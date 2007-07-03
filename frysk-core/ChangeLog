@@ -1,3 +1,9 @@
+2007-07-03  Phil Muldoon  <pmuldoon@redhat.com>
+	
+	* Makefile.am (frysk/pkgdatadir/test-core-x8664): New target, link to
+	frysk-imports files.  Add to CLEANFILES and noinst_DATA.
+
+
 2007-06-26  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac (AM_INIT_AUTOMAKE): Add no-dist.

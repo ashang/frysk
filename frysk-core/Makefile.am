@@ -130,11 +130,17 @@ endif
 
 CLEANFILES += frysk/pkgdatadir/test-core
 CLEANFILES += frysk/pkgdatadir/test-core-mt-fp
+CLEANFILES += frysk/pkgdatadir/test-core-x8664
 noinst_DATA += frysk/pkgdatadir/test-core
 noinst_DATA += frysk/pkgdatadir/test-core-mt-fp
+noinst_DATA += frysk/pkgdatadir/test-core-x8664
+
 frysk/pkgdatadir/test-core:
 	mkdir -p `dirname $@`
 	ln -s @abs_top_builddir@/../frysk-imports/$@ $@
 frysk/pkgdatadir/test-core-mt-fp:
+	mkdir -p `dirname $@`
+	ln -s @abs_top_builddir@/../frysk-imports/$@ $@
+frysk/pkgdatadir/test-core-x8664:
 	mkdir -p `dirname $@`
 	ln -s @abs_top_builddir@/../frysk-imports/$@ $@
