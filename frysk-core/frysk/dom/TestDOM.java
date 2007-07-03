@@ -417,8 +417,6 @@ public class TestDOM extends TestCase {
 	
 	public static void testDOMFormFeed()
 	{
-	  if (brokenXXX(4535))
-	    return;
 	  new DOMLine(0, (char) 0xc + "", 0, false, false, 0);
 	}
 

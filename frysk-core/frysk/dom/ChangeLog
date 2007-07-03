@@ -7,7 +7,8 @@
 
 	* cparser/CDTParser.java: Make more robust in the handling
 	of lines with macros on them; Added checkForMacro and 
-	checkVariabeIndex methods.
+	checkVariableIndex methods.
+	* TestDOM.java: Activate form feed test.
 
 2007-06-21  Rick Moseley  <rmoseley@redhat.com>
 
