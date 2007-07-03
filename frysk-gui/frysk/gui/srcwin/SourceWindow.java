@@ -52,9 +52,6 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import lib.dw.NoDebugInfoException;
-
 import org.gnu.gdk.Color;
 import org.gnu.gdk.KeyValue;
 import org.gnu.gdk.ModifierType;
@@ -438,9 +435,6 @@ public class SourceWindow
       {
         this.dom[0] = DOMFactory.createDOM(trace, this.swProc[0]);
       }
-    catch (NoDebugInfoException e)
-      {
-      }
     catch (IOException e)
       {
       }
@@ -488,9 +482,6 @@ public class SourceWindow
             this.dom[i] = DOMFactory.createDOM(traces[i], this.swProc[0]);
           }
         
-      }
-    catch (NoDebugInfoException e)
-      {
       }
     catch (IOException e)
       {
@@ -3123,9 +3114,6 @@ public class SourceWindow
         								  this.swProc[this.current]);
         		  }
         
-        		catch (NoDebugInfoException e)
-        		  {
-        		  }
         		catch (IOException e)
         		  {
         		  }

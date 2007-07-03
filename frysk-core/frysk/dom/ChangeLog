@@ -1,3 +1,8 @@
+2007-07-03  Andrew Cagney  <cagney@redhat.com>
+
+	* DOMFactory.java (createDOM): Delete lib.dw.NoDebugInfoException
+	from throw list.
+
 2007-07-03  Rick Moseley  <rmoseley@redhat.com>
 
 	* cparser/CDTParser.java: Make more robust in the handling

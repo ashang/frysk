@@ -1,3 +1,7 @@
+2007-07-03  Andrew Cagney  <cagney@redhat.com>
+
+	* SourceWindow.java: Do not catch lib.dw.NoDebugInfoException.
+
 2007-06-29  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (updateShownStackFrame): Fixed a source

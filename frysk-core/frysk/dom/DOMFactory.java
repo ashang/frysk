@@ -42,7 +42,6 @@ package frysk.dom;
 import java.io.IOException;
 import java.util.HashMap;
 import java.io.File;
-import lib.dw.NoDebugInfoException;
 import frysk.proc.Proc;
 import frysk.stack.Frame;
 
@@ -55,8 +54,8 @@ public class DOMFactory
 
   private static HashMap hashmap = new HashMap();
 
-  public static DOMFrysk createDOM (Frame frame, Proc proc) throws NoDebugInfoException,
-  IOException
+  public static DOMFrysk createDOM (Frame frame, Proc proc)
+      throws IOException
   {
     DOMFrysk dom = null;
 

@@ -1,3 +1,7 @@
+2007-07-03  Andrew Cagney  <cagney@redhat.com>
+
+	* NoDebugInfoException.java: Delete.
+
 2007-06-28  Stan Cox  <scox@redhat.com>
 
 	* cni/DwarfDie.cxx (getOffset): New.
