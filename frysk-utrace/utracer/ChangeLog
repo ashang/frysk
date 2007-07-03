@@ -1,3 +1,9 @@
+Tue Jul  3 12:01:52 2007  Chris Moller  <cmoller@redhat.com>
+
+	* Makefile: Added utracer/utracer-errmsgs.h to dependencies.
+	* udb-text-ui.c: Added PID selector to printreg and printregall
+	cmds. Stored invalid commands on readline history stack for editing.
+
 Tue Jul  3 11:10:11 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-text-ui.c: Added hash table for syscall names.  Added parser

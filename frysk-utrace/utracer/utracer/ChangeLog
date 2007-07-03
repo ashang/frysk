@@ -1,3 +1,7 @@
+Tue Jul  3 12:04:42 2007  Chris Moller  <cmoller@redhat.com>
+
+	* utracer-errmsgs.h: Fixed typo.
+
 Tue Jul  3 11:13:16 2007  Chris Moller  <cmoller@redhat.com>
 
 	* utracer-base.c: Added initialisation for syscall reporting

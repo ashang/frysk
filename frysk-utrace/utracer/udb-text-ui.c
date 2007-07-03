@@ -241,30 +241,40 @@ switchpid_fcn (char ** saveptr)
 static int
 printreg_fcn (char ** saveptr)
 {
+  char * tok;
+  int run = 1;
+  long pid = current_pid;
 #define INVALID_REG	-128
   int reg = INVALID_REG;
   
-  char * reg_c = strtok_r (NULL, " \t", saveptr);
-  if (reg_c) {
-    if (reg_hash_table_valid) {
-      ENTRY * entry;
-      ENTRY target;
+  while (tok = strtok_r (NULL, " \t", saveptr)) {
+    if ('[' == *tok) pid = atol (tok+1);
+    else {
+      if (reg_hash_table_valid) {
+	ENTRY * entry;
+	ENTRY target;
       
-      target.key = reg_c;
-      if (0 != hsearch_r (target, FIND, &entry, &reg_hash_table)) 
-	reg = (int)(entry->data);
+	target.key = tok;
+	if (0 != hsearch_r (target, FIND, &entry, &reg_hash_table)) 
+	  reg = (int)(entry->data);
+      }
+      if (INVALID_REG == reg) reg = atoi (tok);
     }
-    if (INVALID_REG == reg) reg = atoi (reg_c);
-    utrace_readreg_if (current_pid, 0, reg);  // fixme--first arg == regset
   }
-  else fprintf (stderr, "\tprintreg requires an argument\n");
+  
+  if (INVALID_REG == reg) reg = -1;	// turn into pra
+  utrace_readreg_if (pid, 0, reg);  // fixme--first arg == regset
   return 1;
 }
 
 static int
 printregall_fcn (char ** saveptr)
 {
-  utrace_readreg_if (current_pid, 0, -1);  // fixme--first arg == regset
+  long pid = current_pid;
+  char * tok = strtok_r (NULL, " \t", saveptr);
+
+  if (tok && ('[' == *tok)) pid = atol (tok+1);
+  utrace_readreg_if (pid, 0, -1);  // fixme--first arg == regset
   return 1;
 }
 
@@ -490,11 +500,10 @@ text_ui()
 	  if (0 != hsearch_r (target, FIND, &entry, &cmd_hash_table)) {
 	    cmd_info_s * cmd_info = (cmd_info_s *)entry->data;
 	    run = (*(action_fcn)(cmd_info->cmd_fcn))(&saveptr);
-	    add_history (iline);
 	  }
-	  else {
+	  else 
 	    fprintf (stderr, "\tCommand %s not recognised\n", iline);
-	  }
+	  add_history (iline);
 
 	  free (iline_copy);
 	}
