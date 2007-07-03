@@ -279,8 +279,7 @@ public class IsaX8664 implements Isa
   public Instruction getInstruction(ByteBuffer bb, long addr)
   {
     bb.position(addr);
-    // return X8664InstructionParser.parse(bb);
-    return new Instruction(new byte[] { bb.getByte() }, false);
+    return X8664InstructionParser.parse(bb);
   }
 
   /**

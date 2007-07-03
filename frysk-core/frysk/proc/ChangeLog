@@ -1,5 +1,12 @@
 2007-07-03  Mark Wielaard  <mwielaard@redhat.com>
 
+	* IA32InstructionParser.java: New class.
+	* X8664InstructionParser.java: Likewise.
+	* IsaIA32.java (getInstruction): Use IA32InstructionParser.
+	* IsaX8664.java (getInstruction): Use X8664InstructionParser.
+
+2007-07-03  Mark Wielaard  <mwielaard@redhat.com>
+
 	* TestInstructions.java: New test.
 
 2007-07-02  Mark Wielaard  <mwielaard@redhat.com>

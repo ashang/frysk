@@ -282,8 +282,7 @@ public class IsaIA32 implements Isa
   public Instruction getInstruction(ByteBuffer bb, long addr)
   {
     bb.position(addr);
-    // return IA32InstructionParser.parse(bb);
-    return new Instruction(new byte[] { bb.getByte() }, false);
+    return IA32InstructionParser.parse(bb);
   }
   
   /**
