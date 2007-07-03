@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@ package frysk.dom.cparser;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import org.eclipse.cdt.core.parser.CodeReader;
@@ -94,9 +95,6 @@ import org.eclipse.cdt.core.parser.ast.IASTUsingDirective;
 import org.eclipse.cdt.core.parser.ast.IASTVariable;
 import org.eclipse.cdt.core.parser.ast.IASTVariableReference;
 
-import org.jdom.Document;
-import org.jdom.output.XMLOutputter;
-
 import frysk.dom.DOMImage;
 import frysk.dom.DOMLine;
 import frysk.dom.DOMSource;
@@ -112,14 +110,20 @@ public class CDTParser
 
   private DOMSource source;
   
-  private DOMFrysk dom;
-  
   private final boolean debug = false;
   
   private final String DEFINE = "#define";
   
   private boolean quickparse = true;
-
+  
+  private int number_includes = 0;
+  
+  // HashSet for keeping up with includes
+  private HashSet ic = new HashSet();
+  
+  // HashSet for keeping up with Macro defines(#DEFINE)
+  private HashSet md = new HashSet();
+  
   /*
    * (non-Javadoc)
    * 
@@ -130,7 +134,6 @@ public class CDTParser
     throws IOException
   {
     this.source = source;
-    this.dom = dom;
     File filename = new File(source.getFilePath(), source.getFileName());
     ParserLanguage language;
     // See what kind of file we are handed so we can tell the parser how to scan
@@ -245,8 +248,6 @@ public class CDTParser
 //            line.addTag(DOMTagTypes.KEYWORD, t.text, t.colNum);
 //          }
 //      }
-    if (debug)
-      printDOM();
     
   }
   
@@ -303,22 +304,6 @@ public class CDTParser
     }
     return ctr;
 }
-  
-  /*
-   * Print the DOM 
-   */
-  public void printDOM() {
-    Document doc = dom.getDOMFrysk();
-    try {
-      XMLOutputter serializer = new XMLOutputter();
-      serializer.getFormat();
-      System.out.println("\n\n********** CDTParser **********\n");
-      serializer.output(doc, System.out);
-    }
-    catch (IOException e) {
-      System.err.println(e);
-    }
-  }
 
   class ParserCallBack
       implements ISourceElementRequestor
@@ -484,7 +469,8 @@ public class CDTParser
           System.out.println(".....lineText = " + lineText.trim() +
                              "\n.....nameText = " + nameText.trim());
       // Check to see if the character string we are parsing is in one of the lines
-      if (!checkScope(arg0.getName(), lineText) && !checkScope(arg0.getName(), nameText))
+      if ((!checkScope(arg0.getName(), lineText) && !checkScope(arg0.getName(), nameText))
+        || number_includes > 0)
         return;
       
       // On functions that are pointers(have an "*" in front of the name) the CDTParser handles
@@ -586,13 +572,18 @@ public class CDTParser
                            arg0.getName());
       
       DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
-      if (line == null || !checkScope(arg0.getName(), line.getText()))
+      if (line == null || !checkScope(arg0.getName(), line.getText())
+          || number_includes > 0)
         return;
       if (debug)
         System.out.println(".....lineText = " + line.getText());
-
-      line.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getOffset()
-                                                        - line.getOffset());
+      
+      if (!checkForMacro(line))
+        line.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getOffset()
+                                                         - line.getOffset());
+      else
+        line.addTag(DOMTagTypes.FUNCTION, arg0.getName(), 
+            checkVariableIndex(line.getText(), arg0.getName()));
     }
 
     public void acceptTypedefDeclaration (IASTTypedefDeclaration arg0)
@@ -742,7 +733,8 @@ public class CDTParser
                              arg0.getName());
       
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-      if (line == null || !checkScope(arg0.getName(), line.getText()))
+      if ((line == null || !checkScope(arg0.getName(), line.getText())) ||
+          number_includes > 0)
         return;
 
       String lineText = line.getText();
@@ -780,17 +772,22 @@ public class CDTParser
     public void acceptVariableReference (IASTVariableReference arg0)
     {
       if (debug)
-          System.out.println("made it to acceptVariable Reference.....name = " + 
+          System.out.println("made it to acceptVariableReference.....name = " + 
                              arg0.getName());
       
       DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
-      if (line == null || !checkScope(arg0.getName(), line.getText()))
+      if (line == null || number_includes > 0)
         return;
       if (debug)
           System.out.println(".....lineText = " + line.getText().trim());
-
-      line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(), arg0.getOffset()
+      
+      if (!checkForMacro(line))
+        line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(), arg0.getOffset()
                                                          - line.getOffset());
+      else {
+          line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(), 
+              checkVariableIndex(line.getText(), arg0.getName()));
+      }
     }
 
     public void acceptFieldReference (IASTFieldReference arg0)
@@ -807,13 +804,18 @@ public class CDTParser
                              arg0.getName());
       
       DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
-      if (line == null || !checkScope(arg0.getName(), line.getText()))
+      if (line == null || !checkScope(arg0.getName(), line.getText())
+          || number_includes > 0)
         return;
       if (debug)
           System.out.println(".....lineText = " + line.getText().trim());
 
-      line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(), arg0.getOffset()
+      if (!checkForMacro(line))
+        line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(), arg0.getOffset()
                                                          - line.getOffset());
+      else
+        line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(), 
+            checkVariableIndex(line.getText(), arg0.getName()));
     }
 
     public void acceptAbstractTypeSpecDeclaration (
@@ -1007,11 +1009,30 @@ public class CDTParser
     }
 
     /* PREPROCESSOR STUFF */
+    
+    /*
+     * enterInclusion/exitInclusion use a HashSet(hs) to help determine when
+     * the parser is inside of an "#include" when it returns a function/variable/
+     * keyword.  If the parser is inside an "#include", the variable
+     * "number_includes" is > 0.  When this is the case, the callback can be
+     * ignored.
+     * 
+     * **NOTE** During testing is was found that if an "#include" is recursive
+     * (that is an "#include" includes an "#include" which in turn includes
+     * the originator, there can be multiple "enterInclusion" callbacks
+     * but there will be only one "exitInclusion" callback for the originator,
+     * hence the reason for the HashSet.
+     */
     public void enterInclusion (IASTInclusion arg0)
     {
       if (debug)
           System.out.println("made it to enterInclusion.....name = " +
                              arg0.getName());
+      
+      if (!ic.contains(arg0.getName())) {
+        ic.add(arg0.getName());
+        number_includes++;
+      }
 
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
       if (line == null || !checkScope(arg0.getName(), line.getText()))
@@ -1032,7 +1053,8 @@ public class CDTParser
         i = lineText.indexOf('"');
         j = lineText.lastIndexOf('"');
       }
-      line.addTag(DOMTagTypes.INCLUDE, lineText.substring(i+1,j), i+1);
+      if (i != -1)
+        line.addTag(DOMTagTypes.INCLUDE, lineText.substring(i+1,j), i+1);
     }
 
     public void acceptMacro (IASTMacro arg0)
@@ -1040,11 +1062,20 @@ public class CDTParser
       if (debug)
           System.out.println("made it to acceptMacro.....name = " +
                              arg0.getName());
+      
+      // Add macro to the list of defines
+      if (!md.contains(arg0.getName())) {
+      md.add(arg0.getName());
+      }
+      
+      // If we are in the middle of an include, skip on out
+      if (number_includes > 0)
+        return;
 
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
       if (line == null || ! checkScope(arg0.getName(), line.getText()))
         return;
-
+      
       String lineText = line.getText();
       
       if (debug)
@@ -1057,13 +1088,15 @@ public class CDTParser
                       lineText.substring(0, arg0.getNameOffset()
                                             - line.getOffset()),
                       arg0.getStartingOffset() - line.getOffset());
+          
         }
+            
       line.addTag(
                   DOMTagTypes.MACRO, arg0.getName(),
                   arg0.getNameOffset() - line.getOffset());
     }
 
-    /* UNIMPLEMENTED INTERFACE FUNCTIIONS */
+    /* UNIMPLEMENTED INTERFACE FUNCTIONS */
     public void acceptEnumeratorReference (IASTEnumeratorReference arg0)
     {
       if (debug)
@@ -1121,7 +1154,8 @@ public class CDTParser
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
       DOMLine nameLine = source.getLineSpanningOffset(arg0.getNameOffset());
       
-      if (line == null || !checkScope(arg0.getName(), nameLine.getText()))
+      if (line == null || !checkScope(arg0.getName(), nameLine.getText())
+          || number_includes > 0)
           return;
       if (debug)
         {
@@ -1211,6 +1245,10 @@ public class CDTParser
       if (debug)
         System.out.println("made it to exitInclusion.....name = " +
                            arg0.getName());
+      if (ic.contains(arg0.getName())) {
+        ic.remove(arg0.getName());
+        number_includes--;
+      }
     }
 
     public void exitCompilationUnit (IASTCompilationUnit arg0)
@@ -1268,6 +1306,83 @@ public class CDTParser
         return false;
       else
         return true;
+    }
+    
+    /**
+     * checkForMacro does a check to see if the line we are on contains a macro.
+     * Due to the way the CDTParser handles macros, we are not notified when one
+     * is found, only when one is defined. We must do the finding unfortunately
+     * and this method does it.
+     * 
+     * @param Line is a DOMLine object of the line currently being parsed
+     * 
+     */
+    private boolean checkForMacro(DOMLine line) {
+      if (debug)
+        System.out.println(".....made it to checkForMacro");
+      String lineText = line.getText();
+      Iterator it = md.iterator();
+      while (it.hasNext()) {
+        Object macro = it.next();
+        String macro_name = (String) macro;
+        int start_index = lineText.indexOf(macro_name);
+        if (start_index >= 0) {
+          // pluck the macro name out of the line
+          int end_index = start_index + macro_name.length();
+          // Make sure it is not part of another variable name
+          char next_char = lineText.charAt(end_index);
+          switch (next_char) {
+            case ' ':
+            case '(':
+              line.addTag(DOMTagTypes.MACRO, macro_name, start_index);
+              return true;
+            default:
+              return false;
+          }
+        }
+      }
+      return false;
+    }
+    
+    /**
+     * checkVariableIndex is a kludge to find the starting offset within a
+     * line of a variable found on a line with a macro.  Unfortunately the
+     * CDTParser has bugs that are difficult to find and has a lot of
+     * things marked as "TODO", especially around methods used to handle
+     * macros.  One bug is that the CDTParser passes back the incorrect
+     * starting index of a variable/parameter on a line with a macro.  This
+     * method finds the correct position and sends it back.
+     * 
+     * @param lineText is a String containing the text of the line being parsed
+     * @param var is a String containing the variable/parameter name to be looked for
+     */
+    private int checkVariableIndex(String lineText, String var) {
+      if (debug)
+        System.out.println(".....made it to checkVariableIndex");
+      int start = 0;
+      while (start < lineText.length() - 1) {
+        int start_index = lineText.indexOf(var, start);
+        int end_index = start_index + var.length() - 1;
+        char next_char = lineText.charAt(end_index + 1);
+        // Make sure the var string is not part of another longer variable name
+        switch (next_char) {
+          case ' ':
+          case ',':
+          case ')':
+          case ';':
+          case '>':
+          case '<':
+          case '=':
+          case '[':
+          case '.':
+          case '+':
+          case '-':
+            return start_index;
+          default:
+            start = end_index + 1;
+        }
+      }
+      return -1;
     }
   }
 }

@@ -1,4 +1,10 @@
-2007-06-21 Rick Moseley  <rmoseley@redhat.com>
+2007-07-03  Rick Moseley  <rmoseley@redhat.com>
+
+	* cparser/CDTParser.java: Make more robust in the handling
+	of lines with macros on them; Added checkForMacro and 
+	checkVariabeIndex methods.
+
+2007-06-21  Rick Moseley  <rmoseley@redhat.com>
 
 	* DOMLine.java: Change another insertion of "&np" to a
 	space; fix problem of multiple form feeds on a line.
