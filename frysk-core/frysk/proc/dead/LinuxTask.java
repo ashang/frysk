@@ -40,6 +40,7 @@
 package frysk.proc.dead;
 
 import lib.elf.ElfPrstatus;
+import lib.elf.ElfPrFPRegSet;
 import inua.eio.ByteBuffer;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
@@ -52,6 +53,7 @@ public class LinuxTask
 {
 
   ElfPrstatus elfTask = null;
+  ElfPrFPRegSet elfFPRegs = null;
   LinuxProc parent = null;
 
   protected ByteBuffer sendrecMemory ()
@@ -67,29 +69,53 @@ public class LinuxTask
 
   protected ByteBuffer[] sendrecRegisterBanks () 
   {
-    ByteBuffer[] bankBuffers;
- 
-    bankBuffers = new ByteBuffer[4];
+    ByteBuffer[] bankBuffers = new ByteBuffer[4];
+
+    // Create an empty page
+    byte[] emptyBuffer = new byte[4096];
+    for (int i=0; i<emptyBuffer.length; i++)
+      emptyBuffer[i]=0;
+
+    // Get ISA specific data
     ByteOrder byteOrder = getIsa().getByteOrder();
     int  wordSize = getIsa().getWordSize();
     
-    ByteBuffer gpRegisters = new ArrayByteBuffer(elfTask.getRawCoreRegisters());
-    gpRegisters.order(byteOrder);
-    gpRegisters.wordSize(wordSize);
-    bankBuffers[0] = gpRegisters;
+    // Set GP Registers
+    bankBuffers[0] = new ArrayByteBuffer(elfTask.getRawCoreRegisters());
     bankBuffers[0].order(byteOrder);
     bankBuffers[0].wordSize(wordSize);
+
+    // The following register banks are either fake (blank page) or
+    // actual core data. As corefiles may or may not contain various
+    // parts of register data, and there is an expectation throughout
+    // Frysk that each task will always provide register data
+    // regardless, we have to preset an empty page to avoid NPEs.
+
+    // If Floating Point Register are present
+    if (elfFPRegs != null)
+      bankBuffers[1] = new ArrayByteBuffer(elfFPRegs.getFPRegisterBuffer());
+    else
+      bankBuffers[1] = new ArrayByteBuffer(emptyBuffer);
+
+    bankBuffers[1].order(byteOrder);
+    bankBuffers[1].wordSize(wordSize);
+
+    // XXX: Other register banks need to be filled in.
+    bankBuffers[2] = new ArrayByteBuffer(emptyBuffer);
+    bankBuffers[3] = new ArrayByteBuffer(emptyBuffer);
     return bankBuffers;
   }
 
   /**
    * Create a new unattached Task.
    */
-  LinuxTask (LinuxProc proc, ElfPrstatus elfTask)
+  LinuxTask (LinuxProc proc, ElfPrstatus elfTask, ElfPrFPRegSet elfFPRegs)
   {
     super(proc, new TaskId(elfTask.getPrPid()),LinuxTaskState.initial());
     this.elfTask = elfTask;
+    this.elfFPRegs = elfFPRegs;
     this.parent = proc;
+
   }
 
 

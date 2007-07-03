@@ -82,9 +82,6 @@ public class TestLinuxCore
 				   xtestCore);
 
     
-    lcoreHost.requestRefreshXXX();
-    Manager.eventLoop.runPending();
-
     Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid()));
 
     MemoryMap[] list = ackProc.getMaps();
@@ -139,9 +136,6 @@ public class TestLinuxCore
     Host lcoreHost = new LinuxHost(Manager.eventLoop, 
 				   xtestCore);
     
-    lcoreHost.requestRefreshXXX();
-    Manager.eventLoop.runPending();
-
     Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid()));
 
 
@@ -187,8 +181,6 @@ public class TestLinuxCore
   {
     
     assertNotNull("Core File Host Is Null?",coreHost);
-    coreHost.requestRefreshXXX();
-    Manager.eventLoop.runPending();
     
     Proc proc = coreHost.getProc(new ProcId(31497));
     
@@ -203,10 +195,6 @@ public class TestLinuxCore
     
     
     assertNotNull("Core file Host is Null?",coreHost);
-    
-    
-    coreHost.requestRefreshXXX();
-    Manager.eventLoop.runPending();
     
     Proc proc = coreHost.getProc(new ProcId(31497));
     assertNotNull("Proc exists in corefile", proc);
@@ -227,9 +215,6 @@ public class TestLinuxCore
     
     
     assertNotNull("Core file Host is Null?",coreHost);
-    
-    coreHost.requestRefreshXXX();
-    Manager.eventLoop.runPending();
     
     Proc proc = coreHost.getProc(new ProcId(31497));
     assertNotNull("Proc exists in corefile", proc);
@@ -270,9 +255,6 @@ public class TestLinuxCore
   {
 	assertNotNull("Core file Host is Null?",coreHost);
     
-	coreHost.requestRefreshXXX();  
-	Manager.eventLoop.runPending();
-	   
 	Proc proc = coreHost.getProc(new ProcId(31497));
 	assertNotNull("Proc exists in corefile", proc);
 	Task task = proc.getMainTask();
@@ -294,10 +276,6 @@ public class TestLinuxCore
 
     assertNotNull("Core file Host is Null?",coreHost);
 
-
-    coreHost.requestRefreshXXX();
-    Manager.eventLoop.runPending();
-    
     Proc proc = coreHost.getProc(new ProcId(31497));
     assertNotNull("Proc exists in corefile", proc);
     Task task = proc.getMainTask();
@@ -336,10 +314,10 @@ public class TestLinuxCore
     assertEquals("ds register",0x0000007b,
 		 isa.getRegisterByName("ds").get(task));
 
-   tmp = new BigInteger("-1072693125"); //0xc010007b
-   BigInteger es = isa.getRegisterByName("es").getBigInteger(task);
-
-   assertEquals("es register",tmp.longValue(), es.longValue());
+    tmp = new BigInteger("-1072693125"); //0xc010007b
+    BigInteger es = isa.getRegisterByName("es").getBigInteger(task);
+    
+    assertEquals("es register",tmp.longValue(), es.longValue());
 
     assertEquals("fs register",0x00000000,
 		 isa.getRegisterByName("fs").get(task));

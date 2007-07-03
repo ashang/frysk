@@ -49,6 +49,7 @@ import lib.elf.ElfPrstatus;
 import lib.elf.ElfPHeader;
 import lib.elf.ElfCommand;
 import lib.elf.ElfSection;
+import lib.elf.ElfPrFPRegSet;
 import frysk.sys.proc.AuxvBuilder;
 import java.util.logging.Level;
 import java.util.Iterator;
@@ -85,7 +86,7 @@ public class LinuxProc
     this.elfProc = ElfPrpsinfo.decode(elfData);
     this.corefileBackEnd = host.coreFile;
 
-    // Executable is null (non-specified), find the exectuable
+    // Executable is null (non-specified), find the executable
     // as it is written in the corefile. 
     if (host.exeFile == null)
       {
@@ -183,15 +184,57 @@ public class LinuxProc
   {
     // Find tasks. Refresh is a misnomer here as 
     // Corefiles will never spawn new tasks beyond the
-    // original refresh, and will lose them. 
+    // original refresh, or will lose them. 
 
     ElfPrstatus elfTasks[] = null;
+    ElfPrFPRegSet elfFPRegs[] = null;
+    int fpCount = 0;
+
+    // Decode both task and floating point registers
     elfTasks = ElfPrstatus.decode(elfData);
-    for (int i=0; i<elfTasks.length; i++)
+    elfFPRegs = ElfPrFPRegSet.decode(elfData);
+    
+    // Two methods of whether Floating Point note data exists.
+    // In userland generated core-dumps there is no way to test
+    // if floating point data operations have actually occurred, so
+    // programs like fcore/gcore will always write NT_FPREGSET note data
+    // per thread regardless. On kernel generated corefiles, the
+    // kernel micro-optimizes whether NT_FPREGSET note data is written
+    // per thread by analyzing to see if that thread has performed
+    // Floating Point operations. If it has, it will write
+    // NT_FPREGSET, and if it hasn't it won't.
+
+    // Account for both these scenarios, here.
+    
+    Task newTask = null;
+    
+    // If the number of NT_FPREGSET note objects is equal to the
+    // the number of NT_PRSTATUS note objects, then no do not account
+    // for mismatch. 
+    if (elfFPRegs.length == elfTasks.length)
+      for (int i=0; i<elfTasks.length; i++)
+	newTask = new LinuxTask(LinuxProc.this, elfTasks[i], elfFPRegs[i]);
+
+    // Otherwise add only NT_FPREGSET data if pr_fpvalid is > 0. This
+    // value is not reliable on userland kernels (gdb always sets it
+    // to 0) so if we are here, this is a micro-optimized kernel where
+    // that flag is set correctly.
+    else
       {
-    	Task newTask = new LinuxTask(LinuxProc.this, elfTasks[i]);
-    	newTask.getClass();
+	for (int i=0; i<elfTasks.length; i++)
+	  {
+	    
+	    if (elfTasks[i].getPrFPValid() > 0)
+	      {
+		newTask = new LinuxTask(LinuxProc.this, elfTasks[i],  elfFPRegs[fpCount]);
+		fpCount++;
+	      }
+	    else
+	      newTask = new LinuxTask(LinuxProc.this, elfTasks[i],  null);
+	    
+	  }
       }
+    newTask.getClass();
   }
 
 

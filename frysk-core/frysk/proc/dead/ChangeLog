@@ -1,3 +1,20 @@
+2007-07-02  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxTask.java (LinuxTask): Take FP Register data as a 
+	parameter.
+	(sendrecRegisterBanks): Rewrite to either present a blank
+	page or actual register data.
+	* LinuxProc.java (sendRefresh):Account for two different
+	optimizations in floating point note data.
+	* TestLinuxCore.java (testLinuxCoreFileMaps) Remove runPending()
+	and requestRefresh calls.
+	(testLinuxCoreFileStackTrace): Ditto.
+	(testLinuxHostPopulation): Ditto.
+	(testLinuxProcPopulation): Ditto.
+	(testLinuxProcAuxV): Ditto.
+	(testLinuxTaskMemory): Ditto.
+	
+
 2007-06-25  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxProc.java (sendrecExe): If a constructed filename
