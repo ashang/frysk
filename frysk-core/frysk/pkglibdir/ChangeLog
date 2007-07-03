@@ -1,7 +1,9 @@
 2007-07-03  Kris Van Hees  <kris.van.hees@oracle.com>
 
-	* funit-scopes.c: Removed 'extern' declaration on second() to work
-	around a GCC bug that surfaces when compiling/linking with -O0.
+	* funit-scopes.c: Removed 'extern' declaration on second() because the
+	"extern inline" declaration causes an error when compiling/linking with
+	-O0 (which has been confirmed to not be a gcc bug, but rather expected
+	behaviour).
 
 2007-07-03  Mark Wielaard  <mwielaard@redhat.com>
 
