@@ -172,7 +172,7 @@ lib::elf::ElfPrstatus::fillMemRegion(jbyteArray buffer, jlong startAddress)
 	    prstatus->pr_reg[i] = registers[i];
 	  }
 
-	prstatus->pr_fpvalid = 0;		/* True if math co-processor being used.  */
+	prstatus->pr_fpvalid = 1;		/* True if math co-processor being used.  */
 
 	memcpy(bs + startAddress, prstatus, sizeof(struct elf_prstatus));
 

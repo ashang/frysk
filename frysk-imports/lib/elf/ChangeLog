@@ -1,3 +1,18 @@
+2007-07-02  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ElfPrFPRegSet.java (ElfPrFPRegSet): New private constructor.
+	(decode): New. Take note data and decode Floating point data.
+	* cni/ElfPrFPRegSet.cxx(fillMemRegion): Indent.
+	(getNoteData): New. Decode multiple note structs.
+	
+	* ElfPrstatus.java (ElfPrstatus): Find value pr_fpvalid.
+	(printAll): Indent.
+	* cni/ElfPrstatus.cxx (ElfPrstatus): Always set
+	prstatus->pr_fpvalid to 1.
+
+	* tests/TestElf.java (testElfCorePrstatusNotes):
+	Add FP stubs for test.
+	
 2007-06-19  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ElfPrstatus.java (ElfPrstatus): Account for alignment

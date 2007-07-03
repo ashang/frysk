@@ -60,7 +60,7 @@ import lib.elf.ElfFileException;
 import lib.elf.ElfPrpsinfo;
 import lib.elf.ElfPrAuxv;
 import lib.elf.ElfPrstatus;
-
+import lib.elf.ElfPrFPRegSet;
 import frysk.sys.proc.AuxvBuilder;
 
 public class TestElf
@@ -203,7 +203,9 @@ public class TestElf
     ElfData noteData = findNoteSegment(testElf);
 
     ElfPrstatus threads[] =  ElfPrstatus.decode(noteData);
-
+    ElfPrFPRegSet fpthreads [] = ElfPrFPRegSet.decode(noteData);
+    
+    assertEquals("Number of FP data sets in notes",0,fpthreads.length);
     // Should only be one thread in this core file.
     assertEquals("Number of  threads",1,threads.length);
 
@@ -342,7 +344,6 @@ public class TestElf
       }
     };
     builder.construct(prAuxv.getAuxvBuffer());
-
 
   }
 

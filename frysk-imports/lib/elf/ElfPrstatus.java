@@ -156,36 +156,41 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
     pr_cstime_sec =  noteBuffer.getWord();
     pr_cstime_usec =  noteBuffer.getWord();
     	
-     pos = noteBuffer.position();
+    pos = noteBuffer.position();
     if (pos % wordSize > 0)
        pos = (pos - (pos % wordSize))+wordSize;
      noteBuffer.position(pos);
       
-    raw_core_registers = new byte[(int) ((singleNoteData.length) - noteBuffer.position())];
-    noteBuffer.get(raw_core_registers,0, (int) ((singleNoteData.length) - noteBuffer.position()));
+    raw_core_registers = new byte[(int) ((singleNoteData.length-4) -  noteBuffer.position())];    
+    noteBuffer.get(raw_core_registers,0, (int) ((singleNoteData.length-4) - noteBuffer.position()));
+    pos = noteBuffer.position();
+    if (pos % wordSize > 0)
+       pos = (pos - (pos % wordSize))+wordSize;
+    noteBuffer.position(pos);
+    pr_fpvalid = noteBuffer.getInt();
   }
 
   
   public void printAll()
   {
-	    System.out.println("signo = "+pr_info_si_signo);
-	    System.out.println("si_code = "+pr_info_si_code);
-	    System.out.println("si_errno = "+pr_info_si_errno);
-	    System.out.println("cur sig = "+pr_cursig);
-		System.out.println("sig pend = "+pr_sigpend);
-		System.out.println("sig hold = "+pr_sighold);
-		System.out.println("pid = "+pr_pid);
-		System.out.println("ppid = "+pr_ppid);
-		System.out.println("pgrp = "+pr_pgrp);
-		System.out.println("sid = "+pr_sid);
-		System.out.println("utime sec = "+pr_utime_sec);
-		System.out.println("utime usec = "+pr_utime_usec);
-		System.out.println("stime sec = "+pr_stime_sec);
-		System.out.println("stime usec = "+pr_stime_usec);
-		System.out.println("cutime sec = "+pr_cutime_sec);
-		System.out.println("cutime usec = "+pr_cutime_usec);
-		System.out.println("cstime sec = "+pr_cstime_sec);
-		System.out.println("cstime usec = "+pr_cstime_usec);
+    System.out.println("signo = "+pr_info_si_signo);
+    System.out.println("si_code = "+pr_info_si_code);
+    System.out.println("si_errno = "+pr_info_si_errno);
+    System.out.println("cur sig = "+pr_cursig);
+    System.out.println("sig pend = "+pr_sigpend);
+    System.out.println("sig hold = "+pr_sighold);
+    System.out.println("pid = "+pr_pid);
+    System.out.println("ppid = "+pr_ppid);
+    System.out.println("pgrp = "+pr_pgrp);
+    System.out.println("sid = "+pr_sid);
+    System.out.println("utime sec = "+pr_utime_sec);
+    System.out.println("utime usec = "+pr_utime_usec);
+    System.out.println("stime sec = "+pr_stime_sec);
+    System.out.println("stime usec = "+pr_stime_usec);
+    System.out.println("cutime sec = "+pr_cutime_sec);
+    System.out.println("cutime usec = "+pr_cutime_usec);
+    System.out.println("cstime sec = "+pr_cstime_sec);
+    System.out.println("cstime usec = "+pr_cstime_usec);
   }
   	
   public static ElfPrstatus[] decode(ElfData noteData)

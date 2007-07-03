@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,12 @@
 
 package lib.elf;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import inua.eio.ArrayByteBuffer;
+import inua.eio.ByteBuffer;
+import inua.eio.ByteOrder;
+
 /**
  * Java Representation of the the Floating point notes secion
  * found in core files
@@ -49,10 +55,52 @@ public class ElfPrFPRegSet extends ElfNhdr.ElfNoteSectionEntry
   
 
   byte[] raw_registers;
+  static ArrayList internalThreads = new ArrayList();
 
   public ElfPrFPRegSet()
   {  
   }
+
+  private ElfPrFPRegSet(byte[] singleNoteData, Elf elf)
+  {
+
+    ByteOrder order = null;
+    if (singleNoteData.length <=0)
+      return;
+    ByteBuffer noteBuffer = new ArrayByteBuffer(singleNoteData);
+
+    ElfEHeader header = elf.getEHeader();
+    switch (header.ident[5])
+      {
+      case ElfEHeader.PHEADER_ELFDATA2LSB: 
+	order = ByteOrder.LITTLE_ENDIAN;
+	break;
+      case ElfEHeader.PHEADER_ELFDATA2MSB:
+	order = ByteOrder.BIG_ENDIAN;
+	break;
+      default:
+	return;
+      }
+
+    noteBuffer.order(order);
+    
+    switch (header.machine)
+      {
+      case ElfEMachine.EM_386:
+      case ElfEMachine.EM_PPC:
+	noteBuffer.wordSize(4);
+	break;
+      case ElfEMachine.EM_X86_64:
+      case ElfEMachine.EM_PPC64:
+	noteBuffer.wordSize(8);
+	break;
+      default:
+	return;
+      }
+
+    raw_registers = new byte[(int)singleNoteData.length];
+    noteBuffer.get(raw_registers,0,(int)singleNoteData.length);
+  }		     
   
   /**
    * Sets the FP register buffer from buffer.
@@ -79,6 +127,26 @@ public class ElfPrFPRegSet extends ElfNhdr.ElfNoteSectionEntry
     return raw_registers;
   }
 
+  public static ElfPrFPRegSet[] decode(ElfData noteData)
+  {
+    getNoteData(noteData);
+    ElfPrFPRegSet threadList[] = new  ElfPrFPRegSet[internalThreads.size()];
+
+    int count = 0;
+    Iterator i = internalThreads.iterator();
+    while (i.hasNext())
+      {
+	byte b[]  = (byte[]) i.next();
+	threadList[count] = new ElfPrFPRegSet(b,noteData.getParent());
+	count++;
+      }
+	
+    internalThreads.clear();
+    return threadList;
+  }
+
+
+  public native static long getNoteData(ElfData data);
   public native long getEntrySize();
   public native long fillMemRegion(byte[] buffer, long startAddress);
 }
