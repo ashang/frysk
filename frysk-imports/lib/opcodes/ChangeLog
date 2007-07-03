@@ -1,3 +1,7 @@
+2007-07-03  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Disassembler.cxx (save_instruction): Re-indent.
+
 2007-01-16  Mark Wielaard  <mark@klomp.org>
 
 	* Disassembler.java (disassemble): Mark native method as throwing

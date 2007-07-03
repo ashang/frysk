@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -63,126 +63,129 @@
 #include "inua/eio/ByteBuffer.h"
 
 // reads number of bytes from the byte buffer
-int read_from_byte_buffer(bfd_vma memaddr, bfd_byte* myadd, unsigned int length,
-		     struct disassemble_info *info);
+static int read_from_byte_buffer (bfd_vma memaddr, bfd_byte* myadd,
+				  unsigned int length,
+				  struct disassemble_info *info);
 
 // throws an OpcodesException
-void error_func(int status, bfd_vma memaddr, struct disassemble_info *info);
+static void error_func (int status, bfd_vma memaddr,
+			struct disassemble_info *info);
 
 // Prints the address when errors occur
-void print_addr(bfd_vma addr, struct disassemble_info *info);
+static void print_addr (bfd_vma addr, struct disassemble_info *info);
 
 // saves the instruction to the java class
-int save_instruction(void* data, const char *str, ...);
+static int save_instruction (void* data, const char *str, ...);
 
 void
 lib::opcodes::Disassembler::disassemble (jlong address, jlong instructions)
 {
-
   disassemble_info disasm_info;
   int (*disasm_func) (bfd_vma, disassemble_info*);
   int instr_length = 0;
 
-	::init_disassemble_info (&disasm_info, (void*) this, save_instruction);
+  ::init_disassemble_info (&disasm_info, (void*) this, save_instruction);
 
-	disasm_info.flavour = bfd_target_unknown_flavour;
+  disasm_info.flavour = bfd_target_unknown_flavour;
 #ifdef __x86_64__
-	disasm_info.arch = bfd_arch_i386;
-	disasm_info.mach = bfd_mach_x86_64;
-	disasm_func = &(::print_insn_i386_att);
+  disasm_info.arch = bfd_arch_i386;
+  disasm_info.mach = bfd_mach_x86_64;
+  disasm_func = &(::print_insn_i386_att);
 #elif defined (__i386__)
-	disasm_info.arch = bfd_arch_i386;
-	disasm_info.mach = bfd_mach_i386_i386;
-	disasm_func = &(::print_insn_i386_att);
+  disasm_info.arch = bfd_arch_i386;
+  disasm_info.mach = bfd_mach_i386_i386;
+  disasm_func = &(::print_insn_i386_att);
 #elif defined (__powerpc64__)
-	disasm_info.arch = bfd_arch_powerpc;
-	disasm_info.mach = bfd_mach_ppc64;
-	disasm_func = &(::print_insn_big_powerpc);
+  disasm_info.arch = bfd_arch_powerpc;
+  disasm_info.mach = bfd_mach_ppc64;
+  disasm_func = &(::print_insn_big_powerpc);
 #elif defined (__powerpc__)
-	disasm_info.arch = bfd_arch_powerpc;
-	disasm_info.mach = bfd_mach_ppc;
-	disasm_func = &(::print_insn_big_powerpc);
+  disasm_info.arch = bfd_arch_powerpc;
+  disasm_info.mach = bfd_mach_ppc;
+  disasm_func = &(::print_insn_big_powerpc);
 #elif defined (__ia64__)
-	disasm_info.arch = bfd_arch_ia64;
-	disasm_info.mach = bfd_mach_ia64_elf64; // TODO: which mach? elf32 or elf64?
-	disasm_func =&(::print_insn_ia64);
+  disasm_info.arch = bfd_arch_ia64;
+  disasm_info.mach = bfd_mach_ia64_elf64; // TODO: which mach? elf32 or elf64?
+  disasm_func =&(::print_insn_ia64);
 #elif defined (__s390__)
-	disasm_info.arch = bfd_arch_s390;
-	disasm_info.mach = bfd_mach_s390_31;
-	disasm_func = &(::print_insn_s390);
+  disasm_info.arch = bfd_arch_s390;
+  disasm_info.mach = bfd_mach_s390_31;
+  disasm_func = &(::print_insn_s390);
 #elif defined (__s390x__)
-	disasm_info.arch = bfd_arch_s390;
-	disasm_info.mach = bfd_mach_s390_64;
-	disasm_func = &(::print_insn_s390);
+  disasm_info.arch = bfd_arch_s390;
+  disasm_info.mach = bfd_mach_s390_64;
+  disasm_func = &(::print_insn_s390);
 #endif
  
-	if (!disasm_func)
-		throw new lib::opcodes::OpcodesException(
-				JvNewStringUTF("Error: Unsupported architechture"));
- 
-	disasm_info.read_memory_func = read_from_byte_buffer;
-	disasm_info.memory_error_func = error_func;
-	disasm_info.print_address_func = print_addr;
+  if (!disasm_func)
+    throw new lib::opcodes::OpcodesException
+      (JvNewStringUTF("Error: Unsupported architechture"));
+  
+  disasm_info.read_memory_func = read_from_byte_buffer;
+  disasm_info.memory_error_func = error_func;
+  disasm_info.print_address_func = print_addr;
 
-	bfd_vma current_address = (bfd_vma) address;
-	
-	for (int i = 0; i < instructions; i++)
-	{
-		this->setCurrentAddress(current_address);
-		instr_length = disasm_func(current_address, &disasm_info);
-		current_address += instr_length;
+  bfd_vma current_address = (bfd_vma) address;
 
-		this->setCurrentInstructionLength (instr_length);
-		this->moveToNext();
-	}
+  for (int i = 0; i < instructions; i++)
+    {
+      this->setCurrentAddress(current_address);
+      instr_length = disasm_func(current_address, &disasm_info);
+      current_address += instr_length;
+
+      this->setCurrentInstructionLength (instr_length);
+      this->moveToNext();
+    }
 }
 
 /*
  * Instead of copying memory from memaddr to myadd, we get the section
  * starting at memaddr in the ByteBuffer.
  */
-int read_from_byte_buffer (bfd_vma memaddr, bfd_byte* myadd, unsigned int length,
-		     struct disassemble_info *info)
+int
+read_from_byte_buffer (bfd_vma memaddr, bfd_byte* myadd, unsigned int length,
+		       struct disassemble_info *info)
 {
-	lib::opcodes::Disassembler *obj = (lib::opcodes::Disassembler*) info->stream;
-	inua::eio::ByteBuffer *buffer = obj->buffer;
+  lib::opcodes::Disassembler *obj = (lib::opcodes::Disassembler*) info->stream;
+  inua::eio::ByteBuffer *buffer = obj->buffer;
 	
-	char tmp[length];
-	for (unsigned int i = 0; i < length; i++)
-	{
-		long offset = ((long) memaddr) + i;
-		tmp[i] = (char) buffer->getByte (offset);
-	}
+  char tmp[length];
+  for (unsigned int i = 0; i < length; i++)
+    {
+      long offset = ((long) memaddr) + i;
+      tmp[i] = (char) buffer->getByte (offset);
+    }
 	
-	memcpy ((void*) myadd, (void*) tmp, length);
+  memcpy ((void*) myadd, (void*) tmp, length);
 	
-	return 0;
+  return 0;
 }
 
 /*
  * If something breaks, throw an exception
  */
-void error_func (int status, bfd_vma memaddr, struct disassemble_info *info)
+void
+error_func (int status, bfd_vma memaddr, struct disassemble_info *info)
 {
-	throw new lib::opcodes::OpcodesException (
-		JvNewStringUTF ("Error occured while disassembling."), 
-		(jint) status, (jlong) memaddr);
+  throw new lib::opcodes::OpcodesException
+    (JvNewStringUTF ("Error occured while disassembling."), 
+     (jint) status, (jlong) memaddr);
 }
 
-void print_addr (bfd_vma addr, struct disassemble_info *info)
+void
+print_addr (bfd_vma addr, struct disassemble_info *info)
 {
-
-	lib::opcodes::Disassembler* obj = (lib::opcodes::Disassembler*) info->stream;
-
-	char *mystr = NULL;
-	if (::asprintf (&mystr, "0x%lx", (long) addr) > 0)
-	{	
-		obj->appendCurrentInstruction (JvNewStringUTF (mystr));
-		::free (mystr);
-	}
-	else
-		throw new lib::opcodes::OpcodesException (
-  			JvNewStringUTF ("Couldn't parse variable address"));
+  lib::opcodes::Disassembler* obj = (lib::opcodes::Disassembler*) info->stream;
+  
+  char *mystr = NULL;
+  if (::asprintf (&mystr, "0x%lx", (long) addr) > 0)
+    {	
+      obj->appendCurrentInstruction (JvNewStringUTF (mystr));
+      ::free (mystr);
+    }
+  else
+    throw new lib::opcodes::OpcodesException
+      (JvNewStringUTF ("Couldn't parse variable address"));
 }
 
 /*
@@ -190,23 +193,23 @@ void print_addr (bfd_vma addr, struct disassemble_info *info)
  */
 int save_instruction (void* disassembler, const char *args, ...)
 {
-	lib::opcodes::Disassembler* obj = (lib::opcodes::Disassembler*) disassembler;
-	va_list ap;
-	::va_start (ap, args);
-	char * mystr;
-	if (::vasprintf (&mystr, args, ap) > 0)
-	{
-		obj->appendCurrentInstruction (JvNewStringUTF (mystr));
-		::free (mystr);
-	}
-	else
-	{
-  		throw new lib::opcodes::OpcodesException (
-  			JvNewStringUTF("Could not parse variable argument list"));
-	}
-	::va_end (ap);
+  lib::opcodes::Disassembler* obj = (lib::opcodes::Disassembler*) disassembler;
+  va_list ap;
+  ::va_start (ap, args);
+  char * mystr;
+  if (::vasprintf (&mystr, args, ap) > 0)
+    {
+      obj->appendCurrentInstruction (JvNewStringUTF (mystr));
+      ::free (mystr);
+    }
+  else
+    {
+      throw new lib::opcodes::OpcodesException
+	(JvNewStringUTF("Could not parse variable argument list"));
+    }
+  ::va_end (ap);
 	
-	int len = strlen (mystr);
+  int len = strlen (mystr);
 	
-	return len;
+  return len;
 }
