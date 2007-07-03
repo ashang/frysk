@@ -1,3 +1,8 @@
+2007-07-03  Phil Muldoon <pmuldoon@redhat.com>
+
+	* pkgdatadir/test-core-x8664.bz2.uu: New File.
+	* pkgdatadir/seggault.c.source: New File. Source of above.
+
 2007-05-11  swagiaal  <swagiaal@redhat.com>
 
 	* Config.java (getFryskTestDir): Added check to ensure that teset
