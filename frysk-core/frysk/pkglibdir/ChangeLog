@@ -1,3 +1,8 @@
+2007-07-03  Mark Wielaard  <mwielaard@redhat.com>
+
+	* funit-instructions.c: New assembly level test for use with
+	TestInstructions.
+
 2007-06-28  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* funit-stacks-values.c: Added asm volatile ("" : "+m" (varX));
