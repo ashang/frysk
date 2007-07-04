@@ -5,8 +5,7 @@ void crash(){
   a[0] = 0;
 }
 
-// Was 'extern' also but GCC doesn't like that when compiling/linking with -O0.
-inline void second(){
+__attribute__((always_inline)) void second(){
   crash();
 }
 

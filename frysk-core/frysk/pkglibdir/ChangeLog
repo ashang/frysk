@@ -1,3 +1,8 @@
+2007-07-04  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* funit-scopes.c: Added __attribute__((always_inline)) to ensure
+	that the function is always inlined.
+
 2007-07-03  Kris Van Hees  <kris.van.hees@oracle.com>
 
 	* funit-scopes.c: Removed 'extern' declaration on second() because the
