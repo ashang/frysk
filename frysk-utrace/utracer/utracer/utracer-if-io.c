@@ -188,13 +188,7 @@ report_syscall (struct utrace_attached_engine * engine,
 		struct pt_regs * regs,
 		long type)
 {
-  utracing_info_s * utracing_info_found;
-  unsigned long flags;
-  
-  flags = engine->flags |  UTRACE_ACTION_QUIESCE;
-  utrace_set_flags(tsk, engine, flags);
-  
-  utracing_info_found = (void *)engine->data;
+  utracing_info_s * utracing_info_found = (void *)engine->data;
 
   if (utracing_info_found) {
     utraced_info_s * utraced_info_found =
@@ -205,16 +199,6 @@ report_syscall (struct utrace_attached_engine * engine,
 	utraced_info_found->exit_bv :
 	utraced_info_found->entry_bv;
       long syscall_nr = regs->orig_eax;	// fixme -- arch dependent
-#if 0
-      printk (KERN_ALERT "report_syscall\n");
-      {
-	int i;
-	int nr_bits_per_long  = 8 * sizeof(long);
-	int nr_longs =  (NR_syscalls + nr_bits_per_long)/nr_bits_per_long;
-	for (i = 0; i < nr_longs; i++)
-	  printk (KERN_ALERT "[%d]: %08x\n", i, (unsigned int)bv[i]);
-      }
-#endif
       if ((0 <= syscall_nr) && (syscall_nr < NR_syscalls) &&
 	  testbit (bv, syscall_nr)) {
 	syscall_resp_s syscall_resp;
@@ -228,9 +212,6 @@ report_syscall (struct utrace_attached_engine * engine,
     }
   }
   
-  flags = engine->flags &  ~UTRACE_ACTION_QUIESCE;
-  utrace_set_flags(tsk, engine, flags);
-
   return UTRACE_ACTION_RESUME;
 }
 
@@ -569,101 +550,111 @@ if_file_write (struct file *file,
     break;
   case IF_CMD_READ_REG:
     {
+      /*
+       * fixme -- have to queue the read cmd, issue a quiesce,
+       * wait for it to happen, do the read, then resume.
+       *
+       */
       struct task_struct * task;
+      
 
       readreg_cmd_s readreg_cmd = if_cmd.readreg_cmd;
       
       task = get_task (readreg_cmd.utraced_pid);
       if (task) {
-        struct utrace_attached_engine * engine;
+	if ((current == task) ||
+	    (task->state & (TASK_TRACED | TASK_STOPPED))) {
+	  struct utrace_attached_engine * engine;
 
-        engine =
-          locate_engine (readreg_cmd.utracing_pid, readreg_cmd.utraced_pid);
-        if (engine) {
-	  const struct utrace_regset * regset;
-          regset = utrace_regset(task, engine,
-                                 utrace_native_view(task),
-                                 readreg_cmd.regset);
+	  engine =
+	    locate_engine (readreg_cmd.utracing_pid, readreg_cmd.utraced_pid);
+	  if (engine) {
+	    const struct utrace_regset * regset;
+	    regset = utrace_regset(task, engine,
+				   utrace_native_view(task),
+				   readreg_cmd.regset);
 
-	  if (unlikely(regset == NULL))
-	    return -EIO;
+	    if (unlikely(regset == NULL))
+	      return -EIO;
 
-	  // fixme -- see kernel/ptrace.c for use of bias and align
-          if (-1 ==  readreg_cmd.which) {
-            utracing_info_s * utracing_info_found;
-            readreg_resp_s readreg_resp;
-            readreg_resp.type           = IF_RESP_REG_DATA;
-            readreg_resp.utraced_pid    = readreg_cmd.utraced_pid;
-            readreg_resp.regset         = readreg_cmd.regset;
-            readreg_resp.which          = -1;
-            readreg_resp.byte_count     = regset->size;
-            readreg_resp.reg_count      = regset->n;
-	    readreg_resp.data		= NULL;
+	    // fixme -- see kernel/ptrace.c for use of bias and align
+	    if (-1 ==  readreg_cmd.which) {
+	      utracing_info_s * utracing_info_found;
+	      readreg_resp_s readreg_resp;
+	      readreg_resp.type           = IF_RESP_REG_DATA;
+	      readreg_resp.utraced_pid    = readreg_cmd.utraced_pid;
+	      readreg_resp.regset         = readreg_cmd.regset;
+	      readreg_resp.which          = -1;
+	      readreg_resp.byte_count     = regset->size;
+	      readreg_resp.reg_count      = regset->n;
+	      readreg_resp.data		= NULL;
 
-            utracing_info_found =
-              lookup_utracing_info (readreg_cmd.utracing_pid);
+	      utracing_info_found =
+		lookup_utracing_info (readreg_cmd.utracing_pid);
 
-            if (utracing_info_found) {
-	      int i;
-	      void * rvp;
-	      void * reg_vals =
-		kmalloc (regset->size * regset->n, GFP_KERNEL);
-	      
-	      for (i = 0, rvp = reg_vals;
-		   i < regset->n;
-		   i++, rvp += regset->size) {
+	      if (utracing_info_found) {
+		int i;
+		void * rvp;
+		void * reg_vals =
+		  kmalloc (regset->size * regset->n, GFP_KERNEL);
+		
+		for (i = 0, rvp = reg_vals;
+		     i < regset->n;
+		     i++, rvp += regset->size) {
+		  int rc;
+
+		  rc = regset->get(task,
+				   regset,
+				   i<<2,		// pos
+				   regset->size,	// count
+				   rvp,		// kbuf
+				   NULL);		// ubuf
+		}
+		queue_response (utracing_info_found,
+				&readreg_resp,
+				sizeof(readreg_resp),
+				reg_vals,
+				regset->size * regset->n,
+				NULL, 0);
+		if (reg_vals) kfree (reg_vals);
+	      }
+	      else return -UTRACER_ETRACING;
+	    }
+	    else if ((0 <=  readreg_cmd.which) &&
+		     (readreg_cmd.which < regset->n)) {
+	      utracing_info_s * utracing_info_found;
+	      readreg_resp_s readreg_resp;
+	      readreg_resp.type           = IF_RESP_REG_DATA;
+	      readreg_resp.utraced_pid    = readreg_cmd.utraced_pid;
+	      readreg_resp.regset         = readreg_cmd.regset;
+	      readreg_resp.which          = readreg_cmd.which;
+	      readreg_resp.byte_count     = regset->size;
+	      readreg_resp.reg_count      = 1;
+
+	      utracing_info_found =
+		lookup_utracing_info (readreg_cmd.utracing_pid);
+
+	      if (utracing_info_found) {
 		int rc;
-
 		rc = regset->get(task,
 				 regset,
-				 i<<2,		// pos
-				 regset->size,	// count
-				 rvp,		// kbuf
-				 NULL);		// ubuf
+				 readreg_cmd.which << 2,  // fixme pos
+				 regset->size,		// count
+				 &readreg_resp.data,      // kbuf
+				 NULL);   // ubuf
+		queue_response (utracing_info_found,
+				&readreg_resp,
+				sizeof(readreg_resp),
+				NULL, 0,
+				NULL, 0);
 	      }
-	      queue_response (utracing_info_found,
-			      &readreg_resp,
-			      sizeof(readreg_resp),
-			      reg_vals,
-			      regset->size * regset->n,
-			      NULL, 0);
-	      if (reg_vals) kfree (reg_vals);
-            }
-            else return -UTRACER_ETRACING;
-          }
-          else if ((0 <=  readreg_cmd.which) &&
-                   (readreg_cmd.which < regset->n)) {
-            utracing_info_s * utracing_info_found;
-            readreg_resp_s readreg_resp;
-            readreg_resp.type           = IF_RESP_REG_DATA;
-            readreg_resp.utraced_pid    = readreg_cmd.utraced_pid;
-            readreg_resp.regset         = readreg_cmd.regset;
-            readreg_resp.which          = readreg_cmd.which;
-            readreg_resp.byte_count     = regset->size;
-            readreg_resp.reg_count      = 1;
-
-            utracing_info_found =
-              lookup_utracing_info (readreg_cmd.utracing_pid);
-
-            if (utracing_info_found) {
-              int rc;
-              rc = regset->get(task,
-                               regset,
-                               readreg_cmd.which << 2,  // fixme pos
-                               regset->size,		// count
-                               &readreg_resp.data,      // kbuf
-                               NULL);   // ubuf
-	      queue_response (utracing_info_found,
-			      &readreg_resp,
-			      sizeof(readreg_resp),
-			      NULL, 0,
-			      NULL, 0);
-            }
-            else return -UTRACER_ETRACING;
-          }
-          else return -UTRACER_EREG;
-        }
-        else return -UTRACER_EENGINE;
+	      else return -UTRACER_ETRACING;
+	    }
+	    else return -UTRACER_EREG;
+	  }
+	  else return -UTRACER_EENGINE;
+	}
+	else return -UTRACER_ESTATE;
       }
       else return -ESRCH;
     }
@@ -701,12 +692,6 @@ if_file_read ( char *buffer,
 	wake_up (&(utracing_info_found->ifw_wait));
       }
     }
-#if 0
-    if (0 >= utracing_info_found->queued_data_length) {
-      //      printk (KERN_ALERT "sending eof\n");
-      *eof = 1;
-    }
-#endif
 
     *buffer_location = buffer;
     return rc;

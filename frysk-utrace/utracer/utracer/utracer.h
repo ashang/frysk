@@ -199,6 +199,7 @@ typedef enum {
   UTRACER_ETRACED,
   UTRACER_EREG,
   UTRACER_ESYSRANGE,
+  UTRACER_ESTATE,
   UTRACER_EMAX,
 } utracer_errno_e;
 
