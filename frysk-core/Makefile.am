@@ -1,3 +1,4 @@
+
 # This file is part of the program FRYSK.
 #
 # Copyright 2005, 2007, Red Hat Inc.
@@ -129,18 +130,18 @@ endif
 # frysk-imports.
 
 CLEANFILES += frysk/pkgdatadir/test-core
-CLEANFILES += frysk/pkgdatadir/test-core-mt-fp
 CLEANFILES += frysk/pkgdatadir/test-core-x8664
+CLEANFILES += frysk/pkgdatadir/test-core-x86
 noinst_DATA += frysk/pkgdatadir/test-core
-noinst_DATA += frysk/pkgdatadir/test-core-mt-fp
 noinst_DATA += frysk/pkgdatadir/test-core-x8664
+noinst_DATA += frysk/pkgdatadir/test-core-x86
 
 frysk/pkgdatadir/test-core:
 	mkdir -p `dirname $@`
 	ln -s @abs_top_builddir@/../frysk-imports/$@ $@
-frysk/pkgdatadir/test-core-mt-fp:
+frysk/pkgdatadir/test-core-x8664:
 	mkdir -p `dirname $@`
 	ln -s @abs_top_builddir@/../frysk-imports/$@ $@
-frysk/pkgdatadir/test-core-x8664:
+frysk/pkgdatadir/test-core-x86:
 	mkdir -p `dirname $@`
 	ln -s @abs_top_builddir@/../frysk-imports/$@ $@

@@ -2,7 +2,8 @@
 	
 	* Makefile.am (frysk/pkgdatadir/test-core-x8664): New target, link to
 	frysk-imports files.  Add to CLEANFILES and noinst_DATA.
-
+	(frysk/pkgdatadir/test-core-x86): Ditto
+	(frysk/pkgdatadir/test-core-mt-fp): Delete target, link.
 
 2007-06-26  Andrew Cagney  <cagney@redhat.com>
 
