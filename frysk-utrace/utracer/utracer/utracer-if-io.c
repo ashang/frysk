@@ -47,7 +47,18 @@ static u32
 report_quiesce (struct utrace_attached_engine *engine,
 		struct task_struct *tsk)
 {
-  //  printk(KERN_ALERT "reporting quiesce\n");
+  utracing_info_s * utracing_info_found =
+    (void *)engine->data;
+
+  if (utracing_info_found) {
+    quiesce_resp_s quiesce_resp = {IF_RESP_QUIESCE_DATA,
+				   tsk->pid};
+    queue_response (utracing_info_found,
+		    &quiesce_resp, sizeof(quiesce_resp),
+		    NULL, 0,
+		    NULL, 0);
+			       
+  }
   return UTRACE_ACTION_RESUME;
 }
 
@@ -204,6 +215,7 @@ report_syscall (struct utrace_attached_engine * engine,
 	syscall_resp_s syscall_resp;
 
 	syscall_resp.type = type;
+	syscall_resp.utraced_pid = (long)tsk->pid;
 	syscall_resp.data_length = sizeof (struct pt_regs);
 	queue_response (utracing_info_found,
 			&syscall_resp, sizeof(syscall_resp),

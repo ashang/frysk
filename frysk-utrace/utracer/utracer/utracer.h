@@ -114,7 +114,8 @@ typedef enum {
   IF_RESP_SYSCALL_ENTRY_DATA,
   IF_RESP_SYSCALL_EXIT_DATA,
   IF_RESP_EXEC_DATA,
-  IF_RESP_ATTACH_DATA
+  IF_RESP_ATTACH_DATA,
+  IF_RESP_QUIESCE_DATA
 } if_resp_e; 
 
 typedef struct {
@@ -157,8 +158,14 @@ typedef struct {
 
 typedef struct {
   long type;
+  long utraced_pid;
   long data_length;
 } syscall_resp_s;
+
+typedef struct {
+  long type;
+  long utraced_pid;
+} quiesce_resp_s;
 
 typedef struct {
   long type;
@@ -190,6 +197,7 @@ typedef union {
   switchpid_resp_s	switchpid_resp;
   syscall_resp_s	syscall_resp;
   exec_resp_s		exec_resp;
+  quiesce_resp_s	quiesce_resp;
 } if_resp_u;
 
 typedef enum {

@@ -110,7 +110,6 @@ utrace_quiesce_if (long pid)
   run_cmd_s run_cmd = {IF_CMD_QUIESCE, (long)udb_pid, pid};
   ssize_t sz = write (utracer_cmd_file_fd, &run_cmd, sizeof(run_cmd));
   if (-1 == sz) uerror ("Writing run command.");
-  else fprintf (stdout, "\t%d  quiesced\n", pid);
 }
 
 // fixme--do stuff about gp, fp, fpx regs, etc

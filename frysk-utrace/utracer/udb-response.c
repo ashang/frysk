@@ -71,7 +71,7 @@ resp_listener (void * arg)
 	}
 	
 	//show_syscall_regs (regs);
-	show_syscall (if_resp.type, regs);
+	show_syscall (if_resp.type, syscall_resp.utraced_pid, regs);
       }
       break;
     case IF_RESP_REG_DATA:
@@ -152,6 +152,15 @@ resp_listener (void * arg)
 	death_resp_s death_resp = if_resp.death_resp;
 	fprintf (stdout, "\t[%ld] died\n",
 		 death_resp.utraced_pid);
+	fprintf (stdout, "%s", prompt);
+	fflush (stdout);
+      }
+      break;
+    case IF_RESP_QUIESCE_DATA:
+      {
+	quiesce_resp_s quiesce_resp = if_resp.quiesce_resp;
+	fprintf (stdout, "\t[%ld] quiesced\n",
+		 quiesce_resp.utraced_pid);
 	fprintf (stdout, "%s", prompt);
 	fflush (stdout);
       }
