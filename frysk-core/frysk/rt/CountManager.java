@@ -39,10 +39,23 @@
 
 package frysk.rt;
 
-public interface DisplayValueObserver
-{
-  void updateAvailableTaskStopped(UpdatingDisplayValue value);
-  void updateUnavailbeResumedExecution(UpdatingDisplayValue value);
-  void updateValueChanged(UpdatingDisplayValue value);
-  void updateUnavailableOutOfScope(UpdatingDisplayValue value);
+/**
+ * The CountManager keeps track of the unique IDs assigned to actionpoints
+ * and increments the next id as id's are requested.
+ * <p>
+ * 
+ * Currently this is being used by BreakpointManager and DisplayManager
+ *
+ */
+public class CountManager {
+    private static int actionPointCount = 0;
+    
+    /**
+     * Get the next available actionpoint ID
+     * @return The next unused integer actionpoint identifier
+     */
+    public static int getNextId()
+    {
+	return actionPointCount++;
+    }
 }

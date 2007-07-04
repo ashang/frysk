@@ -102,7 +102,7 @@ public class TestDisplayValue
     
     // Retrieve the Value we're testing, and encapsulate it in a Display
     DisplayValue disp = new DisplayValue("x", myTask, 
-                                         StackFactory.createFrame(myTask).getFrameIdentifier());
+                                         StackFactory.createFrame(myTask).getFrameIdentifier(), 0);
     
     // Check the value of the variable 'x', make sure it's equal to one
     Value firstVal = disp.getValue();
@@ -176,7 +176,7 @@ public class TestDisplayValue
     
     // Retrieve the Value we're testing, and encapsulate it in a Display
     DisplayValue disp = new DisplayValue("x", myTask,
-                                         StackFactory.createFrame(myTask).getFrameIdentifier());
+                                         StackFactory.createFrame(myTask).getFrameIdentifier(), 0);
     
     // Check the value of the variable 'thevar', make sure it's equal to one
     Value firstVal = disp.getValue();
@@ -235,7 +235,7 @@ public class TestDisplayValue
     
     // Retrieve the Value we're testing, and encapsulate it in a Display
     DisplayValue disp = new DisplayValue("x", myTask,
-                                         StackFactory.createFrame(myTask).getFrameIdentifier());
+                                         StackFactory.createFrame(myTask).getFrameIdentifier(), 0);
     // Check the value of the variable 'x', make sure it's equal to one
     Value firstVal = disp.getValue();
     assertEquals("Variable is in scope", true, disp.isAvailable());
@@ -303,7 +303,7 @@ public class TestDisplayValue
     
     // Retrieve the Value we're testing, and encapsulate it in a Display
     DisplayValue disp = new DisplayValue("x", myTask,
-                                         StackFactory.createFrame(myTask).getFrameIdentifier());
+                                         StackFactory.createFrame(myTask).getFrameIdentifier(), 0);
     // Check the value of the variable 'x', make sure it's equal to one
     Value firstVal = disp.getValue();
     assertEquals("Variable is in scope", true, disp.isAvailable());
@@ -358,7 +358,7 @@ public class TestDisplayValue
     
     // Retrieve the Value we're testing, and encapsulate it in a Display
     DisplayValue disp = new DisplayValue("y", myTask,
-                                         StackFactory.createFrame(myTask).getFrameIdentifier());
+                                         StackFactory.createFrame(myTask).getFrameIdentifier(), 0);
     // Check the value of the variable 'x', make sure it's equal to one
     Value firstVal = disp.getValue();
     assertEquals("Variable is in scope", true, disp.isAvailable());

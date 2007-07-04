@@ -80,7 +80,8 @@ public class DisplayManager {
 	UpdatingDisplayValue value = displays.get(myTask, fIdent, text);
 	if(value == null)
 	{
-	    value = new UpdatingDisplayValue(text, myTask, fIdent, engine);
+	    value = new UpdatingDisplayValue(text, myTask, fIdent, engine,
+		    CountManager.getNextId());
 	    displays.add(value);
 	}
 	

@@ -81,11 +81,12 @@ public class UpdatingDisplayValue
    * @param fIdent The frame identifier corresponding to the scope from which
    *          the variable should be read
    * @param eng The stepping engine to monitor for changes in execution state
+   * @param id The unique id for this display
    */
-  public UpdatingDisplayValue (String name, Task task, FrameIdentifier fIdent,
-                               SteppingEngine eng)
+  UpdatingDisplayValue (String name, Task task, FrameIdentifier fIdent,
+                               SteppingEngine eng, int id)
   {
-    super(name, task, fIdent);
+    super(name, task, fIdent, id);
 
     engine = eng;
     if (engine.getSteppingObserver() == null)

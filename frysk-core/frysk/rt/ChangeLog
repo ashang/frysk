@@ -1,5 +1,20 @@
 2007-07-04  Adam Jocksch  <ajocksch@redhat.com>
 
+	* CountManager.java: New file.
+	* BreakpointManager.java (breakpointID): Removed, use
+	CountManager instead.
+	(addLineBreakpoint): Now uses CountManager.
+	(addFunctionBreakpoint): Ditto.
+	* DisplayValue.java: Changed visibility of class to package only,
+	UpdatingDisplayValue should be used via DisplayManager.
+	(DisplayValue): Now takes an integer id.
+	* UpdatingDisplayValue.java (UpdatingDisplayValue): Ditto.
+	* DisplayManager.java (createDisplay): Now uses CountManager.
+	* DisplayValueObserver.java: Methods now provide an UpdatingDisplayValue.
+	* TestDisplayValue.java: Added default id's to DisplayValue constructors.
+	* TestUpdatingDisplayValue.java (DisplayObserver): Refactored
+	to reflect changes in interface.
+
 	* DisplayManager.java: New file, implementation not yet complete.
 	* DisplayValue.java (num): New field, looking ahead to when displays
 	will have unique numerical identifiers.

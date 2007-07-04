@@ -64,7 +64,7 @@ import lib.dw.DwarfDie;
  */
 public class BreakpointManager
   extends Observable {
-    private int breakpointID = 0;
+//    private int breakpointID = 0;
     private TreeMap breakpointMap = new TreeMap();    
     private SteppingEngine steppingEngine;
     protected Logger logger = Logger.getLogger("frysk");
@@ -137,7 +137,7 @@ public class BreakpointManager
     public synchronized LineBreakpoint addLineBreakpoint(String fileName,
                                                          int lineNumber,
                                                          int column) {
-        int bptId = breakpointID++;
+        int bptId = CountManager.getNextId();
         LineBreakpoint sourceBreakpoint
             = new LineBreakpoint(bptId, fileName, lineNumber, column);
         breakpointMap.put(new Integer(bptId), sourceBreakpoint);
@@ -155,7 +155,7 @@ public class BreakpointManager
      * @return FunctionBreakpoint object
      */
     public FunctionBreakpoint addFunctionBreakpoint(String name, DwarfDie die) {
-        int bptId = breakpointID++;
+        int bptId = CountManager.getNextId();
         FunctionBreakpoint sourceBreakpoint
             = new FunctionBreakpoint(bptId, name, die);
         breakpointMap.put(new Integer(bptId), sourceBreakpoint);

@@ -436,27 +436,27 @@ public class TestUpdatingDisplayValue extends TestLib
       hitOutOfScope = false;
     }
     
-    public void updateAvailableTaskStopped (DisplayValue value)
+    public void updateAvailableTaskStopped (UpdatingDisplayValue value)
     {
       assertNotNull("DisplayValue passed to the observer", value);
       assertFalse("Task should have blockers", myTask.getBlockers().length == 0);
       hitStopped = true;
     }
 
-    public void updateUnavailbeResumedExecution (DisplayValue value)
+    public void updateUnavailbeResumedExecution (UpdatingDisplayValue value)
     {
       assertNotNull("DisplayValue passed to the observer", value);
       assertTrue("Task should not be blocked", myTask.getBlockers().length == 0);
       hitResumed = true;
     }
 
-    public void updateValueChanged (DisplayValue value)
+    public void updateValueChanged (UpdatingDisplayValue value)
     {
       assertNotNull("DisplayValue passed to the observer", value);
       hitChanged = true;
     }
 
-    public void updateUnavailableOutOfScope (DisplayValue value)
+    public void updateUnavailableOutOfScope (UpdatingDisplayValue value)
     {
       assertNotNull("DisplayValue passed to the observer", value);
       hitOutOfScope = true;

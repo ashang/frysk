@@ -1,5 +1,8 @@
 2007-07-04  Adam Jocksch  <ajocksch@redhat.com>
 
+	* DisplayCommand.java (handle): Updated observer to reflect changes
+	to frysk.rt.DisplayValueObserver.java.
+
 	* DisplayCommand.java (handle): Now uses DisplayManager.
 
 2007-06-25  Nurdin Premji  <npremji@redhat.com>

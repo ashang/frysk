@@ -47,7 +47,6 @@ import java.util.List;
 
 import frysk.proc.Task;
 import frysk.rt.DisplayManager;
-import frysk.rt.DisplayValue;
 import frysk.rt.DisplayValueObserver;
 import frysk.rt.SteppingEngine;
 import frysk.rt.UpdatingDisplayValue;
@@ -117,20 +116,20 @@ public class DisplayCommand
         displays.add(uDisp);
         uDisp.addObserver(new DisplayValueObserver()
         {
-          public void updateValueChanged (DisplayValue value)
+          public void updateValueChanged (UpdatingDisplayValue value)
           {
             output.println(value.getName() + " = " + value.getValue());
             output.flush();
           }
     
-          public void updateUnavailableOutOfScope (DisplayValue value) 
+          public void updateUnavailableOutOfScope (UpdatingDisplayValue value) 
           {
               output.println(value.getName() + " = <unvailable>");
               output.flush();
           }
           
-          public void updateUnavailbeResumedExecution (DisplayValue value) {}
-          public void updateAvailableTaskStopped (DisplayValue value) {}
+          public void updateUnavailbeResumedExecution (UpdatingDisplayValue value) {}
+          public void updateAvailableTaskStopped (UpdatingDisplayValue value) {}
         });
       }
     

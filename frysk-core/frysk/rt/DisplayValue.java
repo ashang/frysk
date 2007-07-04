@@ -59,7 +59,7 @@ import frysk.value.Value;
  * register
  *
  */
-public class DisplayValue
+class DisplayValue
 {
   
   protected String varLabel;
@@ -76,8 +76,9 @@ public class DisplayValue
    * @param task The task to fetch updates from
    * @param fIdent The FrameIdentifier corresponding to the frame that
    *    the variable should be looked for in. 
+   * @param id The unique identifier for this display
    */
-  public DisplayValue(String name, Task task, FrameIdentifier fIdent)
+  public DisplayValue(String name, Task task, FrameIdentifier fIdent, int id)
   {
     varLabel = name;
     myTask = task;
