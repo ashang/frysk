@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -59,6 +59,7 @@
 
 #include "lib/opcodes/Disassembler.h"
 #include "lib/opcodes/Instruction.h"
+#include "lib/opcodes/UnsupportedArchitectureException.h"
 #include "lib/opcodes/OpcodesException.h"
 #include "inua/eio/ByteBuffer.h"
 
@@ -118,8 +119,7 @@ lib::opcodes::Disassembler::disassemble (jlong address, jlong instructions)
 #endif
  
   if (!disasm_func)
-    throw new lib::opcodes::OpcodesException
-      (JvNewStringUTF("Error: Unsupported architechture"));
+    throw new lib::opcodes::UnsupportedArchitectureException();
   
   disasm_info.read_memory_func = read_from_byte_buffer;
   disasm_info.memory_error_func = error_func;

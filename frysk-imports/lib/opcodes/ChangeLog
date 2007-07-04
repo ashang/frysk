@@ -1,3 +1,9 @@
+2007-07-04  Andrew Cagney  <cagney@redhat.com>
+
+	* UnsupportedArchitectureException.java: New file.
+	* cni/Disassembler.cxx (Disassembler::disassemble): When ISA is
+	unknown, throw an UnsupportedArchitectureException.
+
 2007-07-03  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Disassembler.cxx (save_instruction): Re-indent.
