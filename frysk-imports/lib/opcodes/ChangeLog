@@ -1,5 +1,7 @@
 2007-07-04  Andrew Cagney  <cagney@redhat.com>
 
+	* OpcodesException.java: Delete.
+
 	* tests/TestOpcodes.java: Update.
 	* Instruction.java: Add constructor.
 	(address, length, instruction): Make final.
