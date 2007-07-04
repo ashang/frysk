@@ -39,7 +39,8 @@
 
 #include "frysk-asm.h"
 
-
+.globl main
+	.type	main, @function
 main:
 	
 	ENTER

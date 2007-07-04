@@ -1,3 +1,8 @@
+2007-07-04  Mike Cvet  <mcvet@redhat.com>
+
+	* funit-rt-asmtester.S: Gave proper main declaration instead
+	of relying on header file.
+
 2007-07-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* funit-scopes.c: Added __attribute__((always_inline)) to ensure
