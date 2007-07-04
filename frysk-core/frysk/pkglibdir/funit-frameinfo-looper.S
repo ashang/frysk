@@ -91,7 +91,7 @@ main:
 .LCFI6:
 	movl	%edi, -4(BASEP)
 	movq	REG3, -16(BASEP)
-	MOVL	($0, %eax)
+	MOV	($0, %eax)
 	CALL	(first@PLT)
 	LEAVE
 .LFE7:

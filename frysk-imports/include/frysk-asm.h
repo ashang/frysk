@@ -47,6 +47,9 @@
 // load-store ISA was chosen.  Please read the notes at the end of
 // this file before making changes and additions.
 
+
+// General register definitions.
+
 #ifdef __i386__
 
 	.text
@@ -57,23 +60,50 @@
 #define REG3 %ecx
 #define REG4 %edx
 
+#elif defined __x86_64__
+
+#define REG1 %rax
+#define REG2 %rdi
+#define REG3 %rsi
+#define REG4 %rdx
+
+#elif defined __powerpc__
+
+#define REG1 3
+#define REG2 4
+#define REG3 5
+#define REG4 6
+
+#elif defined __powerpc64__
+
+#define REG1 %gpr3
+#define REG2 %gpr4
+#define REG3 %gpr5
+#define REG4 %gpr5
+
+#endif
+
+// Base, stack, and instruction pointer registers.
+
+#ifdef __i386__
+
 #define BASEP %ebp
 #define STACKP %esp
 #define IPREG %eip
 
-#define NO_OP nop
-#define ENTER pushl %ebp ; movl %esp, %ebp 
-#define EXIT popl %ebp ; ret
-#define JUMP(LABEL) jmp LABEL
-#define JUMP_NE(LABEL) jne LABEL
-#define CALL(FUNC) call FUNC
-#define LOAD_IMMED(DEST_REG,CONST) mov $CONST, DEST_REG
-#define STORE(SOURCE_REG,BASE_REG) movl SOURCE_REG, (BASE_REG)
-#define COMPARE_IMMED(REG,CONST) cmp $CONST, REG
+#elif defined __x86_64__
 
-#define PUSH_BASEP pushl %ebp
-#define MOV_STACKP movl %esp, %ebp
-#define POP(A) popl A
+#define BASEP %rbp
+#define STACKP %rsp
+#define IPREG %rip
+
+#endif
+
+// Function and main entry definitions.
+
+#ifdef __i386__
+
+#define ENTER pushl %ebp ; movl %esp, %ebp
 
 #define ENTER_MAIN \
 	pushl %ebp ; \
@@ -81,40 +111,9 @@
 	movl 8(%ebp), REG1 ; \
 	movl 12(%ebp), REG2
 
-//XXX: Replace with macros at end of file.
-
 #elif defined __x86_64__
 
-	.text
-	.global main
-
-#define REG1 %rax
-#define REG2 %rdi
-#define REG3 %rsi
-#define REG4 %rdx
-#define BASEP %rbp
-#define STACKP %rsp
-#define IPREG %rip
-
-
-#define NO_OP nop
 #define ENTER pushq %rbp; movq %rsp, %rbp
-#define EXIT ret
-#define JUMP(LABEL) jmp LABEL
-#define JUMP_NE(LABEL) jne LABEL
-#define CALL(FUNC) call FUNC
-#define LOAD_IMMED(DEST_REG,CONST) mov $CONST, DEST_REG
-#define STORE(SOURCE_REG,BASE_REG) mov SOURCE_REG, (BASE_REG)
-#define COMPARE_IMMED(REG,CONST) cmp $CONST, REG
-#define PUSHQ(REG) pushq REG
-#define MOVQ(A, B) movq A, B
-#define MOVL(A, B) movl A, B
-#define ADDL(A, B) addl $A, B
-#define SUBQ(A, B) subq $A, B
-#define TESTL(A, B) testl A, B
-#define PUSH_BASEP pushq %rbp
-#define MOV_STACKP movq %rsp, %rbp
-#define LEAVE leave; ret
 
 //XXX: Need the following to be defined in order to compile. See Bug #3968
 //Intel moves from right to left.
@@ -126,20 +125,6 @@
 
 #elif defined __powerpc__
 
-//General Purpose PowerPC Registers
-#define REG1 3
-#define REG2 4
-#define REG3 5
-#define REG4 6
-
-	.text                       # section declaration - begin code
-	.global  main
-
-//There is no stack register or instructions
-//In C and C++ EABI its standard to use %gpr1 as stack register
-
-#define REG_TMP_IMMED 7
-
 #define ENTER \
 	stwu    1, -32(1)  ; \
 	mflr    0          ; \
@@ -150,7 +135,23 @@
 	stw  REG2,  16(31) ; \
 	stw  REG3,  20(31) ; \
 	stw  REG4,  24(31)
-        
+
+//In PowerPC ABI argc comes by default in reg 3 (Frysk REG1) and argv in reg 4 (Frysk REG2) 
+#define ENTER_MAIN ENTER
+
+#elif defined __powerpc64__
+
+#define ENTER push %gpr0; push %gpr3
+
+#endif
+
+// Function exit definitions
+
+#ifdef __i386__
+#define EXIT popl %ebp ; ret
+#elif defined __x86_64__
+#define EXIT ret
+#elif defined __powerpc__
 #define EXIT \
 	lwz  REG4, 24(31) ; \
         lwz  REG3, 20(31) ; \
@@ -162,44 +163,88 @@
 	lwz    31, -4(11) ; \
 	mr      1, 11     ; \
 	blr
+#elif defined __powerpc64__
+#define EXIT pop %gpr0; ret
+#endif
 
-//In PowerPC ABI argc comes by default in reg 3 (Frysk REG1) and argv in reg 4 (Frysk REG2) 
-#define ENTER_MAIN ENTER
+// Base pointer pushing and stack register moving
 
-#define CALL(LABEL) bl LABEL
+#ifdef __i386__
+#define PUSH_BASEP pushl %ebp
+#define MOV_STACKP movl %esp, %ebp
+#elif defined __x86_64__
+#define PUSH_BASEP pushq %rbp
+#define MOV_STACKP movq %rsp, %rbp
+#endif
 
-#define LOAD_IMMED(DEST_REG,CONST) li DEST_REG, CONST
-#define STORE(SOURCE_REG,BASE_REG) stw SOURCE_REG, 0(BASE_REG)
+
+// General operations
+
+#ifdef __i386__
 
 #define NO_OP nop
 
-#define COMPARE_IMMED(REG, IMMED) li REG_TMP_IMMED, IMMED ; cmpd REG_TMP_IMMED, REG
+#define CALL(LABEL) call LABEL
+#define JUMP(LABEL) jmp LABEL
+#define JUMP_NE(LABEL) jne LABEL
+#define LOAD_IMMED(DEST_REG,CONST) mov $CONST, DEST_REG
+#define STORE(SOURCE_REG,BASE_REG) mov SOURCE_REG, (BASE_REG)
+#define COMPARE_IMMED(REG,CONST) cmp $CONST, REG
+#define POP(A) popl A
+
+#elif defined __x86_64__
+
+#define NO_OP nop
+#define CALL(LABEL) call LABEL
+#define JUMP(LABEL) jmp LABEL
+#define JUMP_NE(LABEL) jne LABEL
+#define LOAD_IMMED(DEST_REG,CONST) mov $CONST, DEST_REG
+#define STORE(SOURCE_REG,BASE_REG) mov SOURCE_REG, (BASE_REG)
+#define COMPARE_IMMED(REG,CONST) cmp $CONST, REG
+#define POP(A) popl A
+
+#elif defined __powerpc__
+
+#define NO_OP nop
+#define CALL(LABEL) bl LABEL
 #define JUMP(LABEL) b LABEL
 #define JUMP_NE(LABEL) bf eq, LABEL
+#define LOAD_IMMED(DEST_REG,CONST) li DEST_REG, CONST
+#define STORE(SOURCE_REG,BASE_REG) stw SOURCE_REG, 0(BASE_REG)
+#define COMPARE_IMMED(REG, IMMED) li REG_TMP_IMMED, IMMED ; cmpd REG_TMP_IMMED, REG
 
 #elif defined __powerpc64__
 
-	.section        ".opd","aw"
-	.global main
-	.align 3
-main:
-	.quad   ._main,.TOC.@tocbase,0
-	.text                       # section declaration - begin code
-	.global  ._main
-._main:
-
-#define REG1 %gpr3
-#define REG2 %gpr4
-#define REG3 %gpr5
-#define REG4 %gpr5
-
-#define ENTER push %gpr0; push %gpr3
-#define EXIT pop %gpr0; ret
-
 #define NO_OP nop
 #define CALL(FUNC) brlr FUNC
+#define JUMP(LABEL) b LABEL
+#define JUMP_NE(LABEL) bf eq, LABEL
+#define LOAD_IMMED(DEST_REG,CONST) li DEST_REG, CONST
+#define STORE(SOURCE_REG,BASE_REG) stw SOURCE_REG, 0(BASE_REG)
+#define COMPARE_IMMED(REG, IMMED) li REG_TMP_IMMED, IMMED ; cmpd REG_TMP_IMMED, REG
 
 #endif
+
+// Other operations
+
+#ifdef __i386__
+
+#define PUSH(REG) pushl REG
+#define MOV(A, B) movl A, B
+#define ADD(A, B) addl $A, B
+#define SUB(A, B) subl $A, B
+#define TEST(A, B) testl A, B
+
+#elif defined __x86_64
+
+#define PUSH(REG) pushq REG
+#define MOV(A, B) movq A, B
+#define ADD(A, B) addq $A, B
+#define SUB(A, B) subq $A, B
+#define TEST(A, B) testq A, B
+
+#endif
+
 
 // These macros define a very simple register-sized two-operand
 // load-store instruction set architecture.
