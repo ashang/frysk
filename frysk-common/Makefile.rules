@@ -350,6 +350,7 @@ $(GEN_SOURCENAME)/JUnitTests.java: files.list
 		outputdir=`dirname $$class`; \
 		outputfile=`basename $$class`.h; \
 		echo "$$class => $$outputdir/$$outputfile"; \
+		rm -f $$outputdir/$$outputfile ; \
 		$(GCJH) -I $$tmpdir \
 			-o $$outputdir/$$outputfile \
 			$(GCJHFLAGS) $$class ; \

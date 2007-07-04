@@ -1,3 +1,8 @@
+2007-07-04  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (.java.h): Remove generated .h file before
+	running GCJH.  Work around 4741.
+
 2007-06-26  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (EXTRA_DIST): Delete.
