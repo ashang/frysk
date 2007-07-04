@@ -64,7 +64,7 @@ public class TestTaskTerminateObserver
 
 	public Action updateTerminating (Task task, boolean signal, int value) {
 	    if (signal) {
-		terminating = - value;
+		terminating = -value;
 	    } else {
 		terminating = value;
 	    }
@@ -73,7 +73,7 @@ public class TestTaskTerminateObserver
 
 	public Action updateTerminated (Task task, boolean signal, int value) {
 	    if (signal) {
-		terminated = - value;
+		terminated = -value;
 	    } else {
 		terminated = value;
 	    }
@@ -86,10 +86,6 @@ public class TestTaskTerminateObserver
      * and verify corresponding observers.
      */
     public void check (int expected, int terminating, int terminated) {
-	if ((expected == 47 || expected == - 9) && brokenIfUtraceXXX(3489)) {
-	    return;
-	}
-
 	// Start the program.
 	AttachedDaemonProcess child = new AttachedDaemonProcess(new String[] {
 		getExecPath ("funit-exit"),
@@ -116,21 +112,20 @@ public class TestTaskTerminateObserver
     }
 
     /**
-     * Check both the Terminating, and Terminated values.
+     * Check that both the Terminating, and Terminated values match
+     * EXPECTED.
      */
     public void terminate (int expected) {
 	check(expected, expected, expected);
     }
-
     /**
-     * Check the Terminating value.
+     * Check that the Terminating value matches EXPECTED.
      */
     public void terminating (int expected) {
 	check(expected, expected, INVALID);
     }
-
     /**
-     * Check the Terminated value.
+     * Check that the Terminated value matches EXPECTED.
      */
     public void terminated (int expected) {
 	check(expected, INVALID, expected);
@@ -148,10 +143,6 @@ public class TestTaskTerminateObserver
 	terminate(- Sig.INT_);
     }
 
-    public void testTerminateKillKILL () {
-	terminate(- Sig.KILL_);
-    }
-
     public void testTerminateKillHUP () {
 	terminate(- Sig.HUP_);
     }
@@ -166,10 +157,6 @@ public class TestTaskTerminateObserver
 
     public void testTerminatingKillINT () {
 	terminating(- Sig.INT_);
-    }
-
-    public void testTerminatingKillKILL () {
-	terminating(- Sig.KILL_);
     }
 
     public void testTerminatingKillHUP () {
@@ -189,6 +176,10 @@ public class TestTaskTerminateObserver
     }
 
     public void testTerminatedKillKILL () {
+	// XXX: When a process is sent a SIGKILL, the only guarentee
+	// is that a TERMINATED event will be received.  Dependant on
+	// various races, there may or may not also be a terminating
+	// event.  See bug 3639.
 	terminated(- Sig.KILL_);
     }
 

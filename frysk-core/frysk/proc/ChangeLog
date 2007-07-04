@@ -1,5 +1,9 @@
 2007-07-04  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskTerminateObserver.java (check): Remove brokenIfUtraceXXX
+	check for bug 3489.
+	(testTerminateKillKILL, testTerminatingKillKILL): Delete.
+	
 	* TestTaskTerminateObserver.java: Re-indent.
 
 2007-07-03  Mark Wielaard  <mwielaard@redhat.com>
