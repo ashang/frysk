@@ -55,12 +55,13 @@
 <p>
 <a href="#faq">Build or Test Question?</a><br>
 <br>
-<a href="#fc6">Fedora Core 6</a><br>
+<a href="#f8">Fedora 8</a><br>
 <a href="#f7">Fedora 7</a><br>
-<a href="#rhel4">RHEL 4</a><br>
-<a href="#rhel5">RHEL 5</a><br>
+<a href="#fc6">Fedora Core 6</a><br>
 <a href="#ubuntu-edgy">Ubuntu - Edgy</a><br>
 <a href="#ubuntu-breezy">Ubuntu - Breezy</a><br>
+<a href="#rhel5">RHEL 5</a><br>
+<a href="#rhel4">RHEL 4</a><br>
 </p>
 	      <!-- end logo -->
 	    </td>
@@ -77,8 +78,9 @@ that all its prerequisites are met.</p>
 
 <dl>
 
-<dt><a name="f7">Fedora 7</a><br><a name="fc6">Fedora Core 6</a><br><a
-name="rhel5">RHEL 5</a></dt>
+<dt><a name="f8">Fedora 8</a><br><a name="f7">Fedora
+7</a><br><a name="fc6">Fedora Core 6</a><br><a name="rhel5">RHEL
+5</a></dt>
 
 <dd>
 
@@ -93,8 +95,11 @@ sudo yum install -y \
     yelp libtool make
 </pre>
 
-For additional updates, check Fedora Core 6's tracker bug's <a
-href="/bugzilla/showdependencytree.cgi?id=2654">dependency tree</a>
+For additional updates, check
+the <a href="/bugzilla/showdependencytree.cgi?id=4743">Fedora
+8</a>, <a href="/bugzilla/showdependencytree.cgi?id=3620">Fedora
+7</a>, <a href="/bugzilla/showdependencytree.cgi?id=26542654">Fedora
+Core 6</a>, or <a href="3385">RHEL 5</a> tracker bug.
 
 </dd>
 
@@ -235,10 +240,10 @@ vis:
 <pre>
 $ ( mkdir build && cd build && ../frysk/autogen.sh \
   PKG_CONFIG_PATH=/usr/lib64/pkgconfig \
-  CC='gcc -m64' \
-  GCJ='gcj -m64' \
-  GCJLINK='gcj -m64' \
-  CXX='g++ -m64' \
+  CC='gcc -m64 -mminimal-toc' \
+  GCJ='gcj -m64 -mminimal-toc' \
+  GCJLINK='gcj -m64 -mminimal-toc' \
+  CXX='g++ -m64 -mminimal-toc' \
   && make -j2 )
 </pre>
 <tt>configure</tt> then saves them as part of the configuration
