@@ -1,3 +1,12 @@
+2007-07-04  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DisplayManager.java: New file, implementation not yet complete.
+	* DisplayValue.java (num): New field, looking ahead to when displays
+	will have unique numerical identifiers.
+	* TestUpdatingDisplayValue.java: Updated tests to use DisplayManager.
+	(testDisabled): New test.
+	* UpdatingDisplayValue.java (disabled): New method.
+
 2007-07-03  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Subroutine.java: Added copyright.

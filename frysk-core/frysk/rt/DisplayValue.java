@@ -67,6 +67,8 @@ public class DisplayValue
   protected FrameIdentifier frameIdentifier;
   protected Value myVar;
   
+  protected int num;
+  
   /**
    * Creates a new DisplayValue object encompassing a variable from the
    * provided Task

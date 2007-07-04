@@ -92,9 +92,10 @@ public class TestUpdatingDisplayValue extends TestLib
     process.resume();
     assertRunUntilStop("First breakpoint");
     
-    UpdatingDisplayValue uDisp = new UpdatingDisplayValue("x", myTask,
-                                                          StackFactory.createFrame(myTask).getFrameIdentifier(),
-                                                          steppingEngine);
+    UpdatingDisplayValue uDisp = DisplayManager.createDisplay(myTask,
+	    StackFactory.createFrame(myTask).getFrameIdentifier(), steppingEngine,
+	    "x"); 
+
     DisplayObserver obs = new DisplayObserver();
     uDisp.addObserver(obs);
     
@@ -141,9 +142,10 @@ public class TestUpdatingDisplayValue extends TestLib
     process.resume();
     assertRunUntilStop("First breakpoint");
     
-    UpdatingDisplayValue uDisp = new UpdatingDisplayValue("x", myTask,
-                                                          StackFactory.createFrame(myTask).getFrameIdentifier(),
-                                                          steppingEngine);
+    UpdatingDisplayValue uDisp = DisplayManager.createDisplay(
+	    myTask, StackFactory.createFrame(myTask).getFrameIdentifier(),
+	    steppingEngine, "x");
+    
     DisplayObserver obs = new DisplayObserver();
     uDisp.addObserver(obs);
     int oldValue = uDisp.getValue().getInt();
@@ -156,6 +158,7 @@ public class TestUpdatingDisplayValue extends TestLib
                                   52, 0);
     brk2.addObserver(new BreakpointBlocker());
     brk2.enableBreakpoint(myTask, steppingEngine);
+    bpManager.enableBreakpoint(brk2, myTask);
     
     // Run until we hit the second breakpoint
     list = new LinkedList();
@@ -191,9 +194,10 @@ public class TestUpdatingDisplayValue extends TestLib
     process.resume();
     assertRunUntilStop("First breakpoint");
     
-    UpdatingDisplayValue uDisp = new UpdatingDisplayValue("x", myTask,
-                                                          StackFactory.createFrame(myTask).getFrameIdentifier(),
-                                                          steppingEngine);
+    UpdatingDisplayValue uDisp = DisplayManager.createDisplay(
+	    myTask, StackFactory.createFrame(myTask).getFrameIdentifier(),
+	    steppingEngine, "x");
+    
     DisplayObserver obs = new DisplayObserver();
     uDisp.addObserver(obs);
     assertTrue("Display is not available", uDisp.isAvailable());
@@ -223,6 +227,10 @@ public class TestUpdatingDisplayValue extends TestLib
       return;
   }
   
+  /*
+   * Create a display on 'y', then make sure we receive an event when 'y' and
+   * 'y's scope disappears due to a call to siglongjmp.
+   */
   public void testLongjmp()
   {
     BreakpointManager bpManager = createDaemon("funit-rt-varlongjmp");
@@ -242,9 +250,10 @@ public class TestUpdatingDisplayValue extends TestLib
     process.resume();
     assertRunUntilStop("First breakpoint");
     
-    UpdatingDisplayValue uDisp = new UpdatingDisplayValue("y", myTask,
-                                                          StackFactory.createFrame(myTask).getFrameIdentifier(),
-                                                          steppingEngine);
+    UpdatingDisplayValue uDisp = DisplayManager.createDisplay(
+	    myTask, StackFactory.createFrame(myTask).getFrameIdentifier(), 
+	    steppingEngine, "y");
+    
     DisplayObserver obs = new DisplayObserver();
     uDisp.addObserver(obs);
     assertTrue("Display is not available", uDisp.isAvailable());
@@ -268,6 +277,10 @@ public class TestUpdatingDisplayValue extends TestLib
     assertFalse("Display is available", uDisp.isAvailable());
   }
   
+  /*
+   * Create a watch on a variable and make sure that we receive an event
+   * when the task disappears.
+   */
   public void testTaskDead()
   {
       BreakpointManager bpManager = createDaemon("funit-rt-varsegv");
@@ -300,9 +313,10 @@ public class TestUpdatingDisplayValue extends TestLib
       process.resume();
       assertRunUntilStop("First breakpoint");
       
-      UpdatingDisplayValue uDisp = new UpdatingDisplayValue("y", myTask,
-                                                            StackFactory.createFrame(myTask).getFrameIdentifier(),
-                                                            steppingEngine);
+      UpdatingDisplayValue uDisp = DisplayManager.createDisplay(
+	      myTask, StackFactory.createFrame(myTask).getFrameIdentifier(), 
+	      steppingEngine, "y");
+      
       DisplayObserver obs = new DisplayObserver();
       uDisp.addObserver(obs);
       assertTrue("Display is not available", uDisp.isAvailable());
@@ -315,6 +329,52 @@ public class TestUpdatingDisplayValue extends TestLib
       
       assertTrue("Observer was not notified", obs.hitOutOfScope);
       assertFalse("Display is available", uDisp.isAvailable());
+  }
+  
+  public void testDisabled()
+  {
+      BreakpointManager bpManager = createDaemon("funit-rt-varchange");
+      
+      /*
+       * First breakpoint
+       */
+      LineBreakpoint brk1 = 
+        bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
+                                   48, 0);
+      brk1.addObserver(new BreakpointBlocker());
+      bpManager.enableBreakpoint(brk1, myTask);
+      
+      LinkedList list = new LinkedList();
+      list.add(myTask);
+      steppingEngine.continueExecution(list);
+      process.resume();
+      assertRunUntilStop("First breakpoint");
+      
+      UpdatingDisplayValue uDisp = DisplayManager.createDisplay(
+  	    myTask, StackFactory.createFrame(myTask).getFrameIdentifier(),
+  	    steppingEngine, "x");
+      
+      DisplayObserver obs = new DisplayObserver();
+      uDisp.addObserver(obs);
+      // This should prevent us from seeing any events
+      uDisp.disable();
+      
+      /*
+       * Second breakpoint
+       */
+      LineBreakpoint brk2 =
+        bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
+                                    52, 0);
+      brk2.addObserver(new BreakpointBlocker());
+      bpManager.enableBreakpoint(brk2, myTask);
+      
+      // Run until we hit the second breakpoint
+      list = new LinkedList();
+      list.add(myTask);
+      steppingEngine.continueExecution(list);
+      assertRunUntilStop("Second breakpoint");
+      
+      assertTrue("Observer was notified of a value change", !obs.hitChanged);
   }
   
   private BreakpointManager createDaemon(String program)

@@ -46,6 +46,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import frysk.proc.Task;
+import frysk.rt.DisplayManager;
 import frysk.rt.DisplayValue;
 import frysk.rt.DisplayValueObserver;
 import frysk.rt.SteppingEngine;
@@ -103,10 +104,14 @@ public class DisplayCommand
     Task myTask = cli.getTask();
     FrameIdentifier fIdent = cli.debugInfo.getCurrentFrame().getFrameIdentifier();
     
-    UpdatingDisplayValue uDisp = new UpdatingDisplayValue((String) args.get(0),
-                                                          myTask,
-                                                          fIdent,
-                                                          engine);
+    UpdatingDisplayValue uDisp = DisplayManager.createDisplay(myTask,
+	    fIdent, engine, (String) args.get(0));
+    
+    /*
+     * We need to keep a local record of what displays have been created via
+     * the HPD, so that we avoid adding observers twice and duplicating
+     * the output when the display updates
+     */
     if(!displays.contains(uDisp))
       {
         displays.add(uDisp);

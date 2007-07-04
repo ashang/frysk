@@ -70,6 +70,8 @@ public class UpdatingDisplayValue
   private byte[] oldValue;
 
   private LockObserver lock;
+  
+  private TermObserver term;
 
   /**
    * Crate a new UpdatingDisplayValue
@@ -91,7 +93,8 @@ public class UpdatingDisplayValue
     lock = new LockObserver();
     engine.addObserver(lock);
     
-    task.requestAddTerminatedObserver(new TermObserver());
+    term = new TermObserver();
+    task.requestAddTerminatedObserver(term);
     
     observers = new LinkedList();
   }
@@ -185,6 +188,12 @@ public class UpdatingDisplayValue
       return false;
 
     return true;
+  }
+  
+  public void disable()
+  {
+      engine.removeObserver(lock, myTask.getProc(), true);
+      myTask.requestDeleteTerminatedObserver(term);
   }
 
   /*
