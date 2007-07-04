@@ -1,3 +1,8 @@
+2007-07-04  Andrew Cagney  <cagney@redhat.com>
+
+	* SourceBuffer.java: Do not catch OpcodesException; use List
+	instead of LinkedList.
+
 2007-07-03  Andrew Cagney  <cagney@redhat.com>
 
 	* SourceWindow.java: Do not catch lib.dw.NoDebugInfoException.

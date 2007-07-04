@@ -54,7 +54,6 @@ import javax.naming.NameNotFoundException;
 
 import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
-import lib.opcodes.OpcodesException;
 
 import org.gnu.gdk.Color;
 import org.gnu.glib.JGException;
@@ -933,7 +932,6 @@ public class SourceBuffer
   public void disassembleFrame (Frame frame)
   {
     Task task = frame.getTask();
-    LinkedList instructionsList = null;
     
     this.firstLoad = false;
     
@@ -944,15 +942,7 @@ public class SourceBuffer
     
     this.deleteText(this.getStartIter(), this.getEndIter());
 
-    try
-      {
-        instructionsList = diss.disassembleInstructions(address, 40);
-      }
-    catch (OpcodesException oe)
-      {
-        System.out.println(oe.getMessage());
-      }
-
+    List instructionsList = diss.disassembleInstructions(address, 40);
     Iterator iter = instructionsList.iterator();
     Instruction ins = (Instruction) iter.next();
 

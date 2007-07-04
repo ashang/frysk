@@ -40,15 +40,12 @@
 
 package lib.opcodes.tests;
 
-import inua.eio.ByteBuffer;
-
-import java.util.LinkedList;
-
 import frysk.Config;
 import frysk.junit.TestCase;
+import inua.eio.ByteBuffer;
+import java.util.List;
 import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
-import lib.opcodes.OpcodesException;
 
 public class TestOpcodes
   extends TestCase
@@ -60,17 +57,7 @@ public class TestOpcodes
     final int numInstructions = 16;
 
     Disassembler disAsm = new Disassembler(buffer);
-    LinkedList list = null;
-    try
-      {
-        list = disAsm.disassembleInstructions(0, numInstructions);
-      }
-    catch (OpcodesException e)
-      {
-        e.printStackTrace(System.err);
-        fail("Exception thrown during disassembly");
-      }
-
+    List list = disAsm.disassembleInstructions(0, numInstructions);
     assertNotNull(list);
     assertEquals(list.size(), numInstructions);
 

@@ -1,3 +1,9 @@
+2007-07-04  Andrew Cagney  <cagney@redhat.com>
+
+	* disassembler/DisassemblyWindow.java: Do not catch
+	OpcodesException.  Use List, not LinkedList.
+	* memory/MemoryWindow.java: Ditto.
+
 2007-06-28  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java (WarningType.CHOOSE_NAME): New

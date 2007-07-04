@@ -223,24 +223,15 @@ public class fstep
     steps++;
     tasks.put(task, Long.valueOf(steps));
 
-    try
-      {
-	if (sample == 0 || steps % sample == 0)
-	  {
-	    int tid = task.getTid();
-	    long pc = task.getIsa().pc(task);
-	    Iterator it;
-	    it = disassembler.disassembleInstructions(pc, instrs).iterator();
-	    while (it.hasNext())
-	      System.out.println("[" + tid + "]\t" + it.next());
-	  }
-      }
-    catch (OpcodesException oe)
-      {
-	// Bad location?
-	oe.printStackTrace();
-	System.exit(-1);
-      }
+    if (sample == 0 || steps % sample == 0) {
+	int tid = task.getTid();
+	long pc = task.getIsa().pc(task);
+	Iterator it;
+	it = disassembler.disassembleInstructions(pc, instrs).iterator();
+	while (it.hasNext()) {
+	    System.out.println("[" + tid + "]\t" + it.next());
+	}
+    }
     return Action.CONTINUE;
   }
 

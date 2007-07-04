@@ -37,66 +37,55 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package lib.opcodes;
 
 import java.util.LinkedList;
-
+import java.util.List;
 import inua.eio.ByteBuffer;
 
-public final class Disassembler
+public class Disassembler
 {
+    private List isnList = new LinkedList();
+    private StringBuffer instruction = new StringBuffer();
+    private final ByteBuffer memory;
+    public Disassembler (ByteBuffer memory)
+    {
+	this.memory = memory;
+    }
+    
+    public List disassembleInstructions (long address, long count) {
+	isnList.clear();
+	// This function will call the below java methods to update
+	// the linked list.
+	disassemble(address, count);
+	return isnList;
+    }
+    
+    void startInstruction() {
+	instruction.setLength(0);
+    }
+    void endInstruction(long address, int length) {
+	isnList.add(new Instruction(address, length, instruction.toString()));
+    }
+    /**
+     * See opcodes fprintf_func.
+     */
+    void printInstruction(String text) {
+	instruction.append(text);
+    }
+    /**
+     * See opcodes print_address_func.
+     */
+    void printAddress(long address) {
+	instruction.append("0x").append(Long.toHexString(address));
+    }
 
-  protected ByteBuffer buffer;
+    /**
+     * See opcodes print_address_func.
+     */
+    byte readMemory(long address) {
+	return memory.getByte(address);
+    }
 
-  private LinkedList isnList;
-
-  private Instruction current;
-
-  public Disassembler (ByteBuffer buffer)
-  {
-    this.buffer = buffer;
-  }
-
-  public LinkedList disassembleInstructions (long address, long count)
-      throws OpcodesException
-  {
-    this.isnList = new LinkedList();
-    current = new Instruction();
-    // This function will call the below java methods to update the linked list
-    disassemble(address, count);
-    return isnList;
-  }
-
-  // THIS SHOULD NOT BE CALLED FROM JAVA!
-  // It is not private because it is called from CNI
-  protected void setCurrentAddress (long address)
-  {
-    current.address = address;
-  }
-
-  // THIS SHOULD NOT BE CALLED FROM JAVA!
-  // It is not private because it is called from CNI
-  protected void appendCurrentInstruction (String inst)
-  {
-    current.instruction = current.instruction + inst;
-  }
-
-  // THIS SHOULD NOT BE CALLED FROM JAVA!
-  // It is not private because it is called from CNI
-  protected void setCurrentInstructionLength (int len)
-  {
-    current.length = len;
-  }
-
-  // THIS SHOULD NOT BE CALLED FROM JAVA!
-  // It is not private because it is called from CNI
-  protected void moveToNext ()
-  {
-    this.isnList.add(this.current);
-    this.current = new Instruction();
-  }
-
-  private native void disassemble (long address, long count)
-    throws OpcodesException;
+    private native void disassemble (long address, long count);
 }

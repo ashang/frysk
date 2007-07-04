@@ -1,5 +1,24 @@
 2007-07-04  Andrew Cagney  <cagney@redhat.com>
 
+	* tests/TestOpcodes.java: Update.
+	* Instruction.java: Add constructor.
+	(address, length, instruction): Make final.
+	* Disassembler.java (printAddress, readMemory)
+	(printInstruction): New.
+	(memory): Replace "buffer".
+	(insnList): Make private.
+	(instruction): Replace "current".
+	(startInstruction, endInstruction): New.
+	(setCurrentAddress, appendCurrentInstruction)
+	(setCurrentInstructionLength, moveToNext): Delete.
+	(disassembleInstructions): Update.  Do not throw OpcodeException.
+	* cni/Disassembler.cxx (print_addr, read_from_byte_buffer)
+	(save_instruction): Delete.
+	(memory_error): New.
+	(print_address, read_memory, print_instruction): New; wrap round
+	printAddress, readMemory, and printInstruction.
+	(disassemble): Update.
+	
 	* UnsupportedArchitectureException.java: New file.
 	* cni/Disassembler.cxx (Disassembler::disassemble): When ISA is
 	unknown, throw an UnsupportedArchitectureException.

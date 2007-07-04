@@ -57,26 +57,67 @@
 #undef VOLATILE
 #include <gcj/cni.h>
 
+#include "frysk/sys/cni/Errno.hxx"
 #include "lib/opcodes/Disassembler.h"
 #include "lib/opcodes/Instruction.h"
 #include "lib/opcodes/UnsupportedArchitectureException.h"
-#include "lib/opcodes/OpcodesException.h"
 #include "inua/eio/ByteBuffer.h"
 
-// reads number of bytes from the byte buffer
-static int read_from_byte_buffer (bfd_vma memaddr, bfd_byte* myadd,
-				  unsigned int length,
-				  struct disassemble_info *info);
+/*
+ * Read LENGTH bytes into MYADD starting at target address MEMADDR.
+ */
+static int
+read_memory (bfd_vma memaddr, bfd_byte* myadd, unsigned int length,
+	     struct disassemble_info *info)
+{
+  lib::opcodes::Disassembler *obj = (lib::opcodes::Disassembler*) info->stream;
+  for (unsigned int i = 0; i < length; i++)
+    {
+      long offset = ((long) memaddr) + i;
+      myadd[i] = (char) obj->readMemory(offset);
+    }
+  return 0;
+}
 
-// throws an OpcodesException
-static void error_func (int status, bfd_vma memaddr,
-			struct disassemble_info *info);
 
-// Prints the address when errors occur
-static void print_addr (bfd_vma addr, struct disassemble_info *info);
+// Prints the address.
+static void
+print_address (bfd_vma addr, struct disassemble_info *info)
+{
+  lib::opcodes::Disassembler *obj = (lib::opcodes::Disassembler*) info->stream;
+  obj->printAddress(addr);
+}
 
-// saves the instruction to the java class
-static int save_instruction (void* data, const char *str, ...);
+/*
+ * Called in response to read_memory returning an error indication;
+ * which never happens.
+ */
+static void
+memory_error (int status, bfd_vma memaddr, struct disassemble_info *info)
+{
+  throwRuntimeException("unexpected call to memory_error");
+}
+
+void
+print_addr (bfd_vma addr, struct disassemble_info *info)
+{
+  lib::opcodes::Disassembler* obj = (lib::opcodes::Disassembler*) info->stream;
+  obj->printAddress (addr);
+}
+
+/*
+ * When we're asked to print a statement, store it on the java side
+ * instead
+ */
+static int
+print_instruction (void* disassembler, const char *args, ...)
+{
+  lib::opcodes::Disassembler* obj = (lib::opcodes::Disassembler*) disassembler;
+  va_list ap;
+  ::va_start (ap, args);
+  obj->printInstruction(vajprintf(args, ap));
+  return 0;
+}
 
 void
 lib::opcodes::Disassembler::disassemble (jlong address, jlong instructions)
@@ -85,7 +126,7 @@ lib::opcodes::Disassembler::disassemble (jlong address, jlong instructions)
   int (*disasm_func) (bfd_vma, disassemble_info*);
   int instr_length = 0;
 
-  ::init_disassemble_info (&disasm_info, (void*) this, save_instruction);
+  ::init_disassemble_info (&disasm_info, (void*) this, print_instruction);
 
   disasm_info.flavour = bfd_target_unknown_flavour;
 #ifdef __x86_64__
@@ -121,95 +162,17 @@ lib::opcodes::Disassembler::disassemble (jlong address, jlong instructions)
   if (!disasm_func)
     throw new lib::opcodes::UnsupportedArchitectureException();
   
-  disasm_info.read_memory_func = read_from_byte_buffer;
-  disasm_info.memory_error_func = error_func;
-  disasm_info.print_address_func = print_addr;
+  disasm_info.read_memory_func = read_memory;
+  disasm_info.memory_error_func = memory_error;
+  disasm_info.print_address_func = print_address;
 
   bfd_vma current_address = (bfd_vma) address;
 
   for (int i = 0; i < instructions; i++)
     {
-      this->setCurrentAddress(current_address);
+      this->startInstruction();
       instr_length = disasm_func(current_address, &disasm_info);
+      this->endInstruction (current_address, instr_length);
       current_address += instr_length;
-
-      this->setCurrentInstructionLength (instr_length);
-      this->moveToNext();
     }
-}
-
-/*
- * Instead of copying memory from memaddr to myadd, we get the section
- * starting at memaddr in the ByteBuffer.
- */
-int
-read_from_byte_buffer (bfd_vma memaddr, bfd_byte* myadd, unsigned int length,
-		       struct disassemble_info *info)
-{
-  lib::opcodes::Disassembler *obj = (lib::opcodes::Disassembler*) info->stream;
-  inua::eio::ByteBuffer *buffer = obj->buffer;
-	
-  char tmp[length];
-  for (unsigned int i = 0; i < length; i++)
-    {
-      long offset = ((long) memaddr) + i;
-      tmp[i] = (char) buffer->getByte (offset);
-    }
-	
-  memcpy ((void*) myadd, (void*) tmp, length);
-	
-  return 0;
-}
-
-/*
- * If something breaks, throw an exception
- */
-void
-error_func (int status, bfd_vma memaddr, struct disassemble_info *info)
-{
-  throw new lib::opcodes::OpcodesException
-    (JvNewStringUTF ("Error occured while disassembling."), 
-     (jint) status, (jlong) memaddr);
-}
-
-void
-print_addr (bfd_vma addr, struct disassemble_info *info)
-{
-  lib::opcodes::Disassembler* obj = (lib::opcodes::Disassembler*) info->stream;
-  
-  char *mystr = NULL;
-  if (::asprintf (&mystr, "0x%lx", (long) addr) > 0)
-    {	
-      obj->appendCurrentInstruction (JvNewStringUTF (mystr));
-      ::free (mystr);
-    }
-  else
-    throw new lib::opcodes::OpcodesException
-      (JvNewStringUTF ("Couldn't parse variable address"));
-}
-
-/*
- * When we're asked to print a statement, store it on the java side instead
- */
-int save_instruction (void* disassembler, const char *args, ...)
-{
-  lib::opcodes::Disassembler* obj = (lib::opcodes::Disassembler*) disassembler;
-  va_list ap;
-  ::va_start (ap, args);
-  char * mystr;
-  if (::vasprintf (&mystr, args, ap) > 0)
-    {
-      obj->appendCurrentInstruction (JvNewStringUTF (mystr));
-      ::free (mystr);
-    }
-  else
-    {
-      throw new lib::opcodes::OpcodesException
-	(JvNewStringUTF("Could not parse variable argument list"));
-    }
-  ::va_end (ap);
-	
-  int len = strlen (mystr);
-	
-  return len;
 }

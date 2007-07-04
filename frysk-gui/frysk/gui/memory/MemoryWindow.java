@@ -42,7 +42,7 @@
 package frysk.gui.memory;
 
 import java.util.prefs.Preferences;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
@@ -88,7 +88,6 @@ import frysk.proc.Task;
 import frysk.rt.TaskStepEngine;
 
 import lib.opcodes.Disassembler;
-import lib.opcodes.OpcodesException;
 import lib.opcodes.Instruction;
 
 public class MemoryWindow
@@ -607,20 +606,10 @@ public class MemoryWindow
     if (this.myTask == null)
       return;
 
-    LinkedList instructionsList = null;
-
-    try
-      {
-        instructionsList = diss.disassembleInstructions(
-                                                        (long) this.lastKnownFrom,
-                                                        (long) (this.lastKnownTo
-                                                                - this.lastKnownFrom + 1));
-      }
-    catch (OpcodesException oe)
-      {
-        System.out.println(oe.getMessage());
-      }
-
+    List instructionsList
+	= diss.disassembleInstructions((long) this.lastKnownFrom,
+				       (long) (this.lastKnownTo
+					       - this.lastKnownFrom + 1));
     Iterator li = instructionsList.listIterator(0);
     Instruction ins = (Instruction) li.next();
 

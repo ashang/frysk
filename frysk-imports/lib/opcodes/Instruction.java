@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,17 +36,21 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package lib.opcodes;
 
 public class Instruction 
 {
-
-  public long address;
-  public int length =0;
-  public String instruction  = "";
-	
-  public String toString()
-  {
-    return "0x"+Long.toHexString(address)+"\t"+instruction;
-  }
+    public final long address;
+    public final int length;
+    public final String instruction;
+    Instruction(long address, int length, String instruction)
+    {
+	this.address = address;
+	this.length = length;
+	this.instruction = instruction;
+    }
+    public String toString() {
+	return "0x"+Long.toHexString(address)+"\t"+instruction;
+    }
 }
