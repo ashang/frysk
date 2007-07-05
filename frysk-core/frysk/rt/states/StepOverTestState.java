@@ -105,7 +105,7 @@ public class StepOverTestState extends State
       }
     else
       {
-	this.task.requestUnblock(tse.getSteppingEngine().getSteppingObserver());
+          tse.getSteppingEngine().continueForStepping(this.task, true);
 	return this;
       }
   }

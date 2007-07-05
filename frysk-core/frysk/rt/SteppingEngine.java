@@ -213,8 +213,8 @@ public class SteppingEngine
     tse.setState(new InstructionStepState(task));
     this.steppingObserver.notifyNotBlocked(tse);
     this.contextMap.put (task.getProc(), new Integer(1));
-    
-    task.requestUnblock(steppingObserver);
+
+    continueForStepping(task, true);
     return true;
   }
   
@@ -243,8 +243,8 @@ public class SteppingEngine
 	t = (Task) iter.next();
 	TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(t);
 	tse.setState(new InstructionStepState(t));
-        this.steppingObserver.notifyNotBlocked(tse);   
-	t.requestUnblock(steppingObserver);
+        this.steppingObserver.notifyNotBlocked(tse);
+        continueForStepping(t, true);
       }
 
     return true;
@@ -276,9 +276,10 @@ public class SteppingEngine
 	if (line == null)
 	  {
 	    tse.setState(new InstructionStepState(task));
-            this.steppingObserver.notifyNotBlocked(tse);
-	    task.requestUnblock(this.steppingObserver);
-	    return true;
+            if (continueForStepping(task, true)) {
+                this.steppingObserver.notifyNotBlocked(tse);
+            }
+	    return true;        // XXX
 	  }
 	else
 	  {
@@ -287,9 +288,10 @@ public class SteppingEngine
       }
 
     tse.setState(new LineStepState(task));
-    this.steppingObserver.notifyNotBlocked(tse);
-    task.requestUnblock(this.steppingObserver);
-    return true;
+    if (continueForStepping(task, true)) {
+        this.steppingObserver.notifyNotBlocked(tse);
+    }
+    return true;                // XXX
   }
   
   /**
@@ -366,7 +368,7 @@ public class SteppingEngine
     while (i.hasNext())
       {
     	t = (Task) i.next();
-    	t.requestUnblock(this.steppingObserver);
+        continueForStepping(t, true);
       }
   }
   
@@ -421,8 +423,7 @@ public class SteppingEngine
     
     int i = ((Integer) this.contextMap.get(task.getProc())).intValue();
     this.contextMap.put(task.getProc(), new Integer(++i));
-    
-    task.requestUnblock(this.steppingObserver);
+    continueForStepping(task, true);
   }
   
   /**
@@ -453,9 +454,10 @@ public class SteppingEngine
         TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(t);
         tse.setFrameIdentifier(this.frameIdentifier);
         tse.setState(new NextInstructionStepTestState(t));
-        this.steppingObserver.notifyNotBlocked(tse);
         
-        t.requestUnblock(this.steppingObserver);
+        if (continueForStepping(t, true)) {
+            this.steppingObserver.notifyNotBlocked(tse);
+        }
       }
   }
 
@@ -477,12 +479,13 @@ public class SteppingEngine
     TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
     tse.setFrameIdentifier(this.frameIdentifier);
     tse.setState(new StepOverTestState(task));
-    this.steppingObserver.notifyNotBlocked(tse);
     
     int i = ((Integer) this.contextMap.get(task.getProc())).intValue();
     this.contextMap.put(task.getProc(), new Integer(++i));
-    
-    task.requestUnblock(this.steppingObserver);
+
+    if (continueForStepping(task, true)) {
+        this.steppingObserver.notifyNotBlocked(tse);
+    }
   }
   
   /**
@@ -513,9 +516,10 @@ public class SteppingEngine
         TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(t);
         tse.setFrameIdentifier(this.frameIdentifier);
         tse.setState(new StepOverTestState(t));
-        this.steppingObserver.notifyNotBlocked(tse);
-        
-        t.requestUnblock(this.steppingObserver);
+
+        if (continueForStepping(t, true)) {
+            this.steppingObserver.notifyNotBlocked(tse);
+        }
       }
   }
 
@@ -622,19 +626,37 @@ public class SteppingEngine
                 tse.setState(new RunningState(t));
                 this.steppingObserver.notifyNotBlocked(tse);
               }
-            
-            TaskObserver[] blockers = t.getBlockers();
-            for (int j = 0; j < blockers.length; j++)
-              {
-                if (blockers[j] instanceof Breakpoint) // One of ours?
-                  t.requestUnblock(blockers[j]);
-              }
-            
+            continueForStepping(t, false);
             t.requestDeleteInstructionObserver(this.steppingObserver);
           }
       }
   }
-  
+
+    /**
+     * Unblock a task so that, from the point of view of the stepping
+     * engine, execution can continue. For now this unblocks
+     * instruction observers and code observers for breakpoints, but
+     * ultimately I (timoore) think it should unblock all blockers.
+     */
+    public boolean continueForStepping(Task task, boolean unblockStepper) {
+        if (unblockStepper) {
+            task.requestUnblock(this.steppingObserver);
+        }
+        TaskObserver[] blockers = (TaskObserver [])task.getBlockers().clone();
+        for (int j = 0; j < blockers.length; j++) {
+            // One of ours?
+            if (blockers[j] instanceof Breakpoint) {
+                task.requestUnblock(blockers[j]);
+                System.out.println("unblocked stepper");
+            } else {
+                // Some blocker that we don't know about
+                // System.out.println("Unknown blocker " + blockers[j].toString());
+                // return false;
+            }
+        }
+        return true;
+    }
+
   /**
    * Re-blocks all running Tasks except for those in the incoming LinkedList.
    * If the list is null or has size zero, than by default all Tasks are 
@@ -1073,7 +1095,7 @@ public class SteppingEngine
      */
     public synchronized Action updateExecuted (Task task)
     {
-//      System.err.println("SE.SO.updateEx: " + task);
+      // System.err.println("SE.SO.updateEx: " + task);
       /* Check to see if acting upon this event produces a stopped state
        * change. If so, decrement the number of Tasks active in the Task's 
        * process context. If there are no Tasks left, then notify the this 
