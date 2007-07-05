@@ -1,5 +1,8 @@
 2007-07-05  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskEvent.java: Delete unused imports of java.util.logging.Level
+	and java.util.logging.Logger.
+	
 	* TaskEvent.java (task): Make private final.
 	(logger, taskId, Task(TaskId)): Delete.
 	(execute(Task)): Declare abstract.

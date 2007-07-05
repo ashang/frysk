@@ -40,8 +40,6 @@
 package frysk.proc;
 
 import frysk.event.Event;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public abstract class TaskEvent
     implements Event
