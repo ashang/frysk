@@ -1,5 +1,7 @@
 2007-07-05  Tim Moore  <timoore@redhat.com>
 
+	* SteppingEngine.java (continueForStepping): Remove debugging cruft.
+
 	* SteppingEngine.java (continueForStepping): New method that
 	unblocks the stepping observer and any breakpoint blockers.
 	(stepInstruction, stepLine, setUp, stepNextInstruction, stepOver,

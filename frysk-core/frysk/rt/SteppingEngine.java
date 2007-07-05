@@ -647,7 +647,6 @@ public class SteppingEngine
             // One of ours?
             if (blockers[j] instanceof Breakpoint) {
                 task.requestUnblock(blockers[j]);
-                System.out.println("unblocked stepper");
             } else {
                 // Some blocker that we don't know about
                 // System.out.println("Unknown blocker " + blockers[j].toString());
