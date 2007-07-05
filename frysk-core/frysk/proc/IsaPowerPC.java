@@ -1,6 +1,7 @@
 // This file is part of the program FRYSK.
 //
 // Copyright 2006 IBM Corp.
+// Copyright 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,6 +42,7 @@ package frysk.proc;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import inua.eio.ByteBuffer;
 import frysk.proc.live.AddressSpaceByteBuffer;
@@ -102,7 +104,15 @@ abstract class IsaPowerPC
 
   public List getOutOfLineAddresses(Proc proc)
   {
-    throw new IllegalStateException("getOutOfLineAddresses not implemented");
+    LinkedList addrs = new LinkedList();
+    Auxv[] auxv = proc.getAuxv ();
+    // Find the Auxv ENTRY data
+    for (int i = 0; i < auxv.length; i++)
+      {
+	if (auxv[i].type == inua.elf.AT.ENTRY)
+	addrs.add(Long.valueOf(auxv[i].val));
+      }
+    return addrs;
   }
 
   /**

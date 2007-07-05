@@ -1,3 +1,9 @@
+2007-07-05  Mark Wielaard  <mwielaard@redhat.com>
+
+	* IsaIA32.java (getOutOfLineAddresses): Use Auxv entry point.
+	* IsaPowerPC.java (getOutOfLineAddresses): Likewise.
+	* IsaX8664.java (getOutOfLineAddresses): Likewise.
+
 2007-07-04  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskSyscallObserver.java: Replace brokenXXX with unresolved.

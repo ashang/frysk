@@ -42,6 +42,7 @@ package frysk.proc;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import inua.eio.ByteOrder;
 import lib.unwind.RegisterX86;
@@ -51,14 +52,7 @@ import frysk.sys.Ptrace.AddressSpace;
 import frysk.proc.live.RegisterSetByteBuffer;
 import frysk.proc.live.AddressSpaceByteBuffer;
 
-import lib.elf.Elf;
-import lib.elf.ElfCommand;
-import lib.elf.ElfException;
 import lib.elf.ElfEMachine;
-
-import lib.dw.Dwarf;
-import lib.dw.DwarfCommand;
-import lib.dw.DwarfDie;
 
 public class IsaIA32 implements Isa
 {
@@ -293,7 +287,7 @@ public class IsaIA32 implements Isa
    */
   public long getBreakpointAddress(Task task)
   {
-    long pcValue = 0;
+    long pcValue;
     
     pcValue = this.pc(task);
     pcValue = pcValue - 1;
@@ -308,21 +302,15 @@ public class IsaIA32 implements Isa
    */
   public List getOutOfLineAddresses(Proc proc)
   {
-    String func = "main";
-    try
+    LinkedList addrs = new LinkedList();
+    Auxv[] auxv = proc.getAuxv ();
+    // Find the Auxv ENTRY data
+    for (int i = 0; i < auxv.length; i++)
       {
-	Elf elf = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
-        Dwarf dwarf = new Dwarf(elf, DwarfCommand.READ, null);
-        DwarfDie die = DwarfDie.getDecl(dwarf, func);
-        return die.getEntryBreakpoints();
+	if (auxv[i].type == inua.elf.AT.ENTRY)
+	addrs.add(Long.valueOf(auxv[i].val));
       }
-    catch (ElfException ee)
-      {
-	IllegalStateException ise;
-	ise = new IllegalStateException("Unable to get at " + func);
-	ise.initCause(ee);
-	throw ise;
-      }
+    return addrs;
   }
 
   /**
