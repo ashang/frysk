@@ -1,5 +1,9 @@
 2007-07-05  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* DwarfDie.java: Removed unused import.
+
+2007-07-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* cni/DwarfDie.cxx (get_scopes_die): new function.
 	* DwarfDie.java (getScopes): Extened javadoc.
 	(getScopesDie): New function.

@@ -40,8 +40,6 @@
 
 package lib.dw;
 
-import gnu.java.security.action.GetSecurityPropertyAction;
-
 import java.util.ArrayList;
 import java.util.List;
 
