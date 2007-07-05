@@ -1,5 +1,14 @@
 2007-07-05  Adam Jocksch  <ajocksch@redhat.com>
 
+	* DisplayManager.java (displaysByNum): Added, keeps track of
+	displays by using their unique ID as a key.
+	(createDisplay): Now adds the display to displaysByNum.
+	(disableDisplay): Added.
+	(enableDisplay): Added.
+	(deleteDisplay): Added a second version that takes an integer
+	identifier.
+	* DisplayValue.java (getId): Added.
+
 	* DisplayValueObserver.java (updateDisabled): Added.
 	* TestUpdatingDisplayValue.java: All tests whose daemons don't
 	terminate during the test now allow them to finish executing.

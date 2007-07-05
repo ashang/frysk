@@ -159,4 +159,9 @@ class DisplayValue
   {
     return varLabel;
   }
+
+  public int getId()
+  {
+    return num;
+  }
 }

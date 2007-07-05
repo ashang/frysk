@@ -58,10 +58,12 @@ public class DisplayManager {
      * task
      */
     private static DisplayMap displays;
+    private static HashMap displaysByNum;
     
     static
     {
 	displays = new DisplayMap();
+	displaysByNum = new HashMap();
     }
     
     /**
@@ -83,20 +85,84 @@ public class DisplayManager {
 	    value = new UpdatingDisplayValue(text, myTask, fIdent, engine,
 		    CountManager.getNextId());
 	    displays.add(value);
+	    displaysByNum.put(new Integer(value.getId()), value);
 	}
 	
 	return value;
     }
     
     /**
-     * Removes an UpdatingDisplayValue from the manager, allowing it to be garbage collected
+     * Removes an UpdatingDisplayValue from the manager, allowing it to be 
+     * garbage collected
      * @param value The display to remove
      */
     public static void deleteDisplay(UpdatingDisplayValue value)
     {
 	displays.remove(value);
 	value.disable();
-    }    
+    }
+    
+    /**
+     * Disables the display with the given identifier. If no display exists
+     * with that identifier nothing is done.
+     * @param num The unique ID of the display to disable
+     * @return true if a display was disabled, false otherwise
+     */
+    public static boolean disableDisplay(int num)
+    {
+	UpdatingDisplayValue val =  (UpdatingDisplayValue)
+		displaysByNum.get(new Integer(num));
+	if(val != null)
+	{
+	    if(val.isEnabled())
+		val.disable();
+	    return true;
+	}
+	return false;
+    }
+    
+    /**
+     * Enables the display with the given identifier. If no display exists
+     * with that number nothing is done 
+     * @param num The unique ID of the identifier to enable
+     * @return True if an identifier was enabled, false otherwise
+     */
+    public static boolean enableDisplay(int num)
+    {
+	UpdatingDisplayValue val = (UpdatingDisplayValue) 
+		displaysByNum.get(new Integer(num));
+	
+	if(val != null)
+	{
+	    if(!val.isEnabled())
+		val.enable();
+	    return true;
+		
+	}
+	
+	return false;
+    }
+    
+    /**
+     * Deletes the display with the given identifier. If no display exists
+     * with that identifier nothing is done.
+     * @param num The unique ID of the display to delete
+     * @return true if a display was deleted, false otherwise
+     */
+    public static boolean deleteDisplay(int num)
+    {
+	UpdatingDisplayValue val =  (UpdatingDisplayValue)
+		displaysByNum.get(new Integer(num));
+	if(val != null)
+	{
+	    if(val.isEnabled())
+		val.disable();
+	    displays.remove(val);
+	    displaysByNum.remove(new Integer(val.getId()));
+	    return true;
+	}
+	return false;
+    }
     
 }
 
