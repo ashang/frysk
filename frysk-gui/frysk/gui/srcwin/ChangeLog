@@ -1,3 +1,8 @@
+2007-07-04  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceWindow.java(updateSourceLabel): Fix bug where stackframe
+	was being accessed even though it was null.
+
 2007-07-04  Andrew Cagney  <cagney@redhat.com>
 
 	* SourceBuffer.java: Do not catch OpcodesException; use List

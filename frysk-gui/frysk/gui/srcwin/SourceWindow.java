@@ -2330,7 +2330,7 @@ public class SourceWindow
     if (sf == null) 
       {
 	String task_name = this.swProc[0].getExe();
-	int proc_id = sf.getTask().getProc().getPid();
+	int proc_id = this.swProc[0].getPid();
 	setSourceLabel("Unknown File for: ", task_name, proc_id);
 	return;
       }
