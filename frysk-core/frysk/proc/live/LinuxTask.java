@@ -45,7 +45,7 @@ import frysk.proc.TaskId;
 import frysk.proc.Task;
 import java.util.logging.Level;
 import frysk.proc.Manager;
-import frysk.proc.TaskEvent;
+import frysk.event.Event;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import frysk.proc.IsaFactory;
@@ -206,7 +206,7 @@ public class LinuxTask
     protected void postDisappearedEvent (final Throwable arg)
     {
 	logger.log(Level.FINE, "{0} postDisappearedEvent\n", this);
-	Manager.eventLoop.add(new TaskEvent()
+	Manager.eventLoop.add(new Event()
 	    {
 		final Throwable w = arg;
 		public void execute ()

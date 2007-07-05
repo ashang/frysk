@@ -1,3 +1,8 @@
+2007-07-05  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxTask.java: Replace frysk.proc.TaskEvent with
+	frysk.event.Event.
+
 2007-06-27  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Breakpoint.java (prepareStep): Don't reset pc.

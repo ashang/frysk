@@ -49,9 +49,6 @@ public abstract class TaskEvent
     private static Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
     protected Task task;
     protected TaskId taskId;
-    protected TaskEvent ()
-    {
-    }
     protected TaskEvent (Task task)
     {
 	this.task = task;

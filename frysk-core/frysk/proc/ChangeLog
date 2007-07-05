@@ -1,3 +1,9 @@
+2007-07-05  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskEvent.java (TaskEvent()): Delete.
+	* TestSyscallRunning.java: Replace TaskEvent with
+	frysk.event.Event.
+
 2007-07-05  Mark Wielaard  <mwielaard@redhat.com>
 
 	* IsaIA32.java (getOutOfLineAddresses): Use Auxv entry point.

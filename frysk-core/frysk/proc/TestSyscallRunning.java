@@ -46,6 +46,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.io.OutputStream;
+import frysk.event.Event;
 
 /**
  * XXX: This code should be simplified, eliminating local parallelism
@@ -103,10 +104,10 @@ public class TestSyscallRunning
     // Get the port that will be listened on.
     int port = Integer.decode(in.readLine()).intValue();
 
-    final Task proc_task = proc.getMainTask();
+    final Task procTask = proc.getMainTask();
 
-    final SyscallObserver syso = new SyscallObserver("accept", proc_task, false);
-    proc_task.requestAddSyscallObserver(syso);
+    final SyscallObserver syso = new SyscallObserver("accept", procTask, false);
+    procTask.requestAddSyscallObserver(syso);
 
     // Make sure the observer is properly installed.
     while (! syso.isAdded())
@@ -122,17 +123,15 @@ public class TestSyscallRunning
 
     // Now unblock and then attach another observer.
     // Do all this on the eventloop so properly serialize calls.
-    final SyscallObserver syso2 = new SyscallObserver("accept", proc_task, true);
-    Manager.eventLoop.add(new TaskEvent()
-      {
-	public void execute ()
-	{
-	  // Continue running (inside syscall),
-	  // while attaching another syscall observer
-	  proc_task.requestUnblock(syso);
-	  proc_task.requestAddSyscallObserver(syso2);
-	}
-      });
+    final SyscallObserver syso2 = new SyscallObserver("accept", procTask, true);
+    Manager.eventLoop.add(new Event() {
+	    public void execute () {
+		// Continue running (inside syscall), while attaching
+		// another syscall observer
+		procTask.requestUnblock(syso);
+		procTask.requestAddSyscallObserver(syso2);
+	    }
+	});
 
     // Wait till we are properly added...
     while (! syso2.isAdded())
