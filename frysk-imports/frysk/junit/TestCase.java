@@ -125,22 +125,6 @@ public class TestCase
      */
   private static Uname uname;
   private static KernelVersion version;
-  /**
-   * A method that returns true, and prints broken, when the running
-   * kernel matches the supplied list.
-   */
-  protected static boolean brokenIfKernelXXX (int bug, String[] kernels)
-  {
-      if (uname == null)
-	  uname = Uname.get ();
-      for (int i = 0; i < kernels.length; i++) {
-	  String kernel = kernels[i];
-	  if (uname.getRelease ().startsWith (kernel))
-	      return Runner.unresolved (bug, true);
-      }
-      return Runner.unresolved(bug, false);
-  }
-
     protected static boolean brokenIfKernelXXX(int bug, KernelMatch matcher)
     {
 	if (uname == null)
@@ -154,31 +138,16 @@ public class TestCase
      * A method that returns true, and prints broken, when the build
      * kernel includes UTRACE.
      */
-    private static KernelVersion goodFC5217
-	= new KernelVersion("2.6.17-1.2187.fc5");
-    private static KernelVersion brokenFC5
-	= new KernelVersion("2.6.18-1.2257.fc5");
-    
     protected static boolean brokenIfUtraceXXX (int bug)
     {
 	return brokenIfKernelXXX(bug, new KernelMatch()
 	    {
 		public boolean matches(KernelVersion version)
 		{
-		    if (version.isFedora()) {
-			if (version.getFedoraRelease() == 5) {
-			    if (version.newer(goodFC5217)
-				&& !version.newer(brokenFC5))
-				return true;
-			    else
-				return false;
-			} else if (version.getFedoraRelease() == 6)
-			    return true;
-			return false;
+		    if (version.isFedora() && version.getFedoraRelease() > 5) {
+			return true;
 		    }
-		    else {
-			return false;
-		    }
+		    return false;
 		}
 	    });
     }
