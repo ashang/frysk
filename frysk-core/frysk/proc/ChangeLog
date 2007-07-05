@@ -1,5 +1,11 @@
 2007-07-05  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskEvent.java (task): Make private final.
+	(logger, taskId, Task(TaskId)): Delete.
+	(execute(Task)): Declare abstract.
+	(execute()): Define final.
+	* Task.java (requestUnblock): Update.
+
 	* TaskEvent.java (TaskEvent()): Delete.
 	* TestSyscallRunning.java: Replace TaskEvent with
 	frysk.event.Event.

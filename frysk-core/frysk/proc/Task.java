@@ -409,23 +409,20 @@ public abstract class Task
     return (TaskObserver[]) blockers.toArray(new TaskObserver[0]);
   }
 
-  /**
-   * Request that the observer be removed from this tasks set of blockers; once
-   * there are no blocking observers, this task resumes.
-   */
-  public void requestUnblock (final TaskObserver observerArg)
-  {
-    logger.log(Level.FINE, "{0} requestUnblock -- observer\n", this);
-    Manager.eventLoop.add(new TaskEvent(this)
-    {
-      TaskObserver observer = observerArg;
-
-      public void execute ()
-      {
-        newState = oldState().handleUnblock(task, observer);
-      }
-    });
-  }
+    /**
+     * Request that the observer be removed from this tasks set of
+     * blockers; once there are no blocking observers, this task
+     * resumes.
+     */
+    public void requestUnblock (final TaskObserver observerArg) {
+	logger.log(Level.FINE, "{0} requestUnblock -- observer\n", this);
+	Manager.eventLoop.add(new TaskEvent(this) {
+		final TaskObserver observer = observerArg;
+		protected void execute (Task task) {
+		    newState = oldState().handleUnblock(task, observer);
+		}
+	    });
+    }
 
   /**
    * Set of Cloned observers.
