@@ -39,28 +39,26 @@
 
 package frysk.junit;
 
-import frysk.EventLogger;
 import frysk.Config;
-import java.util.ArrayList;
-import java.util.regex.PatternSyntaxException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-import java.util.Enumeration;
-import junit.framework.Test;
-import junit.framework.TestResult;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import frysk.EventLogger;
 import frysk.expunit.Expect;
-
 import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+import java.util.regex.PatternSyntaxException;
+import junit.framework.Test;
+import junit.framework.TestResult;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * <em>frysk</em> specific extension to the JUnit test framework.
@@ -87,101 +85,76 @@ public class Runner
     public final static String ARCH64 = "64";
     public final static String ARCH32 = "32";
     
-    public static void usage(String message, int exitVal)
-    {
+    public static void usage(String message, int exitVal) {
         System.out.println (message);                                       
         System.exit (exitVal);
     }
 
-    public void setTestCases(Collection testCases)
-    {
+    public void setTestCases(Collection testCases) {
 	this.testCases = testCases;
     }
     
-    public Collection getTestCases()
-    {
+    public Collection getTestCases() {
 	return this.testCases;
     }
    
-    private int runCases (Collection testClasses)
-    {
+    private int runCases(Collection testClasses) {
 	// Create the testsuite to be run, either as specified on the
-	// command line, or from the provided list of classes.  
+	// command line, or from the provided list of classes.
       
 	TestSuite testSuite = new TestSuite ();
       
-	if (otherArgs.size() > 0)
-      {
-        // Construct the testsuite from the list of names.
-        Iterator iter = otherArgs.listIterator(0);
-        while (iter.hasNext())
-          {
-            String arg = (String) iter.next();
-            if (arg.charAt(0) == '-')
-              this.repeatValue = - Integer.parseInt(arg);
-            else
-              {
-                int lidot = arg.lastIndexOf('.');
-                String testName = null;
-                String testCaseName = null;
-                if (arg.substring(lidot + 1).startsWith("test"))
-                  {
-                    testCaseName = arg.substring(0, lidot);
-                    testName = arg.substring(lidot + 1);
-                  }
-                else if (arg.matches("test.*\\(.*\\)"))
-                  {
-                    String[] testTuple = arg.split("[\\(\\)]");
-                    testName = testTuple[0];
-                    testCaseName = testTuple[1];
-                  }
-                else
-                  {
-                    testCaseName = arg;
-                  }
-
-                try
-                  {
-                    
-                    if (testName == null)
-                      testSuite.addTest(getTest(testCaseName));
-                    else
-                      {
-                        Class klass = loadSuiteClass(testCaseName);
-                        TestCase test = (TestCase) klass.newInstance();
-                        
-                        //Check if the method exists.
-                        klass.getMethod(testName, null);
-                        
-                        test.setName(testName);
-                        testSuite.addTest(test);
-                      }
-                  }
-                catch (NoSuchMethodException e)
-                {
-                  System.out.println("Couldn't find method with name: "
-                                     + testName);
-                }
-                catch (ClassNotFoundException e)
-                  {
-                    System.out.println("Couldn't find class with name: "
-                                       + testCaseName);
-                  }
-                catch (InstantiationException e)
-                  {
-                    System.out.println("Couldn't instantiate class with name: "
-                                       + testCaseName);
-                  }
-                catch (IllegalAccessException e)
-                  {
-                    System.out.println("Couldn't access class with name: "
-                                       + testCaseName);
-                  }
-
-              }
-          }
-      }
-	else {
+	if (otherArgs.size() > 0) {
+	    // Construct the testsuite from the list of names.
+	    Iterator iter = otherArgs.listIterator(0);
+	    while (iter.hasNext()) {
+		String arg = (String) iter.next();
+		if (arg.charAt(0) == '-') {
+		    this.repeatValue = - Integer.parseInt(arg);
+		} else {
+		    int lidot = arg.lastIndexOf('.');
+		    String testName = null;
+		    String testCaseName = null;
+		    if (arg.substring(lidot + 1).startsWith("test")) {
+			testCaseName = arg.substring(0, lidot);
+			testName = arg.substring(lidot + 1);
+		    } else if (arg.matches("test.*\\(.*\\)")) {
+			String[] testTuple = arg.split("[\\(\\)]");
+			testName = testTuple[0];
+			testCaseName = testTuple[1];
+		    } else {
+			testCaseName = arg;
+		    }
+		    
+		    try {
+			if (testName == null) {
+			    testSuite.addTest(getTest(testCaseName));
+			} else {
+			    Class klass = loadSuiteClass(testCaseName);
+			    TestCase test = (TestCase) klass.newInstance();
+			    
+			    //Check if the method exists.
+			    klass.getMethod(testName, null);
+			    
+			    test.setName(testName);
+			    testSuite.addTest(test);
+			}
+		    } catch (NoSuchMethodException e) {
+			System.out.println("Couldn't find method with name: "
+					   + testName);
+		    } catch (ClassNotFoundException e) {
+			System.out.println("Couldn't find class with name: "
+					   + testCaseName);
+		    } catch (InstantiationException e) {
+			System.out.println("Couldn't instantiate class with name: "
+					   + testCaseName);
+		    } catch (IllegalAccessException e) {
+			System.out.println("Couldn't access class with name: "
+					   + testCaseName);
+		    }
+		}
+	    }
+	} else {
 	    for (Iterator i = testClasses.iterator (); i.hasNext (); ) {
 		Class testClass = (Class) i.next ();
 		// Only include tests that gets by both filters.
@@ -189,34 +162,37 @@ public class Runner
 		    boolean addit = true;
 		    for (int j = 0; j < excludeTests.size(); j++) {
 			try {
-			    if (testClass.getName ().matches ((String)excludeTests.get (j))) {
+			    if (testClass.getName ()
+				.matches ((String)excludeTests.get (j))) {
 				addit = false;
 				break;
 			    }
-			}
-			catch (PatternSyntaxException p) {
+			} catch (PatternSyntaxException p) {
 			    System.out.println(p.getMessage());
 			}
 		    }
 		    if (!addit) {
 			for (int j = 0; j < includeTests.size(); j++) {
 			    try {
-				if (testClass.getName ().matches ((String)includeTests.get (j))) {
+				if (testClass.getName ()
+				    .matches ((String)includeTests.get (j))) {
 				    addit = true;
 				    break;
 				}
-			    }
-			    catch (PatternSyntaxException p) {
+			    } catch (PatternSyntaxException p) {
 				System.out.println(p.getMessage());
 			    }
 			}
 		    }
-		    if (addit) testSuite.addTest (new TestSuite (testClass));
-		    else System.out.println ("Omitting " + testClass.getName());
+		    if (addit) {
+			testSuite.addTest (new TestSuite (testClass));
+		    } else {
+			System.out.println ("Omitting " + testClass.getName());
+		    }
 		}
 	    }
 	}
-  
+	
 	if (listClassesOnly) {
 	    for (Enumeration e = testSuite.tests (); e.hasMoreElements (); ) {
 		Test test = (Test) e.nextElement ();
@@ -224,28 +200,21 @@ public class Runner
 	    }
 	    return SUCCESS_EXIT;
 	}
-
+	
 	// Run the TestSuite <<repeat>> times.
-	try
-	    {
-		for (int i = 0; i < this.repeatValue; i++)
-		    {
-			TestResult testResult = doRun (testSuite);
-              
-			if (!testResult.wasSuccessful()) 
-              {
-                System.out.println("Failed after run #" + i);
-			    return FAILURE_EXIT;
-              }
-		    }
+	try {
+	    for (int i = 0; i < this.repeatValue; i++) {
+		TestResult testResult = doRun (testSuite);
+		
+		if (!testResult.wasSuccessful()) {
+		    System.out.println("Failed after run #" + i);
+		    return FAILURE_EXIT;
+		}
 	    }
-	catch(Exception e)
-	    {
-		System.err.println(e.getMessage());
-          
-		return EXCEPTION_EXIT;
-	    }
-      
+	} catch(Exception e) {
+	    System.err.println(e.getMessage());
+	    return EXCEPTION_EXIT;
+	}
 	return SUCCESS_EXIT;      
     }
     
@@ -255,38 +224,35 @@ public class Runner
      * @param testClasses
      * @return int the value of exit.
      */
-    public int runArchCases (Collection testClasses)
-    {
+    public int runArchCases (Collection testClasses) {
 	// Check whether we should continue.
 	if (this.archTarget != null && !this.archTarget.equals(Runner.ARCH64))
 	    return SUCCESS_EXIT;
      
 	boolean testArch64 = Config.getWordSize () == 64;
       
-	if (this.archTarget != null && !testArch64)
-	    {
-		System.out.println ("Arch test is only supported on 64-bit"
-				    + " systems.");
-		System.out.println ("Please try without --arch option! Exit...");
-		System.exit (FAILURE_EXIT);
-	    }
+	if (this.archTarget != null && !testArch64) {
+	    System.out.println ("Arch test is only supported on 64-bit"
+				+ " systems.");
+	    System.out.println ("Please try without --arch option! Exit...");
+	    System.exit (FAILURE_EXIT);
+	}
  
 	return this.runCases(testClasses);
     }
     
     /**
-     * Run bi-arch test when the "-i" or "-b" option is given.
-     * When doing bi-arch test, all cases are the same as the 
-     * common test except for the execPrefix path. So after the 
-     * correct execPrefix is set before calling this function
-     * in frysk.junit.Paths, we do the same procedures as the doRunner().
+     * Run bi-arch test when the "-i" or "-b" option is given.  When
+     * doing bi-arch test, all cases are the same as the common test
+     * except for the execPrefix path. So after the correct execPrefix
+     * is set before calling this function in frysk.junit.Paths, we do
+     * the same procedures as the doRunner().
      * 
      * @param testClasses
      * @return
      * @see frysk.junit.Paths
      */
-    public int runArch32Cases(Collection testClasses)
-    {
+    public int runArch32Cases(Collection testClasses) {
 	//XXX: if all 32-bit cases pass, we should comment 
 	//the following instruction.
 	if (this.archTarget == null)
@@ -294,28 +260,27 @@ public class Runner
       
 	boolean testArch32 = Config.getWordSize () == 64;
 	  
-	if (!testArch32)
-	    {
-		System.out.println("It's unnecessary or unsupported"
-				   + " to do arch test on "
-				   + Config.getWordSize ()
-				   + " system.");
-		System.exit (FAILURE_EXIT);
-	    }
-	else if (!this.archTarget.equals(Runner.ARCH32))
+	if (!testArch32) {
+	    System.out.println("It's unnecessary or unsupported"
+			       + " to do arch test on "
+			       + Config.getWordSize ()
+			       + " system.");
+	    System.exit (FAILURE_EXIT);
+	}
+	if (!this.archTarget.equals(Runner.ARCH32)) {
 	    return SUCCESS_EXIT;
+	}
       
 	/**
 	 * Output some prompt message when we run both 64-bit and 32-bit cases.
 	 */
-	if (this.archTarget == null)
-	    {
-		System.out.println("+====================================================+");
-		System.out.println("|                                                    |");
-		System.out.println("|            The following is Biarch Test            |");
-		System.out.println("|                                                    |");
-		System.out.println("+====================================================+");
-	    }
+	if (this.archTarget == null) {
+	    System.out.println("+====================================================+");
+	    System.out.println("|                                                    |");
+	    System.out.println("|            The following is Biarch Test            |");
+	    System.out.println("|                                                    |");
+	    System.out.println("+====================================================+");
+	}
       
 	return this.runCases(testClasses);
     }
@@ -324,70 +289,54 @@ public class Runner
      * Create and return the command line parser used by frysk's JUnit
      * tests.
      */
-    private Parser createCommandLineParser (String programName)
-    {
+    private Parser createCommandLineParser (String programName) {
 	Parser parser = new Parser (programName, "1.0", true);
-
-    EventLogger.addConsoleOptions(parser);
+	
+	EventLogger.addConsoleOptions(parser);
+	
+	parser.add(new Option("unbreak", 'u', "Run broken tests") {
+		public void parsed (String arg) throws OptionException {
+		    skipUnresolvedTests = false;
+		}
+	    });
     
-    parser.add(new Option("unbreak", 'u', "Run broken tests")
-    {
-	public void parsed (String arg) throws OptionException
-	{
-	    skipUnresolvedTests = false;
-	}
-    });
-    
-    parser.add(new Option('c', "Shortcut for --console frysk=LEVEL.", "<LEVEL>")
-    {
-      public void parsed (String arg0) throws OptionException
-      {
-        Logger logger = LogManager.getLogManager().getLogger("frysk");
-
-        try
-          {
-            Level consoleLevel = Level.parse(arg0);
-            EventLogger.setConsoleLog(logger, consoleLevel);
-
-          }
-        catch (IllegalArgumentException e)
-          {
-            throw new OptionException("Invalid log console: " + arg0);
-          }
-      }
-
-    });
+	parser.add(new Option('c', "Shortcut for --console frysk=LEVEL.",
+			      "<LEVEL>") {
+		public void parsed (String arg0) throws OptionException {
+		    Logger logger = LogManager.getLogManager()
+			.getLogger("frysk");
+		    try {
+			Level consoleLevel = Level.parse(arg0);
+			EventLogger.setConsoleLog(logger, consoleLevel);
+			
+		    } catch (IllegalArgumentException e) {
+			throw new OptionException("Invalid log console: " + arg0);
+		    }
+		}
+	    });
 		
-    parser.add(new Option('l', "Shortcut for --log frysk=LEVEL", "<LEVEL>")
-    {
-      public void parsed (String arg0) throws OptionException
-      {
-        Logger logger = LogManager.getLogManager().getLogger("frysk");
-
-         try
-         {
-           Level level = Level.parse(arg0);
-           logger.setLevel(level);
-         }
-         catch (IllegalArgumentException e)
-         {
-           throw new OptionException ("Invalid log console: " + arg0);
-         }
-      }
-    });
+	parser.add(new Option('l', "Shortcut for --log frysk=LEVEL",
+			      "<LEVEL>") {
+		public void parsed (String arg0) throws OptionException {
+		    Logger logger = LogManager.getLogManager()
+			.getLogger("frysk");
+		    try {
+			Level level = Level.parse(arg0);
+			logger.setLevel(level);
+		    } catch (IllegalArgumentException e) {
+			throw new OptionException ("Invalid log console: " + arg0);
+		    }
+		}
+	    });
 	// Determine the number of times that the testsuite should be
 	// run.
 	parser.add (new Option ("repeat",  'r',
 				"Set the count of repeating the test.",
-				"<repeat-count>")
-	    {
-		public void parsed (String arg0)
-		    throws OptionException
-		{
+				"<repeat-count>") {
+		public void parsed (String arg0) throws OptionException {
 		    try {
 			repeatValue = Integer.parseInt (arg0);
-		    }
-		    catch (NumberFormatException e) {
+		    } catch (NumberFormatException e) {
 			throw new OptionException ("Argument: " + arg0
 						   + " was not a number");
 		    }
@@ -402,25 +351,21 @@ public class Runner
 				+ " arch-32 cases will be run when arch-32"
 				+ " is ready.  The --arch option will take"
 				+ " no effect on 32-bit machines.",
-				"<arch>")
-	    {
-		public void parsed (String arg0)
-		    throws OptionException
-		{
+				"<arch>") {
+		public void parsed (String arg0) throws OptionException {
 		    if (arg0.equals(Runner.ARCH32)
-			|| arg0.equals(Runner.ARCH64))
+			|| arg0.equals(Runner.ARCH64)) {
 			archTarget = arg0;
-		    else {
+		    } else {
 			throw new OptionException( "Invalid arch value: "
 						   + arg0);
 		    }
 		}
 	    });
-
+	
 	parser.add (new Option ("list-classes-only", 'n',
 				"Do not run any tests, instead list the"
-				+ " classes that would have been tested")
-	    {
+				+ " classes that would have been tested") {
 		public void parsed (String nullArgument)
 		    throws OptionException
 		{
@@ -430,19 +375,17 @@ public class Runner
 
 	parser.add (new Option ("stress",
 				"Run only stress tests "
-				+ "(by default stress tests are excluded).")
-	    {
+				+ "(by default stress tests are excluded).") {
 		public void parsed (String nullArgument)
 		    throws OptionException
 		{
 		    testFilter = "^(|.*)Stress.*$";
 		}
 	    });
-
+	
 	parser.add (new Option ("all",
 				"Run all tests "
-				+ "(by default stress tests are excluded).")
-	    {
+				+ "(by default stress tests are excluded).") {
 		public void parsed (String nullArgument)
 		    throws OptionException
 		{
@@ -457,14 +400,12 @@ public class Runner
 				+ " regex specification of a test to omit."
 				+ "  This option may be used multiple"
 				+ " times.",
-				"<test-spec>")
-	    {
-		public void parsed (String arg0)
-		{
+				"<test-spec>") {
+		public void parsed (String arg0) {
 		    excludeTests.add (arg0);
 		}
 	    });
-		
+
 	// Specify tests to include, overriding omit.
 	parser.add (new Option ("include",  'i',
 				"Specify a test to include, ovirriding an"
@@ -473,26 +414,22 @@ public class Runner
 				+ " regex specification of a test to include."
 				+ "  This option may be used multiple"
 				+ " times.",
-				"<test-spec>")
-	    {
-		public void parsed (String arg0)
-		{
+				"<test-spec>") {
+		public void parsed (String arg0) {
 		    includeTests.add (arg0);
 		}
 	    });
-    
-    parser.add(new Option ("timeout",
-			   "Specify a timeout (in seconds) to use for " +
-            "assertRunUntilStop", "<timeout>")
-            {
-              public void parsed (String arg0)
-              {
-		  int timeout = Integer.parseInt(arg0);
-		  TestCase.setTimeoutSeconds (timeout);
-		  Expect.setDefaultTimeoutSeconds (timeout);
-              }
+	
+	parser.add(new Option ("timeout",
+			       "Specify a timeout (in seconds) to use for " +
+			       "assertRunUntilStop", "<timeout>") {
+		public void parsed (String arg0) {
+		    int timeout = Integer.parseInt(arg0);
+		    TestCase.setTimeoutSeconds (timeout);
+		    Expect.setDefaultTimeoutSeconds (timeout);
+		}
             });
-
+	
 	parser.setHeader ("Usage:"
 			  + " [ --console <LOG=LEVEL> ]"
 			  + " [ --log <LOG=LEVEL> ]"
@@ -526,11 +463,10 @@ public class Runner
      * Create a JUnit TestRunner, using command-line arguments args,
      * and the supplied testClasses.
      */
-    public Runner (String programName, String[] args)
-    {
+    public Runner(String programName, String[] args) {
 	// Override the print methods.
 	super (new Results (System.out));
-
+	
 	// Tell expect the default timeout.
 	Expect.setDefaultTimeoutSeconds (TestCase.getTimeoutSeconds ());
 
@@ -540,32 +476,30 @@ public class Runner
 	programBasename = programName;
 	
 	otherArgs = new LinkedList();
-	    
-	parser.parse(args, new FileArgumentCallback()
-	    {
-		public void notifyFile(String arg) throws OptionException
-		{			
+	
+	parser.parse(args, new FileArgumentCallback() {
+		public void notifyFile(String arg) throws OptionException {
 		    otherArgs.add(arg);
 		}
-	    });	  
-
+	    });
+	
     }
 
     /**
      * Merge two TestRunner results returning the most fatal.
      */
-    private int worstResult (int lhs, int rhs)
-    {
-	if (lhs == SUCCESS_EXIT)
+    private int worstResult (int lhs, int rhs) {
+	if (lhs == SUCCESS_EXIT) {
 	    return rhs;
-	else if (lhs == FAILURE_EXIT) {
-	    if (rhs == SUCCESS_EXIT)
-		return FAILURE_EXIT;
-	    else
-		return rhs;
 	}
-	else
-	    return EXCEPTION_EXIT;
+	if (lhs == FAILURE_EXIT) {
+	    if (rhs == SUCCESS_EXIT) {
+		return FAILURE_EXIT;
+	    } else {
+		return rhs;
+	    }
+	}
+	return EXCEPTION_EXIT;
     }
 
     public int runTestCases (Collection tests, Config config,
@@ -595,13 +529,13 @@ public class Runner
      * while trying to avoid the compiler's optimizer realizing that
      * the rest of the function is dead.
      */
-    static boolean unresolved (int bug, boolean unresolved)
+    static boolean unresolved(int bug, boolean unresolved)
     {
 	if (skipUnresolvedTests) {
-	    if (unresolved)
+	    if (unresolved) {
 		Results.addUnresolved(bug);
-	}
-	else {
+	    }
+	} else {
 	    Results.addResolved(bug);
 	}
 	return skipUnresolvedTests && unresolved;
@@ -612,8 +546,9 @@ public class Runner
      */
     static boolean unsupported(String reason, boolean unsupported)
     {
-	if (unsupported)
+	if (unsupported) {
 	    Results.addUnsupported(reason);
+	}
 	// XXX: For moment do not enable unsupported tests when -u was
 	// specified as it seems to cause cascading problems.
 	return unsupported;
