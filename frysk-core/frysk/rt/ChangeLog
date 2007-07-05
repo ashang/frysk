@@ -1,3 +1,16 @@
+2007-07-05  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DisplayValueObserver.java (updateDisabled): Added.
+	* TestUpdatingDisplayValue.java: All tests whose daemons don't
+	terminate during the test now allow them to finish executing.
+	(testDisabled): Added checks for enabling when no change has
+	occured, and enabling when a change has occured.
+	(testEnabledExprUnavailable): Added.
+	(DisplayObserver): Refactored to reflect interface.
+	* UpdatingDisplayValue.java (disable): Now sets a flag.
+	(enable): Added.
+	(isEnabled): Added.
+
 2007-07-05  Tim Moore  <timoore@redhat.com>
 
 	* SteppingEngine.java (continueForStepping): Remove debugging cruft.

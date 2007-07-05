@@ -45,4 +45,6 @@ public interface DisplayValueObserver
   void updateUnavailbeResumedExecution(UpdatingDisplayValue value);
   void updateValueChanged(UpdatingDisplayValue value);
   void updateUnavailableOutOfScope(UpdatingDisplayValue value);
+  
+  void updateDisabled(UpdatingDisplayValue value);
 }

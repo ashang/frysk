@@ -130,6 +130,7 @@ public class DisplayCommand
           
           public void updateUnavailbeResumedExecution (UpdatingDisplayValue value) {}
           public void updateAvailableTaskStopped (UpdatingDisplayValue value) {}
+          public void updateDisabled(UpdatingDisplayValue value) {}
         });
       }
     

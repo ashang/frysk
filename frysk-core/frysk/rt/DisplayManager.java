@@ -96,7 +96,8 @@ public class DisplayManager {
     {
 	displays.remove(value);
 	value.disable();
-    }
+    }    
+    
 }
 
 /*

@@ -72,6 +72,8 @@ public class UpdatingDisplayValue
   private LockObserver lock;
   
   private TermObserver term;
+  
+  private boolean enabled;
 
   /**
    * Crate a new UpdatingDisplayValue
@@ -98,6 +100,8 @@ public class UpdatingDisplayValue
     task.requestAddTerminatedObserver(term);
     
     observers = new LinkedList();
+    
+    enabled = true;
   }
 
   /*
@@ -191,12 +195,42 @@ public class UpdatingDisplayValue
     return true;
   }
   
+  /**
+   * Disables the display, stopping all notification of changes to
+   * the underlying expression.
+   *
+   */
   public void disable()
   {
+      enabled = false;
       engine.removeObserver(lock, myTask.getProc(), true);
       myTask.requestDeleteTerminatedObserver(term);
   }
-
+  
+  /**
+   * Re-enables the display, resuming notification of events to all
+   * observers
+   *
+   */
+  public void enable()
+  {
+      enabled = true;
+      engine.addObserver(lock);
+      myTask.requestAddTerminatedObserver(term);
+      refresh();
+  }
+  
+  /**
+   * Check if this display is enabled or not. A disabled display will not 
+   * send any notifications regarding changes to the value of the watched
+   * expression.
+   * 
+   * @return True iff this display is enabled, false otherwise
+   */
+  public boolean isEnabled() {
+      return enabled;
+  }
+  
   /*
    * Called when we wish to notify the observers that there has been a change in
    * the watched value, should be called automatically at the end of a refresh()

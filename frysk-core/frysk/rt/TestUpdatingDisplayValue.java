@@ -117,6 +117,8 @@ public class TestUpdatingDisplayValue extends TestLib
     
     assertTrue("Observer was not notified of a stop", obs.hitStopped);
     assertFalse("Observer was notified of a variable change", obs.hitChanged);
+    
+    steppingEngine.continueExecution(list);
   }
   
   /*
@@ -168,6 +170,8 @@ public class TestUpdatingDisplayValue extends TestLib
     
     assertTrue("Value did not change", oldValue != uDisp.getValue().getInt());
     assertTrue("Observer was not notified of a value change", obs.hitChanged);
+    
+    steppingEngine.continueExecution(list);
   }
   
   /*
@@ -219,6 +223,8 @@ public class TestUpdatingDisplayValue extends TestLib
     
     assertTrue("Observer was not notified", obs.hitOutOfScope);
     assertFalse("Display is available", uDisp.isAvailable());
+    
+    steppingEngine.continueExecution(list);
   }
   
   public void testExceptionThrown()
@@ -240,7 +246,7 @@ public class TestUpdatingDisplayValue extends TestLib
      */
     LineBreakpoint brk1 = 
       bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varlongjmp.c",
-                                 61, 0);
+                                 60, 0);
     brk1.addObserver(new BreakpointBlocker());
     bpManager.enableBreakpoint(brk1, myTask);
     
@@ -275,6 +281,8 @@ public class TestUpdatingDisplayValue extends TestLib
     
     assertTrue("Observer was not notified", obs.hitOutOfScope);
     assertFalse("Display is available", uDisp.isAvailable());
+    
+    steppingEngine.continueExecution(list);
   }
   
   /*
@@ -331,6 +339,9 @@ public class TestUpdatingDisplayValue extends TestLib
       assertFalse("Display is available", uDisp.isAvailable());
   }
   
+  /*
+   * Test disabling/re-enabling display values
+   */
   public void testDisabled()
   {
       BreakpointManager bpManager = createDaemon("funit-rt-varchange");
@@ -358,6 +369,12 @@ public class TestUpdatingDisplayValue extends TestLib
       uDisp.addObserver(obs);
       // This should prevent us from seeing any events
       uDisp.disable();
+      assertTrue("Display was not disabled", !uDisp.isEnabled());
+      
+      // Enabling when the value has not changed should not trigger an update
+      uDisp.enable();
+      assertTrue("Display should not have changed", !obs.hitChanged);
+      uDisp.disable();
       
       /*
        * Second breakpoint
@@ -369,12 +386,77 @@ public class TestUpdatingDisplayValue extends TestLib
       bpManager.enableBreakpoint(brk2, myTask);
       
       // Run until we hit the second breakpoint
+      steppingEngine.continueExecution(list);
+      assertRunUntilStop("Second breakpoint");
+      
+      // We should not recieve an update while it is disabled
+      assertTrue("Observer was notified of a value change", !obs.hitChanged);
+      
+      // Enabling when the value has changed should trigger an update
+      uDisp.enable();
+      assertTrue("Observer was not notified of a value change", obs.hitChanged);
+      
+      steppingEngine.continueExecution(list);
+  }
+  
+  /*
+   * Test re-enabling a display when the variable has passed out of scope
+   */
+  public void testEnabledExprUnavailable()
+  {
+      BreakpointManager bpManager = createDaemon("funit-rt-varchange");
+      
+      /*
+       * First breakpoint
+       */
+      LineBreakpoint brk1 = 
+        bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
+                                   63, 0);
+      brk1.addObserver(new BreakpointBlocker());
+      bpManager.enableBreakpoint(brk1, myTask);
+      
+      LinkedList list = new LinkedList();
+      list.add(myTask);
+      steppingEngine.continueExecution(list);
+      process.resume();
+      assertRunUntilStop("First breakpoint");
+      
+      UpdatingDisplayValue uDisp = DisplayManager.createDisplay(
+  	    myTask, StackFactory.createFrame(myTask).getFrameIdentifier(),
+  	    steppingEngine, "x");
+      
+      DisplayObserver obs = new DisplayObserver();
+      uDisp.addObserver(obs);
+      assertTrue("Display is not available", uDisp.isAvailable());
+      
+      uDisp.disable();
+      
+      /*
+       * Second breakpoint
+       */
+      LineBreakpoint brk2 =
+        bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
+                                    49, 0);
+      brk2.addObserver(new BreakpointBlocker());
+      brk2.enableBreakpoint(myTask, steppingEngine);
+      
+      // Run until we hit the second breakpoint
       list = new LinkedList();
       list.add(myTask);
       steppingEngine.continueExecution(list);
       assertRunUntilStop("Second breakpoint");
       
-      assertTrue("Observer was notified of a value change", !obs.hitChanged);
+      /*
+       * We should not be notified of out of scope events while the
+       * display is disabled
+       */
+      assertTrue("Observer was notified", !obs.hitOutOfScope);
+      
+      // Renabling it should trigger the OOS event
+      uDisp.enable();
+      assertTrue("Observer was not notified", obs.hitOutOfScope);
+      
+      steppingEngine.continueExecution(list);
   }
   
   private BreakpointManager createDaemon(String program)
@@ -461,6 +543,8 @@ public class TestUpdatingDisplayValue extends TestLib
       assertNotNull("DisplayValue passed to the observer", value);
       hitOutOfScope = true;
     }
+
+    public void updateDisabled(UpdatingDisplayValue value) {}
     
   }
 }
