@@ -129,7 +129,7 @@ public class TestTaskSyscallObserver
   public void testExecSyscall ()
   {
 
-    if (brokenXXX(3244))
+    if (unresolved(3244))
       return;
 
     // Create an unattached child process.
@@ -157,10 +157,6 @@ public class TestTaskSyscallObserver
    */
   public void testForkSyscall ()
   {
-
-    // if (brokenXXX (2245))
-    // return;
-    //        
     // Create an unattached child process.
     AckProcess child = new DetachedAckProcess();
 
@@ -329,8 +325,7 @@ public class TestTaskSyscallObserver
 
   public void testCreateAttachedAddSyscallObserver ()
   {
-
-    if (brokenXXX(2915))
+    if (unresolved(2915))
       return;
 
     int count = 5;
@@ -357,7 +352,7 @@ public class TestTaskSyscallObserver
    */
   public void testSyscalls ()
   {
-    // if (brokenXXX (2245))
+    // if (unresolved (2245))
     // return;
 
     // Create program making syscalls
@@ -458,7 +453,7 @@ public class TestTaskSyscallObserver
   public void testSyscallOpen ()
   {
 
-    // if (brokenXXX (2245))
+    // if (unresolved (2245))
     // return;
 
     // Create program making syscalls
@@ -657,7 +652,7 @@ public class TestTaskSyscallObserver
    */
   public void testSyscallInterrupt ()
   {
-    // if (brokenXXX (2245))
+    // if (unresolved (2245))
     // return;
     PipeReadChild prc = new PipeReadChild(false);
 
@@ -677,8 +672,6 @@ public class TestTaskSyscallObserver
    */
   public void testSyscallInterruptRestart ()
   {
-    // if (brokenXXX (2245))
-    // return;
     PipeReadChild prc = new PipeReadChild(true);
 
     TestSyscallInterruptXXX t = new TestSyscallInterruptXXX(prc.getPid());

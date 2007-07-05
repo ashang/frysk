@@ -111,7 +111,7 @@ public class TestStepping extends TestLib
   
   public void testLineStepFunctionCall ()
   {
-    if (brokenPpcXXX (3277))
+    if (unresolvedOnPPC(3277))
       return;
     
     initial = true;
@@ -145,7 +145,7 @@ public class TestStepping extends TestLib
   
   public void testLineStepIfStatementPass ()
   {
-    if (brokenPpcXXX (3277))
+    if (unresolvedOnPPC(3277))
       return;
     
     initial = true;
@@ -180,7 +180,7 @@ public class TestStepping extends TestLib
   
   public void testLineStepIfStatementFail ()
   {
-    if (brokenPpcXXX (3277))
+    if (unresolvedOnPPC(3277))
       return;
     
     initial = true;
@@ -215,7 +215,7 @@ public class TestStepping extends TestLib
   
   public void testLineStepFunctionReturn ()
   {
-    if (brokenPpcXXX (3277))
+    if (unresolvedOnPPC(3277))
       return;
     
     initial = true;
@@ -251,7 +251,7 @@ public class TestStepping extends TestLib
   public void testASMSingleStep ()
   {
     
-    if (brokenPpcXXX (3277))
+    if (unresolvedOnPPC(3277))
       return;
     
     initial = true;
@@ -277,7 +277,7 @@ public class TestStepping extends TestLib
   public void testASMMultiStep ()
   {
     
-    if (brokenPpcXXX (3277))
+    if (unresolvedOnPPC(3277))
       return;
     
     initial = true;
@@ -305,7 +305,7 @@ public class TestStepping extends TestLib
   public void testASMJump ()
   {
     
-    if (brokenPpcXXX (3277))
+    if (unresolvedOnPPC(3277))
       return;
     
     initial = true;
@@ -330,10 +330,10 @@ public class TestStepping extends TestLib
   
   public void testASMFunctionEntry ()
   {
-    if (brokenPpcXXX (3277))
+    if (unresolvedOnPPC(3277))
       return;
     
-    if (brokenXXX(4711))
+    if (unresolved(4711))
 	return;
     
     initial = true;
@@ -359,10 +359,10 @@ public class TestStepping extends TestLib
   
   public void testASMFunctionReturn ()
   {
-    if (brokenPpcXXX (3277))
+    if (unresolvedOnPPC(3277))
       return;
     
-    if (brokenXXX(4711))
+    if (unresolved(4711))
 	return;
     
     initial = true;
@@ -388,10 +388,10 @@ public class TestStepping extends TestLib
   
   public void testASMFunctionStepOver ()
   {
-    if (brokenPpcXXX (3277))
+    if (unresolvedOnPPC(3277))
       return;
     
-    if (brokenXXX(4711))
+    if (unresolved(4711))
 	return;
     
     initial = true;
@@ -417,10 +417,10 @@ public class TestStepping extends TestLib
   
   public void testASMFunctionStepOut ()
   {
-    if (brokenPpcXXX (3277))
+    if (unresolvedOnPPC(3277))
       return;
     
-    if (brokenXXX(4711))
+    if (unresolved(4711))
 	return;
     
     initial = true;
@@ -446,9 +446,9 @@ public class TestStepping extends TestLib
   
   public void testStepSigLongJmp ()
   {
-    if (brokenPpcXXX (3277))
+    if (unresolvedOnPPC(3277))
       return;
-    if (brokenXXX(4289))
+    if (unresolved(4289))
     	return;
     
     initial = true;
@@ -483,7 +483,7 @@ public class TestStepping extends TestLib
   
   public void testStepGoto ()
   {
-    if (brokenPpcXXX (3277))
+    if (unresolvedOnPPC(3277))
       return;
     
     initial = true;
@@ -518,10 +518,9 @@ public class TestStepping extends TestLib
   
   public void testStepSigRaise ()
   {
-    if (brokenXXX(4237))
+    if (unresolvedOnPPC(3277))
       return;
-    
-    if (brokenPpcXXX (3277))
+    if (unresolved(4237))
       return;
     
     initial = true;

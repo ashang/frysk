@@ -196,7 +196,7 @@ public class TestMemory
 	
     public void testMemoryReadWrite ()
     {
-	if (brokenXXX (3725))
+	if (unresolved(3725))
 	    return;
 	TestModifyXXX t = new TestModifyXXX ();
 	// Create program making syscalls

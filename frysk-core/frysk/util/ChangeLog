@@ -1,3 +1,7 @@
+2007-07-04  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFStack.java: Replace brokenXXX with unresolved.
+
 2007-07-03  Petr Machata  <pmachata@redhat.com>
 
 	* Ftrace.java (addTracePid): take ProcId argument instead of int,

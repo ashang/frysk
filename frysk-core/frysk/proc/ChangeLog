@@ -1,5 +1,13 @@
 2007-07-04  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskSyscallObserver.java: Replace brokenXXX with unresolved.
+	* StressAttachDetachRapidlyForkingMainTask.java: Ditto.
+	* StressAttachDetachSignaledTask.java: Ditto.
+	* StressAttachDetachRapidlyCloningMainTask.java: Ditto.
+	* TestProcStopped.java: Replace brokenIfUtraceXXX with
+	unresolvedOnUtrace.
+	* TestTaskObserver.java: Ditto.
+
 	* TestTaskTerminateObserver.java (check): Remove brokenIfUtraceXXX
 	check for bug 3489.
 	(testTerminateKillKILL, testTerminatingKillKILL): Delete.

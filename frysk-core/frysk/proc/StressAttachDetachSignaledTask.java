@@ -107,7 +107,7 @@ public class StressAttachDetachSignaledTask
      */
     public void testForking ()
     {
-	if (brokenXXX (2952))
+	if (unresolved(2952))
 	    return;
 	new Spawn ()
 	{
@@ -131,7 +131,7 @@ public class StressAttachDetachSignaledTask
      */
     public void testCloning ()
     {
-	if (brokenXXX (2953))
+	if (unresolved(2953))
 	    return;
 	new Spawn ()
 	{

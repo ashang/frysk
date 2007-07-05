@@ -83,7 +83,7 @@ public class TestParser
     {
 	// XXX: The current problem is that the relevant paths are
 	// pointing into the build tree.
-	if (brokenXXX (3841))
+	if (unresolved(3841))
 	  return;
 
 	String IMAGE_FILENAME = "Task 28428";

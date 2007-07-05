@@ -123,7 +123,7 @@ public class TestFStack
   
   public void testCore ()
   {
-    if (brokenXXX(4581))
+    if (unresolved(4581))
       return;
     
     Host coreHost = new LinuxHost(Manager.eventLoop,

@@ -85,12 +85,11 @@ public class TestStackBacktrace
 
   public void testBacktrace ()
   {
-    if (brokenXXX (4468))
-      return;
-    
     // Backtraces only work on x86 and x86_64 for now.
-    if (brokenPpcXXX (3277))
+    if (unresolvedOnPPC(3277))
 	return;
+    if (unresolved(4468))
+      return;
     
     test = 1;
 
@@ -211,7 +210,7 @@ public class TestStackBacktrace
   public synchronized void testThreadedBacktrace ()
   {
       // Backtraces only work on x86 and x86_64 for now.
-      if (brokenPpcXXX (3277))
+      if (unresolvedOnPPC(3277))
 	  return;
 
       test = 2;
@@ -254,11 +253,11 @@ public class TestStackBacktrace
   public void testFramePushing ()
   {
 
-    if (brokenPpcXXX (3277))
+    if (unresolvedOnPPC(3277))
       return;
     
     /* Only applies to i386 */
-    if (brokenXXX(4059))
+    if (unresolved(4059))
       return;
   
   initial = true;
@@ -294,11 +293,11 @@ public class TestStackBacktrace
   public void testFramePopping ()
   {
 
-    if (brokenPpcXXX (3277))
+    if (unresolvedOnPPC(3277))
       return;
     
     /* Only applies to i386 */
-    if (brokenXXX(4059))
+    if (unresolved(4059))
       return;
   
   initial = true;

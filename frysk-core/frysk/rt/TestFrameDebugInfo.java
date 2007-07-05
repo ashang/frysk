@@ -82,7 +82,7 @@ public class TestFrameDebugInfo
 
   public void testFrameAdjustedAddress ()
   {
-    if(brokenXXX(4676))
+    if(unresolved(4676))
         return;
 
     Task task = getStoppedTask("funit-stacks-exit");
@@ -103,7 +103,7 @@ public class TestFrameDebugInfo
   
   public void testFrameScopes ()
   {
-    if(brokenXXX(4677))
+    if(unresolved(4677))
         return;
 
     Task task = getStoppedTask("funit-scopes");
@@ -124,11 +124,6 @@ public class TestFrameDebugInfo
   
   public void testValues() throws NameNotFoundException
   {
-      
-      if(brokenX86XXX(4699)){
-	  return;
-      }
-      
     Task task = getStoppedTask("funit-stacks-values");
     Subprogram subprogram;
     Frame frame;

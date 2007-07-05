@@ -79,45 +79,33 @@ public class TestCase
     }
 
     /**
-     * A method that returns true, and prints skip.  Used by test
-     * cases that want to be skipped (vis: if (broken()) return) while
-     * trying to avoid the compiler's optimizer realizing that the
-     * rest of the function is dead.
+     * The test has problems that have not been resolved on all
+     * systems; see BUG for more details.  Return true and report
+     * UNRESOLVED when called.
      */
-    protected static boolean brokenXXX (int bug) {
+    protected static boolean unresolved(int bug) {
 	return Runner.unresolved(bug, true);
     }
 
     /**
-     * A method that returns true, and prints skip, when the build
-     * architecture is PowerPC.
+     * The test has problems that have not been resolved on a PPC
+     * system; see BUG for more details.  Return true and report
+     * UNRESOLVED when running on a PowerPC.
      */
-    protected static boolean brokenPpcXXX (int bug) {
-	return Runner.unresolved(bug, Config.getTargetCpuXXX ().indexOf ("powerpc") != - 1);
+    protected static boolean unresolvedOnPPC (int bug) {
+	return Runner.unresolved(bug, Config.getTargetCpuXXX ()
+				 .indexOf ("powerpc") != - 1);
     }
 
-    /**
-     * A method that returns true, and prints skip, when the build
-     * architecture is X86_64.
-     */
-    protected static boolean brokenX8664XXX (int bug) {
-	return Runner.unresolved(bug, Config.getTargetCpuXXX ().indexOf ("_64") != - 1);
-    }
-  
-    /**
-     * A method that returns true, and prints skip, when the build
-     * architecture is X86_64.
-     */
-    protected static boolean brokenX86XXX (int bug) {
-	return Runner.unresolved(bug, Config.getTargetCpuXXX ().equals("x86"));
-    }
+    // XXX: Are 32-bit and/or 64-bit needed?  Are I386 and X8664
+    // needed?
 
     /**
      * Results from uname(2) call.
      */
     private static Uname uname;
     private static KernelVersion version;
-    protected static boolean brokenIfKernelXXX(int bug, KernelMatch matcher) {
+    private static boolean unresolvedOn(int bug, KernelMatch matcher) {
 	if (uname == null) {
 	    uname = Uname.get ();
 	}
@@ -131,8 +119,8 @@ public class TestCase
      * A method that returns true, and prints UNRESOLVED, when the
      * build kernel includes UTRACE.
      */
-    protected static boolean brokenIfUtraceXXX (int bug) {
-	return brokenIfKernelXXX(bug, new KernelMatch() {
+    protected static boolean unresolvedOnUtrace(int bug) {
+	return unresolvedOn(bug, new KernelMatch() {
 		public boolean matches(KernelVersion version) {
 		    if (version.isFedora() && version.getFedoraRelease() > 5) {
 			return true;

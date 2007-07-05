@@ -1,5 +1,12 @@
 2007-07-04  Andrew Cagney  <cagney@redhat.com>
 
+	* TestCase.java (unresolvedOnPPC): Rename brokenPpcXXX.
+	(brokenX8684XXX): Delete.
+	(brokenX86XXX): Delete.
+	(unresolvedOn): Rename brokenIfKernelXXX; make private.
+	(unresolvedOnUtrace): Rename brokenIfUtraceXXX.
+	(unresolved): Rename brokenXXX.
+
 	* TestCase.java: Re-indent.
 
 	* TestCase.java (brokenIfKernelXXX(int,String[])): Delete.

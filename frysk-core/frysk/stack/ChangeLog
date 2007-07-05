@@ -1,3 +1,7 @@
+2007-07-04  Andrew Cagney  <cagney@redhat.com>
+
+	* TestStackBacktrace.java: Replace brokenXXX with unresolved.
+
 2007-07-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* StackFactory.java (printRichStackTrace): Added printing of library/excutable

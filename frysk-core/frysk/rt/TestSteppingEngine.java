@@ -101,7 +101,7 @@ public class TestSteppingEngine extends TestLib
   
   public void testInstructionStepping ()
   {
-      if (brokenPpcXXX (3277))
+      if (unresolvedOnPPC(3277))
 	  return;
     
     initial = true;
@@ -133,7 +133,7 @@ public class TestSteppingEngine extends TestLib
   
   public void testInstructionSteppingList ()
   {
-      if (brokenPpcXXX (3277))
+      if (unresolvedOnPPC(3277))
 	  return;
 
     initial = true;
@@ -167,7 +167,7 @@ public class TestSteppingEngine extends TestLib
   
   public void testLineStepping ()
   {
-      if (brokenPpcXXX (3277))
+      if (unresolvedOnPPC(3277))
 	  return;
 
     initial = true;
@@ -201,7 +201,7 @@ public class TestSteppingEngine extends TestLib
   
   public void testLineSteppingList ()
   {
-      if (brokenPpcXXX (3277))
+      if (unresolvedOnPPC(3277))
 	  return;
 
     initial = true;
@@ -235,7 +235,7 @@ public class TestSteppingEngine extends TestLib
   
   public void testStepOver ()
   {
-      if (brokenPpcXXX (3277))
+      if (unresolvedOnPPC(3277))
       return;
 
     initial = true;
@@ -267,7 +267,7 @@ public class TestSteppingEngine extends TestLib
   
   public void testInstructionNext ()
   {
-      if (brokenPpcXXX (3277))
+      if (unresolvedOnPPC(3277))
       return;
 
     initial = true;
@@ -301,7 +301,7 @@ public class TestSteppingEngine extends TestLib
   
   public void testStepOut ()
   {
-      if (brokenPpcXXX (3277))
+      if (unresolvedOnPPC(3277))
       return;
 
     initial = true;
@@ -333,7 +333,7 @@ public class TestSteppingEngine extends TestLib
   
   public void testStepAdvance ()
   {
-      if (brokenPpcXXX (3277))
+      if (unresolvedOnPPC(3277))
       return;
 
     initial = true;

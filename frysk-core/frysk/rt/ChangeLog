@@ -1,5 +1,12 @@
 2007-07-04  Andrew Cagney  <cagney@redhat.com>
 
+	* TestUpdatingDisplayValue.java: Replace brokenXXX with
+	unresolved.
+	* TestSteppingEngine.java: Replace brokenIfPpcXXX with
+	unresolvedOnPPC.
+	* TestStepping.java: Ditto.
+	* TestFrameDebugInfo.java: Delete call to brokenX86XXX.
+
 	* TestStepping.java (testStepSigLongJmp): Delete redundant
 	brokenIfKernel when FC-5 for bug 4289.
 

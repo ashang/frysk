@@ -223,7 +223,7 @@ public class TestUpdatingDisplayValue extends TestLib
   
   public void testExceptionThrown()
   {
-    if(brokenXXX(4639))
+    if(unresolved(4639))
       return;
   }
   
