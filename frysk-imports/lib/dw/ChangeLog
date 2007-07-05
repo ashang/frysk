@@ -1,3 +1,10 @@
+2007-07-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* cni/DwarfDie.cxx (get_scopes_die): new function.
+	* DwarfDie.java (getScopes): Extened javadoc.
+	(getScopesDie): New function.
+	Added new native function get_scopes_die.
+
 2007-07-03  Andrew Cagney  <cagney@redhat.com>
 
 	* NoDebugInfoException.java: Delete.

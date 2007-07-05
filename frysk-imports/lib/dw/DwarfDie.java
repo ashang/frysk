@@ -40,6 +40,8 @@
 
 package lib.dw;
 
+import gnu.java.security.action.GetSecurityPropertyAction;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,13 +110,35 @@ abstract public class DwarfDie
   }
   
   /**
-   * 
+   * This function assumes that this die is a one corresponding
+   * to a Compilation Unit Die.
+   * It will return the scopes containing the give address which
+   * fall within this Compilation Unit Die.
+   * @see getScopesDie
    * @param addr PC address.
    * @return Scope DwarfDies containing addr.
    */
   public DwarfDie[] getScopes (long addr)
   {
     long[] vals = get_scopes(addr);
+    DwarfDie[] dies = new DwarfDie[vals.length];
+    DwarfDieFactory factory = DwarfDieFactory.getFactory();
+    for(int i = 0; i < vals.length; i++)
+      if(vals[i] != 0)
+        dies[i] = factory.makeDie(vals[i], this.parent);
+      else
+        dies[i] = null;
+
+    return dies;
+  }
+  
+  /**
+   * Return the scopes containing this die.
+   * @return Scope DwarfDies containing this die.
+   */
+  public DwarfDie[] getScopesDie ()
+  {
+    long[] vals = get_scopes_die();
     DwarfDie[] dies = new DwarfDie[vals.length];
     DwarfDieFactory factory = DwarfDieFactory.getFactory();
     for(int i = 0; i < vals.length; i++)
@@ -314,7 +338,7 @@ abstract public class DwarfDie
   public List getFrameBase (long pc)
   {
       if(this.scopes == null){
-	  this.scopes = this.getScopes(pc);
+	  this.scopes = this.getScopesDie();
       }
       
     DwarfOps = new ArrayList();
@@ -435,6 +459,8 @@ abstract public class DwarfDie
   private native int get_decl_column (long var_die);
   
   private native long[] get_scopes (long addr);
+
+  private native long[] get_scopes_die ();
 
   private native long get_scopevar (long[] die_scope, long[] scopes, String variable);
 
