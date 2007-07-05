@@ -42,9 +42,46 @@
 
 #ifdef __x86_64__
 
+#define MAIN_FFIL \
+.LFB7:				 ; \
+	PUSH_BASEP 		 ; \
+.LCFI4: 			 ; \
+	MOV_STACKP		 ; \
+.LCFI5:				 ; \
+	subq	$16, STACKP	 ; \
+.LCFI6:				 ; \
+	movl	%edi, -4(BASEP)	 ; \
+	movq	REG3, -16(BASEP) ; \
+	movl	$0, %eax	 ; \
+	CALL	(first)		 ; \
+	EXIT
+
+#elif defined __i386__
+#define MAIN_FFIL \
+.LFB7:				; \
+	leal	4(%esp), %ecx	; \
+.LCFI4:				; \
+	andl	$-16, %esp	; \
+	pushl	-4(%ecx)	; \
+.LCFI5:				; \
+	PUSH_BASEP 		; \
+.LCFI6:				; \
+	MOV_STACKP		; \
+.LCFI7:				; \
+	pushl	%ecx		; \
+.LCFI8:				; \
+	CALL	(first)		; \
+	POP	(%ecx)		; \
+	POP	(%ebp)		; \
+	leal	-4(%ecx), %esp	; \
+	ret
+	
+	
+#endif
+
 .globl second
 	.type	second, @function
- second:
+second:
 .LFB5:
 	PUSH_BASEP
 .LCFI0:
@@ -53,7 +90,7 @@
 	NO_OP
 	NO_OP
 	NO_OP	;  NO_OP ; NO_OP
-	LEAVE
+	EXIT
 .LFE5:
 	.size	second, .-second
 .globl first
@@ -71,29 +108,21 @@ first:
 	JUMP	(.L4)
 .L5:	
 	NO_OP
-	CALL	(second@PLT) #x86_64_func_entry_test
-.L4:	
+	CALL	(second)
+.L4:
 	NO_OP
 	NO_OP
 	JUMP	(.L5)
-	LEAVE
+	EXIT
 .LFE6:
 	.size	first, .-first
 .globl main
 	.type	main, @function
 main:
-.LFB7:
-	PUSH_BASEP
-.LCFI4:
-	MOV_STACKP
-.LCFI5:
-	subq	$16, STACKP
-.LCFI6:
-	movl	%edi, -4(BASEP)
-	movq	REG3, -16(BASEP)
-	movl	$0, %eax
-	CALL	(first@PLT)
-	LEAVE
+	MAIN_FFIL
+
+#ifdef __x86_64__
+	
 .LFE7:
 	.size	main, .-main
 	.section	.eh_frame,"a",@progbits
@@ -176,63 +205,6 @@ main:
 	.section	.note.GNU-stack,"",@progbits
 	
 #elif defined __i386__
-
-.globl second
-	.type	second, @function
-second:
-.LFB5:
-	PUSH_BASEP
-.LCFI0:
-	MOV_STACKP
-.LCFI1:
-	NO_OP
-	NO_OP
-	NO_OP
-.L2:
-	NO_OP
-	NO_OP
-	JUMP	(.L2)
-	EXIT
-.LFE5:
-	.size	second, .-second
-.globl first
-	.type	first, @function
-first:
-.LFB6:
-	PUSH_BASEP
-.LCFI2:
-	MOV_STACKP
-.LCFI3:
-	NO_OP
-	NO_OP
-.L3:	
-	NO_OP
-	CALL	(second)
-	NO_OP
-	JUMP	(.L3)
-	EXIT
-.LFE6:
-	.size	first, .-first
-.globl main
-	.type	main, @function
-main:
-.LFB7:
-	leal	4(%esp), %ecx
-.LCFI4:
-	andl	$-16, %esp
-	pushl	-4(%ecx)
-.LCFI5:
-	PUSH_BASEP
-.LCFI6:
-	MOV_STACKP
-.LCFI7:
-	pushl	%ecx
-.LCFI8:
-	CALL	(first)
-	POP	(%ecx)
-	POP	(%ebp)
-	leal	-4(%ecx), %esp
-	ret
 .LFE7:
 	.size	main, .-main
 	.section	.eh_frame,"a",@progbits
@@ -325,7 +297,6 @@ main:
 .LEFDE5:
 	.ident	"GCC: (GNU) 4.1.2 20070502 (Red Hat 4.1.2-12)"
 	.section	.note.GNU-stack,"",@progbits	
-
 
 #else
 

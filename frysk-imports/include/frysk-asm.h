@@ -150,7 +150,7 @@
 #ifdef __i386__
 #define EXIT popl %ebp ; ret
 #elif defined __x86_64__
-#define EXIT ret
+#define EXIT leave; ret
 #elif defined __powerpc__
 #define EXIT \
 	lwz  REG4, 24(31) ; \
