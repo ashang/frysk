@@ -53,8 +53,7 @@ public class TestCase
     /**
      * Set the second-timeout.
      */
-    static void setTimeoutSeconds (int timeoutSeconds)
-    {
+    static void setTimeoutSeconds (int timeoutSeconds) {
 	TestCase.timeoutSeconds = timeoutSeconds;
     }
     static private int timeoutSeconds = 5;
@@ -62,23 +61,20 @@ public class TestCase
     /**
      * A second timeout.
      */
-    public static int getTimeoutSeconds ()
-    {
+    public static int getTimeoutSeconds () {
 	return timeoutSeconds;
     }
     /**
      * A milli-second timeout.
      */
-    public static long getTimeoutMilliseconds ()
-    {
+    public static long getTimeoutMilliseconds () {
 	return timeoutSeconds * 1000;
     }
 
     /**
      * A method that returns true, and reports UNSUPPORTED.
      */
-    protected static boolean unsupported(String reason, boolean notSupported)
-    {
+    protected static boolean unsupported(String reason, boolean notSupported) {
 	return Runner.unsupported(reason, notSupported);
     }
 
@@ -88,62 +84,56 @@ public class TestCase
      * trying to avoid the compiler's optimizer realizing that the
      * rest of the function is dead.
      */
-    protected static boolean brokenXXX (int bug)
-    {
+    protected static boolean brokenXXX (int bug) {
 	return Runner.unresolved(bug, true);
     }
 
-  /**
-   * A method that returns true, and prints skip, when the build
-   * architecture is PowerPC.
-   */
-  protected static boolean brokenPpcXXX (int bug)
-  {
-      return Runner.unresolved(bug, Config.getTargetCpuXXX ().indexOf ("powerpc") != - 1);
-  }
+    /**
+     * A method that returns true, and prints skip, when the build
+     * architecture is PowerPC.
+     */
+    protected static boolean brokenPpcXXX (int bug) {
+	return Runner.unresolved(bug, Config.getTargetCpuXXX ().indexOf ("powerpc") != - 1);
+    }
 
-  /**
-   * A method that returns true, and prints skip, when the build
-   * architecture is X86_64.
-   */
-  protected static boolean brokenX8664XXX (int bug)
-  {
-      return Runner.unresolved(bug, Config.getTargetCpuXXX ().indexOf ("_64") != - 1);
-  }
+    /**
+     * A method that returns true, and prints skip, when the build
+     * architecture is X86_64.
+     */
+    protected static boolean brokenX8664XXX (int bug) {
+	return Runner.unresolved(bug, Config.getTargetCpuXXX ().indexOf ("_64") != - 1);
+    }
   
-  /**
-   * A method that returns true, and prints skip, when the build
-   * architecture is X86_64.
-   */
-  protected static boolean brokenX86XXX (int bug)
-  {
-      return Runner.unresolved(bug, Config.getTargetCpuXXX ().equals("x86") == true);
-  }
+    /**
+     * A method that returns true, and prints skip, when the build
+     * architecture is X86_64.
+     */
+    protected static boolean brokenX86XXX (int bug) {
+	return Runner.unresolved(bug, Config.getTargetCpuXXX ().equals("x86"));
+    }
 
     /**
      * Results from uname(2) call.
      */
-  private static Uname uname;
-  private static KernelVersion version;
-    protected static boolean brokenIfKernelXXX(int bug, KernelMatch matcher)
-    {
-	if (uname == null)
+    private static Uname uname;
+    private static KernelVersion version;
+    protected static boolean brokenIfKernelXXX(int bug, KernelMatch matcher) {
+	if (uname == null) {
 	    uname = Uname.get ();
-	if (version == null)
+	}
+	if (version == null) {
 	    version = new KernelVersion(uname.getRelease());
+	}
 	return Runner.unresolved(bug, matcher.matches(version));
     }
     
     /**
-     * A method that returns true, and prints broken, when the build
-     * kernel includes UTRACE.
+     * A method that returns true, and prints UNRESOLVED, when the
+     * build kernel includes UTRACE.
      */
-    protected static boolean brokenIfUtraceXXX (int bug)
-    {
-	return brokenIfKernelXXX(bug, new KernelMatch()
-	    {
-		public boolean matches(KernelVersion version)
-		{
+    protected static boolean brokenIfUtraceXXX (int bug) {
+	return brokenIfKernelXXX(bug, new KernelMatch() {
+		public boolean matches(KernelVersion version) {
 		    if (version.isFedora() && version.getFedoraRelease() > 5) {
 			return true;
 		    }

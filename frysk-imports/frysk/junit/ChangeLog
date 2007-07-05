@@ -1,5 +1,7 @@
 2007-07-04  Andrew Cagney  <cagney@redhat.com>
 
+	* TestCase.java: Re-indent.
+
 	* TestCase.java (brokenIfKernelXXX(int,String[])): Delete.
 	(goodFC5217, brokenFC5): Delete.
 	(brokenIfUtraceXXX): Simplify.
