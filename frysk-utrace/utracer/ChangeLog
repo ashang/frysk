@@ -1,7 +1,6 @@
 Fri Jul  6 12:10:16 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-response.c: Added a report formatter for printmmap results.
-	(Imcomplete, but mostly there.)
 	* udb-utrace-if.c:
 	* udb-text-ui.c: Added a printmmap command.  (All this produces
 	the same results as obtained via /proc/<pid>/maps, plus a bit more.)

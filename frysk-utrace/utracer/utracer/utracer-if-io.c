@@ -473,25 +473,10 @@ build_printmmap_resp (printmmap_resp_s * prm,
 	  struct path tpath = vm_file->f_path;
 	  struct vfsmount * mnt    = tpath.mnt;
 	  struct dentry * dentry   = tpath.dentry;
-
-	  if (mnt) {
-	    struct dentry *mnt_mountpoint = mnt->mnt_mountpoint;
-	    struct dentry *mnt_root       = mnt->mnt_root;
-
-	    if (mnt_mountpoint) {
-	      struct qstr d_name = mnt_mountpoint->d_name;
-	      string_count += 1 + strlen (d_name.name);
-	    }
-	    if (mnt_root) {
-	      struct qstr d_name = mnt_root->d_name;
-	      string_count += 1 + strlen (d_name.name);
-	    }
-	  }
-
-	  if (dentry) {
-	    struct qstr d_name = dentry->d_name;
-	    string_count += 1 + strlen (d_name.name);
-	  }
+	  char * buf = kmalloc (PATH_MAX, GFP_KERNEL);
+	  char * res = d_path (dentry, mnt, buf, PATH_MAX);
+	  string_count += 1 + strlen (res);
+	  kfree (buf);
 	}
 
 	mmap = mmap->vm_next;
@@ -518,44 +503,22 @@ build_printmmap_resp (printmmap_resp_s * prm,
 	vm_struct_subset[mmaps_index].vm_start = mmap->vm_start;
 	vm_struct_subset[mmaps_index].vm_end   = mmap->vm_end;
 	vm_struct_subset[mmaps_index].vm_flags = mmap->vm_flags;
-	vm_struct_subset[mmaps_index].mnt_root_offset = -1;
-	vm_struct_subset[mmaps_index].mnt_mountpoint_offset = -1;
-	vm_struct_subset[mmaps_index].dentry_offset = -1;
+	vm_struct_subset[mmaps_index].name_offset = -1;
 
 	vm_file = mmap->vm_file;
 	if (vm_file) {
 	  struct path tpath = vm_file->f_path;
 	  struct vfsmount * mnt    = tpath.mnt;
 	  struct dentry * dentry   = tpath.dentry;
+	  char * buf = kmalloc (PATH_MAX, GFP_KERNEL);
+	  char * res = d_path (dentry, mnt, buf, PATH_MAX);
 
-
-	  if (mnt) {
-	    struct dentry *mnt_mountpoint = mnt->mnt_mountpoint;
-	    struct dentry *mnt_root       = mnt->mnt_root;
-
-	    if (mnt_mountpoint) {
-	      struct qstr d_name = mnt_mountpoint->d_name;
-	      vm_struct_subset[mmaps_index].mnt_mountpoint_offset =
-		string_ptr - vm_strings;
-	      memcpy (string_ptr, d_name.name, 1 + strlen (d_name.name));
-	      string_ptr += 1 + strlen (d_name.name);
-	    }
-	    if (mnt_root) {
-	      struct qstr d_name = mnt_root->d_name;
-	      vm_struct_subset[mmaps_index].mnt_root_offset =
-		string_ptr - vm_strings;
-	      memcpy (string_ptr, d_name.name, 1 + strlen (d_name.name));
-	      string_ptr += 1 + strlen (d_name.name);
-	    }
-	  }
-
-	  if (dentry) {
-	    struct qstr d_name = dentry->d_name;
-	    vm_struct_subset[mmaps_index].dentry_offset =
-	      string_ptr - vm_strings;
-	    memcpy (string_ptr, d_name.name, 1 + strlen (d_name.name));
-	    string_ptr += 1 + strlen (d_name.name);
-	  }
+	  vm_struct_subset[mmaps_index].name_offset =
+	    string_ptr - vm_strings;
+	  memcpy (string_ptr, res, 1 + strlen (res));
+	  string_ptr += 1 + strlen (res);
+	  
+	  kfree (buf);
 	}
 
 	mmap = mmap->vm_next;

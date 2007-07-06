@@ -80,42 +80,26 @@ resp_listener (void * arg)
 	if (0 < prm.nr_mmaps) {
 	  int i;
 
-	  fprintf (stdout, "\t\tMemory maps:\n");
+	  fprintf (stdout, "\t\tMemory maps:\n\t\t  start      end      flags    mount\n");
 
 	  for (i = 0; i < prm.nr_mmaps; i++) {
 	    char * fn1;
-#if 0
-	    char * fn2;
-	    char * fn3;
-#endif
 
-	    if (-1 != vss[i].dentry_offset)
-	      fn1 = &estrings[vss[i].dentry_offset];
-	    else fn1 = "";
+	    if (-1 != vss[i].name_offset)
+	      fn1 = &estrings[vss[i].name_offset];
+	    else {
+	      if ((vss[i].vm_start <= prm.start_brk) &&
+		  (vss[i].vm_end   >= prm.brk)) fn1 = "[heap]";
+	      else if ((vss[i].vm_start <= prm.start_stack) &&
+		       (vss[i].vm_end   >= prm.start_stack)) fn1 = "[stack]";
+	      else fn1 = "[vdso]";
+	    }
 	    
-#if 0
-	    if (-1 != vss[i].mnt_root_offset)
-	      fn2 = &estrings[vss[i].mnt_root_offset];
-	    else fn2 = "mnt_root";
-	    
-	    if (-1 != vss[i].mnt_mountpoint_offset)
-	      fn3 = &estrings[vss[i].mnt_mountpoint_offset];
-	    else fn3 = "mnt_mountpoint";
-#endif
-
-#if 0
-	    fprintf (stdout, "\t\t  %08x - %08x %08x %s %s %s\n",
-		     vss[i].vm_start,
-		     vss[i].vm_end,
-		     vss[i].vm_flags,
-		     fn1, fn2, fn3);
-#else
 	    fprintf (stdout, "\t\t  %08x - %08x %08x %s\n",
 		     vss[i].vm_start,
 		     vss[i].vm_end,
 		     vss[i].vm_flags,
 		     fn1);
-#endif
 	  }
 	}
 	

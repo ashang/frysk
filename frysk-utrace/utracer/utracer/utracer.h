@@ -198,9 +198,7 @@ typedef struct {
   unsigned long vm_start;
   unsigned long vm_end;
   unsigned long vm_flags;
-  long mnt_root_offset;
-  long mnt_mountpoint_offset;
-  long dentry_offset;
+  long name_offset;
 } vm_struct_subset_s;
 
 typedef struct {
