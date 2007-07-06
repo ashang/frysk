@@ -16,8 +16,6 @@
 /*
  * TTD
  *
- * list regs
- * print all regs
  * list attached pids
  * reset prompt on detach
  * print regset info
@@ -32,6 +30,26 @@ static int sys_hash_table_valid = 0;
 
 typedef int (*action_fcn)(char ** saveptr);
 
+#define SYSCALL_INVALID		-5
+
+long
+parse_syscall (char * tok)
+{
+  long syscall_nr = SYSCALL_INVALID;
+  
+  if (0 == strcasecmp (tok, "all"))
+    syscall_nr = SYSCALL_ALL;
+  else if (sys_hash_table_valid) {
+    ENTRY * entry;
+    ENTRY target;
+    
+    target.key = tok;
+    if (0 != hsearch_r (target, FIND, &entry, &sys_hash_table))
+      syscall_nr = (long)(entry->data);
+  }
+  return syscall_nr;
+}
+
 static int
 syscall_fcn(char ** saveptr)
 {
@@ -39,7 +57,6 @@ syscall_fcn(char ** saveptr)
   int got_it = 0;
   int em_sent = 0;
   char * tok;
-#define SYSCALL_INVALID		-5
   long syscall_nr = SYSCALL_INVALID;
   enum {SY_STATE_A1, SY_STATE_A2, SY_STATE_A3} sy_state = SY_STATE_A1;
   enum {SY_MODE_NULL, SY_MODE_ENTRY, SY_MODE_EXIT} sy_mode = SY_MODE_NULL;
@@ -89,21 +106,9 @@ syscall_fcn(char ** saveptr)
       else run = 0;
       break;
     case SY_STATE_A3:
-      if (0 == strcasecmp (tok, "all")) {
-	syscall_nr = SYSCALL_ALL;
-	got_it = 1;
-      }
-      else if (sys_hash_table_valid) {
-	ENTRY * entry;
-	ENTRY target;
-	
-	target.key = tok;
-	if (0 != hsearch_r (target, FIND, &entry, &sys_hash_table)) {
-	  syscall_nr = (long)(entry->data);
-	  got_it = 1;
-	}
-      }
-      if (SYSCALL_INVALID == syscall_nr) {
+      syscall_nr = parse_syscall (tok);
+      if (SYSCALL_INVALID != syscall_nr) got_it = 1;
+      else {
 	char * ep;
 	
 	syscall_nr = strtol (tok, &ep, 0);
@@ -279,6 +284,17 @@ printregall_fcn (char ** saveptr)
 }
 
 static int
+printmmap_fcn (char ** saveptr)
+{
+  long pid = current_pid;
+  char * tok = strtok_r (NULL, " \t", saveptr);
+
+  if (tok && ('[' == *tok)) pid = atol (tok+1);
+  utrace_printmmap_if (pid);  // fixme--first arg == regset
+  return 1;
+}
+
+static int
 quit_fcn(char ** saveptr)
 {
   return 0;
@@ -315,6 +331,11 @@ static cmd_info_s printreg_info =
   {printreg_fcn, "(pr) -- Print the value of the specified register."};
 static cmd_info_s printreg_info_brief =
   {printreg_fcn, NULL};
+
+static cmd_info_s printmmap_info =
+  {printmmap_fcn, "(prm) -- Print the memory map of the current task."};
+static cmd_info_s printmmap_info_brief =
+  {printmmap_fcn, NULL};
 
 static cmd_info_s printregall_info =
   {printregall_fcn, "(pra) -- Print the values of all the registers."};
@@ -369,6 +390,9 @@ static ENTRY cmds[] = {
   
   {"pr",		&printreg_info_brief},
   {"printreg",		&printreg_info},
+  
+  {"prm",		&printmmap_info_brief},
+  {"printmmap",		&printmmap_info},
   
   {"pra",		&printregall_info_brief},
   {"printregall",	&printregall_info},

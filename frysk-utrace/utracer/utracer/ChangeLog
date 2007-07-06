@@ -1,3 +1,9 @@
+Fri Jul  6 12:14:31 2007  Chris Moller  <cmoller@redhat.com>
+
+	* utracer-if-io.c:
+	* utracer.h: Added a printmmap command.  (All this produces the
+	same results as obtained via /proc/<pid>/maps, plus a bit more.) 
+
 Wed Jul  4 12:42:54 2007  Chris Moller  <cmoller@redhat.com>
 
 	* utracer-if-io.c:

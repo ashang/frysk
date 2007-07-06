@@ -23,6 +23,106 @@ resp_listener (void * arg)
 		sizeof(if_resp), 0);
     
     switch (if_resp.type) {
+    case IF_RESP_PRINTMMAP_DATA:
+      {
+	vm_struct_subset_s * vss;
+	char * estrings;
+	printmmap_resp_s prm = if_resp.printmmap_resp;
+	long bytes_to_get = prm.string_count +
+	  (prm.nr_mmaps * sizeof(vm_struct_subset_s));
+	long bytes_gotten = 0;
+	void * extra = alloca (bytes_to_get + 2);
+
+	if (sz > sizeof(prm)) {
+	  long bytes_avail =  sz - sizeof(prm);
+	  memcpy (extra, (void *)(&if_resp) + sizeof (prm),
+		  bytes_avail);
+	  bytes_to_get -= bytes_avail;
+	  bytes_gotten = bytes_avail;
+	}
+	
+	if (0 < bytes_to_get) {
+	  sz = pread (utracer_resp_file_fd,
+		      extra + bytes_gotten,
+		      bytes_to_get, sz);
+	  bytes_gotten += sz;
+	}
+
+	vss = extra;
+	estrings = extra + (prm.nr_mmaps * sizeof(vm_struct_subset_s));
+	
+	fprintf (stdout, "\n\t[%ld] mmap\n",prm.utraced_pid);
+	fprintf (stdout, "\t\t%08lx mmap base\n", prm.mmap_base);
+	fprintf (stdout, "\t\t%08lx task size\n", prm.task_size);
+	
+	fprintf (stdout,
+		 "\t\tVM:  total    locked   shared   exec     stack    reserved\n\t\t     ");
+	fprintf (stdout, "%-8ld ",prm.total_vm);
+	fprintf (stdout, "%-8ld ",prm.locked_vm);
+	fprintf (stdout, "%-8ld ",prm.shared_vm);
+	fprintf (stdout, "%-8ld ",prm.exec_vm);
+	fprintf (stdout, "%-8ld ",prm.stack_vm);
+	fprintf (stdout, "%-8ld ",prm.reserved_vm);
+	fprintf (stdout, "\n");
+	
+	fprintf (stdout, "\t\t%08lx def flags\n\t\t%8ld nr ptes\n",
+		 prm.def_flags, prm.nr_ptes);
+	
+	fprintf (stdout, "\t\t%08lx - %08lx code (length = %ld) \n",
+		 prm.start_code, prm.end_code, prm.end_code - prm.start_code);
+	fprintf (stdout, "\t\t%08lx - %08lx data (length = %ld)\n",
+		 prm.start_data, prm.end_data, prm.end_data - prm.start_data);
+	fprintf (stdout, "\t\t%08lx - %08lx brk  (length = %ld) \n",
+		 prm.start_brk, prm.brk, prm.brk - prm.start_brk);
+	fprintf (stdout, "\t\t%08lx  stack\n",
+		 prm.start_stack);
+
+	if (0 < prm.nr_mmaps) {
+	  int i;
+
+	  fprintf (stdout, "\t\tMemory maps:\n");
+
+	  for (i = 0; i < prm.nr_mmaps; i++) {
+	    char * fn1;
+#if 0
+	    char * fn2;
+	    char * fn3;
+#endif
+
+	    if (-1 != vss[i].dentry_offset)
+	      fn1 = &estrings[vss[i].dentry_offset];
+	    else fn1 = "";
+	    
+#if 0
+	    if (-1 != vss[i].mnt_root_offset)
+	      fn2 = &estrings[vss[i].mnt_root_offset];
+	    else fn2 = "mnt_root";
+	    
+	    if (-1 != vss[i].mnt_mountpoint_offset)
+	      fn3 = &estrings[vss[i].mnt_mountpoint_offset];
+	    else fn3 = "mnt_mountpoint";
+#endif
+
+#if 0
+	    fprintf (stdout, "\t\t  %08x - %08x %08x %s %s %s\n",
+		     vss[i].vm_start,
+		     vss[i].vm_end,
+		     vss[i].vm_flags,
+		     fn1, fn2, fn3);
+#else
+	    fprintf (stdout, "\t\t  %08x - %08x %08x %s\n",
+		     vss[i].vm_start,
+		     vss[i].vm_end,
+		     vss[i].vm_flags,
+		     fn1);
+#endif
+	  }
+	}
+	
+	fprintf (stdout, "%s", prompt);
+	fflush (stdout);
+      }
+      break;
     case IF_RESP_EXEC_DATA:
       {
 	exec_resp_s exec_resp = if_resp.exec_resp;
@@ -44,8 +144,11 @@ resp_listener (void * arg)
 		      bytes_to_get, sz);
 	  bytes_gotten += sz;
 	}
+	
 	fprintf (stdout, "\tProcess %ld execing %s (%s)\n",
 		 exec_resp.utraced_pid, cstr, cstr + 1 + strlen (cstr));
+	fprintf (stdout, "%s", prompt);
+	fflush (stdout);
       }
       break;
     case IF_RESP_SYSCALL_ENTRY_DATA:

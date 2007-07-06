@@ -57,15 +57,23 @@ sigterm_handler (int sig)
 static int unload_module = 1;
 static int default_quiesce = 1;
 
+enum {
+  OPTION_BASE = 256,
+  SYSCALL_ENTRY_ENABLE,
+  SYSCALL_EXIT_ENABLE,
+};
+
 static struct option options[] = {
-  {"watch",     required_argument, NULL, (int)'w'},
-  {"attach",    required_argument, NULL, (int)'a'},
-  {"module",    required_argument, NULL, (int)'m'},
-  {"load",      required_argument, NULL, (int)'l'},
-  {"run",       required_argument, NULL, (int)'r'},
-  {"default-quiesce", no_argument, &default_quiesce, 1},
-  {"default-run",     no_argument, &default_quiesce, 0},
-  {"no-unload", no_argument, &unload_module, 0},
+  {"watch",		required_argument, NULL, (int)'w'},
+  {"attach",		required_argument, NULL, (int)'a'},
+  {"module",		required_argument, NULL, (int)'m'},
+  {"load",		required_argument, NULL, (int)'l'},
+  {"run",		required_argument, NULL, (int)'r'},
+  {"default-quiesce",	no_argument, &default_quiesce, 1},
+  {"default-run",	no_argument, &default_quiesce, 0},
+  {"no-unload",		no_argument, &unload_module, 0},
+  {"syscall-entry-enable",	no_argument, NULL, SYSCALL_ENTRY_ENABLE},
+  {"syscall-exit-enable",	no_argument, NULL, SYSCALL_EXIT_ENABLE},
   {NULL,0, NULL, 0}
 };
 
@@ -113,6 +121,12 @@ main (int ac, char * av[])
       switch (val) {
       case -1:
 	run = 0;
+	break;
+      case SYSCALL_ENTRY_ENABLE:
+	fprintf (stderr, "syscall entry enable\n");
+	break;
+      case SYSCALL_EXIT_ENABLE:
+	fprintf (stderr, "syscall eexit enable\n");
 	break;
       case 'm':
 	if (optarg) {

@@ -10,6 +10,10 @@
 #include <linux/proc_fs.h>
 #include <linux/utrace.h>
 #include <linux/binfmts.h>
+#include <linux/fs.h>
+#include <linux/namei.h>
+#include <linux/mm.h>
+#include <linux/mount.h>
 #include <asm/uaccess.h>
 #include <linux/tracehook.h>
 #include <asm-i386/tracehook.h>
@@ -20,6 +24,79 @@
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Chris Moller");
+
+#if 0
+	   * unsigned long arg_start, arg_end, env_start, env_end;
+	  
+	    printk (KERN_ALERT "  arg_start = %08lx\n", mm->arg_start);
+	    printk (KERN_ALERT "    arg_end = %08lx\n", mm->arg_end);
+
+	    // results in "BUG: unable to handle kernel paging request
+	    // at virtual address bfbff944"  bfbff944 = arg_start
+	    printk (KERN_ALERT "\t arg = \"%.*s\"\n",
+		    (int)(mm->arg_end - mm->arg_start),
+		    (char *)mm->arg_start);
+
+	  
+	    printk (KERN_ALERT "  env_start = %08lx\n", mm->env_start);
+	    printk (KERN_ALERT "    env_end = %08lx\n", mm->env_end);
+
+	    printk (KERN_ALERT "\t env = \"%.*s\"\n",
+		    (int)(mm->env_end - mm->env_start),
+		    (char *)mm->env_start);
+
+
+	    {
+	      // include/linux/mm.h
+	      struct vm_area_struct * mmap = mm->mmap;
+	      
+	      while (mmap) {
+		// struct file deffed in include/linux/fs.h
+		struct file * vm_file = mmap->vm_file;
+	    
+		printk (KERN_ALERT "   vm_start = %08lx\n", mmap->vm_start);
+		printk (KERN_ALERT "     vm_end = %08lx\n", mmap->vm_end);
+		printk (KERN_ALERT "   vm_flags = %08lx\n",   mmap->vm_flags);
+
+		if (vm_file) {
+		  // struct path deffed in include/linux/namei.h
+		  struct path tpath = vm_file->f_path;
+		  // struct vfsmount deffed in nclude/linux/mount.h
+		  struct vfsmount * mnt    = tpath.mnt;
+		  // struct dentry deffed in include/linux/dcache.h
+		  struct dentry * dentry = tpath.dentry;
+
+		  if (mnt) {
+		    struct dentry * mnt_mountpoint = mnt->mnt_mountpoint;
+		    struct dentry * mnt_root       = mnt->mnt_root;
+
+		    if (mnt_mountpoint) {
+		      struct qstr d_name = mnt_mountpoint->d_name;
+		      printk (KERN_ALERT "   mnt_mountpoint = \"%s\"\n",
+			      d_name.name);
+		    }
+		    if (mnt_root) {
+		      struct qstr d_name = mnt_root->d_name;
+		      printk (KERN_ALERT "   mnt_root = \"%s\"\n",
+			      d_name.name);
+		    }
+		  }
+
+		  if (dentry) {
+		    // struct qstr deffed in include/linux/dcache.h
+		    struct qstr d_name = dentry->d_name;
+		    printk (KERN_ALERT "   vm_file = \"%s\"\n", d_name.name);
+		  }
+		}
+		mmap = mmap->vm_next;
+	      }
+	    }
+	    task_unlock(task);
+	    up_read(&mm->mmap_sem);
+	    mmput(mm);
+	  }
+	}
+#endif
 
 static void
 queue_response (utracing_info_s * utracing_info_found,
@@ -63,6 +140,7 @@ report_quiesce (struct utrace_attached_engine *engine,
 }
 
 extern int cfr_data_ready;
+
 static u32
 report_clone (struct utrace_attached_engine *engine,
 	      struct task_struct *parent,
@@ -329,6 +407,168 @@ attach_cmd_fcn (long utracing_pid, long utraced_pid,
   return rc;
 }
 
+static void
+build_printmmap_resp (printmmap_resp_s * prm,
+		      vm_struct_subset_s ** vm_struct_subset_p,
+		      long * vm_struct_subset_size_p,
+		      char ** string_ptr_p,
+		      long * string_ptr_len_p,
+		      long pid,
+		      struct task_struct * task)
+{
+  struct mm_struct * mm = get_task_mm(task);
+
+  memset (prm, 0, sizeof(prm));
+  prm->type = IF_RESP_PRINTMMAP_DATA;
+  prm->utraced_pid = pid;
+  
+  if (mm) {
+    down_read(&mm->mmap_sem);
+    task_lock(task);
+    
+    prm->mmap_base = mm->mmap_base;
+    prm->task_size = mm->task_size;
+    prm->total_vm = mm->total_vm;
+    prm->locked_vm = mm->locked_vm;
+    prm->shared_vm = mm->shared_vm;
+    prm->exec_vm = mm->exec_vm;
+    prm->stack_vm = mm->stack_vm;
+    prm->reserved_vm = mm->reserved_vm;
+    prm->def_flags = mm->def_flags;
+    prm->nr_ptes = mm->nr_ptes;
+    
+    prm->start_code = mm->start_code;
+    prm->end_code = mm->end_code;
+    
+    prm->start_data = mm->start_data;
+    prm->end_data = mm->end_data;
+    
+    prm->start_brk = mm->start_brk;
+    prm->brk = mm->brk;
+    
+    prm->start_stack = mm->start_stack;
+    
+    prm->arg_start = mm->arg_start;
+    prm->arg_end = mm->arg_end;
+    prm->env_start = mm->env_start;
+    prm->env_end = mm->env_end;
+
+    {
+      unsigned long nr_mmaps = 0;
+      struct vm_area_struct * mmap;
+
+      vm_struct_subset_s * vm_struct_subset;
+      unsigned long mmaps_index = 0;
+      unsigned long string_count = 0;
+      char * vm_strings;
+      char * string_ptr;
+      
+      mmap = mm->mmap;
+      while (mmap) {
+	struct file * vm_file;
+	nr_mmaps++;
+
+	vm_file = mmap->vm_file;
+	if (vm_file) {
+	  struct path tpath = vm_file->f_path;
+	  struct vfsmount * mnt    = tpath.mnt;
+	  struct dentry * dentry   = tpath.dentry;
+
+	  if (mnt) {
+	    struct dentry *mnt_mountpoint = mnt->mnt_mountpoint;
+	    struct dentry *mnt_root       = mnt->mnt_root;
+
+	    if (mnt_mountpoint) {
+	      struct qstr d_name = mnt_mountpoint->d_name;
+	      string_count += 1 + strlen (d_name.name);
+	    }
+	    if (mnt_root) {
+	      struct qstr d_name = mnt_root->d_name;
+	      string_count += 1 + strlen (d_name.name);
+	    }
+	  }
+
+	  if (dentry) {
+	    struct qstr d_name = dentry->d_name;
+	    string_count += 1 + strlen (d_name.name);
+	  }
+	}
+
+	mmap = mmap->vm_next;
+      }
+
+      prm->nr_mmaps = nr_mmaps;
+      prm->string_count = string_count;
+      
+      vm_struct_subset = kmalloc (nr_mmaps * sizeof(vm_struct_subset_s),
+				  GFP_KERNEL);
+      if (vm_struct_subset_p) *vm_struct_subset_p = vm_struct_subset;
+      if (vm_struct_subset_size_p) *vm_struct_subset_size_p =
+	nr_mmaps * sizeof(vm_struct_subset_s);
+      
+      string_ptr = vm_strings = kmalloc (string_count, GFP_KERNEL);
+      if (string_ptr_p) *string_ptr_p = vm_strings;
+      if (string_ptr_len_p) *string_ptr_len_p = string_count;
+      
+      mmap = mm->mmap;
+      while (mmap) {
+	struct file * vm_file;
+	
+	// see include/linux/mm.h
+	vm_struct_subset[mmaps_index].vm_start = mmap->vm_start;
+	vm_struct_subset[mmaps_index].vm_end   = mmap->vm_end;
+	vm_struct_subset[mmaps_index].vm_flags = mmap->vm_flags;
+	vm_struct_subset[mmaps_index].mnt_root_offset = -1;
+	vm_struct_subset[mmaps_index].mnt_mountpoint_offset = -1;
+	vm_struct_subset[mmaps_index].dentry_offset = -1;
+
+	vm_file = mmap->vm_file;
+	if (vm_file) {
+	  struct path tpath = vm_file->f_path;
+	  struct vfsmount * mnt    = tpath.mnt;
+	  struct dentry * dentry   = tpath.dentry;
+
+
+	  if (mnt) {
+	    struct dentry *mnt_mountpoint = mnt->mnt_mountpoint;
+	    struct dentry *mnt_root       = mnt->mnt_root;
+
+	    if (mnt_mountpoint) {
+	      struct qstr d_name = mnt_mountpoint->d_name;
+	      vm_struct_subset[mmaps_index].mnt_mountpoint_offset =
+		string_ptr - vm_strings;
+	      memcpy (string_ptr, d_name.name, 1 + strlen (d_name.name));
+	      string_ptr += 1 + strlen (d_name.name);
+	    }
+	    if (mnt_root) {
+	      struct qstr d_name = mnt_root->d_name;
+	      vm_struct_subset[mmaps_index].mnt_root_offset =
+		string_ptr - vm_strings;
+	      memcpy (string_ptr, d_name.name, 1 + strlen (d_name.name));
+	      string_ptr += 1 + strlen (d_name.name);
+	    }
+	  }
+
+	  if (dentry) {
+	    struct qstr d_name = dentry->d_name;
+	    vm_struct_subset[mmaps_index].dentry_offset =
+	      string_ptr - vm_strings;
+	    memcpy (string_ptr, d_name.name, 1 + strlen (d_name.name));
+	    string_ptr += 1 + strlen (d_name.name);
+	  }
+	}
+
+	mmap = mmap->vm_next;
+	mmaps_index++;
+      }
+    }
+    
+    task_unlock(task);
+    up_read(&mm->mmap_sem);
+    mmput(mm);
+  }
+}
+
 int
 if_file_write (struct file *file,
                     const char *buffer,
@@ -442,6 +682,51 @@ if_file_write (struct file *file,
       else return -ESRCH;
     }
     break;
+  case IF_CMD_PRINTMMAP:
+    {
+      utracing_info_s * utracing_info_found;
+      
+      printmmap_cmd_s printmmap_cmd = if_cmd.printmmap_cmd;
+
+      utracing_info_found =
+	lookup_utracing_info (printmmap_cmd.utracing_pid);
+
+      if (utracing_info_found) {
+	struct task_struct * task;
+	printmmap_resp_s printmmap_resp;
+
+	task = get_task (printmmap_cmd.utraced_pid);
+	if (task) {
+	  vm_struct_subset_s  * vm_struct_subset = NULL;
+	  long vm_struct_subset_size = 0;
+	  char * vm_string = NULL;
+	  long vm_string_length = 0;
+	  
+	  build_printmmap_resp (&printmmap_resp,
+				&vm_struct_subset,
+				&vm_struct_subset_size,
+				&vm_string,
+				&vm_string_length,
+				printmmap_cmd.utraced_pid,
+				task);
+
+	  queue_response (utracing_info_found,
+			  &printmmap_resp,
+			  sizeof(printmmap_resp),
+			  vm_struct_subset,
+			  vm_struct_subset_size,
+			  vm_string,
+			  vm_string_length);
+	  if (vm_struct_subset) kfree(vm_struct_subset);
+	  if (vm_string) kfree(vm_string);
+	  
+	  return count;
+	}
+	else return -ESRCH;
+      }
+      else return -UTRACER_ETRACING;
+    }
+    break;
   case IF_CMD_SWITCHPID:
     {
       utracing_info_s * utracing_info_found;
@@ -454,19 +739,22 @@ if_file_write (struct file *file,
       if (utracing_info_found) {
 	struct task_struct * task;
 	switchpid_resp_s switchpid_resp;
-	task = get_task (switchpid_cmd.utraced_pid);
 
-	switchpid_resp.type           = IF_RESP_SWITCHPID_DATA;
-	switchpid_resp.utraced_pid    = switchpid_cmd.utraced_pid;
-	switchpid_resp.okay = task ? 1 : 0;
+	task = get_task (switchpid_cmd.utraced_pid);
+	if (task) {
+	  switchpid_resp.type           = IF_RESP_SWITCHPID_DATA;
+	  switchpid_resp.utraced_pid    = switchpid_cmd.utraced_pid;
+	  switchpid_resp.okay = task ? 1 : 0;
       
-	queue_response (utracing_info_found,
-			&switchpid_resp,
-			sizeof(switchpid_resp),
-			NULL, 0,
-			NULL, 0);
+	  queue_response (utracing_info_found,
+			  &switchpid_resp,
+			  sizeof(switchpid_resp),
+			  NULL, 0,
+			  NULL, 0);
       
-	return count;
+	  return count;
+	}
+	else return -ESRCH;
       }
       else return -UTRACER_ETRACING;
     }
@@ -574,6 +862,9 @@ if_file_write (struct file *file,
       
       task = get_task (readreg_cmd.utraced_pid);
       if (task) {
+
+	
+	
 	if ((current == task) ||
 	    (task->state & (TASK_TRACED | TASK_STOPPED))) {
 	  struct utrace_attached_engine * engine;

@@ -4,91 +4,18 @@ provide a command to req the process tree starting at any point
 
 in utracer.c, trace registering apps & report death; auto-unregister
 research self-unload of module
-use report callbacks
 
-++++++++++++++++++++++++++++++++++++++++++++++
+change cmd_<pid> to cmd/<pid>, etc
 
+[root@hotbox 31104]# cat maps
+00b6d000-00b86000 r-xp 00000000 fd:00 2359327    /lib/ld-2.5.so
+00b86000-00b88000 rwxp 00018000 fd:00 2359327    /lib/ld-2.5.so
+00fc0000-00fc1000 r-xp 00fc0000 00:00 0          [vdso]
+08048000-08049000 r-xp 00000000 fd:00 15501598   /usr/sandbox/frysk-utrace/utracer/testsyscall
+08049000-0804a000 rw-p 00000000 fd:00 15501598   /usr/sandbox/frysk-utrace/utracer/testsyscall
+bfb3d000-bfb53000 rw-p bfb3d000 00:00 0          [stack]
+[root@hotbox 31104]#
 
-
-// arch/i386/kernel/ptrace.c
-	  /*
-         * Fetch and store register values.  Return 0 on success; -EIO or
-         * -ENODEV are usual failure returns.  The pos and count values are
-         * in bytes, but must be properly aligned.  If kbuf is non-null,
-         * that buffer is used and ubuf is ignored.  If kbuf is NULL, then
-         * ubuf gives a userland pointer to access directly, and an -EFAULT
-         * return value is possible.
-         */
-
-	  /*   gp regs(17)	fpregs(27)		fpxregs(128)
- 0		ebx		
- 1		ecx		
- 2		edx		
- 3		esi		
- 4		edi		
- 5		ebp		
- 6		eax		
- 7		ds		
- 8		es		
- 9		fs		
-10		gs		
-13		cs		
-11		orig_eax
-12		eip		
-14		efl		
-15		esp		
-16		ss		
-	  */
-
-#if 0  // reg testing
-	  {
-	    int i;
-	    struct task_struct * task;
-      
-	    readreg_cmd_s readreg_cmd = if_cmd.readreg_cmd;
-	    printk(KERN_ALERT "read reg %d from task %ld\n",
-		   readreg_cmd.which, readreg_cmd.pid);
-
-	    rcu_read_lock();
-	    task = find_task_by_pid(readreg_cmd.pid);
-	    if (task) get_task_struct(task);
-	    rcu_read_unlock();
-	    if (task) {
-	      int j;
-	      const struct utrace_regset_view * rv;
-
-	      rv = utrace_native_view(task);
-	      printk(KERN_ALERT "\trv->n     = %d\n", rv->n);
-	      printk(KERN_ALERT "\trv->name  = %s\n", rv->name);
-
-	      // 0 == gpregs, 1 == fpregs, 2 == fpxregs
-	      for (j = 0; j < 3; j++) {
-		const struct utrace_regset * regset;
-	      
-	
-		regset = utrace_regset(task, testing_engine,
-				       utrace_native_view(task), j);
-		printk(KERN_ALERT "\tn     = %d\n", regset->n);
-		printk(KERN_ALERT "\tsize  = %d\n", regset->size);
-		printk(KERN_ALERT "\talign = %d\n", regset->align);
-		printk(KERN_ALERT "\tbias  = %d\n", regset->bias);
-		
-#if 1
-		for (i = 0; i < regset->n; i++) {
-		  int rc;
-		  long kbuf;
-
-		  rc = regset->get(task,
-				   regset,
-				   i<<2,	// pos
-				   4,		// count
-				   &kbuf,	// kbuf
-				   NULL);	// ubuf
-		  printk(KERN_ALERT "\t\t[%d] reg %d  = %#08lx\n",
-			 rc, i, kbuf);
-		}
-#endif
-	      }
-	    }
-	  }
-#endif
+ read (6, 0xbfb4f2a8, 512)  - stack [ bfb3d000 ] = 122a8
+write (2, 0xbfb4d258, 16)   - stack [ bfb3d000 ] = 10258
+ read (6, 0xb7ffc000, 4096) - stack [ bfb3d000 ] = 
