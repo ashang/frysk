@@ -139,7 +139,7 @@ public class Dwfl
 
   protected void finalize ()
   {
-    dwfl_end();
+    close();
   }
 
   /**
@@ -196,6 +196,13 @@ public class Dwfl
   {
     return factory;
   }
+  
+  public void close() {
+	if (this.pointer != 0) {
+	    dwfl_end();
+	    this.pointer = 0;
+	}
+    }
   
   protected native void dwfl_begin (int pid);
   
