@@ -336,12 +336,15 @@ public class IsaX8664 implements Isa
    * attributed to entering a signal handler or a normal step
    * instruction notification.
    * 
-   * x86_64 doesn't generate spurious trap events and this method
-   * always returns false on this architecture.
+   * On some kernels x86_64 doesn't generate spurious trap events (or
+   * rather doesn't set the stepping flag) after returning from a
+   * SYSCALL instruction.
    */
   public boolean hasExecutedSpuriousTrap(Task task)
   {
-    return false;
+    long address = pc(task);
+    return (task.getMemory().getByte(address - 1) == (byte) 0x05
+            && task.getMemory().getByte(address - 2) == (byte) 0x0f);
   }
 
   /**
