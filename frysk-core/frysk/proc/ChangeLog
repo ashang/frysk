@@ -1,3 +1,7 @@
+2007-07-06  Mike Cvet  <mcvet@redhat.com>
+
+	* TestLib.java (tearDown): Calls DwflFactory.clear().
+
 2007-07-06  Mark Wielaard  <mwielaard@redhat.com>
 
 	* IsaX8664.java hasExecutedSpuriousTrap): Check for SYSCALL

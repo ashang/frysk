@@ -42,6 +42,7 @@ package frysk.proc;
 
 import frysk.testbed.TearDownFile;
 import frysk.testbed.TearDownProcess;
+import frysk.dwfl.DwflFactory;
 import frysk.junit.TestCase;
 import frysk.Config;
 import frysk.sys.Errno;
@@ -1262,6 +1263,8 @@ public class TestLib
     Signal.drain (Sig.HUP);
     Signal.drain (Sig.USR1);
     Signal.drain (Sig.USR2);
+    
+    DwflFactory.clear();
 
     logger.log(Level.FINE, "{0} >>>>>>>>>>>>>>>> end tearDown\n", this);
   }
