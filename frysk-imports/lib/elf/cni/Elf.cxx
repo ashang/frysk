@@ -36,6 +36,7 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <gelf.h>
@@ -55,73 +56,68 @@
 #include "lib/elf/ElfArchiveHeader.h"
 #include "lib/elf/ElfData.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-
 void
 lib::elf::Elf::elf_begin (jstring file, jint command)
 {
-	int fileNameLen = JvGetStringUTFLength(file);
-	char fileName[fileNameLen + 1];
+  int fileNameLen = JvGetStringUTFLength(file);
+  char fileName[fileNameLen + 1];
 	
-	JvGetStringUTFRegion (file, 0, file->length (), fileName);
-	fileName[fileNameLen]='\0';
+  JvGetStringUTFRegion (file, 0, file->length (), fileName);
+  fileName[fileNameLen]='\0';
 
-	errno = 0;
-	switch (command)
-	  {
+  errno = 0;
+  switch (command)
+    {
+    case ELF_C_READ:
+    case ELF_C_READ_MMAP:  
+    case ELF_C_READ_MMAP_PRIVATE: fd = open (fileName, O_RDONLY);
+      break;
+    case ELF_C_WRITE:
+    case ELF_C_WRITE_MMAP: fd = open (fileName, O_RDWR | O_CREAT,00644);
+      break;
+    case ELF_C_RDWR:
+    case ELF_C_RDWR_MMAP:  fd  = open(fileName, O_RDWR);
+      break;
+    default:
+      throw new lib::elf::ElfFileException(JvNewStringUTF("Invalid Elf_Command specified in elf_begin"));
+    }
 
-	  case ELF_C_READ:
-	  case ELF_C_READ_MMAP:  
-	  case ELF_C_READ_MMAP_PRIVATE: fd = open (fileName, O_RDONLY);
-	    break;
-	  case ELF_C_WRITE:
-	  case ELF_C_WRITE_MMAP: fd = open (fileName, O_RDWR | O_CREAT,00644);
-	    break;
-	  case ELF_C_RDWR:
-	  case ELF_C_RDWR_MMAP:  fd  = open(fileName, O_RDWR);
-	    break;
-	  default:
-	    throw new lib::elf::ElfFileException(JvNewStringUTF("Invalid Elf_Command specified in elf_begin"));
-	  }
-
-	if(errno != 0)
-	  {
-		char* message = "Could not open %s";
-		char error[strlen(fileName) + strlen(message) - 2];
-		sprintf(error, message, fileName);
-		throw new lib::elf::ElfFileException(JvNewStringUTF(error),
-		    file);
-	  }
+  if(errno != 0)
+    {
+      char* message = "Could not open %s";
+      char error[strlen(fileName) + strlen(message) - 2];
+      sprintf(error, message, fileName);
+      throw new lib::elf::ElfFileException(JvNewStringUTF(error),
+					   file);
+    }
 	
-	if(::elf_version(EV_CURRENT) == EV_NONE) 
-	  {
-		::close(fd);
-		throw new lib::elf::ElfException(JvNewStringUTF("Elf library version out of date"));
-	  }
-	errno = 0;	
-	::Elf* new_elf = ::elf_begin (fd, (Elf_Cmd) command, (::Elf*) 0);
+  if(::elf_version(EV_CURRENT) == EV_NONE) 
+    {
+      ::close(fd);
+      throw new lib::elf::ElfException(JvNewStringUTF("Elf library version out of date"));
+    }
+  errno = 0;	
+  ::Elf* new_elf = ::elf_begin (fd, (Elf_Cmd) command, (::Elf*) 0);
 	
-	if(errno != 0 || !new_elf) 
-	  {
-		::close(fd);
-		throw new lib::elf::ElfException(JvNewStringUTF("Could not open Elf file"));
-	  }
+  if(errno != 0 || !new_elf) 
+    {
+      ::close(fd);
+      throw new lib::elf::ElfException(JvNewStringUTF("Could not open Elf file"));
+    }
 	
-	this->pointer = (jlong) new_elf;
+  this->pointer = (jlong) new_elf;
 }
 
 jlong
-lib::elf::Elf::elf_clone (jint command){
-	return (jlong) ::elf_clone((::Elf*) this->pointer, (Elf_Cmd) command);
+lib::elf::Elf::elf_clone (jint command)
+{
+  return (jlong) ::elf_clone((::Elf*) this->pointer, (Elf_Cmd) command);
 }
 
 jint
-lib::elf::Elf::elf_next (){
-	return (jint) ::elf_next((::Elf*) this->pointer);
+lib::elf::Elf::elf_next ()
+{
+  return (jint) ::elf_next((::Elf*) this->pointer);
 }
 
 jint
@@ -145,259 +141,288 @@ lib::elf::Elf::elf_end()
 
 
 jlong
-lib::elf::Elf::elf_update (jint command){
-	return (jlong) ::elf_update((::Elf*) this->pointer, (Elf_Cmd) command);
+lib::elf::Elf::elf_update (jint command)
+{
+  return (jlong) ::elf_update((::Elf*) this->pointer, (Elf_Cmd) command);
 }
 
 jint
-lib::elf::Elf::elf_kind (){
-	return ::elf_kind((::Elf*) this->pointer);
+lib::elf::Elf::elf_kind ()
+{
+  return ::elf_kind((::Elf*) this->pointer);
 }
 
 jlong
-lib::elf::Elf::elf_getbase (){
-	return ::elf_getbase((::Elf*) this->pointer);
+lib::elf::Elf::elf_getbase ()
+{
+  return ::elf_getbase((::Elf*) this->pointer);
 }
 
 jstring
-lib::elf::Elf::elf_getident (){
-	size_t length;
-	char* ident = ::elf_getident((::Elf*) pointer, &length);
-	return JvNewString((const jchar*) ident, length);
+lib::elf::Elf::elf_getident ()
+{
+  size_t length;
+  char* ident = ::elf_getident((::Elf*) pointer, &length);
+  return JvNewString((const jchar*) ident, length);
 }
 
 jstring
-lib::elf::Elf::elf_get_last_error_msg (){
-	const char *error = ::elf_errmsg(elf_errno());
-	return JvNewStringLatin1(error, strlen(error));
+lib::elf::Elf::elf_get_last_error_msg ()
+{
+  const char *error = ::elf_errmsg(elf_errno());
+  return JvNewStringLatin1(error, strlen(error));
 }
 
 jint 
-lib::elf::Elf::elf_get_last_error_no (){
-	return elf_errno();
+lib::elf::Elf::elf_get_last_error_no ()
+{
+  return elf_errno();
 }
 
-void fillEHeader(lib::elf::ElfEHeader *header, GElf_Ehdr *ehdr){
-	header->ident = JvNewByteArray(EI_NIDENT);
-	jbyte *bytes = elements(header->ident);
-	for(int i = 0; i < EI_NIDENT; i++)
-		bytes[i] = (jbyte) ehdr->e_ident[i];
+void fillEHeader(lib::elf::ElfEHeader *header, GElf_Ehdr *ehdr)
+{
+  header->ident = JvNewByteArray(EI_NIDENT);
+  jbyte *bytes = elements(header->ident);
+  for(int i = 0; i < EI_NIDENT; i++)
+    bytes[i] = (jbyte) ehdr->e_ident[i];
 	
-	header->type = (jint) ehdr->e_type;
-	header->machine = (jint) ehdr->e_machine;
-	header->version = (jint) ehdr->e_version;
-	header->entry = (jlong) ehdr->e_entry;
-	header->phoff = (jlong) ehdr->e_phoff;
-	header->shoff = (jlong) ehdr->e_shoff;
-	header->flags = (jint) ehdr->e_flags;
-	header->ehsize = (jint) ehdr->e_ehsize;
-	header->phentsize = (jint) ehdr->e_phentsize;
-	header->phnum = (jint) ehdr->e_phnum;
-	header->shentsize = (jint) ehdr->e_shentsize;
-	header->shnum = (jint) ehdr->e_shnum;
-	header->shstrndx = (jint) ehdr->e_shstrndx;
+  header->type = (jint) ehdr->e_type;
+  header->machine = (jint) ehdr->e_machine;
+  header->version = (jint) ehdr->e_version;
+  header->entry = (jlong) ehdr->e_entry;
+  header->phoff = (jlong) ehdr->e_phoff;
+  header->shoff = (jlong) ehdr->e_shoff;
+  header->flags = (jint) ehdr->e_flags;
+  header->ehsize = (jint) ehdr->e_ehsize;
+  header->phentsize = (jint) ehdr->e_phentsize;
+  header->phnum = (jint) ehdr->e_phnum;
+  header->shentsize = (jint) ehdr->e_shentsize;
+  header->shnum = (jint) ehdr->e_shnum;
+  header->shstrndx = (jint) ehdr->e_shstrndx;
 }
 
 lib::elf::ElfEHeader*
-lib::elf::Elf::elf_getehdr(){
-	GElf_Ehdr hdr;
-	if(::gelf_getehdr((::Elf*) this->pointer, &hdr) == NULL)
-		return NULL;
+lib::elf::Elf::elf_getehdr()
+{
+  GElf_Ehdr hdr;
+  if(::gelf_getehdr((::Elf*) this->pointer, &hdr) == NULL)
+    return NULL;
 	
-	lib::elf::ElfEHeader *header = new lib::elf::ElfEHeader(this);
-	fillEHeader(header, &hdr);
+  lib::elf::ElfEHeader *header = new lib::elf::ElfEHeader(this);
+  fillEHeader(header, &hdr);
 	
-	return header;
+  return header;
 }
 
 jint
-lib::elf::Elf::elf_newehdr (jint word_size){
-	::Elf* elf = (::Elf*) this->pointer;
-        if (word_size == 4)
-	  return (jint) ::gelf_newehdr(elf, ELFCLASS32);
-	else
-	  // if work_size != 4 chooise 64 bits seems wrong.
-	  return (jint) ::gelf_newehdr(elf, ELFCLASS64);
+lib::elf::Elf::elf_newehdr (jint word_size)
+{
+  ::Elf* elf = (::Elf*) this->pointer;
+  if (word_size == 4)
+    return (jint) ::gelf_newehdr(elf, ELFCLASS32);
+  else
+    // if work_size != 4 chooise 64 bits seems wrong.
+    return (jint) ::gelf_newehdr(elf, ELFCLASS64);
 }
 
 jint
-lib::elf::Elf::elf_updatehdr(ElfEHeader *phdr) {
-	::Elf* elf = (::Elf*) this->pointer;
-	GElf_Ehdr hdr;
+lib::elf::Elf::elf_updatehdr(ElfEHeader *phdr)
+{
+  ::Elf* elf = (::Elf*) this->pointer;
+  GElf_Ehdr hdr;
 
-	if(::gelf_getehdr((::Elf*) this->pointer, &hdr) == NULL)
-		return elf_get_last_error_no();
+  if(::gelf_getehdr((::Elf*) this->pointer, &hdr) == NULL)
+    return elf_get_last_error_no();
 
-	jbyte *bytes = elements(phdr->ident);	
-	for(int i = 0; i < EI_NIDENT; i++)
-		hdr.e_ident[i] = (jbyte) bytes[i];
+  jbyte *bytes = elements(phdr->ident);	
+  for(int i = 0; i < EI_NIDENT; i++)
+    hdr.e_ident[i] = (jbyte) bytes[i];
 	
-	hdr.e_type = (int) phdr->type;
-	hdr.e_machine = (int) phdr->machine;
-	hdr.e_version = (int) phdr->version;
-	hdr.e_entry = (long) phdr->entry;
-	hdr.e_phoff = (long) phdr->phoff;
-	hdr.e_shoff = (long) phdr->shoff;
-	hdr.e_flags = (int) phdr->flags;
-	hdr.e_ehsize = (int) phdr->ehsize;
-	hdr.e_phentsize = (int) phdr->phentsize;
-	hdr.e_phnum = (int) phdr->phnum;
-	hdr.e_shentsize = (int) phdr->shentsize;
-	hdr.e_shnum = (int) phdr->shnum;
-	hdr.e_shstrndx = (int) phdr->shstrndx;
+  hdr.e_type = (int) phdr->type;
+  hdr.e_machine = (int) phdr->machine;
+  hdr.e_version = (int) phdr->version;
+  hdr.e_entry = (long) phdr->entry;
+  hdr.e_phoff = (long) phdr->phoff;
+  hdr.e_shoff = (long) phdr->shoff;
+  hdr.e_flags = (int) phdr->flags;
+  hdr.e_ehsize = (int) phdr->ehsize;
+  hdr.e_phentsize = (int) phdr->phentsize;
+  hdr.e_phnum = (int) phdr->phnum;
+  hdr.e_shentsize = (int) phdr->shentsize;
+  hdr.e_shnum = (int) phdr->shnum;
+  hdr.e_shstrndx = (int) phdr->shstrndx;
 
-	return gelf_update_ehdr (elf,&hdr);
+  return gelf_update_ehdr (elf,&hdr);
 }
 
 jint
-lib::elf::Elf::elf_get_version() {
-	return EV_CURRENT;
+lib::elf::Elf::elf_get_version()
+{
+  return EV_CURRENT;
 }
 
 void fillPHeader(lib::elf::ElfPHeader *header, GElf_Phdr *phdr){
-	header->type = (jint) phdr->p_type;
-	header->flags = (jint) phdr->p_flags;
-	header->offset = (jlong) phdr->p_offset;
-	header->vaddr = (jlong) phdr->p_vaddr;
-	header->paddr = (jlong) phdr->p_paddr;
-	header->filesz = (jlong) phdr->p_filesz;
-	header->memsz = (jlong) phdr->p_memsz;
-	header->align = (jlong) phdr->p_align;
+  header->type = (jint) phdr->p_type;
+  header->flags = (jint) phdr->p_flags;
+  header->offset = (jlong) phdr->p_offset;
+  header->vaddr = (jlong) phdr->p_vaddr;
+  header->paddr = (jlong) phdr->p_paddr;
+  header->filesz = (jlong) phdr->p_filesz;
+  header->memsz = (jlong) phdr->p_memsz;
+  header->align = (jlong) phdr->p_align;
 }
 
 lib::elf::ElfPHeader*
-lib::elf::Elf::elf_getphdr (jint index){
-	GElf_Phdr phdr;
-	if(::gelf_getphdr((::Elf*) this->pointer, index, &phdr) == NULL)
-		return NULL;
+lib::elf::Elf::elf_getphdr (jint index)
+{
+  GElf_Phdr phdr;
+  if(::gelf_getphdr((::Elf*) this->pointer, index, &phdr) == NULL)
+    return NULL;
 		
-	lib::elf::ElfPHeader *header = new lib::elf::ElfPHeader(this);
+  lib::elf::ElfPHeader *header = new lib::elf::ElfPHeader(this);
 	
-fillPHeader(header, &phdr);
+  fillPHeader(header, &phdr);
 	
-	return header;
+  return header;
 }
 
 jint
-lib::elf::Elf::elf_updatephdr(jint index, lib::elf::ElfPHeader *phdr) {
-	GElf_Phdr header;
-	if (::gelf_getphdr((::Elf*) this->pointer, index, &header) == NULL)
-		return -1;
-	::Elf* elf = (::Elf*) this->pointer;
+lib::elf::Elf::elf_updatephdr(jint index, lib::elf::ElfPHeader *phdr)
+{
+  GElf_Phdr header;
+  if (::gelf_getphdr((::Elf*) this->pointer, index, &header) == NULL)
+    return -1;
+  ::Elf* elf = (::Elf*) this->pointer;
 
-	header.p_type = (jint) phdr->type;
-        header.p_flags = (jint) phdr->flags;
-        header.p_offset = (jlong) phdr->offset;
-        header.p_vaddr = (jlong) phdr->vaddr;
-        header.p_paddr = (jlong) phdr->paddr;
-        header.p_filesz = (jlong) phdr->filesz;
-        header.p_memsz = (jlong) phdr->memsz;
-        header.p_align = (jlong) phdr->align;
+  header.p_type = (jint) phdr->type;
+  header.p_flags = (jint) phdr->flags;
+  header.p_offset = (jlong) phdr->offset;
+  header.p_vaddr = (jlong) phdr->vaddr;
+  header.p_paddr = (jlong) phdr->paddr;
+  header.p_filesz = (jlong) phdr->filesz;
+  header.p_memsz = (jlong) phdr->memsz;
+  header.p_align = (jlong) phdr->align;
 	
-	return gelf_update_phdr (elf, index, &header);
+  return gelf_update_phdr (elf, index, &header);
 } 
 
 
 jint
-lib::elf::Elf::elf_newphdr (jlong cnt){
-	return (jint) ::gelf_newphdr((::Elf*) this->pointer, (size_t) cnt);
+lib::elf::Elf::elf_newphdr (jlong cnt)
+{
+  return (jint) ::gelf_newphdr((::Elf*) this->pointer, (size_t) cnt);
 }
 
 jlong
-lib::elf::Elf::elf_offscn (jlong offset){
-	return (jlong) gelf_offscn((::Elf*) this->pointer, (Elf32_Off) offset);
+lib::elf::Elf::elf_offscn (jlong offset)
+{
+  return (jlong) gelf_offscn((::Elf*) this->pointer, (Elf32_Off) offset);
 }
 
 jlong
-lib::elf::Elf::elf_getscn (jlong index){
-	return (jlong) ::elf_getscn((::Elf*) this->pointer, (size_t) index);
+lib::elf::Elf::elf_getscn (jlong index)
+{
+  return (jlong) ::elf_getscn((::Elf*) this->pointer, (size_t) index);
 }
 
 jlong
-lib::elf::Elf::elf_nextscn (jlong section){
-	return (jlong) ::elf_nextscn((::Elf*) this->pointer, (Elf_Scn*) section);
+lib::elf::Elf::elf_nextscn (jlong section)
+{
+  return (jlong) ::elf_nextscn((::Elf*) this->pointer, (Elf_Scn*) section);
 }
 
 jlong
-lib::elf::Elf::elf_newscn (){
-	return (jlong) ::elf_newscn((::Elf*) this->pointer);
+lib::elf::Elf::elf_newscn ()
+{
+  return (jlong) ::elf_newscn((::Elf*) this->pointer);
 }
 
 jlong
-lib::elf::Elf::elf_getshnum (){
-	size_t count;
-	/* XXX: What to do if this fails */
-	::elf_getshnum((::Elf*) this->pointer, &count);
-	return count;
+lib::elf::Elf::elf_getshnum ()
+{
+  size_t count;
+  /* XXX: What to do if this fails */
+  ::elf_getshnum((::Elf*) this->pointer, &count);
+  return count;
 }
 
 jlong
-lib::elf::Elf::elf_getshstrndx (){
-	size_t index;
-	/* XXX: What to do if this fails */
-	::elf_getshstrndx((::Elf*) this->pointer, &index);
-	return index;
+lib::elf::Elf::elf_getshstrndx ()
+{
+  size_t index;
+  /* XXX: What to do if this fails */
+  ::elf_getshstrndx((::Elf*) this->pointer, &index);
+  return index;
 }
 
 jint
-lib::elf::Elf::elf_flagelf (jint command, jint flags){
-	return ::elf_flagelf((::Elf*) this->pointer, (Elf_Cmd) command, flags);
+lib::elf::Elf::elf_flagelf (jint command, jint flags)
+{
+  return ::elf_flagelf((::Elf*) this->pointer, (Elf_Cmd) command, flags);
 }
 
 jint
-lib::elf::Elf::elf_flagehdr (jint command, jint flags){
-	return ::elf_flagehdr((::Elf*) this->pointer, (Elf_Cmd) command, flags);
+lib::elf::Elf::elf_flagehdr (jint command, jint flags)
+{
+  return ::elf_flagehdr((::Elf*) this->pointer, (Elf_Cmd) command, flags);
 }
 
 jint
-lib::elf::Elf::elf_flagphdr (jint command, jint flags){
-	return ::elf_flagphdr((::Elf*) this->pointer, (Elf_Cmd) command, flags);
+lib::elf::Elf::elf_flagphdr (jint command, jint flags)
+{
+  return ::elf_flagphdr((::Elf*) this->pointer, (Elf_Cmd) command, flags);
 }
 
 jstring
-lib::elf::Elf::elf_strptr (jlong index, jlong offset){
-	char* strptr = ::elf_strptr((::Elf*) this->pointer, (size_t) index, (size_t) offset);
-	return JvNewString((const jchar*) strptr, strlen(strptr));
+lib::elf::Elf::elf_strptr (jlong index, jlong offset)
+{
+  char* strptr = ::elf_strptr((::Elf*) this->pointer, (size_t) index, (size_t) offset);
+  return JvNewString((const jchar*) strptr, strlen(strptr));
 }
 
 lib::elf::ElfArchiveHeader*
-lib::elf::Elf::elf_getarhdr (){
-	Elf_Arhdr *hdr = ::elf_getarhdr((::Elf*) this->pointer);
+lib::elf::Elf::elf_getarhdr ()
+{
+  Elf_Arhdr *hdr = ::elf_getarhdr((::Elf*) this->pointer);
 	
-	if(hdr == NULL)
-		return NULL;
+  if(hdr == NULL)
+    return NULL;
 		
-	lib::elf::ElfArchiveHeader *header = new lib::elf::ElfArchiveHeader(this);
+  lib::elf::ElfArchiveHeader *header = new lib::elf::ElfArchiveHeader(this);
 	
-	header->name = JvNewString((const jchar*)hdr->ar_name, strlen(hdr->ar_name));
-	header->date = (jlong) hdr->ar_date;
-	header->uid = (jint) hdr->ar_uid;
-	header->gid = (jint) hdr->ar_gid;
-	header->mode = (jint) hdr->ar_mode;
-	header->size = (jlong) hdr->ar_size;
-	header->rawname = JvNewString((const jchar*) hdr->ar_rawname, strlen(hdr->ar_rawname));
+  header->name = JvNewString((const jchar*)hdr->ar_name, strlen(hdr->ar_name));
+  header->date = (jlong) hdr->ar_date;
+  header->uid = (jint) hdr->ar_uid;
+  header->gid = (jint) hdr->ar_gid;
+  header->mode = (jint) hdr->ar_mode;
+  header->size = (jlong) hdr->ar_size;
+  header->rawname = JvNewString((const jchar*) hdr->ar_rawname, strlen(hdr->ar_rawname));
 	
-	return header;
+  return header;
 }
 
 jlong
-lib::elf::Elf::elf_getaroff (){
-	return ::elf_getaroff((::Elf*) this->pointer);
+lib::elf::Elf::elf_getaroff ()
+{
+  return ::elf_getaroff((::Elf*) this->pointer);
 }
 
 jlong
-lib::elf::Elf::elf_rand (jint offset){
-	return ::elf_rand((::Elf*) this->pointer, (size_t) offset);
+lib::elf::Elf::elf_rand (jint offset)
+{
+  return ::elf_rand((::Elf*) this->pointer, (size_t) offset);
 }
 
 jlong
-lib::elf::Elf::elf_getarsym (jlong ptr){
-	return (jlong) ::elf_getarsym((::Elf*) this->pointer, (size_t*)(long) &ptr);
+lib::elf::Elf::elf_getarsym (jlong ptr)
+{
+  return (jlong) ::elf_getarsym((::Elf*) this->pointer, (size_t*)(long) &ptr);
 }
 
 jint
-lib::elf::Elf::elf_cntl (jint command){
-	return ::elf_cntl((::Elf*) this->pointer, (Elf_Cmd) command);
+lib::elf::Elf::elf_cntl (jint command)
+{
+  return ::elf_cntl((::Elf*) this->pointer, (Elf_Cmd) command);
 }
 
 lib::elf::ElfData* lib::elf::Elf::elf_get_raw_data (jlong offset, jlong size)
@@ -411,11 +436,8 @@ lib::elf::ElfData* lib::elf::Elf::elf_get_raw_data (jlong offset, jlong size)
 }
 
 jstring
-lib::elf::Elf::elf_rawfile (jlong ptr){
-	char* file = ::elf_rawfile((::Elf*) pointer, (size_t*)(long) &ptr);
-	return JvNewString((const jchar*) file, strlen(file));
+lib::elf::Elf::elf_rawfile (jlong ptr)
+{
+  char* file = ::elf_rawfile((::Elf*) pointer, (size_t*)(long) &ptr);
+  return JvNewString((const jchar*) file, strlen(file));
 }
-
-#ifdef __cplusplus
-}
-#endif
