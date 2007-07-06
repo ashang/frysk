@@ -1,3 +1,8 @@
+2007-07-06  Mike Cvet  <mcvet@redhat.com>
+
+	* DwflFactory.java (clearDwfl): Edited to eliminate race condition.
+	(clear): Added. Removes everything from the map and closes all Dwfl objects.
+
 2007-06-22  Nurdin Premji  <npremji@redhat.com>
 
 	* DwflFactory.java (createDwfl): Added logging messages.

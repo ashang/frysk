@@ -282,11 +282,11 @@ public class DwflFactory
    * 
    * @param proc the given {@link frysk.proc.Proc}.
    */
-  public static void clearDwfl (Proc proc)
-  {
-    if (dwflMap.containsKey(proc.getId()))
-      dwflMap.remove(proc.getId());
-  }
+  public static void clearDwfl(Proc proc) {
+	Dwfl d = (Dwfl) dwflMap.remove(proc.getId());
+	if (d != null)
+	    d.close();
+    }
 
   /**
    * Clear a Dwfl created for a {@link frysk.proc.Task}. (Example: after an
@@ -299,4 +299,12 @@ public class DwflFactory
     clearDwfl(task.getProc());
   }
 
+  public static void clear () {
+      for (Iterator i = dwflMap.values().iterator(); i.hasNext();) {
+	  Dwfl d = (Dwfl) i.next();
+	  d.close();
+	  i.remove();
+      }
+  }
+  
 }
