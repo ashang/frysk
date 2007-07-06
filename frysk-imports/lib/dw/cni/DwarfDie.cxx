@@ -288,6 +288,7 @@ lib::dw::DwarfDie::get_scopevar_names (jlongArray scopes_arg,
 void
 lib::dw::DwarfDie::get_addr (jlong var_die, jlong pc)
 {
+
   Dwarf_Die *die = (Dwarf_Die*) var_die;
   Dwarf_Attribute loc_attr;
   Dwarf_Op *fb_expr;
@@ -295,12 +296,13 @@ lib::dw::DwarfDie::get_addr (jlong var_die, jlong pc)
   
   if (dwarf_attr_integrate (die, DW_AT_location, &loc_attr))
     {
-      int i = 0;
+      size_t i = 0;
       int nlocs;
       if (pc == 0)
 	nlocs = dwarf_getlocation (&loc_attr, &fb_expr, &fb_len);
       else
 	nlocs = dwarf_getlocation_addr (&loc_attr, pc, &fb_expr, &fb_len, 1);
+
       if (nlocs >= 0)
 	do 
 	  {
@@ -308,7 +310,7 @@ lib::dw::DwarfDie::get_addr (jlong var_die, jlong pc)
 		    fb_expr[i].offset);
 	    i += 1;
 	  }
-	while (i < nlocs);
+	while (i < fb_len);
     }
 }
 
@@ -451,6 +453,7 @@ lib::dw::DwarfDie::get_offset (jlong var_die)
 void
 lib::dw::DwarfDie::get_framebase (jlong var_die, jlong scope_arg, jlong pc)
 {
+
   Dwarf_Die *die = (Dwarf_Die*) var_die;
   Dwarf_Attribute loc_attr;
   Dwarf_Op *fb_expr;
@@ -460,8 +463,9 @@ lib::dw::DwarfDie::get_framebase (jlong var_die, jlong scope_arg, jlong pc)
   
   if (dwarf_attr_integrate (die, DW_AT_location, &loc_attr) >= 0)
     {
-      int i = 0;
+      size_t i = 0;
       code = dwarf_getlocation (&loc_attr, &fb_expr, &fb_len);
+
       if (fb_expr[0].atom != DW_OP_fbreg)
 	return;
 
@@ -477,7 +481,7 @@ lib::dw::DwarfDie::get_framebase (jlong var_die, jlong scope_arg, jlong pc)
 		    fb_expr[i].offset);
 	    i += 1;
 	  }
-	while (i < code);
+	while (i < fb_len);
       return;
     }
 }

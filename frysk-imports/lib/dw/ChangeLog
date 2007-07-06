@@ -1,3 +1,9 @@
+2007-07-06  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* cni/DwarfDie.cxx (get_framebase): Changed the while loop to
+	check fb_len instead of code.
+	(get_addr): Ditto.
+
 2007-07-05  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DwarfDie.java: Removed unused import.
