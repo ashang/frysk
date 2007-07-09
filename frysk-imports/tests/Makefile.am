@@ -502,3 +502,11 @@ XFAIL_TESTS += frysk4282/StackAccessors
 systests_PASS_PROGRAM += frysk3754/readproc
 
 systests_PASS_PROGRAM += frysk3754/daemonreadproc
+
+# Does GCJ generate a dependency list?
+PASS_TESTS += frysk4742/java.sh
+frysk4742/java.sh:
+	mkdir -p frysk4742
+	echo $(GCJ) -M -I$(srcdir) $(srcdir)/frysk4742/Referer.java \
+		\| grep Referee > $@
+	chmod a+x $@

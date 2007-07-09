@@ -1,3 +1,10 @@
+2007-07-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk4742/java.sh): New rule.
+	(XFAIL_TESTS): Add.
+	* frysk4742/Referer.java: New file.
+	* frysk4742/Referee.java: New file.
+
 2007-06-28  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Makefike.am (frysk4704_vdso_permissions_CFLAGS): Add
