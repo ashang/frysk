@@ -1,3 +1,10 @@
+2007-07-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Frame.java: Update; Replace DwflFactory with DwflCache.
+	* StackAccessors.java: Ditto.
+	* RemoteFrame.java: Ditto.
+	* StackFactory.java: Ditto.
+
 2007-07-04  Andrew Cagney  <cagney@redhat.com>
 
 	* TestStackBacktrace.java: Replace brokenXXX with unresolved.

@@ -39,36 +39,21 @@
 
 package frysk.dwfl;
 
-import java.util.Iterator;
-import java.util.WeakHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import frysk.proc.Auxv;
 import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
-import frysk.proc.Task;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lib.dw.Dwfl;
 import lib.dw.DwflModule;
 
 /**
- * Factory for creating / updating Dwfl objects for Procs and Tasks.
- * A new Dwfl is created each time a Proc/Task changes.
+ * Factory for creating Dwfl objects for Procs and Tasks.
  */
 public class DwflFactory
 {
-    static Logger logger = Logger.getLogger("frysk");
+    private static Logger logger = Logger.getLogger("frysk");
 
-    /**
-     * Used to cache Dwfl objects per proc.
-     */
-    private static WeakHashMap dwflMap = new WeakHashMap();
-  
-    /**
-     * Used to link tasks to proc based dwfls and
-     */
-    private static WeakHashMap taskMap = new WeakHashMap();
-  
     /**
      * Check whether a given {@link frysk.proc.MemoryMap} from a
      * {@link frysk.proc.Proc} refers to the vdso section.
@@ -109,14 +94,15 @@ public class DwflFactory
      * @param map the given {@link frysk.proc.MemoryMap}.
      * @return true if the map section does not refer to an elf image.
      */
-    private static boolean isEmptyMap (MemoryMap map)
-    {
+    private static boolean isEmptyMap (MemoryMap map) {
 	return map.name.equals("")
 	    || (map.inode == 0 && map.devMinor == 0 && map.devMajor == 0);
     }
 
-    private static Dwfl doDwfl (Proc proc)
-    {
+    /**
+     * Create a new Dwfl. This is package private; use DwflCache.
+     */
+    static Dwfl createDwfl(Proc proc) {
 	MemoryMap[] maps = proc.getMaps();
 
 	Dwfl dwfl = new Dwfl();
@@ -206,87 +192,4 @@ public class DwflFactory
 
 	return dwfl;
     }
-  
-    /**
-     * Create a Dwfl for a {@link frysk.proc.Proc}
-     * 
-     * @param proc the given {@link frysk.proc.Proc}.
-     * @return a Dwfl created with proc's maps.
-     */
-    public static Dwfl createDwfl (Proc proc) {
-	logger.log(Level.FINE, "entering createDwfl, proc: {0}\n", proc);
-	if (dwflMap.containsKey(proc.getId())) {
-	    return (Dwfl) dwflMap.get(proc.getId());
-	}
-	Dwfl dwfl = doDwfl(proc);
-	Iterator iter = proc.getTasks().iterator();
-	while (iter.hasNext()) {
-	    Task task = (Task) iter.next();
-	    taskMap.put(task, new Integer(task.getMod()));
-	}
-	dwflMap.put(proc, dwfl);
-	return dwfl;
-    }
-
-    /**
-     * Create a Dwfl for a {@link frysk.proc.Task}.
-     * 
-     * @param task the given {@link frysk.proc.Task}.
-     * @return a Dwfl created using the tasks maps.
-     */
-    public static Dwfl createDwfl (Task task) {
-	logger.log(Level.FINE, "entering createDwfl, task: {0}\n", task);
-	// Check if this task has changed since (if) a dwfl was last
-	// created.  If it hasn't changed returned the cached dwfl.
-	// If it has changed recreate the dwfl and update the maps.
-	if (taskMap.containsKey(task)) {
-	    logger.log(Level.FINEST, "taskMap contains task, taskMap {0}\n", taskMap);
-	    Integer count = (Integer) taskMap.get(task);
-	    if (count.intValue() == task.getMod()) {
-		logger.log(Level.FINEST, "returning dwfl\n");
-		return (Dwfl) dwflMap.get(task.getProc());
-	    }
-	    taskMap.remove(task);
-	}
-    
-	logger.log(Level.FINEST, "taskMap doesn't contain task\n", taskMap);
-   
-	//createDwfl(proc) adds the dwfl and updates the tasks list.
-	if (dwflMap.containsKey(task.getProc())) {
-	    dwflMap.remove(task.getProc());
-	}
-	return createDwfl(task.getProc());
-    }
-
-    /**
-     * Clear a Dwfl created for a {@link frysk.proc.Proc}. (Example: after an
-     * exec.)
-     * 
-     * @param proc the given {@link frysk.proc.Proc}.
-     */
-    public static void clearDwfl(Proc proc) {
-	Dwfl d = (Dwfl) dwflMap.remove(proc.getId());
-	if (d != null) {
-	    d.close();
-	}
-    }
-
-    /**
-     * Clear a Dwfl created for a {@link frysk.proc.Task}. (Example: after an
-     * exec.)
-     * 
-     * @param task the given {@link frysk.proc.Task}.
-     */
-    public static void clearDwfl (Task task) {
-	clearDwfl(task.getProc());
-    }
-
-    public static void clear () {
-	for (Iterator i = dwflMap.values().iterator(); i.hasNext();) {
-	    Dwfl d = (Dwfl) i.next();
-	    d.close();
-	    i.remove();
-	}
-    }
-  
 }

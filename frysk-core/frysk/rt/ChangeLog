@@ -1,3 +1,11 @@
+2007-07-09  Andrew Cagney  <cagney@redhat.com>
+
+	* LineBreakpoint.java: Update; replace DwflFactory with DwflCache.
+	* BreakpointManager.java: Ditto.
+	* FunctionBreakpoint.java: Ditto.
+	* TaskStepEngine.java: Ditto.
+	* TestFrameDebugInfo.java: Ditto.
+
 2007-07-09  Tim Moore  <timoore@redhat.com>
 
 	* SteppingEngine.java (blockerMap): New variable.

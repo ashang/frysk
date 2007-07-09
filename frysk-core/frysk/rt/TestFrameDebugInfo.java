@@ -47,7 +47,7 @@ import lib.dw.DwTagEncodings;
 import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
-import frysk.dwfl.DwflFactory;
+import frysk.dwfl.DwflCache;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
@@ -110,7 +110,7 @@ public class TestFrameDebugInfo
     Frame frame = StackFactory.createFrame(task);
     frame = frame.getOuter();
     
-    Dwfl dwfl = DwflFactory.createDwfl(task);
+    Dwfl dwfl = DwflCache.getDwfl(task);
     DwflDieBias bias = dwfl.getDie(frame.getAdjustedAddress());
     DwarfDie[] scopes = bias.die.getScopes(frame.getAdjustedAddress() - bias.bias);
     

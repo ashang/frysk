@@ -1,3 +1,8 @@
+2007-07-09  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfo.java: Update; replace DwflFactory with DwflCache.
+	* DebugInfoEvaluator.java: Ditto.
+
 2007-06-28  Stan Cox  <scox@redhat.com>
 
 	* DebugInfo.java (get): Handle NameNotFoundException.

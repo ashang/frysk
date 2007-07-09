@@ -41,7 +41,7 @@ package frysk.stack;
 
 import java.io.File;
 
-import frysk.dwfl.DwflFactory;
+import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.rt.Line;
 import frysk.rt.Symbol;
@@ -257,7 +257,7 @@ public Symbol getSymbol ()
       {
 	if (this.cursor != null)
 	  {
-	    Dwfl dwfl = DwflFactory.createDwfl(task);
+	    Dwfl dwfl = DwflCache.getDwfl(task);
 	    // The innermost frame and frames which were
 	    // interrupted during execution use their PC to get
 	    // the line in source. All other frames have their PC

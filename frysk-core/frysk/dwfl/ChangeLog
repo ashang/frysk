@@ -1,5 +1,11 @@
 2007-07-09  Andrew Cagney  <cagney@redhat.com>
 
+	* DwflFactory.java (dwflMap, tsakMap): Delete.
+	(createDwfl(Proc), createDwfl(Task)): Delete.
+	(clearDwfl(Proc), clearDwfl(Task), clear): Delete.
+	(createDwfl): Rename doDwfl.
+	* DwflCache.java: New file.
+
 	* DwflFactory.java: Re-indent.
 
 2007-07-06  Mike Cvet  <mcvet@redhat.com>

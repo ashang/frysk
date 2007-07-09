@@ -51,7 +51,7 @@ import lib.dw.DwflModule;
 import lib.dw.SymbolBuilder;
 import lib.dw.die.InlinedSubroutine;
 
-import frysk.dwfl.DwflFactory;
+import frysk.dwfl.DwflCache;
 import frysk.proc.Proc;
 
 public class FunctionBreakpoint
@@ -123,7 +123,7 @@ public class FunctionBreakpoint
   }
 
     static LinkedList addressesForSymbol(String name, Proc proc)  {
-	Dwfl dwfl = DwflFactory.createDwfl(proc); // XXX cache Dwfls somewhere?
+	Dwfl dwfl = DwflCache.getDwfl(proc);
 	DwflModule[] modules = dwfl.getModules();
 	final LinkedList addrs = new LinkedList();
 	SymbolBuilder builder = new SymbolBuilder() {

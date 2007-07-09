@@ -48,7 +48,7 @@ import lib.unwind.Cursor;
 import lib.unwind.Unwind;
 import lib.unwind.UnwindX8664;
 import lib.unwind.UnwindX86;
-import frysk.dwfl.DwflFactory;
+import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.rt.Line;
 import frysk.rt.Subprogram;
@@ -180,7 +180,7 @@ public class StackFactory
         
       }else{
 	  stringBuilder.append(frame.toPrint(false));
-	  Dwfl dwfl = DwflFactory.createDwfl(frame.getTask().getProc());
+	  Dwfl dwfl = DwflCache.getDwfl(frame.getTask().getProc());
 	  stringBuilder.append(" from " + dwfl.getModule(frame.getAdjustedAddress()).getName());
       }
       

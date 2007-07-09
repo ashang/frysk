@@ -39,7 +39,7 @@
 
 package frysk.rt;
 
-import frysk.dwfl.DwflFactory;
+import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.rt.states.*;
 import frysk.stack.FrameIdentifier;
@@ -135,7 +135,7 @@ public class TaskStepEngine
   public DwflLine getDwflLine ()
   {
     if (this.dwfl == null)
-      this.dwfl = DwflFactory.createDwfl(task);
+      this.dwfl = DwflCache.getDwfl(task);
     
     DwflLine dline = this.dwfl.getSourceLine(this.task.getIsa().pc(task));
     return dline;

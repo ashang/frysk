@@ -57,7 +57,7 @@ import lib.dw.DwTagEncodings;
 import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
-import frysk.dwfl.DwflFactory;
+import frysk.dwfl.DwflCache;
 import frysk.expr.CppSymTab;
 import frysk.proc.Isa;
 import frysk.proc.Task;
@@ -483,7 +483,7 @@ class DebugInfoEvaluator
     DwarfDie varDie;
     long pc = this.currentFrame.getAdjustedAddress();
 
-    dwfl = DwflFactory.createDwfl(task);
+    dwfl = DwflCache.getDwfl(task);
     DwflDieBias bias = dwfl.getDie(pc);
     if (bias == null)
       return null;

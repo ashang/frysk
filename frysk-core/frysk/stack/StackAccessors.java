@@ -45,6 +45,7 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
+import frysk.dwfl.DwflCache;
 import frysk.dwfl.DwflFactory;
 import frysk.event.Event;
 import frysk.proc.Isa;
@@ -175,7 +176,7 @@ public class StackAccessors
   {
     logger.log(Level.FINE, "Looking for addr: 0x{0}\n", Long.toHexString(addr));
     Dwfl dwfl = null;
-    dwfl = DwflFactory.createDwfl(myTask);
+    dwfl = DwflCache.getDwfl(myTask);
     logger.log(Level.FINEST, "got dwfl: {0}\n", dwfl);
     if (dwfl == null)
       {
