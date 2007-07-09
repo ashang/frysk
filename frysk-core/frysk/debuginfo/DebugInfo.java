@@ -72,7 +72,6 @@ import frysk.expr.CppTreeParser;
 public class DebugInfo
 {
   Proc proc;
-  int pid;
   Elf elf;
   Dwarf dwarf;
   
@@ -87,7 +86,6 @@ public class DebugInfo
   public DebugInfo (Frame frame)
     {
       this.proc = frame.getTask().getProc();
-      this.pid = this.proc.getPid();
       try 
       {
         elf = new Elf(this.proc.getExe(), ElfCommand.ELF_C_READ);
