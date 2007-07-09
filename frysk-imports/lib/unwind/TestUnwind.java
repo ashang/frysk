@@ -61,9 +61,10 @@ public class TestUnwind
   
   public void testCreateCursor()
   {
-    AddressSpace addr = new AddressSpace(new UnwindX8664(), ByteOrder.DEFAULT);
+      Unwind unwind = new UnwindX8664();
+    AddressSpace addr = new AddressSpace(unwind, ByteOrder.DEFAULT);
     
-     Cursor cursor = new Cursor(addr, new Accessors(){
+     Cursor cursor = new Cursor(addr, new Accessors(unwind){
 
       //@Override
       public int accessFPReg (int regnum, byte[] fpvalp, boolean write)

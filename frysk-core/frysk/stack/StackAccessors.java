@@ -80,6 +80,7 @@ public class StackAccessors
 
   StackAccessors (AddressSpace addressSpace, Task task, ByteOrder byteOrder)
   {
+    super(addressSpace.getUnwinder());
     this.addressSpace = addressSpace;
     myTask = task;
   }

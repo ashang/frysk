@@ -37,12 +37,22 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package lib.unwind;
 
 public abstract class Accessors
 {
-  Unwind unwinder;
+    /**
+     * Sanity check that this really is an accessor.
+     */
+    static final int MAGIC = 0xacce550a;
+    final int magic;
+
+    final Unwind unwinder;
+
+    protected Accessors(Unwind unwinder) {
+	this.unwinder = unwinder;
+	this.magic = MAGIC;
+    }
 
   /**
    * Locate the information needed to unwind a particular procedure.

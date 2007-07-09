@@ -1,5 +1,7 @@
 2007-07-09  Andrew Cagney  <cagney@redhat.com>
 
+	* StackAccessors.java: Pass unwinder to super class.
+
 	* StackFactory.java: Use DwflCache.getDwfl(Task).
 	
 	* Frame.java: Update; Replace DwflFactory with DwflCache.

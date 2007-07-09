@@ -1,3 +1,14 @@
+2007-07-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Accessors.java (magic, MAGIC): New fields.
+	(Accessors): New constructor.
+	(unwinder): Delete field.
+	* TestUnwind.java: Update.
+	* cni/UnwindH.hxx (accessor): New method; casts ARG to Accessors.
+	(find_proc_info, put_unwind_info, get_dyn_info_list_addr, resume)
+	(access_mem, access_reg, access_fpreg, min, get_proc_name):
+	Use. Make static.
+
 2007-07-03  Andrew Cagney  <cagney@redhat.com>
 
 	* UnwindException.java: Delete.
