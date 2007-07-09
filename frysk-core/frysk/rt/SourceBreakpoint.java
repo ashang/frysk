@@ -207,7 +207,7 @@ public abstract class SourceBreakpoint
   {
     Proc proc = task.getProc();
 
-    LinkedList addressList = getRawAddressesForProc(proc);
+    LinkedList addressList = getBreakpointRawAddresses(task);
     setAddrs(proc, addressList);
     ProcEntry procEntry = (ProcEntry)procMap.get(proc);
     Iterator bpts = procEntry.addrs.iterator();
@@ -339,11 +339,12 @@ public abstract class SourceBreakpoint
   }
 
   /**
-   * Get all the machine addresses for this breakpoint in a process.
-   * @param proc the process
+   * Get all the machine addresses for this breakpoint using the
+   * stopped task in the process.
+   * @param task the stopped task
    * @return list of addresses
    */
-  public abstract LinkedList getRawAddressesForProc(Proc proc);
+  public abstract LinkedList getBreakpointRawAddresses(Task task);
 
   public abstract PrintWriter output(PrintWriter writer);
 

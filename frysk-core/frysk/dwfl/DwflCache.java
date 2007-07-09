@@ -79,7 +79,7 @@ public class DwflCache
      * @param proc the given {@link frysk.proc.Proc}.
      * @return a Dwfl created with proc's maps.
      */
-    public static Dwfl getDwfl(Proc proc) {
+    private static Dwfl getDwfl(Proc proc) {
 	logger.log(Level.FINE, "entering createDwfl, proc: {0}\n", proc);
 	Dwfl dwfl = (Dwfl) currentDwfls.get(proc); 
 	if (dwfl != null) {

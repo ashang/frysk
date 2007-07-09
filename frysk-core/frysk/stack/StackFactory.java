@@ -178,9 +178,9 @@ public class StackFactory
           stringBuilder.append(subprogram.printScopes());
         }
         
-      }else{
+      } else {
 	  stringBuilder.append(frame.toPrint(false));
-	  Dwfl dwfl = DwflCache.getDwfl(frame.getTask().getProc());
+	  Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
 	  stringBuilder.append(" from " + dwfl.getModule(frame.getAdjustedAddress()).getName());
       }
       

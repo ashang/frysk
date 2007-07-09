@@ -1,3 +1,15 @@
+2007-07-09  Andrew Cagney  <cagney@redhat.com>
+
+	* LineBreakpoint.java (getBreakpointRawAddresses): Replace
+	getRawAddressesForProc, take Task instead of Proc parameter.
+	* SourceBreakpoint.java (getBreakpointRawAddresses): Replace
+	getRawAddressesForProc, take Task instead of Proc parameter.
+	* FunctionBreakpoint.java (getBreakpointRawAddresses): Replace
+	getRawAddressesForProc, take Task instead of Proc parameter.
+	(addressForSymbol): Replace Proc with Task parameter.
+	* BreakpointManager.java (manageProcess): Pass proc's main task to
+	addressForSymbol.
+
 2007-07-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFrameDebugInfo.java (testValues): Added test for variable

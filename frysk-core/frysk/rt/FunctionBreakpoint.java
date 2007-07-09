@@ -50,9 +50,8 @@ import lib.dw.Dwfl;
 import lib.dw.DwflModule;
 import lib.dw.SymbolBuilder;
 import lib.dw.die.InlinedSubroutine;
-
+import frysk.proc.Task;
 import frysk.dwfl.DwflCache;
-import frysk.proc.Proc;
 
 public class FunctionBreakpoint
   extends SourceBreakpoint
@@ -71,7 +70,7 @@ public class FunctionBreakpoint
     this.die = die;
   }
 
-    public LinkedList getRawAddressesForProc(Proc proc) {
+    public LinkedList getBreakpointRawAddresses(Task task) {
 	if (die != null) {
 	    ArrayList entryAddrs = die.getEntryBreakpoints();
 	    ArrayList inlineDies = null;
@@ -94,7 +93,7 @@ public class FunctionBreakpoint
 	    return addrs;
 	}
 	else {
-	    return addressesForSymbol(name, proc);
+	    return addressesForSymbol(name, task);
 	}
     }
 
@@ -122,8 +121,8 @@ public class FunctionBreakpoint
     return writer;
   }
 
-    static LinkedList addressesForSymbol(String name, Proc proc)  {
-	Dwfl dwfl = DwflCache.getDwfl(proc);
+    static LinkedList addressesForSymbol(String name, Task task)  {
+	Dwfl dwfl = DwflCache.getDwfl(task);
 	DwflModule[] modules = dwfl.getModules();
 	final LinkedList addrs = new LinkedList();
 	SymbolBuilder builder = new SymbolBuilder() {

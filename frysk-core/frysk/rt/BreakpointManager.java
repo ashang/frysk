@@ -226,16 +226,17 @@ public class BreakpointManager
     private HashSet managedProcs = new HashSet();
   
     public void manageProcess(final Proc proc) {
+        Task task = proc.getMainTask();
         if (managedProcs.contains(proc))
             return;
         managedProcs.add(proc);
+	// Assume that the Proc's main task is stopped.
         LinkedList sharedLibBptAddrs
-            = FunctionBreakpoint.addressesForSymbol("_dl_debug_state", proc);
+            = FunctionBreakpoint.addressesForSymbol("_dl_debug_state", task);
         if (sharedLibBptAddrs.size() == 0)
             return;
         long sharedLibBptAddr
             = ((Long)sharedLibBptAddrs.getFirst()).longValue();
-        Task task = proc.getMainTask();
         task.requestAddCodeObserver(new TaskObserver.Code() {
                 public Action updateHit(Task task, long address) {
                     refreshBreakpoints(task);

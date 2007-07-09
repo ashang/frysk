@@ -51,7 +51,7 @@ import java.util.logging.LogManager;
 import lib.dw.DwflLine;
 
 import frysk.dwfl.DwflCache;
-import frysk.proc.Proc;
+import frysk.proc.Task;
 
 public class LineBreakpoint
   extends SourceBreakpoint
@@ -95,9 +95,9 @@ public class LineBreakpoint
     return ((Long)addr).longValue();
   }
 
-  public LinkedList getRawAddressesForProc(Proc proc) {
+  public LinkedList getBreakpointRawAddresses(Task task) {
       LinkedList dies
-          = DwflCache.getDwfl(proc)
+          = DwflCache.getDwfl(task)
 	  .getLineAddresses(fileName, lineNumber, column);
       LinkedList result = new LinkedList();
       ListIterator iterator = dies.listIterator();
