@@ -1,5 +1,8 @@
 2007-07-09  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskStepEngine.java (dwfl): Delete.
+	(getDwflLine): Always call DwflCache.getDwfl.
+
 	* LineBreakpoint.java: Update; replace DwflFactory with DwflCache.
 	* BreakpointManager.java: Ditto.
 	* FunctionBreakpoint.java: Ditto.

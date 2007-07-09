@@ -61,9 +61,6 @@ public class TaskStepEngine
   /* The Task for this TaskStepEngine */
   private Task task;
   
-  /* The Dwfl object for task */
-  private Dwfl dwfl;
-  
   /* The current State of task */
   private State state;
   
@@ -126,20 +123,23 @@ public class TaskStepEngine
     return this.steppingEngine;
   }
   
-  /**
-   * Creates the Dwfl object if it hasn't been created yet, and returns its 
-   * current DwflLine object.
-   * 
-   * @return dline The DwflLine for this Engine's Task
-   */
-  public DwflLine getDwflLine ()
-  {
-    if (this.dwfl == null)
-      this.dwfl = DwflCache.getDwfl(task);
-    
-    DwflLine dline = this.dwfl.getSourceLine(this.task.getIsa().pc(task));
-    return dline;
-  }
+    /**
+     * Returns the Task's DwflLine object.
+     * 
+     * @return dline The DwflLine for this Engine's Task
+     *
+     * XXX: If the SourceLine should include information about all
+     * addresses of code for that line then, instead of re-fetching
+     * the source line after each stop, the code can cache the
+     * source/line information across the entire step operation
+     * halting when an address does not fall within the list of
+     * addresses.
+     */
+    public DwflLine getDwflLine () {
+	Dwfl dwfl = DwflCache.getDwfl(task);
+        DwflLine dline = dwfl.getSourceLine(this.task.getIsa().pc(task));
+	return dline;
+    }
   
   /**
    * Returns the current source line for this Task.
