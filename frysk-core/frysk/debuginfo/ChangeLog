@@ -1,5 +1,9 @@
 2007-07-09  Andrew Cagney  <cagney@redhat.com>
 
+	* DebugInfo.java (proc): Delete.
+	(complete): Use the frame's task to find the Dwfl.
+	(what): Ditto.  Delete check for non-null proc.
+	
 	* DebugInfo.java: Re-indent.	
 
 	* DebugInfo.java (pid): Delete.

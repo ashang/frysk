@@ -67,7 +67,6 @@ import lib.elf.Elf;
 import lib.elf.ElfCommand;
 
 public class DebugInfo {
-    Proc proc;
     Elf elf;
     Dwarf dwarf;
   
@@ -80,9 +79,9 @@ public class DebugInfo {
      * @param frame
      */
     public DebugInfo (Frame frame) {
-	this.proc = frame.getTask().getProc();
+	Proc proc = frame.getTask().getProc();
 	try {
-	    elf = new Elf(this.proc.getExe(), ElfCommand.ELF_C_READ);
+	    elf = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
 	    dwarf = new Dwarf(elf, DwarfCommand.READ, null);
 	}
 	catch (lib.elf.ElfException ignore) {
@@ -124,12 +123,9 @@ public class DebugInfo {
      * @return cursor position in buffer
      */
     public int complete (String buffer, int cursor, List candidates) {
-	long pc;
-	Dwfl dwfl;
-      
-	pc = getCurrentFrame().getAdjustedAddress();
-
-	dwfl = DwflCache.getDwfl(proc);
+	Frame frame = getCurrentFrame();
+	long pc = frame.getAdjustedAddress();
+	Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
 	DwflDieBias bias = dwfl.getDie(pc);
 	DwarfDie die = bias.die;
 	String token = "";
@@ -188,15 +184,9 @@ public class DebugInfo {
      */
     public String what(String sInput) throws ParseException,
 					     NameNotFoundException {
-	long pc;
-	Dwfl dwfl;
-      
-	if (proc == null)
-	    throw new NameNotFoundException("No symbol table is available.");
-      
-	pc = getCurrentFrame().getAdjustedAddress();
-
-	dwfl = DwflCache.getDwfl(proc);
+	Frame frame = getCurrentFrame();
+	long pc = frame.getAdjustedAddress();
+	Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
 	DwflDieBias bias = dwfl.getDie(pc);
 	if (bias == null)
 	    throw new NameNotFoundException("No symbol table is available.");
