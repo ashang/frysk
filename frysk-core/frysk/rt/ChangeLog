@@ -1,3 +1,12 @@
+2007-07-09  Tim Moore  <timoore@redhat.com>
+
+	* SteppingEngine.java (blockerMap): New variable.
+	(addBlocker, getBlockers, getAndClearBlockers): New methods for
+	registering blockers with the stepping engine, accessing and
+	removing them.
+	* Breakpoint.java (updateHit): Register observer with the stepping
+	engine.
+
 2007-07-09  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestStepping.java (testASMSingleStep): Add unresolved for bug #4751.

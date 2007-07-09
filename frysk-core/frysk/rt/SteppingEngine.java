@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -78,8 +79,12 @@ public class SteppingEngine
      Package access so Breakpoint.PersistentBreakpoint can get at it. */
   HashSet runningTasks;
 
-  /* Tasks that have hit a breakpoint */
+  /* Map from tasks to breakpoints set for stepping purposes */
   private HashMap breakpointMap;
+
+  /* Map from tasks to blockers that the stepping engine can unblock
+   * to continue stepping. */
+  private HashMap blockerMap;
   
   /* Maps a Proc to an Integer, where the Integer represents the number of
    * Tasks associated with the current context of the process - the number
@@ -108,6 +113,7 @@ public class SteppingEngine
   {
     this.runningTasks = new HashSet();
     this.breakpointMap = new HashMap();
+    this.blockerMap = new HashMap();
     this.contextMap = Collections.synchronizedMap(new HashMap());
     this.taskStateMap = Collections.synchronizedMap(new HashMap());
     this.breakpointManager = new BreakpointManager(this);
@@ -642,15 +648,12 @@ public class SteppingEngine
         if (unblockStepper) {
             task.requestUnblock(this.steppingObserver);
         }
-        TaskObserver[] blockers = (TaskObserver [])task.getBlockers().clone();
-        for (int j = 0; j < blockers.length; j++) {
-            // One of ours?
-            if (blockers[j] instanceof Breakpoint) {
-                task.requestUnblock(blockers[j]);
-            } else {
-                // Some blocker that we don't know about
-                // System.out.println("Unknown blocker " + blockers[j].toString());
-                // return false;
+        LinkedList blockers = getAndClearBlockers(task);
+        if (blockers != null) {
+            ListIterator iter = blockers.listIterator();
+            while (iter.hasNext()) {
+                TaskObserver blocker = (TaskObserver)iter.next();
+                task.requestUnblock(blocker);
             }
         }
         return true;
@@ -1398,4 +1401,43 @@ public class SteppingEngine
   {
     return breakpointManager;
   }
+
+    /**
+     * Add a blocker to the list of blockers that the stepping engine
+     * must unblock before continuing.
+     * @param task the task
+     * @param observer the blocker
+     */
+    public synchronized void addBlocker(Task task, TaskObserver observer) {
+        LinkedList blockerList = (LinkedList)blockerMap.get(task);
+        if (blockerList == null) {
+            blockerList = new LinkedList();
+            blockerMap.put(task, blockerList);
+        }
+        blockerList.add(observer);
+    }
+
+    /**
+     * Get the list of blocking observers that have notified the
+     * stepping engine.
+     * @param task the task
+     * @return list of blockers
+     */
+    public LinkedList getBlockers(Task task) {
+        return (LinkedList)blockerMap.get(task);
+    }
+
+    /**
+     * Get the list of blocking observers that have notified the
+     * stepping engine and clear it.
+     * @param task the task
+     * @return list of blockers
+     */
+    public synchronized LinkedList getAndClearBlockers(Task task) {
+        LinkedList blockers = (LinkedList)blockerMap.get(task);
+        if (blockers != null) {
+            blockerMap.remove(task);
+        }
+        return blockers;
+    }
 }

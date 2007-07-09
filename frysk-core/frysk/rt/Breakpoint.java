@@ -102,6 +102,7 @@ public class Breakpoint implements TaskObserver.Code
       {
         logHit(task, address, "adding instructionobserver {0} 0x{2}");
         task.requestAddInstructionObserver(this.steppingEngine.getSteppingObserver());
+        this.steppingEngine.addBlocker(task, this);
       }
 
     ++triggered;
