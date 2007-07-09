@@ -1,5 +1,7 @@
 2007-07-09  Andrew Cagney  <cagney@redhat.com>
 
+	* TestStepping.java (testASMSingleStep): Remove unresolved 4751.
+
 	* LineBreakpoint.java (getBreakpointRawAddresses): Replace
 	getRawAddressesForProc, take Task instead of Proc parameter.
 	* SourceBreakpoint.java (getBreakpointRawAddresses): Replace
