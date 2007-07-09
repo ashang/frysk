@@ -221,7 +221,7 @@ public class Expect
 	    long timeRemaining = endTime - System.currentTimeMillis ();
 	    if (timeRemaining <= 0) {
 		logger.log (Level.FINE, "{0} match TIMEOUT\n", this);
-		throw new TimeoutException (timeoutSeconds);
+		throw new TimeoutException (timeoutMilliseconds / 1000);
 	    }
 
 	    logger.log (Level.FINE,

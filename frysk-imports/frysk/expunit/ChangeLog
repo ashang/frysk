@@ -1,3 +1,8 @@
+2007-07-09  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Expect.java (expectMilliseconds): Use supplied milli seconds for
+	reporting TimeoutException.
+	
 2007-04-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Expect.java (defaultTimeoutSeconds, setDefaultTimeoutSeconds)
