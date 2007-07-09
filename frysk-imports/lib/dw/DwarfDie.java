@@ -396,6 +396,12 @@ abstract public class DwarfDie
     return typeStr;
   }
   
+  public StringBuilder toPrint(){
+      StringBuilder stringBuilder = new StringBuilder();
+      stringBuilder.append(DwTagEncodings.toName(this.getTag()) + " Name: " + this.getName());
+      return stringBuilder;
+  }
+  
 /**
  * Get die for static symbol sym in dw. 
  * @param dw

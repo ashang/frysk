@@ -137,6 +137,11 @@ public class TestFrameDebugInfo
     assertNotNull(variable);
     assertEquals("Name", variable.getVariable().getText(), "param3");
     assertEquals("Value", variable.getValue(frame).intValue(), 3);
+    
+    variable = (Variable) subprogram.getVariables().getFirst();
+    assertNotNull(variable);
+    assertEquals("Name", variable.getVariable().getText(), "var4");
+    assertEquals("Value", variable.getValue(frame).intValue(), 4);
         
   }
 

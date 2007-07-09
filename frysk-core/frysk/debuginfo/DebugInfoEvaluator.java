@@ -223,6 +223,7 @@ class DebugInfoEvaluator
   class AccessMemory
       implements VariableAccessor
   {
+      
     /**
      * Given a variable's Die return its address.
      * 
@@ -231,43 +232,76 @@ class DebugInfoEvaluator
      */
     protected long getBufferAddr (DwarfDie varDieP) throws NameNotFoundException
     {
-      long pc;
+	
+      long pc = currentFrame.getAdjustedAddress();
+      long address = 0;
+      int reg = 0;
+      
       // ??? Do we need an isa specific way to get x86 reg numbers?
       int[] x86regnumbers = { 0, 2, 1, 3, 7, 6, 4, 5 };
 
-      pc = currentFrame.getAdjustedAddress();
+      List ops = varDieP.getAddr();     
 
-      List ops = varDieP.getAddr();      
-      if (ops.size() == 0 ||
-          ((DwarfDie.DwarfOp)ops.get(0)).operator == -1)
-	  throw new NameNotFoundException();
-      if (((DwarfDie.DwarfOp)ops.get(0)).operator == DwOpEncodings.DW_OP_addr_)
-        {
-          return ((DwarfDie.DwarfOp)ops.get(0)).operand1;
-        }
-      long addr = ((DwarfDie.DwarfOp)ops.get(0)).operand1;
+      if (ops.size() == 0 || ((DwarfDie.DwarfOp) ops.get(0)).operator == -1){
+//	  throw new RuntimeException("Expression evaluation failed for die:\n\t" + varDieP.toPrint());
+	  throw new NameNotFoundException("Expression evaluation failed for die:\n\t" + varDieP.toPrint());
+      }
       
-      ops = varDieP.getFrameBase(pc);
-      if (ops.size() == 0 ||
-          ((DwarfDie.DwarfOp)ops.get(0)).operator == -1)
-	  throw new NameNotFoundException();
-      int reg = ((DwarfDie.DwarfOp)ops.get(0)).operator;
-      if (reg >= DwOpEncodings.DW_OP_reg0_ && reg <= DwOpEncodings.DW_OP_reg31_)
-	  reg = reg - DwOpEncodings.DW_OP_reg0_;
-      else if (reg >= DwOpEncodings.DW_OP_breg0_ && reg <= DwOpEncodings.DW_OP_breg31_)
-	  reg = reg - DwOpEncodings.DW_OP_breg0_;
+      int operator = ((DwarfDie.DwarfOp) ops.get(0)).operator;
+      int operand1 = ((DwarfDie.DwarfOp) ops.get(0)).operand1;
+      
+      boolean handled = false;
+      
+      // This is a static variable the value of
+      // which is stored at memory address operand1
+      if(operator == DwOpEncodings.DW_OP_addr_){
+	  handled = true;
+	  return operand1;
+      }
+      
+      // The value of this variable is stored a memory
+      // location that is operand1 bytes from the frame
+      // base.
+      // Given a value of a frame base such as DW_OP_breg31 64,
+      // the value of the variable will be stored at: frame base
+      // + operand1 + 64
+      if(operator == DwOpEncodings.DW_OP_fbreg_){
+	  address = operand1;
+	  ops = varDieP.getFrameBase(pc);
+	  operator = ((DwarfDie.DwarfOp) ops.get(0)).operator;
+	  operand1 = ((DwarfDie.DwarfOp) ops.get(0)).operand1;
+	  handled = true;
+      }
+
+      // The value of the variable is stored register n
+      if(operator >= DwOpEncodings.DW_OP_reg0_ && operator <= DwOpEncodings.DW_OP_reg31_){
+	  reg = operator - DwOpEncodings.DW_OP_reg0_;
+	  handled = true;
+      }
+      
+      // The value is stored in a memory location that
+      // is operater1 bytes from the value stored in  
+      // register n
+      if(operator >= DwOpEncodings.DW_OP_breg0_ && operator <= DwOpEncodings.DW_OP_breg31_){
+	  reg = operator - DwOpEncodings.DW_OP_breg0_;
+	  handled = true;
+      }
+      
+      if(!handled){
+	  throw new RuntimeException("Did not handle operator " + DwOpEncodings.toName(operator));
+      }
+      
       long regval = 0;
       
-      // DW_OP_fbreg
       Isa isa = currentFrame.getTask().getIsa();
       if (isa instanceof frysk.proc.IsaIA32)
         regval = swapBytes(currentFrame.getReg(x86regnumbers[reg]));
       else if (isa instanceof frysk.proc.IsaX8664)
         regval = swapBytes(currentFrame.getReg(reg));
 
-      addr += ((DwarfDie.DwarfOp)ops.get(0)).operand1;
-      addr += regval;
-      return addr;
+      address += regval + operand1;
+      
+      return address;
     }
 
     public long getAddr (String s) throws NameNotFoundException
@@ -786,7 +820,7 @@ class DebugInfoEvaluator
   public Value get (DwarfDie varDie) throws NameNotFoundException
   {
     VariableAccessor[] variableAccessor = { new AccessMemory(),
-                                           new AccessRegisters() };
+	                                   new AccessRegisters()};
     ByteOrder byteorder = task.getIsa().getByteOrder();
 
     if (varDie == null)
@@ -812,7 +846,6 @@ class DebugInfoEvaluator
             case BaseTypes.baseTypeInteger:
             case BaseTypes.baseTypeUnsignedInteger:
             {
-        	
               int intVal = variableAccessor[i].getInt(varDie, 0);
               return ArithmeticType.newIntegerValue(intType, s, intVal);
             }

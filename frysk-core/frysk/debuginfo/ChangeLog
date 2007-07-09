@@ -1,3 +1,8 @@
+2007-07-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DebugInfoEvaluator.java (AccessMemory.getBufferAddr): Reorganized function.
+	Added non DW_OP_fbreg_ handling.
+
 2007-07-09  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfo.java (proc): Delete.
