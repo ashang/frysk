@@ -1,3 +1,15 @@
+2007-07-09  Mark Wielaard  <mwielaard@redhat.com>
+
+	Fixes bug #4668
+	* fstep.java: Implement TaskObserver.Code.
+	(updateAttached): Depending on whether or not the user supplied a
+	command line to execute or a pid to trace either put a breakpoint
+	on the first real instruction or start tracing immediately. Return
+	Action.BLOCK.
+	(updateHit): New method.
+	(addedTo): Unblock task.
+	* TestFStep.java: New test.
+
 2007-07-04  Andrew Cagney  <cagney@redhat.com>
 
 	* fstep.java: Do not catch OpcodesException.

@@ -1,3 +1,8 @@
+2007-07-09  Mark Wielaard  <mwielaard@redhat.com>
+
+	* LinuxTaskState.java (wantToAttachContinue): Add
+	handleAddObservation() and handleUnblock().
+	
 2007-07-05  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxTask.java: Replace frysk.proc.TaskEvent with

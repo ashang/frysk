@@ -534,6 +534,22 @@ class LinuxTaskState
 		    logger.log (Level.FINE, "{0} handleSignaledEvent\n", task);
 		    return blockOrAttachContinue (task, signal);
 		}
+
+	      // Adding or removing observers doesn't impact this state.
+	      public TaskState handleAddObservation(Task task,
+						    TaskObservation to)
+	      {
+		logger.log (Level.FINE, "{0} handleAddObservation\n", task);
+		to.add();
+		return this;
+	      }
+	      public TaskState handleUnblock (Task task,
+					      TaskObserver observer)
+	      {
+		logger.log (Level.FINE, "{0} handleUnblock\n", task); 
+		task.blockers.remove(observer);
+		return this;
+	      }
 	    };
 	/**
 	 * The task has stopped; just waiting for all the blockers to

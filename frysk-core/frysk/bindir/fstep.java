@@ -47,6 +47,7 @@ import java.util.*;
 
 public class fstep
   implements TaskObserver.Attached,
+  TaskObserver.Code,
   TaskObserver.Instruction,
   TaskObserver.Terminated
 {
@@ -194,10 +195,43 @@ public class fstep
 
     tasks.put(task, Long.valueOf(0));
 
-    task.requestAddTerminatedObserver(this);
-    task.requestAddInstructionObserver(this);
-    return Action.CONTINUE;
+    // If this is an attach for a command given on the command line
+    // then we want to start stepping at the actual start of the
+    // process (and not inside the dynamic linker).
+    long startAddress = 0;
+    if (command != null && command.length != 0)
+      {
+	Auxv[] auxv = task.getProc().getAuxv ();
+	for (int i = 0; i < auxv.length; i++)
+	  {
+	    if (auxv[i].type == inua.elf.AT.ENTRY)
+	      {
+		startAddress = auxv[i].val;
+		break;
+	      }
+	  }
+      }
+
+    if (startAddress == 0)
+      {
+	// Immediately start tracing steps.
+	task.requestAddInstructionObserver(this);
+	task.requestAddTerminatedObserver(this);
+      }
+    else
+      task.requestAddCodeObserver(this, startAddress);
+    return Action.BLOCK;
   }
+
+  // TaskObserver.Code interface
+  public Action updateHit(Task task, long address)
+  {
+    task.requestDeleteCodeObserver(this, address);
+    task.requestAddInstructionObserver(this);
+    task.requestAddTerminatedObserver(this);
+    return Action.BLOCK;
+  }
+
 
   // TaskObserver.Terminated interface
   public Action updateTerminated(Task task, boolean signal, int exit)
@@ -240,7 +274,8 @@ public class fstep
 
   public void addedTo (Object observable)
   {
-    // Unused
+    Task task = (Task) observable;
+    task.requestUnblock(this);
   }
 
   public void addFailed (Object observable, Throwable w)
