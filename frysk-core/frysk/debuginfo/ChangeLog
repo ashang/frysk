@@ -1,5 +1,7 @@
 2007-07-09  Andrew Cagney  <cagney@redhat.com>
 
+	* DebugInfo.java: Re-indent.	
+
 	* DebugInfo.java (pid): Delete.
 
 2007-07-09  Stan Cox  <scox@redhat.com>
