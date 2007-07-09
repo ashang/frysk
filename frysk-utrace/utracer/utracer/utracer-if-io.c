@@ -25,79 +25,6 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Chris Moller");
 
-#if 0
-	   * unsigned long arg_start, arg_end, env_start, env_end;
-	  
-	    printk (KERN_ALERT "  arg_start = %08lx\n", mm->arg_start);
-	    printk (KERN_ALERT "    arg_end = %08lx\n", mm->arg_end);
-
-	    // results in "BUG: unable to handle kernel paging request
-	    // at virtual address bfbff944"  bfbff944 = arg_start
-	    printk (KERN_ALERT "\t arg = \"%.*s\"\n",
-		    (int)(mm->arg_end - mm->arg_start),
-		    (char *)mm->arg_start);
-
-	  
-	    printk (KERN_ALERT "  env_start = %08lx\n", mm->env_start);
-	    printk (KERN_ALERT "    env_end = %08lx\n", mm->env_end);
-
-	    printk (KERN_ALERT "\t env = \"%.*s\"\n",
-		    (int)(mm->env_end - mm->env_start),
-		    (char *)mm->env_start);
-
-
-	    {
-	      // include/linux/mm.h
-	      struct vm_area_struct * mmap = mm->mmap;
-	      
-	      while (mmap) {
-		// struct file deffed in include/linux/fs.h
-		struct file * vm_file = mmap->vm_file;
-	    
-		printk (KERN_ALERT "   vm_start = %08lx\n", mmap->vm_start);
-		printk (KERN_ALERT "     vm_end = %08lx\n", mmap->vm_end);
-		printk (KERN_ALERT "   vm_flags = %08lx\n",   mmap->vm_flags);
-
-		if (vm_file) {
-		  // struct path deffed in include/linux/namei.h
-		  struct path tpath = vm_file->f_path;
-		  // struct vfsmount deffed in nclude/linux/mount.h
-		  struct vfsmount * mnt    = tpath.mnt;
-		  // struct dentry deffed in include/linux/dcache.h
-		  struct dentry * dentry = tpath.dentry;
-
-		  if (mnt) {
-		    struct dentry * mnt_mountpoint = mnt->mnt_mountpoint;
-		    struct dentry * mnt_root       = mnt->mnt_root;
-
-		    if (mnt_mountpoint) {
-		      struct qstr d_name = mnt_mountpoint->d_name;
-		      printk (KERN_ALERT "   mnt_mountpoint = \"%s\"\n",
-			      d_name.name);
-		    }
-		    if (mnt_root) {
-		      struct qstr d_name = mnt_root->d_name;
-		      printk (KERN_ALERT "   mnt_root = \"%s\"\n",
-			      d_name.name);
-		    }
-		  }
-
-		  if (dentry) {
-		    // struct qstr deffed in include/linux/dcache.h
-		    struct qstr d_name = dentry->d_name;
-		    printk (KERN_ALERT "   vm_file = \"%s\"\n", d_name.name);
-		  }
-		}
-		mmap = mmap->vm_next;
-	      }
-	    }
-	    task_unlock(task);
-	    up_read(&mm->mmap_sem);
-	    mmput(mm);
-	  }
-	}
-#endif
-
 static void
 queue_response (utracing_info_s * utracing_info_found,
 		void * resp,   int resp_len,
@@ -351,12 +278,13 @@ attach_cmd_fcn (long utracing_pid, long utraced_pid,
 		long quiesce, long exec_quiesce)
 {
   int rc;
-  struct task_struct * task = get_task (utraced_pid);
-  
-  utracing_info_s * utracing_info_found =
-    lookup_utracing_info (utracing_pid);
+  utracing_info_s * utracing_info_found;
+
+  utracing_info_found = lookup_utracing_info (utracing_pid);
     
   if (utracing_info_found) {
+    struct task_struct * task = get_task (utraced_pid);
+
     if (task) {
       struct utrace_attached_engine * engine;
       engine = utrace_attach (task,
@@ -402,7 +330,8 @@ attach_cmd_fcn (long utracing_pid, long utraced_pid,
 		      NULL, 0);
     }
   }
-  else rc = -UTRACER_ETRACING;
+  else
+    rc = -UTRACER_ETRACING;
 
   return rc;
 }

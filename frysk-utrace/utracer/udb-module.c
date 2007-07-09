@@ -26,12 +26,12 @@ utracer_loaded()
   char * proc_utrace_fn;
   int rc = 1;
   
-  asprintf (&proc_utrace_fn, "/proc/%s", BASE_DIR);
+  asprintf (&proc_utrace_fn, "/proc/%s", UTRACER_BASE_DIR);
   src = stat(proc_utrace_fn, &buf);
   free(proc_utrace_fn);
   if (-1 == src) {
     if (errno != ENOENT)
-      error (1, errno, "Error statting /proc/%s", BASE_DIR);
+      error (1, errno, "Error statting /proc/%s", UTRACER_BASE_DIR);
     rc = 0;
   }
   return rc;
@@ -55,7 +55,10 @@ load_utracer()
 	if (-1 == rc)
 	  error (1, errno, "Error in loader execlp");
       }
-      else fprintf (stderr, "WARNING: No module loaded!\n");
+      else {
+	fprintf (stderr, "ERROR: No module loaded!\n");
+	_exit (0);
+      }
     }
     break;
   default:	// parent
@@ -64,8 +67,8 @@ load_utracer()
       waitpid (child_pid, &status, 0);
       if (!utracer_loaded()) {	/* /proc/utrace still doesn't exist */
 	if (WIFEXITED(status)) {	/* even though the child exited ok  */
-	  fprintf (stderr, "\tLoader failed for no identifiable reason\n");
-	  exit (1);
+	  fprintf (stderr, "\tLoader failed.\n");
+	  _exit (1);
 	}
 	else				/* child came to sad, untimely, end */
 	  error (1, errno, "Error in loader");
@@ -73,7 +76,7 @@ load_utracer()
 
       {
 	char * cfn;
-	asprintf (&cfn, "/proc/%s/%s", BASE_DIR, CONTROL_FN);
+	asprintf (&cfn, "/proc/%s/%s", UTRACER_BASE_DIR, UTRACER_CONTROL_FN);
 	ctl_file_fd = open (cfn, O_RDWR);
 	free (cfn);
 	if (-1 == ctl_file_fd)
@@ -108,7 +111,7 @@ unload_utracer()
       waitpid (child_pid, &status, 0);
       if (utracer_loaded()) {	/* /proc/utrace still exists */
 	if (WIFEXITED(status))	/* even though the child exited ok  */
-	  fprintf (stderr, "\tUnloader failed for no identifiable reason\n");
+	  fprintf (stderr, "\tUnloader failed.\n");
 	else			/* child came to sad, untimely, end */
 	  perror ("Error in unloader");
       }

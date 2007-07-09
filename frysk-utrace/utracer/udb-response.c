@@ -21,6 +21,10 @@ resp_listener (void * arg)
   while (1) {
     sz = pread (utracer_resp_file_fd, &if_resp,
 		sizeof(if_resp), 0);
+    if (-1 == sz) {
+      uerror ("Response pread.");
+      _exit (4);
+    }
     
     switch (if_resp.type) {
     case IF_RESP_PRINTMMAP_DATA:
@@ -80,7 +84,7 @@ resp_listener (void * arg)
 	if (0 < prm.nr_mmaps) {
 	  int i;
 
-	  fprintf (stdout, "\t\tMemory maps:\n\t\t  start      end      flags    mount\n");
+	  fprintf (stdout, "\t\tMemory maps:\n\t\t  start      end      flags    pathname\n");
 
 	  for (i = 0; i < prm.nr_mmaps; i++) {
 	    char * fn1;

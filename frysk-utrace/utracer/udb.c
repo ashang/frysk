@@ -37,10 +37,12 @@ cleanup_udb()
 
   
   if (-1 != utracer_cmd_file_fd) {
+    fprintf (stderr, "closing cmd file\n");
     close (utracer_cmd_file_fd);
     utracer_cmd_file_fd = -1;
   }
   if (-1 != utracer_resp_file_fd) {
+    fprintf (stderr, "closing resp file\n");
     close (utracer_resp_file_fd);
     utracer_resp_file_fd = -1;
   }
@@ -169,7 +171,8 @@ main (int ac, char * av[])
   {
     char * cfn;
     
-    asprintf (&cfn, "/proc/%s/cmd_%ld", BASE_DIR, udb_pid);
+    asprintf (&cfn, "/proc/%s/%ld/%s", UTRACER_BASE_DIR,
+	      udb_pid, UTRACER_CMD_FN);
     utracer_cmd_file_fd = open (cfn, O_WRONLY);
     free (cfn);
     if (-1 == utracer_cmd_file_fd) {
@@ -178,7 +181,8 @@ main (int ac, char * av[])
       error (1, errno, "Error opening control file");
     }
     
-    asprintf (&cfn, "/proc/%s/resp_%ld", BASE_DIR, udb_pid);
+    asprintf (&cfn, "/proc/%s/%ld/%s", UTRACER_BASE_DIR,
+	      udb_pid, UTRACER_RESP_FN);
     utracer_resp_file_fd = open (cfn, O_RDONLY);
     free (cfn);
     if (-1 == utracer_resp_file_fd) {

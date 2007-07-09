@@ -1,3 +1,10 @@
+Mon Jul  9 15:29:35 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-module.c: Minor cleanup.
+	* udb.c:
+	* udb-response.c: Switched to new directory structure in
+	/proc/utrace.
+
 Fri Jul  6 12:10:16 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-response.c: Added a report formatter for printmmap results.

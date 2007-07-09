@@ -82,7 +82,8 @@ create_utraced_info_entry (utracing_info_s * utracing_info_entry,
 
     return 0;
   }
-  else return -UTRACER_ETRACING;
+  else
+    return -UTRACER_ETRACING;
 }
 
 /*
@@ -127,9 +128,9 @@ remove_utraced_info_entry (utracing_info_s * utracing_info_entry,
  */
 int
 create_utracing_info_entry (long utracing_pid,
-			    char * utracing_cmd_pid_string,
-			    char * utracing_resp_pid_string,
-			    struct proc_dir_entry * de_utracing_control,
+			    char * client_pid_dir,
+			    struct proc_dir_entry * de_utracing_client,
+			    struct proc_dir_entry * de_utracing_cmd,
 			    struct proc_dir_entry * de_utracing_resp,
 			    struct utrace_attached_engine * utracing_engine)
 {
@@ -146,9 +147,9 @@ create_utracing_info_entry (long utracing_pid,
   utracing_info_new->prev = NULL;
     
   utracing_info_new->utracing_pid		= utracing_pid;
-  utracing_info_new->utracing_cmd_pid_string	= utracing_cmd_pid_string;
-  utracing_info_new->utracing_resp_pid_string	= utracing_resp_pid_string;
-  utracing_info_new->de_utracing_control	= de_utracing_control;
+  utracing_info_new->client_pid_dir		= client_pid_dir;
+  utracing_info_new->de_utracing_client		= de_utracing_client;
+  utracing_info_new->de_utracing_cmd		= de_utracing_cmd;
   utracing_info_new->de_utracing_resp		= de_utracing_resp;
   utracing_info_new->utracing_engine		= utracing_engine;
   utracing_info_new->utraced_info		= NULL;
@@ -178,18 +179,20 @@ remove_utracing_info_entry (utracing_info_s * utracing_info_entry)
     if (task && utracing_info_entry->utracing_engine)
       utrace_detach (task, utracing_info_entry->utracing_engine);
     
-    if (de_utrace && utracing_info_entry->utracing_cmd_pid_string)
-      remove_proc_entry (utracing_info_entry->utracing_cmd_pid_string,
+    if (utracing_info_entry->de_utracing_client)
+      remove_proc_entry (UTRACER_CMD_FN,
+			 utracing_info_entry->de_utracing_client);
+    
+    if (utracing_info_entry->de_utracing_client)
+      remove_proc_entry (UTRACER_RESP_FN,
+			 utracing_info_entry->de_utracing_client);
+    
+    if (de_utrace && utracing_info_entry->client_pid_dir)
+      remove_proc_entry (utracing_info_entry->client_pid_dir,
 			 de_utrace);
     
-    if (de_utrace && utracing_info_entry->utracing_resp_pid_string)
-      remove_proc_entry (utracing_info_entry->utracing_resp_pid_string,
-			 de_utrace);
-    
-    if (utracing_info_entry->utracing_cmd_pid_string)
-      kfree (utracing_info_entry->utracing_cmd_pid_string);
-    if (utracing_info_entry->utracing_resp_pid_string)
-      kfree (utracing_info_entry->utracing_resp_pid_string);
+    if (utracing_info_entry->client_pid_dir)
+      kfree (utracing_info_entry->client_pid_dir);
     for (utraced_info_this = utracing_info_entry->utraced_info;
 	 utraced_info_this;
 	 utraced_info_this =
@@ -287,26 +290,18 @@ locate_engine (long utracing_pid, long utraced_pid)
 
 static int __init utracer_init(void)
 {
+  de_utrace = proc_mkdir(UTRACER_BASE_DIR, NULL);
 
-  de_utrace = create_proc_entry(BASE_DIR, S_IFDIR | 0777, NULL);
-
-  if (de_utrace == NULL) {
-    remove_proc_entry(BASE_DIR, &proc_root);
+  if (!de_utrace) {
+    remove_proc_entry(UTRACER_BASE_DIR, &proc_root);
     return -ENOMEM;
   }
 
-  de_utrace->owner     = THIS_MODULE;
-  de_utrace->mode      = S_IFDIR | 0777;
-  de_utrace->uid       = 0;
-  de_utrace->gid       = 0;
-  de_utrace->size      = 0;
-
-  de_utrace_control = create_proc_entry(CONTROL_FN,
+  de_utrace_control = create_proc_entry(UTRACER_CONTROL_FN,
                                         S_IFREG | 0666, de_utrace);
 
-
-  if (de_utrace_control == NULL) {
-    remove_proc_entry(CONTROL_FN, de_utrace);
+  if (!de_utrace_control) {
+    remove_proc_entry(UTRACER_CONTROL_FN, de_utrace);
     return -ENOMEM;
   }
 
@@ -316,11 +311,6 @@ static int __init utracer_init(void)
 #else
   de_utrace_control->read_proc  = NULL;
 #endif
-  de_utrace_control->owner     = THIS_MODULE;
-  de_utrace_control->mode      = S_IFREG | 0666;
-  de_utrace_control->uid       = 0;
-  de_utrace_control->gid       = 0;
-  de_utrace_control->size      = 0;
 
   return 0;
 }
@@ -333,8 +323,8 @@ static void __exit utracer_exit (void)
        utracing_info_entry;
        utracing_info_entry = remove_utracing_info_entry (utracing_info_entry));
 
-  remove_proc_entry (CONTROL_FN, de_utrace);
-  remove_proc_entry (BASE_DIR, &proc_root);
+  remove_proc_entry (UTRACER_CONTROL_FN, de_utrace);
+  remove_proc_entry (UTRACER_BASE_DIR, &proc_root);
 }
 
 module_init (utracer_init);

@@ -1,3 +1,12 @@
+Mon Jul  9 15:32:41 2007  Chris Moller  <cmoller@redhat.com>
+
+	* utracer-if-io.c: Minor cleanup.
+	* utracer-private.h:
+	* utracer.h:
+	* utracer-cf-io.c: 
+	* utracer-base.c: Switched to new /proc/utrace directory
+	structure. 
+
 Fri Jul  6 12:14:31 2007  Chris Moller  <cmoller@redhat.com>
 
 	* utracer-if-io.c:

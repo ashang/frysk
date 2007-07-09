@@ -36,9 +36,9 @@ typedef struct _utraced_info_s {
 
 typedef struct _utracing_info_s {
   long utracing_pid;
-  char * utracing_cmd_pid_string;
-  char * utracing_resp_pid_string;
-  struct proc_dir_entry * de_utracing_control;
+  char * client_pid_dir;
+  struct proc_dir_entry * de_utracing_client;
+  struct proc_dir_entry * de_utracing_cmd;
   struct proc_dir_entry * de_utracing_resp;
   struct utrace_attached_engine * utracing_engine;
   utraced_info_s * utraced_info;
@@ -81,13 +81,13 @@ lookup_utraced_info (utracing_info_s * utracing_info_entry, long utraced_pid);
 utracing_info_s *
 remove_utracing_info_entry (utracing_info_s * utracing_info_entry);
 
-int create_utracing_info_entry (long utracing_pid,
-				char * utracing_pid_string,
-				char * utracing_cmd_pid_string,
-				struct proc_dir_entry * de_utracing_control,
-				struct proc_dir_entry * de_utracing_resp,
-				struct utrace_attached_engine *
-				     utraced_engine);
+int
+create_utracing_info_entry (long utracing_pid,
+			    char * client_pid_dir,
+			    struct proc_dir_entry * de_utracing_client,
+			    struct proc_dir_entry * de_utracing_cmd,
+			    struct proc_dir_entry * de_utracing_resp,
+			    struct utrace_attached_engine * utracing_engine);
 
 utraced_info_s *
 remove_utraced_info_entry (utracing_info_s * utracing_info_entry,

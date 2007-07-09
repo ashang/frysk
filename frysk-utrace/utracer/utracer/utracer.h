@@ -1,8 +1,10 @@
 #ifndef UTRACER_H
 #define UTRACER_H
 
-#define BASE_DIR	"utrace"
-#define CONTROL_FN	"control"
+#define UTRACER_BASE_DIR	"utrace"
+#define UTRACER_CONTROL_FN	"control"
+#define UTRACER_CMD_FN		"cmd"
+#define UTRACER_RESP_FN		"resp"
 
 typedef enum {
   CTL_CMD_NULL,
