@@ -254,6 +254,9 @@ public class TestStepping extends TestLib
     if (unresolvedOnPPC(3277))
       return;
     
+    if (unresolved(4751))
+      return;
+
     initial = true;
     this.lineMap = new HashMap();
     
