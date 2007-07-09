@@ -1,5 +1,7 @@
 2007-07-09  Andrew Cagney  <cagney@redhat.com>
 
+	* DwflCache.java (removeDwfl(Task), removeDwfl(Proc)): Delete.
+
 	* TestDwflCache.java: New file.
 
 	* DwflFactory.java (dwflMap, tsakMap): Delete.

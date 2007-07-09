@@ -48,7 +48,6 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import frysk.dwfl.DwflCache;
 import frysk.proc.Action;
 import frysk.proc.Proc;
 import frysk.proc.ProcObserver;
@@ -239,7 +238,6 @@ public class BreakpointManager
         Task task = proc.getMainTask();
         task.requestAddCodeObserver(new TaskObserver.Code() {
                 public Action updateHit(Task task, long address) {
-                    DwflCache.removeDwfl(proc);
                     refreshBreakpoints(task);
                     return Action.CONTINUE;
                 }

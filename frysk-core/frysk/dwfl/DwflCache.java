@@ -132,29 +132,6 @@ public class DwflCache
 	return dwfl;
     }
 
-    /**
-     * Remove a Dwfl created for a {@link frysk.proc.Proc}. (Example:
-     * after an exec.)
-     * 
-     * @param proc the given {@link frysk.proc.Proc}.
-     */
-    public static void removeDwfl(Proc proc) {
-	Dwfl d = (Dwfl) currentDwfls.remove(proc);
-	if (d != null) {
-	    d.close();
-	}
-    }
-
-    /**
-     * Clear a Dwfl created for a {@link frysk.proc.Task}. (Example:
-     * after an exec.)
-     * 
-     * @param task the given {@link frysk.proc.Task}.
-     */
-    public static void removeDwfl(Task task) {
-	removeDwfl(task.getProc());
-    }
-
     public static void clear() {
 	currentDwfls.clear();
 	for (Iterator i = allDwfls.values().iterator(); i.hasNext();) {

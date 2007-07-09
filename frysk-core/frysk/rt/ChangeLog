@@ -1,5 +1,8 @@
 2007-07-09  Andrew Cagney  <cagney@redhat.com>
 
+	* BreakpointManager.java: Delete call to DwflCache
+	.removeDwfl(Proc).
+
 	* TaskStepEngine.java (dwfl): Delete.
 	(getDwflLine): Always call DwflCache.getDwfl.
 
