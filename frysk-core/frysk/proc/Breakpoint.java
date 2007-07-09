@@ -172,13 +172,18 @@ public class Breakpoint
    */
   private void reset(Task task)
   {
-    ByteBuffer buffer;
-    
-    buffer = task.getMemory();
+    ByteBuffer buffer = task.getMemory();
     buffer.position(address);
     
+    Isa isa = task.getIsa();
+    Instruction bpInstruction = isa.getBreakpointInstruction();
+    byte[] bp = bpInstruction.getBytes();
+
     byte[] bs = origInstruction.getBytes();
-    for (int index = 0; index < bs.length; index++)
+
+    // Only need to put back the part of the original instruction
+    // covered by the breakpoint instruction bytes.
+    for (int index = 0; index < bp.length; index++)
       buffer.putByte(bs[index]);
   }
 

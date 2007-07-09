@@ -1,3 +1,8 @@
+2007-07-09  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Breakpoint.java (reset): Only copy back bytes covered by
+	breakpiont instructions.
+
 2007-07-06  Mike Cvet  <mcvet@redhat.com>
 
 	* TestLib.java (tearDown): Calls DwflFactory.clear().
