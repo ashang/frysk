@@ -1,3 +1,8 @@
+2007-07-09  Adam Jocksch  <ajocksch@redhat.com>
+
+	* ActionsCommand.java (handle): Added comments, now prints out
+	displays as well as breakpoints.
+
 2007-07-05  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DisplayCommand.java (handle): Updated observer to reflect changes

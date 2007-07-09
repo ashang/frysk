@@ -49,7 +49,9 @@ import java.util.Set;
 
 import frysk.proc.Task;
 import frysk.rt.BreakpointManager;
+import frysk.rt.DisplayManager;
 import frysk.rt.SourceBreakpoint;
+import frysk.rt.UpdatingDisplayValue;
 
 class ActionsCommand
     extends CLIHandler
@@ -86,11 +88,29 @@ class ActionsCommand
 
     private static final TaskComparator taskComparator = new TaskComparator();
 
+    /*
+     * Print out the specified actionpoints. These will be filtered as per
+     * the possible arguments in the hpd. We have also added the --display
+     * option, which will output the current displays
+     * (non-Javadoc)
+     * @see frysk.cli.hpd.CLIHandler#handle(frysk.cli.hpd.Command)
+     */
     public void handle(Command cmd) throws ParseException 
     {
+	/*
+	 * TODO: According to the HPD spec, this command outputs a number
+	 * of different types of actionpoints. How do we segment these 
+	 * when displaying them to the user so that they remain readable?
+	 */
+	/*
+	 * TODO: Parse the command arguments and change the output accordingly
+	 */
+	
+	// Print out the breakpoints
 	BreakpointManager bpManager = cli.getSteppingEngine().getBreakpointManager();
 	Iterator iterator = bpManager.getBreakpointTableIterator();
 	PrintWriter outWriter = cli.getPrintWriter();
+	outWriter.println("BREAKPOINTS");
 	while (iterator.hasNext()) {
 	    SourceBreakpoint bpt = (SourceBreakpoint)iterator.next();
 	    outWriter.print(bpt.getId() + " ");
@@ -116,6 +136,22 @@ class ActionsCommand
 		    outWriter.print(" ");
 		}
 	    }
+	    outWriter.println();
+	}
+	
+	// Print out the displays
+	outWriter.println("\nDISPLAYS");
+	iterator = DisplayManager.getDisplayIterator();
+	while(iterator.hasNext())
+	{
+	    UpdatingDisplayValue uDisp = (UpdatingDisplayValue) iterator.next();
+	    outWriter.print(uDisp.getId() + " ");
+	    if(uDisp.isEnabled())
+		outWriter.print(" y ");
+	    else
+		outWriter.print(" n ");
+	    outWriter.print(uDisp.getName() + " ");
+	    outWriter.print(uDisp.getTask().getTaskId().intValue());
 	    outWriter.println();
 	}
     }

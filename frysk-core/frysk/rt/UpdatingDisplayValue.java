@@ -278,6 +278,15 @@ public class UpdatingDisplayValue
       ((DisplayValueObserver) iter.next()).updateUnavailableOutOfScope(this);
   }
   
+  protected void notifyObserversDisabled()
+  {
+    if(observers == null)
+      return;
+    Iterator iter = observers.iterator();
+    while(iter.hasNext())
+      ((DisplayValueObserver) iter.next()).updateDisabled(this);   
+  }
+  
   /*
    * Returns true if newArray is different than the value contained in oldValue
    */

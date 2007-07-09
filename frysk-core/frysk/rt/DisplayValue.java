@@ -83,6 +83,7 @@ class DisplayValue
     varLabel = name;
     myTask = task;
     frameIdentifier = fIdent;
+    num = id;
     refresh();
   }
   

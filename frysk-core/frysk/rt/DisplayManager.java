@@ -41,6 +41,7 @@ package frysk.rt;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import frysk.proc.Task;
@@ -137,7 +138,6 @@ public class DisplayManager {
 	    if(!val.isEnabled())
 		val.enable();
 	    return true;
-		
 	}
 	
 	return false;
@@ -162,6 +162,15 @@ public class DisplayManager {
 	    return true;
 	}
 	return false;
+    }
+    
+    /**
+     * Allows retrieval of all the displays being tracked by this manager
+     * @return An iterator of all the displays known to the manager
+     */
+    public static Iterator getDisplayIterator()
+    {
+	return displaysByNum.values().iterator();
     }
     
 }
@@ -193,9 +202,10 @@ class DisplayMap
 	if(!frameMap.containsKey(fIdent))
 	    return null;
 	
-	Map exprMap = (Map) frameMap.get(text);
+	Map exprMap = (Map) frameMap.get(fIdent);
 	if(!exprMap.containsKey(text))
 	    return null;
+
 	return (UpdatingDisplayValue) exprMap.get(text);
     }
     

@@ -1,3 +1,11 @@
+2007-07-09  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DisplayManager.java (getDisplayIterator): Added.
+	(DisplayMap::get): Fixed bug that would cause a NPE.
+	* DisplayValue.java (DisplayValue): Fixed bug where the id was
+	not getting assigned properly.
+	* UpdatingDisplayValue.java (notifyObserversDisabled): Added.
+
 2007-07-09  Andrew Cagney  <cagney@redhat.com>
 
 	* BreakpointManager.java: Delete call to DwflCache
