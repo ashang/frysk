@@ -1,5 +1,11 @@
 2007-07-09  Andrew Cagney  <cagney@redhat.com>
 
+	* DwflCache.java (Mod): New class.
+	(modMap): New static WeakHashMap.
+	(getDwfl(Proc), currentDwfls, taskMod): Delete.
+	(getDwfl(Task)): Store per-task Dwfl's using modMap.
+	(clear): Clear the modMap.
+
 	* DwflCache.java (getDwfl(Proc)): Make private.
 	
 	* DwflCache.java (removeDwfl(Task), removeDwfl(Proc)): Delete.

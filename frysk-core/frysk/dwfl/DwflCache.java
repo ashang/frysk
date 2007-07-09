@@ -39,7 +39,6 @@
 
 package frysk.dwfl;
 
-import frysk.proc.Proc;
 import frysk.proc.Task;
 import java.util.Iterator;
 import java.util.WeakHashMap;
@@ -57,46 +56,24 @@ public class DwflCache
 {
     private static Logger logger = Logger.getLogger("frysk");
 
+    static private class Mod {
+	final Dwfl dwfl;
+	final int count;
+	Mod(Dwfl dwfl, int count) {
+	    this.dwfl = dwfl;
+	    this.count = count;
+	}
+    }
+
     /**
-     * Cache of per-proc Dwfl objects.
+     * Map from a Task to its most recent Dwfl object.
      */
-    private static WeakHashMap currentDwfls = new WeakHashMap();
-  
-    /**
-     * Table of each task's last modified counter.
-     */
-    private static WeakHashMap taskMod = new WeakHashMap();
+    private static WeakHashMap modMap = new WeakHashMap();
 
     /**
      * Cache of all Dwfl objects.
      */
     private static WeakHashMap allDwfls = new WeakHashMap();
-
-    /**
-     * Return a Dwfl for a {@link frysk.proc.Proc}.  If there is no
-     * Dwfl, create a new one.
-     * 
-     * @param proc the given {@link frysk.proc.Proc}.
-     * @return a Dwfl created with proc's maps.
-     */
-    private static Dwfl getDwfl(Proc proc) {
-	logger.log(Level.FINE, "entering createDwfl, proc: {0}\n", proc);
-	Dwfl dwfl = (Dwfl) currentDwfls.get(proc); 
-	if (dwfl != null) {
-	    return dwfl;
-	}
-	// Create a new Dwfl.
-	dwfl = DwflFactory.createDwfl(proc);
-	// Save it in both the Proc and all cache.
-	currentDwfls.put(proc, dwfl);
-	allDwfls.put(proc, dwfl);
-	taskMod.clear();
-	for (Iterator i = proc.getTasks().iterator(); i.hasNext(); ) {
-           Task task = (Task) i.next();
-           taskMod.put(task, new Integer(task.getMod()));
-	}
-	return dwfl;
-    }
 
     /**
      * return a Dwfl for a {@link frysk.proc.Task}.
@@ -106,34 +83,33 @@ public class DwflCache
      */
     public static Dwfl getDwfl(Task task) {
 	logger.log(Level.FINE, "entering createDwfl, task: {0}\n", task);
-	// Check if this task has changed since (if) a dwfl was last
-	// created.  If it hasn't changed returned the cached dwfl.
-	// If it has changed recreate the dwfl and update the maps.
-	Integer mod = (Integer)taskMod.get(task);
+	// See if the task has an existing Dwfl open, and if it does
+	// and it's mod count matches, return that Dwfl.
+	Mod mod = (Mod)modMap.get(task);
 	if (mod != null) {
-	    logger.log(Level.FINEST, "taskMod contains task, taskMod {0}\n",
-		       taskMod);
-	    if (mod.intValue() == task.getMod()) {
-		logger.log(Level.FINEST, "returning dwfl\n");
-		return getDwfl(task.getProc());
+	    if (mod.count == task.getMod()) {
+		logger.log(Level.FINEST, "returning existing dwfl\n");
+		return mod.dwfl;
 	    }
+	    logger.log(Level.FINEST, "existing dwfl out-of-date\n");
+	    modMap.remove(task);
+	    // FIXME: mod.dwfl.close();
 	}
     
-	logger.log(Level.FINEST, "taskMap doesn't contain task\n", taskMod);
+	logger.log(Level.FINEST, "creating new dwfl for task {0}\n", task);
    
-	// Remove the existing dwfl, creating a new one.
-	taskMod.put(task, new Integer(task.getMod()));
-	// XXX: Should close the removed Dwfl, but at present that
-	// will make a right mess.
-	Dwfl dwfl = (Dwfl)currentDwfls.remove(task.getProc());
-	// XXX: Should close the removed Dwfl, but at present that
-	// will make a right mess.
-	dwfl = getDwfl(task.getProc());
+	Dwfl dwfl = DwflFactory.createDwfl(task.getProc());
+	mod = new Mod(dwfl, task.getMod());
+	modMap.put(task, mod);
+
+	// For cleanup, also save the dwfl using Mod as a key (just
+	// need a unique key).
+	allDwfls.put(mod, dwfl);
 	return dwfl;
     }
 
     public static void clear() {
-	currentDwfls.clear();
+	modMap.clear();
 	for (Iterator i = allDwfls.values().iterator(); i.hasNext();) {
 	    Dwfl d = (Dwfl) i.next();
 	    d.close();
