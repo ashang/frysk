@@ -1,3 +1,10 @@
+2007-07-09  Stan Cox  <scox@redhat.com>
+
+	* ClassType.java (getValue): Add PointerType and FunctionType.
+	(toString): Likewise.
+	* FunctionType.java (getName): Check for no parameters.
+	* PointerType.java (toString): Output as hex.
+
 2007-06-28  Stan Cox  <scox@redhat.com>
 
 	* ClassType.java (baseClass): New.

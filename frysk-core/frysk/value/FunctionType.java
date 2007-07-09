@@ -58,8 +58,7 @@ public class FunctionType
    
   public String toString (Value v)
   {
-    StringBuffer strBuf = new StringBuffer();
-    return strBuf.toString();
+    return "0x" + Long.toHexString(v.getLong());
   }
   
   public String getName ()
@@ -76,7 +75,10 @@ public class FunctionType
 	strBuf.append((String)this.parmNames.get(i));
 	strBuf.append(",");
       }
-    strBuf.setCharAt(strBuf.length() - 1, ')');
+    if (this.parmTypes.size() == 0)
+	strBuf.append(")");
+    else
+	strBuf.setCharAt(strBuf.length() - 1, ')');
     return strBuf.toString();
   }
 
@@ -87,7 +89,7 @@ public class FunctionType
    */
   public FunctionType (ByteOrder endian, String name, Type returnType)
   {
-    super(0, endian, 0, name);
+    super(8, endian, 0, name);
     this.returnType = returnType;
     parmTypes = new ArrayList();
     parmNames = new ArrayList();

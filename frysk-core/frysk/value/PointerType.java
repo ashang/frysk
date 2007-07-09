@@ -43,8 +43,6 @@ package frysk.value;
 import inua.eio.ByteOrder;
 
 
-import lib.dw.BaseTypes;
-
 /**
  * Type for a pointer.
  */
@@ -52,7 +50,7 @@ public class PointerType
     extends Type
 {
     private final Type type;
-
+    
     public Type getType ()
     {
       return type;
@@ -60,7 +58,7 @@ public class PointerType
     
     public String toString (Value v)
     {
-      return v.toString();
+	return "0x" + Long.toHexString(v.getLong());
     }
 
     public String getName ()
@@ -81,7 +79,7 @@ public class PointerType
      */
     public PointerType (ByteOrder endian, Type type, String typeStr)
     {
-      super(8, endian, BaseTypes.baseTypeLong, typeStr);
+      super(8, endian, 0, typeStr);
       this.type = type;
     }
 

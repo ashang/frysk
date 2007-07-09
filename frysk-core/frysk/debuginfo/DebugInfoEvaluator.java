@@ -619,8 +619,17 @@ class DebugInfoEvaluator
         else
           haveTypeDef = false;
         
-        if (memberType != null)
-          typeSize = (int)offset + BaseTypes.getTypeSize(memberType.getBaseType());
+      	if (member.getTag() == DwTagEncodings.DW_TAG_subprogram_)
+      	{
+      	    Value v = getSubprogramValue(member);
+      	    classType.addMember(v.getType(), member.getName(), offset, 0);
+      	    continue;
+      	}
+
+        if (memberType == null)
+            continue;
+
+        typeSize = (int)offset + BaseTypes.getTypeSize(memberType.getBaseType());
         switch (memberType.getBaseType())
         {
         case BaseTypes.baseTypeByte:
@@ -668,30 +677,35 @@ class DebugInfoEvaluator
 	{
 	case DwTagEncodings.DW_TAG_structure_type_:
 	{
-          ClassType memberClassType = getClassType(memberType, dieType.getName());
-          memberClassType.setTypedef(haveTypeDef);
+          ClassType memberClassType = getClassType(memberType, memberType.getName());
+          if (member.getTag() != DwTagEncodings.DW_TAG_inheritance_)
+              memberClassType.setTypedef(haveTypeDef);
           typeSize += memberClassType.getSize();
           typeSize += 4 - (typeSize % 4);             // round up to mod 4
-          classType.addMember(memberClassType, member.getName(), offset, 0);
+          classType.addMember(memberClassType, memberType.getName(), offset, 0);
           continue;
 	}
         
-	case DwTagEncodings.DW_TAG_inheritance_:
-        {
-          ClassType memberClassType = getClassType(memberType, dieType.getName());
-          typeSize += memberClassType.getSize();
-          typeSize += 4 - (typeSize % 4);             // round up to mod 4
-          classType.addMember(memberClassType, member.getName(), offset, 0);
-          classType.setBaseClass();
-          continue;
-        }
-
         case DwTagEncodings.DW_TAG_array_type_:
         {
           ArrayType memberArrayType = getArrayType(memberType, memberType.getChild());
           typeSize += memberArrayType.getSize();
           classType.addMember(memberArrayType, member.getName(), offset, 0);
           continue;
+        }
+        
+        case DwTagEncodings.DW_TAG_pointer_type_:
+        {
+            DwarfDie ptrType = memberType.getUltimateType();
+            ByteOrder byteorder = task.getIsa().getByteOrder();
+            Type memberPtrType;
+            
+            if (ptrType == null)
+              memberPtrType = new PointerType(byteorder, null, "void*");
+            memberPtrType = new PointerType(byteorder, getPointerTarget (ptrType), "*");
+            classType.addMember(memberPtrType, member.getName(), offset, 0);
+            typeSize += memberPtrType.getSize();
+            continue;
         }
 	}
       }

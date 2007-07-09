@@ -147,6 +147,23 @@ public class ClassType
 	abb.order(type.getEndian());
 	return new Value((ArrayType)type, type.name, abb);
       }
+    else if (type instanceof PointerType)
+      {
+	
+	ByteBuffer abb = v.getLocation().getByteBuffer().slice(off,type.size);
+	
+	return new Value((PointerType)type, type.name, abb);
+	
+      }
+    
+    else if (type instanceof FunctionType)
+      {
+	
+	ByteBuffer abb = v.getLocation().getByteBuffer().slice(off,type.size);
+	
+	return new Value((FunctionType)type, type.name, abb);
+	
+      }
     return null;
   }
   
@@ -183,8 +200,13 @@ public class ClassType
     strBuf.append("{");
     while (e.hasNext())
       {
-        strBuf.append(e.nextName() + "=");
-        strBuf.append(e.next() + ",");
+	Value val = (Value)e.next();
+	if (val.getType() instanceof frysk.value.FunctionType == true)
+	  strBuf.append(e.nextName() + "," );
+	else {
+	  strBuf.append(e.nextName() + "=");
+	  strBuf.append(val + ",");
+	}
       }
     strBuf.replace(strBuf.length() - 1, strBuf.length(), "}");
     return strBuf.toString();
@@ -205,7 +227,8 @@ public class ClassType
           strBuf.append(((Type)this.types.get(i)).name + " ");
         else
           strBuf.append(((Type)this.types.get(i)).getName() + " ");
-	strBuf.append((String)this.names.get(i));
+        if (((Type) this.types.get(i)) instanceof frysk.value.FunctionType == false)
+            strBuf.append((String) this.names.get(i));
 	int mask = ((Integer)this.masks.get(i)).intValue();
 	int bitCount = 0;
 	// ??? substitute numberOfBits() for 1.5
