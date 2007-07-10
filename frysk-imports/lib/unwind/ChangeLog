@@ -1,5 +1,9 @@
 2007-07-09  Andrew Cagney  <cagney@redhat.com>
 
+	* Cursor.java: Re-indent.  Make fields final.
+	* ProcInfo.java: Ditto.
+	* AddressSpace.java: Ditto.
+
 	* Accessors.java (magic, MAGIC): New fields.
 	(Accessors): New constructor.
 	(unwinder): Delete field.

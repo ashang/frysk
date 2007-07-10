@@ -45,96 +45,86 @@ import java.util.logging.Level;
 
 public class Cursor
 {
-  Logger logger = Logger.getLogger("frysk");
-  RawDataManaged cursor = null; 
-  Unwind unwinder;
-  AddressSpace addressSpace;
-  Accessors accessors;
-  int step;
+    static final Logger logger = Logger.getLogger("frysk");
+    final RawDataManaged cursor; 
+    final Unwind unwinder;
+    final AddressSpace addressSpace;
+    final Accessors accessors;
+    private int step;
 
-  public Cursor(AddressSpace addressSpace, Accessors accessors)
-  {
-    this(addressSpace, accessors, addressSpace.unwinder.initRemote(addressSpace.addressSpace, accessors),
-         addressSpace.unwinder); 
-  }
+    public Cursor(AddressSpace addressSpace, Accessors accessors) {
+	this(addressSpace, accessors,
+	     addressSpace.unwinder.initRemote(addressSpace.addressSpace,
+					      accessors),
+	     addressSpace.unwinder); 
+    }
   
-  private Cursor(AddressSpace addressSpace, Accessors accessors, RawDataManaged cursor, Unwind unwinder)
-  {
-    logger.log(Level.FINE, "{0} Create Cursor\n", this);
-    this.addressSpace = addressSpace;
-    this.accessors = accessors;
-    this.cursor = cursor;
-    this.unwinder = unwinder;
-    this.step = 1;
-  }
+    private Cursor(AddressSpace addressSpace, Accessors accessors,
+		   RawDataManaged cursor, Unwind unwinder) {
+	logger.log(Level.FINE, "{0} Create Cursor\n", this);
+	this.addressSpace = addressSpace;
+	this.accessors = accessors;
+	this.cursor = cursor;
+	this.unwinder = unwinder;
+	this.step = 1;
+    }
   
-  public boolean isSignalFrame()
-  {
-    return (unwinder.isSignalFrame(cursor) == 1);
-  }
+    public boolean isSignalFrame() {
+	return (unwinder.isSignalFrame(cursor) == 1);
+    }
   
-  public int  getRegister(int regNum, byte[] word)
-  {
-    return unwinder.getRegister(cursor, regNum, word);
-  }
+    public int  getRegister(int regNum, byte[] word) {
+	return unwinder.getRegister(cursor, regNum, word);
+    }
   
-  public int getSP(byte[] word)
-  {
-    return unwinder.getSP(cursor, word);
-  }
+    public int getSP(byte[] word) {
+	return unwinder.getSP(cursor, word);
+    }
   
-  public int setRegister(int regNum, long word)
-  {
-    return unwinder.setRegister(cursor, regNum, word);
-  }
+    public int setRegister(int regNum, long word) {
+	return unwinder.setRegister(cursor, regNum, word);
+    }
   
-  public int step()
-  {
-    return unwinder.step(cursor);
-  }
+    public int step() {
+	return unwinder.step(cursor);
+    }
   
-  public ProcName getProcName(int maxNameSize)
-  {
-    return unwinder.getProcName(cursor, maxNameSize);
-  }
+    public ProcName getProcName(int maxNameSize) {
+	return unwinder.getProcName(cursor, maxNameSize);
+    }
   
-  public ProcName getProcName()
-  {
-    int initialSize = 256;
-    ProcName myName;
-    do
-      {
-      myName = unwinder.getProcName(cursor, initialSize);
-      initialSize *= 2;
-      }
-    while (myName.getError() == - lib.unwind.Error.UNW_ENOMEM_);
-    return myName;
-  }
+    public ProcName getProcName() {
+	int initialSize = 256;
+	ProcName myName;
+	do {
+	    myName = unwinder.getProcName(cursor, initialSize);
+	    initialSize *= 2;
+	} while (myName.getError() == - lib.unwind.Error.UNW_ENOMEM_);
+	return myName;
+    }
   
-  public ProcInfo getProcInfo ()
-	{
-		return unwinder.getProcInfo(cursor);
-	}
+    public ProcInfo getProcInfo () {
+	return unwinder.getProcInfo(cursor);
+    }
   
-  public Cursor unwind()
-  {
-    logger.log(Level.FINE, "{0}, unwind\n", this);
+    public Cursor unwind() {
+	logger.log(Level.FINE, "{0}, unwind\n", this);
 
-    //XXX: Don't unwind if no more frames.
-    if (step == 0)
-      return null;
+	//XXX: Don't unwind if no more frames.
+	if (step == 0)
+	    return null;
     
-    Cursor newCursor = new Cursor(addressSpace, accessors, 
-                                  unwinder.copyCursor(cursor), unwinder);
+	Cursor newCursor = new Cursor(addressSpace, accessors, 
+				      unwinder.copyCursor(cursor), unwinder);
   
-    step = newCursor.step();
+	step = newCursor.step();
     
-    logger.log(Level.FINEST, "{0}, unwind, step returned: {1}\n", 
-               new Object[] {this, new Integer(step)});
+	logger.log(Level.FINEST, "{0}, unwind, step returned: {1}\n", 
+		   new Object[] {this, new Integer(step)});
     
-    if (step > 0)
-      return newCursor;
+	if (step > 0)
+	    return newCursor;
        
-    return null;
-  }  
+	return null;
+    }  
 }

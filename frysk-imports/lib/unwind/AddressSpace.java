@@ -43,29 +43,23 @@ import gnu.gcj.RawData;
 
 public class AddressSpace
 {
-  RawData addressSpace = null;
-  Unwind unwinder;
+    final RawData addressSpace;
+    final Unwind unwinder;
   
-  public Unwind getUnwinder()
-  {
-    return unwinder;
-  }
+    public Unwind getUnwinder() {
+	return unwinder;
+    }
   
-  public AddressSpace(Unwind unwinder, ByteOrder byteOrder)
-  {
-
-    this.unwinder = unwinder;
-    
-    addressSpace = unwinder.createAddressSpace(byteOrder);
-  }
+    public AddressSpace(Unwind unwinder, ByteOrder byteOrder) {
+	this.unwinder = unwinder;
+	addressSpace = unwinder.createAddressSpace(byteOrder);
+    }
   
-  public void setCachingPolicy (CachingPolicy cachingPolicy)
-  {
-    unwinder.setCachingPolicy(addressSpace, cachingPolicy);
-  }
+    public void setCachingPolicy (CachingPolicy cachingPolicy) {
+	unwinder.setCachingPolicy(addressSpace, cachingPolicy);
+    }
   
-  protected void finalize()
-  {
-    unwinder.destroyAddressSpace(addressSpace);
-  }
+    protected void finalize() {
+	unwinder.destroyAddressSpace(addressSpace);
+    }
 }

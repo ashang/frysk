@@ -44,82 +44,70 @@ import gnu.gcj.RawDataManaged;
 
 public class ProcInfo
 {
-  Unwind unwinder;
-  RawDataManaged procInfo;
+    final Unwind unwinder;
+    final RawDataManaged procInfo;
+    final int error;
   
-  int error;
+    public int getError() {
+	return error;
+    }
   
-  public int getError()
-  {
-    return error;
-  }
+    public long getStartIP() {
+	return unwinder.getStartIP(procInfo);
+    }
   
-  public long getStartIP()
-  {
-    return unwinder.getStartIP(procInfo);
-  }
+    long getEndIP() {
+	return unwinder.getEndIP(procInfo);
+    }
   
-  long getEndIP()
-  {
-    return unwinder.getEndIP(procInfo);
-  }
+    long getLSDA() {
+	return unwinder.getLSDA(procInfo);
+    }
   
-  long getLSDA()
-  {
-    return unwinder.getLSDA(procInfo);
-  }
+    long getHandler() {
+	return unwinder.getHandler(procInfo);
+    }
   
-  long getHandler()
-  {
-    return unwinder.getHandler(procInfo);
-  }
+    long getGP() {
+	return unwinder.getGP(procInfo);
+    }
   
-  long getGP()
-  {
-    return unwinder.getGP(procInfo);
-  }
+    long getFlags() {
+	return unwinder.getFlags(procInfo);
+    }
   
-  long getFlags()
-  {
-    return unwinder.getFlags(procInfo);
-  }
+    int getFormat() {
+	return unwinder.getFormat(procInfo);
+    }
   
-  int getFormat()
-  {
-    return unwinder.getFormat(procInfo);
-  }
+    int getUnwindInfoSize() {
+	return unwinder.getUnwindInfoSize(procInfo);
+    }
   
-  int getUnwindInfoSize()
-  {
-    return unwinder.getUnwindInfoSize(procInfo);
-  }
+    RawData getUnwindInfo() {
+	return unwinder.getUnwindInfo(procInfo);
+    }
   
-  RawData getUnwindInfo()
-  {
-    return unwinder.getUnwindInfo(procInfo);
-  }
+    ProcInfo(Unwind unwinder, RawDataManaged procInfo) {
+	this.unwinder = unwinder;
+	this.error = 0;
+	this.procInfo = procInfo; 
+    }
   
-  ProcInfo(Unwind unwinder, RawDataManaged procInfo)
-  {
-    this.unwinder = unwinder;
-    this.error = 0;
-    this.procInfo = procInfo; 
-  }
+    public ProcInfo (int error) {
+	this.error = error;
+	this.unwinder = null;
+	this.procInfo = null;
+    }
   
-  public ProcInfo (int error)
-  {
-     this.error = error;
-  }
-  
-  public String toString()
-  {
-    if (error != 0)
-	  return "ProcInfo Error: " + error;
+    public String toString() {
+	if (error != 0)
+	    return "ProcInfo Error: " + error;
 
-    return "ProcInfo startIP: 0x" + Long.toHexString(getStartIP()) 
-    + " endIP: 0x" + Long.toHexString(getEndIP()) + " lsda: " + getLSDA() + " handler: " +
-    getHandler() + " gp: " + getGP() + " flags: " + getFlags()
-    + " format: " + getFormat() + " unwindInfoSize: " + getUnwindInfoSize() 
-    + " hasUnwindInfo?: " + (getUnwindInfo() != null);
-  }
+	return "ProcInfo startIP: 0x" + Long.toHexString(getStartIP()) 
+	    + " endIP: 0x" + Long.toHexString(getEndIP()) + " lsda: " + getLSDA() + " handler: " +
+	    getHandler() + " gp: " + getGP() + " flags: " + getFlags()
+	    + " format: " + getFormat() + " unwindInfoSize: " + getUnwindInfoSize() 
+	    + " hasUnwindInfo?: " + (getUnwindInfo() != null);
+    }
 }
