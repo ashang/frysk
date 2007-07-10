@@ -1,3 +1,8 @@
+2007-07-10  Andrew Cagney  <cagney@redhat.com>
+
+	* DwflFactory.java (createDwfl(Task): Replace createDwfl(Proc).
+	* DwflCache.java: Update call.
+
 2007-07-09  Andrew Cagney  <cagney@redhat.com>
 
 	* DwflCache.java (Mod): New class.

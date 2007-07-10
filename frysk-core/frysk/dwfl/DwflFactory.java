@@ -42,6 +42,7 @@ package frysk.dwfl;
 import frysk.proc.Auxv;
 import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
+import frysk.proc.Task;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lib.dw.Dwfl;
@@ -102,7 +103,8 @@ public class DwflFactory
     /**
      * Create a new Dwfl. This is package private; use DwflCache.
      */
-    static Dwfl createDwfl(Proc proc) {
+    static Dwfl createDwfl(Task task) {
+	Proc proc = task.getProc();
 	MemoryMap[] maps = proc.getMaps();
 
 	Dwfl dwfl = new Dwfl();
@@ -186,8 +188,10 @@ public class DwflFactory
 	logger.log(Level.FINE, "Main task {0}", proc.getMainTask());
 	logger.log(Level.FINE, "Memory {0}", proc.getMainTask().getMemory());
 	logger.log(Level.FINE, "Dwfl module: {0}\n", module);
+	// XXX: Should this method instead have this block of memory
+	// pre-fetched and passed in?
 	if (module != null) {
-	    module.setUserData(proc.getMainTask().getMemory());
+	    module.setUserData(task.getMemory());
 	}
 
 	return dwfl;
