@@ -1,6 +1,13 @@
 #ifndef UDB_H
 #define UDB_H
 
+#ifdef DO_UDB_INIT
+#define DECL(v,i) v = i
+#else
+#define DECL(v,i) v
+#endif
+
+extern int  exec_cmd(char * iline);
 extern void text_ui();
 extern void text_ui_init();
 extern void utace_attach_if(long pid);
@@ -9,42 +16,23 @@ extern void utrace_readreg_if (long pid, int regset, int reg);
 extern void set_prompt();
 extern void register_utracer(pid_t pid);
 
-pid_t		udb_pid;
+pid_t udb_pid;
 
-char * prompt
-#ifdef DO_UDB_INIT
-= NULL;
-#endif
-;
+DECL (char * prompt, NULL);
 
-long current_pid
-#ifdef DO_UDB_INIT
-= -1
-#endif
-;
+DECL (long current_pid, -1);
 
-int ctl_file_fd
-#ifdef DO_UDB_INIT
-= -1
-#endif
-;
+DECL (int ctl_file_fd, -1);
+DECL (int utracer_cmd_file_fd, -1);
+DECL (int utracer_resp_file_fd, -1);
 
-int utracer_cmd_file_fd
-#ifdef DO_UDB_INIT
-= -1
-#endif
-;
+DECL (char * module_name, NULL);
 
-int utracer_resp_file_fd
-#ifdef DO_UDB_INIT
-= -1
-#endif
-;
+DECL (char ** cl_cmds, NULL);
+DECL (int cl_cmds_next, 0);
+DECL (int cl_cmds_max, 0);
+#define CMDS_INCR	4
 
-char * module_name
-#ifdef DO_UDB_INIT
-= NULL
-#endif
-  ;
+DECL (char * ggg, NULL);
 
 #endif  /* UDB_H */

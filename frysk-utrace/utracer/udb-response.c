@@ -142,6 +142,7 @@ resp_listener (void * arg)
     case IF_RESP_SYSCALL_ENTRY_DATA:
     case IF_RESP_SYSCALL_EXIT_DATA:
       {
+	// fixme -- handle /proc/<pid>/mem to access ptr args
 	syscall_resp_s syscall_resp = if_resp.syscall_resp;
 	long bytes_to_get = syscall_resp.data_length;
 	long bytes_gotten = 0;
@@ -243,6 +244,25 @@ resp_listener (void * arg)
 	death_resp_s death_resp = if_resp.death_resp;
 	fprintf (stdout, "\t[%ld] died\n",
 		 death_resp.utraced_pid);
+	fprintf (stdout, "%s", prompt);
+	fflush (stdout);
+      }
+      break;
+    case IF_RESP_SYNC_DATA:
+      {
+	sync_resp_s sync_resp = if_resp.sync_resp;
+	fprintf (stdout, "\tsync %ld\n",
+		 sync_resp.sync_type);
+
+	if (cl_cmds && (0 < cl_cmds_next)) {
+	  int i;
+
+	  for (i = 0; i < cl_cmds_next; i++) {
+	    fprintf (stderr, "cmd \"%s\"\n", cl_cmds[i]);
+	    exec_cmd (cl_cmds[i]);
+	  }
+	}
+	
 	fprintf (stdout, "%s", prompt);
 	fflush (stdout);
       }

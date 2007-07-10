@@ -44,6 +44,8 @@ typedef struct _utracing_info_s {
   utraced_info_s * utraced_info;
   wait_queue_head_t ifr_wait;
   wait_queue_head_t ifw_wait;
+  wait_queue_head_t ifq_wait;
+  long write_in_progress;
   void * queued_data;
   long queued_data_length;
   struct _utracing_info_s * next;

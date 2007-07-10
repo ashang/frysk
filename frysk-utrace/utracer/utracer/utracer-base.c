@@ -155,8 +155,10 @@ create_utracing_info_entry (long utracing_pid,
   utracing_info_new->utraced_info		= NULL;
   init_waitqueue_head (&(utracing_info_new->ifr_wait));
   init_waitqueue_head (&(utracing_info_new->ifw_wait));
+  init_waitqueue_head (&(utracing_info_new->ifq_wait));
   utracing_info_new->queued_data		= NULL;
   utracing_info_new->queued_data_length		= 0;
+  utracing_info_new->write_in_progress		= 0;
 
   return 0;
 }

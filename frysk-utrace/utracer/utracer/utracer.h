@@ -33,7 +33,8 @@ typedef enum {
   IF_CMD_SWITCHPID,
   IF_CMD_PRINTMMAP,
   IF_CMD_SYSCALL,
-  IF_CMD_QUIESCE
+  IF_CMD_QUIESCE,
+  IF_CMD_SYNC
 } if_cmd_e;
 
 typedef enum {
@@ -58,8 +59,8 @@ typedef struct {
   } syscall_cmd;
   long syscall_nr;
 } syscall_cmd_s;
-#define syscall_cmd_cmd(s)	(s).syscall_cmd.cmd.cmd
-#define syscall_cmd_which(s)	(s).syscall_cmd.cmd.which
+#define syscall_cmd_cmd(s)	(s)->syscall_cmd.cmd.cmd
+#define syscall_cmd_which(s)	(s)->syscall_cmd.cmd.which
 #define SYSCALL_ALL  -1
 
 typedef struct {
@@ -72,6 +73,16 @@ typedef struct {
   long cmd;
   long utracing_pid;
 } listpids_cmd_s;
+
+typedef enum {
+  SYNC_INIT
+} sync_cmd_e;
+
+typedef struct {
+  long cmd;
+  long utracing_pid;
+  long sync_type;
+} sync_cmd_s;
 
 typedef struct {
   long cmd;
@@ -103,13 +114,14 @@ typedef struct {
 
 typedef union {
   long cmd;
-  attach_cmd_s	attach_cmd;
-  readreg_cmd_s	readreg_cmd;
-  run_cmd_s	run_cmd;
-  listpids_cmd_s listpids_cmd;
-  switchpid_cmd_s switchpid_cmd;
-  printmmap_cmd_s printmmap_cmd;
-  syscall_cmd_s syscall_cmd;
+  attach_cmd_s		attach_cmd;
+  readreg_cmd_s		readreg_cmd;
+  run_cmd_s		run_cmd;
+  listpids_cmd_s	listpids_cmd;
+  switchpid_cmd_s	switchpid_cmd;
+  printmmap_cmd_s	printmmap_cmd;
+  syscall_cmd_s		syscall_cmd;
+  sync_cmd_s		sync_cmd;
 } if_cmd_u;
 
 typedef enum {
@@ -126,8 +138,15 @@ typedef enum {
   IF_RESP_SYSCALL_EXIT_DATA,
   IF_RESP_EXEC_DATA,
   IF_RESP_ATTACH_DATA,
-  IF_RESP_QUIESCE_DATA
+  IF_RESP_QUIESCE_DATA,
+  IF_RESP_SYNC_DATA
 } if_resp_e; 
+
+typedef struct {
+  long type;
+  long utracing_pid;
+  long sync_type;
+} sync_resp_s;
 
 typedef struct {
   long type;
@@ -231,6 +250,7 @@ typedef union {
   exec_resp_s		exec_resp;
   quiesce_resp_s	quiesce_resp;
   printmmap_resp_s	printmmap_resp;
+  sync_resp_s		sync_resp;
 } if_resp_u;
 
 typedef enum {

@@ -37,12 +37,10 @@ cleanup_udb()
 
   
   if (-1 != utracer_cmd_file_fd) {
-    fprintf (stderr, "closing cmd file\n");
     close (utracer_cmd_file_fd);
     utracer_cmd_file_fd = -1;
   }
   if (-1 != utracer_resp_file_fd) {
-    fprintf (stderr, "closing resp file\n");
     close (utracer_resp_file_fd);
     utracer_resp_file_fd = -1;
   }
@@ -59,23 +57,16 @@ sigterm_handler (int sig)
 static int unload_module = 1;
 static int default_quiesce = 1;
 
-enum {
-  OPTION_BASE = 256,
-  SYSCALL_ENTRY_ENABLE,
-  SYSCALL_EXIT_ENABLE,
-};
-
 static struct option options[] = {
   {"watch",		required_argument, NULL, (int)'w'},
   {"attach",		required_argument, NULL, (int)'a'},
   {"module",		required_argument, NULL, (int)'m'},
   {"load",		required_argument, NULL, (int)'l'},
   {"run",		required_argument, NULL, (int)'r'},
+  {"cmd",		required_argument, NULL, (int)'c'},
   {"default-quiesce",	no_argument, &default_quiesce, 1},
   {"default-run",	no_argument, &default_quiesce, 0},
   {"no-unload",		no_argument, &unload_module, 0},
-  {"syscall-entry-enable",	no_argument, NULL, SYSCALL_ENTRY_ENABLE},
-  {"syscall-exit-enable",	no_argument, NULL, SYSCALL_EXIT_ENABLE},
   {NULL,0, NULL, 0}
 };
 
@@ -91,21 +82,31 @@ typedef struct {
 static pta_s * pids_to_attach = NULL;
 static int nr_pids_to_attach = 0;
 static int max_pids_to_attach = 0;
-static ptc_s * cmds_to_attach = NULL;
-static int nr_cmds_to_attach = 0;
-static int max_cmds_to_attach = 0;
+static ptc_s * runnables_to_attach = NULL;
+static int nr_runnables_to_attach = 0;
+static int max_runnables_to_attach = 0;
 #define PIDS_TO_ATTACH_INCR	4
 
 static void
-append_cmd (char * oa, long quiesce)
+append_runnable (char * oa, long quiesce)
 {
-  if (max_cmds_to_attach <= nr_cmds_to_attach) {
-    max_cmds_to_attach += PIDS_TO_ATTACH_INCR;
-    cmds_to_attach = realloc (cmds_to_attach,
-			      max_cmds_to_attach * sizeof(ptc_s));
+  if (max_runnables_to_attach <= nr_runnables_to_attach) {
+    max_runnables_to_attach += PIDS_TO_ATTACH_INCR;
+    runnables_to_attach = realloc (runnables_to_attach,
+			      max_runnables_to_attach * sizeof(ptc_s));
   }
-  cmds_to_attach[nr_cmds_to_attach].quiesce = quiesce;
-  cmds_to_attach[nr_cmds_to_attach++].cmd = strdup (oa);
+  runnables_to_attach[nr_runnables_to_attach].quiesce = quiesce;
+  runnables_to_attach[nr_runnables_to_attach++].cmd = strdup (oa);
+}
+
+static void
+append_cmd (char * cmd)
+{
+  if (cl_cmds_max <= cl_cmds_next) {
+    cl_cmds_max += CMDS_INCR;
+    cl_cmds = realloc (cl_cmds, cl_cmds_max * sizeof(char *));
+  }
+  cl_cmds[cl_cmds_next++] = strdup (cmd);
 }
 
 main (int ac, char * av[])
@@ -115,20 +116,17 @@ main (int ac, char * av[])
 
   signal (SIGHUP,  sigterm_handler);
   signal (SIGTERM, sigterm_handler);
-  
+
   {
     int run = 1;
     while (1 == run) {
-      int val = getopt_long (ac, av, "a:m:w:l:r:", options, NULL);
+      int val = getopt_long (ac, av, "a:m:w:l:r:c:", options, NULL);
       switch (val) {
       case -1:
 	run = 0;
 	break;
-      case SYSCALL_ENTRY_ENABLE:
-	fprintf (stderr, "syscall entry enable\n");
-	break;
-      case SYSCALL_EXIT_ENABLE:
-	fprintf (stderr, "syscall eexit enable\n");
+      case 'c':
+	append_cmd (optarg);
 	break;
       case 'm':
 	if (optarg) {
@@ -151,7 +149,7 @@ main (int ac, char * av[])
 	break;
       case 'r':		// execlp the given pgm and run
       case 'l':		// execlp the given pgm and quiesce
-	if (optarg) append_cmd (optarg, ('l' == val) ? 1 : 0);
+	if (optarg) append_runnable (optarg, ('l' == val) ? 1 : 0);
 	break;
       case 0:		// flags already handled--do nothing
 	break;
@@ -163,7 +161,10 @@ main (int ac, char * av[])
     }
   }
 
-  for (;optind < ac; optind++) append_cmd (av[optind], default_quiesce);
+  for (;optind < ac; optind++) append_runnable (av[optind], default_quiesce);
+
+  //fixme -- some kind of path?
+  if (!module_name) module_name = strdup ("utracer/utracer");
 
   if (!utracer_loaded()) load_utracer();
   register_utracer (udb_pid);
@@ -218,7 +219,7 @@ main (int ac, char * av[])
   {
     int i;
 
-    for (i = 0; i < nr_cmds_to_attach; i++) {
+    for (i = 0; i < nr_runnables_to_attach; i++) {
       pid_t child_pid;
     
       child_pid = fork();
@@ -230,14 +231,14 @@ main (int ac, char * av[])
 	{
 	  int rc;
 	  long cp = (long)getpid();
-	  char * cl_copy = strdup (cmds_to_attach[i].cmd);
+	  char * cl_copy = strdup (runnables_to_attach[i].cmd);
 	  char * tok = strtok (cl_copy, " \t");
 	  char ** args = NULL;
 	  int args_next = 0;
 	  int args_max  = 0;
 #define ARGS_INCR 4
 	  
-	  utrace_attach_if (cp, 0, cmds_to_attach[i].quiesce);
+	  utrace_attach_if (cp, 0, runnables_to_attach[i].quiesce);
 
 	  while (tok) {
 	    if (args_max >= args_next) {
@@ -268,6 +269,8 @@ main (int ac, char * av[])
       }
     }
   }
+   
+  utrace_sync_if (SYNC_INIT);
 
   text_ui_init();
   text_ui();

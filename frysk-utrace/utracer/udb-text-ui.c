@@ -47,6 +47,23 @@ parse_syscall (char * tok)
     if (0 != hsearch_r (target, FIND, &entry, &sys_hash_table))
       syscall_nr = (long)(entry->data);
   }
+  if (SYSCALL_INVALID == syscall_nr) {
+    char * ep;
+	
+    syscall_nr = strtol (tok, &ep, 0);
+
+    if (0 == *ep) {
+      if ((0 > syscall_nr) || (syscall_nr >= nr_syscall_names)) {
+	fprintf (stderr, "\tSorry, syscall number %ld is out of range.\n",
+		 syscall_nr);
+	syscall_nr = SYSCALL_INVALID;
+      }
+    }
+    else {
+      fprintf (stderr, "\tSorry, I don't recognise syscall %s\n", tok);
+      syscall_nr = SYSCALL_INVALID;
+    }
+  }
   return syscall_nr;
 }
 
@@ -55,7 +72,6 @@ syscall_fcn(char ** saveptr)
 {
   int run = 1;
   int got_it = 0;
-  int em_sent = 0;
   char * tok;
   long syscall_nr = SYSCALL_INVALID;
   enum {SY_STATE_A1, SY_STATE_A2, SY_STATE_A3} sy_state = SY_STATE_A1;
@@ -108,25 +124,6 @@ syscall_fcn(char ** saveptr)
     case SY_STATE_A3:
       syscall_nr = parse_syscall (tok);
       if (SYSCALL_INVALID != syscall_nr) got_it = 1;
-      else {
-	char * ep;
-	
-	syscall_nr = strtol (tok, &ep, 0);
-
-	if (0 == *ep) {
-	  if ((0 <= syscall_nr) && (syscall_nr < nr_syscall_names))
-	    got_it = 1;
-	  else {
-	    em_sent = 1;
-	    fprintf (stderr, "\tSorry, syscall number %ld is out of range.\n",
-		     syscall_nr);
-	  }
-	}
-	else {
-	  em_sent = 1;
-	  fprintf (stderr, "\tSorry, I don't recognise syscall %s\n", tok);
-	}
-      }
       break;
     }
   }
@@ -152,8 +149,7 @@ syscall_fcn(char ** saveptr)
     }
   }
   else
-    if (!em_sent)
-      fprintf (stderr, "\tSorry, I've no clue what you want me to do.\n");
+    fprintf (stderr, "\tSorry, I've no clue what you want me to do.\n");
   
   return 1;
 }
@@ -488,6 +484,50 @@ text_ui_init()
   set_prompt();
 }
 
+int
+exec_cmd (char * iline)
+{
+  int run = 1;
+  
+  switch (*iline) {
+  case 0:
+    break;
+  case '?':
+    {
+      int i;
+      for (i = 0; i < nr_cmds; i++) {
+	cmd_info_s * cmd_info = (cmd_info_s *)cmds[i].data;
+	if (cmd_info->desc)
+	  fprintf (stderr, "\t%s %s\n", cmds[i].key, cmd_info->desc);
+      }
+    }
+    break;
+  default:
+    {
+      ENTRY * entry;
+      ENTRY target;
+      char * iline_copy;
+      char * saveptr;
+      
+      iline_copy = strdup (iline);
+      target.key = strtok_r (iline_copy, " \t", &saveptr);
+      
+      if (0 != hsearch_r (target, FIND, &entry, &cmd_hash_table)) {
+	cmd_info_s * cmd_info = (cmd_info_s *)entry->data;
+	run = (*(action_fcn)(cmd_info->cmd_fcn))(&saveptr);
+      }
+      else 
+	fprintf (stderr, "\tCommand %s not recognised\n", iline);
+      add_history (iline);
+      
+      free (iline_copy);
+    }
+    break;
+  }
+
+  return run;
+}
+
 void
 text_ui()
 {
@@ -498,41 +538,7 @@ text_ui()
   while (run) {
     iline = readline (prompt);
     if (iline) {
-      switch (*iline) {
-      case 0:
-	break;
-      case '?':
-	{
-	  int i;
-	  for (i = 0; i < nr_cmds; i++) {
-	    cmd_info_s * cmd_info = (cmd_info_s *)cmds[i].data;
-	    if (cmd_info->desc)
-	      fprintf (stderr, "\t%s %s\n", cmds[i].key, cmd_info->desc);
-	  }
-	}
-	break;
-      default:
-	{
-	  ENTRY * entry;
-	  ENTRY target;
-	  char * iline_copy;
-	  char * saveptr;
-
-	  iline_copy = strdup (iline);
-	  target.key = strtok_r (iline_copy, " \t", &saveptr);
-
-	  if (0 != hsearch_r (target, FIND, &entry, &cmd_hash_table)) {
-	    cmd_info_s * cmd_info = (cmd_info_s *)entry->data;
-	    run = (*(action_fcn)(cmd_info->cmd_fcn))(&saveptr);
-	  }
-	  else 
-	    fprintf (stderr, "\tCommand %s not recognised\n", iline);
-	  add_history (iline);
-
-	  free (iline_copy);
-	}
-	break;
-      }
+      run = exec_cmd (iline);
       free (iline);
     }
   }

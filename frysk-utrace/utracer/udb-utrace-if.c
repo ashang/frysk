@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <errno.h>
 #include <alloca.h>
+#include <malloc.h>
+#include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
 
@@ -42,14 +44,14 @@ unregister_utracer(pid_t pid)
 void
 utrace_syscall_if (short which, short cmd, long cp, long syscall)
 {
-  ssize_t sz;
   syscall_cmd_s syscall_cmd;
+  ssize_t sz;
   
   syscall_cmd.cmd			= IF_CMD_SYSCALL;
   syscall_cmd.utracing_pid		= (long)udb_pid;
   syscall_cmd.utraced_pid		= cp;
-  syscall_cmd_which (syscall_cmd)	= which;
-  syscall_cmd_cmd (syscall_cmd)		= cmd;
+  syscall_cmd_which (&syscall_cmd)	= which;
+  syscall_cmd_cmd (&syscall_cmd)	= cmd;
   syscall_cmd.syscall_nr		= syscall;
   sz = write (utracer_cmd_file_fd, &syscall_cmd, sizeof(syscall_cmd));
   if (-1 == sz) uerror ("Writing syscall command.");
@@ -101,7 +103,6 @@ utrace_run_if (long pid)
   run_cmd_s run_cmd = {IF_CMD_RUN, (long)udb_pid, pid};
   ssize_t sz = write (utracer_cmd_file_fd, &run_cmd, sizeof(run_cmd));
   if (-1 == sz) uerror ("Writing run command.");
-  else fprintf (stdout, "\t%d  running\n", pid);
 }
 
 void
@@ -111,6 +112,15 @@ utrace_listpids_if ()
   ssize_t sz = write (utracer_cmd_file_fd, &listpids_cmd,
 		      sizeof(listpids_cmd));
   if (-1 == sz) uerror ("Writing listpids command.");
+}
+
+void
+utrace_sync_if (long type)
+{
+  sync_cmd_s sync_cmd = {IF_CMD_SYNC, (long)udb_pid, type};
+  ssize_t sz = write (utracer_cmd_file_fd, &sync_cmd,
+		      sizeof(sync_cmd));
+  if (-1 == sz) uerror ("Writing sync command.");
 }
 
 void
