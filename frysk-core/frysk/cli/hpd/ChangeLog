@@ -1,3 +1,13 @@
+2007-07-10  Adam Jocksch  <ajocksch@redhat.com>
+
+	* ActionsCommand.java: Reformatted.
+	(handle): Now parses command line arguments; currently only the
+	list of ids, -break, -display, -enabled, and -disabled args are
+	accepted.
+	* DisplayCommand.java: Reformatted.
+	(handle): Now includes the id number of the display when it is
+	output.
+
 2007-07-09  Adam Jocksch  <ajocksch@redhat.com>
 
 	* ActionsCommand.java (handle): Added comments, now prints out

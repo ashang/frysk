@@ -41,6 +41,7 @@ package frysk.cli.hpd;
 
 import java.io.PrintWriter;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -53,19 +54,14 @@ import frysk.rt.DisplayManager;
 import frysk.rt.SourceBreakpoint;
 import frysk.rt.UpdatingDisplayValue;
 
-class ActionsCommand
-    extends CLIHandler
-{
+class ActionsCommand extends CLIHandler {
     private static final String descr = "List action points";
 
-    private ActionsCommand(String name, CLI cli)
-    {
-	super(name, cli, new CommandHelp(name, descr, "actionpoints",
-					 descr));
+    private ActionsCommand(String name, CLI cli) {
+	super(name, cli, new CommandHelp(name, descr, "actionpoints", descr));
     }
 
-    ActionsCommand(CLI cli)
-    {
+    ActionsCommand(CLI cli) {
 	this("actionpoints", cli);
     }
 
@@ -73,10 +69,10 @@ class ActionsCommand
 
     private static class TaskComparator implements Comparator {
 	public int compare(Object o1, Object o2) {
-	    Map.Entry me1 = (Map.Entry)o1;
-	    Map.Entry me2 = (Map.Entry)o2;
-	    int id1 = ((Task)me1.getKey()).getTaskId().intValue();
-	    int id2 = ((Task)me2.getKey()).getTaskId().intValue();
+	    Map.Entry me1 = (Map.Entry) o1;
+	    Map.Entry me2 = (Map.Entry) o2;
+	    int id1 = ((Task) me1.getKey()).getTaskId().intValue();
+	    int id2 = ((Task) me2.getKey()).getTaskId().intValue();
 	    if (id1 < id2)
 		return -1;
 	    else if (id1 > id2)
@@ -91,67 +87,163 @@ class ActionsCommand
     /*
      * Print out the specified actionpoints. These will be filtered as per
      * the possible arguments in the hpd. We have also added the --display
-     * option, which will output the current displays
-     * (non-Javadoc)
+     * option, which will output the current displays (non-Javadoc)
+     * 
      * @see frysk.cli.hpd.CLIHandler#handle(frysk.cli.hpd.Command)
      */
-    public void handle(Command cmd) throws ParseException 
-    {
-	/*
-	 * TODO: According to the HPD spec, this command outputs a number
-	 * of different types of actionpoints. How do we segment these 
-	 * when displaying them to the user so that they remain readable?
-	 */
-	/*
-	 * TODO: Parse the command arguments and change the output accordingly
-	 */
-	
-	// Print out the breakpoints
-	BreakpointManager bpManager = cli.getSteppingEngine().getBreakpointManager();
-	Iterator iterator = bpManager.getBreakpointTableIterator();
+    public void handle(Command cmd) throws ParseException {
+	String actionpoints = "";
+	boolean showEnabled = false, showDisabled = false, showBreak = false, showDisplay = false, showWatch = false, showBarrier = false;
+	ArrayList args = cmd.getParameters();
+	int[] ids = null;
+
 	PrintWriter outWriter = cli.getPrintWriter();
-	outWriter.println("BREAKPOINTS");
-	while (iterator.hasNext()) {
-	    SourceBreakpoint bpt = (SourceBreakpoint)iterator.next();
-	    outWriter.print(bpt.getId() + " ");
-	    if (bpt.getUserState() == SourceBreakpoint.ENABLED) {
-		outWriter.print(" y ");
-	    }
-	    else {
-		outWriter.print(" n ");
-	    }
-	    bpt.output(outWriter);
-	    outWriter.print(" ");
-	    // Print tasks in which breakpoint is enabled
-	    Set taskEntrySet = bpt.getTaskStateMap().entrySet();
-	    Map.Entry[] taskEntries = (Map.Entry[])taskEntrySet.toArray(dummy);
-	    Arrays.sort(taskEntries, taskComparator);
-	    for (int i = 0; i < taskEntries.length; i++) {
-		int id
-		    = ((Task)taskEntries[i].getKey()).getTaskId().intValue();
-		SourceBreakpoint.State state
-		    = (SourceBreakpoint.State)taskEntries[i].getValue();
-		if (state == SourceBreakpoint.ENABLED) {
-		    outWriter.print(id);
-		    outWriter.print(" ");
+
+	/*
+         * Parse the command line arguments. There should be at most one, and it
+         * should either be a comma-delimited list of actionpoint ids or one of
+         * the "-" options specified in the hpd. We also allow a "-display"
+         * option to show only displays
+         */
+	if (args.size() > 0) {
+	    if (args.size() > 1)
+		throw new ParseException("Too many arguments to actionpoints",
+			0);
+
+	    String param = (String) args.get(0);
+	    // doesn't start with a dash, must be the list of actionpoints
+	    if (param.indexOf("-") != 0)
+		actionpoints = param;
+	    // starts with a '-', must be an argument
+	    else if (param.equals("-enabled"))
+		showEnabled = true;
+	    else if (param.equals("-disabled"))
+		showDisabled = true;
+	    else if (param.equals("-break"))
+		showBreak = true;
+	    else if (param.equals("-display"))
+		showDisplay = true;
+	    else if (param.equals("-watch"))
+		showWatch = true;
+	    else if (param.equals("-barrier"))
+		showBarrier = true;
+	    else
+		throw new ParseException("Unknown argument " + param
+			+ " to actionpoints", 0);
+	}
+
+	// generate a list of actionpoints to display
+	/*
+         * TODO: We should probably look for a more efficient way of printing
+         * out only specific action points, as the current method of iterating
+         * through everything and only printing out the points specified could
+         * become costly
+         */
+	if (!actionpoints.equals("")) {
+	    String[] points = actionpoints.split(",");
+	    ids = new int[points.length];
+	    for (int i = 0; i < points.length; i++)
+		try {
+		    ids[i] = Integer.parseInt(points[i]);
+		} catch (NumberFormatException e) {
+		    throw new ParseException("Invalid actionpoint id "
+			    + points[i], 0);
 		}
+	    Arrays.sort(ids);
+	}
+
+	// If none of the flags were set, we display everything: set them all
+	if (!showEnabled && !showDisabled && !showBarrier && !showBreak
+		&& !showDisplay && !showWatch)
+	    showEnabled = showDisabled = showDisplay = showBarrier = showBreak = showWatch = true;
+
+	// Print out the breakpoints
+	if (showBreak || showEnabled || showDisabled) {
+	    BreakpointManager bpManager = cli.getSteppingEngine()
+		    .getBreakpointManager();
+	    Iterator iterator = bpManager.getBreakpointTableIterator();
+	    outWriter.println("BREAKPOINTS");
+	    while (iterator.hasNext()) {
+		SourceBreakpoint bpt = (SourceBreakpoint) iterator.next();
+
+		/*
+                 * Only display enabled/disblaed breakpoints if the appropriate
+                 * flags are set. We include the showEnabled || showDisabled so
+                 * that we only care about this if at least one of the two flags
+                 * is set.
+                 */
+		if (((bpt.getUserState() == SourceBreakpoint.ENABLED && !showEnabled) || (bpt
+			.getUserState() == SourceBreakpoint.DISABLED && !showDisabled))
+			&& (showEnabled || showDisabled))
+		    continue;
+
+		/*
+                 * If we were given a list of points, only output breakpoints if
+                 * they match one of the points
+                 */
+		if (ids != null && Arrays.binarySearch(ids, bpt.getId()) < 0)
+		    continue;
+
+		outWriter.print(bpt.getId() + " ");
+		if (bpt.getUserState() == SourceBreakpoint.ENABLED) {
+		    outWriter.print(" y ");
+		} else {
+		    outWriter.print(" n ");
+		}
+		bpt.output(outWriter);
+		outWriter.print(" ");
+		// Print tasks in which breakpoint is enabled
+		Set taskEntrySet = bpt.getTaskStateMap().entrySet();
+		Map.Entry[] taskEntries = (Map.Entry[]) taskEntrySet
+			.toArray(dummy);
+		Arrays.sort(taskEntries, taskComparator);
+		for (int i = 0; i < taskEntries.length; i++) {
+		    int id = ((Task) taskEntries[i].getKey()).getTaskId()
+			    .intValue();
+		    SourceBreakpoint.State state = (SourceBreakpoint.State) taskEntries[i]
+			    .getValue();
+		    if (state == SourceBreakpoint.ENABLED) {
+			outWriter.print(id);
+			outWriter.print(" ");
+		    }
+		}
+		outWriter.println();
 	    }
 	    outWriter.println();
 	}
-	
+
 	// Print out the displays
-	outWriter.println("\nDISPLAYS");
-	iterator = DisplayManager.getDisplayIterator();
-	while(iterator.hasNext())
-	{
-	    UpdatingDisplayValue uDisp = (UpdatingDisplayValue) iterator.next();
-	    outWriter.print(uDisp.getId() + " ");
-	    if(uDisp.isEnabled())
-		outWriter.print(" y ");
-	    else
-		outWriter.print(" n ");
-	    outWriter.print(uDisp.getName() + " ");
-	    outWriter.print(uDisp.getTask().getTaskId().intValue());
+	if (showDisplay || showDisabled || showEnabled) {
+	    outWriter.println("DISPLAYS");
+	    Iterator iterator = DisplayManager.getDisplayIterator();
+	    while (iterator.hasNext()) {
+		UpdatingDisplayValue uDisp = (UpdatingDisplayValue) iterator
+			.next();
+
+		/*
+                 * Similar to the breakpoint section, if one of the enabled /
+                 * disabled flags is set, only display displays of that type
+                 */
+		if (((uDisp.isEnabled() && !showEnabled) || (!uDisp.isEnabled() && !showDisabled))
+			&& (showEnabled || showDisabled))
+		    continue;
+
+		/*
+                 * If we are given a list of actionpoints to display, only
+                 * display those points
+                 */
+		if (ids != null && Arrays.binarySearch(ids, uDisp.getId()) < 0)
+		    continue;
+
+		outWriter.print(uDisp.getId() + " ");
+		if (uDisp.isEnabled())
+		    outWriter.print(" y ");
+		else
+		    outWriter.print(" n ");
+		outWriter.print("\"" + uDisp.getName() + "\" ");
+		outWriter.print(uDisp.getTask().getTaskId().intValue());
+		outWriter.println();
+	    }
 	    outWriter.println();
 	}
     }
