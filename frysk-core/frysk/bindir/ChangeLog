@@ -1,3 +1,8 @@
+2007-07-10  Tim Moore  <timoore@redhat.com>
+
+	* TestFhd.java (testHpdBreakStep): New test for stepping beyond a
+	breakpoint.
+
 2007-07-09  Mark Wielaard  <mwielaard@redhat.com>
 
 	Fixes bug #4668

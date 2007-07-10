@@ -361,4 +361,30 @@ public class TestFhd
 	e.expect("Quitting...");
 	e.close();
     }
+
+    public void testHpdBreakStep() {
+        	child = new Expect (new String[] {
+				new File (Config.getPkgLibDir (),
+					  "test1").getPath ()
+			    });
+	e = new Expect (new String[] {
+			    new File (Config.getBinDir (), "fhpd").getPath ()
+			});
+	e.expect (prompt);
+	// Attach
+	e.send ("attach " + child.getPid () + " -cli\n");
+	e.expect ("attach.*" + prompt);
+	// Break
+        e.send("break anotherFunction\n");
+        e.expect("break.*" + prompt);
+        e.send("go\n");
+	e.expect("go.*" + prompt + ".*Breakpoint.*anotherFunction.*");
+        e.send("step\n");
+        e.expect("step.*Task stopped at.*test1\\.c.*" + prompt);
+        e.send("step\n");
+        e.expect("step.*Task stopped at.*test1\\.c.*" + prompt);
+        e.send("quit\n");
+	e.expect("Quitting...");
+	e.close();
+    }
 }
