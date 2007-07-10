@@ -1,7 +1,3 @@
-2007-07-10  Mark Wielaard  <mark@klomp.org>
-
-	* htdocs/documentation/index.html: Add section Articles on frysk.
-
 2007-06-26  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac (AM_INIT_AUTOMAKE): Remove dist-bzip2 and
