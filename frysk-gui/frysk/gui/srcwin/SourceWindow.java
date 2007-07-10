@@ -177,8 +177,6 @@ public class SourceWindow
   private Action open_executable;
   
   private Action attach_proc;
-  
-//  private Action attach_proc;
 
   private Action copy;
 
@@ -835,7 +833,7 @@ public class SourceWindow
    * @param exe	- the executable's path to start
    * @param env_variables - reserved for future use, will be used to pass 
    *                        the environment arguments to the executable
-   * @param options - options to pass to the task on the command line
+   * @param options - options to pass to tDEBUG_WINDOW_MODEhe task on the command line
    * @param stdin - device to point the executed task's stdin to
    * @param stdout - device to point the executed task's stdout to
    * @param stserr - device to point the executed task's stderr to 
@@ -849,7 +847,11 @@ public class SourceWindow
   }
   
   public void appendTask(Proc proc)
-  {
+  { 
+       getSteppingEngine().addProc(proc);
+       getSteppingEngine().addObserver(this.lock);
+       //this.threadObserver = new ThreadLifeObserver();
+       //this.steppingEngine.setThreadObserver(this.threadObserver);
        appendProc(proc.getMainTask());
   }
   
@@ -1046,7 +1048,7 @@ public class SourceWindow
           {
             if (event.isOfType(LifeCycleEvent.Type.DELETE) || 
                     event.isOfType(LifeCycleEvent.Type.DESTROY))
-                      fc.destroy();               
+                      chooser.destroy();               
             return false;
           }
         });
@@ -1438,16 +1440,18 @@ public class SourceWindow
 		    // select a file name in the chooser
 		    public void fileActivated (FileChooserEvent event)
 		      {
-			activateTerminal();
+			activateProc();
 		      }
 		    });
 		  fc.setIcon(IconManager.windowIcon);
 		  fc.setDefaultResponse(FileChooserEvent.Type.FILE_ACTIVATED.getID());
 		  fc.setCurrentFolder(System.getProperty("user.home"));
+		  gtk_widget_set_size_request(fc.getHandle(), 300, 300);
 		  int response = fc.open();
-		  // "OK" key has been clickedDebugProcess
+		  gtk_widget_set_size_request(fc.getHandle(), 300, 300);
+		  // "OK" key has been clicked
 		  if (response == ResponseType.OK.getValue())
-		    activateTerminal();
+		    activateProc();
 		  // "Cancel" key has been clicked
 		  if (response == ResponseType.CANCEL.getValue())
 		    fc.destroy();
@@ -1470,7 +1474,7 @@ public class SourceWindow
     {
       public void actionEvent (ActionEvent action)
       {
-          WindowManager.theManager.createFryskSessionDruid.presentProcLister(SourceWindow.this);
+          WindowManager.theManager.createFryskSessionDruid.presentProcLister();
       }
     });
     this.attach_proc.setAccelGroup(ag);
@@ -1524,7 +1528,7 @@ public class SourceWindow
 		    // select a file name in the chooser
 		    public void fileActivated (FileChooserEvent event)
 		      {
-			activateTerminal();
+			activateProc();
 		      }
 		    });
 		  fc.setIcon(IconManager.windowIcon);
@@ -1533,7 +1537,7 @@ public class SourceWindow
 		  int response = fc.open();
 		  // "OK" key has been clicked
 		  if (response == ResponseType.OK.getValue())
-		    activateTerminal();
+		    activateProc();
 		  // "Cancel" key has been clicked
 		  if (response == ResponseType.CANCEL.getValue())
 		    fc.destroy();
@@ -1556,7 +1560,7 @@ public class SourceWindow
     {
       public void actionEvent (ActionEvent action)
       {
-	  WindowManager.theManager.createFryskSessionDruid.presentProcLister(SourceWindow.this);
+	  WindowManager.theManager.createFryskSessionDruid.presentProcLister();
       }
     });
     this.attach_proc.setAccelGroup(ag);
@@ -1668,12 +1672,12 @@ public class SourceWindow
   }
   
   /**
-   * activateTerminal is called when the user has selected "Activate I/O terminal" from the 
-   * FileChooserDialog when running an executable.  A Gnome terminal is activated and the
-   * selected process' STDIN/STDOUT/STDERR will be assigned to it.
+   * activateProc is called when the user has selected an executable from the 
+   * FileChooserDialog.  It checks to see if a gnome terminal is to be activated
+   * if so the selected process' STDIN/STDOUT/STDERR will be assigned to it.
    *
    */
-  public void activateTerminal()
+  public void activateProc()
   {
     CheckButton term_activate = (CheckButton) glade_fc.getWidget("term_activate");
     Entry task_options = (Entry) glade_fc.getWidget("task_options");
@@ -1805,6 +1809,8 @@ public class SourceWindow
     menu = new MenuItem("Processes", false);
     tmp = new Menu();
     mi = (MenuItem) this.open_executable.createMenuItem();
+    tmp.append(mi);
+    mi = new MenuItem(); // Separator
     tmp.append(mi);
     mi = (MenuItem) this.attach_proc.createMenuItem();
     tmp.append(mi);

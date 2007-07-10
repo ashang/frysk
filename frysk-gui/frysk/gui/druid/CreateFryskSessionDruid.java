@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@ import frysk.gui.sessions.DebugProcess;
 import frysk.gui.sessions.Session;
 import frysk.gui.sessions.SessionManager;
 import frysk.gui.sessions.Session.SessionType;
-import frysk.gui.srcwin.SourceWindow;
+import frysk.gui.srcwin.SourceWindowFactory;
 
 public class CreateFryskSessionDruid
     extends Dialog
@@ -133,7 +133,7 @@ public class CreateFryskSessionDruid
   
   private LibGlade glade;
   
-  private SourceWindow srcwin;
+  //private SourceWindow srcwin;
   
   private static class DruidMode
   {
@@ -367,9 +367,8 @@ public class CreateFryskSessionDruid
    * list of procs in the cpu queue that the debug window can attach to.
    *  
    */
-  public void presentProcLister(SourceWindow sw)
+  public void presentProcLister()
   {
-    srcwin = sw;
     this.setDruidMode(DruidMode.DEBUG_WINDOW_MODE);
     SessionManager.theManager.setCurrentSession(new Session());
     SessionManager.theManager.getCurrentSession().addDefaultObservers();
@@ -387,10 +386,11 @@ public class CreateFryskSessionDruid
     this.getWindow().setTitle("Frysk: Attach Debug Window to Process");
     this.backButton.hideAll();
     this.nextButton.hideAll();
-    this.finishButton.showAll();
     this.saveButton.hideAll();
     this.cancelButton.hideAll();
     this.okButton.hideAll();
+    this.finishButton.showAll();
+    this.glade.getWidget("sessionDruid_finishButton").setSensitive(true);
     this.closeButton.showAll();
     
     
@@ -803,9 +803,15 @@ public class CreateFryskSessionDruid
                     while (i.hasNext())
                       {
                         GuiProc gp = (GuiProc) i.next();
-                        srcwin.appendTask(gp.getProc());
+                        SourceWindowFactory.createSourceWindow(gp.getProc());
+                        // The following line was used when trying to get the proc to appear in
+                        // the same window instead of starting a different window.
+                        //srcwin.appendTask(gp.getProc());
                       }
                   }
+                procMap.clear();
+                hide();
+                return;
               }
             procMap.clear();
 

@@ -1,3 +1,9 @@
+2007-07-10  Rick Moseley  <rmoseley@redhat.com>
+
+	* druid.CreateFryskSessionDruid.java: Activate a new source
+	window when attaching to a running process instead of trying
+	to attach to an existing window.
+
 2007-07-04  Andrew Cagney  <cagney@redhat.com>
 
 	* disassembler/DisassemblyWindow.java: Do not catch
