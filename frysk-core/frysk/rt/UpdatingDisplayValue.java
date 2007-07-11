@@ -198,6 +198,9 @@ public class UpdatingDisplayValue extends DisplayValue {
      * 
      */
     public void disable() {
+	// This is a no-op if we're already disabled
+	if(!enabled)
+	    return;
 	enabled = false;
 	engine.removeObserver(lock, myTask.getProc(), false);
 	myTask.requestDeleteTerminatedObserver(term);
@@ -209,6 +212,9 @@ public class UpdatingDisplayValue extends DisplayValue {
      * 
      */
     public void enable() {
+	// No-op if we're already enabled
+	if(enabled)
+	    return;
 	enabled = true;
 	engine.addObserver(lock);
 	myTask.requestAddTerminatedObserver(term);

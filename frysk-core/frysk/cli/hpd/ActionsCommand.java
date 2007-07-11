@@ -93,7 +93,8 @@ class ActionsCommand extends CLIHandler {
      */
     public void handle(Command cmd) throws ParseException {
 	String actionpoints = "";
-	boolean showEnabled = false, showDisabled = false, showBreak = false, showDisplay = false, showWatch = false, showBarrier = false;
+	boolean showEnabled = false, showDisabled = false, showBreak = false,
+		showDisplay = false, showWatch = false, showBarrier = false;
 	ArrayList args = cmd.getParameters();
 	int[] ids = null;
 
@@ -162,7 +163,8 @@ class ActionsCommand extends CLIHandler {
 	    BreakpointManager bpManager = cli.getSteppingEngine()
 		    .getBreakpointManager();
 	    Iterator iterator = bpManager.getBreakpointTableIterator();
-	    outWriter.println("BREAKPOINTS");
+	    if (iterator.hasNext())
+		outWriter.println("BREAKPOINTS");
 	    while (iterator.hasNext()) {
 		SourceBreakpoint bpt = (SourceBreakpoint) iterator.next();
 
@@ -214,8 +216,9 @@ class ActionsCommand extends CLIHandler {
 
 	// Print out the displays
 	if (showDisplay || showDisabled || showEnabled) {
-	    outWriter.println("DISPLAYS");
 	    Iterator iterator = DisplayManager.getDisplayIterator();
+	    if (iterator.hasNext())
+		outWriter.println("DISPLAYS");
 	    while (iterator.hasNext()) {
 		UpdatingDisplayValue uDisp = (UpdatingDisplayValue) iterator
 			.next();

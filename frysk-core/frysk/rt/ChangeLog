@@ -1,5 +1,8 @@
 2007-07-11  Adam Jockchch  <ajocksch@redhat.com>
 
+	* UpdatingDisplayValue.java (enabled): Is now a no-op if already enabled.
+	(disabled): Is now a no-op if already disabled.
+
 	* DisplayManager.java (deleteDisplay): Fixed bug where display was
 	not being removed from one of the maps.
 

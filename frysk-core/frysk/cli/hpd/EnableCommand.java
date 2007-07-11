@@ -39,13 +39,17 @@
 
 package frysk.cli.hpd;
 
+import java.io.PrintWriter;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+
 import frysk.proc.Task;
 import frysk.rt.BreakpointManager;
 import frysk.rt.DisplayManager;
 import frysk.rt.SourceBreakpoint;
-import java.io.PrintWriter;
-import java.text.ParseException;
-import java.util.ArrayList;
+import frysk.rt.UpdatingDisplayValue;
 
 class EnableCommand extends CLIHandler {
     private static final String descr = "enable a source breakpoint";
@@ -60,27 +64,139 @@ class EnableCommand extends CLIHandler {
     }
 
     public void handle(Command cmd) throws ParseException {
-	ArrayList params = cmd.getParameters();
-	if (params.size() == 1 && params.get(0).equals("-help")) {
-	    cli.printUsage(cmd);
+	String actionpoints = "";
+	boolean /*enEnabled = false,*/ enDisabled = false, enBreak = false,
+		enDisplay = false, enWatch = false, enBarrier = false;
+	ArrayList args = cmd.getParameters();
+	int[] ids = null;
+
+	PrintWriter outWriter = cli.getPrintWriter();
+
+	/*
+         * Parse the command line arguments. There should be at most one, and it
+         * should either be a comma-delimited list of actionpoint ids or one of
+         * the "-" options specified in the hpd. We also allow a "-display"
+         * option to disable only displays
+         */
+	if (args.size() > 0) {
+	    if (args.size() > 1)
+		throw new ParseException("Too many arguments to enable", 0);
+
+	    String param = (String) args.get(0);
+	    // doesn't start with a dash, must be the list of actionpoints
+	    if (param.indexOf("-") != 0)
+		actionpoints = param;
+	    // starts with a '-', must be an argument
+	    // TODO: enable -enabled seems like a no-op
+//	    else if (param.equals("-enabled"))
+//		enEnabled = true;
+	    else if (param.equals("-disabled"))
+		enDisabled = true;
+	    else if (param.equals("-break"))
+		enBreak = true;
+	    else if (param.equals("-display"))
+		enDisplay = true;
+	    else if (param.equals("-watch"))
+		enWatch = true;
+	    else if (param.equals("-barrier"))
+		enBarrier = true;
+	    else if (param.equals("-help")) {
+		cli.printUsage(cmd);
+		return;
+	    } else
+		throw new ParseException("Unknown argument " + param
+			+ " to enable", 0);
+	}
+
+	// generate a list of actionpoints to disable
+	if (!actionpoints.equals("")) {
+	    String[] points = actionpoints.split(",");
+	    ids = new int[points.length];
+	    for (int i = 0; i < points.length; i++)
+		try {
+		    ids[i] = Integer.parseInt(points[i]);
+		} catch (NumberFormatException e) {
+		    throw new ParseException("Invalid actionpoint id "
+			    + points[i], 0);
+		}
+	    Arrays.sort(ids);
+	}
+	
+	cli.refreshSymtab();
+	
+	// If a list of actionpoints were supplied, enable them and exit
+	if (ids != null) {
+	    for (int i = 0; i < ids.length; i++) {
+		BreakpointManager bpManager = cli.getSteppingEngine()
+			.getBreakpointManager();
+		Task task = cli.getTask();
+		SourceBreakpoint bpt = bpManager.getBreakpoint(ids[i]);
+		if (bpt != null) {
+		    bpManager.enableBreakpoint(bpt, task);
+		    outWriter
+			    .println("breakpoint " + bpt.getId() + " enabled");
+		}
+		// Failed to get a breakpoint, try to get a display instead
+		else if (DisplayManager.enableDisplay(ids[i])) {
+		    outWriter.println("display " + ids[i] + " enabled");
+		} else {
+		    outWriter.println("no such actionpoint");
+		}
+	    }
+
 	    return;
 	}
-	cli.refreshSymtab();
-	final PrintWriter outWriter = cli.getPrintWriter();
-	int breakpointNumber = Integer.parseInt((String) params.get(0));
-	BreakpointManager bpManager = cli.getSteppingEngine()
-		.getBreakpointManager();
-	Task task = cli.getTask();
-	SourceBreakpoint bpt = bpManager.getBreakpoint(breakpointNumber);
-	if (bpt != null) {
-	    bpManager.enableBreakpoint(bpt, task);
-	    outWriter.println("breakpoint " + bpt.getId() + " enabled");
+
+	/*
+	 * Enable breakpoints
+	 * For our purposes -break and -disabled are equivalent here, as 
+	 * enabling all breakpoints is identical to enabling all
+	 * disabled breakpoints.
+	 */
+	if (enDisabled || enBreak) {
+	    BreakpointManager bpManager = cli.getSteppingEngine()
+		    .getBreakpointManager();
+	    Task task = cli.getTask();
+	    Iterator iter = bpManager.getBreakpointTableIterator();
+	    while (iter.hasNext()) {
+		SourceBreakpoint bpt = (SourceBreakpoint) iter.next();
+		if(bpt.getUserState() == SourceBreakpoint.DISABLED) {
+		    bpManager.enableBreakpoint(bpt, task);
+		    outWriter.println("breakpoint "
+			    	+ bpt.getId() + " enabled");
+		}
+	    }
 	}
-	// Failed to get a breakpoint, try to get a display instead
-	else if (DisplayManager.enableDisplay(breakpointNumber)) {
-	    outWriter.println("display " + breakpointNumber + " enabled");
-	} else {
-	    outWriter.println("no such actionpoint");
+	
+	/*
+	 * Enable displays
+	 * Similar to breakpoints, -disabled also means we enable all the
+	 * displays.
+	 */
+	if (enDisabled || enDisplay) {
+	    Iterator iter = DisplayManager.getDisplayIterator();
+	    while (iter.hasNext()) {
+		UpdatingDisplayValue uDisp = (UpdatingDisplayValue) iter.next();
+		if(!uDisp.isEnabled()) {
+		    uDisp.enable();
+		    outWriter.println("display " +
+			    uDisp.getId() + " enabled");
+		}
+	    }
+	}
+	
+	/*
+	 * Enable Watchpoints
+	 */
+	if (enDisabled || enWatch) {
+	    
+	}
+	
+	/*
+	 * Enable Barriers
+	 */
+	if (enDisabled || enBarrier) {
+	    
 	}
     }
 }

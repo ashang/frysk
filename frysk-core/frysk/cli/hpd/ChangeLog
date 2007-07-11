@@ -1,5 +1,11 @@
 2007-07-11  Adam Jocksch  <ajocksch@redhat.com>
 
+	* ActionsCommand.java (handle): Now only prints out section
+	headers if there's something in that section.
+	* DisableCommand.java (handle): Now accepts all arguments as
+	specified in the hpd spec.
+	* EnableCommand.java (handle): Ditto.
+
 	* DeleteCommand.java: Reformatted.
 	(handle): Now deletes displays as well as breakpoints.
 
