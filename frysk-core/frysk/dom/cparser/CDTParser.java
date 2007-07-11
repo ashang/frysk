@@ -1360,8 +1360,10 @@ public class CDTParser
       if (debug)
         System.out.println(".....made it to checkVariableIndex");
       int start = 0;
-      while (start < lineText.length() - 1) {
+      while (start <= lineText.length()) {
         int start_index = lineText.indexOf(var, start);
+        if (start_index == -1)
+            return -1;
         int end_index = start_index + var.length() - 1;
         char next_char = lineText.charAt(end_index + 1);
         // Make sure the var string is not part of another longer variable name
@@ -1377,6 +1379,7 @@ public class CDTParser
           case '.':
           case '+':
           case '-':
+          case '(':
             return start_index;
           default:
             start = end_index + 1;

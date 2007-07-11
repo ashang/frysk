@@ -1,3 +1,8 @@
+2007-07-11  Rick Moseley  <rmoseley@redhat.com>
+
+	* cparser/CDTParser.java: Fix checkVariableIndex for endless loop
+	when parsing hpd-c.c.
+
 2007-07-03  Andrew Cagney  <cagney@redhat.com>
 
 	* DOMFactory.java (createDOM): Delete lib.dw.NoDebugInfoException
