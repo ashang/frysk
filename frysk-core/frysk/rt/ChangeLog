@@ -1,4 +1,7 @@
-2007-07-11  Adam Jockchsc  <ajocksch@redhat.com>
+2007-07-11  Adam Jockchch  <ajocksch@redhat.com>
+
+	* DisplayManager.java (deleteDisplay): Fixed bug where display was
+	not being removed from one of the maps.
 
 	* DisplayManager.java: Reformatted.
 	(getDisplay): Added.

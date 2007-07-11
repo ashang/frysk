@@ -102,6 +102,7 @@ public class DisplayManager {
      */
     public static void deleteDisplay(UpdatingDisplayValue value) {
 	displays.remove(value);
+	displaysByNum.remove(new Integer(value.getId()));
 	value.disable();
     }
 

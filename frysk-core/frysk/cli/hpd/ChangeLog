@@ -1,5 +1,8 @@
 2007-07-11  Adam Jocksch  <ajocksch@redhat.com>
 
+	* DeleteCommand.java: Reformatted.
+	(handle): Now deletes displays as well as breakpoints.
+
 	* DisableCommand.java: Reformatted.
 	(handle): Extended to disable displays as well.
 	* EnableCommand.java: Reformatted.
