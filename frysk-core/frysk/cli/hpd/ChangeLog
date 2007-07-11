@@ -1,3 +1,10 @@
+2007-07-11  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DisableCommand.java: Reformatted.
+	(handle): Extended to disable displays as well.
+	* EnableCommand.java: Reformatted.
+	(handle): Extended to enable displays as well.
+
 2007-07-10  Adam Jocksch  <ajocksch@redhat.com>
 
 	* ActionsCommand.java: Reformatted.

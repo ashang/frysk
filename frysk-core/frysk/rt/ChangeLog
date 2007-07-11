@@ -1,3 +1,10 @@
+2007-07-11  Adam Jockchsc  <ajocksch@redhat.com>
+
+	* DisplayManager.java: Reformatted.
+	(getDisplay): Added.
+	* UpdatingDisplayValue.java: Reformatted.
+	(disable): No longer tells the SteppingEngine to continue.
+
 2007-07-09  Andrew Cagney  <cagney@redhat.com>
 
 	* TestStepping.java (testASMSingleStep): Remove unresolved 4751.

@@ -41,46 +41,46 @@ package frysk.cli.hpd;
 
 import frysk.proc.Task;
 import frysk.rt.BreakpointManager;
+import frysk.rt.DisplayManager;
 import frysk.rt.SourceBreakpoint;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-class EnableCommand
-    extends CLIHandler
-{
+class EnableCommand extends CLIHandler {
     private static final String descr = "enable a source breakpoint";
-  
-    private EnableCommand(String name, CLI cli)
-    {
+
+    private EnableCommand(String name, CLI cli) {
 	super(name, cli, new CommandHelp(name, descr, "enable actionpointID",
-					 descr));
+		descr));
     }
 
-    EnableCommand(CLI cli)
-    {
+    EnableCommand(CLI cli) {
 	this("enable", cli);
     }
 
-    public void handle(Command cmd) throws ParseException 
-    {
+    public void handle(Command cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
-        }
+	}
 	cli.refreshSymtab();
 	final PrintWriter outWriter = cli.getPrintWriter();
-	int breakpointNumber = Integer.parseInt((String)params.get(0));
-	BreakpointManager bpManager = cli.getSteppingEngine().getBreakpointManager();
+	int breakpointNumber = Integer.parseInt((String) params.get(0));
+	BreakpointManager bpManager = cli.getSteppingEngine()
+		.getBreakpointManager();
 	Task task = cli.getTask();
 	SourceBreakpoint bpt = bpManager.getBreakpoint(breakpointNumber);
-	if (bpt != null) 	{
+	if (bpt != null) {
 	    bpManager.enableBreakpoint(bpt, task);
 	    outWriter.println("breakpoint " + bpt.getId() + " enabled");
 	}
-	else {
-	    outWriter.println("no such breakpoint");
+	// Failed to get a breakpoint, try to get a display instead
+	else if (DisplayManager.enableDisplay(breakpointNumber)) {
+	    outWriter.println("display " + breakpointNumber + " enabled");
+	} else {
+	    outWriter.println("no such actionpoint");
 	}
     }
 }
