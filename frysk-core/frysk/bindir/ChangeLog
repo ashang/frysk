@@ -1,3 +1,8 @@
+2007-07-11  Zhao Shujing  <pearly.zhao@oracle.com>
+
+	Fixes bug #4774
+	* fstack.java (main): Correct help description of -a and -c options.
+
 2007-07-10  Tim Moore  <timoore@redhat.com>
 
 	* TestFhd.java (testHpdBreakStep): New test for stepping beyond a
