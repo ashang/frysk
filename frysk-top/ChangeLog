@@ -14,10 +14,6 @@
 	* .classpath: Fix getopt source location so eclipse can correctly find
 	getopt sources.
 
-2007-06-08  Nurdin Premji  <npremji@redhat.com>
-
-	* htdocs/build/index.html: Explain about linked resources in Eclipse.
-
 2007-05-01  Andrew Cagney  <cagney@redhat.com>
 
 	* bootstrap.sh: Add -Werror to autoconf..
@@ -45,10 +41,6 @@
 	Pass -reflection when public.  Update Java-GNOME links.  Update
 	-doctitle.  Add Native Bindings section.
 
-2007-02-12  Nurdin Premji <npremji@redhat.com>
-
-	* htdocs/build/index.html: Fixed cvs branching faq.
-
 2007-02-06  Stepan Kasal  <skasal@redhat.com>
 
 	* bootstrap.sh: Add "set -e".
@@ -62,20 +54,9 @@
 
 	* .classpath: Removed frysk-sys.jar and /usr/share/java/jdom.jar
 
-2007-01-08  Nurdin Premji <npremji@redhat.com>
-
-	* htdocs/build/index.html: Added examples of TestRunner running
-	individual tests from a test case.
-
-2006-12-14  Nurdin Premji <npremji@redhat.com>
-
-	* htdocs/build/index.html: Added FAQ's for dejagnu.
-
 2006-12-12  Stepan Kasal  <skasal@redhat.com>
 
 	* Makefile.am: Replace pkglibexecdir with pkglibdir here, too.
-
-	* htdocs/build/index.html: Reflect the change and fix typos.
 
 2006-12-09  Andrew Cagney  <cagney@redhat.com>
 
@@ -135,46 +116,6 @@
 2006-09-21  Nurdin Premji <npremji@redhat.com>
 
 	* Makefile.am: Added getopt import, new command line parser.
-
-2006-09-19  Stepan Kasal  <kasal@ucw.cz>
-
-	* htdocs/build/index.html: Remove libgtk-java-devel from Fedora
-	Core 5 and 6 requirements; it's brought in by dependencies.
-	Also remove the requirement for libglade2-devel, vte-devel,
-	and ghostscript; the dependecies are fixed in FC5 Updates.
-
-2006-09-18  Stepan Kasal  <kasal@ucw.cz>
-
-	* htdocs/build/index.html: Add audit-libs-devel to the build
-	requirements.
-
-2006-08-22  Nurdin Premji  <npremji@redhat.com>
-
-	* htdocs/build/index.html: Fixed a typo, sharutils, not sharEutils.
-
-2006-08-20  Stepan Kasal  <kasal@ucw.cz>
-
-	* htdocs/index.html: Fix a typo which malformed the end of the page;
-	link to `bugzilla', not `bugs'.
-	* htdocs/build/index.html: Explain which of the packages are needed
-	only because of broken dependencies in previous releases.
-	Add `automake ghostscript' to the list of requirements for RHEL 4U3.
-
-2006-08-16  Stepan Kasal  <kasal@ucw.cz>
-
-	* htdocs/build/index.html: Updated the list of build requirements,
-	explained why ghostscript is needed.
-
-2006-08-16  Chris Moller  <moller@mollerware.com>
-
-	* htdocs/build/index.html: Added a couple of things to the list of
-	required fc6 yum installs.
-
-2006-08-01  Nurdin Premji  <npremji@redhat.com>
-
-	* htdocs/index.html: Added link to developers page. Also added to all 
-	subdirectories.
-	* htdocs/developers/index.html: Added.
 
 2006-07-18  Andrew Cagney  <cagney@redhat.com>
 
