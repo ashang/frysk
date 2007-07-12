@@ -290,4 +290,28 @@ public class TestFileDescriptor
 	assertEquals ("seekCurrent(-2)@2", 0, file.seekCurrent(-2));
 	assertEquals ("seekEnd(-size)@0", 0, file.seekEnd(-size));
     }
+
+
+    /**
+     * See what happens if FileDescriptor is -ve.
+     */
+    public void testNegativeFileDescriptor() {
+	boolean gotException;
+	try {
+	    new FileDescriptor(-1);
+	    gotException = false;
+	} catch (Exception e) {
+	    gotException = true;
+	}
+	assertTrue("gotException", gotException);
+    }
+
+    /**
+     * Try closing things twice; second call should do nothing (i.e.,
+     * no exception).
+     */
+    public void testTwiceClosed() {
+	file.close();
+	file.close();
+    }
 }

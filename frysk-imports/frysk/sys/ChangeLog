@@ -1,3 +1,14 @@
+2007-07-12  Andrew Cagney  <cagney@redhat.com>
+
+	* FileDescriptor.java (FileDescriptor(String,int))
+	(FileDescriptor(File,flags)): Use this() constructor.
+	(FileDescriptor(int)): Check that fd is valid.
+	(close(int)): New.
+	(close()): Use close(int), when fd is non -ve.
+	* cni/FileDescriptor.cxx (close): Update.
+	* TestFileDescriptor.java (testNegativeFileDescriptor): New.
+	(testTwiceClosed): New.
+	
 2007-07-03  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFileDescriptor.java (testLeakyFileDescriptors)

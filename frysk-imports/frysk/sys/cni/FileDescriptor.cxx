@@ -57,14 +57,13 @@
 #include "frysk/sys/Size.h"
 
 void
-frysk::sys::FileDescriptor::close ()
+frysk::sys::FileDescriptor::close (jint fd)
 {
   // ::fprintf (stderr, "%d closing %d\n", getpid(), (int)fd);
   errno = 0;
   ::close (fd);
   if (errno != 0)
     throwErrno (errno, "close", "fd %d", (int)fd);
-  fd = -1;
 }
 
 void

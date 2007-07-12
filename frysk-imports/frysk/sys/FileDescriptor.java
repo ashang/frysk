@@ -52,28 +52,28 @@ import java.io.IOException;
 
 public class FileDescriptor
 {
-    protected final int fd;
+    private int fd = -1;
     /**
      * Package local file descriptor used by various classes when
      * returning a file descriptor.
      */
-    FileDescriptor (int fd)
-    {
+    FileDescriptor (int fd) {
+	if (fd < 0) {
+	    throw new RuntimeException("FileDescriptor " + fd + " invalid");
+	}
 	this.fd = fd;
     }
     /**
      * Create a file descriptor for the specified FILE, open with MODE.
      */
-    public FileDescriptor (String file, int flags)
-    {
-	this.fd = open (file, flags);
+    public FileDescriptor (String file, int flags) {
+	this (open (file, flags));
     }
     /**
      * Create a file descriptor for the specified FILE, open with MODE.
      */
-    public FileDescriptor (File file, int flags)
-    {
-	this.fd = open (file.getAbsolutePath (), flags);
+    public FileDescriptor (File file, int flags) {
+	this (open (file.getAbsolutePath (), flags));
     }
     /**
      * Open file read-only.
@@ -107,14 +107,19 @@ public class FileDescriptor
     static public final FileDescriptor err = new FileDescriptor (2);
 
     /**
-     * Make this a dup of the old file descriptor.
+     * Make this FileDescriptor a dup (point at the same system
+     * object) as OLD.  See dup2(2).
      */
     public native void dup (FileDescriptor old);
 
     /**
-     * Open the specified FILE in FLAGS.
+     * Open the specified FILE in FLAGS; returning a file descriptor.
      */
     private native static int open (String file, int flags);
+    /**
+     * Close the file-descriptor.
+     */
+    private static native void close(int fd);
 
     /**
      * Poll the file descriptor determining if there is there at least
@@ -159,15 +164,22 @@ public class FileDescriptor
     /**
      * Close the file descriptor.
      */
-    public native void close ();
+    public void close() {
+	if (fd >= 0) {
+	    // Make certain that FD is invalidated before the close is
+	    // attempted; stops further attempts at a close.
+	    int openFd = fd;
+	    fd = -1;
+	    close(openFd);
+	}
+    }
 
     /**
      * Always clean up the file descriptor.
      */
     protected void finalize ()
     {
-	if (fd >= 0)
-	    close ();
+	close();
     }
 
     /**
