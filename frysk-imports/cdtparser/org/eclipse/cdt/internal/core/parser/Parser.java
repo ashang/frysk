@@ -233,7 +233,8 @@ public class Parser implements IParserData, IParser
 			currToken = fetchToken();
 		if (currToken != null)
 			lastToken = currToken;
-		currToken = currToken.getNext();
+		if (currToken != null)  // added by Red Hat to fix NPE
+		        currToken = currToken.getNext();
 		handleNewToken(lastToken);
 		return lastToken;
 	}
@@ -2877,6 +2878,7 @@ public class Parser implements IParserData, IParser
 	 */
 	protected void errorHandling() throws EndOfFileException {
 		int depth = ( LT(1) == IToken.tLBRACE ) ? 1 : 0;
+	    if (consume() == null) return;  //added by Red Hat to fix NPE	
 	    int type = consume().getType();
 	    if( type == IToken.tSEMI ) return;
 	    while (!((LT(1) == IToken.tSEMI && depth == 0)

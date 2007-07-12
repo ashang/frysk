@@ -1,3 +1,9 @@
+2007-07-12  Rick Moseley  <rmoseley@redhat.com>
+
+	* org/eclipse/cdt/internal/core/parser/Parser.java:
+	Fix NPE's that occur when trying to debug bash with
+	debuginfo installed.
+
 2007-03-20  Rick Moseley  <rmoseley@redhat.com>
 
 	* org/eclipse/cdt/internal/core/parser/Parser.java(LT): Fix
