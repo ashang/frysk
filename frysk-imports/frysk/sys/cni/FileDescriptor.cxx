@@ -167,9 +167,10 @@ frysk::sys::FileDescriptor::open (jstring file, jint f, jint mode)
   if (f & frysk::sys::FileDescriptor::CREAT)
     flags |= O_CREAT;
   int gc_count = 0;
+  int fd = -1;
   while (1) {
     errno = 0;
-    int fd = ::open (pathname, flags, mode);
+    fd = ::open (pathname, flags, mode);
     int err = errno;
     if (fd >= 0)
       break;

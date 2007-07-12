@@ -1,5 +1,7 @@
 2007-07-12  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/FileDescriptor.cxx (open): Fix typo; declare fd n correct
+	scope.
 	* TestFileDescriptor.java (testCreate): Fix typo; call delete, not
 	remove.
 	
