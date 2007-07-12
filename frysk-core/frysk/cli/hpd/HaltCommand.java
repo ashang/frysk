@@ -58,7 +58,6 @@ class HaltCommand
 	    cli.printUsage(cmd);
 	    return;
         }
-	cli.refreshSymtab();
 	
 	if (cli.steppingObserver != null) {
 	    cli.getSteppingEngine().stop(null, cli.proc.getTasks());

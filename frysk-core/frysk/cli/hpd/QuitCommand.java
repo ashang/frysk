@@ -56,7 +56,6 @@ class QuitCommand
     public void handle(Command cmd)
 	throws ParseException 
     {
-	cli.refreshSymtab();
 	for (Iterator iterator = cli.runningProcs.iterator();
 	     iterator.hasNext(); ) {
 	    Proc p = (Proc) iterator.next();

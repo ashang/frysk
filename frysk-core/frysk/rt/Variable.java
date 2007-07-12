@@ -103,6 +103,6 @@ public class Variable
   public Value getValue(Frame frame) throws NameNotFoundException
   {
       DebugInfo debugInfo = new DebugInfo(frame);
-      return debugInfo.get(getVariableDie());
+      return debugInfo.get(frame, getVariableDie());
   }
 }

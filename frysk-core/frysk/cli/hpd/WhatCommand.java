@@ -58,7 +58,6 @@ class WhatCommand
 	    cli.printUsage(cmd);
 	    return;
         }
-	cli.refreshSymtab();
 	if (params.size() == 0)
 	    return;
         
@@ -75,7 +74,7 @@ class WhatCommand
         }
 	String sInput = ((String)params.get(0));
 	try {
-	    cli.outWriter.println(cli.debugInfo.what(sInput));
+	    cli.outWriter.println(cli.debugInfo.what(cli.frame, sInput));
         }
 	catch (NameNotFoundException nnfe) {
 	    cli.addMessage(nnfe.getMessage(), Message.TYPE_ERROR);

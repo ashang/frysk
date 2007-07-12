@@ -64,7 +64,6 @@ import frysk.proc.Task;
 import frysk.rt.Subprogram;
 import frysk.rt.Variable;
 import frysk.stack.Frame;
-import frysk.stack.StackFactory;
 import frysk.sys.Errno;
 import frysk.value.ArithmeticType;
 import frysk.value.ArrayType;
@@ -82,8 +81,6 @@ class DebugInfoEvaluator
 
   private Frame currentFrame;
   
-  // private Subprogram subprogram;
-
   private ByteBuffer buffer;
 
   private ArithmeticType byteType;
@@ -97,11 +94,6 @@ class DebugInfoEvaluator
   private ArithmeticType floatType;
   private ArithmeticType doubleType;
   
-  public void setSubprogram (Subprogram subprogram)
-  {
-    // this.subprogram = subprogram;
-  }
-
   public boolean putUndefined ()
   {
     return false;
@@ -126,7 +118,6 @@ class DebugInfoEvaluator
     while (frame.getInner() != null)
       frame = frame.getInner();
 
-    /* currentFrame is now the innermost StackFrame */
     currentFrame = frame;
 
     byteType = new ArithmeticType(1, byteorder, BaseTypes.baseTypeByte, "byte");
@@ -143,20 +134,6 @@ class DebugInfoEvaluator
 // BaseTypes.baseTypeUnsignedLong, "unsigned long");
     floatType = new ArithmeticType(4, byteorder, BaseTypes.baseTypeFloat, "float");
     doubleType = new ArithmeticType(8, byteorder, BaseTypes.baseTypeDouble, "double");
-  }
-
-  /**
-   * Refresh the current frame.
-   */
-    
-  void refreshCurrentFrame()
-  {
-    currentFrame = StackFactory.createFrame(task);
-  }
-  
-  void refreshCurrentFrame(Frame scope)
-  {
-    currentFrame = scope;
   }
 
   // ??? Give registers a real type and let the type system do the swap.
@@ -755,8 +732,9 @@ class DebugInfoEvaluator
    * 
    * @see frysk.expr.CppSymTab#put(java.lang.String, frysk.lang.Value)
    */
-  public void put (String s, Value v) throws NameNotFoundException
+  public void put (Frame f, String s, Value v) throws NameNotFoundException
   {
+    setCurrentFrame(f);
     VariableAccessor[] variableAccessor = { new AccessMemory()
     // new AccessDwOpData()
     };
@@ -804,21 +782,23 @@ class DebugInfoEvaluator
   }
 
 
-  public Value get (String s) throws NameNotFoundException
+  public Value get (Frame f, String s) throws NameNotFoundException
   {
+    setCurrentFrame(f);
     DwarfDie varDie = getDie(s);
     if (varDie == null)
       return (null);
     
-    return get(varDie);
+    return get(f, varDie);
   }
   
   /**
    * Returns the Value associated with the given DwarfDie.
    * @see frysk.expr.CppSymTab#get(java.lang.String)
    */
-  public Value get (DwarfDie varDie) throws NameNotFoundException
+  public Value get (Frame f, DwarfDie varDie) throws NameNotFoundException
   {
+    setCurrentFrame(f);
     VariableAccessor[] variableAccessor = { new AccessMemory(),
 	                                   new AccessRegisters()};
     ByteOrder byteorder = task.getIsa().getByteOrder();
@@ -942,14 +922,15 @@ class DebugInfoEvaluator
     return null;
   }
     
-  public Value get (ArrayList components) throws NameNotFoundException
+  public Value get (Frame f, ArrayList components) throws NameNotFoundException
   {
+    setCurrentFrame(f);
     String s = (String)components.get(0);
     DwarfDie varDie = getDie(s);
     if (varDie == null)
       return (null);
 
-    Value v = get(s);
+    Value v = get(f, s);
     if (v.getType() instanceof ArrayType)
       return ((ArrayType)v.getType()).get(v, 1, components);
     else if (v.getType() instanceof ClassType)
@@ -958,14 +939,16 @@ class DebugInfoEvaluator
       return null;
   }
   
-  public Value getAddress (String s) throws NameNotFoundException
+  public Value getAddress (Frame f, String s) throws NameNotFoundException
   {
+    setCurrentFrame(f);
     AccessMemory access = new AccessMemory();
     return ArithmeticType.newLongValue(longType, access.getAddr(s)); 
   }
   
-  public Value getMemory (String s) throws NameNotFoundException
+  public Value getMemory (Frame f, String s) throws NameNotFoundException
   {     
+    setCurrentFrame(f);
     ByteOrder byteorder = task.getIsa().getByteOrder();
     DwarfDie varDie = getDie(s);
     
@@ -1196,9 +1179,9 @@ class DebugInfoEvaluator
    * 
    * @param sf_p
    */
-  void setCurrentFrame (Frame sf_p)
+  void setCurrentFrame (Frame frame)
   {
-    currentFrame = sf_p;
+    currentFrame = frame;
   }
 
   /**

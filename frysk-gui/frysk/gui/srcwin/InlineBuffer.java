@@ -82,8 +82,8 @@ public class InlineBuffer
   /**
    * Creates a new InlineBuffer to reflect the provided instance
    * 
-   * @param scope The file that the declaration is in
    * @param instance The inlined instance to display
+   * @param frame The file that the declaration is in
    */
   public InlineBuffer (DOMInlineInstance instance, Frame frame)
   {
@@ -217,7 +217,7 @@ public class InlineBuffer
         var = stab.print(line.getText().substring(
                                                     tag.getStart(),
                                                     tag.getStart()
-                                                        + tag.getLength()));
+                                                        + tag.getLength()), scope);
       }
     catch (ParseException e)
       {

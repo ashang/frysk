@@ -122,8 +122,6 @@ class EnableCommand extends CLIHandler {
 	    Arrays.sort(ids);
 	}
 	
-	cli.refreshSymtab();
-	
 	// If a list of actionpoints were supplied, enable them and exit
 	if (ids != null) {
 	    for (int i = 0; i < ids.length; i++) {

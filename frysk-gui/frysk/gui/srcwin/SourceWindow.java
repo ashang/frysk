@@ -774,7 +774,6 @@ public class SourceWindow
             LinkedList l = new LinkedList();
             while (values.hasNext())
               l.add(values.next());
-            this.symTab[current].refresh();
             if (view instanceof SourceView)
               wList.refreshVars(((SourceView) this.view).refreshVars((List) l));
           }

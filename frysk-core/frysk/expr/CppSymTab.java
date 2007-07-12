@@ -43,14 +43,15 @@ import java.util.ArrayList;
 
 import javax.naming.NameNotFoundException;
 
+import frysk.stack.Frame;
 import frysk.value.Value;
 
 public interface CppSymTab
 {
-  void put(String s, Value v) throws NameNotFoundException;
-  Value get(String s) throws NameNotFoundException;
-  Value get(ArrayList v) throws NameNotFoundException;
-  Value getAddress(String s) throws NameNotFoundException;
-  Value getMemory(String s) throws NameNotFoundException;
+  void put(Frame f, String s, Value v) throws NameNotFoundException;
+  Value get(Frame f, String s) throws NameNotFoundException;
+  Value get(Frame f, ArrayList v) throws NameNotFoundException;
+  Value getAddress(Frame f, String s) throws NameNotFoundException;
+  Value getMemory(Frame f, String s) throws NameNotFoundException;
   boolean putUndefined();
 }

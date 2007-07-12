@@ -1,3 +1,7 @@
+2007-07-12  Stan Cox  <scox@redhat.com>
+
+	* cni/DwarfDie.cxx (get_type): Add const_type.
+
 2007-07-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DwarfDie.java (toPrint): New function.

@@ -63,8 +63,6 @@ public class CoreCommand extends CLIHandler {
 	    return;
 	}
 	
-	cli.refreshSymtab();	// XXX ?
-
 	if (params.size() != 1) {
 	    cli.printUsage(cmd);
 	    return;

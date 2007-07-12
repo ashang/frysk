@@ -86,7 +86,6 @@ class BreakpointCommand
   
     public void handle(Command cmd) throws ParseException
     {
-	cli.refreshSymtab();
 	ArrayList params = cmd.getParameters();
 	if (params.size() != 1) {
 	    cli.printUsage(cmd);

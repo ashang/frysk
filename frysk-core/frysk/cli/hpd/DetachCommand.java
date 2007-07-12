@@ -58,7 +58,6 @@ class DetachCommand
 	    cli.printUsage(cmd);
 	    return;
 	}
-	cli.refreshSymtab();
 
 	boolean startedByRun;
 	synchronized (cli) {

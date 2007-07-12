@@ -1,3 +1,7 @@
+2007-07-12  Stan Cox  <scox@redhat.com>
+
+	* cpp.g (CppTreeParser): Add Frame parameter.  Change all callers.
+
 2007-06-19  Stan Cox  <scox@redhat.com>
 
 	* cpp.g (unary_expression): Add TILDE and NOT.

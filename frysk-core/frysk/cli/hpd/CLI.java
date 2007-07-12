@@ -67,11 +67,9 @@ public class CLI
 {
   Proc proc;
   Task task;
-  int pid = 0;
-  int tid = 0;
   DebugInfo debugInfo = null;
-  boolean symtabNeedsRefresh = false;
   boolean running = false;
+  Frame frame;
   int stackLevel = 0;
   SteppingObserver steppingObserver;
   SteppingEngine steppingEngine;
@@ -110,22 +108,13 @@ public class CLI
     // Otherwise assume a symbol is being completed
     else if (debugInfo != null)
       {
-	cursor = debugInfo.complete(buffer.substring(first_ws),
+	cursor = debugInfo.complete(frame, buffer.substring(first_ws),
 				 cursor - first_ws, candidates);
 	return cursor + first_ws;
       }
     return 1 + offset;
   }
-  // Superclass refreshes symbol table if necessary.
-  public void refreshSymtab()
-  {
-    if (symtabNeedsRefresh && debugInfo != null)
-      {
-	debugInfo.refresh();
-	symtabNeedsRefresh = false;
-      }
-  }
-  
+
   /*
    * Command handlers
    */
@@ -138,7 +127,6 @@ public class CLI
       {
 	steppingObserver = new SteppingObserver();
       }
-    this.pid = pid;
     this.proc = proc;
     this.task = task;
     Proc[] temp = new Proc[1];
@@ -167,8 +155,9 @@ public class CLI
 	  return;
 	}
       }
-    addMessage("Attached to process " + pid, Message.TYPE_NORMAL);
-    debugInfo = new DebugInfo(StackFactory.createFrame(this.task));
+    addMessage("Attached to process " + this.proc.getPid(), Message.TYPE_NORMAL);
+    frame = StackFactory.createFrame(this.task);
+    debugInfo = new DebugInfo(frame);
   }
   
   class UpDownHandler implements CommandHandler
@@ -181,29 +170,36 @@ public class CLI
           printUsage(cmd);
           return;
         }
-      refreshSymtab();
       int level = 1;
-      Frame tmpFrame = null;
-      Frame currentFrame = debugInfo.getCurrentFrame();
+      boolean down = true;
+      Frame currentFrame = frame;
+      Frame tmpFrame = frame;
 
       if (params.size() != 0)
 	level = Integer.parseInt((String)params.get(0));
 
       // For user command 'down', move a level towards the bottom of the call-stack  
       if (cmd.getAction().compareTo("down") == 0)
-	{
-	  tmpFrame = debugInfo.setCurrentFrame(level);
-	  if (tmpFrame != currentFrame)
-	    stackLevel += level;
-	}
+	  down = true;
       // For user command 'up', move a level towards the top of the call-stack 
       else if (cmd.getAction().compareTo("up") == 0)
-	{
-	  tmpFrame = debugInfo.setCurrentFrame(-level);
-	  if (tmpFrame != currentFrame)
-	    stackLevel -= level;
-	}
+	  down = false;
+
+      int l = level;
+      while (tmpFrame != null && l != 0) {
+	  if (down)
+	      tmpFrame = tmpFrame.getOuter();
+	  else
+	      tmpFrame = tmpFrame.getInner();
+	  l = l - 1;
+      }
         
+      if (tmpFrame != null && tmpFrame != currentFrame)
+      {
+	  frame = tmpFrame;
+	  stackLevel += down ? level : -level;
+      }
+	  
       if (tmpFrame == null)
 	tmpFrame = currentFrame;
       outWriter.print("#" + stackLevel + " ");
@@ -499,7 +495,6 @@ public class CLI
       synchronized (CLI.this)
         {
           attached = true;
-          symtabNeedsRefresh = true;
           // bpt = (Breakpoint.PersistentBreakpoint)
           // SteppingEngine.getTaskBreakpoint(task);
           synchronized (this.monitor)

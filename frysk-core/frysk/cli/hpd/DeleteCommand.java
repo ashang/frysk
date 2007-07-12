@@ -64,8 +64,7 @@ class DeleteCommand extends CLIHandler {
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
-	}
-	cli.refreshSymtab();
+        }
 	final PrintWriter outWriter = cli.getPrintWriter();
 	int breakpointNumber = Integer.parseInt((String) params.get(0));
 	BreakpointManager bpManager = cli.getSteppingEngine()

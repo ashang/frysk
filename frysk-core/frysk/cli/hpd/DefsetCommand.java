@@ -57,7 +57,6 @@ class DefsetCommand
 	    cli.printUsage(cmd);
 	    return;
         }
-	cli.refreshSymtab();
 	String setname = null;
 	String setnot = null;
 	PTSet set = null;

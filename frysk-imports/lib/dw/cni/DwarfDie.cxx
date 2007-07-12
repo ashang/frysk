@@ -321,6 +321,12 @@ lib::dw::DwarfDie::get_type (jlong var_die, jboolean follow_type_def)
   Dwarf_Die * type_mem_die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
   Dwarf_Attribute type_attr;
   
+  while (die && (dwarf_tag (die) == DW_TAG_volatile_type
+		      || (dwarf_tag (die) == DW_TAG_const_type)))
+    {
+      dwarf_attr_integrate (die, DW_AT_type, &type_attr);
+      dwarf_formref_die (&type_attr, die);
+    }
   if (dwarf_attr_integrate (die, DW_AT_type, &type_attr))
     {
       if (dwarf_formref_die (&type_attr, type_mem_die))
@@ -361,7 +367,8 @@ lib::dw::DwarfDie::get_base_type (jlong var_die)
 {
   Dwarf_Die *type_die = (Dwarf_Die*) var_die;
   Dwarf_Attribute type_attr;
-  while (type_die && dwarf_tag (type_die) == DW_TAG_volatile_type)
+  while (type_die && (dwarf_tag (type_die) == DW_TAG_volatile_type
+		      || (dwarf_tag (type_die) == DW_TAG_const_type)))
     {
       dwarf_attr_integrate (type_die, DW_AT_type, &type_attr);
       dwarf_formref_die (&type_attr, type_die);

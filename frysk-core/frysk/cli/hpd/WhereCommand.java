@@ -66,7 +66,6 @@ class WhereCommand
 	    return;
         }
       
-	cli.refreshSymtab();
 	int level = 0;
 	Frame tmpFrame = null;
         
@@ -87,7 +86,7 @@ class WhereCommand
 	else
 	    stopLevel = 0;
       
-	tmpFrame = cli.debugInfo.getCurrentFrame();
+	tmpFrame = cli.frame;
 	while (tmpFrame != null) {
 	    cli.outWriter.print("#" + l + " ");
 	    cli.outWriter.println(tmpFrame.toPrint(false));

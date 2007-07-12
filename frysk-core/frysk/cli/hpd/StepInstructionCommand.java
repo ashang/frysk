@@ -62,7 +62,6 @@ public class StepInstructionCommand implements CommandHandler
         return;
       }
     
-    this.cli.refreshSymtab();
     if (this.cli.steppingObserver != null)
       {
         if (!this.cli.isRunning())
@@ -78,7 +77,7 @@ public class StepInstructionCommand implements CommandHandler
                 catch (InterruptedException ie) {}
               }
             
-            Frame rf = this.cli.debugInfo.getCurrentFrame();
+            Frame rf = this.cli.frame;
             
             if (rf.getLines().length == 0)
               this.cli.addMessage("Task stopped at address 0x" + rf.getAdjustedAddress(), Message.TYPE_NORMAL);

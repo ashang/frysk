@@ -662,7 +662,8 @@ public class SourceBuffer
         var = debugInfo.print(line.getText().substring(
                                                     tag.getStart(),
                                                     tag.getStart()
-                                                        + tag.getLength()));
+                                                        + tag.getLength()),
+                                                        scope);
         var.setFilePathXXX(source.getFilePath() + "/" + fileName);
         var.setLineNoXXX(line.getLineNum());
         
@@ -690,7 +691,7 @@ public class SourceBuffer
         while (i.hasNext())
           {
             Value v = (Value) i.next();
-            Value vv = debugInfo.print(v.getText());
+            Value vv = debugInfo.print(v.getText(), scope);
             
             /* Variable is out of scope, leave it as-is */
             if (vv == null || vv.toString().equals("") || vv.toString().equals("\0"))
@@ -735,7 +736,7 @@ public class SourceBuffer
         var = debugInfo.print(line.getText().substring(
                                                     tag.getStart(),
                                                     tag.getStart()
-                                                        + tag.getLength()));
+                                                        + tag.getLength()), scope);
       }
     catch (ParseException e)
       {
@@ -921,7 +922,6 @@ public class SourceBuffer
       this.highlightLine(scope, true);
 
     debugInfo = new DebugInfo(scope);
-    debugInfo.refresh(scope);
   }
 
   public void setMode (int mode)

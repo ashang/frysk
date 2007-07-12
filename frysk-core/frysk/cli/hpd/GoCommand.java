@@ -58,7 +58,6 @@ class GoCommand
 	    cli.printUsage(cmd);
 	    return;
 	}
-	cli.refreshSymtab();
       
 	if (cli.steppingObserver != null) {
 	    cli.getSteppingEngine().continueExecution(cli.proc.getTasks());

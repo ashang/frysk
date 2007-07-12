@@ -120,10 +120,9 @@ class DisplayValue
     
     // We found the correct frame, now refresh the variable
     DebugInfo info = new DebugInfo(current);
-    info.refresh(current);
     try
       {
-        myVar = info.print(varLabel);
+        myVar = info.print(varLabel, current);
       }
     catch (NameNotFoundException e)
       {

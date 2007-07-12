@@ -62,7 +62,6 @@ class WhichsetsCommand
 	    cli.printUsage(cmd);
 	    return;
         }
-	cli.refreshSymtab();
 	PTSet searchset = null;
 	PTSet tempset = null;
 	TaskData temptd = null;

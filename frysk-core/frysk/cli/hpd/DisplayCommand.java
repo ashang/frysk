@@ -76,7 +76,6 @@ public class DisplayCommand extends CLIHandler {
 
     public void handle(Command cmd) throws ParseException {
 	final PrintWriter output = cli.getPrintWriter();
-	cli.refreshSymtab();
 
 	ArrayList args = cmd.getParameters();
 	if (args.size() > 1)
@@ -96,8 +95,7 @@ public class DisplayCommand extends CLIHandler {
 
 	SteppingEngine engine = cli.getSteppingEngine();
 	Task myTask = cli.getTask();
-	FrameIdentifier fIdent = cli.debugInfo.getCurrentFrame()
-		.getFrameIdentifier();
+	FrameIdentifier fIdent = cli.frame.getFrameIdentifier();
 
 	UpdatingDisplayValue uDisp = DisplayManager.createDisplay(myTask,
 		fIdent, engine, (String) args.get(0));

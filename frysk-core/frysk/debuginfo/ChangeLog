@@ -1,3 +1,18 @@
+2007-07-12  Stan Cox  <scox@redhat.com>
+
+	* DebugInfo.java (refresh): Remove.
+	(complete):  Add frame parameter.  Change all callers.
+	(what): Likewise.
+	(print): Likewise.
+	(setCurrentFrame): Remove.
+	(getCurrentFrame): Remove.
+	(setSubprogram): Remove.
+	* DebugInfoEvaluator.java (refreshCurrentFrame): Remove.
+	(put): Add Frame parameter.  Change all callers.
+	(get): Likewise.
+	(getAddress): Likewise.
+	(getMemory): Likewise.
+
 2007-07-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DebugInfoEvaluator.java (AccessMemory.getBufferAddr): Reorganized function.

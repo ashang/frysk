@@ -92,28 +92,7 @@ public class DebugInfo {
 	debugInfoEvaluator[0] = new DebugInfoEvaluator (frame);
     }
 
-    /**
-     * Synchronize the symbol table with the current state of the task.
-     */
-    public void refresh() {
-	for (int i = 0; i < debugInfoEvaluator.length; i++) {
-	    debugInfoEvaluator[i].refreshCurrentFrame();
-	    subprogram[i] = setSubprogram(debugInfoEvaluator[i].getCurrentFrame());
-	    debugInfoEvaluator[i].setSubprogram(subprogram[i]);
-	}
-    }
-  
-    /**
-     * Synchronize the symbol table with the current state of the task.
-     */
-    public void refresh (Frame scope) {
-	for (int i = 0; i < debugInfoEvaluator.length; i++) {
-	    debugInfoEvaluator[i].refreshCurrentFrame(scope);
-	    subprogram[i] = setSubprogram(debugInfoEvaluator[i].getCurrentFrame());
-	    debugInfoEvaluator[i].setSubprogram(subprogram[i]);
-	}
-    }
-   
+
     /**
      * Handle ConsoleReader Completor
      * 
@@ -122,8 +101,7 @@ public class DebugInfo {
      * @param candidates List that may complete token.
      * @return cursor position in buffer
      */
-    public int complete (String buffer, int cursor, List candidates) {
-	Frame frame = getCurrentFrame();
+    public int complete (Frame frame, String buffer, int cursor, List candidates) {
 	long pc = frame.getAdjustedAddress();
 	Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
 	DwflDieBias bias = dwfl.getDie(pc);
@@ -182,9 +160,8 @@ public class DebugInfo {
      * @throws ParseException
      * @throws NameNotFoundException
      */
-    public String what(String sInput) throws ParseException,
+    public String what(Frame frame, String sInput) throws ParseException,
 					     NameNotFoundException {
-	Frame frame = getCurrentFrame();
 	long pc = frame.getAdjustedAddress();
 	Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
 	DwflDieBias bias = dwfl.getDie(pc);
@@ -242,7 +219,7 @@ public class DebugInfo {
      * @return Variable
      * @throws ParseException
      */
-    public Value print (String sInput) throws ParseException,
+      public Value print (String sInput, Frame frame) throws ParseException,
 					      NameNotFoundException {
 	Value result = null;
 	sInput += (char) 3;
@@ -270,7 +247,7 @@ public class DebugInfo {
 	 */
 	int j = 0;
 	while (result == null && j < debugInfoEvaluator.length) {
-	    treeParser = new CppTreeParser(4, 2, debugInfoEvaluator[j]);
+	  treeParser = new CppTreeParser(4, frame, debugInfoEvaluator[j]);
 
 	    try {
 		result = treeParser.expr(t);
@@ -298,22 +275,22 @@ public class DebugInfo {
     
 	final class TmpSymTab
 	    implements CppSymTab {
-	    public void put (String s, Value v) throws NameNotFoundException {
+	  public void put (Frame f, String s, Value v) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");
 	    }
 
-	    public Value get (String s) throws NameNotFoundException {
+	  public Value get (Frame f, String s) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");
 	    }
 
-	    public Value get (ArrayList v) throws NameNotFoundException {
+	  public Value get (Frame f, ArrayList v) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");
 	    }
       
-	    public Value getAddress (String s) throws NameNotFoundException {
+	public Value getAddress (Frame f, String s) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");
 	    }
-	    public Value getMemory (String s) throws NameNotFoundException {
+	  public Value getMemory (Frame f, String s) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");        
 	    }
       
@@ -337,7 +314,7 @@ public class DebugInfo {
 	CommonAST t = (CommonAST) parser.getAST();
 	CppTreeParser treeParser;
 	TmpSymTab tmpSymTab = new TmpSymTab();
-	treeParser = new CppTreeParser(4, 2, tmpSymTab);
+	treeParser = new CppTreeParser(4, null, tmpSymTab);
         
 	try {
 	    result = treeParser.expr(t);
@@ -355,83 +332,20 @@ public class DebugInfo {
 	return result;
     }
    
-    
-    /**
-     * Implement the cli up/down requests.
-     * 
-     * @param level
-     * @return StackFrame
-     */
-    public Frame setCurrentFrame(int level) {
-	boolean down;
-	Frame tmpFrame = debugInfoEvaluator[0].getCurrentFrame();
-	if (level < 0) {
-	    down = true;
-	    level = -level;
-	} else
-	    down = false;
-       
-	while (tmpFrame != null && level != 0) {
-	    if (! down)
-		tmpFrame = tmpFrame.getOuter();
-	    else
-		tmpFrame = tmpFrame.getInner();
-	    level -= 1;
-	}
-	if (tmpFrame != null) {
-	    debugInfoEvaluator[0].setCurrentFrame(tmpFrame);
-	    subprogram[0] = setSubprogram(tmpFrame);
-	    debugInfoEvaluator[0].setSubprogram(subprogram[0]);
-	}
-	return debugInfoEvaluator[0].getCurrentFrame();
-    }
-     
-    /**
-     * Get the current stack frame.
-     * 
-     * @return
-     */
-    public Frame getCurrentFrame () {
-	return debugInfoEvaluator[0].getCurrentFrame();
-    }
-    /**
-     * Get the most recent stack frame.
-     * 
-     * @return StackFrame
-     */
-    public Frame getInnerMostFrame () {
-	return debugInfoEvaluator[0].getInnerMostFrame();
-    }
-     
-    private Subprogram setSubprogram(Frame sf) {
-	DwarfDie varDie = DwarfDie.getDecl(dwarf, sf.getSymbol().getName());
-	if (varDie == null)
-	    return null;
-	// ??? Is this needed or is Frame setting up Subprogram?
-	Subprogram subPr = new Subprogram(varDie, this);
-	subPr.setFunctionType((FunctionType)debugInfoEvaluator[0].getSubprogramValue(varDie).getType());
-
-	return subPr;
-    }
-     
     public void setFrames (Frame newFrames[]) {
 	debugInfoEvaluator = new DebugInfoEvaluator[newFrames.length];
-	subprogram = new Subprogram[newFrames.length];
 	for (int i = 0; i < newFrames.length; i++) {
 	    debugInfoEvaluator[i] = new DebugInfoEvaluator (newFrames[i]);
-	    subprogram[i] = setSubprogram(newFrames[i]);
-	    debugInfoEvaluator[i].setSubprogram(subprogram[i]);
 	}
     }
-     
      
     public Value getValue (DwarfDie die) {
 	return debugInfoEvaluator[0].getValue(die);
     } 
 
-    public Value get(DwarfDie die) throws NameNotFoundException
+    public Value get(Frame f, DwarfDie die) throws NameNotFoundException
     {
-	return debugInfoEvaluator[0].get(die);
+      return debugInfoEvaluator[0].get(f, die);
     } 
 
 }

@@ -57,7 +57,6 @@ class FocusCommand
 	    cli.printUsage(cmd);
 	    return;
 	}
-	cli.refreshSymtab();
 	if (params.size() <= 1) {
 	    if (params.size() == 1)
 		cli.targetset = cli.createSet((String)params.get(0));

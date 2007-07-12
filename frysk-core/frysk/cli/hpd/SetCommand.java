@@ -59,7 +59,6 @@ class SetCommand
 	    cli.printUsage(cmd);
 	    return;
         }
-	cli.refreshSymtab();
 	String temp;
 	if (params.size() == 3 && ((String)params.get(1)).equals("=") ) {
 	    temp = (String)params.get(0);

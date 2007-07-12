@@ -73,7 +73,6 @@ class ListCommand
 	    cli.printUsage(cmd);
 	    return;
 	}
-	cli.refreshSymtab();
 	if (cli.proc == null) {
 	    cli.addMessage("No symbol table is available.",
 			   Message.TYPE_NORMAL);
@@ -86,7 +85,7 @@ class ListCommand
 	    }
 	    catch (NumberFormatException ignore) {
 		if (((String)params.get(0)).compareTo("$EXEC") == 0)
-		    line = cli.debugInfo.getCurrentFrame().getLines()[0].getLine() - 10;
+		    line = cli.frame.getLines()[0].getLine() - 10;
 		else {
 		    DwarfDie funcDie = null;
 		    try {
@@ -115,7 +114,7 @@ class ListCommand
 	}
  
 	if (file== null) {
-	    Frame frame = cli.debugInfo.getCurrentFrame();
+	    Frame frame = cli.frame;
 	    if (frame.getLines().length > 0) {
 		file = (frame.getLines()[0]).getFile();
 		line = (frame.getLines()[0]).getLine() - 10;

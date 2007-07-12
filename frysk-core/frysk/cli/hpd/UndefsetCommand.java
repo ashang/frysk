@@ -57,7 +57,6 @@ class UndefsetCommand
 	    cli.printUsage(cmd);
 	    return;
         }
-        cli.refreshSymtab();
 	if (params.size() == 1)	{
 	    String setname = (String)params.get(0);
 

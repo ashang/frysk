@@ -58,7 +58,6 @@ class ViewsetCommand
 	    cli.printUsage(cmd);
 	    return;
         }
-	cli.refreshSymtab();
 	PTSet tempset = null;
 	TaskData temptd = null;
 	String setname = "";

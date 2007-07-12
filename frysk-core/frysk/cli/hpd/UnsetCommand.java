@@ -59,7 +59,6 @@ class UnsetCommand
 	    cli.printUsage(cmd);
 	    return;
         }
-	cli.refreshSymtab();
 	String temp;
 	if (params.size() == 1) {
 	    temp = (String)params.get(0);

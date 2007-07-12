@@ -69,7 +69,6 @@ class PrintCommand
 	    cli.printUsage(cmd);
 	    return;
         }
-	cli.refreshSymtab();
 	if (cmd.getParameters().size() == 0
 	    || (((String)params.get(0)).equals("-help"))) {
 	    cli.printUsage(cmd);
@@ -114,7 +113,7 @@ class PrintCommand
 	Value result = null;
 	try {
 	  if (cli.debugInfo != null)
-	    result = cli.debugInfo.print(sInput);
+	    result = cli.debugInfo.print(sInput, cli.frame);
 	  else
 	    result = DebugInfo.printNoSymbolTable(sInput);
         }

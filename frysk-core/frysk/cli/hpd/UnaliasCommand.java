@@ -53,7 +53,6 @@ class UnaliasCommand
     public void handle(Command cmd)
 	throws ParseException
     {
-	cli.refreshSymtab();
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1) {
 	    if (((String)params.get(0)).equals("-all")) {

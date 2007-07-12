@@ -1,3 +1,11 @@
+2007-07-12  Stan Cox  <scox@redhat.com>
+
+	* CLI.java (tid,pid,symtabNeedsRefresh): Remove.
+	(frame): New.  Replaces DebugInfo.getCurrentFrame.  Change all callers.
+	(refreshSymtab): Remove.  Remove reference from all callers.
+	(UpDownHandler): Do all processing here.
+	* AttachCommand.java (handle): Make tid and pid local.
+
 2007-07-11  Adam Jocksch  <ajocksch@redhat.com>
 
 	* ActionsCommand.java (handle): Now only prints out section

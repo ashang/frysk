@@ -83,6 +83,7 @@ header
     import java.util.ArrayList;
     import frysk.value.ArithmeticType;
     import frysk.value.Value;
+    import frysk.stack.Frame;
     import javax.naming.NameNotFoundException;
     import frysk.value.InvalidOperatorException;
     import frysk.value.OperationNotDefinedException;
@@ -746,10 +747,12 @@ options {
     ArithmeticType doubleType;
     ArithmeticType floatType;
     private CppSymTab cppSymTabRef;
-    public CppTreeParser(int intSize, int shortSize, CppSymTab symTab) {
+    private Frame frame;
+    public CppTreeParser(int intSize, Frame frame, CppSymTab symTab) {
         this();
-	cppSymTabRef = symTab; 
-        shortType = new ArithmeticType(shortSize, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeShort, "short");
+	    cppSymTabRef = symTab; 
+        this.frame = frame;
+        shortType = new ArithmeticType(intSize / 2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeShort, "short");
         intType = new ArithmeticType(intSize, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeInteger, "int");
         longType = new ArithmeticType(intSize * 2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeLong, "long");
         floatType = new ArithmeticType(intSize, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeFloat, "float");
@@ -802,7 +805,7 @@ expr returns [Value returnVar=null]
 	{ returnVar = v1.getType().multiply(v1, v2); }
     |   #(MEMORY s1=identifier )
 	{ returnVar = ArithmeticType.newLongValue(longType, (long)0);
-          returnVar = (Value)cppSymTabRef.getMemory(s1); }
+          returnVar = (Value)cppSymTabRef.getMemory(frame, s1); }
     |   #(DIVIDE  v1=expr v2=expr)  { returnVar = v1.getType().divide(v1, v2); }
     |   #(MOD  v1=expr v2=expr)  {	returnVar = v1.getType().mod(v1, v2);  }
     |   #(SHIFTLEFT  v1=expr v2=expr)  {	
@@ -838,7 +841,7 @@ expr returns [Value returnVar=null]
 	{ returnVar = v1.getType().bitWiseAnd(v1, v2);  }
     |   #(ADDRESS_OF s1=identifier )
 	{ returnVar = ArithmeticType.newLongValue(longType, (long)0);
-          returnVar = (Value)cppSymTabRef.getAddress(s1); }
+          returnVar = (Value)cppSymTabRef.getAddress(frame, s1); }
     |   #(BITWISEXOR  v1=expr v2=expr)  { returnVar = v1.getType().bitWiseXor(v1, v2);  }
     |   #(BITWISEOR  v1=expr v2=expr)  { returnVar = v1.getType().bitWiseOr(v1, v2);  }
     |   #(AND  v1=expr v2=expr)  { returnVar = v1.getType().logicalAnd(v1, v2);  }
@@ -891,57 +894,57 @@ expr returns [Value returnVar=null]
     |   #(ASSIGNEQUAL v1=expr v2=expr)  {
             v1.getType().assign(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getText(), v1);
         }
     |   #(TIMESEQUAL v1=expr v2=expr)  {
             v1.getType().timesEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getText(), v1);
         }
     |   #(DIVIDEEQUAL v1=expr v2=expr)  {
             v1.getType().divideEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getText(), v1);
         }
     |   #(MINUSEQUAL v1=expr v2=expr)  {
             v1.getType().minusEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getText(), v1);
         }
     |   #(PLUSEQUAL v1=expr v2=expr)  {
             v1.getType().plusEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getText(), v1);
         }
     |   #(MODEQUAL v1=expr v2=expr)  {
             v1.getType().modEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getText(), v1);
         }
     |   #(SHIFTLEFTEQUAL v1=expr v2=expr)  {
             v1.getType().shiftLeftEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getText(), v1);
         }
     |   #(SHIFTRIGHTEQUAL v1=expr v2=expr)  {
             v1.getType().shiftRightEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getText(), v1);
         }
     |   #(BITWISEANDEQUAL v1=expr v2=expr)  {
             v1.getType().bitWiseAndEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getText(), v1);
         }
     |   #(BITWISEXOREQUAL v1=expr v2=expr)  {
             v1.getType().bitWiseXorEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getText(), v1);
         }
     |   #(BITWISEOREQUAL v1=expr v2=expr)  {
             v1.getType().bitWiseOrEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getText(), v1);
         }
     |   #(CAST pt:primitiveType v2=expr) { 
 	    if(pt.getText().compareTo("long") == 0) {
@@ -969,20 +972,20 @@ expr returns [Value returnVar=null]
     |   #(EXPR_LIST v1=expr)  { returnVar = v1; }
     |   #(FUNC_CALL v1=expr v2=expr)  { returnVar = v1; }
     |   #(REFERENCE el=references) {
-          returnVar = (Value)cppSymTabRef.get(el);
+          returnVar = (Value)cppSymTabRef.get(frame, el);
           }
     |   ident:IDENT  {
-            if((returnVar = ((Value)cppSymTabRef.get(ident.getText()))) == null
+            if((returnVar = ((Value)cppSymTabRef.get(frame, ident.getText()))) == null
 		&& cppSymTabRef.putUndefined()) {
                 returnVar = ArithmeticType.newIntegerValue(intType, 0);
-                cppSymTabRef.put(ident.getText(), returnVar);
+                cppSymTabRef.put(null, ident.getText(), returnVar);
             }
         }
     |   tident:TAB_IDENT  {
-            if((returnVar = ((Value)cppSymTabRef.get(tident.getText()))) == null
+            if((returnVar = ((Value)cppSymTabRef.get(frame, tident.getText()))) == null
 		&& cppSymTabRef.putUndefined()) {
                 returnVar = ArithmeticType.newIntegerValue(intType, 0);
-                cppSymTabRef.put(tident.getText(), returnVar);
+                cppSymTabRef.put(null, tident.getText(), returnVar);
             }
         }
     ;

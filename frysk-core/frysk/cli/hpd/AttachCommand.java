@@ -58,11 +58,12 @@ class AttachCommand
     public void handle(Command cmd) throws ParseException
     {
 	ArrayList params = cmd.getParameters();
+	int pid = 0;
+	int tid = 0;
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
 	}
-	cli.refreshSymtab();	// XXX ?
 	boolean cliOption = true;
 
 	if (params.size() < 1) {
@@ -77,19 +78,19 @@ class AttachCommand
 		cliOption = false;
 	    else if (((String)params.get(idx)).equals("-task")) {
 		idx += 1;
-		cli.tid = Integer.parseInt(((String)params.get(idx)));
+		tid = Integer.parseInt(((String)params.get(idx)));
 	    }
 	    else if (((String)params.get(idx)).indexOf('-') == 0) {
 		cli.printUsage(cmd);
 		return;
 	    }
 	    else if (((String)params.get(idx)).matches("[0-9]+"))
-		cli.pid = Integer.parseInt((String)params.get(idx)); 
+		pid = Integer.parseInt((String)params.get(idx)); 
 	}
 
 	if (cliOption) {
 	    cli.procSearchFinished = false;
-	    Manager.host.requestFindProc(new ProcId(cli.pid),
+	    Manager.host.requestFindProc(new ProcId(pid),
 					 new Host.FindProc() {
 		    public void procFound (ProcId procId)
 		    {
@@ -120,22 +121,22 @@ class AttachCommand
 	    }
 	}
 	if (cli.proc == null) {
-	    cli.addMessage("Couldn't find process " + cli.pid,
+	    cli.addMessage("Couldn't find process " + pid,
 			   Message.TYPE_ERROR);
 	    return;
 	}
 
-	if (cli.pid == cli.tid || cli.tid == 0)
+	if (pid == tid || tid == 0)
 	    cli.task = cli.proc.getMainTask();
 	else
 	    for (Iterator i = cli.proc.getTasks ().iterator ();
 		 i.hasNext (); ) {
 		cli.task = (Task) i.next ();
-		if (cli.task.getTid () == cli.tid)
+		if (cli.task.getTid () == tid)
 		    break;
 	    }
 	if (cliOption) {
-	    cli.startAttach(cli.pid, cli.proc, cli.task);
+	    cli.startAttach(pid, cli.proc, cli.task);
 	    cli.finishAttach();
 	}
 	else {

@@ -57,7 +57,6 @@ class AliasCommand
 	    cli.printUsage(cmd);
 	    return;
 	}
-	cli.refreshSymtab();
 	if (params.size() <= 2) {
 	    if (params.size() == 2) {
 		cli.aliases.put((String)params.get(0), (String)params.get(1));
