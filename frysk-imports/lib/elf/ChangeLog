@@ -1,3 +1,20 @@
+2007-07-12  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* tests/TestElf.java (testCore): Deleted
+	(testElfCorePrpsNotes): Deleted.
+	(testElfCorePrstatusNotes): Deleted.
+	(testElfCorePrAuxvNotes): Deleted.
+	(testCore_x86): New. Rewritten from old version
+	to test cross ISA situations
+	(testElfCorePrpsNotes_x86): Ditto.
+	(testElfCorePrstatusNotes_x86): Ditto.
+	(testElfCorePrAuxvNotes_x86): Ditto.
+	(testCore_x8664): Ditto.
+	(testElfCorePrpsNotes_x8664): Ditto.
+	(testElfCorePrstatusNotes_x8664): Ditto.
+	(testElfCorePrAuxvNotes_x8664): Ditto.
+	
+	
 2007-07-06  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Elf.cxx: Re-indent.
