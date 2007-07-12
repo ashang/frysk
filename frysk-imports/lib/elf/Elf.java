@@ -98,11 +98,6 @@ public class Elf
     pointer = 0;
   }
   
-  public Elf clone (ElfCommand command)
-  {
-    return new Elf(elf_clone(command.getValue()));
-  }
-
   /**
    * @return The next elf command
    */
@@ -426,8 +421,6 @@ public class Elf
 
     private static native long elfBegin (FileDescriptor fd,
 					 ElfCommand cmd) throws ElfException;
-
-  protected native long elf_clone (int __cmd);
 
   // protected native void elf_memory(String __image, long __size);
   protected native int elf_next ();

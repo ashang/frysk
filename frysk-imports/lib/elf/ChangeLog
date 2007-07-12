@@ -1,5 +1,8 @@
 2007-07-12  Andrew Cagney  <cagney@redhat.com>
 
+	* Elf.java (clone, elf_clone): Delete.
+	* cni/Elf.cxx (elf_clone): Ditto.
+
 	* Elf.java (fd): Change type to FileDescriptor.
 	(elfBegin): Declare.
 	(Elf(String,ElfCommand)): Use FileDescriptor and elfBegin.

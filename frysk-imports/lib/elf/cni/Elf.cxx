@@ -81,12 +81,6 @@ lib::elf::Elf::elfBegin (frysk::sys::FileDescriptor* fd,
   return (jlong)new_elf;
 }
 
-jlong
-lib::elf::Elf::elf_clone (jint command)
-{
-  return (jlong) ::elf_clone((::Elf*) this->pointer, (Elf_Cmd) command);
-}
-
 jint
 lib::elf::Elf::elf_next ()
 {
