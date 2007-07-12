@@ -153,7 +153,7 @@ frysk::sys::FileDescriptor::read (jbyteArray bytes, jlong off, jlong len)
 }
 
 jint
-frysk::sys::FileDescriptor::open (jstring file, jint f)
+frysk::sys::FileDescriptor::open (jstring file, jint f, jint mode)
 {
   const char* pathname = ALLOCA_STRING (file);
   // ::fprintf ("opening <<%s>>\n", pathname);
@@ -164,13 +164,15 @@ frysk::sys::FileDescriptor::open (jstring file, jint f)
     flags |= O_WRONLY;
   if (f & frysk::sys::FileDescriptor::RDWR)
     flags |= O_RDWR;
+  if (f & frysk::sys::FileDescriptor::CREAT)
+    flags |= O_CREAT;
   int gc_count = 0;
   while (1) {
     errno = 0;
-    int fd = ::open (pathname, flags);
+    int fd = ::open (pathname, flags, mode);
     int err = errno;
     if (fd >= 0)
-      return fd;
+      break;
     switch (err) {
     case EMFILE:
       tryGarbageCollect (gc_count, err, "open");
@@ -179,6 +181,7 @@ frysk::sys::FileDescriptor::open (jstring file, jint f)
       throwErrno (errno, "open");
     }
   }
+  return fd;
 }
 
 void

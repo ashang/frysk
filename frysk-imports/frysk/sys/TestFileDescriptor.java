@@ -42,6 +42,7 @@ package frysk.sys;
 import frysk.junit.TestCase;
 import java.io.InputStream;
 import java.io.OutputStream;
+import frysk.testbed.TearDownFile;
 
 /**
  * Minimal testing for the FileDescriptor.
@@ -70,6 +71,7 @@ public class TestFileDescriptor
 	} catch (Errno e) {
 	    // Toss it, tear down.
 	}
+	TearDownFile.tearDown();
     }
 
     private void assertBecomesReady (FileDescriptor fd)
@@ -313,5 +315,17 @@ public class TestFileDescriptor
     public void testTwiceClosed() {
 	file.close();
 	file.close();
+    }
+
+    /**
+     * Try creating a temporary file.
+     */
+    public void testCreate() {
+	file.close(); // get rid of existing file.
+	TearDownFile tmp = TearDownFile.create();
+	tmp.remove();
+	assertFalse("tmp exists", tmp.stillExists());
+	file = new FileDescriptor(tmp, FileDescriptor.RDWR, 0777);
+	assertTrue("tmp exists", tmp.stillExists());
     }
 }

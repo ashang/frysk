@@ -64,16 +64,31 @@ public class FileDescriptor
 	this.fd = fd;
     }
     /**
-     * Create a file descriptor for the specified FILE, open with MODE.
+     * Create a file descriptor for the specified FILE, open in mode
+     * specified by flags.
      */
-    public FileDescriptor (String file, int flags) {
-	this (open (file, flags));
+    public FileDescriptor (String file, int accessMode) {
+	this (open (file, accessMode, 0));
     }
     /**
      * Create a file descriptor for the specified FILE, open with MODE.
      */
-    public FileDescriptor (File file, int flags) {
-	this (open (file.getAbsolutePath (), flags));
+    public FileDescriptor (File file, int accessMode) {
+	this (open (file.getAbsolutePath (), accessMode, 0));
+    }
+    /**
+     * Create a new file tied to FileDescriptor with accessMode and
+     * protection.
+     */
+    public FileDescriptor (String file, int accessMode, int prot) {
+	this (open (file, accessMode | CREAT, prot));
+    }
+    /**
+     * Create a new file tied to FileDescriptor with accessMode and
+     * protection.
+     */
+    public FileDescriptor (File file, int accessMode, int prot) {
+	this (open (file.getAbsolutePath(), accessMode | CREAT, prot));
     }
     /**
      * Open file read-only.
@@ -87,6 +102,10 @@ public class FileDescriptor
      * Open file read-write
      */
     public static final int RDWR = 4;
+    /**
+     * Create a new file.  Implied by the three-param constructor.
+     */
+    private static final int CREAT = 8;
 
     public int getFd ()
     {
@@ -114,8 +133,9 @@ public class FileDescriptor
 
     /**
      * Open the specified FILE in FLAGS; returning a file descriptor.
+     * If CREAT was specified, create file based on PROT.
      */
-    private native static int open (String file, int flags);
+    private native static int open(String file, int accessMode, int prot);
     /**
      * Close the file-descriptor.
      */

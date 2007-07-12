@@ -1,5 +1,12 @@
 2007-07-12  Andrew Cagney  <cagney@redhat.com>
 
+	* FileDescriptor.java (CREAT): New.
+	(open): Add mode parameter.
+	(FileDescriptor(String,int,int), FileDescriptor(File,int,int)):
+	Declare.
+	* cni/FileDescriptor.cxx (open): Handle CREAT.
+	* TestFileDescriptor.java (testCreate): New.
+
 	* FileDescriptor.java (FileDescriptor(String,int))
 	(FileDescriptor(File,flags)): Use this() constructor.
 	(FileDescriptor(int)): Check that fd is valid.
