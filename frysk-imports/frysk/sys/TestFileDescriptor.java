@@ -323,7 +323,7 @@ public class TestFileDescriptor
     public void testCreate() {
 	file.close(); // get rid of existing file.
 	TearDownFile tmp = TearDownFile.create();
-	tmp.remove();
+	tmp.delete();
 	assertFalse("tmp exists", tmp.stillExists());
 	file = new FileDescriptor(tmp, FileDescriptor.RDWR, 0777);
 	assertTrue("tmp exists", tmp.stillExists());

@@ -1,5 +1,8 @@
 2007-07-12  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFileDescriptor.java (testCreate): Fix typo; call delete, not
+	remove.
+	
 	* FileDescriptor.java (CREAT): New.
 	(open): Add mode parameter.
 	(FileDescriptor(String,int,int), FileDescriptor(File,int,int)):
