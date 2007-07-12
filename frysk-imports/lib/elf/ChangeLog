@@ -1,5 +1,12 @@
 2007-07-12  Andrew Cagney  <cagney@redhat.com>
 
+	* Elf.java (fd): Change type to FileDescriptor.
+	(elfBegin): Declare.
+	(Elf(String,ElfCommand)): Use FileDescriptor and elfBegin.
+	(Elf(int,ElfCommand): Use this to construct Elf object.
+	* cni/Elf.cxx (elfBegin): Define.
+	(elf_begin): Delete.
+
 	* Elf.java (Elf(int,ElfCommand)): Delete.
 
 2007-07-12  Phil Muldoon  <pmuldoon@redhat.com>

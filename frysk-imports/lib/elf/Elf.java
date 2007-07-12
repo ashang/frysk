@@ -39,36 +39,54 @@
 
 package lib.elf;
 
+import frysk.sys.FileDescriptor;
+import frysk.sys.Errno;
+
 /**
  * This class represents an Elf object.
  */
 public class Elf
 {
-
-  private long pointer;
-  protected int fd;		// ecj thinks this isn't used...
-  private boolean hasNativeObject = false;
+    private long pointer;
+    private final FileDescriptor fd;
+    private boolean hasNativeObject = false;
 
   public Elf (long ptr)
   {
     this.pointer = ptr;
-    this.fd = -1;
+    this.fd = null;
     hasNativeObject = false;
   }
 
-  /**
-   * Creates a new elf object
-   * 
-   * @param file The file to create the object from
-   * @param command The appropriate {@see ElfCommand}
-   */
-  public Elf (String file, ElfCommand command) throws ElfFileException,
-      ElfException
-  {
-
-    elf_begin(file, command.getValue());
-    hasNativeObject = true;
-  }
+    /**
+     * Creates a new elf object
+     * 
+     * @param file The file to create the object from
+     * @param command The appropriate {@see ElfCommand}
+     */
+    public Elf (String file, ElfCommand command) throws ElfFileException,
+							ElfException {
+	try {
+	    if ((command == ElfCommand.ELF_C_READ
+		 || command == ElfCommand.ELF_C_READ_MMAP
+		 || command == ElfCommand.ELF_C_READ_MMAP_PRIVATE)) {
+		fd = new FileDescriptor(file, FileDescriptor.RDONLY);
+	    } else if (command == ElfCommand.ELF_C_WRITE
+		       || command == ElfCommand.ELF_C_WRITE_MMAP) {
+		fd = new FileDescriptor(file, FileDescriptor.RDWR, 00644);
+	    } else if (command == ElfCommand.ELF_C_RDWR
+		       || command == ElfCommand.ELF_C_RDWR_MMAP) {
+		fd  = new FileDescriptor(file, FileDescriptor.RDWR);
+	    } else {
+		throw new ElfFileException("Invalid Elf_Command specified in elf_begin");
+	    }
+	} catch (Errno e) {
+	    throw new ElfFileException(e.getMessage());
+	}
+	// Create the corresponding Elf object.
+	pointer = elfBegin(fd, command);
+	hasNativeObject = true;
+    }
 
   /**
    * Destroy the external elf file object associated with  this object.
@@ -406,8 +424,8 @@ public class Elf
       elf_end();
   }
 
-  protected native void elf_begin (String file, int __cmd) throws ElfException,
-      ElfFileException;
+    private static native long elfBegin (FileDescriptor fd,
+					 ElfCommand cmd) throws ElfException;
 
   protected native long elf_clone (int __cmd);
 

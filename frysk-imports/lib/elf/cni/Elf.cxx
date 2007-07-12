@@ -40,7 +40,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <gelf.h>
-#include <gcj/cni.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -48,6 +47,12 @@
 #include <stdio.h>
 #include <errno.h>
 
+#include <gcj/cni.h>
+
+#include <gnu/gcj/RawDataManaged.h>
+
+#include "frysk/sys/FileDescriptor.h"
+#include "lib/elf/ElfCommand.h"
 #include "lib/elf/ElfException.h"
 #include "lib/elf/ElfFileException.h"
 #include "lib/elf/Elf.h"
@@ -56,56 +61,24 @@
 #include "lib/elf/ElfArchiveHeader.h"
 #include "lib/elf/ElfData.h"
 
-void
-lib::elf::Elf::elf_begin (jstring file, jint command)
+jlong
+lib::elf::Elf::elfBegin (frysk::sys::FileDescriptor* fd,
+			 lib::elf::ElfCommand* command)
 {
-  int fileNameLen = JvGetStringUTFLength(file);
-  char fileName[fileNameLen + 1];
-	
-  JvGetStringUTFRegion (file, 0, file->length (), fileName);
-  fileName[fileNameLen]='\0';
-
-  errno = 0;
-  switch (command)
-    {
-    case ELF_C_READ:
-    case ELF_C_READ_MMAP:  
-    case ELF_C_READ_MMAP_PRIVATE: fd = open (fileName, O_RDONLY);
-      break;
-    case ELF_C_WRITE:
-    case ELF_C_WRITE_MMAP: fd = open (fileName, O_RDWR | O_CREAT,00644);
-      break;
-    case ELF_C_RDWR:
-    case ELF_C_RDWR_MMAP:  fd  = open(fileName, O_RDWR);
-      break;
-    default:
-      throw new lib::elf::ElfFileException(JvNewStringUTF("Invalid Elf_Command specified in elf_begin"));
-    }
-
-  if(errno != 0)
-    {
-      char* message = "Could not open %s";
-      char error[strlen(fileName) + strlen(message) - 2];
-      sprintf(error, message, fileName);
-      throw new lib::elf::ElfFileException(JvNewStringUTF(error),
-					   file);
-    }
-	
   if(::elf_version(EV_CURRENT) == EV_NONE) 
     {
-      ::close(fd);
+      fd->close();
       throw new lib::elf::ElfException(JvNewStringUTF("Elf library version out of date"));
     }
   errno = 0;	
-  ::Elf* new_elf = ::elf_begin (fd, (Elf_Cmd) command, (::Elf*) 0);
-	
+  ::Elf* new_elf = ::elf_begin (fd->getFd(), (Elf_Cmd) (command->getValue()),
+				NULL);
   if(errno != 0 || !new_elf) 
     {
-      ::close(fd);
+      fd->close();
       throw new lib::elf::ElfException(JvNewStringUTF("Could not open Elf file"));
     }
-	
-  this->pointer = (jlong) new_elf;
+  return (jlong)new_elf;
 }
 
 jlong
@@ -126,10 +99,9 @@ lib::elf::Elf::elf_end()
   if (this->pointer)
     {
       jint val = ::elf_end((::Elf*) this->pointer);
-      if (fd >= 0)
-	::close(fd);
+      if (fd != NULL)
+	fd->close();
       this->pointer = 0;
-      fd = -1;
       return val;
     }
   else
