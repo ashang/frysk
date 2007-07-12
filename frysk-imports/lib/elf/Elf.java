@@ -37,12 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package lib.elf;
-
-//import inua.eio.ByteOrder;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * This class represents an Elf object.
@@ -72,57 +67,6 @@ public class Elf
   {
 
     elf_begin(file, command.getValue());
-    hasNativeObject = true;
-  }
-
-
-  /**
-   * Creates a new Elf object.
-   * 
-   * @param image The name of the image in memory to use
-   * @param size The size of the image
-   */
-  // I've disabled this. The image argument to the libelf
-  // elf_memory function is not a name but the raw memory address
-  // of an already mmaped Elf file. Until we determine how frysk
-  // can use this for a process it is debugging (if in fact it
-  // can), better to just turn this off. - timoore
-  // public Elf(String image, long size){
-  // elf_memory(image, size);
-  // }
-  /**
-   * Creates a new Elf object for a process' executable.
-   * 
-   * @param pid The pid of the process
-   * @param command The appropriate {@see ElfCommand}
-   */
-  public Elf (int pid, ElfCommand command) throws ElfFileException,
-      ElfException
-  {
-    try 
-      {
-	elf_begin("/proc/" + pid + "/exe", command.getValue());
-      }
-    catch (ElfFileException e)
-      {
-	// Try to find the real name of problem executable.
-	String badFileName = e.getFileName();
-	if (badFileName == null) 
-	  {
-	    throw e;
-	  }
-	File file = new File(badFileName);
-	try 
-	  {
-	    throw new ElfFileException(e.getMessage(),
-				       file.getCanonicalPath());
-	  }
-	catch (IOException ioException) 
-	  {
-	    // Nice try...
-	    throw e;
-	  }
-      }
     hasNativeObject = true;
   }
 

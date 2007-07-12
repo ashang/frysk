@@ -1,3 +1,7 @@
+2007-07-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Elf.java (Elf(int,ElfCommand)): Delete.
+
 2007-07-12  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* tests/TestElf.java (testCore): Deleted
@@ -13,7 +17,6 @@
 	(testElfCorePrpsNotes_x8664): Ditto.
 	(testElfCorePrstatusNotes_x8664): Ditto.
 	(testElfCorePrAuxvNotes_x8664): Ditto.
-	
 	
 2007-07-06  Andrew Cagney  <cagney@redhat.com>
 

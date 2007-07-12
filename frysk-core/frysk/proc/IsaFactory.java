@@ -42,7 +42,7 @@ package frysk.proc;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Hashtable;
-
+import java.io.File;
 import frysk.Config;
 
 import lib.elf.Elf;
@@ -108,13 +108,20 @@ public class IsaFactory
    */
   private Isa getIsa(int pid, Task task) 
   {
-    Elf elfFile;
     logger.log (Level.FINE, "{0} getIsa\n", this);
     
+    // FIXME: This should use task.proc.getExe().  Only that causes
+    // wierd failures; take a rain-check :-(
+    String exe;
     try {
-	elfFile = new Elf(pid, ElfCommand.ELF_C_READ);
+	exe = new File("/proc/" + pid + "/exe").getCanonicalPath();
+    } catch (java.io.IOException e) {
+	throw new RuntimeException("getting task's executable", e);
     }
-    catch (ElfFileException e) {
+    Elf elfFile;
+    try {
+	elfFile = new Elf(exe, ElfCommand.ELF_C_READ);
+    } catch (ElfFileException e) {
 	throw new RuntimeException ("getting task's executable", e);
     }
     catch (ElfException e) {
