@@ -495,6 +495,7 @@ public class CLI
       synchronized (CLI.this)
         {
           attached = true;
+          frame = StackFactory.createFrame(task);
           // bpt = (Breakpoint.PersistentBreakpoint)
           // SteppingEngine.getTaskBreakpoint(task);
           synchronized (this.monitor)

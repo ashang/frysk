@@ -117,11 +117,18 @@ class ListCommand
 	    Frame frame = cli.frame;
 	    if (frame.getLines().length > 0) {
 		file = (frame.getLines()[0]).getFile();
+		if (file == null) {
+		    cli.addMessage("No symbol table is available.",
+			    Message.TYPE_NORMAL);
+		    return;
+		}
 		line = (frame.getLines()[0]).getLine() - 10;
 		exec_line = line;
 	    }
-	    else
+	    else { 
 		cli.outWriter.println("No source for current frame");
+		return;
+	    }
 	}
       
 	if (line < 0)

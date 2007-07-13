@@ -1,9 +1,11 @@
 2007-07-12  Stan Cox  <scox@redhat.com>
 
+	* ListCommand.java (handle): Return if no debug_line info.
 	* CLI.java (tid,pid,symtabNeedsRefresh): Remove.
 	(frame): New.  Replaces DebugInfo.getCurrentFrame.  Change all callers.
 	(refreshSymtab): Remove.  Remove reference from all callers.
 	(UpDownHandler): Do all processing here.
+	(SteppingObserver.update): Update frame.
 	* AttachCommand.java (handle): Make tid and pid local.
 
 2007-07-11  Adam Jocksch  <ajocksch@redhat.com>
