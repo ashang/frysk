@@ -1,3 +1,8 @@
+2007-07-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFrameDebugInfo.java (testValues): Added test for values of variables
+	from upper non leaf frames.
+
 2007-07-11  Adam Jockchch  <ajocksch@redhat.com>
 
 	* UpdatingDisplayValue.java (enabled): Is now a no-op if already enabled.

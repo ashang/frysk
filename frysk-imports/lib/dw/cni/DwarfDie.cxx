@@ -52,6 +52,7 @@
 #include "lib/dw/DwarfException.h"
 #include "lib/dw/DwException.h"
 
+
 #define DWARF_DIE_POINTER (Dwarf_Die *) this->pointer
 
 jlong
@@ -298,12 +299,19 @@ lib::dw::DwarfDie::get_addr (jlong var_die, jlong pc)
     {
       size_t i = 0;
       int nlocs;
-      if (pc == 0)
-	nlocs = dwarf_getlocation (&loc_attr, &fb_expr, &fb_len);
-      else
-	nlocs = dwarf_getlocation_addr (&loc_attr, pc, &fb_expr, &fb_len, 1);
+      bool ok = false;
 
-      if (nlocs >= 0)
+      if (pc == 0){
+	nlocs = dwarf_getlocation (&loc_attr, &fb_expr, &fb_len);
+	if (nlocs >= 0 && fb_len > 0)
+	  ok = true;
+      }else{
+	nlocs = dwarf_getlocation_addr (&loc_attr,pc, &fb_expr, &fb_len, 5);
+	if (nlocs > 0 && fb_len > 0)
+	  ok = true;
+      }
+
+      if (ok)
 	do 
 	  {
 	    addOps (fb_expr[i].atom, fb_expr[i].number, fb_expr[i].number2,
@@ -471,16 +479,17 @@ lib::dw::DwarfDie::get_framebase (jlong var_die, jlong scope_arg, jlong pc)
   if (dwarf_attr_integrate (die, DW_AT_location, &loc_attr) >= 0)
     {
       size_t i = 0;
-      code = dwarf_getlocation (&loc_attr, &fb_expr, &fb_len);
+      code = dwarf_getlocation_addr (&loc_attr,pc, &fb_expr, &fb_len, 5);
 
       if (fb_expr[0].atom != DW_OP_fbreg)
-	return;
+      	return;
 
       fb_attr = dwarf_attr_integrate ((Dwarf_Die*) scope_arg,
 				      DW_AT_frame_base,
 				      &loc_attr);
 
       code = (dwarf_getlocation_addr (fb_attr, pc, &fb_expr, &fb_len, 1));
+
       if (code > 0 && fb_len > 0)
 	do 
 	  {

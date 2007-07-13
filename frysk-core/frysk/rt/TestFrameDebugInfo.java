@@ -124,15 +124,18 @@ public class TestFrameDebugInfo
   
   public void testValues() throws NameNotFoundException
   {
+      System.out.println();
     Task task = getStoppedTask("funit-stacks-values");
     Subprogram subprogram;
     Frame frame;
     Variable variable;
     
+    // inner most frame
     frame = StackFactory.createFrame(task);
     
     subprogram = frame.getSubprogram();
     assertEquals("Subprogram name", subprogram.getName(), "third");
+    
     variable = (Variable) subprogram.getParameters().iterator().next();
     assertNotNull(variable);
     assertEquals("Name", variable.getVariable().getText(), "param3");
@@ -142,7 +145,39 @@ public class TestFrameDebugInfo
     assertNotNull(variable);
     assertEquals("Name", variable.getVariable().getText(), "var4");
     assertEquals("Value", variable.getValue(frame).intValue(), 4);
-        
+    
+    // outer frame
+    frame = frame.getOuter();
+    
+    subprogram = frame.getSubprogram();
+    assertEquals("Subprogram name", subprogram.getName(), "second");
+    
+    variable = (Variable) subprogram.getParameters().iterator().next();
+    assertNotNull(variable);
+    assertEquals("Name", variable.getVariable().getText(), "param2");
+    assertEquals("Value", variable.getValue(frame).intValue(), 2);
+    
+    variable = (Variable) subprogram.getVariables().getFirst();
+    assertNotNull(variable);
+    assertEquals("Name", variable.getVariable().getText(), "var3");
+    assertEquals("Value", variable.getValue(frame).intValue(), 3);
+    
+    // outer outer frame
+    frame = frame.getOuter();
+    
+    subprogram = frame.getSubprogram();
+    assertEquals("Subprogram name", subprogram.getName(), "first");
+    
+    variable = (Variable) subprogram.getParameters().iterator().next();
+    assertNotNull(variable);
+    assertEquals("Name", variable.getVariable().getText(), "param1");
+    assertEquals("Value", variable.getValue(frame).intValue(), 1);
+    
+    variable = (Variable) subprogram.getVariables().getFirst();
+    assertNotNull(variable);
+    assertEquals("Name", variable.getVariable().getText(), "var2");
+    assertEquals("Value", variable.getValue(frame).intValue(), 2);
+    
   }
 
   public Task getStoppedTask(){

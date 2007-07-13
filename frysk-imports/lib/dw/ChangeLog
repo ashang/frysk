@@ -1,3 +1,10 @@
+2007-07-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* cni/DwarfDie.cxx (get_addr): Added a boolean for checking
+	dwarf_getlocation and dwarf_getlocation_addr success.
+	(get_framebase): used dwarf_getlocation_addr instead of 
+	dwarf_getlocation.
+
 2007-07-12  Stan Cox  <scox@redhat.com>
 
 	* cni/DwarfDie.cxx (get_type): Add const_type.

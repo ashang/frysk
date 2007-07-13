@@ -115,9 +115,6 @@ class DebugInfoEvaluator
     ByteOrder byteorder = this.task.getIsa().getByteOrder();
     buffer.order(byteorder);
 
-    while (frame.getInner() != null)
-      frame = frame.getInner();
-
     currentFrame = frame;
 
     byteType = new ArithmeticType(1, byteorder, BaseTypes.baseTypeByte, "byte");
@@ -217,7 +214,7 @@ class DebugInfoEvaluator
       // ??? Do we need an isa specific way to get x86 reg numbers?
       int[] x86regnumbers = { 0, 2, 1, 3, 7, 6, 4, 5 };
 
-      List ops = varDieP.getAddr();     
+      List ops = varDieP.getFormData(pc);     
 
       if (ops.size() == 0 || ((DwarfDie.DwarfOp) ops.get(0)).operator == -1){
 //	  throw new RuntimeException("Expression evaluation failed for die:\n\t" + varDieP.toPrint());

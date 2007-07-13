@@ -1,3 +1,10 @@
+2007-07-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DebugInfoEvaluator.java (DebugInfoEvaluator): Now no longer
+	sets the frame to the inner most frame.
+	(AccessMemory.getBufferAddr): Used getFormData() instead of 
+	getAddr().
+
 2007-07-12  Stan Cox  <scox@redhat.com>
 
 	* DebugInfo.java (refresh): Remove.

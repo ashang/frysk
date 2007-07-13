@@ -1,3 +1,7 @@
+2007-07-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* funit-stacks-values.c: Added 'volatile' to all the paramters.
+
 2007-07-05  Mike Cvet  <mcvet@redhat.com>
 
 	* funit-frameinfo-looper.S: More fixes.
