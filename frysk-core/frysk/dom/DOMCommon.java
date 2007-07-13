@@ -124,10 +124,17 @@ public class DOMCommon
    */
   public static ArrayList getIncludePaths (String executable)
   {
+    Elf elf = null;
     ArrayList incpaths = new ArrayList();
     try
       {
-        Elf elf = new Elf(executable, ElfCommand.ELF_C_READ);
+        elf = new Elf(executable, ElfCommand.ELF_C_READ);
+      }
+    catch (lib.elf.ElfException ee)
+      {
+	throw new RuntimeException("Cannot open elf file. Name I was given " +
+			"was " + executable, ee);
+      }
         Dwarf dw = new Dwarf(elf, DwarfCommand.READ, null);
         String[] files = dw.getSourceFiles();
 
@@ -156,14 +163,10 @@ public class DOMCommon
             incpaths.add(GLOBAL_INCLUDE);
           }
         return incpaths;
-      }
-
-    catch (lib.elf.ElfException ee)
-      {
-        System.err.println("Error getting include paths: " + ee.getMessage());
-        return null;
-      }
   }
+
+
+
   
   /**
    * alreadyAdded checks to see if an include path is already in the list before adding it.

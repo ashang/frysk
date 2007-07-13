@@ -1,3 +1,8 @@
+2007-07-13  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMCommon.java(getIncludePaths): Make error message give
+	more information from the elf exception.
+
 2007-07-11  Rick Moseley  <rmoseley@redhat.com>
 
 	* cparser/CDTParser.java: Fix checkVariableIndex for endless loop
