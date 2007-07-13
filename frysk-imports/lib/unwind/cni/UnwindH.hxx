@@ -45,13 +45,13 @@
 # define MAP_32BIT 0
 #endif
 
-static lib::unwind::Accessors*
-accessor(void* arg)
+static lib::unwind::AddressSpace*
+addressSpace(void* arg)
 {
-  lib::unwind::Accessors* accessors = (lib::unwind::Accessors*)arg;
-  if (accessors->magic != accessors->MAGIC)
-    throwRuntimeException ("bad accessor");
-  return accessors;
+  lib::unwind::AddressSpace* space = (lib::unwind::AddressSpace*)arg;
+  if (space->magic != lib::unwind::AddressSpace::MAGIC)
+    throwRuntimeException ("bad AddressSpace");
+  return space;
 }
 
 /*
@@ -63,7 +63,7 @@ find_proc_info (::unw_addr_space_t as, ::unw_word_t ip,
 		void *arg)
 {
   lib::unwind::ProcInfo* procInfo 
-    = accessor(arg)->findProcInfo ((jlong) ip, (jboolean) need_unwind_info);
+    = addressSpace(arg)->findProcInfo ((jlong) ip, (jboolean) need_unwind_info);
   if (procInfo->error != 0)
     return procInfo->error;
   memcpy(pip, procInfo->procInfo, sizeof (unw_proc_info_t));
@@ -77,11 +77,11 @@ static void
 put_unwind_info (::unw_addr_space_t as, ::unw_proc_info_t *proc_info,
 		 void *arg)
 {
-  lib::unwind::Accessors* accessors = accessor(arg);
+  lib::unwind::AddressSpace* space = addressSpace(arg);
   lib::unwind::ProcInfo* procInfo
-    = new lib::unwind::ProcInfo(accessors->unwinder,
+    = new lib::unwind::ProcInfo(space->unwinder,
 				(gnu::gcj::RawDataManaged *) proc_info);
-  accessors->putUnwindInfo (procInfo);
+  space->putUnwindInfo (procInfo);
 }
 
 /*
@@ -93,7 +93,7 @@ get_dyn_info_list_addr (::unw_addr_space_t as, ::unw_word_t *dilap,
 {
   jbyteArray tmp = JvNewByteArray(sizeof (unw_word_t));
   memcpy (elements(tmp), dilap, sizeof (unw_word_t));
-  int ret = accessor(arg)->getDynInfoListAddr (tmp);
+  int ret = addressSpace(arg)->getDynInfoListAddr (tmp);
   memcpy(dilap, elements(tmp), sizeof (unw_word_t));
   return ret;
 }
@@ -107,7 +107,7 @@ access_mem (::unw_addr_space_t as, ::unw_word_t addr,
 {
   jbyteArray tmp = JvNewByteArray (sizeof (unw_word_t));
   memcpy (elements(tmp), valp, JvGetArrayLength(tmp));
-  int ret = accessor(arg)->accessMem((jlong) addr, tmp, (jboolean) write);
+  int ret = addressSpace(arg)->accessMem((jlong) addr, tmp, (jboolean) write);
   memcpy(valp, elements(tmp), JvGetArrayLength(tmp));
   return ret;
 }
@@ -121,7 +121,7 @@ access_reg(::unw_addr_space_t as, ::unw_regnum_t regnum,
 {
   jbyteArray tmp = JvNewByteArray(sizeof (unw_word_t));
   memcpy (elements (tmp), valp, JvGetArrayLength(tmp));
-  int ret = accessor(arg)->accessReg((jint) regnum, tmp, (jint) write);
+  int ret = addressSpace(arg)->accessReg((jint) regnum, tmp, (jint) write);
   memcpy(valp, elements (tmp), JvGetArrayLength(tmp));
   return ret;
 }
@@ -135,7 +135,7 @@ access_fpreg(::unw_addr_space_t as, ::unw_regnum_t regnum,
 {
   jbyteArray tmp = JvNewByteArray(sizeof (unw_word_t));
   memcpy (elements (tmp), fpvalp, JvGetArrayLength(tmp));
-  int ret = accessor(arg)->accessFPReg((jint) regnum, tmp, (jboolean) write);
+  int ret = addressSpace(arg)->accessFPReg((jint) regnum, tmp, (jboolean) write);
   memcpy(fpvalp, elements (tmp), JvGetArrayLength(tmp));
   return ret;
 }
@@ -146,7 +146,7 @@ access_fpreg(::unw_addr_space_t as, ::unw_regnum_t regnum,
 static int
 resume(::unw_addr_space_t as, ::unw_cursor_t *cp, void *arg)
 {
-  return (int) accessor(arg)->resume ((lib::unwind::Cursor *) cp);
+  return (int) addressSpace(arg)->resume ((lib::unwind::Cursor *) cp);
 }
 
 static size_t
@@ -165,7 +165,7 @@ get_proc_name(::unw_addr_space_t as,
 	      size_t buf_len, ::unw_word_t *offp, void *arg)
 {
   lib::unwind::ProcName *procName
-    = accessor(arg)->getProcName ((jlong) addr, (jint) buf_len);
+    = addressSpace(arg)->getProcName ((jlong) addr, (jint) buf_len);
   if (procName->error < 0 && procName->error != -UNW_ENOMEM)
     return procName->error;
   *offp = (unw_word_t) procName->offset;
@@ -188,14 +188,14 @@ get_proc_name(::unw_addr_space_t as,
 }
 
 gnu::gcj::RawDataManaged*
-lib::unwind::TARGET::initRemote(gnu::gcj::RawData* addressSpace,
-                                lib::unwind::Accessors* accessors)
+lib::unwind::TARGET::initRemote(lib::unwind::AddressSpace* addressSpace)
 {
   logFine(this, logger, "native initRemote");
   gnu::gcj::RawDataManaged *cursor = (gnu::gcj::RawDataManaged *) JvAllocBytes (sizeof (::unw_cursor_t));
 
   unw_init_remote((unw_cursor_t *) cursor,
-                  (unw_addr_space_t) addressSpace, (void *) accessors);
+                  (unw_addr_space_t) (addressSpace->addressSpace),
+		  (void *) addressSpace);
 
   return cursor;
 }
@@ -340,8 +340,7 @@ lib::unwind::ProcInfo*
 lib::unwind::TARGET::createProcInfoFromElfImage(lib::unwind::AddressSpace* addressSpace,
 						jlong ip,
 						jboolean needUnwindInfo,
-						lib::unwind::ElfImage* elfImage,
-						lib::unwind::Accessors* accessors)
+						lib::unwind::ElfImage* elfImage)
 {
   unw_proc_info_t *procInfo
     = (::unw_proc_info_t *) JvAllocBytes(sizeof (::unw_proc_info_t));
@@ -352,7 +351,7 @@ lib::unwind::TARGET::createProcInfoFromElfImage(lib::unwind::AddressSpace* addre
 				 (int) needUnwindInfo,
 				 (void *) elfImage->elfImage,
 				 elfImage->size, elfImage->segbase,
-				 elfImage->mapoff, (void *) accessors);
+				 elfImage->mapoff, (void *) addressSpace);
 
   logFine(this, logger, "Post unw_get_unwind_table");
   lib::unwind::ProcInfo *myInfo;
@@ -368,8 +367,7 @@ lib::unwind::TARGET::createProcInfoFromElfImage(lib::unwind::AddressSpace* addre
 lib::unwind::ElfImage*
 lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSpace,
 					    jlong lowAddress, jlong highAddress,
-					    jlong offset,
-					    lib::unwind::Accessors* accessors)
+					    jlong offset)
 {
   logFine(this, logger,
           "entering segbase: 0x%lx, highAddress: 0x%lx, mapoff: 0x%lx",
@@ -402,7 +400,7 @@ lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSp
   if (sizeof (magic) >= SELFMAG)
     {
       int ret = (*a->access_mem) (as, (unw_word_t) segbase, &magic,
-                                  0, (void *) accessors);
+                                  0, (void *) addressSpace);
       if (ret < 0)
         return new lib::unwind::ElfImage((jint) ret);
 
@@ -432,7 +430,7 @@ lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSp
       logFinest(this, logger, "Reading memory segbase: 0x%lx, image: %p, hi: 0x%lx, at: 0x%lx to location: %p",
                 segbase , image , hi, segbase+hi, (char *) image + hi);
       int ret = (*a->access_mem) (as, segbase + hi,(unw_word_t *) ((char *) image + hi),
-                                  0, (void *) accessors);
+                                  0, (void *) addressSpace);
 
       if (ret < 0)
         {

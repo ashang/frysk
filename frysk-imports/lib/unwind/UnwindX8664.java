@@ -46,8 +46,7 @@ public class UnwindX8664
     extends Unwind
 {
     
-  native RawDataManaged initRemote (RawData addressSpace,
-                         Accessors accessors);
+    native RawDataManaged initRemote (AddressSpace addressSpace);
    
   native RawData createAddressSpace (ByteOrder byteOrder);
 
@@ -76,12 +75,11 @@ public class UnwindX8664
   native public ProcInfo createProcInfoFromElfImage (AddressSpace addressSpace, 
                                                      long ip, 
                                                      boolean needUnwindInfo, 
-                                                     ElfImage elfImage, 
-                                                     Accessors accessors);
+                                                     ElfImage elfImage);
 
   native public ElfImage createElfImageFromVDSO(AddressSpace addressSpace, 
                                                 long segbase, long hi, 
-                                                long mapoff, Accessors accessors);
+                                                long mapoff);
 
   
   //@Override

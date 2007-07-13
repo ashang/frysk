@@ -1,3 +1,9 @@
+2007-07-12  Andrew Cagney  <cagney@redhat.com>
+
+	* UnwindAddressSpace.java: Replace ...
+	* StackAccessors.java: ... this.  Delete.
+	* StackFactory.java (createFrame): Update.
+
 2007-07-09  Andrew Cagney  <cagney@redhat.com>
 
 	* StackAccessors.java: Pass unwinder to super class.

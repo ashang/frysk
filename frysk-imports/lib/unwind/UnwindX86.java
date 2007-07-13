@@ -66,7 +66,7 @@ public class UnwindX86
   native int setRegister(RawDataManaged cursor, int regNum, long word);
   
   //@Override
-  native RawDataManaged initRemote (RawData addressSpace, Accessors accessors);
+  native RawDataManaged initRemote (AddressSpace addressSpace);
 
   //@Override
   native int isSignalFrame (RawDataManaged cursor);
@@ -86,12 +86,11 @@ public class UnwindX86
   native public ProcInfo createProcInfoFromElfImage (AddressSpace addressSpace, 
                                                      long ip, 
                                                      boolean needUnwindInfo, 
-                                                     ElfImage elfImage, 
-                                                     Accessors accessors);
+                                                     ElfImage elfImage);
   
   native public ElfImage createElfImageFromVDSO(AddressSpace addressSpace, 
                                                   long segbase, long hi, 
-                                                  long mapoff, Accessors accessors);
+						long mapoff);
   
   native public int getSP(RawDataManaged cursor, byte[] word);
   

@@ -41,8 +41,15 @@ package lib.unwind;
 
 import gnu.gcj.RawData;
 
-public class AddressSpace
+public abstract class AddressSpace
 {
+    /**
+     * Marker so that it is possible to confirm that this is an
+     * AddressSpace.
+     */
+    static final int MAGIC = 0xacce550a;
+    final int magic = MAGIC;
+
     final RawData addressSpace;
     final Unwind unwinder;
   
@@ -62,4 +69,34 @@ public class AddressSpace
     protected void finalize() {
 	unwinder.destroyAddressSpace(addressSpace);
     }
+
+
+    /**
+     * Locate the information needed to unwind a particular procedure.
+     * @param ip the instruction-address inside the procedure whose
+     * information is needed.
+     * @param needUnwindInfo whether the format, unwind_info_size and unwind_info
+     *  fields of the returned ProcInfo should be set.
+     * @return A ProcInfo object holding the processes info.
+     */
+    public abstract ProcInfo findProcInfo (long ip, boolean needUnwindInfo);
+
+    /**
+     * Used to free a ProcInfo object created with needUnwindInfo as
+     * true.
+     * @param procInfo the procInfo object to be freed.
+     */
+    public abstract void putUnwindInfo (ProcInfo procInfo);
+
+    public abstract int getDynInfoListAddr (byte[] dilap);
+
+    public abstract int accessMem (long addr, byte[] valp, boolean write);
+
+    public abstract int accessReg (int regnum, byte[] valp, boolean write);
+
+    public abstract int accessFPReg (int regnum, byte[] fpvalp, boolean write);
+
+    public abstract int resume (Cursor cursor);
+
+    public abstract ProcName getProcName (long addr, int maxSize);
 }

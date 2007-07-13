@@ -48,8 +48,7 @@ public abstract class Unwind
 {
   volatile Logger logger = Logger.getLogger("frysk");
   
-  abstract RawDataManaged initRemote(RawData addressSpace, 
-                          Accessors accessors);
+    abstract RawDataManaged initRemote(AddressSpace addressSpace);
      
   abstract RawData createAddressSpace (ByteOrder byteOrder);
   
@@ -106,12 +105,11 @@ public abstract class Unwind
  public abstract ProcInfo createProcInfoFromElfImage(AddressSpace addressSpace,
                                                      long ip, 
                                                      boolean needUnwindInfo,
-                                                     ElfImage elfImage,
-                                                     Accessors accessors);
+                                                     ElfImage elfImage);
  
  public abstract ElfImage createElfImageFromVDSO(AddressSpace addressSpace, 
                                                  long segbase, long hi, 
-                                                 long mapoff, Accessors accessors);
+                                                 long mapoff);
 
  abstract long getStartIP(RawDataManaged procInfo);
  abstract long getEndIP(RawDataManaged procInfo);

@@ -52,70 +52,47 @@ public class TestUnwind
 	TearDownProcess.tearDown ();
     }
   
-  public void testCreateAddress()
-  {  
-    AddressSpace addr = new AddressSpace(new UnwindX8664(), ByteOrder.DEFAULT);
-    
-    assertNotNull("AddressSpace should not be null", addr.addressSpace);
-  }
+    class TestAddressSpace extends AddressSpace {
+	TestAddressSpace(Unwind unwind, ByteOrder byteOrder) {
+	    super(unwind, byteOrder);
+	}
+	public int accessFPReg (int regnum, byte[] fpvalp, boolean write) {
+	    return 0;
+	}
+	public int accessMem (long addr, byte[] valp, boolean write) {
+	    return 0;
+	}
+	public int accessReg (int regnum, byte[] valp, boolean write) {
+	    return 0;
+	}
+	public ProcInfo findProcInfo (long ip, boolean needUnwindInfo) {
+	    return null;
+	}
+	public int getDynInfoListAddr (byte[] dilap) {
+	    return 0;
+	}
+	public ProcName getProcName (long addr, int maxNameSize) {
+	    return null;
+	}
+	public void putUnwindInfo (ProcInfo procInfo) {
+	}
+	public int resume (Cursor cursor) {
+	    return 0;
+	}
+    }
+
+
+    public void testCreateAddress() {  
+	AddressSpace addr = new TestAddressSpace(new UnwindX8664(),
+						 ByteOrder.DEFAULT);
+	assertNotNull("AddressSpace should not be null", addr.addressSpace);
+    }
   
-  public void testCreateCursor()
-  {
-      Unwind unwind = new UnwindX8664();
-    AddressSpace addr = new AddressSpace(unwind, ByteOrder.DEFAULT);
-    
-     Cursor cursor = new Cursor(addr, new Accessors(unwind){
-
-      //@Override
-      public int accessFPReg (int regnum, byte[] fpvalp, boolean write)
-      {
-        return 0;
-      }
-
-//    @Override 
-      public int accessMem (long addr, byte[] valp, boolean write)
-      {
-        return 0;
-      }
-
-      //@Override
-      public int accessReg (int regnum, byte[] valp, boolean write)
-      {
-        return 0;
-      }
-
-      //@Override
-      public ProcInfo findProcInfo (long ip, boolean needUnwindInfo)
-      {
-        return null;
-      }
-
-      //@Override
-      public int getDynInfoListAddr (byte[] dilap)
-      {
-        return 0;
-      }
-
-      //@Override
-      public ProcName getProcName (long addr, int maxNameSize)
-      {
-        return null;
-      }
-
-      //@Override
-      public void putUnwindInfo (ProcInfo procInfo)
-      {
-      }
-
-      //@Override
-      public int resume (Cursor cursor)
-      {
-        return 0;
-      }
-
-     });
-    
-    assertNotNull("Cursor should not be null", cursor.cursor);
-  }
+    public void testCreateCursor()
+    {
+	Unwind unwind = new UnwindX8664();
+	AddressSpace addr = new TestAddressSpace(unwind, ByteOrder.DEFAULT);
+	Cursor cursor = new Cursor(addr);
+	assertNotNull("Cursor should not be null", cursor.cursor);
+    }
 }
-

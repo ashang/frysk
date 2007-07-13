@@ -43,11 +43,7 @@ package frysk.stack;
 import java.util.WeakHashMap;
 
 import lib.dw.Dwfl;
-import lib.unwind.AddressSpace;
 import lib.unwind.Cursor;
-import lib.unwind.Unwind;
-import lib.unwind.UnwindX8664;
-import lib.unwind.UnwindX86;
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.rt.Line;
@@ -86,16 +82,10 @@ public class StackFactory
           taskMap.remove(task);
       }
 
-	Unwind unwinder;
-	if (task.getIsa().getWordSize() == 4)
-	  unwinder = new UnwindX86();
-	else 
-	  unwinder = new UnwindX8664();
-	AddressSpace addressSpace = new AddressSpace(unwinder, lib.unwind.ByteOrder.DEFAULT);
-	StackAccessors accessors = new StackAccessors(addressSpace, task, 
-	                                              lib.unwind.ByteOrder.DEFAULT);
+    UnwindAddressSpace addressSpace
+	= new UnwindAddressSpace(task, lib.unwind.ByteOrder.DEFAULT);
 	    
-	Cursor innermost = new Cursor(addressSpace, accessors);
+    Cursor innermost = new Cursor(addressSpace);
 	    
 	RemoteFrame innerFrame = new RemoteFrame(innermost, task);
 	       

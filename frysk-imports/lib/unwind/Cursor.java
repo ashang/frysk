@@ -49,24 +49,20 @@ public class Cursor
     final RawDataManaged cursor; 
     final Unwind unwinder;
     final AddressSpace addressSpace;
-    final Accessors accessors;
     private int step;
 
-    public Cursor(AddressSpace addressSpace, Accessors accessors) {
-	this(addressSpace, accessors,
-	     addressSpace.unwinder.initRemote(addressSpace.addressSpace,
-					      accessors),
-	     addressSpace.unwinder); 
-    }
-  
-    private Cursor(AddressSpace addressSpace, Accessors accessors,
-		   RawDataManaged cursor, Unwind unwinder) {
+    private Cursor(AddressSpace addressSpace, RawDataManaged cursor,
+		   Unwind unwinder) {
 	logger.log(Level.FINE, "{0} Create Cursor\n", this);
 	this.addressSpace = addressSpace;
-	this.accessors = accessors;
 	this.cursor = cursor;
 	this.unwinder = unwinder;
 	this.step = 1;
+    }
+    public Cursor(AddressSpace addressSpace) {
+	this(addressSpace,
+	     addressSpace.unwinder.initRemote(addressSpace),
+	     addressSpace.unwinder); 
     }
   
     public boolean isSignalFrame() {
@@ -114,7 +110,7 @@ public class Cursor
 	if (step == 0)
 	    return null;
     
-	Cursor newCursor = new Cursor(addressSpace, accessors, 
+	Cursor newCursor = new Cursor(addressSpace,
 				      unwinder.copyCursor(cursor), unwinder);
   
 	step = newCursor.step();

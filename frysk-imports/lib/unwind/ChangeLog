@@ -1,3 +1,25 @@
+2007-07-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Unwind.java (initRemote(AddressSpace): Replace
+	initRemote(RawData,Accessors).
+	(createProcInfoFromElfImage, createElfImageFromVDSO): Drop
+	Accessors parameter.
+	* Cursor.java (Cursor): Drop accessor parameter.
+	(accessor): Delete.
+	* AddressSpace.java (findProcInfo, putUnwindInfo)
+	(getDynInfoListAddr, accessMem, accessReg, accessFPReg, resume)
+	(getProcName): Move to here from Accessors.
+	* Accessors.java: Delete.
+	* cni/UnwindH.hxx (initRemote): Update.
+	(addressSpace): Replace accessor.
+	(find_proc_info, put_unwind_info, get_dyn_info_list_addr)
+	(access_mem, access_reg, access_fpreg, get_proc_name)
+	(resume): Use.
+	* TestUnwind.java: Update.
+	* UnwindX86.java: Update.
+	* UnwindPPC64.java: Update.
+	* UnwindX8664.java: Update.
+
 2007-07-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Cursor.java: Re-indent.  Make fields final.
