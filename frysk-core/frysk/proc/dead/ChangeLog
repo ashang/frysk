@@ -1,3 +1,14 @@
+2007-07-13  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestLinuxCore.java (testLinuxHostPopulation): Refactored
+	to use test-core-x86.
+	(testLinuxProcPopulation): Ditto.
+	(testLinuxProcAuxV): Ditto.
+	(testLinuxTaskMemory): Ditto.
+	(testLinuxTaskPopulation): Ditto. Rewritten to test multiple
+	threads.
+	
+
 2007-07-02  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxTask.java (LinuxTask): Take FP Register data as a 

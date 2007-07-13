@@ -43,7 +43,6 @@ import frysk.Config;
 import inua.eio.ByteBuffer;
 
 import java.io.File;
-import java.math.BigInteger;
 
 import frysk.proc.Isa;
 import frysk.proc.Task;
@@ -67,7 +66,7 @@ public class TestLinuxCore
 
   Host coreHost = new LinuxHost(Manager.eventLoop, 
 					new File(Config.getPkgDataDir (), 
-						 "test-core"));
+						 "test-core-x86"));
   
 
   public void testLinuxCoreFileMaps ()
@@ -182,11 +181,11 @@ public class TestLinuxCore
     
     assertNotNull("Core File Host Is Null?",coreHost);
     
-    Proc proc = coreHost.getProc(new ProcId(31497));
+    Proc proc = coreHost.getProc(new ProcId(26799));
     
-    assertNotNull("PID 31497 populates from core file?", proc);
-    assertEquals("PID  31497 should have one task", 1 ,proc.getTasks().toArray().length);
-    assertEquals("LinuxCoreFileProc PID",31497,proc.getPid());
+    assertNotNull("PID 26799 populates from core file?", proc);
+    assertEquals("PID  26799 should have one task", 3 ,proc.getTasks().toArray().length);
+    assertEquals("LinuxCoreFileProc PID",26799,proc.getPid());
   }
   
   
@@ -196,17 +195,17 @@ public class TestLinuxCore
     
     assertNotNull("Core file Host is Null?",coreHost);
     
-    Proc proc = coreHost.getProc(new ProcId(31497));
+    Proc proc = coreHost.getProc(new ProcId(26799));
     assertNotNull("Proc exists in corefile", proc);
-    assertEquals("PID",31497,proc.getPid());
-    assertEquals("ProcID",31497,proc.getId().id);
+    assertEquals("PID",26799,proc.getPid());
+    assertEquals("ProcID",26799,proc.getId().id);
     assertSame("getHost",coreHost,proc.getHost());
     assertEquals("getParent",null,proc.getParent());
-    assertEquals("getCommand","a.out",proc.getCommand());
-    assertEquals("getExe","a.out",proc.getExe());
+    assertEquals("getCommand","segfault",proc.getCommand());
+    assertEquals("getExe","/home/pmuldoon/segfault",proc.getExe());
     assertEquals("getUID",500,proc.getUID());
-    assertEquals("getGID",100,proc.getGID());
-    assertEquals("getMainTask",31497,proc.getMainTask().getTid());
+    assertEquals("getGID",500,proc.getGID());
+    assertEquals("getMainTask",26799,proc.getMainTask().getTid());
   }
   
   
@@ -216,37 +215,36 @@ public class TestLinuxCore
     
     assertNotNull("Core file Host is Null?",coreHost);
     
-    Proc proc = coreHost.getProc(new ProcId(31497));
+    Proc proc = coreHost.getProc(new ProcId(26799));
     assertNotNull("Proc exists in corefile", proc);
     
     Auxv[] auxv = proc.getAuxv();
-    
     final int[] expectedType = {32,33,16,6,17,3,4,5,7,8,9,11,12,13,14,23,15,0};
-    final BigInteger[] expectedVal = {new BigInteger("1508352",10),
-				      new BigInteger("1507328",10), 				
-				      new BigInteger("3219782655",10),						    	
-				      new BigInteger("4096",10),
-				      new BigInteger("100",10),
-				      new BigInteger("134512692",10),
-				      new BigInteger("32",10),
-				      new BigInteger("7",10),
-				      new BigInteger("0",10),
-				      new BigInteger("0",10),
-				      new BigInteger("134513376",10),
-				      new BigInteger("500",10),
-				      new BigInteger("500",10),
-				      new BigInteger("100",10),
-				      new BigInteger("100",10),
-				      new BigInteger("0",10),
-				      new BigInteger("3220187851",10),
-				      new BigInteger("0",10)};
+    final long[] expectedVal = {0x62a400L,
+				0x62a000L,
+				0xafe9f1bfL,
+				0x1000L,
+				0x64L,
+				0x8048034L,
+				0x20L,
+				0x8L,
+				0x0L,
+				0x0L,
+				0x80483e0L,
+				0x1f4L,
+				0x1f4L,
+				0x1f4L,
+				0x1f4L,
+				0x0L,
+				0xbfcfee4bL,
+				0x0};
     
     for(int i=0; i<auxv.length; i++)
       {
 	assertEquals("Auxv Type", auxv[i].type, 
 		     expectedType[i]);
 	assertEquals("Auxv Value", auxv[i].val,
-		     expectedVal[i].longValue());
+		     expectedVal[i]);
       }
     
   }
@@ -255,91 +253,89 @@ public class TestLinuxCore
   {
 	assertNotNull("Core file Host is Null?",coreHost);
     
-	Proc proc = coreHost.getProc(new ProcId(31497));
+	Proc proc = coreHost.getProc(new ProcId(26799));
 	assertNotNull("Proc exists in corefile", proc);
 	Task task = proc.getMainTask();
 	assertNotNull("Task exists in proc",task);
 	
 	ByteBuffer buffer = task.getMemory();
 	
-	buffer.position(0x00170000L);
+	buffer.position(0x411bc150L);
 	
-	assertEquals("Peek a byte at 0x00170000",0x7f,buffer.getByte());
-	assertEquals("Peek a byte at 0x00170001",0x45,buffer.getByte());
-	assertEquals("Peek a byte at 0x00170002",0x4c,buffer.getByte());
-	assertEquals("Peek a byte at 0x00170003",0x46,buffer.getByte());
-	assertEquals("Peek a byte at 0x00170004",0x01,buffer.getByte());
+	assertEquals("Peek a byte at 0x411bc150",0x28L,buffer.getUByte());
+	assertEquals("Peek a byte at 0x411bc151",0x55L,buffer.getUByte());
+
+	buffer.position(0x411bc153L);
+	assertEquals("Peek a byte at 0x411bc153",0x08L,buffer.getUByte());
+	assertEquals("Peek a byte at 0x411bc154",0x00L,buffer.getUByte());
   }
   
   public void testLinuxTaskPopulation ()
   {
 
+
+    // Preload 3 threads worth of data into the static data structure
+
+    int[] threadPid = {26801, 26800, 26799};
+    String[] threadName = {"Task 26801", "Task 26800", "Task 26799"};
+    long[] eax =    {0xfffffffcL, 0xfffffffcL,0x80486a8L};
+    long[] ebx =    {0x080498ecL, 0x080498ecL,0x411baff4L};
+    long[] ecx =    {0x0L,        0x0L,       0x2L};
+    long[] edx =    {0x2L,        0x2L,       0x1L};
+    long[] esi =    {0x0L,        0x0L,       0x41067ca0L};
+    long[] edi =    {0x080498ecL, 0x080498ecL,0x0L};
+    long[] ebp =    {0xb75603a8L, 0xb7f613a8L,0xbfcfec68L};
+    long[] esp =    {0xb7560350L, 0xb7f61350L,0xbfcfec20L};
+    long[] eip =    {0x0062a402L, 0x0062a402L,0x0804854aL};
+    long[] eflags = {0x00200246L, 0x00200202L,0x00210286L};
+    long[] oeax =   {0xf0L,       0xf0L,      0xffffffffL};
+    long[] cs =     {0x73L,       0x73L,      0x73L};
+    long[] ds =     {0x7bL,       0x7bL,      0x7bL};
+    long[] es =     {0x7b,        0x7b,       0x7b};
+    long[] fs =     {0x0L,        0x0L,       0x0L};
+    long[] gs =     {0x33L,       0x33L,      0x33L};
+
     assertNotNull("Core file Host is Null?",coreHost);
 
-    Proc proc = coreHost.getProc(new ProcId(31497));
+    Proc proc = coreHost.getProc(new ProcId(26799));
     assertNotNull("Proc exists in corefile", proc);
-    Task task = proc.getMainTask();
-    assertNotNull("Task exists in proc",task);
-    assertEquals("Task ID",31497,task.getTaskId().id);
-    assertEquals("Task TID",31497, task.getTid());
-    assertEquals("Task TID","Task 31497",task.getName());
-    assertEquals("Task has ISA before getISA",task.hasIsa(),false);
-    assertNotNull("Task ISA",task.getIsa());
-    assertEquals("Task has ISA?",task.hasIsa(), true);
-    assertSame("Task getParent",proc,task.getProc());
-
-    Isa isa = task.getIsa();
-
-    assertEquals("ebx register",0x00007b09,
-		 isa.getRegisterByName("ebx").get(task));
-    assertEquals("ecx register",0x00007b09,
-		 isa.getRegisterByName("ecx").get(task));
-    assertEquals("edx register",0x00000006,
-		 isa.getRegisterByName("edx").get(task));
-
-    BigInteger tmp = new BigInteger("3220187212"); //0xbff0284c
-    assertEquals("esi register",
-		 tmp.longValue(),isa.getRegisterByName("esi").get(task));
-   
-    assertEquals("edi register",0x00b2cff4,
-		 isa.getRegisterByName("edi").get(task));
-
-    tmp = new BigInteger("3220187052"); //0xbff027ac
-    assertEquals("ebp register",
-		 tmp.longValue(),isa.getRegisterByName("ebp").get(task));
-
-    assertEquals("eax register",0,
-		 isa.getRegisterByName("eax").get(task));
-
-    assertEquals("ds register",0x0000007b,
-		 isa.getRegisterByName("ds").get(task));
-
-    tmp = new BigInteger("-1072693125"); //0xc010007b
-    BigInteger es = isa.getRegisterByName("es").getBigInteger(task);
     
-    assertEquals("es register",tmp.longValue(), es.longValue());
+    Task[] tasks = (Task[]) proc.getTasks().toArray(new Task[proc.getTasks().size()]);
+    assertEquals("PID  26799 should have three tasks", 3 ,tasks.length);
+    
+    // Loop through the expected three threads
+    for (int i=0; i<tasks.length; i++)
+      {
 
-    assertEquals("fs register",0x00000000,
-		 isa.getRegisterByName("fs").get(task));
+	assertNotNull("Task exists in proc",tasks[i]);
+	assertEquals("Task ID",threadPid[i],tasks[i].getTaskId().id);
+	assertEquals("Task TID",threadPid[i], tasks[i].getTid());
+	assertEquals("Task TID",threadName[i],tasks[i].getName());
+	assertEquals("Task has ISA before getISA",tasks[i].hasIsa(),false);
+	assertNotNull("Task ISA",tasks[i].getIsa());
+	assertEquals("Task has ISA?",tasks[i].hasIsa(), true);
+	assertSame("Task getParent",proc,tasks[i].getProc());
 
-    assertEquals("gs register",0x00000033,
-		 isa.getRegisterByName("gs").get(task));
+	Isa isa = tasks[i].getIsa();	
 
-    assertEquals("cs register",0x00000073,
-		 isa.getRegisterByName("cs").get(task));
+	assertEquals("note: ebx",ebx[i], isa.getRegisterByName("ebx").get(tasks[i]));
+	assertEquals("note: ecx",ecx[i], isa.getRegisterByName("ecx").get(tasks[i]));
+	assertEquals("note: edx",edx[i], isa.getRegisterByName("edx").get(tasks[i]));
+	assertEquals("note: esi",esi[i], isa.getRegisterByName("esi").get(tasks[i]));
+	assertEquals("note: edi",edi[i], isa.getRegisterByName("edi").get(tasks[i]));
+	assertEquals("note: ebp",ebp[i], isa.getRegisterByName("ebp").get(tasks[i]));
+	assertEquals("note: eax",eax[i], isa.getRegisterByName("eax").get(tasks[i]));
+	assertEquals("note: ds",ds[i],   isa.getRegisterByName("ds").get(tasks[i]));
+	assertEquals("note: es",es[i], isa.getRegisterByName("es").get(tasks[i]));
+	assertEquals("note: fs",fs[i], isa.getRegisterByName("fs").get(tasks[i]));
+	assertEquals("note: gs",gs[i],	isa.getRegisterByName("gs").get(tasks[i]));
+	assertEquals("note: oeax",oeax[i], isa.getRegisterByName("orig_eax").get(tasks[i]));
+	assertEquals("note: eip",eip[i], isa.getRegisterByName("eip").get(tasks[i]));
+	assertEquals("note: cs",cs[i], isa.getRegisterByName("cs").get(tasks[i]));
+	assertEquals("note: eflags",eflags[i], isa.getRegisterByName("efl").get(tasks[i]));
+	assertEquals("note: esp",esp[i], isa.getRegisterByName("esp").get(tasks[i]));
 
-    assertEquals("oeax register",0x0000010e,
-		 isa.getRegisterByName("orig_eax").get(task));
-
-    assertEquals("eip register",0x00170410,
-		 isa.getRegisterByName("eip").get(task));
-
-    assertEquals("eflags register",0x00000246,
-		 isa.getRegisterByName("efl").get(task));
-
-    tmp = new BigInteger("3220187028");
-    assertEquals("note: esp",tmp.longValue(),
-		 isa.getRegisterByName("esp").get(task));
+      }
   }
 
 
