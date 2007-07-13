@@ -37,43 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <sys/mman.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-
-#include <libdwfl.h>
-
-#include <libunwind-x86_64.h>
-#include <dwarf.h>
-
-#include <gcj/cni.h>
-
-#include <gnu/gcj/RawDataManaged.h>
-
-#include <java/lang/String.h>
-#include <java/lang/Object.h>
-#include <java/util/logging/Logger.h>
-#include <java/util/logging/Level.h>
-
-#include "inua/eio/ByteBuffer.h"
-#include "lib/dw/Dwfl.h"
-
-#include "lib/unwind/Unwind.h"
-#include "lib/unwind/AddressSpace.h"
-#include "lib/unwind/Cursor.h"
-#include "lib/unwind/ByteOrder.h"
-#include "lib/unwind/CachingPolicy.h"
-#include "lib/unwind/ProcInfo.h"
-#include "lib/unwind/ProcName.h"
-#include "lib/unwind/ProcInfo.h"
-#include "lib/unwind/ElfImage.h"
-
-#include "frysk/sys/cni/Errno.hxx"
-
 #define TARGET UnwindX8664
-#include "lib/unwind/UnwindX8664.h"
+#define LIBUNWIND_TARGET_H <libunwind-x86_64.h>
+#define LIB_UNWIND_UNWIND_TARGET_H "lib/unwind/UnwindX8664.h"
+
 #include "lib/unwind/cni/UnwindH.hxx"

@@ -1,5 +1,13 @@
 2007-07-13  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/UnwindH.hxx: Move all #include's to here.  Use
+	LIB_UNWIND_UNWIND_TARGET_H and LIBUNWIND_TARGET_H as macros
+	specifying target dependent headers.
+	* cni/UnwindX86.cxx: Only #include UnwindH.hxx.
+	(LIB_UNWIND_UNWIND_TARGET_H, LIBUNWIND_TARGET_H): Define.
+	* cni/UnwindPPC64.cxx: Ditto.
+	* cni/UnwindX8664.cxx: Ditto.
+
 	* cni/UnwindX86.cxx: Do not include Accessors.h.
 	* cni/UnwindX8664.cxx: Ditto.
 	* cni/UnwindPPC64.cxx: Ditto.
@@ -524,3 +532,10 @@
 	* UnwindCallbacks.java: Created.
 	* cni/Frame.cxx: Created.
 	* cni/StackTraceCreator.cxx: Created.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:
