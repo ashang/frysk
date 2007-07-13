@@ -1,3 +1,7 @@
+2007-07-13  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/PseudoTerminal.cxx (getName): Use getFd.
+
 2007-07-12  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/FileDescriptor.cxx (open): Fix typo; declare fd n correct

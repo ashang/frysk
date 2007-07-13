@@ -82,7 +82,7 @@ frysk::sys::PseudoTerminal::open (jboolean controllingTerminal)
 jstring
 frysk::sys::PseudoTerminal::getName ()
 {
-  char* pts_name = ::ptsname (fd);
+  char* pts_name = ::ptsname (getFd());
   if (pts_name == NULL)
     throwErrno (errno, "ptsname");
   return JvNewStringUTF (pts_name);
