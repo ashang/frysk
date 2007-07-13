@@ -1,3 +1,9 @@
+2007-07-13  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/UnwindX86.cxx: Do not include Accessors.h.
+	* cni/UnwindX8664.cxx: Ditto.
+	* cni/UnwindPPC64.cxx: Ditto.
+
 2007-07-12  Andrew Cagney  <cagney@redhat.com>
 
 	* Unwind.java (initRemote(AddressSpace): Replace

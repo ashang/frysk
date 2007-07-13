@@ -63,7 +63,6 @@
 #include "lib/dw/Dwfl.h"
 
 #include "lib/unwind/Unwind.h"
-#include "lib/unwind/Accessors.h"
 #include "lib/unwind/AddressSpace.h"
 #include "lib/unwind/Cursor.h"
 #include "lib/unwind/ByteOrder.h"
