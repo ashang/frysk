@@ -2,6 +2,7 @@
 
 	* DOMCommon.java(getIncludePaths): Make error message give
 	more information from the elf exception.
+	* DOMCommon.java: Reformatted.
 
 2007-07-11  Rick Moseley  <rmoseley@redhat.com>
 

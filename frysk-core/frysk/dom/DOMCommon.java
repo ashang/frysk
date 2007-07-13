@@ -57,12 +57,12 @@ import java.util.ArrayList;
  *
  */
 
-public class DOMCommon
-{
-  
+public class DOMCommon {
+
   private static final String GLOBAL_INCLUDE = "/usr/include";
+
   private static final String LOCAL_INCLUDE = "/usr/local/include";
-  
+
   /*
    * getSrcFiles gets the source files for this image from the elf/dwarf header
    * The path from the ELF/DWARF header is used for the path for the initial
@@ -73,129 +73,114 @@ public class DOMCommon
    * @param executable is a String containing the path to the executable
    * @return an ArrayList with the path(s) of the source file(s)
    */
-  
-  public static ArrayList getSrcFiles (String executable)
-  {
-    ArrayList sourcefiles = new ArrayList();
-    if (pathFound(executable))
-      {
-        try
-          {
-            Elf elf = new Elf(executable, ElfCommand.ELF_C_READ);
-            Dwarf dw = new Dwarf(elf, DwarfCommand.READ, null);
-            String[] files = dw.getSourceFiles();
 
-            // Since this call returns a lot of non-source file info, we must
-            // parse it and glean the source paths from it
-            for (int i = 0; i < files.length; i++)
-              {
-                if (DOMCompilerSuffixes.checkCPP(files[i]) || DOMCompilerSuffixes.checkC(files[i]))
-                  {
-                    if (pathFound(files[i]))
-                      {
-                        sourcefiles.add(files[i]);
-                      }
-                    // If we have not found the file and it has a relative path, prepend the path
-                    // to the executable to the front of the paths and see what happens
-                    else if (files[i].startsWith("..")) {
-                      if (pathFound(executable.substring(0,executable.lastIndexOf("/")) + "/" + files[i]))
-                        {
-                          sourcefiles.add(executable.substring(0,executable.lastIndexOf("/")+1) + files[i]);
-                        }
-                    }
-                  }
-              }
-          }
-        catch (lib.elf.ElfException ee)
-          {
-            System.err.println("Error getting sourcefile paths: "
-                               + ee.getMessage());
-            return sourcefiles;
-          }
-      }
-      return sourcefiles;
-  }
-  
-  /*
-   * get a list of the include files for this source file
-   * 
-   * @param executable is a String containing the path to the executable
-   * @return an ArrayList containing a list of the include path(s)
-   */
-  public static ArrayList getIncludePaths (String executable)
-  {
-    Elf elf = null;
-    ArrayList incpaths = new ArrayList();
-    try
-      {
-        elf = new Elf(executable, ElfCommand.ELF_C_READ);
-      }
-    catch (lib.elf.ElfException ee)
-      {
-	throw new RuntimeException("Cannot open elf file. Name I was given " +
-			"was " + executable, ee);
-      }
+  public static ArrayList getSrcFiles(String executable) {
+    ArrayList sourcefiles = new ArrayList();
+    if (pathFound(executable)) {
+      try {
+        Elf elf = new Elf(executable, ElfCommand.ELF_C_READ);
         Dwarf dw = new Dwarf(elf, DwarfCommand.READ, null);
         String[] files = dw.getSourceFiles();
 
-        // Since this call returns a lot of non-include file info, we must parse
-        // it and glean the include paths from it
-        for (int i = 0; i < files.length; i++)
-          { 
-            if ((DOMCompilerSuffixes.checkCHeader(files[i]) || 
-                                                  DOMCompilerSuffixes.checkCPPHeader(files[i])) &&
-                ! alreadyAdded(incpaths, files[i]))
-              {
-                int j = files[i].lastIndexOf("/");
-                if (pathFound(files[i].substring(0, j)))
-                  {
-                    incpaths.add(files[i].substring(0, j));
-                  }
+        // Since this call returns a lot of non-source file info, we must
+        // parse it and glean the source paths from it
+        for (int i = 0; i < files.length; i++) {
+          if (DOMCompilerSuffixes.checkCPP(files[i])
+              || DOMCompilerSuffixes.checkC(files[i])) {
+            if (pathFound(files[i])) {
+              sourcefiles.add(files[i]);
+            }
+            // If we have not found the file and it has a relative path, prepend
+            // the path
+            // to the executable to the front of the paths and see what happens
+            else if (files[i].startsWith("..")) {
+              if (pathFound(executable
+                  .substring(0, executable.lastIndexOf("/"))
+                  + "/" + files[i])) {
+                sourcefiles.add(executable.substring(0, executable
+                    .lastIndexOf("/") + 1)
+                    + files[i]);
               }
+            }
           }
-        // Add the default includes used for all systems
-        if (pathFound(LOCAL_INCLUDE))
-          {
-            incpaths.add(LOCAL_INCLUDE);
-          }
-        if (pathFound(GLOBAL_INCLUDE))
-          {
-            incpaths.add(GLOBAL_INCLUDE);
-          }
-        return incpaths;
+        }
+      } catch (lib.elf.ElfException ee) {
+        System.err
+            .println("Error getting sourcefile paths: " + ee.getMessage());
+        return sourcefiles;
+      }
+    }
+    return sourcefiles;
   }
 
-
-
-  
-  /**
-   * alreadyAdded checks to see if an include path is already in the list before adding it.
-   * "/usr/include" and "/usr/local/include" are special cases and are added at the end
-   * automatically.
+  /*
+   * get a list of the include files for this source file
    * 
-   * @param filelist is an ArrayList containing the heretofore added include files
-   * @param newfile is a String with the candidate include path to be added
+   * @param executable is a String containing the path to the executable 
+   * @return an ArrayList containing a list of the include path(s)
+   */
+  public static ArrayList getIncludePaths(String executable) {
+    Elf elf = null;
+    ArrayList incpaths = new ArrayList();
+    try {
+      elf = new Elf(executable, ElfCommand.ELF_C_READ);
+    } catch (lib.elf.ElfException ee) {
+      throw new RuntimeException("Cannot open elf file. Name I was given "
+          + "was " + executable, ee);
+    }
+    Dwarf dw = new Dwarf(elf, DwarfCommand.READ, null);
+    String[] files = dw.getSourceFiles();
+
+    // Since this call returns a lot of non-include file info, we must parse
+    // it and glean the include paths from it
+    for (int i = 0; i < files.length; i++) {
+      if ((DOMCompilerSuffixes.checkCHeader(files[i]) || DOMCompilerSuffixes
+          .checkCPPHeader(files[i]))
+          && !alreadyAdded(incpaths, files[i])) {
+        int j = files[i].lastIndexOf("/");
+        if (pathFound(files[i].substring(0, j))) {
+          incpaths.add(files[i].substring(0, j));
+        }
+      }
+    }
+    // Add the default includes used for all systems
+    if (pathFound(LOCAL_INCLUDE)) {
+      incpaths.add(LOCAL_INCLUDE);
+    }
+    if (pathFound(GLOBAL_INCLUDE)) {
+      incpaths.add(GLOBAL_INCLUDE);
+    }
+    return incpaths;
+  }
+
+  /**
+   * alreadyAdded checks to see if an include path is already in the list before
+   * adding it. "/usr/include" and "/usr/local/include" are special cases and
+   * are added at the end automatically.
+   * 
+   * @param filelist
+   *          is an ArrayList containing the heretofore added include files
+   * @param newfile
+   *          is a String with the candidate include path to be added
    * @return true if the include is already in the list, false if not
    * 
    */
-  public static boolean alreadyAdded(ArrayList filelist, String newfile )
-  {
+  public static boolean alreadyAdded(ArrayList filelist, String newfile) {
     int j = newfile.lastIndexOf("/");
     // Loop thru the already accumulated list to see if the new one is already there
-    for (int i = 0; i < filelist.size(); i++)
-      {
-        if (filelist.get(i).equals(newfile.substring(0, j))) {
-              return true;
-            }
+    for (int i = 0; i < filelist.size(); i++) {
+      if (filelist.get(i).equals(newfile.substring(0, j))) {
+        return true;
       }
+    }
     // See if the file is the global/local include file, if so say we have it
-    if (newfile.substring(0,j).equals(GLOBAL_INCLUDE) ||
-            newfile.substring(0,j).equals(LOCAL_INCLUDE))
+    if (newfile.substring(0, j).equals(GLOBAL_INCLUDE)
+        || newfile.substring(0, j).equals(LOCAL_INCLUDE))
       return true;
     else
       return false;
   }
-  
+
   /**
    * pathFound checks to be sure the source file is where the executable thinks it is
    * 
