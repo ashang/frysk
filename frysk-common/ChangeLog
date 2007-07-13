@@ -1,3 +1,8 @@
+2007-07-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (BUILT_SOURCES): Add headers included into
+	included .hxx files.
+
 2007-07-04  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (.java.h): Remove generated .h file before

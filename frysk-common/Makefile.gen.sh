@@ -533,11 +533,22 @@ done
 # little since, given Class$Nested and Class, generating Class.h will
 # automatically generate the inner Class$Nested class.
 
-print_header "... *.cxx=.h"
+# This matches both:
+# #include "a/file/dot.h"
+# and
+# #define A_FILE "a/file/dot.h"
+
+print_header "... *.{hxx,cxx}=.h"
 grep -e '/cni/' files.list \
-    | xargs grep -H '#include ".*.h"' \
-    | sed -e 's/\..*:#include "/.o /' -e 's/\.h".*$//' -e 's/$.*//' \
-    | while read o h
+    | xargs grep -H \
+    	-e '#include ".*.h"' \
+        -e '#define [A-Z_]* ".*.h"' \
+    | sed \
+        -e 's/\.\(.\).*:#define [A-Z_]* "/ \1 /' \
+    	-e 's/\.\(.\).*:#include "/ \1 /' \
+    	-e 's/\.h".*$//' \
+    	-e 's/$.*//' \
+    | while read o c h
 do
   if test \
       -r ${h}.java -o \
@@ -547,7 +558,11 @@ do
       -r ${h}.mkjava -o \
       -r ${h}.javain \
       ; then
-      echo ${o}: ${h}.h
+      case "$c" in
+	  # Do not know what includes the header; just build early
+	  h) echo "BUILT_SOURCES += ${h}.h" ;;
+	  c) echo "${o}.o: ${h}.h" ;;
+	  esac
       echo "CLEANFILES += ${h}.h"
       echo "CLEANFILES += ${h}\\\$\$*.h"
   fi
