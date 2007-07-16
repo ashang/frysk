@@ -1,3 +1,22 @@
+2007-07-13  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestInstructions.java (pid, proc, in, out, labels): Removed fields.
+	(addresses, io, start_address, end_address): New fields.
+	(getGlobalLabelAddress): New method.
+	(Symbol): New static class.
+	(setup): Rewritten to no use ForkLib and to use Code and Instruction
+	observer to find code instruction path.
+	(tearDown): Clear addresses.
+	(testBreakAndStepInstructions): Renamed to...
+	(testBreakOnStartThenStepAllInstructions): Rewriten to use addresses,
+	breakpoint on first, delete, then step all.
+	(testAllBreakpoints): Rewritten to use addresses.
+	(testInsertAllBreakpointsAndStepAll): New test.
+	(InstructionObserver.block): New field.
+	(InstructionObserver.deletedFrom): Don't stop event loop.
+	(InstructionObserver.updateExecuted): Check block field.
+	(InstructionObserver.setBlock): New method.
+
 2007-07-12  Andrew Cagney  <cagney@redhat.com>
 
 	* IsaFactory.java (getIsa): Use Proc.getExe() to obtain the

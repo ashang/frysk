@@ -37,65 +37,64 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "frysk-asm.h"
 
-int
-main (int argc, char *argv[], char *envp[])
-{
-  __label__ nop1_instruction;
-  __label__ nop2_instruction;
-  __label__ nop3_instruction;
+.data	// Start of data segment
+	
+.text	// Start of code segment
 
-  __label__ jump1_instruction;
-  __label__ jump2_instruction;
-  __label__ jump3_instruction;
+	// Calls the function instruction twice so the test
+	// harness (TestInstructions) can step through it once
+	// recording all releavant information and then can run
+	// it another time to check that it runs exactly the same
+	// in the presence of Code breakpoint (and/or other) observers.	
+	.global main
+	.type main,@function
+main:
+	ENTER_MAIN
+	CALL(instructions)
+	CALL(instructions)	
+	EXIT
 
-  __label__ done;
+	// Make this function global so the test harness can find
+	// the begin and end of it while stepping and setting
+	// breakpoints. The test harness will use the istart and iend
+	// markers and assume that those two addresses are used only
+	// once per run of this function and that when this function is
+	// called multiple times (see main) the exact same instruction
+	// sequence is executed.
+	.globl instructions,istart,iend
+	.type instructions,@function
+instructions:
+	ENTER
+istart:	NO_OP
+	NO_OP
+	JUMP(label1)
+label2:	JUMP(label3)
+label1: NO_OP
+	JUMP(label2)
+label3:	NO_OP
+	CALL(subfunc)
+	CALL(subfunc)
+iend:	NO_OP
+	EXIT
 
-  // Tell the tester the addresses of the assembly instruction labels
-  // in order that they should appear.
-  printf("%p\n", &&nop1_instruction);
-  printf("%p\n", &&nop2_instruction);
-  printf("%p\n", &&jump1_instruction);
-  printf("%p\n", &&nop3_instruction);
-  printf("%p\n", &&jump3_instruction);
-  printf("%p\n", &&jump2_instruction);
-  printf("%p\n", &&nop4_instruction);
-  printf("%p\n", &&done);
-  printf("%p\n", (void *) 0);
-  fflush(stdout);
-
-  // Wait till we are OK to go!
-  char c = getchar();
-  if (c == EOF)
-    exit (-1);
-
-// This works for both x86 and x86_64
-#if defined __i386__  || defined __x86_64__
- nop1_instruction:
-  asm volatile ("nop1_instruction: nop");
-  
- nop2_instruction:
-  asm volatile ("nop2_instruction: nop");
-
- jump1_instruction:
-  asm volatile ("jump1_instruction: jmp nop3_instruction");
-
- jump2_instruction:
-  asm volatile ("jump2_instruction: jmp nop4_instruction");
-
- nop3_instruction:
-  asm volatile ("nop3_instruction: nop");
-
- jump3_instruction:
-  asm volatile ("jump3_instruction: jmp jump2_instruction");
-
- nop4_instruction:
-  asm volatile ("nop4_instruction: nop");
-#else
-#error Not ported for this arch.
-#endif
- done:
-  return 0;
-}
+	// Non-global helper function called from instructions to
+	// check enter/exit of functions.
+	.type subfunc,@function
+subfunc:
+	ENTER
+	LOAD_IMMED(REG2,1)
+sublabel:	
+	COMPARE_IMMED(REG2,1)
+	JUMP_NE(sublabel)
+	LOAD_IMMED(REG2,2)
+	COMPARE_IMMED(REG2,1)
+	JUMP_NE(subexit)
+	JUMP(sublabel)
+subexit:	
+	EXIT
+	
+// make the stack non-executable
+.section        .note.GNU-stack,"",@progbits
+	

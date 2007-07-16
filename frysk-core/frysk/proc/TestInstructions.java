@@ -39,29 +39,87 @@
 
 package frysk.proc;
 
-import frysk.testbed.ForkTestLib;
-
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
-import java.io.IOException;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+
+import lib.dw.*;
+import frysk.dwfl.*;
 
 public class TestInstructions
   extends TestLib
 {
-  // Process id, Proc, and Task representation of our test program.
-  private int pid;
-  private Proc proc;
   private Task task;
 
-  // How we communicate with the test program.
-  private BufferedReader in;
-  private DataOutputStream out;
+  private long start_address;
+  private long end_address;
 
-  private ArrayList labels;
+  private ArrayList addresses;
+
+  // Created and added by setup() in blocked state.
+  // Tests will need to delete (or unblock) it as soon as they are ready
+  // setting up their own observer.
+  private InstructionObserver io;
+
+  /**
+   * Returns the address of a global label by quering the the Proc
+   * main Task's Dwlf.
+   */
+  long getGlobalLabelAddress(String label)
+  {
+    Dwfl dwfl = DwflCache.getDwfl(task);
+    Symbol sym = Symbol.get(dwfl, label);
+    return sym.getAddress();
+  }
+  
+  // Helper class since there there isn't a get symbol method in Dwfl,
+  // so we need to wrap it all in a builder pattern.
+  static class Symbol implements SymbolBuilder
+  {
+    private String name;
+    private long address;
+
+    private boolean found;
+
+    private Symbol()
+    {
+      // properties get set in public static get() method.
+    }
+
+    static Symbol get(Dwfl dwfl, String name)
+    {
+      Symbol sym = new Symbol();
+      sym.name = name;
+      DwflModule[] modules = dwfl.getModules();
+      for (int i = 0; i < modules.length && ! sym.found; i++)
+	modules[i].getSymbolByName(name, sym);
+      
+      if (sym.found)
+	return sym;
+      else
+	return null;
+    }
+
+    String getName()
+    {
+      return name;
+    }
+
+    long getAddress()
+    {
+      return address;
+    }
+
+    public void symbol(String name, long value, long size,
+		       int type, int bind, int visibility)
+    {
+      if (name.equals(this.name))
+	{
+	  this.address = value;
+	  this.found = true;
+	}
+    }
+  }
 
   /**
    * Launch our test program and setup clean environment with the test
@@ -74,47 +132,50 @@ public class TestInstructions
     // and destroyed in tearDown().
     super.setUp();
 
-    // Create a process that we will communicate with through stdin/out.
-    String command = getExecPath ("funit-instructions");
-    ForkTestLib.ForkedProcess process;
-    process = ForkTestLib.fork(new String[] { command });
-    pid = process.pid;
-    in = new BufferedReader(new InputStreamReader(process.in));
-    out = new DataOutputStream(process.out);
-    
-    // Make sure the core knows about it.
-    Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc()
-      {
-	public void procFound (ProcId procId)
-	{
-	  proc = Manager.host.getProc(procId);
-	  Manager.eventLoop.requestStop();
-	}
-	public void procNotFound (ProcId procId, Exception e)
-	{
-	  fail(procId + " not found: " + e);
-	}
-      });
-    assertRunUntilStop("finding proc");
-    
-    task = proc.getMainTask();
+    // Create a process that we want to observe.
+    AttachedObserver ao = new AttachedObserver();
+    String[] cmd = new String[] { getExecPath("funit-instructions") };
+    Manager.host.requestCreateAttachedProc("/dev/null",
+                                           "/dev/null",
+                                           "/dev/null", cmd, ao);
+    assertRunUntilStop("attach then block");
+    assertTrue("AttachedObserver got Task", ao.task != null);
 
-    // Read the addresses of the labels
-    labels = new ArrayList();
-    try
+    task = ao.task;
+
+    start_address = getGlobalLabelAddress("istart");
+    end_address = getGlobalLabelAddress("iend");
+
+    CodeObserver code = new CodeObserver(start_address);
+    task.requestAddCodeObserver(code, start_address);
+    assertRunUntilStop("inserting setup code observer");
+    task.requestDeleteAttachedObserver(ao);
+    assertRunUntilStop("setup start address code observer");
+
+    // Read the addresses of all the instructions by stepping from
+    // istart to iend.
+    addresses = new ArrayList();
+    addresses.add(Long.valueOf(start_address));
+    io = new InstructionObserver(task);
+    task.requestAddInstructionObserver(io);
+    assertRunUntilStop("setup instruction observer");
+    task.requestDeleteCodeObserver(code, start_address);
+    assertRunUntilStop("setup remove start code observer");
+
+    boolean iend_seen = false;
+    while (! iend_seen)
       {
-	String line = in.readLine();
-	while (! line.equals("(nil)"))
-	  {
-	    Long label = Long.decode(line);
-	    labels.add(label);
-	    line = in.readLine();
-	  }
+	task.requestUnblock(io);
+	assertRunUntilStop("Step till iend");
+	long addr = io.getAddr();
+	Long value = Long.valueOf(addr);
+	addresses.add(value);
+	iend_seen = addr == end_address;
       }
-    catch (IOException e)
-      {
-	fail("reading breakpoint addresses: " + e);
-      }
+
+    // And make one final step out of the istart-iend range
+    task.requestUnblock(io);
+    assertRunUntilStop("Step out of range");
   }
 
   /**
@@ -124,12 +185,8 @@ public class TestInstructions
    */
   public void tearDown()
   {
-    pid = -1;
-    proc = null;
     task = null;
-    in = null;
-    out = null;
-    labels = null;
+    addresses = null;
 
     Manager.eventLoop.requestStop();
 
@@ -137,65 +194,140 @@ public class TestInstructions
     super.tearDown();
   }
 
-  public void testBreakAndStepInstructions() throws IOException
+  public void testBreakOnStartThenStepAllInstructions()
   {
-    long first = ((Long) labels.remove(0)).longValue();
+    Long value = (Long) addresses.remove(0);
+    long first = value.longValue();
     CodeObserver code = new CodeObserver(first);
     task.requestAddCodeObserver(code, first);
     assertRunUntilStop("first code observer added");
 
-    out.writeByte(1);
-    assertRunUntilStop("go!");
+    // Go!
+    task.requestDeleteInstructionObserver(io);
+    assertRunUntilStop("Remove setup instruction observer");
 
     assertEquals("stopped at first breakpoint",
 		 task.getIsa().pc(task), first);
 
-    InstructionObserver io = new InstructionObserver(task);
+    // Reinsert instruction observer now that we are at the start.
     task.requestAddInstructionObserver(io);
     assertRunUntilStop("add instruction observer");
 
     task.requestUnblock(code);
-    Iterator it = labels.iterator();
+    Iterator it = addresses.iterator();
     while (it.hasNext())
       {
-	long nextLabel = ((Long) it.next()).longValue();
+	long addr = ((Long) it.next()).longValue();
 	task.requestUnblock(io);
-	assertRunUntilStop("unblock for " + nextLabel);
-	assertEquals("step observer hit: " + nextLabel,
-		     io.getAddr(), nextLabel);
+	assertRunUntilStop("unblock for " + addr);
+	assertEquals("step observer hit: " + addr, io.getAddr(), addr);
       }
 
       task.requestUnblock(io);
   }
 
-  public void testAllBreakpoints() throws IOException
+  public void testAllBreakpoints()
   {
+    // Map to make sure that even if we loop only one code observer is
+    // inserted at each address.
+    HashMap codeObserver = new HashMap();
     ArrayList codeObservers = new ArrayList();
-    Iterator it = labels.iterator();
+    Iterator it = addresses.iterator();
     while (it.hasNext())
       {
-	long label = ((Long) it.next()).longValue();
-	CodeObserver code = new CodeObserver(label);
-	task.requestAddCodeObserver(code, label);
+	Long value = (Long) it.next();
+	CodeObserver code = (CodeObserver) codeObserver.get(value);
+	if (code == null)
+	  {
+	    long addr = value.longValue();
+	    code = new CodeObserver(addr);
+	    codeObserver.put(value, code);
+	    task.requestAddCodeObserver(code, addr);
+	    assertRunUntilStop("add code observer" + addr);
+	  }
 	codeObservers.add(code);
-	assertRunUntilStop("add code observer for " + label);
       }
 
-    out.writeByte(1);
-    assertRunUntilStop("go!");
+    // Go!
+    task.requestDeleteInstructionObserver(io);
+    assertRunUntilStop("Remove setup instruction observer");
 
-    it = labels.iterator();
+    it = addresses.iterator();
     while (it.hasNext())
       {
-	long label = ((Long) it.next()).longValue();
+	long addr = ((Long) it.next()).longValue();
 	CodeObserver code = (CodeObserver) codeObservers.remove(0);
-	assertEquals("code observer hit: " + label,
-		     task.getIsa().pc(task), label);
+	assertEquals("code observer hit: " + addr,
+		     task.getIsa().pc(task), addr);
 	task.requestUnblock(code);
 	if (it.hasNext())
 	  assertRunUntilStop("wait for next code observer hit after "
-			     + Long.toHexString(label));
+			     + Long.toHexString(addr));
       }
+  }
+
+  public void testInsertAllBreakpointsAndStepAll()
+  {
+    // Map to make sure that even if we loop only one code observer is
+    // inserted at each address.
+    HashMap codeObserver = new HashMap();
+    ArrayList codeObservers = new ArrayList();
+    Iterator it = addresses.iterator();
+    while (it.hasNext())
+      {
+	Long value = (Long) it.next();
+	CodeObserver code = (CodeObserver) codeObserver.get(value);
+	if (code == null)
+	  {
+	    long addr = value.longValue();
+	    code = new CodeObserver(addr);
+	    codeObserver.put(value, code);
+	    task.requestAddCodeObserver(code, addr);
+	    assertRunUntilStop("add code observer" + addr);
+	  }
+	codeObservers.add(code);
+      }
+
+    // Go!
+    io.setBlock(false);
+    task.requestUnblock(io);
+    assertRunUntilStop("Unblock setup instruction observer");
+    
+    it = addresses.iterator();
+    while (it.hasNext())
+      {
+	long addr = ((Long) it.next()).longValue();
+	CodeObserver code = (CodeObserver) codeObservers.remove(0);
+	assertEquals("code observer hit: " + addr,
+		     task.getIsa().pc(task), addr);
+	assertEquals("step observer hit: " + addr, io.getAddr(), addr);
+	task.requestUnblock(io);
+	task.requestUnblock(code);
+	if (it.hasNext())
+	  assertRunUntilStop("wait for next code observer hit after "
+			     + Long.toHexString(addr));
+      }
+  }
+  
+  class AttachedObserver implements TaskObserver.Attached
+  {
+    Task task;
+    
+    public void addedTo (Object o){ }
+    
+    public Action updateAttached (Task task)
+    {
+      this.task = task;
+      Manager.eventLoop.requestStop();
+      return Action.BLOCK;
+    }
+    
+    public void addFailed  (Object observable, Throwable w)
+    {
+      System.err.println("addFailed: " + observable + " cause: " + w);
+    }
+    
+    public void deletedFrom (Object o) { }
   }
 
   private class CodeObserver
@@ -216,7 +348,7 @@ public class TestInstructions
       Manager.eventLoop.requestStop();
       return Action.BLOCK;
     }
-
+    
     public void addFailed(Object o, Throwable w)
     {
       fail("add to " + o + " failed, because " + w);
@@ -239,6 +371,8 @@ public class TestInstructions
     private final Task task; 
     private long addr;
 
+    private boolean block = true;
+
     public void addedTo(Object o)
     {
       Manager.eventLoop.requestStop();
@@ -246,7 +380,6 @@ public class TestInstructions
 
     public void deletedFrom(Object o)
     {
-      Manager.eventLoop.requestStop();
     }
 
     public void addFailed (Object o, Throwable w)
@@ -267,8 +400,17 @@ public class TestInstructions
                                         + this.task);
       
       addr = task.getIsa().pc(task);
-      Manager.eventLoop.requestStop();
-      return Action.BLOCK;
+      if (block)
+	{
+	  Manager.eventLoop.requestStop();
+	  return Action.BLOCK;
+	}
+      return Action.CONTINUE;
+    }
+
+    public void setBlock(boolean block)
+    {
+      this.block = block;
     }
 
     public long getAddr()
