@@ -250,7 +250,6 @@ public class TestStepping extends TestLib
 
   public void testASMSingleStep ()
   {
-    
     if (unresolvedOnPPC(3277))
       return;
     
@@ -340,7 +339,6 @@ public class TestStepping extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-//    asmTestStartVal = 74;
     
     testState = INITIAL;
     test = ASM_STEP_FUNC_ENTRY;
@@ -369,7 +367,6 @@ public class TestStepping extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-//    asmTestStartVal = 56;
     
     testState = INITIAL;
     test = ASM_STEP_FUNC_RETURN;
@@ -398,7 +395,6 @@ public class TestStepping extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-//    asmTestStartVal = 74;
     
     testState = INITIAL;
     test = ASM_STEP_FUNC_STEP_OVER;
@@ -717,7 +713,7 @@ public class TestStepping extends TestLib
             break;
 
           case ASM_STEP_SINGLE_INST:
-            if (line.getLine() == 53)
+            if (line.getLine() == 54)
               {
                 this.testState = FINAL_STEP;
               }
@@ -725,7 +721,7 @@ public class TestStepping extends TestLib
             break;
             
           case ASM_STEP_MULTI_LINE:
-            if (line.getLine() == 55)
+            if (line.getLine() == 56)
               {
                 this.testState = FINAL_STEP;
               }
@@ -733,7 +729,7 @@ public class TestStepping extends TestLib
             break;
             
           case ASM_STEP_JUMP:
-            if (line.getLine() == 66)
+            if (line.getLine() == 67)
               {
                 this.testState = FINAL_STEP;
               }
@@ -864,25 +860,24 @@ public class TestStepping extends TestLib
             return;
 
           case ASM_STEP_SINGLE_INST:
-            assertTrue("line number", lineNr == 54);
+            assertTrue("line number", lineNr == 55);
             Manager.eventLoop.requestStop();
             return;
             
           case ASM_STEP_MULTI_LINE:
-            if (lineNr == 56)
+            if (lineNr == 57)
               {
                 ++multiCount;
                 se.stepInstruction(myTask);
                 return;
               }
-            
             assertTrue("line instruction count", multiCount == 3);
-            assertTrue("line number", lineNr == 57);
+            assertTrue("line number", lineNr == 58);
             Manager.eventLoop.requestStop();
             return;
             
           case ASM_STEP_JUMP:
-            assertTrue("line number", lineNr == 53);
+            assertTrue("line number", lineNr == 54);
             Manager.eventLoop.requestStop();
             return;
             
