@@ -1,3 +1,8 @@
+2007-07-16  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Makefile.am (frysk/pkgdatadir/test-core): Delete target, link.
+
+
 2007-07-03  Phil Muldoon  <pmuldoon@redhat.com>
 	
 	* Makefile.am (frysk/pkgdatadir/test-core-x8664): New target, link to
