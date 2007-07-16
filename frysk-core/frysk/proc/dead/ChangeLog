@@ -1,9 +1,22 @@
+2007-07-16  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestCorefileByteBuffer.java(testCorefileByteBufferSlice):
+	Refactor to use more complex test-core-x86.
+	(testCoreFileByteBufferPeek): Ditto.
+	(testCoreFileByteBufferMapOverrun): Ditto.
+	(testCoreFileByteBufferMapUnderrun): Ditto.
+	(testCoreFileByteBufferSequentialGet): Ditto.
+	(testCoreFileByteBufferPeekArray): Ditto.
+	(testCoreFileByteBufferPoke): Ditto.
+	
+
 2007-07-16  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestLinuxCore.java (testInsertedBreakpoint): New method.
 	(getFunctionEntryAddress): New private method.
 	(CodeObserver): New static helper class.
 	(AttachedObserver): Likewise.
+
 
 2007-07-13  Phil Muldoon  <pmuldoon@redhat.com>
 

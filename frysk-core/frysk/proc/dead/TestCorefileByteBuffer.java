@@ -59,32 +59,34 @@ extends TestLib
   {
 
     ElfData rawData;
-    final long sliceBottom = 0x00b2d000;
-    final long sliceTop = 0x00b2dfff;
-    final long elfOffset = 0x6000;
+    final long sliceBottom = 0x411bb000L;
+    final long sliceTop = 0x411bbfffL;
+    final long elfOffset = 0x28000;
     final long elfLen = 0x1000;
 
     ByteBuffer coreBuffer = new CorefileByteBuffer(new 
 						   File(Config.
 							getPkgDataDir(), 
-							"test-core"));
+							"test-core-x86"));
     
     // Slice buffer
     ByteBuffer coreSlice = coreBuffer.slice(sliceBottom, sliceTop);
-
+    
     assertNotNull("Corefile slice was null", coreSlice);
 
     // Independently get the elf core data as a raw image
-    Elf segment = new Elf(Config.getPkgDataDir()+"/test-core",  ElfCommand.ELF_C_READ);
+    Elf segment = new Elf(Config.getPkgDataDir()+"/test-core-x86",  ElfCommand.ELF_C_READ);
     rawData = segment.getRawData(elfOffset,elfLen);
 
     //    coreSlice.position(sliceBottom);
     for(int i=0; i<elfLen; i++)
       assertEquals("Offset at 0x"+Long.toHexString(elfOffset+i)
 		   +" does not match rawData at location " 
-		   + Long.toHexString(i),rawData.internal_buffer[i],
+		   + Long.toHexString(i),
+		   rawData.internal_buffer[i],
 		   coreSlice.get());
 
+    segment.close();
   }
 
   public void testCoreFileByteBufferPeek() throws ElfException
@@ -93,21 +95,23 @@ extends TestLib
     CorefileByteBuffer coreBuffer = new CorefileByteBuffer(new 
 							   File(Config.
 								getPkgDataDir(), 
-								"test-core"));
+								"test-core-x86"));
 
     // Test beginning segment
-    assertEquals("Peek a byte at 0x00170000",0x7f,coreBuffer.peek(0x00170000L));
-    assertEquals("Peek a byte at 0x00170001",0x45,coreBuffer.peek(0x00170001L));
-    assertEquals("Peek a byte at 0x00170002",0x4c,coreBuffer.peek(0x00170002L));
-    assertEquals("Peek a byte at 0x00170003",0x46,coreBuffer.peek(0x00170003L));
-    assertEquals("Peek a byte at 0x00170004",0x01,coreBuffer.peek(0x00170004L));
+    assertEquals("Peek a byte at 0x0062a000",0x7f,coreBuffer.peek(0x0062a000L));
+    assertEquals("Peek a byte at 0x0062a001",0x45,coreBuffer.peek(0x0062a001L));
+    assertEquals("Peek a byte at 0x0062a002",0x4c,coreBuffer.peek(0x0062a002L));
+    assertEquals("Peek a byte at 0x0062a003",0x46,coreBuffer.peek(0x0062a003L));
+    assertEquals("Peek a byte at 0x0062a004",0x01,coreBuffer.peek(0x0062a004L));
 
     // Test a middleish segment.
-    assertEquals("Peek a byte at 0xb7f06000",0x3c,coreBuffer.peek(0xb7f06000L));
-    assertEquals("Peek a byte at 0xb7f06040",0x74,coreBuffer.peek(0xb7f06040L));
+
+    assertEquals("Peek a byte at 0x41490000",(byte)0xca, coreBuffer.peek(0x41490000L));
+    assertEquals("Peek a byte at 0x41490001",(byte)0xed,coreBuffer.peek(0x41490001L));
+
 
     // Test the end of the last segment
-    assertEquals("Peek a byte at 0xbff04999",0x41,coreBuffer.peek(0xbff04999L));
+    assertEquals("Peek a byte at 0xBfcfffff",0x0,coreBuffer.peek(0xbfcfffffL));
 
   }
 
@@ -117,7 +121,7 @@ extends TestLib
     CorefileByteBuffer coreBuffer = new CorefileByteBuffer(new 
 							   File(Config.
 								getPkgDataDir(), 
-								"test-core"));
+								"test-core-x86"));
 
     // Attempt to peek over a segment boundary, but within the 
     // high and low marks of the bytebuffer
@@ -125,7 +129,7 @@ extends TestLib
 
     try 
       {
-	coreBuffer.peek(0xbff06001L);
+	coreBuffer.peek(0xbfd0000L);
 	fail("peek() in an over boundary should thrown an exception");
       }
     catch (RuntimeException e)
@@ -140,7 +144,7 @@ extends TestLib
     CorefileByteBuffer coreBuffer = new CorefileByteBuffer(new 
 							   File(Config.
 								getPkgDataDir(), 
-								"test-core"));
+								"test-core-x86"));
     // Attempt to peek under a segment boundary, but within the 
     // high and low marks of the bytebuffer
 
@@ -161,14 +165,14 @@ extends TestLib
     CorefileByteBuffer coreBuffer = new CorefileByteBuffer(new 
 							   File(Config.
 								getPkgDataDir(), 
-								"test-core"));
+								"test-core-x86"));
 
-    coreBuffer.position(0x00170000L);
-    assertEquals("Peek a byte at 0x00170000",0x7f,coreBuffer.get());
-    assertEquals("Peek a byte at 0x00170001",0x45,coreBuffer.get());
-    assertEquals("Peek a byte at 0x00170002",0x4c,coreBuffer.get());
-    assertEquals("Peek a byte at 0x00170003",0x46,coreBuffer.get());
-    assertEquals("Peek a byte at 0x00170004",0x01,coreBuffer.get());
+    coreBuffer.position(0x0062a000L);
+    assertEquals("Peek a byte at 0x0062a000",0x7f,coreBuffer.get());
+    assertEquals("Peek a byte at 0x0062a001",0x45,coreBuffer.get());
+    assertEquals("Peek a byte at 0x0062a002",0x4c,coreBuffer.get());
+    assertEquals("Peek a byte at 0x0062a003",0x46,coreBuffer.get());
+    assertEquals("Peek a byte at 0x0062a004",0x01,coreBuffer.get());
 
 
     // Test reading at position 0. In this core file there is no 
@@ -196,14 +200,16 @@ extends TestLib
     CorefileByteBuffer coreBuffer = new CorefileByteBuffer(new 
 							   File(Config.
 								getPkgDataDir(), 
-								"test-core"));
+								"test-core-x86"));
     byte byteArray[] = new byte[10];
-    coreBuffer.get (0x00170000L, byteArray, 0,10);
-    assertEquals("Check .get array index 0",0x7f,byteArray[0]);
-    assertEquals("Check .get array index 1",0x45,byteArray[1]);
-    assertEquals("Check .get array index 2",0x4c,byteArray[2]);
-    assertEquals("Check .get array index 3",0x46,byteArray[3]);
-    assertEquals("Check .get array index 4",0x01,byteArray[4]);
+
+    coreBuffer.get(0x0062a000L, byteArray, 0, 10);
+    assertEquals("Peek a byte at 0x0062a000",0x7f,byteArray[0]);
+    assertEquals("Peek a byte at 0x0062a001",0x45,byteArray[1]);
+    assertEquals("Peek a byte at 0x0062a002",0x4c,byteArray[2]);
+    assertEquals("Peek a byte at 0x0062a003",0x46,byteArray[3]);
+    assertEquals("Peek a byte at 0x0062a004",0x01,byteArray[4]);
+
   }
   
   public void testCoreFileByteBufferPoke() throws ElfException 
@@ -212,12 +218,12 @@ extends TestLib
     CorefileByteBuffer coreBuffer = new CorefileByteBuffer(new 
 							   File(Config.
 								getPkgDataDir(), 
-								"test-core"));
+								"test-core-x86"));
 
     try
     {
-      coreBuffer.poke(0x00170000L,10);
-      fail("Poke a byte at 0x00170000 should have raised an exception, but did not");
+      coreBuffer.poke(0x0062a000L, 10);
+      fail("Poke a byte at 0x0062a000 should have raised an exception, but did not");
     }
     catch (RuntimeException e)
     {
