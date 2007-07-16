@@ -93,7 +93,7 @@ public class DwflCache
 	    }
 	    logger.log(Level.FINEST, "existing dwfl out-of-date\n");
 	    modMap.remove(task);
-	    // FIXME: mod.dwfl.close();
+	    mod.dwfl.close();
 	}
     
 	logger.log(Level.FINEST, "creating new dwfl for task {0}\n", task);

@@ -1,3 +1,8 @@
+2007-07-16  Nurdin Premji  <npremji@redhat.com>
+
+	* DwflCache.java (getDwfl): Call dwfl.close on the stale dwfl before 
+	dropping it.
+
 2007-07-10  Andrew Cagney  <cagney@redhat.com>
 
 	* DwflFactory.java (createDwfl(Task): Replace createDwfl(Proc).
