@@ -1,3 +1,8 @@
+2007-07-16  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (noinst_PROGRAMS): Add frysk3491/x-state.
+	(systests_PASS_PROGRAM): Remove frysk3491/x-state.
+
 2007-07-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (frysk4742/java.sh): New rule.
