@@ -1,4 +1,9 @@
-2007-07-10  Rick Moseley  <rmoseley@redhat,com>
+2007-07-16  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (updateShownStackFrame): If the function in question
+	cannot be found but has a DOMSource, just display the disassembled function.
+
+2007-07-10  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindow.java: Renamed activateTerminal to activateProc;
 	fix bug with killing file chooser window; activate a new 

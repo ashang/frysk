@@ -2413,9 +2413,7 @@ public class SourceWindow
 	    }
       }
 
-    // updateSourceLabel(selected);
-
-    if (lines.length == 0)
+    if (lines.length == 0 || lines[0].getDOMFunction() == null)
       {
 	SourceBuffer b = null;
 
