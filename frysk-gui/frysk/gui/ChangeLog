@@ -1,3 +1,8 @@
+2007-07-16  Mark Wielaard  <mwielaard@redhat.com>
+
+	* gladedir/frysk_create_session_druid.glade (label128):
+	Monitoring. Fixed spelling of Session.
+
 2007-07-10  Rick Moseley  <rmoseley@redhat.com>
 
 	* druid.CreateFryskSessionDruid.java: Activate a new source
