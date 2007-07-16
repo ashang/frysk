@@ -1,3 +1,7 @@
+2007-07-16  Phil Muldoon <pmuldoon@redhat.com>
+
+	* pkgdatadir/test-core.bz2.uu: Obsolete. Delete.
+
 2007-07-03  Phil Muldoon <pmuldoon@redhat.com>
 
 	* pkgdatadir/test-core-x8664.bz2.uu: New File.
