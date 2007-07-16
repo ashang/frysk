@@ -49,7 +49,6 @@ import frysk.sys.proc.AuxvBuilder;
 import frysk.proc.MemoryMap;
 import java.util.ArrayList;
 import frysk.proc.Isa;
-import frysk.sys.proc.Exe;
 import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.MapsBuilder;
 import frysk.sys.proc.Status;
@@ -61,6 +60,8 @@ import java.util.Map;
 import java.util.HashMap;
 import frysk.proc.TaskId;
 import java.util.Iterator;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * A Linux Proc tracked using PTRACE.
@@ -201,7 +202,16 @@ public class LinuxProc
      */
     protected String sendrecExe ()
     {
-	return Exe.get (getPid ());
+      String exeString = "/proc/" + getPid() + "/exe";
+      try
+	{
+	  exeString = new File(exeString).getCanonicalPath();
+	}
+      catch (IOException ioe)
+	{
+	  // Just return exeString. No permission or process died.
+	}
+      return exeString;
     }
     /**
      * Get the Process-wide ISA.
