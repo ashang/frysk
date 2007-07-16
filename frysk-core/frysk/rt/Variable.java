@@ -41,7 +41,7 @@
 package frysk.rt;
 
 import javax.naming.NameNotFoundException;
-import lib.dw.DwarfDie;
+import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfo;
 import frysk.stack.Frame;
 import frysk.value.Type;

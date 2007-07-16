@@ -39,7 +39,7 @@
 
 package frysk.value;
 
-import lib.dw.BaseTypes;
+import lib.dwfl.BaseTypes;
 import inua.eio.ByteOrder;
 
 /**

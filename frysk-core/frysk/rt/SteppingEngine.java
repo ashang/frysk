@@ -51,7 +51,7 @@ import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import lib.dw.DwflLine;
+import lib.dwfl.DwflLine;
 
 import frysk.event.RequestStopEvent;
 import frysk.proc.Action;

@@ -43,12 +43,12 @@ import frysk.sys.StatelessFile;
 import java.io.File;
 
 import java.util.ArrayList;
-import lib.elf.Elf;
-import lib.elf.ElfCommand;
-import lib.elf.ElfEHeader;
-import lib.elf.ElfException;
-import lib.elf.ElfFileException;
-import lib.elf.ElfPHeader;
+import lib.dwfl.Elf;
+import lib.dwfl.ElfCommand;
+import lib.dwfl.ElfEHeader;
+import lib.dwfl.ElfException;
+import lib.dwfl.ElfFileException;
+import lib.dwfl.ElfPHeader;
 
 
 import inua.eio.ByteBuffer;

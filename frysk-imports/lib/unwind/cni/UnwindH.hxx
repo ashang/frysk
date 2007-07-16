@@ -59,7 +59,7 @@
 #include <java/util/logging/Level.h>
 
 #include "inua/eio/ByteBuffer.h"
-#include "lib/dw/Dwfl.h"
+#include "lib/dwfl/Dwfl.h"
 #include "lib/unwind/Unwind.h"
 #include "lib/unwind/AddressSpace.h"
 #include "lib/unwind/Cursor.h"

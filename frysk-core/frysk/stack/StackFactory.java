@@ -42,7 +42,7 @@ package frysk.stack;
 
 import java.util.WeakHashMap;
 
-import lib.dw.Dwfl;
+import lib.dwfl.Dwfl;
 import lib.unwind.Cursor;
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;

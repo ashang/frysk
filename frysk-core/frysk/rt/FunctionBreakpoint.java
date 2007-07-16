@@ -45,11 +45,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import lib.dw.DwarfDie;
-import lib.dw.Dwfl;
-import lib.dw.DwflModule;
-import lib.dw.SymbolBuilder;
-import lib.dw.die.InlinedSubroutine;
+import lib.dwfl.DwarfDie;
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflModule;
+import lib.dwfl.SymbolBuilder;
+import lib.dwfl.die.InlinedSubroutine;
 import frysk.proc.Task;
 import frysk.dwfl.DwflCache;
 

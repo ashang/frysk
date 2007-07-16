@@ -54,7 +54,7 @@ import frysk.proc.ProcObserver;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import lib.dw.DwarfDie;
+import lib.dwfl.DwarfDie;
 
 /**
  * Class for managing user breakpoints. In particular it defers

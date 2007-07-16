@@ -1,3 +1,14 @@
+2007-07-16  Andrew Cagney  <cagney@redhat.com>
+
+	* TestInstructions.java: Update, lib.dw merged into lib.elf.
+	* TestTaskObserverCode.java: Ditto.
+	* IsaFactory.java: Ditto.
+	* IsaIA32.java: Ditto.
+	* IsaPPC.java: Ditto.
+	* IsaPPC64.java: Ditto.
+	* IsaX8664.java: Ditto.
+	* TestIsa.java: Ditto.
+
 2007-07-13  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestInstructions.java (pid, proc, in, out, labels): Removed fields.

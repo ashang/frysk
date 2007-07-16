@@ -39,8 +39,8 @@
 
 package frysk.proc.dead;
 
-import lib.elf.ElfPrstatus;
-import lib.elf.ElfPrFPRegSet;
+import lib.dwfl.ElfPrstatus;
+import lib.dwfl.ElfPrFPRegSet;
 import inua.eio.ByteBuffer;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;

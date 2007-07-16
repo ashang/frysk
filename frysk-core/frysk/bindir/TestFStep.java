@@ -47,7 +47,7 @@ import frysk.expunit.*;
 
 import frysk.proc.TestLib;
 
-import lib.elf.*;
+import lib.dwfl.*;
 
 public class TestFStep
   extends TestLib

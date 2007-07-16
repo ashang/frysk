@@ -45,12 +45,12 @@ import java.util.Hashtable;
 import java.io.File;
 import frysk.Config;
 
-import lib.elf.Elf;
-import lib.elf.ElfCommand;
-import lib.elf.ElfEHeader;
-import lib.elf.ElfEMachine;
-import lib.elf.ElfException;
-import lib.elf.ElfFileException;
+import lib.dwfl.Elf;
+import lib.dwfl.ElfCommand;
+import lib.dwfl.ElfEHeader;
+import lib.dwfl.ElfEMachine;
+import lib.dwfl.ElfException;
+import lib.dwfl.ElfFileException;
 
 public class IsaFactory
 {

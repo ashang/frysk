@@ -43,7 +43,7 @@
 
 package frysk.rt;
 
-import lib.dw.DwarfDie;
+import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfo;
 
 

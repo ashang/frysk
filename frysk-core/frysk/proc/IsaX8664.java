@@ -51,7 +51,7 @@ import frysk.sys.Ptrace.AddressSpace;
 import frysk.proc.live.RegisterSetByteBuffer;
 import frysk.proc.live.AddressSpaceByteBuffer;
 
-import lib.elf.ElfEMachine;
+import lib.dwfl.ElfEMachine;
 import lib.unwind.RegisterAMD64;
 
 

@@ -1,3 +1,11 @@
+2007-07-16  Andrew Cagney  <cagney@redhat.com>
+
+	* Value.java: Update; lib.dw and lib.elf merged into lib.dwfl.
+	* ArithmeticType.java: Ditto.
+	* ArrayType.java: Ditto.
+	* TestValue.java: Ditto.
+	* ClassType.java: Ditto.
+
 2007-07-09  Stan Cox  <scox@redhat.com>
 
 	* ClassType.java (getValue): Add PointerType and FunctionType.

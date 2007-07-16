@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import lib.dw.*;
+import lib.dwfl.*;
 import frysk.dwfl.*;
 
 public class TestInstructions

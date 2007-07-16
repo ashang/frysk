@@ -1,3 +1,7 @@
+2007-07-16  Andrew Cagney  <cagney@redhat.com>
+
+	* cpp.g: Update, lib.dw and lib.elf merged into lib.dwfl.
+
 2007-07-12  Stan Cox  <scox@redhat.com>
 
 	* cpp.g (CppTreeParser): Add Frame parameter.  Change all callers.

@@ -41,8 +41,7 @@ package frysk.proc;
 
 import frysk.sys.*;
 
-import lib.dw.*;
-import lib.elf.*;
+import lib.dwfl.*;
 
 import java.util.*;
 

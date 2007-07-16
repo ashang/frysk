@@ -1,3 +1,7 @@
+2007-07-16  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFStep.java: Update, lib.elf and lib.dw merged into lib.dwfl.
+
 2007-07-11  Zhao Shujing  <pearly.zhao@oracle.com>
 
 	Fixes bug #4774

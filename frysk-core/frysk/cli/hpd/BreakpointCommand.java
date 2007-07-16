@@ -49,7 +49,7 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import javax.naming.NameNotFoundException;
-import lib.dw.DwarfDie;
+import lib.dwfl.DwarfDie;
 
 class BreakpointCommand
     extends CLIHandler

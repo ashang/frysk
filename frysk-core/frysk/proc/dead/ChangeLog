@@ -1,3 +1,14 @@
+2007-07-16  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLinuxCore.java: Update, lib.dw and lib.elf merged into
+	lib.dwfl.
+	* CorefileByteBuffer.java: Ditto.
+	* LinuxHost.java: Ditto.
+	* LinuxProc.java: Ditto.
+	* LinuxTask.java: Ditto.
+	* SOLibMapBuilder.java: Ditto.
+	* TestCorefileByteBuffer.java: Ditto.
+
 2007-07-16  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestCorefileByteBuffer.java(testCorefileByteBufferSlice):

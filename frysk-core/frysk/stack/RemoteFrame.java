@@ -46,8 +46,8 @@ import frysk.proc.Task;
 import frysk.rt.Line;
 import frysk.rt.Symbol;
 
-import lib.dw.Dwfl;
-import lib.dw.DwflLine;
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflLine;
 import lib.unwind.Cursor;
 import lib.unwind.ProcInfo;
 import lib.unwind.ProcName;

@@ -41,7 +41,7 @@ package frysk.value;
 
 import java.util.ArrayList;
 
-import lib.dw.BaseTypes;
+import lib.dwfl.BaseTypes;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
 import frysk.junit.TestCase;

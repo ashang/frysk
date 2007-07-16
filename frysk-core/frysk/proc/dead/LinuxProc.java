@@ -39,17 +39,17 @@
 
 package frysk.proc.dead;
 
-import lib.elf.Elf;
-import lib.elf.ElfData;
-import lib.elf.ElfException;
-import lib.elf.ElfPrpsinfo;
-import lib.elf.ElfPrAuxv;
-import lib.elf.ElfEHeader;
-import lib.elf.ElfPrstatus;
-import lib.elf.ElfPHeader;
-import lib.elf.ElfCommand;
-import lib.elf.ElfSection;
-import lib.elf.ElfPrFPRegSet;
+import lib.dwfl.Elf;
+import lib.dwfl.ElfData;
+import lib.dwfl.ElfException;
+import lib.dwfl.ElfPrpsinfo;
+import lib.dwfl.ElfPrAuxv;
+import lib.dwfl.ElfEHeader;
+import lib.dwfl.ElfPrstatus;
+import lib.dwfl.ElfPHeader;
+import lib.dwfl.ElfCommand;
+import lib.dwfl.ElfSection;
+import lib.dwfl.ElfPrFPRegSet;
 import frysk.sys.proc.AuxvBuilder;
 import java.util.logging.Level;
 import java.util.Iterator;

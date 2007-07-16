@@ -41,7 +41,7 @@ package frysk.dwfl;
 
 import frysk.proc.TestLib;
 import frysk.proc.Task;
-import lib.dw.Dwfl;
+import lib.dwfl.Dwfl;
 
 /**
  * Tries to test the dwfl cache (which isn't easy since the cache can

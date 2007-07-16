@@ -43,7 +43,7 @@ import java.util.Observable;
 import java.util.logging.Level;
 import frysk.sys.Pid;
 import frysk.sys.Sig;
-import lib.elf.ElfEMachine;
+import lib.dwfl.ElfEMachine;
 import frysk.testbed.SignalWaiter;
 
 public class TestIsa

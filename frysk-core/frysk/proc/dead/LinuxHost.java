@@ -45,12 +45,12 @@ import java.util.List;
 import java.io.File;
 import java.util.Iterator;
 
-import lib.elf.Elf;
-import lib.elf.ElfCommand;
-import lib.elf.ElfData;
-import lib.elf.ElfEHeader;
-import lib.elf.ElfPHeader;
-import lib.elf.ElfPrpsinfo;
+import lib.dwfl.Elf;
+import lib.dwfl.ElfCommand;
+import lib.dwfl.ElfData;
+import lib.dwfl.ElfEHeader;
+import lib.dwfl.ElfPHeader;
+import lib.dwfl.ElfPrpsinfo;
 import frysk.proc.Host;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;

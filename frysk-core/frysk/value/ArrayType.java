@@ -42,7 +42,7 @@ package frysk.value;
 
 import java.util.ArrayList;
 
-import lib.dw.BaseTypes;
+import lib.dwfl.BaseTypes;
 import inua.eio.ByteBuffer;
 
 /**

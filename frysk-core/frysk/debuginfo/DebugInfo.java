@@ -55,16 +55,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.naming.NameNotFoundException;
-import lib.dw.DwAtEncodings;
-import lib.dw.DwTagEncodings;
-import lib.dw.Dwarf;
-import lib.dw.DwarfCommand;
-import lib.dw.DwarfDie;
-import lib.dw.DwarfException;
-import lib.dw.Dwfl;
-import lib.dw.DwflDieBias;
-import lib.elf.Elf;
-import lib.elf.ElfCommand;
+import lib.dwfl.DwAtEncodings;
+import lib.dwfl.DwTagEncodings;
+import lib.dwfl.Dwarf;
+import lib.dwfl.DwarfCommand;
+import lib.dwfl.DwarfDie;
+import lib.dwfl.DwarfException;
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflDieBias;
+import lib.dwfl.Elf;
+import lib.dwfl.ElfCommand;
 
 public class DebugInfo {
     Elf elf;
@@ -84,7 +84,7 @@ public class DebugInfo {
 	    elf = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
 	    dwarf = new Dwarf(elf, DwarfCommand.READ, null);
 	}
-	catch (lib.elf.ElfException ignore) {
+	catch (lib.dwfl.ElfException ignore) {
 	    // FIXME: Why is this ignored?
 	}
 	debugInfoEvaluator = new DebugInfoEvaluator[1];

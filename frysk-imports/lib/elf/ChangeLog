@@ -1,3 +1,41 @@
+2007-07-16  Andrew Cagney  <cagney@redhat.com>
+
+	Merge lib/dw and lib/elf to lib/dwfl.
+	* README: Deleted.
+	* Elf.java: Moved.
+	* ElfArchiveHeader.java: Moved.
+	* ElfArchiveSymbol.java: Moved.
+	* ElfCommand.java: Moved.
+	* ElfData.java: Moved.
+	* ElfEHeader.java: Moved.
+	* ElfEMachine.java: Moved.
+	* ElfError.java: Moved.
+	* ElfException.java: Moved.
+	* ElfFileException.java: Moved.
+	* ElfFlags.java: Moved.
+	* ElfKind.java: Moved.
+	* ElfNhdr.java: Moved.
+	* ElfNhdrType.java: Moved.
+	* ElfPHeader.java: Moved.
+	* ElfPrAuxv.java: Moved.
+	* ElfPrFPRegSet.java: Moved.
+	* ElfPrpsinfo.java: Moved.
+	* ElfPrstatus.java: Moved.
+	* ElfSection.java: Moved.
+	* ElfSectionHeader.java: Moved.
+	* ElfSectionHeaderTypes.java: Moved.
+	* ElfType.java: Moved.
+	* cni/Elf.cxx: Moved.
+	* cni/ElfArchiveSymbol.cxx: Moved.
+	* cni/ElfData.cxx: Moved.
+	* cni/ElfNhdr.cxx: Moved.
+	* cni/ElfPrAuxv.cxx: Moved.
+	* cni/ElfPrFPRegSet.cxx: Moved.
+	* cni/ElfPrpsinfo.cxx: Moved.
+	* cni/ElfPrstatus.cxx: Moved.
+	* cni/ElfSection.cxx: Moved.
+	* tests/TestElf.java: Moved.
+
 2007-07-12  Andrew Cagney  <cagney@redhat.com>
 
 	* Elf.java (clone, elf_clone): Delete.

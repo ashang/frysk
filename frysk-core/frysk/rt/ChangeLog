@@ -1,3 +1,19 @@
+2007-07-16  Andrew Cagney  <cagney@redhat.com>
+
+	* FunctionBreakpoint.java: Update, lib.dw and lib.elf merged into
+	lib.dwfl.
+	* LexicalBlock.java: Ditto.
+	* LineBreakpoint.java: Ditto.
+	* Scope.java: Ditto.
+	* SteppingEngine.java: Ditto.
+	* Subprogram.java: Ditto.
+	* Subroutine.java: Ditto.
+	* TaskStepEngine.java: Ditto.
+	* TestFrameDebugInfo.java: Ditto.
+	* Variable.java: Ditto.
+	* states/LineStepState.java: Ditto.
+	* states/StepOverTestState.java: Ditto.
+
 2007-07-16  Mike Cvet  <mcvet@redhat.com>
 
 	* TestStepping.java: Several line-number fixes, rectifying some testcase

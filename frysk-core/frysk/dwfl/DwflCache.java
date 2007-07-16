@@ -44,7 +44,7 @@ import java.util.Iterator;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import lib.dw.Dwfl;
+import lib.dwfl.Dwfl;
 
 /**
  * Cache of most-recently opened Dwfl-s.  This class ensures that code

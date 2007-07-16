@@ -1,3 +1,9 @@
+2007-07-16  Andrew Cagney  <cagney@redhat.com>
+
+	* BreakpointCommand.java: Update, lib.dw merged into lib.elf.
+	* ListCommand.java: Ditto.
+	* PrintCommand.java: Ditto.
+
 2007-07-16  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DeleteCommand.java (handle): Now parses the correct parameters

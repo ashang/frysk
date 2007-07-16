@@ -42,7 +42,7 @@ package frysk.cli.hpd;
 import java.util.ArrayList;
 
 import frysk.stack.Frame;
-import lib.dw.DwarfDie;
+import lib.dwfl.DwarfDie;
 import java.io.IOException;
 import java.io.FileReader;
 import java.io.File;

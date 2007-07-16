@@ -39,7 +39,7 @@
 
 package frysk.proc;
 
-import lib.elf.ElfEMachine;
+import lib.dwfl.ElfEMachine;
 
 public class IsaPPC
   extends IsaPowerPC

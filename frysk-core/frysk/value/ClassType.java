@@ -44,7 +44,7 @@ import inua.eio.ByteOrder;
 
 import java.util.ArrayList;
 
-import lib.dw.BaseTypes;
+import lib.dwfl.BaseTypes;
 
 /**
  * Type for a class.

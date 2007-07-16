@@ -1,3 +1,10 @@
+2007-07-16  Andrew Cagney  <cagney@redhat.com>
+
+	* DwflCache.java: Update, lib.dw and lib.elf merged into lib.dwfl.
+	* DwflFactory.java: Ditto.
+	* TestDwflCache.java: Ditto.
+	* package.html: Ditto.
+
 2007-07-16  Nurdin Premji  <npremji@redhat.com>
 
 	* DwflCache.java (getDwfl): Call dwfl.close on the stale dwfl before 
@@ -58,3 +65,10 @@
 	* DwflFactory.java (clearDwfl): Added.
 
 	* DwflFactory.java: Moved from frysk.debuginfo
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

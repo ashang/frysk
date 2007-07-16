@@ -52,7 +52,7 @@ import frysk.sys.Ptrace.AddressSpace;
 import frysk.proc.live.RegisterSetByteBuffer;
 import frysk.proc.live.AddressSpaceByteBuffer;
 
-import lib.elf.ElfEMachine;
+import lib.dwfl.ElfEMachine;
 
 public class IsaIA32 implements Isa
 {

@@ -40,10 +40,10 @@
 package frysk.proc.dead;
 
 
-import lib.elf.Elf;
-import lib.elf.ElfEHeader;
-import lib.elf.ElfPHeader;
-import lib.elf.ElfCommand;
+import lib.dwfl.Elf;
+import lib.dwfl.ElfEHeader;
+import lib.dwfl.ElfPHeader;
+import lib.dwfl.ElfCommand;
 import java.io.File;
 /**
  * Build a list of maps from the contents of the file linkmap

@@ -43,8 +43,8 @@ import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.rt.states.*;
 import frysk.stack.FrameIdentifier;
-import lib.dw.Dwfl;
-import lib.dw.DwflLine;
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflLine;
 
 /**
  * Maintains stepping-relevant information for a given task, including its

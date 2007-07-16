@@ -63,8 +63,7 @@ import frysk.event.RequestStopEvent;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcCoreAction;
 
-import lib.dw.*;
-import lib.elf.*;
+import lib.dwfl.*;
 
 public class TestLinuxCore
     extends TestLib

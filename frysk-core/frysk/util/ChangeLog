@@ -1,3 +1,10 @@
+2007-07-16  Andrew Cagney  <cagney@redhat.com>
+
+	* CommandlineParser.java: Update, lib.elf and lib.dw merged into
+	lib.dwfl.
+	* CoredumpAction.java: Ditto.
+	* TestFCore.java: Ditto.
+
 2007-07-04  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFStack.java: Replace brokenXXX with unresolved.

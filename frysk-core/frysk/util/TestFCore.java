@@ -44,17 +44,17 @@ import inua.eio.ByteOrder;
 
 import java.io.File;
 
-import lib.elf.Elf;
-import lib.elf.ElfCommand;
-import lib.elf.ElfEHeader;
-import lib.elf.ElfEMachine;
-import lib.elf.ElfException;
-import lib.elf.ElfFileException;
-import lib.elf.ElfKind;
-import lib.elf.ElfPHeader;
-import lib.elf.ElfSection;
-import lib.elf.ElfSectionHeader;
-import lib.elf.ElfSectionHeaderTypes;
+import lib.dwfl.Elf;
+import lib.dwfl.ElfCommand;
+import lib.dwfl.ElfEHeader;
+import lib.dwfl.ElfEMachine;
+import lib.dwfl.ElfException;
+import lib.dwfl.ElfFileException;
+import lib.dwfl.ElfKind;
+import lib.dwfl.ElfPHeader;
+import lib.dwfl.ElfSection;
+import lib.dwfl.ElfSectionHeader;
+import lib.dwfl.ElfSectionHeaderTypes;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Isa;

@@ -41,10 +41,10 @@ package frysk.dom;
 
 import frysk.dom.DOMCompilerSuffixes;
 
-import lib.elf.Elf;
-import lib.elf.ElfCommand;
-import lib.dw.Dwarf;
-import lib.dw.DwarfCommand;
+import lib.dwfl.Elf;
+import lib.dwfl.ElfCommand;
+import lib.dwfl.Dwarf;
+import lib.dwfl.DwarfCommand;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -104,7 +104,7 @@ public class DOMCommon {
             }
           }
         }
-      } catch (lib.elf.ElfException ee) {
+      } catch (lib.dwfl.ElfException ee) {
         System.err
             .println("Error getting sourcefile paths: " + ee.getMessage());
         return sourcefiles;
@@ -124,7 +124,7 @@ public class DOMCommon {
     ArrayList incpaths = new ArrayList();
     try {
       elf = new Elf(executable, ElfCommand.ELF_C_READ);
-    } catch (lib.elf.ElfException ee) {
+    } catch (lib.dwfl.ElfException ee) {
       throw new RuntimeException("Cannot open elf file. Name I was given "
           + "was " + executable, ee);
     }

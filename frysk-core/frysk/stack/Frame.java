@@ -39,10 +39,10 @@
 
 package frysk.stack;
 
-import lib.dw.DwTagEncodings;
-import lib.dw.DwarfDie;
-import lib.dw.Dwfl;
-import lib.dw.DwflDieBias;
+import lib.dwfl.DwTagEncodings;
+import lib.dwfl.DwarfDie;
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflDieBias;
 import lib.unwind.Cursor;
 import frysk.debuginfo.DebugInfo;
 import frysk.dwfl.DwflCache;

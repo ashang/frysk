@@ -1,3 +1,8 @@
+2007-07-16  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/UnwindH.hxx: Update, lib.elf and lib.dw merged into
+	lib.dwfl.
+
 2007-07-13  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/UnwindH.hxx: Move all #include's to here.  Use

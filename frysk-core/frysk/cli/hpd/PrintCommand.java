@@ -47,7 +47,7 @@ import frysk.proc.UBigInteger;
 import frysk.value.Value;
 import frysk.debuginfo.DebugInfo;
 import javax.naming.NameNotFoundException;
-import lib.dw.BaseTypes;
+import lib.dwfl.BaseTypes;
 
 class PrintCommand
     implements CommandHandler

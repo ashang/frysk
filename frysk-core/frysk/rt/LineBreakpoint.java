@@ -48,7 +48,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.LogManager;
 
-import lib.dw.DwflLine;
+import lib.dwfl.DwflLine;
 
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;

@@ -88,7 +88,7 @@ header
     import frysk.value.InvalidOperatorException;
     import frysk.value.OperationNotDefinedException;
     import inua.eio.ByteOrder;
-    import lib.dw.BaseTypes;
+    import lib.dwfl.BaseTypes;
 }
 
 class CppParser extends Parser;

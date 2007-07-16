@@ -43,10 +43,10 @@ package frysk.rt;
 import java.util.logging.Logger;
 import javax.naming.NameNotFoundException;
 
-import lib.dw.DwTagEncodings;
-import lib.dw.DwarfDie;
-import lib.dw.Dwfl;
-import lib.dw.DwflDieBias;
+import lib.dwfl.DwTagEncodings;
+import lib.dwfl.DwarfDie;
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflDieBias;
 import frysk.dwfl.DwflCache;
 import frysk.proc.Action;
 import frysk.proc.Manager;

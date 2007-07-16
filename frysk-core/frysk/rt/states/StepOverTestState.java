@@ -39,7 +39,7 @@
 
 package frysk.rt.states;
 
-import lib.dw.DwflLine;
+import lib.dwfl.DwflLine;
 import frysk.proc.Task;
 import frysk.rt.TaskStepEngine;
 import frysk.stack.Frame;

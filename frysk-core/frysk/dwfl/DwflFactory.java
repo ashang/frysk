@@ -45,8 +45,8 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import lib.dw.Dwfl;
-import lib.dw.DwflModule;
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflModule;
 
 /**
  * Factory for creating Dwfl objects for Procs and Tasks.

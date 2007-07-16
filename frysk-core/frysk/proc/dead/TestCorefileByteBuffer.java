@@ -40,11 +40,11 @@
 package frysk.proc.dead;
 
 import java.io.File;
-import lib.elf.Elf;
-import lib.elf.ElfData;
-import lib.elf.ElfCommand;
+import lib.dwfl.Elf;
+import lib.dwfl.ElfData;
+import lib.dwfl.ElfCommand;
 
-import lib.elf.ElfException;
+import lib.dwfl.ElfException;
 
 import frysk.Config;
 import frysk.proc.TestLib;
