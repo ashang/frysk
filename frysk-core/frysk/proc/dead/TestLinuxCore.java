@@ -43,7 +43,9 @@ import frysk.Config;
 import inua.eio.ByteBuffer;
 
 import java.io.File;
+import java.util.ArrayList;
 
+import frysk.proc.Action;
 import frysk.proc.Isa;
 import frysk.proc.Task;
 import frysk.proc.Proc;
@@ -53,12 +55,17 @@ import frysk.proc.TestLib;
 import frysk.proc.ProcId;
 import frysk.proc.Manager;
 import frysk.proc.MemoryMap;
+import frysk.proc.TaskObserver;
 import frysk.util.CoredumpAction;
 import frysk.util.StacktraceAction;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcCoreAction;
+
+import lib.dw.*;
+import lib.elf.*;
+
 public class TestLinuxCore
     extends TestLib
 	    
@@ -338,6 +345,63 @@ public class TestLinuxCore
       }
   }
 
+  /**
+   * Tests that inserted breakpoints aren't visible in the fcore file.
+   */
+  public void testInsertedBreakpoint() throws Exception
+  {
+    Proc ackProc = giveMeAProc();
+    Task procTask = ackProc.getMainTask();
+
+    // Make sure we are attached.
+    AttachedObserver attachedObserver = new AttachedObserver();
+    procTask.requestAddAttachedObserver(attachedObserver);
+    assertRunUntilStop("adding AttachedObserver");
+
+    // Get the memory at a breakpoint before insertion.
+    ByteBuffer memory = procTask.getMemory();
+    long proc_address = getFunctionEntryAddress(ackProc, "bp1_func");
+    memory.position(proc_address);
+    byte origb = memory.getByte();
+
+    // Insert the breakpoint (which will change the raw text/code segment).
+    CodeObserver code = new CodeObserver(procTask, proc_address);
+    procTask.requestAddCodeObserver(code, proc_address);
+    assertRunUntilStop("add breakpoint observer");
+
+    // Create a core file from the process and load it back in.
+    String coreFileName = constructCore(ackProc);
+    File xtestCore = new File(coreFileName);
+    Host lcoreHost = new LinuxHost(Manager.eventLoop,
+				   xtestCore);
+    Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid()));
+    Task coreTask = coreProc.getMainTask();
+
+    // Check that the breakpoint isn't visible.
+    long core_address = getFunctionEntryAddress(coreProc, "bp1_func");
+    memory = coreTask.getMemory();
+    memory.position(core_address);
+    byte coreb = memory.getByte();
+    assertEquals(origb, coreb);
+  }
+
+  /**
+   * Returns the address of the requested function through query the
+   * Proc Elf and DwarfDie. Asserts that the function has only 1
+   * entry point.
+   */
+  private static long getFunctionEntryAddress(Proc proc, String func)
+    throws ElfException
+  {
+    Elf elf = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
+    Dwarf dwarf = new Dwarf(elf, DwarfCommand.READ, null);
+    DwarfDie die = DwarfDie.getDecl(dwarf, func);
+    ArrayList entryAddrs = die.getEntryBreakpoints();
+    
+    // We really expect just one entry point.
+    assertEquals(entryAddrs.size(), 1);
+    return ((Long) entryAddrs.get(0)).longValue();
+  }
 
   /**
    * Generate a process suitable for attaching to (ie detached when returned).
@@ -379,4 +443,79 @@ public class TestLinuxCore
     assertRunUntilStop("Running event loop for core file");
     return coreDump.getConstructedFileName();
   }
+
+  // Helper class for inserting a Code breakpoint observer.
+  static class CodeObserver
+    implements TaskObserver.Code
+  {
+    private final Task task;
+    private final long address;
+
+    boolean hit;
+
+    public CodeObserver(Task task, long address)
+    {
+      this.task = task;
+      this.address = address;
+    }
+
+    public Action updateHit (Task task, long address)
+    {
+      if (! task.equals(this.task))
+        throw new IllegalStateException("Wrong Task, given " + task
+                                        + " not equals expected "
+                                        + this.task);
+      if (address != this.address)
+        throw new IllegalStateException("Wrong address, given " + address
+                                        + " not equals expected "
+                                        + this.address);
+
+      hit = true;
+
+      Manager.eventLoop.requestStop();
+      return Action.BLOCK;
+    }
+
+    public void addedTo(Object o)
+    {
+      Manager.eventLoop.requestStop();
+    }
+
+    public void deletedFrom(Object o)
+    {
+      Manager.eventLoop.requestStop();
+    }
+
+    public void addFailed (Object o, Throwable w)
+    {
+      fail("add to " + o + " failed, because " + w);
+    }
+  }
+
+  // Helper class for attaching to a task.
+  static class AttachedObserver
+    implements TaskObserver.Attached
+  {
+    public Action updateAttached(Task task)
+    {
+      Manager.eventLoop.requestStop();
+      return Action.BLOCK;
+    }
+
+    public void addFailed(Object observable, Throwable w)
+    {
+      fail(w.toString());
+    }
+
+    public void addedTo(Object observable)
+    {
+      // Ignored
+    }
+
+    public void deletedFrom(Object observable)
+    {
+      // Ignored
+    }
+  }
+
 }
