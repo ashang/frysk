@@ -65,7 +65,7 @@ class EnableCommand extends CLIHandler {
 
     public void handle(Command cmd) throws ParseException {
 	String actionpoints = "";
-	boolean /*enEnabled = false,*/ enDisabled = false, enBreak = false,
+	boolean /* enEnabled = false, */enDisabled = false, enBreak = false,
 		enDisplay = false, enWatch = false, enBarrier = false;
 	ArrayList args = cmd.getParameters();
 	int[] ids = null;
@@ -78,37 +78,37 @@ class EnableCommand extends CLIHandler {
          * the "-" options specified in the hpd. We also allow a "-display"
          * option to disable only displays
          */
-	if (args.size() > 0) {
-	    if (args.size() > 1)
-		throw new ParseException("Too many arguments to enable", 0);
+	if (args.size() == 0)
+	    throw new ParseException("Too few arguments to enable", 0);
+	if (args.size() > 1)
+	    throw new ParseException("Too many arguments to enable", 0);
 
-	    String param = (String) args.get(0);
-	    // doesn't start with a dash, must be the list of actionpoints
-	    if (param.indexOf("-") != 0)
-		actionpoints = param;
-	    // starts with a '-', must be an argument
-	    // TODO: enable -enabled seems like a no-op
-//	    else if (param.equals("-enabled"))
-//		enEnabled = true;
-	    else if (param.equals("-disabled"))
-		enDisabled = true;
-	    else if (param.equals("-break"))
-		enBreak = true;
-	    else if (param.equals("-display"))
-		enDisplay = true;
-	    else if (param.equals("-watch"))
-		enWatch = true;
-	    else if (param.equals("-barrier"))
-		enBarrier = true;
-	    else if (param.equals("-help")) {
-		cli.printUsage(cmd);
-		return;
-	    } else
-		throw new ParseException("Unknown argument " + param
-			+ " to enable", 0);
-	}
+	String param = (String) args.get(0);
+	// doesn't start with a dash, must be the list of actionpoints
+	if (param.indexOf("-") != 0)
+	    actionpoints = param;
+	// starts with a '-', must be an argument
+	// TODO: enable -enabled seems like a no-op
+	// else if (param.equals("-enabled"))
+	// enEnabled = true;
+	else if (param.equals("-disabled"))
+	    enDisabled = true;
+	else if (param.equals("-break"))
+	    enBreak = true;
+	else if (param.equals("-display"))
+	    enDisplay = true;
+	else if (param.equals("-watch"))
+	    enWatch = true;
+	else if (param.equals("-barrier"))
+	    enBarrier = true;
+	else if (param.equals("-help")) {
+	    cli.printUsage(cmd);
+	    return;
+	} else
+	    throw new ParseException(
+		    "Unknown argument " + param + " to enable", 0);
 
-	// generate a list of actionpoints to disable
+	// generate a list of actionpoints to enable
 	if (!actionpoints.equals("")) {
 	    String[] points = actionpoints.split(",");
 	    ids = new int[points.length];
@@ -121,7 +121,7 @@ class EnableCommand extends CLIHandler {
 		}
 	    Arrays.sort(ids);
 	}
-	
+
 	// If a list of actionpoints were supplied, enable them and exit
 	if (ids != null) {
 	    for (int i = 0; i < ids.length; i++) {
@@ -131,8 +131,7 @@ class EnableCommand extends CLIHandler {
 		SourceBreakpoint bpt = bpManager.getBreakpoint(ids[i]);
 		if (bpt != null) {
 		    bpManager.enableBreakpoint(bpt, task);
-		    outWriter
-			    .println("breakpoint " + bpt.getId() + " enabled");
+		    outWriter.println("breakpoint " + bpt.getId() + " enabled");
 		}
 		// Failed to get a breakpoint, try to get a display instead
 		else if (DisplayManager.enableDisplay(ids[i])) {
@@ -146,11 +145,10 @@ class EnableCommand extends CLIHandler {
 	}
 
 	/*
-	 * Enable breakpoints
-	 * For our purposes -break and -disabled are equivalent here, as 
-	 * enabling all breakpoints is identical to enabling all
-	 * disabled breakpoints.
-	 */
+         * Enable breakpoints For our purposes -break and -disabled are
+         * equivalent here, as enabling all breakpoints is identical to enabling
+         * all disabled breakpoints.
+         */
 	if (enDisabled || enBreak) {
 	    BreakpointManager bpManager = cli.getSteppingEngine()
 		    .getBreakpointManager();
@@ -158,43 +156,40 @@ class EnableCommand extends CLIHandler {
 	    Iterator iter = bpManager.getBreakpointTableIterator();
 	    while (iter.hasNext()) {
 		SourceBreakpoint bpt = (SourceBreakpoint) iter.next();
-		if(bpt.getUserState() == SourceBreakpoint.DISABLED) {
+		if (bpt.getUserState() == SourceBreakpoint.DISABLED) {
 		    bpManager.enableBreakpoint(bpt, task);
-		    outWriter.println("breakpoint "
-			    	+ bpt.getId() + " enabled");
+		    outWriter.println("breakpoint " + bpt.getId() + " enabled");
 		}
 	    }
 	}
-	
+
 	/*
-	 * Enable displays
-	 * Similar to breakpoints, -disabled also means we enable all the
-	 * displays.
-	 */
+         * Enable displays Similar to breakpoints, -disabled also means we
+         * enable all the displays.
+         */
 	if (enDisabled || enDisplay) {
 	    Iterator iter = DisplayManager.getDisplayIterator();
 	    while (iter.hasNext()) {
 		UpdatingDisplayValue uDisp = (UpdatingDisplayValue) iter.next();
-		if(!uDisp.isEnabled()) {
+		if (!uDisp.isEnabled()) {
 		    uDisp.enable();
-		    outWriter.println("display " +
-			    uDisp.getId() + " enabled");
+		    outWriter.println("display " + uDisp.getId() + " enabled");
 		}
 	    }
 	}
-	
+
 	/*
-	 * Enable Watchpoints
-	 */
+         * Enable Watchpoints
+         */
 	if (enDisabled || enWatch) {
-	    
+
 	}
-	
+
 	/*
-	 * Enable Barriers
-	 */
+         * Enable Barriers
+         */
 	if (enDisabled || enBarrier) {
-	    
+
 	}
     }
 }

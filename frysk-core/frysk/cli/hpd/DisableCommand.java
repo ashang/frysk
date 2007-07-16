@@ -65,7 +65,7 @@ class DisableCommand extends CLIHandler {
 
     public void handle(Command cmd) throws ParseException {
 	String actionpoints = "";
-	boolean disEnabled = false/*, disDisabled = false*/, disBreak = false,
+	boolean disEnabled = false/* , disDisabled = false */, disBreak = false,
 		disDisplay = false, disWatch = false, disBarrier = false;
 	ArrayList args = cmd.getParameters();
 	int[] ids = null;
@@ -78,35 +78,35 @@ class DisableCommand extends CLIHandler {
          * the "-" options specified in the hpd. We also allow a "-display"
          * option to disable only displays
          */
-	if (args.size() > 0) {
-	    if (args.size() > 1)
-		throw new ParseException("Too many arguments to disable", 0);
+	if (args.size() == 0)
+	    throw new ParseException("Too few arguments to disable", 0);
+	if (args.size() > 1)
+	    throw new ParseException("Too many arguments to disable", 0);
 
-	    String param = (String) args.get(0);
-	    // doesn't start with a dash, must be the list of actionpoints
-	    if (param.indexOf("-") != 0)
-		actionpoints = param;
-	    // starts with a '-', must be an argument
-	    else if (param.equals("-enabled"))
-		disEnabled = true;
-	    // TODO: 'disable -disabled' seems like a no-op
-//	    else if (param.equals("-disabled"))
-//		disDisabled = true;
-	    else if (param.equals("-break"))
-		disBreak = true;
-	    else if (param.equals("-display"))
-		disDisplay = true;
-	    else if (param.equals("-watch"))
-		disWatch = true;
-	    else if (param.equals("-barrier"))
-		disBarrier = true;
-	    else if (param.equals("-help")) {
-		cli.printUsage(cmd);
-		return;
-	    } else
-		throw new ParseException("Unknown argument " + param
-			+ " to disable", 0);
-	}
+	String param = (String) args.get(0);
+	// doesn't start with a dash, must be the list of actionpoints
+	if (param.indexOf("-") != 0)
+	    actionpoints = param;
+	// starts with a '-', must be an argument
+	else if (param.equals("-enabled"))
+	    disEnabled = true;
+	// TODO: 'disable -disabled' seems like a no-op
+	// else if (param.equals("-disabled"))
+	// disDisabled = true;
+	else if (param.equals("-break"))
+	    disBreak = true;
+	else if (param.equals("-display"))
+	    disDisplay = true;
+	else if (param.equals("-watch"))
+	    disWatch = true;
+	else if (param.equals("-barrier"))
+	    disBarrier = true;
+	else if (param.equals("-help")) {
+	    cli.printUsage(cmd);
+	    return;
+	} else
+	    throw new ParseException("Unknown argument " + param
+		    + " to disable", 0);
 
 	// generate a list of actionpoints to disable
 	if (!actionpoints.equals("")) {
@@ -146,11 +146,10 @@ class DisableCommand extends CLIHandler {
 	}
 
 	/*
-	 * Disable breakpoints
-	 * For our purposes -break and -enabled are equivalent here, as 
-	 * disabling all breakpoints is identical to disabling all
-	 * enabled breakpoints.
-	 */
+         * Disable breakpoints For our purposes -break and -enabled are
+         * equivalent here, as disabling all breakpoints is identical to
+         * disabling all enabled breakpoints.
+         */
 	if (disEnabled || disBreak) {
 	    BreakpointManager bpManager = cli.getSteppingEngine()
 		    .getBreakpointManager();
@@ -158,43 +157,41 @@ class DisableCommand extends CLIHandler {
 	    Iterator iter = bpManager.getBreakpointTableIterator();
 	    while (iter.hasNext()) {
 		SourceBreakpoint bpt = (SourceBreakpoint) iter.next();
-		if(bpt.getUserState() == SourceBreakpoint.ENABLED) {
+		if (bpt.getUserState() == SourceBreakpoint.ENABLED) {
 		    bpManager.disableBreakpoint(bpt, task);
-		    outWriter.println("breakpoint "
-			    	+ bpt.getId() + " disabled");
+		    outWriter
+			    .println("breakpoint " + bpt.getId() + " disabled");
 		}
 	    }
 	}
-	
+
 	/*
-	 * Disable displays
-	 * Similar to breakpoints, -enable also means we disable all the
-	 * displays.
-	 */
+         * Disable displays Similar to breakpoints, -enable also means we
+         * disable all the displays.
+         */
 	if (disEnabled || disDisplay) {
 	    Iterator iter = DisplayManager.getDisplayIterator();
 	    while (iter.hasNext()) {
 		UpdatingDisplayValue uDisp = (UpdatingDisplayValue) iter.next();
-		if(uDisp.isEnabled()) {
+		if (uDisp.isEnabled()) {
 		    uDisp.disable();
-		    outWriter.println("display " +
-			    uDisp.getId() + " disabled");
+		    outWriter.println("display " + uDisp.getId() + " disabled");
 		}
 	    }
 	}
-	
+
 	/*
-	 * Disable Watchpoints
-	 */
+         * Disable Watchpoints
+         */
 	if (disEnabled || disWatch) {
-	    
+
 	}
-	
+
 	/*
-	 * Disable Barriers
-	 */
+         * Disable Barriers
+         */
 	if (disEnabled || disBarrier) {
-	    
+
 	}
     }
 }

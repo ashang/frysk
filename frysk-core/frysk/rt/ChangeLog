@@ -1,3 +1,8 @@
+2007-07-16  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DisplayManager.java (DisplayMap): Added toString method for debugging
+	purposes.
+
 2007-07-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFrameDebugInfo.java (testValues): Added test for values of variables

@@ -89,7 +89,7 @@ public class DisplayManager {
 	    displays.add(value);
 	    displaysByNum.put(new Integer(value.getId()), value);
 	}
-
+	
 	return value;
     }
 
@@ -162,6 +162,7 @@ public class DisplayManager {
 		val.disable();
 	    displays.remove(val);
 	    displaysByNum.remove(new Integer(val.getId()));
+	    
 	    return true;
 	}
 	return false;
@@ -272,12 +273,42 @@ class DisplayMap {
 	Map exprMap = (Map) frameMap.get(value.getFrameIdentifier());
 	if (!exprMap.containsKey(value.getName()))
 	    return;
-	exprMap.remove(value);
-
+	exprMap.remove(value.getName());
+	
 	/* Clean out empty data structures if they exist */
 	if (exprMap.isEmpty())
-	    frameMap.remove(exprMap);
+	    frameMap.remove(value.getFrameIdentifier());
 	if (frameMap.isEmpty())
-	    taskMap.remove(frameMap);
+	    taskMap.remove(value.getTask());
+    }
+    
+    /*
+     * Prints out the data structure, used mostly for debugging
+     * purposes
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+	String s = "";
+	
+	Iterator tKeyIter = taskMap.keySet().iterator();
+	while(tKeyIter.hasNext()) {
+	    Task task = (Task) tKeyIter.next();
+	    s = s + task.getTid() + "\n";
+	    Map frameMap = (Map) taskMap.get(task);
+	    Iterator fKeyIter = frameMap.keySet().iterator();
+	    while(fKeyIter.hasNext()) {
+		FrameIdentifier fIdent = (FrameIdentifier) fKeyIter.next();
+		s = s + "\t" + fIdent.getFunctionAddress() + "\n";
+		Map exprMap = (Map) frameMap.get(fIdent);
+		Iterator eKeyIter = exprMap.keySet().iterator();
+		while(eKeyIter.hasNext()) {
+		    s = s + "\t\t" + eKeyIter.next() + "\n";
+		}
+	    }
+	}
+	
+	
+	return s;
     }
 }
