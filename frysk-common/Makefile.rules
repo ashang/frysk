@@ -727,20 +727,6 @@ checked-for-parameterless-junit-fail: $(if $(GEN_DIRS),$(GEN_DIRNAME).jar)
 		echo "PASS: code parameterizes all fail() calls" ; \
 	fi
 
-# Check that runtest exists for use by dejagnu
-
-check-local: checked-for-dejagnu
-.PHONY: checked-for-dejagnu
-checked-for-dejagnu:
-	@if test x"$(RUNTEST)" = x ; then \
-		echo "SKIP: check for dejagnu" ; \
-	elif $(RUNTEST) --help > /dev/null 2>&1 ; then \
-		echo "PASS: check for dejagnu" ; \
-	else \
-		echo "FAIL: check for dejagnu" ; \
-		exit 1 ; \
-	fi
-
 # Check for NULL== or null== in code base
 
 check-local: checked-for-null-equals
