@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@
 
 #include <gcj/cni.h>
 
-#include <gnu/gcj/RawDataManaged.h>
+#include <gnu/gcj/RawData.h>
 
 #include "frysk/sys/FileDescriptor.h"
 #include "lib/dwfl/ElfCommand.h"
@@ -61,9 +61,9 @@
 #include "lib/dwfl/ElfArchiveHeader.h"
 #include "lib/dwfl/ElfData.h"
 
-jlong
+gnu::gcj::RawData*
 lib::dwfl::Elf::elfBegin (frysk::sys::FileDescriptor* fd,
-			 lib::dwfl::ElfCommand* command)
+			  lib::dwfl::ElfCommand* command)
 {
   if(::elf_version(EV_CURRENT) == EV_NONE) 
     {
@@ -78,7 +78,7 @@ lib::dwfl::Elf::elfBegin (frysk::sys::FileDescriptor* fd,
       fd->close();
       throw new lib::dwfl::ElfException(JvNewStringUTF("Could not open Elf file"));
     }
-  return (jlong)new_elf;
+  return (gnu::gcj::RawData*)new_elf;
 }
 
 jint
@@ -87,21 +87,10 @@ lib::dwfl::Elf::elf_next ()
   return (jint) ::elf_next((::Elf*) this->pointer);
 }
 
-jint
-lib::dwfl::Elf::elf_end()
+void
+lib::dwfl::Elf::elfEnd(gnu::gcj::RawData* pointer)
 {
-  if (this->pointer)
-    {
-      jint val = ::elf_end((::Elf*) this->pointer);
-      if (fd != NULL)
-	fd->close();
-      this->pointer = 0;
-      return val;
-    }
-  else
-    {
-      return 0;
-    }
+  ::elf_end((::Elf*) pointer);
 }
 
 

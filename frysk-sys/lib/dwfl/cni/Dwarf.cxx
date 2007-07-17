@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -47,9 +47,12 @@
 #define DWARF_POINTER (::Dwarf *) this->pointer
 
 void
-lib::dwfl::Dwarf::dwarf_begin_elf(jlong elf, jint command, jlong section){
-	this->pointer = (jlong)
-		::dwarf_begin_elf((::Elf*) elf, (::Dwarf_Cmd) command, (::Elf_Scn*) section);
+lib::dwfl::Dwarf::dwarf_begin_elf(gnu::gcj::RawData* elf, jint command,
+				  jlong section)
+{
+  this->pointer = (jlong)
+    ::dwarf_begin_elf((::Elf*) elf, (::Dwarf_Cmd) command,
+		      (::Elf_Scn*) section);
 }
 
 void

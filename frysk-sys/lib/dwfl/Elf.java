@@ -41,22 +41,20 @@ package lib.dwfl;
 
 import frysk.sys.FileDescriptor;
 import frysk.sys.Errno;
+import gnu.gcj.RawData;
 
 /**
  * This class represents an Elf object.
  */
 public class Elf
 {
-    private long pointer;
-    private final FileDescriptor fd;
-    private boolean hasNativeObject = false;
+    private RawData pointer;
+    private FileDescriptor fd;
 
-  public Elf (long ptr)
-  {
-    this.pointer = ptr;
-    this.fd = null;
-    hasNativeObject = false;
-  }
+    Elf (RawData ptr) {
+	this.pointer = ptr;
+	this.fd = null;
+    }
 
     /**
      * Creates a new elf object
@@ -85,17 +83,18 @@ public class Elf
 	}
 	// Create the corresponding Elf object.
 	pointer = elfBegin(fd, command);
-	hasNativeObject = true;
     }
 
   /**
-   * Destroy the external elf file object associated with  this object.
+   * Destroy the external elf file object associated with this object.
    */
-  public void close() 
-  {
-    if (hasNativeObject)
-      elf_end();
-    pointer = 0;
+  public void close() {
+      if (fd != null) {
+	  elfEnd(pointer);
+	  fd.close();
+      }
+      fd = null;
+      pointer = null;
   }
   
   /**
@@ -379,11 +378,10 @@ public class Elf
     return elf_rawfile(ptr);
   }
 
-  public long getPointer ()
-  {
-    return this.pointer;
-  }
-
+    RawData getPointer () {
+	return this.pointer;
+    }
+    
   /**
    * 
    * @return The descriptive last error message elf returned.
@@ -413,21 +411,20 @@ public class Elf
   }
 
 
-  protected void finalize () throws Throwable
-  {
-    if (hasNativeObject)
-      elf_end();
+  protected void finalize () {
+      close();
   }
 
-    private static native long elfBegin (FileDescriptor fd,
-					 ElfCommand cmd) throws ElfException;
+    private static native RawData elfBegin (FileDescriptor fd,
+					    ElfCommand cmd)
+	throws ElfException;
+    private static native void elfEnd (RawData elf);
+
 
   // protected native void elf_memory(String __image, long __size);
   protected native int elf_next ();
 
   protected native int elf_get_version ();
-
-  protected native int elf_end ();
 
   protected native long elf_update (int __cmd);
 

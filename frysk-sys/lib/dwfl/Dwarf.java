@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,10 +36,12 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package lib.dwfl;
 
 import lib.dwfl.Elf;
 import lib.dwfl.ElfSection;
+import gnu.gcj.RawData;
 
 public class Dwarf {
 	
@@ -92,7 +94,7 @@ public class Dwarf {
     public String[] getSourceFiles(){
       return get_source_files();
     }
-	protected native void dwarf_begin_elf(long elf, int command, long section);
+    protected native void dwarf_begin_elf(RawData elf, int command, long section);
 	protected native void dwarf_begin(String file, int command);
     protected native String[] get_source_files();
 	protected native int dwarf_end();

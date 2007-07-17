@@ -1,3 +1,19 @@
+2007-07-17  Andrew Cagney  <cagney@redhat.com>
+
+	* Elf.java (pointer): Change type to gnu.gcj.RawData.
+	(Elf(RawData)): Replace Elf(long), make package private.
+	(haveNativeObject): Delete.
+	(elfBegin): Return RawData.
+	(close): Update; close fd.
+	(elfEnd): Replace elf_end; make static.
+	(finalize): Call close.
+	(getPointer): Make package private.
+	* cni/Elf.cxx (elfBegin): Update.
+	(elf_end): Update.
+	* cni/DwflModule.cxx (module_getelf): Update.
+	* cni/Dwarf.cxx: Update.
+	* Dwarf.java (dwarf_begin_elf): Make elf parameter RawData.
+
 2007-07-16  Andrew Cagney  <cagney@redhat.com>
 
 	* DwAtEncodings.shenum: Include frysk-imports in path to

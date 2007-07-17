@@ -36,10 +36,14 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 #include <cstdlib>
 #include <cstring>
 #include "libdwfl.h"
+
 #include <gcj/cni.h>
+
+#include <gnu/gcj/RawData.h>
 
 #include "lib/dwfl/DwflModule.h"
 #include "lib/dwfl/DwflLine.h"
@@ -67,7 +71,7 @@ lib::dwfl::DwflModule::module_getelf()
 		return NULL;
 		
 	lib::dwfl::ModuleElfBias *ret = new lib::dwfl::ModuleElfBias();
-	ret->elf = new lib::dwfl::Elf((jlong) elf);
+	ret->elf = new lib::dwfl::Elf((gnu::gcj::RawData*) elf);
 	ret->bias = (jlong) bias;
 		
 	return ret;	
