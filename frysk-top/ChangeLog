@@ -1,7 +1,3 @@
-2007-07-17  Andrew Cagney  <cagney@redhat.com>
-
-	* Makefile.am (SUBDIRS): Add frysk-sys.
-
 2007-06-26  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac (AM_INIT_AUTOMAKE): Remove dist-bzip2 and

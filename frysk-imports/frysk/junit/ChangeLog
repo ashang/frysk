@@ -1,0 +1,308 @@
+2007-07-04  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCase.java (unresolvedOnPPC): Rename brokenPpcXXX.
+	(brokenX8684XXX): Delete.
+	(brokenX86XXX): Delete.
+	(unresolvedOn): Rename brokenIfKernelXXX; make private.
+	(unresolvedOnUtrace): Rename brokenIfUtraceXXX.
+	(unresolved): Rename brokenXXX.
+
+	* TestCase.java: Re-indent.
+
+	* TestCase.java (brokenIfKernelXXX(int,String[])): Delete.
+	(goodFC5217, brokenFC5): Delete.
+	(brokenIfUtraceXXX): Simplify.
+
+	* Runner.java: Re-indent.
+
+2007-06-25  Mike Cvet  <mcvet@redhat.com>
+
+	* TestCase.java (brokenX86XXX): Added.
+
+2007-05-29  Andrew Cagney  <cagney@redhat.com>
+
+	* Runner.java (unsupported): Do not enable unsupported tests when
+	-u is specified.
+
+	Print "FAIL (UNRESOLVED)" instead of "FAIL (PASS (UNRESOLVED))"
+	* Result.java (what): Change to an array.
+	(toString): Update.
+	(Result(String[])): Replace Result(String).
+	(Result(String,Result)): New.
+	(Problem(String[],int)): New.
+	(Problem(String,Problem,Throwable): New.
+	(Problem(String,Throwable): New.
+	(Problem(String,String[]): Delete.
+	(fail): Use.
+
+	* TestCase.java (unsupported): New.
+	* Runner.java (unsupported): New.
+	* Result.java (fail, unsupported): New methods.
+	(resolved): Delete.
+	* Results.java: Use.
+	(addUnsupported(String), unsupported): New.
+	(printHeader): Print unsupported.
+	
+2007-05-28  Andrew Cagney  <cagney@redhat.com>
+
+	* Result.java (Unresolved, Resolved): Delete.
+	(resolved, unresolved): New.
+	* Results.java: Update.
+	(addProblem): Change "RESOLVED" to "UNRESOLVED".
+	(printResolution): Cast to Result.Problem.
+	(printHeader): Remove all unresolved from resolved.
+	
+	* Result.java (Resolved): Add class.
+	* Runner.java (unresolved): Add "unresolved" parameter.
+	* TestCase.java: Update.
+	* Results.java (addResolved): New.
+	(printResolution): New.
+	(printHeader): Use printResolution to print "resolved" and
+	"unresolved".
+	(addProblem): When the existing result is not PASS, move it from
+	"resolved" to "unresolved".
+	
+	* TestCase.java (brokenXXX): Delete.
+	(brokenXXX(int)): Use Runner.brokenXXX(int).
+	* Runner.java (skipUnresolvedTests, unresolved(int)): New.
+	(Results): Delete.  Replaced by separate Results and Result.
+	* Results.java: New file.
+	* Result.java: New file.
+
+2007-05-10  Nurdin Premji  <npremji@redhat.com>
+
+	* Runner.java (createCommandLineParser): Added "unbreak" command line option 
+	to run broken tests.
+	* TestCase.java (brokenXXX): Changed trueXXX boolean to brokenXXX. 
+	Only print statement if brokenXXX is true.
+
+2007-04-13  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCase.java (getTimeoutSeconds): Make public.
+	(getTimeoutMilliseconds): Make public.
+	
+	* TestCase.java (timeoutSeconds, getTimeoutSeconds)
+	(setTimeoutSeconds): Change type to int, matches sleep(3).
+	* Runner.java: Update.
+
+2007-02-26  Tim Moore  <timoore@redhat.com>
+	
+	* KernelVersion.java (KernelVersion): Move initialization of
+	static patterns to constructor, in order to avoid
+	order-of-initialization problems.
+	(KernelVersion): Use lookingAt() instead of matches().
+	
+2007-02-26  Tim Moore  <timoore@redhat.com>
+
+	* KernelMatch.java: New file.
+	* KernelVersion.java: New file.
+	* TestCase.java (brokenIfUtraceXXX): Use KernelVersion class to
+	test for a range of valid kernels.
+
+2007-02-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Runner.java (timeout, getTimeout): Delete.
+	(Runner): Call TestCase.setTimeoutSeconds.
+	* TestCase.java (timeoutSeconds, getTimeoutSeconds)
+	(getTimeoutMilliseconds, setTimeoutSeconds): New.
+
+	* Runner.java (Runner): Tell expect the default timeout.
+
+2007-02-09  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCase.java (brokenIfKernelXXX): New method.
+	(brokenIfUtraceXXX): Rename brokenUtraceXXX.  Use
+	brokenIfKernelXXX.
+
+	* Runner.java: Set Expect.setDefaultTimeoutSeconds based on
+	timeout.  Mention that the timeout is in seconds.
+
+2007-02-05  Andrew Cagney  <cagney@redhat.com>
+
+	* Runner.java (runTestCases): Reduce parameter list to "tests" and
+	"config" and "tests32" and "config32".
+	(getProgramBasename, programBasename): New.
+	(Runner): Set programBasename.
+	* Paths.java: Delete.
+	* TestPaths.java: Delete.
+
+	* Runner.java: Add parameter binPrefix.
+
+2007-01-30  Nurdin Premji  <npremji@redhat.com>
+
+	* Runner.java (createCommandLineParser): Added shortcut for --console and --log.
+	
+2007-01-26  Nurdin Premji  <npremji@redhat.com>
+
+	* Runner.java (createCommandLineParser): Fixed up usage statement. Bug #3929.
+
+2007-01-15  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCase.java (brokenPpcXXX, brokenX8664XXX): Replace
+	Build.BUILD_ARCH with Config.getTargetCpuXXX.
+
+2007-01-10  Nurdin Premji  <npremji@redhat.com>
+
+	* Runner.java: (runCases): Print out the number of successful runs if fail.
+
+	* Runner.java: forgot to remove unused imports.
+
+	* Runner.java (repeatValue): fixed typo.
+	(createCommandLineParser): Simplified to use EventLogger.addConsoleOptions.
+	Added timeout option.
+	(getTimeout): Added.	
+
+2007-01-08  Nurdin Premji  <npremji@redhat.com>
+
+	* Runner.java (runCases): Check that test actually exists before trying to
+	run it. Fixes bug #3839.
+
+	* Runner.java (runCases): Allow for individual test cases in the form of:
+	test*(TestCaseClass).
+
+2007-01-07  Andrew Cagney  <cagney@redhat.com>
+
+	* TestPaths.java (savedGlade, savedImage, setUp, tearDown): Save
+	and restore glade and image prefixes.
+	(testCrossedDataPaths, testCrossedExecPaths): Replace
+	testCrossPaths.
+	* Paths.java (setDataPrefixes, setExecPrefixes): Replace
+	setPrefixes.
+	(gladePrefix, getGladePrefix, imagePrefix, getImagePrefix): Add.
+	* Runner.java: Update.
+
+2007-01-05  Nurdin Premji  <npremji@redhat.com>
+
+	* Runner.java (runCases): Extended to run individual tests from testcases.
+	(createCommandLineParser): Made to look more like the command line options
+	used by frysk utilities.
+
+2007-01-05  Andrew Cagney  <cagney@redhat.com>
+
+	* Runner.java (runArchCases, runArch32Cases, runTestCases):
+	Replace Build.BUILD_ARCH with Config.getWordSize.
+	(archBuild, setBuildArch, getBuildArch): Delete.
+	
+2006-12-21  Andrew Cagney  <cagney@redhat.com>
+
+	* TestPaths.java: Test getExec32Prefix.
+	* Runner.java (runTestCases): Pass exec32Path to Paths
+	.setPrefixes.
+	* Paths.java (exec32Prefix): Add.
+	(setPrefixes): Add exec32Prefix parameter.
+
+2006-12-15  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCase.java (brokenUtraceXXX): New; make all methods
+	non-static.
+
+2006-12-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Runner.java: Call Paths.setMyBasename.
+	* Paths.java (Paths): New private constructor.
+	(runnerBasename, setRunnerBasename, getRunnerBasename): New.
+	
+2006-11-28  Chris Moller  <moller@mollerware.com>
+
+	* Runner.java: Rename private variable omitTests to excludeTests.
+	Initialise excludeTests and includeTests to new ArrayList().
+	* Runner.java (createCommandLineParser): Rename -omit to -excludeTests.
+	* Runner.java (runCases): Remove checks for null excludeTests and
+	includeTests. 
+
+	* Runner.java: New private variables omitTests and includeTests
+	* Runner.java (createCommandLineParser): Add options -omit and
+	-include. 
+	* Runner.java (runCases): Add code to omit tests specified by
+	-omit and include tests specified by -include, overriding tests
+	omitted by -omit.
+
+2006-11-06  Andrew Cagney  <cagney@redhat.com>
+
+	* Runner.java (testFilter): New private variable.
+	(createCommandLineParser): Add --stress and --all.
+	(runCases): Only include tests that match testFilter.
+
+	* Runner.java (runTestCases): Replace runArchCases.
+	(createCommandLineParser): Add -n / --list-classes-only option.
+	(listClassesOnly): New boolean variable.
+	(runCases): If .listClassesOnly, print, instead of run the tests.
+	
+	* Runner.java (createCommandLineParser): Replace addOptions.
+	(Runner): Add parameter programName.
+
+2006-10-20  Nurdin Premji  <npremji@redhat.com>
+
+	* Runner.java: (runArchCases): Removed extra Runner, fixes issue with double logging.
+	(addOptions.level.parsed): Moved level variables here so they don't hang around globally.
+	(Runner): Only set the logger once on creation.
+	
+
+2006-10-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Runner.java: Coding nit, remove false== and null==.
+
+2006-10-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Runner.java: Emacs indent.
+	
+	* Runner.java (Runner): Do not print each arg.
+	
+	* Runner.java (runArchCases (String, String)): New.
+	(worstResult): New.
+
+2006-10-11  Andrew Cagney  <cagney@redhat.com>
+
+	* TestPaths.java: Add setup and tear down code to save/restore the
+	original prefixes.
+	
+	* TestPaths.java: New file.
+	* Paths.java (getDataPrefix): New method.
+	(dataPrefix): New static local variable.
+	(setPrefixes): Replace setExecPrefix.
+
+2006-10-04  Nurdin Premji <npremji@redhat.com>
+
+	* Runner.java: Added getopt information about ALL logging option.
+
+2006-09-26  Nurdin Premji <npremji@redhat.com>
+
+	* Runner.java: Changed to use getopt command line parser.
+
+2006-09-25  Yong Zheng  <zhengyo@cn.ibm.com>
+
+	* Runner.java (repeatValue,archTarget, archBuild, 
+`	testCases, parser, ARCH64, ARCH32): New.
+	(usage): New method.
+	(setTestCases, GetTestCases): New methods.
+	(setBuildArch, GetBuildArch): New methods.
+	(runCases): New method.
+	(runArchCases): New method.
+	(runArch32Cases): New method.
+	(Runner): Refactor to support arch32 test.
+
+2006-09-19  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* TestCase.java (brokenX8664XXX): New method. 
+
+2006-08-28  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCase.java: New file.
+
+2006-03-26  Andrew Cagney  <cagney@redhat.com>
+
+	* Runner.java: Log the progress of each test.
+
+2006-02-05  Andrew Cagney  <cagney@redhat.com>
+
+	* Paths.java: New file.
+
+	* Runner.java: Moved from frysk-imports/frysk/JUnitRunner.java.
+
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

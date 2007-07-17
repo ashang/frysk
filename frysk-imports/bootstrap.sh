@@ -40,16 +40,17 @@
 
 set -e
 
-FILE_LIST="\
+FILE_LIST="frysk \
+    inua \
     junit/junit.jar \
     ANTLR_JAR \
     cdtparser/cdtparser.jar \
     JDOM_JAR \
     jline/jline.jar \
     getopt/getopt.jar \
-    "
+    lib"
 
-./common/Makefile.gen.sh $FILE_LIST
+./common/Makefile.gen.sh --cni $FILE_LIST
 
 (
     cd elfutils

@@ -1,0 +1,1213 @@
+2007-07-13  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/PseudoTerminal.cxx (getName): Use getFd.
+
+2007-07-12  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/FileDescriptor.cxx (open): Fix typo; declare fd n correct
+	scope.
+	* TestFileDescriptor.java (testCreate): Fix typo; call delete, not
+	remove.
+	
+	* FileDescriptor.java (CREAT): New.
+	(open): Add mode parameter.
+	(FileDescriptor(String,int,int), FileDescriptor(File,int,int)):
+	Declare.
+	* cni/FileDescriptor.cxx (open): Handle CREAT.
+	* TestFileDescriptor.java (testCreate): New.
+
+	* FileDescriptor.java (FileDescriptor(String,int))
+	(FileDescriptor(File,flags)): Use this() constructor.
+	(FileDescriptor(int)): Check that fd is valid.
+	(close(int)): New.
+	(close()): Use close(int), when fd is non -ve.
+	* cni/FileDescriptor.cxx (close): Update.
+	* TestFileDescriptor.java (testNegativeFileDescriptor): New.
+	(testTwiceClosed): New.
+	
+2007-07-03  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFileDescriptor.java (testLeakyFileDescriptors)
+	(testLeakyPipes): Delete; moved to ..
+	* TestLeakingFileDescriptor.java: ... to here.  New file.
+
+2007-06-26  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/StatelessFile.cxx (verifyBounds): Delete, moved to ...
+	* cni/Errno.cxx (verifyBounds): ... here.
+	* cni/Errno.hxx (verifyBounds): Declare.
+	* FileDescriptor.java (seekSet, seekCurrent, seekEnd): Declare.
+	(read(byte[],long,long), write(byte[],long,long)): Make offset and
+	length longs.
+	(lseek): Replaced by seekEnd
+	* cni/FileDescriptor.cxx (read, write): Update.
+	(seek, seekSet, seekCurrent, seekEnd): Implement.
+	(open): Initialize gc_count.
+	* TestStatelessFile.java: Update; use .seekEnd.
+	* TestFileDescriptor.java (file): Add; initialize in setUp, close
+	in tearDown.
+	(testOpenEtcPasswd): Simplify; use 'file'.
+	(IO, assertArrayIndexOutOfBounds, verifyOutOfBounds)
+	(testReadOutOfBounds, testWriteOutOfBounds, testSeek)
+	(testLeakyFileDescriptor): New tests.
+
+2007-06-25  Chris Moller  <cmoller@redhat.com>
+
+	* FileDescriptor.java: Added public native void lseek (long off).
+	* cni/FileDescriptor.cxx: Added void
+	frysk::sys::FileDescriptor::lseek (jlong off), the sole purpose of
+	which is to create huge sparse files to test pread64() and
+	pwrite64() in the StatelessFile code.
+	* cni/StatelessFile.cxx: Reinstated verifyBounds(), but without
+	the fileOffset check.
+	* TestStatelessFile.java: Added a check for accessing files with
+	large fileOffsets.
+
+2007-06-20  Chris Moller  <cmoller@redhat.com>
+
+	* cni/StatelessFile.cxx StatelessFile::pread(): Replaced pread()
+	system call with pread64 to fix problems on 64-bit machines.
+	Removed verifyBounds() and replaced it with an upper-bound check.
+	(Nominally negative signed start and length numbers interpreted as
+	large unsigned numbers will exceed bytes->length and cause a
+	bounds exception.  A nominally negative signed fileOffset number
+	interpreted as a large unsigned value will /probably/ result in a
+	read error and a throwErrno().)
+
+2007-06-18  Andrew Cagney  <cagney@redhat.com>
+
+	* TestPipePair.java (Tee): Delete.
+	* cni/TestPipePair.cxx: Delete file.
+
+2007-05-25  Nurdin Premji  <npremji@redhat.com>
+
+	* cni/Ptrace.cxx (AddressSpace.peek): Added messages to thrown 
+	ArrayIndexOutOfBoundsExceptions.
+
+2007-05-24  Andrew Cagney  <cagney@redhat.com>
+
+	* TestStatelessFile.java (testNoSuchFile)
+	(testNullTermination): New.
+	* StatelessFile.java (StatelessFile(File)): Append a NUL byte to
+	name.
+	(StatelessFile(String)): New.
+	(unixPath): Make protected final.
+	(getUnixPath): Delete.
+	* cni/StatelessFile.cxx (verifyBounds): New.
+	(pread, pwrite): Re-enable calls to the format form of throwErrno.
+	Use "fd < 0", not "-1 == fd".  save errno across close() system
+	call.  Use verifyBounds.
+
+2007-05-24  Chris Moller  <moller@mollerware.com>
+
+	* cni/StatelessFile.cxx pread(), pwrite(): throwErrno()s modified
+	because they can fail with "java.lang.RuntimeException:
+	JvNewStringUTF failed in vajprintf," probably due to reference to
+	"(const char *)elements (unixPath),"  but I'll a real Jave troop
+	figure that out.
+
+2007-05-12  Chris Moller  <moller@mollerware.com>
+
+	* StatelessFile.java:
+	* TestStatelessFile.java:
+	* cni/StatelessFile.cxx:  New class to do pread/pwrite, plus tests
+	for same.
+
+2007-05-10  Chris Moller  <moller@mollerware.com>
+
+	* cni/Ptrace.cxx (peek (jint pid, jlong addr, jlong length,
+	jbyteArray bytes, jlong offset)): Improved the efficiency a little.
+
+2007-05-08  Kris Van Hees  <kris.van.hees@oracle.com>
+
+	* cni/PseudoTerminal.cxx (reopen): Changed the logic to detach to try
+	the open first, and if it succeeds, continue with the detach.  If the
+	open failed, skip the detach operation, and continue (because that
+	means the controlling terminal was already detached).  There is no need
+	to log an error (using perror) on the first open.
+
+2007-05-07  Andrew Cagney  <cagney@redhat.com>
+
+	* Server.java: Delete.
+	* TestServer.java: Delete.
+
+2007-05-03  Chris Moller  <moller@mollerware.com>
+
+	* cni/Ptrace.cxx (peek (jint pid, jlong addr, jlong length,
+	jbyteArray bytes, jlong offset)): Replaced byte-oriented data
+	transfer with word-oriented transfer.
+
+2007-05-03  Andrew Cagney  <cagney@redhat.com>
+
+	* SignalSet.java (add(Sig[])): New.
+	(size): Declare.
+	* cni/SignalSet.cxx (size): Implement.
+	* TestSignalSet.java (testAddRemove, testToArray): Add tests.
+
+	* cni/SignalSet.cxx (toArray): Implement.
+	* SignalSet.java (toString): Add.
+	(toArray): Define.
+	(SignalSet(Sig)): Add.
+	* TestSignalSet.java (testNewFromArray): Rename testList.
+	(testNewFromSig): New.
+	(testToArray): New.
+	(testEmptyToString, testSingleToString, testMultiToString): New.
+
+2007-05-02  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/PtraceServer.cxx: Delete.
+	* PtraceServer.java: Delete.
+
+2007-05-01  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Wait.cxx: Replace PtraceServer with Ptrace.
+
+	* Ptrace.java (attach(ProcessIdentifer)): New.
+	(detach(ProcessIdentifier,int)): New.
+
+	* TestPtraceServer.java: Replace this ...
+	* TestPtrace.java: ... with this.  New file.
+
+2007-04-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Server.java: Disable the [ptrace] Server.
+
+2007-04-18  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Errno.cxx (throwErrno): Use vasprintf, not asprintf.
+	* cni/PtraceServer.cxx (execute): Include more information in
+	throw.
+	* cni/Ptrace.cxx (request): In throw, display "pt" in hex.
+
+	* Server.java (useServerXXX): New.
+	(request): Check useServerXXX.
+
+2007-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Errno.hxx (throwErrno(int,const char*,const char*))
+	(throwErrno(int,const char*,const char*,int)): Delete.
+	(throwErrno(int,const char*,const char*,...)): Declare.
+	* cni/Errno.cxx (throwErrno): Re-implement.
+	* cni/Wait.cxx (drainNoHang): Ditto.
+	* cni/Signal.cxx (tkill): Ditto.
+	* cni/PseudoTerminal.cxx (open): Ditto.
+	* cni/Fork.cxx (daemon): Ditto.
+	* cni/FileDescriptor.cxx (close): Ditto.
+	* cni/Daemon.cxx (daemon): Update.
+	* cni/Ptrace.cxx (request): Throw a meaningful message.
+
+2007-04-15  Andrew Cagney  <cagney@redhat.com>
+
+	* PtraceServer.java (peek, poke): Delete.
+	* Ptrace.java (peek, poke): Delete.
+	* cni/Ptrace.cxx: Update.
+	* PtraceByteBuffer.java: Delete.
+	* cni/PtraceByteBuffer.cxx (peek): Delete.
+	* TestPtraceByteBuffer.java: Delete.
+	* StressMapRead.java: Delete.
+
+	* TestPtraceServer.java (testLengthOnBound, testOffsetOnBound): Add.
+	* cni/Ptrace.cxx (peek): Fix length upper bound check.
+	
+	* RegisterSetBuffer.java: Delete.
+	* Ptrace.java (peekRegisters, pokeRegisters): Delete.
+	(registerSetSize, TEXT, DATA, USR): Delete.
+	* cni/Ptrace.cxx: Update.
+	* PtraceServer.java (peekRegisters, pokeRegisters): Delete.
+	* cni/PtraceServer.cxx: Update.
+	
+	* cni/Ptrace.cxx (peek(jint,jlong,jlong,jbyteArray,jlong)): Implement.
+	* TestPtraceServer.java (testTextValPeekBytes, testDataValPeekBytes)
+	(testTextValPeekBytes, testDataValPeekBytes, testPeekBytes): New.
+	(testTextValPeek): Rename testTextValPeekBytes.
+	(testDataValPeek): Rename testDataValPeekBytes.
+	(testTextValPeek): Rename testTextValPeekBytes.
+	(testDataValPeek): Rename testDataValPeekBytes.
+	(verifyOutOfBounds, testLengthUnderBound, testOffsetUnderBounds)
+	(testLengthOverBounds, testOffsetOverBounds): Add.
+	* PtraceServer.java (AddressSpaceRequest): Add PEEKS, handle.
+	(peek(AddressSpace,int,long,long,byte[],long)): Add.
+	* Ptrace.java (peek(int,long,long,byte[],long): Add.
+
+2007-04-14  Andrew Cagney  <cagney@redhat.com>
+
+	* TestPtraceByteBuffer.java (testDataFunction): Copy the full
+	LocalMemory.getFuncBytes.length bytes, not just 4.
+	* PtraceServer.java (AddressSpaceRequest.request): Return
+	this.data.
+	* Ptrace.java (AddressSpace.toString, AddressSpace.name): Add,
+	update constructor.
+	* cni/Ptrace.cxx (text, data, usr): Update constructor calls.
+	* TestPtraceServer.java (verifyBytes, verifyPeek)
+	(testTextValBytes, testDataValBytes, testTextFuncBytes)
+	(testDataFuncBytes, verifyPoke, testTextValPoke, testDataValPoke)
+	(testTextFuncPoke, testDataFuncPoke): New.	
+	
+	* TestCallPtrace.java: Rename to ...
+	* TestPtraceServer.java: ... this.
+
+2007-04-13  Andrew Cagney  <cagney@redhat.com>
+
+	* PtraceServer.java (RegisterSetRequest, registerSetRequest)
+	(get, put, AddressSpaceRequest, addressSpaceRequest, peek)
+	(poke): Add.
+	* Ptrace.java (RegisterSet, AddressSpace): New classes.
+	* cni/Ptrace.cxx: Implement native methods.
+
+	* TestLib.java: Delete.
+	* cni/TestLib.cxx: Delete.
+	* cni/Wait.cxx (wait): Ensure that .signalSet is non-NULL.
+	* TestCallPtrace.java: Replace TestLib.waitIt with Wait.  Check
+	status values.
+	* StressMapRead.java: Replace TestLib.forkIt, waitIt, and
+	Ptrace.attach, with frysk.testbed.AttachedSelf.
+	* TestPtraceByteBuffer.java: Ditto.
+	* Server.java (request): Handle requests from the server thread
+	immediatly.
+
+	* Child.java (Child(Execute)): New constructor.
+	* Daemon.java (Daemon(Execute)): New constructor.
+	* TestLib.java (tearDown): Delete.
+	* StressMapRead.java: Use frysk.testbed.TearDownProcess.
+	* TestCallPtrace.java: Ditto.
+
+	* Itimer.java (sleep(int)): Declare.
+	* cni/Itimer.cxx: Implement.
+
+	* cni/Wait.cxx (wait): Replace waitAll.
+	* Wait.java (wait(int,WaitBuilder,SignalBuilder,long)): Add.
+	(wait(ProcessIdentifier,WaitBuilder,SignalBuilder,long)): Add.
+	(waitAll(long,WaitBuilder,SignalBuilder,long)): Implement using
+	wait.
+	* PtraceServer.java (attach(ProcessIdentifer))
+	(detach(ProcessIdentifier,int): New.
+	* ProcessIdentifier.java: Make constructor public.
+	(tkill(Sig)): New.
+
+2007-04-10  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java (intVal, byteVal, longVal): Delete.
+	(getIntValAddr, getLongValAddr, getByteValAddr): Delete.
+	(getFuncAddr, getFuncBytes, drainSignal): Delete.
+	* cni/TestLib.cxx: Ditto.
+	* TestPtraceByteBuffer.java: Use frysk.testbed.LocalMemory.
+
+2007-04-09  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Wait.cxx (log): Add "logger" parameter, update calls.
+	(waitForEvent): Delete.
+	(waitAll): Use "log".  Replace loop calling waitForEvent with
+	multiple waitpid calls.
+
+2007-04-09  Chris Moller  <moller@mollerware.com>
+
+	* cni/Wait.cxx: In processStatus (int pid, int status,
+	frysk::sys::WaitBuilder* builder), replace references to
+	WCOREDUMP(status) with 'false' in two places where WCOREDUMP()
+	isn't valid.
+
+2007-04-05  Andrew Cagney  <cagney@redhat.com>
+
+	* PtraceServer.java (REGS, FPREGS, FPXREGS): Delete.
+	(registerSetSize, optionTraceClone, optionTraceFork)
+	(optionTraceExit, optionTraceSysgood, optionTraceExec): Delete.
+	* cni/PtraceServer.cxx: Ditto.
+	* Ptrace.java: Copy PtraceServer.java.
+	* cni/Ptrace.cxx: Copy Ptrace.cxx.
+	* RegisterSetBuffer.java: Use Ptrace.registerSetSize.
+
+	* cni/Ptrace.cxx: Rename to ...
+	* cni/PtraceServer.cxx: ... this.
+	* Ptrace.java: Rename to ...
+	* PtraceServer.java: ... this.
+	* SigSet.java: Rename to ...
+	* SignalSet.java: ... this.
+	* TestSigSet.java: Rename to ...
+	* TestSignalSet.java: ... this.
+	* cni/SigSet.hxx: Rename to ...
+	* cni/SignalSet.hxx: ... this.
+	* cni/SigSet.cxx: Rename to ...
+	* cni/SignalSet.cxx: ... this.
+	* TestPtraceByteBuffer.java: Update.
+	* TestLib.java: Update.
+	* RegisterSetBuffer.java: Update.
+	* cni/Wait.cxx: Update.
+	* cni/Poll.cxx: Update.
+	* cni/PtraceByteBuffer.cxx: Update.
+	* Wait.java: Update.
+	* TestSigSet.java: Update.
+	* TestCallPtrace.java: Update.
+	* StressMapRead.java: Update.
+	* Poll.java: Update.
+
+2007-04-04  Andrew Cagney  <cagney@redhat.com>
+
+	* TestWait.java (testNoWaitBuilder): Add.
+	(tearDown, startTime, endTime): Add.
+	(testSignals): Use getTimeoutMilliseconds.
+	* Wait.java (signalEmpty): Do not install SIGALRM.
+	(getLogger): Always return the logger.
+	(signalEmpty): Make native.
+	* cni/Wait.cxx (waitInterrupt): Remove siginfo_t and context
+	parameters.  Fix STATUS check.
+	(signalAdd): Update.  Add logFinest calls.
+	(waitForEvent): Add "wait" parameter.  Add more comments.
+	(waitAll): Set "wait" according to waitBuilder's NULLness.  Add
+	logFinest calls.
+	(signalEmpty): Implement here.
+	(log): Use logFinest.
+	
+2007-04-03  Andrew Cagney  <cagney@redhat.com>
+
+	* TestWait.java: New file.
+	* SignalBuilder.java: New file.
+	* Wait.java (waitAll(long,WaitBuilder,SignalBuilder): Add
+	(sigSet, signalAdd, signalEmpty): Add.
+	* cni/Wait.cxx (waitAll, signalAdd): Implement.
+	(struct wait_jmpbuf, wait_jmpbuf, waitInterrupt)
+	(struct event, waitForEvent): New.
+
+	* Poll.java (Observere): Move to PollBuilder.java.
+	* PollBuilder.java: New file.
+
+2007-04-02  Andrew Cagney  <cagney@redhat.com>
+
+	* UnhandledWaitBuilder.java: New file.
+
+2007-03-29  Andrew Cagney  <cagney@redhat.com>
+
+	* Wait.java (Observer): Replace with separate WaitBuilder class.
+	* WaitBuilder.java: New file.
+	* ProcessIdentifier.java: Update.
+	* cni/Wait.cxx: Update.
+
+2007-03-28  Mark Wielaard  <mark@klomp.org>
+
+	* Wait.java (static): Use frysk.sys for getLogger().
+
+2007-03-27  Andrew Cagney  <cagney@redhat.com>
+
+	* Ptrace.java: Re-implement using Server.java.
+	(pt): Delete.
+	(getPt): Delete.
+	(requestExecute): Delete.
+	(PtraceThread): Delete.
+	(PtraceRequest): New.
+	(ForkRequest): New.
+	(child): Use RequestFork.
+	(request): New.
+	(peek, poke): Call request.
+	* cni/Ptrace.cxx: Update.
+	(_callPtrace): Delete.
+	(singleStep, cont, sysCall, getEventMsg, peekRegisters,
+	pokeRegisters, setOptions, optionTraceClone): Use request.
+	(reopen): Delete.
+	(child): Delete.
+	(peek, poke): Delete.
+	
+	* Ptrace.java (peek, poke): Change addr type to gnu.gcj.RawData.
+	Make methods package local.
+	* cni/Ptrace.cxx: Update.
+	* cni/PtraceByteBuffer.cxx (peek, poke): Update.
+	
+	* Server.java (Server): Add private constructor.
+	(Op): Delete, use Execute.
+	(exception): Add member.
+	(execute): When exception non-NULL, re-throw.
+	(run): Catch and save RuntimeException-s.
+	TestServer.java: Update.
+	(testThrow): Add.
+
+2007-03-26  Andrew Cagney  <cagney@redhat.com>
+
+	* Server.java: New file.
+	* TestServer.java: New tests.
+
+2007-03-21  Tim Moore  <timoore@redhat.com>
+
+	* Size.java: New class.
+	* FileDescriptor.java (getSize, setSize): New methods.
+	* cni/FileDescriptor.cxx (getSize, setSize): Implement them.
+
+2007-03-06  Nurdin Premji  <npremji@redhat.com>
+
+	* Ptrace.java (requestExecute): Added.
+
+2007-03-06  Andrew Cagney  <cagney@redhat.com>
+
+	* Ptrace.java (PtraceThread.op): New member.
+	(PtraceThread.notifyPtraceThread(Execute)): New method.
+	(PtraceThread.execute()): Rename callPtrace.
+	* cni/Ptrace.cxx (execute): Update.
+
+2007-02-27  Nurdin Premji  <npremji@redhat.com>
+
+	* cni/Errno.cxx (vlog): Remove debug statements.
+
+	* cni/Errno.cxx (vajprintf): throw a runtime exception if the JvNewString
+	call fails.
+	(vlog): Added.
+	(logMessage): Use vlog.
+	(logFine): Ditto.
+	(logFinest): Ditto.
+	(jLogFine): Cleaned up.
+
+2007-02-23  Nurdin Premji  <npremji@redhat.com>
+
+	* cni/Errno.hxx: Added convenience logger for FINE and FINEST levels.
+	* cni/Errno.cxx: Ditto.
+
+	* cni/Errno.hxx: Removed below macros.
+
+	* cni/Errno.hxx: Added macros for Level.FINE, FINER, FINEST.
+	* cni/Errno.cxx: Fixed conditional for logging. Should exit if logger is
+	not loggable.
+
+	* cni/Errno.hxx (ajprintf): Added
+	(vajprintf): Changed format to be similar to vasprintf.
+	(logMessage): Added.
+	(jLogMessage): Added.
+	* cni/Errno.cxx: Ditto.
+	* cni/Wait.cxx: Reflect changes to vajprintf and introduction of ajprintf.
+
+2007-02-22  Andrew Cagney  <cagney@redhat.com>
+
+	* PseudoTerminal.java (RedirectStdio.reopen): Make native.
+	* cni/PseudoTerminal.cxx (reopen): Implement; handle controlling
+	terminal guff.
+	* TestPseudoTerminal.java (testDevTty): Add.
+
+2007-02-19  Andrew Cagney  <cagney@redhat.com>
+
+	* FileDescriptor.java (FileDescriptor(File,int): New constructor.
+	* PseudoTerminal.java (getFile): New method.
+	(getName): Make private.
+	(name, file): New private members.
+	* TestPseudoTerminal.java: Update.
+
+	* PseudoTerminal.java (setUpForConsole): Delete.
+	* cni/PseudoTerminal.cxx: Ditto.
+
+	* termios/: New directory.
+
+	* TestPseudoTerminal.java (pid): Add local private.  Use instead
+	of local variables.
+	(tearDown): Kill the pid, and drain Sig.CHLD.
+	* cni/Errno.hxx (throwRuntimeException): Add "noreturn" attribute.
+
+2007-02-16  Mark Wielaard  <mark@klomp.org>
+
+	* RegisterSetBuffer.java (peek): Remove unnecessary int cast.
+
+2007-02-13  Andrew Cagney  <cagney@redhat.com>
+
+	* TestPseudoTerminal.java (pid): Change type to ProcessIdentifier.
+	* ProcessIdentifier.java (blockingDrain): Rename drainWait.
+	(blockingWait, nonblockingWaitAll): New.
+	(toString): Return a plain integer.
+	* PseudoTerminal.java (addChild, addDaemon): Return a
+	ProcessIdentifier.
+	* TestPseudoTerminal.java (pid): Change type to ProcessIdentifier.
+	* TestPipePair.java: Update.
+	
+2007-02-12  Andrew Cagney  <cagney@redhat.com>
+
+	* TestPipePair.java (testDaemonExecute, testChildExecute): Add.
+	(Tee): Static class, implements Execute.
+	* cni/TestPipePair.cxx: New file.
+
+	* cni/Daemon.cxx: Explictly include parent class
+	frys/sys/ProcessIdentifier.h.
+	* cni/Child.cxx: Ditto.
+
+	* PipePair.java (daemon, child): Move to sub-classes.
+	* TestPipePair.java: Update.
+	* DaemonPipePair.java: New file.
+	* ChildPipePair.java: New file.
+
+	* Execute.java: New file.
+	* Redirect.java: New file.
+	* ProcessIdentifier.java: New file.
+	* cni/Child.cxx: New file.
+	* Child.java: New file.
+	* cni/Daemon.cxx: New file.
+	* Daemon.java: New file.
+	* PipePair.java: New file.
+	* cni/Exec.cxx: New file.
+	* Exec.java: New file.
+	* TestPipePair.java: New file.
+	* cni/FileDescriptor.cxx: Switch commented out printf to fprintf.
+	* Pipe.java (toString): Add.
+	* FileDescriptor.java (toString): Add.
+	
+	* cni/Errno.hxx (sizeof_argv, fill_argv, sizeof_string) 
+	(fill_string): Define.
+	(ALLOCA_STRING, ALLOCA_ARGV): New macros.
+	* cni/Errno.cxx (sizeof_argv, fill_argv, sizeof_string) 
+	(fill_string): Define.
+	* FileDescriptor.java (FileDescriptor(String,int)): New.
+	(RDONLY, WRONLY): New.
+	(in, out, err): New.
+	(open, dup): Declare.
+	(pipe): Delete.
+	* cni/FileDescriptor.cxx (open, dup): Implement.
+	* TestFileDescriptor.java (testArrayIO): Delete.
+	(pipe, hello, xxxhelloyyy): New variables.
+	(in, out): Delete, update all.
+	(testArrayReadWrite, testArraySubBufferWrite)
+	(testArraySubBufferRead, testDupPipeOutToIn): New.
+	* Pipe.java: New.
+	* cni/Pipe.cxx: New.
+
+2007-02-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Wait.java (drain, drainNoHang): Declare.
+	* cni/Wait.cxx (drain, drainNoHang): Define.
+
+	* Signal.java (drain(Sig)): Declare.
+	* cni/Signal.cxx (drain): Define.
+
+2007-01-31  Andrew Cagney  <cagney@redhat.com>
+
+	* FileDescriptor.java (ready(long)): New.
+	(ready): Implement using ready(long).
+	* cni/FileDescriptor.cxx (ready): Update.
+	(doRead): New local function.
+	(read, read(byte[],int,int)): Implement using doRead.
+	* PseudoTerminal.java (toString): Implement.
+	* TestFileDescriptor.java (assertBecomesReady): New.
+	(testArrayEOF, testByteEOF): Add assertBecomesReady.
+	* TestPseudoTerminal.java (assertBecomesAvailable): Rename
+	assertAvailable.
+	(testEOF): New.
+
+2007-01-29  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/PseudoTerminal.cxx: Rename cni/Pty.cxx.
+	* PseudoTerminal.java: Rename Pty.java.
+	* TestPseudoTerminal.java: Rename TestPty.java.
+
+	* TestPty.java (setUp): Add.
+	(tearDown): No need to clear pid.
+	(getPtyDaemon): Add.
+	(testEchoHi, testTeeHi): Use getPtyDaemon.
+	* Pty.java (addChild, addDaemon): New methods.
+	* PtyDaemon.java: Delete.
+
+2007-01-26  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFileDescriptor.java (testLeakyPipes): Use a WeakHashMap to
+	track and then close any non-garbage-collected file descriptors.
+
+	* TestFileDescriptor.java (testByteIO): Rename testIO.
+	(testByteEOF, testArrayEOF, testArrayIO): Add.
+	* FileDescriptor.java (read(byte[],int,int): Add.
+	(getOutputStream): Add close method.
+	(getInputStream): Add close and read(byte[],int,int) methods.
+	(read): Change return type to int.
+	(write): Change parameter to int.
+	* cni/FileDescriptor.cxx: Update.
+	* TestPty.java (testOpen): Rename testAll.
+	(testEchoHi, testTeeHi): New methods.
+	* PtyDaemon.java: New.
+	* FileDescriptor.java (getFd): New method.
+	(fd): Make protected.
+	* Pty.java: Extend FileDescriptor, make non-final.
+	(ptyWrite, setUpPtyForConsole, writeString, getPtyName): Delete
+	(getFd): Delete, handled by parent class.
+	(open): Native method, rename openPty.
+	(getName): Make native.
+	* cni/Pty.cxx: Update to match Pty.java changes.
+	
+	* cni/Errno.hxx (throwErrno): Add noreturn attribute.
+	(tryGarbageCollect): Declare.
+	* cni/Errno.cxx (tryGarbageCollect): Define.
+	* cni/FileDescriptor.cxx: New file
+	* FileDescriptor.java: New file.
+	* TestFileDescriptor.java: New file.
+	
+2006-12-07  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* StressMapRead.java: Add permShared flag.
+
+2006-12-06  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Pty.cxx (writeString): Use ==NULL.
+
+2006-11-16  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Wait.cxx (log): New.
+	* cni/Errno.hxx (vajprintf): Add declaration.
+	* cni/Errno.cxx (vajprintf): Make public.
+	* Wait.java (log): Delete.
+
+2006-11-15  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Wait.cxx: Revert 2006-09-04 Chris Moller
+	<moller@mollerware.com> change, in particular the silent switch to
+	malloc from alloc.
+
+2006-11-14  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCallPtrace.java: Use frysk.junit.TestCase.
+	* TestPtraceByteBuffer.java: Ditto.
+	* TestSigSet.java: Ditto.
+	* TestPty.java: Ditto.
+
+2006-10-26  Tim Moore  <moore@redhat.com>
+
+	* cni/Errno.cxx (throwErrno): Fix bug in use of JvGetStringUTFRegion.
+
+2006-10-14  Mark Wielaard  <mark@klomp.org>
+
+	* AuditLibs.java (SyscallToName): Renamed to...
+	(syscallToName): Renamed to not start with a Capital.
+	(nameToSyscall): New native method.
+	* cni/AuditLibs.cxx: (nameToSyscall): New method.
+
+2006-10-12  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/TestLib.cxx (drainSignal): New.
+	* TestLib.java (tearDown): New.
+	(drainSignal): New.
+	* StressMapRead.java (tearDown): Use TestLib.tearDown, remove
+	broken due to 3360.
+	* TestCallPtrace.java (tearDown): New.  Use TestLib.tearDown.
+	* TestPtraceByteBuffer.java: Use TestLib.tearDown.
+	
+	* TestCallPtrace.java: Emacs indent.
+	* TestPtraceByteBuffer.java: Emacs indent.
+
+	* StressMapRead.java (setUp): Delete, code merged into test
+	proper.  Add broken due to 3360 - does not drain pending events.
+
+2006-10-09  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* cni/Ptrace.cxx: Compile regSetParams conditionally for i386 and
+	x86_64.
+
+2006-10-03  Tim Moore  <timoore@redhat.com>
+
+	* Ptrace.java (REGS, FPREGS,FPXREGS): new constants
+	(registerSetSize, peekRegisters, pokeRegisters): new methods for
+	reading and writing blocks of registers.
+	* cni/Ptrace.cxx (registerSetSize, peekRegisters, pokeRegisters):
+	implementations of above methods.
+
+2006-09-16    <swagiaal@redhat.com>
+
+	* cni/AuditLibs.cxx: New file.
+	* AuditLibs.java: New file.
+
+2006-09-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Wait.java: Pass just "frysk" to getLogger, work-around.
+
+2006-09-04  Chris Moller  <moller@mollerware.com>
+
+	* cni/Wait.cxx: Added a bit of code to check for unset status from
+	waitpid.  Ridiculously unlikely, but something seems to be munged
+	up somewhere, and an unset status could theoretically leave just
+	the wrong random bits in the int.
+
+2006-08-31  Chris Moller  <moller@mollerware.com>
+
+	* cni/Wait.cxx:  Removed the entire mail thing.
+
+	* cni/Wait.cxx:  Take out the local suppression of the 0xff error.
+
+2006-08-30  Chris Moller  <moller@mollerware.com>
+
+	* cni/Wait.cxx:  Added code to send diagnostics to
+	cmoller@redhat.com if the 0xff condition is detected.  Also
+	suppresses local processing of that status on the theory that it's
+	not a real status.
+
+2006-08-28  Andrew Cagney  <cagney@redhat.com>
+
+	* StressMapRead.java: Extend frysk.junit.TestCase.
+	(trueXXX, brokenXXX): Delete, moved to frysk.junit.TestCase.
+
+2006-08-26  Mike Cvet <mcvet@redhat.com>
+
+	* cni/TestLib.cxx (forkIt): Properly GNU format. Removed the
+	printf() call, replaced wtih an exit(). Removed the perror() call
+	and replaced with throwErrno().
+
+2006-08-23  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* cni/TestLib.cxx (getFuncAddr): Get function address instead of
+	address of function descriptor on PPC64.
+	(getFuncBytes): Likewise.
+
+2006-08-22  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* cni/Ptrace.cxx: added calls to setsid and setpgid to forked process
+
+2006-08-16  Andrew Cagney  <cagney@redhat.com>
+
+	* Wait.java: Specify "frysk.sys" as the logger, delete unused
+	import of frysk.Config.
+
+2006-08-16  Tim Moore  <timoore@redhat.com>
+
+	* PtraceByteBuffer.java (Area, Area.getMaxOffset): New method that
+	returns the maximum legal offset into an area. Only useful for the
+	user area.
+	* cni/PtraceByteBuffer.cxx (PtraceByteBuffer$Area::textArea,
+	PtraceByteBuffer$Area::dataArea, PtraceByteBuffer$Area::usrArea):
+	Initialize maximum offset.
+
+2006-08-14  Mark Wielaard  <mark@klomp.org>
+
+	* StressMapRead.java (testMapRead): Add brokenXXX(3043).
+
+2006-08-09  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* Pty.java: Added a setUpForConsole function
+	* cni/Pty.cxx: the same
+
+2006-08-04  Mark Wielaard  <mark@klomp.org>
+
+	* frysk/sys/cni/PtraceByteBuffer.cxx (newPerror): Removed.
+	(peek(long)): Remove errno handling.
+	(peek(long,jbyteArray,jlong,jlong)): Likewise.
+	(poke): Likewise.
+
+2006-08-03  Tim Moore  <timoore@redhat.com>
+
+	* Uname.java: New file, interface to uname(2).
+	* cni/Uname.cxx: New file.
+
+2006-08-02  Adam Jocksch  <ajocksch@redhat.com>
+
+	* StressMapRead.java: Renamed from TestMapRead since the test
+	is very cpu-intensive, also enabled test.
+
+2006-08-01  Adam Jocksch  <ajocksch@redhat.com>
+
+	* TestMapRead.java: New file, test is disabled since it breaks.
+
+2006-07-28  Mark Wielaard  <mark@klomp.org>
+
+	* Ptrace.java (poke): Change data parameter from int to long.
+	* cni/Ptrace.cxx (poke): Likewise.
+
+2006-07-17  Tim Moore  <moore@redhat.com>
+
+	* Ptrace.java (peek): Change return type of peek to long.
+	* cni/Ptrace.cxx (peek): ditto
+
+2006-07-14  Mark Wielaard  <mark@klomp.org>
+
+	* cni/Wait.cxx (waitAll): Save errno before calling log().
+
+2006-07-10  Tim Moore  <timoore@redhat.com>
+
+	* cni/PtraceByteBuffer.cxx (peek, poke): Change the type of data read
+	from / written to ptrace from int to long, corresponding to its
+	declared type in the ptrace prototype.
+
+2006-07-04  Mark Wielaard  <mark@klomp.org>
+
+	* frysk-sys/frysk/sys/TestPtraceByteBuffer.java
+	(testTextVariable): Make sure we are manipulating only the child
+	text area not our own.
+
+2006-06-26  Mark Wielaard  <mark@klomp.org>
+
+	* frysk-sys/frysk/sys/TestPtraceByteBuffer.java: New test.
+	* frysk-sys/frysk/sys/TestLib.java (intVal, byteVal, longVal):
+	New static fields.
+	(getIntValAddr, getByteValAddr, getLongValAddr): New native methods.
+	(getFuncAddr): Likewise.
+	(getFuncBytes): Likewise.
+	* frysk-sys/frysk/sys/cni/TestLib.cxx
+	(dummyfunc): New static function.
+	(getIntValAddr, getByteValAddr, getLongValAddr): New method.
+	(getFuncAddr): Likewise.
+	(getFuncBytes): Likewise.
+
+	* frysk-sys/frysk/sys/cni/PtraceByteBuffer.cxx (peek): Use off when
+	storing bytes.
+
+2006-06-19  Mike Cvet  <mcvet@redhat.com>
+
+	* TestCallPtrace.java (testChildContinue): Finalized tests
+	(getPt): Set the ptrace thread to a daemon thread so that Frysk exits
+	properly.
+
+2006-06-16  Mike Cvet  <mcvet@redhat.com>
+
+	* PtraceByteBuffer.java: Moved over to frysk/sys.
+	* PtraceByteBuffer.cxx: Moved over to frysk/sys/cni; fixes to use the new
+	ptrace thread implementation - fixes #2783.
+	* funit-threadexit.c: Removed race condition.
+	* TestTaskTerminatedObserver.java: TestTerm now stops when the task dies
+	as opposed to timing out.
+	* TestLib.Java: Added print statement if event loop is not stopped.
+	* Ptrace.java: Added methods for peek() and poke().
+	* Ptrace.cxx: Added methods for peek() and poke().
+	* Makefile.am: Builds with headers from inua.
+
+2006-06-15  Nurdin Premji  <npremji@redhat.com>
+
+	* cni/Poll.cxx: Add #include <linux.syscall> and <unistd.h>
+	* cni/Signal.cxx: Ditto.
+	* cni/Tid.cxx: Ditto.
+	
+2006-06-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* cni/Wait.cxx: Fixed a bug resluting in the errno being
+	overwritten before being reported
+
+2006-06-15  Mike Cvet  <mcvet@redhat.com>
+
+	* Ptrace.java: Re-written to now perform all ptrace requests on a
+	separate thread, to address #2595. The parent thread is always running
+	and any children created or attaches to other processes are performed
+	transparently on the ptrace thread which will continue to run after the 
+	very first ptrace request.
+	* Ptrace.cxx: Re-written to satisfy the new requirements for Ptrace.java,
+	specifically satisfying all requests with the new java ptrace thread.
+	* Wait.cxx: Via #2774, double status returns via waitpid() have to be
+	eliminated.
+	* TestCallPtrace.java: Added - Unit test for new Ptrace.java
+	* TestLib.java: Added
+	* TestLib.cxx: Added
+	* Errno.java: Made Errno understand (int err, String prefix) parameters
+	* Errno.cxx: Added new function with the above parameters for returning
+	error.
+
+2006-06-13  Stan Cox  <scox@redhat.com>
+
+	* Errno.java (Eperm): New.
+	* cni/Errno.cxx (throwErrno): Added EPERM.
+
+2006-05-19  Chris Moller  <moller@mollerware.com>
+
+	* Pty.java:
+	* TestPty.java:
+	* cni/Pty.cxx: Added a constructor to open the pty, added an access
+	method to retrieve the fd, added a "write()" method mostly to test
+	that writing to the pty worked, modified the testcase to check the
+	new stuff.
+
+2006-05-18  Chris Moller  <moller@mollerware.com>
+
+	* TestPty.java: New file to test functionality of Pty.java and
+	cni/Pty.cxx under Junit.
+
+2006-05-17  Chris Moller  <moller@mollerware.com>
+
+	* Pty.java:
+	* cni/Pty.cxx: New files to provide a means of opening a pty and
+	identifying the corresponding pty path.
+
+2006-04-09  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Poll.cxx (handler): Change function signature to match
+	sa_sigaction.
+	(addSignalHandler): Instead of sa_handler, set sa_sigaction.
+
+2006-03-23  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Wait.cxx (waitAllNoHang, waitAll): Call <<log>>.
+	* Wait.java (logger): Add.
+	(log): Add.
+
+2006-03-15  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Poll.cxx (poll): Move delivery of signal events to after the
+	::poll call; clean up comments.
+	* cni/Wait.cxx (waitAllNoHang): Accumulate all the wait events on
+	the stack before delivering them.
+	* Wait.java (waitAllNoHang): Update description.
+
+2006-03-14  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/SigSet.hxx (getRawSet): Rename getSigSet.
+	* SigSet.java: Rename sigSet to rawSet; rename newSigSet to
+	newRawSet.
+	* cni/SigSet.cxx: Update.
+	* Poll.java (SignalSet): Delete.
+	(sigSet, add,(Sig), empty, pollFds): New.
+	(poll): Drop Fds parameter.
+	* cni/Poll.cxx: Update.
+
+2006-03-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Signal.java (kill (int, int), tkill (int, int)): Delete.
+	(kill (int, Sig), tkill (int, Sig)): Make native.
+	* cni/Signal.cxx: Update.
+	
+	* Poll.java (Observer.signal (Sig)): Replace Observer.signal (int).
+	* cni/Poll.cxx (poll): Pass a Sig to Observer.signal.
+	
+	* Poll.java (SignalSet.add (int)): Delete.
+	(SignalSet.add (Sig)): Make native.
+	* cni/Poll.cxx: Update.
+	* SigSet.java (SigSet (int[]): Delete.
+	(add (int), remove (int), contains (int)): Delete.
+	(add (Sig), remove (Sig), contains (Sig)): Make native.
+	* cni/SigSet.cxx: Update.
+
+	* Sig.shenum: Add SIGNONE - 0 - to list of signals.
+	
+	* Itimer.java (real (long), real (long, long)): Return a Sig.
+	* cni/Itimer.cxx: Update.
+	* Sig.shenum: Generate the print name.
+
+	* Ptrace.java (detach (int, Sig)): New.
+	* Poll.java (SignalSet.add (Sig)): New.
+	* Signal.java (kill (int, Sig), tkill (int, Sig)): New.
+	* cni/SigSet.cxx (newSigSet): Drop sigs parameter.
+	* SigSet.java (contains (Sig), add (Sig), remove (Sig))
+	(SigSet(Sig[])): New.
+	* TestSigSet.java: Update.
+
+2006-03-07  Andrew Cagney  <cagney@redhat.com>
+
+	* Poll.java (poll): Add description.
+	* SigSet.java, cni/SigSet.cxx: Change all void methods to return
+	this SigSet.
+	
+2006-03-06  Andrew Cagney  <cagney@redhat.com>
+	
+	* SigSet.java (getPending, suspend, blockProcMask)
+	(unblockProcMask, setProcMask, getProcMask): Add.
+	* cni/SigSet.cxx: Ditto.
+	* TestSigSet.java (testProcMask): New test.
+
+	* cni/SigSet.hxx, cni/SigSet.cxx, SigSet.java, TestSigSet.java:
+	New files.
+
+2006-02-19  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Poll.cxx (handler): If the signal is to the wrong thread,
+	re-send it to the correct one.
+	(poll_jmpbuf): Replace .p with .tid.
+	(poll): Set the .tid.
+
+2006-02-10  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Poll.cxx (handler): If poll_jmpbuf is invalid, throw a
+	RuntimeException.
+	(poll): Mark when poll_jmpbuf is valid.
+	(struct poll_jmpbuf): Replace poll_env, a per-thread buffer.
+
+2005-12-21  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/XXX.cxx: Delete.
+	* XXX.java: Delete.
+	
+	* XXX.java (infCloneLoop): Delete.
+	* cni/XXX.cxx (infCloneLoop, cloneThreadFunc, threadFunc): Delete.
+	
+	* XXX.java (infLoop): Delete.
+	* cni/XXX.cxx (infLoop): Delete.
+
+2005-11-28  Andrew Cagney  <cagney@redhat.com>
+
+	* Sig.shjava: Use $CC from the environment.
+	* SyscallNum.shjava: Ditto.
+
+2005-11-14  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Wait.cxx (processStatus): Wrap case local variable in local
+	block.  Gag G++ 4.1 error.
+
+2005-11-10  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* Wait.java (syscallEvent): Revert change on 2005-11-07.
+	* cni/Wait.cxx (processStatus): Ditto.
+
+2005-11-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Wait.java: Add Throwable argument to .disappeared.
+	* cni/Wait.cxx (processStatus): Update.
+
+2005-11-07  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* Wait.java (syscallEvent): Add new syscall event type parameter.
+	* cni/Wait.cxx (processStatus): For a syscall event, indicate
+	the event type is unknown.
+
+2005-11-01  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* SyscallNum.shjava: New file.
+
+2005-10-23  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Wait.cxx (WSTOPEVENT): Replace WEVENTSTATUS.
+	(processStatus): Update.  For PTRACE_EVENT_EXIT, extract the exit
+	signal and/or status.
+	* Wait.java: Add signal, and coreDumped parameters to .exitEvent.
+	Merge .exited into .terminated.  Update comments.
+
+2005-10-22  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Errno.cxx (throwRuntimeException): New function.
+	(vajprintf): New function, use throughout.
+	* cni/Errno.hxx (throwRuntimeException): Declare variant with
+	message, suffix, and val parameters.
+	* cni/Wait.cxx (processStatus): Use.
+
+2005-10-09  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Errno.cxx, cni/Errno.hxx: Add throwErrno methods that take a
+	suffix, and a suffix and val.  Rename throwException to
+	throwRuntimeException.
+	* cni/Fork.cxx, cni/Ptrace.cxx, cni/Signal.cxx, cni/Wait.cxx: Use.
+	
+2005-10-07  Andrew Cagney  <cagney@redhat.com>
+
+	* Tid.java, cni/Tid.cxx: New.
+
+2005-10-03  Andrew Cagney  <cagney@redhat.com>
+
+	* Poll.java: Make SignalSet.signalSet protected; work around ECJ
+	3.1 feature.
+
+2005-09-27  Andrew Cagney  <cagney@redhat.com>
+
+	* ExampleJUnitTest.java: Delete.
+	* Errno.java, Itimer.java, Pid.java, Poll.java, Ptrace.java,
+	Signal.java, Wait.java: Add more documentation.
+
+	* Fork.java: Have "ptrace" should call "ptrace", not "exec".
+	Update comments.
+
+2005-09-18  Andrew Cagney  <cagney@redhat.com>
+
+	* package.html: New file.
+
+2005-09-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Move com/redhat/fedora/frysk/sys/ to frysk/sys/.
+
+2005-08-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Wait.java: Rename wait to waitAll, waitNohang to waitAllNoHang,
+	signaled to terminated, and zombied to disappeared.
+
+2005-08-26  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Fork.cxx: For daemon, reap the original child's pid.
+
+2005-08-26  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* cni/Wait.cxx: Add __WALL flag for regular wait without WNOHANG.
+
+2005-08-25  Andrew Cagney  <cagney@redhat.com>
+
+	* Fork.java, cni/Fork.cxx: Add method "daemon".
+
+2005-08-22  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Signal.cxx (kill, tkill): Throw an exception if the kill
+	fails.
+
+2005-08-13  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Ptrace.cxx, Ptrace.java: Don't catch Errno.Esrch.
+
+	* cni/Errno.cxx, Errno.java: Handle ECHILD adding Echild sub-class
+
+2005-08-12  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* Errno.java: Add Esrch class to represent ESRCH errno (process
+	not found).
+	* Ptrace.java: Change prototypes of cont, singleStep, sysCall, and
+	setOptions methods to return an int.
+	* Wait.java: Add zombied observer.
+	* XXX.java: Add infCloneLoop.
+	* cni/Errno.cxx: Add support for new Errno.Esrch class.
+	* cni/Ptrace.cxx: For cont, singleStep, sysCall, and setOptions,
+	use a try/catch to gracefully handle an ESRCH error and return an
+	error code.
+	* cni/Wait.cxx (PTRACE_EVENT_FORK, PTRACE_EVENT_CLONE): Handle an
+	Esrch error thrown when getting the event msg and in such a case,
+	call the zombied observer.
+	* cni/XXX.cxx (infCloneLoop): New test.
+
+2005-08-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Sig.shjava: Use "gcc -dD" and /usr/include/signal.h.
+
+2005-08-10  Andrew Cagney  <cagney@redhat.com>
+
+	* Fork.java, Pid.java, cni/Fork.cxx, Pid.cxx: New.
+
+	* Wait.java: Add "wait" method, delete "Observer.unknown".
+	* cni/Wait.cxx (processStatus, wait): New.
+	(waitNoHang): Use processStatus.
+
+2005-08-08  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Poll.cxx, Poll.java: Add SignalSet.empty.
+
+2005-08-07  Andrew Cagney  <cagney@redhat.com>
+
+	* .cvsignore: Delete TestJUnits.java.
+
+2005-08-05  Andrew Cagney  <cagney@redhat.com>
+
+	* .cvsignore: Ignore TestJUnits.java.
+	* ExampleJUnitTest.java: New.
+
+	* .cvsignore: Add Sig.java.
+
+2005-07-31  Andrew Cagney  <cagney@redhat.com>
+
+	* Wait.java, cni/Wait.cxx: Delete the one parameter "stopped"
+	observer.
+
+2005-07-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Sig.shjava: New file.
+
+	* cni/XXX.cxx, sys/XXX.java: New files.  Copy in infLoop,
+	infThreadLoop and suspendedProg methods from proc.SysUtils.
+
+	* cni/Signal.cxx, Signal.java: New files.
+
+2005-07-29  Andrew Cagney  <cagney@redhat.com>
+
+	* Wait.java: Delete "stop" wait observer.
+	* cni/Wait.cxx: Enable all the wait observers.
+
+2005-07-28  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Wait.cxx: For WIFEXITED, call Observer.exited.
+	
+	* Wait.java: Uncomment all the commented out observers and add a
+	new method "unknown", but always call "stop" observer.
+
+2005-07-27  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Poll.cxx, Poll.java: Make SignalSet static, drop SignalSet
+	paramter from poll method.
+
+2005-07-26  Andrew Cagney  <cagney@redhat.com>
+
+	* Errno.java: Add missing serialVersionUID.
+
+	* .cvsignore: Exclude more generated files.
+
+2005-07-21  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/.cvsignore: New file.
+
+2005-07-19  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Ptrace.cxx, cni/Poll.cxx, cni/Itimer.cxx, cni/Errno.cxx,
+	cni/Errno.hxx, Ptrace.java, Poll.java, Itimer.java, Errno.java:
+	New file.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

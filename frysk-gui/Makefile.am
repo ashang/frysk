@@ -42,7 +42,7 @@ include Makefile.gen
 
 GEN_SOURCEPATH += ../frysk-gtk/ $(top_srcdir)/../frysk-gtk/
 GEN_SOURCEPATH += ../frysk-core/ $(top_srcdir)/../frysk-core/
-GEN_SOURCEPATH += ../frysk-sys/ $(top_srcdir)/../frysk-sys/
+GEN_SOURCEPATH += ../frysk-imports/ $(top_srcdir)/../frysk-imports/
 
 GEN_CLASSPATH += ../frysk-imports/antlr.jar
 GEN_CLASSPATH += ../frysk-imports/jdom.jar
@@ -56,7 +56,7 @@ GEN_CLASSPATH += /usr/lib
 
 GEN_GCJ_LDADD += ../frysk-gtk/libfrysk-gtk.a
 GEN_GCJ_LDADD += ../frysk-core/libfrysk-core.a
-GEN_GCJ_LDADD += ../frysk-sys/libfrysk-sys.a
+GEN_GCJ_LDADD += ../frysk-imports/libfrysk-imports.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-antlr.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jdom.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-cdtparser.a 
@@ -77,8 +77,9 @@ GEN_GCJ_LDADD += ../frysk-gtk/libfrysk-ftk.a
 GEN_GCJ_LDADD += -L../frysk-gtk/EggTrayIcon
 GEN_GCJ_LDADD += -L../frysk-gtk/tlwidgets
 GEN_GCJ_LDADD += $(FRYSK_GUI_LIBS)
-GEN_GCJ_LDADD += -lopcodes
-GEN_GCJ_LDADD += -laudit
+# Stub bfd_getb32 and bfd_getl32 for PPC64.  Unconditionally
+# link -lbfd_get just for simplification.
+GEN_GCJ_LDADD += -lopcodes -laudit
 
 # Skip the JUnit tests (exit with status 77) when there is no display; bug #3012.
 #TESTS_ENVIRONMENT = ( test $$tst != TestRunner || test -n "$$DISPLAY" || exit 77 ) && 

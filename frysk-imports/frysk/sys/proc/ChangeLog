@@ -1,0 +1,169 @@
+2007-07-16  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Exe.java: Removed.
+	* cni/Exe.cxx: Likewise.
+
+2007-04-20  Petr Machata  <pmachata@redhat.com>
+
+	* cni/slurp.cxx (uslurp): Adjust the length to accomodate trailing
+	zero of buffer. (#4324)
+
+2007-04-13  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcBuilder.java (construct(ProcessIdentifier)): Add.
+
+2007-02-02  Andrew Cagney  <cagney@redhat.com>
+
+	* MapsBuilder.java (buildMap): Delete parameter permPrivate,
+	rename permShared to shared.
+	* TestMaps.java: Update.
+
+2006-12-07  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestMaps.java: Add permShared flag
+	* MapsBuilder.java: Ditto.
+	* cni/MapsBuilder.cxx (construct): Add
+	permShared check and flag.
+
+2006-11-14  Andrew Cagney  <cagney@redhat.com>
+
+	* TestAuxv.java: Use frysk.junit.
+	* TestMaps.java: Ditto.
+	* TestCmdLine.java: Ditto.
+	* TestStatus.java: Ditto.
+
+2006-11-07  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/IdBuilder.cxx: Rename ...
+	* cni/ProcBuilder.cxx: ... to this.
+	* IdBuilder.java: Rename ...
+	* ProcBuilder.java: ... to this.
+
+2006-10-16  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* cni/MapsBuilder.cxx (construct): Don't terminate end of map line
+	as a space, instead use \n.
+	* cni/slurp.cxx (uslurp): New function. Read /proc/$$/{file} 4K chunks 
+	until len of last read = 0
+
+2006-10-09  Yong Zheng  <zhengyzy@cn.ibm.com>
+
+	* frysk-sys/frysk/sys/proc/cni/AuxvBuilder.cxx (verify): Check
+	whether one or three AT_NULL entries are followed at the end of
+	vector.
+
+2006-10-03  Tim Moore  <timoore@redhat.com>
+
+	* cni/AuxvBuilder.cxx (verify): Don't error out if AT_NULL doesn't
+	happen to be at the end of the Auxv vector.
+
+2006-09-06  Mike Cvet  <mcvet@redhat.com>
+
+	* Stat.java (tid): Refactored from the int pid. More correct variable name.
+	(refreshThread): Added - supports reading proc stat information for threads
+	belonging to a process.
+	* cni/Stat.cxx (refreshThread): Added. Nearly identical to refresh() but
+	handles individual threads belonging to a process.
+	(refresh): Updated to use new variable tid.
+	* cni/slurp.cxx (slurp_thread): Added. Reads from /proc/PID/task/TID/stat.
+	* cni/slurp.hxx (slurp_thread): Added header for above function.
+
+2006-08-09  Mike Cvet  <mcvet@redhat.com>
+
+	* Stat.java (zero): Variable representing the zero filed in /proc/pid/stat.
+	* Stat.cxx (refresh): Fixed a bug where all values were off by one field
+	due to a missing field read, via zero above.
+
+2006-05-09  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java: New file.  Move stringsToBytes to here.
+	* TestMaps.java: Update, use TestLib .stringsToBytes.
+	* TestStatus.java: Ditto.
+
+2006-05-08  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* cni/Status.cxx: New File.
+	* Status.java: New File.
+	* TestStatus.java: New File.
+
+2006-01-07  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Exe.cxx: New.
+	* Exe.java: New.
+
+2006-01-06  Andrew Cagney  <cagney@redhat.com>
+
+	* CmdLineBuilder.java (construct): Make abstract.
+	* cni/CmdLineBuilder.cxx: New file.
+	* TestCmdLine.java: Implement, test {}, {""}, {"a"}, {"",""},
+	{"a",""}, {"","b"}, {"a","b"}, {"a","b","c"}.
+
+2006-01-05  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCmdLine.java: New file.
+	* CmdLineBuilder.java: New file.
+
+2005-11-02  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/MapsBuilder.cxx (construct): Implement.
+	* TestMaps.java: Add .stringsToBytes, .Map, .check, .testIA32,
+	.testIA64, .testAMD64, .testPPC32, and .testPPC64.
+	* MapsBuilder.java: Add .buildBuffer.  Fix parameters to
+	.buildMap.
+
+	* cni/slurp.hxx (scanJint, scanJlong): Declare.
+	* cni/slurp.cxx (scanJint, scanJlong): New.
+	* cni/Stat.cxx (scanJint, scanJlong): Delete.
+	(refresh): Make p const.
+
+	* cni/AuxvBuilder.cxx (construct): Call.
+	* AuxvBuilder.java: Add .buildDimensions.
+	* TestAuxv.java: Add .buildDimensions to Builder.
+
+2005-10-31  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/MapsBuilder.cxx, MapsBuilder.java, TestMaps.java: New.
+
+	* TestAuxv.java: New.
+	* cni/AuxvBuilder.cxx (get): New.
+	(get32b, get32l, get64b, get64l): Replace get32, and get64.
+	(verify): Drop wordSize parameter, use get for wordSize.
+	(construct): Use a table to select the correct byte reader.
+	* AuxvBuilder.java: Add bigEndian to .buildBuffer.
+
+	* cni/slurp.hxx: Declare jbyteArray slurp(int,const char*)
+	* cni/slurp.cxx: Implement.
+	* cni/AuxvBuilder.cxx (construct): New, use jbyteArray slurp
+	function.
+	* AuxvBuilder.java: Add construct(byte[]), replace
+	.buildDimensions with .buildBuffer.
+	
+2005-10-30  Andrew Cagney  <cagney@redhat.com>
+
+	* AuxvBuilder.java: Rename AuxiliaryVectorBuilder.java.
+	* IdBuilder.java: Rename ScanDir.java.
+	* cni/AuxvBuilder.cxx: Rename cni/AuxiliaryVectorBuilder.cxx.
+	* cni/IdBuilder.cxx: Rename cni/ScanDir.cxx.
+
+	* cni/AuxiliaryVectorBuilder.cxx: 
+	* AuxiliaryVectorBuilder.java: New.
+	* cni/AuxiliaryVectorBuilder.cxx: New.
+	* cni/slurp.hxx, cni/slurp.c (slurp): Return an int, not a long.
+
+2005-10-09  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/ScanDir.cxx, ScanDir.java: New.
+
+	* cni/slurp.hxx, cni/slurp.cxx: New.
+	* cni/Stat.cxx: Use.
+
+2005-10-08  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Stat.cxx, package.html, Stat.java: New files.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

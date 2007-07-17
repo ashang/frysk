@@ -1,0 +1,138 @@
+2007-07-16  Andrew Cagney  <cagney@redhat.com>
+
+	* DwAtEncodings.shenum: Include frysk-imports in path to
+	"dwarf.h".
+	* DwOpEncodings.shenum: Ditto.
+	* DwTagEncodings.shenum: Ditto.
+
+	Merge lib/dw and lib/elf to lib/dwfl.
+	* package.html: New.
+	* Elf.java: Moved.
+	* ElfArchiveHeader.java: Moved.
+	* ElfArchiveSymbol.java: Moved.
+	* ElfCommand.java: Moved.
+	* ElfData.java: Moved.
+	* ElfEHeader.java: Moved.
+	* ElfEMachine.java: Moved.
+	* ElfError.java: Moved.
+	* ElfException.java: Moved.
+	* ElfFileException.java: Moved.
+	* ElfFlags.java: Moved.
+	* ElfKind.java: Moved.
+	* ElfNhdr.java: Moved.
+	* ElfNhdrType.java: Moved.
+	* ElfPHeader.java: Moved.
+	* ElfPrAuxv.java: Moved.
+	* ElfPrFPRegSet.java: Moved.
+	* ElfPrpsinfo.java: Moved.
+	* ElfPrstatus.java: Moved.
+	* ElfSection.java: Moved.
+	* ElfSectionHeader.java: Moved.
+	* ElfSectionHeaderTypes.java: Moved.
+	* ElfType.java: Moved.
+	* cni/Elf.cxx: Moved.
+	* cni/ElfArchiveSymbol.cxx: Moved.
+	* cni/ElfData.cxx: Moved.
+	* cni/ElfNhdr.cxx: Moved.
+	* cni/ElfPrAuxv.cxx: Moved.
+	* cni/ElfPrFPRegSet.cxx: Moved.
+	* cni/ElfPrpsinfo.cxx: Moved.
+	* cni/ElfPrstatus.cxx: Moved.
+	* cni/ElfSection.cxx: Moved.
+	* tests/TestElf.java: Moved.
+	* DwAtEncodings.shenum: Moved.
+	* DwOpEncodings.shenum: Moved.
+	* DwTagEncodings.shenum: Moved.
+	* BaseTypes.java: Moved.
+	* cni/DwarfDie.cxx: Moved.
+	* cni/DwflModule.cxx: Moved.
+	* cni/Dwarf.cxx: Moved.
+	* cni/DwflLine.cxx: Moved.
+	* cni/Dwfl.cxx: Moved.
+	* cni/DwException.cxx: Moved.
+	* die/StructureType.java: Moved.
+	* die/ArrayType.java: Moved.
+	* die/Variable.java: Moved.
+	* die/VariantPart.java: Moved.
+	* die/ClassType.java: Moved.
+	* die/Namespace.java: Moved.
+	* die/CatchBlock.java: Moved.
+	* die/Member.java: Moved.
+	* die/HiUser.java: Moved.
+	* die/Variant.java: Moved.
+	* die/MIPSLoop.java: Moved.
+	* die/LoUser.java: Moved.
+	* die/ConstType.java: Moved.
+	* die/SubrangeType.java: Moved.
+	* die/InlinedSubroutine.java: Moved.
+	* die/EntryPoint.java: Moved.
+	* die/TemplateValueParameter.java: Moved.
+	* die/FormalParameter.java: Moved.
+	* die/AccessDeclaration.java: Moved.
+	* die/ImportedUnit.java: Moved.
+	* die/ThrownType.java: Moved.
+	* die/Constant.java: Moved.
+	* die/UnspecifiedType.java: Moved.
+	* die/StringType.java: Moved.
+	* die/CompileUnit.java: Moved.
+	* die/PackedType.java: Moved.
+	* die/Inheritance.java: Moved.
+	* die/Condition.java: Moved.
+	* die/LexicalBlock.java: Moved.
+	* die/Enumerator.java: Moved.
+	* die/Subprogram.java: Moved.
+	* die/SetType.java: Moved.
+	* die/ReferenceType.java: Moved.
+	* die/PartialUnit.java: Moved.
+	* die/Module.java: Moved.
+	* die/UnspecifiedParameters.java: Moved.
+	* die/Label.java: Moved.
+	* die/ImportedModule.java: Moved.
+	* die/CommonBlock.java: Moved.
+	* die/MutableType.java: Moved.
+	* die/SharedType.java: Moved.
+	* die/ClassTemplate.java: Moved.
+	* die/InterfaceType.java: Moved.
+	* die/Friend.java: Moved.
+	* die/WithStmt.java: Moved.
+	* die/BaseType.java: Moved.
+	* die/PointerType.java: Moved.
+	* die/Typedef.java: Moved.
+	* die/TemplateTypeParameter.java: Moved.
+	* die/FunctionTemplate.java: Moved.
+	* die/VolatileType.java: Moved.
+	* die/FormatLabel.java: Moved.
+	* die/PtrToMemberType.java: Moved.
+	* die/CommonInclusion.java: Moved.
+	* die/RestrictType.java: Moved.
+	* die/UnionType.java: Moved.
+	* die/TryBlock.java: Moved.
+	* die/ImportedDeclaration.java: Moved.
+	* die/NamelistItem.java: Moved.
+	* die/FileType.java: Moved.
+	* die/DwarfProcedure.java: Moved.
+	* die/EnumerationType.java: Moved.
+	* die/SubroutineType.java: Moved.
+	* die/Namelist.java: Moved.
+	* DieVisitor.java: Moved.
+	* DwarfCommand.java: Moved.
+	* DwarfDieFactory.java: Moved.
+	* DwarfDie.java: Moved.
+	* DwarfException.java: Moved.
+	* Dwarf.java: Moved.
+	* DwException.java: Moved.
+	* DwflDieBias.java: Moved.
+	* Dwfl.java: Moved.
+	* DwflLine.java: Moved.
+	* DwflModule.java: Moved.
+	* ModuleElfBias.java: Moved.
+	* SymbolBuilder.java: Moved.
+	* tests/TestDwfl.java: Moved.
+
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

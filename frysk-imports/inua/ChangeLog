@@ -1,0 +1,209 @@
+2007-05-28  Nurdin Premji  <npremji@redhat.com>
+
+	* eio/TestByteBuffer.java (testGetRelativeAndAbsoluteLimits): Added.
+	Tests changes to get(long index, ...).
+	
+	* eio/ByteBuffer.java (safeGet): Added.
+	(get (long index ,...)): Changed to use limit() rather than remaining.
+
+2007-04-24  Nurdin Premji  <npremji@redhat.com>
+	
+	* eio/ByteBuffer.java(get):  Added logging.
+	(peek): Ditto.
+	(peekFully): Ditto.
+
+2007-04-18  Tim Moore  <timoore@redhat.com>
+
+	* eio/ULong.java: (castChar, castByte, castInt): New methods.
+
+2007-04-17  Tim Moore  <timoore@redhat.com>
+
+	* eio/ULong.java(MAX_VALUE): New constant.
+
+2007-03-06  Andrew Cagney  <cagney@redhat.com>
+
+	* elf/AT.shjava: Restore.  Partial revert 2007-03-06 removal of
+	directory.
+
+2007-03-06  Mark Wielaard  <mark@klomp.org>
+
+	* eio/ByteBuffer.java (get(byte[],int,int)): Remove unecessary
+	long cast.
+	(wrap,allocate,allocateDirect): Remove unimplemented and unused
+	methods.
+
+2007-03-06  Mark Wielaard  <mark@klomp.org>
+
+	* elf/*: Removed.
+	* dwarf/*: Removed.
+	* util/readelf.java: Removed.
+
+2007-03-05  Mark Wielaard  <mark@klomp.org>
+
+	* TestPut.java: Remove unnecessary casts to int and long.
+
+2007-02-21  Andrew Cagney  <cagney@redhat.com>
+
+	* dwarf/TestDebugLine.java (test): Replace "main".
+	* dwarf/TestLib.java: Extend junit.framework.TestCase.
+
+2007-02-16  Mark Wielaard  <mark@klomp.org>
+
+	* eio/ByteOrdered.java: Removed unnecessary int, long and float casts.
+
+2007-02-16  Mark Wielaard  <mark@klomp.org>
+
+	* util/PrintWriter.java (printp(int,char,long)): Pass on padding.
+
+2007-01-04  Nurdin Premji  <npremji@redhat.com>
+
+	* eio/ByteBuffer.java (getInt): Added logging messages.
+
+2006-12-11  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* eio/ByteBuffer.java (get): Change to use peekFully over peek.
+
+2006-12-11  Andrew Cagney  <cagney@redhat.com>
+
+	* eio/cni/.cvsignore: Delete.
+	* elf/.cvsignore: Delete.
+	* eio/.cvsignore: Delete.
+
+2006-10-31  Tim Moore  <timoore@redhat.com>
+
+	* ULong.java: New file.
+	* TestUlong.java: New file.
+	* ByteBuffer.java (get): Use ULong class to do comparisons on
+	buffer indexes. Addresses http://sourceware.org/bugzilla/show_bug.cgi?id=1537
+
+2006-10-26  Tim Moore  <moore@redhat.com>
+
+	* cni/MmapByteBuffer.cxx ($Mmap::mmap): Fix bug in use of
+	JvGetStringUTFRegion.
+
+2006-10-13  Andrew Cagney  <cagney@redhat.com>
+
+	* util/readelf.java: Coding nit, remove false== and null==.
+
+2006-10-02  Nurdin Premji <npremji@redhat.com>
+
+	* util/readelf.java (main): Initialized LinkedList to avoid null pointer exception.
+	Initialized arg string for same reason.
+	(addOptions): Removed unused help option, use generic getopt help.
+
+2006-09-27  Nurdin Premji <npremji@redhat.com>
+
+	* util/readelf.java: Changed to use getopt.
+
+2006-09-18  Stan Cox  <scox@redhat.com>
+
+	* eio/ByteOrdered.java (peekFloat): New.
+	(peekDouble): New.
+	(pokeFloat): New.
+	(pokeDouble): New.
+	* eio/ByteBuffer.java (peekBigFloat): New.
+	(peekBigDouble): New.
+	(peekLittleFloat): New.
+	(peekLittleDouble): New.
+	(pokeLittle): New for float and double.
+	(pokeBig): New for float and double.
+	(getFloat): New.
+	(getDouble): New.
+
+2006-07-05  Mike Cvet  <mcvet@redhat.com>
+
+	* eio/ByteBuffer.java (ByteBuffer): Applied GNU formatting.
+	* eio/WordSized.java (WordSized): Applied GNU formatting.
+
+2006-04-20  Andrew Cagney  <cagney@redhat.com>
+
+	* eio/cni/PtraceByteBuffer.cxx (newPerror): Use asprintf, instead
+	of snprintf.
+
+2006-04-19  Andrew Cagney  <cagney@redhat.com>
+
+	* eio/cni/PtraceByteBuffer.cxx (newPerror): Add pid and addr
+	parameters.  Update calls.
+
+2006-04-04  Andrew Cagney  <cagney@redhat.com>
+
+	* eio/cni/PtraceByteBuffer.cxx: Import; no longer calls abort.
+
+2006-01-11  Andrew Cagney  <cagney@redhat.com>
+
+	Import 2006-01-11.
+	* Mask.java, Misc.java, Pool.java, Print.java, PrintWriter.java,
+	Scanner.java, TestPool.java: Delete.
+	* EXCEPTION, dwarf/PrintDebugAbbrev.java,
+	dwarf/PrintDebugAranges.java, dwarf/PrintDebugFrame.java,
+	dwarf/PrintDebugInfo.java, dwarf/PrintDebugLine.java,
+	dwarf/PrintDebugLoc.java, dwarf/PrintDebugMacinfo.java,
+	dwarf/PrintDebugPubs.java, dwarf/PrintDebugRanges.java,
+	dwarf/PrintDebugStr.java, dwarf/TestDebugLine.java, elf/Elf.java,
+	elf/PrintEhdr.java, elf/PrintNote.java, elf/PrintPhdr.java,
+	elf/PrintShdr.java, elf/PrintSym.java: Update.
+	* elf/TestLib.java, util/Mask.java, util/Misc.java,
+	util/Pool.java, util/Print.java, util/PrintWriter.java,
+	util/Scanner.java, util/TestPool.java, util/readelf.java: New.
+
+2005-10-03  Andrew Cagney  <cagney@redhat.com>
+
+	* Pool.java, Print.java, PrintWriter.java, Scanner.java,
+	mkjava.sh, package.html, dwarf/DebugAranges.java,
+	dwarf/DebugFrame.java, dwarf/package.html,
+	eio/PtraceByteBuffer.java, eio/package.html, elf/ElfBuffer.java,
+	elf/PrintNote.java, elf/package.html, util/TestReadelf.sh,
+	util/readelf.java: Update; more doco; ecj 3.1 warnings.
+	
+2005-09-22  Andrew Cagney  <cagney@redhat.com>
+
+	* Pool.java, Scanner.java, dwarf/DW.mkjava, dwarf/DebugFrame.java,
+	dwarf/DebugLine.java, dwarf/DebugSection.java,
+	dwarf/PrintDebugFrame.java, dwarf/PrintDebugLoc.java,
+	dwarf/PrintDebugRanges.java, eio/ArrayByteBuffer.java,
+	eio/ByteBuffer.java, eio/ByteFileBuffer.java,
+	eio/MmapByteBuffer.java, eio/PtraceByteBuffer.java,
+	eio/cni/PtraceByteBuffer.cxx, elf/EM.mkjava, elf/ET.mkjava,
+	elf/EV.mkjava, elf/Ehdr.java, elf/ElfBuffer.java,
+	elf/PrintEhdr.java, elf/PrintPhdr.java, elf/PrintSym.java,
+	elf/SymSection.java, util/Test.sh, util/TestReadelf.sh,
+	util/readelf.java:  Update; Fixes i386 problems.
+
+2005-09-19  Andrew Cagney  <cagney@redhat.com>
+
+	* dwarf/Format.java, dwarf/DebugPubs.java, dwarf/Reference.java,
+	dwarf/DebugMacinfo.java, dwarf/PrintDebugStr.java,
+	dwarf/DebugSection.java, dwarf/DebugBuilder.java,
+	dwarf/TestDebugLine.java, dwarf/PrintDebugMacinfo.java,
+	dwarf/DebugAranges.java, dwarf/PrintDebugInfo.java,
+	dwarf/DebugRanges.java, dwarf/DebugLoc.java, dwarf/Elf.java,
+	dwarf/DW.mkjava, dwarf/PowerPC.mkjava, dwarf/Dwarf.java,
+	dwarf/PrintDebugAbbrev.java, dwarf/PrintDebugRanges.java,
+	dwarf/PrintDebugPubs.java, dwarf/PrintDebugFrame.java,
+	dwarf/DebugInfo.java, dwarf/TestLib.java, dwarf/DebugFrame.java,
+	dwarf/DebugAbbrev.java, dwarf/DebugLine.java,
+	dwarf/PrintDebugLine.java, dwarf/PrintDebugLoc.java,
+	dwarf/DebugStr.java, dwarf/PrintDebugAranges.java,
+	eio/TestWordSize.java, eio/cni/MmapByteBuffer.cxx,
+	eio/cni/.cvsignore, eio/cni/PtraceByteBuffer.cxx,
+	eio/ByteOrdered.java, eio/TestPut.java, eio/Ctring.java,
+	eio/ByteBuffer.java, eio/ArrayByteBuffer.java,
+	eio/ByteFileBuffer.java, eio/WordSized.java,
+	eio/ReaderByteBuffer.java, eio/PtraceByteBuffer.java,
+	eio/BufferUnderflowException.java, eio/MmapByteBuffer.java,
+	eio/TestGet.java, eio/.cvsignore, eio/TestMmap.java,
+	eio/TestLib.java, eio/ByteOrder.java,
+	eio/BufferOverflowException.java, eio/Buffer.java,
+	elf/ElfInput.java, elf/Sym.java, elf/STT.mkjava, elf/PF.mkjava,
+	elf/PrintShdr.java, elf/STB.mkjava, elf/SHN.mkjava,
+	elf/SymSection.java, elf/Note.java, elf/ET.mkjava, elf/Elf.java,
+	elf/STV.mkjava, elf/PrintNote.java, elf/PrintPhdr.java,
+	elf/NT.mkjava, elf/Shdr.java, elf/Phdr.java, elf/SHF.mkjava,
+	elf/PrintSym.java, elf/AT.shjava, elf/EM.mkjava,
+	elf/ElfBuffer.java, elf/.cvsignore, elf/Ehdr.java, elf/SHT.mkjava,
+	elf/ELF.mkjava, elf/TestLib.java, elf/PT.mkjava, elf/Hdr.java,
+	elf/EV.mkjava, elf/PrintEhdr.java, elf/EI.mkjava, EXCEPTION,
+	Mask.java, Misc.java, mkjava.sh, Pool.java, Print.java,
+	PrintWriter.java, Scanner.java, TestPool.java, util/readelf.java,
+	util/TestReadelf.sh, util/addr2line.java, util/line2addr.java:
+	Initial import.

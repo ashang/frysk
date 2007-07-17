@@ -55,7 +55,7 @@ public class funit
 	Runner testRunner = new Runner ("funit", args);
 
 	LinkedList tests = new LinkedList ();
-	tests.addAll (frysk.sys.JUnitTests.get ());
+	tests.addAll (frysk.imports.JUnitTests.get ());
 	tests.addAll (frysk.core.JUnitTests.get ());
 	Config config = Config.createInstallConfig ();
 	
