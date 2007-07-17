@@ -1,5 +1,8 @@
 2007-07-17  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (files-java.list): When files.list is empty,
+	create an empty file.
+	
 	* Makefile.rules (checked-ecj-compile): Only run ECJ when there is
 	something to compile.
 	
