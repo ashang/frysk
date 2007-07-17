@@ -81,8 +81,6 @@ GEN_GCJ_LDADD += -lstdc++
 GEN_GCJ_LDADD += ./libunwind-i386/src/.libs/libunwind-x86.a
 GEN_GCJ_LDADD += ./libunwind-x86_64/src/.libs/libunwind-x86_64.a
 GEN_GCJ_LDADD += ./libunwind-ppc64/src/.libs/libunwind-ppc64.a
-# For CNI code.
-AM_CXXFLAGS += -I$(srcdir)/include
 # For auding of system calls.
 GEN_GCJ_LDADD += -laudit
 GEN_GCJ_LDADD += -lopcodes

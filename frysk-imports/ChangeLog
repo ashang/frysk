@@ -1,5 +1,7 @@
 2007-07-17  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (AM_CXXFLAGS): Do not add $(srcdir)/include/.
+	
 	* Makefile.am (noinst_LIBRARIES): Delete.
 	(GEN_GCJ_LDADD): Remove -L./lib/opcodes -lbfd_get.
 
