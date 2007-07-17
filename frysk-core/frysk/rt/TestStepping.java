@@ -47,7 +47,6 @@ import java.util.Observer;
 
 import frysk.Config;
 import frysk.proc.Action;
-import frysk.proc.Isa;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.TaskObserver;
@@ -332,9 +331,6 @@ public class TestStepping extends TestLib
     if (unresolvedOnPPC(3277))
       return;
     
-    if (unresolved(4711))
-	return;
-    
     initial = true;
     this.lineMap = new HashMap();
     
@@ -359,9 +355,6 @@ public class TestStepping extends TestLib
   {
     if (unresolvedOnPPC(3277))
       return;
-    
-    if (unresolved(4711))
-	return;
     
     initial = true;
     this.lineMap = new HashMap();
@@ -388,9 +381,6 @@ public class TestStepping extends TestLib
     if (unresolvedOnPPC(3277))
       return;
     
-    if (unresolved(4711))
-	return;
-    
     initial = true;
     this.lineMap = new HashMap();
     
@@ -416,14 +406,10 @@ public class TestStepping extends TestLib
     if (unresolvedOnPPC(3277))
       return;
     
-    if (unresolved(4711))
-	return;
-    
     initial = true;
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-//    asmTestStartVal = 49;
     
     testState = INITIAL;
     test = ASM_STEP_FUNC_STEP_OUT;
@@ -946,65 +932,30 @@ public class TestStepping extends TestLib
       myTask = task;
       myProc = task.getProc();
       
-      Isa isa = task.getIsa();
-      
-      switch (test)
-      {
-      	case ASM_STEP_FUNC_ENTRY:
-      	    if (isa instanceof frysk.proc.IsaIA32)
-      	    {
-      		asmTestStartVal = 210;
-      		asmTestFinishVal = 184;
-      	    }
-      	    else
-      	    {
-      		asmTestStartVal = 74;
-      		asmTestFinishVal = 49;
-      	    }
-      	    break;
-      	
-      	case ASM_STEP_FUNC_RETURN:
-      	    if (isa instanceof frysk.proc.IsaIA32)
-      	    {
-      		asmTestStartVal = 195;
-      		asmTestFinishVal = 211;
-      	    }
-      	    else
-      	    {
-      		asmTestStartVal = 56;
-      		asmTestFinishVal = 76;
-      	    }
-      	    break;
-      	    
-      	case ASM_STEP_FUNC_STEP_OVER:
-      	    if (isa instanceof frysk.proc.IsaIA32)
-      	    {
-      		asmTestStartVal = 210;
-      		asmTestFinishVal = 211;
-      	    }
-      	    else
-      	    {
-      		asmTestStartVal = 74;
-      		asmTestFinishVal = 76;
-      	    }
-      	    break;
-      	    
-      	case ASM_STEP_FUNC_STEP_OUT:
-      	    if (isa instanceof frysk.proc.IsaIA32)
-      	    {
-      		asmTestStartVal = 184;
-      		asmTestFinishVal = 211;
-      	    }
-      	    else
-      	    {
-      		asmTestStartVal = 49;
-      		asmTestFinishVal = 76;
-      	    }
-      	    break;
-      	    
-      	    default:
-      		break;
-      }
+      switch (test) {
+	    case ASM_STEP_FUNC_ENTRY:
+		asmTestStartVal = 111;
+		asmTestFinishVal = 86;
+		break;
+
+	    case ASM_STEP_FUNC_RETURN:
+		asmTestStartVal = 93;
+		asmTestFinishVal = 113;
+		break;
+
+	    case ASM_STEP_FUNC_STEP_OVER:
+		asmTestStartVal = 111;
+		asmTestFinishVal = 113;
+		break;
+
+	    case ASM_STEP_FUNC_STEP_OUT:
+		asmTestStartVal = 86;
+		asmTestFinishVal = 113;
+		break;
+
+	    default:
+		break;
+	    }
 
       myTask.requestDeleteAttachedObserver(this);
       return Action.CONTINUE;
