@@ -1,3 +1,8 @@
+2007-07-17  Mike Cvet  <mcvet@redhat.com>
+
+	* cni/slurp.cxx (uslurp): Continue to attempt to open file and prod the
+	garbage collector if file descriptors are maxed out. Fixes #4803.
+
 2007-07-16  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Exe.java: Removed.

@@ -72,12 +72,30 @@ uslurp(int pid, const char* name)
     return NULL;
   }
 
+  int fd = 0;
+
   // Open the file file.
-  errno = 0;
-  int fd = ::open (file, O_RDONLY);
-  if (errno != 0) {
-     ::free(buf);
-     return NULL;
+  while (1)
+    {
+      errno = 0;
+      fd = ::open (file, O_RDONLY);
+
+      if (fd >= 0)
+	    break;
+     
+      int gc = 0;
+      int err = errno;
+      switch (err)
+	    {
+	      case EMFILE:
+		    tryGarbageCollect (gc, err, "open");
+      	    continue;
+      	    
+      	  default:
+	        ::free(buf);
+	        throwErrno(err, "open", "file %s", file);
+	        return NULL;
+	    }
   }
 
   do  {
