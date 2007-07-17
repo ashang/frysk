@@ -387,4 +387,50 @@ public class TestFhd
 	e.expect("Quitting...");
 	e.close();
     }
+    
+    
+    public void testHpdDisplayCommands() {
+	e = new Expect (new String[] {
+	    new File (Config.getBinDir (), "fhpd").getPath (), 
+	    new File (Config.getPkgLibDir (), "hpd-c").getPath ()
+	});
+	e.expect (prompt);
+	// Break
+        e.send("break @hpd-c.c@179\n");
+        e.expect("breakpoint.*" + prompt);
+        e.send("go\n");
+	e.expect("go.*" + prompt + ".*Breakpoint.*@hpd-c.c@179.*");
+	e.send("display int_21\n");
+	e.expect("display.*1:.*int_21 = .*" + prompt);
+	e.send("display int_21*2\n");
+	e.expect("display.*2:.*temp = .*" + prompt);
+	e.send("actionpoints -display\n");
+	e.expect("actionpoints.*DISPLAYS.*2.*y.*\"int_21.*\".*\n1.*y.*\"int_21\".*"
+		+ prompt);
+	e.send("disable 1\n");
+	e.expect("disable.*display 1 disabled.*" + prompt);
+	e.send("actionpoints -display\n");
+	e.expect("actionpoints.*DISPLAYS.*2.*y.*\"int_21.*\".*\n1.*n.*\"int_21\".*"
+		+ prompt);
+	e.send("disable -display\n");
+	e.expect("disable.*display 2 disabled.*" + prompt);
+	e.send("actionpoints -display\n");
+	e.expect("actionpoints.*DISPLAYS.*2.*n.*\"int_21.*\".*\n1.*n.*\"int_21\".*"
+		+ prompt);
+	e.send("enable 2\n");
+	e.expect("enable.*display 2 enabled.*" + prompt);
+	e.send("enable -display\n");
+	e.expect("enable.*display 1 enabled.*" + prompt);
+	e.send("delete 1\n");
+	e.expect("delete.*display 1 deleted.*" + prompt);
+	e.send("actionpoints -display\n");
+	e.expect("actionpoints.*DISPLAYS.*2.*y.*\"int_21.*\".*" + prompt);
+	e.send("delete -display\n");
+	e.expect("delete.*display 2 deleted.*" + prompt);
+	e.send("actionpoints -display\n");
+	e.expect("actionpoints.*" + prompt);
+	e.send("quit\n");
+	e.expect("Quitting...");
+	e.close();
+    }
 }

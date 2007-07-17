@@ -1,3 +1,8 @@
+2007-07-17  Adam Jocksch  <ajocksch@redhat.com>
+
+	* TestFhd.java (testHpdDisplayCommands): New test, tests the
+	display-related commands in the hpd.
+
 2007-07-16  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFStep.java: Update, lib.elf and lib.dw merged into lib.dwfl.
