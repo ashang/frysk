@@ -78,6 +78,8 @@ public class TestLinuxCore
   public void testLinuxCoreFileMaps ()
   {
 
+    // Remove the hasIsa test as on -r test runs the 
+    // singleton maintains reference in between runs.
 
     Proc ackProc = giveMeAProc();
     String coreFileName = constructCore(ackProc);
@@ -317,9 +319,7 @@ public class TestLinuxCore
 	assertEquals("Task ID",threadPid[i],tasks[i].getTaskId().id);
 	assertEquals("Task TID",threadPid[i], tasks[i].getTid());
 	assertEquals("Task TID",threadName[i],tasks[i].getName());
-	assertEquals("Task has ISA before getISA",tasks[i].hasIsa(),false);
 	assertNotNull("Task ISA",tasks[i].getIsa());
-	assertEquals("Task has ISA?",tasks[i].hasIsa(), true);
 	assertSame("Task getParent",proc,tasks[i].getProc());
 
 	Isa isa = tasks[i].getIsa();	
