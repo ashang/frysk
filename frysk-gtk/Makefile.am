@@ -42,13 +42,13 @@ include Makefile.gen
 
 SUBDIRS = tlwidgets tests
 
-GEN_SOURCEPATH += ../frysk-imports/ $(top_srcdir)/../frysk-imports/
+GEN_SOURCEPATH += ../frysk-sys/ $(top_srcdir)/../frysk-sys/
 
 GEN_CLASSPATH += ../frysk-imports/junit.jar 
 GEN_CLASSPATH += ../frysk-imports/getopt.jar
 GEN_CLASSPATH += $(FRYSK_GTK_JARS)
 
-GEN_GCJ_LDADD += ../frysk-imports/libfrysk-imports.a
+GEN_GCJ_LDADD += ../frysk-sys/libfrysk-sys.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-junit.a 
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-getopt.a
 GEN_GCJ_LDADD += $(FRYSK_GTK_LIBS)
@@ -62,8 +62,6 @@ GEN_GCJ_LDADD += ../frysk-imports/libunwind-i386/src/.libs/libunwind-x86.a \
                  ../frysk-imports/libunwind-ppc64/src/.libs/libunwind-ppc64.a
 endif
 GEN_GCJ_LDADD += -lstdc++
-# Stub bfd_getb32 and bfd_getl32 for PPC64.  Unconditionally
-# link -lbfd_get just for simplification.
 GEN_GCJ_LDADD += -lopcodes
 # For auditing
 GEN_GCJ_LDADD += -laudit

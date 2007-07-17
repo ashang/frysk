@@ -1,5 +1,10 @@
 2007-07-17  Andrew Cagney  <cagney@redhat.com>
 
+	Move inua/, frysk/, and lib/ to frysk-sys from frysk-imports.
+	* bootstrap.sh (FILE_LIST): Remove inua frysk and lib.  Do not
+	pass --cni to Makefile.gen.sh.
+	* Makefile.am (GEN_GCJ_LDADD): Remove -laudit and -lopcodes.
+	
 	* Makefile.am (noinst_LIBRARIES): Delete.
 	(GEN_GCJ_LDADD): Remove -L./lib/opcodes -lbfd_get.
 
