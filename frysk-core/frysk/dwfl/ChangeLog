@@ -1,5 +1,8 @@
 2007-07-17    <npremji@localhost.localdomain>
 
+	* DwflCache.java (getDwfl): Rewrote, commented. Has a single return statement,
+	easier to write return logging statement for.
+
 	* DwflCache.java (getDwfl): When creating a new Dwfl, call the constructor directly
 	and update rather than calling createDwfl.
 	* DwflFactory.java (createDwfl): Removed.

@@ -58,7 +58,7 @@ public class DwflCache
 
     static private class Mod {
 	final Dwfl dwfl;
-	final int count;
+	int count;
 	Mod(Dwfl dwfl, int count) {
 	    this.dwfl = dwfl;
 	    this.count = count;
@@ -83,33 +83,31 @@ public class DwflCache
      */
     public static Dwfl getDwfl(Task task) {
 	logger.log(Level.FINE, "entering createDwfl, task: {0}\n", task);
-	// See if the task has an existing Dwfl open, and if it does
-	// and it's mod count matches, return that Dwfl.
-	Mod mod = (Mod)modMap.get(task);
-	if (mod != null) {
-	    if (mod.count == task.getMod()) {
-		logger.log(Level.FINEST, "returning existing dwfl\n");
-		return mod.dwfl;
-	    }
-	    logger.log(Level.FINEST, "existing dwfl out-of-date\n");
-	    Dwfl dwfl = mod.dwfl;
-	    DwflFactory.updateDwfl(dwfl, task);
-	    modMap.remove(task);	    
-	    modMap.put(task, new Mod(dwfl, task.getMod()));
-	    return dwfl;
-	}
-    
-	logger.log(Level.FINEST, "creating new dwfl for task {0}\n", task);
-   
-	Dwfl dwfl = new Dwfl();
-	DwflFactory.updateDwfl(dwfl, task);
-	mod = new Mod(dwfl, task.getMod());
-	modMap.put(task, mod);
 
-	// For cleanup, also save the dwfl using Mod as a key (just
-	// need a unique key).
-	allDwfls.put(mod, dwfl);
-	return dwfl;
+	// If there is no dwfl for this task create one.
+	if (!modMap.containsKey(task)) {
+	    logger.log(Level.FINEST, "creating new dwfl for task {0}\n", task);
+	    Dwfl dwfl = new Dwfl();
+	    DwflFactory.updateDwfl(dwfl, task);
+	    Mod mod = new Mod(dwfl, task.getMod());
+	    modMap.put(task, mod);
+
+	    // For cleanup, also save dwfl using Mod as a key (just need a
+	    // unique key).
+	    allDwfls.put(mod, dwfl);
+	}
+
+	Mod mod = (Mod) modMap.get(task);
+
+	// If a dwfl doesn't match the Tasks mod count, update it.
+	if (mod.count != task.getMod()) {
+	    logger.log(Level.FINEST, "existing dwfl out-of-date\n");
+	    DwflFactory.updateDwfl(mod.dwfl, task);
+	    mod.count = task.getMod();
+	}
+
+	logger.log(Level.FINER, "returning existing dwfl {0}\n", mod.dwfl);
+	return mod.dwfl;
     }
 
     public static void clear() {
