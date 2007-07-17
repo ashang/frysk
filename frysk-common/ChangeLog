@@ -1,3 +1,8 @@
+2007-07-16  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (TestRunner_LDADD): Pass -r to xargs.
+	(files.list): Prune ".".
+
 2007-07-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (BUILT_SOURCES): Add headers included into

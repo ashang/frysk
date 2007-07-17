@@ -87,10 +87,12 @@ jars=`echo ${jars}`
 JARS=`echo ${JARS}`
 
 # Generate a list of source files; all the code below should refer to
-# this list, and not run a local find.
+# this list, and not run a local find.  If ${dirs} is empty, the
+# search is started from "." so prune that.
 
 (
-    find ${dirs} -name 'CVS' -prune \
+    find ${dirs} -name '\.' -prune \
+    -o -name 'CVS' -prune \
     -o -name "ChangeLog" -print \
     -o -name "[A-Za-z]*\.h" -print \
     -o -name "[A-Za-z]*\.c" -print \
@@ -116,8 +118,8 @@ JARS=`echo ${JARS}`
     -o -path "*dir/[A-Za-z]*\.py" -print \
     -o -type f -name 'test*' -print
     if $cni ; then
-	find ${dirs} \
-	    -path '*/cni/[A-Za-z]*\.hxx' -print \
+	find ${dirs} -name '\.' -prune \
+	    -o -path '*/cni/[A-Za-z]*\.hxx' -print \
 	    -o -path '*/cni/[A-Za-z]*\.cxxin' -print \
 	    -o -path '*/cni/[A-Za-z]*\.cxx' -print \
 	    -o -path '*/cni/[A-Za-z]*\.[sS]' -print
@@ -540,7 +542,7 @@ done
 
 print_header "... *.{hxx,cxx}=.h"
 grep -e '/cni/' files.list \
-    | xargs grep -H \
+    | xargs -r grep -H \
     	-e '#include ".*.h"' \
         -e '#define [A-Z_]* ".*.h"' \
     | sed \
