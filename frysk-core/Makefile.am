@@ -70,7 +70,8 @@ endif
 GEN_GCJ_LDADD += -lstdc++
 # Stub bfd_getb32 and bfd_getl32 for PPC64.  Unconditionally
 # link -lbfd_get just for simplification.
-GEN_GCJ_LDADD += -lopcodes -laudit -L../frysk-imports/lib/opcodes -lbfd_get
+GEN_GCJ_LDADD += -laudit
+GEN_GCJ_LDADD += -lopcodes
 
 # For TestExec.java
 pkglib_PROGRAMS += frysk/pkglibdir/funit-child-alias

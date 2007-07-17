@@ -1,5 +1,8 @@
 2007-07-17  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (GEN_GCJ_LDADD): Remove
+	-L../frysk-imports/lib/opcodes -lbfd_get.
+	
 	* Makefile.am (frysk/pkgdatadir/test-core-x86) 
 	(frysk/pkgdatadir/test-core-x8664): Pass -f to "ln".
 

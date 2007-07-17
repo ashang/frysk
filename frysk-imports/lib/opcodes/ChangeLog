@@ -1,3 +1,8 @@
+2007-07-17  Andrew Cagney  <cagney@redhat.com>
+
+	* libbfd_get.c: Delete file.  Move contents to ...
+	* cni/Disassembler.cxx (bfd_getb32, bfd_getl32): ... here.
+
 2007-07-05  Andrew Cagney  <cagney@redhat.com>
 
 	* tests/DummyByteBuffer.java: Delete.

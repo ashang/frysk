@@ -1,3 +1,8 @@
+2007-07-17  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (GEN_GCJ_LDADD): Remove
+	-L../frysk-imports/lib/opcodes -lbfd_get.
+
 2007-06-26  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac (AM_INIT_AUTOMAKE): Add no-dist.

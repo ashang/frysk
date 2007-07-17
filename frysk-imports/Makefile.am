@@ -85,11 +85,7 @@ GEN_GCJ_LDADD += ./libunwind-ppc64/src/.libs/libunwind-ppc64.a
 AM_CXXFLAGS += -I$(srcdir)/include
 # For auding of system calls.
 GEN_GCJ_LDADD += -laudit
-
-# Stub bfd_getb32 and bfd_getl32 for PPC64.  Unconditionally 
-# compile this code just for simplification.
-noinst_LIBRARIES += lib/opcodes/libbfd_get.a
-GEN_GCJ_LDADD += -lopcodes -L./lib/opcodes -lbfd_get
+GEN_GCJ_LDADD += -lopcodes
 
 # Need to get this into the distribution
 noinst_HEADERS = \
