@@ -40,32 +40,22 @@
 package lib.dwfl;
 
 import java.util.LinkedList;
-import gnu.gcj.RawDataManaged;
+import gnu.gcj.RawData;
 
-public class Dwfl
-{
+public class Dwfl {
 
-    private long pointer;
-
-    protected RawDataManaged callbacks;
+    private RawData pointer;
 
     private DwflModule[] modules;
 
-    private DwarfDieFactory factory;
-  
-    public Dwfl (int pid) {
-	factory = DwarfDieFactory.getFactory();
-	dwfl_begin(pid);
-    }
+    private final DwarfDieFactory factory = DwarfDieFactory.getFactory();
   
     public Dwfl() {
-	factory = DwarfDieFactory.getFactory();
-	dwfl_begin();
+	pointer = dwflBegin();
     }
 
-    protected Dwfl (long pointer) {
-	factory = DwarfDieFactory.getFactory();
-	this.pointer = pointer;
+    Dwfl(int pid) {
+	pointer = dwflBegin(pid);
     }
 
     /**
@@ -75,17 +65,16 @@ public class Dwfl
      * @return an array of DwflModule.
      */
     public DwflModule[] getModules() {
-	if (modules == null) 
-	    {
-		dwfl_getmodules();
-	    }
+	if (modules == null) {
+	    dwfl_getmodules();
+	}
 	return modules;
     }
 
     /**
-     * Get anew all the DwflModule objects associated with this
-     * Dwfl. This requests a new array from libdwfl and stores it as the
-     * cached list for return by getModules.
+     * Get new all the DwflModule objects associated with this
+     * Dwfl. This requests a new array from libdwfl and stores it as
+     * the cached list for return by getModules.
      *
      * @return an array of DwflModule.
      */
@@ -118,7 +107,7 @@ public class Dwfl
 	return dwfl_addrdie(addr);
     }
 
-    protected long getPointer () {
+    RawData getPointer () {
 	return pointer;
     }
 
@@ -173,15 +162,14 @@ public class Dwfl
     }
   
     public void close() {
-	if (this.pointer != 0) {
+	if (this.pointer != null) {
 	    dwfl_end();
-	    this.pointer = 0;
+	    this.pointer = null;
 	}
     }
   
-    protected native void dwfl_begin (int pid);
-  
-    protected native void dwfl_begin();
+    private static native RawData dwflBegin ();
+    private static native RawData dwflBegin(int pid);
   
     public native void dwfl_report_begin();
     public native void dwfl_report_end();

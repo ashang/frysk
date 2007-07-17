@@ -36,15 +36,17 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 #include <libdwfl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+
 #include <gcj/cni.h>
 
-#include <gnu/gcj/RawDataManaged.h>
+#include <gnu/gcj/RawData.h>
 
 #include "lib/dwfl/Dwfl.h"
 #include "lib/dwfl/DwflDieBias.h"
@@ -104,49 +106,39 @@ dwfl_frysk_proc_find_elf (Dwfl_Module *mod,
   return -1;
 }
 
-
-void
-lib::dwfl::Dwfl::dwfl_begin(jint pid){
-	
-	/* Default `DEFAULT_DEBUGINFO_PATH' is the same but checks it CRCs.  */
-	static char *flags = "-:.debug:/usr/lib/debug";
-	
-	::Dwfl_Callbacks *cbs = (::Dwfl_Callbacks*) JvAllocBytes(sizeof(::Dwfl_Callbacks));
-	
-	cbs->find_elf = ::dwfl_linux_proc_find_elf;
-	cbs->find_debuginfo = ::dwfl_standard_find_debuginfo;
-	cbs->debuginfo_path = &flags;
-	cbs->section_address = NULL;
-	
-	this->callbacks = (gnu::gcj::RawDataManaged*) cbs;
-	
-	::Dwfl* dwfl = ::dwfl_begin(cbs);
-	
-	::dwfl_report_begin(dwfl);
-	::dwfl_linux_proc_report(dwfl, (pid_t) pid);
-	::dwfl_report_end(dwfl, NULL, NULL);
-	
-	this->pointer = (jlong) dwfl;
+gnu::gcj::RawData*
+lib::dwfl::Dwfl::dwflBegin (jint pid)
+{
+  /* Default `DEFAULT_DEBUGINFO_PATH' is the same but checks it
+     CRCs.  */
+  static char* flags = "-:.debug:/usr/lib/debug";
+  static Dwfl_Callbacks callbacks = {
+    &::dwfl_linux_proc_find_elf,
+    &::dwfl_standard_find_debuginfo,
+    NULL,
+    &flags,
+  };
+  ::Dwfl* dwfl = ::dwfl_begin(&callbacks);
+  ::dwfl_report_begin(dwfl);
+  ::dwfl_linux_proc_report(dwfl, (pid_t) pid);
+  // FIXME: needs to re-build the module table.
+  ::dwfl_report_end(dwfl, NULL, NULL);
+  return (gnu::gcj::RawData*)dwfl;
 }
 
-void
-lib::dwfl::Dwfl::dwfl_begin()
+gnu::gcj::RawData*
+lib::dwfl::Dwfl::dwflBegin()
 {
-  /* Default `DEFAULT_DEBUGINFO_PATH' is the same but checks it CRCs.  */
-	static char *flags = "-:.debug:/usr/lib/debug";
-	
-	::Dwfl_Callbacks *cbs = (::Dwfl_Callbacks*) JvAllocBytes(sizeof(::Dwfl_Callbacks));
-	
-	cbs->find_elf = ::dwfl_frysk_proc_find_elf;
-	cbs->find_debuginfo = ::dwfl_standard_find_debuginfo;
-	cbs->debuginfo_path = &flags;
-	cbs->section_address = NULL;
-	
-	this->callbacks = (gnu::gcj::RawDataManaged*) cbs;
-	
-	::Dwfl* dwfl = ::dwfl_begin(cbs);
-	
-	this->pointer = (jlong) dwfl;
+  /* Default `DEFAULT_DEBUGINFO_PATH' is the same but checks it
+     CRCs.  */
+  static char* flags = "-:.debug:/usr/lib/debug";
+  static Dwfl_Callbacks callbacks = {
+    &::dwfl_frysk_proc_find_elf,
+    &::dwfl_standard_find_debuginfo,
+    NULL,
+    &flags,
+  };
+  return (gnu::gcj::RawData*) ::dwfl_begin(&callbacks);
 }
 
 void
@@ -160,6 +152,7 @@ lib::dwfl::Dwfl::dwfl_report_end()
 {
 	::dwfl_report_end(DWFL_POINTER, NULL, NULL);
 }
+
 
 void
 lib::dwfl::Dwfl::dwfl_report_module(jstring moduleName, jlong low, jlong high)

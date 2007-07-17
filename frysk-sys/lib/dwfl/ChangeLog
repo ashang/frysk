@@ -1,5 +1,14 @@
 2007-07-17  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/Dwfl.cxx (dwflBegin(int)): Replace dwfl_begin(int).
+	(dwflBegin): Replace dwfl_begin().
+	* Dwfl.java (pointer): Change type to gnu.gcj.RawData.
+	(getPointer): Return RawData; make package private.
+	(Dwfl(int)): Delete.
+	(Dwfl(long)): Delete.
+	(dwflBegin(int)): Replace dwfl_begin(int).
+	(dwflBegin): Replace dwfl_begin().
+	
 	* DwflModule.java: Re-indent.
 	* Dwfl.java: Re-indent.
 	* Elf.java: Re-indent.
