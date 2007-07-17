@@ -104,10 +104,18 @@ public class DwflFactory
      * Create a new Dwfl. This is package private; use DwflCache.
      */
     static Dwfl createDwfl(Task task) {
+      Dwfl dwfl = new Dwfl();
+      updateDwfl(dwfl, task);
+      return dwfl;
+    }
+    
+    /**
+     * Refresh an existing dwfl. Package private, use DwflCache.getDwfl().
+     */
+    static Dwfl updateDwfl(Dwfl dwfl, Task task) {
+	
 	Proc proc = task.getProc();
 	MemoryMap[] maps = proc.getMaps();
-
-	Dwfl dwfl = new Dwfl();
 	dwfl.dwfl_report_begin();
 
 	int count = 0;

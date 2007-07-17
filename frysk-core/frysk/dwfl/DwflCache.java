@@ -92,8 +92,11 @@ public class DwflCache
 		return mod.dwfl;
 	    }
 	    logger.log(Level.FINEST, "existing dwfl out-of-date\n");
-	    modMap.remove(task);
-	    mod.dwfl.close();
+	    Dwfl dwfl = mod.dwfl;
+	    DwflFactory.updateDwfl(dwfl, task);
+	    modMap.remove(task);	    
+	    modMap.put(task, new Mod(dwfl, task.getMod()));
+	    return dwfl;
 	}
     
 	logger.log(Level.FINEST, "creating new dwfl for task {0}\n", task);
