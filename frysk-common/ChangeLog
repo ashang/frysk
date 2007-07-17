@@ -1,7 +1,10 @@
 2007-07-17  Andrew Cagney  <cagney@redhat.com>
 
-	* Makefile.rules (checked-for-dejagnu): Delete.
+	* Makefile.rules (checked-ecj-compile): Only run ECJ when there is
+	something to compile.
 	
+	* Makefile.rules (checked-for-dejagnu): Delete.
+
 	* Makefile.rules (checked-for-java-util-hashtable)
 	(checked-for-java-util-vector, checked-for-pkglibdir-in-manpage)
 	(checked-for-copyright-notice, checked-for-eclipse-residue)

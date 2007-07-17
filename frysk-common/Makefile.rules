@@ -670,7 +670,7 @@ checked-ecj-compile: files-java.list $(if $(GEN_DIRS),$(GEN_DIRNAME).jar)
 	mkdir -p ecj
 if HAVE_ECJ
 	echo Compiling all the generated files.
-	$(GIJ) \
+	( test -s files-java.list && $(GIJ) \
 		--classpath $(ECJ_JAR):$(CLASSPATH) \
 		org.eclipse.jdt.internal.compiler.batch.Main \
 		\
@@ -679,7 +679,7 @@ if HAVE_ECJ
 		-sourcepath $(SOURCEPATH) \
 		-classpath $(CLASSPATH) \
 		@files-java.list \
-		2>&1 | tee $@.log
+		2>&1 ) | tee $@.log
 	if test -s $@.log ; \
 	then rm $@.log ; false ; \
 	fi
