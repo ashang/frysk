@@ -1,5 +1,10 @@
 2007-07-17  Andrew Cagney  <cagney@redhat.com>
 
+	* DwflModule.java: Re-indent.
+	* Dwfl.java: Re-indent.
+	* Elf.java: Re-indent.
+	* Dwarf.java: Re-indent.
+	
 	* Elf.java (pointer): Change type to gnu.gcj.RawData.
 	(Elf(RawData)): Replace Elf(long), make package private.
 	(haveNativeObject): Delete.

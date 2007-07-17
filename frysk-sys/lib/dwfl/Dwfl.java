@@ -37,7 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package lib.dwfl;
 
 import java.util.LinkedList;
@@ -46,181 +45,157 @@ import gnu.gcj.RawDataManaged;
 public class Dwfl
 {
 
-  private long pointer;
+    private long pointer;
 
-  protected RawDataManaged callbacks;
+    protected RawDataManaged callbacks;
 
-  private DwflModule[] modules;
+    private DwflModule[] modules;
 
-  private DwarfDieFactory factory;
+    private DwarfDieFactory factory;
   
-  public Dwfl (int pid)
-  {
-    factory = DwarfDieFactory.getFactory();
-    dwfl_begin(pid);
-  }
+    public Dwfl (int pid) {
+	factory = DwarfDieFactory.getFactory();
+	dwfl_begin(pid);
+    }
   
-  public Dwfl()
-  {
-    factory = DwarfDieFactory.getFactory();
-    dwfl_begin();
-  }
+    public Dwfl() {
+	factory = DwarfDieFactory.getFactory();
+	dwfl_begin();
+    }
 
-  protected Dwfl (long pointer)
-  {
-    factory = DwarfDieFactory.getFactory();
-    this.pointer = pointer;
-  }
+    protected Dwfl (long pointer) {
+	factory = DwarfDieFactory.getFactory();
+	this.pointer = pointer;
+    }
 
-  /**
-   * Get all the DwflModule objects associated with this Dwfl. Use a
-   * cached array if possible.
-   *
-   * @return an array of DwflModule.
-   */
-  public DwflModule[] getModules() 
-  {
-    if (modules == null) 
-      {
+    /**
+     * Get all the DwflModule objects associated with this Dwfl. Use a
+     * cached array if possible.
+     *
+     * @return an array of DwflModule.
+     */
+    public DwflModule[] getModules() {
+	if (modules == null) 
+	    {
+		dwfl_getmodules();
+	    }
+	return modules;
+    }
+
+    /**
+     * Get anew all the DwflModule objects associated with this
+     * Dwfl. This requests a new array from libdwfl and stores it as the
+     * cached list for return by getModules.
+     *
+     * @return an array of DwflModule.
+     */
+    public DwflModule[] getModulesForce()    {
 	dwfl_getmodules();
-      }
-    return modules;
-  }
-
-  /**
-   * Get anew all the DwflModule objects associated with this
-   * Dwfl. This requests a new array from libdwfl and stores it as the
-   * cached list for return by getModules.
-   *
-   * @return an array of DwflModule.
-   */
-  public DwflModule[] getModulesForce()
-  {
-    dwfl_getmodules();
-    return modules;
-  }
+	return modules;
+    }
   
-  /**
-   * Get the DwflModule associated with an address.
-   *
-   * @return The module
-   */
-  public native DwflModule getModule(long addr);
+    /**
+     * Get the DwflModule associated with an address.
+     *
+     * @return The module
+     */
+    public native DwflModule getModule(long addr);
 
-  public DwflLine getSourceLine (long addr)
-  {
-    long val = 0;
-    
-    try
-      {
-        val = dwfl_getsrc(addr);
-      }
-    catch (NullPointerException npe)
-      {
-        System.out.println(npe.getMessage());
-        val = 0;
-      }
-    
-    if (val == 0)
-      return null;
+    public DwflLine getSourceLine (long addr) {
+	long val = 0;
+	try {
+	    val = dwfl_getsrc(addr);
+	} catch (NullPointerException npe) {
+	    System.out.println(npe.getMessage());
+	    val = 0;
+	}
+	if (val == 0)
+	    return null;
+	return new DwflLine(val, this);
+    }
 
-    return new DwflLine(val, this);
-  }
+    public DwflDieBias getDie (long addr) {
+	return dwfl_addrdie(addr);
+    }
 
-  public DwflDieBias getDie (long addr)
-  {
-    return dwfl_addrdie(addr);
-  }
+    protected long getPointer () {
+	return pointer;
+    }
 
-  protected long getPointer ()
-  {
-    return pointer;
-  }
+    protected void finalize () {
+	close();
+    }
 
-  protected void finalize ()
-  {
-    close();
-  }
-
-  /**
-   * Get all the DwflLine objects associated with a line in a source file.
-   */
-  public LinkedList getLineAddresses(String fileName, int lineNo, int column) 
-  {
-    DwflModule[] modules = getModules();
-    if (modules == null) 
-      {
-	return null;
-      }
-    LinkedList list = new LinkedList();
-    for (int i = 0; i < modules.length; i++) 
-      {
-	DwflModule mod = modules[i];
-	DwflLine[] lines = mod.getLines(fileName, lineNo, column);
-	
-	if (lines != null) 
-	  {
-	    for (int j = 0; j < lines.length; j++) 
-	      {
-		list.add(lines[j]);
-	      }
-	  }
-      }
-    return list;
-  }
+    /**
+     * Get all the DwflLine objects associated with a line in a source file.
+     */
+    public LinkedList getLineAddresses(String fileName, int lineNo,
+				       int column) {
+	DwflModule[] modules = getModules();
+	if (modules == null) {
+	    return null;
+	}
+	LinkedList list = new LinkedList();
+	for (int i = 0; i < modules.length; i++) {
+	    DwflModule mod = modules[i];
+	    DwflLine[] lines = mod.getLines(fileName, lineNo, column);
+	    
+	    if (lines != null) {
+		for (int j = 0; j < lines.length; j++) {
+		    list.add(lines[j]);
+		}
+	    }
+	}
+	return list;
+    }
   
-  /**
-   * Test to see if the requested line number is executable.
-   */
-  public boolean isLineExecutable (String fileName, int lineNo, int column)
-  {
-    DwflModule[] modules = getModules();
-    if (modules == null)
-      return false;
+    /**
+     * Test to see if the requested line number is executable.
+     */
+    public boolean isLineExecutable (String fileName, int lineNo,
+				     int column) {
+	DwflModule[] modules = getModules();
+	if (modules == null)
+	    return false;
     
-    for (int i = 0; i < modules.length; i++)
-      {
-        DwflModule mod = modules[i];
-        DwflLine[] lines = mod.getLines(fileName, lineNo, column);
+	for (int i = 0; i < modules.length; i++) {
+	    DwflModule mod = modules[i];
+	    DwflLine[] lines = mod.getLines(fileName, lineNo, column);
+	    if (lines != null) {
+		return true;
+	    }
+	}
+	return false;
+    }
 
-        if (lines != null)
-          {
-            return true;
-          }
-      }
-    
-    return false;
-  }
-
-  public DwarfDieFactory getFactory()
-  {
-    return factory;
-  }
+    public DwarfDieFactory getFactory() {
+	return factory;
+    }
   
-  public void close() {
+    public void close() {
 	if (this.pointer != 0) {
 	    dwfl_end();
 	    this.pointer = 0;
 	}
     }
   
-  protected native void dwfl_begin (int pid);
+    protected native void dwfl_begin (int pid);
   
-  protected native void dwfl_begin();
+    protected native void dwfl_begin();
   
-  public native void dwfl_report_begin();
-  public native void dwfl_report_end();
-  public native void dwfl_report_module(String moduleName, long low, long high);
+    public native void dwfl_report_begin();
+    public native void dwfl_report_end();
+    public native void dwfl_report_module(String moduleName, long low, long high);
 
-  protected native void dwfl_end ();
+    protected native void dwfl_end ();
 
-  // protected native long[] dwfl_get_modules();
-  // protected native long[] dwfl_getdwarf();
-  protected native long dwfl_getsrc (long addr);
+    // protected native long[] dwfl_get_modules();
+    // protected native long[] dwfl_getdwarf();
+    protected native long dwfl_getsrc (long addr);
   
-  protected native DwflDieBias dwfl_addrdie (long addr);
+    protected native DwflDieBias dwfl_addrdie (long addr);
   
-  protected native long dwfl_addrmodule (long addr);
+    protected native long dwfl_addrmodule (long addr);
 
-  protected native void dwfl_getmodules();
+    protected native void dwfl_getmodules();
 }

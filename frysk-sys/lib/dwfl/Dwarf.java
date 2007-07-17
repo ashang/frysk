@@ -45,59 +45,59 @@ import gnu.gcj.RawData;
 
 public class Dwarf {
 	
-	private long pointer;
+    private long pointer;
 	
-	public Dwarf(Elf elf, DwarfCommand cmd, ElfSection section){
-		dwarf_begin_elf(elf.getPointer(), cmd.getValue(), (section == null) ? 0 : section.getPointer());
-	}
+    public Dwarf(Elf elf, DwarfCommand cmd, ElfSection section){
+	dwarf_begin_elf(elf.getPointer(), cmd.getValue(), (section == null) ? 0 : section.getPointer());
+    }
 	
-	public Dwarf(String file, DwarfCommand cmd){
-		dwarf_begin(file, cmd.getValue());
-	}
+    public Dwarf(String file, DwarfCommand cmd){
+	dwarf_begin(file, cmd.getValue());
+    }
 	
-//	public DwarfDie[] getFunctions(){
-//		long[] vals = dwarf_get_functions();
-//		if(vals == null || vals.length == 0)
-//			return new DwarfDie[0];
-//		
-//		DwarfDie[] dwarfs = new DwarfDie[vals.length];
-//		for(int i = 0; i < vals.length; i++){
-//			if(vals[i] == 0)
-//				dwarfs[i] = null;
-//			else
-//				dwarfs[i] = new DwarfDie(vals[i]);
-//		}
-//		
-//		return dwarfs;
-//	}
-//	
-//	public DwarfDie getDIEByAddr(long address){
-//		long val = dwarf_addrdie(address);
-//		if(val == 0)
-//			return null;
-//		
-//		return new DwarfDie(val);
-//	}
+    //	public DwarfDie[] getFunctions(){
+    //		long[] vals = dwarf_get_functions();
+    //		if(vals == null || vals.length == 0)
+    //			return new DwarfDie[0];
+    //		
+    //		DwarfDie[] dwarfs = new DwarfDie[vals.length];
+    //		for(int i = 0; i < vals.length; i++){
+    //			if(vals[i] == 0)
+    //				dwarfs[i] = null;
+    //			else
+    //				dwarfs[i] = new DwarfDie(vals[i]);
+    //		}
+    //		
+    //		return dwarfs;
+    //	}
+    //	
+    //	public DwarfDie getDIEByAddr(long address){
+    //		long val = dwarf_addrdie(address);
+    //		if(val == 0)
+    //			return null;
+    //		
+    //		return new DwarfDie(val);
+    //	}
 	
-	protected Dwarf(long pointer){
-		this.pointer = pointer;
-	}
+    protected Dwarf(long pointer){
+	this.pointer = pointer;
+    }
 	
-	protected long getPointer(){
-		return pointer;
-	}
+    protected long getPointer(){
+	return pointer;
+    }
 	
-	protected void finalize(){
-		dwarf_end();
-	}
+    protected void finalize(){
+	dwarf_end();
+    }
 	
     public String[] getSourceFiles(){
-      return get_source_files();
+	return get_source_files();
     }
     protected native void dwarf_begin_elf(RawData elf, int command, long section);
-	protected native void dwarf_begin(String file, int command);
+    protected native void dwarf_begin(String file, int command);
     protected native String[] get_source_files();
-	protected native int dwarf_end();
-//	protected native long[] dwarf_get_functions();
-//	protected native long dwarf_addrdie(long addr);
+    protected native int dwarf_end();
+    //	protected native long[] dwarf_get_functions();
+    //	protected native long dwarf_addrdie(long addr);
 }

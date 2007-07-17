@@ -45,74 +45,64 @@ package lib.dwfl;
 public class DwflModule
 {
 
-  protected long bias;
+    protected long bias;
   
-  private long pointer;
+    private long pointer;
 
-  private Dwfl parent;
+    private Dwfl parent;
 
-  protected String name;
+    protected String name;
   
-  public String toString()
-  {
-    return name + " pointer: 0x" + Long.toHexString(pointer);
-  }
-  public DwflModule(long val, Dwfl parent) 
-  {
-    this(val, parent, null);
-  }
+    public String toString() {
+	return name + " pointer: 0x" + Long.toHexString(pointer);
+    }
+    public DwflModule(long val, Dwfl parent) {
+	this(val, parent, null);
+    }
   
-  DwflModule (long val, Dwfl parent, String name)
-  {
-    this.pointer = val;
-    this.parent = parent;
-    this.bias = 0;
-    this.name = name;
-  }
+    DwflModule (long val, Dwfl parent, String name) {
+	this.pointer = val;
+	this.parent = parent;
+	this.bias = 0;
+	this.name = name;
+    }
 
 
-  // public String getName(){
-  // return dwfl_module_info_getname();
-  // }
+    protected long getPointer () {
+	return pointer;
+    }
 
-  protected long getPointer ()
-  {
-    return pointer;
-  }
+    protected Dwfl getParent () {
+	return this.parent;
+    }
 
-  protected Dwfl getParent ()
-  {
-    return this.parent;
-  }
+    public ModuleElfBias getElf () {
+	return module_getelf();
+    }
 
-  public ModuleElfBias getElf ()
-  {
-    return module_getelf();
-  }
-
-  /**
-   * Get the name of the module.
-   *
-   * @return the name
-   */
-  public native String getName();
+    /**
+     * Get the name of the module.
+     *
+     * @return the name
+     */
+    public native String getName();
   
-  public native void getSymbol(long address, SymbolBuilder symbolBuilder);
+    public native void getSymbol(long address, SymbolBuilder symbolBuilder);
   
-  private native ModuleElfBias module_getelf();
+    private native ModuleElfBias module_getelf();
 
-  /**
-   * Get all the line records for a source position in a file.
-   *
-   * @param filename the file
-   * @param lineno line number of source
-   * @param column column number, or 0
-   * @return array of DwflLine objects.
-   */
-  public native DwflLine[] getLines(String filename, int lineo, int column);
+    /**
+     * Get all the line records for a source position in a file.
+     *
+     * @param filename the file
+     * @param lineno line number of source
+     * @param column column number, or 0
+     * @return array of DwflLine objects.
+     */
+    public native DwflLine[] getLines(String filename, int lineo, int column);
 
-  public native void getSymbolByName(String name,
-				     SymbolBuilder symbolBuilder);
+    public native void getSymbolByName(String name,
+				       SymbolBuilder symbolBuilder);
   
-  public native void setUserData(Object data);
+    public native void setUserData(Object data);
 }
