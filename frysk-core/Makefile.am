@@ -1,4 +1,3 @@
-
 # This file is part of the program FRYSK.
 #
 # Copyright 2005, 2007, Red Hat Inc.
@@ -136,7 +135,7 @@ noinst_DATA += frysk/pkgdatadir/test-core-x86
 
 frysk/pkgdatadir/test-core-x8664:
 	mkdir -p `dirname $@`
-	ln -s @abs_top_builddir@/../frysk-imports/$@ $@
+	ln -s -f @abs_top_builddir@/../frysk-imports/$@ $@
 frysk/pkgdatadir/test-core-x86:
 	mkdir -p `dirname $@`
-	ln -s @abs_top_builddir@/../frysk-imports/$@ $@
+	ln -s -f @abs_top_builddir@/../frysk-imports/$@ $@
