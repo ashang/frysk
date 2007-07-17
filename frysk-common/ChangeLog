@@ -1,3 +1,13 @@
+2007-07-17  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (checked-for-java-util-hashtable)
+	(checked-for-java-util-vector, checked-for-pkglibdir-in-manpage)
+	(checked-for-copyright-notice, checked-for-eclipse-residue)
+	(checked-for-at-author, checked-for-null-equals)
+	(checked-for-import-junit-framework, checked-ecj-compile)
+	(checked-for-parameterless-junit-fail): When GEN_DIRS is
+	non-empty, depend on $(GEN_DIRNAME).jar.  Pass -r to xargs.
+
 2007-07-16  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (TestRunner_LDADD): Pass -r to xargs.
