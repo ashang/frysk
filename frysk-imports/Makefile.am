@@ -45,11 +45,11 @@ include Makefile.gen
 # as its testsuite is not portable, and it is not built native.
 CHECK_SUBDIRS = \
 	jline \
-	tests \
 	cdtparser \
 	junit \
 	elfutils \
-	getopt
+	getopt \
+	tests
 check-recursive: SUBDIRS = $(CHECK_SUBDIRS)
 
 # List of directories to build.  This does not include "libunwind" but

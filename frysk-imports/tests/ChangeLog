@@ -1,3 +1,9 @@
+2007-07-17  Nurdin Premji <npremji@redhat.com>
+
+	* frysk4796/dwfltest.c: Added.
+	* Makefile.am (frysk4796/dwfltest): New rules.
+	(systests_XFAIL_PROGRAMS): Added.
+
 2007-07-16  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (noinst_PROGRAMS): Add frysk3491/x-state.

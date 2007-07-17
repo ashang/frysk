@@ -511,3 +511,10 @@ frysk4742/java.sh:
 	echo $(GCJ) -M -I$(srcdir) $(srcdir)/frysk4742/Referer.java \
 		\| grep Referee > $@
 	chmod a+x $@
+
+frysk4796_dwfltest_CFLAGS = -I$(top_srcdir)/elfutils/libdwfl \
+-I$(top_srcdir)/elfutils/libdw
+frysk4796_dwfltest_LDADD = -ldl $(top_builddir)/elfutils/libdw/libdw.a \
+$(top_builddir)/elfutils/libebl/libebl.a \
+$(top_builddir)/elfutils/libelf/libelf.a
+systests_XFAIL_PROGRAM += frysk4796/dwfltest
