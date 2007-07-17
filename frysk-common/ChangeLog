@@ -1,8 +1,5 @@
 2007-07-17  Andrew Cagney  <cagney@redhat.com>
 
-	* Makefile.rules (files-java.list): Populate conditional on
-	files.list being non-empty.
-	
 	* Makefile.rules (checked-ecj-compile): Only run ECJ when there is
 	something to compile.
 	
