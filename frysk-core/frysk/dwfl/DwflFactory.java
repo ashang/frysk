@@ -99,15 +99,6 @@ public class DwflFactory
 	return map.name.equals("")
 	    || (map.inode == 0 && map.devMinor == 0 && map.devMajor == 0);
     }
-
-    /**
-     * Create a new Dwfl. This is package private; use DwflCache.
-     */
-    static Dwfl createDwfl(Task task) {
-      Dwfl dwfl = new Dwfl();
-      updateDwfl(dwfl, task);
-      return dwfl;
-    }
     
     /**
      * Refresh an existing dwfl. Package private, use DwflCache.getDwfl().

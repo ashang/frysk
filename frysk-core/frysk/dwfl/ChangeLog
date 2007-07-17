@@ -1,5 +1,9 @@
 2007-07-17    <npremji@localhost.localdomain>
 
+	* DwflCache.java (getDwfl): When creating a new Dwfl, call the constructor directly
+	and update rather than calling createDwfl.
+	* DwflFactory.java (createDwfl): Removed.
+
 	* DwflCache.java (getDwfl): If dwfl is out of date, update rather than
 	creating a brand new dwfl.
 	* DwflFactory.java (createDwfl): call updateDwfl.

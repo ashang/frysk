@@ -101,7 +101,8 @@ public class DwflCache
     
 	logger.log(Level.FINEST, "creating new dwfl for task {0}\n", task);
    
-	Dwfl dwfl = DwflFactory.createDwfl(task);
+	Dwfl dwfl = new Dwfl();
+	DwflFactory.updateDwfl(dwfl, task);
 	mod = new Mod(dwfl, task.getMod());
 	modMap.put(task, mod);
 
