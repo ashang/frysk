@@ -634,12 +634,16 @@ distclean-cvsignored:
 CLEANFILES += files-java.list
 CLEANDIRS += $(GEN_CLASSDIR)
 files-java.list: files.list
-	sed -n < $(top_srcdir)/files.list > $@.tmp \
+	if test -s files.list ; then \
+	    sed -n < $(top_srcdir)/files.list > $@.tmp \
 		-e 's,\(^.*\.java$$\),$(top_srcdir)/\1, p' -e 't' \
 		-e 's,\(^.*\)\..*java.*,$(top_builddir)/\1.java, p' -e 't' \
-		-e 's,\(^.*\)\..*enum$$,$(top_builddir)/\1.java, p' -e 't'
-	echo $(GEN_SOURCENAME)/JUnitTests.java >> $@.tmp
-	mv $@.tmp $@
+		-e 's,\(^.*\)\..*enum$$,$(top_builddir)/\1.java, p' -e 't' ; \
+	    echo $(GEN_SOURCENAME)/JUnitTests.java >> $@.tmp ; \
+	    mv $@.tmp $@ ; \
+	else \
+	    cp /dev/null $@ ; \
+	fi
 ${GEN_DIRNAME}.jar: files-java.list
 	rm -rf $(GEN_CLASSDIR)
 	mkdir -p $(GEN_CLASSDIR)
