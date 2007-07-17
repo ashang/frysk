@@ -43,15 +43,15 @@ include Makefile.gen
 
 ANTLR = $(JAVA) -classpath ../frysk-imports/antlr.jar antlr.Tool
 
-GEN_SOURCEPATH += ../frysk-imports/
-GEN_SOURCEPATH += $(top_srcdir)/../frysk-imports/
+GEN_SOURCEPATH += ../frysk-sys/
+GEN_SOURCEPATH += $(top_srcdir)/../frysk-sys/
 GEN_CLASSPATH += ../frysk-imports/jline.jar
 GEN_CLASSPATH += ../frysk-imports/antlr.jar
 GEN_CLASSPATH += ../frysk-imports/junit.jar
 GEN_CLASSPATH += ../frysk-imports/getopt.jar
 GEN_CLASSPATH += ../frysk-imports/jdom.jar
 GEN_CLASSPATH += ../frysk-imports/cdtparser.jar 
-GEN_GCJ_LDADD += ../frysk-imports/libfrysk-imports.a
+GEN_GCJ_LDADD += ../frysk-sys/libfrysk-sys.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jline.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-antlr.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-junit.a

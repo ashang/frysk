@@ -1,0 +1,16 @@
+2007-07-17  Andrew Cagney  <cagney@redhat.com>
+
+	Move inua/, frysk/, and lib/ to frysk-sys from frysk-imports.
+	* Makefile.am: New.
+	* bootstrap.sh: New.
+	* configure.ac: New.
+	* frysk/: Copied from frysk-imports/
+	* inua/: Copied from frysk-imports/
+	* lib/: Copied from frysk-imports/
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

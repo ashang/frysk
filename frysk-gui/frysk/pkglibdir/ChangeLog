@@ -1,3 +1,8 @@
+2007-07-17  Andrew Cagney  <cagney@redhat.com>
+
+	Move CNI code from frysk-imports/ to frysk-sys/
+	* funit.java: Call frysk.sys.JUnitTests.
+
 2007-05-31  Andrew Cagney  <cagney@redhat.com>
 
 	* funit.java: Moved from frysk-core/frysk/pkglibdir/.

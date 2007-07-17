@@ -1,7 +1,6 @@
-#!/bin/sh -eu
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, 2006, 2007, Red Hat Inc.
+# Copyright 2005, 2007, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -38,67 +37,31 @@
 # version and license this file solely under the GPL without
 # exception.
 
-set -e
-
-FILE_LIST="\
-    junit/junit.jar \
-    ANTLR_JAR \
-    cdtparser/cdtparser.jar \
-    JDOM_JAR \
-    jline/jline.jar \
-    getopt/getopt.jar \
-    "
-
-./common/Makefile.gen.sh $FILE_LIST
-
-(
-    cd elfutils
-    echo "Running aclocal ... for elfutils"
-    aclocal -I m4
-    echo "Running autoconf ... for elfutils"
-    autoconf -Werror
-    echo "Running autoheader ... for elfutils"
-    autoheader -Werror
-    echo "Running automake ... for elfutils"
-    automake -Werror --add-missing 
-)
-
-(
-    cd antlr
-    echo "Running autoconf ... for antlr"
-    autoconf -Werror -f
-)
-
-for isa in i386 x86_64 ppc64
-do
-    mkdir -p libunwind-$isa
-    # Something to include in EXTRA_DIST that these directories are
-    # included in the distro.
-    touch libunwind-$isa/.keep_me
-done
-(
-    cd libunwind
-    mkdir -p config
-    echo "Running aclocal ... for libunwind"
-    aclocal
-    echo "Running libtoolize ... for libunwind"
-    libtoolize --copy --force
-    echo "Running autoheader ... for libunwind"
-    autoheader -Werror
-    echo "Running automake ... for libunwind"
-    automake -Werror --add-missing
-    echo "Running autoconf ... for libunwind"
-    autoconf -Werror -f
-)
-
-
-# Generate everything (always run with --add-missing).
-
-echo "Running aclocal ... for frysk-imports"
-aclocal -I common/m4
-
-echo "Running autoconf ... for frysk-imports"
-autoconf -Werror -f
-
-echo "Running automake ... for frysk-imports"
-automake -Werror --add-missing
+
+include common/Makefile.rules
+include Makefile.gen
+
+GEN_SOURCEPATH += ../frysk-imports/
+GEN_SOURCEPATH += $(top_srcdir)/../frysk-imports/
+GEN_CLASSPATH += ../frysk-imports/jline.jar
+GEN_CLASSPATH += ../frysk-imports/antlr.jar
+GEN_CLASSPATH += ../frysk-imports/junit.jar
+GEN_CLASSPATH += ../frysk-imports/getopt.jar
+GEN_CLASSPATH += ../frysk-imports/jdom.jar
+GEN_CLASSPATH += ../frysk-imports/cdtparser.jar 
+GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jline.a
+GEN_GCJ_LDADD += ../frysk-imports/libfrysk-antlr.a
+GEN_GCJ_LDADD += ../frysk-imports/libfrysk-junit.a
+GEN_GCJ_LDADD += ../frysk-imports/libfrysk-getopt.a
+GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jdom.a
+GEN_GCJ_LDADD += ../frysk-imports/libfrysk-cdtparser.a 
+GEN_GCJ_LDADD += ../frysk-imports/elfutils/libdwfl/libdwfl.a
+GEN_GCJ_LDADD += ../frysk-imports/elfutils/libdw/libdw.a
+GEN_GCJ_LDADD += ../frysk-imports/elfutils/libebl/libebl.a
+GEN_GCJ_LDADD += ../frysk-imports/elfutils/libelf/libelf.a
+if USE_LIBUNWIND
+GEN_GCJ_LDADD += ../frysk-imports/libunwind-i386/src/.libs/libunwind-x86.a \
+                 ../frysk-imports/libunwind-x86_64/src/.libs/libunwind-x86_64.a \
+                 ../frysk-imports/libunwind-ppc64/src/.libs/libunwind-ppc64.a
+endif
+GEN_GCJ_LDADD += -lstdc++ -lopcodes -laudit

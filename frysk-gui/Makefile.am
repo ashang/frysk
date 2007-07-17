@@ -42,7 +42,7 @@ include Makefile.gen
 
 GEN_SOURCEPATH += ../frysk-gtk/ $(top_srcdir)/../frysk-gtk/
 GEN_SOURCEPATH += ../frysk-core/ $(top_srcdir)/../frysk-core/
-GEN_SOURCEPATH += ../frysk-imports/ $(top_srcdir)/../frysk-imports/
+GEN_SOURCEPATH += ../frysk-sys/ $(top_srcdir)/../frysk-sys/
 
 GEN_CLASSPATH += ../frysk-imports/antlr.jar
 GEN_CLASSPATH += ../frysk-imports/jdom.jar
@@ -56,7 +56,7 @@ GEN_CLASSPATH += /usr/lib
 
 GEN_GCJ_LDADD += ../frysk-gtk/libfrysk-gtk.a
 GEN_GCJ_LDADD += ../frysk-core/libfrysk-core.a
-GEN_GCJ_LDADD += ../frysk-imports/libfrysk-imports.a
+GEN_GCJ_LDADD += ../frysk-sys/libfrysk-sys.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-antlr.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jdom.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-cdtparser.a 

@@ -1,5 +1,12 @@
 2007-07-17  Andrew Cagney  <cagney@redhat.com>
 
+	Move CNI code from frysk-imports/ to frysk-sys/
+	* bootstrap.sh: Do not pass --cni to Makefile.gen.sh.
+	(FILE_LIST): Remove frysk, inua and lib.
+	* frysk/: Delete.
+	* inua/: Delete.
+	* lib/: Delete.
+
 	* Makefile.am (AM_CXXFLAGS): Do not add $(srcdir)/include/.
 	
 	* Makefile.am (noinst_LIBRARIES): Delete.

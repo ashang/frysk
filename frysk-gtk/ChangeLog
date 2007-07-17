@@ -1,5 +1,9 @@
 2007-07-17  Andrew Cagney  <cagney@redhat.com>
 
+	Move CNI code from frysk-imports/ to frysk-sys/
+	* Makefile.am (GEN_SOURCEPATH): Search frysk-sys/
+	(GEN_GCJ_LDADD): Link frysk-sys.a.
+
 	* Makefile.am (GEN_GCJ_LDADD): Remove
 	-L../frysk-imports/lib/opcodes -lbfd_get.
 

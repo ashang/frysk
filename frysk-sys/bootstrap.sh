@@ -40,65 +40,19 @@
 
 set -e
 
-FILE_LIST="\
-    junit/junit.jar \
-    ANTLR_JAR \
-    cdtparser/cdtparser.jar \
-    JDOM_JAR \
-    jline/jline.jar \
-    getopt/getopt.jar \
-    "
+FILE_LIST="frysk \
+    inua \
+    lib"
 
-./common/Makefile.gen.sh $FILE_LIST
-
-(
-    cd elfutils
-    echo "Running aclocal ... for elfutils"
-    aclocal -I m4
-    echo "Running autoconf ... for elfutils"
-    autoconf -Werror
-    echo "Running autoheader ... for elfutils"
-    autoheader -Werror
-    echo "Running automake ... for elfutils"
-    automake -Werror --add-missing 
-)
-
-(
-    cd antlr
-    echo "Running autoconf ... for antlr"
-    autoconf -Werror -f
-)
-
-for isa in i386 x86_64 ppc64
-do
-    mkdir -p libunwind-$isa
-    # Something to include in EXTRA_DIST that these directories are
-    # included in the distro.
-    touch libunwind-$isa/.keep_me
-done
-(
-    cd libunwind
-    mkdir -p config
-    echo "Running aclocal ... for libunwind"
-    aclocal
-    echo "Running libtoolize ... for libunwind"
-    libtoolize --copy --force
-    echo "Running autoheader ... for libunwind"
-    autoheader -Werror
-    echo "Running automake ... for libunwind"
-    automake -Werror --add-missing
-    echo "Running autoconf ... for libunwind"
-    autoconf -Werror -f
-)
-
+./common/Makefile.gen.sh --cni $FILE_LIST
 
 # Generate everything (always run with --add-missing).
 
-echo "Running aclocal ... for frysk-imports"
+echo "Running aclocal ... for frysk-sys"
 aclocal -I common/m4
 
-echo "Running autoconf ... for frysk-imports"
+echo "Running autoconf ... for frysk-sys"
 autoconf -Werror -f
 
-echo "Running automake ... for frysk-imports"
+echo "Running automake ... for frysk-sys"
 automake -Werror --add-missing
