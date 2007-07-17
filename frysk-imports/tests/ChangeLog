@@ -1,5 +1,8 @@
 2007-07-17  Nurdin Premji <npremji@redhat.com>
 
+	* Makefile.am (systests_XFAIL_PROGRAMS): Removed frysk4796/dwfltest.
+	(system_PASS_PROGRAMS): Added frysk4796/dwfltest.
+
 	* frysk4796/dwfltest.c: Added.
 	* Makefile.am (frysk4796/dwfltest): New rules.
 	(systests_XFAIL_PROGRAMS): Added.
