@@ -1,5 +1,10 @@
 2007-07-16  Andrew Cagney  <cagney@redhat.com>
 
+	* DwAtEncodings.shenum: Include frysk-imports in path to
+	"dwarf.h".
+	* DwOpEncodings.shenum: Ditto.
+	* DwTagEncodings.shenum: Ditto.
+
 	Merge lib/dw and lib/elf to lib/dwfl.
 	* package.html: New.
 	* Elf.java: Moved.

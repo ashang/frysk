@@ -40,7 +40,7 @@
 
 # Generate a mkenum.sh table for the DW_OP encodings we are interested in.
 CC=${CC:-gcc}
-$CC -dD -E $(dirname $0)/../../elfutils/libdw/dwarf.h | awk '
+$CC -dD -E $(dirname $0)/../../../frysk-imports/elfutils/libdw/dwarf.h | awk '
     /DW_OP_.* = / {gsub(",","",$3)
 	   printf "%s %s\n", $1, $3}
 ' 2>&1
