@@ -148,6 +148,7 @@ if (m->low_addr == start && m->high_addr == end
   m->next = *tailp;
   m->gc = false;
   *tailp = m;
+  ++dwfl->nmodules;
   return m;
 }
 
