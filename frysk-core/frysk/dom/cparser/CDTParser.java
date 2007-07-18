@@ -47,6 +47,7 @@ package frysk.dom.cparser;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -110,7 +111,9 @@ public class CDTParser
 
   private DOMSource source;
   
-  private final boolean debug = false;
+  private final boolean DEBUG = false;
+  
+  private final boolean TIMING = false;
   
   private final String DEFINE = "#define";
   
@@ -155,9 +158,13 @@ public class CDTParser
                                             buildScanInfo.getIncludePaths());
 
     ParserCallBack callback = new ParserCallBack();
-    if (debug)
+    if (DEBUG)
       {
-        System.out.println("\n\n***** Fixing to parse " + filename.toString() + " *****\n\n");
+        System.out.println("\n\n***** Fixing to quick parse " + filename.toString() + " *****\n\n");
+      }
+    if (TIMING) {
+	Date date = new Date();
+	System.out.println("\n ----- Starting time = " + date + " -----\n");
       }
     IParser parser = ParserFactory.createParser(
                                                 ParserFactory.createScanner(
@@ -172,13 +179,20 @@ public class CDTParser
                                                 ParserMode.QUICK_PARSE,
                                                 language, new NullLogService());
 
-    if (! parser.parse() && debug)
+    if (! parser.parse() && DEBUG)
       System.err.println("Quick Parse: Error found on line "
                          + parser.getLastErrorLine());
     
-    if (debug)
+    if (DEBUG) {
       System.out.println("\n\n*********** After quick parse for " + filename.toString() + 
                          " ***********\n\n");
+      System.out.println("\n\n***** Starting full parser *****\n\n");
+    }
+    if (TIMING) {
+      Date date = new Date();
+      System.out.println("\n----- Ending time for quick parse" + 
+	      "/beginning time for full parse = " + date + " -----\n");
+      }
 
     quickparse = false;
     ParserCallBack callback2 = new ParserCallBack();
@@ -195,11 +209,18 @@ public class CDTParser
                                                  ParserMode.COMPLETE_PARSE,
                                                  language, new NullLogService());
 
-    if (! parser2.parse() && debug)
+    if (! parser2.parse() && DEBUG)
       System.err.println("Complete Parse: Error found on line "
                          + parser2.getLastErrorLine()
                          + "\n                Char offset of error = "
                          + parser2.getLastErrorOffset());
+    if (DEBUG) {
+      System.out.println("\n\n****** Finished parsing ******\n\n");
+    }
+    if (TIMING) {
+	Date date = new Date();
+	System.out.println("\n\n ----- Full parse ended at " + date + " -----\n");
+    }
 
     /*
      * The CDT Parser does not parse out comments for some reason, do a second
@@ -311,7 +332,7 @@ public class CDTParser
 
     public void acceptVariable (IASTVariable arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to acceptVariable.....name = " + arg0.getName());
       // Don't assume the type is on the same line as the name
       DOMLine typeLine = source.getLineSpanningOffset(arg0.getStartingOffset());
@@ -321,7 +342,7 @@ public class CDTParser
 
       String typeText = typeLine.getText();
       String nameText = nameLine.getText();
-      if (debug)
+      if (DEBUG)
         System.out.println(".....typeText = " + typeText.trim() +
                            ".....nameText = " + nameText.trim());
       
@@ -348,7 +369,7 @@ public class CDTParser
 
     public void acceptFunctionDeclaration (IASTFunction arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to acceptFunctionDeclaration.....name = " + arg0.getName());
       
       // The return type of the function may not be on the same line as the name
@@ -359,7 +380,7 @@ public class CDTParser
 
       String lineText = line.getText();
       String nameText = nameLine.getText();
-      if (debug)
+      if (DEBUG)
         System.out.println(".....lineText = " + lineText.trim() +
                           ".....nameText = " + nameText.trim());
       
@@ -454,7 +475,7 @@ public class CDTParser
     {
       if (quickparse)
         return;
-      if (debug) 
+      if (DEBUG) 
         System.out.println("enterFunctionBody.....name = " + arg0.getName());
     
       // The return type of the function may not be on the same line as the name
@@ -465,7 +486,7 @@ public class CDTParser
 
       String lineText = line.getText().trim();
       String nameText = nameLine.getText().trim();
-      if (debug)
+      if (DEBUG)
           System.out.println(".....lineText = " + lineText.trim() +
                              "\n.....nameText = " + nameText.trim());
       // Check to see if the character string we are parsing is in one of the lines
@@ -567,7 +588,7 @@ public class CDTParser
 
     public void acceptFunctionReference (IASTFunctionReference arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to acceptFunctionReference.....name = " + 
                            arg0.getName());
       
@@ -575,7 +596,7 @@ public class CDTParser
       if (line == null || !checkScope(arg0.getName(), line.getText())
           || number_includes > 0)
         return;
-      if (debug)
+      if (DEBUG)
         System.out.println(".....lineText = " + line.getText());
       
       if (!checkForMacro(line))
@@ -588,28 +609,28 @@ public class CDTParser
 
     public void acceptTypedefDeclaration (IASTTypedefDeclaration arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to acceptTypedefDeclaration.....name = " + 
                            arg0.getName());
     }
 
     public void acceptTypedefReference (IASTTypedefReference arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to acceptTypedefReference.....name = " + 
                            arg0.getName());
     }
 
     public void acceptEnumerationSpecifier (IASTEnumerationSpecifier arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to acceptEnumerationSpecifier.....name = " + 
                            arg0.getName());
     }
 
     public void enterNamespaceDefinition (IASTNamespaceDefinition arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to enterNamespaceDefinition.....name = " + 
                            arg0.getName());
       
@@ -618,7 +639,7 @@ public class CDTParser
         return;
 
       String lineText = line.getText();
-      if (debug)
+      if (DEBUG)
         System.out.println(".....lineText = " + lineText);
 
       line.addTag(DOMTagTypes.KEYWORD,
@@ -635,14 +656,14 @@ public class CDTParser
 
     public void acceptNamespaceReference (IASTNamespaceReference arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to accept NamespaceReference.....name = " + 
                            arg0.getName());
       
       DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
       if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
-      if (debug)
+      if (DEBUG)
         System.out.println(".....lineText = " + line.getText());
 
       line.addTag(DOMTagTypes.NAMESPACE, arg0.getName(), arg0.getOffset()
@@ -651,7 +672,7 @@ public class CDTParser
 
     public void acceptUsingDirective (IASTUsingDirective arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to acceptUsingDirective.....name = " + 
                            arg0.getName());
       
@@ -660,7 +681,7 @@ public class CDTParser
         return;
 
       String lineText = line.getText();
-      if (debug)
+      if (DEBUG)
         System.out.println(".....lineText = " + lineText);
 
       line.addTag(DOMTagTypes.KEYWORD,
@@ -676,7 +697,7 @@ public class CDTParser
 
     public void acceptUsingDeclaration (IASTUsingDeclaration arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to acceptUsingDeclaration.....name = " + 
                            arg0.getName());
       
@@ -685,7 +706,7 @@ public class CDTParser
         return;
 
       String lineText = line.getText();
-      if (debug)
+      if (DEBUG)
         System.out.println(".....lineText = " + lineText);
 
       line.addTag(DOMTagTypes.KEYWORD,
@@ -701,7 +722,7 @@ public class CDTParser
 
     public void enterClassSpecifier (IASTClassSpecifier arg0)
     {
-      if (debug)
+      if (DEBUG)
           System.out.println("made it to enterClassSpecifier.....name = " + 
                              arg0.getName());
       
@@ -711,7 +732,7 @@ public class CDTParser
         return;
 
       String lineText = line.getText();
-      if (debug)
+      if (DEBUG)
           System.out.print(".....lineText = " + lineText.trim());
 
       line.addTag(DOMTagTypes.KEYWORD,
@@ -728,7 +749,7 @@ public class CDTParser
 
     public void acceptField (IASTField arg0)
     {
-      if (debug)
+      if (DEBUG)
           System.out.println("made it to acceptField.....name = " + 
                              arg0.getName());
       
@@ -738,7 +759,7 @@ public class CDTParser
         return;
 
       String lineText = line.getText();
-      if (debug)
+      if (DEBUG)
           System.out.println(".....lineText = " + lineText.trim());
       
       line.addTag(DOMTagTypes.KEYWORD,
@@ -755,14 +776,14 @@ public class CDTParser
 
     public void acceptClassReference (IASTClassReference arg0)
     {
-      if (debug)
+      if (DEBUG)
           System.out.println(".....made it to acceptClassReference.....name = " + 
                              arg0.getName());
       
       DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
       if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
-      if (debug)
+      if (DEBUG)
           System.out.println(".....lineText = " + line.getText().trim());
 
       line.addTag(DOMTagTypes.CLASS_DECL, arg0.getName(), arg0.getOffset()
@@ -771,14 +792,14 @@ public class CDTParser
 
     public void acceptVariableReference (IASTVariableReference arg0)
     {
-      if (debug)
+      if (DEBUG)
           System.out.println("made it to acceptVariableReference.....name = " + 
                              arg0.getName());
       
       DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
       if (line == null || number_includes > 0)
         return;
-      if (debug)
+      if (DEBUG)
           System.out.println(".....lineText = " + line.getText().trim());
       
       if (!checkForMacro(line))
@@ -792,14 +813,14 @@ public class CDTParser
 
     public void acceptFieldReference (IASTFieldReference arg0)
     {
-      if (debug)
+      if (DEBUG)
           System.out.println("made it to acceptFieldReference.....name = " + 
                              arg0.getName());
     }
 
     public void acceptParameterReference (IASTParameterReference arg0)
     {
-      if (debug)
+      if (DEBUG)
           System.out.println("made it to acceptParameterReference.....name = " + 
                              arg0.getName());
       
@@ -807,7 +828,7 @@ public class CDTParser
       if (line == null || !checkScope(arg0.getName(), line.getText())
           || number_includes > 0)
         return;
-      if (debug)
+      if (DEBUG)
           System.out.println(".....lineText = " + line.getText().trim());
 
       if (!checkForMacro(line))
@@ -821,14 +842,14 @@ public class CDTParser
     public void acceptAbstractTypeSpecDeclaration (
                                                    IASTAbstractTypeSpecifierDeclaration arg0)
     {
-      if (debug)
+      if (DEBUG)
           System.out.println("made it to acceptAbstractTypeSpecDeclaration.....name = " +
                              arg0.getName());
       
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
       if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
-      if (debug)
+      if (DEBUG)
           System.out.println(".....lineText = " + line.getText().trim());
 
       line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(),
@@ -839,7 +860,7 @@ public class CDTParser
 
     public void acceptMethodDeclaration (IASTMethod arg0)
     {
-      if (debug)
+      if (DEBUG)
           System.out.println("made it to acceptMethodDeclaration.....name = " + 
                              arg0.getName());
       
@@ -848,7 +869,7 @@ public class CDTParser
         return;
 
       String lineText = line.getText();
-      if (debug)
+      if (DEBUG)
         System.out.println(".....lineText = " + lineText.trim());
 
       line.addTag(DOMTagTypes.KEYWORD,
@@ -893,7 +914,7 @@ public class CDTParser
 
     public void acceptMethodReference (IASTMethodReference arg0)
     {
-      if (debug)
+      if (DEBUG)
           System.out.println("acceptMethodReference.....name = " +
                              arg0.getName());
       
@@ -901,7 +922,7 @@ public class CDTParser
       if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
       
-      if (debug)
+      if (DEBUG)
           System.out.println(".....lineText = " + line.getText().trim());
 
       line.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getOffset()
@@ -910,7 +931,7 @@ public class CDTParser
 
     public void enterMethodBody (IASTMethod arg0)
     {
-      if (debug)
+      if (DEBUG)
           System.out.println("made it to enterMethodBody.....name = " + 
                              arg0.getName());
       
@@ -919,7 +940,7 @@ public class CDTParser
         return;
 
       String lineText = line.getText();
-      if (debug)
+      if (DEBUG)
           System.out.println(".....lineText = " + lineText.trim());
 
       line.addTag(DOMTagTypes.KEYWORD,
@@ -974,21 +995,21 @@ public class CDTParser
     /* TEMPLATES */
     public void enterTemplateDeclaration (IASTTemplateDeclaration arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to enterTemplateDeclaration.....name = " +
                            arg0.getClass().getName());
     }
 
     public void enterTemplateInstantiation (IASTTemplateInstantiation arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to enterTemplateInstantiation.....name = " +
                            arg0.getClass().getName());
     }
 
     public void enterTemplateSpecialization (IASTTemplateSpecialization arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to enterTemplateSpecialization.....name = " +
                            arg0.getClass().getName());
     }
@@ -996,7 +1017,7 @@ public class CDTParser
     public void acceptTemplateParameterReference (
                                                   IASTTemplateParameterReference arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("acceptTemplateParameterReference.....name = " +
                            arg0.getName());
    
@@ -1025,7 +1046,7 @@ public class CDTParser
      */
     public void enterInclusion (IASTInclusion arg0)
     {
-      if (debug)
+      if (DEBUG)
           System.out.println("made it to enterInclusion.....name = " +
                              arg0.getName());
       
@@ -1038,7 +1059,7 @@ public class CDTParser
       if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
       
-      if (debug)
+      if (DEBUG)
           System.out.println(".....lineText = " + line.getText().trim());
       // See if there is already a tag for this include on this line
       if (line.getTag(0) != null)
@@ -1059,7 +1080,7 @@ public class CDTParser
 
     public void acceptMacro (IASTMacro arg0)
     {
-      if (debug)
+      if (DEBUG)
           System.out.println("made it to acceptMacro.....name = " +
                              arg0.getName());
       
@@ -1078,7 +1099,7 @@ public class CDTParser
       
       String lineText = line.getText();
       
-      if (debug)
+      if (DEBUG)
           System.out.println(".....lineText = " + lineText.trim());
 
       // if this is not a #define stmt, we do not need the KEYWORD entry
@@ -1099,28 +1120,28 @@ public class CDTParser
     /* UNIMPLEMENTED INTERFACE FUNCTIONS */
     public void acceptEnumeratorReference (IASTEnumeratorReference arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to acceptEnumeratorReference.....name = " + 
                            arg0.getName());
     }
 
     public void acceptEnumerationReference (IASTEnumerationReference arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to acceptEnumerationReference.....name = " +
                            arg0.getName());
     }
 
     public void acceptFriendDeclaration (IASTDeclaration arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to acceptFriendDeclaration....." + 
                            arg0.getClass().getName());
     }
 
     public void acceptASMDefinition (IASTASMDefinition arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to acceptASMDefinition.....name = " +
                            arg0.getClass().getName());
     }
@@ -1128,7 +1149,7 @@ public class CDTParser
     /* Probably not useful */
     public void enterCodeBlock (IASTCodeScope arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to enterCodeBlock.....name = " +
                            arg0.getClass().getName());
     }
@@ -1136,7 +1157,7 @@ public class CDTParser
     public void acceptElaboratedForewardDeclaration (
                                                      IASTElaboratedTypeSpecifier arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to acceptElaboratedForewardDeclaration....name = " +
                            arg0.getName());
     }
@@ -1145,11 +1166,11 @@ public class CDTParser
     {
       if (quickparse)
         return;
-      if (debug)
+      if (DEBUG)
         System.out.println("exitFunctionBody....name = " + arg0.getName());
       
       DOMFunction func = source.getFunction(arg0.getName());
-      if (func == null && debug)
+      if (func == null && DEBUG)
         System.out.println("Could not get DOMFunction");
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
       DOMLine nameLine = source.getLineSpanningOffset(arg0.getNameOffset());
@@ -1157,7 +1178,7 @@ public class CDTParser
       if (line == null || !checkScope(arg0.getName(), nameLine.getText())
           || number_includes > 0)
           return;
-      if (debug)
+      if (DEBUG)
         {
           System.out.println(".....line = " + line.getText().trim());
           System.out.println(".....arg0.getEndingLine() = " + arg0.getEndingLine());
@@ -1171,42 +1192,42 @@ public class CDTParser
 
     public void exitCodeBlock (IASTCodeScope arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("exitCodeBlock.....name = " + 
                            arg0.getClass().getName());
     }
 
     public void enterCompilationUnit (IASTCompilationUnit arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to enterCompilationUnit.....name = " +
                            arg0.getClass().getName());
     }
 
     public void enterLinkageSpecification (IASTLinkageSpecification arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to enterLinkageSpecification.....name = " +
                            arg0.getClass().getName());
     }
 
     public void exitMethodBody (IASTMethod arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to exitMethodBody.....name = " +
                            arg0.getName());
     }
 
     public void exitTemplateDeclaration (IASTTemplateDeclaration arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to exitTemplateDeclaration.....name = " +
                            arg0.getClass().getName());
     }
 
     public void exitTemplateSpecialization (IASTTemplateSpecialization arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to exitTemplateSpecialization.....name = " +
                            arg0.getClass().getName());
     }
@@ -1214,35 +1235,35 @@ public class CDTParser
     public void exitTemplateExplicitInstantiation (
                                                    IASTTemplateInstantiation arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to exitTemplateExplicitInstantiation.....name = " +
                            arg0.getClass().getName());
     }
 
     public void exitLinkageSpecification (IASTLinkageSpecification arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to exitLinkageSpecification.....name = " +
                            arg0.getClass().getName());
     }
 
     public void exitClassSpecifier (IASTClassSpecifier arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to exit Class Specifier.....name = " +
                            arg0.getName());
     }
 
     public void exitNamespaceDefinition (IASTNamespaceDefinition arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to exitNamespaceDefinition.....name = " +
                            arg0.getName());
     }
 
     public void exitInclusion (IASTInclusion arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to exitInclusion.....name = " +
                            arg0.getName());
       if (ic.contains(arg0.getName())) {
@@ -1253,7 +1274,7 @@ public class CDTParser
 
     public void exitCompilationUnit (IASTCompilationUnit arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("made it to exitCompilationUnit.....name = " +
                            arg0.getClass().getName());
     }
@@ -1279,7 +1300,7 @@ public class CDTParser
 
     public boolean acceptProblem (IProblem arg0)
     {
-      if (debug)
+      if (DEBUG)
         System.out.println("Made it to acceptProblem" + ".....error = "
                            + arg0.getMessage() + ".....line # = "
                            + arg0.getSourceLineNumber() + ".....source start = "
@@ -1318,7 +1339,7 @@ public class CDTParser
      * 
      */
     private boolean checkForMacro(DOMLine line) {
-      if (debug)
+      if (DEBUG)
         System.out.println(".....made it to checkForMacro");
       String lineText = line.getText();
       Iterator it = md.iterator();
@@ -1357,7 +1378,7 @@ public class CDTParser
      * @param var is a String containing the variable/parameter name to be looked for
      */
     private int checkVariableIndex(String lineText, String var) {
-      if (debug)
+      if (DEBUG)
         System.out.println(".....made it to checkVariableIndex");
       int start = 0;
       while (start <= lineText.length()) {

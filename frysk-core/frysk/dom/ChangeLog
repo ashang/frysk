@@ -1,3 +1,7 @@
+2007-07-18  Rick Moseley  <rmoseley@redhat.com>
+
+	* cparser/CDTParser.java: Add timing info for parsing.
+
 2007-07-16  Andrew Cagney  <cagney@redhat.com>
 
 	* DOMCommon.java: Update, lib.dw merged with lib.elf.
