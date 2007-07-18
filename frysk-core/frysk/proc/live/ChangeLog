@@ -1,5 +1,7 @@
 2007-07-18  Andrew Cagney  <cagney@redhat.com>
 
+	* MemorySpaceByteBuffer.java: Revert below change.
+	
 	* MemorySpaceByteBuffer.java: Replace StatelessFile with Mem.
 	(MemorySpaceByteBuffer): Remove AddressSpace parameter.
 	(PeekRequest, PeeksRequest, PokeRequest): Make static.  Add local

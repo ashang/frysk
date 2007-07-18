@@ -1,5 +1,7 @@
 2007-07-18  Andrew Cagney  <cagney@redhat.com>
 
+	* Mem.java: Add missing include of ProcessIdentifier.
+
 	* Mem.java: New file.
 
 2007-07-17  Andrew Cagney  <cagney@redhat.com>

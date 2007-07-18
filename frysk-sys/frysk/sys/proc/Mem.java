@@ -40,7 +40,7 @@
 package frysk.sys.proc;
 
 import frysk.sys.StatelessFile;
-import frysk.sys.
+import frysk.sys.ProcessIdentifier;
 
 /**
  * Manipulate a pid's mem using stateless file and /proc/$$/mem.
