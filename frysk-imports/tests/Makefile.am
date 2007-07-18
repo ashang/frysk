@@ -513,7 +513,7 @@ frysk4742/java.sh:
 	chmod a+x $@
 
 frysk4796_dwfltest_CFLAGS = -I$(top_srcdir)/elfutils/libdwfl \
--I$(top_srcdir)/elfutils/libdw
+-I$(top_srcdir)/elfutils/libdw -I$(top_srcdir)/elfutils/libelf
 frysk4796_dwfltest_LDADD = -ldl $(top_builddir)/elfutils/libdw/libdw.a \
 $(top_builddir)/elfutils/libebl/libebl.a \
 $(top_builddir)/elfutils/libelf/libelf.a
