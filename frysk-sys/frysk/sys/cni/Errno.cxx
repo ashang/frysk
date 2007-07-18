@@ -41,6 +41,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include <gcj/cni.h>
 
@@ -203,6 +206,35 @@ tryGarbageCollect (int &count, int err, const char *prefix,
   if (tryGarbageCollect (count) == 0)
     throwErrno (err, prefix, suffix, val);
 }
+
+int
+tryOpen (char *file, int flags, int gc)
+{
+  int errno;
+  int fd;
+  
+  while (1)                                                                         
+    {
+      errno = 0;
+      fd = ::open (file, flags);
+      
+      if (fd >= 1)
+	return fd;
+      
+      int err = errno;
+      switch (err)
+	{
+	case EMFILE:
+	  tryGarbageCollect (gc, err, "open");
+	  continue;
+	  
+	default:
+	  throwErrno (err, "open", "file %s", file);
+	  return 0;
+	}
+    }
+}
+
 
 
 // Returns the total size required by ARGS an a unix argv[] array.
