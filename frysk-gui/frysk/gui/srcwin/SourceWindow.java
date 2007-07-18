@@ -2315,12 +2315,13 @@ public class SourceWindow
    * @param proc_id is an integer containing the PID of the task being displayed.
    * 
    */
-  private void setSourceLabel(String header, String task, int pid)
+  private void setSourceLabel(String header, String task, int pid, int tid)
   {
     ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
 	                                                      + header
 	                                                      + task + " -- PID: "
 	                                                      + pid
+	                                                      + " -- TID: " + tid
 	                                                      + "</b>");
 	((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
   }
@@ -2336,13 +2337,14 @@ public class SourceWindow
       {
 	String task_name = this.swProc[0].getExe();
 	int proc_id = this.swProc[0].getPid();
-	setSourceLabel("Unknown File for: ", task_name, proc_id);
+	setSourceLabel("Unknown File for: ", task_name, proc_id, 0);
 	return;
       }
     
      ((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
     String task_name = sf.getTask().getProc().getExe();
     int proc_id = sf.getTask().getProc().getPid();
+    int task_id = sf.getTask().getTid();
     
     DOMSource source = null;
     Line[] lines = sf.getLines();
@@ -2363,11 +2365,12 @@ public class SourceWindow
       }
     
     if (lines.length == 0)
-      setSourceLabel("Unknown File for: ", task_name, proc_id);
+      setSourceLabel("Unknown File for: ", task_name, proc_id, task_id);
     else if (source == null && lines.length > 0)
-      setSourceLabel(sf.getLines()[0].getFile().getPath() + " for: ", task_name, proc_id);
+      setSourceLabel(sf.getLines()[0].getFile().getPath() + " for: ", task_name,
+	      proc_id, task_id);
     else
-      setSourceLabel(source.getFileName() + " for: ", task_name, proc_id);
+      setSourceLabel(source.getFileName() + " for: ", task_name, proc_id, task_id);
   }
   
   /*******************************************************************
