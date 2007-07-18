@@ -61,6 +61,15 @@ public class Disassembler
 	return isnList;
     }
     
+    public List disassembleInstructionsStartEnd (long startAddress, 
+	    long endAddress) {
+	isnList.clear();
+	// This function will call the below java methods to update
+	// the linked list.
+	disassembleStartEnd(startAddress, endAddress);
+	return isnList;
+    }
+    
     void startInstruction() {
 	instruction.setLength(0);
     }
@@ -88,4 +97,6 @@ public class Disassembler
     }
 
     private native void disassemble (long address, long count);
+    
+    private native void disassembleStartEnd (long startAddress, long endAddress);
 }

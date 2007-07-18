@@ -147,6 +147,36 @@ public class TestDisassembler
 	    address += inst.length;
 	}
     }
+    
+    public void testDisassembleStartEnd() {
+	
+	final int numInstructions = 5;
+	Assembler assembler = getAssembler();
+	assertEquals("assembler.instructions.length", numInstructions,
+		     assembler.instructions.length);
+
+	ByteBuffer buffer = new ArrayByteBuffer(assembler.opcodes);
+	
+	Disassembler disAsm = new Disassembler(buffer);
+	List list = disAsm.disassembleInstructionsStartEnd(0, 8);
+	assertNotNull("list", list);
+	assertEquals("list.size", numInstructions, list.size());
+	
+	// Address for ByteBuffer is started at 0x00.
+	int address = 0;
+	for (int i = 0; i < numInstructions; i++) {
+	    Instruction inst = (Instruction) list.get(i);
+	    assertNotNull(inst);
+	    
+	    assertEquals(address, inst.address);
+	    //Remve tailing whiespace before compare.
+	    assertEquals("assembler.instructions[" + i + "]",
+			 assembler.instructions[i],
+			 inst.instruction.trim());
+	    
+	    address += inst.length;
+	}
+    }
 
     public void testOutOfBounds() {
 	ByteBuffer buffer = new ArrayByteBuffer(new byte[0]);

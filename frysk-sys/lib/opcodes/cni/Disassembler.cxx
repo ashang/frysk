@@ -121,52 +121,78 @@ print_instruction (void* disassembler, const char *args, ...)
 }
 
 void
+init_disassemble (lib::opcodes::Disassembler *disassembler, 
+disassemble_info *disasm_info, int (**disasm_func) (bfd_vma, disassemble_info*))
+{
+  ::init_disassemble_info (disasm_info, (void*) disassembler, print_instruction);
+
+  disasm_info->flavour = bfd_target_unknown_flavour;
+#ifdef __x86_64__
+  disasm_info->arch = bfd_arch_i386;
+  disasm_info->mach = bfd_mach_x86_64;
+  *disasm_func = &(::print_insn_i386_att);
+#elif defined (__i386__)
+  disasm_info->arch = bfd_arch_i386;
+  disasm_info->mach = bfd_mach_i386_i386;
+  *disasm_func = &(::print_insn_i386_att);
+#elif defined (__powerpc64__)
+  disasm_info->arch = bfd_arch_powerpc;
+  disasm_info->mach = bfd_mach_ppc64;
+  *disasm_func = &(::print_insn_big_powerpc);
+#elif defined (__powerpc__)
+  disasm_info->arch = bfd_arch_powerpc;
+  disasm_info->mach = bfd_mach_ppc;
+  *disasm_func = &(::print_insn_big_powerpc);
+#elif defined (__ia64__)
+  disasm_info->arch = bfd_arch_ia64;
+  disasm_info->mach = bfd_mach_ia64_elf64; // TODO: which mach? elf32 or elf64?
+  *disasm_func =&(::print_insn_ia64);
+#elif defined (__s390__)
+  disasm_info->arch = bfd_arch_s390;
+  disasm_info->mach = bfd_mach_s390_31;
+  *disasm_func = &(::print_insn_s390);
+#elif defined (__s390x__)
+  disasm_info->arch = bfd_arch_s390;
+  disasm_info->mach = bfd_mach_s390_64;
+  *disasm_func = &(::print_insn_s390);
+#endif
+ 
+  if (!*disasm_func)
+    throw new lib::opcodes::UnsupportedArchitectureException();
+  
+  disasm_info->read_memory_func = read_memory;
+  disasm_info->memory_error_func = memory_error;
+  disasm_info->print_address_func = print_address;
+}
+
+void
+lib::opcodes::Disassembler::disassembleStartEnd (jlong startAddress, 
+jlong endAddress)
+{
+  disassemble_info disasm_info;
+  int instr_length = 0;
+  int (*disasm_func) (bfd_vma, disassemble_info*) = NULL;
+  
+  init_disassemble(this, &disasm_info, &disasm_func);
+  bfd_vma current_address = (bfd_vma) startAddress;
+
+  while (current_address < (bfd_vma) endAddress)
+    {
+      this->startInstruction();
+      instr_length = disasm_func(current_address, &disasm_info);
+      this->endInstruction (current_address, instr_length);
+      current_address += instr_length;
+    }
+}
+
+void
 lib::opcodes::Disassembler::disassemble (jlong address, jlong instructions)
 {
   disassemble_info disasm_info;
-  int (*disasm_func) (bfd_vma, disassemble_info*);
   int instr_length = 0;
-
-  ::init_disassemble_info (&disasm_info, (void*) this, print_instruction);
-
-  disasm_info.flavour = bfd_target_unknown_flavour;
-#ifdef __x86_64__
-  disasm_info.arch = bfd_arch_i386;
-  disasm_info.mach = bfd_mach_x86_64;
-  disasm_func = &(::print_insn_i386_att);
-#elif defined (__i386__)
-  disasm_info.arch = bfd_arch_i386;
-  disasm_info.mach = bfd_mach_i386_i386;
-  disasm_func = &(::print_insn_i386_att);
-#elif defined (__powerpc64__)
-  disasm_info.arch = bfd_arch_powerpc;
-  disasm_info.mach = bfd_mach_ppc64;
-  disasm_func = &(::print_insn_big_powerpc);
-#elif defined (__powerpc__)
-  disasm_info.arch = bfd_arch_powerpc;
-  disasm_info.mach = bfd_mach_ppc;
-  disasm_func = &(::print_insn_big_powerpc);
-#elif defined (__ia64__)
-  disasm_info.arch = bfd_arch_ia64;
-  disasm_info.mach = bfd_mach_ia64_elf64; // TODO: which mach? elf32 or elf64?
-  disasm_func =&(::print_insn_ia64);
-#elif defined (__s390__)
-  disasm_info.arch = bfd_arch_s390;
-  disasm_info.mach = bfd_mach_s390_31;
-  disasm_func = &(::print_insn_s390);
-#elif defined (__s390x__)
-  disasm_info.arch = bfd_arch_s390;
-  disasm_info.mach = bfd_mach_s390_64;
-  disasm_func = &(::print_insn_s390);
-#endif
- 
-  if (!disasm_func)
-    throw new lib::opcodes::UnsupportedArchitectureException();
+  int (*disasm_func) (bfd_vma, disassemble_info*) = NULL;
   
-  disasm_info.read_memory_func = read_memory;
-  disasm_info.memory_error_func = memory_error;
-  disasm_info.print_address_func = print_address;
-
+  init_disassemble(this, &disasm_info, &disasm_func);
   bfd_vma current_address = (bfd_vma) address;
 
   for (int i = 0; i < instructions; i++)

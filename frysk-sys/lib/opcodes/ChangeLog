@@ -1,3 +1,12 @@
+2007-07-18  Nurdin Premji  <npremji@redhat.com>
+
+	* Disassembler.java (disassembleStartEnd): Added.
+	(disassembleInstructionsStartEnd): Added.
+	* cni/Disassembler.cxx (disassembleStartEnd): Implemented.
+	(init_disassemble): Added.
+	(disassemble): Use init_disassemble.
+	* TestDisassembler.java (testDisassembleStartEnd): Added.
+
 2007-07-17  Andrew Cagney  <cagney@redhat.com>
 
 	* libbfd_get.c: Delete file.  Move contents to ...
