@@ -1,3 +1,11 @@
+2007-07-18  Andrew Cagney  <cagney@redhat.com>
+
+	* MemorySpaceByteBuffer.java: Replace StatelessFile with Mem.
+	(MemorySpaceByteBuffer): Remove AddressSpace parameter.
+	(PeekRequest, PeeksRequest, PokeRequest): Make static.  Add local
+	pid field.
+	(PeeksRequest): Always use Mem when available.
+
 2007-07-16  Mark Wielaard  <mwielaard@redhat.com>
 
 	* LinuxProc.java (sendrecExe): Use File.getCanonicalPath().
