@@ -39,6 +39,7 @@
 
 package frysk.proc.live;
 
+import frysk.sys.proc.Exe;
 import frysk.proc.ProcId;
 import frysk.proc.Proc;
 import frysk.proc.Task;
@@ -61,7 +62,6 @@ import java.util.HashMap;
 import frysk.proc.TaskId;
 import java.util.Iterator;
 import java.io.File;
-import java.io.IOException;
 
 /**
  * A Linux Proc tracked using PTRACE.
@@ -199,19 +199,32 @@ public class LinuxProc
     }
     /**
      * Get the Executable.
+     *
+     * XXX: This is racy - it can miss file renames.  The alternative
+     * would be to have two methods; one returning a file descriptor
+     * and a second returning the exe as it should be (but possibly
+     * isn't :-).  Better yet have utrace handle it :-)
      */
-    protected String sendrecExe ()
-    {
-      String exeString = "/proc/" + getPid() + "/exe";
-      try
-	{
-	  exeString = new File(exeString).getCanonicalPath();
-	}
-      catch (IOException ioe)
-	{
-	  // Just return exeString. No permission or process died.
-	}
-      return exeString;
+    protected String sendrecExe () {
+	String exe = Exe.get(getPid());
+	// Linux's /proc/$$/exe can get screwed up in several ways.
+	// Detect each here and return null.
+	if (exe.endsWith(" (deleted)"))
+	    // Assume (possibly incorrectly) that a trailing
+	    // "(deleted)" always indicates a deleted file.
+	    return null;
+	if (exe.indexOf((char)0) >= 0)
+	    // Assume that an EXE that has somehow ended up with an
+	    // embedded NUL character is invalid.  This happens when
+	    // the kernel screws up "mv a-really-long-file $exe"
+	    // leaving the updated EXE string with something like
+	    // "$exe<NUL>ally-long-file (deleted)".
+	    return null;
+	if (new File(exe).exists())
+	    // Final sanity check; the above two should have covered
+	    // all possible cases.  But one never knows.
+	    return exe;
+	return null;
     }
     /**
      * Get the Process-wide ISA.

@@ -1,3 +1,7 @@
+2007-07-18  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Exe.cxx (get): Allow space for "(deleted)").
+
 2007-07-18  Mike Cvet  <mcvet@redhat.com>
 
 	* cni/slurp.cxx (uslurp): Call tryOpen() instead of manually trying to free

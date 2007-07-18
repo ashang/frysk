@@ -1,3 +1,9 @@
+2007-07-18  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFexe.java: New file.
+	* fexe.java: New file.
+	* fexe.xml: New file.
+
 2007-07-17  Adam Jocksch  <ajocksch@redhat.com>
 
 	* TestFhd.java (testHpdDisplayCommands): New test, tests the

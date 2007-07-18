@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,36 +37,61 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <stdio.h>
-#include <unistd.h>
-#include <errno.h>
+package frysk.bindir;
 
-#include <gcj/cni.h>
+import frysk.util.CommandlineParser;
+import frysk.util.Util;
+import frysk.proc.Proc;
+import frysk.proc.ProcId;
+import frysk.sys.proc.Exe;
+import gnu.classpath.tools.getopt.Option;
+import java.io.File;
 
-#include "frysk/sys/proc/cni/slurp.hxx"
-#include "frysk/sys/cni/Errno.hxx"
-#include "frysk/sys/proc/Exe.h"
-
-jstring
-frysk::sys::proc::Exe::get (jint pid)
-{
-  char file[FILENAME_MAX];
-  if (::snprintf (file, sizeof file, "/proc/%d/exe", (int) pid)
-      >= FILENAME_MAX)
-    throwRuntimeException ("snprintf: buffer overflow");
-
-  // /proc/$$/exe contains a soft-link specifying the name of the
-  // executable, possibly with "(deleted)" appended.  That link's
-  // upper bound is determined by FILENAME_MAX since that is the
-  // longest possible allowable file name.
-  const int maxLen = FILENAME_MAX + sizeof (" (deleted)") + 1;
-  char link[maxLen];
-  int len = ::readlink (file, link, sizeof (link));
-  if (len < 0 || len >= maxLen)
-    throwErrno (errno, "readlink");
-
-  // Note that some kernels have a "feature" where the link can become
-  // corrupted.  Just retun that, the caller needs to decide if the
-  // extracted link is valid.
-  return JvNewStringLatin1 (link, len);
+public class fexe {
+    static boolean verbose = false;
+    public static void main (String[] args) {
+	// Parse command line. Check pid provided.
+	CommandlineParser parser = new CommandlineParser("fexe") {
+		public void parseCores (File[] coreFiles) {
+		    for (int i = 0; i < coreFiles.length; i++) {
+			File coreFile = coreFiles[i];
+			Proc proc = Util.getProcFromCoreFile(coreFile);
+			if (verbose) {
+			    System.out.println(coreFile.getPath()
+					       + " "
+					       + proc.getExe());
+			} else {
+			    System.out.println(proc.getExe());
+			}
+		    }
+		    System.exit(0);
+		}
+		public void parsePids (ProcId[] pids) {
+		    for (int i= 0; i< pids.length; i++) {
+			ProcId id = pids[i];
+			Proc proc = Util.getProcFromPid(id);
+			if (verbose) {
+			    System.out.println(id.hashCode()
+					       + " "
+					       + proc.getExe()
+					       + " "
+					       + Exe.get(id.hashCode()));
+			} else {
+			    System.out.println(proc.getExe());
+			}
+		    }
+		    System.exit(0);
+		}
+	    };
+	parser.add(new Option('v', "More verbose output") {
+		public void parsed (String val) {
+		    verbose = true;
+		}
+	    });
+	parser.parse(args);
+	//If we got here, we didn't find a pid.
+	System.err.println("Error: No PID or COREFILE.");
+	parser.printHelp();
+	System.exit(1);
+    }
 }

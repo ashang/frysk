@@ -1,5 +1,8 @@
 2007-07-18  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxProc.java: Use frysk.sys.proc.Exe.get.  Validate the
+	returned string, returning NULL when a problem.
+
 	* MemorySpaceByteBuffer.java: Revert below change.
 	
 	* MemorySpaceByteBuffer.java: Replace StatelessFile with Mem.
