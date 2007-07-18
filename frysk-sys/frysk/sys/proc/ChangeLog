@@ -1,3 +1,10 @@
+2007-07-18  Mike Cvet  <mcvet@redhat.com>
+
+	* cni/slurp.cxx (uslurp): Call tryOpen() instead of manually trying to free
+	file descriptors.
+	(slurp): Ditto.
+	(slurp_thread): Ditto.
+
 2007-07-18  Andrew Cagney  <cagney@redhat.com>
 
 	* Mem.java: Add missing include of ProcessIdentifier.

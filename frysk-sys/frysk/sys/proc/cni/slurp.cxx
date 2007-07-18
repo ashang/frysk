@@ -72,31 +72,13 @@ uslurp(int pid, const char* name)
     return NULL;
   }
 
-  int fd = 0;
-
   // Open the file file.
-  while (1)
+  int fd = tryOpen (file, O_RDONLY, 0);
+  if (!fd)
     {
-      errno = 0;
-      fd = ::open (file, O_RDONLY);
-
-      if (fd >= 0)
-	    break;
-     
-      int gc = 0;
-      int err = errno;
-      switch (err)
-	    {
-	      case EMFILE:
-		    tryGarbageCollect (gc, err, "open");
-      	    continue;
-      	    
-      	  default:
-	        ::free(buf);
-	        throwErrno(err, "open", "file %s", file);
-	        return NULL;
-	    }
-  }
+      ::free (buf);
+      return NULL;
+    }
 
   do  {
     // Reads upto BUFSIZ bytes from /proc. It appears reading maps and possibly
@@ -145,10 +127,14 @@ slurp (int pid, const char* name, char buf[], long sizeof_buf)
     throwRuntimeException ("snprintf: buffer overflow");
   
   // Open the file file.
-  errno = 0;
-  int fd = ::open (file, O_RDONLY);
-  if (errno != 0)
-    return -1;
+  int fd = tryOpen (file, O_RDONLY, 0);
+
+  if (!fd)
+    {
+      ::free (buf);
+      return 0;
+    }
+
 
   // Read in the entire file file, NUL terminate the string.
   errno = 0;
@@ -179,10 +165,14 @@ slurp_thread (int pid, int tid, const char* name, char buf[], long sizeof_buf)
     throwRuntimeException ("snprintf: buffer overflow");
   
   // Open the file file.
-  errno = 0;
-  int fd = ::open (file, O_RDONLY);
-  if (errno != 0)
-    return -1;
+  int fd = tryOpen (file, O_RDONLY, 0);
+
+  if (!fd)
+    {
+      ::free (buf);
+      return 0;
+    }
+
 
   // Read in the entire file file, NUL terminate the string.
   errno = 0;
