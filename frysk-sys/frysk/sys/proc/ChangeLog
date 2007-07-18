@@ -1,3 +1,8 @@
+2007-07-17  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Exe.cxx: Restored.
+	* Exe.java: Restored.
+
 2007-07-17  Mike Cvet  <mcvet@redhat.com>
 
 	* cni/slurp.cxx (uslurp): Continue to attempt to open file and prod the
