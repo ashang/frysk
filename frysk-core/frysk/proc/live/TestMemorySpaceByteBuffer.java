@@ -44,7 +44,6 @@ import frysk.junit.TestCase;
 import frysk.testbed.TearDownProcess;
 import frysk.testbed.AttachedSelf;
 import frysk.testbed.LocalMemory;
-import frysk.sys.Ptrace.AddressSpace;
 import frysk.proc.Manager;
 
 public class TestMemorySpaceByteBuffer
@@ -60,8 +59,7 @@ public class TestMemorySpaceByteBuffer
     public void setUp ()
     {
 	pid = new AttachedSelf().hashCode();
-	memorySpaceByteBuffer
-	    = new MemorySpaceByteBuffer (pid, AddressSpace.TEXT);
+	memorySpaceByteBuffer = new MemorySpaceByteBuffer (pid);
     }
 
     public void testPeeks ()

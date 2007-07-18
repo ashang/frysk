@@ -65,8 +65,7 @@ public class TestByteBuffer
 	pid = new AttachedSelf().hashCode();
 	addressSpaceByteBuffer
 	    = new AddressSpaceByteBuffer (pid, AddressSpace.TEXT);
-	memorySpaceByteBuffer
-	    = new MemorySpaceByteBuffer (pid, AddressSpace.TEXT);
+	memorySpaceByteBuffer = new MemorySpaceByteBuffer (pid);
 	if (RegisterSet.REGS != null) {
 	    registerByteBuffer
 		= new RegisterSetByteBuffer (pid, RegisterSet.REGS);

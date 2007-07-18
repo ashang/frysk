@@ -50,7 +50,6 @@ import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import frysk.proc.IsaFactory;
 import frysk.proc.Isa;
-import frysk.sys.Ptrace.AddressSpace;
 import frysk.sys.Errno;
 import frysk.sys.Ptrace;
 import frysk.sys.Sig;
@@ -95,8 +94,7 @@ public class LinuxTask
     {
 	logger.log(Level.FINE, "Begin fillMemory\n", this);
 	ByteOrder byteOrder = getIsa().getByteOrder();
-	ByteBuffer memory
-	    = new MemorySpaceByteBuffer(getTid(), AddressSpace.DATA);
+	ByteBuffer memory = new MemorySpaceByteBuffer(getTid());
 	memory.order(byteOrder);
 	logger.log(Level.FINE, "End fillMemory\n", this); 
 	return memory;

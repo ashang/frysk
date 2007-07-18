@@ -40,54 +40,52 @@
 
 package frysk.proc.live;
 
-import java.io.File;
 import inua.eio.ByteBuffer;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.sys.Errno;
-//import java.io.IOException;
-import frysk.sys.StatelessFile;
+import frysk.sys.proc.Mem;
 import frysk.event.Request;
 import frysk.proc.Manager;
 
 public class MemorySpaceByteBuffer
     extends ByteBuffer
 {
-    private final AddressSpace addressSpace;
-    private final int pid;
-
-    private MemorySpaceByteBuffer (int pid, AddressSpace addressSpace,
-				   long lowerExtreem, long upperExtreem)
+    private MemorySpaceByteBuffer (long lowerExtreem,
+				   long upperExtreem,
+				   PeekRequest peekRequest,
+				   PokeRequest pokeRequest,
+				   PeeksRequest peeksRequest)
     {
 	super (lowerExtreem, upperExtreem);
-	this.pid = pid;
-	this.addressSpace = addressSpace;
-	peekRequest = new PeekRequest();
-	pokeRequest = new PokeRequest();
-	peeksRequest = new PeeksRequest();
+	this.peekRequest = peekRequest;
+	this.pokeRequest = pokeRequest;
+	this.peeksRequest = peeksRequest;
     }
-    public MemorySpaceByteBuffer (int pid, AddressSpace addressSpace)
+    public MemorySpaceByteBuffer (int pid)
     {
-	this (pid, addressSpace, 0, addressSpace.length ());
+	this (0, AddressSpace.TEXT.length (), new PeekRequest(pid),
+	      new PokeRequest(pid), new PeeksRequest(pid));
     }
 
-
-    private class PeekRequest
+    private static class PeekRequest
 	extends Request
     {
 	private long index;
 	private int value;
-	PeekRequest()
+	private final int pid;
+	PeekRequest(int pid)
 	{
 	    super(Manager.eventLoop);
+	    this.pid = pid;
 	}
 	public void execute ()
 	{
-	    value = addressSpace.peek(pid, index);
+	    value = AddressSpace.TEXT.peek(pid, index);
 	}
 	public int request (long index)
 	{
 	    if (isEventLoopThread())
-		return addressSpace.peek(pid, index);
+		return AddressSpace.TEXT.peek(pid, index);
 	    else synchronized (this) {
 		this.index = index;
 		request();
@@ -101,23 +99,25 @@ public class MemorySpaceByteBuffer
 	return peekRequest.request (index);
     }
 
-    private class PokeRequest
+    private static class PokeRequest
 	extends Request
     {
 	private long index;
 	private int value;
-	PokeRequest()
+	private final int pid;
+	PokeRequest(int pid)
 	{
 	    super(Manager.eventLoop);
+	    this.pid = pid;
 	}
 	public void execute ()
 	{
-	    addressSpace.poke(pid, index, value);
+	    AddressSpace.TEXT.poke(pid, index, value);
 	}
 	public void request (long index, int value)
 	{
 	    if (isEventLoopThread())
-		addressSpace.poke(pid, index, value);
+		AddressSpace.TEXT.poke(pid, index, value);
 	    else synchronized (this) {
 		this.index = index;
 		this.value = value;
@@ -131,33 +131,39 @@ public class MemorySpaceByteBuffer
 	pokeRequest.request (index, value);
     }
 
-    private class PeeksRequest
+    private static class PeeksRequest
 	extends Request
     {
 	private long index;
 	private long length;
 	private long offset;
 	private byte[] bytes;
-	PeeksRequest()
-	{
+	private Mem mem;
+	private final int pid;
+	PeeksRequest(int pid) {
 	    super(Manager.eventLoop);
+	    mem = new Mem(pid);
+	    this.pid = pid;
+	}
+	private long peek(long index, byte[] bytes, long offset, long length) {
+	    if (mem != null) {
+		try {
+		    return mem.pread (index, bytes, offset, length);
+		} catch (Errno ioe) {
+		    mem = null;
+		}
+	    }
+	    return AddressSpace.TEXT.peek(pid, index, length, bytes, offset);
 	}
 	public void execute ()
 	{
-	    length = addressSpace.peek(pid, index, length, bytes, offset);
+	    length = peek(index, bytes, offset, length);
 	}
 	public long request (long index, byte[] bytes,
 			     long offset, long length)
 	{
-	    long rc;
 	    if (isEventLoopThread()) {
-		File fn = new File ("/proc/" + pid + "/mem");
-		StatelessFile sf = new StatelessFile (fn);
-		try {
-		    rc = sf.pread (index, bytes, offset, length);
-		} catch (Errno ioe) {
-		    rc = addressSpace.peek(pid, index, length, bytes, offset);
-		}
+		return peek(index, bytes, offset, length);
 	    }
 	    else synchronized (this) {
 		this.index = index;
@@ -165,9 +171,8 @@ public class MemorySpaceByteBuffer
 		this.offset = offset;
 		this.length = length;
 		request();
-		rc = length;
+		return length;
 	    }
-	    return rc;
 	}
     }
     private final PeeksRequest peeksRequest;
@@ -180,7 +185,9 @@ public class MemorySpaceByteBuffer
 				    long upperExtreem)
     {
 	MemorySpaceByteBuffer up = (MemorySpaceByteBuffer)parent;
-	return new MemorySpaceByteBuffer (up.pid, up.addressSpace,
-					  lowerExtreem, upperExtreem);
+	return new MemorySpaceByteBuffer (lowerExtreem, upperExtreem,
+					  up.peekRequest,
+					  up.pokeRequest,
+					  up.peeksRequest);
     }
 }
