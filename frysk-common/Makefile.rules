@@ -856,3 +856,19 @@ checked-for-java-util-hashtable: files-java.list $(if $(GEN_DIRS),$(GEN_DIRNAME)
 		exit 1 ; \
 	fi
 	mv $@.tmp $@
+
+# Check for direct references to /proc, /proc accesseses should be
+# routed through frysk.sys.proc.
+
+# all-local: checked-for-slash-proc
+CLEANFILES += checked-for-slash-proc
+checked-for-slash-proc: files-java.list $(if $(GEN_DIRS),$(GEN_DIRNAME).jar)
+	grep -v frysk/sys < files-java.list \
+	    | xargs -r grep -H -n -e '"/proc' \
+		> $@.tmp \
+		|| :
+	if test -s $@.tmp ; then \
+		sed -e 's,$$,: use frysk.sys.proc,' $@.tmp ; \
+		exit 1 ; \
+	fi
+	mv $@.tmp $@

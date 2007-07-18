@@ -1,5 +1,7 @@
 2007-07-17  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (checked-for-slash-proc): New target.
+	
 	* Makefile.rules (AM_CXXFLAGS): Add frysk-imports/include/.
 	
 	* Makefile.rules (files-java.list): Use full path to files.list in
