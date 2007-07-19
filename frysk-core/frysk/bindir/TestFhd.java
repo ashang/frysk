@@ -433,4 +433,20 @@ public class TestFhd
 	e.expect("Quitting...");
 	e.close();
     }
+    
+    public void testHpdDisassemble() {
+	child = new Expect(new String[] { new File(Config.getPkgLibDir(),
+		"hpd-c").getPath() });
+	e = new Expect(new String[] { new File(Config.getBinDir(), "fhpd")
+		.getPath() });
+	e.expect(prompt);
+	// Attach
+	e.send("attach " + child.getPid() + "\n\n");
+	e.expect(5, "attach.*\n" + prompt);
+	e.send("disassemble\n");
+	e.expect(5, "\\*.*test.*\n(.*\n)*" + prompt);
+	e.send("quit\n");
+	e.expect("Quitting...");
+	e.close();
+    }
 }
