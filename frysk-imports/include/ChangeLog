@@ -1,5 +1,20 @@
 2007-07-19  Andrew Cagney  <cagney@redhat.com>
 
+	* frysk-asm.h: Remove instruction descriptions.
+	(COMPARE_IMMED, TEST): Delete.
+	(PUSH, POP, PUSH_BASEP, MOVE_STACKP): Delete.
+	(ENTER, ENTER_MAIN, EXIT, CALL): Delete.
+	(LOAD_STACK, STORE_STACK): Delete.
+	(STACKP, BASEP, IPREG, REG4): Delete.
+	(REG0): Define.
+	(WORD): Define.
+	(JUMP_REG): Define.
+	(.section .note.GNU-stack): Specify.
+	(FUNCTIN_BEGIN, FUNCTION_END, FUNCTION_PROLOGUE)
+	(FUNCTION_EPILOGUE, FUNCTION_RETURN): Define.
+	(The FRYSK ABI): Document.
+	(SYSCALL): Define.
+	
 	* fixme-asm.h: Copy of frysk-asm.h.
 
 2007-07-04  Mike Cvet  <mcvet@redhat.com>
