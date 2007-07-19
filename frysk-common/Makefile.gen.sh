@@ -527,6 +527,11 @@ for suffix in .cxx .c .hxx .s .S ; do
 	else
 	    echo "${sources} += ${file}"
 	fi
+	case "${suffix}" in
+	    # Hardwire assembler dependency on include/frysk-asm.h;
+	    # automake doesn't generate this :-( FIXME: ARCH-32 case?
+	    .S|.s) echo "${name}.\$(OBJEXT): \$(top_srcdir)/../frysk-imports/include/frysk-asm.h" ;;
+	esac
     done
 done
 

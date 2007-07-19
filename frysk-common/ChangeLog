@@ -1,3 +1,8 @@
+2007-07-19  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (.S, .s): Hardwire dependency on
+	frysk-imports/include/frysk-asm.h.
+
 2007-07-17  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (checked-for-slash-proc): New target.
