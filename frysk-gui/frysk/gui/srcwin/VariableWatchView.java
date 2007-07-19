@@ -37,7 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.gui.srcwin;
 
 import java.util.Iterator;
@@ -64,211 +63,241 @@ import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.gui.sessions.WatchListListener;
-import frysk.value.Value;
+import frysk.rt.UpdatingDisplayValue;
 
-public class VariableWatchView
-    extends TreeView
-    implements TreeSelectionListener, WatchListListener
-{
+public class VariableWatchView extends TreeView implements
+	TreeSelectionListener, WatchListListener {
 
-  public static final String VAR_WATCHES = "variable_watches";
+    public static final String VAR_WATCHES = "variable_watches";
 
-  public interface WatchViewListener
-  {
-    void variableSelected (Value var);
-  }
-
-  private DataColumn[] traceColumns;
-
-  private LinkedList observers;
-  
-  private SourceView view;
-  
-  private VariableWatchViewListener listener;
-  
-  private ListStore model;
-  
-  private int treeSize = 0;
-  
-  public VariableWatchView ()
-  {
-    super();
-
-    this.setName("varWatchView");
-    this.getAccessible().setName("varWatchView_variableWatchList");
-    this.getAccessible().setDescription(
-                                        "A list of all the variables that are being watched");
-
-    this.observers = new LinkedList();
-
-    traceColumns = new DataColumn[] { new DataColumnString(),
-                                     new DataColumnString(),
-                                     new DataColumnObject()};
-
-    this.model = new ListStore(traceColumns);
-
-    this.setModel(model);
-
-    TreeViewColumn column = new TreeViewColumn();
-    column.setTitle("Name");
-    CellRenderer renderer = new CellRendererText();
-    column.packStart(renderer, true);
-    column.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
-                               traceColumns[0]);
-    this.appendColumn(column);
-
-    column = new TreeViewColumn();
-    column.setTitle("Value");
-    renderer = new CellRendererText();
-    column.packStart(renderer, true);
-    column.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
-                               traceColumns[1]);
-    this.appendColumn(column);
-
-    this.getSelection().setMode(SelectionMode.SINGLE);
-
-    this.getSelection().addListener(this);
-    listener = new VariableWatchViewListener();
-    this.addListener(listener);
-  }
-  
-  public void setView (SourceView sv)
-  {
-    this.view = sv;
-  }
-
-  /**
-   * Adds a listener to this list of observers.
-   * 
-   * @param listener    The Listener to be added.
-   */
-  public void addObserver (WatchViewListener listener)
-  {
-    this.observers.add(listener);
-  }
-
-  /**
-   * Notifies all observers of the selected Variable
-   * 
-   * @param var The selected Variable.
-   */
-  private void notifyListeners (Value var)
-  {
-    Iterator iter = this.observers.iterator();
-
-    while (iter.hasNext())
-      ((WatchViewListener) iter.next()).variableSelected(var);
-  }
-
-  /**
-   * Called when the selection in this TreeView has changed.
-   */
-  public void selectionChangedEvent (TreeSelectionEvent arg0)
-  {
-    TreeIter selected = null;
-    
-    try
-    {
-      selected = this.model.getIter(this.getSelection().getSelectedRows()[0]);
+    public interface WatchViewListener {
+	void variableSelected(UpdatingDisplayValue disp);
     }
-    catch (ArrayIndexOutOfBoundsException aoobe)
-    {
-      return;
+
+    private DataColumn[] traceColumns;
+
+    private LinkedList observers;
+
+    private SourceView view;
+
+    private VariableWatchViewListener listener;
+
+    private ListStore model;
+
+    private int treeSize = 0;
+
+    public VariableWatchView() {
+	super();
+
+	this.setName("varWatchView");
+	this.getAccessible().setName("varWatchView_variableWatchList");
+	this.getAccessible().setDescription(
+		"A list of all the variables that are being watched");
+
+	this.observers = new LinkedList();
+
+	traceColumns = new DataColumn[] { new DataColumnString(),
+		new DataColumnString(), new DataColumnObject() };
+
+	this.model = new ListStore(traceColumns);
+
+	this.setModel(model);
+
+	TreeViewColumn column = new TreeViewColumn();
+	column.setTitle("Name");
+	CellRenderer renderer = new CellRendererText();
+	column.packStart(renderer, true);
+	column.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
+		traceColumns[0]);
+	this.appendColumn(column);
+
+	column = new TreeViewColumn();
+	column.setTitle("Value");
+	renderer = new CellRendererText();
+	column.packStart(renderer, true);
+	column.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
+		traceColumns[1]);
+	this.appendColumn(column);
+
+	this.getSelection().setMode(SelectionMode.SINGLE);
+
+	this.getSelection().addListener(this);
+	listener = new VariableWatchViewListener();
+	this.addListener(listener);
     }
-    
-    this.notifyListeners((Value) this.model.getValue(
-                    selected, (DataColumnObject) this.traceColumns[2]));
-  }
-  
-  /**
-   * Generates a new right-click menu when a row with a Variable
-   * is clicked.
-   * 
-   * @param event   The click event
-   */
-  public void clickedOnVariable(MouseEvent event)
-  {
-    Menu m = new Menu();
-    MenuItem removeItem = new MenuItem("Remove from Variable Watches", false);
-    m.append(removeItem);
-    removeItem.setSensitive(true);
-    removeItem.addListener(new MenuItemListener()
-    {
-      public void menuItemEvent (MenuItemEvent arg0)
-      {
-        handleClick();
-      }
-    });
-    
-    m.showAll();
-    m.popup();
-  }
-   
-  /**
-   * Finds the selected Variable and tells the View view
-   * to remove it, which will then update this TreeView.
-   */
-  private void handleClick()
-  {
-    TreePath[] paths = this.getSelection().getSelectedRows();
-    
-    Value selected = (Value) model.getValue(model.getIter(paths[0]),
-                             (DataColumnObject) traceColumns[2]);
-    this.view.removeVar(selected);
-  }
 
-  /*
-   * When the list of watched variables we're displaying is changed, re-populate the model
-   * (non-Javadoc)
-   * @see frysk.gui.srcwin.VariableWatchListener#variableWatchChanged(java.util.Iterator)
-   */
-  public void variableWatchChanged (Iterator vars)
-  {
-    model.clear();
-    
-    while(vars.hasNext())
-      {
-	Value var = (Value) vars.next();
-	addTrace(var);
-      }
-  }
-  
-  /**
-   * Addes a Variable row to this TreeView.
-   * 
-   * @param var
-   */
-  private void addTrace (Value var)
-  {
-    TreeIter iter = this.model.appendRow();
-    this.treeSize++;
-    
-    this.model.setValue(iter, (DataColumnString) this.traceColumns[0], var.getText());
-    this.model.setValue(iter, (DataColumnString) this.traceColumns[1],
-                       "" + var.toString());
-    this.model.setValue(iter, (DataColumnObject) this.traceColumns[2], var);
-    this.showAll();
-  }
-  
-  /**
-   * Checks for right-clicks.
-   */
-  private class VariableWatchViewListener
-      implements MouseListener
-  {
-
-    public boolean mouseEvent (MouseEvent event)
-    {
-      if (! event.isOfType(MouseEvent.Type.BUTTON_PRESS))
-        return false;
-      
-      if (event.getButtonPressed() == MouseEvent.BUTTON3)
-        {
-          clickedOnVariable(event);
-        }
-
-      return false;
+    public void setView(SourceView sv) {
+	this.view = sv;
     }
-  }
+
+    /**
+     * Adds a listener to this list of observers.
+     * 
+     * @param listener
+     *                The Listener to be added.
+     */
+    public void addObserver(WatchViewListener listener) {
+	this.observers.add(listener);
+    }
+
+    /**
+     * Notifies all observers of the selected Variable
+     * 
+     * @param disp
+     *                The selected Variable.
+     */
+    private void notifyListeners(UpdatingDisplayValue disp) {
+	Iterator iter = this.observers.iterator();
+
+	while (iter.hasNext())
+	    ((WatchViewListener) iter.next()).variableSelected(disp);
+    }
+
+    /**
+     * Called when the selection in this TreeView has changed.
+     */
+    public void selectionChangedEvent(TreeSelectionEvent arg0) {
+	TreeIter selected = null;
+
+	try {
+	    selected = this.model
+		    .getIter(this.getSelection().getSelectedRows()[0]);
+	} catch (ArrayIndexOutOfBoundsException aoobe) {
+	    return;
+	}
+
+	this.notifyListeners((UpdatingDisplayValue) this.model.getValue(
+		selected, (DataColumnObject) this.traceColumns[2]));
+    }
+
+    /**
+     * Generates a new right-click menu when a row with a Variable is
+     * clicked.
+     * 
+     * @param event
+     *                The click event
+     */
+    public void clickedOnVariable(MouseEvent event) {
+	Menu m = new Menu();
+	MenuItem removeItem = new MenuItem("Remove from Variable Watches",
+		false);
+	m.append(removeItem);
+	removeItem.setSensitive(true);
+	removeItem.addListener(new MenuItemListener() {
+	    public void menuItemEvent(MenuItemEvent arg0) {
+		handleClick();
+	    }
+	});
+
+	m.showAll();
+	m.popup();
+    }
+
+    /**
+     * Finds the selected Variable and tells the View view to remove it,
+     * which will then update this TreeView.
+     */
+    private void handleClick() {
+	TreePath[] paths = this.getSelection().getSelectedRows();
+
+	UpdatingDisplayValue disp = (UpdatingDisplayValue) model.getValue(model
+		.getIter(paths[0]), (DataColumnObject) traceColumns[2]);
+	this.view.removeDisplay(disp);
+    }
+
+    /*
+     * Fired whenever a display is added (non-Javadoc)
+     * 
+     * @see frysk.gui.sessions.WatchListListener#variableWatchAdded(frysk.rt.UpdatingDisplayValue)
+     */
+    public void variableWatchAdded(UpdatingDisplayValue disp) {
+	TreeIter iter = this.model.appendRow();
+	this.treeSize++;
+
+	this.model.setValue(iter, (DataColumnString) this.traceColumns[0], disp
+		.getName());
+	this.model.setValue(iter, (DataColumnString) this.traceColumns[1], ""
+		+ (disp.isAvailable() ? disp.getValue().toString()
+			: "<unavailable>"));
+	this.model
+		.setValue(iter, (DataColumnObject) this.traceColumns[2], disp);
+	this.showAll();
+    }
+
+    /*
+     * Fired when a display updates, provides the display that was updated
+     * (non-Javadoc)
+     * 
+     * @see frysk.gui.srcwin.VariableWatchListener#variableWatchChanged(java.util.Iterator)
+     */
+    public void variableWatchChanged(UpdatingDisplayValue disp) {
+	TreeIter iter = this.model.getFirstIter();
+	// Compare the display against all the displays in the list
+	while (iter != null) {
+	    UpdatingDisplayValue stored = (UpdatingDisplayValue) this.model
+		    .getValue(iter, (DataColumnObject) this.traceColumns[2]);
+
+	    // If this is the display that's being updated, refresh it's
+                // value and
+	    // return
+	    if (stored.equals(disp)) {
+		this.model.setValue(iter,
+			(DataColumnString) this.traceColumns[1], ""
+				+ (disp.isAvailable() ? disp.getValue()
+					.toString() : "<unavailable>"));
+		return;
+	    }
+
+	    // Otherwise advance to the next iterator
+	    iter = iter.getNextIter();
+	}
+
+	// We should not get here
+	System.err.println("Error: Recieved an update for a display that was"
+		+ "not already in the watched view");
+    }
+
+    /*
+     * Fired whenever a watch is deleted (non-Javadoc)
+     * 
+     * @see frysk.gui.sessions.WatchListListener#variableWatchDeleted(frysk.rt.UpdatingDisplayValue)
+     */
+    public void variableWatchDeleted(UpdatingDisplayValue disp) {
+	TreeIter iter = this.model.getFirstIter();
+	while (iter != null) {
+	    UpdatingDisplayValue stored = (UpdatingDisplayValue) this.model
+		    .getValue(iter, (DataColumnObject) this.traceColumns[2]);
+
+	    // If this is the display, remove it
+	    if (stored.equals(disp)) {
+		this.model.removeRow(iter);
+		return;
+	    }
+
+	    // Else advance to the next row
+	    iter = iter.getNextIter();
+	}
+
+	// Should not get here
+	System.err.println("Error: Recieved a delete event for a display"
+		+ "that we did not have");
+    }
+
+    /**
+     * Checks for right-clicks.
+     */
+    private class VariableWatchViewListener implements MouseListener {
+
+	public boolean mouseEvent(MouseEvent event) {
+	    if (!event.isOfType(MouseEvent.Type.BUTTON_PRESS))
+		return false;
+
+	    if (event.getButtonPressed() == MouseEvent.BUTTON3) {
+		clickedOnVariable(event);
+	    }
+
+	    return false;
+	}
+    }
 
 }

@@ -39,19 +39,37 @@
 
 package frysk.gui.sessions;
 
-import java.util.Iterator;
+import frysk.rt.UpdatingDisplayValue;
 
 /**
  * Classes implementing VariableWatchListener should be looking to recieve
  * events when variables are added, removed, or refreshed from a WatchList
- *
+ * 
  */
-public interface WatchListListener
-{
-  /**
-   * Called whenever a variable is added, removed, or refreshed in the
-   * list of watched variables
-   *
-   */
-  void variableWatchChanged(Iterator vars);
+public interface WatchListListener {
+    /**
+     * Called whenever a variable is added to the list of watched
+     * variables
+     * 
+     * @param disp 
+     * 		      The display that was added
+     */
+    void variableWatchAdded(UpdatingDisplayValue disp);
+    /**
+     * Called whenever a variable is refreshed in the list of watched
+     * variables
+     * 
+     * @param disp
+     *                The display that was updated
+     */
+    void variableWatchChanged(UpdatingDisplayValue disp);
+
+    /**
+     * Called whenever a display is removed from the list of watched
+     * variables
+     * 
+     * @param disp
+     *                The display that was removed
+     */
+    void variableWatchDeleted(UpdatingDisplayValue disp);
 }

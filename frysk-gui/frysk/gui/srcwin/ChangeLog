@@ -1,3 +1,25 @@
+2007-07-19  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceBuffer.java: Reformatted.
+	(refreshVars): Removed.
+	* SourceView.java: Reformatted.
+	(refreshVars): Removed.
+	* SourceWindow.java (addVariableTrace): Now creates a display
+	object and then passes that to the watch list.
+	(removeVariableTrace): Now converts the value into a display.
+	(removeDisplay): Added.
+	(populateStackBrowser): Removed code for updating variable watches.
+	* VariableWatchView.java (WatchViewListener): Now passes a 
+	display instead of a value.
+	(handleClick): Now casts to a display.
+	(variableWatchAdded): New function, adds a display to the watched
+	list.
+	(variableWatchChanged): Now only takes the display that was updated and
+	updates it in place.
+	(variableWatchDeleted): New function, takes the display to remove
+	from the list.
+	(selectionChangedEvent): Now casts to display.
+
 2007-07-18  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindow.java: Add thread ID(TID) to the source view title.

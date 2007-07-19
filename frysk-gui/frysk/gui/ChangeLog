@@ -1,3 +1,18 @@
+2007-07-19  Adam Jocksch  <ajocksch@redhat.com>
+
+	* sessions/WatchListListener.java: Reformatted.
+	(variableWatchAdded): New method.
+	(variableWatchDeleted): New method.
+	(variableWatchChanged): Now takes a display instead of a value.
+	* sessions/WatchList.java: Reformatted.
+	(addVariable): Now takes a display.
+	(removeVariable): Ditto.
+	(clearVariables): Now notifies observers of the individual deletions.
+	(save): Refactored to reflect that we are now storing displays.
+	(notifyListenersAdded): New method.
+	(nofityListenersRemoved): Ditto.
+	(notifyListenersUpdated): Renamed from notifyListeners.
+
 2007-07-16  Mark Wielaard  <mwielaard@redhat.com>
 
 	* gladedir/frysk_create_session_druid.glade (label128):
