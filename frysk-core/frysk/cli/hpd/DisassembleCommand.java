@@ -56,7 +56,7 @@ import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
 
 public class DisassembleCommand extends CLIHandler {
-
+    
     private static String name = "disassemble";
 
     private static String description = "disassemble a section of memory";
@@ -92,8 +92,33 @@ public class DisassembleCommand extends CLIHandler {
 		return;
 	    }
 	} else if (params.size() == 2) {
-	    long startInstruction = Long.parseLong((String) params.get(0));
-	    long endInstruction = Long.parseLong((String) params.get(1));
+	    long startInstruction, endInstruction;
+	    try {
+		String sInput = (String) params.get(0);
+		if (cli.debugInfo != null)
+		    startInstruction = cli.debugInfo.print(sInput, cli.frame)
+			    .getLong();
+		else
+		    startInstruction = DebugInfo.printNoSymbolTable(sInput)
+			    .getLong();
+	    } catch (NameNotFoundException nnfe) {
+		cli.addMessage(new Message(nnfe.getMessage(),
+			Message.TYPE_ERROR));
+		return;
+	    }
+	    try {
+		String sInput = (String) params.get(1);
+		if (cli.debugInfo != null)
+		    endInstruction = cli.debugInfo.print(sInput, cli.frame)
+			    .getLong();
+		else
+		    endInstruction = DebugInfo.printNoSymbolTable(sInput)
+			    .getLong();
+	    } catch (NameNotFoundException nnfe) {
+		cli.addMessage(new Message(nnfe.getMessage(),
+			Message.TYPE_ERROR));
+		return;
+	    }
 	    List instructions = disassembler.disassembleInstructionsStartEnd(
 		    startInstruction, endInstruction);
 	    printInstructions(-1, instructions);
@@ -102,7 +127,8 @@ public class DisassembleCommand extends CLIHandler {
 	    throw new RuntimeException("too many arguments to disassemble");
 	}
 
-	DisassembleSymbol symbol = new DisassembleSymbol(disassembler);
+	DisassembleSymbol symbol = new DisassembleSymbol(disassembler,
+		currentInstruction);
 	Dwfl dwfl = DwflCache.getDwfl(getCLI().getTask());
 	dwfl.getModule(currentInstruction)
 		.getSymbol(currentInstruction, symbol);
@@ -117,32 +143,61 @@ public class DisassembleCommand extends CLIHandler {
          */
     private void printInstructions(long currentAddress, List instructions) {
 
+	int wrapLines = 10;
+	HardList cache = new HardList(wrapLines * 2);
 	Iterator iter = instructions.iterator();
+
+	boolean foundCurrent = false;
+	while (iter.hasNext() && !foundCurrent) {
+	    Instruction instruction = (Instruction) iter.next();
+	    cache.add(instruction);
+	    if (instruction.address == currentAddress) {
+		foundCurrent = true;
+	    }
+	}
+
+	while (iter.hasNext() && wrapLines > 0) {
+	    Instruction instruction = (Instruction) iter.next();
+	    cache.add(instruction);
+	    wrapLines--;
+	}
+
+	iter = cache.iterator();
 
 	while (iter.hasNext()) {
 	    Instruction instruction = (Instruction) iter.next();
 	    if (instruction.address == currentAddress)
-		DisassembleCommand.this.cli.outWriter
-			.println("*" + instruction);
+		DisassembleCommand.this.cli.outWriter.print("*");
 	    else
-		DisassembleCommand.this.cli.outWriter
-			.println(" " + instruction);
+		DisassembleCommand.this.cli.outWriter.print(" ");
+	    DisassembleCommand.this.cli.outWriter.println(instruction);
 	}
     }
 
     private class DisassembleSymbol implements SymbolBuilder {
+	
+	    //XXX: TODO Need a better way of handling symbol size = 0
+		private long padding = 100;
 	private Disassembler disassembler;
 
 	private List instructions;
 
-	private DisassembleSymbol(Disassembler disassembler) {
+	private long currentInstruction;
+
+	private DisassembleSymbol(Disassembler disassembler,
+		long currentInstruction) {
 	    this.disassembler = disassembler;
+	    this.currentInstruction = currentInstruction;
 	}
 
 	public void symbol(String name, long value, long size, int type,
 		int bind, int visibility) {
-	    instructions = disassembler.disassembleInstructionsStartEnd(value,
-		    value + size);
+	    if (size == 0)
+		instructions = disassembler.disassembleInstructionsStartEnd(
+			value, currentInstruction + padding );
+	    else
+		instructions = disassembler.disassembleInstructionsStartEnd(
+			value, value + size);
 	}
 
     }

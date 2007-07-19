@@ -1,5 +1,10 @@
 2007-07-19  Nurdin Premji  <npremji@redhat.com>
 
+	* HardList.java: Added.
+	* DisassembleCommand.java(handle): Handle hexadecimal inputs to 
+	disassemble start end.
+	(printInstructions): Limit number of printed lines to 20.
+	
 	* CLI.java (CLI): Added a DisassembleCommand.
 	* DisassembleCommand.java: Added.
 	
