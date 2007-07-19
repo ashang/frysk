@@ -1,3 +1,8 @@
+2007-07-19  Nurdin Premji  <npremji@redhat.com>
+
+	* CLI.java (CLI): Added a DisassembleCommand.
+	* DisassembleCommand.java: Added.
+	
 2007-07-16  Andrew Cagney  <cagney@redhat.com>
 
 	* BreakpointCommand.java: Update, lib.dw merged into lib.elf.
