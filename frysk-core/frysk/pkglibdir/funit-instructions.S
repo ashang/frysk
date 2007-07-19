@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk-asm.h"
+#include "fixme-asm.h"
 
 .data	// Start of data segment
 	

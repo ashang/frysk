@@ -1,3 +1,10 @@
+2007-07-19  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-frameinfo-looper.S: Use fixme-asm.h, instead of
+	frysk-asm.h, for now.
+	* funit-instructions.S: Ditto.
+	* funit-rt-asmstepper.S: Ditto.
+
 2007-07-13  Mark Wielaard  <mwielaard@redhat.com>
 
 	* funit-instructions.c: Removed.

@@ -1,3 +1,7 @@
+2007-07-19  Andrew Cagney  <cagney@redhat.com>
+
+	* fixme-asm.h: Copy of frysk-asm.h.
+
 2007-07-04  Mike Cvet  <mcvet@redhat.com>
 
 	* frysk-asm.h: Reorganized and updated. Fixes #4739.

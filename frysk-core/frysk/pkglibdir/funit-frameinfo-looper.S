@@ -38,7 +38,7 @@
 // exception.
 
 
-#include "frysk-asm.h"
+#include "fixme-asm.h"
 
 #ifdef __x86_64__
 
