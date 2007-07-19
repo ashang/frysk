@@ -56,7 +56,7 @@ import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
 
 public class DisassembleCommand extends CLIHandler {
-    
+
     private static String name = "disassemble";
 
     private static String description = "disassemble a section of memory";
@@ -175,9 +175,10 @@ public class DisassembleCommand extends CLIHandler {
     }
 
     private class DisassembleSymbol implements SymbolBuilder {
-	
-	    //XXX: TODO Need a better way of handling symbol size = 0
-		private long padding = 100;
+
+	// XXX: Need a better way of handling symbol size = 0
+	private long padding = 100;
+
 	private Disassembler disassembler;
 
 	private List instructions;
@@ -194,7 +195,7 @@ public class DisassembleCommand extends CLIHandler {
 		int bind, int visibility) {
 	    if (size == 0)
 		instructions = disassembler.disassembleInstructionsStartEnd(
-			value, currentInstruction + padding );
+			value, currentInstruction + padding);
 	    else
 		instructions = disassembler.disassembleInstructionsStartEnd(
 			value, value + size);

@@ -39,63 +39,39 @@
 
 package frysk.cli.hpd;
 
-import java.util.Arrays;
+import java.util.AbstractCollection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class HardList{
+public class HardList extends AbstractCollection{
 
     Logger logger = Logger.getLogger("frysk");
-    private Object[] elements;
+    private LinkedList elements;
 
-    private int endIndex = 0;
+    private int hardSize;
 
     public HardList(int hardSize) {
 	logger.log(Level.FINE, "created HardList\n");
-	this.endIndex = 0;
-	elements = new Object[hardSize];
+	this.hardSize = hardSize;
+	elements = new LinkedList();
     }
 
-    public void add(Object o) {
+    public boolean add(Object o) {
 	logger.log(Level.FINE, "{0} adding {1}\n", new Object[] {this, o});
-	elements[endIndex] = o;
-	endIndex = (endIndex + 1) % elements.length;
+	elements.addLast(o);
+	if (elements.size() > hardSize)
+	    elements.removeFirst();
+	return true;
     }
     
     public Iterator iterator() {
-	return new HardIterator();
+	return elements.iterator();
     }
 
-    public String toString() {
-	return "HardQueue: " + Arrays.toString(elements) + "index: " + endIndex;
+    public int size() {
+	return elements.size();
     }
-    private class HardIterator implements Iterator {
-	private int index;
 
-	HardIterator() {
-	    logger.log(Level.FINE, "Created HardIterator\n");
-	    if (elements[elements.length-1] == null)
-		index = 0;
-	    else
-		index = (endIndex + 1) % elements.length;
-	}
-
-	public boolean hasNext() {
-	    logger.log(Level.FINE, "hasNext\n");
-	    return index != endIndex;
-	}
-
-	public Object next() {
-	    logger.log(Level.FINE, "next\n");
-	    Object ret = elements[index];
-	    index = (index+ 1) % elements.length;
-	    return ret;
-	}
-
-	public void remove() {
-	    // XXX: NO!
-	}
-
-    }
 }

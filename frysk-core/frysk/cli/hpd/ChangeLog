@@ -1,5 +1,8 @@
 2007-07-19  Nurdin Premji  <npremji@redhat.com>
 
+	* HardList.java: Drastically simplified, extend AbstractCollection.
+	* DisassembleCommand.java: Cleaned indenting.
+
 	* HardList.java: Added.
 	* DisassembleCommand.java(handle): Handle hexadecimal inputs to 
 	disassemble start end.
