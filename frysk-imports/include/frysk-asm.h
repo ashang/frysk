@@ -112,7 +112,7 @@
 // By convention, parameters are also passed between functions using
 // these registers (and hence they must not be preserved across across
 // function calls).  REG1-REG3 contain param1-param-3 et.al.  REG0
-// contains the return value.
+// is reserved for the return value.
 
 // By convention, the system call instruction assumes these registers
 // contain the system call information.  REG0 contains the SYSCALL
@@ -139,7 +139,7 @@
 #  define REG2 %gpr5
 #  define REG3 %gpr6
 #else
-# warning "no general purpose registers"
+#  warning "no general purpose registers"
 #endif
 
 
@@ -160,7 +160,7 @@
 #elif defined __powerpc64__
 #  define NO_OP nop
 #else
-# warning "No no-operation instruction defined"
+#  warning "No no-operation instruction defined"
 #endif
 
 
@@ -186,7 +186,7 @@
 //#elif defined __powerpc64__
 //#  define LOAD(DEST_REG,BASE_REG) //???
 //#else
-// # warning "No load instruction defined"
+// #  warning "No load instruction defined"
 //#endif
 
 #if defined __i386__
@@ -198,7 +198,7 @@
 #elif defined __powerpc64__
 #  define STORE(SOURCE_REG,BASE_REG) stw SOURCE_REG, 0(BASE_REG)
 #else
-# warning "No store instruction defined"
+#  warning "No store instruction defined"
 #endif
 
 
@@ -227,7 +227,7 @@
 #elif defined __powerpc64__
 #  define LOAD_IMMED(DEST_REG,CONST) li DEST_REG, CONST
 #else
-# warning "No load immediate instruction sequence defined"
+#  warning "No load immediate instruction sequence defined"
 #endif
 
 
@@ -267,7 +267,7 @@
 //#elif defined __powerpc64__
 //#  define ADD(DEST_REG, SOURCE_REG)
 #else
-# warning "No register-add instruction defined"
+#  warning "No register-add instruction defined"
 #endif
 
 #if defined __i386__
@@ -279,7 +279,7 @@
 //#elif defined __powerpc64__
 //#  define SUB(DEST_REG, SOURCE_REG)
 #else
-# warning "No register-subtract instruction defined"
+#  warning "No register-subtract instruction defined"
 #endif
 
 #if defined __i386__
@@ -291,20 +291,20 @@
 //#elif defined __powerpc64__
 //#  define MOV(DEST_REG, SOURCE_REG)
 #else
-# warning "No register-move instruction defined"
+#  warning "No register-move instruction defined"
 #endif
 
 #if defined __i386__
-#  define COMPARE(LHS_REG,RHS_REG) testl LHS_REG, RHS_REG
+#  define COMPARE(LHS_REG,RHS_REG) cmpl LHS_REG, RHS_REG
 #elif defined __x86_64__
-#  define COMPARE(LHS_REG,RHS_REG) testq LHS_REG, RHS_REG
+#  define COMPARE(LHS_REG,RHS_REG) cmpq LHS_REG, RHS_REG
 //#elif defined __powerpc__
 //#  define COMPARE(LHS_REG,RHS_REG)
 //#elif defined __powerpc64__
 //#  define COMPARE(LHS_REG,RHS_REG)
-//#else
-//# warning "No register-compare instruction defined"
-//#endif
+#else
+#  warning "No register-compare instruction defined"
+#endif
 
 
 
@@ -314,15 +314,15 @@
 // are supported.
 
 #if defined __i386__
-#  define JUMP_EQ(LABEL) jeq LABEL
+#  define JUMP_EQ(LABEL) je LABEL
 #elif defined __x86_64__
-#  define JUMP_EQ(LABEL) jeq LABEL
+#  define JUMP_EQ(LABEL) je LABEL
 #elif defined __powerpc__
 #  define JUMP_EQ(LABEL) bf eq, LABEL
 #elif defined __powerpc64__
 #  define JUMP_EQ(LABEL) bf eq, LABEL
 #else
-# warning "No jump equal instruction defined"
+#  warning "No jump equal instruction defined"
 #endif
 
 #if defined __i386__
@@ -334,19 +334,19 @@
 #elif defined __powerpc64__
 #  define JUMP_NE(LABEL) bf ne, LABEL
 #else
-# warning "No jump not-equal instruction defined"
+#  warning "No jump not-equal instruction defined"
 #endif
 
 #if defined __i386__
-#define JUMP(LABEL) jmp LABEL
+#  define JUMP(LABEL) jmp LABEL
 #elif defined __x86_64__
-#define JUMP(LABEL) jmp LABEL
+#  define JUMP(LABEL) jmp LABEL
 #elif defined __powerpc__
-#define JUMP(LABEL) b LABEL
+#  define JUMP(LABEL) b LABEL
 #elif defined __powerpc64__
-#define JUMP(LABEL) b LABEL
+#  define JUMP(LABEL) b LABEL
 #else
-# warning "No unoconditional jump instruction defined"
+#  warning "No unoconditional jump instruction defined"
 #endif
 
 #if defined __i386__
@@ -358,7 +358,7 @@
 #elif defined __powerpc64__
 #  define JUMP_REG(REG) br (REG)
 #else
-# warning "No indirect or register jump instruction defined"
+#  warning "No indirect or register jump instruction defined"
 #endif
 
 
@@ -386,8 +386,9 @@
 // particular determining information such as the function's size.
 
 // In addition, the "main" function is special.  MAIN_PROLOGUE,
-// instead of FUNCTION_PROLOGUE, is used.  .  After MAIN_PROLOGUE,
-// ARGC is in REG0 and ARGV is in REG1.
+// instead of FUNCTION_PROLOGUE, is used.  After MAIN_PROLOGUE,
+// ARGC is in REG1 and ARGV is in REG2, and ENVP in REG3.  REG0 is
+// undefined.
 
 // For instance, a host ABI conformant function, that includes unwind
 // information is written as:
@@ -408,7 +409,7 @@
 // These slots can then be accessed using STACK_LOAD and STACK_STORE
 // instructions.
 
-// For instance, to save REG0 on the stack before making a further
+// For instance, to save REG1 on the stack before making a further
 // function call, use:
 
 //        FUNCTION_PROLOGUE(foo, 1)
@@ -420,7 +421,7 @@
 
 // Implementation note: Parameter passing following the host's
 // calling-conventions is _not_ supported!  By convention, parameters
-// are passed in REG's 1-3, and the return value in REG 0.
+// are passed in REG's 1-3, and the return value is in REG0.
 
 #if defined __i386__
 #  define FUNCTION_CALL(LABEL) call LABEL
@@ -431,7 +432,7 @@
 #elif defined __powerpc64__
 #  define FUNCTION_CALL(LABEL) bl LABEL
 #else
-# warning "No function-call instruction defined"
+#  warning "No function-call instruction defined"
 #endif
 
 #define SANE_FUNCTION_BEGIN(FUNC) \
@@ -463,8 +464,6 @@
 #elif defined __x86_64__
 #  define FUNCTION_PROLOGUE(FUNC,SLOTS) pushq %rbp; movq %rsp, %rbp
 #elif defined __powerpc__
-// FIXME: This isn't right, REG1 through REG4 do not need to be
-// preserved
 #  define FUNCTION_PROLOGUE(FUNC,SLOTS) \
 	stwu    1, -32(1)  ; \
 	mflr    0          ; \
@@ -476,9 +475,11 @@
 	stw  REG3,  20(31) ; \
 	stw  REG4,  24(31)
 #elif defined __powerpc64__
-#  define FUNCTION_PROLOGUE(FUNC,SLOTS) push %gpr0; push %gpr3
+#  define FUNCTION_PROLOGUE(FUNC,SLOTS) \
+	push %gpr0; \
+	push %gpr3
 #else
-# warning "No function-prologue compound instruction defined"
+#  warning "No function-prologue compound instruction defined"
 #endif
 
 #if defined __i386__
@@ -499,7 +500,7 @@
 #elif defined __powerpc64__
 #  define FUNCTION_EPILOGUE(FUNC,SLOTS) pop %gpr0
 #else
-# warning "No function-epilogue instruction sequence defined"
+#  warning "No function-epilogue instruction sequence defined"
 #endif
 
 #if defined __i386__
@@ -511,10 +512,10 @@
 #elif defined __powerpc64__
 #  define FUNCTION_RETURN(FUNC,SLOTS) blr
 #else
-# warning "No function-epilogue instruction sequence defined"
+#  warning "No function-epilogue instruction sequence defined"
 #endif
 
-#define SANE_FUNCION_END(FUNC) .size FUNC, .-FUNC
+#define SANE_FUNCTION_END(FUNC) .size FUNC, . - FUNC
 #if defined __i386__
 #  define FUNCTION_END(FUNC,SLOTS) SANE_FUNCTION_END(FUNC)
 #elif defined __x86_64__
@@ -524,7 +525,7 @@
 #elif defined __powerpc64__
 #  define FUNCTION_END(FUNC,SLOTS) .size FUNC, .-_##FUNC
 #else
-# warning "No function-epilogue instruction sequence defined"
+#  warning "No function-epilogue instruction sequence defined"
 #endif
 
 #if defined __i386__
@@ -532,13 +533,12 @@
 	pushl %ebp ; \
 	movl %esp, %ebp ; \
 	movl 8(%ebp), REG1 ; \
-	movl 12(%ebp), REG2
+	movl 12(%ebp), REG2 ; \
+        movl 16(%ebp), REG3
 #elif defined __x86_64__
 #  define MAIN_PROLOGUE(SLOTS) \
 	pushq %rbp ; \
-	movq %rsp, %rbp ; \
-	movq %rdi, REG1 ; \
-	movq %rsi, REG2
+	movq %rsp, %rbp // ARGC, ARGV, and ENVP already in correct registers.
 #elif defined __powerpc__
 //In PowerPC ABI argc comes by default in reg 3 (Frysk REG1) and argv in reg 4 (Frysk REG2) 
 #define MAIN_PROLOGUE(SLOTS) FUNCTION_PROLOGUE(main,SLOTS)
@@ -555,7 +555,7 @@
 //#elif defined __powerpc64__
 //#  define STACK_LOAD(DEST_REG,SLOT)
 //#else
-//# warning "No stack-load instruction defined"
+//#  warning "No stack-load instruction defined"
 //#endif
 
 //#if defined __i386__
@@ -567,7 +567,7 @@
 //#elif defined __powerpc64__
 //#  define STACK_STORE(SOURCE_REG,SLOT)
 //#else
-//# warning "No stack-store instruction sequence defined"
+//#  warning "No stack-store instruction sequence defined"
 //#endif
 
 
@@ -584,13 +584,13 @@
 //         SYSCALL
 
 #if defined __i386__
-#  define SYSCALL int $80
+#  define SYSCALL int $0x80
 #elif defined __x86_64__
-#  define SYSCALL int $80
+#  define SYSCALL syscall
 //#elif defined __powerpc__
 //#elif defined __powerpc64__
 #else
-# warning "No stack-store instruction sequence defined"
+#  warning "No stack-store instruction sequence defined"
 #endif
 
 

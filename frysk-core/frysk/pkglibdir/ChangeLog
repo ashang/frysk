@@ -1,3 +1,7 @@
+2007-07-19  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-symbols.S: Rewrite of funit-stackframe.S.
+
 2007-07-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* funit-scopes.c: Removed crash() and moved sigfault
@@ -5,6 +9,8 @@
 	removed __attribute__((always_inline)).
 
 2007-07-19  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-symbols.S: New file; based on funit-stackframe.S.
 
 	* funit-frameinfo-looper.S: Use fixme-asm.h, instead of
 	frysk-asm.h, for now.

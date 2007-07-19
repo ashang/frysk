@@ -1,5 +1,10 @@
 2007-07-19  Andrew Cagney  <cagney@redhat.com>
 
+	* frysk-asm.h: Add missing #endif.
+	(JUMP_EQ, MAIN_PROLOGUE, COMPARE, SYSCALL): Fix i386 and x86-64
+	implementations.
+	(SANE_FUNCTION_END): Fix typo, was SANE_FUNCION_END.
+
 	* frysk-asm.h: Remove instruction descriptions.
 	(COMPARE_IMMED, TEST): Delete.
 	(PUSH, POP, PUSH_BASEP, MOVE_STACKP): Delete.

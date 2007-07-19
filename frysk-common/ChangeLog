@@ -1,5 +1,10 @@
 2007-07-19  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (.S, .s): For arch32, add hardwired dependency
+	on frysk-imports/include-frysk-asm.h.
+	(has_main): Recognize 'FUNCTION_BEGIN(main' as marker for a main
+	program.
+
 	* Makefile.gen.sh (.S, .s): Hardwire dependency on
 	frysk-imports/include/frysk-asm.h.
 

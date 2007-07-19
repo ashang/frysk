@@ -303,7 +303,7 @@ has_main ()
 	    grep -e '^main[( ]' -e ' main[( ]' $1 > /dev/null 2>&1
 	    ;;
         *.S | *.s )
-	    grep "main:" $1 > /dev/null 2>&1
+	    grep -e 'main:' -e 'FUNCTION_BEGIN *(main' $1 > /dev/null 2>&1
 	    ;;
 	* )
 	    false
@@ -530,7 +530,11 @@ for suffix in .cxx .c .hxx .s .S ; do
 	case "${suffix}" in
 	    # Hardwire assembler dependency on include/frysk-asm.h;
 	    # automake doesn't generate this :-( FIXME: ARCH-32 case?
-	    .S|.s) echo "${name}.\$(OBJEXT): \$(top_srcdir)/../frysk-imports/include/frysk-asm.h" ;;
+	    .S|.s)
+		echo "${name}.\$(OBJEXT): \$(top_srcdir)/../frysk-imports/include/frysk-asm.h"
+		echo "if DO_ARCH32_TEST"
+		echo "${d}/arch32/${b}.\$(OBJEXT): \$(top_srcdir)/../frysk-imports/include/frysk-asm.h"
+		echo "endif"
 	esac
     done
 done
