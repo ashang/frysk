@@ -46,11 +46,8 @@ import java.util.List;
 
 import javax.naming.NameNotFoundException;
 
-import frysk.debuginfo.DebugInfo;
 import frysk.dwfl.DwflCache;
-import frysk.stack.Frame;
 
-import lib.dwfl.Dwfl;
 import lib.dwfl.SymbolBuilder;
 import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
@@ -67,9 +64,8 @@ public class DisassembleCommand extends CLIHandler {
     }
 
     public void handle(Command cmd) throws ParseException {
-	Frame currentFrame = getCLI().frame;
 
-	long currentInstruction = currentFrame.getAddress();
+	long currentInstruction = getCLI().frame.getAddress();
 
 	Disassembler disassembler = new Disassembler(getCLI().getTask()
 		.getMemory());
@@ -77,15 +73,10 @@ public class DisassembleCommand extends CLIHandler {
 	ArrayList params = cmd.getParameters();
 
 	if (params.size() == 1) {
-	    // currentInstruction = Long.parseLong((String) params.get(0));
 	    try {
-		String sInput = (String) params.get(0);
-		if (cli.debugInfo != null)
-		    currentInstruction = cli.debugInfo.print(sInput, cli.frame)
-			    .getLong();
-		else
-		    currentInstruction = DebugInfo.printNoSymbolTable(sInput)
-			    .getLong();
+		currentInstruction = cli.parseValue((String) params.get(0))
+			.getLong();
+
 	    } catch (NameNotFoundException nnfe) {
 		cli.addMessage(new Message(nnfe.getMessage(),
 			Message.TYPE_ERROR));
@@ -94,26 +85,10 @@ public class DisassembleCommand extends CLIHandler {
 	} else if (params.size() == 2) {
 	    long startInstruction, endInstruction;
 	    try {
-		String sInput = (String) params.get(0);
-		if (cli.debugInfo != null)
-		    startInstruction = cli.debugInfo.print(sInput, cli.frame)
-			    .getLong();
-		else
-		    startInstruction = DebugInfo.printNoSymbolTable(sInput)
-			    .getLong();
-	    } catch (NameNotFoundException nnfe) {
-		cli.addMessage(new Message(nnfe.getMessage(),
-			Message.TYPE_ERROR));
-		return;
-	    }
-	    try {
-		String sInput = (String) params.get(1);
-		if (cli.debugInfo != null)
-		    endInstruction = cli.debugInfo.print(sInput, cli.frame)
-			    .getLong();
-		else
-		    endInstruction = DebugInfo.printNoSymbolTable(sInput)
-			    .getLong();
+		startInstruction = cli.parseValue((String) params.get(0))
+			.getLong();
+		endInstruction = cli.parseValue((String) params.get(1))
+			.getLong();
 	    } catch (NameNotFoundException nnfe) {
 		cli.addMessage(new Message(nnfe.getMessage(),
 			Message.TYPE_ERROR));
@@ -129,8 +104,7 @@ public class DisassembleCommand extends CLIHandler {
 
 	DisassembleSymbol symbol = new DisassembleSymbol(disassembler,
 		currentInstruction);
-	Dwfl dwfl = DwflCache.getDwfl(getCLI().getTask());
-	dwfl.getModule(currentInstruction)
+	DwflCache.getDwfl(getCLI().getTask()).getModule(currentInstruction)
 		.getSymbol(currentInstruction, symbol);
 	printInstructions(currentInstruction, symbol.instructions);
     }

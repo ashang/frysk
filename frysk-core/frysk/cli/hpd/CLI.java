@@ -55,6 +55,8 @@ import java.util.Observable;
 import java.text.ParseException;
 import java.lang.RuntimeException;
 
+import javax.naming.NameNotFoundException;
+
 import frysk.debuginfo.DebugInfo;
 import frysk.proc.Proc;
 import frysk.proc.Task;
@@ -62,6 +64,7 @@ import frysk.rt.SteppingEngine;
 import frysk.rt.TaskStepEngine;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
+import frysk.value.Value;
 
 public class CLI 
 {
@@ -246,6 +249,13 @@ public class CLI
     String name = handler.getName(); 
     handlers.put(name, handler);
     userhelp.addHelp(name, handler.getHelp());
+  }
+  
+  Value parseValue(String value) throws ParseException, NameNotFoundException{
+	  if (debugInfo != null)
+	    return debugInfo.print(value, frame);
+	  else
+	    return DebugInfo.printNoSymbolTable(value);        
   }
   
   /**

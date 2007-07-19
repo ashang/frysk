@@ -45,7 +45,6 @@ import java.util.ArrayList;
 
 import frysk.proc.UBigInteger;
 import frysk.value.Value;
-import frysk.debuginfo.DebugInfo;
 import javax.naming.NameNotFoundException;
 import lib.dwfl.BaseTypes;
 
@@ -112,10 +111,7 @@ class PrintCommand
 
 	Value result = null;
 	try {
-	  if (cli.debugInfo != null)
-	    result = cli.debugInfo.print(sInput, cli.frame);
-	  else
-	    result = DebugInfo.printNoSymbolTable(sInput);
+	    result = cli.parseValue(sInput);	  
         }
 	catch (NameNotFoundException nnfe)
 	    {

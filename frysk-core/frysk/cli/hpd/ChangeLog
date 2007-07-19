@@ -1,5 +1,11 @@
 2007-07-19  Nurdin Premji  <npremji@redhat.com>
 
+	* CLI.java (parseValue): Added.
+	* DisassembleCommand.java: Remove singular references to objects,
+	helps clean up imports.
+	(handle): Use cli.parseValue;
+	* PrintCommand.java (handle): Ditto.
+
 	* HardList.java: Drastically simplified, extend AbstractCollection.
 	* DisassembleCommand.java: Cleaned indenting.
 
@@ -9,6 +15,7 @@
 	(printInstructions): Limit number of printed lines to 20.
 	
 	* CLI.java (CLI): Added a DisassembleCommand.
+
 	* DisassembleCommand.java: Added.
 	
 2007-07-16  Andrew Cagney  <cagney@redhat.com>
