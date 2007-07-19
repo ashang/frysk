@@ -1,3 +1,9 @@
+2007-07-19  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* funit-scopes.c: Removed crash() and moved sigfault
+	code into second.
+	removed __attribute__((always_inline)).
+
 2007-07-19  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-frameinfo-looper.S: Use fixme-asm.h, instead of
