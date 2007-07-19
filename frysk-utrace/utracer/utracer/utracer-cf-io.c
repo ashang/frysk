@@ -38,7 +38,30 @@ client_report_exit (struct utrace_attached_engine *engine,
 	     struct task_struct *tsk,
 	     long orig_code, long *code)
 {
-  //  printk(KERN_ALERT "client reporting exit\n");// fixme use to cleanup 
+  utracing_info_s * utracing_info_found = lookup_utracing_info (tsk->pid);
+#if 0
+  struct proc_dir_entry * de = utracing_info_found->de_utracing_client;
+
+  if (de) {
+    lock_kernel();
+    if (atomic_read(&de->count)) {
+      if (atomic_dec_and_test(&de->count)) {
+	if (de->deleted) {
+	  printk("de_put: deferred delete of %s\n",
+		 de->name);
+	  free_proc_entry(de);
+	  utracing_info_found->de_utracing_client = NULL;
+	}
+      }
+    }
+    unlock_kernel();
+  }
+#endif
+  
+      
+  if (utracing_info_found)
+    remove_utracing_info_entry (utracing_info_found);
+  
   return UTRACE_ACTION_RESUME;			// utracing_info list
 }
 
@@ -46,7 +69,11 @@ static u32
 client_report_death (struct utrace_attached_engine *engine,
 	      struct task_struct *tsk)
 {
-  //  printk(KERN_ALERT "client reporting death\n");
+  utracing_info_s * utracing_info_found = lookup_utracing_info (tsk->pid);
+  struct proc_dir_entry * de = utracing_info_found->de_utracing_client;
+  printk(KERN_ALERT "client reporting death count = %d\n",
+	 de ? atomic_read(&de->count) : -999);
+
   return UTRACE_ACTION_RESUME;
 }
 
@@ -66,6 +93,29 @@ static const struct utrace_engine_ops utracing_utrace_ops = {
   .tracer_task		= NULL,
   .allow_access_process_vm = NULL,
 };
+
+static int
+cf_file_read ( char *buffer,
+               char **buffer_location,
+               off_t offset,
+               int buffer_length,
+               int *eof,
+               void *data)
+{
+  utracing_info_s * utracing_info_found  = (utracing_info_s *)data;
+  
+  if (utracing_info_found) {
+    int wrc;
+    // wrc == 0		==> condition true
+    // wrc == -ERESTARTSYS	==> signal intr
+    wrc = wait_event_interruptible (utracing_info_found->ifr_wait,
+			(1 == utracing_info_found->response_ready));
+    memset (buffer, 1, buffer_length);
+    *buffer_location = buffer;
+    return buffer_length;
+  }
+  else return -UTRACER_ETRACING;
+}
 
 int
 control_file_write (struct file *file,
@@ -119,7 +169,7 @@ control_file_write (struct file *file,
 	}
 	
 	de_utracing_cmd = create_proc_entry(UTRACER_CMD_FN,
-						S_IFREG | 0222,
+						S_IFREG | 0666,
 						de_utracing_client);
 	if (!de_utracing_cmd) {
 	  remove_proc_entry(client_pid_dir, de_utrace);
@@ -128,6 +178,7 @@ control_file_write (struct file *file,
 	}
 	
 	de_utracing_cmd->write_proc = if_file_write;
+	de_utracing_cmd->read_proc = cf_file_read;
 	
 	de_utracing_resp = create_proc_entry(UTRACER_RESP_FN,
 					     S_IFREG | 0444,
@@ -187,7 +238,7 @@ control_file_write (struct file *file,
             return rc;
           }
 	  de_utracing_cmd->data       = utracing_info_top;
-	  de_utracing_resp->data       = utracing_info_top;
+	  de_utracing_resp->data      = utracing_info_top;
 	}
 
 	return count;

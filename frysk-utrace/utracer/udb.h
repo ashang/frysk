@@ -26,7 +26,9 @@ DECL (int ctl_file_fd, -1);
 DECL (int utracer_cmd_file_fd, -1);
 DECL (int utracer_resp_file_fd, -1);
 
+#ifdef ENABLE_MODULE_OPS
 DECL (char * module_name, NULL);
+#endif
 
 DECL (char ** cl_cmds, NULL);
 DECL (int cl_cmds_next, 0);

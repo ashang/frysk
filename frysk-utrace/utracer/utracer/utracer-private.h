@@ -1,23 +1,20 @@
 #ifndef UTRACER_PRIVATE_H
 #define UTRACER_PRIVATE_H
 
-#ifndef DO_INIT
-extern
-#endif
-struct proc_dir_entry * de_utrace
 #ifdef DO_INIT
-= NULL
+#define DECL(v,i) v = i
+#else
+#define DECL(v,i) extern v
 #endif
-  ;
 
-#ifndef DO_INIT
-extern
+#if 0
+#define DB_PRINTK printk
+#else
+#define DB_PRINTK(fmt, a...)
 #endif
-struct proc_dir_entry * de_utrace_control
-#ifdef DO_INIT
-= NULL
-#endif
-  ;
+
+DECL (struct proc_dir_entry * de_utrace, NULL);
+DECL (struct proc_dir_entry * de_utrace_control, NULL);
 
 typedef struct _utraced_info_s {
   long utraced_pid;
@@ -45,6 +42,8 @@ typedef struct _utracing_info_s {
   wait_queue_head_t ifr_wait;
   wait_queue_head_t ifw_wait;
   wait_queue_head_t ifq_wait;
+  wait_queue_head_t ifx_wait;
+  long response_ready;
   long write_in_progress;
   void * queued_data;
   long queued_data_length;

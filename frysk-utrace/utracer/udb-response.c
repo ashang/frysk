@@ -18,6 +18,8 @@ resp_listener (void * arg)
   if_resp_u if_resp;
   ssize_t sz;
 
+  //  utrace_sync_if (SYNC_RESP);
+
   while (1) {
     sz = pread (utracer_resp_file_fd, &if_resp,
 		sizeof(if_resp), 0);
@@ -251,7 +253,7 @@ resp_listener (void * arg)
     case IF_RESP_SYNC_DATA:
       {
 	sync_resp_s sync_resp = if_resp.sync_resp;
-	fprintf (stdout, "\tsync %ld\n",
+	fprintf (stdout, "\tsync %ld received\n",
 		 sync_resp.sync_type);
 
 	if (cl_cmds && (0 < cl_cmds_next)) {

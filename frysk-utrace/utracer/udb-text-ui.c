@@ -291,8 +291,9 @@ printmmap_fcn (char ** saveptr)
 }
 
 static int
-quit_fcn(char ** saveptr)
+quit_fcn (char ** saveptr)
 {
+  // fixme -- have quit do more than end the cmd loop when don from -c option
   return 0;
 }
 
@@ -423,15 +424,22 @@ create_cmd_hash_table()
   int i, rc;
   rc = hcreate_r ((4 * nr_cmds)/3, &cmd_hash_table);
   if (0 == rc) {
-    unload_utracer();
+    //    unload_utracer();//fixme -- unregister if registered
+    cleanup_udb();
+    unregister_utracer (udb_pid);
+    close_ctl_file();
     fprintf (stderr, "\tCreating command hash table failed.\n");
     _exit (1);
   }
 
   for (i = 0; i < nr_cmds; i++) {
     ENTRY * entry;
-    if (0 == hsearch_r (cmds[i], ENTER, &entry, &cmd_hash_table))
+    if (0 == hsearch_r (cmds[i], ENTER, &entry, &cmd_hash_table)) {
+      cleanup_udb();
+      unregister_utracer (udb_pid);
+      close_ctl_file();
       error (1, errno, "Error building commands hash.");
+    }
   }
 }
 
@@ -441,14 +449,21 @@ create_reg_hash_table()
   int i, rc;
   rc = hcreate_r ((4 * nr_regs)/3, &reg_hash_table);
   if (0 == rc) {
+    cleanup_udb();
+    unregister_utracer (udb_pid);
+    close_ctl_file();
     fprintf (stderr, "\tCreating register hash table failed.\n");
     _exit (1);
   }
 
   for (i = 0; i < nr_regs; i++) {
     ENTRY * entry;
-    if (0 == hsearch_r (reg_mapping[i], ENTER, &entry, &reg_hash_table))
+    if (0 == hsearch_r (reg_mapping[i], ENTER, &entry, &reg_hash_table)) {
+      cleanup_udb();
+      unregister_utracer (udb_pid);
+      close_ctl_file();
       error (1, errno, "Error building register hash.");
+    }
   }
   reg_hash_table_valid = 1;
 }
@@ -459,14 +474,21 @@ create_sys_hash_table()
   int i, rc;
   rc = hcreate_r ((4 * nr_syscall_names)/3, &sys_hash_table);
   if (0 == rc) {
+    cleanup_udb();
+    unregister_utracer (udb_pid);
+    close_ctl_file();
     fprintf (stderr, "\tCreating syscall hash table failed.\n");
     _exit (1);
   }
 
   for (i = 0; i < nr_syscall_names; i++) {
     ENTRY * entry;
-    if (0 == hsearch_r (syscall_names[i], ENTER, &entry, &sys_hash_table))
+    if (0 == hsearch_r (syscall_names[i], ENTER, &entry, &sys_hash_table)) {
+      cleanup_udb();
+      unregister_utracer (udb_pid);
+      close_ctl_file();
       error (1, errno, "Error building syscall hash.");
+    }
   }
   sys_hash_table_valid = 1;
 }

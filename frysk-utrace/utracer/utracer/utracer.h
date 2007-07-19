@@ -34,7 +34,7 @@ typedef enum {
   IF_CMD_PRINTMMAP,
   IF_CMD_SYSCALL,
   IF_CMD_QUIESCE,
-  IF_CMD_SYNC
+  IF_CMD_SYNC,
 } if_cmd_e;
 
 typedef enum {
@@ -75,7 +75,8 @@ typedef struct {
 } listpids_cmd_s;
 
 typedef enum {
-  SYNC_INIT
+  SYNC_INIT,
+  SYNC_RESP
 } sync_cmd_e;
 
 typedef struct {
@@ -125,21 +126,21 @@ typedef union {
 } if_cmd_u;
 
 typedef enum {
-  IF_RESP_NULL,
-  IF_RESP_REG_DATA,
-  IF_RESP_CLONE_DATA,
-  IF_RESP_SIGNAL_DATA,
-  IF_RESP_EXIT_DATA,
-  IF_RESP_PIDS_DATA,
-  IF_RESP_DEATH_DATA,
-  IF_RESP_SWITCHPID_DATA,
-  IF_RESP_PRINTMMAP_DATA,
-  IF_RESP_SYSCALL_ENTRY_DATA,
-  IF_RESP_SYSCALL_EXIT_DATA,
-  IF_RESP_EXEC_DATA,
-  IF_RESP_ATTACH_DATA,
-  IF_RESP_QUIESCE_DATA,
-  IF_RESP_SYNC_DATA
+  IF_RESP_NULL,				//  0
+  IF_RESP_REG_DATA,			//  1
+  IF_RESP_CLONE_DATA,			//  2
+  IF_RESP_SIGNAL_DATA,			//  3
+  IF_RESP_EXIT_DATA,			//  4
+  IF_RESP_PIDS_DATA,			//  5
+  IF_RESP_DEATH_DATA,			//  6
+  IF_RESP_SWITCHPID_DATA,		//  7
+  IF_RESP_PRINTMMAP_DATA,		//  8
+  IF_RESP_SYSCALL_ENTRY_DATA,		//  9
+  IF_RESP_SYSCALL_EXIT_DATA,		// 10
+  IF_RESP_EXEC_DATA,			// 11
+  IF_RESP_ATTACH_DATA,			// 12
+  IF_RESP_QUIESCE_DATA,			// 13
+  IF_RESP_SYNC_DATA			// 14
 } if_resp_e; 
 
 typedef struct {
@@ -264,5 +265,10 @@ typedef enum {
   UTRACER_EMAX,
 } utracer_errno_e;
 
+typedef struct {
+  long cmd;
+  long bffr_len;
+  char * bffr;
+} utracer_ioctl_s;
 
 #endif  /* UTRACER_H */

@@ -1,3 +1,16 @@
+Thu Jul 19 11:41:27 2007  Chris Moller  <cmoller@redhat.com>
+
+	* utracer-base.c: Added code to synchronise the udb control
+	thread, the udb listener thread, and the module.  Still needs
+	work.  Added code to support ioctl ops to the kernel.  Kind of
+	experimental, but works so far.
+	* utracer-cf-io.c: Made the cmd file readable--part of the
+	synchronisation stuff.
+	* utracer-if-io.c: More synchronisation stuff.  Added stuff trying
+	to make the equivalent of /proc/<pid>/mem work; still busted,
+	needs work.
+	* utracer-private.h:  Clean-up and more synchronisation stuff.
+
 Tue Jul 10 11:38:09 2007  Chris Moller  <cmoller@redhat.com>
 
 	* utracer-base.c: Added initialisation for write proc wait queue.

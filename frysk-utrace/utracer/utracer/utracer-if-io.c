@@ -25,26 +25,50 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Chris Moller");
 
+
 static void
 queue_response (utracing_info_s * utracing_info_found,
 		void * resp,   int resp_len,
 		void * extra,  int extra_len,
 		void * extra2, int extra2_len)
 {
-  wait_event (utracing_info_found->ifq_wait,
-	      (0 >= utracing_info_found->queued_data_length));
+  int wrc;
+  
+  DB_PRINTK (KERN_ALERT "queue_response(%ld)\n", ((if_resp_u *)resp)->type);
+  // wrc == 0			==> timed out
+  // wrc == -ERESTARTSYS	==> signal intr
+  // otherwise			==> ok
+  wrc = wait_event_interruptible_timeout (utracing_info_found->ifq_wait,
+			      (0 >= utracing_info_found->queued_data_length),
+				      2 * HZ);
+  
+  DB_PRINTK (KERN_ALERT "queue_response wrc = %s\n",
+	     (0 == wrc) ? "timed out" :
+	     ((-ERESTARTSYS == wrc) ? "intr" : "okay"));
+  
+  // might return 0 length if wait ended by som random interrupt
+  if (0 >= utracing_info_found->queued_data_length) {
+    utracing_info_found->queued_data_length =
+      resp_len + extra_len + extra2_len;
+    utracing_info_found->queued_data =
+      kmalloc (resp_len + extra_len + extra2_len, GFP_KERNEL);
+    memcpy (utracing_info_found->queued_data, resp, resp_len);
+    if (extra)
+      memcpy (utracing_info_found->queued_data + resp_len, extra, extra_len);
+    if (extra2)
+      memcpy (utracing_info_found->queued_data + resp_len + extra_len,
+	      extra2, extra2_len);
+    wake_up (&(utracing_info_found->ifr_wait));
+  }
+}
 
-  utracing_info_found->queued_data_length =
-    resp_len + extra_len + extra2_len;
-  utracing_info_found->queued_data =
-    kmalloc (resp_len + extra_len + extra2_len, GFP_KERNEL);
-  memcpy (utracing_info_found->queued_data, resp, resp_len);
-  if (extra)
-    memcpy (utracing_info_found->queued_data + resp_len, extra, extra_len);
-  if (extra2)
-    memcpy (utracing_info_found->queued_data + resp_len + extra_len,
-	    extra2, extra2_len);
-  wake_up (&(utracing_info_found->ifr_wait));
+static int
+allow_access_process_vm (struct utrace_attached_engine *engine,
+			 struct task_struct *target,
+			 struct task_struct *caller)
+{
+  printk (KERN_ALERT "allow_access_process_vm\n");
+  return 1;
 }
 
 static u32
@@ -270,7 +294,7 @@ static const struct utrace_engine_ops utraced_utrace_ops = {
   .report_quiesce	= report_quiesce,
   .unsafe_exec		= NULL,
   .tracer_task		= NULL,
-  .allow_access_process_vm = NULL,
+  .allow_access_process_vm = allow_access_process_vm,
 };
 
 static int
@@ -322,6 +346,7 @@ attach_cmd_fcn (long utracing_pid, long utraced_pid,
     {
       attach_resp_s attach_resp = {IF_RESP_ATTACH_DATA,
 				   utraced_pid, (0 == rc) ? 1 : 0 };
+
       queue_response (utracing_info_found,
 		      &attach_resp, sizeof(attach_resp),
 		      NULL, 0,
@@ -533,7 +558,6 @@ handle_quiesce (run_cmd_s * run_cmd, unsigned long count, void * data)
 
   task = get_task (run_cmd->utraced_pid);
 
-  // fixme -- report quiesced
   if (task) {
     struct utrace_attached_engine * engine;
 
@@ -693,13 +717,23 @@ handle_sync (sync_cmd_s * sync_cmd, unsigned long count,
   int rc = count;
 
   if (utracing_info_found) {
-    sync_resp_s sync_resp = {IF_RESP_SYNC_DATA,
-			     sync_cmd->utracing_pid,
-			     sync_cmd->sync_type};
-    queue_response (utracing_info_found,
-		    &sync_resp, sizeof(sync_resp),
-		    NULL, 0,
-		    NULL, 0);
+#if 0
+    if (SYNC_RESP == sync_cmd->sync_type) {
+      utracing_info_found->response_ready = 1;
+      wake_up (&(utracing_info_found->ifx_wait));
+    }
+    else {
+#endif
+      sync_resp_s sync_resp = {IF_RESP_SYNC_DATA,
+			       sync_cmd->utracing_pid,
+			       sync_cmd->sync_type};
+      queue_response (utracing_info_found,
+		      &sync_resp, sizeof(sync_resp),
+		      NULL, 0,
+		      NULL, 0);
+#if 0
+    }
+#endif
     rc = count;
   }
   else rc = -UTRACER_ETRACING;
@@ -858,56 +892,76 @@ if_file_write (struct file *file,
                     void * data)
 {
   if_cmd_u if_cmd;
+  int wrc;
   int rc = count;
   utracing_info_s * utracing_info_found  = (utracing_info_s *)data;
+
+  // wrc == 0			==> condition true
+  // wrc == -ERESTARTSYS	==> signal intr
+  wrc = wait_event_interruptible (utracing_info_found->ifw_wait,
+			  (0 == utracing_info_found->write_in_progress));
+
+  DB_PRINTK (KERN_ALERT "if_file_write wrc = %s\n",
+	     (0 == wrc) ? "okay" : "intr");
+  // might return 0 length if wait ended by som random interrupt
+  if (0 == utracing_info_found->write_in_progress) {
+    utracing_info_found->write_in_progress = 1;
   
-  wait_event_interruptible (utracing_info_found->ifw_wait,
-			    (0 == utracing_info_found->write_in_progress));
+    if (count > sizeof(if_cmd_u)) return -ENOSPC;
 
-  utracing_info_found->write_in_progress = 1;
-  
-  if (count > sizeof(if_cmd_u)) return -ENOSPC;
+    if (copy_from_user(&if_cmd, buffer, count) ) return -EFAULT;
 
-  if (copy_from_user(&if_cmd, buffer, count) ) return -EFAULT;
+    switch (if_cmd.cmd) {
+    case IF_CMD_NULL:
+      DB_PRINTK (KERN_ALERT "IF_CMD_NULL\n");
+      break;
+    case IF_CMD_SYSCALL:
+      DB_PRINTK (KERN_ALERT "IF_CMD_SYSCALL\n");
+      rc = handle_syscall (&if_cmd.syscall_cmd, count, data);
+      break;
+    case IF_CMD_RUN:
+    case IF_CMD_QUIESCE:
+      DB_PRINTK (KERN_ALERT "IF_CMD_RUN?QUIESCE\n");
+      rc = handle_quiesce (&if_cmd.run_cmd, count, data);
+      break;
+    case IF_CMD_PRINTMMAP:
+      DB_PRINTK (KERN_ALERT "IF_CMD_PRINTMAP\n");
+      rc = handle_printmap (&if_cmd.printmmap_cmd, count, data);
+      break;
+    case IF_CMD_SWITCHPID:
+      DB_PRINTK (KERN_ALERT "IF_CMD_SWITCHPID\n");
+      rc = handle_switchpid (&if_cmd.switchpid_cmd, count, data);
+      break;
+    case IF_CMD_ATTACH:
+      DB_PRINTK (KERN_ALERT "IF_CMD_ATTACH\n");
+      rc = handle_attach (&if_cmd.attach_cmd, count, data);
+      break;
+    case IF_CMD_DETACH:
+      DB_PRINTK (KERN_ALERT "IF_CMD_DETACH\n");
+      rc = handle_detach (&if_cmd.attach_cmd, count, data);
+      break;
+    case IF_CMD_SYNC:
+      DB_PRINTK (KERN_ALERT "IF_CMD_SYNC\n");
+      rc = handle_sync (&if_cmd.sync_cmd, count, data);
+      break;
+    case IF_CMD_LIST_PIDS:
+      DB_PRINTK (KERN_ALERT "IF_CMD_LIST_PIDS\n");
+      rc = handle_listpids (&if_cmd.listpids_cmd, count, data);
+      break;
+    case IF_CMD_SET_REG:
+      // fixme -- actually do it
+      DB_PRINTK (KERN_ALERT "IF_CMD_SET_REG\n");
+      rc = count;
+      break;
+    case IF_CMD_READ_REG:
+      DB_PRINTK (KERN_ALERT "IF_CMD_READ_REG\n");
+      rc = handle_readreg (&if_cmd.readreg_cmd, count, data);
+      break;
+    }
 
-  switch (if_cmd.cmd) {
-  case IF_CMD_NULL:
-    break;
-  case IF_CMD_SYSCALL:
-    rc = handle_syscall (&if_cmd.syscall_cmd, count, data);
-    break;
-  case IF_CMD_RUN:
-  case IF_CMD_QUIESCE:
-    rc = handle_quiesce (&if_cmd.run_cmd, count, data);
-    break;
-  case IF_CMD_PRINTMMAP:
-    rc = handle_printmap (&if_cmd.printmmap_cmd, count, data);
-    break;
-  case IF_CMD_SWITCHPID:
-    rc = handle_switchpid (&if_cmd.switchpid_cmd, count, data);
-    break;
-  case IF_CMD_ATTACH:
-    rc = handle_attach (&if_cmd.attach_cmd, count, data);
-    break;
-  case IF_CMD_DETACH:
-    rc = handle_detach (&if_cmd.attach_cmd, count, data);
-    break;
-  case IF_CMD_SYNC:
-    rc = handle_sync (&if_cmd.sync_cmd, count, data);
-    break;
-  case IF_CMD_LIST_PIDS:
-    rc = handle_listpids (&if_cmd.listpids_cmd, count, data);
-    break;
-  case IF_CMD_SET_REG:
-    // fixme -- actually do it
-    return count;
-    break;
-  case IF_CMD_READ_REG:
-    rc = handle_readreg (&if_cmd.readreg_cmd, count, data);
-    break;
+    utracing_info_found->write_in_progress = 0;
   }
 
-  utracing_info_found->write_in_progress = 0;
   
   return rc;
 }
@@ -921,13 +975,26 @@ if_file_read ( char *buffer,
                void *data)
 {
   utracing_info_s * utracing_info_found  = (utracing_info_s *)data;
+  
   if (utracing_info_found) {
+    int wrc = 0;
     int rc = 0;
 
-    if (0 == offset)
-      wait_event_interruptible (utracing_info_found->ifr_wait,
-				(0 < utracing_info_found->queued_data_length));
+    if (1 != utracing_info_found->response_ready) {
+      utracing_info_found->response_ready = 1;
+      wake_up (&(utracing_info_found->ifx_wait));
+    }
 
+    if (0 == offset) {
+      // wrc == 0		==> condition true
+      // wrc == -ERESTARTSYS	==> signal intr
+      wrc = wait_event_interruptible (utracing_info_found->ifr_wait,
+			      (0 < utracing_info_found->queued_data_length));
+      DB_PRINTK (KERN_ALERT "if_file_read wrc = %s\n",
+		 (0 == wrc) ? "okay" : "intr");
+    }
+    
+    // might return 0 length if wait ended by som random interrupt
     if (utracing_info_found->queued_data &&
 	(0 < utracing_info_found->queued_data_length)) {
       rc = utracing_info_found->queued_data_length;
@@ -944,6 +1011,5 @@ if_file_read ( char *buffer,
     *buffer_location = buffer;
     return rc;
   }
-
   else return -UTRACER_ETRACING;
 }

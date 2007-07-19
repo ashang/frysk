@@ -156,8 +156,10 @@ create_utracing_info_entry (long utracing_pid,
   init_waitqueue_head (&(utracing_info_new->ifr_wait));
   init_waitqueue_head (&(utracing_info_new->ifw_wait));
   init_waitqueue_head (&(utracing_info_new->ifq_wait));
+  init_waitqueue_head (&(utracing_info_new->ifx_wait));
   utracing_info_new->queued_data		= NULL;
   utracing_info_new->queued_data_length		= 0;
+  utracing_info_new->response_ready		= 0;
   utracing_info_new->write_in_progress		= 0;
 
   return 0;
@@ -177,6 +179,17 @@ remove_utracing_info_entry (utracing_info_s * utracing_info_entry)
     utraced_info_s  * utraced_info_this;
     struct task_struct * task =
       get_task (utracing_info_entry->utracing_pid);
+
+#if 0
+    if (task) {
+      wait_queue_t wait;
+
+      init_waitqueue_entry(&wait, task);
+      remove_wait_queue(&utracing_info_entry->ifr_wait, &wait);
+      remove_wait_queue(&utracing_info_entry->ifw_wait, &wait);
+      remove_wait_queue(&utracing_info_entry->ifq_wait, &wait);
+    }
+#endif
     
     if (task && utracing_info_entry->utracing_engine)
       utrace_detach (task, utracing_info_entry->utracing_engine);
@@ -290,6 +303,28 @@ locate_engine (long utracing_pid, long utraced_pid)
   return engine;
 }
 
+static int
+utracer_ioctl (struct inode * inode, struct file * file,
+	       unsigned int a1, unsigned long a2)
+{
+  utracer_ioctl_s utracer_ioctl;
+  printk (KERN_ALERT "utracer_ioctl a1 = %d, a2 = %p\n",
+	  a1, (utracer_ioctl_s *)a2);
+
+  if (copy_from_user(&utracer_ioctl, (void *)a2, sizeof(utracer_ioctl_s)))
+    return -EFAULT;
+
+  printk (KERN_ALERT "cmd = %ld, bffr_len = %ld, bffr = %p\n",
+	  utracer_ioctl.cmd,
+	  utracer_ioctl.bffr_len,
+	  utracer_ioctl.bffr);
+  if (copy_to_user (utracer_ioctl.bffr, "hello", 6))
+    return -EFAULT;
+  return 0;
+}
+
+static struct file_operations utracer_proc_dir_operations;
+
 static int __init utracer_init(void)
 {
   de_utrace = proc_mkdir(UTRACER_BASE_DIR, NULL);
@@ -306,6 +341,11 @@ static int __init utracer_init(void)
     remove_proc_entry(UTRACER_CONTROL_FN, de_utrace);
     return -ENOMEM;
   }
+
+  memcpy (&utracer_proc_dir_operations, de_utrace_control->proc_fops,
+	  sizeof(struct file_operations));
+  utracer_proc_dir_operations.ioctl   = utracer_ioctl;
+  de_utrace_control->proc_fops =  &utracer_proc_dir_operations;
 
   de_utrace_control->write_proc = control_file_write;
 #if 0

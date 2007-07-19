@@ -1,3 +1,14 @@
+Thu Jul 19 11:41:16 2007  Chris Moller  <cmoller@redhat.com>
+
+	* Makefile: Changed default target to not setsuid of udb
+	* udb-module.c: #ifdeffed-out stuff that auto-loaded/auto-unloaded
+	the module.  It was causing race problems and won't be used in the
+	real world.
+	* udb-text-ui.c: Clean-up.
+	* udb.c: Added code to synchronise the udb control thread, the udb
+	listener thread, and the module.  Still needs work.  Also took out
+	the -m option to load the module; see above.
+
 Tue Jul 10 11:31:00 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-response.c: Added a sync response that executes queued cmds

@@ -60,7 +60,8 @@ utrace_syscall_if (short which, short cmd, long cp, long syscall)
 void
 utrace_switchpid_if (long pid)
 {
-  switchpid_cmd_s switchpid_cmd = {IF_CMD_SWITCHPID, (long)udb_pid, pid};
+  switchpid_cmd_s switchpid_cmd = {IF_CMD_SWITCHPID,
+				   (long)udb_pid, pid};
   ssize_t sz = write (utracer_cmd_file_fd, &switchpid_cmd,
 		      sizeof(switchpid_cmd));
   if (-1 == sz) uerror ("Writing switchpid command.");
@@ -69,7 +70,8 @@ utrace_switchpid_if (long pid)
 void
 utrace_printmmap_if (long pid)
 {
-  printmmap_cmd_s printmmap_cmd = {IF_CMD_PRINTMMAP, (long)udb_pid, pid};
+  printmmap_cmd_s printmmap_cmd = {IF_CMD_PRINTMMAP,
+				   (long)udb_pid, pid};
   ssize_t sz = write (utracer_cmd_file_fd, &printmmap_cmd,
 		      sizeof(printmmap_cmd));
   if (-1 == sz) uerror ("Writing printmmap command.");

@@ -37,6 +37,7 @@ utracer_loaded()
   return rc;
 }
 
+#ifdef ENABLE_MODULE_OPS
 void
 load_utracer()
 {
@@ -72,15 +73,6 @@ load_utracer()
 	}
 	else				/* child came to sad, untimely, end */
 	  error (1, errno, "Error in loader");
-      }
-
-      {
-	char * cfn;
-	asprintf (&cfn, "/proc/%s/%s", UTRACER_BASE_DIR, UTRACER_CONTROL_FN);
-	ctl_file_fd = open (cfn, O_RDWR);
-	free (cfn);
-	if (-1 == ctl_file_fd)
-	  error (1, errno, "Error opening control file");
       }
     }
     break;
@@ -119,3 +111,4 @@ unload_utracer()
     break;
   }
 }
+#endif
