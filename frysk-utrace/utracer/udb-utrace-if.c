@@ -90,13 +90,7 @@ utrace_printenv_if (long pid)
 				 PRINTENV_BUFFER_SIZE};
   irc = ioctl (utracer_cmd_file_fd, sizeof(printenv_cmd_s), &printenv_cmd);
   if (0 > irc) uerror ("printenv ioctl");
-  else {
-    long len;
-    
-    memcpy (&len, buffer, sizeof(long));
-    fprintf (stdout, "len = %ld\n", len);
-    fprintf (stdout, "buffer = \t%s\n", buffer + sizeof(long));
-  }
+  else handle_printenv (buffer);
 }
 
 void

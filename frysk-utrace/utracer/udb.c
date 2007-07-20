@@ -11,7 +11,6 @@
 #include <malloc.h>
 #include <signal.h>
 #include <sys/types.h>
-// #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <pthread.h>
 
@@ -299,23 +298,6 @@ main (int ac, char * av[])
     char * cfn;
     asprintf (&cfn, "/proc/%s/%s", UTRACER_BASE_DIR, UTRACER_CONTROL_FN);
     ctl_file_fd = open (cfn, O_RDWR);
-
-#if 0
-    if (0) {
-#define UTB_LEN 64
-      char utb[UTB_LEN];
-      utracer_ioctl_s utracer_ioctl = {56, UTB_LEN, utb};
-      
-      int irc;
-      fprintf (stderr, "starting ioctl\n");
-
-      irc = ioctl (ctl_file_fd, sizeof(utracer_ioctl_s), &utracer_ioctl);
-      fprintf (stderr, "bffr ret = %s\n", &utb);
-      
-      fprintf (stderr, "ioctl rc = %d\n", irc);
-      if (-1 == irc) perror ("ioctl");
-    }
-#endif
     free (cfn);
     if (-1 == ctl_file_fd)
       error (1, errno, "Error opening control file");

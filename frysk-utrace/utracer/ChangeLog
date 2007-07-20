@@ -1,3 +1,11 @@
+Fri Jul 20 10:20:02 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-response.c: Moved the printenv formatter here.  Encapsulated
+	the printmmap formatter in an s/r.  (Planning to move all the
+	formatters to their own file sometime soon.)
+	* udb-utrace-if.c: Removed the printenv formatter from here.
+	* udb.c: Clean-up.
+
 Fri Jul 20 00:00:55 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-response.c: Added a way to kill the debugger from a script.
