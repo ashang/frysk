@@ -1,3 +1,20 @@
+2007-07-20  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Breakpoint.java: Implements Comparable.
+	(getInstruction): New method.
+	(getProc): New method.
+	(compareTo): New method.
+	* BreakpointAddresses.java (breakpoints): New field.
+	(BreakpointAddresses): Initialize breakpoints.
+	(getBreakpoint): New method.
+	(getBreakpoints): New method.
+	* MemoryMap.java: Make immutable.
+	* Task.java (getRawMemory): New method.
+	* TestTaskObserverCode (testViewBreakpointMemory): New test.
+	(testViewBreakpointMap): New test.
+	(getFunctionDie): New method.
+	(getFunctionEntryAddress): Use getFunctionDie.
+
 2007-07-16  Andrew Cagney  <cagney@redhat.com>
 
 	* TestInstructions.java: Update, lib.dw merged into lib.elf.

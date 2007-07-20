@@ -39,6 +39,7 @@
 
 package frysk.proc.live;
 
+import frysk.proc.BreakpointAddresses;
 import frysk.proc.TaskObserver;
 import frysk.proc.Proc;
 import frysk.proc.TaskId;
@@ -52,8 +53,10 @@ import frysk.proc.IsaFactory;
 import frysk.proc.Isa;
 import frysk.sys.Errno;
 import frysk.sys.Ptrace;
+import frysk.sys.Ptrace.AddressSpace;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
+
 
 /**
  * A Linux Task tracked using PTRACE.
@@ -88,9 +91,9 @@ public class LinuxTask
 
 
     /**
-     * Return the memory byte-buffer.
+     * Return the raw memory byte-buffer.
      */
-    protected ByteBuffer sendrecMemory ()
+    public ByteBuffer getRawMemory ()
     {
 	logger.log(Level.FINE, "Begin fillMemory\n", this);
 	ByteOrder byteOrder = getIsa().getByteOrder();
@@ -99,7 +102,16 @@ public class LinuxTask
 	logger.log(Level.FINE, "End fillMemory\n", this); 
 	return memory;
     }
-    
+
+    protected ByteBuffer sendrecMemory ()
+    {
+      int tid = getTid();
+      ByteOrder byteOrder = getIsa().getByteOrder();
+      BreakpointAddresses breakpoints = getProc().breakpoints;
+      return new LogicalMemoryBuffer(tid, AddressSpace.DATA,
+				     byteOrder, breakpoints);
+    }
+
     /**
      * Return the ISA's register-bank byte-buffers.
      */

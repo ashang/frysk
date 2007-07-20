@@ -46,9 +46,11 @@ import java.util.HashMap;
 
 /**
  * Internal proc class that represents a Breakpoint at a certain
- * address in a Proc.
+ * address in a Proc. Some attempts are made to have synchronize
+ * different Breakpoint instances at the same address in the same
+ * Proc, but currently this isn't a full singleton.
  */
-public class Breakpoint
+public class Breakpoint implements Comparable
 {
   // These two fields define a Breakpoint
   private final long address;
@@ -274,6 +276,34 @@ public class Breakpoint
   }
 
   /**
+   * If this breakpoint is installed then the original instruction at
+   * the breakpoint address is returned. Otherwise null could be
+   * returned.
+   */
+  public Instruction getInstruction()
+  {
+    if (origInstruction == null)
+      {
+	// Try to get at the installed instance and sync with it.
+	synchronized(installed)
+	  {
+	    Breakpoint existing = (Breakpoint) installed.get(this);
+	    if (existing != null)
+	      this.origInstruction = existing.origInstruction;
+	  }
+      }
+    return origInstruction;
+  }
+
+  /**
+   * Returns the Proc to which this breakpoint belongs.
+   */
+  public Proc getProc()
+  {
+    return proc;
+  }
+
+  /**
    * Returns true if break point is installed and not yet removed.
    */
   public boolean isInstalled()
@@ -298,6 +328,15 @@ public class Breakpoint
 
     Breakpoint other = (Breakpoint) o;
     return other.proc.equals(proc) && other.address == address;
+  }
+
+  /**
+   * Uses natural ordering on address.
+   */
+  public int compareTo(Object o) 
+  {
+    Breakpoint other = (Breakpoint) o;
+    return (int) (this.address - other.address);
   }
 
   public String toString()

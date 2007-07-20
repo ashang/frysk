@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -70,7 +70,12 @@ public class BreakpointAddresses
    * will do.
    */
   private final HashMap map;
-  
+
+  /**
+   * A sorted set (on address) of Breakpoints, used for getBreakpoints().
+   */
+  private final TreeSet breakpoints;
+
   /**
    * Package private constructor used by the Proc when created.
    */
@@ -78,6 +83,7 @@ public class BreakpointAddresses
   {
     this.proc = proc;
     map = new HashMap();
+    breakpoints = new TreeSet();
   }
 
   /**
@@ -94,6 +100,7 @@ public class BreakpointAddresses
     ArrayList list = (ArrayList) map.get(breakpoint);
     if (list == null)
       {
+	breakpoints.add(breakpoint);
 	list = new ArrayList();
 	map.put(breakpoint, list);
 	list.add(observer);
@@ -126,6 +133,7 @@ public class BreakpointAddresses
     
     if (list.isEmpty())
       {
+	breakpoints.remove(breakpoint);
 	map.remove(breakpoint);
 	return true;
       }
@@ -153,6 +161,28 @@ public class BreakpointAddresses
     return observers;
   }
 
+  public Breakpoint getBreakpoint(long address)
+  {
+    Breakpoint breakpoint = Breakpoint.create(address, proc);
+    Object observer = map.get(breakpoint);
+    if (observer == null)
+      return null;
+    else
+      return breakpoint;
+  }
+
+  /**
+   * Returns an iterator that returns in address order all breakpoints
+   * (possibly) installed starting at the from address up to (but not
+   * including) the till address.
+   */
+  public Iterator getBreakpoints(long from, long till)
+  {
+    Breakpoint fromBreakpoint = Breakpoint.create(from, proc);
+    Breakpoint tillBreakpoint = Breakpoint.create(till, proc);
+    return breakpoints.subSet(fromBreakpoint, tillBreakpoint).iterator();
+  }
+
   /**
    * Called from TaskState when the Task gets an execed event which
    * clears the whole address space.
@@ -162,5 +192,6 @@ public class BreakpointAddresses
   public void removeAllCodeObservers()
   {
     map.clear();
+    breakpoints.clear();
   }
 }

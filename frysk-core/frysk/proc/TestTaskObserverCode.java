@@ -39,6 +39,8 @@
 
 package frysk.proc;
 
+import inua.eio.*;
+
 import frysk.sys.*;
 
 import lib.dwfl.*;
@@ -139,6 +141,230 @@ public class TestTaskObserverCode extends TestLib
     assertRunUntilStop("cleanup");
   }
 
+  // Tests that breakpoint instructions are not visible to
+  // normal users of task memory (only through raw memory view).
+  public void testViewBreakpointMemory() throws Exception
+  {
+    // Create a child.
+    child = new AckDaemonProcess();
+    task = child.findTaskUsingRefresh (true);
+    proc = task.getProc();
+
+    // Make sure we are attached.
+    AttachedObserver attachedObserver = new AttachedObserver();
+    task.requestAddAttachedObserver(attachedObserver);
+    assertRunUntilStop("adding AttachedObserver");
+
+    ByteBuffer memory = task.getMemory();
+    ByteBuffer raw_memory = task.getRawMemory();
+    long address = getFunctionEntryAddress("bp1_func");
+    DwarfDie func1_die = getFunctionDie("bp1_func");
+    long func1_start = func1_die.getLowPC();
+    long func1_end = func1_die.getHighPC();
+
+    // Get the original byte and byte[] for the breakpoint address and
+    // whole function. Raw and logical should be similar.
+    byte bp1_orig;
+    memory.position(address);
+    bp1_orig = memory.getByte();
+
+    byte bp1_orig_raw;
+    raw_memory.position(address);
+    bp1_orig_raw = raw_memory.getByte();
+    assertEquals("orig and raw", bp1_orig, bp1_orig_raw);
+
+    byte[] func1_orig = new byte[(int) (func1_end - func1_start)];
+    memory.position(func1_start);
+    memory.get(func1_orig);
+
+    byte[] func1_orig_raw = new byte[(int) (func1_end - func1_start)];
+    raw_memory.position(func1_start);
+    raw_memory.get(func1_orig_raw);
+    assertTrue("func_orig and func_raw",
+	       Arrays.equals(func1_orig, func1_orig_raw));
+
+    // Insert breakpoint and check that (non-raw) view is the same.
+    CodeObserver code = new CodeObserver(task, address);
+    task.requestAddCodeObserver(code, address);
+    assertRunUntilStop("add breakpoint observer");
+
+    // Get the byte and byte[] for the breakpoint address and
+    // whole function. Raw should show the breakpoint.
+    byte bp1_insert;
+    memory.position(address);
+    bp1_insert = memory.getByte();
+    assertEquals("orig and insert", bp1_orig, bp1_insert);
+
+    byte bp1_insert_raw;
+    raw_memory.position(address);
+    bp1_insert_raw = raw_memory.getByte();
+    assertTrue("insert and raw", bp1_insert != bp1_insert_raw);
+
+    byte[] func1_insert = new byte[(int) (func1_end - func1_start)];
+    memory.position(func1_start);
+    memory.get(func1_insert);
+    assertTrue("func_orig and func_insert",
+	       Arrays.equals(func1_orig, func1_insert));
+    
+    byte[] func1_insert_raw = new byte[(int) (func1_end - func1_start)];
+    raw_memory.position(func1_start);
+    raw_memory.get(func1_insert_raw);
+    assertFalse("func_insert and func_insert_raw",
+		Arrays.equals(func1_insert, func1_insert_raw));
+
+    // And remove it again.
+    task.requestDeleteCodeObserver(code, address);
+    assertRunUntilStop("remove code observer again");
+
+    // Get the byte and byte[] for the breakpoint address and
+    // whole function. Neither memory view should show the breakpoint.
+    byte bp1_new;
+    memory.position(address);
+    bp1_new = memory.getByte();
+    assertEquals("orig and new", bp1_orig, bp1_new);
+
+    byte[] func1_new = new byte[(int) (func1_end - func1_start)];
+    memory.position(func1_start);
+    memory.get(func1_new);
+    assertTrue("func_orig and func_new",
+	       Arrays.equals(func1_orig, func1_new));
+
+    byte bp1_new_raw;
+    raw_memory.position(address);
+    bp1_new_raw = raw_memory.getByte();
+    assertEquals("new and raw",
+		 bp1_new, bp1_new_raw);
+
+    byte[] func1_new_raw = new byte[(int) (func1_end - func1_start)];
+    raw_memory.position(func1_start);
+    raw_memory.get(func1_new_raw);
+    assertTrue("func_new and func_new_raw",
+	       Arrays.equals(func1_new, func1_new_raw));
+  }
+
+  // Tests that breakpoint instructions are not visible in the entire
+  // code text map of the program.
+  public void testViewBreakpointMap() throws Exception
+  {
+    // Create a child.
+    child = new AckDaemonProcess();
+    task = child.findTaskUsingRefresh (true);
+    proc = task.getProc();
+
+    // Make sure we are attached.
+    AttachedObserver attachedObserver = new AttachedObserver();
+    task.requestAddAttachedObserver(attachedObserver);
+    assertRunUntilStop("adding AttachedObserver");
+
+    ByteBuffer memory = task.getMemory();
+    ByteBuffer raw_memory = task.getRawMemory();
+
+    DwarfDie func1_die = getFunctionDie("bp1_func");
+    long func1_start = func1_die.getLowPC();
+    long func1_end = func1_die.getHighPC();
+
+    DwarfDie func2_die = getFunctionDie("bp2_func");
+    long func2_start = func2_die.getLowPC();
+    long func2_end = func2_die.getHighPC();
+
+    long address = func1_start;
+    MemoryMap map = proc.getMap(func1_start);
+
+    int map_len = (int) (map.addressHigh - map.addressLow);
+
+    byte[] mem_orig = new byte[map_len];
+    byte[] raw_orig = new byte[map_len];
+    
+    memory.position(map.addressLow);
+    memory.get(mem_orig);
+    raw_memory.position(map.addressLow);
+    raw_memory.get(raw_orig);
+
+    assertTrue("mem_orig and raw_orig",
+	       Arrays.equals(mem_orig, raw_orig));
+
+    // Put breakpoints inside the map and at the beginning and the end
+    // to test the corner cases.
+    address = func1_start;
+    CodeObserver code1 = new CodeObserver(task, address);
+    task.requestAddCodeObserver(code1, address);
+    assertRunUntilStop("add breakpoint observer func1 start");
+
+    address = func1_end;
+    CodeObserver code2 = new CodeObserver(task, address);
+    task.requestAddCodeObserver(code2, address);
+    assertRunUntilStop("add breakpoint observer func1 end");
+
+    address = func2_start;
+    CodeObserver code3 = new CodeObserver(task, address);
+    task.requestAddCodeObserver(code3, address);
+    assertRunUntilStop("add breakpoint observer func2 start");
+
+    address = func2_end;
+    CodeObserver code4 = new CodeObserver(task, address);
+    task.requestAddCodeObserver(code4, address);
+    assertRunUntilStop("add breakpoint observer func2 end");
+
+    address = map.addressLow;
+    CodeObserver code5 = new CodeObserver(task, address);
+    task.requestAddCodeObserver(code5, address);
+    assertRunUntilStop("add breakpoint observer addressLow");
+
+    address = map.addressHigh - 1;
+    CodeObserver code6 = new CodeObserver(task, address);
+    task.requestAddCodeObserver(code6, address);
+    assertRunUntilStop("add breakpoint observer addressHigh");
+
+    byte[] bp_mem = new byte[map_len];
+    byte[] bp_raw = new byte[map_len];
+    
+    memory.position(map.addressLow);
+    memory.get(bp_mem);
+    raw_memory.position(map.addressLow);
+    raw_memory.get(bp_raw);
+
+    assertTrue("mem_orig and bp_mem",
+	       Arrays.equals(mem_orig, bp_mem));
+    assertFalse("raw_orig and bp_raw",
+		Arrays.equals(raw_orig, bp_raw));
+
+    // See if only the breakpoint addresses were affected.
+    bp_raw[(int) (func1_start - map.addressLow)] = memory.getByte(func1_start);
+    bp_raw[(int) (func1_end - map.addressLow)] = memory.getByte(func1_end);
+    bp_raw[(int) (func2_start - map.addressLow)] = memory.getByte(func2_start);
+    bp_raw[(int) (func2_end - map.addressLow)] = memory.getByte(func2_end);
+    bp_raw[0] = memory.getByte(map.addressLow);
+    bp_raw[map_len - 1] = memory.getByte(map.addressHigh - 1);
+
+    assertTrue("bp_mem and bp_raw",
+	       Arrays.equals(bp_mem, bp_raw));
+
+    // Remove all breakpoints and all memory should revert to be the same.
+    task.requestDeleteCodeObserver(code1, code1.address);
+    assertRunUntilStop("delete 1");
+    task.requestDeleteCodeObserver(code2, code2.address);
+    assertRunUntilStop("delete 2");
+    task.requestDeleteCodeObserver(code3, code3.address);
+    assertRunUntilStop("delete 3");
+    task.requestDeleteCodeObserver(code4, code4.address);
+    assertRunUntilStop("delete 4");
+    task.requestDeleteCodeObserver(code5, code5.address);
+    assertRunUntilStop("delete 5");
+    task.requestDeleteCodeObserver(code6, code6.address);
+    assertRunUntilStop("delete 6");
+
+    memory.position(map.addressLow);
+    memory.get(bp_mem);
+    raw_memory.position(map.addressLow);
+    raw_memory.get(bp_raw);
+
+    assertTrue("deleted mem_orig and bp_mem",
+               Arrays.equals(mem_orig, bp_mem));
+    assertTrue("deleted bp_mem and bp_raw",
+	       Arrays.equals(bp_mem, bp_raw));
+
+  }
+
   // Tells the child to run the dummy () function
   // which calls bp1_func () and bp2_func ().
   static final Sig dummySig = Sig.PROF;
@@ -172,23 +398,26 @@ public class TestTaskObserverCode extends TestLib
    */
   long getFunctionEntryAddress(String func) throws ElfException
   {
-    Elf elf = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
-    Dwarf dwarf = new Dwarf(elf, DwarfCommand.READ, null);
-    DwarfDie die = DwarfDie.getDecl(dwarf, func);
+    DwarfDie die = getFunctionDie(func);
     ArrayList entryAddrs = die.getEntryBreakpoints();
 
     // We really expect just one entry point.
     assertEquals(entryAddrs.size(), 1);
-
-    // Add a Code observer on the address.
     return ((Long) entryAddrs.get(0)).longValue();
+  }
+
+  DwarfDie getFunctionDie(String func) throws ElfException
+  {
+    Elf elf = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
+    Dwarf dwarf = new Dwarf(elf, DwarfCommand.READ, null);
+    return DwarfDie.getDecl(dwarf, func);
   }
 
   static class CodeObserver
     implements TaskObserver.Code
   {
     private final Task task;
-    private final long address;
+    final long address;
 
     boolean hit;
 

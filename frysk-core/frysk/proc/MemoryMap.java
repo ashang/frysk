@@ -48,19 +48,19 @@ package frysk.proc;
  */
 public class MemoryMap
 {
-  public long addressLow;
-  public long addressHigh;
-  public boolean permRead;
-  public boolean permWrite;
-  public boolean permExecute;
-  public boolean shared;
-  public long offset;
-  public int devMajor;
-  public int devMinor;
-  public int inode;       
-  public int pathnameOffset;
-  public int pathnameLength; 
-  public String name;
+  public final long addressLow;
+  public final long addressHigh;
+  public final boolean permRead;
+  public final boolean permWrite;
+  public final boolean permExecute;
+  public final boolean shared;
+  public final long offset;
+  public final int devMajor;
+  public final int devMinor;
+  public final int inode;       
+  public final int pathnameOffset;
+  public final int pathnameLength; 
+  public final String name;
 
   public MemoryMap(long addressLow, long addressHigh,
 	     boolean permRead, boolean permWrite,

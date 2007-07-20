@@ -47,10 +47,10 @@ import frysk.proc.Manager;
 public class AddressSpaceByteBuffer
     extends ByteBuffer
 {
-    private final AddressSpace addressSpace;
-    private final int pid;
+    protected final AddressSpace addressSpace;
+    protected final int pid;
 
-    private AddressSpaceByteBuffer (int pid, AddressSpace addressSpace,
+    protected AddressSpaceByteBuffer (int pid, AddressSpace addressSpace,
 				    long lowerExtreem, long upperExtreem)
     {
 	super (lowerExtreem, upperExtreem);
