@@ -49,6 +49,7 @@ typedef struct _utracing_info_s {
   long queued_data_length;
   struct _utracing_info_s * next;
   struct _utracing_info_s * prev;
+  struct file_operations proc_dir_operations;
 } utracing_info_s;
 
 #ifndef DO_INIT

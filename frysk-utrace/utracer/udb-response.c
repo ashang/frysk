@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <alloca.h>
+#include <sys/types.h>
+#include <signal.h>
 // this isn't the same as the one in the kernel
 //#include <asm/ptrace.h>
 
@@ -260,8 +262,15 @@ resp_listener (void * arg)
 	  int i;
 
 	  for (i = 0; i < cl_cmds_next; i++) {
+	    int rc;
+	    
 	    fprintf (stderr, "cmd \"%s\"\n", cl_cmds[i]);
-	    exec_cmd (cl_cmds[i]);
+	    rc = exec_cmd (cl_cmds[i]);
+
+	    if (0 == rc) {
+	      kill (udb_pid, SIGTERM);
+	      break;
+	    }
 	  }
 	}
 	

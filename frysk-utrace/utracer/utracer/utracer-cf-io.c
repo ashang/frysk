@@ -10,6 +10,8 @@
 #include <linux/proc_fs.h>
 #include <linux/utrace.h>
 #include <linux/binfmts.h>
+#include <linux/highmem.h>
+#include <linux/pagemap.h>
 #include <asm/uaccess.h>
 #include <linux/tracehook.h>
 #include <asm-i386/tracehook.h>
@@ -115,6 +117,102 @@ cf_file_read ( char *buffer,
     return buffer_length;
   }
   else return -UTRACER_ETRACING;
+}
+
+static int
+handle_printenv (printenv_cmd_s * printenv_cmd)
+{
+  int rc = 0;
+  utracing_info_s * utracing_info_found =
+    lookup_utracing_info (printenv_cmd->utracing_pid);
+
+  if (utracing_info_found) {
+    struct task_struct * task = get_task (printenv_cmd->utraced_pid);
+    if (task) {
+      struct mm_struct * mm = get_task_mm(task);
+
+      if (mm) {
+	int ret;
+	char * buffer;
+	struct vm_area_struct * vma;
+	struct page *page;
+	long llen;
+	unsigned int len = mm->env_end - mm->env_start;
+
+	if (len > PAGE_SIZE) len = PAGE_SIZE;
+	buffer = kmalloc (len, GFP_KERNEL);
+
+	ret = get_user_pages (task,
+			      mm,
+			      mm->env_start,
+			      len,
+			      0,				// int write
+			      0,				// int force
+			      &page,
+			      &vma);
+	if (0 < ret) {
+	  void * maddr = kmap (page);
+	  copy_from_user_page (vma,
+			       page,
+			       mm->env_start,
+			       buffer,
+			       maddr + (mm->env_start & (PAGE_SIZE-1)),
+			       len);
+	  if ((len + sizeof(long)) > printenv_cmd->buffer_len)
+	    len = printenv_cmd->buffer_len - sizeof(long);
+	  llen = (long)len;
+	  if (copy_to_user (printenv_cmd->buffer, &llen,
+			    sizeof(long)))
+	    rc = -EFAULT;
+	  else {
+	    if (copy_to_user (printenv_cmd->buffer + sizeof(long),
+			      buffer, len))
+	      rc = -EFAULT;
+	  }
+	}
+	else rc = 9999; // fixme
+
+	kfree (buffer);
+      }
+      else rc = -8888; // fixme -- mm not found
+    }
+    else rc = -ESRCH;
+  }
+  else rc = -UTRACER_ETRACING;
+
+  return rc;
+}
+
+static int
+utracer_ioctl (struct inode * inode,
+	       struct file * file,
+	       unsigned int a1,
+	       unsigned long a2)
+{
+  int rc = 0;
+  if_cmd_u if_cmd;
+  
+  printk (KERN_ALERT "utracer_ioctl len = %d\n", a1);
+
+  if (copy_from_user(&if_cmd, (void *)a2, a1))
+    return -EFAULT;
+
+  printk (KERN_ALERT "if_cmd.cmd = %ld\n", if_cmd.cmd);
+
+  switch (if_cmd.cmd) {
+  case IF_CMD_PRINTENV:
+    rc = handle_printenv (&if_cmd.printenv_cmd);
+    break;
+  default:
+    rc = -EINVAL;
+    break;
+  }
+
+#if 0
+  if (copy_to_user (utracer_ioctl.bffr, "hello", 6))
+    rc = -EFAULT;
+#endif
+  return rc;
 }
 
 int
@@ -237,6 +335,14 @@ control_file_write (struct file *file,
 	    kfree (client_pid_dir);
             return rc;
           }
+
+	  memcpy (&utracing_info_top->proc_dir_operations,
+		  de_utrace_control->proc_fops,
+		  sizeof(struct file_operations));
+	  utracing_info_top->proc_dir_operations.ioctl = utracer_ioctl;
+	  de_utracing_cmd->proc_fops =
+	    &utracing_info_top->proc_dir_operations;
+	
 	  de_utracing_cmd->data       = utracing_info_top;
 	  de_utracing_resp->data      = utracing_info_top;
 	}

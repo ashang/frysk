@@ -291,6 +291,17 @@ printmmap_fcn (char ** saveptr)
 }
 
 static int
+printenv_fcn (char ** saveptr)
+{
+  long pid = current_pid;
+  char * tok = strtok_r (NULL, " \t", saveptr);
+
+  if (tok && ('[' == *tok)) pid = atol (tok+1);
+  utrace_printenv_if (pid);
+  return 1;
+}
+
+static int
 quit_fcn (char ** saveptr)
 {
   // fixme -- have quit do more than end the cmd loop when don from -c option
@@ -308,6 +319,11 @@ typedef struct {
   int (*cmd_fcn)(char ** saveptr);
   char * desc;
 } cmd_info_s;
+
+static cmd_info_s printenv_info =
+  {printenv_fcn, "(penv) -- Print the environment the given PID."};
+static cmd_info_s printenv_info_brief =
+  {printenv_fcn, NULL};
 
 static cmd_info_s attach_info =
   {attach_fcn, "(at) -- Attach and quiesce the given PID."};
@@ -393,6 +409,9 @@ static ENTRY cmds[] = {
   
   {"pra",		&printregall_info_brief},
   {"printregall",	&printregall_info},
+  
+  {"penv",		&printenv_info_brief},
+  {"printenv",		&printenv_info},
   
   {"halt",		&quiesce_info_brief},
   {"quiesce",		&quiesce_info},

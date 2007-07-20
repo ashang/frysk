@@ -1,3 +1,10 @@
+Fri Jul 20 00:00:55 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-response.c: Added a way to kill the debugger from a script.
+	* udb-text-ui.c: Added the printenv command.
+	* udb-utrace-if.c: Added the printenv i/f (also verifies the ioctl
+	path).
+
 Thu Jul 19 11:41:16 2007  Chris Moller  <cmoller@redhat.com>
 
 	* Makefile: Changed default target to not setsuid of udb

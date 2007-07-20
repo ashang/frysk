@@ -78,6 +78,28 @@ utrace_printmmap_if (long pid)
 }
 
 void
+utrace_printenv_if (long pid)
+{
+  int irc;
+#define PRINTENV_BUFFER_SIZE 4096
+  char * buffer = alloca (PRINTENV_BUFFER_SIZE);
+  printenv_cmd_s printenv_cmd = {IF_CMD_PRINTENV,
+				 (long)udb_pid,
+				 pid,
+				 buffer,
+				 PRINTENV_BUFFER_SIZE};
+  irc = ioctl (utracer_cmd_file_fd, sizeof(printenv_cmd_s), &printenv_cmd);
+  if (0 > irc) uerror ("printenv ioctl");
+  else {
+    long len;
+    
+    memcpy (&len, buffer, sizeof(long));
+    fprintf (stdout, "len = %ld\n", len);
+    fprintf (stdout, "buffer = \t%s\n", buffer + sizeof(long));
+  }
+}
+
+void
 utrace_attach_if (long pid, long quiesce, long exec_quiesce)
 {
   attach_cmd_s attach_cmd =

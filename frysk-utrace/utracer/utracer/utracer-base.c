@@ -303,28 +303,6 @@ locate_engine (long utracing_pid, long utraced_pid)
   return engine;
 }
 
-static int
-utracer_ioctl (struct inode * inode, struct file * file,
-	       unsigned int a1, unsigned long a2)
-{
-  utracer_ioctl_s utracer_ioctl;
-  printk (KERN_ALERT "utracer_ioctl a1 = %d, a2 = %p\n",
-	  a1, (utracer_ioctl_s *)a2);
-
-  if (copy_from_user(&utracer_ioctl, (void *)a2, sizeof(utracer_ioctl_s)))
-    return -EFAULT;
-
-  printk (KERN_ALERT "cmd = %ld, bffr_len = %ld, bffr = %p\n",
-	  utracer_ioctl.cmd,
-	  utracer_ioctl.bffr_len,
-	  utracer_ioctl.bffr);
-  if (copy_to_user (utracer_ioctl.bffr, "hello", 6))
-    return -EFAULT;
-  return 0;
-}
-
-static struct file_operations utracer_proc_dir_operations;
-
 static int __init utracer_init(void)
 {
   de_utrace = proc_mkdir(UTRACER_BASE_DIR, NULL);
@@ -341,11 +319,6 @@ static int __init utracer_init(void)
     remove_proc_entry(UTRACER_CONTROL_FN, de_utrace);
     return -ENOMEM;
   }
-
-  memcpy (&utracer_proc_dir_operations, de_utrace_control->proc_fops,
-	  sizeof(struct file_operations));
-  utracer_proc_dir_operations.ioctl   = utracer_ioctl;
-  de_utrace_control->proc_fops =  &utracer_proc_dir_operations;
 
   de_utrace_control->write_proc = control_file_write;
 #if 0

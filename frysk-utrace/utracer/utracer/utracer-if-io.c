@@ -14,8 +14,12 @@
 #include <linux/namei.h>
 #include <linux/mm.h>
 #include <linux/mount.h>
+#include <linux/security.h>
+#include <linux/capability.h>
+#include <linux/sched.h>
 #include <asm/uaccess.h>
 #include <linux/tracehook.h>
+#include <asm/tracehook.h>
 #include <asm-i386/tracehook.h>
 #include <asm-i386/unistd.h>
 
@@ -353,8 +357,7 @@ attach_cmd_fcn (long utracing_pid, long utraced_pid,
 		      NULL, 0);
     }
   }
-  else
-    rc = -UTRACER_ETRACING;
+  else rc = -UTRACER_ETRACING;
 
   return rc;
 }
