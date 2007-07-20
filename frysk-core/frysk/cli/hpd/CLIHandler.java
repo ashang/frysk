@@ -73,5 +73,11 @@ public abstract class CLIHandler
     this.help = help;
   }
   
+  public CLIHandler (CLI cli, String name, String description, String syntax, String full) {
+      this.cli = cli;
+      this.name = name;
+      this.help = new CommandHelp(name, description, syntax, full);
+  }
+  
   public abstract void handle(Command cmd) throws ParseException;
 }

@@ -72,5 +72,10 @@ class CommandHelp
   {
     return full;
   }
+  
+  public String toPrint()
+  {
+      return cmd + ": " + descr + "\n" + syntax + "\n" + full + "\n";
+  }
 }
 	

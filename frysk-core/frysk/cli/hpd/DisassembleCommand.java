@@ -40,13 +40,16 @@
 package frysk.cli.hpd;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.naming.NameNotFoundException;
 
+import frysk.Config;
 import frysk.dwfl.DwflCache;
+import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionException;
+import gnu.classpath.tools.getopt.Parser;
 
 import lib.dwfl.SymbolBuilder;
 import lib.opcodes.Disassembler;
@@ -54,27 +57,79 @@ import lib.opcodes.Instruction;
 
 public class DisassembleCommand extends CLIHandler {
 
-    private static String name = "disassemble";
-
-    private static String description = "disassemble a section of memory";
-
     public DisassembleCommand(CLI cli) {
-	super(name, cli, new CommandHelp(name, description,
-		"disassemble [startAddress] [endAddress]", description));
+	super(cli, "disassemble", "disassemble a section of memory",
+		"disassemble [-i|--instructions-only] [startAddress] ||\n"
+			+ "disassemble [-i|--instructions-only] "
+			+ "<startAddress> <endAddress>",
+		"disassemble the function surrounding the current pc, "
+			+ "the function surrounding a given address, "
+			+ "or a range of functions.");
+
+	addOptions(parser);
+    }
+
+    void addOptions(Parser parser) {
+	parser.add(new Option("instructions-only", 'i',
+		"only print the instruction portion not the parameters") {
+
+	    public void parsed(String argument) throws OptionException {
+		instructionOnly = true;
+	    }
+
+	});
+
+	// XXX: Need these two to prevent help and version from exiting fhpd
+        // when finished.
+	parser.add(new Option("version", "display version number") {
+
+	    public void parsed(String argument) throws OptionException {
+		cli.outWriter.println(Config.getVersion());
+		helpStop = true;
+	    }
+	});
+
+	parser.add(new Option("help", "display help") {
+	    public void parsed(String argument) throws OptionException {
+		cli.outWriter.println(getHelp().toPrint());
+		helpStop = true;
+	    }
+	});
+    }
+
+    private boolean instructionOnly = false;
+
+    private boolean helpStop = false;
+
+    Parser parser = new Parser("disassemble", Config.getVersion(), true);
+
+    public void reset() {
+	instructionOnly = false;
+	helpStop = false;
     }
 
     public void handle(Command cmd) throws ParseException {
 
+	reset();
 	long currentInstruction = getCLI().frame.getAddress();
 
 	Disassembler disassembler = new Disassembler(getCLI().getTask()
 		.getMemory());
 
-	ArrayList params = cmd.getParameters();
+	Object[] objects = cmd.getParameters().toArray();
 
-	if (params.size() == 1) {
+	String[] params = new String[objects.length];
+	for (int i = 0; i < objects.length; i++)
+	    params[i] = (String) objects[i];
+
+	params = parser.parse(params);
+
+	if (helpStop)
+	    return;
+
+	if (params.length == 1) {
 	    try {
-		currentInstruction = cli.parseValue((String) params.get(0))
+		currentInstruction = cli.parseValue((String) params[0])
 			.getLong();
 
 	    } catch (NameNotFoundException nnfe) {
@@ -82,13 +137,11 @@ public class DisassembleCommand extends CLIHandler {
 			Message.TYPE_ERROR));
 		return;
 	    }
-	} else if (params.size() == 2) {
+	} else if (params.length == 2) {
 	    long startInstruction, endInstruction;
 	    try {
-		startInstruction = cli.parseValue((String) params.get(0))
-			.getLong();
-		endInstruction = cli.parseValue((String) params.get(1))
-			.getLong();
+		startInstruction = cli.parseValue((String) params[0]).getLong();
+		endInstruction = cli.parseValue((String) params[1]).getLong();
 	    } catch (NameNotFoundException nnfe) {
 		cli.addMessage(new Message(nnfe.getMessage(),
 			Message.TYPE_ERROR));
@@ -98,7 +151,7 @@ public class DisassembleCommand extends CLIHandler {
 		    startInstruction, endInstruction);
 	    printInstructions(-1, instructions);
 	    return;
-	} else if (params.size() > 2) {
+	} else if (params.length > 2) {
 	    throw new RuntimeException("too many arguments to disassemble");
 	}
 
@@ -144,7 +197,13 @@ public class DisassembleCommand extends CLIHandler {
 		DisassembleCommand.this.cli.outWriter.print("*");
 	    else
 		DisassembleCommand.this.cli.outWriter.print(" ");
-	    DisassembleCommand.this.cli.outWriter.println(instruction);
+
+	    if (instructionOnly)
+		DisassembleCommand.this.cli.outWriter.println("0x"
+			+ instruction.address + "\t"
+			+ instruction.instruction.split("\\s")[0]);
+	    else
+		DisassembleCommand.this.cli.outWriter.println(instruction);
 	}
     }
 

@@ -1,3 +1,13 @@
+2007-07-20  Nurdin Premji  <npremji@redhat.com>
+
+	* CLIHandler.java (CLIHandler): Added new constructor.
+	* CommandHelp.java (toPrint): Added.
+	* DisassembleCommand.java: Added instructions-only option.
+	(DisassembleCommand): Use new constructor,
+	initialize parser
+	(addOptions): Added.
+	(reset): Added.
+
 2007-07-19  Nurdin Premji  <npremji@redhat.com>
 
 	* CLI.java (parseValue): Added.
