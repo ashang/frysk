@@ -2,6 +2,7 @@
 
 	* SourceWindow.java: Show the source code even if the parser
 	cannot handle it properly(bz #4818).
+	* SourceWIndow.java: Forgot one change when merging changes.
 
 2007-07-19  Adam Jocksch  <ajocksch@redhat.com>
 

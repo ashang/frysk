@@ -2266,6 +2266,8 @@ public class SourceWindow extends Window {
 	Line[] lines = sf.getLines();
 
 	if (lines.length > 0) {
+	    if (lines[0].getDOMFunction() == null)
+	        noDOMFunction = true;
 	    source = lines[0].getDOMSource();
 	    if (source == null)
 		try {
