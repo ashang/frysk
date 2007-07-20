@@ -17,6 +17,7 @@
 #include <linux/security.h>
 #include <linux/capability.h>
 #include <linux/sched.h>
+#include <linux/string.h>
 #include <asm/uaccess.h>
 #include <linux/tracehook.h>
 #include <asm/tracehook.h>
@@ -128,6 +129,7 @@ report_vfork_done (struct utrace_attached_engine *engine,
   return UTRACE_ACTION_RESUME;
 }
 
+
 static u32
 report_exec (struct utrace_attached_engine *engine,
 	     struct task_struct * tsk,
@@ -136,7 +138,7 @@ report_exec (struct utrace_attached_engine *engine,
 {
   utracing_info_s * utracing_info_found = (void *)engine->data;
   u32 rc = UTRACE_ACTION_RESUME;
-  
+
   if (utracing_info_found) {
     utraced_info_s * utraced_info_found =
       lookup_utraced_info (utracing_info_found, (long)tsk->pid);
@@ -151,6 +153,9 @@ report_exec (struct utrace_attached_engine *engine,
 		      &exec_resp, sizeof(exec_resp),
 		      bprm->filename, 1 + strlen(bprm->filename),
 		      bprm->interp, 1 + strlen (bprm->interp));
+
+      utraced_info_found->filename = kstrdup (bprm->filename, GFP_KERNEL);
+      utraced_info_found->interp   = kstrdup (bprm->interp, GFP_KERNEL);
       
       if (utraced_info_found->exec_quiesce) {
 	flags = engine->flags |  UTRACE_ACTION_QUIESCE;

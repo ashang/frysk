@@ -120,6 +120,42 @@ cf_file_read ( char *buffer,
 }
 
 static int
+handle_printexe (printexe_cmd_s * printexe_cmd)
+{
+  int rc = 0;
+  utracing_info_s * utracing_info_found =
+    lookup_utracing_info (printexe_cmd->utracing_pid);
+
+  if (utracing_info_found) {
+    utraced_info_s * utraced_info_found =
+      lookup_utraced_info (utracing_info_found, printexe_cmd->utraced_pid);
+
+    if (utraced_info_found) {
+      if (utraced_info_found->filename) {
+	long len = 1 + strlen (utraced_info_found->filename);
+	if (len > printexe_cmd->filename_len)
+	  len = printexe_cmd->filename_len - 1;
+	if (copy_to_user (printexe_cmd->filename,
+			  utraced_info_found->filename, len))
+	  rc = -EFAULT;
+      }
+      if ((0 == rc) && utraced_info_found->interp) {
+	long len = 1 + strlen (utraced_info_found->interp);
+	if (len > printexe_cmd->interp_len)
+	  len = printexe_cmd->interp_len - 1;
+	if (copy_to_user (printexe_cmd->interp,
+			  utraced_info_found->interp, len))
+	  rc = -EFAULT;
+      }
+    }
+    else rc = -UTRACER_ETRACED;
+  }
+  else rc = -UTRACER_ETRACING;
+
+  return rc;
+}
+
+static int
 handle_printenv (printenv_cmd_s * printenv_cmd)
 {
   int rc = 0;
@@ -158,6 +194,7 @@ handle_printenv (printenv_cmd_s * printenv_cmd)
 			       buffer,
 			       maddr + (mm->env_start & (PAGE_SIZE-1)),
 			       len);
+	  // fixme -- maybe an rc indicating truncation if len < buffer_len
 	  if ((len + sizeof(long)) > printenv_cmd->buffer_len)
 	    len = printenv_cmd->buffer_len - sizeof(long);
 	  llen = (long)len;
@@ -202,6 +239,9 @@ utracer_ioctl (struct inode * inode,
   switch (if_cmd.cmd) {
   case IF_CMD_PRINTENV:
     rc = handle_printenv (&if_cmd.printenv_cmd);
+    break;
+  case IF_CMD_PRINTEXE:
+    rc = handle_printexe (&if_cmd.printexe_cmd);
     break;
   default:
     rc = -EINVAL;

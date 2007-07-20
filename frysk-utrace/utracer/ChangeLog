@@ -1,3 +1,10 @@
+Fri Jul 20 12:02:31 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-text-ui.c:
+	* udb-utrace-if.  Added code to print both the supplied filename
+	and the interpreted filename of the binary corresponding to the
+	current task.
+
 Fri Jul 20 10:20:02 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-response.c: Moved the printenv formatter here.  Encapsulated

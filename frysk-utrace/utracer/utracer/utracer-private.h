@@ -18,6 +18,8 @@ DECL (struct proc_dir_entry * de_utrace_control, NULL);
 
 typedef struct _utraced_info_s {
   long utraced_pid;
+  char * filename;		/* Name of binary as seen by procps */
+  char * interp;		/* Name of the binary really executed. */
   long exec_quiesce;
   unsigned long * entry_bv;
   unsigned long * exit_bv;

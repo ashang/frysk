@@ -1,3 +1,13 @@
+Fri Jul 20 12:02:38 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-utrace-if.c:
+	* utracer-base.c:
+	* utracer-cf-io.c:
+	* utracer-if-io.c:
+	* utracer-private.h:  Added code to extract and report both the
+	supplied filename and the interpreted filename of the binary
+	corresponding to the current task.
+
 Fri Jul 20 00:01:02 2007  Chris Moller  <cmoller@redhat.com>
 
 	* utracer-base.c: Removed the experimental ioctl code.

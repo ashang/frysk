@@ -33,6 +33,7 @@ typedef enum {
   IF_CMD_SWITCHPID,
   IF_CMD_PRINTMMAP,
   IF_CMD_PRINTENV,
+  IF_CMD_PRINTEXE,
   IF_CMD_SYSCALL,
   IF_CMD_QUIESCE,
   IF_CMD_SYNC,
@@ -110,6 +111,16 @@ typedef struct {
   long cmd;
   long utracing_pid;
   long utraced_pid;
+  char * filename;
+  long filename_len;
+  char * interp;
+  long interp_len;
+} printexe_cmd_s;
+
+typedef struct {
+  long cmd;
+  long utracing_pid;
+  long utraced_pid;
   long quiesce;
   long exec_quiesce;
 } attach_cmd_s;
@@ -133,6 +144,7 @@ typedef union {
   syscall_cmd_s		syscall_cmd;
   sync_cmd_s		sync_cmd;
   printenv_cmd_s	printenv_cmd;
+  printexe_cmd_s	printexe_cmd;
 } if_cmd_u;
 
 typedef enum {

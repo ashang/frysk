@@ -302,6 +302,17 @@ printenv_fcn (char ** saveptr)
 }
 
 static int
+printexe_fcn (char ** saveptr)
+{
+  long pid = current_pid;
+  char * tok = strtok_r (NULL, " \t", saveptr);
+
+  if (tok && ('[' == *tok)) pid = atol (tok+1);
+  utrace_printexe_if (pid);
+  return 1;
+}
+
+static int
 quit_fcn (char ** saveptr)
 {
   // fixme -- have quit do more than end the cmd loop when don from -c option
@@ -319,6 +330,12 @@ typedef struct {
   int (*cmd_fcn)(char ** saveptr);
   char * desc;
 } cmd_info_s;
+
+static cmd_info_s printexe_info =
+  {printexe_fcn, "(pexe) -- Print the user-supplied and interpreted \
+filenames of the binarie of the given PID."};
+static cmd_info_s printexe_info_brief =
+  {printexe_fcn, NULL};
 
 static cmd_info_s printenv_info =
   {printenv_fcn, "(penv) -- Print the environment the given PID."};
@@ -412,6 +429,9 @@ static ENTRY cmds[] = {
   
   {"penv",		&printenv_info_brief},
   {"printenv",		&printenv_info},
+  
+  {"pexe",		&printexe_info_brief},
+  {"printexe",		&printexe_info},
   
   {"halt",		&quiesce_info_brief},
   {"quiesce",		&quiesce_info},

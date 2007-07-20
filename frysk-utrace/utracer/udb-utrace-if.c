@@ -7,6 +7,7 @@
 #include <alloca.h>
 #include <malloc.h>
 #include <string.h>
+#include <limits.h>
 #include <sys/time.h>
 #include <sys/types.h>
 
@@ -75,6 +76,27 @@ utrace_printmmap_if (long pid)
   ssize_t sz = write (utracer_cmd_file_fd, &printmmap_cmd,
 		      sizeof(printmmap_cmd));
   if (-1 == sz) uerror ("Writing printmmap command.");
+}
+
+void
+utrace_printexe_if (long pid)
+{
+  int irc;
+  char * filename = alloca (PATH_MAX);
+  char * interp   = alloca (PATH_MAX);
+  printexe_cmd_s printexe_cmd = {IF_CMD_PRINTEXE,
+				 (long)udb_pid,
+				 pid,
+				 filename,
+				 PATH_MAX,
+				 interp,
+				 PATH_MAX};
+  irc = ioctl (utracer_cmd_file_fd, sizeof(printexe_cmd_s), &printexe_cmd);
+  if (0 > irc) uerror ("printexe ioctl");
+  else {
+    fprintf (stdout, "\t filename: \"%s\"\n", filename);
+    fprintf (stdout, "\t   interp: \"%s\"\n", interp);
+  }
 }
 
 void
