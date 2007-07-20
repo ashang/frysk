@@ -1,3 +1,8 @@
+2007-07-20  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceWindow.java: Show the source code even if the parser
+	cannot handle it properly(bz #4818).
+
 2007-07-19  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceBuffer.java: Reformatted.

@@ -2215,11 +2215,27 @@ public class SourceWindow extends Window {
          * @param proc_id
          *                is an integer containing the PID of the task being
          *                displayed.
+         * @param tid 
+         * 		  is an integer with the thread id being displayed
+         * @param noDOMFunction
+         * 		  is a boolean indicating whether or not the parser
+         *         	  could find the function the process is currently executing in
+         * @param source  
+         * 		  is the DOMSource of the source code being displayed
+         * 
          * 
          */
-    private void setSourceLabel(String header, String task, int pid, int tid) {
-	((Label) this.glade.getWidget("sourceLabel")).setText("<b>" + header
-		+ task + " -- PID: " + pid + " -- TID: " + tid + "</b>");
+    private void setSourceLabel(String header, String task, int pid, int tid,
+	    boolean noDOMFunction, DOMSource source) {
+	if (noDOMFunction && !(source == null))
+	    ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
+		    + header + task + " -- PID: " + pid + " -- TID: " + tid
+		    + " **** Parser could not find function ****" + "</b>");
+	else
+	    ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
+		    + header + task + " -- PID: " + pid + " -- TID: " + tid
+		    + "</b>");
+
 	((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
     }
 
@@ -2232,10 +2248,12 @@ public class SourceWindow extends Window {
          *                in the source frame.
          */
     private void updateSourceLabel(Frame sf) {
+	boolean noDOMFunction = false;
 	if (sf == null) {
 	    String task_name = this.swProc[0].getExe();
 	    int proc_id = this.swProc[0].getPid();
-	    setSourceLabel("Unknown File for: ", task_name, proc_id, 0);
+	    setSourceLabel("Unknown File for: ", task_name, proc_id, 0,
+		    false, null);
 	    return;
 	}
 
@@ -2259,13 +2277,13 @@ public class SourceWindow extends Window {
 	}
 
 	if (lines.length == 0)
-	    setSourceLabel("Unknown File for: ", task_name, proc_id, task_id);
+	    setSourceLabel("Unknown File for: ", task_name, proc_id, task_id, noDOMFunction, source);
 	else if (source == null && lines.length > 0)
 	    setSourceLabel(sf.getLines()[0].getFile().getPath() + " for: ",
-		    task_name, proc_id, task_id);
+		    task_name, proc_id, task_id, noDOMFunction, source);
 	else
 	    setSourceLabel(source.getFileName() + " for: ", task_name, proc_id,
-		    task_id);
+		    task_id, noDOMFunction, source);
     }
 
     /***********************************************************************
@@ -2309,7 +2327,7 @@ public class SourceWindow extends Window {
 		}
 	}
 
-	if (lines.length == 0 || lines[0].getDOMFunction() == null) {
+	if (lines.length == 0) {
 	    SourceBuffer b = null;
 
 	    if (mode == 2)
@@ -2335,7 +2353,7 @@ public class SourceWindow extends Window {
 		    desensitize();
 		b.deleteText(b.getStartIter(), b.getEndIter());
 	    }
-	} else if (source != null && lines[0].getDOMFunction() != null) {
+	} else if (source != null) {
 	    if (this.currentFrame.getLines().length == 0
 		    || !source.getFileName()
 			    .equals(
@@ -2375,15 +2393,16 @@ public class SourceWindow extends Window {
 		    if (mode == 2) {
 			this.currentFrame = selected;
 			switchToSourceAsmMode();
-			((MixedView) this.view).getSourceWidget()
+			if (lines[0].getDOMFunction() != null)
+			    ((MixedView) this.view).getSourceWidget()
 				.scrollToFunction(
 					lines[0].getDOMFunction()
 						.getFunctionCall());
-		    } else if (mode == 0)
+		    } else if (mode == 0 && lines[0].getDOMFunction() != null)
 			this.view.scrollToFunction(lines[0].getDOMFunction()
 				.getFunctionCall());
 		} else {
-		    if (mode == 0)
+		    if (mode == 0 && lines[0].getDOMFunction() != null)
 			this.view.scrollToLine(lines[0].getLine());
 		    else if (mode == 2)
 			((MixedView) this.view).getSourceWidget().scrollToLine(
