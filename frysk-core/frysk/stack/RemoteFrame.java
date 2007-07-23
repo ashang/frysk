@@ -48,6 +48,7 @@ import frysk.rt.Symbol;
 
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflLine;
+import lib.dwfl.SymbolBuilder;
 import lib.unwind.Cursor;
 import lib.unwind.ProcInfo;
 import lib.unwind.ProcName;
@@ -224,24 +225,41 @@ class RemoteFrame extends Frame
     return cursor.isSignalFrame();
   }
 
-  /**
+   /**
    * Return this frame's symbol; UNKNOWN if there is no symbol.
    */
-public Symbol getSymbol ()
-{
-  if (this.symbol == null)
-    {
-      String mangledName = cursor.getProcName().getName();
-      if (mangledName == null)
-        this.symbol = Symbol.UNKNOWN;
-      else
-        {
-          long address = getAddress() - cursor.getProcName().getOffset();
-          this.symbol = new Symbol(address, mangledName);
-        }
+    public Symbol getSymbol() {
+	if (this.symbol == null) {
+	    String mangledName = cursor.getProcName().getName();
+	    if (mangledName == null)
+		this.symbol = Symbol.UNKNOWN;
+	    else {
+		FrameSymbolBuilder builder = new FrameSymbolBuilder();
+		DwflCache.getDwfl(task).getModule(getAddress()).getSymbol(
+			getAddress(), builder);
+		this.symbol = new Symbol(builder.value, builder.size,
+			builder.name);
+	    }
+	}
+	return this.symbol;
     }
-  return this.symbol;
-}
+
+    private class FrameSymbolBuilder implements SymbolBuilder {
+
+	private String name = null;
+
+	private long value = 0;
+
+	private long size = 0;
+
+	public void symbol(String name, long value, long size, int type,
+		int bind, int visibility) {
+	    this.name = name;
+	    this.value = value;
+	    this.size = size;
+	}
+
+    }
 
   /**
    * Return this frame's list of lines as an array; returns an empty array if
