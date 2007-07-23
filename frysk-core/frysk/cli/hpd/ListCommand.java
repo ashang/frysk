@@ -69,11 +69,12 @@ class ListCommand
     {
 	ArrayList params = cmd.getParameters();
 	int windowSize = 20;
+	Frame frame = this.cli.frame;
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
 	}
-	if (cli.proc == null) {
+	if (cli.proc == null || frame.getLines().length == 0) {
 	    cli.addMessage("No symbol table is available.",
 			   Message.TYPE_NORMAL);
 	    return;
@@ -85,7 +86,7 @@ class ListCommand
 	    }
 	    catch (NumberFormatException ignore) {
 		if (((String)params.get(0)).compareTo("$EXEC") == 0)
-		    line = cli.frame.getLines()[0].getLine() - 10;
+		    line = frame.getLines()[0].getLine() - 10;
 		else {
 		    DwarfDie funcDie = null;
 		    try {
@@ -112,9 +113,13 @@ class ListCommand
 		}
 	    }
 	}
+	else if (frame.getLines()[0].getLine() != exec_line) {
+	    // list around pc.
+	    exec_line = frame.getLines()[0].getLine();
+	    line = exec_line - 10;
+	}
  
 	if (file== null) {
-	    Frame frame = cli.frame;
 	    if (frame.getLines().length > 0) {
 		file = (frame.getLines()[0]).getFile();
 		if (file == null) {
@@ -143,10 +148,10 @@ class ListCommand
 	    while ((str = lr.readLine()) != null) 		    {
 		if (lr.getLineNumber() == line)
 		    display = true;
-		else if (lr.getLineNumber() == exec_line)
-		    flag = "*";
 		else if (lr.getLineNumber() == endLine)
 		    break;
+		if (display && lr.getLineNumber() == exec_line)
+		    flag = "*";
                 
 		if (display)			    {
 		    cli.outWriter.println(lr.getLineNumber() + flag + "\t "+ str);
