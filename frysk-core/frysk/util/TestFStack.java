@@ -127,7 +127,7 @@ public class TestFStack
       return;
     
     Host coreHost = new LinuxHost(Manager.eventLoop,
-                                  new File(Config.getPkgDataDir(), "test-core"));
+                                  new File(Config.getPkgDataDir(), "test-core-x86"));
 
     assertNotNull("Core file Host is Null?", coreHost);
 

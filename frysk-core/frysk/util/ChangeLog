@@ -1,3 +1,8 @@
+2007-07-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFStack.java: replaced test-core with test-core-x86;
+	fix for failing tests.
+
 2007-07-16  Andrew Cagney  <cagney@redhat.com>
 
 	* CommandlineParser.java: Update, lib.elf and lib.dw merged into
