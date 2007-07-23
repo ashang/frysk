@@ -1,0 +1,13 @@
+bin
+Makefile.in
+aclocal.m4
+autom4te.cache
+configure
+Makefile.gen
+Makefile
+config.log
+config.status
+*.jar
+*.db
+.deps
+core

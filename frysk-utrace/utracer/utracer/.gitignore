@@ -1,0 +1,10 @@
+.tmp_versions
+.utracer-base.o.cmd
+.utracer-cf-io.o.cmd
+.utracer-if-io.o.cmd
+.utracer.ko.cmd
+.utracer.mod.o.cmd
+.utracer.o.cmd
+Module.symvers
+utracer.ko
+utracer.mod.c
