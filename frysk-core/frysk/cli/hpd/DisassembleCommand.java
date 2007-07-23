@@ -46,12 +46,11 @@ import java.util.List;
 import javax.naming.NameNotFoundException;
 
 import frysk.Config;
-import frysk.dwfl.DwflCache;
+import frysk.rt.Symbol;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 
-import lib.dwfl.SymbolBuilder;
 import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
 
@@ -80,7 +79,7 @@ public class DisassembleCommand extends CLIHandler {
 	});
 
 	// XXX: Need these two to prevent help and version from exiting fhpd
-        // when finished.
+	// when finished.
 	parser.add(new Option("version", "display version number") {
 
 	    public void parsed(String argument) throws OptionException {
@@ -109,7 +108,6 @@ public class DisassembleCommand extends CLIHandler {
     }
 
     public void handle(Command cmd) throws ParseException {
-
 	reset();
 	long currentInstruction = getCLI().frame.getAddress();
 
@@ -155,11 +153,17 @@ public class DisassembleCommand extends CLIHandler {
 	    throw new RuntimeException("too many arguments to disassemble");
 	}
 
-	DisassembleSymbol symbol = new DisassembleSymbol(disassembler,
-		currentInstruction);
-	DwflCache.getDwfl(getCLI().getTask()).getModule(currentInstruction)
-		.getSymbol(currentInstruction, symbol);
-	printInstructions(currentInstruction, symbol.instructions);
+	Symbol symbol = getCLI().frame.getSymbol();
+	List instructions;
+	// XXX: Need a better way of handling symbol size = 0
+	long padding = 100;
+	if (symbol.getSize() == 0)
+	    instructions = disassembler.disassembleInstructionsStartEnd(symbol
+		    .getAddress(), currentInstruction + padding);
+	else
+	    instructions = disassembler.disassembleInstructionsStartEnd(symbol
+		    .getAddress(), symbol.getAddress() + symbol.getSize());
+	printInstructions(currentInstruction, instructions);
     }
 
     /**
@@ -205,34 +209,5 @@ public class DisassembleCommand extends CLIHandler {
 	    else
 		DisassembleCommand.this.cli.outWriter.println(instruction);
 	}
-    }
-
-    private class DisassembleSymbol implements SymbolBuilder {
-
-	// XXX: Need a better way of handling symbol size = 0
-	private long padding = 100;
-
-	private Disassembler disassembler;
-
-	private List instructions;
-
-	private long currentInstruction;
-
-	private DisassembleSymbol(Disassembler disassembler,
-		long currentInstruction) {
-	    this.disassembler = disassembler;
-	    this.currentInstruction = currentInstruction;
-	}
-
-	public void symbol(String name, long value, long size, int type,
-		int bind, int visibility) {
-	    if (size == 0)
-		instructions = disassembler.disassembleInstructionsStartEnd(
-			value, currentInstruction + padding);
-	    else
-		instructions = disassembler.disassembleInstructionsStartEnd(
-			value, value + size);
-	}
-
     }
 }
