@@ -1,3 +1,9 @@
+2007-07-23  Rick Moseley  <rmoseley@redhat.com>
+
+	* cparser/CDTParser.java: Catch NPE and ArrayOutOfBounds errors.
+	* DOMSource.java: Add new element to indicate parser had an error
+	while parsing; add new get/set methods to handle it.
+
 2007-07-18  Rick Moseley  <rmoseley@redhat.com>
 
 	* cparser/CDTParser.java: Add timing info for parsing.
