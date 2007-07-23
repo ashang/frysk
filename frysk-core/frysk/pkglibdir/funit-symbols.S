@@ -40,7 +40,7 @@
 #include "frysk-asm.h"
 #include <sys/syscall.h>
 
-# Code that segfaults, has a global symbol, with a defined size.
+# A global symbol that includes its size.
 .globl global_st_size
 	.type	global_st_size, @function
 global_st_size:
@@ -49,7 +49,8 @@ global_st_size:
 	NO_OP
 	.size	global_st_size, .-global_st_size
 	
-# Code that segfaults, has a local symbol, with a defined size.
+# A local symbol that includes its size.
+.local local_st_size
 	.type	local_st_size, @function
 local_st_size:
 	LOAD_IMMED (REG0, 0)
@@ -57,7 +58,7 @@ local_st_size:
 	NO_OP
 	.size	local_st_size, .-local_st_size
 
-# Method that segfaults, has a global symbol, with undefined (0) size.	
+# A global symbol that has zero size.
 .global global_st_size_0
 	.type	global_st_size_0, @function
 global_st_size_0:
@@ -65,48 +66,221 @@ global_st_size_0:
 	STORE (REG0, REG0)
 	NO_OP
 	
-# Method that segfaults, has a local symbol, with undefined (0) size.
+# A local symbol that has zero size.
+.local local_st_size_0
 	.type local_st_size_0, @function
 local_st_size_0:
 	LOAD_IMMED (REG0, 0)
 	STORE (REG0, REG0)
 	NO_OP
-	
+	
+# A global symbol, with size, that contains a nested global and local
+# symbols each also with sizes.
+.global global_outer
+	.type global_outer, @function
+.global global_inner
+	.type global_inner, @function
+global_in_global:
+	STORE (REG0, REG0)
+	NO_OP
+	.size global_in_global, .-global_in_global
+.local local_in_global
+	.type local_in_global, @function
+local_in_global:
+	STORE (REG0, REG0)
+	NO_OP
+	.size local_in_global, .-local_in_global
+.Lglobal_outer:
+	STORE (REG0, REG0)
+	NO_OP
+	.size global_outer, .-global_outer
+
+# Code with no symbol after a global symbol with size.
+.Lno_global:
+	STORE (REG0, REG0)
+	NO_OP
+	
+# A global symbol, with size, that contains a nested global and local
+# symbols each also with sizes.
+.local local_outer
+	.type local_outer, @function
+.global global_in_local
+	.type global_in_local, @function
+global_in_local:
+	STORE (REG0, REG0)
+	NO_OP
+	.size global_in_local, .-global_in_local
+.local local_in_local
+	.type local_in_local, @function
+local_in_local:
+	STORE (REG0, REG0)
+	NO_OP
+	.size local_in_local, .-local_in_local
+.Llocal_outer:
+	STORE (REG0, REG0)
+	NO_OP
+	.size local_outer, .-local_outer
+
+# Code with no symbol after a local symbol with size.
+.Lno_local:
+	STORE (REG0, REG0)
+	NO_OP
+	
+# A sized global symbol that contains local/global symbols of zero
+# size.
+
+.global global_after_0
+	.type global_after_0, @function
+global_after_0:
+	NO_OP
+.global global_0_in_global
+	.type global_0_in_global, @function
+global_0_in_global:
+	STORE(REG0, REG0)
+	NO_OP
+.local local_0_in_global
+	.type local_0_in_global, @function
+local_0_in_global:
+	STORE(REG0, REG0)
+	NO_OP
+.Lglobal_after_0:
+	STORE(REG0, REG0)
+	.size global_after_0, .-global_after_0	
+
+# A sized local symbol that contains local/global symbols of zero
+# size.
+
+.local local_after_0
+	.type local_after_0, @function
+local_after_0:
+	NO_OP
+.global global_0_in_local
+	.type global_0_in_local, @function
+global_0_in_local:
+	STORE(REG0, REG0)
+	NO_OP
+.local local_0_in_local
+	.type local_0_in_local, @function
+local_0_in_local:
+	STORE(REG0, REG0)
+	NO_OP
+.Llocal_after_0:
+	STORE(REG0, REG0)
+	.size local_after_0, .-local_after_0	
+
+
+// Dependant on ARGC jump to a symbol with either global or
+// local scope.
+
 	FUNCTION_BEGIN(main,0)
 	MAIN_PROLOGUE(0)
 	#REG1==ARGC
-# If argc = 1 run with global_st_size.
-	LOAD_IMMED(REG0, 2)
-	COMPARE(REG0, REG1)
-	JUMP_NE(.L10)
-	FUNCTION_CALL(global_st_size)
-.L10:
-# If argc = 2 run with local_st_size.
-	LOAD_IMMED(REG0, 3)
-	COMPARE(REG0, REG1)
-	JUMP_NE(.L12)
-	FUNCTION_CALL(local_st_size)
-.L12:
-# If argc = 3 run with global_st_size_0.
-	LOAD_IMMED(REG0, 4)
-	COMPARE(REG0, REG1)
-	JUMP_NE(.L14)
-	FUNCTION_CALL(global_st_size_0)
-.L14:
-# If argc = 4 run with local_st_size_0.
-	LOAD_IMMED(REG0, 5)
-	COMPARE(REG0, REG1)
-	JUMP_NE(.L16)
-	FUNCTION_CALL(local_st_size_0)
-.L16:
+	LOAD_IMMED(REG0, 0)
+# global_st_size?
+	LOAD_IMMED(REG3, 2)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(global_st_size)
+# local_st_size?
+	LOAD_IMMED(REG3, 3)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(local_st_size)
+# global_st_size_0.
+	LOAD_IMMED(REG3, 4)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(global_st_size_0)
+# local_st_size_0?
+	LOAD_IMMED(REG3, 5)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(local_st_size_0)
+# global_in_global?
+	LOAD_IMMED(REG3, 6)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(global_in_global)
+# local_in_global?
+	LOAD_IMMED(REG3, 7)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(local_in_global)
+# global_in_local?
+	LOAD_IMMED(REG3, 8)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(global_in_local)
+# local_in_local?
+	LOAD_IMMED(REG3, 9)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(local_in_local)
+# global_outer?
+	LOAD_IMMED(REG3, 10)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(.Lglobal_outer)
+# local_outer?
+	LOAD_IMMED(REG3, 11)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(.Llocal_outer)
+# no_global?
+	LOAD_IMMED(REG3, 12)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(.Lno_global)
+# no_local?
+	LOAD_IMMED(REG3, 13)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(.Lno_local)
+# global_0_in_global?
+	LOAD_IMMED(REG3, 14)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(global_0_in_global)
+# local_0_in_global?
+	LOAD_IMMED(REG3, 15)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(local_0_in_global)
+# global_0_in_local?
+	LOAD_IMMED(REG3, 16)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(global_0_in_local)
+# local_0_in_local?
+	LOAD_IMMED(REG3, 17)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(local_0_in_local)
+# global_after_0?
+	LOAD_IMMED(REG3, 18)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(.Lglobal_after_0)
+# local_after_0?
+	LOAD_IMMED(REG3, 19)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(.Llocal_after_0)
+	
 	LOAD_IMMED(REG0, SYS_write)
 	LOAD_IMMED(REG1, 1)
 	LOAD_IMMED(REG2, usage)
 	LOAD_IMMED(REG3, .usage-usage)
 	SYSCALL
-	FUNCTION_EPILOGUE(main,0)
+		// exit with a non-zero status
+	LOAD_IMMED(REG0, 1)
+	MAIN_EPILOGUE(0)
 	FUNCTION_RETURN(main,0)
 	FUNCTION_END(main,0)
 
-usage:	.asciz "Usage: ARG where number of args determines behavour\n"
+usage:	.asciz "Usage:\r\n\
+	ARG1 ...\r\n\
+The number of arguments determines the symbol at which this program\r\n\
+crashes:\r\n\
+1: Global symbol with size (global_st_size)\r\n\
+2: Local symbol with size (local_st_size)\r\n\
+3: Global symbol with no size (global_st_size_0)\r\n\
+4: Local symbol with no size (local_st_size_0)\r\n\
+5: Global nested within global (global_in_global)\r\n\
+6: Local nested within global (local_in_global)\r\n\
+7: Global nested within local (global_in_local)\r\n\
+8: Local nested within local (local_in_local)\r\n\
+9: Global symbol after nested symbols (global_outer)\r\n\
+10: Local symbol after nested symbols (local_outer)\r\n\
+11: Region with no symbol after a global (no_global)\r\n\
+12: Region with no symbol after a local (no_local)\r\n\
+13: Global symbol with no size nested in global (global_0_in_global)\r\n\
+14: Local symbol with no size nested within global (local_0_in_global)\r\n\
+15: Global symbol with no size nested in local (global_0_in_local)\r\n\
+16: Local symbol with no size nested within local (local_0_in_local)\r\n\
+17: Global after nested size 0 symbols (global_after_0)\r\n\
+18: Local after nested size 0 symbols (local_after_0)\r\n\
+"
 .usage:

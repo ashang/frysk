@@ -1,3 +1,11 @@
+2007-07-23  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk/pkglibdir/funit-symbols-nodebug)
+	(frysk/pkglibdir/funit-symbols-stripped)
+	(frysk/pkglibdir/arch32/funit-symbols-nodebug)
+	(frysk/pkglibdir/arch32/funit-symbols-stripped): Replace
+	funit-stackframe executables.
+
 2007-07-17  Mike Cvet  <mcvet@redhat.com>
 
 	* Makefile.am: Fixed corefile test links.

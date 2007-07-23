@@ -385,17 +385,12 @@
 // FUNCTION_END(FUNC,SLOTS): This is closes out the function, in
 // particular determining information such as the function's size.
 
-// In addition, the "main" function is special.  MAIN_PROLOGUE,
-// instead of FUNCTION_PROLOGUE, is used.  After MAIN_PROLOGUE,
-// ARGC is in REG1 and ARGV is in REG2, and ENVP in REG3.  REG0 is
-// undefined.
-
 // For instance, a host ABI conformant function, that includes unwind
 // information is written as:
 
 //        FUNCTION_BEGIN(func, 0)
 //        FUNCTION_PROLOGUE(func, 0)
-//        ...
+//          ... body ...
 //        FUNCTION_EPILOGUE(func, 0)
 //        FUNCTION_RETURN(func, 0)
 //        FUNCTION_END(func, 0)
@@ -404,7 +399,28 @@
 
 //        FUNCTION_CALL(func)
 
-// Should scratch space be required, then this can be allocated on the
+// The "main" function is special.  Instead of FUNCTION_PROLOGUE and
+// FUNCTION_EPILOGUE, MAIN_PROLOGUE and MAIN_EPILOGUE are used:
+
+// MAIN_PROLOGUE, in addition to creating a frame, copies ARGC to
+// REG1, ARGV is in REG2, and ENVP in REG3; REG0 is undefined.
+
+// MAIN_EPILOGUE, in addition to tearing down the frame, copies REG0
+// to the return register so that it is used as the program's exit
+// status.
+
+// For instance, this program, takes ARGC and exits with that -1:
+
+//        FUNCTION_BEGIN(main,0)
+//        MAIN_PROLOGUE(0)
+//          LOAD_IMMED(REG2,1) ;; Decrement ARGC
+//          SUB(REG1,REG2)
+//          MOVE(REG0,REG1) ;; Move ARGC(REG1) to return(REG0)
+//        MAIN_EPILOGUE(0)
+//        FUNCTION_RETURN(main,0)
+//        FUNCTION_END(main,0)
+
+// Should scratch space be required, this can be allocated on the
 // stack by specifying a non-zero number of word-sized stack slots.
 // These slots can then be accessed using STACK_LOAD and STACK_STORE
 // instructions.
@@ -544,6 +560,16 @@
 #define MAIN_PROLOGUE(SLOTS) FUNCTION_PROLOGUE(main,SLOTS)
 #elif defined __powerpc64__
 #define MAIN_PROLOGUE(SLOTS) FUNCTION_PROLOGUE(main,SLOTS)
+#endif
+
+#if defined __i386__
+#  define MAIN_EPILOGUE(SLOTS) FUNCTION_EPILOGUE(main,SLOTS)
+#elif defined __x86_64__
+#  define MAIN_EPILOGUE(SLOTS) FUNCTION_EPILOGUE(main,SLOTS)
+#elif defined __powerpc__
+#  define MAIN_EPILOGUE(SLOTS) FUNCTION_EPILOGUE(main,SLOTS)
+#elif defined __powerpc64__
+#  define MAIN_EPILOGUE(SLOTS) FUNCTION_EPILOGUE(main,SLOTS)
 #endif
 
 //#if defined __i386__

@@ -97,31 +97,31 @@ installcheck-local: installcheck-funit
 installcheck-funit:
 	$(DESTDIR)$(pkglibdir)/funit
 
-# Create executables for stackframe tests for TestStackFrame.java.
-frysk/pkglibdir/funit-stackframe-nodebug: frysk/pkglibdir/funit-stackframe
-	strip --strip-debug -o frysk/pkglibdir/funit-stackframe-nodebug frysk/pkglibdir/funit-stackframe
+# Create executables for symbol tests for TestSymbol.java.
 
-pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-nodebug
-frysk_pkglibdir_funit_stackframe_nodebug_SOURCES =
+pkglib_PROGRAMS += frysk/pkglibdir/funit-symbols-nodebug
+frysk_pkglibdir_funit_symbols_nodebug_SOURCES =
+frysk/pkglibdir/funit-symbols-nodebug: frysk/pkglibdir/funit-symbols
+	strip --strip-debug -o $@ frysk/pkglibdir/funit-symbols
 
-frysk/pkglibdir/funit-stackframe-stripped: frysk/pkglibdir/funit-stackframe
-	strip -o frysk/pkglibdir/funit-stackframe-stripped frysk/pkglibdir/funit-stackframe
 
-pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-stripped
-frysk_pkglibdir_funit_stackframe_stripped_SOURCES =
+pkglib_PROGRAMS += frysk/pkglibdir/funit-symbols-stripped
+frysk_pkglibdir_funit_symbols_stripped_SOURCES =
+frysk/pkglibdir/funit-symbols-stripped: frysk/pkglibdir/funit-symbols
+	strip -o $@ frysk/pkglibdir/funit-symbols
 
 if DO_ARCH32_TEST
-frysk/pkglibdir/arch32/funit-stackframe-nodebug: frysk/pkglibdir/arch32/funit-stackframe
-	strip --strip-debug -o frysk/pkglibdir/arch32/funit-stackframe-nodebug frysk/pkglibdir/arch32/funit-stackframe
+pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-symbols-nodebug
+frysk_pkglibdir_arch32_funit_symbols_nodebug_SOURCES =
+frysk/pkglibdir/arch32/funit-symbols-nodebug: frysk/pkglibdir/arch32/funit-symbols
+	strip --strip-debug -o $@ frysk/pkglibdir/arch32/funit-symbols
 
-pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-stackframe-nodebug
-frysk_pkglibdir_arch32_funit_stackframe_nodebug_SOURCES =
 
-frysk/pkglibdir/arch32/funit-stackframe-stripped: frysk/pkglibdir/arch32/funit-stackframe
-	strip -o frysk/pkglibdir/arch32/funit-stackframe-stripped frysk/pkglibdir/arch32/funit-stackframe
+pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-symbols-stripped
+frysk_pkglibdir_arch32_funit_symbols_stripped_SOURCES =
+frysk/pkglibdir/arch32/funit-symbols-stripped: frysk/pkglibdir/arch32/funit-symbols
+	strip -o $@ frysk/pkglibdir/arch32/funit-symbols
 
-pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-stackframe-stripped
-frysk_pkglibdir_arch32_funit_stackframe_stripped_SOURCES =
 endif
 
 # frysk-core code needs to be able to find the core files found in

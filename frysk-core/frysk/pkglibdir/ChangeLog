@@ -1,3 +1,9 @@
+2007-07-23  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-symbols.S: Use MAIN_EPILOGUE, exit with a non-zero status.
+	Expand usage.  Add nested symbols.
+	* funit-stackframe.S: Delete.
+	
 2007-07-19  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-symbols.S: Rewrite of funit-stackframe.S.

@@ -1,3 +1,13 @@
+2007-07-23  Andrew Cagney  <cagney@redhat.com>
+
+	* TestSymbol.java: Use funit-symbols as the test program.
+	(testGlobalInGlobal, testLocalInGlobal, testGlobalInLocal)
+	(testLocalInLocal, testGlobalAfterNested, testLocalAfterNested)
+	(testNoSymbolAfterGlobal, testNoSymbolAfterLocal)
+	(testGlobalSize0InGlobal, testLocalSize0InGlobal)
+	(testGlobalSize0InLocal, testLocalSize0InLocal)
+	(testGlobalAfterNestedSize0, testLocalAfterNestedSize0): New tests.
+
 2007-07-23  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Scope.java: Replaced printing to Strings with printing to
