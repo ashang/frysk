@@ -90,14 +90,11 @@ public class TestSymbol
 	// the inner-most frame's symbol matches the expected.
 	Frame frame = StackFactory.createFrame(runToCrash.task);
 
-	// XXX: Need to call frame.getSymbol () and then validate
-	// that.
 	Symbol symbol = frame.getSymbol ();
 	assertEquals ("symbol " + name, name, symbol.getDemangledName ());
 	assertEquals ("symbol address valid", addressValid,
 		      symbol.getAddress() != 0);
-	// XXX: Can't yet get the size of the symbol
-	// assertEquals ("symbol size valid", sizeValid, symbol.getSize() > 0);
+	assertEquals ("symbol size valid", sizeValid, symbol.getSize() > 0);
     }
 
     /**

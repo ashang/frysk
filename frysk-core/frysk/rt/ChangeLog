@@ -1,5 +1,7 @@
 2007-07-23  Nurdin Premji  <npremji@redhat.com>
 
+	* TestSymbol.java (symbolTest): Enabled symbol size tests.
+	
 	* Symbol.java (Symbol): Made public.
 
 2007-07-23  Andrew Cagney  <cagney@redhat.com>
