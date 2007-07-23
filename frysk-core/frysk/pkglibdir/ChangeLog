@@ -1,5 +1,10 @@
 2007-07-23  Andrew Cagney  <cagney@redhat.com>
 
+	* funit-symbols.S: Replace LOAD_IMMED with LOAD_IMMED_BYTE and
+	LOAD_IMMED_WORD.
+	* funit-rt-asmstepper.S: Ditto.
+	* funit-instructions.S: Ditto.
+
 	* funit-rt-asmstepper.S: Update; use "frysk-asm.h"
 	* funit-instructions.S: Ditto.
 

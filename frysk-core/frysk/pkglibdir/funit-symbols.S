@@ -44,7 +44,7 @@
 .globl global_st_size
 	.type	global_st_size, @function
 global_st_size:
-	LOAD_IMMED (REG0, 0)
+	LOAD_IMMED_BYTE (REG0, 0)
 	STORE (REG0, REG0)
 	NO_OP
 	.size	global_st_size, .-global_st_size
@@ -53,7 +53,7 @@ global_st_size:
 .local local_st_size
 	.type	local_st_size, @function
 local_st_size:
-	LOAD_IMMED (REG0, 0)
+	LOAD_IMMED_BYTE (REG0, 0)
 	STORE (REG0, REG0)
 	NO_OP
 	.size	local_st_size, .-local_st_size
@@ -62,7 +62,7 @@ local_st_size:
 .global global_st_size_0
 	.type	global_st_size_0, @function
 global_st_size_0:
-	LOAD_IMMED (REG0, 0)
+	LOAD_IMMED_BYTE (REG0, 0)
 	STORE (REG0, REG0)
 	NO_OP
 	
@@ -70,7 +70,7 @@ global_st_size_0:
 .local local_st_size_0
 	.type local_st_size_0, @function
 local_st_size_0:
-	LOAD_IMMED (REG0, 0)
+	LOAD_IMMED_BYTE (REG0, 0)
 	STORE (REG0, REG0)
 	NO_OP
 	
@@ -175,87 +175,87 @@ local_0_in_local:
 	FUNCTION_BEGIN(main,0)
 	MAIN_PROLOGUE(0)
 	#REG1==ARGC
-	LOAD_IMMED(REG0, 0)
+	LOAD_IMMED_BYTE(REG0, 0)
 # global_st_size?
-	LOAD_IMMED(REG3, 2)
+	LOAD_IMMED_BYTE(REG3, 2)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(global_st_size)
 # local_st_size?
-	LOAD_IMMED(REG3, 3)
+	LOAD_IMMED_BYTE(REG3, 3)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(local_st_size)
 # global_st_size_0.
-	LOAD_IMMED(REG3, 4)
+	LOAD_IMMED_BYTE(REG3, 4)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(global_st_size_0)
 # local_st_size_0?
-	LOAD_IMMED(REG3, 5)
+	LOAD_IMMED_BYTE(REG3, 5)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(local_st_size_0)
 # global_in_global?
-	LOAD_IMMED(REG3, 6)
+	LOAD_IMMED_BYTE(REG3, 6)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(global_in_global)
 # local_in_global?
-	LOAD_IMMED(REG3, 7)
+	LOAD_IMMED_BYTE(REG3, 7)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(local_in_global)
 # global_in_local?
-	LOAD_IMMED(REG3, 8)
+	LOAD_IMMED_BYTE(REG3, 8)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(global_in_local)
 # local_in_local?
-	LOAD_IMMED(REG3, 9)
+	LOAD_IMMED_BYTE(REG3, 9)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(local_in_local)
 # global_outer?
-	LOAD_IMMED(REG3, 10)
+	LOAD_IMMED_BYTE(REG3, 10)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(.Lglobal_outer)
 # local_outer?
-	LOAD_IMMED(REG3, 11)
+	LOAD_IMMED_BYTE(REG3, 11)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(.Llocal_outer)
 # no_global?
-	LOAD_IMMED(REG3, 12)
+	LOAD_IMMED_BYTE(REG3, 12)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(.Lno_global)
 # no_local?
-	LOAD_IMMED(REG3, 13)
+	LOAD_IMMED_BYTE(REG3, 13)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(.Lno_local)
 # global_0_in_global?
-	LOAD_IMMED(REG3, 14)
+	LOAD_IMMED_BYTE(REG3, 14)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(global_0_in_global)
 # local_0_in_global?
-	LOAD_IMMED(REG3, 15)
+	LOAD_IMMED_BYTE(REG3, 15)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(local_0_in_global)
 # global_0_in_local?
-	LOAD_IMMED(REG3, 16)
+	LOAD_IMMED_BYTE(REG3, 16)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(global_0_in_local)
 # local_0_in_local?
-	LOAD_IMMED(REG3, 17)
+	LOAD_IMMED_BYTE(REG3, 17)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(local_0_in_local)
 # global_after_0?
-	LOAD_IMMED(REG3, 18)
+	LOAD_IMMED_BYTE(REG3, 18)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(.Lglobal_after_0)
 # local_after_0?
-	LOAD_IMMED(REG3, 19)
+	LOAD_IMMED_BYTE(REG3, 19)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(.Llocal_after_0)
 	
-	LOAD_IMMED(REG0, SYS_write)
-	LOAD_IMMED(REG1, 1)
-	LOAD_IMMED(REG2, usage)
-	LOAD_IMMED(REG3, .usage-usage)
+	LOAD_IMMED_BYTE(REG0, SYS_write)
+	LOAD_IMMED_BYTE(REG1, 1)
+	LOAD_IMMED_WORD(REG2, usage)
+	LOAD_IMMED_WORD(REG3, .usage-usage)
 	SYSCALL
 		// exit with a non-zero status
-	LOAD_IMMED(REG0, 1)
+	LOAD_IMMED_BYTE(REG0, 1)
 	MAIN_EPILOGUE(0)
 	FUNCTION_RETURN(main,0)
 	FUNCTION_END(main,0)

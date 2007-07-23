@@ -1,5 +1,10 @@
 2007-07-23  Andrew Cagney  <cagney@redhat.com>
 
+	* frysk-asm.h (LOAD_IMMED): Delete.
+	(LOAD_IMMED_WORD): Define.
+	(LOAD_IMMED_BYTE): Define.
+	(FRYSK ABI): Fix typo, jump to bar not foo.
+
 	* frysk-asm.h (MAIN_EPILOGUE): Define.
 
 2007-07-19  Andrew Cagney  <cagney@redhat.com>

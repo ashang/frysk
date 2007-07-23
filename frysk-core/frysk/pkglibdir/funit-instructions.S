@@ -80,13 +80,13 @@ iend:	NO_OP
 	// check enter/exit of functions.
 	FUNCTION_BEGIN(subfunc,0)
 	FUNCTION_PROLOGUE(subfunc,0)
-	LOAD_IMMED(REG2,1)
+	LOAD_IMMED_BYTE(REG2,1)
 sublabel:
-	LOAD_IMMED(REG0, 1)
+	LOAD_IMMED_BYTE(REG0, 1)
 	COMPARE(REG2,REG0)
 	JUMP_NE(sublabel) // never taken
-	LOAD_IMMED(REG2,2)
-	LOAD_IMMED(REG0, 1)
+	LOAD_IMMED_BYTE(REG2,2)
+	LOAD_IMMED_BYTE(REG0,1)
 	COMPARE(REG2,REG0)
 	JUMP_NE(subexit) // always taken
 	JUMP(sublabel)

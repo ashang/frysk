@@ -54,9 +54,9 @@
 // simpler instrutions.  For instance, a memory increment uses the
 // sequence:
 
-//   LOAD_IMMED(REG1, memory_addres)
+//   LOAD_IMMED_WORD(REG1, memory_addres)
 //   LOAD(REG2, REG1)
-//   LOAD_IMMED(REG3, 1)
+//   LOAD_IMMED_BYTE(REG3, 1)
 //   ADD(REG2, REG3)
 //   STORE(REG2, REG1)
 
@@ -101,8 +101,8 @@
 
 //        WORD(var, 10)
 //        ....
-//        LOAD_IMMED(REG0, var)
-//        LOAD_IMMED(REG1, 1)
+//        LOAD_IMMED_WORD(REG0, var)
+//        LOAD_IMMED_BYTE(REG1, 1)
 //        COMPARE(REG0, REG1)
 //        JUMP_EQ(dest)
 //        ....
@@ -205,27 +205,48 @@
 
 // Load-immediate instruction sequences:
 
+// A very small constant can be loaded directly into a register using
+// the LOAD_IMMED_BYTE instruction.
+
 // A WORD sized constant can be loaded directly into a register using
-// the LOAD_IMMED instruction.
+// the LOAD_IMMED_WORD compound instruction.
 
 // For instance, to load the WORD at VARIABLE, use the sequence:
 
-//   LOAD_IMMEDIATE(REG1, variable)
-//   LOAD(REG1, REG1)
+//        LOAD_IMMED_WORD(REG1, variable)
+//        LOAD(REG1, REG1)
 
-// Implementation note: Since some architectures have fixed sized
-// instructions a multi-instruction sequence may be needed to
-// implement this.  For instance, the PowerPC, which has 32-bit this
-// is implemented using two 16-bit immediate instructions.
+// And then to increment REG1 by 1 use:
+
+//        LOAD_IMMED_BYTE(REG0, 1)
+//        ADD(REG1, REG0)
+
+// Implementation note: The LOAD_IMMED_BYTE macro must be a single
+// instruction; while the LOAD_IMMED_WORD instruction can be a
+// compound sequence.  For instance, the PowerPC, which has 32-bit
+// instructions will implement LOAD_IMMED_WORD as two 16-bit immediate
+// instructions.
 
 #if defined __i386__
-#  define LOAD_IMMED(DEST_REG,CONST) mov $CONST, DEST_REG
+#  define LOAD_IMMED_BYTE(DEST_REG,CONST) mov $CONST, DEST_REG
 #elif defined __x86_64__
-#  define LOAD_IMMED(DEST_REG,CONST) mov $CONST, DEST_REG
+#  define LOAD_IMMED_BYTE(DEST_REG,CONST) mov $CONST, DEST_REG
 #elif defined __powerpc__
-#  define LOAD_IMMED(DEST_REG,CONST) li DEST_REG, CONST
+#  define LOAD_IMMED_BYTE(DEST_REG,CONST) li DEST_REG, CONST
 #elif defined __powerpc64__
-#  define LOAD_IMMED(DEST_REG,CONST) li DEST_REG, CONST
+#  define LOAD_IMMED_BYTE(DEST_REG,CONST) li DEST_REG, CONST
+#else
+#  warning "No load immediate instruction sequence defined"
+#endif
+
+#if defined __i386__
+#  define LOAD_IMMED_WORD(DEST_REG,CONST) mov $CONST, DEST_REG
+#elif defined __x86_64__
+#  define LOAD_IMMED_WORD(DEST_REG,CONST) mov $CONST, DEST_REG
+#elif defined __powerpc__
+#  define LOAD_IMMED_WORD(DEST_REG,CONST) li DEST_REG, CONST
+#elif defined __powerpc64__
+#  define LOAD_IMMED_WORD(DEST_REG,CONST) li DEST_REG, CONST
 #else
 #  warning "No load immediate instruction sequence defined"
 #endif
@@ -246,13 +267,13 @@
 
 // For instance, to add one to the register REG1, use the sequence:
 
-//   LOAD_IMMED(REG2, 1)
+//   LOAD_IMMED_BYTE(REG2, 1)
 //   ADD(REG1, REG2)
 
 // For instance, to jump to foo when REG1 is not equal to 5, the
 // sequence:
 
-//   LOAD_IMMED(REG2, 5)
+//   LOAD_IMMED_BYTE(REG2, 5)
 //   COMPARE(REG1, REG2)
 //   JUMP_NE(foo)
 //   ...
@@ -413,7 +434,7 @@
 
 //        FUNCTION_BEGIN(main,0)
 //        MAIN_PROLOGUE(0)
-//          LOAD_IMMED(REG2,1) ;; Decrement ARGC
+//          LOAD_IMMED_BYTE(REG2,1) ;; Decrement ARGC
 //          SUB(REG1,REG2)
 //          MOVE(REG0,REG1) ;; Move ARGC(REG1) to return(REG0)
 //        MAIN_EPILOGUE(0)
@@ -606,7 +627,7 @@
 
 // For instance, the getpid system call can be made using:
 
-//         LOAD_IMMED(REG0, SYSCALL_getpid)
+//         LOAD_IMMED_WORD(REG0, SYSCALL_getpid)
 //         SYSCALL
 
 #if defined __i386__
@@ -630,18 +651,18 @@
 
 // For instance:
 
-//         LOAD_IMMED(REG1, 1) ;; parameter 1
-//         LOAD_IMMED(REG0, .1) ;; return address
+//         LOAD_IMMED_BYTE(REG1, 1) ;; parameter 1
+//         LOAD_IMMED_WORD(REG0, .1) ;; return address
 //         JUMP(foo)
 //     .1: ....
 //     ...
 //     foo:
-//         MOVE(REG1, REG0) ;; Save return address
+//         MOVE(REG1, REG0) ;; Save return address in REG1
 //         NO_OP; NO_OP
-//         LOAD_IMMED(REG0, .1) ;; return address
-//         JUMP(foo)
+//         LOAD_IMMED_WORD(REG0, .1) ;; return address
+//         JUMP(bar)
 //     .1: NO_OP; NO_OP
-//         JUMP_REG(REG1) ;; REG0 has return address
+//         JUMP_REG(REG1) ;; REG1 has the saved return address
 //         ....
 //     bar:
 //         JUMP_REG(REG0) ;; just return
