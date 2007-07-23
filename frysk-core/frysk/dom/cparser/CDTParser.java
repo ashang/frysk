@@ -47,6 +47,7 @@ package frysk.dom.cparser;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.NullPointerException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -178,7 +179,8 @@ public class CDTParser
                                                 callback,
                                                 ParserMode.QUICK_PARSE,
                                                 language, new NullLogService());
-
+    // Try to parse the source code, but catch any errors
+    try {
     if (! parser.parse() && DEBUG)
       System.err.println("Quick Parse: Error found on line "
                          + parser.getLastErrorLine());
@@ -208,12 +210,26 @@ public class CDTParser
                                                  callback2,
                                                  ParserMode.COMPLETE_PARSE,
                                                  language, new NullLogService());
-
+    
     if (! parser2.parse() && DEBUG)
       System.err.println("Complete Parse: Error found on line "
                          + parser2.getLastErrorLine()
                          + "\n                Char offset of error = "
                          + parser2.getLastErrorOffset());
+    }
+    catch (NullPointerException e) {
+      System.err.println("Parser NPE for " + filename.toString() +
+	 "\n" + e.getStackTrace());
+      source.setParserError(true);
+      return;
+    }
+    catch (ArrayIndexOutOfBoundsException e) {
+      System.err.println("Parser Array out of bounds error for " + filename.toString() +
+	 "\n" + e.getStackTrace());
+      source.setParserError(true);
+      return;
+    }
+    
     if (DEBUG) {
       System.out.println("\n\n****** Finished parsing ******\n\n");
     }

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -1218,7 +1218,8 @@ public class SourceBuffer extends TextBuffer {
 
 	// System.out.println("Creating tags for " +
         // this.scope.getMethodName());
-	if (source == null)
+	// If there is no source or the parser errored while parsing, return 
+	if (source == null || source.getParserError())
 	    return;
 
 	Iterator lines = source.getLines();

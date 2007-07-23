@@ -1,3 +1,7 @@
+2007-07-23  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceBuffer.java: Do not add tags if parser had an error.
+
 2007-07-23  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* CurrentStackView.java: replaced use of String for printing

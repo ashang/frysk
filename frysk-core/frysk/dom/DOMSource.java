@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -70,6 +70,11 @@ public class DOMSource
    * Whether this source file has already been parsed
    */
   public static final String IS_PARSED = "parsed";
+  
+  /**
+   * Whether the parser errored out while while this source was being parsed
+   */
+  public static final String PARSER_ERROR = "parser_error";
 
   // program counter attribute
   public static final String ADDR_ATTR = "pc";
@@ -109,6 +114,7 @@ public class DOMSource
     myElement.setAttribute(DOMSource.FILENAME_ATTR, filename);
     myElement.setAttribute(DOMSource.FILEPATH_ATTR, filepath);
     myElement.setAttribute(DOMSource.IS_PARSED, "false");
+    myElement.setAttribute(DOMSource.PARSER_ERROR, "false");
     int i = 0;
     String incpaths = "";
     while (i < includepaths.length && includepaths[i] != null)
@@ -483,6 +489,26 @@ public class DOMSource
   public void setParsed (boolean value)
   {
     this.myElement.setAttribute(IS_PARSED, Boolean.toString(value));
+  }
+  
+  /**
+   * set the parseError value for this source
+   * 
+   * @param value = true is the parser errored while parsing this source code
+   *                false if not
+   */
+  
+  public void setParserError (boolean value) {
+    this.myElement.setAttribute(PARSER_ERROR, Boolean.toString(value));
+  }
+  
+  /**
+   * get the parseError value for this source
+   * 
+   */
+  
+  public boolean getParserError() {
+      return this.myElement.getAttributeValue(PARSER_ERROR).equals("true"); 
   }
   
   public void setContent (String con)
