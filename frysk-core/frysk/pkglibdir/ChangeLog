@@ -1,5 +1,8 @@
 2007-07-23  Andrew Cagney  <cagney@redhat.com>
 
+	* funit-rt-asmstepper.S: Update; use "frysk-asm.h"
+	* funit-instructions.S: Ditto.
+
 	* funit-symbols.S: Use MAIN_EPILOGUE, exit with a non-zero status.
 	Expand usage.  Add nested symbols.
 	* funit-stackframe.S: Delete.

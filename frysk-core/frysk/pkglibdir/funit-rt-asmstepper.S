@@ -37,19 +37,19 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "fixme-asm.h"
+#include "frysk-asm.h"
 
-.globl main
-	.type	main, @function
-main:
+
+
+FUNCTION_BEGIN(main,0)
 	
-	ENTER
+MAIN_PROLOGUE(0)
 	
-	LOAD_IMMED (REG1, 0x14)
-	LOAD_IMMED (REG2, 1)
-	LOAD_IMMED (REG3, 2)
-	LOAD_IMMED (REG4, 3)
-//	INTERRUPT $0x80
+	LOAD_IMMED (REG0, 0x14)
+	LOAD_IMMED (REG1, 1)
+	LOAD_IMMED (REG2, 2)
+	LOAD_IMMED (REG3, 3)
+//	SYSCALL
 loop:
 	NO_OP
 	NO_OP
@@ -58,16 +58,15 @@ loop:
 	NO_OP
 	NO_OP ; NO_OP ; NO_OP
 	NO_OP;
-	COMPARE_IMMED(REG2, 1)
+	LOAD_IMMED(REG0, 1) ; COMPARE(REG1, REG0)
 	JUMP_NE (fail)
-	COMPARE_IMMED(REG3, 2)
+	LOAD_IMMED(REG0, 2) ; COMPARE(REG2, REG0)
 	JUMP_NE (fail)
-	COMPARE_IMMED(REG4, 3)
+	LOAD_IMMED(REG0, 3) ; COMPARE(REG3, REG0)
 	JUMP_NE (fail)
 	JUMP (loop)
-	EXIT
+	MAIN_EPILOGUE(0)
+	FUNCTION_RETURN(main,0)
+	FUNCTION_END(main,0)
+
 fail: JUMP (0)
-
-// make the stack non-executable
-.section	.note.GNU-stack,"",@progbits
-

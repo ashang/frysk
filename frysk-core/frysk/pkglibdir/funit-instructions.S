@@ -37,24 +37,20 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "fixme-asm.h"
-
-.data	// Start of data segment
-	
-.text	// Start of code segment
+#include "frysk-asm.h"
 
 	// Calls the function instruction twice so the test
 	// harness (TestInstructions) can step through it once
 	// recording all releavant information and then can run
 	// it another time to check that it runs exactly the same
 	// in the presence of Code breakpoint (and/or other) observers.	
-	.global main
-	.type main,@function
-main:
-	ENTER_MAIN
-	CALL(instructions)
-	CALL(instructions)	
-	EXIT
+	FUNCTION_BEGIN(main,0)
+	MAIN_PROLOGUE(0)
+	FUNCTION_CALL(instructions)
+	FUNCTION_CALL(instructions)	
+	MAIN_EPILOGUE(0)
+	FUNCTION_RETURN(main,0)
+	FUNCTION_END(main,0)
 
 	// Make this function global so the test harness can find
 	// the begin and end of it while stepping and setting
@@ -63,10 +59,9 @@ main:
 	// once per run of this function and that when this function is
 	// called multiple times (see main) the exact same instruction
 	// sequence is executed.
-	.globl instructions,istart,iend
-	.type instructions,@function
-instructions:
-	ENTER
+	.globl istart,iend
+	FUNCTION_BEGIN(instructions,0)
+	FUNCTION_PROLOGUE(instructions,0)
 istart:	NO_OP
 	NO_OP
 	JUMP(label1)
@@ -74,27 +69,28 @@ label2:	JUMP(label3)
 label1: NO_OP
 	JUMP(label2)
 label3:	NO_OP
-	CALL(subfunc)
-	CALL(subfunc)
+	FUNCTION_CALL(subfunc)
+	FUNCTION_CALL(subfunc)
 iend:	NO_OP
-	EXIT
+	FUNCTION_EPILOGUE(instructions,0)
+	FUNCTION_RETURN(instructions,0)
+	FUNCTION_END(instructions,0)
 
 	// Non-global helper function called from instructions to
 	// check enter/exit of functions.
-	.type subfunc,@function
-subfunc:
-	ENTER
+	FUNCTION_BEGIN(subfunc,0)
+	FUNCTION_PROLOGUE(subfunc,0)
 	LOAD_IMMED(REG2,1)
-sublabel:	
-	COMPARE_IMMED(REG2,1)
-	JUMP_NE(sublabel)
+sublabel:
+	LOAD_IMMED(REG0, 1)
+	COMPARE(REG2,REG0)
+	JUMP_NE(sublabel) // never taken
 	LOAD_IMMED(REG2,2)
-	COMPARE_IMMED(REG2,1)
-	JUMP_NE(subexit)
+	LOAD_IMMED(REG0, 1)
+	COMPARE(REG2,REG0)
+	JUMP_NE(subexit) // always taken
 	JUMP(sublabel)
 subexit:	
-	EXIT
-	
-// make the stack non-executable
-.section        .note.GNU-stack,"",@progbits
-	
+	FUNCTION_EPILOGUE(subfunc,0)
+	FUNCTION_RETURN(subfunc,0)
+	FUNCTION_END(subfunc,0)
