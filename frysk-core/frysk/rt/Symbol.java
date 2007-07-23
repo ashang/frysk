@@ -72,7 +72,7 @@ public class Symbol
      * Create a new symbol.  The SIZE is a field from ELF and defines
      * the symbol's address range.
      */
-    Symbol (long address, long size, String name)
+    public Symbol (long address, long size, String name)
     {
 	this.address = address;
 	this.size = size;

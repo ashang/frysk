@@ -1,3 +1,7 @@
+2007-07-23  Nurdin Premji  <npremji@redhat.com>
+
+	* Symbol.java (Symbol): Made public.
+
 2007-07-23  Andrew Cagney  <cagney@redhat.com>
 
 	* TestSymbol.java: Use funit-symbols as the test program.
