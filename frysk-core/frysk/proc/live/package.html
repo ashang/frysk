@@ -1,0 +1,206 @@
+<html>
+<body>
+
+This is a frysk implementation package that provides the
+implementation of frysk.proc for ptrace based (GNU/Linux)
+systems. Normally none of these implementation details are needed for
+normal use of frysk-core and the public classes of frysk.proc should
+be used.
+
+<h2>Implementation notes on Instruction and Code observers</h2>
+
+<code>Instruction</code> observers are what implement instruction
+stepping, <code>Code</code> observers are what implement low level
+instruction breakpoints.
+
+<p>
+
+Lets assume that we installed an <code>InstructionObserver<code>, the
+<code>Task</code> stopped notified the observer which decided that the
+<code>Task</code> needed to be blocked which turned the
+<code>TaskState</code> into <code>BlockedSignal</code>. If you are
+interested in what would happen while stepping and the
+<code>Task</code> not being blocked already, start reading from (*)
+and assume we are in the <code>Running</code> state and just want to
+continue running the task after some event happened.
+
+<p>
+
+So we start at <code>Task.unblock(InstructionObserver)</code> which
+will notify the <code>BlockedSignal</code> state class in
+<code>LinuxTaskState</code>. The <code>handleUnblock()</code> method
+will be triggered.  Depending on which observers are actually
+installed (and whether all blocking observer have been cleared now) a
+<code>Running</code> <code>TaskState</code> is determined and
+<code>sendContinue(task, sig)</code> is called on that
+<code>Running</code> state (the <code>Running</code> state class is
+also defined inside the <code>LinuxTaskState</code>).
+
+<p>
+
+<code>sendContinue()</code> is an instance method of the
+<code>Running</code> <code>TaskState</code> class which will return
+the appropriate Running subclass/instance depending on how the
+<code>Task</code> continues. If an <code>Instruction</code> observer
+(or the task is currently at a breakpoint, see below) then
+<code>LinuxTask.sendStepInstruction</code> code is called and
+<code>sendContinue</code> will return <code>Stepping</code> (which is
+a subclass of <code>Running</code>) as the new state of the Task.
+
+<p>
+
+<code>sendStepInstruction()</code> will do some bookkeeping to
+remember which signal number was requested and whether or not the Task
+is currently at a signal return instruction. We need to do that here
+so we know what we were doing when we get a callback from the kernel
+after the step. Then the appropriate ptrace command is invoked so the
+Task is doing the actual step. Some, but not all (signal number and
+sigret in particular) this is contained as state in the
+<code>Stepping</code> task state instance.
+
+<p>
+
+If the Task made its step then we will get a TrappedEvent. Here things
+get a little messy since ptrace/wait uses trap events for signaling
+almost everything. Luckily the <code>Isa</code> should be able to tell
+us if the current <code>Task</code> just did an instruction step. If
+it did (and it isn't a breakpoint address in which case we need to do
+some extra things) then we inform all <code>Instruction</code>
+observers and if any of them tells us to Block then we move into the
+BlockedSignal state, otherwise we keep in the <code>Stepping</code>
+state and continue from (*).
+
+<p>
+
+When a Code observer is installed then the ptrace task states will all
+call <code>setupSteppingBreakpoint()</code> after a breakpoint hit has
+been detected, which makes sure the PC is setup correctly (which can
+be off by one on some architectures after a breakpoint) and then mark
+the <code>Task</code> as being at that particular breakpoint (this is
+still kept as Task field for now). We need to always do the adjustment
+immediately in case the user decides to move to a <code>Blocked</code>
+state instead of of continuing the <code>Task</code>. When
+<code>Running.sendContinue</code> is later called it will depend on
+this fact.
+
+<p>
+
+All the logic of how to breakpoint step is contained in the
+<code>Breakpoint</code> class that checks the properties of the
+<code>Instruction</code> class object which is created by the
+<code>Isa</code> through an instruction parser before the breakpoint
+is inserted at a given location. An <code>Instruction</code> knows how
+long the instruction is, which bytes it represents, whether it can be
+single stepped out of line and how to set that up given the original
+pc location and an alternative address, plus any fixups that are
+needed to the Task afterwards (and it has a notion of whether or not
+the <code>Instruction</code> can be simulated, but that isn't
+currently used, see below).  A <code>Breakpoint</code> ties an
+<code>Instruction</code> to a particular address and <code>Proc</code>
+(and <code>Task</code>s can have zero or more
+<code>Breakpoint</code>s, they share the same <code>Breakpoint</code>
+on the same address with other <code>Task</code>s of a
+<code>Proc</code> and when no <code>Task</code>s of a
+<code>Proc</code> has an <code>Breakpoint<code> at a particular
+address anymore the <code>Breakpoint<code> is removed).
+
+<p>
+
+For stepping the <code>Breakpoint</code> the
+<code>Running.sendContinue()</code> method first calls
+<code>Breakpoint.prepareStep()</code>, then signals ptrace to do a
+single step of the <code>Task</code>, putting the <code>Task</code> in
+<code>Stepping</code> state and then in <code>handleTrapEvent()</code>
+calls <code>Breakpoint.stepDone()</code>. <code>prepareStep()</code>
+queries the capabilities of the <code>Instruction</code> at the pc
+address and depending on that either sets things up for doing a step
+out of line, simulate the instruction (but none of the current
+<code>Instruction</code>s have been setup to do simulation yet, and
+look at the comment in <code>prepareStep()</code> to see what is
+needed to fully enable this option) or reset the current
+<code>Instruction</code> (removing the breakpoint instruction
+temporarily). Accordingly a Breakpoint can be in the state
+<code>NOT_STEPPING</code>, <code>OUT_OF_LINE_STEPPING</code>,
+<code>SIMULATE_STEPPING</code> or <code>RESET_STEPPING</code>.
+
+<p>
+
+In the case of <code>RESET_STEPPING</code> other Tasks might miss and
+just past the Breakpoint during the brief period between the reset,
+step and reinstall. Breakpoint <code>prepareStep()</code> just takes
+the Instruction bytes and puts them at the current pc address, and
+<code>doneStep()</code> reinstates the breakpoint instruction. The
+right solution here would be to stop all other Tasks first, step and
+then continue them all.
+
+<p>
+
+When the <code>Instruction</code> supports single step out of line
+then the <code>Breakpoint</code> requests an address in the single
+step out of line area of the <code>Proc</code>, instructs the
+<code>Instruction</code> to install itself there for the current Task
+calling <code>Instruction.setupExecuteOutOfLine()</code>. The default
+action of <code>setupExecuteOutOfLine()</code> is to set the pc to the
+given address and place a copy the instruction bytes there (although
+this can be overridden if an <code>Instruction</code> wants to do
+something more fancy). When the task signals the
+<code>Breakpoint</code> that a step was taken by calling
+,code>stepDone()</code>, the <code>Breakpoint</code> calls
+<code>Instruction.fixupExecuteOutOfLine()</code> with the original pc
+and replacement address so any adjustments can be done to the
+<code>Task</code> registers. The default action is to just set the pc
+to the original pc plus the length of the <code>Instruction</code>
+just stepped. But Instructions can override that if more is needed. As
+an example the <code>RET</code> instruction doesn't do any fixup
+(since the only action is setting the pc to the right location in the
+first place) and the <code>JMP</code> instruction sets the pc to
+original pc plus/minus the difference of the alternate address and the
+pc after the single step. Afterward the <code>Breakpoint</code>
+returns the used address to the <code>Proc</code> so it can be used by
+other <code>Task</code>s needing to do a single step out of line.
+
+<p>
+
+The <code>Proc</code> maintains a single step out of line area pool of
+addresses that point to locations that are at least as big is the
+largest instruction of the instruction set. The <code>Proc</code> gets
+this list from the <code>Isa</code> the first time an address is
+requested through <code>getOutOfLineAddress()</code>. Currently this
+is just the address of the main function entry point (see below). The
+address is taken out of the pool and the <code>Breakpoint</code> is
+responsible for putting it back through <code>doneOutOfLine</code>
+(see above). If no address is currently available the call blocks till
+one is available (this was way easier than inventing yet another
+<code>TaskState</code> and getting the communication between
+<code>Proc</code> and <code>Task</code> about this right, and
+contention is very low and at the longest it takes for an address to
+become available is one instruction single step).
+
+<p>
+
+Deficiencies of the <b>Instruction Parser</b>.  The framework is in
+place and works for the few Instructions that are known to the
+instruction parser, but there are all hand coded (see
+<code>IA32InstructionParser</code> which just handles
+<code>NOP</code>, <code>INT3</code>, <code>RETQ</code> and one
+<code>JMP</code> variant, the <code>X8664Instruction</code> just
+delegates to the IA32 for now). There don't seem to be libraries
+available to easily plugin that would give us the fixup instructions
+needed. The best available is the kprobes examples from the linux
+kernel which have as drawback that they are coded to be intimately
+tied to the kernel/C way of doing things and only seem handles
+instructions found in kernel space (no robust instruction parsing,
+just a instruction bits/lookup table).appreciated. So we need to sit
+down with the various instruction manuals and just code it up by hand
+if we cannot find an existing library.  (Bonus points for finding
+something that would not just give us ssol fixups but also simulation
+of instructions when hooked to the registers and memory of a Task.)
+This is
+<href="http://sourceware.org/bugzilla/show_bug.cgi?id=4762">Frysk bug
+#4762</a>. See there for updates. This means that in most cases we
+currently fall back to reset instruction stepping which has its own
+deficiency of not stopping other <code>Task</code>s which means
+breakpoints can and will be missed.
+
+</body>
+<html>

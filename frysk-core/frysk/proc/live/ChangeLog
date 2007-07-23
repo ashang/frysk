@@ -1,3 +1,8 @@
+2007-07-23  Mark Wielaard  <mwielaard@redhat.com>
+
+	* package.html: New file describing implementation details of
+	Instruction and Code observers.
+
 2007-07-20  Mark Wielaard  <mwielaard@redhat.com>
 
 	* AddressSpaceByteBuffer.java (addressSpace): Now protected.
