@@ -40,6 +40,7 @@
 
 package frysk.stack;
 
+import java.io.PrintWriter;
 import java.util.WeakHashMap;
 
 import lib.dwfl.Dwfl;
@@ -94,91 +95,83 @@ public class StackFactory
       
   }
 
-  public static final StringBuffer generateTaskStackTrace (Task task, boolean elfOnly, boolean printParameters, boolean printScopes, boolean fullpath)
+  public static final void printTaskStackTrace (PrintWriter printWriter, Task task, boolean elfOnly, boolean printParameters, boolean printScopes, boolean fullpath)
   {
-    StringBuffer buffer = new StringBuffer();
-
     if (task != null){
-      buffer.append(new StringBuffer("Task #" + task.getTid() + "\n"));
+      printWriter.println("Task #" + task.getTid());
       Frame frame = StackFactory.createFrame(task);
       if(elfOnly){
-        buffer.append(printStackTrace(frame));
+	  printStackTrace(printWriter, frame);
       }else{
-        buffer.append(printRichStackTrace(frame, printParameters, printScopes, fullpath));
+	  printRichStackTrace(printWriter, frame, printParameters, printScopes, fullpath);
       }
     }
-
-    return buffer;
+    printWriter.flush();
   }
 
-  public static String printStackTrace(Frame topFrame){
-    
-    String string = new String();
+  public static void printStackTrace(PrintWriter printWriter, Frame topFrame){
     int count = 0;
     for (Frame frame = topFrame;
     frame != null; frame = frame.getOuter()) {
-      string += "#" + count + " "+ frame.toPrint(false) + "\n";
-          
+      printWriter.print("#" + count + " ");
+      frame.toPrint(printWriter,false);
+      printWriter.println();
       count++;
     }
-
-    return string;
   }
 
-  public static String printRichStackTrace(Frame topFrame, boolean printParameters, boolean printScopes, boolean fullpath){
+  public static void printRichStackTrace(PrintWriter writer, Frame topFrame, boolean printParameters, boolean printScopes, boolean fullpath){
     
-    StringBuilder stringBuilder = new StringBuilder();
     int count = 0;
     for (Frame frame = topFrame;
     frame != null; frame = frame.getOuter()) {
       
-      stringBuilder.append("#" + count + " ");
+      writer.print("#" + count + " ");
       
       Subprogram subprogram = frame.getSubprogram();
 
       if(subprogram != null){
-        stringBuilder.append("0x");
+        writer.print("0x");
         String addr = Long.toHexString(frame.getAddress());
         int padding = 2 * frame.getTask().getIsa().getWordSize() - addr.length();
         
         for (int i = 0; i < padding; ++i)
-          stringBuilder.append('0');
+          writer.print('0');
         
-        stringBuilder.append(addr);
+        writer.print(addr);
         
-        stringBuilder.append(" in " + subprogram.getName() + "(");
+        writer.print(" in " + subprogram.getName() + "(");
         if(printParameters){
-          stringBuilder.append(subprogram.printParameters());
+          subprogram.printParameters(writer);
         }
-        stringBuilder.append(") ");
+        writer.print(") ");
         
         if(fullpath){
           Line line = frame.getLines()[0];
-          stringBuilder.append(line.getFile().getPath());
-          stringBuilder.append("#");
-          stringBuilder.append(line.getLine());
+          writer.print(line.getFile().getPath());
+          writer.print("#");
+          writer.print(line.getLine());
         }else{
           Line line = frame.getLines()[0];
-          stringBuilder.append(line.getFile().getName());
-          stringBuilder.append("#");
-          stringBuilder.append(line.getLine());
+          writer.print(line.getFile().getName());
+          writer.print("#");
+          writer.print(line.getLine());
         }
         
         if(printScopes){
-          stringBuilder.append(subprogram.printScopes());
+          subprogram.printScopes(writer);
         }
         
       } else {
-	  stringBuilder.append(frame.toPrint(false));
+	  frame.toPrint(writer,false);
 	  Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
-	  stringBuilder.append(" from " + dwfl.getModule(frame.getAdjustedAddress()).getName());
+	  writer.print(" from " + dwfl.getModule(frame.getAdjustedAddress()).getName());
       }
       
-      stringBuilder.append("\n");
+      writer.println();
       count++;
     }
 
-    return new String(stringBuilder);
   }
 
 }

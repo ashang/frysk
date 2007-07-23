@@ -40,6 +40,8 @@
 
 package frysk.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.logging.Level;
 
 import frysk.event.Event;
@@ -68,13 +70,14 @@ public class StressTestFStack
 
   public void testClone ()
   {
-
+      StringWriter stringWriter = new StringWriter();
+      
     int threads = 2;
     AckProcess ackProc = new AckDaemonCloneProcess(threads);
 
     final Proc proc = ackProc.assertFindProcAndTasks();
 
-    StacktraceAction stacker = new StacktraceAction(proc, new Event()
+    StacktraceAction stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new Event()
     {
 
       public void execute ()
@@ -97,7 +100,7 @@ public class StressTestFStack
 
     regex += "(" + mainClone + ")(" + clone + ")*";
 
-    String result = stacker.toPrint();
+    String result = stringWriter.getBuffer().toString();
     logger.log(Level.FINE, result);
     assertTrue(result + "should match: " + regex, result.matches(regex));
 

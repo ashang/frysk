@@ -40,7 +40,10 @@
 
 package frysk.rt;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.logging.Logger;
+
 import javax.naming.NameNotFoundException;
 
 import lib.dwfl.DwTagEncodings;
@@ -66,13 +69,15 @@ public class TestFrameDebugInfo
   {
     Task task = getStoppedTask();
 
+    StringWriter stringWriter = new StringWriter();
     Frame frame = StackFactory.createFrame(task);
-    String string = StackFactory.printRichStackTrace(frame, true, true, true);
+    StackFactory.printRichStackTrace(new PrintWriter(stringWriter),frame, true, true, true);
       
 //    System.out.println("TestRichFrame.testRichFrame()");
 //    System.out.println(string);
 //    System.out.println();
     
+    String string = stringWriter.getBuffer().toString();
     assertTrue("first", string.contains("first"));
     assertTrue("second", string.contains("second"));
     assertTrue("third",string.contains("third"));
@@ -88,12 +93,15 @@ public class TestFrameDebugInfo
     Task task = getStoppedTask("funit-stacks-exit");
 
     Frame frame = StackFactory.createFrame(task);
-    String string = StackFactory.printStackTrace(frame);
+    StringWriter stringWriter = new StringWriter();
+    StackFactory.printStackTrace(new PrintWriter(stringWriter),frame);
       
 //    System.out.println("TestRichFrame.testRichFrame()");
 //    System.out.println(string);
 //    System.out.println();
 //    
+    String string = stringWriter.getBuffer().toString();
+    
     assertTrue("first", string.contains("first"));
     assertTrue("second", string.contains("second"));
     assertTrue("third",string.contains("third"));

@@ -39,6 +39,7 @@
 
 package frysk.rt;
 
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -137,8 +138,8 @@ public class Scope
       }
   }
   
-  public String toPrint(int indent){
-    StringBuilder stringBuilder = new StringBuilder();
+  public void toPrint(PrintWriter writer, int indent){
+    
     char[] indentArray = new char[indent];
     Arrays.fill(indentArray, ' ');
     String indentString = new String(indentArray);
@@ -147,18 +148,17 @@ public class Scope
     while(iterator.hasNext()){
 	Variable variable = (Variable) iterator.next();
 	if(variable.getVariable()!=null){
-	    stringBuilder.append("\n" + indentString + variable.getVariable().getType() + " " + variable.getVariable().getText());
+	    writer.print("\n" + indentString + variable.getVariable().getType() + " " + variable.getVariable().getText());
 	}else{
-	    stringBuilder.append("\n" + indentString + "Unhandled type on line: " + variable.getVariableDie().getDeclLine());
+	    writer.print("\n" + indentString + "Unhandled type on line: " + variable.getVariableDie().getDeclLine());
 	}
     }
     
     iterator = this.getScopes().iterator();
     while(iterator.hasNext()){
       Scope scope = (Scope) iterator.next();
-      stringBuilder.append(scope.toPrint(indent+1));
+      scope.toPrint(writer, indent+1);
     }
     
-    return new String(stringBuilder);
   }
 }

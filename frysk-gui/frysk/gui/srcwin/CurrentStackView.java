@@ -40,6 +40,8 @@
 
 package frysk.gui.srcwin;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -192,8 +194,11 @@ public class CurrentStackView
 		  }
 	      }
 
-	    row = "# " + (++level) + " " + frame.toPrint(true);
-
+	    StringWriter stringWriter = new StringWriter();
+	    stringWriter.write("# " + (++level) + " ");
+	    frame.toPrint(new PrintWriter(stringWriter),true);
+	    row = stringWriter.toString();
+	    
 	    if (hasInlinedCode)
 	      row += " (i)";
 
@@ -308,8 +313,11 @@ public class CurrentStackView
 
 		iter = treeModel.appendRow(taskIter);
 
-		row = "# " + (++level) + " " + frame.toPrint(true);
-
+		StringWriter stringWriter = new StringWriter();
+		stringWriter.write(row = "# " + (++level) + " ");
+		frame.toPrint(new PrintWriter(stringWriter),true);
+		row = stringWriter.toString();
+		
 		if (hasInlinedCode)
 		  row += " (i)";
 

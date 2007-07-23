@@ -40,6 +40,7 @@
 package frysk.bindir;
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
@@ -64,6 +65,8 @@ public final class fstack
 
   protected static final Logger logger = Logger.getLogger("frysk"); 
   
+  private static PrintWriter printWriter = new PrintWriter(System.out);
+  
   static boolean elfOnly = true;
   static boolean printParameters = false;
   static boolean printScopes = false;
@@ -73,11 +76,11 @@ public final class fstack
   {
 
     Proc proc;
-    public Stacker (Proc theProc, Event theEvent,boolean elfOnly, 
+    public Stacker (PrintWriter printWriter, Proc theProc, Event theEvent,boolean elfOnly, 
                     boolean printParameters, boolean printScopes, 
                     boolean fullpath)
     {
-      super(theProc, theEvent, elfOnly, printParameters, printScopes, fullpath);
+      super(printWriter, theProc, theEvent, elfOnly, printParameters, printScopes, fullpath);
       this.proc = theProc;
     }
 
@@ -115,8 +118,8 @@ public final class fstack
 
       public void execute ()
       {
-        Manager.eventLoop.requestStop();
-        System.out.print(stacker.toPrint());
+	  Manager.eventLoop.requestStop();
+	  stacker.flush();
       }
     });
     }
@@ -128,14 +131,14 @@ public final class fstack
     public void execute()
     {
       Manager.eventLoop.requestStop();
-      System.out.println(stacker.toPrint());
+      stacker.flush();
     }
   }
   
   private static void stackCore(File coreFile)
   {
     Proc proc = Util.getProcFromCoreFile(coreFile);
-    stacker = new Stacker(proc, new PrintEvent(),elfOnly,printParameters,printScopes, fullpath);
+    stacker = new Stacker(printWriter, proc, new PrintEvent(),elfOnly,printParameters,printScopes, fullpath);
     new ProcCoreAction(proc, stacker);
     Manager.eventLoop.run();
   }
@@ -143,7 +146,7 @@ public final class fstack
   private static void stackPid (ProcId procId)
   {
     Proc proc = Util.getProcFromPid(procId);
-    stacker = new Stacker(proc, new AbandonPrintEvent(proc),elfOnly,printParameters,printScopes, fullpath);
+    stacker = new Stacker(printWriter, proc, new AbandonPrintEvent(proc),elfOnly,printParameters,printScopes, fullpath);
     new ProcBlockAction(proc, stacker);
     Manager.eventLoop.run();
   }

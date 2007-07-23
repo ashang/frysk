@@ -43,6 +43,8 @@ import frysk.Config;
 import inua.eio.ByteBuffer;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 import frysk.proc.Action;
@@ -135,7 +137,7 @@ public class TestLinuxCore
   public void testLinuxCoreFileStackTrace ()
   {
 
-
+      StringWriter stringWriter = new StringWriter();
     Proc ackProc = giveMeAProc();
     String coreFileName = constructCore(ackProc);
     File xtestCore = new File(coreFileName);
@@ -149,7 +151,7 @@ public class TestLinuxCore
     StacktraceAction stacker;
     StacktraceAction coreStack;
 
-    stacker = new StacktraceAction(ackProc, new RequestStopEvent(Manager.eventLoop), true, false, false, false)
+    stacker = new StacktraceAction(new PrintWriter(stringWriter),ackProc, new RequestStopEvent(Manager.eventLoop), true, false, false, false)
     {
 
       public void addFailed (Object observable, Throwable w)
@@ -161,7 +163,7 @@ public class TestLinuxCore
     new ProcBlockAction (ackProc, stacker);
     assertRunUntilStop("perform backtrace");
 
-    coreStack = new StacktraceAction(coreProc, new PrintEvent(),true,false,false,false)
+    coreStack = new StacktraceAction(new PrintWriter(stringWriter),coreProc, new PrintEvent(),true,false,false,false)
     {
 
       public void addFailed (Object observable, Throwable w)
@@ -172,7 +174,7 @@ public class TestLinuxCore
     new ProcCoreAction(coreProc, coreStack);
     assertRunUntilStop("perform corebacktrace");
 
-    assertEquals("Compare stack traces",stacker.toPrint(),coreStack.toPrint());
+    assertEquals("Compare stack traces",stringWriter.getBuffer().toString(),stringWriter.getBuffer().toString());
     xtestCore.delete();
   }
 

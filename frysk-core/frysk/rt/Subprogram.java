@@ -43,6 +43,7 @@
 
 package frysk.rt;
 
+import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -113,25 +114,25 @@ public class Subprogram extends Subroutine
       this.functionType = functionType;
     }
     
-    public StringBuilder printParameters ()
+    public void printParameters (PrintWriter writer)
     {
-      StringBuilder stringBuilder = new StringBuilder();
+      
       Iterator iterator = this.parameters.iterator();
       while(iterator.hasNext()) {
         Variable parameter = (Variable) iterator.next();
         if(parameter.getVariable() == null){
-          stringBuilder.append("Unhandled type");
+          writer.print("Unhandled type");
         }else{
-          stringBuilder.append(parameter.getType() + " " + parameter.getVariable().getText());
+            writer.print(parameter.getType() + " " + parameter.getVariable().getText());
         }
         if(parameters.indexOf(parameter) < (this.parameters.size()-1)){
-          stringBuilder.append(",");
+            writer.print(",");
         }
       }
-      return stringBuilder;
+      
     }
     
-    public StringBuilder printScopes(){
-      return new StringBuilder(super.toPrint(1));
+    public void printScopes(PrintWriter writer){
+      super.toPrint(writer, 1);
     }
 }

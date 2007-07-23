@@ -1,5 +1,10 @@
 2007-07-23  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* fstack.java: Created a PrintWriter and added to all 
+	StacktraceAction constructors.
+
+2007-07-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* TestFhd.java (testHpdCore): replaced test-core with
 	test-core-x86; fix for failing tests.
 	(testHpdCore): ditto.

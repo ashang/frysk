@@ -41,6 +41,8 @@
 package frysk.util;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -195,7 +197,10 @@ public class FCatch
     while (frame != null)
       {
         this.stackTrace.append("#" + i + " ");
-        this.stackTrace.append(frame.toPrint(false));
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        frame.toPrint(printWriter,false);
+        this.stackTrace.append(stringWriter.getBuffer());
         this.stackTrace.append("\n");
         frame = frame.getOuter();
         i++;

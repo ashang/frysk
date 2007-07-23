@@ -1,3 +1,8 @@
+2007-07-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CurrentStackView.java: replaced use of String for printing
+	stack traces with PrintWriter.
+
 2007-07-20  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindow.java: Show the source code even if the parser

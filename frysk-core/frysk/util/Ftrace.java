@@ -177,7 +177,9 @@ public class Ftrace
     int count = 0;
     while (frame != null)
       {
-	writer.println("#" + count + " " + frame.toPrint(false));
+	writer.print("#" + count + " ");
+	frame.toPrint(writer,false);
+	writer.println();
 	frame = frame.getOuter();
 	++count;
       }

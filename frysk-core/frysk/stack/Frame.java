@@ -39,6 +39,8 @@
 
 package frysk.stack;
 
+import java.io.PrintWriter;
+
 import lib.dwfl.DwTagEncodings;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
@@ -99,30 +101,30 @@ public abstract class Frame
   /**
    * Return a simple string representation of this stack frame.
    * The returned string is suitable for display to the user.
+   * @param printWriter 
    */
-  public String toPrint (boolean name)
+  public void toPrint (PrintWriter printWriter, boolean name)
   {
     // XXX: There is always an inner cursor.
     if (this.cursor == null)
-      return "Empty stack trace";
+      printWriter.write("Empty stack trace");
 
     // Pad the address based on the task's word size.
-    StringBuffer builder = new StringBuffer("0x");
+    printWriter.write("0x");
     String addr = Long.toHexString(getAddress());
     int padding = 2 * task.getIsa().getWordSize() - addr.length();
     for (int i = 0; i < padding; ++i)
-      builder.append('0');
-    builder.append(addr);
+      printWriter.write('0');
+    printWriter.write(addr);
 
     // Print the symbol, if known append ().
     Symbol symbol = getSymbol();
-    builder.append(" in ");
-    builder.append(symbol.getDemangledName());
+    printWriter.write(" in ");
+    printWriter.write(symbol.getDemangledName());
     if (symbol != Symbol.UNKNOWN)
-      builder.append(" ()");
-    
-    return builder.toString();
+      printWriter.write(" ()");
   }
+  
   public abstract long getReg(long reg);
   
   /**

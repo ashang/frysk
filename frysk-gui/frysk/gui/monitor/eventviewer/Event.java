@@ -39,6 +39,9 @@
 
 package frysk.gui.monitor.eventviewer;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.freedesktop.cairo.Point;
 import org.gnu.gdk.Color;
 import org.gnu.gdk.GdkCairo;
@@ -216,15 +219,17 @@ public class Event extends GuiObject
   public void setStackFrame (Frame frame)
   {
     stackFrame = frame;
-    String summary = this.getName() + ": " + this.getToolTip() + "\n";
+    StringWriter stringWriter = new StringWriter();
+    
+     stringWriter.write(this.getName() + ": " + this.getToolTip() + "\n");
     
     if(frame != null){
-      summary += StackFactory.printStackTrace(frame);
+      StackFactory.printStackTrace(new PrintWriter(stringWriter),frame);
     }else{
-      summary += "*Error capturing stack frame*";
+      stringWriter.write("*Error capturing stack frame*");
     }
     
-    this.setSummay(summary);
+    this.setSummay(stringWriter.getBuffer().toString());
   }
 
 }

@@ -1,3 +1,10 @@
+2007-07-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Scope.java: Replaced printing to Strings with printing to
+	PrintWriters.
+	* Subprogram.java: Ditto.
+	* TestFrameDebugInfo.java: Ditto.
+
 2007-07-19  Mike Cvet  <mcvet@redhat.com>
 
 	* states/StepOverTestState.java (handleUpdate): Aesthetic update.

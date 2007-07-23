@@ -40,6 +40,7 @@
 
 package frysk.util;
 
+import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -70,7 +71,7 @@ public abstract class StacktraceAction
   {
   }
 
-  protected StringBuffer stackTrace = new StringBuffer();
+  protected PrintWriter printWriter;
 
   private TreeMap sortedTasks = new TreeMap();
 
@@ -100,7 +101,7 @@ public abstract class StacktraceAction
    *            file path is printed other wise only the name of the file is printed.
    * @throws ProcException
    */
-  public StacktraceAction (Proc theProc, Event theEvent,boolean elfOnly, boolean printParameters, boolean printScopes, boolean fullpath)
+  public StacktraceAction (PrintWriter printWriter, Proc theProc, Event theEvent,boolean elfOnly, boolean printParameters, boolean printScopes, boolean fullpath)
   {
      event = theEvent;
 
@@ -109,8 +110,14 @@ public abstract class StacktraceAction
      this.printScopes = printScopes;
      this.fullpath = fullpath;
      
+     this.printWriter = printWriter;
     Manager.eventLoop.add(new InterruptEvent(theProc));
   }  
+
+//  public StacktraceAction (Proc theProc, Event theEvent,boolean elfOnly, boolean printParameters, boolean printScopes, boolean fullpath)
+//  {
+//      this(new PrintWriter(System.out) , theProc, theEvent, elfOnly, printParameters, printScopes, fullpath);
+//  }  
 
   public final void existingTask (Task task)
   {
@@ -119,12 +126,12 @@ public abstract class StacktraceAction
                new Object[] { this, task });
 
     // Print the stack frame for this stack.
-    StringBuffer taskTrace = StackFactory.generateTaskStackTrace(task,elfOnly,printParameters,printScopes,fullpath);
+    
 
     if (sortedTasks == null)
       sortedTasks = new TreeMap();
 
-    sortedTasks.put(new Integer(task.getTid()), taskTrace);
+    sortedTasks.put(new Integer(task.getTid()), task);
   }
 
   public void taskAddFailed (Object observable, Throwable w)
@@ -140,19 +147,15 @@ public abstract class StacktraceAction
     Iterator iter = sortedTasks.values().iterator();
     while (iter.hasNext())
       {
-        StringBuffer output = (StringBuffer) iter.next();
-        stackTrace.append(output);
+	Task task =  (Task) iter.next();
+	StackFactory.printTaskStackTrace(printWriter,task,elfOnly,printParameters,printScopes,fullpath);
       }
     logger.log(Level.FINE, "{0} exiting printTasks\n", this);
   }
 
-  public final String toPrint ()
-  {
-    logger.log(Level.FINE, "{0} toPrint, stackTrace: {1}\n",
-               new Object[] { this, stackTrace });
-    return stackTrace.toString();
+  public void flush(){
+      this.printWriter.flush();
   }
-
   /**
    * If the user cntl-c interrupts, handle it cleanly
    */

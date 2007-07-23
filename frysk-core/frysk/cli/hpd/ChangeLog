@@ -1,3 +1,8 @@
+2007-07-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CLI.java: Passed printWriter as a direct argument to Frame.
+	* WhereCommand.java: Ditto.
+
 2007-07-20  Nurdin Premji  <npremji@redhat.com>
 
 	* CLIHandler.java (CLIHandler): Added new constructor.

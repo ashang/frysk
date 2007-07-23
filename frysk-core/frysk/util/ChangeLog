@@ -1,5 +1,15 @@
 2007-07-23  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* FCatch.java: Used printWriter instead of String to print
+	stack trace.
+	* Ftrace.java: Ditto.
+	* StacktraceAction.java: Ditto.
+	* StressTestFStack.java: Ditto.
+	* TestFCatch.java: Ditto.
+	* TestFStack.java: Ditto.
+
+2007-07-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* TestFStack.java: replaced test-core with test-core-x86;
 	fix for failing tests.
 

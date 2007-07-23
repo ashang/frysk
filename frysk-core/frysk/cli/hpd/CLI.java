@@ -41,19 +41,16 @@ package frysk.cli.hpd;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.LinkedList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Observer;
-import java.util.Observable;
-
 import java.text.ParseException;
-import java.lang.RuntimeException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Set;
 
 import javax.naming.NameNotFoundException;
 
@@ -206,7 +203,8 @@ public class CLI
       if (tmpFrame == null)
 	tmpFrame = currentFrame;
       outWriter.print("#" + stackLevel + " ");
-      outWriter.println(tmpFrame.toPrint(false));        
+      tmpFrame.toPrint(outWriter, false);
+      outWriter.println();
     }
   }
   

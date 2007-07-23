@@ -41,6 +41,8 @@
 package frysk.util;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.logging.Level;
 
@@ -83,6 +85,8 @@ public class TestFStack
 
   public static void multiThreaded (AckProcess ackProc, int numSecondaryThreads)
   {
+      StringWriter stringWriter = new StringWriter();
+      
     String mainThread = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
                         + "#[\\d]+ 0x[\\da-f]+ in server \\(\\).*\n"
                         + "#[\\d]+ 0x[\\da-f]+ in main \\(\\).*\n"
@@ -98,7 +102,7 @@ public class TestFStack
 
     StacktraceAction stacker;
 
-    stacker = new StacktraceAction(proc, new RequestStopEvent(Manager.eventLoop), true, false, false, false)
+    stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop), true, false, false, false)
     {
 
       public void addFailed (Object observable, Throwable w)
@@ -114,7 +118,7 @@ public class TestFStack
     regex += "(" + mainThread + ")(" + thread + "){" + numSecondaryThreads
              + "}";
 
-    String result = stacker.toPrint();
+    String result = stringWriter.getBuffer().toString();
     logger.log(Level.FINE, result);
     assertTrue(result + "should match: " + regex + " threads",
                result.matches(regex));
@@ -125,6 +129,8 @@ public class TestFStack
   {
     if (unresolved(4581))
       return;
+   
+    StringWriter stringWriter = new StringWriter();
     
     Host coreHost = new LinuxHost(Manager.eventLoop,
                                   new File(Config.getPkgDataDir(), "test-core-x86"));
@@ -137,7 +143,7 @@ public class TestFStack
         Proc proc = (Proc) iter.next();
         StacktraceAction stacker;
 
-        stacker = new StacktraceAction(proc, new RequestStopEvent(Manager.eventLoop), true, false, false, false)
+        stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop), true, false, false, false)
         {
 
           public void addFailed (Object observable, Throwable w)
@@ -149,7 +155,7 @@ public class TestFStack
         new ProcCoreAction (proc, stacker);
         assertRunUntilStop("perform backtrace");
         
-        assertNotNull("has backtrace?", stacker.toPrint());
+        assertNotNull("has backtrace?", stringWriter.getBuffer().toString());
       }
 
   }
