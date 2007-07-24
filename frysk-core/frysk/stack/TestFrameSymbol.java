@@ -37,8 +37,9 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.rt;
+package frysk.stack;
 
+import frysk.rt.Symbol;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
@@ -46,26 +47,23 @@ import frysk.proc.TaskObserver;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 
-public class TestSymbol
+public class TestFrameSymbol
     extends frysk.proc.TestLib
 {
     private void symbolTest (String command, int numberOfArgs,
 			     String name, boolean addressValid,
-			     boolean sizeValid)
-    {
+			     boolean sizeValid) {
 	class RunToCrash
 	    extends TaskObserverBase
 	    implements TaskObserver.Attached, TaskObserver.Signaled
 	{
 	    Task task;
-	    public Action updateAttached (Task task)
-	    {
+	    public Action updateAttached (Task task) {
 		task.requestAddSignaledObserver (this);
 		task.requestDeleteAttachedObserver(this);
 		return Action.CONTINUE;
 	    }
-	    public Action updateSignaled (Task task, int value)
-	    {
+	    public Action updateSignaled (Task task, int value) {
 		this.task = task;
 		Manager.eventLoop.requestStop();
 		return Action.BLOCK;

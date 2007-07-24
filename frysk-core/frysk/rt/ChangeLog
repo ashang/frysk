@@ -1,3 +1,7 @@
+2007-07-24  Andrew Cagney  <cagney@redhat.com>
+
+	* TestSymbol.java: Moved to frysk.stack.TestFrameSymbol.java.
+
 2007-07-23  Nurdin Premji  <npremji@redhat.com>
 
 	* TestSymbol.java (symbolTest): Enabled symbol size tests.
