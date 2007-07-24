@@ -1,5 +1,7 @@
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
+	* FrameDecorator.java: New.
+
 	* package.html: New file.
 
 2007-07-23  Nurdin Premji  <npremji@redhat.com>
