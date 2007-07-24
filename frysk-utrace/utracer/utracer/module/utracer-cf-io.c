@@ -16,7 +16,7 @@
 #include <linux/tracehook.h>
 #include <asm-i386/tracehook.h>
 
-#include "utracer.h"
+#include "../include/utracer.h"
 #include "utracer-private.h"
 
 MODULE_LICENSE("GPL");

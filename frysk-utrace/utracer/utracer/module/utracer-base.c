@@ -14,7 +14,7 @@
 #include <asm-i386/tracehook.h>
 #include <asm-i386/unistd.h>
 
-#include "utracer.h"
+#include "../include/utracer.h"
 #define DO_INIT
 #include "utracer-private.h"
 

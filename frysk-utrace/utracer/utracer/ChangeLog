@@ -1,3 +1,12 @@
+Tue Jul 24 14:04:25 2007  Chris Moller  <cmoller@redhat.com>
+
+	* include:
+	* module:  Added two new dirs and moved the "public" headers to
+	the include dir and everything else to the module dir.  This is in
+	aid of coupling the user-space end of the read, write, and ioctl
+	ops more closely to the module (instead of to the front-end) in
+	preparation for writing a Java wrapper.
+
 Mon Jul 23 23:27:48 2007  Chris Moller  <cmoller@redhat.com>
 
 	* utracer-cf-io.c: Removed dead code. Added ioctl-based query code
