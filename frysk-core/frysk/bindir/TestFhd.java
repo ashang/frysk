@@ -303,10 +303,10 @@ public class TestFhd
     e.send ("attach " + child.getPid () + "\n\n");
     e.expect (5, "attach.*\n" + prompt);
     // Break
-    e.send("break @hpd-c.c@196\n");	// This has to break on: while (int_21)
+    e.send("break #hpd-c.c#196\n");	// This has to break on: while (int_21)
     e.expect("breakpoint.*" + prompt);
     e.send("go\n");
-    e.expect("go.*\n" + prompt + "Breakpoint.*@hpd-c.c@196");
+    e.expect("go.*\n" + prompt + "Breakpoint.*#hpd-c.c#196");
     e.send("quit\n");
     e.expect("quit.*\nQuitting...");
     e.close();
@@ -396,10 +396,10 @@ public class TestFhd
 	});
 	e.expect (prompt);
 	// Break
-        e.send("break @hpd-c.c@179\n");
+        e.send("break #hpd-c.c#179\n");
         e.expect("breakpoint.*" + prompt);
         e.send("go\n");
-	e.expect("go.*" + prompt + ".*Breakpoint.*@hpd-c.c@179.*");
+	e.expect("go.*" + prompt + ".*Breakpoint.*#hpd-c.c#179.*");
 	e.send("display int_21\n");
 	e.expect("display.*1:.*int_21 = .*" + prompt);
 	e.send("display int_21*2\n");

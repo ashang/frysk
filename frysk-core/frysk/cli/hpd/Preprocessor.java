@@ -168,15 +168,10 @@ class Preprocessor
 
 	private static String stripComment(String cmd)
 	{
-		int pos = cmd.indexOf('#');
-		String result = "";
-
-		if (pos != -1)
-			result = cmd.substring(0,pos);
+		if (cmd.length() == 0 || cmd.charAt(0) == '#')
+		    return "";
 		else
-			result = cmd;
-
-		return result;
+		    return cmd;
 	}
 	
 	/**

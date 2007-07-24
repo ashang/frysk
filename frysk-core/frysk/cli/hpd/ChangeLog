@@ -1,3 +1,8 @@
+2007-07-24  Stan Cox  <scox@redhat.com>
+
+	* Preprocessor.java (stripComment): Verify that line starts with #.
+	* BreakpointCommand.java (handle): Change break trigger to #.
+
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
 	* DisassembleCommand.java: Update; frysk.rt.Symbol moved to

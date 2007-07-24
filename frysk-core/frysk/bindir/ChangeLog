@@ -1,3 +1,7 @@
+2007-07-24  Stan Cox  <scox@redhat.com>
+
+	* TestFhd.java (testHpdBreakpoint): Change break trigger to #.
+
 2007-07-23  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* fstack.java: Created a PrintWriter and added to all 

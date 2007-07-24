@@ -58,7 +58,7 @@ class BreakpointCommand
 
     private BreakpointCommand(String name, CLI cli)
     {
-	super(name, cli, new CommandHelp(name, descr, "break @file@lineno", descr));
+	super(name, cli, new CommandHelp(name, descr, "break #file#lineno", descr));
     }
 
     BreakpointCommand(CLI cli)
@@ -98,8 +98,8 @@ class BreakpointCommand
 	BreakpointManager bpManager = cli.getSteppingEngine().getBreakpointManager();
 	Task task = cli.getTask();
 	final PrintWriter outWriter = cli.getPrintWriter();
-	if (breakpt.charAt(0) == '@') {
-	    String[] bptParams = breakpt.split("@");
+	if (breakpt.charAt(0) == '#') {
+	    String[] bptParams = breakpt.split("#");
 	    if (bptParams.length != 3) {
 		// XXX should use notion of "current" source file
 		throw new ParseException("bad syntax for breakpoint:" + breakpt,
@@ -115,9 +115,9 @@ class BreakpointCommand
 			LineBreakpoint lbpt = (LineBreakpoint)bpt;
 			outWriter.print("Breakpoint ");
 			outWriter.print(lbpt.getId());
-			outWriter.print(" @");
+			outWriter.print(" #");
 			outWriter.print(lbpt.getFileName());
-			outWriter.print("@");
+			outWriter.print("#");
 			outWriter.println(lbpt.getLineNumber());
 		    }
 		});
