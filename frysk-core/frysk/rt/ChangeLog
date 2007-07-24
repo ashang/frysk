@@ -2,6 +2,8 @@
 
 	* TestStepping.java: Updated to use funit-stepping-asm instead of
 	funit-frameinfo-looper.
+	
+	* TestStepping.java: Reverted previous change due to break.
 
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 

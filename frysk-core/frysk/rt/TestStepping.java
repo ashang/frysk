@@ -340,7 +340,7 @@ public class TestStepping extends TestLib
     test = ASM_STEP_FUNC_ENTRY;
     
     String[] cmd = new String[1];
-    cmd[0] = getExecPath ("funit-stepping-asm");
+    cmd[0] = getExecPath ("funit-frameinfo-looper");
     
     attachedObserver = new AttachedObserver();
     Manager.host.requestCreateAttachedProc(cmd, attachedObserver);
@@ -365,7 +365,7 @@ public class TestStepping extends TestLib
     test = ASM_STEP_FUNC_RETURN;
     
     String[] cmd = new String[1];
-    cmd[0] = getExecPath ("funit-stepping-asm");
+    cmd[0] = getExecPath ("funit-frameinfo-looper");
     
     attachedObserver = new AttachedObserver();
     Manager.host.requestCreateAttachedProc(cmd, attachedObserver);
@@ -390,7 +390,7 @@ public class TestStepping extends TestLib
     test = ASM_STEP_FUNC_STEP_OVER;
     
     String[] cmd = new String[1];
-    cmd[0] = getExecPath ("funit-stepping-asm");
+    cmd[0] = getExecPath ("funit-frameinfo-looper");
     
     attachedObserver = new AttachedObserver();
     Manager.host.requestCreateAttachedProc(cmd, attachedObserver);
@@ -415,7 +415,7 @@ public class TestStepping extends TestLib
     test = ASM_STEP_FUNC_STEP_OUT;
     
     String[] cmd = new String[1];
-    cmd[0] = getExecPath ("funit-stepping-asm");
+    cmd[0] = getExecPath ("funit-frameinfo-looper");
     
     attachedObserver = new AttachedObserver();
     Manager.host.requestCreateAttachedProc(cmd, attachedObserver);
@@ -934,23 +934,23 @@ public class TestStepping extends TestLib
       
       switch (test) {
 	    case ASM_STEP_FUNC_ENTRY:
-		asmTestStartVal = 68;
-		asmTestFinishVal = 47;
+		asmTestStartVal = 111;
+		asmTestFinishVal = 86;
 		break;
 
 	    case ASM_STEP_FUNC_RETURN:
-		asmTestStartVal = 52;
-		asmTestFinishVal = 70;
+		asmTestStartVal = 93;
+		asmTestFinishVal = 113;
 		break;
 
 	    case ASM_STEP_FUNC_STEP_OVER:
-		asmTestStartVal = 68;
-		asmTestFinishVal = 70;
+		asmTestStartVal = 111;
+		asmTestFinishVal = 113;
 		break;
 
 	    case ASM_STEP_FUNC_STEP_OUT:
-		asmTestStartVal = 47;
-		asmTestFinishVal = 70;
+		asmTestStartVal = 86;
+		asmTestFinishVal = 113;
 		break;
 
 	    default:
