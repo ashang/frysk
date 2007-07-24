@@ -37,56 +37,84 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.stack;
+package frysk.symtab;
 
-import frysk.proc.Task;
-import frysk.symtab.Symbol;
-import java.io.PrintWriter;
+import lib.stdcpp.Demangler;
 
 /**
- * Decorator wrapper for the ABI frame.  More abstract frames, such as
- * the DebuginfoFrame extend this class.
+ * The object-file symbol.  Typically obtained by reading ELF
+ * information.
+ *
+ * Do not confuse this with higher-level symbolic information, such as
+ * function names, obtained from debug information such as DWARF.
  */
 
-public abstract class FrameDecorator
+public class Symbol
 {
-    private final Frame frame;
-    protected FrameDecorator(Frame frame) {
-	this.frame = frame;
+    // The symbol's fields.
+    private long address;
+    private long size;
+    private String name;
+    private String demangledName;
+
+    // package private constructor.
+    Symbol() {
     }
 
-    public long getAddress() {
-	return frame.getAddress();
+    void symbol(long address, long size, String name) {
+	this.address = address;
+	this.size = size;
+	this.name = name;
+    }
+    void symbol(long address, String name) {
+	this.address = address;
+	this.size = 0;
+	this.name = name;
     }
 
-    public long getAdjustedAddress() {
-	return frame.getAdjustedAddress();
+    /**
+     * Return the address of the symbol.
+     */
+    public long getAddress ()
+    {
+	return address;
+    }
+    
+    /**
+     * Return the size of the symbol (possibly zero).
+     */
+    public long getSize ()
+    {
+	return size;
     }
 
-    public final Task getTask() {
-	return frame.getTask();
+    /**
+     * Return the mangled name (the raw string found in the symbol
+     * table).  Or NULL, of the name is unknown.
+     */
+    public String getName ()
+    {
+	return name;
     }
 
-    protected Frame getDecoratedInner() {
-	return frame.getInner();
-    }
-    protected Frame getDecoratedOuter() {
-	return frame.getOuter();
-    }
-
-    public void toPrint(PrintWriter printWriter, boolean name) {
-	frame.toPrint(printWriter, name);
-    }
-
-    public long getReg(long reg) {
-	return frame.getReg(reg);
+    /**
+     * Return the demangled name, or "" of the name isn't known.
+     *
+     * XXX: Is returning "" better than null?  Sounds like a cheat for
+     * code that should be conditional on the symbol being known.
+     */
+    public String getDemangledName ()
+    {
+	if (demangledName == null)
+	    demangledName = Demangler.demangle (name);
+	return demangledName;
     }
 
-    public FrameIdentifier getFrameIdentifier() {
-	return frame.getFrameIdentifier();
-    }
-
-    public Symbol getSymbol() {
-	return frame.getSymbol();
+    /**
+     * Dump the symbol's contents.
+     */
+    public String toString ()
+    {
+	return name + "@" + Long.toHexString (address) + ":" + size;
     }
 }

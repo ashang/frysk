@@ -37,56 +37,34 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.stack;
+package frysk.symtab;
 
 import frysk.proc.Task;
-import frysk.symtab.Symbol;
-import java.io.PrintWriter;
+import frysk.dwfl.DwflCache;
 
 /**
- * Decorator wrapper for the ABI frame.  More abstract frames, such as
- * the DebuginfoFrame extend this class.
+ * The object-file symbol.  Typically obtained by reading ELF
+ * information.
+ *
+ * Do not confuse this with higher-level symbolic information, such as
+ * function names, obtained from debug information such as DWARF.
  */
 
-public abstract class FrameDecorator
+public class SymbolFactory
 {
-    private final Frame frame;
-    protected FrameDecorator(Frame frame) {
-	this.frame = frame;
-    }
+    /**
+     * A special unknown symbol.
+     */
+    public static final Symbol UNKNOWN = new UnknownSymbol ();
 
-    public long getAddress() {
-	return frame.getAddress();
-    }
-
-    public long getAdjustedAddress() {
-	return frame.getAdjustedAddress();
-    }
-
-    public final Task getTask() {
-	return frame.getTask();
-    }
-
-    protected Frame getDecoratedInner() {
-	return frame.getInner();
-    }
-    protected Frame getDecoratedOuter() {
-	return frame.getOuter();
-    }
-
-    public void toPrint(PrintWriter printWriter, boolean name) {
-	frame.toPrint(printWriter, name);
-    }
-
-    public long getReg(long reg) {
-	return frame.getReg(reg);
-    }
-
-    public FrameIdentifier getFrameIdentifier() {
-	return frame.getFrameIdentifier();
-    }
-
-    public Symbol getSymbol() {
-	return frame.getSymbol();
+   /**
+    * Return the symbol at the specified address within task.
+    */
+    public static Symbol getSymbol(Task task, long address) {
+	DwflSymbol symbol = new DwflSymbol();
+	DwflCache.getDwfl(task).getModule(address).getSymbol(address, symbol);
+	if (symbol.getName() == null)
+	    return UNKNOWN;
+	return symbol;
     }
 }

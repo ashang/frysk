@@ -37,100 +37,19 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.rt;
-
-import lib.stdcpp.Demangler;
+package frysk.symtab;
 
 /**
- * The object-file symbol.  Typically obtained by reading ELF
- * information.
- *
- * Do not confuse this with higher-level symbolic information, such as
- * function names, obtained from debug information such as DWARF.
+ * An unknown-symbol; a singleton.
  */
 
-public class Symbol
+class UnknownSymbol
+    extends Symbol
 {
-    /**
-     * A special unknown symbol.
-     */
-    public static final Symbol UNKNOWN = new Symbol (0, -1, "[unknown]")
-	{
-	    public String getDemangledName ()
-	    {
-		return "[unknown]";
-	    }
-	};
-
-
-    // The symbol's fields.
-    private long address;
-    private long size;
-    private String name;
-
-    /**
-     * Create a new symbol.  The SIZE is a field from ELF and defines
-     * the symbol's address range.
-     */
-    public Symbol (long address, long size, String name)
-    {
-	this.address = address;
-	this.size = size;
-	this.name = name;
+    UnknownSymbol() {
+	super.symbol(0, -1, "[unknown]");
     }
-
-    /**
-     * Create a new Symbol; when the size is unknown.
-     */
-    public Symbol (long address, String name)
-    {
-	this (address, -1, name);
-    }
-
-    /**
-     * Return the address of the symbol.
-     */
-    public long getAddress ()
-    {
-	return address;
-    }
-    
-    /**
-     * Return the size of the symbol (possibly zero).
-     */
-    public long getSize ()
-    {
-	return size;
-    }
-
-    /**
-     * Return the mangled name (the raw string found in the symbol
-     * table).  Or NULL, of the name is unknown.
-     */
-    public String getName ()
-    {
-	return name;
-    }
-
-    /**
-     * Return the demangled name, or "" of the name isn't known.
-     *
-     * XXX: Is returning "" better than null?  Sounds like a cheat for
-     * code that should be conditional on the symbol being known.
-     */
-    public String getDemangledName ()
-    {
-	if (name == null)
-	    return "";
-	else
-	    return Demangler.demangle (name);
-    }
-
-    /**
-     * Dump the symbol's contents.
-     */
-    public String toString ()
-    {
-	return name + "@" + Long.toHexString (address) + ":" + size;
+    public String getDemangledName () {
+	return "[unknown]";
     }
 }

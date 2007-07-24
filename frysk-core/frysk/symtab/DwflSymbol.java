@@ -37,56 +37,23 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.stack;
+package frysk.symtab;
 
-import frysk.proc.Task;
-import frysk.symtab.Symbol;
-import java.io.PrintWriter;
+import lib.dwfl.SymbolBuilder;
 
 /**
- * Decorator wrapper for the ABI frame.  More abstract frames, such as
- * the DebuginfoFrame extend this class.
+ * A dwfl based symbol.
+ *
+ * Do not confuse this with higher-level symbolic information, such as
+ * function names, obtained from debug information such as DWARF.
  */
 
-public abstract class FrameDecorator
+class DwflSymbol
+    extends Symbol
+    implements SymbolBuilder
 {
-    private final Frame frame;
-    protected FrameDecorator(Frame frame) {
-	this.frame = frame;
-    }
-
-    public long getAddress() {
-	return frame.getAddress();
-    }
-
-    public long getAdjustedAddress() {
-	return frame.getAdjustedAddress();
-    }
-
-    public final Task getTask() {
-	return frame.getTask();
-    }
-
-    protected Frame getDecoratedInner() {
-	return frame.getInner();
-    }
-    protected Frame getDecoratedOuter() {
-	return frame.getOuter();
-    }
-
-    public void toPrint(PrintWriter printWriter, boolean name) {
-	frame.toPrint(printWriter, name);
-    }
-
-    public long getReg(long reg) {
-	return frame.getReg(reg);
-    }
-
-    public FrameIdentifier getFrameIdentifier() {
-	return frame.getFrameIdentifier();
-    }
-
-    public Symbol getSymbol() {
-	return frame.getSymbol();
+    public void symbol(String name, long value, long size, int type,
+		       int bind, int visibility) {
+	super.symbol(value, size, name);
     }
 }

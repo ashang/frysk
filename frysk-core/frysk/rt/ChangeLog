@@ -1,10 +1,14 @@
+2007-07-24  Andrew Cagney  <cagney@redhat.com>
+
+	* Symbol.java: Moved to frysk.symtab.Symbol.
+
 2007-07-24  Mike Cvet  <mcvet@redhat.com>
+
+	* TestStepping.java: Reverted previous change due to break.
 
 	* TestStepping.java: Updated to use funit-stepping-asm instead of
 	funit-frameinfo-looper.
 	
-	* TestStepping.java: Reverted previous change due to break.
-
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
 	* TestSymbol.java: Moved to frysk.stack.TestFrameSymbol.java.

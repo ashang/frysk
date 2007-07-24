@@ -51,7 +51,8 @@ import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.rt.Line;
 import frysk.rt.Subprogram;
-import frysk.rt.Symbol;
+import frysk.symtab.SymbolFactory;
+import frysk.symtab.Symbol;
 
 public abstract class Frame
 {
@@ -121,7 +122,7 @@ public abstract class Frame
     Symbol symbol = getSymbol();
     printWriter.write(" in ");
     printWriter.write(symbol.getDemangledName());
-    if (symbol != Symbol.UNKNOWN)
+    if (symbol != SymbolFactory.UNKNOWN)
       printWriter.write(" ()");
   }
   

@@ -46,7 +46,7 @@ import java.util.List;
 import javax.naming.NameNotFoundException;
 
 import frysk.Config;
-import frysk.rt.Symbol;
+import frysk.symtab.Symbol;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;

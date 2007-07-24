@@ -39,7 +39,7 @@
 
 package frysk.stack;
 
-import frysk.rt.Symbol;
+import frysk.symtab.Symbol;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
@@ -47,12 +47,15 @@ import frysk.proc.TaskObserver;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 
+/**
+ * Checks that the frame's getSymbol method is wired up to the
+ * SymbolFactory.
+ */
+
 public class TestFrameSymbol
     extends frysk.proc.TestLib
 {
-    private void symbolTest (String command, int numberOfArgs,
-			     String name, boolean addressValid,
-			     boolean sizeValid) {
+    public void testOneSymbol() {
 	class RunToCrash
 	    extends TaskObserverBase
 	    implements TaskObserver.Attached, TaskObserver.Signaled
@@ -71,17 +74,12 @@ public class TestFrameSymbol
 	}
 	RunToCrash runToCrash = new RunToCrash ();
 
-	// Construct an argument list containing numberOfArgs dummy
-	// arguments.  The inferior program just looks at ARGC to
-	// determine what to do.
-	String[] fullCommand = new String[numberOfArgs + 1];
-	fullCommand[0] =  getExecPath (command);
-    	for (int i = 1; i < fullCommand.length; i++) {
-	    fullCommand[i] = Integer.toString(i);
-	}
-    
 	// Run the target program throuth to its termination.
-	Manager.host.requestCreateAttachedProc(fullCommand, runToCrash);
+	Manager.host.requestCreateAttachedProc(new String[] {
+						   getExecPath ("funit-symbols"),
+						   "1"
+					       },
+					       runToCrash);
 	assertRunUntilStop("Run to crash");
 
 	// Extract the stack from the signalled program and validate
@@ -89,124 +87,9 @@ public class TestFrameSymbol
 	Frame frame = StackFactory.createFrame(runToCrash.task);
 
 	Symbol symbol = frame.getSymbol ();
-	assertEquals ("symbol " + name, name, symbol.getDemangledName ());
-	assertEquals ("symbol address valid", addressValid,
-		      symbol.getAddress() != 0);
-	assertEquals ("symbol size valid", sizeValid, symbol.getSize() > 0);
-    }
-
-    /**
-     * What to expect when there is no symbol.
-     */
-    private String unknown = Symbol.UNKNOWN.getName ();
-
-    public void testDebug () {
-	symbolTest("funit-symbols", 1, "global_st_size", true, true);
-    }
-  
-    public void testNoDebug () {
-	symbolTest("funit-symbols-nodebug", 1, "global_st_size", true, true);
-    }
-  
-    public void testStripped () {
-	symbolTest("funit-symbols-stripped", 1, unknown, false, false);
-    }
-  
-    public void testStaticDebug () {
-	symbolTest("funit-symbols", 2, "local_st_size", true, true);
-    }
-  
-    public void testStaticNoDebug () {
-	symbolTest("funit-symbols-nodebug", 2, "local_st_size", true, true);
-    }
-  
-    public void testStaticStripped () {
-	symbolTest("funit-symbols-stripped", 2, unknown, false, false);
-    }
-  
-    public void testNoSize() {
-	symbolTest("funit-symbols", 3, "global_st_size_0", true, false);
-    }
-  
-    public void testNoDebugNoSize() {
-	symbolTest("funit-symbols-nodebug", 3, "global_st_size_0",
-		   true, false);   
-    }
-  
-    public void testStrippedNoSize() {
-	symbolTest("funit-symbols-stripped", 3, unknown, false, false);    
-    }
-  
-    public void testStaticNoSize() {
-	symbolTest("funit-symbols", 4, "local_st_size_0", true, false);    
-    }
-    public void testStaticNoDebugNoSize() {
-	symbolTest("funit-symbols-nodebug", 4, "local_st_size_0", true, false);   
-    }
-    public void testStaticStrippedNoSize() {
-	symbolTest("funit-symbols-stripped", 4, unknown, false, false);    
-    }
-
-    public void testGlobalInGlobal() {
-	symbolTest("funit-symbols", 5, "global_in_global", true, true);
-    }
-    public void testLocalInGlobal() {
-	symbolTest("funit-symbols", 6, "local_in_global", true, true);
-    }
-    public void testGlobalInLocal() {
-	symbolTest("funit-symbols", 7, "global_in_local", true, true);
-    }
-    public void testLocalInLocal() {
-	symbolTest("funit-symbols", 8, "local_in_local", true, true);
-    }
-
-    public void testGlobalAfterNested() {
-	if (unresolved(4830))
-	    return;
-	symbolTest("funit-symbols", 9, "global_outer", true, true);
-    }
-    public void testLocalAfterNested() {
-	if (unresolved(4830))
-	    return;
-	symbolTest("funit-symbols", 10, "local_outer", true, true);
-    }
-
-    public void testNoSymbolAfterGlobal() {
-	if (unresolved(4831))
-	    return;
-	symbolTest("funit-symbols", 11, unknown, false, false);
-    }
-    public void testNoSymbolAfterLocal() {
-	if (unresolved(4831))
-	    return;
-	symbolTest("funit-symbols", 12, unknown, false, false);
-    }
-
-    public void testGlobalSize0InGlobal() {
-	if (unresolved(4832))
-	    return;
-	symbolTest("funit-symbols", 13, "global_0_in_global", true, true);
-    }
-    public void testLocalSize0InGlobal() {
-	if (unresolved(4832))
-	    return;
-	symbolTest("funit-symbols", 14, "local_0_in_global", true, true);
-    }
-    public void testGlobalSize0InLocal() {
-	if (unresolved(4832))
-	    return;
-	symbolTest("funit-symbols", 15, "global_0_in_local", true, true);
-    }
-    public void testLocalSize0InLocal() {
-	if (unresolved(4832))
-	    return;
-	symbolTest("funit-symbols", 16, "local_0_in_local", true, true);
-    }
-
-    public void testGlobalAfterNestedSize0() {
-	symbolTest("funit-symbols", 17, "global_after_0", true, true);
-    }
-    public void testLocalAfterNestedSize0() {
-	symbolTest("funit-symbols", 18, "local_after_0", true, true);
+	assertEquals ("symbol's demangled name", "global_st_size",
+		      symbol.getDemangledName ());
+	assertTrue ("symbol address valid", symbol.getAddress() != 0);
+	assertTrue ("symbol size valid", symbol.getSize() > 0);
     }
 }

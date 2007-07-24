@@ -55,7 +55,7 @@ import frysk.proc.TestLib;
 //import frysk.sys.proc.MapsBuilder;
 import frysk.rt.Line;
 import frysk.rt.SteppingEngine;
-import frysk.rt.Symbol;
+import frysk.symtab.Symbol;
 import frysk.rt.TaskStepEngine;
 import frysk.sys.Pid;
 import frysk.sys.Sig;

@@ -1,5 +1,12 @@
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
+	* Frame.java: Update; frysk.rt.Symbol moved to frysk.symtab.Symbol
+	and frysk.symtab.SymbolFactory.
+	* TestStackBacktrace.java: Ditto.
+	* FrameDecorator.java: Ditto.
+	* RemoteFrame.java: Ditto.
+	* TestFrameSymbol.java: Simplify.
+
 	* TestFrameSymbol.java: Moved to here from frysk.rt.TestSymbol.
 
 	* FrameDecorator.java: New.
