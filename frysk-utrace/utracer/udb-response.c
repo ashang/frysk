@@ -9,7 +9,7 @@
 // this isn't the same as the one in the kernel
 //#include <asm/ptrace.h>
 
-#include "utracer/utracer.h"
+#include <utracer.h>
 #include "udb.h"
 #include "udb-i386.h"
 

@@ -12,9 +12,9 @@
 #include <sys/types.h>
 #include <sys/user.h>
 
+#include <utracer.h>
+#include <utracer-errmsgs.h>
 #include "udb.h"
-#include "utracer/utracer.h"
-#include "utracer/utracer-errmsgs.h"
 
 void
 uerror(const char * s)
@@ -69,98 +69,87 @@ utrace_switchpid_if (long pid)
   if (-1 == sz) uerror ("Writing switchpid command.");
 }
 
-void
-handle_printmmap (printmmap_resp_s * prm,
-		  vm_struct_subset_s * vss,
-		  char * estrings)
-{
-  fprintf (stdout, "\n\t[%ld] mmap\n",prm->utraced_pid);
-  fprintf (stdout, "\t\t%08lx mmap base\n", prm->mmap_base);
-  fprintf (stdout, "\t\t%08lx task size\n", prm->task_size);
-  fprintf (stdout, "\t\t%08lx def flags\n\t\t%8ld nr ptes\n",
-	   prm->def_flags, prm->nr_ptes);
-	
-  fprintf (stdout,
-	   "\n\t\tVM:  total    locked   shared   exec     stack\
-    reserved\n\t\t     ");
-  fprintf (stdout, "%-8ld ",prm->total_vm);
-  fprintf (stdout, "%-8ld ",prm->locked_vm);
-  fprintf (stdout, "%-8ld ",prm->shared_vm);
-  fprintf (stdout, "%-8ld ",prm->exec_vm);
-  fprintf (stdout, "%-8ld ",prm->stack_vm);
-  fprintf (stdout, "%-8ld ",prm->reserved_vm);
-  fprintf (stdout, "\n");
-
-  fprintf (stdout, "\n\t\tCode ranges:\n");
-  fprintf (stdout, "\t\t  %08lx - %08lx code (length = %ld) \n",
-	   prm->start_code, prm->end_code, prm->end_code - prm->start_code);
-  fprintf (stdout, "\t\t  %08lx - %08lx data (length = %ld)\n",
-	   prm->start_data, prm->end_data, prm->end_data - prm->start_data);
-  fprintf (stdout, "\t\t  %08lx - %08lx brk  (length = %ld) \n",
-	   prm->start_brk, prm->brk, prm->brk - prm->start_brk);
-  fprintf (stdout, "\t\t  %08lx  stack\n",
-	   prm->start_stack);
-
-  if (0 < prm->nr_mmaps) {
-    int i;
-
-    fprintf (stdout, "\n\t\tMemory maps:\n\t\t  start\
-      end      flags    pathname\n");
-
-    for (i = 0; i < prm->nr_mmaps; i++) {
-      char * fn1;
-
-      if (-1 != vss[i].name_offset)
-	fn1 = &estrings[vss[i].name_offset];
-      else {
-	if ((vss[i].vm_start <= prm->start_brk) &&
-	    (vss[i].vm_end   >= prm->brk)) fn1 = "[heap]";
-	else if ((vss[i].vm_start <= prm->start_stack) &&
-		 (vss[i].vm_end   >= prm->start_stack)) fn1 = "[stack]";
-	else fn1 = "[vdso]";
-      }
-	    
-      fprintf (stdout, "\t\t  %08x - %08x %08x %s\n",
-	       vss[i].vm_start,
-	       vss[i].vm_end,
-	       vss[i].vm_flags,
-	       fn1);
-    }
-  }
-}
-
-void
-utrace_printmmap_if (long pid)
+static int
+do_get_printmmap (long pid,
+		  printmmap_resp_s ** pr,
+		  vm_struct_subset_s ** vss,
+		  char ** vs,
+		  long vssl_req,
+		  long vsl_req,
+		  long * vssl_actual,
+		  long * vsl_actual)
 {
   int irc;
-  printmmap_resp_s * printmmap_resp = alloca (sizeof(printmmap_resp_s));
-  vm_struct_subset_s * vm_struct_subset = alloca (PAGE_SIZE);
-  char * vm_strings = alloca(PAGE_SIZE);
   long vm_struct_subset_length;
   long vm_strings_length;
+
+  if (!pr || ! vss || !vs) return UTRACER_EMAX;
+
+  *pr  = malloc (sizeof(printmmap_resp_s));
+  *vss = malloc (vssl_req);
+  *vs  = malloc (vsl_req);
   
   printmmap_cmd_s printmmap_cmd = {IF_CMD_PRINTMMAP,
 				   (long)udb_pid,
 				   pid,
-				   PAGE_SIZE,		// vm_subset_alloc
-				   PAGE_SIZE,		// vm_strings_alloc
+				   vssl_req,
+				   vsl_req,
 				   &vm_struct_subset_length,
 				   &vm_strings_length,
-				   printmmap_resp,
-				   vm_struct_subset,
-				   vm_strings};
+				   *pr,
+				   *vss,
+				   *vs};
   irc = ioctl (utracer_cmd_file_fd,
 	       sizeof(printmmap_cmd),
 	       &printmmap_cmd);
-  if (-1 == irc) uerror ("printmmap ioctl.");
-  else {
-    // fixme -- retry
-    if ((vm_struct_subset_length > PAGE_SIZE) ||
-	(vm_strings_length > PAGE_SIZE)) {
-      fprintf (stderr, "WARNING: printmmap buffer truncated.\n");
+
+  if (vssl_actual) *vssl_actual = vm_struct_subset_length;
+  if (vsl_actual)  *vsl_actual = vm_strings_length;
+
+  return irc;
+}
+
+int
+utracer_get_printmmap (long pid,
+		       printmmap_resp_s ** printmmap_resp_p,
+		       vm_struct_subset_s ** vm_struct_subset_p,
+		       char ** vm_strings_p)
+{
+  int irc;
+  printmmap_resp_s * pr = NULL;
+  vm_struct_subset_s * vss = NULL;
+  char * vs = NULL;
+  long vssl;
+  long vsl;
+  
+  irc = do_get_printmmap (pid, &pr, &vss, &vs,
+			  PAGE_SIZE, PAGE_SIZE, &vssl, &vsl);
+
+  if (0 == irc) {
+    if ((vssl > PAGE_SIZE) ||
+	(vsl > PAGE_SIZE)) {
+      if (pr)  free (pr);
+      if (vss) free (vss);
+      if (vs)  free (vs);
+      irc = do_get_printmmap (pid, &pr, &vss, &vs,
+			      vssl, vsl, NULL, NULL);
     }
-    else handle_printmmap (printmmap_resp, vm_struct_subset, vm_strings);
   }
+  switch (irc) {
+  case UTRACER_EMAX:
+    fprintf (stderr, "do_get_printmmap failed.\n");
+    break;
+  case -1:
+    uerror ("printmmap ioctl.");
+    break;
+  default:
+    if (printmmap_resp_p)	*printmmap_resp_p	= pr;
+    if (vm_struct_subset_p)	*vm_struct_subset_p	= vss;
+    if (vm_strings_p)		*vm_strings_p		= vs;
+    break;
+  }
+
+  return irc;
 }
 
 void

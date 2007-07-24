@@ -9,7 +9,7 @@
 #include <wait.h>
 #include <fcntl.h>
 
-#include "utracer/utracer.h"
+#include <utracer.h>
 #include "udb.h"
 
 /* using execlp of insmod and rmmod isn't my first choice of efficient ways to

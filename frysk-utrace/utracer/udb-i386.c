@@ -5,7 +5,7 @@
 #include <fcntl.h>
 /*#include <asm/ptrace.h>*/
 
-#include "utracer/utracer.h"
+#include <utracer.h>
 #include "udb-i386.h"
 #include <asm/unistd.h>
 

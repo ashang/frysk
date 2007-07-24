@@ -1,3 +1,7 @@
+Tue Jul 24 15:03:36 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-text-ui.c:  Moved handle_printmmap() here from udb-utrace-if.
+
 Mon Jul 23 23:23:22 2007  Chris Moller  <cmoller@redhat.com>
 
 	* /udb-i386.c:  Cleaned up dead code.

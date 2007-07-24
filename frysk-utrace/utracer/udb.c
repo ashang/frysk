@@ -14,7 +14,7 @@
 #include <fcntl.h>
 #include <pthread.h>
 
-#include "utracer/utracer.h"
+#include <utracer.h>
 #define DO_UDB_INIT
 #include "udb.h"
 #include "udb-i386.h"
