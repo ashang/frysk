@@ -476,7 +476,8 @@
 	.text ; \
 	.global FUNC ; \
 	.type FUNC, @function ; \
-    FUNC:
+    FUNC: \
+	.cfi_startproc
 #if defined __i386__
 #  define FUNCTION_BEGIN(FUNC,SLOTS) SANE_FUNCTION_BEGIN(FUNC)
 #elif defined __x86_64__
@@ -497,9 +498,17 @@
 #endif
 
 #if defined __i386__
-#  define FUNCTION_PROLOGUE(FUNC,SLOTS) pushl %ebp ; movl %esp, %ebp
+#  define FUNCTION_PROLOGUE(FUNC,SLOTS) \
+	pushl %ebp ; \
+	.cfi_adjust_cfa_offset 4; \
+	movl %esp, %ebp; \
+	.cfi_offset %ebp, -4
 #elif defined __x86_64__
-#  define FUNCTION_PROLOGUE(FUNC,SLOTS) pushq %rbp; movq %rsp, %rbp
+#  define FUNCTION_PROLOGUE(FUNC,SLOTS) \
+	 pushq %rbp; \
+	.cfi_adjust_cfa_offset 8; \
+	 movq %rsp, %rbp; \
+	.cfi_offset %rbp, -8
 #elif defined __powerpc__
 #  define FUNCTION_PROLOGUE(FUNC,SLOTS) \
 	stwu    1, -32(1)  ; \
@@ -520,9 +529,15 @@
 #endif
 
 #if defined __i386__
-#  define FUNCTION_EPILOGUE(FUNC,SLOTS) popl %ebp
+#  define FUNCTION_EPILOGUE(FUNC,SLOTS) \
+	popl %ebp; \
+	.cfi_restore %ebp; \
+	.cfi_adjust_cfa_offset -4
 #elif defined __x86_64__
-#  define FUNCTION_EPILOGUE(FUNC,SLOTS) leave
+#  define FUNCTION_EPILOGUE(FUNC,SLOTS) \
+	leave; \
+	.cfi_restore %rbp; \
+	.cfi_adjust_cfa_offset -8
 #elif defined __powerpc__
 #  define FUNCTION_EPILOGUE(FUNC,SLOTS) \
 	lwz  REG4, 24(31) ; \
@@ -552,7 +567,9 @@
 #  warning "No function-epilogue instruction sequence defined"
 #endif
 
-#define SANE_FUNCTION_END(FUNC) .size FUNC, . - FUNC
+#define SANE_FUNCTION_END(FUNC) \
+	.cfi_endproc; \
+	.size FUNC, . - FUNC
 #if defined __i386__
 #  define FUNCTION_END(FUNC,SLOTS) SANE_FUNCTION_END(FUNC)
 #elif defined __x86_64__
@@ -567,15 +584,13 @@
 
 #if defined __i386__
 #  define MAIN_PROLOGUE(SLOTS) \
-	pushl %ebp ; \
-	movl %esp, %ebp ; \
+	FUNCTION_PROLOGUE (main, SLOTS); \
 	movl 8(%ebp), REG1 ; \
 	movl 12(%ebp), REG2 ; \
         movl 16(%ebp), REG3
 #elif defined __x86_64__
 #  define MAIN_PROLOGUE(SLOTS) \
-	pushq %rbp ; \
-	movq %rsp, %rbp // ARGC, ARGV, and ENVP already in correct registers.
+	FUNCTION_PROLOGUE (main, SLOTS); // ARGC, ARGV, and ENVP already in correct registers.
 #elif defined __powerpc__
 //In PowerPC ABI argc comes by default in reg 3 (Frysk REG1) and argv in reg 4 (Frysk REG2) 
 #define MAIN_PROLOGUE(SLOTS) FUNCTION_PROLOGUE(main,SLOTS)

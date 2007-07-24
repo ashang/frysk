@@ -1,3 +1,7 @@
+2007-07-24  Mike Cvet  <mcvet@redhat.com>
+
+	* frysk-asm.h: Added CFI directives for x86 and x86_64.
+
 2007-07-23  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk-asm.h (LOAD_IMMED): Delete.
