@@ -1,3 +1,8 @@
+2007-07-24  Mike Cvet  <mcvet@redhat.com>
+
+	* TestStepping.java: Updated to use funit-stepping-asm instead of
+	funit-frameinfo-looper.
+
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
 	* TestSymbol.java: Moved to frysk.stack.TestFrameSymbol.java.
