@@ -56,35 +56,30 @@ public class TestFrameSymbol
     extends frysk.proc.TestLib
 {
     public void testOneSymbol() {
+	// Get the target program started.
+	AttachedDaemonProcess daemon
+	    = new AttachedDaemonProcess(new String[] {
+					    getExecPath("funit-symbols"),
+					    "1"
+					});
+	Task task = daemon.getMainTask();
+	// Allow it to run through to a crash.
 	class RunToCrash
 	    extends TaskObserverBase
-	    implements TaskObserver.Attached, TaskObserver.Signaled
+	    implements TaskObserver.Signaled
 	{
-	    Task task;
-	    public Action updateAttached (Task task) {
-		task.requestAddSignaledObserver (this);
-		task.requestDeleteAttachedObserver(this);
-		return Action.CONTINUE;
-	    }
 	    public Action updateSignaled (Task task, int value) {
-		this.task = task;
 		Manager.eventLoop.requestStop();
 		return Action.BLOCK;
 	    }
 	}
-	RunToCrash runToCrash = new RunToCrash ();
-
-	// Run the target program throuth to its termination.
-	Manager.host.requestCreateAttachedProc(new String[] {
-						   getExecPath ("funit-symbols"),
-						   "1"
-					       },
-					       runToCrash);
+	task.requestAddSignaledObserver (new RunToCrash());
+	daemon.resume();
 	assertRunUntilStop("Run to crash");
 
 	// Extract the stack from the signalled program and validate
 	// the inner-most frame's symbol matches the expected.
-	Frame frame = StackFactory.createFrame(runToCrash.task);
+	Frame frame = StackFactory.createFrame(task);
 
 	Symbol symbol = frame.getSymbol ();
 	assertEquals ("symbol's demangled name", "global_st_size",

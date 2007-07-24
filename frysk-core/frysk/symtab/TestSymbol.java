@@ -43,31 +43,14 @@ import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
+import frysk.proc.TestLib;
 
 public class TestSymbol
-    extends frysk.proc.TestLib
+    extends TestLib
 {
     private void symbolTest (String command, int numberOfArgs,
 			     String name, boolean addressValid,
 			     boolean sizeValid) {
-	class RunToCrash
-	    extends TaskObserverBase
-	    implements TaskObserver.Attached, TaskObserver.Signaled
-	{
-	    Task task;
-	    public Action updateAttached (Task task) {
-		task.requestAddSignaledObserver (this);
-		task.requestDeleteAttachedObserver(this);
-		return Action.CONTINUE;
-	    }
-	    public Action updateSignaled (Task task, int value) {
-		this.task = task;
-		Manager.eventLoop.requestStop();
-		return Action.BLOCK;
-	    }
-	}
-	RunToCrash runToCrash = new RunToCrash ();
-
 	// Construct an argument list containing numberOfArgs dummy
 	// arguments.  The inferior program just looks at ARGC to
 	// determine what to do.
@@ -76,13 +59,25 @@ public class TestSymbol
     	for (int i = 1; i < fullCommand.length; i++) {
 	    fullCommand[i] = Integer.toString(i);
 	}
-    
-	// Run the target program throuth to its termination.
-	Manager.host.requestCreateAttachedProc(fullCommand, runToCrash);
+	// Get the target program started.
+	AttachedDaemonProcess daemon = new AttachedDaemonProcess(fullCommand);
+	Task task = daemon.getMainTask();
+	// Allow it to run through to a crash.
+	class RunToCrash
+	    extends TaskObserverBase
+	    implements TaskObserver.Signaled
+	{
+	    public Action updateSignaled (Task task, int value) {
+		Manager.eventLoop.requestStop();
+		return Action.BLOCK;
+	    }
+	}
+	task.requestAddSignaledObserver (new RunToCrash());
+	daemon.resume();
 	assertRunUntilStop("Run to crash");
 
-	long pc = runToCrash.task.getIsa().pc(runToCrash.task);
-	Symbol symbol = SymbolFactory.getSymbol(runToCrash.task, pc);
+	long pc = task.getIsa().pc(task);
+	Symbol symbol = SymbolFactory.getSymbol(task, pc);
 	assertEquals ("symbol " + name, name, symbol.getDemangledName ());
 	assertEquals ("symbol address valid", addressValid,
 		      symbol.getAddress() != 0);

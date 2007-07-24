@@ -1,5 +1,7 @@
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFrameSymbol.java (testSymbol): Use AttachedDaemonProcess.
+
 	* Frame.java: Update; frysk.rt.Symbol moved to frysk.symtab.Symbol
 	and frysk.symtab.SymbolFactory.
 	* TestStackBacktrace.java: Ditto.
