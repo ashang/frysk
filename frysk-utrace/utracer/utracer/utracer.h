@@ -94,17 +94,45 @@ typedef struct {
 } switchpid_cmd_s;
 
 typedef struct {
+  unsigned long vm_start;
+  unsigned long vm_end;
+  unsigned long vm_flags;
+  long name_offset;
+} vm_struct_subset_s;
+
+typedef struct {
+  long utraced_pid;
+  unsigned long mmap_base;
+  unsigned long task_size;
+  unsigned long total_vm, locked_vm, shared_vm, exec_vm;
+  unsigned long stack_vm, reserved_vm, def_flags, nr_ptes;
+  unsigned long start_code, end_code, start_data, end_data;
+  unsigned long start_brk, brk, start_stack;
+  unsigned long arg_start, arg_end, env_start, env_end;
+  unsigned long nr_mmaps;
+  unsigned long vm_strings_length;
+} printmmap_resp_s;
+
+typedef struct {
   long cmd;
   long utracing_pid;
   long utraced_pid;
+  unsigned long vm_struct_subset_alloc;
+  unsigned long vm_strings_alloc;
+  long * vm_struct_subset_length;
+  long * vm_strings_length;
+  printmmap_resp_s * printmmap_resp;
+  vm_struct_subset_s * vm_struct_subset;
+  char * vm_strings;
 } printmmap_cmd_s;
 
 typedef struct {
   long cmd;
   long utracing_pid;
   long utraced_pid;
-  char * buffer;
   long buffer_len;
+  long * length_returned;
+  char * buffer;
 } printenv_cmd_s;
 
 typedef struct {
@@ -156,13 +184,12 @@ typedef enum {
   IF_RESP_PIDS_DATA,			//  5
   IF_RESP_DEATH_DATA,			//  6
   IF_RESP_SWITCHPID_DATA,		//  7
-  IF_RESP_PRINTMMAP_DATA,		//  8
-  IF_RESP_SYSCALL_ENTRY_DATA,		//  9
-  IF_RESP_SYSCALL_EXIT_DATA,		// 10
-  IF_RESP_EXEC_DATA,			// 11
-  IF_RESP_ATTACH_DATA,			// 12
-  IF_RESP_QUIESCE_DATA,			// 13
-  IF_RESP_SYNC_DATA			// 14
+  IF_RESP_SYSCALL_ENTRY_DATA,		//  8
+  IF_RESP_SYSCALL_EXIT_DATA,		//  9
+  IF_RESP_EXEC_DATA,			// 10
+  IF_RESP_ATTACH_DATA,			// 11
+  IF_RESP_QUIESCE_DATA,			// 12
+  IF_RESP_SYNC_DATA			// 13
 } if_resp_e; 
 
 typedef struct {
@@ -238,27 +265,6 @@ typedef struct {
   int  okay;
 } switchpid_resp_s;
 
-typedef struct {
-  unsigned long vm_start;
-  unsigned long vm_end;
-  unsigned long vm_flags;
-  long name_offset;
-} vm_struct_subset_s;
-
-typedef struct {
-  long type;
-  long utraced_pid;
-  unsigned long mmap_base;
-  unsigned long task_size;
-  unsigned long total_vm, locked_vm, shared_vm, exec_vm;
-  unsigned long stack_vm, reserved_vm, def_flags, nr_ptes;
-  unsigned long start_code, end_code, start_data, end_data;
-  unsigned long start_brk, brk, start_stack;
-  unsigned long arg_start, arg_end, env_start, env_end;
-  unsigned long nr_mmaps;
-  unsigned long string_count;
-} printmmap_resp_s;
-
 typedef union {
   long type;
   readreg_resp_s	readreg_resp;
@@ -272,7 +278,6 @@ typedef union {
   syscall_resp_s	syscall_resp;
   exec_resp_s		exec_resp;
   quiesce_resp_s	quiesce_resp;
-  printmmap_resp_s	printmmap_resp;
   sync_resp_s		sync_resp;
 } if_resp_u;
 
@@ -284,6 +289,7 @@ typedef enum {
   UTRACER_EREG,
   UTRACER_ESYSRANGE,
   UTRACER_ESTATE,
+  UTRACER_EPAGES,
   UTRACER_EMAX,
 } utracer_errno_e;
 

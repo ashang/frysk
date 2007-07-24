@@ -1,6 +1,14 @@
+Mon Jul 23 23:27:48 2007  Chris Moller  <cmoller@redhat.com>
+
+	* utracer-cf-io.c: Removed dead code. Added ioctl-based query code
+	removed from utracer-if-io.c.
+	* utracer-errmsgs.h: Added another error message.
+	* utracer-if-io.c: Removed cmd-response query code to utracer-cf-io.c.
+	* utracer.h: Changed structs to accomdate ioctl vs. cmd-response
+	path. 
+
 Fri Jul 20 12:02:38 2007  Chris Moller  <cmoller@redhat.com>
 
-	* udb-utrace-if.c:
 	* utracer-base.c:
 	* utracer-cf-io.c:
 	* utracer-if-io.c:

@@ -13,82 +13,6 @@
 #include "udb.h"
 #include "udb-i386.h"
 
-void
-handle_printenv (char * raw)
-{
-  long i;
-  long len;
-  char * env;
-
-  memcpy (&len, raw, sizeof(long));
-  env = raw + sizeof(long);
-  for (i = 0; i < len; i++) {
-    if (0 == env[i]) env[i] = '\n';
-  }
-  fprintf (stdout, "%s\n", env);
-}
-
-void
-handle_printmmap (printmmap_resp_s * prm, void * raw)
-{
-  vm_struct_subset_s * vss = raw;
-  char * estrings = raw + (prm->nr_mmaps * sizeof(vm_struct_subset_s));
-	
-  fprintf (stdout, "\n\t[%ld] mmap\n",prm->utraced_pid);
-  fprintf (stdout, "\t\t%08lx mmap base\n", prm->mmap_base);
-  fprintf (stdout, "\t\t%08lx task size\n", prm->task_size);
-  fprintf (stdout, "\t\t%08lx def flags\n\t\t%8ld nr ptes\n",
-	   prm->def_flags, prm->nr_ptes);
-	
-  fprintf (stdout,
-	   "\n\t\tVM:  total    locked   shared   exec     stack\
-    reserved\n\t\t     ");
-  fprintf (stdout, "%-8ld ",prm->total_vm);
-  fprintf (stdout, "%-8ld ",prm->locked_vm);
-  fprintf (stdout, "%-8ld ",prm->shared_vm);
-  fprintf (stdout, "%-8ld ",prm->exec_vm);
-  fprintf (stdout, "%-8ld ",prm->stack_vm);
-  fprintf (stdout, "%-8ld ",prm->reserved_vm);
-  fprintf (stdout, "\n");
-
-  fprintf (stdout, "\n\t\tCode ranges:\n");
-  fprintf (stdout, "\t\t  %08lx - %08lx code (length = %ld) \n",
-	   prm->start_code, prm->end_code, prm->end_code - prm->start_code);
-  fprintf (stdout, "\t\t  %08lx - %08lx data (length = %ld)\n",
-	   prm->start_data, prm->end_data, prm->end_data - prm->start_data);
-  fprintf (stdout, "\t\t  %08lx - %08lx brk  (length = %ld) \n",
-	   prm->start_brk, prm->brk, prm->brk - prm->start_brk);
-  fprintf (stdout, "\t\t  %08lx  stack\n",
-	   prm->start_stack);
-
-  if (0 < prm->nr_mmaps) {
-    int i;
-
-    fprintf (stdout, "\n\t\tMemory maps:\n\t\t  start\
-      end      flags    pathname\n");
-
-    for (i = 0; i < prm->nr_mmaps; i++) {
-      char * fn1;
-
-      if (-1 != vss[i].name_offset)
-	fn1 = &estrings[vss[i].name_offset];
-      else {
-	if ((vss[i].vm_start <= prm->start_brk) &&
-	    (vss[i].vm_end   >= prm->brk)) fn1 = "[heap]";
-	else if ((vss[i].vm_start <= prm->start_stack) &&
-		 (vss[i].vm_end   >= prm->start_stack)) fn1 = "[stack]";
-	else fn1 = "[vdso]";
-      }
-	    
-      fprintf (stdout, "\t\t  %08x - %08x %08x %s\n",
-	       vss[i].vm_start,
-	       vss[i].vm_end,
-	       vss[i].vm_flags,
-	       fn1);
-    }
-  }
-}
-
 void *
 resp_listener (void * arg)
 {
@@ -106,37 +30,6 @@ resp_listener (void * arg)
     }
     
     switch (if_resp.type) {
-    case IF_RESP_PRINTMMAP_DATA:
-      {
-	vm_struct_subset_s * vss;
-	//	char * estrings;
-	printmmap_resp_s prm = if_resp.printmmap_resp;
-	long bytes_to_get = prm.string_count +
-	  (prm.nr_mmaps * sizeof(vm_struct_subset_s));
-	long bytes_gotten = 0;
-	void * extra = alloca (bytes_to_get + 2);
-
-	if (sz > sizeof(prm)) {
-	  long bytes_avail =  sz - sizeof(prm);
-	  memcpy (extra, (void *)(&if_resp) + sizeof (prm),
-		  bytes_avail);
-	  bytes_to_get -= bytes_avail;
-	  bytes_gotten = bytes_avail;
-	}
-	
-	if (0 < bytes_to_get) {
-	  sz = pread (utracer_resp_file_fd,
-		      extra + bytes_gotten,
-		      bytes_to_get, sz);
-	  bytes_gotten += sz;
-	}
-
-	handle_printmmap (&prm, extra);
-	
-	fprintf (stdout, "%s", prompt);
-	fflush (stdout);
-      }
-      break;
     case IF_RESP_EXEC_DATA:
       {
 	exec_resp_s exec_resp = if_resp.exec_resp;

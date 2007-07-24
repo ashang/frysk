@@ -9,6 +9,7 @@ const char * utrace_emsg[] = {
   "Register out of range.",
   "Syscall number out of range.",
   "Process not quiesced."
+  "Kernel internal failure."
 };
   
 

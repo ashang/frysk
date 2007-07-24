@@ -26,26 +26,6 @@ show_syscall (long type, long pid, struct pt_regs * regs)
 	     regs->ebx,
 	     regs->ecx,
 	     regs->edx);
-#if 0
-    fprintf (stdout, "%ld, 0x%08x, %ld", regs->ebx, regs->ecx, regs->edx);
-    fprintf (stderr, "\".*%s\"\n", regs->edx, (char *)regs->ecx);
-    {
-      int pfd;
-      char * pidc;
-      size_t count  = regs->edx;
-      off_t  offset = regs->ecx;
-      void * buffer = alloca (count);
-      
-      asprintf (&pidc, "/proc/%ld/mem", pid);
-      fprintf (stderr, "opening %s\n", pidc);
-      pfd = open (pidc, O_RDONLY);
-      fprintf (stderr, "pread (%ld, %08x, %ld, %08x)\n",
-	       pfd, buffer, count, offset);
-      count = pread (pfd, buffer, count, offset);
-      if (-1 == count) perror ("syscall read pread");
-      else fprintf (stdout, "%.*s\n", count, buffer);
-    }
-#endif
     break;
   case __NR_write:
     fprintf (stdout, "%ld, 0x%08x, %ld",

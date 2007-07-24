@@ -367,131 +367,6 @@ attach_cmd_fcn (long utracing_pid, long utraced_pid,
   return rc;
 }
 
-static void
-build_printmmap_resp (printmmap_resp_s * prm,
-		      vm_struct_subset_s ** vm_struct_subset_p,
-		      long * vm_struct_subset_size_p,
-		      char ** string_ptr_p,
-		      long * string_ptr_len_p,
-		      long pid,
-		      struct task_struct * task)
-{
-  struct mm_struct * mm = get_task_mm(task);
-
-  memset (prm, 0, sizeof(prm));
-  prm->type = IF_RESP_PRINTMMAP_DATA;
-  prm->utraced_pid = pid;
-  
-  if (mm) {
-    down_read(&mm->mmap_sem);
-    task_lock(task);
-    
-    prm->mmap_base = mm->mmap_base;
-    prm->task_size = mm->task_size;
-    prm->total_vm = mm->total_vm;
-    prm->locked_vm = mm->locked_vm;
-    prm->shared_vm = mm->shared_vm;
-    prm->exec_vm = mm->exec_vm;
-    prm->stack_vm = mm->stack_vm;
-    prm->reserved_vm = mm->reserved_vm;
-    prm->def_flags = mm->def_flags;
-    prm->nr_ptes = mm->nr_ptes;
-    
-    prm->start_code = mm->start_code;
-    prm->end_code = mm->end_code;
-    
-    prm->start_data = mm->start_data;
-    prm->end_data = mm->end_data;
-    
-    prm->start_brk = mm->start_brk;
-    prm->brk = mm->brk;
-    
-    prm->start_stack = mm->start_stack;
-    
-    prm->arg_start = mm->arg_start;
-    prm->arg_end = mm->arg_end;
-    prm->env_start = mm->env_start;
-    prm->env_end = mm->env_end;
-
-    {
-      unsigned long nr_mmaps = 0;
-      struct vm_area_struct * mmap;
-
-      vm_struct_subset_s * vm_struct_subset;
-      unsigned long mmaps_index = 0;
-      unsigned long string_count = 0;
-      char * vm_strings;
-      char * string_ptr;
-      
-      mmap = mm->mmap;
-      while (mmap) {
-	struct file * vm_file;
-	nr_mmaps++;
-
-	vm_file = mmap->vm_file;
-	if (vm_file) {
-	  struct path tpath = vm_file->f_path;
-	  struct vfsmount * mnt    = tpath.mnt;
-	  struct dentry * dentry   = tpath.dentry;
-	  char * buf = kmalloc (PATH_MAX, GFP_KERNEL);
-	  char * res = d_path (dentry, mnt, buf, PATH_MAX);
-	  string_count += 1 + strlen (res);
-	  kfree (buf);
-	}
-
-	mmap = mmap->vm_next;
-      }
-
-      prm->nr_mmaps = nr_mmaps;
-      prm->string_count = string_count;
-      
-      vm_struct_subset = kmalloc (nr_mmaps * sizeof(vm_struct_subset_s),
-				  GFP_KERNEL);
-      if (vm_struct_subset_p) *vm_struct_subset_p = vm_struct_subset;
-      if (vm_struct_subset_size_p) *vm_struct_subset_size_p =
-	nr_mmaps * sizeof(vm_struct_subset_s);
-      
-      string_ptr = vm_strings = kmalloc (string_count, GFP_KERNEL);
-      if (string_ptr_p) *string_ptr_p = vm_strings;
-      if (string_ptr_len_p) *string_ptr_len_p = string_count;
-      
-      mmap = mm->mmap;
-      while (mmap) {
-	struct file * vm_file;
-	
-	// see include/linux/mm.h
-	vm_struct_subset[mmaps_index].vm_start = mmap->vm_start;
-	vm_struct_subset[mmaps_index].vm_end   = mmap->vm_end;
-	vm_struct_subset[mmaps_index].vm_flags = mmap->vm_flags;
-	vm_struct_subset[mmaps_index].name_offset = -1;
-
-	vm_file = mmap->vm_file;
-	if (vm_file) {
-	  struct path tpath = vm_file->f_path;
-	  struct vfsmount * mnt    = tpath.mnt;
-	  struct dentry * dentry   = tpath.dentry;
-	  char * buf = kmalloc (PATH_MAX, GFP_KERNEL);
-	  char * res = d_path (dentry, mnt, buf, PATH_MAX);
-
-	  vm_struct_subset[mmaps_index].name_offset =
-	    string_ptr - vm_strings;
-	  memcpy (string_ptr, res, 1 + strlen (res));
-	  string_ptr += 1 + strlen (res);
-	  
-	  kfree (buf);
-	}
-
-	mmap = mmap->vm_next;
-	mmaps_index++;
-      }
-    }
-    
-    task_unlock(task);
-    up_read(&mm->mmap_sem);
-    mmput(mm);
-  }
-}
-
 static int
 handle_syscall (syscall_cmd_s * syscall_cmd, unsigned long count, void *data)
 {
@@ -586,51 +461,6 @@ handle_quiesce (run_cmd_s * run_cmd, unsigned long count, void * data)
   return rc;
 }
 
-static int
-handle_printmap (printmmap_cmd_s * printmmap_cmd, unsigned long count,
-		 void * data)
-{
-  utracing_info_s * utracing_info_found = (utracing_info_s *)data;
-  int rc = count;
-
-
-  if (utracing_info_found) {
-    struct task_struct * task;
-    printmmap_resp_s printmmap_resp;
-
-    task = get_task (printmmap_cmd->utraced_pid);
-    if (task) {
-      vm_struct_subset_s  * vm_struct_subset = NULL;
-      long vm_struct_subset_size = 0;
-      char * vm_string = NULL;
-      long vm_string_length = 0;
-	  
-      build_printmmap_resp (&printmmap_resp,
-			    &vm_struct_subset,
-			    &vm_struct_subset_size,
-			    &vm_string,
-			    &vm_string_length,
-			    printmmap_cmd->utraced_pid,
-			    task);
-
-      queue_response (utracing_info_found,
-		      &printmmap_resp,
-		      sizeof(printmmap_resp),
-		      vm_struct_subset,
-		      vm_struct_subset_size,
-		      vm_string,
-		      vm_string_length);
-      if (vm_struct_subset) kfree(vm_struct_subset);
-      if (vm_string) kfree(vm_string);
-	  
-      rc = count;
-    }
-    else rc = -ESRCH;
-  }
-  else rc = -UTRACER_ETRACING;
-
-  return rc;
-}	
 
 static int
 handle_switchpid (switchpid_cmd_s * switchpid_cmd, unsigned long count,
@@ -725,23 +555,13 @@ handle_sync (sync_cmd_s * sync_cmd, unsigned long count,
   int rc = count;
 
   if (utracing_info_found) {
-#if 0
-    if (SYNC_RESP == sync_cmd->sync_type) {
-      utracing_info_found->response_ready = 1;
-      wake_up (&(utracing_info_found->ifx_wait));
-    }
-    else {
-#endif
-      sync_resp_s sync_resp = {IF_RESP_SYNC_DATA,
-			       sync_cmd->utracing_pid,
-			       sync_cmd->sync_type};
-      queue_response (utracing_info_found,
-		      &sync_resp, sizeof(sync_resp),
-		      NULL, 0,
-		      NULL, 0);
-#if 0
-    }
-#endif
+    sync_resp_s sync_resp = {IF_RESP_SYNC_DATA,
+			     sync_cmd->utracing_pid,
+			     sync_cmd->sync_type};
+    queue_response (utracing_info_found,
+		    &sync_resp, sizeof(sync_resp),
+		    NULL, 0,
+		    NULL, 0);
     rc = count;
   }
   else rc = -UTRACER_ETRACING;
@@ -931,10 +751,6 @@ if_file_write (struct file *file,
     case IF_CMD_QUIESCE:
       DB_PRINTK (KERN_ALERT "IF_CMD_RUN?QUIESCE\n");
       rc = handle_quiesce (&if_cmd.run_cmd, count, data);
-      break;
-    case IF_CMD_PRINTMMAP:
-      DB_PRINTK (KERN_ALERT "IF_CMD_PRINTMAP\n");
-      rc = handle_printmap (&if_cmd.printmmap_cmd, count, data);
       break;
     case IF_CMD_SWITCHPID:
       DB_PRINTK (KERN_ALERT "IF_CMD_SWITCHPID\n");

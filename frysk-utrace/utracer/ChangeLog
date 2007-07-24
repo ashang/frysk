@@ -1,5 +1,14 @@
+Mon Jul 23 23:23:22 2007  Chris Moller  <cmoller@redhat.com>
+
+	* /udb-i386.c:  Cleaned up dead code.
+	* udb-response.c: Removed formatting code now handled via the
+	ioctl path.
+	* udb-utrace-if.c: Added ioctl queries migrated from the
+	cmd-response path.
+
 Fri Jul 20 12:02:31 2007  Chris Moller  <cmoller@redhat.com>
 
+	* udb-utrace-if.c:
 	* udb-text-ui.c:
 	* udb-utrace-if.  Added code to print both the supplied filename
 	and the interpreted filename of the binary corresponding to the
