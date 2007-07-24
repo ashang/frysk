@@ -43,6 +43,7 @@
 #include "lib/dwfl/ElfSection.h"
 #include "lib/dwfl/ElfSectionHeader.h"
 #include "lib/dwfl/Elf.h"
+#include "lib/dwfl/SymbolBuilder.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -125,6 +126,21 @@ lib::dwfl::ElfSection::elf_rawdata (){
 jlong
 lib::dwfl::ElfSection::elf_newdata (){
 	return (jlong) ::elf_newdata((Elf_Scn*) this->pointer);
+}
+
+void
+lib::dwfl::ElfSection::elf_getsymbol (jlong index, jlong str_sect_num, lib::dwfl::SymbolBuilder *builder){
+  ::GElf_Sym sym;
+  ::gelf_getsym ((::Elf_Data*)this->elf_getdata(), index, &sym);
+
+  ::java::lang::String * name = this->parent->getStringAtOffset(str_sect_num, sym.st_name);
+  jlong value = sym.st_value;
+  jlong size = sym.st_size;
+  jlong type = ELF64_ST_TYPE(sym.st_info);
+  jlong bind = ELF64_ST_BIND(sym.st_info);
+  jlong visibility = ELF64_ST_VISIBILITY(sym.st_other);
+
+  builder->symbol(name, value, size, type, bind, visibility);
 }
 
 #ifdef __cplusplus

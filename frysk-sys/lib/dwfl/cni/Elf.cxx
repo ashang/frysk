@@ -332,7 +332,7 @@ jstring
 lib::dwfl::Elf::elf_strptr (jlong index, jlong offset)
 {
   char* strptr = ::elf_strptr((::Elf*) this->pointer, (size_t) index, (size_t) offset);
-  return JvNewString((const jchar*) strptr, strlen(strptr));
+  return JvNewStringUTF(strptr);
 }
 
 lib::dwfl::ElfArchiveHeader*

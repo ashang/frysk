@@ -1,3 +1,10 @@
+2007-07-24  Petr Machata  <pmachata@redhat.com>
+
+	* cni/Elf.cxx (elf_strptr): Use JvNewStringUTF to build a string.
+	* ElfSectionHeader.java (class): introduce constants from elf.h.
+	* ElfSection.java(getSymbols): New function.
+	* cni/ElfSection.cxx (elf_getsymbol): New function.
+
 2007-07-17  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Dwfl.cxx (dwflBegin(int)): Replace dwfl_begin(int).
