@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@
 
 #include <gcj/cni.h>
 
+#include "frysk/sys/Errno.h"
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/proc/cni/slurp.hxx"
 
@@ -73,7 +74,15 @@ uslurp(int pid, const char* name)
   }
 
   // Open the file file.
-  int fd = tryOpen (file, O_RDONLY, 0);
+  int fd;
+  try
+    {
+      fd = tryOpen (file, O_RDONLY, 0);
+    }
+  catch (frysk::sys::Errno *ignored)
+    {
+      fd = 0;
+    }
   if (!fd)
     {
       ::free (buf);
@@ -127,12 +136,18 @@ slurp (int pid, const char* name, char buf[], long sizeof_buf)
     throwRuntimeException ("snprintf: buffer overflow");
   
   // Open the file file.
-  int fd = tryOpen (file, O_RDONLY, 0);
-
+  int fd;
+  try
+    {
+      fd = tryOpen (file, O_RDONLY, 0);
+    }
+  catch (frysk::sys::Errno *ignored)
+    {
+      fd = 0;
+    }
   if (!fd)
     {
-      ::free (buf);
-      return 0;
+      return -1;
     }
 
 
@@ -165,12 +180,18 @@ slurp_thread (int pid, int tid, const char* name, char buf[], long sizeof_buf)
     throwRuntimeException ("snprintf: buffer overflow");
   
   // Open the file file.
-  int fd = tryOpen (file, O_RDONLY, 0);
-
+  int fd;
+  try
+    {
+      fd = tryOpen (file, O_RDONLY, 0);
+    }
+  catch (frysk::sys::Errno *ignored)
+    {
+      fd = 0;
+    }
   if (!fd)
     {
-      ::free (buf);
-      return 0;
+      return -1;
     }
 
 
