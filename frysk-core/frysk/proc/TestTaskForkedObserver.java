@@ -41,6 +41,7 @@
 package frysk.proc;
 
 import frysk.testbed.TestLib;
+import frysk.testbed.Fibonacci;
 
 /**
  * Check that the observer TaskObserver.Forked works.
@@ -100,13 +101,13 @@ public class TestTaskForkedObserver
 
     Fibonacci fib = new Fibonacci(n);
 
-    assertEquals("number of child processes created", fib.callCount,
+    assertEquals("number of child processes created", fib.getCallCount(),
                  procCounter.added.size());
-    assertEquals("number of child processes destroyed", fib.callCount,
+    assertEquals("number of child processes destroyed", fib.getCallCount(),
                  procCounter.removed.size());
-    assertEquals("number of times fork observer added", fib.callCount,
+    assertEquals("number of times fork observer added", fib.getCallCount(),
                  forkObserver.addedCount);
     assertEquals("number of forks (one less than number of processes)",
-                 fib.callCount - 1, forkObserver.count);
+                 fib.getCallCount() - 1, forkObserver.count);
   }
 }

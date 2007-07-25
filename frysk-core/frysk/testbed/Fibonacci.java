@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,68 +37,39 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
-package frysk.proc;
-
-import frysk.testbed.TestLib;
-import frysk.testbed.Fibonacci;
+package frysk.testbed;
 
 /**
- * Check that clone (task create and delete) events are detected.
+ * Compute the Fibonacci number of N. The class contains both the
+ * computed value, and the number of resursive calls required to
+ * compute that value.
  */
-
-public class TestTaskClonedObserver
-    extends TestLib
-{
-  static final int fibCount = 10;
-
-  /**
-   * Test that Task.requestAddObserver (Clone) can be used to track all clones
-   * by a child process. This creates a program that, in turn, creates lots and
-   * lots of tasks. It then checks that the number of task create and delete
-   * events matches the expected.
-   */
-  public void testTaskCloneObserver ()
-  {
-
-    class CloneCounter
-        extends TaskObserverBase
-        implements TaskObserver.Cloned
-    {
-      int count;
-
-      public Action updateClonedParent (Task parent, Task offspring)
-      {
-        count++;
-        parent.requestUnblock(this);
-        return Action.BLOCK;
-      }
-
-      public Action updateClonedOffspring (Task parent, Task offspring)
-      {
-        offspring.requestAddClonedObserver(this);
-        offspring.requestUnblock(this);
-        return Action.BLOCK;
-      }
+public class Fibonacci {
+    private int callCount;
+    
+    private final int value;
+    
+    private int fib (int n) {
+	callCount++;
+	switch (n) {
+	case 0:
+	    return 0;
+	case 1:
+	    return 1;
+	default:
+	    return fib(n - 1) + fib(n - 2);
+	}
     }
-    CloneCounter cloneCounter = new CloneCounter();
+    
+    public Fibonacci (int n) {
+	value = fib(n);
+    }
 
-    AttachedDaemonProcess child = new AttachedDaemonProcess(new String[]
-	{
-	    getExecPath ("funit-fib-clone"),
-	    Integer.toString(fibCount)
-	});
+    public int getValue() {
+	return value;
+    }
 
-    new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
-
-    child.mainTask.requestAddClonedObserver(cloneCounter);
-    child.resume();
-    assertRunUntilStop("run \"clone\" to exit");
-
-    Fibonacci fib = new Fibonacci(fibCount);
-    // The first task, included in fib.callCount isn't included in
-    // the clone count.
-    assertEquals("number of clones", fib.getCallCount() - 1,
-		 cloneCounter.count);
-  }
+    public int getCallCount() {
+	return callCount;
+    }
 }

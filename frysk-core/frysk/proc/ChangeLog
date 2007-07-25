@@ -1,3 +1,10 @@
+2007-07-25  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTaskClonedObserver.java: Update; Fibonacci moved from
+	frysk.testbed.TestLib to separate class.
+	* TestTaskObserverBlocked.java: Ditto.
+	* TestTaskForkedObserver.java: Ditto.
+
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java: Move to frysk.testbed.TestLib.

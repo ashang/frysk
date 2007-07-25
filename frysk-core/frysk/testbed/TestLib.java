@@ -37,7 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.testbed;
 
 import frysk.proc.Action;
@@ -965,35 +964,6 @@ public class TestLib
 	 */
 	public ProcCounter () {
 	    this(false);
-	}
-    }
-
-    /**
-     * Compute the Fibonacci number of N. The class contains both the
-     * computed value, and the number of resursive calls required to
-     * compute that value.
-     */
-    static public class Fibonacci
-    {
-	public int callCount;
-
-	public final int value;
-
-	private int fib (int n) {
-	    callCount++;
-	    switch (n)
-		{
-		case 0:
-		    return 0;
-		case 1:
-		    return 1;
-		default:
-		    return fib(n - 1) + fib(n - 2);
-		}
-	}
-
-	public Fibonacci (int n) {
-	    value = fib(n);
 	}
     }
 

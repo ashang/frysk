@@ -43,6 +43,7 @@ package frysk.proc;
 import java.util.logging.Level;
 import frysk.testbed.SignalWaiter;
 import frysk.testbed.TestLib;
+import frysk.testbed.Fibonacci;
 
 /**
  * Check the behavior of an observer that blocks a Task's progress. In
@@ -525,22 +526,22 @@ public class TestTaskObserverBlocked
       // (every time there is a spawn the event loop will stop).
       int spawnCount = 0;
       int loopCount = 0;
-      while (loopCount <= fib.callCount && ! childRemoved.p)
+      while (loopCount <= fib.getCallCount() && ! childRemoved.p)
         {
           loopCount++;
           assertRunUntilStop("run \"fibonacci\" until stop, number "
-                             + spawnCount + " of " + fib.callCount);
+                             + spawnCount + " of " + fib.getCallCount());
           spawnCount += parentTasks.size();
           parentTasks.unblock(this).clear();
           childTasks.unblock(this).clear();
         }
 
-      // The first task, included in fib.callCount isn't
+      // The first task, included in fib.getCallCount() isn't
       // included in the spawn count.
-      assertEquals("number of times spawnObserver added", fib.callCount,
+      assertEquals("number of times spawnObserver added", fib.getCallCount(),
                    addedCount);
       assertEquals("number of times spawnObserver deleted", 0, deletedCount);
-      assertEquals("Number of spawns", fib.callCount - 1, spawnCount);
+      assertEquals("Number of spawns", fib.getCallCount() - 1, spawnCount);
       assertTrue("child exited", childRemoved.p);
       assertTrue("at least two iterations of the spawn loop", loopCount > 2);
     }

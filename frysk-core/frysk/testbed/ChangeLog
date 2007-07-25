@@ -1,3 +1,8 @@
+2007-07-25  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java (Fibonacci): Move to Fibonacci.java.
+	* Fibonacci.java: New.
+
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java: Moved to here from frysk.proc.TestLib.
