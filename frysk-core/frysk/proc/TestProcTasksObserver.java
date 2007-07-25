@@ -43,6 +43,7 @@ import java.util.logging.Level;
 import frysk.sys.Signal;
 import frysk.sys.Sig;
 import frysk.testbed.TestLib;
+import frysk.testbed.TaskSet;
 
 /**
  * Test that the Proc's ProcTasks Observer correctly reports the tasks

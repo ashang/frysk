@@ -60,13 +60,11 @@ import frysk.sys.UnhandledWaitBuilder;
 import frysk.sys.proc.Stat;
 import frysk.testbed.SignalWaiter;
 import java.io.File;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -766,59 +764,6 @@ public class TestLib
 
 	public Task getMainTask () {
 	    return this.mainTask;
-	}
-    }
-
-    /**
-     * A Task set. In addition to methods for managing the set, there
-     * is a method for unblocking all members.
-     */
-    public static class TaskSet
-    {
-	/**
-	 * Set of tasks being managed.
-	 */
-	private Set tasks = new HashSet();
-
-	/**
-	 * Return the task set as an array.
-	 */
-	public Task[] toArray () {
-	    return (Task[]) tasks.toArray(new Task[0]);
-	}
-
-	/**
-	 * Add the Task to the Set of Task's.
-	 */
-	public TaskSet add (Task task) {
-	    tasks.add(task);
-	    return this;
-	}
-
-	/**
-	 * Clear the Task Set.
-	 */
-	public TaskSet clear () {
-	    tasks.clear();
-	    return this;
-	}
-
-	/**
-	 * Return the number of Task's currently in the Task Set.
-	 */
-	public int size () {
-	    return tasks.size();
-	}
-
-	/**
-	 * Unblock all members of the Task Set.
-	 */
-	public TaskSet unblock (TaskObserver observer) {
-	    for (Iterator i = tasks.iterator(); i.hasNext();) {
-		Task task = (Task) i.next();
-		task.requestUnblock(observer);
-	    }
-	    return this;
 	}
     }
 

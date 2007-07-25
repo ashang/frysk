@@ -1,5 +1,10 @@
 2007-07-25  Andrew Cagney  <cagney@redhat.com>
 
+	* TestProcTasksObserver.java: Update; TaskSet moved from
+	frysk.testbed.TestLib to frysk.testbed.TaskSet.
+	* TestRun.java: Ditto.
+	* TestTaskObserverBlocked.java: Ditto.
+
 	* TestTaskClonedObserver.java: Update; Fibonacci moved from
 	frysk.testbed.TestLib to separate class.
 	* TestTaskObserverBlocked.java: Ditto.
