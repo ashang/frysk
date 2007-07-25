@@ -299,4 +299,15 @@ typedef struct {
   char * bffr;
 } utracer_ioctl_s;
 
+
+void utracer_set_environment (pid_t client_pid, int cmd_fd);  //temp
+int utracer_get_printmmap (long pid,
+			   printmmap_resp_s ** printmmap_resp_p,
+			   vm_struct_subset_s ** vm_struct_subset_p,
+			   char ** vm_strings_p);
+int utracer_get_exe (long pid,
+		     char ** filename_p,
+		     char ** interp_p);
+int utracer_get_env (long pid, char ** env_p);
+  
 #endif  /* UTRACER_H */

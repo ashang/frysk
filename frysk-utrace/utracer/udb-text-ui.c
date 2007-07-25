@@ -351,10 +351,11 @@ printmmap_fcn (char ** saveptr)
   char * tok = strtok_r (NULL, " \t", saveptr);
 
   if (tok && ('[' == *tok)) pid = atol (tok+1);
-  rc =utracer_get_printmmap (pid,
-			     &printmmap_resp, &vm_struct_subset, &vm_strings);
-  if (0 == rc)
+  rc = utracer_get_printmmap (pid,
+			      &printmmap_resp, &vm_struct_subset, &vm_strings);
+  if (0 == rc) 
     handle_printmmap (printmmap_resp, vm_struct_subset, vm_strings);
+  else uerror ("printmmap");
 
   if (printmmap_resp)	free (printmmap_resp);
   if (vm_struct_subset)	free (vm_struct_subset);
@@ -366,22 +367,38 @@ printmmap_fcn (char ** saveptr)
 static int
 printenv_fcn (char ** saveptr)
 {
+  char * env;
+  int rc;
   long pid = current_pid;
   char * tok = strtok_r (NULL, " \t", saveptr);
 
   if (tok && ('[' == *tok)) pid = atol (tok+1);
-  utrace_printenv_if (pid);
+  rc = utracer_get_env (pid, &env);
+  if (0 == rc) fprintf (stdout, "%s\n", env);
+  else uerror ("printenv");
   return 1;
 }
 
 static int
 printexe_fcn (char ** saveptr)
 {
+  char * filename;
+  char * interp;
+  int rc;
   long pid = current_pid;
   char * tok = strtok_r (NULL, " \t", saveptr);
 
   if (tok && ('[' == *tok)) pid = atol (tok+1);
-  utrace_printexe_if (pid);
+  rc = utracer_get_exe (pid, &filename, &interp);
+  if (0 == rc) {
+    fprintf (stdout, "\t filename: \"%s\"\n", filename);
+    fprintf (stdout, "\t   interp: \"%s\"\n", interp);
+  }
+  else uerror ("printexe");
+
+  if (filename)	free (filename);
+  if (interp)	free (interp);
+  
   return 1;
 }
 

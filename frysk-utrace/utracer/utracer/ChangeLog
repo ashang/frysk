@@ -1,3 +1,11 @@
+Wed Jul 25 17:22:20 2007  Chris Moller  <cmoller@redhat.com>
+
+	* utracer: New directory added to hold public i/f code to the
+	module.
+	* utracer/utracer.c: New file for public i/f code (swiped and
+	adapted from the old udb-utrace-if.c.)
+	* include/utracer.h: Added/modded stuff for new public i/f.
+
 Tue Jul 24 14:04:25 2007  Chris Moller  <cmoller@redhat.com>
 
 	* include:

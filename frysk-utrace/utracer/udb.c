@@ -330,6 +330,8 @@ main (int ac, char * av[])
     }
   }
 
+  utracer_set_environment (udb_pid, utracer_cmd_file_fd);
+
   
 #ifdef USE_UTRACER_SYNC
   utracer_sync();

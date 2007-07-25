@@ -1,3 +1,10 @@
+Wed Jul 25 17:24:06 2007  Chris Moller  <cmoller@redhat.com>
+
+	* Makefile:  Added -lutracer stuff.
+	* udb-text-ui.c:  Replaced local utracer i/f calls with new public
+	i/f calls.
+	* udb-utrace-if.c: Removed som i/f calls to public i/f.
+
 Tue Jul 24 15:03:36 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-text-ui.c:  Moved handle_printmmap() here from udb-utrace-if.

@@ -5,7 +5,7 @@ UDB_CFLAGS = -g
 UDB_INCLUDES = -I./utracer/include
 #UDB_CFLAGS = -g -DENABLE_MODULE_OPS
 UDB_LDFLAGS =
-UDB_LIBS = -lreadline -lhistory -lcurses -lpthread
+UDB_LIBS = -L./utracer/utracer -lutracer -lreadline -lhistory -lcurses -lpthread
 
 UDB_SOURCE_FILES = udb.c udb-text-ui.c udb-utrace-if.c udb-module.c \
                    udb-response.c udb-i386.c
@@ -24,7 +24,7 @@ lcl_install: $(TARGET)
 	sudo chown root:root $(TARGET)
 	sudo chmod u+s $(TARGET)
 
-$(TARGET): $(UDB_OBJECT_FILES)
+$(TARGET): $(UDB_OBJECT_FILES) ./utracer/utracer/libutracer.a
 	gcc -o $@ $(UDB_LDFLAGS) $^ $(UDB_LIBS)
 
 #$(TARGET): $(UDB_OBJECT_FILES)
@@ -41,13 +41,15 @@ udb-utrace-if.o: udb-text-ui.c  $(UDB_INCS) $(UTRACER_INCS)
 clean:
 	rm -f *.o
 	make -C utracer/module clean
+	make -C utracer/utracer clean
 
 veryclean: clean
 	rm -f $(TARGET)
 	make -C utracer/module veryclean
+	make -C utracer/utracer veryclean
 
 insert:
-	sudo insmod utracer/utracer.ko
+	sudo insmod utracer/module/utracer.ko
 
 remove:
-	sudo rmmod utracer/utracer.ko
+	sudo rmmod utracer/module/utracer.ko

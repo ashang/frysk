@@ -1,4 +1,5 @@
 #!/bin/sh
 
+(cd utracer/utracer; make)
 (cd utracer/module; make)
 make
