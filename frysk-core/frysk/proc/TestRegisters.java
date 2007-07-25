@@ -44,6 +44,7 @@ import java.util.Observer;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
 import frysk.sys.SyscallNum;
+import frysk.testbed.DaemonBlockedAtEntry;
 
 /**
  * Check that registers and memory can be modified for all platform.
@@ -546,14 +547,14 @@ public class TestRegisters
   private void checkI386Modify ()
   {   
     // Create program making syscalls
-    AttachedDaemonProcess ackProc = new AttachedDaemonProcess (new String[]
+    DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry (new String[]
         {
 	    getExecPath ("funit-registers")
         });
     
-    TestI386ModifyXXX t = new TestI386ModifyXXX (ackProc.mainTask.getProc().getPid());
+    TestI386ModifyXXX t = new TestI386ModifyXXX(ackProc.getMainTask().getProc().getPid());
     
-    ackProc.resume ();
+    ackProc.requestUnblock ();
     assertRunUntilStop ("run \"x86modify\" to exit");
 
     if (t.ia32Isa) {
@@ -568,14 +569,14 @@ public class TestRegisters
       return;
     
     // Create program making syscalls
-    AttachedDaemonProcess ackProc = new AttachedDaemonProcess (new String[]
+    DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry (new String[]
 	{
 	    getExecPath ("funit-registers")
 	});
     
-    TestX8664ModifyXXX t = new TestX8664ModifyXXX (ackProc.mainTask.getProc().getPid());
+    TestX8664ModifyXXX t = new TestX8664ModifyXXX (ackProc.getMainTask().getProc().getPid());
     
-    ackProc.resume ();
+    ackProc.requestUnblock();
     assertRunUntilStop ("run \"x86modify\" to exit");
 
     if (t.X8664Isa) {
@@ -591,14 +592,14 @@ public class TestRegisters
    
     
     // Call assembler program making syscalls
-    AttachedDaemonProcess ackProc = new AttachedDaemonProcess (new String[]
+    DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry (new String[]
 	{
 	    getExecPath ("funit-registers")
 	});
     
-    TestPPC64ModifyXXX t = new TestPPC64ModifyXXX (ackProc.mainTask.getProc().getPid());
+    TestPPC64ModifyXXX t = new TestPPC64ModifyXXX (ackProc.getMainTask().getProc().getPid());
     
-    ackProc.resume ();
+    ackProc.requestUnblock();
     assertRunUntilStop ("run \"ppc64modify\" to exit");
     
     if (t.isPPC64Isa)

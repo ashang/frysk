@@ -45,6 +45,7 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
+import frysk.testbed.DaemonBlockedAtEntry;
 
 public class TestSymbol
     extends TestLib
@@ -61,7 +62,7 @@ public class TestSymbol
 	    fullCommand[i] = Integer.toString(i);
 	}
 	// Get the target program started.
-	AttachedDaemonProcess daemon = new AttachedDaemonProcess(fullCommand);
+	DaemonBlockedAtEntry daemon = new DaemonBlockedAtEntry(fullCommand);
 	Task task = daemon.getMainTask();
 	// Allow it to run through to a crash.
 	class RunToCrash
@@ -74,7 +75,7 @@ public class TestSymbol
 	    }
 	}
 	task.requestAddSignaledObserver (new RunToCrash());
-	daemon.resume();
+	daemon.requestRemoveBlock();
 	assertRunUntilStop("Run to crash");
 
 	long pc = task.getIsa().pc(task);

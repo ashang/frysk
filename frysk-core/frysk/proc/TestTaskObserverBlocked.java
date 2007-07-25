@@ -46,6 +46,7 @@ import frysk.testbed.TestLib;
 import frysk.testbed.Fibonacci;
 import frysk.testbed.TaskSet;
 import frysk.testbed.TaskObserverBase;
+import frysk.testbed.DaemonBlockedAtEntry;
 
 /**
  * Check the behavior of an observer that blocks a Task's progress. In
@@ -511,18 +512,16 @@ public class TestTaskObserverBlocked
       // main task).
       Fibonacci fib = new Fibonacci(fibCount);
 
-      AttachedDaemonProcess child = new AttachedDaemonProcess(
-                                                              new String[] {
-                                                                            fibonacciProgram(),
-                                                                            Integer.toString(fibCount) });
-      addFirstObserver(child.mainTask);
-      child.resume();
+      DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(new String[] {
+								fibonacciProgram(),
+								Integer.toString(fibCount) });
+      addFirstObserver(child.getMainTask());
+      child.requestRemoveBlock();
 
       // An object that, when the child process exits, both sets
       // a flag to record that event, and requests that the
       // event loop stop.
-      StopEventLoopWhenProcRemoved childRemoved = new StopEventLoopWhenProcRemoved(
-                                                                                   child.mainTask.getProc().getPid());
+      StopEventLoopWhenProcRemoved childRemoved = new StopEventLoopWhenProcRemoved(child.getMainTask().getProc().getPid());
 
       // Repeatedly run the event loop until the child exits
       // (every time there is a spawn the event loop will stop).

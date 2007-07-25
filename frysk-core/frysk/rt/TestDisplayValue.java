@@ -50,6 +50,7 @@ import frysk.proc.Task;
 import frysk.testbed.TestLib;
 import frysk.stack.StackFactory;
 import frysk.value.Value;
+import frysk.testbed.DaemonBlockedAtEntry;
 
 public class TestDisplayValue
     extends TestLib
@@ -57,7 +58,7 @@ public class TestDisplayValue
   
   private Task myTask;
   private Proc myProc;
-  private AttachedDaemonProcess process;
+  private DaemonBlockedAtEntry process;
   private SteppingEngine steppingEngine;
   
   public void setUp ()
@@ -97,7 +98,7 @@ public class TestDisplayValue
     LinkedList list = new LinkedList();
     list.add(myTask);
     steppingEngine.continueExecution(list);
-    process.resume();
+    process.requestRemoveBlock();
     assertRunUntilStop("First breakpoint");
     
     // Retrieve the Value we're testing, and encapsulate it in a Display
@@ -171,7 +172,7 @@ public class TestDisplayValue
     LinkedList list = new LinkedList();
     list.add(myTask);
     steppingEngine.continueExecution(list);
-    process.resume();
+    process.requestRemoveBlock();
     assertRunUntilStop("First breakpoint");
     
     // Retrieve the Value we're testing, and encapsulate it in a Display
@@ -230,7 +231,7 @@ public class TestDisplayValue
     LinkedList list = new LinkedList();
     list.add(myTask);
     steppingEngine.continueExecution(list);
-    process.resume();
+    process.requestRemoveBlock();
     assertRunUntilStop("First breakpoint");
     
     // Retrieve the Value we're testing, and encapsulate it in a Display
@@ -298,7 +299,7 @@ public class TestDisplayValue
     LinkedList list = new LinkedList();
     list.add(myTask);
     steppingEngine.continueExecution(list);
-    process.resume();
+    process.requestRemoveBlock();
     assertRunUntilStop("First breakpoint");
     
     // Retrieve the Value we're testing, and encapsulate it in a Display
@@ -353,7 +354,7 @@ public class TestDisplayValue
     LinkedList list = new LinkedList();
     list.add(myTask);
     steppingEngine.continueExecution(list);
-    process.resume();
+    process.requestRemoveBlock();
     assertRunUntilStop("First breakpoint");
     
     // Retrieve the Value we're testing, and encapsulate it in a Display
@@ -389,7 +390,7 @@ public class TestDisplayValue
   {
     //  Start the daemon process
     process = 
-      new AttachedDaemonProcess(new String[]{Config.getPkgLibDir() + "/funit-rt-varchange"});
+      new DaemonBlockedAtEntry(new String[]{Config.getPkgLibDir() + "/funit-rt-varchange"});
     
     myTask = process.getMainTask();
     myProc = myTask.getProc();

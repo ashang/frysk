@@ -221,31 +221,31 @@ public class TestLib
     // NOTE: Use a different signal to thread add/del. Within this
     // process the signal is masked and Linux appears to propogate the
     // mask all the way down to the exec'ed child.
-    protected final Sig ackSignal = Sig.HUP;
+    protected static final Sig ackSignal = Sig.HUP;
 
-    protected final Sig childAck = Sig.USR1;
+    protected static final Sig childAck = Sig.USR1;
 
-    protected final Sig parentAck = Sig.USR2;
+    protected static final Sig parentAck = Sig.USR2;
 
-    protected final Sig addCloneSig = Sig.USR1;
+    protected static final Sig addCloneSig = Sig.USR1;
 
-    protected final Sig delCloneSig = Sig.USR2;
+    protected static final Sig delCloneSig = Sig.USR2;
 
-    protected final Sig stopSig = Sig.STOP;
+    protected static final Sig stopSig = Sig.STOP;
 
-    protected final Sig addForkSig = Sig.HUP;
+    protected static final Sig addForkSig = Sig.HUP;
 
-    protected final Sig delForkSig = Sig.INT;
+    protected static final Sig delForkSig = Sig.INT;
 
-    protected final Sig zombieForkSig = Sig.URG;
+    protected static final Sig zombieForkSig = Sig.URG;
 
-    protected final Sig execSig = Sig.PWR;
+    protected static final Sig execSig = Sig.PWR;
 
-    protected final Sig execCloneSig = Sig.FPE;
+    protected static final Sig execCloneSig = Sig.FPE;
 
-    protected final Sig[] spawnAck = new Sig[] { childAck, parentAck };
+    protected static final Sig[] spawnAck = new Sig[] { childAck, parentAck };
 
-    protected final Sig[] execAck = new Sig[] { childAck };
+    protected static final Sig[] execAck = new Sig[] { childAck };
 
     /**
      * Manage a child process. Create a child process and then block
@@ -253,7 +253,7 @@ public class TestLib
      * ackSignal). Permit various operations on the process, see also
      * the various extensions.
      */
-    public abstract class Child {
+    public static abstract class Child {
 	private int pid;
 
 	/**
@@ -393,7 +393,7 @@ public class TestLib
      * Create an ack-process that can be manipulated using various
      * signals (see below).
      */
-    public abstract class AckProcess
+    public static abstract class AckProcess
 	extends Child
     {
 	private AckProcess (Sig ack, String[] argv) {
@@ -592,7 +592,7 @@ public class TestLib
      * event when this exits.  It is most useful when a controlled
      * process exit is required (see reap).
      */
-    public class DetachedAckProcess
+    public static class DetachedAckProcess
 	extends AckProcess
     {
 	public DetachedAckProcess () {
@@ -713,58 +713,6 @@ public class TestLib
 	command.add(sleepTime);
 	command.add("" + threads);
 	return (String[]) command.toArray(new String[0]);
-    }
-
-    /**
-     * Creates an attached process halted at it's first instruction
-     * (just after the exec call to start it running).
-     */
-    public class AttachedDaemonProcess {
-	public final Task mainTask;
-
-	TaskObserver.Execed execBlockingObserver;
-
-	/**
-	 * Create an attached process blocked at it's entry-point (i.e., just after
-	 * the exec).
-	 */
-	public AttachedDaemonProcess (String[] argv) {
-	    // Create the child.
-	    AckProcess child = new DetachedAckProcess((String) null, argv);
-	    this.mainTask = child.findTaskUsingRefresh(true);
-	    // Create and add an exec observer that blocks the task.
-	    class ExecBlockingObserver
-		extends TaskObserverBase
-		implements TaskObserver.Execed
-	    {
-		public void addedTo (Object o) {
-		    super.addedTo(o);
-		    Manager.eventLoop.requestStop();
-		}
-
-		public Action updateExeced (Task task) {
-		    Manager.eventLoop.requestStop();
-		    return Action.BLOCK;
-		}
-	    }
-	    execBlockingObserver = new ExecBlockingObserver();
-	    mainTask.requestAddExecedObserver(execBlockingObserver);
-	    assertRunUntilStop("add exec observer to AttachedDaemonProcess");
-	    // Run to the exec call.
-	    Signal.tkill(mainTask.getTid(), execSig);
-	    assertRunUntilStop("run to exec");
-	}
-
-	/**
-	 * Resume the attached process.
-	 */
-	public void resume () {
-	    mainTask.requestUnblock(execBlockingObserver);
-	}
-
-	public Task getMainTask () {
-	    return this.mainTask;
-	}
     }
 
     /**

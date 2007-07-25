@@ -47,6 +47,7 @@ import java.util.Iterator;
 import java.util.List;
 import frysk.testbed.TearDownFile;
 import frysk.testbed.TestLib;
+import frysk.testbed.DaemonBlockedAtEntry;
 
 /**
  * Test Proc's public get methods.
@@ -63,18 +64,18 @@ public class TestProcGet
   {
     TearDownFile tmpFile = TearDownFile.create();
 
-    AttachedDaemonProcess child = new AttachedDaemonProcess(new String[]
+    DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(new String[]
 	{
 	    getExecPath ("funit-print-auxv"),
 	    tmpFile.toString(),
 	    "/dev/null"
 	});
 
-    new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
+    new StopEventLoopWhenProcRemoved(child.getMainTask().getProc().getPid());
     // Grab the AUXV from the process sitting at its entry point.
-    Auxv[] auxv = child.mainTask.getProc().getAuxv();
+    Auxv[] auxv = child.getMainTask().getProc().getAuxv();
     assertNotNull("captured AUXV", auxv);
-    child.resume();
+    child.requestUnblock();
     assertRunUntilStop("run \"auxv\" to completion");
 
     // Compare the AUXV as printed against that extracted using

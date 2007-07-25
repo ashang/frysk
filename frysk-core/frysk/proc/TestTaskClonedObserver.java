@@ -43,6 +43,7 @@ package frysk.proc;
 import frysk.testbed.TestLib;
 import frysk.testbed.Fibonacci;
 import frysk.testbed.TaskObserverBase;
+import frysk.testbed.DaemonBlockedAtEntry;
 
 /**
  * Check that clone (task create and delete) events are detected.
@@ -84,16 +85,16 @@ public class TestTaskClonedObserver
     }
     CloneCounter cloneCounter = new CloneCounter();
 
-    AttachedDaemonProcess child = new AttachedDaemonProcess(new String[]
+    DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(new String[]
 	{
 	    getExecPath ("funit-fib-clone"),
 	    Integer.toString(fibCount)
 	});
 
-    new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
+    new StopEventLoopWhenProcRemoved(child.getMainTask().getProc().getPid());
 
-    child.mainTask.requestAddClonedObserver(cloneCounter);
-    child.resume();
+    child.getMainTask().requestAddClonedObserver(cloneCounter);
+    child.requestRemoveBlock();
     assertRunUntilStop("run \"clone\" to exit");
 
     Fibonacci fib = new Fibonacci(fibCount);

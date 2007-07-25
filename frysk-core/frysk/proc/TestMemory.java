@@ -46,6 +46,7 @@ import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
+import frysk.testbed.DaemonBlockedAtEntry;
 
 /**
  * Check that memory can be modified.
@@ -202,10 +203,10 @@ public class TestMemory
 	    return;
 	TestModifyXXX t = new TestModifyXXX ();
 	// Create program making syscalls
-	new AttachedDaemonProcess (new String[]
+	new DaemonBlockedAtEntry (new String[]
 	    {
 		getExecPath ("funit-memory")
-	    }).resume ();
+	    }).requestRemoveBlock ();
 
 	assertRunUntilStop ("run \"modify\" to exit");
 

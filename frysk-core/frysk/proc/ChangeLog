@@ -1,5 +1,17 @@
 2007-07-25  Andrew Cagney  <cagney@redhat.com>
 
+	* StressAttachDetachRapidlyForkingMainTask.java: Update;
+	frysk.testbed.TestLib.AttachedDaemonProcess moved to
+	frysk.testbed.DaemonBlockedAtEntry.
+	* TestMemory.java: Ditto.
+	* TestProcGet.java: Ditto.
+	* TestTaskForkedObserver.java: Ditto.
+	* TestTaskSyscallObserver.java: Ditto.
+	* TestTaskObserverBlocked.java: Ditto.
+	* TestRegisters.java: Ditto.
+	* TestTaskClonedObserver.java: Ditto.
+	* TestTaskTerminateObserver.java: Ditto.
+
 	* StressAttachDetachManyTasks.java: Update; TaskObserverBase moved
 	from frysk.testbed.TestLib to frysk.testbed.TaskObserverBase.
 	* StressAttachDetachRapidlyCloningMainTask.java: Ditto.

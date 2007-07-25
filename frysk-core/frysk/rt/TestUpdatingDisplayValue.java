@@ -51,10 +51,11 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.testbed.TestLib;
 import frysk.stack.StackFactory;
+import frysk.testbed.DaemonBlockedAtEntry;
 
 public class TestUpdatingDisplayValue extends TestLib
 {
-  private AttachedDaemonProcess process;
+  private DaemonBlockedAtEntry process;
   private Task myTask;
   private Proc myProc;
   private SteppingEngine steppingEngine;
@@ -89,7 +90,7 @@ public class TestUpdatingDisplayValue extends TestLib
     LinkedList list = new LinkedList();
     list.add(myTask);
     steppingEngine.continueExecution(list);
-    process.resume();
+    process.requestRemoveBlock();
     assertRunUntilStop("First breakpoint");
     
     UpdatingDisplayValue uDisp = DisplayManager.createDisplay(myTask,
@@ -141,7 +142,7 @@ public class TestUpdatingDisplayValue extends TestLib
     LinkedList list = new LinkedList();
     list.add(myTask);
     steppingEngine.continueExecution(list);
-    process.resume();
+    process.requestRemoveBlock();
     assertRunUntilStop("First breakpoint");
     
     UpdatingDisplayValue uDisp = DisplayManager.createDisplay(
@@ -195,7 +196,7 @@ public class TestUpdatingDisplayValue extends TestLib
     LinkedList list = new LinkedList();
     list.add(myTask);
     steppingEngine.continueExecution(list);
-    process.resume();
+    process.requestRemoveBlock();
     assertRunUntilStop("First breakpoint");
     
     UpdatingDisplayValue uDisp = DisplayManager.createDisplay(
@@ -253,7 +254,7 @@ public class TestUpdatingDisplayValue extends TestLib
     LinkedList list = new LinkedList();
     list.add(myTask);
     steppingEngine.continueExecution(list);
-    process.resume();
+    process.requestRemoveBlock();
     assertRunUntilStop("First breakpoint");
     
     UpdatingDisplayValue uDisp = DisplayManager.createDisplay(
@@ -318,7 +319,7 @@ public class TestUpdatingDisplayValue extends TestLib
       LinkedList list = new LinkedList();
       list.add(myTask);
       steppingEngine.continueExecution(list);
-      process.resume();
+      process.requestRemoveBlock();
       assertRunUntilStop("First breakpoint");
       
       UpdatingDisplayValue uDisp = DisplayManager.createDisplay(
@@ -358,7 +359,7 @@ public class TestUpdatingDisplayValue extends TestLib
       LinkedList list = new LinkedList();
       list.add(myTask);
       steppingEngine.continueExecution(list);
-      process.resume();
+      process.requestRemoveBlock();
       assertRunUntilStop("First breakpoint");
       
       UpdatingDisplayValue uDisp = DisplayManager.createDisplay(
@@ -418,7 +419,7 @@ public class TestUpdatingDisplayValue extends TestLib
       LinkedList list = new LinkedList();
       list.add(myTask);
       steppingEngine.continueExecution(list);
-      process.resume();
+      process.requestRemoveBlock();
       assertRunUntilStop("First breakpoint");
       
       UpdatingDisplayValue uDisp = DisplayManager.createDisplay(
@@ -463,7 +464,7 @@ public class TestUpdatingDisplayValue extends TestLib
   {
     //  Start the daemon process
     process = 
-      new AttachedDaemonProcess(new String[]{Config.getPkgLibDir() + "/" + program});
+      new DaemonBlockedAtEntry(new String[]{Config.getPkgLibDir() + "/" + program});
     
     myTask = process.getMainTask();
     myProc = myTask.getProc();

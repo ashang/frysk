@@ -37,7 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.rt;
 
 import java.io.PrintWriter;
@@ -58,6 +57,7 @@ import frysk.proc.TaskObserver;
 import frysk.testbed.TestLib;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
+import frysk.testbed.DaemonBlockedAtEntry;
 
 public class TestFrameDebugInfo
     extends TestLib
@@ -195,15 +195,14 @@ public class TestFrameDebugInfo
   public Task getStoppedTask (String process)
   {
 
-    AttachedDaemonProcess ackProc = new AttachedDaemonProcess(
-							      new String[] { getExecPath(process) });
+    DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(new String[] { getExecPath(process) });
 
     Task task = ackProc.getMainTask();
 
     task.requestAddSignaledObserver(new TerminatingSignaledObserver());
     task.requestAddTerminatingObserver(new TerminatingSignaledObserver());
     
-    ackProc.resume();
+    ackProc.requestRemoveBlock();
     assertRunUntilStop("Add TerminatingSignaledObserver");
 
     return task;

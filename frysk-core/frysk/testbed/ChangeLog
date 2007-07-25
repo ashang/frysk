@@ -1,5 +1,14 @@
 2007-07-25  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (AttatchedDaemonProcess): Moved to
+	DaemonBlockedAtEntry.java.
+	(ackSignal, childAck, parentAck, addCloneSig, delCloneSig)
+	(stopSigaddForkSig, delForkSig, zombieForkSig, execSig)
+	(execCloneSig, spawnAck, execAck): Make static.
+	(DetachedAckProcess): Make static.
+	(AckProcess): Make static.
+	* DaemonBlockedAtEntry.java: New file.	
+
 	* TestLib.java (TaskObserverBase): Move to TaskObserverBase.java.
 	* TaskObserverBase.java: New.
 	

@@ -48,6 +48,7 @@ import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
+import frysk.testbed.DaemonBlockedAtEntry;
 
 /**
  * Checks that the frame's getSymbol method is wired up to the
@@ -59,8 +60,8 @@ public class TestFrameSymbol
 {
     public void testOneSymbol() {
 	// Get the target program started.
-	AttachedDaemonProcess daemon
-	    = new AttachedDaemonProcess(new String[] {
+	DaemonBlockedAtEntry daemon
+	    = new DaemonBlockedAtEntry(new String[] {
 					    getExecPath("funit-symbols"),
 					    "1"
 					});
@@ -76,7 +77,7 @@ public class TestFrameSymbol
 	    }
 	}
 	task.requestAddSignaledObserver (new RunToCrash());
-	daemon.resume();
+	daemon.requestRemoveBlock();
 	assertRunUntilStop("Run to crash");
 
 	// Extract the stack from the signalled program and validate

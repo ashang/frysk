@@ -43,6 +43,7 @@ package frysk.proc;
 import frysk.testbed.TestLib;
 import frysk.testbed.Fibonacci;
 import frysk.testbed.TaskObserverBase;
+import frysk.testbed.DaemonBlockedAtEntry;
 
 /**
  * Check that the observer TaskObserver.Forked works.
@@ -89,15 +90,15 @@ public class TestTaskForkedObserver
     ForkObserver forkObserver = new ForkObserver();
 
     // Run a program that forks wildly.
-    AttachedDaemonProcess child = new AttachedDaemonProcess(new String[]
+    DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(new String[]
 	{
 	    getExecPath ("funit-fib-fork"),
 	    Integer.toString(n)
 	});
 
-    new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
-    child.mainTask.requestAddForkedObserver(forkObserver);
-    child.resume();
+    new StopEventLoopWhenProcRemoved(child.getMainTask().getProc().getPid());
+    child.getMainTask().requestAddForkedObserver(forkObserver);
+    child.requestRemoveBlock();
     assertRunUntilStop("run \"fork\" until exit");
 
     Fibonacci fib = new Fibonacci(n);

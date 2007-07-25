@@ -43,6 +43,7 @@ import frysk.sys.Pid;
 import frysk.sys.Sig;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
+import frysk.testbed.DaemonBlockedAtEntry;
 
 /**
  * Check the Task terminating and terminated observers.
@@ -89,24 +90,24 @@ public class TestTaskTerminateObserver
      */
     public void check (int expected, int terminating, int terminated) {
 	// Start the program.
-	AttachedDaemonProcess child = new AttachedDaemonProcess(new String[] {
+	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(new String[] {
 		getExecPath ("funit-exit"),
 		Integer.toString(expected)
 	    });
 	
 	// Bail once it has exited.
-	new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
+	new StopEventLoopWhenProcRemoved(child.getMainTask().getProc().getPid());
 	
 	// Set up an observer that watches for both Terminating and
 	// Terminated events.
 	Terminate terminate = new Terminate();
 	if (terminated != INVALID) {
-	    child.mainTask.requestAddTerminatedObserver(terminate);
+	    child.getMainTask().requestAddTerminatedObserver(terminate);
 	}
 	if (terminating != INVALID) {
-	    child.mainTask.requestAddTerminatingObserver(terminate);
+	    child.getMainTask().requestAddTerminatingObserver(terminate);
 	}
-	child.resume();
+	child.requestRemoveBlock();
 	assertRunUntilStop("run \"exit\" to exit");
 
 	assertEquals("terminating value", terminating, terminate.terminating);

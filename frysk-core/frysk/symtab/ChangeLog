@@ -1,5 +1,9 @@
 2007-07-25  Andrew Cagney  <cagney@redhat.com>
 
+	* TestSymbol.java: Update;
+	frysk.testbed.TestLib.AttachedDaemonProcess moved to
+	frysk.testbed.DaemonBlockedAtEntry.
+
 	* TestSymbol.java: Update; TaskObserverBase in
 	frysk.testbed.TestLib moved to frysk.testbed.TaskObserverBase.
 

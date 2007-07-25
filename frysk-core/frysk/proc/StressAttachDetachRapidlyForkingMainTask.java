@@ -44,6 +44,7 @@ import frysk.event.TimerEvent;
 import frysk.proc.ProcObserver.ProcTasks;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
+import frysk.testbed.DaemonBlockedAtEntry;
 
 /**
  * Check that the observer TaskObserver.Forked works.
@@ -72,7 +73,7 @@ public class StressAttachDetachRapidlyForkingMainTask
 	    return;
 
 	// Run a program that forks wildly.
-	AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
+	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry (new String[]
 	    {
 		getExecPath ("funit-forks"),
 		Integer.toString (numberOfForks),
@@ -118,7 +119,7 @@ public class StressAttachDetachRapidlyForkingMainTask
 	ForkObserver forkObserver = new ForkObserver ();
 
 	// Add a tasks observer to add observers to fork's children
-	new ProcTasksObserver(child.mainTask.getProc(), new ProcTasks(){
+	new ProcTasksObserver(child.getMainTask().getProc(), new ProcTasks(){
 		public void deletedFrom(Object observable)
 		{
 		    logger.log(Level.INFO,"ProcTasksObserver.deleted from fired");
@@ -152,7 +153,7 @@ public class StressAttachDetachRapidlyForkingMainTask
 			      );
 		
 	// Add the fork observer
-	child.mainTask.requestAddForkedObserver (forkObserver);
+	child.getMainTask().requestAddForkedObserver (forkObserver);
 	
 	// Create a refresh time with a low refresh.
 	TimerEvent refreshTimer = new TimerEvent(0, 500){
@@ -164,7 +165,7 @@ public class StressAttachDetachRapidlyForkingMainTask
 	Manager.eventLoop.add (refreshTimer);
 	
 	// Go ....
-	child.resume();
+	child.requestRemoveBlock();
 	assertRunUntilStop ("run \"fork\" until exit");
 		
 	assertEquals ("number of child processes created",

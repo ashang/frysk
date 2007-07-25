@@ -51,6 +51,7 @@ import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
+import frysk.testbed.DaemonBlockedAtEntry;
 
 /**
  * Check that syscall events are detected. This should be expanded later to
@@ -254,7 +255,7 @@ public class TestTaskSyscallObserver
     // return;
 
     int count = 5;
-    AttachedDaemonProcess child = new AttachedDaemonProcess(new String[]
+    DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(new String[]
 	{
 	    getExecPath ("funit-syscallloop"),
 	    Integer.toString(count)
@@ -262,14 +263,14 @@ public class TestTaskSyscallObserver
 
     // Add a syscall observer. XXX: This doesn't work - system
     // call tracing doesn't get enabled enabled.
-    SyscallObserver syscallObserver = new SyscallObserver(child.mainTask);
-    child.mainTask.requestAddSyscallObserver(syscallObserver);
+    SyscallObserver syscallObserver = new SyscallObserver(child.getMainTask());
+    child.getMainTask().requestAddSyscallObserver(syscallObserver);
     assertRunUntilStop("add SyscallObserver");
 
     // XXX: This is wrong; the task isn't a child so this will
     // never work. What about assertRunUntilTaskRemoved (...)?
-    new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
-    child.resume();
+    new StopEventLoopWhenProcRemoved(child.getMainTask().getProc().getPid());
+    child.requestRemoveBlock();
     assertRunUntilStop("run until program exits");
 
     assertTrue("enough syscall enter events", syscallObserver.enter >= count);
@@ -354,21 +355,21 @@ public class TestTaskSyscallObserver
     // return;
 
     // Create program making syscalls
-    AttachedDaemonProcess child = new AttachedDaemonProcess(new String[]
+    DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(new String[]
 	{
 	    getExecPath ("funit-syscalls")
 	});
 
     // Add a syscall observer. XXX: This doesn't work - system
     // call tracing doesn't get enabled enabled.
-    SyscallObserver syscallObserver = new SyscallObserver(child.mainTask);
-    child.mainTask.requestAddSyscallObserver(syscallObserver);
+    SyscallObserver syscallObserver = new SyscallObserver(child.getMainTask());
+    child.getMainTask().requestAddSyscallObserver(syscallObserver);
     assertRunUntilStop("add SyscallObserver");
 
     // XXX: This is wrong; the task isn't a child so this will
     // never work. What about assertRunUntilTaskRemoved (...)?
-    new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
-    child.resume();
+    new StopEventLoopWhenProcRemoved(child.getMainTask().getProc().getPid());
+    child.requestRemoveBlock();
     assertRunUntilStop("run until program exits");
 
     assertTrue("syscall events received >= 8", syscallObserver.enter >= 8);
@@ -455,18 +456,18 @@ public class TestTaskSyscallObserver
     // return;
 
     // Create program making syscalls
-    AttachedDaemonProcess child = new AttachedDaemonProcess(new String[]
+    DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(new String[]
 	{
 	    getExecPath ("funit-syscalls")
 	});
-    new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
+    new StopEventLoopWhenProcRemoved(child.getMainTask().getProc().getPid());
 
     SyscallOpenObserver syscallOpenObserver = new SyscallOpenObserver(
-                                                                      child.mainTask);
-    child.mainTask.requestAddSyscallObserver(syscallOpenObserver);
+                                                                      child.getMainTask());
+    child.getMainTask().requestAddSyscallObserver(syscallOpenObserver);
     assertRunUntilStop("add SyscallObserver");
 
-    child.resume();
+    child.requestRemoveBlock();
     assertRunUntilStop("run \"syscalls\" until exit");
 
     assertTrue("syscall events received >= 8", syscallOpenObserver.enter >= 8);
