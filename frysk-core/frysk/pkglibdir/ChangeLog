@@ -1,3 +1,7 @@
+2007-07-24  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-stackframe.S: Restore.
+
 2007-07-24  Mike Cvet  <mcvet@redhat.com>
 	
 	* funit-stepping-asm: Added. New, cleaner ASM stepping test tool.
