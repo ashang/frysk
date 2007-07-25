@@ -1,5 +1,15 @@
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFhd.java (testDisassembler): Delete; moved to
+	frysk.hpd.TestDisassemblerCommand.
+	(testHpdDisplayCommands): Ditto to TestDisplayCommand.
+	(testHpdCore, testHpdCoreCore): Ditto to TestCoreCommand.
+	(testHpdBreakStep, testHpdBreakpointLibrary)
+	(testHpdBreakpointInline, testHpdBreakpoint): Ditto to
+	TestBreakpoints.
+	(testHpdScalars, testHpdClass, testHpdArray, testHpdEnum): Delete;
+	moved to frysk.value.TestPrint.
+
 	* fhpd.java: Update; package frysk.cli.hpd moved to frysk.hpd.
 
 	* TestFtrace.java: Update; frysk.proc.TestLib moved to

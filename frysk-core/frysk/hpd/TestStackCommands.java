@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, Red Hat Inc.
+// Copyright 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,69 +37,45 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.bindir;
+package frysk.hpd;
 
+import frysk.expunit.Expect;
+import frysk.Config;
 import java.io.File;
 
-import frysk.Config;
-import frysk.expunit.Expect;
-import frysk.junit.TestCase;
-
-/**
- * This performs a "sniff" test of Fstack, confirming basic
- * functionality.
- */
-
-public class TestFhd
-  extends TestCase
+public class TestStackCommands
+    extends TestLib
 {
-  Expect e;
-  Expect child;
-  String prompt = "\\(fhpd\\) ";
-  public void tearDown ()
-  {
-    if (e != null)
-      e.close ();
-    e = null;
-    if (child != null)
-      child.close ();
-    child = null;
-  }
-  
-  public void testHpdPid ()
-  {
-    child = new Expect(new String[] 
-               { 
-                 new File(Config.getPkgLibDir(), "hpd-c").getPath() 
-               });
-    e = new Expect(new String[] 
-               { 
-                 new File(Config.getBinDir(), "fhpd").getPath(), 
-                 child.getPid().toString() 
-                 });
-    e.expect(5, "Attached to process.*\n" + prompt);
-    e.close();
-  }
-  
-  public void testHpdCommand ()
-  {
-    e = new Expect(new String[] 
-                              { 
-                                new File(Config.getBinDir(), "fhpd").getPath(), 
-                                new File(Config.getPkgLibDir(), "hpd-c").getPath() 
-                                });
-                   e.expect(5, "Attached to process.*\n" + prompt);
-                   e.close();
-  }
-  
-  public void testHpdCore ()
-  {
-      e = new Expect(new String[]
-                                {
-	      			  new File(Config.getBinDir(), "fhpd").getPath(),
-	      			  new File(Config.getPkgDataDir(), "test-core-x86").getPath()
-                                });
-      e.expect(5, "Attached to core file.*");
-      e.close();
-  }
+    public void testHpdTraceStack () {
+	child = new Expect (new String[] {
+				new File (Config.getPkgLibDir (), "hpd-c").getPath ()
+			    });
+	e = new Expect (new String[] {
+			    new File (Config.getBinDir (), "fhpd").getPath ()
+			});
+	e.expect (prompt);
+	// Add
+	e.send ("print 2+2\n");
+	e.expect ("\r\n4\r\n" + prompt);
+	// Attach
+	e.send ("attach " + child.getPid () + "\n\n");
+	e.expect (5, "attach.*\n" + prompt);
+	// Where
+	e.send ("where\n");
+	e.expect ("where.*#0.*" + prompt);
+	// int_21
+	e.send ("print int_21\n");
+	e.expect ("print.*2.*\r\n" + prompt);
+	// Down
+	e.send ("d\t");
+	e.expect (".*defset.*delete.*detach.*disable.*down.*" + prompt + ".*");
+	e.send ("own\n");
+	e.expect ("own.*#1.*" + prompt);
+	// int_21
+	e.send ("print int_21\n");
+	e.expect ("print.*int_21.*(fhpd)");
+	e.send ("up\n");
+	e.expect ("up.*#0.*" + prompt);
+	e.close();
+    }
 }

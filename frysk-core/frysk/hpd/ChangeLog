@@ -1,5 +1,13 @@
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
+	* TestPrint.java: New file.
+	* TestBreakpoints.java: New file.
+	* TestStackCommands.java: New file.
+	* TestCoreCommand.java: New file.
+	* TestDisplayCommand.java: New file.
+	* TestDisassemblerCommand.java: New file.
+	* TestLib.java: New file.
+
 	Move package frysk.cli.hpd to frysk.hpd.
 
 2007-07-24  Stan Cox  <scox@redhat.com>
