@@ -1,5 +1,24 @@
 2007-07-25  Andrew Cagney  <cagney@redhat.com>
 
+	* StressAttachDetachManyTasks.java: Update; TaskObserverBase moved
+	from frysk.testbed.TestLib to frysk.testbed.TaskObserverBase.
+	* StressAttachDetachRapidlyCloningMainTask.java: Ditto.
+	* StressAttachDetachRapidlyForkingMainTask.java: Ditto.
+	* StressAttachDetachSignaledTask.java: Ditto.
+	* SyscallExaminer.java: Ditto.
+	* TestMemory.java: Ditto.
+	* TestExec.java: Ditto.
+	* TestIsa.java: Ditto.
+	* TestRegisters.java: Ditto.
+	* TestRun.java: Ditto.
+	* TestTaskClonedObserver.java: Ditto.
+	* TestTaskObserverBlocked.java: Ditto.
+	* TestTaskObserverDetach.java: Ditto.
+	* TestTaskSyscallObserver.java: Ditto.
+	* TestTaskObserver.java: Ditto.
+	* TestTaskForkedObserver.java: Ditto.
+	* TestTaskTerminateObserver.java: Ditto.
+
 	* TestProcTasksObserver.java: Update; TaskSet moved from
 	frysk.testbed.TestLib to frysk.testbed.TaskSet.
 	* TestRun.java: Ditto.

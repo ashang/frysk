@@ -1,3 +1,8 @@
+2007-07-25  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFrameSymbol.java: Update; TaskObserverBase in
+	frysk.testbed.TestLib moved to frysk.testbed.TaskObserverBase.
+
 2007-07-25  Nurdin Premji  <npremji@redhat.com>
 
 	* Frame.java (getRegister): Added.

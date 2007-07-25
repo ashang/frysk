@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@ import frysk.sys.Sig;
 import frysk.sys.Errno;
 import frysk.event.TimerEvent;
 import frysk.testbed.TestLib;
+import frysk.testbed.TaskObserverBase;
 
 /**
  * Generic observer tests - that the framework functions ok.
@@ -143,7 +144,7 @@ public class TestTaskObserver
 	assertEquals ("attached count", tasks.length,
 		      attachedObserver.attachedCount);
 	assertEquals ("deleted count", 0,
-		      attachedObserver.deletedCount);
+		      attachedObserver.deletedCount());
 	return attachedObserver;
     }
 
@@ -171,7 +172,7 @@ public class TestTaskObserver
 	    });
 	assertRunUntilStop ("detaching from task");
 	assertEquals ("deleted count", tasks.length,
-		      attachedObserver.deletedCount);
+		      attachedObserver.deletedCount());
 
 	// Finally, prove that the process really is detached - send
 	// it a kill and then probe (using kill) the process until
@@ -282,7 +283,7 @@ public class TestTaskObserver
 	FailedObserver failedObserver = new FailedObserver ();
 	task.requestAddAttachedObserver (failedObserver);
 	assertRunUntilStop ("fail to add observer");
-	assertEquals ("added count", 1, failedObserver.addedCount);
+	assertEquals ("added count", 1, failedObserver.addedCount());
     }
     /** {@link #attachDeadTask} */
     public void testAttachDeadMainTask ()
@@ -316,7 +317,7 @@ public class TestTaskObserver
 	FailedObserver failedObserver = new FailedObserver ();
 	task.requestAddAttachedObserver (failedObserver);
 	assertRunUntilStop ("fail to add observer");
-	assertEquals ("added count", 1, failedObserver.addedCount);
+	assertEquals ("added count", 1, failedObserver.addedCount());
     }
     /** {@link #attachDieingTask} */
     public void testAttachDieingMainTask ()
@@ -459,7 +460,7 @@ public class TestTaskObserver
 		public void addFailed (Object o, Throwable w)
 		{
 		    super.addedTo (o); // A lie.
-		    deletedCount++; // A bigger lie.
+		    super.deletedFrom (o); // A bigger lie.
 		}
 		public void deletedFrom (Object o)
 		{

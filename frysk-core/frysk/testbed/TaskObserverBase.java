@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007 Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,56 +37,63 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.stack;
+package frysk.testbed;
 
-import frysk.symtab.Symbol;
-import frysk.proc.Action;
-import frysk.proc.Manager;
-import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.stack.Frame;
-import frysk.stack.StackFactory;
-import frysk.testbed.TestLib;
-import frysk.testbed.TaskObserverBase;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import frysk.junit.TestCase;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Checks that the frame's getSymbol method is wired up to the
- * SymbolFactory.
+ * A base class for implementing TaskObservers. This provides a
+ * framework for both automatically adding and implementing
+ * TaskObserver's. The client supplied .updateClass method is called
+ * as each new task is found. It should register itself with the
+ * applicable observer.
  */
 
-public class TestFrameSymbol
-    extends TestLib
+public abstract class TaskObserverBase
+    implements TaskObserver
 {
-    public void testOneSymbol() {
-	// Get the target program started.
-	AttachedDaemonProcess daemon
-	    = new AttachedDaemonProcess(new String[] {
-					    getExecPath("funit-symbols"),
-					    "1"
-					});
-	Task task = daemon.getMainTask();
-	// Allow it to run through to a crash.
-	class RunToCrash
-	    extends TaskObserverBase
-	    implements TaskObserver.Signaled
-	{
-	    public Action updateSignaled (Task task, int value) {
-		Manager.eventLoop.requestStop();
-		return Action.BLOCK;
-	    }
-	}
-	task.requestAddSignaledObserver (new RunToCrash());
-	daemon.resume();
-	assertRunUntilStop("Run to crash");
+    protected static final Logger logger = Logger.getLogger("frysk");
+    /**
+     * Count of number of times that this observer was added to a Task's
+     * observer set.
+     */
+    private List added = new LinkedList();
+    public void addedTo (Object o) {
+	logger.log(Level.FINE, "{0} addedTo {1}\n",
+		   new Object[] {this, o});
+	added.add(o);
+    }
+    public int addedCount() {
+	return added.size();
+    }
+    
+    /**
+     * Count of number of times this observer was deleted from a
+     * Task's observer set.
+     */
+    private List deleted = new LinkedList();
+    public void deletedFrom (Object o) {
+	logger.log(Level.FINE, "{0} deletedFrom {1}\n",
+		   new Object[] {this, o});
+	deleted.add(o);
+    }
+    public int deletedCount() {
+	return deleted.size();
+    }
 
-	// Extract the stack from the signalled program and validate
-	// the inner-most frame's symbol matches the expected.
-	Frame frame = StackFactory.createFrame(task);
+    /**
+     * The add operation failed, should never happen.
+     */
+    public void addFailed (Object o, Throwable w) {
+	TestCase.fail("add to " + o + " failed due to " + w);
+    }
 
-	Symbol symbol = frame.getSymbol ();
-	assertEquals ("symbol's demangled name", "global_st_size",
-		      symbol.getDemangledName ());
-	assertTrue ("symbol address valid", symbol.getAddress() != 0);
-	assertTrue ("symbol size valid", symbol.getSize() > 0);
+    public String toString() {
+	return super.toString() + added + deleted;
     }
 }

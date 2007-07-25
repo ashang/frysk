@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ import java.util.logging.Level;
 import frysk.event.TimerEvent;
 import frysk.proc.ProcObserver.ProcTasks;
 import frysk.testbed.TestLib;
+import frysk.testbed.TaskObserverBase;
 
 /**
  * Check that the observer TaskObserver.Forked works.

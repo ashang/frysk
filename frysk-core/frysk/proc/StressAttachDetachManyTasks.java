@@ -43,6 +43,7 @@ import frysk.testbed.TestLib;
 import java.util.Observer;
 import java.util.Observable;
 import frysk.sys.Pid;
+import frysk.testbed.TaskObserverBase;
 
 /**
  * Test attaching to a process with many many tasks.
@@ -97,6 +98,6 @@ public class StressAttachDetachManyTasks
 	    });
 	assertRunUntilStop (timeout, "attach and detach");
 	assertTrue ("successful attach count greater than zero",
-		    attachDetachObserver.addedCount > 0);
+		    attachDetachObserver.addedCount() > 0);
     }
 }

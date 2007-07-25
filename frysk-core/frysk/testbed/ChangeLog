@@ -1,5 +1,8 @@
 2007-07-25  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (TaskObserverBase): Move to TaskObserverBase.java.
+	* TaskObserverBase.java: New.
+	
 	* TestLib.java (TaskSet): Move to TaskSet.java.
 	* TaskSet.java: New.
 	

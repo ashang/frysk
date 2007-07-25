@@ -43,6 +43,7 @@ package frysk.proc;
 import frysk.testbed.TearDownFile;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskSet;
+import frysk.testbed.TaskObserverBase;
 
 /**
  * Check that a program can be run to completion. A scratch file is

@@ -45,6 +45,7 @@ import frysk.testbed.SignalWaiter;
 import frysk.testbed.TestLib;
 import frysk.testbed.Fibonacci;
 import frysk.testbed.TaskSet;
+import frysk.testbed.TaskObserverBase;
 
 /**
  * Check the behavior of an observer that blocks a Task's progress. In
@@ -540,8 +541,8 @@ public class TestTaskObserverBlocked
       // The first task, included in fib.getCallCount() isn't
       // included in the spawn count.
       assertEquals("number of times spawnObserver added", fib.getCallCount(),
-                   addedCount);
-      assertEquals("number of times spawnObserver deleted", 0, deletedCount);
+                   addedCount());
+      assertEquals("number of times spawnObserver deleted", 0, deletedCount());
       assertEquals("Number of spawns", fib.getCallCount() - 1, spawnCount);
       assertTrue("child exited", childRemoved.p);
       assertTrue("at least two iterations of the spawn loop", loopCount > 2);

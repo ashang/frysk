@@ -768,45 +768,6 @@ public class TestLib
     }
 
     /**
-     * A TaskObserver base class. This provides a framework for both
-     * automatically adding and implementing TaskObserver's. The
-     * client supplied .updateClass method is called as each new task
-     * is found. It should register itself with the applicable
-     * observer.
-     */
-    public abstract class TaskObserverBase
-	implements TaskObserver
-    {
-	/**
-	 * Count of number of times that this observer was added to a Task's
-	 * observer set.
-	 */
-	public int addedCount;
-
-	public void addedTo (Object o) {
-	    logger.log(Level.FINE, "{0} addedTo\n", this);
-	    addedCount++;
-	}
-
-	/**
-	 * Count of number of times this observer was deleted from a
-	 * Task's observer set.
-	 */
-	public int deletedCount;
-
-	public void deletedFrom (Object o) {
-	    deletedCount++;
-	}
-
-	/**
-	 * The add operation failed, should never happen.
-	 */
-	public void addFailed (Object o, Throwable w) {
-	    fail("add to " + o + " failed");
-	}
-    }
-
-    /**
      * Observer that counts the number of tasks <em>frysk</em> reports
      * as added and removed to the system.. This automatically wires
      * itself in using the Proc's procAdded observer.

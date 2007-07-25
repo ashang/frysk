@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ package frysk.proc;
 
 import frysk.testbed.TestLib;
 import frysk.testbed.Fibonacci;
+import frysk.testbed.TaskObserverBase;
 
 /**
  * Check that the observer TaskObserver.Forked works.
@@ -106,7 +107,7 @@ public class TestTaskForkedObserver
     assertEquals("number of child processes destroyed", fib.getCallCount(),
                  procCounter.removed.size());
     assertEquals("number of times fork observer added", fib.getCallCount(),
-                 forkObserver.addedCount);
+                 forkObserver.addedCount());
     assertEquals("number of forks (one less than number of processes)",
                  fib.getCallCount() - 1, forkObserver.count);
   }

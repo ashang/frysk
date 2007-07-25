@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ import java.util.Observer;
 import java.util.Observable;
 import frysk.sys.Pid;
 import frysk.testbed.TestLib;
+import frysk.testbed.TaskObserverBase;
 
 /**
  * Observer stress test.
@@ -113,7 +114,7 @@ public class StressAttachDetachRapidlyCloningMainTask
 	// The main task never dies so at least it will have been
 	// successfully attached.
 	assertTrue ("successful attach count greater than zero",
-		    canFailObserver.addedCount > 0);
+		    canFailObserver.addedCount() > 0);
 	for (int i = 0; i < tasks.length; i++) {
 	    tasks[i].requestDeleteAttachedObserver (canFailObserver);
 	}

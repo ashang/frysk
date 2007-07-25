@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ package frysk.proc;
 import java.util.Observable;
 import java.util.Observer;
 import frysk.testbed.TestLib;
+import frysk.testbed.TaskObserverBase;
 import frysk.sys.SyscallNum;
 
 /**
