@@ -1,3 +1,13 @@
+2007-07-25  Nurdin Premji  <npremji@redhat.com>
+
+	* Frame.java (getRegister): Added.
+	(getReg): Removed.
+	* RemoteFrame.java (getRegister): Implemented.
+	(getReg(int)): Removed.
+	(getReg(long)): Removed.
+	* FrameDecorator (getRegister): Added.
+	(getReg): Removed.
+
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFrame.java: Update; frysk.proc.TestLib moved to

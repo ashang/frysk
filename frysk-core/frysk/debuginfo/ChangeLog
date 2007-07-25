@@ -1,3 +1,14 @@
+2007-07-25  Nurdin Premji  <npremji@redhat.com>
+
+	* DebugInfoEvaluator.java (AccessMemory.getBufferAddr): Use
+	Frame.getRegister(). instead of old frame.getReg().
+	(AccessRegisters.getByte): Ditto.
+	(AccessRegisters.getDouble): Ditto.
+	(AccessRegisters.getFloat): Ditto.
+	(AccessRegisters.getInt): Ditto.
+	(AccessRegisters.getLong): Ditto.
+	(AccessRegisters.getShort): Ditto.
+
 2007-07-25  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DebugInfoEvaluator.java (VariableAccessor.getAddr): Now takes the

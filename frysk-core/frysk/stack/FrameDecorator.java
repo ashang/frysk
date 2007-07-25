@@ -41,6 +41,9 @@ package frysk.stack;
 
 import frysk.proc.Task;
 import frysk.symtab.Symbol;
+
+import frysk.value.Value;
+
 import java.io.PrintWriter;
 
 /**
@@ -78,8 +81,8 @@ public abstract class FrameDecorator
 	frame.toPrint(printWriter, name);
     }
 
-    public long getReg(long reg) {
-	return frame.getReg(reg);
+    public Value getRegister(int reg) {
+	return frame.getRegister(reg);
     }
 
     public FrameIdentifier getFrameIdentifier() {

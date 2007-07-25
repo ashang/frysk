@@ -54,6 +54,8 @@ import frysk.rt.Subprogram;
 import frysk.symtab.SymbolFactory;
 import frysk.symtab.Symbol;
 
+import frysk.value.Value;
+
 public abstract class Frame
 {
   protected Task task;
@@ -126,7 +128,10 @@ public abstract class Frame
       printWriter.write(" ()");
   }
   
-  public abstract long getReg(long reg);
+  /**
+   * Returns the value stored at the given register number.
+   */
+  public abstract Value getRegister(int reg);
   
   /**
    * Returns the Cannonical Frame Address of this StackFrame. Used in

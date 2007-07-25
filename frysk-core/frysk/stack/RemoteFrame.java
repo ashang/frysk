@@ -39,6 +39,9 @@
 
 package frysk.stack;
 
+import inua.eio.ArrayByteBuffer;
+import inua.eio.ByteOrder;
+
 import java.io.File;
 
 import frysk.dwfl.DwflCache;
@@ -47,6 +50,10 @@ import frysk.rt.Line;
 import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
 
+import frysk.value.ArithmeticType;
+import frysk.value.Value;
+
+import lib.dwfl.BaseTypes;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflLine;
 import lib.unwind.Cursor;
@@ -141,23 +148,17 @@ class RemoteFrame extends Frame
       return getAddress();
   }
   
-  /**
-   * Returns the value stored at the given register number.
-   */
-  public long getReg(int regNum)
-  {
-    byte[] word = new byte[task.getIsa().getWordSize()];
-    if (cursor.getRegister(regNum, word) < 0)
-      return 0;
-    return byteArrayToLong(word);
-  }
-  
-  /**
-   * Returns the value stored at the given register number.
-   */
-  public long getReg (long regNum)
-  {
-    return getReg((int) regNum);
+  public Value getRegister(int regNum) {
+	byte[] word = new byte[task.getIsa().getWordSize()];
+	if (cursor.getRegister(regNum, word) < 0)
+	    return null;
+
+	ByteOrder byteOrder = this.task.getIsa().getByteOrder();
+
+	// TODO: Write the text value, base type..
+	return new Value(new ArithmeticType(task.getIsa().getWordSize(),
+		byteOrder, BaseTypes.baseTypeInteger, "int"), "todo",
+		new ArrayByteBuffer(word));
   }
   
   /**

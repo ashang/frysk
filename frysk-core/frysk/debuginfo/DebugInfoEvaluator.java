@@ -268,9 +268,9 @@ class DebugInfoEvaluator
       
       Isa isa = currentFrame.getTask().getIsa();
       if (isa instanceof frysk.proc.IsaIA32)
-        regval = swapBytes(currentFrame.getReg(x86regnumbers[reg]));
+        regval = swapBytes(currentFrame.getRegister(x86regnumbers[reg]).longValue());
       else if (isa instanceof frysk.proc.IsaX8664)
-        regval = swapBytes(currentFrame.getReg(reg));
+        regval = swapBytes(currentFrame.getRegister(reg).longValue());
 
       address += regval + operand1;
       
@@ -403,7 +403,7 @@ class DebugInfoEvaluator
 
     public long getLong (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
-      long val = swapBytes(currentFrame.getReg(getReg(varDieP)));
+      long val = swapBytes(currentFrame.getRegister((int) getReg(varDieP)).longValue());
       return val;
     }
 
@@ -415,7 +415,7 @@ class DebugInfoEvaluator
 
     public int getInt (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
-      long val = swapBytes(currentFrame.getReg(getReg(varDieP)));
+      long val = swapBytes(currentFrame.getRegister((int) getReg(varDieP)).longValue());
       return (int) val;
     }
 
@@ -427,7 +427,7 @@ class DebugInfoEvaluator
 
     public short getShort (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
-      long val = swapBytes(currentFrame.getReg(getReg(varDieP)));
+      long val = swapBytes(currentFrame.getRegister((int)getReg(varDieP)).longValue());
       return (short) val;
     }
 
@@ -439,7 +439,7 @@ class DebugInfoEvaluator
 
     public byte getByte (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
-      long val = swapBytes(currentFrame.getReg(getReg(varDieP)));
+      long val = swapBytes(currentFrame.getRegister((int) getReg(varDieP)).longValue());
       return (byte) val;
     }
 
@@ -451,7 +451,7 @@ class DebugInfoEvaluator
 
     public float getFloat (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
-      long val = swapBytes(currentFrame.getReg(getReg(varDieP)));
+      long val = swapBytes(currentFrame.getRegister((int)getReg(varDieP)).longValue());
       float fval = Float.intBitsToFloat((int)val);
       return fval;
     }
@@ -464,7 +464,7 @@ class DebugInfoEvaluator
 
     public double getDouble (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
-      long val = swapBytes(currentFrame.getReg(getReg(varDieP)));
+      long val = swapBytes(currentFrame.getRegister((int) getReg(varDieP)).longValue());
       double dval = Double.longBitsToDouble(val);
       return dval;
     }
