@@ -45,7 +45,7 @@ import org.gnu.gdk.Color;
 import org.gnu.gnomevte.Terminal;
 import java.io.*;
 import frysk.sys.PseudoTerminal;
-import frysk.cli.hpd.CLI;
+import frysk.hpd.CLI;
 import jline.ConsoleReader;
 import jline.PtyTerminal;
 //import frysk.util.PtyTerminal;

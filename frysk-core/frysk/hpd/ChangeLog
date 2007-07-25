@@ -1,0 +1,1178 @@
+2007-07-24  Andrew Cagney  <cagney@redhat.com>
+
+	Move package frysk.cli.hpd to frysk.hpd.
+
+2007-07-24  Stan Cox  <scox@redhat.com>
+
+	* Preprocessor.java (stripComment): Verify that line starts with #.
+	* BreakpointCommand.java (handle): Change break trigger to #.
+
+2007-07-24  Andrew Cagney  <cagney@redhat.com>
+
+	* DisassembleCommand.java: Update; frysk.rt.Symbol moved to
+	frysk.symtab.Symbol.
+
+2007-07-23  Stan Cox  <scox@redhat.com>
+
+	* ListCommand.java (handle): Use pc if no options given.
+
+2007-07-23  Nurdin Premji  <npremji@redhat.com>
+
+	* DisassembleCommand.java: Removed DisassembleSymbol class.
+	 (handle): Use frame.getSymbol()
+
+2007-07-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CLI.java: Passed printWriter as a direct argument to Frame.
+	* WhereCommand.java: Ditto.
+
+2007-07-20  Nurdin Premji  <npremji@redhat.com>
+
+	* CLIHandler.java (CLIHandler): Added new constructor.
+	* CommandHelp.java (toPrint): Added.
+	* DisassembleCommand.java: Added instructions-only option.
+	(DisassembleCommand): Use new constructor,
+	initialize parser
+	(addOptions): Added.
+	(reset): Added.
+
+2007-07-19  Nurdin Premji  <npremji@redhat.com>
+
+	* CLI.java (parseValue): Added.
+	* DisassembleCommand.java: Remove singular references to objects,
+	helps clean up imports.
+	(handle): Use cli.parseValue;
+	* PrintCommand.java (handle): Ditto.
+
+	* HardList.java: Drastically simplified, extend AbstractCollection.
+	* DisassembleCommand.java: Cleaned indenting.
+
+	* HardList.java: Added.
+	* DisassembleCommand.java(handle): Handle hexadecimal inputs to 
+	disassemble start end.
+	(printInstructions): Limit number of printed lines to 20.
+	
+	* CLI.java (CLI): Added a DisassembleCommand.
+
+	* DisassembleCommand.java: Added.
+	
+2007-07-16  Andrew Cagney  <cagney@redhat.com>
+
+	* BreakpointCommand.java: Update, lib.dw merged into lib.elf.
+	* ListCommand.java: Ditto.
+	* PrintCommand.java: Ditto.
+
+2007-07-16  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DeleteCommand.java (handle): Now parses the correct parameters
+	as per the hpd spec.
+	* DisableCommand.java (handle): Simplified the argument parsing
+	logic.
+	* EnableCommand.java (handle): Ditto.
+
+2007-07-12  Stan Cox  <scox@redhat.com>
+
+	* ListCommand.java (handle): Return if no debug_line info.
+	* CLI.java (tid,pid,symtabNeedsRefresh): Remove.
+	(frame): New.  Replaces DebugInfo.getCurrentFrame.  Change all callers.
+	(refreshSymtab): Remove.  Remove reference from all callers.
+	(UpDownHandler): Do all processing here.
+	(SteppingObserver.update): Update frame.
+	* AttachCommand.java (handle): Make tid and pid local.
+
+2007-07-11  Adam Jocksch  <ajocksch@redhat.com>
+
+	* ActionsCommand.java (handle): Now only prints out section
+	headers if there's something in that section.
+	* DisableCommand.java (handle): Now accepts all arguments as
+	specified in the hpd spec.
+	* EnableCommand.java (handle): Ditto.
+
+	* DeleteCommand.java: Reformatted.
+	(handle): Now deletes displays as well as breakpoints.
+
+	* DisableCommand.java: Reformatted.
+	(handle): Extended to disable displays as well.
+	* EnableCommand.java: Reformatted.
+	(handle): Extended to enable displays as well.
+
+2007-07-10  Adam Jocksch  <ajocksch@redhat.com>
+
+	* ActionsCommand.java: Reformatted.
+	(handle): Now parses command line arguments; currently only the
+	list of ids, -break, -display, -enabled, and -disabled args are
+	accepted.
+	* DisplayCommand.java: Reformatted.
+	(handle): Now includes the id number of the display when it is
+	output.
+
+2007-07-09  Adam Jocksch  <ajocksch@redhat.com>
+
+	* ActionsCommand.java (handle): Added comments, now prints out
+	displays as well as breakpoints.
+
+2007-07-05  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DisplayCommand.java (handle): Updated observer to reflect changes
+	to frysk.rt.DisplayValueObserver.java.
+
+2007-07-04  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DisplayCommand.java (handle): Updated observer to reflect changes
+	to frysk.rt.DisplayValueObserver.java.
+
+	* DisplayCommand.java (handle): Now uses DisplayManager.
+
+2007-06-25  Nurdin Premji  <npremji@redhat.com>
+
+	* CoreCommand.java (handle): Add message once core has been attached.
+
+	* CoreCommand.java: Added.
+	* CLI.java (CLI): Added a "core" command.
+
+2007-06-25  Tim Moore  <timoore@redhat.com>
+
+	* RunCommand.java (update): Tell the breakpoint manager to manage
+	the process..
+	* ActionsCommand.java (TaskComparator): Comparator for sorting
+	tasks.
+	(handle): Print out tasks that have a breakpoint enabled.
+	* BreakpointCommand (handle): Print out status of breakpoint if it
+	cannot be enabled.
+
+2007-06-22  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DisplayCommand.java (handle): Enabled notifications to the user
+	when a displayed expressions became unavailable.
+
+	* DisplayCommand.java (handle): Now recieves events when the the value
+	being displayed becomes unavailable, nothing is currently being
+	displayed to the user when this occurs.
+
+2007-06-20  Adam Jocksch  <ajocksch@redhat.com>
+
+	* CLi.java (CLI): Added hook for DisplayCommand.
+	* DisplayCommand.java: New file.
+
+2007-06-19  Mike Cvet  <mcvet@redhat.com>
+
+	* CLI.java (SteppingObserver.update): Updated to expect TaskStepEngine
+	parameter instead of null or Task objects.
+	
+	* RunCommand.java (update): Ditto. Fixes #4665.
+
+2007-06-14  Stan Cox  <scox@redhat.com>
+
+	* frysk/cli/hpd/PrintCommand.java (handle): Use BigInteger for hex.
+
+2007-06-14  Tim Moore  <timoore@redhat.com>
+
+	* BreakpointCommand.java (CLIBreakpointObserver.updateHit): Set
+	cli.running to false.
+	(handle): In anonymous CLIBreakpointObserver classes for
+	LineBreakpoint and Function breakpoint, pass cli as argument to
+	constructor and call the superclass method.
+	* RunCommand.java (update): Rename "unblock" to
+	"removeObserver". Tell stepping engine not to unblock this task.
+
+2007-06-12  Teresa Thomas  <tthomas@redhat.com>
+
+	* CLI.java (UpDownHandler): Fixed the up/down commands for call 
+	stack.
+
+2007-06-12  Tim Moore  <timoore@redhat.com>
+
+	* RunCommand (updateAttached): Move call to
+	cli.getSteppingEngine() after cli.startAttach(), because that
+	initializes the stepping engine.
+
+2007-06-11  Nurdin Premji  <npremji@redhat.com>
+
+	* StepInstructionCommand.java (handle): Use abstract Frame rather than 
+	RemoteFrame.
+	* StepInstructionCommand.java (handle): Ditto.
+
+	* CLI.java: Reflect frysk.stack package movement.
+	* WhereCommand.java: Ditto.
+	* StepInstructionCommand.java: Ditto.
+	* StepCommand.java: Ditto.
+	* ListCommand.java: Ditto.
+
+2007-06-09  Mike Cvet  <mcvet@redhat.com>
+
+	* CLI.java: Fixups for new dynamic SteppingEngine class.
+	(steppingEngine): New field.
+	(getSteppingEngine): Added.
+	* ActionsCommand.java: Fixups for new dynamic SteppingEngine class.
+	* BreakpointCommand.java: Ditto.
+	* DeleteCommand.java: Ditto.
+	* DetachCommand.java: Ditto.
+	* DisableCommand.java: Ditto.
+	* EnableCommand.java: Ditto.
+	* GoCommand.java: Ditto.
+	* HaltCommand.java: Ditto.
+	* RunCommand.java: Ditto.
+	* StepCommand.java: Ditto.
+	* StepInstructionCommand.java: Ditto.
+
+2007-06-08  Andrew Cagney  <cagney@redhat.com>
+
+	* RunHandler.java: Rename this ...
+	* RunCommand.java: ... to this.
+	* ActionsHandler.java: Rename this ...
+	* ActionsCommand.java: ... to this.
+	* BreakpointHandler.java: Rename this ...
+	* BreakpointCommand.java: ... to this.
+	* DisableHandler.java: Rename this ...
+	* DisableCommand.java: ... to this.
+	* EnableHandler.java: Rename this ...
+	* EnableCommand.java: ... to this.
+	* DeleteHandler.java: Rename this ...
+	* DeleteCommand.java: ... to this.
+	* CLI.java: Update.
+
+	* CLI.java (WhichsetsHandler): Rename this ...
+	* WhichsetsCommand.java: ... to this.  New file.
+	* CLI.java (UndefsetsHandler): Rename this ...
+	* UndefsetsCommand.java: ... to this.  New file.
+	* CLI.java (createSet, namedPTSets): Make package private.
+	(DefsetHandler): Rename this ...
+	* DefsetCommand.java: ... to this.  New file.
+	* CLI.java (builtinPTSets): Make package private.
+	(ViewsetHandler): Rename this ...
+	* ViewsetCommand.java: ... to this.  New file.
+	* CLI.java (targetset, handlers): Make package private.
+	(FocusHandler): Rename this ...
+	* FocusCommand.java: ... to this.  New file.
+
+	* CLI.java (UnsetHandler): Rename this ...
+	* UnsetCommand.java: ... to this.  New file.
+	* CLI.java (SetHandler): Rename this ...
+	* SetCommand.java: ... to this.  New file.
+
+	* CLI.java (GoHandler): Rename this ...
+	* GoCommand.java: ... to this.  New file.
+	* CLI.java (UnaliasHandler): Rename this ...
+	* UnaliasCommand.java: ... to this.  New file.
+
+	* CLI.java (AttachHandler): Rename this ...
+	* AttachCommand.java: ... to this.  New file.
+	* CLI.java (aliases): Make final package private.
+	(AliasHandler): Rename this ...
+	* AliasCommand.java: ... to this.  New file.
+
+2007-06-07  Andrew Cagney  <cagney@redhat.com>
+
+	* CLI.java (DetachHandler): Rename to ...
+	* DetachCommand.java: ... this.  New file.
+	* CLI.java (runningProcs): Make package private and final.
+	(QuitHandler): Rename to ...
+	* QuitCommand.java: ... this.  New file.
+
+	* CLI.java (HaltHandler): Rename to ...
+	* HaltCommand.java: ... this.  New file.
+
+	* CLI.java (userhelp): Make package private.
+	(HelpHandler): Rename to ...
+	* HelpCommand.java: ... this.  New file.
+
+	* CLI.java (WhatHandler): Rename to ...
+	* WhatCommand.java: ... this.  New file.
+
+	* CLI.java (WhereHandler): Rename to ...
+	* WhereCommand.java: ... this.  New file.
+
+	* CLI.java (PrintHandler): Rename to ...
+	* PrintCommand.java: ... this.  New file.
+
+2007-06-07  Mike Cvet  <mcvet@redhat.com>
+
+	* CLI.java (StepHandler): Removed.
+	(StepInstructionHandler): Removed.
+	(CLI): Initialize new step command classes with CLI parameter.
+	(SteppingObserver): Made package private.
+	* StepInstructionCommand.java: Added.
+	* StepCommand.java: Added.
+
+2007-06-07  Andrew Cagney  <cagney@redhat.com>
+
+	* CLI.java (addMessage): Make package private.
+	(outWriter): Make package private and final.
+	(ListHandler): Rename to ..
+	* ListCommand.java: here.  New file.
+
+2007-06-06  Mike Cvet  <mcvet@redhat.com>
+
+	* CLI.java (SteppingObserver.monitor): Added. Synchronization 
+	object for stepping commands.
+	(SteppingObserver.update): Now synchronizes on, and notifies from
+	monitor object.
+	(StepHandler.handle): Synchronizes on stepping monitor and prints
+	stepping results after completion.
+	(StepInstructionHandler.handle): Ditto.
+
+2007-06-05  Mike Cvet  <mcvet@redhat.com>
+
+	* UserHelp.java (UserHelp): Added user help for step and stepi.
+	* CLI.java: Turned Hashtables into HashMaps. Fixes #3986.
+	(running): Added.
+	(StepHandler): Added. Handler for line stepping. Fixes #4594.
+	(StepInstructionHandler): Added. Handler for instruction steping.
+	Fixes #4594.
+	(WhereHandler.handle): Bail immediately if the process is running.
+	Fixes #4595.
+	(GoHandler.handle): Sets running boolean.
+	(HaltHandler.handle): Unsets running boolean.
+	(CLI): Added new stepping handlers.
+	(complete): Ordered the returned commands alphabetically.
+
+2007-05-25  Tim Moore  <timoore@redhat.com>
+
+	* CLI.java (DetachHandler.handle): Skip processes started by
+	the run command without reporting an error.
+
+2007-05-25  Stan Cox  <scox@redhat.com>
+
+	* SymTab.java: Move to frysk.debuginfo.DebugInfo
+	* ExprSymTab.java: Move to frysk.debuginfo.DebugInfoEvaluator
+	
+2007-05-17  Stan Cox  <scox@redhat.com>
+
+	* SymTab.java (complete): Handle struct members.
+	(get): Remove get(String s, ArrayList components).
+	* ExprSymTab.java (get): Remove get(String, ArrayList).
+	(ArrayList components): Handle both structs and arrays.
+
+2007-05-16  Tim Moore  <timoore@redhat.com>
+
+	* ActionsHandler.java: New file.
+	* DeleteHandler.java: New file.
+	* DisableHandler.java: New file.
+	* EnableHandler.java: New file.
+	* Actionpoint.java: delete.
+	* ActionpointTable.java: delete.
+	* FunctionBreakpointAdapter.java: delete.
+	* LineBreakpointAdapter.java: delete.
+	* BreakpointHandler.java (handle): Use RT BreakpointManager to
+	install breakpoints.
+	* RunHandler.java (update): New method for observing SteppingEngine.
+	(updateAttached): Use SteppingEngine attached notice to remove the
+	attached observer.
+
+2007-05-10  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java (get): Handle union.
+	(getClassType): Likewise.
+
+2007-05-10  Andrew Cagney  <cagney@redhat.com>
+
+	* TestSetCreation.java: Replace references to
+	frysk.proc.DummyProc and frysk.proc.DummyTask with
+	frysk.proc.dummy.Proc and frysk.proc.dummy.Task.
+
+2007-05-09  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java (get): Remove DwarfDie from newXVariable signature.
+
+2007-05-08  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java (get): newXVariable signature.
+	Changed to use ArrayType.get.
+	* CLI.java (ListHandler): Implement -length.
+
+2007-05-07  Tim Moore  <timoore@redhat.com>
+
+	* RunHandler.java (updateAttached): Put the request to unblock
+	this observer in an event for the Event manager.
+
+2007-05-04  Nurdin Premji  <npremji@redhat.com>
+
+	* ExprSymTab.java (refreshCurrentFrame): Updated for 
+	frysk.rt.StackFactory.createFrame name change.
+	(ExprSymTab): Ditto.
+
+	* SymTab.java (setSubprogram): Abstract StackFrame to Frame.
+	(SymTab): Ditto.
+	(getCurrentFrame): Ditto.
+	(setFrames): Ditto.
+	(getInnerMostFrame): Ditto.
+	(setCurrentFrame): Ditto.
+	* CLI.java (WhereHandler.handle): Ditto.
+	(UpDownHandler.handle): Ditto.
+	* ExprSymTab.java (getCurrentFrame): Ditto.
+	(ExprSymTab): Ditto.
+	(getInnerMostFrame): Ditto.
+	(setCurrentFrame): Ditto.
+	
+2007-05-03  Tim Moore  <timoore@redhat.com>
+
+	* Actionpoint.java (Actionpoint): Implement BreakpointObserver.
+	(Actionpoint constructor): Take cli as argument.
+	(addedTo, addFailed, deletedFrom, updateHit): BreakpointObserver
+	implementation.
+	* BreakpointHandler.java (handle): New arguments for adapter
+	constructors.
+	* CLI.java (CLI): Expose apTable to package.
+	(AttachHandler.handle): Don't start and stop event loop.
+	(startAttach): Store away pid.
+	(CLIEventLoop): Delete.
+	* FunctionBreakpointAdapter.java (FunctionBreakpointAdapter
+	constructor): Take cli as argument, set observer delegate.
+	* LineBreakpointAdapter.java: ditto.
+	* RunHandler.java (updateAttached): request unblock and Return
+	BLOCK.
+
+2007-05-02  Andrew Cagney  <cagney@redhat.com>
+
+	* Revert 2007-05-01 Nurdin Premji <npremji@redhat.com> change.
+
+2007-05-02  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java (getArrayType): New.
+	(getClassType): New.
+	(navigateType): New.
+	(get): Use above new methods.
+	* CLI.java (PrintHandler.handle): Remove try/catch block.
+	(CLI): Remove command parameter.
+
+2007-05-01  Nurdin Premji  <npremji@redhat.com>
+
+	* SymTab.java (setSubprogram): Switch from StackFrame to Frame.
+	(SymTab): Ditto.
+	(getCurrentFrame): Ditto.
+	(setFrames): Ditto.
+	(getInnerMostFrame): Ditto.
+	(setCurrentFrame): 	Ditto.
+	* CLI.java (WhereHandler.handle): Ditto.
+	(UpDownHandler.handle): Ditto.
+	* ExprSymTab.java (AccessDW_FORM_data.getLong): Ditto.
+	(AccessDW_FORM_data.getDouble): Ditto.
+	(getCurrentFrame): Ditto.
+	(refreshCurrentFrame): Ditto.
+	(AccessDW_FORM_data.putFloat): Ditto.
+	(AccessDW_FORM_data.putDouble): Ditto.
+	(AccessDW_FORM_data.getRegister): Ditto.
+	(AccessDW_FORM_data.getInt): Ditto.
+	(setCurrentFrame): Ditto.
+	(AccessDW_FORM_data.putInt): Ditto.
+	(AccessDW_FORM_data.getByte): Ditto.
+	(AccessDW_FORM_data.getFloat): Ditto.
+	(AccessDW_FORM_data.putShort): Ditto.
+	(AccessDW_FORM_block.getBufferAddr): Ditto.
+	(AccessDW_FORM_data.putLong): Ditto.
+	(AccessDW_FORM_data.getShort): Ditto.
+	(ExprSymTab): Ditto.
+	(AccessDW_FORM_data.putByte): Ditto.
+	(getInnerMostFrame): Ditto.
+
+2007-04-20  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java (get): Support bit fields.
+	(get): Likewise.
+
+2007-04-19  Mike Cvet  <mcvet@redhat.com>
+
+	* CLI.java: General fixes for RunState -> SteppingEngine move.
+	(steppingObserver): Renamed from runStateObserver.
+	(ListHandler.handle): No-debuginfo exception fix.
+	(SteppingObserver): Renamed from RunStateObserver.
+	(SteppingObserver.update): Return if argument is null.
+	(getRunState): Removed.
+	* BreakpointHandler.java: SteppingEngine fixes.
+	* FunctionBreakpointAdapter.java: Ditto.
+	* LineBreakpointAdapter.java: Ditto.
+
+2007-04-18  Tim Moore  <timoore@redhat.com>
+
+	* BreakpointHandler.java (handle): New parameters to
+	LineBreakpoint. Support function breakpoint based on symbol name.
+
+	* CLI.java (AttachHandler.handle): Fix breakage from monitor
+	lock cleanup.
+
+2007-04-17  Tim Moore  <timoore@redhat.com>
+
+	* CLI.java (CLIMonitor, monitor, procSearchFinished): delete
+	monitor and use the cli	object itself as a lock.
+	(runningProcs, getRunningProcs): New field and accessor
+	(QuitHandler): Kill processes started by the run command.
+	* RunHandler.java (updateAttached): Keep track of running
+	processes with a ProcessTasksObserver.
+	* ProcData.java (equals): New method.
+	* ProcTasks.java (equals): New method.
+	* StaticPTSet.java (union): New method.
+
+2007-04-15  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java (*Type): Use ArithmeticType.
+	(get): Likewise.
+	* CLI.java (PrintHandler.handle): Rename baseTypeByte.
+
+2007-04-10  Andrew Cagney  <cagney@redhat.com>
+	    Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ExprSymTab.java: Replace PtraceByteBuffer with
+	Task.getMemory.
+	
+2007-04-08  Mike Cvet  <mcvet@redhat.com>
+
+	* CLI.java (RunStateObserver.update): Updated calls to
+	RunState.getState() to getTaskState(Task).
+
+2007-04-03  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java (getDecl): Pass scopes to getDeclCU.
+
+2007-04-02  Tim Moore  <timoore@redhat.com>
+
+	* FunctionBreakpointAdapter.java (output): Print differently
+	if function contains inline instances.
+
+2007-03-30  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java: Handle DW_TAG_enumerator.
+	(get): Handle DW_TAG_pointer_type, DW_TAG_enumeration_type, and
+	DW_TAG_enumerator.
+	* SymTab.java (what): Handle DW_TAG_array_type,
+	DW_TAG_structure_type, and DW_TAG_enumeration.
+
+2007-03-30  Mike Cvet  <mcvet@redhat.com>
+
+	* CLI.java (DetachHandler.handle): Updated call to 
+	RunState.removeObserver to include Proc parameter.
+	(HaltHandler.handle): Update call to RunState.stop to 
+	include Task list parameter.
+
+2007-03-29  Tim Moore  <timoore@redhat.com>
+
+	* SymTab.java (what): Catch exception if variable file and line
+	number are unknown.
+	* BreakpontHandler.java (handle): Disabled debugging code.
+
+2007-03-22  Tim Moore  <timoore@redhat.com>
+
+	* CLI.java (RunStateObserver.update): Print out breakpoint
+	information when a breakpoint is hit.
+	* Actionpoint.java (getRTBreakpoint, setRTBreakpoint): New
+	methods.
+	* ActionpointTable.java (size): New method.
+	* LineBreakpointAdapter.java : Use RTBreakpoint from superclass.
+	* FunctionBreakpointAdapter.java : ditto.
+
+2007-03-21  Tim Moore  <timoore@redhat.com>
+
+	* BreakpointHandler.java : Class refactored from
+	CLI.java. Implement breakpoints based on function names.
+	* FunctionBreakpointAdapter.java : New class.
+	* CLI.java (BreakpointHandler): remove.
+	(refreshSymtab): Make public.
+	(getActionpointTable, getPrintWriter, getTask, getSymTab): New
+	getter methods to support writing command handlers outside of the
+	CLI class.
+	* Symtab.java (getSymbolDie): New method.
+
+2007-03-20  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java (get): Set name when creating arrayType/classType.
+	(getAddress): New.
+	(getMemory): New.
+	* SymTab.java (getAddress, getMemory): Likewise.
+
+2007-03-17  Stan Cox  <scox@redhat.com>	
+
+	* SymTab.java (complete): Handle help request<HT>.
+	(CommandHandler): Add -help to all .handle.
+	* UserHelp.java (UserHelp): Improve full descriptions.
+
+2007-03-16  Stan Cox  <scox@redhat.com>
+
+	* SymTab.java (setSubprogram): Check for no .debug_info.
+	(what): Likewise.
+	(SetFrames): Set subprogram in ExprSymTab.	
+
+2007-03-15  Stan Cox  <scox@redhat.com>
+
+	* SymTab.java (subprogram): New.  Used to initialize dies in
+	subprogram.
+	(SymTab): Allocate subprogram.
+	(refresh): Set subprogram.
+	(setCurrentFrame): Set subprogram.
+	(setSubprogram): Initialize subprogram.
+	(setFrames): Set subprogram.
+	* ExprSymTab.java (subprogram, setSubprogram): New.
+	(getDie): Check if die is in subprogram.
+	(getVariable): New.
+
+2007-03-08  Mike Cvet  <mcvet@redhat.com>
+
+	* Symtab.java (task): Not used, removed.
+	(exprSymTab): Changed to an array. Will contain an ExprSymTab for
+	each thread of a process. Fixes #4173.
+	(SymTab): Changed parameter 'pid_p' to 'tid_p'. Initializes the new
+	ExprSymTab array.
+	(print): Moved TmpSymTab initialization inside if statement.
+	Added a while loop to check through all elements of the ExprSymTab
+	array for a variable. Fixes #4173.
+	(setFrames): Added. Static method to be called after a step; updating
+	the ExprSymTab array with fresh StackFrame values.
+
+2007-03-07  Stan Cox  <scox@redhat.com>
+
+	* SymTab.java (what): Use DwAtEncodings and DwTagEncodings.
+	* ExprSymTab.java (getBufferAddr): Use DwarfOp and DwOpEncodings.
+	(AccessDW_FORM_data.getReg): Likewise.
+	(get): Use DwTagEncodings.
+
+2007-03-07  Tim Moore  <timoore@redhat.com>
+
+	* CLIHandler.java: New file.
+	* CommandHelp.java: New file.
+	* RunHandler.java: New file.
+	* UserHelp.java (CommandHelp): Refactor to outer class.
+	(addHelp): Add overloaded version that takes a CommandHelp object
+	as an argument.
+	* CLI.java (CLIMonitor): New inner class.
+	(AttachHandler.handle): Always start event loop in a thread and
+	use it to locate the process of interest. Properly synchronize
+	with the event loop to retrieve the process. Use startAttach() and
+	finishAttach(). Disable non-cli case.
+	(startAttach, finishAttach): New methods refactored from
+	AttachHandler.
+	(DetachHandler.handle): Call requestStop on the CLI event loop
+	object, not directly on Manager.eventLoop.
+	(addHandler): New method.
+	(CLI constructor): Add RunHandler object.
+	(CLIEventLoop):Make inner class instead of static inner class.
+	(CLIEventLoop.requestStop): Remove eventLoop object from CLI.
+	(startEventLoop, getRunState, printUsage): New method.
+
+2007-02-28  Stan Cox  <scox@redhat.com>
+
+        * ExprSymTab.java (AccessDW_FORM_block.getBufferAddr):
+        Add x8664 specific registers.
+        (AccessDW_FORM_data.getReg): Handle x8664.
+        (AccessDW_FORM_data.{getFloat,getDouble}): Cast via Float/Double.
+
+2007-02-27  Andrew Cagney  <cagney@redhat.com>
+
+	* CLI.java: Replace StackFrame .getSourceFile with Line
+	.getFile.
+
+2007-02-26  Andrew Cagney  <cagney@redhat.com>
+
+	* CLI.java: Use frysk.rt.Line instead of Frame getLineNumber.
+
+2007-02-24  Tim Moore  <timoore@redhat.com>
+
+	* Actionpoint.java: New file.
+	* ActionpointTable.java: New file.
+	* LineBreakpointAdapter.java: New file.
+	* Command.java (setOut, getOut): remove.
+	* CLI.java (CLI): Change out PrintStream to outWriter PrintWriter.
+	(apTable): New member.
+	(BreakpointHandler.handle): Add breakpoint to action point table.
+	(DeleteHandler.handle): Implement breakpoint deletion.
+	(ActionsHandler): New class.
+
+2007-02-21  Stan Cox  <scox@redhat.com>
+
+	* CLI.java (CLI): Add initial command line parameter.
+	(attach): Don't require executable name.
+
+2007-02-19  Mike Cvet  <mcvet@redhat.com>
+
+	* CLI.java (DetachHandler.handle): Updated to call 
+	RunState.continueExecution().
+	* CLI.java (GoHandler.handle): Ditto.
+
+2007-02-15  Tim Moore  <timoore@redhat.com>
+
+	* SymTab.java (refresh): New method.
+	* ExprSymTab.java (refreshCurrentFrame): New method.
+	* CLI.java (symtabNeedsRefresh): New member.
+	(refreshSymtab): New method.
+	(handle): In most handler classes, call refreshSymtab.
+	(AttachHandler.handle): Add error messages.
+	(RunStateObserver.update): Set symtabNeedsRefresh if necessary.
+
+2007-02-14  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java (get): Add offset to classType.addMember.
+	(get): New for class members.
+	* SymTab.java (get): Likewise.
+
+2007-02-07  Stan Cox  <scox@redhat.com>
+
+	* CLI.java (frysk.proc.Action, frysk.proc.TaskObserver):
+	Remove unused imports.
+	(DeleteBreakpointHandler): Remove params, filename, linenumber.	
+	(params): remove.
+
+2007-02-07  Tim Moore  <timoore@redhat.com>	
+
+	* CLI.java (addMessage): New version that takes string and
+	message type.
+	(CLI): Reformat to GNU standards, use new addMessage convenience
+	method.
+	
+2007-02-07  Tim Moore  <timoore@redhat.com>
+
+	* CLI.java (attachedObserver): Remove.
+	(runState, runStateObserver, AttachHandler, DetachHandler): Start
+	and stop processes using RunState object.
+	(BreakpointHandler, DeleteBreakpointHandler): Handlers for
+	manipulating source breakpoints.
+	(GoHandler, HaltHandler): Handlers for starting and stopping a
+	process.
+	(CLI constructor): Add new handlers to handler table.
+	(RunStateObserver): New local class for interacting with RunState.
+	* UserHelp.java (addHelp): Convenience function.
+	(UserHelp constructor): Use it. Add help for "go" and "halt" commands.
+	
+
+2007-01-29  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java (byteType,shortType,intType,floatType,doubleType): New.
+	(VariableAccessor.(get*,put*): Add offset to getters and putters.
+	(AccessDW_FORM_block.(get*,put*): Add offset to getters and putters.
+	(AccessDW_FORM_data.(get*,put*): Add offset to getters and putters.
+	(get): Use switch statements.
+	(get): New for array element references.
+	* CLI.java (WhereHandler.handle): Fix formatting typo.
+
+2007-01-26  Mark Wielaard  <mark@klomp.org>
+
+	* SymTab.java: Removed unused import DwflLine.
+
+2007-01-26  Mark Wielaard  <mark@klomp.org>
+
+	* CLI.java: Delete unused import lib.stdcpp.Demangler.
+	* SymTab.java: Delete unused import frysk.rt.StackFactory.
+	(complete): Removed unused variable result.
+	(what): Removed unused variable line.
+	(print): Removed unused variable intResult.
+
+2007-01-23  Stan Cox  <scox@redhat.com>
+
+	* CLI.java Delete unused import frysk.rt.StackFactory,
+	frysk.sys.Errno, frysk.sys.Ptrace, frysk.sys.Sig, lib.dw.DwarfDie,
+	lib.dw.Dwfl, lib.dw.DwflDieBias, lib.dw.DwflLine.
+	(complete): Remove candidates iterator.
+	(AttachedObserver): Remove unread variable stopped.
+
+2007-01-23  Nurdin Premji  <npremji@redhat.com>
+
+	* CLI.java (WhereHandler.handle): Changed to use
+	Stackframe.toPrint method. 
+	(UpDownHandler.handle): Ditto.
+
+2007-01-23  Andrew Cagney  <cagney@redhat.com>
+
+	* CLI.java: Delete unused import frysk.proc.TaskException.
+
+2007-01-22  Andrew Cagney  <cagney@redhat.com>
+
+	* CLI.java: Delete unused import java.util.Vector;
+
+	* SymTab.java: Delete import frysk.proc.TaskException.
+		
+2007-01-22  Mike Cvet  <mcvet@redhat.com>
+
+	* ExprSymTab.java (getReg): Removed erroneous frame PC
+	decrement and instead call StackFrame.getAdjustedAddress().
+	(getBufferAddr): Ditto.
+	(getDie): Ditto.
+	* SymTab.java (complete): Ditto.
+	(what): Ditto.
+
+2007-01-22  Andrew Cagney  <cagney@redhat.com>
+
+	* ExprSymTab.java: Delete catch throwing TaskException as
+	RuntimeException.
+	* SymTab.java: Ditto.
+
+2007-01-18  Tim Moore  <timoore@redhat.com>
+
+	* ExprSymTab.java(AccessDW_FORM_block.getBufferAddr,
+	AccessDW_FORM_data.getReg): Instead of using MachineType, look at
+	the task's Isa.
+
+2007-01-16  Stan Cox  <scox@redhat.com>
+
+	* CLI.java (PrintHandler.handle): Special case baseTypeChar.
+
+2007-01-11  Stan Cox  <scox@redhat.com>
+
+	* CLI.java (complete): New.
+	(ListHandler): New.
+	* SymTab.java (complete): New.
+	* UserHelp.java (list): New.	
+
+2006-12-20  Stan Cox  <scox@redhat.com>
+
+	* AllPTSet.java (taskSets): Use ArrayList instead of Vector.
+	* CLI.java (handle): Likewise.
+	* Command.java (myParameters): Likewise.
+	* DynamicPTSet.java (getTasks): Likewise.
+	* ExecPTSet.java (getTasks): Likewise.
+	* Preprocessor.java (preprocess): Likewise.
+	* ProcTasks.java (getTaskData): Likewise.
+	* SetNotationParser.java (parse): Likewise.
+	* StaticPTSet.java (getProcs): Likewise.
+	* StatePTSet.java (getTasks): Likewise.
+	* UserHelp.java (getCmdList): Likewise.
+	* SymTab.java (print): Add NameNotFoundException, TmpSymTab.
+	* CppSymTab.java (print): Add NameNotFoundException.
+
+2006-12-18  Stan Cox  <scox@redhat.com>
+
+	* SymTab.java (SymTab): Add elf and dwarf.
+	(what): Handle functions.
+	* CLI.java (WhereHandler): Demangle. Check usage.
+	(UpDownHandler): Demangle.
+	(PrintHandler): Check usage.
+	(WhatHandler): Check usage.
+
+2006-12-14  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java (VariableAccessor): Add getLong/putLong/ and
+	getByte/putByte.
+	(AccessDW_FORM_block): Likewise.
+	(AccessDW_FORM_data): Likewise.
+	(put): Likewise.
+	(get): Likewise.
+
+2006-12-11  Andrew Cagney  <cagney@redhat.com>
+
+	* .cvsignore: Delete.
+
+2006-12-06  Nurdin Premji  <npremji@redhat.com>
+
+	* CLI.java (AttachHandler.handle): Removed unneccesary TODO:
+	Autogenerated method stub.
+
+2006-11-28  Nurdin Premji  <npremji@redhat.com>
+
+	* CLI.java (AttachHandler.handle): Changed to use simplified
+	requestFindProc.
+
+2006-11-27  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java (AccessDW_FORM_block.getBufferAddr): Change 
+	getFrameBase.
+	(AccessDW_FORM_data.getReg): Change getFormData.
+	* CLI.java (QuitHandler.handle): Do implicit detach from quit.
+
+2006-11-27  Nurdin Premji  <npremji@redhat.com>
+
+	* CLI.java: Reverted to old refreshRequestXXX and reimplemented 
+	FindProc interface.  foundProc method just stops eventLoop rather than 
+	running everything after the runPending.
+
+2006-11-21  Nurdin Premji  <npremji@redhat.com>
+
+	* CLI.java: Changed to use FindProc interface.
+
+2006-11-17  Stan Cox  <scox@redhat.com>
+
+	* CLI.java (CLIEventLoop): New.
+	(AttachedObserver): New.
+	(AttachHandler.handle): Attach to process using an attach observer.
+
+2006-11-16  Stan Cox  <scox@redhat.com>
+
+	* CLI.java (PrintHandler.handle): Add -task.
+	Rename frysk.lang to frysk.value.
+	* ExprSymTab.java: Rename frysk.lang to frysk.value.
+	* SymTab.java: Rename frysk.lang to frysk.value.
+
+2006-11-14  Andrew Cagney  <cagney@redhat.com>
+
+	* TestSetCreation.java: Use frysk.junit.TestCase.
+	* TestSetParser.java: Use frysk.junit.TestCase.
+
+2006-11-09  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java (get): Add isClassType support.
+
+2006-11-03  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java (VariableAccessor.getAddr): New.
+	(get): Use BaseTypes. Add isArrayType support.
+	* CLI.java (PrintHandler.handle): Use BaseTypes.
+
+2006-10-11  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java (VariableAccessor): New.
+	(AccessDW_FORM_block): New.
+	(AccessDW_FORM_data): New.
+	(put): Use VariableAccessor.
+	(get): Use VariableAccessor.
+
+2006-10-06  Mike Cvet  <mcvet@redhat.com>
+
+	* ExprSymTab.java (ExprSymTab): New StackFrame parameter.Sets
+	currentFrame to the inner most frame of the incoming stack trace 
+	if non-null; generates new stack trace otherwise. Got rid of 
+	innermostFrame field. Fixes #3312.
+	(getBufferAddr): Checks currentFrame.getInner() null-ness instead
+	of innermostFrame.
+	(getDie): Ditto.
+	(getInnerMostFrame): Iterates a pointer to currentFrame's innermost
+	and returns it.
+	* SymTab.java (SymTab): Added a new constructor with 
+	an extra parameter - a StackFrame. Calls ExprSymTab with new
+	StackFrame argument; null if no StackFrame was given.
+	* CLI.java (AttachHandler.handle): Sends in an extra null
+	argument to the new SymTab.
+
+2006-10-03  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java (getBufferAddr): Add x86regnumbers to map x86
+	dwarf reg numbers to unwind reg numbers.
+
+2006-10-02  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java (getBufferAddr):  Add x86regnames to map x86
+	dwarf reg numbers to unwind reg names.
+
+2006-10-02  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java (put): Check that the die has a type.
+	(get): Likewise.
+
+2006-09-29  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java (getBufferAddr): Simplify DW_AT_frame_base handling.
+	(put): Handle Errno.
+	* CLI.java (PrintHandler.handle): Handle missing variable.
+
+2006-09-28  Stan Cox  <scox@redhat.com>
+
+	* CLI.java (UpDownHandler): New.
+	(WhereHandler): New.
+	* SymTab.java (CppSymTab): Move from here...
+	* ExprSymTab.java: to here.
+
+2006-09-22  Stan Cox  <scox@redhat.com>
+
+	* SymTab.java (what,print): Refactor command handling from here...
+	* CLI.java (what,print): to here.
+
+2006-09-18  Stan Cox  <scox@redhat.com>
+
+	* SymTab.java (get): Handle float and double.
+	(print): Likewise.
+
+2006-09-12  Stan Cox  <scox@redhat.com>
+
+	* CLI.java (proc): New.
+	(task): New.
+	(symtab): New.
+	(AttachHandler): New.
+	(DetachHandler): New.
+	* hpd.java: New file for standalone execution of hpd.
+	* SymTab.java (symTab): New.
+	(what): Use it.
+	(print): Use it.
+	* UserHelp.java (UserHelp): Add print, assign, what, attach, detach.
+	* PrintHandler.java: Moved to SymTab.java.
+
+2006-08-21  Stan Cox  <scox@redhat.com>
+
+	* PrintHandler.java (handle): Add -format and hex/octal output.
+
+2006-07-14  Stan Cox  <scox@redhat.com>
+
+	* Command.java (getOut, setOut): New.
+	* CLI.java (execCommand): Call it.
+	* PrintHandler.java (PrintHandler): Change println to getOut.
+
+2006-07-07  Ivan Pantuyev  <ipantuye@redhat.com>
+	
+	* DbgVariables.java: new
+	* CLI.java: aliasing, variable setting added
+	* UserHelp.java: help for the newly implemented commands
+	
+2006-07-05  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* UserHelp.java: more commands
+	* CLI.java: some work on set commands, new debugger internal commands
+	* AllPTSet.java: fixed index out of bounds exception
+
+2006-06-28  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* UserHelp.java: new
+
+2006-06-28  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* StatePTSet.java: fixed bug
+
+2006-06-28  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* Message.java: new
+	* ExecPTSet.java: new
+
+2006-06-27  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* SetNotationParser.java: fixed bug
+	* TestSetParser.java: two more tests
+
+2006-06-26  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* ParsedSet.java: Added support for static name and exec sets
+	* CLI.java: Added support for static name and exec sets, minor fixes
+	* SetNotationParser.java: Conform to ParsedSet changes
+	* AllPTSet.java: minor edit
+
+2006-06-26  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* CLI.java: remove call to System.exit()
+
+2006-06-25  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* CLI.java: commented out and changed the name of "main"
+
+2006-06-21  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* StatePTSet.java: Broken HEAD build fixes.
+	Fixed missing java.util import.	Declare state variable.
+	(StatePTSet): Set assignment of this.state to state.
+	Remove this.set = set.
+
+2006-06-21  Ivan Pantuyev  <ipantuye@redhat.com>
+	
+	* PTSet.java: changed the interface
+	* AllPTSet.java: conform to PTSet changes, added getSubsetByState
+	* StaticPTSet.java: conform to PTSet changes
+	* DynamicPTSet.java: conform to PTSet changes
+	* StatePTSet.java: new
+	* SetNotationParser.java: added recognition of set by task state
+	* CLI.java: Added a few variables
+	* Command.java: Better tokenization
+	* ProcTasks.java: Changed a function name
+	* ParsedSet.java: Added TYPE_STATE
+	
+2006-06-16  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* PrintHandler.java : Remove unused imports.
+	* SymTab.java : Ditto.
+
+2006-06-15  Stan Cox  <scox@redhat.com>
+
+	* CLI.java (WhatHandler): New.
+	(QuitHandler): New.
+	(HelpHandler): New.
+	(CLI): New handlers for print, what, help, quit, exit.
+	* PrintHandler.java: New file.
+	* SymTab.java: New file.
+
+2006-06-14  Ivan Pantuyev  <ipantuye@redhat.com>
+	
+	* ParsedSet.java: new
+	* SetNotationParser: returns ParsedSet now
+	* TestSetCreation.java: adjusted to conform with changes to other classes
+	* TestSetParser.java: adjusted to conform with changes to other classes
+
+2006-06-12  Ivan Pantuyev  <ipantuye@redhat.com>
+	
+	* AllPTSet.java: Removed from public scope
+	* Command.java: Removed from public scope
+	* ParseTreeNode.java: Removed from public scope
+	* Preprocessor.java: Removed from public scope
+	* SetNotationParser.java: Removed from public scope
+	* AllPTSet.java: Removed from public scope
+
+2006-06-12  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* PTSet.java: new
+	* DynamicPTSet.java: new
+	* AllPTSet.java: implements PTSet interface, generalized subset creation
+	* StaticPTSet.java: implements PTSet interface
+	* TestSetCreation.java: reflect changes to AllPTSet
+
+2006-06-09  Ivan Pantuyev  <ipantuye@redhat.com>
+	
+	* ProcData.java: new
+	* TaskData.java: new
+	* ProcTasks.java: new
+	* TestSetCreation.java: new
+	* StaticPTSet.java: new
+	* AllPTSet.java: changed algorithms to simpler ones, added support for new classes
+	* SetNotationParser.java: removed support for "fuzzy" notations
+	* TestSetParser.java: accomodated to SetNotationParser changes, more tests
+
+2006-06-07  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* TestSerParser.java: JUnitified it
+
+2006-05-31  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* ParseTreeNode.java: Changed all instance of PTNode to ParseTreeNode
+	* SetParserTest.java: Changed all instance of PTNode to ParseTreeNode
+	* SetNotationParse.java: Changed all instance of PTNode to ParseTreeNode
+	* AllPTSet.java: Changed all instance of PTNode to ParseTreeNode
+
+2006-06-01  Ivan Pantuyev  <ipantuye@redhat.com>
+	
+	* PTNode.java: Renamed to ParseTreeNode
+	* ParseTreeNode.java: New (renamed PTNode.java to it)
+
+2006-05-30  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* TaskSet.java: Renamed to AllPTSet.java
+	* AllPTSet.java: New
+
+2006-05-24  Ivan Pantuyev  <ipantuye@redhat.com>
+	
+	* Command.java: New
+	* CLI.java: Changed to use Command class instead of ParserHelper
+	* CommandHandler.java: Changed to use Command class instead of ParserHelper
+	* Preprocessor.java: Made to handle quote-bound compound commands
+
+2006-05-24  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* ParserHelper.java: Removed
+
+2005-10-03  Andrew Cagney  <cagney@redhat.com>
+
+	* CLI.java: Delete unused private member aliases.
+
+2005-09-18  Andrew Cagney  <cagney@redhat.com>
+
+	* package.html: Add a proper package title.
+
+2005-09-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Move com/redhat/fedora/frysk/cli/ to frysk/cli/.
+
+2005-09-01  Andrew Cagney  <cagney@redhat.com>
+	
+	* .cvsignore: New.
+
+2005-08-19  Ivan Pantuyev  <ipantuye@redhat.com>
+	
+	* doc-files/parsetree.png: New.
+	* doc-files/package.html: New.
+
+2005-08-13  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskSet.java: Delete java.util.Arrays import.
+
+2005-08-13  Ivan Pantuyev <ipantuye@redhat.com>
+	
+	* CLI.java: New.
+	* CommandHandler.java: New.
+	* PTNode.java: New.
+	* ParserHelper.java: New.
+	* Preprocessor.java: New.
+	* SetNotationParser.java: New.
+	* SetParserTest.java: New.
+	* TaskSet.java: New.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

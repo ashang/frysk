@@ -1,5 +1,7 @@
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
+	* fhpd.java: Update; package frysk.cli.hpd moved to frysk.hpd.
+
 	* TestFtrace.java: Update; frysk.proc.TestLib moved to
 	frysk.testbed.TestLib.
 	* TestFStep.java: Ditto.

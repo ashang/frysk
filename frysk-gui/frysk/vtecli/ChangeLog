@@ -1,3 +1,8 @@
+2007-07-24  Andrew Cagney  <cagney@redhat.com>
+
+	* ConsoleWindow.java: Update; package frysk.cli.hpd moved to
+	frysk.hpd.
+
 2007-05-03  Stan Cox  <scox@redhat.com>
 
 	* ConsoleWindow.java (reader): Remove CLI command line parameter.

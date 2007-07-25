@@ -46,7 +46,7 @@ import java.io.PrintWriter;
 
 import java.util.List;
 
-import frysk.cli.hpd.CLI;
+import frysk.hpd.CLI;
 
 import jline.Completor;
 import jline.ConsoleReader;
