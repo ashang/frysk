@@ -1,3 +1,8 @@
+2007-07-25  Mark Wielaard  <mwielaard@redhat.com>
+
+	* PickProcDialog.java (ProcCreatedObserver.run): Check whether
+	Proc.getExe() returns null before constructing File path.
+
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
 	* ConsoleWidget.java: Update; package frysk.cli.hpd moved to

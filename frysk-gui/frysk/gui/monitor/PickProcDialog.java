@@ -355,11 +355,14 @@ public class PickProcDialog
             {
               iterMap.put(proc.getCommand(), process);
               treeStore.setValue(process, nameDC, proc.getCommand());
-              File path = new File(proc.getExe());
-              
-              if (path != null)
-                treeStore.setValue(process, locationDC,
-                                   justPath(path.getPath(), path.getName()));
+	
+	      String exe = proc.getExe();
+	      if (exe != null)
+		{
+		  File path = new File(exe);
+		  treeStore.setValue(process, locationDC,
+				     justPath(path.getPath(), path.getName()));
+		}
               else
                 treeStore.setValue(process, locationDC, "");
               
