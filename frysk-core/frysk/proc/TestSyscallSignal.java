@@ -46,6 +46,7 @@ import java.io.InputStreamReader;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.testbed.ForkTestLib;
+import frysk.testbed.TestLib;
 
 /**
  * XXX: This code should be simplified, eliminating local parallelism

@@ -47,6 +47,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 import frysk.testbed.SignalWaiter;
+import frysk.testbed.TestLib;
 
 /**
  * Check that random events, arriving mid-way through a detach, are

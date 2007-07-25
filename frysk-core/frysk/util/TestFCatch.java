@@ -56,7 +56,7 @@ import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.proc.TestLib;
+import frysk.testbed.TestLib;
 
 public class TestFCatch
     extends TestLib

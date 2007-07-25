@@ -49,6 +49,7 @@ import frysk.sys.Fork;
 import frysk.sys.Pid;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
+import frysk.testbed.TestLib;
 
 /**
  * Check that syscall events are detected. This should be expanded later to

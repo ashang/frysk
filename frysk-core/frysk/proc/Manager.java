@@ -64,7 +64,7 @@ public class Manager
      * XXX: For testing, resets the Manager back to it's default
      * state.
      */
-    static Host resetXXX ()
+    public static Host resetXXX ()
     {
 	eventLoop = EventLoop.factory ();
 	host = new LinuxHost (eventLoop);

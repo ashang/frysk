@@ -53,7 +53,7 @@ import frysk.proc.Task;
 import frysk.proc.Proc;
 import frysk.proc.Host;
 import frysk.proc.Auxv;
-import frysk.proc.TestLib;
+import frysk.testbed.TestLib;
 import frysk.proc.ProcId;
 import frysk.proc.Manager;
 import frysk.proc.MemoryMap;

@@ -42,6 +42,7 @@ package frysk.proc;
 import java.util.Observer;
 import java.util.Observable;
 import frysk.sys.Pid;
+import frysk.testbed.TestLib;
 
 /**
  * Observer stress test.

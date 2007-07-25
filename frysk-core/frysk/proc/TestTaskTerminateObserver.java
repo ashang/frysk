@@ -41,6 +41,7 @@ package frysk.proc;
 
 import frysk.sys.Pid;
 import frysk.sys.Sig;
+import frysk.testbed.TestLib;
 
 /**
  * Check the Task terminating and terminated observers.

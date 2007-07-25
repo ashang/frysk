@@ -47,7 +47,7 @@ import java.util.Observer;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.TestLib;
+import frysk.testbed.TestLib;
 import frysk.rt.states.State;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;

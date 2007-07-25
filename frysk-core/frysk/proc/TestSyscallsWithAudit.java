@@ -40,6 +40,7 @@
 package frysk.proc;
 
 import frysk.sys.AuditLibs;
+import frysk.testbed.TestLib;
 
 public class TestSyscallsWithAudit
   extends TestLib

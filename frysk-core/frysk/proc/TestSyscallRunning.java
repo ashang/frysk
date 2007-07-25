@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.io.OutputStream;
 import frysk.event.Event;
+import frysk.testbed.TestLib;
 
 /**
  * XXX: This code should be simplified, eliminating local parallelism

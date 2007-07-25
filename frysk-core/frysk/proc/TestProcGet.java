@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import frysk.testbed.TearDownFile;
+import frysk.testbed.TestLib;
 
 /**
  * Test Proc's public get methods.

@@ -40,6 +40,8 @@
 
 package frysk.proc;
 
+import frysk.testbed.TestLib;
+
 /**
  * Check that clone (task create and delete) events are detected.
  */

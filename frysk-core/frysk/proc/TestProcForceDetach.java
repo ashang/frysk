@@ -41,6 +41,7 @@
 package frysk.proc;
 
 import frysk.event.RequestStopEvent;
+import frysk.testbed.TestLib;
 
 public class TestProcForceDetach
     extends TestLib

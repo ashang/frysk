@@ -39,13 +39,14 @@
 
 package frysk.proc;
 
-/**
- * Superclass for tests that examine process state at a system call.
- */
-
 import java.util.Observer;
 import java.util.Observable;
 import java.util.logging.Level;
+import frysk.testbed.TestLib;
+
+/**
+ * Superclass for tests that examine process state at a system call.
+ */
 
 public class SyscallExaminer
   extends TestLib 

@@ -42,6 +42,7 @@ package frysk.proc;
 
 import frysk.sys.Signal;
 import frysk.testbed.TearDownFile;
+import frysk.testbed.TestLib;
 
 /**
  * Test the exec event. The exec needs to completely replace the existing

@@ -45,7 +45,7 @@ import java.io.File;
 import frysk.Config;
 import frysk.expunit.Expect;
 import frysk.proc.Task;
-import frysk.proc.TestLib;
+import frysk.testbed.TestLib;
 
 public class TestFtrace
     extends TestLib

@@ -39,6 +39,8 @@
 
 package frysk.proc;
 
+import frysk.testbed.TestLib;
+
 /**
  * Test attaching to a process with many many tasks.
  * 

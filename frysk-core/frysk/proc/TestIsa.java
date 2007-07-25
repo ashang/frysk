@@ -45,6 +45,7 @@ import frysk.sys.Pid;
 import frysk.sys.Sig;
 import lib.dwfl.ElfEMachine;
 import frysk.testbed.SignalWaiter;
+import frysk.testbed.TestLib;
 
 public class TestIsa
     extends TestLib

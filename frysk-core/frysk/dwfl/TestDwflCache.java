@@ -39,7 +39,7 @@
 
 package frysk.dwfl;
 
-import frysk.proc.TestLib;
+import frysk.testbed.TestLib;
 import frysk.proc.Task;
 import lib.dwfl.Dwfl;
 

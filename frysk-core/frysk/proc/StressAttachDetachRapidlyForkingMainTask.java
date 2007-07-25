@@ -42,6 +42,7 @@ package frysk.proc;
 import java.util.logging.Level;
 import frysk.event.TimerEvent;
 import frysk.proc.ProcObserver.ProcTasks;
+import frysk.testbed.TestLib;
 
 /**
  * Check that the observer TaskObserver.Forked works.

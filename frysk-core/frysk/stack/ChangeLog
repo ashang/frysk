@@ -1,5 +1,10 @@
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFrame.java: Update; frysk.proc.TestLib moved to
+	frysk.testbed.TestLib.
+	* TestFrameSymbol.java: Ditto.
+	* TestStackBacktrace.java: Ditto.
+
 	* TestFrameSymbol.java (testSymbol): Use AttachedDaemonProcess.
 
 	* Frame.java: Update; frysk.rt.Symbol moved to frysk.symtab.Symbol

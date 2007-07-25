@@ -41,6 +41,7 @@
 package frysk.proc;
 
 import frysk.sys.proc.MapsBuilder;
+import frysk.testbed.TestLib;
 
 public class TestMapGet
     extends TestLib

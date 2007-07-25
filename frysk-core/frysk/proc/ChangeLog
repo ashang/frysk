@@ -1,3 +1,42 @@
+2007-07-24  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java: Move to frysk.testbed.TestLib.
+	* Manager.java (resetXXX): Make public.
+	* StressAttachDetachManyTasks.java: Update.
+	* StressAttachDetachRapidlyCloningMainTask.java: Ditto.
+	* StressAttachDetachRapidlyForkingMainTask.java: Ditto.
+	* TestTaskForkedObserver.java: Ditto.
+	* TestBreakpoints.java: Ditto.
+	* TestSyscallRunning.java: Ditto.
+	* TestTaskObserverInstruction.java: Ditto.
+	* TestTaskTerminateObserver.java: Ditto.
+	* TestTaskSyscallObserver.java: Ditto.
+	* TestRegisters.java: Ditto.
+	* TestSyscallSignal.java: Ditto.
+	* TestTaskObserver.java: Ditto.
+	* TestTaskObserverInstructionSigReturn.java: Ditto.
+	* TestProcGet.java: Ditto.
+	* TestTaskObserverInstructionAndCode.java: Ditto.
+	* TestTaskObserverBlocked.java: Ditto.
+	* StressAttachDetachSignaledTask.java: Ditto.
+	* TestTaskClonedObserver.java: Ditto.
+	* TestTaskObserverDetach.java: Ditto.
+	* TestSyscallsWithAudit.java: Ditto.
+	* SyscallExaminer.java: Ditto.
+	* TestAbandon.java: Ditto.
+	* StressTestAbandon.java: Ditto.
+	* TestExec.java: Ditto.
+	* TestFindProc.java: Ditto.
+	* TestProcStopped.java: Ditto.
+	* TestHostGet.java: Ditto.
+	* TestIsa.java: Ditto.
+	* TestInstructions.java: Ditto.
+	* TestMapGet.java: Ditto.
+	* TestMemory.java: Ditto.
+	* TestProcForceDetach.java: Ditto.
+	* TestRefresh.java: Ditto.
+	* TestProcTasksObserver.java: Ditto.
+
 2007-07-20  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Breakpoint.java: Implements Comparable.

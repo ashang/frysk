@@ -39,7 +39,10 @@
 
 package frysk.proc;
 
-public class TestTaskObserverInstructionAndCode extends TestLib
+import frysk.testbed.TestLib;
+
+public class TestTaskObserverInstructionAndCode
+    extends TestLib
 {
   public void testInstructionAndCode()
   {

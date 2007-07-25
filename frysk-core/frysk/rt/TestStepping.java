@@ -51,7 +51,7 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.TaskObserver;
 import frysk.proc.Task;
-import frysk.proc.TestLib;
+import frysk.testbed.TestLib;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 import frysk.sys.Sig;

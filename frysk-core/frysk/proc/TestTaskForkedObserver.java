@@ -40,6 +40,8 @@
 
 package frysk.proc;
 
+import frysk.testbed.TestLib;
+
 /**
  * Check that the observer TaskObserver.Forked works.
  */

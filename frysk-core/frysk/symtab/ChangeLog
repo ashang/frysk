@@ -1,5 +1,8 @@
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
+	* TestSymbol.java: Update; frysk.proc.TestLib moved to
+	frysk.testbed.TestLib.
+	
 	* TestSymbol.java (symbolTest): Use AttachedDaemonProcess.
 	
 	* TestSymbol.java: Copied and modified frysk.stack.TestFrameSymbol.

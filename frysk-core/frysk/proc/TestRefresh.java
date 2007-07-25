@@ -44,6 +44,7 @@ import java.util.Iterator;
 import java.util.Observer;
 import java.util.Observable;
 import frysk.sys.Pid;
+import frysk.testbed.TestLib;
 
 /**
  * Check the host's behavior.

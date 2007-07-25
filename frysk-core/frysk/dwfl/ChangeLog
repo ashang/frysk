@@ -1,3 +1,8 @@
+2007-07-24  Andrew Cagney  <cagney@redhat.com>
+
+	* TestDwflCache.java: Update; frysk.proc.TestLib moved to
+	frysk.testbed.TestLib.
+
 2007-07-17    <npremji@localhost.localdomain>
 
 	* DwflCache.java (getDwfl): Rewrote, commented. Has a single return statement,

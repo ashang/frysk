@@ -46,6 +46,7 @@ import frysk.sys.*;
 import lib.dwfl.*;
 
 import java.util.*;
+import frysk.testbed.TestLib;
 
 public class TestTaskObserverCode extends TestLib
 {

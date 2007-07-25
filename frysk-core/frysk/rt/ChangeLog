@@ -1,5 +1,12 @@
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
+	* TestDisplayValue.java: Update; frysk.proc.TestLib moved to
+	frysk.testbed.TestLib.
+	* TestFrameDebugInfo.java: Ditto.
+	* TestSteppingEngine.java: Ditto.
+	* TestStepping.java: Ditto.
+	* TestUpdatingDisplayValue.java: Ditto.
+
 	* Symbol.java: Moved to frysk.symtab.Symbol.
 
 2007-07-24  Mike Cvet  <mcvet@redhat.com>

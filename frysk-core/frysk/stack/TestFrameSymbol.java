@@ -46,6 +46,7 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
+import frysk.testbed.TestLib;
 
 /**
  * Checks that the frame's getSymbol method is wired up to the
@@ -53,7 +54,7 @@ import frysk.stack.StackFactory;
  */
 
 public class TestFrameSymbol
-    extends frysk.proc.TestLib
+    extends TestLib
 {
     public void testOneSymbol() {
 	// Get the target program started.

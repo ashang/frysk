@@ -43,7 +43,7 @@ package frysk.proc;
 import java.util.Observable;
 import java.util.logging.Level;
 import java.util.Observer;
-
+import frysk.testbed.TestLib;
 import frysk.event.RequestStopEvent;
 
 public class TestFindProc

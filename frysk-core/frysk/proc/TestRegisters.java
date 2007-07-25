@@ -41,7 +41,7 @@ package frysk.proc;
 
 import java.util.Observable;
 import java.util.Observer;
-
+import frysk.testbed.TestLib;
 import frysk.sys.SyscallNum;
 
 /**

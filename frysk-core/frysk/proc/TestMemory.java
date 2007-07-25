@@ -44,6 +44,7 @@ import frysk.sys.Sig;
 import java.util.Observable;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
+import frysk.testbed.TestLib;
 
 /**
  * Check that memory can be modified.

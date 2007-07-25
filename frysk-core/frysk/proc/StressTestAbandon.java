@@ -40,6 +40,7 @@
 
 package frysk.proc;
 
+import frysk.testbed.TestLib;
 import frysk.event.RequestStopEvent;
 
 public class StressTestAbandon

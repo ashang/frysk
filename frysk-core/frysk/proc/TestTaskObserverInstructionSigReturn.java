@@ -43,6 +43,7 @@ import java.io.File;
 
 import frysk.Config;
 import frysk.sys.Sig;
+import frysk.testbed.TestLib;
 
 public class TestTaskObserverInstructionSigReturn
   extends TestLib

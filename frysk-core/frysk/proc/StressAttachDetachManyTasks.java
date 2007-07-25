@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import frysk.testbed.TestLib;
 import java.util.Observer;
 import java.util.Observable;
 import frysk.sys.Pid;

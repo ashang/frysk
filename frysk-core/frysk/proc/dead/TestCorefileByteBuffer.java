@@ -47,11 +47,11 @@ import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfException;
 
 import frysk.Config;
-import frysk.proc.TestLib;
+import frysk.testbed.TestLib;
 import inua.eio.ByteBuffer;
 
 public class TestCorefileByteBuffer
-extends TestLib
+    extends TestLib
 {
 
 

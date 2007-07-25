@@ -40,6 +40,7 @@
 package frysk.proc;
 
 import frysk.sys.Pid;
+import frysk.testbed.TestLib;
 
 /**
  * Test Host's public get methods.

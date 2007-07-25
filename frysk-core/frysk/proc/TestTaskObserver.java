@@ -45,6 +45,7 @@ import frysk.sys.Signal;
 import frysk.sys.Sig;
 import frysk.sys.Errno;
 import frysk.event.TimerEvent;
+import frysk.testbed.TestLib;
 
 /**
  * Generic observer tests - that the framework functions ok.

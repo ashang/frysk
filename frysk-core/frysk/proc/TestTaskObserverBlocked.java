@@ -42,6 +42,7 @@ package frysk.proc;
 
 import java.util.logging.Level;
 import frysk.testbed.SignalWaiter;
+import frysk.testbed.TestLib;
 
 /**
  * Check the behavior of an observer that blocks a Task's progress. In

@@ -43,7 +43,7 @@ import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.proc.TestLib;
+import frysk.testbed.TestLib;
 
 public class TestSymbol
     extends TestLib

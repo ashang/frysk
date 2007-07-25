@@ -41,9 +41,9 @@ package frysk.proc;
 
 import java.util.Observable;
 import java.util.Observer;
-
 import frysk.rt.SteppingEngine;
 import frysk.rt.TaskStepEngine;
+import frysk.testbed.TestLib;
 
 public class TestTaskObserverInstruction extends TestLib
 {

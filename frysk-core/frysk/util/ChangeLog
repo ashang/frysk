@@ -1,3 +1,9 @@
+2007-07-24  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFCatch.java: Update; frysk.proc.TestLib moved to
+	frysk.testbed.TestLib.
+	* TestLib.java: Ditto.
+
 2007-07-23  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* FCatch.java: Used printWriter instead of String to print

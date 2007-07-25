@@ -45,7 +45,7 @@ import java.io.File;
 import frysk.Config;
 import frysk.expunit.*;
 
-import frysk.proc.TestLib;
+import frysk.testbed.TestLib;
 
 import lib.dwfl.*;
 

@@ -1,3 +1,7 @@
+2007-07-24  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java: Moved to here from frysk.proc.TestLib.
+
 2007-05-03  Tim Moore  <timoore@redhat.com>
 
 	* SignalWaiter.java (constructor): Add a use of sigs to avoid an
