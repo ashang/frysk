@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.naming.NameNotFoundException;
 
 import lib.dwfl.BaseTypes;
@@ -164,7 +165,7 @@ class DebugInfoEvaluator
   {
     DwarfDie varDie = null;
 
-    long getAddr (String s) throws NameNotFoundException;
+    long getAddr (DwarfDie die) throws NameNotFoundException;
 
     long getLong (DwarfDie varDieP, long offset) throws NameNotFoundException;
 
@@ -206,7 +207,6 @@ class DebugInfoEvaluator
      */
     protected long getBufferAddr (DwarfDie varDieP) throws NameNotFoundException
     {
-	
       long pc = currentFrame.getAdjustedAddress();
       long address = 0;
       int reg = 0;
@@ -216,8 +216,7 @@ class DebugInfoEvaluator
 
       List ops = varDieP.getFormData(pc);     
 
-      if (ops.size() == 0 || ((DwarfDie.DwarfOp) ops.get(0)).operator == -1){
-//	  throw new RuntimeException("Expression evaluation failed for die:\n\t" + varDieP.toPrint());
+      if ( ops.size() == 0 || ((DwarfDie.DwarfOp) ops.get(0)).operator == -1){
 	  throw new NameNotFoundException("Expression evaluation failed for die:\n\t" + varDieP.toPrint());
       }
       
@@ -278,9 +277,8 @@ class DebugInfoEvaluator
       return address;
     }
 
-    public long getAddr (String s) throws NameNotFoundException
+    public long getAddr (DwarfDie die) throws NameNotFoundException
     {
-      DwarfDie die = getDie(s);
       return getBufferAddr(die);
     }
 
@@ -363,7 +361,7 @@ class DebugInfoEvaluator
   class AccessRegisters
       implements VariableAccessor
   {
-    public long getAddr (String s) throws NameNotFoundException
+    public long getAddr (DwarfDie die) throws NameNotFoundException
     {
       return 0;
     }
@@ -793,7 +791,7 @@ class DebugInfoEvaluator
    * Returns the Value associated with the given DwarfDie.
    * @see frysk.expr.CppSymTab#get(java.lang.String)
    */
-  public Value get (Frame f, DwarfDie varDie) throws NameNotFoundException
+  public Value get (Frame f, DwarfDie varDie)
   {
     setCurrentFrame(f);
     VariableAccessor[] variableAccessor = { new AccessMemory(),
@@ -856,7 +854,7 @@ class DebugInfoEvaluator
             case DwTagEncodings.DW_TAG_array_type_:
             {
               DwarfDie subrange;
-              long addr = variableAccessor[0].getAddr(s);
+              long addr = variableAccessor[0].getAddr(varDie);
               if (addr == 0)
                 continue;
               subrange = type.getChild();
@@ -872,7 +870,7 @@ class DebugInfoEvaluator
             case DwTagEncodings.DW_TAG_union_type_:
             case DwTagEncodings.DW_TAG_structure_type_:
             {
-              long addr = variableAccessor[0].getAddr(s);
+              long addr = variableAccessor[0].getAddr(varDie);
               if (addr == 0)
                 continue;
               ClassType classType = getClassType(type, null);
@@ -883,13 +881,13 @@ class DebugInfoEvaluator
             }
             case DwTagEncodings.DW_TAG_pointer_type_:
             {
-              long addr = variableAccessor[i].getAddr(s);
+              long addr = variableAccessor[i].getAddr(varDie);
               return ArithmeticType.newLongValue(longType, addr);
             }
             case DwTagEncodings.DW_TAG_enumeration_type_:
             {
               DwarfDie subrange;
-              long addr = variableAccessor[0].getAddr(s);
+              long addr = variableAccessor[0].getAddr(varDie);
               if (addr == 0)
                 continue;
               subrange = type.getChild();
@@ -940,7 +938,7 @@ class DebugInfoEvaluator
   {
     setCurrentFrame(f);
     AccessMemory access = new AccessMemory();
-    return ArithmeticType.newLongValue(longType, access.getAddr(s)); 
+    return ArithmeticType.newLongValue(longType, access.getAddr(getDie(s))); 
   }
   
   public Value getMemory (Frame f, String s) throws NameNotFoundException
@@ -954,7 +952,7 @@ class DebugInfoEvaluator
     
     DwarfDie type = varDie.getUltimateType();
     AccessMemory access = new AccessMemory();
-    long addr = access.getAddr(s); 
+    long addr = access.getAddr(getDie(s)); 
     long addrIndirect = buffer.getLong(addr);
     
     switch (type.getUltimateType().getBaseType())

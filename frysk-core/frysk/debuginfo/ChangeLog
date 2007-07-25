@@ -1,3 +1,8 @@
+2007-07-25  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DebugInfoEvaluator.java (VariableAccessor.getAddr): Now takes the
+	variables Die instead of name String.
+
 2007-07-16  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfo.java: Update, lib.dw merged into lib.elf.
