@@ -46,7 +46,10 @@ import java.util.List;
 import javax.naming.NameNotFoundException;
 
 import frysk.Config;
+
 import frysk.symtab.Symbol;
+import frysk.symtab.SymbolFactory;
+
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
@@ -109,7 +112,9 @@ public class DisassembleCommand extends CLIHandler {
 
     public void handle(Command cmd) throws ParseException {
 	reset();
+	
 	long currentInstruction = getCLI().frame.getAddress();
+	Symbol symbol = getCLI().frame.getSymbol();
 
 	Disassembler disassembler = new Disassembler(getCLI().getTask()
 		.getMemory());
@@ -129,7 +134,7 @@ public class DisassembleCommand extends CLIHandler {
 	    try {
 		currentInstruction = cli.parseValue((String) params[0])
 			.getLong();
-
+		symbol = SymbolFactory.getSymbol(cli.task, currentInstruction);
 	    } catch (NameNotFoundException nnfe) {
 		cli.addMessage(new Message(nnfe.getMessage(),
 			Message.TYPE_ERROR));
@@ -152,8 +157,6 @@ public class DisassembleCommand extends CLIHandler {
 	} else if (params.length > 2) {
 	    throw new RuntimeException("too many arguments to disassemble");
 	}
-
-	Symbol symbol = getCLI().frame.getSymbol();
 	List instructions;
 	// XXX: Need a better way of handling symbol size = 0
 	long padding = 100;
@@ -193,21 +196,23 @@ public class DisassembleCommand extends CLIHandler {
 	    wrapLines--;
 	}
 
+	cli.outWriter.println(" Address\tInstructions");
+	
 	iter = cache.iterator();
-
+	
 	while (iter.hasNext()) {
 	    Instruction instruction = (Instruction) iter.next();
 	    if (instruction.address == currentAddress)
-		DisassembleCommand.this.cli.outWriter.print("*");
+		cli.outWriter.print("*");
 	    else
-		DisassembleCommand.this.cli.outWriter.print(" ");
+		cli.outWriter.print(" ");
 
 	    if (instructionOnly)
-		DisassembleCommand.this.cli.outWriter.println("0x"
-			+ instruction.address + "\t"
+		cli.outWriter.println("0x"
+			+ Long.toHexString(instruction.address) + "\t"
 			+ instruction.instruction.split("\\s")[0]);
 	    else
-		DisassembleCommand.this.cli.outWriter.println(instruction);
+		cli.outWriter.println(instruction);
 	}
     }
 }

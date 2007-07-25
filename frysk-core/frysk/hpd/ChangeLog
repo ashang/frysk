@@ -1,5 +1,10 @@
 2007-07-25  Nurdin Premji  <npremji@redhat.com>
 
+	* DisassembleCommand.java (handle): Use SymbolFactory to get the proper
+	symbol for explicit address.
+	(printInstructions): Print a header for disassembling "Address\tInstructions"
+	Print hex value of instruction when -i is passed.
+	
 	* CoreCommand.java (handle): Initialize frame.
 
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
