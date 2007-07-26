@@ -110,19 +110,15 @@ dwfl_module_addrsym (Dwfl_Module *mod, GElf_Addr addr,
 	{
 	  inline void closest (void)
 	    {
-	      printf("closest\n");
 	      *closest_sym = sym;
 	      closest_shndx = shndx;
 	      closest_name = name;
 	    }
 	  
-	  printf("%lx: %s %lx %d\n", (long)addr, name, (long)sym.st_value, (int)sym.st_size);
-
 	  /* This symbol contains ADDR; but is it better than the
 	     previous candidate?  */
 	  if (addr < sym.st_value + sym.st_size)
 	    {
-	      printf("contains addr\n");
 	      if (addr >= closest_sym->st_value + closest_sym->st_size)
 		{
 		  /* Ha! The previous candidate doesn't even contain
