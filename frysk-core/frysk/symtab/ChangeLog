@@ -1,3 +1,8 @@
+2007-07-26  Kris Van Hees  <kris.van.hees@oracle.com>
+
+	* SymbolFactory.java (getSymbol): Verify whether the Dwfl and DwflModule
+	can be retrieved.  If not, return UNKNOWN.
+
 2007-07-25  Andrew Cagney  <cagney@redhat.com>
 
 	* TestSymbol.java: Update;

@@ -1,5 +1,6 @@
 // This file is part of the program FRYSK.
 //
+// Copyright 2007 Oracle Corporation.
 // Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
@@ -41,6 +42,8 @@ package frysk.symtab;
 
 import frysk.proc.Task;
 import frysk.dwfl.DwflCache;
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflModule;
 
 /**
  * The object-file symbol.  Typically obtained by reading ELF
@@ -61,10 +64,19 @@ public class SymbolFactory
     * Return the symbol at the specified address within task.
     */
     public static Symbol getSymbol(Task task, long address) {
+	Dwfl dwfl = DwflCache.getDwfl(task);
+	if (dwfl == null)
+	    return UNKNOWN;
+
+	DwflModule module = dwfl.getModule(address);
+	if (module == null)
+	    return UNKNOWN;
+
 	DwflSymbol symbol = new DwflSymbol();
 	DwflCache.getDwfl(task).getModule(address).getSymbol(address, symbol);
 	if (symbol.getName() == null)
 	    return UNKNOWN;
+
 	return symbol;
     }
 }
