@@ -60,7 +60,7 @@ frysk::sys::StatelessFile::pread (jlong fileOffset,
 {
   verifyBounds (bytes, start, length);
   
-  int fd = ::open ((const char *)elements (unixPath), O_RDONLY);
+  int fd = tryOpen ((const char *)elements (unixPath), O_RDONLY);
   if (fd < 0)
     throwErrno (errno, "open", "filename %s",
 		(const char *)elements (unixPath));
@@ -86,7 +86,7 @@ frysk::sys::StatelessFile::pwrite (jlong fileOffset,
 {
   verifyBounds (bytes, start, length);
   
-  int fd = ::open ((const char *)elements (unixPath), O_WRONLY);
+  int fd = tryOpen ((const char *)elements (unixPath), O_WRONLY);
   if (fd < 0)
     throwErrno (errno, "open", "filename %s",
 		(const char *)elements (unixPath));

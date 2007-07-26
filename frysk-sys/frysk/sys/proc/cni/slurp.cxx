@@ -77,7 +77,7 @@ uslurp(int pid, const char* name)
   int fd;
   try
     {
-      fd = tryOpen (file, O_RDONLY, 0);
+      fd = tryOpen (file, O_RDONLY);
     }
   catch (frysk::sys::Errno *ignored)
     {
@@ -139,7 +139,7 @@ slurp (int pid, const char* name, char buf[], long sizeof_buf)
   int fd;
   try
     {
-      fd = tryOpen (file, O_RDONLY, 0);
+      fd = tryOpen (file, O_RDONLY);
     }
   catch (frysk::sys::Errno *ignored)
     {
@@ -183,7 +183,7 @@ slurp_thread (int pid, int tid, const char* name, char buf[], long sizeof_buf)
   int fd;
   try
     {
-      fd = tryOpen (file, O_RDONLY, 0);
+      fd = tryOpen (file, O_RDONLY);
     }
   catch (frysk::sys::Errno *ignored)
     {

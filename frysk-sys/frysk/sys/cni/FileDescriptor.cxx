@@ -168,7 +168,7 @@ frysk::sys::FileDescriptor::open (jstring file, jint f, jint mode)
   if (f & frysk::sys::FileDescriptor::CREAT)
     flags |= O_CREAT;
 
-  return tryOpen(pathname, flags, mode, 0);
+  return tryOpen(pathname, flags, mode);
 }
 
 void

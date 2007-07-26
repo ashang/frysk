@@ -1,3 +1,7 @@
+2007-07-26  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/slurp.cxx (uslurp): Update; GC parameter to tryOpen removed.
+
 2007-07-25  Mark Wielaard  <mark@klomp.org>
 
 	Fixes bug #4838

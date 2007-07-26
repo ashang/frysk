@@ -74,8 +74,8 @@ extern int tryGarbageCollect (int &count);
 extern void tryGarbageCollect (int &count, int err, const char *prefix);
 extern void tryGarbageCollect (int &count, int err, const char *prefix,
 			       const char *suffix, int val);
-extern int tryOpen (const char *file, int flags, int gc);
-extern int tryOpen (const char *file, int flags, int mode, int gc);
+extern int tryOpen (const char *file, int flags);
+extern int tryOpen (const char *file, int flags, int mode);
 
 /**
  * Convert ARGV, a String[], into a C char* array allocated on the

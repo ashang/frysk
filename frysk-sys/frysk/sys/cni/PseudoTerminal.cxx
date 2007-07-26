@@ -91,15 +91,17 @@ frysk::sys::PseudoTerminal::getName ()
 void
 frysk::sys::PseudoTerminal$RedirectStdio::reopen ()
 {
-  // Detach from the existing controlling terminal.
-  int fd = ::open ("/dev/tty", O_RDWR|O_NOCTTY);
+  // Detach from the existing controlling terminal.  NOTE: Do not use
+  // tryOpen() here, this is running in a child process.
+  int fd = ::open ("/dev/tty", O_RDWR|O_NOCTTY); // ::open ok
   if (fd >= 0) {
     if (::ioctl (fd, TIOCNOTTY, NULL) < 0)
       ::perror ("ioctl (/dev/tty, TIOCNOTTY)");
     ::close (fd);
 
-    // Verify that the detach worked, this open should fail.
-    fd = ::open ("/dev/tty", O_RDWR|O_NOCTTY);
+    // Verify that the detach worked, this open should fail.  NOTE: Do
+    // not use tryOpen() here, this is running in a child process.
+    fd = ::open ("/dev/tty", O_RDWR|O_NOCTTY); // ::open ok
     if (fd >= 0) {
       ::perror ("open (re-open old controlling terminal)");
       ::exit (1);

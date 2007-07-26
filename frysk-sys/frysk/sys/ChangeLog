@@ -1,3 +1,12 @@
+2007-07-26  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Errno.hxx (tryOpen): Delete "gc" parameter.
+	* cni/Errno.cxx (tryOpen): Update.
+	* cni/FileDescriptor.cxx (open): Update.
+	* cni/StatelessFile.cxx (pread): Use tryOpen.
+	(pread): Ditto.
+	* cni/PseudoTerminal.cxx (reopen): Add comment that ::open call is ok.
+
 2007-07-26  Kris Van Hees  <kris.van.hees@oracle.com>
 
 	* cni/Errno.cxx (tryOpen): Allow fd 0 as a successful open.  Removed

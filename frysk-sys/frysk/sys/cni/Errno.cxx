@@ -209,11 +209,12 @@ tryGarbageCollect (int &count, int err, const char *prefix,
 }
 
 int
-tryOpen (const char *file, int flags, int mode, int gc)
+tryOpen (const char *file, int flags, int mode)
 {
   int fd;
+  int gc = 0;
   
-  while (1)                                                                         
+  while (1)
     {
       errno = 0;
       fd = ::open (file, flags, mode);
@@ -236,9 +237,9 @@ tryOpen (const char *file, int flags, int mode, int gc)
 }
 
 int
-tryOpen (const char *file, int flags, int gc)
+tryOpen (const char *file, int flags)
 {
-    return tryOpen (file, flags, 0, gc);
+  return tryOpen (file, flags, 0);
 }
 
 // Returns the total size required by ARGS an a unix argv[] array.
