@@ -1,5 +1,6 @@
 // This file is part of the program FRYSK.
 //
+// Copyright 2007 Oracle Corporation.
 // Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
@@ -208,17 +209,16 @@ tryGarbageCollect (int &count, int err, const char *prefix,
 }
 
 int
-tryOpen (char *file, int flags, int gc)
+tryOpen (const char *file, int flags, int mode, int gc)
 {
-  int errno;
   int fd;
   
   while (1)                                                                         
     {
       errno = 0;
-      fd = ::open (file, flags);
+      fd = ::open (file, flags, mode);
       
-      if (fd >= 1)
+      if (fd >= 0)
 	return fd;
       
       int err = errno;
@@ -235,8 +235,12 @@ tryOpen (char *file, int flags, int gc)
     }
 }
 
-
-
+int
+tryOpen (const char *file, int flags, int gc)
+{
+    return tryOpen (file, flags, 0, gc);
+}
+
 // Returns the total size required by ARGS an a unix argv[] array.
 size_t
 sizeof_argv (jstringArray args)
@@ -274,7 +278,7 @@ fill_argv (void *p, jstringArray args)
   argv[argc] = 0;
   return argv;
 }
-
+
 // Return the number of bytes needed to store the String with a
 // trailing null.  If ARG is NULL, 1 is returned, thus ensuring that a
 // zero size buffer is never allocated.

@@ -1,3 +1,13 @@
+2007-07-26  Kris Van Hees  <kris.van.hees@oracle.com>
+
+	* cni/Errno.cxx (tryOpen): Allow fd 0 as a successful open.  Removed
+	local declaration of errno masking the global one.
+	(tryOpen(const char *, int, int, int)): Added.
+	* cni/Errno.hxx (tryOpen(char *, int, int)): Filename argument made
+	const.
+	(tryOpen(const char *, int, int, int)): Added.
+	* cni/FileDescriptor.cxx (open): Use above.
+
 2007-07-18  Mike Cvet  <mcvet@redhat.com>
 
 	* cni/Errno.cxx (tryOpen): Added. Fixes #4807.

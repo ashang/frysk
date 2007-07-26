@@ -1,5 +1,6 @@
 // This file is part of the program FRYSK.
 //
+// Copyright 2007 Oracle Corporation.
 // Copyright 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
@@ -151,7 +152,7 @@ frysk::sys::FileDescriptor::read (jbyteArray bytes, jlong off, jlong len)
   verifyBounds (bytes, off, len);
   return doRead (fd, elements(bytes) + off, len);
 }
-
+
 jint
 frysk::sys::FileDescriptor::open (jstring file, jint f, jint mode)
 {
@@ -166,25 +167,10 @@ frysk::sys::FileDescriptor::open (jstring file, jint f, jint mode)
     flags |= O_RDWR;
   if (f & frysk::sys::FileDescriptor::CREAT)
     flags |= O_CREAT;
-  int gc_count = 0;
-  int fd = -1;
-  while (1) {
-    errno = 0;
-    fd = ::open (pathname, flags, mode);
-    int err = errno;
-    if (fd >= 0)
-      break;
-    switch (err) {
-    case EMFILE:
-      tryGarbageCollect (gc_count, err, "open");
-      continue;
-    default:
-      throwErrno (errno, "open");
-    }
-  }
-  return fd;
+
+  return tryOpen(pathname, flags, mode, 0);
 }
-
+
 void
 frysk::sys::FileDescriptor::dup (frysk::sys::FileDescriptor *old)
 {

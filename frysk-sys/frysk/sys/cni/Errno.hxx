@@ -1,5 +1,6 @@
 // This file is part of the program FRYSK.
 //
+// Copyright 2007 Oracle Corporation.
 // Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
@@ -73,9 +74,9 @@ extern int tryGarbageCollect (int &count);
 extern void tryGarbageCollect (int &count, int err, const char *prefix);
 extern void tryGarbageCollect (int &count, int err, const char *prefix,
 			       const char *suffix, int val);
-extern int tryOpen (char *file, int flags, int gc);
+extern int tryOpen (const char *file, int flags, int gc);
+extern int tryOpen (const char *file, int flags, int mode, int gc);
 
-
 /**
  * Convert ARGV, a String[], into a C char* array allocated on the
  * stack.
