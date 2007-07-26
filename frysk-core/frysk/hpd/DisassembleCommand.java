@@ -323,6 +323,6 @@ public class DisassembleCommand extends CLIHandler {
     }
 
     interface InstructionPrinter {
-	public String toPrint(Instruction instruction);
+	String toPrint(Instruction instruction);
     }
 }

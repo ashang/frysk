@@ -1,5 +1,8 @@
 2007-07-26  Nurdin Premji  <npremji@redhat.com>
 
+	* DisassembleCommand.java (InstructionPrinter.toPrint): Removed r
+	edundant public warning.
+
 	* DisassembleCommand.java (printInstructions): Added support for printing
 	the symbol name, used a decorator pattern so if symbol isn't printed,
 	SymbolFactory isn't called.
