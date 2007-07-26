@@ -1,5 +1,8 @@
 2007-07-26  Andrew Cagney  <cagney@redhat.com>
 
+	* TestSymbol.java (testAfterGlobalContiningSize0): Add.
+	(testAfterLocalContiningSize0): Add.	
+
 	* TestSymbol.java (symbolTest(int,String,boolean,boolean)): Add.
 	(testSmallGlobalAtLargeGlobal): Add.
 	(testSmallLocalAtLargeGlobal): Add.

@@ -1,5 +1,9 @@
 2007-07-26  Andrew Cagney  <cagney@redhat.com>
 
+	* dwfl_module_addrsym.c (dwfl_module_addrsym): When looking for a
+	near symbol compare end-addresses so that a sized symbol with a
+	closer end wins over a n unsized symbol with a closer start.
+	
 	* dwfl_module_addrsym.c (dwfl_module_addrsym): Remove stray printf
 	calls.
 	

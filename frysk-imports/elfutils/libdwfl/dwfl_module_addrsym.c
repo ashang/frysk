@@ -150,13 +150,12 @@ dwfl_module_addrsym (Dwfl_Module *mod, GElf_Addr addr,
 	  if (addr < closest_sym->st_value + closest_sym->st_size)
 	    continue;
 
-	  /* Save the symbol with the closer address.  If the closest
-	     symbol has no size (typically from hand written
-	     assembler) then it is the best candidate.  If the symbol
-	     has size but doesn't contain ADDR then it is still saved
-	     (but discarded below); this prevents a more distant
-	     unsized symbol being selected. */
-	  if (sym.st_value >= closest_sym->st_value
+	  /* Save the symbol which is "closer".  Use the end-address
+	     so that a sized symbol that ends closer to an unsized
+	     symbol wins (unsized symbols are typically created using
+	     hand-written assembler).  */
+	  if (sym.st_value + sym.st_size
+	      >= closest_sym->st_value + closest_sym->st_size
 	      && same_section (&sym, shndx))
 	    {
 	      closest ();
@@ -167,7 +166,8 @@ dwfl_module_addrsym (Dwfl_Module *mod, GElf_Addr addr,
 
   /* If the closest symbol has a size doesn't contain ADDR, discard
      it.  There must be a hole in the symbol table.  */
-  if (closest_sym->st_size > 0 && addr >= closest_sym->st_value + closest_sym->st_size)
+  if (closest_sym->st_size > 0
+      && addr >= closest_sym->st_value + closest_sym->st_size)
     {
       memset(closest_sym, 0, sizeof(*closest_sym));
       return NULL;

@@ -203,4 +203,10 @@ public class TestSymbol
 	symbolTest(22, "small_local_at_large_local", true, true);
     }
 
+    public void testAfterGlobalContiningSize0() {
+	symbolTest(23, unknown, false, false);
+    }
+    public void testAfterLocalContiningSize0() {
+	symbolTest(24, unknown, false, false);
+    }
 }

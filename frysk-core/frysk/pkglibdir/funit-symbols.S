@@ -155,6 +155,13 @@ LOCAL(local_0_in_global)
 
 
 
+# Code with no symbol after a global with nexted zero-sized symbols.
+.Lafter_global_containing_0:
+	STORE(REG0, REG0)
+	NO_OP
+
+
+
 # A sized local symbol that contains local/global symbols of zero
 # size.
 
@@ -170,6 +177,12 @@ LOCAL(local_0_in_local)
 	STORE(REG0, REG0)
 	SIZE(local_after_0)
 
+
+
+# Code with no symbol after a local with nexted zero-sized symbols.
+.Lafter_local_containing_0:
+	STORE(REG0, REG0)
+	NO_OP
 
 
 # A small global symbol at a large global symbol.
@@ -315,6 +328,14 @@ LOCAL(small_local_at_large_local)
 	LOAD_IMMED_BYTE(REG3, 23)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(small_local_at_large_local)
+# after_global_containing_0?
+	LOAD_IMMED_BYTE(REG3, 24)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(.Lafter_global_containing_0)
+# after_local_containing_0?
+	LOAD_IMMED_BYTE(REG3, 25)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(.Lafter_local_containing_0)
 
 	LOAD_IMMED_BYTE(REG0, SYS_write)
 	LOAD_IMMED_BYTE(REG1, 1)
@@ -353,5 +374,7 @@ crashes:\r\n\
 20: Small local at large global (small_local_at_large_global\r\n\
 21: Small global at large local (small_global_at_large_local\r\n\
 22: Small local at large local (small_local_at_large_local\r\n\
+23: No symbol after global with nested zero-sized symbols\r\n\
+24: No symbol after local with nested zero-sized symbols\r\n\
 "
 .usage:

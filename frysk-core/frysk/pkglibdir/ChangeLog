@@ -1,5 +1,8 @@
 2007-07-26  Andrew Cagney  <cagney@redhat.com>
 
+	* funit-symbols.S (.Lafter_local_containing_0): Add.
+	(.Lafter_global_containing_0): Add.
+
 	* funit-symbols.S (SIZE, GLOBAL, LOCAL): Define.
 	(small_global_at_large_global): Add.
 	(small_local_at_large_global): Add.
