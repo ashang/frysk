@@ -1,3 +1,19 @@
+2007-07-26  Andrew Cagney  <cagney@redhat.com>
+
+	* TestSymbol.java (symbolTest(int,String,boolean,boolean)): Add.
+	(testSmallGlobalAtLargeGlobal): Add.
+	(testSmallLocalAtLargeGlobal): Add.
+	(testSmallGlobalAtLargeLocal): Add.
+	(testSmallLocalAtLargeLocal): Add.
+	(testGlobalAfterNested): Remove unresolved.
+	(testLocalAfterNested): Remove unresolved.
+	(testNoSymbolAfterGlobal): Remove unresolved.
+	(testNoSymbolAfterLocal): Remove unresolved.
+	(testGlobalSize0InGlobal): Remove unresolved.
+	(testLocalSize0InGlobal): Remove unresolved.
+	(testGlobalSize0InLocal): Remove unresolved.
+	(testLocalSize0InLocal): Remove unresolved.
+
 2007-07-26  Kris Van Hees  <kris.van.hees@oracle.com>
 
 	* SymbolFactory.java (getSymbol): Verify whether the Dwfl and DwflModule

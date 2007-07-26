@@ -80,10 +80,15 @@ public class TestSymbol
 
 	long pc = task.getIsa().pc(task);
 	Symbol symbol = SymbolFactory.getSymbol(task, pc);
-	assertEquals ("symbol " + name, name, symbol.getDemangledName ());
+	assertEquals ("symbol name", name, symbol.getDemangledName ());
 	assertEquals ("symbol address valid", addressValid,
 		      symbol.getAddress() != 0);
 	assertEquals ("symbol size valid", sizeValid, symbol.getSize() > 0);
+    }
+
+    private void symbolTest(int numberOfArgs, String name, boolean addressValid,
+			    boolean sizeValid) {
+	symbolTest("funit-symbols", numberOfArgs, name, addressValid, sizeValid);
     }
 
     /**
@@ -139,66 +144,63 @@ public class TestSymbol
     }
 
     public void testGlobalInGlobal() {
-	symbolTest("funit-symbols", 5, "global_in_global", true, true);
+	symbolTest(5, "global_in_global", true, true);
     }
     public void testLocalInGlobal() {
-	symbolTest("funit-symbols", 6, "local_in_global", true, true);
+	symbolTest(6, "local_in_global", true, true);
     }
     public void testGlobalInLocal() {
-	symbolTest("funit-symbols", 7, "global_in_local", true, true);
+	symbolTest(7, "global_in_local", true, true);
     }
     public void testLocalInLocal() {
-	symbolTest("funit-symbols", 8, "local_in_local", true, true);
+	symbolTest(8, "local_in_local", true, true);
     }
 
     public void testGlobalAfterNested() {
-	if (unresolved(4830))
-	    return;
-	symbolTest("funit-symbols", 9, "global_outer", true, true);
+	symbolTest(9, "global_outer", true, true);
     }
     public void testLocalAfterNested() {
-	if (unresolved(4830))
-	    return;
-	symbolTest("funit-symbols", 10, "local_outer", true, true);
+	symbolTest(10, "local_outer", true, true);
     }
 
     public void testNoSymbolAfterGlobal() {
-	if (unresolved(4831))
-	    return;
-	symbolTest("funit-symbols", 11, unknown, false, false);
+	symbolTest(11, unknown, false, false);
     }
     public void testNoSymbolAfterLocal() {
-	if (unresolved(4831))
-	    return;
-	symbolTest("funit-symbols", 12, unknown, false, false);
+	symbolTest(12, unknown, false, false);
     }
 
     public void testGlobalSize0InGlobal() {
-	if (unresolved(4832))
-	    return;
-	symbolTest("funit-symbols", 13, "global_0_in_global", true, true);
+	symbolTest(13, "global_after_0", true, true);
     }
     public void testLocalSize0InGlobal() {
-	if (unresolved(4832))
-	    return;
-	symbolTest("funit-symbols", 14, "local_0_in_global", true, true);
+	symbolTest(14, "global_after_0", true, true);
     }
     public void testGlobalSize0InLocal() {
-	if (unresolved(4832))
-	    return;
-	symbolTest("funit-symbols", 15, "global_0_in_local", true, true);
+	symbolTest(15, "local_after_0", true, true);
     }
     public void testLocalSize0InLocal() {
-	if (unresolved(4832))
-	    return;
-	symbolTest("funit-symbols", 16, "local_0_in_local", true, true);
+	symbolTest(16, "local_after_0", true, true);
     }
 
     public void testGlobalAfterNestedSize0() {
-	symbolTest("funit-symbols", 17, "global_after_0", true, true);
+	symbolTest(17, "global_after_0", true, true);
     }
     public void testLocalAfterNestedSize0() {
-	symbolTest("funit-symbols", 18, "local_after_0", true, true);
+	symbolTest(18, "local_after_0", true, true);
+    }
+
+    public void testSmallGlobalAtLargeGlobal() {
+	symbolTest(19, "small_global_at_large_global", true, true);
+    }
+    public void testSmallLocalAtLargeGlobal() {
+	symbolTest(20, "small_local_at_large_global", true, true);
+    }
+    public void testSmallGlobalAtLargeLocal() {
+	symbolTest(21, "small_global_at_large_local", true, true);
+    }
+    public void testSmallLocalAtLargeLocal() {
+	symbolTest(22, "small_local_at_large_local", true, true);
     }
 
 }

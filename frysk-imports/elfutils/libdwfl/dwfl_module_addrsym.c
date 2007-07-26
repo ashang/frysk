@@ -51,7 +51,7 @@
 
 const char *
 dwfl_module_addrsym (Dwfl_Module *mod, GElf_Addr addr,
-					  GElf_Sym *closest_sym, GElf_Word *shndxp)
+		     GElf_Sym *closest_sym, GElf_Word *shndxp)
 {
   int syments = INTUSE(dwfl_module_getsymtab) (mod);
   if (syments < 0)
@@ -99,7 +99,7 @@ dwfl_module_addrsym (Dwfl_Module *mod, GElf_Addr addr,
 
   /* Look through the symbol table for a matching symbol.  */
   const char *closest_name = NULL;
-  closest_sym->st_value = 0;
+  memset(closest_sym, 0, sizeof(*closest_sym));
   GElf_Word closest_shndx = SHN_UNDEF;
   for (int i = 1; i < syments; ++i)
     {
@@ -108,26 +108,73 @@ dwfl_module_addrsym (Dwfl_Module *mod, GElf_Addr addr,
       const char *name = INTUSE(dwfl_module_getsym) (mod, i, &sym, &shndx);
       if (name != NULL && sym.st_value <= addr)
 	{
-		inline void closest (void)
-		{
+	  inline void closest (void)
+	    {
+	      printf("closest\n");
 	      *closest_sym = sym;
 	      closest_shndx = shndx;
 	      closest_name = name;
-		}
+	    }
+	  
+	  printf("%lx: %s %lx %d\n", (long)addr, name, (long)sym.st_value, (int)sym.st_size);
 
+	  /* This symbol contains ADDR; but is it better than the
+	     previous candidate?  */
 	  if (addr < sym.st_value + sym.st_size)
+	    {
+	      printf("contains addr\n");
+	      if (addr >= closest_sym->st_value + closest_sym->st_size)
 		{
-	      closest ();
-	      break;
+		  /* Ha! The previous candidate doesn't even contain
+		     ADDR; replace it.  */
+		  closest();
+		  continue;
 		}
+	      if (sym.st_value > closest_sym->st_value)
+		{
+		  /* This candidate is closer to ADDR.  */
+		  closest ();
+		  continue;
+		}
+	      if (sym.st_value == closest_sym->st_value
+		  && sym.st_size < closest_sym->st_size)
+		{
+		  /* This candidate, while having an identical value,
+		     is at least smaller.  */
+		  closest ();
+		  continue;
+		}
+	      /* Discard this candidate, no better than the previous
+		 sized symbol that contained ADDR.  */
+	      continue;
+	    }
+	  
+	  /* The current closest symbol contains ADDR, can't do better
+	     than that.  */
+	  if (addr < closest_sym->st_value + closest_sym->st_size)
+	    continue;
 
-	  /* Handwritten assembly symbols sometimes have no st_size.
-	     If no symbol with proper size includes the address, we'll
-	     use the closest one that is in the same section as ADDR.   */
-	  if (sym.st_size == 0 && sym.st_value >= closest_sym->st_value
+	  /* Save the symbol with the closer address.  If the closest
+	     symbol has no size (typically from hand written
+	     assembler) then it is the best candidate.  If the symbol
+	     has size but doesn't contain ADDR then it is still saved
+	     (but discarded below); this prevents a more distant
+	     unsized symbol being selected. */
+	  if (sym.st_value >= closest_sym->st_value
 	      && same_section (&sym, shndx))
-	    closest ();
+	    {
+	      closest ();
+	      continue;
+	    }
 	}
+    }
+
+  /* If the closest symbol has a size doesn't contain ADDR, discard
+     it.  There must be a hole in the symbol table.  */
+  if (closest_sym->st_size > 0 && addr >= closest_sym->st_value + closest_sym->st_size)
+    {
+      memset(closest_sym, 0, sizeof(*closest_sym));
+      return NULL;
     }
 
   if (shndxp != NULL)

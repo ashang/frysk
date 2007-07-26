@@ -1,3 +1,11 @@
+2007-07-26  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-symbols.S (SIZE, GLOBAL, LOCAL): Define.
+	(small_global_at_large_global): Add.
+	(small_local_at_large_global): Add.
+	(small_global_at_large_local): Add.
+	(small_local_at_large_local): Add.
+
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-stackframe.S: Restore.

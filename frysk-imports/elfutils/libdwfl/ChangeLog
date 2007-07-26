@@ -1,3 +1,10 @@
+2007-07-26  Andrew Cagney  <cagney@redhat.com>
+
+	* dwfl_module_addrsym.c (dwfl_module_addrsym): Handle nested
+	symbols (prefer closer and smaller); handle regions between
+	symbols (they have no symbol); handle nested zero-sized symbols
+	(discard them).
+
 2007-07-17  Roland McGrath <roland@redhat.com>
 
 	* dwfl_module.c (dwfl_report_module): Increment nmodule when old

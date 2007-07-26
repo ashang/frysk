@@ -40,135 +40,186 @@
 #include "frysk-asm.h"
 #include <sys/syscall.h>
 
+#define SIZE(X) .size X, .-X
+#define GLOBAL(X) \
+	.global X 		;  \
+	.type X, @function	; \
+	X:		
+#define LOCAL(X) \
+	.local X 		;  \
+	.type X, @function	; \
+	X:		
+
 # A global symbol that includes its size.
-.globl global_st_size
-	.type	global_st_size, @function
-global_st_size:
+GLOBAL(global_st_size)
 	LOAD_IMMED_BYTE (REG0, 0)
 	STORE (REG0, REG0)
 	NO_OP
-	.size	global_st_size, .-global_st_size
-	
+	SIZE(global_st_size)
+
+
+
 # A local symbol that includes its size.
-.local local_st_size
-	.type	local_st_size, @function
-local_st_size:
+LOCAL(local_st_size)	
 	LOAD_IMMED_BYTE (REG0, 0)
 	STORE (REG0, REG0)
 	NO_OP
-	.size	local_st_size, .-local_st_size
+	SIZE(local_st_size)
+
+
 
 # A global symbol that has zero size.
-.global global_st_size_0
-	.type	global_st_size_0, @function
-global_st_size_0:
+GLOBAL(global_st_size_0)
 	LOAD_IMMED_BYTE (REG0, 0)
 	STORE (REG0, REG0)
 	NO_OP
 	
+
+
 # A local symbol that has zero size.
-.local local_st_size_0
-	.type local_st_size_0, @function
-local_st_size_0:
+LOCAL(local_st_size_0)
 	LOAD_IMMED_BYTE (REG0, 0)
 	STORE (REG0, REG0)
 	NO_OP
 	
+
+
 # A global symbol, with size, that contains a nested global and local
 # symbols each also with sizes.
-.global global_outer
-	.type global_outer, @function
-.global global_inner
-	.type global_inner, @function
-global_in_global:
+GLOBAL(global_outer)
+	STORE(REG0, REG0)
+	NO_OP
+GLOBAL(global_in_global)
 	STORE (REG0, REG0)
 	NO_OP
-	.size global_in_global, .-global_in_global
-.local local_in_global
-	.type local_in_global, @function
-local_in_global:
+	SIZE(global_in_global)
+LOCAL(local_in_global)
 	STORE (REG0, REG0)
 	NO_OP
-	.size local_in_global, .-local_in_global
+	SIZE(local_in_global)
 .Lglobal_outer:
 	STORE (REG0, REG0)
 	NO_OP
-	.size global_outer, .-global_outer
+	SIZE(global_outer)
 
+
+	
 # Code with no symbol after a global symbol with size.
 .Lno_global:
 	STORE (REG0, REG0)
 	NO_OP
 	
+
+
 # A global symbol, with size, that contains a nested global and local
 # symbols each also with sizes.
-.local local_outer
-	.type local_outer, @function
-.global global_in_local
-	.type global_in_local, @function
-global_in_local:
+LOCAL(local_outer)
+	STORE(REG0,REG0)
+	NO_OP
+GLOBAL(global_in_local)
 	STORE (REG0, REG0)
 	NO_OP
-	.size global_in_local, .-global_in_local
-.local local_in_local
-	.type local_in_local, @function
-local_in_local:
+	SIZE(global_in_local)
+LOCAL(local_in_local)
 	STORE (REG0, REG0)
 	NO_OP
-	.size local_in_local, .-local_in_local
+	SIZE(local_in_local)
 .Llocal_outer:
 	STORE (REG0, REG0)
 	NO_OP
-	.size local_outer, .-local_outer
+	SIZE(local_outer)
+
+
 
 # Code with no symbol after a local symbol with size.
 .Lno_local:
 	STORE (REG0, REG0)
 	NO_OP
 	
+
+	
 # A sized global symbol that contains local/global symbols of zero
 # size.
 
-.global global_after_0
-	.type global_after_0, @function
-global_after_0:
+GLOBAL(global_after_0)
 	NO_OP
-.global global_0_in_global
-	.type global_0_in_global, @function
-global_0_in_global:
+GLOBAL(global_0_in_global)
 	STORE(REG0, REG0)
 	NO_OP
-.local local_0_in_global
-	.type local_0_in_global, @function
-local_0_in_global:
+LOCAL(local_0_in_global)
 	STORE(REG0, REG0)
 	NO_OP
 .Lglobal_after_0:
 	STORE(REG0, REG0)
-	.size global_after_0, .-global_after_0	
+	SIZE(global_after_0)
+
+
 
 # A sized local symbol that contains local/global symbols of zero
 # size.
 
-.local local_after_0
-	.type local_after_0, @function
-local_after_0:
+LOCAL(local_after_0)
 	NO_OP
-.global global_0_in_local
-	.type global_0_in_local, @function
-global_0_in_local:
+GLOBAL(global_0_in_local)
 	STORE(REG0, REG0)
 	NO_OP
-.local local_0_in_local
-	.type local_0_in_local, @function
-local_0_in_local:
+LOCAL(local_0_in_local)
 	STORE(REG0, REG0)
 	NO_OP
 .Llocal_after_0:
 	STORE(REG0, REG0)
-	.size local_after_0, .-local_after_0	
+	SIZE(local_after_0)
 
 
+
+# A small global symbol at a large global symbol.
+
+GLOBAL(large_global_at_small_global)
+GLOBAL(small_global_at_large_global)
+	STORE(REG0,REG0)
+	NO_OP
+	SIZE(small_global_at_large_global)
+	NO_OP
+	SIZE(large_global_at_small_global)
+
+
+
+# A small local symbol at a large global symbol
+
+GLOBAL(large_global_at_small_local)
+LOCAL(small_local_at_large_global)
+	STORE(REG0,REG0)
+	NO_OP
+	SIZE(small_local_at_large_global)
+	NO_OP
+	SIZE(large_global_at_small_local)
+
+
+
+# A small global symbol at a large local symbol.
+
+LOCAL(large_local_at_small_global)
+GLOBAL(small_global_at_large_local)
+	STORE(REG0,REG0)
+	NO_OP
+	SIZE(small_global_at_large_local)
+	NO_OP
+	SIZE(large_local_at_small_global)
+	
+
+	
+# A small local symbol at a large local symbol.
+
+LOCAL(large_local_at_small_local)
+LOCAL(small_local_at_large_local)
+	STORE(REG0,REG0)
+	NO_OP
+	SIZE(small_local_at_large_local)
+	NO_OP
+	SIZE(large_local_at_small_local)
+	
+
+
 // Dependant on ARGC jump to a symbol with either global or
 // local scope.
 
@@ -248,7 +299,23 @@ local_0_in_local:
 	LOAD_IMMED_BYTE(REG3, 19)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(.Llocal_after_0)
-	
+# small_global_at_large_global?
+	LOAD_IMMED_BYTE(REG3, 20)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(small_global_at_large_global)
+# small_local_at_large_global?
+	LOAD_IMMED_BYTE(REG3, 21)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(small_local_at_large_global)
+# small_global_at_large_local?
+	LOAD_IMMED_BYTE(REG3, 22)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(small_global_at_large_local)
+# small_local_at_large_local?
+	LOAD_IMMED_BYTE(REG3, 23)
+	COMPARE(REG3, REG1)
+	JUMP_EQ(small_local_at_large_local)
+
 	LOAD_IMMED_BYTE(REG0, SYS_write)
 	LOAD_IMMED_BYTE(REG1, 1)
 	LOAD_IMMED_WORD(REG2, usage)
@@ -282,5 +349,9 @@ crashes:\r\n\
 16: Local symbol with no size nested within local (local_0_in_local)\r\n\
 17: Global after nested size 0 symbols (global_after_0)\r\n\
 18: Local after nested size 0 symbols (local_after_0)\r\n\
+19: Small global at large global (small_global_at_large_global\r\n\
+20: Small local at large global (small_local_at_large_global\r\n\
+21: Small global at large local (small_global_at_large_local\r\n\
+22: Small local at large local (small_local_at_large_local\r\n\
 "
 .usage:
