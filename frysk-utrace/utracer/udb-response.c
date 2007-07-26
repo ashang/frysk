@@ -84,7 +84,7 @@ resp_listener (void * arg)
 	show_syscall (if_resp.type, syscall_resp.utraced_pid, regs);
       }
       break;
-    case IF_RESP_REG_DATA:
+    case IF_RESP_REG_DATA:	// fixme -- move to ioctl
       {
 	// fixme -- handle non-int values
 	// fixme -- use reg name in addition to number
@@ -127,32 +127,6 @@ resp_listener (void * arg)
 		   (int)readreg_resp.data,
 		   (int)readreg_resp.data);
 	}
-	fprintf (stdout, "%s", prompt);
-	fflush (stdout);
-      }
-      break;
-    case IF_RESP_PIDS_DATA:
-      {
-	int i;
-	int pids_received;
-	long * pids_list = NULL;
-	pids_resp_s pids_resp = if_resp.pids_resp;
-	
-	pids_received = (sz - sizeof(pids_resp))/ sizeof(long);
-	
-	pids_list = alloca (pids_resp.nr_pids * sizeof(long));
-	if (0 < pids_received)
-	  memcpy (pids_list, ((void *)(&if_resp)) + sizeof(pids_resp),
-		  pids_received * sizeof(long));
-	
-	if (pids_received < pids_resp.nr_pids) {
-	  size_t sz_req = (pids_resp.nr_pids - pids_received) * sizeof(long);
-	  sz = pread (utracer_resp_file_fd, &pids_list[pids_received],
-		      sz_req, sz);
-	}
-
-	for (i = 0; i < pids_resp.nr_pids; i++)
-	  fprintf (stdout, "\t[%d] %ld\n", i, pids_list[i]);
 	fprintf (stdout, "%s", prompt);
 	fflush (stdout);
       }
@@ -224,7 +198,7 @@ resp_listener (void * arg)
 	fflush (stdout);
       }
       break;
-    case IF_RESP_SWITCHPID_DATA:
+    case IF_RESP_SWITCHPID_DATA:	// fixme -- move to ioctl
       {
 	switchpid_resp_s switchpid_resp = if_resp.switchpid_resp;
 	if (switchpid_resp.okay) {

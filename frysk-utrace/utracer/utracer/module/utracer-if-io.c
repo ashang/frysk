@@ -4,25 +4,14 @@
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/kernel.h>
-#include <linux/init.h>
-#include <linux/stat.h>
-#include <linux/slab.h>
-#include <linux/proc_fs.h>
 #include <linux/utrace.h>
-#include <linux/binfmts.h>
 #include <linux/fs.h>
-#include <linux/namei.h>
-#include <linux/mm.h>
-#include <linux/mount.h>
-#include <linux/security.h>
-#include <linux/capability.h>
-#include <linux/sched.h>
 #include <linux/string.h>
+#include <linux/binfmts.h>
 #include <asm/uaccess.h>
 #include <linux/tracehook.h>
 #include <asm/tracehook.h>
-#include <asm-i386/tracehook.h>
-#include <asm-i386/unistd.h>
+#include <asm/unistd.h>
 
 #include "../include/utracer.h"
 #include "utracer-private.h"
@@ -230,7 +219,6 @@ report_signal (struct utrace_attached_engine *engine,
   return UTRACE_ACTION_RESUME;
 }
 
-// include/asm-i386/unistd.h  -- syscallls
 static u32
 report_syscall (struct utrace_attached_engine * engine,
 		struct task_struct * tsk,
@@ -570,43 +558,6 @@ handle_sync (sync_cmd_s * sync_cmd, unsigned long count,
 }
 
 static int
-handle_listpids (listpids_cmd_s * listpids_cmd, unsigned long count,
-		 void * data)
-{
-  utracing_info_s * utracing_info_found = (utracing_info_s *)data;
-  int rc = count;
-
-  if (utracing_info_found) {
-    utraced_info_s * utraced_info;
-    pids_resp_s pids_resp;
-    long * pids_list = NULL;
-    int i;
-	
-    pids_resp.type = IF_RESP_PIDS_DATA;
-    for (pids_resp.nr_pids	= 0,
-	   utraced_info = utracing_info_found->utraced_info;
-	 utraced_info;
-	 utraced_info = utraced_info->next) pids_resp.nr_pids++;
-    if (0 < pids_resp.nr_pids) {
-      pids_list = kmalloc (pids_resp.nr_pids * sizeof(long), GFP_KERNEL);
-      for ( i = 0, utraced_info = utracing_info_found->utraced_info;
-	    utraced_info;
-	    i++, utraced_info = utraced_info->next)
-	pids_list[i] = utraced_info->utraced_pid;
-    }
-    queue_response (utracing_info_found,
-		    &pids_resp, sizeof(pids_resp),
-		    pids_list, pids_resp.nr_pids * sizeof(long),
-		    NULL, 0);
-    if (pids_list) kfree (pids_list);
-    rc = count;
-  }
-  else rc = -UTRACER_ETRACING;
-  
-  return rc;
-}
-
-static int
 handle_readreg (readreg_cmd_s * readreg_cmd, unsigned long count,
 		void * data)
 {
@@ -767,10 +718,6 @@ if_file_write (struct file *file,
     case IF_CMD_SYNC:
       DB_PRINTK (KERN_ALERT "IF_CMD_SYNC\n");
       rc = handle_sync (&if_cmd.sync_cmd, count, data);
-      break;
-    case IF_CMD_LIST_PIDS:
-      DB_PRINTK (KERN_ALERT "IF_CMD_LIST_PIDS\n");
-      rc = handle_listpids (&if_cmd.listpids_cmd, count, data);
       break;
     case IF_CMD_SET_REG:
       // fixme -- actually do it

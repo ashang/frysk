@@ -1,3 +1,14 @@
+Thu Jul 26 11:52:01 2007  Chris Moller  <cmoller@redhat.com>
+
+	* include/utracer.h: Fixed listpids stuff.
+	* module/Makefile: Added utracer-ioctl.o to utracer-objs.
+	* module/utracer-cf-io.c:Cleaned up #includes.  Moved some handlers to
+	utracer-ioctl.c.
+	* module/utracer-base.c: Cleaned up #includes.
+	* module/utracer-if-io.c: Cleaned up #includes.  Moved listpids to
+	utracer-ioctl.c.
+	* utracer/utracer.c: Added listpids code.
+
 Wed Jul 25 21:01:21 2007  Chris Moller  <cmoller@redhat.com>
 
 	* module/utracer-cf-io.c: Fixed a rather egregious abuse of the

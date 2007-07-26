@@ -1,3 +1,9 @@
+Thu Jul 26 11:49:36 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-utrace-if.c:
+	* udb-response.c: Removed listpids code.
+	* udb-text-ui.c: Add listpids code.
+
 Wed Jul 25 17:24:06 2007  Chris Moller  <cmoller@redhat.com>
 
 	* Makefile:  Added -lutracer stuff.

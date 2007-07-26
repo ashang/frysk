@@ -71,11 +71,6 @@ typedef struct {
   long utraced_pid;
 } run_cmd_s;
 
-typedef struct {
-  long cmd;
-  long utracing_pid;
-} listpids_cmd_s;
-
 typedef enum {
   SYNC_INIT,
   SYNC_RESP
@@ -138,6 +133,14 @@ typedef struct {
 typedef struct {
   long cmd;
   long utracing_pid;
+  long nr_pids_alloced;
+  long * nr_pids_actual;
+  long * pids;
+} listpids_cmd_s;
+
+typedef struct {
+  long cmd;
+  long utracing_pid;
   long utraced_pid;
   char * filename;
   long filename_len;
@@ -181,7 +184,6 @@ typedef enum {
   IF_RESP_CLONE_DATA,			//  2
   IF_RESP_SIGNAL_DATA,			//  3
   IF_RESP_EXIT_DATA,			//  4
-  IF_RESP_PIDS_DATA,			//  5
   IF_RESP_DEATH_DATA,			//  6
   IF_RESP_SWITCHPID_DATA,		//  7
   IF_RESP_SYSCALL_ENTRY_DATA,		//  8
@@ -233,11 +235,6 @@ typedef struct {
 
 typedef struct {
   long type;
-  long nr_pids;
-} pids_resp_s;
-
-typedef struct {
-  long type;
   long utraced_pid;
   long data_length;
 } syscall_resp_s;
@@ -273,7 +270,6 @@ typedef union {
   attach_resp_s		attach_resp;
   death_resp_s		death_resp;
   exit_resp_s		exit_resp;
-  pids_resp_s		pids_resp;
   switchpid_resp_s	switchpid_resp;
   syscall_resp_s	syscall_resp;
   exec_resp_s		exec_resp;

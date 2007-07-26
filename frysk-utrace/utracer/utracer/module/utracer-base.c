@@ -11,8 +11,8 @@
 #include <linux/utrace.h>
 #include <asm/uaccess.h>
 #include <linux/tracehook.h>
-#include <asm-i386/tracehook.h>
-#include <asm-i386/unistd.h>
+#include <asm/tracehook.h>
+#include <asm/unistd.h>
 
 #include "../include/utracer.h"
 #define DO_INIT

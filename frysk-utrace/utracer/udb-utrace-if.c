@@ -99,15 +99,6 @@ utrace_run_if (long pid)
 }
 
 void
-utrace_listpids_if ()
-{
-  listpids_cmd_s listpids_cmd = {IF_CMD_LIST_PIDS, (long)udb_pid};
-  ssize_t sz = write (utracer_cmd_file_fd, &listpids_cmd,
-		      sizeof(listpids_cmd));
-  if (-1 == sz) uerror ("Writing listpids command.");
-}
-
-void
 utrace_sync_if (long type)
 {
   sync_cmd_s sync_cmd = {IF_CMD_SYNC, (long)udb_pid, type};
@@ -133,3 +124,5 @@ utrace_readreg_if (long pid, int regset, int reg)
   ssize_t sz = write (utracer_cmd_file_fd, &readreg_cmd, sizeof(readreg_cmd));
   if (-1 == sz) uerror ("Writing readreg command.");
 }
+
+

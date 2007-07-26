@@ -16,7 +16,6 @@
 /*
  * TTD
  *
- * list attached pids
  * reset prompt on detach
  * print regset info
  * allow regset spec in printreg
@@ -151,13 +150,6 @@ syscall_fcn(char ** saveptr)
   else
     fprintf (stderr, "\tSorry, I've no clue what you want me to do.\n");
   
-  return 1;
-}
-
-static int
-listpids_fcn(char ** saveptr)
-{
-  utrace_listpids_if ();
   return 1;
 }
 
@@ -380,10 +372,29 @@ printenv_fcn (char ** saveptr)
 }
 
 static int
+listpids_fcn(char ** saveptr)
+{
+  int rc;
+  long nr_pids = 0;
+  long * pids = NULL;
+  
+  rc = utracer_get_pids (&nr_pids, &pids);
+  if (pids && (0 == rc)) {
+    long i;
+    
+    for (i = 0; i < nr_pids; i++) fprintf (stdout, "\t%ld\n", pids[i]);
+  }
+  else uerror ("printenv");
+
+  if (pids) free (pids);
+  return 1;
+}
+
+static int
 printexe_fcn (char ** saveptr)
 {
-  char * filename;
-  char * interp;
+  char * filename = NULL;
+  char * interp = NULL;
   int rc;
   long pid = current_pid;
   char * tok = strtok_r (NULL, " \t", saveptr);

@@ -75,8 +75,6 @@ utracer_get_printmmap (long pid,
   long vssl;
   long vsl;
 
-  
-  
   irc = do_get_mmap (pid, &pr, &vss, &vs, PAGE_SIZE, PAGE_SIZE, &vssl, &vsl);
 
   if (0 == irc) {
@@ -101,6 +99,64 @@ utracer_get_printmmap (long pid,
     if (printmmap_resp_p)	*printmmap_resp_p	= pr;
     if (vm_struct_subset_p)	*vm_struct_subset_p	= vss;
     if (vm_strings_p)		*vm_strings_p		= vs;
+  }
+
+  return irc;
+}
+
+
+/************************** listpids  ********************/
+
+static int
+do_get_pids (long ** pids_p, long nr_pids_req, long *nr_pids_actual_p)
+{
+  int irc;
+  long nr_pids_actual;
+
+  if (!pids_p || !nr_pids_actual_p) return -EINVAL;
+
+  *pids_p  = malloc (nr_pids_req * sizeof(long));
+
+  listpids_cmd_s listpids_cmd = {IF_CMD_LIST_PIDS,
+				 (long)client_pid,
+				 nr_pids_req,
+				 &nr_pids_actual,
+				 *pids_p};
+  irc = ioctl (utracer_cmd_file_fd,
+	       sizeof(listpids_cmd_s),
+	       &listpids_cmd);
+
+  if (nr_pids_actual_p) *nr_pids_actual_p = nr_pids_actual;
+
+  return irc;
+}
+
+
+int
+utracer_get_pids (long * nr_pids_p, long ** pids_p)
+{
+  int irc;
+  long nr_pids;
+  long * pids;
+  long nr_pids_actual;
+  long nr_pids_req = PAGE_SIZE/sizeof(long);
+  
+  irc = do_get_pids (&pids, nr_pids_req, &nr_pids_actual);
+
+  if (0 == irc) {
+    if (nr_pids_actual > nr_pids_req) {
+      if (pids)  free (pids);
+      irc = do_get_pids (&pids, nr_pids_actual, NULL);
+    }
+  }
+  
+  if  (0 != irc) {
+    if (pids)  free (pids);
+    if (pids_p) *pids_p = NULL;
+  }
+  else {
+    if (pids_p)		*pids_p = pids;
+    if (nr_pids_p)	*nr_pids_p = nr_pids_actual;
   }
 
   return irc;
