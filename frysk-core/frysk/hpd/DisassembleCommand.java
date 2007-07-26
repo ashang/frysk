@@ -81,6 +81,22 @@ public class DisassembleCommand extends CLIHandler {
 
 	});
 
+	parser.add(new Option("no-truncate", 't',
+		"don't truncate the number of instructions printed") {
+
+	    public void parsed(String argument) throws OptionException {
+		truncate = false;
+	    }
+
+	});
+
+	parser.add(new Option("no-symbol", 's', "don't print the symbol name") {
+
+	    public void parsed(String argument) throws OptionException {
+		symbol = false;
+	    }
+	});
+
 	// XXX: Need these two to prevent help and version from exiting fhpd
 	// when finished.
 	parser.add(new Option("version", "display version number") {
@@ -101,18 +117,24 @@ public class DisassembleCommand extends CLIHandler {
 
     private boolean instructionOnly = false;
 
+    private boolean truncate = true;
+
     private boolean helpStop = false;
+
+    private boolean symbol = true;
 
     Parser parser = new Parser("disassemble", Config.getVersion(), true);
 
-    public void reset() {
+    private void reset() {
 	instructionOnly = false;
 	helpStop = false;
+	truncate = true;
+	symbol = true;
     }
 
     public void handle(Command cmd) throws ParseException {
 	reset();
-	
+
 	long currentInstruction = getCLI().frame.getAddress();
 	Symbol symbol = getCLI().frame.getSymbol();
 
@@ -150,13 +172,19 @@ public class DisassembleCommand extends CLIHandler {
 			Message.TYPE_ERROR));
 		return;
 	    }
+	    cli.outWriter.println("Dump of assembler code from 0x"
+		    + Long.toHexString(startInstruction) + " to 0x"
+		    + Long.toHexString(endInstruction) + ":");
 	    List instructions = disassembler.disassembleInstructionsStartEnd(
 		    startInstruction, endInstruction);
-	    printInstructions(-1, instructions);
+	    printInstructions(-1, instructions, false);
 	    return;
 	} else if (params.length > 2) {
 	    throw new RuntimeException("too many arguments to disassemble");
 	}
+
+	cli.outWriter.println("Dump of assembler code for function: "
+		+ symbol.getName());
 	List instructions;
 	// XXX: Need a better way of handling symbol size = 0
 	long padding = 100;
@@ -166,7 +194,7 @@ public class DisassembleCommand extends CLIHandler {
 	else
 	    instructions = disassembler.disassembleInstructionsStartEnd(symbol
 		    .getAddress(), symbol.getAddress() + symbol.getSize());
-	printInstructions(currentInstruction, instructions);
+	printInstructions(currentInstruction, instructions, truncate);
     }
 
     /**
@@ -175,19 +203,42 @@ public class DisassembleCommand extends CLIHandler {
          * @param currentAddress
          * @param instructions
          */
-    private void printInstructions(long currentAddress, List instructions) {
+    private void printInstructions(long currentAddress, List instructions,
+	    boolean truncate) {
 
+	InstructionPrinter printer;
+	printer = new AddressPrinter();
+
+	if (symbol)
+	    printer = new SymbolPrinter(printer);
+
+	if (instructionOnly)
+	    printer = new InstructionOnlyPrinter(printer);
+	else
+	    printer = new InstructionParamsPrinter(printer);
 	int wrapLines = 10;
-	HardList cache = new HardList(wrapLines * 2);
+
+	HardList cache = null;
+	if (truncate)
+	    cache = new HardList(wrapLines * 2);
+
 	Iterator iter = instructions.iterator();
 
-	boolean foundCurrent = false;
-	while (iter.hasNext() && !foundCurrent) {
+	while (iter.hasNext()) {
 	    Instruction instruction = (Instruction) iter.next();
-	    cache.add(instruction);
-	    if (instruction.address == currentAddress) {
-		foundCurrent = true;
+	    if (cache != null)
+		cache.add(instruction);
+	    else
+		printInstruction(currentAddress, instruction, printer);
+
+	    if (instruction.address == currentAddress && truncate) {
+		break;
 	    }
+	}
+
+	if (!truncate) {
+	    cli.outWriter.println("End of assembly dump");
+	    return;
 	}
 
 	while (iter.hasNext() && wrapLines > 0) {
@@ -196,23 +247,82 @@ public class DisassembleCommand extends CLIHandler {
 	    wrapLines--;
 	}
 
-	cli.outWriter.println(" Address\tInstructions");
-	
+	// Note the space in front of address, placeholder for * character for
+	// current address.
+
 	iter = cache.iterator();
-	
+
 	while (iter.hasNext()) {
 	    Instruction instruction = (Instruction) iter.next();
-	    if (instruction.address == currentAddress)
-		cli.outWriter.print("*");
-	    else
-		cli.outWriter.print(" ");
-
-	    if (instructionOnly)
-		cli.outWriter.println("0x"
-			+ Long.toHexString(instruction.address) + "\t"
-			+ instruction.instruction.split("\\s")[0]);
-	    else
-		cli.outWriter.println(instruction);
+	    printInstruction(currentAddress, instruction, printer);
 	}
+
+	cli.outWriter.println("End of assembly dump");
+    }
+
+    private void printInstruction(long currentAddress, Instruction instruction,
+	    InstructionPrinter printer) {
+	if (instruction.address == currentAddress)
+	    cli.outWriter.print("*");
+	else
+	    cli.outWriter.print(" ");
+
+	cli.outWriter.println(printer.toPrint(instruction));
+    }
+
+    class AddressPrinter implements InstructionPrinter {
+
+	public String toPrint(Instruction instruction) {
+	    return "0x" + Long.toHexString(instruction.address) + "\t";
+	}
+    }
+
+    class SymbolPrinter implements InstructionPrinter {
+
+	InstructionPrinter printer;
+
+	SymbolPrinter(InstructionPrinter decorator) {
+	    this.printer = decorator;
+	}
+
+	public String toPrint(Instruction instruction) {
+	    Symbol symbol = SymbolFactory.getSymbol(cli.task,
+		    instruction.address);
+	    return printer.toPrint(instruction)
+		    + "<"
+		    + symbol.getName()
+		    + "+"
+		    + Long.toHexString(instruction.address
+			    - symbol.getAddress()) + ">:\t";
+	}
+    }
+
+    class InstructionParamsPrinter implements InstructionPrinter {
+	InstructionPrinter printer;
+
+	InstructionParamsPrinter(InstructionPrinter decorator) {
+	    this.printer = decorator;
+	}
+
+	public String toPrint(Instruction instruction) {
+	    return printer.toPrint(instruction) + instruction.toString();
+	}
+    }
+
+    class InstructionOnlyPrinter implements InstructionPrinter {
+	InstructionPrinter printer;
+
+	InstructionOnlyPrinter(InstructionPrinter decorator) {
+	    this.printer = decorator;
+	}
+
+	public String toPrint(Instruction instruction) {
+	    return printer.toPrint(instruction)
+		    + instruction.instruction.split("\\s")[0];
+	}
+    }
+
+    interface InstructionPrinter {
+	public String toPrint(Instruction instruction);
     }
 }

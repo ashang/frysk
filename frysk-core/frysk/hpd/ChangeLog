@@ -1,3 +1,10 @@
+2007-07-26  Nurdin Premji  <npremji@redhat.com>
+
+	* DisassembleCommand.java (printInstructions): Added support for printing
+	the symbol name, used a decorator pattern so if symbol isn't printed,
+	SymbolFactory isn't called.
+	Added option to disable truncating.
+
 2007-07-25  Nurdin Premji  <npremji@redhat.com>
 
 	* DisassembleCommand.java (handle): Use SymbolFactory to get the proper
