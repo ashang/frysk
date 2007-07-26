@@ -111,8 +111,8 @@ public class TestFrameDebugInfo
   
   public void testFrameScopes ()
   {
-//    if(unresolved(4677))
-//        return;
+    if(unresolved(4677))
+        return;
 
     Task task = getStoppedTask("funit-scopes");
     Frame frame = StackFactory.createFrame(task);

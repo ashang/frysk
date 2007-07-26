@@ -1,5 +1,10 @@
 2007-07-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* TestFrameDebugInfo.java (testFrameScopes): disabled test; it
+	was enabled by mistake.
+
+2007-07-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* VariableOptimizedOutException.java: New file.
 	* ValueUavailableException.java: New file.
 	* DebugInfoEvaluator.java: Removed unused code.
