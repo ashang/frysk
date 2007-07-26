@@ -40,9 +40,14 @@
 
 package frysk.rt;
 
+import java.io.PrintWriter;
+
 import javax.naming.NameNotFoundException;
+
 import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfo;
+import frysk.debuginfo.ValueUavailableException;
+import frysk.debuginfo.VariableOptimizedOutException;
 import frysk.stack.Frame;
 import frysk.value.Type;
 import frysk.value.Value;
@@ -65,6 +70,9 @@ public class Variable
    if(variable != null){
        this.type = variable.getType();
    }
+   if(variableDie == null){
+       throw new IllegalArgumentException();
+   }
 //   this.typeDie =  typeDie;
   }
   public void setVariable (Value variable)
@@ -77,6 +85,9 @@ public class Variable
   }
   public void setVariableDie (DwarfDie variableDie)
   {
+      if(variableDie == null){
+	       throw new IllegalArgumentException();
+	   }
     this.variableDie = variableDie;
   }
   public DwarfDie getVariableDie ()
@@ -100,9 +111,30 @@ public class Variable
     return typeDie;
   }
 
-  public Value getValue(Frame frame) throws NameNotFoundException
+  public void toPrint(PrintWriter printWriter, Frame frame){
+      printWriter.print(this.getType() + " " + this.getVariable().getText() + " = ");
+      try{
+	  Value value = getValue(frame);
+	  printWriter.print(value.toString());
+      }
+      catch (ValueUavailableException e) {
+	  printWriter.print("< value unavailable at pc=0x"+ Long.toHexString(frame.getAdjustedAddress())+">");
+      }
+      catch (VariableOptimizedOutException e) {
+	  printWriter.print("< optimized out >");
+      }
+      catch (RuntimeException e) {
+	  printWriter.print("< ERROR >");
+      }
+  }
+  
+  public Value getValue(Frame frame)
   {
       DebugInfo debugInfo = new DebugInfo(frame);
-      return debugInfo.get(frame, getVariableDie());
+      try {
+	return debugInfo.get(frame, getVariableDie());
+    } catch (NameNotFoundException e) {
+	throw new RuntimeException(e);
+    }
   }
 }

@@ -1,3 +1,11 @@
+2007-07-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* VariableOptimizedOutException.java: New file.
+	* ValueUavailableException.java: New file.
+	* DebugInfoEvaluator.java: Removed unused code.
+	(getBufferAddr): now throws VariableOptimizedOutException and
+	ValueUavailableException when appropriet.
+
 2007-07-25  Nurdin Premji  <npremji@redhat.com>
 
 	* DebugInfoEvaluator.java (AccessMemory.getBufferAddr): Use

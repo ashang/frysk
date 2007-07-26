@@ -142,7 +142,7 @@ public class StackFactory
         
         writer.print(" in " + subprogram.getName() + "(");
         if(printParameters){
-          subprogram.printParameters(writer);
+	    subprogram.printParameters(writer, frame);
         }
         writer.print(") ");
         
@@ -159,7 +159,7 @@ public class StackFactory
         }
         
         if(printScopes){
-          subprogram.printScopes(writer);
+	    subprogram.printScopes(writer, frame);
         }
         
       } else {

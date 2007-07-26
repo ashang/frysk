@@ -1,3 +1,10 @@
+2007-07-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Variable.java (getValue): added handling for NameNotFoundException 
+	(toPrint): New function.
+	* Scope.java (toPrint): Added variable printing.
+	* Subprogram.java (toPrint): Ditto.
+
 2007-07-25  Andrew Cagney  <cagney@redhat.com>
 
 	* TestDisplayValue.java: Update;

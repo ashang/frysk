@@ -207,7 +207,7 @@ class DebugInfoEvaluator
      */
     protected long getBufferAddr (DwarfDie varDieP) throws NameNotFoundException
     {
-      long pc = currentFrame.getAdjustedAddress();
+	long pc = currentFrame.getAdjustedAddress();
       long address = 0;
       int reg = 0;
       
@@ -216,7 +216,15 @@ class DebugInfoEvaluator
 
       List ops = varDieP.getFormData(pc);     
 
-      if ( ops.size() == 0 || ((DwarfDie.DwarfOp) ops.get(0)).operator == -1){
+      if (varDieP.getAttrBoolean(DwAtEncodings.DW_AT_location_) && ops.size() == 0){
+	  throw new VariableOptimizedOutException();  
+      }
+      
+      if (ops.size() == 0){
+	  throw new ValueUavailableException();
+      }
+      
+      if (((DwarfDie.DwarfOp) ops.get(0)).operator == -1){
 	  throw new NameNotFoundException("Expression evaluation failed for die:\n\t" + varDieP.toPrint());
       }
       

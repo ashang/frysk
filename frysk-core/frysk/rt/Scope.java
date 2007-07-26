@@ -44,9 +44,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import lib.dwfl.DwException;
 import lib.dwfl.DwTagEncodings;
 import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfo;
+import frysk.stack.Frame;
 import frysk.value.Value;
 
 /**
@@ -138,8 +140,9 @@ public class Scope
       }
   }
   
-  public void toPrint(PrintWriter writer, int indent){
-    
+
+  public void toPrint(Frame frame, PrintWriter writer, int indent){
+  
     char[] indentArray = new char[indent];
     Arrays.fill(indentArray, ' ');
     String indentString = new String(indentArray);
@@ -148,16 +151,26 @@ public class Scope
     while(iterator.hasNext()){
 	Variable variable = (Variable) iterator.next();
 	if(variable.getVariable()!=null){
-	    writer.print("\n" + indentString + variable.getVariable().getType() + " " + variable.getVariable().getText());
+            writer.println();
+	    writer.print(indentString);
+	    variable.toPrint(writer, frame);
 	}else{
-	    writer.print("\n" + indentString + "Unhandled type on line: " + variable.getVariableDie().getDeclLine());
+	    String lineString;
+	    try{
+		lineString = " on line " + variable.getVariableDie().getDeclLine();
+	    }catch (DwException e) {
+		lineString = " (could not get line number)";
+	    }
+	    writer.println();
+	    writer.print(indentString +"Unhandled type" + lineString);
 	}
+	writer.flush();
     }
     
     iterator = this.getScopes().iterator();
     while(iterator.hasNext()){
       Scope scope = (Scope) iterator.next();
-      scope.toPrint(writer, indent+1);
+      scope.toPrint(frame, writer, indent+1);
     }
     
   }

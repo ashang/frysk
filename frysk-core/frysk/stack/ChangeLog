@@ -1,3 +1,8 @@
+2007-07-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* StackFactory.java: Passed a frame argument when printing a 
+	Subprogram.
+
 2007-07-25  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFrameSymbol.java: Update;

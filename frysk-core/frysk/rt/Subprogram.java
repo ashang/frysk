@@ -50,6 +50,7 @@ import java.util.LinkedList;
 import lib.dwfl.DwTagEncodings;
 import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfo;
+import frysk.stack.Frame;
 import frysk.value.FunctionType;
 import frysk.value.Value;
 
@@ -114,7 +115,7 @@ public class Subprogram extends Subroutine
       this.functionType = functionType;
     }
     
-    public void printParameters (PrintWriter writer)
+    public void printParameters (PrintWriter writer, Frame frame)
     {
       
       Iterator iterator = this.parameters.iterator();
@@ -123,7 +124,8 @@ public class Subprogram extends Subroutine
         if(parameter.getVariable() == null){
           writer.print("Unhandled type");
         }else{
-            writer.print(parameter.getType() + " " + parameter.getVariable().getText());
+            parameter.toPrint(writer, frame);
+            writer.flush();
         }
         if(parameters.indexOf(parameter) < (this.parameters.size()-1)){
             writer.print(",");
@@ -131,8 +133,7 @@ public class Subprogram extends Subroutine
       }
       
     }
-    
-    public void printScopes(PrintWriter writer){
-      super.toPrint(writer, 1);
+    public void printScopes(PrintWriter writer, Frame frame){
+	super.toPrint(frame, writer, 1);
     }
 }

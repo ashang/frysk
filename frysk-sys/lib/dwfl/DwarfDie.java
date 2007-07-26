@@ -335,12 +335,10 @@ abstract public class DwarfDie
    */
   public List getFrameBase (long pc)
   {
-      if(this.scopes == null){
-	  this.scopes = this.getScopesDie();
-      }
+      this.scopes = this.getScopesDie();
       
-    DwarfOps = new ArrayList();
-    for (int i = this.scopeIndex; i < this.scopes.length; i++)
+      DwarfOps = new ArrayList();
+      for (int i = this.scopeIndex; i < this.scopes.length; i++)
       {
         get_framebase(this.getPointer(), this.scopes[i].pointer, pc);
         if (DwarfOps.size() != 0)

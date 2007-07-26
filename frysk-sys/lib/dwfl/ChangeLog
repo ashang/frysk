@@ -1,3 +1,8 @@
+2007-07-24  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DwarfDie.java (getFrameBase): Scopes are retrieved on every
+	call.
+
 2007-07-24  Petr Machata  <pmachata@redhat.com>
 
 	* cni/Elf.cxx (elf_strptr): Use JvNewStringUTF to build a string.
