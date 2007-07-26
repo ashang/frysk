@@ -244,6 +244,60 @@ handle_printmap (printmmap_cmd_s * printmmap_cmd)
 }
 
 static int
+handle_getmem (getmem_cmd_s * getmem_cmd)
+{
+  int rc = 0;
+  utracing_info_s * utracing_info_found =
+    lookup_utracing_info (getmem_cmd->utracing_pid);
+
+  if (utracing_info_found) {
+    struct task_struct * task = get_task (getmem_cmd->utraced_pid);
+    if (task) {
+      struct mm_struct * mm = get_task_mm(task);
+
+      if (mm) {
+	int ret;
+	struct vm_area_struct * vma;
+	struct page *page;
+	char * buffer;
+	unsigned int nr_pages =
+	  (getmem_cmd->mem_len + (PAGE_SIZE - 1))/PAGE_SIZE;
+
+	buffer = kmalloc (getmem_cmd->mem_len, GFP_KERNEL);
+	ret = get_user_pages (task,
+			      mm,
+			      getmem_cmd->mem_addr,
+			      nr_pages,
+			      0,				// int write
+			      0,				// int force
+			      &page,
+			      &vma);
+	if (0 < ret) {
+	  void * maddr = kmap (page);
+	  copy_from_user_page (vma,
+			       page,
+			       getmem_cmd->mem_addr,
+			       buffer,
+			       maddr + (getmem_cmd->mem_addr & (PAGE_SIZE-1)),
+			       getmem_cmd->mem_len);
+	  if (copy_to_user (getmem_cmd->mem,
+			    buffer, getmem_cmd->mem_len)) {
+	    kfree (buffer);
+	    rc = -EFAULT;
+	  }
+	}
+	else rc = -UTRACER_EPAGES;
+      }
+      else rc = -UTRACER_EPAGES;
+    }
+    else rc = -ESRCH;
+  }
+  else rc = -UTRACER_ETRACING;
+
+  return rc;
+}
+
+static int
 handle_printenv (printenv_cmd_s * printenv_cmd)
 {
   int rc = 0;
@@ -262,14 +316,14 @@ handle_printenv (printenv_cmd_s * printenv_cmd)
 	struct page *page;
 	long llen;
 	unsigned int len = mm->env_end - mm->env_start;
+	unsigned int nr_pages = (len + (PAGE_SIZE - 1))/PAGE_SIZE;
 
-	if (len > PAGE_SIZE) len = (len + (PAGE_SIZE - 1))/PAGE_SIZE;
 	buffer = kmalloc (len, GFP_KERNEL);
 
 	ret = get_user_pages (task,
 			      mm,
 			      mm->env_start,
-			      len,
+			      nr_pages,
 			      0,				// int write
 			      0,				// int force
 			      &page,
@@ -286,12 +340,16 @@ handle_printenv (printenv_cmd_s * printenv_cmd)
 	    len = printenv_cmd->buffer_len - sizeof(long);
 	  llen = (long)len;
 	  if (copy_to_user (printenv_cmd->length_returned, &llen,
-			    sizeof(long)))
+			    sizeof(long))) {
+	    kfree (buffer);
 	    rc = -EFAULT;
+	  }
 	  else {
 	    if (copy_to_user (printenv_cmd->buffer,
-			      buffer, len))
+			      buffer, len)) {
+	      kfree (buffer);
 	      rc = -EFAULT;
+	    }
 	  }
 	}
 	else rc = -UTRACER_EPAGES;
@@ -373,6 +431,9 @@ utracer_ioctl (struct inode * inode,
     break;
   case IF_CMD_PRINTEXE:
     rc = handle_printexe (&if_cmd.printexe_cmd);
+    break;
+  case IF_CMD_GETMEM:
+    rc = handle_getmem (&if_cmd.getmem_cmd);
     break;
   default:
     rc = -EINVAL;

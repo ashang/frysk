@@ -13,6 +13,7 @@
 void
 show_syscall (long type, long pid, struct pt_regs * regs)
 {
+  void * addr_to_show = NULL;
   fprintf (stdout, "\t[%ld] %s syscall: %s (",
 	   pid,
 	   ((IF_RESP_SYSCALL_EXIT_DATA == type) ?
@@ -26,12 +27,14 @@ show_syscall (long type, long pid, struct pt_regs * regs)
 	     regs->ebx,
 	     regs->ecx,
 	     regs->edx);
+    if (IF_RESP_SYSCALL_EXIT_DATA == type) addr_to_show = (void *)regs->ecx;
     break;
   case __NR_write:
     fprintf (stdout, "%ld, 0x%08x, %ld",
 	     regs->ebx,
 	     regs->ecx,
 	     regs->edx);
+    addr_to_show = (void *)regs->ecx;
     break;
   case __NR_close:
     fprintf (stdout, "%ld", regs->ebx);
@@ -41,6 +44,19 @@ show_syscall (long type, long pid, struct pt_regs * regs)
     break;
   }
   fprintf (stdout, ")\n");
+
+  if (addr_to_show) {
+    int rc;
+#define SC_BFFR_LEN 56
+    void * bffr = alloca (SC_BFFR_LEN);
+
+    rc = utracer_get_mem (pid, addr_to_show, SC_BFFR_LEN, &bffr);
+
+    if (0 == rc)
+      fprintf (stdout, "\t\tat addr %08x: \"%.*s\"\n",
+	       addr_to_show, SC_BFFR_LEN, (char *)bffr);
+    else uerror ("stscall getmem.");
+  }
 }
 
 void

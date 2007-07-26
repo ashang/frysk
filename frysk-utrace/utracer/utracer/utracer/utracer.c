@@ -167,6 +167,55 @@ utracer_get_pids (long * nr_pids_p, long ** pids_p)
 
 
 static int
+do_get_mem (long pid,
+	    void ** mem_p,
+	    void * addr,
+	    long mem_req)
+{
+  int irc;
+
+  if (!mem_p) return -EINVAL;
+
+  *mem_p  = malloc (mem_req);
+
+  getmem_cmd_s getmem_cmd = {IF_CMD_GETMEM,
+			     (long)client_pid,
+			     pid,
+			     mem_req,
+			     addr,
+			     *mem_p};
+  irc = ioctl (utracer_cmd_file_fd,
+	       sizeof(getmem_cmd_s),
+	       &getmem_cmd);
+
+  return irc;
+}
+
+int
+utracer_get_mem (long pid, void * addr, long length, void ** mem_p)
+{
+  int irc;
+  void * mem  = NULL;
+  
+  irc = do_get_mem (pid, &mem, addr, length);
+
+  if  (0 != irc) {
+    if (mem)  free (mem);
+    if (mem_p) *mem_p = NULL;
+  }
+  else {
+    if (mem_p) *mem_p = mem;
+  }
+
+  return irc;
+}
+
+
+
+/************************** printenv  ********************/
+
+
+static int
 do_get_env (long pid,
 	    char ** env_p,
 	    long env_req,
@@ -193,7 +242,6 @@ do_get_env (long pid,
 
   return irc;
 }
-
 
 int
 utracer_get_env (long pid, char ** env_p)

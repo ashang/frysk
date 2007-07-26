@@ -1,3 +1,9 @@
+Thu Jul 26 14:07:40 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-i386.c: Added a bit of code to read and display proc mem
+	corresponding to the buffer args of read and write syscalls.  Uses
+	the new /proc/<pid>/mem emulation.
+
 Thu Jul 26 11:49:36 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-utrace-if.c:

@@ -1,3 +1,10 @@
+Thu Jul 26 14:09:42 2007  Chris Moller  <cmoller@redhat.com>
+
+	* include/utracer-errmsgs.h: Minor bug  fix.
+	* module/utracer-ioctl.c:
+	* utracer/utracer.c: 
+	* include/utracer.h: Added stuff to support /proc/<pid>/mem emulation.
+
 Thu Jul 26 11:52:01 2007  Chris Moller  <cmoller@redhat.com>
 
 	* include/utracer.h: Fixed listpids stuff.

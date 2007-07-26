@@ -33,6 +33,7 @@ typedef enum {
   IF_CMD_SWITCHPID,
   IF_CMD_PRINTMMAP,
   IF_CMD_PRINTENV,
+  IF_CMD_GETMEM,
   IF_CMD_PRINTEXE,
   IF_CMD_SYSCALL,
   IF_CMD_QUIESCE,
@@ -125,6 +126,15 @@ typedef struct {
   long cmd;
   long utracing_pid;
   long utraced_pid;
+  long mem_len;
+  long mem_addr;
+  void * mem;
+} getmem_cmd_s;
+
+typedef struct {
+  long cmd;
+  long utracing_pid;
+  long utraced_pid;
   long buffer_len;
   long * length_returned;
   char * buffer;
@@ -176,6 +186,7 @@ typedef union {
   sync_cmd_s		sync_cmd;
   printenv_cmd_s	printenv_cmd;
   printexe_cmd_s	printexe_cmd;
+  getmem_cmd_s		getmem_cmd;
 } if_cmd_u;
 
 typedef enum {
@@ -289,12 +300,7 @@ typedef enum {
   UTRACER_EMAX,
 } utracer_errno_e;
 
-typedef struct {
-  long cmd;
-  long bffr_len;
-  char * bffr;
-} utracer_ioctl_s;
-
+/***************** public i/f ****************/
 
 void utracer_set_environment (pid_t client_pid, int cmd_fd);  //temp
 int utracer_get_printmmap (long pid,
@@ -305,5 +311,7 @@ int utracer_get_exe (long pid,
 		     char ** filename_p,
 		     char ** interp_p);
 int utracer_get_env (long pid, char ** env_p);
+int utracer_get_mem (long pid, void * addr, long length, void ** mem_p);
+int utracer_get_pids (long * nr_pids, long ** pids);
   
 #endif  /* UTRACER_H */
