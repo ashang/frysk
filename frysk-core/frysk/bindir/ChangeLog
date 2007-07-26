@@ -1,3 +1,8 @@
+2007-07-26  Petr Machata  <pmachata@redhat.com>
+
+	* fltrace.java: New file.
+	* fltrace.xml: New file.
+
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFhd.java (testDisassembler): Delete; moved to

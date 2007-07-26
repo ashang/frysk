@@ -1,3 +1,7 @@
+2007-07-26  Petr Machata  <pmachata@redhat.com>
+
+	* Ltrace.java: New file.
+
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFCatch.java: Update; frysk.proc.TestLib moved to
