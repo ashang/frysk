@@ -121,24 +121,6 @@ public class ElfSection {
 		return this.parent;
 	}
 
-	/**
-	 * Calls builder.symbol with each symbol in this section.
-	 * Only makes sense for .symtab or .dynsym sections.
-	 */
-	public void getSymbols(SymbolBuilder builder)
-	    throws ElfException
-	{
-		ElfSectionHeader header = this.getSectionHeader();
-		if (!(header.type == ElfSectionHeader.SHEADER_SHT_SYMTAB
-		      || header.type == ElfSectionHeader.SHEADER_SHT_DYNSYM))
-			throw new ElfException("Section " + header.name + " doesn't contain symbol table.");
-
-		long count = header.size / header.entsize;
-		// Note: ignoring special symbol entry on index 0.
-		for (long i = 1; i < count; ++i)
-			elf_getsymbol(i, header.link, builder);
-	}
-
 	
 	/**
 	 * 
@@ -158,5 +140,4 @@ public class ElfSection {
 	protected native long elf_getdata();
 	protected native long elf_rawdata();
 	protected native long elf_newdata();
-	protected native void elf_getsymbol(long __ndx, long str_sect_num, SymbolBuilder builder);
 }

@@ -1,3 +1,12 @@
+2007-07-26  Petr Machata  <pmachata@redhat.com>
+
+	* ElfSymbol.java, cni/ElfSymbol.cxx: new class
+	* ElfRel.java, cni/ElfRel.cxx: new class
+	* ElfSymbolBuilder.java: new interface
+	* ElfSection.java(getSymbols): moved to ElfSymbol
+	* cni/ElfSection.cxx(elf_getsymbol): moved to ElfSymbol
+	* ElfSectionHeader.java: changed SHEADER_ prefix to ELF_
+
 2007-07-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DwarfDie.java (getFrameBase): Scopes are retrieved on every
