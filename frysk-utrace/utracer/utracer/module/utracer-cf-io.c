@@ -352,7 +352,7 @@ handle_printenv (printenv_cmd_s * printenv_cmd)
 	long llen;
 	unsigned int len = mm->env_end - mm->env_start;
 
-	if (len > PAGE_SIZE) len = 1 + len/PAGE_SIZE;
+	if (len > PAGE_SIZE) len = (len + (PAGE_SIZE - 1))/PAGE_SIZE;
 	buffer = kmalloc (len, GFP_KERNEL);
 
 	ret = get_user_pages (task,
