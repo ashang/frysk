@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.rt;
+package frysk.debuginfo;
 
 import java.io.PrintWriter;
 import java.util.Arrays;

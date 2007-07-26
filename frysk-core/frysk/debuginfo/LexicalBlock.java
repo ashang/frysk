@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2005, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,27 +37,26 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.rt;
+/**
+ * Lexical Block
+ */
+
+package frysk.debuginfo;
 
 import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfo;
 
-/**
- * In DWARF a subroutine is used to refer to an entity that can either
- * be a concrete function (Subprogram) or an inlined function 
- * (InlinedSubprogram).
- */
-public class Subroutine extends Scope
+
+public class LexicalBlock extends Scope
 {
 
-  public Subroutine (DwarfDie die, DebugInfo debugInfo)
+  public LexicalBlock(){
+    super();  
+  }
+  
+  public LexicalBlock (DwarfDie die, DebugInfo debugInfo)
   {
     super(die, debugInfo);
   }
-
-  public Subroutine ()
-  {
-  }
-
-  
+     
 }

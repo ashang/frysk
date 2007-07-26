@@ -62,8 +62,6 @@ import frysk.dwfl.DwflCache;
 import frysk.expr.CppSymTab;
 import frysk.proc.Isa;
 import frysk.proc.Task;
-import frysk.rt.Subprogram;
-import frysk.rt.Variable;
 import frysk.stack.Frame;
 import frysk.sys.Errno;
 import frysk.value.ArithmeticType;

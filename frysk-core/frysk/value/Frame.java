@@ -43,7 +43,7 @@
 
 package frysk.value;
 
-import frysk.rt.Subprogram;
+import frysk.debuginfo.Subprogram;
 
 class Frame
 {

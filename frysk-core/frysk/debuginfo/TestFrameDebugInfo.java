@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.rt;
+package frysk.debuginfo;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -111,16 +111,22 @@ public class TestFrameDebugInfo
   
   public void testFrameScopes ()
   {
-    if(unresolved(4677))
-        return;
+//    if(unresolved(4677))
+//        return;
 
     Task task = getStoppedTask("funit-scopes");
     Frame frame = StackFactory.createFrame(task);
-    frame = frame.getOuter();
     
     Dwfl dwfl = DwflCache.getDwfl(task);
     DwflDieBias bias = dwfl.getDie(frame.getAdjustedAddress());
     DwarfDie[] scopes = bias.die.getScopes(frame.getAdjustedAddress() - bias.bias);
+    System.out.println("TestFrameDebugInfo.testFrameScopes() pc 0x" + Long.toHexString(frame.getAdjustedAddress()));
+    System.out.println("TestFrameDebugInfo.testFrameScopes() outer pc 0x" + Long.toHexString(frame.getOuter().getAdjustedAddress()));
+     
+    for (int i = 0; i < scopes.length; i++) {
+	System.out.println("TestFrameDebugInfo.testFrameScopes() " + DwTagEncodings.toName(scopes[i].getTag()));
+    }
+    
     
     assertEquals("number of scopes", 3, scopes.length);
     

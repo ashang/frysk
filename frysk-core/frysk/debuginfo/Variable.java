@@ -38,7 +38,7 @@
 // exception.
 
 
-package frysk.rt;
+package frysk.debuginfo;
 
 import java.io.PrintWriter;
 

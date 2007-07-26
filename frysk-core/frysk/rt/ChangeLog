@@ -1,5 +1,15 @@
 2007-07-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* Variable.java:  Moved to frysk.debuginf.
+	* TestFrameDebugInfo.java: Ditto.
+	* Subroutine.java: Ditto.
+	* Subprogram.java: Ditto.
+	* Scope.java: Ditto.
+	* LexicalBlock.java: Ditto.
+	* InlinedSubroutine.java: Ditto.
+
+2007-07-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* Variable.java (getValue): added handling for NameNotFoundException 
 	(toPrint): New function.
 	* Scope.java (toPrint): Added variable printing.

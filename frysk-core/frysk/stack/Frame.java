@@ -47,13 +47,12 @@ import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
 import lib.unwind.Cursor;
 import frysk.debuginfo.DebugInfo;
+import frysk.debuginfo.Subprogram;
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.rt.Line;
-import frysk.rt.Subprogram;
-import frysk.symtab.SymbolFactory;
 import frysk.symtab.Symbol;
-
+import frysk.symtab.SymbolFactory;
 import frysk.value.Value;
 
 public abstract class Frame

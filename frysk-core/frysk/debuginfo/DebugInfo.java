@@ -45,7 +45,7 @@ import frysk.expr.CppParser;
 import frysk.expr.CppSymTab;
 import frysk.expr.CppTreeParser;
 import frysk.proc.Proc;
-import frysk.rt.Subprogram;
+import frysk.debuginfo.Subprogram;
 import frysk.stack.Frame;
 import frysk.value.FunctionType;
 import frysk.value.Value;

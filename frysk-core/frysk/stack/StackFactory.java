@@ -45,10 +45,10 @@ import java.util.WeakHashMap;
 
 import lib.dwfl.Dwfl;
 import lib.unwind.Cursor;
+import frysk.debuginfo.Subprogram;
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.rt.Line;
-import frysk.rt.Subprogram;
 
 public class StackFactory
 {  
