@@ -46,57 +46,61 @@ import frysk.proc.Manager;
 import frysk.sys.Signal;
 
 /**
- * Creates an attached process halted at it's first instruction
- * (just after the exec call to start it running).
+ * Creates an attached process halted at it's entry point address
+ * (i.e., the program's first instruction).
  */
 public class DaemonBlockedAtEntry extends TestLib {
-  public final Task mainTask;
+    private final Task mainTask;
   
-  TaskObserver.Execed execBlockingObserver;
-  
-  /**
-   * Create an attached process blocked at it's entry-point (i.e., just after
-   * the exec).
-   */
-  public DaemonBlockedAtEntry (String[] argv) {
-    // Create the child.
-    AckProcess child = new DetachedAckProcess((String) null, argv);
-    this.mainTask = child.findTaskUsingRefresh(true);
-    // Create and add an exec observer that blocks the task.
-    class ExecBlockingObserver
-      extends TaskObserverBase
-      implements TaskObserver.Execed
+    private static class ExecBlockingObserver
+	extends TaskObserverBase
+	implements TaskObserver.Execed
     {
-      public void addedTo (Object o) {
-	super.addedTo(o);
-	Manager.eventLoop.requestStop();
-      }
-      
-      public Action updateExeced (Task task) {
-	Manager.eventLoop.requestStop();
-	return Action.BLOCK;
-      }
+	private boolean fired = false;
+	public void addedTo (Object o) {
+	    super.addedTo(o);
+	    Manager.eventLoop.requestStop();
+	}
+	public Action updateExeced (Task task) {
+	    if (fired)
+		// Only trigger the first time.
+		return Action.CONTINUE;
+	    Manager.eventLoop.requestStop();
+	    fired = true;
+	    return Action.BLOCK;
+	}
     }
-    execBlockingObserver = new ExecBlockingObserver();
-	    mainTask.requestAddExecedObserver(execBlockingObserver);
-	    assertRunUntilStop("add exec observer to DaemonBlockedAtEntry");
-	    // Run to the exec call.
-	    Signal.tkill(mainTask.getTid(), execSig);
-	    assertRunUntilStop("run to exec");
-  }
+    private final TaskObserver.Execed execBlockingObserver
+	= new ExecBlockingObserver();
   
-  /**
-   * Resume the attached process.
-   */
-  public void requestUnblock() {
-    mainTask.requestUnblock(execBlockingObserver);
-  }
+    /**
+     * Create an attached process blocked at it's entry-point (i.e., just after
+     * the exec).
+     */
+    public DaemonBlockedAtEntry (String[] argv) {
+	// Create the child.
+	AckProcess child = new DetachedAckProcess((String) null, argv);
+	this.mainTask = child.findTaskUsingRefresh(true);
+	// Add the exec observer that will block the task.
+	mainTask.requestAddExecedObserver(execBlockingObserver);
+	assertRunUntilStop("add exec observer to DaemonBlockedAtEntry");
+	// Run to the exec call.
+	Signal.tkill(mainTask.getTid(), execSig);
+	assertRunUntilStop("run to exec");
+    }
+  
+    /**
+     * Resume the attached process.
+     */
+    public void requestUnblock() {
+	mainTask.requestUnblock(execBlockingObserver);
+    }
 
-  public void requestRemoveBlock() {
-    mainTask.requestDeleteExecedObserver(execBlockingObserver);
-  }
+    public void requestRemoveBlock() {
+	mainTask.requestDeleteExecedObserver(execBlockingObserver);
+    }
   
-  public Task getMainTask () {
-    return this.mainTask;
-  }
+    public Task getMainTask () {
+	return this.mainTask;
+    }
 }

@@ -1,3 +1,9 @@
+2007-07-26  Andrew Cagney  <cagney@redhat.com>
+
+	* DaemonBlockedAtEntry.java (ExecBlockingObserver): Private static
+	class.  Only block the exec event the first time it fires.
+	(execBlockingObserver, mainTask): Make private.
+	
 2007-07-26  Mark Wielaard  <mwielaard@redhat.com>
 
 	* DaemonBlockedAtEntry.java: New file.
