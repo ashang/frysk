@@ -1,3 +1,8 @@
+Wed Jul 25 21:01:21 2007  Chris Moller  <cmoller@redhat.com>
+
+	* module/utracer-cf-io.c: Fixed a rather egregious abuse of the
+	length arg of get_user_pages().
+
 Wed Jul 25 17:22:20 2007  Chris Moller  <cmoller@redhat.com>
 
 	* utracer: New directory added to hold public i/f code to the
