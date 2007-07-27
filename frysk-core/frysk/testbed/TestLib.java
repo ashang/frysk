@@ -893,18 +893,6 @@ public class TestLib
 	    }
 	}
     }
-    
-    /**
-     * Observer that just tells the event loop to stop.
-     */
-    protected class StopEventLoopObserver
-	implements Observer
-    {
-	public void update (Observable o, Object obj) {
-	    Manager.eventLoop.requestStop();
-	    o.deleteObserver(this);
-	}
-    }
 
     /**
      * The host being used by the current test.

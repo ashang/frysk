@@ -1,5 +1,7 @@
 2007-07-27  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (StopEventLoopObserver): Delete.
+
 	* TestLib.java (AttachedSyscallDaemonProcess): Delete.
 
 2007-07-26  Andrew Cagney  <cagney@redhat.com>
