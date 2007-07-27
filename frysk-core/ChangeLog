@@ -1,3 +1,8 @@
+2007-07-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* frysk/stepping/TestStepping.java (SteppingTest.runAssertions): 
+	Removed 'public' from function signiture.
+
 2007-07-23  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (frysk/pkglibdir/funit-symbols-nodebug)
