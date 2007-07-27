@@ -475,12 +475,12 @@ public class MemoryWindow
     {
       public void entryEvent (EntryEvent arg0)
       {
-        if (arg0.getType() == EntryEvent.Type.CHANGED)
+        if (arg0.getType() == EntryEvent.Type.ACTIVATE)
           {
             if (refreshLock)
               return;
             
-            String str = arg0.getText();
+            String str = fromBox.getText();
             try
             {
               double d = (double) Long.parseLong(str, 16);
@@ -499,12 +499,12 @@ public class MemoryWindow
     {
       public void entryEvent (EntryEvent arg0)
       {
-        if (arg0.getType() == EntryEvent.Type.CHANGED)
+        if (arg0.getType() == EntryEvent.Type.ACTIVATE)
           {
             if (refreshLock)
               return;
             
-              String str = arg0.getText();
+              String str = toBox.getText();
               try
               {
                 double d = (double) Long.parseLong(str, 16);
@@ -874,7 +874,7 @@ public class MemoryWindow
       {
         TreeIter iter = model.getFirstIter();
 
-        for (int i = (int) lastKnownFrom; i < (int) val; i++)
+        for (long i = (long) lastKnownFrom; i < (long) val; i++)
           {
             model.removeRow(iter);
             iter = iter.getNextIter();
@@ -931,6 +931,7 @@ public class MemoryWindow
       }
 
     this.toBox.setText(Long.toHexString((long) val));
+    this.toSpin.setValue(val);
     refreshList();
   }
 

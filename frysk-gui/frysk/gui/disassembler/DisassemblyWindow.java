@@ -345,12 +345,12 @@ public class DisassemblyWindow
     {
       public void entryEvent (EntryEvent arg0)
       {
-        if (arg0.getType() == EntryEvent.Type.CHANGED)
+        if (arg0.getType() == EntryEvent.Type.ACTIVATE)
           {
             if (refreshLock)
               return;
           
-            String str = arg0.getText();
+            String str = fromBox.getText();
             try
             {
               double d = (double) Long.parseLong(str, 16);
@@ -368,12 +368,12 @@ public class DisassemblyWindow
     {
       public void entryEvent (EntryEvent arg0)
       {
-        if (arg0.getType() == EntryEvent.Type.CHANGED)
+        if (arg0.getType() == EntryEvent.Type.ACTIVATE)
           {
             if (refreshLock)
               return;
             
-              String str = arg0.getText();
+              String str = toBox.getText();             
               try
               {
                 double d = (double) Long.parseLong(str, 16);
@@ -592,6 +592,14 @@ public class DisassemblyWindow
         this.lastPath.next();
         if (ins != null)
           {
+            if (li.hasNext())
+                ins = (Instruction) li.next();
+              else
+                {
+                  this.toSpin.setValue((double) ins.address);
+                  this.lastKnownTo = ins.address;
+                  ins = null;
+                }
             model.setValue(iter, (DataColumnString) cols[1],
                            "<pc+" + (ins.address - this.pc) + ">: ");
             model.setValue(iter, (DataColumnString) cols[LOC],
@@ -599,14 +607,6 @@ public class DisassemblyWindow
             model.setValue(iter, (DataColumnString) cols[2], ins.instruction);
             model.setValue(iter, (DataColumnObject) cols[3], ins);
             
-            if (li.hasNext())
-              ins = (Instruction) li.next();
-            else
-              {
-                this.toSpin.setValue((double) ins.address);
-                this.lastKnownTo = ins.address;
-                ins = null;
-              }
           }
         else
           model.setValue(iter, (DataColumnString) cols[1], "");
@@ -679,9 +679,10 @@ public class DisassemblyWindow
           }
       }
     
-    refreshList();
+    this.fromSpin.setValue(val);
     this.lastKnownFrom = val;
     this.fromBox.setText(Long.toHexString((long) val));
+    refreshList();
   }
 
   boolean toToggle = false;

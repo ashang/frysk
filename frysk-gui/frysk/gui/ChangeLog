@@ -1,3 +1,13 @@
+2007-07-27  Zhao Shujing  <pearly.zhao@oracle.com>
+
+	* memory/MemoryWindow.java: fromBox and toBox can be edited. Fixes
+	#4612.
+	* memory/MemoryWindow.java(handleFromSpin): synchronously display
+	column and fromBox when adjust the fromSpin.
+	* disassembler/DisassemblyWindow.java: fromBox and toBox can be edited.
+	* disassembler/DisassemblyWindow.java(rowAppend): synchronously display
+	column and toBox when adjust the toSpin.
+
 2007-07-27  Mike Cvet  <mcvet@redhat.com>
 
 	* register/RegisterWindowFactory.java: Updated to reference SteppingEngine 
