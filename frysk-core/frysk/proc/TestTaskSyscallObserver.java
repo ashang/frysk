@@ -50,6 +50,7 @@ import frysk.sys.Pid;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.testbed.TestLib;
+import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.TaskObserverBase;
 import frysk.testbed.DaemonBlockedAtEntry;
 

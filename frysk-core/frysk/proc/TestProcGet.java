@@ -47,6 +47,7 @@ import java.util.Iterator;
 import java.util.List;
 import frysk.testbed.TearDownFile;
 import frysk.testbed.TestLib;
+import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.DaemonBlockedAtEntry;
 
 /**

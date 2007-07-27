@@ -43,6 +43,7 @@ package frysk.proc;
 import java.util.logging.Level;
 import frysk.testbed.SignalWaiter;
 import frysk.testbed.TestLib;
+import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.Fibonacci;
 import frysk.testbed.TaskSet;
 import frysk.testbed.TaskObserverBase;

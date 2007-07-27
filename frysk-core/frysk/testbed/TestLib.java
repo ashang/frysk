@@ -860,40 +860,7 @@ public class TestLib
 	    }
 	}
     }
-    
-    /**
-     * An observer that stops the eventloop when the process with the
-     * given pid is removed.
-     */
-    public static class StopEventLoopWhenProcRemoved
-	implements Observer
-    {
-	public boolean p;
-
-	int pid;
-
-	public StopEventLoopWhenProcRemoved (int pid) {
-	    this.pid = pid;
-	    Manager.host.observableProcRemovedXXX.addObserver(this);
-	}
-
-	public void update (Observable o, Object obj) {
-	    Proc proc = (Proc) obj;
-	    if (proc.getPid() == this.pid) {
-		// Shut things down.
-		logger.log(Level.FINE,
-			   "{0} update {1} has been removed stopping event loop\n",
-			   new Object[] { this, proc });
-		Manager.eventLoop.requestStop();
-		p = true;
-	    } else {
-		logger.log(Level.FINE,
-			   "{0} update {1} has been removed NOT stopping event loop\n",
-			   new Object[] { this, proc });
-	    }
-	}
-    }
-
+  
     /**
      * The host being used by the current test.
      */

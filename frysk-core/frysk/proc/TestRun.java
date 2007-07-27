@@ -42,6 +42,7 @@ package frysk.proc;
 
 import frysk.testbed.TearDownFile;
 import frysk.testbed.TestLib;
+import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.TaskSet;
 import frysk.testbed.TaskObserverBase;
 

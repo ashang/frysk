@@ -1,3 +1,16 @@
+2007-07-27  Andrew Cagney  <cagney@redhat.com>
+
+	* TestExec.java: Update;
+	frysk.testbed.TestLib.StopEventLoopWhenProcRemoved moved to
+	frysk.testbed.StopEventLoopWhenProcRemoved.
+	* TestProcGet.java: Ditto.
+	* TestRun.java: Ditto.
+	* TestTaskClonedObserver.java: Ditto.
+	* TestTaskObserverBlocked.java: Ditto.
+	* TestTaskForkedObserver.java: Ditto.
+	* TestTaskSyscallObserver.java: Ditto.
+	* TestTaskTerminateObserver.java: Ditto.
+	
 2007-07-27  Mike Cvet  <mcvet@redhat.com>
 
 	* TestTaskObserverInstruction.java: Updated to reference frysk.stepping.
