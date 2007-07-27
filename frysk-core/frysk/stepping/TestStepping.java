@@ -352,9 +352,6 @@ public class TestStepping extends TestLib {
 	if (unresolvedOnPPC(3277))
 	    return;
 
-	if (unresolved(4289))
-	    return;
-
 	/** SteppingTest Object definition - tell the stepping test
 	 * what to look for at the completion of the test. */
 	class LineStepSigLongJmpTest implements SteppingTest {
@@ -371,6 +368,11 @@ public class TestStepping extends TestLib {
 	    public void runAssertions() {
 
 		Frame frame = StackFactory.createFrame(testTask);
+		if (frame.getLines().length == 0)
+		{
+		    se.stepInstruction(testTask);
+		    return;
+		}
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 		Manager.eventLoop.requestStop();

@@ -16,3 +16,5 @@
 	* TestStepping.java: New file. Fixes #4853.
 	
 	* TestStepping.java: Marked a couple of tests as broken, via 4855.
+	
+	* TestStepping.java (testStepSigLongJmp): Enabled test.
