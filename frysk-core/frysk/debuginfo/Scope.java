@@ -154,6 +154,8 @@ public class Scope
             writer.println();
 	    writer.print(indentString);
 	    variable.toPrint(writer, frame);
+	    writer.print(" ");
+	    variable.printLineCol(writer);
 	}else{
 	    String lineString;
 	    try{

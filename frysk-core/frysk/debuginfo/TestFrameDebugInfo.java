@@ -41,6 +41,7 @@ package frysk.debuginfo;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 import javax.naming.NameNotFoundException;
@@ -54,10 +55,10 @@ import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.testbed.TestLib;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 import frysk.testbed.DaemonBlockedAtEntry;
+import frysk.testbed.TestLib;
 
 public class TestFrameDebugInfo
     extends TestLib
@@ -138,7 +139,6 @@ public class TestFrameDebugInfo
   
   public void testValues() throws NameNotFoundException
   {
-      System.out.println();
     Task task = getStoppedTask("funit-stacks-values");
     Subprogram subprogram;
     Frame frame;
@@ -194,6 +194,61 @@ public class TestFrameDebugInfo
     
   }
 
+  public void testColNumbers(){
+      
+  }
+  
+  public void testLineNumbers(){
+      Task task = getStoppedTask("funit-stacks-linenum");
+      
+      Subprogram subprogram;
+      Frame frame;
+      Variable variable;
+      
+      // inner most frame
+      frame = StackFactory.createFrame(task);
+      
+      subprogram = frame.getSubprogram();
+      assertEquals("Subprogram name", subprogram.getName(), "first");
+      Iterator iterator = subprogram.getParameters().iterator();
+      
+      variable = (Variable) iterator.next();
+      assertNotNull(variable);
+      assertEquals("Name", variable.getVariable().getText(), "param1");
+      assertEquals("line number", variable.getLineNumber(), 3);
+      
+      variable = (Variable) iterator.next();
+      assertNotNull(variable);
+      assertEquals("Name", variable.getVariable().getText(), "param2");
+      assertEquals("line number", variable.getLineNumber(), 3);
+      
+      frame = frame.getOuter();
+      
+      subprogram = frame.getSubprogram();
+      assertEquals("Subprogram name", subprogram.getName(), "main");
+      iterator = subprogram.getVariables().iterator();
+      
+      variable = (Variable) iterator.next();
+      assertNotNull(variable);
+      assertEquals("Name", variable.getVariable().getText(), "var1");
+      assertEquals("line number", variable.getLineNumber(), 9);
+      
+      variable = (Variable) iterator.next();
+      assertNotNull(variable);
+      assertEquals("Name", variable.getVariable().getText(), "var2");
+      assertEquals("line number", variable.getLineNumber(), 9);
+      
+      variable = (Variable) iterator.next();
+      assertNotNull(variable);
+      assertEquals("Name", variable.getVariable().getText(), "var3");
+      assertEquals("line number", variable.getLineNumber(), 9);
+      
+      variable = (Variable) iterator.next();
+      assertNotNull(variable);
+      assertEquals("Name", variable.getVariable().getText(), "var4");
+      assertEquals("line number", variable.getLineNumber(), 10);
+  }
+  
   public Task getStoppedTask(){
     return this.getStoppedTask("funit-stacks");
   }

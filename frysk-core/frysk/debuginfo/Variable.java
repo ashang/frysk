@@ -44,10 +44,8 @@ import java.io.PrintWriter;
 
 import javax.naming.NameNotFoundException;
 
+import lib.dwfl.DwException;
 import lib.dwfl.DwarfDie;
-import frysk.debuginfo.DebugInfo;
-import frysk.debuginfo.ValueUavailableException;
-import frysk.debuginfo.VariableOptimizedOutException;
 import frysk.stack.Frame;
 import frysk.value.Type;
 import frysk.value.Value;
@@ -111,6 +109,14 @@ public class Variable
     return typeDie;
   }
 
+  public long getLineNumber(){
+      return this.variableDie.getDeclLine();
+  }
+  
+  public int getColumnNumber(){
+      return this.variableDie.getDeclColumn();
+  }
+  
   public void toPrint(PrintWriter printWriter, Frame frame){
       printWriter.print(this.getType() + " " + this.getVariable().getText() + " = ");
       try{
@@ -126,6 +132,22 @@ public class Variable
       catch (RuntimeException e) {
 	  printWriter.print("< ERROR >");
       }
+  }
+  
+  public void printLineCol(PrintWriter printWriter){
+      printWriter.print("line#");
+      try {
+	  printWriter.print(this.getLineNumber());
+      } catch (DwException e) {
+	  printWriter.print("< error >");
+      }
+      
+//      printWriter.print(" col#");
+//      try {
+//	  printWriter.print(this.getColumnNumber());
+//      } catch (DwException e) {
+//	  printWriter.print("< error >");
+//      }
   }
   
   public Value getValue(Frame frame)
