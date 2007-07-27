@@ -1,3 +1,7 @@
+2007-07-27  Nurdin Premji  <npremji@redhat.com>
+
+	* UnwindCallbacks.java: Removed.
+
 2007-07-16  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/UnwindH.hxx: Update, lib.elf and lib.dw merged into
