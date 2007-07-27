@@ -14,6 +14,13 @@
 	* TaskStepEngine.java: Ditto.
 	* TestSteppingEngine.java: Ditto.
 	* TestStepping.java: Deleted, new file in frysk.stepping. Fixes #4853.
+	* TestUpdatingDisplayValue.java: Update references to frysk.stepping.
+	* TestDisplayValue.java: Ditto.
+	* Breakpoint.java: Ditto.
+	* SourceBreakpoint.java: Ditto.
+	* BreakpointManager.java: Ditto.
+	* UpdatingDisplayValue.java: Ditto.
+	* DisplayManager.java: Ditto.
 
 2007-07-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
