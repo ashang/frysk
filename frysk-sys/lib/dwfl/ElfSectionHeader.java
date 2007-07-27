@@ -99,6 +99,18 @@ public  class ElfSectionHeader {
 	public static final long ELF_SHF_ORDERED = (1 << 30);
 	public static final long ELF_SHF_EXCLUDE = (1 << 31);
 
+	// Special values of section index number.
+	public static final long ELF_SHN_UNDEF = 0;
+	public static final long ELF_SHN_LORESERVE = 0xff00;
+	public static final long ELF_SHN_LOPROC = 0xff00;
+	public static final long ELF_SHN_HIPROC = 0xff1f;
+	public static final long ELF_SHN_LOOS = 0xff20;
+	public static final long ELF_SHN_HIOS = 0xff3f;
+	public static final long ELF_SHN_ABS = 0xfff1;
+	public static final long ELF_SHN_COMMON = 0xfff2;
+	public static final long ELF_SHN_XINDEX = 0xffff;
+	public static final long ELF_SHN_HIRESERVE = 0xffff;
+
 	public String name;
 	public long nameAsNum;
 	public int type;
