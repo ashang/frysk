@@ -881,6 +881,9 @@ public class TestStepping extends TestLib {
 
 	if (unresolvedOnPPC(3277))
 	    return;
+	
+	if (unresolved(4855))
+	    return;
 
 	/** SteppingTest Object definition - tell the stepping test
 	 * what to look for at the completion of the test. */
@@ -947,7 +950,10 @@ public class TestStepping extends TestLib {
 
 	if (unresolvedOnPPC(3277))
 	    return;
-
+	
+	if (unresolved(4855))
+	    return;
+	
 	/** SteppingTest Object definition - tell the stepping test
 	 * what to look for at the completion of the test. */
 	class StepOutASMFunctioNTest implements SteppingTest {
@@ -1144,7 +1150,6 @@ public class TestStepping extends TestLib {
 	public void updateHit(SourceBreakpoint breakpoint, Task task,
 		long address) {
 
-	    	    System.err.println("breakpoint UPDATEHIT");
 	    //	    currentTest.setUp(task);
 	    //	    testStarted = true;
 	    Manager.eventLoop.requestStop();
