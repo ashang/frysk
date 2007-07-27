@@ -1,3 +1,7 @@
+2007-07-27  Mike Cvet  <mcvet@redhat.com>
+
+	* frysk-asm.h: CFA adjustment fix.
+
 2007-07-24  Mike Cvet  <mcvet@redhat.com>
 
 	* frysk-asm.h: Added CFI directives for x86 and x86_64.

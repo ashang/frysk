@@ -502,7 +502,7 @@
 	pushl %ebp ; \
 	.cfi_adjust_cfa_offset 4; \
 	movl %esp, %ebp; \
-	.cfi_offset %ebp, -4
+	.cfi_offset %ebp, 4
 #elif defined __x86_64__
 #  define FUNCTION_PROLOGUE(FUNC,SLOTS) \
 	 pushq %rbp; \
