@@ -49,6 +49,7 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.testbed.TestLib;
 import frysk.stack.StackFactory;
+import frysk.stepping.SteppingEngine;
 import frysk.value.Value;
 import frysk.testbed.DaemonBlockedAtEntry;
 

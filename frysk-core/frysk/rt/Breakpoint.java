@@ -47,6 +47,7 @@ import frysk.proc.Action;
 import frysk.proc.Observable;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
+import frysk.stepping.SteppingEngine;
 
 public class Breakpoint implements TaskObserver.Code 
 {
@@ -109,7 +110,7 @@ public class Breakpoint implements TaskObserver.Code
     return Action.BLOCK;
   }
 
-  int getTriggered ()
+  public int getTriggered ()
   {
     return triggered;
   }
@@ -208,7 +209,7 @@ public class Breakpoint implements TaskObserver.Code
       
       synchronized (SteppingEngine.class)
 	{
-	  steppingEngine.runningTasks.remove(task);
+	  steppingEngine.getRunningTasks().remove(task);
 	}
       
       synchronized (this)

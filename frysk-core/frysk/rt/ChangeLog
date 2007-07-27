@@ -1,6 +1,23 @@
+2006-07-27  Mike Cvet  <mcvet@redhat.com>
+
+	* states/InstructionStepState.java: Moved from here to frysk.stepping.
+	* states/LineStepState.java: Ditto.
+	* states/NextInstructionStepState.java: Ditto.
+	* states/NextInstructionStepTestState.java: Ditto.
+	* states/RunningState.java: Ditto.
+	* states/State.java: Ditto.
+	* states/StepAdvanceState.java: Ditto.
+	* states/StepOutState.java: Ditto.
+	* states/StepOverState.java: Ditto.
+	* states/StoppedState.java: Ditto.
+	* SteppingEngine.java: Moved from here to frysk.stepping.
+	* TaskStepEngine.java: Ditto.
+	* TestSteppingEngine.java: Ditto.
+	* TestStepping.java: Deleted, new file in frysk.stepping. Fixes #4853.
+
 2007-07-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
-	* Variable.java:  Moved to frysk.debuginf.
+	* Variable.java:  Moved to frysk.debuginfo.
 	* TestFrameDebugInfo.java: Ditto.
 	* Subroutine.java: Ditto.
 	* Subprogram.java: Ditto.

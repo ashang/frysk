@@ -51,6 +51,8 @@ import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.stack.FrameIdentifier;
+import frysk.stepping.SteppingEngine;
+import frysk.stepping.TaskStepEngine;
 
 /**
  * An UpdatingDisplayValue is nearly identical to a DisplayValue, except that an

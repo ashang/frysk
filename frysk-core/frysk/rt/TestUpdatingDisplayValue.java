@@ -51,6 +51,7 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.testbed.TestLib;
 import frysk.stack.StackFactory;
+import frysk.stepping.SteppingEngine;
 import frysk.testbed.DaemonBlockedAtEntry;
 
 public class TestUpdatingDisplayValue extends TestLib

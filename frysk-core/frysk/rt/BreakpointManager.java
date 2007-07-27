@@ -54,6 +54,7 @@ import frysk.proc.ProcObserver;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
+import frysk.stepping.SteppingEngine;
 import lib.dwfl.DwarfDie;
 
 /**

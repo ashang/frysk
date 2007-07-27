@@ -46,6 +46,7 @@ import java.util.Map;
 
 import frysk.proc.Task;
 import frysk.stack.FrameIdentifier;
+import frysk.stepping.SteppingEngine;
 
 /**
  * The DisplayManager is in charge of keeping track of the UpdatingDisplayValues

@@ -48,6 +48,7 @@ import java.util.LinkedList;
 
 import frysk.proc.Task;
 import frysk.proc.Proc;
+import frysk.stepping.SteppingEngine;
 
 /**
  * Class representing a breakpoint at at location in a program. It
