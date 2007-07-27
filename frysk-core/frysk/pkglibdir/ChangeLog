@@ -1,3 +1,8 @@
+2007-07-27  Mike Cvet  <mcvet@redhat.com>
+
+	* funit-stepping-asm.S: Added more tokens. Removed loop.
+	* funit-rt-stepper.S: Removed loop.
+
 2007-07-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* funit-stacks-linenum.c: New test program.

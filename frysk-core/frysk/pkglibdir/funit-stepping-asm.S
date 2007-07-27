@@ -42,7 +42,7 @@
 
     FUNCTION_BEGIN(second,0)
     FUNCTION_PROLOGUE(second,0)                       	// _stepASMFunctionEntry_
-	NO_OP												
+	NO_OP												// _stepASMFunctionStepOut_
 	NO_OP
 	NO_OP	;  NO_OP ; NO_OP
 	FUNCTION_EPILOGUE(second, 0)
@@ -55,14 +55,9 @@
 	NO_OP
 	NO_OP	; NO_OP ; NO_OP
 	NO_OP
-	JUMP	(.L4)
-.L5:	
-	NO_OP
 	FUNCTION_CALL(second)								// _stepASMFunctionCall_
-.L4:
 	NO_OP												// _stepASMFunctionReturned_
 	NO_OP
-	JUMP	(.L5)
 	FUNCTION_EPILOGUE(first, 0)
 	FUNCTION_RETURN(first, 0)
 	FUNCTION_END(first, 0)
