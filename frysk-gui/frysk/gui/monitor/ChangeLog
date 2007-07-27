@@ -1,3 +1,8 @@
+2007-07-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* eventviewer/Event.java (setStackFrame): Passed printScoureLibrary
+	boolean to StackFactory.printStackTrace().
+
 2007-07-27  Mike Cvet  <mcvet@redhat.com>
 
 	* ShowMemWin.java: Updated to reference SteppingEngine move to 
