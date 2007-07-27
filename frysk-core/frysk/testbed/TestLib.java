@@ -773,55 +773,6 @@ public class TestLib
     }
 
     /**
-     * Observer that counts the number of processes added and removed.
-     * Automaticaly registers itself.
-     */
-    public class ProcCounter
-    {
-	// Base count.
-	public final LinkedList added = new LinkedList();
-
-	public final LinkedList removed = new LinkedList();
-
-	private boolean descendantsOnly;
-
-	/**
-	 * Create a new ProcCounter counting processes added and
-	 * removed. If descendantsOnly, only count children of this
-	 * process.
-	 */
-	public ProcCounter (boolean descendantsOnly) {
-	    this.descendantsOnly = descendantsOnly;
-	    // Set up observers to count proc add and delete events.
-	    Manager.host.observableProcAddedXXX.addObserver(new Observer() {
-		    public void update (Observable o, Object obj) {
-			Proc proc = (Proc) obj;
-			if (ProcCounter.this.descendantsOnly
-			    && ! isDescendantOfMine(proc))
-			    return;
-			added.add(proc);
-		    }
-		});
-	    Manager.host.observableProcRemovedXXX.addObserver(new Observer() {
-		    public void update (Observable o, Object obj) {
-			Proc proc = (Proc) obj;
-			if (ProcCounter.this.descendantsOnly
-			    && ! isDescendantOfMine(proc))
-			    return;
-			removed.add(proc);
-		    }
-		});
-	}
-	
-	/**
-	 * Count all proc's added and removed.
-	 */
-	public ProcCounter () {
-	    this(false);
-	}
-    }
-
-    /**
      * Watch for events involving the specified PID process; count the
      * number of events seen.
      */

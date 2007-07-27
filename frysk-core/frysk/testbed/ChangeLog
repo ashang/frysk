@@ -1,5 +1,8 @@
 2007-07-27  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (ProcCounter): Delete; moved to ProcCounter.java.
+	* ProcCounter.java: New file.
+
 	* TestLib.java (StopEventLoopWhenProcRemoved): Delete.
 
 	* StopEventLoopWhenProcRemoved.java: New file; extracted from

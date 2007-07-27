@@ -41,6 +41,7 @@
 package frysk.proc;
 
 import frysk.testbed.TestLib;
+import frysk.testbed.ProcCounter;
 import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.Fibonacci;
 import frysk.testbed.TaskObserverBase;

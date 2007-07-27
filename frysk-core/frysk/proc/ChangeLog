@@ -1,5 +1,9 @@
 2007-07-27  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRun.java: Update. frysk.testbed.TestLib.ProcCounter moved to
+	frysk.testbed.ProcCounter.
+	* TestTaskForkedObserver.java: Ditto.
+	
 	* TestExec.java: Update;
 	frysk.testbed.TestLib.StopEventLoopWhenProcRemoved moved to
 	frysk.testbed.StopEventLoopWhenProcRemoved.
