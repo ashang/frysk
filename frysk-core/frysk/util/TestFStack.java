@@ -54,6 +54,7 @@ import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcCoreAction;
 import frysk.proc.dead.LinuxHost;
+import frysk.testbed.TestLib;
 
 public class TestFStack
     extends TestLib

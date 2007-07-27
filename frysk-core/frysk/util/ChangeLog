@@ -1,3 +1,10 @@
+2007-07-27  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java: Delete file.
+	* StressTestFStack.java: Extend frysk.testbed.TestLib.
+	* TestFStack.java: Ditto.
+	* TestFCore.java: Ditto.
+
 2007-07-26  Petr Machata  <pmachata@redhat.com>
 
 	* Ltrace.java: New file.

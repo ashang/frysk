@@ -62,6 +62,7 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.sys.proc.MapsBuilder;
+import frysk.testbed.TestLib;
 
 public class TestFCore
     extends TestLib

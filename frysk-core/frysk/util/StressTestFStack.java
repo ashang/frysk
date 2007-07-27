@@ -49,6 +49,7 @@ import frysk.event.RequestStopEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
+import frysk.testbed.TestLib;
 
 public class StressTestFStack
     extends TestLib
