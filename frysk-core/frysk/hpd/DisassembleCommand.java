@@ -305,7 +305,7 @@ public class DisassembleCommand extends CLIHandler {
 	}
 
 	public String toPrint(Instruction instruction) {
-	    return printer.toPrint(instruction) + instruction.toString();
+	    return printer.toPrint(instruction) + instruction.instruction;
 	}
     }
 
