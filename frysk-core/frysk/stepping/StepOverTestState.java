@@ -39,6 +39,8 @@
 
 package frysk.stepping;
 
+//import java.io.PrintWriter;
+
 import lib.dwfl.DwflLine;
 import frysk.proc.Task;
 import frysk.stack.Frame;
@@ -78,32 +80,26 @@ public class StepOverTestState extends State {
 	    Frame newFrame = StackFactory.createFrame(this.task);
 
 	    if (newFrame.getFrameIdentifier().innerTo(tse.getFrameIdentifier())) {
-//		System.err.println("First " + newFrame.getSymbol().getName() + " 0x" + Long.toHexString(newFrame.getAddress()));
 		/* There is a different innermost frame on the stack - run until
 		 * it exits - success! */
 		Frame frame = newFrame.getOuter();
 		tse.getSteppingEngine().setBreakpoint(this.task,
 			frame.getAddress());
-//		System.err.println("adding breakpoint to " + frame.getSymbol().getName() + " 0x" + Long.toHexString(frame.getAddress()));
 		return new StepOverState(this.task);
 	    }
 	    /* The two frames are the same or we've actually stepped over a
 	     * frame return; treat this step-over as an instruction step. */
 	    else if (newFrame.getFrameIdentifier().equals(tse.getFrameIdentifier())) {
-//		System.err.println("second");
 		return new StoppedState(this.task);
 		
 	    } else if (newFrame.getFrameIdentifier().outerTo(tse.getFrameIdentifier())) {
-//		System.err.println("third");
 		return new StoppedState(this.task);
 		
 	    } else {
 		/* Leaf function */
-//		System.err.println("fourth");
 		return new StoppedState(this.task);
 	    }
 	} else {
-//	    System.err.println("contforstepping");
 	    tse.getSteppingEngine().continueForStepping(this.task, true);
 	    return this;
 	}

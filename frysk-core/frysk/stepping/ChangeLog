@@ -18,3 +18,8 @@
 	* TestStepping.java: Marked a couple of tests as broken, via 4855.
 	
 	* TestStepping.java (testStepSigLongJmp): Enabled test.
+	
+	* SteppingEngine.java (SteppingBreakpoint.addedTo): Make a call to
+	continueForStepping() to ensure the Task runs.
+	* TestStepping.java (testASMFunctionStepOut): Enabled test, fixed #4855.
+	* TestStepping.java (testASMFunctionStepOver): Ditto.

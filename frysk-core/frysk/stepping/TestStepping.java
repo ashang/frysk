@@ -71,16 +71,10 @@ public class TestStepping extends TestLib {
 
     private TestfileTokenScanner scanner;
 
-//    private AttachedObserver attachedObserver;
     private LockObserver lock;
 
     private SteppingTest currentTest;
     
-//    private Task theTask;
-//    private String theSource;
-//    private int theStartLine;
-//    private int theEndLine;
-
     public void testLineStepFunctionCall() {
 
 	if (unresolvedOnPPC(3277))
@@ -719,7 +713,7 @@ public class TestStepping extends TestLib {
 	int startLine = this.scanner.findTokenLine("_asmStepJump_");
 
 	/* The line number the test should end up at */
-	int endLine = this.scanner.findTokenLine("_asmSingleStepStart_");
+	int endLine = this.scanner.findTokenLine("_asmStepJumpTo_");
 
 	/* The test process */
 	dbae = 
@@ -884,8 +878,8 @@ public class TestStepping extends TestLib {
 	if (unresolvedOnPPC(3277))
 	    return;
 	
-	if (unresolved(4855))
-	    return;
+//	if (unresolved(4855))
+//	    return;
 
 	/** SteppingTest Object definition - tell the stepping test
 	 * what to look for at the completion of the test. */
@@ -912,7 +906,7 @@ public class TestStepping extends TestLib {
 	/** Variable setup */
 
 	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-rt-asmstepper.S";
+		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 
 	this.scanner = new TestfileTokenScanner(new File(source));
 
@@ -925,7 +919,7 @@ public class TestStepping extends TestLib {
 	/* The test process */
 	dbae = 
 	    new DaemonBlockedAtEntry(new String[]{Config.getPkgLibDir()
-		    + "/funit-rt-asmstepper"});
+		    + "/funit-stepping-asm"});
 	
 	Task theTask = dbae.getMainTask();
 	
@@ -953,8 +947,8 @@ public class TestStepping extends TestLib {
 	if (unresolvedOnPPC(3277))
 	    return;
 	
-	if (unresolved(4855))
-	    return;
+//	if (unresolved(4855))
+//	    return;
 	
 	/** SteppingTest Object definition - tell the stepping test
 	 * what to look for at the completion of the test. */
@@ -981,12 +975,12 @@ public class TestStepping extends TestLib {
 	/** Variable setup */
 
 	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-rt-asmstepper.S";
+		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 
 	this.scanner = new TestfileTokenScanner(new File(source));
 
 	/* The line number where the test begins */
-	int startLine = this.scanner.findTokenLine("_stepASMFunctionEntry_");
+	int startLine = this.scanner.findTokenLine("_stepASMFunctionStepOut_");
 
 	/* The line number the test should end up at */
 	int endLine = this.scanner.findTokenLine("_stepASMFunctionReturned_");
@@ -994,7 +988,7 @@ public class TestStepping extends TestLib {
 	/* The test process */
 	dbae = 
 	    new DaemonBlockedAtEntry(new String[]{Config.getPkgLibDir()
-		    + "/funit-rt-asmstepper"});
+		    + "/funit-stepping-asm"});
 	
 	Task theTask = dbae.getMainTask();
 	

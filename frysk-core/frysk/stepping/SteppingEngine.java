@@ -1387,6 +1387,7 @@ public class SteppingEngine
       TaskStepEngine tse = (TaskStepEngine) SteppingEngine.this.taskStateMap.get(t);
       tse.setState(new RunningState(t));
       t.requestDeleteInstructionObserver(steppingObserver);
+      continueForStepping(t, false);
     }
 
     public boolean isAdded ()
