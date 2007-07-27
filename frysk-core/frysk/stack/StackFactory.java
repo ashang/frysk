@@ -43,10 +43,8 @@ package frysk.stack;
 import java.io.PrintWriter;
 import java.util.WeakHashMap;
 
-import lib.dwfl.Dwfl;
 import lib.unwind.Cursor;
 import frysk.debuginfo.Subprogram;
-import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.rt.Line;
 
@@ -164,8 +162,6 @@ public class StackFactory
         
       } else {
 	  frame.toPrint(writer,false);
-	  Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
-	  writer.print(" from " + dwfl.getModule(frame.getAdjustedAddress()).getName());
       }
       
       writer.println();

@@ -45,6 +45,7 @@ import lib.dwfl.DwTagEncodings;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
+import lib.dwfl.DwflModule;
 import lib.unwind.Cursor;
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.Subprogram;
@@ -125,6 +126,18 @@ public abstract class Frame
     printWriter.write(symbol.getDemangledName());
     if (symbol != SymbolFactory.UNKNOWN)
       printWriter.write(" ()");
+    
+    printWriter.print(" from " + this.getLibraryName());
+  }
+  
+  public String getLibraryName(){
+      Dwfl dwfl = DwflCache.getDwfl(getTask());
+      DwflModule dwflModule = dwfl.getModule(getAdjustedAddress()); 
+      if(dwflModule != null){
+	  return dwflModule.getName();
+      }else{
+	  return "Unknown";
+      }
   }
   
   /**
