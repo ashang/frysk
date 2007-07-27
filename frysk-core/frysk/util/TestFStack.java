@@ -91,13 +91,13 @@ public class TestFStack
     String mainThread = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
                         + "#[\\d]+ 0x[\\da-f]+ in server \\(\\).*\n"
                         + "#[\\d]+ 0x[\\da-f]+ in main \\(\\).*\n"
-                        + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\)\n"
-                        + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\)\n";
+                        + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\).*\n"
+                        + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\).*\n";
 
     String thread = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
                     + "#[\\d]+ 0x[\\da-f]+ in server \\(\\).*\n"
-                    + "#[\\d]+ 0x[\\da-f]+ in start_thread \\(\\)\n"
-                    + "#[\\d]+ 0x[\\da-f]+ in (__)?clone \\(\\)\n";
+                    + "#[\\d]+ 0x[\\da-f]+ in start_thread \\(\\).*\n"
+                    + "#[\\d]+ 0x[\\da-f]+ in (__)?clone \\(\\).*\n";
 
     final Proc proc = ackProc.assertFindProcAndTasks();
 
