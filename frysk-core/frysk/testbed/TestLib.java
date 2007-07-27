@@ -716,46 +716,6 @@ public class TestLib
     }
 
     /**
-     * Watch for events involving the specified PID process; count the
-     * number of events seen.
-     */
-    public class PidCounter
-	implements Observer
-    {
-	public final List what = new LinkedList(); // XXX:
-
-	private int pid;
-
-	public int count = 0;
-
-	/**
-	 * Create a pid counter bound to PID.
-	 */
-	public PidCounter (int pid) {
-	    this.pid = pid;
-	}
-
-	/**
-	 * Create a pid counter bound to PID, and attached to
-	 * observable.
-	 */
-	public PidCounter (int pid, Observable observable) {
-	    this(pid);
-	    observable.addObserver(this);
-	}
-
-	public void update (Observable o, Object obj) {
-	    if (obj instanceof Proc) {
-		Proc proc = (Proc) obj;
-		if (proc.getPid() == pid) {
-		    count++;
-		    what.add(new RuntimeException()); // XXX:
-		}
-	    }
-	}
-    }
-  
-    /**
      * The host being used by the current test.
      */
     protected Host host;

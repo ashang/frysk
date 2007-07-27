@@ -1,5 +1,8 @@
 2007-07-27  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (PidCounter): Delete; moved to PidCounter.java.
+	* PidCounter.java: New file.
+
 	* TestLib.java (TaskCounter): Delete; moved to TaskCounter.java.
 	* TaskCounter.java: New file.
 
