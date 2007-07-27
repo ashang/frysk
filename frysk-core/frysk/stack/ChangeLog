@@ -1,3 +1,7 @@
+2007-07-27  Nurdin Premji <npremji@redhat.com>
+
+	* StackCallbacks.java: Removed.
+
 2007-07-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* StackFactory.java: Stack printing functions now take a 
