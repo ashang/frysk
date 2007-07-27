@@ -49,7 +49,7 @@ import org.gnu.gtk.event.LifeCycleListener;
 import frysk.Config;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.rt.SteppingEngine;
+import frysk.stepping.SteppingEngine;
 
 /**
  * Factory for creating DisassemblyWindows - allows multiple DisassemblyWindows to be

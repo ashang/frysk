@@ -79,7 +79,7 @@ import frysk.proc.Proc;
 import frysk.proc.Register;
 import frysk.proc.RegisterView;
 import frysk.proc.Task;
-import frysk.rt.TaskStepEngine;
+import frysk.stepping.TaskStepEngine;
 
 
 public class RegisterWindow

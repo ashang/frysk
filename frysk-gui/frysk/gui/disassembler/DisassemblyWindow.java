@@ -78,7 +78,7 @@ import frysk.gui.prefs.PreferenceManager;
 import frysk.gui.monitor.Saveable;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.rt.TaskStepEngine;
+import frysk.stepping.TaskStepEngine;
 
 import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;

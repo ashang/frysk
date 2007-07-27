@@ -1,3 +1,9 @@
+2007-07-27  Mike Cvet  <mcvet@redhat.com>
+
+	* ShowMemWin.java: Updated to reference SteppingEngine move to 
+	frysk.stepping.
+	* ShowRegWin.java: Ditto.
+
 2007-07-25  Mark Wielaard  <mwielaard@redhat.com>
 
 	* PickProcDialog.java (ProcCreatedObserver.run): Check whether

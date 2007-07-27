@@ -46,7 +46,7 @@ import frysk.gui.monitor.eventviewer.Event;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.gui.register.RegisterWindowFactory;
 import frysk.proc.Task;
-import frysk.rt.SteppingEngine;
+import frysk.stepping.SteppingEngine;
 
 public class ShowRegWin
     extends TaskAction

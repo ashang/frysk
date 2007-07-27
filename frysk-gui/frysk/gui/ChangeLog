@@ -1,3 +1,13 @@
+2007-07-27  Mike Cvet  <mcvet@redhat.com>
+
+	* register/RegisterWindowFactory.java: Updated to reference SteppingEngine 
+	move to frysk.stepping.
+	* register/RegisterWindow.java: Ditto.
+	* memory/MemoryWindowFactory.java: Ditto.
+	* memory/MemoryWindow.java: Ditto.
+	* disassembler/DisassemblyWindowFactory.java: Ditto.
+	* disassembler/DisassemblyWindow.java: Ditto.
+
 2007-07-19  Adam Jocksch  <ajocksch@redhat.com>
 
 	* sessions/WatchListListener.java: Reformatted.

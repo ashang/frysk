@@ -48,7 +48,7 @@ import org.gnu.gtk.event.LifeCycleListener;
 
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.rt.SteppingEngine;
+import frysk.stepping.SteppingEngine;
 import frysk.Config;
 
 /**

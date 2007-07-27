@@ -85,7 +85,7 @@ import frysk.gui.monitor.Saveable;
 import frysk.gui.monitor.SimpleComboBox;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.rt.TaskStepEngine;
+import frysk.stepping.TaskStepEngine;
 
 import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
