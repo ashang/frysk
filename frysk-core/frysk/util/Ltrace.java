@@ -49,6 +49,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 
+import inua.eio.ByteBuffer;
+
 import frysk.proc.Action;
 import frysk.proc.Host;
 import frysk.proc.Manager;
@@ -56,6 +58,7 @@ import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.ProcObserver;
 import frysk.proc.ProcTasksObserver;
+import frysk.proc.Register;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
@@ -113,16 +116,34 @@ class LtraceSymbol
   public final long value;
   public final long size;
   public final int type;
+  public final long shndx;
   protected LtraceObjectFile parent = null;
 
-  public long pltAddress;
+  /**
+   * Address associated with symbol.  Most often this is address of
+   * PLT entry, but it can be any address suitable for breakpoint
+   * tracking.
+   */
+  public long address;
 
-  public LtraceSymbol(String name, int type, long value, long size)
+  /**
+   * Build ltrace symbol.
+   *
+   * @param name Name of the symbol.
+   * @param type Type of the symbol, as in ElfSymbol.ELF_STT_* fields.
+   * @param value Value of the symbol.
+   * @param size Size of the symbol.
+   * @param shndx Associated section index, or one of the special
+   *   values in ElfSectionHeader.ELF_SHN_*.
+   */
+  public LtraceSymbol(String name, int type, long value,
+		      long size, long shndx)
   {
     this.name = name;
     this.type = type;
     this.value = value;
     this.size = size;
+    this.shndx = shndx;
   }
 
   public String toString()
@@ -140,8 +161,8 @@ class LtraceSymbol
     return this.parent;
   }
 
-  public void setPltAddress(long address) {
-    this.pltAddress = address;
+  public void setAddress(long address) {
+    this.address = address;
   }
 }
 
@@ -174,7 +195,7 @@ class LtraceObjectFile
     final LinkedList list = new LinkedList();
     this.eachSymbol(new SymbolIterator(){
 	public void symbol(LtraceSymbol symbol) {
-	  if (symbol.pltAddress == address)
+	  if (symbol.address == address)
 	    list.add(symbol);
 	}
       });
@@ -182,7 +203,7 @@ class LtraceObjectFile
     if (list.isEmpty())
       return null;
     if (list.size() > 1)
-      System.err.println("Strange: symbolAt(0x" + Long.toString(address, 16) + ") has more than one symbol...");
+      System.err.println("Strange: symbolAt(0x" + Long.toHexString(address) + ") has more than one symbol...");
     return (LtraceSymbol)list.getFirst();
   }
 
@@ -200,8 +221,7 @@ class LtraceObjectFile
 
   public static LtraceObjectFile buildForProc(Proc proc)
   {
-    try
-      {
+    try {
 	Elf elfFile = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
 	ElfEHeader eh = elfFile.getEHeader();
 	LtraceObjectFile objFile = new LtraceObjectFile(proc.getExe());
@@ -236,14 +256,18 @@ class LtraceObjectFile
 					int type, int bind, int visibility,
 					long shndx)
 		    {
-		      symbols.add(new LtraceSymbol(name, type, value, size));
+		      LtraceSymbol sym = new LtraceSymbol(name, type, value, size, shndx);
+		      sym.setAddress(value);
+		      symbols.add(sym);
 		    }
 		  });
 
 		for (Iterator it = symbols.iterator(); it.hasNext(); )
 		  {
 		    LtraceSymbol sym = (LtraceSymbol)it.next();
-		    if (sym.type == ElfSymbol.ELF_STT_FUNC)
+		    if (sym.type == ElfSymbol.ELF_STT_FUNC
+			&& (sym.shndx == ElfSectionHeader.ELF_SHN_UNDEF
+			    || sym.value == 0))
 		      {
 			System.err.println("Got library function symbol `" + sym.name + "'.");
 			objFile.addSymbol(sym);
@@ -277,8 +301,8 @@ class LtraceObjectFile
 	  {
 	    long entryAddr = pltAddr + pltEntrySize * (i + 1);
 	    LtraceSymbol symbol = (LtraceSymbol)symbols.get((int)pltRelocs[i].symbolIndex - 1);
-	    System.out.println("PLT entry for `" + symbol.name + "' is at 0x" + Long.toString(entryAddr, 16) + ".");
-	    symbol.setPltAddress(entryAddr);
+	    System.out.println("PLT entry for `" + symbol.name + "' is at 0x" + Long.toHexString(entryAddr) + ".");
+	    symbol.setAddress(entryAddr);
 	  }
 
 	return objFile;
@@ -341,10 +365,42 @@ public class Ltrace
   }
 
   /**
-   * Add new traced process.  This is called from various places when
-   * new process appeared and should be traced.
+   * Trace new process.
    */
   private void addProc(Proc proc)
+  {
+    new ProcTasksObserver(proc, new ProcObserver.ProcTasks() {
+	public void existingTask (Task task)
+	{
+	  System.err.println("=== existing " + task.getTid() + "===");
+	  addTask(task);
+	  if (task.getTid() == task.getProc().getMainTask().getTid())
+	    perProcInit(task.getProc());
+	}
+
+	public void taskAdded (Task task)
+	{
+	  System.err.println("=== added " + task.getTid() + " ===");
+	  addTask(task);
+	}
+
+	public void taskRemoved (Task task)
+	{
+	  System.err.println("=== removed " + task.getTid() + " ===");
+	  removeTask(task);
+	}
+
+	public void addFailed (Object arg0, Throwable w) {}
+	public void addedTo (Object arg0) {}
+	public void deletedFrom (Object arg0) {}
+      });
+  }
+
+  /**
+   * Do a per-process init.  Call this only when process task(s)
+   * exist(s) and are attached to.
+   */
+  private void perProcInit(Proc proc)
   {
     LtraceObjectFile objf = (LtraceObjectFile)objectFiles.get(proc);
     if (objf == null)
@@ -358,42 +414,24 @@ public class Ltrace
     else
       objectFiles.put(proc, objf);
 
-    new ProcTasksObserver(proc, new ProcObserver.ProcTasks()
-      {
-	public void existingTask (Task task)
-	{
-	  addTask(task);
+    final Task mainTask = proc.getMainTask();
+    objf.eachSymbol(new LtraceObjectFile.SymbolIterator() {
+	public void symbol(LtraceSymbol sym) {
+	  System.out.println("Add breakpoint to 0x" + Long.toHexString(sym.address)
+			     + " for " + sym.name);
+	  mainTask.requestAddCodeObserver(ltraceTaskObserver, sym.address);
 	}
-
-	public void taskAdded (Task task)
-	{
-	  addTask(task);
-	}
-
-	public void taskRemoved (Task task)
-	{
-	  removeTask(task);
-	}
-
-	public void addFailed (Object arg0, Throwable w)
-	{
-	  throw new RuntimeException("Failed to add a Task observer to the process", w);
-	}
-
-	public void addedTo (Object arg0) {}
-	public void deletedFrom (Object arg0) {}
       });
   }
 
   /**
    * Trace new task of existing process.
    */
-  private void addTask (final Task task)
+  private void addTask (Task task)
   {
-    synchronized (Ltrace.this)
-      {
-	numTasks++;
-      }
+    synchronized (this) {
+      numTasks++;
+    }
 
     task.requestAddAttachedObserver(ltraceTaskObserver);
     if (traceChildren)
@@ -402,13 +440,7 @@ public class Ltrace
     task.requestAddTerminatingObserver(ltraceTaskObserver);
     task.requestAddSyscallObserver(ltraceTaskObserver);
 
-    LtraceObjectFile objf = (LtraceObjectFile)objectFiles.get(task.getProc());
-    objf.eachSymbol(new LtraceObjectFile.SymbolIterator(){
-	public void symbol(LtraceSymbol sym) {
-	  System.out.println("Add breakpoint to 0x" + Long.toString(sym.pltAddress, 16));
-	  task.requestAddCodeObserver(ltraceTaskObserver, sym.pltAddress);
-	}
-      });
+    // Code observers are added in perProcInit
   }
 
   /**
@@ -470,7 +502,16 @@ public class Ltrace
     if (!pidsToTrace.isEmpty())
       throw new AssertionError("Unexpected: tracing both pids and command.");
 
-    Manager.host.requestCreateAttachedProc(command, ltraceTaskObserver);
+    Manager.host.requestCreateAttachedProc(command, new TaskObserver.Attached() {
+	public Action updateAttached (Task task)
+	{
+	  addProc(task.getProc());
+	  return ltraceTaskObserver.updateAttached(task);
+	}
+	public void addFailed (Object arg0, Throwable w) {}
+	public void addedTo (Object arg0) {}
+	public void deletedFrom (Object arg0) {}
+      });
     Manager.eventLoop.run();
   }
 
@@ -488,7 +529,7 @@ public class Ltrace
     // ------------------------
 
     /// Remembers which syscall is currently handled in which task.
-    HashMap syscallCache = new HashMap();
+    private HashMap syscallCache = new HashMap();
 
     public Action updateSyscallEnter (Task task)
     {
@@ -502,9 +543,8 @@ public class Ltrace
 
       if (traceSignals)
 	{
-	  if (traceChildren)
-	    System.out.print ("[" + task.getTaskId().intValue() + "] ");
-	  System.out.println ("enter: " + syscall.getName());
+	  System.out.print("[" + task.getTaskId().intValue() + "] ");
+	  System.out.println("syscall enter " + syscall.getName());
 	}
 
       return Action.CONTINUE;
@@ -519,20 +559,21 @@ public class Ltrace
       else
 	{
 	  // Unfortunately, I know of no reasonable, (as in platform
-	  // independent) way to find whether a syscall is mmap, munmap, or
-	  // anything else.  Thus this hack, which is probably still much
-	  // better than rescanning the map on each syscall.
+	  // independent) way to find whether a syscall is mmap,
+	  // munmap, or anything else.  Hence this hack, which is
+	  // probably still much better than rescanning the map on
+	  // each syscall.
 	  String name = syscall.getName();
-
-	  if (traceSignals)
-	    {
-	      System.out.print ("[" + task.getTaskId().intValue() + "] ");
-	      System.out.println ("leave: " + syscall.getName());
-	    }
 
 	  if (name.indexOf("mmap") != -1
 	      || name.indexOf("munmap") != -1)
 	    return this.checkMapUnmapUpdates(task, false);
+
+	  if (traceSignals)
+	    {
+	      System.out.print ("[" + task.getTaskId().intValue() + "] ");
+	      System.out.println ("syscall leave " + name);
+	    }
 	}
 
       return Action.CONTINUE;
@@ -550,7 +591,46 @@ public class Ltrace
       System.err.print("[" + task.getTaskId().intValue() + "] ");
       LtraceObjectFile objf = (LtraceObjectFile)objectFiles.get(task.getProc());
       LtraceSymbol symbol = objf.symbolAt(address);
-      System.err.println(symbol.name);
+      System.err.print("call " + symbol.name + "(");
+
+      ByteBuffer buf = task.getMemory();
+
+      // i386 only at this time
+      Register espRegister = task.getIsa().getRegisterByName("esp");
+      long esp = espRegister.get(task);
+      esp += 4;
+
+      // Poor man's call formatter... both traditional ltrace-style
+      // and dwarf-enhanced formatters will be implemented in future,
+      // this is just to test some stuff...
+      if (symbol.name.equals("puts"))
+	{
+	  long pointer = buf.getInt(esp);
+	  System.err.print('"');
+	  while(true)
+	    {
+	      byte value = buf.getByte(pointer);
+	      if (value == 0)
+		break;
+	      ++pointer;
+	      if (value < 32)
+		{
+		  long val = value < 0 ? 255 + value : value;
+		  System.err.print("\\x" + Long.toHexString(val));
+		}
+	      else
+		System.err.print((char)value);
+	    }
+	  System.err.print('"');
+	}
+      else
+	for (long i = 0; i < 8; ++i)
+	  {
+	    int value = buf.getInt(esp);
+	    System.err.print("0x" + Long.toHexString(value) + ", ");
+	    esp += 4;
+	  }
+      System.err.println(")");
       return Action.CONTINUE;
     }
 
@@ -562,14 +642,13 @@ public class Ltrace
 
     public Action updateAttached (Task task)
     {
+      // Per-task initialization.
       long pc = task.getIsa().pc(task);
       System.err.print("[" + task.getTaskId().intValue() + "] ");
-      System.err.println("+++ Attached at 0x" + Long.toString (pc, 16) + " +++");
+      System.err.println("new task attached at 0x" + Long.toHexString(pc));
 
       this.mapsForTask.put(task, new HashSet());
       this.checkMapUnmapUpdates(task, false);
-
-      addProc(task.getProc());
 
       return Action.CONTINUE;
     }
