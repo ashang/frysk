@@ -70,43 +70,43 @@ void
   while (1);
 }
 
-volatile int bak_recursive_count = 0;
+volatile int count = 0;
 volatile int ret_count = 0;
 volatile int dummy = 0;
 
 void
-bak_recursive ()
-{
-  if (bak_recursive_count == 1)
+last ()
+{ 													// _lineStepFunctionEntry_
+  if (count == 1)
+  {
     ret_count = 0;
+    count = 0;
+  }
     
-  if (bak_recursive_count == 4 || ret_count == 1)
-    {
-      ret_count = 1;
-      bak_recursive_count--;
-      return;
-    }
-  else
-    {
-      ret_count = 0;
-      bak_recursive_count++;
-      bak_recursive ();
-    }
+  ret_count = 1;
+  count++;
 
-  if (!dummy)
-    ++dummy;
+  if (!dummy)										// _lineStepIfPass_
+    ++dummy;										// _lineStepIfPassFinish_
 
-  if (!dummy)
+  if (!dummy)										// _lineStepIfFail_
     ++dummy;
   else
-    --dummy;
+    --dummy;										// _lineStepIfFailFinish_
+    
+    return;											// _lineStepFunctionReturn_
 }
+
+volatile int a;
 
 void
 bak ()
 {
   while (1)
-    bak_recursive ();
+  {
+  	a = 0;
+    last ();										// _lineStepFunctionCall_
+  }													
 }
 
 void
@@ -159,6 +159,5 @@ main (int argc, char ** argv)
 
   foo ();
 
-  fprintf (stderr, "%d, %d, %d %d\n", bak_recursive_count, ret_count, sig_rec, kill_bool);
   return 0;
 }

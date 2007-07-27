@@ -66,7 +66,7 @@ void
 void
 handler (int sig)
 {
-  if (sig == SIGUSR1)
+  if (sig == SIGUSR1)								// _lineStepSigHandlerEntry_
     {
       --j;
       ++j;
@@ -75,7 +75,7 @@ handler (int sig)
     exit (EXIT_FAILURE);
 
   return;
-}
+}													
 
 void
 do_it ()
@@ -88,7 +88,7 @@ do_it ()
       --j;
       ++j;
       --j;
-      raise (SIGUSR1);
+      raise (SIGUSR1);								// _lineStepSigRaiseCall_
     }
 }
 

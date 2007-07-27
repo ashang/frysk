@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,39 +37,55 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.testbed;
 
-#include "frysk-asm.h"
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-    FUNCTION_BEGIN(second,0)
-    FUNCTION_PROLOGUE(second,0)                       	// _stepASMFunctionEntry_
-	NO_OP												
-	NO_OP
-	NO_OP	;  NO_OP ; NO_OP
-	FUNCTION_EPILOGUE(second, 0)
-	FUNCTION_RETURN(second, 0)							// _stepASMFunctionExit_
-	FUNCTION_END(second, 0)
+public class TestfileTokenScanner {
 
-	FUNCTION_BEGIN(first,0)
-	FUNCTION_PROLOGUE(first,0)
-	NO_OP
-	NO_OP
-	NO_OP	; NO_OP ; NO_OP
-	NO_OP
-	JUMP	(.L4)
-.L5:	
-	NO_OP
-	FUNCTION_CALL(second)								// _stepASMFunctionCall_
-.L4:
-	NO_OP												// _stepASMFunctionReturned_
-	NO_OP
-	JUMP	(.L5)
-	FUNCTION_EPILOGUE(first, 0)
-	FUNCTION_RETURN(first, 0)
-	FUNCTION_END(first, 0)
+    	protected static final Logger logger = Logger.getLogger("frysk");
+    
+	File file;
 
-	FUNCTION_BEGIN(main, 0)
-	MAIN_PROLOGUE(0)
-	FUNCTION_CALL(first)
-	MAIN_EPILOGUE(0)
-	FUNCTION_RETURN(main,0)
-	FUNCTION_END(main,0)
+	public TestfileTokenScanner(File file) {
+	    this.file = file;
+	    logger.log(Level.FINE, "{0} new\n", this);
+	}
+
+	public int findTokenLine(String token) {
+	    
+	    logger.log(Level.FINE, "{0} Searching for token: \n", token);
+	    String line = "";
+	    int lineNumber = 0;
+	    BufferedReader br = null;
+	    
+	    try {
+		br = new BufferedReader(new FileReader(file));
+	    } catch (Exception e) {
+		e.printStackTrace();
+	    }
+
+	    try {
+		line = br.readLine();
+		while (line != null) {
+		    ++lineNumber;
+
+		    if (line.indexOf(token) > -1) {
+			
+			logger.log(Level.FINE, "{0} Found token in line: \n", line);
+			return lineNumber;
+		    }
+		    
+		    line = br.readLine();
+		}
+	    } catch (Exception e) {
+		e.printStackTrace();
+	    }
+
+	    return 0;
+	}
+}

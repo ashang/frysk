@@ -53,9 +53,9 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.testbed.TestLib;
 import frysk.rt.Line;
-import frysk.rt.SteppingEngine;
+import frysk.stepping.SteppingEngine;
+import frysk.stepping.TaskStepEngine;
 import frysk.symtab.Symbol;
-import frysk.rt.TaskStepEngine;
 import frysk.sys.Pid;
 import frysk.sys.Sig;
 

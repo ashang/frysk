@@ -68,7 +68,7 @@ void
 call_sig ()
 {
   lock = 0; 
-  siglongjmp (*env, 0);
+  siglongjmp (*env, 0);										// _SigLongJumpCall_
 
   return;
 }
@@ -77,7 +77,7 @@ void
 do_it ()
 {
   sigsetjmp (*env, 0);
-  call_sig ();
+  call_sig ();												// _SigSetJmpReturn_
 
   return;
 }

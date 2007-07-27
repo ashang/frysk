@@ -1,3 +1,7 @@
+2007-07-27  Mike Cvet  <mcvet@redhat.com>
+
+	* TestTaskObserverInstruction.java: Updated to reference frysk.stepping.
+
 2007-07-25  Andrew Cagney  <cagney@redhat.com>
 
 	* StressAttachDetachRapidlyForkingMainTask.java: Update;

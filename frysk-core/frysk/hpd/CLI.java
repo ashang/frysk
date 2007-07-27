@@ -57,10 +57,10 @@ import javax.naming.NameNotFoundException;
 import frysk.debuginfo.DebugInfo;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.rt.SteppingEngine;
-import frysk.rt.TaskStepEngine;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
+import frysk.stepping.SteppingEngine;
+import frysk.stepping.TaskStepEngine;
 import frysk.value.Value;
 
 public class CLI 

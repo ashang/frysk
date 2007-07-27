@@ -51,11 +51,11 @@ MAIN_PROLOGUE(0)
 	LOAD_IMMED_BYTE (REG3, 3)
 //	SYSCALL
 loop:
+	NO_OP												// _asmSingleStepStart_
+	NO_OP												// _asmSingleStepFinish_
 	NO_OP
-	NO_OP
-	NO_OP
-	NO_OP ; NO_OP ; NO_OP
-	NO_OP
+	NO_OP ; NO_OP ; NO_OP								// _asmMultiStepStart_
+	NO_OP												// _asmMultiStepFinish_
 	NO_OP ; NO_OP ; NO_OP
 	NO_OP;
 	LOAD_IMMED_BYTE(REG0, 1) ; COMPARE(REG1, REG0)
@@ -64,7 +64,7 @@ loop:
 	JUMP_NE (fail)
 	LOAD_IMMED_BYTE(REG0, 3) ; COMPARE(REG3, REG0)
 	JUMP_NE (fail)
-	JUMP (loop)
+	JUMP (loop)                                       	// _asmStepJump_
 	MAIN_EPILOGUE(0)
 	FUNCTION_RETURN(main,0)
 	FUNCTION_END(main,0)

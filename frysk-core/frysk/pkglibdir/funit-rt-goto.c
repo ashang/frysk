@@ -68,11 +68,10 @@ do_it ()
   lock = 0;
 
  jump_to:
-  --j;
+  --j;													// _lineStepGotoExit_
   ++j;
   --j;
-  ++j;
-
+  ++j;													// _lineStepGotoEntry_
   goto jump_to;
 
   return;

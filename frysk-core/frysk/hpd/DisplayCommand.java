@@ -48,9 +48,9 @@ import java.util.List;
 import frysk.proc.Task;
 import frysk.rt.DisplayManager;
 import frysk.rt.DisplayValueObserver;
-import frysk.rt.SteppingEngine;
 import frysk.rt.UpdatingDisplayValue;
 import frysk.stack.FrameIdentifier;
+import frysk.stepping.SteppingEngine;
 import frysk.value.Value;
 
 /**

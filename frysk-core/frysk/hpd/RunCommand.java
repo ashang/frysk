@@ -46,7 +46,8 @@ import frysk.proc.ProcObserver.ProcTasks;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.rt.TaskStepEngine;
+import frysk.stepping.TaskStepEngine;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
