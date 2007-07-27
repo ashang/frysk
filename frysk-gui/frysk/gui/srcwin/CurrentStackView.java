@@ -196,7 +196,7 @@ public class CurrentStackView
 
 	    StringWriter stringWriter = new StringWriter();
 	    stringWriter.write("# " + (++level) + " ");
-	    frame.toPrint(new PrintWriter(stringWriter),true);
+	    frame.toPrint(new PrintWriter(stringWriter),true,true);
 	    row = stringWriter.toString();
 	    
 	    if (hasInlinedCode)
@@ -315,7 +315,7 @@ public class CurrentStackView
 
 		StringWriter stringWriter = new StringWriter();
 		stringWriter.write(row = "# " + (++level) + " ");
-		frame.toPrint(new PrintWriter(stringWriter),true);
+		frame.toPrint(new PrintWriter(stringWriter),true,true);
 		row = stringWriter.toString();
 		
 		if (hasInlinedCode)

@@ -106,7 +106,7 @@ public abstract class Frame
    * The returned string is suitable for display to the user.
    * @param printWriter 
    */
-  public void toPrint (PrintWriter printWriter, boolean name)
+  public void toPrint (PrintWriter printWriter, boolean name, boolean printSourceLibrary)
   {
     // XXX: There is always an inner cursor.
     if (this.cursor == null)
@@ -127,7 +127,9 @@ public abstract class Frame
     if (symbol != SymbolFactory.UNKNOWN)
       printWriter.write(" ()");
     
-    printWriter.print(" from " + this.getLibraryName());
+    if(printSourceLibrary){
+	printWriter.print(" from " + this.getLibraryName());
+    }
   }
   
   public String getLibraryName(){

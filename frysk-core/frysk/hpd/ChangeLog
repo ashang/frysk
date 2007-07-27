@@ -1,3 +1,9 @@
+2007-07-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CLI.java (UpDownHandler.handle): Now passes a printSourceLibrary boolean
+	to Frame.toPrint().
+	* WhereCommand.java (handle): Ditto.
+
 2007-07-27  Nurdin Premji  <npremji@redhat.com>
 
 	* DisassembleCommand.java (InstructionParamsPrinter.toPrint): Only print

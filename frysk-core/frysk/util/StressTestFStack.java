@@ -85,7 +85,7 @@ public class StressTestFStack
       {
         proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
       }
-    }, true, false, false, false)
+    }, true, false, false, false,true)
     {
 
       public void addFailed (Object observable, Throwable w)

@@ -81,6 +81,7 @@ public abstract class StacktraceAction
   boolean printParameters;
   boolean printScopes;
   boolean fullpath;
+  boolean printSourceLibrary;
   
   protected static Logger logger = Logger.getLogger("frysk"); 
 
@@ -101,7 +102,7 @@ public abstract class StacktraceAction
    *            file path is printed other wise only the name of the file is printed.
    * @throws ProcException
    */
-  public StacktraceAction (PrintWriter printWriter, Proc theProc, Event theEvent,boolean elfOnly, boolean printParameters, boolean printScopes, boolean fullpath)
+  public StacktraceAction (PrintWriter printWriter, Proc theProc, Event theEvent,boolean elfOnly, boolean printParameters, boolean printScopes, boolean fullpath, boolean printSourceLibrary)
   {
      event = theEvent;
 
@@ -109,6 +110,7 @@ public abstract class StacktraceAction
      this.printParameters = printParameters;
      this.printScopes = printScopes;
      this.fullpath = fullpath;
+     this.printSourceLibrary = printSourceLibrary;
      
      this.printWriter = printWriter;
     Manager.eventLoop.add(new InterruptEvent(theProc));
@@ -148,7 +150,8 @@ public abstract class StacktraceAction
     while (iter.hasNext())
       {
 	Task task =  (Task) iter.next();
-	StackFactory.printTaskStackTrace(printWriter,task,elfOnly,printParameters,printScopes,fullpath);
+	System.out.println("StacktraceAction.printTasks() printSourceLibrary " + printSourceLibrary);
+	StackFactory.printTaskStackTrace(printWriter,task,elfOnly,printParameters,printScopes,fullpath,printSourceLibrary);
       }
     logger.log(Level.FINE, "{0} exiting printTasks\n", this);
   }

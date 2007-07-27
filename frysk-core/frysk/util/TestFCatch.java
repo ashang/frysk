@@ -65,8 +65,8 @@ public class TestFCatch
   String mainThread = "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
                       + "#[\\d]+ 0x[\\da-f]+ in server \\(\\).*\n"
                       + "#[\\d]+ 0x[\\da-f]+ in main \\(\\).*\n"
-                      + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\)\n"
-                      + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\)\n";
+                      + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\).*\n"
+                      + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\).*\n";
 
   public void testSingleThreadedCatch ()
   {
@@ -326,7 +326,7 @@ public class TestFCatch
           this.stackTrace.append("#" + i + " ");
           StringWriter stringWriter = new StringWriter();
           PrintWriter printWriter = new PrintWriter(stringWriter);
-          frame.toPrint(printWriter,false);
+          frame.toPrint(printWriter,false,true);
           this.stackTrace.append(stringWriter.getBuffer());
           this.stackTrace.append("\n");
           frame = frame.getOuter();

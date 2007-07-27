@@ -78,7 +78,7 @@ public abstract class FrameDecorator
     }
 
     public void toPrint(PrintWriter printWriter, boolean name) {
-	frame.toPrint(printWriter, name);
+	frame.toPrint(printWriter, name,true);
     }
 
     public Value getRegister(int reg) {

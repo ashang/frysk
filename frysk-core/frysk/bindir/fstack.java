@@ -71,6 +71,7 @@ public final class fstack
   static boolean printParameters = false;
   static boolean printScopes = false;
   static boolean fullpath = false;
+  static boolean printSourceLibrary = true;
   
   private static class Stacker extends StacktraceAction
   {
@@ -78,9 +79,9 @@ public final class fstack
     Proc proc;
     public Stacker (PrintWriter printWriter, Proc theProc, Event theEvent,boolean elfOnly, 
                     boolean printParameters, boolean printScopes, 
-                    boolean fullpath)
+                    boolean fullpath, boolean printSourceLibrary)
     {
-      super(printWriter, theProc, theEvent, elfOnly, printParameters, printScopes, fullpath);
+      super(printWriter, theProc, theEvent, elfOnly, printParameters, printScopes, fullpath,printSourceLibrary);
       this.proc = theProc;
     }
 
@@ -138,7 +139,7 @@ public final class fstack
   private static void stackCore(File coreFile)
   {
     Proc proc = Util.getProcFromCoreFile(coreFile);
-    stacker = new Stacker(printWriter, proc, new PrintEvent(),elfOnly,printParameters,printScopes, fullpath);
+    stacker = new Stacker(printWriter, proc, new PrintEvent(),elfOnly,printParameters,printScopes, fullpath,printSourceLibrary);
     new ProcCoreAction(proc, stacker);
     Manager.eventLoop.run();
   }
@@ -146,7 +147,7 @@ public final class fstack
   private static void stackPid (ProcId procId)
   {
     Proc proc = Util.getProcFromPid(procId);
-    stacker = new Stacker(printWriter, proc, new AbandonPrintEvent(proc),elfOnly,printParameters,printScopes, fullpath);
+    stacker = new Stacker(printWriter, proc, new AbandonPrintEvent(proc),elfOnly,printParameters,printScopes, fullpath,printSourceLibrary);
     new ProcBlockAction(proc, stacker);
     Manager.eventLoop.run();
   }

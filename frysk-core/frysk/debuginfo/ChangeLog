@@ -1,5 +1,10 @@
 2007-07-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* TestFrameDebugInfo.java (testFrameDebugInfoStackTrace): Passes
+	printSourceLibrary boolean.
+
+2007-07-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* Variable.java (getLineNumber): New function.
 	(getColumnNumber): New function.
 	(printLineCol): New function.

@@ -72,7 +72,7 @@ public class TestFrameDebugInfo
 
     StringWriter stringWriter = new StringWriter();
     Frame frame = StackFactory.createFrame(task);
-    StackFactory.printRichStackTrace(new PrintWriter(stringWriter),frame, true, true, true);
+    StackFactory.printRichStackTrace(new PrintWriter(stringWriter),frame, true, true, true, true);
       
 //    System.out.println("TestRichFrame.testRichFrame()");
 //    System.out.println(string);
@@ -95,7 +95,7 @@ public class TestFrameDebugInfo
 
     Frame frame = StackFactory.createFrame(task);
     StringWriter stringWriter = new StringWriter();
-    StackFactory.printStackTrace(new PrintWriter(stringWriter),frame);
+    StackFactory.printStackTrace(new PrintWriter(stringWriter),frame, true);
       
 //    System.out.println("TestRichFrame.testRichFrame()");
 //    System.out.println(string);

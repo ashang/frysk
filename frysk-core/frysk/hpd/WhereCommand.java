@@ -89,7 +89,7 @@ class WhereCommand
 	tmpFrame = cli.frame;
 	while (tmpFrame != null) {
 	    cli.outWriter.print("#" + l + " ");
-	    tmpFrame.toPrint(cli.outWriter,false);
+	    tmpFrame.toPrint(cli.outWriter,false,true);
 	    cli.outWriter.println();
 	    tmpFrame = tmpFrame.getOuter();
 	    l += 1;

@@ -1,5 +1,14 @@
 2007-07-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* StackFactory.java: Stack printing functions now take a 
+	printSourceLibrary boolean.
+	* FrameDecorator.java (toPrint): passes a printSourceLibrary
+	boolean.
+	* Frame.java (toPrint): Now takes a boolean for printing
+	source library name.
+
+2007-07-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* Frame.java (getLibraryName): New function.
 	(toPrint): Now prints library name.
 	* StackFactory.java (printRichStackTrace): Now uses 

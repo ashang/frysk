@@ -1,3 +1,8 @@
+2007-07-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* fstack.java (Stacker.Stacker): Now passes a printSourceLibrary
+	to StacktraceActions.
+	
 2007-07-26  Petr Machata  <pmachata@redhat.com>
 
 	* fltrace.java: New file.

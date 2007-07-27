@@ -1,3 +1,10 @@
+2007-07-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestLinuxCore.java (testLinuxCoreFileStackTrace): Now passes a
+	printSourceLibrary to StacktraceAction.
+	From previous refactoring the test was mistakingly comparing a
+	string to itself; fixed.
+
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
 	* TestCorefileByteBuffer.java: Update; frysk.proc.TestLib moved to

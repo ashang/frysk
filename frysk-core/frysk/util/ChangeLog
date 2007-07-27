@@ -1,3 +1,15 @@
+2007-07-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* StacktraceAction.java (StacktraceAction): now takes a 
+	printSourceLibrary boolean.
+	* FCatch.java (generateStackTrace): passes a printSourceLibrary
+	boolean to Frame.toPrint().
+	* Ftrace.java (generateStacKTrace): Ditto.
+	* StressTestFStack.java (testClone): Ditto.
+	* TestFStack.java (multiThreaded): passes a printSourceLibrary
+	boolean to StacktraceAction.
+
+
 2007-07-27  Petr Machata  <pmachata@redhat.com>
 
 	* Ltrace.java: Fixes for multi-task procs, print out parameters of

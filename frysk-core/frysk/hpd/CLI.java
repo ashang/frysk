@@ -203,7 +203,7 @@ public class CLI
       if (tmpFrame == null)
 	tmpFrame = currentFrame;
       outWriter.print("#" + stackLevel + " ");
-      tmpFrame.toPrint(outWriter, false);
+      tmpFrame.toPrint(outWriter, false,true);
       outWriter.println();
     }
   }

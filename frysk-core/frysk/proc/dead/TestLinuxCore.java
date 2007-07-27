@@ -137,7 +137,6 @@ public class TestLinuxCore
   public void testLinuxCoreFileStackTrace ()
   {
 
-      StringWriter stringWriter = new StringWriter();
     Proc ackProc = giveMeAProc();
     String coreFileName = constructCore(ackProc);
     File xtestCore = new File(coreFileName);
@@ -151,7 +150,8 @@ public class TestLinuxCore
     StacktraceAction stacker;
     StacktraceAction coreStack;
 
-    stacker = new StacktraceAction(new PrintWriter(stringWriter),ackProc, new RequestStopEvent(Manager.eventLoop), true, false, false, false)
+    StringWriter stringWriter1 = new StringWriter();
+    stacker = new StacktraceAction(new PrintWriter(stringWriter1),ackProc, new RequestStopEvent(Manager.eventLoop), true, false, false, false, false)
     {
 
       public void addFailed (Object observable, Throwable w)
@@ -163,7 +163,8 @@ public class TestLinuxCore
     new ProcBlockAction (ackProc, stacker);
     assertRunUntilStop("perform backtrace");
 
-    coreStack = new StacktraceAction(new PrintWriter(stringWriter),coreProc, new PrintEvent(),true,false,false,false)
+    StringWriter stringWriter2 = new StringWriter();
+    coreStack = new StacktraceAction(new PrintWriter(stringWriter2),coreProc, new PrintEvent(),true,false,false,false, false)
     {
 
       public void addFailed (Object observable, Throwable w)
@@ -174,7 +175,7 @@ public class TestLinuxCore
     new ProcCoreAction(coreProc, coreStack);
     assertRunUntilStop("perform corebacktrace");
 
-    assertEquals("Compare stack traces",stringWriter.getBuffer().toString(),stringWriter.getBuffer().toString());
+    assertEquals("Compare stack traces",stringWriter1.getBuffer().toString(),stringWriter2.getBuffer().toString());
     xtestCore.delete();
   }
 

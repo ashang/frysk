@@ -93,32 +93,32 @@ public class StackFactory
       
   }
 
-  public static final void printTaskStackTrace (PrintWriter printWriter, Task task, boolean elfOnly, boolean printParameters, boolean printScopes, boolean fullpath)
+  public static final void printTaskStackTrace (PrintWriter printWriter, Task task, boolean elfOnly, boolean printParameters, boolean printScopes, boolean fullpath, boolean printSourceLibrary)
   {
     if (task != null){
       printWriter.println("Task #" + task.getTid());
       Frame frame = StackFactory.createFrame(task);
       if(elfOnly){
-	  printStackTrace(printWriter, frame);
+	  printStackTrace(printWriter, frame, printSourceLibrary);
       }else{
-	  printRichStackTrace(printWriter, frame, printParameters, printScopes, fullpath);
+	  printRichStackTrace(printWriter, frame, printParameters, printScopes, fullpath, printSourceLibrary);
       }
     }
     printWriter.flush();
   }
 
-  public static void printStackTrace(PrintWriter printWriter, Frame topFrame){
+  public static void printStackTrace(PrintWriter printWriter, Frame topFrame, boolean printSourceLibrary){
     int count = 0;
     for (Frame frame = topFrame;
     frame != null; frame = frame.getOuter()) {
       printWriter.print("#" + count + " ");
-      frame.toPrint(printWriter,false);
+      frame.toPrint(printWriter,false, printSourceLibrary);
       printWriter.println();
       count++;
     }
   }
 
-  public static void printRichStackTrace(PrintWriter writer, Frame topFrame, boolean printParameters, boolean printScopes, boolean fullpath){
+  public static void printRichStackTrace(PrintWriter writer, Frame topFrame, boolean printParameters, boolean printScopes, boolean fullpath, boolean printSourceLibrary){
     
     int count = 0;
     for (Frame frame = topFrame;
@@ -161,7 +161,7 @@ public class StackFactory
         }
         
       } else {
-	  frame.toPrint(writer,false);
+	  frame.toPrint(writer,false, printSourceLibrary);
       }
       
       writer.println();
