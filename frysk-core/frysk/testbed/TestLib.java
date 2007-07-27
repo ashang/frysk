@@ -716,63 +716,6 @@ public class TestLib
     }
 
     /**
-     * Observer that counts the number of tasks <em>frysk</em> reports
-     * as added and removed to the system.. This automatically wires
-     * itself in using the Proc's procAdded observer.
-     */
-    public class TaskCounter {
-	/**
-	 * List of tasks added.
-	 */
-	public final List added = new LinkedList();
-
-	/**
-	 * List of tasks removed.
-	 */
-	public final List removed = new LinkedList();
-
-	/**
-	 * Only count descendants of this process?
-	 */
-	private boolean descendantsOnly;
-
-	/**
-	 * Create a task counter that monitors task added and removed
-	 * events. If descendantsOnly, limit the count to tasks
-	 * belonging to descendant processes.
-	 */
-	public TaskCounter (boolean descendantsOnly) {
-	    this.descendantsOnly = descendantsOnly;
-	    Manager.host.observableTaskAddedXXX.addObserver(new Observer() {
-		    public void update (Observable o, Object obj) {
-			Task task = (Task) obj;
-			if (TaskCounter.this.descendantsOnly
-			    && ! isDescendantOfMine(task.getProc()))
-			    return;
-			added.add(task);
-		    }
-		});
-	    Manager.host.observableTaskRemovedXXX.addObserver(new Observer() {
-		    public void update (Observable o, Object obj) {
-			Task task = (Task) obj;
-			if (TaskCounter.this.descendantsOnly
-			    && ! isDescendantOfMine(task.getProc()))
-			    return;
-			removed.add(task);
-		    }
-		});
-	}
-	
-	/**
-	 * Create a task counter that counts all task add and removed
-	 * events.
-	 */
-	public TaskCounter () {
-	    this(false);
-	}
-    }
-
-    /**
      * Watch for events involving the specified PID process; count the
      * number of events seen.
      */

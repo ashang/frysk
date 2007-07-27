@@ -40,6 +40,7 @@
 
 package frysk.proc;
 
+import frysk.testbed.TaskCounter;
 import frysk.sys.Signal;
 import frysk.testbed.TearDownFile;
 import frysk.testbed.TestLib;

@@ -1,5 +1,10 @@
 2007-07-27  Andrew Cagney  <cagney@redhat.com>
 
+	* TestExec.java: Update. frysk.testbed.TestLib.TaskCounter moved
+	to frysk.testbed.TaskCounter.
+	* TestRefresh.java: Ditto.
+	* TestRun.java: Remove redundant import of frysk.testbed.ProcCounter.
+
 	* TestRun.java: Update. frysk.testbed.TestLib.ProcCounter moved to
 	frysk.testbed.ProcCounter.
 	* TestTaskForkedObserver.java: Ditto.
