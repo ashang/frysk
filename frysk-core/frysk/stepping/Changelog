@@ -1,0 +1,16 @@
+2006-07-27  Mike Cvet  <mcvet@redhat.com>
+
+	* InstructionStepState.java: Moved here from frysk.rt
+	* LineStepState.java: Ditto.
+	* NextInstructionStepState.java: Ditto.
+	* NextInstructionStepTestState.java: Ditto.
+	* RunningState.java: Ditto.
+	* State.java: Ditto.
+	* StepAdvanceState.java: Ditto.
+	* StepOutState.java: Ditto.
+	* StepOverState.java: Ditto.
+	* SteppingEngine.java: Ditto.
+	* StoppedState.java: Ditto.
+	* TaskStepEngine.java: Ditto.
+	* TestSteppingEngine.java: Ditto.
+	* TestStepping.java: New file. Fixes #4853.
