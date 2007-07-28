@@ -46,6 +46,7 @@ import frysk.sys.Sig;
 import frysk.sys.Signal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.io.File;
 
 /**
  * Simple expect like framework, that works within JUnit.
@@ -64,14 +65,24 @@ public class Expect
     private ProcessIdentifier pid = null;
 
     /**
-     * Create an expect instance running the specified program and
-     * args.
+     * Create an expect instance running the specified program args[0]
+     * and args.
      */
     public Expect (String[] args)
     {
 	pid = child.addChild (args);
 	logger.log (Level.FINE, "{0} new {1} pid {2}\n",
 		    new Object[] { this, child, pid });
+    }
+
+    /**
+     * Create an expect instance running PROGRAM with no arguments.
+     *
+     * Turns out that doing this is common and it saves the hassle of
+     * creating an argument list.
+     */
+    public Expect(File program) {
+	this(new String[] { program.getAbsolutePath() });
     }
 
     /**

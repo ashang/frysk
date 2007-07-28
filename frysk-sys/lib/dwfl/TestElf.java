@@ -39,7 +39,6 @@
 
 package lib.dwfl;
 
-import java.io.File;
 import frysk.Config;
 import frysk.junit.TestCase;
 import inua.eio.ArrayByteBuffer;
@@ -53,7 +52,7 @@ public class TestElf
   public void testCore_x8664 () throws ElfException, ElfFileException
   {
 
-    Elf testElf = new Elf (new File (Config.getPkgDataDir (), "test-core-x8664")
+    Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x8664")
 			   .getAbsolutePath (),
 			   ElfCommand.ELF_C_READ);
 
@@ -139,9 +138,9 @@ public class TestElf
 
   public void testCore_x86 () throws ElfException, ElfFileException
   {
-    Elf testElf = new Elf (new File (Config.getPkgDataDir (), "test-core-x86")
-			     .getAbsolutePath (),
-			     ElfCommand.ELF_C_READ);
+    Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x86")
+			   .getAbsolutePath (),
+			   ElfCommand.ELF_C_READ);
 
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
@@ -221,7 +220,7 @@ public class TestElf
    */
   public void testElfCorePrpsNotes_x8664 () throws ElfException, ElfFileException
   {
-    Elf testElf = new Elf (new File (Config.getPkgDataDir (), "test-core-x8664")
+    Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x8664")
 			   .getAbsolutePath (), ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
@@ -253,7 +252,7 @@ public class TestElf
   public void testElfCorePrpsNotes_x86 () throws ElfException, ElfFileException
   {
     
-    Elf testElf = new Elf (new File (Config.getPkgDataDir (), "test-core-x86")
+    Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x86")
 			   .getAbsolutePath (), ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
@@ -286,7 +285,7 @@ public class TestElf
   public void testElfCorePrstatusNotes_x86 () throws ElfException,  ElfFileException
   {
 
-    Elf testElf = new Elf (new File (Config.getPkgDataDir (), "test-core-x86")
+    Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x86")
 			   .getAbsolutePath (), ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
@@ -399,7 +398,7 @@ public class TestElf
   {
 
     ByteOrder order = ByteOrder.LITTLE_ENDIAN;
-    Elf testElf = new Elf (new File (Config.getPkgDataDir (), "test-core-x8664")
+    Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x8664")
 			   .getAbsolutePath (), ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
@@ -542,7 +541,7 @@ public class TestElf
     ElfFileException 
   {
 
-    Elf testElf = new Elf (new File (Config.getPkgDataDir (), "test-core-x8664")
+    Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x8664")
 			   .getAbsolutePath (), ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
@@ -608,7 +607,7 @@ public class TestElf
     ElfFileException 
   {
 
-    Elf testElf = new Elf (new File (Config.getPkgDataDir (), "test-core-x86")
+    Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x86")
 			   .getAbsolutePath (), ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
@@ -670,7 +669,7 @@ public class TestElf
 
   public void testObjectFile () throws ElfException, ElfFileException
   {
-      Elf testElf = new Elf (new File (Config.getPkgDataDir (), "helloworld.o")
+      Elf testElf = new Elf (Config.getPkgDataFile ("helloworld.o")
 			     .getAbsolutePath (),
 			     ElfCommand.ELF_C_READ);
 

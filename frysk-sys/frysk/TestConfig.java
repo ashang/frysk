@@ -71,9 +71,9 @@ public class TestConfig
 	assertNotNull ("getGladeDir", Config.getGladeDir ());
 	assertNotNull ("getHelpDir", Config.getHelpDir ());
 	assertNotNull ("getImagesDir", Config.getImagesDir ());
-	assertNotNull ("getBinDir", Config.getBinDir ());
-	assertNotNull ("getPkgDataDir", Config.getPkgDataDir ());
-	assertNotNull ("getPkgLibDir", Config.getPkgLibDir ());
+	assertNotNull ("getBinFile", Config.getBinFile (null));
+	assertNotNull ("getPkgDataFile", Config.getPkgDataFile (null));
+	assertNotNull ("getPkgLibFile", Config.getPkgLibFile (null));
 	if (pure) {
 	    assertNull ("getPkgLib32Dir", Config.getPkgLib32Dir ());
 	    assertNull ("getPkgLib64Dir", Config.getPkgLib64Dir ());
@@ -81,8 +81,8 @@ public class TestConfig
 	else {
 	    assertNotNull ("getPkgLib32Dir", Config.getPkgLib32Dir ());
 	    assertNotNull ("getPkgLib64Dir", Config.getPkgLib64Dir ());
-	    assertSame ("getPkgLibDir is getPkgLib32Dir",
-			Config.getPkgLibDir (), Config.getPkgLib32Dir ());
+	    assertSame ("getPkgLibFile is getPkgLib32Dir",
+			Config.getPkgLibFile (null), Config.getPkgLib32Dir ());
 	}
     }
 

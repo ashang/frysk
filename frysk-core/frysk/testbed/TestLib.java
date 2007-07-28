@@ -59,7 +59,6 @@ import frysk.sys.Wait;
 import frysk.sys.UnhandledWaitBuilder;
 import frysk.sys.proc.Stat;
 import frysk.testbed.SignalWaiter;
-import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -88,34 +87,10 @@ public class TestLib
     }
 
     /**
-     * Return an absolute path as a string, or null of FILE is null.
-     */
-    private static String getAbsolutePath (File file, String suffix) {
-	if (file != null)
-	    return new File (file, suffix).getAbsolutePath ();
-	else
-	    return null;
-    }
-
-    /**
      * Return a String specifying the absolute path of the executable.
      */
-    protected static String getExecPath (String program) {
-	return getAbsolutePath (Config.getPkgLibDir (), program);
-    }
-  
-    /**
-     * Return a String specifying the absolute path of the executable.
-     */
-    protected static String getExec32Path (String program) {
-	return getAbsolutePath (Config.getPkgLib32Dir (), program);
-    }
-  
-    /**
-     * Return a String specifying the absolute path of the executable.
-     */
-    protected static String getExec64Path (String program) {
-	return getAbsolutePath (Config.getPkgLib64Dir (), program);
+    protected static String getExecPath(String program) {
+	return Config.getPkgLibFile(program).getAbsolutePath();
     }
 
     /**

@@ -1,5 +1,8 @@
 2007-07-27  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (getExecPath): Use Config.getPkgLibFile.
+	(getAbsolutePath, getExec32Path, getExec64Path): Delete.
+
 	* TestLib.java (PidCounter): Delete; moved to PidCounter.java.
 	* PidCounter.java: New file.
 

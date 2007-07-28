@@ -47,6 +47,8 @@ import lib.dwfl.ElfEMachine;
 import frysk.testbed.SignalWaiter;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
+import java.io.File;
+import frysk.Config;
 
 public class TestIsa
     extends TestLib
@@ -261,16 +263,16 @@ public class TestIsa
   
   public void test64To32Isa ()
   {
-      String exec32 = getExec32Path ("funit-exec");
-      String exec64 = getExec64Path ("funit-exec");
+      File exec32 = Config.getPkgLib32File("funit-exec");
+      File exec64 = Config.getPkgLib64File("funit-exec");
       if (unsupported ("32-on-64", exec32 == null || exec64 == null))
 	  return;
       String[] command = new String[] {
-	  exec64,
+	  exec64.getAbsolutePath(),
 	  String.valueOf(Pid.get()),
 	  String.valueOf(Sig.USR2_),
 	  "5",
-	  exec32,
+	  exec32.getAbsolutePath(),
 	  String.valueOf(Pid.get()),
 	  String.valueOf(Sig.USR2_),
 	  "5", "echo",  "hello"
@@ -305,20 +307,20 @@ public class TestIsa
   
   public void test64To32To64 ()
   {
-      String exec32 = getExec32Path ("funit-exec");
-      String exec64 = getExec64Path ("funit-exec");
+      File exec32 = Config.getPkgLib32File("funit-exec");
+      File exec64 = Config.getPkgLib64File("funit-exec");
       if (unsupported ("32-on-64", exec32 == null && exec64 == null))
 	  return;
       String[] command = new String[] {
-	  exec64,
+	  exec64.getAbsolutePath(),
 	  String.valueOf(Pid.get()),
 	  String.valueOf(Sig.USR2_),
 	  "20",
-	  exec32,
+	  exec32.getAbsolutePath(),
 	  String.valueOf(Pid.get()),
 	  String.valueOf(Sig.USR2_),
 	  "20",
-	  exec64,
+	  exec64.getAbsolutePath(),
 	  String.valueOf(Pid.get()),
 	  String.valueOf(Sig.USR2_),
 	  "20", "echo",  "hello"

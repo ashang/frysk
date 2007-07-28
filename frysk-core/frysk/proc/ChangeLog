@@ -1,5 +1,9 @@
 2007-07-27  Andrew Cagney  <cagney@redhat.com>
 
+	* TestIsa.java (test64to32Isa): Use Config.getPkgLib32File and
+	Config.getPkgLib64File.
+	(test64to32to64Isa): Ditto.
+	
 	* TestRefresh.java: Update; frysk.testbed.TestLib.PidCounter moved
 	to frysk.testbed.PidCounter.
 

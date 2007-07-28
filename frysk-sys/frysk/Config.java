@@ -49,11 +49,15 @@ import frysk.testbed.TearDownFile;
 
 public class Config
 {
+    private File theBinDir;
+    private File thePkgDataDir;
+    private File thePkgLibDir;
+    private File thePkgLib32Dir;
+    private File thePkgLib64Dir;
     /**
      * Do not allow extension.
      */
-    private Config ()
-    {
+    private Config () {
     }
 
     /**
@@ -63,16 +67,14 @@ public class Config
     /**
      * Select the specified configuration.
      */
-    public static final void set (Config config)
-    {
+    public static final void set (Config config) {
 	current = config;
     }
 
     /**
      * Return the current config.
      */
-    static final Config get ()
-    {
+    static final Config get () {
 	return current;
     }
 
@@ -104,13 +106,24 @@ public class Config
 							       String absBuildDir);
 
     /**
+     * Return either the file or directory.
+     */
+    private static File getFile(File dir, String file) {
+	if (file == null)
+	    return dir;
+	if (dir == null)
+	    // Directory isn't valid, no files allowed.
+	    return null;
+	return new File(dir, file);
+    }
+
+    /**
      * Directory containing the .glade files describing frysk's UI
      * windows.
      *
      * XXX: This is a String so that it works better with Java-GNOME.
      */
-    public static final String getGladeDir ()
-    {
+    public static final String getGladeDir () {
 	return current.theGladeDir;
     }
     private String theGladeDir;
@@ -118,8 +131,7 @@ public class Config
     /**
      * Directory containing the frysk help files.
      */
-    public static final File getHelpDir ()
-    {
+    public static final File getHelpDir () {
 	return current.theHelpDir;
     }
     private File theHelpDir;
@@ -129,72 +141,84 @@ public class Config
      *
      * XXX: This is a String so that it works better with Java-GNOME.
      */
-    public static final String getImagesDir ()
-    {
+    public static final String getImagesDir () {
 	return current.theImagesDir;
     }
     private String theImagesDir;
 
     /**
-     * Frysk's shared, and 32-bit and 64-bit independant, data
-     * directory.  Typically <tt>/usr/share/frysk</tt>.
+     * A file in frysk's shared, and 32-bit and 64-bit independant,
+     * data directory.  Typically <tt>/usr/share/frysk/FILE</tt>
      */
-    public static final File getPkgDataDir ()
-    {
+    public static final File getPkgDataFile (String file) {
+	return getFile(current.thePkgDataDir, file);
+    }
+    // FIXME: delete.
+    public static final File getPkgDataDir() {
 	return current.thePkgDataDir;
     }
-    private File thePkgDataDir;
 
     /**
-     * Frysk's user-visible executable directory.  Typically <tt>/usr/bin</tt>.
+     * A file in Frysk's user-visible executable directory.  Typically
+     * <tt>/usr/bin/FILE</tt>.
      *
-     * Used by install-tree testing when specifying the path to
-     * installed frysk executables.
+     * Used by install-tree testing when needing to run a user-visible
+     * executable.
      */
-    public static final File getBinDir ()
-    {
+    public static final File getBinFile(String file) {
+	return getFile(current.theBinDir, file);
+    }
+    // FIXME: delete.
+    public static final File getBinDir() {
 	return current.theBinDir;
     }
-    private File theBinDir;
 
     /**
-     * Frysk's library directory.  Typically either
-     * <tt>/usr/lib/frysk</tt> or <tt>/usr/lib64/frysk</tt>.
+     * A file in Frysk's library directory.  Typically either
+     * <tt>/usr/lib/frysk/FILE</tt> or <tt>/usr/lib64/frysk/FILE</tt>.
      *
      * Used by tests when they need to run an executable of the same
      * bit-size as frysk.
      */
-    public static final File getPkgLibDir ()
-    {
+    public static final File getPkgLibFile (String file) {
+	return getFile(current.thePkgLibDir, file);
+    }
+    // FIXME: delete.
+    public static final File getPkgLibDir() {
 	return current.thePkgLibDir;
     }
-    private File thePkgLibDir;
 
     /**
-     * Frysk's 32-bit library directory.  Typically
-     * <tt>/usr/lib/frysk</tt>.
+     * A file in frysk's 32-bit library directory.  Typically
+     * <tt>/usr/lib/frysk/FILE</tt>.  Returns NULL when the Config
+     * does not include a 32-bit specific directory.
      *
      * Solely for use by 32-bit on 64-bit tests when a 32-bit
      * executable is required.
      */
-    public static final File getPkgLib32Dir ()
-    {
+    public static final File getPkgLib32File(String file) {
+	return getFile(current.thePkgLib32Dir, file);
+    }
+    // FIXME: delete.
+    public static final File getPkgLib32Dir () {
 	return current.thePkgLib32Dir;
     }
-    private File thePkgLib32Dir;
 
     /**
-     * Frysk's 64-bit library directory.  Typically
-     * <tt>/usr/lib64/frysk</tt>.
+     * A file in frysk's 64-bit library directory.  Typically
+     * <tt>/usr/lib64/frysk/FILE</tt>.  Returns NULL when the Config
+     * does not include a 64-bit specific directory.
      *
      * Solely for use by 32-bit on 64-bit tests when a 64-bit
      * executable is required.
      */
-    public static final File getPkgLib64Dir ()
-    {
+    public static final File getPkgLib64File(String file) {
+	return getFile(current.thePkgLib64Dir, file);
+    }
+    // FIXME: delete.
+    public static final File getPkgLib64Dir () {
 	return current.thePkgLib64Dir;
     }
-    private File thePkgLib64Dir;
 
     /**
      * The frysk version number.  Typically of the form:
@@ -203,32 +227,32 @@ public class Config
     public static final native String getVersion ();
 
     public static File getFryskDir(){
-      File file = new File(getHomeDir()+"/"+".frysk/");
-      if(file.exists()){
-	file.mkdir();
-      }
-      return file;
+	File file = new File(getHomeDir()+"/"+".frysk/");
+	if(file.exists()){
+	    file.mkdir();
+	}
+	return file;
     }
     
-    public static File getFryskTestDir() throws Exception{
-      File file = null;
-      file = TearDownFile.create();
+    public static File getFryskTestDir() throws Exception {
+	File file = null;
+	file = TearDownFile.create();
       
-      String path = file.getAbsolutePath();
-      file.delete();
-      file = new File(path);
+	String path = file.getAbsolutePath();
+	file.delete();
+	file = new File(path);
       
-      if(!file.mkdirs()){
-	throw new Exception("Could not create test directory " + file.getAbsolutePath());
-      }
+	if(!file.mkdirs()){
+	    throw new Exception("Could not create test directory " + file.getAbsolutePath());
+	}
       
-      file.deleteOnExit();
-      return file;
+	file.deleteOnExit();
+	return file;
     }
     
-    public static File getHomeDir(){
-      //XXX: Should not use user.home property.
-      return new File(System.getProperty("user.home"));
+    public static File getHomeDir() {
+	//XXX: Should not use user.home property.
+	return new File(System.getProperty("user.home"));
     }
     
     /**
