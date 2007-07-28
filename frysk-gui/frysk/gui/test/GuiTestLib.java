@@ -108,7 +108,7 @@ public class GuiTestLib extends TestCase{
 		
 		public TestProc(){
 			logger.log(Level.FINE, "{0} TestProc\n", this);
-			String path = Config.getPkgLibDir () + "funit-child";
+			String path = Config.getPkgLibFile("funit-child").getPath();
 			path = path.replaceAll("gui", "core");
 			Manager.host.observableProcAddedXXX.addObserver(this);
 			pid = Fork.exec(new String[]{path, "0", "0"});
