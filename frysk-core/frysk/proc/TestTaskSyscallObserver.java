@@ -40,6 +40,7 @@
 
 package frysk.proc;
 
+import frysk.Config;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -356,10 +357,8 @@ public class TestTaskSyscallObserver
     // return;
 
     // Create program making syscalls
-    DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(new String[]
-	{
-	    getExecPath ("funit-syscalls")
-	});
+    DaemonBlockedAtEntry child
+	= new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-syscalls"));
 
     // Add a syscall observer. XXX: This doesn't work - system
     // call tracing doesn't get enabled enabled.
@@ -452,15 +451,9 @@ public class TestTaskSyscallObserver
    */
   public void testSyscallOpen ()
   {
-
-    // if (unresolved (2245))
-    // return;
-
-    // Create program making syscalls
-    DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(new String[]
-	{
-	    getExecPath ("funit-syscalls")
-	});
+      // Create program making syscalls
+      DaemonBlockedAtEntry child
+	  = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-syscalls"));
     new StopEventLoopWhenProcRemoved(child.getMainTask().getProc().getPid());
 
     SyscallOpenObserver syscallOpenObserver = new SyscallOpenObserver(

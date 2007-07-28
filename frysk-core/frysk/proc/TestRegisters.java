@@ -45,6 +45,7 @@ import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
 import frysk.sys.SyscallNum;
 import frysk.testbed.DaemonBlockedAtEntry;
+import frysk.Config;
 
 /**
  * Check that registers and memory can be modified for all platform.
@@ -544,13 +545,10 @@ public class TestRegisters
     }
   }
 
-  private void checkI386Modify ()
-  {   
-    // Create program making syscalls
-    DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry (new String[]
-        {
-	    getExecPath ("funit-registers")
-        });
+  private void checkI386Modify () {   
+      // Create program making syscalls
+      DaemonBlockedAtEntry ackProc
+	  = new DaemonBlockedAtEntry (Config.getPkgLibFile("funit-registers"));
     
     TestI386ModifyXXX t = new TestI386ModifyXXX(ackProc.getMainTask().getProc().getPid());
     
@@ -569,10 +567,8 @@ public class TestRegisters
       return;
     
     // Create program making syscalls
-    DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry (new String[]
-	{
-	    getExecPath ("funit-registers")
-	});
+    DaemonBlockedAtEntry ackProc
+	= new DaemonBlockedAtEntry (Config.getPkgLibFile("funit-registers"));
     
     TestX8664ModifyXXX t = new TestX8664ModifyXXX (ackProc.getMainTask().getProc().getPid());
     
@@ -592,10 +588,8 @@ public class TestRegisters
    
     
     // Call assembler program making syscalls
-    DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry (new String[]
-	{
-	    getExecPath ("funit-registers")
-	});
+    DaemonBlockedAtEntry ackProc
+	= new DaemonBlockedAtEntry (Config.getPkgLibFile("funit-registers"));
     
     TestPPC64ModifyXXX t = new TestPPC64ModifyXXX (ackProc.getMainTask().getProc().getPid());
     

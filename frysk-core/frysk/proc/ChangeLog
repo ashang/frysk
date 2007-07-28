@@ -1,5 +1,10 @@
 2007-07-28  Andrew Cagney  <cagney@redhat.com>
 
+	* TestMemory.java: Use DaemonBlockedAtEntry(File) and
+	Config.getPkgLibFile.
+	* TestRegisters.java: Ditto.
+	* TestTaskSyscallObserver.java: Ditto.
+
 	* TestTaskObserverInstructionSigReturn.java: Use
 	Config.getPkgLibFile.
 

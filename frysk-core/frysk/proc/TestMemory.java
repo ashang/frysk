@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import frysk.Config;
 import java.util.Observer;
 import frysk.sys.Sig;
 import java.util.Observable;
@@ -203,10 +204,8 @@ public class TestMemory
 	    return;
 	TestModifyXXX t = new TestModifyXXX ();
 	// Create program making syscalls
-	new DaemonBlockedAtEntry (new String[]
-	    {
-		getExecPath ("funit-memory")
-	    }).requestRemoveBlock ();
+	new DaemonBlockedAtEntry (Config.getPkgLibFile("funit-memory"))
+	    .requestRemoveBlock ();
 
 	assertRunUntilStop ("run \"modify\" to exit");
 
