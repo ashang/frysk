@@ -16,15 +16,12 @@
 /*
  * TTD
  *
- * reset prompt on detach
  * print regset info
  * allow regset spec in printreg
  */
 
 static struct hsearch_data cmd_hash_table;
-static struct hsearch_data reg_hash_table;
 static struct hsearch_data sys_hash_table;
-static int reg_hash_table_valid = 0;
 static int sys_hash_table_valid = 0;
 
 typedef int (*action_fcn)(char ** saveptr);
@@ -234,40 +231,56 @@ switchpid_fcn (char ** saveptr)
 static int
 printreg_fcn (char ** saveptr)
 {
+  int rc;
   char * tok;
-  int run = 1;
+  unsigned int nr_regs;
+  unsigned int reg_size;
   long pid = current_pid;
-#define INVALID_REG	-128
-  int reg = INVALID_REG;
+  long reg = INVALID_REG;
+  long regset = 0;
+  void * regsinfo = NULL;
   
-  while (tok = strtok_r (NULL, " \t", saveptr)) {
-    if ('[' == *tok) pid = atol (tok+1);
-    else {
-      if (reg_hash_table_valid) {
-	ENTRY * entry;
-	ENTRY target;
-      
-	target.key = tok;
-	if (0 != hsearch_r (target, FIND, &entry, &reg_hash_table)) 
-	  reg = (int)(entry->data);
-      }
-      if (INVALID_REG == reg) reg = atoi (tok);
+  tok = strtok_r (NULL, ", \t", saveptr);
+  if (tok) {
+    if ('[' == *tok) {
+      pid = atol (tok+1);
+      tok = strtok_r (NULL, ", \t", saveptr);
     }
   }
+  if (tok) parse_regspec (tok, saveptr, &regset, &reg);
   
-  if (INVALID_REG == reg) reg = -1;	// turn into pra
-  utrace_readreg_if (pid, 0, reg);  // fixme--first arg == regset
+  if (INVALID_REG == reg) {
+    reg = -1;	// turn into pra
+    regset = 0;
+  }
+
+  rc = utracer_get_regs (pid, regset, &regsinfo, &nr_regs, &reg_size);
+  if (0 == rc) show_regs (pid, regset, reg, regsinfo, nr_regs, reg_size);
+  else uerror ("printreg");
+
+  if (regsinfo) free (regsinfo);
+
   return 1;
 }
 
 static int
 printregall_fcn (char ** saveptr)
 {
+  int rc;
+  unsigned int nr_regs;
+  unsigned int reg_size;
+  void * regsinfo = NULL;
   long pid = current_pid;
   char * tok = strtok_r (NULL, " \t", saveptr);
 
   if (tok && ('[' == *tok)) pid = atol (tok+1);
-  utrace_readreg_if (pid, 0, -1);  // fixme--first arg == regset
+
+  rc = utracer_get_regs (pid, 0, &regsinfo, &nr_regs, &reg_size);
+  if (0 == rc) show_regs (0, -1, regsinfo, nr_regs, reg_size);
+  else uerror ("printreg");
+
+  if (regsinfo) free (regsinfo);
+
   return 1;
 }
 
@@ -584,31 +597,6 @@ create_cmd_hash_table()
 }
 
 static void
-create_reg_hash_table()
-{
-  int i, rc;
-  rc = hcreate_r ((4 * nr_regs)/3, &reg_hash_table);
-  if (0 == rc) {
-    cleanup_udb();
-    unregister_utracer (udb_pid);
-    close_ctl_file();
-    fprintf (stderr, "\tCreating register hash table failed.\n");
-    _exit (1);
-  }
-
-  for (i = 0; i < nr_regs; i++) {
-    ENTRY * entry;
-    if (0 == hsearch_r (reg_mapping[i], ENTER, &entry, &reg_hash_table)) {
-      cleanup_udb();
-      unregister_utracer (udb_pid);
-      close_ctl_file();
-      error (1, errno, "Error building register hash.");
-    }
-  }
-  reg_hash_table_valid = 1;
-}
-
-static void
 create_sys_hash_table()
 {
   int i, rc;
@@ -640,7 +628,6 @@ text_ui_init()
   stifle_history (HISTORY_LIMIT);	// fixme--make settable
 
   create_cmd_hash_table();
-  create_reg_hash_table();
   create_sys_hash_table();
 
   set_prompt();

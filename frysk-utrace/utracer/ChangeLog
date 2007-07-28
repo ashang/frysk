@@ -1,3 +1,14 @@
+Sat Jul 28 10:02:47 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-i386.c: Moved regspec parser here from udb-if-io.c.  Moved
+	reg display code here from whereever it was.  Tweaked both to work
+	better
+	* udb-i386.h: Aded stuff in aid of above.
+	* udb-response.c: Removed reg display stuff and put it in
+	arch-dep.
+	* udb-text-ui.c: Removed regspec parser to arc-dep.
+	* udb-utrace-if.c: Removed readreg stuff and put it in ioctl.
+
 Thu Jul 26 14:07:40 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-i386.c: Added a bit of code to read and display proc mem

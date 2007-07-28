@@ -557,113 +557,6 @@ handle_sync (sync_cmd_s * sync_cmd, unsigned long count,
   return rc;
 }
 
-static int
-handle_readreg (readreg_cmd_s * readreg_cmd, unsigned long count,
-		void * data)
-{
-  utracing_info_s * utracing_info_found = (utracing_info_s *)data;
-  struct task_struct * task;
-  int rc = count;
-      
-  task = get_task (readreg_cmd->utraced_pid);
-  if (task) {
-    if ((current == task) ||
-	(task->state & (TASK_TRACED | TASK_STOPPED))) {
-      struct utrace_attached_engine * engine;
-
-      engine =
-	locate_engine (readreg_cmd->utracing_pid, readreg_cmd->utraced_pid);
-      if (engine) {
-	const struct utrace_regset * regset;
-	regset = utrace_regset(task, engine,
-			       utrace_native_view(task),
-			       readreg_cmd->regset);
-
-	if (unlikely(regset == NULL))
-	  return -EIO;
-
-	// fixme -- see kernel/ptrace.c for use of bias and align
-	if (-1 ==  readreg_cmd->which) {
-	  readreg_resp_s readreg_resp;
-	  readreg_resp.type           = IF_RESP_REG_DATA;
-	  readreg_resp.utraced_pid    = readreg_cmd->utraced_pid;
-	  readreg_resp.regset         = readreg_cmd->regset;
-	  readreg_resp.which          = -1;
-	  readreg_resp.byte_count     = regset->size;
-	  readreg_resp.reg_count      = regset->n;
-	  readreg_resp.data	      = NULL;
-
-	  if (utracing_info_found) {
-	    int i;
-	    void * rvp;
-	    void * reg_vals =
-	      kmalloc (regset->size * regset->n, GFP_KERNEL);
-		
-	    for (i = 0, rvp = reg_vals;
-		 i < regset->n;
-		 i++, rvp += regset->size) {
-	      int lrc;
-	      // fixme -- do something with lrc?
-	      
-	      lrc = regset->get(task,
-				regset,
-				i<<2,		// pos
-				regset->size,	// count
-				rvp,		// kbuf
-				NULL);		// ubuf
-	    }
-	    queue_response (utracing_info_found,
-			    &readreg_resp,
-			    sizeof(readreg_resp),
-			    reg_vals,
-			    regset->size * regset->n,
-			    NULL, 0);
-	    if (reg_vals) kfree (reg_vals);
-	  }
-	  else rc = -UTRACER_ETRACING;
-	}
-	else if ((0 <=  readreg_cmd->which) &&
-		 (readreg_cmd->which < regset->n)) {
-	  utracing_info_s * utracing_info_found;
-	  readreg_resp_s readreg_resp;
-	  readreg_resp.type           = IF_RESP_REG_DATA;
-	  readreg_resp.utraced_pid    = readreg_cmd->utraced_pid;
-	  readreg_resp.regset         = readreg_cmd->regset;
-	  readreg_resp.which          = readreg_cmd->which;
-	  readreg_resp.byte_count     = regset->size;
-	  readreg_resp.reg_count      = 1;
-
-	  utracing_info_found =
-	    lookup_utracing_info (readreg_cmd->utracing_pid);
-
-	  if (utracing_info_found) {
-	    int lrc;
-	    // fixme -- do something with lrc?
-	    lrc = regset->get(task,
-			      regset,
-			      readreg_cmd->which << 2,  // fixme pos
-			      regset->size,		// count
-			      &readreg_resp.data,      // kbuf
-			      NULL);   	// ubuf
-	    queue_response (utracing_info_found,
-			    &readreg_resp,
-			    sizeof(readreg_resp),
-			    NULL, 0,
-			    NULL, 0);
-	  }	
-	  else rc = -UTRACER_ETRACING;
-	}
-	else rc = -UTRACER_EREG;
-      }
-      else rc = -UTRACER_EENGINE;
-    }
-    else rc = -UTRACER_ESTATE;
-  }
-  else rc = -ESRCH;
-
-  return rc;
-}
-
 int
 if_file_write (struct file *file,
                     const char *buffer,
@@ -723,10 +616,6 @@ if_file_write (struct file *file,
       // fixme -- actually do it
       DB_PRINTK (KERN_ALERT "IF_CMD_SET_REG\n");
       rc = count;
-      break;
-    case IF_CMD_READ_REG:
-      DB_PRINTK (KERN_ALERT "IF_CMD_READ_REG\n");
-      rc = handle_readreg (&if_cmd.readreg_cmd, count, data);
       break;
     }
 

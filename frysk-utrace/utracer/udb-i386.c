@@ -1,13 +1,176 @@
 #define _XOPEN_SOURCE 500
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <alloca.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <search.h>
+#include <string.h>
+#include <ctype.h>
 /*#include <asm/ptrace.h>*/
-
 #include <utracer.h>
-#include "udb-i386.h"
 #include <asm/unistd.h>
+
+#include "udb.h"
+#include "udb-i386.h"
+
+
+static struct hsearch_data reg_hash_table;
+static int reg_hash_table_valid = 0;
+
+void
+parse_regspec (char * tok, char ** saveptr, long * regset_p, long *reg_p)
+{
+  long reg = INVALID_REG;
+  long regset = INVALID_REG;
+  
+  if (!reg_hash_table_valid) {
+    int i, rc;
+    rc = hcreate_r ((4 * nr_regs)/3, &reg_hash_table);
+    if (0 == rc) {
+      fprintf (stderr, "\tCreating register hash table failed.\n");
+      return;
+    }
+
+    for (i = 0; i < nr_regs; i++) {
+      ENTRY * entry;
+      if (0 == hsearch_r (reg_mapping[i], ENTER, &entry, &reg_hash_table)) {
+	perror ("Error building register hash.");
+	return;
+      }
+    }
+    reg_hash_table_valid = 1;
+  }
+  
+  if (reg_hash_table_valid) {
+    ENTRY * entry;
+    ENTRY target;
+
+    if (tok) {
+      target.key = tok;
+      if (0 != hsearch_r (target, FIND, &entry, &reg_hash_table)) {
+	reg    = ((reg_data_s *)(entry->data))->reg;
+	regset = ((reg_data_s *)(entry->data))->regset;
+      }
+      else if (isdigit (*tok) || ('-' == *tok)) {
+	regset = 0;
+	reg    = atol (tok);
+	tok = strtok_r (NULL, ", \t", saveptr);
+	if (tok && (isdigit (*tok) || ('-' == *tok))) {
+	  regset = reg;
+	  reg    = atol (tok);
+	}
+      }
+    }
+  }
+  
+  if (INVALID_REG == reg)    reg    = -1;
+  if (INVALID_REG == regset) regset = 0;
+
+  if (reg_p)    *reg_p    = reg;
+  if (regset_p) *regset_p = regset;
+}
+
+#if 0
+        from include/asm-i386/user.h
+struct user_i387_struct {
+  long    cwd;
+  long    swd;
+  long    twd;
+  long    fip;
+  long    fcs;
+  long    foo;
+  long    fos;
+  long    st_space[20];   /* 8*10 bytes for each FP-reg = 80 bytes */
+};
+
+struct user_fxsr_struct {
+  unsigned short  cwd;
+  unsigned short  swd;
+  unsigned short  twd;
+  unsigned short  fop;
+  long    fip;
+  long    fcs;
+  long    foo;
+  long    fos;
+  long    mxcsr;
+  long    reserved;
+  long    st_space[32];   /* 8*16 bytes for each FP-reg = 128 bytes */
+  long    xmm_space[32];  /* 8*16 bytes for each XMM-reg = 128 bytes */
+  long    padding[56];
+};
+
+from include/asm-i386/ldt.h
+struct user_desc {
+  unsigned int  entry_number;
+  unsigned long base_addr;
+  unsigned int  limit;
+  unsigned int  seg_32bit:1;
+  unsigned int  contents:2;
+  unsigned int  read_exec_only:1;
+  unsigned int  limit_in_pages:1;
+  unsigned int  seg_not_present:1;
+  unsigned int  useable:1;
+};
+
+
+
+// from arch/i386/kernel/ptrace.c native_regsets
+// 0: gprs:		n =  17, size = sizeof(long), align = sizeof(long)
+// 1: fprs:		n =  27, size = sizeof(long), align = sizeof(long)
+// 2: fprx:		n = 126, size = sizeof(long), align = sizeof(long)
+// 3: descriptors:	n =   3, size = sizeof(user_desc), align = size
+//				GDTR, LDTR and IDTR
+// 4: debug:		n =   8, size = sizeof(long), align = sizeof(long)
+
+#endif
+
+static char *
+reg_name (long regset, long reg){
+  char * rna = NULL;
+  char * rn;
+  
+  switch (regset) {
+  case 0:				/* gprs		*/
+    rn = (reg < nr_regs) ? reg_mapping[reg].key : "";
+    break;
+  case 1:				/* fprs		*/
+  case 2:				/* fprx		*/
+  case 3:				/* descriptors	*/
+  case 4:				/* debug	*/
+  default:
+    rn = "";
+  }
+
+  return rn;
+}
+
+void
+show_regs (long pid, long regset, long reg, void * regsinfo,
+	   unsigned int regs_count, unsigned int reg_size)
+{
+  fprintf (stderr, "reg_size = %d\n", reg_size);
+  if (-1 == reg) {
+    long i;
+  
+    for (i = 0; i < regs_count; i++) {
+      fprintf (stdout, "\t[%ld] [%d][%d (%s)]: [%#08x] %ld\n",
+	       pid,
+	       regset,
+	       i,
+	       reg_name (regset, i),
+	       ((long *)regsinfo)[i],
+	       ((long *)regsinfo)[i]);
+    }
+  }
+  else fprintf (stdout, "\t[%ld] [%d][%d (%s)]: [%#08x] %ld\n",
+		pid,
+		regset,
+		reg,
+		reg_name (regset, reg),
+		((long *)regsinfo)[reg],
+		((long *)regsinfo)[reg]);
+}
 
 
 void

@@ -15,6 +15,8 @@ extern void utrace_detach_if (long pid);
 extern void utrace_readreg_if (long pid, int regset, int reg);
 extern void set_prompt();
 extern void register_utracer(pid_t pid);
+extern void parse_regspec (char * tok, char ** saveptr, 
+			   long * regset_p, long *reg_p);
 
 pid_t udb_pid;
 
@@ -36,5 +38,7 @@ DECL (int cl_cmds_max, 0);
 #define CMDS_INCR	4
 
 DECL (char * ggg, NULL);
+
+#define INVALID_REG	-128
 
 #endif  /* UDB_H */

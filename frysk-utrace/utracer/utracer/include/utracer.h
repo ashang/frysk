@@ -171,7 +171,11 @@ typedef struct {
   long utracing_pid;
   long utraced_pid;
   int  regset;
-  int  which;
+  void *  regsinfo;
+  long alloced_size;
+  long * actual_size;
+  unsigned int * nr_regs;
+  unsigned int * reg_size;
 } readreg_cmd_s;
 
 typedef union {
@@ -191,18 +195,17 @@ typedef union {
 
 typedef enum {
   IF_RESP_NULL,				//  0
-  IF_RESP_REG_DATA,			//  1
-  IF_RESP_CLONE_DATA,			//  2
-  IF_RESP_SIGNAL_DATA,			//  3
-  IF_RESP_EXIT_DATA,			//  4
-  IF_RESP_DEATH_DATA,			//  6
-  IF_RESP_SWITCHPID_DATA,		//  7
-  IF_RESP_SYSCALL_ENTRY_DATA,		//  8
-  IF_RESP_SYSCALL_EXIT_DATA,		//  9
-  IF_RESP_EXEC_DATA,			// 10
-  IF_RESP_ATTACH_DATA,			// 11
-  IF_RESP_QUIESCE_DATA,			// 12
-  IF_RESP_SYNC_DATA			// 13
+  IF_RESP_CLONE_DATA,			//  1
+  IF_RESP_SIGNAL_DATA,			//  2
+  IF_RESP_EXIT_DATA,			//  3
+  IF_RESP_DEATH_DATA,			//  4
+  IF_RESP_SWITCHPID_DATA,		//  5
+  IF_RESP_SYSCALL_ENTRY_DATA,		//  6
+  IF_RESP_SYSCALL_EXIT_DATA,		//  7
+  IF_RESP_EXEC_DATA,			//  8
+  IF_RESP_ATTACH_DATA,			//  9
+  IF_RESP_QUIESCE_DATA,			// 10
+  IF_RESP_SYNC_DATA			// 11
 } if_resp_e; 
 
 typedef struct {
@@ -210,16 +213,6 @@ typedef struct {
   long utracing_pid;
   long sync_type;
 } sync_resp_s;
-
-typedef struct {
-  long type;
-  long utraced_pid;
-  int  regset;
-  int  which;
-  int  byte_count;
-  int  reg_count;
-  void * data;
-} readreg_resp_s;
 
 typedef struct {
   long type;
@@ -275,7 +268,6 @@ typedef struct {
 
 typedef union {
   long type;
-  readreg_resp_s	readreg_resp;
   clone_resp_s		clone_resp;
   signal_resp_s		signal_resp;
   attach_resp_s		attach_resp;
@@ -297,7 +289,9 @@ typedef enum {
   UTRACER_ESYSRANGE,
   UTRACER_ESTATE,
   UTRACER_EPAGES,
-  UTRACER_EMAX,
+  UTRACER_EMM,
+  UTRACER_EREGSET,
+  UTRACER_EMAX,       
 } utracer_errno_e;
 
 /***************** public i/f ****************/
@@ -313,5 +307,7 @@ int utracer_get_exe (long pid,
 int utracer_get_env (long pid, char ** env_p);
 int utracer_get_mem (long pid, void * addr, long length, void ** mem_p);
 int utracer_get_pids (long * nr_pids, long ** pids);
+int utracer_get_regs (long pid, long regset, void ** regsinfo,
+		      unsigned int * nr_regs_p, unsigned int * reg_size_p);
   
 #endif  /* UTRACER_H */

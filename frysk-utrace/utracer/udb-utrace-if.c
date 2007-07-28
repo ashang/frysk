@@ -115,14 +115,5 @@ utrace_quiesce_if (long pid)
   if (-1 == sz) uerror ("Writing run command.");
 }
 
-// fixme--do stuff about gp, fp, fpx regs, etc
-void
-utrace_readreg_if (long pid, int regset, int reg)
-{
-  readreg_cmd_s readreg_cmd = {IF_CMD_READ_REG, (long)udb_pid,
-			       pid, regset, reg};
-  ssize_t sz = write (utracer_cmd_file_fd, &readreg_cmd, sizeof(readreg_cmd));
-  if (-1 == sz) uerror ("Writing readreg command.");
-}
 
 

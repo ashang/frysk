@@ -3,6 +3,14 @@
 
 #include <search.h>
 
+#ifdef DO_UDB_INIT
+#define DECL(v,i) v = i
+#define REG_DECL(v,s,r) v = {s,r}
+#else
+#define DECL(v,i) v
+#define REG_DECL(v,s,r) v
+#endif
+
 #ifndef DO_UDB_INIT
 extern
 #endif
@@ -51,30 +59,54 @@ int nr_signals
 #endif
   ;
 
+typedef struct {
+  long regset;
+  long reg;
+} reg_data_s;
+
+// derived from <kernel_src>/include/asm-i386/elf.h
 // this doesn't match include/asm-i386/user.h
+REG_DECL (reg_data_s ebx_data,		0,  0);
+REG_DECL (reg_data_s ecx_data,		0,  1);
+REG_DECL (reg_data_s edx_data,		0,  2);
+REG_DECL (reg_data_s esi_data,		0,  3);
+REG_DECL (reg_data_s edi_data,		0,  4);
+REG_DECL (reg_data_s ebp_data,		0,  5);
+REG_DECL (reg_data_s eax_data,		0,  6);
+REG_DECL (reg_data_s xds_data,		0,  7);
+REG_DECL (reg_data_s xes_data,		0,  8);
+REG_DECL (reg_data_s xfs_data,		0,  9);
+REG_DECL (reg_data_s xgs_data,		0, 10);
+REG_DECL (reg_data_s orig_eax_data,	0, 11);
+REG_DECL (reg_data_s eip_data,		0, 12);
+REG_DECL (reg_data_s xcs_data,		0, 13);
+REG_DECL (reg_data_s eflags_data,	0, 14);
+REG_DECL (reg_data_s esp_data,		0, 15);
+REG_DECL (reg_data_s xss_data,		0, 16);
+
 #ifndef DO_UDB_INIT
 extern
 #endif
 ENTRY reg_mapping[]
 #ifdef DO_UDB_INIT
 = {
-  {"ebx",	 (void *)0},
-  {"ecx",	 (void *)1},
-  {"edx",	 (void *)2},
-  {"esi",	 (void *)3},
-  {"edi",	 (void *)4},
-  {"ebp",	 (void *)5},
-  {"eax",	 (void *)6},
-  {"ds",	 (void *)7},
-  {"es",	 (void *)8},
-  {"fs",	 (void *)9},
-  {"gs",	(void *)10},
-  {"cs",	(void *)13},
-  {"orig_eax",	(void *)11},
-  {"eip",	(void *)12},
-  {"efl",	(void *)14},
-  {"esp",	(void *)15},
-  {"ss",	(void *)16}
+  {"ebx",	 (void *)&ebx_data},
+  {"ecx",	 (void *)&ecx_data},
+  {"edx",	 (void *)&edx_data},
+  {"esi",	 (void *)&esi_data},
+  {"edi",	 (void *)&edi_data},
+  {"ebp",	 (void *)&ebp_data},
+  {"eax",	 (void *)&eax_data},
+  {"xds",	 (void *)&xds_data},
+  {"xes",	 (void *)&xes_data},
+  {"xfs",	 (void *)&xfs_data},
+  {"xgs",	 (void *)&xgs_data},
+  {"xcs",	 (void *)&xcs_data},
+  {"orig_eax",	 (void *)&orig_eax_data},
+  {"eip",	 (void *)&eip_data},
+  {"eflags",	 (void *)&eflags_data},
+  {"esp",	 (void *)&esp_data},
+  {"xss",	 (void *)&xss_data}
 }
 #endif
   ;

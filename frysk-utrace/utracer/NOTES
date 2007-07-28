@@ -1,5 +1,7 @@
 TODO
 
+>>>>>>>>>>>>>>>>> get nr of of regsets from somewhere
+
 provide a command to req the process tree starting at any point
 
 in utracer.c, trace registering apps & report death; auto-unregister

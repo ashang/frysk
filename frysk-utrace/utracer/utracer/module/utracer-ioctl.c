@@ -4,6 +4,8 @@
 #include <linux/fs.h>
 #include <linux/mm.h>
 #include <linux/highmem.h>
+#include <linux/tracehook.h>
+#include <asm/tracehook.h>
 #include <asm/uaccess.h>
 
 #include "../include/utracer.h"
@@ -288,7 +290,7 @@ handle_getmem (getmem_cmd_s * getmem_cmd)
 	}
 	else rc = -UTRACER_EPAGES;
       }
-      else rc = -UTRACER_EPAGES;
+      else rc = -UTRACER_EMM;
     }
     else rc = -ESRCH;
   }
@@ -408,6 +410,69 @@ handle_listpids (listpids_cmd_s * listpids_cmd)
 }
 
 int
+handle_getregs (readreg_cmd_s * readreg_cmd)
+{
+  int rc = 0;
+  utracing_info_s * utracing_info_found =
+    lookup_utracing_info (readreg_cmd->utracing_pid);
+
+  if (utracing_info_found) {
+    struct task_struct * task = get_task (readreg_cmd->utraced_pid);
+    if (task) {
+      if ((current == task) ||
+	  (task->state & (TASK_TRACED | TASK_STOPPED))) {
+	struct utrace_attached_engine * engine =
+	  locate_engine (readreg_cmd->utracing_pid, readreg_cmd->utraced_pid);
+	
+	if (engine) {
+	  const struct utrace_regset_view * rv = utrace_native_view(task);
+
+	  if ((0 <= readreg_cmd->regset) && (readreg_cmd->regset < rv->n)) {
+	    const struct utrace_regset * regset =
+	      utrace_regset(task, engine, rv, readreg_cmd->regset);
+
+	    if (unlikely(regset == NULL))
+	      rc = -EIO;
+	    else {
+	      int lrc;
+
+	      lrc = regset->get(task,
+				regset,
+				0,		// pos
+				regset->n * regset->size,	// count
+				NULL,		// kbuf
+				readreg_cmd->regsinfo);		// ubuf
+	    
+	      if (copy_to_user (readreg_cmd->nr_regs,
+				&regset->n, sizeof(unsigned int)))
+		rc = -EFAULT;
+	      else {
+		if (copy_to_user (readreg_cmd->reg_size,
+				  &regset->size, sizeof(unsigned int)))
+		  rc = -EFAULT;
+		{
+		  long actual_size = (long)(regset->n * regset->size);
+		  if (copy_to_user (readreg_cmd->actual_size,
+				    &actual_size, sizeof(long)))
+		    rc = -EFAULT;
+		}
+	      }
+	    }
+	  }
+	  else rc = -UTRACER_EREGSET;
+	}
+	else rc = -UTRACER_EENGINE;
+      }
+      else rc = -UTRACER_ESTATE;
+    }
+    else rc = -ESRCH;
+  }
+  else rc = -UTRACER_ETRACING;
+
+  return rc;
+}
+
+int
 utracer_ioctl (struct inode * inode,
 	       struct file * file,
 	       unsigned int a1,
@@ -434,6 +499,9 @@ utracer_ioctl (struct inode * inode,
     break;
   case IF_CMD_GETMEM:
     rc = handle_getmem (&if_cmd.getmem_cmd);
+    break;
+  case IF_CMD_READ_REG:
+    rc = handle_getregs (&if_cmd.readreg_cmd);
     break;
   default:
     rc = -EINVAL;

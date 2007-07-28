@@ -182,7 +182,7 @@ do_get_mem (long pid,
 			     (long)client_pid,
 			     pid,
 			     mem_req,
-			     addr,
+			     (long)addr,
 			     *mem_p};
   irc = ioctl (utracer_cmd_file_fd,
 	       sizeof(getmem_cmd_s),
@@ -269,6 +269,40 @@ utracer_get_env (long pid, char ** env_p)
       if (0 == env[i]) env[i] = '\n';
     }
     if (env_p) *env_p = env;
+  }
+
+  return irc;
+}
+
+
+/************************** get regs  ********************/
+
+
+int
+utracer_get_regs (long pid, long regset, void ** regsinfo_p,
+		  unsigned int * nr_regs_p, unsigned int * reg_size_p)
+{
+  int irc;
+  long actual_size;
+  void * regsinfo = malloc (PAGE_SIZE);
+  readreg_cmd_s readreg_cmd = {IF_CMD_READ_REG,
+			       (long)client_pid,
+			       pid,
+			       regset,
+			       regsinfo,
+			       PAGE_SIZE,
+			       &actual_size,
+			       nr_regs_p,
+			       reg_size_p};
+
+  irc = ioctl (utracer_cmd_file_fd, sizeof(readreg_cmd_s), &readreg_cmd);
+
+  if  (0 != irc) {
+    if (regsinfo)	free (regsinfo);
+    if (regsinfo_p)	*regsinfo_p	= NULL;
+  }
+  else {
+    if (regsinfo_p)	*regsinfo_p	= regsinfo;
   }
 
   return irc;
