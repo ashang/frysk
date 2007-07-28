@@ -10,6 +10,8 @@
 /*#include <asm/ptrace.h>*/
 #include <utracer.h>
 #include <asm/unistd.h>
+#include <asm/user.h>
+#include <asm/ldt.h>
 
 #include "udb.h"
 #include "udb-i386.h"
@@ -123,53 +125,98 @@ struct user_desc {
 //				GDTR, LDTR and IDTR
 // 4: debug:		n =   8, size = sizeof(long), align = sizeof(long)
 
+
 #endif
-
-static char *
-reg_name (long regset, long reg){
-  char * rna = NULL;
-  char * rn;
-  
-  switch (regset) {
-  case 0:				/* gprs		*/
-    rn = (reg < nr_regs) ? reg_mapping[reg].key : "";
-    break;
-  case 1:				/* fprs		*/
-  case 2:				/* fprx		*/
-  case 3:				/* descriptors	*/
-  case 4:				/* debug	*/
-  default:
-    rn = "";
-  }
-
-  return rn;
-}
 
 void
 show_regs (long pid, long regset, long reg, void * regsinfo,
 	   unsigned int regs_count, unsigned int reg_size)
 {
-  fprintf (stderr, "reg_size = %d\n", reg_size);
-  if (-1 == reg) {
-    long i;
+  long i,mx,k;
+  char * rn;
+  struct user_i387_struct * i387_regs;
+  struct user_desc * ud;
   
-    for (i = 0; i < regs_count; i++) {
-      fprintf (stdout, "\t[%ld] [%d][%d (%s)]: [%#08x] %ld\n",
-	       pid,
-	       regset,
-	       i,
-	       reg_name (regset, i),
-	       ((long *)regsinfo)[i],
-	       ((long *)regsinfo)[i]);
+  
+  fprintf (stdout, "\t[%ld] %s:\n", pid, regset_names[regset]);
+  switch (regset) {
+    case 0:			// gprs
+    case 4:			// gprs
+      mx = regs_count;
+      break;
+    case 3:
+      mx = regs_count;
+      ud = regsinfo;
+      fprintf (stdout,
+	       "\t\t\t\tentry\tbase\t  limit 32b cts rx lmt nosg ok\n");
+      break;
+    case 1:			// fprs
+      i387_regs = regsinfo;
+
+      fprintf (stdout, "\t\tcwd      swd      twd      fip\n");
+      fprintf (stdout, "\t\t%08x %08x %08x %08x\n",
+	       i387_regs->cwd,
+	       i387_regs->swd,
+	       i387_regs->twd,
+	       i387_regs->fip);
+      fprintf (stdout, "\t\tfcs      foo      fos\n");
+      fprintf (stdout, "\t\t%08x %08x %08x\n\n",
+	       i387_regs->fcs,
+	       i387_regs->foo,
+	       i387_regs->fos);
+      mx = 8;
+      break;
+  }
+  
+  if (-1 == reg) {
+    i = 0;
+    k = mx;
+  }
+  else {
+    i = reg;
+    k = reg + 1;
+  }
+  
+  for (; i < k; i++) {
+    switch (regset) {
+    case 0:			// gprs
+      rn = (i < mx) ? reg_mapping[i].key : "";
+      fprintf (stdout, "\t\t [%d (%s)]: [%#08x] %ld\n",
+	       i, rn, ((long *)regsinfo)[i], ((long *)regsinfo)[i]);
+      break;
+    case 1:			// fprs
+      {
+	int j;
+	char * fp_vec = (char *)&i387_regs->st_space;
+	fp_vec += i * 10;
+	fprintf (stdout, "\t\t [%d]: ", i);;
+	for (j = 0; j < 10; j++) fprintf (stdout, "%02x ", fp_vec[j]);
+	fprintf (stdout, "\n");
+      }
+      break;
+    case 2:			// fprx
+      break;
+    case 3:			// descriptors
+      rn = (i < mx) ? descriptor_names[i] : "";
+      fprintf (stdout, "\t\t [%d (%s)]:\t", i, rn);
+      fprintf (stdout,
+	       "%u\t%08lx  %u     %u   %u   %u  %u   %u    %u\n",
+	       ud[i].entry_number,
+	       ud[i].base_addr,
+	       ud[i].limit,
+	       ud[i].seg_32bit,
+	       ud[i].contents,
+	       ud[i].read_exec_only,
+	       ud[i].limit_in_pages,
+	       ud[i].seg_not_present,
+	       ud[i].useable);
+      break;
+    case 4:			// debug
+      fprintf (stdout, "\t\t [%d]: [%#08x] %ld\n",
+	       i, ((long *)regsinfo)[i], ((long *)regsinfo)[i]);
+      break;
     }
   }
-  else fprintf (stdout, "\t[%ld] [%d][%d (%s)]: [%#08x] %ld\n",
-		pid,
-		regset,
-		reg,
-		reg_name (regset, reg),
-		((long *)regsinfo)[reg],
-		((long *)regsinfo)[reg]);
 }
 
 

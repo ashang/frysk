@@ -59,6 +59,35 @@ int nr_signals
 #endif
   ;
 
+#ifndef DO_UDB_INIT
+extern
+#endif
+const char * regset_names[]
+#ifdef DO_UDB_INIT
+= {
+  "GPRS",
+  "FPRS",
+  "FPRX",
+  "Descriptors",
+  "Debug"
+}
+#endif
+  ;
+
+#ifndef DO_UDB_INIT
+extern
+#endif
+char * descriptor_names[]
+#ifdef DO_UDB_INIT
+= {
+  "GDTR",
+  "LDTR",
+  "IDTR"
+}
+#endif
+  ;
+
+
 typedef struct {
   long regset;
   long reg;

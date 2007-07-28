@@ -275,8 +275,9 @@ printregall_fcn (char ** saveptr)
 
   if (tok && ('[' == *tok)) pid = atol (tok+1);
 
+  // fixme allow selection of regset
   rc = utracer_get_regs (pid, 0, &regsinfo, &nr_regs, &reg_size);
-  if (0 == rc) show_regs (0, -1, regsinfo, nr_regs, reg_size);
+  if (0 == rc) show_regs (pid, 0, -1, regsinfo, nr_regs, reg_size);
   else uerror ("printreg");
 
   if (regsinfo) free (regsinfo);
