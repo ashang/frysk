@@ -17,17 +17,6 @@
 	(getPkgLibFile): New.
 	* TestConfig.java: Update.
 
-2007-07-16  Phil Muldoon <pmuldoon@redhat.com>
-
-	* pkgdatadir/test-core.bz2.uu: Obsolete. Delete.
-
-2007-07-03  Phil Muldoon <pmuldoon@redhat.com>
-
-	* pkgdatadir/test-core-x8664.bz2.uu: New File.
-	* pkgdatadir/test-core-x86.bz2.uu: New File.
-	* pkgdatadir/test-core-mt-fp.bz2.uu: Delete.
-	* pkgdatadir/segfault.c.source: New File. Source of above.
-	
 2007-05-11  swagiaal  <swagiaal@redhat.com>
 
 	* Config.java (getFryskTestDir): Added check to ensure that teset

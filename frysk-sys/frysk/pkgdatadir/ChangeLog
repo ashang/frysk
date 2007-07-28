@@ -1,0 +1,17 @@
+2007-07-16  Phil Muldoon <pmuldoon@redhat.com>
+
+	* test-core.bz2.uu: Obsolete. Delete.
+
+2007-07-03  Phil Muldoon <pmuldoon@redhat.com>
+
+	* test-core-x8664.bz2.uu: New File.
+	* test-core-x86.bz2.uu: New File.
+	* test-core-mt-fp.bz2.uu: Delete.
+	* segfault.c.source: New File. Source of above.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:
