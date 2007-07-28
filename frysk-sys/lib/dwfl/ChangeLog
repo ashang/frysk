@@ -1,5 +1,7 @@
 2007-07-27  Andrew Cagney  <cagney@redhat.com>
 
+	* Elf.java (Elf(File,ElfCommand)): New constructor.
+
 	* TestElf.java: Use Config.getPkgDataFile.
 
 2007-07-27  Petr Machata  <pmachata@redhat.com>

@@ -42,6 +42,7 @@ package lib.dwfl;
 import frysk.sys.FileDescriptor;
 import frysk.sys.Errno;
 import gnu.gcj.RawData;
+import java.io.File;
 
 /**
  * This class represents an Elf object.
@@ -83,6 +84,17 @@ public class Elf
 	}
 	// Create the corresponding Elf object.
 	pointer = elfBegin(fd, command);
+    }
+
+    /**
+     * Creates a new elf object
+     * 
+     * @param file The file to create the object from
+     * @param command The appropriate {@see ElfCommand}
+     */
+    public Elf (File file, ElfCommand command) throws ElfFileException,
+							ElfException {
+	this(file.getAbsolutePath(), command);
     }
 
     /**

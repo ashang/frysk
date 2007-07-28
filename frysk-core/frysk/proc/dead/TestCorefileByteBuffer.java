@@ -39,7 +39,6 @@
 
 package frysk.proc.dead;
 
-import java.io.File;
 import lib.dwfl.Elf;
 import lib.dwfl.ElfData;
 import lib.dwfl.ElfCommand;
@@ -64,10 +63,8 @@ public class TestCorefileByteBuffer
     final long elfOffset = 0x28000;
     final long elfLen = 0x1000;
 
-    ByteBuffer coreBuffer = new CorefileByteBuffer(new 
-						   File(Config.
-							getPkgDataDir(), 
-							"test-core-x86"));
+    ByteBuffer coreBuffer
+	= new CorefileByteBuffer(Config.getPkgDataFile("test-core-x86"));
     
     // Slice buffer
     ByteBuffer coreSlice = coreBuffer.slice(sliceBottom, sliceTop);
@@ -75,7 +72,8 @@ public class TestCorefileByteBuffer
     assertNotNull("Corefile slice was null", coreSlice);
 
     // Independently get the elf core data as a raw image
-    Elf segment = new Elf(Config.getPkgDataDir()+"/test-core-x86",  ElfCommand.ELF_C_READ);
+    Elf segment = new Elf(Config.getPkgDataFile("test-core-x86"),
+			  ElfCommand.ELF_C_READ);
     rawData = segment.getRawData(elfOffset,elfLen);
 
     //    coreSlice.position(sliceBottom);
@@ -92,10 +90,8 @@ public class TestCorefileByteBuffer
   public void testCoreFileByteBufferPeek() throws ElfException
   {
 
-    CorefileByteBuffer coreBuffer = new CorefileByteBuffer(new 
-							   File(Config.
-								getPkgDataDir(), 
-								"test-core-x86"));
+    CorefileByteBuffer coreBuffer
+	= new CorefileByteBuffer(Config.getPkgDataFile("test-core-x86"));
 
     // Test beginning segment
     assertEquals("Peek a byte at 0x0062a000",0x7f,coreBuffer.peek(0x0062a000L));
@@ -118,10 +114,8 @@ public class TestCorefileByteBuffer
   public void testCoreFileByteBufferMapOverrun () throws ElfException
   {
     
-    CorefileByteBuffer coreBuffer = new CorefileByteBuffer(new 
-							   File(Config.
-								getPkgDataDir(), 
-								"test-core-x86"));
+    CorefileByteBuffer coreBuffer
+	= new CorefileByteBuffer(Config.getPkgDataFile("test-core-x86"));
 
     // Attempt to peek over a segment boundary, but within the 
     // high and low marks of the bytebuffer
@@ -141,10 +135,8 @@ public class TestCorefileByteBuffer
   public void testCoreFileByteBufferMapUnderrun () throws ElfException
   {
 
-    CorefileByteBuffer coreBuffer = new CorefileByteBuffer(new 
-							   File(Config.
-								getPkgDataDir(), 
-								"test-core-x86"));
+    CorefileByteBuffer coreBuffer
+	= new CorefileByteBuffer(Config.getPkgDataFile("test-core-x86"));
     // Attempt to peek under a segment boundary, but within the 
     // high and low marks of the bytebuffer
 
@@ -162,10 +154,8 @@ public class TestCorefileByteBuffer
   
   public void testCoreFileByteBufferSequentialGet() throws ElfException
   {
-    CorefileByteBuffer coreBuffer = new CorefileByteBuffer(new 
-							   File(Config.
-								getPkgDataDir(), 
-								"test-core-x86"));
+    CorefileByteBuffer coreBuffer
+	= new CorefileByteBuffer(Config.getPkgDataFile("test-core-x86"));
 
     coreBuffer.position(0x0062a000L);
     assertEquals("Peek a byte at 0x0062a000",0x7f,coreBuffer.get());
@@ -197,10 +187,8 @@ public class TestCorefileByteBuffer
   public void testCoreFileByteBufferPeekArray() throws ElfException
   {
     
-    CorefileByteBuffer coreBuffer = new CorefileByteBuffer(new 
-							   File(Config.
-								getPkgDataDir(), 
-								"test-core-x86"));
+    CorefileByteBuffer coreBuffer
+	= new CorefileByteBuffer(Config.getPkgDataFile("test-core-x86"));
     byte byteArray[] = new byte[10];
 
     coreBuffer.get(0x0062a000L, byteArray, 0, 10);
@@ -215,10 +203,8 @@ public class TestCorefileByteBuffer
   public void testCoreFileByteBufferPoke() throws ElfException 
   {
 
-    CorefileByteBuffer coreBuffer = new CorefileByteBuffer(new 
-							   File(Config.
-								getPkgDataDir(), 
-								"test-core-x86"));
+    CorefileByteBuffer coreBuffer
+	= new CorefileByteBuffer(Config.getPkgDataFile("test-core-x86"));
 
     try
     {
