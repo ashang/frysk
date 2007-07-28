@@ -89,7 +89,7 @@ public class TestParser
 	String IMAGE_FILENAME = "Task 28428";
 	String CC_FILE = "./test";
 
-	String execPath = Config.getPkgLibDir () + "test_main_looper";
+	String execPath = Config.getPkgLibFile("test_main_looper").getPath();
 	List sources = DOMCommon.getSrcFiles (execPath);
 	assertTrue ("sources.size > 0", sources.size () > 0);
 	

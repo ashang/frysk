@@ -39,6 +39,7 @@
 
 package frysk.testbed;
 
+import java.io.File;
 import frysk.proc.Action;
 import frysk.proc.TaskObserver;
 import frysk.proc.Task;
@@ -89,6 +90,14 @@ public class DaemonBlockedAtEntry extends TestLib {
 	assertRunUntilStop("run to exec");
     }
   
+    /**
+     * Create an attached process blocked at it's entry-point (i.e., just after
+     * the exec).
+     */
+    public DaemonBlockedAtEntry(File program) {
+	this(new String[] { program.getAbsolutePath() });
+    }
+
     /**
      * Resume the attached process.
      */

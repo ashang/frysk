@@ -41,16 +41,12 @@ package frysk.hpd;
 
 import frysk.expunit.Expect;
 import frysk.Config;
-import java.io.File;
 
 public class TestBreakpoints
     extends TestLib
 {
     public void testHpdBreakpoint() {
-	child = new Expect (new String[]
-	    {
-		new File (Config.getPkgLibDir (), "hpd-c").getPath ()
-	    });
+	child = new Expect(Config.getPkgLibFile("hpd-c"));
 	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
 	// Attach
@@ -67,10 +63,7 @@ public class TestBreakpoints
     }
 
     public void testHpdBreakpointInline() {
-	child = new Expect (new String[]
-	    {
-		new File (Config.getPkgLibDir (), "test1").getPath ()
-	    });
+	child = new Expect(Config.getPkgLibFile("test1"));
 	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
 	// Attach
@@ -89,10 +82,7 @@ public class TestBreakpoints
     }
 
     public void testHpdBreakpointLibrary() {
-	child = new Expect (new String[] {
-				new File (Config.getPkgLibDir (),
-					  "test1").getPath ()
-			    });
+	child = new Expect(Config.getPkgLibFile("test1"));
 	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
 	// Attach
@@ -111,10 +101,7 @@ public class TestBreakpoints
     }
 
     public void testHpdBreakStep() {
-	child = new Expect (new String[] {
-				new File (Config.getPkgLibDir (),
-					  "test1").getPath ()
-			    });
+	child = new Expect(Config.getPkgLibFile("test1"));
 	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
 	// Attach

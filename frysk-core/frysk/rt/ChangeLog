@@ -1,3 +1,9 @@
+2007-07-28  Andrew Cagney  <cagney@redhat.com>
+
+	* TestDisplayValue.java: Use Config.getPkgLibFile and
+	DaemonBlockedAtEntry(File).
+	* TestUpdatingDisplayValue.java: Ditto.
+
 2006-07-27  Mike Cvet  <mcvet@redhat.com>
 
 	* states/InstructionStepState.java: Moved from here to frysk.stepping.

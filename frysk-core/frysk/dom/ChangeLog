@@ -1,5 +1,7 @@
 2007-07-28  Andrew Cagney  <cagney@redhat.com>
 
+	* TestParser.java: Use Config.getPkgLibFile.
+	
 	* TestParser.java: Use Config.getPkgDataFile. 
 
 2007-07-23  Rick Moseley  <rmoseley@redhat.com>

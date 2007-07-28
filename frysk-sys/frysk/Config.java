@@ -175,10 +175,6 @@ public class Config
     public static final File getPkgLibFile (String file) {
 	return getFile(current.thePkgLibDir, file);
     }
-    // FIXME: delete.
-    public static final File getPkgLibDir() {
-	return current.thePkgLibDir;
-    }
 
     /**
      * A file in frysk's 32-bit library directory.  Typically

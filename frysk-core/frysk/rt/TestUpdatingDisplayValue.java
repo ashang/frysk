@@ -463,9 +463,8 @@ public class TestUpdatingDisplayValue extends TestLib
   
   private BreakpointManager createDaemon(String program)
   {
-    //  Start the daemon process
-    process = 
-      new DaemonBlockedAtEntry(new String[]{Config.getPkgLibDir() + "/" + program});
+      //  Start the daemon process
+      process = new DaemonBlockedAtEntry(Config.getPkgLibFile(program));
     
     myTask = process.getMainTask();
     myProc = myTask.getProc();

@@ -584,9 +584,7 @@ public class TestStepping extends TestLib {
 	int endLine = this.scanner.findTokenLine("_asmSingleStepFinish_");
 
 	/* The test process */
-	dbae = 
-	    new DaemonBlockedAtEntry(new String[]{Config.getPkgLibDir()
-		    + "/funit-rt-asmstepper"});
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-rt-asmstepper"));
 	
 	Task theTask = dbae.getMainTask();
 	
@@ -650,9 +648,7 @@ public class TestStepping extends TestLib {
 	int endLine = this.scanner.findTokenLine("_asmMultiStepFinish_");
 
 	/* The test process */
-	dbae = 
-	    new DaemonBlockedAtEntry(new String[]{Config.getPkgLibDir()
-		    + "/funit-rt-asmstepper"});
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-rt-asmstepper"));
 	
 	Task theTask = dbae.getMainTask();
 	
@@ -716,9 +712,7 @@ public class TestStepping extends TestLib {
 	int endLine = this.scanner.findTokenLine("_asmStepJumpTo_");
 
 	/* The test process */
-	dbae = 
-	    new DaemonBlockedAtEntry(new String[]{Config.getPkgLibDir()
-		    + "/funit-rt-asmstepper"});
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-rt-asmstepper"));
 	
 	Task theTask = dbae.getMainTask();
 	
@@ -782,9 +776,7 @@ public class TestStepping extends TestLib {
 	int endLine = this.scanner.findTokenLine("_stepASMFunctionEntry_");
 
 	/* The test process */
-	dbae = 
-	    new DaemonBlockedAtEntry(new String[]{Config.getPkgLibDir()
-		    + "/funit-stepping-asm"});
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
 	
 	Task theTask = dbae.getMainTask();
 	
@@ -848,9 +840,7 @@ public class TestStepping extends TestLib {
 	int endLine = this.scanner.findTokenLine("_stepASMFunctionReturned_");
 
 	/* The test process */
-	dbae = 
-	    new DaemonBlockedAtEntry(new String[]{Config.getPkgLibDir()
-		    + "/funit-stepping-asm"});
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
 	
 	Task theTask = dbae.getMainTask();
 	
@@ -917,9 +907,7 @@ public class TestStepping extends TestLib {
 	int endLine = this.scanner.findTokenLine("_stepASMFunctionReturned_");
 
 	/* The test process */
-	dbae = 
-	    new DaemonBlockedAtEntry(new String[]{Config.getPkgLibDir()
-		    + "/funit-stepping-asm"});
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
 	
 	Task theTask = dbae.getMainTask();
 	
@@ -986,9 +974,7 @@ public class TestStepping extends TestLib {
 	int endLine = this.scanner.findTokenLine("_stepASMFunctionReturned_");
 
 	/* The test process */
-	dbae = 
-	    new DaemonBlockedAtEntry(new String[]{Config.getPkgLibDir()
-		    + "/funit-stepping-asm"});
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
 	
 	Task theTask = dbae.getMainTask();
 	

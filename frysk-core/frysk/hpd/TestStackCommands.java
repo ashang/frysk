@@ -41,15 +41,12 @@ package frysk.hpd;
 
 import frysk.expunit.Expect;
 import frysk.Config;
-import java.io.File;
 
 public class TestStackCommands
     extends TestLib
 {
     public void testHpdTraceStack () {
-	child = new Expect (new String[] {
-				new File (Config.getPkgLibDir (), "hpd-c").getPath ()
-			    });
+	child = new Expect(Config.getPkgLibFile("hpd-c"));
 	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
 	// Add

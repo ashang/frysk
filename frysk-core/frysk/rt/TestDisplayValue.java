@@ -389,9 +389,8 @@ public class TestDisplayValue
   
   private BreakpointManager createDaemon()
   {
-    //  Start the daemon process
-    process = 
-      new DaemonBlockedAtEntry(new String[]{Config.getPkgLibDir() + "/funit-rt-varchange"});
+      //  Start the daemon process
+      process = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-rt-varchange"));
     
     myTask = process.getMainTask();
     myProc = myTask.getProc();

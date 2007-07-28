@@ -41,7 +41,6 @@ package frysk.hpd;
 
 import frysk.expunit.Expect;
 import frysk.Config;
-import java.io.File;
 
 public class TestDisplayCommand
     extends TestLib
@@ -49,7 +48,7 @@ public class TestDisplayCommand
     public void testHpdDisplayCommands() {
 	e = new Expect (new String[] {
 			    Config.getBinFile("fhpd").getPath (),
-			    new File (Config.getPkgLibDir (), "hpd-c").getPath ()
+			    Config.getPkgLibFile("hpd-c").getPath ()
 			});
 	e.expect (prompt);
 	// Break

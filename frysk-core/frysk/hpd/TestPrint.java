@@ -41,7 +41,6 @@ package frysk.hpd;
 
 import frysk.expunit.Expect;
 import frysk.Config;
-import java.io.File;
 
 /**
  * Test parsing and printing of types.
@@ -50,12 +49,8 @@ import java.io.File;
 public class TestPrint
     extends TestLib
 {
-    public void testHpdScalars ()
-    {
-	child = new Expect (new String[]
-	    {
-		new File (Config.getPkgLibDir (), "hpd-c").getPath ()
-	    });
+    public void testHpdScalars () {
+	child = new Expect(Config.getPkgLibFile("hpd-c"));
 	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
 	// Attach
@@ -93,12 +88,8 @@ public class TestPrint
 	e.close();
     }
     
-    public void testHpdClass ()
-    {
-	child = new Expect (new String[]
-	    {
-		new File (Config.getPkgLibDir (), "hpd-c").getPath ()
-	    });
+    public void testHpdClass () {
+	child = new Expect(Config.getPkgLibFile("hpd-c"));
 	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
 	// Attach
@@ -126,12 +117,8 @@ public class TestPrint
 	e.close();
     }    
 
-    public void testHpdArray ()
-    {
-	child = new Expect (new String[]
-	    {
-		new File (Config.getPkgLibDir (), "hpd-c").getPath ()
-	    });
+    public void testHpdArray () {
+	child = new Expect(Config.getPkgLibFile("hpd-c"));
 	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
 	// Attach
@@ -157,12 +144,8 @@ public class TestPrint
 	e.close();
     }    
 
-    public void testHpdEnum ()
-    {
-	child = new Expect (new String[]
-	    {
-		new File (Config.getPkgLibDir (), "hpd-c").getPath ()
-	    });
+    public void testHpdEnum () {
+	child = new Expect(Config.getPkgLibFile("hpd-c"));
 	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
 	// Attach

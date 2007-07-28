@@ -41,16 +41,12 @@ package frysk.hpd;
 
 import frysk.expunit.Expect;
 import frysk.Config;
-import java.io.File;
 
 public class TestDisassemblerCommand
     extends TestLib
 {
     public void testHpdDisassemble() {
-	child = new Expect(new String[] {
-			       new File(Config.getPkgLibDir(),
-					"hpd-c").getPath()
-			   });
+	child = new Expect(Config.getPkgLibFile("hpd-c"));
 	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect(prompt);
 	// Attach
