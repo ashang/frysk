@@ -75,14 +75,14 @@ public class TestConfig
 	assertNotNull ("getPkgDataFile", Config.getPkgDataFile (null));
 	assertNotNull ("getPkgLibFile", Config.getPkgLibFile (null));
 	if (pure) {
-	    assertNull ("getPkgLib32Dir", Config.getPkgLib32Dir ());
-	    assertNull ("getPkgLib64Dir", Config.getPkgLib64Dir ());
-	}
-	else {
-	    assertNotNull ("getPkgLib32Dir", Config.getPkgLib32Dir ());
-	    assertNotNull ("getPkgLib64Dir", Config.getPkgLib64Dir ());
-	    assertSame ("getPkgLibFile is getPkgLib32Dir",
-			Config.getPkgLibFile (null), Config.getPkgLib32Dir ());
+	    assertNull("getPkgLib32File", Config.getPkgLib32File(null));
+	    assertNull("getPkgLib64File", Config.getPkgLib64File(null));
+	} else {
+	    assertNotNull("getPkgLib32File", Config.getPkgLib32File(null));
+	    assertNotNull("getPkgLib64File", Config.getPkgLib64File(null));
+	    assertSame("getPkgLibFile is getPkgLib32File",
+			Config.getPkgLibFile(null),
+			Config.getPkgLib32File(null));
 	}
     }
 

@@ -1,3 +1,10 @@
+2007-07-28  Andrew Cagney  <cagney@redhat.com>
+
+	* Config.java (getPkgLib32Dir): Delete.
+	(getPkgLib64Dir): Delete.
+	* TestConfig.java (validate): Update; use getPkgLib32File and
+	pkgLib64File.
+
 2007-07-27  Andrew Cagney  <cagney@redhat.com>
 
 	* Config.java (getFile, getBinFile, getPkgDataFile)

@@ -199,10 +199,6 @@ public class Config
     public static final File getPkgLib32File(String file) {
 	return getFile(current.thePkgLib32Dir, file);
     }
-    // FIXME: delete.
-    public static final File getPkgLib32Dir () {
-	return current.thePkgLib32Dir;
-    }
 
     /**
      * A file in frysk's 64-bit library directory.  Typically
@@ -214,10 +210,6 @@ public class Config
      */
     public static final File getPkgLib64File(String file) {
 	return getFile(current.thePkgLib64Dir, file);
-    }
-    // FIXME: delete.
-    public static final File getPkgLib64Dir () {
-	return current.thePkgLib64Dir;
     }
 
     /**
