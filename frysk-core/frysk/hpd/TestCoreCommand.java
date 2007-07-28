@@ -51,7 +51,7 @@ public class TestCoreCommand
 			   new File(Config.getBinDir(), "fhpd").getPath(),
 		       });
 	e.expect(prompt);
-	e.send("core " + new File(Config.getPkgDataDir(), "test-core-x86").getPath() + "\n");
+	e.send("core " + Config.getPkgDataFile("test-core-x86").getPath() + "\n");
 	e.expect(5, "Attached to core file.*");
 	e.close();
     }

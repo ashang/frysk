@@ -153,10 +153,6 @@ public class Config
     public static final File getPkgDataFile (String file) {
 	return getFile(current.thePkgDataDir, file);
     }
-    // FIXME: delete.
-    public static final File getPkgDataDir() {
-	return current.thePkgDataDir;
-    }
 
     /**
      * A file in Frysk's user-visible executable directory.  Typically

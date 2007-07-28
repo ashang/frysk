@@ -73,8 +73,7 @@ public class TestLinuxCore
 {
 
   Host coreHost = new LinuxHost(Manager.eventLoop, 
-					new File(Config.getPkgDataDir (), 
-						 "test-core-x86"));
+				Config.getPkgDataFile("test-core-x86"));
   
 
   public void testLinuxCoreFileMaps ()

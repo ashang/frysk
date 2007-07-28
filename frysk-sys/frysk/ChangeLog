@@ -1,5 +1,7 @@
 2007-07-28  Andrew Cagney  <cagney@redhat.com>
 
+	* Config.java (getPkgDataDir): Delete.
+
 	* Config.java (getPkgLib32Dir): Delete.
 	(getPkgLib64Dir): Delete.
 	* TestConfig.java (validate): Update; use getPkgLib32File and

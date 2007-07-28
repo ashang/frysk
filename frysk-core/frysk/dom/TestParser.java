@@ -173,9 +173,7 @@ public class TestParser
     public static void assertDomMatchesBase (File newfile)
 	throws IOException
     {
-	String basedom = Config.getPkgDataDir () + "test_looper.xml";
-	File baseDomInput = new File (basedom);
-    
+	File baseDomInput = Config.getPkgDataFile("test_looper.xml");
 	FileInputStream base = new FileInputStream(newfile);
 	FileInputStream newdom = new FileInputStream(baseDomInput);
     

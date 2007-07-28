@@ -40,7 +40,6 @@
 
 package frysk.util;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
@@ -134,7 +133,7 @@ public class TestFStack
     StringWriter stringWriter = new StringWriter();
     
     Host coreHost = new LinuxHost(Manager.eventLoop,
-                                  new File(Config.getPkgDataDir(), "test-core-x86"));
+                                  Config.getPkgDataFile("test-core-x86"));
 
     assertNotNull("Core file Host is Null?", coreHost);
 
