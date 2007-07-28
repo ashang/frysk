@@ -39,8 +39,6 @@
 
 package frysk.bindir;
 
-import java.io.File;
-
 import frysk.Config;
 import frysk.expunit.Expect;
 import frysk.junit.TestCase;
@@ -66,40 +64,31 @@ public class TestFhd
     child = null;
   }
   
-  public void testHpdPid ()
-  {
-    child = new Expect(new String[] 
-               { 
-                 new File(Config.getPkgLibDir(), "hpd-c").getPath() 
-               });
-    e = new Expect(new String[] 
-               { 
-                 new File(Config.getBinDir(), "fhpd").getPath(), 
-                 child.getPid().toString() 
-                 });
-    e.expect(5, "Attached to process.*\n" + prompt);
-    e.close();
-  }
+    public void testHpdPid () {
+	child = new Expect(Config.getPkgLibFile("hpd-c"));
+	e = new Expect(new String[] { 
+			   Config.getBinFile("fhpd").getPath(), 
+			   child.getPid().toString() 
+		       });
+	e.expect(5, "Attached to process.*\n" + prompt);
+	e.close();
+    }
   
-  public void testHpdCommand ()
-  {
-    e = new Expect(new String[] 
-                              { 
-                                new File(Config.getBinDir(), "fhpd").getPath(), 
-                                new File(Config.getPkgLibDir(), "hpd-c").getPath() 
-                                });
-                   e.expect(5, "Attached to process.*\n" + prompt);
-                   e.close();
-  }
+    public void testHpdCommand () {
+	e = new Expect(new String[] { 
+			   Config.getBinFile("fhpd").getPath(), 
+			   Config.getPkgLibFile("hpd-c").getPath() 
+		       });
+	e.expect(5, "Attached to process.*\n" + prompt);
+	e.close();
+    }
   
-  public void testHpdCore ()
-  {
-      e = new Expect(new String[]
-                                {
-	      			  new File(Config.getBinDir(), "fhpd").getPath(),
-	      			  new File(Config.getPkgDataDir(), "test-core-x86").getPath()
-                                });
-      e.expect(5, "Attached to core file.*");
-      e.close();
-  }
+    public void testHpdCore ()  {
+	e = new Expect(new String[] {
+			   Config.getBinFile("fhpd").getPath(),
+			   Config.getPkgDataFile("test-core-x86").getPath()
+		       });
+	e.expect(5, "Attached to core file.*");
+	e.close();
+    }
 }

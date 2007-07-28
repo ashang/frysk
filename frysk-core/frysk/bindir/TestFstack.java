@@ -42,7 +42,6 @@ package frysk.bindir;
 import frysk.junit.TestCase;
 import frysk.expunit.Expect;
 import frysk.Config;
-import java.io.File;
 
 /**
  * This performs a "sniff" test of Fstack, confirming basic
@@ -64,107 +63,82 @@ public class TestFstack
 	child = null;
     }
 
-    public void testBackTrace ()
-    {
-	child = new Expect (new String[]
-	    {
-		new File (Config.getPkgLibDir (), "funit-child").getAbsolutePath (),
-		"5", "0", "0"
-	    });
-	e = new Expect (new String[]
-	    {
-		new File (Config.getBinDir (), "fstack").getAbsolutePath (),
-		child.getPid () + ""
-	    });
+    public void testBackTrace () {
+	child = new Expect (new String[] {
+				Config.getPkgLibFile("funit-child").getAbsolutePath (),
+				"5", "0", "0"
+			    });
+	e = new Expect (new String[] {
+			    Config.getBinFile("fstack").getAbsolutePath (),
+			    child.getPid () + ""
+			});
 	// Just look for main.
 	e.expect ("main");
     }
     
-    public void testBackTraceWithParams ()
-    {
-        child = new Expect (new String[]
-            {
-                new File (Config.getPkgLibDir (), "funit-child").getAbsolutePath (),
-                "5", "0", "0"
-            });
-        e = new Expect (new String[]
-            {
-                new File (Config.getBinDir (), "fstack").getAbsolutePath (),
-                child.getPid () + "",
-                "--print","params"
-            });
-        
+    public void testBackTraceWithParams () {
+        child = new Expect (new String[] {
+				Config.getPkgLibFile("funit-child").getAbsolutePath (),
+				"5", "0", "0"
+			    });
+        e = new Expect (new String[] {
+			    Config.getBinFile("fstack").getAbsolutePath (),
+			    child.getPid () + "",
+			    "--print","params"
+			});
         e.expect ("int argc");
     }
 
-    public void testBackTraceWithScopes ()
-    {
-        child = new Expect (new String[]
-            {
-                new File (Config.getPkgLibDir (), "funit-child").getAbsolutePath (),
-                "5", "0", "0"
-            });
-        e = new Expect (new String[]
-            {
-                new File (Config.getBinDir (), "fstack").getAbsolutePath (),
-                child.getPid () + "",
-                "--print", "scopes"
-            });
-        
+    public void testBackTraceWithScopes () {
+        child = new Expect (new String[] {
+				Config.getPkgLibFile("funit-child").getAbsolutePath (),
+				"5", "0", "0"
+			    });
+        e = new Expect (new String[] {
+			    Config.getBinFile("fstack").getAbsolutePath (),
+			    child.getPid () + "",
+			    "--print", "scopes"
+			});
         e.expect ("int sigchld_pid");
     }
 
-    public void testBackTraceWithFullpath ()
-    {
-        child = new Expect (new String[]
-            {
-                new File (Config.getPkgLibDir (), "funit-child").getAbsolutePath (),
-                "5", "0", "0"
-            });
-        e = new Expect (new String[]
-            {
-                new File (Config.getBinDir (), "fstack").getAbsolutePath (),
-                child.getPid () + "",
-                "--print", "fullpath"
-            });
-        
+    public void testBackTraceWithFullpath () {
+        child = new Expect (new String[] {
+				Config.getPkgLibFile("funit-child").getAbsolutePath (),
+				"5", "0", "0"
+			    });
+        e = new Expect (new String[] {
+			    Config.getBinFile("fstack").getAbsolutePath (),
+			    child.getPid () + "",
+			    "--print", "fullpath"
+			});
         e.expect (Config.getRootSrcDir()+ ".*funit-child.c#");
     }
 
-    public void testBackTraceWithDashA ()
-    {
-        child = new Expect (new String[]
-            {
-                new File (Config.getPkgLibDir (), "funit-child").getAbsolutePath (),
-                "5", "0", "0"
-            });
-        e = new Expect (new String[]
-            {
-                new File (Config.getBinDir (), "fstack").getAbsolutePath (),
-                child.getPid () + "",
-                "-a"
-            });
-        
+    public void testBackTraceWithDashA () {
+        child = new Expect (new String[] {
+				Config.getPkgLibFile("funit-child").getAbsolutePath (),
+				"5", "0", "0"
+			    });
+        e = new Expect (new String[] {
+			    Config.getBinFile("fstack").getAbsolutePath (),
+			    child.getPid () + "",
+			    "-a"
+			});
         e.expect (".*main.*int argc.*"+Config.getRootSrcDir()+ ".*funit-child\\.c#.*int argi.*");
-        
     }
 
-    public void testBackTraceWithDashC ()
-    {
-        child = new Expect (new String[]
-            {
-                new File (Config.getPkgLibDir (), "funit-child").getAbsolutePath (),
-                "5", "0", "0"
-            });
-        e = new Expect (new String[]
-            {
-                new File (Config.getBinDir (), "fstack").getAbsolutePath (),
-                child.getPid () + "",
-                "-c"
-            });
-        
+    public void testBackTraceWithDashC () {
+        child = new Expect (new String[] {
+				Config.getPkgLibFile("funit-child").getAbsolutePath (),
+				"5", "0", "0"
+			    });
+        e = new Expect (new String[] {
+			    Config.getBinFile("fstack").getAbsolutePath (),
+			    child.getPid () + "",
+			    "-c"
+			});
         e.expect (".*main.*int argc.*"+Config.getRootSrcDir()+ ".*funit-child\\.c#");
-        
     }
 
 }

@@ -1,3 +1,9 @@
+2007-07-27  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFcatch.java: Use Config.getBinFile and Config.getPkgLibFile.
+	* TestFhd.java: Ditto.
+	* TestFstack.java: Ditto.
+
 2007-07-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* fstack.java (Stacker.Stacker): Now passes a printSourceLibrary

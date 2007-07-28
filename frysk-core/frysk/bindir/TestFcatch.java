@@ -40,8 +40,6 @@
 
 package frysk.bindir;
 
-import java.io.File;
-
 import frysk.Config;
 import frysk.expunit.Expect;
 import frysk.junit.TestCase;
@@ -51,17 +49,14 @@ public class TestFcatch
 {
   Expect e;
 
-  public void testBackTrace ()
-  {
-    e = new Expect(
-		   new String[] {
-				 new File(Config.getBinDir(), "fcatch").getAbsolutePath(),
-				 new File(Config.getPkgLibDir(),
-					  "funit-stackframe").getAbsolutePath() });
-
-    // just look for main.
-    e.expect(" in main ");
-  }
+    public void testBackTrace () {
+	e = new Expect(new String[] {
+			   Config.getBinFile("fcatch").getAbsolutePath(),
+			   Config.getPkgLibFile("funit-stackframe").getAbsolutePath()
+		       });
+	// just look for main.
+	e.expect(" in main ");
+    }
 
   public void tearDown ()
   {
