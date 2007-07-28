@@ -51,10 +51,7 @@ public class TestBreakpoints
 	    {
 		new File (Config.getPkgLibDir (), "hpd-c").getPath ()
 	    });
-	e = new Expect (new String[]
-	    {
-		new File (Config.getBinDir (), "fhpd").getPath ()
-	    });
+	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
 	// Attach
 	e.send ("attach " + child.getPid () + "\n\n");
@@ -74,10 +71,7 @@ public class TestBreakpoints
 	    {
 		new File (Config.getPkgLibDir (), "test1").getPath ()
 	    });
-	e = new Expect (new String[]
-	    {
-		new File (Config.getBinDir (), "fhpd").getPath ()
-	    });
+	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
 	// Attach
 	e.send ("attach " + child.getPid () + " -cli\n");
@@ -99,9 +93,7 @@ public class TestBreakpoints
 				new File (Config.getPkgLibDir (),
 					  "test1").getPath ()
 			    });
-	e = new Expect (new String[] {
-			    new File (Config.getBinDir (), "fhpd").getPath ()
-			});
+	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
 	// Attach
 	e.send ("attach " + child.getPid () + " -cli\n");
@@ -123,9 +115,7 @@ public class TestBreakpoints
 				new File (Config.getPkgLibDir (),
 					  "test1").getPath ()
 			    });
-	e = new Expect (new String[] {
-			    new File (Config.getBinDir (), "fhpd").getPath ()
-			});
+	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
 	// Attach
 	e.send ("attach " + child.getPid () + " -cli\n");

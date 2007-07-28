@@ -1,5 +1,12 @@
 2007-07-28  Andrew Cagney  <cagney@redhat.com>
 
+	* TestBreakpoints.java: Use Config.getBinFile.
+	* TestCoreCommand.java: Ditto.
+	* TestDisassemblerCommand.java: Ditto.
+	* TestDisplayCommand.java: Ditto.
+	* TestPrint.java: Ditto.
+	* TestStackCommands.java: Ditto.
+
 	* TestCoreCommand.java: Use Config.getPkgDataFile.
 
 2007-07-27  Sami Wagiaalla  <swagiaal@redhat.com>

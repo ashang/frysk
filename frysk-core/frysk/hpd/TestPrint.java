@@ -56,10 +56,7 @@ public class TestPrint
 	    {
 		new File (Config.getPkgLibDir (), "hpd-c").getPath ()
 	    });
-	e = new Expect (new String[]
-	    {
-		new File (Config.getBinDir (), "fhpd").getPath ()
-	    });
+	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
 	// Attach
 	e.send ("attach " + child.getPid () + "\n\n");
@@ -102,10 +99,7 @@ public class TestPrint
 	    {
 		new File (Config.getPkgLibDir (), "hpd-c").getPath ()
 	    });
-	e = new Expect (new String[]
-	    {
-		new File (Config.getBinDir (), "fhpd").getPath ()
-	    });
+	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
 	// Attach
 	e.send ("attach " + child.getPid () + "\n\n");
@@ -138,10 +132,7 @@ public class TestPrint
 	    {
 		new File (Config.getPkgLibDir (), "hpd-c").getPath ()
 	    });
-	e = new Expect (new String[]
-	    {
-		new File (Config.getBinDir (), "fhpd").getPath ()
-	    });
+	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
 	// Attach
 	e.send ("attach " + child.getPid () + "\n\n");
@@ -172,10 +163,7 @@ public class TestPrint
 	    {
 		new File (Config.getPkgLibDir (), "hpd-c").getPath ()
 	    });
-	e = new Expect (new String[]
-	    {
-		new File (Config.getBinDir (), "fhpd").getPath ()
-	    });
+	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
 	// Attach
 	e.send ("attach " + child.getPid () + "\n\n");

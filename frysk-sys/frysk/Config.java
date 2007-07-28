@@ -164,10 +164,6 @@ public class Config
     public static final File getBinFile(String file) {
 	return getFile(current.theBinDir, file);
     }
-    // FIXME: delete.
-    public static final File getBinDir() {
-	return current.theBinDir;
-    }
 
     /**
      * A file in Frysk's library directory.  Typically either

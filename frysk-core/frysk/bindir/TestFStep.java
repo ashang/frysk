@@ -40,8 +40,6 @@
 
 package frysk.bindir;
 
-import java.io.File;
-
 import frysk.Config;
 import frysk.expunit.*;
 
@@ -62,8 +60,7 @@ public class TestFStep
 	ElfEHeader h = e.getEHeader();
 	final String entryAddress = "0x" + Long.toHexString(h.entry);
 
-	String command;
-	command = new File(Config.getBinDir(), "fstep").getAbsolutePath();
+	String command = Config.getBinFile("fstep").getAbsolutePath();
 	String argument = "/bin/true";
 	Expect expect = new Expect(new String[] { command, argument });
 	try

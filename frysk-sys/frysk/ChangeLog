@@ -1,5 +1,7 @@
 2007-07-28  Andrew Cagney  <cagney@redhat.com>
 
+	* Config.java (getBinDir): Delete.
+
 	* Config.java (getPkgDataDir): Delete.
 
 	* Config.java (getPkgLib32Dir): Delete.

@@ -41,15 +41,12 @@ package frysk.hpd;
 
 import frysk.expunit.Expect;
 import frysk.Config;
-import java.io.File;
 
 public class TestCoreCommand
     extends TestLib
 {
     public void testCoreCommand() {
-	e = new Expect(new String[] {
-			   new File(Config.getBinDir(), "fhpd").getPath(),
-		       });
+	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect(prompt);
 	e.send("core " + Config.getPkgDataFile("test-core-x86").getPath() + "\n");
 	e.expect(5, "Attached to core file.*");

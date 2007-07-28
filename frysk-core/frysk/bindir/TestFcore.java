@@ -42,7 +42,6 @@ package frysk.bindir;
 import frysk.junit.TestCase;
 import frysk.expunit.Expect;
 import frysk.Config;
-import java.io.File;
 
 public class TestFcore
     extends TestCase
@@ -55,85 +54,73 @@ public class TestFcore
 	e = null;
     }
     
-    public void testNoArguments()
-    {
-      e = new Expect (new String[] 
-                  { 
-                    new File (Config.getBinDir (), "fcore").getAbsolutePath ()
-                  });
-                  
-      e.expect ("Error: No pid provided.");      
+    public void testNoArguments() {
+	e = new Expect (Config.getBinFile("fcore"));
+	e.expect ("Error: No pid provided.");      
     }
 
-    public void testBadArguments ()
-    {
+    public void testBadArguments () {
 	e = new Expect (new String[] {
-	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
-	    "this is a bad argument"
-	});
+			    Config.getBinFile("fcore").getAbsolutePath (),
+			    "this is a bad argument"
+			});
 	e.expect ("Error: Commands not supported.");
     }
 
-    public void testBadConsoleParameter ()
-    {
+    public void testBadConsoleParameter () {
 	e = new Expect (new String[] {
-	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
-	    "-console", "frysk=SILLY",
-	    "1"
-	});
+			    Config.getBinFile("fcore").getAbsolutePath (),
+			    "-console", "frysk=SILLY",
+			    "1"
+			});
 	e.expect ("fcore: Invalid log console: SILLY");
     }
 
-    public void testBadLogParameter ()
-    {
+    public void testBadLogParameter () {
 	e = new Expect (new String[] {
-	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
-	    "-log", "frysk=SILLY",
-	    "1"
-	});
+			    Config.getBinFile("fcore").getAbsolutePath (),
+			    "-log", "frysk=SILLY",
+			    "1"
+			});
 	e.expect ("fcore: Invalid log level: SILLY");
     }
 
-    public void testGoodConsoleBadLogParameter ()
-    {
+    public void testGoodConsoleBadLogParameter () {
 	e = new Expect (new String[] {
-	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
-	    "-console", "frysk=FINE",
-	    "-log", "frysk=SILLY",
-	    "1"
-	});
+			    Config.getBinFile("fcore").getAbsolutePath (),
+			    "-console", "frysk=FINE",
+			    "-log", "frysk=SILLY",
+			    "1"
+			});
 	e.expect ("fcore: Invalid log level: SILLY");
     }
 
-    public void testBadConsoleBadLogParameter ()
-    {
+    public void testBadConsoleBadLogParameter () {
 	e = new Expect (new String[] {
-	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
-	    "-console", "frysk=SILLY",
-	    "-log", "frysk=SILLY",
-	    "1"
-	});
+			    Config.getBinFile("fcore").getAbsolutePath (),
+			    "-console", "frysk=SILLY",
+			    "-log", "frysk=SILLY",
+			    "1"
+			});
 	e.expect ("fcore: Invalid log console: SILLY");
     }
 
-    public void testBadConsoleGoodLogParameter ()
-    {
+    public void testBadConsoleGoodLogParameter () {
 	e = new Expect (new String[] {
-	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
-	    "-console", "frysk=SILLY",
-	    "-log", "frysk=FINE",
-	    "1"
-	});
+			    Config.getBinFile("fcore").getAbsolutePath (),
+			    "-console", "frysk=SILLY",
+			    "-log", "frysk=FINE",
+			    "1"
+			});
 	e.expect ("fcore: Invalid log console: SILLY");
     }
 
-    public void testInvalidArgument ()
-    {
+    public void testInvalidArgument () {
 	e = new Expect (new String[] {
-	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
-	    "-z",
-	    "1"
-	});
+			    Config.getBinFile("fcore").getAbsolutePath (),
+			    "-z",
+			    "1"
+			});
 	e.expect ("fcore: unrecognized option");
     }
 }

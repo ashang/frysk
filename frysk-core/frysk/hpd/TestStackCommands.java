@@ -50,9 +50,7 @@ public class TestStackCommands
 	child = new Expect (new String[] {
 				new File (Config.getPkgLibDir (), "hpd-c").getPath ()
 			    });
-	e = new Expect (new String[] {
-			    new File (Config.getBinDir (), "fhpd").getPath ()
-			});
+	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
 	// Add
 	e.send ("print 2+2\n");

@@ -48,9 +48,9 @@ public class TestDisplayCommand
 {
     public void testHpdDisplayCommands() {
 	e = new Expect (new String[] {
-	    new File (Config.getBinDir (), "fhpd").getPath (), 
-	    new File (Config.getPkgLibDir (), "hpd-c").getPath ()
-	});
+			    Config.getBinFile("fhpd").getPath (),
+			    new File (Config.getPkgLibDir (), "hpd-c").getPath ()
+			});
 	e.expect (prompt);
 	// Break
         e.send("break #hpd-c.c#179\n");

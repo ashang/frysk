@@ -40,8 +40,6 @@
 
 package frysk.bindir;
 
-import java.io.File;
-
 import frysk.Config;
 import frysk.expunit.Expect;
 import frysk.proc.Task;
@@ -59,56 +57,43 @@ public class TestFtrace
     expect = null;
   }
 
-  public void testFtraceTraces ()
-  {
-    // Create an unattached child process.
-    AckProcess child = new DetachedAckProcess();
-    Task task = child.findTaskUsingRefresh(true);
+    public void testFtraceTraces () {
+	// Create an unattached child process.
+	AckProcess child = new DetachedAckProcess();
+	Task task = child.findTaskUsingRefresh(true);
+	expect = new Expect(new String[] {
+				Config.getBinFile("ftrace").getAbsolutePath(),
+				""+task.getProc().getPid()
+			    });
+	expect.expect(""+task.getProc().getPid()+"."+ task.getTid());
+    }
 
-    expect = new Expect(
-			new String[] {
-				      new File(Config.getBinDir(), "ftrace").getAbsolutePath(),
-				      ""+task.getProc().getPid() });
-    expect.expect(""+task.getProc().getPid()+"."+ task.getTid());
-  }
+    public void testFtraceFollowsClones() {
+	// Create an unattached child process.
+	AckProcess child = new DetachedAckProcess();
+	Task task = child.findTaskUsingRefresh(true);
+	expect = new Expect(new String[] {
+				Config.getBinFile("ftrace").getAbsolutePath(),
+				""+task.getProc().getPid()
+			    });
+	expect.expect(""+task.getProc().getPid()+"."+ task.getTid());
+	child.assertSendAddCloneWaitForAcks();
+	Task task1 = child.findTaskUsingRefresh(false);
+        expect.expect(""+task1.getProc().getPid()+"."+ task1.getTid());
+    }
 
-  public void testFtraceFollowsClones()
-  {
-    // Create an unattached child process.
-    AckProcess child = new DetachedAckProcess();
-    
-    Task task = child.findTaskUsingRefresh(true);
-    
-    expect = new Expect(
-			new String[] {
-				      new File(Config.getBinDir(), "ftrace").getAbsolutePath(),
-				      ""+task.getProc().getPid() });
-    expect.expect(""+task.getProc().getPid()+"."+ task.getTid());
-    
-    child.assertSendAddCloneWaitForAcks();
-    Task task1 = child.findTaskUsingRefresh(false);
-    
-    expect.expect(""+task1.getProc().getPid()+"."+ task1.getTid());
-  }
-
-  public void testFtraceFollowsForks()
-  {
-    // Create an unattached child process.
-    AckProcess child = new DetachedAckProcess();
-    
-    Task task = child.findTaskUsingRefresh(true);
-    
-    expect = new Expect(
-			new String[] {
-				      new File(Config.getBinDir(), "ftrace").getAbsolutePath(),
-				      "-c",
-				      ""+task.getProc().getPid() });
-    expect.expect(""+task.getProc().getPid()+"."+ task.getTid() + " <SYSCALL> rt_sigsuspend ()");
-    
-    child.assertSendAddForkWaitForAcks();
-    
-    expect.expect("rt_sigsuspend");
-    expect.expect("rt_sigsuspend");    
-  }
-  
+    public void testFtraceFollowsForks() {
+	// Create an unattached child process.
+	AckProcess child = new DetachedAckProcess();
+	Task task = child.findTaskUsingRefresh(true);
+        expect = new Expect(new String[] {
+				Config.getBinFile("ftrace").getAbsolutePath(),
+				"-c",
+				""+task.getProc().getPid()
+			    });
+	expect.expect(""+task.getProc().getPid()+"."+ task.getTid() + " <SYSCALL> rt_sigsuspend ()");
+	child.assertSendAddForkWaitForAcks();
+	expect.expect("rt_sigsuspend");
+	expect.expect("rt_sigsuspend");    
+    }
 }

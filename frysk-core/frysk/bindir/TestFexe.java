@@ -55,7 +55,7 @@ public class TestFexe
     }
     
     public void testExeOfPid() {
-	File fexe = new File (Config.getBinDir (), "fexe");
+	File fexe = Config.getBinFile("fexe");
 	e = new Expect(fexe.getAbsolutePath () + " $$");
 	e.expect(fexe + "\r\n");
     }
