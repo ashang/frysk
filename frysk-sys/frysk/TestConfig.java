@@ -125,4 +125,54 @@ public class TestConfig
 	Config.set (Config.createBuild32On64Config ("src-dir", "build-dir"));
 	validate (false);
     }
+
+    public void testBuild32() {
+	Config.set (Config.createBuildConfig32("src-dir", "build-dir"));
+	switch (Config.getWordSize()) {
+	case 32:
+	case 64: 
+	    validate (true);
+	    break;
+	default:
+	    fail("unknown word size");
+	}
+    }
+    public void testInstall32() {
+	Config.set (Config.createInstallConfig32());
+	switch (Config.getWordSize()) {
+	case 32:
+	case 64: 
+	    validate (true);
+	    break;
+	default:
+	    fail("unknown word size");
+	}
+    }
+    public void testBuild64() {
+	Config.set (Config.createBuildConfig64("src-dir", "build-dir"));
+	switch (Config.getWordSize()) {
+	case 32:
+	    assertNull("config", Config.get());
+	    break;
+	case 64: 
+	    validate (true);
+	    break;
+	default:
+	    fail("unknown word size");
+	}
+    }
+    public void testInstall64() {
+	Config.set (Config.createInstallConfig64());
+	switch (Config.getWordSize()) {
+	case 32:
+	    assertNull("config", Config.get());
+	    break;
+	case 64: 
+	    validate (true);
+	    break;
+	default:
+	    fail("unknown word size");
+	}
+    }
+
 }

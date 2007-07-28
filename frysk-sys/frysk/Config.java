@@ -79,11 +79,23 @@ public class Config
     }
 
     /**
-     * Create the standard install tree configuration.
+     * Create the default install tree configuration.
      *
      * The 32-bit and 64-bit specific library paths are set to NULL.
      */
     public static native final Config createInstallConfig ();
+
+    /**
+     * Create a 32-bit specific install configuration; return NULL if
+     * this is not supported.
+     */
+    public static native final Config createInstallConfig32();
+
+    /**
+     * Create a 64-bit specific install configuration; return NULL if
+     * if this is not supported.
+     */
+    public static native final Config createInstallConfig64();
 
     /**
      * Create the 32-bit install tree configuration (used when running
@@ -98,6 +110,19 @@ public class Config
      */
     public static native final Config createBuildConfig (String absSrcDir,
 							 String absBuildDir);
+
+    /**
+     * Create a 32-bit specific build-tree configuration; return NULL
+     * if this is not supported by this build.
+     */
+    public static native final Config createBuildConfig32 (String absSrcDir,
+							   String absBuildDir);
+    /**
+     * Create a 64-bit specific build-tree configuration; return NULL
+     * if this is not supported by this build.
+     */
+    public static native final Config createBuildConfig64 (String absSrcDir,
+							   String absBuildDir);
 
     /**
      * Create the 32-bit on 64-bit build-tree configuration.

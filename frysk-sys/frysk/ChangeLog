@@ -1,5 +1,10 @@
 2007-07-28  Andrew Cagney  <cagney@redhat.com>
 
+	* Config.java (createBuildConfig64, createBuildConfig32): New.
+	 (createInstallConfig64, createInstallConfig32): New.
+	* TestConfig.java (testInstall32, testInstall64): New.
+	(testBuild32, testBuild64): New.
+
 	* Config.java (getPkgLibDir): Delete.
 
 	* Config.java (getBinDir): Delete.
