@@ -2,6 +2,7 @@
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <alloca.h>
+#include <malloc.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <search.h>
@@ -12,22 +13,30 @@
 #include <asm/unistd.h>
 #include <asm/user.h>
 #include <asm/ldt.h>
+#include <sys/types.h>
+#include <regex.h>
 
 #include "udb.h"
 #include "udb-i386.h"
 
+const char re[] = "(\\[([[:digit:]]+)\\])?[[:space:]]*(([[:digit:]]+)|([[:alpha:]]+))([[:space:]]*,[[:space:]]*(([-[:digit:]]+)|([[:alpha:]]+)))?";
 
 static struct hsearch_data reg_hash_table;
 static int reg_hash_table_valid = 0;
 
 void
-parse_regspec (char * tok, char ** saveptr, long * regset_p, long *reg_p)
+parse_regspec (char ** saveptr, long * pid_p, long * regset_p, long *reg_p)
 {
+  int rc;
   long reg = INVALID_REG;
   long regset = INVALID_REG;
-  
+
+  static regex_t preg;
+  static regmatch_t * pmatch = NULL;
+
   if (!reg_hash_table_valid) {
     int i, rc;
+    
     rc = hcreate_r ((4 * nr_regs)/3, &reg_hash_table);
     if (0 == rc) {
       fprintf (stderr, "\tCreating register hash table failed.\n");
@@ -41,29 +50,77 @@ parse_regspec (char * tok, char ** saveptr, long * regset_p, long *reg_p)
 	return;
       }
     }
+
+    rc = regcomp (&preg, re, REG_EXTENDED);
+    if (0 == rc) pmatch = malloc ((1 + preg.re_nsub) * sizeof(regmatch_t));
+    
     reg_hash_table_valid = 1;
   }
-  
-  if (reg_hash_table_valid) {
-    ENTRY * entry;
-    ENTRY target;
 
-    if (tok) {
-      target.key = tok;
-      if (0 != hsearch_r (target, FIND, &entry, &reg_hash_table)) {
-	reg    = ((reg_data_s *)(entry->data))->reg;
-	regset = ((reg_data_s *)(entry->data))->regset;
+  /* 1  2            2  1             34            4 5            53
+   *        pid              space              arg1
+   * (\[([[:digit:]]+)\])?[[:space:]]*(([[:digit:]]+)|([[:alpha:]]+))
+   *
+   *      6                         78            8 9            976
+   *                                    arg2
+   *      ([[:space:]]*,[[:space:]]*(([\\-[:digit:]]+)|([[:alpha:]]+)))?
+   *
+   * [2] = pid
+   * [4] = digit arg1
+   * [5] = alpha arg1
+   * [7] != -1 ==> two args
+   * [8] = digit arg2
+   * [9] = alpha arg2
+   *
+   *
+   */
+
+  /* fixme -- add stuff to recognise alpha regset specs
+  /* fixme -- add stuff to recognise alpha reg specs for non-gprs
+  if (pmatch) {
+    int i;
+    rc = regexec (&preg, *saveptr, 1 + preg.re_nsub, pmatch, 0);
+    if (0 == rc) {
+      if (-1 != pmatch[2].rm_so) {
+	if (pid_p) *pid_p =  atol (&((*saveptr)[pmatch[2].rm_so]));
       }
-      else if (isdigit (*tok) || ('-' == *tok)) {
-	regset = 0;
-	reg    = atol (tok);
-	tok = strtok_r (NULL, ", \t", saveptr);
-	if (tok && (isdigit (*tok) || ('-' == *tok))) {
-	  regset = reg;
-	  reg    = atol (tok);
+      
+      if (-1 != pmatch[4].rm_so) {
+	reg =  atol (&((*saveptr)[pmatch[4].rm_so]));
+      }
+      else if (-1 != pmatch[5].rm_so) {
+	ENTRY * entry;
+	ENTRY target;
+	
+	char * key = alloca (1 + (pmatch[5].rm_eo - pmatch[5].rm_so));
+	memcpy (key, &((*saveptr)[pmatch[5].rm_so]),
+		pmatch[5].rm_eo - pmatch[5].rm_so);
+	key[pmatch[5].rm_eo - pmatch[5].rm_so] = 0;
+
+	target.key = key;
+	if (0 != hsearch_r (target, FIND, &entry, &reg_hash_table)) {
+	  reg    = ((reg_data_s *)(entry->data))->reg;
+	  regset = ((reg_data_s *)(entry->data))->regset;
 	}
       }
+
+      if (-1 != pmatch[8].rm_so) {
+	regset = reg;
+	reg =  atol (&((*saveptr)[pmatch[8].rm_so]));
+      }
     }
+
+#if 0
+    for (i = 0; i < 1+preg.re_nsub; i++) {
+      fprintf (stderr, "[%d] %d %d \"%.*s\"\n",
+	       i,
+	       pmatch[i].rm_so,
+	       pmatch[i].rm_eo,
+	       pmatch[i].rm_eo - pmatch[i].rm_so,
+	       (-1 != pmatch[i].rm_so) ? &((*saveptr)[pmatch[i].rm_so])  : ""
+	       );
+    }
+#endif
   }
   
   if (INVALID_REG == reg)    reg    = -1;

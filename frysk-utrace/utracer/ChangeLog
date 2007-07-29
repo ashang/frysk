@@ -1,3 +1,9 @@
+Sun Jul 29 00:11:01 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-text-ui.c (printreg_fcn): Removed the pid parsing from
+	readregs and moved it to udb-i386.c.
+	* udb-i386.c: Added a regcomp/regexec parser for the regspec.
+
 Sat Jul 28 17:01:09 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-i386.h:

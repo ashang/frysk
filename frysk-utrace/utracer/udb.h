@@ -15,7 +15,7 @@ extern void utrace_detach_if (long pid);
 extern void utrace_readreg_if (long pid, int regset, int reg);
 extern void set_prompt();
 extern void register_utracer(pid_t pid);
-extern void parse_regspec (char * tok, char ** saveptr, 
+extern void parse_regspec (char ** saveptr, long * pid_p,
 			   long * regset_p, long *reg_p);
 
 pid_t udb_pid;

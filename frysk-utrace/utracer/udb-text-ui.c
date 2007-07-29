@@ -239,15 +239,8 @@ printreg_fcn (char ** saveptr)
   long reg = INVALID_REG;
   long regset = 0;
   void * regsinfo = NULL;
-  
-  tok = strtok_r (NULL, ", \t", saveptr);
-  if (tok) {
-    if ('[' == *tok) {
-      pid = atol (tok+1);
-      tok = strtok_r (NULL, ", \t", saveptr);
-    }
-  }
-  if (tok) parse_regspec (tok, saveptr, &regset, &reg);
+
+  parse_regspec (saveptr, &pid, &regset, &reg);
   
   if (INVALID_REG == reg) {
     reg = -1;	// turn into pra
