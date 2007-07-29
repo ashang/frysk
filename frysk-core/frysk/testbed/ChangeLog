@@ -1,5 +1,9 @@
 2007-07-28  Andrew Cagney  <cagney@redhat.com>
 
+	* OffspringType.java: New file.
+	* Offspring.java (logger): Add.
+	* SynchronizedOffspring.java: New file.
+
 	* TestLib.java (Child): Extend Offspring.
 	(Child.assertFindProcAndTasks): Delete.
 	(Child.findTaskUsingRefresh): Delete.

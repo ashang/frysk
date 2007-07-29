@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,88 +40,59 @@
 package frysk.testbed;
 
 import frysk.sys.Sig;
-import frysk.proc.Proc;
-import frysk.proc.Task;
-import frysk.sys.Errno;
-import frysk.proc.Host;
-import frysk.proc.Manager;
-import frysk.proc.ProcId;
-import java.util.Iterator;
-import frysk.sys.Signal;
+import frysk.Config;
+import frysk.sys.Pid;
 import frysk.junit.TestCase;
-import java.util.logging.Logger;
 
 /**
- * A generic test process created by this testbed.
+ * Create a process running funit-exec.
+ *
+ * The program funit-exec, when sent a signal, will exec its
+ * arguments.
  */
-
-public abstract class Offspring {
-    protected final static Logger logger = Logger.getLogger("frysk");
+public class FunitExec extends SynchronizedOffspring {
     /**
-     * Return the process's system identifier.
+     * Create a process that, when requested, will execute an exec
+     * system call.
      */
-    public abstract int getPid();
-    /**
-     * Package private.
-     */
-    Offspring() {
+    FunitExec(String[] program) {
+	super(Sig.HUP, constructArgs(0, program));
+    }
+    private static String[] constructArgs(int threads,
+					  String[] program) {
+	String[] args;
+	if (threads > 0)
+	    args = new String[program.length + 4 + 1];
+	else
+	    args = new String[program.length + 4];
+	int n = 0;
+	args[n++] = Config.getPkgLibFile("funit-exec").getPath();
+	if (threads > 0)
+	    args[n++] = "-" + threads;
+	args[n++] = Integer.toString(Pid.get());
+	args[n++] = Integer.toString(Sig.HUP_);
+	args[n++] = Integer.toString(TestCase.getTimeoutSeconds());
+	System.arraycopy(program, 0, args, n, program.length);
+	return args;
     }
     /**
-     * Send the child the sig.
+     * Create a multi-threaded process that, when requested, will
+     * execute an exec system call.
      */
-    public void signal (Sig sig) {
-	Signal.tkill(getPid(), sig);
+    FunitExec(int threads, String[] program) {
+	super(Sig.HUP, constructArgs(threads, program));
     }
     /**
-     * Attempt to kill the child. Return false if the child doesn't
-     * appear to exist.
+     * Request that the process perform a request.  This operation is
+     * not acknowledged.
      */
-    public boolean kill () {
-	try {
-	    signal(Sig.KILL);
-	    return true;
-	} catch (Errno.Esrch e) {
-	    return false;
-	}
+    public void requestExec() {
+	signal(Sig.USR1);
     }
     /**
-     * Find/return the child's Proc, polling /proc if necessary.
+     * Request that a random thread does an exec.
      */
-    public Proc assertFindProcAndTasks () {
-	class FindProc
-	    implements Host.FindProc
-	{
-	    Proc proc;
-	    public void procFound (ProcId procId) {
-		proc = Manager.host.getProc(procId);
-		Manager.eventLoop.requestStop();
-	    }
-	    public void procNotFound (ProcId procId, Exception e) {
-		TestCase.fail("Couldn't find the given proc");
-	    }
-	}
-	FindProc findProc = new FindProc();
-	Manager.host.requestFindProc(new ProcId(getPid()), findProc);
-	Manager.eventLoop.run();
-	return findProc.proc;
-    }
-    
-    /**
-     * Find the child's Proc's main or non-main Task, polling /proc if
-     * necessary.
-     */
-    public Task findTaskUsingRefresh (boolean mainTask) {
-	Proc proc = assertFindProcAndTasks();
-	for (Iterator i = proc.getTasks().iterator(); i.hasNext();) {
-	    Task task = (Task) i.next();
-	    if (task.getTid() == proc.getPid()) {
-		if (mainTask)
-		    return task;
-	    } else {
-		if (! mainTask)
-		    return task;
-	    }
-	}
-	return null;
+    public void requestRandomExec() {
+	signal(Sig.USR2);
     }
 }

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,89 +39,61 @@
 
 package frysk.testbed;
 
-import frysk.sys.Sig;
-import frysk.proc.Proc;
-import frysk.proc.Task;
-import frysk.sys.Errno;
-import frysk.proc.Host;
+import frysk.sys.Fork;
 import frysk.proc.Manager;
-import frysk.proc.ProcId;
-import java.util.Iterator;
-import frysk.sys.Signal;
-import frysk.junit.TestCase;
-import java.util.logging.Logger;
+import frysk.proc.TaskObserver;
+import frysk.proc.Action;
+import frysk.proc.Task;
 
-/**
- * A generic test process created by this testbed.
- */
-
-public abstract class Offspring {
-    protected final static Logger logger = Logger.getLogger("frysk");
+public abstract class OffspringType {
+    private OffspringType() { }
+    public abstract int startOffspring(String stdin, String stdout,
+				       String stderr, String[] argv);
     /**
-     * Return the process's system identifier.
+     * Create a daemon offspring.
      */
-    public abstract int getPid();
-    /**
-     * Package private.
-     */
-    Offspring() {
-    }
-    /**
-     * Send the child the sig.
-     */
-    public void signal (Sig sig) {
-	Signal.tkill(getPid(), sig);
-    }
-    /**
-     * Attempt to kill the child. Return false if the child doesn't
-     * appear to exist.
-     */
-    public boolean kill () {
-	try {
-	    signal(Sig.KILL);
-	    return true;
-	} catch (Errno.Esrch e) {
-	    return false;
-	}
-    }
-    /**
-     * Find/return the child's Proc, polling /proc if necessary.
-     */
-    public Proc assertFindProcAndTasks () {
-	class FindProc
-	    implements Host.FindProc
-	{
-	    Proc proc;
-	    public void procFound (ProcId procId) {
-		proc = Manager.host.getProc(procId);
-		Manager.eventLoop.requestStop();
+    static public final OffspringType DAEMON = new OffspringType() {
+	    public int startOffspring (String stdin, String stdout,
+				       String stderr, String[] argv) {
+		return Fork.daemon(stdin, stdout, stderr, argv);
 	    }
-	    public void procNotFound (ProcId procId, Exception e) {
-		TestCase.fail("Couldn't find the given proc");
-	    }
-	}
-	FindProc findProc = new FindProc();
-	Manager.host.requestFindProc(new ProcId(getPid()), findProc);
-	Manager.eventLoop.run();
-	return findProc.proc;
-    }
-    
+	};
     /**
-     * Find the child's Proc's main or non-main Task, polling /proc if
-     * necessary.
+     * Create a child offspring.
      */
-    public Task findTaskUsingRefresh (boolean mainTask) {
-	Proc proc = assertFindProcAndTasks();
-	for (Iterator i = proc.getTasks().iterator(); i.hasNext();) {
-	    Task task = (Task) i.next();
-	    if (task.getTid() == proc.getPid()) {
-		if (mainTask)
-		    return task;
-	    } else {
-		if (! mainTask)
-		    return task;
+    static public final OffspringType CHILD = new OffspringType() {
+	    public int startOffspring (String stdin, String stdout,
+				       String stderr, String[] argv) {
+		return Fork.exec(stdin, stdout, stderr, argv);
 	    }
-	}
-	return null;
-    }
+	};
+    /**
+     * Create a running attached child offspring.
+     */
+    static protected final OffspringType ATTACHED = new OffspringType() {
+	    public int startOffspring (String stdin, String stdout,
+				       String stderr, String[] argv) {
+		// Capture the child process id as it flys past.
+		class TidObserver
+		    extends TaskObserverBase
+		    implements TaskObserver.Attached
+		{
+		    int tid;
+		    public Action updateAttached (Task task) {
+			tid = task.getTid();
+			Manager.eventLoop.requestStop();
+			return Action.CONTINUE;
+		    }
+		}
+		TidObserver tidObserver = new TidObserver();
+		// Start the child process, run the event loop until
+		// the tid is known.
+		Manager.host.requestCreateAttachedProc(stdin, stdout,
+						       stderr, argv,
+						       tidObserver);
+		TestLib.assertRunUntilStop("starting attached child");
+		// Return that captured TID.
+		return tidObserver.tid;
+	    }
+	};
 }

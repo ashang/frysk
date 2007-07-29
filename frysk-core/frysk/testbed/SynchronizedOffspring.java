@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,88 +40,51 @@
 package frysk.testbed;
 
 import frysk.sys.Sig;
-import frysk.proc.Proc;
-import frysk.proc.Task;
-import frysk.sys.Errno;
-import frysk.proc.Host;
 import frysk.proc.Manager;
-import frysk.proc.ProcId;
-import java.util.Iterator;
-import frysk.sys.Signal;
-import frysk.junit.TestCase;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
- * A generic test process created by this testbed.
+ * Create an offspring that has synchronized with this test-framework
+ * using a signal.  The synchronization ensures that the test process
+ * is ready before the test proceeds.
  */
 
-public abstract class Offspring {
-    protected final static Logger logger = Logger.getLogger("frysk");
+public class SynchronizedOffspring
+    extends Offspring
+{
+    // NOTE: Use a different signal to thread add/del. Within this
+    // process the signal is masked and Linux appears to propogate the
+    // mask all the way down to the exec'ed child.
+    public static final Sig START_ACK = Sig.HUP;
+
+    private final int pid;
     /**
-     * Return the process's system identifier.
+     * Return the ProcessID of the child.
      */
-    public abstract int getPid();
-    /**
-     * Package private.
-     */
-    Offspring() {
+    public int getPid () {
+	return pid;
     }
+
     /**
-     * Send the child the sig.
+     * Create a child process (using startChild), return once the
+     * process is running. Wait for acknowledge SIG.
      */
-    public void signal (Sig sig) {
-	Signal.tkill(getPid(), sig);
+    protected SynchronizedOffspring (OffspringType type,
+				     Sig sig, String[] argv) {
+	logger.log(Level.FINE, "{0} new ...\n", this);
+	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, sig,
+					    "startOffspring");
+	pid = type.startOffspring(null, (logger.isLoggable(Level.FINE)
+					 ? null
+					 : "/dev/null"),
+				  null, argv);
+	TearDownProcess.add(pid);
+	ack.assertRunUntilSignaled();
+	logger.log(Level.FINE, "{0} ... new pid {1,number,integer}\n",
+		   new Object[] {this, new Integer(pid) });
     }
-    /**
-     * Attempt to kill the child. Return false if the child doesn't
-     * appear to exist.
-     */
-    public boolean kill () {
-	try {
-	    signal(Sig.KILL);
-	    return true;
-	} catch (Errno.Esrch e) {
-	    return false;
-	}
-    }
-    /**
-     * Find/return the child's Proc, polling /proc if necessary.
-     */
-    public Proc assertFindProcAndTasks () {
-	class FindProc
-	    implements Host.FindProc
-	{
-	    Proc proc;
-	    public void procFound (ProcId procId) {
-		proc = Manager.host.getProc(procId);
-		Manager.eventLoop.requestStop();
-	    }
-	    public void procNotFound (ProcId procId, Exception e) {
-		TestCase.fail("Couldn't find the given proc");
-	    }
-	}
-	FindProc findProc = new FindProc();
-	Manager.host.requestFindProc(new ProcId(getPid()), findProc);
-	Manager.eventLoop.run();
-	return findProc.proc;
-    }
-    
-    /**
-     * Find the child's Proc's main or non-main Task, polling /proc if
-     * necessary.
-     */
-    public Task findTaskUsingRefresh (boolean mainTask) {
-	Proc proc = assertFindProcAndTasks();
-	for (Iterator i = proc.getTasks().iterator(); i.hasNext();) {
-	    Task task = (Task) i.next();
-	    if (task.getTid() == proc.getPid()) {
-		if (mainTask)
-		    return task;
-	    } else {
-		if (! mainTask)
-		    return task;
-	    }
-	}
-	return null;
+
+    public SynchronizedOffspring(Sig sig, String[] argv) {
+	this(OffspringType.DAEMON, sig, argv);
     }
 }
