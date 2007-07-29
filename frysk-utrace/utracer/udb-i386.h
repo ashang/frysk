@@ -112,6 +112,9 @@ REG_DECL (reg_data_s xcs_data,		0, 13);
 REG_DECL (reg_data_s eflags_data,	0, 14);
 REG_DECL (reg_data_s esp_data,		0, 15);
 REG_DECL (reg_data_s xss_data,		0, 16);
+REG_DECL (reg_data_s gdtr_data,		3,  0);
+REG_DECL (reg_data_s ldtr_data,		3,  1);
+REG_DECL (reg_data_s idtr_data,		3,  2);
 
 #ifndef DO_UDB_INIT
 extern
@@ -135,7 +138,10 @@ ENTRY reg_mapping[]
   {"eip",	 (void *)&eip_data},
   {"eflags",	 (void *)&eflags_data},
   {"esp",	 (void *)&esp_data},
-  {"xss",	 (void *)&xss_data}
+  {"xss",	 (void *)&xss_data},
+  {"gdtr",	 (void *)&gdtr_data},
+  {"ldtr",	 (void *)&ldtr_data},
+  {"idtr",	 (void *)&idtr_data}
 }
 #endif
   ;

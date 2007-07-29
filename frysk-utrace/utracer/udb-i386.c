@@ -19,7 +19,35 @@
 #include "udb.h"
 #include "udb-i386.h"
 
-const char re[] = "(\\[([[:digit:]]+)\\])?[[:space:]]*(([[:digit:]]+)|([[:alpha:]]+))([[:space:]]*,[[:space:]]*(([-[:digit:]]+)|([[:alpha:]]+)))?";
+
+const char re[] = "(\\[([[:digit:]]+)\\])?[[:space:]]*(([[:digit:]]+)|(st([[:digit:]]+))|([[:alpha:]]+))([[:space:]]*,[[:space:]]*(([-[:digit:]]+)|([[:alpha:]]+)))?";
+
+  /*
+   * 1  2            2  1             34            4 5  6            65 7            73
+   *        pid              space              arg1                                 
+   * (\[([[:digit:]]+)\])?[[:space:]]*(([[:digit:]]+)|(st([[:digit:]]+))|([[:alpha:]]+))
+   *
+   *      8                         90               0 1            198
+   *                                    arg2
+   *      ([[:space:]]*,[[:space:]]*(([\\-[:digit:]]+)|([[:alpha:]]+)))?
+   *
+   * [2] = pid
+   * [4] = digit arg1
+   * [5] = alpha arg1
+   * [6] = st digit arg1
+   * [7] != -1 ==> two args
+   * [8] = digit arg2
+   * [9] = alpha arg2
+   *
+   *
+   */
+  
+#define PMATCH_PID		 2
+#define PMATCH_ARG1_DIGIT	 4
+#define PMATCH_ARG1_ST_DIGIT	 6
+#define PMATCH_ARG1_ALPHA	 7
+#define PMATCH_ARG2_DIGIT	10
+#define PMATCH_ARG2_ALPHA	11
 
 static struct hsearch_data reg_hash_table;
 static int reg_hash_table_valid = 0;
@@ -51,51 +79,39 @@ parse_regspec (char ** saveptr, long * pid_p, long * regset_p, long *reg_p)
       }
     }
 
-    rc = regcomp (&preg, re, REG_EXTENDED);
+    rc = regcomp (&preg, re, REG_EXTENDED | REG_ICASE);
     if (0 == rc) pmatch = malloc ((1 + preg.re_nsub) * sizeof(regmatch_t));
     
     reg_hash_table_valid = 1;
   }
 
-  /* 1  2            2  1             34            4 5            53
-   *        pid              space              arg1
-   * (\[([[:digit:]]+)\])?[[:space:]]*(([[:digit:]]+)|([[:alpha:]]+))
-   *
-   *      6                         78            8 9            976
-   *                                    arg2
-   *      ([[:space:]]*,[[:space:]]*(([\\-[:digit:]]+)|([[:alpha:]]+)))?
-   *
-   * [2] = pid
-   * [4] = digit arg1
-   * [5] = alpha arg1
-   * [7] != -1 ==> two args
-   * [8] = digit arg2
-   * [9] = alpha arg2
-   *
-   *
-   */
-
-  /* fixme -- add stuff to recognise alpha regset specs
-  /* fixme -- add stuff to recognise alpha reg specs for non-gprs
+  /* fixme -- add stuff to recognise alpha regset specs */
   if (pmatch) {
     int i;
     rc = regexec (&preg, *saveptr, 1 + preg.re_nsub, pmatch, 0);
     if (0 == rc) {
-      if (-1 != pmatch[2].rm_so) {
-	if (pid_p) *pid_p =  atol (&((*saveptr)[pmatch[2].rm_so]));
+      if (-1 != pmatch[PMATCH_PID].rm_so) {
+	if (pid_p) *pid_p =  atol (&((*saveptr)[pmatch[PMATCH_PID].rm_so]));
       }
       
-      if (-1 != pmatch[4].rm_so) {
-	reg =  atol (&((*saveptr)[pmatch[4].rm_so]));
+      if (-1 != pmatch[PMATCH_ARG1_DIGIT].rm_so) {
+	reg =  atol (&((*saveptr)[pmatch[PMATCH_ARG1_DIGIT].rm_so]));
       }
-      else if (-1 != pmatch[5].rm_so) {
+      else if (-1 != pmatch[PMATCH_ARG1_ST_DIGIT].rm_so) {
+	regset = 1;		// fixme -- make symbolic
+	reg =  atol (&((*saveptr)[pmatch[PMATCH_ARG1_ST_DIGIT].rm_so]));
+      }
+      else if (-1 != pmatch[PMATCH_ARG1_ALPHA].rm_so) {
 	ENTRY * entry;
 	ENTRY target;
 	
-	char * key = alloca (1 + (pmatch[5].rm_eo - pmatch[5].rm_so));
-	memcpy (key, &((*saveptr)[pmatch[5].rm_so]),
-		pmatch[5].rm_eo - pmatch[5].rm_so);
-	key[pmatch[5].rm_eo - pmatch[5].rm_so] = 0;
+	char * key = alloca (1 + (pmatch[PMATCH_ARG1_ALPHA].rm_eo -
+	pmatch[PMATCH_ARG1_ALPHA].rm_so));
+	memcpy (key, &((*saveptr)[pmatch[PMATCH_ARG1_ALPHA].rm_so]),
+		pmatch[PMATCH_ARG1_ALPHA].rm_eo -
+		pmatch[PMATCH_ARG1_ALPHA].rm_so);
+	key[pmatch[PMATCH_ARG1_ALPHA].rm_eo -
+	pmatch[PMATCH_ARG1_ALPHA].rm_so] = 0;
 
 	target.key = key;
 	if (0 != hsearch_r (target, FIND, &entry, &reg_hash_table)) {
@@ -104,9 +120,9 @@ parse_regspec (char ** saveptr, long * pid_p, long * regset_p, long *reg_p)
 	}
       }
 
-      if (-1 != pmatch[8].rm_so) {
+      if (-1 != pmatch[PMATCH_ARG2_DIGIT].rm_so) {
 	regset = reg;
-	reg =  atol (&((*saveptr)[pmatch[8].rm_so]));
+	reg =  atol (&((*saveptr)[pmatch[PMATCH_ARG2_DIGIT].rm_so]));
       }
     }
 
