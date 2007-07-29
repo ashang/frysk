@@ -40,7 +40,6 @@
 package frysk.testbed;
 
 import frysk.proc.Action;
-import frysk.proc.ProcId;
 import frysk.proc.TaskObserver;
 import frysk.proc.Proc;
 import frysk.proc.Task;
@@ -59,7 +58,6 @@ import frysk.sys.Wait;
 import frysk.sys.UnhandledWaitBuilder;
 import frysk.sys.proc.Stat;
 import frysk.testbed.SignalWaiter;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
@@ -228,7 +226,7 @@ public class TestLib
      * ackSignal). Permit various operations on the process, see also
      * the various extensions.
      */
-    public static abstract class Child {
+    public static abstract class Child extends Offspring {
 	private int pid;
 
 	/**
@@ -245,13 +243,6 @@ public class TestLib
 	 */
 	public String[] getArgv () {
 	    return argv;
-	}
-
-	/**
-	 * Send the child the sig.
-	 */
-	public void signal (Sig sig) {
-	    Signal.tkill(pid, sig);
 	}
 
 	public void signal (int tid, Sig sig) {
@@ -285,60 +276,6 @@ public class TestLib
 	 */
 	protected Child (String[] argv) {
 	    this(ackSignal, argv);
-	}
-
-	/**
-	 * Attempt to kill the child. Return false if the child
-	 * doesn't appear to exist.
-	 */
-	boolean kill () {
-	    try {
-		signal(Sig.KILL);
-		return true;
-	    } catch (Errno.Esrch e) {
-		return false;
-	    }
-	}
-
-	/**
-	 * Find/return the child's Proc, polling /proc if necessary.
-	 */
-	public Proc assertFindProcAndTasks () {
-	    class FindProc
-		implements Host.FindProc
-	    {
-		Proc proc;
-		public void procFound (ProcId procId) {
-		    proc = Manager.host.getProc(procId);
-		    Manager.eventLoop.requestStop();
-		}
-		public void procNotFound (ProcId procId, Exception e) {
-		    fail("Couldn't find the given proc");
-		}
-	    }
-	    FindProc findProc = new FindProc();
-	    Manager.host.requestFindProc(new ProcId(pid), findProc);
-	    Manager.eventLoop.run();
-	    return findProc.proc;
-	}
-
-	/**
-	 * Find the child's Proc's main or non-main Task, polling /proc if
-	 * necessary.
-	 */
-	public Task findTaskUsingRefresh (boolean mainTask) {
-	    Proc proc = assertFindProcAndTasks();
-	    for (Iterator i = proc.getTasks().iterator(); i.hasNext();) {
-		Task task = (Task) i.next();
-		if (task.getTid() == proc.getPid()) {
-		    if (mainTask)
-			return task;
-		} else {
-		    if (! mainTask)
-			return task;
-		}
-	    }
-	    return null;
 	}
     }
 

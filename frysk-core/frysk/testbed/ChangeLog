@@ -1,5 +1,11 @@
 2007-07-28  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (Child): Extend Offspring.
+	(Child.assertFindProcAndTasks): Delete.
+	(Child.findTaskUsingRefresh): Delete.
+	(Child.kill, Child.signal): Delete.
+	* Offspring.java: New file.
+	
 	* DaemonBlockedAtEntry.java (DaemonBlockedAtEntry(File)): New
 	constructor.
 
