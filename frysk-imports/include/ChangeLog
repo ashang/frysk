@@ -1,6 +1,8 @@
 2007-07-30  Mike Cvet  <mcvet@redhat.com>
 
 	* frysk-asm.h: Added directives for frameless functions.
+	
+	* frysk-asm.h: Added directives as above for x86_64.
 
 2007-07-27  Mike Cvet  <mcvet@redhat.com>
 

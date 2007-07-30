@@ -693,14 +693,25 @@
 	.cfi_startproc; \
 	.cfi_def_cfa esp, 0; \
 	.cfi_return_column eax
+#elif defined __x86_64__
+#define FRAMELESS_FUNCTION_BEGIN(FUNC) \
+	.cfi_startproc; \
+	.cfi_def_cfa rsp, 0; \
+	.cfi_return_column rax
 #endif
 
 #ifdef __i386__
 #define FRAMELESS_ADJ_RETURN \
 	.cfi_register eax, ebx
+#elif defined __x86_64__
+#define FRAMELESS_ADJ_RETURN \
+	.cfi_register rax, rbx
 #endif
 
 #if defined __i386__
+#define FRAMELESS_FUNCTION_END(FUNC) \
+	.cfi_endproc
+#elif defined __x86_64__
 #define FRAMELESS_FUNCTION_END(FUNC) \
 	.cfi_endproc
 #endif
