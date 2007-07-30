@@ -1,5 +1,9 @@
 2007-07-27  Mike Cvet  <mcvet@redhat.com>
 
+	* funit-frameinfo-looper.S: Removed.
+
+2007-07-27  Mike Cvet  <mcvet@redhat.com>
+
 	* funit-stepping-asm.S: Added more tokens. Removed loop.
 	* funit-rt-stepper.S: Removed loop.
 
