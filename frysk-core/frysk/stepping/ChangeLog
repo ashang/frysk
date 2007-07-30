@@ -1,3 +1,7 @@
+2007-07-30  Mike Cvet  <mcvet@redhat.com>
+
+	* TestSteppingEngine.java: Re-written from scratch. Fixes #4867.
+
 2007-07-28  Andrew Cagney  <cagney@redhat.com>
 
 	* TestStepping.java: Use Config.getPkgLibFile, and
