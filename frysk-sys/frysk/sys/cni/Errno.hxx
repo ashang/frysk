@@ -121,4 +121,4 @@ extern void jLogFinest (jobject myThis, java::util::logging::Logger* logger, cha
  * Throw an ArrayIndexOutOfBounds exception if START and LENGTH do not
  * fall within the byte array.
  */
-extern void verifyBounds (jbyteArray bytes, jlong start, jlong length);
+extern void verifyBounds (jbyteArray bytes, jint start, jint length);

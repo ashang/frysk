@@ -220,9 +220,9 @@ frysk::sys::Ptrace$AddressSpace::peek (jint pid, jlong addr)
   return byte;
 }
 
-jlong
-frysk::sys::Ptrace$AddressSpace::peek (jint pid, jlong addr, jlong length,
-				       jbyteArray bytes, jlong offset)
+jint
+frysk::sys::Ptrace$AddressSpace::peek (jint pid, jlong addr, jint length,
+				       jbyteArray bytes, jint offset)
 {
    if (offset < 0)
     throw new java::lang::ArrayIndexOutOfBoundsException (JvNewStringUTF("Offset < 0"));

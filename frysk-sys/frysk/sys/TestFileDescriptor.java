@@ -226,15 +226,15 @@ public class TestFileDescriptor
 	private IO(FileDescriptor fd) {
 	    this.fd = fd;
 	}
-	abstract void op(byte[] buf, long start, long length);
+	abstract void op(byte[] buf, int start, int length);
     }
 
     /**
      * Check that an IO operation throws an exception.
      */
     private void assertArrayIndexOutOfBounds(String what, IO io,
-					     byte[] buf, long start,
-					     long length)
+					     byte[] buf, int start,
+					     int length)
     {
 	boolean thrown = false;
 	try {
@@ -255,7 +255,7 @@ public class TestFileDescriptor
 	assertArrayIndexOutOfBounds("len + off > buf.length", io,
 				    new byte[1], 1, 1);
 	assertArrayIndexOutOfBounds("len + off < 0", io, new byte[1],
-				    0x7fffffffffffffffL, 1);
+				    Integer.MAX_VALUE, 1);
     }
 
     /**
@@ -264,7 +264,7 @@ public class TestFileDescriptor
     public void testReadOutOfBounds()
     {
 	verifyOutOfBounds(new IO(file) {
-		public void op(byte[] buf, long start, long length) {
+		public void op(byte[] buf, int start, int length) {
 		    fd.read(buf, start, length);
 		}
 	    });
@@ -272,7 +272,7 @@ public class TestFileDescriptor
     public void testWriteOutOfBounds()
     {
 	verifyOutOfBounds(new IO(file) {
-		public void op(byte[] buf, long start, long length) {
+		public void op(byte[] buf, int start, int length) {
 		    fd.write(buf, start, length);
 		}
 	    });

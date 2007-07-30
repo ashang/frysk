@@ -135,8 +135,8 @@ public class MemorySpaceByteBuffer
 	extends Request
     {
 	private long index;
-	private long length;
-	private long offset;
+	private int length;
+	private int offset;
 	private byte[] bytes;
 	private Mem mem;
 	private final int pid;
@@ -145,7 +145,7 @@ public class MemorySpaceByteBuffer
 	    mem = new Mem(pid);
 	    this.pid = pid;
 	}
-	private long peek(long index, byte[] bytes, long offset, long length) {
+	private int peek(long index, byte[] bytes, int offset, int length) {
 	    if (mem != null) {
 		try {
 		    return mem.pread (index, bytes, offset, length);
@@ -159,8 +159,8 @@ public class MemorySpaceByteBuffer
 	{
 	    length = peek(index, bytes, offset, length);
 	}
-	public long request (long index, byte[] bytes,
-			     long offset, long length)
+	public int request (long index, byte[] bytes,
+			     int offset, int length)
 	{
 	    if (isEventLoopThread()) {
 		return peek(index, bytes, offset, length);
@@ -176,7 +176,7 @@ public class MemorySpaceByteBuffer
 	}
     }
     private final PeeksRequest peeksRequest;
-    protected long peek (long index, byte[] bytes, long offset, long length)
+    protected int peek (long index, byte[] bytes, int offset, int length)
     {
 	return peeksRequest.request(index, bytes, offset, length);
     }

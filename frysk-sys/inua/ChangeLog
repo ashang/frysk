@@ -1,3 +1,12 @@
+2007-07-30  Mark Wielaard  <mwielaard@redhat.com>
+
+	* eio/ByteBuffer.java (peek): Make off and len ints.
+	(poke): Likewise.
+	(peekFully): Likewise.
+	(pokeFully): Likewise.
+	* eio/MmapByteBuffer.java (peek): Likewise.
+	* eio/cni/MmapByteBuffer.cxx (peek): Likewise.
+
 2007-05-28  Nurdin Premji  <npremji@redhat.com>
 
 	* eio/TestByteBuffer.java (testGetRelativeAndAbsoluteLimits): Added.

@@ -80,7 +80,7 @@ frysk::sys::FileDescriptor::write (jint b)
 }
 
 jint
-frysk::sys::FileDescriptor::write (jbyteArray bytes, jlong off, jlong len)
+frysk::sys::FileDescriptor::write (jbyteArray bytes, jint off, jint len)
 {
   verifyBounds (bytes, off, len);
   errno = 0;
@@ -147,7 +147,7 @@ frysk::sys::FileDescriptor::read (void)
 }
 
 jint
-frysk::sys::FileDescriptor::read (jbyteArray bytes, jlong off, jlong len)
+frysk::sys::FileDescriptor::read (jbyteArray bytes, jint off, jint len)
 {
   verifyBounds (bytes, off, len);
   return doRead (fd, elements(bytes) + off, len);

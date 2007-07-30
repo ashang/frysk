@@ -444,7 +444,7 @@ jLogFinest (jobject myThis, java::util::logging::Logger* logger, char *message, 
 }
 
 void
-verifyBounds (jbyteArray bytes, jlong start, jlong length)
+verifyBounds (jbyteArray bytes, jint start, jint length)
 {
   if (start < 0)
     throw new java::lang::ArrayIndexOutOfBoundsException ();

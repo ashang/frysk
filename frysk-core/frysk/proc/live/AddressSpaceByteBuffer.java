@@ -130,8 +130,8 @@ public class AddressSpaceByteBuffer
 	extends Request
     {
 	private long index;
-	private long length;
-	private long offset;
+	private int length;
+	private int offset;
 	private byte[] bytes;
 	PeeksRequest()
 	{
@@ -141,8 +141,8 @@ public class AddressSpaceByteBuffer
 	{
 	    length = addressSpace.peek(pid, index, length, bytes, offset);
 	}
-	public long request (long index, byte[] bytes,
-			     long offset, long length)
+	public int request (long index, byte[] bytes,
+			    int offset, int length)
 	{
 	    if (isEventLoopThread())
 		return addressSpace.peek(pid, index, length, bytes, offset);
@@ -157,7 +157,7 @@ public class AddressSpaceByteBuffer
 	}
     }
     private final PeeksRequest peeksRequest;
-    protected long peek (long index, byte[] bytes, long offset, long length)
+    protected int peek (long index, byte[] bytes, int offset, int length)
     {
 	return peeksRequest.request(index, bytes, offset, length);
     }

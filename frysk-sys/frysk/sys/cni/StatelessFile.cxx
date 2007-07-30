@@ -52,11 +52,11 @@
 #include "frysk/sys/Errno$Esrch.h"
 #include "frysk/sys/cni/Errno.hxx"
 
-jlong
+jint
 frysk::sys::StatelessFile::pread (jlong fileOffset,
 				  jbyteArray bytes,
-				  jlong start,
-				  jlong length)
+				  jint start,
+				  jint length)
 {
   verifyBounds (bytes, start, length);
   
@@ -70,19 +70,19 @@ frysk::sys::StatelessFile::pread (jlong fileOffset,
   if (rc < 0) {
     int savedErrno = errno;
     ::close (fd);
-    throwErrno (savedErrno, "pread", "fd %d, count %ld, offset %ld",
-    		fd, (long)length, (long)fileOffset);
+    throwErrno (savedErrno, "pread", "fd %d, count %d, offset %ld",
+    		fd, (int) length, (long)fileOffset);
   }
 
   ::close (fd);
   return rc;
 }
 
-jlong
+jint
 frysk::sys::StatelessFile::pwrite (jlong fileOffset,
 				   jbyteArray bytes,
-				   jlong start,
-				   jlong length)
+				   jint start,
+				   jint length)
 {
   verifyBounds (bytes, start, length);
   
@@ -96,8 +96,8 @@ frysk::sys::StatelessFile::pwrite (jlong fileOffset,
   if (rc < 0) {
     int savedErrno = errno;
     ::close (fd);
-    throwErrno (savedErrno, "pwrite", "fd %d, count %ld, offset %ld",
-		fd, (long)length, (long)fileOffset);
+    throwErrno (savedErrno, "pwrite", "fd %d, count %d, offset %ld",
+		fd, (int) length, (long)fileOffset);
   }
   
   ::close (fd);

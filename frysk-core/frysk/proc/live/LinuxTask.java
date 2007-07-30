@@ -108,8 +108,10 @@ public class LinuxTask
       int tid = getTid();
       ByteOrder byteOrder = getIsa().getByteOrder();
       BreakpointAddresses breakpoints = getProc().breakpoints;
-      return new LogicalMemoryBuffer(tid, AddressSpace.DATA,
-				     byteOrder, breakpoints);
+      ByteBuffer memory = new LogicalMemoryBuffer(tid, AddressSpace.DATA,
+						  breakpoints);
+      memory.order(byteOrder);
+      return memory;
     }
 
     /**

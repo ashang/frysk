@@ -1,3 +1,16 @@
+2007-07-30  Mark Wielaard  <mwielaard@redhat.com>
+
+	* AddressSpaceByteBuffer.java (Request): Make length and offset ints.
+	(peek): Likewise.
+	* LinuxTask.java (sendrecMemory): Set memory order.
+	* LogicalMemoryBuffer.java (order): Remove field.
+	(LogicalMemoryBuffer): Don't set order.
+	(peek): Make length and offset ints.
+	(subBuffer): Don't pass order.
+	* MemorySpaceByteBuffer.java (Request): Make length and offset ints.
+	(peek): Likewise.
+	* TestMemorySpaceByteBuffer.java (AsyncPeeks): Make length int.
+
 2007-07-23  Mark Wielaard  <mwielaard@redhat.com>
 
 	* package.html: New file describing implementation details of

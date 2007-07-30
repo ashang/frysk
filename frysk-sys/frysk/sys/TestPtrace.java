@@ -292,7 +292,7 @@ public class TestPtrace
     }
 
     private void verifyOutOfBounds (String why, boolean expected,
-				    long length, byte[] bytes, int offset)
+				    int length, byte[] bytes, int offset)
     {
 	int pid = new AttachedSelf().hashCode();
 	boolean caught = false;

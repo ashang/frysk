@@ -168,7 +168,7 @@ public class FileDescriptor
      *
      * XXX: Since read is capped by byte[].length, int is returned.
      */
-    public native int read(byte[] bytes, long start, long length);
+    public native int read(byte[] bytes, int start, int length);
 
     /**
      * Write a single byte to the file descriptor.
@@ -179,7 +179,7 @@ public class FileDescriptor
      *
      * XXX: Since write is capped by byte[].lenght, int is returned.
      */
-    public native int write(byte[] bytes, long start, long length);
+    public native int write(byte[] bytes, int start, int length);
 
     /**
      * Close the file descriptor.

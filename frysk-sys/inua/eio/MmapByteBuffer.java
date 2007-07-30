@@ -1,4 +1,5 @@
 // This file is part of INUA.  Copyright 2004, 2005, Andrew Cagney
+// Copyright 2007, Red Hat Inc.
 //
 // INUA is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -81,6 +82,6 @@ public class MmapByteBuffer
     native protected final int peek (long index);
     native protected final void poke (long index, int val);
     
-    native protected final long peek (long index, byte[] bytes,
-				      long off, long len);
+    native protected final int peek (long index, byte[] bytes,
+				      int off, int len);
 }

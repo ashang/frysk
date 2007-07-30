@@ -1,3 +1,24 @@
+2007-07-30  Mark Wielaard  <mwielaard@redhat.com>
+
+	* FileDescriptor.java (read): Make start and length ints.
+	(write): Likewise.
+	* Ptrace.java (peek): Make length and offset ints.
+	* StatelessFile.java (pread): Make start and length ints.
+	(pwrite): Likewise.
+	* TestFileDescriptor.java (IO.op): Likewise.
+	(assertArrayIndexOutOfBounds): Likewise.
+	(testReadOutOfBounds): Likewise.
+	(testWriteOutOfBounds): Likewise.
+	* TestPtrace.java (verifyOutOfBounds): Make length and offset ints.
+	* TestStatelessFile.java: Make start and length ints.
+	* cni/Errno.cxx (verifyBounds): Make start and length ints.
+	* cni/Errno.hxx: Likewise.
+	* cni/FileDescriptor.cxx (read): Make start and length jints.
+	(write): Likewise.
+	* cni/Ptrace.cxx (peek): Make length and offset jints.
+	* cni/StatelessFile.cxx (pread): Make start and length jints.
+	(pwrite): Likewise.
+
 2007-07-26  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Errno.hxx (tryOpen): Delete "gc" parameter.

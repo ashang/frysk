@@ -46,7 +46,6 @@ import frysk.proc.Instruction;
 import java.util.Iterator;
 
 import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
 
 import frysk.sys.Ptrace.AddressSpace;
 
@@ -59,21 +58,15 @@ import frysk.sys.Ptrace.AddressSpace;
  */
 class LogicalMemoryBuffer extends AddressSpaceByteBuffer
 {
-  // Byte order set on the buffer (needed for creating a subBuffer).
-  private final ByteOrder order;
-
   // The breakpoints associated with the process address space.
   private final BreakpointAddresses breakpoints;
 
   // Private constructor used by subBuffer()
   private LogicalMemoryBuffer(int tid, AddressSpace addressSpace,
-			      ByteOrder order,
 			      BreakpointAddresses breakpoints,
 			      long lower, long upper)
   {
     super(tid, addressSpace, lower, upper);
-    order(order);
-    this.order = order;
     this.breakpoints = breakpoints;
   }
   
@@ -81,12 +74,9 @@ class LogicalMemoryBuffer extends AddressSpaceByteBuffer
   // memory space for a task when requested.
   LogicalMemoryBuffer(int tid,
 		      AddressSpace addressSpace,
-		      ByteOrder order,
 		      BreakpointAddresses breakpoints)
   {
     super(tid, addressSpace);
-    order(order);
-    this.order = order;
     this.breakpoints = breakpoints;
   }
   
@@ -107,17 +97,19 @@ class LogicalMemoryBuffer extends AddressSpaceByteBuffer
     return super.peek(caret);
   }
   
-  protected long peek(long index, byte[] bytes, long offset, long length)
+  protected int peek(long index, byte[] bytes, int offset, int length)
   {
     synchronized (breakpoints)
       {
 	Iterator it;
 	it = breakpoints.getBreakpoints(index, index + length);
-	long r = 0;
+	int r = 0;
 	while (it.hasNext())
 	  {
 	    Breakpoint breakpoint = (Breakpoint) it.next();
-	    long l = breakpoint.getAddress() - (index + r);
+	    // address - index falls inside the byte[] so will be at most
+	    // a positive int apart.
+	    int l = (int) (breakpoint.getAddress() - index) - r;
 	    // Do we need to be worried about "short peeks"?
 	    r += super.peek(index + r, bytes, offset + r, l);
 
@@ -129,12 +121,7 @@ class LogicalMemoryBuffer extends AddressSpaceByteBuffer
 	      b = instruction.getBytes()[0];
 	    else
 	      b = (byte) super.peek(index + r);
-	    // Since we are addressing a array both offset and r
-	    // cannot really be bigger than an int, they could still
-	    // overflow, but then we get a negative offset exception
-	    // which seems fine because in that case offset + r was
-	    // already larger than the array length.
-	    bytes[(int) (offset + r)] = b;
+	    bytes[offset + r] = b;
 	    r++;
 	  }
 	return super.peek(index + r, bytes, offset + r, length - r) + r;
@@ -146,7 +133,7 @@ class LogicalMemoryBuffer extends AddressSpaceByteBuffer
   {
     LogicalMemoryBuffer sub = (LogicalMemoryBuffer) parent;
     return new LogicalMemoryBuffer (sub.pid, sub.addressSpace,
-				    sub.order, sub.breakpoints,
+				    sub.breakpoints,
 				    lower, upper);
   }
 }

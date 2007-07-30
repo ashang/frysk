@@ -1,4 +1,5 @@
 // This file is part of INUA.  Copyright 2004, 2005, Andrew Cagney
+// Copyright 2007, Red Hat Inc.
 //
 // INUA is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -68,33 +69,33 @@ public abstract class ByteBuffer
    */
   protected abstract void poke (long caret, int val);
 
-  protected long peek (long caret, byte[] bytes, long off, long len)
+  protected int peek (long caret, byte[] bytes, int off, int len)
   {
     logger.log(Level.FINE, "entering peek, caret: 0x{0}, off: 0x{1}, len: 0x{2}",
-               new Object[]{Long.toHexString(caret), Long.toHexString(off), 
-                            Long.toHexString(len)});
-    for (long i = 0; i < len; i++)
+               new Object[]{Long.toHexString(caret), Integer.toHexString(off), 
+                            Integer.toHexString(len)});
+    for (int i = 0; i < len; i++)
       {
 	logger.log(Level.FINEST, "on byte: 0x{0}", Long.toHexString(i));
-        bytes[(int) (off + i)] = (byte) peek(caret + i);
+        bytes[off + i] = (byte) peek(caret + i);
       }
     return len;
   }
 
-  protected long poke (long caret, byte[] bytes, long off, long len)
+  protected int poke (long caret, byte[] bytes, int off, int len)
   {
-    for (long i = 0; i < len; i++)
+    for (int i = 0; i < len; i++)
       {
-        poke(caret + i, bytes[(int) (off + i)]);
+        poke(caret + i, bytes[off + i]);
       }
     return len;
   }
 
-  protected final void peekFully (long caret, byte[] bytes, long off, long len)
+  protected final void peekFully (long caret, byte[] bytes, int off, int len)
   {
     logger.log(Level.FINE, "entering peekFully, caret: 0x{0}, off: 0x{1}, len: 0x{2}\n",
-               new Object[]{Long.toHexString(caret), Long.toHexString(off), 
-                            Long.toHexString(len)});
+               new Object[]{Long.toHexString(caret), Integer.toHexString(off), 
+                            Integer.toHexString(len)});
     while (len > 0)
       {
         long xfer = peek(caret, bytes, off, len);
@@ -105,7 +106,7 @@ public abstract class ByteBuffer
     logger.log(Level.FINE, "exiting peekFully\n");
   }
 
-  protected final void pokeFully (long caret, byte[] bytes, long off, long len)
+  protected final void pokeFully (long caret, byte[] bytes, int off, int len)
   {
     while (len > 0)
       {

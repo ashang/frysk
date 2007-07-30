@@ -1,4 +1,5 @@
 // This file is part of INUA.  Copyright 2004, 2005, Andrew Cagney
+// Copyright 2007, Red Hat Inc.
 //
 // INUA is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -89,9 +90,9 @@ inua::eio::MmapByteBuffer::poke (jlong caret, jint value)
   p[caret] = value;
 }
 
-jlong
-inua::eio::MmapByteBuffer::peek (jlong caret, jbyteArray bytes, jlong off,
-			     jlong len)
+jint
+inua::eio::MmapByteBuffer::peek (jlong caret, jbyteArray bytes, jint off,
+				 jint len)
 {
   u_int8_t *p = (u_int8_t*) (long) this->map->byteData;
   memcpy (elements (bytes) + off, p + caret, len);

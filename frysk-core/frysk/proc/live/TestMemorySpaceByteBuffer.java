@@ -79,15 +79,15 @@ public class TestMemorySpaceByteBuffer
     {
 	private MemorySpaceByteBuffer buffer;
 	private long addr;
-	private long length;
+	private int length;
 	private byte[] bytes;
 	private Exception e;
-	AsyncPeeks (MemorySpaceByteBuffer buffer, long addr, long length)
+	AsyncPeeks (MemorySpaceByteBuffer buffer, long addr, int length)
 	{
 	    this.buffer = buffer;
 	    this.addr = addr;
 	    this.length = length;
-	    this.bytes = new byte[(int)length];
+	    this.bytes = new byte[length];
 	}
 	public void run ()
 	{
