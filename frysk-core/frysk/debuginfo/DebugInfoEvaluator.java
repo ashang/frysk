@@ -63,6 +63,8 @@ import frysk.expr.CppSymTab;
 import frysk.proc.Isa;
 import frysk.proc.Task;
 import frysk.stack.Frame;
+import frysk.stack.IA32Registers;
+import frysk.stack.Register;
 import frysk.sys.Errno;
 import frysk.value.ArithmeticType;
 import frysk.value.ArrayType;
@@ -210,7 +212,9 @@ class DebugInfoEvaluator
       int reg = 0;
       
       // ??? Do we need an isa specific way to get x86 reg numbers?
-      int[] x86regnumbers = { 0, 2, 1, 3, 7, 6, 4, 5 };
+	    Register[] x86regnumbers = { IA32Registers.EAX, IA32Registers.ECX,
+		    IA32Registers.EDX, IA32Registers.EBX, IA32Registers.ESP,
+		    IA32Registers.EBP, IA32Registers.ESI, IA32Registers.EDI };
 
       List ops = varDieP.getFormData(pc);     
 
@@ -274,7 +278,7 @@ class DebugInfoEvaluator
       
       Isa isa = currentFrame.getTask().getIsa();
       if (isa instanceof frysk.proc.IsaIA32)
-        regval = swapBytes(currentFrame.getRegister(x86regnumbers[reg]).longValue());
+        regval = currentFrame.getRegisterValue(x86regnumbers[reg]).longValue();
       else if (isa instanceof frysk.proc.IsaX8664)
         regval = swapBytes(currentFrame.getRegister(reg).longValue());
 

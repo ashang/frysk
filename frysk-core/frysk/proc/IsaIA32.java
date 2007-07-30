@@ -192,7 +192,7 @@ public class IsaIA32 implements Isa
 	      new IA32SegmentRegister("ss", 16),
 	      new IA32Register("orig_eax", 11),
 	      new IA32Register("eip", 12),
-	      new IA32Register("efl", 14),
+	      new IA32Register("eflags", 14),
 	      new IA32Register("esp", 15) };
 
   private LinkedHashMap registerMap = new LinkedHashMap();

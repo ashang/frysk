@@ -265,7 +265,7 @@ extends LinuxIa32
 	new IndirectRegister("ss", "gs"),
 	new IndirectRegister("orig_eax", "orig_rax"),
 	new IndirectRegister("eip", "rip"),
-	new IndirectRegister("efl","eflags"),
+	new IndirectRegister("eflags","eflags"),
 	new IndirectRegister("esp", "rsp"),
 	new IndirectRegister("cwd", "cwd"),
 	new IndirectRegister("swd", "swd"),

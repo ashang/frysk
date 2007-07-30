@@ -304,6 +304,7 @@ public class CLI
     addHandler(new RunCommand(this));
     addHandler(new CoreCommand(this));
     addHandler(new DisassembleCommand(this));
+    addHandler(new RegsCommand(this));
 
     // initialize PT set stuff
     setparser = new SetNotationParser();

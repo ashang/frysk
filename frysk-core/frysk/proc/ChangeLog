@@ -1,3 +1,8 @@
+2007-07-30  Nurdin Premji  <npremji@redhat.com>
+
+	* IsaIA32.java (regDefs): Expanded "efl" to "eflags".
+	* LinuxIa32On64.java (LinuxIa32On64): Ditto.
+
 2007-07-29  Andrew Cagney  <cagney@redhat.com>
 
 	* TestIsa.java (test64To32Isa): Use SynchronizedOffspring.

@@ -43,8 +43,11 @@ import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
 
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import frysk.dwfl.DwflCache;
+import frysk.proc.Isa;
 import frysk.proc.Task;
 import frysk.rt.Line;
 import frysk.symtab.Symbol;
@@ -62,7 +65,7 @@ import lib.unwind.ProcName;
 
 class RemoteFrame extends Frame
 {  
-  
+  private static Logger logger = Logger.getLogger("frysk");
   private Symbol symbol;
   private Line[] lines;
   
@@ -148,9 +151,9 @@ class RemoteFrame extends Frame
       return getAddress();
   }
   
-  public Value getRegister(int regNum) {
-	byte[] word = new byte[task.getIsa().getWordSize()];
-	if (cursor.getRegister(regNum, word) < 0)
+  public Value getRegister(int reg) {
+      byte[] word = new byte[task.getIsa().getWordSize()];
+      if (cursor.getRegister(reg, word) < 0)
 	    return null;
 
 	ByteOrder byteOrder = this.task.getIsa().getByteOrder();
@@ -160,6 +163,22 @@ class RemoteFrame extends Frame
 		byteOrder, BaseTypes.baseTypeInteger, "int"), "todo",
 		new ArrayByteBuffer(word));
   }
+  
+  
+  public Value getRegisterValue(Register register) {
+	logger.log(Level.FINE, "{0}: getRegisterValue register: {1}",
+		new Object[] { this, register });
+	Isa isa = task.getIsa();
+	byte[] word = new byte[register.type.getSize()];
+	UnwindRegisterMap map = UnwindRegisterMapFactory.getRegisterMap(isa);
+
+	if (cursor.getRegister(map.getRegisterNumber(register), word) < 0)
+	    return null;
+
+	ArrayByteBuffer buffer = new ArrayByteBuffer(word);
+	buffer.order(register.type.getEndian());
+	return new Value(register.type, register.name, buffer);
+    }
   
   /**
    * Returns the given byte array as a long.

@@ -147,6 +147,8 @@ public abstract class Frame
    */
   public abstract Value getRegister(int reg);
   
+  public abstract Value getRegisterValue(Register reg);
+  
   /**
    * Returns the Cannonical Frame Address of this StackFrame. Used in
    * conjunction with methodName to provide a unique identifier.

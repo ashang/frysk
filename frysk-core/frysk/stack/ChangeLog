@@ -1,3 +1,15 @@
+2007-07-30  Nurdin Premji <npremji@redhat.com>
+
+	* Frame.java (getRegisterValue): Added.
+	* RemoteFrame.java (getRegisterValue): Implemented.
+	* IA32Registers.java: Added.
+	* Register.java: Added.
+	* RegisterGroup.java: Added.
+	* RegisterGroupFactory.java: Added.
+	* UnwindRegisterMap.java: Added.
+	* UnwindRegisterMapFactory.java: Added.
+	* X8664Registers.java: Added.
+
 2007-07-27  Nurdin Premji <npremji@redhat.com>
 
 	* StackCallbacks.java: Removed.

@@ -1,3 +1,9 @@
+2007-07-30  Nurdin Premji  <npremji@redhat.com>
+
+	* RegsCommand.java: Added.
+	* TestRegs.java: Added.
+	* CLI.java (CLI): Added regs command.
+
 2007-07-28  Andrew Cagney  <cagney@redhat.com>
 
 	* TestBreakpoints.java: Use Config.getPkgLibFile.
