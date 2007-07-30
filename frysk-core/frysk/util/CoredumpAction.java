@@ -235,11 +235,8 @@ public class CoredumpAction
   {
     // New PRSTATUS Note Entry.
     ElfPrFPRegSet fpRegSet = new ElfPrFPRegSet();
-    Isa register = null;
 
-    register = task.getIsa();
-
-    ByteBuffer registerMaps[] = register.getRegisterBankBuffers(task.getProc().getPid());
+    ByteBuffer registerMaps[] = task.getRegisterBanks();
     if (registerMaps[1].capacity() <= 0)
       abandonCoreDump(new RuntimeException("FP Register bank is <=0"));
     byte[] regBuffer = new byte[(int) registerMaps[1].capacity()];
