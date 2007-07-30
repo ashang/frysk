@@ -58,11 +58,11 @@ void *signal_parent (void* args)
 
 void jump ()
 {
-	volatile int z = 1;
-	volatile int y = 2;
+	volatile int z = 1;										// _stepOutStart_
+	volatile int y = 2;										// _stepAdvanceStart_
 	volatile int x = 3;
-	volatile int w = (((((x + y + z) * 20) / 10) - 0) + 1);
-	w++;
+	volatile int w = (((((x + y + z) * 20) / 10) - 0) + 1);	// _instructionStep_
+	w++;													// _lineStepEnd_
 	return;
 }
 
@@ -85,15 +85,15 @@ void foo ()
 	 	 if (b + d == 2)
 	  	  {
 	 	     a = 0;
-	 	     b = 0;
-		     c = 0;
+	 	     b = 0;												
+		     c = 0;												
 		     d = 0;
 	 		 if (d == 0)
 				d = 1;
 	    	}
 		}
-		jump ();
-    }
+		jump ();											// _stepOver_
+    }														
 }
 
 int main (int argc, char ** argv)

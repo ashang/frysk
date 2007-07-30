@@ -3,6 +3,8 @@
 	* funit-frameinfo-looper.S: Removed.
 	
 	* funit-frameless.S: Added. Frameless function ASM test file.
+	
+	* funit-rt-stepper.c: Added tokens for new TestSteppingEngine testsuite.
 
 2007-07-27  Mike Cvet  <mcvet@redhat.com>
 
