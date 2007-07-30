@@ -41,6 +41,13 @@ package frysk.hpd;
 
 import frysk.junit.TestCase;
 
+import frysk.proc.Manager;
+import frysk.proc.Host;
+import frysk.proc.Proc;
+import frysk.proc.ProcId;
+
+import frysk.sys.ProcessIdentifier;
+
 import frysk.expunit.Expect;
 
 /**
@@ -60,5 +67,29 @@ class TestLib
 	if (child != null)
 	    child.close ();
 	child = null;
+    }
+    
+    public Proc getChild() {
+	ProcessIdentifier pid = child.getPid();
+
+	class Finder implements Host.FindProc {
+
+	    Proc proc;
+
+	    public void procFound(ProcId procId) {
+		proc = Manager.host.getProc(procId);
+		Manager.eventLoop.requestStop();
+	    }
+
+	    public void procNotFound(ProcId procId, Exception e) {
+		fail("Couldn't find child process");
+	    }
+
+	}
+
+	Finder finder = new Finder();
+	Manager.host.requestFindProc(new ProcId(pid.hashCode()), finder);
+	Manager.eventLoop.run();
+	return finder.proc;
     }
 }

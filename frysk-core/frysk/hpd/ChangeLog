@@ -1,5 +1,8 @@
 2007-07-30  Nurdin Premji  <npremji@redhat.com>
 
+	* TestLib.java (getChild): Added.
+	* TestRegs.java (testRegsCommand): Use getChild to find the isa.
+	
 	* RegsCommand.java: Added.
 	* TestRegs.java: Added.
 	* CLI.java (CLI): Added regs command.

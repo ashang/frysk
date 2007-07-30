@@ -44,25 +44,23 @@ import frysk.expunit.Expect;
 import frysk.proc.Isa;
 import frysk.proc.IsaIA32;
 import frysk.proc.IsaX8664;
-import frysk.proc.Manager;
 
-public class TestRegs extends TestLib{
+public class TestRegs extends TestLib {
 
     public void testRegsCommand() {
-	Isa isa = Manager.host.getSelf().getIsa();
-	
 	child = new Expect(Config.getPkgLibFile("hpd-c"));
+	Isa isa = getChild().getMainTask().getIsa();
 	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect(prompt);
-//	 Attach
-	e.send ("attach " + child.getPid () + "\n\n");
-	e.expect (5, "attach.*\n" + prompt);
-	
-	//Regs
+	// Attach
+	e.send("attach " + child.getPid() + "\n\n");
+	e.expect(5, "attach.*\n" + prompt);
+
+	// Regs
 	e.send("regs\n");
-	
+
 	if (isa instanceof IsaIA32)
-	    e.expect("eax:.*esp:.*" + prompt);	
+	    e.expect("eax:.*esp:.*" + prompt);
 	else if (isa instanceof IsaX8664)
 	    e.expect("rax:.*rip:.*" + prompt);
 	else
