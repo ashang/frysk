@@ -74,6 +74,14 @@ const char * regset_names[]
 #endif
   ;
 
+enum {
+  REGSET_GPRS,
+  REGSET_FPRS,
+  REGSET_FPRX,
+  REGSET_DESC,
+  REGSET_DEBUG
+};
+
 #ifndef DO_UDB_INIT
 extern
 #endif
@@ -95,26 +103,31 @@ typedef struct {
 
 // derived from <kernel_src>/include/asm-i386/elf.h
 // this doesn't match include/asm-i386/user.h
-REG_DECL (reg_data_s ebx_data,		0,  0);
-REG_DECL (reg_data_s ecx_data,		0,  1);
-REG_DECL (reg_data_s edx_data,		0,  2);
-REG_DECL (reg_data_s esi_data,		0,  3);
-REG_DECL (reg_data_s edi_data,		0,  4);
-REG_DECL (reg_data_s ebp_data,		0,  5);
-REG_DECL (reg_data_s eax_data,		0,  6);
-REG_DECL (reg_data_s xds_data,		0,  7);
-REG_DECL (reg_data_s xes_data,		0,  8);
-REG_DECL (reg_data_s xfs_data,		0,  9);
-REG_DECL (reg_data_s xgs_data,		0, 10);
-REG_DECL (reg_data_s orig_eax_data,	0, 11);
-REG_DECL (reg_data_s eip_data,		0, 12);
-REG_DECL (reg_data_s xcs_data,		0, 13);
-REG_DECL (reg_data_s eflags_data,	0, 14);
-REG_DECL (reg_data_s esp_data,		0, 15);
-REG_DECL (reg_data_s xss_data,		0, 16);
-REG_DECL (reg_data_s gdtr_data,		3,  0);
-REG_DECL (reg_data_s ldtr_data,		3,  1);
-REG_DECL (reg_data_s idtr_data,		3,  2);
+REG_DECL (reg_data_s debug_data,	REGSET_DEBUG, -1);
+REG_DECL (reg_data_s ebx_data,		REGSET_GPRS,  0);
+REG_DECL (reg_data_s ecx_data,		REGSET_GPRS,  1);
+REG_DECL (reg_data_s edx_data,		REGSET_GPRS,  2);
+REG_DECL (reg_data_s esi_data,		REGSET_GPRS,  3);
+REG_DECL (reg_data_s edi_data,		REGSET_GPRS,  4);
+REG_DECL (reg_data_s ebp_data,		REGSET_GPRS,  5);
+REG_DECL (reg_data_s eax_data,		REGSET_GPRS,  6);
+REG_DECL (reg_data_s xds_data,		REGSET_GPRS,  7);
+REG_DECL (reg_data_s xes_data,		REGSET_GPRS,  8);
+REG_DECL (reg_data_s xfs_data,		REGSET_GPRS,  9);
+REG_DECL (reg_data_s xgs_data,		REGSET_GPRS, 10);
+REG_DECL (reg_data_s orig_eax_data,	REGSET_GPRS, 11);
+REG_DECL (reg_data_s eip_data,		REGSET_GPRS, 12);
+REG_DECL (reg_data_s xcs_data,		REGSET_GPRS, 13);
+REG_DECL (reg_data_s eflags_data,	REGSET_GPRS, 14);
+REG_DECL (reg_data_s esp_data,		REGSET_GPRS, 15);
+REG_DECL (reg_data_s xss_data,		REGSET_GPRS, 16);
+REG_DECL (reg_data_s gdtr_data,		REGSET_DESC,  0);
+REG_DECL (reg_data_s ldtr_data,		REGSET_DESC,  1);
+REG_DECL (reg_data_s idtr_data,		REGSET_DESC,  2);
+REG_DECL (reg_data_s gprs_data,		REGSET_GPRS,  -1);
+REG_DECL (reg_data_s fprs_data,		REGSET_FPRS,  -1);
+REG_DECL (reg_data_s fprx_data,		REGSET_FPRX,  -1);
+REG_DECL (reg_data_s desc_data,		REGSET_DESC,  -1);
 
 #ifndef DO_UDB_INIT
 extern
@@ -122,6 +135,11 @@ extern
 ENTRY reg_mapping[]
 #ifdef DO_UDB_INIT
 = {
+  {"gprs",	 (void *)&gprs_data},
+  {"fprs",	 (void *)&fprs_data},
+  {"fprx",	 (void *)&fprx_data},
+  {"desc",	 (void *)&desc_data},
+  {"debug",	 (void *)&debug_data},
   {"ebx",	 (void *)&ebx_data},
   {"ecx",	 (void *)&ecx_data},
   {"edx",	 (void *)&edx_data},

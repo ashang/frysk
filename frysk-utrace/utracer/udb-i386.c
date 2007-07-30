@@ -20,24 +20,25 @@
 #include "udb-i386.h"
 
 
-const char re[] = "(\\[([[:digit:]]+)\\])?[[:space:]]*(([[:digit:]]+)|(st([[:digit:]]+))|([[:alpha:]]+))([[:space:]]*,[[:space:]]*(([-[:digit:]]+)|([[:alpha:]]+)))?";
+const char re[] = "(\\[([[:digit:]]+)\\])?[[:space:]]*(([[:digit:]]+)|(st([[:digit:]]+))|([[:alpha:]]+))([[:space:]]*,[[:space:]]*(([-[:digit:]]+)|([[:alpha:]]+)|(all)))?";
 
   /*
    * 1  2            2  1             34            4 5  6            65 7            73
    *        pid              space              arg1                                 
    * (\[([[:digit:]]+)\])?[[:space:]]*(([[:digit:]]+)|(st([[:digit:]]+))|([[:alpha:]]+))
-   *
-   *      8                         90               0 1            198
+   *                                 1               1 1   1 1            1
+   *      8                         90               0 1   1 2            298
    *                                    arg2
-   *      ([[:space:]]*,[[:space:]]*(([\\-[:digit:]]+)|([[:alpha:]]+)))?
+   *      ([[:space:]]*,[[:space:]]*(([\\-[:digit:]]+)|(all)|([[:alpha:]]+)))?
    *
    * [2] = pid
    * [4] = digit arg1
    * [5] = alpha arg1
    * [6] = st digit arg1
    * [7] != -1 ==> two args
-   * [8] = digit arg2
-   * [9] = alpha arg2
+   * [10] = digit arg2
+   * [11] = all arg2
+   * [12] = alpha arg2
    *
    *
    */
@@ -47,20 +48,38 @@ const char re[] = "(\\[([[:digit:]]+)\\])?[[:space:]]*(([[:digit:]]+)|(st([[:dig
 #define PMATCH_ARG1_ST_DIGIT	 6
 #define PMATCH_ARG1_ALPHA	 7
 #define PMATCH_ARG2_DIGIT	10
-#define PMATCH_ARG2_ALPHA	11
+#define PMATCH_ARG2_ALL		11
+#define PMATCH_ARG2_ALPHA	12
 
+//fixme -- free preg, pmatch, etc, when leaving
 static struct hsearch_data reg_hash_table;
 static int reg_hash_table_valid = 0;
+static regex_t preg;
+static regmatch_t * pmatch = NULL;
 
-void
+int
 parse_regspec (char ** saveptr, long * pid_p, long * regset_p, long *reg_p)
 {
   int rc;
   long reg = INVALID_REG;
   long regset = INVALID_REG;
 
-  static regex_t preg;
-  static regmatch_t * pmatch = NULL;
+
+  if ('?' == **saveptr) {
+    int i;
+
+    fprintf (stderr, "\nformat: pr {[pid]} regset, reg\n");
+      fprintf (stderr, "        pr {[pid]} symbol\n");
+      fprintf (stderr, "        pr {[pid]} symbol, reg\n\n");
+    fprintf (stderr,
+	     "where regset and reg are numeric and symbol is from the \
+following list.\nA register value of -1 or \"all\" prints all of the regs in \
+the set.\n\n");
+    for (i = 0; i < nr_regs; i++) 
+      fprintf (stdout, "\t%s\n", reg_mapping[i].key);
+    
+    return 0;
+  }
 
   if (!reg_hash_table_valid) {
     int i, rc;
@@ -121,8 +140,11 @@ parse_regspec (char ** saveptr, long * pid_p, long * regset_p, long *reg_p)
       }
 
       if (-1 != pmatch[PMATCH_ARG2_DIGIT].rm_so) {
-	regset = reg;
+	if (INVALID_REG == regset) regset = reg;
 	reg =  atol (&((*saveptr)[pmatch[PMATCH_ARG2_DIGIT].rm_so]));
+      }
+      else if (-1 != pmatch[PMATCH_ARG2_ALL].rm_so) {
+	reg = -1;
       }
     }
 
@@ -144,21 +166,11 @@ parse_regspec (char ** saveptr, long * pid_p, long * regset_p, long *reg_p)
 
   if (reg_p)    *reg_p    = reg;
   if (regset_p) *regset_p = regset;
+  
+  return 1;
 }
 
 #if 0
-        from include/asm-i386/user.h
-struct user_i387_struct {
-  long    cwd;
-  long    swd;
-  long    twd;
-  long    fip;
-  long    fcs;
-  long    foo;
-  long    fos;
-  long    st_space[20];   /* 8*10 bytes for each FP-reg = 80 bytes */
-};
-
 struct user_fxsr_struct {
   unsigned short  cwd;
   unsigned short  swd;
@@ -175,21 +187,6 @@ struct user_fxsr_struct {
   long    padding[56];
 };
 
-from include/asm-i386/ldt.h
-struct user_desc {
-  unsigned int  entry_number;
-  unsigned long base_addr;
-  unsigned int  limit;
-  unsigned int  seg_32bit:1;
-  unsigned int  contents:2;
-  unsigned int  read_exec_only:1;
-  unsigned int  limit_in_pages:1;
-  unsigned int  seg_not_present:1;
-  unsigned int  useable:1;
-};
-
-
-
 // from arch/i386/kernel/ptrace.c native_regsets
 // 0: gprs:		n =  17, size = sizeof(long), align = sizeof(long)
 // 1: fprs:		n =  27, size = sizeof(long), align = sizeof(long)
@@ -197,8 +194,6 @@ struct user_desc {
 // 3: descriptors:	n =   3, size = sizeof(user_desc), align = size
 //				GDTR, LDTR and IDTR
 // 4: debug:		n =   8, size = sizeof(long), align = sizeof(long)
-
-
 #endif
 
 void
@@ -207,23 +202,27 @@ show_regs (long pid, long regset, long reg, void * regsinfo,
 {
   long i,mx,k;
   char * rn;
+  
+  //	from include/asm-i386/user.h
   struct user_i387_struct * i387_regs;
+  
+  //	from include/asm-i386/ldt.h
   struct user_desc * ud;
   
   
   fprintf (stdout, "\t[%ld] %s:\n", pid, regset_names[regset]);
   switch (regset) {
-    case 0:			// gprs
-    case 4:			// gprs
+    case REGSET_GPRS:			// gprs
+    case REGSET_DEBUG:			// debug
       mx = regs_count;
       break;
-    case 3:
+    case REGSET_DESC:
       mx = regs_count;
       ud = regsinfo;
       fprintf (stdout,
 	       "\t\t\t\tentry\tbase\t  limit 32b cts rx lmt nosg ok\n");
       break;
-    case 1:			// fprs
+    case REGSET_FPRS:			// fprs
       i387_regs = regsinfo;
 
       fprintf (stdout, "\t\tcwd      swd      twd      fip\n");

@@ -240,18 +240,18 @@ printreg_fcn (char ** saveptr)
   long regset = 0;
   void * regsinfo = NULL;
 
-  parse_regspec (saveptr, &pid, &regset, &reg);
-  
-  if (INVALID_REG == reg) {
-    reg = -1;	// turn into pra
-    regset = 0;
+  if (parse_regspec (saveptr, &pid, &regset, &reg)) {
+    if (INVALID_REG == reg) {
+      reg = -1;	// turn into pra
+      regset = 0;
+    }
+
+    rc = utracer_get_regs (pid, regset, &regsinfo, &nr_regs, &reg_size);
+    if (0 == rc) show_regs (pid, regset, reg, regsinfo, nr_regs, reg_size);
+    else uerror ("printreg");
+
+    if (regsinfo) free (regsinfo);
   }
-
-  rc = utracer_get_regs (pid, regset, &regsinfo, &nr_regs, &reg_size);
-  if (0 == rc) show_regs (pid, regset, reg, regsinfo, nr_regs, reg_size);
-  else uerror ("printreg");
-
-  if (regsinfo) free (regsinfo);
 
   return 1;
 }
