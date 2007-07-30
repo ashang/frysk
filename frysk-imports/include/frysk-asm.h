@@ -371,7 +371,7 @@
 #endif
 
 #if defined __i386__
-#  define JUMP_REG(REG) jmp (REG)
+#  define JUMP_REG(REG) jmp *(REG)
 #elif defined __x86_64__
 #  define JUMP_REG(REG) jmp (REG)
 #elif defined __powerpc__
@@ -502,7 +502,7 @@
 	pushl %ebp ; \
 	.cfi_adjust_cfa_offset 4; \
 	movl %esp, %ebp; \
-	.cfi_offset %ebp, 4
+	.cfi_offset %ebp, -4
 #elif defined __x86_64__
 #  define FUNCTION_PROLOGUE(FUNC,SLOTS) \
 	 pushq %rbp; \
@@ -687,6 +687,23 @@
 
 // Implementation note: This abi requires custom CFI information at
 // present.
+	
+#if defined __i386__
+#define FRAMELESS_FUNCTION_BEGIN(FUNC) \
+	.cfi_startproc; \
+	.cfi_def_cfa esp, 0; \
+	.cfi_return_column eax
+#endif
+
+#ifdef __i386__
+#define FRAMELESS_ADJ_RETURN \
+	.cfi_register eax, ebx
+#endif
+
+#if defined __i386__
+#define FRAMELESS_FUNCTION_END(FUNC) \
+	.cfi_endproc
+#endif
 
 
 
