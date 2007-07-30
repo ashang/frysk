@@ -332,7 +332,7 @@ show_syscall (long type, long pid, struct pt_regs * regs)
 #define SC_BFFR_LEN 56
     void * bffr = alloca (SC_BFFR_LEN);
 
-    rc = utracer_get_mem (pid, addr_to_show, SC_BFFR_LEN, &bffr);
+    rc = utracer_get_mem (pid, addr_to_show, SC_BFFR_LEN, &bffr, NULL);
 
     if (0 == rc)
       fprintf (stdout, "\t\tat addr %08x: \"%.*s\"\n",

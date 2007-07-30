@@ -1,5 +1,6 @@
 #define _GNU_SOURCE
 #include <stdio.h>
+#include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <error.h>
@@ -421,6 +422,53 @@ printexe_fcn (char ** saveptr)
 }
 
 static int
+printmem_fcn (char ** saveptr)
+{
+  int rc;
+  long bffr_length_actual;
+  long pid = current_pid;
+  void * bffr = NULL;
+  unsigned long addr = -1;
+  unsigned long bffr_length_req = 0;
+  char * tok = strtok_r (NULL, " \t", saveptr);
+
+  if (tok && ('[' == *tok)) {
+    pid = atol (tok+1);
+    tok = strtok_r (NULL, " \t", saveptr);
+  }
+  if (tok) {
+    addr = strtoul (tok, NULL, 0);
+    tok = strtok_r (NULL, " \t", saveptr);
+  }
+  if (tok) bffr_length_req = strtoul (tok, NULL, 0);
+
+  if ((0 == addr) || (0 == bffr_length_req)) {
+    fprintf (stderr,
+	     "Either the requested address or the \
+requested length are invlaid.\n");
+    return 1;
+  }
+
+  fprintf (stderr, "addr = %08x, len = %lu\n", addr, bffr_length_req);
+  rc = utracer_get_mem (pid, (void *)addr, bffr_length_req, &bffr,
+			&bffr_length_actual);
+  
+  if (0 == rc) {
+    int i;
+    fprintf (stdout, "str = \"%.*s\"\n", bffr_length_req, (char *)bffr);
+
+    for (i = 0; i < bffr_length_req; i++)
+      fprintf (stdout, "%02x ", (int)(((char *)bffr)[i]));
+    fprintf (stdout, "\n");
+  }
+  else uerror ("printmem");
+
+  if (bffr) free (bffr);
+  
+  return 1;
+}
+
+static int
 quit_fcn (char ** saveptr)
 {
   // fixme -- have quit do more than end the cmd loop when don from -c option
@@ -444,6 +492,12 @@ static cmd_info_s printexe_info =
 filenames of the binarie of the given PID."};
 static cmd_info_s printexe_info_brief =
   {printexe_fcn, NULL};
+
+static cmd_info_s printmem_info =
+  {printmem_fcn, "(pm) -- Print the contents of the specified address for \
+the specified length of the given PID."};
+static cmd_info_s printmem_info_brief =
+  {printmem_fcn, NULL};
 
 static cmd_info_s printenv_info =
   {printenv_fcn, "(penv) -- Print the environment the given PID."};
@@ -528,6 +582,9 @@ static ENTRY cmds[] = {
   
   {"pr",		&printreg_info_brief},
   {"printreg",		&printreg_info},
+  
+  {"pm",		&printmem_info_brief},
+  {"printmem",		&printmem_info},
   
   {"prm",		&printmmap_info_brief},
   {"printmmap",		&printmmap_info},

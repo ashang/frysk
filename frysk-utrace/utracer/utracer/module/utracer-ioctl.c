@@ -287,6 +287,15 @@ handle_getmem (getmem_cmd_s * getmem_cmd)
 	    kfree (buffer);
 	    rc = -EFAULT;
 	  }
+#if 0
+	  // fixme
+	  else {
+	    if (copy_to_user (getmem_cmd->actual,
+			      &getmem_cmd->mem_len, sizeof (unsigned long))) {
+	      rc = -EFAULT;
+	    }
+	  }
+#endif
 	}
 	else rc = -UTRACER_EPAGES;
       }

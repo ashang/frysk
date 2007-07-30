@@ -1,3 +1,7 @@
+Mon Jul 30 11:56:09 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-text-ui.c (printmem_fcn): Added CLI to getmem.
+
 Sun Jul 29 11:27:37 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-i386.h:

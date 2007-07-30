@@ -170,7 +170,8 @@ static int
 do_get_mem (long pid,
 	    void ** mem_p,
 	    void * addr,
-	    long mem_req)
+	    long mem_req
+	    unsigned long * actual)
 {
   int irc;
 
@@ -183,7 +184,8 @@ do_get_mem (long pid,
 			     pid,
 			     mem_req,
 			     (long)addr,
-			     *mem_p};
+			     *mem_p,
+			     actual};
   irc = ioctl (utracer_cmd_file_fd,
 	       sizeof(getmem_cmd_s),
 	       &getmem_cmd);
@@ -192,12 +194,13 @@ do_get_mem (long pid,
 }
 
 int
-utracer_get_mem (long pid, void * addr, long length, void ** mem_p)
+utracer_get_mem (long pid, void * addr, unsigned long length,
+		 void ** mem_p, unsigned long * actual)
 {
   int irc;
   void * mem  = NULL;
   
-  irc = do_get_mem (pid, &mem, addr, length);
+  irc = do_get_mem (pid, &mem, addr, length, actual);
 
   if  (0 != irc) {
     if (mem)  free (mem);

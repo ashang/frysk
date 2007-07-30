@@ -129,6 +129,7 @@ typedef struct {
   long mem_len;
   long mem_addr;
   void * mem;
+  unsigned long * actual;
 } getmem_cmd_s;
 
 typedef struct {
@@ -305,7 +306,11 @@ int utracer_get_exe (long pid,
 		     char ** filename_p,
 		     char ** interp_p);
 int utracer_get_env (long pid, char ** env_p);
-int utracer_get_mem (long pid, void * addr, long length, void ** mem_p);
+int utracer_get_mem (long pid,
+		     void * addr,
+		     unsigned long length,
+		     void ** mem_p,
+		     unsigned long * actual_length);
 int utracer_get_pids (long * nr_pids, long ** pids);
 int utracer_get_regs (long pid, long regset, void ** regsinfo,
 		      unsigned int * nr_regs_p, unsigned int * reg_size_p);
