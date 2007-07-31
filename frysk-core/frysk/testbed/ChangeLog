@@ -1,5 +1,7 @@
 2007-07-31  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (DetachedAckProcess(Sig,String[])): Delete.
+
 	* FunitThreadsOffspring.java (Type): Add enum-stype class
 	containing BLOCK, CLONE, and LOOP.
 	(FunitThreadsOffspring(int,Type): New constructor.

@@ -511,10 +511,6 @@ public class TestLib
 	    super();
 	}
 
-	public DetachedAckProcess (Sig ack, String[] argv) {
-	    super(ack, argv);
-	}
-
 	public DetachedAckProcess (String filename, String[] argv) {
 	    super(filename, argv);
 	}

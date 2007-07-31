@@ -45,6 +45,7 @@ import frysk.testbed.TestLib;
 import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.TaskObserverBase;
 import frysk.testbed.DaemonBlockedAtEntry;
+import frysk.testbed.SynchronizedOffspring;
 
 /**
  * Check the Task terminating and terminated observers.
@@ -216,10 +217,12 @@ public class TestTaskTerminateObserver
     public void testAttachToUnJoinedTask () {
 	final int timeout = 5; // XXX: Should be constant in TestLib.
 
-	AckProcess daemon = new DetachedAckProcess(ackSignal, new String[] {
+	SynchronizedOffspring daemon = new SynchronizedOffspring
+	    (SynchronizedOffspring.START_ACK,
+	     new String[]{
 		getExecPath ("funit-threadexit"),
 		Integer.toString(Pid.get()),
-		Integer.toString(ackSignal.hashCode()),
+		Integer.toString(SynchronizedOffspring.START_ACK.hashCode()),
 		Integer.toString(timeout), // Seconds
 	    });
 

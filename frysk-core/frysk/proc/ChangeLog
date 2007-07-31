@@ -1,5 +1,7 @@
 2007-07-31  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskTerminateObserver.java: Use SynchronizedOffspring.
+
 	* StressAttachDetachRapidlyCloningMainTask.java: Use
 	frysk.testbed.FunitThreadsOffspring.
 	* StressAttachDetachManyTasks.java: Ditto.
