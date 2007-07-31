@@ -45,16 +45,45 @@ import java.util.List;
 import java.util.LinkedList;
 import frysk.Config;
 
+/**
+ * Create a program that contains a large number of threads.
+ */
+
 public class FunitThreadsOffspring
     extends SynchronizedOffspring
 {
+    static public class Type {
+	private Type() {}
+	/**
+	 * The threads in the created program should block.
+	 */
+	public static final Type CLONE = new Type();
+	/**
+	 * The threads in the created program should execute an infinite
+	 * loop.
+	 */
+	public static final Type LOOP = new Type();
+	/**
+	 * The threads in the created program should repeatedly clone.
+	 */
+	public static final Type BLOCK = new Type();
+	/**
+	 * Build an funit-threads command to run.
+	 */
+    }
     /**
-     * Build an funit-threads command to run.
+     * Construct the argument list for funit-threads with THREADS
+     * thread-count and TYPE.
      */
-    private static String[] funitThreadsCommand (int threads) {
+    private static String[] funitThreadsCommand (int threads,
+						 Type type) {
 	List command = new LinkedList();
 	
 	command.add (Config.getPkgLibFile("funit-threads").getPath());
+	if (type == Type.BLOCK)
+	    command.add("--block");
+	else if (type == Type.LOOP)
+	    command.add("--loop");
 	// Use getpid as this testsuite always runs the event loop
 	// from the main thread (which has tid==pid).
 	command.add(Integer.toString(Pid.get()));
@@ -66,7 +95,17 @@ public class FunitThreadsOffspring
 	return argv;
     }
 
+    /**
+     * Create a program with a large number of threads, each thread
+     * joining its predicessor, cloning creating a successor, and then
+     * exiting (so its successor can join it).  At any time there is
+     * somewhere between 1(main)+THREADS and 1+2*THREADS.
+     */
     public FunitThreadsOffspring (int threads) {
-	super(START_ACK, funitThreadsCommand(threads));
+	super(START_ACK, funitThreadsCommand(threads, Type.CLONE));
+    }
+
+    public FunitThreadsOffspring(int threads, Type type) {
+	super(START_ACK, funitThreadsCommand(threads, type));
     }
 }

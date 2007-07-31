@@ -1,3 +1,9 @@
+2007-07-31  Andrew Cagney  <cagney@redhat.com>
+
+	* StressAttachDetachRapidlyCloningMainTask.java: Use
+	frysk.testbed.FunitThreadsOffspring.
+	* StressAttachDetachManyTasks.java: Ditto.
+
 2007-07-31  Mark Wielaard  <mwielaard@redhat.com>
 
 	Fixes bug #4865

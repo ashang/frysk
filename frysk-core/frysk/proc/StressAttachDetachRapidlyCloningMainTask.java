@@ -41,9 +41,9 @@ package frysk.proc;
 
 import java.util.Observer;
 import java.util.Observable;
-import frysk.sys.Pid;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
+import frysk.testbed.FunitThreadsOffspring;
 
 /**
  * Observer stress test.
@@ -63,15 +63,7 @@ public class StressAttachDetachRapidlyCloningMainTask
 
 	final int timeout = 20;
 
-	Child child = new AckDaemonProcess (ackSignal, new String[]
-	    {
-		getExecPath ("funit-threads"),
-		Integer.toString (Pid.get ()),
-		Integer.toString (ackSignal.hashCode ()),
-		Integer.toString (timeout), // Seconds
-		"1000" // Tasks
-	    });
-	final Proc proc = child.assertFindProcAndTasks();
+	final Proc proc = new FunitThreadsOffspring(1000).assertFindProcAndTasks();
 
 	// Create a list of tasks.  Since the above is constantly
 	// creating new tasks (with the old ones exiting) it is almost

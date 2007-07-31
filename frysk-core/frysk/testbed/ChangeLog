@@ -1,5 +1,9 @@
 2007-07-31  Andrew Cagney  <cagney@redhat.com>
 
+	* FunitThreadsOffspring.java (Type): Add enum-stype class
+	containing BLOCK, CLONE, and LOOP.
+	(FunitThreadsOffspring(int,Type): New constructor.
+	
 	* TestLib.java (funitThreadsCommand): Delete.
 	(AckDaemonCloneProcess): Delete.
 

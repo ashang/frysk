@@ -42,8 +42,8 @@ package frysk.proc;
 import frysk.testbed.TestLib;
 import java.util.Observer;
 import java.util.Observable;
-import frysk.sys.Pid;
 import frysk.testbed.TaskObserverBase;
+import frysk.testbed.FunitThreadsOffspring;
 
 /**
  * Test attaching to a process with many many tasks.
@@ -59,16 +59,8 @@ public class StressAttachDetachManyTasks
     {
 	final int timeout = 20;
 
-	Child child = new AckDaemonProcess (ackSignal, new String[]
-	    {
-		getExecPath ("funit-threads"),
-		"--block",
-		Integer.toString (Pid.get ()),
-		Integer.toString (ackSignal.hashCode ()),
-		Integer.toString (timeout), // Seconds
-		"1000" // Tasks
-	    });
-	Task task = child.findTaskUsingRefresh (true);
+	Task task = new FunitThreadsOffspring(1000, FunitThreadsOffspring.Type.BLOCK)
+	    .findTaskUsingRefresh (true);
 	final Proc proc = task.getProc ();
 
  	class AttachDetachObserver
