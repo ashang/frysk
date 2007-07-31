@@ -1,3 +1,16 @@
+2007-07-31  Phil Muldoon  <pmuldoon@localhost.localdomain>
+
+	* CoredumpAction.java: Rewritten and Refactored to
+	LinuxElfCorefile.java.	
+	* LinuxElfCorefileFactory.java: New. Return correct core
+	file back-end.
+	* LinuxCoreFile.java: New file.
+	* LinuxCoreFilex86.java: New file.
+	* LinuxCoreFilex8664.java: New file.
+	* LinuxCoreFilePPC32.java: New file.
+	* LinuxCoreFilePPC32On64.java: New file.	
+	* LinuxCoreFilePPC64.java: New file.	
+	
 2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* StacktraceAction.java: Now calls StackFactory or DebugInfoStackFactory
