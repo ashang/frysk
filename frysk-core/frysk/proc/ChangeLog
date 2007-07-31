@@ -1123,7 +1123,7 @@
 
 	* StressAttachDetachManyTasks.java (test): Remove #2468 blocker.
 
-2007-01-23  npremji  <npremji@tow.toronto.redhat.com>
+2007-01-23  Nurdin Premji  <npremji@redhat.com>
 
 	* ProcBlockAction.java (ProcBlockTaskObserver.updateExecuted): Added check to avoid
 	main task being dealt with twice. Bug #3909

@@ -369,7 +369,7 @@
 	* Ftrace.java: Remove TaskException code.
 	* CoredumpAction.java: Ditto.
 
-2007-01-23  npremji  <npremji@tow.toronto.redhat.com>
+2007-01-23  Nurdin Premji  <npremji@redhat.com>
 
 	* Util.java (printStackTrace): changed catch Exception _ to catch Exception ignored.
 	* StacktraceAction.java (generateTaskStackTrace): Ditto.

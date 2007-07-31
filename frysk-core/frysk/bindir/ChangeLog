@@ -401,7 +401,7 @@
 
 	* fhpd.java (FhpdCompletor): Mark as static class.
 
-2007-01-23  npremji  <npremji@tow.toronto.redhat.com>
+2007-01-23  Nurdin Premji  <npremji@redhat.com>
 
 	* fcatch.java (.parsed): Changed catch Exception _ to catch Exception e.
 	* ftrace.java (.notifyFile): Ditto.
