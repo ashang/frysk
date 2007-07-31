@@ -1,3 +1,8 @@
+2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* StacktraceAction.java: Now calls StackFactory or DebugInfoStackFactory
+	depending on whether or not an elf only stack back trace was requrested.
+
 2007-07-31  Andrew Cagney  <cagney@redhat.com>
 
 	* StressTestFStack.java: Use frysk.testbed.FunitThreadsOffspring.

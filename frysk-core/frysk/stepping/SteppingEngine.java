@@ -52,7 +52,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import lib.dwfl.DwflLine;
-
+import frysk.debuginfo.DebugInfoFrame;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Action;
 import frysk.proc.Manager;
@@ -388,10 +388,10 @@ public class SteppingEngine
    * @param task  The Task to be stepped.
    * @param frame  The frame on the stack to be continued to.
    */
-  public void stepAdvance (Task task, Frame frame)
+  public void stepAdvance (Task task, DebugInfoFrame frame)
   {
     /* There's nowhere to advance to - this is already the innermost frame */
-    if (frame.getInner() == null)
+    if (frame.getInnerDebugInfoFrame() == null)
       {
         stepLine(task);
         return;
@@ -419,7 +419,7 @@ public class SteppingEngine
    * @param task The stepping Task
    * @param lastFrame The current innermost frame of the Task
    */
-  public void stepNextInstruction (Task task, Frame lastFrame)
+  public void stepNextInstruction (Task task, DebugInfoFrame lastFrame)
   {
     this.frameIdentifier = lastFrame.getFrameIdentifier();
     
@@ -479,7 +479,7 @@ public class SteppingEngine
    * @param task   The Task to be stepped-over
    * @param lastFrame	The current innermost StackFrame of the given Task
    */
-  public void stepOver (Task task, Frame lastFrame)
+  public void stepOver (Task task, DebugInfoFrame lastFrame)
   {
     this.frameIdentifier = lastFrame.getFrameIdentifier();
     
@@ -537,9 +537,9 @@ public class SteppingEngine
    * @param task   The Task to be stepped
    * @param frame The frame to step out of.
    */
-  public void stepOut (Task task, Frame frame)
+  public void stepOut (Task task, DebugInfoFrame frame)
   {
-    long address = frame.getOuter().getAddress();
+    long address = frame.getOuterDebugInfoFrame().getAddress();
     
     TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
     tse.setState(new StepOutState(task));

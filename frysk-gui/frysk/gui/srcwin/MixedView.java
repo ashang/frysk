@@ -45,7 +45,7 @@ import java.util.List;
 import org.gnu.gtk.HPaned;
 import org.gnu.gtk.ScrolledWindow;
 
-import frysk.stack.Frame;
+import frysk.debuginfo.DebugInfoFrame;
 
 public class MixedView
     extends HPaned
@@ -56,7 +56,7 @@ public class MixedView
 
   private SourceView assemblyWidget;
 
-  public MixedView (Frame scope, SourceWindow parent)
+  public MixedView (DebugInfoFrame scope, SourceWindow parent)
   {
     super();
 
@@ -106,7 +106,7 @@ public class MixedView
     // TODO: same problem as findPrevious
   }
 
-  public void load (Frame data, int mode)
+  public void load (DebugInfoFrame data, int mode)
   {
     if (mode != 3)
       {
@@ -150,7 +150,7 @@ public class MixedView
     return null;
   }
 
-  public Frame getScope ()
+  public DebugInfoFrame getScope ()
   {
     return this.sourceWidget.getScope();
   }

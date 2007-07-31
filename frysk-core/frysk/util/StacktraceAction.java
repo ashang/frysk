@@ -46,6 +46,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.event.SignalEvent;
@@ -150,7 +151,12 @@ public abstract class StacktraceAction
     while (iter.hasNext())
       {
 	Task task =  (Task) iter.next();
-	StackFactory.printTaskStackTrace(printWriter,task,elfOnly,printParameters,printScopes,fullpath,printSourceLibrary);
+	
+	if(elfOnly){
+	    StackFactory.printTaskStackTrace(printWriter,task,printSourceLibrary);
+	}else{
+	    DebugInfoStackFactory.printTaskStackTrace(printWriter,task,printParameters,printScopes,fullpath);
+	}
       }
     logger.log(Level.FINE, "{0} exiting printTasks\n", this);
   }

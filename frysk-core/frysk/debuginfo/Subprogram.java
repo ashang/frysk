@@ -49,7 +49,6 @@ import java.util.LinkedList;
 
 import lib.dwfl.DwTagEncodings;
 import lib.dwfl.DwarfDie;
-import frysk.stack.Frame;
 import frysk.value.FunctionType;
 import frysk.value.Value;
 
@@ -114,7 +113,7 @@ public class Subprogram extends Subroutine
       this.functionType = functionType;
     }
     
-    public void printParameters (PrintWriter writer, Frame frame)
+    public void printParameters (PrintWriter writer, DebugInfoFrame frame)
     {
       
       Iterator iterator = this.parameters.iterator();
@@ -132,7 +131,7 @@ public class Subprogram extends Subroutine
       }
       
     }
-    public void printScopes(PrintWriter writer, Frame frame){
+    public void printScopes(PrintWriter writer, DebugInfoFrame frame){
 	super.toPrint(frame, writer, 1);
     }
 }

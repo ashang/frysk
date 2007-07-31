@@ -62,7 +62,6 @@ import frysk.dwfl.DwflCache;
 import frysk.expr.CppSymTab;
 import frysk.proc.Isa;
 import frysk.proc.Task;
-import frysk.stack.Frame;
 import frysk.stack.IA32Registers;
 import frysk.stack.Register;
 import frysk.sys.Errno;
@@ -80,7 +79,7 @@ class DebugInfoEvaluator
 {
   private Task task;
 
-  private Frame currentFrame;
+  private DebugInfoFrame currentFrame;
   
   private ByteBuffer buffer;
 
@@ -108,7 +107,7 @@ class DebugInfoEvaluator
    * @param task_p Task
    * @param pid_p Pid
    */
-  DebugInfoEvaluator (Frame frame)
+  DebugInfoEvaluator (DebugInfoFrame frame)
   {
     this.task = frame.getTask();
     buffer = this.task.getMemory();
@@ -382,7 +381,7 @@ class DebugInfoEvaluator
       int[] x86regnumbers = { 0, 2, 1, 3, 7, 6, 4, 5 };
       Isa isa;
 
-      if (currentFrame.getInner() == null)
+      if (currentFrame.getInnerDebugInfoFrame() == null)
         isa = task.getIsa();
       else
         isa = currentFrame.getTask().getIsa();
@@ -737,7 +736,7 @@ class DebugInfoEvaluator
    * 
    * @see frysk.expr.CppSymTab#put(java.lang.String, frysk.lang.Value)
    */
-  public void put (Frame f, String s, Value v) throws NameNotFoundException
+  public void put (DebugInfoFrame f, String s, Value v) throws NameNotFoundException
   {
     setCurrentFrame(f);
     VariableAccessor[] variableAccessor = { new AccessMemory()
@@ -787,7 +786,7 @@ class DebugInfoEvaluator
   }
 
 
-  public Value get (Frame f, String s) throws NameNotFoundException
+  public Value get (DebugInfoFrame f, String s) throws NameNotFoundException
   {
     setCurrentFrame(f);
     DwarfDie varDie = getDie(s);
@@ -801,7 +800,7 @@ class DebugInfoEvaluator
    * Returns the Value associated with the given DwarfDie.
    * @see frysk.expr.CppSymTab#get(java.lang.String)
    */
-  public Value get (Frame f, DwarfDie varDie)
+  public Value get (DebugInfoFrame f, DwarfDie varDie)
   {
     setCurrentFrame(f);
     VariableAccessor[] variableAccessor = { new AccessMemory(),
@@ -927,7 +926,7 @@ class DebugInfoEvaluator
     return null;
   }
     
-  public Value get (Frame f, ArrayList components) throws NameNotFoundException
+  public Value get (DebugInfoFrame f, ArrayList components) throws NameNotFoundException
   {
     setCurrentFrame(f);
     String s = (String)components.get(0);
@@ -944,14 +943,14 @@ class DebugInfoEvaluator
       return null;
   }
   
-  public Value getAddress (Frame f, String s) throws NameNotFoundException
+  public Value getAddress (DebugInfoFrame f, String s) throws NameNotFoundException
   {
     setCurrentFrame(f);
     AccessMemory access = new AccessMemory();
     return ArithmeticType.newLongValue(longType, access.getAddr(getDie(s))); 
   }
   
-  public Value getMemory (Frame f, String s) throws NameNotFoundException
+  public Value getMemory (DebugInfoFrame f, String s) throws NameNotFoundException
   {     
     setCurrentFrame(f);
     ByteOrder byteorder = task.getIsa().getByteOrder();
@@ -1174,7 +1173,7 @@ class DebugInfoEvaluator
    * 
    * @return StackFrame
    */
-  Frame getCurrentFrame ()
+  DebugInfoFrame getCurrentFrame ()
   {
     return currentFrame;
   }
@@ -1184,9 +1183,9 @@ class DebugInfoEvaluator
    * 
    * @param sf_p
    */
-  void setCurrentFrame (Frame frame)
+  void setCurrentFrame (DebugInfoFrame f)
   {
-    currentFrame = frame;
+    currentFrame = f;
   }
 
   /**
@@ -1194,12 +1193,12 @@ class DebugInfoEvaluator
    * 
    * @return StackFrame
    */
-  Frame getInnerMostFrame ()
+  DebugInfoFrame getInnerMostFrame ()
   {
-    Frame curr = currentFrame;
+    DebugInfoFrame curr = currentFrame;
 
-    while (curr.getInner() != null)
-      curr = curr.getInner();
+    while (curr.getInnerDebugInfoFrame() != null)
+      curr = curr.getInnerDebugInfoFrame();
 
     return curr;
   }

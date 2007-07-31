@@ -42,32 +42,24 @@ package frysk.stack;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
 
-import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import frysk.dwfl.DwflCache;
-import frysk.proc.Isa;
-import frysk.proc.Task;
-import frysk.rt.Line;
-import frysk.symtab.Symbol;
-import frysk.symtab.SymbolFactory;
-
-import frysk.value.ArithmeticType;
-import frysk.value.Value;
-
 import lib.dwfl.BaseTypes;
-import lib.dwfl.Dwfl;
-import lib.dwfl.DwflLine;
 import lib.unwind.Cursor;
 import lib.unwind.ProcInfo;
 import lib.unwind.ProcName;
+import frysk.proc.Isa;
+import frysk.proc.Task;
+import frysk.symtab.Symbol;
+import frysk.symtab.SymbolFactory;
+import frysk.value.ArithmeticType;
+import frysk.value.Value;
 
 class RemoteFrame extends Frame
 {  
   private static Logger logger = Logger.getLogger("frysk");
   private Symbol symbol;
-  private Line[] lines;
   
   /* Identifies this frame by its CFA and frame start address */
   private FrameIdentifier frameIdentifier;
@@ -254,52 +246,5 @@ class RemoteFrame extends Frame
 	}
 	return symbol;
     }
-
-  /**
-   * Return this frame's list of lines as an array; returns an empty array if
-   * there is no line number information available. The lack of line-number
-   * information can be determined with the test: <<tt>>.getLines().length == 0</tt>.
-   * XXX: When there are multiple lines, it isn't clear if there is a well
-   * defined ordering of the information; for instance: outer-to-inner or
-   * inner-to-outer.
-   */
-  public Line[] getLines ()
-  {
-    if (this.lines == null)
-      {
-	if (this.cursor != null)
-	  {
-	    Dwfl dwfl = DwflCache.getDwfl(task);
-	    // The innermost frame and frames which were
-	    // interrupted during execution use their PC to get
-	    // the line in source. All other frames have their PC
-	    // set to the line after the inner frame call and must
-	    // be decremented by one.
-	    DwflLine dwflLine = dwfl.getSourceLine(getAdjustedAddress());
-	    if (dwflLine != null)
-	      {
-		File f = new File(dwflLine.getSourceFile());
-		if (! f.isAbsolute())
-		  {
-		    /* The file refers to a path relative to the compilation
-		     * directory; so prepend the path to that directory in
-		     * front of it. */
-		    File parent = new File(dwflLine.getCompilationDir());
-		    f = new File(parent, dwflLine.getSourceFile());
-		  }
-
-		this.lines = new Line[] { new Line(f, dwflLine.getLineNum(),
-						   dwflLine.getColumn(),
-						   this.task.getProc()) };
-	      }
-
-	  }
-	// If the fetch failed, mark it as unknown.
-	if (this.lines == null)
-	  this.lines = new Line[0];
-      }
-
-    return this.lines;
-  }
-
+    
 }

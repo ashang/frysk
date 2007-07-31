@@ -45,19 +45,19 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
-//import inua.eio.ByteBuffer;
-//import inua.eio.ULong;
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.event.Event;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.testbed.TestLib;
 import frysk.rt.Line;
 import frysk.stepping.SteppingEngine;
 import frysk.stepping.TaskStepEngine;
 import frysk.symtab.Symbol;
 import frysk.sys.Pid;
 import frysk.sys.Sig;
+import frysk.testbed.TestLib;
 
 public class TestStackBacktrace
     extends TestLib
@@ -145,7 +145,7 @@ public class TestStackBacktrace
   
   private void firstTestBacktraceAssertions ()
   {
-    Frame frame = StackFactory.createFrame(myTask);
+    DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
 //    System.err.println(StackFactory.printStackTrace(frame));
     Line line;
     Symbol symbol;
@@ -159,7 +159,7 @@ public class TestStackBacktrace
 //    assertEquals("line number", 62, line.getLine());
     assertEquals("symbol", "baz", symbol.getDemangledName ());
     
-    frame = frame.getOuter();
+    frame = frame.getOuterDebugInfoFrame();
     assertNotNull (frame);
     assertNotNull(frame.getInner());
     line = frame.getLines()[0];
@@ -168,7 +168,7 @@ public class TestStackBacktrace
     assertEquals(71, line.getLine ());
     assertEquals("symbol", "bar", symbol.getDemangledName());
 
-    frame = frame.getOuter();
+    frame = frame.getOuterDebugInfoFrame();
     assertNotNull(frame);
     assertNotNull(frame.getInner());
     line = frame.getLines()[0];
@@ -177,7 +177,7 @@ public class TestStackBacktrace
     assertEquals("line number", 81, line.getLine());
     assertEquals("foo", symbol.getDemangledName());
 
-    frame = frame.getOuter();
+    frame = frame.getOuterDebugInfoFrame();
     assertNotNull(frame);
     assertNotNull(frame.getInner());
     line = frame.getLines()[0];
@@ -186,21 +186,21 @@ public class TestStackBacktrace
     assertEquals("line number", 117, line.getLine());
     assertEquals("symbol name", "main", symbol.getDemangledName());
 
-    frame = frame.getOuter();
+    frame = frame.getOuterDebugInfoFrame();
     assertNotNull(frame);
     assertNotNull(frame.getInner());
     symbol = frame.getSymbol();
     // No check for file information - depends on glibc-debuginfo.
     assertEquals("symbol", "__libc_start_main", symbol.getDemangledName());
 
-    frame = frame.getOuter();
+    frame = frame.getOuterDebugInfoFrame();
     assertNotNull(frame);
     assertNotNull(frame.getInner());
     symbol = frame.getSymbol();
     // No check for line information - depends on glibc-debuginfo.
     assertEquals("symbol", "_start", symbol.getDemangledName());
 
-    frame = frame.getOuter();
+    frame = frame.getOuterDebugInfoFrame();
     assertNull(frame);
     
     Manager.eventLoop.requestStop();
@@ -332,7 +332,7 @@ public class TestStackBacktrace
   public void setUpTest ()
   {
 
-    Frame frame = StackFactory.createFrame(myTask);
+    DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
     
     if (frame.getLines().length == 0)
       {
@@ -495,7 +495,7 @@ public class TestStackBacktrace
   
   public void pushPopAssertions ()
   {
-    Frame sFrame = StackFactory.createFrame(myTask);
+    DebugInfoFrame sFrame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
     Line line = null; 
     
     if (this.testState == PUSH || this.testState == POP)
@@ -567,18 +567,18 @@ public class TestStackBacktrace
               }
             else
               {
-                Frame frame = StackFactory.createFrame(myTask);
+                DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
 
                 /* Make sure we're not missing any frames */
                 if (frame.getLines()[0].getLine() > 95)
                   {
                     assertEquals ("demangled name", "jump",
 				  frame.getSymbol().getDemangledName());
-                    frame = frame.getOuter();
+                    frame = frame.getOuterDebugInfoFrame();
                   }
                 assertEquals ("demangled name", "foo",
 			      frame.getSymbol().getDemangledName());
-                frame = frame.getOuter();
+                frame = frame.getOuterDebugInfoFrame();
                 assertEquals ("demangled name", "main",
 			      frame.getSymbol().getDemangledName());
                 
@@ -629,12 +629,12 @@ public class TestStackBacktrace
    */
   public synchronized void handleTask (Task task)
   {
-    Frame frame = null;
+      DebugInfoFrame frame = null;
     myTask = task;
     
     if (task != null)
       {
-        frame = StackFactory.createFrame(task);
+        frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
 //        System.err.println(StackFactory.printStackTrace(frame));
         
         assertNotNull(frame);
@@ -663,7 +663,7 @@ public class TestStackBacktrace
             else
               frameTracker[task_count][i][4] = "" + 0;
             
-            frame = frame.getOuter();
+            frame = frame.getOuterDebugInfoFrame();
             i++;
           }
         

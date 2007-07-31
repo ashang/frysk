@@ -1,3 +1,9 @@
+2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* SteppingEngine.java: Replaced Frame with DebugInfoFrame.
+	* TestSteppingEngine.java: Ditto.
+	* TestStepping.java: Ditto.
+
 2007-07-31  Mike Cvet  <mcvet@redhat.com>
 
 	* TestStepping.java: Cleaned up.

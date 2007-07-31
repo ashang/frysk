@@ -46,7 +46,6 @@ import frysk.expr.CppSymTab;
 import frysk.expr.CppTreeParser;
 import frysk.proc.Proc;
 import frysk.debuginfo.Subprogram;
-import frysk.stack.Frame;
 import frysk.value.FunctionType;
 import frysk.value.Value;
 import java.io.StringReader;
@@ -78,7 +77,7 @@ public class DebugInfo {
      * Create a symbol table object.  There should be one SymTab per process.
      * @param frame
      */
-    public DebugInfo (Frame frame) {
+    public DebugInfo (DebugInfoFrame frame) {
 	Proc proc = frame.getTask().getProc();
 	try {
 	    elf = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
@@ -101,7 +100,7 @@ public class DebugInfo {
      * @param candidates List that may complete token.
      * @return cursor position in buffer
      */
-    public int complete (Frame frame, String buffer, int cursor, List candidates) {
+    public int complete (DebugInfoFrame frame, String buffer, int cursor, List candidates) {
 	long pc = frame.getAdjustedAddress();
 	Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
 	DwflDieBias bias = dwfl.getDie(pc);
@@ -160,7 +159,7 @@ public class DebugInfo {
      * @throws ParseException
      * @throws NameNotFoundException
      */
-    public String what(Frame frame, String sInput) throws ParseException,
+    public String what(DebugInfoFrame frame, String sInput) throws ParseException,
 					     NameNotFoundException {
 	long pc = frame.getAdjustedAddress();
 	Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
@@ -219,7 +218,7 @@ public class DebugInfo {
      * @return Variable
      * @throws ParseException
      */
-      public Value print (String sInput, Frame frame) throws ParseException,
+      public Value print (String sInput, DebugInfoFrame frame) throws ParseException,
 					      NameNotFoundException {
 	Value result = null;
 	sInput += (char) 3;
@@ -275,22 +274,22 @@ public class DebugInfo {
     
 	final class TmpSymTab
 	    implements CppSymTab {
-	  public void put (Frame f, String s, Value v) throws NameNotFoundException {
+	  public void put (DebugInfoFrame f, String s, Value v) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");
 	    }
 
-	  public Value get (Frame f, String s) throws NameNotFoundException {
+	  public Value get (DebugInfoFrame f, String s) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");
 	    }
 
-	  public Value get (Frame f, ArrayList v) throws NameNotFoundException {
+	  public Value get (DebugInfoFrame f, ArrayList v) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");
 	    }
       
-	public Value getAddress (Frame f, String s) throws NameNotFoundException {
+	public Value getAddress (DebugInfoFrame f, String s) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");
 	    }
-	  public Value getMemory (Frame f, String s) throws NameNotFoundException {
+	  public Value getMemory (DebugInfoFrame f, String s) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");        
 	    }
       
@@ -332,7 +331,7 @@ public class DebugInfo {
 	return result;
     }
    
-    public void setFrames (Frame newFrames[]) {
+    public void setFrames (DebugInfoFrame newFrames[]) {
 	debugInfoEvaluator = new DebugInfoEvaluator[newFrames.length];
 	for (int i = 0; i < newFrames.length; i++) {
 	    debugInfoEvaluator[i] = new DebugInfoEvaluator (newFrames[i]);
@@ -343,7 +342,7 @@ public class DebugInfo {
 	return debugInfoEvaluator[0].getValue(die);
     } 
 
-    public Value get(Frame f, DwarfDie die) throws NameNotFoundException
+    public Value get(DebugInfoFrame f, DwarfDie die) throws NameNotFoundException
     {
       return debugInfoEvaluator[0].get(f, die);
     } 

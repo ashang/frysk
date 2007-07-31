@@ -44,10 +44,10 @@ import java.text.ParseException;
 import javax.naming.NameNotFoundException;
 
 import frysk.debuginfo.DebugInfo;
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.proc.Task;
-import frysk.stack.Frame;
 import frysk.stack.FrameIdentifier;
-import frysk.stack.StackFactory;
 import frysk.value.Value;
 
 /**
@@ -101,14 +101,14 @@ class DisplayValue
   public void refresh()
   {
     
-    Frame current = StackFactory.createFrame(myTask);
+    DebugInfoFrame current = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
     // Work backwards through the frames
     // trying to find the one the value came from
     while(current != null)
       {
         if(current.getFrameIdentifier().equals(frameIdentifier))
           break;
-        current = current.getOuter();
+        current = current.getOuterDebugInfoFrame();
       }
     
     // If we couldn't find a matching frame, our variable is no longer available

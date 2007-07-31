@@ -40,8 +40,8 @@
 package frysk.gui.srcwin;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -66,6 +66,7 @@ import org.gnu.pango.Weight;
 import org.jdom.Element;
 
 import frysk.debuginfo.DebugInfo;
+import frysk.debuginfo.DebugInfoFrame;
 import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMLine;
 import frysk.dom.DOMSource;
@@ -80,7 +81,6 @@ import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference.SyntaxPreferenceListener;
 import frysk.proc.Task;
 import frysk.rt.Line;
-import frysk.stack.Frame;
 import frysk.value.Value;
 
 /**
@@ -160,7 +160,7 @@ public class SourceBuffer extends TextBuffer {
         // we
     // don't
     // need any information higher than this
-    protected Frame scope;
+    protected DebugInfoFrame scope;
 
     protected DebugInfo debugInfo;
 
@@ -187,7 +187,7 @@ public class SourceBuffer extends TextBuffer {
          * 
          * @param scope
          */
-    public SourceBuffer(Frame scope) {
+    public SourceBuffer(DebugInfoFrame scope) {
 	this();
 	if (scope == null) {
 	    this.insertText("Stack and source information not available!");
@@ -197,7 +197,7 @@ public class SourceBuffer extends TextBuffer {
 	this.setScope(scope, SOURCE_MODE);
     }
 
-    public SourceBuffer(Frame scope, int mode) {
+    public SourceBuffer(DebugInfoFrame scope, int mode) {
 	this();
 	if (scope == null) {
 	    this.insertText("Stack and source information not available!");
@@ -319,14 +319,14 @@ public class SourceBuffer extends TextBuffer {
          * @param newFrame
          *                Whether this is a highlight or a de-highlight
          */
-    protected void highlightLine(Frame frame, boolean newFrame) {
+    protected void highlightLine(DebugInfoFrame frame, boolean newFrame) {
 	// // Quick check.
 	// if (this.scope.getLines().length == 0)
 	// return;
 
 	// Find the first frame with source-line information.
-	while (frame.getOuter() != null && frame.getLines().length == 0) {
-	    frame = frame.getOuter();
+	while (frame.getOuterDebugInfoFrame() != null && frame.getLines().length == 0) {
+	    frame = frame.getOuterDebugInfoFrame();
 	    if (frame.getLines().length == 0)
 		return;
 	}
@@ -358,7 +358,7 @@ public class SourceBuffer extends TextBuffer {
 	    }
 	}
 
-	Frame curr = frame.getOuter();
+	DebugInfoFrame curr = frame.getOuterDebugInfoFrame();
 
 	/*
          * Only highlight lines in the same file as the current scope of this
@@ -366,7 +366,7 @@ public class SourceBuffer extends TextBuffer {
          */
 	while (curr != null) {
 	    if (curr.getLines().length == 0) {
-		curr = curr.getOuter();
+		curr = curr.getOuterDebugInfoFrame();
 		continue;
 	    }
 
@@ -375,7 +375,7 @@ public class SourceBuffer extends TextBuffer {
 		if (newFrame == true
 			&& !stackLine.getDOMSource().getFileName().equals(
 				this.fileName)) {
-		    curr = curr.getOuter();
+		    curr = curr.getOuterDebugInfoFrame();
 		    continue;
 		}
 	    }
@@ -396,7 +396,7 @@ public class SourceBuffer extends TextBuffer {
 			.getIter(end));
 	    }
 
-	    curr = curr.getOuter();
+	    curr = curr.getOuterDebugInfoFrame();
 	}
     }
 
@@ -797,7 +797,7 @@ public class SourceBuffer extends TextBuffer {
 	return new DOMInlineInstance((Element) iter.next());
     }
 
-    public void setScope(Frame scope) {
+    public void setScope(DebugInfoFrame scope) {
 	this.setScope(scope, SOURCE_MODE);
     }
 
@@ -808,7 +808,7 @@ public class SourceBuffer extends TextBuffer {
          * @param scope
          *                The stack frame to be displayed
          */
-    protected void setScope(Frame scope, int mode) {
+    protected void setScope(DebugInfoFrame scope, int mode) {
 	Iterator i = this.functions.iterator();
 	while (i.hasNext()) {
 	    String del = (String) i.next();
@@ -862,7 +862,7 @@ public class SourceBuffer extends TextBuffer {
 	this.setScope(this.getScope(), mode);
     }
 
-    public void disassembleFrame(Frame frame) {
+    public void disassembleFrame(DebugInfoFrame frame) {
 	Task task = frame.getTask();
 
 	this.firstLoad = false;
@@ -937,7 +937,7 @@ public class SourceBuffer extends TextBuffer {
     /**
          * @return The stack frame currently being displayed
          */
-    public Frame getScope() {
+    public DebugInfoFrame getScope() {
 	return scope;
     }
 
@@ -1096,7 +1096,7 @@ public class SourceBuffer extends TextBuffer {
 	    // return;
 	    // }
 
-	    Frame curr = this.scope;
+	    DebugInfoFrame curr = this.scope;
 	    while (curr != null) {
 		if (curr.getLines().length > 0
 			&& curr.getLines()[0].getDOMSource() != null) {
@@ -1109,7 +1109,7 @@ public class SourceBuffer extends TextBuffer {
 		    this.insertText(loadUnmarkedText(this.scope));
 		    return;
 		}
-		curr = curr.getOuter();
+		curr = curr.getOuterDebugInfoFrame();
 	    }
 
 	    /* There really were no frames with debuginfo */
@@ -1156,7 +1156,7 @@ public class SourceBuffer extends TextBuffer {
          * @return text The source to be loaded into the SourceWindow
          * @throws FileNotFoundException
          */
-    private String loadUnmarkedText(Frame frame) throws FileNotFoundException {
+    private String loadUnmarkedText(DebugInfoFrame frame) throws FileNotFoundException {
 	BufferedReader br = null;
 	if (frame.getLines().length == 0)
 	    return "Cannot find source!";

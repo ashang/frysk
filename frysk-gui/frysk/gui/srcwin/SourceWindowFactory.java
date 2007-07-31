@@ -52,6 +52,8 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 import frysk.Config;
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.dom.DOMFrysk;
 import frysk.gui.Gui;
 import frysk.gui.monitor.WindowManager;
@@ -62,8 +64,6 @@ import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.stack.Frame;
-import frysk.stack.StackFactory;
 
 /**
  * SourceWindow factory is the interface through which all SourceWindow objects
@@ -130,7 +130,7 @@ public class SourceWindowFactory
     srcWin.grabFocus();
   }
   
-  public static void createSourceWindow (Frame frame)
+  public static void createSourceWindow (DebugInfoFrame frame)
   {
     LibGlade glade;
     try
@@ -149,7 +149,7 @@ public class SourceWindowFactory
     srcWin.grabFocus();
   }
   
-  public static void createSourceWindow (Frame[] frames)
+  public static void createSourceWindow (DebugInfoFrame[] frames)
   {
     LibGlade glade;
     try
@@ -193,12 +193,12 @@ public class SourceWindowFactory
     Proc proc = frysk.util.Util.getProcFromCoreFile(coreFile);     
 
     LinkedList tasks = proc.getTasks();
-    Frame[] framez = new Frame[tasks.size()];
+    DebugInfoFrame[] framez = new DebugInfoFrame[tasks.size()];
     Iterator iter = tasks.iterator();
     for (int i = 0; iter.hasNext(); i++)
       {
         Task task = (Task) iter.next();
-        framez[i] = StackFactory.createFrame(task);
+        framez[i] = DebugInfoStackFactory.createDebugInfoStackTrace(task);
       }
     createSourceWindow(framez);
   }

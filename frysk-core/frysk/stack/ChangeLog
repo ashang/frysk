@@ -1,3 +1,16 @@
+2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestStackBacktrace.java: Replaced Frame with DebugInfoFrame.
+	* RemoteFrame.java: Removed getLines.
+	* FrameDecorator.java (getRegisterValue): Added.
+	(setReg): Added.
+	(getFrame): Added.
+	(getCFA): Added.
+	* StackFactory.java (printRichStackTrace): moved to
+	DebugInfoStackFactory.  
+	* Frame.java (getLines): Moved to DebugInfoFrame.
+	(getSubprogram): Ditto.
+
 2007-07-31  Nurdin Premji  <npremji@redhat.com>
 
 	* IA32Registers.java (SEGMENT): Removed TSS and LDT registers from 

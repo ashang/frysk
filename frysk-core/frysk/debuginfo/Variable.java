@@ -46,7 +46,6 @@ import javax.naming.NameNotFoundException;
 
 import lib.dwfl.DwException;
 import lib.dwfl.DwarfDie;
-import frysk.stack.Frame;
 import frysk.value.Type;
 import frysk.value.Value;
 
@@ -117,7 +116,7 @@ public class Variable
       return this.variableDie.getDeclColumn();
   }
   
-  public void toPrint(PrintWriter printWriter, Frame frame){
+  public void toPrint(PrintWriter printWriter, DebugInfoFrame frame){
       printWriter.print(this.getType() + " " + this.getVariable().getText() + " = ");
       try{
 	  Value value = getValue(frame);
@@ -150,7 +149,7 @@ public class Variable
 //      }
   }
   
-  public Value getValue(Frame frame)
+  public Value getValue(DebugInfoFrame frame)
   {
       DebugInfo debugInfo = new DebugInfo(frame);
       try {

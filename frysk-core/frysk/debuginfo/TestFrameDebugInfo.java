@@ -71,13 +71,9 @@ public class TestFrameDebugInfo
     Task task = getStoppedTask();
 
     StringWriter stringWriter = new StringWriter();
-    Frame frame = StackFactory.createFrame(task);
-    StackFactory.printRichStackTrace(new PrintWriter(stringWriter),frame, true, true, true, true);
+    DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
+    DebugInfoStackFactory.printStackTrace(new PrintWriter(stringWriter),frame, true, true, true);
       
-//    System.out.println("TestRichFrame.testRichFrame()");
-//    System.out.println(string);
-//    System.out.println();
-    
     String string = stringWriter.getBuffer().toString();
     assertTrue("first", string.contains("first"));
     assertTrue("second", string.contains("second"));
@@ -97,10 +93,6 @@ public class TestFrameDebugInfo
     StringWriter stringWriter = new StringWriter();
     StackFactory.printStackTrace(new PrintWriter(stringWriter),frame, true);
       
-//    System.out.println("TestRichFrame.testRichFrame()");
-//    System.out.println(string);
-//    System.out.println();
-//    
     String string = stringWriter.getBuffer().toString();
     
     assertTrue("first", string.contains("first"));
@@ -121,13 +113,6 @@ public class TestFrameDebugInfo
     Dwfl dwfl = DwflCache.getDwfl(task);
     DwflDieBias bias = dwfl.getDie(frame.getAdjustedAddress());
     DwarfDie[] scopes = bias.die.getScopes(frame.getAdjustedAddress() - bias.bias);
-    System.out.println("TestFrameDebugInfo.testFrameScopes() pc 0x" + Long.toHexString(frame.getAdjustedAddress()));
-    System.out.println("TestFrameDebugInfo.testFrameScopes() outer pc 0x" + Long.toHexString(frame.getOuter().getAdjustedAddress()));
-     
-    for (int i = 0; i < scopes.length; i++) {
-	System.out.println("TestFrameDebugInfo.testFrameScopes() " + DwTagEncodings.toName(scopes[i].getTag()));
-    }
-    
     
     assertEquals("number of scopes", 3, scopes.length);
     
@@ -137,15 +122,34 @@ public class TestFrameDebugInfo
     
   }
   
+  public void testFrameScopesWorkAround ()
+  {
+    
+    Task task = getStoppedTask("funit-scopes-workaround");
+    Frame frame = StackFactory.createFrame(task);
+    
+    Dwfl dwfl = DwflCache.getDwfl(task);
+    DwflDieBias bias = dwfl.getDie(frame.getAdjustedAddress());
+    DwarfDie[] scopes = bias.die.getScopes(frame.getAdjustedAddress() - bias.bias);
+    scopes = scopes[0].getScopesDie();
+    
+    assertEquals("number of scopes", 4, scopes.length);
+    
+    assertEquals("inlined die" , DwTagEncodings.DW_TAG_inlined_subroutine_,scopes[1].getTag());
+    assertEquals("function die", DwTagEncodings.DW_TAG_subprogram_, scopes[2].getTag());
+    assertEquals("compliation unit die", DwTagEncodings.DW_TAG_compile_unit_, scopes[3].getTag());
+    
+  }
+  
   public void testValues() throws NameNotFoundException
   {
     Task task = getStoppedTask("funit-stacks-values");
     Subprogram subprogram;
-    Frame frame;
+    DebugInfoFrame frame;
     Variable variable;
     
     // inner most frame
-    frame = StackFactory.createFrame(task);
+    frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
     
     subprogram = frame.getSubprogram();
     assertEquals("Subprogram name", subprogram.getName(), "third");
@@ -161,7 +165,7 @@ public class TestFrameDebugInfo
     assertEquals("Value", variable.getValue(frame).intValue(), 4);
     
     // outer frame
-    frame = frame.getOuter();
+    frame = frame.getOuterDebugInfoFrame();
     
     subprogram = frame.getSubprogram();
     assertEquals("Subprogram name", subprogram.getName(), "second");
@@ -177,7 +181,7 @@ public class TestFrameDebugInfo
     assertEquals("Value", variable.getValue(frame).intValue(), 3);
     
     // outer outer frame
-    frame = frame.getOuter();
+    frame = frame.getOuterDebugInfoFrame();
     
     subprogram = frame.getSubprogram();
     assertEquals("Subprogram name", subprogram.getName(), "first");
@@ -202,11 +206,11 @@ public class TestFrameDebugInfo
       Task task = getStoppedTask("funit-stacks-linenum");
       
       Subprogram subprogram;
-      Frame frame;
+      DebugInfoFrame frame;
       Variable variable;
       
       // inner most frame
-      frame = StackFactory.createFrame(task);
+      frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
       
       subprogram = frame.getSubprogram();
       assertEquals("Subprogram name", subprogram.getName(), "first");
@@ -222,7 +226,7 @@ public class TestFrameDebugInfo
       assertEquals("Name", variable.getVariable().getText(), "param2");
       assertEquals("line number", variable.getLineNumber(), 3);
       
-      frame = frame.getOuter();
+      frame = frame.getOuterDebugInfoFrame();
       
       subprogram = frame.getSubprogram();
       assertEquals("Subprogram name", subprogram.getName(), "main");

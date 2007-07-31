@@ -1,3 +1,7 @@
+2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DisplayValue.java: Replaced Frame with DebugInfoFrame.
+
 2007-07-28  Andrew Cagney  <cagney@redhat.com>
 
 	* TestDisplayValue.java: Use Config.getPkgLibFile and

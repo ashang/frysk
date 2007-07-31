@@ -46,12 +46,12 @@ import org.freedesktop.cairo.Point;
 import org.gnu.gdk.Color;
 import org.gnu.gdk.GdkCairo;
 
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.GuiTask;
 import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.observers.ObserverRoot;
-import frysk.stack.Frame;
-import frysk.stack.StackFactory;
 
 public class Event extends GuiObject
 {
@@ -67,7 +67,7 @@ public class Event extends GuiObject
   
   private int x,y;
 
-  private Frame stackFrame;
+  private DebugInfoFrame stackFrame;
   public static int w,h;
   
   static{
@@ -212,11 +212,11 @@ public class Event extends GuiObject
    * otherwise returns null.
    * @return
    */
-  public Frame getStackFrame(){
+  public DebugInfoFrame getStackFrame(){
     return stackFrame;
   }
   
-  public void setStackFrame (Frame frame)
+  public void setStackFrame (DebugInfoFrame frame)
   {
     stackFrame = frame;
     StringWriter stringWriter = new StringWriter();
@@ -224,7 +224,7 @@ public class Event extends GuiObject
      stringWriter.write(this.getName() + ": " + this.getToolTip() + "\n");
     
     if(frame != null){
-      StackFactory.printStackTrace(new PrintWriter(stringWriter),frame, true);
+	DebugInfoStackFactory.printStackTrace(new PrintWriter(stringWriter),frame, true, false, false);
     }else{
       stringWriter.write("*Error capturing stack frame*");
     }

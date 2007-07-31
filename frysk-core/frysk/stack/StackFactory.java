@@ -44,9 +44,7 @@ import java.io.PrintWriter;
 import java.util.WeakHashMap;
 
 import lib.unwind.Cursor;
-import frysk.debuginfo.Subprogram;
 import frysk.proc.Task;
-import frysk.rt.Line;
 
 public class StackFactory
 {  
@@ -93,16 +91,12 @@ public class StackFactory
       
   }
 
-  public static final void printTaskStackTrace (PrintWriter printWriter, Task task, boolean elfOnly, boolean printParameters, boolean printScopes, boolean fullpath, boolean printSourceLibrary)
+  public static final void printTaskStackTrace (PrintWriter printWriter, Task task, boolean printSourceLibrary)
   {
     if (task != null){
       printWriter.println("Task #" + task.getTid());
       Frame frame = StackFactory.createFrame(task);
-      if(elfOnly){
-	  printStackTrace(printWriter, frame, printSourceLibrary);
-      }else{
-	  printRichStackTrace(printWriter, frame, printParameters, printScopes, fullpath, printSourceLibrary);
-      }
+      printStackTrace(printWriter, frame, printSourceLibrary);
     }
     printWriter.flush();
   }
@@ -116,58 +110,6 @@ public class StackFactory
       printWriter.println();
       count++;
     }
-  }
-
-  public static void printRichStackTrace(PrintWriter writer, Frame topFrame, boolean printParameters, boolean printScopes, boolean fullpath, boolean printSourceLibrary){
-    
-    int count = 0;
-    for (Frame frame = topFrame;
-    frame != null; frame = frame.getOuter()) {
-      
-      writer.print("#" + count + " ");
-      
-      Subprogram subprogram = frame.getSubprogram();
-
-      if(subprogram != null){
-        writer.print("0x");
-        String addr = Long.toHexString(frame.getAddress());
-        int padding = 2 * frame.getTask().getIsa().getWordSize() - addr.length();
-        
-        for (int i = 0; i < padding; ++i)
-          writer.print('0');
-        
-        writer.print(addr);
-        
-        writer.print(" in " + subprogram.getName() + "(");
-        if(printParameters){
-	    subprogram.printParameters(writer, frame);
-        }
-        writer.print(") ");
-        
-        if(fullpath){
-          Line line = frame.getLines()[0];
-          writer.print(line.getFile().getPath());
-          writer.print("#");
-          writer.print(line.getLine());
-        }else{
-          Line line = frame.getLines()[0];
-          writer.print(line.getFile().getName());
-          writer.print("#");
-          writer.print(line.getLine());
-        }
-        
-        if(printScopes){
-	    subprogram.printScopes(writer, frame);
-        }
-        
-      } else {
-	  frame.toPrint(writer,false, printSourceLibrary);
-      }
-      
-      writer.println();
-      count++;
-    }
-
   }
 
 }

@@ -42,8 +42,8 @@ package frysk.gui.srcwin;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.HashMap;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,6 +51,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.gnu.gdk.Color;
 import org.gnu.gdk.KeyValue;
 import org.gnu.gdk.ModifierType;
@@ -110,10 +111,13 @@ import org.gnu.gtk.event.MouseListener;
 
 import frysk.Config;
 import frysk.debuginfo.DebugInfo;
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.dom.DOMFactory;
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMSource;
 import frysk.gui.common.IconManager;
+import frysk.gui.console.ConsoleWindow;
 import frysk.gui.dialogs.WarnDialog;
 import frysk.gui.disassembler.DisassemblyWindow;
 import frysk.gui.disassembler.DisassemblyWindowFactory;
@@ -130,20 +134,17 @@ import frysk.gui.sessions.DebugProcess;
 import frysk.gui.sessions.SessionManager;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
+import frysk.gui.terminal.TermWindow;
 import frysk.proc.Isa;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.rt.DisplayManager;
 import frysk.rt.Line;
 import frysk.rt.UpdatingDisplayValue;
-import frysk.stack.Frame;
 import frysk.stack.FrameIdentifier;
-import frysk.stack.StackFactory;
 import frysk.stepping.SteppingEngine;
 import frysk.stepping.TaskStepEngine;
 import frysk.value.Value;
-import frysk.gui.console.ConsoleWindow;
-import frysk.gui.terminal.TermWindow;
 
 /**
  * The SourceWindow displays the source or assembly level view of a Task's
@@ -255,13 +256,13 @@ public class SourceWindow extends Window {
 
     protected boolean SW_active = false;
 
-    private Frame currentFrame;
+    private DebugInfoFrame currentFrame;
 
     private Task currentTask;
 
     private FrameIdentifier fi;
 
-    private Frame[][] frames;
+    private DebugInfoFrame[][] frames;
 
     private DebugInfo symTab[];
 
@@ -363,7 +364,7 @@ public class SourceWindow extends Window {
 	this.gladePath = gladePath;
 	this.swProc = new Proc[this.numProcs];
 	this.swProc[this.current] = proc;
-	this.frames = new Frame[1][];
+	this.frames = new DebugInfoFrame[1][];
 	this.symTab = new DebugInfo[1];
 	this.lock = new LockObserver();
 	Proc[] temp = new Proc[1];
@@ -397,7 +398,7 @@ public class SourceWindow extends Window {
 	this.gladePath = gladePath;
 	this.numProcs = procs.length;
 	this.swProc = procs;
-	this.frames = new Frame[this.numProcs][];
+	this.frames = new DebugInfoFrame[this.numProcs][];
 	this.symTab = new DebugInfo[this.numProcs];
 	this.lock = new LockObserver();
 	this.dom = new DOMFrysk[this.numProcs];
@@ -423,7 +424,7 @@ public class SourceWindow extends Window {
          *                The stack frame that represents the current state of
          *                execution
          */
-    public SourceWindow(LibGlade glade, String gladePath, Frame trace) {
+    public SourceWindow(LibGlade glade, String gladePath, DebugInfoFrame trace) {
 	super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
 
 	this.setIcon(IconManager.windowIcon);
@@ -434,7 +435,7 @@ public class SourceWindow extends Window {
 	this.swProc[this.current] = trace.getTask().getProc();
 	this.steppingEngine = new SteppingEngine();
 	this.steppingEngine.setRunning(this.swProc[this.current].getTasks());
-	this.frames = new Frame[1][];
+	this.frames = new DebugInfoFrame[1][];
 	this.symTab = new DebugInfo[1];
 	this.dom = new DOMFrysk[1];
 
@@ -443,7 +444,7 @@ public class SourceWindow extends Window {
 	} catch (IOException e) {
 	}
 
-	Frame[] newTrace = new Frame[1];
+	DebugInfoFrame[] newTrace = new DebugInfoFrame[1];
 	newTrace[0] = trace;
 	this.frames[0] = newTrace;
 
@@ -469,7 +470,7 @@ public class SourceWindow extends Window {
          *                The stack frames that represents the current state of
          *                execution
          */
-    public SourceWindow(LibGlade glade, String gladePath, Frame[] traces) {
+    public SourceWindow(LibGlade glade, String gladePath, DebugInfoFrame[] traces) {
 	super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
 
 	this.setIcon(IconManager.windowIcon);
@@ -479,7 +480,7 @@ public class SourceWindow extends Window {
 	this.swProc = new Proc[1];
 	this.swProc[this.current] = traces[0].getTask().getProc();
 	this.steppingEngine = new SteppingEngine();
-	this.frames = new Frame[traces.length][];
+	this.frames = new DebugInfoFrame[traces.length][];
 	this.symTab = new DebugInfo[traces.length];
 	this.dom = new DOMFrysk[traces.length];
 
@@ -492,7 +493,7 @@ public class SourceWindow extends Window {
 	}
 
 	for (int i = 0; i < traces.length; i++)
-	    this.frames[i] = new Frame[] { traces[i] };
+	    this.frames[i] = new DebugInfoFrame[] { traces[i] };
 
 	finishSourceWin();
 
@@ -616,24 +617,24 @@ public class SourceWindow extends Window {
          * @param frames
          *                An array of StackFrames
          */
-    public void populateStackBrowser(Frame[][] frames) {
+    public void populateStackBrowser(DebugInfoFrame[][] frames) {
 	this.frames = frames;
 
 	/* Initialization */
 	if (this.view == null) {
 	    this.stackView = new CurrentStackView(frames);
-	    Frame temp = null;
+	    DebugInfoFrame temp = null;
 
 	    temp = CurrentStackView.getCurrentFrame();
 
 	    if (temp == null)
 		temp = frames[0][0];
 
-	    Frame curr = temp;
+	    DebugInfoFrame curr = temp;
 	    this.currentFrame = temp;
 
 	    while (curr != null && curr.getLines().length == 0)
-		curr = curr.getOuter();
+		curr = curr.getOuterDebugInfoFrame();
 
 	    if (curr != null) {
 		this.currentFrame = curr;
@@ -695,8 +696,8 @@ public class SourceWindow extends Window {
 	    sb = (SourceBuffer) ((MixedView) this.view).getSourceWidget()
 		    .getBuffer();
 
-	Frame curr = null;
-	Frame taskMatch = null;
+	DebugInfoFrame curr = null;
+	DebugInfoFrame taskMatch = null;
 
 	/*
          * Refresh the information displayed in the stack view with the info
@@ -704,7 +705,7 @@ public class SourceWindow extends Window {
          */
 	this.stackView.refreshProc(frames[this.current], this.current);
 	this.stackView.expandAll();
-	Frame newFrame = null;
+	DebugInfoFrame newFrame = null;
 
 	/*
          * Try to find the new StackFrame representing the same frame from
@@ -725,7 +726,7 @@ public class SourceWindow extends Window {
 			newFrame = curr;
 			break;
 		    }
-		    curr = curr.getOuter();
+		    curr = curr.getOuterDebugInfoFrame();
 		}
 	    }
 	}
@@ -864,13 +865,13 @@ public class SourceWindow extends Window {
 	int oldSize = this.numProcs;
 	++this.numProcs;
 
-	Frame[][] newFrames = new Frame[numProcs][];
+	DebugInfoFrame[][] newFrames = new DebugInfoFrame[numProcs][];
 	DOMFrysk[] newDom = new DOMFrysk[numProcs];
 	DebugInfo[] newSymTab = new DebugInfo[numProcs];
 	Proc[] newSwProc = new Proc[numProcs];
 
 	for (int i = 0; i < oldSize; i++) {
-	    newFrames[i] = new Frame[this.frames[i].length];
+	    newFrames[i] = new DebugInfoFrame[this.frames[i].length];
 	    System.arraycopy(this.frames, 0, newFrames, 0, oldSize);
 	}
 	System.arraycopy(this.dom, 0, newDom, 0, oldSize);
@@ -902,7 +903,7 @@ public class SourceWindow extends Window {
 	int oldSize = this.numProcs;
 	--this.numProcs;
 
-	Frame[][] newFrames = new Frame[numProcs][];
+	DebugInfoFrame[][] newFrames = new DebugInfoFrame[numProcs][];
 	DOMFrysk[] newDom = new DOMFrysk[numProcs];
 	DebugInfo[] newSymTab = new DebugInfo[numProcs];
 	Proc[] newSwProc = new Proc[numProcs];
@@ -913,7 +914,7 @@ public class SourceWindow extends Window {
 	int j = 0;
 	for (int i = 0; i < oldSize; i++) {
 	    if (i != this.current) {
-		newFrames[j] = new Frame[this.frames[i].length];
+		newFrames[j] = new DebugInfoFrame[this.frames[i].length];
 		System.arraycopy(this.frames[i], 0, newFrames[j], 0,
 			this.frames[i].length);
 		newDom[j] = this.dom[i];
@@ -2247,7 +2248,7 @@ public class SourceWindow extends Window {
          *                is the StackFrame that has been selected for viewing
          *                in the source frame.
          */
-    private void updateSourceLabel(Frame sf) {
+    private void updateSourceLabel(DebugInfoFrame sf) {
 	boolean noDOMFunction = false;
 	if (sf == null) {
 	    String task_name = this.swProc[0].getExe();
@@ -2309,7 +2310,7 @@ public class SourceWindow extends Window {
          * @param current
          *                The index of the currently selected Proc
          */
-    private void updateShownStackFrame(Frame selected, int current) {
+    private void updateShownStackFrame(DebugInfoFrame selected, int current) {
 	int mode = this.viewPicker.getActive();
 
 	DOMSource source = null;
@@ -2921,11 +2922,11 @@ public class SourceWindow extends Window {
          *                The new Proc array index
          * @return frames The new StackFrame[] stack trace
          */
-    private Frame[] generateProcStackTrace(Proc proc, int current) {
+    private DebugInfoFrame[] generateProcStackTrace(Proc proc, int current) {
 	int size = proc.getTasks().size();
 	int main = proc.getPid();
 	Task[] tasks = new Task[size];
-	Frame[] frames = new Frame[size];
+	DebugInfoFrame[] frames = new DebugInfoFrame[size];
 
 	Iterator iter = proc.getTasks().iterator();
 	int k = 0;
@@ -2936,13 +2937,13 @@ public class SourceWindow extends Window {
 	    ++k;
 	}
 
-	frames = new Frame[size];
+	frames = new DebugInfoFrame[size];
 
 	for (int j = 0; j < size; j++) {
 	    /** Create the stack frame * */
-	    Frame curr = null;
+	    DebugInfoFrame curr = null;
 	    try {
-		frames[j] = StackFactory.createFrame(tasks[j]);
+		frames[j] = DebugInfoStackFactory.createDebugInfoStackTrace(tasks[j]);
 		curr = frames[j];
 	    } catch (Exception e) {
 		System.out.println("Error generating stack trace");
@@ -2968,7 +2969,7 @@ public class SourceWindow extends Window {
 		    } else
 			break;
 
-		    curr = curr.getOuter();
+		    curr = curr.getOuterDebugInfoFrame();
 		}
 	    }
 	}
@@ -3077,7 +3078,7 @@ public class SourceWindow extends Window {
 
 	}
 
-	public void currentStackChanged(Frame newFrame, int current) {
+	public void currentStackChanged(DebugInfoFrame newFrame, int current) {
 	    if (newFrame == null)
 		return;
 

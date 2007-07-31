@@ -61,10 +61,10 @@ import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
+import frysk.debuginfo.DebugInfoFrame;
 import frysk.dom.DOMLine;
 import frysk.proc.Isa;
 import frysk.proc.Task;
-import frysk.stack.Frame;
 
 public class CurrentStackView
 	extends TreeView
@@ -73,24 +73,24 @@ public class CurrentStackView
 
   public interface StackViewListener
   {
-	void currentStackChanged (Frame newFrame, int current);
+	void currentStackChanged (DebugInfoFrame newFrame, int current);
   }
 
   private DataColumn[] stackColumns = new DataColumn[] {
 														new DataColumnString(),
 														new DataColumnObject() };
 
-  private static Frame currentFrame;
+  private static DebugInfoFrame currentFrame;
 
   private LinkedList observers;
 
-  private Frame head = null;
+  private DebugInfoFrame head = null;
 
   private TreeStore treeModel = new TreeStore(stackColumns);
 
   private Object[] stackArray;
 
-  public CurrentStackView (Frame[][] frames)
+  public CurrentStackView (DebugInfoFrame[][] frames)
   {
 	super();
 	this.setName("currentStackView");
@@ -119,7 +119,7 @@ public class CurrentStackView
 	this.getSelection().addListener(this);
   }
 
-  public void refreshProc (Frame[] frames, int current)
+  public void refreshProc (DebugInfoFrame[] frames, int current)
   {
     TreeIter iter = null;
     TreePath path = ((TreeRowReference) this.stackArray[current]).getPath();
@@ -143,7 +143,7 @@ public class CurrentStackView
 
     for (int j = frames.length - 1; j >= 0; j--)
       {
-	Frame frame = frames[j];
+	DebugInfoFrame frame = frames[j];
 	task = frames[j].getTask();
 	boolean hasInlinedCode = false;
 	String row = "";
@@ -162,7 +162,7 @@ public class CurrentStackView
 
 	if (task.getTid() == task.getProc().getMainTask().getTid())
 	  {
-	    Frame out = frame.getOuter();
+	    DebugInfoFrame out = frame.getOuterDebugInfoFrame();
 	    if (out != null)
 	      {
 		currentFrame = out;
@@ -196,7 +196,7 @@ public class CurrentStackView
 
 	    StringWriter stringWriter = new StringWriter();
 	    stringWriter.write("# " + (++level) + " ");
-	    frame.toPrint(new PrintWriter(stringWriter),true,true);
+	    frame.toPrint(new PrintWriter(stringWriter),true);
 	    row = stringWriter.toString();
 	    
 	    if (hasInlinedCode)
@@ -205,7 +205,7 @@ public class CurrentStackView
 	    treeModel.setValue(iter, (DataColumnString) stackColumns[0], row);
 	    treeModel.setValue(iter, (DataColumnObject) stackColumns[1], frame);
 
-	    frame = frame.getOuter();
+	    frame = frame.getOuterDebugInfoFrame();
 	    iter = iter.getNextIter();
 	    row = "";
 	  }
@@ -221,7 +221,7 @@ public class CurrentStackView
       }
   }
 
-  private void buildTree (Frame[][] frames)
+  private void buildTree (DebugInfoFrame[][] frames)
   {
     TreeIter iter = null;
     TreeIter procIter = null;
@@ -257,7 +257,7 @@ public class CurrentStackView
 
 	for (int j = frames[i].length - 1; j >= 0; j--)
 	  {
-	    Frame frame = frames[i][j];
+	    DebugInfoFrame frame = frames[i][j];
 	    task = frames[i][j].getTask();
 
 	    iter = null;
@@ -271,7 +271,7 @@ public class CurrentStackView
 	    if (i == 0
 		&& task.getTid() == task.getProc().getMainTask().getTid())
 	      {
-		Frame in = frame.getInner();
+		DebugInfoFrame in = frame.getInnerDebugInfoFrame();
 		if (in != null)
 		  {
 		    currentFrame = in;
@@ -288,7 +288,7 @@ public class CurrentStackView
       }
   }
 
-  public void appendRows (Frame frame, TreeIter taskIter)
+  public void appendRows (DebugInfoFrame frame, TreeIter taskIter)
   {
 	boolean hasInlinedCode;
 	TreeIter iter;
@@ -315,7 +315,7 @@ public class CurrentStackView
 
 		StringWriter stringWriter = new StringWriter();
 		stringWriter.write(row = "# " + (++level) + " ");
-		frame.toPrint(new PrintWriter(stringWriter),true,true);
+		frame.toPrint(new PrintWriter(stringWriter),true);
 		row = stringWriter.toString();
 		
 		if (hasInlinedCode)
@@ -324,12 +324,12 @@ public class CurrentStackView
 		treeModel.setValue(iter, (DataColumnString) stackColumns[0], row);
 		treeModel.setValue(iter, (DataColumnObject) stackColumns[1], frame);
 
-		frame = frame.getOuter();
+		frame = frame.getOuterDebugInfoFrame();
 		row = "";
 	  }
   }
 
-  public void addProc (Frame[] frames, int current)
+  public void addProc (DebugInfoFrame[] frames, int current)
   {
 	int len = this.stackArray.length;
 	Object[] tempArray = new Object[len + 1];
@@ -365,7 +365,7 @@ public class CurrentStackView
 
 	for (int j = frames.length - 1; j >= 0; j--)
 	  {
-		Frame frame = frames[j];
+		DebugInfoFrame frame = frames[j];
 		iter = null;
 
 		taskIter = treeModel.appendRow(procIter);
@@ -415,7 +415,7 @@ public class CurrentStackView
   /**
    * @return The currently selected stack frame
    */
-  public static Frame getCurrentFrame ()
+  public static DebugInfoFrame getCurrentFrame ()
   {
 	return currentFrame;
   }
@@ -425,7 +425,7 @@ public class CurrentStackView
 	this.observers.add(listener);
   }
 
-  private void notifyObservers (Frame newStack, int current)
+  private void notifyObservers (DebugInfoFrame newStack, int current)
   {
 	Iterator iter = this.observers.iterator();
 
@@ -435,7 +435,7 @@ public class CurrentStackView
 	  }
   }
 
-  public Frame getFirstFrameSelection ()
+  public DebugInfoFrame getFirstFrameSelection ()
   {
 	return this.head;
   }
@@ -446,7 +446,7 @@ public class CurrentStackView
          * 
          * @param frame The StackFrame whose row to highlight.
          */
-  public void selectRow (Frame frame)
+  public void selectRow (DebugInfoFrame frame)
   {
     TreeSelection selection = this.getSelection();
     TreeIter first = this.treeModel.getFirstIter();
@@ -457,7 +457,7 @@ public class CurrentStackView
 	TreeIter iter = first.getFirstChild();
 	while (iter != null && this.treeModel.isIterValid(iter))
 	  {
-	    Frame rowFrame = (Frame) this.treeModel.getValue(
+	    DebugInfoFrame rowFrame = (DebugInfoFrame) this.treeModel.getValue(
 								       iter,
 								       (DataColumnObject) stackColumns[1]);
 
@@ -479,7 +479,7 @@ public class CurrentStackView
 	if (paths.length == 0)
 	  return;
 
-	Frame selected = null;
+	DebugInfoFrame selected = null;
 	Integer current = null;
 
 	Object o = treeModel.getValue(treeModel.getIter(paths[0]),
@@ -492,7 +492,7 @@ public class CurrentStackView
 		  {
 			if (paths[0].up())
 			  {
-				selected = (Frame) o;
+				selected = (DebugInfoFrame) o;
 
 				current = (Integer) treeModel.getValue(
 													   treeModel.getIter(paths[0]),

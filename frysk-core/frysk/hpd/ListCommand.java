@@ -39,16 +39,17 @@
 
 package frysk.hpd;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.text.ParseException;
 import java.util.ArrayList;
 
-import frysk.stack.Frame;
-import lib.dwfl.DwarfDie;
-import java.io.IOException;
-import java.io.FileReader;
-import java.io.File;
-import java.io.LineNumberReader;
 import javax.naming.NameNotFoundException;
-import java.text.ParseException;
+
+import lib.dwfl.DwarfDie;
+import frysk.debuginfo.DebugInfoFrame;
 
 /**
  * Implement the "list" source command.
@@ -69,7 +70,7 @@ class ListCommand
     {
 	ArrayList params = cmd.getParameters();
 	int windowSize = 20;
-	Frame frame = this.cli.frame;
+	DebugInfoFrame frame = this.cli.frame;
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;

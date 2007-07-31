@@ -41,28 +41,32 @@ package frysk.stepping;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.LinkedList;
 
 import frysk.Config;
-//import frysk.event.Event;
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.event.Event;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+
 import frysk.testbed.TestLib;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.TestfileTokenScanner;
+
 import frysk.rt.Breakpoint;
 import frysk.rt.BreakpointManager;
 import frysk.rt.LineBreakpoint;
 import frysk.rt.SourceBreakpoint;
 import frysk.rt.SourceBreakpointObserver;
-import frysk.stack.Frame;
-import frysk.stack.StackFactory;
 import frysk.sys.Pid;
 import frysk.sys.Sig;
+import frysk.testbed.DaemonBlockedAtEntry;
+import frysk.testbed.TestLib;
+import frysk.testbed.TestfileTokenScanner;
 
 public class TestSteppingEngine extends TestLib {
 
@@ -96,7 +100,7 @@ public class TestSteppingEngine extends TestLib {
 
 	    public void runAssertions() {
 
-		Frame frame = StackFactory.createFrame(testTask);
+		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 		Manager.eventLoop.requestStop();
@@ -128,7 +132,7 @@ public class TestSteppingEngine extends TestLib {
 
 	this.currentTest = new InstructionStepTest(end, myTask);
 
-	Frame frame = StackFactory.createFrame(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
@@ -161,7 +165,7 @@ public class TestSteppingEngine extends TestLib {
 
 	    public void runAssertions() {
 
-		Frame frame = StackFactory.createFrame(testTask);
+		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 		Manager.eventLoop.requestStop();
@@ -193,7 +197,7 @@ public class TestSteppingEngine extends TestLib {
 
 	this.currentTest = new InstructionStepListTest(end, myTask);
 
-	Frame frame = StackFactory.createFrame(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
@@ -228,7 +232,7 @@ public class TestSteppingEngine extends TestLib {
 
 	    public void runAssertions() {
 
-		Frame frame = StackFactory.createFrame(testTask);
+		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 		Manager.eventLoop.requestStop();
@@ -260,7 +264,7 @@ public class TestSteppingEngine extends TestLib {
 
 	this.currentTest = new LineStepList(end, myTask);
 
-	Frame frame = StackFactory.createFrame(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
@@ -293,7 +297,7 @@ public class TestSteppingEngine extends TestLib {
 
 	    public void runAssertions() {
 
-		Frame frame = StackFactory.createFrame(testTask);
+		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 		Manager.eventLoop.requestStop();
@@ -325,7 +329,7 @@ public class TestSteppingEngine extends TestLib {
 
 	this.currentTest = new LineStepListTest(end, myTask);
 
-	Frame frame = StackFactory.createFrame(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
@@ -360,13 +364,13 @@ public class TestSteppingEngine extends TestLib {
 
 	    public void runAssertions() {
 
-		Frame frame = StackFactory.createFrame(testTask);
+		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 
 		assertEquals("demanged name", "foo", frame.getSymbol()
 			.getDemangledName());
-		frame = frame.getOuter();
+		frame = frame.getOuterDebugInfoFrame();
 		assertEquals("demanged name", "main", frame.getSymbol()
 			.getDemangledName());
 
@@ -399,11 +403,11 @@ public class TestSteppingEngine extends TestLib {
 
 	this.currentTest = new StepOverTest(end, myTask);
 
-	Frame frame = StackFactory.createFrame(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
-	this.se.stepOver(myTask, StackFactory.createFrame(myTask));
+	this.se.stepOver(myTask, DebugInfoStackFactory.createDebugInfoStackTrace(myTask));
 
 	this.testStarted = true;
 	//System.err.println("waiting for finish");
@@ -435,17 +439,17 @@ public class TestSteppingEngine extends TestLib {
 		
 		if (first) {
 		    first = false;
-		    se.stepNextInstruction(testTask, StackFactory.createFrame(testTask));
+		    se.stepNextInstruction(testTask, DebugInfoStackFactory.createDebugInfoStackTrace(testTask));
 		    return;
 		}
 		
-		Frame frame = StackFactory.createFrame(testTask);
+		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 
 		assertEquals("demanged name", "foo", frame.getSymbol()
 			.getDemangledName());
-		frame = frame.getOuter();
+		frame = frame.getOuterDebugInfoFrame();
 		assertEquals("demanged name", "main", frame.getSymbol()
 			.getDemangledName());
 
@@ -478,7 +482,7 @@ public class TestSteppingEngine extends TestLib {
 
 	this.currentTest = new InstructionNextTest(end, myTask);
 
-	Frame frame = StackFactory.createFrame(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
@@ -511,13 +515,13 @@ public class TestSteppingEngine extends TestLib {
 
 	    public void runAssertions() {
 
-		Frame frame = StackFactory.createFrame(testTask);
+		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 
 		assertEquals("demanged name", "foo", frame.getSymbol()
 			.getDemangledName());
-		frame = frame.getOuter();
+		frame = frame.getOuterDebugInfoFrame();
 		assertEquals("demanged name", "main", frame.getSymbol()
 			.getDemangledName());
 
@@ -550,11 +554,11 @@ public class TestSteppingEngine extends TestLib {
 
 	this.currentTest = new StepOutTest(end, myTask);
 
-	Frame frame = StackFactory.createFrame(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
-	this.se.stepOut(myTask, StackFactory.createFrame(myTask));
+	this.se.stepOut(myTask, DebugInfoStackFactory.createDebugInfoStackTrace(myTask));
 
 	this.testStarted = true;
 	//System.err.println("waiting for finish");
@@ -583,13 +587,13 @@ public class TestSteppingEngine extends TestLib {
 
 	    public void runAssertions() {
 
-		Frame frame = StackFactory.createFrame(testTask);
+		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 
 		assertEquals("demanged name", "foo", frame.getSymbol()
 			.getDemangledName());
-		frame = frame.getOuter();
+		frame = frame.getOuterDebugInfoFrame();
 		assertEquals("demanged name", "main", frame.getSymbol()
 			.getDemangledName());
 
@@ -622,13 +626,13 @@ public class TestSteppingEngine extends TestLib {
 
 	this.currentTest = new StepAdvanceTest(end, myTask);
 
-	Frame frame = StackFactory.createFrame(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
 	this.se
-		.stepAdvance(myTask, StackFactory.createFrame(myTask)
-			.getOuter());
+		.stepAdvance(myTask, DebugInfoStackFactory.createDebugInfoStackTrace(myTask)
+			.getOuterDebugInfoFrame());
 
 	this.testStarted = true;
 	//System.err.println("waiting for finish");
@@ -665,11 +669,11 @@ public class TestSteppingEngine extends TestLib {
 	/** Test initialization */
 	Task myTask = initTask(process, source, start, end);
 
-	Frame frame = StackFactory.createFrame(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
-	breakpointAddress = frame.getOuter().getAddress();
+	breakpointAddress = frame.getOuterDebugInfoFrame().getAddress();
 	se.setBreakpoint(myTask, breakpointAddress);
 	
 	bpTask = myTask;

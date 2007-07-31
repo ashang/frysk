@@ -47,8 +47,6 @@ import java.util.LinkedList;
 import lib.dwfl.DwException;
 import lib.dwfl.DwTagEncodings;
 import lib.dwfl.DwarfDie;
-import frysk.debuginfo.DebugInfo;
-import frysk.stack.Frame;
 import frysk.value.Value;
 
 /**
@@ -141,7 +139,7 @@ public class Scope
   }
   
 
-  public void toPrint(Frame frame, PrintWriter writer, int indent){
+  public void toPrint(DebugInfoFrame frame, PrintWriter writer, int indent){
   
     char[] indentArray = new char[indent];
     Arrays.fill(indentArray, ' ');

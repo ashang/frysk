@@ -41,17 +41,11 @@ package frysk.stack;
 
 import java.io.PrintWriter;
 
-import lib.dwfl.DwTagEncodings;
-import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
-import lib.dwfl.DwflDieBias;
 import lib.dwfl.DwflModule;
 import lib.unwind.Cursor;
-import frysk.debuginfo.DebugInfo;
-import frysk.debuginfo.Subprogram;
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
-import frysk.rt.Line;
 import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
 import frysk.value.Value;
@@ -60,8 +54,6 @@ public abstract class Frame
 {
   protected Task task;
   protected Cursor cursor;
-  
-  private Subprogram subprogram;
   
   /**
    * Returns the program counter for this StackFrame.
@@ -168,46 +160,5 @@ public abstract class Frame
      * Return this frame's symbol; UNKNOWN if there is no symbol.
      */
   public abstract Symbol getSymbol ();
-
-    /**
-     * Return this frame's list of lines as an array; returns an empty array if
-     * there is no line number information available. The lack of line-number
-     * information can be determined with the test: <<tt>>.getLines().length == 0</tt>.
-     * XXX: When there are multiple lines, it isn't clear if there is a well
-     * defined ordering of the information; for instance: outer-to-inner or
-     * inner-to-outer.
-     */
-  public abstract Line[] getLines ();
-
-  public final Subprogram getSubprogram ()
-  {
-    if (subprogram == null) {
-      DebugInfo debugInfo = new DebugInfo(this);
-      
-      Dwfl dwfl = DwflCache.getDwfl(this.getTask());
-      DwflDieBias bias = dwfl.getDie(getAdjustedAddress());
-
-      if (bias != null) {
-
-	DwarfDie[] scopes = bias.die.getScopes(getAdjustedAddress());
-	
-	for (int i = 0; i < scopes.length; i++) {
-	  if (scopes[i].getTag() == DwTagEncodings.DW_TAG_subprogram_) {
-	    subprogram = new Subprogram(scopes[i], debugInfo);
-	    break;
-	  }
-
-	}
-      }
-      this.setSubprogram(subprogram);
-    }
-
-    return subprogram;
-  }
-
-    public final void setSubprogram (Subprogram subprogram)
-    {
-      this.subprogram = subprogram;
-    }
-    
+  
 }

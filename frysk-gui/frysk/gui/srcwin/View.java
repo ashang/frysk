@@ -43,7 +43,7 @@ import java.util.List;
 
 import org.gnu.gtk.Widget;
 
-import frysk.stack.Frame;
+import frysk.debuginfo.DebugInfoFrame;
 
 
 public interface View{
@@ -59,9 +59,9 @@ public interface View{
 	
 	List getFunctions();
 	
-	void load(Frame data, int mode);
+	void load(DebugInfoFrame data, int mode);
 	
-	Frame getScope();
+	DebugInfoFrame getScope();
 	
 	void setSubscopeAtCurrentLine(InlineSourceView child);
 	

@@ -1,3 +1,15 @@
+2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Variable.java: Replaced Frame with DebugInfoFrame.
+	* Subprogram.java: Ditto.
+	* TestFrameDebugInfo.java: Ditto.
+	added TestFrameScopesWorkAround.
+	* Scope.java: Replaced Frame with DebugInfoFrame.
+	* DebugInfoEvaluator.java: Ditto.
+	* DebugInfo.java: Ditto.
+	* DebugInfoStackFactory.java: New file.
+	* DebugInfoFrame.java : New file.
+
 2007-07-30  Nurdin Premji  <npremji@redhat.com>
 
 	* DebugInfoEvaluator.java (AccessMemory.getBufferAddr): Use frysk.stack.Register

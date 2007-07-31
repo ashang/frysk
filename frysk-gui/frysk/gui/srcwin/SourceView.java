@@ -41,8 +41,6 @@ package frysk.gui.srcwin;
 
 import java.util.HashMap;
 import java.util.List;
-//import java.io.PrintStream;
-//import java.io.OutputStream;
 
 import org.gnu.gdk.Color;
 import org.gnu.gdk.Cursor;
@@ -52,10 +50,6 @@ import org.gnu.gdk.GC;
 import org.gnu.gdk.Point;
 import org.gnu.gdk.Window;
 import org.gnu.gtk.Container;
-//import org.gnu.gtk.GtkStockItem;
-//import org.gnu.gtk.IconSize;
-//import org.gnu.gdk.Image;
-//import org.gnu.gtk.Label;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.StateType;
@@ -65,7 +59,6 @@ import org.gnu.gtk.TextIter;
 import org.gnu.gtk.TextMark;
 import org.gnu.gtk.TextView;
 import org.gnu.gtk.TextWindowType;
-//import org.gnu.gtk.WindowType;
 import org.gnu.gtk.event.ExposeEvent;
 import org.gnu.gtk.event.ExposeListener;
 import org.gnu.gtk.event.MenuItemEvent;
@@ -78,8 +71,7 @@ import org.gnu.pango.Alignment;
 import org.gnu.pango.FontDescription;
 import org.gnu.pango.Layout;
 
-//import frysk.cli.hpd.*;
-//import frysk.dom.DOMFunction;
+import frysk.debuginfo.DebugInfoFrame;
 import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMLine;
 import frysk.dom.DOMSource;
@@ -92,9 +84,7 @@ import frysk.gui.prefs.BooleanPreference.BooleanPreferenceListener;
 import frysk.gui.prefs.ColorPreference.ColorPreferenceListener;
 import frysk.gui.prefs.IntPreference.IntPreferenceListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
-//import frysk.rt.LineBreakpoint;
 import frysk.rt.UpdatingDisplayValue;
-import frysk.stack.Frame;
 import frysk.value.Value;
 
 //import frysk.rt.BreakpointManager;
@@ -165,11 +155,11 @@ public class SourceView extends TextView implements View, ExposeListener {
          *                The SourceWindow that this SourceViewWidget is
          *                contained in
          */
-    public SourceView(Frame scope, SourceWindow parent) {
+    public SourceView(DebugInfoFrame scope, SourceWindow parent) {
 	this(new SourceBuffer(scope), parent);
     }
 
-    public SourceView(Frame scope, SourceWindow parent, int mode) {
+    public SourceView(DebugInfoFrame scope, SourceWindow parent, int mode) {
 	this(new SourceBuffer(scope, mode), parent);
     }
 
@@ -299,7 +289,7 @@ public class SourceView extends TextView implements View, ExposeListener {
          * @param data
          *                The new stack frame to load.
          */
-    public void load(Frame data, int mode) {
+    public void load(DebugInfoFrame data, int mode) {
 	this.buf.setScope(data, mode);
 	this.expanded = false;
 	this.anchor = null;
@@ -372,7 +362,7 @@ public class SourceView extends TextView implements View, ExposeListener {
 	return this.buf.getFunctions();
     }
 
-    public Frame getScope() {
+    public DebugInfoFrame getScope() {
 	return this.buf.getScope();
     }
 
@@ -962,7 +952,7 @@ public class SourceView extends TextView implements View, ExposeListener {
 	TextIter iter = this.getIterFromWindowCoords((int) event.getX(),
 		(int) event.getY());
 
-	Frame frame = this.buf.getScope();
+	DebugInfoFrame frame = this.buf.getScope();
 
 	if (frame == null || frame.getLines().length == 0)
 	    return false;

@@ -1,3 +1,15 @@
+2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* SourceWindowFactory.java: Replaced Frame with DebugInfoFrame.
+	* SourceWindow.java: Ditto.
+	* SourceBuffer.java: Ditto.
+	* MixedView.java: Ditto.
+	* View.java: Ditto.
+	* InlineSourceView.java: Ditto.
+	* SourceView.java: Ditto.
+	* InlineBuffer.java: Ditto.
+	* CurrentStackView.java: Ditto.
+
 2007-07-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* CurrentStackView.java (refreshProc): Passes a printSourceLibrary

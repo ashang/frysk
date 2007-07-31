@@ -1,3 +1,13 @@
+2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* WhereCommand.java: Replaced Frame with DebugInfoFrame.
+	* WhatCommand.java: Ditto.
+	* StepInstructionCommand.java: Ditto.
+	* StepCommand.java: Ditto.
+	* ListCommand.java: Ditto.
+	* CoreCommand.java: Ditto.
+	* CLI.java: Ditto.
+
 2007-07-31  Nurdin Premji  <npremji@redhat.com>
 
 	* CLIHandler.java (CLIHandler): Reflect change to HpdCommandParser.

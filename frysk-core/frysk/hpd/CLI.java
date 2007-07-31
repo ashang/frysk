@@ -55,10 +55,10 @@ import java.util.Set;
 import javax.naming.NameNotFoundException;
 
 import frysk.debuginfo.DebugInfo;
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.stack.Frame;
-import frysk.stack.StackFactory;
 import frysk.stepping.SteppingEngine;
 import frysk.stepping.TaskStepEngine;
 import frysk.value.Value;
@@ -69,7 +69,7 @@ public class CLI
   Task task;
   DebugInfo debugInfo = null;
   boolean running = false;
-  Frame frame;
+  DebugInfoFrame frame;
   int stackLevel = 0;
   SteppingObserver steppingObserver;
   SteppingEngine steppingEngine;
@@ -156,7 +156,7 @@ public class CLI
 	}
       }
     addMessage("Attached to process " + this.proc.getPid(), Message.TYPE_NORMAL);
-    frame = StackFactory.createFrame(this.task);
+    frame = DebugInfoStackFactory.createDebugInfoStackTrace(this.task);
     debugInfo = new DebugInfo(frame);
   }
   
@@ -172,8 +172,8 @@ public class CLI
         }
       int level = 1;
       boolean down = true;
-      Frame currentFrame = frame;
-      Frame tmpFrame = frame;
+      DebugInfoFrame currentFrame = frame;
+      DebugInfoFrame tmpFrame = frame;
 
       if (params.size() != 0)
 	level = Integer.parseInt((String)params.get(0));
@@ -188,9 +188,9 @@ public class CLI
       int l = level;
       while (tmpFrame != null && l != 0) {
 	  if (down)
-	      tmpFrame = tmpFrame.getOuter();
+	      tmpFrame = tmpFrame.getOuterDebugInfoFrame();
 	  else
-	      tmpFrame = tmpFrame.getInner();
+	      tmpFrame = tmpFrame.getInnerDebugInfoFrame();
 	  l = l - 1;
       }
         
@@ -203,7 +203,7 @@ public class CLI
       if (tmpFrame == null)
 	tmpFrame = currentFrame;
       outWriter.print("#" + stackLevel + " ");
-      tmpFrame.toPrint(outWriter, false,true);
+      tmpFrame.toPrint(outWriter, false);
       outWriter.println();
     }
   }
@@ -505,7 +505,7 @@ public class CLI
       synchronized (CLI.this)
         {
           attached = true;
-          frame = StackFactory.createFrame(task);
+          frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
           // bpt = (Breakpoint.PersistentBreakpoint)
           // SteppingEngine.getTaskBreakpoint(task);
           synchronized (this.monitor)

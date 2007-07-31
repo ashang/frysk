@@ -83,7 +83,7 @@ header
     import java.util.ArrayList;
     import frysk.value.ArithmeticType;
     import frysk.value.Value;
-    import frysk.stack.Frame;
+    import frysk.debuginfo.DebugInfoFrame;
     import javax.naming.NameNotFoundException;
     import frysk.value.InvalidOperatorException;
     import frysk.value.OperationNotDefinedException;
@@ -747,8 +747,8 @@ options {
     ArithmeticType doubleType;
     ArithmeticType floatType;
     private CppSymTab cppSymTabRef;
-    private Frame frame;
-    public CppTreeParser(int intSize, Frame frame, CppSymTab symTab) {
+    private DebugInfoFrame frame;
+    public CppTreeParser(int intSize, DebugInfoFrame frame, CppSymTab symTab) {
         this();
 	    cppSymTabRef = symTab; 
         this.frame = frame;

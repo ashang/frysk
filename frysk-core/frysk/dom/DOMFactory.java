@@ -39,14 +39,15 @@
 
 package frysk.dom;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.io.File;
-import frysk.proc.Proc;
-import frysk.stack.Frame;
 
 import org.jdom.Document;
 import org.jdom.output.XMLOutputter;
+
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.proc.Proc;
 
 public class DOMFactory
 {
@@ -54,7 +55,7 @@ public class DOMFactory
 
   private static HashMap hashmap = new HashMap();
 
-  public static DOMFrysk createDOM (Frame frame, Proc proc)
+  public static DOMFrysk createDOM (DebugInfoFrame frame, Proc proc)
       throws IOException
   {
     DOMFrysk dom = null;

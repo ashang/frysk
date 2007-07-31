@@ -42,7 +42,7 @@ package frysk.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-import frysk.stack.Frame;
+import frysk.debuginfo.DebugInfoFrame;
   
 class WhereCommand
     implements CommandHandler
@@ -67,7 +67,7 @@ class WhereCommand
         }
       
 	int level = 0;
-	Frame tmpFrame = null;
+	DebugInfoFrame tmpFrame = null;
         
 	if (cli.proc == null) {
 	    cli.addMessage("No symbol table is available.",
@@ -89,9 +89,9 @@ class WhereCommand
 	tmpFrame = cli.frame;
 	while (tmpFrame != null) {
 	    cli.outWriter.print("#" + l + " ");
-	    tmpFrame.toPrint(cli.outWriter,false,true);
+	    tmpFrame.toPrint(cli.outWriter,false);
 	    cli.outWriter.println();
-	    tmpFrame = tmpFrame.getOuter();
+	    tmpFrame = tmpFrame.getOuterDebugInfoFrame();
 	    l += 1;
 	    if (l == stopLevel)
 		break;

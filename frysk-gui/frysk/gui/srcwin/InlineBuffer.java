@@ -50,13 +50,13 @@ import org.gnu.gtk.TextIter;
 import org.jdom.Element;
 
 import frysk.debuginfo.DebugInfo;
+import frysk.debuginfo.DebugInfoFrame;
 import frysk.dom.DOMFunction;
 import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMLine;
 import frysk.dom.DOMTag;
 import frysk.dom.DOMTagTypes;
 import frysk.value.Value;
-import frysk.stack.Frame;
 
 /**
  * The InlineBuffer performs much of the same functionality as the SourceBuffer,
@@ -75,7 +75,7 @@ public class InlineBuffer
 
   private TextChildAnchor ellipsisAnchor;
 
-  Frame currentFrame;
+  DebugInfoFrame currentFrame;
 
   private DebugInfo stab;
   
@@ -85,7 +85,7 @@ public class InlineBuffer
    * @param instance The inlined instance to display
    * @param frame The file that the declaration is in
    */
-  public InlineBuffer (DOMInlineInstance instance, Frame frame)
+  public InlineBuffer (DOMInlineInstance instance, DebugInfoFrame frame)
   {
     super();
     this.instance = instance;

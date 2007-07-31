@@ -1,3 +1,8 @@
+2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* cpp.g: Replaced Frame with DebugInfoFrame.
+	* CppSymTab.java: Ditto.
+
 2007-07-16  Andrew Cagney  <cagney@redhat.com>
 
 	* cpp.g: Update, lib.dw and lib.elf merged into lib.dwfl.

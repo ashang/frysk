@@ -54,12 +54,12 @@ import org.gnu.gtk.event.MouseEvent;
 import org.gnu.pango.Alignment;
 import org.gnu.pango.Layout;
 
+import frysk.debuginfo.DebugInfoFrame;
 import frysk.dom.DOMInlineInstance;
 import frysk.gui.prefs.IntPreference;
 import frysk.gui.prefs.PreferenceManager;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.value.Value;
-import frysk.stack.Frame;
 
 /**
  * The InlineViewer displays code that has been inlined. InlineViewers will always
@@ -87,7 +87,7 @@ public class InlineSourceView extends SourceView{
 	 *     InlineViewer will be displaying
 	 * @param instance The inline instance to display
 	 */
-	public InlineSourceView(SourceWindow top, DOMInlineInstance instance, Frame frame) {
+	public InlineSourceView(SourceWindow top, DOMInlineInstance instance, DebugInfoFrame frame) {
 		super(new InlineBuffer(instance, frame), top);
 		this.setBorderWidth(1);
 		this.depth = 1;
