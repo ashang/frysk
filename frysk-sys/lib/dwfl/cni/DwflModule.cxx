@@ -164,3 +164,35 @@ lib::dwfl::DwflModule::setUserData(jobject data)
    *userdata = data;
   
 }
+
+/* 
+ * Get the DebugInfo paths if present
+ */
+jstring
+lib::dwfl::DwflModule::getDebuginfo()
+{
+  // Filter out non-binary modules
+  if (module_getelf() == NULL)
+    return JvNewStringUTF ("");
+	
+  Dwarf_Addr bias;
+
+  if (dwfl_module_getdwarf (DWFL_MODULE_POINTER, &bias) == NULL)
+  {
+    // Case where debuginfo not installed or available
+    return JvNewStringUTF("---");
+  }
+  
+  // Get the path to debuginfo file
+  const char* debuginfo_fname = NULL;  
+  dwfl_module_info (DWFL_MODULE_POINTER, 
+                    NULL, NULL, NULL, NULL, NULL, NULL,
+                    &debuginfo_fname);   
+
+  if (debuginfo_fname)
+    {                      
+      return JvNewStringUTF(debuginfo_fname); 
+    }
+
+  return JvNewStringUTF("Debuginfo present in executable");                 	               		      
+}    

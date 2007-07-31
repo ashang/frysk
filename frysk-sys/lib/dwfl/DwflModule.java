@@ -105,4 +105,11 @@ public class DwflModule
 				       SymbolBuilder symbolBuilder);
   
     public native void setUserData(Object data);
+    
+    /**
+     * Get the Debuginfo path for DwflModule
+     * 
+     * @return path to debuginfo package, or string "---" if not found, or "" if non-binary module 
+     */
+    public native String getDebuginfo();
 }

@@ -1,3 +1,8 @@
+2007-07-31  Teresa Thomas  <tthomas@redhat.com>
+
+	* DwflModule.java (getDebuginfo): Added.	
+	* cni/DwflModule.cxx (getDebuginfo): Added.
+	
 2007-07-27  Andrew Cagney  <cagney@redhat.com>
 
 	* Elf.java (Elf(File,ElfCommand)): New constructor.
@@ -7,7 +12,7 @@
 2007-07-27  Petr Machata  <pmachata@redhat.com>
 
 	* ElfSectionHeader.java: added ELF_SHN_* constants
-
+	
 2007-07-26  Petr Machata  <pmachata@redhat.com>
 
 	* ElfSymbol.java, cni/ElfSymbol.cxx: new class
