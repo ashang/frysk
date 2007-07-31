@@ -50,15 +50,17 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.testbed.TestLib;
+import frysk.testbed.FunitThreadsOffspring;
 
 public class StressTestFStack
     extends TestLib
 {
 
-  static String mainClone = "Task #\\d+\n"
-                            + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
-                            + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\)\n"
-                            + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\)\n";
+  static String mainClone
+      = "Task #\\d+\n"
+      + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
+      + "#[\\d]+ 0x[\\da-f]+ in main \\(\\) from .*\n"
+      + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*";
 
   static String clone = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*";
 
@@ -74,8 +76,7 @@ public class StressTestFStack
       StringWriter stringWriter = new StringWriter();
       
     int threads = 2;
-    AckProcess ackProc = new AckDaemonCloneProcess(threads);
-
+    FunitThreadsOffspring ackProc = new FunitThreadsOffspring(threads);
     final Proc proc = ackProc.assertFindProcAndTasks();
 
     StacktraceAction stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new Event()
@@ -97,9 +98,7 @@ public class StressTestFStack
     new ProcBlockAction(proc, stacker);
     assertRunUntilStop("perform backtrace");
 
-    String regex = new String();
-
-    regex += "(" + mainClone + ")(" + clone + ")*";
+    String regex = "(" + mainClone + ")(" + clone + ")*";
 
     String result = stringWriter.getBuffer().toString();
     logger.log(Level.FINE, result);

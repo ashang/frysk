@@ -1,5 +1,8 @@
 2007-07-31  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (funitThreadsCommand): Delete.
+	(AckDaemonCloneProcess): Delete.
+
 	* FunitExecOffspring.java: Rename FunitExec.java.
 	* FunitThreadsOffspring.java: New file; based on
 	TestLib.AckDaemonCloneProcess and TestLib.funitThreadsCommand.

@@ -1,3 +1,8 @@
+2007-07-31  Andrew Cagney  <cagney@redhat.com>
+
+	* StressTestFStack.java: Use frysk.testbed.FunitThreadsOffspring.
+	(mainClone): Add pattern to match " from ...".
+
 2007-07-31  Mark Wielaard  <mwielaard@redhat.com>
 
 	* StacktraceAction.java (printTasks): Remove debug println.
