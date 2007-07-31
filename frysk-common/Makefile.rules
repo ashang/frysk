@@ -266,7 +266,7 @@ SUBST = \
 	mkdir -p `dirname $@` ; \
 	rm -f $@.tmp ; \
 	touch $@.tmp ; \
-	case "$@" in \
+	case "$<" in \
 		*.java|*.cxx|*.c) \
 			echo '// Generated from: $<'	>> $@.tmp ; \
 			echo ''				>> $@.tmp ; \
