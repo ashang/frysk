@@ -161,7 +161,7 @@ public class IA32Registers {
 		    MXCSR });
 
     public final static RegisterGroup SEGMENT = new RegisterGroup("segment",
-	    new Register[] { GS, FS, ES, DS, SS, CS, TSS, LDT });
+	    new Register[] { GS, FS, ES, DS, SS, CS});
 
     public final static RegisterGroup ALL;
     static {

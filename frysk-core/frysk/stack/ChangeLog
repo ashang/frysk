@@ -1,3 +1,8 @@
+2007-07-31  Nurdin Premji  <npremji@redhat.com>
+
+	* IA32Registers.java (SEGMENT): Removed TSS and LDT registers from 
+	SEGMENT group.
+
 2007-07-30  Nurdin Premji <npremji@redhat.com>
 
 	* Frame.java (getRegisterValue): Added.
