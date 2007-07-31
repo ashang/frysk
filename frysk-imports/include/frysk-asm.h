@@ -371,13 +371,13 @@
 #endif
 
 #if defined __i386__
-#  define JUMP_REG(REG) jmp REG
+#  define JUMP_REG(REG) jmp *REG
 #elif defined __x86_64__
-#  define JUMP_REG(REG) jmp REG
+#  define JUMP_REG(REG) jmp *REG
 #elif defined __powerpc__
-#  define JUMP_REG(REG) br REG
+#  define JUMP_REG(REG) br *REG
 #elif defined __powerpc64__
-#  define JUMP_REG(REG) br REG
+#  define JUMP_REG(REG) br *REG
 #else
 #  warning "No indirect or register jump instruction defined"
 #endif

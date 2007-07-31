@@ -5,6 +5,8 @@
 	(JUMP_REG): Fixed syntax bug.
 	(FRAMELESS_FUNCTION_BEGIN): Defined new name parameter.
 	(FRAMELESS_ADJ_RETURN): Defined new register parameter.
+	
+	* frysk-asm.h (JUMP_REG): Changed to *REG.
 
 2007-07-30  Mike Cvet  <mcvet@redhat.com>
 
