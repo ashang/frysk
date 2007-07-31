@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,64 +39,60 @@
 
 package frysk.testbed;
 
-import frysk.sys.Errno;
-import frysk.sys.Fork;
-import frysk.sys.Wait;
-import frysk.sys.UnhandledWaitBuilder;
+import frysk.sys.Sig;
+import frysk.Config;
+import frysk.sys.Pid;
 import frysk.junit.TestCase;
 
 /**
- * Create a detached child process running the funit-sigack
- * program. Since the created process is a direct child of this
- * process, this process will see a wait event when this exits.  It is
- * most useful when a controlled process exit is required (see reap).
+ * Create a process running funit-exec.
+ *
+ * The program funit-exec, when sent a signal, will exec its
+ * arguments.
  */
-public class SigAckChild
-    extends SigAckProcess
-{
-    public SigAckChild () {
-	super();
-    }
-
-    public SigAckChild (String filenameArg, String[] argv) {
-	super(filenameArg, argv);
-    }
-
-    public SigAckChild (int count) {
-	super(count);
-    }
-
+public class FunitExecOffspring extends SynchronizedOffspring {
     /**
-     * Create a detached process that is a child of this one.
+     * Create a process that, when requested, will execute an exec
+     * system call.
      */
-    protected int startChild (String stdin, String stdout, String stderr,
-			      String[] argv) {
-	return Fork.exec(stdin, stdout, stderr, argv);
+    FunitExecOffspring(String[] program) {
+	super(Sig.HUP, constructArgs(0, program));
     }
-
+    private static String[] constructArgs(int threads,
+					  String[] program) {
+	String[] args;
+	if (threads > 0)
+	    args = new String[program.length + 4 + 1];
+	else
+	    args = new String[program.length + 4];
+	int n = 0;
+	args[n++] = Config.getPkgLibFile("funit-exec").getPath();
+	if (threads > 0)
+	    args[n++] = "-" + threads;
+	args[n++] = Integer.toString(Pid.get());
+	args[n++] = Integer.toString(Sig.HUP_);
+	args[n++] = Integer.toString(TestCase.getTimeoutSeconds());
+	System.arraycopy(program, 0, args, n, program.length);
+	return args;
+    }
     /**
-     * Reap the child. Kill the child, wait for and consume the
-     * child's exit event.
+     * Create a multi-threaded process that, when requested, will
+     * execute an exec system call.
      */
-    public void reap () {
-	kill();
-	try {
-	    while (true) {
-		Wait.waitAll(getPid(), new UnhandledWaitBuilder () {
-			protected void unhandled (String why) {
-			    TestCase.fail ("killing child (" + why + ")");
-			}
-			public void terminated (int pid, boolean signal,
-						int value,
-						boolean coreDumped) {
-			    // Termination with signal is ok.
-			    TestCase.assertTrue("terminated with signal",
-						signal);
-			}
-		    });
-	    }
-	} catch (Errno.Echild e) {
-	    // No more waitpid events.
-	}
+    FunitExecOffspring(int threads, String[] program) {
+	super(Sig.HUP, constructArgs(threads, program));
+    }
+    /**
+     * Request that the process perform a request.  This operation is
+     * not acknowledged.
+     */
+    public void requestExec() {
+	signal(Sig.USR1);
+    }
+    /**
+     * Request that a random thread does an exec.
+     */
+    public void requestRandomExec() {
+	signal(Sig.USR2);
     }
 }

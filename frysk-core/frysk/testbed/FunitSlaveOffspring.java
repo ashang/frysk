@@ -48,18 +48,22 @@ import frysk.sys.proc.Stat;
 import frysk.testbed.SignalWaiter;
 import java.util.LinkedList;
 import java.util.List;
+import frysk.sys.Errno;
+import frysk.sys.Wait;
+import frysk.sys.UnhandledWaitBuilder;
 
 /**
- * Create an ack-process that can be manipulated using various
- * signals (see below).
+ * Create a process running the funit slave (a.k.a., funit-child).
+ * The slave can be manipulated using various signals and methods
+ * listed below.
  */
-public abstract class SigAckProcess
-    extends TestLib.Child
+public abstract class FunitSlaveOffspring
+    extends SynchronizedOffspring
 {
     /**
-     * Build an funit-child command to run.
+     * Build the slave command that should be run.
      */
-    static private String[] funitChildCommand (boolean busy,
+    static private String[] funitSlaveCommand (boolean busy,
 					       String filenameArg,
 					       String[] argv) {
 	List command = new LinkedList();
@@ -81,66 +85,50 @@ public abstract class SigAckProcess
 	return args;
     }
 
-    // NOTE: Use a different signal to thread add/del. Within this
-    // process the signal is masked and Linux appears to propogate the
-    // mask all the way down to the exec'ed child.
-    protected static final Sig ackSignal = Sig.HUP;
-
-    protected static final Sig childAck = Sig.USR1;
-
-    protected static final Sig parentAck = Sig.USR2;
-
-    protected static final Sig addCloneSig = Sig.USR1;
-
-    protected static final Sig delCloneSig = Sig.USR2;
-
-    protected static final Sig stopSig = Sig.STOP;
-
-    protected static final Sig addForkSig = Sig.HUP;
-
-    protected static final Sig delForkSig = Sig.INT;
-
-    protected static final Sig zombieForkSig = Sig.URG;
-
-    protected static final Sig execSig = Sig.PWR;
-
-    protected static final Sig execCloneSig = Sig.FPE;
-
-    protected static final Sig[] spawnAck = new Sig[] { childAck, parentAck };
-
-    protected static final Sig[] execAck = new Sig[] { childAck };
+    public static final Sig CHILD_ACK = Sig.USR1;
+    public static final Sig PARENT_ACK = Sig.USR2;
+    public static final Sig ADD_CLONE_SIG = Sig.USR1;
+    public static final Sig DEL_CLONE_SIG = Sig.USR2;
+    public static final Sig STOP_SIG = Sig.STOP;
+    public static final Sig ADD_FORK_SIG = Sig.HUP;
+    public static final Sig DEL_FORK_SIG = Sig.INT;
+    public static final Sig ZOMBIE_FORK_SIG = Sig.URG;
+    public static final Sig EXEC_SIG = Sig.PWR;
+    public static final Sig EXEC_CLONE_SIG = Sig.FPE;
+    public static final Sig[] spawnAck = new Sig[] { CHILD_ACK, PARENT_ACK };
+    public static final Sig[] execAck = new Sig[] { CHILD_ACK };
 
     /** Create an ack process. */
-    protected SigAckProcess () {
-	super(childAck, funitChildCommand(false, null, null));
+    protected FunitSlaveOffspring () {
+	super(CHILD_ACK, funitSlaveCommand(false, null, null));
     }
 
     /**
-     * Create an SigAckProcess; if BUSY, the process will use a
+     * Create an FunitSlaveOffspring; if BUSY, the process will use a
      * busy-loop, instead of suspending, when waiting for signal
      * commands.
      */
-    protected SigAckProcess (boolean busy) {
-	super(childAck, funitChildCommand(busy, null, null));
+    protected FunitSlaveOffspring (boolean busy) {
+	super(CHILD_ACK, funitSlaveCommand(busy, null, null));
     }
 
     /**
-     * Create an SigAckProcess; the process will use FILENAME and
+     * Create an FunitSlaveOffspring; the process will use FILENAME and
      * ARGV as the program to exec.
      */
-    protected SigAckProcess (String filename, String[] argv) {
-	super(childAck, funitChildCommand(false, filename, argv));
+    protected FunitSlaveOffspring (String filename, String[] argv) {
+	super(CHILD_ACK, funitSlaveCommand(false, filename, argv));
     }
 
-    /** Create an SigAckProcess, and then add COUNT threads. */
-    protected SigAckProcess (int count) {
+    /** Create an FunitSlaveOffspring, and then add COUNT threads. */
+    protected FunitSlaveOffspring (int count) {
 	this();
 	for (int i = 0; i < count; i++)
 	    assertSendAddCloneWaitForAcks();
     }
 
-    /** Create a possibly busy SigAckProcess. Add COUNT threads. */
-    protected SigAckProcess (int count, boolean busy) {
+    /** Create a possibly busy FunitSlaveOffspring. Add COUNT threads. */
+    protected FunitSlaveOffspring (int count, boolean busy) {
 	this(busy);
 	for (int i = 0; i < count; i++)
 	    assertSendAddCloneWaitForAcks();
@@ -151,51 +139,52 @@ public abstract class SigAckProcess
      */
     private void spawn (int tid, Sig sig, String why) {
 	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, spawnAck, why);
-	signal(tid, sig);
+	// XXX: Just trust that TID is part of this process.
+	Signal.tkill(tid, sig);
 	ack.assertRunUntilSignaled();
     }
 
     /** Add a Task. */
     public void assertSendAddCloneWaitForAcks () {
-	spawn(getPid(), addCloneSig, "assertSendAddCloneWaitForAcks");
+	spawn(getPid(), ADD_CLONE_SIG, "assertSendAddCloneWaitForAcks");
     }
 
     /** Add a Task. */
     public void assertSendAddCloneWaitForAcks (int tid) {
-	spawn(tid, addCloneSig, "addClone");
+	spawn(tid, ADD_CLONE_SIG, "addClone");
     }
 
     /** Delete a Task. */
     public void assertSendDelCloneWaitForAcks () {
-	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, parentAck,
+	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, PARENT_ACK,
 					    "assertSendDelCloneWaitForAcks");
-	signal(delCloneSig);
+	signal(DEL_CLONE_SIG);
 	ack.assertRunUntilSignaled();
     }
 
     /** Add a child Proc. */
     public void assertSendAddForkWaitForAcks () {
-	spawn(getPid(), addForkSig, "assertSendAddForkWaitForAcks");
+	spawn(getPid(), ADD_FORK_SIG, "assertSendAddForkWaitForAcks");
     }
 
     /** Add a child Proc. */
     public void assertSendAddForkWaitForAcks (int tid) {
-	spawn(tid, addForkSig, "addFork");
+	spawn(tid, ADD_FORK_SIG, "addFork");
     }
 
     /** Delete a child Proc. */
     public void assertSendDelForkWaitForAcks () {
-	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, parentAck,
+	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, PARENT_ACK,
 					    "assertSendDelForkWaitForAcks");
-	signal(delForkSig);
+	signal(DEL_FORK_SIG);
 	ack.assertRunUntilSignaled();
     }
 
     /** Terminate a fork Proc (creates zombie). */
     public void assertSendZombieForkWaitForAcks () {
-	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, parentAck,
+	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, PARENT_ACK,
 					    "assertSendZombieForkWaitForAcks");
-	signal(zombieForkSig);
+	signal(ZOMBIE_FORK_SIG);
 	ack.assertRunUntilSignaled();
     }
 
@@ -204,7 +193,7 @@ public abstract class SigAckProcess
      * better be a child).
      */
     public void assertSendFryParentWaitForAcks ()	{
-	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, childAck,
+	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, CHILD_ACK,
 					    "assertSendFryParentWaitForAcks");
 	signal(Sig.KILL);
 	ack.assertRunUntilSignaled();
@@ -217,7 +206,7 @@ public abstract class SigAckProcess
     public void assertSendExecWaitForAcks (int tid) {
 	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, execAck,
 					    "assertSendExecWaitForAcks:" + tid);
-	Signal.tkill(tid, execSig);
+	Signal.tkill(tid, EXEC_SIG);
 	ack.assertRunUntilSignaled();
     }
 
@@ -232,12 +221,12 @@ public abstract class SigAckProcess
      * Request that the cloned task perform an exec.
      */
     public void assertSendExecCloneWaitForAcks () {
-	// First the main thread acks with .parentAck, and then the
-	// execed process acks with .childAck.
+	// First the main thread acks with .PARENT_ACK, and then the
+	// execed process acks with .CHILD_ACK.
 	SignalWaiter ack = new SignalWaiter(Manager.eventLoop,
-					    new Sig[] { parentAck, childAck },
+					    new Sig[] { PARENT_ACK, CHILD_ACK },
 					    "assertSendExecCloneWaitForAcks");
-	signal(execCloneSig);
+	signal(EXEC_CLONE_SIG);
 	ack.assertRunUntilSignaled();
     }
 
@@ -245,7 +234,7 @@ public abstract class SigAckProcess
      * Stop a Task.
      */
     public void assertSendStop () {
-	signal(stopSig);
+	signal(STOP_SIG);
 
 	Stat stat = new Stat();
 	stat.refresh(this.getPid());
@@ -257,5 +246,31 @@ public abstract class SigAckProcess
 	}
 	TestCase.fail("Stop signal not handled by process, in state: "
 		      + stat.state);
+    }
+
+    /**
+     * Reap the process.. Kill the process and then wait for and
+     * consume all of that processes waitpid events.
+     */
+    public void reap () {
+	kill();
+	try {
+	    while (true) {
+		Wait.waitAll(getPid(), new UnhandledWaitBuilder () {
+			protected void unhandled (String why) {
+			    TestCase.fail ("killing child (" + why + ")");
+			}
+			public void terminated (int pid, boolean signal,
+						int value,
+						boolean coreDumped) {
+			    // Termination with signal is ok.
+			    TestCase.assertTrue("terminated with signal",
+						signal);
+			}
+		    });
+	    }
+	} catch (Errno.Echild e) {
+	    // No more waitpid events.
+	}
     }
 }

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,60 +39,34 @@
 
 package frysk.testbed;
 
-import frysk.sys.Sig;
-import frysk.Config;
 import frysk.sys.Pid;
 import frysk.junit.TestCase;
+import java.util.List;
+import java.util.LinkedList;
+import frysk.Config;
 
-/**
- * Create a process running funit-exec.
- *
- * The program funit-exec, when sent a signal, will exec its
- * arguments.
- */
-public class FunitExec extends SynchronizedOffspring {
+public class FunitThreadsOffspring
+    extends SynchronizedOffspring
+{
     /**
-     * Create a process that, when requested, will execute an exec
-     * system call.
+     * Build an funit-threads command to run.
      */
-    FunitExec(String[] program) {
-	super(Sig.HUP, constructArgs(0, program));
+    private static String[] funitThreadsCommand (int threads) {
+	List command = new LinkedList();
+	
+	command.add (Config.getPkgLibFile("funit-threads").getPath());
+	// Use getpid as this testsuite always runs the event loop
+	// from the main thread (which has tid==pid).
+	command.add(Integer.toString(Pid.get()));
+	command.add(Integer.toString(START_ACK.hashCode()));
+	command.add(Integer.toString(TestCase.getTimeoutSeconds()));
+	command.add(Integer.toString(threads));
+	String[] argv = new String[command.size()];
+	command.toArray(argv);
+	return argv;
     }
-    private static String[] constructArgs(int threads,
-					  String[] program) {
-	String[] args;
-	if (threads > 0)
-	    args = new String[program.length + 4 + 1];
-	else
-	    args = new String[program.length + 4];
-	int n = 0;
-	args[n++] = Config.getPkgLibFile("funit-exec").getPath();
-	if (threads > 0)
-	    args[n++] = "-" + threads;
-	args[n++] = Integer.toString(Pid.get());
-	args[n++] = Integer.toString(Sig.HUP_);
-	args[n++] = Integer.toString(TestCase.getTimeoutSeconds());
-	System.arraycopy(program, 0, args, n, program.length);
-	return args;
-    }
-    /**
-     * Create a multi-threaded process that, when requested, will
-     * execute an exec system call.
-     */
-    FunitExec(int threads, String[] program) {
-	super(Sig.HUP, constructArgs(threads, program));
-    }
-    /**
-     * Request that the process perform a request.  This operation is
-     * not acknowledged.
-     */
-    public void requestExec() {
-	signal(Sig.USR1);
-    }
-    /**
-     * Request that a random thread does an exec.
-     */
-    public void requestRandomExec() {
-	signal(Sig.USR2);
+
+    public FunitThreadsOffspring (int threads) {
+	super(START_ACK, funitThreadsCommand(threads));
     }
 }

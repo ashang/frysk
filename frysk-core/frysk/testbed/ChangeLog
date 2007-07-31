@@ -1,3 +1,14 @@
+2007-07-31  Andrew Cagney  <cagney@redhat.com>
+
+	* FunitExecOffspring.java: Rename FunitExec.java.
+	* FunitThreadsOffspring.java: New file; based on
+	TestLib.AckDaemonCloneProcess and TestLib.funitThreadsCommand.
+	* FunitSlaveOffspring.java: New file; based on TestLib.AckProcess
+	and SigAckProcess, SigAckDaemon, and SigAckChild.
+	* SigAckChild.java: Delete.
+	* SigAckDaemon.java: Delete.
+	* SigAckProcess.java: Delete.
+	
 2007-07-28  Andrew Cagney  <cagney@redhat.com>
 
 	* OffspringType.java: New file.
