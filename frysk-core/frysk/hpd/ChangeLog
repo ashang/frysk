@@ -3,6 +3,7 @@
 	* CLIHandler.java (CLIHandler): Reflect change to HpdCommandParser.
 	Add a newline character to the end of the parser help function.
 	* HpdCommandParser.java (HpdCommandParser): Added output PrintStream parameter.
+	(parse): Reset help tag.
 	* TestHpdCommandParser.java (testHelp): Added.
 
 	* TestHpdCommandParser.java: Added.
