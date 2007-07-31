@@ -498,6 +498,8 @@ public class LinuxIa32Syscall
     new SocketSubSyscall ("recvmsg",    SOCKET_NUM, 5, "i:iiipp ")
   };
 
+  private static final SocketSubSyscall unknownSocketSubSyscall =
+    new SocketSubSyscall ("<unknown>", SOCKET_NUM);
 
   static class IpcSubSyscall
     extends Ia32Syscall
@@ -522,31 +524,35 @@ public class LinuxIa32Syscall
   }
   /**FIXME: No argument list here.*/
   static Syscall[] ipcSubcallList = {
+    new IpcSubSyscall ("<unknown0>",  IPC_NUM),
     new IpcSubSyscall ("semop",  IPC_NUM),
     new IpcSubSyscall ("semget", IPC_NUM),
     new IpcSubSyscall ("semctl",  IPC_NUM),
     new IpcSubSyscall ("semtimedop", IPC_NUM),
-    new IpcSubSyscall ("",  IPC_NUM),
-    new IpcSubSyscall ("", IPC_NUM),
-    new IpcSubSyscall ("",  IPC_NUM),
-    new IpcSubSyscall ("", IPC_NUM),
-    new IpcSubSyscall ("",  IPC_NUM),
-    new IpcSubSyscall ("", IPC_NUM),
+    new IpcSubSyscall ("<unknown5>",  IPC_NUM),
+    new IpcSubSyscall ("<unknown6>", IPC_NUM),
+    new IpcSubSyscall ("<unknown7>",  IPC_NUM),
+    new IpcSubSyscall ("<unknown8>", IPC_NUM),
+    new IpcSubSyscall ("<unknown9>",  IPC_NUM),
+    new IpcSubSyscall ("<unknown10>", IPC_NUM),
     new IpcSubSyscall ("msgsnd",  IPC_NUM),
     new IpcSubSyscall ("msgrcv", IPC_NUM),
     new IpcSubSyscall ("msgget",  IPC_NUM),
     new IpcSubSyscall ("msgctl", IPC_NUM),
-    new IpcSubSyscall ("",  IPC_NUM),
-    new IpcSubSyscall ("", IPC_NUM),
-    new IpcSubSyscall ("",  IPC_NUM),
-    new IpcSubSyscall ("", IPC_NUM),
-    new IpcSubSyscall ("",  IPC_NUM),
-    new IpcSubSyscall ("", IPC_NUM),
+    new IpcSubSyscall ("<unknown15>",  IPC_NUM),
+    new IpcSubSyscall ("<unknown16>", IPC_NUM),
+    new IpcSubSyscall ("<unknown17>",  IPC_NUM),
+    new IpcSubSyscall ("<unknown18>", IPC_NUM),
+    new IpcSubSyscall ("<unknown19>",  IPC_NUM),
+    new IpcSubSyscall ("<unknown20>", IPC_NUM),
     new IpcSubSyscall ("shmat",  IPC_NUM),
     new IpcSubSyscall ("shmdt", IPC_NUM),
     new IpcSubSyscall ("shmget",  IPC_NUM),
     new IpcSubSyscall ("shmctl", IPC_NUM)
   };
+
+  private static final IpcSubSyscall unknownIpcSubSyscall =
+    new IpcSubSyscall ("<unknown>", IPC_NUM);
 
   public static Syscall syscallByNum (Task task, int number)
   {
@@ -567,11 +573,17 @@ public class LinuxIa32Syscall
 	
 	if (number == SOCKET_NUM)
 	  {
-	    return socketSubcallList[subSyscallNumber];
+	    if (subSyscallNumber < socketSubcallList.length)
+	      return socketSubcallList[subSyscallNumber];
+	    else
+	      return unknownSocketSubSyscall;
 	  }
 	else
 	  {
-	    return ipcSubcallList[subSyscallNumber];
+	    if (subSyscallNumber < ipcSubcallList.length)
+	      return ipcSubcallList[subSyscallNumber];
+	    else
+	      return unknownIpcSubSyscall;
 	  }
       }
   }

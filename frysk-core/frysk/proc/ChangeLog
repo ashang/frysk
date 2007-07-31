@@ -1,3 +1,12 @@
+2007-07-31  Mark Wielaard  <mwielaard@redhat.com>
+
+	Fixes bug #4865
+	* LinuxIa32Syscall.java (unknownIpcSubSyscall): New static field.
+	(unknownSocketSubSyscall): Likewise.
+	(ipcSubcallList): Add unknown numbers, including zero.
+	(syscallByNum): Bounds check socketSubcallList and ipcSubcallList
+	arrays before returning possible unknown subsyscall.
+
 2007-07-30  Nurdin Premji  <npremji@redhat.com>
 
 	* IsaIA32.java (regDefs): Expanded "efl" to "eflags".
