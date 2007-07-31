@@ -1,8 +1,13 @@
 2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* TestSteppingEngine.java: Organized imports.
+	* TestStepping.java: Replaced more Frames with DebugInfoFrames.
+	
+2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* SteppingEngine.java: Replaced Frame with DebugInfoFrame.
 	* TestSteppingEngine.java: Ditto.
-	* TestStepping.java: Ditto.
+	* TestStepping.java: Ditto.	
 
 2007-07-31  Mike Cvet  <mcvet@redhat.com>
 

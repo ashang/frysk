@@ -45,19 +45,11 @@ import java.util.Observable;
 import java.util.Observer;
 
 import frysk.Config;
-
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
-import frysk.proc.Action;
-
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-
-import frysk.testbed.TestLib;
-import frysk.testbed.DaemonBlockedAtEntry;
-import frysk.testbed.TestfileTokenScanner;
-
 import frysk.rt.BreakpointManager;
 import frysk.rt.LineBreakpoint;
 import frysk.rt.SourceBreakpoint;
@@ -1022,7 +1014,7 @@ public class TestStepping extends TestLib {
 
 	    public void runAssertions() {
 
-		Frame frame = StackFactory.createFrame(testTask);
+		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 		Manager.eventLoop.requestStop();
@@ -1053,7 +1045,7 @@ public class TestStepping extends TestLib {
 	
 	this.currentTest = new StepFramelessFunctionEntryASMTest(endLine, theTask);
 
-	Frame frame = StackFactory.createFrame(theTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 	
 	/** The stepping operation */
