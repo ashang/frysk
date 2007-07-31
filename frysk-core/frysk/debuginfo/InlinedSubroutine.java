@@ -39,11 +39,15 @@
 
 package frysk.debuginfo;
 
+import lib.dwfl.DwarfDie;
+
 /**
  * An InlinedSubroutine represents an instance of a function
  * that has been inlined.
  */
 public class InlinedSubroutine extends Subprogram
 {
-
+    public InlinedSubroutine(DwarfDie die, DebugInfo debugInfo) {
+	super(die,debugInfo);
+    }
 }

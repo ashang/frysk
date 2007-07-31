@@ -1,5 +1,11 @@
 2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* InlinedSubroutine.java (InlinedSubroutine): Added constructor.
+	* DebugInfoFrame.java (getInlnedSubprograms): New.
+	* TestFrameDebugInfo.java (testGetInlinedSubroutines): New.
+
+2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* Variable.java: Replaced Frame with DebugInfoFrame.
 	* Subprogram.java: Ditto.
 	* TestFrameDebugInfo.java: Ditto.

@@ -42,6 +42,7 @@ package frysk.debuginfo;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.logging.Logger;
 
 import javax.naming.NameNotFoundException;
@@ -138,6 +139,18 @@ public class TestFrameDebugInfo
     assertEquals("inlined die" , DwTagEncodings.DW_TAG_inlined_subroutine_,scopes[1].getTag());
     assertEquals("function die", DwTagEncodings.DW_TAG_subprogram_, scopes[2].getTag());
     assertEquals("compliation unit die", DwTagEncodings.DW_TAG_compile_unit_, scopes[3].getTag());
+    
+  }
+  
+  public void testGetInlinedSubroutines ()
+  {
+    
+    Task task = getStoppedTask("funit-inlined");
+    DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
+    
+    LinkedList inlinedSubprograms =  frame.getInlnedSubprograms();
+    
+    assertEquals("Number of inline functions",3,inlinedSubprograms.size());
     
   }
   

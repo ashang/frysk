@@ -40,6 +40,7 @@
 package frysk.debuginfo;
 
 import java.io.File;
+import java.util.LinkedList;
 
 import lib.dwfl.DwTagEncodings;
 import lib.dwfl.DwarfDie;
@@ -59,6 +60,8 @@ public class DebugInfoFrame extends FrameDecorator{
     private DebugInfoFrame outerDebugInfoFrame;
     
     private Line[] lines;
+
+    private LinkedList inlinedSubprograms;
 
     protected DebugInfoFrame(Frame frame) {
 	super(frame);
@@ -88,6 +91,41 @@ public class DebugInfoFrame extends FrameDecorator{
       }
 
       return subprogram;
+    }
+
+    /**
+     * returns a LinkedList of all the inlined instances
+     * in this frame.
+     * The first item in the list is the inner most (narrowest scope)
+     * inlined function.
+     * @return
+     */
+    public final LinkedList getInlnedSubprograms ()
+    {
+      if (inlinedSubprograms == null) {
+	  this.inlinedSubprograms = new LinkedList();
+	  
+        DebugInfo debugInfo = new DebugInfo(this);
+        
+        Dwfl dwfl = DwflCache.getDwfl(this.getTask());
+        DwflDieBias bias = dwfl.getDie(getAdjustedAddress());
+
+        if (bias != null) {
+
+            DwarfDie[] scopes = bias.die.getScopes(getAdjustedAddress());
+            scopes = scopes[0].getScopesDie();
+
+            for (int i = 0; i < scopes.length; i++) {
+        	System.out.println("DebugInfoFrame.getInlnedSubprograms() " + DwTagEncodings.toName(scopes[i].getTag()));
+        	if (scopes[i].getTag() == DwTagEncodings.DW_TAG_inlined_subroutine_) {
+        	    inlinedSubprograms.add(new InlinedSubroutine(scopes[i], debugInfo));
+        	}
+            }
+        }
+        this.setSubprogram(subprogram);
+      }
+
+      return this.inlinedSubprograms;
     }
 
     /**

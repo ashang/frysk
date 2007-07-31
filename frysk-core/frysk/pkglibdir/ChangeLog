@@ -1,5 +1,9 @@
 2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* funit-inlined.c: New.
+
+2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* funit-scopes-workaround.c: New file.
 
 2007-07-31  Mike Cvet  <mcvet@redhat.com>
