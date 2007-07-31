@@ -340,7 +340,7 @@ public class TestLinuxCore
 	assertEquals("note: oeax",oeax[i], isa.getRegisterByName("orig_eax").get(tasks[i]));
 	assertEquals("note: eip",eip[i], isa.getRegisterByName("eip").get(tasks[i]));
 	assertEquals("note: cs",cs[i], isa.getRegisterByName("cs").get(tasks[i]));
-	assertEquals("note: eflags",eflags[i], isa.getRegisterByName("efl").get(tasks[i]));
+	assertEquals("note: eflags",eflags[i], isa.getRegisterByName("eflags").get(tasks[i]));
 	assertEquals("note: esp",esp[i], isa.getRegisterByName("esp").get(tasks[i]));
 
       }
