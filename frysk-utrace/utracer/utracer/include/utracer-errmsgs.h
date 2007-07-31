@@ -10,7 +10,7 @@ const char * utrace_emsg[] = {
   "Syscall number out of range.",	  // UTRACER_ESYSRANGE,  
   "Process not quiesced.",		  // UTRACER_ESTATE,     
   "Error reading user pages.",		  // UTRACER_EPAGES,     
-  "Null mm_struct.",			  // UTRACER_EMM,        
+  "Null mm_struct, task probably died.",  // UTRACER_EMM,        
   "Invalid regset."			  // UTRACER_EREGSET,    
 };					  
   

@@ -1,3 +1,16 @@
+Tue Jul 31 13:18:15 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-i386.c: Added various free() and regfree() stuff for clean
+	shutdown.  Moved arch-dependent syscall table stuff here from
+	udb-text-ui.c.  (Should have been done a long time ago, but I
+	missed it.)
+	* udb-response.c: A little clean-up.
+	* udb-text-ui.c: Removed syscall parsing stuff; see above.   Added
+	various	free() and hdestroy() stuff for clean shutdown. Moved
+	syscall cmd stuff to ioctl i/f.
+	* udb-utrace-if.c:  Moved syscall cmd stuff to ioctl i/f.  A bit
+	of clean-up.
+
 Mon Jul 30 11:56:09 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-text-ui.c (printmem_fcn): Added CLI to getmem.

@@ -53,6 +53,9 @@ cleanup_udb()
     close (utracer_resp_file_fd);
     utracer_resp_file_fd = -1;
   }
+
+  text_ui_terminate();
+  arch_specific_terminate();
 }
 
 static void
@@ -142,7 +145,7 @@ utracer_sync()
     sz = pread (utracer_resp_file_fd, &if_resp,
 		  sizeof(if_resp), 0);
     if (-1 == sz) {
-      uerror ("Response pread.");
+      uerror ("Response pread");
       // fixme -- close things
       _exit (4);
     }
@@ -371,7 +374,7 @@ main (int ac, char * av[])
 
     // fixme -- all this syncing should make the sleep unnecessary, but it
     // still isn't working right.  try again some other time.
-    usleep (5000);
+    //usleep (500000);
     
     utrace_sync_if (SYNC_INIT);
   }

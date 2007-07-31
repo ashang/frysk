@@ -356,72 +356,6 @@ attach_cmd_fcn (long utracing_pid, long utraced_pid,
 }
 
 static int
-handle_syscall (syscall_cmd_s * syscall_cmd, unsigned long count, void *data)
-{
-  struct task_struct * task;
-  int rc = count;
-
-  task = get_task (syscall_cmd->utraced_pid);
-
-  if (task) {
-    utracing_info_s * utracing_info_found = (utracing_info_s *)data;
-
-    if (utracing_info_found) {
-      utraced_info_s * utraced_info_found =
-	lookup_utraced_info (utracing_info_found, (long)task->pid);
-      if (utraced_info_found) {
-	struct utrace_attached_engine * engine =
-	  locate_engine (syscall_cmd->utracing_pid,
-			 syscall_cmd->utraced_pid);
-	if (engine) {
-	  unsigned long flags = engine->flags;
-	  unsigned long ** bv;
-	  unsigned long  ef;
-	  if (SYSCALL_CMD_ENTRY == syscall_cmd_which(syscall_cmd)) {
-	    bv = &(utraced_info_found->entry_bv);
-	    ef = UTRACE_EVENT (SYSCALL_ENTRY);
-	  }
-	  else {
-	    bv = &(utraced_info_found->exit_bv);
-	    ef = UTRACE_EVENT (SYSCALL_EXIT);
-	  }
-	  
-	  switch (syscall_cmd_cmd(syscall_cmd)) {
-	  case SYSCALL_CMD_ENABLE:
-	    flags |= ef;
-	    break;
-	  case SYSCALL_CMD_DISABLE:
-	    flags &= ~ef;
-	    break;
-	  case SYSCALL_CMD_ADD:
-	    if (SYSCALL_ALL == syscall_cmd->syscall_nr)
-	      memset (*bv, -1, utraced_info_found->bv_len);
-	    else if (NR_syscalls > syscall_cmd->syscall_nr)
-	      setbit (*bv, syscall_cmd->syscall_nr);
-	    else rc = -UTRACER_ESYSRANGE;
-	    break;
-	  case SYSCALL_CMD_REMOVE:
-	    if (SYSCALL_ALL == syscall_cmd->syscall_nr)
-	      memset (*bv, 0, utraced_info_found->bv_len);
-	    else if (NR_syscalls > syscall_cmd->syscall_nr)
-	      clearbit (*bv, syscall_cmd->syscall_nr);
-	    else rc = -UTRACER_ESYSRANGE;
-	    break;
-	  }
-	  utrace_set_flags(task, engine, flags);
-	}
-	else rc = -UTRACER_EENGINE;
-      }
-      else rc = -UTRACER_ETRACED;
-    }
-    else rc = -UTRACER_ETRACING;
-  }
-  else rc = -ESRCH;
-  
-  return rc;
-}
-
-static int
 handle_quiesce (run_cmd_s * run_cmd, unsigned long count, void * data)
 {
   struct task_struct * task;
@@ -586,10 +520,6 @@ if_file_write (struct file *file,
     switch (if_cmd.cmd) {
     case IF_CMD_NULL:
       DB_PRINTK (KERN_ALERT "IF_CMD_NULL\n");
-      break;
-    case IF_CMD_SYSCALL:
-      DB_PRINTK (KERN_ALERT "IF_CMD_SYSCALL\n");
-      rc = handle_syscall (&if_cmd.syscall_cmd, count, data);
       break;
     case IF_CMD_RUN:
     case IF_CMD_QUIESCE:

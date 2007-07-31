@@ -25,7 +25,7 @@ resp_listener (void * arg)
     sz = pread (utracer_resp_file_fd, &if_resp,
 		sizeof(if_resp), 0);
     if (-1 == sz) {
-      uerror ("Response pread.");
+      uerror ("Response pread");
       _exit (4);
     }
     
@@ -54,8 +54,6 @@ resp_listener (void * arg)
 	
 	fprintf (stdout, "\tProcess %ld execing %s (%s)\n",
 		 exec_resp.utraced_pid, cstr, cstr + 1 + strlen (cstr));
-	fprintf (stdout, "%s", prompt);
-	fflush (stdout);
       }
       break;
     case IF_RESP_SYSCALL_ENTRY_DATA:
@@ -89,8 +87,6 @@ resp_listener (void * arg)
 	death_resp_s death_resp = if_resp.death_resp;
 	fprintf (stdout, "\t[%ld] died\n",
 		 death_resp.utraced_pid);
-	fprintf (stdout, "%s", prompt);
-	fflush (stdout);
       }
       break;
     case IF_RESP_SYNC_DATA:
@@ -114,9 +110,6 @@ resp_listener (void * arg)
 	    }
 	  }
 	}
-	
-	fprintf (stdout, "%s", prompt);
-	fflush (stdout);
       }
       break;
     case IF_RESP_QUIESCE_DATA:
@@ -124,8 +117,6 @@ resp_listener (void * arg)
 	quiesce_resp_s quiesce_resp = if_resp.quiesce_resp;
 	fprintf (stdout, "\t[%ld] quiesced\n",
 		 quiesce_resp.utraced_pid);
-	fprintf (stdout, "%s", prompt);
-	fflush (stdout);
       }
       break;
     case IF_RESP_EXIT_DATA:
@@ -134,8 +125,6 @@ resp_listener (void * arg)
 	fprintf (stdout, "\t[%ld] exit with code %ld\n",
 		 exit_resp.utraced_pid,
 		 exit_resp.code);
-	fprintf (stdout, "%s", prompt);
-	fflush (stdout);
       }
       break;
     case IF_RESP_SIGNAL_DATA:
@@ -147,8 +136,6 @@ resp_listener (void * arg)
 		 ((0 <= signal_resp.signal) &&
 		  (signal_resp.signal < nr_signals)) ?
 		 i386_signals[signal_resp.signal] : "unused");
-	fprintf (stdout, "%s", prompt);
-	fflush (stdout);
       }
       break;
     case IF_RESP_SWITCHPID_DATA:	// fixme -- move to ioctl
@@ -159,8 +146,6 @@ resp_listener (void * arg)
 	  set_prompt();
 	}
 	else fprintf (stdout, "PID %d invalid\n", switchpid_resp.utraced_pid);
-	fprintf (stdout, "%s", prompt);
-	fflush (stdout);
       }       
       break;
     case IF_RESP_ATTACH_DATA:
@@ -173,8 +158,6 @@ resp_listener (void * arg)
 	  current_pid = attach_resp.utraced_pid;
 	  set_prompt();
 	}
-	fprintf (stdout, "%s", prompt);
-	fflush (stdout);
       }
       break;
     case IF_RESP_CLONE_DATA:
@@ -183,12 +166,12 @@ resp_listener (void * arg)
 	fprintf (stdout, "\t[%ld] cloned to %ld\n",
 		 clone_resp.utracing_pid,
 		 clone_resp.new_utraced_pid);
-	fprintf (stdout, "%s", prompt);
-	fflush (stdout);
       }
       break;
     default:
       break;
     }
+    fprintf (stdout, "%s", prompt);
+    fflush (stdout);
   }
 }

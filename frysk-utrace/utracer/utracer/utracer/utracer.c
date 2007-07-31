@@ -170,7 +170,7 @@ static int
 do_get_mem (long pid,
 	    void ** mem_p,
 	    void * addr,
-	    long mem_req
+	    long mem_req,
 	    unsigned long * actual)
 {
   int irc;
@@ -307,6 +307,28 @@ utracer_get_regs (long pid, long regset, void ** regsinfo_p,
   else {
     if (regsinfo_p)	*regsinfo_p	= regsinfo;
   }
+
+  return irc;
+}
+
+
+/************************** printexe  ********************/
+
+
+int
+utracer_set_syscall (short which, short cmd, long pid, long syscall)
+{
+  int irc;
+  syscall_cmd_s syscall_cmd;
+
+  syscall_cmd.cmd			= IF_CMD_SYSCALL;
+  syscall_cmd.utracing_pid		= (long)client_pid;
+  syscall_cmd.utraced_pid		= pid;
+  syscall_cmd_which (&syscall_cmd)	= which;
+  syscall_cmd_cmd (&syscall_cmd)	= cmd;
+  syscall_cmd.syscall_nr		= syscall;
+
+  irc = ioctl (utracer_cmd_file_fd, sizeof(syscall_cmd_s), &syscall_cmd);
 
   return irc;
 }

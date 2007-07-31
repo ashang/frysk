@@ -22,46 +22,14 @@
  */
 
 static struct hsearch_data cmd_hash_table;
-static struct hsearch_data sys_hash_table;
-static int sys_hash_table_valid = 0;
+static int cmd_hash_table_valid = 0;
 
 typedef int (*action_fcn)(char ** saveptr);
 
-#define SYSCALL_INVALID		-5
-
-long
-parse_syscall (char * tok)
+void
+text_ui_terminate()
 {
-  long syscall_nr = SYSCALL_INVALID;
-  
-  if (0 == strcasecmp (tok, "all"))
-    syscall_nr = SYSCALL_ALL;
-  else if (sys_hash_table_valid) {
-    ENTRY * entry;
-    ENTRY target;
-    
-    target.key = tok;
-    if (0 != hsearch_r (target, FIND, &entry, &sys_hash_table))
-      syscall_nr = (long)(entry->data);
-  }
-  if (SYSCALL_INVALID == syscall_nr) {
-    char * ep;
-	
-    syscall_nr = strtol (tok, &ep, 0);
-
-    if (0 == *ep) {
-      if ((0 > syscall_nr) || (syscall_nr >= nr_syscall_names)) {
-	fprintf (stderr, "\tSorry, syscall number %ld is out of range.\n",
-		 syscall_nr);
-	syscall_nr = SYSCALL_INVALID;
-      }
-    }
-    else {
-      fprintf (stderr, "\tSorry, I don't recognise syscall %s\n", tok);
-      syscall_nr = SYSCALL_INVALID;
-    }
-  }
-  return syscall_nr;
+  if (cmd_hash_table_valid) hdestroy_r(&cmd_hash_table);
 }
 
 static int
@@ -128,20 +96,20 @@ syscall_fcn(char ** saveptr)
   if (got_it) {
     switch (sy_state) {
     case SY_STATE_A2:
-      utrace_syscall_if (((SY_MODE_ENTRY == sy_mode) ?
-			  SYSCALL_CMD_ENTRY : SYSCALL_CMD_EXIT),
-			 ((SY_ENABLE_ON == sy_enable) ?
-			  SYSCALL_CMD_ENABLE : SYSCALL_CMD_DISABLE),
-			 current_pid,
-			 0);
+      utracer_set_syscall (((SY_MODE_ENTRY == sy_mode) ?
+			    SYSCALL_CMD_ENTRY : SYSCALL_CMD_EXIT),
+			   ((SY_ENABLE_ON == sy_enable) ?
+			    SYSCALL_CMD_ENABLE : SYSCALL_CMD_DISABLE),
+			   current_pid,
+			   0);
       break;
     case SY_STATE_A3:
-      utrace_syscall_if (((SY_MODE_ENTRY == sy_mode) ?
-			  SYSCALL_CMD_ENTRY : SYSCALL_CMD_EXIT),
-			 ((SY_ADD_ADD == sy_add) ?
-			  SYSCALL_CMD_ADD : SYSCALL_CMD_REMOVE),
-			 current_pid,
-			 syscall_nr);
+      utracer_set_syscall (((SY_MODE_ENTRY == sy_mode) ?
+			    SYSCALL_CMD_ENTRY : SYSCALL_CMD_EXIT),
+			   ((SY_ADD_ADD == sy_add) ?
+			    SYSCALL_CMD_ADD : SYSCALL_CMD_REMOVE),
+			   current_pid,
+			   syscall_nr);
       break;
     }
   }
@@ -628,7 +596,6 @@ create_cmd_hash_table()
   int i, rc;
   rc = hcreate_r ((4 * nr_cmds)/3, &cmd_hash_table);
   if (0 == rc) {
-    //    unload_utracer();//fixme -- unregister if registered
     cleanup_udb();
     unregister_utracer (udb_pid);
     close_ctl_file();
@@ -645,31 +612,7 @@ create_cmd_hash_table()
       error (1, errno, "Error building commands hash.");
     }
   }
-}
-
-static void
-create_sys_hash_table()
-{
-  int i, rc;
-  rc = hcreate_r ((4 * nr_syscall_names)/3, &sys_hash_table);
-  if (0 == rc) {
-    cleanup_udb();
-    unregister_utracer (udb_pid);
-    close_ctl_file();
-    fprintf (stderr, "\tCreating syscall hash table failed.\n");
-    _exit (1);
-  }
-
-  for (i = 0; i < nr_syscall_names; i++) {
-    ENTRY * entry;
-    if (0 == hsearch_r (syscall_names[i], ENTER, &entry, &sys_hash_table)) {
-      cleanup_udb();
-      unregister_utracer (udb_pid);
-      close_ctl_file();
-      error (1, errno, "Error building syscall hash.");
-    }
-  }
-  sys_hash_table_valid = 1;
+  cmd_hash_table_valid = 1;
 }
 
 void

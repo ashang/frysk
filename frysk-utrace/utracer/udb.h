@@ -40,5 +40,6 @@ DECL (int cl_cmds_max, 0);
 DECL (char * ggg, NULL);
 
 #define INVALID_REG	-128
+#define SYSCALL_INVALID	-5
 
 #endif  /* UDB_H */

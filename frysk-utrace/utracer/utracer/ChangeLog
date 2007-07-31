@@ -1,3 +1,12 @@
+Tue Jul 31 13:18:42 2007  Chris Moller  <cmoller@redhat.com>
+
+	* include/utracer.h:
+	* module/utracer-if-io.c: Removed syscall cmd stuff from here and
+	to ioctl.
+	* module/utracer-ioctl.c: Fixed potential gotcha in getting user
+	pages.  Moved syscall cmd stuff here from front-end.
+	* utracer/utracer.c: Moved syscall cmd stuff here from front-end.
+
 Sat Jul 28 10:02:12 2007  Chris Moller  <cmoller@redhat.com>
 
 	* include/utracer-errmsgs.h: A couple of new error msgs.

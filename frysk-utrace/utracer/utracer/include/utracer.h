@@ -314,5 +314,6 @@ int utracer_get_mem (long pid,
 int utracer_get_pids (long * nr_pids, long ** pids);
 int utracer_get_regs (long pid, long regset, void ** regsinfo,
 		      unsigned int * nr_regs_p, unsigned int * reg_size_p);
+int utracer_set_syscall (short which, short cmd, long pid, long syscall);
   
 #endif  /* UTRACER_H */

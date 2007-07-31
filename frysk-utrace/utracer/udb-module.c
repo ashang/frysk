@@ -12,12 +12,6 @@
 #include <utracer.h>
 #include "udb.h"
 
-/* using execlp of insmod and rmmod isn't my first choice of efficient ways to
- * load and unload modules, but using init_module() is a pain and rmmod does a
- * lot of useful stuff
- *
- */
-
 int
 utracer_loaded()
 {
@@ -38,6 +32,13 @@ utracer_loaded()
 }
 
 #ifdef ENABLE_MODULE_OPS
+
+/* using execlp of insmod and rmmod isn't my first choice of efficient ways to
+ * load and unload modules, but using init_module() is a pain and rmmod does a
+ * lot of useful stuff
+ *
+ */
+
 void
 load_utracer()
 {

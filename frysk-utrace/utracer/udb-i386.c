@@ -15,6 +15,8 @@
 #include <asm/ldt.h>
 #include <sys/types.h>
 #include <regex.h>
+#include <error.h>
+#include <errno.h>
 
 #include "udb.h"
 #include "udb-i386.h"
@@ -51,11 +53,84 @@ const char re[] = "(\\[([[:digit:]]+)\\])?[[:space:]]*(([[:digit:]]+)|(st([[:dig
 #define PMATCH_ARG2_ALL		11
 #define PMATCH_ARG2_ALPHA	12
 
-//fixme -- free preg, pmatch, etc, when leaving
 static struct hsearch_data reg_hash_table;
 static int reg_hash_table_valid = 0;
-static regex_t preg;
+static struct hsearch_data sys_hash_table;
+static int sys_hash_table_valid = 0;
+
+static regex_t preg = {.buffer = NULL };
 static regmatch_t * pmatch = NULL;
+
+void
+arch_specific_terminate()
+{
+  if (reg_hash_table_valid) hdestroy_r (&reg_hash_table);
+  if (sys_hash_table_valid) hdestroy_r (&sys_hash_table);
+  if (pmatch) free (pmatch);
+  if (preg.buffer) regfree (&preg);
+}
+
+
+void
+create_sys_hash_table()
+{
+  int i, rc;
+  rc = hcreate_r ((4 * nr_syscall_names)/3, &sys_hash_table);
+  if (0 == rc) {
+    cleanup_udb();
+    unregister_utracer (udb_pid);
+    close_ctl_file();
+    fprintf (stderr, "\tCreating syscall hash table failed.\n");
+    _exit (1);
+  }
+
+  for (i = 0; i < nr_syscall_names; i++) {
+    ENTRY * entry;
+    if (0 == hsearch_r (syscall_names[i], ENTER, &entry, &sys_hash_table)) {
+      cleanup_udb();
+      unregister_utracer (udb_pid);
+      close_ctl_file();
+      error (1, errno, "Error building syscall hash.");
+    }
+  }
+  sys_hash_table_valid = 1;
+}
+
+long
+parse_syscall (char * tok)
+{
+  long syscall_nr = SYSCALL_INVALID;
+  
+  if (0 == strcasecmp (tok, "all"))
+    syscall_nr = SYSCALL_ALL;
+  else if (sys_hash_table_valid) {
+    ENTRY * entry;
+    ENTRY target;
+    
+    target.key = tok;
+    if (0 != hsearch_r (target, FIND, &entry, &sys_hash_table))
+      syscall_nr = (long)(entry->data);
+  }
+  if (SYSCALL_INVALID == syscall_nr) {
+    char * ep;
+	
+    syscall_nr = strtol (tok, &ep, 0);
+
+    if (0 == *ep) {
+      if ((0 > syscall_nr) || (syscall_nr >= nr_syscall_names)) {
+	fprintf (stderr, "\tSorry, syscall number %ld is out of range.\n",
+		 syscall_nr);
+	syscall_nr = SYSCALL_INVALID;
+      }
+    }
+    else {
+      fprintf (stderr, "\tSorry, I don't recognise syscall %s\n", tok);
+      syscall_nr = SYSCALL_INVALID;
+    }
+  }
+  return syscall_nr;
+}
+
 
 int
 parse_regspec (char ** saveptr, long * pid_p, long * regset_p, long *reg_p)
@@ -337,7 +412,7 @@ show_syscall (long type, long pid, struct pt_regs * regs)
     if (0 == rc)
       fprintf (stdout, "\t\tat addr %08x: \"%.*s\"\n",
 	       addr_to_show, SC_BFFR_LEN, (char *)bffr);
-    else uerror ("stscall getmem.");
+    else uerror ("syscall getmem");
   }
 }
 
