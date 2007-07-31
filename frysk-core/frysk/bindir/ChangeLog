@@ -1,3 +1,13 @@
+2007-07-31  Teresa Thomas  <tthomas@redhat.com>
+
+	* fdebugrpm.sh: New file - Bash scripts to install missing 
+	  debuginfo packages.
+	* fdebuginfo.xml: New file.
+	* fdebuginfo.java: New file - Utility to list missing 
+	  debuginfo packages.
+	* fdebuginfo.xml: New file.
+	* TestFdebuginfo.java: New file. 
+	
 2007-07-28  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFcore.java: Use Config.getBinFile.
@@ -14,7 +24,7 @@
 2007-07-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* fstack.java (Stacker.Stacker): Now passes a printSourceLibrary
-	to StacktraceActions.
+	to StacktraceActions.	
 	
 2007-07-26  Petr Machata  <pmachata@redhat.com>
 
