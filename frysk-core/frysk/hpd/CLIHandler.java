@@ -49,8 +49,10 @@ public abstract class CLIHandler
 {
   protected final CLI cli;
   private final CommandHelp help;
-  private final String name;
+  private final String name;  
 
+  protected HpdCommandParser parser;
+  
   public CLI getCLI()
   {
     return cli;
@@ -71,12 +73,13 @@ public abstract class CLIHandler
     this.name = name;
     this.cli = cli;
     this.help = help;
+    parser = new HpdCommandParser(name);
+    parser.setHeader(help.syntax);
+    parser.setFooter(help.full);
   }
   
   public CLIHandler (CLI cli, String name, String description, String syntax, String full) {
-      this.cli = cli;
-      this.name = name;
-      this.help = new CommandHelp(name, description, syntax, full);
+      this(name, cli, new CommandHelp(name, description, syntax, full));
   }
   
   public abstract void handle(Command cmd) throws ParseException;

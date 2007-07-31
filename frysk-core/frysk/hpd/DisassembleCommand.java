@@ -40,19 +40,17 @@
 package frysk.hpd;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.naming.NameNotFoundException;
-
-import frysk.Config;
 
 import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
 
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
-import gnu.classpath.tools.getopt.Parser;
 
 import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
@@ -61,17 +59,17 @@ public class DisassembleCommand extends CLIHandler {
 
     public DisassembleCommand(CLI cli) {
 	super(cli, "disassemble", "disassemble a section of memory",
-		"disassemble [-i|--instructions-only] [startAddress] ||\n"
-			+ "disassemble [-i|--instructions-only] "
+		"disassemble [OPTIONS] [startAddress] ||\n"
+			+ "disassemble [-OPTIONS] "
 			+ "<startAddress> <endAddress>",
 		"disassemble the function surrounding the current pc, "
 			+ "the function surrounding a given address, "
 			+ "or a range of functions.");
-
 	addOptions(parser);
+
     }
 
-    void addOptions(Parser parser) {
+    void addOptions(HpdCommandParser parser) {
 	parser.add(new Option("instructions-only", 'i',
 		"only print the instruction portion not the parameters") {
 
@@ -96,38 +94,16 @@ public class DisassembleCommand extends CLIHandler {
 		symbol = false;
 	    }
 	});
-
-	// XXX: Need these two to prevent help and version from exiting fhpd
-	// when finished.
-	parser.add(new Option("version", "display version number") {
-
-	    public void parsed(String argument) throws OptionException {
-		cli.outWriter.println(Config.getVersion());
-		helpStop = true;
-	    }
-	});
-
-	parser.add(new Option("help", "display help") {
-	    public void parsed(String argument) throws OptionException {
-		cli.outWriter.println(getHelp().toPrint());
-		helpStop = true;
-	    }
-	});
     }
 
     private boolean instructionOnly = false;
 
     private boolean truncate = true;
 
-    private boolean helpStop = false;
-
     private boolean symbol = true;
-
-    Parser parser = new Parser("disassemble", Config.getVersion(), true);
 
     private void reset() {
 	instructionOnly = false;
-	helpStop = false;
 	truncate = true;
 	symbol = true;
     }
@@ -141,20 +117,15 @@ public class DisassembleCommand extends CLIHandler {
 	Disassembler disassembler = new Disassembler(getCLI().getTask()
 		.getMemory());
 
-	Object[] objects = cmd.getParameters().toArray();
+	ArrayList params = cmd.getParameters();
+	parser.parse(params);
 
-	String[] params = new String[objects.length];
-	for (int i = 0; i < objects.length; i++)
-	    params[i] = (String) objects[i];
-
-	params = parser.parse(params);
-
-	if (helpStop)
+	if (parser.helpOnly)
 	    return;
 
-	if (params.length == 1) {
+	if (params.size() == 1) {
 	    try {
-		currentInstruction = cli.parseValue((String) params[0])
+		currentInstruction = cli.parseValue((String) params.get(0))
 			.getLong();
 		symbol = SymbolFactory.getSymbol(cli.task, currentInstruction);
 	    } catch (NameNotFoundException nnfe) {
@@ -162,11 +133,13 @@ public class DisassembleCommand extends CLIHandler {
 			Message.TYPE_ERROR));
 		return;
 	    }
-	} else if (params.length == 2) {
+	} else if (params.size() == 2) {
 	    long startInstruction, endInstruction;
 	    try {
-		startInstruction = cli.parseValue((String) params[0]).getLong();
-		endInstruction = cli.parseValue((String) params[1]).getLong();
+		startInstruction = cli.parseValue((String) params.get(0))
+			.getLong();
+		endInstruction = cli.parseValue((String) params.get(1))
+			.getLong();
 	    } catch (NameNotFoundException nnfe) {
 		cli.addMessage(new Message(nnfe.getMessage(),
 			Message.TYPE_ERROR));
@@ -179,7 +152,7 @@ public class DisassembleCommand extends CLIHandler {
 		    startInstruction, endInstruction);
 	    printInstructions(-1, instructions, false);
 	    return;
-	} else if (params.length > 2) {
+	} else if (params.size() > 2) {
 	    throw new RuntimeException("too many arguments to disassemble");
 	}
 

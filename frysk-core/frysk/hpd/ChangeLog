@@ -1,3 +1,10 @@
+2007-07-31  Nurdin Premji  <npremji@redhat.com>
+
+	* TestHpdCommandParser.java: Added.
+	* HpdCommandParser.java: Added.
+	* DisassembleCommand.java: Use HpdCommandParser.
+	* CLIHandler.java: Added an HpdCommandParser.
+
 2007-07-30  Nurdin Premji  <npremji@redhat.com>
 
 	* TestLib.java (getChild): Added.
