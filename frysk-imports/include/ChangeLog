@@ -1,3 +1,11 @@
+2007-07-31  Mike Cvet  <mcvet@redhat.com>
+
+	* frysk-asm.h (MOV): Fixed bug with backwards-syntax - 
+	changed to mov source, dest.
+	(JUMP_REG): Fixed syntax bug.
+	(FRAMELESS_FUNCTION_BEGIN): Defined new name parameter.
+	(FRAMELESS_ADJ_RETURN): Defined new register parameter.
+
 2007-07-30  Mike Cvet  <mcvet@redhat.com>
 
 	* frysk-asm.h: Added directives for frameless functions.

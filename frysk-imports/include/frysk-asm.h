@@ -304,13 +304,13 @@
 #endif
 
 #if defined __i386__
-#  define MOV(DEST_REG, SOURCE_REG) movl DEST_REG, SOURCE_REG
+#  define MOV(SOURCE_REG, DEST_REG) movl SOURCE_REG, DEST_REG
 #elif defined __x86_64__
-#  define MOV(DEST_REG, SOURCE_REG) movq DEST_REG, SOURCE_REG
+#  define MOV(SOURCE_REG, DEST_REG) movq SOURCE_REG, DEST_REG
 //#elif defined __powerpc__
-//#  define MOV(DEST_REG, SOURCE_REG)
+//#  define MOV(SOURCE_REG, DEST_REG)
 //#elif defined __powerpc64__
-//#  define MOV(DEST_REG, SOURCE_REG)
+//#  define MOV(SOURCE_REG, DEST_REG)
 #else
 #  warning "No register-move instruction defined"
 #endif
@@ -371,13 +371,13 @@
 #endif
 
 #if defined __i386__
-#  define JUMP_REG(REG) jmp *(REG)
+#  define JUMP_REG(REG) jmp REG
 #elif defined __x86_64__
-#  define JUMP_REG(REG) jmp (REG)
+#  define JUMP_REG(REG) jmp REG
 #elif defined __powerpc__
-#  define JUMP_REG(REG) br (REG)
+#  define JUMP_REG(REG) br REG
 #elif defined __powerpc64__
-#  define JUMP_REG(REG) br (REG)
+#  define JUMP_REG(REG) br REG
 #else
 #  warning "No indirect or register jump instruction defined"
 #endif
@@ -690,22 +690,24 @@
 	
 #if defined __i386__
 #define FRAMELESS_FUNCTION_BEGIN(FUNC) \
+	FUNC: \
 	.cfi_startproc; \
 	.cfi_def_cfa esp, 0; \
 	.cfi_return_column eax
 #elif defined __x86_64__
 #define FRAMELESS_FUNCTION_BEGIN(FUNC) \
+	FUNC: \
 	.cfi_startproc; \
 	.cfi_def_cfa rsp, 0; \
 	.cfi_return_column rax
 #endif
 
 #ifdef __i386__
-#define FRAMELESS_ADJ_RETURN \
-	.cfi_register eax, ebx
+#define FRAMELESS_ADJ_RETURN(REG) \
+	.cfi_register eax, REG
 #elif defined __x86_64__
-#define FRAMELESS_ADJ_RETURN \
-	.cfi_register rax, rbx
+#define FRAMELESS_ADJ_RETURN(REG) \
+	.cfi_register rax, REG
 #endif
 
 #if defined __i386__
