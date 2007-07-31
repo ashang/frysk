@@ -1,7 +1,11 @@
 2007-07-31  Mike Cvet  <mcvet@redhat.com>
 
-	* TestStepping.java (testFramelessFunctionEntry): New test. Tests stepping
-	by an instruction into a frameless function.
+	* TestStepping.java: Cleaned up.
+	(AttachedObserver): Removed.
+	(testFramelessFunctionEntry): New test. Tests stepping by an instruction 
+	into a frameless function.
+	* TestSteppingEngine.java: Cleaned up.
+	(AttachedObserver): Removed.
 
 2007-07-30  Mike Cvet  <mcvet@redhat.com>
 

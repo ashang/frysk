@@ -45,12 +45,9 @@ import java.util.Observable;
 import java.util.Observer;
 
 import frysk.Config;
-//import frysk.event.Event;
-import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.TaskObserver;
 import frysk.testbed.TestLib;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.TestfileTokenScanner;
@@ -1116,7 +1113,6 @@ public class TestStepping extends TestLib {
 	bManager.enableBreakpoint(lbp2, task);
 
 	this.se.addObserver(lock);
-	//	testStarted = true;
 	this.se.continueExecution(task);
 
 	assertRunUntilStop("Continuing to final breakpoint");
@@ -1131,38 +1127,10 @@ public class TestStepping extends TestLib {
 	dbae = null;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-
     private interface SteppingTest {
 	void runAssertions();
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-
-    protected class AttachedObserver implements TaskObserver.Attached {
-	
-	public void addedTo(Object o) {
-	}
-
-	public Action updateAttached(Task task) {
-
-//	    theTask = task;
-//	    initTaskWithTask(task, theSource, theStartLine, theEndLine);
-//
-//	    Manager.eventLoop.requestStop();
-//
-//	    task.requestDeleteAttachedObserver(this);
-	    return Action.CONTINUE;
-	}
-
-	public void addFailed(Object observable, Throwable w) {
-	}
-
-	public void deletedFrom(Object o) {
-	}
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////
     boolean testStarted = false;
 
     class LockObserver implements Observer {
@@ -1179,37 +1147,29 @@ public class TestStepping extends TestLib {
 	public synchronized void update(Observable o, Object arg) {
 	    TaskStepEngine tse = (TaskStepEngine) arg;
 	    //	    System.err.println("Lock.update " + tse.isStopped() + " " + testStarted);
-	    if (testStarted == true && tse.isStopped()) {//System.err.println("-----> Running ASSERTIONS");
+	    if (testStarted == true && tse.isStopped()) {
 		currentTest.runAssertions();
 	    }
-	    //	    else if (testStarted == false && tse.isStopped())
-	    //		Manager.eventLoop.requestStop();
 	    else
 		return;
 	}
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-
     private class TestSteppingBreakpoint implements SourceBreakpointObserver {
 
 	public void updateHit(SourceBreakpoint breakpoint, Task task,
 		long address) {
-
-	    //	    currentTest.setUp(task);
-	    //	    testStarted = true;
 	    Manager.eventLoop.requestStop();
 	}
 
 	public void addFailed(Object observable, Throwable w) {
 	}
 
-	public void addedTo(Object observable) { //System.err.println("Breakpoint ADDEDTO");
+	public void addedTo(Object observable) {
 	}
 
 	public void deletedFrom(Object observable) {
 	}
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
 }
