@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -150,7 +150,6 @@ public abstract class StacktraceAction
     while (iter.hasNext())
       {
 	Task task =  (Task) iter.next();
-	System.out.println("StacktraceAction.printTasks() printSourceLibrary " + printSourceLibrary);
 	StackFactory.printTaskStackTrace(printWriter,task,elfOnly,printParameters,printScopes,fullpath,printSourceLibrary);
       }
     logger.log(Level.FINE, "{0} exiting printTasks\n", this);

@@ -1,3 +1,8 @@
+2007-07-31  Mark Wielaard  <mwielaard@redhat.com>
+
+	* StacktraceAction.java (printTasks): Remove debug println.
+	* CoredumpAction.java (fillENotePrstatus): Rename elf to elflags.
+
 2007-07-30  Mark Wielaard  <mwielaard@redhat.com>
 
 	* CoredumpAction.java (): Use Task.getRegisterBanks() not
