@@ -73,9 +73,9 @@ public abstract class CLIHandler
     this.name = name;
     this.cli = cli;
     this.help = help;
-    parser = new HpdCommandParser(name);
+    parser = new HpdCommandParser(name, System.out);
     parser.setHeader(help.syntax);
-    parser.setFooter(help.full);
+    parser.setFooter(help.full +"\n");
   }
   
   public CLIHandler (CLI cli, String name, String description, String syntax, String full) {

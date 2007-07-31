@@ -42,6 +42,8 @@ package frysk.hpd;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 
@@ -57,6 +59,8 @@ public class TestHpdCommandParser extends TestLib {
 	public DummyParseCommand(CLI cli) {
 	    super(cli, "parser", "parse some stuff",
 		    "parse ARGUMENTS [OPTIONS]", "test the parser");
+	    //Don't print help to the screen.
+	    this.parser.outStream = new PrintStream(new ByteArrayOutputStream());
 	}
 
 	public void handle(Command cmd) throws ParseException {
@@ -66,7 +70,7 @@ public class TestHpdCommandParser extends TestLib {
 
     }
 
-    CLI cli = new CLI("(fhpd) ", System.out);
+    CLI cli = new CLI("(fhpd) ", null);
 
     DummyParseCommand parser = new DummyParseCommand(cli);
 
@@ -154,7 +158,7 @@ public class TestHpdCommandParser extends TestLib {
 	assertEquals("Option should have argument 'argument'", parser.argument,
 		"argument");
     }
-    
+
     public void testOptionWithArgsAfterDashDash() {
 	parser.parser.add(new Option("short", "short option", "ARG") {
 
@@ -170,7 +174,7 @@ public class TestHpdCommandParser extends TestLib {
 	assertEquals("Option should have argument 'argument'", parser.argument,
 		"argument");
     }
-    
+
     public void testOptionWithArgsBeforeDashDash() {
 	parser.parser.add(new Option("short", "short option", "ARG") {
 
@@ -181,10 +185,19 @@ public class TestHpdCommandParser extends TestLib {
 
 	});
 	cli.execCommand("parser -short argument --");
-	assertEquals("Params list should have 2 elements", parser.params.size(), 2);
+	assertEquals("Params list should have 2 elements",
+		parser.params.size(), 2);
 	assertEquals("First argument: '-short", parser.params.get(0), "-short");
-	assertEquals("Second argument: 'argument", parser.params.get(1), "argument");
+	assertEquals("Second argument: 'argument", parser.params.get(1),
+		"argument");
 	assertFalse("Option should not have been handled", parser.parsedOption);
-	
+
+    }
+
+    public void testHelp() {
+	cli.execCommand("parser -help");
+	assertTrue("Help only should be activated", parser.parser.helpOnly);
+	cli.execCommand("parser nohelp");
+	assertFalse("Help only should not be activated", parser.parser.helpOnly);
     }
 }

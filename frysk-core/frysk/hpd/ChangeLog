@@ -1,5 +1,10 @@
 2007-07-31  Nurdin Premji  <npremji@redhat.com>
 
+	* CLIHandler.java (CLIHandler): Reflect change to HpdCommandParser.
+	Add a newline character to the end of the parser help function.
+	* HpdCommandParser.java (HpdCommandParser): Added output PrintStream parameter.
+	* TestHpdCommandParser.java (testHelp): Added.
+
 	* TestHpdCommandParser.java: Added.
 	* HpdCommandParser.java: Added.
 	* DisassembleCommand.java: Use HpdCommandParser.

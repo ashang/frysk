@@ -55,15 +55,18 @@ class HpdCommandParser {
     OptionGroup defaultGroup, finalGroup;
 
     String header = null, footer = null;
+    
+    PrintStream outStream;
 
-    HpdCommandParser(String programName) {
+    HpdCommandParser(String programName, PrintStream out) {
 	this.programName = programName;
+	this.outStream = out;
 	defaultGroup = new OptionGroup(programName + " Options");
 	finalGroup = new OptionGroup("Standard Options");
 	Option help = new Option("help", "print this help") {
 
 	    public void parsed(String argument) throws OptionException {
-		printHelp(System.out);
+		printHelp(outStream);
 		helpOnly = true;
 	    }
 	};
@@ -114,6 +117,7 @@ class HpdCommandParser {
 
     //Given a list of arguments, parse and remove options as they are found.
     public synchronized void parse(ArrayList args) {
+	this.helpOnly = false;
 	this.args = args;
 	try {
 	    for (currentIndex = args.size() - 1; currentIndex > -1; --currentIndex) {
