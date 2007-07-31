@@ -1,4 +1,10 @@
-2007-07-27  Mike Cvet  <mcvet@redhat.com>
+2007-07-31  Mike Cvet  <mcvet@redhat.com>
+
+	* funit-frameless.S (bar): Removed explicit label; used macro
+	from header instead.
+	(foo): Use updated mov and return address register adjustment macros.
+
+2007-07-30  Mike Cvet  <mcvet@redhat.com>
 
 	* funit-frameinfo-looper.S: Removed.
 	
