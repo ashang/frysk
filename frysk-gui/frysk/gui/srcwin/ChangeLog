@@ -1,3 +1,8 @@
+2007-08-01  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceBuffer.java (getVariable): Fixed assumption that variable returned
+	from DebugInfo will never be null. Fixes #4871.
+
 2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* SourceWindowFactory.java: Replaced Frame with DebugInfoFrame.

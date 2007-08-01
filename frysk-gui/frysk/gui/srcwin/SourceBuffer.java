@@ -619,7 +619,9 @@ public class SourceBuffer extends TextBuffer {
          * @return The variable at that location, or null
          */
     public Value getVariable(TextIter iter) {
-	if (this.scope == null || this.scope.getLines().length == 0)
+	
+	if (this.scope == null || this.scope.getLines().length == 0 
+		|| debugInfo == null)
 	    return null;
 
 	DOMSource source = this.scope.getLines()[0].getDOMSource();
@@ -642,6 +644,10 @@ public class SourceBuffer extends TextBuffer {
 	try {
 	    var = debugInfo.print(line.getText().substring(tag.getStart(),
 		    tag.getStart() + tag.getLength()), scope);
+	    
+	    if (var == null)
+		return null;
+	     
 	    var.setFilePathXXX(source.getFilePath() + "/" + fileName);
 	    var.setLineNoXXX(line.getLineNum());
 
