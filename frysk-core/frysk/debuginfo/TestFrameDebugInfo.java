@@ -154,6 +154,21 @@ public class TestFrameDebugInfo
     
   }
   
+  public void testVirtualDebugInfoStackTrace ()
+  {
+    
+    Task task = getStoppedTask("funit-inlined");
+    StringWriter stringWriter = new StringWriter();
+    
+    DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(stringWriter), task, true, true, true);
+
+    assertTrue("contains first", stringWriter.getBuffer().toString().contains("first"));
+    assertTrue("contains second", stringWriter.getBuffer().toString().contains("second"));
+    assertTrue("contains third", stringWriter.getBuffer().toString().contains("third"));
+    assertTrue("contains main", stringWriter.getBuffer().toString().contains("main"));
+  }
+  
+  
   public void testValues() throws NameNotFoundException
   {
     Task task = getStoppedTask("funit-stacks-values");

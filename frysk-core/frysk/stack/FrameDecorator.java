@@ -108,4 +108,8 @@ public abstract class FrameDecorator
     public long getCFA(){
 	return this.frame.getCFA();
     }
+    
+    public Frame getUndecoratedFrame(){
+	return this.frame;
+    }
 }

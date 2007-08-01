@@ -116,7 +116,6 @@ public class DebugInfoFrame extends FrameDecorator{
             scopes = scopes[0].getScopesDie();
 
             for (int i = 0; i < scopes.length; i++) {
-        	System.out.println("DebugInfoFrame.getInlnedSubprograms() " + DwTagEncodings.toName(scopes[i].getTag()));
         	if (scopes[i].getTag() == DwTagEncodings.DW_TAG_inlined_subroutine_) {
         	    inlinedSubprograms.add(new InlinedSubroutine(scopes[i], debugInfo));
         	}
@@ -191,5 +190,12 @@ public class DebugInfoFrame extends FrameDecorator{
 	  }
 	  return outerDebugInfoFrame;
       }
+	
+      public void setInnerDebugInfoFrame(DebugInfoFrame frame){
+	  innerDebugInfoFrame = frame;
+      }
 	      
+      public void setOuterDebugInfoFrame(DebugInfoFrame frame){
+	  outerDebugInfoFrame = frame;
+      }
 }

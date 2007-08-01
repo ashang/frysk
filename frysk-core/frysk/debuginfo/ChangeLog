@@ -1,3 +1,11 @@
+2007-08-01  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFrameDebugInfo.java (testVirtualDebugInfoStackTrace): New test.
+	* DebugInfoStackFactory.java (createVirtualDebugInfoStackTrace): Added.
+	(printVirtualTaskStackTrace): Added.
+	* DebugInfoFrame.java (setInnerDebugInfoFrame): Added.
+	(setOuterDebugInfoFrame): Added.
+
 2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* InlinedSubroutine.java (InlinedSubroutine): Added constructor.

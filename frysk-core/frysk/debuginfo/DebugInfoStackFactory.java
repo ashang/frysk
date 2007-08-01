@@ -40,6 +40,8 @@
 package frysk.debuginfo;
 
 import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import frysk.proc.Task;
 import frysk.rt.Line;
@@ -51,6 +53,54 @@ public class DebugInfoStackFactory {
     public static DebugInfoFrame createDebugInfoStackTrace (Task task)
     {
 	return new DebugInfoFrame(StackFactory.createFrame(task));
+    }
+
+    public static DebugInfoFrame createVirtualDebugInfoStackTrace (Task task)
+    {
+	DebugInfoFrame frame = createDebugInfoStackTrace (task);
+	DebugInfoFrame tempFrame = null;
+	DebugInfoFrame virtualFrame = null;
+	
+	DebugInfoFrame innermostFrame = null;
+	
+	while(frame != null){
+//	    System.out
+//	    .println("DebugInfoStackFactory.createVirtualDebugInfoStackTrace() " + frame.getUndecoratedFrame());
+
+	    LinkedList inlineList = frame.getInlnedSubprograms(); 
+	    if(inlineList.size() != 0 ){
+		Iterator iterator = inlineList.iterator();
+		while (iterator.hasNext()) {
+		    InlinedSubroutine subroutine = (InlinedSubroutine) iterator.next();
+		    tempFrame = new DebugInfoFrame(frame.getUndecoratedFrame());
+		    tempFrame.setSubprogram(subroutine);
+		    
+		    if(virtualFrame!=null){
+			virtualFrame.setOuterDebugInfoFrame(tempFrame);
+			tempFrame.setInnerDebugInfoFrame(virtualFrame);
+			virtualFrame = virtualFrame.getOuterDebugInfoFrame();
+		    }else{
+			virtualFrame = tempFrame;
+			innermostFrame = tempFrame;
+		    }
+		}
+	    }
+	    
+	    tempFrame = new DebugInfoFrame(frame.getUndecoratedFrame());
+	    
+	    if(virtualFrame!=null){
+		virtualFrame.setOuterDebugInfoFrame(tempFrame);
+		tempFrame.setInnerDebugInfoFrame(virtualFrame);
+		virtualFrame = virtualFrame.getOuterDebugInfoFrame();
+	    }else{
+		virtualFrame = tempFrame;
+		innermostFrame = tempFrame;
+	    }
+	    
+	    frame = frame.getOuterDebugInfoFrame();
+	}
+	
+	return innermostFrame;
     }
 
     public static DebugInfoFrame createDebugInfoFrame (Frame frame)
@@ -67,6 +117,16 @@ public class DebugInfoStackFactory {
       if (task != null){
         printWriter.println("Task #" + task.getTid());
         DebugInfoFrame frame = createDebugInfoStackTrace(task);
+        printStackTrace(printWriter, frame,printParameters,printScopes,fullpath);
+      }
+      printWriter.flush();
+    }
+
+    public static final void printVirtualTaskStackTrace (PrintWriter printWriter, Task task, boolean printParameters, boolean printScopes, boolean fullpath)
+    {
+      if (task != null){
+        printWriter.println("Task #" + task.getTid());
+        DebugInfoFrame frame = createVirtualDebugInfoStackTrace(task);
         printStackTrace(printWriter, frame,printParameters,printScopes,fullpath);
       }
       printWriter.flush();

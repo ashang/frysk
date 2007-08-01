@@ -1,3 +1,7 @@
+2007-08-01  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* FrameDecorator.java (getUndecoratedFrame): New function.
+
 2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestStackBacktrace.java: Replaced Frame with DebugInfoFrame.
