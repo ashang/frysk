@@ -1,3 +1,9 @@
+2007-08-01  Nurdin Premji  <npremji@redhat.com>
+
+	* DisassembleCommand.java (DisassembleCommand): Fix up syntax string,
+	options go at end.
+	* CoreCommand.java (handle): Handle "core corefile exefile" case.
+
 2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* WhereCommand.java: Replaced Frame with DebugInfoFrame.

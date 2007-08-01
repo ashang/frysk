@@ -58,19 +58,28 @@ public class CoreCommand extends CLIHandler {
 
     public void handle(Command cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
-	if (params.size() == 1 && params.get(0).equals("-help")) {
-	    cli.printUsage(cmd);
+
+	parser.parse(params);
+	if (parser.helpOnly)
+	    return;
+	
+	
+	if (params.size() > 2) {
+	    cli.addMessage("Too many parameters", Message.TYPE_ERROR);
+	    parser.printHelp(System.out);
 	    return;
 	}
 	
-	if (params.size() != 1) {
-	    cli.printUsage(cmd);
-	    return;
+	File coreFile = new File((String) params.get(0));
+	
+	Proc coreProc;
+	if (params.size() == 1)	    
+	 coreProc = frysk.util.Util.getProcFromCoreFile(coreFile);
+	else {
+	    File exeFile = new File((String) params.get(1));
+	    coreProc = frysk.util.Util.getProcFromCoreFile(coreFile, exeFile);
 	}
-	
-	Proc coreProc = frysk.util.Util.getProcFromCoreFile(new File((String) params.get(0)));
-	
-	
+
 	cli.proc = coreProc;
 	cli.task = coreProc.getMainTask();
 	cli.frame = DebugInfoStackFactory.createDebugInfoStackTrace(cli.task);

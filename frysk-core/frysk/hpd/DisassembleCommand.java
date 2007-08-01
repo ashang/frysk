@@ -59,9 +59,9 @@ public class DisassembleCommand extends CLIHandler {
 
     public DisassembleCommand(CLI cli) {
 	super(cli, "disassemble", "disassemble a section of memory",
-		"disassemble [OPTIONS] [startAddress] ||\n"
-			+ "disassemble [-OPTIONS] "
-			+ "<startAddress> <endAddress>",
+		"disassemble  [startAddress] [--] [OPTIONS]||\n"
+			+ "disassemble  "
+			+ "<startAddress> <endAddress> [--] [-OPTIONS]",
 		"disassemble the function surrounding the current pc, "
 			+ "the function surrounding a given address, "
 			+ "or a range of functions.");
