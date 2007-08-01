@@ -1,3 +1,7 @@
+2007-08-01  Nurdin Premji  <npremji@redhat.com>
+
+	* fhpd.java (main): Cleaned up usage message.
+
 2007-07-31  Teresa Thomas  <tthomas@redhat.com>
 
 	* fdebugrpm.sh: New file - Bash scripts to install missing 

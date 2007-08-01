@@ -106,7 +106,7 @@ public class fhpd
       
       
     };    
-    parser.setHeader("Usage: fhpd <PID>");
+    parser.setHeader("Usage: fhpd <PID> || fhpd <COREFILE> [<EXEFILE>]");
     parser.parse(args);
     Manager.eventLoop.start();
     String line = "";
