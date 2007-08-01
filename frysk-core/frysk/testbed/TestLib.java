@@ -477,10 +477,6 @@ public class TestLib
 	    return Fork.daemon(stdin, stdout, stderr, argv);
 	}
 
-	public AckDaemonProcess (Sig ack, String[] argv) {
-	    super(ack, argv);
-	}
-
 	public AckDaemonProcess () {
 	    super();
 	}

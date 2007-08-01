@@ -1,3 +1,11 @@
+2007-08-01  Andrew Cagney  <cagney@redhat.com>
+
+	* TestStackBacktrace.java (testBacktrace): Use
+	SynchronizedOffspring.
+	(testThreadedBacktrace): Ditto.
+	(testFramePushing): Ditto.
+	(testFramePopping): Ditto.
+	
 2007-08-01  Nurdin Premji  <npremji@redhat.com>
 
 	* UnwindRegisterMap.java: Renamed to ...

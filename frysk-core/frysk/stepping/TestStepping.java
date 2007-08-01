@@ -43,7 +43,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
-
+import frysk.testbed.Offspring;
+import frysk.testbed.SynchronizedOffspring;
 import frysk.Config;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
@@ -113,10 +114,12 @@ public class TestStepping extends TestLib {
 	int end = this.scanner.findTokenLine("_lineStepFunctionEntry_");
 
 	/* The test process */
-	AckDaemonProcess process = new AckDaemonProcess(Sig.USR1, new String[] {
-		getExecPath("funit-rt-steptester"), "" + Pid.get(),
-		"" + Sig.USR1_ });
-
+	SynchronizedOffspring process
+	    = new SynchronizedOffspring(Sig.USR1, new String[] {
+					    getExecPath("funit-rt-steptester"),
+					    "" + Pid.get(),
+					    "" + Sig.USR1_
+					});
 	this.testStarted = false;
 
 	/** Test initialization */
@@ -180,10 +183,12 @@ public class TestStepping extends TestLib {
 	//	System.err.println("start/end: " + start + " " + end);
 
 	/* The test process */
-	AckDaemonProcess process = new AckDaemonProcess(Sig.USR1, new String[] {
-		getExecPath("funit-rt-steptester"), "" + Pid.get(),
-		"" + Sig.USR1_ });
-
+	SynchronizedOffspring process
+	    = new SynchronizedOffspring(Sig.USR1, new String[] {
+					    getExecPath("funit-rt-steptester"),
+					    "" + Pid.get(),
+					    "" + Sig.USR1_
+					});
 	this.testStarted = false;
 
 	/** Test initialization */
@@ -249,9 +254,12 @@ public class TestStepping extends TestLib {
 	int end = this.scanner.findTokenLine("_lineStepIfFailFinish_");
 
 	/* The test process */
-	AckDaemonProcess process = new AckDaemonProcess(Sig.USR1, new String[] {
-		getExecPath("funit-rt-steptester"), "" + Pid.get(),
-		"" + Sig.USR1_ });
+	SynchronizedOffspring process
+	    = new SynchronizedOffspring(Sig.USR1, new String[] {
+					    getExecPath("funit-rt-steptester"),
+					    "" + Pid.get(),
+					    "" + Sig.USR1_
+					});
 
 	this.testStarted = false;
 
@@ -314,10 +322,12 @@ public class TestStepping extends TestLib {
 	int end = this.scanner.findTokenLine("_lineStepFunctionCall_");
 
 	/* The test process */
-	AckDaemonProcess process = new AckDaemonProcess(Sig.USR1, new String[] {
-		getExecPath("funit-rt-steptester"), "" + Pid.get(),
-		"" + Sig.USR1_ });
-
+	SynchronizedOffspring process
+	    = new SynchronizedOffspring(Sig.USR1, new String[] {
+					    getExecPath("funit-rt-steptester"),
+					    "" + Pid.get(),
+					    "" + Sig.USR1_
+					});
 	this.testStarted = false;
 
 	/** Test initialization */
@@ -384,10 +394,12 @@ public class TestStepping extends TestLib {
 	int end = this.scanner.findTokenLine("_SigSetJmpReturn_");
 
 	/* The test process */
-	AckDaemonProcess process = new AckDaemonProcess(Sig.USR1, new String[] {
-		getExecPath("funit-rt-siglongjmp"), "" + Pid.get(),
-		"" + Sig.USR1_ });
-
+	SynchronizedOffspring process
+	    = new SynchronizedOffspring(Sig.USR1, new String[] {
+					    getExecPath("funit-rt-siglongjmp"),
+					    "" + Pid.get(),
+					    "" + Sig.USR1_
+					});
 	this.testStarted = false;
 
 	/** Test initialization */
@@ -449,9 +461,11 @@ public class TestStepping extends TestLib {
 	int end = this.scanner.findTokenLine("_lineStepGotoExit_");
 
 	/* The test process */
-	AckDaemonProcess process = new AckDaemonProcess(Sig.USR1, new String[] {
-		getExecPath("funit-rt-goto"), "" + Pid.get(), "" + Sig.USR1_ });
-
+	SynchronizedOffspring process
+	    = new SynchronizedOffspring(Sig.USR1, new String[] {
+					    getExecPath("funit-rt-goto"),
+					    "" + Pid.get(), "" + Sig.USR1_
+					});
 	this.testStarted = false;
 
 	/** Test initialization */
@@ -516,10 +530,12 @@ public class TestStepping extends TestLib {
 	int end = this.scanner.findTokenLine("_lineStepSigHandlerEntry_");
 
 	/* The test process */
-	AckDaemonProcess process = new AckDaemonProcess(Sig.USR1, new String[] {
-		getExecPath("funit-rt-sigraise"), "" + Pid.get(),
-		"" + Sig.USR1_ });
-
+	SynchronizedOffspring process
+	    = new SynchronizedOffspring(Sig.USR1, new String[] {
+					    getExecPath("funit-rt-sigraise"),
+					    "" + Pid.get(),
+					    "" + Sig.USR1_
+					});
 	this.testStarted = false;
 
 	/** Test initialization */
@@ -1182,11 +1198,9 @@ public class TestStepping extends TestLib {
     
     boolean genericUpdate = false;
 
-    public Task initTask(AckDaemonProcess process, String source,
-	    int startLine, int endLine) {
-
+    public Task initTask(Offspring process, String source,
+			 int startLine, int endLine) {
 	Task myTask = process.findTaskUsingRefresh(true);
-	
 	initTaskWithTask(myTask, source, startLine, endLine);
 	return myTask;
     }

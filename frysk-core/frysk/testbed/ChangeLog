@@ -1,5 +1,7 @@
 2007-08-01  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (AckDaemonProcess(Sig,String[]): Delete.
+
 	* FunitExecOffspring.java (getCommandLine): Replace constructArgs,
 	make public.
 	(assertRunExec): New.

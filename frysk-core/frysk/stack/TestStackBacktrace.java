@@ -44,7 +44,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
-
+import frysk.testbed.SynchronizedOffspring;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.event.Event;
@@ -94,13 +94,12 @@ public class TestStackBacktrace
 
     lock = new LockObserver();
     
-    AckDaemonProcess process = new AckDaemonProcess
-	(Sig.USR1, new String[] {
-	    getExecPath ("funit-rt-looper"),
-	    "" + Pid.get (),
-	    "" + Sig.USR1_
-	});
-    
+    SynchronizedOffspring process
+	= new SynchronizedOffspring (Sig.USR1, new String[] {
+					 getExecPath ("funit-rt-looper"),
+					 "" + Pid.get (),
+					 "" + Sig.USR1_
+				     });
     myTask = process.findTaskUsingRefresh(true);
     assertNotNull(myTask);
     
@@ -215,13 +214,12 @@ public class TestStackBacktrace
       test = 2;
       lock = new LockObserver();
 
-    AckDaemonProcess process = new AckDaemonProcess
-	(Sig.USR1, new String[] {
-	    getExecPath ("funit-rt-threader"),
-	    "" + Pid.get (),
-	    "" + Sig.USR1_
-	});
-    
+    SynchronizedOffspring process
+	= new SynchronizedOffspring (Sig.USR1, new String[] {
+					 getExecPath ("funit-rt-threader"),
+					 "" + Pid.get (),
+					 "" + Sig.USR1_
+				     });
     myTask = process.findTaskUsingRefresh(true);
     
     task_count = 0;
@@ -266,14 +264,12 @@ public class TestStackBacktrace
   
   testState = PUSH;
   
-  AckDaemonProcess process = new AckDaemonProcess
-    (Sig.USR1,
-     new String[] {
-        getExecPath ("funit-rt-stepper"),
-        "" + Pid.get (),
-        "" + Sig.USR1_
-    });
-  
+  SynchronizedOffspring process
+      = new SynchronizedOffspring (Sig.USR1, new String[] {
+				       getExecPath ("funit-rt-stepper"),
+				       "" + Pid.get (),
+				       "" + Sig.USR1_
+				   });
   myTask = process.findTaskUsingRefresh(true);
   myProc = myTask.getProc();
   assertNotNull(myProc);
@@ -306,14 +302,12 @@ public class TestStackBacktrace
   
   testState = POP;
   
-  AckDaemonProcess process = new AckDaemonProcess
-    (Sig.USR1,
-     new String[] {
-        getExecPath ("funit-rt-stepper"),
-        "" + Pid.get (),
-        "" + Sig.USR1_
-    });
-  
+  SynchronizedOffspring process
+      = new SynchronizedOffspring (Sig.USR1, new String[] {
+				       getExecPath ("funit-rt-stepper"),
+				       "" + Pid.get (),
+				       "" + Sig.USR1_
+				   });
   myTask = process.findTaskUsingRefresh(true);
   myProc = myTask.getProc();
   assertNotNull(myProc);

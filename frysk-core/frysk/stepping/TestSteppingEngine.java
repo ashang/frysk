@@ -44,7 +44,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
-
+import frysk.testbed.Offspring;
+import frysk.testbed.SynchronizedOffspring;
 import frysk.Config;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
@@ -116,10 +117,12 @@ public class TestSteppingEngine extends TestLib {
 	int end = this.scanner.findTokenLine("_instructionStep_");
 
 	/* The test process */
-	AckDaemonProcess process = new AckDaemonProcess(Sig.USR1,
-		new String[] { getExecPath("funit-rt-stepper"), "" + Pid.get(),
-			"" + Sig.USR1_ });
-
+	SynchronizedOffspring process
+	    = new SynchronizedOffspring(Sig.USR1, new String[] {
+					    getExecPath("funit-rt-stepper"),
+					    "" + Pid.get(),
+					    "" + Sig.USR1_
+					});
 	this.testStarted = false;
 
 	/** Test initialization */
@@ -181,10 +184,12 @@ public class TestSteppingEngine extends TestLib {
 	int end = this.scanner.findTokenLine("_instructionStep_");
 
 	/* The test process */
-	AckDaemonProcess process = new AckDaemonProcess(Sig.USR1,
-		new String[] { getExecPath("funit-rt-stepper"), "" + Pid.get(),
-			"" + Sig.USR1_ });
-
+	SynchronizedOffspring process
+	    = new SynchronizedOffspring(Sig.USR1, new String[] {
+					    getExecPath("funit-rt-stepper"),
+					    "" + Pid.get(),
+					    "" + Sig.USR1_
+					});
 	this.testStarted = false;
 
 	/** Test initialization */
@@ -248,10 +253,12 @@ public class TestSteppingEngine extends TestLib {
 	int end = this.scanner.findTokenLine("_lineStepEnd_");
 
 	/* The test process */
-	AckDaemonProcess process = new AckDaemonProcess(Sig.USR1,
-		new String[] { getExecPath("funit-rt-stepper"), "" + Pid.get(),
-			"" + Sig.USR1_ });
-
+	SynchronizedOffspring process
+	    = new SynchronizedOffspring(Sig.USR1, new String[] {
+					    getExecPath("funit-rt-stepper"),
+					    "" + Pid.get(),
+					    "" + Sig.USR1_
+					});
 	this.testStarted = false;
 
 	/** Test initialization */
@@ -313,10 +320,12 @@ public class TestSteppingEngine extends TestLib {
 	int end = this.scanner.findTokenLine("_lineStepEnd_");
 
 	/* The test process */
-	AckDaemonProcess process = new AckDaemonProcess(Sig.USR1,
-		new String[] { getExecPath("funit-rt-stepper"), "" + Pid.get(),
-			"" + Sig.USR1_ });
-
+	SynchronizedOffspring process
+	    = new SynchronizedOffspring(Sig.USR1, new String[] {
+					    getExecPath("funit-rt-stepper"),
+					    "" + Pid.get(),
+					    "" + Sig.USR1_
+					});
 	this.testStarted = false;
 
 	/** Test initialization */
@@ -387,10 +396,12 @@ public class TestSteppingEngine extends TestLib {
 	int end = this.scanner.findTokenLine("_stepOver_");
 
 	/* The test process */
-	AckDaemonProcess process = new AckDaemonProcess(Sig.USR1,
-		new String[] { getExecPath("funit-rt-stepper"), "" + Pid.get(),
-			"" + Sig.USR1_ });
-
+	SynchronizedOffspring process
+	    = new SynchronizedOffspring(Sig.USR1, new String[] {
+					    getExecPath("funit-rt-stepper"),
+					    "" + Pid.get(),
+					    "" + Sig.USR1_
+					});
 	this.testStarted = false;
 
 	/** Test initialization */
@@ -466,10 +477,12 @@ public class TestSteppingEngine extends TestLib {
 	int end = this.scanner.findTokenLine("_stepOver_");
 
 	/* The test process */
-	AckDaemonProcess process = new AckDaemonProcess(Sig.USR1,
-		new String[] { getExecPath("funit-rt-stepper"), "" + Pid.get(),
-			"" + Sig.USR1_ });
-
+	SynchronizedOffspring process
+	    = new SynchronizedOffspring(Sig.USR1, new String[] {
+					    getExecPath("funit-rt-stepper"),
+					    "" + Pid.get(),
+					    "" + Sig.USR1_
+					});
 	this.testStarted = false;
 
 	/** Test initialization */
@@ -538,10 +551,12 @@ public class TestSteppingEngine extends TestLib {
 	int end = this.scanner.findTokenLine("_stepOver_");
 
 	/* The test process */
-	AckDaemonProcess process = new AckDaemonProcess(Sig.USR1,
-		new String[] { getExecPath("funit-rt-stepper"), "" + Pid.get(),
-			"" + Sig.USR1_ });
-
+	SynchronizedOffspring process
+	    = new SynchronizedOffspring(Sig.USR1, new String[] {
+					    getExecPath("funit-rt-stepper"),
+					    "" + Pid.get(),
+					    "" + Sig.USR1_
+					});
 	this.testStarted = false;
 
 	/** Test initialization */
@@ -610,10 +625,12 @@ public class TestSteppingEngine extends TestLib {
 	int end = this.scanner.findTokenLine("_stepOver_");
 
 	/* The test process */
-	AckDaemonProcess process = new AckDaemonProcess(Sig.USR1,
-		new String[] { getExecPath("funit-rt-stepper"), "" + Pid.get(),
-			"" + Sig.USR1_ });
-
+	SynchronizedOffspring process
+	    = new SynchronizedOffspring(Sig.USR1, new String[] {
+					    getExecPath("funit-rt-stepper"),
+					    "" + Pid.get(),
+					    "" + Sig.USR1_
+					});
 	this.testStarted = false;
 
 	/** Test initialization */
@@ -655,10 +672,12 @@ public class TestSteppingEngine extends TestLib {
 	int end = 0;
 
 	/* The test process */
-	AckDaemonProcess process = new AckDaemonProcess(Sig.USR1,
-		new String[] { getExecPath("funit-rt-stepper"), "" + Pid.get(),
-			"" + Sig.USR1_ });
-
+	SynchronizedOffspring process
+	    = new SynchronizedOffspring(Sig.USR1, new String[] {
+					    getExecPath("funit-rt-stepper"),
+					    "" + Pid.get(),
+					    "" + Sig.USR1_
+					});
 	this.testStarted = false;
 
 	/** Test initialization */
@@ -691,11 +710,9 @@ public class TestSteppingEngine extends TestLib {
     long breakpointAddress = 0;
     boolean genericUpdate = false;
 
-    public Task initTask(AckDaemonProcess process, String source,
-	    int startLine, int endLine) {
-
+    public Task initTask(Offspring process, String source,
+			 int startLine, int endLine) {
 	Task myTask = process.findTaskUsingRefresh(true);
-
 	initTaskWithTask(myTask, source, startLine, endLine);
 	return myTask;
     }

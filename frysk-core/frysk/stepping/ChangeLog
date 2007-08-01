@@ -1,3 +1,25 @@
+2007-08-01  Andrew Cagney  <cagney@redhat.com>
+
+	* TestSteppingEngine.java (testInstructionStepping): Use
+	SynchronizedOffspring.
+	(testLineSteppingList): Ditto.
+	(testInstructionSteppingList): Ditto.
+	(testLineStepping): Ditto.
+	(testStepOver): Ditto.
+	(testInstructionNext): Ditto.
+	(testStepOut): Ditto.
+	(testStepAdvance): Ditto.
+	(testBreakpointing): Ditto.
+	(initTask): Change process parameter type to Offspring.
+	* TestStepping.java (testLineStepFunctionCall): Ditto.
+	(testLineStepIfStatementPass): Ditto.
+	(testLineStepIfStatementFail): Ditto.
+	(testLineStepFunctionReturn): Ditto.
+	(testStepSigLongJmp): Ditto.
+	(testStepGoto): Ditto.
+	(testStepSigRaise): Ditto.
+	(initTask): Change process parameter type to Offspring.
+
 2007-08-01  Mike Cvet  <mcvet@redhat.com>
 
 	* TestStepping.java (testASMFramelessFunctionStepOver): Added.
