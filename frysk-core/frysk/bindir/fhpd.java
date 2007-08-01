@@ -43,19 +43,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-
 import java.util.List;
-
 import frysk.hpd.CLI;
-
 import jline.Completor;
 import jline.ConsoleReader;
-
+import frysk.util.CoreExePair;
 import frysk.proc.Manager;
 import frysk.proc.ProcId;
 import frysk.util.CommandlineParser;
 import frysk.util.PtyTerminal;
-import frysk.util.Util;
 
 public class fhpd 
 {
@@ -101,7 +97,7 @@ public class fhpd
         pid = pids[0].id;
       }
 
-    public void parseCores(Util.CoreExePair[] corePairs) {
+    public void parseCores(CoreExePair[] corePairs) {
 	core = corePairs[0].coreFile;
 	exeFile = corePairs[0].exeFile;
     }

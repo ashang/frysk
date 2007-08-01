@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2005, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,67 +37,16 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.bindir;
+package frysk.util;
 
-import frysk.util.CommandlineParser;
-import frysk.util.Util;
-import frysk.proc.Proc;
-import frysk.proc.ProcId;
-import frysk.sys.proc.Exe;
-import gnu.classpath.tools.getopt.Option;
 import java.io.File;
-import frysk.util.CoreExePair;
 
-public class fexe {
-    static boolean verbose = false;
-    public static void main (String[] args) {
-	// Parse command line. Check pid provided.
-	CommandlineParser parser = new CommandlineParser("fexe") {
-		public void parseCores (CoreExePair[] corePairs) {
-		    for (int i = 0; i < corePairs.length; i++) {
-			File coreFile = corePairs[i].coreFile;
-			File exeFile = corePairs[i].exeFile;
-			Proc proc;
-			if (exeFile == null)
-			    proc = Util.getProcFromCoreFile(coreFile);
-			else
-			    proc = Util.getProcFromCoreFile(coreFile, exeFile);
-			if (verbose) {
-			    System.out.println(coreFile.getPath()
-					       + " "
-					       + proc.getExe());
-			} else {
-			    System.out.println(proc.getExe());
-			}
-		    }
-		    System.exit(0);
-		}
-		public void parsePids (ProcId[] pids) {
-		    for (int i= 0; i< pids.length; i++) {
-			ProcId id = pids[i];
-			Proc proc = Util.getProcFromPid(id);
-			if (verbose) {
-			    System.out.println(id.hashCode()
-					       + " "
-					       + proc.getExe()
-					       + " "
-					       + Exe.get(id.hashCode()));
-			} else {
-			    System.out.println(proc.getExe());
-			}
-		    }
-		    System.exit(0);
-		}
-	    };
-	parser.add(new Option('v', "More verbose output") {
-		public void parsed (String val) {
-		    verbose = true;
-		}
-	    });
-	parser.parse(args);
-	//If we got here, we didn't find a pid.
-	System.err.println("Error: No PID or COREFILE.");
-	parser.printHelp();
-	System.exit(1);
+public class CoreExePair {
+    public final File coreFile;
+    public final File exeFile;
+    
+    CoreExePair(File coreFile, File exeFile) {
+	this.coreFile = coreFile;
+	this.exeFile = exeFile;
     }
 }

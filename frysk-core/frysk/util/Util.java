@@ -108,47 +108,30 @@ public class Util
   }
   
   /**
-   * Used to find a Proc given a pid.
-   *
-   */
-  private static class ProcFinder implements Host.FindProc
-  {
-    Proc proc;
-    public void procFound (ProcId procId)
-    {
-      proc = Manager.host.getProc(procId);
-      Manager.eventLoop.requestStop();
-    }
-
-    public void procNotFound (ProcId procId, Exception e)
-    { 
-      System.err.println("Couldn't find the process: "
-                         + procId.toString());
-      Manager.eventLoop.requestStop();  
-    } 
-  }
-  
-  public static class CoreExePair {
-      public final File coreFile;
-      public final File exeFile;
-      
-      CoreExePair(File coreFile, File exeFile) {
-	  this.coreFile = coreFile;
-	  this.exeFile = exeFile;
-      }
-  }
-
-  /**
    * Return a Proc associated with the given pid.
    * @param procId The given pid.
    * @return A Proc for the given pid.
    */
   public static Proc getProcFromPid(ProcId procId)
   {
-    ProcFinder finder = new ProcFinder();
-    Manager.host.requestFindProc(procId, finder);
-    Manager.eventLoop.run();
-    return finder.proc;
+      class ProcFinder implements Host.FindProc {
+	  Proc proc;
+	  public void procFound (ProcId procId)
+	  {
+	      proc = Manager.host.getProc(procId);
+	      Manager.eventLoop.requestStop();
+	  }
+	  
+	  public void procNotFound (ProcId procId, Exception e)
+	  { 
+	      System.err.println("Couldn't find the process: "
+				 + procId.toString());
+	      Manager.eventLoop.requestStop();  
+	  } 
+      }
+      ProcFinder finder = new ProcFinder();
+      Manager.host.requestFindProc(procId, finder);
+      Manager.eventLoop.run();
+      return finder.proc;
   }
-    
 }

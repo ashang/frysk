@@ -40,12 +40,10 @@
 package frysk.util;
 
 import java.io.File;
-import java.util.ArrayList;
-
+import java.util.LinkedList;
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfEHeader;
-
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
@@ -71,12 +69,11 @@ public class CommandlineParser {
     }
 
     /**
-         * Callback function. Gives an array of pids if pids were detected on
-         * the command line.
-         * 
-         * @param pids
-         *                The array of pids passed on the command line.
-         */
+     * Callback function. Gives an array of pids if pids were detected
+     * on the command line.
+     * 
+     * @param pids The array of pids passed on the command line.
+     */
     public void parsePids(ProcId[] pids) {
 	System.err.println("Error: Pids not supported.");
 	printHelp();
@@ -84,24 +81,24 @@ public class CommandlineParser {
     }
 
     /**
-         * Callback function. Gives an array of core files if core files were
-         * detected on the command line.
-         * 
-         * @param coreFiles
-         *                The array of core files passed on the command line.
-         */
-    public void parseCores(Util.CoreExePair[] coreExePairs) {
+     * Callback function. Gives an array of core files if core files
+     * were detected on the command line.
+     * 
+     * @param coreFiles The array of core files passed on the command
+     * line.
+     */
+    public void parseCores(CoreExePair[] coreExePairs) {
 	System.err.println("Error: Cores not supported.");
 	printHelp();
 	System.exit(1);
     }
 
     /**
-         * Callback function. Gives a string array represented a parsed command.
-         * 
-         * @param command
-         *                The parsed command.
-         */
+     * Callback function. Gives a string array represented a parsed
+     * command.
+     * 
+     * @param command The parsed command.
+     */
     public void parseCommand(String[] command) {
 	System.err.println("Error: Commands not supported.");
 	printHelp();
@@ -150,31 +147,25 @@ public class CommandlineParser {
 
 	// Check if arguments are all core file/ exe file pairs..
 	if (isCoreFile(result[0])) {
-	    ArrayList coreExeFiles = new ArrayList();
-
-	    for (int file = 0; file < result.length - 1; file++) {
-		File coreFile;
+	    LinkedList coreExeFiles = new LinkedList();
+	    for (int file = 0; file < result.length; /*see below*/) {
 		if (isCoreFile(result[file])) {
-		    coreFile = new File(result[file]);
-		    if (isExeFile(result[file + 1])) {
-			coreExeFiles.add(new Util.CoreExePair(coreFile,
-				new File(result[file + 1])));
-			file++;
-		    } else
-			coreExeFiles.add(new Util.CoreExePair(coreFile, null));
-		} else
+		    File coreFile = new File(result[file]);
+		    if (file + 1 < result.length && isExeFile(result[file + 1])) {
+			File exeFile = new File(result[file + 1]);
+			coreExeFiles.add(new CoreExePair(coreFile, exeFile));
+			file += 2;
+		    } else {
+			coreExeFiles.add(new CoreExePair(coreFile, null));
+			file += 1;
+		    }
+		} else {
 		    throw new RuntimeException(
 			    "Please don't mix core files with pids or executables.");
+		}
 	    }
-
-	    if (isCoreFile(result[result.length - 1]))
-		coreExeFiles.add(new Util.CoreExePair(new File(
-			result[result.length - 1]), null));
-
-	    Util.CoreExePair[] coreExePairs = new Util.CoreExePair[coreExeFiles
-		    .size()];
-	    System.arraycopy(coreExeFiles.toArray(), 0, coreExePairs, 0,
-		    coreExePairs.length);
+	    CoreExePair[] coreExePairs = new CoreExePair[coreExeFiles.size()];
+	    coreExeFiles.toArray(coreExePairs);
 	    parseCores(coreExePairs);
 	    return result;
 	}
@@ -185,12 +176,11 @@ public class CommandlineParser {
     }
 
     /**
-         * Check if the given file is a coreFile.
-         * 
-         * @param fileName
-         *                A file to check.
-         * @return if fileName is a corefile returns true, otherwise false.
-         */
+     * Check if the given file is a coreFile.
+     * 
+     * @param fileName A file to check.
+     * @return if fileName is a corefile returns true, otherwise false.
+     */
     private boolean isCoreFile(String fileName) {
 	Elf elf;
 	try {
@@ -202,7 +192,6 @@ public class CommandlineParser {
 	boolean ret = elf.getEHeader().type == ElfEHeader.PHEADER_ET_CORE;
 	elf.close();
 	return ret;
-
     }
 
     private boolean isExeFile(String fileName) {

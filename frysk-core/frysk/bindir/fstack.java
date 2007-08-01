@@ -55,6 +55,7 @@ import frysk.util.StacktraceAction;
 import frysk.util.Util;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
+import frysk.util.CoreExePair;
 
 public final class fstack
 {
@@ -135,7 +136,7 @@ public final class fstack
     }
   }
   
-  private static void stackCore(Util.CoreExePair coreExePair)
+  private static void stackCore(CoreExePair coreExePair)
   {
       
     Proc proc = Util.getProcFromCoreExePair(coreExePair);
@@ -157,7 +158,7 @@ public final class fstack
     parser = new CommandlineParser("fstack")
     {
       //@Override
-      public void parseCores (Util.CoreExePair[] coreExePairs)
+      public void parseCores (CoreExePair[] coreExePairs)
       {
        for (int i = 0; i < coreExePairs.length; i++)
          stackCore(coreExePairs[i]);
