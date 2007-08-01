@@ -1,3 +1,7 @@
+2007-08-01  Mike Cvet  <mcvet@redhat.com>
+
+	* FCatch.java: Formatting using Sun style.
+
 2007-08-01  Nurdin Premji  <npremji@redhat.com>
 
 	* Util.java (getProcFromCoreFile): Added, takes an exe file as well.
