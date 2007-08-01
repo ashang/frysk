@@ -100,6 +100,13 @@ public class Util
     return proc;
   }
   
+  public static Proc getProcFromCoreExePair(CoreExePair coreExePair) {
+      if (coreExePair.exeFile == null)
+	  return getProcFromCoreFile(coreExePair.coreFile);
+      else
+	  return getProcFromCoreFile(coreExePair.coreFile, coreExePair.exeFile);
+  }
+  
   /**
    * Used to find a Proc given a pid.
    *
@@ -121,6 +128,16 @@ public class Util
     } 
   }
   
+  public static class CoreExePair {
+      public final File coreFile;
+      public final File exeFile;
+      
+      CoreExePair(File coreFile, File exeFile) {
+	  this.coreFile = coreFile;
+	  this.exeFile = exeFile;
+      }
+  }
+
   /**
    * Return a Proc associated with the given pid.
    * @param procId The given pid.

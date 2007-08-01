@@ -1,3 +1,10 @@
+2007-08-01  Nurdin Premji  <npremji@redhat.com>
+
+	* fexe.java (.parseCores): Update to reflect CommandlineParser changes.
+	* fstack.java (.parseCores): Ditto.
+	(stackCore): Ditto.
+	* fhpd.java (.parseCores): Ditto.
+
 2007-08-01  Mike Cvet  <mcvet@redhat.com>
 
 	* fcatch.java: Re-formatted to Sun style.

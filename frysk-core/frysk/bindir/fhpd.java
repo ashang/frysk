@@ -55,12 +55,14 @@ import frysk.proc.Manager;
 import frysk.proc.ProcId;
 import frysk.util.CommandlineParser;
 import frysk.util.PtyTerminal;
+import frysk.util.Util;
 
 public class fhpd 
 {
   static int pid;
   static File execFile;
   static File core;
+  static File exeFile;
 
   final static class FhpdCompletor implements Completor
   {
@@ -99,8 +101,9 @@ public class fhpd
         pid = pids[0].id;
       }
 
-    public void parseCores(File[] coreFiles) {
-	core = coreFiles[0];
+    public void parseCores(Util.CoreExePair[] corePairs) {
+	core = corePairs[0].coreFile;
+	exeFile = corePairs[0].exeFile;
     }
       
       
@@ -117,8 +120,11 @@ public class fhpd
         line = "attach " + pid;
       else if (execFile != null)
         line = "run " + execFile.getCanonicalPath();
-      else if (core != null)
-	  line = "core " + core.getCanonicalPath();
+      else if (core != null) {
+	  line = "core " + core.getCanonicalPath();      
+	  if (exeFile != null)
+	      line += " " + exeFile.getCanonicalPath();
+      }
     }
     catch (IOException ignore) {}
     

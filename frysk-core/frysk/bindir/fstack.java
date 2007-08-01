@@ -39,7 +39,6 @@
 
 package frysk.bindir;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
@@ -136,9 +135,10 @@ public final class fstack
     }
   }
   
-  private static void stackCore(File coreFile)
+  private static void stackCore(Util.CoreExePair coreExePair)
   {
-    Proc proc = Util.getProcFromCoreFile(coreFile);
+      
+    Proc proc = Util.getProcFromCoreExePair(coreExePair);
     stacker = new Stacker(printWriter, proc, new PrintEvent(),elfOnly,printParameters,printScopes, fullpath,printSourceLibrary);
     new ProcCoreAction(proc, stacker);
     Manager.eventLoop.run();
@@ -157,10 +157,10 @@ public final class fstack
     parser = new CommandlineParser("fstack")
     {
       //@Override
-      public void parseCores (File[] coreFiles)
+      public void parseCores (Util.CoreExePair[] coreExePairs)
       {
-       for (int i = 0; i < coreFiles.length; i++)
-         stackCore(coreFiles[i]);
+       for (int i = 0; i < coreExePairs.length; i++)
+         stackCore(coreExePairs[i]);
       }
 
       //@Override

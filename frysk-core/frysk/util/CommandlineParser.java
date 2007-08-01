@@ -40,6 +40,7 @@
 package frysk.util;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
@@ -89,7 +90,7 @@ public class CommandlineParser
    * detected on the command line.
    * @param coreFiles The array of core files passed on the command line.
    */
-  public void parseCores(File[] coreFiles)
+  public void parseCores(Util.CoreExePair[] coreExePairs)
   {
     System.err.println("Error: Cores not supported.");
     printHelp();
@@ -158,19 +159,27 @@ public class CommandlineParser
       //Not a pid, continue on.
     }        
     
-    // Check if arguments are all core files.
+    // Check if arguments are all core file/ exe file pairs..
     if (isCoreFile(result[0]))
       {
-        File[] coreFiles = new File[result.length];
+        ArrayList coreExeFiles = new ArrayList();
         
-        for (int file = 0; file < result.length; file++)
-          if (isCoreFile(result[file]))
-            coreFiles[file] = new File(result[file]);
+        for (int file = 0; file < result.length - 1; file++) {
+         File coreFile;
+            if (isCoreFile(result[file])) {
+            coreFile = new File(result[file]);
+            if (isExeFile(result[file+1])) {
+              coreExeFiles.add(new Util.CoreExePair(coreFile, new File(result[file+1])));
+              file++; }
+              else
+        	 coreExeFiles.add(new Util.CoreExePair(coreFile, null)); 
+            }
           else
-            throw new RuntimeException("Please don't mix core files with pids or executables.");
-          
-        
-        parseCores(coreFiles);        
+            throw new RuntimeException("Please don't mix core files with pids or executables.");         
+        }
+        Util.CoreExePair[] coreExePairs = new Util.CoreExePair[coreExeFiles.size()];
+        System.arraycopy(coreExeFiles.toArray(), 0, coreExePairs, 0, coreExePairs.length);
+        parseCores(coreExePairs);        
         return result;
       }
       
@@ -198,6 +207,24 @@ public class CommandlineParser
       }
     
     boolean ret = elf.getEHeader().type == ElfEHeader.PHEADER_ET_CORE;
+    elf.close();
+    return ret;
+
+  }
+  
+  private boolean isExeFile (String fileName)
+  {
+    Elf elf;
+    try
+      {
+        elf = new Elf(fileName, ElfCommand.ELF_C_READ);
+      }
+    catch (Exception e)
+      {
+        return false;
+      }
+    
+    boolean ret = elf.getEHeader().type == ElfEHeader.PHEADER_ET_EXEC;
     elf.close();
     return ret;
 

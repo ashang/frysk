@@ -1,3 +1,11 @@
+2007-08-01  Nurdin Premji  <npremji@redhat.com>
+
+	* CommandlineParser.java (doParse): Handle core file/ exe file pairs.
+	(parseCores): Ditto.
+	(isExeFile): New.
+	* Util.java (CoreExePair): New.
+	(getProcFromCoreExePair): New.	
+	
 2007-08-01  Mike Cvet  <mcvet@redhat.com>
 
 	* FCatch.java: Formatting using Sun style.

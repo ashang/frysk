@@ -52,10 +52,15 @@ public class fexe {
     public static void main (String[] args) {
 	// Parse command line. Check pid provided.
 	CommandlineParser parser = new CommandlineParser("fexe") {
-		public void parseCores (File[] coreFiles) {
-		    for (int i = 0; i < coreFiles.length; i++) {
-			File coreFile = coreFiles[i];
-			Proc proc = Util.getProcFromCoreFile(coreFile);
+		public void parseCores (Util.CoreExePair[] corePairs) {
+		    for (int i = 0; i < corePairs.length; i++) {
+			File coreFile = corePairs[i].coreFile;
+			File exeFile = corePairs[i].exeFile;
+			Proc proc;
+			if (exeFile == null)
+			    proc = Util.getProcFromCoreFile(coreFile);
+			else
+			    proc = Util.getProcFromCoreFile(coreFile, exeFile);
 			if (verbose) {
 			    System.out.println(coreFile.getPath()
 					       + " "
