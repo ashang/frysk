@@ -135,10 +135,8 @@ public abstract class Frame
   }
   
   /**
-   * Returns the value stored at the given register number.
+   * Returns the value stored at the given register.
    */
-  public abstract Value getRegister(int reg);
-  
   public abstract Value getRegisterValue(Register reg);
   
   /**

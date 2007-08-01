@@ -1,3 +1,15 @@
+2007-08-01  Nurdin Premji  <npremji@redhat.com>
+
+	* UnwindRegisterMap.java: Renamed to ...
+	* RegisterMap.java: ... this.
+	* Frame.java (getRegister): Removed.
+	* FrameDecorator.java (getRegister): Removed.
+	* RemoteFrame.java (getRegister): Removed.
+	(getRegisterValue): Update RegisterMap name change.
+	* UnwindRegisterMapFactory.java (IA32Map): Update RegisterMap name change.
+	(X8664Map): Ditto.
+	(getRegisterMap): Ditto.
+
 2007-08-01  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* FrameDecorator.java (getUndecoratedFrame): New function.

@@ -1,3 +1,17 @@
+2007-08-01  Nurdin Premji  <npremji@redhat.com>
+
+	* DebugInfoEvaluator.java (AccessMemory.getBufferAddr): 
+	Use DwarfRegisterMapsFactory.
+	(AccessRegisters.getRegister): Added.
+	(getReg): Use getRegister.
+	(getByte): Use Frame.getRegisterValue instead of Frame.getRegister.
+	(getDouble): Ditto.
+	(getFloat): Ditto.
+	(getInt): Ditto.
+	(getLong): Ditto.
+	(getShort): Ditto.
+	* DwarfRegisterMapFactory.java: Added.
+
 2007-08-01  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFrameDebugInfo.java (testVirtualDebugInfoStackTrace): New test.

@@ -45,7 +45,7 @@ import frysk.proc.IsaX8664;
 
 public class UnwindRegisterMapFactory {
 
-    public static UnwindRegisterMap getRegisterMap(Isa isa) {
+    public static RegisterMap getRegisterMap(Isa isa) {
 	if (isa instanceof IsaIA32)
 	    return new IA32Map();
 	else if (isa instanceof IsaX8664)
@@ -55,74 +55,74 @@ public class UnwindRegisterMapFactory {
     }
 }
 
-class IA32Map extends UnwindRegisterMap {
+class IA32Map extends RegisterMap {
 
     IA32Map() {
 
-	numbers.put(IA32Registers.EAX, new Integer(0));
-	numbers.put(IA32Registers.EDX, new Integer(1));
-	numbers.put(IA32Registers.ECX, new Integer(2));
-	numbers.put(IA32Registers.EBX, new Integer(3));
-	numbers.put(IA32Registers.ESI, new Integer(4));
-	numbers.put(IA32Registers.EDI, new Integer(5));
-	numbers.put(IA32Registers.EBP, new Integer(6));
-	numbers.put(IA32Registers.ESP, new Integer(7));
-	numbers.put(IA32Registers.EIP, new Integer(8));
-	numbers.put(IA32Registers.EFLAGS, new Integer(9));
-	numbers.put(IA32Registers.TRAPS, new Integer(10));
+	addEntry(IA32Registers.EAX, new Integer(0));
+	addEntry(IA32Registers.EDX, new Integer(1));
+	addEntry(IA32Registers.ECX, new Integer(2));
+	addEntry(IA32Registers.EBX, new Integer(3));
+	addEntry(IA32Registers.ESI, new Integer(4));
+	addEntry(IA32Registers.EDI, new Integer(5));
+	addEntry(IA32Registers.EBP, new Integer(6));
+	addEntry(IA32Registers.ESP, new Integer(7));
+	addEntry(IA32Registers.EIP, new Integer(8));
+	addEntry(IA32Registers.EFLAGS, new Integer(9));
+	addEntry(IA32Registers.TRAPS, new Integer(10));
 	// MMX registers
-	numbers.put(IA32Registers.ST0, new Integer(11));
-	numbers.put(IA32Registers.ST1, new Integer(12));
-	numbers.put(IA32Registers.ST2, new Integer(13));
-	numbers.put(IA32Registers.ST3, new Integer(14));
-	numbers.put(IA32Registers.ST4, new Integer(15));
-	numbers.put(IA32Registers.ST5, new Integer(16));
-	numbers.put(IA32Registers.ST6, new Integer(17));
-	numbers.put(IA32Registers.ST7, new Integer(18));
-	numbers.put(IA32Registers.FCW, new Integer(19));
-	numbers.put(IA32Registers.FSW, new Integer(20));
-	numbers.put(IA32Registers.FTW, new Integer(21));
-	numbers.put(IA32Registers.FOP, new Integer(22));
-	numbers.put(IA32Registers.FCS, new Integer(23));
-	numbers.put(IA32Registers.FIP, new Integer(24));
-	numbers.put(IA32Registers.FEA, new Integer(25));
-	numbers.put(IA32Registers.FDS, new Integer(26));
+	addEntry(IA32Registers.ST0, new Integer(11));
+	addEntry(IA32Registers.ST1, new Integer(12));
+	addEntry(IA32Registers.ST2, new Integer(13));
+	addEntry(IA32Registers.ST3, new Integer(14));
+	addEntry(IA32Registers.ST4, new Integer(15));
+	addEntry(IA32Registers.ST5, new Integer(16));
+	addEntry(IA32Registers.ST6, new Integer(17));
+	addEntry(IA32Registers.ST7, new Integer(18));
+	addEntry(IA32Registers.FCW, new Integer(19));
+	addEntry(IA32Registers.FSW, new Integer(20));
+	addEntry(IA32Registers.FTW, new Integer(21));
+	addEntry(IA32Registers.FOP, new Integer(22));
+	addEntry(IA32Registers.FCS, new Integer(23));
+	addEntry(IA32Registers.FIP, new Integer(24));
+	addEntry(IA32Registers.FEA, new Integer(25));
+	addEntry(IA32Registers.FDS, new Integer(26));
 	// SSE Registers
 	//TODO: XMMx registers.
-	numbers.put(IA32Registers.MXCSR, new Integer(43));
+	addEntry(IA32Registers.MXCSR, new Integer(43));
 	// Segment registers
-	numbers.put(IA32Registers.GS, new Integer(44));
-	numbers.put(IA32Registers.FS, new Integer(45));
-	numbers.put(IA32Registers.ES, new Integer(46));
-	numbers.put(IA32Registers.DS, new Integer(47));
-	numbers.put(IA32Registers.SS, new Integer(48));
-	numbers.put(IA32Registers.CS, new Integer(49));
-	numbers.put(IA32Registers.TSS, new Integer(50));
-	numbers.put(IA32Registers.LDT, new Integer(51));
+	addEntry(IA32Registers.GS, new Integer(44));
+	addEntry(IA32Registers.FS, new Integer(45));
+	addEntry(IA32Registers.ES, new Integer(46));
+	addEntry(IA32Registers.DS, new Integer(47));
+	addEntry(IA32Registers.SS, new Integer(48));
+	addEntry(IA32Registers.CS, new Integer(49));
+	addEntry(IA32Registers.TSS, new Integer(50));
+	addEntry(IA32Registers.LDT, new Integer(51));
 	// frame info
-	numbers.put(IA32Registers.CFA, new Integer(52));
+	addEntry(IA32Registers.CFA, new Integer(52));
 	
     }
 }
 
-class X8664Map extends UnwindRegisterMap {
+class X8664Map extends RegisterMap {
     X8664Map() {
-	numbers.put(X8664Registers.RAX, new Integer(0));
-	numbers.put(X8664Registers.RDX, new Integer(1));
-	numbers.put(X8664Registers.RCX, new Integer(2));
-	numbers.put(X8664Registers.RBX, new Integer(3));
-	numbers.put(X8664Registers.RSI, new Integer(4));
-	numbers.put(X8664Registers.RDI, new Integer(5));
-	numbers.put(X8664Registers.RBP, new Integer(6));
-	numbers.put(X8664Registers.RSP, new Integer(7));
-	numbers.put(X8664Registers.R8, new Integer(8));
-	numbers.put(X8664Registers.R9, new Integer(9));
-	numbers.put(X8664Registers.R10, new Integer(10));
-	numbers.put(X8664Registers.R11, new Integer(11));
-	numbers.put(X8664Registers.R12, new Integer(12));
-	numbers.put(X8664Registers.R13, new Integer(13));
-	numbers.put(X8664Registers.R14, new Integer(14));
-	numbers.put(X8664Registers.R15, new Integer(15));
-	numbers.put(X8664Registers.RIP, new Integer(16));
+	addEntry(X8664Registers.RAX, new Integer(0));
+	addEntry(X8664Registers.RDX, new Integer(1));
+	addEntry(X8664Registers.RCX, new Integer(2));
+	addEntry(X8664Registers.RBX, new Integer(3));
+	addEntry(X8664Registers.RSI, new Integer(4));
+	addEntry(X8664Registers.RDI, new Integer(5));
+	addEntry(X8664Registers.RBP, new Integer(6));
+	addEntry(X8664Registers.RSP, new Integer(7));
+	addEntry(X8664Registers.R8, new Integer(8));
+	addEntry(X8664Registers.R9, new Integer(9));
+	addEntry(X8664Registers.R10, new Integer(10));
+	addEntry(X8664Registers.R11, new Integer(11));
+	addEntry(X8664Registers.R12, new Integer(12));
+	addEntry(X8664Registers.R13, new Integer(13));
+	addEntry(X8664Registers.R14, new Integer(14));
+	addEntry(X8664Registers.R15, new Integer(15));
+	addEntry(X8664Registers.RIP, new Integer(16));
     }
 }

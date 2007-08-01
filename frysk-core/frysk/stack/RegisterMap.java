@@ -39,73 +39,24 @@
 
 package frysk.stack;
 
-import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
-import frysk.proc.Task;
-import frysk.symtab.Symbol;
-import frysk.value.Value;
-
-/**
- * Decorator wrapper for the ABI frame.  More abstract frames, such as
- * the DebuginfoFrame extend this class.
- */
-
-public abstract class FrameDecorator
-{
+public abstract class RegisterMap {
     
-    private final Frame frame;
-    protected FrameDecorator(Frame frame) {
-	this.frame = frame;
-    }
-
-    public long getAddress() {
-	return frame.getAddress();
-    }
-
-    public long getAdjustedAddress() {
-	return frame.getAdjustedAddress();
-    }
-
-    public final Task getTask() {
-	return frame.getTask();
-    }
-
-    protected Frame getInner() {
-	return frame.getInner();
-    }
-    protected Frame getOuter() {
-	return frame.getOuter();
-    }
-
-    public void toPrint(PrintWriter printWriter, boolean name) {
-	frame.toPrint(printWriter, name,true);
-    }
-
-    public Value getRegisterValue(Register reg){
-	return frame.getRegisterValue(reg);
+    private Map numbers = new HashMap();
+    private Map registers = new HashMap();
+    
+    public int getRegisterNumber(Register register) {
+	return ((Integer) numbers.get(register)).intValue(); 
     }
     
-    public long setReg(long reg, long val){
-	return frame.setReg(reg, val);
-    }
-
-    public FrameIdentifier getFrameIdentifier() {
-	return frame.getFrameIdentifier();
-    }
-
-    public Symbol getSymbol() {
-	return frame.getSymbol();
+    public void addEntry(Register register, Integer regNum){
+	numbers.put(register, regNum);
+	registers.put(regNum, register);
     }
     
-    protected Frame getFrame(){
-	return this.frame;
-    }
-    
-    public long getCFA(){
-	return this.frame.getCFA();
-    }
-    
-    public Frame getUndecoratedFrame(){
-	return this.frame;
+    public Register getRegister(int regNum) {
+	return (Register) registers.get(new Integer(regNum));
     }
 }

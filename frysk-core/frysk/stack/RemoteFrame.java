@@ -40,20 +40,20 @@
 package frysk.stack;
 
 import inua.eio.ArrayByteBuffer;
-import inua.eio.ByteOrder;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import lib.dwfl.BaseTypes;
 import lib.unwind.Cursor;
 import lib.unwind.ProcInfo;
 import lib.unwind.ProcName;
+
 import frysk.proc.Isa;
 import frysk.proc.Task;
+
 import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
-import frysk.value.ArithmeticType;
+
 import frysk.value.Value;
 
 class RemoteFrame extends Frame
@@ -143,26 +143,12 @@ class RemoteFrame extends Frame
       return getAddress();
   }
   
-  public Value getRegister(int reg) {
-      byte[] word = new byte[task.getIsa().getWordSize()];
-      if (cursor.getRegister(reg, word) < 0)
-	    return null;
-
-	ByteOrder byteOrder = this.task.getIsa().getByteOrder();
-
-	// TODO: Write the text value, base type..
-	return new Value(new ArithmeticType(task.getIsa().getWordSize(),
-		byteOrder, BaseTypes.baseTypeInteger, "int"), "todo",
-		new ArrayByteBuffer(word));
-  }
-  
-  
   public Value getRegisterValue(Register register) {
 	logger.log(Level.FINE, "{0}: getRegisterValue register: {1}",
 		new Object[] { this, register });
 	Isa isa = task.getIsa();
 	byte[] word = new byte[register.type.getSize()];
-	UnwindRegisterMap map = UnwindRegisterMapFactory.getRegisterMap(isa);
+	RegisterMap map = UnwindRegisterMapFactory.getRegisterMap(isa);
 
 	if (cursor.getRegister(map.getRegisterNumber(register), word) < 0)
 	    return null;

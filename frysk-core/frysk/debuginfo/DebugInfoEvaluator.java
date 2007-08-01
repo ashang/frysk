@@ -62,7 +62,6 @@ import frysk.dwfl.DwflCache;
 import frysk.expr.CppSymTab;
 import frysk.proc.Isa;
 import frysk.proc.Task;
-import frysk.stack.IA32Registers;
 import frysk.stack.Register;
 import frysk.sys.Errno;
 import frysk.value.ArithmeticType;
@@ -133,33 +132,6 @@ class DebugInfoEvaluator
     doubleType = new ArithmeticType(8, byteorder, BaseTypes.baseTypeDouble, "double");
   }
 
-  // ??? Give registers a real type and let the type system do the swap.
-  private long swapBytes(long val)
-    {
-	long newVal = 0;
-	Isa isa = currentFrame.getTask().getIsa();
-
-	if (isa.getByteOrder() == ByteOrder.BIG_ENDIAN)
-	    return val;
-	else if (isa.getWordSize() == 4)
-	    {
-		int ival = (int)val;
-		for (int i = 0; i < 4; i++)
-		    {
-			newVal = newVal | ((ival & 0xff000000) >>> (24 - (i * 8)));
-			ival = ival << 8;
-		    }
-		newVal = newVal & 0x00000000ffffffffL;
-	    }
-	else if (isa.getWordSize() == 8)
-	    for (int i = 0; i < 8; i++)
-		{
-		    newVal = newVal | ((val & 0xff00000000000000L) >>> (56 - (i * 8)));
-		    val = val << 8;
-		}
-	return newVal;
-    }
-
   interface VariableAccessor
   {
     DwarfDie varDie = null;
@@ -209,11 +181,7 @@ class DebugInfoEvaluator
 	long pc = currentFrame.getAdjustedAddress();
       long address = 0;
       int reg = 0;
-      
-      // ??? Do we need an isa specific way to get x86 reg numbers?
-	    Register[] x86regnumbers = { IA32Registers.EAX, IA32Registers.ECX,
-		    IA32Registers.EDX, IA32Registers.EBX, IA32Registers.ESP,
-		    IA32Registers.EBP, IA32Registers.ESI, IA32Registers.EDI };
+       
 
       List ops = varDieP.getFormData(pc);     
 
@@ -276,10 +244,11 @@ class DebugInfoEvaluator
       long regval = 0;
       
       Isa isa = currentFrame.getTask().getIsa();
-      if (isa instanceof frysk.proc.IsaIA32)
-        regval = currentFrame.getRegisterValue(x86regnumbers[reg]).longValue();
-      else if (isa instanceof frysk.proc.IsaX8664)
-        regval = swapBytes(currentFrame.getRegister(reg).longValue());
+   
+      Register register = DwarfRegisterMapFactory.getRegisterMap(isa)
+		    .getRegister(reg);
+	    
+      regval = currentFrame.getRegisterValue(register).longValue();
 
       address += regval + operand1;
       
@@ -375,44 +344,60 @@ class DebugInfoEvaluator
       return 0;
     }
 
-    private long getReg (DwarfDie varDieP) throws NameNotFoundException
-    {
-      long pc;
-      int[] x86regnumbers = { 0, 2, 1, 3, 7, 6, 4, 5 };
-      Isa isa;
+    
+    private long getReg(DwarfDie varDieP) throws NameNotFoundException {
+	    Register register = getRegister(varDieP);
+	    Isa isa;
 
-      if (currentFrame.getInnerDebugInfoFrame() == null)
-        isa = task.getIsa();
-      else
-        isa = currentFrame.getTask().getIsa();
+	    if (currentFrame.getInnerDebugInfoFrame() == null)
+		  isa = task.getIsa();
+	    else
+		  isa = currentFrame.getTask().getIsa();
 
-      pc = currentFrame.getAdjustedAddress();
-      List ops = varDieP.getFormData(pc);
-      int op = -1;
+	    int reg = DwarfRegisterMapFactory.getRegisterMap(isa)
+		    .getRegisterNumber(register);
+	    return reg;
 
-      if (ops.size() != 0)
-	  op = ((DwarfDie.DwarfOp)ops.get(0)).operator;
+	}
+    
+    private Register getRegister(DwarfDie varDieP)
+		throws NameNotFoundException {
+	    Isa isa;
+
+	    if (currentFrame.getInnerDebugInfoFrame() == null)
+		isa = task.getIsa();
+	    else
+		isa = currentFrame.getTask().getIsa();
+	    
+	    long pc;
+
+	      pc = currentFrame.getAdjustedAddress();
+	      List ops = varDieP.getFormData(pc);
+	      int op = -1;
+
+	      if (ops.size() != 0)
+		  op = ((DwarfDie.DwarfOp)ops.get(0)).operator;
+		      
+	      if (op == -1 
+		  || (op < DwOpEncodings.DW_OP_reg0_ || op > DwOpEncodings.DW_OP_breg31_))
+		  throw new NameNotFoundException();
+
+	      int reg = 0;
+	      if (op >= DwOpEncodings.DW_OP_reg0_ && op <= DwOpEncodings.DW_OP_reg31_)
+		  reg = op - DwOpEncodings.DW_OP_reg0_;
+	      else if (reg >= DwOpEncodings.DW_OP_breg0_ && reg <= DwOpEncodings.DW_OP_breg31_)
+		  reg = op - DwOpEncodings.DW_OP_breg0_;
+	      else
+		  throw new NameNotFoundException();
 	      
-      if (op == -1 
-	  || (op < DwOpEncodings.DW_OP_reg0_ || op > DwOpEncodings.DW_OP_breg31_))
-	  throw new NameNotFoundException();
-
-      int reg = 0;
-      if (op >= DwOpEncodings.DW_OP_reg0_ && op <= DwOpEncodings.DW_OP_reg31_)
-	  reg = op - DwOpEncodings.DW_OP_reg0_;
-      else if (reg >= DwOpEncodings.DW_OP_breg0_ && reg <= DwOpEncodings.DW_OP_breg31_)
-	  reg = op - DwOpEncodings.DW_OP_breg0_;
-      else
-	  throw new NameNotFoundException();
-      if (isa instanceof frysk.proc.IsaIA32)
-          reg = x86regnumbers[(int)reg];
-      
-      return reg;
-    }
+	    Register register = DwarfRegisterMapFactory.getRegisterMap(isa)
+		    .getRegister(reg);
+	    return register;
+	}
 
     public long getLong (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
-      long val = swapBytes(currentFrame.getRegister((int) getReg(varDieP)).longValue());
+      long val = currentFrame.getRegisterValue(getRegister(varDieP)).longValue();
       return val;
     }
 
@@ -424,7 +409,7 @@ class DebugInfoEvaluator
 
     public int getInt (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
-      long val = swapBytes(currentFrame.getRegister((int) getReg(varDieP)).longValue());
+      long val = currentFrame.getRegisterValue(getRegister(varDieP)).longValue();
       return (int) val;
     }
 
@@ -436,7 +421,7 @@ class DebugInfoEvaluator
 
     public short getShort (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
-      long val = swapBytes(currentFrame.getRegister((int)getReg(varDieP)).longValue());
+      long val = currentFrame.getRegisterValue(getRegister(varDieP)).longValue();
       return (short) val;
     }
 
@@ -448,7 +433,7 @@ class DebugInfoEvaluator
 
     public byte getByte (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
-      long val = swapBytes(currentFrame.getRegister((int) getReg(varDieP)).longValue());
+      long val = currentFrame.getRegisterValue(getRegister(varDieP)).longValue();
       return (byte) val;
     }
 
@@ -460,7 +445,7 @@ class DebugInfoEvaluator
 
     public float getFloat (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
-      long val = swapBytes(currentFrame.getRegister((int)getReg(varDieP)).longValue());
+      long val = currentFrame.getRegisterValue(getRegister(varDieP)).longValue();
       float fval = Float.intBitsToFloat((int)val);
       return fval;
     }
@@ -473,7 +458,7 @@ class DebugInfoEvaluator
 
     public double getDouble (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
-      long val = swapBytes(currentFrame.getRegister((int) getReg(varDieP)).longValue());
+      long val = currentFrame.getRegisterValue(getRegister(varDieP)).longValue();
       double dval = Double.longBitsToDouble(val);
       return dval;
     }
