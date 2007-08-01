@@ -80,6 +80,26 @@ public class Util
     return proc;
   }
   
+  public static Proc getProcFromCoreFile(File coreFile, File exeFile)
+  {
+    LinuxHost core = new LinuxHost(Manager.eventLoop, coreFile, exeFile);
+
+    Iterator iterator = core.getProcIterator();
+
+    Proc proc;
+    if (iterator.hasNext())
+      proc = (Proc) iterator.next();
+    else
+      {
+        proc = null;
+        throw new RuntimeException("No proc in this corefile");
+      }
+    if (iterator.hasNext())
+      throw new RuntimeException("Too many procs on this corefile");
+    
+    return proc;
+  }
+  
   /**
    * Used to find a Proc given a pid.
    *

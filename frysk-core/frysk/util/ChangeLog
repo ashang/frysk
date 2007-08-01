@@ -1,3 +1,7 @@
+2007-08-01  Nurdin Premji  <npremji@redhat.com>
+
+	* Util.java (getProcFromCoreFile): Added, takes an exe file as well.
+
 2007-07-31  Phil Muldoon  <pmuldoon@localhost.localdomain>
 
 	* CoredumpAction.java: Rewritten and Refactored to
