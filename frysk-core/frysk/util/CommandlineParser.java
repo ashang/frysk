@@ -177,6 +177,10 @@ public class CommandlineParser
           else
             throw new RuntimeException("Please don't mix core files with pids or executables.");         
         }
+        
+        if (isCoreFile(result[result.length -1]))
+            coreExeFiles.add(new Util.CoreExePair(new File(result[result.length -1]), null));
+        
         Util.CoreExePair[] coreExePairs = new Util.CoreExePair[coreExeFiles.size()];
         System.arraycopy(coreExeFiles.toArray(), 0, coreExePairs, 0, coreExePairs.length);
         parseCores(coreExePairs);        

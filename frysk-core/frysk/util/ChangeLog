@@ -1,5 +1,7 @@
 2007-08-01  Nurdin Premji  <npremji@redhat.com>
 
+	* CommandlineParser.java (doParse): Handle last file is a core file case.
+
 	* CommandlineParser.java (doParse): Handle core file/ exe file pairs.
 	(parseCores): Ditto.
 	(isExeFile): New.
