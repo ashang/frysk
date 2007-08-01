@@ -671,8 +671,7 @@ public class SourceWindow extends Window {
 	    }
 
 	    if (this.currentFrame.getLines().length != 0) {
-		this.view.scrollToLine(this.currentFrame.getLines()[0]
-			.getLine());
+		this.view.scrollToFunction(this.currentFrame.getLines()[0].getDOMFunction().getFunctionCall());
 	    } else {
 		/* Only the case during a monitor stack trace */
 		if (!this.steppingEngine
@@ -2405,8 +2404,10 @@ public class SourceWindow extends Window {
 			this.view.scrollToFunction(lines[0].getDOMFunction()
 				.getFunctionCall());
 		} else {
-		    if (mode == 0 && lines[0].getDOMFunction() != null)
-			this.view.scrollToLine(lines[0].getLine());
+		    if (mode == 0 && lines[0].getDOMFunction() != null) {
+			this.view.scrollToFunction(lines[0].getDOMFunction()
+				.getFunctionCall());
+		    }
 		    else if (mode == 2)
 			((MixedView) this.view).getSourceWidget().scrollToLine(
 				lines[0].getLine());

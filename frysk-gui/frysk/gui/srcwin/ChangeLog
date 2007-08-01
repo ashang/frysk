@@ -2,6 +2,10 @@
 
 	* SourceBuffer.java (getVariable): Fixed assumption that variable returned
 	from DebugInfo will never be null. Fixes #4871.
+	
+	* SourceWindow.java (updateShownStackFrame): Rely on function TextMarks for
+	SourceBuffer scrolling, rather than line numbers. Fixes #4876.
+	(populateStackBrowser): Ditto.
 
 2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
