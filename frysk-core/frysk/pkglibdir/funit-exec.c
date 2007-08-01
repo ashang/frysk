@@ -55,32 +55,35 @@ static void
 usage ()
 {
   printf ("\
-Usage:\n\
-    [ -<N> ] <pid> <signal> <seconds> <program> ...\n\
-Where:\n\
-    -<N>             Create N threads.\n\
-    <pid> <signal>   Manager process to signal, and signal to use, once\n\
-                     an operation has completed (e.g., running, thread\n\
-                     created, thread exited).\n\
+Usage: funit-exec [OPTION] PROGRAM ARGS ...\n\
+On receipt of a signal, perform the operation:\n\
+    SIGINT (cntrl-c)   The signaled thread execs PROGRAM with ARGS\n\
+    SIGUSR1            Signal a non-main thread with SIGINT (it execs)\n\
+    SIGABORT (cntrl-\\) Abort program.\n\
+Where valid options are:\n\
+    -e EXE           Instead of PROGRAM, exec EXE\n\
+    -c COUNT         Create COUNT threads\n\
+    -t TIMEOUT       Set an ALARM to TIMEOUT seconds; after which exit\n\
+                     Default is to not exit\n\
+    -s SIGNAL\n\
+    -m MASTER        Once running, send SIGNAL to process MASTER\n\
+                     Default is to send signal 0 to process 0\n\
     <program> ...    Program to exec.\n\
-Signals:\n\
-    SIGUSR1          The thread receiving the signal execs the program\n\
-    SIGUSR2          A random non-main thread is sent SIGUSR1 which causes\n\
-                     it to exec the program\n\
 ");
   exit (1);
 }
 
 
 
+char *exec_exe;
 char **exec_argv;
 char **exec_envp;
 
 void
 exec_handler (int sig)
 {
-  trace ("exec %s", exec_argv[0]);
-  execve (exec_argv[0], exec_argv, exec_envp);
+  trace ("exec %s", exec_exe);
+  execve (exec_exe, exec_argv, exec_envp);
   pfatal ("execve");
 }
 
@@ -90,7 +93,7 @@ void
 random_handler (int sig)
 {
   trace ("random %d", random_thread);
-  if (tkill (random_thread, SIGUSR1) < 0)
+  if (tkill (random_thread, SIGINT) < 0)
     pfatal ("tkill");
 }
 
@@ -131,29 +134,51 @@ int
 main (int argc, char *argv[], char *envp[])
 {
   int i;
-  int sig;
-  int pid;
-  int sec;
-
-  int argi = 1;
+  int sig = 0;
+  int pid = 0;
+  int timeout = 0;
   int nr_threads = 0;
-  while (argi < argc) {
-    char *arg = argv[argi];
-    if (arg[0] == '-' && isdigit (arg[1]))
-      nr_threads = atoi (argv[argi] + 1);
-    else
+  int opt;
+
+  while ((opt = getopt(argc, argv, "+m:s:t:e:c:")) != -1) {
+    switch (opt) {
+    case 'm': // master
+      pid = atoi (optarg);
       break;
-    argi++;
+    case 's': // signal
+      sig = atoi (optarg);
+      break;
+    case 't': // timeout
+      timeout = atoi (optarg);
+      break;
+    case 'e': // executable
+      exec_exe = optarg;
+      break;
+    case 'c': // clone count
+      nr_threads = atoi (optarg);
+      break;
+    case '?':
+      exit(1);
+    }
   }
 
-  if (argi + 4 > argc)
-    usage ();
-  pid = stringtolong (argv[argi++]);
-  sig = stringtolong (argv[argi++]);
-  sec = stringtolong (argv[argi++]); 	
-  alarm(sec);
-  exec_argv = argv + argi;
+  if (optind == argc) {
+    usage();
+    exit(1);
+  }
+
+  if (exec_exe == NULL)
+    exec_exe = argv[optind];
+  exec_argv = argv + optind;
   exec_envp = envp;
+
+  trace ("nr_threads = %d", nr_threads);
+  trace ("master pid = %d", pid);
+  trace ("master sig = %d", sig);
+  trace ("timeout = %d", timeout);
+  trace ("exec exe = %s", exec_exe);
+
+  alarm(timeout);
 
   // Minimal stack.
   pthread_attr_t pthread_attr;
@@ -173,19 +198,16 @@ main (int argc, char *argv[], char *envp[])
     pthread_barrier_wait (&barrier); // Can't check error status.
   }
 
-  sigset (SIGUSR1, exec_handler);
-  sigset (SIGUSR2, random_handler);
+  sigset (SIGINT, exec_handler);
+  sigset (SIGUSR1, random_handler);
 
   trace ("send sig %d to pid %d", sig, pid);
   tkill (pid, sig); // ack.
 
-	sigset_t mask;
-	sigfillset(&mask);	
-	sigdelset(&mask, SIGUSR1);
-	sigdelset(&mask, SIGUSR2);
-	
   while (1) {
-    trace ("sleep %d sec", sec);
+    trace ("calling sigsuspend");
+    sigset_t mask;
+    sigemptyset(&mask);	
     sigsuspend(&mask);
   }
 

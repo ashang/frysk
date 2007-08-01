@@ -1,3 +1,11 @@
+2007-08-01  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-exec.c (usage): Update.
+	(main): Change options to -m(master), -s(signal), -t(timeout),
+	-e(executable) and -c(thread-count).
+	(exec_exe): New global.
+	(exec_handler): Use exec_exe.
+
 2007-08-01  Mike Cvet  <mcvet@redhat.com>
 
 	* funit-frameless.S: Added scanning tokens.

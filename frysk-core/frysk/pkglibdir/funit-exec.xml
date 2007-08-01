@@ -4,7 +4,7 @@
 
  This file is part of the program FRYSK.
 
- Copyright 2006, Red Hat Inc.
+ Copyright 2006, 2007, Red Hat Inc.
 
  FRYSK is free software; you can redistribute it and/or modify it
  under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@
 
   <refentryinfo>
     <title>funit-exec</title>
-    <date>14 April 2006</date>
+    <date>1 August 2007</date>
   </refentryinfo>
   
   <refmeta>
@@ -69,19 +69,10 @@
     <cmdsynopsis>
       <command>funit-exec</command>
       <arg choice="opt">
-        <option>-<replaceable>N</replaceable></option>
+        <option><replaceable>OPTION</replaceable></option>
       </arg>
       <arg choice="req">
-        <replaceable>tid</replaceable>
-      </arg>
-      <arg choice="req">
-        <replaceable>signal</replaceable>
-      </arg>
-      <arg choice="req">
-        <replaceable>seconds</replaceable>
-      </arg>
-      <arg choice="req">
-        <replaceable>program ...</replaceable>
+        <replaceable>PROGRAM-ARGS</replaceable>
       </arg>
     </cmdsynopsis>
   </refsynopsisdiv>
@@ -89,80 +80,81 @@
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para>Creates the specified number of threads, sends the
-    <replaceable>signal</replaceable> to thread
-    <replaceable>tid</replaceable>, and then sleeps for
-    <replaceable>seconds</replaceable>.  Sending the signal SIGUSR1 to
-    a thread will cause that thread to execute
-    <replaceable>program</replaceable> using exec.  Sending the signal
-    SIGUSR2 will cause a random non-main thread to exec
-    <replaceable>program</replaceable></para>
+    <para>Wait for a SIGINT (cntrl-c) signal and then exec
+    <replaceable>PROGRAM-ARGS</replaceable>, the first parameter being
+    the executable and the remainder being arguments.  Sending a
+    SIGUSR1 signal will cause a random non-main thread to make the
+    exec call.</para>
+
+    <variablelist>
+
+      <varlistentry>
+	<term> <option>-m <replaceable>PID</replaceable>
+	</option> </term> <listitem><para>The PID of the master
+	process that should be sent a signal once this program is
+	running (default 0).</para> </listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term> <option>-s <replaceable>SIGNAL</replaceable>
+	</option> </term> <listitem> <para>The SIGNAL to send to the
+	master process once this program is running (default
+	0).</para> </listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term> <option>-t <replaceable>TIMEOUT</replaceable> </option>
+	</term> <listitem> <para>Exit after TIMEOUT seconds exit</para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term> <option>-c <replaceable>COUNT</replaceable> </option>
+	</term> <listitem> <para>Create COUNT threads before sending
+	the master TIMEOUT seconds exit</para> </listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term> <option>-e <replaceable>EXECUTABLE</replaceable>
+	</option> </term> <listitem> <para>The EXECUTABLE to exec
+	(default is the first PROGRAM-ARGS parameter).</para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><replaceable>PROGRAM-ARGS</replaceable></term>
+	<listitem><para>The program and arguments to pass to the exec
+	call.</para></listitem>
+      </varlistentry>
+
+    </variablelist>
 
     <para>This program is used by <function>funit</function>, as part
     of frysk's JUnit testsuite.</para>
 
-    <variablelist>
-      <varlistentry>
-	<term><option>-<replaceable>N</replaceable></option></term>
-	<listitem><para>Number of threads to create (default none).</para></listitem>
-      </varlistentry>
-    </variablelist>
-
-    <variablelist>
-      <varlistentry>
-	<term><replaceable>tid</replaceable></term>
-	<listitem><para>Thread ID to send <replaceable>signal</replaceable> to once all threads have been created.</para></listitem>
-      </varlistentry>
-    </variablelist>
-
-    <variablelist>
-      <varlistentry>
-	<term><replaceable>signal</replaceable></term>
-	<listitem><para>The signal to send to <replaceable>tid</replaceable> once all threads have been started.</para></listitem>
-      </varlistentry>
-    </variablelist>
-
-    <variablelist>
-      <varlistentry>
-	<term><replaceable>seconds</replaceable></term>
-	<listitem><para>Number of seconds to wait before the program exits.</para></listitem>
-      </varlistentry>
-    </variablelist>
-
-    <variablelist>
-      <varlistentry>
-	<term><replaceable>program ...</replaceable></term>
-	<listitem><para>Program to execute on receipt of SIGUSR1.</para></listitem>
-      </varlistentry>
-    </variablelist>
-
   </refsect1>
-  
-  <!-- refsect1>
-    <title>EXIT STATUS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>RETURN VALUES</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>ENVIRONMENT</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>FILES</title>
-    <para></para>
-  </refsect1 -->
   
   <refsect1>
     <title>EXAMPLE</title>
-    <para>Create a 32-bit process that, on receipt of SIGUSR1, will
-    exec the 64-bit <function>funit-exit</function> program.</para>
-    <screen>@pkglib32dir@/funit-exec $$ 0 100 @pkglib64dir@/funit-exec 1</screen>
+
+    <para>Create a 32-bit process that, on cntrl-c (SIGINT), will exec
+    the 64-bit <function>funit-exit</function> program.</para>
+
+<screen>
+@pkglib32dir@/funit-exec \
+    @pkglib64dir@/funit-exec /bin/echo done
+</screen>
+
+    <para>Create a process, with one additional thread, signals the
+    shell with SIGUSR1 once it is running, and then execs
+    <function>/bin/echo</function> but with argument zero set to
+    "arg0".</para>
+
+<screen>
+@pkglib32dir@/funit-exec -c 1 -s 1 -p $$ \
+    -e /bin/echo arg0 arg1
+</screen>
+
   </refsect1>
    
   <!-- refsect1>
@@ -187,7 +179,7 @@
 
   <refsect1>
     <title>SEE ALSO</title>
-    <para>frysk(1) funit(8) funit-child(8) funit-exec(8) funit-exit(8) funit-threads(8)</para>
+    <para>frysk(1) funit(8)</para>
   </refsect1>
   
   <!-- refsect1>

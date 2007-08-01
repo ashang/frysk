@@ -43,6 +43,9 @@ import frysk.sys.Sig;
 import frysk.Config;
 import frysk.sys.Pid;
 import frysk.junit.TestCase;
+import java.util.LinkedList;
+import java.util.logging.Level;
+import frysk.proc.Manager;
 
 /**
  * Create a process running funit-exec.
@@ -55,44 +58,84 @@ public class FunitExecOffspring extends SynchronizedOffspring {
      * Create a process that, when requested, will execute an exec
      * system call.
      */
-    FunitExecOffspring(String[] program) {
-	super(Sig.HUP, constructArgs(0, program));
-    }
-    private static String[] constructArgs(int threads,
-					  String[] program) {
-	String[] args;
-	if (threads > 0)
-	    args = new String[program.length + 4 + 1];
-	else
-	    args = new String[program.length + 4];
-	int n = 0;
-	args[n++] = Config.getPkgLibFile("funit-exec").getPath();
-	if (threads > 0)
-	    args[n++] = "-" + threads;
-	args[n++] = Integer.toString(Pid.get());
-	args[n++] = Integer.toString(Sig.HUP_);
-	args[n++] = Integer.toString(TestCase.getTimeoutSeconds());
-	System.arraycopy(program, 0, args, n, program.length);
-	return args;
+    public FunitExecOffspring(String[] programAndArgs) {
+	super(START_ACK, getCommandLine(0, 0, null, programAndArgs));
     }
     /**
-     * Create a multi-threaded process that, when requested, will
-     * execute an exec system call.
+     * Create a multi-threaded process that, when requested, will exec
+     * ARGS[0] passing ARGS.
      */
-    FunitExecOffspring(int threads, String[] program) {
-	super(Sig.HUP, constructArgs(threads, program));
+    public FunitExecOffspring(int threads, String[] programAndArgs) {
+	super(START_ACK, getCommandLine(0, threads, null, programAndArgs));
+    }
+
+    /**
+     * Construct a command line for invoking the WORD_SIZED version of
+     * funit-exec (0 for default word size).  If THREADS is non-zero,
+     * create that many additional threads.  If EXE is non-null,
+     * invoke that program instead of PROGRAM from PROGRAM_ARGS.
+     */
+    public static String[] getCommandLine(int wordSize,
+					  int threads,
+					  String exe,
+					  String[] programArgs) {
+	LinkedList args = new LinkedList();
+	switch (wordSize) {
+	case 0:
+	    args.add(Config.getPkgLibFile("funit-exec").getPath());
+	    break;
+	case 32:
+	    args.add(Config.getPkgLib32File("funit-exec").getPath());
+	    break;
+	case 64:
+	    args.add(Config.getPkgLib64File("funit-exec").getPath());
+	    break;
+	default:
+	    throw new RuntimeException("wordSize " + wordSize + " is unknown");
+	}
+	if (threads > 0) {
+	    args.add("-c");
+	    args.add(Integer.toString(threads));
+	}
+	if (exe != null) {
+	    args.add("-e");
+	    args.add(exe);
+	}
+	args.add("-m");
+	args.add(Integer.toString(Pid.get()));
+	args.add("-s");
+	args.add(Integer.toString(START_ACK.hashCode()));
+	args.add("-t");
+	args.add(Integer.toString(TestCase.getTimeoutSeconds()));
+	for (int i = 0; i < programArgs.length; i++) {
+	    args.add(programArgs[i]);
+	}
+	logger.log(Level.FINE, "funit-exec: {0}\n", args);
+	return (String[]) args.toArray(new String[0]);
     }
     /**
-     * Request that the process perform a request.  This operation is
-     * not acknowledged.
+     * Request that the process perform an exec.  Since the exec
+     * starts a new program, this operation is not acknowledged.
      */
     public void requestExec() {
-	signal(Sig.USR1);
+	signal(Sig.INT);
     }
     /**
      * Request that a random thread does an exec.
      */
     public void requestRandomExec() {
-	signal(Sig.USR2);
+	signal(Sig.USR1);
     }
-}
+    /**
+     * Request an exec and then wait for the new program to signal
+     * back that it is running.  This assumes that the new program is
+     * set up to send the START_ACK to this process.
+     */
+    public void assertRunExec(String why) {
+	logger.log(Level.FINE, why + "\n");
+	SignalWaiter ack
+	    = new SignalWaiter(Manager.eventLoop, START_ACK, why);
+	requestExec();
+	ack.assertRunUntilSignaled();
+    }
+  }

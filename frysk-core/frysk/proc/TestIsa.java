@@ -40,16 +40,12 @@
 package frysk.proc;
 
 import java.util.Observable;
-import java.util.logging.Level;
-import frysk.sys.Pid;
-import frysk.sys.Sig;
 import lib.dwfl.ElfEMachine;
-import frysk.testbed.SignalWaiter;
 import frysk.testbed.TestLib;
-import frysk.testbed.SynchronizedOffspring;
 import frysk.testbed.TaskObserverBase;
 import java.io.File;
 import frysk.Config;
+import frysk.testbed.FunitExecOffspring;
 
 public class TestIsa
     extends TestLib
@@ -262,108 +258,43 @@ public class TestIsa
 
   }
   
-  public void test64To32Isa ()
-  {
-      File exec32 = Config.getPkgLib32File("funit-exec");
-      File exec64 = Config.getPkgLib64File("funit-exec");
-      if (unsupported ("32-on-64", exec32 == null || exec64 == null))
-	  return;
-      String[] command = new String[] {
-	  exec64.getAbsolutePath(),
-	  String.valueOf(Pid.get()),
-	  String.valueOf(Sig.USR2_),
-	  "5",
-	  exec32.getAbsolutePath(),
-	  String.valueOf(Pid.get()),
-	  String.valueOf(Sig.USR2_),
-	  "5", "echo",  "hello"
-      };
-      
-    SynchronizedOffspring ackProc
-	= new SynchronizedOffspring(Sig.USR2, command);
-
-    Proc proc = ackProc.assertFindProcAndTasks();      
-    
-    Task task = proc.getMainTask();
-    
-    AttachedObserver attacher = new AttachedObserver();
-    
-    task.requestAddAttachedObserver(attacher);
-    assertRunUntilStop("Attaching to proc");
-
-    Isa isa64 = null;
-    assertNotNull("64 bit isa", task.getIsa());
-
-    isa64 = task.getIsa();
-
-    logger.log(Level.FINE, "Before sending exec\n");    
-    
-    SignalWaiter ack = new SignalWaiter(Manager.eventLoop, Sig.USR2,
-					"assertExec");
-    ackProc.signal(Sig.USR1);
-    ack.assertRunUntilSignaled();
-   
-    assertNotNull("32 bit isa", task.getIsa());
-    assertNotSame("32 bit and 64 bit isa", task.getIsa(), isa64);
-  }
-  
   public void test64To32To64 ()
   {
-      File exec32 = Config.getPkgLib32File("funit-exec");
-      File exec64 = Config.getPkgLib64File("funit-exec");
+      File exec32 = Config.getPkgLib32File(null);
+      File exec64 = Config.getPkgLib64File(null);
       if (unsupported ("32-on-64", exec32 == null && exec64 == null))
 	  return;
-      String[] command = new String[] {
-	  exec64.getAbsolutePath(),
-	  String.valueOf(Pid.get()),
-	  String.valueOf(Sig.USR2_),
-	  "20",
-	  exec32.getAbsolutePath(),
-	  String.valueOf(Pid.get()),
-	  String.valueOf(Sig.USR2_),
-	  "20",
-	  exec64.getAbsolutePath(),
-	  String.valueOf(Pid.get()),
-	  String.valueOf(Sig.USR2_),
-	  "20", "echo",  "hello"
+      String[] invokeEcho = new String[] {
+	  "/bin/echo", "hello"
       };
-    
+      String[] invoke64thenEcho
+	  = FunitExecOffspring.getCommandLine(64, 0/*threads*/, null/*exe*/,
+					      invokeEcho);
+      String[] invoke32then64thenEcho
+	  = FunitExecOffspring.getCommandLine(32, 0/*threads*/, null/*exe*/,
+					      invoke64thenEcho);
+      String[] invoke64then32then64thenEcho
+	  = FunitExecOffspring.getCommandLine(32, 0/*threads*/, null/*exe*/,
+					      invoke32then64thenEcho);
+      FunitExecOffspring ackProc
+	  = new FunitExecOffspring(invoke64then32then64thenEcho);
+
+      Task task = ackProc.findTaskUsingRefresh(true);
+      AttachedObserver attacher = new AttachedObserver();
+      task.requestAddAttachedObserver(attacher);
+      assertRunUntilStop("Attaching to main task");
       
-    SynchronizedOffspring ackProc
-	= new SynchronizedOffspring(Sig.USR2, command);
-
-    Proc proc = ackProc.assertFindProcAndTasks();      
-    
-    Task task = proc.getMainTask();
-    
-    AttachedObserver attacher = new AttachedObserver();
-    
-    task.requestAddAttachedObserver(attacher);
-    assertRunUntilStop("Attaching to proc");
-
-    Isa isa64 = null;
-    assertNotNull("64 bit isa", task.getIsa());
-
-    isa64 = task.getIsa();
-
-    logger.log(Level.FINE, "Before sending 1st exec\n");    
-    
-    SignalWaiter ack = new SignalWaiter(Manager.eventLoop, Sig.USR2,
-					"assertExec");
-    ackProc.signal(Sig.USR1);
-    ack.assertRunUntilSignaled();
-
-    assertNotNull("32 bit isa", task.getIsa());
-    assertNotSame("32 bit and 64 bit isa", task.getIsa(), isa64);
-    
-    logger.log(Level.FINE, "Before sending 2nd exec\n");   
-    
-    ack = new SignalWaiter(Manager.eventLoop, Sig.USR2, "assertExec");
-    ackProc.signal(Sig.USR1);
-    ack.assertRunUntilSignaled();
-    
-    assertNotNull("64 bit isa", task.getIsa());
-    assertSame("64 bit isa is a singleton", task.getIsa(), isa64);
+      ackProc.assertRunExec("execing 64-bit");
+      Isa isa64 = task.getIsa();
+      assertNotNull("64 bit isa", isa64);
+      
+      ackProc.assertRunExec("64-bit execing 32-bit");
+      assertNotNull("32 bit isa", task.getIsa());
+      assertNotSame("32 bit and 64 bit isa", task.getIsa(), isa64);
+      
+      ackProc.assertRunExec("32-bit execing 64-bit");
+      assertNotNull("64 bit isa", task.getIsa());
+      assertSame("64 bit isa is a singleton", task.getIsa(), isa64);
   }
 
   public void testArbitraryISAInstantiation ()

@@ -1,3 +1,11 @@
+2007-08-01  Andrew Cagney  <cagney@redhat.com>
+
+	* FunitExecOffspring.java (getCommandLine): Replace constructArgs,
+	make public.
+	(assertRunExec): New.
+	(requestExec): Send SIGINT.
+	(requestRandomExec): Send SIGUSR1.
+
 2007-07-31  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java (DetachedAckProcess(Sig,String[])): Delete.

@@ -40,12 +40,11 @@
 
 package frysk.proc;
 
-import frysk.testbed.TaskCounter;
-import frysk.sys.Signal;
 import frysk.testbed.TearDownFile;
 import frysk.testbed.TestLib;
 import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.TaskObserverBase;
+import frysk.testbed.FunitExecOffspring;
 
 /**
  * Test the exec event. The exec needs to completely replace the existing
@@ -92,10 +91,10 @@ public class TestExec
     // Create a temp file that the exec'd program will remove.
     // That way it's possible to confirm that the exec did work.
     TearDownFile tmpFile = TearDownFile.create();
-    AckProcess child = new DetachedAckProcess(
-                                              (String) null,
-                                              new String[] { "/bin/rm",
-                                                            tmpFile.toString(), });
+    FunitExecOffspring child = new FunitExecOffspring(new String[] {
+							  "/bin/rm",
+							  tmpFile.toString()
+						      });
     Task task = child.findTaskUsingRefresh(true);
 
     // Create an exec observer attached to Task, forcing an
@@ -104,7 +103,7 @@ public class TestExec
     assertRunUntilStop("add execBlockCounter");
 
     // Trigger the exec, when it occurs the task will be blocked.
-    Signal.tkill(task.getTid(), execSig);
+    child.requestExec();
     assertRunUntilStop("wait for exec");
     assertTrue("tmp file exists", tmpFile.stillExists());
 
@@ -118,32 +117,35 @@ public class TestExec
   }
 
   /**
-   * A multi-tasked program's non main task performs an exec, check that it is
-   * correctly tracked. This case is messy, the exec blows away all but the exec
-   * task, making the exec task the new main task.
+   * A multi-tasked program's non main task performs an exec, check
+   * that it is correctly tracked. This case is messy, the exec blows
+   * away all but the exec task, making the exec task the new main
+   * task.
    */
   public void testTaskBlockExec ()
   {
-    TaskCounter taskCounter = new TaskCounter(true);
-
     // Create a temp file, the exec will remove. That way it's
     // possible to confirm that the exec did work.
     TearDownFile tmpFile = TearDownFile.create();
-    AckProcess child = new DetachedAckProcess(
-                                              (String) null,
-                                              new String[] { "/bin/rm",
-                                                            tmpFile.toString(), });
-    child.assertSendAddCloneWaitForAcks();
+    FunitExecOffspring child
+	= new FunitExecOffspring(1, /*thread*/
+				 new String[] {
+				     "/bin/rm",
+				     tmpFile.toString()
+				 });
     Task mainTask = child.findTaskUsingRefresh(true);
-    Task clone = child.findTaskUsingRefresh(false);
 
     // Add an exec observer causing the task to be attached.
     ExecBlockCounter execBlockCounter = new ExecBlockCounter(mainTask);
     assertRunUntilStop("add exec observer to mainTask");
+    assertEquals("task count before exec", 2,
+		 mainTask.getProc().getTasks().size());
 
-    // Trigger the exec
-    Signal.tkill(clone.getTid(), execSig);
+    // Trigger the exec (of the non-main task).
+    child.requestRandomExec();
     assertRunUntilStop("wait for exec");
+    assertEquals("task count after exec", 1,
+		 mainTask.getProc().getTasks().size());
 
     // Set things up to stop once the exec task exits.
     new StopEventLoopWhenProcRemoved(mainTask.getProc().getPid());
@@ -151,9 +153,6 @@ public class TestExec
     assertRunUntilStop("wait for exec program exit");
 
     assertEquals("number of child exec's", 1, execBlockCounter.numberExecs);
-    assertEquals("number of child tasks created", 2, taskCounter.added.size());
-    // The exec makes one task disappear.
-    assertEquals("number of tasks destroyed", 1, taskCounter.removed.size());
     assertFalse("tmp file exists", tmpFile.stillExists());
   }
 
