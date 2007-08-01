@@ -47,6 +47,7 @@ import frysk.sys.Signal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.File;
+import java.util.Arrays;
 
 /**
  * Simple expect like framework, that works within JUnit.
@@ -71,8 +72,13 @@ public class Expect
     public Expect (String[] args)
     {
 	pid = child.addChild (args);
-	logger.log (Level.FINE, "{0} new {1} pid {2}\n",
-		    new Object[] { this, child, pid });
+	logger.log (Level.FINE, "{0} new {1} pid {2} args {3}\n",
+		    new Object[] {
+			this,
+			child,
+			pid,
+			Arrays.asList(args)
+		    });
     }
 
     /**
