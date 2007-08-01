@@ -47,82 +47,73 @@ import frysk.util.FCatch;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 
-public class fcatch
-{
+public class fcatch {
 
-  FCatch catcher = new FCatch();
-  
-  protected static final Logger logger = Logger.getLogger("frysk");
-  
-  private boolean requestedPid = false;
-  
-  private static StringBuffer argString;
+    FCatch catcher = new FCatch();
 
-  private void run (String[] args)
-  {
-    CommandlineParser parser = new CommandlineParser("fcatch")
-    {
-      protected void validate () throws OptionException
-      {
-        if (! requestedPid && argString == null)
-          throw new OptionException("no command or PID specified");
-      }
+    protected static final Logger logger = Logger.getLogger("frysk");
 
-      //@Override
-      public void parseCommand (String[] command)
-      {
-        System.err.println("Entered parseCommand");
-        argString = new StringBuffer(command[0]);
-        for (int i = 1; i < command.length; i++)
-          argString.append(" ").append(command[i]);
-      }
-      
-      
-    };
-    addOptions(parser);
-    parser.setHeader("Usage: fcatch [OPTIONS] -- PATH ARGS || fcatch [OPTIONS] PID");
+    private boolean requestedPid = false;
 
-    parser.parse(args);
+    private static StringBuffer argString;
 
-    if (argString != null)
-      {
-         String[] cmd = argString.toString().split("\\s");
-         
-        catcher.trace(cmd, requestedPid);
-      }
-  }
-  
-  public void addOptions (CommandlineParser p)
-  {
-    p.add(new Option('p', "pid to trace", "PID") {
-      public void parsed(String arg) throws OptionException
-      {
-          try {
-              int pid = Integer.parseInt(arg);
-              // FIXME: we have no good way of giving the user an
-              // error message if the PID is not available.
-              //System.out.println("Option pid: " + pid);
-              catcher.addTracePid(pid);
-              requestedPid = true;
-              
-              if (argString == null)
-        	      argString = new StringBuffer(pid);
-              else
-        	      argString.append(" "  + pid);
-              
-          } catch (NumberFormatException e) {
-              OptionException oe = new OptionException("couldn't parse pid: " + arg);
-              oe.initCause(e);
-              throw oe;
-          }
-      }
-  });
-  }
-    
-    
-  public static void main(String[] args)
-  {
-    fcatch fc = new fcatch();
-    fc.run(args);
-  }
+    private void run(String[] args) {
+	CommandlineParser parser = new CommandlineParser("fcatch") {
+	    protected void validate() throws OptionException {
+		if (!requestedPid && argString == null)
+		    throw new OptionException("no command or PID specified");
+	    }
+
+	    //@Override
+	    public void parseCommand(String[] command) {
+		System.err.println("Entered parseCommand");
+		argString = new StringBuffer(command[0]);
+		for (int i = 1; i < command.length; i++)
+		    argString.append(" ").append(command[i]);
+	    }
+
+	};
+	addOptions(parser);
+	parser
+		.setHeader("Usage: fcatch [OPTIONS] -- PATH ARGS || fcatch [OPTIONS] PID");
+
+	parser.parse(args);
+
+	if (argString != null) {
+	    String[] cmd = argString.toString().split("\\s");
+
+	    catcher.trace(cmd, requestedPid);
+	}
+    }
+
+    public void addOptions(CommandlineParser p) {
+	p.add(new Option('p', "pid to trace", "PID") {
+	    public void parsed(String arg) throws OptionException {
+		try {
+		    int pid = Integer.parseInt(arg);
+		    // FIXME: we have no good way of giving the user an
+		    // error message if the PID is not available.
+		    //System.out.println("Option pid: " + pid);
+		    catcher.addTracePid(pid);
+		    requestedPid = true;
+
+		    if (argString == null)
+			argString = new StringBuffer(pid);
+		    else
+			argString.append(" " + pid);
+
+		} catch (NumberFormatException e) {
+		    OptionException oe = new OptionException(
+			    "couldn't parse pid: " + arg);
+		    oe.initCause(e);
+		    throw oe;
+		}
+	    }
+	});
+    }
+
+    public static void main(String[] args) {
+	fcatch fc = new fcatch();
+	fc.run(args);
+    }
 }
