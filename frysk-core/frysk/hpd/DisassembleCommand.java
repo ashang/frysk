@@ -70,41 +70,57 @@ public class DisassembleCommand extends CLIHandler {
     }
 
     void addOptions(HpdCommandParser parser) {
-	parser.add(new Option("instructions-only", 'i',
-		"only print the instruction portion not the parameters") {
+	parser.add(new Option("all-instructions", 'a',
+		"only print the instruction portion not the parameters",
+		"<Yes|no>") {
 
 	    public void parsed(String argument) throws OptionException {
-		instructionOnly = true;
+		allInstructions = parseBoolean(argument);
 	    }
 
 	});
 
-	parser.add(new Option("no-truncate", 't',
-		"don't truncate the number of instructions printed") {
+	parser.add(new Option("full-function", 'f',
+		"disassemble the entire function", "<yes/No>") {
 
 	    public void parsed(String argument) throws OptionException {
-		truncate = false;
+		full = parseBoolean(argument);
 	    }
 
 	});
 
-	parser.add(new Option("no-symbol", 's', "don't print the symbol name") {
+	parser.add(new Option("symbol", 's', "print the symbol name",
+		"<Yes|no>") {
 
 	    public void parsed(String argument) throws OptionException {
-		symbol = false;
+
+		symbol = parseBoolean(argument);
 	    }
 	});
     }
+    
+    private boolean parseBoolean( String argument) throws OptionException{
+	if (argument.toLowerCase().equals("yes")
+		|| argument.toLowerCase().equals("y"))
+	    return true;
+	else if (argument.toLowerCase().equals("no")
+		|| argument.toLowerCase().equals("n"))
+	    return false;
 
-    private boolean instructionOnly = false;
+	else
+	    throw new OptionException(
+		    "argument should be one of yes or no");
+    }
 
-    private boolean truncate = true;
+    private boolean allInstructions = true;
+
+    private boolean full = false;
 
     private boolean symbol = true;
 
     private void reset() {
-	instructionOnly = false;
-	truncate = true;
+	allInstructions = true;
+	full = false;
 	symbol = true;
     }
 
@@ -167,7 +183,7 @@ public class DisassembleCommand extends CLIHandler {
 	else
 	    instructions = disassembler.disassembleInstructionsStartEnd(symbol
 		    .getAddress(), symbol.getAddress() + symbol.getSize());
-	printInstructions(currentInstruction, instructions, truncate);
+	printInstructions(currentInstruction, instructions, full);
     }
 
     /**
@@ -177,7 +193,7 @@ public class DisassembleCommand extends CLIHandler {
          * @param instructions
          */
     private void printInstructions(long currentAddress, List instructions,
-	    boolean truncate) {
+	    boolean full) {
 
 	InstructionPrinter printer;
 	printer = new AddressPrinter();
@@ -185,14 +201,14 @@ public class DisassembleCommand extends CLIHandler {
 	if (symbol)
 	    printer = new SymbolPrinter(printer);
 
-	if (instructionOnly)
-	    printer = new InstructionOnlyPrinter(printer);
-	else
+	if (allInstructions)
 	    printer = new InstructionParamsPrinter(printer);
+	else
+	    printer = new InstructionOnlyPrinter(printer);
 	int wrapLines = 10;
 
 	HardList cache = null;
-	if (truncate)
+	if (!full)
 	    cache = new HardList(wrapLines * 2);
 
 	Iterator iter = instructions.iterator();
@@ -204,12 +220,12 @@ public class DisassembleCommand extends CLIHandler {
 	    else
 		printInstruction(currentAddress, instruction, printer);
 
-	    if (instruction.address == currentAddress && truncate) {
+	    if (instruction.address == currentAddress && !full) {
 		break;
 	    }
 	}
 
-	if (!truncate) {
+	if (full) {
 	    cli.outWriter.println("End of assembly dump");
 	    return;
 	}

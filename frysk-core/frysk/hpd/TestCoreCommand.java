@@ -39,17 +39,35 @@
 
 package frysk.hpd;
 
+import java.io.File;
+
 import frysk.expunit.Expect;
+import frysk.proc.Proc;
+import frysk.proc.dead.TestLinuxCore;
+import frysk.testbed.TestLib.AckDaemonProcess;
 import frysk.Config;
 
-public class TestCoreCommand
-    extends TestLib
-{
+public class TestCoreCommand extends TestLib {
     public void testCoreCommand() {
 	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect(prompt);
-	e.send("core " + Config.getPkgDataFile("test-core-x86").getPath() + "\n");
+	e.send("core " + Config.getPkgDataFile("test-core-x86").getPath()
+		+ "\n");
 	e.expect(5, "Attached to core file.*");
 	e.close();
+    }
+
+    public void testCoreExeCommand() {
+	TestLinuxCore tester = new TestLinuxCore();
+	AckDaemonProcess funit = tester.new AckDaemonProcess();
+	Proc funitProc = funit.assertFindProcAndTasks();
+	File core = new File(tester.constructCore(funitProc));
+	e = new Expect(Config.getBinFile("fhpd"));
+	e.expect(prompt);
+	e.send("core " + core.getPath() + " "
+		+ Config.getPkgLibFile("funit-child").getPath() + "\n");
+	e.expect(5, "Attached to core file.*");
+	e.close();
+	core.delete();
     }
 }

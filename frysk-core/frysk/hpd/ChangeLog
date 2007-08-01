@@ -1,5 +1,8 @@
 2007-08-01  Nurdin Premji  <npremji@redhat.com>
 
+	* TestCoreCommand.java (testCoreExeCommand): Added.
+	* DisassembleCommand.java: Made options more neutral.
+	
 	* DisassembleCommand.java (DisassembleCommand): Fix up syntax string,
 	options go at end.
 	* CoreCommand.java (handle): Handle "core corefile exefile" case.
