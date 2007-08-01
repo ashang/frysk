@@ -1,3 +1,10 @@
+2007-08-01  Mike Cvet  <mcvet@redhat.com>
+
+	* TestStepping.java (testASMFramelessFunctionStepOver): Added.
+	(testASMFramelessFunctionStepOut): Added.
+	* StepOverTestState.java (handleUpdate): Added logic for handling special
+	case of landing in frameless function.
+
 2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestSteppingEngine.java: Organized imports.

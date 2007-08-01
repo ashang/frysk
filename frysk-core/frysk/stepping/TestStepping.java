@@ -865,9 +865,6 @@ public class TestStepping extends TestLib {
 	if (unresolvedOnPPC(3277))
 	    return;
 	
-//	if (unresolved(4855))
-//	    return;
-
 	/** SteppingTest Object definition - tell the stepping test
 	 * what to look for at the completion of the test. */
 	class StepOverASMFunctionTest implements SteppingTest {
@@ -931,9 +928,6 @@ public class TestStepping extends TestLib {
 
 	if (unresolvedOnPPC(3277))
 	    return;
-	
-//	if (unresolved(4855))
-//	    return;
 	
 	/** SteppingTest Object definition - tell the stepping test
 	 * what to look for at the completion of the test. */
@@ -1050,6 +1044,134 @@ public class TestStepping extends TestLib {
 	
 	/** The stepping operation */
 	this.se.stepInstruction(theTask);
+
+	this.testStarted = true;
+	//System.err.println("waiting for finish");
+	/** Run to completion */
+	assertRunUntilStop("Running test");
+	cleanup();
+    }
+    
+    public void testASMFramelessFunctionStepOver() {
+
+	if (unresolvedOnPPC(3277))
+	    return;
+	
+	/** SteppingTest Object definition - tell the stepping test
+	 * what to look for at the completion of the test. */
+	class StepOverASMFramelessFunctionTest implements SteppingTest {
+
+	    Task testTask = null;
+
+	    int success = 0;
+
+	    public StepOverASMFramelessFunctionTest(int s, Task task) {
+		success = s;
+		testTask = task;
+	    }
+
+	    public void runAssertions() {
+
+		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(testTask);
+		int lineNr = frame.getLines()[0].getLine();
+		assertTrue("line number", lineNr == success);
+		Manager.eventLoop.requestStop();
+	    }
+	}
+
+	/** Variable setup */
+
+	String source = Config.getRootSrcDir()
+		+ "frysk-core/frysk/pkglibdir/funit-frameless.S";
+
+	this.scanner = new TestfileTokenScanner(new File(source));
+
+	/* The line number where the test begins */
+	int startLine = this.scanner.findTokenLine("_stepFramelessEntry_");
+
+	/* The line number the test should end up at */
+	int endLine = this.scanner.findTokenLine("_stepFramelessReturn_");
+
+	/* The test process */
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-frameless"));
+	
+	Task theTask = dbae.getMainTask();
+	
+	this.testStarted = false;
+	
+	initTaskWithTask(theTask, source, startLine, endLine);
+	
+	this.currentTest = new StepOverASMFramelessFunctionTest(endLine, theTask);
+
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
+	assertTrue("Line information present", frame.getLines().length > 0);
+
+	/** The stepping operation */
+	this.se.stepOver(theTask, frame);
+
+	this.testStarted = true;
+	//System.err.println("waiting for finish");
+	/** Run to completion */
+	assertRunUntilStop("Running test");
+	cleanup();
+    }
+    
+    public void testASMFramelessFunctionStepOut() {
+
+	if (unresolvedOnPPC(3277))
+	    return;
+	
+	/** SteppingTest Object definition - tell the stepping test
+	 * what to look for at the completion of the test. */
+	class StepOutASMFramelessFunctionTest implements SteppingTest {
+
+	    Task testTask = null;
+
+	    int success = 0;
+
+	    public StepOutASMFramelessFunctionTest(int s, Task task) {
+		success = s;
+		testTask = task;
+	    }
+
+	    public void runAssertions() {
+
+		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(testTask);
+		int lineNr = frame.getLines()[0].getLine();
+		assertTrue("line number", lineNr == success);
+		Manager.eventLoop.requestStop();
+	    }
+	}
+
+	/** Variable setup */
+
+	String source = Config.getRootSrcDir()
+		+ "frysk-core/frysk/pkglibdir/funit-frameless.S";
+
+	this.scanner = new TestfileTokenScanner(new File(source));
+
+	/* The line number where the test begins */
+	int startLine = this.scanner.findTokenLine("_stepFramelessEntered_");
+
+	/* The line number the test should end up at */
+	int endLine = this.scanner.findTokenLine("_stepFramelessReturn_");
+
+	/* The test process */
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-frameless"));
+	
+	Task theTask = dbae.getMainTask();
+	
+	this.testStarted = false;
+	
+	initTaskWithTask(theTask, source, startLine, endLine);
+	
+	this.currentTest = new StepOutASMFramelessFunctionTest(endLine, theTask);
+
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
+	assertTrue("Line information present", frame.getLines().length > 0);
+
+	/** The stepping operation */
+	this.se.stepOut(theTask, frame);
 
 	this.testStarted = true;
 	//System.err.println("waiting for finish");

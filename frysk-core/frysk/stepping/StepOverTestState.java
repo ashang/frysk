@@ -52,17 +52,18 @@ public class StepOverTestState extends State {
     }
 
     /**
-     * Begins the process of stepping-over a line for a Task. Continues to step
-     * instructions until the line changes. If, when that happens, the Task is still
-     * in the same frame as before, simply stops the stepping and treats the
-     * operation as a line step. Otherwise, sets a breakpoint and runs the
-     * Task until it returns.
-     * 
-     * @param tse 	The parent TaskStepEngine
-     * @return new StoppedState 	If there was no frame change
-     * @return new StepOverState 	If the frame changed with the line
-     * @return this 	If the line has not changed yet
-     */
+         * Begins the process of stepping-over a line for a Task. Continues to
+         * step instructions until the line changes. If, when that happens, the
+         * Task is still in the same frame as before, simply stops the stepping
+         * and treats the operation as a line step. Otherwise, sets a breakpoint
+         * and runs the Task until it returns.
+         * 
+         * @param tse
+         *                The parent TaskStepEngine
+         * @return new StoppedState If there was no frame change
+         * @return new StepOverState If the frame changed with the line
+         * @return this If the line has not changed yet
+         */
     public State handleUpdate(TaskStepEngine tse) {
 	DwflLine line = tse.getDwflLine();
 
@@ -80,24 +81,40 @@ public class StepOverTestState extends State {
 	    Frame newFrame = StackFactory.createFrame(this.task);
 
 	    if (newFrame.getFrameIdentifier().innerTo(tse.getFrameIdentifier())) {
-		/* There is a different innermost frame on the stack - run until
-		 * it exits - success! */
+		/*
+                 * There is a different innermost frame on the stack - run until
+                 * it exits - success!
+                 */
 		Frame frame = newFrame.getOuter();
 		tse.getSteppingEngine().setBreakpoint(this.task,
 			frame.getAddress());
 		return new StepOverState(this.task);
 	    }
-	    /* The two frames are the same or we've actually stepped over a
-	     * frame return; treat this step-over as an instruction step. */
-	    else if (newFrame.getFrameIdentifier().equals(tse.getFrameIdentifier())) {
+	    /*
+                 * The two frames are the same or we've actually stepped over a
+                 * frame return; treat this step-over as an instruction step.
+                 */
+	    else if (newFrame.getFrameIdentifier().equals(
+		    tse.getFrameIdentifier())) {
 		return new StoppedState(this.task);
-		
-	    } else if (newFrame.getFrameIdentifier().outerTo(tse.getFrameIdentifier())) {
+
+	    } else if (newFrame.getFrameIdentifier().outerTo(
+		    tse.getFrameIdentifier())) {
 		return new StoppedState(this.task);
-		
+
 	    } else {
 		/* Leaf function */
-		return new StoppedState(this.task);
+		if (newFrame.getOuter().getFrameIdentifier().equals(
+			tse.getFrameIdentifier())) {
+		    
+		    Frame frame = newFrame.getOuter();
+		    tse.getSteppingEngine().setBreakpoint(this.task,
+			    frame.getAddress());
+		    
+		    return new StepOverState(this.task);
+		} else {
+		    return new StoppedState(this.task);
+		}
 	    }
 	} else {
 	    tse.getSteppingEngine().continueForStepping(this.task, true);
