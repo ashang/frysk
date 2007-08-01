@@ -1,8 +1,11 @@
+2007-08-01  Mike Cvet  <mcvet@redhat.com>
+
+	* funit-frameless.S: Added scanning tokens.
+	(bar): Added extra nop operation.
+
 2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* funit-inlined.c: New.
-
-2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* funit-scopes-workaround.c: New file.
 

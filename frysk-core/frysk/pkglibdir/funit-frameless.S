@@ -40,23 +40,21 @@
 
 #include "frysk-asm.h"
 
-  	FRAMELESS_FUNCTION_BEGIN(bar)
+  	FRAMELESS_FUNCTION_BEGIN(bar)							
+  	NO_OP											// _stepFramelessEntered_
     JUMP_REG(REG0)
 	FRAMELESS_FUNCTION_END(bar)
-	
 	
   	FRAMELESS_FUNCTION_BEGIN(foo)
     MOV(REG0, REG1)
 	FRAMELESS_ADJ_RETURN (REG1)
     NO_OP; NO_OP
     LOAD_IMMED_WORD(REG0, .L1)
-    JUMP(bar)
+    JUMP(bar)										// _stepFramelessEntry_
 .L1: 
-	NO_OP; NO_OP
-    JUMP_REG(REG1)
-    //JUMP(.L2)
+	NO_OP; NO_OP									// _stepFramelessReturn_
+    JUMP_REG(REG1)											
     FRAMELESS_FUNCTION_END(foo)
-
 
 	FUNCTION_BEGIN(main, 0)
 	MAIN_PROLOGUE(0)	
