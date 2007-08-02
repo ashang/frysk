@@ -1,3 +1,7 @@
+2007-08-02  Andrew Cagney  <cagney@redhat.com>
+
+	* PrintCommand.java: Use frysk.value.Format; but minimally.
+
 2007-08-02  Nurdin Premji  <npremji@redhat.com>
 
 	* DisassembleCommand.java (handle): Change to not truncate range of 

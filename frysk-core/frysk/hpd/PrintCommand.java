@@ -39,12 +39,10 @@
      
 package frysk.hpd;
 
-import inua.eio.ByteBuffer;
-
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.ArrayList;
-
+import frysk.value.Format;
 import frysk.proc.UBigInteger;
 import frysk.value.Value;
 import javax.naming.NameNotFoundException;
@@ -75,6 +73,7 @@ class PrintCommand
 	    cli.printUsage(cmd);
 	    return;
         }
+	Format format = Format.NATURAL;
 	boolean haveFormat = false;
 	int outputFormat = DECIMAL;
 
@@ -86,12 +85,18 @@ class PrintCommand
 		haveFormat = true;
 		i += 1;
 		String arg = ((String)params.get(i));
-		if (arg.compareTo("d") == 0)
+		if (arg.compareTo("d") == 0) {
+		    format = Format.DECIMAL;
 		    outputFormat = DECIMAL;
-		else if (arg.compareTo("o") == 0)
+		}
+		else if (arg.compareTo("o") == 0) {
+		    format = Format.OCTAL;
 		    outputFormat = OCTAL;
-		else if (arg.compareTo("x") == 0)
+		}
+		else if (arg.compareTo("x") == 0) {
+		    format = Format.HEXADECIMAL;
 		    outputFormat = HEX;
+		}
 	    }
 	}
 	if (haveFormat)
@@ -157,9 +162,8 @@ class PrintCommand
 						   outputFormat) + 
 				  " '" + result.toString() + "'");
 	else {
-	    ByteBuffer buffer;
-	    buffer = cli.task.getMemory();
-	    cli.outWriter.println(result.toString(buffer));
+	    result.toPrint(cli.outWriter, cli.task.getMemory(), format);
+	    cli.outWriter.println();
 	}
     }
 }

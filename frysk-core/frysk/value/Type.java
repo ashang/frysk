@@ -42,6 +42,7 @@ package frysk.value;
 
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
+import java.io.PrintWriter;
 
 /**
  * Holds the type of a Variable and also defines possible operations. Classes
@@ -109,6 +110,12 @@ public abstract class Type
   public abstract String toString (Value v, ByteBuffer b);
 
   public abstract String toString (Value v);
+
+    public void toPrint(PrintWriter writer, Value value, ByteBuffer memory,
+			Format format) {
+	// XXX: Override this!
+	writer.print(toString(value, memory));
+    }
 
   public abstract Value add (Value var1, Value var2)
       throws InvalidOperatorException;

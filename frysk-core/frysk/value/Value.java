@@ -42,6 +42,7 @@ package frysk.value;
 import lib.dwfl.BaseTypes;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
+import java.io.PrintWriter;
 
 /**
  * Stores the type and location of a variable
@@ -291,5 +292,14 @@ public class Value
     
     public String toString()  {
       return type.toString(this);
+    }
+
+    /**
+     * Write THIS value to WRITER, formatted according to FORMAT.
+     */
+    public void toPrint(PrintWriter writer, ByteBuffer memory,
+			Format format) {
+	// XXX: Shouldn't this be location?
+	type.toPrint(writer, this, memory, format);
     }
 }
