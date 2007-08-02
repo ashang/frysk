@@ -2,6 +2,13 @@
 
 	* funit-iftester.S: Added. Addresses #4883.
 
+	* funit-stepping-asm.S: Added tokens and functions required
+	to relieve stepping test suite dependence on 
+	funit-rt-steptester.c. Fixes #4883.
+	(fourth): New function.
+	(third): Ditto.
+	(second): Now makes function call to third().
+
 2007-08-02  Andrew Cagney  <cagney@redhat.com>
 
 	* util.h: Delete; moved to frysk-imports/include/funit-util.h.

@@ -40,13 +40,37 @@
 
 #include "frysk-asm.h"
 
-    FUNCTION_BEGIN(second,0)
-    FUNCTION_PROLOGUE(second,0)                       	// _stepASMFunctionEntry_
-	NO_OP												// _stepASMFunctionStepOut_
+	FUNCTION_BEGIN(fourth,0)
+	FUNCTION_PROLOGUE(fourth,0)
+	NO_OP					// _stepAdvanceStart_
+	NO_OP
+	FUNCTION_EPILOGUE(fourth,0)
+	FUNCTION_RETURN(fourth,0)
+	FUNCTION_END(fourth,0)
+
+	FUNCTION_BEGIN(third,0)
+	FUNCTION_PROLOGUE(third,0)
+	NO_OP					// _stepOutStart_
+	LOAD_IMMED_BYTE(REG0,0x0)
+	LOAD_IMMED_BYTE(REG1,0x1)
+	LOAD_IMMED_BYTE(REG2,0x2)
+	FUNCTION_CALL(fourth)
+	ADD(REG0,REG1)
+	ADD(REG0,REG2)
+	ADD(REG0,REG0)
+	NO_OP	; NO_OP	 ;  NO_OP		// _instructionStep_
+	FUNCTION_EPILOGUE(third,0)		// _lineStepEnd_
+	FUNCTION_RETURN(third,0)
+	FUNCTION_END(third,0)
+
+	FUNCTION_BEGIN(second,0)
+	FUNCTION_PROLOGUE(second,0)		// _stepASMFunctionEntry_
+	NO_OP					// _stepASMFunctionStepOut_
 	NO_OP
 	NO_OP	;  NO_OP ; NO_OP
-	FUNCTION_EPILOGUE(second, 0)
-	FUNCTION_RETURN(second, 0)							// _stepASMFunctionExit_
+	FUNCTION_CALL(third)			// _stepOverStart_
+	FUNCTION_EPILOGUE(second, 0)		// _stepOverEnd_
+	FUNCTION_RETURN(second, 0)		// _stepASMFunctionExit_
 	FUNCTION_END(second, 0)
 
 	FUNCTION_BEGIN(first,0)
@@ -55,8 +79,8 @@
 	NO_OP
 	NO_OP	; NO_OP ; NO_OP
 	NO_OP
-	FUNCTION_CALL(second)								// _stepASMFunctionCall_
-	NO_OP												// _stepASMFunctionReturned_
+	FUNCTION_CALL(second)			// _stepASMFunctionCall_
+	NO_OP					// _stepASMFunctionReturned_
 	NO_OP
 	FUNCTION_EPILOGUE(first, 0)
 	FUNCTION_RETURN(first, 0)
