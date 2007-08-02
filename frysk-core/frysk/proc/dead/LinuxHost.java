@@ -66,29 +66,35 @@ public class LinuxHost
   Elf corefileElf;
   EventLoop eventLoop;
 
-  public LinuxHost(EventLoop eventLoop, File coreFile)
+  private LinuxHost(EventLoop eventLoop, File coreFile, boolean doRefresh)
   {
-    this.coreFile = coreFile;
-    this.eventLoop = eventLoop;
-
-    try
+      this.coreFile = coreFile;
+      this.eventLoop = eventLoop;
+      try
       {
         this.corefileElf = new Elf (coreFile.getPath(), ElfCommand.ELF_C_READ);
       }
-    catch (Exception e)
+      catch (Exception e)
       {
         throw new RuntimeException("Corefile " + this.coreFile + " is "+ 
 				   "not a valid ELF core file.");
       }
 
-    this.sendRefresh(true);
+      if (doRefresh)
+	  this.sendRefresh(true);
+  }
+  
+  public LinuxHost(EventLoop eventLoop, File coreFile)
+  {
+      this(eventLoop, coreFile, true);
   }
 
 
   public LinuxHost(EventLoop eventLoop, File coreFile, File exeFile)
   {
-    this(eventLoop, coreFile);
-    this.exeFile = exeFile;
+      this(eventLoop, coreFile, false);
+      this.exeFile = exeFile;
+      this.sendRefresh(true);
   }
 
   protected void sendRefresh(boolean refreshAll) 

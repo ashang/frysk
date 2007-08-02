@@ -1,3 +1,8 @@
+2007-08-02  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxHost.java (LinuxHost): New private constructor. Take
+	an boolean, doRefresh. Set other public constructors to use this.
+
 2007-07-31  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestLinuxCore.java (testLinuxTaskPopulation): Change "elf" to
