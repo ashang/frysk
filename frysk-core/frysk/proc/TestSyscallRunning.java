@@ -39,7 +39,6 @@
 
 package frysk.proc;
 
-import frysk.testbed.ForkTestLib;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -48,6 +47,9 @@ import java.net.Socket;
 import java.io.OutputStream;
 import frysk.event.Event;
 import frysk.testbed.TestLib;
+import frysk.testbed.TearDownProcess;
+import frysk.Config;
+import frysk.sys.DaemonPipePair;
 
 /**
  * XXX: This code should be simplified, eliminating local parallelism
@@ -59,7 +61,6 @@ public class TestSyscallRunning
   extends TestLib
 {
   // Process id and Proc representation of our test program.
-  int pid;
   Proc proc;
 
   // How we communicate with the test program.
@@ -77,16 +78,18 @@ public class TestSyscallRunning
     super.setUp();
 
     // Create a process that we will communicate with through stdin/out.
-    String command = getExecPath ("funit-syscall-running");
-    ForkTestLib.ForkedProcess process;
-    process = ForkTestLib.fork(new String[] { command });
-    pid = process.pid;
+    DaemonPipePair process
+	= new DaemonPipePair(new String[] {
+				 Config.getPkgLibFile("funit-syscall-running").getPath()
+			     });
+    TearDownProcess.add(process.pid);
 
-    in = new BufferedReader(new InputStreamReader(process.in));
-    out = new DataOutputStream(process.out);
+    in = new BufferedReader(new InputStreamReader(process.in.getInputStream()));
+    out = new DataOutputStream(process.out.getOutputStream());
 
     // Make sure the core knows about it.
-    Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc()
+    Manager.host.requestFindProc(new ProcId(process.pid.hashCode()),
+				 new Host.FindProc()
 	{
 	    public void procFound (ProcId procId)
 	    {

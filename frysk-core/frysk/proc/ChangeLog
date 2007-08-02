@@ -1,3 +1,11 @@
+2007-08-02  Andrew Cagney  <cagney@redhat.com>
+
+	Fix frysk/4879.
+	* TestSyscallSignal.java: Replace ForkTestLib with
+	frysk.sys.DaemonPipePair.  Use ProcessIdentifier.
+	* TestSyscallRunning.java: Ditto.
+	* TestBreakpoints.java: Ditto.
+
 2007-08-02  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Breakpoint.java (set): Use raw memory and bulk put method.

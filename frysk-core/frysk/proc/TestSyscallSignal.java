@@ -45,8 +45,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
-import frysk.testbed.ForkTestLib;
+import frysk.sys.DaemonPipePair;
 import frysk.testbed.TestLib;
+import frysk.testbed.TearDownProcess;
+import frysk.Config;
+import frysk.sys.ProcessIdentifier;
 
 /**
  * XXX: This code should be simplified, eliminating local parallelism
@@ -58,7 +61,7 @@ public class TestSyscallSignal
   extends TestLib
 {
   // Process id and Proc representation of our test program.
-  int pid;
+  private ProcessIdentifier pid;
   Proc proc;
 
   // How we communicate with the test program.
@@ -76,16 +79,19 @@ public class TestSyscallSignal
     super.setUp();
 
     // Create a process that we will communicate with through stdin/out.
-    String command = getExecPath ("funit-syscall-signal");
-    ForkTestLib.ForkedProcess process;
-    process = ForkTestLib.fork(new String[] { command });
+    DaemonPipePair process
+	= new DaemonPipePair(new String[] {
+				 Config.getPkgLibFile("funit-syscall-signal")
+				 .getPath()
+			     });
     pid = process.pid;
-
-    in = new BufferedReader(new InputStreamReader(process.in));
-    out = new DataOutputStream(process.out);
+    TearDownProcess.add(pid);
+    in = new BufferedReader(new InputStreamReader(process.in.getInputStream()));
+    out = new DataOutputStream(process.out.getOutputStream());
 
     // Make sure the core knows about it.
-    Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc()
+    Manager.host.requestFindProc(new ProcId(pid.hashCode()),
+				 new Host.FindProc()
 	{
 	    public void procFound (ProcId procId)
 	    {
@@ -101,8 +107,6 @@ public class TestSyscallSignal
 
   public void testIt() throws IOException
   {
-      if (unresolved(4879))
-	  return;
     // Make sure the process is "ready"
     in.readLine();
 
@@ -118,7 +122,7 @@ public class TestSyscallSignal
 	assertRunUntilStop("sigo and syso added");
 
     // Kill 1...
-    Signal.tkill(pid, Sig.HUP);
+    pid.tkill(Sig.HUP);
 
     // Tell the process to go some rounds!
     out.writeByte(42);
@@ -172,7 +176,7 @@ public class TestSyscallSignal
     assertEquals(2 * 42, syso.getExited());
 
     // Kill 3...
-    Signal.tkill(pid, Sig.HUP);
+    pid.tkill(Sig.HUP);
 
     // Run some more
     out.writeByte(100);

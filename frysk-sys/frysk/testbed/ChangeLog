@@ -1,3 +1,8 @@
+2007-08-02  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/ForkTestLib.cxx: Delete.
+	* ForkTestLib.java: Delete.
+
 2007-06-18  Andrew Cagney  <cagney@redhat.com>
 
 	* Tee.java: New file, moved to here from frysk.sys.TestPipePair.
