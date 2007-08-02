@@ -101,6 +101,8 @@ public class TestSyscallSignal
 
   public void testIt() throws IOException
   {
+      if (unresolved(4879))
+	  return;
     // Make sure the process is "ready"
     in.readLine();
 

@@ -1,5 +1,7 @@
 2007-08-01  Andrew Cagney  <cagney@redhat.com>
 
+	* TestSyscallSignal.java (testIt): Mark as unresolved.
+
 	* TestIsa.java (test64To32To64): Use FunitExecOffspring.
 	(test64To32Isa): Delete.
 	* TestExec.java (testProcBlockExec): Replace DetachedAckProcess
