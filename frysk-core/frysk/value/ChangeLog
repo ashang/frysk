@@ -6,6 +6,7 @@
 	(getName): Display using a C like syntax.
 	(addMember): Add accessibility.
 	* ArrayType.java (toString): Look for terminating '\0'.
+	* TestValue.java (testStructure): New struct output syntax.
 
 2007-07-16  Andrew Cagney  <cagney@redhat.com>
 

@@ -311,6 +311,6 @@ public class TestValue
     abb.order(byteOrder);
     Value c1 = new Value(classType, "c1", abb);
     String s = c1.toString();
-    assertEquals ("class", "{alpha=16909060,beta=84281096,gamma=2320,iota=17,epsilon=18}", s);
+    assertEquals ("class", "{alpha=16909060,\n beta=84281096,\n gamma=2320,\n iota=17,\n epsilon=18,\n}", s);
   }
 }
