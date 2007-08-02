@@ -1,3 +1,7 @@
+2007-08-02  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java: Drain the IO signal.
+
 2007-08-01  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java (AckDaemonProcess(Sig,String[]): Delete.

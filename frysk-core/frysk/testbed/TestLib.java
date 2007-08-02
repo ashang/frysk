@@ -649,14 +649,19 @@ public class TestLib
 	TearDownFile.tearDown();
 	TearDownProcess.tearDown();
 
-	// Drain all the pending signals. Note that the process of
-	// killing off the processes used in the test can generate
-	// extra signals - for instance a SIGUSR1 from a detached
-	// child that notices that it's parent just exited.
+	// Drain all the pending signals used by children to notify
+	// this parent. Note that the process of killing off the
+	// processes used in the test can generate extra signals - for
+	// instance a SIGUSR1 from a detached child that notices that
+	// it's parent just exited.
 	Signal.drain (Sig.CHLD);
 	Signal.drain (Sig.HUP);
 	Signal.drain (Sig.USR1);
 	Signal.drain (Sig.USR2);
+
+	// Drain the event-loops interrupt signal.  Could be an
+	// internal IO request outstanding.
+	Signal.drain (Sig.IO);
 	
 	DwflCache.clear();
 	
