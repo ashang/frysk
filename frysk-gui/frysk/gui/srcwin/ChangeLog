@@ -1,3 +1,8 @@
+2007-08-02  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (populateStackBrowser): Fixed Nullpointer and
+	ensured assembly isn't shown if source is available. Fixes #4885.
+
 2007-08-01  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceBuffer.java (getVariable): Fixed assumption that variable returned

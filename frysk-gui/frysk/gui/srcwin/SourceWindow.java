@@ -670,8 +670,11 @@ public class SourceWindow extends Window {
 		// stackView.expandAll();
 	    }
 
-	    if (this.currentFrame.getLines().length != 0) {
-		this.view.scrollToFunction(this.currentFrame.getLines()[0].getDOMFunction().getFunctionCall());
+	    if (this.currentFrame.getLines().length != 0) { 
+		    if (this.currentFrame.getLines()[0].getDOMFunction() != null)
+			this.view.scrollToFunction(this.currentFrame.getLines()[0].getDOMFunction().getFunctionCall());
+		    else
+			this.view.scrollToLine(this.currentFrame.getLines()[0].getLine());
 	    } else {
 		/* Only the case during a monitor stack trace */
 		if (!this.steppingEngine
