@@ -1,3 +1,11 @@
+2007-08-02  Mike Cvet  <mcvet@redhat.com>
+
+	* TestStepping.java (testLineStepFunctionCall): Changed to use
+	funit-iftester.S. Addresses #4883.
+	(testLineStepIfStatementPass): Ditto.
+	(testLineStepIfStatementFail): Ditto.
+	(testLineStepFunctionReturn): Ditto.
+
 2007-08-01  Andrew Cagney  <cagney@redhat.com>
 
 	* TestSteppingEngine.java (testInstructionStepping): Use

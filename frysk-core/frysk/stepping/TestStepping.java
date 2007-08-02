@@ -103,35 +103,32 @@ public class TestStepping extends TestLib {
 	/** Variable setup */
 
 	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-rt-steptester.c";
+	+ "frysk-core/frysk/pkglibdir/funit-iftester.S";
 
 	this.scanner = new TestfileTokenScanner(new File(source));
 
 	/* The line number where the test begins */
-	int start = this.scanner.findTokenLine("_lineStepFunctionCall_");
+	int startLine = this.scanner.findTokenLine("_lineStepIfFail_");
 
 	/* The line number the test should end up at */
-	int end = this.scanner.findTokenLine("_lineStepFunctionEntry_");
+	int endLine = this.scanner.findTokenLine("_lineStepIfPass_");
 
 	/* The test process */
-	SynchronizedOffspring process
-	    = new SynchronizedOffspring(Sig.USR1, new String[] {
-					    getExecPath("funit-rt-steptester"),
-					    "" + Pid.get(),
-					    "" + Sig.USR1_
-					});
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-iftester"));
+	
+	Task theTask = dbae.getMainTask();
+	
 	this.testStarted = false;
+	
+	initTaskWithTask(theTask, source, startLine, endLine);
 
-	/** Test initialization */
-	Task myTask = initTask(process, source, start, end);
+	this.currentTest = new LineStepFunctionCallTest(endLine, theTask);
 
-	this.currentTest = new LineStepFunctionCallTest(end, myTask);
-
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
-	this.se.stepLine(myTask);
+	this.se.stepLine(theTask);
 
 	this.testStarted = true;
 	//System.err.println("waiting for finish");
@@ -170,41 +167,32 @@ public class TestStepping extends TestLib {
 	/** Variable setup */
 
 	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-rt-steptester.c";
+		+ "frysk-core/frysk/pkglibdir/funit-iftester.S";
 
 	this.scanner = new TestfileTokenScanner(new File(source));
 
 	/* The line number where the test begins */
-	int start = this.scanner.findTokenLine("_lineStepIfPass_");
+	int startLine = this.scanner.findTokenLine("_lineStepIfPass_");
 
 	/* The line number the test should end up at */
-	int end = this.scanner.findTokenLine("_lineStepIfPassFinish_");
-
-	//	System.err.println("start/end: " + start + " " + end);
-
+	int endLine = this.scanner.findTokenLine("_lineStepIfPassFinish_");
+	
 	/* The test process */
-	SynchronizedOffspring process
-	    = new SynchronizedOffspring(Sig.USR1, new String[] {
-					    getExecPath("funit-rt-steptester"),
-					    "" + Pid.get(),
-					    "" + Sig.USR1_
-					});
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-iftester"));
+	
+	Task theTask = dbae.getMainTask();
+	
 	this.testStarted = false;
+	
+	initTaskWithTask(theTask, source, startLine, endLine);
 
-	/** Test initialization */
-	Task myTask = initTask(process, source, start, end);
+	this.currentTest = new LineStepIfStatementPassTest(endLine, theTask);
 
-	//	Frame sframe = DebugInfoStackFactory.createFrame(myTask);
-
-	//	System.err.println("CreateFrame: " + sframe.getLines()[0].getLine());
-
-	this.currentTest = new LineStepIfStatementPassTest(end, myTask);
-
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
-	this.se.stepLine(myTask);
+	this.se.stepLine(theTask);
 
 	this.testStarted = true;
 	//	System.err.println("waiting for finish");
@@ -243,36 +231,32 @@ public class TestStepping extends TestLib {
 	/** Variable setup */
 
 	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-rt-steptester.c";
+		+ "frysk-core/frysk/pkglibdir/funit-iftester.S";
 
 	this.scanner = new TestfileTokenScanner(new File(source));
 
 	/* The line number where the test begins */
-	int start = this.scanner.findTokenLine("_lineStepIfFail_");
+	int startLine = this.scanner.findTokenLine("_lineStepIfFail_");
 
 	/* The line number the test should end up at */
-	int end = this.scanner.findTokenLine("_lineStepIfFailFinish_");
+	int endLine = this.scanner.findTokenLine("_lineStepIfPass_");
 
 	/* The test process */
-	SynchronizedOffspring process
-	    = new SynchronizedOffspring(Sig.USR1, new String[] {
-					    getExecPath("funit-rt-steptester"),
-					    "" + Pid.get(),
-					    "" + Sig.USR1_
-					});
-
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-iftester"));
+	
+	Task theTask = dbae.getMainTask();
+	
 	this.testStarted = false;
+	
+	initTaskWithTask(theTask, source, startLine, endLine);
 
-	/** Test initialization */
-	Task myTask = initTask(process, source, start, end);
+	this.currentTest = new LineStepIfStatementFailTest(endLine, theTask);
 
-	this.currentTest = new LineStepIfStatementFailTest(end, myTask);
-
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
-	this.se.stepLine(myTask);
+	this.se.stepLine(theTask);
 
 	this.testStarted = true;
 	//System.err.println("waiting for finish");
@@ -311,35 +295,32 @@ public class TestStepping extends TestLib {
 	/** Variable setup */
 
 	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-rt-steptester.c";
+	+ "frysk-core/frysk/pkglibdir/funit-iftester.S";
 
 	this.scanner = new TestfileTokenScanner(new File(source));
 
 	/* The line number where the test begins */
-	int start = this.scanner.findTokenLine("_lineStepFunctionReturn_");
+	int startLine = this.scanner.findTokenLine("_lineStepFunctionEnd_");
 
 	/* The line number the test should end up at */
-	int end = this.scanner.findTokenLine("_lineStepFunctionCall_");
-
+	int endLine = this.scanner.findTokenLine("_lineStepFunctionEndReturn_");
+	
 	/* The test process */
-	SynchronizedOffspring process
-	    = new SynchronizedOffspring(Sig.USR1, new String[] {
-					    getExecPath("funit-rt-steptester"),
-					    "" + Pid.get(),
-					    "" + Sig.USR1_
-					});
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-iftester"));
+	
+	Task theTask = dbae.getMainTask();
+	
 	this.testStarted = false;
+	
+	initTaskWithTask(theTask, source, startLine, endLine);
 
-	/** Test initialization */
-	Task myTask = initTask(process, source, start, end);
+	this.currentTest = new LineStepFunctionReturnTest(endLine, theTask);
 
-	this.currentTest = new LineStepFunctionReturnTest(end, myTask);
-
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
-	this.se.stepLine(myTask);
+	this.se.stepLine(theTask);
 
 	this.testStarted = true;
 	//System.err.println("waiting for finish");
