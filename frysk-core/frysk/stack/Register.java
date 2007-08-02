@@ -53,6 +53,6 @@ public class Register {
     public final Type type;
 
     public String toString() {
-	return "[Register: " + name + "type: " + type + "]";
+	return "[Register: " + name + " type: " + type + "]";
     }
 }
