@@ -1,3 +1,7 @@
+2007-08-02  Mike Cvet  <mcvet@redhat.com>
+
+	* funit-iftester.S: Added. Addresses #4883.
+
 2007-08-02  Andrew Cagney  <cagney@redhat.com>
 
 	* util.h: Delete; moved to frysk-imports/include/funit-util.h.
