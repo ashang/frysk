@@ -45,7 +45,6 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 import frysk.testbed.Offspring;
-import frysk.testbed.SynchronizedOffspring;
 import frysk.Config;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
@@ -58,8 +57,6 @@ import frysk.rt.BreakpointManager;
 import frysk.rt.LineBreakpoint;
 import frysk.rt.SourceBreakpoint;
 import frysk.rt.SourceBreakpointObserver;
-import frysk.sys.Pid;
-import frysk.sys.Sig;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.TestLib;
 import frysk.testbed.TestfileTokenScanner;
@@ -106,35 +103,32 @@ public class TestSteppingEngine extends TestLib {
 	/** Variable setup */
 
 	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-rt-stepper.c";
+		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 
 	this.scanner = new TestfileTokenScanner(new File(source));
 
 	/* The line number where the test begins */
-	int start = this.scanner.findTokenLine("_instructionStep_");
+	int startLine = this.scanner.findTokenLine("_instructionStep_");
 
 	/* The line number the test should end up at */
-	int end = this.scanner.findTokenLine("_instructionStep_");
+	int endLine = this.scanner.findTokenLine("_instructionStep_");
 
 	/* The test process */
-	SynchronizedOffspring process
-	    = new SynchronizedOffspring(Sig.USR1, new String[] {
-					    getExecPath("funit-rt-stepper"),
-					    "" + Pid.get(),
-					    "" + Sig.USR1_
-					});
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
+	
+	Task theTask = dbae.getMainTask();
+	
 	this.testStarted = false;
+	
+	initTaskWithTask(theTask, source, startLine, endLine);
 
-	/** Test initialization */
-	Task myTask = initTask(process, source, start, end);
+	this.currentTest = new InstructionStepTest(endLine, theTask);
 
-	this.currentTest = new InstructionStepTest(end, myTask);
-
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
-	this.se.stepInstruction(myTask);
+	this.se.stepInstruction(theTask);
 
 	this.testStarted = true;
 	//System.err.println("waiting for finish");
@@ -173,36 +167,33 @@ public class TestSteppingEngine extends TestLib {
 	/** Variable setup */
 
 	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-rt-stepper.c";
+		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 
 	this.scanner = new TestfileTokenScanner(new File(source));
 
 	/* The line number where the test begins */
-	int start = this.scanner.findTokenLine("_instructionStep_");
+	int startLine = this.scanner.findTokenLine("_instructionStep_");
 
 	/* The line number the test should end up at */
-	int end = this.scanner.findTokenLine("_instructionStep_");
+	int endLine = this.scanner.findTokenLine("_instructionStep_");
 
 	/* The test process */
-	SynchronizedOffspring process
-	    = new SynchronizedOffspring(Sig.USR1, new String[] {
-					    getExecPath("funit-rt-stepper"),
-					    "" + Pid.get(),
-					    "" + Sig.USR1_
-					});
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
+	
+	Task theTask = dbae.getMainTask();
+	
 	this.testStarted = false;
+	
+	initTaskWithTask(theTask, source, startLine, endLine);
 
-	/** Test initialization */
-	Task myTask = initTask(process, source, start, end);
+	this.currentTest = new InstructionStepListTest(endLine, theTask);
 
-	this.currentTest = new InstructionStepListTest(end, myTask);
-
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
-
+	
 	/** The stepping operation */
 	LinkedList l = new LinkedList();
-	l.add(myTask);
+	l.add(theTask);
 	this.se.stepInstruction(l);
 
 	this.testStarted = true;
@@ -242,35 +233,32 @@ public class TestSteppingEngine extends TestLib {
 	/** Variable setup */
 
 	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-rt-stepper.c";
+		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 
 	this.scanner = new TestfileTokenScanner(new File(source));
 
 	/* The line number where the test begins */
-	int start = this.scanner.findTokenLine("_instructionStep_");
+	int startLine = this.scanner.findTokenLine("_instructionStep_");
 
 	/* The line number the test should end up at */
-	int end = this.scanner.findTokenLine("_lineStepEnd_");
+	int endLine = this.scanner.findTokenLine("_lineStepEnd_");
 
 	/* The test process */
-	SynchronizedOffspring process
-	    = new SynchronizedOffspring(Sig.USR1, new String[] {
-					    getExecPath("funit-rt-stepper"),
-					    "" + Pid.get(),
-					    "" + Sig.USR1_
-					});
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
+	
+	Task theTask = dbae.getMainTask();
+	
 	this.testStarted = false;
+	
+	initTaskWithTask(theTask, source, startLine, endLine);
 
-	/** Test initialization */
-	Task myTask = initTask(process, source, start, end);
+	this.currentTest = new LineStepList(endLine, theTask);
 
-	this.currentTest = new LineStepList(end, myTask);
-
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
-	assertTrue("Line information present", frame.getLines().length > 0);
+	DebugInfoFrame sFrame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
+	assertTrue("Line information present", sFrame.getLines().length > 0);
 
 	/** The stepping operation */
-	this.se.stepLine(myTask);
+	this.se.stepLine(theTask);
 
 	this.testStarted = true;
 	//System.err.println("waiting for finish");
@@ -309,36 +297,33 @@ public class TestSteppingEngine extends TestLib {
 	/** Variable setup */
 
 	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-rt-stepper.c";
+		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 
 	this.scanner = new TestfileTokenScanner(new File(source));
 
 	/* The line number where the test begins */
-	int start = this.scanner.findTokenLine("_instructionStep_");
+	int startLine = this.scanner.findTokenLine("_instructionStep_");
 
 	/* The line number the test should end up at */
-	int end = this.scanner.findTokenLine("_lineStepEnd_");
+	int endLine = this.scanner.findTokenLine("_lineStepEnd_");
 
 	/* The test process */
-	SynchronizedOffspring process
-	    = new SynchronizedOffspring(Sig.USR1, new String[] {
-					    getExecPath("funit-rt-stepper"),
-					    "" + Pid.get(),
-					    "" + Sig.USR1_
-					});
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
+	
+	Task theTask = dbae.getMainTask();
+	
 	this.testStarted = false;
+	
+	initTaskWithTask(theTask, source, startLine, endLine);
 
-	/** Test initialization */
-	Task myTask = initTask(process, source, start, end);
+	this.currentTest = new LineStepListTest(endLine, theTask);
 
-	this.currentTest = new LineStepListTest(end, myTask);
-
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
 	LinkedList l = new LinkedList();
-	l.add(myTask);
+	l.add(theTask);
 	this.se.stepLine(l);
 
 	this.testStarted = true;
@@ -372,7 +357,10 @@ public class TestSteppingEngine extends TestLib {
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 
-		assertEquals("demanged name", "foo", frame.getSymbol()
+		assertEquals("demanged name", "second", frame.getSymbol()
+			.getDemangledName());
+		frame = frame.getOuterDebugInfoFrame();
+		assertEquals("demanged name", "first", frame.getSymbol()
 			.getDemangledName());
 		frame = frame.getOuterDebugInfoFrame();
 		assertEquals("demanged name", "main", frame.getSymbol()
@@ -385,35 +373,32 @@ public class TestSteppingEngine extends TestLib {
 	/** Variable setup */
 
 	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-rt-stepper.c";
+		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 
 	this.scanner = new TestfileTokenScanner(new File(source));
 
 	/* The line number where the test begins */
-	int start = this.scanner.findTokenLine("_stepOver_");
+	int startLine = this.scanner.findTokenLine("_stepOverStart_");
 
 	/* The line number the test should end up at */
-	int end = this.scanner.findTokenLine("_stepOver_");
+	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 
 	/* The test process */
-	SynchronizedOffspring process
-	    = new SynchronizedOffspring(Sig.USR1, new String[] {
-					    getExecPath("funit-rt-stepper"),
-					    "" + Pid.get(),
-					    "" + Sig.USR1_
-					});
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
+	
+	Task theTask = dbae.getMainTask();
+	
 	this.testStarted = false;
+	
+	initTaskWithTask(theTask, source, startLine, endLine);
 
-	/** Test initialization */
-	Task myTask = initTask(process, source, start, end);
+	this.currentTest = new StepOverTest(endLine, theTask);
 
-	this.currentTest = new StepOverTest(end, myTask);
-
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
-	this.se.stepOver(myTask, DebugInfoStackFactory.createDebugInfoStackTrace(myTask));
+	this.se.stepOver(theTask, DebugInfoStackFactory.createDebugInfoStackTrace(theTask));
 
 	this.testStarted = true;
 	//System.err.println("waiting for finish");
@@ -453,7 +438,10 @@ public class TestSteppingEngine extends TestLib {
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 
-		assertEquals("demanged name", "foo", frame.getSymbol()
+		assertEquals("demanged name", "second", frame.getSymbol()
+			.getDemangledName());
+		frame = frame.getOuterDebugInfoFrame();
+		assertEquals("demanged name", "first", frame.getSymbol()
 			.getDemangledName());
 		frame = frame.getOuterDebugInfoFrame();
 		assertEquals("demanged name", "main", frame.getSymbol()
@@ -466,35 +454,32 @@ public class TestSteppingEngine extends TestLib {
 	/** Variable setup */
 
 	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-rt-stepper.c";
+		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 
 	this.scanner = new TestfileTokenScanner(new File(source));
 
 	/* The line number where the test begins */
-	int start = this.scanner.findTokenLine("_stepOver_");
+	int startLine = this.scanner.findTokenLine("_stepOverStart_");
 
 	/* The line number the test should end up at */
-	int end = this.scanner.findTokenLine("_stepOver_");
+	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 
 	/* The test process */
-	SynchronizedOffspring process
-	    = new SynchronizedOffspring(Sig.USR1, new String[] {
-					    getExecPath("funit-rt-stepper"),
-					    "" + Pid.get(),
-					    "" + Sig.USR1_
-					});
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
+	
+	Task theTask = dbae.getMainTask();
+	
 	this.testStarted = false;
+	
+	initTaskWithTask(theTask, source, startLine, endLine);
 
-	/** Test initialization */
-	Task myTask = initTask(process, source, start, end);
+	this.currentTest = new InstructionNextTest(endLine, theTask);
 
-	this.currentTest = new InstructionNextTest(end, myTask);
-
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
-	se.stepInstruction(myTask);
+	se.stepInstruction(theTask);
 
 	this.testStarted = true;
 	//System.err.println("waiting for finish");
@@ -527,7 +512,10 @@ public class TestSteppingEngine extends TestLib {
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 
-		assertEquals("demanged name", "foo", frame.getSymbol()
+		assertEquals("demanged name", "second", frame.getSymbol()
+			.getDemangledName());
+		frame = frame.getOuterDebugInfoFrame();
+		assertEquals("demanged name", "first", frame.getSymbol()
 			.getDemangledName());
 		frame = frame.getOuterDebugInfoFrame();
 		assertEquals("demanged name", "main", frame.getSymbol()
@@ -540,35 +528,32 @@ public class TestSteppingEngine extends TestLib {
 	/** Variable setup */
 
 	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-rt-stepper.c";
+		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 
 	this.scanner = new TestfileTokenScanner(new File(source));
 
 	/* The line number where the test begins */
-	int start = this.scanner.findTokenLine("_stepOutStart_");
+	int startLine = this.scanner.findTokenLine("_stepOutStart_");
 
 	/* The line number the test should end up at */
-	int end = this.scanner.findTokenLine("_stepOver_");
+	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 
 	/* The test process */
-	SynchronizedOffspring process
-	    = new SynchronizedOffspring(Sig.USR1, new String[] {
-					    getExecPath("funit-rt-stepper"),
-					    "" + Pid.get(),
-					    "" + Sig.USR1_
-					});
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
+	
+	Task theTask = dbae.getMainTask();
+	
 	this.testStarted = false;
+	
+	initTaskWithTask(theTask, source, startLine, endLine);
 
-	/** Test initialization */
-	Task myTask = initTask(process, source, start, end);
+	this.currentTest = new StepOutTest(endLine, theTask);
 
-	this.currentTest = new StepOutTest(end, myTask);
-
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
-	this.se.stepOut(myTask, DebugInfoStackFactory.createDebugInfoStackTrace(myTask));
+	this.se.stepOut(theTask, DebugInfoStackFactory.createDebugInfoStackTrace(theTask));
 
 	this.testStarted = true;
 	//System.err.println("waiting for finish");
@@ -601,7 +586,10 @@ public class TestSteppingEngine extends TestLib {
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 
-		assertEquals("demanged name", "foo", frame.getSymbol()
+		assertEquals("demanged name", "second", frame.getSymbol()
+			.getDemangledName());
+		frame = frame.getOuterDebugInfoFrame();
+		assertEquals("demanged name", "first", frame.getSymbol()
 			.getDemangledName());
 		frame = frame.getOuterDebugInfoFrame();
 		assertEquals("demanged name", "main", frame.getSymbol()
@@ -614,37 +602,34 @@ public class TestSteppingEngine extends TestLib {
 	/** Variable setup */
 
 	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-rt-stepper.c";
+		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 
 	this.scanner = new TestfileTokenScanner(new File(source));
 
 	/* The line number where the test begins */
-	int start = this.scanner.findTokenLine("_stepAdvanceStart_");
+	int startLine = this.scanner.findTokenLine("_stepAdvanceStart_");
 
 	/* The line number the test should end up at */
-	int end = this.scanner.findTokenLine("_stepOver_");
+	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 
 	/* The test process */
-	SynchronizedOffspring process
-	    = new SynchronizedOffspring(Sig.USR1, new String[] {
-					    getExecPath("funit-rt-stepper"),
-					    "" + Pid.get(),
-					    "" + Sig.USR1_
-					});
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
+	
+	Task theTask = dbae.getMainTask();
+	
 	this.testStarted = false;
+	
+	initTaskWithTask(theTask, source, startLine, endLine);
 
-	/** Test initialization */
-	Task myTask = initTask(process, source, start, end);
+	this.currentTest = new StepAdvanceTest(endLine, theTask);
 
-	this.currentTest = new StepAdvanceTest(end, myTask);
-
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
 	this.se
-		.stepAdvance(myTask, DebugInfoStackFactory.createDebugInfoStackTrace(myTask)
-			.getOuterDebugInfoFrame());
+		.stepAdvance(theTask, DebugInfoStackFactory.createDebugInfoStackTrace(theTask)
+			.getOuterDebugInfoFrame().getOuterDebugInfoFrame());
 
 	this.testStarted = true;
 	//System.err.println("waiting for finish");
@@ -661,36 +646,32 @@ public class TestSteppingEngine extends TestLib {
 	/** Variable setup */
 
 	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-rt-stepper.c";
+		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 
 	this.scanner = new TestfileTokenScanner(new File(source));
 
 	/* The line number where the test begins */
-	int start = this.scanner.findTokenLine("_stepAdvanceStart_");
+	int startLine = this.scanner.findTokenLine("_stepOutStart_");
 
 	/* The line number the test should end up at */
-	int end = 0;
+	int endLine = 0;
 
-	/* The test process */
-	SynchronizedOffspring process
-	    = new SynchronizedOffspring(Sig.USR1, new String[] {
-					    getExecPath("funit-rt-stepper"),
-					    "" + Pid.get(),
-					    "" + Sig.USR1_
-					});
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
+	
+	Task theTask = dbae.getMainTask();
+	
 	this.testStarted = false;
+	
+	initTaskWithTask(theTask, source, startLine, endLine);
 
-	/** Test initialization */
-	Task myTask = initTask(process, source, start, end);
-
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
 	breakpointAddress = frame.getOuterDebugInfoFrame().getAddress();
-	se.setBreakpoint(myTask, breakpointAddress);
+	se.setBreakpoint(theTask, breakpointAddress);
 	
-	bpTask = myTask;
+	bpTask = theTask;
 	      Manager.eventLoop.add(new Event() {
 	    public void execute() {
 		Breakpoint b = se.getTaskBreakpoint(bpTask);

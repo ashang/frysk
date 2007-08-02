@@ -6,6 +6,18 @@
 	(testLineStepIfStatementFail): Ditto.
 	(testLineStepFunctionReturn): Ditto.
 
+	* TestSteppingEngine.java (testInstructionStepping): Now uses
+	funit-stepping-asm.S. Updated required tokens and core
+	requirements for test. Fixes #4883.
+	(testInstructionSteppingList): Ditto.
+	(testLineStepping): Ditto.
+	(testLineSteppingList): Ditto.
+	(testStepOver): Ditto.
+	(testInstructionNext): Ditto.
+	(testStepOut): Ditto.
+	(testStepAdvance): Ditto.
+	(testBreakpointing): Ditto.
+
 2007-08-01  Andrew Cagney  <cagney@redhat.com>
 
 	* TestSteppingEngine.java (testInstructionStepping): Use
