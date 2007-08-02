@@ -166,7 +166,7 @@ public class DisassembleCommand extends CLIHandler {
 		    + Long.toHexString(endInstruction) + ":");
 	    List instructions = disassembler.disassembleInstructionsStartEnd(
 		    startInstruction, endInstruction);
-	    printInstructions(-1, instructions, false);
+	    printInstructions(-1, instructions, true);
 	    return;
 	} else if (params.size() > 2) {
 	    throw new RuntimeException("too many arguments to disassemble");

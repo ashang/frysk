@@ -58,4 +58,19 @@ public class TestDisassemblerCommand
 	e.expect("Quitting...");
 	e.close();
     }
+    
+    public void testDisassembleRange() {
+	child = new Expect(Config.getPkgLibFile("hpd-c"));
+	e = new Expect(Config.getBinFile("fhpd"));
+	e.expect(prompt);
+	// Attach
+	e.send("attach " + child.getPid() + "\n\n");
+	e.expect(5, "attach.*\n" + prompt);
+	e.send("disassemble 0x804860f  0x80487ea\n");
+	e.expect(5, " 0x804860f.*\n");
+	e.expect(5, " 0x80487ea.*\n" + prompt);
+	e.send("quit\n");
+	e.expect("Quitting...");
+	e.close();
+    }
 }
