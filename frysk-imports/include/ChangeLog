@@ -1,3 +1,8 @@
+2007-08-02  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-util.h: Copied to here from
+	frysk-core/frysk/pkglibdir/util.h; include attribute unused.
+
 2007-07-31  Mike Cvet  <mcvet@redhat.com>
 
 	* frysk-asm.h (MOV): Fixed bug with backwards-syntax - 

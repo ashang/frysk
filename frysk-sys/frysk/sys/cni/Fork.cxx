@@ -87,11 +87,16 @@ spawn (jstring in, jstring out, jstring err, jstringArray args,
   errno = 0;
   pid_t pid = fork ();
   switch (pid) {
-  case -1:
-    // Fork failed.
+  case -1: // Fork failed.
     throwErrno (errno, "fork");
-  case 0:
-    // Child
+  default: // Parent
+    return pid;
+  case 0: // Child
+    // Scrub the signal mask.
+    sigset_t mask;
+    sigfillset(&mask);
+    ::sigprocmask(SIG_UNBLOCK, &mask, NULL);
+    // Redirect stdio.
     reopen (in, "r", stdin);
     reopen (out, "w", stdout);
     reopen (err, "w", stderr);
@@ -107,8 +112,6 @@ spawn (jstring in, jstring out, jstring err, jstringArray args,
     // This should not happen.
     ::perror ("execvp");
     ::_exit (errno);
-  default:
-    return pid;
   }
 }
 

@@ -1,3 +1,8 @@
+2007-08-02  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Fork.cxx (spawn): Scrub the signal mask.
+	* TestFork.java: New file.
+
 2007-07-30  Mark Wielaard  <mwielaard@redhat.com>
 
 	* FileDescriptor.java (read): Make start and length ints.
