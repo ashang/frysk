@@ -1,5 +1,7 @@
 2007-08-02  Teresa Thomas  <tthomas@redhat.com>
 
+	* TestFdebuginfo.java: Updated.
+	
 	* fdebuginfo.java (printDebuginfo): Reflect changes in 
 	  DwflModule::getDebuginfo.
 	* fdebugrpm.sh: Updated.	  	  
