@@ -138,28 +138,6 @@ resp_listener (void * arg)
 		 i386_signals[signal_resp.signal] : "unused");
       }
       break;
-    case IF_RESP_SWITCHPID_DATA:	// fixme -- move to ioctl
-      {
-	switchpid_resp_s switchpid_resp = if_resp.switchpid_resp;
-	if (switchpid_resp.okay) {
-	  current_pid = switchpid_resp.utraced_pid;
-	  set_prompt();
-	}
-	else fprintf (stdout, "PID %d invalid\n", switchpid_resp.utraced_pid);
-      }       
-      break;
-    case IF_RESP_ATTACH_DATA:
-      {
-	attach_resp_s attach_resp = if_resp.attach_resp;
-	fprintf (stdout, "\tprocess %ld attach %s\n",
-		 attach_resp.utraced_pid,
-		 attach_resp.okay ? "succeeded" : "failed");
-	if (attach_resp.okay) {
-	  current_pid = attach_resp.utraced_pid;
-	  set_prompt();
-	}
-      }
-      break;
     case IF_RESP_CLONE_DATA:
       {
 	clone_resp_s clone_resp = if_resp.clone_resp;

@@ -187,34 +187,37 @@ start_runnables ()
 	int args_next = 0;
 	int args_max  = 0;
 #define ARGS_INCR 4
-	
-	utrace_attach_if (cp, 0, runnables_to_attach[i].quiesce);
 
-	while (tok) {
+	rc = utracer_attach (cp, 0, runnables_to_attach[i].quiesce);
+	if (0 == rc) {
+	  while (tok) {
+	    if (args_max >= args_next) {
+	      args_max += ARGS_INCR;
+	      args = realloc (args, ARGS_INCR * sizeof(char *));
+	    }
+	    args[args_next++] = tok;
+	    tok = strtok (NULL, " \t");
+	  }
 	  if (args_max >= args_next) {
 	    args_max += ARGS_INCR;
 	    args = realloc (args, ARGS_INCR * sizeof(char *));
 	  }
-	  args[args_next++] = tok;
-	  tok = strtok (NULL, " \t");
-	}
-	if (args_max >= args_next) {
-	  args_max += ARGS_INCR;
-	  args = realloc (args, ARGS_INCR * sizeof(char *));
-	}
-	args[args_next++] = NULL;
+	  args[args_next++] = NULL;
 	
-	rc = execvp (args[0], args);
+	  rc = execvp (args[0], args);
 	
-	if (args) free (args);
-	if (cl_copy) free (cl_copy);
+	  if (args) free (args);
+	  if (cl_copy) free (cl_copy);
 	  
-	if (-1 == rc)
-	  error (1, errno, "Error in spawner execlp");
+	  if (-1 == rc)
+	    perror ("Error in spawner execlp");
+	}
+	else uerror ("start_runnables");
       }
       break;
     default:      // parent
-      // fixme -- record pid somewhere?
+      current_pid = child_pid;
+      set_prompt();
       break;
     }
   }
@@ -231,6 +234,8 @@ main (int ac, char * av[])
 #endif
 
   udb_pid = getpid();
+
+  text_ui_init();
 
   signal (SIGHUP,  sigterm_handler);
   signal (SIGTERM, sigterm_handler);
@@ -343,9 +348,16 @@ main (int ac, char * av[])
 
   if (0 < nr_pids_to_attach) {
     int i;
-    for (i = 0; i < nr_pids_to_attach; i++)
-      utrace_attach_if (pids_to_attach[i].pid,
-			pids_to_attach[i].quiesce, 0);
+    for (i = 0; i < nr_pids_to_attach; i++) {
+      int rc;
+      rc =  utracer_attach (pids_to_attach[i].pid,
+			    pids_to_attach[i].quiesce, 0);
+      if (0 == rc) {
+	current_pid = pids_to_attach[i].pid;
+	set_prompt();
+      }
+      else uerror ("attaching cl pids");
+    }
     free (pids_to_attach);
   }
 
@@ -378,8 +390,8 @@ main (int ac, char * av[])
     
     utrace_sync_if (SYNC_INIT);
   }
+  
 
-  text_ui_init();
   text_ui();
 
   cleanup_udb();

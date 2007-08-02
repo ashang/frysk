@@ -28,7 +28,7 @@ queue_response (utracing_info_s * utracing_info_found,
 {
   int wrc;
   
-  DB_PRINTK (KERN_ALERT "queue_response(%ld)\n", ((if_resp_u *)resp)->type);
+  //DB_PRINTK (KERN_ALERT "queue_response(%ld)\n", ((if_resp_u *)resp)->type);
   // wrc == 0			==> timed out
   // wrc == -ERESTARTSYS	==> signal intr
   // otherwise			==> ok
@@ -36,9 +36,9 @@ queue_response (utracing_info_s * utracing_info_found,
 			      (0 >= utracing_info_found->queued_data_length),
 				      2 * HZ);
   
-  DB_PRINTK (KERN_ALERT "queue_response wrc = %s\n",
-	     (0 == wrc) ? "timed out" :
-	     ((-ERESTARTSYS == wrc) ? "intr" : "okay"));
+  //DB_PRINTK (KERN_ALERT "queue_response wrc = %s\n",
+  //	     (0 == wrc) ? "timed out" :
+  //	     ((-ERESTARTSYS == wrc) ? "intr" : "okay"));
   
   // might return 0 length if wait ended by som random interrupt
   if (0 >= utracing_info_found->queued_data_length) {
@@ -277,7 +277,7 @@ report_reap (struct utrace_attached_engine *engine,
 }
 
 
-static const struct utrace_engine_ops utraced_utrace_ops = {
+const struct utrace_engine_ops utraced_utrace_ops = {
   .report_syscall_entry	= report_syscall_entry,
   .report_syscall_exit	= report_syscall_exit,
   .report_exec		= report_exec,
@@ -293,67 +293,6 @@ static const struct utrace_engine_ops utraced_utrace_ops = {
   .tracer_task		= NULL,
   .allow_access_process_vm = allow_access_process_vm,
 };
-
-static int
-attach_cmd_fcn (long utracing_pid, long utraced_pid,
-		long quiesce, long exec_quiesce,
-		utracing_info_s * utracing_info_found)
-{
-  int rc;
-    
-  if (utracing_info_found) {
-    struct task_struct * task = get_task (utraced_pid);
-
-    if (task) {
-      struct utrace_attached_engine * engine;
-      engine = utrace_attach (task,
-			      UTRACE_ATTACH_CREATE |
-			      UTRACE_ATTACH_EXCLUSIVE |
-			      UTRACE_ATTACH_MATCH_OPS,
-			      &utraced_utrace_ops,
-			      0UL);  //fixme -- maybe use?
-      if (!IS_ERR (engine)) {
-	unsigned long flags =
-	  UTRACE_EVENT (EXEC)	    |
-	  UTRACE_EVENT (SIGNAL)	    |
-	  UTRACE_EVENT (VFORK_DONE) |
-	  UTRACE_EVENT (CLONE)	    |
-	  UTRACE_EVENT (EXIT)	    |
-	  UTRACE_EVENT (QUIESCE)    |
-	  UTRACE_EVENT (SYSCALL_EXIT)    |
-	  UTRACE_EVENT (SYSCALL_ENTRY)    |
-	  UTRACE_EVENT (REAP)    |
-	  UTRACE_EVENT (DEATH);
-
-	if (quiesce) flags |= UTRACE_ACTION_QUIESCE;
-	
-	//fixme -- do something with rc?
-	rc = utrace_set_flags (task,engine, flags);
-
-	engine->data = (unsigned long)utracing_info_found;
-	rc = create_utraced_info_entry (utracing_info_found,
-					utraced_pid,
-					engine,
-					exec_quiesce);
-	if (0 != rc) utrace_detach(task, engine);
-      }
-      else rc = -UTRACER_EENGINE;
-    }
-    else rc = -ESRCH;
-    {
-      attach_resp_s attach_resp = {IF_RESP_ATTACH_DATA,
-				   utraced_pid, (0 == rc) ? 1 : 0 };
-
-      queue_response (utracing_info_found,
-		      &attach_resp, sizeof(attach_resp),
-		      NULL, 0,
-		      NULL, 0);
-    }
-  }
-  else rc = -UTRACER_ETRACING;
-
-  return rc;
-}
 
 static int
 handle_quiesce (run_cmd_s * run_cmd, unsigned long count, void * data)
@@ -379,54 +318,6 @@ handle_quiesce (run_cmd_s * run_cmd, unsigned long count, void * data)
     else rc = -UTRACER_EENGINE;
   }
   else rc = -ESRCH;
-
-  return rc;
-}
-
-
-static int
-handle_switchpid (switchpid_cmd_s * switchpid_cmd, unsigned long count,
-		  void * data)
-{
-  utracing_info_s * utracing_info_found = (utracing_info_s *)data;
-  int rc = count;
-
-  if (utracing_info_found) {
-    struct task_struct * task;
-    switchpid_resp_s switchpid_resp;
-
-    task = get_task (switchpid_cmd->utraced_pid);
-    if (task) {
-      switchpid_resp.type           = IF_RESP_SWITCHPID_DATA;
-      switchpid_resp.utraced_pid    = switchpid_cmd->utraced_pid;
-      switchpid_resp.okay = task ? 1 : 0;
-      
-      queue_response (utracing_info_found,
-		      &switchpid_resp,
-		      sizeof(switchpid_resp),
-		      NULL, 0,
-		      NULL, 0);
-      
-      rc = count;
-    }
-    else rc = -ESRCH;
-  }
-  else rc = -UTRACER_ETRACING;
-
-  return rc;
-}
-
-static int
-handle_attach (attach_cmd_s * attach_cmd, unsigned long count,
-	       void * data)
-{
-  int rc =
-    attach_cmd_fcn (attach_cmd->utracing_pid,
-		    attach_cmd->utraced_pid,
-		    attach_cmd->quiesce,
-		    attach_cmd->exec_quiesce,
-		    (utracing_info_s *)data);
-  if (0 == rc) rc = count;
 
   return rc;
 }
@@ -507,8 +398,8 @@ if_file_write (struct file *file,
   wrc = wait_event_interruptible (utracing_info_found->ifw_wait,
 			  (0 == utracing_info_found->write_in_progress));
 
-  DB_PRINTK (KERN_ALERT "if_file_write wrc = %s\n",
-	     (0 == wrc) ? "okay" : "intr");
+  //  DB_PRINTK (KERN_ALERT "if_file_write wrc = %s\n",
+  //	     (0 == wrc) ? "okay" : "intr");
   // might return 0 length if wait ended by som random interrupt
   if (0 == utracing_info_found->write_in_progress) {
     utracing_info_found->write_in_progress = 1;
@@ -523,28 +414,20 @@ if_file_write (struct file *file,
       break;
     case IF_CMD_RUN:
     case IF_CMD_QUIESCE:
-      DB_PRINTK (KERN_ALERT "IF_CMD_RUN?QUIESCE\n");
+      DB_PRINTK (KERN_ALERT "IF_CMD_RUN?QUIESCE--write\n");
       rc = handle_quiesce (&if_cmd.run_cmd, count, data);
       break;
-    case IF_CMD_SWITCHPID:
-      DB_PRINTK (KERN_ALERT "IF_CMD_SWITCHPID\n");
-      rc = handle_switchpid (&if_cmd.switchpid_cmd, count, data);
-      break;
-    case IF_CMD_ATTACH:
-      DB_PRINTK (KERN_ALERT "IF_CMD_ATTACH\n");
-      rc = handle_attach (&if_cmd.attach_cmd, count, data);
-      break;
     case IF_CMD_DETACH:
-      DB_PRINTK (KERN_ALERT "IF_CMD_DETACH\n");
+      DB_PRINTK (KERN_ALERT "IF_CMD_DETACH--write\n");
       rc = handle_detach (&if_cmd.attach_cmd, count, data);
       break;
     case IF_CMD_SYNC:
-      DB_PRINTK (KERN_ALERT "IF_CMD_SYNC\n");
+      DB_PRINTK (KERN_ALERT "IF_CMD_SYNC--write\n");
       rc = handle_sync (&if_cmd.sync_cmd, count, data);
       break;
     case IF_CMD_SET_REG:
       // fixme -- actually do it
-      DB_PRINTK (KERN_ALERT "IF_CMD_SET_REG\n");
+      DB_PRINTK (KERN_ALERT "IF_CMD_SET_REG--write\n");
       rc = count;
       break;
     }
@@ -580,8 +463,8 @@ if_file_read ( char *buffer,
       // wrc == -ERESTARTSYS	==> signal intr
       wrc = wait_event_interruptible (utracing_info_found->ifr_wait,
 			      (0 < utracing_info_found->queued_data_length));
-      DB_PRINTK (KERN_ALERT "if_file_read wrc = %s\n",
-		 (0 == wrc) ? "okay" : "intr");
+      //      DB_PRINTK (KERN_ALERT "if_file_read wrc = %s\n",
+      //		 (0 == wrc) ? "okay" : "intr");
     }
     
     // might return 0 length if wait ended by som random interrupt

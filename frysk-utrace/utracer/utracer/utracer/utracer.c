@@ -334,6 +334,39 @@ utracer_set_syscall (short which, short cmd, long pid, long syscall)
 }
 
 
+/************************** attach  ********************/
+
+
+int
+utracer_attach (long pid, long quiesce, long exec_quiesce)
+{
+  int irc;
+  attach_cmd_s attach_cmd = {IF_CMD_ATTACH,
+			     (long)client_pid, pid, quiesce, exec_quiesce};
+
+  irc = ioctl (utracer_cmd_file_fd, sizeof(attach_cmd_s), &attach_cmd);
+
+  return irc;
+}
+
+
+
+/************************** switchpid  ********************/
+
+
+int
+utracer_switch_pid (long pid)
+{
+  int irc;
+  switchpid_cmd_s switchpid_cmd = {IF_CMD_SWITCHPID,
+				   (long)client_pid,
+				   pid};
+
+  irc = ioctl (utracer_cmd_file_fd, sizeof(switchpid_cmd_s), &switchpid_cmd);
+
+  return irc;
+}
+
 /************************** printexe  ********************/
 
 

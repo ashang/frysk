@@ -486,6 +486,101 @@ handle_getregs (readreg_cmd_s * readreg_cmd)
   return rc;
 }
 
+extern const struct utrace_engine_ops utraced_utrace_ops;
+
+static int
+attach_cmd_fcn (long utracing_pid, long utraced_pid,
+		long quiesce, long exec_quiesce)
+{
+  int rc;
+  
+  utracing_info_s * utracing_info_found =
+    lookup_utracing_info (utracing_pid);
+
+  DB_PRINTK (KERN_ALERT "attach_cmd_fcn\n");
+    
+  if (utracing_info_found) {
+    struct task_struct * task = get_task (utraced_pid);
+    
+    DB_PRINTK (KERN_ALERT "attach_cmd_fcn -- ui found\n");
+    if (task) {
+      struct utrace_attached_engine * engine;
+      engine = utrace_attach (task,
+			      UTRACE_ATTACH_CREATE |
+			      UTRACE_ATTACH_EXCLUSIVE |
+			      UTRACE_ATTACH_MATCH_OPS,
+			      &utraced_utrace_ops,
+			      0UL);  //fixme -- maybe use?
+      DB_PRINTK (KERN_ALERT "attach_cmd_fcn -- task found\n");
+      if (!IS_ERR (engine)) {
+	unsigned long flags =
+	  UTRACE_EVENT (EXEC)	    |
+	  UTRACE_EVENT (SIGNAL)	    |
+	  UTRACE_EVENT (VFORK_DONE) |
+	  UTRACE_EVENT (CLONE)	    |
+	  UTRACE_EVENT (EXIT)	    |
+	  UTRACE_EVENT (QUIESCE)    |
+	  UTRACE_EVENT (SYSCALL_EXIT)    |
+	  UTRACE_EVENT (SYSCALL_ENTRY)    |
+	  UTRACE_EVENT (REAP)    |
+	  UTRACE_EVENT (DEATH);
+
+	if (quiesce) flags |= UTRACE_ACTION_QUIESCE;
+	
+	DB_PRINTK (KERN_ALERT "attach_cmd_fcn -- engine ok\n");
+	
+	//fixme -- do something with rc?
+	rc = utrace_set_flags (task,engine, flags);
+
+	engine->data = (unsigned long)utracing_info_found;
+	rc = create_utraced_info_entry (utracing_info_found,
+					utraced_pid,
+					engine,
+					exec_quiesce);
+	DB_PRINTK (KERN_ALERT "attach_cmd_fcn -- ui create rc = %d\n", rc);
+	if (0 != rc) utrace_detach(task, engine);
+      }
+      else rc = -UTRACER_EENGINE;
+    }
+    else rc = -ESRCH;
+  }
+  else rc = -UTRACER_ETRACING;
+
+  return rc;
+}
+
+static int
+handle_attach (attach_cmd_s * attach_cmd)
+{
+  int rc = attach_cmd_fcn (attach_cmd->utracing_pid,
+			   attach_cmd->utraced_pid,
+			   attach_cmd->quiesce,
+			   attach_cmd->exec_quiesce);
+  return rc;
+}
+
+
+static int
+handle_switchpid (switchpid_cmd_s * switchpid_cmd)
+{
+  int rc = 0;
+  struct task_struct * task;
+
+  task = get_task (switchpid_cmd->utraced_pid);
+  if (task) {
+    utracing_info_s * utracing_info_found =
+      lookup_utracing_info (switchpid_cmd->utracing_pid);
+    if (utracing_info_found) {
+      utraced_info_s * utraced_info_found =
+	lookup_utraced_info (utracing_info_found, switchpid_cmd->utraced_pid);
+      if (!utraced_info_found) rc = -UTRACER_ETRACED;
+    }
+    else rc = -UTRACER_ETRACING;
+  }
+  else rc = -ESRCH;
+
+  return rc;
+}
 
 static int
 handle_syscall (syscall_cmd_s * syscall_cmd)
@@ -568,25 +663,40 @@ utracer_ioctl (struct inode * inode,
 
   switch (if_cmd.cmd) {
   case IF_CMD_LIST_PIDS:
+    DB_PRINTK (KERN_ALERT "IF_LIST_PIDS--ioctl\n");
     rc = handle_listpids (&if_cmd.listpids_cmd);
     break;
   case IF_CMD_PRINTMMAP:
+    DB_PRINTK (KERN_ALERT "IF_CMD_PRINTMAP--ioctl\n");
     rc = handle_printmap (&if_cmd.printmmap_cmd);
     break;
   case IF_CMD_PRINTENV:
+    DB_PRINTK (KERN_ALERT "IF_CMD_PRINTENV--ioctl\n");
     rc = handle_printenv (&if_cmd.printenv_cmd);
     break;
   case IF_CMD_PRINTEXE:
+    DB_PRINTK (KERN_ALERT "IF_CMD_PRINTEXE--ioctl\n");
     rc = handle_printexe (&if_cmd.printexe_cmd);
     break;
   case IF_CMD_GETMEM:
+    DB_PRINTK (KERN_ALERT "IF_CMD_GETMEM--ioctl\n");
     rc = handle_getmem (&if_cmd.getmem_cmd);
     break;
   case IF_CMD_READ_REG:
+    DB_PRINTK (KERN_ALERT "IF_CMD_READ_REG--ioctl\n");
     rc = handle_getregs (&if_cmd.readreg_cmd);
     break;
   case IF_CMD_SYSCALL:
+    DB_PRINTK (KERN_ALERT "IF_CMD_SYSCALL--ioctl\n");
     rc = handle_syscall (&if_cmd.syscall_cmd);
+    break;
+  case IF_CMD_SWITCHPID:
+    DB_PRINTK (KERN_ALERT "IF_CMD_SWITCHPID--ioctl\n");
+    rc = handle_switchpid (&if_cmd.switchpid_cmd);
+    break;
+  case IF_CMD_ATTACH:
+    DB_PRINTK (KERN_ALERT "IF_CMD_ATTACH--ioctl\n");
+    rc = handle_attach (&if_cmd.attach_cmd);
     break;
   default:
     rc = -EINVAL;

@@ -1,3 +1,11 @@
+Thu Aug  2 10:01:26 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-utrace-if.c
+	* udb-response.c:  Removed switchpid and attach response code.
+	* udb.c:
+	* udb-text-ui.c:  Changed switchpid, attach, and watch from
+	write() to ioctl() methods.
+
 Tue Jul 31 13:18:15 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-i386.c: Added various free() and regfree() stuff for clean

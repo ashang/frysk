@@ -200,13 +200,11 @@ typedef enum {
   IF_RESP_SIGNAL_DATA,			//  2
   IF_RESP_EXIT_DATA,			//  3
   IF_RESP_DEATH_DATA,			//  4
-  IF_RESP_SWITCHPID_DATA,		//  5
-  IF_RESP_SYSCALL_ENTRY_DATA,		//  6
-  IF_RESP_SYSCALL_EXIT_DATA,		//  7
-  IF_RESP_EXEC_DATA,			//  8
-  IF_RESP_ATTACH_DATA,			//  9
-  IF_RESP_QUIESCE_DATA,			// 10
-  IF_RESP_SYNC_DATA			// 11
+  IF_RESP_SYSCALL_ENTRY_DATA,		//  5
+  IF_RESP_SYSCALL_EXIT_DATA,		//  6
+  IF_RESP_EXEC_DATA,			//  7
+  IF_RESP_QUIESCE_DATA,			//  8
+  IF_RESP_SYNC_DATA			//  9
 } if_resp_e; 
 
 typedef struct {
@@ -255,26 +253,12 @@ typedef struct {
   long data_length;
 } exec_resp_s;
 
-typedef struct {
-  long type;
-  long utraced_pid;
-  int  okay;
-} attach_resp_s;
-
-typedef struct {
-  long type;
-  long utraced_pid;
-  int  okay;
-} switchpid_resp_s;
-
 typedef union {
   long type;
   clone_resp_s		clone_resp;
   signal_resp_s		signal_resp;
-  attach_resp_s		attach_resp;
   death_resp_s		death_resp;
   exit_resp_s		exit_resp;
-  switchpid_resp_s	switchpid_resp;
   syscall_resp_s	syscall_resp;
   exec_resp_s		exec_resp;
   quiesce_resp_s	quiesce_resp;
@@ -312,6 +296,8 @@ int utracer_get_mem (long pid,
 		     void ** mem_p,
 		     unsigned long * actual_length);
 int utracer_get_pids (long * nr_pids, long ** pids);
+int utracer_switch_pid (long pid);
+int utracer_attach (long pid, long quiesce, long exec_quiesce);
 int utracer_get_regs (long pid, long regset, void ** regsinfo,
 		      unsigned int * nr_regs_p, unsigned int * reg_size_p);
 int utracer_set_syscall (short which, short cmd, long pid, long syscall);

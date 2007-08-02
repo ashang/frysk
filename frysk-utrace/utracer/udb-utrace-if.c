@@ -43,25 +43,6 @@ unregister_utracer(pid_t pid)
 }
 
 void
-utrace_switchpid_if (long pid)
-{
-  switchpid_cmd_s switchpid_cmd = {IF_CMD_SWITCHPID,
-				   (long)udb_pid, pid};
-  ssize_t sz = write (utracer_cmd_file_fd, &switchpid_cmd,
-		      sizeof(switchpid_cmd));
-  if (-1 == sz) uerror ("Writing switchpid command");
-}
-
-void
-utrace_attach_if (long pid, long quiesce, long exec_quiesce)
-{
-  attach_cmd_s attach_cmd =
-    {IF_CMD_ATTACH, (long)udb_pid, pid, quiesce, exec_quiesce};
-  ssize_t sz = write (utracer_cmd_file_fd, &attach_cmd, sizeof(attach_cmd));
-  if (-1 == sz) uerror ("Writing attach command");
-}
-
-void
 utrace_detach_if (long pid)
 {
   attach_cmd_s attach_cmd = {IF_CMD_DETACH, (long)udb_pid, pid, 0};

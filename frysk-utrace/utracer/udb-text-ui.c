@@ -122,22 +122,24 @@ syscall_fcn(char ** saveptr)
 static int
 watch_fcn(char ** saveptr)
 {
+  int rc;
   long pid = -1;
   char * pid_c = strtok_r (NULL, " \t", saveptr);
   pid = pid_c ? atol (pid_c) : current_pid;
-  if (-1 != pid) utrace_attach_if (pid, 0, 0);
-  else fprintf (stderr, "\twatch requires an argument\n");
+  rc = utracer_attach (pid, 0, 0);
+  if (0 != rc) uerror ("watch");
   return 1;
 }
 
 static int
 attach_fcn(char ** saveptr)
 {
+  int rc;
   long pid = -1;
   char * pid_c = strtok_r (NULL, " \t", saveptr);
   pid = pid_c ? atol (pid_c) : current_pid;
-  if (-1 != pid) utrace_attach_if (pid, 1, 0);
-  else fprintf (stderr, "\tattach requires an argument\n");
+  rc = utracer_attach (pid, 1, 0);
+  if (0 != rc) uerror ("attach");
   return 1;
 }
 
@@ -187,11 +189,17 @@ step_fcn (char ** saveptr)
 static int
 switchpid_fcn (char ** saveptr)
 {
+  int rc;
   long pid;
   char * pid_c = strtok_r (NULL, " \t", saveptr);
   if (pid_c) {
     pid = atol (pid_c);
-    utrace_switchpid_if (pid, 0);
+    rc = utracer_switch_pid (pid);
+    if (0 == rc) {
+      current_pid = pid;
+      set_prompt();
+    }
+    else uerror ("switchpid");
   }
   else fprintf (stderr, "\tswitchpid requires an argument\n");
   return 1;
@@ -623,6 +631,8 @@ text_ui_init()
 
   create_cmd_hash_table();
   create_sys_hash_table();
+
+  asprintf (&prompt, "udb >");
 
   set_prompt();
 }
