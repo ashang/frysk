@@ -77,7 +77,8 @@
         <replaceable>executable</replaceable>
       </arg>
        <arg choice="opt">
-        <option>-p <replaceable>pid,...</replaceable></option>
+        <replaceable>core</replaceable>
+        <replaceable>execFile</replaceable>
       </arg>
       <!-- arg choice="opt">
         <option>-list of options</option>

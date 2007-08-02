@@ -1,3 +1,8 @@
+2007-08-02  Nurdin Premji  <npremji@redhat.com>
+
+	* fhpd.xml: Updated.
+	* fstack.xml: Fixed bug reporting website.
+
 2007-08-02  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestFdebuginfo.java: Updated.
