@@ -280,9 +280,9 @@
 //   foo:
 
 #if defined __i386__
-#  define ADD(DEST_REG, SOURCE_REG) addl $DEST_REG, SOURCE_REG
+#  define ADD(DEST_REG, SOURCE_REG) addl DEST_REG, SOURCE_REG
 #elif defined __x86_64__
-#  define ADD(DEST_REG, SOURCE_REG) addq $DEST_REG, SOURCE_REG
+#  define ADD(DEST_REG, SOURCE_REG) addq DEST_REG, SOURCE_REG
 //#elif defined __powerpc__
 //#  define ADD(DEST_REG, SOURCE_REG)
 //#elif defined __powerpc64__
@@ -292,9 +292,9 @@
 #endif
 
 #if defined __i386__
-#  define SUB(DEST_REG, SOURCE_REG) subl $DEST_REG, SOURCE_REG
+#  define SUB(DEST_REG, SOURCE_REG) subl DEST_REG, SOURCE_REG
 #elif defined __x86_64__
-#  define SUB(DEST_REG, SOURCE_REG) subq $DEST_REG, SOURCE_REG
+#  define SUB(DEST_REG, SOURCE_REG) subq DEST_REG, SOURCE_REG
 //#elif defined __powerpc__
 //#  define SUB(DEST_REG, SOURCE_REG)
 //#elif defined __powerpc64__
@@ -700,6 +700,8 @@
 	.cfi_startproc; \
 	.cfi_def_cfa rsp, 0; \
 	.cfi_return_column rax
+#else
+#  warning "No frameless function beginning instructions defined"
 #endif
 
 #ifdef __i386__
@@ -708,6 +710,8 @@
 #elif defined __x86_64__
 #define FRAMELESS_ADJ_RETURN(REG) \
 	.cfi_register rax, REG
+#else
+#  warning "No frameless function return adjustment defined"
 #endif
 
 #if defined __i386__
@@ -716,6 +720,8 @@
 #elif defined __x86_64__
 #define FRAMELESS_FUNCTION_END(FUNC) \
 	.cfi_endproc
+#else
+#  warning "No frameless function ending instructions defined"
 #endif
 
 

@@ -1,3 +1,12 @@
+2007-08-02  Mike Cvet  <mcvet@redhat.com
+
+	* frysk-asm.h (ADD): Fixed syntax error.
+	(SUB): Ditto.
+	(FRAMELESS_FUNCTION_BEGIN): Added warning for currently
+	unsupported architectures.
+	(FRAMELESS_ADJ_RETURN): Ditto.
+	(FRAMELESS_FUNCTION_END): Ditto.
+
 2007-08-02  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-util.h: Copied to here from
