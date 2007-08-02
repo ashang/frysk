@@ -8,6 +8,8 @@
 	(fourth): New function.
 	(third): Ditto.
 	(second): Now makes function call to third().
+	
+	* funit-frameless.S (bar): Added new token for new frameless test.
 
 2007-08-02  Andrew Cagney  <cagney@redhat.com>
 
