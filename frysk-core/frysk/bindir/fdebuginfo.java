@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright  2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -74,23 +74,29 @@ public final class fdebuginfo
     for (int i = 0; i < modules.length; i++)
       {
         DwflModule mod = modules[i];  
+        String name = mod.getName();
+        
+        // Check for valid executables
+        if (name.charAt(0)=='/')
+          {              
+            // Ignore non-binary modules
+            if (mod.getElf()==null)  
+              break;
+            
+            dInfoOut.append(mod.getName());   
+            dInfoOut.append(" ");
 
-        String mName = mod.getName();
-
-        // Ensure valid Dwfl Modules names 
-        if ( mName.charAt(0) == '/' )
-        {              
-          String path = mod.getDebuginfo();
-          // If path is non empty, append to buffer
-          if (!path.equals(""))
-            {
-              dInfoOut.append(mod.getName());  
-              dInfoOut.append(" ");        
-              dInfoOut.append(path);  
-              dInfoOut.append("\n"); 
-            }
+            String path = mod.getDebuginfo();
+            // Case where debuginfo not found
+            if (path==null) 
+              dInfoOut.append("---"); 
+            // Debuginfo found
+            else
+              dInfoOut.append(path); 
+            dInfoOut.append("\n"); 
          }
       }  
+    
     System.out.print (dInfoOut.toString());    
   }
    

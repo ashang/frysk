@@ -1,3 +1,9 @@
+2007-08-02  Teresa Thomas  <tthomas@redhat.com>
+
+	* DwflModule.java (getDebuginfo): Documentation updated.
+	* cni/DwflModule.cxx (getDebuginfo): Return NULL instead of ""
+	  when debuginfo not found.
+
 2007-07-31  Teresa Thomas  <tthomas@redhat.com>
 
 	* DwflModule.java (getDebuginfo): Added.	

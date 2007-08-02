@@ -107,9 +107,9 @@ public class DwflModule
     public native void setUserData(Object data);
     
     /**
-     * Get the Debuginfo path for DwflModule
+     * Get the debuginfo path for DwflModule
      * 
-     * @return path to debuginfo package, or string "---" if not found, or "" if non-binary module 
+     * @return path to debuginfo package if found, NULL otherwise 
      */
     public native String getDebuginfo();
 }

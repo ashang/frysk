@@ -173,14 +173,15 @@ lib::dwfl::DwflModule::getDebuginfo()
 {
   // Filter out non-binary modules
   if (module_getelf() == NULL)
-    return JvNewStringUTF ("");
-	
+  {    
+    return NULL;
+  }	
   Dwarf_Addr bias;
 
   if (dwfl_module_getdwarf (DWFL_MODULE_POINTER, &bias) == NULL)
   {
     // Case where debuginfo not installed or available
-    return JvNewStringUTF("---");
+    return NULL;
   }
   
   // Get the path to debuginfo file
@@ -194,5 +195,5 @@ lib::dwfl::DwflModule::getDebuginfo()
       return JvNewStringUTF(debuginfo_fname); 
     }
 
-  return JvNewStringUTF("Debuginfo present in executable");                 	               		      
+  return getName();                 	               		      
 }    
