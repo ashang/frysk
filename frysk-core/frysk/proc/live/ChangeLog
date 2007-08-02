@@ -1,3 +1,23 @@
+2007-08-02  Mark Wielaard  <mwielaard@redhat.com>
+
+	* AddressSpaceByteBuffer.java (mem): New field.
+	(pokesRequest): Likewise.
+	(AddressSpaceByteBuffer): Initialize mem and pokesRequest.
+	(PeeksRequest.peek): New method.
+	(PeeksRequest.execute): use peek().
+	(PeeksRequest.request): Likewise.
+	(PokesRequest): New inner class.
+	(poke): New method.
+	* LinuxTask.java (getRawMemory): Use AddressSpaceByteBuffer.
+	* LogicalMemoryBuffer.java (poke): New methods marked as unsupported.
+	* MemorySpaceByteBuffer.java: Removed.
+	* RegisterSetByteBuffer.java (peek): Use System.arraycopy().
+	(poke): New method.
+	* TestMemorySpaceByteBuffer.java: Removed.
+	* TestByteBuffer.java: Merged in TestMemorySpaceByteBuffer tests,
+	made test more generic to test all possible buffers, add bulk put
+	tests.
+
 2007-07-30  Mark Wielaard  <mwielaard@redhat.com>
 
 	* AddressSpaceByteBuffer.java (Request): Make length and offset ints.

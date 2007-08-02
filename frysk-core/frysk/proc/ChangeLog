@@ -1,3 +1,11 @@
+2007-08-02  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Breakpoint.java (set): Use raw memory and bulk put method.
+	(reset): Likewise.
+	* BreakpointAddresses.java: Make public.
+	* Instruction.java (setupExecuteOutOfLine): use raw memory and
+	bulk put method.
+
 2007-08-01  Andrew Cagney  <cagney@redhat.com>
 
 	* TestSyscallSignal.java (testIt): Mark as unresolved.

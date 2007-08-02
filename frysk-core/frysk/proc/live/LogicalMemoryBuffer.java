@@ -127,7 +127,17 @@ class LogicalMemoryBuffer extends AddressSpaceByteBuffer
 	return super.peek(index + r, bytes, offset + r, length - r) + r;
       }
   }
+
+  protected void poke (long index, int value)
+  {
+    throw new UnsupportedOperationException("read only memory buffer");
+  }
   
+  protected int poke(long index, byte[] bytes, int offset, int length)
+  {
+    throw new UnsupportedOperationException("read only memory buffer");
+  }
+
   protected ByteBuffer subBuffer(ByteBuffer parent,
 				 long lower, long upper)
   {

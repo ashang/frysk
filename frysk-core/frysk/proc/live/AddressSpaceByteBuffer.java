@@ -40,7 +40,9 @@
 package frysk.proc.live;
 
 import inua.eio.ByteBuffer;
+import frysk.sys.Errno;
 import frysk.sys.Ptrace.AddressSpace;
+import frysk.sys.proc.Mem;
 import frysk.event.Request;
 import frysk.proc.Manager;
 
@@ -49,6 +51,9 @@ public class AddressSpaceByteBuffer
 {
     protected final AddressSpace addressSpace;
     protected final int pid;
+
+    // Direct files access if possible, or null otherwise.
+    final Mem mem;
 
     protected AddressSpaceByteBuffer (int pid, AddressSpace addressSpace,
 				    long lowerExtreem, long upperExtreem)
@@ -59,6 +64,13 @@ public class AddressSpaceByteBuffer
 	peekRequest = new PeekRequest();
 	pokeRequest = new PokeRequest();
 	peeksRequest = new PeeksRequest();
+	pokesRequest = new PokesRequest();
+
+	if (addressSpace == AddressSpace.TEXT
+	    || addressSpace == AddressSpace.DATA)
+	  mem = new Mem(pid);
+	else
+	  mem = null;
     }
     public AddressSpaceByteBuffer (int pid, AddressSpace addressSpace)
     {
@@ -137,15 +149,34 @@ public class AddressSpaceByteBuffer
 	{
 	    super(Manager.eventLoop);
 	}
+
+        private int peek(long index, byte[] bytes, int offset, int length)
+	{
+	  if (mem != null)
+	    {
+	      try
+		{
+		  return mem.pread(index, bytes, offset, length);
+		}
+	      catch (Errno e)
+		{
+		  // try again through address space.
+		}
+	    }
+
+	  return addressSpace.peek(pid, index, length, bytes, offset);
+	}
+
 	public void execute ()
 	{
-	    length = addressSpace.peek(pid, index, length, bytes, offset);
+	  length = peek(index, bytes, offset, length);
 	}
+
 	public int request (long index, byte[] bytes,
 			    int offset, int length)
 	{
 	    if (isEventLoopThread())
-		return addressSpace.peek(pid, index, length, bytes, offset);
+	      return peek(index, bytes, offset, length);
 	    else synchronized (this) {
 		this.index = index;
 		this.bytes = bytes;
@@ -160,6 +191,67 @@ public class AddressSpaceByteBuffer
     protected int peek (long index, byte[] bytes, int offset, int length)
     {
 	return peeksRequest.request(index, bytes, offset, length);
+    }
+
+ 
+    private class PokesRequest
+      extends Request
+    {
+      private long index;
+      private int length;
+      private int offset;
+      private byte[] bytes;
+
+      PokesRequest()
+      {
+	super(Manager.eventLoop);
+      }
+
+      private int poke(long index, byte[] bytes, int offset, int length)
+      {
+	if (mem != null)
+	  {
+	    try
+	      {
+		return mem.pwrite(index, bytes, offset, length);
+	      }
+	    catch (Errno e)
+	      {
+		// try again through address space.
+	      }
+	  }
+	
+	// We lose here since AddressSpace isn't optimized for bulk poke.
+	for (int i = offset; i < length; i++)
+	  addressSpace.poke(pid, index + i, bytes[i]);
+	return length;
+      }
+
+      public void execute ()
+      {
+	length = poke(index, bytes, offset, length);
+      }
+
+      public int request (long index, byte[] bytes,
+			  int offset, int length)
+      {
+	if (isEventLoopThread())
+	  return poke(index, bytes, offset, length);
+	else synchronized (this) {
+	  this.index = index;
+	  this.bytes = bytes;
+	  this.offset = offset;
+	  this.length = length;
+	  request();
+	  return length;
+	}
+      }
+    }
+
+    private final PokesRequest pokesRequest;
+    protected int poke(long index, byte[] bytes, int off, int len)
+    {
+      return pokesRequest.request(index, bytes, off, len);
     }
 
     protected ByteBuffer subBuffer (ByteBuffer parent, long lowerExtreem,

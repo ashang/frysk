@@ -79,7 +79,7 @@ public class BreakpointAddresses
   /**
    * Package private constructor used by the Proc when created.
    */
-  BreakpointAddresses(Proc proc)
+  public BreakpointAddresses(Proc proc)
   {
     this.proc = proc;
     map = new HashMap();

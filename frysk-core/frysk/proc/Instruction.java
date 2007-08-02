@@ -140,10 +140,9 @@ public class Instruction
    */
   public void setupExecuteOutOfLine(Task task, long pc, long address)
   {
-    ByteBuffer buffer = task.getMemory();
+    ByteBuffer buffer = task.getRawMemory();
     buffer.position(address);
-    for (int i = 0; i < instr.length; i++)
-      buffer.putByte(instr[i]);
+    buffer.put(instr);
     task.getIsa().setPC(task, address);
   }
 

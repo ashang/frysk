@@ -138,7 +138,7 @@ public class Breakpoint implements Comparable
    */
   private void set(Task task)
   {
-    ByteBuffer buffer = task.getMemory();
+    ByteBuffer buffer = task.getRawMemory();
     Isa isa = task.getIsa();
     Instruction bpInstruction = isa.getBreakpointInstruction();
     
@@ -147,8 +147,7 @@ public class Breakpoint implements Comparable
     // Put in the breakpoint.
     byte[] bs = bpInstruction.getBytes();
     buffer.position(address);
-    for (int index = 0; index < bs.length; index++)
-      buffer.putByte(bs[index]);
+    buffer.put(bs);
   }
 
   /**
@@ -174,7 +173,7 @@ public class Breakpoint implements Comparable
    */
   private void reset(Task task)
   {
-    ByteBuffer buffer = task.getMemory();
+    ByteBuffer buffer = task.getRawMemory();
     buffer.position(address);
     
     Isa isa = task.getIsa();
@@ -185,8 +184,7 @@ public class Breakpoint implements Comparable
 
     // Only need to put back the part of the original instruction
     // covered by the breakpoint instruction bytes.
-    for (int index = 0; index < bp.length; index++)
-      buffer.putByte(bs[index]);
+    buffer.put(bs, 0, bp.length);
   }
 
   /**

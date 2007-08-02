@@ -1,3 +1,9 @@
+2007-08-02  Mark Wielaard  <mwielaard@redhat.com>
+
+	* ByteBuffer.java (put(byte[],int,int)): New
+	bulk put method.
+	(put(byte[])): likewise.
+
 2007-07-30  Mark Wielaard  <mwielaard@redhat.com>
 
 	* eio/ByteBuffer.java (peek): Make off and len ints.

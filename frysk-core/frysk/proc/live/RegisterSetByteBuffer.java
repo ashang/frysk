@@ -137,13 +137,19 @@ public class RegisterSetByteBuffer
 	setRegs();
     }
   
-    protected long peek (long index, byte[] bytes, long off, long len) 
+    protected int peek (long index, byte[] bytes, int off, int len) 
     {
 	getRegs();
-	for (int i = 0; i < len; i++) {
-	    bytes[(int)off + i] = this.bytes[(int)index + i];
-	}
+	System.arraycopy(this.bytes, (int) index, bytes, off, len);
 	return len;
+    }
+
+    protected int poke (long index, byte[] bytes, int off, int len)
+    {
+      getRegs();
+      System.arraycopy(bytes, off, this.bytes, (int) index, len);
+      setRegs();
+      return len;
     }
   
     protected ByteBuffer subBuffer (ByteBuffer parent, long lowerExtreem,

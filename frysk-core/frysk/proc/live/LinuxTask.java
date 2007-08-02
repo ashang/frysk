@@ -91,13 +91,14 @@ public class LinuxTask
 
 
     /**
-     * Return the raw memory byte-buffer.
+     * Return the raw memory byte-buffer. This is the TEXT/DATA area.
      */
     public ByteBuffer getRawMemory ()
     {
 	logger.log(Level.FINE, "Begin fillMemory\n", this);
 	ByteOrder byteOrder = getIsa().getByteOrder();
-	ByteBuffer memory = new MemorySpaceByteBuffer(getTid());
+	ByteBuffer memory = new AddressSpaceByteBuffer(getTid(),
+						       AddressSpace.DATA);
 	memory.order(byteOrder);
 	logger.log(Level.FINE, "End fillMemory\n", this); 
 	return memory;

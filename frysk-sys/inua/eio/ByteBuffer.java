@@ -372,6 +372,21 @@ public abstract class ByteBuffer
     return get(dst, 0, dst.length);
   }
 
+  public ByteBuffer put (byte[] src, int off, int len)
+    throws BufferUnderflowException
+  {
+    if (ULong.GT(len, remaining()))
+      throw new BufferUnderflowException();
+    poke(cursor, src, off, len);
+    cursor += len;
+    return this;
+  }
+
+  public final ByteBuffer put (byte[] src) throws BufferUnderflowException
+  {
+    return put(src, 0, src.length);
+  }
+
   protected ByteOrdered byteOrdered;
 
   public final ByteOrder order ()
