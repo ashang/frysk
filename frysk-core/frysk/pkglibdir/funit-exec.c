@@ -191,6 +191,13 @@ main (int argc, char *argv[], char *envp[])
   // Lock a mutex so that nothing can advance.
   OK (pthread_mutex_lock, (&lock));
 
+  // Make certain that all signal masks are correctly set.
+  sigset_t mask;
+  sigemptyset(&mask);
+  sigaddset(&mask, SIGINT);
+  sigaddset(&mask, SIGUSR1);
+  sigprocmask(SIG_UNBLOCK, &mask, NULL);
+
   trace ("creating %d threads", nr_threads);
   for (i = 0; i < nr_threads; i++) {
     pthread_t p;
