@@ -40,6 +40,7 @@
 package frysk.value;
 
 import lib.dwfl.BaseTypes;
+import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
 /**
@@ -639,7 +640,7 @@ public class ArithmeticType
     return returnVar;
   }
 
-  public String toString (Value v)
+  public String toString (Value v, ByteBuffer b)
   {
     switch (typeId)
     {
@@ -658,6 +659,10 @@ public class ArithmeticType
     default:
       return "";
     }
+  }
+  
+  public String toString (Value v) {
+      return this.toString (v, null);
   }
 }
 

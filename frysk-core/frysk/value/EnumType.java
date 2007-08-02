@@ -39,6 +39,7 @@
 
 package frysk.value;
 
+import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
 import java.util.ArrayList;
@@ -96,9 +97,13 @@ public class EnumType
     return new Iterator();
   }
 
-  public String toString (Value v)
+  public String toString (Value v, ByteBuffer b)
   {
     return toString();
+  }
+  
+  public String toString (Value v) {
+      return this.toString (v, null);
   }
   
   public String toString ()

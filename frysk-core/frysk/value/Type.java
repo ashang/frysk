@@ -40,6 +40,7 @@
 
 package frysk.value;
 
+import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
 /**
@@ -104,6 +105,8 @@ public abstract class Type
   {
     return name;
   }
+
+  public abstract String toString (Value v, ByteBuffer b);
 
   public abstract String toString (Value v);
 

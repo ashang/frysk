@@ -61,7 +61,11 @@ public class ClassType
   ArrayList masks;	// Integer mask for bitfields
   
   ArrayList baseClass;
+  
+  ArrayList accessibility;	// DW_AT_accessibility
 
+  boolean inheritance;	// DW_AT_inheritance
+  
   /**
    * Iterate through the class types.
    */
@@ -193,7 +197,7 @@ public class ClassType
     return v;
   }
   
-  public String toString (Value v)
+  public String toString (Value v, ByteBuffer b)
   {
     StringBuffer strBuf = new StringBuffer();
     ClassIterator e = iterator(v);
@@ -202,14 +206,18 @@ public class ClassType
       {
 	Value val = (Value)e.next();
 	if (val.getType() instanceof frysk.value.FunctionType == true)
-	  strBuf.append(e.nextName() + "," );
+	  continue;
 	else {
 	  strBuf.append(e.nextName() + "=");
-	  strBuf.append(val + ",");
+	  strBuf.append(val.toString(b) + ",\n ");
 	}
       }
-    strBuf.replace(strBuf.length() - 1, strBuf.length(), "}");
+    strBuf.replace(strBuf.length()-1, strBuf.length(), "}");
     return strBuf.toString();
+  }
+  
+  public String toString (Value v) {
+      return this.toString (v, null);
   }
   
   public String getName ()
@@ -220,15 +228,45 @@ public class ClassType
         strBuf.append(this.name);
         return strBuf.toString();
       }
-    strBuf.append("{");
+    boolean putBrace = true;
+    int access, previousAccess = 0;
     for (int i = 0; i < this.types.size(); i++)
       {
-        if (((Type)this.types.get(i)).isTypedef())
-          strBuf.append(((Type)this.types.get(i)).name + " ");
+	Type memberType = ((Type)this.types.get(i));
+	access = ((Integer)this.accessibility.get(i)).intValue();
+	if (memberType instanceof frysk.value.ClassType == true
+	    && ((ClassType)memberType).inheritance == true) {
+	    
+	    switch (access)
+	    {
+	    case 1: strBuf.append("public "); break;
+	    case 2: strBuf.append("protected "); break;
+	    case 3: strBuf.append("private "); break;
+	    }
+	    strBuf.append(memberType.name + ", ");
+	    continue;
+	}
+	if (putBrace) {
+	    if (strBuf.length() > 5)	// rewind to extra ", "
+		strBuf.delete(strBuf.length()-2, strBuf.length());
+	    strBuf.append(" {\n  ");
+	    putBrace = false;
+	}
+	if (access != previousAccess) {
+	    previousAccess = access;
+	    switch (access)
+	    {
+	    case 1: strBuf.append("public:\n  "); break;
+	    case 2: strBuf.append("protected:\n  "); break;
+	    case 3: strBuf.append("private:\n  "); break;
+	    }
+	}
+	if (memberType.isTypedef())
+          strBuf.append(memberType.name);
         else
-          strBuf.append(((Type)this.types.get(i)).getName() + " ");
-        if (((Type) this.types.get(i)) instanceof frysk.value.FunctionType == false)
-            strBuf.append((String) this.names.get(i));
+          strBuf.append(memberType.getName());
+        if (memberType instanceof frysk.value.FunctionType == false)
+            strBuf.append(" " + (String) this.names.get(i));
 	int mask = ((Integer)this.masks.get(i)).intValue();
 	int bitCount = 0;
 	// ??? substitute numberOfBits() for 1.5
@@ -240,9 +278,9 @@ public class ClassType
 	  }
 	if (bitCount > 0)
 	  strBuf.append(":" + bitCount);
-	strBuf.append(";");
+	strBuf.append(";\n  ");
       }
-    strBuf.append("}");
+    strBuf.replace(strBuf.length(), strBuf.length(), "}");
     return strBuf.toString();
   }
 
@@ -260,15 +298,18 @@ public class ClassType
     offsets = new ArrayList();
     masks = new ArrayList();
     baseClass = new ArrayList();
+    accessibility = new ArrayList();
+    inheritance = false;
   }
 
-  public void addMember (Type member, String name, long offset, int mask)
+  public void addMember (Type member, String name, long offset, int mask, int access)
   {
     types.add(member);
     names.add(name);
     offsets.add(new Long(offset));
     masks.add(new Integer(mask));
     baseClass.add(new Boolean(false));
+    accessibility.add(new Integer(access));
   }
 
   public void setBaseClass ()
@@ -281,8 +322,12 @@ public class ClassType
     this.size = size;
   }
   
-  public Value add (Value var1, Value var2)
-      throws InvalidOperatorException
+  public void setInheritance(boolean inheritance) {
+    this.inheritance = inheritance;
+  }
+
+public Value add (Value var1, Value var2)
+  throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }

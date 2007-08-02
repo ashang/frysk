@@ -1,3 +1,7 @@
+2007-08-02  Stan Cox  <scox@redhat.com>
+
+	* DebugInfoEvaluator.java (getClassType): Handle DW_AT_accessibility.
+
 2007-08-01  Nurdin Premji  <npremji@redhat.com>
 
 	* DebugInfoEvaluator.java (AccessMemory.getBufferAddr): 

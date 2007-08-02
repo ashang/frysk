@@ -203,7 +203,7 @@ public class ArrayType
 	return v;
     }
     
-    public String toString (Value v)
+    public String toString (Value v, ByteBuffer b)
     {
       StringBuffer strBuf = new StringBuffer();
       ArrayIterator e = iterator(v);
@@ -217,6 +217,7 @@ public class ArrayType
 	for (int i = 1; i <= e.dimCount; i++)
 	  strBuf.append("{");
       boolean firstTime = true;
+      boolean eos = false;
       while (e.hasNext())
 	{
 	  if (!isString)
@@ -245,8 +246,11 @@ public class ArrayType
 	  else	
 	    {
 	      char ch = (char)((Value)e.next()).getByte();
-	      if (ch != 0)
-		strBuf.append(ch);
+	      if (eos == false)
+		  if (ch == 0)
+		      eos = true;
+		  else
+		      strBuf.append(ch);
 	    }
 	}
       if (isString)
@@ -255,6 +259,10 @@ public class ArrayType
 	for (int i = 1; i <= e.dimCount; i++)
 	  strBuf.append("}");
       return strBuf.toString();
+    }
+
+    public String toString (Value v) {
+	return this.toString (v, null);
     }
 
     public String getName ()

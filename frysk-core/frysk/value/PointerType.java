@@ -40,6 +40,8 @@
 
 package frysk.value;
 
+import lib.dwfl.BaseTypes;
+import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
 
@@ -56,9 +58,27 @@ public class PointerType
       return type;
     }
     
-    public String toString (Value v)
+    public String toString (Value v, ByteBuffer b)
     {
-	return "0x" + Long.toHexString(v.getLong());
+	StringBuffer strBuf = new StringBuffer();
+	long addr = v.getLong();
+	strBuf.append("0x" + Long.toHexString(addr));
+	if (getType().typeId == BaseTypes.baseTypeByte) {
+	    char ch= (char)b.getByte(addr);
+	    strBuf.append(" \"" + ch);
+	    while (ch != 0)
+	    {
+		addr+= 1;
+		ch= (char)b.getByte(addr);
+		strBuf.append(ch);
+	    }
+	    strBuf.append("\"");
+	}
+	return strBuf.toString();
+    }
+
+    public String toString (Value v) {
+	return this.toString (v, null);
     }
 
     public String getName ()

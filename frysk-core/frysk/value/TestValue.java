@@ -293,11 +293,11 @@ public class TestValue
     // Also separate tests for 0 dimensioned arrays et.al.
     ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
     ClassType classType = new ClassType(byteOrder, null);
-    classType.addMember(intType, "alpha", 0, 0);
-    classType.addMember(intType, "beta", 4, 0);
-    classType.addMember(shortType, "gamma", 8, 0);
-    classType.addMember(intType, "iota", 8, 0x0000ff00);
-    classType.addMember(intType, "epsilon", 8, 0x000000ff);
+    classType.addMember(intType, "alpha", 0, 0, 0);
+    classType.addMember(intType, "beta", 4, 0, 0);
+    classType.addMember(shortType, "gamma", 8, 0, 0);
+    classType.addMember(intType, "iota", 8, 0x0000ff00, 0);
+    classType.addMember(intType, "epsilon", 8, 0x000000ff, 0);
     int [] intbuf = {0x1020304, 0x5060708, 0x9101112};
     byte [] buf = new byte [intbuf.length * 4];
     for (int i = 0; i < intbuf.length; i++)

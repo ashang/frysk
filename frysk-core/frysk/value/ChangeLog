@@ -1,3 +1,12 @@
+2007-08-02  Stan Cox  <scox@redhat.com>
+
+	* Type.java (toString): Add ByteBuffer parameter.  Change all callers.
+	* PointerType.java (toString): Dereference char*
+	* ClassType.java (accessibility, inheritance): New.
+	(getName): Display using a C like syntax.
+	(addMember): Add accessibility.
+	* ArrayType.java (toString): Look for terminating '\0'.
+
 2007-07-16  Andrew Cagney  <cagney@redhat.com>
 
 	* Value.java: Update; lib.dw and lib.elf merged into lib.dwfl.

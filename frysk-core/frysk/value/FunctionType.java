@@ -39,6 +39,7 @@
 
 package frysk.value;
 
+import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
 import java.util.ArrayList;
@@ -56,9 +57,13 @@ public class FunctionType
   ArrayList parmNames;	// Name of parameter
   
    
-  public String toString (Value v)
+  public String toString (Value v, ByteBuffer b)
   {
     return "0x" + Long.toHexString(v.getLong());
+  }
+  
+  public String toString (Value v) {
+      return this.toString (v, null);
   }
   
   public String getName ()

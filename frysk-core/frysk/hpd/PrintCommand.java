@@ -39,6 +39,8 @@
      
 package frysk.hpd;
 
+import inua.eio.ByteBuffer;
+
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -154,7 +156,10 @@ class PrintCommand
 	    cli.outWriter.println(Integer.toString((int)result.longValue(),
 						   outputFormat) + 
 				  " '" + result.toString() + "'");
-	else
-	    cli.outWriter.println(result.toString());
+	else {
+	    ByteBuffer buffer;
+	    buffer = cli.task.getMemory();
+	    cli.outWriter.println(result.toString(buffer));
+	}
     }
 }

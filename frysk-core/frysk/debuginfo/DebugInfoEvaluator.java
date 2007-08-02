@@ -610,6 +610,7 @@ class DebugInfoEvaluator
           offset = 0;                           // union
         }
         
+        int access = member.getAttrConstant(DwAtEncodings.DW_AT_accessibility_);
         DwarfDie dieType = member.getType();
         DwarfDie memberType = member.getUltimateType();
         Type type;
@@ -622,7 +623,7 @@ class DebugInfoEvaluator
       	if (member.getTag() == DwTagEncodings.DW_TAG_subprogram_)
       	{
       	    Value v = getSubprogramValue(member);
-      	    classType.addMember(v.getType(), member.getName(), offset, 0);
+      	    classType.addMember(v.getType(), member.getName(), offset, 0, access);
       	    continue;
       	}
 
@@ -635,12 +636,12 @@ class DebugInfoEvaluator
         case BaseTypes.baseTypeByte:
         case BaseTypes.baseTypeUnsignedByte:
           classType.addMember(fetchType(haveTypeDef, byteType, dieType.getName()),
-                              member.getName(), offset, 0);
+                              member.getName(), offset, 0, access);
           continue;
         case BaseTypes.baseTypeShort:
         case BaseTypes.baseTypeUnsignedShort:
           classType.addMember(fetchType(haveTypeDef, shortType, dieType.getName()),
-                              member.getName(), offset, 0);
+                              member.getName(), offset, 0, access);
           continue;
         case BaseTypes.baseTypeInteger:
         case BaseTypes.baseTypeUnsignedInteger:
@@ -656,23 +657,24 @@ class DebugInfoEvaluator
               bitOffset = member.getAttrConstant(DwAtEncodings.DW_AT_bit_offset_);
               mask = (0xffffffff >>> (byteSize * 8 - bitSize) << (4 * 8 - bitOffset - bitSize));
             }
-          classType.addMember(type, member.getName(), offset, mask);
+          classType.addMember(type, member.getName(), offset, mask, access);
           continue;
         case BaseTypes.baseTypeLong:
         case BaseTypes.baseTypeUnsignedLong:
           classType.addMember(fetchType(haveTypeDef, longType, dieType.getName()),
-                              member.getName(), offset, 0);
+                              member.getName(), offset, 0, access);
           continue;
         case BaseTypes.baseTypeFloat:
           classType.addMember(fetchType(haveTypeDef, floatType, dieType.getName()),
-                              member.getName(), offset, 0);
+                              member.getName(), offset, 0, access);
           continue;
         case BaseTypes.baseTypeDouble:
           classType.addMember(fetchType(haveTypeDef, doubleType, dieType.getName()),
-                              member.getName(), offset, 0);
+                              member.getName(), offset, 0, access);
           continue;
         }
-        
+
+        // memberType is the ultimate type derived from chasing the thread of types
 	switch (memberType.getTag())
 	{
 	case DwTagEncodings.DW_TAG_structure_type_:
@@ -680,9 +682,11 @@ class DebugInfoEvaluator
           ClassType memberClassType = getClassType(memberType, memberType.getName());
           if (member.getTag() != DwTagEncodings.DW_TAG_inheritance_)
               memberClassType.setTypedef(haveTypeDef);
+          else
+              memberClassType.setInheritance(true);
           typeSize += memberClassType.getSize();
           typeSize += 4 - (typeSize % 4);             // round up to mod 4
-          classType.addMember(memberClassType, memberType.getName(), offset, 0);
+          classType.addMember(memberClassType, memberType.getName(), offset, 0, access);
           continue;
 	}
         
@@ -690,7 +694,7 @@ class DebugInfoEvaluator
         {
           ArrayType memberArrayType = getArrayType(memberType, memberType.getChild());
           typeSize += memberArrayType.getSize();
-          classType.addMember(memberArrayType, member.getName(), offset, 0);
+          classType.addMember(memberArrayType, member.getName(), offset, 0, access);
           continue;
         }
         
@@ -703,7 +707,7 @@ class DebugInfoEvaluator
             if (ptrType == null)
               memberPtrType = new PointerType(byteorder, null, "void*");
             memberPtrType = new PointerType(byteorder, getPointerTarget (ptrType), "*");
-            classType.addMember(memberPtrType, member.getName(), offset, 0);
+            classType.addMember(memberPtrType, member.getName(), offset, 0, access);
             typeSize += memberPtrType.getSize();
             continue;
         }
@@ -1057,7 +1061,8 @@ class DebugInfoEvaluator
           if (parm.getAttrBoolean((DwAtEncodings.DW_AT_artificial_)) == false)
             {
               value = getValue(parm);
-              functionType.addParameter(value.getType(), value.getText());
+              if (value != null)
+        	  functionType.addParameter(value.getType(), value.getText());
         }
       parm = parm.getSibling();
         }
