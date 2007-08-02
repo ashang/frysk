@@ -1,5 +1,9 @@
 2007-08-02  Andrew Cagney  <cagney@redhat.com>
 
+	* TestExamineCommand.java: New file.
+	* ExamineCommand.java: New file.
+	* CLI.java: Add ExamineCommand.
+
 	* PrintCommand.java: Use frysk.value.Format; but minimally.
 
 2007-08-02  Nurdin Premji  <npremji@redhat.com>
