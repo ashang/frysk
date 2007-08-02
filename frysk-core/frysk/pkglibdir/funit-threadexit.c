@@ -12,7 +12,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
-#include "util.h"
+
+#include "funit-util.h"
 
 void
 usage ()

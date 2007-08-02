@@ -47,7 +47,7 @@
 #include <errno.h>
 #include <sys/wait.h>
 
-#include "util.h"
+#include "funit-util.h"
 
 int childPid;
 

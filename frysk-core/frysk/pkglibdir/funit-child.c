@@ -54,7 +54,7 @@
 #include <sys/prctl.h>
 #include <stdarg.h>
 
-#include "util.h"
+#include "funit-util.h"
 
 
 
