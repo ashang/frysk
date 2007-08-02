@@ -41,6 +41,9 @@ package frysk.sys;
 
 import frysk.junit.TestCase;
 import frysk.testbed.Tee;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import frysk.Config;
 
 /**
  * Test creation of a process wired up to a pipe.
@@ -49,6 +52,7 @@ import frysk.testbed.Tee;
 public class TestPipePair
     extends TestCase
 {
+    private static Logger logger = Logger.getLogger("frysk");
     private PipePair pipe;
     public void tearDown ()
     {
@@ -123,5 +127,74 @@ public class TestPipePair
     {
 	pipe = new ChildPipePair (new Tee ());
 	verifyIO ();
+    }
+
+    private String[] funitProcMask = new String[] {
+	Config.getPkgLibFile("funit-procmask").getPath(),
+	"-n",
+	Integer.toString(Sig.HUP.hashCode())
+    };
+
+    /**
+     * Test that a daemon's signal mask is empty.
+     */
+    public void testDaemonMask() {
+	logger.log(Level.FINE, "Masking SIGHUP\n");
+	SignalSet set = new SignalSet(Sig.HUP);
+	set.blockProcMask();
+	assertTrue("SIGHUP masked",
+		   new SignalSet().getProcMask().contains(Sig.HUP));
+	logger.log(Level.FINE, "Creating funit-procmask to check the mask\n");
+	pipe = new DaemonPipePair(funitProcMask);
+	// For a daemon, it isn't possible to capture the processes
+	// exit status; instead read the output and check for the word
+	// "absent".
+	byte[] line = new byte[100];
+	int len = pipe.in.read(line, 0, line.length);
+	assertTrue("found \"absent\"",
+		   new String(line, 0, len).indexOf("absent") >= 0);
+    }
+    /**
+     * Test that a child's signal mask is empty.
+     */
+    public void testChildMask() {
+	logger.log(Level.FINE, "Masking SIGHUP\n");
+	SignalSet set = new SignalSet(Sig.HUP);
+	set.blockProcMask();
+	assertTrue("SIGHUP masked",
+		   new SignalSet().getProcMask().contains(Sig.HUP));
+	logger.log(Level.FINE, "Creating funit-procmask to check the mask\n");
+	pipe = new ChildPipePair(funitProcMask);
+	// Capture the child's output (look for 
+	class ExitStatus extends UnhandledWaitBuilder {
+	    int pid;
+	    boolean signal;
+	    int value;
+	    public void terminated(int pid, boolean signal, int value,
+				   boolean coreDumped) {
+		logger.log(Level.FINE,
+			   "exited with status {0,number,integer}\n",
+			   new Integer(value));
+		this.pid = pid;
+		this.signal = signal;
+		this.value = value;
+	    }
+	    public void unhandled(String reason) {
+		fail(reason);
+	    }
+	}
+	ExitStatus exitStatus = new ExitStatus();
+	logger.log(Level.FINE, "Capturing funit-procmask's exit status\n");
+	Wait.wait(pipe.pid, exitStatus,
+		  new SignalBuilder() {
+		      public void signal(Sig sig) {
+			  fail("unexpected signal " + sig);
+		      }
+		  },
+		  getTimeoutMilliseconds() * 10);
+	// (a timeout will also fail with the below)
+	assertEquals("pid", pipe.pid.hashCode(), exitStatus.pid);
+	assertEquals("signal", false, exitStatus.signal);
+	assertEquals("status", 0, exitStatus.value);
     }
 }

@@ -1,5 +1,8 @@
 2007-08-02  Andrew Cagney  <cagney@redhat.com>
 
+	* TestPipePair.java (testChildMask, testDaemonMask): New tests.
+	* cni/Exec.cxx (execute): Scrub the signal mask.
+
 	* cni/Fork.cxx (spawn): Scrub the signal mask.
 	* TestFork.java: New file.
 

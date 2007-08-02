@@ -41,6 +41,7 @@
 #include <errno.h>
 #include <alloca.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include <gcj/cni.h>
 
@@ -53,6 +54,12 @@ frysk::sys::Exec::execute ()
   // ::fprintf (stderr, "%d exec\n", getpid ());
   char* theFile = ALLOCA_STRING (file);
   char** theArgv = ALLOCA_ARGV (argv);
+  // fprintf(stderr, "exec %s\n", theFile);
+  // Scrub the signal mask.
+  sigset_t mask;
+  sigfillset(&mask);
+  ::sigprocmask(SIG_UNBLOCK, &mask, NULL);
+  // Do the exec.
   errno = 0;
   ::execvp (theFile, theArgv);
   int err = errno;
