@@ -17,6 +17,10 @@
 	(testStepOut): Ditto.
 	(testStepAdvance): Ditto.
 	(testBreakpointing): Ditto.
+	
+	* TestStepping.java (testASMFramelessFunctionCall): New frameless
+	function test.
+	(testASMFramelessFunctionReturn): Ditto.
 
 2007-08-01  Andrew Cagney  <cagney@redhat.com>
 
