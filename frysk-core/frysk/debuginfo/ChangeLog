@@ -1,3 +1,8 @@
+2007-08-03  Nurdin Premji <npremji@redhat.com>
+
+	* DwarfRegisterMapFactory.java: Use the DwarfRegistersX86 and
+	DwarfRegistersX8664 generated enums.
+
 2007-08-02  Stan Cox  <scox@redhat.com>
 
 	* DebugInfoEvaluator.java (getClassType): Handle DW_AT_accessibility.

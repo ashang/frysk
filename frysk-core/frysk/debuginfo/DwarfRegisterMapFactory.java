@@ -39,6 +39,8 @@
 
 package frysk.debuginfo;
 
+import lib.dwfl.DwarfRegistersX86;
+import lib.dwfl.DwarfRegistersX8664;
 import frysk.proc.Isa;
 import frysk.proc.IsaIA32;
 import frysk.proc.IsaX8664;
@@ -62,36 +64,36 @@ public class DwarfRegisterMapFactory {
 class DwarfRegisterIA32 extends RegisterMap {
     
     DwarfRegisterIA32 () {
-	addEntry(IA32Registers.EAX, new Integer(0));
-	addEntry(IA32Registers.ECX, new Integer(1));
-	addEntry(IA32Registers.EDX, new Integer(2));
-	addEntry(IA32Registers.EBX, new Integer(3));
-	addEntry(IA32Registers.ESP, new Integer(4));
-	addEntry(IA32Registers.EBP, new Integer(5));
-	addEntry(IA32Registers.ESI, new Integer(6));
-	addEntry(IA32Registers.EDI, new Integer(7));
+	addEntry(IA32Registers.EAX, new Integer(DwarfRegistersX86.EAX_));
+	addEntry(IA32Registers.ECX, new Integer(DwarfRegistersX86.ECX_));
+	addEntry(IA32Registers.EDX, new Integer(DwarfRegistersX86.EDX_));
+	addEntry(IA32Registers.EBX, new Integer(DwarfRegistersX86.EBX_));
+	addEntry(IA32Registers.ESP, new Integer(DwarfRegistersX86.ESP_));
+	addEntry(IA32Registers.EBP, new Integer(DwarfRegistersX86.EBP_));
+	addEntry(IA32Registers.ESI, new Integer(DwarfRegistersX86.ESI_));
+	addEntry(IA32Registers.EDI, new Integer(DwarfRegistersX86.EDI_));
 
     }
 }
 
 class DwarfRegisterX8664 extends RegisterMap {
     DwarfRegisterX8664() {
-	addEntry(X8664Registers.RAX, new Integer(0));
-	addEntry(X8664Registers.RDX, new Integer(1));
-	addEntry(X8664Registers.RCX, new Integer(2));
-	addEntry(X8664Registers.RBX, new Integer(3));
-	addEntry(X8664Registers.RSI, new Integer(4));
-	addEntry(X8664Registers.RDI, new Integer(5));
-	addEntry(X8664Registers.RBP, new Integer(6));
-	addEntry(X8664Registers.RSP, new Integer(7));
-	addEntry(X8664Registers.R8, new Integer(8));
-	addEntry(X8664Registers.R9, new Integer(9));
-	addEntry(X8664Registers.R10, new Integer(10));
-	addEntry(X8664Registers.R11, new Integer(11));
-	addEntry(X8664Registers.R12, new Integer(12));
-	addEntry(X8664Registers.R13, new Integer(13));
-	addEntry(X8664Registers.R14, new Integer(14));
-	addEntry(X8664Registers.R15, new Integer(15));
-	addEntry(X8664Registers.RIP, new Integer(16));
+	addEntry(X8664Registers.RAX, new Integer(DwarfRegistersX8664.RAX_));
+	addEntry(X8664Registers.RDX, new Integer(DwarfRegistersX8664.RDX_));
+	addEntry(X8664Registers.RCX, new Integer(DwarfRegistersX8664.RCX_));
+	addEntry(X8664Registers.RBX, new Integer(DwarfRegistersX8664.RBX_));
+	addEntry(X8664Registers.RSI, new Integer(DwarfRegistersX8664.RSI_));
+	addEntry(X8664Registers.RDI, new Integer(DwarfRegistersX8664.RDI_));
+	addEntry(X8664Registers.RBP, new Integer(DwarfRegistersX8664.RBP_));
+	addEntry(X8664Registers.RSP, new Integer(DwarfRegistersX8664.RSP_));
+	addEntry(X8664Registers.R8, new Integer(DwarfRegistersX8664.R8_));
+	addEntry(X8664Registers.R9, new Integer(DwarfRegistersX8664.R9_));
+	addEntry(X8664Registers.R10, new Integer(DwarfRegistersX8664.R10_));
+	addEntry(X8664Registers.R11, new Integer(DwarfRegistersX8664.R11_));
+	addEntry(X8664Registers.R12, new Integer(DwarfRegistersX8664.R12_));
+	addEntry(X8664Registers.R13, new Integer(DwarfRegistersX8664.R13_));
+	addEntry(X8664Registers.R14, new Integer(DwarfRegistersX8664.R14_));
+	addEntry(X8664Registers.R15, new Integer(DwarfRegistersX8664.R15_));
+	addEntry(X8664Registers.RIP, new Integer(DwarfRegistersX8664.RIP_));
     }
 }
