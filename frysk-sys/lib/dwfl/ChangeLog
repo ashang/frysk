@@ -1,3 +1,11 @@
+2007-08-03  Petr Machata  <pmachata@redhat.com>
+
+	* Elf.java (getSectionByOffset): Call elf_offscn, not elf_getscn.
+	* ElfSymbolBuilder.java: Removed.
+	* ElfSymbol.java (Builder): Brought in from ElfSymbolBuilder.java.
+	* cni/ElfSymbol.cxx: Changed to reflect that.
+	* ElfDynamic.java, cni/ElfDynamic.cxx: New class.
+
 2007-08-02  Teresa Thomas  <tthomas@redhat.com>
 
 	* DwflModule.java (getDebuginfo): Documentation updated.

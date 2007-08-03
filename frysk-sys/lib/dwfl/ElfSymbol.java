@@ -45,6 +45,12 @@ package lib.dwfl;
 public class ElfSymbol {
     // Constants defined in this class were copied from elf.h.
 
+    public static interface Builder
+    {
+      void symbol (String name, long value, long size, int type, int bind,
+		   int visibility, long shndx);
+    }
+
     // Legal values for `bind' argument of SymbolBuiler.symbol.
     public static int ELF_STB_LOCAL = 0;
     public static int ELF_STB_GLOBAL = 1;
@@ -76,10 +82,10 @@ public class ElfSymbol {
     public static int ELF_STV_PROTECTED = 3;
 
     /**
-     * Calls {@see SymbolBuilder.symbol} with each symbol in given
+     * Calls {@see Builder.symbol} with each symbol in given
      * section.  Only makes sense for .symtab or .dynsym sections.
      */
-    public static void loadFrom(ElfSection section, ElfSymbolBuilder builder)
+    public static void loadFrom(ElfSection section, ElfSymbol.Builder builder)
 	    throws ElfException
     {
 	ElfSectionHeader header = section.getSectionHeader();
@@ -98,5 +104,5 @@ public class ElfSymbol {
 
     protected static native boolean elf_buildsymbol(Elf parent, long data_pointer,
 						    long symbol_index, long str_sect_index,
-						    ElfSymbolBuilder builder);
+						    ElfSymbol.Builder builder);
 }

@@ -38,13 +38,11 @@
 // exception.
 
 #include <gcj/cni.h>
-#include <stdlib.h>
 #include <gelf.h>
-#include <stdio.h>
 
 #include "lib/dwfl/Elf.h"
 #include "lib/dwfl/ElfSymbol.h"
-#include "lib/dwfl/ElfSymbolBuilder.h"
+#include "lib/dwfl/ElfSymbol$Builder.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -56,7 +54,7 @@ lib::dwfl::ElfSymbol::elf_buildsymbol (lib::dwfl::Elf * parent,
 				       jlong data_pointer,
 				       jlong symbol_index,
 				       jlong str_sect_index,
-				       lib::dwfl::ElfSymbolBuilder * builder)
+				       lib::dwfl::ElfSymbol$Builder * builder)
 {
   ::GElf_Sym sym;
   if (::gelf_getsym ((::Elf_Data*)data_pointer, symbol_index, &sym) == NULL)

@@ -37,10 +37,32 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package lib.dwfl;
+#include <gcj/cni.h>
+#include <gelf.h>
 
-public interface ElfSymbolBuilder
+#include "lib/dwfl/Elf.h"
+#include "lib/dwfl/ElfDynamic.h"
+#include "lib/dwfl/ElfDynamic$Builder.h"
+
+#ifdef __cplusplus
+extern "C"
 {
-  void symbol (String name, long value, long size, int type, int bind,
-	       int visibility, long shndx);
+#endif
+
+jboolean
+lib::dwfl::ElfDynamic::elf_buildentry (lib::dwfl::Elf * parent,
+				       jlong data_pointer,
+				       jlong entry_index,
+				       lib::dwfl::ElfDynamic$Builder * builder)
+{
+  ::GElf_Dyn dyn;
+  if (::gelf_getdyn ((::Elf_Data*)data_pointer, entry_index, &dyn) == NULL)
+    return false;
+
+  builder->entry((jint)dyn.d_tag, *(jlong*)&dyn.d_un);
+  return true;
 }
+
+#ifdef __cplusplus
+}
+#endif

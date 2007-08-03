@@ -219,7 +219,7 @@ public class Elf
      * @return The ElfSection
      */
     public ElfSection getSectionByOffset (int offset) {
-	return new ElfSection(elf_getscn(offset), this);
+	return new ElfSection(elf_offscn(offset), this);
     }
 
     /**
