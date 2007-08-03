@@ -1,3 +1,8 @@
+2007-08-03  Nurdin Premji  <npremji@redhat.com>
+
+	* DwarfRegistersX86.mkenum: Added.
+	* DwarfRegistersX8664.mkenum: Added.
+
 2007-08-03  Petr Machata  <pmachata@redhat.com>
 
 	* Elf.java (getSectionByOffset): Call elf_offscn, not elf_getscn.
