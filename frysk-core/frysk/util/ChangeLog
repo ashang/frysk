@@ -1,3 +1,7 @@
+2007-08-03  Petr Machata <pmachata@redhat.com>
+
+	* Ltrace.java: fix use of ElfSymbolBuilder
+
 2007-08-02  Nurdin Premji  <npremji@redhat.com>
 
 	* TestCommandlineParser.java: Added.

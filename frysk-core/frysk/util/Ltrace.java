@@ -72,7 +72,6 @@ import lib.dwfl.ElfRel;
 import lib.dwfl.ElfSection;
 import lib.dwfl.ElfSectionHeader;
 import lib.dwfl.ElfSymbol;
-import lib.dwfl.ElfSymbolBuilder;
 
 class MemMappedFiles
   extends MapsBuilder
@@ -251,7 +250,7 @@ class LtraceObjectFile
 	      {
 		haveDynsym = true;
 
-		ElfSymbol.loadFrom(section, new ElfSymbolBuilder() {
+		ElfSymbol.loadFrom(section, new ElfSymbol.Builder() {
 		    public void symbol (String name, long value, long size,
 					int type, int bind, int visibility,
 					long shndx)
