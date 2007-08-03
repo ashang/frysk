@@ -1,0 +1,8 @@
+# Generate a mkenum.sh table for the UNW_X86 encodings we are interested in.
+cat $(dirname $0)/../../../frysk-imports/libunwind/include/libunwind-x86.h | awk ' 
+    /UNW_X86/ {
+   	gsub(",","",$1) 
+   	gsub("UNW_X86_", "", $1)
+	printf "%s\n", $1
+    }' | awk '{printf "%s %s\n", $1, NR -1 }
+' 2>&1

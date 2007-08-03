@@ -1,3 +1,8 @@
+2007-08-03  Nurdin Premji  <npremji@redhat.com>
+
+	* UnwindRegistersX86.shenum: Added.
+	* UnwindRegistersX8664.shenum: Added.
+
 2007-07-27  Nurdin Premji  <npremji@redhat.com>
 
 	* UnwindCallbacks.java: Removed.
