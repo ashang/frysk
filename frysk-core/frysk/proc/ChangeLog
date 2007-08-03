@@ -1,3 +1,7 @@
+2007-08-04  Petr Machata  <pmachata@redhat.com>
+
+	* TestTaskObserverCode.java (testCodeRemovedInHit): New test.
+
 2007-08-02  Andrew Cagney  <cagney@redhat.com>
 
 	Fix frysk/4879.

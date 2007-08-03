@@ -142,6 +142,39 @@ public class TestTaskObserverCode extends TestLib
     assertRunUntilStop("cleanup");
   }
 
+  public void testCodeRemovedInHit() throws Exception
+  {
+    // Create a child.
+    child = new AckDaemonProcess();
+    task = child.findTaskUsingRefresh (true);
+    proc = task.getProc();
+
+    // Make sure we are attached.
+    AttachedObserver attachedObserver = new AttachedObserver();
+    task.requestAddAttachedObserver(attachedObserver);
+    TerminatingObserver terminatingObserver = new TerminatingObserver();
+    task.requestAddTerminatingObserver(terminatingObserver);
+    assertRunUntilStop("adding AttachedObserver & TerminatingObserver");
+
+    long address1 = getFunctionEntryAddress("bp1_func");
+    long address2 = getFunctionEntryAddress("bp2_func");
+    RemovingCodeObserver code = new RemovingCodeObserver();
+    task.requestUnblock(attachedObserver);
+    task.requestAddCodeObserver(code, address1);
+    task.requestAddCodeObserver(code, address2);
+    assertRunUntilStop("add breakpoint observer");
+
+    assertEquals(code.hits, 0);
+
+    // Request a run and watch the breakpoint get hit.
+    requestDummyRun();
+    while (!terminatingObserver.terminating)
+      assertRunUntilStop("task terminating");
+
+    assertEquals(code.hits, 2);
+    assertEquals(code.deletes, 2);
+  }
+
   // Tests that breakpoint instructions are not visible to
   // normal users of task memory (only through raw memory view).
   public void testViewBreakpointMemory() throws Exception
@@ -461,6 +494,37 @@ public class TestTaskObserverCode extends TestLib
     }
   }
 
+  static class RemovingCodeObserver
+    implements TaskObserver.Code
+  {
+    int hits = 0;
+    int deletes = 0;
+
+    public Action updateHit (Task task, long addr)
+    {
+      hits++;
+      task.requestDeleteCodeObserver(this, addr);
+      task.requestUnblock(this);
+      return Action.BLOCK;
+    }
+
+    public void addedTo(Object o)
+    {
+      Manager.eventLoop.requestStop();
+    }
+
+    public void deletedFrom(Object o)
+    {
+      deletes++;
+      Manager.eventLoop.requestStop();
+    }
+
+    public void addFailed (Object o, Throwable w)
+    {
+      fail("add to " + o + " failed, because " + w);
+    }
+  }
+
   static class AttachedObserver
     implements TaskObserver.Attached
   {
@@ -486,4 +550,21 @@ public class TestTaskObserverCode extends TestLib
     }
   }
 
+  private class TerminatingObserver
+    implements TaskObserver.Terminating
+  {
+    public boolean terminating = false;
+    public Action updateTerminating (Task task, boolean signal, int value)
+    {
+	terminating = true;
+	Manager.eventLoop.requestStop();
+	return Action.CONTINUE;
+    }
+    public void addFailed(Object observable, Throwable w)
+    {
+      fail(w.getMessage());
+    }
+    public void addedTo(Object observable){}
+    public void deletedFrom(Object observable){}
+  }
 }
