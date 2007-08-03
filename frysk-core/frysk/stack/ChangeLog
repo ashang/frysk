@@ -1,3 +1,8 @@
+2007-08-03  Nurdin Premji  <npremji@redhat.com>
+
+	* UnwindRegisterMapFactory.java: Use UnwindRegistersX86 and
+	UnwindRegistersX8664 generated enums.
+
 2007-08-02  Nurdin Premji  <npremji@redhat.com>
 
 	* Register.java (toString): Add space between name and type.

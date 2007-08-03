@@ -39,6 +39,8 @@
 
 package frysk.stack;
 
+import lib.unwind.UnwindRegistersX86;
+import lib.unwind.UnwindRegistersX8664;
 import frysk.proc.Isa;
 import frysk.proc.IsaIA32;
 import frysk.proc.IsaX8664;
@@ -59,70 +61,70 @@ class IA32Map extends RegisterMap {
 
     IA32Map() {
 
-	addEntry(IA32Registers.EAX, new Integer(0));
-	addEntry(IA32Registers.EDX, new Integer(1));
-	addEntry(IA32Registers.ECX, new Integer(2));
-	addEntry(IA32Registers.EBX, new Integer(3));
-	addEntry(IA32Registers.ESI, new Integer(4));
-	addEntry(IA32Registers.EDI, new Integer(5));
-	addEntry(IA32Registers.EBP, new Integer(6));
-	addEntry(IA32Registers.ESP, new Integer(7));
-	addEntry(IA32Registers.EIP, new Integer(8));
-	addEntry(IA32Registers.EFLAGS, new Integer(9));
-	addEntry(IA32Registers.TRAPS, new Integer(10));
+	addEntry(IA32Registers.EAX, new Integer(UnwindRegistersX86.EAX_));
+	addEntry(IA32Registers.EDX, new Integer(UnwindRegistersX86.EDX_));
+	addEntry(IA32Registers.ECX, new Integer(UnwindRegistersX86.ECX_));
+	addEntry(IA32Registers.EBX, new Integer(UnwindRegistersX86.EBX_));
+	addEntry(IA32Registers.ESI, new Integer(UnwindRegistersX86.ESI_));
+	addEntry(IA32Registers.EDI, new Integer(UnwindRegistersX86.EDI_));
+	addEntry(IA32Registers.EBP, new Integer(UnwindRegistersX86.EBP_));
+	addEntry(IA32Registers.ESP, new Integer(UnwindRegistersX86.ESP_));
+	addEntry(IA32Registers.EIP, new Integer(UnwindRegistersX86.EIP_));
+	addEntry(IA32Registers.EFLAGS, new Integer(UnwindRegistersX86.EFLAGS_));
+	addEntry(IA32Registers.TRAPS, new Integer(UnwindRegistersX86.TRAPNO_));
 	// MMX registers
-	addEntry(IA32Registers.ST0, new Integer(11));
-	addEntry(IA32Registers.ST1, new Integer(12));
-	addEntry(IA32Registers.ST2, new Integer(13));
-	addEntry(IA32Registers.ST3, new Integer(14));
-	addEntry(IA32Registers.ST4, new Integer(15));
-	addEntry(IA32Registers.ST5, new Integer(16));
-	addEntry(IA32Registers.ST6, new Integer(17));
-	addEntry(IA32Registers.ST7, new Integer(18));
-	addEntry(IA32Registers.FCW, new Integer(19));
-	addEntry(IA32Registers.FSW, new Integer(20));
-	addEntry(IA32Registers.FTW, new Integer(21));
-	addEntry(IA32Registers.FOP, new Integer(22));
-	addEntry(IA32Registers.FCS, new Integer(23));
-	addEntry(IA32Registers.FIP, new Integer(24));
-	addEntry(IA32Registers.FEA, new Integer(25));
-	addEntry(IA32Registers.FDS, new Integer(26));
+	addEntry(IA32Registers.ST0, new Integer(UnwindRegistersX86.ST0_));
+	addEntry(IA32Registers.ST1, new Integer(UnwindRegistersX86.ST1_));
+	addEntry(IA32Registers.ST2, new Integer(UnwindRegistersX86.ST2_));
+	addEntry(IA32Registers.ST3, new Integer(UnwindRegistersX86.ST3_));
+	addEntry(IA32Registers.ST4, new Integer(UnwindRegistersX86.ST4_));
+	addEntry(IA32Registers.ST5, new Integer(UnwindRegistersX86.ST5_));
+	addEntry(IA32Registers.ST6, new Integer(UnwindRegistersX86.ST6_));
+	addEntry(IA32Registers.ST7, new Integer(UnwindRegistersX86.ST7_));
+	addEntry(IA32Registers.FCW, new Integer(UnwindRegistersX86.FCW_));
+	addEntry(IA32Registers.FSW, new Integer(UnwindRegistersX86.FSW_));
+	addEntry(IA32Registers.FTW, new Integer(UnwindRegistersX86.FTW_));
+	addEntry(IA32Registers.FOP, new Integer(UnwindRegistersX86.FOP_));
+	addEntry(IA32Registers.FCS, new Integer(UnwindRegistersX86.FCS_));
+	addEntry(IA32Registers.FIP, new Integer(UnwindRegistersX86.FIP_));
+	addEntry(IA32Registers.FEA, new Integer(UnwindRegistersX86.FEA_));
+	addEntry(IA32Registers.FDS, new Integer(UnwindRegistersX86.FDS_));
 	// SSE Registers
 	//TODO: XMMx registers.
-	addEntry(IA32Registers.MXCSR, new Integer(43));
+	addEntry(IA32Registers.MXCSR, new Integer(UnwindRegistersX86.MXCSR_));
 	// Segment registers
-	addEntry(IA32Registers.GS, new Integer(44));
-	addEntry(IA32Registers.FS, new Integer(45));
-	addEntry(IA32Registers.ES, new Integer(46));
-	addEntry(IA32Registers.DS, new Integer(47));
-	addEntry(IA32Registers.SS, new Integer(48));
-	addEntry(IA32Registers.CS, new Integer(49));
-	addEntry(IA32Registers.TSS, new Integer(50));
-	addEntry(IA32Registers.LDT, new Integer(51));
+	addEntry(IA32Registers.GS, new Integer(UnwindRegistersX86.GS_));
+	addEntry(IA32Registers.FS, new Integer(UnwindRegistersX86.FS_));
+	addEntry(IA32Registers.ES, new Integer(UnwindRegistersX86.ES_));
+	addEntry(IA32Registers.DS, new Integer(UnwindRegistersX86.DS_));
+	addEntry(IA32Registers.SS, new Integer(UnwindRegistersX86.SS_));
+	addEntry(IA32Registers.CS, new Integer(UnwindRegistersX86.CS_));
+	addEntry(IA32Registers.TSS, new Integer(UnwindRegistersX86.TSS_));
+	addEntry(IA32Registers.LDT, new Integer(UnwindRegistersX86.LDT_));
 	// frame info
-	addEntry(IA32Registers.CFA, new Integer(52));
+	addEntry(IA32Registers.CFA, new Integer(UnwindRegistersX86.CFA_));
 	
     }
 }
 
 class X8664Map extends RegisterMap {
     X8664Map() {
-	addEntry(X8664Registers.RAX, new Integer(0));
-	addEntry(X8664Registers.RDX, new Integer(1));
-	addEntry(X8664Registers.RCX, new Integer(2));
-	addEntry(X8664Registers.RBX, new Integer(3));
-	addEntry(X8664Registers.RSI, new Integer(4));
-	addEntry(X8664Registers.RDI, new Integer(5));
-	addEntry(X8664Registers.RBP, new Integer(6));
-	addEntry(X8664Registers.RSP, new Integer(7));
-	addEntry(X8664Registers.R8, new Integer(8));
-	addEntry(X8664Registers.R9, new Integer(9));
-	addEntry(X8664Registers.R10, new Integer(10));
-	addEntry(X8664Registers.R11, new Integer(11));
-	addEntry(X8664Registers.R12, new Integer(12));
-	addEntry(X8664Registers.R13, new Integer(13));
-	addEntry(X8664Registers.R14, new Integer(14));
-	addEntry(X8664Registers.R15, new Integer(15));
-	addEntry(X8664Registers.RIP, new Integer(16));
+	addEntry(X8664Registers.RAX, new Integer(UnwindRegistersX8664.RAX_));
+	addEntry(X8664Registers.RDX, new Integer(UnwindRegistersX8664.RDX_));
+	addEntry(X8664Registers.RCX, new Integer(UnwindRegistersX8664.RCX_));
+	addEntry(X8664Registers.RBX, new Integer(UnwindRegistersX8664.RBX_));
+	addEntry(X8664Registers.RSI, new Integer(UnwindRegistersX8664.RSI_));
+	addEntry(X8664Registers.RDI, new Integer(UnwindRegistersX8664.RDI_));
+	addEntry(X8664Registers.RBP, new Integer(UnwindRegistersX8664.RBP_));
+	addEntry(X8664Registers.RSP, new Integer(UnwindRegistersX8664.RSP_));
+	addEntry(X8664Registers.R8, new Integer(UnwindRegistersX8664.R8_));
+	addEntry(X8664Registers.R9, new Integer(UnwindRegistersX8664.R9_));
+	addEntry(X8664Registers.R10, new Integer(UnwindRegistersX8664.R10_));
+	addEntry(X8664Registers.R11, new Integer(UnwindRegistersX8664.R11_));
+	addEntry(X8664Registers.R12, new Integer(UnwindRegistersX8664.R12_));
+	addEntry(X8664Registers.R13, new Integer(UnwindRegistersX8664.R13_));
+	addEntry(X8664Registers.R14, new Integer(UnwindRegistersX8664.R14_));
+	addEntry(X8664Registers.R15, new Integer(UnwindRegistersX8664.R15_));
+	addEntry(X8664Registers.RIP, new Integer(UnwindRegistersX8664.RIP_));
     }
 }
