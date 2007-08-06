@@ -41,6 +41,7 @@
 package frysk.proc;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -472,9 +473,11 @@ public abstract class Proc
   }
 
   /**
-   * The set of observations that currently apply to this task.
+   * The set of observations that currently apply to this task.  Note
+   * that this is a Collection that may contain the same Observer
+   * object multiple times (for possible different observations).
    */
-  private Set observations = new HashSet();
+  private Collection observations = new LinkedList();
 
   public boolean addObservation (Object o)
   {

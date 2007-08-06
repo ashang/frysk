@@ -161,15 +161,16 @@ public class TestTaskObserverCode extends TestLib
     RemovingCodeObserver code = new RemovingCodeObserver();
     task.requestUnblock(attachedObserver);
     task.requestAddCodeObserver(code, address1);
+    assertRunUntilStop("add breakpoint observer at address1");
     task.requestAddCodeObserver(code, address2);
-    assertRunUntilStop("add breakpoint observer");
+    assertRunUntilStop("add breakpoint observer at address1");
 
     assertEquals(code.hits, 0);
 
     // Request a run and watch the breakpoint get hit.
     requestDummyRun();
-    while (!terminatingObserver.terminating)
-      assertRunUntilStop("task terminating");
+    assertRunUntilStop("wait for delete 1");
+    assertRunUntilStop("wait for delete 2");
 
     assertEquals(code.hits, 2);
     assertEquals(code.deletes, 2);

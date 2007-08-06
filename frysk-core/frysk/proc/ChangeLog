@@ -1,3 +1,11 @@
+2007-08-06  Mark Wielaard  <mark@klomp.org>
+
+	Fixes bug #4894
+	* Proc.java (observations): Turn into a Collection that can
+	contain an observer multiple times.
+	* TestTaskObserverCode.java (testCodeRemovedInHit): Explicitly
+	wait for add and delete.
+
 2007-08-04  Petr Machata  <pmachata@redhat.com>
 
 	* TestTaskObserverCode.java (testCodeRemovedInHit): New test.
