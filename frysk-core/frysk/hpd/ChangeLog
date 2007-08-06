@@ -1,3 +1,8 @@
+2007-08-06  Stan Cox  <scox@redhat.com>
+
+	* PrintCommand.java (handle): Handle ValueUavailableException and 
+	VariableOptimizedOutException.
+
 2007-08-02  Andrew Cagney  <cagney@redhat.com>
 
 	* TestExamineCommand.java: New file.

@@ -1,3 +1,7 @@
+2007-08-06  Stan Cox  <scox@redhat.com>
+
+	* X8664Registers.java: X8664 registers are baseTypeLong.
+
 2007-08-03  Nurdin Premji  <npremji@redhat.com>
 
 	* UnwindRegisterMapFactory.java: Use UnwindRegistersX86 and

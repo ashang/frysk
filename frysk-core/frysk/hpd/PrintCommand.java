@@ -43,6 +43,8 @@ import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.ArrayList;
 import frysk.value.Format;
+import frysk.debuginfo.ValueUavailableException;
+import frysk.debuginfo.VariableOptimizedOutException;
 import frysk.proc.UBigInteger;
 import frysk.value.Value;
 import javax.naming.NameNotFoundException;
@@ -120,14 +122,23 @@ class PrintCommand
 	try {
 	    result = cli.parseValue(sInput);	  
         }
-	catch (NameNotFoundException nnfe)
-	    {
-		cli.addMessage(new Message(nnfe.getMessage(),
-					   Message.TYPE_ERROR));
-		return;
-	    }
+	catch (NameNotFoundException nnfe) {
+	    cli.addMessage(new Message(nnfe.getMessage(), Message.TYPE_ERROR));
+	    return;
+	}
+	catch (ValueUavailableException vue) {
+	    cli.addMessage("Symbol \"" + sInput + "\" is not available in the current context.",
+		    Message.TYPE_ERROR);
+	    return;
+	}
+	catch (VariableOptimizedOutException vooe) {
+	    cli.addMessage("Value of symbol \"" + sInput + "\" is optimized out.",
+		    Message.TYPE_ERROR);
+	    return;
+	}
+	
 	if (result == null) {
-	    cli.addMessage("Variable " + sInput + " not found in scope",
+	    cli.addMessage("Symbol \"" + sInput + "\" is not found in the current context.",
 			   Message.TYPE_ERROR);
 	    return;
 	}
