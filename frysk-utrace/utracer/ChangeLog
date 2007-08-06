@@ -1,3 +1,10 @@
+Mon Aug  6 12:03:18 2007  Chris Moller  <cmoller@redhat.com>
+
+	* include/utracer.h:
+	* module/utracer-if-io.c:
+	* module/utracer-ioctl.c:
+	* utracer/utracer.c: Move quiesce and run cmds to ioctl.
+
 Mon Aug  6 10:39:08 2007  Chris Moller  <cmoller@redhat.com>
 
 	* Makefile: Made insmod and rmmod absolute path specs.

@@ -649,6 +649,33 @@ handle_syscall (syscall_cmd_s * syscall_cmd)
   return rc;
 }
 
+static int
+handle_quiesce (run_cmd_s * run_cmd)
+{
+  struct task_struct * task;
+  int rc = 0;
+
+  task = get_task (run_cmd->utraced_pid);
+
+  if (task) {
+    struct utrace_attached_engine * engine;
+
+    engine =
+      locate_engine (run_cmd->utracing_pid, run_cmd->utraced_pid);
+    if (engine) {
+      unsigned long flags =
+	(IF_CMD_RUN == run_cmd->cmd) ?
+	(engine->flags & ~UTRACE_ACTION_QUIESCE) :
+	(engine->flags |  UTRACE_ACTION_QUIESCE);
+      utrace_set_flags(task,engine, flags);
+    }
+    else rc = -UTRACER_EENGINE;
+  }
+  else rc = -ESRCH;
+
+  return rc;
+}
+
 int
 utracer_ioctl (struct inode * inode,
 	       struct file * file,
@@ -697,6 +724,11 @@ utracer_ioctl (struct inode * inode,
   case IF_CMD_ATTACH:
     DB_PRINTK (KERN_ALERT "IF_CMD_ATTACH--ioctl\n");
     rc = handle_attach (&if_cmd.attach_cmd);
+    break;
+  case IF_CMD_RUN:
+  case IF_CMD_QUIESCE:
+    DB_PRINTK (KERN_ALERT "IF_CMD_RUN of IF_CMD_QUIESCE--ioctl\n");
+    rc = handle_quiesce (&if_cmd.run_cmd);
     break;
   default:
     rc = -EINVAL;

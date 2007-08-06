@@ -154,10 +154,15 @@ attach_fcn(char ** saveptr)
 static int
 run_fcn(char ** saveptr)
 {
+  int rc;
   long pid = -1;
   char * pid_c = strtok_r (NULL, " \t", saveptr);
   pid = pid_c ? atol (pid_c) : current_pid;
-  if (-1 != pid) utrace_run_if (pid);
+  if (-1 != pid) {
+    rc = utracer_run (pid);
+    if (0 == rc) fprintf (stderr, "%d running\n", pid);
+    else uerror ("run");
+  }
   else fprintf (stderr, "\trun requires an argument\n");
   return 1;
 }
@@ -165,11 +170,16 @@ run_fcn(char ** saveptr)
 static int
 quiesce_fcn(char ** saveptr)
 {
+  int rc;
   long pid = -1;
   char * pid_c = strtok_r (NULL, " \t", saveptr);
   pid = pid_c ? atol (pid_c) : current_pid;
-  if (-1 != pid) utrace_quiesce_if (pid);
-  else fprintf (stderr, "\tquiesce requires an argument\n");
+  if (-1 != pid) {
+    rc = utracer_quiesce (pid);
+    if (0 == rc) fprintf (stderr, "%d quiesced\n", pid);
+    else uerror ("quiesce");
+  }
+  else fprintf (stderr, "\trun requires an argument\n");
   return 1;
 }
 

@@ -351,6 +351,37 @@ utracer_attach (long pid, long quiesce, long exec_quiesce)
 
 
 
+/************************** quiesce  ********************/
+
+
+int
+utracer_run (long pid)
+{
+  int irc;
+  run_cmd_s run_cmd = {IF_CMD_RUN,
+		       (long)client_pid,
+		       pid};
+
+  irc = ioctl (utracer_cmd_file_fd, sizeof(run_cmd_s), &run_cmd);
+
+  return irc;
+}
+
+
+int
+utracer_quiesce (long pid)
+{
+  int irc;
+  run_cmd_s run_cmd = {IF_CMD_QUIESCE,
+		       (long)client_pid,
+		       pid};
+
+  irc = ioctl (utracer_cmd_file_fd, sizeof(run_cmd_s), &run_cmd);
+
+  return irc;
+}
+
+
 /************************** switchpid  ********************/
 
 

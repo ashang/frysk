@@ -1,3 +1,8 @@
+Mon Aug  6 12:03:07 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-text-ui.c:
+	* udb-utrace-if.c: Move quiesce and run cmds to ioctl.
+
 Mon Aug  6 10:42:01 2007  Chris Moller  <cmoller@redhat.com>
 
 	* module/utracer-if-io.c:  Added auto-attach.  Added auto-detach

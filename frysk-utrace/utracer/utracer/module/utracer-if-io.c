@@ -306,34 +306,6 @@ const struct utrace_engine_ops utraced_utrace_ops = {
 };
 
 static int
-handle_quiesce (run_cmd_s * run_cmd, unsigned long count, void * data)
-{
-  struct task_struct * task;
-  int rc = count;
-
-  task = get_task (run_cmd->utraced_pid);
-
-  if (task) {
-    struct utrace_attached_engine * engine;
-
-    engine =
-      locate_engine (run_cmd->utracing_pid, run_cmd->utraced_pid);
-    if (engine) {
-      unsigned long flags =
-	(IF_CMD_RUN == run_cmd->cmd) ?
-	(engine->flags & ~UTRACE_ACTION_QUIESCE) :
-	(engine->flags |  UTRACE_ACTION_QUIESCE);
-      utrace_set_flags(task,engine, flags);
-      rc = count;
-    }
-    else rc = -UTRACER_EENGINE;
-  }
-  else rc = -ESRCH;
-
-  return rc;
-}
-
-static int
 handle_detach (attach_cmd_s * attach_cmd, unsigned long count,
 	       void * data)
 {
@@ -422,11 +394,6 @@ if_file_write (struct file *file,
     switch (if_cmd.cmd) {
     case IF_CMD_NULL:
       DB_PRINTK (KERN_ALERT "IF_CMD_NULL\n");
-      break;
-    case IF_CMD_RUN:
-    case IF_CMD_QUIESCE:
-      DB_PRINTK (KERN_ALERT "IF_CMD_RUN?QUIESCE--write\n");
-      rc = handle_quiesce (&if_cmd.run_cmd, count, data);
       break;
     case IF_CMD_DETACH:
       DB_PRINTK (KERN_ALERT "IF_CMD_DETACH--write\n");
