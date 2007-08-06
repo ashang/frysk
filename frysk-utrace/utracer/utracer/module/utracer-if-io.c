@@ -193,7 +193,6 @@ report_death (struct utrace_attached_engine *engine,
 {
   utracing_info_s * utracing_info_found = (void *)engine->data;
 
-  // fixme -- utrace_detach?  remove info?
   if (utracing_info_found) {
     death_resp_s death_resp = {IF_RESP_DEATH_DATA,
 			       (long)tsk->pid };
@@ -201,6 +200,9 @@ report_death (struct utrace_attached_engine *engine,
 		    &death_resp, sizeof(death_resp),
 		    NULL, 0,
 		    NULL, 0);
+    remove_utraced_info_entry (utracing_info_found,
+			       lookup_utraced_info (utracing_info_found,
+						    (long)tsk->pid));
   }
   return UTRACE_ACTION_RESUME;
 }
