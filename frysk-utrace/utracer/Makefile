@@ -49,7 +49,7 @@ veryclean: clean
 	make -C utracer/utracer veryclean
 
 insert:
-	sudo insmod utracer/module/utracer.ko
+	sudo /sbin/insmod utracer/module/utracer.ko
 
 remove:
-	sudo rmmod utracer/module/utracer.ko
+	sudo /sbin/rmmod utracer/module/utracer.ko

@@ -127,7 +127,11 @@ watch_fcn(char ** saveptr)
   char * pid_c = strtok_r (NULL, " \t", saveptr);
   pid = pid_c ? atol (pid_c) : current_pid;
   rc = utracer_attach (pid, 0, 0);
-  if (0 != rc) uerror ("watch");
+  if (0 == rc) {
+    current_pid = pid;
+    set_prompt();
+  }
+  else uerror ("watch");
   return 1;
 }
 
@@ -139,7 +143,11 @@ attach_fcn(char ** saveptr)
   char * pid_c = strtok_r (NULL, " \t", saveptr);
   pid = pid_c ? atol (pid_c) : current_pid;
   rc = utracer_attach (pid, 1, 0);
-  if (0 != rc) uerror ("attach");
+  if (0 == rc) {
+    current_pid = pid;
+    set_prompt();
+  }
+  else uerror ("attach");
   return 1;
 }
 

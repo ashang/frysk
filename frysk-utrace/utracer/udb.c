@@ -21,6 +21,8 @@
 
 pthread_t resp_listener_thread;
 
+#define USE_UTRACER_SYNC
+
 extern void * resp_listener (void * arg);
 
 void

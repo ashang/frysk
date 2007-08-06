@@ -1,0 +1,17 @@
+#!/bin/sh
+
+stty sane
+
+lsmod | grep -q utracer
+if (( $? != 0 )); then sudo /sbin/insmod utracer/module/utracer.ko; fi
+
+#LD_LIBRARY_PATH=./utracer/utracer:$LD_LIBRARY_PATH ./udb -c'sy ex en' -c'sy ex a read' -l ls
+#./udb -c'sy en en' -c'sy en a read' -c'run' -c'quit' -l ls
+#./udb -c'sy ex en' -c'sy ex a read' -l ./aux/testsyscall
+#./udb -c'sy ex en' -c'sy en en' -c'sy ex a write' -c'sy en a write' \
+#  -cr -l ./aux/ts
+./udb -c'sy ex en' -c'sy en en' -c'sy ex a write' -c'sy en a write' \
+  -l ./aux/ts
+
+sudo /sbin/rmmod utracer/module/utracer.ko
+

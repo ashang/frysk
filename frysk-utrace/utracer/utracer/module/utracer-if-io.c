@@ -85,6 +85,8 @@ report_quiesce (struct utrace_attached_engine *engine,
 }
 
 extern int cfr_data_ready;
+extern int attach_cmd_fcn (long utracing_pid, long utraced_pid,
+			   long quiesce, long exec_quiesce);
 
 static u32
 report_clone (struct utrace_attached_engine *engine,
@@ -99,13 +101,20 @@ report_clone (struct utrace_attached_engine *engine,
   //  printk(KERN_ALERT "reporting clone\n");
   
   if (utracing_info_found) {
-    clone_resp_s clone_resp = {IF_RESP_CLONE_DATA,
-			       parent->pid, child->pid};
-    queue_response (utracing_info_found,
-		    &clone_resp, sizeof(clone_resp),
-		    NULL, 0,
-		    NULL, 0);
-			       
+    int rc;
+    
+    rc = attach_cmd_fcn (utracing_info_found->utracing_pid,
+			 child->pid, 0, 0);
+    {
+      clone_resp_s clone_resp = {IF_RESP_CLONE_DATA,
+				 parent->pid, child->pid, (long)rc};
+
+      // fixme -- maybe do something with quiesce
+      queue_response (utracing_info_found,
+		      &clone_resp, sizeof(clone_resp),
+		      NULL, 0,
+		      NULL, 0);
+    }
   }
   return UTRACE_ACTION_RESUME;
 }

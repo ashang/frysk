@@ -1,3 +1,10 @@
+Mon Aug  6 10:39:08 2007  Chris Moller  <cmoller@redhat.com>
+
+	* Makefile: Made insmod and rmmod absolute path specs.
+	* udb-text-ui.c:  Made attach_fcn and watch_fcn set current_pid
+	and prompt on success.
+	* tudb: New file of primitive trest drivers.
+
 Thu Aug  2 10:01:26 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-utrace-if.c

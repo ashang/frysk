@@ -217,6 +217,7 @@ typedef struct {
   long type;
   long utracing_pid;
   long new_utraced_pid;
+  long attach_rc;
 } clone_resp_s;
 
 typedef struct {

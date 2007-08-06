@@ -1,3 +1,7 @@
+Mon Aug  6 10:42:01 2007  Chris Moller  <cmoller@redhat.com>
+
+	* module/utracer-if-io.c:  Added auto-attach.
+
 Thu Aug  2 10:01:13 2007  Chris Moller  <cmoller@redhat.com>
 
 	* include/utracer.h: Removed switchpid and attach response stuff.

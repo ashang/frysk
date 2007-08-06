@@ -488,7 +488,7 @@ handle_getregs (readreg_cmd_s * readreg_cmd)
 
 extern const struct utrace_engine_ops utraced_utrace_ops;
 
-static int
+/*static*/ int
 attach_cmd_fcn (long utracing_pid, long utraced_pid,
 		long quiesce, long exec_quiesce)
 {

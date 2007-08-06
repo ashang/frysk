@@ -141,9 +141,10 @@ resp_listener (void * arg)
     case IF_RESP_CLONE_DATA:
       {
 	clone_resp_s clone_resp = if_resp.clone_resp;
-	fprintf (stdout, "\t[%ld] cloned to %ld\n",
+	fprintf (stdout, "\t[%ld] cloned to %ld, attach rc = %ld\n",
 		 clone_resp.utracing_pid,
-		 clone_resp.new_utraced_pid);
+		 clone_resp.new_utraced_pid,
+		 clone_resp.attach_rc);
       }
       break;
     default:
