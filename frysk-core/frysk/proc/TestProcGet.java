@@ -49,6 +49,7 @@ import frysk.testbed.TearDownFile;
 import frysk.testbed.TestLib;
 import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.DaemonBlockedAtEntry;
+import frysk.testbed.FunitExecOffspring;
 
 /**
  * Test Proc's public get methods.
@@ -162,41 +163,42 @@ public class TestProcGet
       }
   }
 
-  /**
-   * Check that getCmdLine returns the list of arguments that matches what was
-   * passed to a detached child.
-   */
-  public void testGetCmdLine ()
-  {
-    Child child = new AckDaemonProcess();
-    String[] argv = child.getArgv();
-    Proc proc = child.assertFindProcAndTasks();
-    String[] cmdLine = proc.getCmdLine();
-    assertEquals("cmdLine.length", argv.length, cmdLine.length);
-    for (int i = 0; i < argv.length; i++)
-      {
-        assertEquals("cmdLine[" + i + "]", argv[i], cmdLine[i]);
-      }
-  }
+    /**
+     * Check that getCmdLine returns the list of arguments that
+     * matches what was passed to a detached process.
+     */
+    public void testGetCmdLine() {
+	// Create a process with a known set of arguments.
+	String[] argv = FunitExecOffspring.getCommandLine(0, 0, null,
+							  new String[] {
+							      "/bin/echo",
+							      "hello"
+							  });
+	FunitExecOffspring child = new FunitExecOffspring(argv);
+	child.assertRunExec("invoking command with known argv");
+	Proc proc = child.assertFindProcAndTasks();
+	String[] cmdLine = proc.getCmdLine();
+	assertEquals("cmdLine.length", argv.length, cmdLine.length);
+	for (int i = 0; i < argv.length; i++) {
+	    assertEquals("cmdLine[" + i + "]", argv[i], cmdLine[i]);
+	}
+    }
 
-  /**
-   * Check that getExe returns the fully qualified path to the ack-daemon
-   * program.
-   */
-  public void testGetExe ()
-  {
-    Child child = new AckDaemonProcess();
-    String[] argv = child.getArgv();
-    String file;
-    try
-      {
-        file = new File(argv[0]).getCanonicalPath();
-      }
-    catch (IOException e)
-      {
-        throw new RuntimeException(e);
-      }
-    Proc proc = child.assertFindProcAndTasks();
-    assertEquals("exe", proc.getExe(), file);
-  }
+    /**
+     * Check that getExe returns the fully qualified path to the
+     * ack-daemon program.
+     */
+    public void testGetExe() throws IOException {
+	// Create a process with a known set of arguments.
+	String[] argv = FunitExecOffspring.getCommandLine(0, 0, null,
+							  new String[] {
+							      "/bin/echo",
+							      "hello"
+							  });
+	FunitExecOffspring child = new FunitExecOffspring(argv);
+	child.assertRunExec("invoking command with known argv");
+	String file = new File(argv[0]).getCanonicalPath();
+	Proc proc = child.assertFindProcAndTasks();
+	assertEquals("exe", proc.getExe(), file);
+    }
 }

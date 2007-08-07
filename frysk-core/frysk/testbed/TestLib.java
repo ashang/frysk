@@ -236,15 +236,6 @@ public class TestLib
 	    return pid;
 	}
 
-	private String[] argv;
-
-	/**
-	 * Return the Process's argv.
-	 */
-	public String[] getArgv () {
-	    return argv;
-	}
-
 	public void signal (int tid, Sig sig) {
 	    Signal.tkill(tid, sig);
 	}
@@ -262,7 +253,6 @@ public class TestLib
 	protected Child (Sig sig, String[] argv) {
 	    SignalWaiter ack = new SignalWaiter(Manager.eventLoop, sig,
 						"startChild");
-	    this.argv = argv;
 	    this.pid = startChild(null, (logger.isLoggable(Level.FINE) ? null
 					 : "/dev/null"),
 				  null, argv);

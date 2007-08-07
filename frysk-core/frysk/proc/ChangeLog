@@ -1,5 +1,9 @@
 2007-08-07  Andrew Cagney  <cagney@redhat.com>
 
+	* TestProcGet.java (testGetCmdLine): Use FunitExecOffspring to
+	create a process with known arguments.
+	(testGetExe): Ditto.
+
 	* TestRefresh.java: Replace frysk.testbed.TestLib.Child with
 	frysk.testbed.Offspring.
 	* TestTaskObserver.java: Ditto.
