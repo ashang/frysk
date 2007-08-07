@@ -1,5 +1,8 @@
 2007-08-07  Andrew Cagney  <cagney@redhat.com>
 
+	* FunitSlaveOffspring.java (FunitSlaveOffspring(String,String[])):
+	Delete.
+
 	* DaemonBlockedAtEntry.java: Do not extend TestLib.
 	(DaemonBlockedAtEntry(String[]): Use FunitExecOffspring.
 

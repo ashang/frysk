@@ -112,14 +112,6 @@ public abstract class FunitSlaveOffspring
 	super(CHILD_ACK, funitSlaveCommand(busy, null, null));
     }
 
-    /**
-     * Create an FunitSlaveOffspring; the process will use FILENAME and
-     * ARGV as the program to exec.
-     */
-    protected FunitSlaveOffspring (String filename, String[] argv) {
-	super(CHILD_ACK, funitSlaveCommand(false, filename, argv));
-    }
-
     /** Create an FunitSlaveOffspring, and then add COUNT threads. */
     protected FunitSlaveOffspring (int count) {
 	this();
