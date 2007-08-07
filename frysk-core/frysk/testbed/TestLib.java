@@ -226,7 +226,7 @@ public class TestLib
      * ackSignal). Permit various operations on the process, see also
      * the various extensions.
      */
-    public static abstract class Child extends Offspring {
+    protected static abstract class Child extends Offspring {
 	private int pid;
 
 	/**

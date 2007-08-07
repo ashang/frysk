@@ -46,6 +46,7 @@ import frysk.sys.Sig;
 import frysk.sys.Errno;
 import frysk.event.TimerEvent;
 import frysk.testbed.TestLib;
+import frysk.testbed.Offspring;
 import frysk.testbed.TaskObserverBase;
 
 /**
@@ -343,7 +344,7 @@ public class TestTaskObserver
 	    extends TaskObserverBase
 	    implements TaskObserver.Terminating
 	{
-	    Child c = child;
+	    Offspring c = child;
 	    public void addedTo (Object o)
 	    {
 		c.signal (Sig.TERM);

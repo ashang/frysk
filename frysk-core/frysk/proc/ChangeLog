@@ -1,5 +1,9 @@
 2007-08-07  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRefresh.java: Replace frysk.testbed.TestLib.Child with
+	frysk.testbed.Offspring.
+	* TestTaskObserver.java: Ditto.
+
 	* TestRun.java: Use ProcCounter(int).
 	* TestTaskForkedObserver.java: Ditto; adjust counts.
 

@@ -1,5 +1,7 @@
 2007-08-07  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (Child): Make protected.
+
 	* FunitSlaveOffspring.java (FunitSlaveOffspring(String,String[])):
 	Delete.
 

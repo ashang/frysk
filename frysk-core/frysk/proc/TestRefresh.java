@@ -47,6 +47,7 @@ import frysk.testbed.TaskCounter;
 import frysk.testbed.PidCounter;
 import frysk.sys.Pid;
 import frysk.testbed.TestLib;
+import frysk.testbed.Offspring;
 
 /**
  * Check the host's behavior.
@@ -63,8 +64,8 @@ public class TestRefresh
     {
 	PidCounter added;
 	PidCounter removed;
-	Child child;
-	ChildTracker (Child child)
+	Offspring child;
+	ChildTracker (Offspring child)
 	{
 	    this.child = child;
 	    added = new PidCounter (child.getPid (),
