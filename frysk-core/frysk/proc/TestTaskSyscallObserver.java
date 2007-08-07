@@ -45,8 +45,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
-
-import frysk.sys.Fork;
+import frysk.testbed.SynchronizedOffspring;
 import frysk.sys.Pid;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
@@ -471,34 +470,21 @@ public class TestTaskSyscallObserver
     assertTrue("open of a.file failed", syscallOpenObserver.expectedRcFound);
   }
 
-  /**
-   * Class to create a detached child process that will be in the middle of
-   * reading a pipe.
-   */
-  class PipeReadChild
-      extends Child
-  {
-    protected int startChild (String stdin, String stdout, String stderr,
-                              String[] argv)
-    {
-      return Fork.daemon(stdin, stdout, stderr, argv);
+    /**
+     * Class to create a detached child process that will be in the
+     * middle of reading a pipe.
+     */
+    private class PipeReadChild extends SynchronizedOffspring {
+	PipeReadChild (boolean restart) {
+	    super(START_ACK,
+		  new String[] {
+		      getExecPath ("funit-syscallint"),
+		      Integer.toString(Pid.get()),
+		      Integer.toString(START_ACK.hashCode()),
+		      Integer.toString(restart ? 1 : 0)
+		  });
+	}
     }
-
-    PipeReadChild (String[] argv)
-    {
-      super(argv);
-    }
-
-    PipeReadChild (boolean restart)
-    {
-	this(new String[] {
-		 getExecPath ("funit-syscallint"),
-		 Integer.toString(Pid.get()),
-		 Integer.toString(ackSignal.hashCode()),
-		 Integer.toString(restart ? 1 : 0)
-	     });
-    }
-  }
 
   private SyscallEventInfo getSyscallEventInfo (Task task)
   {

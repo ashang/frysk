@@ -1,5 +1,7 @@
 2007-08-07  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (Child): Delete.
+	
 	* TestLib.java (AckProcess): Extend Offspring.
 	
 	* TestLib.java (Child.signal(int,Sig)): Delete.

@@ -1,5 +1,9 @@
 2007-08-07  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskSyscallObserver.java: Replace
+	frysk.testbed.TestLib.Child with
+	frysk.testbed.SynchronizedOffspring.
+
 	* TestProcGet.java: Replace frysk.testbed.TestLib.Child with
 	frysk.testbed.Offspring.
 	* TestTaskObserverBlocked.java: Ditto.

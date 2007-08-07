@@ -221,51 +221,6 @@ public class TestLib
     protected static final Sig[] execAck = new Sig[] { childAck };
 
     /**
-     * Manage a child process. Create a child process and then block
-     * until the child has reported back that it has started (using a
-     * ackSignal). Permit various operations on the process, see also
-     * the various extensions.
-     */
-    protected static abstract class Child extends Offspring {
-	private int pid;
-
-	/**
-	 * Return the ProcessID of the child.
-	 */
-	public int getPid () {
-	    return pid;
-	}
-
-	/**
-	 * Start CHILD as a running process.
-	 */
-	abstract protected int startChild (String stdin, String stdout,
-					   String stderr, String[] argv);
-
-	/**
-	 * Create a child process (using startChild), return once the
-	 * process is running. Wait for acknowledge SIG.
-	 */
-	protected Child (Sig sig, String[] argv) {
-	    SignalWaiter ack = new SignalWaiter(Manager.eventLoop, sig,
-						"startChild");
-	    this.pid = startChild(null, (logger.isLoggable(Level.FINE) ? null
-					 : "/dev/null"),
-				  null, argv);
-	    TearDownProcess.add(pid);
-	    ack.assertRunUntilSignaled();
-	}
-
-	/**
-	 * Create a child process (using startChild), return once the
-	 * process is running.
-	 */
-	protected Child (String[] argv) {
-	    this(ackSignal, argv);
-	}
-    }
-
-    /**
      * Build an funit-child command to run.
      */
     private static String[] funitChildCommand (boolean busy, String filename,
