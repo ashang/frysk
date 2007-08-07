@@ -415,16 +415,16 @@ public class TestTaskObserverCode extends TestLib
     child.signal(dummySig);
   }
   
-  /**
-   * Request that that given thread of the child runs its dummy
-   * function which will call the pb1 and pb1 functions. Done by
-   * sending it the dummySig. To observe this event one needs to put a
-   * code observer on the dummy (), pb1_func () and/or pb2_func () functions.
-   */
-  void requestDummyRun(int tid) throws Errno
-  {
-    child.signal(tid, dummySig);
-  }
+    /**
+     * Request that that given thread of the child runs its dummy
+     * function which will call the pb1 and pb1 functions. Done by
+     * sending it the dummySig. To observe this event one needs to put
+     * a code observer on the dummy (), pb1_func () and/or pb2_func ()
+     * functions.
+     */
+    void requestDummyRun(int tid) throws Errno {
+	Signal.tkill(tid, dummySig);
+    }
 
   /**
    * Returns the address of the requested function through

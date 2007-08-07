@@ -236,10 +236,6 @@ public class TestLib
 	    return pid;
 	}
 
-	public void signal (int tid, Sig sig) {
-	    Signal.tkill(tid, sig);
-	}
-
 	/**
 	 * Start CHILD as a running process.
 	 */
@@ -343,7 +339,7 @@ public class TestLib
 	 */
 	private void spawn (int tid, Sig sig, String why) {
 	    SignalWaiter ack = new SignalWaiter(Manager.eventLoop, spawnAck, why);
-	    signal(tid, sig);
+	    Signal.tkill(tid, sig);
 	    ack.assertRunUntilSignaled();
 	}
 

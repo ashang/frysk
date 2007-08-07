@@ -1,5 +1,8 @@
 2007-08-07  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserverCode.java: Replace child.signal(int,Sig) with
+	Signal.tkill(int,Sig).
+
 	* TestProcGet.java (testGetCmdLine): Use FunitExecOffspring to
 	create a process with known arguments.
 	(testGetExe): Ditto.
