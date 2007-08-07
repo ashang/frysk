@@ -1,3 +1,7 @@
+2007-08-07  Teresa Thomas  <tthomas@redhat.com>
+
+	* DebuginfoPaths.java (task): Added.
+
 2007-08-03  Petr Machata <pmachata@redhat.com>
 
 	* Ltrace.java: fix use of ElfSymbolBuilder

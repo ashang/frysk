@@ -1,7 +1,8 @@
-2007-08-06  Stan Cox  <scox@redhat.com>
+2007-08-07  Teresa Thomas  <tthomas@redhat.com>
 
-	* PrintCommand.java (handle): Handle ValueUavailableException and 
-	VariableOptimizedOutException.
+	* UserHelp.java (UserHelp): User help added for 'debuginfo'.
+	* CLI.java (CLI): Command 'debuginfo' added.
+	* DebuginfoCommand.java (handle): Added.
 
 2007-08-02  Andrew Cagney  <cagney@redhat.com>
 

@@ -38,55 +38,63 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.bindir;
+package frysk.util;
 
-import frysk.proc.ProcId;
-import frysk.proc.Proc;
+import lib.dwfl.DwflModule;
+import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 
-import frysk.util.CommandlineParser;
-import frysk.util.Util;
-import frysk.util.DebuginfoPaths;
-
-public final class fdebuginfo
+/**
+ * Utility class that obtains the debugging information install paths
+ * for a process.
+ */
+public class DebuginfoPaths
 {
-  private static CommandlineParser parser;
+  Task task;
   
-   /**
-   * Entry function for fdebuginfo
-   * 
-   * @param args - pid of the process(es) 
-   */  
-  public static void main(String[] args)
+  public DebuginfoPaths(Task task_)
   {
-    // Parse command line. Check if pid provided.
-    parser = new CommandlineParser("fdebuginfo")
-    {
-      //@Override
-      public void parsePids (ProcId[] pids)
-      { 
-        for (int i= 0; i< pids.length; i++)
-          {       
-            Proc proc = Util.getProcFromPid(pids[i]);
-            Task task  = proc.getMainTask();
-            DebuginfoPaths dbg = new DebuginfoPaths(task);
-            String dInfo = dbg.getDebuginfo();          
-            if (dInfo!=null)
-              System.out.print(dInfo);
-          }
-          
-        System.exit(0);
-      }
-    };
-
-    parser.setHeader("Usage: fdebuginfo <pid(s)>");
-
-    parser.parse(args);
+     task = task_; 
+  }
+  
+  /**
+   * Returns debuginfo package paths of task modules
+   */
+  public String getDebuginfo()
+  {     
+    // Get the DwflModules from the task.   
+    DwflModule[] modules = (DwflCache.getDwfl(task)).getModules();
     
-    //Pid not found
-    System.err.println("Error: No pid provided.");
-    parser.printHelp();
-    System.exit(1);    
-  }   
-}
+    if (modules == null)
+      return null;
+     
+    // Buffer to append debugging information 
+    StringBuffer dInfoOut = new StringBuffer(); 
 
+    for (int i = 0; i < modules.length; i++)
+      {
+        DwflModule mod = modules[i];  
+        String name = mod.getName();
+        
+        // Check for valid executables
+        if (name.charAt(0)=='/')
+          {              
+            // Ignore non-binary modules
+            if (mod.getElf()==null)  
+              break;
+             
+            dInfoOut.append(mod.getName());   
+            dInfoOut.append(" ");
+            String path = mod.getDebuginfo();
+            // Case where debuginfo not found
+            if (path==null) 
+              dInfoOut.append("---"); 
+            // Debuginfo found
+            else
+              dInfoOut.append(path); 
+            dInfoOut.append("\n"); 
+         }
+      }      
+    return (dInfoOut.toString());    
+  }
+}    

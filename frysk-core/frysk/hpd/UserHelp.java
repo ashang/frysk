@@ -241,6 +241,12 @@ class UserHelp
         addHelp("break", "Define a breakpoint",
 		"break {proc | line | #file#line} [-stop stop-set]", temp);
         
+        temp = 
+"The debuginfo command lists the debuginfo paths for a process and its shared modules.";
+        addHelp("debuginfo", "Displays debuginfo install paths of a process.",
+        	"debuginfo", temp);
+
+        
         addHelp("exit", "Terminate the debugging session.",
 		"exit", "Terminate the debugging session.");
         

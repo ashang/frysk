@@ -1,7 +1,6 @@
-
 // This file is part of the program FRYSK.
 //
-// Copyright  2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -38,55 +37,39 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.bindir;
+package frysk.hpd;
 
-import frysk.proc.ProcId;
-import frysk.proc.Proc;
-import frysk.proc.Task;
+import java.text.ParseException;
+import java.util.ArrayList;
 
-import frysk.util.CommandlineParser;
-import frysk.util.Util;
 import frysk.util.DebuginfoPaths;
 
-public final class fdebuginfo
-{
-  private static CommandlineParser parser;
-  
-   /**
-   * Entry function for fdebuginfo
-   * 
-   * @param args - pid of the process(es) 
-   */  
-  public static void main(String[] args)
-  {
-    // Parse command line. Check if pid provided.
-    parser = new CommandlineParser("fdebuginfo")
-    {
-      //@Override
-      public void parsePids (ProcId[] pids)
-      { 
-        for (int i= 0; i< pids.length; i++)
-          {       
-            Proc proc = Util.getProcFromPid(pids[i]);
-            Task task  = proc.getMainTask();
-            DebuginfoPaths dbg = new DebuginfoPaths(task);
-            String dInfo = dbg.getDebuginfo();          
-            if (dInfo!=null)
-              System.out.print(dInfo);
-          }
-          
-        System.exit(0);
-      }
-    };
-
-    parser.setHeader("Usage: fdebuginfo <pid(s)>");
-
-    parser.parse(args);
+class DebuginfoCommand
+    implements CommandHandler
+{  
+    private final CLI cli;
     
-    //Pid not found
-    System.err.println("Error: No pid provided.");
-    parser.printHelp();
-    System.exit(1);    
-  }   
+    DebuginfoCommand(CLI cli)
+    {
+	this.cli = cli;
+    }
+    
+    public void handle(Command cmd) throws ParseException 
+    {   
+	ArrayList params = cmd.getParameters();
+	
+	if (params.size() == 1 && params.get(0).equals("-help")) {
+	    cli.printUsage(cmd);
+	    return;
+        }
+	
+	if (cli.proc == null) {
+	    cli.addMessage("Not attached to any process", Message.TYPE_ERROR);
+	    return;
+	}	
+	
+	DebuginfoPaths dbg = new DebuginfoPaths(cli.getTask());
+        String dInfo = dbg.getDebuginfo();
+        cli.outWriter.println(dInfo);
+    }
 }
-
