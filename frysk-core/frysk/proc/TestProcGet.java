@@ -50,6 +50,7 @@ import frysk.testbed.TestLib;
 import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.FunitExecOffspring;
+import frysk.testbed.Offspring;
 
 /**
  * Test Proc's public get methods.
@@ -109,7 +110,7 @@ public class TestProcGet
    */
   public void testGetCommand ()
   {
-    Child child = new AckDaemonProcess();
+    Offspring child = new AckDaemonProcess();
     Proc childProc = child.assertFindProcAndTasks();
     assertEquals("value of child's getCommand()", "funit-child",
                  childProc.getCommand());
@@ -120,7 +121,7 @@ public class TestProcGet
    */
   public void testGetTasks ()
   {
-    Child child = new AckDaemonProcess(1);
+    Offspring child = new AckDaemonProcess(1);
     Proc proc = child.assertFindProcAndTasks(); // and tasks
     List tasks = proc.getTasks();
 

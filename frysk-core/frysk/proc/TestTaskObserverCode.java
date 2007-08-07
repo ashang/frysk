@@ -42,15 +42,14 @@ package frysk.proc;
 import inua.eio.*;
 
 import frysk.sys.*;
-
+import frysk.testbed.Offspring;
 import lib.dwfl.*;
-
 import java.util.*;
 import frysk.testbed.TestLib;
 
 public class TestTaskObserverCode extends TestLib
 {
-  private Child child;
+  private Offspring child;
   private Task task;
   private Proc proc;
 

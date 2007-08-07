@@ -292,10 +292,34 @@ public class TestLib
      * signals (see below).
      */
     public static abstract class AckProcess
-	extends Child
+	extends Offspring
     {
-	private AckProcess (Sig ack, String[] argv) {
-	    super(ack, argv);
+	private int pid;
+	/**
+	 * Return the ProcessID of the child.
+	 */
+	public int getPid () {
+	    return pid;
+	}
+
+	/**
+	 * Start CHILD as a running process.
+	 */
+	abstract protected int startChild (String stdin, String stdout,
+					   String stderr, String[] argv);
+
+	/**
+	 * Create a process (using startChild), return once the
+	 * process is running. Wait for acknowledge SIG.
+	 */
+	private AckProcess (Sig ackSig, String[] argv) {
+	    SignalWaiter ack = new SignalWaiter(Manager.eventLoop, ackSig,
+						"startChild");
+	    this.pid = startChild(null, (logger.isLoggable(Level.FINE) ? null
+					 : "/dev/null"),
+				  null, argv);
+	    TearDownProcess.add(pid);
+	    ack.assertRunUntilSignaled();
 	}
 
 	/** Create an ack process. */

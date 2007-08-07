@@ -1,5 +1,13 @@
 2007-08-07  Andrew Cagney  <cagney@redhat.com>
 
+	* TestProcGet.java: Replace frysk.testbed.TestLib.Child with
+	frysk.testbed.Offspring.
+	* TestTaskObserverBlocked.java: Ditto.
+	* TestTaskObserverInstructionAndCode.java: Ditto.
+	* TestTaskObserverCode.java: Ditto.
+	* TestTaskObserverInstruction.java: Ditto.
+	* TestTaskObserver.java: Ditto.
+
 	* TestTaskObserverCode.java: Replace child.signal(int,Sig) with
 	Signal.tkill(int,Sig).
 

@@ -48,6 +48,7 @@ import frysk.testbed.Fibonacci;
 import frysk.testbed.TaskSet;
 import frysk.testbed.TaskObserverBase;
 import frysk.testbed.DaemonBlockedAtEntry;
+import frysk.testbed.Offspring;
 
 /**
  * Check the behavior of an observer that blocks a Task's progress. In
@@ -628,7 +629,7 @@ public class TestTaskObserverBlocked
    */
   public void testUnblockRunning ()
   {
-    Child child = new AckDaemonProcess();
+    Offspring child = new AckDaemonProcess();
     Task task = child.findTaskUsingRefresh(true);
 
     class UnblockRunning

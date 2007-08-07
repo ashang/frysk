@@ -40,6 +40,7 @@
 package frysk.proc;
 
 import frysk.testbed.TestLib;
+import frysk.testbed.Offspring;
 
 public class TestTaskObserverInstructionAndCode
     extends TestLib
@@ -47,7 +48,7 @@ public class TestTaskObserverInstructionAndCode
   public void testInstructionAndCode()
   {
     // Create busy child.
-    Child child = new AckDaemonProcess(true);
+    Offspring child = new AckDaemonProcess(true);
     Task task = child.findTaskUsingRefresh (true);
 
     // Watch for any unexpected terminations of the child process.

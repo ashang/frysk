@@ -204,7 +204,7 @@ public class TestTaskObserver
     public void attachDetachTask (int count, boolean main)
     {
 	// Create a detached child.
-	Child child = new AckDaemonProcess (count);
+	Offspring child = new AckDaemonProcess (count);
 	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("task", task);
 	attachDetach (new Task[] { task });
@@ -232,7 +232,7 @@ public class TestTaskObserver
     public void detachExitingTask (int count, boolean main)
     {
 	// Create a detached child.
-	Child child = new AckDaemonProcess (count);
+	Offspring child = new AckDaemonProcess (count);
 	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("task", task);
 
@@ -269,7 +269,7 @@ public class TestTaskObserver
      */
     public void attachDeadTask (int count, boolean main)
     {
-	Child child = new AckDaemonProcess (count);
+	Offspring child = new AckDaemonProcess (count);
 	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("task", task);
 	
@@ -336,7 +336,7 @@ public class TestTaskObserver
      */
     public void attachToAttachedTask (int count, boolean main)
     {
-	final Child child = new AckDaemonProcess (count);
+	final Offspring child = new AckDaemonProcess (count);
 	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("task", task);
 	attach (new Task[] { task });
@@ -378,7 +378,7 @@ public class TestTaskObserver
      */
     public void backToBackAttachAttachTask (int count, boolean main)
     {
-	Child child = new AckDaemonProcess ();
+	Offspring child = new AckDaemonProcess ();
 	Task task = child.findTaskUsingRefresh (true);
 	assertNotNull ("main task", task);
 
@@ -408,7 +408,7 @@ public class TestTaskObserver
      */
     public void backToBackAttachDetachTask (int count, boolean main)
     {
-	Child child = new AckDaemonProcess (count);
+	Offspring child = new AckDaemonProcess (count);
 	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("main task", task);
 
@@ -447,7 +447,7 @@ public class TestTaskObserver
      */
     public void deletedAttachTask (int count, boolean main)
     {
-	Child child = new AckDaemonProcess (count);
+	Offspring child = new AckDaemonProcess (count);
 	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("main task", task);
 
@@ -486,7 +486,7 @@ public class TestTaskObserver
      * Check that removing a non-existant observer doesn't cause a
      * panic.
      */
-    private void deleteUnattachedObserver (Child child, boolean main)
+    private void deleteUnattachedObserver (Offspring child, boolean main)
     {
 	TaskObserver.Attached unattachedObserver = new TaskObserver.Attached ()
 	    {
@@ -515,13 +515,13 @@ public class TestTaskObserver
     /** {@link #deleteUnattachedObserver} */
     public void testDeleteUnattachedFromAttachedMain ()
     {
-	Child child = new AttachedAckProcess ();
+	Offspring child = new AttachedAckProcess ();
 	deleteUnattachedObserver (child, true);
     }
     /** {@link #deleteUnattachedObserver} */
     public void testDeleteUnattachedFromDetachedMain ()
     {
-	Child child = new AckDaemonProcess ();
+	Offspring child = new AckDaemonProcess ();
 	deleteUnattachedObserver (child, true);
     }
 }
