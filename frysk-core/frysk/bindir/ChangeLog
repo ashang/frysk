@@ -2,7 +2,10 @@
 
 	* fdebuginfo.java (.parsePids): Function to get debuginfo moved to
 	  frysk utils.
-
+	  
+	* fdebuginfo.java (main): Corefile support added.
+	(printDebuginfo): Updated.
+	 
 2007-08-02  Nurdin Premji  <npremji@redhat.com>
 
 	* fhpd.xml: Updated.

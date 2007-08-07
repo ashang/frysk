@@ -45,6 +45,7 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 
 import frysk.util.CommandlineParser;
+import frysk.util.CoreExePair;
 import frysk.util.Util;
 import frysk.util.DebuginfoPaths;
 
@@ -52,29 +53,49 @@ public final class fdebuginfo
 {
   private static CommandlineParser parser;
   
-   /**
-   * Entry function for fdebuginfo
+  /**
+   * Function that gets and prints the debuginfo install paths
    * 
-   * @param args - pid of the process(es) 
-   */  
+   * @param proc - pid
+   */
+  private static void printDebuginfo (Proc proc)
+  {
+    Task task  = proc.getMainTask();
+    DebuginfoPaths dbg = new DebuginfoPaths(task);
+    String dInfo = dbg.getDebuginfo();          
+    if (dInfo!=null)
+      System.out.print(dInfo);      
+  }
+  
+  /**
+  * Entry function for fdebuginfo
+  * 
+  * @param args - pid of the process(es) or corefile
+  */  
   public static void main(String[] args)
   {
-    // Parse command line. Check if pid provided.
+    // Parse command line. Check if argument provided.
     parser = new CommandlineParser("fdebuginfo")
     {
+      //@Override 
+      public void parseCores (CoreExePair[] coreExePairs)
+      {
+        for (int i = 0; i < coreExePairs.length; i++)
+        {       
+          Proc proc = Util.getProcFromCoreExePair(coreExePairs[i]);
+          printDebuginfo(proc);
+        }  
+        System.exit(0);  
+      }
+      
       //@Override
       public void parsePids (ProcId[] pids)
       { 
         for (int i= 0; i< pids.length; i++)
           {       
             Proc proc = Util.getProcFromPid(pids[i]);
-            Task task  = proc.getMainTask();
-            DebuginfoPaths dbg = new DebuginfoPaths(task);
-            String dInfo = dbg.getDebuginfo();          
-            if (dInfo!=null)
-              System.out.print(dInfo);
-          }
-          
+            printDebuginfo(proc);
+          }  
         System.exit(0);
       }
     };
