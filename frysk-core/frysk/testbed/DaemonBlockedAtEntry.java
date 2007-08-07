@@ -44,13 +44,13 @@ import frysk.proc.Action;
 import frysk.proc.TaskObserver;
 import frysk.proc.Task;
 import frysk.proc.Manager;
-import frysk.sys.Signal;
+import java.util.logging.Level;
 
 /**
  * Creates an attached process halted at it's entry point address
  * (i.e., the program's first instruction).
  */
-public class DaemonBlockedAtEntry extends TestLib {
+public class DaemonBlockedAtEntry {
     private final Task mainTask;
   
     private static class ExecBlockingObserver
@@ -63,9 +63,14 @@ public class DaemonBlockedAtEntry extends TestLib {
 	    Manager.eventLoop.requestStop();
 	}
 	public Action updateExeced (Task task) {
-	    if (fired)
+	    if (fired) {
+		logger.log(Level.FINE,
+			   "{0} first exec already occcured, continue\n",
+			   this);
 		// Only trigger the first time.
 		return Action.CONTINUE;
+	    }
+	    logger.log(Level.FINE, "{0} first exec, blocking\n", this);
 	    Manager.eventLoop.requestStop();
 	    fired = true;
 	    return Action.BLOCK;
@@ -78,16 +83,16 @@ public class DaemonBlockedAtEntry extends TestLib {
      * Create an attached process blocked at it's entry-point (i.e., just after
      * the exec).
      */
-    public DaemonBlockedAtEntry (String[] argv) {
+    public DaemonBlockedAtEntry(String[] argv) {
 	// Create the child.
-	AckProcess child = new DetachedAckProcess((String) null, argv);
+	FunitExecOffspring child = new FunitExecOffspring(argv);
 	this.mainTask = child.findTaskUsingRefresh(true);
 	// Add the exec observer that will block the task.
 	mainTask.requestAddExecedObserver(execBlockingObserver);
-	assertRunUntilStop("add exec observer to DaemonBlockedAtEntry");
+	TestLib.assertRunUntilStop("add exec observer");
 	// Run to the exec call.
-	Signal.tkill(mainTask.getTid(), execSig);
-	assertRunUntilStop("run to exec");
+	child.requestExec();
+	TestLib.assertRunUntilStop("run to blocked exec");
     }
   
     /**
