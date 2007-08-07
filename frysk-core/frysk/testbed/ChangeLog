@@ -1,3 +1,10 @@
+2007-08-07  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcCounter.java (ProcCounter(int)): Replace
+	ProcCounter(boolean); Check that Proc is a descendant of the
+	process root.
+	(ProcCounter()): Update.
+
 2007-08-02  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java: Drain the IO signal.

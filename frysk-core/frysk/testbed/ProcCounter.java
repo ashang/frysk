@@ -57,21 +57,25 @@ public class ProcCounter
 
     public final LinkedList removed = new LinkedList();
 
-    private boolean descendantsOnly;
+    /**
+     * Process root; only count descendants of this.
+     */
+    private final int root;
 
     /**
      * Create a new ProcCounter counting processes added and
      * removed. If descendantsOnly, only count children of this
      * process.
      */
-    public ProcCounter (boolean descendantsOnly) {
-	this.descendantsOnly = descendantsOnly;
+    public ProcCounter (int root) {
+	this.root = root;
 	// Set up observers to count proc add and delete events.
 	Manager.host.observableProcAddedXXX.addObserver(new Observer() {
 		public void update (Observable o, Object obj) {
 		    Proc proc = (Proc) obj;
-		    if (ProcCounter.this.descendantsOnly
-			&& ! TestLib.isDescendantOfMine(proc))
+		    if (ProcCounter.this.root > 0
+			&& !TestLib.isDescendantOf(ProcCounter.this.root,
+						   proc))
 			return;
 		    added.add(proc);
 		}
@@ -79,8 +83,9 @@ public class ProcCounter
 	Manager.host.observableProcRemovedXXX.addObserver(new Observer() {
 		public void update (Observable o, Object obj) {
 		    Proc proc = (Proc) obj;
-		    if (ProcCounter.this.descendantsOnly
-			&& ! TestLib.isDescendantOfMine(proc))
+		    if (ProcCounter.this.root > 0
+			&& !TestLib.isDescendantOf(ProcCounter.this.root,
+						   proc))
 			return;
 		    removed.add(proc);
 		}
@@ -88,9 +93,9 @@ public class ProcCounter
     }
 	
     /**
-     * Count all proc's added and removed.
+     * Count all Proc's added and removed.
      */
-    public ProcCounter () {
-	this(false);
+    public ProcCounter() {
+	this(0);
     }
 }

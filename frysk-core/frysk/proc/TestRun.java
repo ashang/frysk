@@ -46,6 +46,7 @@ import frysk.testbed.TestLib;
 import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.TaskSet;
 import frysk.testbed.TaskObserverBase;
+import frysk.sys.Pid;
 
 /**
  * Check that a program can be run to completion. A scratch file is
@@ -66,7 +67,7 @@ public class TestRun
 
     // Add an observer that counts the number of proc create
     // events.
-    ProcCounter procCounter = new ProcCounter(true);
+    ProcCounter procCounter = new ProcCounter(Pid.get());
 
     // Observe TaskObserver.Attached events; when any occur
     // indicate that the curresponding task should continue.

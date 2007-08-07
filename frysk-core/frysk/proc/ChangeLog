@@ -1,3 +1,8 @@
+2007-08-07  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRun.java: Use ProcCounter(int).
+	* TestTaskForkedObserver.java: Ditto; adjust counts.
+
 2007-08-06  Mark Wielaard  <mark@klomp.org>
 
 	Fixes bug #4894
