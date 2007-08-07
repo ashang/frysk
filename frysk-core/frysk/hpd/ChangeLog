@@ -4,6 +4,12 @@
 	* CLI.java (CLI): Command 'debuginfo' added.
 	* DebuginfoCommand.java (handle): Added.
 
+2007-08-06  Stan Cox  <scox@redhat.com>
+	
+	* PrintCommand.java (handle): Handle ValueUavailableException and
+	VariableOptimizedOutException.
+	* X8664Registers.java: X8664 registers are baseTypeLong.	
+
 2007-08-02  Andrew Cagney  <cagney@redhat.com>
 
 	* TestExamineCommand.java: New file.
