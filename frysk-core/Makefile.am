@@ -74,19 +74,19 @@ GEN_GCJ_LDADD += -laudit
 GEN_GCJ_LDADD += -lopcodes
 
 # For TestExec.java
-pkglib_PROGRAMS += frysk/pkglibdir/funit-child-alias
-frysk_pkglibdir_funit_child_alias_SOURCES =
-frysk/pkglibdir/funit-child-alias: frysk/pkglibdir/funit-child
-	cp -p frysk/pkglibdir/funit-child $@
+pkglib_PROGRAMS += frysk/pkglibdir/funit-exec-alias
+frysk_pkglibdir_funit_exec_alias_SOURCES =
+frysk/pkglibdir/funit-exec-alias: frysk/pkglibdir/funit-exec
+	cp -p frysk/pkglibdir/funit-exec $@
 
 # Shared library for inserting a breakpoint
 frysk_pkglibdir_test1_LDADD = -lm
 
 if DO_ARCH32_TEST
-pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-child-alias
-frysk_pkglibdir_arch32_funit_child_alias_SOURCES =
-frysk/pkglibdir/arch32/funit-child-alias: frysk/pkglibdir/arch32/funit-child
-	cp -p frysk/pkglibdir/arch32/funit-child $@
+pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-exec-alias
+frysk_pkglibdir_arch32_funit_exec_alias_SOURCES =
+frysk/pkglibdir/arch32/funit-exec-alias: frysk/pkglibdir/arch32/funit-exec
+	cp -p frysk/pkglibdir/arch32/funit-exec $@
 frysk_pkglibdir_arch32_test1_LDADD = -lm
 endif
 

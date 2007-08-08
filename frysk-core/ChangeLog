@@ -1,3 +1,9 @@
+2007-08-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk_pkglibdir_arch32_funit_exec_alias_SOURCES)
+	(frysk_pkglibdir_funit_exec_alias_SOURCES): Replace
+	funit-child-alias.
+
 2007-07-31  Teresa Thomas  <tthomas@redhat.com>
 
 	* Makefile.rules (SUBST): Switch changed from $@ to $<.

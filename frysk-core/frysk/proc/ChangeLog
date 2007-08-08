@@ -1,5 +1,9 @@
 2007-08-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TestExec.java (testAttachedMultipleChildExec): Use
+	ExecOffspring.  Replace ExecOffspring.requestRandomExec with
+	ExecOffspring.requestThreadExec.
+
 	* TestAbandon.java: Replace frysk.testbed.TestLib.AckProcess with
 	frysk.testbed.SlaveOffspring.
 	* TestFindProc.java: Ditto.

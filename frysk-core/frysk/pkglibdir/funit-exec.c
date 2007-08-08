@@ -83,6 +83,13 @@ void
 exec_handler (int sig)
 {
   trace ("exec %s", exec_exe);
+  if (getpid() != gettid()) {
+    // When a non-main thread, brand the argv with the exec-ing
+    // thread's pid.  This lets tests such as frysk.proc.TestExec
+    // check that the correct thread executed the exec call.
+    if (asprintf(&exec_argv[0], "%d:%d", getpid(), gettid()) < 0)
+      pfatal("asprintf");
+  }
   execve (exec_exe, exec_argv, exec_envp);
   pfatal ("execve");
 }

@@ -1,5 +1,12 @@
 2007-08-08  Andrew Cagney  <cagney@redhat.com>
 
+	* ExecOffspring.java (assertRunThreadExec): New.
+	(requestThreadExec): Rename requestRandomExec.
+	(ExecOffspring(int,File,String[]): New.
+	(getCommandLine): Change "exe" parameter type to a File.
+	* TestLib.java (AckProcess(String,String[]): Delete.
+	(DetachedAckProcess(String,String[]): Delete.
+	
 	* TestLib.java (AckDaemonProcess): Extend SlaveProcess.
 	(AckDaemonProcess.startChild): Delete.
 

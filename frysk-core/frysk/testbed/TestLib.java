@@ -291,14 +291,6 @@ public class TestLib
 	    this(childAck, funitChildCommand(busy, null, null));
 	}
 
-	/**
-	 * Create an AckProcess; the process will use FILENAME and
-	 * ARGV as the program to exec.
-	 */
-	AckProcess (String filename, String[] argv) {
-	    this(childAck, funitChildCommand(false, filename, argv));
-	}
-
 	/** Create an AckProcess, and then add COUNT threads. */
 	AckProcess (int count) {
 	    this();
@@ -358,10 +350,6 @@ public class TestLib
     {
 	public DetachedAckProcess () {
 	    super();
-	}
-
-	public DetachedAckProcess (String filename, String[] argv) {
-	    super(filename, argv);
 	}
 
 	public DetachedAckProcess (int count) {

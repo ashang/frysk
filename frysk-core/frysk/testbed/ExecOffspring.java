@@ -46,6 +46,7 @@ import frysk.junit.TestCase;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import frysk.proc.Manager;
+import java.io.File;
 
 /**
  * Create a process running funit-exec.
@@ -68,6 +69,13 @@ public class ExecOffspring extends SynchronizedOffspring {
     public ExecOffspring(int threads, String[] programAndArgs) {
 	super(START_ACK, getCommandLine(0, threads, null, programAndArgs));
     }
+    /**
+     * Create a multi-threaded process that, when requested, will exec
+     * EXE passing ARGS as the argument list.
+     */
+    public ExecOffspring(int threads, File exe, String[] programAndArgs) {
+	super(START_ACK, getCommandLine(0, threads, exe, programAndArgs));
+    }
 
     /**
      * Construct a command line for invoking the WORD_SIZED version of
@@ -77,7 +85,7 @@ public class ExecOffspring extends SynchronizedOffspring {
      */
     public static String[] getCommandLine(int wordSize,
 					  int threads,
-					  String exe,
+					  File exe,
 					  String[] programArgs) {
 	LinkedList args = new LinkedList();
 	switch (wordSize) {
@@ -99,7 +107,7 @@ public class ExecOffspring extends SynchronizedOffspring {
 	}
 	if (exe != null) {
 	    args.add("-e");
-	    args.add(exe);
+	    args.add(exe.getAbsolutePath());
 	}
 	args.add("-m");
 	args.add(Integer.toString(Pid.get()));
@@ -123,7 +131,7 @@ public class ExecOffspring extends SynchronizedOffspring {
     /**
      * Request that a random thread does an exec.
      */
-    public void requestRandomExec() {
+    public void requestThreadExec() {
 	signal(Sig.USR1);
     }
     /**
@@ -138,4 +146,17 @@ public class ExecOffspring extends SynchronizedOffspring {
 	requestExec();
 	ack.assertRunUntilSignaled();
     }
-  }
+    /**
+     * Request that a random non-main thread do an exec and then wait
+     * for the new program to signal back that it is running.  This
+     * assumes that the new program is set up to send the START_ACK to
+     * this process.
+     */
+    public void assertRunThreadExec(String why) {
+	logger.log(Level.FINE, why + "\n");
+	SignalWaiter ack
+	    = new SignalWaiter(Manager.eventLoop, START_ACK, why);
+	requestThreadExec();
+	ack.assertRunUntilSignaled();
+    }
+}

@@ -45,6 +45,7 @@ import frysk.testbed.TestLib;
 import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.TaskObserverBase;
 import frysk.testbed.ExecOffspring;
+import frysk.Config;
 
 /**
  * Test the exec event. The exec needs to completely replace the existing
@@ -142,7 +143,7 @@ public class TestExec
 		 mainTask.getProc().getTasks().size());
 
     // Trigger the exec (of the non-main task).
-    child.requestRandomExec();
+    child.requestThreadExec();
     assertRunUntilStop("wait for exec");
     assertEquals("task count after exec", 1,
 		 mainTask.getProc().getTasks().size());
@@ -271,7 +272,7 @@ public class TestExec
    * A multiple threaded program's child performs an exec, check that it is
    * correctly tracked.
    */
-  public void testAttachedMultipleChildExec ()
+  public void testAttachedMultipleChildExec()
   {
     // Watch for any Task exec events, accumulating them as they arrive.
     class ExecChildObserver
@@ -293,39 +294,44 @@ public class TestExec
       }
     }
 
-    // Create an unattached child process.
-    AckProcess child = new DetachedAckProcess("funit-child-alias", null);
-
+    // Create an unattached process with one extra threads that will,
+    // when requested, exec a "clone" of itself.
+    String[] newCmdLine = ExecOffspring.getCommandLine(0, 0, null,
+						       new String[] {
+							   "/bin/echo",
+							   "hi"
+						       });
+    ExecOffspring child
+	= new ExecOffspring(1, Config.getPkgLibFile("funit-exec-alias"),
+			    newCmdLine);
     Proc proc = child.assertFindProcAndTasks();
-    ExecChildObserver execObserverParent = new ExecChildObserver();
-    ExecChildObserver execObserverChild = new ExecChildObserver();
+    String[] beforeCmdLine = proc.getCmdLine();
+    String beforeCommand = proc.getCommand();
 
     // Attach to the process using the exec observer. The event
     // loop is kept running until execObserverParent .addedTo is
     // called indicating that the attach succeeded.
+
+    ExecChildObserver execObserverParent = new ExecChildObserver();
     Task task = child.findTaskUsingRefresh(true);
+    assertNotNull("task", task);
     task.requestAddExecedObserver(execObserverParent);
     assertRunUntilStop("adding exec observer causing attach");
 
-    // Add the clones, then do the exec; this call keeps the event
-    // loop running until the child process has notified this
-    // process that the exec has finished which is well after
-    // execObserverParent .updateExeced has been called.
-    // execObserverChild .updateExeced should not be called
-    // since the event only arrives after the exec has completed, and only
-    // the main thread is left and is therefore the only thread that
-    // can receive the event.
-
-    child.assertSendAddCloneWaitForAcks();
-    child.assertSendAddCloneWaitForAcks();
-
-    String[] beforeCmdLine = proc.getCmdLine();
-    String beforeCommand = proc.getCommand();
-
+    ExecChildObserver execObserverChild = new ExecChildObserver();
     Task childtask = child.findTaskUsingRefresh(false);
+    assertNotNull("childTask", childtask);
     childtask.requestAddExecedObserver(execObserverChild);
-    child.assertSendExecWaitForAcks(childtask.getTid());
 
+    // Do the exec; this call keeps the event loop running until the
+    // child process has notified this process that the exec has
+    // finished which is well after execObserverParent .updateExeced
+    // has been called.  execObserverChild .updateExeced should not be
+    // called since the event only arrives after the exec has
+    // completed, and only the main thread is left and is therefore
+    // the only thread that can receive the event.
+
+    child.assertRunThreadExec("execing funit-exec-clone from thread");
     assertEquals("task after attached multiple clone exec", proc,
                  task.getProc()); // parent/child relationship
     assertTrue("task after attached multiple clone exec",
@@ -343,7 +349,7 @@ public class TestExec
 
     assertEquals("number of children", proc.getChildren().size(), 0);
     assertEquals("proc's getCommand after exec", proc.getCommand(),
-                 "funit-child-ali");
+                 "funit-exec-alia");
     assertFalse("proc's getCommand before/after exec equals",
                 beforeCommand.equals(proc.getCommand()));
     assertFalse("proc's getCmdLine[0] before/after exec equals",
