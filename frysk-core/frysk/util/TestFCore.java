@@ -63,6 +63,7 @@ import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.sys.proc.MapsBuilder;
 import frysk.testbed.TestLib;
+import frysk.testbed.SlaveOffspring;
 
 public class TestFCore
     extends TestLib
@@ -349,7 +350,7 @@ public class TestFCore
    */
   protected Proc giveMeAProc ()
   {
-    AckProcess ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = new DetachedAckProcess();
     assertNotNull(ackProc);
     Proc proc = ackProc.assertFindProcAndTasks();
     assertNotNull(proc);

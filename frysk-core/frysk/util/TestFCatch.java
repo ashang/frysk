@@ -57,6 +57,7 @@ import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.testbed.TestLib;
+import frysk.testbed.SlaveOffspring;
 
 public class TestFCatch
     extends TestLib
@@ -70,7 +71,7 @@ public class TestFCatch
 
   public void testSingleThreadedCatch ()
   {
-    AckProcess ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = new DetachedAckProcess();
     Proc proc = ackProc.assertFindProcAndTasks();
 
     FCatchTester catcher = new FCatchTester();

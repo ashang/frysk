@@ -44,6 +44,7 @@ import frysk.Config;
 import frysk.expunit.Expect;
 import frysk.proc.Task;
 import frysk.testbed.TestLib;
+import frysk.testbed.SlaveOffspring;
 
 public class TestFtrace
     extends TestLib
@@ -59,7 +60,7 @@ public class TestFtrace
 
     public void testFtraceTraces () {
 	// Create an unattached child process.
-	AckProcess child = new DetachedAckProcess();
+	SlaveOffspring child = new DetachedAckProcess();
 	Task task = child.findTaskUsingRefresh(true);
 	expect = new Expect(new String[] {
 				Config.getBinFile("ftrace").getAbsolutePath(),
@@ -70,7 +71,7 @@ public class TestFtrace
 
     public void testFtraceFollowsClones() {
 	// Create an unattached child process.
-	AckProcess child = new DetachedAckProcess();
+	SlaveOffspring child = new DetachedAckProcess();
 	Task task = child.findTaskUsingRefresh(true);
 	expect = new Expect(new String[] {
 				Config.getBinFile("ftrace").getAbsolutePath(),
@@ -84,7 +85,7 @@ public class TestFtrace
 
     public void testFtraceFollowsForks() {
 	// Create an unattached child process.
-	AckProcess child = new DetachedAckProcess();
+	SlaveOffspring child = new DetachedAckProcess();
 	Task task = child.findTaskUsingRefresh(true);
         expect = new Expect(new String[] {
 				Config.getBinFile("ftrace").getAbsolutePath(),

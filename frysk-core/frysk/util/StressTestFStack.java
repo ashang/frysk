@@ -50,6 +50,7 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.testbed.TestLib;
+import frysk.testbed.SlaveOffspring;
 import frysk.testbed.FunitThreadsOffspring;
 
 public class StressTestFStack
@@ -67,7 +68,7 @@ public class StressTestFStack
   public void testStressMultiThreadedDetach ()
   {
     int clones = 20;
-    AckProcess ackProc = new DetachedAckProcess(clones);
+    SlaveOffspring ackProc = new DetachedAckProcess(clones);
     TestFStack.multiThreaded(ackProc, clones);
   }
 

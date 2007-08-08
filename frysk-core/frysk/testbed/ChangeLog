@@ -1,5 +1,13 @@
 2007-08-08  Andrew Cagney  <cagney@redhat.com>
 
+	* SlaveOffspring.java (SlaveOffspring(OffspringType)): New.
+	(SlaveOffspring(OffspringType,int): New.
+	(SlaveOffspring(OffspringType,boolean): New.
+	(SlaveOffspring(OffspringType,int,boolean): New.
+	* TestLib.java (DetachedAckProcess): Extend SlaveOffspring.
+	(DetachedAckProcess.startChild): Delete.
+	(DetachedAckProcess.reap): Delete.
+	
 	* ExecOffspring.java (assertRunThreadExec): New.
 	(requestThreadExec): Rename requestRandomExec.
 	(ExecOffspring(int,File,String[]): New.

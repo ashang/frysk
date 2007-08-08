@@ -46,6 +46,7 @@ import frysk.testbed.TaskObserverBase;
 import java.io.File;
 import frysk.Config;
 import frysk.testbed.ExecOffspring;
+import frysk.testbed.SlaveOffspring;
 
 public class TestIsa
     extends TestLib
@@ -93,7 +94,7 @@ public class TestIsa
   public void testIsa ()
   {
 
-    AckProcess ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = new DetachedAckProcess();
 
     final Task task = ackProc.findTaskUsingRefresh(true);
 
@@ -113,8 +114,8 @@ public class TestIsa
 
   public void testIsaSingleton ()
   {
-    AckProcess ackProc = new DetachedAckProcess();
-    AckProcess ackProc2 = new DetachedAckProcess();
+    SlaveOffspring ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc2 = new DetachedAckProcess();
 
     Task firstMain = ackProc.findTaskUsingRefresh(true);
     Task secondMain = ackProc2.findTaskUsingRefresh(true);
@@ -135,7 +136,7 @@ public class TestIsa
 
   public void testAttachedCreateChild ()
   {
-    AckProcess ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = new AttachedAckProcess();
     Proc proc = ackProc.assertFindProcAndTasks();
 
     assertNotNull("child has an isa", proc.getMainTask().getIsa());
@@ -155,7 +156,7 @@ public class TestIsa
 
   public void testAttachedCreateAttachedChild ()
   {
-    AckProcess ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = new AttachedAckProcess();
     Proc proc = ackProc.assertFindProcAndTasks();
 
     class ForkedObserver
@@ -188,7 +189,7 @@ public class TestIsa
   
   public void testAttachedCreateAttachedClone()
   {
-    AckProcess ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = new AttachedAckProcess();
     Proc proc = ackProc.assertFindProcAndTasks();
 
     class ClonedObserver
@@ -221,7 +222,7 @@ public class TestIsa
 
   public void testAttachDetachAttachAgainDetachAgainAttachAgainAgain ()
   {
-    AckProcess ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = new DetachedAckProcess();
 
     Proc proc = ackProc.assertFindProcAndTasks();
 

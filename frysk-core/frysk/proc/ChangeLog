@@ -1,5 +1,11 @@
 2007-08-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TestIsa.java: Replace frysk.testbed.TestLib.AckProcess with
+	frysk.testbed.SlaveOffspring.
+	* TestMapGet.java: Ditto.
+	* TestExec.java: Ditto.
+	* TestTaskSyscallObserver.java: Ditto.
+
 	* TestExec.java (testAttachedMultipleChildExec): Use
 	ExecOffspring.  Replace ExecOffspring.requestRandomExec with
 	ExecOffspring.requestThreadExec.

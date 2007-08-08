@@ -100,7 +100,11 @@ public abstract class SlaveOffspring
 
     /** Create an ack process. */
     protected SlaveOffspring () {
-	super(CHILD_ACK, funitSlaveCommand(false, null, null));
+	this(OffspringType.DAEMON);
+    }
+    /** Create an ack process. */
+    protected SlaveOffspring (OffspringType type) {
+	super(type, CHILD_ACK, funitSlaveCommand(false, null, null));
     }
 
     /**
@@ -109,19 +113,35 @@ public abstract class SlaveOffspring
      * commands.
      */
     protected SlaveOffspring (boolean busy) {
-	super(CHILD_ACK, funitSlaveCommand(busy, null, null));
+	this(OffspringType.DAEMON, busy);
+    }
+    /**
+     * Create an SlaveOffspring; if BUSY, the process will use a
+     * busy-loop, instead of suspending, when waiting for signal
+     * commands.
+     */
+    protected SlaveOffspring (OffspringType type, boolean busy) {
+	super(type, CHILD_ACK, funitSlaveCommand(busy, null, null));
     }
 
     /** Create an SlaveOffspring, and then add COUNT threads. */
     protected SlaveOffspring (int count) {
-	this();
+	this(OffspringType.DAEMON, count);
+    }
+    /** Create an SlaveOffspring, and then add COUNT threads. */
+    protected SlaveOffspring (OffspringType type, int count) {
+	this(type);
 	for (int i = 0; i < count; i++)
 	    assertSendAddCloneWaitForAcks();
     }
 
     /** Create a possibly busy SlaveOffspring. Add COUNT threads. */
     protected SlaveOffspring (int count, boolean busy) {
-	this(busy);
+	this(OffspringType.DAEMON, count, busy);
+    }
+    /** Create a possibly busy SlaveOffspring. Add COUNT threads. */
+    protected SlaveOffspring (OffspringType type, int count, boolean busy) {
+	this(type, busy);
 	for (int i = 0; i < count; i++)
 	    assertSendAddCloneWaitForAcks();
     }

@@ -45,6 +45,7 @@ import frysk.testbed.TestLib;
 import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.TaskObserverBase;
 import frysk.testbed.ExecOffspring;
+import frysk.testbed.SlaveOffspring;
 import frysk.Config;
 
 /**
@@ -188,7 +189,7 @@ public class TestExec
     SingleExecObserver execObserver = new SingleExecObserver();
 
     // Create an unattached child process.
-    AckProcess child = new DetachedAckProcess();
+    SlaveOffspring child = new DetachedAckProcess();
 
     // Attach to the process using the exec observer. The event
     // loop is kept running until SingleExecObserver .addedTo is
@@ -236,7 +237,7 @@ public class TestExec
     }
 
     // Create an unattached child process.
-    AckProcess child = new DetachedAckProcess();
+    SlaveOffspring child = new DetachedAckProcess();
 
     Proc proc = child.assertFindProcAndTasks();
     ExecParentObserver execParentObserver = new ExecParentObserver();

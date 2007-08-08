@@ -1,3 +1,9 @@
+2007-08-08  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFdebuginfo.java: Replace frysk.testbed.TestLib.AckProcess
+	with frysk.testbed.SlaveOffspring.
+	* TestFtrace.java: Ditto.
+
 2007-08-08  Teresa Thomas  <tthomas@redhat.com>
 
 	* fdebugrpm.sh: Version number included for package install;

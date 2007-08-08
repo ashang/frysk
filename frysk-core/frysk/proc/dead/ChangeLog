@@ -1,3 +1,8 @@
+2007-08-08  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLinuxCore.java: Replace frysk.testbed.TestLib.AckProcess
+	with frysk.testbed.SlaveOffspring.
+
 2007-08-02  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxHost.java (LinuxHost): New private constructor. Take

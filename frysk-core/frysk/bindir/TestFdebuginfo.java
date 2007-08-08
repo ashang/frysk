@@ -43,6 +43,7 @@ import frysk.Config;
 import frysk.expunit.Expect;
 import frysk.proc.Task;
 import frysk.testbed.TestLib;
+import frysk.testbed.SlaveOffspring;
 
 /**
  * This tests the basic functionality of the fdebuginfo
@@ -63,7 +64,7 @@ public class TestFdebuginfo
     public void testPathListing ()
     {
         // Create an unattached child process.
-	AckProcess child = new DetachedAckProcess();
+	SlaveOffspring child = new DetachedAckProcess();
 	Task task = child.findTaskUsingRefresh(true);
 
 	e = new Expect(new String[] {

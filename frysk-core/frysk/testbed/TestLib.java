@@ -48,14 +48,11 @@ import frysk.proc.Manager;
 import frysk.dwfl.DwflCache;
 import frysk.junit.TestCase;
 import frysk.Config;
-import frysk.sys.Errno;
 import frysk.sys.Fork;
 import frysk.sys.Pid;
 import frysk.sys.Sig;
 import frysk.sys.SignalSet;
 import frysk.sys.Signal;
-import frysk.sys.Wait;
-import frysk.sys.UnhandledWaitBuilder;
 import frysk.sys.proc.Stat;
 import frysk.testbed.SignalWaiter;
 import java.util.LinkedList;
@@ -346,48 +343,16 @@ public class TestLib
      * process exit is required (see reap).
      */
     public static class DetachedAckProcess
-	extends AckProcess
+	extends SlaveOffspring
     {
 	public DetachedAckProcess () {
-	    super();
+	    super(OffspringType.CHILD);
 	}
 
 	public DetachedAckProcess (int count) {
-	    super(count);
+	    super(OffspringType.CHILD, count);
 	}
 
-	/**
-	 * Create a detached process that is a child of this one.
-	 */
-	protected int startChild (String stdin, String stdout, String stderr,
-				  String[] argv) {
-	    return Fork.exec(stdin, stdout, stderr, argv);
-	}
-
-	/**
-	 * Reap the child. Kill the child, wait for and consume the
-	 * child's exit event.
-	 */
-	public void reap () {
-	    kill();
-	    try {
-		while (true) {
-		    Wait.waitAll(getPid(), new UnhandledWaitBuilder () {
-			    protected void unhandled (String why) {
-				fail ("killing child (" + why + ")");
-			    }
-			    public void terminated (int pid, boolean signal,
-						    int value,
-						    boolean coreDumped) {
-				// Termination with signal is ok.
-				assertTrue("terminated with signal", signal);
-			    }
-			});
-		}
-	    } catch (Errno.Echild e) {
-		// No more waitpid events.
-	    }
-	}
     }
     
     /**

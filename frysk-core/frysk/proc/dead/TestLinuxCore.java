@@ -64,6 +64,7 @@ import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcCoreAction;
+import frysk.testbed.SlaveOffspring;
 
 import lib.dwfl.*;
 
@@ -413,7 +414,7 @@ public class TestLinuxCore
    */
   protected Proc giveMeAProc ()
   {
-    AckProcess ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = new DetachedAckProcess();
     assertNotNull(ackProc);
     Proc proc = ackProc.assertFindProcAndTasks();
     assertNotNull(proc);

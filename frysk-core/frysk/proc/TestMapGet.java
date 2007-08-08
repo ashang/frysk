@@ -42,6 +42,7 @@ package frysk.proc;
 
 import frysk.sys.proc.MapsBuilder;
 import frysk.testbed.TestLib;
+import frysk.testbed.SlaveOffspring;
 
 public class TestMapGet
     extends TestLib
@@ -123,7 +124,7 @@ public class TestMapGet
 
   protected Proc giveMeAProc ()
   {
-    AckProcess ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = new DetachedAckProcess();
     assertNotNull(ackProc);
     Proc proc = ackProc.assertFindProcAndTasks();
     assertNotNull(proc);
