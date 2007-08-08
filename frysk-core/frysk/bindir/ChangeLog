@@ -1,3 +1,8 @@
+2007-08-08  Teresa Thomas  <tthomas@redhat.com>
+
+	* fdebugrpm.sh: Version number included for package install;
+	repos enabled by default
+	  
 2007-08-07  Teresa Thomas  <tthomas@redhat.com>
 
 	* fdebuginfo.java (.parsePids): Function to get debuginfo moved to

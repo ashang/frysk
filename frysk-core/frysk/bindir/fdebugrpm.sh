@@ -49,7 +49,8 @@ export packages=`@bindir@/fdebuginfo "$*" | grep "\-\-\-" |
                  grep '^/'| 
                  xargs rpm -qf --qf '%{SOURCERPM}\n' | 
                  sort | uniq | 
-                 sed -e 's/-[0-9].*$/-debuginfo/g'`
+                 sed -e 's/-/-debuginfo-/' |
+                 sed -e 's/.src.rpm//g'`
 
 if [ -n "$packages" ] 
 then
@@ -61,11 +62,13 @@ then
     echo ""
 
     # Install on user request
-    #echo "Do you wish to install the above packages? [y/n]"
     read -p "Do you wish to install the above packages? [y/n]: " ch
     if [ "$ch" = "y" ]  
     then
-       sudo yum install $packages
+       sudo yum install --enablerepo=core-debuginfo \
+                        --enablerepo=updates-debuginfo \
+                        --enablerepo=extras-debuginfo \
+                        --enablerepo=development-debuginfo $packages
     fi
 
 else
