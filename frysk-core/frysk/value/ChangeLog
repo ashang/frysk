@@ -1,3 +1,7 @@
+2007-08-08  Nurdin Premji  <npremji@redhat.com>
+
+	* ArithmeticType.java: Added some general types.
+
 2007-08-02  Andrew Cagney  <cagney@redhat.com>
 
 	* Type.java (toPrint): New method.
