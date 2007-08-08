@@ -715,52 +715,6 @@ public class TestElf
                                    ElfType.ELF_T_BYTE };
     int[] expectedBytes = { 0, - 115, 20, 0, 0, 72, 0, 0, 0, 0, 0 };
 
-    class SymbolChecker implements ElfSymbol.Builder {
-      String[] expectedSymbolNames
-        = {"helloworld.c", "", "",
-	   "", "", "",
-	   "", "main", "prinf"};
-      int[] expectedSymbolTypes
-        = {ElfSymbol.ELF_STT_FILE,    ElfSymbol.ELF_STT_SECTION, ElfSymbol.ELF_STT_SECTION,
-	   ElfSymbol.ELF_STT_SECTION, ElfSymbol.ELF_STT_SECTION, ElfSymbol.ELF_STT_SECTION,
-	   ElfSymbol.ELF_STT_SECTION, ElfSymbol.ELF_STT_FUNC,    ElfSymbol.ELF_STT_NOTYPE};
-      int[] expectedSymbolBinds
-        = {ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_LOCAL,
-	   ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_LOCAL,
-	   ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_GLOBAL,  ElfSymbol.ELF_STB_GLOBAL};
-      long[] expectedSymbolShndxs
-        = {ElfSectionHeader.ELF_SHN_ABS, 1, 3,
-	   4, 5, 7,
-	   6, 1, ElfSectionHeader.ELF_SHN_UNDEF};
-      long[] expectedSymbolSizes
-        = {0, 0,  0,
-	   0, 0,  0,
-	   0, 43, 0};
-
-      int index = 0;
-      public void symbol (String name, long value, long size, int type, int bind,
-			  int visibility, long shndx)
-      {
-	assertTrue("symbol table length", index < expectedSymbolNames.length);
-
-	assertEquals("symbol-" + index + "-name", expectedSymbolNames[index], name);
-	assertEquals("symbol-" + index + "-value", 0, value);
-	assertEquals("symbol-" + index + "-size", 0, expectedSymbolSizes[index], size);
-	assertEquals("symbol-" + index + "-type", expectedSymbolTypes[index], type);
-	assertEquals("symbol-" + index + "-binding", expectedSymbolBinds[index], bind);
-	assertEquals("symbol-" + index + "-visibility", ElfSymbol.ELF_STV_DEFAULT, visibility);
-	assertEquals("symbol-" + index + "-shndx", expectedSymbolShndxs[index], shndx);
-
-	++index;
-      }
-
-      public void postCheck()
-      {
-	assertEquals("symbol table length", expectedSymbolNames.length, index);
-      }
-    }
-    SymbolChecker symbolChecker = new SymbolChecker();
-
     for (int i = 0; i < header.shnum; i++)
       {
         ElfSection section = testElf.getSection(i);
@@ -789,7 +743,20 @@ public class TestElf
         assertEquals("section-" + i + "-type", expectedDataTypes[i], data.getType());
         if (data.getSize() != 0)
           assertEquals("section-" + i + "-byte", expectedBytes[i], data.getByte(0));
+      }
+  }
 
+  public void testObjectFileTables () throws ElfException, ElfFileException
+  {
+    Elf testElf = new Elf (Config.getPkgDataFile ("helloworld.o")
+			   .getAbsolutePath (),
+			   ElfCommand.ELF_C_READ);
+
+    ElfEHeader header = testElf.getEHeader();
+    for (int i = 0; i < header.shnum; i++)
+      {
+        ElfSection section = testElf.getSection(i);
+        ElfSectionHeader sheader = section.getSectionHeader();
 	if (sheader.type == ElfSectionHeader.ELF_SHT_SYMTAB)
 	  {
 	    ElfSymbol.loadFrom(section, symbolChecker);
@@ -880,4 +847,50 @@ public class TestElf
     
     return noteData;
   }
+
+  class SymbolChecker implements ElfSymbol.Builder {
+    String[] expectedSymbolNames
+      = {"helloworld.c", "", "",
+	 "", "", "",
+	 "", "main", "prinf"};
+    int[] expectedSymbolTypes
+      = {ElfSymbol.ELF_STT_FILE,    ElfSymbol.ELF_STT_SECTION, ElfSymbol.ELF_STT_SECTION,
+	 ElfSymbol.ELF_STT_SECTION, ElfSymbol.ELF_STT_SECTION, ElfSymbol.ELF_STT_SECTION,
+	 ElfSymbol.ELF_STT_SECTION, ElfSymbol.ELF_STT_FUNC,    ElfSymbol.ELF_STT_NOTYPE};
+    int[] expectedSymbolBinds
+      = {ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_LOCAL,
+	 ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_LOCAL,
+	 ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_GLOBAL,  ElfSymbol.ELF_STB_GLOBAL};
+    long[] expectedSymbolShndxs
+      = {ElfSectionHeader.ELF_SHN_ABS, 1, 3,
+	 4, 5, 7,
+	 6, 1, ElfSectionHeader.ELF_SHN_UNDEF};
+    long[] expectedSymbolSizes
+      = {0, 0,  0,
+	 0, 0,  0,
+	 0, 43, 0};
+
+    int index = 0;
+    public void symbol (String name, long value, long size, int type, int bind,
+			int visibility, long shndx)
+    {
+      assertTrue("symbol table length", index < expectedSymbolNames.length);
+
+      assertEquals("symbol-" + index + "-name", expectedSymbolNames[index], name);
+      assertEquals("symbol-" + index + "-value", 0, value);
+      assertEquals("symbol-" + index + "-size", 0, expectedSymbolSizes[index], size);
+      assertEquals("symbol-" + index + "-type", expectedSymbolTypes[index], type);
+      assertEquals("symbol-" + index + "-binding", expectedSymbolBinds[index], bind);
+      assertEquals("symbol-" + index + "-visibility", ElfSymbol.ELF_STV_DEFAULT, visibility);
+      assertEquals("symbol-" + index + "-shndx", expectedSymbolShndxs[index], shndx);
+
+      ++index;
+    }
+
+    public void postCheck()
+    {
+      assertEquals("symbol table length", expectedSymbolNames.length, index);
+    }
+  }
+  private SymbolChecker symbolChecker = new SymbolChecker();
 }

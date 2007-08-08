@@ -1,5 +1,10 @@
 2007-08-08  Petr Machata  <pmachata@redhat.com>
 
+	* TestElf.java (testObjectFileTables): Moved symtab and relocation
+	tests here.
+
+2007-08-08  Petr Machata  <pmachata@redhat.com>
+
 	* TestElf.java (testObjectFile): Test symtab and relocations.
 
 2007-08-03  Nurdin Premji  <npremji@redhat.com>
