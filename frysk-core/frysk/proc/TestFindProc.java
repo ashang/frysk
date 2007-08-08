@@ -45,6 +45,7 @@ import java.util.logging.Level;
 import java.util.Observer;
 import frysk.testbed.TestLib;
 import frysk.event.RequestStopEvent;
+import frysk.testbed.SlaveOffspring;
 
 public class TestFindProc
     extends TestLib
@@ -92,13 +93,13 @@ public class TestFindProc
 
   public void testFindProcDetached ()
   {
-    AckProcess ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = new DetachedAckProcess();
     doFindProc(ackProc, 1);
   }
   
   public void testFindProcAttached ()
   {
-    AckProcess ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = new AttachedAckProcess();
     
     //expect no additional processes to be added to the procPool.
     doFindProc(ackProc, 0);
@@ -106,11 +107,11 @@ public class TestFindProc
   
   public void testFindProcAckDaemon ()
   {
-    AckProcess ackProc = new AckDaemonProcess();
+    SlaveOffspring ackProc = new AckDaemonProcess();
     doFindProc(ackProc, 1);
   }
 
-  public void doFindProc (AckProcess ackProc, int expectedCount)
+  public void doFindProc (SlaveOffspring ackProc, int expectedCount)
   {
    
     ProcCounter o = new ProcCounter();
@@ -165,7 +166,7 @@ public class TestFindProc
 
   public void testFindUsingRefresh ()
   {
-    final AckProcess ackProc = new DetachedAckProcess();
+    final SlaveOffspring ackProc = new DetachedAckProcess();
 
     Proc proc;
 

@@ -42,12 +42,13 @@ package frysk.proc;
 
 import frysk.event.RequestStopEvent;
 import frysk.testbed.TestLib;
+import frysk.testbed.SlaveOffspring;
 
 public class TestProcForceDetach
     extends TestLib
 {
 
-  public void requestRemove (AckProcess ackProc, int count)
+  public void requestRemove(SlaveOffspring ackProc, int count)
   {
     Proc proc = ackProc.assertFindProcAndTasks();
     new ProcBlockAction(proc, new MyProcBlockAction(proc));
@@ -56,25 +57,25 @@ public class TestProcForceDetach
 
   public void testRequestRemoveAckDaemon ()
   {
-    AckProcess ackProc = new AckDaemonProcess();
+    SlaveOffspring ackProc = new AckDaemonProcess();
     requestRemove(ackProc, 1);
   }
 
   public void testRequestRemoveDetached ()
   {
-    AckProcess ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = new DetachedAckProcess();
     requestRemove(ackProc, 1);
   }
 
   public void testMultiThreadedRequestRemoveAckDaemon ()
   {
-    AckProcess ackProc = new AckDaemonProcess(2);
+    SlaveOffspring ackProc = new AckDaemonProcess(2);
     requestRemove(ackProc, 3);
   }
 
   public void testMultiThreadedRequestRemoveDetached ()
   {
-    AckProcess ackProc = new DetachedAckProcess(2);
+    SlaveOffspring ackProc = new DetachedAckProcess(2);
     requestRemove(ackProc, 3);
   }
 

@@ -47,6 +47,7 @@ import frysk.sys.Errno;
 import frysk.event.TimerEvent;
 import frysk.testbed.TestLib;
 import frysk.testbed.Offspring;
+import frysk.testbed.SlaveOffspring;
 import frysk.testbed.TaskObserverBase;
 
 /**
@@ -302,7 +303,7 @@ public class TestTaskObserver
      */
     public void attachDieingTask (int count, boolean main)
     {
-	AckProcess child = new AckDaemonProcess (count);
+	SlaveOffspring child = new AckDaemonProcess (count);
 	Task task = child.findTaskUsingRefresh (main);
 	
 	// Blow away the task.

@@ -42,19 +42,20 @@ package frysk.proc;
 
 import frysk.event.RequestStopEvent;
 import frysk.testbed.TestLib;
+import frysk.testbed.SlaveOffspring;
 
 public class TestProcStopped
     extends TestLib
 {
 
-  public void stopped (AckProcess ackProc, int count)
+  public void stopped (SlaveOffspring ackProc, int count)
   {
     ackProc.assertSendStop();
     Proc proc = ackProc.assertFindProcAndTasks();
     new ProcBlockAction(proc, new MyTester());
   }
 
-  public void running (AckProcess ackProc, int count)
+  public void running (SlaveOffspring ackProc, int count)
   {
     Proc proc = ackProc.assertFindProcAndTasks();
     new ProcBlockAction(proc, new MyTester());
@@ -62,42 +63,42 @@ public class TestProcStopped
 
   public void testStoppedAckDaemon ()
   {
-    AckProcess ackProc = new AckDaemonProcess();
+    SlaveOffspring ackProc = new AckDaemonProcess();
     stopped(ackProc, 1);
     assertRunUntilStop("testStoppedAckDaemon");
   }
 
   public void testStoppedDetached ()
   {
-    AckProcess ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = new DetachedAckProcess();
     stopped(ackProc, 1);
     assertRunUntilStop("testStoppedDetached");
   }
 
   public void testStoppedAttached ()
   {
-    AckProcess ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = new AttachedAckProcess();
     stopped(ackProc, 1);
     assertRunUntilStop("testStoppedAttached");
   }
 
   public void testRunningAckDaemon ()
   {
-    AckProcess ackProc = new AckDaemonProcess();
+    SlaveOffspring ackProc = new AckDaemonProcess();
     running(ackProc, 1);
     assertRunUntilStop("testRunningAckDaemon");
   }
 
   public void testRunningDetached ()
   {
-    AckProcess ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = new DetachedAckProcess();
     running(ackProc, 1);
     assertRunUntilStop("testRunningDetached");
   }
 
   public void testRunningAttached ()
   {
-    AckProcess ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = new AttachedAckProcess();
     running(ackProc, 1);
     assertRunUntilStop("testRunningAttached");
   }
@@ -106,7 +107,7 @@ public class TestProcStopped
   {
       if (unresolvedOnUtrace(3595))
 	  return;
-    AckProcess ackProc = new AckDaemonProcess(2);
+    SlaveOffspring ackProc = new AckDaemonProcess(2);
     stopped(ackProc, 3);
     assertRunUntilStop("testStoppedAckDaemon");
   }
@@ -115,35 +116,35 @@ public class TestProcStopped
   {
       if (unresolvedOnUtrace(3595))
 	  return;
-    AckProcess ackProc = new DetachedAckProcess(2);
+    SlaveOffspring ackProc = new DetachedAckProcess(2);
     stopped(ackProc, 3);
     assertRunUntilStop("testStoppedDetached");
   }
 
   public void testMultiThreadedStoppedAttached ()
   {
-    AckProcess ackProc = new AttachedAckProcess(2);
+    SlaveOffspring ackProc = new AttachedAckProcess(2);
     stopped(ackProc, 3);
     assertRunUntilStop("testStoppedAttached");
   }
 
   public void testMultiThreadedRunningAckDaemon ()
   {
-    AckProcess ackProc = new AckDaemonProcess(2);
+    SlaveOffspring ackProc = new AckDaemonProcess(2);
     running(ackProc, 3);
     assertRunUntilStop("testRunningAckDaemon");
   }
 
   public void testMultiThreadedRunningDetached ()
   {
-    AckProcess ackProc = new DetachedAckProcess(2);
+    SlaveOffspring ackProc = new DetachedAckProcess(2);
     running(ackProc, 3);
     assertRunUntilStop("testRunningDetached");
   }
 
   public void testMultiThreadedRunningAttached ()
   {
-    AckProcess ackProc = new AttachedAckProcess(2);
+    SlaveOffspring ackProc = new AttachedAckProcess(2);
     running(ackProc, 3);
     assertRunUntilStop("testRunningAttached");
   }

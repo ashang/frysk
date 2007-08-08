@@ -1,3 +1,8 @@
+2007-08-08  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFStack.java: Replace frysk.testbed.TestLib.AckProcess with
+	frysk.testbed.SlaveOffspring.
+
 2007-08-07  Teresa Thomas  <tthomas@redhat.com>
 
 	* DebuginfoPaths.java (task): Added.

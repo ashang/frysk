@@ -44,6 +44,7 @@ import frysk.sys.Signal;
 import frysk.sys.Sig;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskSet;
+import frysk.testbed.SlaveOffspring;
 
 /**
  * Test that the Proc's ProcTasks Observer correctly reports the tasks
@@ -56,7 +57,7 @@ public class TestProcTasksObserver extends TestLib {
      * Check that adding ProcObserver.ProcTasks to a running process
      * correctly notifies the client of the correct number of tasks.
      */
-    public void manyExistingThread(AckProcess ackProcess)
+    public void manyExistingThread(SlaveOffspring ackProcess)
     {
 	final Proc proc = ackProcess.assertFindProcAndTasks();
 		
@@ -84,7 +85,7 @@ public class TestProcTasksObserver extends TestLib {
      * Check that adding ProcObserver to a process that has cloned once returns
      * the correct number of existing Threads.
      */
-    public void singleExistingClone(AckProcess ackProcess)
+    public void singleExistingClone(SlaveOffspring ackProcess)
     {
 	//Create Process
 	Proc proc = ackProcess.assertFindProcAndTasks();
@@ -112,7 +113,7 @@ public class TestProcTasksObserver extends TestLib {
      * Check that adding ProcObserver to a process that hasn't cloned returns
      * the correct number of existing threads.
      */
-    public void singleExistingThread(AckProcess ackProcess)
+    public void singleExistingThread(SlaveOffspring ackProcess)
     {
 	//Create Process
 	Proc proc = ackProcess.assertFindProcAndTasks();
@@ -137,7 +138,7 @@ public class TestProcTasksObserver extends TestLib {
     /**
      * Check that a new task after the observer is attached is detected.
      */
-    public void doClone(AckProcess ackProcess) {
+    public void doClone(SlaveOffspring ackProcess) {
 	//		Create Process
 		
 	Proc proc = ackProcess.assertFindProcAndTasks();
@@ -171,7 +172,7 @@ public class TestProcTasksObserver extends TestLib {
     /**
      * Check that deleting a clone is detected.
      */
-    public void delete(AckProcess ackProcess) {
+    public void delete(SlaveOffspring ackProcess) {
 	//		Create Process
 		
 	Proc proc = ackProcess.assertFindProcAndTasks();
@@ -207,7 +208,7 @@ public class TestProcTasksObserver extends TestLib {
      * Check that we can add and remove a task and that it will be detected.
      *
      */
-    public void cloneThenKill(AckProcess ackProcess)
+    public void cloneThenKill(SlaveOffspring ackProcess)
     {
 	//Create Process
 		
@@ -246,102 +247,102 @@ public class TestProcTasksObserver extends TestLib {
 	
 	
     public void testManyExistingThreadAttached() {
-	AckProcess ackProcess = new AttachedAckProcess(3);
+	SlaveOffspring ackProcess = new AttachedAckProcess(3);
 	manyExistingThread(ackProcess);
     }
 	
 	
     public void testSingleExistingCloneAttached() 
     {
-	AckProcess ackProcess = new AttachedAckProcess ();
+	SlaveOffspring ackProcess = new AttachedAckProcess ();
 	singleExistingClone(ackProcess);
     }
 	
     public void testCloneThenKillAttached() 
     {
-	AckProcess ackProcess = new AttachedAckProcess ();
+	SlaveOffspring ackProcess = new AttachedAckProcess ();
 	cloneThenKill(ackProcess);
     }
 	
     public void testDeleteAttached() {
-	AckProcess ackProcess = new AttachedAckProcess (1);
+	SlaveOffspring ackProcess = new AttachedAckProcess (1);
 	delete(ackProcess);
     }
 	
     public void testDoCloneAttached() 
     {
-	AckProcess ackProcess = new AttachedAckProcess ();
+	SlaveOffspring ackProcess = new AttachedAckProcess ();
 	doClone(ackProcess);
     }
 	
     public void testSingleExistingThreadAttached() {
-	AckProcess ackProcess = new AttachedAckProcess();
+	SlaveOffspring ackProcess = new AttachedAckProcess();
 	singleExistingThread(ackProcess);
     }
 	
     public void testManyExistingThreadDetached() {
-	AckProcess ackProcess = new DetachedAckProcess(3);
+	SlaveOffspring ackProcess = new DetachedAckProcess(3);
 	manyExistingThread(ackProcess);
     }
 	
     public void testSingleExistingCloneDetached() 
     {
-	AckProcess ackProcess = new DetachedAckProcess ();
+	SlaveOffspring ackProcess = new DetachedAckProcess ();
 	singleExistingClone(ackProcess);
     }
 	
     public void testCloneThenKillDetached() 
     {
-	AckProcess ackProcess = new DetachedAckProcess ();
+	SlaveOffspring ackProcess = new DetachedAckProcess ();
 	cloneThenKill(ackProcess);
     }
 	
     public void testDeleteDetached() {
-	AckProcess ackProcess = new DetachedAckProcess (1);
+	SlaveOffspring ackProcess = new DetachedAckProcess (1);
 	delete(ackProcess);
     }
 	
     public void testDoCloneDetached() 
     {
-	AckProcess ackProcess = new DetachedAckProcess ();
+	SlaveOffspring ackProcess = new DetachedAckProcess ();
 	doClone(ackProcess);
     }
 	
     public void testSingleExistingThreadDetached() {
-	AckProcess ackProcess = new DetachedAckProcess();
+	SlaveOffspring ackProcess = new DetachedAckProcess();
 	singleExistingThread(ackProcess);
     }
 	
     public void testManyExistingThreadAckDaemon() {
-	AckProcess ackProcess = new AckDaemonProcess(3);
+	SlaveOffspring ackProcess = new AckDaemonProcess(3);
 	manyExistingThread(ackProcess);
     }
 	
     public void testSingleExistingCloneAckDaemon() 
     {
-	AckProcess ackProcess = new AckDaemonProcess ();
+	SlaveOffspring ackProcess = new AckDaemonProcess ();
 	singleExistingClone(ackProcess);
     }
 	
     public void testCloneThenKillAckDaemon() 
     {
-	AckProcess ackProcess = new AckDaemonProcess ();
+	SlaveOffspring ackProcess = new AckDaemonProcess ();
 	cloneThenKill(ackProcess);
     }
 	
     public void testDeleteAckDaemon() {
-	AckProcess ackProcess = new AckDaemonProcess (1);
+	SlaveOffspring ackProcess = new AckDaemonProcess (1);
 	delete(ackProcess);
     }
 	
     public void testDoCloneAckDaemon() 
     {
-	AckProcess ackProcess = new AckDaemonProcess ();
+	SlaveOffspring ackProcess = new AckDaemonProcess ();
 	doClone(ackProcess);
     }
 	
     public void testSingleExistingThreadAckDaemon() {
-	AckProcess ackProcess = new AckDaemonProcess();
+	SlaveOffspring ackProcess = new AckDaemonProcess();
 	singleExistingThread(ackProcess);
     }
 	

@@ -54,6 +54,7 @@ import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcCoreAction;
 import frysk.proc.dead.LinuxHost;
 import frysk.testbed.TestLib;
+import frysk.testbed.SlaveOffspring;
 
 public class TestFStack
     extends TestLib
@@ -61,29 +62,30 @@ public class TestFStack
 
   public void testSingleThreadedDetached ()
   {
-    AckProcess ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = new DetachedAckProcess();
     multiThreaded(ackProc, 0);
   }
 
   public void testSingleThreadedAckDaemon ()
   {
-    AckProcess ackProc = new AckDaemonProcess();
+    SlaveOffspring ackProc = new AckDaemonProcess();
     multiThreaded(ackProc, 0);
   }
 
   public void testMultiThreadedDetached ()
   {
-    AckProcess ackProc = new DetachedAckProcess(2);
+    SlaveOffspring ackProc = new DetachedAckProcess(2);
     multiThreaded(ackProc, 2);
   }
 
   public void testMultiThreadedAckDaemon ()
   {
-    AckProcess ackProc = new AckDaemonProcess(2);
+    SlaveOffspring ackProc = new AckDaemonProcess(2);
     multiThreaded(ackProc, 2);
   }
 
-  public static void multiThreaded (AckProcess ackProc, int numSecondaryThreads)
+  public static void multiThreaded (SlaveOffspring ackProc,
+				    int numSecondaryThreads)
   {
       StringWriter stringWriter = new StringWriter();
       

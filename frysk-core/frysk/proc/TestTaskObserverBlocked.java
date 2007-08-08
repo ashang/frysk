@@ -49,6 +49,7 @@ import frysk.testbed.TaskSet;
 import frysk.testbed.TaskObserverBase;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.Offspring;
+import frysk.testbed.SlaveOffspring;
 
 /**
  * Check the behavior of an observer that blocks a Task's progress. In
@@ -85,7 +86,7 @@ public class TestTaskObserverBlocked
 
     // Run a program, any program so that blockedAttached has
     // something to block.
-    AckProcess child = new DetachedAckProcess();
+    SlaveOffspring child = new DetachedAckProcess();
     Task mainTask = child.findTaskUsingRefresh(true);
     mainTask.requestAddAttachedObserver(blockAttached);
     assertRunUntilStop("run \"exit\" to exit");
@@ -219,7 +220,7 @@ public class TestTaskObserverBlocked
     public void assertRunToSpawn ()
     {
       logger.log(Level.FINE, "{0} assertRunToSpawn\n", this);
-      AckProcess proc = new AckDaemonProcess();
+      SlaveOffspring proc = new AckDaemonProcess();
       Task main = proc.findTaskUsingRefresh(true);
 
       requestAddSpawnObserver(main);
@@ -271,7 +272,7 @@ public class TestTaskObserverBlocked
       ack.assertRunUntilSignaled();
     }
 
-    abstract void requestSpawn (AckProcess proc);
+    abstract void requestSpawn (SlaveOffspring proc);
 
     abstract void requestAddSpawnObserver (Task task);
   }
@@ -283,7 +284,7 @@ public class TestTaskObserverBlocked
       extends SpawnObserver
       implements TaskObserver.Cloned
   {
-    void requestSpawn (AckProcess child)
+    void requestSpawn (SlaveOffspring child)
     {
       child.signal(addCloneSig);
     }
@@ -341,7 +342,7 @@ public class TestTaskObserverBlocked
       extends SpawnObserver
       implements TaskObserver.Forked
   {
-    void requestSpawn (AckProcess child)
+    void requestSpawn (SlaveOffspring child)
     {
       child.signal(addForkSig);
     }
@@ -395,7 +396,7 @@ public class TestTaskObserverBlocked
    */
   public void testRefreshAfterUnblockedForkExits ()
   {
-    AckProcess proc = new AckDaemonProcess();
+    SlaveOffspring proc = new AckDaemonProcess();
     Task task = proc.findTaskUsingRefresh(true);
     class ForkUnblock
         extends TaskObserverBase
@@ -454,7 +455,7 @@ public class TestTaskObserverBlocked
     // if (brokenXXX (2937))
     // return;
 
-    AckProcess proc = new AckDaemonProcess();
+    SlaveOffspring proc = new AckDaemonProcess();
     Task task = proc.findTaskUsingRefresh(true);
     class UnblockAdd
         extends TaskObserverBase

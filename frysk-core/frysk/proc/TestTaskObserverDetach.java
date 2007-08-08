@@ -48,6 +48,7 @@ import java.util.Observer;
 import java.util.logging.Level;
 import frysk.testbed.SignalWaiter;
 import frysk.testbed.TestLib;
+import frysk.testbed.SlaveOffspring;
 import frysk.testbed.TaskObserverBase;
 
 /**
@@ -93,7 +94,7 @@ public class TestTaskObserverDetach
 	/** Remove the observer looking for the relevant event.  */
 	abstract void deleteEventObserver (Task task);
 	/** The process.  */
-	AckProcess child = new AckDaemonProcess ();
+	SlaveOffspring child = new AckDaemonProcess ();
 	/** It's main task.  */
 	final Task task = child.findTaskUsingRefresh (true);
 	/**

@@ -83,8 +83,7 @@ public class StressTestAbandon
   }
   public void testStressAbandon ()
   {
-    AckProcess ackProc = new AckDaemonProcess(99);
-    Proc proc = ackProc.assertFindProcAndTasks();
+    Proc proc = new AckDaemonProcess(99).assertFindProcAndTasks();
 
     new ProcBlockAction(proc, new Action(proc));
 

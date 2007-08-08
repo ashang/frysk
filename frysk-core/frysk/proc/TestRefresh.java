@@ -48,6 +48,7 @@ import frysk.testbed.PidCounter;
 import frysk.sys.Pid;
 import frysk.testbed.TestLib;
 import frysk.testbed.Offspring;
+import frysk.testbed.SlaveOffspring;
 
 /**
  * Check the host's behavior.
@@ -170,7 +171,7 @@ public class TestRefresh
 
 	// Create a suspended sub-process that contains three cloned
 	// tasks, and wait for it to start.
-	AckProcess child = new AckDaemonProcess (nrTasks - 1);
+	SlaveOffspring child = new AckDaemonProcess (nrTasks - 1);
 
 	// Create a task counter, to count the number discovered and
 	// removed tasks.
@@ -274,7 +275,7 @@ public class TestRefresh
     {
 	// Create the zombie maker, and then get it to create one
 	// child.
-	AckProcess zombie = new AckDaemonProcess ();
+	SlaveOffspring zombie = new AckDaemonProcess ();
 	zombie.assertSendAddForkWaitForAcks ();
 	
 	// Do a refresh, find the zombie maker, check it has one child
@@ -320,7 +321,7 @@ public class TestRefresh
      */
     public void testExitLoosesChild ()
     {
-	AckProcess daemon = new AckDaemonProcess ();
+	SlaveOffspring daemon = new AckDaemonProcess ();
 	daemon.assertSendAddForkWaitForAcks ();
 
 	// Find the process and it's children.
@@ -375,7 +376,7 @@ public class TestRefresh
     {
 	// Create the zombie maker, and then get it to create one
 	// child.
-	AckProcess zombie = new AckDaemonProcess ();
+	SlaveOffspring zombie = new AckDaemonProcess ();
 	zombie.assertSendAddForkWaitForAcks ();
 	
 	// Do a refresh (that includes updating the task list), find
@@ -412,7 +413,7 @@ public class TestRefresh
      */
     public void testUnattachedSingleExec ()
     {
-	AckProcess child = new AckDaemonProcess ();
+	SlaveOffspring child = new AckDaemonProcess ();
 	Proc proc = child.assertFindProcAndTasks();
 	
 	child.assertSendExecWaitForAcks ();
@@ -433,7 +434,7 @@ public class TestRefresh
      */
     public void testUnattachedMultipleExec ()
     {
-	AckProcess child = new AckDaemonProcess (1);
+	SlaveOffspring child = new AckDaemonProcess (1);
 	Proc proc = child.assertFindProcAndTasks();
 
 	Manager.host.requestRefreshXXX ();

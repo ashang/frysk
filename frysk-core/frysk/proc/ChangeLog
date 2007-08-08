@@ -1,5 +1,17 @@
 2007-08-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TestAbandon.java: Replace frysk.testbed.TestLib.AckProcess with
+	frysk.testbed.SlaveOffspring.
+	* TestFindProc.java: Ditto.
+	* TestProcForceDetach.java: Ditto.
+	* TestProcStopped.java: Ditto.
+	* TestProcTasksObserver.java: Ditto.
+	* TestRefresh.java: Ditto.
+	* TestTaskObserverBlocked.java: Ditto.
+	* TestTaskObserverDetach.java: Ditto.
+	* TestTaskObserver.java: Ditto.
+	* StressTestAbandon.java: Remove reference to AckDaemon.
+
 	* TestExec.java: Rename FunitExecOffspring to ExecOffspring.
 	* TestIsa.java: Ditto.
 	* TestProcGet.java: Ditto.

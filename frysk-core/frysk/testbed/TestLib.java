@@ -320,7 +320,7 @@ public class TestLib
      * have to contend with its exit status - it will go to process 1.
      */
     public class AckDaemonProcess
-	extends AckProcess
+	extends SlaveOffspring
     {
 	/**
 	 * Create the process as a daemon.

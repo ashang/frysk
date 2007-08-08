@@ -1,5 +1,8 @@
 2007-08-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (AckDaemonProcess): Extend SlaveProcess.
+	(AckDaemonProcess.startChild): Delete.
+
 	* ExecOffspring.java: Rename FunitExecOffspring.java.
 	* SlaveOffspring: Rename FunitSlaveOffspring.java.
 	* DaemonBlockedAtEntry.java: Update.
