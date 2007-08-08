@@ -1,4 +1,6 @@
-2007-08-08  Nurdin Premji <npremji@redhat.com>
+2007-08-08  Nurdin Premji  <npremji@redhat.com>
+
+	* DwarfRegistersX8664.mkenum: Removed spaces, mkenum doesn't handle them well.	
 
 	* DwarfRegistersX8664.mkenum: Updated, based on newer ABI.
 

@@ -55,12 +55,10 @@ SS 52
 DS 53
 FS 54
 GS 55
-
-
+# Reserved
 FSBASE 58
 GSBASE 59
-
-
+# Reserved
 TR 62
 LDTR 63
 MXCSR 64
