@@ -1,3 +1,20 @@
+2007-08-08  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java (AckProcess): Extend FunitSlaveOffspring.
+	(AckProcess.spawn): Delete.
+	(AckProcess.assertSendAddCloneWaitForAcks): Delete.
+	(AckProcess.assertSendAddCloneWaitForAcks): Delete.
+	(AckProcess.assertSendDelCloneWaitForAcks): Delete.
+	(AckProcess.assertSendAddForkWaitForAcks): Delete.
+	(AckProcess.assertSendAddForkWaitForAcks): Delete.
+	(AckProcess.assertSendDelForkWaitForAcks): Delete.
+	(AckProcess.assertSendZombieForkWaitForAcks): Delete.
+	(AckProcess.assertSendFryParentWaitForAcks): Delete.
+	(AckProcess.assertSendExecWaitForAcks): Delete.
+	(AckProcess.assertSendExecWaitForAcks): Delete.
+	(AckProcess.assertSendExecCloneWaitForAcks): Delete.
+	(AckProcess.assertSendStop): Delete.
+
 2007-08-07  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java (Child): Delete.

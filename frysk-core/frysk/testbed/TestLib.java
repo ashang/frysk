@@ -247,7 +247,7 @@ public class TestLib
      * signals (see below).
      */
     public static abstract class AckProcess
-	extends Offspring
+	extends FunitSlaveOffspring
     {
 	private int pid;
 	/**
@@ -311,118 +311,6 @@ public class TestLib
 	    this(busy);
 	    for (int i = 0; i < count; i++)
 		assertSendAddCloneWaitForAcks();
-	}
-
-	/**
-	 * Tell TID to create a new offspring. Wait for the acknowledgment.
-	 */
-	private void spawn (int tid, Sig sig, String why) {
-	    SignalWaiter ack = new SignalWaiter(Manager.eventLoop, spawnAck, why);
-	    Signal.tkill(tid, sig);
-	    ack.assertRunUntilSignaled();
-	}
-
-	/** Add a Task. */
-	public void assertSendAddCloneWaitForAcks () {
-	    spawn(getPid(), addCloneSig, "assertSendAddCloneWaitForAcks");
-	}
-
-	/** Add a Task. */
-	public void assertSendAddCloneWaitForAcks (int tid) {
-	    spawn(tid, addCloneSig, "addClone");
-	}
-
-	/** Delete a Task. */
-	public void assertSendDelCloneWaitForAcks () {
-	    SignalWaiter ack = new SignalWaiter(Manager.eventLoop, parentAck,
-						"assertSendDelCloneWaitForAcks");
-	    signal(delCloneSig);
-	    ack.assertRunUntilSignaled();
-	}
-
-	/** Add a child Proc. */
-	public void assertSendAddForkWaitForAcks () {
-	    spawn(getPid(), addForkSig, "assertSendAddForkWaitForAcks");
-	}
-
-	/** Add a child Proc. */
-	public void assertSendAddForkWaitForAcks (int tid) {
-	    spawn(tid, addForkSig, "addFork");
-	}
-
-	/** Delete a child Proc. */
-	public void assertSendDelForkWaitForAcks () {
-	    SignalWaiter ack = new SignalWaiter(Manager.eventLoop, parentAck,
-						"assertSendDelForkWaitForAcks");
-	    signal(delForkSig);
-	    ack.assertRunUntilSignaled();
-	}
-
-	/** Terminate a fork Proc (creates zombie). */
-	public void assertSendZombieForkWaitForAcks () {
-	    SignalWaiter ack = new SignalWaiter(Manager.eventLoop, parentAck,
-						"assertSendZombieForkWaitForAcks");
-	    signal(zombieForkSig);
-	    ack.assertRunUntilSignaled();
-	}
-
-	/**
-	 * Kill the parent, expect an ack from the child (there had
-	 * better be a child).
-	 */
-	public void assertSendFryParentWaitForAcks ()	{
-	    SignalWaiter ack = new SignalWaiter(Manager.eventLoop, childAck,
-						"assertSendFryParentWaitForAcks");
-	    signal(Sig.KILL);
-	    ack.assertRunUntilSignaled();
-	}
-
-	/**
-	 * Request that TID (assumed to be a child) perform an exec
-	 * call.
-	 */
-	public void assertSendExecWaitForAcks (int tid) {
-	    SignalWaiter ack = new SignalWaiter(Manager.eventLoop, execAck,
-						"assertSendExecWaitForAcks:" + tid);
-	    Signal.tkill(tid, execSig);
-	    ack.assertRunUntilSignaled();
-	}
-
-	/**
-	 * Request that the main task perform an exec.
-	 */
-	public void assertSendExecWaitForAcks () {
-	    assertSendExecWaitForAcks(getPid());
-	}
-
-	/**
-	 * Request that the cloned task perform an exec.
-	 */
-	public void assertSendExecCloneWaitForAcks () {
-	    // First the main thread acks with .parentAck, and then the
-	    // execed process acks with .childAck.
-	    SignalWaiter ack = new SignalWaiter(Manager.eventLoop,
-						new Sig[] { parentAck, childAck },
-						"assertSendExecCloneWaitForAcks");
-	    signal(execCloneSig);
-	    ack.assertRunUntilSignaled();
-	}
-
-	/**
-	 * Stop a Task.
-	 */
-	public void assertSendStop () {
-	    signal(stopSig);
-
-	    Stat stat = new Stat();
-	    stat.refresh(this.getPid());
-	    for (int i = 0; i < 10; i++) {
-		if (stat.state == 'T')
-		    return;
-		Thread.yield();
-		stat.refresh();
-	    }
-	    fail("Stop signal not handled by process, in state: " + stat.state);
 	}
     }
 
