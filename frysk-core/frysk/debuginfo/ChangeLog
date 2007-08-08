@@ -1,3 +1,10 @@
+2007-08-07  Stan Cox  <scox@redhat.com>
+
+	* LocationExpression.java: New file.
+	* DebugInfoEvaluator.java (getBufferAddr): Use it.
+	(getReg): Likewise.
+	(getRegister): Likewise.
+
 2007-08-03  Nurdin Premji <npremji@redhat.com>
 
 	* DwarfRegisterMapFactory.java: Use the DwarfRegistersX86 and

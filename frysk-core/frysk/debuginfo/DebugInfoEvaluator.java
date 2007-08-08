@@ -51,10 +51,9 @@ import java.util.List;
 import javax.naming.NameNotFoundException;
 
 import lib.dwfl.BaseTypes;
+import lib.dwfl.DwTagEncodings;
 import lib.dwfl.DwAtEncodings;
 import lib.dwfl.DwException;
-import lib.dwfl.DwOpEncodings;
-import lib.dwfl.DwTagEncodings;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
@@ -178,81 +177,12 @@ class DebugInfoEvaluator
      */
     protected long getBufferAddr (DwarfDie varDieP) throws NameNotFoundException
     {
-	long pc = currentFrame.getAdjustedAddress();
-      long address = 0;
-      int reg = 0;
+      long pc = currentFrame.getAdjustedAddress();
        
-
-      List ops = varDieP.getFormData(pc);     
-
-      if (varDieP.getAttrBoolean(DwAtEncodings.DW_AT_location_) && ops.size() == 0){
-	  throw new VariableOptimizedOutException();  
-      }
+      List ops = varDieP.getFormData(pc);
       
-      if (ops.size() == 0){
-	  throw new ValueUavailableException();
-      }
-      
-      if (((DwarfDie.DwarfOp) ops.get(0)).operator == -1){
-	  throw new NameNotFoundException("Expression evaluation failed for die:\n\t" + varDieP.toPrint());
-      }
-      
-      int operator = ((DwarfDie.DwarfOp) ops.get(0)).operator;
-      int operand1 = ((DwarfDie.DwarfOp) ops.get(0)).operand1;
-      
-      boolean handled = false;
-      
-      // This is a static variable the value of
-      // which is stored at memory address operand1
-      if(operator == DwOpEncodings.DW_OP_addr_){
-	  handled = true;
-	  return operand1;
-      }
-      
-      // The value of this variable is stored a memory
-      // location that is operand1 bytes from the frame
-      // base.
-      // Given a value of a frame base such as DW_OP_breg31 64,
-      // the value of the variable will be stored at: frame base
-      // + operand1 + 64
-      if(operator == DwOpEncodings.DW_OP_fbreg_){
-	  address = operand1;
-	  ops = varDieP.getFrameBase(pc);
-	  operator = ((DwarfDie.DwarfOp) ops.get(0)).operator;
-	  operand1 = ((DwarfDie.DwarfOp) ops.get(0)).operand1;
-	  handled = true;
-      }
-
-      // The value of the variable is stored register n
-      if(operator >= DwOpEncodings.DW_OP_reg0_ && operator <= DwOpEncodings.DW_OP_reg31_){
-	  reg = operator - DwOpEncodings.DW_OP_reg0_;
-	  handled = true;
-      }
-      
-      // The value is stored in a memory location that
-      // is operater1 bytes from the value stored in  
-      // register n
-      if(operator >= DwOpEncodings.DW_OP_breg0_ && operator <= DwOpEncodings.DW_OP_breg31_){
-	  reg = operator - DwOpEncodings.DW_OP_breg0_;
-	  handled = true;
-      }
-      
-      if(!handled){
-	  throw new RuntimeException("Did not handle operator " + DwOpEncodings.toName(operator));
-      }
-      
-      long regval = 0;
-      
-      Isa isa = currentFrame.getTask().getIsa();
-   
-      Register register = DwarfRegisterMapFactory.getRegisterMap(isa)
-		    .getRegister(reg);
-	    
-      regval = currentFrame.getRegisterValue(register).longValue();
-
-      address += regval + operand1;
-      
-      return address;
+      LocationExpression locExp = new LocationExpression(currentFrame, varDieP, ops);
+      return locExp.decode();
     }
 
     public long getAddr (DwarfDie die) throws NameNotFoundException
@@ -345,60 +275,39 @@ class DebugInfoEvaluator
     }
 
     
-    private long getReg(DwarfDie varDieP) throws NameNotFoundException {
-	    Register register = getRegister(varDieP);
-	    Isa isa;
+    private int getReg(DwarfDie varDieP) throws NameNotFoundException {
+	long pc = currentFrame.getAdjustedAddress();
+	
+	List ops = varDieP.getFormData(pc);
+	
+	LocationExpression locExp = new LocationExpression(currentFrame, varDieP, ops);
+	Register register = locExp.getRegisterNumber();
+        Isa isa;
 
-	    if (currentFrame.getInnerDebugInfoFrame() == null)
-		  isa = task.getIsa();
-	    else
-		  isa = currentFrame.getTask().getIsa();
+        if (currentFrame.getInnerDebugInfoFrame() == null)
+              isa = task.getIsa();
+        else
+              isa = currentFrame.getTask().getIsa();
 
-	    int reg = DwarfRegisterMapFactory.getRegisterMap(isa)
-		    .getRegisterNumber(register);
-	    return reg;
+        int reg = DwarfRegisterMapFactory.getRegisterMap(isa)
+                .getRegisterNumber(register);
+        return reg;
 
 	}
     
-    private Register getRegister(DwarfDie varDieP)
-		throws NameNotFoundException {
-	    Isa isa;
-
-	    if (currentFrame.getInnerDebugInfoFrame() == null)
-		isa = task.getIsa();
-	    else
-		isa = currentFrame.getTask().getIsa();
-	    
-	    long pc;
-
-	      pc = currentFrame.getAdjustedAddress();
-	      List ops = varDieP.getFormData(pc);
-	      int op = -1;
-
-	      if (ops.size() != 0)
-		  op = ((DwarfDie.DwarfOp)ops.get(0)).operator;
-		      
-	      if (op == -1 
-		  || (op < DwOpEncodings.DW_OP_reg0_ || op > DwOpEncodings.DW_OP_breg31_))
-		  throw new NameNotFoundException();
-
-	      int reg = 0;
-	      if (op >= DwOpEncodings.DW_OP_reg0_ && op <= DwOpEncodings.DW_OP_reg31_)
-		  reg = op - DwOpEncodings.DW_OP_reg0_;
-	      else if (reg >= DwOpEncodings.DW_OP_breg0_ && reg <= DwOpEncodings.DW_OP_breg31_)
-		  reg = op - DwOpEncodings.DW_OP_breg0_;
-	      else
-		  throw new NameNotFoundException();
-	      
-	    Register register = DwarfRegisterMapFactory.getRegisterMap(isa)
-		    .getRegister(reg);
-	    return register;
-	}
+    private long getRegister(DwarfDie varDieP)
+                     throws NameNotFoundException {
+	long pc = currentFrame.getAdjustedAddress();
+       
+	List ops = varDieP.getFormData(pc);
+      
+	LocationExpression locExp = new LocationExpression(currentFrame, varDieP, ops);
+	return locExp.decode();
+    }
 
     public long getLong (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
-      long val = currentFrame.getRegisterValue(getRegister(varDieP)).longValue();
-      return val;
+      return getRegister(varDieP);
     }
 
     public void putLong (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
@@ -409,8 +318,7 @@ class DebugInfoEvaluator
 
     public int getInt (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
-      long val = currentFrame.getRegisterValue(getRegister(varDieP)).longValue();
-      return (int) val;
+      return (int) getRegister(varDieP);
     }
 
     public void putInt (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
@@ -421,8 +329,7 @@ class DebugInfoEvaluator
 
     public short getShort (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
-      long val = currentFrame.getRegisterValue(getRegister(varDieP)).longValue();
-      return (short) val;
+      return (short) getRegister(varDieP);
     }
 
     public void putShort (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
@@ -433,8 +340,7 @@ class DebugInfoEvaluator
 
     public byte getByte (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
-      long val = currentFrame.getRegisterValue(getRegister(varDieP)).longValue();
-      return (byte) val;
+      return (byte) getRegister(varDieP);
     }
 
     public void putByte (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
@@ -445,7 +351,7 @@ class DebugInfoEvaluator
 
     public float getFloat (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
-      long val = currentFrame.getRegisterValue(getRegister(varDieP)).longValue();
+      long val = getRegister(varDieP);
       float fval = Float.intBitsToFloat((int)val);
       return fval;
     }
@@ -458,7 +364,7 @@ class DebugInfoEvaluator
 
     public double getDouble (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
-      long val = currentFrame.getRegisterValue(getRegister(varDieP)).longValue();
+      long val = getRegister(varDieP);
       double dval = Double.longBitsToDouble(val);
       return dval;
     }
@@ -516,6 +422,7 @@ class DebugInfoEvaluator
   private ArrayType getArrayType (DwarfDie type, DwarfDie subrange)
     {
       int elementCount = 1;
+      // System.out.println("die=" + Long.toHexString(type.getOffset()) + " tag=" + Long.toHexString(type.getTag()) + " "+ type.getName());
       ArrayList dims = new ArrayList();
       while (subrange != null)
 	{
@@ -594,11 +501,13 @@ class DebugInfoEvaluator
   private ClassType getClassType (DwarfDie classDie, String name)
   {
     int typeSize = 0;
+    // System.out.println("die=" + Long.toHexString(classDie.getOffset()) + " tag=" + Long.toHexString(classDie.getTag()) + " " + classDie.getName());
     ClassType classType = new ClassType(task.getIsa().getByteOrder(), name);
     for (DwarfDie member = classDie.getChild();
     	 member != null;
     	 member = member.getSibling())
       {
+	// System.out.println("member=" + Long.toHexString(member.getOffset()) + " tag=" + Long.toHexString(member.getTag()) + " " + member.getName());
         long offset;
         boolean haveTypeDef;
         try
