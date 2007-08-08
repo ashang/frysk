@@ -1,3 +1,7 @@
+2007-08-08  Petr Machata  <pmachata@redhat.com>
+
+	* TestElf.java (testObjectFile): Test symtab and relocations.
+
 2007-08-03  Nurdin Premji  <npremji@redhat.com>
 
 	* DwarfRegistersX86.mkenum: Added.

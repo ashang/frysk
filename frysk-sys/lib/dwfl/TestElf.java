@@ -699,8 +699,12 @@ public class TestElf
                               ".rodata", ".comment", ".note.GNU-stack",
                               ".shstrtab", ".symtab", ".strtab" };
     int[] expectedSize = { 0, 43, 16, 0, 0, 14, 45, 0, 81, 160, 25 };
-    int[] expectedTypes = { 0, 1, 9, 1, 8, 1, 1, 1, 3, 2, 3 };
-
+    int[] expectedTypes = { ElfSectionHeader.ELF_SHT_NULL, ElfSectionHeader.ELF_SHT_PROGBITS,
+			    ElfSectionHeader.ELF_SHT_REL, ElfSectionHeader.ELF_SHT_PROGBITS,
+			    ElfSectionHeader.ELF_SHT_NOBITS, ElfSectionHeader.ELF_SHT_PROGBITS,
+			    ElfSectionHeader.ELF_SHT_PROGBITS, ElfSectionHeader.ELF_SHT_PROGBITS,
+			    ElfSectionHeader.ELF_SHT_STRTAB, ElfSectionHeader.ELF_SHT_SYMTAB,
+			    ElfSectionHeader.ELF_SHT_STRTAB };
     int[] expectedDataSizes = { 0, 43, 16, 0, 0, 14, 45, 0, 81, 160, 25 };
     int[] expectedDataAlignments = { 0, 4, 4, 4, 4, 1, 1, 1, 1, 4, 1 };
     ElfType[] expectedDataTypes = { ElfType.ELF_T_BYTE, ElfType.ELF_T_BYTE,
@@ -710,6 +714,52 @@ public class TestElf
                                    ElfType.ELF_T_BYTE, ElfType.ELF_T_SYM,
                                    ElfType.ELF_T_BYTE };
     int[] expectedBytes = { 0, - 115, 20, 0, 0, 72, 0, 0, 0, 0, 0 };
+
+    class SymbolChecker implements ElfSymbol.Builder {
+      String[] expectedSymbolNames
+        = {"helloworld.c", "", "",
+	   "", "", "",
+	   "", "main", "prinf"};
+      int[] expectedSymbolTypes
+        = {ElfSymbol.ELF_STT_FILE,    ElfSymbol.ELF_STT_SECTION, ElfSymbol.ELF_STT_SECTION,
+	   ElfSymbol.ELF_STT_SECTION, ElfSymbol.ELF_STT_SECTION, ElfSymbol.ELF_STT_SECTION,
+	   ElfSymbol.ELF_STT_SECTION, ElfSymbol.ELF_STT_FUNC,    ElfSymbol.ELF_STT_NOTYPE};
+      int[] expectedSymbolBinds
+        = {ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_LOCAL,
+	   ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_LOCAL,
+	   ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_GLOBAL,  ElfSymbol.ELF_STB_GLOBAL};
+      long[] expectedSymbolShndxs
+        = {ElfSectionHeader.ELF_SHN_ABS, 1, 3,
+	   4, 5, 7,
+	   6, 1, ElfSectionHeader.ELF_SHN_UNDEF};
+      long[] expectedSymbolSizes
+        = {0, 0,  0,
+	   0, 0,  0,
+	   0, 43, 0};
+
+      int index = 0;
+      public void symbol (String name, long value, long size, int type, int bind,
+			  int visibility, long shndx)
+      {
+	assertTrue("symbol table length", index < expectedSymbolNames.length);
+
+	assertEquals("symbol-" + index + "-name", expectedSymbolNames[index], name);
+	assertEquals("symbol-" + index + "-value", 0, value);
+	assertEquals("symbol-" + index + "-size", 0, expectedSymbolSizes[index], size);
+	assertEquals("symbol-" + index + "-type", expectedSymbolTypes[index], type);
+	assertEquals("symbol-" + index + "-binding", expectedSymbolBinds[index], bind);
+	assertEquals("symbol-" + index + "-visibility", ElfSymbol.ELF_STV_DEFAULT, visibility);
+	assertEquals("symbol-" + index + "-shndx", expectedSymbolShndxs[index], shndx);
+
+	++index;
+      }
+
+      public void postCheck()
+      {
+	assertEquals("symbol table length", expectedSymbolNames.length, index);
+      }
+    }
+    SymbolChecker symbolChecker = new SymbolChecker();
 
     for (int i = 0; i < header.shnum; i++)
       {
@@ -739,6 +789,28 @@ public class TestElf
         assertEquals("section-" + i + "-type", expectedDataTypes[i], data.getType());
         if (data.getSize() != 0)
           assertEquals("section-" + i + "-byte", expectedBytes[i], data.getByte(0));
+
+	if (sheader.type == ElfSectionHeader.ELF_SHT_SYMTAB)
+	  {
+	    ElfSymbol.loadFrom(section, symbolChecker);
+	    symbolChecker.postCheck();
+	  }
+	else if (sheader.type == ElfSectionHeader.ELF_SHT_REL)
+	  {
+	    ElfRel[] relocs = ElfRel.loadFrom(section);
+	    assertEquals("relocation count", 2, relocs.length);
+	    final long[] expectedRelOffsets = {0x00000014, 0x00000019};
+	    final int[] expectedRelTypes = {1/*386_32*/, 2/*386_PC32*/};
+	    final long[] expectedRelSymbols = {5/*.rodata*/, 9/*prinf*/};
+
+	    for (int j = 0; j < relocs.length; ++j)
+	      {
+		assertEquals("relocation-" + j + "-offset", expectedRelOffsets[j], relocs[j].offset);
+		assertEquals("relocation-" + j + "-type", expectedRelTypes[j], relocs[j].type);
+		assertEquals("relocation-" + j + "-symbol", expectedRelSymbols[j], relocs[j].symbolIndex);
+		assertEquals("relocation-" + j + "-addend", 0, relocs[j].addend);
+	      }
+	  }
       }
   }
 
