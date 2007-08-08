@@ -39,11 +39,12 @@
 
 package frysk.util;
 
+import java.io.File;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -62,22 +63,49 @@ import frysk.proc.Register;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
+/*import frysk.stack.Frame;
+import frysk.stack.StackFactory;*/
+
 import frysk.sys.Sig;
 import frysk.sys.proc.MapsBuilder;
 
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
+import lib.dwfl.ElfData;
+import lib.dwfl.ElfDynamic;
 import lib.dwfl.ElfEHeader;
+import lib.dwfl.ElfPHeader;
 import lib.dwfl.ElfRel;
 import lib.dwfl.ElfSection;
 import lib.dwfl.ElfSectionHeader;
 import lib.dwfl.ElfSymbol;
 
+class MappingInfo
+{
+  public String path;
+  public long addressLow;
+  public long addressHigh;
+  public boolean permRead;
+  public boolean permWrite;
+  public boolean permExecute;
+
+  public MappingInfo(String path, long addressLow, long addressHigh,
+		     boolean permRead, boolean permWrite, boolean permExecute)
+  {
+    this.path = path;
+    this.addressLow = addressLow;
+    this.addressHigh = addressHigh;
+    this.permRead = permRead;
+    this.permWrite = permWrite;
+    this.permExecute = permExecute;
+  }
+}
+
 class MemMappedFiles
   extends MapsBuilder
 {
   private byte[] buf;
-  private Set mappedFiles = new HashSet ();
+  private Map mappedFiles = new HashMap();
 
   public void buildBuffer (byte[] buf)
   {
@@ -92,16 +120,35 @@ class MemMappedFiles
 			int inode,
 			int pathnameOffset, int pathnameLength)
   {
-    String path = new String (this.buf, pathnameOffset, pathnameLength);
+    String path = new String(this.buf, pathnameOffset, pathnameLength);
     if (path.length () > 0 && path.charAt(0) != '[')
       {
 	if (path.charAt(0) != '/')
 	  throw new AssertionError ("Unexpected: first character of path in map is neither '[', nor '/'.");
-	mappedFiles.add(path);
+	MappingInfo info = (MappingInfo)mappedFiles.get(path);
+	if (info != null)
+	  {
+	    if (info.addressLow == addressHigh
+		|| info.addressHigh == addressLow)
+	      {
+		if (addressHigh > info.addressHigh)
+		  info.addressHigh = addressHigh;
+		if (addressLow < info.addressLow)
+		  info.addressLow = addressLow;
+		if (permRead) info.permRead = true;
+		if (permWrite) info.permWrite = true;
+		if (permExecute) info.permExecute = true;
+	      }
+	    else
+	      throw new AssertionError("Non-continuous mapping.");
+	  }
+	else
+	  mappedFiles.put(path, new MappingInfo(path, addressLow, addressHigh,
+						permRead, permWrite, permExecute));
       }
   }
 
-  public static Set forPid (int pid)
+  public static Map forPid (int pid)
   {
     MemMappedFiles mappings = new MemMappedFiles();
     mappings.construct(pid);
@@ -118,12 +165,8 @@ class LtraceSymbol
   public final long shndx;
   protected LtraceObjectFile parent = null;
 
-  /**
-   * Address associated with symbol.  Most often this is address of
-   * PLT entry, but it can be any address suitable for breakpoint
-   * tracking.
-   */
-  public long address;
+  public long entryAddress;
+  public long pltAddress;
 
   /**
    * Build ltrace symbol.
@@ -160,15 +203,22 @@ class LtraceSymbol
     return this.parent;
   }
 
-  public void setAddress(long address) {
-    this.address = address;
+  public void setEntryAddress(long address) {
+    this.entryAddress = address;
+  }
+
+  public void setPltAddress(long address) {
+    this.pltAddress = address;
   }
 }
 
 class LtraceObjectFile
 {
   public HashMap symbolMap = new HashMap();
-  public String name;
+  private String fileName;
+  private String soname = null;
+  private long baseAddress = 0;
+  private static HashMap cachedFiles = new HashMap();
 
   public interface SymbolIterator {
     void symbol(LtraceSymbol symbol);
@@ -176,7 +226,7 @@ class LtraceObjectFile
 
   private LtraceObjectFile (String name)
   {
-    this.name = name;
+    this.fileName = name;
   }
 
   public void addSymbol(LtraceSymbol symbol)
@@ -185,6 +235,7 @@ class LtraceObjectFile
     symbol.addedTo(this);
   }
 
+  /*
   public LtraceSymbol symbolAt(final long address)
   {
     // XXX: Huh, this is ugly.  Eventually either invent some observer
@@ -194,7 +245,7 @@ class LtraceObjectFile
     final LinkedList list = new LinkedList();
     this.eachSymbol(new SymbolIterator(){
 	public void symbol(LtraceSymbol symbol) {
-	  if (symbol.address == address)
+	  if (symbol.entryAddress == address)
 	    list.add(symbol);
 	}
       });
@@ -205,6 +256,7 @@ class LtraceObjectFile
       System.err.println("Strange: symbolAt(0x" + Long.toHexString(address) + ") has more than one symbol...");
     return (LtraceSymbol)list.getFirst();
   }
+  */
 
   public void eachSymbol(SymbolIterator client)
   {
@@ -218,102 +270,226 @@ class LtraceObjectFile
       }
   }
 
-  public static LtraceObjectFile buildForProc(Proc proc)
+  public void setSoname(String soname)
   {
+    this.soname = soname;
+  }
+
+  /** Either answer preset soname, or construct soname from filename. */
+  public String getSoname()
+  {
+    if (this.soname != null)
+      return this.soname;
+    else
+      return new File(this.fileName).getName();
+  }
+
+  public void setBaseAddress(long baseAddress)
+  {
+    this.baseAddress = baseAddress;
+  }
+
+  public long getBaseAddress()
+  {
+    return this.baseAddress;
+  }
+
+  private static ElfSection getElfSectionWithAddr(Elf elfFile, long addr)
+  {
+    for (ElfSection section = elfFile.getSection(0);
+	 section != null;
+	 section = elfFile.getNextSection(section))
+      {
+	ElfSectionHeader sheader = section.getSectionHeader();
+	if (sheader.addr == addr)
+	  return section;
+      }
+    return null;
+  }
+
+  public static LtraceObjectFile buildFromFile(String fileName)
+  {
+    {
+      LtraceObjectFile objFile = (LtraceObjectFile)cachedFiles.get(fileName);
+      if (objFile != null)
+	return objFile;
+    }
+
     try {
-	Elf elfFile = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
-	ElfEHeader eh = elfFile.getEHeader();
-	LtraceObjectFile objFile = new LtraceObjectFile(proc.getExe());
+	final Elf elfFile = new Elf(fileName, ElfCommand.ELF_C_READ);
+	if (elfFile == null)
+	  return null;
+
+	final ElfEHeader eh = elfFile.getEHeader();
+	if (eh == null)
+	  return null;
+
+	boolean haveDynamic = false;
+	boolean haveLoadable = false;
+	boolean havePlt = false;
+	boolean haveRelPlt = false;
+	long offDynamic = 0;
+	long baseAddress = 0;
+
+	for (int i = 0; i < eh.phnum; ++i)
+	  {
+	    ElfPHeader ph = elfFile.getPHeader(i);
+	    if (ph.type == ElfPHeader.PTYPE_DYNAMIC)
+	      {
+		haveDynamic = true;
+		offDynamic = ph.offset;
+	      }
+	    else if (ph.type == ElfPHeader.PTYPE_LOAD
+		     && ph.offset == 0)
+	      {
+		haveLoadable = true;
+		baseAddress = ph.vaddr;
+	      }
+	  }
+
+	if (!haveDynamic)
+	  {
+	    System.err.println("This file doesn't participate in dynamic linking.");
+	    return null;
+	  }
+	if (!haveLoadable)
+	  {
+	    System.err.println("This file doesn't contain any loadable segments.");
+	    return null;
+	  }
+
+	final LtraceObjectFile objFile = new LtraceObjectFile(fileName);
+	objFile.setBaseAddress(baseAddress);
 
 	if (eh.type == ElfEHeader.PHEADER_ET_EXEC)
 	  System.err.println("Executable");
 	else if (eh.type == ElfEHeader.PHEADER_ET_DYN)
-	  System.err.println("PIE executable");
+	  System.err.println("DSO/PIE");
 	else
 	  System.err.println("Unknown ELF type " + eh.type + "!");
 
-	long pltAddr = 0;
-	long pltSize = 0;
-	ElfRel[] pltRelocs = null;
-	final ArrayList symbols = new ArrayList();
+	class Locals {
+	  public ElfSection dynamicStrtab = null;
+	  public ElfSection dynamicSymtab = null;
+	  public int dynamicSonameIdx = -1;
+	  public long pltAddr = 0;
+	  public long pltSize = 0;
+	  public ElfRel[] pltRelocs = null;
+	}
+	final Locals locals = new Locals();
+	haveDynamic = false;
 
-	boolean haveDynsym = false;
-	boolean havePlt = false;
-	boolean haveRelPlt = false;
-
+	// Find & interpret DYNAMIC section.
 	for (ElfSection section = elfFile.getSection(0);
 	     section != null;
 	     section = elfFile.getNextSection(section))
 	  {
 	    ElfSectionHeader sheader = section.getSectionHeader();
-	    if (sheader.type == ElfSectionHeader.ELF_SHT_DYNSYM)
+	    if (sheader.offset == offDynamic)
 	      {
-		haveDynsym = true;
-
-		ElfSymbol.loadFrom(section, new ElfSymbol.Builder() {
-		    public void symbol (String name, long value, long size,
-					int type, int bind, int visibility,
-					long shndx)
+		haveDynamic = true;
+		ElfDynamic.loadFrom(section, new ElfDynamic.Builder() {
+		    public void entry (int tag, long value)
 		    {
-		      LtraceSymbol sym = new LtraceSymbol(name, type, value, size, shndx);
-		      sym.setAddress(value);
-		      symbols.add(sym);
+		      if (tag == ElfDynamic.ELF_DT_STRTAB)
+			locals.dynamicStrtab = getElfSectionWithAddr(elfFile, value);
+		      else if (tag == ElfDynamic.ELF_DT_SONAME)
+			locals.dynamicSonameIdx = (int)value;
+		      else if (tag == ElfDynamic.ELF_DT_SYMTAB)
+			locals.dynamicSymtab = getElfSectionWithAddr(elfFile, value);
 		    }
-		  });
-
-		for (Iterator it = symbols.iterator(); it.hasNext(); )
-		  {
-		    LtraceSymbol sym = (LtraceSymbol)it.next();
-		    if (sym.type == ElfSymbol.ELF_STT_FUNC
-			&& (sym.shndx == ElfSectionHeader.ELF_SHN_UNDEF
-			    || sym.value == 0))
-		      {
-			System.err.println("Got library function symbol `" + sym.name + "'.");
-			objFile.addSymbol(sym);
-		      }
-		  }
+		});
 	      }
-	    else if (sheader.type == ElfSectionHeader.ELF_SHT_PROGBITS
+	    else if ((sheader.type == ElfSectionHeader.ELF_SHT_PROGBITS
+		      || sheader.type == ElfSectionHeader.ELF_SHT_NOBITS)
 		     && sheader.name.equals(".plt"))
 	      {
 		havePlt = true;
-		pltAddr = sheader.addr;
-		pltSize = sheader.size;
+		locals.pltAddr = sheader.addr;
+		locals.pltSize = sheader.size;
 	      }
-	    else if (sheader.type == ElfSectionHeader.ELF_SHT_REL
-		     && sheader.name.equals(".rel.plt"))
+	    else if ((sheader.type == ElfSectionHeader.ELF_SHT_REL
+		      && sheader.name.equals(".rel.plt"))
+		     || (sheader.type == ElfSectionHeader.ELF_SHT_RELA
+			 && sheader.name.equals(".rela.plt")))
 	      {
 		haveRelPlt = true;
-		pltRelocs = ElfRel.loadFrom(section);
+		locals.pltRelocs = ElfRel.loadFrom(section);
 	      }
 	  }
 
+	if (!haveDynamic)
+	  throw new lib.dwfl.ElfFileException("DYNAMIC section not found in ELF file.");
 	if (!havePlt)
-	  throw new lib.dwfl.ElfFileException("No .plt found in ELF file.");
+	  throw new lib.dwfl.ElfFileException("No (suitable) .plt found in ELF file.");
 	if (!haveRelPlt)
-	  throw new lib.dwfl.ElfFileException("No .rel.plt found in ELF file.");
-	if (!haveDynsym)
-	  throw new lib.dwfl.ElfFileException("No .dynsym found in ELF file.");
+	  throw new lib.dwfl.ElfFileException("No (suitable) .rel.plt found in ELF file.");
+	if (locals.dynamicSymtab == null)
+	  throw new lib.dwfl.ElfFileException("Couldn't get SYMTAB from DYNAMIC section.");
+	if (locals.dynamicStrtab == null)
+	  throw new lib.dwfl.ElfFileException("Couldn't get STRTAB from DYNAMIC section.");
 
-	long pltEntrySize = pltSize / (pltRelocs.length + 1);
-	for (int i = 0; i < pltRelocs.length; ++i)
+	// Load DT_SYMTAB.
+	{
+	  ElfSection section = locals.dynamicSymtab;
+	  ElfSectionHeader sheader = section.getSectionHeader();
+	  if (sheader.type != ElfSectionHeader.ELF_SHT_DYNSYM)
+	    throw new lib.dwfl.ElfFileException("Section denoted by DT_SYMTAB isn't SHT_DYNSYM.");
+
+	  final ArrayList symbolList = new ArrayList();
+	  ElfSymbol.loadFrom(section, new ElfSymbol.Builder() {
+	      public void symbol (String name, long value, long size,
+				  int type, int bind, int visibility,
+				  long shndx)
+	      {
+		LtraceSymbol sym = new LtraceSymbol(name, type, value, size, shndx);
+		symbolList.add(sym);
+		if (type == ElfSymbol.ELF_STT_FUNC)
+		  {
+		    sym.setEntryAddress(value);
+		    objFile.addSymbol(sym);
+		  }
+	      }
+	    });
+
+	  long pltEntrySize = locals.pltSize / (locals.pltRelocs.length + 1);
+	  for (int i = 0; i < locals.pltRelocs.length; ++i)
+	    /* XXX HACK: 386 specific.  In general we want
+	     * platform-independent way of asking whether it's
+	     * JMP_SLOT relocation. */
+	    if (locals.pltRelocs[i].type == 7)
+	      {
+		long pltAddress = locals.pltAddr + pltEntrySize * (i + 1);
+		long symbolIndex = locals.pltRelocs[i].symbolIndex;
+		LtraceSymbol symbol = (LtraceSymbol)symbolList.get((int)symbolIndex - 1);
+		symbol.setPltAddress(pltAddress);
+	      }
+	}
+
+	// Read SONAME if there was one.
+	if (locals.dynamicSonameIdx != -1)
 	  {
-	    long entryAddr = pltAddr + pltEntrySize * (i + 1);
-	    LtraceSymbol symbol = (LtraceSymbol)symbols.get((int)pltRelocs[i].symbolIndex - 1);
-	    System.out.println("PLT entry for `" + symbol.name + "' is at 0x" + Long.toHexString(entryAddr) + ".");
-	    symbol.setAddress(entryAddr);
+	    ElfData data = locals.dynamicStrtab.getData();
+	    byte[] bytes = data.getBytes();
+	    int startIndex = locals.dynamicSonameIdx;
+	    int endIndex = startIndex;
+	    while (bytes[endIndex] != 0)
+	      ++endIndex;
+	    String name = new String(bytes, startIndex, endIndex - startIndex);
+	    objFile.setSoname(name);
 	  }
 
+	cachedFiles.put(fileName, objFile);
 	return objFile;
       }
     catch (lib.dwfl.ElfFileException efe)
       {
-	efe.printStackTrace ();
+	efe.printStackTrace();
 	System.err.println("load error: " + efe);
       }
     catch (lib.dwfl.ElfException eexp)
       {
-	eexp.printStackTrace ();
+	eexp.printStackTrace();
 	System.err.println("load error: " + eexp);
       }
 
@@ -334,9 +510,6 @@ public class Ltrace
 
   // Task counter.
   int numTasks = 0;
-
-  // Mapping between processes and their LtraceObjectFile descriptors.
-  HashMap objectFiles = new HashMap();
 
   /**
    * Used for adding one or more traced pids.
@@ -396,31 +569,11 @@ public class Ltrace
   }
 
   /**
-   * Do a per-process init.  Call this only when process task(s)
-   * exist(s) and are attached to.
+   * Do a per-process init.  Called only when process task(s) exist(s)
+   * and are attached to.
    */
   private void perProcInit(Proc proc)
   {
-    LtraceObjectFile objf = (LtraceObjectFile)objectFiles.get(proc);
-    if (objf == null)
-      objf = LtraceObjectFile.buildForProc(proc);
-
-    if (objf == null)
-      {
-	System.err.println("Error in loading executable or libraries. The process will not be traced.");
-	return;
-      }
-    else
-      objectFiles.put(proc, objf);
-
-    final Task mainTask = proc.getMainTask();
-    objf.eachSymbol(new LtraceObjectFile.SymbolIterator() {
-	public void symbol(LtraceSymbol sym) {
-	  System.out.println("Add breakpoint to 0x" + Long.toHexString(sym.address)
-			     + " for " + sym.name);
-	  mainTask.requestAddCodeObserver(ltraceTaskObserver, sym.address);
-	}
-      });
   }
 
   /**
@@ -542,8 +695,8 @@ public class Ltrace
 
       if (traceSignals)
 	{
-	  System.out.print("[" + task.getTaskId().intValue() + "] ");
-	  System.out.println("syscall enter " + syscall.getName());
+	  System.err.print("[" + task.getTaskId().intValue() + "] ");
+	  System.err.println("syscall enter " + syscall.getName());
 	}
 
       return Action.CONTINUE;
@@ -566,12 +719,16 @@ public class Ltrace
 
 	  if (name.indexOf("mmap") != -1
 	      || name.indexOf("munmap") != -1)
-	    return this.checkMapUnmapUpdates(task, false);
+	    {
+	      this.checkMapUnmapUpdates(task, false);
+	      task.requestUnblock(this);
+	      return Action.BLOCK;
+	    }
 
 	  if (traceSignals)
 	    {
-	      System.out.print ("[" + task.getTaskId().intValue() + "] ");
-	      System.out.println ("syscall leave " + name);
+	      System.err.print ("[" + task.getTaskId().intValue() + "] ");
+	      System.err.println ("syscall leave " + name);
 	    }
 	}
 
@@ -584,25 +741,60 @@ public class Ltrace
     // --- code observer, breakpoint handling ---
     // ------------------------------------------
 
-    public Action updateHit (Task task, long address)
+    // XXX: Following fields will have to be made task-aware.
+    private HashMap breakpointMap = new HashMap();
+    private HashMap returnBreakpoints = new HashMap();
+    private int level = 0;
+
+    public Action libcallEnter(Task task, LtraceSymbol symbol, long address)
     {
-      //long pc = task.getIsa().pc(task);
-      System.err.print("[" + task.getTaskId().intValue() + "] ");
-      LtraceObjectFile objf = (LtraceObjectFile)objectFiles.get(task.getProc());
-      LtraceSymbol symbol = objf.symbolAt(address);
-      System.err.print("call " + symbol.name + "(");
+      /*
+	// XXX: this makes no sense for PLT tracing.
+      Frame frame = StackFactory.createFrame(task);
+      if (frame != null)
+	{
+	  try { frame = frame.getOuter(); }
+	  catch (java.lang.NullPointerException ex) {}
+	}
+      String symbolName = symbol.name;
+      String libraryName = symbol.getParent().getSoname();
+
+      String callerLibrary = "(toplevel)";
+      if (frame != null)
+	{
+	  try {
+	    callerLibrary = frame.getLibraryName();
+	    if (!callerLibrary.equals("Unknown"))
+	      callerLibrary = LtraceObjectFile.buildFromFile(callerLibrary).getSoname();
+	  }
+	  catch (java.lang.Exception ex) {
+	    callerLibrary = "(Exception)";
+	  }
+	}
+      */
+
+      String symbolName = symbol.name;
+      String callerLibrary = symbol.parent.getSoname();
+
+      StringBuffer spaces = new StringBuffer();
+      for (int i = 0; i < level; ++i)
+	spaces.append(' ');
+      ++level;
+      System.err.print("[" + task.getTaskId().intValue() + "] " + spaces + "call enter ");
+      System.err.print(callerLibrary + "->" + /*libraryName + ":" +*/ symbolName + "(");
 
       ByteBuffer buf = task.getMemory();
 
       // i386 only at this time
       Register espRegister = task.getIsa().getRegisterByName("esp");
       long esp = espRegister.get(task);
+      long retAddr = buf.getInt(esp);
       esp += 4;
 
       // Poor man's call formatter... both traditional ltrace-style
       // and dwarf-enhanced formatters will be implemented in future,
       // this is just to test some stuff...
-      if (symbol.name.equals("puts"))
+      if (symbolName.equals("puts"))
 	{
 	  long pointer = buf.getInt(esp);
 	  System.err.print('"');
@@ -623,13 +815,51 @@ public class Ltrace
 	  System.err.print('"');
 	}
       else
-	for (long i = 0; i < 8; ++i)
+	for (long i = 0; i < 4; ++i)
 	  {
 	    int value = buf.getInt(esp);
 	    System.err.print("0x" + Long.toHexString(value) + ", ");
 	    esp += 4;
 	  }
       System.err.println(")");
+
+      // Install breakpoint to return address.
+      task.getProc().getMainTask().requestAddCodeObserver(this, retAddr);
+      returnBreakpoints.put(new Long(retAddr), symbol);
+
+      task.requestUnblock(this);
+      return Action.BLOCK;
+    }
+
+    public Action libcallLeave(Task task, LtraceSymbol symbol, long address)
+    {
+      StringBuffer spaces = new StringBuffer();
+      --level;
+      for (int i = 0; i < level; ++i)
+	spaces.append(' ');
+      System.err.println("[" + task.getTaskId().intValue() + "] " + spaces + "call leave " + symbol.name);
+      task.getProc().getMainTask().requestDeleteCodeObserver(this, address);
+      returnBreakpoints.remove(new Long(address));
+
+      task.requestUnblock(this);
+      return Action.BLOCK;
+    }
+
+    public Action updateHit (Task task, long address)
+    {
+      Long laddress = new Long(address);
+      LtraceSymbol symbol = (LtraceSymbol)breakpointMap.get(laddress);
+      if (symbol != null)
+	return this.libcallEnter(task, symbol, address);
+
+      // XXX: This will have to take into account the fact that all
+      // tasks will hit breakpoint, not only the original.
+      symbol = (LtraceSymbol)returnBreakpoints.get(laddress);
+      if (symbol != null)
+        return this.libcallLeave(task, symbol, address);
+
+      System.err.println("[" + task.getTaskId().intValue() + "] UNKNOWN BREAKPOINT 0x" + Long.toHexString(address));
+      returnBreakpoints.remove(laddress);
       return Action.CONTINUE;
     }
 
@@ -646,7 +876,7 @@ public class Ltrace
       System.err.print("[" + task.getTaskId().intValue() + "] ");
       System.err.println("new task attached at 0x" + Long.toHexString(pc));
 
-      this.mapsForTask.put(task, new HashSet());
+      this.mapsForTask.put(task, new HashMap());
       this.checkMapUnmapUpdates(task, false);
 
       return Action.CONTINUE;
@@ -654,12 +884,14 @@ public class Ltrace
 
     public Action updateTerminating(Task task, boolean signal, int value)
     {
-      return this.checkMapUnmapUpdates(task, true);
+      this.checkMapUnmapUpdates(task, true);
+      task.requestUnblock(this);
+      return Action.BLOCK;
     }
 
     public Action updateTerminated (Task task, boolean signal, int value)
     {
-      System.out.print("[" + task.getTaskId().intValue() + "] ");
+      System.err.print("[" + task.getTaskId().intValue() + "] ");
       if (signal)
 	System.err.println("+++ killed by " + Sig.toPrintString(value) + " +++");
       else
@@ -699,71 +931,110 @@ public class Ltrace
     /// Remembers which files are currently mapped in which task.
     HashMap mapsForTask = new HashMap();
 
-    private Action checkMapUnmapUpdates(Task task, boolean terminating)
+    private void checkMapUnmapUpdates(Task task, boolean terminating)
     {
-      // Note that when several files get mapped or unmapped (which
-      // should generally happen only on program start or end), and
-      // handler blocks in the middle of the list, you lose the rest of
-      // the list.  This may be considered a bug.
+      Map mappedFiles = (Map)this.mapsForTask.get(task);
+      Map newMappedFiles = terminating
+	? new HashMap ()
+	: MemMappedFiles.forPid(task.getTid());
 
-      int pid = task.getTid();
-      Set mappedFiles = (Set)this.mapsForTask.get(task);
-      Set newMappedFiles = terminating
-	? new HashSet ()
-	: MemMappedFiles.forPid(pid);
+      Set mappedFilesSet = mappedFiles.keySet();
+      Set newMappedFilesSet = newMappedFiles.keySet();
 
-      if (!newMappedFiles.equals(mappedFiles))
+      if (!newMappedFilesSet.equals(mappedFilesSet))
 	{
 	  // Assume that files get EITHER mapped, OR unmapped.
 	  // Because under normal conditions, each map/unmap will
 	  // get spotted, this is a reasonable assumption.
-	  if (newMappedFiles.containsAll(mappedFiles))
+	  if (newMappedFilesSet.containsAll(mappedFilesSet))
 	    {
-	      Set diff = new HashSet(newMappedFiles);
-	      diff.removeAll(mappedFiles);
+	      Set diff = new HashSet(newMappedFilesSet);
+	      diff.removeAll(mappedFilesSet);
 	      for (Iterator it = diff.iterator(); it.hasNext(); )
 		{
-		  Action a = this.updateMappedFile (task, it.next().toString());
-		  if (a != Action.CONTINUE)
-		    return a;
+		  String path = (String)it.next();
+		  MappingInfo info = (MappingInfo)newMappedFiles.get(path);
+		  this.updateMappedFile(task, info);
 		}
 	    }
 	  else
 	    {
 	      // We can avoid artificial `diff' set here, to gain a
 	      // little performance.
-	      mappedFiles.removeAll(newMappedFiles);
-	      for (Iterator it = mappedFiles.iterator(); it.hasNext(); )
+	      mappedFilesSet.removeAll(newMappedFilesSet);
+	      for (Iterator it = mappedFilesSet.iterator(); it.hasNext(); )
 		{
-		  Action a = this.updateUnmappedFile (task, it.next().toString());
-		  if (a != Action.CONTINUE)
-		    return a;
+		  String path = (String)it.next();
+		  MappingInfo info = (MappingInfo)mappedFiles.get(path);
+		  this.updateUnmappedFile(task, info);
 		}
 	    }
 	}
 
       this.mapsForTask.put(task, newMappedFiles);
-      return Action.CONTINUE;
     }
 
     private void reportMapUnmap(Task task, String filename, String method)
     {
       int pid = task.getTid();
-      System.out.println ("[" + pid + "]"
+      System.err.println ("[" + pid + "]"
 			  + " " + method
 			  + " " + filename);
     }
 
-    public Action updateMappedFile (Task task, String filename)
+    public void updateMappedFile (final Task task, MappingInfo mapping)
     {
-      this.reportMapUnmap(task, filename, "map");
-      return Action.CONTINUE;
+      this.reportMapUnmap(task, mapping.path, "map");
+
+      // Try to load the mappped file as ELF.  Assume all
+      // executable-mmapped ELF files are libraries.
+      if (!mapping.permExecute)
+	return;
+      LtraceObjectFile objf = LtraceObjectFile.buildFromFile(mapping.path);
+      if (objf == null)
+	{
+	  int pid = task.getTid();
+	  System.err.println("[" + pid + "] note mmap non-elf " + mapping.path);
+	}
+      else
+	{
+	  // XXX: frysk doesn't currently handle the "once per Task"
+    	  // part right, and triggers each breakpoint for each task,
+    	  // so the tracing get's somewhat useless for multithreading.
+	  final long relocation = mapping.addressLow - objf.getBaseAddress();
+	  objf.eachSymbol(new LtraceObjectFile.SymbolIterator() {
+	      public void symbol(LtraceSymbol sym)
+	      {
+		if (sym.pltAddress == 0)
+		  return;
+
+		Long laddr = new Long(sym.pltAddress + relocation);
+		if (breakpointMap.containsKey(laddr))
+		  {
+		    // We got an alias.  Put the symbol with the
+    		    // shorter name into the map.
+		    //
+		    // XXX: In future, for trace pruning/symbol
+		    // matching purposes, all aliases should be
+		    // available.  By default the shortest one should
+		    // get printed, but any of them should match.
+		    LtraceSymbol original = (LtraceSymbol)breakpointMap.get(laddr);
+		    if (sym.name.length() < original.name.length())
+		      breakpointMap.put(laddr, sym);
+		  }
+		else
+		  {
+		    task.requestAddCodeObserver(ltraceTaskObserver, laddr.longValue());
+		    breakpointMap.put(laddr, sym);
+		  }
+	      }
+	    });
+	}
     }
 
-    public Action updateUnmappedFile (Task task, String filename)
+    public void updateUnmappedFile (Task task, MappingInfo mapping)
     {
-      this.reportMapUnmap(task, filename, "unmap");
-      return Action.CONTINUE;
+      this.reportMapUnmap(task, mapping.path, "unmap");
     }
 
 
@@ -776,15 +1047,17 @@ public class Ltrace
     {
     }
 
-    public void addFailed (Object observable, Throwable w)
-    {
-      throw new RuntimeException("Failed to add an observer to the process", w);
-    }
-
     public void deletedFrom (Object observable)
     {
-      throw new RuntimeException("This has not yet been implemented");
     }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+      System.err.print("[" + ((Task)observable).getTid() + "] ");
+      w.printStackTrace();
+      //throw new RuntimeException("Failed to add an observer to the process", w);
+    }
+
   }
 
   LtraceTaskObserver ltraceTaskObserver = new LtraceTaskObserver();
