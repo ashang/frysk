@@ -1,10 +1,8 @@
-#www.linux-foundation.org/spec/refspecs/elf/x86_64-SysV-psABI.pdf 
+#http://www.x86-64.org/viewvc/trunk/x86-64-ABI/low-level-sys-info.tex?revision=214&view=markup
 RAX 0
-#Consistent with frysk and gcc?
-RBX 3
-RCX 2
-#Consistent with frysk and gcc?
 RDX 1
+RCX 2
+RBX 3
 RSI 4
 RDI 5
 RBP 6
@@ -50,3 +48,21 @@ MM4 45
 MM5 46
 MM6 47
 MM7 48
+RFLAGS 49
+ES 50
+CS 51
+SS 52
+DS 53
+FS 54
+GS 55
+
+
+FSBASE 58
+GSBASE 59
+
+
+TR 62
+LDTR 63
+MXCSR 64
+FCW 65
+FSW 66

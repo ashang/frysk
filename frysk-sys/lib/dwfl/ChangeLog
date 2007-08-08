@@ -1,3 +1,7 @@
+2007-08-08  Nurdin Premji <npremji@redhat.com>
+
+	* DwarfRegistersX8664.mkenum: Updated, based on newer ABI.
+
 2007-08-08  Petr Machata  <pmachata@redhat.com>
 
 	* TestElf.java (testObjectFileTables): Moved symtab and relocation
