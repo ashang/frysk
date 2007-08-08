@@ -1,5 +1,8 @@
 2007-08-08  Nurdin Premji  <npremji@redhat.com>
 
+	* ArithmeticTypes.java: Moved standard types to ...
+	* StandardTypes.java: Added.
+		
 	* ArithmeticType.java: Added some general types.
 
 2007-08-02  Andrew Cagney  <cagney@redhat.com>

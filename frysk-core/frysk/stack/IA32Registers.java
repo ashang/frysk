@@ -39,106 +39,106 @@
 
 package frysk.stack;
 
-import frysk.value.ArithmeticType;
+import frysk.value.StandardTypes;
 
 public class IA32Registers {
 
-    public final static Register EAX = new Register("eax", ArithmeticType.int32Type);
+    public final static Register EAX = new Register("eax", StandardTypes.int32Type);
 
-    public final static Register EDX = new Register("edx", ArithmeticType.int32Type);
+    public final static Register EDX = new Register("edx", StandardTypes.int32Type);
 
-    public final static Register ECX = new Register("ecx", ArithmeticType.int32Type);
+    public final static Register ECX = new Register("ecx", StandardTypes.int32Type);
 
-    public final static Register EBX = new Register("ebx", ArithmeticType.int32Type);
+    public final static Register EBX = new Register("ebx", StandardTypes.int32Type);
 
-    public final static Register ESI = new Register("esi", ArithmeticType.int32Type);
+    public final static Register ESI = new Register("esi", StandardTypes.int32Type);
 
-    public final static Register EDI = new Register("edi", ArithmeticType.int32Type);
+    public final static Register EDI = new Register("edi", StandardTypes.int32Type);
 
-    public final static Register EBP = new Register("ebp", ArithmeticType.int32Type);
+    public final static Register EBP = new Register("ebp", StandardTypes.int32Type);
 
-    public final static Register ESP = new Register("esp", ArithmeticType.int32Type);
+    public final static Register ESP = new Register("esp", StandardTypes.int32Type);
 
-    public final static Register EIP = new Register("eip", ArithmeticType.int32Type);
+    public final static Register EIP = new Register("eip", StandardTypes.int32Type);
 
-    public final static Register EFLAGS = new Register("eflags", ArithmeticType.int32Type);
+    public final static Register EFLAGS = new Register("eflags", StandardTypes.int32Type);
 
-    public final static Register TRAPS = new Register("traps", ArithmeticType.int32Type);
+    public final static Register TRAPS = new Register("traps", StandardTypes.int32Type);
 
     /* MMX/stacked-fp registers */
 
-    public final static Register ST0 = new Register("st0", ArithmeticType.float32Type);
+    public final static Register ST0 = new Register("st0", StandardTypes.float32Type);
 
-    public final static Register ST1 = new Register("st1", ArithmeticType.float32Type);
+    public final static Register ST1 = new Register("st1", StandardTypes.float32Type);
 
-    public final static Register ST2 = new Register("st2", ArithmeticType.float32Type);
+    public final static Register ST2 = new Register("st2", StandardTypes.float32Type);
 
-    public final static Register ST3 = new Register("st3", ArithmeticType.float32Type);
+    public final static Register ST3 = new Register("st3", StandardTypes.float32Type);
 
-    public final static Register ST4 = new Register("st4", ArithmeticType.float32Type);
+    public final static Register ST4 = new Register("st4", StandardTypes.float32Type);
 
-    public final static Register ST5 = new Register("st5", ArithmeticType.float32Type);
+    public final static Register ST5 = new Register("st5", StandardTypes.float32Type);
 
-    public final static Register ST6 = new Register("st6", ArithmeticType.float32Type);
+    public final static Register ST6 = new Register("st6", StandardTypes.float32Type);
 
-    public final static Register ST7 = new Register("st7", ArithmeticType.float32Type);
+    public final static Register ST7 = new Register("st7", StandardTypes.float32Type);
 
-    public final static Register FCW = new Register("fcw", ArithmeticType.float32Type);
+    public final static Register FCW = new Register("fcw", StandardTypes.float32Type);
 
-    public final static Register FSW = new Register("fsw", ArithmeticType.float32Type);
+    public final static Register FSW = new Register("fsw", StandardTypes.float32Type);
 
-    public final static Register FTW = new Register("ftw", ArithmeticType.float32Type);
+    public final static Register FTW = new Register("ftw", StandardTypes.float32Type);
 
-    public final static Register FOP = new Register("fop", ArithmeticType.float32Type);
+    public final static Register FOP = new Register("fop", StandardTypes.float32Type);
 
-    public final static Register FCS = new Register("fcs", ArithmeticType.float32Type);
+    public final static Register FCS = new Register("fcs", StandardTypes.float32Type);
 
-    public final static Register FIP = new Register("fip", ArithmeticType.float32Type);
+    public final static Register FIP = new Register("fip", StandardTypes.float32Type);
 
-    public final static Register FEA = new Register("fea", ArithmeticType.float32Type);
+    public final static Register FEA = new Register("fea", StandardTypes.float32Type);
 
-    public final static Register FDS = new Register("fds", ArithmeticType.float32Type);
+    public final static Register FDS = new Register("fds", StandardTypes.float32Type);
 
     /* SSE registers */
 
-    public final static Register XMM0 = new Register("xmm0", ArithmeticType.int32Type);
+    public final static Register XMM0 = new Register("xmm0", StandardTypes.int32Type);
 
-    public final static Register XMM1 = new Register("xmm1", ArithmeticType.int32Type);
+    public final static Register XMM1 = new Register("xmm1", StandardTypes.int32Type);
 
-    public final static Register XMM2 = new Register("xmm2", ArithmeticType.int32Type);
+    public final static Register XMM2 = new Register("xmm2", StandardTypes.int32Type);
 
-    public final static Register XMM3 = new Register("xmm3", ArithmeticType.int32Type);
+    public final static Register XMM3 = new Register("xmm3", StandardTypes.int32Type);
 
-    public final static Register XMM4 = new Register("xmm4", ArithmeticType.int32Type);
+    public final static Register XMM4 = new Register("xmm4", StandardTypes.int32Type);
 
-    public final static Register XMM5 = new Register("xmm5", ArithmeticType.int32Type);
+    public final static Register XMM5 = new Register("xmm5", StandardTypes.int32Type);
 
-    public final static Register XMM6 = new Register("xmm6", ArithmeticType.int32Type);
+    public final static Register XMM6 = new Register("xmm6", StandardTypes.int32Type);
 
-    public final static Register XMM7 = new Register("xmm7", ArithmeticType.int32Type);
+    public final static Register XMM7 = new Register("xmm7", StandardTypes.int32Type);
 
-    public final static Register MXCSR = new Register("mxcsr", ArithmeticType.int32Type);
+    public final static Register MXCSR = new Register("mxcsr", StandardTypes.int32Type);
 
     /* segment registers */
 
-    public final static Register GS = new Register("gs", ArithmeticType.int32Type);
+    public final static Register GS = new Register("gs", StandardTypes.int32Type);
 
-    public final static Register FS = new Register("fs", ArithmeticType.int32Type);
+    public final static Register FS = new Register("fs", StandardTypes.int32Type);
 
-    public final static Register ES = new Register("es", ArithmeticType.int32Type);
+    public final static Register ES = new Register("es", StandardTypes.int32Type);
 
-    public final static Register DS = new Register("ds", ArithmeticType.int32Type);
+    public final static Register DS = new Register("ds", StandardTypes.int32Type);
 
-    public final static Register SS = new Register("ss", ArithmeticType.int32Type);
+    public final static Register SS = new Register("ss", StandardTypes.int32Type);
 
-    public final static Register CS = new Register("cs", ArithmeticType.int32Type);
+    public final static Register CS = new Register("cs", StandardTypes.int32Type);
 
-    public final static Register TSS = new Register("tss", ArithmeticType.int32Type);
+    public final static Register TSS = new Register("tss", StandardTypes.int32Type);
 
-    public final static Register LDT = new Register("ldt", ArithmeticType.int32Type);
+    public final static Register LDT = new Register("ldt", StandardTypes.int32Type);
 
     /* frame info (read-only) */
-    public final static Register CFA = new Register("cfa", ArithmeticType.int32Type);
+    public final static Register CFA = new Register("cfa", StandardTypes.int32Type);
 
     public final static RegisterGroup GENERAL = new RegisterGroup("general",
 	    new Register[] { EAX, EBX, ECX, EDX, ESI, EDI, EBP, EIP, EFLAGS,

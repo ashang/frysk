@@ -39,46 +39,46 @@
 
 package frysk.stack;
 
-import frysk.value.ArithmeticType;
+import frysk.value.StandardTypes;
 
 public class X8664Registers {
 
-    public static final Register RAX = new Register("rax", ArithmeticType.long64Type);
+    public static final Register RAX = new Register("rax", StandardTypes.long64Type);
 
-    public static final Register RDX = new Register("rdx", ArithmeticType.long64Type);
+    public static final Register RDX = new Register("rdx", StandardTypes.long64Type);
 
-    public static final Register RCX = new Register("rcx", ArithmeticType.long64Type);
+    public static final Register RCX = new Register("rcx", StandardTypes.long64Type);
 
-    public static final Register RBX = new Register("rbx", ArithmeticType.long64Type);
+    public static final Register RBX = new Register("rbx", StandardTypes.long64Type);
 
-    public static final Register RSI = new Register("rsi", ArithmeticType.long64Type);
+    public static final Register RSI = new Register("rsi", StandardTypes.long64Type);
 
-    public static final Register RDI = new Register("rdi", ArithmeticType.long64Type);
+    public static final Register RDI = new Register("rdi", StandardTypes.long64Type);
 
-    public static final Register RBP = new Register("rbp", ArithmeticType.long64Type);
+    public static final Register RBP = new Register("rbp", StandardTypes.long64Type);
 
-    public static final Register RSP = new Register("rsp", ArithmeticType.long64Type);
+    public static final Register RSP = new Register("rsp", StandardTypes.long64Type);
 
-    public static final Register R8 = new Register("r8", ArithmeticType.long64Type);
+    public static final Register R8 = new Register("r8", StandardTypes.long64Type);
 
-    public static final Register R9 = new Register("r9", ArithmeticType.long64Type);
+    public static final Register R9 = new Register("r9", StandardTypes.long64Type);
 
-    public static final Register R10 = new Register("r10", ArithmeticType.long64Type);
+    public static final Register R10 = new Register("r10", StandardTypes.long64Type);
 
-    public static final Register R11 = new Register("r11", ArithmeticType.long64Type);
+    public static final Register R11 = new Register("r11", StandardTypes.long64Type);
 
-    public static final Register R12 = new Register("r12", ArithmeticType.long64Type);
+    public static final Register R12 = new Register("r12", StandardTypes.long64Type);
 
-    public static final Register R13 = new Register("r13", ArithmeticType.long64Type);
+    public static final Register R13 = new Register("r13", StandardTypes.long64Type);
 
-    public static final Register R14 = new Register("r14", ArithmeticType.long64Type);
+    public static final Register R14 = new Register("r14", StandardTypes.long64Type);
 
-    public static final Register R15 = new Register("r15", ArithmeticType.long64Type);
+    public static final Register R15 = new Register("r15", StandardTypes.long64Type);
 
-    public static final Register RIP = new Register("rip", ArithmeticType.long64Type);
+    public static final Register RIP = new Register("rip", StandardTypes.long64Type);
 
     /* frame info (read-only) */
-    public static final Register CFA = new Register("cfa", ArithmeticType.long64Type);
+    public static final Register CFA = new Register("cfa", StandardTypes.long64Type);
 
     public static final RegisterGroup GENERAL = new RegisterGroup("general",
 	    new Register[] { RAX, RDX, RCX, RBX, RSI, RDI, RBP, RSP, R8, R9,

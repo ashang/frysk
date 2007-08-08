@@ -48,18 +48,8 @@ import inua.eio.ByteOrder;
  */
 public class ArithmeticType
     extends Type
-{
-    
-    public static final Type int32Type =  new ArithmeticType(4,
-	    ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeInteger, "int");
-    
-    public static final Type float32Type =  new ArithmeticType(4,
-	    ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeFloat, "float");
-    
-    public static final Type long64Type = new ArithmeticType(8,
-	    ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeLong, "long");
-    
-  public ArithmeticType (int size, ByteOrder endian,
+{    
+    public ArithmeticType (int size, ByteOrder endian,
                          int typeId, String typeStr)
   {
     super(size, endian, typeId, typeStr);

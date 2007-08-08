@@ -1,6 +1,10 @@
 2007-08-08  Nurdin Premji  <npremji@redhat.com>
 
-	* IA32Registers.java: Use frysk.value.ArithmeticType general types.
+	* IA32Register.java: Update standard types now stored in 
+	frysk.value.StandardTypes.
+	* X8664Registers.java: Ditto.
+
+	* IA32Registers.java: Use frysk.value.ArithmeticType general types.	
 	* X8664Registers.java: Ditto.
 
 2007-08-06  Stan Cox  <scox@redhat.com>
