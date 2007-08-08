@@ -57,7 +57,7 @@ import frysk.sys.UnhandledWaitBuilder;
  * The slave can be manipulated using various signals and methods
  * listed below.
  */
-public abstract class FunitSlaveOffspring
+public abstract class SlaveOffspring
     extends SynchronizedOffspring
 {
     /**
@@ -99,28 +99,28 @@ public abstract class FunitSlaveOffspring
     public static final Sig[] execAck = new Sig[] { CHILD_ACK };
 
     /** Create an ack process. */
-    protected FunitSlaveOffspring () {
+    protected SlaveOffspring () {
 	super(CHILD_ACK, funitSlaveCommand(false, null, null));
     }
 
     /**
-     * Create an FunitSlaveOffspring; if BUSY, the process will use a
+     * Create an SlaveOffspring; if BUSY, the process will use a
      * busy-loop, instead of suspending, when waiting for signal
      * commands.
      */
-    protected FunitSlaveOffspring (boolean busy) {
+    protected SlaveOffspring (boolean busy) {
 	super(CHILD_ACK, funitSlaveCommand(busy, null, null));
     }
 
-    /** Create an FunitSlaveOffspring, and then add COUNT threads. */
-    protected FunitSlaveOffspring (int count) {
+    /** Create an SlaveOffspring, and then add COUNT threads. */
+    protected SlaveOffspring (int count) {
 	this();
 	for (int i = 0; i < count; i++)
 	    assertSendAddCloneWaitForAcks();
     }
 
-    /** Create a possibly busy FunitSlaveOffspring. Add COUNT threads. */
-    protected FunitSlaveOffspring (int count, boolean busy) {
+    /** Create a possibly busy SlaveOffspring. Add COUNT threads. */
+    protected SlaveOffspring (int count, boolean busy) {
 	this(busy);
 	for (int i = 0; i < count; i++)
 	    assertSendAddCloneWaitForAcks();

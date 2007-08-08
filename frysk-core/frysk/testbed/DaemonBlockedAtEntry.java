@@ -85,7 +85,7 @@ public class DaemonBlockedAtEntry {
      */
     public DaemonBlockedAtEntry(String[] argv) {
 	// Create the child.
-	FunitExecOffspring child = new FunitExecOffspring(argv);
+	ExecOffspring child = new ExecOffspring(argv);
 	this.mainTask = child.findTaskUsingRefresh(true);
 	// Add the exec observer that will block the task.
 	mainTask.requestAddExecedObserver(execBlockingObserver);

@@ -44,7 +44,7 @@ import frysk.testbed.TearDownFile;
 import frysk.testbed.TestLib;
 import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.TaskObserverBase;
-import frysk.testbed.FunitExecOffspring;
+import frysk.testbed.ExecOffspring;
 
 /**
  * Test the exec event. The exec needs to completely replace the existing
@@ -91,7 +91,7 @@ public class TestExec
     // Create a temp file that the exec'd program will remove.
     // That way it's possible to confirm that the exec did work.
     TearDownFile tmpFile = TearDownFile.create();
-    FunitExecOffspring child = new FunitExecOffspring(new String[] {
+    ExecOffspring child = new ExecOffspring(new String[] {
 							  "/bin/rm",
 							  tmpFile.toString()
 						      });
@@ -127,8 +127,8 @@ public class TestExec
     // Create a temp file, the exec will remove. That way it's
     // possible to confirm that the exec did work.
     TearDownFile tmpFile = TearDownFile.create();
-    FunitExecOffspring child
-	= new FunitExecOffspring(1, /*thread*/
+    ExecOffspring child
+	= new ExecOffspring(1, /*thread*/
 				 new String[] {
 				     "/bin/rm",
 				     tmpFile.toString()

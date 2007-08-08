@@ -1,5 +1,10 @@
 2007-08-08  Andrew Cagney  <cagney@redhat.com>
 
+	* ExecOffspring.java: Rename FunitExecOffspring.java.
+	* SlaveOffspring: Rename FunitSlaveOffspring.java.
+	* DaemonBlockedAtEntry.java: Update.
+	* TestLib.java: Update.
+
 	* TestLib.java (AckProcess): Extend FunitSlaveOffspring.
 	(AckProcess.spawn): Delete.
 	(AckProcess.assertSendAddCloneWaitForAcks): Delete.

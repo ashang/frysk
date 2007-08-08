@@ -49,7 +49,7 @@ import frysk.testbed.TearDownFile;
 import frysk.testbed.TestLib;
 import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.DaemonBlockedAtEntry;
-import frysk.testbed.FunitExecOffspring;
+import frysk.testbed.ExecOffspring;
 import frysk.testbed.Offspring;
 
 /**
@@ -170,12 +170,12 @@ public class TestProcGet
      */
     public void testGetCmdLine() {
 	// Create a process with a known set of arguments.
-	String[] argv = FunitExecOffspring.getCommandLine(0, 0, null,
+	String[] argv = ExecOffspring.getCommandLine(0, 0, null,
 							  new String[] {
 							      "/bin/echo",
 							      "hello"
 							  });
-	FunitExecOffspring child = new FunitExecOffspring(argv);
+	ExecOffspring child = new ExecOffspring(argv);
 	child.assertRunExec("invoking command with known argv");
 	Proc proc = child.assertFindProcAndTasks();
 	String[] cmdLine = proc.getCmdLine();
@@ -191,12 +191,12 @@ public class TestProcGet
      */
     public void testGetExe() throws IOException {
 	// Create a process with a known set of arguments.
-	String[] argv = FunitExecOffspring.getCommandLine(0, 0, null,
+	String[] argv = ExecOffspring.getCommandLine(0, 0, null,
 							  new String[] {
 							      "/bin/echo",
 							      "hello"
 							  });
-	FunitExecOffspring child = new FunitExecOffspring(argv);
+	ExecOffspring child = new ExecOffspring(argv);
 	child.assertRunExec("invoking command with known argv");
 	String file = new File(argv[0]).getCanonicalPath();
 	Proc proc = child.assertFindProcAndTasks();

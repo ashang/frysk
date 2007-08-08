@@ -45,7 +45,7 @@ import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
 import java.io.File;
 import frysk.Config;
-import frysk.testbed.FunitExecOffspring;
+import frysk.testbed.ExecOffspring;
 
 public class TestIsa
     extends TestLib
@@ -268,16 +268,16 @@ public class TestIsa
 	  "/bin/echo", "hello"
       };
       String[] invoke64thenEcho
-	  = FunitExecOffspring.getCommandLine(64, 0/*threads*/, null/*exe*/,
+	  = ExecOffspring.getCommandLine(64, 0/*threads*/, null/*exe*/,
 					      invokeEcho);
       String[] invoke32then64thenEcho
-	  = FunitExecOffspring.getCommandLine(32, 0/*threads*/, null/*exe*/,
+	  = ExecOffspring.getCommandLine(32, 0/*threads*/, null/*exe*/,
 					      invoke64thenEcho);
       String[] invoke64then32then64thenEcho
-	  = FunitExecOffspring.getCommandLine(32, 0/*threads*/, null/*exe*/,
+	  = ExecOffspring.getCommandLine(32, 0/*threads*/, null/*exe*/,
 					      invoke32then64thenEcho);
-      FunitExecOffspring ackProc
-	  = new FunitExecOffspring(invoke64then32then64thenEcho);
+      ExecOffspring ackProc
+	  = new ExecOffspring(invoke64then32then64thenEcho);
 
       Task task = ackProc.findTaskUsingRefresh(true);
       AttachedObserver attacher = new AttachedObserver();

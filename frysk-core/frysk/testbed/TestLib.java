@@ -247,7 +247,7 @@ public class TestLib
      * signals (see below).
      */
     public static abstract class AckProcess
-	extends FunitSlaveOffspring
+	extends SlaveOffspring
     {
 	private int pid;
 	/**

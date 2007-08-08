@@ -53,19 +53,19 @@ import frysk.proc.Manager;
  * The program funit-exec, when sent a signal, will exec its
  * arguments.
  */
-public class FunitExecOffspring extends SynchronizedOffspring {
+public class ExecOffspring extends SynchronizedOffspring {
     /**
      * Create a process that, when requested, will execute an exec
      * system call.
      */
-    public FunitExecOffspring(String[] programAndArgs) {
+    public ExecOffspring(String[] programAndArgs) {
 	super(START_ACK, getCommandLine(0, 0, null, programAndArgs));
     }
     /**
      * Create a multi-threaded process that, when requested, will exec
      * ARGS[0] passing ARGS.
      */
-    public FunitExecOffspring(int threads, String[] programAndArgs) {
+    public ExecOffspring(int threads, String[] programAndArgs) {
 	super(START_ACK, getCommandLine(0, threads, null, programAndArgs));
     }
 

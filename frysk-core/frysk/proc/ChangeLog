@@ -1,3 +1,9 @@
+2007-08-08  Andrew Cagney  <cagney@redhat.com>
+
+	* TestExec.java: Rename FunitExecOffspring to ExecOffspring.
+	* TestIsa.java: Ditto.
+	* TestProcGet.java: Ditto.
+
 2007-08-07  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskSyscallObserver.java: Replace
