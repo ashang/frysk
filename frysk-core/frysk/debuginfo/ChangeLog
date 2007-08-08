@@ -1,3 +1,7 @@
+2007-08-08  Stan Cox  <scox@redhat.com>
+
+	* LocationExpression.java (getRegisterNumber): Return null instead.
+
 2007-08-08  Mark Wielaard  <mwielaard@redhat.com>
 
 	* LocationExpression.java (getRegisterNumber): Throw

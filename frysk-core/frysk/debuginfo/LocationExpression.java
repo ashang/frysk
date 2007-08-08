@@ -263,6 +263,6 @@ class LocationExpression {
 	}
 	else
 	    throw new ValueUavailableException();
-	throw new NullPointerException();
+	return null;
     }
 }
