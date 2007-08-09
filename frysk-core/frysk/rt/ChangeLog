@@ -1,3 +1,7 @@
+2007-08-08  Tim Moore  <timoore@redhat.com>
+
+	* ProcTaskIDManager.java: New file.
+
 2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DisplayValue.java: Replaced Frame with DebugInfoFrame.

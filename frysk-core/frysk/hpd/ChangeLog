@@ -1,5 +1,16 @@
 2007-08-08  Tim Moore  <timoore@redhat.com>
 
+	* AllPTSet.java: Complete rewrite to reference active Procs and
+	Tasks via the ProcTaskIDManager.
+	* CLI.java (idManager): New variable, reference to
+	ProcTaskIDManager.
+	(startAttach): Only initialize steppingEngine once.
+	(CLI): Initialize idManager.
+	(getCommandPTSet): New method.
+	* TestSetCreation.java: Remove file because AllPTSet doesn't
+	support creation of random proc/task numbers anymore. 
+	
+
 	* AttachCommand.java (FindProc): New local class for FindProc results.
 	(handle): Use FindProc class in call to
 	Manager.host.requestFindProc() and synchronize on that object, not

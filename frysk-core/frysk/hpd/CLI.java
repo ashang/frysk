@@ -59,6 +59,7 @@ import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.rt.ProcTaskIDManager;
 import frysk.stepping.SteppingEngine;
 import frysk.stepping.TaskStepEngine;
 import frysk.value.Value;
@@ -71,6 +72,7 @@ public class CLI
   boolean running = false;
   DebugInfoFrame frame;
   int stackLevel = 0;
+  ProcTaskIDManager idManager;
   SteppingObserver steppingObserver;
   SteppingEngine steppingEngine;
   boolean procSearchFinished = false;
@@ -131,7 +133,10 @@ public class CLI
     this.task = task;
     Proc[] temp = new Proc[1];
     temp[0] = proc;
-    steppingEngine = new SteppingEngine(temp, steppingObserver);
+    if (steppingEngine == null)
+      steppingEngine = new SteppingEngine(temp, steppingObserver);
+    else
+      steppingEngine.addProc(proc);
   }
   
   public void startAttach(Task task)
@@ -265,6 +270,7 @@ public class CLI
   {
     this.prompt = prompt;
     outWriter = new PrintWriter(out, true);
+    idManager = ProcTaskIDManager.getSingleton();
 
     prepro = new Preprocessor();
     handlers = new HashMap();
@@ -572,4 +578,15 @@ public class CLI
   {
     return this.steppingEngine;
   }
+
+    public PTSet getCommandPTSet(Command cmd) throws ParseException {
+        String setString = cmd.getSet();
+        PTSet ptset = null;
+        if (setString == null) {
+            ptset = targetset;
+        } else {
+            ptset = createSet(setString);
+        }
+        return ptset;
+    }
 }

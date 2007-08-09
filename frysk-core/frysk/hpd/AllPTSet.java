@@ -38,16 +38,16 @@
 // exception.
 package frysk.hpd;
 
-import frysk.proc.*;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.LinkedList;
 import java.lang.IllegalStateException;
-import java.lang.IllegalArgumentException;
-import java.lang.RuntimeException;
 
+import frysk.proc.Proc;
+import frysk.proc.Task;
+
+import frysk.rt.ProcTaskIDManager;
 
  // There are two different range notations that are handled one creation of subsets
  // referred to as "reg", which is in the form a:b.c:d, and the "range" notation,
@@ -68,179 +68,64 @@ class AllPTSet implements PTSet
 
 	// parallel arrays are not cute, but in this case they are handy
 	// Proc at proSet[i] has it's tasks in taskSets[i] in the form of a ArrayList
-	ArrayList taskSets; // a ArrayList of ArrayLists containing Tasks
-	ArrayList procSet; // a ArrayList of Proc's
 
 	/*
 	 * Public methods
 	 */
 
-	/**
-	 * Constructs an empty TaskSet
-	 */
-	public AllPTSet()
-	{
-		procSet = new ArrayList();
-		taskSets = new ArrayList();
+    private final ProcTaskIDManager manager;
+
+    public AllPTSet(){
+        manager = ProcTaskIDManager.getSingleton();
+    }
+
+
+	public Proc getProc(int procID)	{
+            return manager.getProc(procID);
 	}
 
-	/**
-	 * Adds a task to a specific process, if a process was not created, throw
-	 * an exception.
-	 * @param task Task to add
-	 * @param procID id of the the task's parent process
-	 * @return id of the Task
-	 */
-	public int addTask(Task task, int procID)
-	{
-		int result = -1;
-
-		if (procID < taskSets.size())
-		{
-			ArrayList set = (ArrayList) taskSets.get(procID);
-
-			result = set.size();
-			set.add(task);
-		}
-		else
-		{
-			throw new RuntimeException("Task added to a nonexistent Proc");
-		}
-
-		return result;
+	public boolean containsTask(int procid, int taskid) {
+            ProcTaskIDManager manager = ProcTaskIDManager.getSingleton();
+            return (manager.getTask(procid, taskid) != null);
 	}
 
-	/**
-	 * Tells the set to alocate a structure for a set of tasks.
-	 */
-	public int addProc(Proc proc)
-	{
-		int result = procSet.size(); // new Proc will be appended
+    /**
+     * Return an iterator to a collection of all the tasks.
+     */
+    public Iterator getTasks() {
+        ArrayList result = new ArrayList();
+        synchronized (manager) {
+            int numProcs = manager.getNumberOfProcs();
+            for (int p = 0; p < numProcs; p++) {
+                int numTasks = manager.getNumberOfTasks(p);
+                for (int t = 0; t < numTasks; t++) {
+                    Task task = manager.getTask(p, t);
+                    if (task != null)
+                        result.add(task);
+                }
+            }
+        }
+        return result.iterator();
+    }
+    
 
-		procSet.add(proc);
-		taskSets.add(new ArrayList());
-
-		if (procSet.size() != taskSets.size())
-			throw new IllegalStateException("Unsynchronized Proc and Task ArrayLists.");
-
-		return result;
-	}
-
-
-	/**
-	 * Find the ID of a task.
-	 * @return a tuple (procID,taskID) in the form of a two-element array, null if task not found
-	 */
-	public int[] getTaskID(Task task)
-	{
-		int[] result = new int[2];
-		result[0] = -1;
-		result [1] = -1;
-
-		ArrayList temp = null;
-
-		for (int i = 0; i < taskSets.size(); i++)
-		{
-			temp = (ArrayList) taskSets.get(i);
-
-			if (temp.contains(task))
-			{
-				result[0] = i;
-				result[1] = temp.indexOf(task);
-				break;
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Find the ID of a task in a specific process.
-	 * @return id of the task in that process, -1 if task not found
-	 */
-	public int getTaskID(Task task, int procID)
-	{
-		int result = -1;
-		ArrayList temp = null;
-
-		if (taskSets.size() < procID)
-		{
-			temp = (ArrayList) taskSets.get(procID);
-			result = temp.indexOf(task);
-		}
-		else
-		{
-			throw new IllegalArgumentException("Looking up Task in a nonexistent Proc");
-		}
-
-		return result;
-	}
-
-	/**
-	 * Find the ID of a process.
-	 * @return id of the process, -1 if not found
-	 */
-	public int getProcID(Proc proc)
-	{
-		return procSet.indexOf(proc);
-	}
-
-	public Proc getProc(int procID)
-	{
-		if (procID < procSet.size())
-			return (Proc)procSet.get(procID);
-		else
-			return null;
-	}
-
-	public ArrayList getTasksArrayList()
-	{
-		ArrayList result = new ArrayList();
-
-		for (int i = 0; i < result.size(); i++)
-			result.addAll((ArrayList)taskSets.get(i));
-
-		return result;
-	}
-
-	public ArrayList getProcsArrayList()
-	{
-		ArrayList result = (ArrayList)procSet.clone();
-		return result;
-	}
-
-	public boolean containsTask(int procid, int taskid)
-	{
-		boolean result = false;
-
-		if (procid < procSet.size() && taskid < ((ArrayList)taskSets.get(procid)).size())
-			result = true;
-
-		return result;
-	}
-
-	public Iterator getTasks()
-	{
-		return getTasksArrayList().iterator();
-	}
-
-	public Iterator getTaskData()
-	{
-		LinkedList result = new LinkedList();
-		ArrayList temp = null;
-
-		for (int i = 0; i < taskSets.size(); i++)
-		{
-			temp = (ArrayList) taskSets.get(i);
-			for (int j = 0; j < temp.size(); j++)
-			{
-				result.add(new TaskData((Task)temp.get(j), j, i));
-			}
-		}
-
-		return result.iterator();
-	}
-
-
+    public Iterator getTaskData() {
+        LinkedList result = new LinkedList();
+        synchronized (manager) {
+            int numProcs = manager.getNumberOfProcs();
+            for (int p = 0; p < numProcs; p++) {
+                int numTasks = manager.getNumberOfTasks(p);
+                System.out.println("procs " + numProcs + " tasks " + numTasks);
+                for (int t = 0; t < numTasks; t++) {
+                    Task task = manager.getTask(p, t);
+                    if (task != null)
+                        result.add(new TaskData(task, t, p));
+                }
+            }
+        }
+        return result.iterator();
+    }
+    
 	/**
 	 * Generate a subset of this set, based on the tree generated by set
 	 * notation parser.
@@ -249,6 +134,7 @@ class AllPTSet implements PTSet
 	 */
 	public ProcTasks[] getSubset(ParseTreeNode[] parseTree)
 	{
+            ArrayList snapshot = ProcTaskIDManager.getSingleton().snapshot();
 		TreeMap proctasks = new TreeMap();
 		ProcTasks[] result = null;
 		ParseTreeNode tempNode = null;
@@ -261,12 +147,12 @@ class AllPTSet implements PTSet
 			if (tempNode.getType() == ParseTreeNode.TYPE_REG)
 			{
 				walkResult = walkRegTree(tempNode);
-				addTasksFromReg(proctasks, walkResult);
+				addTasksFromReg(snapshot, proctasks, walkResult);
 			}
 			else if (tempNode.getType() == ParseTreeNode.TYPE_RANGE)
 			{
 				walkResult = walkRangeTree(tempNode);
-				addTasksFromRange(proctasks, walkResult);
+				addTasksFromRange(snapshot, proctasks, walkResult);
 			}
 			else
 			{
@@ -290,20 +176,15 @@ class AllPTSet implements PTSet
 		return null;
 	}
 	
-	public String toString()
-	{
-		String result = "";
-		ArrayList tempVec = new ArrayList();
+	public String toString() {
+            String result = "";
 
-		for (int i = 0; i < procSet.size(); i++)
-		{
-			result += i + ".0:";
-			tempVec = (ArrayList)taskSets.get(i);
-			result += tempVec.size() - 1;
-			result += "\n";
-		}
-
-		return result;
+            for (int i = 0; i < manager.getNumberOfProcs(); i++) {
+                result += i + ".0:";
+                result += manager.getNumberOfTasks(i) - 1;
+                result += "\n";
+            }
+            return result;
 	}
 
 	/**
@@ -394,10 +275,11 @@ class AllPTSet implements PTSet
 	/**
 	 * Add tasks to the "tasks" ArrayList, as specified in "range", which
 	 * corresponds to a.b:c.d notation
+         * @param taskSets array of arrays of tasks
 	 * @param proctasks A treemap of Integer(procID) to ProcTasks
 	 * @param reg an array of length 4 returned by walkRangeTree
 	 */
-	private void addTasksFromRange(TreeMap proctasks, int[] range)
+    private void addTasksFromRange(ArrayList taskSets, TreeMap proctasks, int[] range)
 	{
 		ArrayList tempSet = null; // a temporary ArrayList of a process tasks
 		ProcTasks tempPT = null; // 
@@ -410,9 +292,9 @@ class AllPTSet implements PTSet
 		int procP = 0;
 		int taskP = 0;
 
-		if (procEnd == -1 || procEnd >= procSet.size())
-			procEnd = procSet.size() - 1;
-
+		if (procEnd == -1 || procEnd >= taskSets.size())
+			procEnd = taskSets.size() - 1;
+                
 		tempSet = (ArrayList)taskSets.get(procEnd);
 
 		if (taskEnd == -1 || taskEnd >= tempSet.size()) //if wildcard or more than actual
@@ -463,10 +345,11 @@ class AllPTSet implements PTSet
 	/**
 	 * Add tasks to the "tasks" ArrayList, as specified in "reg", which
 	 * corresponds to a:b.c:d notation
+         * @param taskSets array of arrays of tasks
 	 * @param proctasks TreeMap of ProcTasks to put Procs and Tasks into
 	 * @param reg an array of length 4 returned by walkRegTree
 	 */
-	private void addTasksFromReg(TreeMap proctasks, int[] reg)
+    private void addTasksFromReg(ArrayList taskSets, TreeMap proctasks, int[] reg)
 	{
 		ArrayList tempSet = null; // a temporary ArrayList of a process tasks
 		ProcTasks tempPT = null;  
@@ -479,8 +362,8 @@ class AllPTSet implements PTSet
 		int procP = 0;
 		int taskP = 0;
 
-		if (procEnd >= procSet.size() || procEnd == -1)
-			procEnd = procSet.size() - 1;
+		if (procEnd >= taskSets.size() || procEnd == -1)
+			procEnd = taskSets.size() - 1;
 
 		if (procStart == -1) // if this is a wildcard
 			procStart = 0;
