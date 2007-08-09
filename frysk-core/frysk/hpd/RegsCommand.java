@@ -41,6 +41,7 @@ package frysk.hpd;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import frysk.proc.Isa;
 import frysk.stack.RegisterGroup;
@@ -55,32 +56,39 @@ public class RegsCommand extends CLIHandler {
     }
 
     public void handle(Command cmd) throws ParseException {
-	Isa isa = cli.frame.getTask().getIsa();
-	RegisterGroup[] regs = RegisterGroupFactory.getRegisterGroups(isa);
+        PTSet ptset = cli.getCommandPTSet(cmd);
+        Iterator taskDataIter = ptset.getTaskData();
+        while (taskDataIter.hasNext()) {
+            TaskData td = (TaskData)taskDataIter.next();
+            Isa isa = td.getTask().getIsa();
+            RegisterGroup[] regs = RegisterGroupFactory.getRegisterGroups(isa);
 
-	RegisterGroup selectedGroup = regs[0];
+            RegisterGroup selectedGroup = regs[0];
 
-	ArrayList params = cmd.getParameters();
+            ArrayList params = cmd.getParameters();
 
-	if (params.size() > 0) {
-	    String groupName = (String) params.get(0);
-	    int i;
-	    for (i = 0; i < regs.length; i++)
-		if (regs[i].name.equals(groupName)) {
-		    selectedGroup = regs[i];
-		    break;
-		}
-	    if (i == regs.length) {
-		cli.addMessage("Register group name: " + groupName
-			+ " not found", Message.TYPE_ERROR);
+            if (params.size() > 0) {
+                String groupName = (String) params.get(0);
+                int i;
+                for (i = 0; i < regs.length; i++)
+                    if (regs[i].name.equals(groupName)) {
+                        selectedGroup = regs[i];
+                        break;
+                    }
+                if (i == regs.length) {
+                    cli.addMessage("Register group name: " + groupName
+                                   + " not found", Message.TYPE_ERROR);
 
-		return;
-	    }
-	}
+                    return;
+                }
+            }
+            cli.outWriter.println("[" + td.getParentID() + "." + td.getID()
+                                  + "]");
+            for (int i = 0; i < selectedGroup.registers.length; i++) {
+                cli.outWriter.println(selectedGroup.registers[i].name + ":\t"
+                                      + cli.getTaskFrame(td.getTask()).getRegisterValue(selectedGroup.registers[i]));
+            }
+        }
 
-	for (int i = 0; i < selectedGroup.registers.length; i++) {
-	    cli.outWriter.println(selectedGroup.registers[i].name + ":\t"
-		    + cli.frame.getRegisterValue(selectedGroup.registers[i]));
-	}
     }
 }
