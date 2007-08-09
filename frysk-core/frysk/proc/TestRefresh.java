@@ -171,7 +171,8 @@ public class TestRefresh
 
 	// Create a suspended sub-process that contains three cloned
 	// tasks, and wait for it to start.
-	SlaveOffspring child = new AckDaemonProcess (nrTasks - 1);
+	SlaveOffspring child = new AckDaemonProcess()
+	    .assertSendAddClonesWaitForAcks(nrTasks - 1);
 
 	// Create a task counter, to count the number discovered and
 	// removed tasks.
@@ -434,7 +435,8 @@ public class TestRefresh
      */
     public void testUnattachedMultipleExec ()
     {
-	SlaveOffspring child = new AckDaemonProcess (1);
+	SlaveOffspring child = new AckDaemonProcess()
+	    .assertSendAddClonesWaitForAcks(1);
 	Proc proc = child.assertFindProcAndTasks();
 
 	Manager.host.requestRefreshXXX ();

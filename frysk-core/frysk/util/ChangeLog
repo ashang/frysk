@@ -1,3 +1,9 @@
+2007-08-09  Andrew Cagney  <cagney@redhat.com>
+
+	* StressTestFStack.java: Use SlaveOffspring
+	.assertSendAddClonesWaitForAcks.
+	* TestFStack.java: Ditto.
+
 2007-08-09  Teresa Thomas  <tthomas@redhat.com>
 
 	* DebuginfoPaths.java (getDebuginfo): Ensure non empty module

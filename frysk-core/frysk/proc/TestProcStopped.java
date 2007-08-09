@@ -103,51 +103,51 @@ public class TestProcStopped
     assertRunUntilStop("testRunningAttached");
   }
 
-  public void testMultiThreadedStoppedAckDaemon ()
-  {
-      if (unresolvedOnUtrace(3595))
-	  return;
-    SlaveOffspring ackProc = new AckDaemonProcess(2);
-    stopped(ackProc, 3);
-    assertRunUntilStop("testStoppedAckDaemon");
-  }
+    public void testMultiThreadedStoppedAckDaemon () {
+	if (unresolvedOnUtrace(3595))
+	    return;
+	SlaveOffspring ackProc = new AckDaemonProcess()
+	    .assertSendAddClonesWaitForAcks(2);
+	stopped(ackProc, 3);
+	assertRunUntilStop("testStoppedAckDaemon");
+    }
 
-  public void testMultiThreadedStoppedDetached ()
-  {
-      if (unresolvedOnUtrace(3595))
-	  return;
-    SlaveOffspring ackProc = new DetachedAckProcess(2);
-    stopped(ackProc, 3);
-    assertRunUntilStop("testStoppedDetached");
-  }
+    public void testMultiThreadedStoppedDetached () {
+	if (unresolvedOnUtrace(3595))
+	    return;
+	SlaveOffspring ackProc = new DetachedAckProcess()
+	    .assertSendAddClonesWaitForAcks(2);
+	stopped(ackProc, 3);
+	assertRunUntilStop("testStoppedDetached");
+    }
+    
+    public void testMultiThreadedStoppedAttached () {
+	SlaveOffspring ackProc = new AttachedAckProcess()
+	    .assertSendAddClonesWaitForAcks(2);
+	stopped(ackProc, 3);
+	assertRunUntilStop("testStoppedAttached");
+    }
 
-  public void testMultiThreadedStoppedAttached ()
-  {
-    SlaveOffspring ackProc = new AttachedAckProcess(2);
-    stopped(ackProc, 3);
-    assertRunUntilStop("testStoppedAttached");
-  }
+    public void testMultiThreadedRunningAckDaemon () {
+	SlaveOffspring ackProc = new AckDaemonProcess()
+	    .assertSendAddClonesWaitForAcks(2);
+	running(ackProc, 3);
+	assertRunUntilStop("testRunningAckDaemon");
+    }
 
-  public void testMultiThreadedRunningAckDaemon ()
-  {
-    SlaveOffspring ackProc = new AckDaemonProcess(2);
-    running(ackProc, 3);
-    assertRunUntilStop("testRunningAckDaemon");
-  }
+    public void testMultiThreadedRunningDetached () {
+	SlaveOffspring ackProc = new DetachedAckProcess()
+	    .assertSendAddClonesWaitForAcks(2);
+	running(ackProc, 3);
+	assertRunUntilStop("testRunningDetached");
+    }
 
-  public void testMultiThreadedRunningDetached ()
-  {
-    SlaveOffspring ackProc = new DetachedAckProcess(2);
-    running(ackProc, 3);
-    assertRunUntilStop("testRunningDetached");
-  }
-
-  public void testMultiThreadedRunningAttached ()
-  {
-    SlaveOffspring ackProc = new AttachedAckProcess(2);
-    running(ackProc, 3);
-    assertRunUntilStop("testRunningAttached");
-  }
+    public void testMultiThreadedRunningAttached () {
+	SlaveOffspring ackProc = new AttachedAckProcess()
+	    .assertSendAddClonesWaitForAcks(2);
+	running(ackProc, 3);
+	assertRunUntilStop("testRunningAttached");
+    }
 
   public class MyTester
       implements ProcObserver.ProcAction

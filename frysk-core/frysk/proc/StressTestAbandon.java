@@ -81,12 +81,11 @@ public class StressTestAbandon
     }
     
   }
-  public void testStressAbandon ()
-  {
-    Proc proc = new AckDaemonProcess(99).assertFindProcAndTasks();
-
-    new ProcBlockAction(proc, new Action(proc));
-
-    assertRunUntilStop("testStressAbandon");
-  }
+    public void testStressAbandon () {
+	Proc proc = new AckDaemonProcess()
+	    .assertSendAddClonesWaitForAcks(99)
+	    .assertFindProcAndTasks();
+	new ProcBlockAction(proc, new Action(proc));
+	assertRunUntilStop("testStressAbandon");
+    }
 }

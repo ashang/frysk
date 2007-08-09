@@ -68,7 +68,8 @@ public class StressTestFStack
   public void testStressMultiThreadedDetach ()
   {
     int clones = 20;
-    SlaveOffspring ackProc = new DetachedAckProcess(clones);
+    SlaveOffspring ackProc = new DetachedAckProcess()
+	.assertSendAddClonesWaitForAcks(clones);
     TestFStack.multiThreaded(ackProc, clones);
   }
 

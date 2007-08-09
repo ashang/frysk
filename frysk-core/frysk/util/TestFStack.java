@@ -72,17 +72,17 @@ public class TestFStack
     multiThreaded(ackProc, 0);
   }
 
-  public void testMultiThreadedDetached ()
-  {
-    SlaveOffspring ackProc = new DetachedAckProcess(2);
-    multiThreaded(ackProc, 2);
-  }
+    public void testMultiThreadedDetached () {
+	SlaveOffspring ackProc = new DetachedAckProcess()
+	    .assertSendAddClonesWaitForAcks(2);
+	multiThreaded(ackProc, 2);
+    }
 
-  public void testMultiThreadedAckDaemon ()
-  {
-    SlaveOffspring ackProc = new AckDaemonProcess(2);
-    multiThreaded(ackProc, 2);
-  }
+    public void testMultiThreadedAckDaemon () {
+	SlaveOffspring ackProc = new AckDaemonProcess()
+	    .assertSendAddClonesWaitForAcks(2);
+	multiThreaded(ackProc, 2);
+    }
 
   public static void multiThreaded (SlaveOffspring ackProc,
 				    int numSecondaryThreads)

@@ -67,17 +67,17 @@ public class TestProcForceDetach
     requestRemove(ackProc, 1);
   }
 
-  public void testMultiThreadedRequestRemoveAckDaemon ()
-  {
-    SlaveOffspring ackProc = new AckDaemonProcess(2);
-    requestRemove(ackProc, 3);
-  }
+    public void testMultiThreadedRequestRemoveAckDaemon () {
+	SlaveOffspring ackProc = new AckDaemonProcess()
+	    .assertSendAddClonesWaitForAcks(2);
+	requestRemove(ackProc, 3);
+    }
 
-  public void testMultiThreadedRequestRemoveDetached ()
-  {
-    SlaveOffspring ackProc = new DetachedAckProcess(2);
-    requestRemove(ackProc, 3);
-  }
+    public void testMultiThreadedRequestRemoveDetached () {
+	SlaveOffspring ackProc = new DetachedAckProcess()
+	    .assertSendAddClonesWaitForAcks(2);
+	requestRemove(ackProc, 3);
+    }
 
   class MyProcBlockAction
       implements ProcObserver.ProcAction

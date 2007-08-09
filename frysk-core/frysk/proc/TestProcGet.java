@@ -121,7 +121,8 @@ public class TestProcGet
    */
   public void testGetTasks ()
   {
-    Offspring child = new AckDaemonProcess(1);
+      Offspring child = new AckDaemonProcess()
+	  .assertSendAddClonesWaitForAcks(1);
     Proc proc = child.assertFindProcAndTasks(); // and tasks
     List tasks = proc.getTasks();
 

@@ -126,28 +126,6 @@ public abstract class SlaveOffspring
 	super(type, CHILD_ACK, funitSlaveCommand(busy, null, null));
     }
 
-    /** Create an SlaveOffspring, and then add COUNT threads. */
-    protected SlaveOffspring (int count) {
-	this(OffspringType.DAEMON, count);
-    }
-    /** Create an SlaveOffspring, and then add COUNT threads. */
-    protected SlaveOffspring (OffspringType type, int count) {
-	this(type);
-	for (int i = 0; i < count; i++)
-	    assertSendAddCloneWaitForAcks();
-    }
-
-    /** Create a possibly busy SlaveOffspring. Add COUNT threads. */
-    protected SlaveOffspring (int count, boolean busy) {
-	this(OffspringType.DAEMON, count, busy);
-    }
-    /** Create a possibly busy SlaveOffspring. Add COUNT threads. */
-    protected SlaveOffspring (OffspringType type, int count, boolean busy) {
-	this(type, busy);
-	for (int i = 0; i < count; i++)
-	    assertSendAddCloneWaitForAcks();
-    }
-
     /**
      * Tell TID to create a new offspring. Wait for the acknowledgment.
      */
@@ -166,6 +144,13 @@ public abstract class SlaveOffspring
     public Sig[] requestClone() {
 	signal(ADD_CLONE_SIG);
 	return SPAWN_ACK;
+    }
+    /** Add many Tasks; wait for acknowledgement.  */
+    public SlaveOffspring assertSendAddClonesWaitForAcks(int count) {
+	for (int i = 0; i < count; i++) {
+	    assertSendAddCloneWaitForAcks();
+	}
+	return this;
     }
 
     /** Add a Task. */

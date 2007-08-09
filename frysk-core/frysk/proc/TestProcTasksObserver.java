@@ -247,7 +247,8 @@ public class TestProcTasksObserver extends TestLib {
 	
 	
     public void testManyExistingThreadAttached() {
-	SlaveOffspring ackProcess = new AttachedAckProcess(3);
+	SlaveOffspring ackProcess = new AttachedAckProcess()
+	    .assertSendAddClonesWaitForAcks(3);
 	manyExistingThread(ackProcess);
     }
 	
@@ -265,7 +266,8 @@ public class TestProcTasksObserver extends TestLib {
     }
 	
     public void testDeleteAttached() {
-	SlaveOffspring ackProcess = new AttachedAckProcess (1);
+	SlaveOffspring ackProcess = new AttachedAckProcess()
+	    .assertSendAddClonesWaitForAcks(1);
 	delete(ackProcess);
     }
 	
@@ -281,7 +283,8 @@ public class TestProcTasksObserver extends TestLib {
     }
 	
     public void testManyExistingThreadDetached() {
-	SlaveOffspring ackProcess = new DetachedAckProcess(3);
+	SlaveOffspring ackProcess = new DetachedAckProcess()
+	    .assertSendAddClonesWaitForAcks(3);
 	manyExistingThread(ackProcess);
     }
 	
@@ -298,7 +301,8 @@ public class TestProcTasksObserver extends TestLib {
     }
 	
     public void testDeleteDetached() {
-	SlaveOffspring ackProcess = new DetachedAckProcess (1);
+	SlaveOffspring ackProcess = new DetachedAckProcess()
+	    .assertSendAddClonesWaitForAcks(1);
 	delete(ackProcess);
     }
 	
@@ -314,7 +318,8 @@ public class TestProcTasksObserver extends TestLib {
     }
 	
     public void testManyExistingThreadAckDaemon() {
-	SlaveOffspring ackProcess = new AckDaemonProcess(3);
+	SlaveOffspring ackProcess = new AckDaemonProcess()
+	    .assertSendAddClonesWaitForAcks(3);
 	manyExistingThread(ackProcess);
     }
 	
@@ -331,7 +336,8 @@ public class TestProcTasksObserver extends TestLib {
     }
 	
     public void testDeleteAckDaemon() {
-	SlaveOffspring ackProcess = new AckDaemonProcess (1);
+	SlaveOffspring ackProcess = new AckDaemonProcess()
+	    .assertSendAddClonesWaitForAcks(1);
 	delete(ackProcess);
     }
 	

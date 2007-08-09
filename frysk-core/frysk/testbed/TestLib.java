@@ -205,14 +205,6 @@ public class TestLib
 	public AckDaemonProcess (boolean busy) {
 	    super(busy);
 	}
-
-	public AckDaemonProcess (int count) {
-	    super(count);
-	}
-
-	AckDaemonProcess (int count, boolean busy) {
-	    super(count, busy);
-	}
     }
 
     /**
@@ -227,11 +219,6 @@ public class TestLib
 	public DetachedAckProcess () {
 	    super(OffspringType.CHILD);
 	}
-
-	public DetachedAckProcess (int count) {
-	    super(OffspringType.CHILD, count);
-	}
-
     }
     
     /**
@@ -242,10 +229,6 @@ public class TestLib
     {
 	public AttachedAckProcess () {
 	    super(OffspringType.ATTACHED_CHILD);
-	}
-
-	public AttachedAckProcess (int count) {
-	    super(OffspringType.ATTACHED_CHILD, count);
 	}
     }
 
