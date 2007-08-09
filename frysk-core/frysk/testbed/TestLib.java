@@ -182,34 +182,19 @@ public class TestLib
 	return isDescendantOf(Pid.get(), proc);
     }
 
-    // NOTE: Use a different signal to thread add/del. Within this
-    // process the signal is masked and Linux appears to propogate the
-    // mask all the way down to the exec'ed child.
-    protected static final Sig ackSignal = Sig.HUP;
+     protected static final Sig childAck = Sig.USR1;
 
-    protected static final Sig childAck = Sig.USR1;
+     protected static final Sig parentAck = Sig.USR2;
 
-    protected static final Sig parentAck = Sig.USR2;
+     protected static final Sig addCloneSig = Sig.USR1;
 
-    protected static final Sig addCloneSig = Sig.USR1;
+     protected static final Sig addForkSig = Sig.HUP;
 
-    protected static final Sig delCloneSig = Sig.USR2;
+     protected static final Sig execSig = Sig.PWR;
 
-    protected static final Sig stopSig = Sig.STOP;
+     protected static final Sig[] spawnAck = new Sig[] { childAck, parentAck };
 
-    protected static final Sig addForkSig = Sig.HUP;
-
-    protected static final Sig delForkSig = Sig.INT;
-
-    protected static final Sig zombieForkSig = Sig.URG;
-
-    protected static final Sig execSig = Sig.PWR;
-
-    protected static final Sig execCloneSig = Sig.FPE;
-
-    protected static final Sig[] spawnAck = new Sig[] { childAck, parentAck };
-
-    protected static final Sig[] execAck = new Sig[] { childAck };
+     protected static final Sig[] execAck = new Sig[] { childAck };
 
     /**
      * Create an ack daemon. An ack daemon has process 1, and not this

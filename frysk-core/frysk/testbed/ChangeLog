@@ -1,5 +1,12 @@
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (ackSignal): Delete.
+	(execCloneSig): Delete.
+	(delForkSig): Delete.
+	(zombieForkSig): Delete.
+	(delCloneSig): Delete.
+	(stopSig): Delete.
+	
 	* TestLib.java (AckProcess): Delete.
 	(funitChildCommand): Delete.
 
