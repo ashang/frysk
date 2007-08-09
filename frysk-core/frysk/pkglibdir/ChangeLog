@@ -1,3 +1,8 @@
+2007-08-09  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-slave.c: New; based on funit-child.c.
+	* funit-slave.xml: New; based on funit-child.xml.
+	
 2007-08-08  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-exec.c (exec_handler): When a non-main thread, brand
