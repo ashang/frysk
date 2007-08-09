@@ -1,5 +1,7 @@
 2007-08-09  Tim Moore  <timoore@redhat.com>
 
+	* WhatCommand (handle): Do check for each task in target pset.
+
 	* ExamineCommand (handle): Apply command to each task in the target
 	pset.
 	* PrintCommand (handle): ditto

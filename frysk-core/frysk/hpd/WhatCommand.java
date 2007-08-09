@@ -41,8 +41,9 @@ package frysk.hpd;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-
+import java.util.Iterator;
 import javax.naming.NameNotFoundException;
+import frysk.proc.Task;
 
 class WhatCommand
     implements CommandHandler
@@ -52,33 +53,31 @@ class WhatCommand
     {
 	this.cli = cli;
     }
-    public void handle(Command cmd) throws ParseException 
-    {
+    public void handle(Command cmd) throws ParseException {
+        PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
         }
-	if (params.size() == 0)
-	    return;
-        
-	if (cli.proc == null)	{
-	    cli.addMessage("No symbol table is available.",
-			   Message.TYPE_NORMAL);
-	    return;
-	}
+        if (params.size() == 0
+            || (((String)params.get(0)).equals("-help")))        {
+            cli.printUsage(cmd);
+            return;
+        }
+        String sInput = ((String)params.get(0));
+        Iterator taskIter = ptset.getTasks();
+        while (taskIter.hasNext()) {
+            Task task = (Task)taskIter.next();
 
-	if (params.size() == 0
-	    || (((String)params.get(0)).equals("-help")))        {
-	    cli.printUsage(cmd);
-	    return;
-        }
-	String sInput = ((String)params.get(0));
-	try {
-	    cli.outWriter.println(cli.debugInfo.what(cli.frame, sInput));
-        }
-	catch (NameNotFoundException nnfe) {
-	    cli.addMessage(nnfe.getMessage(), Message.TYPE_ERROR);
+            try {
+                cli.outWriter.println(cli.getTaskDebugInfo(task)
+                                      .what(cli.getTaskFrame(task), sInput));
+            }
+            catch (NameNotFoundException nnfe) {
+                cli.addMessage(nnfe.getMessage(), Message.TYPE_ERROR);
+            }
+
         }
     }
 }
