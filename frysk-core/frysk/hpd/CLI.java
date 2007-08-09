@@ -75,7 +75,6 @@ public class CLI
   ProcTaskIDManager idManager;
   SteppingObserver steppingObserver;
   SteppingEngine steppingEngine;
-  boolean procSearchFinished = false;
   boolean attached;
   
   final HashSet runningProcs = new HashSet(); //Processes started with run command

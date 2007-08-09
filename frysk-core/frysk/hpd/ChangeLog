@@ -1,5 +1,7 @@
 2007-08-08  Tim Moore  <timoore@redhat.com>
 
+	* CLI.java (procSearchFinished): Remove unused variable.
+
 	* AllPTSet.java: Complete rewrite to reference active Procs and
 	Tasks via the ProcTaskIDManager.
 	* CLI.java (idManager): New variable, reference to
