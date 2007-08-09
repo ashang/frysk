@@ -40,8 +40,6 @@
 package frysk.util;
 
 import java.io.File;
-
-import frysk.Config;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.dead.TestLinuxCore;
@@ -68,7 +66,7 @@ public class TestCommandlineParser extends TestLib {
 		assertEquals("Core file is correct", coreExePairs[0].coreFile,
 			core);
 		assertEquals("Exe file is correct", coreExePairs[0].exeFile,
-			Config.getPkgLibFile("funit-child"));
+			     SlaveOffspring.getExecutable());
 	    }
 
 	    public void parsePids(ProcId[] pids) {
@@ -77,9 +75,10 @@ public class TestCommandlineParser extends TestLib {
 
 	};
 
-	parser.parse(new String[] { core.getPath(),
-		Config.getPkgLibFile("funit-child").getPath() });
-
+	parser.parse(new String[] {
+			 core.getPath(),
+			 SlaveOffspring.getExecutable().getPath()
+		     });
 	core.delete();
     }
 

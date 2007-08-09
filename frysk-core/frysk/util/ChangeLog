@@ -1,5 +1,8 @@
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
+	* TestCommandlineParser.java: Replace "funit-child" with
+	SlaveOffspring.getExecutable.
+	
 	* TestFStack.java: Replace AckDaemonProcess with
 	SlaveOffspring.createDaemon.
 	* TestCommandlineParser.java: Ditto.

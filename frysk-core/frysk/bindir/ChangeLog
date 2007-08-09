@@ -1,5 +1,8 @@
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFstack.java: Extend frysk.testbed.TestLib.  Replace
+	"funit-child" with SlaveOffspring.
+
 	* TestFdebuginfo.java: Replace DetachedAckProcess with
 	SlaveProcess.createChild.
 	* TestFtrace.java: Ditto.

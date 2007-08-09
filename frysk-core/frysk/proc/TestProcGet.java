@@ -113,7 +113,8 @@ public class TestProcGet
   {
     Offspring child = SlaveOffspring.createDaemon();
     Proc childProc = child.assertFindProcAndTasks();
-    assertEquals("value of child's getCommand()", "funit-child",
+    assertEquals("value of child's getCommand()",
+		 SlaveOffspring.getExecutable().getName(),
                  childProc.getCommand());
   }
 

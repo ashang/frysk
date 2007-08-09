@@ -51,6 +51,8 @@ import java.util.List;
 import frysk.sys.Errno;
 import frysk.sys.Wait;
 import frysk.sys.UnhandledWaitBuilder;
+import java.io.File;
+import frysk.Config;
 
 /**
  * Create a process running the funit slave (a.k.a., funit-child).
@@ -67,7 +69,7 @@ public class SlaveOffspring
 					       String filenameArg,
 					       String[] argv) {
 	List command = new LinkedList();
-	command.add(TestLib.getExecPath ("funit-child"));
+	command.add(getExecutable().getAbsolutePath());
 	command.add(busy ? "--wait=busy-loop" : "--wait=suspend");
 	if (filenameArg != null)
 	    command.add("--filename=" + TestLib.getExecPath (filenameArg));
@@ -295,5 +297,11 @@ public class SlaveOffspring
      */
     static public SlaveOffspring createAttachedChild() {
 	return new SlaveOffspring(OffspringType.ATTACHED_CHILD);
+    }
+    /**
+     * Return the program executable that will be run.
+     */
+    static public File getExecutable() {
+	return Config.getPkgLibFile("funit-child");
     }
 }

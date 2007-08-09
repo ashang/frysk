@@ -1,5 +1,7 @@
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
+	* SlaveOffspring.java (getExecFile()): New.
+
 	* SlaveOffspring.java (SlaveOffspring()): Delete.
 	(SlaveOffspring(OffspringType)): Make private.
 	(SlaveOffspring(boolean)): Delete.

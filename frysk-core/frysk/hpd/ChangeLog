@@ -1,8 +1,11 @@
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
+	* TestCoreCommand.java: Replace "funit-child" with
+	SlaveOffspring.getExecutable.
+	
 	* TestCoreCommand.java: Replace AckDaemonProcess with
 	SlaveOffspring.createDaemon.
-	
+
 2007-08-09  Tim Moore  <timoore@redhat.com>
 
 	* CLI.java (proc, task, debugInfo, stackLevel): Remove.

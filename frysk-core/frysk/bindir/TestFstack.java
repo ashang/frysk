@@ -39,9 +39,10 @@
 
 package frysk.bindir;
 
-import frysk.junit.TestCase;
 import frysk.expunit.Expect;
 import frysk.Config;
+import frysk.testbed.TestLib;
+import frysk.testbed.SlaveOffspring;
 
 /**
  * This performs a "sniff" test of Fstack, confirming basic
@@ -49,7 +50,7 @@ import frysk.Config;
  */
 
 public class TestFstack
-    extends TestCase
+    extends TestLib
 {
     Expect e;
     Expect child;
@@ -58,16 +59,11 @@ public class TestFstack
 	if (e != null)
 	    e.close ();
 	e = null;
-	if (child != null)
-	    child.close ();
-	child = null;
+	super.tearDown();
     }
 
     public void testBackTrace () {
-	child = new Expect (new String[] {
-				Config.getPkgLibFile("funit-child").getAbsolutePath (),
-				"5", "0", "0"
-			    });
+	SlaveOffspring child = SlaveOffspring.createDaemon();
 	e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
 			    child.getPid () + ""
@@ -77,10 +73,7 @@ public class TestFstack
     }
     
     public void testBackTraceWithParams () {
-        child = new Expect (new String[] {
-				Config.getPkgLibFile("funit-child").getAbsolutePath (),
-				"5", "0", "0"
-			    });
+	SlaveOffspring child = SlaveOffspring.createDaemon();
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
 			    child.getPid () + "",
@@ -90,10 +83,7 @@ public class TestFstack
     }
 
     public void testBackTraceWithScopes () {
-        child = new Expect (new String[] {
-				Config.getPkgLibFile("funit-child").getAbsolutePath (),
-				"5", "0", "0"
-			    });
+	SlaveOffspring child = SlaveOffspring.createDaemon();
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
 			    child.getPid () + "",
@@ -103,10 +93,7 @@ public class TestFstack
     }
 
     public void testBackTraceWithFullpath () {
-        child = new Expect (new String[] {
-				Config.getPkgLibFile("funit-child").getAbsolutePath (),
-				"5", "0", "0"
-			    });
+	SlaveOffspring child = SlaveOffspring.createDaemon();
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
 			    child.getPid () + "",
@@ -116,10 +103,7 @@ public class TestFstack
     }
 
     public void testBackTraceWithDashA () {
-        child = new Expect (new String[] {
-				Config.getPkgLibFile("funit-child").getAbsolutePath (),
-				"5", "0", "0"
-			    });
+	SlaveOffspring child = SlaveOffspring.createDaemon();
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
 			    child.getPid () + "",
@@ -129,10 +113,7 @@ public class TestFstack
     }
 
     public void testBackTraceWithDashC () {
-        child = new Expect (new String[] {
-				Config.getPkgLibFile("funit-child").getAbsolutePath (),
-				"5", "0", "0"
-			    });
+	SlaveOffspring child = SlaveOffspring.createDaemon();
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
 			    child.getPid () + "",

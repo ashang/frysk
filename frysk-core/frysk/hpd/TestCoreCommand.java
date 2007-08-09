@@ -65,7 +65,7 @@ public class TestCoreCommand extends TestLib {
 	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect(prompt);
 	e.send("core " + core.getPath() + " "
-		+ Config.getPkgLibFile("funit-child").getPath() + "\n");
+	       + SlaveOffspring.getExecutable().getPath() + "\n");
 	e.expect(5, "Attached to core file.*");
 	e.close();
 	core.delete();
