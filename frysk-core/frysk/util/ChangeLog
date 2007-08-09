@@ -1,3 +1,8 @@
+2007-08-09  Teresa Thomas  <tthomas@redhat.com>
+
+	* DebuginfoPaths.java (getDebuginfo): Ensure non empty module
+	name.
+	
 2007-08-08  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFCatch.java: Replace frysk.testbed.TestLib.AckProcess with

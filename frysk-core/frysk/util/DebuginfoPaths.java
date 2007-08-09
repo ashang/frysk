@@ -77,7 +77,7 @@ public class DebuginfoPaths
         String name = mod.getName();
         
         // Check for valid executables
-        if (name.charAt(0)=='/')
+        if (name.length()!=0 && name.charAt(0)=='/')
           {              
             // Ignore non-binary modules
             if (mod.getElf()==null)  
