@@ -56,10 +56,7 @@ public class TestFrame
   
   public void testAttached()
   {
-    
-    AckProcess ackProc = new AttachedAckProcess();
-    
-    Task task = ackProc.findTaskUsingRefresh(true);
+    Task task = new AttachedAckProcess().findTaskUsingRefresh(true);
     
     backtrace (task, new BlockingObserver());
     
@@ -109,9 +106,7 @@ public class TestFrame
   
   public void testFrameSame ()
   {
-    AckProcess ackProc = new AttachedAckProcess();
-    
-    Task task = ackProc.findTaskUsingRefresh(true);
+    Task task = new AttachedAckProcess().findTaskUsingRefresh(true);
     
     Frame frame = backtrace(task, new BlockingObserver());
     
@@ -123,9 +118,7 @@ public class TestFrame
   
   public void testContinueNotSame()
   {
-    AckProcess ackProc = new AttachedAckProcess();
-    
-    Task task = ackProc.findTaskUsingRefresh(true);
+    Task task = new AttachedAckProcess().findTaskUsingRefresh(true);
     BlockingObserver blocker = new BlockingObserver();
     
     Frame frame = backtrace(task, blocker);

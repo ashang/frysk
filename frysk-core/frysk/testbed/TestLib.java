@@ -39,10 +39,7 @@
 
 package frysk.testbed;
 
-import frysk.proc.Action;
-import frysk.proc.TaskObserver;
 import frysk.proc.Proc;
-import frysk.proc.Task;
 import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.dwfl.DwflCache;
@@ -359,42 +356,14 @@ public class TestLib
      * Create an attached child ack process.
      */
     protected class AttachedAckProcess
-	extends AckProcess
+	extends SlaveOffspring
     {
 	public AttachedAckProcess () {
-	    super();
+	    super(OffspringType.ATTACHED_CHILD);
 	}
 
 	public AttachedAckProcess (int count) {
-	    super(count);
-	}
-
-	/**
-	 * Create the process as an attached child.
-	 */
-	protected int startChild (String stdin, String stdout, String stderr,
-				  String[] argv) {
-	    // Capture the child process id as it flys past.
-	    class TidObserver
-		extends TaskObserverBase
-		implements TaskObserver.Attached
-	    {
-		int tid;
-
-		public Action updateAttached (Task task) {
-		    tid = task.getTid();
-		    Manager.eventLoop.requestStop();
-		    return Action.CONTINUE;
-		}
-	    }
-	    TidObserver tidObserver = new TidObserver();
-	    // Start the child process, run the event loop until the
-	    // tid is known.
-	    Manager.host.requestCreateAttachedProc(stdin, stdout, stderr, argv,
-						   tidObserver);
-	    assertRunUntilStop("starting attached child");
-	    // Return that captured TID.
-	    return tidObserver.tid;
+	    super(OffspringType.ATTACHED_CHILD, count);
 	}
     }
 

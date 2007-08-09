@@ -1,5 +1,9 @@
 2007-08-08  Andrew Cagney  <cagney@redhat.com>
 
+	* OffspringType.java (ATTACHED_CHILD): Rename ATTACHED.
+	* TestLib.java (AttachedAckProcess): Extend SlaveOffspring.
+	(AttatchedAckProcess.createChild): Delete.
+	
 	* SlaveOffspring.java (SlaveOffspring(OffspringType)): New.
 	(SlaveOffspring(OffspringType,int): New.
 	(SlaveOffspring(OffspringType,boolean): New.

@@ -70,7 +70,7 @@ public abstract class OffspringType {
     /**
      * Create a running attached child offspring.
      */
-    static protected final OffspringType ATTACHED = new OffspringType() {
+    static protected final OffspringType ATTACHED_CHILD = new OffspringType() {
 	    public int startOffspring (String stdin, String stdout,
 				       String stderr, String[] argv) {
 		// Capture the child process id as it flys past.
