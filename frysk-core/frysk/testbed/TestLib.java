@@ -182,10 +182,6 @@ public class TestLib
 	return isDescendantOf(Pid.get(), proc);
     }
 
-     protected static final Sig childAck = Sig.USR1;
-
-     protected static final Sig parentAck = Sig.USR2;
-
     /**
      * Create an ack daemon. An ack daemon has process 1, and not this
      * process, as its parent. Since this a daemon, this process won't

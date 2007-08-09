@@ -87,16 +87,18 @@ public abstract class SlaveOffspring
 
     public static final Sig CHILD_ACK = Sig.USR1;
     public static final Sig PARENT_ACK = Sig.USR2;
-    private static final Sig ADD_CLONE_SIG = Sig.USR1;
-    public static final Sig DEL_CLONE_SIG = Sig.USR2;
-    public static final Sig STOP_SIG = Sig.STOP;
-    private static final Sig ADD_FORK_SIG = Sig.HUP;
-    public static final Sig DEL_FORK_SIG = Sig.INT;
-    public static final Sig ZOMBIE_FORK_SIG = Sig.URG;
-    private static final Sig EXEC_SIG = Sig.PWR;
-    public static final Sig EXEC_CLONE_SIG = Sig.FPE;
+
     private static final Sig[] SPAWN_ACK = new Sig[] { CHILD_ACK, PARENT_ACK };
     private static final Sig[] EXEC_ACK = new Sig[] { CHILD_ACK };
+
+    private static final Sig ADD_CLONE_SIG = Sig.USR1;
+    private static final Sig DEL_CLONE_SIG = Sig.USR2;
+    private static final Sig STOP_SIG = Sig.STOP;
+    private static final Sig ADD_FORK_SIG = Sig.HUP;
+    private static final Sig DEL_FORK_SIG = Sig.INT;
+    private static final Sig ZOMBIE_FORK_SIG = Sig.URG;
+    private static final Sig EXEC_SIG = Sig.PWR;
+    private static final Sig EXEC_CLONE_SIG = Sig.FPE;
 
     /** Create an ack process. */
     protected SlaveOffspring () {

@@ -253,8 +253,9 @@ public class TestTaskObserverBlocked
 
       // Remove this from the blockers list as an attached
       // observer.
-      SignalWaiter ack = new SignalWaiter(Manager.eventLoop, childAck,
-					  "childAck");
+      SignalWaiter ack = new SignalWaiter(Manager.eventLoop,
+					  SlaveOffspring.CHILD_ACK,
+					  "CHILD_ACK");
       offspring.requestUnblock(this);
       ack.assertRunUntilSignaled();
     }
@@ -266,8 +267,9 @@ public class TestTaskObserverBlocked
     public void assertUnblockParent ()
     {
       logger.log(Level.FINE, "{0} assertUnblockParent\n", this);
-      SignalWaiter ack = new SignalWaiter(Manager.eventLoop, parentAck,
-					  "parentAck");
+      SignalWaiter ack = new SignalWaiter(Manager.eventLoop,
+					  SlaveOffspring.PARENT_ACK,
+					  "PARENT_ACK");
       parent.requestUnblock(this);
       ack.assertRunUntilSignaled();
     }

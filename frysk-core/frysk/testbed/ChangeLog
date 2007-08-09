@@ -1,5 +1,9 @@
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
+	* SlaveOffspring.java (DEL_CLONE_SIG): Make private.
+	(STOP_SIG, DEL_FORK_SIG, ZOMBIE_FORK_SIG, EXEC_CLONE_SIG): Ditto.
+	* TestLib.java (parentAck, childAck): Delete.
+	
 	* SlaveOffspring.java (assertSendExecWaitForAcks(int)): Delete.
 	(requestExec, requestFork, requestClone): New.
 	(SPAWN_ACK): Rename spawnAck; make private.
