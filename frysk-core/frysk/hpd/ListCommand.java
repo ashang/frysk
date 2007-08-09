@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
+import java.util.Iterator;
 import java.text.ParseException;
 import java.util.ArrayList;
 
@@ -50,6 +51,8 @@ import javax.naming.NameNotFoundException;
 
 import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.DebugInfo;
+import frysk.proc.Task;
 
 /**
  * Implement the "list" source command.
@@ -66,106 +69,117 @@ class ListCommand
     private File file = null;
     private int line;
     private int exec_line = 0;
-    public void handle(Command cmd) throws ParseException
-    {
+    public void handle(Command cmd) throws ParseException {
+        PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	int windowSize = 20;
-	DebugInfoFrame frame = this.cli.frame;
-	if (params.size() == 1 && params.get(0).equals("-help")) {
-	    cli.printUsage(cmd);
-	    return;
-	}
-	if (cli.proc == null || frame.getLines().length == 0) {
-	    cli.addMessage("No symbol table is available.",
-			   Message.TYPE_NORMAL);
-	    return;
-	}
-	if (params.size() == 1) {
-	    // list N
-	    try {
-		line = Integer.parseInt((String)params.get(0));
-	    }
-	    catch (NumberFormatException ignore) {
-		if (((String)params.get(0)).compareTo("$EXEC") == 0)
-		    line = frame.getLines()[0].getLine() - 10;
-		else {
-		    DwarfDie funcDie = null;
-		    try {
-			funcDie = cli.debugInfo.getSymbolDie((String)params.get(0));
-		    }
-		    catch (NameNotFoundException none) {
-			// XXX: Ignored?
-		    }
-		    line = (int)funcDie.getDeclLine();
-		}
-	    }
-	}
-	else if (params.size() == 2) {
-	    // list -length {-}N
-	    if (((String)params.get(0)).equals("-length"))		    {
-		try 			    {
-		    windowSize = Integer.parseInt((String)params.get(1));
-		    if (windowSize < 0)				    {
-			line += windowSize;
-		    }
-		}
-		catch (NumberFormatException ignore)			    {
-		    // XXX: Ignored?
-		}
-	    }
-	}
-	else if (frame.getLines()[0].getLine() != exec_line) {
-	    // list around pc.
-	    exec_line = frame.getLines()[0].getLine();
-	    line = exec_line - 10;
-	}
+        Iterator taskIter = ptset.getTaskData();
+        while (taskIter.hasNext()) {
+            TaskData taskData = (TaskData)taskIter.next();
+            Task task = taskData.getTask();
+            DebugInfoFrame frame = cli.getTaskFrame(task);
+            if (params.size() == 1 && params.get(0).equals("-help")) {
+                cli.printUsage(cmd);
+                return;
+            }
+            if (frame.getLines().length == 0) {
+                cli.addMessage("No symbol table is available.",
+                               Message.TYPE_NORMAL);
+                return;
+            }
+            cli.outWriter.println("[" + taskData.getParentID() + "."
+                                  + taskData.getID() + "]");
+            if (params.size() == 1) {
+                // list N
+                try {
+                    line = Integer.parseInt((String)params.get(0));
+                }
+                catch (NumberFormatException ignore) {
+                    if (((String)params.get(0)).compareTo("$EXEC") == 0)
+                        line = frame.getLines()[0].getLine() - 10;
+                    else {
+                        DwarfDie funcDie = null;
+                        try {
+                            DebugInfo debugInfo = cli.getTaskDebugInfo(task);
+                            if (debugInfo != null)
+                                funcDie = debugInfo
+                                    .getSymbolDie((String)params.get(0));
+                        }
+                        catch (NameNotFoundException none) {
+                            // XXX: Ignored?
+                        }
+                        line = (int)funcDie.getDeclLine();
+                    }
+                }
+            }
+            else if (params.size() == 2) {
+                // list -length {-}N
+                if (((String)params.get(0)).equals("-length"))		    {
+                    try 			    {
+                        windowSize = Integer.parseInt((String)params.get(1));
+                        if (windowSize < 0)				    {
+                            line += windowSize;
+                        }
+                    }
+                    catch (NumberFormatException ignore)			    {
+                        // XXX: Ignored?
+                    }
+                }
+            }
+            else if (frame.getLines()[0].getLine() != exec_line) {
+                // list around pc.
+                exec_line = frame.getLines()[0].getLine();
+                line = exec_line - 10;
+            }
  
-	if (file== null) {
-	    if (frame.getLines().length > 0) {
-		file = (frame.getLines()[0]).getFile();
-		if (file == null) {
-		    cli.addMessage("No symbol table is available.",
-			    Message.TYPE_NORMAL);
-		    return;
-		}
-		line = (frame.getLines()[0]).getLine() - 10;
-		exec_line = line;
-	    }
-	    else { 
-		cli.outWriter.println("No source for current frame");
-		return;
-	    }
-	}
+            if (file== null) {
+                if (frame.getLines().length > 0) {
+                    file = (frame.getLines()[0]).getFile();
+                    if (file == null) {
+                        cli.addMessage("No symbol table is available.",
+                                       Message.TYPE_NORMAL);
+                        return;
+                    }
+                    line = (frame.getLines()[0]).getLine() - 10;
+                    exec_line = line;
+                }
+                else { 
+                    cli.outWriter.println("No source for current frame");
+                    return;
+                }
+            }
       
-	if (line < 0)
-	    line = 1;
-	try {
-	    FileReader fr = new FileReader(file);
-	    LineNumberReader lr = new LineNumberReader(fr);
-	    String str;
-	    boolean display = false;
-	    int endLine = line + StrictMath.abs(windowSize);
-	    String flag = "";
-	    while ((str = lr.readLine()) != null) 		    {
-		if (lr.getLineNumber() == line)
-		    display = true;
-		else if (lr.getLineNumber() == endLine)
-		    break;
-		if (display && lr.getLineNumber() == exec_line)
-		    flag = "*";
+            if (line < 0)
+                line = 1;
+            try {
+                FileReader fr = new FileReader(file);
+                LineNumberReader lr = new LineNumberReader(fr);
+                String str;
+                boolean display = false;
+                int endLine = line + StrictMath.abs(windowSize);
+                String flag = "";
+                while ((str = lr.readLine()) != null) 		    {
+                    if (lr.getLineNumber() == line)
+                        display = true;
+                    else if (lr.getLineNumber() == endLine)
+                        break;
+                    if (display && lr.getLineNumber() == exec_line)
+                        flag = "*";
                 
-		if (display)			    {
-		    cli.outWriter.println(lr.getLineNumber() + flag + "\t "+ str);
-		    flag = "";
-		}
-	    }
-	    if (str != null && windowSize > 0)
-		line += windowSize;
-	    lr.close();
-	}
-	catch (IOException e) {
-	    cli.addMessage("file " + file + " not found.",
-			   Message.TYPE_ERROR);
-	}
+                    if (display)			    {
+                        cli.outWriter.println(lr.getLineNumber() + flag + "\t "+ str);
+                        flag = "";
+                    }
+                }
+                if (str != null && windowSize > 0)
+                    line += windowSize;
+                lr.close();
+            }
+            catch (IOException e) {
+                cli.addMessage("file " + file + " not found.",
+                               Message.TYPE_ERROR);
+            }
+        }
+
     }
 }

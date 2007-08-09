@@ -1,5 +1,11 @@
 2007-08-08  Tim Moore  <timoore@redhat.com>
 
+	* DisplayCommand.java (handle): Do display for each task in target
+	set.
+	* ListCommand.java (handle): List each task in target set.
+	* WhereCommand.java (handle): Show backtrace of each task in
+	target set.
+
 	* DisassembleCommand.java (handle): Act on all tasks in the target
 	set.
 	(printInstructions, SymbolPrinter): Add a task parameter.

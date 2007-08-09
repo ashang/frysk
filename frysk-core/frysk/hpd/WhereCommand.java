@@ -41,6 +41,8 @@ package frysk.hpd;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import frysk.proc.Task;
 
 import frysk.debuginfo.DebugInfoFrame;
   
@@ -53,48 +55,41 @@ class WhereCommand
 	this.cli = cli;
     }
 
-    public void handle(Command cmd) throws ParseException 
-    {
+    public void handle(Command cmd) throws ParseException {
+        PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
         }
       
-	if (cli.running) {
-	    cli.addMessage("Process is running", Message.TYPE_ERROR);
-	    return;
-        }
-      
 	int level = 0;
-	DebugInfoFrame tmpFrame = null;
-        
-	if (cli.proc == null) {
-	    cli.addMessage("No symbol table is available.",
-			   Message.TYPE_NORMAL);
-	    return;
-	}
 
 	if (params.size() != 0)
 	    level = Integer.parseInt((String)params.get(0));
- 
-	int l = cli.stackLevel;
-	int stopLevel;
+        Iterator taskIter = ptset.getTasks();
+        while (taskIter.hasNext()) {
+            Task task = (Task)taskIter.next();
+            DebugInfoFrame tmpFrame = null; 
+            int l = cli.getTaskStackLevel(task);
+            int stopLevel;
       
-	if (level > 0)
-	    stopLevel = l + level;
-	else
-	    stopLevel = 0;
+            if (level > 0)
+                stopLevel = l + level;
+            else
+                stopLevel = 0;
       
-	tmpFrame = cli.frame;
-	while (tmpFrame != null) {
-	    cli.outWriter.print("#" + l + " ");
-	    tmpFrame.toPrint(cli.outWriter,false);
-	    cli.outWriter.println();
-	    tmpFrame = tmpFrame.getOuterDebugInfoFrame();
-	    l += 1;
-	    if (l == stopLevel)
-		break;
-	}
+            tmpFrame = cli.getTaskFrame(task);
+            while (tmpFrame != null) {
+                cli.outWriter.print("#" + l + " ");
+                tmpFrame.toPrint(cli.outWriter,false);
+                cli.outWriter.println();
+                tmpFrame = tmpFrame.getOuterDebugInfoFrame();
+                l += 1;
+                if (l == stopLevel)
+                    break;
+            }
+        }
+
     }
 }

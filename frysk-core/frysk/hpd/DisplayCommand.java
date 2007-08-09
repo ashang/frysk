@@ -42,6 +42,7 @@ package frysk.hpd;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -77,70 +78,81 @@ public class DisplayCommand extends CLIHandler {
     public void handle(Command cmd) throws ParseException {
 	final PrintWriter output = cli.getPrintWriter();
 
+        PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList args = cmd.getParameters();
 	if (args.size() > 1)
 	    throw new ParseException("Too many arguments to display", 0);
 	if (args.size() == 0)
 	    throw new ParseException("Too few arguments to display", 0);
+        Iterator taskIter = ptset.getTasks();
+        SteppingEngine engine = cli.getSteppingEngine();
+        while (taskIter.hasNext()) {
+            Task myTask = (Task)taskIter.next();
+            /*
+             * if debugInfo is null, that probably means that
+             * we're not attached to anything
+             */
+            if (cli.getTaskDebugInfo(myTask) == null) {
+                output.write("Not attached to any task, nothing to display\n");
+                output.flush();
+                return;         // XXX
+            }
 
-	/*
-         * if cli.debugInfo is null, that probably means that we're not attached
-         * to anything
-         */
-	if (cli.debugInfo == null) {
-	    output.write("Not attached to any task, nothing to display\n");
-	    output.flush();
-	    return;
-	}
+            FrameIdentifier fIdent
+                = cli.getTaskFrame(myTask).getFrameIdentifier();
 
-	SteppingEngine engine = cli.getSteppingEngine();
-	Task myTask = cli.getTask();
-	FrameIdentifier fIdent = cli.frame.getFrameIdentifier();
+            UpdatingDisplayValue uDisp
+                = DisplayManager.createDisplay(myTask, fIdent, engine,
+                                               (String) args.get(0));
 
-	UpdatingDisplayValue uDisp = DisplayManager.createDisplay(myTask,
-		fIdent, engine, (String) args.get(0));
+            /*
+             * We need to keep a local record of what displays have
+             * been created via the HPD, so that we avoid adding
+             * observers twice and duplicating the output when the
+             * display updates.
+             */
+            if (!displays.contains(uDisp)) {
+                displays.add(uDisp);
+                uDisp.addObserver(new DisplayValueObserver() {
+                        public void updateValueChanged(UpdatingDisplayValue
+                                                       value) {
+                            output.println(value.getId() + ": "
+                                           + value.getName() + " = "
+                                           + value.getValue());
+                            output.flush();
+                        }
 
-	/*
-         * We need to keep a local record of what displays have been created via
-         * the HPD, so that we avoid adding observers twice and duplicating the
-         * output when the display updates
-         */
-	if (!displays.contains(uDisp)) {
-	    displays.add(uDisp);
-	    uDisp.addObserver(new DisplayValueObserver() {
-		public void updateValueChanged(UpdatingDisplayValue value) {
-		    output.println(value.getId() + ": " + value.getName()
-			    + " = " + value.getValue());
-		    output.flush();
-		}
+                        public void
+                            updateUnavailableOutOfScope(UpdatingDisplayValue
+                                                        value) {
+                            output.println(value.getId() + ": "
+                                           + value.getName()
+                                           + " = <unavailable>");
+                            output.flush();
+                        }
 
-		public void updateUnavailableOutOfScope(
-			UpdatingDisplayValue value) {
-		    output.println(value.getId() + ": " + value.getName()
-			    + " = <unvailable>");
-		    output.flush();
-		}
+                        public void
+                            updateUnavailbeResumedExecution(UpdatingDisplayValue
+                                                            value) {
+                        }
 
-		public void updateUnavailbeResumedExecution(
-			UpdatingDisplayValue value) {
-		}
+                        public void
+                            updateAvailableTaskStopped(UpdatingDisplayValue
+                                                       value) {
+                        }
 
-		public void updateAvailableTaskStopped(
-			UpdatingDisplayValue value) {
-		}
+                        public void updateDisabled(UpdatingDisplayValue value) {
+                        }
+                    });
+            }
 
-		public void updateDisabled(UpdatingDisplayValue value) {
-		}
-	    });
-	}
-
-	Value v = uDisp.getValue();
-	if (v == null)
-	    output.println(uDisp.getId() + ": " + args.get(0)
-		    + " = <unavailable>");
-	else
-	    output.println(uDisp.getId() + ": " + v.getText() + " = " + v);
-	output.flush();
+            Value v = uDisp.getValue();
+            if (v == null)
+                output.println(uDisp.getId() + ": " + args.get(0)
+                               + " = <unavailable>");
+            else
+                output.println(uDisp.getId() + ": " + v.getText() + " = " + v);
+            output.flush();
+        }
     }
-
 }
