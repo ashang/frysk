@@ -77,14 +77,19 @@ class ViewsetCommand
 		    return;
 		}
 	    }
-
+            boolean hasOneTask = false;
 	    for (Iterator iter = tempset.getTaskData(); iter.hasNext();) {
+                hasOneTask = true;
 		// ??? this way of outputting is simple, but it's okay for now
 		temptd = (TaskData)iter.next();
 		output += "Set " + setname + " includes:\n";
 		output += "[" + temptd.getParentID() + "." + temptd.getID() + "]\n";
 		cli.addMessage(output, Message.TYPE_NORMAL);
 	    }
+            if (!hasOneTask) {
+                output = "Set " + setname + " is empty.\n";
+                cli.addMessage(output, Message.TYPE_NORMAL);
+            }
 	}
 	else {
 	    cli.printUsage(cmd);

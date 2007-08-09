@@ -41,7 +41,10 @@ package frysk.hpd;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 
+import frysk.proc.Task;
 import frysk.debuginfo.DebugInfoFrame;
 
 public class StepCommand implements CommandHandler
@@ -56,37 +59,42 @@ public class StepCommand implements CommandHandler
   
   public void handle(Command cmd) throws ParseException
   {
+    PTSet ptset = cli.getCommandPTSet(cmd);
     ArrayList params = cmd.getParameters();
     if (params.size() == 1 && params.get(0).equals("-help"))
       {
         this.cli.printUsage(cmd);
         return;
       }
-    
+    LinkedList taskList = new LinkedList();
+    Iterator taskIter = ptset.getTasks();
+    while (taskIter.hasNext()) {
+      taskList.add(taskIter.next());
+    }
     if (this.cli.steppingObserver != null)
       {
-        if (!this.cli.isRunning())
+        this.cli.getSteppingEngine().stepLine(taskList);
+            
+        synchronized (this.cli.steppingObserver.getMonitor())
           {
-            this.cli.getSteppingEngine().stepLine(cli.proc.getTasks());
-            
-            synchronized (this.cli.steppingObserver.getMonitor())
+            try
               {
-                try
-                {
-                  this.cli.steppingObserver.getMonitor().wait();
-                }
-                catch (InterruptedException ie) {}
+                //XXX This looks racy.
+                this.cli.steppingObserver.getMonitor().wait();
               }
-            
-            DebugInfoFrame rf =  this.cli.frame;
+            catch (InterruptedException ie) {}
+          }
+        taskIter = ptset.getTasks();
+        while (taskIter.hasNext())
+          {
+            Task task = (Task)taskIter.next();
+            DebugInfoFrame rf =  this.cli.getTaskFrame(task);
             
             if (rf.getLines().length == 0)
               this.cli.addMessage("Task stopped at address 0x" + rf.getAdjustedAddress(), Message.TYPE_NORMAL);
             else
               this.cli.addMessage("Task stopped at line " + rf.getLines()[0].getLine() + " in file " + rf.getLines()[0].getFile(), Message.TYPE_NORMAL);
           }
-        else
-          this.cli.addMessage("Process is already running", Message.TYPE_ERROR);
       }
     else
       this.cli.addMessage("Not attached to any process", Message.TYPE_ERROR);

@@ -41,41 +41,45 @@ package frysk.hpd;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import frysk.proc.Proc;
+import frysk.proc.Task;
 
 class DetachCommand
-    implements CommandHandler
-{
+    implements CommandHandler {
     private final CLI cli;
-    DetachCommand(CLI cli)
-    {
+    
+    DetachCommand(CLI cli) {
 	this.cli = cli;
     }
+    
     public void handle (Command cmd)
-	throws ParseException
-    {
+	throws ParseException {
+        PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
 	}
-
-	boolean startedByRun;
-	synchronized (cli) {
-	    startedByRun = cli.runningProcs.contains(cli.proc);
-	}
-	if (startedByRun)
-	    return;
-	// Delete all breakpoints.
-	if (cli.steppingObserver != null)
-	    cli.getSteppingEngine().removeObserver(cli.steppingObserver,
-					  cli.proc, true);
-	
-	cli.proc = null;
-	cli.task = null;
-	
-	cli.attached = -1;
-	if (params.size() > 0) {
-	    cli.printUsage(cmd);
-	}
+        HashSet procSet = new HashSet();
+        Iterator taskIter = ptset.getTasks();
+        while (taskIter.hasNext()) {
+            procSet.add(((Task)taskIter.next()).getProc());
+        }
+        Iterator procIter = procSet.iterator();
+        while (procIter.hasNext()) {
+            Proc proc = (Proc)procIter.next();
+            boolean startedByRun;
+            synchronized (cli) {
+                startedByRun = cli.runningProcs.contains(proc);
+            }
+            if (startedByRun)
+                continue;
+            // Delete all breakpoints.
+            if (cli.steppingObserver != null)
+                cli.getSteppingEngine().removeObserver(cli.steppingObserver,
+                                                       proc, true);
+        }
     }
 }

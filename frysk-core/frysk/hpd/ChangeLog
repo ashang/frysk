@@ -1,5 +1,12 @@
 2007-08-08  Tim Moore  <timoore@redhat.com>
 
+	* DetachCommand.java (handle): Act on all processes in the target
+	set.
+	* StepCommand.java (handle): Step all tasks in the target set.
+	* StepInstructionCommand.java (handle): ditto
+	* ViewsetCommand.java (handle): Print a message if the target set
+	is empty.
+
 	* CLI.java (TaskInfo, getTaskFrame, setTaskFrame,
 	getTaskDebugInfo, setTaskDebugInfo, getTaskStackLevel, 
 	setTaskStackLevel): New interface for tracking values that were
