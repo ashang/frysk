@@ -1,3 +1,9 @@
+2007-08-09  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
+
+	* TestFrameDebugInfo.java: Moved getStoppedTask and 
+	TerminatingSignaledObserver to StoppedTestTaskFactory.java.
+	* StoppedTestTaskFactory.java: New file.
+
 2007-08-08  Stan Cox  <scox@redhat.com>
 
 	* LocationExpression.java (getRegisterNumber): Return null instead.

@@ -52,24 +52,21 @@ import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
 import frysk.dwfl.DwflCache;
-import frysk.proc.Action;
-import frysk.proc.Manager;
 import frysk.proc.Task;
-import frysk.proc.TaskObserver;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
-import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.TestLib;
 
 public class TestFrameDebugInfo
     extends TestLib
 {
-
+    /// I am not looking at what you are typing. I just have to see ya type
   Logger logger = Logger.getLogger("frysk");
 
   public void testFrameDebugInfoStackTrace ()
   {
-    Task task = getStoppedTask();
+      
+    Task task = StoppedTestTaskFactory.getStoppedTask();
 
     StringWriter stringWriter = new StringWriter();
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
@@ -88,7 +85,7 @@ public class TestFrameDebugInfo
     if(unresolved(4676))
         return;
 
-    Task task = getStoppedTask("funit-stacks-exit");
+    Task task = StoppedTestTaskFactory.getStoppedTask("funit-stacks-exit");
 
     Frame frame = StackFactory.createFrame(task);
     StringWriter stringWriter = new StringWriter();
@@ -108,7 +105,7 @@ public class TestFrameDebugInfo
     if(unresolved(4677))
         return;
 
-    Task task = getStoppedTask("funit-scopes");
+    Task task = StoppedTestTaskFactory.getStoppedTask("funit-scopes");
     Frame frame = StackFactory.createFrame(task);
     
     Dwfl dwfl = DwflCache.getDwfl(task);
@@ -126,7 +123,7 @@ public class TestFrameDebugInfo
   public void testFrameScopesWorkAround ()
   {
     
-    Task task = getStoppedTask("funit-scopes-workaround");
+    Task task = StoppedTestTaskFactory.getStoppedTask("funit-scopes-workaround");
     Frame frame = StackFactory.createFrame(task);
     
     Dwfl dwfl = DwflCache.getDwfl(task);
@@ -145,7 +142,7 @@ public class TestFrameDebugInfo
   public void testGetInlinedSubroutines ()
   {
     
-    Task task = getStoppedTask("funit-inlined");
+    Task task = StoppedTestTaskFactory.getStoppedTask("funit-inlined");
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
     
     LinkedList inlinedSubprograms =  frame.getInlnedSubprograms();
@@ -157,7 +154,7 @@ public class TestFrameDebugInfo
   public void testVirtualDebugInfoStackTrace ()
   {
     
-    Task task = getStoppedTask("funit-inlined");
+    Task task = StoppedTestTaskFactory.getStoppedTask("funit-inlined");
     StringWriter stringWriter = new StringWriter();
     
     DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(stringWriter), task, true, true, true);
@@ -171,7 +168,7 @@ public class TestFrameDebugInfo
   
   public void testValues() throws NameNotFoundException
   {
-    Task task = getStoppedTask("funit-stacks-values");
+    Task task = StoppedTestTaskFactory.getStoppedTask("funit-stacks-values");
     Subprogram subprogram;
     DebugInfoFrame frame;
     Variable variable;
@@ -231,7 +228,7 @@ public class TestFrameDebugInfo
   }
   
   public void testLineNumbers(){
-      Task task = getStoppedTask("funit-stacks-linenum");
+      Task task = StoppedTestTaskFactory.getStoppedTask("funit-stacks-linenum");
       
       Subprogram subprogram;
       DebugInfoFrame frame;
@@ -281,50 +278,4 @@ public class TestFrameDebugInfo
       assertEquals("line number", variable.getLineNumber(), 10);
   }
   
-  public Task getStoppedTask(){
-    return this.getStoppedTask("funit-stacks");
-  }
-  
-  public Task getStoppedTask (String process)
-  {
-
-    DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(new String[] { getExecPath(process) });
-
-    Task task = ackProc.getMainTask();
-
-    task.requestAddSignaledObserver(new TerminatingSignaledObserver());
-    task.requestAddTerminatingObserver(new TerminatingSignaledObserver());
-    
-    ackProc.requestRemoveBlock();
-    assertRunUntilStop("Add TerminatingSignaledObserver");
-
-    return task;
-  }
-
-  class TerminatingSignaledObserver implements TaskObserver.Signaled, TaskObserver.Terminating{
-    public void deletedFrom (Object observable)
-    {
-    }
-
-    public void addedTo (Object observable)
-    {
-    }
-
-    public void addFailed (Object observable, Throwable w)
-    {
-        throw new RuntimeException(w);
-    }
-
-    public Action updateSignaled (Task task, int signal)
-    {
-      Manager.eventLoop.requestStop();
-      return Action.BLOCK;
-    }
-
-    public Action updateTerminating (Task task, boolean signal, int value)
-    {
-      Manager.eventLoop.requestStop();
-      return Action.BLOCK;
-    }
-  }
 }
