@@ -69,10 +69,8 @@ class HaltCommand
             LinkedList stopList = new LinkedList();
             while (taskIter.hasNext()) {
                 Task task = (Task)taskIter.next();
-                if (steppingEngine.isTaskRunning(task)) {
+                if (steppingEngine.isTaskRunning(task))
                     stopList.add(task);
-                    cli.running = false; // XXX
-                }
             }
             steppingEngine.stop(null, stopList);
         }

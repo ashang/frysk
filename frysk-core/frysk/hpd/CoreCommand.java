@@ -44,8 +44,10 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 import frysk.debuginfo.DebugInfo;
+import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.proc.Proc;
+import frysk.proc.Task;
 
 public class CoreCommand extends CLIHandler {
 
@@ -80,11 +82,17 @@ public class CoreCommand extends CLIHandler {
 	    coreProc = frysk.util.Util.getProcFromCoreFile(coreFile, exeFile);
 	}
 
-	cli.proc = coreProc;
-	cli.task = coreProc.getMainTask();
-	cli.frame = DebugInfoStackFactory.createDebugInfoStackTrace(cli.task);
-	cli.debugInfo = new DebugInfo(cli.frame);
-	cli.attached = coreProc.getPid();
+        Task task = coreProc.getMainTask();
+	TaskData coreTaskData = new TaskData(task, 0, 0);
+        ProcData procData = new ProcData(coreProc, 0);
+        TaskData[] taskArray = new TaskData[] {coreTaskData};
+        ProcTasks procTask = new ProcTasks(procData, taskArray);
+        
+        cli.targetset = new StaticPTSet(new ProcTasks[] {procTask});
+        DebugInfoFrame frame
+          = DebugInfoStackFactory.createDebugInfoStackTrace(task);
+        cli.setTaskFrame(task, frame);
+	cli.setTaskDebugInfo(task, new DebugInfo(frame));
 	cli.addMessage("Attached to core file: " + params.get(0), Message.TYPE_NORMAL);
     }
 

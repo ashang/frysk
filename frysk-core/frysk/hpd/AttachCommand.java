@@ -129,16 +129,15 @@ class AttachCommand
 			   Message.TYPE_ERROR);
 	    return;
 	}
-        cli.proc = findProc.proc;
         int procID = cli.idManager.reserveProcID();
         cli.idManager.manageProc(findProc.proc, procID);
         Task task = null;
 	if (pid == tid || tid == 0)
-	    cli.task = task = findProc.proc.getMainTask();
-        else
+	    task = findProc.proc.getMainTask();
+	else
 	    for (Iterator i = findProc.proc.getTasks ().iterator ();
 		 i.hasNext (); ) {
-		cli.task = task = (Task) i.next ();
+		task = (Task) i.next ();
 		if (task.getTid () == tid)
 		    break;
 	    }

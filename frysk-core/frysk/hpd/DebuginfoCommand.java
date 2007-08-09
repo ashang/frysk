@@ -41,7 +41,9 @@ package frysk.hpd;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
+import frysk.proc.Task;
 import frysk.util.DebuginfoPaths;
 
 class DebuginfoCommand
@@ -55,21 +57,20 @@ class DebuginfoCommand
     }
     
     public void handle(Command cmd) throws ParseException 
-    {   
+    {
+        PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
         }
-	
-	if (cli.proc == null) {
-	    cli.addMessage("Not attached to any process", Message.TYPE_ERROR);
-	    return;
-	}	
-	
-	DebuginfoPaths dbg = new DebuginfoPaths(cli.getTask());
-        String dInfo = dbg.getDebuginfo();
-        cli.outWriter.println(dInfo);
+	Iterator taskIter = ptset.getTasks();
+        while (taskIter.hasNext()) {
+            Task task = (Task)taskIter.next();
+            DebuginfoPaths dbg = new DebuginfoPaths(task);
+            String dInfo = dbg.getDebuginfo();
+            cli.outWriter.println(dInfo);
+        }
     }
 }

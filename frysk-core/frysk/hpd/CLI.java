@@ -67,12 +67,7 @@ import frysk.value.Value;
 
 public class CLI 
 {
-  Proc proc;
-  Task task;
-  DebugInfo debugInfo = null;
   boolean running = false;
-  DebugInfoFrame frame;
-  int stackLevel = 0;
   ProcTaskIDManager idManager;
   SteppingObserver steppingObserver;
   SteppingEngine steppingEngine;
@@ -201,8 +196,6 @@ public class CLI
       {
 	steppingObserver = new SteppingObserver();
       }
-    this.proc = proc;
-    this.task = task;
     Proc[] temp = new Proc[1];
     temp[0] = proc;
     attached = -1;
@@ -233,8 +226,6 @@ public class CLI
 	  return;
 	}
       }
-    frame = DebugInfoStackFactory.createDebugInfoStackTrace(this.task);
-    debugInfo = new DebugInfo(frame);
     addMessage("Attached to process " + attached, Message.TYPE_NORMAL);
     attached = -1;
   }
@@ -269,7 +260,6 @@ public class CLI
           Task task = (Task)taskIter.next();
           DebugInfoFrame currentFrame = getTaskFrame(task);
           DebugInfoFrame tmpFrame = currentFrame;
-          int stackLevel = getTaskStackLevel(task);
 
           int l = level;
           while (tmpFrame != null && l != 0) {
@@ -282,17 +272,13 @@ public class CLI
         
           if (tmpFrame != null && tmpFrame != currentFrame)
             {
-              // XXX
-              frame = tmpFrame;
-              stackLevel += down ? level : -level;
-              
               setTaskFrame(task, tmpFrame);
               setTaskStackLevel(task, (getTaskStackLevel(task)
                                        + (down ? level : -level)));
             }
           if (tmpFrame == null)
             tmpFrame = currentFrame;
-          outWriter.print("#" + stackLevel + " ");
+          outWriter.print("#" + getTaskStackLevel(task) + " ");
           tmpFrame.toPrint(outWriter, false);
           outWriter.println();
         }
@@ -338,13 +324,6 @@ public class CLI
     String name = handler.getName(); 
     handlers.put(name, handler);
     userhelp.addHelp(name, handler.getHelp());
-  }
-
-  Value parseValue(String value) throws ParseException, NameNotFoundException{
-	  if (debugInfo != null)
-	    return debugInfo.print(value, frame);
-	  else
-	    return DebugInfo.printNoSymbolTable(value);        
   }
   
   Value parseValue(Task task, String value)
@@ -609,11 +588,10 @@ public class CLI
       synchronized (CLI.this)
         {
           attached = task.getProc().getPid();
-          DebugInfoFrame newFrame
+          DebugInfoFrame frame
             = DebugInfoStackFactory.createDebugInfoStackTrace(task);
-          frame = newFrame;
-          setTaskFrame(task, newFrame);
-          setTaskDebugInfo(task, new DebugInfo(newFrame));
+          setTaskFrame(task, frame);
+          setTaskDebugInfo(task, new DebugInfo(frame));
           synchronized (this.monitor)
             {
               this.monitor.notifyAll();
@@ -642,20 +620,6 @@ public class CLI
     return outWriter;
   }
 
-  /**
-   * Return CLI's current task.
-   */
-
-  public Task getTask()
-  {
-    return task;
-  }
-
-  public DebugInfo getDebugInfo()
-  {
-    return debugInfo;
-  }
-  
   /**
    * Get the set of processes (Proc) started by the run command. Access to the
    * CLI object should be synchronized when using the set.

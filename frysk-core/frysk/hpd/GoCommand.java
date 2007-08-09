@@ -68,10 +68,8 @@ class GoCommand
             SteppingEngine steppingEngine = cli.getSteppingEngine();
             while (taskIter.hasNext()) {
                 Task task = (Task)taskIter.next();
-                if (!steppingEngine.isTaskRunning(task)) {
+                if (!steppingEngine.isTaskRunning(task))
                     steppingEngine.continueExecution(task);
-                    cli.running = true; // XXX
-                }
             }
 	}
 	else
