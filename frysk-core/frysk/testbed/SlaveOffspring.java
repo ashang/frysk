@@ -101,11 +101,7 @@ public class SlaveOffspring
     private static final Sig EXEC_CLONE_SIG = Sig.FPE;
 
     /** Create an ack process. */
-    protected SlaveOffspring () {
-	this(OffspringType.DAEMON);
-    }
-    /** Create an ack process. */
-    protected SlaveOffspring (OffspringType type) {
+    private SlaveOffspring (OffspringType type) {
 	super(type, CHILD_ACK, funitSlaveCommand(false, null, null));
     }
 
@@ -114,15 +110,7 @@ public class SlaveOffspring
      * busy-loop, instead of suspending, when waiting for signal
      * commands.
      */
-    protected SlaveOffspring (boolean busy) {
-	this(OffspringType.DAEMON, busy);
-    }
-    /**
-     * Create an SlaveOffspring; if BUSY, the process will use a
-     * busy-loop, instead of suspending, when waiting for signal
-     * commands.
-     */
-    protected SlaveOffspring (OffspringType type, boolean busy) {
+    private SlaveOffspring (OffspringType type, boolean busy) {
 	super(type, CHILD_ACK, funitSlaveCommand(busy, null, null));
     }
 

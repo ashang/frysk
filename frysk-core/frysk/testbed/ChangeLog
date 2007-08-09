@@ -1,5 +1,10 @@
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
+	* SlaveOffspring.java (SlaveOffspring()): Delete.
+	(SlaveOffspring(OffspringType)): Make private.
+	(SlaveOffspring(boolean)): Delete.
+	(SlaveOffspring(OffspringType,boolean)): Make private.
+	
 	* SlaveOffspring.java (createAttachedChild()): New.
 	* TestLib.java (AttachedAckProcess): Delete.
 	
