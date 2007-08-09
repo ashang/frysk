@@ -44,19 +44,39 @@ import java.util.ArrayList;
 import frysk.proc.ProcId;
 import java.util.Iterator;
 import frysk.proc.Host;
+import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.Manager;
 
 class AttachCommand
     implements CommandHandler
 {
+    private class FindProc
+        implements Host.FindProc {
+        Proc proc = null;
+        boolean procSearchFinished = false;
+
+        public synchronized void procFound (ProcId procId)
+        {
+            proc = Manager.host.getProc(procId);
+            procSearchFinished = true;
+            notifyAll();
+        }
+
+        public synchronized void procNotFound (ProcId procId, Exception e)
+        {
+            proc = null;
+            procSearchFinished = true;
+            notifyAll();
+        }
+    }
+
     private final CLI cli;
     AttachCommand(CLI cli)
     {
 	this.cli = cli;
     }
-    public void handle(Command cmd) throws ParseException
-    {
+    public void handle(Command cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	int pid = 0;
 	int tid = 0;
@@ -85,47 +105,31 @@ class AttachCommand
 		return;
 	    }
 	    else if (((String)params.get(idx)).matches("[0-9]+"))
-		pid = Integer.parseInt((String)params.get(idx)); 
+		pid = Integer.parseInt((String)params.get(idx));
 	}
 
+        FindProc findProc = new FindProc();
 	if (cliOption) {
-	    cli.procSearchFinished = false;
-	    Manager.host.requestFindProc(new ProcId(pid),
-					 new Host.FindProc() {
-		    public void procFound (ProcId procId)
-		    {
-			synchronized (cli) {
-			    cli.proc = Manager.host.getProc(procId);
-			    cli.procSearchFinished = true;
-			    cli.notifyAll();
-			}
-		    }
-
-		    public void procNotFound (ProcId procId, Exception e)
-		    {
-			synchronized (cli) {
-			    cli.proc = null;
-			    cli.procSearchFinished = true;
-			    cli.notifyAll();
-			}
-		    }});
-	    synchronized (cli) {
-		while (!cli.procSearchFinished) {
+	    Manager.host.requestFindProc(new ProcId(pid), findProc);
+	    synchronized (findProc) {
+		while (!findProc.procSearchFinished) {
 		    try {
-			cli.wait();
+			findProc.wait();
 		    }
 		    catch (InterruptedException ie) {
-			cli.proc = null;
+			findProc.proc = null;
 		    }
 		}
 	    }
-	}
-	if (cli.proc == null) {
+	} else {
+            return;             // no-cli really doesn't work.
+        }
+	if (findProc.proc == null) {
 	    cli.addMessage("Couldn't find process " + pid,
 			   Message.TYPE_ERROR);
 	    return;
 	}
-
+        cli.proc = findProc.proc;
 	if (pid == tid || tid == 0)
 	    cli.task = cli.proc.getMainTask();
 	else

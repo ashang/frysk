@@ -1,3 +1,10 @@
+2007-08-08  Tim Moore  <timoore@redhat.com>
+
+	* AttachCommand.java (FindProc): New local class for FindProc results.
+	(handle): Use FindProc class in call to
+	Manager.host.requestFindProc() and synchronize on that object, not
+	the CLI object.
+
 2007-08-07  Teresa Thomas  <tthomas@redhat.com>
 
 	* UserHelp.java (UserHelp): User help added for 'debuginfo'.
