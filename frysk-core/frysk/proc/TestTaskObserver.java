@@ -205,7 +205,7 @@ public class TestTaskObserver
     public void attachDetachTask (int count, boolean main)
     {
 	// Create a detached child.
-	Offspring child = new AckDaemonProcess()
+	Offspring child = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(count);
 	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("task", task);
@@ -234,7 +234,7 @@ public class TestTaskObserver
     public void detachExitingTask (int count, boolean main)
     {
 	// Create a detached child.
-	Offspring child = new AckDaemonProcess()
+	Offspring child = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(count);
 	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("task", task);
@@ -272,7 +272,7 @@ public class TestTaskObserver
      */
     public void attachDeadTask (int count, boolean main)
     {
-	Offspring child = new AckDaemonProcess()
+	Offspring child = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(count);
 	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("task", task);
@@ -306,7 +306,7 @@ public class TestTaskObserver
      */
     public void attachDieingTask (int count, boolean main)
     {
-	SlaveOffspring child = new AckDaemonProcess()
+	SlaveOffspring child = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(count);
 	Task task = child.findTaskUsingRefresh (main);
 	
@@ -341,7 +341,7 @@ public class TestTaskObserver
      */
     public void attachToAttachedTask (int count, boolean main)
     {
-	final Offspring child = new AckDaemonProcess()
+	final Offspring child = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(count);
 	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("task", task);
@@ -384,7 +384,7 @@ public class TestTaskObserver
      */
     public void backToBackAttachAttachTask (int count, boolean main)
     {
-	Offspring child = new AckDaemonProcess ();
+	Offspring child = SlaveOffspring.createDaemon ();
 	Task task = child.findTaskUsingRefresh (true);
 	assertNotNull ("main task", task);
 
@@ -414,7 +414,7 @@ public class TestTaskObserver
      */
     public void backToBackAttachDetachTask (int count, boolean main)
     {
-	Offspring child = new AckDaemonProcess()
+	Offspring child = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(count);
 	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("main task", task);
@@ -454,7 +454,7 @@ public class TestTaskObserver
      */
     public void deletedAttachTask (int count, boolean main)
     {
-	Offspring child = new AckDaemonProcess()
+	Offspring child = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(count);
 	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("main task", task);
@@ -529,7 +529,7 @@ public class TestTaskObserver
     /** {@link #deleteUnattachedObserver} */
     public void testDeleteUnattachedFromDetachedMain ()
     {
-	Offspring child = new AckDaemonProcess ();
+	Offspring child = SlaveOffspring.createDaemon ();
 	deleteUnattachedObserver (child, true);
     }
 }

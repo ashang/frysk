@@ -63,7 +63,7 @@ public class TestProcStopped
 
   public void testStoppedAckDaemon ()
   {
-    SlaveOffspring ackProc = new AckDaemonProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createDaemon();
     stopped(ackProc, 1);
     assertRunUntilStop("testStoppedAckDaemon");
   }
@@ -84,7 +84,7 @@ public class TestProcStopped
 
   public void testRunningAckDaemon ()
   {
-    SlaveOffspring ackProc = new AckDaemonProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createDaemon();
     running(ackProc, 1);
     assertRunUntilStop("testRunningAckDaemon");
   }
@@ -106,7 +106,7 @@ public class TestProcStopped
     public void testMultiThreadedStoppedAckDaemon () {
 	if (unresolvedOnUtrace(3595))
 	    return;
-	SlaveOffspring ackProc = new AckDaemonProcess()
+	SlaveOffspring ackProc = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(2);
 	stopped(ackProc, 3);
 	assertRunUntilStop("testStoppedAckDaemon");
@@ -129,7 +129,7 @@ public class TestProcStopped
     }
 
     public void testMultiThreadedRunningAckDaemon () {
-	SlaveOffspring ackProc = new AckDaemonProcess()
+	SlaveOffspring ackProc = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(2);
 	running(ackProc, 3);
 	assertRunUntilStop("testRunningAckDaemon");

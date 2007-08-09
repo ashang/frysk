@@ -318,37 +318,37 @@ public class TestProcTasksObserver extends TestLib {
     }
 	
     public void testManyExistingThreadAckDaemon() {
-	SlaveOffspring ackProcess = new AckDaemonProcess()
+	SlaveOffspring ackProcess = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(3);
 	manyExistingThread(ackProcess);
     }
 	
     public void testSingleExistingCloneAckDaemon() 
     {
-	SlaveOffspring ackProcess = new AckDaemonProcess ();
+	SlaveOffspring ackProcess = SlaveOffspring.createDaemon ();
 	singleExistingClone(ackProcess);
     }
 	
     public void testCloneThenKillAckDaemon() 
     {
-	SlaveOffspring ackProcess = new AckDaemonProcess ();
+	SlaveOffspring ackProcess = SlaveOffspring.createDaemon ();
 	cloneThenKill(ackProcess);
     }
 	
     public void testDeleteAckDaemon() {
-	SlaveOffspring ackProcess = new AckDaemonProcess()
+	SlaveOffspring ackProcess = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(1);
 	delete(ackProcess);
     }
 	
     public void testDoCloneAckDaemon() 
     {
-	SlaveOffspring ackProcess = new AckDaemonProcess ();
+	SlaveOffspring ackProcess = SlaveOffspring.createDaemon ();
 	doClone(ackProcess);
     }
 	
     public void testSingleExistingThreadAckDaemon() {
-	SlaveOffspring ackProcess = new AckDaemonProcess();
+	SlaveOffspring ackProcess = SlaveOffspring.createDaemon();
 	singleExistingThread(ackProcess);
     }
 	

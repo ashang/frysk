@@ -1,5 +1,8 @@
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
+	* SlaveOffspring.java (createDaemon): New.
+	* TestLib.java (AckDaemonProcess): Delete.
+	
 	* SlaveOffspring.java: Make concrete (remove abstract).
 	(createChild()): New.
 	* TestLib.java (DetachedAckProcess): Delete.

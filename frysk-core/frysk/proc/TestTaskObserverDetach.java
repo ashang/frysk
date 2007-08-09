@@ -90,7 +90,7 @@ public class TestTaskObserverDetach
 	/** Remove the observer looking for the relevant event.  */
 	abstract void deleteEventObserver (Task task);
 	/** The process.  */
-	SlaveOffspring child = new AckDaemonProcess ();
+	SlaveOffspring child = SlaveOffspring.createDaemon ();
 	/** It's main task.  */
 	final Task task = child.findTaskUsingRefresh (true);
 	/**

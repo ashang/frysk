@@ -45,7 +45,6 @@ import frysk.proc.Manager;
 import frysk.dwfl.DwflCache;
 import frysk.junit.TestCase;
 import frysk.Config;
-import frysk.sys.Fork;
 import frysk.sys.Pid;
 import frysk.sys.Sig;
 import frysk.sys.SignalSet;
@@ -180,31 +179,6 @@ public class TestLib
      */
     static public boolean isDescendantOfMine (Proc proc) {
 	return isDescendantOf(Pid.get(), proc);
-    }
-
-    /**
-     * Create an ack daemon. An ack daemon has process 1, and not this
-     * process, as its parent. Since this a daemon, this process won't
-     * have to contend with its exit status - it will go to process 1.
-     */
-    public class AckDaemonProcess
-	extends SlaveOffspring
-    {
-	/**
-	 * Create the process as a daemon.
-	 */
-	protected int startChild (String stdin, String stdout, String stderr,
-				  String[] argv) {
-	    return Fork.daemon(stdin, stdout, stderr, argv);
-	}
-
-	public AckDaemonProcess () {
-	    super();
-	}
-
-	public AckDaemonProcess (boolean busy) {
-	    super(busy);
-	}
     }
 
     /**

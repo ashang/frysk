@@ -46,13 +46,14 @@ import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.dead.TestLinuxCore;
 import frysk.testbed.TestLib;
+import frysk.testbed.SlaveOffspring;
 
 public class TestCommandlineParser extends TestLib {
 
     public void testCoreExe() {
 
 	TestLinuxCore tester = new TestLinuxCore();
-	AckDaemonProcess funit = tester.new AckDaemonProcess();
+	SlaveOffspring funit = SlaveOffspring.createDaemon();
 	Proc funitProc = funit.assertFindProcAndTasks();
 	final File core = new File(tester.constructCore(funitProc));
 
@@ -85,7 +86,7 @@ public class TestCommandlineParser extends TestLib {
     public void testCore() {
 
 	TestLinuxCore tester = new TestLinuxCore();
-	AckDaemonProcess funit = tester.new AckDaemonProcess();
+	SlaveOffspring funit = SlaveOffspring.createDaemon();
 	Proc funitProc = funit.assertFindProcAndTasks();
 	final File core = new File(tester.constructCore(funitProc));
 

@@ -107,7 +107,7 @@ public class TestFindProc
   
   public void testFindProcAckDaemon ()
   {
-    SlaveOffspring ackProc = new AckDaemonProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createDaemon();
     doFindProc(ackProc, 1);
   }
 

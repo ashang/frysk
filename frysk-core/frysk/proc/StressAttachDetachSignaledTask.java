@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import frysk.testbed.SlaveOffspring;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
 
@@ -77,11 +78,11 @@ public class StressAttachDetachSignaledTask
 	/**
 	 * Perform arbitrary operation OP.
 	 */
-	abstract void op (AckDaemonProcess child, int iteration);
+	abstract void op (SlaveOffspring child, int iteration);
 
 	Spawn ()
 	{
-	    AckDaemonProcess child = new AckDaemonProcess ();
+	    SlaveOffspring child = SlaveOffspring.createDaemon();
 	    AttachDetach attachDetach = new AttachDetach ();
 	    Task task = child.findTaskUsingRefresh (true);
 
@@ -114,7 +115,7 @@ public class StressAttachDetachSignaledTask
 	    return;
 	new Spawn ()
 	{
-	    void op (AckDaemonProcess child, int iteration)
+	    void op (SlaveOffspring child, int iteration)
 	    {
 		switch (iteration % 2) {
 		case 0:
@@ -138,7 +139,7 @@ public class StressAttachDetachSignaledTask
 	    return;
 	new Spawn ()
 	{
-	    void op (AckDaemonProcess child, int iteration)
+	    void op (SlaveOffspring child, int iteration)
 	    {
 		switch (iteration % 2) {
 		case 0:
@@ -159,7 +160,7 @@ public class StressAttachDetachSignaledTask
     {
 	new Spawn ()
 	{
-	    void op (AckDaemonProcess child, int iteration)
+	    void op (SlaveOffspring child, int iteration)
 	    {
 		child.assertSendExecWaitForAcks ();
 	    }

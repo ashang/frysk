@@ -289,4 +289,16 @@ public class SlaveOffspring
     static public SlaveOffspring createChild() {
 	return new SlaveOffspring(OffspringType.CHILD);
     }
+    /**
+     * Create a slave-process that is a child of this process.
+     */
+    static public SlaveOffspring createDaemon() {
+	return new SlaveOffspring(OffspringType.DAEMON);
+    }
+    /**
+     * Create a slave-process that is a child of this process.
+     */
+    static public SlaveOffspring createDaemon(boolean busy) {
+	return new SlaveOffspring(OffspringType.DAEMON, busy);
+    }
 }

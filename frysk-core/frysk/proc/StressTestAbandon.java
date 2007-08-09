@@ -42,6 +42,7 @@ package frysk.proc;
 
 import frysk.testbed.TestLib;
 import frysk.event.RequestStopEvent;
+import frysk.testbed.SlaveOffspring;
 
 public class StressTestAbandon
     extends TestLib
@@ -82,7 +83,7 @@ public class StressTestAbandon
     
   }
     public void testStressAbandon () {
-	Proc proc = new AckDaemonProcess()
+	Proc proc = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(99)
 	    .assertFindProcAndTasks();
 	new ProcBlockAction(proc, new Action(proc));

@@ -112,7 +112,7 @@ public class TestAbandon
 
   public void testAbandonThenRemoveAckDaemon ()
   {
-    SlaveOffspring ackProc = new AckDaemonProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createDaemon();
     TaskObserver.Instruction testObserver = new TestObserver();
 
     abandonThenRemove(ackProc, testObserver);
@@ -136,7 +136,7 @@ public class TestAbandon
 
   public void testAbandonThenRemoveAckDaemonUpdateExecuted ()
   {
-    SlaveOffspring ackProc = new AckDaemonProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createDaemon();
     TaskObserver.Instruction testObserver = new AbandonOnUpdateExecuted();
 
     abandonThenRemove(ackProc, testObserver);
@@ -160,7 +160,7 @@ public class TestAbandon
 
   public void testAbandonThenRemoveAckDaemonAddedTo ()
   {
-    SlaveOffspring ackProc = new AckDaemonProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createDaemon();
     TaskObserver.Instruction testObserver = new AbandonOnAddedTo();
 
     abandonThenRemove(ackProc, testObserver);
@@ -184,7 +184,7 @@ public class TestAbandon
   
   public void testAbandonThenRemoveAckDaemonDeletedFrom ()
   {
-    SlaveOffspring ackProc = new AckDaemonProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createDaemon();
     TaskObserver.Instruction testObserver = new AbandonOnDeletedFrom();
 
     abandonThenRemove(ackProc, testObserver);
@@ -223,7 +223,7 @@ public class TestAbandon
 
   public void testRemoveThenAbandonAckDaemon ()
   {
-    SlaveOffspring ackProc = new AckDaemonProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createDaemon();
 
     TaskObserver.Instruction testObserver = new TestObserver();
     removeThenAbandon(ackProc, testObserver);
@@ -247,7 +247,7 @@ public class TestAbandon
 
   public void testRemoveThenAbandonAckDaemonAddedTo ()
   {
-    SlaveOffspring ackProc = new AckDaemonProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createDaemon();
 
     TaskObserver.Instruction testObserver = new AbandonOnAddedTo();
     removeThenAbandon(ackProc, testObserver);
@@ -271,7 +271,7 @@ public class TestAbandon
 
   public void testRemoveThenAbandonAckDaemonUpdateExecuted ()
   {
-    SlaveOffspring ackProc = new AckDaemonProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createDaemon();
 
     TaskObserver.Instruction testObserver = new AbandonOnUpdateExecuted();
     removeThenAbandon(ackProc, testObserver);
@@ -295,7 +295,7 @@ public class TestAbandon
 
   public void testRemoveThenAbandonAckDaemonDeletedFrom ()
   {
-    SlaveOffspring ackProc = new AckDaemonProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createDaemon();
 
     TaskObserver.Instruction testObserver = new AbandonOnDeletedFrom();
     removeThenAbandon(ackProc, testObserver);
@@ -335,7 +335,7 @@ public class TestAbandon
 
   public void testAbandonAndAbandon ()
   {
-    SlaveOffspring ackProc = new AckDaemonProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createDaemon();
 
     TaskObserver.Instruction testObserver = new TestObserver();
 

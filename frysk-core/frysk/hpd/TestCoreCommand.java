@@ -44,7 +44,7 @@ import java.io.File;
 import frysk.expunit.Expect;
 import frysk.proc.Proc;
 import frysk.proc.dead.TestLinuxCore;
-import frysk.testbed.TestLib.AckDaemonProcess;
+import frysk.testbed.SlaveOffspring;
 import frysk.Config;
 
 public class TestCoreCommand extends TestLib {
@@ -59,7 +59,7 @@ public class TestCoreCommand extends TestLib {
 
     public void testCoreExeCommand() {
 	TestLinuxCore tester = new TestLinuxCore();
-	AckDaemonProcess funit = tester.new AckDaemonProcess();
+	SlaveOffspring funit = SlaveOffspring.createDaemon();
 	Proc funitProc = funit.assertFindProcAndTasks();
 	File core = new File(tester.constructCore(funitProc));
 	e = new Expect(Config.getBinFile("fhpd"));

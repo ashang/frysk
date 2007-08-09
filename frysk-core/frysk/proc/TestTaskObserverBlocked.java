@@ -220,7 +220,7 @@ public class TestTaskObserverBlocked
     public void assertRunToSpawn ()
     {
       logger.log(Level.FINE, "{0} assertRunToSpawn\n", this);
-      SlaveOffspring proc = new AckDaemonProcess();
+      SlaveOffspring proc = SlaveOffspring.createDaemon();
       Task main = proc.findTaskUsingRefresh(true);
 
       requestAddSpawnObserver(main);
@@ -396,7 +396,7 @@ public class TestTaskObserverBlocked
    */
   public void testRefreshAfterUnblockedForkExits ()
   {
-    SlaveOffspring proc = new AckDaemonProcess();
+    SlaveOffspring proc = SlaveOffspring.createDaemon();
     Task task = proc.findTaskUsingRefresh(true);
     class ForkUnblock
         extends TaskObserverBase
@@ -455,7 +455,7 @@ public class TestTaskObserverBlocked
     // if (brokenXXX (2937))
     // return;
 
-    SlaveOffspring proc = new AckDaemonProcess();
+    SlaveOffspring proc = SlaveOffspring.createDaemon();
     Task task = proc.findTaskUsingRefresh(true);
     class UnblockAdd
         extends TaskObserverBase
@@ -630,7 +630,7 @@ public class TestTaskObserverBlocked
    */
   public void testUnblockRunning ()
   {
-    Offspring child = new AckDaemonProcess();
+    Offspring child = SlaveOffspring.createDaemon();
     Task task = child.findTaskUsingRefresh(true);
 
     class UnblockRunning

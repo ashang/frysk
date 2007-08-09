@@ -45,13 +45,14 @@ import frysk.stepping.SteppingEngine;
 import frysk.stepping.TaskStepEngine;
 import frysk.testbed.TestLib;
 import frysk.testbed.Offspring;
+import frysk.testbed.SlaveOffspring;
 
 public class TestTaskObserverInstruction extends TestLib
 {
   public void testInstruction()
   {
     // We want a busy child, because we are going to follow its steps.
-    Offspring child = new AckDaemonProcess(true);
+    Offspring child = SlaveOffspring.createDaemon(true);
     Task task = child.findTaskUsingRefresh (true);
 
     InstructionObserver instr1 = new InstructionObserver();

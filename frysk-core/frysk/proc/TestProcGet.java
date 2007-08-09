@@ -111,7 +111,7 @@ public class TestProcGet
    */
   public void testGetCommand ()
   {
-    Offspring child = new AckDaemonProcess();
+    Offspring child = SlaveOffspring.createDaemon();
     Proc childProc = child.assertFindProcAndTasks();
     assertEquals("value of child's getCommand()", "funit-child",
                  childProc.getCommand());
@@ -122,7 +122,7 @@ public class TestProcGet
    */
   public void testGetTasks ()
   {
-      Offspring child = new AckDaemonProcess()
+      Offspring child = SlaveOffspring.createDaemon()
 	  .assertSendAddClonesWaitForAcks(1);
     Proc proc = child.assertFindProcAndTasks(); // and tasks
     List tasks = proc.getTasks();

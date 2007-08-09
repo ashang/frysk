@@ -107,7 +107,7 @@ public class TestRefresh
     {
 	// Create a daemon process, set things up to watch and verify
 	// the child.
-	ChildTracker tracker = new ChildTracker (new AckDaemonProcess ());
+	ChildTracker tracker = new ChildTracker (SlaveOffspring.createDaemon ());
 
 	// Do several refreshes, check that the child is only added
 	// once, and never removed.
@@ -171,7 +171,7 @@ public class TestRefresh
 
 	// Create a suspended sub-process that contains three cloned
 	// tasks, and wait for it to start.
-	SlaveOffspring child = new AckDaemonProcess()
+	SlaveOffspring child = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(nrTasks - 1);
 
 	// Create a task counter, to count the number discovered and
@@ -276,7 +276,7 @@ public class TestRefresh
     {
 	// Create the zombie maker, and then get it to create one
 	// child.
-	SlaveOffspring zombie = new AckDaemonProcess ();
+	SlaveOffspring zombie = SlaveOffspring.createDaemon ();
 	zombie.assertSendAddForkWaitForAcks ();
 	
 	// Do a refresh, find the zombie maker, check it has one child
@@ -322,7 +322,7 @@ public class TestRefresh
      */
     public void testExitLoosesChild ()
     {
-	SlaveOffspring daemon = new AckDaemonProcess ();
+	SlaveOffspring daemon = SlaveOffspring.createDaemon ();
 	daemon.assertSendAddForkWaitForAcks ();
 
 	// Find the process and it's children.
@@ -377,7 +377,7 @@ public class TestRefresh
     {
 	// Create the zombie maker, and then get it to create one
 	// child.
-	SlaveOffspring zombie = new AckDaemonProcess ();
+	SlaveOffspring zombie = SlaveOffspring.createDaemon ();
 	zombie.assertSendAddForkWaitForAcks ();
 	
 	// Do a refresh (that includes updating the task list), find
@@ -414,7 +414,7 @@ public class TestRefresh
      */
     public void testUnattachedSingleExec ()
     {
-	SlaveOffspring child = new AckDaemonProcess ();
+	SlaveOffspring child = SlaveOffspring.createDaemon ();
 	Proc proc = child.assertFindProcAndTasks();
 	
 	child.assertSendExecWaitForAcks ();
@@ -435,7 +435,7 @@ public class TestRefresh
      */
     public void testUnattachedMultipleExec ()
     {
-	SlaveOffspring child = new AckDaemonProcess()
+	SlaveOffspring child = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(1);
 	Proc proc = child.assertFindProcAndTasks();
 

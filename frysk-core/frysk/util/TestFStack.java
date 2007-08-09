@@ -68,7 +68,7 @@ public class TestFStack
 
   public void testSingleThreadedAckDaemon ()
   {
-    SlaveOffspring ackProc = new AckDaemonProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createDaemon();
     multiThreaded(ackProc, 0);
   }
 
@@ -79,7 +79,7 @@ public class TestFStack
     }
 
     public void testMultiThreadedAckDaemon () {
-	SlaveOffspring ackProc = new AckDaemonProcess()
+	SlaveOffspring ackProc = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(2);
 	multiThreaded(ackProc, 2);
     }
