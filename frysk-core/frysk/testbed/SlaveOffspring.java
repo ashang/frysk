@@ -87,16 +87,16 @@ public abstract class SlaveOffspring
 
     public static final Sig CHILD_ACK = Sig.USR1;
     public static final Sig PARENT_ACK = Sig.USR2;
-    public static final Sig ADD_CLONE_SIG = Sig.USR1;
+    private static final Sig ADD_CLONE_SIG = Sig.USR1;
     public static final Sig DEL_CLONE_SIG = Sig.USR2;
     public static final Sig STOP_SIG = Sig.STOP;
-    public static final Sig ADD_FORK_SIG = Sig.HUP;
+    private static final Sig ADD_FORK_SIG = Sig.HUP;
     public static final Sig DEL_FORK_SIG = Sig.INT;
     public static final Sig ZOMBIE_FORK_SIG = Sig.URG;
-    public static final Sig EXEC_SIG = Sig.PWR;
+    private static final Sig EXEC_SIG = Sig.PWR;
     public static final Sig EXEC_CLONE_SIG = Sig.FPE;
-    public static final Sig[] spawnAck = new Sig[] { CHILD_ACK, PARENT_ACK };
-    public static final Sig[] execAck = new Sig[] { CHILD_ACK };
+    private static final Sig[] SPAWN_ACK = new Sig[] { CHILD_ACK, PARENT_ACK };
+    private static final Sig[] EXEC_ACK = new Sig[] { CHILD_ACK };
 
     /** Create an ack process. */
     protected SlaveOffspring () {
@@ -150,15 +150,20 @@ public abstract class SlaveOffspring
      * Tell TID to create a new offspring. Wait for the acknowledgment.
      */
     private void spawn (int tid, Sig sig, String why) {
-	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, spawnAck, why);
+	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, SPAWN_ACK, why);
 	// XXX: Just trust that TID is part of this process.
 	Signal.tkill(tid, sig);
 	ack.assertRunUntilSignaled();
     }
 
-    /** Add a Task. */
+    /** Add a Task; wait for acknowledgement. */
     public void assertSendAddCloneWaitForAcks () {
 	spawn(getPid(), ADD_CLONE_SIG, "assertSendAddCloneWaitForAcks");
+    }
+    /** Request that a task be added.  */
+    public Sig[] requestClone() {
+	signal(ADD_CLONE_SIG);
+	return SPAWN_ACK;
     }
 
     /** Add a Task. */
@@ -174,9 +179,14 @@ public abstract class SlaveOffspring
 	ack.assertRunUntilSignaled();
     }
 
-    /** Add a child Proc. */
+    /** Add a child Proc; wait for acknowledgement */
     public void assertSendAddForkWaitForAcks () {
 	spawn(getPid(), ADD_FORK_SIG, "assertSendAddForkWaitForAcks");
+    }
+    /** Request that a child Proc be added.  */
+    public Sig[] requestFork() {
+	signal(ADD_FORK_SIG);
+	return SPAWN_ACK;
     }
 
     /** Add a child Proc. */
@@ -212,21 +222,21 @@ public abstract class SlaveOffspring
     }
 
     /**
-     * Request that TID (assumed to be a child) perform an exec
-     * call.
+     * Request that the main task perform an exec; wait for the
+     * acknowledge.
      */
-    public void assertSendExecWaitForAcks (int tid) {
-	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, execAck,
-					    "assertSendExecWaitForAcks:" + tid);
-	Signal.tkill(tid, EXEC_SIG);
+    public void assertSendExecWaitForAcks () {
+	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, EXEC_ACK,
+					    "assertSendExecWaitForAcks");
+	requestExec();
 	ack.assertRunUntilSignaled();
     }
-
     /**
      * Request that the main task perform an exec.
      */
-    public void assertSendExecWaitForAcks () {
-	assertSendExecWaitForAcks(getPid());
+    public Sig[] requestExec() {
+	signal(EXEC_SIG);
+	return EXEC_ACK;
     }
 
     /**

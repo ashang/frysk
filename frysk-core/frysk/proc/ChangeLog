@@ -1,3 +1,14 @@
+2007-08-09  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTaskObserverBlocked.java (ForkObserver.requestSpawn):
+	Replace addForkSig with SlaveOffspring.requestFork.
+	(CloneObserver.requestSpawn): Replace addCloneSig with
+	SlaveOffspring.requestClone.
+	* TestTaskObserverDetach.java (Detach.requestEvent): Replace
+	Detach.eventSignal.  Use SlaveOffspring's .requestExec,
+	.requestClone, and .requestFork.
+	(Detach.eventAcks): Delete.
+	
 2007-08-08  Andrew Cagney  <cagney@redhat.com>
 
 	* TestIsa.java: Replace frysk.testbed.TestLib.AckProcess with

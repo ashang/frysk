@@ -284,9 +284,8 @@ public class TestTaskObserverBlocked
       extends SpawnObserver
       implements TaskObserver.Cloned
   {
-    void requestSpawn (SlaveOffspring child)
-    {
-      child.signal(addCloneSig);
+    void requestSpawn (SlaveOffspring child) {
+	child.requestClone();
     }
 
     void requestAddSpawnObserver (Task task)
@@ -342,9 +341,8 @@ public class TestTaskObserverBlocked
       extends SpawnObserver
       implements TaskObserver.Forked
   {
-    void requestSpawn (SlaveOffspring child)
-    {
-      child.signal(addForkSig);
+    void requestSpawn (SlaveOffspring child) {
+	child.requestFork();
     }
 
     void requestAddSpawnObserver (Task task)

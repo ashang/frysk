@@ -186,16 +186,6 @@ public class TestLib
 
      protected static final Sig parentAck = Sig.USR2;
 
-     protected static final Sig addCloneSig = Sig.USR1;
-
-     protected static final Sig addForkSig = Sig.HUP;
-
-     protected static final Sig execSig = Sig.PWR;
-
-     protected static final Sig[] spawnAck = new Sig[] { childAck, parentAck };
-
-     protected static final Sig[] execAck = new Sig[] { childAck };
-
     /**
      * Create an ack daemon. An ack daemon has process 1, and not this
      * process, as its parent. Since this a daemon, this process won't

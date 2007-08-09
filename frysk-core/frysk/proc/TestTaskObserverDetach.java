@@ -78,13 +78,9 @@ public class TestTaskObserverDetach
 	    Manager.eventLoop.requestStop ();
 	    return Action.CONTINUE;
 	}
-	/** The signal to send to the task so that it will perform an
-	 * additiona request. */
-	abstract Sig eventSignal ();
-	/** The list of ack signals that the task will send back to
-	 * this process indicating that the requested operation has
-	 * been completed.  */
-	abstract Sig[] eventAcks ();
+	/** Request that the target trigger the required event; return
+	 * the expected acknowledge signals.  */
+	abstract Sig[] requestEvent ();
 	/** Ask the derived task to add an observer for the event that
 	 * requestSignal triggers.  */
 	abstract void addEventObserver (Task task);
@@ -114,18 +110,16 @@ public class TestTaskObserverDetach
 	 */
 	void assertDetach ()
 	{
-	    if (eventIsSignal ())
-		// Send the signal to the task making that signal
-		// delivery the pending event.
-		child.signal (eventSignal ());
-	    else {
-		// Send the event's signal to the process, and then
-		// allow the signal to be delivered, this allows the
-		// inferior to run upto the point where the requested
-		// action has been started.
-		child.signal (eventSignal ());
+	    // Request that the event occure.
+	    Sig[] eventAcks = requestEvent();
+	    // When the event is the signal the event-loop doesn't
+	    // need to be run, just need to wait for the signal to
+	    // reach the thread.  However for other cases, the
+	    // event-loop needs to run just long enough for the signal
+	    // to be delivered to the process so that it will trigger
+	    // the desired event.
+	    if (!eventIsSignal ())
 		assertRunUntilStop ("delivering signal");
-	    }
 	    
 	    // Poll until process goes into T state (indicating
 	    // pending trace event); horrible race condition here.
@@ -149,7 +143,7 @@ public class TestTaskObserverDetach
 	    // Set up an ack handler to catch the process
 	    // acknowledging that it has completed the relevant task.
 	    SignalWaiter ackHandler = new SignalWaiter (Manager.eventLoop,
-							eventAcks (),
+							eventAcks,
 							"eventAcks - detach");
 
 	    // Remove all observers, this will cause the process to
@@ -182,8 +176,7 @@ public class TestTaskObserverDetach
 	    extends Detach
 	    implements TaskObserver.Forked
 	{
-	    Sig eventSignal () { return addForkSig; }
-	    Sig[] eventAcks () { return spawnAck; }
+	    Sig[] requestEvent () { return child.requestFork(); }
 	    boolean eventIsSignal () { return false; }
 	    DetachFork ()
 	    {
@@ -220,8 +213,7 @@ public class TestTaskObserverDetach
 	    extends Detach
 	    implements TaskObserver.Cloned
 	{
-	    Sig eventSignal () { return addCloneSig; }
-	    Sig[] eventAcks () { return spawnAck; }
+	    Sig[] requestEvent () { return child.requestClone(); }
 	    boolean eventIsSignal () { return false; }
 	    DetachClone ()
 	    {
@@ -259,8 +251,7 @@ public class TestTaskObserverDetach
 	    extends Detach
 	    implements TaskObserver.Execed
 	{
-	    Sig eventSignal () { return execSig; }
-	    Sig[] eventAcks () { return execAck; }
+	    Sig[] requestEvent () { return child.requestExec(); }
 	    boolean eventIsSignal () { return false; }
 	    DetachExec ()
 	    {
@@ -291,8 +282,7 @@ public class TestTaskObserverDetach
 	class DetachSignal
 	    extends Detach
 	{
-	    Sig eventSignal () { return Sig.TERM; }
-	    Sig[] eventAcks () { return new Sig[0]; }
+	    Sig[] requestEvent () { child.signal(Sig.TERM); return new Sig[0]; }
 	    boolean eventIsSignal () { return true; }
 	    void addEventObserver (Task task)
 	    {
