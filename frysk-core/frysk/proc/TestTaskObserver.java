@@ -523,7 +523,7 @@ public class TestTaskObserver
     /** {@link #deleteUnattachedObserver} */
     public void testDeleteUnattachedFromAttachedMain ()
     {
-	Offspring child = new AttachedAckProcess ();
+	Offspring child = SlaveOffspring.createAttachedChild ();
 	deleteUnattachedObserver (child, true);
     }
     /** {@link #deleteUnattachedObserver} */

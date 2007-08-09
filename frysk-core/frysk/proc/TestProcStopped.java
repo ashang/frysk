@@ -77,7 +77,7 @@ public class TestProcStopped
 
   public void testStoppedAttached ()
   {
-    SlaveOffspring ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
     stopped(ackProc, 1);
     assertRunUntilStop("testStoppedAttached");
   }
@@ -98,7 +98,7 @@ public class TestProcStopped
 
   public void testRunningAttached ()
   {
-    SlaveOffspring ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
     running(ackProc, 1);
     assertRunUntilStop("testRunningAttached");
   }
@@ -122,7 +122,7 @@ public class TestProcStopped
     }
     
     public void testMultiThreadedStoppedAttached () {
-	SlaveOffspring ackProc = new AttachedAckProcess()
+	SlaveOffspring ackProc = SlaveOffspring.createAttachedChild()
 	    .assertSendAddClonesWaitForAcks(2);
 	stopped(ackProc, 3);
 	assertRunUntilStop("testStoppedAttached");
@@ -143,7 +143,7 @@ public class TestProcStopped
     }
 
     public void testMultiThreadedRunningAttached () {
-	SlaveOffspring ackProc = new AttachedAckProcess()
+	SlaveOffspring ackProc = SlaveOffspring.createAttachedChild()
 	    .assertSendAddClonesWaitForAcks(2);
 	running(ackProc, 3);
 	assertRunUntilStop("testRunningAttached");

@@ -128,7 +128,7 @@ public class TestAbandon
 
   public void testAbandonThenRemoveAttached ()
   {
-    SlaveOffspring ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
     TaskObserver.Instruction testObserver = new TestObserver();
 
     abandonThenRemove(ackProc, testObserver);
@@ -152,7 +152,7 @@ public class TestAbandon
 
   public void testAbandonThenRemoveAttachedUpdateExecuted ()
   {
-    SlaveOffspring ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
     TaskObserver.Instruction testObserver = new AbandonOnUpdateExecuted();
 
     abandonThenRemove(ackProc, testObserver);
@@ -176,7 +176,7 @@ public class TestAbandon
 
   public void testAbandonThenRemoveAttachedAddedTo ()
   {
-    SlaveOffspring ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
     TaskObserver.Instruction testObserver = new AbandonOnAddedTo();
 
     abandonThenRemove(ackProc, testObserver);
@@ -200,7 +200,7 @@ public class TestAbandon
 
   public void testAbandonThenRemoveAttachedDeletedFrom ()
   {
-    SlaveOffspring ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
     TaskObserver.Instruction testObserver = new AbandonOnDeletedFrom();
 
     abandonThenRemove(ackProc, testObserver);
@@ -239,7 +239,7 @@ public class TestAbandon
 
   public void testRemoveThenAbandonAttached ()
   {
-    SlaveOffspring ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
 
     TaskObserver.Instruction testObserver = new TestObserver();
     removeThenAbandon(ackProc, testObserver);
@@ -263,7 +263,7 @@ public class TestAbandon
 
   public void testRemoveThenAbandonAttachedAddedTo ()
   {
-    SlaveOffspring ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
 
     TaskObserver.Instruction testObserver = new AbandonOnAddedTo();
     removeThenAbandon(ackProc, testObserver);
@@ -287,7 +287,7 @@ public class TestAbandon
 
   public void testRemoveThenAbandonAttachedUpdateExecuted ()
   {
-    SlaveOffspring ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
 
     TaskObserver.Instruction testObserver = new AbandonOnUpdateExecuted();
     removeThenAbandon(ackProc, testObserver);
@@ -311,7 +311,7 @@ public class TestAbandon
 
   public void testRemoveThenAbandonAttachedDeletedFrom ()
   {
-    SlaveOffspring ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
 
     TaskObserver.Instruction testObserver = new AbandonOnDeletedFrom();
     removeThenAbandon(ackProc, testObserver);

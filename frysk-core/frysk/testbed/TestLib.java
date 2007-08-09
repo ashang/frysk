@@ -182,17 +182,6 @@ public class TestLib
     }
 
     /**
-     * Create an attached child ack process.
-     */
-    protected class AttachedAckProcess
-	extends SlaveOffspring
-    {
-	public AttachedAckProcess () {
-	    super(OffspringType.ATTACHED_CHILD);
-	}
-    }
-
-    /**
      * The host being used by the current test.
      */
     protected Host host;

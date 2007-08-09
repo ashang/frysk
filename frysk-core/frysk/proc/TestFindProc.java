@@ -99,7 +99,7 @@ public class TestFindProc
   
   public void testFindProcAttached ()
   {
-    SlaveOffspring ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
     
     //expect no additional processes to be added to the procPool.
     doFindProc(ackProc, 0);

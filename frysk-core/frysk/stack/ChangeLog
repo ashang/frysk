@@ -1,3 +1,8 @@
+2007-08-09  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFrame.java: Replace AttachedAckProcess with
+	SlaveOffspring.createAttachedChild.
+	
 2007-08-08  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFrame.java: Eliminate use of AckProcess.

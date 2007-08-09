@@ -1,3 +1,8 @@
+2007-08-09  Andrew Cagney  <cagney@redhat.com>
+
+	* TestDwflCache.java: Replace AttachedAckProcess with
+	SlaveOffspring .createAttachedChild.
+
 2007-07-24  Andrew Cagney  <cagney@redhat.com>
 
 	* TestDwflCache.java: Update; frysk.proc.TestLib moved to

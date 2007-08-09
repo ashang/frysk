@@ -1,5 +1,8 @@
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
+	* SlaveOffspring.java (createAttachedChild()): New.
+	* TestLib.java (AttachedAckProcess): Delete.
+	
 	* SlaveOffspring.java (createDaemon): New.
 	* TestLib.java (AckDaemonProcess): Delete.
 	

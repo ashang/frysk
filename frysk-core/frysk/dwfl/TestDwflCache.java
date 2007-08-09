@@ -40,6 +40,7 @@
 package frysk.dwfl;
 
 import frysk.testbed.TestLib;
+import frysk.testbed.SlaveOffspring;
 import frysk.proc.Task;
 import lib.dwfl.Dwfl;
 
@@ -55,12 +56,14 @@ public class TestDwflCache
      * the original dwfl.
      */
     public void testReGet() {
-	Task task = new AttachedAckProcess().findTaskUsingRefresh(true);
+	Task task = SlaveOffspring.createAttachedChild()
+	    .findTaskUsingRefresh(true);
 	Dwfl orig = DwflCache.getDwfl(task);
 	assertSame("orig vs getDwfl", orig, DwflCache.getDwfl(task));
     }
     public void testClear() {
-	Task task = new AttachedAckProcess().findTaskUsingRefresh(true);
+	Task task = SlaveOffspring.createAttachedChild()
+	    .findTaskUsingRefresh(true);
 	Dwfl orig = DwflCache.getDwfl(task);
 	DwflCache.clear();
 	assertNotSame("orig vs getDwfl", orig, DwflCache.getDwfl(task));

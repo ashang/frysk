@@ -136,7 +136,7 @@ public class TestIsa
 
   public void testAttachedCreateChild ()
   {
-    SlaveOffspring ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
     Proc proc = ackProc.assertFindProcAndTasks();
 
     assertNotNull("child has an isa", proc.getMainTask().getIsa());
@@ -156,7 +156,7 @@ public class TestIsa
 
   public void testAttachedCreateAttachedChild ()
   {
-    SlaveOffspring ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
     Proc proc = ackProc.assertFindProcAndTasks();
 
     class ForkedObserver
@@ -189,7 +189,7 @@ public class TestIsa
   
   public void testAttachedCreateAttachedClone()
   {
-    SlaveOffspring ackProc = new AttachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
     Proc proc = ackProc.assertFindProcAndTasks();
 
     class ClonedObserver

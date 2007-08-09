@@ -301,4 +301,11 @@ public class SlaveOffspring
     static public SlaveOffspring createDaemon(boolean busy) {
 	return new SlaveOffspring(OffspringType.DAEMON, busy);
     }
+    /**
+     * Create an attached slave-process that is a child of this
+     * process.
+     */
+    static public SlaveOffspring createAttachedChild() {
+	return new SlaveOffspring(OffspringType.ATTACHED_CHILD);
+    }
 }

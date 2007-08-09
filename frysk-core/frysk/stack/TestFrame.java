@@ -47,6 +47,7 @@ import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.testbed.TestLib;
+import frysk.testbed.SlaveOffspring;
 
 public class TestFrame
     extends TestLib
@@ -56,7 +57,7 @@ public class TestFrame
   
   public void testAttached()
   {
-    Task task = new AttachedAckProcess().findTaskUsingRefresh(true);
+    Task task = SlaveOffspring.createAttachedChild().findTaskUsingRefresh(true);
     
     backtrace (task, new BlockingObserver());
     
@@ -106,7 +107,7 @@ public class TestFrame
   
   public void testFrameSame ()
   {
-    Task task = new AttachedAckProcess().findTaskUsingRefresh(true);
+    Task task = SlaveOffspring.createAttachedChild().findTaskUsingRefresh(true);
     
     Frame frame = backtrace(task, new BlockingObserver());
     
@@ -118,7 +119,8 @@ public class TestFrame
   
   public void testContinueNotSame()
   {
-    Task task = new AttachedAckProcess().findTaskUsingRefresh(true);
+    Task task = SlaveOffspring.createAttachedChild()
+	.findTaskUsingRefresh(true);
     BlockingObserver blocker = new BlockingObserver();
     
     Frame frame = backtrace(task, blocker);
