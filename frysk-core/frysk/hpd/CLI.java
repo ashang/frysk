@@ -75,7 +75,7 @@ public class CLI
   ProcTaskIDManager idManager;
   SteppingObserver steppingObserver;
   SteppingEngine steppingEngine;
-  boolean attached;
+  int attached = -1;
   
   final HashSet runningProcs = new HashSet(); //Processes started with run command
   
@@ -132,6 +132,7 @@ public class CLI
     this.task = task;
     Proc[] temp = new Proc[1];
     temp[0] = proc;
+    attached = -1;
     if (steppingEngine == null)
       steppingEngine = new SteppingEngine(temp, steppingObserver);
     else
@@ -147,7 +148,7 @@ public class CLI
   public synchronized void finishAttach()
   {
     // Wait till we are attached.
-    while (!attached)
+    while (attached < 0)
       {
 	try
 	{
@@ -159,9 +160,10 @@ public class CLI
 	  return;
 	}
       }
-    addMessage("Attached to process " + this.proc.getPid(), Message.TYPE_NORMAL);
     frame = DebugInfoStackFactory.createDebugInfoStackTrace(this.task);
     debugInfo = new DebugInfo(frame);
+    addMessage("Attached to process " + attached, Message.TYPE_NORMAL);
+    attached = -1;
   }
   
   class UpDownHandler implements CommandHandler
@@ -504,14 +506,14 @@ public class CLI
       TaskStepEngine tse = (TaskStepEngine) arg;
       if (! tse.getState().isStopped())
         {
-          attached = false;
+          attached = -1;
           return;
         }
 
       // Breakpoint.PersistentBreakpoint bpt = null;
       synchronized (CLI.this)
         {
-          attached = true;
+          attached = task.getProc().getPid();
           frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
           // bpt = (Breakpoint.PersistentBreakpoint)
           // SteppingEngine.getTaskBreakpoint(task);
@@ -519,7 +521,6 @@ public class CLI
             {
               this.monitor.notifyAll();
             }
-
           CLI.this.notifyAll();
         }
     }

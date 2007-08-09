@@ -67,7 +67,7 @@ class RunCommand
 					 "run executable arguments*",
 					 descr));
     }
-  
+
     RunCommand(CLI cli)
     {
 	this("run", cli);
@@ -79,10 +79,7 @@ class RunCommand
       TaskStepEngine tse = (TaskStepEngine) arg;
 	Task task = tse.getTask();
 	boolean removeObserver = false;
-        
-	if (tse.getState().isStopped())
-	    return;
-        
+
 	synchronized (this) {
 	    if (launchedTasks.contains(task)) {
 		launchedTasks.remove(task);
@@ -92,10 +89,12 @@ class RunCommand
 	if (removeObserver) {
 	    cli.getSteppingEngine().removeObserver(this, task.getProc(), false);
 	    cli.getSteppingEngine().getBreakpointManager().manageProcess(task.getProc());
+            cli.idManager.manageProc(task.getProc(),
+                                     cli.idManager.reserveProcID());
 	    task.requestUnblock(this);
 	}
     }
-  
+
     public Action updateAttached(final Task task)
     {
 	final Proc proc = task.getProc();
@@ -104,7 +103,7 @@ class RunCommand
 	}
 	synchronized (cli) {
 	    cli.getRunningProcs().add(proc);
-	}    
+	}
 	new ProcTasksObserver(proc, new ProcTasks()
 	    {
 		public void existingTask(Task task)
@@ -159,7 +158,7 @@ class RunCommand
 	    sa[i] = (String)oa[i];
 	return sa;
     }
-  
+
     public void handle(Command cmd) throws ParseException
     {
 	ArrayList params = cmd.getParameters();

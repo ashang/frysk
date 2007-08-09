@@ -84,7 +84,7 @@ public class CoreCommand extends CLIHandler {
 	cli.task = coreProc.getMainTask();
 	cli.frame = DebugInfoStackFactory.createDebugInfoStackTrace(cli.task);
 	cli.debugInfo = new DebugInfo(cli.frame);
-	cli.attached = true;
+	cli.attached = coreProc.getPid();
 	cli.addMessage("Attached to core file: " + params.get(0), Message.TYPE_NORMAL);
     }
 

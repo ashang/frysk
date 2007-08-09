@@ -130,23 +130,19 @@ class AttachCommand
 	    return;
 	}
         cli.proc = findProc.proc;
+        int procID = cli.idManager.reserveProcID();
+        cli.idManager.manageProc(findProc.proc, procID);
+        Task task = null;
 	if (pid == tid || tid == 0)
-	    cli.task = cli.proc.getMainTask();
-	else
-	    for (Iterator i = cli.proc.getTasks ().iterator ();
+	    cli.task = task = findProc.proc.getMainTask();
+        else
+	    for (Iterator i = findProc.proc.getTasks ().iterator ();
 		 i.hasNext (); ) {
-		cli.task = (Task) i.next ();
-		if (cli.task.getTid () == tid)
+		cli.task = task = (Task) i.next ();
+		if (task.getTid () == tid)
 		    break;
 	    }
-	if (cliOption) {
-	    cli.startAttach(pid, cli.proc, cli.task);
-	    cli.finishAttach();
-	}
-	else {
-	    // This can't work because the event loop isn't started in
-	    // the non-cli case, so we can't find the proc.
-	    // symtab = new SymTab(pid, proc, task, null); 
-	}
+        cli.startAttach(pid, findProc.proc, task);
+        cli.finishAttach();
     }
 }

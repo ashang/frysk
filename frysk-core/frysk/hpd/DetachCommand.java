@@ -73,7 +73,7 @@ class DetachCommand
 	cli.proc = null;
 	cli.task = null;
 	
-	cli.attached = false;
+	cli.attached = -1;
 	if (params.size() > 0) {
 	    cli.printUsage(cmd);
 	}

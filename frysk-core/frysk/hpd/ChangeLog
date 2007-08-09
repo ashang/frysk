@@ -1,5 +1,17 @@
 2007-08-08  Tim Moore  <timoore@redhat.com>
 
+	* AttachCommand.java (handle): Register process with
+	ProcTaskIDManager.
+	* CLI.java (attached): Change to integer (PID) type.
+	(startAttached): Initialize attached to -1.
+	(finishAttached): Wait for attached to go positive.
+	(update): Set attached based on the process we get here.
+	* CoreCommand.java (handle): Set attached to -1.
+	* Detach.java (handle): Set attached to -1.
+	* RunCommand.java (update): Don't return early if the task is
+	stopped, because that's the state the task is actually in after
+	being started. Register process with ProcTaskIDManager.
+
 	* CLI.java (procSearchFinished): Remove unused variable.
 
 	* AllPTSet.java: Complete rewrite to reference active Procs and
