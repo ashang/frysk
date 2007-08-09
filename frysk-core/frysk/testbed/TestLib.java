@@ -51,9 +51,6 @@ import frysk.sys.Sig;
 import frysk.sys.SignalSet;
 import frysk.sys.Signal;
 import frysk.sys.proc.Stat;
-import frysk.testbed.SignalWaiter;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -213,92 +210,6 @@ public class TestLib
     protected static final Sig[] spawnAck = new Sig[] { childAck, parentAck };
 
     protected static final Sig[] execAck = new Sig[] { childAck };
-
-    /**
-     * Build an funit-child command to run.
-     */
-    private static String[] funitChildCommand (boolean busy, String filename,
-					       String[] argv) {
-	List command = new LinkedList();
-	final String sleepTime = "10";
-	command.add (getExecPath ("funit-child"));
-	command.add(busy ? "--wait=busy-loop" : "--wait=suspend");
-	if (filename != null)
-	    command.add("--filename=" + getExecPath (filename));
-	command.add(sleepTime);
-	// Use getpid as this testsuite always runs the event loop
-	// from the main thread (which has tid==pid).
-	command.add(Integer.toString(Pid.get()));
-	// Append any arguments.
-	if (argv != null)
-	    for (int n = 0; n < argv.length; n++)
-		command.add(argv[n]);
-	return (String[]) command.toArray(new String[0]);
-    }
-
-    /**
-     * Create an ack-process that can be manipulated using various
-     * signals (see below).
-     */
-    public static abstract class AckProcess
-	extends SlaveOffspring
-    {
-	private int pid;
-	/**
-	 * Return the ProcessID of the child.
-	 */
-	public int getPid () {
-	    return pid;
-	}
-
-	/**
-	 * Start CHILD as a running process.
-	 */
-	abstract protected int startChild (String stdin, String stdout,
-					   String stderr, String[] argv);
-
-	/**
-	 * Create a process (using startChild), return once the
-	 * process is running. Wait for acknowledge SIG.
-	 */
-	private AckProcess (Sig ackSig, String[] argv) {
-	    SignalWaiter ack = new SignalWaiter(Manager.eventLoop, ackSig,
-						"startChild");
-	    this.pid = startChild(null, (logger.isLoggable(Level.FINE) ? null
-					 : "/dev/null"),
-				  null, argv);
-	    TearDownProcess.add(pid);
-	    ack.assertRunUntilSignaled();
-	}
-
-	/** Create an ack process. */
-	AckProcess () {
-	    this(childAck, funitChildCommand(false, null, null));
-	}
-
-	/**
-	 * Create an AckProcess; if BUSY, the process will use a
-	 * busy-loop, instead of suspending, when waiting for signal
-	 * commands.
-	 */
-	AckProcess (boolean busy) {
-	    this(childAck, funitChildCommand(busy, null, null));
-	}
-
-	/** Create an AckProcess, and then add COUNT threads. */
-	AckProcess (int count) {
-	    this();
-	    for (int i = 0; i < count; i++)
-		assertSendAddCloneWaitForAcks();
-	}
-
-	/** Create a possibly busy AckProcess. Add COUNT threads. */
-	AckProcess (int count, boolean busy) {
-	    this(busy);
-	    for (int i = 0; i < count; i++)
-		assertSendAddCloneWaitForAcks();
-	}
-    }
 
     /**
      * Create an ack daemon. An ack daemon has process 1, and not this

@@ -1,3 +1,8 @@
+2007-08-09  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java (AckProcess): Delete.
+	(funitChildCommand): Delete.
+
 2007-08-08  Andrew Cagney  <cagney@redhat.com>
 
 	* OffspringType.java (ATTACHED_CHILD): Rename ATTACHED.
