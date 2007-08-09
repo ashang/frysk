@@ -50,6 +50,7 @@ import lib.dwfl.ElfPHeader;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfSection;
 import lib.dwfl.ElfPrFPRegSet;
+import lib.dwfl.ElfPrXFPRegSet;
 import frysk.sys.proc.AuxvBuilder;
 import java.util.logging.Level;
 import java.util.Iterator;
@@ -188,11 +189,13 @@ public class LinuxProc
 
     ElfPrstatus elfTasks[] = null;
     ElfPrFPRegSet elfFPRegs[] = null;
+    ElfPrXFPRegSet elfXFPRegs[] = null;
     int fpCount = 0;
 
     // Decode both task and floating point registers
     elfTasks = ElfPrstatus.decode(elfData);
     elfFPRegs = ElfPrFPRegSet.decode(elfData);
+    elfXFPRegs = ElfPrXFPRegSet.decode(elfData);
     
     // Two methods of whether Floating Point note data exists.
     // In userland generated core-dumps there is no way to test
@@ -213,7 +216,14 @@ public class LinuxProc
     // for mismatch. 
     if (elfFPRegs.length == elfTasks.length)
       for (int i=0; i<elfTasks.length; i++)
-	newTask = new LinuxTask(LinuxProc.this, elfTasks[i], elfFPRegs[i]);
+	{
+	  // xfpregsets accompany fp registers on a 1:1  basis
+	  // but only on some architectures.
+	  ElfPrXFPRegSet xregSet = null;
+	  if (elfXFPRegs.length > 0)
+	    xregSet = elfXFPRegs[i];
+	  newTask = new LinuxTask(LinuxProc.this, elfTasks[i], elfFPRegs[i], xregSet);
+	}
 
     // Otherwise add only NT_FPREGSET data if pr_fpvalid is > 0. This
     // value is not reliable on userland kernels (gdb always sets it
@@ -225,12 +235,17 @@ public class LinuxProc
 	  {
 	    
 	    if (elfTasks[i].getPrFPValid() > 0)
+	      // xfpregsets accompany fp registers on a 1:1  basis
+	      // but only on some architectures.
 	      {
-		newTask = new LinuxTask(LinuxProc.this, elfTasks[i],  elfFPRegs[fpCount]);
+		ElfPrXFPRegSet xregSet = null;
+		if (elfXFPRegs.length > 0)
+		  xregSet = elfXFPRegs[fpCount];
+		newTask = new LinuxTask(LinuxProc.this, elfTasks[i], elfFPRegs[fpCount], xregSet);
 		fpCount++;
 	      }
 	    else
-	      newTask = new LinuxTask(LinuxProc.this, elfTasks[i],  null);
+	      newTask = new LinuxTask(LinuxProc.this, elfTasks[i],  null, null);
 	    
 	  }
       }

@@ -41,6 +41,7 @@ package frysk.proc.dead;
 
 import lib.dwfl.ElfPrstatus;
 import lib.dwfl.ElfPrFPRegSet;
+import lib.dwfl.ElfPrXFPRegSet;
 import inua.eio.ByteBuffer;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
@@ -54,6 +55,7 @@ public class LinuxTask
 
   ElfPrstatus elfTask = null;
   ElfPrFPRegSet elfFPRegs = null;
+  ElfPrXFPRegSet elfXFPRegs = null;
   LinuxProc parent = null;
 
   protected ByteBuffer sendrecMemory ()
@@ -100,8 +102,16 @@ public class LinuxTask
     bankBuffers[1].order(byteOrder);
     bankBuffers[1].wordSize(wordSize);
 
+    // If X Floating Point Register are present
+    if (elfXFPRegs != null)
+      bankBuffers[2] = new ArrayByteBuffer(elfXFPRegs.getXFPRegisterBuffer());
+    else
+      bankBuffers[2] = new ArrayByteBuffer(emptyBuffer);
+
+    bankBuffers[2].order(byteOrder);
+    bankBuffers[2].wordSize(wordSize);
+
     // XXX: Other register banks need to be filled in.
-    bankBuffers[2] = new ArrayByteBuffer(emptyBuffer);
     bankBuffers[3] = new ArrayByteBuffer(emptyBuffer);
     return bankBuffers;
   }
@@ -109,11 +119,13 @@ public class LinuxTask
   /**
    * Create a new unattached Task.
    */
-  LinuxTask (LinuxProc proc, ElfPrstatus elfTask, ElfPrFPRegSet elfFPRegs)
+  LinuxTask (LinuxProc proc, ElfPrstatus elfTask, ElfPrFPRegSet
+	     elfFPRegs, ElfPrXFPRegSet elfXFPRegs)
   {
     super(proc, new TaskId(elfTask.getPrPid()),LinuxTaskState.initial());
     this.elfTask = elfTask;
     this.elfFPRegs = elfFPRegs;
+    this.elfXFPRegs = elfXFPRegs;
     this.parent = proc;
 
   }
