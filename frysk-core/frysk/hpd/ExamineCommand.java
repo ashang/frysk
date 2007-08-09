@@ -40,6 +40,7 @@
 package frysk.hpd;
 
 import java.text.ParseException;
+import java.util.Iterator;
 import frysk.value.Value;
 import javax.naming.NameNotFoundException;
 import inua.eio.ByteBuffer;
@@ -54,6 +55,7 @@ public class ExamineCommand extends CLIHandler {
     }
 
     public void handle(Command cmd) throws ParseException {
+        PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	parser.parse(params);
 	if (parser.helpOnly)
@@ -64,19 +66,25 @@ public class ExamineCommand extends CLIHandler {
 	    return;
 	}
 	Value value;
-	try {
-	    // XXX: Is this right, is this the entire expresson?
-	    value = cli.parseValue((String) params.get(0));
-	} catch (NameNotFoundException nnfe) {
-	    cli.addMessage(new Message(nnfe.getMessage(),
-				       Message.TYPE_ERROR));
-	    return;
-	}
+        Iterator taskDataIter = ptset.getTaskData();
+        while (taskDataIter.hasNext()) {
+            TaskData tdata = (TaskData)taskDataIter.next();
+            try {
+                // XXX: Is this right, is this the entire expresson?
+                value = cli.parseValue(tdata.getTask(), (String) params.get(0));
+            } catch (NameNotFoundException nnfe) {
+                cli.addMessage(new Message(nnfe.getMessage(),
+                                           Message.TYPE_ERROR));
+                return;
+            }
 
-	// For moment, just print the bytes.
-	ByteBuffer bytes = value.getLocation().getByteBuffer();
-	for (int i = 0; i < bytes.capacity(); i++) {
-	    cli.outWriter.println(i + ": " + bytes.getByte(i));
-	}
+            // For moment, just print the bytes.
+            cli.outWriter.println("[" + tdata.getParentID() + "."
+                                  + tdata.getID() + "]");
+            ByteBuffer bytes = value.getLocation().getByteBuffer();
+            for (int i = 0; i < bytes.capacity(); i++) {
+                cli.outWriter.println(i + ": " + bytes.getByte(i));
+            }
+        }
     }
 }

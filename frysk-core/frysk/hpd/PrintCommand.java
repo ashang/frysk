@@ -45,7 +45,10 @@ import java.util.ArrayList;
 import frysk.value.Format;
 import frysk.debuginfo.ValueUavailableException;
 import frysk.debuginfo.VariableOptimizedOutException;
+import java.util.Iterator;
+
 import frysk.proc.UBigInteger;
+import frysk.proc.Task;
 import frysk.value.Value;
 import javax.naming.NameNotFoundException;
 import lib.dwfl.BaseTypes;
@@ -63,8 +66,8 @@ class PrintCommand
     private static final int HEX = 16;
     private static final int OCTAL = 8;    
     
-    public void handle(Command cmd) throws ParseException
-    {
+    public void handle(Command cmd) throws ParseException {
+        PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
@@ -119,62 +122,74 @@ class PrintCommand
 	}        
 
 	Value result = null;
-	try {
-	    result = cli.parseValue(sInput);	  
-        }
-	catch (NameNotFoundException nnfe) {
-	    cli.addMessage(new Message(nnfe.getMessage(), Message.TYPE_ERROR));
-	    return;
-	}
-	catch (ValueUavailableException vue) {
-	    cli.addMessage("Symbol \"" + sInput + "\" is not available in the current context.",
-		    Message.TYPE_ERROR);
-	    return;
-	}
-	catch (VariableOptimizedOutException vooe) {
-	    cli.addMessage("Value of symbol \"" + sInput + "\" is optimized out.",
-		    Message.TYPE_ERROR);
-	    return;
-	}
-	
-	if (result == null) {
-	    cli.addMessage("Symbol \"" + sInput + "\" is not found in the current context.",
-			   Message.TYPE_ERROR);
-	    return;
-	}
+        Iterator taskDataIter = ptset.getTaskData();
+        boolean doWithoutTask = !taskDataIter.hasNext();
+        while (doWithoutTask || taskDataIter.hasNext()) {
+            TaskData td = null;
+            Task task = null;
+            if (!doWithoutTask) {
+                td = (TaskData)taskDataIter.next();
+                task = td.getTask();
+                cli.outWriter.println("[" + td.getParentID() + "." + td.getID()
+                                      + "]\n");
+            }
+            doWithoutTask = false;
+            try {
+                result = cli.parseValue(task, sInput);	  
+            }
+            catch (NameNotFoundException nnfe) {
+                cli.addMessage(new Message(nnfe.getMessage(), Message.TYPE_ERROR));
+                continue;
+            }
+            catch (ValueUavailableException vue) {
+                cli.addMessage("Symbol \"" + sInput + "\" is not available in the current context.",
+                               Message.TYPE_ERROR);
+                continue;
+            }
+            catch (VariableOptimizedOutException vooe) {
+                cli.addMessage("Value of symbol \"" + sInput + "\" is optimized out.",
+                               Message.TYPE_ERROR);
+                continue;
+            }
 
-	switch (outputFormat) {
-	case HEX: 
-	    cli.outWriter.print("0x");
-	    break;
-	case OCTAL: 
-	    cli.outWriter.print("0");
-	    break;
-	}
-	int resultType = result.getType().getTypeId();
-	if (resultType == BaseTypes.baseTypeFloat
-	    || resultType == BaseTypes.baseTypeDouble)
-	    cli.outWriter.println(result.toString());
-	else if (resultType == BaseTypes.baseTypeShort
-		 || resultType == BaseTypes.baseTypeInteger
-		 || resultType == BaseTypes.baseTypeLong)
-          {
-            if (outputFormat == DECIMAL)
-              cli.outWriter.println(Long.toString(result.longValue(),
-                                                  outputFormat));
-            else
-              {
-                BigInteger bigInt = new BigInteger(Long.toString(result.longValue()));
-                cli.outWriter.println(UBigInteger.toString(bigInt, bigInt.bitLength() + 1, 16));
-              }
-          }
-	else if (resultType == BaseTypes.baseTypeByte)
-	    cli.outWriter.println(Integer.toString((int)result.longValue(),
-						   outputFormat) + 
-				  " '" + result.toString() + "'");
-	else {
-	    result.toPrint(cli.outWriter, cli.task.getMemory(), format);
-	    cli.outWriter.println();
-	}
+
+            switch (outputFormat) {
+            case HEX: 
+                cli.outWriter.print("0x");
+                break;
+            case OCTAL: 
+                cli.outWriter.print("0");
+                break;
+            }
+            int resultType = result.getType().getTypeId();
+            if (resultType == BaseTypes.baseTypeFloat
+                || resultType == BaseTypes.baseTypeDouble)
+                cli.outWriter.println(result.toString());
+            else if (resultType == BaseTypes.baseTypeShort
+                     || resultType == BaseTypes.baseTypeInteger
+                     || resultType == BaseTypes.baseTypeLong)
+                {
+                    if (outputFormat == DECIMAL)
+                        cli.outWriter.println(Long.toString(result.longValue(),
+                                                            outputFormat));
+                    else
+                        {
+                            BigInteger bigInt = new BigInteger(Long.toString(result.longValue()));
+                            cli.outWriter.println(UBigInteger.toString(bigInt, bigInt.bitLength() + 1, 16));
+                        }
+                }
+            else if (resultType == BaseTypes.baseTypeByte)
+                cli.outWriter.println(Integer.toString((int)result.longValue(),
+                                                       outputFormat) + 
+                                      " '" + result.toString() + "'");
+            else {
+                result.toPrint(cli.outWriter, task.getMemory(), format);
+                cli.outWriter.println();
+            }
+        }
+        if (result == null) {
+            cli.addMessage("Symbol \"" + sInput + "\" is not found in the current context.",
+                           Message.TYPE_ERROR);
+        }
     }
 }
