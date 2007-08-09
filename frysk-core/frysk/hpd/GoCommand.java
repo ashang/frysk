@@ -41,6 +41,9 @@ package frysk.hpd;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import frysk.proc.Task;
+import frysk.stepping.SteppingEngine;
 
 class GoCommand
     implements CommandHandler
@@ -53,6 +56,7 @@ class GoCommand
     public void handle(Command cmd)
 	throws ParseException 
     {
+        PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
@@ -60,11 +64,17 @@ class GoCommand
 	}
       
 	if (cli.steppingObserver != null) {
-	    cli.getSteppingEngine().continueExecution(cli.proc.getTasks());
-	    cli.running = true;
+            Iterator taskIter = ptset.getTasks();
+            SteppingEngine steppingEngine = cli.getSteppingEngine();
+            while (taskIter.hasNext()) {
+                Task task = (Task)taskIter.next();
+                if (!steppingEngine.isTaskRunning(task)) {
+                    steppingEngine.continueExecution(task);
+                    cli.running = true; // XXX
+                }
+            }
 	}
 	else
 	    cli.addMessage("Not attached to any process", Message.TYPE_ERROR);
     }
 }
-

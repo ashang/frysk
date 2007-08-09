@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import javax.naming.NameNotFoundException;
 
@@ -78,7 +79,66 @@ public class CLI
   int attached = -1;
   
   final HashSet runningProcs = new HashSet(); //Processes started with run command
-  
+
+    private class TaskInfo {
+        DebugInfoFrame frame;
+        DebugInfo debugInfo;
+        int stackLevel;
+    }
+
+    WeakHashMap taskInfoMap = new WeakHashMap();
+    
+    DebugInfoFrame getTaskFrame(Task task) {
+        TaskInfo taskInfo = (TaskInfo)taskInfoMap.get(task);
+        if (taskInfo == null)
+            return null;
+        else
+            return taskInfo.frame;
+    }
+
+    void setTaskFrame(Task task, DebugInfoFrame frame) {
+        TaskInfo taskInfo = (TaskInfo)taskInfoMap.get(task);
+        if (taskInfo == null) {
+            taskInfo = new TaskInfo();
+            taskInfoMap.put(task, taskInfo);
+        }
+        taskInfo.frame = frame;
+    }
+
+    DebugInfo getTaskDebugInfo(Task task) {
+        TaskInfo taskInfo = (TaskInfo)taskInfoMap.get(task);
+        if (taskInfo == null)
+            return null;
+        else
+            return taskInfo.debugInfo;
+    }
+
+    void setTaskDebugInfo(Task task, DebugInfo debugInfo) {
+        TaskInfo taskInfo = (TaskInfo)taskInfoMap.get(task);
+        if (taskInfo == null) {
+            taskInfo = new TaskInfo();
+            taskInfoMap.put(task, taskInfo);
+        }
+        taskInfo.debugInfo = debugInfo;
+    }
+
+    int getTaskStackLevel(Task task) {
+        TaskInfo taskInfo = (TaskInfo)taskInfoMap.get(task);
+        if (taskInfo == null)
+            return 0;
+        else
+            return taskInfo.stackLevel;
+    }
+
+    void setTaskStackLevel(Task task, int stackLevel) {
+        TaskInfo taskInfo = (TaskInfo)taskInfoMap.get(task);
+        if (taskInfo == null) {
+            taskInfo = new TaskInfo();
+            taskInfoMap.put(task, taskInfo);
+        }
+        taskInfo.stackLevel = stackLevel;
+    }
+    
   /**
    * Handle ConsoleReader Completor
    * @param buffer Input buffer.
@@ -107,11 +167,24 @@ public class CLI
         java.util.Collections.sort(candidates);
       }
     // Otherwise assume a symbol is being completed
-    else if (debugInfo != null)
+    else
       {
-	cursor = debugInfo.complete(frame, buffer.substring(first_ws),
-				 cursor - first_ws, candidates);
-	return cursor + first_ws;
+        // XXX We should support the p/t set specified in the current
+        // command, if any.
+        Iterator taskIterator = targetset.getTasks();
+        int newCursor = -1;
+
+        while (taskIterator.hasNext())
+          {
+            Task task = (Task)taskIterator.next();
+            DebugInfoFrame frame = getTaskFrame(task);
+            DebugInfo debugInfo = getTaskDebugInfo(task);
+            if (debugInfo != null)
+              newCursor = debugInfo.complete(frame, buffer.substring(first_ws),
+                                             cursor - first_ws, candidates);
+          }
+        if (newCursor >= 0)
+          return newCursor + first_ws;
       }
     return 1 + offset;
   }
@@ -170,6 +243,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException 
     {
+      PTSet ptset = getCommandPTSet(cmd);
       ArrayList params = cmd.getParameters();
       if (params.size() == 1 && params.get(0).equals("-help"))
         {
@@ -178,8 +252,6 @@ public class CLI
         }
       int level = 1;
       boolean down = true;
-      DebugInfoFrame currentFrame = frame;
-      DebugInfoFrame tmpFrame = frame;
 
       if (params.size() != 0)
 	level = Integer.parseInt((String)params.get(0));
@@ -191,26 +263,39 @@ public class CLI
       else if (cmd.getAction().compareTo("up") == 0)
 	  down = false;
 
-      int l = level;
-      while (tmpFrame != null && l != 0) {
-	  if (down)
+      Iterator taskIter = ptset.getTasks();
+      while (taskIter.hasNext())
+        {
+          Task task = (Task)taskIter.next();
+          DebugInfoFrame currentFrame = getTaskFrame(task);
+          DebugInfoFrame tmpFrame = currentFrame;
+          int stackLevel = getTaskStackLevel(task);
+
+          int l = level;
+          while (tmpFrame != null && l != 0) {
+            if (down)
 	      tmpFrame = tmpFrame.getOuterDebugInfoFrame();
-	  else
+            else
 	      tmpFrame = tmpFrame.getInnerDebugInfoFrame();
-	  l = l - 1;
-      }
+            l = l - 1;
+          }
         
-      if (tmpFrame != null && tmpFrame != currentFrame)
-      {
-	  frame = tmpFrame;
-	  stackLevel += down ? level : -level;
-      }
-	  
-      if (tmpFrame == null)
-	tmpFrame = currentFrame;
-      outWriter.print("#" + stackLevel + " ");
-      tmpFrame.toPrint(outWriter, false);
-      outWriter.println();
+          if (tmpFrame != null && tmpFrame != currentFrame)
+            {
+              // XXX
+              frame = tmpFrame;
+              stackLevel += down ? level : -level;
+              
+              setTaskFrame(task, tmpFrame);
+              setTaskStackLevel(task, (getTaskStackLevel(task)
+                                       + (down ? level : -level)));
+            }
+          if (tmpFrame == null)
+            tmpFrame = currentFrame;
+          outWriter.print("#" + stackLevel + " ");
+          tmpFrame.toPrint(outWriter, false);
+          outWriter.println();
+        }
     }
   }
   
@@ -254,12 +339,22 @@ public class CLI
     handlers.put(name, handler);
     userhelp.addHelp(name, handler.getHelp());
   }
-  
+
   Value parseValue(String value) throws ParseException, NameNotFoundException{
 	  if (debugInfo != null)
 	    return debugInfo.print(value, frame);
 	  else
 	    return DebugInfo.printNoSymbolTable(value);        
+  }
+  
+  Value parseValue(Task task, String value)
+    throws ParseException, NameNotFoundException  {
+      DebugInfoFrame frame = getTaskFrame(task);
+      DebugInfo debugInfo = getTaskDebugInfo(task);
+      if (debugInfo != null)
+          return debugInfo.print(value, frame);
+      else
+          return DebugInfo.printNoSymbolTable(value);        
   }
   
   /**
@@ -509,14 +604,16 @@ public class CLI
           attached = -1;
           return;
         }
-
+      Task task = tse.getTask();
       // Breakpoint.PersistentBreakpoint bpt = null;
       synchronized (CLI.this)
         {
           attached = task.getProc().getPid();
-          frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
-          // bpt = (Breakpoint.PersistentBreakpoint)
-          // SteppingEngine.getTaskBreakpoint(task);
+          DebugInfoFrame newFrame
+            = DebugInfoStackFactory.createDebugInfoStackTrace(task);
+          frame = newFrame;
+          setTaskFrame(task, newFrame);
+          setTaskDebugInfo(task, new DebugInfo(newFrame));
           synchronized (this.monitor)
             {
               this.monitor.notifyAll();

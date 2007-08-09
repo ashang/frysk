@@ -39,6 +39,7 @@
 
 package frysk.hpd;
 
+import frysk.debuginfo.DebugInfo;
 import frysk.proc.Task;
 import frysk.rt.BreakpointManager;
 import frysk.rt.FunctionBreakpoint;
@@ -48,6 +49,9 @@ import frysk.rt.SourceBreakpointObserver;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import javax.naming.NameNotFoundException;
 import lib.dwfl.DwarfDie;
 
@@ -79,8 +83,9 @@ class BreakpointCommand
             cli.running = false;
         }
     }
-  
+
     public void handle(Command cmd) throws ParseException {
+        PTSet ptset = cli.getCommandPTSet(cmd);
         ArrayList params = cmd.getParameters();
         if (params.size() != 1) {
             cli.printUsage(cmd);
@@ -90,9 +95,12 @@ class BreakpointCommand
         String fileName;
         int lineNumber;
         SourceBreakpoint actionpoint;
-        BreakpointManager bpManager = cli.getSteppingEngine().getBreakpointManager();
-        Task task = cli.getTask();
+        BreakpointManager bpManager
+            = cli.getSteppingEngine().getBreakpointManager();
         final PrintWriter outWriter = cli.getPrintWriter();
+        Iterator taskIter = ptset.getTasks();
+        // Map between tasks and breakpoints to enable.
+        HashMap bptMap = new HashMap();
         if (breakpt.charAt(0) == '#') {
             String[] bptParams = breakpt.split("#");
             if (bptParams.length != 3) {
@@ -116,36 +124,53 @@ class BreakpointCommand
                         outWriter.println(lbpt.getLineNumber());
                     }
                 });
+            while (taskIter.hasNext()) {
+                bptMap.put(taskIter.next(), actionpoint);
+            }
         } else {
-            DwarfDie die = null;
-            try {
-                die = cli.debugInfo.getSymbolDie(breakpt);
-            }
-            catch (NameNotFoundException e) {
-                // cli.getPrintWriter().println(e.getMessage());
-                // return;
-            }
-
-            actionpoint = bpManager.addFunctionBreakpoint(breakpt, die);
-            actionpoint.addObserver(new CLIBreakpointObserver(cli)
-                {
-                    public void updateHit(SourceBreakpoint bpt, Task task,
-                                          long address) {
-                        super.updateHit(bpt, task, address);
-                        FunctionBreakpoint fbpt = (FunctionBreakpoint)bpt;
-                        outWriter.print("Breakpoint ");
-                        outWriter.print(fbpt.getId());
-                        outWriter.print(" ");
-                        outWriter.println(fbpt.getName());
+            while (taskIter.hasNext()) {
+                Task task = (Task)taskIter.next();
+                DebugInfo debugInfo = cli.getTaskDebugInfo(task);
+                if (debugInfo != null) {
+                    DwarfDie die = null;
+                    try {
+                        die = debugInfo.getSymbolDie(breakpt);
                     }
-                });
+                    catch (NameNotFoundException e) {
+                        // cli.getPrintWriter().println(e.getMessage());
+                        // return;
+                    }
+                    actionpoint = bpManager.addFunctionBreakpoint(breakpt, die);
+                    actionpoint.addObserver(new CLIBreakpointObserver(cli) {
+                            public void updateHit(SourceBreakpoint bpt, Task task,
+                                              long address) {
+                            super.updateHit(bpt, task, address);
+                            FunctionBreakpoint fbpt = (FunctionBreakpoint)bpt;
+                            outWriter.print("Breakpoint ");
+                            outWriter.print(fbpt.getId());
+                            outWriter.print(" ");
+                            outWriter.println(fbpt.getName());
+                        }
+                    });
+                    bptMap.put(task, actionpoint);
+                }
+            }
         }
-
-        SourceBreakpoint.State result = bpManager.enableBreakpoint(actionpoint,
-                                                                   task);
-        outWriter.print("breakpoint " + actionpoint.getId());
-        if (result != SourceBreakpoint.ENABLED) {
-            outWriter.print(" " + result.toString());
+        if (bptMap.isEmpty()) {
+            outWriter.print("No matching breakpoint found.\n");
+            return;
+        }
+        Iterator bptIterator = bptMap.entrySet().iterator();
+        while (bptIterator.hasNext()) {
+            Map.Entry entry = (Map.Entry)bptIterator.next();
+            Task task = (Task)entry.getKey();
+            actionpoint = (SourceBreakpoint)entry.getValue();
+            SourceBreakpoint.State result
+              = bpManager.enableBreakpoint(actionpoint, task);
+            outWriter.print("breakpoint " + actionpoint.getId());
+            if (result != SourceBreakpoint.ENABLED) {
+              outWriter.print(" " + result.toString());
+            }
         }
         outWriter.println();
     }

@@ -64,6 +64,7 @@ class DeleteCommand extends CLIHandler {
     }
 
     public void handle(Command cmd) throws ParseException {
+        PTSet ptset = cli.getCommandPTSet(cmd);
 	String actionpoints = "";
 	boolean delEnabled = false, delDisabled = false, delBreak = false,
 		delDisplay = false, delWatch = false, delBarrier = false;
@@ -126,10 +127,12 @@ class DeleteCommand extends CLIHandler {
 	    for (int i = 0; i < ids.length; i++) {
 		BreakpointManager bpManager = cli.getSteppingEngine()
 			.getBreakpointManager();
-		Task task = cli.getTask();
 		SourceBreakpoint bpt = bpManager.getBreakpoint(ids[i]);
 		if (bpt != null) {
-		    bpManager.disableBreakpoint(bpt, task);
+                    Iterator taskIter = ptset.getTasks();
+                    while (taskIter.hasNext()) {
+                        bpManager.disableBreakpoint(bpt, (Task)taskIter.next());
+                    }
 		    outWriter.println("breakpoint " + bpt.getId() + " deleted");
 		}
 		// Failed to get a breakpoint, try to get a display instead
@@ -151,14 +154,16 @@ class DeleteCommand extends CLIHandler {
 	if (delBreak || delEnabled || delDisabled) {
 	    BreakpointManager bpManager = cli.getSteppingEngine()
 	    		.getBreakpointManager();
-	    Task task = cli.getTask();
 	    Iterator iter = bpManager.getBreakpointTableIterator();
 	    while (iter.hasNext()) {
 		SourceBreakpoint bpt = (SourceBreakpoint) iter.next();
 		if (delBreak 
 			|| (bpt.getUserState() == SourceBreakpoint.ENABLED && delEnabled)
 			|| (bpt.getUserState() == SourceBreakpoint.DISABLED && delDisabled)) {
-		    bpManager.disableBreakpoint(bpt, task);
+                    Iterator taskIter = ptset.getTasks();
+                    while (taskIter.hasNext()) {
+                        bpManager.disableBreakpoint(bpt, (Task)taskIter.next());
+                    }
 		    outWriter.println("breakpoint " +
 			    bpt.getId() + " deleted");
 		}

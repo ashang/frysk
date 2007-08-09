@@ -40,7 +40,11 @@
 package frysk.hpd;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.text.ParseException;
+import frysk.proc.Task;
+import frysk.stepping.SteppingEngine;
 
 class HaltCommand
     implements CommandHandler
@@ -53,15 +57,24 @@ class HaltCommand
     public void handle(Command cmd)
 	throws ParseException
     {
+        PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
         }
-	
+	SteppingEngine steppingEngine = cli.getSteppingEngine();
 	if (cli.steppingObserver != null) {
-	    cli.getSteppingEngine().stop(null, cli.proc.getTasks());
-	    cli.running = false;
+            Iterator taskIter = ptset.getTasks();
+            LinkedList stopList = new LinkedList();
+            while (taskIter.hasNext()) {
+                Task task = (Task)taskIter.next();
+                if (steppingEngine.isTaskRunning(task)) {
+                    stopList.add(task);
+                    cli.running = false; // XXX
+                }
+            }
+            steppingEngine.stop(null, stopList);
         }
 	else
 	    cli.addMessage("Not attached to any process", Message.TYPE_ERROR);

@@ -64,6 +64,7 @@ class DisableCommand extends CLIHandler {
     }
 
     public void handle(Command cmd) throws ParseException {
+        PTSet ptset = cli.getCommandPTSet(cmd);
 	String actionpoints = "";
 	boolean disEnabled = false/* , disDisabled = false */, disBreak = false,
 		disDisplay = false, disWatch = false, disBarrier = false;
@@ -127,10 +128,12 @@ class DisableCommand extends CLIHandler {
 	    for (int i = 0; i < ids.length; i++) {
 		BreakpointManager bpManager = cli.getSteppingEngine()
 			.getBreakpointManager();
-		Task task = cli.getTask();
 		SourceBreakpoint bpt = bpManager.getBreakpoint(ids[i]);
 		if (bpt != null) {
-		    bpManager.disableBreakpoint(bpt, task);
+                    Iterator taskIter = ptset.getTasks();
+                    while (taskIter.hasNext()) {
+                        bpManager.disableBreakpoint(bpt, (Task)taskIter.next());
+                    }
 		    outWriter
 			    .println("breakpoint " + bpt.getId() + " disabled");
 		}
@@ -153,12 +156,14 @@ class DisableCommand extends CLIHandler {
 	if (disEnabled || disBreak) {
 	    BreakpointManager bpManager = cli.getSteppingEngine()
 		    .getBreakpointManager();
-	    Task task = cli.getTask();
 	    Iterator iter = bpManager.getBreakpointTableIterator();
 	    while (iter.hasNext()) {
 		SourceBreakpoint bpt = (SourceBreakpoint) iter.next();
 		if (bpt.getUserState() == SourceBreakpoint.ENABLED) {
-		    bpManager.disableBreakpoint(bpt, task);
+                    Iterator taskIter = ptset.getTasks();
+                    while (taskIter.hasNext()) {
+                        bpManager.disableBreakpoint(bpt, (Task)taskIter.next());
+                    }
 		    outWriter
 			    .println("breakpoint " + bpt.getId() + " disabled");
 		}
