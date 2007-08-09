@@ -1,4 +1,22 @@
 2007-08-08  Tim Moore  <timoore@redhat.com>
+
+	* CLI.java (TaskInfo, getTaskFrame, setTaskFrame,
+	getTaskDebugInfo, setTaskDebugInfo, getTaskStackLevel, 
+	setTaskStackLevel): New interface for tracking values that were
+	global across a single task in the CLI.
+	(complete): Complete across all tasks in the target set.
+	(UpDownHandler.handle): Set the frame in all tasks in the target
+	set. Set cli.frame and cli.stackLevel for now.
+	(parseValue): Add a version that takes a task argument
+	(update): Set frame and debugInfo using per-task interface.
+	* BreakpointCommand.java (handle): Set breakpoints in all the
+	tasks of the target ptset of command.
+	* DeleteCommand (handle): ditto
+	* DisableCommand (handle): ditto
+	* EnableCommand (handle): ditto
+	* GoCommand.java (handle): ditto
+	* HaltCommand.java (handle): ditto
+
 	* BreakpointCommand.java: Indentation fixups for Java standard and
 	remove tabs.
 
