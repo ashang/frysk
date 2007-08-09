@@ -57,7 +57,7 @@ import frysk.sys.UnhandledWaitBuilder;
  * The slave can be manipulated using various signals and methods
  * listed below.
  */
-public abstract class SlaveOffspring
+public class SlaveOffspring
     extends SynchronizedOffspring
 {
     /**
@@ -281,5 +281,12 @@ public abstract class SlaveOffspring
 	} catch (Errno.Echild e) {
 	    // No more waitpid events.
 	}
+    }
+
+    /**
+     * Create a slave-process that is a child of this process.
+     */
+    static public SlaveOffspring createChild() {
+	return new SlaveOffspring(OffspringType.CHILD);
     }
 }

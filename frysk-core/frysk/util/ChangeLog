@@ -1,5 +1,11 @@
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
+	* StressTestFStack.java: Replace DetachedAckProcess with
+	SlaveOffspring.createChild.
+	* TestFCatch.java: Ditto.
+	* TestFCore.java: Ditto.
+	* TestFStack.java: Ditto.
+	
 	* StressTestFStack.java: Use SlaveOffspring
 	.assertSendAddClonesWaitForAcks.
 	* TestFStack.java: Ditto.

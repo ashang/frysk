@@ -189,7 +189,7 @@ public class TestExec
     SingleExecObserver execObserver = new SingleExecObserver();
 
     // Create an unattached child process.
-    SlaveOffspring child = new DetachedAckProcess();
+    SlaveOffspring child = SlaveOffspring.createChild();
 
     // Attach to the process using the exec observer. The event
     // loop is kept running until SingleExecObserver .addedTo is
@@ -237,7 +237,7 @@ public class TestExec
     }
 
     // Create an unattached child process.
-    SlaveOffspring child = new DetachedAckProcess();
+    SlaveOffspring child = SlaveOffspring.createChild();
 
     Proc proc = child.assertFindProcAndTasks();
     ExecParentObserver execParentObserver = new ExecParentObserver();

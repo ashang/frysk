@@ -208,20 +208,6 @@ public class TestLib
     }
 
     /**
-     * Create a detached child ack process. Since the created process
-     * is a direct child of this process, this process will see a wait
-     * event when this exits.  It is most useful when a controlled
-     * process exit is required (see reap).
-     */
-    public static class DetachedAckProcess
-	extends SlaveOffspring
-    {
-	public DetachedAckProcess () {
-	    super(OffspringType.CHILD);
-	}
-    }
-    
-    /**
      * Create an attached child ack process.
      */
     protected class AttachedAckProcess

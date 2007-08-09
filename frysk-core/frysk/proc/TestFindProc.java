@@ -93,7 +93,7 @@ public class TestFindProc
 
   public void testFindProcDetached ()
   {
-    SlaveOffspring ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createChild();
     doFindProc(ackProc, 1);
   }
   
@@ -166,7 +166,7 @@ public class TestFindProc
 
   public void testFindUsingRefresh ()
   {
-    final SlaveOffspring ackProc = new DetachedAckProcess();
+    final SlaveOffspring ackProc = SlaveOffspring.createChild();
 
     Proc proc;
 

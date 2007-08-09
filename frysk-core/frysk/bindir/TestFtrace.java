@@ -60,7 +60,7 @@ public class TestFtrace
 
     public void testFtraceTraces () {
 	// Create an unattached child process.
-	SlaveOffspring child = new DetachedAckProcess();
+	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);
 	expect = new Expect(new String[] {
 				Config.getBinFile("ftrace").getAbsolutePath(),
@@ -71,7 +71,7 @@ public class TestFtrace
 
     public void testFtraceFollowsClones() {
 	// Create an unattached child process.
-	SlaveOffspring child = new DetachedAckProcess();
+	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);
 	expect = new Expect(new String[] {
 				Config.getBinFile("ftrace").getAbsolutePath(),
@@ -85,7 +85,7 @@ public class TestFtrace
 
     public void testFtraceFollowsForks() {
 	// Create an unattached child process.
-	SlaveOffspring child = new DetachedAckProcess();
+	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);
         expect = new Expect(new String[] {
 				Config.getBinFile("ftrace").getAbsolutePath(),

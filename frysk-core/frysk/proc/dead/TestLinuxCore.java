@@ -414,7 +414,7 @@ public class TestLinuxCore
    */
   protected Proc giveMeAProc ()
   {
-    SlaveOffspring ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createChild();
     assertNotNull(ackProc);
     Proc proc = ackProc.assertFindProcAndTasks();
     assertNotNull(proc);

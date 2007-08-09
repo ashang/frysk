@@ -134,7 +134,7 @@ public class TestTaskSyscallObserver
   public void testExecSyscall ()
   {
     // Create an unattached child process.
-    SlaveOffspring child = new DetachedAckProcess();
+    SlaveOffspring child = SlaveOffspring.createChild();
 
     // Attach to the process using the exec observer. The event
     // loop is kept running until SingleExecObserver .addedTo is
@@ -159,7 +159,7 @@ public class TestTaskSyscallObserver
   public void testForkSyscall ()
   {
     // Create an unattached child process.
-    SlaveOffspring child = new DetachedAckProcess();
+    SlaveOffspring child = SlaveOffspring.createChild();
 
     // Attach to the process using the exec observer. The event
     // loop is kept running until SingleExecObserver .addedTo is
@@ -188,7 +188,7 @@ public class TestTaskSyscallObserver
     // return;
 
     // Create an unattached child process.
-    SlaveOffspring child = new DetachedAckProcess();
+    SlaveOffspring child = SlaveOffspring.createChild();
 
     // Attach to the process using the exec observer. The event
     // loop is kept running until SingleExecObserver .addedTo is

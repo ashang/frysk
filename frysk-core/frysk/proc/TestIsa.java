@@ -94,7 +94,7 @@ public class TestIsa
   public void testIsa ()
   {
 
-    SlaveOffspring ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createChild();
 
     final Task task = ackProc.findTaskUsingRefresh(true);
 
@@ -114,8 +114,8 @@ public class TestIsa
 
   public void testIsaSingleton ()
   {
-    SlaveOffspring ackProc = new DetachedAckProcess();
-    SlaveOffspring ackProc2 = new DetachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createChild();
+    SlaveOffspring ackProc2 = SlaveOffspring.createChild();
 
     Task firstMain = ackProc.findTaskUsingRefresh(true);
     Task secondMain = ackProc2.findTaskUsingRefresh(true);
@@ -222,7 +222,7 @@ public class TestIsa
 
   public void testAttachDetachAttachAgainDetachAgainAttachAgainAgain ()
   {
-    SlaveOffspring ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createChild();
 
     Proc proc = ackProc.assertFindProcAndTasks();
 

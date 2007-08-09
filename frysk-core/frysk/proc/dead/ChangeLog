@@ -1,3 +1,8 @@
+2007-08-09  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLinuxCore.java: Replace DetachedAckProcess with
+	SlaveOffspring.createChild.
+	
 2007-08-08  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLinuxCore.java: Replace frysk.testbed.TestLib.AckProcess

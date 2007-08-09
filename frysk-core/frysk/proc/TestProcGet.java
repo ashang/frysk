@@ -40,6 +40,7 @@
 
 package frysk.proc;
 
+import frysk.testbed.SlaveOffspring;
 import inua.util.Scanner;
 import java.io.File;
 import java.io.IOException;
@@ -152,8 +153,8 @@ public class TestProcGet
     // Create two children. The refreshes have the side effect of
     // updating this processes proc list.
     Proc[] child = new Proc[] {
-                               new DetachedAckProcess().assertFindProcAndTasks(),
-                               new DetachedAckProcess().assertFindProcAndTasks() };
+                               SlaveOffspring.createChild().assertFindProcAndTasks(),
+                               SlaveOffspring.createChild().assertFindProcAndTasks() };
     Proc self = host.getSelf();
 
     assertEquals("number of children", 2, self.getChildren().size());

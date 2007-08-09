@@ -64,7 +64,7 @@ public class TestFdebuginfo
     public void testPathListing ()
     {
         // Create an unattached child process.
-	SlaveOffspring child = new DetachedAckProcess();
+	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);
 
 	e = new Expect(new String[] {

@@ -120,7 +120,7 @@ public class TestAbandon
 
   public void testAbandonThenRemoveDetached ()
   {
-    SlaveOffspring ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createChild();
     TaskObserver.Instruction testObserver = new TestObserver();
 
     abandonThenRemove(ackProc, testObserver);
@@ -144,7 +144,7 @@ public class TestAbandon
 
   public void testAbandonThenRemoveDetachedUpdateExecuted ()
   {
-    SlaveOffspring ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createChild();
     TaskObserver.Instruction testObserver = new AbandonOnUpdateExecuted();
 
     abandonThenRemove(ackProc, testObserver);
@@ -168,7 +168,7 @@ public class TestAbandon
 
   public void testAbandonThenRemoveDetachedAddedTo ()
   {
-    SlaveOffspring ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createChild();
     TaskObserver.Instruction testObserver = new AbandonOnAddedTo();
 
     abandonThenRemove(ackProc, testObserver);
@@ -192,7 +192,7 @@ public class TestAbandon
 
   public void testAbandonThenRemoveDetachedDeletedFrom ()
   {
-    SlaveOffspring ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createChild();
     TaskObserver.Instruction testObserver = new AbandonOnDeletedFrom();
 
     abandonThenRemove(ackProc, testObserver);
@@ -231,7 +231,7 @@ public class TestAbandon
 
   public void testRemoveThenAbandonDetached ()
   {
-    SlaveOffspring ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createChild();
 
     TaskObserver.Instruction testObserver = new TestObserver();
     removeThenAbandon(ackProc, testObserver);
@@ -255,7 +255,7 @@ public class TestAbandon
 
   public void testRemoveThenAbandonDetachedAddedTo ()
   {
-    SlaveOffspring ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createChild();
 
     TaskObserver.Instruction testObserver = new AbandonOnAddedTo();
     removeThenAbandon(ackProc, testObserver);
@@ -279,7 +279,7 @@ public class TestAbandon
 
   public void testRemoveThenAbandonDetachedUpdateExecuted ()
   {
-    SlaveOffspring ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createChild();
 
     TaskObserver.Instruction testObserver = new AbandonOnUpdateExecuted();
     removeThenAbandon(ackProc, testObserver);
@@ -303,7 +303,7 @@ public class TestAbandon
 
   public void testRemoveThenAbandonDetachedDeletedFrom ()
   {
-    SlaveOffspring ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createChild();
 
     TaskObserver.Instruction testObserver = new AbandonOnDeletedFrom();
     removeThenAbandon(ackProc, testObserver);

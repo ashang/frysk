@@ -62,7 +62,7 @@ public class TestFStack
 
   public void testSingleThreadedDetached ()
   {
-    SlaveOffspring ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createChild();
     multiThreaded(ackProc, 0);
   }
 
@@ -73,7 +73,7 @@ public class TestFStack
   }
 
     public void testMultiThreadedDetached () {
-	SlaveOffspring ackProc = new DetachedAckProcess()
+	SlaveOffspring ackProc = SlaveOffspring.createChild()
 	    .assertSendAddClonesWaitForAcks(2);
 	multiThreaded(ackProc, 2);
     }

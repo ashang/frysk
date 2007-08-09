@@ -1,5 +1,19 @@
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
+	* TestAbandon.java: Replace DetachedAckProcess with
+	SlaveOffspring.createChild.
+	* TestExec.java: Ditto.
+	* TestFindProc.java: Ditto.
+	* TestIsa.java: Ditto.
+	* TestMapGet.java: Ditto.
+	* TestProcGet.java: Ditto.
+	* TestProcForceDetach.java: Ditto.
+	* TestProcStopped.java: Ditto.
+	* TestRefresh.java: Ditto.
+	* TestProcTasksObserver.java: Ditto.
+	* TestTaskObserverBlocked.java: Ditto.
+	* TestTaskSyscallObserver.java: Ditto.
+	
 	* TestProcStopped.java: Use SlaveOffspring
 	.assertSendAddClonesWaitForAcks.
 	* TestProcTasksObserver.java: Ditto.

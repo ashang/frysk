@@ -70,7 +70,7 @@ public class TestProcStopped
 
   public void testStoppedDetached ()
   {
-    SlaveOffspring ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createChild();
     stopped(ackProc, 1);
     assertRunUntilStop("testStoppedDetached");
   }
@@ -91,7 +91,7 @@ public class TestProcStopped
 
   public void testRunningDetached ()
   {
-    SlaveOffspring ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createChild();
     running(ackProc, 1);
     assertRunUntilStop("testRunningDetached");
   }
@@ -115,7 +115,7 @@ public class TestProcStopped
     public void testMultiThreadedStoppedDetached () {
 	if (unresolvedOnUtrace(3595))
 	    return;
-	SlaveOffspring ackProc = new DetachedAckProcess()
+	SlaveOffspring ackProc = SlaveOffspring.createChild()
 	    .assertSendAddClonesWaitForAcks(2);
 	stopped(ackProc, 3);
 	assertRunUntilStop("testStoppedDetached");
@@ -136,7 +136,7 @@ public class TestProcStopped
     }
 
     public void testMultiThreadedRunningDetached () {
-	SlaveOffspring ackProc = new DetachedAckProcess()
+	SlaveOffspring ackProc = SlaveOffspring.createChild()
 	    .assertSendAddClonesWaitForAcks(2);
 	running(ackProc, 3);
 	assertRunUntilStop("testRunningDetached");

@@ -86,7 +86,7 @@ public class TestTaskObserverBlocked
 
     // Run a program, any program so that blockedAttached has
     // something to block.
-    SlaveOffspring child = new DetachedAckProcess();
+    SlaveOffspring child = SlaveOffspring.createChild();
     Task mainTask = child.findTaskUsingRefresh(true);
     mainTask.requestAddAttachedObserver(blockAttached);
     assertRunUntilStop("run \"exit\" to exit");

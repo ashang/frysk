@@ -63,7 +63,7 @@ public class TestProcForceDetach
 
   public void testRequestRemoveDetached ()
   {
-    SlaveOffspring ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createChild();
     requestRemove(ackProc, 1);
   }
 
@@ -74,7 +74,7 @@ public class TestProcForceDetach
     }
 
     public void testMultiThreadedRequestRemoveDetached () {
-	SlaveOffspring ackProc = new DetachedAckProcess()
+	SlaveOffspring ackProc = SlaveOffspring.createChild()
 	    .assertSendAddClonesWaitForAcks(2);
 	requestRemove(ackProc, 3);
     }

@@ -71,7 +71,7 @@ public class TestFCatch
 
   public void testSingleThreadedCatch ()
   {
-    SlaveOffspring ackProc = new DetachedAckProcess();
+    SlaveOffspring ackProc = SlaveOffspring.createChild();
     Proc proc = ackProc.assertFindProcAndTasks();
 
     FCatchTester catcher = new FCatchTester();
