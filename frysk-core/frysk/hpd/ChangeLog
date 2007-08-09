@@ -1,4 +1,6 @@
 2007-08-08  Tim Moore  <timoore@redhat.com>
+	* BreakpointCommand.java: Indentation fixups for Java standard and
+	remove tabs.
 
 	* AttachCommand.java (handle): Register process with
 	ProcTaskIDManager.

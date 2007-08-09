@@ -52,107 +52,101 @@ import javax.naming.NameNotFoundException;
 import lib.dwfl.DwarfDie;
 
 class BreakpointCommand
-    extends CLIHandler
-{
+    extends CLIHandler {
     private static final String descr = "set source breakpoint";
 
-    private BreakpointCommand(String name, CLI cli)
-    {
-	super(name, cli, new CommandHelp(name, descr, "break #file#lineno", descr));
+    private BreakpointCommand(String name, CLI cli) {
+        super(name, cli, new CommandHelp(name, descr, "break #file#lineno", descr));
     }
 
-    BreakpointCommand(CLI cli)
-    {
-	this("break", cli);
+    BreakpointCommand(CLI cli) {
+        this("break", cli);
     }
 
     static private class CLIBreakpointObserver
-	implements SourceBreakpointObserver
-    {
-	private CLI cli;
-	public CLIBreakpointObserver(CLI cli) {
-	    this.cli = cli;
-	}
-	public void addedTo (Object observable) {}
-	public void addFailed (Object observable, Throwable w) {}
-	public void deletedFrom (Object observable) {}
-	public void updateHit(SourceBreakpoint bpt, Task task, long address) {
-	    //XXX This cli.running business is a hack for other
-	    //commands in CLI (where) and needs to go away when
-	    //multiple processes / tasks are supported.
-	    cli.running = false;
-	}
+        implements SourceBreakpointObserver {
+        private CLI cli;
+        public CLIBreakpointObserver(CLI cli) {
+            this.cli = cli;
+        }
+        public void addedTo (Object observable) {}
+        public void addFailed (Object observable, Throwable w) {}
+        public void deletedFrom (Object observable) {}
+        public void updateHit(SourceBreakpoint bpt, Task task, long address) {
+            //XXX This cli.running business is a hack for other
+            //commands in CLI (where) and needs to go away when
+            //multiple processes / tasks are supported.
+            cli.running = false;
+        }
     }
   
-    public void handle(Command cmd) throws ParseException
-    {
-	ArrayList params = cmd.getParameters();
-	if (params.size() != 1) {
-	    cli.printUsage(cmd);
-	    return;
-	}
-	String breakpt = (String)params.get(0);
-	String fileName;
-	int lineNumber;
-	SourceBreakpoint actionpoint;
-	BreakpointManager bpManager = cli.getSteppingEngine().getBreakpointManager();
-	Task task = cli.getTask();
-	final PrintWriter outWriter = cli.getPrintWriter();
-	if (breakpt.charAt(0) == '#') {
-	    String[] bptParams = breakpt.split("#");
-	    if (bptParams.length != 3) {
-		// XXX should use notion of "current" source file
-		throw new ParseException("bad syntax for breakpoint:" + breakpt,
-					 0);
-	    }
-	    fileName = bptParams[1];
-	    lineNumber = Integer.parseInt((String)bptParams[2]);
-	    actionpoint = bpManager.addLineBreakpoint(fileName, lineNumber, 0);
-	    actionpoint.addObserver(new CLIBreakpointObserver(cli) {
-		    public void updateHit(SourceBreakpoint bpt, Task task,
-					  long address) {
-			super.updateHit(bpt, task, address);
-			LineBreakpoint lbpt = (LineBreakpoint)bpt;
-			outWriter.print("Breakpoint ");
-			outWriter.print(lbpt.getId());
-			outWriter.print(" #");
-			outWriter.print(lbpt.getFileName());
-			outWriter.print("#");
-			outWriter.println(lbpt.getLineNumber());
-		    }
-		});
-	}
-	else {
-	    DwarfDie die = null;
-	    try {
-		die = cli.debugInfo.getSymbolDie(breakpt);
-	    }
-	    catch (NameNotFoundException e) {
-		// cli.getPrintWriter().println(e.getMessage());
-		// return;
-	    }
+    public void handle(Command cmd) throws ParseException {
+        ArrayList params = cmd.getParameters();
+        if (params.size() != 1) {
+            cli.printUsage(cmd);
+            return;
+        }
+        String breakpt = (String)params.get(0);
+        String fileName;
+        int lineNumber;
+        SourceBreakpoint actionpoint;
+        BreakpointManager bpManager = cli.getSteppingEngine().getBreakpointManager();
+        Task task = cli.getTask();
+        final PrintWriter outWriter = cli.getPrintWriter();
+        if (breakpt.charAt(0) == '#') {
+            String[] bptParams = breakpt.split("#");
+            if (bptParams.length != 3) {
+                // XXX should use notion of "current" source file
+                throw new ParseException("bad syntax for breakpoint:" + breakpt,
+                                         0);
+            }
+            fileName = bptParams[1];
+            lineNumber = Integer.parseInt((String)bptParams[2]);
+            actionpoint = bpManager.addLineBreakpoint(fileName, lineNumber, 0);
+            actionpoint.addObserver(new CLIBreakpointObserver(cli) {
+                    public void updateHit(SourceBreakpoint bpt, Task task,
+                                          long address) {
+                        super.updateHit(bpt, task, address);
+                        LineBreakpoint lbpt = (LineBreakpoint)bpt;
+                        outWriter.print("Breakpoint ");
+                        outWriter.print(lbpt.getId());
+                        outWriter.print(" #");
+                        outWriter.print(lbpt.getFileName());
+                        outWriter.print("#");
+                        outWriter.println(lbpt.getLineNumber());
+                    }
+                });
+        } else {
+            DwarfDie die = null;
+            try {
+                die = cli.debugInfo.getSymbolDie(breakpt);
+            }
+            catch (NameNotFoundException e) {
+                // cli.getPrintWriter().println(e.getMessage());
+                // return;
+            }
 
-	    actionpoint = bpManager.addFunctionBreakpoint(breakpt, die);
-	    actionpoint.addObserver(new CLIBreakpointObserver(cli)
-		{
-		    public void updateHit(SourceBreakpoint bpt, Task task,
-					  long address) {
-			super.updateHit(bpt, task, address);
-			FunctionBreakpoint fbpt = (FunctionBreakpoint)bpt;
-			outWriter.print("Breakpoint ");
-			outWriter.print(fbpt.getId());
-			outWriter.print(" ");
-			outWriter.println(fbpt.getName());
-		    }
-		});
-	}
+            actionpoint = bpManager.addFunctionBreakpoint(breakpt, die);
+            actionpoint.addObserver(new CLIBreakpointObserver(cli)
+                {
+                    public void updateHit(SourceBreakpoint bpt, Task task,
+                                          long address) {
+                        super.updateHit(bpt, task, address);
+                        FunctionBreakpoint fbpt = (FunctionBreakpoint)bpt;
+                        outWriter.print("Breakpoint ");
+                        outWriter.print(fbpt.getId());
+                        outWriter.print(" ");
+                        outWriter.println(fbpt.getName());
+                    }
+                });
+        }
 
-	SourceBreakpoint.State result = bpManager.enableBreakpoint(actionpoint,
-								   task);
-	outWriter.print("breakpoint " + actionpoint.getId());
-	if (result != SourceBreakpoint.ENABLED) {
-	    outWriter.print(" " + result.toString());
-	}
-	outWriter.println();
+        SourceBreakpoint.State result = bpManager.enableBreakpoint(actionpoint,
+                                                                   task);
+        outWriter.print("breakpoint " + actionpoint.getId());
+        if (result != SourceBreakpoint.ENABLED) {
+            outWriter.print(" " + result.toString());
+        }
+        outWriter.println();
     }
 }
