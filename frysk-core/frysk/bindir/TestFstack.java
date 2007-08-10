@@ -99,7 +99,10 @@ public class TestFstack
 			    child.getPid () + "",
 			    "--print", "fullpath"
 			});
-        e.expect (Config.getRootSrcDir()+ ".*funit-child.c#");
+        e.expect (Config.getRootSrcDir()
+		  + ".*"
+		  + SlaveOffspring.getExecutable().getName()
+		  + ".c#");
     }
 
     public void testBackTraceWithDashA () {
@@ -109,7 +112,11 @@ public class TestFstack
 			    child.getPid () + "",
 			    "-a"
 			});
-        e.expect (".*main.*int argc.*"+Config.getRootSrcDir()+ ".*funit-child\\.c#.*int argi.*");
+        e.expect (".*main.*int argc.*"
+		  + Config.getRootSrcDir()
+		  + ".*"
+		  + SlaveOffspring.getExecutable().getName()
+		  + "\\.c#.*int argi.*");
     }
 
     public void testBackTraceWithDashC () {
@@ -119,7 +126,11 @@ public class TestFstack
 			    child.getPid () + "",
 			    "-c"
 			});
-        e.expect (".*main.*int argc.*"+Config.getRootSrcDir()+ ".*funit-child\\.c#");
+        e.expect (".*main.*int argc.*"
+		  + Config.getRootSrcDir()
+		  + ".*"
+		  + SlaveOffspring.getExecutable().getName()
+		  + "\\.c#");
     }
 
 }

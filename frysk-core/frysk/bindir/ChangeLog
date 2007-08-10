@@ -1,5 +1,8 @@
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFstack.java: Replace funit-child in patterns with
+	SlaveOffspring .getExecutable .getName.
+
 	* TestFstack.java: Extend frysk.testbed.TestLib.  Replace
 	"funit-child" with SlaveOffspring.
 
