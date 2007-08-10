@@ -64,7 +64,7 @@ import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcCoreAction;
-import frysk.testbed.SlaveOffspring;
+import frysk.testbed.LegacyOffspring;
 
 import lib.dwfl.*;
 
@@ -414,7 +414,10 @@ public class TestLinuxCore
    */
   protected Proc giveMeAProc ()
   {
-    SlaveOffspring ackProc = SlaveOffspring.createChild();
+      // This code is relying on magic symbols found within
+      // funit-child.  Why not write a simple program that does
+      // nothing but provide the symbols.
+    LegacyOffspring ackProc = LegacyOffspring.createChild();
     assertNotNull(ackProc);
     Proc proc = ackProc.assertFindProcAndTasks();
     assertNotNull(proc);

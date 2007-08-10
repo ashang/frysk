@@ -1,5 +1,7 @@
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
+	* funit-legacy.c: New; copy of funit-child.
+
 	* funit-slave.c (exec_args): Delete.
 	(server): Pass -m to execed process.
 	(usage): Note that -e is internal-use-only

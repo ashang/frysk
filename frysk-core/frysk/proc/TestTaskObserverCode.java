@@ -40,7 +40,7 @@
 package frysk.proc;
 
 import inua.eio.*;
-import frysk.testbed.SlaveOffspring;
+import frysk.testbed.LegacyOffspring;
 import frysk.sys.*;
 import frysk.testbed.Offspring;
 import lib.dwfl.*;
@@ -56,7 +56,7 @@ public class TestTaskObserverCode extends TestLib
   public void testCode() throws Exception
   {
     // Create a child.
-    child = SlaveOffspring.createDaemon();
+    child = LegacyOffspring.createDaemon();
     task = child.findTaskUsingRefresh (true);
     proc = task.getProc();
 
@@ -144,7 +144,7 @@ public class TestTaskObserverCode extends TestLib
   public void testCodeRemovedInHit() throws Exception
   {
     // Create a child.
-    child = SlaveOffspring.createDaemon();
+    child = LegacyOffspring.createDaemon();
     task = child.findTaskUsingRefresh (true);
     proc = task.getProc();
 
@@ -180,7 +180,7 @@ public class TestTaskObserverCode extends TestLib
   public void testViewBreakpointMemory() throws Exception
   {
     // Create a child.
-    child = SlaveOffspring.createDaemon();
+    child = LegacyOffspring.createDaemon();
     task = child.findTaskUsingRefresh (true);
     proc = task.getProc();
 
@@ -281,7 +281,7 @@ public class TestTaskObserverCode extends TestLib
   public void testViewBreakpointMap() throws Exception
   {
     // Create a child.
-    child = SlaveOffspring.createDaemon();
+    child = LegacyOffspring.createDaemon();
     task = child.findTaskUsingRefresh (true);
     proc = task.getProc();
 
