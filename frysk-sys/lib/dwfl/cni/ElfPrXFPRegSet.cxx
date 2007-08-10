@@ -97,7 +97,7 @@ jlong lib::dwfl::ElfPrXFPRegSet::getNoteData(ElfData *data)
 
 
   // Can have more that on Prstatus note per core file. Collect all of them.
-  while (note_loc <= data->getSize())
+  while (note_loc < data->getSize())
     {
       // Find Prstatus note data. If the first note header is not prstatus
       // loop through, adding up header + align + data till we find the

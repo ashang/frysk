@@ -1,3 +1,7 @@
+2007-08-09  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* cni/ElfPrXFPRegSet.cxx (ElfPrXFPRegSet::getNoteData): <= != <
+
 2007-08-08  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestElf.java (testXFPRegSet): New method.
