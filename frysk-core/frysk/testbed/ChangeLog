@@ -1,5 +1,11 @@
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
+	* SlaveOffspring.java (getExecutable): Run funit-slave instead of
+	funit-child.
+	(DEL_FORK_SIG): Change to SIGPROF.
+	(funitSlaveCommand): Update options to match funit-slave; delete
+	filenameArg.
+
 	* LegacyOffspring.java: New; copy of SlaveOffspring; runs
 	funit-legacy.
 	

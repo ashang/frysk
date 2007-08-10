@@ -1,5 +1,9 @@
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
+	* funit-exit.xml: Remove all but funit and frysk from SEE ALSO.
+	* funit-threads.xml: Ditto; run funit-threads in EXAMPLE.
+	* funit-child.xml: Delete.
+
 	* funit-legacy.c: New; copy of funit-child.
 
 	* funit-slave.c (exec_args): Delete.

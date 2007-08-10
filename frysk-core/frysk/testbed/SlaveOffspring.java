@@ -66,16 +66,18 @@ public class SlaveOffspring
      * Build the slave command that should be run.
      */
     static private String[] funitSlaveCommand (boolean busy,
-					       String filenameArg,
 					       String[] argv) {
 	List command = new LinkedList();
 	command.add(getExecutable().getAbsolutePath());
-	command.add(busy ? "--wait=busy-loop" : "--wait=suspend");
-	if (filenameArg != null)
-	    command.add("--filename=" + TestLib.getExecPath (filenameArg));
+	if (busy) {
+	    command.add("-w");
+	    command.add("busy-loop");
+	}
+	command.add("-t");
 	command.add(Integer.toString(TestCase.getTimeoutSeconds()));
 	// Use getpid as this testsuite always runs the event loop
 	// from the main thread (which has tid==pid).
+	command.add("-m");
 	command.add(Integer.toString(Pid.get()));
 	// Append any arguments.
 	if (argv != null) {
@@ -97,14 +99,14 @@ public class SlaveOffspring
     private static final Sig DEL_CLONE_SIG = Sig.USR2;
     private static final Sig STOP_SIG = Sig.STOP;
     private static final Sig ADD_FORK_SIG = Sig.HUP;
-    private static final Sig DEL_FORK_SIG = Sig.INT;
+    private static final Sig DEL_FORK_SIG = Sig.PROF;
     private static final Sig ZOMBIE_FORK_SIG = Sig.URG;
     private static final Sig EXEC_SIG = Sig.PWR;
     private static final Sig EXEC_CLONE_SIG = Sig.FPE;
 
     /** Create an ack process. */
     private SlaveOffspring (OffspringType type) {
-	super(type, CHILD_ACK, funitSlaveCommand(false, null, null));
+	super(type, CHILD_ACK, funitSlaveCommand(false, null));
     }
 
     /**
@@ -113,7 +115,7 @@ public class SlaveOffspring
      * commands.
      */
     private SlaveOffspring (OffspringType type, boolean busy) {
-	super(type, CHILD_ACK, funitSlaveCommand(busy, null, null));
+	super(type, CHILD_ACK, funitSlaveCommand(busy, null));
     }
 
     /**
@@ -302,6 +304,6 @@ public class SlaveOffspring
      * Return the program executable that will be run.
      */
     static public File getExecutable() {
-	return Config.getPkgLibFile("funit-child");
+	return Config.getPkgLibFile("funit-slave");
     }
 }
