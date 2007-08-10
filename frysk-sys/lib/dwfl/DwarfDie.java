@@ -193,21 +193,7 @@ abstract public class DwarfDie
   {
     varNames.add(name);
   }
-  
-  public class DwarfOp
-  {
-    public int operator;
-    public int operand1;
-    public int operand2;
-    public int offset;
-    DwarfOp (int op, int op1, int op2, int off)
-    {
-      operator = op;
-      operand1 = op1;
-      operand2 = op2;
-      offset = off;
-    }
-  }
+
   private ArrayList DwarfOps;
   
   public void addOps (int operator, int operand1, int operand2, int offset)
