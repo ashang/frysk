@@ -1,3 +1,8 @@
+2007-08-10  Teresa Thomas  <tthomas@redhat.com>
+
+	* DwarfRegisterMapFactory.java: Added RegisterMaps IA32 and X8664. 
+	getRegisterMap now returns IA32 or X8664.
+	
 2007-08-10  Stan Cox  <scox@redhat.com>
 
 	* LocationExpression.java (locationType): New.
