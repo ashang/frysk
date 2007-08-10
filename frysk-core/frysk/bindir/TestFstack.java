@@ -39,10 +39,11 @@
 
 package frysk.bindir;
 
-import frysk.expunit.Expect;
 import frysk.Config;
+import frysk.expunit.Expect;
+import frysk.proc.Proc;
+import frysk.testbed.CoreFileAtSignal;
 import frysk.testbed.TestLib;
-import frysk.testbed.SlaveOffspring;
 
 /**
  * This performs a "sniff" test of Fstack, confirming basic
@@ -53,7 +54,7 @@ public class TestFstack
     extends TestLib
 {
     Expect e;
-    Expect child;
+    
     public void tearDown ()
     {
 	if (e != null)
@@ -63,74 +64,82 @@ public class TestFstack
     }
 
     public void testBackTrace () {
-	SlaveOffspring child = SlaveOffspring.createDaemon();
+	
+	Proc proc = CoreFileAtSignal.constructCore(getExecPath("funit-stacks"));
 	e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
-			    child.getPid () + ""
+			    "core." + proc.getPid()
 			});
 	// Just look for main.
 	e.expect ("main");
     }
     
     public void testBackTraceWithParams () {
-	SlaveOffspring child = SlaveOffspring.createDaemon();
+	Proc proc = CoreFileAtSignal.constructCore(getExecPath("funit-stacks"));
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
-			    child.getPid () + "",
+			    "core." + proc.getPid(),
 			    "--print","params"
 			});
-        e.expect ("int argc");
+        e.expect ("int param1");
     }
 
     public void testBackTraceWithScopes () {
-	SlaveOffspring child = SlaveOffspring.createDaemon();
+	Proc proc = CoreFileAtSignal.constructCore(getExecPath("funit-stacks"));
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
-			    child.getPid () + "",
+			    "core." + proc.getPid(),
 			    "--print", "scopes"
 			});
-        e.expect ("int sigchld_pid");
+        e.expect ("int one.*int two");
     }
 
     public void testBackTraceWithFullpath () {
-	SlaveOffspring child = SlaveOffspring.createDaemon();
+	Proc proc = CoreFileAtSignal.constructCore(getExecPath("funit-stacks"));
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
-			    child.getPid () + "",
+			    "core." + proc.getPid(),
 			    "--print", "fullpath"
 			});
         e.expect (Config.getRootSrcDir()
 		  + ".*"
-		  + SlaveOffspring.getExecutable().getName()
+		  + proc.getCommand()
 		  + ".c#");
     }
 
     public void testBackTraceWithDashA () {
-	SlaveOffspring child = SlaveOffspring.createDaemon();
+	Proc proc = CoreFileAtSignal.constructCore(getExecPath("funit-stacks"));
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
-			    child.getPid () + "",
+			    "core." + proc.getPid(),
 			    "-a"
 			});
-        e.expect (".*main.*int argc.*"
+        e.expect ("fourth.*int param1.*int param2.*int param3.*"
 		  + Config.getRootSrcDir()
 		  + ".*"
-		  + SlaveOffspring.getExecutable().getName()
-		  + "\\.c#.*int argi.*");
+		  + proc.getCommand() + "\\.c#" 
+		  + ".*char var1.*"
+		  + "");
     }
 
     public void testBackTraceWithDashC () {
-	SlaveOffspring child = SlaveOffspring.createDaemon();
+	Proc proc = CoreFileAtSignal.constructCore(getExecPath("funit-stacks"));
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
-			    child.getPid () + "",
+			    "core." + proc.getPid(),
 			    "-c"
 			});
-        e.expect (".*main.*int argc.*"
+        
+        e.expect ("fourth.*int param1.*int param2.*int param3.*"
 		  + Config.getRootSrcDir()
 		  + ".*"
-		  + SlaveOffspring.getExecutable().getName()
-		  + "\\.c#");
+		  + proc.getCommand() + "\\.c#" 
+		  + "");
+        
+//        e.expect (".*main.*int argc.*"
+//		  + Config.getRootSrcDir()
+//		  + ".*"
+//		  + proc.getCommand() + "\\.c#");
     }
 
 }
