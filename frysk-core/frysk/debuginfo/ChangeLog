@@ -1,5 +1,8 @@
 2007-08-10  Teresa Thomas  <tthomas@redhat.com>
 
+	* LocationExpression.java (decode): More stack and arithmetic operators
+	added.
+	
 	* DwarfRegisterMapFactory.java: Added RegisterMaps IA32 and X8664. 
 	getRegisterMap now returns IA32 or X8664.
 	

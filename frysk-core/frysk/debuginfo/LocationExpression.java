@@ -46,6 +46,7 @@ import frysk.proc.Isa;
 import frysk.stack.Register;
 
 import lib.dwfl.DwarfDie;
+import lib.dwfl.DwarfOp;
 import lib.dwfl.DwOpEncodings;
 import lib.dwfl.DwAtEncodings;
 
@@ -81,9 +82,9 @@ class LocationExpression {
 		throw new ValueUavailableException();
 
 	for(int i = 0; i < nops; i++) {
-	    int operator = ((DwarfDie.DwarfOp) ops.get(i)).operator;
-	    long operand1 = ((DwarfDie.DwarfOp) ops.get(i)).operand1;
-	    long operand2 = ((DwarfDie.DwarfOp) ops.get(i)).operand2;
+	    int operator = ((DwarfOp) ops.get(i)).operator;
+	    long operand1 = ((DwarfOp) ops.get(i)).operand1;
+	    long operand2 = ((DwarfOp) ops.get(i)).operand2;
 	    switch (operator) {
 	    case DwOpEncodings.DW_OP_lit0_:
 	    case DwOpEncodings.DW_OP_lit1_:
@@ -230,11 +231,35 @@ class LocationExpression {
 	    case DwOpEncodings.DW_OP_consts_:
 		stack.addFirst(new Long(operand1));
 		break;
-
+            
+            // Stack Operations
 	    case DwOpEncodings.DW_OP_dup_:
 		stack.addFirst(stack.getFirst());
 		break;
+		
+	    case DwOpEncodings.DW_OP_over_:
+		stack.addFirst(stack.get(1));
+		break;
+		
+	    case DwOpEncodings.DW_OP_drop_:
+		stack.removeFirst();
+		break;
 
+	    case DwOpEncodings.DW_OP_swap_:
+                Long first = (Long) stack.removeFirst();
+                Long second = (Long) stack.removeFirst();
+                stack.addFirst(first);
+                stack.addFirst(second);
+		break;	
+		
+	    case DwOpEncodings.DW_OP_rot_:
+                first = (Long) stack.removeFirst();
+                second = (Long) stack.removeFirst();
+                stack.addFirst(first);
+                stack.addFirst(second);
+		break;			
+
+            // Arithmetic Operations
 	    case DwOpEncodings.DW_OP_plus_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
@@ -249,7 +274,13 @@ class LocationExpression {
 	    case DwOpEncodings.DW_OP_minus_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
-		stack.addFirst(new Long(operand1 + operand2));
+		stack.addFirst(new Long(operand1 + operand2)); // - ?
+		break;
+	
+	    case DwOpEncodings.DW_OP_mul_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(operand1 * operand2));
 		break;
 
 		// ??? Support remaining operators
@@ -269,7 +300,7 @@ class LocationExpression {
 	Isa isa = frame.getTask().getIsa();
 	
 	if (ops.size() == 1) {
-	    int operator = ((DwarfDie.DwarfOp) ops.get(0)).operator;
+	    int operator = ((DwarfOp) ops.get(0)).operator;
 	    if (operator >= DwOpEncodings.DW_OP_reg0_
 		|| operator <=  DwOpEncodings.DW_OP_reg31_) {
 		locationType = locationTypeReg;
