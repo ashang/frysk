@@ -45,8 +45,7 @@ import frysk.testbed.TestLib;
 import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.TaskObserverBase;
 import frysk.testbed.ExecOffspring;
-import frysk.testbed.SlaveOffspring;
-import frysk.Config;
+import frysk.testbed.ExecCommand;
 
 /**
  * Test the exec event. The exec needs to completely replace the existing
@@ -93,10 +92,11 @@ public class TestExec
     // Create a temp file that the exec'd program will remove.
     // That way it's possible to confirm that the exec did work.
     TearDownFile tmpFile = TearDownFile.create();
-    ExecOffspring child = new ExecOffspring(new String[] {
-							  "/bin/rm",
-							  tmpFile.toString()
-						      });
+    ExecOffspring child
+	= new ExecOffspring(new ExecCommand (new String[] {
+						 "/bin/rm",
+						 tmpFile.toString()
+					     }));
     Task task = child.findTaskUsingRefresh(true);
 
     // Create an exec observer attached to Task, forcing an
@@ -129,12 +129,12 @@ public class TestExec
     // Create a temp file, the exec will remove. That way it's
     // possible to confirm that the exec did work.
     TearDownFile tmpFile = TearDownFile.create();
-    ExecOffspring child
-	= new ExecOffspring(1, /*thread*/
-				 new String[] {
-				     "/bin/rm",
-				     tmpFile.toString()
-				 });
+    ExecOffspring child	= new ExecOffspring
+	(new ExecCommand(1, /*thread*/
+			 new String[] {
+			     "/bin/rm",
+			     tmpFile.toString()
+			 }));
     Task mainTask = child.findTaskUsingRefresh(true);
 
     // Add an exec observer causing the task to be attached.
@@ -188,8 +188,8 @@ public class TestExec
     }
     SingleExecObserver execObserver = new SingleExecObserver();
 
-    // Create an unattached child process.
-    SlaveOffspring child = SlaveOffspring.createChild();
+    // Create an unattached process that can repeatedly exec itself.
+    ExecOffspring child = new ExecOffspring();
 
     // Attach to the process using the exec observer. The event
     // loop is kept running until SingleExecObserver .addedTo is
@@ -202,15 +202,15 @@ public class TestExec
     // the child process has notified this process that the exec
     // has finished which is well after SingleExecObserver
     // .updateExeced has been called.
-    child.assertSendExecWaitForAcks();
+    child.assertRunExec("exec-observer fires");
 
     assertEquals("pid after attached single exec", child.getPid(),
                  execObserver.savedTid);
   }
 
   /**
-   * A multiple threaded program performs an exec, check that it is correctly
-   * tracked.
+   * A multiple threaded program performs an exec, check that it is
+   * correctly tracked.
    */
   public void testAttachedMultipleParentExec ()
   {
@@ -236,15 +236,16 @@ public class TestExec
       }
     }
 
-    // Create an unattached child process.
-    SlaveOffspring child = SlaveOffspring.createChild();
-
-    Proc proc = child.assertFindProcAndTasks();
-    ExecParentObserver execParentObserver = new ExecParentObserver();
+    // Create an unattached process with one thread that will invoke a
+    // program with no extra threads.
+    ExecOffspring child
+	= new ExecOffspring(new ExecCommand(1, new ExecCommand()));
 
     // Attach to the process using the exec observer. The event
     // loop is kept running until ExecParentObserver .addedTo is
     // called indicating that the attach succeeded.
+    ExecParentObserver execParentObserver = new ExecParentObserver();
+    Proc proc = child.assertFindProcAndTasks();
     Task task = child.findTaskUsingRefresh(true);
     task.requestAddExecedObserver(execParentObserver);
     assertRunUntilStop("adding exec observer causing attach");
@@ -253,9 +254,7 @@ public class TestExec
     // loop running until the child process has notified this
     // process that the exec has finished which is well after
     // ExecParentObserver .updateExeced has been called.
-    child.assertSendAddCloneWaitForAcks();
-    child.assertSendAddCloneWaitForAcks();
-    child.assertSendExecWaitForAcks();
+    child.assertRunExec("execing main thread");
 
     assertTrue("task after attached multiple parent exec",
                proc.getPid() == task.getTid()); // not main task
@@ -295,19 +294,14 @@ public class TestExec
       }
     }
 
-    // Create an unattached process with one extra threads that will,
-    // when requested, exec a "clone" of itself.
-    String[] newCmdLine = ExecOffspring.getCommandLine(0, 0, null,
-						       new String[] {
-							   "/bin/echo",
-							   "hi"
-						       });
+    // Create an unattached process with one extra thread that, when
+    // requested: exec a "clone" of itself, and brand argv[0] of the
+    // execed process with PID:TID in argv[0] so that initiating
+    // thread can be checked.
+    ExecCommand alias = new ExecCommand(ExecCommand.Executable.ALIAS);
     ExecOffspring child
-	= new ExecOffspring(1, Config.getPkgLibFile("funit-exec-alias"),
-			    newCmdLine);
+	= new ExecOffspring (new ExecCommand(1 /* one thread */, alias));
     Proc proc = child.assertFindProcAndTasks();
-    String[] beforeCmdLine = proc.getCmdLine();
-    String beforeCommand = proc.getCommand();
 
     // Attach to the process using the exec observer. The event
     // loop is kept running until execObserverParent .addedTo is
@@ -338,8 +332,8 @@ public class TestExec
     assertTrue("task after attached multiple clone exec",
                proc.getPid() == task.getTid());
 
-    assertEquals("proc's getCmdLine[0]", proc.getPid() + ":"
-                                         + childtask.getTid(),
+    assertEquals("proc's getCmdLine[0]",
+		 proc.getPid() + ":" + childtask.getTid(),
                  proc.getCmdLine()[0]);
 
     assertEquals("Parent pid after attached multiple clone exec",
@@ -350,10 +344,6 @@ public class TestExec
 
     assertEquals("number of children", proc.getChildren().size(), 0);
     assertEquals("proc's getCommand after exec", proc.getCommand(),
-                 "funit-exec-alia");
-    assertFalse("proc's getCommand before/after exec equals",
-                beforeCommand.equals(proc.getCommand()));
-    assertFalse("proc's getCmdLine[0] before/after exec equals",
-                beforeCmdLine[0].equals(proc.getCmdLine()[0]));
+		 alias.exe.getName().substring(0, 15));
   }
 }

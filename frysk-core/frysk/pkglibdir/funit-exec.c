@@ -55,7 +55,7 @@ static void
 usage ()
 {
   printf ("\
-Usage: funit-exec [OPTION] PROGRAM ARGS ...\n\
+Usage: funit-exec [OPTION] -- [PROGRAM  ...]\n\
 On receipt of a signal, perform the operation:\n\
     SIGINT (cntrl-c)   The signaled thread execs PROGRAM with ARGS\n\
     SIGUSR1            Signal a non-main thread with SIGINT (it execs)\n\
@@ -68,7 +68,10 @@ Where valid options are:\n\
     -s SIGNAL\n\
     -m MASTER        Once running, send SIGNAL to process MASTER\n\
                      Default is to send signal 0 to process 0\n\
-    <program> ...    Program to exec.\n\
+    -b               Brand the exec, replacing argv[0] with the string\n\
+                     PID:TID, so that the execing thread is identified\n\
+    PROGRAM ...      Program and arguments to exec; by default funit-exec\n\
+                     re-execs itself\n\
 ");
   exit (1);
 }
@@ -78,18 +81,26 @@ Where valid options are:\n\
 char *exec_exe;
 char **exec_argv;
 char **exec_envp;
+int exec_brand_argv0;
 
 void
 exec_handler (int sig)
 {
-  trace ("exec %s", exec_exe);
-  if (getpid() != gettid()) {
-    // When a non-main thread, brand the argv with the exec-ing
-    // thread's pid.  This lets tests such as frysk.proc.TestExec
-    // check that the correct thread executed the exec call.
-    if (asprintf(&exec_argv[0], "%d:%d", getpid(), gettid()) < 0)
-      pfatal("asprintf");
-  }
+  trace ("exec %s ...", exec_exe);
+  if (exec_brand_argv0)
+    {
+      // Brand the argv[0] with the exec-ing thread's pid.  This lets
+      // tests such as frysk.proc.TestExec check that the correct
+      // thread initiated the exec call.
+      if (asprintf(&exec_argv[0], "%d:%d", getpid(), gettid()) < 0)
+	pfatal("asprintf");
+    }
+  int i;
+  for (i = 0; exec_argv[i] != NULL; i++)
+    {
+      trace ("... argv[%d] = %s", i, exec_argv[i]);
+    }
+  trace ("... call");
   execve (exec_exe, exec_argv, exec_envp);
   pfatal ("execve");
 }
@@ -140,6 +151,11 @@ stringtolong (const char * string)
 int
 main (int argc, char *argv[], char *envp[])
 {
+  if (argc <= 1) {
+    usage();
+    exit(1);
+  }
+
   int i;
   int sig = 0;
   int pid = 0;
@@ -147,7 +163,7 @@ main (int argc, char *argv[], char *envp[])
   int nr_threads = 0;
   int opt;
 
-  while ((opt = getopt(argc, argv, "+m:s:t:e:c:")) != -1) {
+  while ((opt = getopt(argc, argv, "+m:s:t:e:c:bh")) != -1) {
     switch (opt) {
     case 'm': // master
       pid = atoi (optarg);
@@ -164,19 +180,24 @@ main (int argc, char *argv[], char *envp[])
     case 'c': // clone count
       nr_threads = atoi (optarg);
       break;
+    case 'b': // Brand argv0 with PID:TID
+      exec_brand_argv0 = 1;
+      break;
+    case 'h': // help
+      usage();
+      exit(0);
     case '?':
       exit(1);
     }
   }
 
-  if (optind == argc) {
-    usage();
-    exit(1);
-  }
-
+  // If there was no executable, re-exec self.
+  if (optind == argc)
+    exec_argv = argv;
+  else
+    exec_argv = argv + optind;
   if (exec_exe == NULL)
-    exec_exe = argv[optind];
-  exec_argv = argv + optind;
+    exec_exe = exec_argv[0];
   exec_envp = envp;
 
   trace ("nr_threads = %d", nr_threads);

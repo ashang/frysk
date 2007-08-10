@@ -121,11 +121,16 @@
 	</listitem>
       </varlistentry>
 
+       <varlistentry>
+	<term> <option>-b</option> </term> <listitem> <para>Brand the
+	exec with the thread that initiated it by setting argv[0] to
+	the string TID:PID.</para> </listitem>
+      </varlistentry>
+
       <varlistentry>
 	<term><replaceable>PROGRAM-ARGS</replaceable></term>
 	<listitem><para>The program and arguments to pass to the exec
-	call.</para></listitem>
-      </varlistentry>
+	call.</para></listitem> </varlistentry>
 
     </variablelist>
 

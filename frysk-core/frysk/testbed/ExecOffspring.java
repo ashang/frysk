@@ -40,87 +40,38 @@
 package frysk.testbed;
 
 import frysk.sys.Sig;
-import frysk.Config;
-import frysk.sys.Pid;
-import frysk.junit.TestCase;
-import java.util.LinkedList;
-import java.util.logging.Level;
 import frysk.proc.Manager;
-import java.io.File;
+import java.util.logging.Level;
 
 /**
- * Create a process running funit-exec.
+ * Create a process running funit-exec as described by ExecCommand.
+ *
+ * The funit-exec program is created in two steps; first the
+ * ExecCommand is created. and second the ExecOffspring running that
+ * command.  This two step process makes it easier to construct a
+ * chain of funit-execs.  For instance, to create an funit-exec proces
+ * will invoke funit-exec and then invoke /bin/echo, use: new
+ * ExecOffspring(new ExecCommnand(new ExecCommand(new String[] {
+ * "/bin/echo", "hi"}))).
  *
  * The program funit-exec, when sent a signal, will exec its
  * arguments.
  */
 public class ExecOffspring extends SynchronizedOffspring {
     /**
-     * Create a process that, when requested, will execute an exec
-     * system call.
+     * Invoke funit-exec as specified by COMMAND.
      */
-    public ExecOffspring(String[] programAndArgs) {
-	super(START_ACK, getCommandLine(0, 0, null, programAndArgs));
+    public ExecOffspring(ExecCommand command) {
+	super(START_ACK, command.argv);
     }
     /**
-     * Create a multi-threaded process that, when requested, will exec
-     * ARGS[0] passing ARGS.
+     * Invoke funit-exec in a way that allows it to repeatedly re-exec
+     * itself.
      */
-    public ExecOffspring(int threads, String[] programAndArgs) {
-	super(START_ACK, getCommandLine(0, threads, null, programAndArgs));
-    }
-    /**
-     * Create a multi-threaded process that, when requested, will exec
-     * EXE passing ARGS as the argument list.
-     */
-    public ExecOffspring(int threads, File exe, String[] programAndArgs) {
-	super(START_ACK, getCommandLine(0, threads, exe, programAndArgs));
+    public ExecOffspring() {
+	this(new ExecCommand());
     }
 
-    /**
-     * Construct a command line for invoking the WORD_SIZED version of
-     * funit-exec (0 for default word size).  If THREADS is non-zero,
-     * create that many additional threads.  If EXE is non-null,
-     * invoke that program instead of PROGRAM from PROGRAM_ARGS.
-     */
-    public static String[] getCommandLine(int wordSize,
-					  int threads,
-					  File exe,
-					  String[] programArgs) {
-	LinkedList args = new LinkedList();
-	switch (wordSize) {
-	case 0:
-	    args.add(Config.getPkgLibFile("funit-exec").getPath());
-	    break;
-	case 32:
-	    args.add(Config.getPkgLib32File("funit-exec").getPath());
-	    break;
-	case 64:
-	    args.add(Config.getPkgLib64File("funit-exec").getPath());
-	    break;
-	default:
-	    throw new RuntimeException("wordSize " + wordSize + " is unknown");
-	}
-	if (threads > 0) {
-	    args.add("-c");
-	    args.add(Integer.toString(threads));
-	}
-	if (exe != null) {
-	    args.add("-e");
-	    args.add(exe.getAbsolutePath());
-	}
-	args.add("-m");
-	args.add(Integer.toString(Pid.get()));
-	args.add("-s");
-	args.add(Integer.toString(START_ACK.hashCode()));
-	args.add("-t");
-	args.add(Integer.toString(TestCase.getTimeoutSeconds()));
-	for (int i = 0; i < programArgs.length; i++) {
-	    args.add(programArgs[i]);
-	}
-	logger.log(Level.FINE, "funit-exec: {0}\n", args);
-	return (String[]) args.toArray(new String[0]);
-    }
     /**
      * Request that the process perform an exec.  Since the exec
      * starts a new program, this operation is not acknowledged.

@@ -1,3 +1,12 @@
+2007-08-10  Andrew Cagney  <cagney@redhat.com>
+
+	* TestExec.java (testAttachedSingleExec): Use ExecOffspring and
+	ExecCommand.
+	(testAttachedMultipleParentExec): Ditto.
+	(testAttachedMultipleChildExec): Ditto.
+	* TestIsa.java: Ditto.
+	* TestProcGet.java: Ditto.
+	
 2007-08-10  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestTaskObserverCode.java (testCodeSignalInterrupt): New test

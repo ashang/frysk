@@ -51,6 +51,7 @@ import frysk.testbed.TestLib;
 import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.ExecOffspring;
+import frysk.testbed.ExecCommand;
 import frysk.testbed.Offspring;
 
 /**
@@ -173,18 +174,13 @@ public class TestProcGet
      */
     public void testGetCmdLine() {
 	// Create a process with a known set of arguments.
-	String[] argv = ExecOffspring.getCommandLine(0, 0, null,
-							  new String[] {
-							      "/bin/echo",
-							      "hello"
-							  });
-	ExecOffspring child = new ExecOffspring(argv);
-	child.assertRunExec("invoking command with known argv");
+	ExecCommand cmd = new ExecCommand();
+	ExecOffspring child = new ExecOffspring(cmd);
 	Proc proc = child.assertFindProcAndTasks();
 	String[] cmdLine = proc.getCmdLine();
-	assertEquals("cmdLine.length", argv.length, cmdLine.length);
-	for (int i = 0; i < argv.length; i++) {
-	    assertEquals("cmdLine[" + i + "]", argv[i], cmdLine[i]);
+	assertEquals("cmdLine.length", cmd.argv.length, cmdLine.length);
+	for (int i = 0; i < cmd.argv.length; i++) {
+	    assertEquals("cmdLine[" + i + "]", cmd.argv[i], cmdLine[i]);
 	}
     }
 
@@ -194,14 +190,9 @@ public class TestProcGet
      */
     public void testGetExe() throws IOException {
 	// Create a process with a known set of arguments.
-	String[] argv = ExecOffspring.getCommandLine(0, 0, null,
-							  new String[] {
-							      "/bin/echo",
-							      "hello"
-							  });
-	ExecOffspring child = new ExecOffspring(argv);
-	child.assertRunExec("invoking command with known argv");
-	String file = new File(argv[0]).getCanonicalPath();
+	ExecCommand cmd = new ExecCommand();
+	ExecOffspring child = new ExecOffspring(cmd);
+	String file = new File(cmd.argv[0]).getCanonicalPath();
 	Proc proc = child.assertFindProcAndTasks();
 	assertEquals("exe", proc.getExe(), file);
     }

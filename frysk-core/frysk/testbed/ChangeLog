@@ -1,3 +1,14 @@
+2007-08-10  Andrew Cagney  <cagney@redhat.com>
+
+	* ExecOffspring.java (getCommandLine): Delete.
+	(ExecOffspring(Command)): New.
+	(ExecOffspring()): New.
+	(ExecOffspring(String[]): Delete.
+	(ExecOffspring(int,String[]): Delete.
+	(ExecOffspring(int,File,String[]): Delete.
+	* ExecCommand.java: New.
+	* DaemonBlockedAtEntry.java: Update.
+
 2007-08-10  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
 
 	* TestCoreFileAtSignal.java: New file.

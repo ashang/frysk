@@ -47,6 +47,7 @@ import java.io.File;
 import frysk.Config;
 import frysk.testbed.ExecOffspring;
 import frysk.testbed.SlaveOffspring;
+import frysk.testbed.ExecCommand;
 
 public class TestIsa
     extends TestLib
@@ -265,20 +266,15 @@ public class TestIsa
       File exec64 = Config.getPkgLib64File(null);
       if (unsupported ("32-on-64", exec32 == null && exec64 == null))
 	  return;
-      String[] invokeEcho = new String[] {
-	  "/bin/echo", "hello"
-      };
-      String[] invoke64thenEcho
-	  = ExecOffspring.getCommandLine(64, 0/*threads*/, null/*exe*/,
-					      invokeEcho);
-      String[] invoke32then64thenEcho
-	  = ExecOffspring.getCommandLine(32, 0/*threads*/, null/*exe*/,
-					      invoke64thenEcho);
-      String[] invoke64then32then64thenEcho
-	  = ExecOffspring.getCommandLine(32, 0/*threads*/, null/*exe*/,
-					      invoke32then64thenEcho);
+      ExecCommand invoke64
+	  = new ExecCommand(ExecCommand.Executable.BIT64);
+      ExecCommand invoke32then64
+	  = new ExecCommand(ExecCommand.Executable.BIT32, invoke64);
+      ExecCommand invoke64then32then64
+	  = new ExecCommand(ExecCommand.Executable.BIT64, invoke32then64);
       ExecOffspring ackProc
-	  = new ExecOffspring(invoke64then32then64thenEcho);
+	  = new ExecOffspring(new ExecCommand(ExecCommand.Executable.DEFAULT,
+					      invoke64then32then64));
 
       Task task = ackProc.findTaskUsingRefresh(true);
       AttachedObserver attacher = new AttachedObserver();
