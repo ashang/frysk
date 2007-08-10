@@ -79,11 +79,10 @@ send the MASTER (if specified) a SIGUSR2 acknowledge signal:\n\
 
 static void usage ()
 {
-  printf ("Usage: funit-slave [OPTIONS] [EXEC-ARGV ...]\n");
+  printf ("Usage: funit-slave [OPTIONS]\n");
   help ();
   printf ("\
 Where valid options are:\n\
-    -e EXE           Instead of PROGRAM, exec EXE\n\
     -w WAIT-TYPE     While waiting for signals, block using WAIT-TYPE.\n\
                      WAIT-TYPE is either \"suspend\" or \"busy-loop\".\n\
     -t TIMEOUT       Set an ALARM to TIMEOUT seconds; after which exit\n\
@@ -92,6 +91,7 @@ Where valid options are:\n\
                      Default is to send signal to process 0\n\
     <exec-argv>      Optional program and arguments to exec, by default\n\
                      this program, with identical aguments, will be execed.\n\
+    -e EXE           Instead of PROGRAM, exec EXE (internal use only)\n\
 ");
 }
 
@@ -198,7 +198,6 @@ int main_pid;
 int timeout;
 sigset_t sigmask;
 char *exec_program;
-char **exec_argv;
 char **exec_envp;
 
 void *
@@ -398,28 +397,22 @@ server (void *np)
 	// after the SIGFPE code has notified the manager that it's
 	// part is finished.
 	OK (pthread_mutex_lock, (&tids_mutex));
-	char **argv;
-	if (exec_argv != NULL) {
-	  argv = exec_argv;
-	  trace ("execing %s argv[0]=%s ...", exec_program, argv[0]);
-	}
-	else {
-	  const int ARGN = 9;
-	  argv = calloc (ARGN, sizeof (const char *));
-	  asprintf (&argv[0], "%d:%d", tiddle->pid, tiddle->tid);
-	  asprintf (&argv[1], "-w");
-	  asprintf (&argv[2], "%s", use_busy_wait ? "busy-loop" : "suspend");
-	  asprintf (&argv[3], "-e");
-	  asprintf (&argv[4], "%s", exec_program);
-	  asprintf (&argv[5], "-t");
-	  asprintf (&argv[6], "%d", timeout);
-	  asprintf (&argv[7], "%d", master_tid);
-	  argv[8] = NULL;
-	  trace ("execing %s 0=%s 1=%s 2=%s 3=%s 4=%s 5=%s 6=%s 7=%s",
-		 exec_program,
-		 argv[0], argv[1], argv[2], argv[3], argv[4], argv[5],
-		 argv[6], argv[7]);
-	}
+	const int ARGN = 10;
+	char **argv = calloc (ARGN, sizeof (const char *));
+	asprintf (&argv[0], "%d:%d", tiddle->pid, tiddle->tid);
+	asprintf (&argv[1], "-w");
+	asprintf (&argv[2], "%s", use_busy_wait ? "busy-loop" : "suspend");
+	asprintf (&argv[3], "-e");
+	asprintf (&argv[4], "%s", exec_program);
+	asprintf (&argv[5], "-t");
+	asprintf (&argv[6], "%d", timeout);
+	asprintf (&argv[7], "-m");
+	asprintf (&argv[8], "%d", master_tid);
+	argv[9] = NULL;
+	trace ("execing %s 0=%s 1=%s 2=%s 3=%s 4=%s 5=%s 6=%s 7=%s 8=%s",
+	       exec_program,
+	       argv[0], argv[1], argv[2], argv[3], argv[4], argv[5],
+	       argv[6], argv[7], argv[8]);
 	execve (exec_program, argv, exec_envp);
 	// Any execve return is an error.
 	pfatal ("execve");
@@ -448,7 +441,6 @@ main (int argc, char *argv[], char *envp[])
 
   main_pid = getpid ();
   exec_program = NULL;
-  exec_argv = NULL;
   exec_envp = envp;
   timeout = 0; // infinite
   master_tid = 0;
@@ -490,20 +482,15 @@ main (int argc, char *argv[], char *envp[])
 	  exit(1);
 	}
     }
+  if (optind != argc) {
+    fprintf (stderr, "Extra argument at end of line: %s\n", argv[optind]);
+    exit(1);
+  }
+    
 
   // Grab the exec-argv.
-  if (optind < argc)
-    {
-      exec_argv = argv + optind;
-      if (exec_program == NULL)
-	exec_program = argv[optind];
-    }
-  else
-    {
-      exec_argv = argv;
-      if (exec_program == NULL)
-	exec_program = argv[0];
-    }
+  if (exec_program == NULL)
+    exec_program = argv[0];
   exec_envp = envp;
 
   // Disable buffering; tell the world the pid.

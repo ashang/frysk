@@ -1,5 +1,9 @@
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
+	* funit-slave.c (exec_args): Delete.
+	(server): Pass -m to execed process.
+	(usage): Note that -e is internal-use-only
+	
 	* funit-slave.c: New; based on funit-child.c.
 	* funit-slave.xml: New; based on funit-child.xml.
 	
