@@ -1,3 +1,8 @@
+2007-08-09  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* StaticPTSet.java (getTasks): Return correct
+	ArrayList Iterator.
+
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
 	* TestCoreCommand.java: Replace "funit-child" with

@@ -98,7 +98,7 @@ class StaticPTSet implements PTSet
 				result.add( ((TaskData) temp.get(j)).getTask() );
 		}
 
-		return temp.iterator();
+		return result.iterator();
 	}
 
 	public Iterator getTaskData()
