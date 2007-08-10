@@ -1,3 +1,8 @@
+2007-08-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestLinuxCore.java: Added virtualFrames boolean argument
+	to StackTraceActions.
+
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLinuxCore.java: Use frysk.testbed.LegacyOffspring for now.

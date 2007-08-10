@@ -151,7 +151,7 @@ public class TestLinuxCore
     StacktraceAction coreStack;
 
     StringWriter stringWriter1 = new StringWriter();
-    stacker = new StacktraceAction(new PrintWriter(stringWriter1),ackProc, new RequestStopEvent(Manager.eventLoop), true, false, false, false, false)
+    stacker = new StacktraceAction(new PrintWriter(stringWriter1),ackProc, new RequestStopEvent(Manager.eventLoop), true, false,false, false, false, false)
     {
 
       public void addFailed (Object observable, Throwable w)
@@ -164,7 +164,7 @@ public class TestLinuxCore
     assertRunUntilStop("perform backtrace");
 
     StringWriter stringWriter2 = new StringWriter();
-    coreStack = new StacktraceAction(new PrintWriter(stringWriter2),coreProc, new PrintEvent(),true,false,false,false, false)
+    coreStack = new StacktraceAction(new PrintWriter(stringWriter2),coreProc, new PrintEvent(),true,false,false,false,false, false)
     {
 
       public void addFailed (Object observable, Throwable w)

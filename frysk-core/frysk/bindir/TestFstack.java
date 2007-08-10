@@ -135,11 +135,21 @@ public class TestFstack
 		  + ".*"
 		  + proc.getCommand() + "\\.c#" 
 		  + "");
+  }
+
+    public void testBackTraceWithDashV () {
+	Proc proc = CoreFileAtSignal.constructCore(getExecPath("funit-inlined"));
+        e = new Expect (new String[] {
+			    Config.getBinFile("fstack").getAbsolutePath (),
+			    "-v",
+			    "-a",
+			    "core." + proc.getPid()
+			});
         
-//        e.expect (".*main.*int argc.*"
-//		  + Config.getRootSrcDir()
-//		  + ".*"
-//		  + proc.getCommand() + "\\.c#");
-    }
+        e.expect ("third" +
+        	".*second" +
+        	".*first" +
+        ".*main");
+  }
 
 }

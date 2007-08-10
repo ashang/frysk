@@ -1,3 +1,9 @@
+2007-08-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* fstack.java: Added new -v option.
+	Added virtualFrames boolean.
+	* TestFstack.java (testBackTraceWithDashV): New test.
+
 2007-08-10  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
 
 	* TestFstack.java: Now uses funit-stacks instead of 

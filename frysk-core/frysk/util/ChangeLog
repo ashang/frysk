@@ -1,3 +1,9 @@
+2007-08-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* StacktraceAction.java: Added virtualFrames boolean.
+	* StressTestFStack.java: Ditto.
+	* TestFStack.java: Ditto.
+
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
 	* TestCommandlineParser.java: Replace "funit-child" with

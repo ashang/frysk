@@ -67,6 +67,7 @@ public final class fstack
   
   private static PrintWriter printWriter = new PrintWriter(System.out);
   
+  static boolean virtualFrames = false;
   static boolean elfOnly = true;
   static boolean printParameters = false;
   static boolean printScopes = false;
@@ -77,11 +78,11 @@ public final class fstack
   {
 
     Proc proc;
-    public Stacker (PrintWriter printWriter, Proc theProc, Event theEvent,boolean elfOnly, 
+    public Stacker (PrintWriter printWriter, Proc theProc, Event theEvent,boolean elfOnly, boolean virtualFrames,
                     boolean printParameters, boolean printScopes, 
                     boolean fullpath, boolean printSourceLibrary)
     {
-      super(printWriter, theProc, theEvent, elfOnly, printParameters, printScopes, fullpath,printSourceLibrary);
+      super(printWriter, theProc, theEvent, elfOnly,virtualFrames, printParameters, printScopes, fullpath,printSourceLibrary);
       this.proc = theProc;
     }
 
@@ -140,7 +141,7 @@ public final class fstack
   {
       
     Proc proc = Util.getProcFromCoreExePair(coreExePair);
-    stacker = new Stacker(printWriter, proc, new PrintEvent(),elfOnly,printParameters,printScopes, fullpath,printSourceLibrary);
+    stacker = new Stacker(printWriter, proc, new PrintEvent(),elfOnly,virtualFrames,printParameters,printScopes, fullpath,printSourceLibrary);
     new ProcCoreAction(proc, stacker);
     Manager.eventLoop.run();
   }
@@ -148,7 +149,7 @@ public final class fstack
   private static void stackPid (ProcId procId)
   {
     Proc proc = Util.getProcFromPid(procId);
-    stacker = new Stacker(printWriter, proc, new AbandonPrintEvent(proc),elfOnly,printParameters,printScopes, fullpath,printSourceLibrary);
+    stacker = new Stacker(printWriter, proc, new AbandonPrintEvent(proc),elfOnly,virtualFrames,printParameters,printScopes, fullpath,printSourceLibrary);
     new ProcBlockAction(proc, stacker);
     Manager.eventLoop.run();
   }
@@ -185,7 +186,22 @@ public final class fstack
                   fullpath = true;
                 }
               });
-              
+    
+    parser.add(new Option(
+			"virtual",
+			'v',
+			"Includes virtual frames in the stack trace.\n" +
+			"Virtual frames are artificial frames corresponding" +
+			" to calls to inlined functions") {
+
+		    public void parsed(String argument) throws OptionException {
+			virtualFrames = true;
+			elfOnly = false;
+			System.out.println(".parsed() virtualFrames " + virtualFrames);
+		    }
+		});
+
+
     parser.add(new Option("common", 'c', "print commonly used debug information:" +
                           "this is equivalent to -p functions,params,fullpath"){
 

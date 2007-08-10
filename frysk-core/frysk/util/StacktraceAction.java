@@ -83,6 +83,7 @@ public abstract class StacktraceAction
   boolean printScopes;
   boolean fullpath;
   boolean printSourceLibrary;
+  private boolean virtualFrames;
   
   protected static Logger logger = Logger.getLogger("frysk"); 
 
@@ -103,10 +104,11 @@ public abstract class StacktraceAction
    *            file path is printed other wise only the name of the file is printed.
    * @throws ProcException
    */
-  public StacktraceAction (PrintWriter printWriter, Proc theProc, Event theEvent,boolean elfOnly, boolean printParameters, boolean printScopes, boolean fullpath, boolean printSourceLibrary)
+  public StacktraceAction (PrintWriter printWriter, Proc theProc, Event theEvent,boolean elfOnly, boolean virtualFrames, boolean printParameters, boolean printScopes, boolean fullpath, boolean printSourceLibrary)
   {
      event = theEvent;
 
+     this.virtualFrames = virtualFrames;
      this.elfOnly = elfOnly;
      this.printParameters = printParameters;
      this.printScopes = printScopes;
@@ -116,11 +118,6 @@ public abstract class StacktraceAction
      this.printWriter = printWriter;
     Manager.eventLoop.add(new InterruptEvent(theProc));
   }  
-
-//  public StacktraceAction (Proc theProc, Event theEvent,boolean elfOnly, boolean printParameters, boolean printScopes, boolean fullpath)
-//  {
-//      this(new PrintWriter(System.out) , theProc, theEvent, elfOnly, printParameters, printScopes, fullpath);
-//  }  
 
   public final void existingTask (Task task)
   {
@@ -155,7 +152,11 @@ public abstract class StacktraceAction
 	if(elfOnly){
 	    StackFactory.printTaskStackTrace(printWriter,task,printSourceLibrary);
 	}else{
-	    DebugInfoStackFactory.printTaskStackTrace(printWriter,task,printParameters,printScopes,fullpath);
+	    if(virtualFrames){
+		DebugInfoStackFactory.printVirtualTaskStackTrace(printWriter,task,printParameters,printScopes,fullpath);
+	    }else{
+		DebugInfoStackFactory.printTaskStackTrace(printWriter,task,printParameters,printScopes,fullpath);
+	    }
 	}
       }
     logger.log(Level.FINE, "{0} exiting printTasks\n", this);
