@@ -1,3 +1,11 @@
+2007-08-10  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
+
+	* StoppedTestTaskFactory.java: Renamed getStoppedTask to
+	getStoppedTaskFromExecDir.
+	Created getStoppedTask.
+	* TestFrameDebugInfo.java: Renamed getStoppedTask to
+	getStoppedTaskFromExecDir.
+
 2007-08-09  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
 
 	* TestFrameDebugInfo.java: Moved getStoppedTask and 

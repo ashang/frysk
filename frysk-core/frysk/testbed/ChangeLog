@@ -1,3 +1,8 @@
+2007-08-10  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
+
+	* TestCoreFileAtSignal.java: New file.
+	* CoreFileAtSignal.java: New file.
+
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
 	* SlaveOffspring.java (getExecutable): Run funit-slave instead of

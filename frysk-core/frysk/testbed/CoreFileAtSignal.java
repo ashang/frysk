@@ -37,60 +37,54 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.debuginfo;
+package frysk.testbed;
 
-import frysk.proc.Action;
+import java.io.File;
+
+import frysk.debuginfo.StoppedTestTaskFactory;
+import frysk.event.Event;
+import frysk.event.RequestStopEvent;
+import frysk.proc.Host;
 import frysk.proc.Manager;
-import frysk.proc.Task;
-import frysk.proc.TaskObserver;
-import frysk.testbed.DaemonBlockedAtEntry;
-import frysk.testbed.TestLib;
+import frysk.proc.Proc;
+import frysk.proc.ProcBlockAction;
+import frysk.proc.ProcId;
+import frysk.proc.dead.LinuxHost;
+import frysk.util.CoredumpAction;
 
-public class StoppedTestTaskFactory extends TestLib {
+public class CoreFileAtSignal extends TestLib {
     
-    public static Task getStoppedTask(String path){
-	DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(
-		new String[] { path });
+    /**
+     * Given a path to an executable it will run it until it sigfaults then
+     * extracts a corefile at that point, and return a Proc representing
+     * that core file.
+     */
+    public static Proc constructCore(String procPath) {
+	
+	final Proc ackProc = StoppedTestTaskFactory.getStoppedTask(procPath).getProc();
 
-	Task task = ackProc.getMainTask();
+	final CoredumpAction coreDump = new CoredumpAction(ackProc,
+		new Event() {
+	    
+	    public void execute() {
+		ackProc.requestAbandonAndRunEvent(new RequestStopEvent(
+			Manager.eventLoop));
+	    }
+	}, false);
 
-	task.requestAddSignaledObserver(new TerminatingSignaledObserver());
-	task.requestAddTerminatingObserver(new TerminatingSignaledObserver());
+	new ProcBlockAction(ackProc, coreDump);
+	assertRunUntilStop("Running event loop for core file");
 
-	ackProc.requestRemoveBlock();
-	assertRunUntilStop("Add TerminatingSignaledObserver");
+	String coreFileName = coreDump.getConstructedFileName();
 
-	return task;
+	File xtestCore = new File(coreFileName);
+	xtestCore.deleteOnExit();
+	
+	Host lcoreHost = new LinuxHost(Manager.eventLoop, xtestCore);
+
+	Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid()));
+
+	return coreProc;
     }
-    
-    public static Task getStoppedTaskFromExecDir() {
-	return getStoppedTaskFromExecDir("funit-stacks");
-    }
 
-    public  static Task getStoppedTaskFromExecDir(String process) {
-	return getStoppedTask(getExecPath(process));
-    }
-
-    static class TerminatingSignaledObserver implements TaskObserver.Signaled,
-	    TaskObserver.Terminating {
-	public void deletedFrom(Object observable) {
-	}
-
-	public void addedTo(Object observable) {
-	}
-
-	public void addFailed(Object observable, Throwable w) {
-	    throw new RuntimeException(w);
-	}
-
-	public Action updateSignaled(Task task, int signal) {
-	    Manager.eventLoop.requestStop();
-	    return Action.BLOCK;
-	}
-
-	public Action updateTerminating(Task task, boolean signal, int value) {
-	    Manager.eventLoop.requestStop();
-	    return Action.BLOCK;
-	}
-    }
 }

@@ -66,7 +66,7 @@ public class TestFrameDebugInfo
   public void testFrameDebugInfoStackTrace ()
   {
       
-    Task task = StoppedTestTaskFactory.getStoppedTask();
+    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir();
 
     StringWriter stringWriter = new StringWriter();
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
@@ -85,7 +85,7 @@ public class TestFrameDebugInfo
     if(unresolved(4676))
         return;
 
-    Task task = StoppedTestTaskFactory.getStoppedTask("funit-stacks-exit");
+    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-stacks-exit");
 
     Frame frame = StackFactory.createFrame(task);
     StringWriter stringWriter = new StringWriter();
@@ -105,7 +105,7 @@ public class TestFrameDebugInfo
     if(unresolved(4677))
         return;
 
-    Task task = StoppedTestTaskFactory.getStoppedTask("funit-scopes");
+    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-scopes");
     Frame frame = StackFactory.createFrame(task);
     
     Dwfl dwfl = DwflCache.getDwfl(task);
@@ -123,7 +123,7 @@ public class TestFrameDebugInfo
   public void testFrameScopesWorkAround ()
   {
     
-    Task task = StoppedTestTaskFactory.getStoppedTask("funit-scopes-workaround");
+    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-scopes-workaround");
     Frame frame = StackFactory.createFrame(task);
     
     Dwfl dwfl = DwflCache.getDwfl(task);
@@ -142,7 +142,7 @@ public class TestFrameDebugInfo
   public void testGetInlinedSubroutines ()
   {
     
-    Task task = StoppedTestTaskFactory.getStoppedTask("funit-inlined");
+    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-inlined");
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
     
     LinkedList inlinedSubprograms =  frame.getInlnedSubprograms();
@@ -154,7 +154,7 @@ public class TestFrameDebugInfo
   public void testVirtualDebugInfoStackTrace ()
   {
     
-    Task task = StoppedTestTaskFactory.getStoppedTask("funit-inlined");
+    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-inlined");
     StringWriter stringWriter = new StringWriter();
     
     DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(stringWriter), task, true, true, true);
@@ -168,7 +168,7 @@ public class TestFrameDebugInfo
   
   public void testValues() throws NameNotFoundException
   {
-    Task task = StoppedTestTaskFactory.getStoppedTask("funit-stacks-values");
+    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-stacks-values");
     Subprogram subprogram;
     DebugInfoFrame frame;
     Variable variable;
@@ -228,7 +228,7 @@ public class TestFrameDebugInfo
   }
   
   public void testLineNumbers(){
-      Task task = StoppedTestTaskFactory.getStoppedTask("funit-stacks-linenum");
+      Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-stacks-linenum");
       
       Subprogram subprogram;
       DebugInfoFrame frame;

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,60 +37,31 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.debuginfo;
+package frysk.testbed;
 
-import frysk.proc.Action;
-import frysk.proc.Manager;
-import frysk.proc.Task;
-import frysk.proc.TaskObserver;
-import frysk.testbed.DaemonBlockedAtEntry;
-import frysk.testbed.TestLib;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
-public class StoppedTestTaskFactory extends TestLib {
-    
-    public static Task getStoppedTask(String path){
-	DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(
-		new String[] { path });
+import frysk.proc.Proc;
+import frysk.stack.StackFactory;
 
-	Task task = ackProc.getMainTask();
+public class TestCoreFileAtSignal extends TestLib
 
-	task.requestAddSignaledObserver(new TerminatingSignaledObserver());
-	task.requestAddTerminatingObserver(new TerminatingSignaledObserver());
+{
 
-	ackProc.requestRemoveBlock();
-	assertRunUntilStop("Add TerminatingSignaledObserver");
+    public void testCoreFileAtSignal() {
 
-	return task;
-    }
-    
-    public static Task getStoppedTaskFromExecDir() {
-	return getStoppedTaskFromExecDir("funit-stacks");
+	StringWriter stringWriter = new StringWriter();
+	Proc coreProc = CoreFileAtSignal.constructCore(getExecPath("funit-stacks"));
+	StackFactory.printTaskStackTrace(new PrintWriter(stringWriter), coreProc
+		.getMainTask(), false);
+
+	String stackString = stringWriter.getBuffer().toString();
+	
+	assertTrue(stackString.contains("fourth"));
+	assertTrue(stackString.contains("third"));
+	assertTrue(stackString.contains("second"));
+	assertTrue(stackString.contains("first"));	
     }
 
-    public  static Task getStoppedTaskFromExecDir(String process) {
-	return getStoppedTask(getExecPath(process));
-    }
-
-    static class TerminatingSignaledObserver implements TaskObserver.Signaled,
-	    TaskObserver.Terminating {
-	public void deletedFrom(Object observable) {
-	}
-
-	public void addedTo(Object observable) {
-	}
-
-	public void addFailed(Object observable, Throwable w) {
-	    throw new RuntimeException(w);
-	}
-
-	public Action updateSignaled(Task task, int signal) {
-	    Manager.eventLoop.requestStop();
-	    return Action.BLOCK;
-	}
-
-	public Action updateTerminating(Task task, boolean signal, int value) {
-	    Manager.eventLoop.requestStop();
-	    return Action.BLOCK;
-	}
-    }
 }
