@@ -362,6 +362,7 @@ pm_expression throws TabException
   *  parse tree constructed so far.
   */
 /* ??? add (id_expression | (TAB {bTabPressed = true;})) */
+
 variable! throws TabException 
 {
     AST astPostExpr = null, astDotExpr = null;
@@ -373,21 +374,19 @@ variable! throws TabException
 
             (   options {warnWhenFollowAmbig = false;}
 
-              :   LPAREN (expr2:expressionList)? RPAREN
+            : LPAREN (expr2:expressionList)? RPAREN
                 { astPostExpr = #([FUNC_CALL, "FuncCall"], #astPostExpr, #expr2); }
-	      | LSQUARE expr1:expression RSQUARE
+	        | LSQUARE expr1:expression RSQUARE
                 // a[b][c] => (Array Reference a (Subscript b) (Subscript c))
                 {AST sub = null;
-		 if (astPostExpr.getFirstChild() != null)
-		    {
-		      #sub = #(#[SUBSCRIPT,"Subscript"], #expr1);
-                      astPostExpr.addChild(#sub);
-		    }
-                 else
-                    {
-		      #sub = #(#[SUBSCRIPT,"Subscript"], #expr1);
-                      #astPostExpr = #(#[REFERENCE,"Array Reference"], #astPostExpr, #sub);
-                    }
+		 		 if (astPostExpr.getFirstChild() != null) {
+		      	    #sub = #(#[SUBSCRIPT,"Subscript"], #expr1);
+                    astPostExpr.addChild(#sub);
+		    	 }
+                 else {
+		      	    #sub = #(#[SUBSCRIPT,"Subscript"], #expr1);
+                    #astPostExpr = #(#[REFERENCE,"Array Reference"], #astPostExpr, #sub);
+                 }
                 }
 
             |   DOT!
@@ -400,18 +399,16 @@ variable! throws TabException
                     { astDotExpr = #id_expr1;}
                 )
                 // a.b.c => (Class Reference a b c))
-                {if (astPostExpr.getFirstChild() != null)
-		   {
-		     if (#astDotExpr.getText().endsWith("\t") == false)
-                       astPostExpr.addChild(#astDotExpr);
-		   }
-                 else
-		   {
-		     if (#astDotExpr.getText().endsWith("\t") == false)
-		       #astPostExpr = #(#[REFERENCE,"Class Reference"], #astPostExpr, #astDotExpr);
-		     else
-                       #astPostExpr = #(#[REFERENCE,"Class Reference"], #astPostExpr);
-		   }
+                {if (astPostExpr.getFirstChild() != null) {
+		            if (#astDotExpr.getText().endsWith("\t") == false)
+                       astPostExpr.addChild(#astDotExpr); 
+		            }
+                    else {
+		     	       if (#astDotExpr.getText().endsWith("\t") == false)
+		       			  #astPostExpr = #(#[REFERENCE,"Class Reference"], #astPostExpr, #astDotExpr);
+		     		   else
+                          #astPostExpr = #(#[REFERENCE,"Class Reference"], #astPostExpr);
+		   			}
                 }
             |   POINTERTO id_expr2:id_expression
                 { astPostExpr = #(POINTERTO, #astPostExpr, #id_expr2); }
@@ -491,10 +488,12 @@ LPAREN    : '('   ;
 RPAREN    : ')'   ;
 
 LSQUARE   : '[' ;
-
 RSQUARE   : ']' ;
+
 LCURLY    : '{' ;
 RCURLY    : '}' ;
+
+AT : '@' ;
 
 EQUAL			: "==" ;
 NOTEQUAL		: "!=" ;
@@ -540,7 +539,7 @@ SCOPE           : "::"  ;
 protected
 IDENT
 options {testLiterals = true;}
-    :   ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
+    :   ('$')*('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
     
 ;
 /**

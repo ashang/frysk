@@ -47,13 +47,19 @@ import frysk.stack.Register;
 
 import lib.dwfl.DwarfDie;
 import lib.dwfl.DwOpEncodings;
+import lib.dwfl.DwAtEncodings;
 
 class LocationExpression {
+    public final static int locationTypeRegDisp = 1,
+    locationTypeAddress = 2,
+    locationTypeReg = 3;
     DebugInfoFrame frame;
     DwarfDie die;
     List ops;
+    int locationType;
     
     public LocationExpression (DebugInfoFrame frame, DwarfDie die, List ops) {
+	locationType = 0;
 	this.frame = frame;
 	this.die = die;
 	this.ops = ops;
@@ -69,7 +75,10 @@ class LocationExpression {
 	int nops = ops.size();
 
 	if (nops == 0)
-	    throw new ValueUavailableException();
+	    if (die.getAttrBoolean(DwAtEncodings.DW_AT_location_)) 
+		throw new VariableOptimizedOutException();  
+	    else 
+		throw new ValueUavailableException();
 
 	for(int i = 0; i < nops; i++) {
 	    int operator = ((DwarfDie.DwarfOp) ops.get(i)).operator;
@@ -143,6 +152,8 @@ class LocationExpression {
 	    case DwOpEncodings.DW_OP_reg29_:
 	    case DwOpEncodings.DW_OP_reg30_:
 	    case DwOpEncodings.DW_OP_reg31_:
+		if (locationType == 0) 
+		    locationType = locationTypeReg;
 		Register register = DwarfRegisterMapFactory.getRegisterMap(isa)
 		.getRegister(operator - DwOpEncodings.DW_OP_reg0_);
 		long regval = frame.getRegisterValue(register).longValue();
@@ -181,6 +192,7 @@ class LocationExpression {
 	    case DwOpEncodings.DW_OP_breg29_:
 	    case DwOpEncodings.DW_OP_breg30_:
 	    case DwOpEncodings.DW_OP_breg31_:
+		locationType = locationTypeRegDisp;
 		register = DwarfRegisterMapFactory.getRegisterMap(isa)
 		.getRegister(operator - DwOpEncodings.DW_OP_breg0_);
 		regval = frame.getRegisterValue(register).longValue();
@@ -196,10 +208,12 @@ class LocationExpression {
 		break;
 
 	    case DwOpEncodings.DW_OP_addr_:
+		locationType = locationTypeAddress;
 		stack.addFirst(new Long(operand1));
 		break;
 
 	    case DwOpEncodings.DW_OP_fbreg_:
+		locationType = locationTypeRegDisp;
 		long pc = frame.getAdjustedAddress();
 		LocationExpression frameBaseOps = new LocationExpression (frame, die, die.getFrameBase(pc));
 		stack.addFirst(new Long(operand1 + frameBaseOps.decode()));
@@ -257,12 +271,16 @@ class LocationExpression {
 	if (ops.size() == 1) {
 	    int operator = ((DwarfDie.DwarfOp) ops.get(0)).operator;
 	    if (operator >= DwOpEncodings.DW_OP_reg0_
-		|| operator <=  DwOpEncodings.DW_OP_reg31_)
+		|| operator <=  DwOpEncodings.DW_OP_reg31_) {
+		locationType = locationTypeReg;
 		return DwarfRegisterMapFactory.getRegisterMap(isa)
 		.getRegister(operator - DwOpEncodings.DW_OP_reg0_);
+	    }
 	}
-	else
-	    throw new ValueUavailableException();
 	return null;
+    }
+
+    public int getLocationType () {
+	return locationType;
     }
 }

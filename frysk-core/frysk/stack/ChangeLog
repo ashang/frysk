@@ -1,3 +1,7 @@
+2007-08-10  Stan Cox  <scox@redhat.com>
+
+	* RegisterMap.java (getRegister): New.  Given String return Register.
+
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFrame.java: Replace AttachedAckProcess with

@@ -1,3 +1,12 @@
+2007-08-10  Stan Cox  <scox@redhat.com>
+
+	* LocationExpression.java (locationType): New.
+	(decode): Set it.
+	* DebugInfoEvaluator.java (getBufferAddr): Insure we have a memory 
+	address.
+	(AccessRegisters.getRegister): Insure we have a register.
+	(get): Handle register names.
+
 2007-08-10  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
 
 	* StoppedTestTaskFactory.java: Renamed getStoppedTask to

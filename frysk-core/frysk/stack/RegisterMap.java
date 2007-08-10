@@ -39,7 +39,9 @@
 
 package frysk.stack;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public abstract class RegisterMap {
@@ -58,5 +60,18 @@ public abstract class RegisterMap {
     
     public Register getRegister(int regNum) {
 	return (Register) registers.get(new Integer(regNum));
+    }
+
+    public Register getRegister(String s) {
+	Collection regs = registers.values();
+	Iterator it = regs.iterator();
+	Register val;
+	while (it.hasNext()) {
+	    val = (Register)it.next();
+	    if (val.name.compareTo(s) == 0)
+		return val;
+	}
+	
+	return null;
     }
 }

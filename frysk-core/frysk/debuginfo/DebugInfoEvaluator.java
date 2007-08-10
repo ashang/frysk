@@ -62,6 +62,7 @@ import frysk.expr.CppSymTab;
 import frysk.proc.Isa;
 import frysk.proc.Task;
 import frysk.stack.Register;
+import frysk.stack.RegisterMap;
 import frysk.sys.Errno;
 import frysk.value.ArithmeticType;
 import frysk.value.ArrayType;
@@ -182,7 +183,11 @@ class DebugInfoEvaluator
       List ops = varDieP.getFormData(pc);
       
       LocationExpression locExp = new LocationExpression(currentFrame, varDieP, ops);
-      return locExp.decode();
+      long value = locExp.decode();
+      if (locExp.getLocationType() != LocationExpression.locationTypeAddress
+	      && locExp.getLocationType() != LocationExpression.locationTypeRegDisp)
+	  throw new NameNotFoundException();
+      return value;
     }
 
     public long getAddr (DwarfDie die) throws NameNotFoundException
@@ -279,10 +284,12 @@ class DebugInfoEvaluator
 	long pc = currentFrame.getAdjustedAddress();
 	
 	List ops = varDieP.getFormData(pc);
+        Isa isa;
 	
 	LocationExpression locExp = new LocationExpression(currentFrame, varDieP, ops);
 	Register register = locExp.getRegisterNumber();
-        Isa isa;
+	if (register == null)
+	    throw new NameNotFoundException();
 
         if (currentFrame.getInnerDebugInfoFrame() == null)
               isa = task.getIsa();
@@ -292,7 +299,6 @@ class DebugInfoEvaluator
         int reg = DwarfRegisterMapFactory.getRegisterMap(isa)
                 .getRegisterNumber(register);
         return reg;
-
 	}
     
     private long getRegister(DwarfDie varDieP)
@@ -302,7 +308,10 @@ class DebugInfoEvaluator
 	List ops = varDieP.getFormData(pc);
       
 	LocationExpression locExp = new LocationExpression(currentFrame, varDieP, ops);
-	return locExp.decode();
+	long value  = locExp.decode();
+	if (locExp.getLocationType() != LocationExpression.locationTypeReg)
+	    throw new NameNotFoundException();
+	return value;
     }
 
     public long getLong (DwarfDie varDieP, long offset) throws NameNotFoundException
@@ -687,6 +696,16 @@ class DebugInfoEvaluator
   public Value get (DebugInfoFrame f, String s) throws NameNotFoundException
   {
     setCurrentFrame(f);
+    if (s.charAt(0) == '$')
+    {
+	RegisterMap regMap = DwarfRegisterMapFactory.getRegisterMap(f.getTask().getIsa());
+	Register reg = regMap.getRegister(s.substring(1).trim());
+	if (reg == null)
+	    return null;
+	long regval = f.getRegisterValue(reg).longValue();
+	return ArithmeticType.newLongValue(longType, s, regval);
+    }
+
     DwarfDie varDie = getDie(s);
     if (varDie == null)
       return (null);

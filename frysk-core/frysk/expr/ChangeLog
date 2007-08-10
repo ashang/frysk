@@ -1,3 +1,7 @@
+2007-08-10  Stan Cox  <scox@redhat.com>
+
+	* cpp.g (IDENT): Allow leading '$'.
+
 2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* cpp.g: Replaced Frame with DebugInfoFrame.

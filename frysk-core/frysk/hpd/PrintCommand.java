@@ -62,10 +62,14 @@ class PrintCommand
 	this.cli = cli;
     }
 
-    private static final int DECIMAL = 10;
-    private static final int HEX = 16;
-    private static final int OCTAL = 8;    
-    
+    private int getFormat(Format f) {
+	if (f == Format.HEXADECIMAL)
+	    return 16;
+	if (f == Format.OCTAL)
+	    return 8;
+	else return 10;
+    }
+
     public void handle(Command cmd) throws ParseException {
         PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
@@ -80,28 +84,26 @@ class PrintCommand
         }
 	Format format = Format.NATURAL;
 	boolean haveFormat = false;
-	int outputFormat = DECIMAL;
 
 	String sInput 
 	    = cmd.getFullCommand().substring(cmd.getAction().length()).trim();
+
+	if (sInput.indexOf('$') != -1) 
+	    format = Format.HEXADECIMAL;
+	else
+	    format = Format.DECIMAL;
 
 	for (int i = 0; i < params.size(); i++) {
 	    if (((String)params.get(i)).equals("-format")) {
 		haveFormat = true;
 		i += 1;
 		String arg = ((String)params.get(i));
-		if (arg.compareTo("d") == 0) {
+		if (arg.compareTo("d") == 0) 
 		    format = Format.DECIMAL;
-		    outputFormat = DECIMAL;
-		}
-		else if (arg.compareTo("o") == 0) {
+		else if (arg.compareTo("o") == 0)
 		    format = Format.OCTAL;
-		    outputFormat = OCTAL;
-		}
-		else if (arg.compareTo("x") == 0) {
+		else if (arg.compareTo("x") == 0) 
 		    format = Format.HEXADECIMAL;
-		    outputFormat = HEX;
-		}
 	    }
 	}
 	if (haveFormat)
@@ -153,15 +155,12 @@ class PrintCommand
             }
 
 
-            switch (outputFormat) {
-            case HEX: 
+	    if (format == Format.HEXADECIMAL) 
                 cli.outWriter.print("0x");
-                break;
-            case OCTAL: 
+	    else if (format == Format.OCTAL)
                 cli.outWriter.print("0");
-                break;
-            }
-            int resultType = result.getType().getTypeId();
+
+	    int resultType = result.getType().getTypeId();
             if (resultType == BaseTypes.baseTypeFloat
                 || resultType == BaseTypes.baseTypeDouble)
                 cli.outWriter.println(result.toString());
@@ -169,9 +168,9 @@ class PrintCommand
                      || resultType == BaseTypes.baseTypeInteger
                      || resultType == BaseTypes.baseTypeLong)
                 {
-                    if (outputFormat == DECIMAL)
+                    if (format == Format.DECIMAL)
                         cli.outWriter.println(Long.toString(result.longValue(),
-                                                            outputFormat));
+                                                            getFormat(format)));
                     else
                         {
                             BigInteger bigInt = new BigInteger(Long.toString(result.longValue()));
@@ -180,8 +179,8 @@ class PrintCommand
                 }
             else if (resultType == BaseTypes.baseTypeByte)
                 cli.outWriter.println(Integer.toString((int)result.longValue(),
-                                                       outputFormat) + 
-                                      " '" + result.toString() + "'");
+                                                       getFormat(format)) + 
+                                      " '" + (char)result.intValue() + "'");
             else {
                 result.toPrint(cli.outWriter, task.getMemory(), format);
                 cli.outWriter.println();
