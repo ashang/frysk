@@ -2,6 +2,7 @@
 
 	* LocationExpression.java (decode): More stack and arithmetic operators
 	added.
+	Casts to DwarfOp modified to reflect changes in DwarfDie.
 	
 	* DwarfRegisterMapFactory.java: Added RegisterMaps IA32 and X8664. 
 	getRegisterMap now returns IA32 or X8664.
