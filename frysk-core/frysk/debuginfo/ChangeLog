@@ -1,5 +1,7 @@
 2007-08-10  Teresa Thomas  <tthomas@redhat.com>
 
+	* TestLocationExpression.java: New file. 
+	
 	* LocationExpression.java (decode): More stack and arithmetic operators
 	added.
 	Casts to DwarfOp modified to reflect changes in DwarfDie.
