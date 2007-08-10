@@ -1,3 +1,18 @@
+2007-08-10  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestTaskObserverCode.java (testCodeSignalInterrupt): New test
+	case for bug #4747.
+	(testInstallCodeDuringCode): New test cae for bug 4889.
+	(CodeObserver.block): New boolean field.
+	(CodeObserver.updateHit): Check block field.
+	(SignaledObserver): New TaskObserver helper class.
+	(TerminatingObserver.updateTerminating): Explictly block.
+	(TerminatingObserver.addedTo): Request stop event loop.
+	* TestBreakpoints.java (testSteppingtestHitAndRun): Mark unresolved
+	for bug #4847.
+	(testSteppingtestInsertRemove): Likewise.
+	(testSteppingAddLots): Likewise.
+
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskObserverCode.java: Use frysk.testbed.LegacyOffspring for

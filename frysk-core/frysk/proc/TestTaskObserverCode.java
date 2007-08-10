@@ -141,6 +141,124 @@ public class TestTaskObserverCode extends TestLib
     assertRunUntilStop("cleanup");
   }
 
+  // testcase for bug #4747
+  public void testCodeSignalInterrupt() throws Exception
+  {
+    if (unresolved(4747))
+      return;
+
+    // Create a child.
+    child = LegacyOffspring.createDaemon();
+    task = child.findTaskUsingRefresh (true);
+    proc = task.getProc();
+
+    // Make sure we are attached.
+    AttachedObserver attachedObserver = new AttachedObserver();
+    task.requestAddAttachedObserver(attachedObserver);
+    assertRunUntilStop("adding AttachedObserver");
+
+    long address = getFunctionEntryAddress("bp1_func");
+    CodeObserver code = new CodeObserver(task, address);
+    task.requestUnblock(attachedObserver);
+    task.requestAddCodeObserver(code, address);
+    assertRunUntilStop("add breakpoint observer");
+
+    assertFalse(code.hit);
+
+    // Request a run and watch the breakpoint get hit.
+    requestDummyRun();
+    assertRunUntilStop("signal and wait for hit");
+
+    assertTrue(code.hit);
+
+    SignaledObserver signaled = new SignaledObserver();
+    task.requestAddSignaledObserver(signaled);
+    assertRunUntilStop("Add signaled observer");
+
+    // We are at the breakpoint now, but have not yet stepped over it.
+    // The dummySig is currently blocked in the funit-child.  So
+    // sending another request will make it pending, but not get
+    // immediately delivered (we will get notified in the signaled
+    // observer though as soon as the signal gets unblocked). We
+    // expect to get a notification about the PROF signal, right after
+    // the step over the breakpoint without trouble and then hit the
+    // breakpoint again.
+    code.hit = false;
+    requestDummyRun();
+    task.requestUnblock(code);
+    assertRunUntilStop("signal and wait for signaled observer to hit");
+    assertFalse("not hit again (after second prof)", code.hit);
+    assertEquals("Prof signaled", Sig.PROF_, signaled.sig);
+
+    signaled.sig = -1;
+    task.requestUnblock(signaled);
+    assertRunUntilStop("wait for hit after sigprof");
+    assertTrue("hit again (after second prof)", code.hit);
+    assertEquals("signaled not again", -1, signaled.sig);
+
+    // The TERM signal however isn't blocked. So making that pending
+    // will immediately jump into the signal handler, bypassing the
+    // step over the currently pending breakpoint. And will then kill
+    // the process when delivered.
+    code.hit = false;
+    Signal.tkill(task.getTid(), Sig.TERM);
+    task.requestUnblock(code);
+    assertRunUntilStop("wait for TERM signal"); 
+    assertEquals("term signaled", Sig.TERM_, signaled.sig);
+    assertFalse("no hit after term", code.hit);
+
+    TerminatingObserver terminatingObserver = new TerminatingObserver();
+    task.requestAddTerminatingObserver(terminatingObserver);
+    assertRunUntilStop("TerminatingObserver");
+
+    task.requestUnblock(signaled);
+    assertRunUntilStop("waiting for terminate...");
+    assertFalse(code.hit);
+  }
+
+  // Testcase for bug #4889
+  public void testInstallCodeDuringCode() throws Exception
+  {
+    if (unresolved(4889))
+      return;
+
+    // Create a child.
+    child = LegacyOffspring.createDaemon();
+    task = child.findTaskUsingRefresh (true);
+    proc = task.getProc();
+
+    // Make sure we are attached.
+    AttachedObserver attachedObserver = new AttachedObserver();
+    task.requestAddAttachedObserver(attachedObserver);
+    assertRunUntilStop("adding AttachedObserver");
+
+    long address1 = getFunctionEntryAddress("bp1_func");
+    CodeObserver code1 = new CodeObserver(task, address1);
+    task.requestUnblock(attachedObserver);
+    task.requestAddCodeObserver(code1, address1);
+    assertRunUntilStop("add breakpoint observer");
+
+    assertFalse(code1.hit);
+
+    // Request a run and watch the breakpoint get hit.
+    requestDummyRun();
+    assertRunUntilStop("signal and wait for hit");
+
+    assertTrue(code1.hit);
+
+    // Now install a second code observer while simultaniously
+    // unblocking the task from the first code observer.
+    long address2 = getFunctionEntryAddress("bp2_func");
+    CodeObserver code2 = new CodeObserver(task, address2);
+    code1.block = false;
+    task.requestUnblock(code1);
+    task.requestAddCodeObserver(code2, address2);
+    assertRunUntilStop("add breakpoint observer 2");
+
+    assertFalse(code2.hit);
+
+  }
+
   public void testCodeRemovedInHit() throws Exception
   {
     // Create a child.
@@ -151,9 +269,7 @@ public class TestTaskObserverCode extends TestLib
     // Make sure we are attached.
     AttachedObserver attachedObserver = new AttachedObserver();
     task.requestAddAttachedObserver(attachedObserver);
-    TerminatingObserver terminatingObserver = new TerminatingObserver();
-    task.requestAddTerminatingObserver(terminatingObserver);
-    assertRunUntilStop("adding AttachedObserver & TerminatingObserver");
+    assertRunUntilStop("adding AttachedObserver");
 
     long address1 = getFunctionEntryAddress("bp1_func");
     long address2 = getFunctionEntryAddress("bp2_func");
@@ -414,16 +530,17 @@ public class TestTaskObserverCode extends TestLib
     child.signal(dummySig);
   }
   
-    /**
-     * Request that that given thread of the child runs its dummy
-     * function which will call the pb1 and pb1 functions. Done by
-     * sending it the dummySig. To observe this event one needs to put
-     * a code observer on the dummy (), pb1_func () and/or pb2_func ()
-     * functions.
-     */
-    void requestDummyRun(int tid) throws Errno {
-	Signal.tkill(tid, dummySig);
-    }
+  /**
+   * Request that that given thread of the child runs its dummy
+   * function which will call the pb1 and pb1 functions. Done by
+   * sending it the dummySig. To observe this event one needs to put
+   * a code observer on the dummy (), pb1_func () and/or pb2_func ()
+   * functions.
+   */
+  void requestDummyRun(int tid) throws Errno
+  {
+    Signal.tkill(tid, dummySig);
+  }
 
   /**
    * Returns the address of the requested function through
@@ -454,6 +571,7 @@ public class TestTaskObserverCode extends TestLib
     final long address;
 
     boolean hit;
+    boolean block = true;
 
     public CodeObserver(Task task, long address)
     {
@@ -474,8 +592,13 @@ public class TestTaskObserverCode extends TestLib
 
       hit = true;
 
-      Manager.eventLoop.requestStop();
-      return Action.BLOCK;
+      if (block)
+	{
+	  Manager.eventLoop.requestStop();
+	  return Action.BLOCK;
+	}
+      else
+	return Action.CONTINUE;
     }
 
     public void addedTo(Object o)
@@ -550,21 +673,51 @@ public class TestTaskObserverCode extends TestLib
     }
   }
 
+
+  static class SignaledObserver
+    implements TaskObserver.Signaled
+  {
+    int sig;
+
+    public Action updateSignaled (Task task, int signal)
+    {
+      this.sig = signal;
+      Manager.eventLoop.requestStop();
+      return Action.BLOCK;
+    }
+
+    public void addFailed(Object observable, Throwable w)
+    {
+      fail(w.toString());
+    }
+
+    public void addedTo(Object observable)
+    {
+      Manager.eventLoop.requestStop();
+    }
+
+    public void deletedFrom(Object observable)
+    {
+      // Ignored
+    }
+  }
+
   private class TerminatingObserver
     implements TaskObserver.Terminating
   {
-    public boolean terminating = false;
     public Action updateTerminating (Task task, boolean signal, int value)
     {
-	terminating = true;
-	Manager.eventLoop.requestStop();
-	return Action.CONTINUE;
+      Manager.eventLoop.requestStop();
+      return Action.BLOCK;
     }
     public void addFailed(Object observable, Throwable w)
     {
       fail(w.getMessage());
     }
-    public void addedTo(Object observable){}
+    public void addedTo(Object observable)
+    {
+      Manager.eventLoop.requestStop();
+    }
     public void deletedFrom(Object observable){}
   }
 }

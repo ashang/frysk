@@ -213,6 +213,9 @@ public class TestBreakpoints
 
   public void testSteppingtestHitAndRun() throws IOException
   {
+    if (unresolved(4847))
+      return;
+
     installInstructionObserver = true;
     testHitAndRun();
   }
@@ -316,6 +319,9 @@ public class TestBreakpoints
 
   public void testSteppingtestInsertRemove() throws IOException
   {
+    if (unresolved(4847))
+      return;
+
     installInstructionObserver = true;
     testInsertRemove();
   }
@@ -416,6 +422,9 @@ public class TestBreakpoints
   
   public void testSteppingAddLots() throws IOException
   {
+    if (unresolved(4847))
+      return;
+
     installInstructionObserver = true;
     testAddLots();
   }
