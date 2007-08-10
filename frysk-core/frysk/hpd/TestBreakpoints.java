@@ -61,6 +61,26 @@ public class TestBreakpoints
 	e.expect("quit.*\nQuitting...");
 	e.close();
     }
+    
+    public void testHpdBreakpointRunProcess() {
+	
+	if (unresolved(4914))
+	    return;
+	
+	e = new Expect(Config.getBinFile("fhpd"));
+	e.expect (prompt);
+	// Attach
+	e.send ("run " + Config.getPkgLibFile("hpd-c"));
+	e.expect (5, "Attached.*\n" + prompt);
+	// Break
+	e.send("break #hpd-c.c#196\n");	// This has to break on: while (int_21)
+	e.expect("breakpoint.*" + prompt);
+	e.send("go\n");
+	e.expect("go.*\n" + prompt + "Breakpoint.*#hpd-c.c#196");
+	e.send("quit\n");
+	e.expect("quit.*\nQuitting...");
+	e.close();
+    }
 
     public void testHpdBreakpointInline() {
 	child = new Expect(Config.getPkgLibFile("test1"));
