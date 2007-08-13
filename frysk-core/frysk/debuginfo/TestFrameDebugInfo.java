@@ -181,12 +181,12 @@ public class TestFrameDebugInfo
     
     variable = (Variable) subprogram.getParameters().iterator().next();
     assertNotNull(variable);
-    assertEquals("Name", variable.getVariable().getTextFIXME(), "param3");
+    assertEquals("Name", variable.getName(), "param3");
     assertEquals("Value", variable.getValue(frame).intValue(), 3);
     
     variable = (Variable) subprogram.getVariables().getFirst();
     assertNotNull(variable);
-    assertEquals("Name", variable.getVariable().getTextFIXME(), "var4");
+    assertEquals("Name", variable.getName(), "var4");
     assertEquals("Value", variable.getValue(frame).intValue(), 4);
     
     // outer frame
@@ -197,12 +197,12 @@ public class TestFrameDebugInfo
     
     variable = (Variable) subprogram.getParameters().iterator().next();
     assertNotNull(variable);
-    assertEquals("Name", variable.getVariable().getTextFIXME(), "param2");
+    assertEquals("Name", variable.getName(), "param2");
     assertEquals("Value", variable.getValue(frame).intValue(), 2);
     
     variable = (Variable) subprogram.getVariables().getFirst();
     assertNotNull(variable);
-    assertEquals("Name", variable.getVariable().getTextFIXME(), "var3");
+    assertEquals("Name", variable.getName(), "var3");
     assertEquals("Value", variable.getValue(frame).intValue(), 3);
     
     // outer outer frame
@@ -213,12 +213,12 @@ public class TestFrameDebugInfo
     
     variable = (Variable) subprogram.getParameters().iterator().next();
     assertNotNull(variable);
-    assertEquals("Name", variable.getVariable().getTextFIXME(), "param1");
+    assertEquals("Name", variable.getName(), "param1");
     assertEquals("Value", variable.getValue(frame).intValue(), 1);
     
     variable = (Variable) subprogram.getVariables().getFirst();
     assertNotNull(variable);
-    assertEquals("Name", variable.getVariable().getTextFIXME(), "var2");
+    assertEquals("Name", variable.getName(), "var2");
     assertEquals("Value", variable.getValue(frame).intValue(), 2);
     
   }
@@ -243,12 +243,12 @@ public class TestFrameDebugInfo
       
       variable = (Variable) iterator.next();
       assertNotNull(variable);
-      assertEquals("Name", variable.getVariable().getTextFIXME(), "param1");
+      assertEquals("Name", variable.getName(), "param1");
       assertEquals("line number", variable.getLineNumber(), 3);
       
       variable = (Variable) iterator.next();
       assertNotNull(variable);
-      assertEquals("Name", variable.getVariable().getTextFIXME(), "param2");
+      assertEquals("Name", variable.getName(), "param2");
       assertEquals("line number", variable.getLineNumber(), 3);
       
       frame = frame.getOuterDebugInfoFrame();
@@ -259,22 +259,22 @@ public class TestFrameDebugInfo
       
       variable = (Variable) iterator.next();
       assertNotNull(variable);
-      assertEquals("Name", variable.getVariable().getTextFIXME(), "var1");
+      assertEquals("Name", variable.getName(), "var1");
       assertEquals("line number", variable.getLineNumber(), 9);
       
       variable = (Variable) iterator.next();
       assertNotNull(variable);
-      assertEquals("Name", variable.getVariable().getTextFIXME(), "var2");
+      assertEquals("Name", variable.getName(), "var2");
       assertEquals("line number", variable.getLineNumber(), 9);
       
       variable = (Variable) iterator.next();
       assertNotNull(variable);
-      assertEquals("Name", variable.getVariable().getTextFIXME(), "var3");
+      assertEquals("Name", variable.getName(), "var3");
       assertEquals("line number", variable.getLineNumber(), 9);
       
       variable = (Variable) iterator.next();
       assertNotNull(variable);
-      assertEquals("Name", variable.getVariable().getTextFIXME(), "var4");
+      assertEquals("Name", variable.getName(), "var4");
       assertEquals("line number", variable.getLineNumber(), 10);
   }
   

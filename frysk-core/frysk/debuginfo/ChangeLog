@@ -1,5 +1,7 @@
 2007-08-13  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFrameDebugInfo.java: Use Variable.getName.
+
 	* Variable.java (getName): New.
 
 	* Variable.java: Re-indent.
