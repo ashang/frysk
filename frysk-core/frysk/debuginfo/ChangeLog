@@ -1,3 +1,10 @@
+2007-08-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Variable.java (getName): Add.
+	* DebugInfoEvaluator.java: Replace Value.getText with
+	Variable.getName or Value.getTextFIXME.
+	* TestFrameDebugInfo.java: Ditto.
+
 2007-08-10  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestLocationExpression.java: New file. 

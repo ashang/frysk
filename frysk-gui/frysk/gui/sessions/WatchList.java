@@ -135,7 +135,7 @@ public class WatchList implements SaveableXXX {
 	    UpdatingDisplayValue uDisp = (UpdatingDisplayValue) iter.next();
 	    // TODO: Do we need a better way of identifying whether two
 	    // variables are the same?
-	    if (uDisp.getName().equals(disp.getValue().getText())
+	    if (uDisp.getName().equals(disp.getValue().getTextFIXME())
 		    && uDisp.getValue().getType().getName().equals(
 			    disp.getValue().getType().getName())) {
 		iter.remove();

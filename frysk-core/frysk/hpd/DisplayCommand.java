@@ -151,7 +151,8 @@ public class DisplayCommand extends CLIHandler {
                 output.println(uDisp.getId() + ": " + args.get(0)
                                + " = <unavailable>");
             else
-                output.println(uDisp.getId() + ": " + v.getText() + " = " + v);
+                output.println(uDisp.getId() + ": " + v.getTextFIXME()
+			       + " = " + v);
             output.flush();
         }
     }

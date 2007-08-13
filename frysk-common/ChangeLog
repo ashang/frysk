@@ -1,3 +1,8 @@
+2007-08-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (.g.antlered): Assume unfixable problems are real
+	errors and install files anyway.
+
 2007-07-19  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (.S, .s): For arch32, add hardwired dependency

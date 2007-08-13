@@ -1,3 +1,7 @@
+2007-08-13  Andrew Cagney  <cagney@redhat.com>
+
+	* cpp.g: Replace Value.getText with Value.getTextFIXME.
+
 2007-08-10  Stan Cox  <scox@redhat.com>
 
 	* cpp.g (IDENT): Allow leading '$'.

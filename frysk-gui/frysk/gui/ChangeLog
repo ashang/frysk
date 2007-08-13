@@ -1,3 +1,8 @@
+2007-08-13  Andrew Cagney  <cagney@redhat.com>
+
+	* sessions/WatchList.java: Replace Value.getText with
+	Value.getTextFIXME.
+
 2007-08-09  Andrew Cagney  <cagney@redhat.com>
 
 	* test/GuiTestLib.java: Delete.

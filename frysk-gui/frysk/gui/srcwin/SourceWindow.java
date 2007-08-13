@@ -766,7 +766,7 @@ public class SourceWindow extends Window {
     public void addVariableTrace(Value var) {
 	UpdatingDisplayValue disp = DisplayManager.createDisplay(currentTask,
 		currentFrame.getFrameIdentifier(), steppingEngine, var
-			.getText());
+			.getTextFIXME());
 	getCurrentDebugProcess().getWatchList().addVariable(disp);
     }
 
@@ -780,7 +780,7 @@ public class SourceWindow extends Window {
     public void removeVariableTrace(Value var) {
 	UpdatingDisplayValue disp = DisplayManager.createDisplay(currentTask,
 		currentFrame.getFrameIdentifier(), steppingEngine, var
-			.getText());
+			.getTextFIXME());
 	getCurrentDebugProcess().getWatchList().removeVariable(disp);
     }
 

@@ -99,6 +99,11 @@ public class Variable
   {
     return type;
   }
+    public String getName() {
+	if (variable != null)
+	    return null;
+	return variable.getTextFIXME();
+    }
   public void setTypeDie (DwarfDie typeDie)
   {
     this.typeDie = typeDie;
@@ -117,7 +122,7 @@ public class Variable
   }
   
   public void toPrint(PrintWriter printWriter, DebugInfoFrame frame){
-      printWriter.print(this.getType() + " " + this.getVariable().getText() + " = ");
+      printWriter.print(this.getType() + " " + this.getName() + " = ");
       try{
 	  Value value = getValue(frame);
 	  printWriter.print(value.toString());

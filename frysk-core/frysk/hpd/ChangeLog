@@ -1,3 +1,8 @@
+2007-08-13  Andrew Cagney  <cagney@redhat.com>
+
+	* DisplayCommand.java: Replace Value.getText with
+	Value.getTextFIXME.
+
 2007-08-10  Mike Cvet  <mcvet@redhat.com>
 
 	* TestBreakpoints.java (testHpdBreakpointRunProcess): Added. Marked

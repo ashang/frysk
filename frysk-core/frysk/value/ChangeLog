@@ -1,4 +1,10 @@
 2007-08-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Value.java (textFIXME): Rename text.
+	(getTextFIXME): Rename getText.
+	* ArrayType.java: Update.
+
+2007-08-13  Andrew Cagney  <cagney@redhat.com>
             Nurdin Premji  <npremji@redhat.com>
 	
 	* Value.java (columnXXX, getColumnXXX): Delete.

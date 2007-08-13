@@ -150,7 +150,7 @@ public class ArrayType
 	{
 	  ByteBuffer abb = v.getLocation().getByteBuffer().slice(off, type.size);
 	  abb.order(type.getEndian());
-	  return new Value((ClassType)type, v.getText(), abb);
+	  return new Value((ClassType)type, v.getTextFIXME(), abb);
 	}
       return null;
     }

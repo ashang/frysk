@@ -1,4 +1,9 @@
 2007-08-13  Andrew Cagney  <cagney@redhat.com>
+
+	* SourceView.java: Replace Value.getText with Value.getTextFIXME.
+	* SourceWindow.java: Ditto.
+
+2007-08-13  Andrew Cagney  <cagney@redhat.com>
             Nurdin Premji  <npremji@redhat.com>
 	
 	* SourceBuffer.java: Do not set the value's file path or line

@@ -507,8 +507,11 @@ SUFFIXES += .antlered .g
 		test -r "$$d/$$b.sed" || continue ; \
 		( set -x ; sort -n $$d/$$b.sed $$fix | uniq > $$d/$$b.tmp ) ; \
 		if ( set -x ; cmp -s $$d/$$b.tmp $$d/$$b.sed ) ; then \
-		    echo "$$d/$$b.sed already contains fixes, oops!" ; \
-		    exit 1 ; \
+		    echo "***" ; \
+		    echo "*** $$d/$$b.sed already contains all fixes!" ; \
+		    echo "*** Assuming errors are real." ; \
+		    echo "***" ; \
+		    continue ; \
 		fi ; \
 		mv -f $$d/$$b.tmp $$d/$$b.sed ; \
 		edits=true ; \

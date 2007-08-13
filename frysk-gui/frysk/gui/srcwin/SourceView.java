@@ -577,8 +577,8 @@ public class SourceView extends TextView implements View, ExposeListener {
          *                The value to remove from the list of watches
          */
     public void removeVar(Value var) {
-	if (varMap.containsKey(var.getText()))
-	    varMap.remove(var.getText());
+	if (varMap.containsKey(var.getTextFIXME()))
+	    varMap.remove(var.getTextFIXME());
 	else
 	    return;
 
@@ -876,7 +876,8 @@ public class SourceView extends TextView implements View, ExposeListener {
 
 	    if (var != null) {
 		MenuItem valueItem;
-		valueItem = new MenuItem("Value of " + var.getText() + ": "
+		valueItem = new MenuItem("Value of " + var.getTextFIXME()
+					 + ": "
 			+ var.toString(), true);
 		valueItem.setSensitive(false);
 		m.append(valueItem);
@@ -884,17 +885,17 @@ public class SourceView extends TextView implements View, ExposeListener {
                  * Only show this item in the menu if the variable is not
                  * already there
                  */
-		if (!varMap.containsKey(var.getText())) {
+		if (!varMap.containsKey(var.getTextFIXME())) {
 		    MenuItem traceItem = new MenuItem(
 			    "Add to Variable Watches", false);
 		    m.append(traceItem);
 		    traceItem.setSensitive(true);
 		    traceItem.addListener(new MenuItemListener() {
 			public void menuItemEvent(MenuItemEvent arg0) {
-			    if (varMap.containsKey(var.getText()))
+			    if (varMap.containsKey(var.getTextFIXME()))
 				return;
 			    else
-				varMap.put(var.getText(), var);
+				varMap.put(var.getTextFIXME(), var);
 
 			    SourceView.this.parent.addVariableTrace(var);
 			}
@@ -903,7 +904,7 @@ public class SourceView extends TextView implements View, ExposeListener {
 		/*
                  * Only show this item if the variable is indeed in the list
                  */
-		if (varMap.containsKey(var.getText())) {
+		if (varMap.containsKey(var.getTextFIXME())) {
 
 		    MenuItem removeItem = new MenuItem(
 			    "Remove from Variable Watches", false);

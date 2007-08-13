@@ -52,33 +52,33 @@ public class Value
 {
     private final Type type;
     private final Location location;
-    private final String text;
+    private final String textFIXME;
 
     public Value(Type type)	{
       this(type, "temp");
     }
 
-    public Value(Type type, String text)
+    public Value(Type type, String textFIXME)
     {
-      this(type, text, (new Location(type.getSize())));
+      this(type, textFIXME, (new Location(type.getSize())));
     }
       
  
-    public Value(Type type, String text, ByteBuffer byteBuffer) 
+    public Value(Type type, String textFIXME, ByteBuffer byteBuffer) 
     {
-      this(type, text, (new Location(byteBuffer)));
+      this(type, textFIXME, (new Location(byteBuffer)));
     }    
 
-    public Value(Type type, String text, ArrayByteBuffer arrayByteBuffer) 
+    public Value(Type type, String textFIXME, ArrayByteBuffer arrayByteBuffer) 
     {
-      this(type, text, (new Location(arrayByteBuffer)));
+      this(type, textFIXME, (new Location(arrayByteBuffer)));
     }    
     
-    public Value(Type type, String text, Location location)
+    public Value(Type type, String textFIXME, Location location)
     {
        this.type = type;
        this.location = location;
-       this.text = text;
+       this.textFIXME = textFIXME;
     }
 
 
@@ -92,8 +92,14 @@ public class Value
       return type;
     }
 
-    public String getText() {
-      return text;
+    /**
+     * Return what is probably the variable's name.
+     *
+     * XXX: This dates back to when Variable and Value were the same
+     * class.  Code should instead ask the Variable for it's name.
+     */
+    public String getTextFIXME() {
+      return textFIXME;
     }
 
     public byte getByte() {

@@ -893,57 +893,57 @@ expr returns [Value returnVar=null]
     |   #(ASSIGNEQUAL v1=expr v2=expr)  {
             v1.getType().assign(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(frame, v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getTextFIXME(), v1);
         }
     |   #(TIMESEQUAL v1=expr v2=expr)  {
             v1.getType().timesEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(frame, v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getTextFIXME(), v1);
         }
     |   #(DIVIDEEQUAL v1=expr v2=expr)  {
             v1.getType().divideEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(frame, v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getTextFIXME(), v1);
         }
     |   #(MINUSEQUAL v1=expr v2=expr)  {
             v1.getType().minusEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(frame, v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getTextFIXME(), v1);
         }
     |   #(PLUSEQUAL v1=expr v2=expr)  {
             v1.getType().plusEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(frame, v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getTextFIXME(), v1);
         }
     |   #(MODEQUAL v1=expr v2=expr)  {
             v1.getType().modEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(frame, v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getTextFIXME(), v1);
         }
     |   #(SHIFTLEFTEQUAL v1=expr v2=expr)  {
             v1.getType().shiftLeftEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(frame, v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getTextFIXME(), v1);
         }
     |   #(SHIFTRIGHTEQUAL v1=expr v2=expr)  {
             v1.getType().shiftRightEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(frame, v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getTextFIXME(), v1);
         }
     |   #(BITWISEANDEQUAL v1=expr v2=expr)  {
             v1.getType().bitWiseAndEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(frame, v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getTextFIXME(), v1);
         }
     |   #(BITWISEXOREQUAL v1=expr v2=expr)  {
             v1.getType().bitWiseXorEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(frame, v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getTextFIXME(), v1);
         }
     |   #(BITWISEOREQUAL v1=expr v2=expr)  {
             v1.getType().bitWiseOrEqual(v1, v2);
             returnVar = v1;
-            cppSymTabRef.put(frame, v1.getText(), v1);
+            cppSymTabRef.put(frame, v1.getTextFIXME(), v1);
         }
     |   #(CAST pt:primitiveType v2=expr) { 
 	    if(pt.getText().compareTo("long") == 0) {
