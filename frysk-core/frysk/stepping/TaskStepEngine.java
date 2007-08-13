@@ -108,13 +108,9 @@ public class TaskStepEngine
   {
     /* Perform the next tentative state transition */
     State s = this.state.handleUpdate(this);
-    if (s.isStopped())
-      {
-	this.state = s;
-	return true;
-      }
+    this.state = s;
     
-    return false;
+    return (s.isStopped());
   }
   
   public SteppingEngine getSteppingEngine ()

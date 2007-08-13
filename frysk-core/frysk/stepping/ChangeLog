@@ -1,5 +1,7 @@
 2007-08-13  Mike Cvet  <mcvet@redhat.com>
 
+	* TaskStepEngine.java (handleUpdate): Fixed bug which caused intermittent
+	testcase failures.
 	* StepOverTestState.java (handleUpdate): Ensure to remove breakpoint
 	after all cases.
 	* SteppingEngine.java (stepOut): Add breakpoint to breakpointMap.
