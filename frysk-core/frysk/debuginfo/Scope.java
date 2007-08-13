@@ -44,7 +44,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import lib.dwfl.DwException;
 import lib.dwfl.DwTagEncodings;
 import lib.dwfl.DwarfDie;
 import frysk.value.Value;

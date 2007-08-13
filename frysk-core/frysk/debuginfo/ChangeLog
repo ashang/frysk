@@ -1,5 +1,7 @@
 2007-08-13  Andrew Cagney  <cagney@redhat.com>
 
+	* Scope.java: Delete unused import lib.dwfl.DwException.
+	
 	* Scope.java: Always call Variable.toPrint.
 	* Subprogram.java: Ditto.
 	* DebugInfoEvaluator.java: Replace Variable.getVariable and
