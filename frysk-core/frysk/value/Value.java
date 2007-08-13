@@ -54,16 +54,17 @@ public class Value
     private final Location location;
     private final String textFIXME;
 
-    public Value(Type type)	{
-      this(type, "temp");
+    public Value(Type type, Location location) {
+	this.type = type;
+	this.location = location;
+	this.textFIXME = "textFIXME";
     }
-
+ 
     public Value(Type type, String textFIXME)
     {
       this(type, textFIXME, (new Location(type.getSize())));
     }
-      
- 
+
     public Value(Type type, String textFIXME, ByteBuffer byteBuffer) 
     {
       this(type, textFIXME, (new Location(byteBuffer)));
