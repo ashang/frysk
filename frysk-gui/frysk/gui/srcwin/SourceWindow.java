@@ -1211,7 +1211,7 @@ public class SourceWindow extends Window {
 	AccelMap.changeEntry("<sourceWin>/Program/Next", KeyValue.n,
 		ModifierType.MOD1_MASK, true);
 	this.next.connectAccelerator();
-	this.next.setSensitive(false);
+	this.next.setSensitive(true);
 
 	// Finish action
 	this.finish = new Action("finish", "Finish", "Finish Function Call",
@@ -1226,7 +1226,7 @@ public class SourceWindow extends Window {
 	AccelMap.changeEntry("<sourceWin>/Program/Finish", KeyValue.f,
 		ModifierType.MOD1_MASK, true);
 	this.finish.connectAccelerator();
-	this.finish.setSensitive(false);
+	this.finish.setSensitive(true);
 
 	// Continue action
 	this.cont = new Action("continue", "Continue", "Continue Execution",
@@ -1285,7 +1285,7 @@ public class SourceWindow extends Window {
 	AccelMap.changeEntry("<sourceWin>/Program/Next Assembly", KeyValue.n,
 		ModifierType.MOD1_MASK.or(ModifierType.SHIFT_MASK), true);
 	this.nextAsm.connectAccelerator();
-	this.nextAsm.setSensitive(false);
+	this.nextAsm.setSensitive(true);
 
 	// top of stack action
 	this.stackTop = new Action("stackTop", "To top of Stack",
@@ -1854,13 +1854,13 @@ public class SourceWindow extends Window {
 	    this.stepDialog.resensitize();
 
 	// Set status of actions
-	// this.run.setSensitive(true);
+//	 this.run.setSensitive(true);
 	this.stop.setSensitive(false);
 	this.step.setSensitive(true);
-	// this.next.setSensitive(true);
-	// this.finish.setSensitive(true);
+	this.next.setSensitive(true);
+	this.finish.setSensitive(true);
 	this.cont.setSensitive(true);
-	// this.nextAsm.setSensitive(true);
+	this.nextAsm.setSensitive(true);
 	this.stepAsm.setSensitive(true);
 
 	this.stepInDialog.setSensitive(true);
@@ -2629,21 +2629,17 @@ public class SourceWindow extends Window {
          * out"
          */
     private void doFinish() {
-	System.out.println("Step Out");
 
 	StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
 	sbar.push(0, "Stepping Out");
 
 	desensitize();
 
-	LinkedList l = new LinkedList();
-	l.add(this.currentTask);
-	this.steppingEngine.stepOut(l);
+	this.steppingEngine.stepOut(this.currentTask, DebugInfoStackFactory.createDebugInfoStackTrace(this.currentTask));
 	removeTags();
     }
 
     protected void doFinish(LinkedList tasks) {
-	System.out.println("Step Out");
 
 	StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
 	sbar.push(0, "Stepping Out");

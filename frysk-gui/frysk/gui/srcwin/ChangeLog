@@ -1,3 +1,8 @@
+2007-08-13  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWidow.java: Sensitized and enabled all stepping actions.
+	Fixes #4908.
+
 2007-08-13  Andrew Cagney  <cagney@redhat.com>
 
 	* SourceView.java: Replace Value.getText with Value.getTextFIXME.
