@@ -74,9 +74,6 @@ public class Variable {
     public void setVariable (Value variable) {
 	this.variable = variable;
     }
-    public Value getVariable() {
-	return variable;
-    }
     public void setVariableDie (DwarfDie variableDie) {
 	if (variableDie == null) {
 	    throw new IllegalArgumentException();
@@ -119,7 +116,14 @@ public class Variable {
     }
   
     public void toPrint(PrintWriter printWriter, DebugInfoFrame frame) {
-	printWriter.print(this.getType() + " " + this.getVariable().getTextFIXME() + " = ");
+	if (variable == null) {
+	    // FIXME: This should just send the request to the Value's
+	    // toPrint method and not try to figure out of the Type
+	    // information was delt with.
+	    printWriter.print("<<unhandled type>>");
+	    return;
+	}
+	printWriter.print(this.getType() + " " + this.getName() + " = ");
 	try {
 	    Value value = getValue(frame);
 	    printWriter.print(value.toString());

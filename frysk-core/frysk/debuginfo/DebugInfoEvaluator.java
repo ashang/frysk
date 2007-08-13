@@ -410,7 +410,7 @@ class DebugInfoEvaluator
      Iterator iterator = vars.iterator();
      while (iterator.hasNext()) {
 	Variable variable = (Variable) iterator.next();
-	if (variable.getVariable() != null && variable.getVariable().getTextFIXME().compareTo(s) == 0)
+	if (variable.getName() != null && variable.getName().compareTo(s) == 0)
 	{
 	    allDies = die.getScopes(pc - bias.bias);
 	    variable.getVariableDie().setScopes(allDies);

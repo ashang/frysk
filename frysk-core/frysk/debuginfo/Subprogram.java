@@ -119,12 +119,8 @@ public class Subprogram extends Subroutine
       Iterator iterator = this.parameters.iterator();
       while(iterator.hasNext()) {
         Variable parameter = (Variable) iterator.next();
-        if(parameter.getVariable() == null){
-          writer.print("Unhandled type");
-        }else{
-            parameter.toPrint(writer, frame);
-            writer.flush();
-        }
+	parameter.toPrint(writer, frame);
+	writer.flush();
         if(parameters.indexOf(parameter) < (this.parameters.size()-1)){
             writer.print(",");
         }

@@ -148,22 +148,11 @@ public class Scope
     Iterator iterator = this.variables.iterator();
     while(iterator.hasNext()){
 	Variable variable = (Variable) iterator.next();
-	if(variable.getVariable()!=null){
-            writer.println();
-	    writer.print(indentString);
-	    variable.toPrint(writer, frame);
-	    writer.print(" ");
-	    variable.printLineCol(writer);
-	}else{
-	    String lineString;
-	    try{
-		lineString = " on line " + variable.getVariableDie().getDeclLine();
-	    }catch (DwException e) {
-		lineString = " (could not get line number)";
-	    }
-	    writer.println();
-	    writer.print(indentString +"Unhandled type" + lineString);
-	}
+	writer.println();
+	writer.print(indentString);
+	variable.toPrint(writer, frame);
+	writer.print(" ");
+	variable.printLineCol(writer);
 	writer.flush();
     }
     

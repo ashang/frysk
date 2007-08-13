@@ -1,5 +1,12 @@
 2007-08-13  Andrew Cagney  <cagney@redhat.com>
 
+	* Scope.java: Always call Variable.toPrint.
+	* Subprogram.java: Ditto.
+	* DebugInfoEvaluator.java: Replace Variable.getVariable and
+	Value.getTextFIXME with Variable.getName.
+	* Variable.java (getVariable): Delete.
+	(toPrint): Handle unknown type here; add FIXME.
+	
 	* TestFrameDebugInfo.java: Use Variable.getName.
 
 	* Variable.java (getName): New.
