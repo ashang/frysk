@@ -549,6 +549,7 @@ public class SteppingEngine
     this.contextMap.put(task.getProc(), new Integer(++i));
     
     this.breakpoint = new SteppingBreakpoint(this, address);
+    this.breakpointMap.put(task, this.breakpoint);
     task.requestAddCodeObserver(this.breakpoint, address);
   }
   
@@ -579,8 +580,10 @@ public class SteppingEngine
         
         /* This is trouble. Need to figure out a way to map these properly, and
          * *hopefully* not requiring another HashMap. */ 
-        this.breakpoint = new SteppingBreakpoint(this, frame.getOuter().getAddress());
-        t.requestAddCodeObserver(this.breakpoint, frame.getOuter().getAddress());
+//        this.breakpoint = new SteppingBreakpoint(this, frame.getOuter().getAddress());
+        SteppingBreakpoint sb = new SteppingBreakpoint(this, frame.getOuter().getAddress());
+        this.breakpointMap.put(t, sb);
+        t.requestAddCodeObserver(sb, frame.getOuter().getAddress());
       }
   }
   
@@ -986,11 +989,14 @@ public class SteppingEngine
    * 
    * @param task The Task to remove the SteppingBreakpoint from
    */
-  public void removeBreakpoint (Task task)
-  {
-    this.breakpointMap.remove(task);
-    task.requestDeleteCodeObserver(this.breakpoint, this.breakpoint.getAddress());
-  }
+  public void removeBreakpoint(Task task) {
+	if (this.breakpointMap.containsKey(task)) {
+	    this.breakpointMap.remove(task);
+	    task.requestUnblock(this.breakpoint);
+	    task.requestDeleteCodeObserver(this.breakpoint, this.breakpoint
+		    .getAddress());
+	}
+    }
   
   /**
    * Returns the Breakpoint set on the given Task
@@ -1115,7 +1121,7 @@ public class SteppingEngine
      */
     public synchronized Action updateExecuted (Task task)
     {
-      // System.err.println("SE.SO.updateEx: " + task);
+//       System.err.println("SE.SO.updateEx: " + task);
       /* Check to see if acting upon this event produces a stopped state
        * change. If so, decrement the number of Tasks active in the Task's 
        * process context. If there are no Tasks left, then notify the this 
@@ -1173,17 +1179,6 @@ public class SteppingEngine
       this.setChanged();
       this.notifyObservers(tse);
     }
-    
-//    /**
-//     * Nofity certain classes observing this object's Proc that it has finished
-//     * becoming re-blocked.
-//     */
-//    public void notifyStopped ()
-//    {
-//      //System.err.println("notifyStopped");
-//      this.setChanged();
-//      this.notifyObservers(null);
-//    }
   }
   
   
@@ -1384,8 +1379,6 @@ public class SteppingEngine
         }
       
       Task t = (Task) observable;
-      TaskStepEngine tse = (TaskStepEngine) SteppingEngine.this.taskStateMap.get(t);
-      tse.setState(new RunningState(t));
       t.requestDeleteInstructionObserver(steppingObserver);
       continueForStepping(t, false);
     }

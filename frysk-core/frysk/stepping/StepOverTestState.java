@@ -96,10 +96,12 @@ public class StepOverTestState extends State {
                  */
 	    else if (newFrame.getFrameIdentifier().equals(
 		    tse.getFrameIdentifier())) {
+		tse.getSteppingEngine().removeBreakpoint(this.task);
 		return new StoppedState(this.task);
 
 	    } else if (newFrame.getFrameIdentifier().outerTo(
 		    tse.getFrameIdentifier())) {
+		tse.getSteppingEngine().removeBreakpoint(this.task);
 		return new StoppedState(this.task);
 
 	    } else {
@@ -113,6 +115,7 @@ public class StepOverTestState extends State {
 		    
 		    return new StepOverState(this.task);
 		} else {
+		    tse.getSteppingEngine().removeBreakpoint(this.task);
 		    return new StoppedState(this.task);
 		}
 	    }

@@ -1,3 +1,12 @@
+2007-08-13  Mike Cvet  <mcvet@redhat.com>
+
+	* StepOverTestState.java (handleUpdate): Ensure to remove breakpoint
+	after all cases.
+	* SteppingEngine.java (stepOut): Add breakpoint to breakpointMap.
+	(removeBreakpoint): Only remove if it is contained in the map field.
+	(SteppingBreakpoint.addedTo): Don't destroy the saved stepping state
+	upon breakpoint addition.
+
 2007-08-02  Mike Cvet  <mcvet@redhat.com>
 
 	* TestStepping.java (testLineStepFunctionCall): Changed to use
