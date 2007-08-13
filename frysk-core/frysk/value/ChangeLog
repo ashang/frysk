@@ -1,3 +1,10 @@
+2007-08-13  Andrew Cagney  <cagney@redhat.com>
+            Nurdin Premji  <npremji@redhat.com>
+	
+	* Value.java (columnXXX, getColumnXXX): Delete.
+	(getFilePathXXX, setFilePathXXX, filePathXXX): Delete.
+	(getLineNoXXX, setLineNoXXX, lineNoXXX): Delete.
+	
 2007-08-08  Nurdin Premji  <npremji@redhat.com>
 
 	* ArithmeticTypes.java: Moved standard types to ...

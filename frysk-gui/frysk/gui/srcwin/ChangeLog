@@ -1,3 +1,9 @@
+2007-08-13  Andrew Cagney  <cagney@redhat.com>
+            Nurdin Premji  <npremji@redhat.com>
+	
+	* SourceBuffer.java: Do not set the value's file path or line
+	number -- never read.
+
 2007-08-02  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (populateStackBrowser): Fixed Nullpointer and

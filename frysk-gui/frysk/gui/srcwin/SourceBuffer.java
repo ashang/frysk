@@ -648,9 +648,6 @@ public class SourceBuffer extends TextBuffer {
 	    if (var == null)
 		return null;
 	     
-	    var.setFilePathXXX(source.getFilePath() + "/" + fileName);
-	    var.setLineNoXXX(line.getLineNum());
-
 	} catch (ParseException e) {
 	    System.out.println(e.getMessage());
 	    return null;

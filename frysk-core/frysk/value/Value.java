@@ -53,47 +53,6 @@ public class Value
     private final Type type;
     private final Location location;
     private final String text;
-    // A variable may not necessarily have a file/line/column.  For
-    // instance a "register" can be represented as a variable.  For
-    // instance, is this the line that the variable was declared, or
-    // the line at which the variable is being examined, or the most
-    // recent line at which the program stopped and the variable was
-    // live.
-    //
-    // A better separation of abstraction is needed.  That way, when
-    // it comes to saving, storing, or manipulating what is being
-    // watched, these lower-level variables are not involved.  For
-    // instance, the text of what was requested, or the expression of
-    // what was requested, could be saved.  Either of which can then
-    // be possibly mapped onto a Variable.
-    private String filePathXXX;
-    private int lineNoXXX;
-    private int columnXXX;
-    
-    public String getFilePathXXX ()
-    {
-      return filePathXXX;
-    }
-
-    public void setFilePathXXX (String filePath)
-    {
-      this.filePathXXX = filePath;
-    }
-
-    public int getLineNoXXX ()
-    {
-      return lineNoXXX;
-    }
-
-    public void setLineNoXXX (int lineNo)
-    {
-      this.lineNoXXX = lineNo;
-    }
-
-    public int getColumnXXX ()
-    {
-      return columnXXX;
-    }
 
     public Value(Type type)	{
       this(type, "temp");
