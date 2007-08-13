@@ -43,102 +43,102 @@ import frysk.value.StandardTypes;
 
 public class IA32Registers {
 
-    public final static Register EAX = new Register("eax", StandardTypes.int32Type);
+    public final static Register EAX = new Register("eax", StandardTypes.intLittleEndianType);
 
-    public final static Register EDX = new Register("edx", StandardTypes.int32Type);
+    public final static Register EDX = new Register("edx", StandardTypes.intLittleEndianType);
 
-    public final static Register ECX = new Register("ecx", StandardTypes.int32Type);
+    public final static Register ECX = new Register("ecx", StandardTypes.intLittleEndianType);
 
-    public final static Register EBX = new Register("ebx", StandardTypes.int32Type);
+    public final static Register EBX = new Register("ebx", StandardTypes.intLittleEndianType);
 
-    public final static Register ESI = new Register("esi", StandardTypes.int32Type);
+    public final static Register ESI = new Register("esi", StandardTypes.intLittleEndianType);
 
-    public final static Register EDI = new Register("edi", StandardTypes.int32Type);
+    public final static Register EDI = new Register("edi", StandardTypes.intLittleEndianType);
 
-    public final static Register EBP = new Register("ebp", StandardTypes.int32Type);
+    public final static Register EBP = new Register("ebp", StandardTypes.intLittleEndianType);
 
-    public final static Register ESP = new Register("esp", StandardTypes.int32Type);
+    public final static Register ESP = new Register("esp", StandardTypes.intLittleEndianType);
 
-    public final static Register EIP = new Register("eip", StandardTypes.int32Type);
+    public final static Register EIP = new Register("eip", StandardTypes.intLittleEndianType);
 
-    public final static Register EFLAGS = new Register("eflags", StandardTypes.int32Type);
+    public final static Register EFLAGS = new Register("eflags", StandardTypes.intLittleEndianType);
 
-    public final static Register TRAPS = new Register("traps", StandardTypes.int32Type);
+    public final static Register TRAPS = new Register("traps", StandardTypes.intLittleEndianType);
 
     /* MMX/stacked-fp registers */
 
-    public final static Register ST0 = new Register("st0", StandardTypes.float32Type);
+    public final static Register ST0 = new Register("st0", StandardTypes.floatLittleEndianType);
 
-    public final static Register ST1 = new Register("st1", StandardTypes.float32Type);
+    public final static Register ST1 = new Register("st1", StandardTypes.floatLittleEndianType);
 
-    public final static Register ST2 = new Register("st2", StandardTypes.float32Type);
+    public final static Register ST2 = new Register("st2", StandardTypes.floatLittleEndianType);
 
-    public final static Register ST3 = new Register("st3", StandardTypes.float32Type);
+    public final static Register ST3 = new Register("st3", StandardTypes.floatLittleEndianType);
 
-    public final static Register ST4 = new Register("st4", StandardTypes.float32Type);
+    public final static Register ST4 = new Register("st4", StandardTypes.floatLittleEndianType);
 
-    public final static Register ST5 = new Register("st5", StandardTypes.float32Type);
+    public final static Register ST5 = new Register("st5", StandardTypes.floatLittleEndianType);
 
-    public final static Register ST6 = new Register("st6", StandardTypes.float32Type);
+    public final static Register ST6 = new Register("st6", StandardTypes.floatLittleEndianType);
 
-    public final static Register ST7 = new Register("st7", StandardTypes.float32Type);
+    public final static Register ST7 = new Register("st7", StandardTypes.floatLittleEndianType);
 
-    public final static Register FCW = new Register("fcw", StandardTypes.float32Type);
+    public final static Register FCW = new Register("fcw", StandardTypes.floatLittleEndianType);
 
-    public final static Register FSW = new Register("fsw", StandardTypes.float32Type);
+    public final static Register FSW = new Register("fsw", StandardTypes.floatLittleEndianType);
 
-    public final static Register FTW = new Register("ftw", StandardTypes.float32Type);
+    public final static Register FTW = new Register("ftw", StandardTypes.floatLittleEndianType);
 
-    public final static Register FOP = new Register("fop", StandardTypes.float32Type);
+    public final static Register FOP = new Register("fop", StandardTypes.floatLittleEndianType);
 
-    public final static Register FCS = new Register("fcs", StandardTypes.float32Type);
+    public final static Register FCS = new Register("fcs", StandardTypes.floatLittleEndianType);
 
-    public final static Register FIP = new Register("fip", StandardTypes.float32Type);
+    public final static Register FIP = new Register("fip", StandardTypes.floatLittleEndianType);
 
-    public final static Register FEA = new Register("fea", StandardTypes.float32Type);
+    public final static Register FEA = new Register("fea", StandardTypes.floatLittleEndianType);
 
-    public final static Register FDS = new Register("fds", StandardTypes.float32Type);
+    public final static Register FDS = new Register("fds", StandardTypes.floatLittleEndianType);
 
     /* SSE registers */
 
-    public final static Register XMM0 = new Register("xmm0", StandardTypes.int32Type);
+    public final static Register XMM0 = new Register("xmm0", StandardTypes.intLittleEndianType);
 
-    public final static Register XMM1 = new Register("xmm1", StandardTypes.int32Type);
+    public final static Register XMM1 = new Register("xmm1", StandardTypes.intLittleEndianType);
 
-    public final static Register XMM2 = new Register("xmm2", StandardTypes.int32Type);
+    public final static Register XMM2 = new Register("xmm2", StandardTypes.intLittleEndianType);
 
-    public final static Register XMM3 = new Register("xmm3", StandardTypes.int32Type);
+    public final static Register XMM3 = new Register("xmm3", StandardTypes.intLittleEndianType);
 
-    public final static Register XMM4 = new Register("xmm4", StandardTypes.int32Type);
+    public final static Register XMM4 = new Register("xmm4", StandardTypes.intLittleEndianType);
 
-    public final static Register XMM5 = new Register("xmm5", StandardTypes.int32Type);
+    public final static Register XMM5 = new Register("xmm5", StandardTypes.intLittleEndianType);
 
-    public final static Register XMM6 = new Register("xmm6", StandardTypes.int32Type);
+    public final static Register XMM6 = new Register("xmm6", StandardTypes.intLittleEndianType);
 
-    public final static Register XMM7 = new Register("xmm7", StandardTypes.int32Type);
+    public final static Register XMM7 = new Register("xmm7", StandardTypes.intLittleEndianType);
 
-    public final static Register MXCSR = new Register("mxcsr", StandardTypes.int32Type);
+    public final static Register MXCSR = new Register("mxcsr", StandardTypes.intLittleEndianType);
 
     /* segment registers */
 
-    public final static Register GS = new Register("gs", StandardTypes.int32Type);
+    public final static Register GS = new Register("gs", StandardTypes.intLittleEndianType);
 
-    public final static Register FS = new Register("fs", StandardTypes.int32Type);
+    public final static Register FS = new Register("fs", StandardTypes.intLittleEndianType);
 
-    public final static Register ES = new Register("es", StandardTypes.int32Type);
+    public final static Register ES = new Register("es", StandardTypes.intLittleEndianType);
 
-    public final static Register DS = new Register("ds", StandardTypes.int32Type);
+    public final static Register DS = new Register("ds", StandardTypes.intLittleEndianType);
 
-    public final static Register SS = new Register("ss", StandardTypes.int32Type);
+    public final static Register SS = new Register("ss", StandardTypes.intLittleEndianType);
 
-    public final static Register CS = new Register("cs", StandardTypes.int32Type);
+    public final static Register CS = new Register("cs", StandardTypes.intLittleEndianType);
 
-    public final static Register TSS = new Register("tss", StandardTypes.int32Type);
+    public final static Register TSS = new Register("tss", StandardTypes.intLittleEndianType);
 
-    public final static Register LDT = new Register("ldt", StandardTypes.int32Type);
+    public final static Register LDT = new Register("ldt", StandardTypes.intLittleEndianType);
 
     /* frame info (read-only) */
-    public final static Register CFA = new Register("cfa", StandardTypes.int32Type);
+    public final static Register CFA = new Register("cfa", StandardTypes.intLittleEndianType);
 
     public final static RegisterGroup GENERAL = new RegisterGroup("general",
 	    new Register[] { EAX, EBX, ECX, EDX, ESI, EDI, EBP, EIP, EFLAGS,

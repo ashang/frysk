@@ -49,82 +49,77 @@ public class UnwindRegisterMapFactory {
 
     public static RegisterMap getRegisterMap(Isa isa) {
 	if (isa instanceof IsaIA32)
-	    return new IA32Map();
+	    return IA32;
 	else if (isa instanceof IsaX8664)
-	    return new X8664Map();
+	    return X8664;
 	else
 	    throw new RuntimeException("Isa not supported");
     }
-}
 
-class IA32Map extends RegisterMap {
-
-    IA32Map() {
-
-	addEntry(IA32Registers.EAX, new Integer(UnwindRegistersX86.EAX_));
-	addEntry(IA32Registers.EDX, new Integer(UnwindRegistersX86.EDX_));
-	addEntry(IA32Registers.ECX, new Integer(UnwindRegistersX86.ECX_));
-	addEntry(IA32Registers.EBX, new Integer(UnwindRegistersX86.EBX_));
-	addEntry(IA32Registers.ESI, new Integer(UnwindRegistersX86.ESI_));
-	addEntry(IA32Registers.EDI, new Integer(UnwindRegistersX86.EDI_));
-	addEntry(IA32Registers.EBP, new Integer(UnwindRegistersX86.EBP_));
-	addEntry(IA32Registers.ESP, new Integer(UnwindRegistersX86.ESP_));
-	addEntry(IA32Registers.EIP, new Integer(UnwindRegistersX86.EIP_));
-	addEntry(IA32Registers.EFLAGS, new Integer(UnwindRegistersX86.EFLAGS_));
-	addEntry(IA32Registers.TRAPS, new Integer(UnwindRegistersX86.TRAPNO_));
+static final RegisterMap IA32 = new RegisterMap() 
+	.add(IA32Registers.EAX, new Integer(UnwindRegistersX86.EAX_))
+	.add(IA32Registers.EDX, new Integer(UnwindRegistersX86.EDX_))
+	.add(IA32Registers.ECX, new Integer(UnwindRegistersX86.ECX_))
+	.add(IA32Registers.EBX, new Integer(UnwindRegistersX86.EBX_))
+	.add(IA32Registers.ESI, new Integer(UnwindRegistersX86.ESI_))
+	.add(IA32Registers.EDI, new Integer(UnwindRegistersX86.EDI_))
+	.add(IA32Registers.EBP, new Integer(UnwindRegistersX86.EBP_))
+	.add(IA32Registers.ESP, new Integer(UnwindRegistersX86.ESP_))
+	.add(IA32Registers.EIP, new Integer(UnwindRegistersX86.EIP_))
+	.add(IA32Registers.EFLAGS, new Integer(UnwindRegistersX86.EFLAGS_))
+	.add(IA32Registers.TRAPS, new Integer(UnwindRegistersX86.TRAPNO_))
 	// MMX registers
-	addEntry(IA32Registers.ST0, new Integer(UnwindRegistersX86.ST0_));
-	addEntry(IA32Registers.ST1, new Integer(UnwindRegistersX86.ST1_));
-	addEntry(IA32Registers.ST2, new Integer(UnwindRegistersX86.ST2_));
-	addEntry(IA32Registers.ST3, new Integer(UnwindRegistersX86.ST3_));
-	addEntry(IA32Registers.ST4, new Integer(UnwindRegistersX86.ST4_));
-	addEntry(IA32Registers.ST5, new Integer(UnwindRegistersX86.ST5_));
-	addEntry(IA32Registers.ST6, new Integer(UnwindRegistersX86.ST6_));
-	addEntry(IA32Registers.ST7, new Integer(UnwindRegistersX86.ST7_));
-	addEntry(IA32Registers.FCW, new Integer(UnwindRegistersX86.FCW_));
-	addEntry(IA32Registers.FSW, new Integer(UnwindRegistersX86.FSW_));
-	addEntry(IA32Registers.FTW, new Integer(UnwindRegistersX86.FTW_));
-	addEntry(IA32Registers.FOP, new Integer(UnwindRegistersX86.FOP_));
-	addEntry(IA32Registers.FCS, new Integer(UnwindRegistersX86.FCS_));
-	addEntry(IA32Registers.FIP, new Integer(UnwindRegistersX86.FIP_));
-	addEntry(IA32Registers.FEA, new Integer(UnwindRegistersX86.FEA_));
-	addEntry(IA32Registers.FDS, new Integer(UnwindRegistersX86.FDS_));
+	.add(IA32Registers.ST0, new Integer(UnwindRegistersX86.ST0_))
+	.add(IA32Registers.ST1, new Integer(UnwindRegistersX86.ST1_))
+	.add(IA32Registers.ST2, new Integer(UnwindRegistersX86.ST2_))
+	.add(IA32Registers.ST3, new Integer(UnwindRegistersX86.ST3_))
+	.add(IA32Registers.ST4, new Integer(UnwindRegistersX86.ST4_))
+	.add(IA32Registers.ST5, new Integer(UnwindRegistersX86.ST5_))
+	.add(IA32Registers.ST6, new Integer(UnwindRegistersX86.ST6_))
+	.add(IA32Registers.ST7, new Integer(UnwindRegistersX86.ST7_))
+	.add(IA32Registers.FCW, new Integer(UnwindRegistersX86.FCW_))
+	.add(IA32Registers.FSW, new Integer(UnwindRegistersX86.FSW_))
+	.add(IA32Registers.FTW, new Integer(UnwindRegistersX86.FTW_))
+	.add(IA32Registers.FOP, new Integer(UnwindRegistersX86.FOP_))
+	.add(IA32Registers.FCS, new Integer(UnwindRegistersX86.FCS_))
+	.add(IA32Registers.FIP, new Integer(UnwindRegistersX86.FIP_))
+	.add(IA32Registers.FEA, new Integer(UnwindRegistersX86.FEA_))
+	.add(IA32Registers.FDS, new Integer(UnwindRegistersX86.FDS_))
 	// SSE Registers
 	//TODO: XMMx registers.
-	addEntry(IA32Registers.MXCSR, new Integer(UnwindRegistersX86.MXCSR_));
+	//.add(IA32Registers.MXCSR, new Integer(UnwindRegistersX86.MXCSR_))
 	// Segment registers
-	addEntry(IA32Registers.GS, new Integer(UnwindRegistersX86.GS_));
-	addEntry(IA32Registers.FS, new Integer(UnwindRegistersX86.FS_));
-	addEntry(IA32Registers.ES, new Integer(UnwindRegistersX86.ES_));
-	addEntry(IA32Registers.DS, new Integer(UnwindRegistersX86.DS_));
-	addEntry(IA32Registers.SS, new Integer(UnwindRegistersX86.SS_));
-	addEntry(IA32Registers.CS, new Integer(UnwindRegistersX86.CS_));
-	addEntry(IA32Registers.TSS, new Integer(UnwindRegistersX86.TSS_));
-	addEntry(IA32Registers.LDT, new Integer(UnwindRegistersX86.LDT_));
+	.add(IA32Registers.GS, new Integer(UnwindRegistersX86.GS_))
+	.add(IA32Registers.FS, new Integer(UnwindRegistersX86.FS_))
+	.add(IA32Registers.ES, new Integer(UnwindRegistersX86.ES_))
+	.add(IA32Registers.DS, new Integer(UnwindRegistersX86.DS_))
+	.add(IA32Registers.SS, new Integer(UnwindRegistersX86.SS_))
+	.add(IA32Registers.CS, new Integer(UnwindRegistersX86.CS_))
+	.add(IA32Registers.TSS, new Integer(UnwindRegistersX86.TSS_))
+	.add(IA32Registers.LDT, new Integer(UnwindRegistersX86.LDT_))
 	// frame info
-	addEntry(IA32Registers.CFA, new Integer(UnwindRegistersX86.CFA_));
+	.add(IA32Registers.CFA, new Integer(UnwindRegistersX86.CFA_));
 	
-    }
-}
+    
 
-class X8664Map extends RegisterMap {
-    X8664Map() {
-	addEntry(X8664Registers.RAX, new Integer(UnwindRegistersX8664.RAX_));
-	addEntry(X8664Registers.RDX, new Integer(UnwindRegistersX8664.RDX_));
-	addEntry(X8664Registers.RCX, new Integer(UnwindRegistersX8664.RCX_));
-	addEntry(X8664Registers.RBX, new Integer(UnwindRegistersX8664.RBX_));
-	addEntry(X8664Registers.RSI, new Integer(UnwindRegistersX8664.RSI_));
-	addEntry(X8664Registers.RDI, new Integer(UnwindRegistersX8664.RDI_));
-	addEntry(X8664Registers.RBP, new Integer(UnwindRegistersX8664.RBP_));
-	addEntry(X8664Registers.RSP, new Integer(UnwindRegistersX8664.RSP_));
-	addEntry(X8664Registers.R8, new Integer(UnwindRegistersX8664.R8_));
-	addEntry(X8664Registers.R9, new Integer(UnwindRegistersX8664.R9_));
-	addEntry(X8664Registers.R10, new Integer(UnwindRegistersX8664.R10_));
-	addEntry(X8664Registers.R11, new Integer(UnwindRegistersX8664.R11_));
-	addEntry(X8664Registers.R12, new Integer(UnwindRegistersX8664.R12_));
-	addEntry(X8664Registers.R13, new Integer(UnwindRegistersX8664.R13_));
-	addEntry(X8664Registers.R14, new Integer(UnwindRegistersX8664.R14_));
-	addEntry(X8664Registers.R15, new Integer(UnwindRegistersX8664.R15_));
-	addEntry(X8664Registers.RIP, new Integer(UnwindRegistersX8664.RIP_));
-    }
+
+static final RegisterMap X8664 = new RegisterMap() 
+	.add(X8664Registers.RAX, new Integer(UnwindRegistersX8664.RAX_))
+	.add(X8664Registers.RDX, new Integer(UnwindRegistersX8664.RDX_))
+	.add(X8664Registers.RCX, new Integer(UnwindRegistersX8664.RCX_))
+	.add(X8664Registers.RBX, new Integer(UnwindRegistersX8664.RBX_))
+	.add(X8664Registers.RSI, new Integer(UnwindRegistersX8664.RSI_))
+	.add(X8664Registers.RDI, new Integer(UnwindRegistersX8664.RDI_))
+	.add(X8664Registers.RBP, new Integer(UnwindRegistersX8664.RBP_))
+	.add(X8664Registers.RSP, new Integer(UnwindRegistersX8664.RSP_))
+	.add(X8664Registers.R8, new Integer(UnwindRegistersX8664.R8_))
+	.add(X8664Registers.R9, new Integer(UnwindRegistersX8664.R9_))
+	.add(X8664Registers.R10, new Integer(UnwindRegistersX8664.R10_))
+	.add(X8664Registers.R11, new Integer(UnwindRegistersX8664.R11_))
+	.add(X8664Registers.R12, new Integer(UnwindRegistersX8664.R12_))
+	.add(X8664Registers.R13, new Integer(UnwindRegistersX8664.R13_))
+	.add(X8664Registers.R14, new Integer(UnwindRegistersX8664.R14_))
+	.add(X8664Registers.R15, new Integer(UnwindRegistersX8664.R15_))
+	.add(X8664Registers.RIP, new Integer(UnwindRegistersX8664.RIP_))
+	.add(X8664Registers.CFA, new Integer(UnwindRegistersX8664.CFA_));
 }

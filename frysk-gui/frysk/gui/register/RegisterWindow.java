@@ -40,12 +40,12 @@
 
 package frysk.gui.register;
 
-import java.util.Iterator;
+import inua.eio.ByteOrder;
+
 import java.util.Observable;
 import java.util.Observer;
 import java.util.prefs.Preferences;
-import java.lang.Float;
-import java.lang.Double;
+
 import java.math.BigInteger;
 
 import org.gnu.glade.LibGlade;
@@ -74,12 +74,18 @@ import frysk.gui.common.IconManager;
 import frysk.gui.common.UBigInteger;
 import frysk.gui.prefs.PreferenceManager;
 import frysk.gui.monitor.Saveable;
+
 import frysk.proc.Isa;
 import frysk.proc.Proc;
-import frysk.proc.Register;
-import frysk.proc.RegisterView;
 import frysk.proc.Task;
+
+import frysk.stack.Register;
+import frysk.stack.RegisterFactory;
+import frysk.stack.StackFactory;
 import frysk.stepping.TaskStepEngine;
+import frysk.value.ArithmeticType;
+import frysk.value.Format;
+import frysk.value.Value;
 
 
 public class RegisterWindow
@@ -93,22 +99,35 @@ public class RegisterWindow
   private LibGlade glade;
 
   private Preferences prefs;
-
-  private DataColumn[] cols = { new DataColumnString(), // name
-				new DataColumnString(), // decimal le
-				new DataColumnString(), // decimal be
-				new DataColumnString(), // hex le
-				new DataColumnString(), // hex be
-				new DataColumnString(), // octal le
-				new DataColumnString(), // octal be
-				new DataColumnString(), // binary le
-				new DataColumnString(), // binary be
-				new DataColumnObject(), // the Register object
-				new DataColumnDouble(), // alignment
-				new DataColumnObject (), // BigInteger value
-				new DataColumnObject() }; // current view object
   
-
+  private DataColumnString registerNameColumn = new DataColumnString();
+  private DataColumnString decimalLittleEndianColumn = new DataColumnString();
+  private DataColumnString decimalBigEndianColumn = new DataColumnString();
+  private DataColumnString hexidecimalLittleEndianColumn = new DataColumnString();
+  private DataColumnString hexidecimalBigEndianColumn = new DataColumnString();
+  private DataColumnString octalLittleEndianColumn = new DataColumnString();
+  private DataColumnString octalBigEndianColumn = new DataColumnString();
+  private DataColumnString binaryLittleEndianColumn = new DataColumnString();
+  private DataColumnString binaryBigEndianColumn = new DataColumnString();
+  private DataColumnObject registerColumn = new DataColumnObject();
+  private DataColumnDouble alignmentColumn = new DataColumnDouble();
+  private DataColumnObject valueColumn = new DataColumnObject();
+  private DataColumnObject typeColumn = new DataColumnObject();
+  
+  private DataColumn[] cols = new DataColumn[] {registerNameColumn,
+				decimalLittleEndianColumn,
+				decimalBigEndianColumn,
+				hexidecimalLittleEndianColumn,
+				hexidecimalBigEndianColumn,
+				octalLittleEndianColumn,
+				octalBigEndianColumn,
+				binaryLittleEndianColumn,
+				binaryBigEndianColumn,
+				registerColumn,
+				alignmentColumn,
+				valueColumn,
+				typeColumn }; 
+  
   protected static String[] colNames = { "Decimal (LE)", "Decimal (BE)",
                                         "Hexadecimal (LE)", "Hexadecimal (BE)",
                                         "Octal (LE)", "Octal (BE)",
@@ -214,28 +233,14 @@ public class RegisterWindow
     ListStore model = new ListStore(cols);
     registerView.setModel(model);
 
-    Iterator registers = isa.RegisterIterator();
-
-    while (registers.hasNext())
-      {
-        Register register = (Register) registers.next();
-        TreeIter iter = model.appendRow();
-
-        model.setValue(iter, (DataColumnString) cols[0], register.getName());
-        model.setValue(iter, (DataColumnObject) cols[9], register);
-        model.setValue(iter, (DataColumnDouble) cols[10], 1.0);
-        model.setValue(iter, (DataColumnObject) cols[12],
-                       register.getViews()[0]);
-
-        saveBinaryValue(register.getBigInteger(myTask), iter.getPath());
-      }
+    setValues(myTask, isa, model);
 
     TreeViewColumn col = new TreeViewColumn();
     col.setTitle("Name");
     CellRenderer renderer = new CellRendererText();
     col.packStart(renderer, true);
     col.setReorderable(false);
-    col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, cols[0]);
+    col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, registerNameColumn);
     registerView.appendColumn(col);
     
     for (int i = 0; i < colNames.length; i++)
@@ -276,7 +281,7 @@ public class RegisterWindow
         col.packStart(renderer, false);
         col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
                                 cols[i + 1]);
-        col.addAttributeMapping(renderer, CellRendererText.Attribute.XALIGN, cols[10]);
+        col.addAttributeMapping(renderer, CellRendererText.Attribute.XALIGN, alignmentColumn);
         registerView.appendColumn(col);
 
         col.setVisible(this.prefs.getBoolean(colNames[i], colVisible[i]));
@@ -326,6 +331,26 @@ public class RegisterWindow
 
     this.refreshList();
   }
+
+private void setValues(Task myTask, Isa isa, ListStore model) {
+    
+    Register[] registers = RegisterFactory.getRegisters(isa);
+    
+    for (int i = 0; i < registers.length; i++)
+      {
+        Register register = registers[i];
+        TreeIter iter = model.appendRow();
+
+        model.setValue(iter, registerNameColumn, register.name);
+        model.setValue(iter, registerColumn, register);
+        model.setValue(iter, alignmentColumn, 1.0);
+        model.setValue(iter, typeColumn,
+                       register.type);
+
+        Value value = StackFactory.createFrame(myTask).getRegisterValue(register);
+        saveBinaryValue(value, iter.getPath());
+      }
+}
   
   public void resetTask (Task task)
   {
@@ -338,21 +363,8 @@ public class RegisterWindow
     ListStore model = (ListStore) this.registerView.getModel();
     model.clear();
 
-    Iterator registers = isa.RegisterIterator();
-
-    while (registers.hasNext())
-      {
-        Register register = (Register) registers.next();
-        TreeIter iter = model.appendRow();
-
-        model.setValue(iter, (DataColumnString) cols[0], register.getName());
-        model.setValue(iter, (DataColumnObject) cols[9], register);
-        model.setValue(iter, (DataColumnDouble) cols[10], 1.0);
-        model.setValue(iter, (DataColumnObject) cols[12],
-                       register.getViews()[0]);
-
-        saveBinaryValue(register.getBigInteger(myTask), iter.getPath());
-      }
+    setValues(task, isa, model);
+    
     refreshList();
   }
 
@@ -399,44 +411,13 @@ public class RegisterWindow
     this.refreshList();
   }
 
-  private String stringUsingView(BigInteger value, RegisterView view, int base)
+  private String stringUsingValue(Value value, ArithmeticType type, Format format)
   {
-    return stringUsingView(value, view, base, 0);
+      if (value == null)
+	  return null;
+    return type.toString(value, format);
   }
-  
-    
-  private String stringUsingView(BigInteger value, RegisterView view, int base,
-				 int field) 
-  {
-    int viewType = view.getType();
-    switch (viewType) 
-      {
-      case RegisterView.INTEGER:
-	{
-	  BigInteger fieldVal = view.getIntField(value, field);
-	  if (base == 10) 
-	    {
-	      return fieldVal.toString();
-	    }
-	  else 
-	    {
-	      String val = UBigInteger.toString(fieldVal, view.getFieldLength() * 8,
-						base);
-	      return val;
-	    }
-	}
-      case RegisterView.FLOAT:
-	return Float.toString(view.getFloatField(value, field));
-      case RegisterView.DOUBLE:
-	return Double.toString(view.getDoubleFloatField(value, field));
-      case RegisterView.LONGFLOAT:
-	return Double.toString(view.getLongFloatField(value, field).asDouble());
-      default:
-	throw new RuntimeException("can't handle view type "
-				   + viewType + " yet");
-      }
-  }
-  
+
   private void resetList ()
   {
     Isa isa;
@@ -444,21 +425,8 @@ public class RegisterWindow
     ListStore model = (ListStore) this.registerView.getModel();
     model.clear();
     
-    Iterator registers = isa.RegisterIterator();
-
-    while (registers.hasNext())
-      {
-        Register register = (Register) registers.next();
-        TreeIter iter = model.appendRow();
-
-        model.setValue(iter, (DataColumnString) cols[0], register.getName());
-        model.setValue(iter, (DataColumnObject) cols[9], register);
-        model.setValue(iter, (DataColumnDouble) cols[10], 1.0);
-        model.setValue(iter, (DataColumnObject) cols[12],
-                       register.getViews()[0]);
-
-        saveBinaryValue(register.getBigInteger(myTask), iter.getPath());
-      }
+    setValues(myTask, isa, model);
+    
     refreshList();
   }
   
@@ -481,37 +449,39 @@ public class RegisterWindow
         // get the register
         Register register 
 	  = (Register)model.getValue(iter,
-				     (DataColumnObject) cols[9]);
-	int bitlength = register.getLength() * 8;
-	BigInteger value
-	  = (BigInteger)model.getValue(iter, (DataColumnObject)cols[11]);
-	RegisterView view = register.getViews()[0];
+				     registerColumn);
+	Value value
+	  = (Value)model.getValue(iter, valueColumn);
 	
+	ArithmeticType type;
+	type = new ArithmeticType(register.type.getSize(), ByteOrder.LITTLE_ENDIAN, register.type.getTypeId(), register.type.getName());
 	// Binary little endian
-	model.setValue(iter, (DataColumnString)cols[7], 
-		       stringUsingView(value, view, 2));
+	model.setValue(iter, binaryLittleEndianColumn, 
+		       stringUsingValue(value, type, Format.BINARY));
 	// Decimal little endian
-	model.setValue(iter, (DataColumnString)cols[1], 
-		       stringUsingView(value, view, 10));
+	model.setValue(iter, decimalLittleEndianColumn, 
+		       stringUsingValue(value, type, Format.DECIMAL));
 	// Hex little endian
-	model.setValue(iter, (DataColumnString)cols[3], 
-		       "0x" + stringUsingView(value, view, 16));
+	model.setValue(iter, hexidecimalLittleEndianColumn, 
+		       "0x" + stringUsingValue(value, type, Format.HEXADECIMAL));
 	// Octal little endian
-	model.setValue(iter, (DataColumnString)cols[5], 
-		       stringUsingView(value, view, 8));
-	BigInteger bigEndValue = swizzleByteOrder(value, bitlength);
+	model.setValue(iter, octalLittleEndianColumn, 
+		       stringUsingValue(value, type, Format.OCTAL));
+
+	//Switch endian-ness.	
+	type = new ArithmeticType(register.type.getSize(), ByteOrder.BIG_ENDIAN, register.type.getTypeId(), register.type.getName());
 	// Binary big endian
-	model.setValue(iter, (DataColumnString)cols[8], 
-		       stringUsingView(bigEndValue, view, 2));
+	model.setValue(iter, binaryBigEndianColumn, 
+		       stringUsingValue(value, type, Format.BINARY));
         // Decimal big-endian
-	model.setValue(iter, (DataColumnString)cols[2],
-		       stringUsingView(bigEndValue, view, 10));
+	model.setValue(iter, decimalBigEndianColumn,
+		       stringUsingValue(value, type, Format.DECIMAL));
         // Hex big-endian
-	model.setValue(iter, (DataColumnString)cols[4], 
-		       "0x" + stringUsingView(bigEndValue, view, 16));
+	model.setValue(iter, hexidecimalBigEndianColumn, 
+		       "0x" + stringUsingValue(value, type, Format.HEXADECIMAL));
         // Octal big-endian
-	model.setValue(iter, (DataColumnString)cols[6],
-		       stringUsingView(bigEndValue, view, 8));
+	model.setValue(iter, octalBigEndianColumn,
+		       stringUsingValue(value, type, Format.OCTAL));
 
         iter = iter.getNextIter();
       }
@@ -550,11 +520,11 @@ public class RegisterWindow
    * @param val The binary value to save
    * @param path    The path used to get the TreeIter from the model.
    */
-  private void saveBinaryValue (BigInteger val, TreePath path)
+  private void saveBinaryValue (Value val, TreePath path)
   {
     ListStore model = (ListStore) this.registerView.getModel();
     TreeIter iter = model.getIter(path);
-    model.setValue (iter, (DataColumnObject)cols[11], val);
+    model.setValue (iter, valueColumn, val);
   }
 
   /**
@@ -565,12 +535,13 @@ public class RegisterWindow
    */
   private void writeBinaryValue (BigInteger val, TreePath path)
   {
-    ListStore model = (ListStore) this.registerView.getModel();
-    TreeIter iter = model.getIter(path);
-    Register register = (Register) model.getValue(iter,
-                                                  (DataColumnObject) cols[9]);
-    register.putBigInteger (myTask, val);
-    model.setValue (iter, (DataColumnObject)cols[11], val);
+      //XXX: Implement frame.setRegister(Register reg, Value value)
+//    ListStore model = (ListStore) this.registerView.getModel();
+//    TreeIter iter = model.getIter(path);
+//    Register register = (Register) model.getValue(iter,
+//                                                  (DataColumnObject) cols[9]);
+//    register.putBigInteger (myTask, val);
+//    model.setValue (iter, (DataColumnObject)cols[11], val);
   }
 
   /**
@@ -591,8 +562,8 @@ public class RegisterWindow
     ListStore model = (ListStore)registerView.getModel();
     TreeIter iter = model.getIter(path);
     Register register = (Register)model.getValue(iter,
-						 (DataColumnObject) cols[9]);
-    int bitLength = register.getLength() * 8;
+						 registerColumn);
+    int bitLength = register.type.getSize() * 8;
 
     try
       {

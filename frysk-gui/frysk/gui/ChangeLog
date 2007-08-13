@@ -1,3 +1,16 @@
+2007-08-13  Nurdin Premji  <npremji@redhat.com>
+
+	* register/RegisterWindow.java (stringUsingValue): Added.
+	(stringUsingView): Removed.
+	(setValues): Added, uses frysk.stack.Registers.
+	(resetList): Use setValues.
+	(setTask): Ditto.
+	(resetTask): Ditto.
+	(refreshList): Change to use Values.
+	(saveBinaryValue): Ditto.
+	(writeBinaryValue): Change to use frysk.stack.Register.
+	(cols): name each individual column.
+
 2007-08-13  Andrew Cagney  <cagney@redhat.com>
 
 	* sessions/WatchList.java: Replace Value.getText with

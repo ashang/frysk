@@ -1,5 +1,24 @@
 2007-08-13  Nurdin Premji  <npremji@redhat.com>
 
+	* StandardTypes.java (getByteType): Added.
+	(getDoubleType): Ditto.
+	(longLittleEndianType): Ditto. 
+	(getLongType): Ditto.
+	(floatLittleEndianType): Ditto.
+	(intBigEndianType): Ditto.
+	(byteLittleEndianType): Ditto.
+	(intLittleEndianType): Ditto.
+	(floatBigEndianType): Ditto.
+	(getIntType): Ditto.
+	(getFloatType): Ditto.
+	(doubleLittleEndianType): Ditto.
+	(shortLittleEndianType): Ditto.
+	(longBigEndianType): Ditto.
+	(getShortType): Ditto.
+	(doubleBigEndianType): Ditto.
+	(shortBigEndianType): Ditto.
+	(byteBigEndianType): Ditto.
+
 	* Location.java (putInt): Added, takes a ByteOrder.
 	(putDouble): Ditto.
 	(getDouble): Ditto.

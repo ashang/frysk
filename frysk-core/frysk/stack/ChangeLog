@@ -1,3 +1,16 @@
+2007-08-13  Nurdin Premji  <npremji@redhat.com>
+
+	* RegisterFactory.java: Added.
+	* RemoteFrame.java (getRegisterValue): Check for floating point registers.
+	Don't throw a null pointer if register can't be located.
+	* X8664Registers.java: Use StandardTypes.
+	* IA32Registers.java: Ditto.
+	* UnwindRegisterMapFactory.java (X8664): Created instance of RegisterMap.
+	(IA32): Ditto.
+	(getRegisterMap): Return singleton instance rather than new object.
+	* RegisterMap.java (add): Added.
+	(addEntry): Removed.
+
 2007-08-10  Stan Cox  <scox@redhat.com>
 
 	* RegisterMap.java (getRegister): New.  Given String return Register.

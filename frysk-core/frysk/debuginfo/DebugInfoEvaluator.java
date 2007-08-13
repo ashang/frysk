@@ -70,6 +70,7 @@ import frysk.value.ClassType;
 import frysk.value.EnumType;
 import frysk.value.FunctionType;
 import frysk.value.PointerType;
+import frysk.value.StandardTypes;
 import frysk.value.Type;
 import frysk.value.Value;
 
@@ -115,21 +116,21 @@ class DebugInfoEvaluator
     buffer.order(byteorder);
 
     currentFrame = frame;
-
-    byteType = new ArithmeticType(1, byteorder, BaseTypes.baseTypeByte, "byte");
+    Isa isa = this.task.getIsa();
+    byteType = StandardTypes.getByteType(isa);
 // byteUnsignedType = new ArithmeticType(1, byteorder,
 // BaseTypes.baseTypeUnsignedByte, "unsigned byte");
-    shortType = new ArithmeticType(2, byteorder, BaseTypes.baseTypeShort, "short");
+    shortType = StandardTypes.getShortType(isa);
 // shortUnsignedType = new ArithmeticType(2, byteorder,
 // BaseTypes.baseTypeUnsignedShort, "unsigned short");
-    intType = new ArithmeticType(4, byteorder, BaseTypes.baseTypeInteger, "int");
+    intType = StandardTypes.getIntType(isa);
 // intUnsignedType = new ArithmeticType(4, byteorder,
 // BaseTypes.baseTypeUnsignedInteger, "unsigned int");
-    longType = new ArithmeticType(8, byteorder, BaseTypes.baseTypeLong, "long");
+    longType = StandardTypes.getLongType(isa);
 // longUnsignedType = new ArithmeticType(8, byteorder,
 // BaseTypes.baseTypeUnsignedLong, "unsigned long");
-    floatType = new ArithmeticType(4, byteorder, BaseTypes.baseTypeFloat, "float");
-    doubleType = new ArithmeticType(8, byteorder, BaseTypes.baseTypeDouble, "double");
+    floatType = StandardTypes.getFloatType(isa);
+    doubleType = StandardTypes.getDoubleType(isa);
   }
 
   interface VariableAccessor

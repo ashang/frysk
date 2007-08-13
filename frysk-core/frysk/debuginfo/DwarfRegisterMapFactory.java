@@ -67,37 +67,37 @@ public class DwarfRegisterMapFactory {
     static private class DwarfRegisterIA32 extends RegisterMap {
 
 	DwarfRegisterIA32 () {
-	    addEntry(IA32Registers.EAX, new Integer(DwarfRegistersX86.EAX_));
-	    addEntry(IA32Registers.ECX, new Integer(DwarfRegistersX86.ECX_));
-	    addEntry(IA32Registers.EDX, new Integer(DwarfRegistersX86.EDX_));
-	    addEntry(IA32Registers.EBX, new Integer(DwarfRegistersX86.EBX_));
-	    addEntry(IA32Registers.ESP, new Integer(DwarfRegistersX86.ESP_));
-	    addEntry(IA32Registers.EBP, new Integer(DwarfRegistersX86.EBP_));
-	    addEntry(IA32Registers.ESI, new Integer(DwarfRegistersX86.ESI_));
-	    addEntry(IA32Registers.EDI, new Integer(DwarfRegistersX86.EDI_));
+	    add(IA32Registers.EAX, new Integer(DwarfRegistersX86.EAX_));
+	    add(IA32Registers.ECX, new Integer(DwarfRegistersX86.ECX_));
+	    add(IA32Registers.EDX, new Integer(DwarfRegistersX86.EDX_));
+	    add(IA32Registers.EBX, new Integer(DwarfRegistersX86.EBX_));
+	    add(IA32Registers.ESP, new Integer(DwarfRegistersX86.ESP_));
+	    add(IA32Registers.EBP, new Integer(DwarfRegistersX86.EBP_));
+	    add(IA32Registers.ESI, new Integer(DwarfRegistersX86.ESI_));
+	    add(IA32Registers.EDI, new Integer(DwarfRegistersX86.EDI_));
 
 	}
     }
 
     static private class DwarfRegisterX8664 extends RegisterMap {
 	DwarfRegisterX8664() {
-	    addEntry(X8664Registers.RAX, new Integer(DwarfRegistersX8664.RAX_));
-	    addEntry(X8664Registers.RDX, new Integer(DwarfRegistersX8664.RDX_));
-	    addEntry(X8664Registers.RCX, new Integer(DwarfRegistersX8664.RCX_));
-	    addEntry(X8664Registers.RBX, new Integer(DwarfRegistersX8664.RBX_));
-	    addEntry(X8664Registers.RSI, new Integer(DwarfRegistersX8664.RSI_));
-	    addEntry(X8664Registers.RDI, new Integer(DwarfRegistersX8664.RDI_));
-	    addEntry(X8664Registers.RBP, new Integer(DwarfRegistersX8664.RBP_));
-	    addEntry(X8664Registers.RSP, new Integer(DwarfRegistersX8664.RSP_));
-	    addEntry(X8664Registers.R8, new Integer(DwarfRegistersX8664.R8_));
-	    addEntry(X8664Registers.R9, new Integer(DwarfRegistersX8664.R9_));
-	    addEntry(X8664Registers.R10, new Integer(DwarfRegistersX8664.R10_));
-	    addEntry(X8664Registers.R11, new Integer(DwarfRegistersX8664.R11_));
-	    addEntry(X8664Registers.R12, new Integer(DwarfRegistersX8664.R12_));
-	    addEntry(X8664Registers.R13, new Integer(DwarfRegistersX8664.R13_));
-	    addEntry(X8664Registers.R14, new Integer(DwarfRegistersX8664.R14_));
-	    addEntry(X8664Registers.R15, new Integer(DwarfRegistersX8664.R15_));
-	    addEntry(X8664Registers.RIP, new Integer(DwarfRegistersX8664.RIP_));
+	    add(X8664Registers.RAX, new Integer(DwarfRegistersX8664.RAX_));
+	    add(X8664Registers.RDX, new Integer(DwarfRegistersX8664.RDX_));
+	    add(X8664Registers.RCX, new Integer(DwarfRegistersX8664.RCX_));
+	    add(X8664Registers.RBX, new Integer(DwarfRegistersX8664.RBX_));
+	    add(X8664Registers.RSI, new Integer(DwarfRegistersX8664.RSI_));
+	    add(X8664Registers.RDI, new Integer(DwarfRegistersX8664.RDI_));
+	    add(X8664Registers.RBP, new Integer(DwarfRegistersX8664.RBP_));
+	    add(X8664Registers.RSP, new Integer(DwarfRegistersX8664.RSP_));
+	    add(X8664Registers.R8, new Integer(DwarfRegistersX8664.R8_));
+	    add(X8664Registers.R9, new Integer(DwarfRegistersX8664.R9_));
+	    add(X8664Registers.R10, new Integer(DwarfRegistersX8664.R10_));
+	    add(X8664Registers.R11, new Integer(DwarfRegistersX8664.R11_));
+	    add(X8664Registers.R12, new Integer(DwarfRegistersX8664.R12_));
+	    add(X8664Registers.R13, new Integer(DwarfRegistersX8664.R13_));
+	    add(X8664Registers.R14, new Integer(DwarfRegistersX8664.R14_));
+	    add(X8664Registers.R15, new Integer(DwarfRegistersX8664.R15_));
+	    add(X8664Registers.RIP, new Integer(DwarfRegistersX8664.RIP_));
 	}
     }
 }    

@@ -54,6 +54,7 @@ import frysk.proc.Task;
 import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
 
+import frysk.value.StandardTypes;
 import frysk.value.Value;
 
 class RemoteFrame extends Frame
@@ -144,15 +145,24 @@ class RemoteFrame extends Frame
   }
   
   public Value getRegisterValue(Register register) {
-	logger.log(Level.FINE, "{0}: getRegisterValue register: {1}",
+	logger.log(Level.FINE, "{0}: getRegisterValue register: {1}\n",
 		new Object[] { this, register });
 	Isa isa = task.getIsa();
 	byte[] word = new byte[register.type.getSize()];
 	RegisterMap map = UnwindRegisterMapFactory.getRegisterMap(isa);
 
-	if (cursor.getRegister(map.getRegisterNumber(register), word) < 0)
+	try {
+	    if (register.type == StandardTypes.getIntType(isa)) {
+		if (cursor.getRegister(map.getRegisterNumber(register), word) < 0)
+		    return null;
+	    } else {
+		if (cursor.getFPRegister(map.getRegisterNumber(register), word) < 0)
+		    return null;
+	    }
+	} catch (NullPointerException exception) {
+	    logger.log(Level.WARNING, "{0}: couldn't get register: {1}\n", new Object[] {this, register});
 	    return null;
-
+	}
 	ArrayByteBuffer buffer = new ArrayByteBuffer(word);
 	buffer.order(register.type.getEndian());
 	return new Value(register.type, register.name, buffer);

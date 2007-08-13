@@ -39,18 +39,86 @@
 
 package frysk.value;
 
+import frysk.proc.Isa;
 import inua.eio.ByteOrder;
 import lib.dwfl.BaseTypes;
 
 public class StandardTypes {
+    public static final ArithmeticType byteLittleEndianType = new ArithmeticType(
+	    1, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeByte, "byte");
 
-    public static final Type int32Type = new ArithmeticType(4,
-	    ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeInteger, "int");
+    public static final ArithmeticType byteBigEndianType = new ArithmeticType(
+	    1, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeByte, "byte");
 
-    public static final Type float32Type = new ArithmeticType(4,
-	    ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeFloat, "float");
+    public static ArithmeticType getByteType(Isa isa) {
+	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
+	    return byteLittleEndianType;
+	else
+	    return byteBigEndianType;
+    }
 
-    public static final Type long64Type = new ArithmeticType(8,
-	    ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeLong, "long");
+    public static final ArithmeticType shortLittleEndianType = new ArithmeticType(
+	    2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeShort, "short");
 
+    public static final ArithmeticType shortBigEndianType = new ArithmeticType(
+	    2, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeShort, "short");
+
+    public static ArithmeticType getShortType(Isa isa) {
+	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
+	    return shortLittleEndianType;
+	else
+	    return shortBigEndianType;
+    }
+
+    public static final ArithmeticType intLittleEndianType = new ArithmeticType(
+	    4, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeInteger, "int");
+
+    public static final ArithmeticType intBigEndianType = new ArithmeticType(
+	    4, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeInteger, "int");
+
+    public static ArithmeticType getIntType(Isa isa) {
+	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
+	    return intLittleEndianType;
+	else
+	    return intBigEndianType;
+    }
+
+    public static final ArithmeticType floatLittleEndianType = new ArithmeticType(
+	    4, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeFloat, "float");
+
+    public static final ArithmeticType floatBigEndianType = new ArithmeticType(
+	    4, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeFloat, "float");
+
+    public static ArithmeticType getFloatType(Isa isa) {
+	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
+	    return floatLittleEndianType;
+	else
+	    return floatBigEndianType;
+    }
+
+    public static final ArithmeticType longLittleEndianType = new ArithmeticType(
+	    8, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeLong, "long");
+
+    public static final ArithmeticType longBigEndianType = new ArithmeticType(
+	    8, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeLong, "long");
+
+    public static ArithmeticType getLongType(Isa isa) {
+	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
+	    return longLittleEndianType;
+	else
+	    return longBigEndianType;
+    }
+
+    public static final ArithmeticType doubleLittleEndianType = new ArithmeticType(
+	    8, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeDouble, "double");
+
+    public static final ArithmeticType doubleBigEndianType = new ArithmeticType(
+	    8, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeDouble, "double");
+
+    public static ArithmeticType getDoubleType(Isa isa) {
+	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
+	    return doubleLittleEndianType;
+	else
+	    return doubleBigEndianType;
+    }
 }

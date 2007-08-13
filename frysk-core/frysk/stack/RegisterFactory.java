@@ -39,40 +39,19 @@
 
 package frysk.stack;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import frysk.proc.Isa;
+import frysk.proc.IsaIA32;
+import frysk.proc.IsaX8664;
 
-public class RegisterMap {
+public class RegisterFactory {
     
-    private Map numbers = new HashMap();
-    private Map registers = new HashMap();
-    
-    public int getRegisterNumber(Register register) {
-	return ((Integer) numbers.get(register)).intValue(); 
-    }
-    
-    public final RegisterMap add(Register register, Integer regNum) {
-	numbers.put(register, regNum);
-	registers.put(regNum, register);
-	return this;
-    }
-    
-    public Register getRegister(int regNum) {
-	return (Register) registers.get(new Integer(regNum));
+    static public Register[] getRegisters(Isa isa) {
+	if (isa instanceof IsaIA32)
+	    return IA32Registers.ALL.registers;
+	if (isa instanceof IsaX8664)
+	    return X8664Registers.GENERAL.registers;
+
+	throw new RuntimeException("Unsupported architecture");
     }
 
-    public Register getRegister(String s) {
-	Collection regs = registers.values();
-	Iterator it = regs.iterator();
-	Register val;
-	while (it.hasNext()) {
-	    val = (Register)it.next();
-	    if (val.name.compareTo(s) == 0)
-		return val;
-	}
-	
-	return null;
-    }
 }

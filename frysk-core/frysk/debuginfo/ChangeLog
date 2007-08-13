@@ -1,3 +1,8 @@
+2007-08-13  Nurdin Premji  <npremji@redhat.com>
+
+	* DwarfRegisterMapFactory.java: Use RegisterMap.add().
+	* DebugInfoEvaluator.java (DebugInfoEvaluator): Use StandardTypes.
+
 2007-08-13  Mike Cvet  <mcvet@redhat.com>
 
 	* DebugInfoFrame.java (getInlinedSubprograms): Fixed method spelling error:
