@@ -1,3 +1,25 @@
+2007-08-13  Nurdin Premji  <npremji@redhat.com>
+
+	* Location.java (putInt): Added, takes a ByteOrder.
+	(putDouble): Ditto.
+	(getDouble): Ditto.
+	(getLong): Ditto.
+	(getInt): Ditto.
+	(getChar): Ditto.
+	(putLong): Ditto.
+	(putChar): Ditto.
+	(getShort): Ditto.
+	(getFloat): Ditto.
+	(putFloat): Ditto.
+	(putShort): Ditto.
+	* Format.java (BINARY): Added.
+	* ArithmeticType.java (toString): Added, takes a Format.
+	* Value.java (getDouble): Added, takes a ByteOrder.
+	(getLong): Ditto.
+	(getInt): Ditto.
+	(getShort): Ditto.
+	(getFloat): Ditto.
+	
 2007-08-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Value.java (Value(Type,String,ArrayByteBuffer)): Delete.

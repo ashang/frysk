@@ -49,4 +49,5 @@ public class Format
     public static final Format HEXADECIMAL = new Format();
     public static final Format OCTAL = new Format();
     public static final Format DECIMAL = new Format();
+    public static final Format BINARY = new Format();
 }

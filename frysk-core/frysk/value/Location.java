@@ -45,6 +45,7 @@ package frysk.value;
 
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
+import inua.eio.ByteOrder;
 
 public class Location
 {
@@ -72,6 +73,12 @@ public class Location
     short getShort() { return location.getShort(index); }
     byte getByte() { return (byte)location.getByte(index); }
 
+    double getDouble(ByteOrder order) { return location.getDouble(order, index); }
+    float getFloat(ByteOrder order) { return location.getFloat(order, index); }
+    long getLong(ByteOrder order) { return location.getLong(order, index); }
+    int getInt(ByteOrder order) { return location.getInt(order, index); }
+    short getShort(ByteOrder order) { return location.getShort(order, index); }
+    
     double getDouble(int idx) { return location.getDouble(idx); }
     float getFloat(int idx) { return location.getFloat(idx); }
     long getLong(int idx) { return location.getLong(idx); }
@@ -79,10 +86,22 @@ public class Location
     short getShort(int idx) { return location.getShort(idx); }
     byte getByte(int idx) { return (byte)location.getByte(idx); }
   
+    double getDouble(ByteOrder order, int idx) { return location.getDouble(order, idx); }
+    float getFloat(ByteOrder order, int idx) { return location.getFloat(order, idx); }
+    long getLong(ByteOrder order, int idx) { return location.getLong(order, idx); }
+    int getInt(ByteOrder order, int idx) { return location.getInt(order, idx); }
+    short getShort(ByteOrder order, int idx) { return location.getShort(order, idx); }
+    
     void putDouble(double value)  {location.putDouble(index, value);}
     void putFloat(float value)  {location.putFloat(index, value);}
     void putLong(long value)  {location.putLong(index, value);}
     void putInt(int value)  {location.putInt(index, value);}
     void putShort(short value)  {location.putShort(index, value);}
     void putByte(byte value)  {location.putByte(index, (byte)value);}
+    
+    void putDouble(ByteOrder order, double value)  {location.putDouble(order, index, value);}
+    void putFloat(ByteOrder order, float value)  {location.putFloat(order, index, value);}
+    void putLong(ByteOrder order, long value)  {location.putLong(order, index, value);}
+    void putInt(ByteOrder order, int value)  {location.putInt(order, index, value);}
+    void putShort(ByteOrder order, short value)  {location.putShort(order, index, value);}
 }

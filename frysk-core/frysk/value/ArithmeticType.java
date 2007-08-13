@@ -662,8 +662,46 @@ public class ArithmeticType
   }
   
   public String toString (Value v) {
-      return this.toString (v, null);
+      return this.toString (v, (ByteBuffer) null);
   }
+
+public String toString(Value v, Format format) {
+    switch (typeId)
+    {
+    case BaseTypes.baseTypeByte:
+      return String.valueOf(v.getByte());
+    case BaseTypes.baseTypeShort:
+      return String.valueOf(v.getShort(endian));
+    case BaseTypes.baseTypeInteger:
+	if (format == Format.BINARY)
+	  return Integer.toBinaryString(v.getInt(endian));
+	else if (format == Format.OCTAL)
+	    return Integer.toOctalString(v.getInt(endian));
+	else if (format == Format.DECIMAL)
+	    return String.valueOf(v.getInt(endian));
+	else if (format == Format.HEXADECIMAL)
+	    return Integer.toHexString(v.getInt(endian));
+	else
+	    throw new RuntimeException ("Unsupported base value");	
+    case BaseTypes.baseTypeLong:
+	if (format == Format.BINARY)
+	  return Long.toBinaryString(v.getLong(endian));
+	else if (format == Format.OCTAL)
+	    return Long.toOctalString(v.getLong(endian));
+	else if (format == Format.DECIMAL)
+	    return String.valueOf(v.getLong(endian));
+	else if (format == Format.HEXADECIMAL)
+	    return Long.toHexString(v.getLong(endian));
+	else
+	   throw new RuntimeException ("Unsupported base value");
+    case BaseTypes.baseTypeFloat:
+      return String.valueOf(v.getFloat(endian));
+    case BaseTypes.baseTypeDouble:
+      return String.valueOf(v.getDouble(endian));
+    default:
+      return "";
+    }
+}
 }
 
 
