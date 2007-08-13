@@ -67,7 +67,7 @@ public class DebugInfoStackFactory {
 //	    System.out
 //	    .println("DebugInfoStackFactory.createVirtualDebugInfoStackTrace() " + frame.getUndecoratedFrame());
 
-	    LinkedList inlineList = frame.getInlnedSubprograms(); 
+	    LinkedList inlineList = frame.getInlinedSubprograms(); 
 	    if(inlineList.size() != 0 ){
 		Iterator iterator = inlineList.iterator();
 		while (iterator.hasNext()) {

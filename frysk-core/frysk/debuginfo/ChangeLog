@@ -2,6 +2,9 @@
 
 	* DebugInfoFrame.java (getInlinedSubprograms): Fixed method spelling error:
 	inlned -> inlined.
+	* DebugInfoStackFactory.java (createVirtualDebugInfoStackTrace): Use updated
+	method from above.
+	* TestFrameDebugInfo.java (testGetInlinedSubroutines): Ditto.
 
 2007-08-13  Andrew Cagney  <cagney@redhat.com>
 

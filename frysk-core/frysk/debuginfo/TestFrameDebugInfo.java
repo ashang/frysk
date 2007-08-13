@@ -145,7 +145,7 @@ public class TestFrameDebugInfo
     Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-inlined");
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
     
-    LinkedList inlinedSubprograms =  frame.getInlnedSubprograms();
+    LinkedList inlinedSubprograms =  frame.getInlinedSubprograms();
     
     assertEquals("Number of inline functions",3,inlinedSubprograms.size());
     
