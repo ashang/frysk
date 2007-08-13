@@ -40,7 +40,6 @@
 package frysk.value;
 
 import lib.dwfl.BaseTypes;
-import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
 import java.io.PrintWriter;
 
@@ -70,11 +69,6 @@ public class Value
       this(type, textFIXME, (new Location(byteBuffer)));
     }    
 
-    public Value(Type type, String textFIXME, ArrayByteBuffer arrayByteBuffer) 
-    {
-      this(type, textFIXME, (new Location(arrayByteBuffer)));
-    }    
-    
     public Value(Type type, String textFIXME, Location location)
     {
        this.type = type;
