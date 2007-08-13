@@ -41,7 +41,6 @@ package frysk.value;
 
 import lib.dwfl.BaseTypes;
 import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
 
 import java.io.PrintWriter;
 
@@ -111,40 +110,20 @@ public class Value
       return location.getShort();
     }
     
-    public short getShort(ByteOrder order) {
-	return location.getShort(order);
-    }
-    
     public int getInt() {
       return location.getInt();
-    }
-    
-    public int getInt(ByteOrder order) {
-	return location.getInt(order);
     }
 
     public long getLong() {
       return location.getLong();
     }
     
-    public long getLong(ByteOrder order) {      
-	return location.getLong(order);
-    }
-    
     public float getFloat() {
       return location.getFloat();
-    }
-    
-    public float getFloat(ByteOrder order) {
-	return location.getFloat(order);
     }
 
     public double getDouble() {
       return location.getDouble();
-    }
-    
-    public double getDouble(ByteOrder order) {
-	return location.getDouble(order);
     }
     
     public byte getByte(int idx) {

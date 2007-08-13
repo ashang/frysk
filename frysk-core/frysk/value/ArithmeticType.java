@@ -645,17 +645,17 @@ public class ArithmeticType
     switch (typeId)
     {
     case BaseTypes.baseTypeByte:
-      return String.valueOf(v.getByte());
+      return String.valueOf(v.getLocation().getByte());
     case BaseTypes.baseTypeShort:
-      return String.valueOf(v.getShort());
+      return String.valueOf(v.getLocation().getShort());
     case BaseTypes.baseTypeInteger:
-      return String.valueOf(v.getInt());
+      return String.valueOf(v.getLocation().getInt());
     case BaseTypes.baseTypeLong:
-      return String.valueOf(v.getLong());
+      return String.valueOf(v.getLocation().getLong());
     case BaseTypes.baseTypeFloat:
-      return String.valueOf(v.getFloat());
+      return String.valueOf(v.getLocation().getFloat());
     case BaseTypes.baseTypeDouble:
-      return String.valueOf(v.getDouble());
+      return String.valueOf(v.getLocation().getDouble());
     default:
       return "";
     }
@@ -669,35 +669,35 @@ public String toString(Value v, Format format) {
     switch (typeId)
     {
     case BaseTypes.baseTypeByte:
-      return String.valueOf(v.getByte());
+      return String.valueOf(v.getLocation().getByte());
     case BaseTypes.baseTypeShort:
-      return String.valueOf(v.getShort(endian));
+      return String.valueOf(v.getLocation().getShort(endian));
     case BaseTypes.baseTypeInteger:
 	if (format == Format.BINARY)
-	  return Integer.toBinaryString(v.getInt(endian));
+	  return Integer.toBinaryString(v.getLocation().getInt(endian));
 	else if (format == Format.OCTAL)
-	    return Integer.toOctalString(v.getInt(endian));
+	    return Integer.toOctalString(v.getLocation().getInt(endian));
 	else if (format == Format.DECIMAL)
-	    return String.valueOf(v.getInt(endian));
+	    return String.valueOf(v.getLocation().getInt(endian));
 	else if (format == Format.HEXADECIMAL)
-	    return Integer.toHexString(v.getInt(endian));
+	    return Integer.toHexString(v.getLocation().getInt(endian));
 	else
 	    throw new RuntimeException ("Unsupported base value");	
     case BaseTypes.baseTypeLong:
 	if (format == Format.BINARY)
-	  return Long.toBinaryString(v.getLong(endian));
+	  return Long.toBinaryString(v.getLocation().getLong(endian));
 	else if (format == Format.OCTAL)
-	    return Long.toOctalString(v.getLong(endian));
+	    return Long.toOctalString(v.getLocation().getLong(endian));
 	else if (format == Format.DECIMAL)
-	    return String.valueOf(v.getLong(endian));
+	    return String.valueOf(v.getLocation().getLong(endian));
 	else if (format == Format.HEXADECIMAL)
-	    return Long.toHexString(v.getLong(endian));
+	    return Long.toHexString(v.getLocation().getLong(endian));
 	else
 	   throw new RuntimeException ("Unsupported base value");
     case BaseTypes.baseTypeFloat:
-      return String.valueOf(v.getFloat(endian));
+      return String.valueOf(v.getLocation().getFloat(endian));
     case BaseTypes.baseTypeDouble:
-      return String.valueOf(v.getDouble(endian));
+      return String.valueOf(v.getLocation().getDouble(endian));
     default:
       return "";
     }

@@ -1,5 +1,13 @@
 2007-08-13  Nurdin Premji  <npremji@redhat.com>
 
+	* ArithmeticType.java (toString): Use Value.location.getXX()
+	instead of Value.getXX().
+	* Value.java(getDouble): Removed.
+	(getFloat): Removed.
+	(getInt): Removed.
+	(getLong): Removed.
+	(getShort): Removed.
+
 	* StandardTypes.java (getByteType): Added.
 	(getDoubleType): Ditto.
 	(longLittleEndianType): Ditto. 
