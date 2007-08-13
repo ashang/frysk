@@ -39,19 +39,15 @@
      
 package frysk.hpd;
 
-import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.ArrayList;
 import frysk.value.Format;
 import frysk.debuginfo.ValueUavailableException;
 import frysk.debuginfo.VariableOptimizedOutException;
 import java.util.Iterator;
-
-import frysk.proc.UBigInteger;
 import frysk.proc.Task;
 import frysk.value.Value;
 import javax.naming.NameNotFoundException;
-import lib.dwfl.BaseTypes;
 
 class PrintCommand
     implements CommandHandler
@@ -60,14 +56,6 @@ class PrintCommand
     PrintCommand(CLI cli)
     {
 	this.cli = cli;
-    }
-
-    private int getFormat(Format f) {
-	if (f == Format.HEXADECIMAL)
-	    return 16;
-	if (f == Format.OCTAL)
-	    return 8;
-	else return 10;
     }
 
     public void handle(Command cmd) throws ParseException {
@@ -82,20 +70,13 @@ class PrintCommand
 	    cli.printUsage(cmd);
 	    return;
         }
-	Format format = Format.NATURAL;
-	boolean haveFormat = false;
 
 	String sInput 
 	    = cmd.getFullCommand().substring(cmd.getAction().length()).trim();
 
-	if (sInput.indexOf('$') != -1) 
-	    format = Format.HEXADECIMAL;
-	else
-	    format = Format.DECIMAL;
-
+	Format format = null;
 	for (int i = 0; i < params.size(); i++) {
 	    if (((String)params.get(i)).equals("-format")) {
-		haveFormat = true;
 		i += 1;
 		String arg = ((String)params.get(i));
 		if (arg.compareTo("d") == 0) 
@@ -106,8 +87,10 @@ class PrintCommand
 		    format = Format.HEXADECIMAL;
 	    }
 	}
-	if (haveFormat)
+	if (format != null)
 	    sInput = sInput.substring(0,sInput.indexOf("-format"));
+	else
+	    format = Format.NATURAL;
 
 	if (sInput.length() == 0) {
 	    cli.printUsage(cmd);
@@ -155,36 +138,13 @@ class PrintCommand
             }
 
 
-	    if (format == Format.HEXADECIMAL) 
-                cli.outWriter.print("0x");
-	    else if (format == Format.OCTAL)
-                cli.outWriter.print("0");
-
-	    int resultType = result.getType().getTypeId();
-            if (resultType == BaseTypes.baseTypeFloat
-                || resultType == BaseTypes.baseTypeDouble)
-                cli.outWriter.println(result.toString());
-            else if (resultType == BaseTypes.baseTypeShort
-                     || resultType == BaseTypes.baseTypeInteger
-                     || resultType == BaseTypes.baseTypeLong)
-                {
-                    if (format == Format.DECIMAL)
-                        cli.outWriter.println(Long.toString(result.longValue(),
-                                                            getFormat(format)));
-                    else
-                        {
-                            BigInteger bigInt = new BigInteger(Long.toString(result.longValue()));
-                            cli.outWriter.println(UBigInteger.toString(bigInt, bigInt.bitLength() + 1, 16));
-                        }
-                }
-            else if (resultType == BaseTypes.baseTypeByte)
-                cli.outWriter.println(Integer.toString((int)result.longValue(),
-                                                       getFormat(format)) + 
-                                      " '" + (char)result.intValue() + "'");
-            else {
-                result.toPrint(cli.outWriter, task.getMemory(), format);
-                cli.outWriter.println();
-            }
+	    // XXX: Would it be better to just always have some sort
+	    // of fake task?
+	    if (task == null)
+		result.toPrint(cli.outWriter, null, format);
+	    else
+		result.toPrint(cli.outWriter, task.getMemory(), format);
+	    cli.outWriter.println();
         }
         if (result == null) {
             cli.addMessage("Symbol \"" + sInput + "\" is not found in the current context.",

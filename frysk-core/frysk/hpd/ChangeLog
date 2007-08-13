@@ -1,3 +1,9 @@
+2007-08-13  Andrew Cagney  <cagney@redhat.com>
+
+	* TestStackCommands.java: Move test of <<print 2+2>> from here...
+	* TestPrint.java (testUnattached): ... to here.
+	* PrintCommand.java (handle): Simplify; always call Value.toPrint.
+
 2007-08-13  Mike Cvet  <mcvet@redhat.com>
 
 	* TestFhpdStepping.java: Added. Fixes #4908.

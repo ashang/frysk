@@ -49,9 +49,6 @@ public class TestStackCommands
 	child = new Expect(Config.getPkgLibFile("hpd-c"));
 	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
-	// Add
-	e.send ("print 2+2\n");
-	e.expect ("\r\n4\r\n" + prompt);
 	// Attach
 	e.send ("attach " + child.getPid () + "\n\n");
 	e.expect (5, "attach.*\n" + prompt);

@@ -49,6 +49,14 @@ import frysk.Config;
 public class TestPrint
     extends TestLib
 {
+    public void testUnattached() {
+	e = new Expect(Config.getBinFile("fhpd"));
+	e.expect (prompt);
+	// Add with no process; shouldn't crash.
+	e.send ("print 2+2\n");
+	e.expect ("\r\n4\r\n" + prompt);
+    }
+
     public void testHpdScalars () {
 	child = new Expect(Config.getPkgLibFile("hpd-c"));
 	e = new Expect(Config.getBinFile("fhpd"));
