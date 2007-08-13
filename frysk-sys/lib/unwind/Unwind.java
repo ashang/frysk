@@ -68,6 +68,9 @@ public abstract class Unwind
   abstract int getRegister(RawDataManaged cursor, int regNum,
                            byte[] word);
   
+  abstract int getFPRegister(RawDataManaged cursor, int regNum,
+          byte[] word);
+  
   abstract int setRegister(RawDataManaged cursor, int regNum, long word);
   public abstract int getSP(RawDataManaged cursor, byte[] word);
   

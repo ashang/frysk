@@ -72,6 +72,10 @@ public class Cursor
     public int  getRegister(int regNum, byte[] word) {
 	return unwinder.getRegister(cursor, regNum, word);
     }
+    
+    public int getFPRegister(int regNum, byte[] word) {
+	return unwinder.getFPRegister(cursor, regNum, word);
+    }
   
     public int getSP(byte[] word) {
 	return unwinder.getSP(cursor, word);

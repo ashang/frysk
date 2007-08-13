@@ -322,6 +322,14 @@ lib::unwind::TARGET::getRegister(gnu::gcj::RawDataManaged* cursor,
 }
 
 jint
+lib::unwind::TARGET::getFPRegister(gnu::gcj::RawDataManaged* cursor,
+                                 jint regNum, jbyteArray word)
+{
+  return (jint) unw_get_fpreg((::unw_cursor_t *) cursor,
+                            (::unw_regnum_t) regNum, (::unw_fpreg_t *) elements(word));
+}
+
+jint
 lib::unwind::TARGET::setRegister(gnu::gcj::RawDataManaged* cursor,
                                  jint regNum, jlong word)
 {

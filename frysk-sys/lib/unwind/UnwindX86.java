@@ -104,4 +104,6 @@ public class UnwindX86
   native int getFormat(RawDataManaged procInfo);
   native int getUnwindInfoSize(RawDataManaged procInfo);
   native RawData getUnwindInfo(RawDataManaged procInfo);
+
+  native int getFPRegister(RawDataManaged cursor, int regNum, byte[] word);
 }

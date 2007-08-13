@@ -1,3 +1,22 @@
+2007-08-13  Nurdin Premji  <npremji@redhat.com>
+
+	* eio/ByteBuffer.java (putULong): Added, takes a ByteOrder.
+	(putInt): Ditto.
+	(putUShort): Ditto.
+	(putDouble): Ditto.
+	(getDouble): Ditto.
+	(getLong): Ditto.
+	(getUShort): Ditto.
+	(getInt): Ditto.
+	(putLong): Ditto.
+	(getUInt): Ditto.
+	(putUInt): Ditto.
+	(getShort): Ditto.
+	(getFloat): Ditto.
+	(putFloat): Ditto.
+	(putShort): Ditto.
+	(getULong): Ditto.
+
 2007-08-02  Mark Wielaard  <mwielaard@redhat.com>
 
 	* ByteBuffer.java (put(byte[],int,int)): New

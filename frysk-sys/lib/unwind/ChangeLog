@@ -1,3 +1,12 @@
+2007-08-13  Nurdin Premji  <npremji@redhat.com>
+
+	* UnwindPPC64.java (getFPRegister): Added.
+	* UnwindX86.java (getFPRegister): Added.
+	* UnwindX8664.java (getFPRegister): Added.
+	* Unwind.java (getFPRegister): Added.
+	* Cursor.java (getFPRegister): Added.
+	* cni/UnwindH.hxx (getFPRegister): Implemented.
+
 2007-08-03  Nurdin Premji  <npremji@redhat.com>
 
 	* UnwindRegistersX86.shenum: Added (C).

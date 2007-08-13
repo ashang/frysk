@@ -444,9 +444,20 @@ public abstract class ByteBuffer
   {
     return byteOrdered.peekShort(this);
   }
+  
+  public final short getShort(ByteOrder byteOrder) {
+      ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+      return byteOrdered.peekShort(this);
+  }
 
   public final short getShort (long index)
   {
+    return byteOrdered.peekShort(this, lowWater + index);
+  }
+  
+  public final short getShort (ByteOrder byteOrder, long index)
+  {
+    ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
     return byteOrdered.peekShort(this, lowWater + index);
   }
 
@@ -455,16 +466,34 @@ public abstract class ByteBuffer
     return byteOrdered.peekUShort(this);
   }
 
+  public final int getUShort (ByteOrder byteOrder)
+  {
+    ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    return byteOrdered.peekUShort(this);
+  }
+  
   public final int getUShort (long index)
   {
     return byteOrdered.peekUShort(this, lowWater + index);
   }
-
+  
+  public final int getUShort (ByteOrder byteOrder, long index)
+  {
+    ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    return byteOrdered.peekUShort(this, lowWater + index);
+  }
+  
   public final int getInt ()
   {
     return byteOrdered.peekInt(this);
   }
-
+  
+  public final int getInt (ByteOrder byteOrder)
+  {
+    ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    return byteOrdered.peekInt(this);
+  }
+  
   public final int getInt (long index)
   {
     logger.log(Level.FINE, "{0} getInt\n", this);
@@ -472,39 +501,90 @@ public abstract class ByteBuffer
     logger.log(Level.FINE, "{0} getInt Finished " + peek + " \n", this);
     return peek;
   }
-
+  
+  public final int getInt (ByteOrder byteOrder, long index)
+  {
+    ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    logger.log(Level.FINE, "{0} getInt\n", this);
+    int peek = byteOrdered.peekInt(this, lowWater + index);
+    logger.log(Level.FINE, "{0} getInt Finished " + peek + " \n", this);
+    return peek;
+  }
+  
   public final long getUInt ()
   {
     return byteOrdered.peekUInt(this);
   }
-
+  
+  public final long getUInt (ByteOrder byteOrder)
+  {
+    ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    return byteOrdered.peekUInt(this);
+  }
+  
   public final long getUInt (long index)
   {
     return byteOrdered.peekUInt(this, lowWater + index);
   }
-
+  
+  public final long getUInt (ByteOrder byteOrder, long index)
+  {
+    ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    return byteOrdered.peekUInt(this, lowWater + index);
+  }
+  
   public final long getULong ()
   {
     return byteOrdered.peekULong(this);
   }
-
+  
+  public final long getULong (ByteOrder byteOrder)
+  {
+    ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    return byteOrdered.peekULong(this);
+  }
+  
   public final long getULong (long index)
   {
     return byteOrdered.peekULong(this, lowWater + index);
   }
-
+  
+  public final long getULong (ByteOrder byteOrder, long index)
+  {
+    ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    return byteOrdered.peekULong(this, lowWater + index);
+  }
+  
   public final long getLong ()
   {
     return byteOrdered.peekLong(this);
   }
-
+  
+  public final long getLong (ByteOrder byteOrder)
+  {
+    ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    return byteOrdered.peekLong(this);
+  }
+  
   public final long getLong (long index)
   {
     return byteOrdered.peekLong(this, lowWater + index);
   }
 
+  public final long getLong (ByteOrder byteOrder, long index)
+  {
+    ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    return byteOrdered.peekLong(this, lowWater + index);
+  }
+  
   public final float getFloat (long index)
   {
+    return byteOrdered.peekFloat(this, lowWater + index);
+  }
+  
+  public final float getFloat (ByteOrder byteOrder, long index)
+  {
+    ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
     return byteOrdered.peekFloat(this, lowWater + index);
   }
 
@@ -512,69 +592,151 @@ public abstract class ByteBuffer
   {
     return byteOrdered.peekDouble(this, lowWater + index);
   }
+  
+  public final double getDouble (ByteOrder byteOrder, long index) {
+      ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+      return byteOrdered.peekDouble(this, lowWater + index);
+  }
 
   public final void putShort (short v)
   {
     byteOrdered.pokeShort(this, v);
   }
-
+  
+  public final void putShort (ByteOrder byteOrder, short v)
+  {
+      ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    byteOrdered.pokeShort(this, v);
+  }
+  
   public final void putShort (long index, short v)
   {
     byteOrdered.pokeShort(this, lowWater + index, v);
   }
-
+  
+  public final void putShort (ByteOrder byteOrder, long index, short v)
+  {
+      ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    byteOrdered.pokeShort(this, lowWater + index, v);
+  }
+  
   public final void putUShort (int v)
   {
     byteOrdered.pokeUShort(this, v);
   }
 
+  public final void putUShort (ByteOrder byteOrder, int v)
+  {
+      ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    byteOrdered.pokeUShort(this, v);
+  }
+  
   public final void putUShort (long index, int v)
   {
     byteOrdered.pokeUShort(this, lowWater + index, v);
   }
 
+  public final void putUShort (ByteOrder byteOrder, long index, int v)
+  {
+      ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    byteOrdered.pokeUShort(this, lowWater + index, v);
+  }
+  
   public final void putInt (int v)
   {
     byteOrdered.pokeInt(this, v);
   }
 
+  public final void putInt (ByteOrder byteOrder, int v)
+  {
+      ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    byteOrdered.pokeInt(this, v);
+  }
+  
   public final void putInt (long index, int v)
   {
     byteOrdered.pokeInt(this, lowWater + index, v);
   }
-
+  
+  public final void putInt (ByteOrder byteOrder, long index, int v)
+  {
+      ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    byteOrdered.pokeInt(this, lowWater + index, v);
+  }
+  
   public final void putUInt (long v)
   {
     byteOrdered.pokeUInt(this, v);
   }
 
+  public final void putUInt (ByteOrder byteOrder, long v)
+  {
+      ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    byteOrdered.pokeUInt(this, v);
+  }
+ 
   public final void putUInt (long index, long v)
   {
     byteOrdered.pokeUInt(this, lowWater + index, v);
   }
 
+  public final void putUInt (ByteOrder byteOrder, long index, long v)
+  {
+      ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    byteOrdered.pokeUInt(this, lowWater + index, v);
+  }
+  
   public final void putULong (long v)
   {
     byteOrdered.pokeULong(this, v);
   }
 
+  public final void putULong (ByteOrder byteOrder, long v)
+  {
+      ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    byteOrdered.pokeULong(this, v);
+  }
+  
   public final void putULong (long index, long v)
   {
     byteOrdered.pokeULong(this, lowWater + index, v);
   }
 
+  public final void putULong (ByteOrder byteOrder, long index, long v)
+  {
+      ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    byteOrdered.pokeULong(this, lowWater + index, v);
+  }
   public final void putLong (long v)
   {
     byteOrdered.pokeLong(this, v);
   }
-
+  
+  public final void putLong (ByteOrder byteOrder, long v)
+  {
+      ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    byteOrdered.pokeLong(this, v);
+  }
+  
   public final void putLong (long index, long v)
   {
     byteOrdered.pokeLong(this, lowWater + index, v);
   }
-
+  
+  public final void putLong (ByteOrder byteOrder, long index, long v)
+  {
+      ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    byteOrdered.pokeLong(this, lowWater + index, v);
+  }
+  
   public final void putFloat (float v)
   {
+    byteOrdered.pokeFloat(this, v);
+  }
+
+  public final void putFloat (ByteOrder byteOrder, float v)
+  {
+      ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
     byteOrdered.pokeFloat(this, v);
   }
 
@@ -583,16 +745,34 @@ public abstract class ByteBuffer
     byteOrdered.pokeFloat(this, lowWater + index, v);
   }
 
+  public final void putFloat (ByteOrder byteOrder, long index, float v)
+  {
+      ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    byteOrdered.pokeFloat(this, lowWater + index, v);
+  }
+
   public final void putDouble (double v)
   {
     byteOrdered.pokeDouble(this, v);
   }
 
+  public final void putDouble (ByteOrder byteOrder, double v)
+  {
+      ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    byteOrdered.pokeDouble(this, v);
+  }
+  
   public final void putDouble (long index, double v)
   {
     byteOrdered.pokeDouble(this, lowWater + index, v);
   }
 
+  public final void putDouble (ByteOrder byteOrder, long index, double v)
+  {
+      ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
+    byteOrdered.pokeDouble(this, lowWater + index, v);
+  }
+  
   public final long getWord ()
   {
     return wordSized.getWord(this);
