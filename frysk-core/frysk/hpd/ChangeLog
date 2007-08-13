@@ -1,3 +1,14 @@
+2007-08-13  Mike Cvet  <mcvet@redhat.com>
+
+	* TestFhpdStepping.java: Added. Fixes #4908.
+	* StepFinishCommand.java: Ditto.
+	* StepNextCommand.java: Ditto.
+	* StepNextiCommand.java: Ditto.
+	* StepCommand.java: Fixed hex conversion bug.
+	* StepInstructionCommand.java: Ditto.
+	* CLI.java (CLI): Added commented-out commands for above Commands. Pending 
+	resolution of #4914.
+
 2007-08-13  Andrew Cagney  <cagney@redhat.com>
 
 	* DisplayCommand.java: Replace Value.getTextFIXME with

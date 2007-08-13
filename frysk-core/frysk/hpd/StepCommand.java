@@ -91,7 +91,7 @@ public class StepCommand implements CommandHandler
             DebugInfoFrame rf =  this.cli.getTaskFrame(task);
             
             if (rf.getLines().length == 0)
-              this.cli.addMessage("Task stopped at address 0x" + rf.getAdjustedAddress(), Message.TYPE_NORMAL);
+              this.cli.addMessage("Task stopped at address 0x" + Long.toHexString(rf.getAdjustedAddress()), Message.TYPE_NORMAL);
             else
               this.cli.addMessage("Task stopped at line " + rf.getLines()[0].getLine() + " in file " + rf.getLines()[0].getFile(), Message.TYPE_NORMAL);
           }

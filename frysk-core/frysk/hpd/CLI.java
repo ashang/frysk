@@ -345,6 +345,7 @@ public class CLI
   {
     this.prompt = prompt;
     outWriter = new PrintWriter(out, true);
+//    outWriter = new PrintWriter(frysk.sys.FileDescriptor.out.getOutputStream(), true);
     idManager = ProcTaskIDManager.getSingleton();
 
     prepro = new Preprocessor();
@@ -356,17 +357,21 @@ public class CLI
     handlers.put("assign", new PrintCommand(this));
     handlers.put("attach", new AttachCommand(this));
     addHandler(new BreakpointCommand(this));
+    handlers.put("debuginfo", new DebuginfoCommand(this));
     handlers.put("defset", new DefsetCommand(this));
     addHandler(new DeleteCommand(this));
     handlers.put("detach", new DetachCommand(this));
     addHandler(new DisableCommand(this));
     handlers.put("down", new UpDownHandler());
     addHandler(new EnableCommand(this));
+//    handlers.put("finish", new StepFinishCommand(this));
     handlers.put("focus", new FocusCommand(this));
     handlers.put("go", new GoCommand(this));
     handlers.put("halt", new HaltCommand(this));
     handlers.put("help", new HelpCommand(this));
     handlers.put("list", new ListCommand(this));
+//    handlers.put("next", new StepNextCommand(this));
+//    handlers.put("nexti", new StepNextiCommand(this));
     handlers.put("print", new PrintCommand(this));
     handlers.put("quit", new QuitCommand(this));
     handlers.put("set", new SetCommand(this, dbgvars));
@@ -380,7 +385,6 @@ public class CLI
     handlers.put("what", new WhatCommand(this));
     handlers.put("where", new WhereCommand(this));
     handlers.put("whichsets", new WhichsetsCommand(this));
-    handlers.put("debuginfo", new DebuginfoCommand(this));
     addHandler(new DisplayCommand(this));
     // New interface
     addHandler(new RunCommand(this));
