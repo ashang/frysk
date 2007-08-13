@@ -1,3 +1,8 @@
+2007-08-13  Mike Cvet  <mcvet@redhat.com>
+
+	* DebugInfoFrame.java (getInlinedSubprograms): Fixed method spelling error:
+	inlned -> inlined.
+
 2007-08-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Scope.java: Delete unused import lib.dwfl.DwException.
@@ -8,7 +13,7 @@
 	Value.getTextFIXME with Variable.getName.
 	* Variable.java (getVariable): Delete.
 	(toPrint): Handle unknown type here; add FIXME.
-	
+
 	* TestFrameDebugInfo.java: Use Variable.getName.
 
 	* Variable.java (getName): New.

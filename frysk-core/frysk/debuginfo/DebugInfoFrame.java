@@ -100,7 +100,7 @@ public class DebugInfoFrame extends FrameDecorator{
      * inlined function.
      * @return
      */
-    public final LinkedList getInlnedSubprograms ()
+    public final LinkedList getInlinedSubprograms ()
     {
       if (inlinedSubprograms == null) {
 	  this.inlinedSubprograms = new LinkedList();
