@@ -52,6 +52,7 @@ import lib.dwfl.ElfPrAuxv;
 import lib.dwfl.ElfPrpsinfo;
 import lib.dwfl.ElfPrstatus;
 import lib.dwfl.ElfPrFPRegSet;
+import lib.dwfl.ElfPrXFPRegSet;
 import frysk.sys.proc.AuxvBuilder;
 import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.Stat;
@@ -211,7 +212,21 @@ public class LinuxElfCorefilex86 extends LinuxElfCorefile {
     /* (non-Javadoc)
      * @see frysk.util.LinuxElfCorefile#writeNotePRXFPRegset(lib.dwfl.ElfNhdr, frysk.proc.Task)
      */
-    protected void writeNotePRXFPRegset(ElfNhdr nhdrEntry, Task task) {
+    protected boolean writeNotePRXFPRegset(ElfNhdr nhdrEntry, Task task)
+    {
+	ElfPrXFPRegSet xfpRegSet = new ElfPrXFPRegSet();
+
+	// Write FP Register info over wholesae. Do not interpret.
+	ByteBuffer registerMaps[] = task.getRegisterBanks();
+	byte[] regBuffer = new byte[(int) registerMaps[2].capacity()];
+	registerMaps[2].get(regBuffer);
+
+	xfpRegSet.setXFPRegisterBuffer(regBuffer);
+
+	// Write it
+	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_PRXFPREG, xfpRegSet);
+
+	return true;
     }
 
     /* (non-Javadoc)

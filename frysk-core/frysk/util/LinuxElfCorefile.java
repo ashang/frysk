@@ -248,8 +248,9 @@ public abstract class LinuxElfCorefile {
      * @param nhdrEntry - the note header entry this function is to populate.
      * @param task - the frysk.proc.live.Taskthat provides seed info to
      * populate the note header.
+     * @return boolean: Reutrns whether this arch supports this note.
      */   
-    protected abstract void writeNotePRXFPRegset(ElfNhdr nhdrEntry, Task task);
+    protected abstract boolean writeNotePRXFPRegset(ElfNhdr nhdrEntry, Task task);
     
     /**
      * writeNoteAuxVec
@@ -361,6 +362,14 @@ public abstract class LinuxElfCorefile {
 	    writeNoteFPRegset(prFPRegSet, blockedTasks[i]);
 	    list.add(entryCount, prFPRegSet);
 	    entryCount++;
+
+	    // XFP REGISTERS
+	    ElfNhdr prXFPRegSet = new ElfNhdr();
+	    if (writeNotePRXFPRegset(prXFPRegSet, blockedTasks[i]))
+	    {
+		list.add(entryCount, prXFPRegSet);
+		entryCount++;
+	    }
 	}
 
 	// Process Auxillary (AuxV)

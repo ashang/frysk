@@ -1,3 +1,23 @@
+2007-08-13  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestFCore.java (testProgramSegmentHeader): Use getElf().
+	(testElfCoreHeader): Ditto.
+	(getElf): New.
+	(giveMeABlockedProc): New.
+	(testXFloatingPointRegisters): New.	
+	(testGeneralPurposeRegisters): New.
+	(testFloatingPointRegisters): New
+	* LinuxElfCorefile.java (writeNotePRXFPRegset): Change method 
+	signature to return boolean.
+	(fillElfNoteSection): Add in NT_XPFREGSet write call.
+	* LinuxElfCorefilex8664.java (writeNotePRXFPRegset): Reflect
+	new method signature.
+	* LinuxElfCorefilePPC32.java (writeNotePRXFPRegset): Ditto.
+	* LinuxElfCorefilePPC32On64.java (writeNotePRXFPRegset): Ditto.
+	* LinuxElfCorefilePPC64.java (writeNotePRXFPRegset): Ditto.
+	* LinuxElfCorefilex86.java (writeNotePRXFPRegset): Ditto.
+	Fill XFPRegs for x86.
+	
 2007-08-10  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* StacktraceAction.java: Added virtualFrames boolean.

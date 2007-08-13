@@ -212,7 +212,8 @@ public class LinuxElfCorefilex8664 extends LinuxElfCorefile {
     /* (non-Javadoc)
      * @see frysk.util.LinuxElfCorefile#writeNotePRXFPRegset(lib.dwfl.ElfNhdr, frysk.proc.Task)
      */
-    protected void writeNotePRXFPRegset(ElfNhdr nhdrEntry, Task task) {
+    protected  boolean writeNotePRXFPRegset(ElfNhdr nhdrEntry, Task task) {
+        return false;
     }
 
     /* (non-Javadoc)

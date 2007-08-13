@@ -40,6 +40,7 @@
 
 package frysk.util;
 
+import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
 import java.io.File;
@@ -61,9 +62,13 @@ import frysk.proc.Isa;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
+import frysk.proc.ProcId;
+import frysk.proc.Task;
+import frysk.proc.dead.LinuxHost;
 import frysk.sys.proc.MapsBuilder;
-import frysk.testbed.TestLib;
+import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.SlaveOffspring;
+import frysk.testbed.TestLib;
 
 public class TestFCore
     extends TestLib
@@ -93,20 +98,7 @@ public class TestFCore
     Isa arch = getIsa(ackProc);
     ByteOrder order = arch.getByteOrder();
 
-    Elf local_elf = null;
-    // Start new elf file
-    try
-      {
-        local_elf = new Elf(coreFileName, ElfCommand.ELF_C_READ);
-      }
-    catch (ElfFileException e)
-      {
-        fail(e.getMessage());
-      }
-    catch (ElfException e)
-      {
-        fail(e.getMessage());
-      }
+    Elf local_elf = getElf(coreFileName);
     assertNotNull("elf variable is null", local_elf);
 
     assertEquals("Checking ELF Kind", local_elf.getKind(), ElfKind.ELF_K_ELF);
@@ -188,20 +180,9 @@ public class TestFCore
     assertTrue("Checking core file " + coreFileName + " exists.",
                testCore.exists());
 
-    Elf local_elf = null;
-    // Start new elf file
-    try
-      {
-        local_elf = new Elf(coreFileName, ElfCommand.ELF_C_READ);
-      }
-    catch (ElfFileException e)
-      {
-        fail(e.getMessage());
-      }
-    catch (ElfException e)
-      {
-        fail(e.getMessage());
-      }
+    Elf local_elf = getElf(coreFileName);
+
+
     assertNotNull("elf variable is null", local_elf);
 
     // Build, and write out memory segments to sections
@@ -212,7 +193,152 @@ public class TestFCore
     testCore.delete();
   }
 
-  /**
+  
+  public void testGeneralPurposeRegisters ()
+  {
+      
+      // Construct a process
+      Proc ackProc = giveMeABlockedProc();
+      assertNotNull("Found Process",ackProc);
+      
+      // Get main task
+      Task mainLiveTask = ackProc.getMainTask();
+      assertNotNull("Found main live task",mainLiveTask);
+      
+      // Get the live process register banks and store them
+      ByteBuffer liveRegisterMaps[] = mainLiveTask.getRegisterBanks();
+      byte[] liveRegBuffer = new byte[(int) liveRegisterMaps[0].capacity()];
+      liveRegisterMaps[0].get(0,liveRegBuffer,0,(int) liveRegisterMaps[0].capacity());
+      
+      // Create a corefile from process
+      String coreFileName = constructCore(ackProc);
+      File testCore = new File(coreFileName);
+      assertTrue("Checking core file " + coreFileName + " exists.",
+                 testCore.exists());
+
+      // Model the corefile, and get the Process.
+      LinuxHost lcoreHost = new LinuxHost(Manager.eventLoop, 
+		   testCore);      
+      assertNotNull("Checking core file Host", lcoreHost);
+      
+      // Get corefile process
+      Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid())); 
+      assertNotNull("Checking core file process", coreProc);
+      
+      // Get Main tasks of corefile
+      Task mainCoreTask = coreProc.getMainTask();
+      assertNotNull("Checking core main task", mainCoreTask);
+ 
+      // Get corefile registers
+      ByteBuffer coreRegisterMaps[] = mainCoreTask.getRegisterBanks(); 
+      byte[] coreRegBuffer = new byte[(int) coreRegisterMaps[0].capacity()];
+      coreRegisterMaps[0].get(coreRegBuffer);
+      
+      // Compare
+      for (int i=0; i<liveRegBuffer.length; i++)
+	  assertEquals("General Purpose Register buffer postion "+i,coreRegBuffer[i],liveRegBuffer[i]);
+
+      testCore.delete();
+ }
+
+  public void testFloatingPointRegisters ()
+  {
+      
+      // Construct a process
+      Proc ackProc = giveMeABlockedProc();
+      assertNotNull("Found Process",ackProc);
+      
+      // Get main task
+      Task mainLiveTask = ackProc.getMainTask();
+      assertNotNull("Found main live task",mainLiveTask);
+      
+      // Get the live process register banks and store them
+      ByteBuffer liveRegisterMaps[] = mainLiveTask.getRegisterBanks();
+      byte[] liveRegBuffer = new byte[(int) liveRegisterMaps[1].capacity()];
+      liveRegisterMaps[1].get(0,liveRegBuffer,0,(int) liveRegisterMaps[1].capacity());
+      
+      // Create a corefile from process
+      String coreFileName = constructCore(ackProc);
+      File testCore = new File(coreFileName);
+      assertTrue("Checking core file " + coreFileName + " exists.",
+                 testCore.exists());
+
+      // Model the corefile, and get the Process.
+      LinuxHost lcoreHost = new LinuxHost(Manager.eventLoop, 
+		   testCore);      
+      assertNotNull("Checking core file Host", lcoreHost);
+      
+      // Get corefile process
+      Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid())); 
+      assertNotNull("Checking core file process", coreProc);
+      
+      // Get Main tasks of corefile
+      Task mainCoreTask = coreProc.getMainTask();
+      assertNotNull("Checking core main task", mainCoreTask);
+ 
+      // Get corefile registers
+      ByteBuffer coreRegisterMaps[] = mainCoreTask.getRegisterBanks(); 
+      byte[] coreRegBuffer = new byte[(int) coreRegisterMaps[1].capacity()];
+      coreRegisterMaps[1].get(coreRegBuffer);
+      
+      // Compare
+      for (int i=0; i<coreRegBuffer.length; i++)
+	  assertEquals("Floating Point Register buffer postion "+i,coreRegBuffer[i],liveRegBuffer[i]);
+
+      testCore.delete();
+ }
+
+  
+  public void testXFloatingPointRegisters ()
+  {
+      
+      if (unresolvedOnPPC(4890) || unresolvedOnx8664(4890))
+	  return;
+      // Construct a process
+      Proc ackProc = giveMeABlockedProc();
+      assertNotNull("Found Process",ackProc);
+      
+      // Get main task
+      Task mainLiveTask = ackProc.getMainTask();
+      assertNotNull("Found main live task",mainLiveTask);
+      
+      // Get the live process register banks and store them
+      ByteBuffer liveRegisterMaps[] = mainLiveTask.getRegisterBanks();
+      byte[] liveRegBuffer = new byte[(int) liveRegisterMaps[2].capacity()];
+      liveRegisterMaps[2].get(0,liveRegBuffer,0,(int) liveRegisterMaps[2].capacity());
+      
+      // Create a corefile from process
+      String coreFileName = constructCore(ackProc);
+      File testCore = new File(coreFileName);
+      assertTrue("Checking core file " + coreFileName + " exists.",
+                 testCore.exists());
+
+      // Model the corefile, and get the Process.
+      LinuxHost lcoreHost = new LinuxHost(Manager.eventLoop, 
+		   testCore);      
+      assertNotNull("Checking core file Host", lcoreHost);
+      
+      // Get corefile process
+      Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid())); 
+      assertNotNull("Checking core file process", coreProc);
+      
+      // Get Main tasks of corefile
+      Task mainCoreTask = coreProc.getMainTask();
+      assertNotNull("Checking core main task", mainCoreTask);
+ 
+      // Get corefile registers
+      ByteBuffer coreRegisterMaps[] = mainCoreTask.getRegisterBanks(); 
+      byte[] coreRegBuffer = new byte[(int) coreRegisterMaps[2].capacity()];
+      coreRegisterMaps[2].get(coreRegBuffer);
+      
+      // Compare
+      for (int i=0; i<coreRegBuffer.length; i++)
+	  assertEquals("X Floating Point Register buffer postion "+i,coreRegBuffer[i],liveRegBuffer[i]);
+  
+      testCore.delete();
+ }
+
+/**
    * Given a Proc object, generate a core file from that given proc.
    * 
    * @param ackProc - proc object to generate core from.
@@ -350,13 +476,26 @@ public class TestFCore
    */
   protected Proc giveMeAProc ()
   {
-    SlaveOffspring ackProc = SlaveOffspring.createChild();
+    SlaveOffspring ackProc = SlaveOffspring.createDaemon();
     assertNotNull(ackProc);
     Proc proc = ackProc.assertFindProcAndTasks();
     assertNotNull(proc);
     return proc;
   }
-
+  
+  protected Proc giveMeABlockedProc ()
+  {
+    String[] nocmds = {};
+    DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(nocmds);
+    //SlaveOffspring ackProc = SlaveOffspring.createDaemon();
+    assertNotNull(ackProc);
+    ackProc.getMainTask().getProc();
+    //Proc proc = ackProc.assertFindProcAndTasks();
+    //assertNotNull(proc);
+    return ackProc.getMainTask().getProc();
+  }
+  
+  
   /**
    * Return a string representing the architecture of the given ISA. Really need
    * to make a better ISA arch test.
@@ -383,5 +522,24 @@ public class TestFCore
     Isa arch = null;
     arch = proc.getMainTask().getIsa();
     return arch;
+  }
+  
+  private Elf getElf(String coreFileName)
+  {
+      Elf local_elf = null;
+      // Start new elf file
+      try
+        {
+          local_elf = new Elf(coreFileName, ElfCommand.ELF_C_READ);
+        }
+      catch (ElfFileException e)
+        {
+          fail(e.getMessage());
+        }
+      catch (ElfException e)
+        {
+          fail(e.getMessage());
+        }
+      return local_elf;
   }
 }
