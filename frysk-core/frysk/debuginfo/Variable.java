@@ -37,7 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.debuginfo;
 
 import java.io.PrintWriter;
@@ -50,112 +49,100 @@ import frysk.value.Type;
 import frysk.value.Value;
 
 /**
- * This class contains the static information corresponding to a language variable.
- * Given a Frame it is possible to get a Value corresponding to this Variable
+ * This class contains the static information corresponding to a
+ * language variable.  Given a Frame it is possible to get a Value
+ * corresponding to this Variable
  */
-public class Variable
-{
 
-  private Value variable;
-  private DwarfDie variableDie;
-  private Type type;
-  private DwarfDie typeDie;
+public class Variable {
+    private Value variable;
+    private DwarfDie variableDie;
+    private Type type;
+    private DwarfDie typeDie;
   
-  public Variable(Value variable, DwarfDie variableDie){
-   this.variable = variable;
-   this.variableDie = variableDie;
-   if(variable != null){
-       this.type = variable.getType();
-   }
-   if(variableDie == null){
-       throw new IllegalArgumentException();
-   }
-//   this.typeDie =  typeDie;
-  }
-  public void setVariable (Value variable)
-  {
-    this.variable = variable;
-  }
-  public Value getVariable ()
-  {
-    return variable;
-  }
-  public void setVariableDie (DwarfDie variableDie)
-  {
-      if(variableDie == null){
-	       throw new IllegalArgumentException();
-	   }
-    this.variableDie = variableDie;
-  }
-  public DwarfDie getVariableDie ()
-  {
-    return variableDie;
-  }
-  public void setType (Type type)
-  {
-    this.type = type;
-  }
-  public Type getType ()
-  {
-    return type;
-  }
-  public void setTypeDie (DwarfDie typeDie)
-  {
-    this.typeDie = typeDie;
-  }
-  public DwarfDie getTypeDie ()
-  {
-    return typeDie;
-  }
-
-  public long getLineNumber(){
-      return this.variableDie.getDeclLine();
-  }
-  
-  public int getColumnNumber(){
-      return this.variableDie.getDeclColumn();
-  }
-  
-  public void toPrint(PrintWriter printWriter, DebugInfoFrame frame){
-      printWriter.print(this.getType() + " " + this.getVariable().getTextFIXME() + " = ");
-      try{
-	  Value value = getValue(frame);
-	  printWriter.print(value.toString());
-      }
-      catch (ValueUavailableException e) {
-	  printWriter.print("< value unavailable at pc=0x"+ Long.toHexString(frame.getAdjustedAddress())+">");
-      }
-      catch (VariableOptimizedOutException e) {
-	  printWriter.print("< optimized out >");
-      }
-      catch (RuntimeException e) {
-	  printWriter.print("< ERROR >");
-      }
-  }
-  
-  public void printLineCol(PrintWriter printWriter){
-      printWriter.print("line#");
-      try {
-	  printWriter.print(this.getLineNumber());
-      } catch (DwException e) {
-	  printWriter.print("< error >");
-      }
-      
-//      printWriter.print(" col#");
-//      try {
-//	  printWriter.print(this.getColumnNumber());
-//      } catch (DwException e) {
-//	  printWriter.print("< error >");
-//      }
-  }
-  
-  public Value getValue(DebugInfoFrame frame)
-  {
-      DebugInfo debugInfo = new DebugInfo(frame);
-      try {
-	return debugInfo.get(frame, getVariableDie());
-    } catch (NameNotFoundException e) {
-	throw new RuntimeException(e);
+    public Variable(Value variable, DwarfDie variableDie) {
+	this.variable = variable;
+	this.variableDie = variableDie;
+	if (variable != null) {
+	    this.type = variable.getType();
+	}
+	if (variableDie == null) {
+	    throw new IllegalArgumentException();
+	}
+	//   this.typeDie =  typeDie;
     }
-  }
+    public void setVariable (Value variable) {
+	this.variable = variable;
+    }
+    public Value getVariable() {
+	return variable;
+    }
+    public void setVariableDie (DwarfDie variableDie) {
+	if (variableDie == null) {
+	    throw new IllegalArgumentException();
+	}
+	this.variableDie = variableDie;
+    }
+    public DwarfDie getVariableDie() {
+	return variableDie;
+    }
+    public void setType (Type type) {
+	this.type = type;
+    }
+    public Type getType() {
+	return type;
+    }
+    public void setTypeDie (DwarfDie typeDie) {
+	this.typeDie = typeDie;
+    }
+    public DwarfDie getTypeDie() {
+	return typeDie;
+    }
+
+    public long getLineNumber() {
+	return this.variableDie.getDeclLine();
+    }
+  
+    public int getColumnNumber() {
+	return this.variableDie.getDeclColumn();
+    }
+  
+    public void toPrint(PrintWriter printWriter, DebugInfoFrame frame) {
+	printWriter.print(this.getType() + " " + this.getVariable().getTextFIXME() + " = ");
+	try {
+	    Value value = getValue(frame);
+	    printWriter.print(value.toString());
+	} catch (ValueUavailableException e) {
+	    printWriter.print("< value unavailable at pc=0x"+ Long.toHexString(frame.getAdjustedAddress())+">");
+	} catch (VariableOptimizedOutException e) {
+	    printWriter.print("< optimized out >");
+	} catch (RuntimeException e) {
+	    printWriter.print("< ERROR >");
+	}
+    }
+  
+    public void printLineCol(PrintWriter printWriter) {
+	printWriter.print("line#");
+	try {
+	    printWriter.print(this.getLineNumber());
+	} catch (DwException e) {
+	    printWriter.print("< error >");
+	}
+      
+	//      printWriter.print(" col#");
+	//      try {
+	//	  printWriter.print(this.getColumnNumber());
+	//      } catch (DwException e) {
+	//	  printWriter.print("< error >");
+	//      }
+    }
+  
+    public Value getValue(DebugInfoFrame frame) {
+	DebugInfo debugInfo = new DebugInfo(frame);
+	try {
+	    return debugInfo.get(frame, getVariableDie());
+	} catch (NameNotFoundException e) {
+	    throw new RuntimeException(e);
+	}
+    }
 }

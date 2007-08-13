@@ -1,5 +1,7 @@
 2007-08-13  Andrew Cagney  <cagney@redhat.com>
 
+	* Variable.java: Re-indent.
+
 	* Variable.java (getName): Revert; use Value.getTextFIXME.
 	* TestFrameDebugInfo.java: Ditto.
 	* DebugInfoEvaluator.java: Revert switch to Variable.getName; use,
