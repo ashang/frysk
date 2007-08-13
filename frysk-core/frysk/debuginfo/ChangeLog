@@ -1,5 +1,10 @@
 2007-08-13  Andrew Cagney  <cagney@redhat.com>
 
+	* Variable.java (getName): Revert; use Value.getTextFIXME.
+	* TestFrameDebugInfo.java: Ditto.
+	* DebugInfoEvaluator.java: Revert switch to Variable.getName; use,
+	use Value.getTextFIXME instead.
+	
 	* Variable.java (getName): Add.
 	* DebugInfoEvaluator.java: Replace Value.getText with
 	Variable.getName or Value.getTextFIXME.

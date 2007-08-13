@@ -410,8 +410,7 @@ class DebugInfoEvaluator
      Iterator iterator = vars.iterator();
      while (iterator.hasNext()) {
 	Variable variable = (Variable) iterator.next();
-	if (variable.getName() != null
-	    && variable.getName().compareTo(s) == 0)
+	if (variable.getVariable() != null && variable.getVariable().getTextFIXME().compareTo(s) == 0)
 	{
 	    allDies = die.getScopes(pc - bias.bias);
 	    variable.getVariableDie().setScopes(allDies);
@@ -991,8 +990,7 @@ class DebugInfoEvaluator
             {
               value = getValue(parm);
               if (value != null)
-        	  functionType.addParameter(value.getType(),
-					    value.getTextFIXME());
+        	  functionType.addParameter(value.getType(), value.getTextFIXME());
         }
       parm = parm.getSibling();
         }
