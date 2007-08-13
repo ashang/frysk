@@ -1,6 +1,6 @@
 //This file is part of the program FRYSK.
 
-//Copyright 2006, IBM Inc.
+//Copyright 2006, 2007, IBM Inc.
 
 //FRYSK is free software; you can redistribute it and/or modify it
 //under the terms of the GNU General Public License as published by
@@ -61,12 +61,13 @@ public class ElfNhdrType
     public static final ElfNhdrType NT_LWPSTATUS = new ElfNhdrType(16, "NT_LWPSTATUS");
     public static final ElfNhdrType NT_LWPSINFO = new ElfNhdrType(17, "NT_LWPSINFO");
     public static final ElfNhdrType NT_PRFPXREG = new ElfNhdrType(20, "NT_PRFPXREG");
-    
+    public static final ElfNhdrType NT_PRXFPREG = new ElfNhdrType(0x46e62b7f, "NT_PRXFPREG");    
     private static ElfNhdrType[] types = {NT_INVALID, 
         NT_PRSTATUS, NT_FPREGSET, NT_PRPSINFO, NT_PRXREG, NT_PLATFORM,
         NT_AUXV, NT_GWINDOWS, NT_ASRS, NT_INVALID, NT_PSTATUS,
         NT_INVALID, NT_INVALID, NT_PSINFO, NT_PRCRED, NT_UTSNAME,
-        NT_LWPSTATUS, NT_LWPSINFO, NT_INVALID, NT_INVALID, NT_PRFPXREG
+	NT_LWPSTATUS, NT_LWPSINFO, NT_INVALID, NT_INVALID, 
+	NT_PRFPXREG, NT_PRXFPREG
     };
     
     private int value = 0;
