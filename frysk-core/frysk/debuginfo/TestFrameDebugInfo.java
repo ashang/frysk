@@ -182,12 +182,12 @@ public class TestFrameDebugInfo
     variable = (Variable) subprogram.getParameters().iterator().next();
     assertNotNull(variable);
     assertEquals("Name", variable.getName(), "param3");
-    assertEquals("Value", variable.getValue(frame).intValue(), 3);
+    assertEquals("Value", variable.getValue(frame).asLong(), 3);
     
     variable = (Variable) subprogram.getVariables().getFirst();
     assertNotNull(variable);
     assertEquals("Name", variable.getName(), "var4");
-    assertEquals("Value", variable.getValue(frame).intValue(), 4);
+    assertEquals("Value", variable.getValue(frame).asLong(), 4);
     
     // outer frame
     frame = frame.getOuterDebugInfoFrame();
@@ -198,12 +198,12 @@ public class TestFrameDebugInfo
     variable = (Variable) subprogram.getParameters().iterator().next();
     assertNotNull(variable);
     assertEquals("Name", variable.getName(), "param2");
-    assertEquals("Value", variable.getValue(frame).intValue(), 2);
+    assertEquals("Value", variable.getValue(frame).asLong(), 2);
     
     variable = (Variable) subprogram.getVariables().getFirst();
     assertNotNull(variable);
     assertEquals("Name", variable.getName(), "var3");
-    assertEquals("Value", variable.getValue(frame).intValue(), 3);
+    assertEquals("Value", variable.getValue(frame).asLong(), 3);
     
     // outer outer frame
     frame = frame.getOuterDebugInfoFrame();
@@ -214,12 +214,12 @@ public class TestFrameDebugInfo
     variable = (Variable) subprogram.getParameters().iterator().next();
     assertNotNull(variable);
     assertEquals("Name", variable.getName(), "param1");
-    assertEquals("Value", variable.getValue(frame).intValue(), 1);
+    assertEquals("Value", variable.getValue(frame).asLong(), 1);
     
     variable = (Variable) subprogram.getVariables().getFirst();
     assertNotNull(variable);
     assertEquals("Name", variable.getName(), "var2");
-    assertEquals("Value", variable.getValue(frame).intValue(), 2);
+    assertEquals("Value", variable.getValue(frame).asLong(), 2);
     
   }
 

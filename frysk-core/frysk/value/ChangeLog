@@ -1,3 +1,10 @@
+2007-08-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Value.java (asLong): Replace longValue.
+	(intValue): Delete.
+	* ArithmeticType.java: Use asLong.
+	* PointerType.java: Ditto.
+
 2007-08-13  Nurdin Premji  <npremji@redhat.com>
 
 	* ArithmeticType.java (toString): Use Value.location.getXX()

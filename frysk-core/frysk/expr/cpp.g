@@ -786,7 +786,7 @@ subscript_or_member returns [String id=null;]
 		OperationNotDefinedException,
 		NameNotFoundException
     {   Value s; }
-    :   #(SUBSCRIPT s=expr) {refList.add(new Integer(s.intValue()).toString());}
+    :   #(SUBSCRIPT s=expr) {refList.add(new Integer((int)s.asLong()).toString());}
     |    id=identifier {refList.add(id);};
 
 expr returns [Value returnVar=null] 

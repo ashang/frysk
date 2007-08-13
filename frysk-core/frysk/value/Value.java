@@ -98,134 +98,202 @@ public class Value
       return textFIXME;
     }
 
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public byte getByte() {
       return location.getByte();
     }
 
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public char getChar() {
       return (char)location.getShort();
     }
 
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public short getShort() {
       return location.getShort();
     }
     
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public int getInt() {
       return location.getInt();
     }
 
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public long getLong() {
       return location.getLong();
     }
     
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public float getFloat() {
       return location.getFloat();
     }
 
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public double getDouble() {
       return location.getDouble();
     }
     
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public byte getByte(int idx) {
       return (byte)location.getByte(idx);
     }
 
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public char getChar(int idx) {
       return (char)location.getShort(idx);
     }
 
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public short getShort(int idx) {
       return location.getShort(idx);
     }
 
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public int getInt(int idx) {
       return location.getInt(idx);
     }
 
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public long getLong(int idx) {
       return location.getLong(idx);
     }
 
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public float getFloat(int idx) {
       return location.getFloat(idx);
     }
 
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public double getDouble(int idx) {
       return location.getDouble(idx);
     }
 
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public void putByte(byte val) {
       location.putByte(val);
     }
 
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public void putChar(char val) {
       location.putShort((short)val);
     }
 
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public void putShort(short val) {
       location.putShort(val);
     }
 
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public void putInt(int val) {
       location.putInt(val);
     }
 
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public void putLong(long val) {
       location.putLong(val);
     }
 
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public void putFloat(float val) {
       location.putFloat(val);
     }
 
+    /**
+     * FIXME: Do not use this.  Get the location and then use it's
+     * methods.
+     */
     public void putDouble(double val) {
       location.putDouble(val);
     }
 
-    public int intValue()
-    {
-      switch (type.getTypeId())
-      {
-	case BaseTypes.baseTypeByte:
-	  return location.getByte();
-	case BaseTypes.baseTypeShort:
-       	  return location.getShort();
-	case BaseTypes.baseTypeInteger:
-	  return location.getInt();
-	case BaseTypes.baseTypeLong:
-	  return (int)location.getLong();
-	case BaseTypes.baseTypeFloat:
-	  return (int)location.getFloat();
-	case BaseTypes.baseTypeDouble:
-	  return (int)location.getDouble();
+    /**
+     * Quick and dirty conversion of the value into a long.  Useful
+     * for code wanting to use the raw value as a pointer for
+     * instance.
+     *
+     * Code wanting to access the value's raw bytes using different
+     * formats should get the location and manipulate that; and
+     * shouldn't add more methods here.
+     */
+    public long asLong() {
+	switch ((int)location.getByteBuffer().capacity()) {
+	case 1:
+	    return location.getByte();
+	case 2:
+	    return location.getShort();
+	case 4:
+	    return location.getInt();
+    	case 8:
+	    return location.getLong();
 	default:
-	  return 0;
-      }
-    }
-
-    public long longValue()
-    {
-      if (type.getTypeId() < BaseTypes.baseTypeLong)
-	return this.intValue();
-      switch (type.getTypeId())
-      {
-	case BaseTypes.baseTypeByte:
-	  return location.getByte();
-	case BaseTypes.baseTypeShort:
-       	  return location.getShort();
-	case BaseTypes.baseTypeInteger:
-	  return location.getInt();
-    	case BaseTypes.baseTypeLong:
-	  return location.getLong();
-	case BaseTypes.baseTypeFloat:
-	  return (long)location.getFloat();
-	case BaseTypes.baseTypeDouble:
-	  return (long)location.getDouble();
-	default:
-	  return 0;
-      }
+	    return 0;
+	}
     }
     
+    /**
+     * FIXME: Do not use this as it is assuming that Java's
+     * floating-point double matches that of the host.
+     */
     public double doubleValue()
     {
       switch (type.getTypeId())
@@ -247,6 +315,9 @@ public class Value
       }
     }
 
+    /**
+     * FIXME: Do not use this.
+     */
     public String toString(ByteBuffer b) {
 	return type.toString(this, b);
     }

@@ -157,7 +157,7 @@ class LocationExpression {
 		    locationType = locationTypeReg;
 		Register register = DwarfRegisterMapFactory.getRegisterMap(isa)
 		.getRegister(operator - DwOpEncodings.DW_OP_reg0_);
-		long regval = frame.getRegisterValue(register).longValue();
+		long regval = frame.getRegisterValue(register).asLong();
 		stack.addFirst(new Long(regval));
 		break;
 
@@ -196,7 +196,7 @@ class LocationExpression {
 		locationType = locationTypeRegDisp;
 		register = DwarfRegisterMapFactory.getRegisterMap(isa)
 		.getRegister(operator - DwOpEncodings.DW_OP_breg0_);
-		regval = frame.getRegisterValue(register).longValue();
+		regval = frame.getRegisterValue(register).asLong();
 		stack.addFirst(new Long(operand1 + regval));
 		break;
 
@@ -204,7 +204,7 @@ class LocationExpression {
 	    case DwOpEncodings.DW_OP_regx_:
 		register = DwarfRegisterMapFactory.getRegisterMap(isa)
 		.getRegister((int)operand1);
-		regval = frame.getRegisterValue(register).longValue();
+		regval = frame.getRegisterValue(register).asLong();
 		stack.addFirst(new Long(regval));
 		break;
 

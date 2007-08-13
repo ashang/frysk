@@ -107,14 +107,14 @@ public class PointerType
 	throws InvalidOperatorException
     {
       return ArithmeticType.newLongValue((ArithmeticType)type, 
-                                         var1.longValue() + var2.longValue());
+                                         var1.asLong() + var2.asLong());
     }
 
     public Value subtract (Value var1, Value var2)
 	throws InvalidOperatorException
     {
       return ArithmeticType.newLongValue((ArithmeticType)type, 
-                                         var1.longValue() - var2.longValue());
+                                         var1.asLong() - var2.asLong());
     }
 
     public Value logicalNegation(Value var1) 

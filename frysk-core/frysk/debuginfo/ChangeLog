@@ -1,3 +1,9 @@
+2007-08-13  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfoEvaluator.java: Use Value.asLong.
+	* LocationExpression.java: Ditto.
+	* TestFrameDebugInfo.java: Ditto.
+
 2007-08-13  Nurdin Premji  <npremji@redhat.com>
 
 	* DwarfRegisterMapFactory.java: Use RegisterMap.add().

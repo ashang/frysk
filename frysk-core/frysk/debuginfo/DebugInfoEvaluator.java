@@ -703,7 +703,7 @@ class DebugInfoEvaluator
 	Register reg = regMap.getRegister(s.substring(1).trim());
 	if (reg == null)
 	    return null;
-	long regval = f.getRegisterValue(reg).longValue();
+	long regval = f.getRegisterValue(reg).asLong();
 	return ArithmeticType.newLongValue(longType, s, regval);
     }
 
