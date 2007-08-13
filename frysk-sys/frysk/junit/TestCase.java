@@ -101,6 +101,17 @@ public class TestCase
     // needed?
 
     /**
+     * The test has problems that have not been resolved on a X8664
+     * system; see BUG for more details.  Return true and report
+     * UNRESOLVED when running on a X8664.
+     */
+    protected static boolean unresolvedOnx8664 (int bug) {
+        return Runner.unresolved(bug, Config.getTargetCpuXXX ()
+                                 .indexOf ("x86_64") != - 1);
+    }
+
+
+    /**
      * Results from uname(2) call.
      */
     private static Uname uname;
