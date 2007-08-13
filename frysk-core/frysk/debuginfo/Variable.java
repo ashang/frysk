@@ -89,6 +89,17 @@ public class Variable {
     public void setType (Type type) {
 	this.type = type;
     }
+    /**
+     * Return the variable's name.
+     *
+     * XXX: For moment return the Value's text field which is wrong;
+     * this code should have its name set directly from the DIE.
+     */
+    public String getName() {
+	if (variable == null)
+	    return null;
+	return variable.getTextFIXME();
+    }
     public Type getType() {
 	return type;
     }
