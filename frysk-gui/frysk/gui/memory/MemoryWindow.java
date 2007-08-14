@@ -484,8 +484,15 @@ public class MemoryWindow
             try
             {
               double d = (double) Long.parseLong(str, 16);
-              //fromSpin.setValue(d);
-              handleFromSpin(d);
+              if (d > lastKnownTo)
+              {
+        	  if (lastKnownTo == lastKnownFrom)
+        	      handleFromSpin(lastKnownTo);
+        	  else
+        	      fromSpin.setValue(lastKnownTo);
+              }
+              else
+        	  fromSpin.setValue(d);
             }
             catch (NumberFormatException nfe)
             {
@@ -508,8 +515,15 @@ public class MemoryWindow
               try
               {
                 double d = (double) Long.parseLong(str, 16);
-                //toSpin.setValue(d);
-                handleToSpin(d);
+                if (d < lastKnownFrom)
+                {
+                    if (lastKnownFrom == lastKnownTo)
+                	handleToSpin(lastKnownFrom);
+                    else
+                	toSpin.setValue(lastKnownFrom);
+                }
+                else
+                    toSpin.setValue(d);
               }
               catch (NumberFormatException nfe)
               {
@@ -877,12 +891,11 @@ public class MemoryWindow
         for (long i = (long) lastKnownFrom; i < (long) val; i++)
           {
             model.removeRow(iter);
-            iter = iter.getNextIter();
           }
       }
     else
       {
-        for (long i = (long) val; i < lastKnownFrom; i++)
+        for (long i = (long) lastKnownFrom - 1; i >= (long) val; i--)
           {
             TreeIter newRow = model.prependRow();
             rowAppend(i, newRow);
@@ -903,7 +916,7 @@ public class MemoryWindow
   public void handleToSpin (double val)
   {
     
-    if (this.model.getFirstIter() == null || val == this.lastKnownTo)
+    if (this.model.getFirstIter() == null)
       return;
 
     if (val < this.lastKnownFrom)
@@ -918,8 +931,6 @@ public class MemoryWindow
       {
         for (long i = (long) lastKnownTo + 1; i < val + 1; i++)
           rowAppend(i, null);
-        
-        this.lastKnownTo = val;
       }
     else
       {
@@ -931,7 +942,7 @@ public class MemoryWindow
       }
 
     this.toBox.setText(Long.toHexString((long) val));
-    this.toSpin.setValue(val);
+    this.lastKnownTo = val;
     refreshList();
   }
 

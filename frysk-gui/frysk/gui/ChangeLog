@@ -1,3 +1,11 @@
+2007-08-14 Zhao Shujing <pearly.zhao@oracle.com>
+
+	* memory/MemoryWindow.java (fromBox.entryEvent): Use fromSpin.setValue 
+	to invoke fromSpin entryEvent.
+	(toBox.entryEvent): Ditto.
+	(handleToSpin):Ditto.	
+	(handleFromSpin):Prepend row from high address to low address.
+
 2007-08-13  Nurdin Premji  <npremji@redhat.com>
 
 	* register/RegisterWindow.java (stringUsingValue): Added.
