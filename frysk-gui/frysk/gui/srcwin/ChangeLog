@@ -1,3 +1,8 @@
+2007-08-14  Mark Wielaard  <mwielaard@redhat.com>
+
+	* InlineSourceView.java (mouseEvent): Use asLong instead of
+	longValue.
+	
 2007-08-13  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWidow.java: Sensitized and enabled all stepping actions.

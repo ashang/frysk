@@ -240,7 +240,7 @@ public class InlineSourceView extends SourceView{
             if (var != null)
               {
                 MenuItem valueItem;
-		valueItem = new MenuItem("Value: " + var.longValue(), true);
+		valueItem = new MenuItem("Value: " + var.asLong(), true);
 		valueItem.setSensitive(false);
 		m.append(valueItem);
                 
