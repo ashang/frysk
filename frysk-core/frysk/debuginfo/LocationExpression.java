@@ -353,7 +353,44 @@ class LocationExpression {
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(~operand1));
 		break;
-
+	   
+	    // Control flow operations
+	    case DwOpEncodings.DW_OP_le_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long((operand2 <= operand1)? 1:0));
+		break;	
+		
+	    case DwOpEncodings.DW_OP_ge_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long((operand2 >= operand1)? 1:0));
+		break;	
+		
+	    case DwOpEncodings.DW_OP_eq_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long((operand2 == operand1)? 1:0));
+		break;	
+		
+	    case DwOpEncodings.DW_OP_lt_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long((operand2 < operand1)? 1:0));
+		break;	
+		
+	    case DwOpEncodings.DW_OP_gt_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long((operand2 > operand1)? 1:0));
+		break;	
+		
+	    case DwOpEncodings.DW_OP_ne_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long((operand2 != operand1)? 1:0));
+		break;	
+	
 		// ??? Support remaining operators
 	    default:
 		throw new ValueUavailableException();

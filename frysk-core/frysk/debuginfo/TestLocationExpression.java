@@ -227,7 +227,7 @@ extends TestLib
 	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit2_, 0, 0, 0) );
 	ops.add( new DwarfOp(DwOpEncodings.DW_OP_shr_, 0, 0, 0) ) ;
 
-	checkLocExpected(ops, (long)6, 0);
+	checkLocExpected(ops, (long)3, 0);
     }
     
     public void testShra()
@@ -250,6 +250,28 @@ extends TestLib
 	ops.add( new DwarfOp(DwOpEncodings.DW_OP_xor_, 0, 0, 0) ) ;
 
 	checkLocExpected(ops, (long)7, 0);
+    }
+    
+    public void testLe()
+    {
+	List ops = new ArrayList();
+
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit9_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit14_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_le_, 0, 0, 0) ) ;
+
+	checkLocExpected(ops, (long)1, 0);
+    }
+    
+    public void testGe()
+    {
+	List ops = new ArrayList();
+
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit9_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit14_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_ge_, 0, 0, 0) ) ;
+
+	checkLocExpected(ops, (long)0, 0);
     }
     
     /**

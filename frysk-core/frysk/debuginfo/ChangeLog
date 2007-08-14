@@ -1,3 +1,8 @@
+2007-08-14  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestLocationExpression.java: Tests added for new operations.
+	* LocationExpression.java: Operations le, ge, eq, lt, gt, ne added. 
+
 2007-08-14  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFrameDebugInfo.java (testVirtualDebugInfoStackTrace): New test.
