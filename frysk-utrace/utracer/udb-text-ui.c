@@ -152,6 +152,26 @@ attach_fcn(char ** saveptr)
 }
 
 static int
+detach_fcn(char ** saveptr)
+{
+  long pid = -1;
+  char * pid_c = strtok_r (NULL, " \t", saveptr);
+  pid = pid_c ? atol (pid_c) : current_pid;
+  if (-1 != pid) {
+    int rc = utracer_detach (pid);
+    if (0 == rc) {
+      // fixme -- switch to next pid?
+      current_pid = -1;
+      set_prompt();
+    }
+    else uerror ("detach");
+  }
+  else fprintf (stderr, "\tdetach requires a valid PID\n");
+
+  return 1;
+}
+
+static int
 run_fcn(char ** saveptr)
 {
   int rc;
@@ -180,17 +200,6 @@ quiesce_fcn(char ** saveptr)
     else uerror ("quiesce");
   }
   else fprintf (stderr, "\trun requires an argument\n");
-  return 1;
-}
-
-static int
-detach_fcn(char ** saveptr)
-{
-  long pid = -1;
-  char * pid_c = strtok_r (NULL, " \t", saveptr);
-  pid = pid_c ? atol (pid_c) : current_pid;
-  if (-1 != pid) utrace_detach_if (pid);
-  else fprintf (stderr, "\tdetach requires an argument\n");
   return 1;
 }
 

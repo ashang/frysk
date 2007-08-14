@@ -301,6 +301,8 @@ int utracer_switch_pid (long pid);
 int utracer_run (long pid);
 int utracer_quiesce (long pid);
 int utracer_attach (long pid, long quiesce, long exec_quiesce);
+int utracer_detach (long pid);
+int utracer_sync (long type);
 int utracer_get_regs (long pid, long regset, void ** regsinfo,
 		      unsigned int * nr_regs_p, unsigned int * reg_size_p);
 int utracer_set_syscall (short which, short cmd, long pid, long syscall);

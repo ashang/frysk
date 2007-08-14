@@ -382,6 +382,27 @@ handle_printenv (printenv_cmd_s * printenv_cmd)
 }
 
 int
+handle_sync (sync_cmd_s * sync_cmd)
+{
+  int rc = 0;
+  utracing_info_s * utracing_info_found =
+    lookup_utracing_info (sync_cmd->utracing_pid);
+
+  if (utracing_info_found) {
+    sync_resp_s sync_resp = {IF_RESP_SYNC_DATA,
+			     sync_cmd->utracing_pid,
+			     sync_cmd->sync_type};
+    queue_response (utracing_info_found,
+		    &sync_resp, sizeof(sync_resp),
+		    NULL, 0,
+		    NULL, 0);
+  }
+  else rc = -UTRACER_ETRACING;
+
+  return rc;
+}
+
+int
 handle_listpids (listpids_cmd_s * listpids_cmd)
 {
   int rc = 0;
@@ -559,6 +580,43 @@ handle_attach (attach_cmd_s * attach_cmd)
   return rc;
 }
 
+static int
+handle_detach (attach_cmd_s * attach_cmd)
+{
+  struct task_struct * task;
+  int rc = 0;
+
+  // fixme fix info lists
+
+  task = get_task (attach_cmd->utraced_pid);
+
+  if (task) {
+    struct utrace_attached_engine * engine;
+
+    engine =
+      locate_engine (attach_cmd->utracing_pid, attach_cmd->utraced_pid);
+    if (engine) {
+      utracing_info_s * utracing_info_found =
+	lookup_utracing_info (attach_cmd->utracing_pid);
+      if (utracing_info_found) {
+	utraced_info_s * utraced_info_found =
+	  lookup_utraced_info (utracing_info_found,
+			       attach_cmd->utraced_pid);
+	if (utraced_info_found) {
+	  remove_utraced_info_entry (utracing_info_found,
+				     utraced_info_found);
+	}
+	else rc = -UTRACER_ETRACED;
+      }
+      else rc = -UTRACER_ETRACING;
+    }
+    else rc = -UTRACER_EENGINE;
+  }
+  else rc = -ESRCH;
+
+  return rc;
+}
+
 
 static int
 handle_switchpid (switchpid_cmd_s * switchpid_cmd)
@@ -689,8 +747,12 @@ utracer_ioctl (struct inode * inode,
     return -EFAULT;
 
   switch (if_cmd.cmd) {
+  case IF_CMD_SYNC:
+    DB_PRINTK (KERN_ALERT "IF_CMD_SYNC--ioctl\n");
+    rc = handle_sync (&if_cmd.sync_cmd);
+    break;
   case IF_CMD_LIST_PIDS:
-    DB_PRINTK (KERN_ALERT "IF_LIST_PIDS--ioctl\n");
+    DB_PRINTK (KERN_ALERT "IF_CMD_LIST_PIDS--ioctl\n");
     rc = handle_listpids (&if_cmd.listpids_cmd);
     break;
   case IF_CMD_PRINTMMAP:
@@ -724,6 +786,10 @@ utracer_ioctl (struct inode * inode,
   case IF_CMD_ATTACH:
     DB_PRINTK (KERN_ALERT "IF_CMD_ATTACH--ioctl\n");
     rc = handle_attach (&if_cmd.attach_cmd);
+    break;
+  case IF_CMD_DETACH:
+    DB_PRINTK (KERN_ALERT "IF_CMD_DETACH--ioctl\n");
+    rc = handle_detach (&if_cmd.attach_cmd);
     break;
   case IF_CMD_RUN:
   case IF_CMD_QUIESCE:

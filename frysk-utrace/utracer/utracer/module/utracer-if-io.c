@@ -20,7 +20,7 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Chris Moller");
 
 
-static void
+void
 queue_response (utracing_info_s * utracing_info_found,
 		void * resp,   int resp_len,
 		void * extra,  int extra_len,
@@ -305,66 +305,6 @@ const struct utrace_engine_ops utraced_utrace_ops = {
   .allow_access_process_vm = allow_access_process_vm,
 };
 
-static int
-handle_detach (attach_cmd_s * attach_cmd, unsigned long count,
-	       void * data)
-{
-  utracing_info_s * utracing_info_found = (utracing_info_s *)data;
-  struct task_struct * task;
-  int rc = count;
-
-  // fixme fix info lists
-
-  task = get_task (attach_cmd->utraced_pid);
-
-  if (task) {
-    struct utrace_attached_engine * engine;
-
-    engine =
-      locate_engine (attach_cmd->utracing_pid, attach_cmd->utraced_pid);
-    if (engine) {
-      if (utracing_info_found) {
-	utraced_info_s * utraced_info_found =
-	  lookup_utraced_info (utracing_info_found,
-			       attach_cmd->utraced_pid);
-	if (utraced_info_found) {
-	  remove_utraced_info_entry (utracing_info_found,
-				     utraced_info_found);
-	  rc = count;
-	}
-	else rc = -UTRACER_ETRACED;
-      }
-      else rc = -UTRACER_ETRACING;
-    }
-    else rc = -UTRACER_EENGINE;
-  }
-  else rc = -ESRCH;
-
-  return rc;
-}	
-
-static int
-handle_sync (sync_cmd_s * sync_cmd, unsigned long count,
-	     void * data)
-{
-  utracing_info_s * utracing_info_found = (utracing_info_s *)data;
-  int rc = count;
-
-  if (utracing_info_found) {
-    sync_resp_s sync_resp = {IF_RESP_SYNC_DATA,
-			     sync_cmd->utracing_pid,
-			     sync_cmd->sync_type};
-    queue_response (utracing_info_found,
-		    &sync_resp, sizeof(sync_resp),
-		    NULL, 0,
-		    NULL, 0);
-    rc = count;
-  }
-  else rc = -UTRACER_ETRACING;
-
-  return rc;
-}
-
 int
 if_file_write (struct file *file,
                     const char *buffer,
@@ -394,14 +334,6 @@ if_file_write (struct file *file,
     switch (if_cmd.cmd) {
     case IF_CMD_NULL:
       DB_PRINTK (KERN_ALERT "IF_CMD_NULL\n");
-      break;
-    case IF_CMD_DETACH:
-      DB_PRINTK (KERN_ALERT "IF_CMD_DETACH--write\n");
-      rc = handle_detach (&if_cmd.attach_cmd, count, data);
-      break;
-    case IF_CMD_SYNC:
-      DB_PRINTK (KERN_ALERT "IF_CMD_SYNC--write\n");
-      rc = handle_sync (&if_cmd.sync_cmd, count, data);
       break;
     case IF_CMD_SET_REG:
       // fixme -- actually do it

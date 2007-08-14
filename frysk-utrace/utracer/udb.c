@@ -21,7 +21,7 @@
 
 pthread_t resp_listener_thread;
 
-#define USE_UTRACER_SYNC
+#define USE_UTRACER_WAIT
 
 extern void * resp_listener (void * arg);
 
@@ -131,9 +131,9 @@ append_cmd (char * cmd)
   cl_cmds[cl_cmds_next++] = strdup (cmd);
 }
 
-#ifdef USE_UTRACER_SYNC
+#ifdef USE_UTRACER_WAIT
 static void
-utracer_sync()
+utracer_wait()
 {
   int i;
 #define CHECKS_NR	3
@@ -142,7 +142,7 @@ utracer_sync()
     if_resp_u if_resp;
     ssize_t sz;
       
-    utrace_sync_if (SYNC_INIT);
+    utracer_sync (SYNC_INIT);
 
     sz = pread (utracer_resp_file_fd, &if_resp,
 		  sizeof(if_resp), 0);
@@ -343,8 +343,8 @@ main (int ac, char * av[])
   utracer_set_environment (udb_pid, utracer_cmd_file_fd);
 
   
-#ifdef USE_UTRACER_SYNC
-  utracer_sync();
+#ifdef USE_UTRACER_WAIT
+  utracer_wait();
 #endif
       
 
@@ -386,11 +386,7 @@ main (int ac, char * av[])
     sz = pread (utracer_cmd_file_fd, &resp, sizeof(int), 0);
     if (-1 == sz) error (1, errno, "pread listener sync");
 
-    // fixme -- all this syncing should make the sleep unnecessary, but it
-    // still isn't working right.  try again some other time.
-    //usleep (500000);
-    
-    utrace_sync_if (SYNC_INIT);
+    utracer_sync (SYNC_INIT);
   }
   
 

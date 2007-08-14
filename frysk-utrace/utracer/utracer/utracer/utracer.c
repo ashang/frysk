@@ -334,6 +334,39 @@ utracer_set_syscall (short which, short cmd, long pid, long syscall)
 }
 
 
+/************************** sync  ********************/
+
+
+int
+utracer_sync (long type)
+{
+  int irc;
+  sync_cmd_s sync_cmd = {IF_CMD_SYNC,
+			 (long)client_pid, type};
+
+  irc = ioctl (utracer_cmd_file_fd, sizeof(sync_cmd_s), &sync_cmd);
+
+  return irc;
+}
+
+
+/************************** detach  ********************/
+
+
+int
+utracer_detach (long pid)
+{
+  int irc;
+  attach_cmd_s attach_cmd = {IF_CMD_DETACH,
+			     (long)client_pid, pid, 0, 0};
+
+  irc = ioctl (utracer_cmd_file_fd, sizeof(attach_cmd_s), &attach_cmd);
+
+  return irc;
+}
+
+
+
 /************************** attach  ********************/
 
 

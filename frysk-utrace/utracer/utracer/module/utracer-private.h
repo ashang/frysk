@@ -118,6 +118,10 @@ struct task_struct * get_task (long utraced_pid);
 
 struct utrace_attached_engine *
 locate_engine (long utracing_pid, long utraced_pid);
+void queue_response (utracing_info_s * utracing_info_found,
+		     void * resp,   int resp_len,
+		     void * extra,  int extra_len,
+		     void * extra2, int extra2_len);
 
 #endif /* UTRACER_PRIVATE_H */
 
