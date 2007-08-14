@@ -106,11 +106,6 @@ class LinuxPPC32On64
       return ppc32Reg.getLength();
     }
     
-    public RegisterView[] getViews() 
-    {
-      return ppc32Reg.getViews();
-    }
-    
     public long get(Task task) 
     {
       long rawVal = ppc64Reg.get(task);

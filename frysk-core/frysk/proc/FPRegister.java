@@ -58,19 +58,4 @@ public class FPRegister
   {
     super(bank, offset, length, name);
   }
-
-  /**
-   * Constructor plus views array.
-   *
-   * @param bank The number of a bank (ByteBuffer) in the Task
-   * object's registerBank array 
-   * @param offset byte offset in the bank
-   * @param name name of the register
-   * @param views possible ways of interpreting the data in the register
-   */
-  public FPRegister(int bank, int offset, int length, String name,
-		    RegisterView[] views)
-  {
-    super(bank, offset, length, name, views);
-  }
 }

@@ -1,3 +1,13 @@
+2007-08-14  Nurdin Premji  <npremji@redhat.com>
+
+	* RegisterView.java: Removed.
+	* FPRegister.java: Remove references to RegisterView.
+	* IsaIA32.java: Ditto.
+	* IsaX8664.java: Ditto.
+	* LinuxIa32On64.java: Ditto.
+	* LinuxPPC32On64.java: Ditto.
+	* Register.java: Ditto.
+
 2007-08-10  Andrew Cagney  <cagney@redhat.com>
 
 	* TestExec.java (testAttachedSingleExec): Use ExecOffspring and

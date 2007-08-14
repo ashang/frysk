@@ -51,8 +51,7 @@ public class Register
   final int offset;
   private final int length;
   private final String name;
-  private RegisterView[] views;
-
+  
   // Does this really not exist somewhere else?
   private static void reverseArray(byte[] array) 
   {
@@ -78,23 +77,6 @@ public class Register
     this.offset = offset;
     this.length = length;
     this.name = name;
-    views = new RegisterView[] 
-      {	new RegisterView(length, length, RegisterView.INTEGER) };
-  }
-
-  /**
-   * Constructor plus views array.
-   *
-   * @param bank The number of a bank (ByteBuffer) in the Task
-   * object's registerBank array 
-   * @param offset byte offset in the bank
-   * @param name name of the register
-   * @param views possible ways of interpreting the data in the register
-   */
-  Register(int bank, int offset, int length, String name, RegisterView[] views)
-  {
-    this(bank, offset, length, name);
-    this.views = views;
   }
   
   /**
@@ -257,15 +239,5 @@ public class Register
   public int getLength()
   {
     return length;
-  }
-
-  /**
-   * Get the array of possible RegisterView objects for this register.
-   *
-   * @return the views
-   */
-  public RegisterView[] getViews() 
-  {
-    return views;
   }
 }

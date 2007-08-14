@@ -128,13 +128,6 @@ extends LinuxIa32
     {
       return ia32Reg.getLength();
     }
-    
-
-    public RegisterView[] getViews() 
-    {
-      return ia32Reg.getViews();
-    }
-    
 
     public long get(Task task) 
     {
@@ -212,12 +205,6 @@ extends LinuxIa32
     public int getLength()
     {
       return ia32Reg.getLength();
-    }
-    
-
-    public RegisterView[] getViews() 
-    {
-      return ia32Reg.getViews();
     }
     
 

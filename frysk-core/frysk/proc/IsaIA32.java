@@ -111,19 +111,6 @@ public class IsaIA32 implements Isa
       return 2;
     }
   }
-  
-  // The floating point registers can also be mmx registers. The
-  // normal x87 view of the registers is as a long float, because they
-  // are always saved to memory in that format.
-  static private RegisterView[] fpViews = 
-    {
-      new RegisterView(80, 80, RegisterView.LONGFLOAT),
-      new RegisterView(64, 32, RegisterView.FLOAT),
-      new RegisterView(64, 64, RegisterView.INTEGER),
-      new RegisterView(64, 32, RegisterView.INTEGER),
-      new RegisterView(64, 16, RegisterView.INTEGER),
-      new RegisterView(64, 8, RegisterView.INTEGER)
-    } ;
 
   static class I387ConfigRegister
     extends Register
@@ -139,27 +126,17 @@ public class IsaIA32 implements Isa
   {
     IA32FPRegister(String name, int regNum) 
     {
-      super(1, 7*4 + regNum * 10, 10, name, fpViews);
+      super(1, 7*4 + regNum * 10, 10, name);
     }
     
   }
-
-    static private RegisterView[] xmmViews =
-    {
-      new RegisterView(128, 64, RegisterView.DOUBLE),
-      new RegisterView(128, 32, RegisterView.FLOAT),
-      new RegisterView(128, 64, RegisterView.INTEGER),
-      new RegisterView(128, 32, RegisterView.INTEGER),
-      new RegisterView(128, 16, RegisterView.INTEGER),
-      new RegisterView(128, 8, RegisterView.INTEGER)
-    };
 
   static class XMMRegister 
     extends Register 
   {
     XMMRegister(String name, int regNum) 
     {
-      super(2, 160 + regNum * 16, 16, name, xmmViews);
+      super(2, 160 + regNum * 16, 16, name);
     }
   }
 
