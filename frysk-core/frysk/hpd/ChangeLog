@@ -1,5 +1,10 @@
 2007-08-14  Nurdin Premji  <npremji@redhat.com>
 
+	* StepFinishCommand.java: Extend CLIHandler.
+	* StepNextCommand.java: Ditto.
+	* StepNextiCommand.java: Ditto.
+	* CLI.java: Remove calls to addHandler() for above.
+
 	* AssignCommand.java: New.
 	* CLIHandler.java (CLIHandler): Add call to cli.addHandler()
 	* CoreCommand.java (CoreCommand): Remove call to cli.addHandler().

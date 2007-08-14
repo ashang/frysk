@@ -47,13 +47,12 @@ import java.util.LinkedList;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.proc.Task;
 
-public class StepNextCommand implements CommandHandler {
+public class StepNextCommand extends CLIHandler {
 
-    private CLI cli;
-    
     StepNextCommand (CLI cli)
     {
-      this.cli = cli;
+	//XXX: Write a description, syntax, and full manual.
+     	super (cli, "next", "next", "next", "next");
     }
     
     public void handle(Command cmd) throws ParseException
