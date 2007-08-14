@@ -228,8 +228,8 @@ public class TestValue
     enumType.addMember(byteType, "green", 4);
     enumType.addMember(byteType, "blue", 5);
     enumType.addMember(byteType, "violet", 6);
-        Value e1 = EnumType.newEnumValue(enumType, "e1");
-    String s = e1.toString();
+    Value e1 = EnumType.newEnumValue(enumType, "e1");
+    String s = e1.toPrint();
     assertEquals ("enum", "{red=1,orange=2,yellow=3,green=4,blue=5,violet=6}", s);
   }
   
@@ -255,7 +255,7 @@ public class TestValue
     ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, buf.length);
     abb.order(byteOrder);
     Value c1 = new Value(arrayType, "a1", abb);
-    String s = c1.toString();
+    String s = c1.toPrint();
     assertEquals ("array1dim", "{16909060,84281096,151653132,219025168}", s);
   }
 
@@ -281,7 +281,7 @@ public class TestValue
     ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, buf.length);
     abb.order(byteOrder);
     Value c1 = new Value(arrayType, "a2", abb);
-    String s = c1.toString();
+    String s = c1.toPrint();
     assertEquals ("array2dim", "{{0,1,2,3},{0,16,32,48}}", s);
   }
 
@@ -310,7 +310,7 @@ public class TestValue
     ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, buf.length);
     abb.order(byteOrder);
     Value c1 = new Value(classType, "c1", abb);
-    String s = c1.toString();
+    String s = c1.toPrint();
     assertEquals ("class", "{alpha=16909060,\n beta=84281096,\n gamma=2320,\n iota=17,\n epsilon=18,\n}", s);
   }
 }

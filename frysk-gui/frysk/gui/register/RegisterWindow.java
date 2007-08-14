@@ -415,7 +415,7 @@ private void setValues(Task myTask, Isa isa, ListStore model) {
   {
       if (value == null)
 	  return null;
-    return type.toString(value, format);
+      return new Value(type, value.getLocation()).toPrint(format);
   }
 
   private void resetList ()
@@ -463,7 +463,7 @@ private void setValues(Task myTask, Isa isa, ListStore model) {
 		       stringUsingValue(value, type, Format.DECIMAL));
 	// Hex little endian
 	model.setValue(iter, hexidecimalLittleEndianColumn, 
-		       "0x" + stringUsingValue(value, type, Format.HEXADECIMAL));
+		       stringUsingValue(value, type, Format.HEXADECIMAL));
 	// Octal little endian
 	model.setValue(iter, octalLittleEndianColumn, 
 		       stringUsingValue(value, type, Format.OCTAL));
@@ -478,7 +478,7 @@ private void setValues(Task myTask, Isa isa, ListStore model) {
 		       stringUsingValue(value, type, Format.DECIMAL));
         // Hex big-endian
 	model.setValue(iter, hexidecimalBigEndianColumn, 
-		       "0x" + stringUsingValue(value, type, Format.HEXADECIMAL));
+		       stringUsingValue(value, type, Format.HEXADECIMAL));
         // Octal big-endian
 	model.setValue(iter, octalBigEndianColumn,
 		       stringUsingValue(value, type, Format.OCTAL));

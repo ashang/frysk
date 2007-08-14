@@ -323,13 +323,26 @@ public class Value
     }
 
     /**
-     * Return this as a printable string.
+     * Return this as a printable string; if need be and when
+     * non-NULL, use MEMORY for dereferencing pointers.
      */
-    public String toPrint(ByteBuffer memory, Format format) {
+    public String toPrint(Format format, ByteBuffer memory) {
 	StringWriter stringWriter = new StringWriter();
 	PrintWriter writer = new PrintWriter(stringWriter);
 	toPrint(writer, memory, format);
 	return stringWriter.toString();
+    }
+    /**
+     * Return this as a printable string using the default formatting.
+     */
+    public String toPrint() {
+	return toPrint(Format.NATURAL, null/*memory*/);
+    }
+    /**
+     * Return this as a printable string using the specified FORMAT.
+     */
+    public String toPrint(Format format) {
+	return toPrint(format, null/*memory*/);
     }
 
     /**
@@ -340,4 +353,5 @@ public class Value
 	// XXX: Shouldn't this be location?
 	type.toPrint(writer, this, memory, format);
     }
+
 }

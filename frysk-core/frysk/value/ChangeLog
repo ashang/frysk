@@ -1,5 +1,9 @@
 2007-08-14  Andrew Cagney  <cagney@redhat.com>
 
+	* TestValue.java: Replace Value.toString with Value.toPrint().
+	* ArithmeticType.java (toString(Value,Format): Delete.
+	* Value.java(toPrint(), toPrint(Format)): New.
+	
 	* Value.java (toPrint(ByteBuffer,Format)): New.
 	* Type.java (toPrint(PrintWriter,Location,ByteBuffer,Format): New.
 	(toString(Value)): Delete.
