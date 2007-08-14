@@ -1,3 +1,8 @@
+2007-08-14  Mike Cvet  <mcvet@redhat.com>
+
+	* SteppingEngine.java (removeBreakpoint): Make sure to reference the 
+	breakpoint pulled out of the map, instead of static field variable.
+
 2007-08-13  Mike Cvet  <mcvet@redhat.com>
 
 	* TaskStepEngine.java (handleUpdate): Fixed bug which caused intermittent

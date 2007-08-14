@@ -991,10 +991,9 @@ public class SteppingEngine
    */
   public void removeBreakpoint(Task task) {
 	if (this.breakpointMap.containsKey(task)) {
-	    this.breakpointMap.remove(task);
-	    task.requestUnblock(this.breakpoint);
-	    task.requestDeleteCodeObserver(this.breakpoint, this.breakpoint
-		    .getAddress());
+	    SteppingBreakpoint sbp = (SteppingBreakpoint) this.breakpointMap.remove(task);
+	    task.requestUnblock(sbp);
+	    task.requestDeleteCodeObserver(sbp, sbp.getAddress());
 	}
     }
   
