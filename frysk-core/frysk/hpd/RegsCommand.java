@@ -53,6 +53,7 @@ public class RegsCommand extends CLIHandler {
 	super(cli, "regs", "print registers", "regs group", "print out "
 		+ "registers in the given group, general registers "
 		+ "printed by default.");
+	cli.addHandler(this);
     }
 
     public void handle(Command cmd) throws ParseException {

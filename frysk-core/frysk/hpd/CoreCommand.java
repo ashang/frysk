@@ -56,6 +56,7 @@ public class CoreCommand extends CLIHandler {
     
     CoreCommand(CLI cli) {
 	super(name, cli, new CommandHelp(name, desc, "core core.file", desc));
+	cli.addHandler(this);
     }
 
     public void handle(Command cmd) throws ParseException {

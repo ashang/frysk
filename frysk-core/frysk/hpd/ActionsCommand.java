@@ -63,6 +63,7 @@ class ActionsCommand extends CLIHandler {
 
     ActionsCommand(CLI cli) {
 	this("actionpoints", cli);
+	cli.addHandler(this);
     }
 
     private static final Map.Entry[] dummy = new Map.Entry[] {};

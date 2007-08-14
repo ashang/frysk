@@ -66,6 +66,7 @@ class RunCommand
 	super(name, cli, new CommandHelp(name, descr,
 					 "run executable arguments*",
 					 descr));
+	cli.addHandler(this);
     }
 
     RunCommand(CLI cli)

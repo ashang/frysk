@@ -61,14 +61,6 @@ class UserHelp
 	{
 		String temp = null;
 		commandHelp = new TreeMap();
-		
-		temp = 
-"The alias command associates a user-defined name with a list of one or\n" +
-"more debugger commands. After definition, the user-defined command can\n" +
-"be used in the same way as a debugger-defined command, including as part\n" +
-"of the definition of new user-defined commands. ";
-        addHelp("alias", "Create or view user-define commands.",
-                "alias command-name command-body\nalias [command-name]", temp);
 
         temp = 
 "The assign command evaluates a scalar expression and uses the result to\n" +
@@ -78,15 +70,6 @@ class UserHelp
         addHelp("assign", "Change the value of a scalar program variable.",
 		"assign scalar-target scalar-value [-force]", temp);
         
-        temp = 
-"The attach command causes the debugger to attach to an existing\n" +
-"process(es), making it possible to continue the process' execution under\n" +
-"debugger control. The command applies at the process level; all threads\n" +
-"corresponding to the process will be attached by the operation. It is\n" +
-"the user's responsibility to ensure that the process(es) actually is\n" +
-"executing the specified executable.";
-        addHelp("attach", "Attach to a running process.",
-		"attach [executable] pid [-task tid] [-cli]", temp);
         
         temp = 
 "Associates a logical name with a group of threads and/or processes,\n" +

@@ -1,3 +1,17 @@
+2007-08-14  Nurdin Premji  <npremji@redhat.com>
+
+	* ActionsCommand.java (ActionsCommand): Call cli.addHandler().
+	* CoreCommand.java (CoreCommand): Ditto.
+	* DisassembleCommand.java (DisassembleCommand): Ditto.
+	* DisplayCommand.java (DisplayCommand): Ditto.
+	* ExamineCommand.java (ExamineCommand): Ditto.
+	* RegsCommand.java (RegsCommand): Ditto.
+	* RunCommand.java (RunCommand): Ditto.
+	* AliasCommand.java (AliasCommand): Extend CLIHandler.
+	* AttachCommand.java (AttachCommand): Ditto.
+	* UserHelp.java (UserHelp): Remove alias and attach commands.
+	* CLI.java (CLI): Update, no need to call addHandler for above classes.
+
 2007-08-14  Mike Cvet  <mcvet@redhat.com>
 
 	* CLI.java (CLI): Enabled next, nexti, and finish commands.

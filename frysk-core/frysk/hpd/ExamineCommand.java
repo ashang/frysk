@@ -52,6 +52,7 @@ public class ExamineCommand extends CLIHandler {
 	super(cli, "examine", "examine a value",
 	      "examine VALUE\n",
 	      "Examine a value in more detail.");
+	cli.addHandler(this);
     }
 
     public void handle(Command cmd) throws ParseException {

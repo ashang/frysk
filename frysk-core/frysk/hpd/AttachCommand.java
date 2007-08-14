@@ -49,7 +49,7 @@ import frysk.proc.Task;
 import frysk.proc.Manager;
 
 class AttachCommand
-    implements CommandHandler
+    extends CLIHandler
 {
     private class FindProc
         implements Host.FindProc {
@@ -71,10 +71,14 @@ class AttachCommand
         }
     }
 
-    private final CLI cli;
     AttachCommand(CLI cli)
     {
-	this.cli = cli;
+	super (cli, "attach", "Attach to a running process.", "attach [executable] pid [-task tid] [-cli]", "The attach command causes the debugger to attach to an existing\n" +
+		"process(es), making it possible to continue the process' execution under\n" +
+		"debugger control. The command applies at the process level; all threads\n" +
+		"corresponding to the process will be attached by the operation. It is\n" +
+		"the user's responsibility to ensure that the process(es) actually is\n" +
+		"executing the specified executable.");
     }
     public void handle(Command cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();

@@ -351,8 +351,8 @@ public class CLI
     handlers = new HashMap();
     userhelp = new UserHelp();
     dbgvars = new DbgVariables();
-    addHandler(new ActionsCommand(this));
-    handlers.put("alias", new AliasCommand(this));
+    new ActionsCommand(this);
+    new AliasCommand(this);
     handlers.put("assign", new PrintCommand(this));
     handlers.put("attach", new AttachCommand(this));
     addHandler(new BreakpointCommand(this));
@@ -384,13 +384,12 @@ public class CLI
     handlers.put("what", new WhatCommand(this));
     handlers.put("where", new WhereCommand(this));
     handlers.put("whichsets", new WhichsetsCommand(this));
-    addHandler(new DisplayCommand(this));
-    // New interface
-    addHandler(new RunCommand(this));
-    addHandler(new CoreCommand(this));
-    addHandler(new DisassembleCommand(this));
-    addHandler(new RegsCommand(this));
-    addHandler(new ExamineCommand(this));
+    new DisplayCommand(this);
+    new RunCommand(this);
+    new CoreCommand(this);
+    new DisassembleCommand(this);
+    new RegsCommand(this);
+    new ExamineCommand(this);
 
     // initialize PT set stuff
     setparser = new SetNotationParser();

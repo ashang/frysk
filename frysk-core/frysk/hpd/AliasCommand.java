@@ -43,12 +43,17 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 class AliasCommand
-    implements CommandHandler 
+    extends CLIHandler
 {
-    private final CLI cli;
     AliasCommand(CLI cli)
     {
-	this.cli = cli;
+	super (cli, "alias", "Create or view user-defined commands", 
+		"alias command-name command body\nalias [command-name]", 
+		"The alias command associates a user-defined name with a list of one or\n" +
+		"more debugger commands. After definition, the user-defined command can\n" +
+		"be used in the same way as a debugger-defined command, including as part\n" +
+		"of the definition of new user-defined commands. ");
+	cli.addHandler(this);
     }
     public void handle(Command cmd) throws ParseException
     {

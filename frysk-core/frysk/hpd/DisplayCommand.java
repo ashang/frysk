@@ -68,6 +68,7 @@ public class DisplayCommand extends CLIHandler {
 
     public DisplayCommand(String name, CLI cli) {
 	super(name, cli, new CommandHelp(name, desc, "display expr", desc));
+	cli.addHandler(this);
 	displays = new LinkedList();
     }
 
