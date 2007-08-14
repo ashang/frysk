@@ -109,12 +109,25 @@ public abstract class Type
 
   public abstract String toString (Value v, ByteBuffer b);
 
-  public abstract String toString (Value v);
-
     public void toPrint(PrintWriter writer, Value value, ByteBuffer memory,
 			Format format) {
 	// XXX: Override this!
 	writer.print(toString(value, memory));
+    }
+    /**
+     * Interpret Location as a bunch of bytes of type Type; print it
+     * as a string using Format.
+     */
+    public void toPrint(PrintWriter writer, Location location,
+			ByteBuffer memory, Format format) {
+	// Override this!
+	writer.print("<<unimplemented type printer>>");
+    }
+    /**
+     * Print this type.
+     */
+    public void toPrint(PrintWriter writer) {
+	// Override this!
     }
 
   public abstract Value add (Value var1, Value var2)

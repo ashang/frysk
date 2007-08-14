@@ -1,5 +1,16 @@
 2007-08-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Value.java (toPrint(ByteBuffer,Format)): New.
+	* Type.java (toPrint(PrintWriter,Location,ByteBuffer,Format): New.
+	(toString(Value)): Delete.
+	(toPrint(PrintWriter)): New.
+	* PointerType.java (toString(Value)): Delete.
+	* FunctionType.java (toString(Value)): Delete.
+	* EnumType.java (toString(Value)): Delete.
+	* ClassType.java (toString(Value)): Delete.
+	* ArrayType.java (toString(Value)): Delete.
+	* ArithmeticType.java (toString(Value)): Delete.
+	
 	* Value.java (toString(ByteBuffer)): Delete.
 	* ClassType.java: Replace Value.toString call with Type.toString
 	call.

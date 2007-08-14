@@ -41,7 +41,7 @@ package frysk.value;
 
 import lib.dwfl.BaseTypes;
 import inua.eio.ByteBuffer;
-
+import java.io.StringWriter;
 import java.io.PrintWriter;
 
 /**
@@ -315,8 +315,21 @@ public class Value
       }
     }
 
+    /**
+     * Dump this object into a string.
+     */
     public String toString()  {
-      return type.toString(this);
+	return type.toString(this, null/*no-memory*/);
+    }
+
+    /**
+     * Return this as a printable string.
+     */
+    public String toPrint(ByteBuffer memory, Format format) {
+	StringWriter stringWriter = new StringWriter();
+	PrintWriter writer = new PrintWriter(stringWriter);
+	toPrint(writer, memory, format);
+	return stringWriter.toString();
     }
 
     /**

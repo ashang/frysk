@@ -661,10 +661,11 @@ public class ArithmeticType
     }
   }
   
-  public String toString (Value v) {
-      return this.toString (v, (ByteBuffer) null);
-  }
-
+    /**
+     * XXX: Never called?
+     *
+     * XXX: Should call Format, not use format as an enum.
+     */
 public String toString(Value v, Format format) {
     switch (typeId)
     {

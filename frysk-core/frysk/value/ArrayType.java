@@ -261,10 +261,6 @@ public class ArrayType
       return strBuf.toString();
     }
 
-    public String toString (Value v) {
-	return this.toString (v, null);
-    }
-
     public String getName ()
     {
       StringBuffer strBuf = new StringBuffer();

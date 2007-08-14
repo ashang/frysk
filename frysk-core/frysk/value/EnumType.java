@@ -102,10 +102,6 @@ public class EnumType
     return toString();
   }
   
-  public String toString (Value v) {
-      return this.toString (v, null);
-  }
-  
   public String toString ()
   {
     StringBuffer strBuf = new StringBuffer();

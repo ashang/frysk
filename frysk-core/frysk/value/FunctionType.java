@@ -62,10 +62,6 @@ public class FunctionType
     return "0x" + Long.toHexString(v.getLong());
   }
   
-  public String toString (Value v) {
-      return this.toString (v, null);
-  }
-  
   public String getName ()
   {
     StringBuffer strBuf = new StringBuffer();
