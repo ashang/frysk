@@ -62,7 +62,7 @@ extends TestLib
 	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit15_, 0, 0, 0) );
 	ops.add( new DwarfOp(DwOpEncodings.DW_OP_dup_, 0, 0, 0) ) ;
 
-	checkExpected(ops, (long)15);
+	checkLocExpected(ops, (long)15, 1);//Expect 1 and not 2 since top of stack popped by decode()
     }
 
     public void testPlus()
@@ -73,7 +73,7 @@ extends TestLib
 	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit7_, 0, 0, 0) );
 	ops.add( new DwarfOp(DwOpEncodings.DW_OP_plus_, 0, 0, 0) ) ;
 
-	checkExpected(ops, (long)17);
+	checkLocExpected(ops, (long)17, 0);
     }
 
     public void testMul()
@@ -81,12 +81,36 @@ extends TestLib
 	List ops = new ArrayList();
 
 	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit10_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit7_, 0, 0, 0) );	
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit10_, 0, 0, 0) );
 	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit7_, 0, 0, 0) );
 	ops.add( new DwarfOp(DwOpEncodings.DW_OP_mul_, 0, 0, 0) ) ;
 	
-	checkExpected(ops, (long)70);
+	checkLocExpected(ops, (long)70, 2);
     }
 
+    public void testDiv()
+    {
+	List ops = new ArrayList();
+
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit30_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit10_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_div_, 0, 0, 0) ) ;
+
+	checkLocExpected(ops, (long)3, 0);
+    }
+    
+    public void testMod()
+    {
+	List ops = new ArrayList();
+
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit31_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit10_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_mod_, 0, 0, 0) ) ;
+
+	checkLocExpected(ops, (long)1, 0);
+    }
+    
     public void testOver()
     {
 	List ops = new ArrayList();
@@ -95,7 +119,7 @@ extends TestLib
 	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit7_, 0, 0, 0) );
 	ops.add( new DwarfOp(DwOpEncodings.DW_OP_over_, 0, 0, 0) ) ;
 
-	checkExpected(ops, (long)10);
+	checkLocExpected(ops, (long)10, 2);
     }
 
     public void testDrop()
@@ -106,7 +130,7 @@ extends TestLib
 	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit1_, 0, 0, 0) );
 	ops.add( new DwarfOp(DwOpEncodings.DW_OP_drop_, 0, 0, 0) ) ;
 
-	checkExpected(ops, (long)30);
+	checkLocExpected(ops, (long)30, 0);
     }
 
     public void testSwap()
@@ -117,16 +141,125 @@ extends TestLib
 	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit15_, 0, 0, 0) );
 	ops.add( new DwarfOp(DwOpEncodings.DW_OP_swap_, 0, 0, 0) ) ;
 
-	checkExpected(ops, (long)12);
+	checkLocExpected(ops, (long)12, 1);
     }  
 
+    public void testRot()
+    {
+	List ops = new ArrayList();
+
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit31_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit7_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit5_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_rot_, 0, 0, 0) ) ;
+
+	checkLocExpected(ops, (long)7, 2);
+    }  
+
+    public void testAbs()
+    {
+	List ops = new ArrayList();
+
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_const1s_, -5, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_abs_, 0, 0, 0) );
+
+	checkLocExpected(ops, (long)5, 0);
+    }
+    
+    public void testNeg()
+    {
+	List ops = new ArrayList();
+
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_const1s_, 5, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_neg_, 0, 0, 0) );
+
+	checkLocExpected(ops, (long)-5, 0);
+    }
+    
+    public void testNot()
+    {
+	List ops = new ArrayList();
+
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_const1s_, 5, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_not_, 0, 0, 0) );
+
+	checkLocExpected(ops, (long)-6, 0);
+    }
+    
+    public void testAnd()
+    {
+	List ops = new ArrayList();
+
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit3_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit4_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_and_, 0, 0, 0) ) ;
+
+	checkLocExpected(ops, (long)0, 0);
+    }
+
+    public void testOr()
+    {
+	List ops = new ArrayList();
+
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit3_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit4_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_or_, 0, 0, 0) ) ;
+
+	checkLocExpected(ops, (long)7, 0);
+    }
+    
+    public void testShl()
+    {
+	List ops = new ArrayList();
+
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit9_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit3_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_shl_, 0, 0, 0) ) ;
+
+	checkLocExpected(ops, (long)72, 0);
+    }
+    
+    public void testShr()
+    {
+	List ops = new ArrayList();
+
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_const1s_, 12, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit2_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_shr_, 0, 0, 0) ) ;
+
+	checkLocExpected(ops, (long)6, 0);
+    }
+    
+    public void testShra()
+    {
+	List ops = new ArrayList();
+
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_const1s_, -28, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit2_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_shra_, 0, 0, 0) ) ;
+
+	checkLocExpected(ops, (long)-7, 0);
+    }
+    
+    public void testXor()
+    {
+	List ops = new ArrayList();
+
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit9_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit14_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_xor_, 0, 0, 0) ) ;
+
+	checkLocExpected(ops, (long)7, 0);
+    }
+    
     /**
      * Function that creates Dwarf stack and checks its values
      * 
      * @param ops - List of operations
      * @param expectedLoc - Expected resultant location
+     * @param stackSize - Expected stack size
      */
-    private void checkExpected (List ops, long expectedLoc)
+    private void checkLocExpected (List ops, long expectedLoc, int stackSize)
     {
 	DwarfDie die = null;
 	Task task = getStoppedTask();
@@ -134,7 +267,9 @@ extends TestLib
 
 	LocationExpression locExp = new LocationExpression(frame, die, ops);
 	long loc = locExp.decode();
-	assertEquals ("Result", loc, expectedLoc);	
+	
+	assertEquals ("Stack size", locExp.getStackSize(), stackSize);
+	assertEquals ("Location", loc, expectedLoc);	
     }
 
     private Task getStoppedTask()

@@ -39,6 +39,8 @@
 
 package frysk.debuginfo;
 
+import java.lang.Math;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -58,12 +60,14 @@ class LocationExpression {
     DwarfDie die;
     List ops;
     int locationType;
+    LinkedList stack;
     
     public LocationExpression (DebugInfoFrame frame, DwarfDie die, List ops) {
 	locationType = 0;
 	this.frame = frame;
 	this.die = die;
 	this.ops = ops;
+	this.stack = null;
     }
     
     /**
@@ -71,7 +75,7 @@ class LocationExpression {
      *
      */
     public long decode () {
-	LinkedList stack = new LinkedList();
+	stack = new LinkedList();
 	Isa isa = frame.getTask().getIsa();
 	int nops = ops.size();
 
@@ -255,7 +259,9 @@ class LocationExpression {
 	    case DwOpEncodings.DW_OP_rot_:
                 first = (Long) stack.removeFirst();
                 second = (Long) stack.removeFirst();
+                Long third = (Long) stack.removeFirst();
                 stack.addFirst(first);
+                stack.addFirst(third);
                 stack.addFirst(second);
 		break;			
 
@@ -282,9 +288,73 @@ class LocationExpression {
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 * operand2));
 		break;
+		
+	    case DwOpEncodings.DW_OP_div_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		// Should there be a check here for operand1!=0 ?
+		stack.addFirst(new Long(operand2 / operand1));
+		break;
+
+	    case DwOpEncodings.DW_OP_mod_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		// Should there be a check here for operand1!=0 ?
+		stack.addFirst(new Long(operand2 % operand1));
+		break;
+		
+	    case DwOpEncodings.DW_OP_abs_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(Math.abs(operand1)));
+		break;
+		
+	    case DwOpEncodings.DW_OP_and_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(operand1 & operand2));
+		break;
+		
+	    case DwOpEncodings.DW_OP_or_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(operand1 | operand2));
+		break;
+		
+	    case DwOpEncodings.DW_OP_shl_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(operand2 << operand1));
+		break;
+		
+	    case DwOpEncodings.DW_OP_shr_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(operand2 >>> operand1));
+		break;
+		
+	    case DwOpEncodings.DW_OP_shra_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(operand2 >> operand1));
+		break;
+		
+	    case DwOpEncodings.DW_OP_xor_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(operand1 ^ operand2));
+		break;
+		
+	    case DwOpEncodings.DW_OP_neg_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(0-operand1));
+		break;
+		
+	    case DwOpEncodings.DW_OP_not_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(~operand1));
+		break;
 
 		// ??? Support remaining operators
-
 	    default:
 		throw new ValueUavailableException();
 	    }
@@ -313,5 +383,12 @@ class LocationExpression {
 
     public int getLocationType () {
 	return locationType;
+    }
+    
+    public int getStackSize() {
+	if (stack != null)
+	    return stack.size();
+	else
+	    return 0;
     }
 }
