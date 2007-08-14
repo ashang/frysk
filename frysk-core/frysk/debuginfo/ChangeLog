@@ -1,3 +1,9 @@
+2007-08-14  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFrameDebugInfo.java (testVirtualDebugInfoStackTrace): New test.
+	* DebugInfoFrame.java (getSubprogram): Added call to 
+	scopes[0].getScopesDie().
+
 2007-08-14  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestLocationExpression.java: Tests added for new operations.

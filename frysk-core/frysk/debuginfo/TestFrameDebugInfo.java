@@ -158,11 +158,34 @@ public class TestFrameDebugInfo
     StringWriter stringWriter = new StringWriter();
     
     DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(stringWriter), task, true, true, true);
-
+    
     assertTrue("contains first", stringWriter.getBuffer().toString().contains("first"));
     assertTrue("contains second", stringWriter.getBuffer().toString().contains("second"));
     assertTrue("contains third", stringWriter.getBuffer().toString().contains("third"));
     assertTrue("contains main", stringWriter.getBuffer().toString().contains("main"));
+  }
+  
+  // test that a Subprogram can be retrieved for a function even
+  // if the call stack contains calls to inlined functions inner
+  // to it.
+  public void testInlinedFunctionDerailment ()
+  {
+  
+    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-inlined");
+    
+    DebugInfoFrame frame = DebugInfoStackFactory.createVirtualDebugInfoStackTrace(task);
+    Subprogram subprogram = null;
+    
+    while(frame.getOuterDebugInfoFrame() != null){
+	subprogram = frame.getSubprogram();
+	if(subprogram != null && subprogram.getName().equals("main")){
+	    break;
+	}
+	frame = frame.getOuterDebugInfoFrame();
+    }
+    
+    assertNotNull(subprogram);
+    assertTrue("found main", subprogram.getName().equals("main"));
   }
   
   

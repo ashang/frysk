@@ -78,6 +78,7 @@ public class DebugInfoFrame extends FrameDecorator{
         if (bias != null) {
 
   	DwarfDie[] scopes = bias.die.getScopes(getAdjustedAddress());
+  	scopes = scopes[0].getScopesDie();
   	
   	for (int i = 0; i < scopes.length; i++) {
   	  if (scopes[i].getTag() == DwTagEncodings.DW_TAG_subprogram_) {
