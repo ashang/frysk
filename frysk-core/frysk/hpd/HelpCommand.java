@@ -44,12 +44,11 @@ import java.util.Iterator;
 import java.text.ParseException;
 
 class HelpCommand
-    implements CommandHandler
+    extends CLIHandler
 {
-    private final CLI cli;
     HelpCommand(CLI cli)
     {
-	this.cli = cli;
+	super (cli, "help", "Display this help message.", "help [command]", "Display help (possibly for a command.)");
     }
     public void handle(Command cmd)
 	throws ParseException 

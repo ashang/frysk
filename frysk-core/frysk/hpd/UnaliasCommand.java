@@ -43,12 +43,14 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 class UnaliasCommand
-    implements CommandHandler
+   extends CLIHandler
 {
-    private final CLI cli;
     UnaliasCommand(CLI cli)
     {
-	this.cli = cli;
+	super(cli, "unalias", "Create or view user-define commands.",
+		"unalias { command-name | -all }", "The unalias command removes the alias that was previously established\n" +
+"for the specified user-defined command name. Use of the argument -all\n" +
+"deletes all user-defined commands at once.");
     }
     public void handle(Command cmd)
 	throws ParseException

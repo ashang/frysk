@@ -46,12 +46,15 @@ import frysk.proc.Task;
 import frysk.stepping.SteppingEngine;
 
 class GoCommand
-    implements CommandHandler
+    extends CLIHandler
 {
-    private final CLI cli;
     GoCommand(CLI cli)
     {
-	this.cli = cli;
+	super(cli, "go", "Continue a process.",
+		"go", "Continue running a process, returning without blocking.  The go command\n" +
+"resumes execution of a collection of processes. The prompt will then be\n" +
+"returned so that the user can issue further commands; execution\n" +
+"continues behind the scene.");
     }
     public void handle(Command cmd)
 	throws ParseException 

@@ -43,12 +43,13 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 class UndefsetCommand
-    implements CommandHandler
+   extends CLIHandler
 {
-    private final CLI cli;
     UndefsetCommand(CLI cli)
     {
-	this.cli = cli;
+	super (cli, "undefset", "Undefine a previously defined process/thread set.",
+		"undefset {set-name | -all}", "The undefset command reverses the action of defset, so that the set is\n" +
+"deleted. This command is applicable only to user-defined sets.");
     }
     public void handle(Command cmd) throws ParseException
     {

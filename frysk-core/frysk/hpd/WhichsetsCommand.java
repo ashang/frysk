@@ -48,12 +48,15 @@ import java.util.ArrayList;
  */
 
 class WhichsetsCommand
-    implements CommandHandler
+    extends CLIHandler
 {
-    private final CLI cli;
     WhichsetsCommand(CLI cli)
     {
-	this.cli = cli;
+	super (cli, "whichsets", "List all user-defined set to which a proc/task belongs.",
+		"whichsets [p/t-set]", "The whichsets command displays sets to which a particular thread(s)\n" +
+"belongs. When no argument is used, the membership of each thread in the\n" +
+"target p/t set is displayed. If a thread(s) is specified as the\n" +
+"argument, only its membership information will be displayed. ");
     }
     public void handle(Command cmd) throws ParseException
     {

@@ -47,12 +47,14 @@ import frysk.proc.Task;
 import frysk.debuginfo.DebugInfoFrame;
   
 class WhereCommand
-    implements CommandHandler
+    extends CLIHandler
 {
-    private final CLI cli;
     WhereCommand (CLI cli)
     {
-	this.cli = cli;
+	super (cli, "where", "Display the current execution location and call stack",
+		"where [ {num-levels | -all} ] [-args]", "The where command displays the current execution location(s) and the\n" +
+"call stack(s) - or sequence of procedure calls - which led to that\n" +
+"point.");
     }
 
     public void handle(Command cmd) throws ParseException {

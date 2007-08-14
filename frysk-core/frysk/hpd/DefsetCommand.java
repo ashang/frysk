@@ -43,12 +43,17 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 class DefsetCommand
-    implements CommandHandler
+    extends CLIHandler
 {
-    private final CLI cli;
     DefsetCommand(CLI cli)
     {
-	this.cli = cli;
+	super (cli, "defset", "Assign a set name to a group of processes/threads",
+		"defset set-name p/t-set", "Associates a logical name with a " +
+		"group of threads and/or processes,\n" +
+"creating a user-defined set. Once a user-defined set has been\n" +
+"established, it can be used (enclosed in brackets) as a p/t set prefix\n" +
+"or as the argument to a focus command, providing a shorthand way of\n" +
+"referring to potentially complex groupings of processes and threads. ");
     }
     public void handle(Command cmd) throws ParseException 
     {

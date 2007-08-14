@@ -59,12 +59,15 @@ import frysk.proc.Task;
  */
 
 class ListCommand
-    implements CommandHandler
+   extends CLIHandler
 {
-    private CLI cli;
     ListCommand (CLI cli)
     {
-	this.cli = cli;
+	super(cli, "list", "Display source code lines.",
+		"list source-loc [-length [-]num-lines]", "The list command displays lines of source code. The user can control\n" +
+"both the location in the source code and the number of lines\n" +
+"displayed. Successive list commands without location arguments result in\n" +
+"the display of consecutive sequences of source lines.");
     }
     private File file = null;
     private int line;

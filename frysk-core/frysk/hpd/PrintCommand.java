@@ -50,12 +50,22 @@ import frysk.value.Value;
 import javax.naming.NameNotFoundException;
 
 class PrintCommand
-    implements CommandHandler
+    extends CLIHandler
 {
-    private final CLI cli;
     PrintCommand(CLI cli)
     {
-	this.cli = cli;
+	this(cli, "print", "Evaluate and display the value of a program variable or expression.",
+		"print expression [-name] [-index] [-format d|o|x]", "The print command evaluates and displays an expression. The debugger\n" +
+		"interprets the expression by looking up the value(s) associated with\n" +
+		"each symbol and applying the operators.  The result of an expression may\n" +
+		"be a scalar value or an aggregate (array, array slice, record, or\n" +
+		"structure.");
+    }
+    
+    PrintCommand (CLI cli, String name, String description, String syntax, 
+	    String full)
+    {
+	super (cli, name, description, syntax, full);
     }
 
     public void handle(Command cmd) throws ParseException {

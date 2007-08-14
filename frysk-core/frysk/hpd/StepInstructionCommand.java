@@ -47,13 +47,13 @@ import java.util.LinkedList;
 import frysk.proc.Task;
 import frysk.debuginfo.DebugInfoFrame;
 
-public class StepInstructionCommand implements CommandHandler
+public class StepInstructionCommand extends CLIHandler
 {
-  private CLI cli;
   
   StepInstructionCommand (CLI cli)
   {
-    this.cli = cli;
+    super(cli, "stepi", "Instruction step a process.",
+                "stepi", "Step a process by an instruction. The process must be attached to and blocked.");
   }
   
   public void handle(Command cmd) throws ParseException

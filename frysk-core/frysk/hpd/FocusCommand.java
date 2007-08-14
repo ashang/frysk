@@ -43,12 +43,15 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 class FocusCommand
-    implements CommandHandler 
+   extends CLIHandler
 {
-    private final CLI cli;
     FocusCommand(CLI cli)
     {
-	this.cli = cli;
+	super(cli, "focus", "Change the current process/thread set.",
+		"focus [p/t-set]", "Changes the current p/t set. As a consequence, subsequent commands will\n" +
+		"apply to just the threads specified in the argument of this\n" +
+		"command. When no argument is specified, the command lists the threads in\n" +
+		"the current p/t set. ");
     }
     public void handle(Command cmd) throws ParseException
     {

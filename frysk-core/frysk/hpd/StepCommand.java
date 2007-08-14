@@ -47,14 +47,14 @@ import java.util.LinkedList;
 import frysk.proc.Task;
 import frysk.debuginfo.DebugInfoFrame;
 
-public class StepCommand implements CommandHandler
+public class StepCommand extends CLIHandler
 {
   
-  private CLI cli;
   
   StepCommand (CLI cli)
   {
-    this.cli = cli;
+   super (cli, "step", "Step a process.",
+                "step", "Line step a process which has been attached to, and is currently blocked.");
   }
   
   public void handle(Command cmd) throws ParseException

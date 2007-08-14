@@ -43,13 +43,20 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 class SetCommand
-    implements CommandHandler
+    extends CLIHandler
 {
-    private final CLI cli;
     private final DbgVariables dbgvars;
     SetCommand(CLI cli, DbgVariables dbgvars)
     {
-	this.cli = cli;
+	super(cli, "set", "Change or view a debugger variable.",
+		"set debugger-var = value\nset [debugger-var]", "The set command supports the viewing of debugger state variables and the\n" +
+"assignment of new values to them.  When no arguments are specified, the\n" +
+"names and current values for all debugger state variables are\n" +
+"displayed. When just a single argument is included, the debugger echoes\n" +
+"the variable name and displays its current value.  The second argument\n" +
+"defines the value that should replace any previous value for that\n" +
+"variable.  It must be enclosed in quotes if it contains multiple\n" +
+"words. ");
 	this.dbgvars = dbgvars;
     }
     public void handle(Command cmd) throws ParseException

@@ -47,13 +47,14 @@ import frysk.proc.Task;
 import frysk.util.DebuginfoPaths;
 
 class DebuginfoCommand
-    implements CommandHandler
+    extends CLIHandler
 {  
-    private final CLI cli;
-    
+   
     DebuginfoCommand(CLI cli)
     {
-	this.cli = cli;
+	super(cli, "debuginfo", "Displays debuginfo install paths of a process.",
+		"debuginfo","The debuginfo command lists the debuginfo paths " +
+				"for a process and its shared modules.");
     }
     
     public void handle(Command cmd) throws ParseException 

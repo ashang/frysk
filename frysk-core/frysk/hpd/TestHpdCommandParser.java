@@ -76,7 +76,6 @@ public class TestHpdCommandParser extends TestLib {
 
     protected void setUp() throws Exception {
 	super.setUp();
-	cli.addHandler(parser);
     }
 
     public void test() {

@@ -57,14 +57,14 @@ import lib.dwfl.DwarfDie;
 
 class BreakpointCommand
     extends CLIHandler {
-    private static final String descr = "set source breakpoint";
-
-    private BreakpointCommand(String name, CLI cli) {
-        super(name, cli, new CommandHelp(name, descr, "break #file#lineno", descr));
-    }
+    private static final String descr = "Define a breakpoint";
 
     BreakpointCommand(CLI cli) {
-        this("break", cli);
+        super( cli, "break", descr, "break {proc | line | #file#line} [-stop stop-set]", "The break command defines a breakpoint that will be triggered when some\n" +
+        	"thread(s) in the trigger set arrives at the specified location during\n" +
+        	"program execution. When that occurs, the process(es) containing the\n" +
+        	"triggering thread(s) plus all processes in the stop set will be forcibly\n" +
+        	"stopped so the user can examine program state information.");
     }
 
     static private class CLIBreakpointObserver

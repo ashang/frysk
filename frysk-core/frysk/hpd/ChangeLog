@@ -1,5 +1,40 @@
 2007-08-14  Nurdin Premji  <npremji@redhat.com>
 
+	* AssignCommand.java: New.
+	* CLIHandler.java (CLIHandler): Add call to cli.addHandler()
+	* CoreCommand.java (CoreCommand): Remove call to cli.addHandler().
+	* ActionsCommand.java (ActionsCommand): Ditto.
+	* TestHpdCommandParser.java (setup): Ditto.
+	* DisassembleCommand.java (DisassembleCommand): Ditto.
+	* ExamineCommand.java (ExamineCommand): Ditto.
+	* RegsCommand.java (RegsCommand): Ditto.
+	* RunCommand.java (RunCommand): Ditto.
+	* AliasCommand.java (AliasCommand): Ditto.	
+	* DisplayCommand.java (DisplayCommand):Ditto.
+	* DefsetCommand.java (DefsetCommand): Extend CLIHandler.
+	* UnsetCommand.java (UnsetCommand): Ditto.
+	* SetCommand.java (SetCommand): Ditto.
+	* StepInstructionCommand.java (StepInstructionCommand): Ditto.
+	* HelpCommand.java (HelpCommand): Ditto.
+	* ListCommand.java (ListCommand): Ditto.
+	* WhereCommand.java (WhereCommand): Ditto.
+	* UndefsetCommand.java (UndefsetCommand): Ditto.
+	* UnaliasCommand.java (UnaliasCommand): Ditto.
+	* HaltCommand.java (HaltCommand): Ditto.
+	* PrintCommand.java (PrintCommand): Ditto.
+	* DetachCommand.java (DetachCommand): Ditto.
+	* FocusCommand.java (FocusCommand): Ditto.
+	* GoCommand.java (GoCommand): Ditto.
+	* QuitCommand.java (QuitCommand): Ditto.
+	* BreakpointCommand.java (BreakpointCommand): Ditto.
+	* ViewsetCommand.java (ViewsetCommand): Ditto.
+	* WhichsetsCommand.java (WhichsetsCommand): Ditto.
+	* WhatCommand.java (WhatCommand): Ditto.
+	* StepCommand.java (StepCommand): Ditto.
+	* DebuginfoCommand.java (DebuginfoCommand): Ditto.
+	* UserHelp.java	(UserHelp): Remove help messages for above classes.
+	* CLI.java (CLI): Remove calls to addHandler() for above.
+
 	* ActionsCommand.java (ActionsCommand): Call cli.addHandler().
 	* CoreCommand.java (CoreCommand): Ditto.
 	* DisassembleCommand.java (DisassembleCommand): Ditto.

@@ -46,12 +46,12 @@ import frysk.sys.Sig;
 import java.text.ParseException;
 
 class QuitCommand
-    implements CommandHandler
+    extends CLIHandler
 {
-    private final CLI cli;
     QuitCommand (CLI cli)
     {
-	this.cli = cli;
+	super (cli, "quit", "Terminate the debugging session.",
+		"quit", "Terminate the debugging session.");
     }
     public void handle(Command cmd)
 	throws ParseException 

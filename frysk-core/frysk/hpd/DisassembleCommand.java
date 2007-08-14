@@ -67,7 +67,6 @@ public class DisassembleCommand extends CLIHandler {
 		"disassemble the function surrounding the current pc, "
 			+ "the function surrounding a given address, "
 			+ "or a range of functions.");
-	cli.addHandler(this);
 	addOptions(parser);
 
     }

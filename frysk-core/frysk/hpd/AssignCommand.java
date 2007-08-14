@@ -39,49 +39,18 @@
 
 package frysk.hpd;
 
-import java.text.ParseException;
+public class AssignCommand extends PrintCommand {
 
-/**
- * A handler class for the CLI that supplies its own help messages.
- */
-public abstract class CLIHandler
-  implements CommandHandler
-{
-  protected final CLI cli;
-  private final CommandHelp help;
-  private final String name;  
+    static String full = "The assign command evaluates a scalar expression and "
+	    + "uses the result to\n"
+	    + "replace the previous contents of a program variable. The target "
+	    + "location\n"
+	    + "may be a scalar variable, an element of an array or "
+	    + "structure/record, or\n" + "a de-referenced pointer variable.";
 
-  protected HpdCommandParser parser;
-  
-  public CLI getCLI()
-  {
-    return cli;
-  }
+    AssignCommand(CLI cli) {
+	super(cli, "assign", "Change the value of a scalar program variable.",
+		"assign scalar-target scalar-value [-force]", full);
+    }
 
-  public CommandHelp getHelp()
-  {
-    return help;
-  }
-
-  public String getName()
-  {
-    return name;
-  }
-  
-  public CLIHandler(String name, CLI cli, CommandHelp help)
-  {
-    this.name = name;
-    this.cli = cli;
-    this.help = help;
-    parser = new HpdCommandParser(name, System.out);
-    parser.setHeader(help.syntax);
-    parser.setFooter(help.full +"\n");
-    cli.addHandler(this);
-  }
-  
-  public CLIHandler (CLI cli, String name, String description, String syntax, String full) {
-      this(name, cli, new CommandHelp(name, description, syntax, full));
-  }
-  
-  public abstract void handle(Command cmd) throws ParseException;
 }

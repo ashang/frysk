@@ -46,12 +46,15 @@ import javax.naming.NameNotFoundException;
 import frysk.proc.Task;
 
 class WhatCommand
-    implements CommandHandler
+    extends CLIHandler
 {
-    private final CLI cli;
     WhatCommand(CLI cli)
     {
-	this.cli = cli;
+	super(cli, "what", "Determine what a target program name refers to",
+		"what symbol-name [-all]", "The what command queries the debugger about its current interpretation\n" +
+		"of a symbol name from the target program. Intuitively, the command shows\n" +
+		"what program symbol(s) would be displayed (modified) if the symbol name\n" +
+		"were used as the argument of a print command.");
     }
     public void handle(Command cmd) throws ParseException {
         PTSet ptset = cli.getCommandPTSet(cmd);

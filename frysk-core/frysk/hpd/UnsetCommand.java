@@ -43,13 +43,18 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 class UnsetCommand
-    implements CommandHandler
+    extends CLIHandler
 {
-    private final CLI cli;
     private final DbgVariables dbgvars;
     UnsetCommand(CLI cli, DbgVariables dbgvars)
     {
-	this.cli = cli;
+	super(cli, "unset", "Revert variable value to default.",
+		"unset { debugger-var | -all }", "The unset command reverses the effects of any previous set operations,\n" +
+"restoring the debugger state variable(s) to their default settings.\n" +
+"When the argument -all is specified, the command affects all debugger\n" +
+"state variables, restoring them to the original settings that were in\n" +
+"effect when the debugging session began.  When just a single argument is\n" +
+"included, only that variable is affected. ");
 	this.dbgvars = dbgvars;
     }
     public void handle(Command cmd) throws ParseException

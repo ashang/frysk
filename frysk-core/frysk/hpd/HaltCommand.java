@@ -47,12 +47,13 @@ import frysk.proc.Task;
 import frysk.stepping.SteppingEngine;
 
 class HaltCommand
-    implements CommandHandler
+    extends CLIHandler
 {
-    private final CLI cli;
     HaltCommand (CLI cli)
     {
-	this.cli = cli;
+	super(cli, "halt", "Stop a process.",
+		"halt", "Stop a process which is already attached.  The halt command temporarily\n" +
+"suspends the execution of a collection of processes.");
     }
     public void handle(Command cmd)
 	throws ParseException

@@ -44,12 +44,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 class ViewsetCommand
-    implements CommandHandler 
+    extends CLIHandler
 {
-    private final CLI cli;
     ViewsetCommand(CLI cli)
     {
-	this.cli = cli;
+	super(cli, "viewset", "List members of a proc/task set.",
+		"viewset [set-name]", "The viewset command displays the members of debugger- or user-defined\n" +
+"sets. When no argument is used, the members of all currently defined\n" +
+"sets are displayed. ");
     }
     public void handle(Command cmd) throws ParseException
     {

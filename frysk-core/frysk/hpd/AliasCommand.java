@@ -53,7 +53,6 @@ class AliasCommand
 		"more debugger commands. After definition, the user-defined command can\n" +
 		"be used in the same way as a debugger-defined command, including as part\n" +
 		"of the definition of new user-defined commands. ");
-	cli.addHandler(this);
     }
     public void handle(Command cmd) throws ParseException
     {

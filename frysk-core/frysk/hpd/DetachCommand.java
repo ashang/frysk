@@ -47,11 +47,16 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 
 class DetachCommand
-    implements CommandHandler {
-    private final CLI cli;
+    extends CLIHandler {
     
     DetachCommand(CLI cli) {
-	this.cli = cli;
+	super(cli, "detach", "Detach from a running process.",
+		"detach", "The detach command detaches the debugger from all processes in the\n" +
+"affected set. This serves to undo the effects of attaching the debugger\n" +
+"to a running process; that is, the debugger releases all control over\n" +
+"the process, eliminates all debugger state information related to it,\n" +
+"and allows it to continue execution in the normal run-time\n" +
+"environment. ");
     }
     
     public void handle (Command cmd)
