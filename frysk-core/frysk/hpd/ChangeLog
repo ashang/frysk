@@ -1,3 +1,7 @@
+2007-08-14  Mike Cvet  <mcvet@redhat.com>
+
+	* CLI.java (CLI): Enabled next, nexti, and finish commands.
+
 2007-08-13  Andrew Cagney  <cagney@redhat.com>
 
 	* TestStackCommands.java: Move test of <<print 2+2>> from here...

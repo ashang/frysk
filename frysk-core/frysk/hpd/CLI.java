@@ -345,7 +345,6 @@ public class CLI
   {
     this.prompt = prompt;
     outWriter = new PrintWriter(out, true);
-//    outWriter = new PrintWriter(frysk.sys.FileDescriptor.out.getOutputStream(), true);
     idManager = ProcTaskIDManager.getSingleton();
 
     prepro = new Preprocessor();
@@ -364,14 +363,14 @@ public class CLI
     addHandler(new DisableCommand(this));
     handlers.put("down", new UpDownHandler());
     addHandler(new EnableCommand(this));
-//    handlers.put("finish", new StepFinishCommand(this));
+    handlers.put("finish", new StepFinishCommand(this));
     handlers.put("focus", new FocusCommand(this));
     handlers.put("go", new GoCommand(this));
     handlers.put("halt", new HaltCommand(this));
     handlers.put("help", new HelpCommand(this));
     handlers.put("list", new ListCommand(this));
-//    handlers.put("next", new StepNextCommand(this));
-//    handlers.put("nexti", new StepNextiCommand(this));
+    handlers.put("next", new StepNextCommand(this));
+    handlers.put("nexti", new StepNextiCommand(this));
     handlers.put("print", new PrintCommand(this));
     handlers.put("quit", new QuitCommand(this));
     handlers.put("set", new SetCommand(this, dbgvars));
