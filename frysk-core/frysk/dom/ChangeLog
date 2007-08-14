@@ -1,3 +1,10 @@
+2007-08-14  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMFactory.java: Move printDOM() to DOMCommon.
+	* DOMImage.java: Ditto.
+	* DOMCommon.java: Ditto.
+	* CDTParser.java: Ditto; fix bz# 4921(another parsing error).
+
 2007-07-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DOMFactory.java: Replaced Frame with DebugInfoFrame.

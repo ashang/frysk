@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005,2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -67,6 +67,7 @@ public class DOMImage
 	public static final String IMAGE_NODE = "image";
 	public static final String NAME_ATTR = "filename";
 	public static final String PATH_ATTR = "filepath";
+  public static final boolean DEBUG = false; 
     public DOMFrysk dom;
     public DOMImage image;
     
@@ -159,6 +160,8 @@ public class DOMImage
         source.setParsed(true);
         
         addSource(source);
+        if (DEBUG)
+          DOMCommon.printDOM(dom);
         return source;
       
     }

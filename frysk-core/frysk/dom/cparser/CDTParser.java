@@ -363,7 +363,8 @@ public class CDTParser
                            ".....nameText = " + nameText.trim());
       
       // Check to see if the character string we are parsing is in one of the lines
-      if (!checkScope(arg0.getName(), typeText) || !checkScope(arg0.getName(), nameText))
+      if (!checkScope(arg0.getName(), typeText) || !checkScope(arg0.getName(), nameText)
+          || number_includes > 0)
         return;
       
       String token = typeText.substring(arg0.getStartingOffset()
@@ -398,7 +399,7 @@ public class CDTParser
       String nameText = nameLine.getText();
       if (DEBUG)
         System.out.println(".....lineText = " + lineText.trim() +
-                          ".....nameText = " + nameText.trim());
+                          ".....nameText = " + nameText);
       
       // Check to see if the character string we are parsing is in one of the lines
       if (!checkScope(arg0.getName(), lineText) || !checkScope(arg0.getName(), nameText))
@@ -748,8 +749,17 @@ public class CDTParser
         return;
 
       String lineText = line.getText();
-      if (DEBUG)
-          System.out.print(".....lineText = " + lineText.trim());
+      if (DEBUG) {
+          System.out.print(".....lineText = " + lineText);
+          System.out.println(".....KEYWORD\n.....lineText.substring(" + 
+              (arg0.getStartingOffset() - line.getOffset()) + ", " + 
+              (arg0.getNameOffset() - line.getOffset()) + ", " + 
+              (arg0.getStartingOffset() - line.getOffset()) + ")");
+          System.out.println(".....CLASS_DECL\n.....lineText.substring(" + 
+              (arg0.getNameOffset() - line.getOffset()) + ", " +
+              (arg0.getNameOffset() - line.getOffset()+ arg0.getName().length()) + ", " +
+              (arg0.getNameOffset() - line.getOffset()) + ")");
+      }
 
       line.addTag(DOMTagTypes.KEYWORD,
                   lineText.substring(arg0.getStartingOffset()
@@ -1266,7 +1276,7 @@ public class CDTParser
     public void exitClassSpecifier (IASTClassSpecifier arg0)
     {
       if (DEBUG)
-        System.out.println("made it to exit Class Specifier.....name = " +
+        System.out.println("made it to exitClass Specifier.....name = " +
                            arg0.getName());
     }
 
@@ -1339,7 +1349,7 @@ public class CDTParser
      */
     public boolean checkScope(String token, String linetext) 
     {
-      if (linetext.indexOf(token) == -1) 
+      if (linetext.indexOf(token) == -1 || token.equals("")) 
         return false;
       else
         return true;

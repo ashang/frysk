@@ -41,12 +41,16 @@ package frysk.dom;
 
 import frysk.dom.DOMCompilerSuffixes;
 
+import org.jdom.Document;
+import org.jdom.output.XMLOutputter;
+
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.Dwarf;
 import lib.dwfl.DwarfCommand;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -191,5 +195,21 @@ public class DOMCommon {
   public static boolean pathFound(String path) {
     File f = new File(path);
     return f.exists();
+  }
+  
+  /*
+   * Print out the DOM @param dom is the DOMFrysk object to print out
+   */
+  
+  public static void printDOM(DOMFrysk dom) {
+    Document doc = dom.getDOMFrysk();
+    try {
+      XMLOutputter serializer = new XMLOutputter();
+      serializer.getFormat();
+      serializer.output(doc, System.out);
+    }
+    catch (IOException e) {
+      System.err.println(e);
+    }
   }
 }

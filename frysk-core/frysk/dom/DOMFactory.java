@@ -43,9 +43,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
-import org.jdom.Document;
-import org.jdom.output.XMLOutputter;
-
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.proc.Proc;
 
@@ -96,26 +93,8 @@ public class DOMFactory
     hashmap.put(proc, dom);
     // if we are debugging the DOM, print it out now
     if (DEBUG)
-      {
-        printDOM(dom);
-      }
+      DOMCommon.printDOM(dom);
     return dom;
-  }
-  
-  /*
-   * Print out the DOM @param dom is the DOMFrysk object to print out
-   */
-  
-  public static void printDOM(DOMFrysk dom) {
-    Document doc = dom.getDOMFrysk();
-    try {
-      XMLOutputter serializer = new XMLOutputter();
-      serializer.getFormat();
-      serializer.output(doc, System.out);
-    }
-    catch (IOException e) {
-      System.err.println(e);
-    }
   }
   
   /**
