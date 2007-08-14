@@ -1,3 +1,9 @@
+2007-08-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Value.java (toString(ByteBuffer)): Delete.
+	* ClassType.java: Replace Value.toString call with Type.toString
+	call.
+
 2007-08-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Value.java (asLong): Replace longValue.

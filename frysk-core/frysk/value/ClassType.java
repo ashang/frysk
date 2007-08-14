@@ -209,7 +209,8 @@ public class ClassType
 	  continue;
 	else {
 	  strBuf.append(e.nextName() + "=");
-	  strBuf.append(val.toString(b) + ",\n ");
+	  Type valType = val.getType();
+	  strBuf.append(valType.toString(val, b) + ",\n ");
 	}
       }
     strBuf.replace(strBuf.length()-1, strBuf.length(), "}");

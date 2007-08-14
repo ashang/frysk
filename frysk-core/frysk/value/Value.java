@@ -315,13 +315,6 @@ public class Value
       }
     }
 
-    /**
-     * FIXME: Do not use this.
-     */
-    public String toString(ByteBuffer b) {
-	return type.toString(this, b);
-    }
-    
     public String toString()  {
       return type.toString(this);
     }
