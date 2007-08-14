@@ -1,5 +1,12 @@
 2007-08-14  Andrew Cagney  <cagney@redhat.com>
 
+	* ArithmeticType.java (toString(Value,ByteBuffer)): Delete.
+	(toPrint(PrintWriter,Location,ByteBuffer,Format)): New.
+	(toPrint(PrintWriter)): New.
+	* Type.java (toPrint(PrintWriter)): Throw a RuntimeException.
+	(toPrint(PrintWriter, Location, ByteBuffer, Format): Ditto.
+	(toString(Value,ByteBuffer)): Implement using toPrint.
+	
 	* TestValue.java: Replace Value.toString with Value.toPrint().
 	* ArithmeticType.java (toString(Value,Format): Delete.
 	* Value.java(toPrint(), toPrint(Format)): New.

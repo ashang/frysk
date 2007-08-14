@@ -39,12 +39,106 @@
 
 package frysk.value;
 
+import java.io.PrintWriter;
+
 /**
  * Formats a base type sending it to the printer.
  */
 
 public class Format
 {
+    /**
+     * Report that formattting for Type is unknown.
+     */
+    public void printUnknown(PrintWriter writer, Type type) {
+	writer.print("<<format for ");
+	type.toPrint(writer);
+	writer.print(" unknown>>");
+    }
+
+    /**
+     * Report that formatting of TYPE of SIZE is unknown.
+     */
+    protected void printUnknown(PrintWriter writer, String type,
+				long size) {
+	writer.print("<<format for ");
+	writer.print(size);
+	writer.print(" byte ");
+	writer.print(type);
+	writer.print(" unknown>>");
+    }
+    /**
+     * Print VAL as a signed integer.
+     *
+     * FIXME: Should take a BigInt.
+     */
+    public void printInteger(PrintWriter writer, Location location) {
+	long value;
+	long size = location.getByteBuffer().capacity();
+	switch ((int)size) {
+	case 1:
+	    value = location.getByte();
+	    break;
+	case 2:
+ 	    value = location.getShort();
+	    break;
+	case 4:
+	    value = location.getInt();
+	    break;
+	case 8:
+	    value = location.getLong();
+	    break;
+	default:
+	    printUnknown(writer, "integer", size);
+	    return;
+	}
+	writer.print(value);
+    }
+
+    /**
+     * Print VAL as a floating-point.
+     *
+     * FIXME: Should take a BigFloat.
+     */
+    public void printFloatingPoint(PrintWriter writer, Location location) {
+	long size = location.getByteBuffer().capacity();
+	switch((int) size) {
+	case 4:
+	    writer.print(location.getFloat());
+	    break;
+	case 8:
+	    writer.print(location.getDouble());
+	    break;
+	default:
+	    printUnknown(writer, "floating-point", size);
+	    break;
+	}
+    }
+
+    public void printPointer(PrintWriter writer, Location location) {
+	long value;
+	long size = location.getByteBuffer().capacity();
+	switch ((int)size) {
+	case 1:
+	    value = location.getByte();
+	    break;
+	case 2:
+	    value = location.getShort();
+	    break;
+	case 4:
+	    value = location.getInt();
+	    break;
+	case 8:
+	    value = location.getLong();
+	    break;
+	default:
+	    printUnknown(writer, "integer", size);
+	    return;
+	}
+	writer.print("0x");
+	writer.print(Long.toHexString(value));
+    }
+
     public static final Format NATURAL = new Format();
     public static final Format HEXADECIMAL = new Format();
     public static final Format OCTAL = new Format();

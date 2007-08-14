@@ -43,196 +43,210 @@ package frysk.value;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
- * Holds the type of a Variable and also defines possible operations. Classes
- * extended from this type will have to define the individual operation that are
- * defined on those types. e.g. addition operation may be defined for the
- * integer type.
+ * Holds the type of a Value and also defines possible operations.
+ * Classes extended from this type will have to define the individual
+ * operation that are defined on those types. e.g. addition operation
+ * may be defined for the integer type.
  */
 
-public abstract class Type
-{
-  protected int size;
+public abstract class Type {
+    protected int size;
 
-  protected final ByteOrder endian;
+    protected final ByteOrder endian;
   
-  protected final int typeId;
+    protected final int typeId;
 
-  protected final String name;
+    protected final String name;
   
-  protected boolean isTypedef;
+    protected boolean isTypedef;
 
-  Type (int size, ByteOrder endian, int typeId)
-  {
-    this(size, endian, typeId, "", false);
-  }
+    Type(int size, ByteOrder endian, int typeId) {
+	this(size, endian, typeId, "", false);
+    }
 
-  Type (int size, ByteOrder endian, int typeId, String name)
-  {
-    this(size, endian, typeId, name, false);
-  }
+    Type (int size, ByteOrder endian, int typeId, String name) {
+	this(size, endian, typeId, name, false);
+    }
 
-  Type (int size, ByteOrder endian, int typeId, String name, boolean typedef)
-  {
-    this.size = size;
-    this.endian = endian;
-    this.typeId = typeId;
-    this.name = name;
-    this.isTypedef = false;
-  }
+    Type (int size, ByteOrder endian, int typeId, String name,
+	  boolean typedef) {
+	this.size = size;
+	this.endian = endian;
+	this.typeId = typeId;
+	this.name = name;
+	this.isTypedef = false;
+    }
 
-  public int getSize ()
-  {
-    return size;
-  }
+    public int getSize() {
+	return size;
+    }
 
-  public ByteOrder getEndian ()
-  {
-    return endian;
-  }
+    public ByteOrder getEndian() {
+	return endian;
+    }
 
-  public int getTypeId ()
-  {
-    return typeId;
-  }
+    public int getTypeId() {
+	return typeId;
+    }
 
-  public String getName ()
-  {
-    return name;
-  }
+    public String getName() {
+	return name;
+    }
 
-  public String toString ()
-  {
-    return name;
-  }
+    /**
+     * Dump the type to the string.
+     */
+    public String toString() {
+	return name;
+    }
 
-  public abstract String toString (Value v, ByteBuffer b);
+    /**
+     * FIXME: Do not use.  This is going away.
+     */
+    public String toString (Value value, ByteBuffer memory) {
+	StringWriter stringWriter = new StringWriter();
+	PrintWriter writer = new PrintWriter(stringWriter);
+	toPrint(writer, value.getLocation(), memory, Format.NATURAL);
+	return stringWriter.toString();
+    }
 
+    /**
+     * FIXME: Do not use.  This is going away.
+     */
     public void toPrint(PrintWriter writer, Value value, ByteBuffer memory,
 			Format format) {
 	// XXX: Override this!
 	writer.print(toString(value, memory));
     }
+
     /**
-     * Interpret Location as a bunch of bytes of type Type; print it
-     * as a string using Format.
+     * Print Location as Type in user-readable form; use Format to
+     * print basic types.  If needed, and when memory is non-NULL, it
+     * can be used for dereferencing pointers.
+     *
+     * XXX: Will be made abstract once all sub-classes have
+     * implemented this.
      */
     public void toPrint(PrintWriter writer, Location location,
 			ByteBuffer memory, Format format) {
-	// Override this!
-	writer.print("<<unimplemented type printer>>");
+	throw new RuntimeException("unimplemented");
     }
     /**
-     * Print this type.
+     * Print this Type.
+     *
+     * XXX: Will be made abstract once all sub-classes have
+     * implemented this.
      */
     public void toPrint(PrintWriter writer) {
-	// Override this!
+	throw new RuntimeException("unimplemented");
     }
 
-  public abstract Value add (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value add (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value subtract (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value subtract (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value multiply (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value multiply (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value divide (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value divide (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value mod (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value mod (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value shiftLeft (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value shiftLeft (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value shiftRight (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value shiftRight (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value lessThan (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value lessThan (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value greaterThan (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value greaterThan (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value lessThanOrEqualTo (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value lessThanOrEqualTo (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value greaterThanOrEqualTo (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value greaterThanOrEqualTo (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value equal (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value equal (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value notEqual (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value notEqual (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value bitWiseAnd (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value bitWiseAnd (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value bitWiseXor (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value bitWiseXor (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value bitWiseOr (Value var1, Value var2)
-  throws InvalidOperatorException;
+    public abstract Value bitWiseOr (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value bitWiseComplement (Value var1)
-  throws InvalidOperatorException;
+    public abstract Value bitWiseComplement (Value var1)
+	throws InvalidOperatorException;
 
-  public abstract Value logicalAnd (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value logicalAnd (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value logicalOr (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value logicalOr (Value var1, Value var2)
+	throws InvalidOperatorException;
   
-  public abstract Value logicalNegation(Value var1) 
-      throws InvalidOperatorException;
+    public abstract Value logicalNegation(Value var1) 
+	throws InvalidOperatorException;
 
-  public abstract Value assign (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value assign (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value timesEqual (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value timesEqual (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value divideEqual (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value divideEqual (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value modEqual (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value modEqual (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value plusEqual (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value plusEqual (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value minusEqual (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value minusEqual (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value shiftLeftEqual (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value shiftLeftEqual (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value shiftRightEqual (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value shiftRightEqual (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value bitWiseOrEqual (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value bitWiseOrEqual (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value bitWiseXorEqual (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value bitWiseXorEqual (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract Value bitWiseAndEqual (Value var1, Value var2)
-      throws InvalidOperatorException;
+    public abstract Value bitWiseAndEqual (Value var1, Value var2)
+	throws InvalidOperatorException;
 
-  public abstract boolean getLogicalValue (Value var) throws InvalidOperatorException;
+    public abstract boolean getLogicalValue (Value var) throws InvalidOperatorException;
 
-  public boolean isTypedef ()
-  {
-    return isTypedef;
-  }
+    public boolean isTypedef()
+    {
+	return isTypedef;
+    }
 
-  public void setTypedef (boolean isTypedef)
-  {
-    this.isTypedef = isTypedef;
-  }
+    public void setTypedef(boolean isTypedef)
+    {
+	this.isTypedef = isTypedef;
+    }
   
 }
