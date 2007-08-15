@@ -376,17 +376,40 @@ variable! throws TabException
 
             : LPAREN (expr2:expressionList)? RPAREN
                 { astPostExpr = #([FUNC_CALL, "FuncCall"], #astPostExpr, #expr2); }
-	        | LSQUARE expr1:expression RSQUARE
-                // a[b][c] => (Array Reference a (Subscript b) (Subscript c))
+	        | LSQUARE arrExpr1:expression (COLON arrExpr2:expression)? RSQUARE
+                // a[b][c] => (Array Reference a (Subscript b-lbound)
+                //            (Subscript b-hbound) (Subscript c-lbound)...)
                 {AST sub = null;
 		 		 if (astPostExpr.getFirstChild() != null) {
-		      	    #sub = #(#[SUBSCRIPT,"Subscript"], #expr1);
+		      	    #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
                     astPostExpr.addChild(#sub);
-		    	 }
+                    // arr[n] is treated as arr[n:n]
+                    if (#arrExpr2 != null)
+		      	       #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr2);
+                    else
+                       #sub =  #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
+                    astPostExpr.addChild(#sub);
+                    }
                  else {
-		      	    #sub = #(#[SUBSCRIPT,"Subscript"], #expr1);
+		      	    #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
                     #astPostExpr = #(#[REFERENCE,"Array Reference"], #astPostExpr, #sub);
+                    if (#arrExpr2 != null)
+		      	       #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr2);
+                    else
+                       #sub =  #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
+                    astPostExpr.addChild(#sub);
                  }
+                }
+
+	        | AT at_expr:expression
+                // a@N => (Array Reference a (Subscript N) (Subscript N))
+                {AST sub = null;
+		      	 #sub = #(#[SUBSCRIPT,"Subscript"], #[DECIMALINT,"0"]);
+                 #astPostExpr = #(#[REFERENCE,"Array Reference"], #astPostExpr, #sub);
+                 // allow for 0 origin lower bound
+                 #at_expr.setText(new String(Integer.toString(Integer.parseInt(#at_expr.getText()) - 1)));
+		      	 #sub = #(#[SUBSCRIPT,"Subscript"], #at_expr);
+                 astPostExpr.addChild(#sub);
                 }
 
             |   DOT!

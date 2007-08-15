@@ -155,6 +155,16 @@ public class ArrayType
       return null;
     }
     
+    private Value buildArraySlice(Value v, int count, int offset)
+    {
+	ArrayList dims = new ArrayList();
+	dims.add(new Integer(count));
+	ArrayType arrayType = new ArrayType(this.getType(), count * type.size, dims);
+	ByteBuffer abb = v.getLocation().getByteBuffer().slice(offset * type.size, count * type.size);
+	abb.order(type.getEndian());
+	return new Value(arrayType, v.getTextFIXME(), abb);
+    }
+    
     public ArrayIterator iterator (Value v)
     {
 	return new ArrayIterator(v);
@@ -182,19 +192,23 @@ public class ArrayType
       subscript_loop:
       while (componentsIdx < components.size())
 	{
-	  String component = (String)components.get(componentsIdx);
+	  int lbound = Integer.parseInt((String)components.get(componentsIdx));
+	  int hbound = Integer.parseInt((String)components.get(componentsIdx+1));
+
 	  d -= 1;
 	  if (d < 0)
 	    break subscript_loop;
 	  try
 	  {
-	    offset += stride[d] * (Integer.parseInt(component));
+	    offset += stride[d] * lbound;
 	  }
 	  catch (NumberFormatException e) 
 	  {
 	    break subscript_loop;
 	  }
-	  componentsIdx += 1;
+	  if (lbound != hbound)
+	      return buildArraySlice(v, hbound - lbound, offset);
+	  componentsIdx += 2;
 	}
       v = getValue (v, offset);
       if (v.getType() instanceof ClassType)
