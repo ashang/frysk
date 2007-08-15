@@ -78,6 +78,11 @@ public class DebugInfoFrame extends FrameDecorator{
         if (bias != null) {
 
   	DwarfDie[] scopes = bias.die.getScopes(getAdjustedAddress());
+  	
+  	if(scopes.length == 0){
+  	    return null;
+  	}
+  	
   	scopes = scopes[0].getScopesDie();
   	
   	for (int i = 0; i < scopes.length; i++) {

@@ -1,3 +1,8 @@
+2007-08-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DebugInfoFrame.java (getSubprogram): Added check for size of scopes
+	array.
+
 2007-08-14  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestLocationExpression.java: Tests added for new operations.
