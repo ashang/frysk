@@ -36,7 +36,7 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-     
+
 package frysk.hpd;
 
 import java.text.ParseException;
@@ -45,53 +45,55 @@ import java.util.Iterator;
 import frysk.proc.Task;
 
 import frysk.debuginfo.DebugInfoFrame;
-  
-class WhereCommand
-    extends CLIHandler
-{
-    WhereCommand (CLI cli)
-    {
-	super (cli, "where", "Display the current execution location and call stack",
-		"where [ {num-levels | -all} ] [-args]", "The where command displays the current execution location(s) and the\n" +
-"call stack(s) - or sequence of procedure calls - which led to that\n" +
-"point.");
+
+class WhereCommand extends CLIHandler {
+
+    private static final String full = "The where command displays the current "
+	    + "execution location(s) and the\n"
+	    + "call stack(s) - or sequence of procedure calls - which led to "
+	    + "that\n" + "point.";
+
+    WhereCommand(CLI cli) {
+	super(cli, "where",
+		"Display the current execution location and call stack",
+		"where [ {num-levels | -all} ] [-args]", full);
     }
 
     public void handle(Command cmd) throws ParseException {
-        PTSet ptset = cli.getCommandPTSet(cmd);
+	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
-        }
-      
+	}
+
 	int level = 0;
 
 	if (params.size() != 0)
-	    level = Integer.parseInt((String)params.get(0));
-        Iterator taskIter = ptset.getTasks();
-        while (taskIter.hasNext()) {
-            Task task = (Task)taskIter.next();
-            DebugInfoFrame tmpFrame = null; 
-            int l = cli.getTaskStackLevel(task);
-            int stopLevel;
-      
-            if (level > 0)
-                stopLevel = l + level;
-            else
-                stopLevel = 0;
-      
-            tmpFrame = cli.getTaskFrame(task);
-            while (tmpFrame != null) {
-                cli.outWriter.print("#" + l + " ");
-                tmpFrame.toPrint(cli.outWriter,false);
-                cli.outWriter.println();
-                tmpFrame = tmpFrame.getOuterDebugInfoFrame();
-                l += 1;
-                if (l == stopLevel)
-                    break;
-            }
-        }
+	    level = Integer.parseInt((String) params.get(0));
+	Iterator taskIter = ptset.getTasks();
+	while (taskIter.hasNext()) {
+	    Task task = (Task) taskIter.next();
+	    DebugInfoFrame tmpFrame = null;
+	    int l = cli.getTaskStackLevel(task);
+	    int stopLevel;
+
+	    if (level > 0)
+		stopLevel = l + level;
+	    else
+		stopLevel = 0;
+
+	    tmpFrame = cli.getTaskFrame(task);
+	    while (tmpFrame != null) {
+		cli.outWriter.print("#" + l + " ");
+		tmpFrame.toPrint(cli.outWriter, false);
+		cli.outWriter.println();
+		tmpFrame = tmpFrame.getOuterDebugInfoFrame();
+		l += 1;
+		if (l == stopLevel)
+		    break;
+	    }
+	}
 
     }
 }

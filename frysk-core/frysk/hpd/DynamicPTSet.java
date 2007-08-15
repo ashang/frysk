@@ -42,74 +42,65 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-class DynamicPTSet implements PTSet
-{
-	ParseTreeNode[] set;
-	AllPTSet pool;
+class DynamicPTSet implements PTSet {
+    ParseTreeNode[] set;
 
-	public DynamicPTSet(AllPTSet ptpool, ParseTreeNode[] set)
-	{
-		this.set = set;
-		pool = ptpool;
+    AllPTSet pool;
+
+    public DynamicPTSet(AllPTSet ptpool, ParseTreeNode[] set) {
+	this.set = set;
+	pool = ptpool;
+    }
+
+    // not efficient, but okay for now
+    public Iterator getProcData() {
+	ProcTasks[] proctasks = pool.getSubset(set);
+	LinkedList result = new LinkedList();
+
+	for (int i = 0; i < proctasks.length; i++)
+	    result.add(proctasks[i].getProcData().getProc());
+
+	return result.iterator();
+    }
+
+    public boolean containsTask(int procid, int taskid) {
+	boolean result = false;
+
+	ProcTasks[] proctasks = pool.getSubset(set);
+	for (int i = 0; i < proctasks.length; i++) {
+	    if (proctasks[i].getProcData().getID() == procid
+		    && proctasks[i].containsTask(taskid)) {
+		result = true;
+		break;
+	    }
 	}
 
-	//not efficient, but okay for now
-	public Iterator getProcData()
-	{
-		ProcTasks[] proctasks = pool.getSubset(set);
-		LinkedList result = new LinkedList();
+	return result;
+    }
 
-		for (int i = 0; i < proctasks.length; i++)
-			result.add(proctasks[i].getProcData().getProc());
+    // not efficient, but okay for now
+    public Iterator getTasks() {
+	ProcTasks[] proctasks = pool.getSubset(set);
+	ArrayList temp = new ArrayList();
+	LinkedList result = new LinkedList();
 
-		return result.iterator();
+	for (int i = 0; i < proctasks.length; i++) {
+	    temp = proctasks[i].getTaskData();
+	    for (int j = 0; j < temp.size(); j++)
+		result.add(((TaskData) temp.get(i)).getTask());
 	}
 
-	public boolean containsTask(int procid, int taskid)
-	{
-		boolean result = false;
+	return result.iterator();
+    }
 
-		ProcTasks[] proctasks = pool.getSubset(set);
-		for (int i = 0; i < proctasks.length; i++)
-		{
-			if (proctasks[i].getProcData().getID() == procid &&
-				proctasks[i].containsTask(taskid))
-			{
-				result = true;
-				break;
-			}
-		}
+    public Iterator getTaskData() {
+	ProcTasks[] proctasks = pool.getSubset(set);
+	LinkedList result = new LinkedList();
 
-		return result;
+	for (int i = 0; i < proctasks.length; i++) {
+	    result.addAll(proctasks[i].getTaskData());
 	}
 
-	//not efficient, but okay for now
-	public Iterator getTasks()
-	{
-		ProcTasks[] proctasks = pool.getSubset(set);
-		ArrayList temp = new ArrayList();
-		LinkedList result = new LinkedList();
-
-		for (int i = 0; i < proctasks.length; i++)
-		{
-			temp = proctasks[i].getTaskData();
-			for (int j = 0; j < temp.size(); j++)
-				result.add( ((TaskData)temp.get(i)).getTask() );
-		}
-
-		return result.iterator();
-	}
-
-	public Iterator getTaskData()
-	{
-		ProcTasks[] proctasks = pool.getSubset(set);
-		LinkedList result = new LinkedList();
-
-		for (int i = 0; i < proctasks.length; i++)
-		{
-			result.addAll(proctasks[i].getTaskData());
-		}
-
-		return result.iterator();
-	}
+	return result.iterator();
+    }
 }

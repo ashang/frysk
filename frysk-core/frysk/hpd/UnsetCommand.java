@@ -42,43 +42,46 @@ package frysk.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-class UnsetCommand
-    extends CLIHandler
-{
+class UnsetCommand extends CLIHandler {
+    private static final String full = "The unset command reverses the effects "
+	    + "of any previous set operations,\n"
+	    + "restoring the debugger state variable(s) to their default "
+	    + "settings.\n"
+	    + "When the argument -all is specified, the command affects all "
+	    + "debugger\n"
+	    + "state variables, restoring them to the original settings that "
+	    + "were in\n"
+	    + "effect when the debugging session began.  When just a single "
+	    + "argument is\n" + "included, only that variable is affected. ";
+
     private final DbgVariables dbgvars;
-    UnsetCommand(CLI cli, DbgVariables dbgvars)
-    {
+
+    UnsetCommand(CLI cli, DbgVariables dbgvars) {
 	super(cli, "unset", "Revert variable value to default.",
-		"unset { debugger-var | -all }", "The unset command reverses the effects of any previous set operations,\n" +
-"restoring the debugger state variable(s) to their default settings.\n" +
-"When the argument -all is specified, the command affects all debugger\n" +
-"state variables, restoring them to the original settings that were in\n" +
-"effect when the debugging session began.  When just a single argument is\n" +
-"included, only that variable is affected. ");
+		"unset { debugger-var | -all }", full);
 	this.dbgvars = dbgvars;
     }
-    public void handle(Command cmd) throws ParseException
-    {
+
+    public void handle(Command cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
-        }
+	}
 	String temp;
 	if (params.size() == 1) {
-	    temp = (String)params.get(0);
+	    temp = (String) params.get(0);
 	    if (temp.equals("-all"))
 		dbgvars.unsetAll();
 	    else {
 		if (dbgvars.variableIsValid(temp))
 		    dbgvars.unsetVariable(temp);
 		else
-		    cli.addMessage(new Message("\"" + (String)params.get(0)
-					       + "\" is not a valid debugger variable",
-					       Message.TYPE_ERROR));
+		    cli.addMessage(new Message("\"" + (String) params.get(0)
+			    + "\" is not a valid debugger variable",
+			    Message.TYPE_ERROR));
 	    }
-	}
-	else {
+	} else {
 	    cli.printUsage(cmd);
 	}
     }

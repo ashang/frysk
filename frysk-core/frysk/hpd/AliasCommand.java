@@ -42,20 +42,22 @@ package frysk.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-class AliasCommand
-    extends CLIHandler
-{
-    AliasCommand(CLI cli)
-    {
-	super (cli, "alias", "Create or view user-defined commands", 
-		"alias command-name command body\nalias [command-name]", 
-		"The alias command associates a user-defined name with a list of one or\n" +
-		"more debugger commands. After definition, the user-defined command can\n" +
-		"be used in the same way as a debugger-defined command, including as part\n" +
-		"of the definition of new user-defined commands. ");
+class AliasCommand extends CLIHandler {
+
+    private static final String full = "The alias command associates a "
+	    + "user-defined name with a list of one or\n"
+	    + "more debugger commands. After definition, the user-defined "
+	    + "command can\n"
+	    + "be used in the same way as a debugger-defined command, "
+	    + "including as part\n"
+	    + "of the definition of new user-defined commands. ";
+
+    AliasCommand(CLI cli) {
+	super(cli, "alias", "Create or view user-defined commands",
+		"alias command-name command body\nalias [command-name]", full);
     }
-    public void handle(Command cmd) throws ParseException
-    {
+
+    public void handle(Command cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
@@ -63,23 +65,20 @@ class AliasCommand
 	}
 	if (params.size() <= 2) {
 	    if (params.size() == 2) {
-		cli.aliases.put((String)params.get(0), (String)params.get(1));
-	    }
-	    else if (params.size() == 1) {
-		String temp = (String)params.get(0);
+		cli.aliases.put((String) params.get(0), (String) params.get(1));
+	    } else if (params.size() == 1) {
+		String temp = (String) params.get(0);
 		if (cli.aliases.containsKey(temp)) {
-		    cli.addMessage(temp + " = " + (String)(cli.aliases).get(temp),
-				   Message.TYPE_NORMAL);
-		}
-		else
-		    cli.addMessage("Alias \"" + temp + "\" not defined.", 
-				   Message.TYPE_ERROR);
-	    }
-	    else {
+		    cli.addMessage(temp + " = "
+			    + (String) (cli.aliases).get(temp),
+			    Message.TYPE_NORMAL);
+		} else
+		    cli.addMessage("Alias \"" + temp + "\" not defined.",
+			    Message.TYPE_ERROR);
+	    } else {
 		cli.addMessage(cli.aliases.toString(), Message.TYPE_NORMAL);
 	    }
-	}
-	else {
+	} else {
 	    cli.printUsage(cmd);
 	}
     }

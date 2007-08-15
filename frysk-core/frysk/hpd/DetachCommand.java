@@ -46,45 +46,48 @@ import java.util.Iterator;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 
-class DetachCommand
-    extends CLIHandler {
-    
+class DetachCommand extends CLIHandler {
+
+    private static final String full = "The detach command detaches the debugger "
+	    + "from all processes in the\n"
+	    + "affected set. This serves to undo the effects of attaching the "
+	    + "debugger\n"
+	    + "to a running process; that is, the debugger releases all "
+	    + "control over\n"
+	    + "the process, eliminates all debugger state information related "
+	    + "to it,\n"
+	    + "and allows it to continue execution in the normal run-time\n"
+	    + "environment. ";
+
     DetachCommand(CLI cli) {
-	super(cli, "detach", "Detach from a running process.",
-		"detach", "The detach command detaches the debugger from all processes in the\n" +
-"affected set. This serves to undo the effects of attaching the debugger\n" +
-"to a running process; that is, the debugger releases all control over\n" +
-"the process, eliminates all debugger state information related to it,\n" +
-"and allows it to continue execution in the normal run-time\n" +
-"environment. ");
+	super(cli, "detach", "Detach from a running process.", "detach", full);
     }
-    
-    public void handle (Command cmd)
-	throws ParseException {
-        PTSet ptset = cli.getCommandPTSet(cmd);
+
+    public void handle(Command cmd) throws ParseException {
+	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
 	}
-        HashSet procSet = new HashSet();
-        Iterator taskIter = ptset.getTasks();
-        while (taskIter.hasNext()) {
-            procSet.add(((Task)taskIter.next()).getProc());
-        }
-        Iterator procIter = procSet.iterator();
-        while (procIter.hasNext()) {
-            Proc proc = (Proc)procIter.next();
-            boolean startedByRun;
-            synchronized (cli) {
-                startedByRun = cli.runningProcs.contains(proc);
-            }
-            if (startedByRun)
-                continue;
-            // Delete all breakpoints.
-            if (cli.steppingObserver != null)
-                cli.getSteppingEngine().removeObserver(cli.steppingObserver,
-                                                       proc, true);
-        }
+	HashSet procSet = new HashSet();
+	Iterator taskIter = ptset.getTasks();
+	while (taskIter.hasNext()) {
+	    procSet.add(((Task) taskIter.next()).getProc());
+	}
+	Iterator procIter = procSet.iterator();
+	while (procIter.hasNext()) {
+	    Proc proc = (Proc) procIter.next();
+	    boolean startedByRun;
+	    synchronized (cli) {
+		startedByRun = cli.runningProcs.contains(proc);
+	    }
+	    if (startedByRun)
+		continue;
+	    // Delete all breakpoints.
+	    if (cli.steppingObserver != null)
+		cli.getSteppingEngine().removeObserver(cli.steppingObserver,
+			proc, true);
+	}
     }
 }

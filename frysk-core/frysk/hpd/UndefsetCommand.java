@@ -42,42 +42,40 @@ package frysk.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-class UndefsetCommand
-   extends CLIHandler
-{
-    UndefsetCommand(CLI cli)
-    {
-	super (cli, "undefset", "Undefine a previously defined process/thread set.",
-		"undefset {set-name | -all}", "The undefset command reverses the action of defset, so that the set is\n" +
-"deleted. This command is applicable only to user-defined sets.");
+class UndefsetCommand extends CLIHandler {
+    private static final String full = "The undefset command reverses the "
+	    + "action of defset, so that the set is\n"
+	    + "deleted. This command is applicable only to user-defined sets.";
+
+    UndefsetCommand(CLI cli) {
+	super(cli, "undefset",
+		"Undefine a previously defined process/thread set.",
+		"undefset {set-name | -all}", full);
     }
-    public void handle(Command cmd) throws ParseException
-    {
+
+    public void handle(Command cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
-        }
-	if (params.size() == 1)	{
-	    String setname = (String)params.get(0);
+	}
+	if (params.size() == 1) {
+	    String setname = (String) params.get(0);
 
 	    if (cli.builtinPTSets.containsKey(setname)) {
 		cli.addMessage(new Message("The set \"" + setname
-					   + "\" cannot be undefined.",
-					   Message.TYPE_ERROR));
-	    }
-	    else if (cli.namedPTSets.containsKey(setname)) {
+			+ "\" cannot be undefined.", Message.TYPE_ERROR));
+	    } else if (cli.namedPTSets.containsKey(setname)) {
 		cli.namedPTSets.remove(setname);
-		cli.addMessage("Set \"" + setname + "\" successfuly undefined.",
-			       Message.TYPE_VERBOSE);
-	    }
-	    else {
+		cli.addMessage(
+			"Set \"" + setname + "\" successfuly undefined.",
+			Message.TYPE_VERBOSE);
+	    } else {
 		cli.addMessage("Set \"" + setname
-			       + "\" does not exist, no action taken.",
-			       Message.TYPE_NORMAL);
+			+ "\" does not exist, no action taken.",
+			Message.TYPE_NORMAL);
 	    }
-	}
-	else {
+	} else {
 	    cli.printUsage(cmd);
 	}
     }

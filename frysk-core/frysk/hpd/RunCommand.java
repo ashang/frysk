@@ -54,29 +54,18 @@ import java.util.HashSet;
 import java.util.Observable;
 import java.util.Observer;
 
-class RunCommand
-    extends CLIHandler
-    implements TaskObserver.Attached, Observer
-{
+class RunCommand extends CLIHandler implements TaskObserver.Attached, Observer {
     private static final String descr = "run program and immediately attach";
-    private HashSet launchedTasks = new HashSet();
-  
-    private RunCommand(String name, CLI cli)
-    {
-	super(name, cli, new CommandHelp(name, descr,
-					 "run executable arguments*",
-					 descr));
-    }
 
-    RunCommand(CLI cli)
-    {
-	this("run", cli);
+    private HashSet launchedTasks = new HashSet();
+
+    RunCommand(CLI cli) {
+	super(cli, "run", descr, "run executable arguments*", descr);
     }
 
     // Observer for Stepping engine; called when attach is finished.
-    public void update(Observable observable, Object arg)
-    {
-      TaskStepEngine tse = (TaskStepEngine) arg;
+    public void update(Observable observable, Object arg) {
+	TaskStepEngine tse = (TaskStepEngine) arg;
 	Task task = tse.getTask();
 	boolean removeObserver = false;
 
@@ -88,15 +77,15 @@ class RunCommand
 	}
 	if (removeObserver) {
 	    cli.getSteppingEngine().removeObserver(this, task.getProc(), false);
-	    cli.getSteppingEngine().getBreakpointManager().manageProcess(task.getProc());
-            cli.idManager.manageProc(task.getProc(),
-                                     cli.idManager.reserveProcID());
+	    cli.getSteppingEngine().getBreakpointManager().manageProcess(
+		    task.getProc());
+	    cli.idManager.manageProc(task.getProc(), cli.idManager
+		    .reserveProcID());
 	    task.requestUnblock(this);
 	}
     }
 
-    public Action updateAttached(final Task task)
-    {
+    public Action updateAttached(final Task task) {
 	final Proc proc = task.getProc();
 	synchronized (this) {
 	    launchedTasks.add(task);
@@ -104,33 +93,31 @@ class RunCommand
 	synchronized (cli) {
 	    cli.getRunningProcs().add(proc);
 	}
-	new ProcTasksObserver(proc, new ProcTasks()
-	    {
-		public void existingTask(Task task)
-		{
-		}
-		public void addedTo(Object observable)
-		{
-		}
-		public void addFailed(Object observable, Throwable w)
-		{
-		}
-		public void deletedFrom(Object observable)
-		{
-		}
-		public void taskAdded(Task task)
-		{
-		}
-		public void taskRemoved(Task task)
-		{
-		    if (proc.getChildren().size() == 0) {
-			synchronized (cli) {
-			    HashSet procs = cli.getRunningProcs();
-			    procs.remove(proc);
-			}
+	new ProcTasksObserver(proc, new ProcTasks() {
+	    public void existingTask(Task task) {
+	    }
+
+	    public void addedTo(Object observable) {
+	    }
+
+	    public void addFailed(Object observable, Throwable w) {
+	    }
+
+	    public void deletedFrom(Object observable) {
+	    }
+
+	    public void taskAdded(Task task) {
+	    }
+
+	    public void taskRemoved(Task task) {
+		if (proc.getChildren().size() == 0) {
+		    synchronized (cli) {
+			HashSet procs = cli.getRunningProcs();
+			procs.remove(proc);
 		    }
 		}
-	    });
+	    }
+	});
 	cli.startAttach(task);
 	cli.getSteppingEngine().addObserver(this);
 	// Keep task blocked until the SteppingEngine notifies us that its
@@ -138,29 +125,24 @@ class RunCommand
 	return Action.BLOCK;
     }
 
-    public void addedTo(Object observable)
-    {
+    public void addedTo(Object observable) {
     }
 
-    public void addFailed(Object observable, Throwable w)
-    {
+    public void addFailed(Object observable, Throwable w) {
 	System.out.println("couldn't get it done:" + w);
     }
 
-    public void deletedFrom(Object observable)
-    {
+    public void deletedFrom(Object observable) {
     }
 
-    private static String[] toStringArray(Object[] oa)
-    {
+    private static String[] toStringArray(Object[] oa) {
 	String[] sa = new String[oa.length];
 	for (int i = 0; i < oa.length; i++)
-	    sa[i] = (String)oa[i];
+	    sa[i] = (String) oa[i];
 	return sa;
     }
 
-    public void handle(Command cmd) throws ParseException
-    {
+    public void handle(Command cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 
 	if (params.size() < 1) {
@@ -168,7 +150,7 @@ class RunCommand
 	    return;
 	}
 	Manager.host.requestCreateAttachedProc(toStringArray(params.toArray()),
-					       this);
+		this);
 	cli.finishAttach();
     }
 

@@ -54,20 +54,15 @@ import java.util.Iterator;
 class DeleteCommand extends CLIHandler {
     private static final String descr = "delete a source breakpoint";
 
-    private DeleteCommand(String name, CLI cli) {
-	super(name, cli, new CommandHelp(name, descr, "delete actionpointID",
-		descr));
-    }
-
     DeleteCommand(CLI cli) {
-	this("delete", cli);
+	super(cli, "delete", descr, "delete actionpointID", descr);
     }
 
     public void handle(Command cmd) throws ParseException {
-        PTSet ptset = cli.getCommandPTSet(cmd);
+	PTSet ptset = cli.getCommandPTSet(cmd);
 	String actionpoints = "";
-	boolean delEnabled = false, delDisabled = false, delBreak = false,
-		delDisplay = false, delWatch = false, delBarrier = false;
+	boolean delEnabled = false, delDisabled = false, delBreak = false;
+	boolean delDisplay = false, delWatch = false, delBarrier = false;
 	ArrayList args = cmd.getParameters();
 	int[] ids = null;
 
@@ -129,10 +124,11 @@ class DeleteCommand extends CLIHandler {
 			.getBreakpointManager();
 		SourceBreakpoint bpt = bpManager.getBreakpoint(ids[i]);
 		if (bpt != null) {
-                    Iterator taskIter = ptset.getTasks();
-                    while (taskIter.hasNext()) {
-                        bpManager.disableBreakpoint(bpt, (Task)taskIter.next());
-                    }
+		    Iterator taskIter = ptset.getTasks();
+		    while (taskIter.hasNext()) {
+			bpManager
+				.disableBreakpoint(bpt, (Task) taskIter.next());
+		    }
 		    outWriter.println("breakpoint " + bpt.getId() + " deleted");
 		}
 		// Failed to get a breakpoint, try to get a display instead
@@ -147,59 +143,56 @@ class DeleteCommand extends CLIHandler {
 	}
 
 	/*
-         * Delete breakpoints.
-         * We need to consider all of -break, -enabled, and -disabled and
-         * delete breakpoints accordingly
+         * Delete breakpoints. We need to consider all of -break, -enabled, and
+         * -disabled and delete breakpoints accordingly
          */
 	if (delBreak || delEnabled || delDisabled) {
 	    BreakpointManager bpManager = cli.getSteppingEngine()
-	    		.getBreakpointManager();
+		    .getBreakpointManager();
 	    Iterator iter = bpManager.getBreakpointTableIterator();
 	    while (iter.hasNext()) {
 		SourceBreakpoint bpt = (SourceBreakpoint) iter.next();
-		if (delBreak 
+		if (delBreak
 			|| (bpt.getUserState() == SourceBreakpoint.ENABLED && delEnabled)
 			|| (bpt.getUserState() == SourceBreakpoint.DISABLED && delDisabled)) {
-                    Iterator taskIter = ptset.getTasks();
-                    while (taskIter.hasNext()) {
-                        bpManager.disableBreakpoint(bpt, (Task)taskIter.next());
-                    }
-		    outWriter.println("breakpoint " +
-			    bpt.getId() + " deleted");
+		    Iterator taskIter = ptset.getTasks();
+		    while (taskIter.hasNext()) {
+			bpManager
+				.disableBreakpoint(bpt, (Task) taskIter.next());
+		    }
+		    outWriter.println("breakpoint " + bpt.getId() + " deleted");
 		}
 	    }
 	}
-	
+
 	/*
-	 * Delete Displays.
-	 * Again, we need to pay attention to whether -enabled and -disabled
-	 * are set
-	 */
+         * Delete Displays. Again, we need to pay attention to whether -enabled
+         * and -disabled are set
+         */
 	if (delDisplay || delEnabled || delDisabled) {
 	    Iterator iter = DisplayManager.getDisplayIterator();
 	    while (iter.hasNext()) {
 		UpdatingDisplayValue disp = (UpdatingDisplayValue) iter.next();
-		if (delDisplay
-			|| (disp.isEnabled() && delEnabled)
+		if (delDisplay || (disp.isEnabled() && delEnabled)
 			|| (!disp.isEnabled() && delDisabled)) {
 		    DisplayManager.deleteDisplay(disp);
 		    outWriter.println("display " + disp.getId() + " deleted");
 		}
 	    }
 	}
-	
+
 	/*
-	 * Delete Barriers
-	 */
+         * Delete Barriers
+         */
 	if (delBarrier || delEnabled || delDisabled) {
-	    
+
 	}
-	
+
 	/*
-	 * Delete Watches
-	 */
+         * Delete Watches
+         */
 	if (delWatch || delEnabled || delDisabled) {
-	    
+
 	}
 
     }

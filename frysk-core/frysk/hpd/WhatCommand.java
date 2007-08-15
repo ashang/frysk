@@ -36,7 +36,7 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-     
+
 package frysk.hpd;
 
 import java.text.ParseException;
@@ -45,42 +45,42 @@ import java.util.Iterator;
 import javax.naming.NameNotFoundException;
 import frysk.proc.Task;
 
-class WhatCommand
-    extends CLIHandler
-{
-    WhatCommand(CLI cli)
-    {
+class WhatCommand extends CLIHandler {
+    private static final String full = "The what command queries the debugger "
+	    + "about its current interpretation\n"
+	    + "of a symbol name from the target program. Intuitively, the "
+	    + "command shows\n"
+	    + "what program symbol(s) would be displayed (modified) if the "
+	    + "symbol name\n" + "were used as the argument of a print command.";
+
+    WhatCommand(CLI cli) {
 	super(cli, "what", "Determine what a target program name refers to",
-		"what symbol-name [-all]", "The what command queries the debugger about its current interpretation\n" +
-		"of a symbol name from the target program. Intuitively, the command shows\n" +
-		"what program symbol(s) would be displayed (modified) if the symbol name\n" +
-		"were used as the argument of a print command.");
+		"what symbol-name [-all]", full);
     }
+
     public void handle(Command cmd) throws ParseException {
-        PTSet ptset = cli.getCommandPTSet(cmd);
+	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
-        }
-        if (params.size() == 0
-            || (((String)params.get(0)).equals("-help")))        {
-            cli.printUsage(cmd);
-            return;
-        }
-        String sInput = ((String)params.get(0));
-        Iterator taskIter = ptset.getTasks();
-        while (taskIter.hasNext()) {
-            Task task = (Task)taskIter.next();
+	}
+	if (params.size() == 0 || (((String) params.get(0)).equals("-help"))) {
+	    cli.printUsage(cmd);
+	    return;
+	}
+	String sInput = ((String) params.get(0));
+	Iterator taskIter = ptset.getTasks();
+	while (taskIter.hasNext()) {
+	    Task task = (Task) taskIter.next();
 
-            try {
-                cli.outWriter.println(cli.getTaskDebugInfo(task)
-                                      .what(cli.getTaskFrame(task), sInput));
-            }
-            catch (NameNotFoundException nnfe) {
-                cli.addMessage(nnfe.getMessage(), Message.TYPE_ERROR);
-            }
+	    try {
+		cli.outWriter.println(cli.getTaskDebugInfo(task).what(
+			cli.getTaskFrame(task), sInput));
+	    } catch (NameNotFoundException nnfe) {
+		cli.addMessage(nnfe.getMessage(), Message.TYPE_ERROR);
+	    }
 
-        }
+	}
     }
 }

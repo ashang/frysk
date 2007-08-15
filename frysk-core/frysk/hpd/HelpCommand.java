@@ -43,31 +43,28 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.text.ParseException;
 
-class HelpCommand
-    extends CLIHandler
-{
-    HelpCommand(CLI cli)
-    {
-	super (cli, "help", "Display this help message.", "help [command]", "Display help (possibly for a command.)");
+class HelpCommand extends CLIHandler {
+    HelpCommand(CLI cli) {
+	super(cli, "help", "Display this help message.", "help [command]",
+		"Display help (possibly for a command.)");
     }
-    public void handle(Command cmd)
-	throws ParseException 
-    {
+
+    public void handle(Command cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	String output = "";
 	String temp = "";
 	if (params.size() == 0) {
-	    for (Iterator iter = cli.userhelp.getCmdList().iterator();
-		 iter.hasNext();) {
-		temp = (String)iter.next();
-		output += temp + " - " + cli.userhelp.getCmdDescription(temp) + "\n";
+	    for (Iterator iter = cli.userhelp.getCmdList().iterator(); iter
+		    .hasNext();) {
+		temp = (String) iter.next();
+		output += temp + " - " + cli.userhelp.getCmdDescription(temp)
+			+ "\n";
 	    }
-	}
-	else {
-	    for (Iterator iter = cli.userhelp.getCmdList().iterator();
-		 iter.hasNext();) {
-		temp = (String)iter.next();
-		if (temp.compareTo(params.get(0)) == 0) {              
+	} else {
+	    for (Iterator iter = cli.userhelp.getCmdList().iterator(); iter
+		    .hasNext();) {
+		temp = (String) iter.next();
+		if (temp.compareTo(params.get(0)) == 0) {
 		    output += cli.userhelp.getCmdSyntax(temp) + "\n";
 		    output += cli.userhelp.getCmdFullDescr(temp);
 		}

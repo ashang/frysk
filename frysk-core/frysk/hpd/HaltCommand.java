@@ -46,36 +46,34 @@ import java.text.ParseException;
 import frysk.proc.Task;
 import frysk.stepping.SteppingEngine;
 
-class HaltCommand
-    extends CLIHandler
-{
-    HaltCommand (CLI cli)
-    {
-	super(cli, "halt", "Stop a process.",
-		"halt", "Stop a process which is already attached.  The halt command temporarily\n" +
-"suspends the execution of a collection of processes.");
+class HaltCommand extends CLIHandler {
+
+    private static String full = "Stop a process which is already attached. "
+	    + "The halt command temporarily\n"
+	    + "suspends the execution of a collection of processes.";
+
+    HaltCommand(CLI cli) {
+	super(cli, "halt", "Stop a process.", "halt", full);
     }
-    public void handle(Command cmd)
-	throws ParseException
-    {
-        PTSet ptset = cli.getCommandPTSet(cmd);
+
+    public void handle(Command cmd) throws ParseException {
+	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
-        }
+	}
 	SteppingEngine steppingEngine = cli.getSteppingEngine();
 	if (cli.steppingObserver != null) {
-            Iterator taskIter = ptset.getTasks();
-            LinkedList stopList = new LinkedList();
-            while (taskIter.hasNext()) {
-                Task task = (Task)taskIter.next();
-                if (steppingEngine.isTaskRunning(task))
-                    stopList.add(task);
-            }
-            steppingEngine.stop(null, stopList);
-        }
-	else
+	    Iterator taskIter = ptset.getTasks();
+	    LinkedList stopList = new LinkedList();
+	    while (taskIter.hasNext()) {
+		Task task = (Task) taskIter.next();
+		if (steppingEngine.isTaskRunning(task))
+		    stopList.add(task);
+	    }
+	    steppingEngine.stop(null, stopList);
+	} else
 	    cli.addMessage("Not attached to any process", Message.TYPE_ERROR);
     }
 }

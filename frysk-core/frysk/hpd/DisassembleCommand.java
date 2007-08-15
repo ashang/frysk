@@ -100,8 +100,8 @@ public class DisassembleCommand extends CLIHandler {
 	    }
 	});
     }
-    
-    private boolean parseBoolean( String argument) throws OptionException{
+
+    private boolean parseBoolean(String argument) throws OptionException {
 	if (argument.toLowerCase().equals("yes")
 		|| argument.toLowerCase().equals("y"))
 	    return true;
@@ -110,8 +110,7 @@ public class DisassembleCommand extends CLIHandler {
 	    return false;
 
 	else
-	    throw new OptionException(
-		    "argument should be one of yes or no");
+	    throw new OptionException("argument should be one of yes or no");
     }
 
     private boolean allInstructions = true;
@@ -128,76 +127,74 @@ public class DisassembleCommand extends CLIHandler {
 
     public void handle(Command cmd) throws ParseException {
 	reset();
-        PTSet ptset = cli.getCommandPTSet(cmd);
-        Iterator taskDataIter = ptset.getTaskData();
-        ArrayList params = cmd.getParameters();
+	PTSet ptset = cli.getCommandPTSet(cmd);
+	Iterator taskDataIter = ptset.getTaskData();
+	ArrayList params = cmd.getParameters();
 	parser.parse(params);
-        if (params.size() > 2)
-            throw new RuntimeException("too many arguments to disassemble");
+	if (params.size() > 2)
+	    throw new RuntimeException("too many arguments to disassemble");
 	if (parser.helpOnly)
 	    return;
 
-        while (taskDataIter.hasNext()) {
-            TaskData data = (TaskData)taskDataIter.next();
-            Task task = data.getTask();
-            
-            if (cli.getSteppingEngine().isTaskRunning(task))
-                continue;
-            DebugInfoFrame frame = cli.getTaskFrame(task);
-            long currentInstruction = frame.getAddress();
-            Symbol symbol = frame.getSymbol();
+	while (taskDataIter.hasNext()) {
+	    TaskData data = (TaskData) taskDataIter.next();
+	    Task task = data.getTask();
 
-            Disassembler disassembler = new Disassembler(task.getMemory());
-            cli.outWriter.println("[" + data.getParentID() + "." + data.getID() + "]");
-            if (params.size() == 1) {
-                try {
-                    currentInstruction
-                        = cli.parseValue(task, (String) params.get(0)).getLong();
-                    symbol = SymbolFactory.getSymbol(task, currentInstruction);
-                } catch (NameNotFoundException nnfe) {
-                    cli.addMessage(new Message(nnfe.getMessage(),
-                                               Message.TYPE_ERROR));
-                    continue;
-                }
-            } else if (params.size() == 2) {
-                long startInstruction, endInstruction;
-                try {
-                    startInstruction
-                        = cli.parseValue(task,(String) params.get(0)).getLong();
-                    endInstruction
-                        = cli.parseValue(task, (String) params.get(1)).getLong();
-                } catch (NameNotFoundException nnfe) {
-                    cli.addMessage(new Message(nnfe.getMessage(),
-                                               Message.TYPE_ERROR));
-                    continue;
-                }
-                cli.outWriter.println("Dump of assembler code from 0x"
-                                      + Long.toHexString(startInstruction) + " to 0x"
-                                      + Long.toHexString(endInstruction) + ":");
-                List instructions = disassembler
-                    .disassembleInstructionsStartEnd(startInstruction,
-                                                     endInstruction);
-                printInstructions(task,-1, instructions, true);
-                continue;
-            }
-            cli.outWriter.println("Dump of assembler code for function: "
-                                  + symbol.getName());
-            List instructions;
-            // XXX: Need a better way of handling symbol size = 0
-            long padding = 100;
-            if (symbol.getSize() == 0) {
-                instructions = disassembler
-                    .disassembleInstructionsStartEnd(symbol.getAddress(),
-                                                     (currentInstruction
-                                                      + padding));
-            } else {
-                instructions = disassembler
-                    .disassembleInstructionsStartEnd(symbol.getAddress(),
-                                                     (symbol.getAddress()
-                                                      + symbol.getSize()));
-            }
-            printInstructions(task, currentInstruction, instructions, full);
-        }
+	    if (cli.getSteppingEngine().isTaskRunning(task))
+		continue;
+	    DebugInfoFrame frame = cli.getTaskFrame(task);
+	    long currentInstruction = frame.getAddress();
+	    Symbol symbol = frame.getSymbol();
+
+	    Disassembler disassembler = new Disassembler(task.getMemory());
+	    cli.outWriter.println("[" + data.getParentID() + "." + data.getID()
+		    + "]");
+	    if (params.size() == 1) {
+		try {
+		    currentInstruction = cli.parseValue(task,
+			    (String) params.get(0)).getLong();
+		    symbol = SymbolFactory.getSymbol(task, currentInstruction);
+		} catch (NameNotFoundException nnfe) {
+		    cli.addMessage(new Message(nnfe.getMessage(),
+			    Message.TYPE_ERROR));
+		    continue;
+		}
+	    } else if (params.size() == 2) {
+		long startInstruction, endInstruction;
+		try {
+		    startInstruction = cli.parseValue(task,
+			    (String) params.get(0)).getLong();
+		    endInstruction = cli.parseValue(task,
+			    (String) params.get(1)).getLong();
+		} catch (NameNotFoundException nnfe) {
+		    cli.addMessage(new Message(nnfe.getMessage(),
+			    Message.TYPE_ERROR));
+		    continue;
+		}
+		cli.outWriter.println("Dump of assembler code from 0x"
+			+ Long.toHexString(startInstruction) + " to 0x"
+			+ Long.toHexString(endInstruction) + ":");
+		List instructions = disassembler
+			.disassembleInstructionsStartEnd(startInstruction,
+				endInstruction);
+		printInstructions(task, -1, instructions, true);
+		continue;
+	    }
+	    cli.outWriter.println("Dump of assembler code for function: "
+		    + symbol.getName());
+	    List instructions;
+	    // XXX: Need a better way of handling symbol size = 0
+	    long padding = 100;
+	    if (symbol.getSize() == 0) {
+		instructions = disassembler.disassembleInstructionsStartEnd(
+			symbol.getAddress(), (currentInstruction + padding));
+	    } else {
+		instructions = disassembler.disassembleInstructionsStartEnd(
+			symbol.getAddress(), (symbol.getAddress() + symbol
+				.getSize()));
+	    }
+	    printInstructions(task, currentInstruction, instructions, full);
+	}
     }
 
     /**
@@ -207,7 +204,7 @@ public class DisassembleCommand extends CLIHandler {
          * @param instructions
          */
     private void printInstructions(Task task, long currentAddress,
-                                   List instructions, boolean full) {
+	    List instructions, boolean full) {
 
 	InstructionPrinter printer;
 	printer = new AddressPrinter();
@@ -283,16 +280,16 @@ public class DisassembleCommand extends CLIHandler {
     class SymbolPrinter implements InstructionPrinter {
 
 	InstructionPrinter printer;
-        private Task task;
+
+	private Task task;
 
 	SymbolPrinter(Task task, InstructionPrinter decorator) {
-            this.task = task;
+	    this.task = task;
 	    this.printer = decorator;
 	}
 
 	public String toPrint(Instruction instruction) {
-	    Symbol symbol = SymbolFactory.getSymbol(task,
-		    instruction.address);
+	    Symbol symbol = SymbolFactory.getSymbol(task, instruction.address);
 	    return printer.toPrint(instruction)
 		    + "<"
 		    + symbol.getName()

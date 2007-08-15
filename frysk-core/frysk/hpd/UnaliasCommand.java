@@ -42,38 +42,34 @@ package frysk.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-class UnaliasCommand
-   extends CLIHandler
-{
-    UnaliasCommand(CLI cli)
-    {
+class UnaliasCommand extends CLIHandler {
+    private static final String full = "The unalias command removes the alias "
+	    + "that was previously established\n"
+	    + "for the specified user-defined command name. Use of the "
+	    + "argument -all\n" + "deletes all user-defined commands at once.";
+
+    UnaliasCommand(CLI cli) {
 	super(cli, "unalias", "Create or view user-define commands.",
-		"unalias { command-name | -all }", "The unalias command removes the alias that was previously established\n" +
-"for the specified user-defined command name. Use of the argument -all\n" +
-"deletes all user-defined commands at once.");
+		"unalias { command-name | -all }", full);
     }
-    public void handle(Command cmd)
-	throws ParseException
-    {
+
+    public void handle(Command cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1) {
-	    if (((String)params.get(0)).equals("-all")) {
+	    if (((String) params.get(0)).equals("-all")) {
 		cli.aliases.clear();
 		cli.addMessage("Removing all aliases.", Message.TYPE_VERBOSE);
-	    }
-	    else {
-		String temp = (String)params.get(0);
+	    } else {
+		String temp = (String) params.get(0);
 		if (cli.aliases.containsKey(temp)) {
 		    cli.aliases.remove(temp);
 		    cli.addMessage("Removed alias \"" + temp + "\"",
-				   Message.TYPE_VERBOSE);
-		}
-		else
-		    cli.addMessage("Alias \"" + temp + "\" not defined.", 
-				   Message.TYPE_ERROR);
+			    Message.TYPE_VERBOSE);
+		} else
+		    cli.addMessage("Alias \"" + temp + "\" not defined.",
+			    Message.TYPE_ERROR);
 	    }
-	}
-	else {
+	} else {
 	    cli.printUsage(cmd);
 	}
     }

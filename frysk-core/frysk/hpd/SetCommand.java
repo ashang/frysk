@@ -42,61 +42,59 @@ package frysk.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-class SetCommand
-    extends CLIHandler
-{
+class SetCommand extends CLIHandler {
+    private static final String full = "The set command supports the viewing of "
+	    + "debugger state variables and the\n"
+	    + "assignment of new values to them.  When no arguments are "
+	    + "specified, the\n"
+	    + "names and current values for all debugger state variables are\n"
+	    + "displayed. When just a single argument is included, the "
+	    + "debugger echoes\n"
+	    + "the variable name and displays its current value.  The second "
+	    + "argument\n"
+	    + "defines the value that should replace any previous value for "
+	    + "that\n"
+	    + "variable.  It must be enclosed in quotes if it contains "
+	    + "multiple\n" + "words. ";
+
     private final DbgVariables dbgvars;
-    SetCommand(CLI cli, DbgVariables dbgvars)
-    {
+
+    SetCommand(CLI cli, DbgVariables dbgvars) {
 	super(cli, "set", "Change or view a debugger variable.",
-		"set debugger-var = value\nset [debugger-var]", "The set command supports the viewing of debugger state variables and the\n" +
-"assignment of new values to them.  When no arguments are specified, the\n" +
-"names and current values for all debugger state variables are\n" +
-"displayed. When just a single argument is included, the debugger echoes\n" +
-"the variable name and displays its current value.  The second argument\n" +
-"defines the value that should replace any previous value for that\n" +
-"variable.  It must be enclosed in quotes if it contains multiple\n" +
-"words. ");
+		"set debugger-var = value\nset [debugger-var]", full);
 	this.dbgvars = dbgvars;
     }
-    public void handle(Command cmd) throws ParseException
-    {
+
+    public void handle(Command cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
-        }
+	}
 	String temp;
-	if (params.size() == 3 && ((String)params.get(1)).equals("=") ) {
-	    temp = (String)params.get(0);
+	if (params.size() == 3 && ((String) params.get(1)).equals("=")) {
+	    temp = (String) params.get(0);
 	    if (dbgvars.variableIsValid(temp)) {
-		if (dbgvars.valueIsValid(temp, (String)params.get(2))) {
-		    dbgvars.setVariable(temp, (String)params.get(2));
-		}
-		else
+		if (dbgvars.valueIsValid(temp, (String) params.get(2))) {
+		    dbgvars.setVariable(temp, (String) params.get(2));
+		} else
 		    cli.addMessage("Illegal variable value.",
-				   Message.TYPE_ERROR);
-	    }
-	    else
+			    Message.TYPE_ERROR);
+	    } else
 		cli.addMessage(new Message("Illegal debugger variable \""
-					   + (String)params.get(0) + "\"",
-					   Message.TYPE_ERROR));
-	}
-	else if (params.size() == 1) {
-	    temp = (String)params.get(0);
+			+ (String) params.get(0) + "\"", Message.TYPE_ERROR));
+	} else if (params.size() == 1) {
+	    temp = (String) params.get(0);
 	    if (dbgvars.variableIsValid(temp)) {
-		cli.addMessage(temp + " = " + dbgvars.getValue(temp).toString(),
-			       Message.TYPE_NORMAL);
-	    }
-	    else
-		cli.addMessage(new Message("Illegal debugger variable \"" 
-					   + (String)params.get(0) + "\"",
-					   Message.TYPE_ERROR));
-	}
-	else if (params.size() == 0) {
+		cli.addMessage(
+			temp + " = " + dbgvars.getValue(temp).toString(),
+			Message.TYPE_NORMAL);
+	    } else
+		cli.addMessage(new Message("Illegal debugger variable \""
+			+ (String) params.get(0) + "\"", Message.TYPE_ERROR));
+	} else if (params.size() == 0) {
 	    cli.addMessage(dbgvars.toString(), Message.TYPE_NORMAL);
-	}
-	else {
+	} else {
 	    cli.printUsage(cmd);
 	}
     }

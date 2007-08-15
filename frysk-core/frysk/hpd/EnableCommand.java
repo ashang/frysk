@@ -54,20 +54,18 @@ import frysk.rt.UpdatingDisplayValue;
 class EnableCommand extends CLIHandler {
     private static final String descr = "enable a source breakpoint";
 
-    private EnableCommand(String name, CLI cli) {
-	super(name, cli, new CommandHelp(name, descr, "enable actionpointID",
-		descr));
+    EnableCommand(CLI cli) {
+	super(cli, "enable", descr, "enable actionpointID",
+		descr);
     }
 
-    EnableCommand(CLI cli) {
-	this("enable", cli);
-    }
+
 
     public void handle(Command cmd) throws ParseException {
-        PTSet ptset = cli.getCommandPTSet(cmd);
+	PTSet ptset = cli.getCommandPTSet(cmd);
 	String actionpoints = "";
-	boolean /* enEnabled = false, */enDisabled = false, enBreak = false,
-		enDisplay = false, enWatch = false, enBarrier = false;
+	boolean /* enEnabled = false, */enDisabled = false, enBreak = false;
+	boolean enDisplay = false, enWatch = false, enBarrier = false;
 	ArrayList args = cmd.getParameters();
 	int[] ids = null;
 
@@ -130,10 +128,10 @@ class EnableCommand extends CLIHandler {
 			.getBreakpointManager();
 		SourceBreakpoint bpt = bpManager.getBreakpoint(ids[i]);
 		if (bpt != null) {
-                    Iterator taskIter = ptset.getTasks();
-                    while (taskIter.hasNext()) {
-                        bpManager.enableBreakpoint(bpt, (Task)taskIter.next());
-                    }
+		    Iterator taskIter = ptset.getTasks();
+		    while (taskIter.hasNext()) {
+			bpManager.enableBreakpoint(bpt, (Task) taskIter.next());
+		    }
 		    outWriter.println("breakpoint " + bpt.getId() + " enabled");
 		}
 		// Failed to get a breakpoint, try to get a display instead
@@ -159,10 +157,10 @@ class EnableCommand extends CLIHandler {
 	    while (iter.hasNext()) {
 		SourceBreakpoint bpt = (SourceBreakpoint) iter.next();
 		if (bpt.getUserState() == SourceBreakpoint.DISABLED) {
-                    Iterator taskIter = ptset.getTasks();
-                    while (taskIter.hasNext()) {
-                        bpManager.enableBreakpoint(bpt, (Task)taskIter.next());
-                    }
+		    Iterator taskIter = ptset.getTasks();
+		    while (taskIter.hasNext()) {
+			bpManager.enableBreakpoint(bpt, (Task) taskIter.next());
+		    }
 		    outWriter.println("breakpoint " + bpt.getId() + " enabled");
 		}
 	    }

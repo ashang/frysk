@@ -68,7 +68,7 @@ public abstract class CLIHandler
     return name;
   }
   
-  public CLIHandler(String name, CLI cli, CommandHelp help)
+  private CLIHandler(String name, CLI cli, CommandHelp help)
   {
     this.name = name;
     this.cli = cli;
@@ -79,7 +79,7 @@ public abstract class CLIHandler
     cli.addHandler(this);
   }
   
-  public CLIHandler (CLI cli, String name, String description, String syntax, String full) {
+  CLIHandler (CLI cli, String name, String description, String syntax, String full) {
       this(name, cli, new CommandHelp(name, description, syntax, full));
   }
   

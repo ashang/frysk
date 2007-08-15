@@ -1,5 +1,42 @@
 2007-08-15  Nurdin Premji  <npremji@redhat.com>
 
+	* CLIHandler.java: Removed unused constructor
+	* ActionsCommand.java: Sun formatted.
+	* AliasCommand.java: Ditto.
+	* AttachCommand.java: Ditto.
+	* BreakpointCommand.java: Ditto.
+	* DynamicPTSet.java: Ditto.
+	* UserHelp.java: Ditto.
+	* CoreCommand.java: Ditto.
+	* DebuginfoCommand.java: Ditto.
+	* DefsetCommand.java: Ditto.
+	* DeleteCommand.java: Ditto.
+	* DetachCommand.java: Ditto.
+	* DisableCommand.java: Ditto.
+	* DisassembleCommand.java: Ditto.
+	* DisplayCommand.java: Ditto.
+	* EnableCommand.java: Ditto.
+	* ExamineCommand.java: Ditto.
+	* FocusCommand.java: Ditto.
+	* GoCommand.java: Ditto.
+	* HaltCommand.java: Ditto.
+	* HelpCommand.java: Ditto.
+	* QuitCommand.java: Ditto.
+	* RegsCommand.java: Ditto.
+	* RunCommand.java: Ditto.
+	* SetCommand.java: Ditto.
+	* StepCommand.java: Ditto.
+	* StepFinishCommand.java: Ditto.
+	* StepInstructionCommand.java: Ditto.
+	* UnaliasCommand.java: Ditto.
+	* UndefsetCommand.java: Ditto.
+	* UnsetCommand.java: Ditto.
+	* UpDownCommand.java: Ditto.
+	* ViewsetCommand.java: Ditto.
+	* WhatCommand.java: Ditto.
+	* WhereCommand.java: Ditto.
+	* WhichsetsCommand.java: Ditto.
+
 	* CLI.java (UpDownHandler): Moved from here ...
 	* UpDownCommand.java: ... to here. Sun formatted.
 

@@ -41,49 +41,40 @@ package frysk.hpd;
 import java.util.TreeMap;
 import java.util.ArrayList;
 
-class UserHelp
-{
-  TreeMap commandHelp;
-  void addHelp(String commandName, String description, String syntax,
-	       String full)
-  {
-    addHelp(commandName,
-	    new CommandHelp(commandName, description, syntax, full));
-  }
+class UserHelp {
+    TreeMap commandHelp;
 
-  public void addHelp(String commandName, CommandHelp help)
-  {
-    commandHelp.put(commandName, help);
-  }
-  
+    void addHelp(String commandName, String description, String syntax,
+	    String full) {
+	addHelp(commandName, new CommandHelp(commandName, description, syntax,
+		full));
+    }
 
-  public UserHelp()
-	{
-		commandHelp = new TreeMap();
-	}
+    public void addHelp(String commandName, CommandHelp help) {
+	commandHelp.put(commandName, help);
+    }
 
-	public boolean isValidCommand(String cmd)
-	{
-		return commandHelp.containsKey(cmd);
-	}
+    public UserHelp() {
+	commandHelp = new TreeMap();
+    }
 
-	public ArrayList getCmdList()
-	{
-		return new ArrayList(commandHelp.keySet());
-	}
+    public boolean isValidCommand(String cmd) {
+	return commandHelp.containsKey(cmd);
+    }
 
-	public String getCmdDescription(String cmd)
-	{
-		return ((CommandHelp)commandHelp.get(cmd)).getDescription();
-	}
+    public ArrayList getCmdList() {
+	return new ArrayList(commandHelp.keySet());
+    }
 
-	public String getCmdSyntax(String cmd)
-	{
-		return ((CommandHelp)commandHelp.get(cmd)).getSyntax();
-	}
+    public String getCmdDescription(String cmd) {
+	return ((CommandHelp) commandHelp.get(cmd)).getDescription();
+    }
 
-	public String getCmdFullDescr(String cmd)
-	{
-		return ((CommandHelp)commandHelp.get(cmd)).getFull();
-	}
+    public String getCmdSyntax(String cmd) {
+	return ((CommandHelp) commandHelp.get(cmd)).getSyntax();
+    }
+
+    public String getCmdFullDescr(String cmd) {
+	return ((CommandHelp) commandHelp.get(cmd)).getFull();
+    }
 }

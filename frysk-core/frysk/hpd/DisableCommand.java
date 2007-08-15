@@ -54,20 +54,15 @@ import java.util.Iterator;
 class DisableCommand extends CLIHandler {
     private static final String descr = "disable a source breakpoint";
 
-    private DisableCommand(String name, CLI cli) {
-	super(name, cli, new CommandHelp(name, descr, "disable actionpointID",
-		descr));
-    }
-
     DisableCommand(CLI cli) {
-	this("disable", cli);
+	super(cli, "disable", descr, "disable actionpointID", descr);
     }
 
     public void handle(Command cmd) throws ParseException {
-        PTSet ptset = cli.getCommandPTSet(cmd);
+	PTSet ptset = cli.getCommandPTSet(cmd);
 	String actionpoints = "";
-	boolean disEnabled = false/* , disDisabled = false */, disBreak = false,
-		disDisplay = false, disWatch = false, disBarrier = false;
+	boolean disEnabled = false/* , disDisabled = false */, disBreak = false;
+	boolean disDisplay = false, disWatch = false, disBarrier = false;
 	ArrayList args = cmd.getParameters();
 	int[] ids = null;
 
@@ -130,10 +125,11 @@ class DisableCommand extends CLIHandler {
 			.getBreakpointManager();
 		SourceBreakpoint bpt = bpManager.getBreakpoint(ids[i]);
 		if (bpt != null) {
-                    Iterator taskIter = ptset.getTasks();
-                    while (taskIter.hasNext()) {
-                        bpManager.disableBreakpoint(bpt, (Task)taskIter.next());
-                    }
+		    Iterator taskIter = ptset.getTasks();
+		    while (taskIter.hasNext()) {
+			bpManager
+				.disableBreakpoint(bpt, (Task) taskIter.next());
+		    }
 		    outWriter
 			    .println("breakpoint " + bpt.getId() + " disabled");
 		}
@@ -160,10 +156,11 @@ class DisableCommand extends CLIHandler {
 	    while (iter.hasNext()) {
 		SourceBreakpoint bpt = (SourceBreakpoint) iter.next();
 		if (bpt.getUserState() == SourceBreakpoint.ENABLED) {
-                    Iterator taskIter = ptset.getTasks();
-                    while (taskIter.hasNext()) {
-                        bpManager.disableBreakpoint(bpt, (Task)taskIter.next());
-                    }
+		    Iterator taskIter = ptset.getTasks();
+		    while (taskIter.hasNext()) {
+			bpManager
+				.disableBreakpoint(bpt, (Task) taskIter.next());
+		    }
 		    outWriter
 			    .println("breakpoint " + bpt.getId() + " disabled");
 		}

@@ -48,11 +48,14 @@ import frysk.proc.Task;
 
 class UpDownCommand extends CLIHandler {
 
-    private static String full = "The up (down) command modifies the current frame location(s) by adding\n"
-	    + "(subtracting) num-levels. Call stack movements are all relative, so up\n"
-	    + "effectively \"moves up\" (or back) in the call stack, to a frame that\n"
-	    + "has existed longer, while down \"moves down\" in the call stack,\n"
-	    + "following the progress of program execution.";
+    private static final String full = "The up (down) command modifies the "
+	    + "current frame location(s) by adding\n"
+	    + "(subtracting) num-levels. Call stack movements are all "
+	    + "relative, so up\n"
+	    + "effectively \"moves up\" (or back) in the call stack, to a "
+	    + "frame that\n"
+	    + "has existed longer, while down \"moves down\" in the call "
+	    + "stack,\n" + "following the progress of program execution.";
 
     UpDownCommand(CLI cli, String name) {
 	super(cli, name, "Move " + name

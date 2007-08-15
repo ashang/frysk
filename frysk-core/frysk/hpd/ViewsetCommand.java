@@ -43,23 +43,24 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-class ViewsetCommand
-    extends CLIHandler
-{
-    ViewsetCommand(CLI cli)
-    {
+class ViewsetCommand extends CLIHandler {
+
+    private static final String full = "The viewset command displays the "
+	    + "members of debugger- or user-defined\n"
+	    + "sets. When no argument is used, the members of all currently "
+	    + "defined\n" + "sets are displayed. ";
+
+    ViewsetCommand(CLI cli) {
 	super(cli, "viewset", "List members of a proc/task set.",
-		"viewset [set-name]", "The viewset command displays the members of debugger- or user-defined\n" +
-"sets. When no argument is used, the members of all currently defined\n" +
-"sets are displayed. ");
+		"viewset [set-name]", full);
     }
-    public void handle(Command cmd) throws ParseException
-    {
+
+    public void handle(Command cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
-        }
+	}
 	PTSet tempset = null;
 	TaskData temptd = null;
 	String setname = "";
@@ -69,31 +70,30 @@ class ViewsetCommand
 	    if (params.size() == 0)
 		tempset = cli.targetset;
 	    else if (params.size() == 1) {
-		setname = (String)params.get(0);
+		setname = (String) params.get(0);
 		if (cli.namedPTSets.containsKey(setname))
 		    tempset = (PTSet) (cli.namedPTSets).get(setname);
 		else {
 		    cli.addMessage(new Message("Set \"" + setname
-					       + "\" does not exist.",
-					       Message.TYPE_NORMAL));
+			    + "\" does not exist.", Message.TYPE_NORMAL));
 		    return;
 		}
 	    }
-            boolean hasOneTask = false;
+	    boolean hasOneTask = false;
 	    for (Iterator iter = tempset.getTaskData(); iter.hasNext();) {
-                hasOneTask = true;
+		hasOneTask = true;
 		// ??? this way of outputting is simple, but it's okay for now
-		temptd = (TaskData)iter.next();
+		temptd = (TaskData) iter.next();
 		output += "Set " + setname + " includes:\n";
-		output += "[" + temptd.getParentID() + "." + temptd.getID() + "]\n";
+		output += "[" + temptd.getParentID() + "." + temptd.getID()
+			+ "]\n";
 		cli.addMessage(output, Message.TYPE_NORMAL);
 	    }
-            if (!hasOneTask) {
-                output = "Set " + setname + " is empty.\n";
-                cli.addMessage(output, Message.TYPE_NORMAL);
-            }
-	}
-	else {
+	    if (!hasOneTask) {
+		output = "Set " + setname + " is empty.\n";
+		cli.addMessage(output, Message.TYPE_NORMAL);
+	    }
+	} else {
 	    cli.printUsage(cmd);
 	}
     }

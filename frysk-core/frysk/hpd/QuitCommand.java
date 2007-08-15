@@ -45,25 +45,21 @@ import frysk.sys.Signal;
 import frysk.sys.Sig;
 import java.text.ParseException;
 
-class QuitCommand
-    extends CLIHandler
-{
-    QuitCommand (CLI cli, String name)
-    {
-	super (cli, name, "Terminate the debugging session.",
-		name, "Terminate the debugging session.");
+class QuitCommand extends CLIHandler {
+    QuitCommand(CLI cli, String name) {
+	super(cli, name, "Terminate the debugging session.", name,
+		"Terminate the debugging session.");
     }
-    public void handle(Command cmd)
-	throws ParseException 
-    {
-	for (Iterator iterator = cli.runningProcs.iterator();
-	     iterator.hasNext(); ) {
+
+    public void handle(Command cmd) throws ParseException {
+	for (Iterator iterator = cli.runningProcs.iterator(); iterator
+		.hasNext();) {
 	    Proc p = (Proc) iterator.next();
-	    Signal.kill(p.getPid(),Sig.KILL);
+	    Signal.kill(p.getPid(), Sig.KILL);
 	}
 	cli.addMessage("Quitting...", Message.TYPE_NORMAL);
 	DetachCommand detachCommand = new DetachCommand(cli);
-	Command command = new Command ("detach");
+	Command command = new Command("detach");
 	detachCommand.handle(command);
     }
 }

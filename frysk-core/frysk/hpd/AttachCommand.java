@@ -48,38 +48,41 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.Manager;
 
-class AttachCommand
-    extends CLIHandler
-{
-    private class FindProc
-        implements Host.FindProc {
-        Proc proc = null;
-        boolean procSearchFinished = false;
+class AttachCommand extends CLIHandler {
+    private class FindProc implements Host.FindProc {
+	Proc proc = null;
 
-        public synchronized void procFound (ProcId procId)
-        {
-            proc = Manager.host.getProc(procId);
-            procSearchFinished = true;
-            notifyAll();
-        }
+	boolean procSearchFinished = false;
 
-        public synchronized void procNotFound (ProcId procId, Exception e)
-        {
-            proc = null;
-            procSearchFinished = true;
-            notifyAll();
-        }
+	public synchronized void procFound(ProcId procId) {
+	    proc = Manager.host.getProc(procId);
+	    procSearchFinished = true;
+	    notifyAll();
+	}
+
+	public synchronized void procNotFound(ProcId procId, Exception e) {
+	    proc = null;
+	    procSearchFinished = true;
+	    notifyAll();
+	}
     }
 
-    AttachCommand(CLI cli)
-    {
-	super (cli, "attach", "Attach to a running process.", "attach [executable] pid [-task tid] [-cli]", "The attach command causes the debugger to attach to an existing\n" +
-		"process(es), making it possible to continue the process' execution under\n" +
-		"debugger control. The command applies at the process level; all threads\n" +
-		"corresponding to the process will be attached by the operation. It is\n" +
-		"the user's responsibility to ensure that the process(es) actually is\n" +
-		"executing the specified executable.");
+    private static final String full = "The attach command causes the debugger "
+	    + "to attach to an existing\n"
+	    + "process(es), making it possible to continue the process' "
+	    + "execution under\n"
+	    + "debugger control. The command applies at the process level; all "
+	    + "threads\n"
+	    + "corresponding to the process will be attached by the operation. "
+	    + "It is\n"
+	    + "the user's responsibility to ensure that the process(es) "
+	    + "actually is\n" + "executing the specified executable.";
+
+    AttachCommand(CLI cli) {
+	super(cli, "attach", "Attach to a running process.",
+		"attach [executable] pid [-task tid] [-cli]", full);
     }
+
     public void handle(Command cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	int pid = 0;
@@ -94,58 +97,53 @@ class AttachCommand
 	    cli.printUsage(cmd);
 	    return;
 	}
- 
+
 	for (int idx = 0; idx < params.size(); idx++) {
-	    if (((String)params.get(idx)).equals("-cli"))
+	    if (((String) params.get(idx)).equals("-cli"))
 		cliOption = true;
-	    else if (((String)params.get(idx)).equals("-no-cli"))
+	    else if (((String) params.get(idx)).equals("-no-cli"))
 		cliOption = false;
-	    else if (((String)params.get(idx)).equals("-task")) {
+	    else if (((String) params.get(idx)).equals("-task")) {
 		idx += 1;
-		tid = Integer.parseInt(((String)params.get(idx)));
-	    }
-	    else if (((String)params.get(idx)).indexOf('-') == 0) {
+		tid = Integer.parseInt(((String) params.get(idx)));
+	    } else if (((String) params.get(idx)).indexOf('-') == 0) {
 		cli.printUsage(cmd);
 		return;
-	    }
-	    else if (((String)params.get(idx)).matches("[0-9]+"))
-		pid = Integer.parseInt((String)params.get(idx));
+	    } else if (((String) params.get(idx)).matches("[0-9]+"))
+		pid = Integer.parseInt((String) params.get(idx));
 	}
 
-        FindProc findProc = new FindProc();
+	FindProc findProc = new FindProc();
 	if (cliOption) {
 	    Manager.host.requestFindProc(new ProcId(pid), findProc);
 	    synchronized (findProc) {
 		while (!findProc.procSearchFinished) {
 		    try {
 			findProc.wait();
-		    }
-		    catch (InterruptedException ie) {
+		    } catch (InterruptedException ie) {
 			findProc.proc = null;
 		    }
 		}
 	    }
 	} else {
-            return;             // no-cli really doesn't work.
-        }
+	    return; // no-cli really doesn't work.
+	}
 	if (findProc.proc == null) {
-	    cli.addMessage("Couldn't find process " + pid,
-			   Message.TYPE_ERROR);
+	    cli.addMessage("Couldn't find process " + pid, Message.TYPE_ERROR);
 	    return;
 	}
-        int procID = cli.idManager.reserveProcID();
-        cli.idManager.manageProc(findProc.proc, procID);
-        Task task = null;
+	int procID = cli.idManager.reserveProcID();
+	cli.idManager.manageProc(findProc.proc, procID);
+	Task task = null;
 	if (pid == tid || tid == 0)
 	    task = findProc.proc.getMainTask();
 	else
-	    for (Iterator i = findProc.proc.getTasks ().iterator ();
-		 i.hasNext (); ) {
-		task = (Task) i.next ();
-		if (task.getTid () == tid)
+	    for (Iterator i = findProc.proc.getTasks().iterator(); i.hasNext();) {
+		task = (Task) i.next();
+		if (task.getTid() == tid)
 		    break;
 	    }
-        cli.startAttach(pid, findProc.proc, task);
-        cli.finishAttach();
+	cli.startAttach(pid, findProc.proc, task);
+	cli.finishAttach();
     }
 }

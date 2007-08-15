@@ -57,13 +57,10 @@ import frysk.rt.UpdatingDisplayValue;
 class ActionsCommand extends CLIHandler {
     private static final String descr = "List action points";
 
-    private ActionsCommand(String name, CLI cli) {
-	super(name, cli, new CommandHelp(name, descr, "actionpoints", descr));
+    ActionsCommand(CLI cli) {
+	super(cli, "actionpoints", descr, "actionpoints", descr);
     }
 
-    ActionsCommand(CLI cli) {
-	this("actionpoints", cli);
-    }
 
     private static final Map.Entry[] dummy = new Map.Entry[] {};
 
@@ -85,16 +82,15 @@ class ActionsCommand extends CLIHandler {
     private static final TaskComparator taskComparator = new TaskComparator();
 
     /*
-     * Print out the specified actionpoints. These will be filtered as per
-     * the possible arguments in the hpd. We have also added the --display
-     * option, which will output the current displays (non-Javadoc)
-     * 
-     * @see frysk.hpd.CLIHandler#handle(frysk.hpd.Command)
-     */
+         * Print out the specified actionpoints. These will be filtered as per
+         * the possible arguments in the hpd. We have also added the --display
+         * option, which will output the current displays (non-Javadoc)
+         * 
+         * @see frysk.hpd.CLIHandler#handle(frysk.hpd.Command)
+         */
     public void handle(Command cmd) throws ParseException {
 	String actionpoints = "";
-	boolean showEnabled = false, showDisabled = false, showBreak = false,
-		showDisplay = false, showWatch = false, showBarrier = false;
+	boolean showEnabled = false, showDisabled = false, showBreak = false, showDisplay = false, showWatch = false, showBarrier = false;
 	ArrayList args = cmd.getParameters();
 	int[] ids = null;
 

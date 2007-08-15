@@ -46,32 +46,29 @@ import java.util.Iterator;
 import frysk.proc.Task;
 import frysk.util.DebuginfoPaths;
 
-class DebuginfoCommand
-    extends CLIHandler
-{  
-   
-    DebuginfoCommand(CLI cli)
-    {
-	super(cli, "debuginfo", "Displays debuginfo install paths of a process.",
-		"debuginfo","The debuginfo command lists the debuginfo paths " +
-				"for a process and its shared modules.");
+class DebuginfoCommand extends CLIHandler {
+
+    DebuginfoCommand(CLI cli) {
+	super(cli, "debuginfo",
+		"Displays debuginfo install paths of a process.", "debuginfo",
+		"The debuginfo command lists the debuginfo paths "
+			+ "for a process and its shared modules.");
     }
-    
-    public void handle(Command cmd) throws ParseException 
-    {
-        PTSet ptset = cli.getCommandPTSet(cmd);
+
+    public void handle(Command cmd) throws ParseException {
+	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
-	
+
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
-        }
+	}
 	Iterator taskIter = ptset.getTasks();
-        while (taskIter.hasNext()) {
-            Task task = (Task)taskIter.next();
-            DebuginfoPaths dbg = new DebuginfoPaths(task);
-            String dInfo = dbg.getDebuginfo();
-            cli.outWriter.println(dInfo);
-        }
+	while (taskIter.hasNext()) {
+	    Task task = (Task) taskIter.next();
+	    DebuginfoPaths dbg = new DebuginfoPaths(task);
+	    String dInfo = dbg.getDebuginfo();
+	    cli.outWriter.println(dInfo);
+	}
     }
 }

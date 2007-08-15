@@ -47,61 +47,52 @@ import java.util.LinkedList;
 import frysk.proc.Task;
 import frysk.debuginfo.DebugInfoFrame;
 
-public class StepInstructionCommand extends CLIHandler
-{
-  
-  StepInstructionCommand (CLI cli)
-  {
-    super(cli, "stepi", "Instruction step a process.",
-                "stepi", "Step a process by an instruction. The process must be attached to and blocked.");
-  }
-  
-  public void handle(Command cmd) throws ParseException
-  {
-    PTSet ptset = cli.getCommandPTSet(cmd);
-    ArrayList params = cmd.getParameters();
-    if (params.size() == 1 && params.get(0).equals("-help"))
-      {
-        this.cli.printUsage(cmd);
-        return;
-      }
-    
-    if (this.cli.steppingObserver != null)
-      {
-        LinkedList taskList = new LinkedList();
-        Iterator taskIter = ptset.getTasks();
-        while (taskIter.hasNext())
-          {
-            taskList.add(taskIter.next());
-          }
-        this.cli.getSteppingEngine().stepInstruction(taskList);
-            
-        synchronized (this.cli.steppingObserver.getMonitor())
-          {
-            try
-              {
-                this.cli.steppingObserver.getMonitor().wait();
-              }
-            catch (InterruptedException ie) {}
-          }
-        Iterator stepped = taskList.iterator();
-        while (stepped.hasNext())
-          {
-            Task task = (Task)stepped.next();
-            DebugInfoFrame rf = cli.getTaskFrame(task);
-            
-            if (rf.getLines().length == 0)
-              this.cli.addMessage("Task stopped at address 0x"
-                                  + Long.toHexString(rf.getAdjustedAddress()),
-                                  Message.TYPE_NORMAL);
-            else
-              this.cli.addMessage("Task stopped at line "
-                                  + rf.getLines()[0].getLine()
-                                  + " in file " + rf.getLines()[0].getFile(),
-                                  Message.TYPE_NORMAL);
-          }
-      }
-    else
-      this.cli.addMessage("Not attached to any process", Message.TYPE_ERROR);
-  }
+public class StepInstructionCommand extends CLIHandler {
+    private static final String full = "Step a process by an instruction. "
+	    + "The process must be attached to and blocked.";
+
+    StepInstructionCommand(CLI cli) {
+	super(cli, "stepi", "Instruction step a process.", "stepi", full);
+    }
+
+    public void handle(Command cmd) throws ParseException {
+	PTSet ptset = cli.getCommandPTSet(cmd);
+	ArrayList params = cmd.getParameters();
+	if (params.size() == 1 && params.get(0).equals("-help")) {
+	    this.cli.printUsage(cmd);
+	    return;
+	}
+
+	if (this.cli.steppingObserver != null) {
+	    LinkedList taskList = new LinkedList();
+	    Iterator taskIter = ptset.getTasks();
+	    while (taskIter.hasNext()) {
+		taskList.add(taskIter.next());
+	    }
+	    this.cli.getSteppingEngine().stepInstruction(taskList);
+
+	    synchronized (this.cli.steppingObserver.getMonitor()) {
+		try {
+		    this.cli.steppingObserver.getMonitor().wait();
+		} catch (InterruptedException ie) {
+		}
+	    }
+	    Iterator stepped = taskList.iterator();
+	    while (stepped.hasNext()) {
+		Task task = (Task) stepped.next();
+		DebugInfoFrame rf = cli.getTaskFrame(task);
+
+		if (rf.getLines().length == 0)
+		    this.cli.addMessage("Task stopped at address 0x"
+			    + Long.toHexString(rf.getAdjustedAddress()),
+			    Message.TYPE_NORMAL);
+		else
+		    this.cli.addMessage("Task stopped at line "
+			    + rf.getLines()[0].getLine() + " in file "
+			    + rf.getLines()[0].getFile(), Message.TYPE_NORMAL);
+	    }
+	} else
+	    this.cli.addMessage("Not attached to any process",
+		    Message.TYPE_ERROR);
+    }
 }

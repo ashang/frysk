@@ -42,19 +42,19 @@ package frysk.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-class FocusCommand
-   extends CLIHandler
-{
-    FocusCommand(CLI cli)
-    {
+class FocusCommand extends CLIHandler {
+    private static String full = "Changes the current p/t set. As a "
+	    + "consequence, subsequent commands will\n"
+	    + "apply to just the threads specified in the argument of this\n"
+	    + "command. When no argument is specified, the command lists the "
+	    + "threads in\n" + "the current p/t set. ";
+
+    FocusCommand(CLI cli) {
 	super(cli, "focus", "Change the current process/thread set.",
-		"focus [p/t-set]", "Changes the current p/t set. As a consequence, subsequent commands will\n" +
-		"apply to just the threads specified in the argument of this\n" +
-		"command. When no argument is specified, the command lists the threads in\n" +
-		"the current p/t set. ");
+		"focus [p/t-set]", full);
     }
-    public void handle(Command cmd) throws ParseException
-    {
+
+    public void handle(Command cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
@@ -62,12 +62,11 @@ class FocusCommand
 	}
 	if (params.size() <= 1) {
 	    if (params.size() == 1)
-		cli.targetset = cli.createSet((String)params.get(0));
+		cli.targetset = cli.createSet((String) params.get(0));
 	    else
-		((CommandHandler)cli.handlers.get("viewset"))
-		    .handle(new Command("viewset"));
-	}
-	else {
+		((CommandHandler) cli.handlers.get("viewset"))
+			.handle(new Command("viewset"));
+	} else {
 	    cli.printUsage(cmd);
 	}
     }

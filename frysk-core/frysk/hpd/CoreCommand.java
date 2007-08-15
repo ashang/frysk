@@ -51,11 +51,10 @@ import frysk.proc.Task;
 
 public class CoreCommand extends CLIHandler {
 
-    private static String name = "core";
     private static String desc = "open a core file";
-    
+
     CoreCommand(CLI cli) {
-	super(name, cli, new CommandHelp(name, desc, "core core.file", desc));
+	super(cli, "core", desc, "core core.file", desc);
     }
 
     public void handle(Command cmd) throws ParseException {
@@ -64,36 +63,36 @@ public class CoreCommand extends CLIHandler {
 	parser.parse(params);
 	if (parser.helpOnly)
 	    return;
-	
-	
+
 	if (params.size() > 2) {
 	    cli.addMessage("Too many parameters", Message.TYPE_ERROR);
 	    parser.printHelp(System.out);
 	    return;
 	}
-	
+
 	File coreFile = new File((String) params.get(0));
-	
+
 	Proc coreProc;
-	if (params.size() == 1)	    
-	 coreProc = frysk.util.Util.getProcFromCoreFile(coreFile);
+	if (params.size() == 1)
+	    coreProc = frysk.util.Util.getProcFromCoreFile(coreFile);
 	else {
 	    File exeFile = new File((String) params.get(1));
 	    coreProc = frysk.util.Util.getProcFromCoreFile(coreFile, exeFile);
 	}
 
-        Task task = coreProc.getMainTask();
+	Task task = coreProc.getMainTask();
 	TaskData coreTaskData = new TaskData(task, 0, 0);
-        ProcData procData = new ProcData(coreProc, 0);
-        TaskData[] taskArray = new TaskData[] {coreTaskData};
-        ProcTasks procTask = new ProcTasks(procData, taskArray);
-        
-        cli.targetset = new StaticPTSet(new ProcTasks[] {procTask});
-        DebugInfoFrame frame
-          = DebugInfoStackFactory.createDebugInfoStackTrace(task);
-        cli.setTaskFrame(task, frame);
+	ProcData procData = new ProcData(coreProc, 0);
+	TaskData[] taskArray = new TaskData[] { coreTaskData };
+	ProcTasks procTask = new ProcTasks(procData, taskArray);
+
+	cli.targetset = new StaticPTSet(new ProcTasks[] { procTask });
+	DebugInfoFrame frame = DebugInfoStackFactory
+		.createDebugInfoStackTrace(task);
+	cli.setTaskFrame(task, frame);
 	cli.setTaskDebugInfo(task, new DebugInfo(frame));
-	cli.addMessage("Attached to core file: " + params.get(0), Message.TYPE_NORMAL);
+	cli.addMessage("Attached to core file: " + params.get(0),
+		Message.TYPE_NORMAL);
     }
 
 }

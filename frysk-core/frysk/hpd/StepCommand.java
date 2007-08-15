@@ -47,56 +47,52 @@ import java.util.LinkedList;
 import frysk.proc.Task;
 import frysk.debuginfo.DebugInfoFrame;
 
-public class StepCommand extends CLIHandler
-{
-  
-  
-  StepCommand (CLI cli)
-  {
-   super (cli, "step", "Step a process.",
-                "step", "Line step a process which has been attached to, and is currently blocked.");
-  }
-  
-  public void handle(Command cmd) throws ParseException
-  {
-    PTSet ptset = cli.getCommandPTSet(cmd);
-    ArrayList params = cmd.getParameters();
-    if (params.size() == 1 && params.get(0).equals("-help"))
-      {
-        this.cli.printUsage(cmd);
-        return;
-      }
-    LinkedList taskList = new LinkedList();
-    Iterator taskIter = ptset.getTasks();
-    while (taskIter.hasNext()) {
-      taskList.add(taskIter.next());
+public class StepCommand extends CLIHandler {
+    private static final String full = "Line step a process which has been "
+	    + "attached to, and is currently blocked.";
+
+    StepCommand(CLI cli) {
+	super(cli, "step", "Step a process.", "step", full);
     }
-    if (this.cli.steppingObserver != null)
-      {
-        this.cli.getSteppingEngine().stepLine(taskList);
-            
-        synchronized (this.cli.steppingObserver.getMonitor())
-          {
-            try
-              {
-                //XXX This looks racy.
-                this.cli.steppingObserver.getMonitor().wait();
-              }
-            catch (InterruptedException ie) {}
-          }
-        taskIter = ptset.getTasks();
-        while (taskIter.hasNext())
-          {
-            Task task = (Task)taskIter.next();
-            DebugInfoFrame rf =  this.cli.getTaskFrame(task);
-            
-            if (rf.getLines().length == 0)
-              this.cli.addMessage("Task stopped at address 0x" + Long.toHexString(rf.getAdjustedAddress()), Message.TYPE_NORMAL);
-            else
-              this.cli.addMessage("Task stopped at line " + rf.getLines()[0].getLine() + " in file " + rf.getLines()[0].getFile(), Message.TYPE_NORMAL);
-          }
-      }
-    else
-      this.cli.addMessage("Not attached to any process", Message.TYPE_ERROR);
-  }
+
+    public void handle(Command cmd) throws ParseException {
+	PTSet ptset = cli.getCommandPTSet(cmd);
+	ArrayList params = cmd.getParameters();
+	if (params.size() == 1 && params.get(0).equals("-help")) {
+	    this.cli.printUsage(cmd);
+	    return;
+	}
+	LinkedList taskList = new LinkedList();
+	Iterator taskIter = ptset.getTasks();
+	while (taskIter.hasNext()) {
+	    taskList.add(taskIter.next());
+	}
+	if (this.cli.steppingObserver != null) {
+	    this.cli.getSteppingEngine().stepLine(taskList);
+
+	    synchronized (this.cli.steppingObserver.getMonitor()) {
+		try {
+		    // XXX This looks racy.
+		    this.cli.steppingObserver.getMonitor().wait();
+		} catch (InterruptedException ie) {
+		}
+	    }
+	    taskIter = ptset.getTasks();
+	    while (taskIter.hasNext()) {
+		Task task = (Task) taskIter.next();
+		DebugInfoFrame rf = this.cli.getTaskFrame(task);
+
+		if (rf.getLines().length == 0)
+		    this.cli.addMessage("Task stopped at address 0x"
+			    + Long.toHexString(rf.getAdjustedAddress()),
+			    Message.TYPE_NORMAL);
+		else
+		    this.cli.addMessage("Task stopped at line "
+			    + rf.getLines()[0].getLine() + " in file "
+			    + rf.getLines()[0].getFile(), Message.TYPE_NORMAL);
+	    }
+	} else
+	    this.cli.addMessage("Not attached to any process",
+		    Message.TYPE_ERROR);
+    }
 }
