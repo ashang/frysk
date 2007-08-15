@@ -1,3 +1,8 @@
+2007-08-15  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestTaskObserverDetach.java (assertDetach): Use TestLib
+	assertStatState().
+
 2007-08-14  Nurdin Premji  <npremji@redhat.com>
 
 	* RegisterView.java: Removed.

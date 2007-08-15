@@ -41,8 +41,6 @@ package frysk.proc;
 
 import frysk.event.RequestStopEvent;
 import frysk.sys.Sig;
-import frysk.sys.proc.Stat;
-import java.lang.Thread;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -121,24 +119,7 @@ public class TestTaskObserverDetach
 	    if (!eventIsSignal ())
 		assertRunUntilStop ("delivering signal");
 	    
-	    // Poll until process goes into T state (indicating
-	    // pending trace event); horrible race condition here.
-	    // Can't use the event loop as that would detect, and soak
-	    // up the event that is ment to be left sitting in the
-	    // event loop.
-	    Stat stat = new Stat ();
-	    for (int i = 0; i < 100; i++) {
-		assertTrue ("stat refresh", stat.refresh (task.getTid ()));
-		if (stat.state == 'T')
-		    break;
-		try {
-		    Thread.sleep (50); // milliseconds.
-		}
-		catch (Exception e) {
-		    fail (e.toString ());
-		}
-	    }
-	    assertEquals ("stat.state", 'T', stat.state);
+	    assertStatState(task.getTid(), 'T');
 	    
 	    // Set up an ack handler to catch the process
 	    // acknowledging that it has completed the relevant task.

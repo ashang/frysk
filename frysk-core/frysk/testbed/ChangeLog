@@ -1,3 +1,10 @@
+2007-08-15  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestLib.java (assertStatState): New static method.
+	* LegacyOffspring.java (assertSendStop): Use TestLib
+	assertStatState().
+	* SlaveOffspring.java (assertSendStop): Likewise.
+
 2007-08-10  Andrew Cagney  <cagney@redhat.com>
 
 	* ExecOffspring.java (getCommandLine): Delete.

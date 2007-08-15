@@ -44,7 +44,6 @@ import frysk.junit.TestCase;
 import frysk.sys.Pid;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
-import frysk.sys.proc.Stat;
 import frysk.testbed.SignalWaiter;
 import java.util.LinkedList;
 import java.util.List;
@@ -233,17 +232,7 @@ public class LegacyOffspring
      */
     public void assertSendStop () {
 	signal(STOP_SIG);
-
-	Stat stat = new Stat();
-	stat.refresh(this.getPid());
-	for (int i = 0; i < 10; i++) {
-	    if (stat.state == 'T')
-		return;
-	    Thread.yield();
-	    stat.refresh();
-	}
-	TestCase.fail("Stop signal not handled by process, in state: "
-		      + stat.state);
+	TestLib.assertStatState(this.getPid(), 'T');
     }
 
     /**
