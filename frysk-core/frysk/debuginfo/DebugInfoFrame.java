@@ -120,7 +120,11 @@ public class DebugInfoFrame extends FrameDecorator{
 
             DwarfDie[] scopes = bias.die.getScopes(getAdjustedAddress());
             scopes = scopes[0].getScopesDie();
-
+            
+            if(scopes.length == 0){
+        	return inlinedSubprograms;
+            }
+            
             for (int i = 0; i < scopes.length; i++) {
         	if (scopes[i].getTag() == DwTagEncodings.DW_TAG_inlined_subroutine_) {
         	    inlinedSubprograms.add(new InlinedSubroutine(scopes[i], debugInfo));
