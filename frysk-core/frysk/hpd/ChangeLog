@@ -1,3 +1,12 @@
+2007-08-15  Nurdin Premji  <npremji@redhat.com>
+
+	* CLI.java (CLI): Remove last references to addHandler().
+	Updated QuitCommand.
+	(UpDownHandler): Extend CLIHandler.
+	* QuitCommand.java (QuitCommand): Take a name, so "exit" can use the 
+	same handler.
+	* UserHelp.java: Removed last help messages.
+
 2007-08-14  Nurdin Premji  <npremji@redhat.com>
 
 	* StepFinishCommand.java: Extend CLIHandler.

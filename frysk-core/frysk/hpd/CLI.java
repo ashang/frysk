@@ -230,8 +230,16 @@ public class CLI
     attached = -1;
   }
   
-  class UpDownHandler implements CommandHandler
+  class UpDownHandler extends CLIHandler
   {
+    UpDownHandler(CLI cli, String name) {
+	super (cli, name, "Move " + name + " one or more levels in the call stack", 
+		name + " [num-levels]", "The up (down) command modifies the current frame location(s) by adding\n" +
+		"(subtracting) num-levels. Call stack movements are all relative, so up\n" +
+		"effectively \"moves up\" (or back) in the call stack, to a frame that\n" +
+		"has existed longer, while down \"moves down\" in the call stack,\n" +
+		"following the progress of program execution.");
+    }
     public void handle(Command cmd) throws ParseException 
     {
       PTSet ptset = getCommandPTSet(cmd);
@@ -364,9 +372,9 @@ public class CLI
     new DefsetCommand(this);
     new DeleteCommand(this);
     new DetachCommand(this);
-    addHandler(new DisableCommand(this));
-    handlers.put("down", new UpDownHandler());
-    addHandler(new EnableCommand(this));
+    new DisableCommand(this);
+    new UpDownHandler(this, "down");
+    new EnableCommand(this);
     new StepFinishCommand(this);
     new FocusCommand(this);
     new GoCommand(this);
@@ -376,14 +384,15 @@ public class CLI
     new StepNextCommand(this);
     new StepNextiCommand(this);
     new PrintCommand(this);
-    new QuitCommand(this);
+    new QuitCommand(this, "quit");
+    new QuitCommand(this, "exit");
     new SetCommand(this, dbgvars);
     new StepCommand(this);
     new StepInstructionCommand(this);
     new UnaliasCommand(this);
     new UndefsetCommand(this);
     new UnsetCommand(this, dbgvars);
-    handlers.put("up", new UpDownHandler());
+    new UpDownHandler(this, "up");
     new ViewsetCommand(this);
     new WhatCommand(this);
     new WhereCommand(this);

@@ -48,10 +48,10 @@ import java.text.ParseException;
 class QuitCommand
     extends CLIHandler
 {
-    QuitCommand (CLI cli)
+    QuitCommand (CLI cli, String name)
     {
-	super (cli, "quit", "Terminate the debugging session.",
-		"quit", "Terminate the debugging session.");
+	super (cli, name, "Terminate the debugging session.",
+		name, "Terminate the debugging session.");
     }
     public void handle(Command cmd)
 	throws ParseException 

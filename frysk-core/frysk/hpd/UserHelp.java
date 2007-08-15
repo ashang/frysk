@@ -59,23 +59,7 @@ class UserHelp
 
   public UserHelp()
 	{
-		String temp = null;
 		commandHelp = new TreeMap();
-
-        
-        temp = 
-"The up (down) command modifies the current frame location(s) by adding\n" +
-"(subtracting) num-levels. Call stack movements are all relative, so up\n" +
-"effectively \"moves up\" (or back) in the call stack, to a frame that\n" +
-"has existed longer, while down \"moves down\" in the call stack,\n" +
-"following the progress of program execution.";
-        addHelp("up", "Move up one or more levels in the call stack",
-		"up [num-levels]", temp);
-        addHelp("down", "Move down one or more levels in the call stack",
-		"down [num-levels]", temp);
-   
-        addHelp("exit", "Terminate the debugging session.",
-		"exit", "Terminate the debugging session.");
 	}
 
 	public boolean isValidCommand(String cmd)
