@@ -140,4 +140,29 @@ public class TestCase
 		}
 	    });
     }
+
+    /**
+     * The two byte arrays have identical contents.
+     */
+    public static void assertEquals(String what, byte[] correct, byte[] test) {
+	if (correct == null) {
+	    if (test == null)
+		return;
+	    else
+		fail(what + ": expected <null> but was <" + test + ">");
+	}
+	if (test == null) {
+	    if (correct != null)
+		fail(what + ": expected <...> but was <null>");
+	}
+	if (correct.length != test.length)
+	    fail(what + ": expected byte[].length <"
+		 + correct.length + "> but was <"
+		 + test.length + ">");
+	for (int i = 0; i < correct.length; i++) {
+	    if (correct[i] != test[i])
+		fail(what + ": expected byte[" + i + "] <" + correct[i]
+		     + "> but was <" + test[i] + ">");
+	}
+    }
 }

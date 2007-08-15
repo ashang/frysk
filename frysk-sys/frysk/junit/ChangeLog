@@ -1,3 +1,8 @@
+2007-08-14  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCase.java (asserEquals(String,byte[],byte[]): New.
+	* TestAsserts.java: New file.
+
 2007-08-13  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestCase.java (unresolvedOnx8664): New.
