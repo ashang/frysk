@@ -51,8 +51,11 @@ public class StepFinishCommand extends CLIHandler {
     
     StepFinishCommand (CLI cli)
     {
-	//XXX: Write a description, syntax, and full manual.
-     super (cli, "finish", "finish", "finish", "finish");
+     super (cli, "finish", "Step out of function", "finish", 
+	     "The finish command defines a 'step-out' command, which \n"
+	     + "is used when the user has what they need from stepping \n"
+	     + "through a function, and would like to quickly return to\n"
+	     + "the calling function to continue debugging there.");
     }
 
     public void handle(Command cmd) throws ParseException

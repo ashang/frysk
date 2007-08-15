@@ -51,8 +51,13 @@ public class StepNextCommand extends CLIHandler {
 
     StepNextCommand (CLI cli)
     {
-	//XXX: Write a description, syntax, and full manual.
-     	super (cli, "next", "next", "next", "next");
+     	super (cli, "next", "Step over next function", "next", 
+     		"The next command defines a 'step-over' operation, \n" 
+     		+ "which is used during stepping, when the user wishes\n"
+     		+ "to line step through the current function of interest \n"
+     		+ "and avoid descending into any further function calls. \n"
+     		+ "This operation will skip over any function call, and will\n"
+     		+ "otherwise just perform a line step.");
     }
     
     public void handle(Command cmd) throws ParseException
