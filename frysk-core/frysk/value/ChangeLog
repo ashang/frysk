@@ -1,5 +1,13 @@
 2007-08-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Format.java (print(PrintWriter,Location,IntegerType): New.
+	(print(PrintWriter,Location,FloatingPointType): New.
+	(printInteger): Delete.
+	(printFloatingPoint): Delete.
+	* IntegerType.java: New file.
+	* FloatingPointType.java: New file.
+	* ArithmeticType.java: Update.
+	
 	* ArithmeticType.java (toString(Value,ByteBuffer)): Delete.
 	(toPrint(PrintWriter,Location,ByteBuffer,Format)): New.
 	(toPrint(PrintWriter)): New.

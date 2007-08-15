@@ -67,12 +67,14 @@ public class Format
 	writer.print(type);
 	writer.print(" unknown>>");
     }
+
     /**
-     * Print VAL as a signed integer.
-     *
-     * FIXME: Should take a BigInt.
+     * Print the integer at LOCATION.
      */
-    public void printInteger(PrintWriter writer, Location location) {
+    public void print(PrintWriter writer, Location location,
+		      IntegerType type) {
+	// FIXME: Should use information in IntegerType such as the
+	// value's sign and bit-size.
 	long value;
 	long size = location.getByteBuffer().capacity();
 	switch ((int)size) {
@@ -96,11 +98,12 @@ public class Format
     }
 
     /**
-     * Print VAL as a floating-point.
-     *
-     * FIXME: Should take a BigFloat.
+     * Print the floating-point at LOCATION.
      */
-    public void printFloatingPoint(PrintWriter writer, Location location) {
+    public void print(PrintWriter writer, Location location,
+		      FloatingPointType type) {
+	// FIXME: Should use information in IntegerType, not location.
+	// For instance the SIGN.
 	long size = location.getByteBuffer().capacity();
 	switch((int) size) {
 	case 4:

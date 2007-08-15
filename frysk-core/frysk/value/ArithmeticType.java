@@ -652,11 +652,13 @@ public class ArithmeticType
 	case BaseTypes.baseTypeShort:
 	case BaseTypes.baseTypeInteger:
 	case BaseTypes.baseTypeLong:
-	    format.printInteger(writer, location);
+	    // XXX: Force the correct method using a NULL cast.
+	    format.print(writer, location, (IntegerType)null);
 	    break;
 	case BaseTypes.baseTypeFloat:
 	case BaseTypes.baseTypeDouble:
-	    format.printFloatingPoint(writer, location);
+	    // XXX: Force the correct method using a NULL cast.
+	    format.print(writer, location, (FloatingPointType)null);
 	    break;
 	default:
 	    format.printUnknown(writer, this);
