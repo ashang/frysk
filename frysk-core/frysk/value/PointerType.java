@@ -44,7 +44,6 @@ import lib.dwfl.BaseTypes;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
-
 /**
  * Type for a pointer.
  */
@@ -53,21 +52,18 @@ public class PointerType
 {
     private final Type type;
     
-    public Type getType ()
-    {
-      return type;
+    public Type getType () {
+	return type;
     }
     
-    public String toString (Value v, ByteBuffer b)
-    {
+    public String toString (Value v, ByteBuffer b) {
 	StringBuffer strBuf = new StringBuffer();
 	long addr = v.getLong();
 	strBuf.append("0x" + Long.toHexString(addr));
 	if (getType().typeId == BaseTypes.baseTypeByte) {
 	    char ch= (char)b.getByte(addr);
 	    strBuf.append(" \"" + ch);
-	    while (ch != 0)
-	    {
+	    while (ch != 0) {
 		addr+= 1;
 		ch= (char)b.getByte(addr);
 		strBuf.append(ch);
@@ -77,46 +73,44 @@ public class PointerType
 	return strBuf.toString();
     }
 
-    public String getName ()
-    {
-      StringBuffer strBuf = new StringBuffer();
-      if (type == null)
-	strBuf.append("void");
-      else
-	strBuf.append(type.getName());
-      strBuf.append(" *");
-      return strBuf.toString();
+    public String getName () {
+	StringBuffer strBuf = new StringBuffer();
+	if (type == null)
+	    strBuf.append("void");
+	else
+	    strBuf.append(type.getName());
+	strBuf.append(" *");
+	return strBuf.toString();
     }
-
+    
     /**
      * Create a PointerType
      * 
      * @param typep - Type of pointed to value
      */
-    public PointerType (ByteOrder endian, Type type, String typeStr)
-    {
-      super(8, endian, 0, typeStr);
-      this.type = type;
+    public PointerType (ByteOrder endian, Type type, String typeStr) {
+	super(8, endian, 0, typeStr);
+	this.type = type;
     }
 
     public Value add (Value var1, Value var2)
 	throws InvalidOperatorException
     {
-      return ArithmeticType.newLongValue((ArithmeticType)type, 
-                                         var1.asLong() + var2.asLong());
+	return ArithmeticType.newLongValue((ArithmeticType)type, 
+					   var1.asLong() + var2.asLong());
     }
 
     public Value subtract (Value var1, Value var2)
 	throws InvalidOperatorException
     {
-      return ArithmeticType.newLongValue((ArithmeticType)type, 
-                                         var1.asLong() - var2.asLong());
+	return ArithmeticType.newLongValue((ArithmeticType)type, 
+					   var1.asLong() - var2.asLong());
     }
 
     public Value logicalNegation(Value var1) 
         throws InvalidOperatorException
     {
-      throw (new InvalidOperatorException());
+	throw (new InvalidOperatorException());
     }
     
     public Value assign (Value var1, Value var2)
@@ -272,7 +266,7 @@ public class PointerType
     public Value bitWiseComplement (Value var1)
         throws InvalidOperatorException
     {
-      throw (new InvalidOperatorException());
+	throw (new InvalidOperatorException());
     }
     
     public Value logicalAnd (Value var1, Value var2)

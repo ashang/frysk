@@ -41,7 +41,6 @@ package frysk.value;
 
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
-
 import java.util.ArrayList;
 
 /**
@@ -50,247 +49,242 @@ import java.util.ArrayList;
 public class FunctionType
     extends Type
 {
-  Type returnType;
+    Type returnType;
   
-  ArrayList parmTypes;	// Type of parameter
+    ArrayList parmTypes;	// Type of parameter
 
-  ArrayList parmNames;	// Name of parameter
+    ArrayList parmNames;	// Name of parameter
   
    
-  public String toString (Value v, ByteBuffer b)
-  {
-    return "0x" + Long.toHexString(v.getLong());
-  }
-  
-  public String getName ()
-  {
-    StringBuffer strBuf = new StringBuffer();
-    if (returnType == null)
-      strBuf.append("void");
-    else
-      strBuf.append(returnType.getName());
-    strBuf.append(" " + this.name + " (");
-    for (int i = 0; i < this.parmTypes.size(); i++)
-      {
-	strBuf.append(((Type)this.parmTypes.get(i)).getName() + " ");
-	strBuf.append((String)this.parmNames.get(i));
-	strBuf.append(",");
-      }
-    if (this.parmTypes.size() == 0)
-	strBuf.append(")");
-    else
-	strBuf.setCharAt(strBuf.length() - 1, ')');
-    return strBuf.toString();
-  }
-
-  /**
-   * Create an FunctionType
-   * 
-   * @param endian - Endianness of class
-   */
-  public FunctionType (ByteOrder endian, String name, Type returnType)
-  {
-    super(8, endian, 0, name);
-    this.returnType = returnType;
-    parmTypes = new ArrayList();
-    parmNames = new ArrayList();
-  }
-
-  public void addParameter (Type member, String name)
-  {
-    parmTypes.add(member);
-    parmNames.add(name);
-  }
-
-  public Value add (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
-
-  public Value subtract (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
-
-  public Value logicalNegation(Value var1) 
-    throws InvalidOperatorException
-    {
-      throw (new InvalidOperatorException());
+    public String toString (Value v, ByteBuffer b) {
+	return "0x" + Long.toHexString(v.getLong());
     }
   
-  public Value assign (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public String getName () {
+	StringBuffer strBuf = new StringBuffer();
+	if (returnType == null)
+	    strBuf.append("void");
+	else
+	    strBuf.append(returnType.getName());
+	strBuf.append(" " + this.name + " (");
+	for (int i = 0; i < this.parmTypes.size(); i++) {
+	    strBuf.append(((Type)this.parmTypes.get(i)).getName() + " ");
+	    strBuf.append((String)this.parmNames.get(i));
+	    strBuf.append(",");
+	}
+	if (this.parmTypes.size() == 0)
+	    strBuf.append(")");
+	else
+	    strBuf.setCharAt(strBuf.length() - 1, ')');
+	return strBuf.toString();
+    }
+    
+    /**
+     * Create an FunctionType
+     * 
+     * @param endian - Endianness of class
+     */
+    public FunctionType (ByteOrder endian, String name, Type returnType) {
+	super(8, endian, 0, name);
+	this.returnType = returnType;
+	parmTypes = new ArrayList();
+	parmNames = new ArrayList();
+    }
 
-  public Value timesEqual (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public void addParameter (Type member, String name) {
+	parmTypes.add(member);
+	parmNames.add(name);
+    }
 
-  public Value divideEqual (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value add (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value minusEqual (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value subtract (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value plusEqual (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value logicalNegation(Value var1) 
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
+  
+    public Value assign (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value modEqual (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value timesEqual (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value shiftLeftEqual (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value divideEqual (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value shiftRightEqual (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value minusEqual (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value bitWiseAndEqual (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value plusEqual (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value bitWiseOrEqual (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value modEqual (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value bitWiseXorEqual (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value shiftLeftEqual (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value multiply (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value shiftRightEqual (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value divide (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value bitWiseAndEqual (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value mod (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value bitWiseOrEqual (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value shiftLeft (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value bitWiseXorEqual (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value shiftRight (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value multiply (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value lessThan (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value divide (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value greaterThan (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value mod (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value greaterThanOrEqualTo (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value shiftLeft (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value lessThanOrEqualTo (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value shiftRight (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value equal (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value lessThan (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value notEqual (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value greaterThan (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value bitWiseAnd (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value greaterThanOrEqualTo (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value bitWiseOr (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value lessThanOrEqualTo (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value bitWiseXor (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value equal (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value bitWiseComplement (Value var1)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value notEqual (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value logicalAnd (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value bitWiseAnd (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Value logicalOr (Value var1, Value var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value bitWiseOr (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public boolean getLogicalValue (Value var1)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Value bitWiseXor (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
+
+    public Value bitWiseComplement (Value var1)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
+
+    public Value logicalAnd (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
+
+    public Value logicalOr (Value var1, Value var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
+
+    public boolean getLogicalValue (Value var1)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 }

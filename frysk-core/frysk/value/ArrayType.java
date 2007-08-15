@@ -57,7 +57,7 @@ public class ArrayType
 
     public Type getType ()
     {
-      return type;
+	return type;
     }
 
     /**
@@ -74,26 +74,22 @@ public class ArrayType
 
 	Value v;
 
-	ArrayIterator (Value v)
-	{
+	ArrayIterator (Value v) {
 	    idx = - 1;
 	    stride[0] = 1;
 	    this.v = v;
 
-	    for (int i = 1; i < dimCount; i++)
-		{
-		    int d = ((Integer) (dimensions.get(dimCount - i))).intValue() + 1;
-		    stride[i] = d * stride[i - 1];
-		}
+	    for (int i = 1; i < dimCount; i++) {
+		int d = ((Integer) (dimensions.get(dimCount - i))).intValue() + 1;
+		stride[i] = d * stride[i - 1];
+	    }
 	    stride[dimCount] = (((Integer) (dimensions.get(0))).intValue() + 1) * stride[dimCount - 1]; 
 	}
 
-	public boolean hasNext ()
-	{
+	public boolean hasNext () {
 	    idx += 1;
 	    element = idx;
 	    dim = dimCount;
-
 	    if (idx < stride[dimCount])
 		return true;
 	    return false;
@@ -102,61 +98,53 @@ public class ArrayType
 	/**
 	 * @return The next dimension index for the corresponding array element
 	 */
-	public int nextIdx ()
-	{
-	  dim -= 1;
-	  if (dim > 0)
-	    {
-	      if (element >= stride[dim])
-		{
-		  int newDim = element / (stride[dim]);
-		  element = element % (stride[dim]);
-		  return newDim;
+	public int nextIdx () {
+	    dim -= 1;
+	    if (dim > 0) {
+		if (element >= stride[dim]) {
+		    int newDim = element / (stride[dim]);
+		    element = element % (stride[dim]);
+		    return newDim;
 		}
-	      return 0;
+		return 0;
 	    }
-	  return element;
+	    return element;
 	}
-
-	public Object next ()
-	{
-	  return getValue (v, idx);
+	
+	public Object next () {
+	    return getValue (v, idx);
 	}
-
+	
 	public void remove ()
 	{
 	}
     }
 
-    private Value getValue (Value v, int idx)
-    {
-      int off = idx * type.getSize();
-      switch (type.typeId)
-      {
-      case (BaseTypes.baseTypeByte):
-	return ArithmeticType.newByteValue((ArithmeticType)type, v.getByte((off)));
-      case (BaseTypes.baseTypeShort):
-	return ArithmeticType.newShortValue((ArithmeticType)type, v.getShort(off));
-      case (BaseTypes.baseTypeInteger):
-	return ArithmeticType.newIntegerValue((ArithmeticType)type, v.getInt(off));
-      case (BaseTypes.baseTypeLong):
-	return ArithmeticType.newLongValue((ArithmeticType)type, v.getLong(off));
-      case (BaseTypes.baseTypeFloat):
-	return ArithmeticType.newFloatValue((ArithmeticType)type, v.getFloat(off));
-      case (BaseTypes.baseTypeDouble):
-	return ArithmeticType.newDoubleValue((ArithmeticType)type, v.getDouble(off));
-      }
-      if (type instanceof ClassType)
-	{
-	  ByteBuffer abb = v.getLocation().getByteBuffer().slice(off, type.size);
-	  abb.order(type.getEndian());
-	  return new Value((ClassType)type, v.getTextFIXME(), abb);
+    private Value getValue (Value v, int idx) {
+	int off = idx * type.getSize();
+	switch (type.typeId) {
+	case (BaseTypes.baseTypeByte):
+	    return ArithmeticType.newByteValue((ArithmeticType)type, v.getByte((off)));
+	case (BaseTypes.baseTypeShort):
+	    return ArithmeticType.newShortValue((ArithmeticType)type, v.getShort(off));
+	case (BaseTypes.baseTypeInteger):
+	    return ArithmeticType.newIntegerValue((ArithmeticType)type, v.getInt(off));
+	    case (BaseTypes.baseTypeLong):
+		return ArithmeticType.newLongValue((ArithmeticType)type, v.getLong(off));
+	case (BaseTypes.baseTypeFloat):
+	    return ArithmeticType.newFloatValue((ArithmeticType)type, v.getFloat(off));
+	case (BaseTypes.baseTypeDouble):
+	    return ArithmeticType.newDoubleValue((ArithmeticType)type, v.getDouble(off));
 	}
-      return null;
+	if (type instanceof ClassType) {
+	    ByteBuffer abb = v.getLocation().getByteBuffer().slice(off, type.size);
+	    abb.order(type.getEndian());
+	    return new Value((ClassType)type, v.getTextFIXME(), abb);
+	}
+	return null;
     }
     
-    private Value buildArraySlice(Value v, int count, int offset)
-    {
+    private Value buildArraySlice(Value v, int count, int offset) {
 	ArrayList dims = new ArrayList();
 	dims.add(new Integer(count));
 	ArrayType arrayType = new ArrayType(this.getType(), count * type.size, dims);
@@ -165,129 +153,111 @@ public class ArrayType
 	return new Value(arrayType, v.getTextFIXME(), abb);
     }
     
-    public ArrayIterator iterator (Value v)
-    {
+    public ArrayIterator iterator (Value v) {
 	return new ArrayIterator(v);
     }
 
-    public Value get (Value v, int componentsIdx, ArrayList components)
-    {
-      int dimCount = dimensions.size();
-      int stride[] = new int[dimCount + 1];
+    public Value get (Value v, int componentsIdx, ArrayList components) {
+	int dimCount = dimensions.size();
+	int stride[] = new int[dimCount + 1];
       
-      stride[0] = 1;
-      for (int i = 1; i < dimCount; i++)
-	{
-	  int d = ((Integer) (dimensions.get(dimCount - i))).intValue() + 1;
-	  stride[i] = d * stride[i - 1];
+	stride[0] = 1;
+	for (int i = 1; i < dimCount; i++) {
+	    int d = ((Integer) (dimensions.get(dimCount - i))).intValue() + 1;
+	    stride[i] = d * stride[i - 1];
 	}
-      stride[dimCount] = (((Integer) (dimensions.get(0))).intValue() + 1) * stride[dimCount - 1]; 
-      
-      int offset = 0;
-
-      int d = dimCount;
-      if (componentsIdx >= components.size())	// want the entire array?
-	return v;
-
-      subscript_loop:
-      while (componentsIdx < components.size())
-	{
-	  int lbound = Integer.parseInt((String)components.get(componentsIdx));
-	  int hbound = Integer.parseInt((String)components.get(componentsIdx+1));
-
-	  d -= 1;
-	  if (d < 0)
-	    break subscript_loop;
-	  try
-	  {
-	    offset += stride[d] * lbound;
-	  }
-	  catch (NumberFormatException e) 
-	  {
-	    break subscript_loop;
-	  }
-	  if (lbound != hbound)
-	      return buildArraySlice(v, hbound - lbound, offset);
-	  componentsIdx += 2;
+	stride[dimCount] = (((Integer) (dimensions.get(0))).intValue() + 1) * stride[dimCount - 1]; 
+	
+	int offset = 0;
+	
+	int d = dimCount;
+	if (componentsIdx >= components.size())	// want the entire array?
+	    return v;
+	
+	subscript_loop:
+	while (componentsIdx < components.size()) {
+	    int lbound = Integer.parseInt((String)components.get(componentsIdx));
+	    int hbound = Integer.parseInt((String)components.get(componentsIdx+1));
+	    
+	    d -= 1;
+	    if (d < 0)
+		break subscript_loop;
+	    try {
+		offset += stride[d] * lbound;
+	    } catch (NumberFormatException e) {
+		break subscript_loop;
+	    }
+	    if (lbound != hbound)
+		return buildArraySlice(v, hbound - lbound, offset);
+	    componentsIdx += 2;
 	}
-      v = getValue (v, offset);
-      if (v.getType() instanceof ClassType)
-	return ((ClassType)v.getType()).get(v, componentsIdx, components);
-      else
-	return v;
+	v = getValue (v, offset);
+	if (v.getType() instanceof ClassType)
+	    return ((ClassType)v.getType()).get(v, componentsIdx, components);
+	else
+	    return v;
     }
     
-    public String toString (Value v, ByteBuffer b)
-    {
-      StringBuffer strBuf = new StringBuffer();
-      ArrayIterator e = iterator(v);
-      boolean isString = false;
-      if (type.typeId == BaseTypes.baseTypeByte)
-	{
-	  isString = true;
-	  strBuf.append("\"");
+    public String toString (Value v, ByteBuffer b) {
+	StringBuffer strBuf = new StringBuffer();
+	ArrayIterator e = iterator(v);
+	boolean isString = false;
+	if (type.typeId == BaseTypes.baseTypeByte) {
+	    isString = true;
+	    strBuf.append("\"");
+	} else {
+	    for (int i = 1; i <= e.dimCount; i++)
+		strBuf.append("{");
 	}
-      else
-	for (int i = 1; i <= e.dimCount; i++)
-	  strBuf.append("{");
-      boolean firstTime = true;
-      boolean eos = false;
-      while (e.hasNext())
-	{
-	  if (!isString)
-	    {
-	      int dimCount = e.dimCount;
-	      boolean putBraces = false;
-	      for (int j = dimCount; j >= 1; j--)
-		{
-		  int nextIdx = e.nextIdx();
-		  if (j != dimCount && nextIdx == 0)
-		    {
-		      putBraces = true;
-		      if (firstTime)
-			{
-			  firstTime = false;
-			  putBraces = false;
+	boolean firstTime = true;
+	boolean eos = false;
+	while (e.hasNext()) {
+	    if (!isString) {
+		int dimCount = e.dimCount;
+		boolean putBraces = false;
+		for (int j = dimCount; j >= 1; j--) {
+		    int nextIdx = e.nextIdx();
+		    if (j != dimCount && nextIdx == 0) {
+			putBraces = true;
+			if (firstTime) {
+			    firstTime = false;
+			    putBraces = false;
 			}
 		    }
 		}
-	      if (putBraces)
-		strBuf.append("},{");
-	      else if (e.idx != 0)
-		strBuf.append(",");
-	      strBuf.append(e.next());
-	    }
-	  else	
-	    {
-	      char ch = (char)((Value)e.next()).getByte();
-	      if (eos == false)
-		  if (ch == 0)
-		      eos = true;
-		  else
-		      strBuf.append(ch);
+		if (putBraces)
+		    strBuf.append("},{");
+		else if (e.idx != 0)
+		    strBuf.append(",");
+		strBuf.append(e.next());
+	    } else {
+		char ch = (char)((Value)e.next()).getByte();
+		if (eos == false)
+		    if (ch == 0)
+			eos = true;
+		    else
+			strBuf.append(ch);
 	    }
 	}
-      if (isString)
-	strBuf.append("\"");
-      else
-	for (int i = 1; i <= e.dimCount; i++)
-	  strBuf.append("}");
-      return strBuf.toString();
+	if (isString)
+	    strBuf.append("\"");
+	else
+	    for (int i = 1; i <= e.dimCount; i++)
+		strBuf.append("}");
+	return strBuf.toString();
     }
 
-    public String getName ()
-    {
-      StringBuffer strBuf = new StringBuffer();
-      strBuf.append(type.getName());
-      strBuf.append(" [");
-      for(int i = 0; i < this.dimensions.size(); i++)
-        {
-          if (i > 0)
-            strBuf.append(",");
-          strBuf.append(((Integer)this.dimensions.get(i)).intValue() + 1);
-        }
-      strBuf.append("]");
-      return strBuf.toString();
+    public String getName () {
+	StringBuffer strBuf = new StringBuffer();
+	strBuf.append(type.getName());
+	strBuf.append(" [");
+	for(int i = 0; i < this.dimensions.size(); i++) {
+	    if (i > 0)
+		strBuf.append(",");
+	    strBuf.append(((Integer)this.dimensions.get(i)).intValue() + 1);
+	}
+	strBuf.append("]");
+	return strBuf.toString();
     }
 
     /**
@@ -296,8 +266,7 @@ public class ArrayType
      * @param typep - Type of each array element
      * @param dimensionsp - ArrayList of dimension upper bounds.
      */
-    public ArrayType (Type typep, int size, ArrayList dimensionsp)
-    {
+    public ArrayType (Type typep, int size, ArrayList dimensionsp) {
 	super(size, typep.endian, 0, "array");
 	type = typep;
 	dimensions = dimensionsp;
@@ -312,13 +281,13 @@ public class ArrayType
     public Value subtract (Value var1, Value var2)
         throws InvalidOperatorException
     {
-      throw (new InvalidOperatorException());
+	throw (new InvalidOperatorException());
     }
 
     public Value logicalNegation(Value var1) 
         throws InvalidOperatorException
     {
-      throw (new InvalidOperatorException());
+	throw (new InvalidOperatorException());
     }
     
     public Value assign (Value var1, Value var2)
@@ -474,7 +443,7 @@ public class ArrayType
     public Value bitWiseComplement (Value var1)
         throws InvalidOperatorException
     {
-      throw (new InvalidOperatorException());
+	throw (new InvalidOperatorException());
     }
     
     public Value logicalAnd (Value var1, Value var2)

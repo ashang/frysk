@@ -1,5 +1,11 @@
 2007-08-15  Andrew Cagney  <cagney@redhat.com>
 
+	* EnumType.java: Re-indent.
+	* FunctionType.java: Re-indent.
+	* ClassType.java: Re-indent.
+	* PointerType.java: Re-indent.
+	* ArrayType.java: Re-indent.
+
 	* Type.java (getTypeIdFIXME): Rename getTypeId.
 	* ArithmeticType.java: Update.
 	* Value.java: Update.
