@@ -142,7 +142,7 @@ public class fhpd
     reader.addCompletor(fhpdCompletor);
     try {
       cli.execCommand(line);
-      while (line != null && ! (line.equals("quit") || line.equals("q"))) 
+      while (line != null && ! (line.equals("quit") || line.equals("q") || line.equals("exit"))) 
 	{
 	  line = reader.readLine(cli.getPrompt());
 	  cli.execCommand(line);
