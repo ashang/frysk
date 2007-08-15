@@ -42,7 +42,6 @@ package frysk.hpd;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -230,73 +229,6 @@ public class CLI
     attached = -1;
   }
   
-  class UpDownHandler extends CLIHandler
-  {
-    UpDownHandler(CLI cli, String name) {
-	super (cli, name, "Move " + name + " one or more levels in the call stack", 
-		name + " [num-levels]", "The up (down) command modifies the current frame location(s) by adding\n" +
-		"(subtracting) num-levels. Call stack movements are all relative, so up\n" +
-		"effectively \"moves up\" (or back) in the call stack, to a frame that\n" +
-		"has existed longer, while down \"moves down\" in the call stack,\n" +
-		"following the progress of program execution.");
-    }
-    public void handle(Command cmd) throws ParseException 
-    {
-      PTSet ptset = getCommandPTSet(cmd);
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-      int level = 1;
-      boolean down = true;
-
-      if (params.size() != 0)
-	level = Integer.parseInt((String)params.get(0));
-
-      // For user command 'down', move a level towards the bottom of the call-stack  
-      if (cmd.getAction().compareTo("down") == 0)
-	  down = true;
-      // For user command 'up', move a level towards the top of the call-stack 
-      else if (cmd.getAction().compareTo("up") == 0)
-	  down = false;
-
-      Iterator taskIter = ptset.getTasks();
-      while (taskIter.hasNext())
-        {
-          Task task = (Task)taskIter.next();
-          DebugInfoFrame currentFrame = getTaskFrame(task);
-          DebugInfoFrame tmpFrame = currentFrame;
-
-          int l = level;
-          while (tmpFrame != null && l != 0) {
-            if (down)
-	      tmpFrame = tmpFrame.getOuterDebugInfoFrame();
-            else
-	      tmpFrame = tmpFrame.getInnerDebugInfoFrame();
-            l = l - 1;
-          }
-        
-          if (tmpFrame != null && tmpFrame != currentFrame)
-            {
-              setTaskFrame(task, tmpFrame);
-              setTaskStackLevel(task, (getTaskStackLevel(task)
-                                       + (down ? level : -level)));
-            }
-          if (tmpFrame == null)
-            tmpFrame = currentFrame;
-          outWriter.print("#" + getTaskStackLevel(task) + " ");
-          tmpFrame.toPrint(outWriter, false);
-          outWriter.println();
-        }
-    }
-  }
-  
-  /*
-   * Private variables
-   */
-
   //private static PrintStream out = null;// = System.out;
   final PrintWriter outWriter;
   private Preprocessor prepro;
@@ -373,7 +305,7 @@ public class CLI
     new DeleteCommand(this);
     new DetachCommand(this);
     new DisableCommand(this);
-    new UpDownHandler(this, "down");
+    new UpDownCommand(this, "down");
     new EnableCommand(this);
     new StepFinishCommand(this);
     new FocusCommand(this);
@@ -392,7 +324,7 @@ public class CLI
     new UnaliasCommand(this);
     new UndefsetCommand(this);
     new UnsetCommand(this, dbgvars);
-    new UpDownHandler(this, "up");
+    new UpDownCommand(this, "up");
     new ViewsetCommand(this);
     new WhatCommand(this);
     new WhereCommand(this);

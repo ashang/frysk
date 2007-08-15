@@ -1,3 +1,8 @@
+2007-08-15  Nurdin Premji  <npremji@redhat.com>
+
+	* CLI.java (UpDownHandler): Moved from here ...
+	* UpDownCommand.java: ... to here. Sun formatted.
+
 2007-08-15  Mike Cvet  <mcvet@redhat.com>
 
 	* StepFinishCommand.java (StepFinishCommand): Added help messages.
