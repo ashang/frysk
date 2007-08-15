@@ -1095,7 +1095,10 @@ class LinuxTaskState
       // installed a breakpoint at the address.  Otherwise it is a
       // real trap event and we should treat it like a trap
       // signal.
-      if (isa.isTaskStepped(task) || task.just_started)
+      Breakpoint steppingBreakpoint = task.steppingBreakpoint;
+      if (isa.isTaskStepped(task)
+	  || steppingBreakpoint != null
+	  || task.just_started)
 	{
 	  task.just_started = false;
 	  
@@ -1103,7 +1106,6 @@ class LinuxTaskState
 	  // State).  Reset/Reinstall Intruction, all logic is in the
 	  // Breakpoint and associated Instruction, which will fixup
 	  // any registers for us.
-	  Breakpoint steppingBreakpoint = task.steppingBreakpoint;
 	  if (steppingBreakpoint != null)
 	    {
 	      steppingBreakpoint.stepDone(task);
@@ -1165,6 +1167,45 @@ class LinuxTaskState
 	      return handleSignaledEvent(task, Sig.TRAP_);
 	    }
 	}
+    }
+
+    private void checkBreakpointStepping(Task task)
+    {
+      // Since we were stepping we expected a trap event.
+      // If we were stepping a breakpoint we have to check whether
+      // or not the step occured before or after the breakpoint was
+      // taken and make sure the breakpoint it put back in place.
+      Breakpoint steppingBreakpoint = task.steppingBreakpoint;
+      if (steppingBreakpoint != null)
+	{
+	  long pc = task.getIsa().pc(task);
+	  long setupAddress = steppingBreakpoint.getSetupAddress();
+
+	  // Check whether the breakpoint was actually stepped.
+	  // In theory there are instructions that might not change the
+	  // pc after execution, these are expected to not need fixups.
+	  // If any of them would, then we can add an explicit abort()
+	  // to Instruction so they can special case themselves.
+	  if (pc != setupAddress)
+	    steppingBreakpoint.stepDone(task);
+	  else
+	    steppingBreakpoint.stepAbort(task);
+	}
+    }
+
+    public TaskState handleSignaledEvent(Task task, int sig)
+    {
+      logger.log (Level.FINE, "{0} handleSignaledEvent, signal: {1}\n",
+		  new Object[] {task, new Integer(sig)}); 
+      checkBreakpointStepping(task);
+      return super.handleSignaledEvent(task, sig);
+    }
+
+    public TaskState handleStoppedEvent (Task task)
+    {
+      logger.log (Level.FINE, "{0} handleStoppedEvent\n", new Object[] {task}); 
+      checkBreakpointStepping(task);
+      return super.handleStoppedEvent(task);
     }
   }
 

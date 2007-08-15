@@ -1,3 +1,7 @@
+2007-08-15  Mark Wielaard  <mwielaard@redhat.com>
+
+	* funit-raise.S: New test.
+
 2007-08-10  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-exec.c (main): Add -b -- brand arg0 with PID:TID --

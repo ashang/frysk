@@ -115,6 +115,18 @@ public class Breakpoint implements Comparable
   }
 
   /**
+   * Return the address that the original instruction has been setup
+   * if the breakpoint has been setup. This can be an out of line address
+   * or if doing reset stepping the original address.
+   */
+  public long getSetupAddress()
+  {
+    if (stepping == NOT_STEPPING)
+      throw new IllegalStateException("Not currently stepping");
+    return oo_address != 0 ? oo_address : address;
+  }
+
+  /**
    * Installs breakpoint. Caller must make sure there is no breakpoint set
    * at that address yet and that install() is not called again till remove()
    * is called on it.
@@ -253,6 +265,43 @@ public class Breakpoint implements Comparable
 	    // is available again.
 	    origInstruction.fixupExecuteOutOfLine(task, address, oo_address);
 	    proc.doneOutOfLine(oo_address);
+	    oo_address = 0;
+	  }
+	else if (stepping == SIMULATE_STEPPING)
+	  {
+	    // FIXME: See prepareStep().
+	    System.err.println("Instruction simulation not finished! "
+			       + "Already stepped next instruction. Sorry.");
+	  }
+	else if (stepping == RESET_STEPPING)
+	  {
+	    // Put the breakpoint instruction quickly back.
+	    set(task);
+	  }
+	else
+	  throw new IllegalStateException("Impossible stepping state: "
+					  + stepping);
+      }
+
+    stepping = NOT_STEPPING;
+  }
+
+  /**
+   * Aborts a breakpoint setup (interrupted while stepping).
+   */
+  public void stepAbort(Task task)
+  {
+    if (isInstalled())
+      {
+	if (stepping == NOT_STEPPING)
+	  throw new IllegalStateException("Not stepping");
+	else if (stepping == OUT_OF_LINE_STEPPING)
+	  {
+	    // No step took place, so no fixup needed. Just but
+	    // breakpoint back and cleaer oo_address for Proc.
+	    set(task);
+	    proc.doneOutOfLine(oo_address);
+	    oo_address = 0;
 	  }
 	else if (stepping == SIMULATE_STEPPING)
 	  {

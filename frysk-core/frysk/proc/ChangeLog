@@ -1,5 +1,26 @@
 2007-08-15  Mark Wielaard  <mwielaard@redhat.com>
 
+	* getSetupAddress (getSetupAddress): New method.
+	(stepAbort): Likewise.
+	* TestTaskObserverCode.java (testCodeSignalInterrupt): Enable test.
+	(testInstallCodeDuringCode): Likewise.
+	(Symbol): New static helper class.
+	(getGlobalLabelAddress): New helper method.
+	(breakTest): New test harness for funit-raise.
+	(testBreakDivZero): New test based on breakTest.
+	(testBreakIllegalAddress): Likewise.
+	(testBreakIllegalInstruction): Likewise.
+	(testBreakSignalTerminate): Likewise.
+	(testBreakSignalIgnore): Likewise.
+	(AttachedObserver.task): New field.
+	(updateAttached): Set task field.
+	(TerminatingObserver.task): New field.
+	(TerminatingObserver.signal): Likewise.
+	(TerminatingObserver.value): Likewise.
+	(TerminatingObserver.updateTerminating): Set new fields.
+	
+2007-08-15  Mark Wielaard  <mwielaard@redhat.com>
+
 	* TestTaskObserverDetach.java (assertDetach): Use TestLib
 	assertStatState().
 

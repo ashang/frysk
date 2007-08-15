@@ -1,3 +1,11 @@
+2007-08-15  Mark Wielaard  <mwielaard@redhat.com>
+
+	* LinuxTaskState.java (Stepping.handleTrappedpEvent): Always check
+	steppingBreakpoint.
+	(checkBreakpointStepping): New helper method.
+	(handleSignaledEvent): Use checkBreakpointStepping before continuing.
+	(handleStoppedEvent): Likewise.
+
 2007-08-02  Mark Wielaard  <mwielaard@redhat.com>
 
 	* AddressSpaceByteBuffer.java (mem): New field.

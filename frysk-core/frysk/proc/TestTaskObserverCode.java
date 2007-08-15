@@ -40,11 +40,12 @@
 package frysk.proc;
 
 import inua.eio.*;
-import frysk.testbed.LegacyOffspring;
+import frysk.testbed.*;
 import frysk.sys.*;
-import frysk.testbed.Offspring;
+import frysk.dwfl.*;
 import lib.dwfl.*;
 import java.util.*;
+
 import frysk.testbed.TestLib;
 
 public class TestTaskObserverCode extends TestLib
@@ -144,9 +145,6 @@ public class TestTaskObserverCode extends TestLib
   // testcase for bug #4747
   public void testCodeSignalInterrupt() throws Exception
   {
-    if (unresolved(4747))
-      return;
-
     // Create a child.
     child = LegacyOffspring.createDaemon();
     task = child.findTaskUsingRefresh (true);
@@ -219,9 +217,6 @@ public class TestTaskObserverCode extends TestLib
   // Testcase for bug #4889
   public void testInstallCodeDuringCode() throws Exception
   {
-    if (unresolved(4889))
-      return;
-
     // Create a child.
     child = LegacyOffspring.createDaemon();
     task = child.findTaskUsingRefresh (true);
@@ -289,6 +284,175 @@ public class TestTaskObserverCode extends TestLib
 
     assertEquals(code.hits, 2);
     assertEquals(code.deletes, 2);
+  }
+
+  // Helper class since there there isn't a get symbol method in Dwfl,
+  // so we need to wrap it all in a builder pattern.
+  static class Symbol implements SymbolBuilder
+  {
+    private String name;
+    private long address;
+    
+    private boolean found;
+    
+    private Symbol()
+    {
+      // properties get set in public static get() method.
+    }
+    
+    static Symbol get(Dwfl dwfl, String name)
+    {
+      Symbol sym = new Symbol();
+      sym.name = name;
+      DwflModule[] modules = dwfl.getModules();
+      for (int i = 0; i < modules.length && ! sym.found; i++)
+	modules[i].getSymbolByName(name, sym);
+      
+      if (sym.found)
+	return sym;
+      else
+	return null;
+    }
+    
+    String getName()
+    {
+      return name;
+    }
+    
+    long getAddress()
+    {
+      return address;
+    }
+    
+    public void symbol(String name, long value, long size,
+		       int type, int bind, int visibility)
+    {
+      if (name.equals(this.name))
+	{
+	  this.address = value;
+	  this.found = true;
+	}
+    }
+  }
+
+  /**
+   * Returns the address of a global label by quering the the Proc
+   * main Task's Dwlf.
+   */
+  long getGlobalLabelAddress(String label)
+  {
+    Dwfl dwfl = DwflCache.getDwfl(task);
+    Symbol sym = Symbol.get(dwfl, label);
+    return sym.getAddress();
+  }
+
+  private void breakTest(final int argc)
+  {
+    // Translate testname to argc (used by test to select where to jump),
+    // label name to put breakpoint on, expected signal and whether or
+    // not the exit will be clean.
+    String testName;
+    int signal;
+    boolean cleanExit;
+    switch (argc)
+      {
+      case 1:
+	testName = "div_zero";
+	signal = Sig.FPE_;
+	cleanExit = false;
+	break;
+      case 2:
+	testName = "bad_addr_segv";
+	signal = Sig.SEGV_;
+	cleanExit = false;
+	break;
+      case 3:
+	testName = "bad_inst_ill";
+	signal = Sig.ILL_;
+	cleanExit = false;
+	break;
+      case 4:
+	testName = "term_sig_hup";
+	signal = Sig.HUP_;
+	cleanExit = false;
+	break;
+      case 5:
+	testName = "ign_sig_urg";
+	signal = Sig.URG_;
+	cleanExit = true;
+	break;
+      default:
+	throw new RuntimeException("No such test: " + argc);
+      }
+    String label = testName + "_label";
+
+    String[] command = new String[argc + 1];
+    command[0] =  getExecPath("funit-raise");
+    for (int i = 1; i < argc + 1; i++)
+      command[i] = Integer.toString(i);
+
+    AttachedObserver ao = new AttachedObserver();
+    Manager.host.requestCreateAttachedProc("/dev/null",
+                                           "/dev/null",
+                                           "/dev/null", command, ao);
+    assertRunUntilStop("attach then block");
+    assertTrue("AttachedObserver got Task", ao.task != null);
+
+    task = ao.task;
+
+    long address = getGlobalLabelAddress(label);
+    CodeObserver code = new CodeObserver(task, address);
+    task.requestAddCodeObserver(code, address);
+    assertRunUntilStop("add breakpoint observer");
+
+    // Delete and unblock
+    task.requestDeleteAttachedObserver(ao);
+    assertRunUntilStop("wait for breakpoint hit");
+
+    SignaledObserver so = new SignaledObserver();
+    task.requestAddSignaledObserver(so);
+    assertRunUntilStop("add signal observer");
+
+    task.requestUnblock(code);
+    assertRunUntilStop("wait for signal observer hit");
+    assertEquals(signal, so.sig);
+
+    TerminatingObserver to = new TerminatingObserver();
+    task.requestAddTerminatingObserver(to);
+    assertRunUntilStop("add terminating observer");
+
+    task.requestUnblock(so);
+    assertRunUntilStop("wait for terminating observer hit");
+    assertEquals("killed by signal", ! cleanExit, to.signal);
+    assertEquals("exit/signal value", cleanExit ? 0 : signal, to.value);
+
+    // And let it go...
+    task.requestDeleteTerminatingObserver(to);
+  }
+
+  public void testBreakDivZero()
+  {
+    breakTest(1);
+  }
+
+  public void testBreakIllegalAddress()
+  {
+    breakTest(2);
+  }
+
+  public void testBreakIllegalInstruction()
+  {
+    breakTest(3);
+  }
+
+  public void testBreakSignalTerminate()
+  {
+    breakTest(4);
+  }
+
+  public void testBreakSignalIgnore()
+  {
+    breakTest(5);
   }
 
   // Tests that breakpoint instructions are not visible to
@@ -651,8 +815,11 @@ public class TestTaskObserverCode extends TestLib
   static class AttachedObserver
     implements TaskObserver.Attached
   {
+    Task task;
+
     public Action updateAttached(Task task)
     {
+      this.task = task;
       Manager.eventLoop.requestStop();
       return Action.BLOCK;
     }
@@ -702,11 +869,19 @@ public class TestTaskObserverCode extends TestLib
     }
   }
 
-  private class TerminatingObserver
+  class TerminatingObserver
     implements TaskObserver.Terminating
   {
+    Task task;
+    boolean signal;
+    int value;
+
     public Action updateTerminating (Task task, boolean signal, int value)
     {
+      this.task = task;
+      this.signal = signal;
+      this.value = value;
+
       Manager.eventLoop.requestStop();
       return Action.BLOCK;
     }
