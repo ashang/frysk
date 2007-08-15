@@ -197,7 +197,6 @@ public final class fstack
 		    public void parsed(String argument) throws OptionException {
 			virtualFrames = true;
 			elfOnly = false;
-			System.out.println(".parsed() virtualFrames " + virtualFrames);
 		    }
 		});
 
