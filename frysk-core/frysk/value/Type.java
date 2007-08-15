@@ -88,7 +88,14 @@ public abstract class Type {
 	return endian;
     }
 
-    public int getTypeId() {
+    /**
+     * This returns the DWARF type identifier.
+     *
+     * XXX: Client code should be querying the type's attributes
+     * (signed? size?) and not coding switches based on this return
+     * value (== baseTypeUnsignedShort).
+     */
+    public int getTypeIdFIXME() {
 	return typeId;
     }
 

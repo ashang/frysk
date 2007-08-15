@@ -1,3 +1,9 @@
+2007-08-15  Andrew Cagney  <cagney@redhat.com>
+
+	* Type.java (getTypeIdFIXME): Rename getTypeId.
+	* ArithmeticType.java: Update.
+	* Value.java: Update.
+
 2007-08-15  Stan Cox  <scox@redhat.com>
 
 	* ArrayType.java (buildArraySlice): New.

@@ -155,16 +155,16 @@ public class ArithmeticType
   public Value shiftLeft(Value var1, Value var2) throws InvalidOperatorException 
   {
     Type type;
-    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
       type = var2.getType();
     else
       type = var1.getType();
     
-    if (BaseTypes.isInteger(type.getTypeId()))
+    if (BaseTypes.isInteger(type.getTypeIdFIXME()))
       return newValue(type, var1.asLong() << var2.asLong());
-    else if (BaseTypes.isLong(type.getTypeId()))
+    else if (BaseTypes.isLong(type.getTypeIdFIXME()))
       return newValue(type, var1.asLong() << var2.asLong());
-    else if (BaseTypes.isFloat(var1.getType().getTypeId()))
+    else if (BaseTypes.isFloat(var1.getType().getTypeIdFIXME()))
       throw new InvalidOperatorException(
                                          "binary operator << not defined for type "
 					 + var1.getType().getName());
@@ -174,16 +174,16 @@ public class ArithmeticType
   public Value shiftRight(Value var1, Value var2) throws InvalidOperatorException 
   {
     Type type;
-    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
       type = var2.getType();
     else
       type = var1.getType();
     
-    if (BaseTypes.isInteger(type.getTypeId()))
+    if (BaseTypes.isInteger(type.getTypeIdFIXME()))
       return newValue(type, var1.asLong() >> var2.asLong());
-    else if (BaseTypes.isLong(type.getTypeId()))
+    else if (BaseTypes.isLong(type.getTypeIdFIXME()))
       return newValue(type, var1.asLong() >> var2.asLong());
-    else if (BaseTypes.isFloat(var1.getType().getTypeId()))
+    else if (BaseTypes.isFloat(var1.getType().getTypeIdFIXME()))
       throw new InvalidOperatorException(
                                          "binary operator >> not defined for type "
 					 + var1.getType().getName());
@@ -306,11 +306,11 @@ public class ArithmeticType
     else
       type = var1.getType();
     
-    if (BaseTypes.isInteger(type.getTypeId()))
+    if (BaseTypes.isInteger(type.getTypeIdFIXME()))
       return newValue(type, var1.asLong() & var2.asLong());
-    else if (BaseTypes.isLong(type.getTypeId()))
+    else if (BaseTypes.isLong(type.getTypeIdFIXME()))
       return newValue(type, var1.asLong() & var2.asLong());
-    else if (BaseTypes.isFloat(var1.getType().getTypeId()))
+    else if (BaseTypes.isFloat(var1.getType().getTypeIdFIXME()))
       throw new InvalidOperatorException(
                                          "binary operator & not defined for type "
 					 + var1.getType().getName());

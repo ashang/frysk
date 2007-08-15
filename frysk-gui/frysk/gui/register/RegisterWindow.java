@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -454,7 +454,7 @@ private void setValues(Task myTask, Isa isa, ListStore model) {
 	  = (Value)model.getValue(iter, valueColumn);
 	
 	ArithmeticType type;
-	type = new ArithmeticType(register.type.getSize(), ByteOrder.LITTLE_ENDIAN, register.type.getTypeId(), register.type.getName());
+	type = new ArithmeticType(register.type.getSize(), ByteOrder.LITTLE_ENDIAN, register.type.getTypeIdFIXME(), register.type.getName());
 	// Binary little endian
 	model.setValue(iter, binaryLittleEndianColumn, 
 		       stringUsingValue(value, type, Format.BINARY));
@@ -469,7 +469,7 @@ private void setValues(Task myTask, Isa isa, ListStore model) {
 		       stringUsingValue(value, type, Format.OCTAL));
 
 	//Switch endian-ness.	
-	type = new ArithmeticType(register.type.getSize(), ByteOrder.BIG_ENDIAN, register.type.getTypeId(), register.type.getName());
+	type = new ArithmeticType(register.type.getSize(), ByteOrder.BIG_ENDIAN, register.type.getTypeIdFIXME(), register.type.getName());
 	// Binary big endian
 	model.setValue(iter, binaryBigEndianColumn, 
 		       stringUsingValue(value, type, Format.BINARY));

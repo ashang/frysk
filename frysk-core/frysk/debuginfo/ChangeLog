@@ -1,3 +1,8 @@
+2007-08-15  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfoEvaluator.java: Type.getTypeId renamed to
+	Type.getTypeIdFIXME.
+
 2007-08-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DebugInfoFrame.java (getSubprogram): Added check for size of scopes

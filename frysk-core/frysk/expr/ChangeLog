@@ -1,3 +1,7 @@
+2007-08-15  Andrew Cagney  <cagney@redhat.com>
+
+	* cpp.g: Type.getTypeId renamed to Type.getTypeIdFIXME.
+
 2007-08-15  Stan Cox  <scox@redhat.com>
 
 	* cpp.g (variable): Support array[x:y] and array@n.

@@ -1,3 +1,8 @@
+2007-08-15  Andrew Cagney  <cagney@redhat.com>
+
+	* register/RegisterWindow.java: Type.getTypeId renamed to
+	Type.getTypeIdFIXME.
+
 2007-08-14  Andrew Cagney  <cagney@redhat.com>
 
 	* register/RegisterWindow.java (stringUsingValue): Re-implement

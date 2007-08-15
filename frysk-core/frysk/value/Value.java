@@ -296,7 +296,7 @@ public class Value
      */
     public double doubleValue()
     {
-      switch (type.getTypeId())
+      switch (type.getTypeIdFIXME())
       {
 	case BaseTypes.baseTypeByte:
 	  return location.getByte();

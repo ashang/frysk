@@ -485,7 +485,7 @@ class DebugInfoEvaluator
   {
     if (haveTypeDef == false) 
       return type;
-    switch (type.getTypeId())
+    switch (type.getTypeIdFIXME())
     {
       case BaseTypes.baseTypeLong:
       case BaseTypes.baseTypeUnsignedLong:
