@@ -1,5 +1,9 @@
 2007-08-15  Andrew Cagney  <cagney@redhat.com>
 
+	* Location.java (asByteArray): New.
+	(Location(byte[]): New.
+	* TestLocation.java: New file.
+
 	* IntegerType.java: Make constructor public, add boolean parameter.
 	* FloatingPointType.java: Ditto.
 	* ArithmeticType.java: Make abstract.

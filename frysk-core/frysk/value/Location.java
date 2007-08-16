@@ -65,6 +65,33 @@ public class Location
 	this.index = 0;
     }
 
+    /**
+     * Create a location containing BYTES.
+     */
+    Location(byte[] bytes) {
+	this(new ArrayByteBuffer(bytes));
+    }
+
+    /**
+     * Return the contents of the location as an array of bytes.  If
+     * little-endian, reverse the byte-order making it big-endian.
+     *
+     * Useful for code trying to extract byte-order dependant values.
+     */
+    byte[] asByteArray(ByteOrder order) {
+	byte[] bytes = new byte[(int)location.capacity()];
+	location.get(0, bytes, 0, bytes.length);
+	if (order == ByteOrder.LITTLE_ENDIAN) {
+	    for (int i = 0; i < bytes.length / 2; i++) {
+		int j = bytes.length - 1 - i;
+		byte tmp = bytes[i];
+		bytes[i] = bytes[j];
+		bytes[j] = tmp;
+	    }
+	}
+	return bytes;
+    }
+
     public ByteBuffer getByteBuffer() { return location;}
     double getDouble() { return location.getDouble(index); }
     float getFloat() { return location.getFloat(index); }
