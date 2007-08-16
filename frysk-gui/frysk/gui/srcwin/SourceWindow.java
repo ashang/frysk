@@ -284,8 +284,6 @@ public class SourceWindow extends Window {
 
     private LockObserver lock;
 
-    protected ThreadLifeObserver threadObserver;
-
     private org.gnu.gtk.FileChooserDialog chooser;
 
     private FileChooserDialog fc;
@@ -357,7 +355,7 @@ public class SourceWindow extends Window {
          */
     public SourceWindow(LibGlade glade, String gladePath, Proc proc) {
 	super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
-
+	
 	this.setIcon(IconManager.windowIcon);
 
 	this.glade = glade;
@@ -370,8 +368,6 @@ public class SourceWindow extends Window {
 	Proc[] temp = new Proc[1];
 	temp[0] = proc;
 	this.steppingEngine = new SteppingEngine(temp, this.lock);
-	this.threadObserver = new ThreadLifeObserver();
-	this.steppingEngine.setThreadObserver(this.threadObserver);
 	this.termHash = new HashMap();
     }
 
@@ -391,7 +387,7 @@ public class SourceWindow extends Window {
          */
     public SourceWindow(LibGlade glade, String gladePath, Proc[] procs) {
 	super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
-
+	
 	this.setIcon(IconManager.windowIcon);
 
 	this.glade = glade;
@@ -403,8 +399,6 @@ public class SourceWindow extends Window {
 	this.lock = new LockObserver();
 	this.dom = new DOMFrysk[this.numProcs];
 	this.steppingEngine = new SteppingEngine(procs, this.lock);
-	this.threadObserver = new ThreadLifeObserver();
-	this.steppingEngine.setThreadObserver(this.threadObserver);
 	this.termHash = new HashMap();
     }
 
@@ -426,7 +420,7 @@ public class SourceWindow extends Window {
          */
     public SourceWindow(LibGlade glade, String gladePath, DebugInfoFrame trace) {
 	super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
-
+	
 	this.setIcon(IconManager.windowIcon);
 
 	this.glade = glade;
@@ -472,7 +466,7 @@ public class SourceWindow extends Window {
          */
     public SourceWindow(LibGlade glade, String gladePath, DebugInfoFrame[] traces) {
 	super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
-
+	
 	this.setIcon(IconManager.windowIcon);
 
 	this.glade = glade;
@@ -521,6 +515,8 @@ public class SourceWindow extends Window {
          */
     public SourceWindow(LibGlade glade, String gladePath, Proc proc,
 	    SourceWindowFactory.AttachedObserver ao) {
+	
+	
 	this(glade, gladePath, proc);
 	this.attachedObserver = ao;
 
@@ -755,6 +751,21 @@ public class SourceWindow extends Window {
 	this.fi = newFrame.getFrameIdentifier();
 	updateShownStackFrame(newFrame, this.current);
 	updateSourceLabel(newFrame);
+    }
+    
+    /**
+     * Cleans up the SourceWindow after all observed processes have exited.
+     */
+    private void allProcsExited() {
+	((Label) SourceWindow.this.glade.getWidget("sourceLabel"))
+		.setUseMarkup(true);
+	SourceWindow.this.stackView.clear();
+	SourceBuffer b = (SourceBuffer) ((SourceView) view).getBuffer();
+	b.clear();
+	SourceWindow.this.desensitize();
+	SourceWindow.this.stop.setSensitive(false);
+
+	return;
     }
 
     /**
@@ -2493,9 +2504,11 @@ public class SourceWindow extends Window {
 	else
 	    sb = (SourceBuffer) ((MixedView) this.view).getSourceWidget()
 		    .getBuffer();
-
-	for (int i = 0; i < this.frames[this.current].length; i++) {
-	    sb.highlightLine(this.frames[this.current][i], false);
+	
+	if (this.frames.length > 0) {
+	    for (int i = 0; i < this.frames[this.current].length; i++) {
+		sb.highlightLine(this.frames[this.current][i], false);
+	    }
 	}
     }
 
@@ -2508,8 +2521,10 @@ public class SourceWindow extends Window {
 	    sb = (SourceBuffer) ((MixedView) this.view).getSourceWidget()
 		    .getBuffer();
 
-	for (int i = 0; i < this.frames[this.current].length; i++) {
-	    sb.highlightLine(frames[this.current][i], true);
+	if (this.frames.length > 0) {
+	    for (int i = 0; i < this.frames[this.current].length; i++) {
+		sb.highlightLine(frames[this.current][i], true);
+	    }
 	}
     }
 
@@ -3132,37 +3147,6 @@ public class SourceWindow extends Window {
 	}
     }
 
-    /**
-         * Watches for Task creation and exit events.
-         */
-    private class ThreadLifeObserver implements Observer {
-	public void update(Observable o, Object arg) {
-	    if (arg == null) {
-		((Label) SourceWindow.this.glade.getWidget("sourceLabel"))
-			.setText("<b>" + "All processes have exited." + "</b>");
-		((Label) SourceWindow.this.glade.getWidget("sourceLabel"))
-			.setUseMarkup(true);
-		SourceWindow.this.stackView.clear();
-		SourceBuffer b = (SourceBuffer) ((SourceView) view).getBuffer();
-		b.clear();
-		SourceWindow.this.desensitize();
-		SourceWindow.this.stop.setSensitive(false);
-
-		return;
-	    }
-
-	    Task t = (Task) arg;
-	    LinkedList tasks = SourceWindow.this.swProc[SourceWindow.this.current]
-		    .getTasks();
-
-	    if (tasks.contains(t) && tasks.size() == 1) {
-		removeProc(false);
-		SW_add = false;
-		lock.update(null, new Object());
-	    }
-	}
-    }
-
     private boolean SW_add = false;
 
     /**
@@ -3176,30 +3160,48 @@ public class SourceWindow extends Window {
     private class LockObserver implements Observer {
 
 	/**
-         * Builtin Observer method - called whenever the Observable we're
-         * concerned with - in this case the RunState - has changed.
-         * 
-         * @param o
-         *                The Observable we're watching
-         * @param arg
-         *                An Object argument
-         */
+	 * Builtin Observer method - called whenever the Observable we're
+	 * concerned with - in this case the RunState - has changed.
+	 * 
+	 * @param o
+	 *                The Observable we're watching
+	 * @param arg
+	 *                An Object argument
+	 */
 	public void update(Observable o, Object arg) {
-	    /* We don't need to worry about this case here */
+
 	    TaskStepEngine tse = (TaskStepEngine) arg;
-	    // System.err.println("LockObserver.update " + tse + " " +
-                // SW_active + " " + SW_add);
+	    //	     System.err.println("LockObserver.update " + tse + " " + tse.isAlive());
+	    if (!tse.isAlive()) {
+		LinkedList tasks = SourceWindow.this.swProc[SourceWindow.this.current]
+			.getTasks();
+		
+		((Label) SourceWindow.this.glade.getWidget("sourceLabel"))
+		.setText("<b>" + tse.getMessage() + "</b>");
+
+		if (tasks.contains(tse.getTask()) && tasks.size() == 1) {
+
+		    removeProc(false);
+		    SW_add = false;
+
+		    if (swProc.length == 0)
+			allProcsExited();
+
+		    return;
+		}
+	    }
+
 	    if (!tse.getState().isStopped())
 		return;
 
 	    if (SW_active) {
 		if (SW_add == false) {
 		    /*
-                         * This callback was called because all our Proc's Tasks
-                         * were blocked because of some state change operation.
-                         * Re-generate the stack trace information and refresh
-                         * the window.
-                         */
+		     * This callback was called because all our Proc's Tasks
+		     * were blocked because of some state change operation.
+		     * Re-generate the stack trace information and refresh
+		     * the window.
+		     */
 		    CustomEvents.addEvent(new Runnable() {
 			public void run() {
 			    SourceWindow.this.frames[SourceWindow.this.current] = generateProcStackTrace(
@@ -3214,9 +3216,9 @@ public class SourceWindow extends Window {
 		}
 	    } else {
 		/*
-                 * The very first time all the Tasks are blocked is when we're
-                 * initializing this window.
-                 */
+		 * The very first time all the Tasks are blocked is when we're
+		 * initializing this window.
+		 */
 		SW_active = true;
 
 		CustomEvents.addEvent(new Runnable() {

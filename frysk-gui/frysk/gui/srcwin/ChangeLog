@@ -1,3 +1,15 @@
+2007-08-16  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (threadObserver): Removed.
+	(SourceWindow): Removed threadObserver code.
+	(removeTags): Watch for Frame array length.
+	(createTags): Ditto.
+	(allProcsExited): Added. Cleans up window after all observed processes
+	have exited.
+	(ThreadLifeObserver): Removed.
+	(LockObserver.update): Watch for exited processes, and clean up after
+	them if they have.
+
 2007-08-16  Andrew Cagney  <cagney@redhat.com>
 
 	* SourceWindow.java: Replace Frame.getCFA with
