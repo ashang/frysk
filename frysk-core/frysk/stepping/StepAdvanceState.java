@@ -64,4 +64,9 @@ public class StepAdvanceState extends State
   {
     return false;
   }
+  
+  public boolean isAlive ()
+  {
+      return true;
+  }
 }

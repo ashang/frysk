@@ -69,6 +69,9 @@ public class TaskStepEngine
   /* task's current source line number */
   private int line = 0;
   
+  /* Task termination message */
+  String message = null;
+  
   /**
    * Builds a new TaskStepEngine, setting only the Task field and defaulting
    * to the StoppedState.
@@ -93,6 +96,18 @@ public class TaskStepEngine
   public boolean isStopped ()
   {
     return this.state.isStopped();
+  }
+  
+  /**
+   * Returns true if the current State of this TaskStepEngine's Task field
+   * is a StepTerminatedState.
+   * 
+   * @return true The Task has terminated
+   * @return false The Task has not terminated
+   */
+  public boolean isAlive ()
+  {
+      return this.state.isAlive();
   }
   
   /**
@@ -204,5 +219,13 @@ public class TaskStepEngine
   public FrameIdentifier getFrameIdentifier ()
   {
     return this.fi;
+  }
+  
+  public void setMessage (String message) {
+      this.message = message;
+  }
+  
+  public String getMessage () {
+      return this.message;
   }
 }

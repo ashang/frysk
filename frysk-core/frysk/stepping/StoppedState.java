@@ -63,4 +63,9 @@ public class StoppedState extends State
   {
     return true;
   }
+  
+  public boolean isAlive ()
+  {
+      return true;
+  }
 }

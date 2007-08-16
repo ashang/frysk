@@ -64,4 +64,12 @@ public abstract class State
    * @return false If the Task is not stopped
    */
   public abstract boolean isStopped ();
+  
+  /**
+   * Returns whether or not this State a Task which has just died.
+   * 
+   * @return true If the Task is alive
+   * @return false If the Task has died
+   */
+  public abstract boolean isAlive ();
 }

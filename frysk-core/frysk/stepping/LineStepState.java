@@ -90,4 +90,9 @@ public class LineStepState extends State
   {
     return false;
   }
+  
+  public boolean isAlive ()
+  {
+      return true;
+  }
 }

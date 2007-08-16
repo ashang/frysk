@@ -64,4 +64,9 @@ public class StepOutState extends State
   {
     return false;
   }
+  
+  public boolean isAlive ()
+  {
+      return true;
+  }
 }

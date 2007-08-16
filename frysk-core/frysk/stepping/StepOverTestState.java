@@ -128,4 +128,9 @@ public class StepOverTestState extends State {
     public boolean isStopped() {
 	return false;
     }
+    
+    public boolean isAlive ()
+    {
+        return true;
+    }
 }

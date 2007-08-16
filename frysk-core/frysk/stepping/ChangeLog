@@ -1,3 +1,27 @@
+2007-08-16  Mike Cvet  <mcvet@redhat.com>
+
+	* State.java (isAlive): Added. Informs calling TaskStepEngine 
+	whether or not the stepping task has terminated.
+	* InstructionStepState.java (isAlive): Ditto.
+	* LineStepState.java (isAlive): Ditto.
+	* NextInstructionStepState.java (isAlive): Ditto.
+	* NextInstructionStepTestState.java (isAlive): Ditto.
+	* RunningState.java (isAlive): Ditto.
+	* StepAdvanceState.java (isAlive): Ditto.
+	* StepOutState.java (isAlive): Ditto.
+	* StepOverState.java (isAlive): Ditto.
+	* StoppedState.java (isAlive): Ditto.
+	* StepTerminatedState.java: Added.
+	* TaskStepEngine.java (message): Added - termination message for
+	stepping tasks.
+	(isAlive): Added.
+	(getMessage): Added.
+	(setMessage): Added.
+	* SteppingEngine.java (ThreadLifeObservable.updateTerminating): Update
+	the state of the stepping task as terminated and set a message.
+	(SteppingObserver.updateExecuted): Check to see if the task has
+	terminated before performing any operations on it.
+
 2007-08-14  Mike Cvet  <mcvet@redhat.com>
 
 	* SteppingEngine.java (removeBreakpoint): Make sure to reference the 

@@ -41,33 +41,25 @@ package frysk.stepping;
 
 import frysk.proc.Task;
 
-public class StepOverState extends State
-{
-  public StepOverState (Task task)
-  {
-    this.task = task;
-  }
-  
-  /**
-   * When the step-over operation returns from the breakpoint, this deletes
-   * the breakpoint and returns a new StoppedState.
-   * 
-   * @param tse	The parent TaskStepEngine
-   * @return new StoppedState	The new StoppedState for this Task
-   */
-  public State handleUpdate (TaskStepEngine tse)
-  {
-    tse.getSteppingEngine().removeBreakpoint(this.task);
-    return new StoppedState(this.task);
-  }
-  
-  public boolean isStopped ()
-  {
-    return false;
-  }
-  
-  public boolean isAlive ()
-  {
+public class StepTerminatedState extends State {
+    
+    public StepTerminatedState (Task task)
+    {
+    }
+    
+    public State handleUpdate (TaskStepEngine tse)
+    {
+	return this;
+    }
+    
+    public boolean isStopped ()
+    {
       return true;
-  }
+    }
+    
+    public boolean isAlive ()
+    {
+        return false;
+    }
+
 }

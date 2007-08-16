@@ -64,4 +64,9 @@ public class RunningState extends State
   {
     return false;
   }
+  
+  public boolean isAlive ()
+  {
+      return true;
+  }
 }

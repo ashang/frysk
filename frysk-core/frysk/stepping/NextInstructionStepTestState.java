@@ -91,4 +91,9 @@ public class NextInstructionStepTestState extends State
   {
     return false;
   }
+  
+  public boolean isAlive ()
+  {
+      return true;
+  }
 }
