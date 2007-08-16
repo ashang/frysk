@@ -244,3 +244,9 @@ AC_SUBST([lib64dir])
 FRYSK_DO_ARCH32_TEST
 FRYSK_WERROR
 FRYSK_COVERAGE
+
+AC_ARG_WITH(libopcodes,
+	AS_HELP_STRING([--with-libopcodes], [use libopcodes (disassembler)]),
+	[AC_DEFINE(WITH_LIBOPCODES)
+	 LIBS="$LIBS -lopcodes"]
+	[])

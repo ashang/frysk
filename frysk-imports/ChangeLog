@@ -1,3 +1,8 @@
+2007-08-16  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (GEN_GCJ_LDADD): Remove -lopcodes; handled by
+	common/frysk-common.ac.
+
 2007-07-17  Nurdin Premji  <npremji@redhat.com>
 
 	* Makefile.am (CHECK_SUBDIRS): Moved test subdirectory to be compiled last.

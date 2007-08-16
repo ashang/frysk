@@ -1,3 +1,9 @@
+2007-08-16  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Disassembler.cxx: Make conditional on WITH_LIBOPCODES.
+	(available): Implement.
+	* Disassembler.java (available()): Declare.
+
 2007-07-18  Nurdin Premji  <npremji@redhat.com>
 
 	* Disassembler.java (disassembleStartEnd): Added.

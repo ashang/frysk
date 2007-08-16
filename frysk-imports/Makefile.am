@@ -83,7 +83,6 @@ GEN_GCJ_LDADD += ./libunwind-x86_64/src/.libs/libunwind-x86_64.a
 GEN_GCJ_LDADD += ./libunwind-ppc64/src/.libs/libunwind-ppc64.a
 # For auding of system calls.
 GEN_GCJ_LDADD += -laudit
-GEN_GCJ_LDADD += -lopcodes
 
 # Need to get this into the distribution
 noinst_HEADERS = \

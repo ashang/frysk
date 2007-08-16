@@ -64,4 +64,4 @@ GEN_GCJ_LDADD += ../frysk-imports/libunwind-i386/src/.libs/libunwind-x86.a \
                  ../frysk-imports/libunwind-x86_64/src/.libs/libunwind-x86_64.a \
                  ../frysk-imports/libunwind-ppc64/src/.libs/libunwind-ppc64.a
 endif
-GEN_GCJ_LDADD += -lstdc++ -lopcodes -laudit
+GEN_GCJ_LDADD += -lstdc++ -laudit

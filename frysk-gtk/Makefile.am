@@ -62,9 +62,6 @@ GEN_GCJ_LDADD += ../frysk-imports/libunwind-i386/src/.libs/libunwind-x86.a \
                  ../frysk-imports/libunwind-ppc64/src/.libs/libunwind-ppc64.a
 endif
 GEN_GCJ_LDADD += -lstdc++
-# Stub bfd_getb32 and bfd_getl32 for PPC64.  Unconditionally
-# link -lbfd_get just for simplification.
-GEN_GCJ_LDADD += -lopcodes
 # For auditing
 GEN_GCJ_LDADD += -laudit
 

@@ -45,6 +45,8 @@ import inua.eio.ByteBuffer;
 
 public class Disassembler
 {
+    static public native boolean available();
+
     private List isnList = new LinkedList();
     private StringBuffer instruction = new StringBuffer();
     private final ByteBuffer memory;

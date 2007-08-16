@@ -40,8 +40,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <bfd.h>
-#include <dis-asm.h>
 #include <errno.h>
 #include <string.h>
 #include <stdarg.h>
@@ -63,6 +61,11 @@
 #include "lib/opcodes/Instruction.h"
 #include "lib/opcodes/UnsupportedArchitectureException.h"
 #include "inua/eio/ByteBuffer.h"
+
+#ifdef WITH_LIBOPCODES
+
+#include <bfd.h>
+#include <dis-asm.h>
 
 /*
  * Read LENGTH bytes into MYADD starting at target address MEMADDR.
@@ -165,10 +168,13 @@ disassemble_info *disasm_info, int (**disasm_func) (bfd_vma, disassemble_info*))
   disasm_info->print_address_func = print_address;
 }
 
+#endif
+
 void
 lib::opcodes::Disassembler::disassembleStartEnd (jlong startAddress, 
 jlong endAddress)
 {
+#ifdef WITH_LIBOPCODES
   disassemble_info disasm_info;
   int instr_length = 0;
   int (*disasm_func) (bfd_vma, disassemble_info*) = NULL;
@@ -183,11 +189,13 @@ jlong endAddress)
       this->endInstruction (current_address, instr_length);
       current_address += instr_length;
     }
+#endif
 }
 
 void
 lib::opcodes::Disassembler::disassemble (jlong address, jlong instructions)
 {
+#ifdef HAVE_LIPOPCODES
   disassemble_info disasm_info;
   int instr_length = 0;
   int (*disasm_func) (bfd_vma, disassemble_info*) = NULL;
@@ -202,8 +210,20 @@ lib::opcodes::Disassembler::disassemble (jlong address, jlong instructions)
       this->endInstruction (current_address, instr_length);
       current_address += instr_length;
     }
+#endif
+}
+
+jboolean
+lib::opcodes::Disassembler::available()
+{
+#ifdef WITH_LIBOPCODES
+  return 1;
+#else
+  return 0;
+#endif
 }
 
+#ifdef WITH_LIBOPCODES
 extern "C" {
   /* Stub these two functions, which are needed for libopcodes on
      PPC64.  */
@@ -234,3 +254,4 @@ bfd_getl32 (const void *p)
   v |= (unsigned long) addr[3] << 24;
   return v;
 }
+#endif
