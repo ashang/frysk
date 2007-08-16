@@ -1,3 +1,8 @@
+2007-08-16  Mike Cvet  <mcvet@redhat.com>
+
+	* CLI.java (SteppingObserver.update): Check to see if the task is still
+	alive before continuing - if not, print exit message.
+
 2007-08-15  Nurdin Premji  <npremji@redhat.com>
 
 	* CLIHandler.java: Removed unused constructor

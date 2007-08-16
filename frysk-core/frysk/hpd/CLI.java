@@ -525,6 +525,21 @@ public class CLI
     public void update (Observable observable, Object arg)
     {
       TaskStepEngine tse = (TaskStepEngine) arg;
+      
+      if (!tse.isAlive()) {
+		addMessage(tse.getMessage(), Message.TYPE_VERBOSE);
+		flushMessages();
+		// DetachCommand detachCommand = new DetachCommand(CLI.this);
+		// try {
+		// Command command = new Command ("detach");
+		// detachCommand.handle(command);
+		// } catch (ParseException pe) {}
+		synchronized (CLI.this) {
+		    CLI.this.notifyAll();
+		}
+		return;
+	    }
+      
       if (! tse.getState().isStopped())
         {
           attached = -1;
