@@ -38,6 +38,11 @@
 // exception.
 package lib.dwfl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * ElfSymbol is a container class with symbol-table related functions
  * and constants.
@@ -45,64 +50,190 @@ package lib.dwfl;
 public class ElfSymbol {
     // Constants defined in this class were copied from elf.h.
 
-    public static interface Builder
-    {
-      void symbol (String name, long value, long size, int type, int bind,
-		   int visibility, long shndx);
+    public static interface Builder {
+      /**
+       * Called for each symbol.
+       *
+       * @param name Name of symbol.
+       * @param value Address of symbol if symbol is defined, or 0.
+       * @param size Size of object associated with the symbol.
+       * @param type Symbol type.
+       * @param bind Symbol binding.
+       * @param visibility Symbol visibility.
+       * @param shndx Associated section index, or one of the special
+       *   values in ElfSectionHeader.ELF_SHN_*.
+       * @param versions Version requirements and/or definitions of
+       *   symbol. If there are none, null is passed instead of
+       *   empty list.
+       */
+      void symbol (String name, long value, long size, ElfSymbolType type,
+		   ElfSymbolBinding bind, ElfSymbolVisibility visibility,
+		   long shndx, List versions);
     }
 
-    // Legal values for `bind' argument of SymbolBuiler.symbol.
-    public static int ELF_STB_LOCAL = 0;
-    public static int ELF_STB_GLOBAL = 1;
-    public static int ELF_STB_WEAK = 2;
-    public static int ELF_STB_NUM = 3;
-    public static int ELF_STB_LOOS = 10;
-    public static int ELF_STB_HIOS = 12;
-    public static int ELF_STB_LOPROC = 13;
-    public static int ELF_STB_HIPROC = 15;
+    protected static class PrivVerdef {
+      int version;	// revision of version interface
+      boolean base;	// version definition of file itself
+      int index;	// version index
+      int hash; 	// version name hash value
+      String[] names;   // version or dependency names
+    }
 
-    // Legal values for `type' argument of SymbolBuiler.symbol.
-    public static int ELF_STT_NOTYPE = 0;
-    public static int ELF_STT_OBJECT = 1;
-    public static int ELF_STT_FUNC = 2;
-    public static int ELF_STT_SECTION = 3;
-    public static int ELF_STT_FILE = 4;
-    public static int ELF_STT_COMMON = 5;
-    public static int ELF_STT_TLS = 6;
-    public static int ELF_STT_NUM = 7;
-    public static int ELF_STT_LOOS = 10;
-    public static int ELF_STT_HIOS = 12;
-    public static int ELF_STT_LOPROC = 13;
-    public static int ELF_STT_HIPROC = 15;
+    protected static class PrivVerneed {
+      public static class Aux {
+	int hash;	// hash value of dependency name
+	boolean weak;	// weak version reference
+	String name;	// dependency name
+	int index;	// version index
+      }
 
-    // Legal values for `visibility' argument of SymbolBuiler.symbol.
-    public static int ELF_STV_DEFAULT = 0;
-    public static int ELF_STV_INTERNAL = 1;
-    public static int ELF_STV_HIDDEN = 2;
-    public static int ELF_STV_PROTECTED = 3;
+      int version;	// revision of version interface
+      String filename;	// filename for this dependency
+      Aux[] aux;	// associated auxiliary entries
+    }
 
     /**
      * Calls {@see Builder.symbol} with each symbol in given
-     * section.  Only makes sense for .symtab or .dynsym sections.
+     * section.
+     *
+     * @param section Section of type STRTAB or DYNSYM, contains
+     * symbol table.  May not be null.
+     * @param versym Section of type GNU_versym.  May be null, but in
+     * that case both verdef and verneed have to be null, too.
+     * @param verdef Section with version definitions, typed GNU_verdef.
+     * May be null, if verneed is not null.
+     * @param verneed Section with version requirements, typed
+     * GNU_verneed.  May be null, if verdef is not null.
      */
-    public static void loadFrom(ElfSection section, ElfSymbol.Builder builder)
-	    throws ElfException
+    public static void loadFrom(ElfSection symbolsS, ElfSection versymS,
+				ElfSection verdefS, int verdefCount,
+				ElfSection verneedS, int verneedCount,
+				ElfSymbol.Builder builder)
+      throws ElfException
     {
-	ElfSectionHeader header = section.getSectionHeader();
-	if (!(header.type == ElfSectionHeader.ELF_SHT_SYMTAB
-	      || header.type == ElfSectionHeader.ELF_SHT_DYNSYM))
-	    throw new ElfException("Section " + header.name + " doesn't contain symbol table.");
+	Elf parent = symbolsS.getParent();
+	ElfSectionHeader symbolsH = symbolsS.getSectionHeader();
+	if (!(symbolsH.type == ElfSectionHeader.ELF_SHT_SYMTAB
+	      || symbolsH.type == ElfSectionHeader.ELF_SHT_DYNSYM))
+	  throw new ElfException("Section " + symbolsH.name + " doesn't contain symbol table.");
+	long symbolsP = symbolsS.getData().getPointer();
+	long symbolsCount = symbolsH.size / symbolsH.entsize;
 
-	Elf parent = section.getParent();
-	long data_pointer = section.getData().getPointer();
-	long count = header.size / header.entsize;
+	ElfSectionHeader versymH = null;
+	long versymP = 0;
+	if (versymS != null)
+	  {
+	    versymH = versymS.getSectionHeader();
+	    if (versymH.type != ElfSectionHeader.ELF_SHT_GNU_versym)
+	      throw new ElfException("Section " + versymH.name + " doesn't contain versym info.");
+	    ElfData d = versymS.getData();
+	    versymP = d.getPointer();
+	  }
+
+	Map versionMap = new HashMap();
+
+	if (verdefS != null)
+	  {
+	    ElfSectionHeader verdefH = verdefS.getSectionHeader();
+	    if (verdefH.type != ElfSectionHeader.ELF_SHT_GNU_verdef)
+	      throw new ElfException("Section " + verdefH.name + " doesn't contain verdef info.");
+
+	    long verdefP = verdefS.getData().getPointer();
+
+	    PrivVerdef[] verdef = new PrivVerdef[verdefCount];
+	    if (!elf_load_verdef(parent, verdefP, verdefH.link, verdef))
+	      throw new ElfException("Couldn't load verdef info from section " + verdefH.name + ".");
+
+	    for (int i = 0; i < verdefCount; ++i)
+	      {
+		Integer key = new Integer(verdef[i].index);
+		ArrayList verList = (ArrayList)versionMap.get(key);
+		if (verList == null)
+		  {
+		    verList = new ArrayList();
+		    versionMap.put(key, verList);
+		  }
+
+		int defCount = verdef[i].names.length;
+		for (int j = 0; j < defCount; ++j)
+		  verList.add(new ElfSymbolVersion.Def(verdef[i].names[j], verdef[i].base));
+	      }
+	  }
+	else if (verdefCount != 0)
+	  throw new AssertionError("Inconsistent verdef count.");
+
+	if (verneedS != null)
+	  {
+	    ElfSectionHeader verneedH = verneedS.getSectionHeader();
+	    if (verneedH.type != ElfSectionHeader.ELF_SHT_GNU_verneed)
+	      throw new ElfException("Section " + verneedH.name + " doesn't contain verneed info.");
+	    long verneedP = verneedS.getData().getPointer();
+
+	    PrivVerneed[] verneed = new PrivVerneed[verneedCount];
+	    if (!elf_load_verneed(parent, verneedP, verneedH.link, verneed))
+	      throw new ElfException("Couldn't load verneed info from section " + verneedH.name + ".");
+
+	    for (int i = 0; i < verneedCount; ++i)
+	      for (int j = 0; j < verneed[i].aux.length; ++j)
+		{
+		  Integer key = new Integer(verneed[i].aux[j].index);
+		  ArrayList verList = (ArrayList)versionMap.get(key);
+		  if (verList == null)
+		    {
+		      verList = new ArrayList();
+		      versionMap.put(key, verList);
+		    }
+
+		  PrivVerneed.Aux aux = verneed[i].aux[j];
+		  String fn = verneed[i].filename;
+		  verList.add(new ElfSymbolVersion.Need(fn, aux.name, aux.weak));
+		}
+	  }
+	else if (verneedCount != 0)
+	  throw new AssertionError("Inconsistent verneed count.");
+
 	// Note: ignoring special symbol entry on index 0.
-	for (long i = 1; i < count; ++i)
-	    if (!elf_buildsymbol(parent, data_pointer, i, header.link, builder))
-		throw new ElfException("Symbol on index " + i + " couldn't be retrieved.");
+	for (long i = 1; i < symbolsCount; ++i)
+	  {
+	    List versions = null;
+
+	    if (versymS != null)
+	      {
+		int version = elf_getversym(versymP, i);
+		if ((version & 0x8000) != 0)
+		  {
+		    //hidden = true;
+		    version ^= 0x8000;
+		  }
+
+		versions = (List)versionMap.get(new Integer(version));
+	      }
+
+
+	    if (!elf_buildsymbol(parent, symbolsP, i, symbolsH.link, versions, builder))
+	      throw new ElfException("Symbol on index " + i + " couldn't be retrieved.");
+	  }
+    }
+
+    public static void loadFrom(ElfSection symbols, ElfSymbol.Builder builder)
+      throws ElfException
+    {
+      loadFrom(symbols, null,
+	       null, 0,
+	       null, 0,
+	       builder);
     }
 
     protected static native boolean elf_buildsymbol(Elf parent, long data_pointer,
 						    long symbol_index, long str_sect_index,
+						    List versions,
 						    ElfSymbol.Builder builder);
+
+    protected static native int elf_getversym(long data_pointer, long symbol_index);
+
+    protected static native boolean elf_load_verneed(Elf parent, long data_pointer,
+						     long str_sect_index, PrivVerneed[] ret);
+
+    protected static native boolean elf_load_verdef(Elf parent, long data_pointer,
+						    long str_sect_index, PrivVerdef[] ret);
 }

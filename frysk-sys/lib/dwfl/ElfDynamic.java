@@ -89,7 +89,17 @@ public class ElfDynamic {
     public static int ELF_DT_NUM = 34;
     public static int ELF_DT_LOOS = 0x6000000d;
     public static int ELF_DT_HIOS = 0x6ffff000;
+    public static int ELF_DT_VERSYM = 0x6ffffff0;
+    public static int ELF_DT_RELACOUNT = 0x6ffffff9;
+    public static int ELF_DT_RELCOUNT = 0x6ffffffa;
+    public static int ELF_DT_FLAGS_1 = 0x6ffffffb;
+    public static int ELF_DT_VERDEF = 0x6ffffffc;
+    public static int ELF_DT_VERDEFNUM = 0x6ffffffd;
+    public static int ELF_DT_VERNEED = 0x6ffffffe;
+    public static int ELF_DT_VERNEEDNUM = 0x6fffffff;
     public static int ELF_DT_LOPROC = 0x70000000;
+    public static int ELF_DT_AUXILIARY = 0x7ffffffd;
+    public static int ELF_DT_FILTER = 0x7fffffff;
     public static int ELF_DT_HIPROC = 0x7fffffff;
 
     /**

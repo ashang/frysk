@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -79,6 +80,9 @@ import lib.dwfl.ElfRel;
 import lib.dwfl.ElfSection;
 import lib.dwfl.ElfSectionHeader;
 import lib.dwfl.ElfSymbol;
+import lib.dwfl.ElfSymbolBinding;
+import lib.dwfl.ElfSymbolType;
+import lib.dwfl.ElfSymbolVisibility;
 
 class MappingInfo
 {
@@ -161,7 +165,7 @@ class LtraceSymbol
   public final String name;
   public final long value;
   public final long size;
-  public final int type;
+  public final ElfSymbolType type;
   public final long shndx;
   protected LtraceObjectFile parent = null;
 
@@ -172,13 +176,13 @@ class LtraceSymbol
    * Build ltrace symbol.
    *
    * @param name Name of the symbol.
-   * @param type Type of the symbol, as in ElfSymbol.ELF_STT_* fields.
+   * @param type Type of the symbol.
    * @param value Value of the symbol.
    * @param size Size of the symbol.
    * @param shndx Associated section index, or one of the special
    *   values in ElfSectionHeader.ELF_SHN_*.
    */
-  public LtraceSymbol(String name, int type, long value,
+  public LtraceSymbol(String name, ElfSymbolType type, long value,
 		      long size, long shndx)
   {
     this.name = name;
@@ -439,12 +443,13 @@ class LtraceObjectFile
 	  final ArrayList symbolList = new ArrayList();
 	  ElfSymbol.loadFrom(section, new ElfSymbol.Builder() {
 	      public void symbol (String name, long value, long size,
-				  int type, int bind, int visibility,
-				  long shndx)
+				  ElfSymbolType type, ElfSymbolBinding bind, 
+				  ElfSymbolVisibility visibility, long shndx,
+				  List versions)
 	      {
 		LtraceSymbol sym = new LtraceSymbol(name, type, value, size, shndx);
 		symbolList.add(sym);
-		if (type == ElfSymbol.ELF_STT_FUNC)
+		if (type == ElfSymbolType.ELF_STT_FUNC)
 		  {
 		    sym.setEntryAddress(value);
 		    objFile.addSymbol(sym);

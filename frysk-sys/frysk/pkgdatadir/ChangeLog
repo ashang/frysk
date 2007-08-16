@@ -1,3 +1,9 @@
+2007-08-16  Petr Machata  <pmachata@redhat.com>
+
+	* libtest.so.bz2.uu: New file.
+	* libtest.c.source: New file. Source of above.
+	* libtest.map.source: New file. Source of above.
+
 2007-07-16  Phil Muldoon <pmuldoon@redhat.com>
 
 	* test-core.bz2.uu: Obsolete. Delete.

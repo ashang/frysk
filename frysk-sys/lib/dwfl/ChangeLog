@@ -1,3 +1,16 @@
+2007-08-16  Petr Machata  <pmachata@redhat.com>
+
+	* ElfSymbolBinding.java: New file.
+	* ElfSymbolType.java: New file.
+	* ElfSymbolVersion.java: New file.
+	* ElfSymbolVisibility.java: New file.
+	* ElfDynamic.java: New fields of enum.
+	* ElfSymbol.java: Use full enums instead of ints where possible.
+	Support ELF versioning scheme.
+	* TestElf.java: Test enums and versioning.
+	* cni/ElfSymbol.cxx: Support enums and versioning.
+	(elf_getversym, elf_load_verdef, elf_load_verneed): New methods.
+
 2007-08-16  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
 
 	* DwInlEncodings.shenum: New file.

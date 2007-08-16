@@ -44,6 +44,9 @@ import frysk.junit.TestCase;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
 import frysk.sys.proc.AuxvBuilder;
+import java.util.Iterator;
+import java.util.List;
+import java.util.HashSet;
 
 public class TestElf
     extends TestCase
@@ -863,6 +866,210 @@ public class TestElf
       }
   }
 
+  private static ElfSection getElfSectionWithAddr(Elf elfFile, long addr)
+  {
+    for (ElfSection section = elfFile.getSection(0);
+	 section != null;
+	 section = elfFile.getNextSection(section))
+      {
+	ElfSectionHeader sheader = section.getSectionHeader();
+	if (sheader.addr == addr)
+	  return section;
+      }
+    return null;
+  }
+
+  public void testLibraryVersions() throws ElfException, ElfFileException
+  {
+    final Elf elfFile = new Elf(Config.getPkgDataFile ("libtest.so").getAbsolutePath (),
+				ElfCommand.ELF_C_READ);
+    final ElfEHeader eh = elfFile.getEHeader();
+
+    boolean haveDynamic = false;
+    long offDynamic = 0;
+    for (int i = 0; i < eh.phnum; ++i)
+      {
+	ElfPHeader ph = elfFile.getPHeader(i);
+	if (ph.type == ElfPHeader.PTYPE_DYNAMIC)
+	  {
+	    haveDynamic = true;
+	    offDynamic = ph.offset;
+	  }
+      }
+    if (!haveDynamic)
+      throw new lib.dwfl.ElfFileException("DYNAMIC section not found in ELF file.");
+    haveDynamic = false;
+
+    class Locals
+    {
+      public ElfSection dynamicStrtab = null;
+      public ElfSection dynamicSymtab = null;
+
+      public ElfSection dynamicVersym = null;
+      public ElfSection dynamicVerdef = null;
+      public ElfSection dynamicVerneed = null;
+      public int dynamicVerdefCount = 0;
+      public int dynamicVerneedCount = 0;
+
+      public int dynamicSonameIdx = -1;
+    }
+    final Locals locals = new Locals();
+
+    for (ElfSection section = elfFile.getSection(0);
+	 section != null;
+	 section = elfFile.getNextSection(section))
+      {
+	ElfSectionHeader sheader = section.getSectionHeader();
+	if (sheader.offset == offDynamic)
+	  {
+	    haveDynamic = true;
+	    ElfDynamic.loadFrom(section, new ElfDynamic.Builder() {
+		public void entry (int tag, long value)
+		{
+		  if (tag == ElfDynamic.ELF_DT_STRTAB)
+		    locals.dynamicStrtab = getElfSectionWithAddr(elfFile, value);
+		  else if (tag == ElfDynamic.ELF_DT_SONAME)
+		    locals.dynamicSonameIdx = (int)value;
+		  else if (tag == ElfDynamic.ELF_DT_SYMTAB)
+		    locals.dynamicSymtab = getElfSectionWithAddr(elfFile, value);
+		  else if (tag == ElfDynamic.ELF_DT_VERSYM)
+		    locals.dynamicVersym = getElfSectionWithAddr(elfFile, value);
+		  else if (tag == ElfDynamic.ELF_DT_VERDEF)
+		    locals.dynamicVerdef = getElfSectionWithAddr(elfFile, value);
+		  else if (tag == ElfDynamic.ELF_DT_VERDEFNUM)
+		    locals.dynamicVerdefCount = (int)value;
+		  else if (tag == ElfDynamic.ELF_DT_VERNEED)
+		    locals.dynamicVerneed = getElfSectionWithAddr(elfFile, value);
+		  else if (tag == ElfDynamic.ELF_DT_VERNEEDNUM)
+		    locals.dynamicVerneedCount = (int)value;
+		}
+	    });
+	  }
+      }
+
+    if (!haveDynamic)
+      throw new lib.dwfl.ElfFileException("DYNAMIC section not found in ELF file.");
+    if (locals.dynamicSymtab == null)
+      throw new lib.dwfl.ElfFileException("Couldn't get SYMTAB from DYNAMIC section.");
+    if (locals.dynamicStrtab == null)
+      throw new lib.dwfl.ElfFileException("Couldn't get STRTAB from DYNAMIC section.");
+    if ((locals.dynamicVerneed != null || locals.dynamicVerdef != null) && locals.dynamicVersym == null)
+      throw new lib.dwfl.ElfFileException("Versym section missing when verdef or verneed present.");
+    if (locals.dynamicVerneed == null && locals.dynamicVerdef == null && locals.dynamicVersym != null)
+      throw new lib.dwfl.ElfFileException("Versym section present when neither verdef nor verneed present.");
+    if (locals.dynamicVerdefCount != 0 && locals.dynamicVerdef == null)
+      throw new lib.dwfl.ElfFileException("Strange: VERDEFNUM tag present, but not VERDEF.");
+    if (locals.dynamicVerneedCount != 0 && locals.dynamicVerneed == null)
+      throw new lib.dwfl.ElfFileException("Strange: VERNEEDNUM tag present, but not VERNEED.");
+    if (locals.dynamicSonameIdx == -1)
+      throw new lib.dwfl.ElfFileException("Soname not found.");
+
+    // Check SONAME.
+    {
+      ElfData data = locals.dynamicStrtab.getData();
+      byte[] bytes = data.getBytes();
+      int startIndex = locals.dynamicSonameIdx;
+      int endIndex = startIndex;
+      while (bytes[endIndex] != 0)
+	++endIndex;
+      String soname = new String(bytes, startIndex, endIndex - startIndex);
+      assertEquals("soname", "libtest.so.1", soname);
+    }
+
+    // Check DT_SYMTAB.
+    {
+      final String[] expectedSymNames = {"__gmon_start__", "_Jv_RegisterClasses",
+					 "puts",           "__cxa_finalize",
+					 "oldtest",        "test",
+					 "test",           "TESTVER_1.0",
+					 "TESTVER_2.0"};
+      final long[] expectedSymValues = {0x00000000, 0x00000000, 0x00000000, 0x00000000,
+					0x00000478, 0x0000042c, 0x00000452, 0x00000000,
+					0x00000000};
+      final long[] expectedSymSizes = {0, 0, 399, 373, 29,  38, 38,  0, 0};
+      final ElfSymbolType[] expectedSymTypes = {
+	ElfSymbolType.ELF_STT_NOTYPE, ElfSymbolType.ELF_STT_NOTYPE,
+	ElfSymbolType.ELF_STT_FUNC, ElfSymbolType.ELF_STT_FUNC,
+	ElfSymbolType.ELF_STT_FUNC, ElfSymbolType.ELF_STT_FUNC,
+	ElfSymbolType.ELF_STT_FUNC, ElfSymbolType.ELF_STT_OBJECT,
+	ElfSymbolType.ELF_STT_OBJECT};
+      final ElfSymbolBinding[] expectedSymBinds = {
+	ElfSymbolBinding.ELF_STB_WEAK, ElfSymbolBinding.ELF_STB_WEAK,
+	ElfSymbolBinding.ELF_STB_GLOBAL, ElfSymbolBinding.ELF_STB_WEAK,
+	ElfSymbolBinding.ELF_STB_GLOBAL, ElfSymbolBinding.ELF_STB_GLOBAL,
+	ElfSymbolBinding.ELF_STB_GLOBAL, ElfSymbolBinding.ELF_STB_GLOBAL,
+	ElfSymbolBinding.ELF_STB_GLOBAL};
+      final long[] expectedSymShndxs = {
+	ElfSectionHeader.ELF_SHN_UNDEF, ElfSectionHeader.ELF_SHN_UNDEF,
+	ElfSectionHeader.ELF_SHN_UNDEF, ElfSectionHeader.ELF_SHN_UNDEF,
+	11,                             11,
+	11,                             ElfSectionHeader.ELF_SHN_ABS,
+	ElfSectionHeader.ELF_SHN_ABS};
+      final String[][] expectedSymVersions = {
+	null,          null,
+	{"GLIBC_2.0"},                  {"GLIBC_2.1.3"},
+	{"TESTVER_2.0", "TESTVER_1.0"}, {"TESTVER_1.0"},
+	{"TESTVER_2.0", "TESTVER_1.0"}, {"TESTVER_1.0"},
+	{"TESTVER_2.0", "TESTVER_1.0"}};
+      final boolean[] expectedVerRequired = {
+	false, false, true, true, false, false, false, false, false
+      };
+
+      ElfSymbol.loadFrom(locals.dynamicSymtab, locals.dynamicVersym,
+			 locals.dynamicVerdef, locals.dynamicVerdefCount,
+			 locals.dynamicVerneed, locals.dynamicVerneedCount,
+			 new ElfSymbol.Builder() {
+	  private int counter = 0;
+	  public void symbol (String name, long value, long size,
+			      ElfSymbolType type, ElfSymbolBinding bind,
+			      ElfSymbolVisibility visibility, long shndx,
+			      List versions)
+	  {
+	    assertEquals("symbol-" + counter + "-name", expectedSymNames[counter], name);
+	    assertEquals("symbol-" + counter + "-value", expectedSymValues[counter], value);
+	    assertEquals("symbol-" + counter + "-size", expectedSymSizes[counter], size);
+	    assertEquals("symbol-" + counter + "-type", expectedSymTypes[counter], type);
+	    assertEquals("symbol-" + counter + "-bind", expectedSymBinds[counter], bind);
+	    assertEquals("symbol-" + counter + "-visibility", ElfSymbolVisibility.ELF_STV_DEFAULT, visibility);
+	    assertEquals("symbol-" + counter + "-shndx", expectedSymShndxs[counter], shndx);
+
+	    String[] expVersions = expectedSymVersions[counter];
+	    if (expVersions == null)
+	      assertEquals("symbol-" + counter + "-version#1", expVersions, versions);
+	    else
+	      {
+		HashSet expVersionSet = new HashSet();
+		for (int i = 0; i < expVersions.length; ++i)
+		  expVersionSet.add(expVersions[i]);
+
+		HashSet haveVersionSet = new HashSet();
+		for (Iterator it = versions.iterator(); it.hasNext();)
+		  {
+		    ElfSymbolVersion ver = (ElfSymbolVersion)it.next();
+		    haveVersionSet.add(ver.name);
+		    ver.visit(new ElfSymbolVersion.Visitor() {
+			public Object def(ElfSymbolVersion.Def verdef) {
+			  assertEquals("symbol-" + counter + "-version-type",
+				       expectedVerRequired[counter], false);
+			  return null;
+			}
+			public Object need(ElfSymbolVersion.Need verneed) {
+			  assertEquals("symbol-" + counter + "-version-type",
+				       expectedVerRequired[counter], true);
+			  return null;
+			}
+		      });
+		  }
+
+		assertTrue("symbol-" + counter + "-version#2", expVersionSet.equals(haveVersionSet));
+	      }
+
+	    counter++;
+	  }
+	});
+    }
+  }
+
   // Copied from frysk-core/Register.java and reused here.
   // Does this really not exist somewhere else?
     private static void reverseArray(byte[] array) 
@@ -937,14 +1144,14 @@ public class TestElf
       = {"helloworld.c", "", "",
 	 "", "", "",
 	 "", "main", "prinf"};
-    int[] expectedSymbolTypes
-      = {ElfSymbol.ELF_STT_FILE,    ElfSymbol.ELF_STT_SECTION, ElfSymbol.ELF_STT_SECTION,
-	 ElfSymbol.ELF_STT_SECTION, ElfSymbol.ELF_STT_SECTION, ElfSymbol.ELF_STT_SECTION,
-	 ElfSymbol.ELF_STT_SECTION, ElfSymbol.ELF_STT_FUNC,    ElfSymbol.ELF_STT_NOTYPE};
-    int[] expectedSymbolBinds
-      = {ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_LOCAL,
-	 ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_LOCAL,
-	 ElfSymbol.ELF_STB_LOCAL,   ElfSymbol.ELF_STB_GLOBAL,  ElfSymbol.ELF_STB_GLOBAL};
+    ElfSymbolType[] expectedSymbolTypes
+      = {ElfSymbolType.ELF_STT_FILE,    ElfSymbolType.ELF_STT_SECTION, ElfSymbolType.ELF_STT_SECTION,
+	 ElfSymbolType.ELF_STT_SECTION, ElfSymbolType.ELF_STT_SECTION, ElfSymbolType.ELF_STT_SECTION,
+	 ElfSymbolType.ELF_STT_SECTION, ElfSymbolType.ELF_STT_FUNC,    ElfSymbolType.ELF_STT_NOTYPE};
+    ElfSymbolBinding[] expectedSymbolBinds
+      = {ElfSymbolBinding.ELF_STB_LOCAL, ElfSymbolBinding.ELF_STB_LOCAL,  ElfSymbolBinding.ELF_STB_LOCAL,
+	 ElfSymbolBinding.ELF_STB_LOCAL, ElfSymbolBinding.ELF_STB_LOCAL,  ElfSymbolBinding.ELF_STB_LOCAL,
+	 ElfSymbolBinding.ELF_STB_LOCAL, ElfSymbolBinding.ELF_STB_GLOBAL, ElfSymbolBinding.ELF_STB_GLOBAL};
     long[] expectedSymbolShndxs
       = {ElfSectionHeader.ELF_SHN_ABS, 1, 3,
 	 4, 5, 7,
@@ -955,8 +1162,9 @@ public class TestElf
 	 0, 43, 0};
 
     int index = 0;
-    public void symbol (String name, long value, long size, int type, int bind,
-			int visibility, long shndx)
+    public void symbol (String name, long value, long size, ElfSymbolType type,
+			ElfSymbolBinding bind, ElfSymbolVisibility visibility,
+			long shndx, List versions)
     {
       assertTrue("symbol table length", index < expectedSymbolNames.length);
 
@@ -965,7 +1173,7 @@ public class TestElf
       assertEquals("symbol-" + index + "-size", 0, expectedSymbolSizes[index], size);
       assertEquals("symbol-" + index + "-type", expectedSymbolTypes[index], type);
       assertEquals("symbol-" + index + "-binding", expectedSymbolBinds[index], bind);
-      assertEquals("symbol-" + index + "-visibility", ElfSymbol.ELF_STV_DEFAULT, visibility);
+      assertEquals("symbol-" + index + "-visibility", ElfSymbolVisibility.ELF_STV_DEFAULT, visibility);
       assertEquals("symbol-" + index + "-shndx", expectedSymbolShndxs[index], shndx);
 
       ++index;

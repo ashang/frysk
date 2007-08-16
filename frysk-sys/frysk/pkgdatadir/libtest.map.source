@@ -1,0 +1,8 @@
+TESTVER_1.0 {
+	 global: test;
+	 local: *;
+};
+
+TESTVER_2.0 {
+	 global: test; oldtest;
+} TESTVER_1.0;
