@@ -1,3 +1,7 @@
+2007-08-16  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfoFrame.java: Use getUndecoratedFrame.
+
 2007-08-15  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfo.java: Replace Type.getName with Type.toPrint.

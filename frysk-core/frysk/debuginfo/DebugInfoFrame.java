@@ -190,14 +190,14 @@ public class DebugInfoFrame extends FrameDecorator{
       
       public DebugInfoFrame getInnerDebugInfoFrame(){
 	if(innerDebugInfoFrame == null){
-	    innerDebugInfoFrame = DebugInfoStackFactory.createDebugInfoFrame(this.getFrame().getInner());
+	    innerDebugInfoFrame = DebugInfoStackFactory.createDebugInfoFrame(this.getUndecoratedFrame().getInner());
 	}
 	return innerDebugInfoFrame;
       }
       
       public DebugInfoFrame getOuterDebugInfoFrame(){
 	  if(outerDebugInfoFrame == null){
-	      outerDebugInfoFrame = DebugInfoStackFactory.createDebugInfoFrame(this.getFrame().getOuter());
+	      outerDebugInfoFrame = DebugInfoStackFactory.createDebugInfoFrame(this.getUndecoratedFrame().getOuter());
 	  }
 	  return outerDebugInfoFrame;
       }

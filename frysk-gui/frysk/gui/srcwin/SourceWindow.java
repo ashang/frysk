@@ -3092,8 +3092,8 @@ public class SourceWindow extends Window {
 	    if (!SourceWindow.this.steppingEngine.isTaskRunning(newFrame
 		    .getTask())) {
 		if (SourceWindow.this.currentFrame != null
-			&& SourceWindow.this.currentFrame.getCFA() != newFrame
-				.getCFA()) {
+		    && !(SourceWindow.this.currentFrame.getFrameIdentifier()
+			 .equals(newFrame.getFrameIdentifier()))) {
 		    DisassemblyWindow disWin = DisassemblyWindowFactory.disWin;
 		    if (disWin != null && disWin.getClosed() == false)
 			disWin.resetTask(newFrame.getTask());

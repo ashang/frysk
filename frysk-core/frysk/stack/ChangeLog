@@ -1,3 +1,17 @@
+2007-08-16  Andrew Cagney  <cagney@redhat.com>
+
+	* RemoteFrame.java (cursor, task): Add.
+	(getTask()): Add.
+	* Frame.java (getTask): Make abstract.
+	(cursor, task): Delete.
+	(getCFA): Delete.
+	(toPrint): Remove references to cursor and task.
+	* FrameDecorator.java: Extend Frame.
+	(getInner, getOuter): Make public.
+	(getTask): Make non-final.
+	(getCFA): Delete.
+	(getFrame): Delete.
+	
 2007-08-13  Nurdin Premji  <npremji@redhat.com>
 
 	* RegisterFactory.java: Added.

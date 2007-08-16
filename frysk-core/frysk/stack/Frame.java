@@ -43,7 +43,6 @@ import java.io.PrintWriter;
 
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
-import lib.unwind.Cursor;
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.symtab.Symbol;
@@ -52,9 +51,6 @@ import frysk.value.Value;
 
 public abstract class Frame
 {
-  protected Task task;
-  protected Cursor cursor;
-  
   /**
    * Returns the program counter for this StackFrame.
    * 
@@ -74,10 +70,7 @@ public abstract class Frame
    * 
    * @return The Task this StackFrame belongs to.
    */
-  public final Task getTask ()
-  {
-    return task;
-  }
+  public abstract Task getTask ();
 
   /**
    * Returns this StackFrame's inner frame.
@@ -93,36 +86,33 @@ public abstract class Frame
    */
   public abstract Frame getOuter ();
   
-  /**
-   * Return a simple string representation of this stack frame.
-   * The returned string is suitable for display to the user.
-   * @param printWriter 
-   */
-  public void toPrint (PrintWriter printWriter, boolean name, boolean printSourceLibrary)
-  {
-    // XXX: There is always an inner cursor.
-    if (this.cursor == null)
-      printWriter.write("Empty stack trace");
-
-    // Pad the address based on the task's word size.
-    printWriter.write("0x");
-    String addr = Long.toHexString(getAddress());
-    int padding = 2 * task.getIsa().getWordSize() - addr.length();
-    for (int i = 0; i < padding; ++i)
-      printWriter.write('0');
-    printWriter.write(addr);
-
-    // Print the symbol, if known append ().
-    Symbol symbol = getSymbol();
-    printWriter.write(" in ");
-    printWriter.write(symbol.getDemangledName());
-    if (symbol != SymbolFactory.UNKNOWN)
-      printWriter.write(" ()");
-    
-    if(printSourceLibrary){
-	printWriter.print(" from " + this.getLibraryName());
+    /**
+     * Return a simple string representation of this stack frame.
+     * The returned string is suitable for display to the user.
+     * @param printWriter
+     */
+    public void toPrint (PrintWriter printWriter, boolean name,
+			 boolean printSourceLibrary)
+    {
+	// Pad the address based on the task's word size.
+	printWriter.write("0x");
+	String addr = Long.toHexString(getAddress());
+	int padding = 2 * getTask().getIsa().getWordSize() - addr.length();
+	for (int i = 0; i < padding; ++i)
+	    printWriter.write('0');
+	printWriter.write(addr);
+	
+	// Print the symbol, if known append ().
+	Symbol symbol = getSymbol();
+	printWriter.write(" in ");
+	printWriter.write(symbol.getDemangledName());
+	if (symbol != SymbolFactory.UNKNOWN)
+	    printWriter.write(" ()");
+	
+	if(printSourceLibrary){
+	    printWriter.print(" from " + this.getLibraryName());
+	}
     }
-  }
   
   public String getLibraryName(){
       Dwfl dwfl = DwflCache.getDwfl(getTask());
@@ -138,14 +128,6 @@ public abstract class Frame
    * Returns the value stored at the given register.
    */
   public abstract Value getRegisterValue(Register reg);
-  
-  /**
-   * Returns the Cannonical Frame Address of this StackFrame. Used in
-   * conjunction with methodName to provide a unique identifier.
-   * 
-   * @return cfa    The cannonical frame address of this StackFrame
-   */
-  public abstract long getCFA();
   
   public abstract long setReg(long reg, long val);
   

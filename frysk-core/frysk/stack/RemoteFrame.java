@@ -68,6 +68,9 @@ class RemoteFrame extends Frame
   RemoteFrame inner = null;
   RemoteFrame outer = null;
    
+    private final Cursor cursor;
+    private final Task task;
+
   /**
    * Creates a new RemoteFrame object. Represents a frame on the stack of a 
    * remote (non-local) process.
@@ -108,6 +111,13 @@ class RemoteFrame extends Frame
     return inner;
   }
   
+    /**
+     * Return's the frame's task.
+     */
+    public Task getTask() {
+	return task;
+    }
+
   /**
    * Returns the ProcInfo object for this Frame.
    */
@@ -182,30 +192,21 @@ class RemoteFrame extends Frame
     return val;
   }
   
-  /**
-   * Returns the Canonical Frame Address of this Frame.
-   */
-  public long getCFA()
-  {
-    byte[] word = new byte[task.getIsa().getWordSize()];
-    if (cursor.getSP(word) < 0)
-      return 0;
-    return byteArrayToLong(word);
-  }
-  
-  /**
-   * Return this frame's FrameIdentifier.
-   */
-  public FrameIdentifier getFrameIdentifier ()
-  {
-    if (this.frameIdentifier == null)
-      {
-        ProcInfo myInfo = getProcInfo();
-        this.frameIdentifier = new FrameIdentifier(myInfo.getStartIP(),
-                                          getCFA());
-      }
-    return this.frameIdentifier;
-  }
+    /**
+     * Return this frame's FrameIdentifier.
+     */
+    public FrameIdentifier getFrameIdentifier () {
+	if (this.frameIdentifier == null) {
+	    ProcInfo myInfo = getProcInfo();
+	    byte[] word = new byte[task.getIsa().getWordSize()];
+	    long cfa = 0;
+	    if (cursor.getSP(word) >= 0)
+		cfa = byteArrayToLong(word);
+	    this.frameIdentifier = new FrameIdentifier(myInfo.getStartIP(),
+						       cfa);
+	}
+	return this.frameIdentifier;
+    }
   
   /**
    * Sets the value of the given register number with the word value.
