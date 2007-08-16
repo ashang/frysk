@@ -1,3 +1,9 @@
+2007-08-16  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DebugInfoFrame.java (getSubprogram): Added check check for functions inlined
+	by the compiler.
+	(getInlinedSubprograms): Ditto.
+
 2007-08-16  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfoFrame.java: Use getUndecoratedFrame.

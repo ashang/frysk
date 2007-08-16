@@ -42,6 +42,8 @@ package frysk.debuginfo;
 import java.io.File;
 import java.util.LinkedList;
 
+import lib.dwfl.DwAtEncodings;
+import lib.dwfl.DwInlEncodings;
 import lib.dwfl.DwTagEncodings;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
@@ -86,7 +88,10 @@ public class DebugInfoFrame extends FrameDecorator{
   	scopes = scopes[0].getScopesDie();
   	
   	for (int i = 0; i < scopes.length; i++) {
-  	  if (scopes[i].getTag() == DwTagEncodings.DW_TAG_subprogram_) {
+  	  
+  	  if (scopes[i].getTag() == DwTagEncodings.DW_TAG_subprogram_ && 
+  		  scopes[i].getAttrConstant(DwAtEncodings.DW_AT_inline_) != DwInlEncodings.DW_INL_inlined_ &&
+  		  scopes[i].getAttrConstant(DwAtEncodings.DW_AT_inline_) != DwInlEncodings.DW_INL_declared_inlined_) {
   	    subprogram = new Subprogram(scopes[i], debugInfo);
   	    break;
   	  }
@@ -127,8 +132,9 @@ public class DebugInfoFrame extends FrameDecorator{
             scopes = scopes[0].getScopesDie();
             
             for (int i = 0; i < scopes.length; i++) {
-        	if (scopes[i].getTag() == DwTagEncodings.DW_TAG_inlined_subroutine_) {
-        	    inlinedSubprograms.add(new InlinedSubroutine(scopes[i], debugInfo));
+        	if (scopes[i].getTag() == DwTagEncodings.DW_TAG_inlined_subroutine_ ||
+        		scopes[i].getAttrConstant(DwAtEncodings.DW_AT_inline_) == DwInlEncodings.DW_INL_inlined_) {
+	  	    inlinedSubprograms.add(new InlinedSubroutine(scopes[i], debugInfo));
         	}
             }
         }
