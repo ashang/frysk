@@ -144,11 +144,14 @@ public class Scope
     Arrays.fill(indentArray, ' ');
     String indentString = new String(indentArray);
     
+    writer.println();
+    writer.print(indentString+"{");
+	
     Iterator iterator = this.variables.iterator();
     while(iterator.hasNext()){
 	Variable variable = (Variable) iterator.next();
 	writer.println();
-	writer.print(indentString);
+	writer.print(indentString + " ");
 	variable.toPrint(writer, frame);
 	writer.print(" ");
 	variable.printLineCol(writer);
@@ -161,5 +164,6 @@ public class Scope
       scope.toPrint(frame, writer, indent+1);
     }
     
+    writer.print("\n"+indentString+"}");
   }
 }
