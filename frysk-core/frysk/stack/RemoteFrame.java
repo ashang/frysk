@@ -162,7 +162,7 @@ class RemoteFrame extends Frame
 	RegisterMap map = UnwindRegisterMapFactory.getRegisterMap(isa);
 
 	try {
-	    if (register.type == StandardTypes.getIntType(isa)) {
+	    if (register.type == StandardTypes.getIntType(isa) || register.type == StandardTypes.getLongType(isa)) {
 		if (cursor.getRegister(map.getRegisterNumber(register), word) < 0)
 		    return null;
 	    } else {
