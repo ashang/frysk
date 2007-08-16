@@ -463,9 +463,9 @@ private void setValues(Task myTask, Isa isa, ListStore model) {
 	// re-create the type with a specific byte-order isn't going
 	// to scale.
 	if (register.type instanceof IntegerType)
-	    type = new IntegerType(register.type.getSize(), ByteOrder.LITTLE_ENDIAN, register.type.getTypeIdFIXME(), register.type.getName(), false);
+	    type = new IntegerType(register.type.getSize(), ByteOrder.LITTLE_ENDIAN, register.type.getTypeIdFIXME(), register.type.toPrint(), false);
 	else if (register.type instanceof FloatingPointType)
-	    type = new FloatingPointType(register.type.getSize(), ByteOrder.LITTLE_ENDIAN, register.type.getTypeIdFIXME(), register.type.getName(), false);
+	    type = new FloatingPointType(register.type.getSize(), ByteOrder.LITTLE_ENDIAN, register.type.getTypeIdFIXME(), register.type.toPrint(), false);
 	else
 	    throw new RuntimeException("type botch");
 
@@ -490,9 +490,9 @@ private void setValues(Task myTask, Isa isa, ListStore model) {
 	// re-create the type with a specific byte-order isn't going
 	// to scale.
 	if (register.type instanceof IntegerType)
-	    type = new IntegerType(register.type.getSize(), ByteOrder.BIG_ENDIAN, register.type.getTypeIdFIXME(), register.type.getName(), false);
+	    type = new IntegerType(register.type.getSize(), ByteOrder.BIG_ENDIAN, register.type.getTypeIdFIXME(), register.type.toPrint(), false);
 	else if (register.type instanceof FloatingPointType)
-	    type = new FloatingPointType(register.type.getSize(), ByteOrder.BIG_ENDIAN, register.type.getTypeIdFIXME(), register.type.getName(), false);
+	    type = new FloatingPointType(register.type.getSize(), ByteOrder.BIG_ENDIAN, register.type.getTypeIdFIXME(), register.type.toPrint(), false);
 	else
 	    throw new RuntimeException("type botch");
 

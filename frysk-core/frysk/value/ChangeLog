@@ -1,5 +1,10 @@
 2007-08-15  Andrew Cagney  <cagney@redhat.com>
 
+	* Type.java (toPrint()): New.
+	(toPrint(PrintWriter)): Implement using getName.
+	(getName): Make package private.
+	* ArithmeticType.java: Use toPrint().
+	
 	* Location.java (asByteArray): New.
 	(Location(byte[]): New.
 	* TestLocation.java: New file.

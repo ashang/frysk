@@ -136,8 +136,8 @@ public class WatchList implements SaveableXXX {
 	    // TODO: Do we need a better way of identifying whether two
 	    // variables are the same?
 	    if (uDisp.getName().equals(disp.getValue().getTextFIXME())
-		    && uDisp.getValue().getType().getName().equals(
-			    disp.getValue().getType().getName())) {
+		    && uDisp.getValue().getType().toPrint().equals(
+			    disp.getValue().getType().toPrint())) {
 		iter.remove();
 		notifyListenersRemoved(disp);
 		return true;

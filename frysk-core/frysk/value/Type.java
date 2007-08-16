@@ -55,6 +55,8 @@ import java.io.StringWriter;
 public abstract class Type {
     protected int size;
 
+    // XXX: ByteOrder is an arithmetic-type thing; not a generic type
+    // thing; should be pushed to sub-class.
     protected final ByteOrder endian;
   
     protected final int typeId;
@@ -99,7 +101,7 @@ public abstract class Type {
 	return typeId;
     }
 
-    public String getName() {
+    String getName() {
 	return name;
     }
 
@@ -148,7 +150,16 @@ public abstract class Type {
      * implemented this.
      */
     public void toPrint(PrintWriter writer) {
-	throw new RuntimeException("unimplemented");
+	writer.print(getName());
+    }
+    /**
+     * Print this Type.
+     */
+    public String toPrint() {
+	StringWriter stringWriter = new StringWriter();
+	PrintWriter writer = new PrintWriter(stringWriter);
+	toPrint(writer);
+	return stringWriter.toString();
     }
 
     public abstract Value add (Value var1, Value var2)

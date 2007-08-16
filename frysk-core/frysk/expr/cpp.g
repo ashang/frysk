@@ -837,7 +837,7 @@ expr returns [Value returnVar=null]
                 (v2.getType().getTypeIdFIXME() < BaseTypes.baseTypeByte && v2.getType().getTypeIdFIXME() > BaseTypes.baseTypeLong)) {
 
                 throw new OperationNotDefinedException("binary operator << not defined for types " + 
-                    v1.getType().getName() + " and " + v2.getType().getName());
+                    v1.getType().toPrint() + " and " + v2.getType().toPrint());
             }
 
             returnVar = v1.getType().shiftLeft(v1, v2);  }
@@ -846,7 +846,7 @@ expr returns [Value returnVar=null]
                 (v2.getType().getTypeIdFIXME() < BaseTypes.baseTypeByte && v2.getType().getTypeIdFIXME() > BaseTypes.baseTypeLong)) {
 
                 throw new OperationNotDefinedException("binary operator >> not defined for types " + 
-                    v1.getType().getName() + " and " + v2.getType().getName());
+                    v1.getType().toPrint() + " and " + v2.getType().toPrint());
             }
 
             returnVar = v1.getType().shiftRight(v1, v2);  }

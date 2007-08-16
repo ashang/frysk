@@ -1,5 +1,9 @@
 2007-08-15  Andrew Cagney  <cagney@redhat.com>
 
+	* register/RegisterWindow.java: Replace Type.getName with
+	Type.toPrint.
+	* sessions/WatchList.java: Ditto.
+	
 	* register/RegisterWindow.java: Use IntegerType and
 	FloatingPointType.
 	

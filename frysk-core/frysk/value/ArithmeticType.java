@@ -167,7 +167,7 @@ public abstract class ArithmeticType
     else if (BaseTypes.isFloat(var1.getType().getTypeIdFIXME()))
       throw new InvalidOperatorException(
                                          "binary operator << not defined for type "
-					 + var1.getType().getName());
+					 + var1.getType().toPrint());
     return null;
   } 
 
@@ -186,7 +186,7 @@ public abstract class ArithmeticType
     else if (BaseTypes.isFloat(var1.getType().getTypeIdFIXME()))
       throw new InvalidOperatorException(
                                          "binary operator >> not defined for type "
-					 + var1.getType().getName());
+					 + var1.getType().toPrint());
     return null;
   } 
   
@@ -313,7 +313,7 @@ public abstract class ArithmeticType
     else if (BaseTypes.isFloat(var1.getType().getTypeIdFIXME()))
       throw new InvalidOperatorException(
                                          "binary operator & not defined for type "
-					 + var1.getType().getName());
+					 + var1.getType().toPrint());
     return null;
   }
 
@@ -332,7 +332,7 @@ public abstract class ArithmeticType
     else if (BaseTypes.isFloat(var1.getType().typeId))
       throw new InvalidOperatorException(
                                          "binary operator | not defined for type "
-					 + var1.getType().getName());
+					 + var1.getType().toPrint());
     return null;
   }
   
@@ -351,7 +351,7 @@ public abstract class ArithmeticType
     else if (BaseTypes.isFloat(var1.getType().typeId))
       throw new InvalidOperatorException(
                                          "binary operator ^ not defined for type "
-					 + var1.getType().getName());
+					 + var1.getType().toPrint());
     return null;
   }
 
@@ -366,7 +366,7 @@ public abstract class ArithmeticType
     else if (BaseTypes.isFloat(var1.getType().typeId))
       throw new InvalidOperatorException(
                                          "unary operator ~ not defined for type "
-					 + var1.getType().getName());
+					 + var1.getType().toPrint());
     return null;
   }
 
@@ -387,7 +387,7 @@ public abstract class ArithmeticType
     else if (BaseTypes.isFloat(var1.getType().typeId))
       throw new InvalidOperatorException(
                                          "binary operator && not defined for type "
-					 + var1.getType().getName());
+					 + var1.getType().toPrint());
     return null;
   }
   
@@ -408,7 +408,7 @@ public abstract class ArithmeticType
     else if (BaseTypes.isFloat(var1.getType().typeId))
       throw new InvalidOperatorException(
                                          "binary operator || not defined for type "
-					 + var1.getType().getName());
+					 + var1.getType().toPrint());
     return null;
   }
 
@@ -422,7 +422,7 @@ public abstract class ArithmeticType
     else if (BaseTypes.isFloat(var1.getType().typeId))
       throw new InvalidOperatorException(
                                          "binary operator || not defined for type "
-                                         + var1.getType().getName());
+                                         + var1.getType().toPrint());
     return null;
   }
 

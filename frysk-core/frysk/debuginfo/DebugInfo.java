@@ -46,7 +46,6 @@ import frysk.expr.CppSymTab;
 import frysk.expr.CppTreeParser;
 import frysk.proc.Proc;
 import frysk.debuginfo.Subprogram;
-import frysk.value.FunctionType;
 import frysk.value.Value;
 import java.io.StringReader;
 import java.text.ParseException;
@@ -180,13 +179,13 @@ public class DebugInfo {
 	    switch (varDie.getTag()) {
             case DwTagEncodings.DW_TAG_subprogram_: {
 		Value value = debugInfoEvaluator[0].getSubprogramValue(varDie);
-		result.append(((FunctionType)value.getType()).getName());
+		result.append(value.getType().toPrint());
 		break;
             }
             case DwTagEncodings.DW_TAG_typedef_:
             case DwTagEncodings.DW_TAG_structure_type_: {
 		Value value = debugInfoEvaluator[0].getValue(varDie);
-		result.append(value.getType().getName());
+		result.append(value.getType().toPrint());
 		break;
             }
             default:
@@ -198,7 +197,7 @@ public class DebugInfo {
 		result.append("extern ");
 
 	    if (value != null)
-		result.append(value.getType().getName());
+		result.append(value.getType().toPrint());
         }
 	if (varDie != null) {
 	    try {
