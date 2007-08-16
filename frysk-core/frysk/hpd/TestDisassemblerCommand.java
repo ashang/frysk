@@ -46,6 +46,8 @@ public class TestDisassemblerCommand
     extends TestLib
 {
     public void testHpdDisassemble() {
+	if (unsupported("disassembler", !lib.opcodes.Disassembler.available()))
+	    return;
 	child = new Expect(Config.getPkgLibFile("hpd-c"));
 	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect(prompt);
@@ -60,6 +62,8 @@ public class TestDisassemblerCommand
     }
     
     public void testDisassembleRange() {
+	if (unsupported("disassembler", !lib.opcodes.Disassembler.available()))
+	    return;
 	child = new Expect(Config.getPkgLibFile("hpd-c"));
 	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect(prompt);

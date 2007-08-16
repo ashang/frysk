@@ -54,6 +54,8 @@ public class TestFStep
   // stepped program.
   public void testFirstStep() throws Exception
   {
+      if (unsupported("disassembler", !lib.opcodes.Disassembler.available()))
+	  return;
     Elf e = new Elf("/bin/true", ElfCommand.ELF_C_READ);
     try
       {
