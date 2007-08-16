@@ -69,6 +69,7 @@ import frysk.sys.proc.MapsBuilder;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.SlaveOffspring;
 import frysk.testbed.TestLib;
+import frysk.proc.Auxv;
 
 public class TestFCore
     extends TestLib
@@ -337,6 +338,38 @@ public class TestFCore
   
       testCore.delete();
  }
+
+  public void testAuxv ()
+  {
+      // Construct a process
+      Proc ackProc = giveMeABlockedProc();
+      assertNotNull("Found Process",ackProc);
+      
+      // Create a corefile from process
+      String coreFileName = constructCore(ackProc);
+      File testCore = new File(coreFileName);
+      assertTrue("Checking core file " + coreFileName + " exists.",
+                 testCore.exists());
+
+      // Model the corefile, and get the Process.
+      LinuxHost lcoreHost = new LinuxHost(Manager.eventLoop, 
+		   testCore);      
+      assertNotNull("Checking core file Host", lcoreHost);
+      
+      // Get corefile process
+      Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid())); 
+      assertNotNull("Checking core file process", coreProc);
+      
+      Auxv[] coreAux = coreProc.getAuxv();
+      Auxv[] liveAux = ackProc.getAuxv();
+
+      assertEquals("AuxV length is same as live", coreAux.length,  liveAux.length);
+      for (int i=0; i<coreAux.length; i++)
+	{
+	  assertEquals("AuxV types matches live", coreAux[i].type, liveAux[i].type);
+	  assertEquals("AuxV value matches live", coreAux[i].val, liveAux[i].val);
+	}
+  }
 
 /**
    * Given a Proc object, generate a core file from that given proc.

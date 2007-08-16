@@ -1,3 +1,7 @@
+2007-08-16  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestFCore.java (testAuxv): New.
+
 2007-08-13  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestFCore.java (testProgramSegmentHeader): Use getElf().
