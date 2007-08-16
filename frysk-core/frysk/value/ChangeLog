@@ -1,5 +1,12 @@
 2007-08-15  Andrew Cagney  <cagney@redhat.com>
 
+	* IntegerType.java: Make constructor public, add boolean parameter.
+	* FloatingPointType.java: Ditto.
+	* ArithmeticType.java: Make abstract.
+	(toPrint(PrintWriter)): Print "name".
+	* StandardTypes.java: Use IntegerType and FloatingPointType.
+	* TestValue.java: Ditto.
+
 	* EnumType.java: Re-indent.
 	* FunctionType.java: Re-indent.
 	* ClassType.java: Re-indent.

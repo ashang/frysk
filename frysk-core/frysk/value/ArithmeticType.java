@@ -47,20 +47,20 @@ import java.io.PrintWriter;
 /**
  * Type for a arithmetic.
  */
-public class ArithmeticType
+public abstract class ArithmeticType
     extends Type
 {    
-    public ArithmeticType (int size, ByteOrder endian,
-                         int typeId, String typeStr)
-  {
-    super(size, endian, typeId, typeStr);
-  }
+    protected ArithmeticType (int size, ByteOrder endian,
+			      int typeId, String typeStr)
+    {
+	super(size, endian, typeId, typeStr);
+    }
   
-  public ArithmeticType (int size, ByteOrder endian, 
-                         int typeId, String typeStr, boolean haveTypeDef)
-  {
-    super(size, endian, typeId, typeStr, haveTypeDef);
-  }
+    protected ArithmeticType (int size, ByteOrder endian, 
+			      int typeId, String typeStr, boolean haveTypeDef)
+    {
+	super(size, endian, typeId, typeStr, haveTypeDef);
+    }
   
   public Value add (Value var1, Value var2)
   {
@@ -642,7 +642,7 @@ public class ArithmeticType
   }
 
     public void toPrint(PrintWriter writer) {
-	writer.print(getName());
+	writer.print(name);
     }
 
     public void toPrint(PrintWriter writer, Location location,

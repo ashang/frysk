@@ -84,6 +84,8 @@ import frysk.stack.RegisterFactory;
 import frysk.stack.StackFactory;
 import frysk.stepping.TaskStepEngine;
 import frysk.value.ArithmeticType;
+import frysk.value.IntegerType;
+import frysk.value.FloatingPointType;
 import frysk.value.Format;
 import frysk.value.Value;
 
@@ -454,7 +456,19 @@ private void setValues(Task myTask, Isa isa, ListStore model) {
 	  = (Value)model.getValue(iter, valueColumn);
 	
 	ArithmeticType type;
-	type = new ArithmeticType(register.type.getSize(), ByteOrder.LITTLE_ENDIAN, register.type.getTypeIdFIXME(), register.type.getName());
+
+	// XXX: This big/little re-formatting of the Register's type
+	// could be pushed into Format.  XXX: Registers can be more
+	// complex types such as union; this use of instanceof to
+	// re-create the type with a specific byte-order isn't going
+	// to scale.
+	if (register.type instanceof IntegerType)
+	    type = new IntegerType(register.type.getSize(), ByteOrder.LITTLE_ENDIAN, register.type.getTypeIdFIXME(), register.type.getName(), false);
+	else if (register.type instanceof FloatingPointType)
+	    type = new FloatingPointType(register.type.getSize(), ByteOrder.LITTLE_ENDIAN, register.type.getTypeIdFIXME(), register.type.getName(), false);
+	else
+	    throw new RuntimeException("type botch");
+
 	// Binary little endian
 	model.setValue(iter, binaryLittleEndianColumn, 
 		       stringUsingValue(value, type, Format.BINARY));
@@ -469,7 +483,19 @@ private void setValues(Task myTask, Isa isa, ListStore model) {
 		       stringUsingValue(value, type, Format.OCTAL));
 
 	//Switch endian-ness.	
-	type = new ArithmeticType(register.type.getSize(), ByteOrder.BIG_ENDIAN, register.type.getTypeIdFIXME(), register.type.getName());
+
+	// XXX: This big/little re-formatting of the Register's type
+	// could be pushed into Format.  XXX: Registers can be more
+	// complex types such as union; this use of instanceof to
+	// re-create the type with a specific byte-order isn't going
+	// to scale.
+	if (register.type instanceof IntegerType)
+	    type = new IntegerType(register.type.getSize(), ByteOrder.BIG_ENDIAN, register.type.getTypeIdFIXME(), register.type.getName(), false);
+	else if (register.type instanceof FloatingPointType)
+	    type = new FloatingPointType(register.type.getSize(), ByteOrder.BIG_ENDIAN, register.type.getTypeIdFIXME(), register.type.getName(), false);
+	else
+	    throw new RuntimeException("type botch");
+
 	// Binary big endian
 	model.setValue(iter, binaryBigEndianColumn, 
 		       stringUsingValue(value, type, Format.BINARY));

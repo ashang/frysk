@@ -50,9 +50,15 @@ import java.io.PrintWriter;
 public class FloatingPointType
     extends ArithmeticType
 {    
-    FloatingPointType(int size, ByteOrder endian,
-		      int typeId, String typeStr) {
-	super(size, endian, typeId, typeStr);
+    /**
+     * XXX: This is an interim constructor.  This will be replaced by
+     * a constructor that replaces TYPE_ID with a description of the
+     * underlying floating-point format.
+     */
+    public FloatingPointType(int size, ByteOrder endian,
+			     int typeId, String typeStr,
+			     boolean haveTypeDef) {
+	super(size, endian, typeId, typeStr, haveTypeDef);
     }
 
     public void toPrint(PrintWriter writer, Location location,

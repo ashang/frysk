@@ -1,5 +1,7 @@
 2007-08-15  Andrew Cagney  <cagney@redhat.com>
 
+	* cpp.g: Use IntegerType and FloatingPointType.
+
 	* cpp.g: Type.getTypeId renamed to Type.getTypeIdFIXME.
 
 2007-08-15  Stan Cox  <scox@redhat.com>

@@ -49,9 +49,14 @@ import java.io.PrintWriter;
 public class IntegerType
     extends ArithmeticType
 {    
-    IntegerType(int size, ByteOrder endian,
-		int typeId, String typeStr) {
-	super(size, endian, typeId, typeStr);
+    /**
+     * XXX: This is an interim constructor.  This will be replaced by
+     * a constructor that replaces TYPE_ID with SIGNNESS.
+     */
+    public IntegerType(int size, ByteOrder endian,
+		       int typeId, String typeStr,
+		       boolean haveTypeDef) {
+	super(size, endian, typeId, typeStr, haveTypeDef);
     }
 
     public void toPrint(PrintWriter writer, Location location,

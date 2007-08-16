@@ -82,6 +82,8 @@ header
 
     import java.util.ArrayList;
     import frysk.value.ArithmeticType;
+    import frysk.value.IntegerType;
+    import frysk.value.FloatingPointType;
     import frysk.value.Value;
     import frysk.debuginfo.DebugInfoFrame;
     import javax.naming.NameNotFoundException;
@@ -763,22 +765,22 @@ options {
 {
     ArrayList      refList;
     ArithmeticType arithmeticType;
-    ArithmeticType longType;
-    ArithmeticType intType;
-    ArithmeticType shortType;
-    ArithmeticType doubleType;
-    ArithmeticType floatType;
+    IntegerType longType;
+    IntegerType intType;
+    IntegerType shortType;
+    FloatingPointType doubleType;
+    FloatingPointType floatType;
     private CppSymTab cppSymTabRef;
     private DebugInfoFrame frame;
     public CppTreeParser(int intSize, DebugInfoFrame frame, CppSymTab symTab) {
         this();
 	    cppSymTabRef = symTab; 
         this.frame = frame;
-        shortType = new ArithmeticType(intSize / 2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeShort, "short");
-        intType = new ArithmeticType(intSize, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeInteger, "int");
-        longType = new ArithmeticType(intSize * 2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeLong, "long");
-        floatType = new ArithmeticType(intSize, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeFloat, "float");
-        doubleType = new ArithmeticType(intSize * 2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeDouble, "double");
+        shortType = new IntegerType(intSize / 2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeShort, "short", false);
+        intType = new IntegerType(intSize, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeInteger, "int", false);
+        longType = new IntegerType(intSize * 2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeLong, "long", false);
+        floatType = new FloatingPointType(intSize, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeFloat, "float", false);
+        doubleType = new FloatingPointType(intSize * 2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeDouble, "double", false);
     }
 }
 

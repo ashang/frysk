@@ -65,6 +65,8 @@ import frysk.stack.Register;
 import frysk.stack.RegisterMap;
 import frysk.sys.Errno;
 import frysk.value.ArithmeticType;
+import frysk.value.IntegerType;
+import frysk.value.FloatingPointType;
 import frysk.value.ArrayType;
 import frysk.value.ClassType;
 import frysk.value.EnumType;
@@ -489,20 +491,21 @@ class DebugInfoEvaluator
     {
       case BaseTypes.baseTypeLong:
       case BaseTypes.baseTypeUnsignedLong:
-        return new ArithmeticType(longType.getSize(), longType.getEndian(), BaseTypes.baseTypeLong, name, true);
+        return new IntegerType(longType.getSize(), longType.getEndian(),
+			       BaseTypes.baseTypeLong, name, true);
       case BaseTypes.baseTypeInteger:
       case BaseTypes.baseTypeUnsignedInteger:
-        return new ArithmeticType(intType.getSize(), intType.getEndian(), BaseTypes.baseTypeInteger, name, true);
+        return new IntegerType(intType.getSize(), intType.getEndian(), BaseTypes.baseTypeInteger, name, true);
       case BaseTypes.baseTypeShort:
       case BaseTypes.baseTypeUnsignedShort:
-        return new ArithmeticType(shortType.getSize(), shortType.getEndian(), BaseTypes.baseTypeShort, name, true);
+        return new IntegerType(shortType.getSize(), shortType.getEndian(), BaseTypes.baseTypeShort, name, true);
       case BaseTypes.baseTypeByte:
       case BaseTypes.baseTypeUnsignedByte:
-        return new ArithmeticType(byteType.getSize(), byteType.getEndian(), BaseTypes.baseTypeByte, name, true);
+        return new IntegerType(byteType.getSize(), byteType.getEndian(), BaseTypes.baseTypeByte, name, true);
       case BaseTypes.baseTypeFloat:
-        return new ArithmeticType(floatType.getSize(), floatType.getEndian(), BaseTypes.baseTypeFloat, name, true);
+        return new FloatingPointType(floatType.getSize(), floatType.getEndian(), BaseTypes.baseTypeFloat, name, true);
       case BaseTypes.baseTypeDouble:
-        return new ArithmeticType(doubleType.getSize(), doubleType.getEndian(), BaseTypes.baseTypeDouble, name, true);
+        return new FloatingPointType(doubleType.getSize(), doubleType.getEndian(), BaseTypes.baseTypeDouble, name, true);
       default:
         return null;
     }
