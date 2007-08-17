@@ -1,3 +1,10 @@
+2007-08-17  Teresa Thomas  <tthomas@redhat.com>
+	
+	* Piece.java: New File.
+	* MemoryPiece.java: New File.
+	* RegisterPiece.java: New File.
+	* UnavailablePiece.java: New File.
+
 2007-08-15  Andrew Cagney  <cagney@redhat.com>
 
 	* Type.java (toPrint()): New.
