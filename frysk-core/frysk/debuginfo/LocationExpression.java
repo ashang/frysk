@@ -42,10 +42,14 @@ package frysk.debuginfo;
 import java.lang.Math;
 
 import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import frysk.proc.Isa;
 import frysk.stack.Register;
+import frysk.value.RegisterPiece;
+import frysk.value.MemoryPiece;
+import frysk.value.UnavailablePiece;
 
 import lib.dwfl.DwarfDie;
 import lib.dwfl.DwarfOp;
@@ -61,6 +65,7 @@ class LocationExpression {
     List ops;
     int locationType;
     LinkedList stack;
+    public static final long NOMEMORYSPLIT = -99;
     
     public LocationExpression (DebugInfoFrame frame, DwarfDie die, List ops) {
 	locationType = 0;
@@ -125,6 +130,7 @@ class LocationExpression {
 		stack.addFirst(new Long(operator - DwOpEncodings.DW_OP_lit0_));
 		break;
 
+	    // Register name Operators	
 	    case DwOpEncodings.DW_OP_reg0_:
 	    case DwOpEncodings.DW_OP_reg1_:
 	    case DwOpEncodings.DW_OP_reg2_:
@@ -217,6 +223,7 @@ class LocationExpression {
 		stack.addFirst(new Long(operand1));
 		break;
 
+	    // DW_OP_fbreg calls recursively and pushes that value on the stack
 	    case DwOpEncodings.DW_OP_fbreg_:
 		locationType = locationTypeRegDisp;
 		long pc = frame.getAdjustedAddress();
@@ -390,13 +397,394 @@ class LocationExpression {
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 != operand1)? 1:0));
 		break;	
-	
+		
 		// ??? Support remaining operators
 	    default:
 		throw new ValueUavailableException();
 	    }
 	}
 	return ((Long)stack.removeFirst()).longValue();
+    }
+
+    /**
+     * Decode a location list and return the value
+     * (Currently not being used by frysk)
+     * @param size Size of variable (currently unused)
+     * @return List of memory or register pieces
+     */
+    public List decode (int size)
+    {
+	stack = new LinkedList();
+	Isa isa = frame.getTask().getIsa();
+	int nops = ops.size();
+	
+	/*
+	 * pieces will contain a list of MemoryPiece or RegisterPiece
+	 */
+	ArrayList pieces = new ArrayList(); 
+
+	if (nops == 0)
+	    if (die.getAttrBoolean(DwAtEncodings.DW_AT_location_)) 
+		throw new VariableOptimizedOutException();  
+	    else 
+		throw new ValueUavailableException();
+
+	for(int i = 0; i < nops; i++) {
+	    int operator = ((DwarfOp) ops.get(i)).operator;
+	    long operand1 = ((DwarfOp) ops.get(i)).operand1;
+	    long operand2 = ((DwarfOp) ops.get(i)).operand2;
+	    switch (operator) {
+	    case DwOpEncodings.DW_OP_lit0_:
+	    case DwOpEncodings.DW_OP_lit1_:
+	    case DwOpEncodings.DW_OP_lit2_:
+	    case DwOpEncodings.DW_OP_lit3_:
+	    case DwOpEncodings.DW_OP_lit4_:
+	    case DwOpEncodings.DW_OP_lit5_:
+	    case DwOpEncodings.DW_OP_lit6_:
+	    case DwOpEncodings.DW_OP_lit7_:
+	    case DwOpEncodings.DW_OP_lit8_:
+	    case DwOpEncodings.DW_OP_lit9_:
+	    case DwOpEncodings.DW_OP_lit10_:
+	    case DwOpEncodings.DW_OP_lit11_:
+	    case DwOpEncodings.DW_OP_lit12_:
+	    case DwOpEncodings.DW_OP_lit13_:
+	    case DwOpEncodings.DW_OP_lit14_:
+	    case DwOpEncodings.DW_OP_lit15_:
+	    case DwOpEncodings.DW_OP_lit16_:
+	    case DwOpEncodings.DW_OP_lit17_:
+	    case DwOpEncodings.DW_OP_lit18_:
+	    case DwOpEncodings.DW_OP_lit19_:
+	    case DwOpEncodings.DW_OP_lit20_:
+	    case DwOpEncodings.DW_OP_lit21_:
+	    case DwOpEncodings.DW_OP_lit22_:
+	    case DwOpEncodings.DW_OP_lit23_:
+	    case DwOpEncodings.DW_OP_lit24_:
+	    case DwOpEncodings.DW_OP_lit25_:
+	    case DwOpEncodings.DW_OP_lit26_:
+	    case DwOpEncodings.DW_OP_lit27_:
+	    case DwOpEncodings.DW_OP_lit28_:
+	    case DwOpEncodings.DW_OP_lit29_:
+	    case DwOpEncodings.DW_OP_lit30_:
+	    case DwOpEncodings.DW_OP_lit31_:
+		stack.addFirst(new Long(operator - DwOpEncodings.DW_OP_lit0_));
+		break;
+
+	    // Register name Operators	
+	    case DwOpEncodings.DW_OP_reg0_:
+	    case DwOpEncodings.DW_OP_reg1_:
+	    case DwOpEncodings.DW_OP_reg2_:
+	    case DwOpEncodings.DW_OP_reg3_:
+	    case DwOpEncodings.DW_OP_reg4_:
+	    case DwOpEncodings.DW_OP_reg5_:
+	    case DwOpEncodings.DW_OP_reg6_:
+	    case DwOpEncodings.DW_OP_reg7_:
+	    case DwOpEncodings.DW_OP_reg8_:
+	    case DwOpEncodings.DW_OP_reg9_:
+	    case DwOpEncodings.DW_OP_reg10_:
+	    case DwOpEncodings.DW_OP_reg11_:
+	    case DwOpEncodings.DW_OP_reg12_:
+	    case DwOpEncodings.DW_OP_reg13_:
+	    case DwOpEncodings.DW_OP_reg14_:
+	    case DwOpEncodings.DW_OP_reg15_:
+	    case DwOpEncodings.DW_OP_reg16_:
+	    case DwOpEncodings.DW_OP_reg17_:
+	    case DwOpEncodings.DW_OP_reg18_:
+	    case DwOpEncodings.DW_OP_reg19_:
+	    case DwOpEncodings.DW_OP_reg20_:
+	    case DwOpEncodings.DW_OP_reg21_:
+	    case DwOpEncodings.DW_OP_reg22_:
+	    case DwOpEncodings.DW_OP_reg23_:
+	    case DwOpEncodings.DW_OP_reg24_:
+	    case DwOpEncodings.DW_OP_reg25_:
+	    case DwOpEncodings.DW_OP_reg26_:
+	    case DwOpEncodings.DW_OP_reg27_:
+	    case DwOpEncodings.DW_OP_reg28_:
+	    case DwOpEncodings.DW_OP_reg29_:
+	    case DwOpEncodings.DW_OP_reg30_:
+	    case DwOpEncodings.DW_OP_reg31_:
+		if (locationType == 0) 
+		    locationType = locationTypeReg;
+		Register register = DwarfRegisterMapFactory.getRegisterMap(isa)
+		.getRegister(operator - DwOpEncodings.DW_OP_reg0_);
+		// Push the register onto the stack
+		stack.addFirst(register);
+		break;
+
+	    case DwOpEncodings.DW_OP_breg0_:
+	    case DwOpEncodings.DW_OP_breg1_:
+	    case DwOpEncodings.DW_OP_breg2_:
+	    case DwOpEncodings.DW_OP_breg3_:
+	    case DwOpEncodings.DW_OP_breg4_:
+	    case DwOpEncodings.DW_OP_breg5_:
+	    case DwOpEncodings.DW_OP_breg6_:
+	    case DwOpEncodings.DW_OP_breg7_:
+	    case DwOpEncodings.DW_OP_breg8_:
+	    case DwOpEncodings.DW_OP_breg9_:
+	    case DwOpEncodings.DW_OP_breg10_:
+	    case DwOpEncodings.DW_OP_breg11_:
+	    case DwOpEncodings.DW_OP_breg12_:
+	    case DwOpEncodings.DW_OP_breg13_:
+	    case DwOpEncodings.DW_OP_breg14_:
+	    case DwOpEncodings.DW_OP_breg15_:
+	    case DwOpEncodings.DW_OP_breg16_:
+	    case DwOpEncodings.DW_OP_breg17_:
+	    case DwOpEncodings.DW_OP_breg18_:
+	    case DwOpEncodings.DW_OP_breg19_:
+	    case DwOpEncodings.DW_OP_breg20_:
+	    case DwOpEncodings.DW_OP_breg21_:
+	    case DwOpEncodings.DW_OP_breg22_:
+	    case DwOpEncodings.DW_OP_breg23_:
+	    case DwOpEncodings.DW_OP_breg24_:
+	    case DwOpEncodings.DW_OP_breg25_:
+	    case DwOpEncodings.DW_OP_breg26_:
+	    case DwOpEncodings.DW_OP_breg27_:
+	    case DwOpEncodings.DW_OP_breg28_:
+	    case DwOpEncodings.DW_OP_breg29_:
+	    case DwOpEncodings.DW_OP_breg30_:
+	    case DwOpEncodings.DW_OP_breg31_:
+		locationType = locationTypeRegDisp;
+		register = DwarfRegisterMapFactory.getRegisterMap(isa)
+		.getRegister(operator - DwOpEncodings.DW_OP_breg0_);
+		long regval = frame.getRegisterValue(register).asLong();
+		stack.addFirst(new Long(operand1 + regval));
+		break;
+
+	    case DwOpEncodings.DW_OP_regx_:
+		if (locationType == 0) 
+		    locationType = locationTypeReg;
+		register = DwarfRegisterMapFactory.getRegisterMap(isa)
+		.getRegister((int)operand1);
+		stack.addFirst(register);
+		break;
+
+	    case DwOpEncodings.DW_OP_addr_:
+		locationType = locationTypeAddress;
+		stack.addFirst(new Long(operand1));
+		break;
+
+	    // DW_OP_fbreg calls recursively and pushes that value on the stack
+	    case DwOpEncodings.DW_OP_fbreg_:
+		locationType = locationTypeRegDisp;
+		long pc = frame.getAdjustedAddress();
+		LocationExpression frameBaseOps = new LocationExpression (frame, die, die.getFrameBase(pc));
+		stack.addFirst(new Long(operand1 + frameBaseOps.decode()));
+		break;
+
+		// ??? unsigned not properly handled (use bignum?) See DwarfDie.java
+	    case DwOpEncodings.DW_OP_const1u_:
+	    case DwOpEncodings.DW_OP_const1s_:
+	    case DwOpEncodings.DW_OP_const2u_:
+	    case DwOpEncodings.DW_OP_const2s_:
+	    case DwOpEncodings.DW_OP_const4u_:
+	    case DwOpEncodings.DW_OP_const4s_:
+	    case DwOpEncodings.DW_OP_constu_:
+	    case DwOpEncodings.DW_OP_consts_:
+		stack.addFirst(new Long(operand1));
+		break;
+            
+            // Stack Operations
+	    case DwOpEncodings.DW_OP_dup_:
+		stack.addFirst(stack.getFirst());
+		break;
+		
+	    case DwOpEncodings.DW_OP_over_:
+		stack.addFirst(stack.get(1));
+		break;
+		
+	    case DwOpEncodings.DW_OP_drop_:
+		stack.removeFirst();
+		break;
+
+	    case DwOpEncodings.DW_OP_swap_:
+                Long first = (Long) stack.removeFirst();
+                Long second = (Long) stack.removeFirst();
+                stack.addFirst(first);
+                stack.addFirst(second);
+		break;	
+		
+	    case DwOpEncodings.DW_OP_rot_:
+                first = (Long) stack.removeFirst();
+                second = (Long) stack.removeFirst();
+                Long third = (Long) stack.removeFirst();
+                stack.addFirst(first);
+                stack.addFirst(third);
+                stack.addFirst(second);
+		break;			
+
+            // Arithmetic Operations
+	    case DwOpEncodings.DW_OP_plus_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(operand1 + operand2));
+		break;
+
+	    case DwOpEncodings.DW_OP_plus_uconst_:
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(operand1 + operand2));
+		break;
+
+	    case DwOpEncodings.DW_OP_minus_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(operand1 + operand2)); // - ?
+		break;
+	
+	    case DwOpEncodings.DW_OP_mul_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(operand1 * operand2));
+		break;
+		
+	    case DwOpEncodings.DW_OP_div_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		// Should there be a check here for operand1!=0 ?
+		stack.addFirst(new Long(operand2 / operand1));
+		break;
+
+	    case DwOpEncodings.DW_OP_mod_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		// Should there be a check here for operand1!=0 ?
+		stack.addFirst(new Long(operand2 % operand1));
+		break;
+		
+	    case DwOpEncodings.DW_OP_abs_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(Math.abs(operand1)));
+		break;
+		
+	    case DwOpEncodings.DW_OP_and_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(operand1 & operand2));
+		break;
+		
+	    case DwOpEncodings.DW_OP_or_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(operand1 | operand2));
+		break;
+		
+	    case DwOpEncodings.DW_OP_shl_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(operand2 << operand1));
+		break;
+		
+	    case DwOpEncodings.DW_OP_shr_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(operand2 >>> operand1));
+		break;
+		
+	    case DwOpEncodings.DW_OP_shra_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(operand2 >> operand1));
+		break;
+		
+	    case DwOpEncodings.DW_OP_xor_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(operand1 ^ operand2));
+		break;
+		
+	    case DwOpEncodings.DW_OP_neg_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(0-operand1));
+		break;
+		
+	    case DwOpEncodings.DW_OP_not_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long(~operand1));
+		break;
+	   
+	    // Control flow operations
+	    case DwOpEncodings.DW_OP_le_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long((operand2 <= operand1)? 1:0));
+		break;	
+		
+	    case DwOpEncodings.DW_OP_ge_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long((operand2 >= operand1)? 1:0));
+		break;	
+		
+	    case DwOpEncodings.DW_OP_eq_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long((operand2 == operand1)? 1:0));
+		break;	
+		
+	    case DwOpEncodings.DW_OP_lt_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long((operand2 < operand1)? 1:0));
+		break;	
+		
+	    case DwOpEncodings.DW_OP_gt_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long((operand2 > operand1)? 1:0));
+		break;	
+		
+	    case DwOpEncodings.DW_OP_ne_:
+		operand1 = ((Long)stack.removeFirst()).longValue();
+		operand2 = ((Long)stack.removeFirst()).longValue();
+		stack.addFirst(new Long((operand2 != operand1)? 1:0));
+		break;	
+				
+	    //Special Operations
+	    case DwOpEncodings.DW_OP_nop_:
+		if (true) {
+		    // Do nothing 
+		}
+		break;
+		
+	    // Composition Operators
+	    case DwOpEncodings.DW_OP_piece_:
+		
+		//Case where some bytes of value is unavailable 
+		if (i==0 || ((DwarfOp)(ops.get(i-1))).operator==DwOpEncodings.DW_OP_piece_)
+		{
+		    pieces.add(new UnavailablePiece(operand1));
+		    break;
+		}	
+		
+		/*
+		 * If stackTop is a Register, add it as a RegisterPiece to list pieces 
+		 * If it is a long value, add it as a MemoryPiece 
+		 */
+		Object stackTop = stack.getFirst();
+		if (stackTop instanceof Register)
+		    pieces.add(new RegisterPiece((Register)stackTop, operand1));
+		else if (stackTop instanceof Long)
+		    pieces.add(new MemoryPiece(((Long)stackTop).longValue(), operand1));
+		break;
+		
+	    default:
+		throw new ValueUavailableException();
+	    }
+	}
+	
+	/* 
+	 * If pieces is empty, its the case where there is no memory split between registers and memory
+	 * Pop top of stack & add to the empty list
+	 */
+	if (pieces.isEmpty())
+	{    
+	    Object stackTop = stack.removeFirst();
+
+	    if (stackTop instanceof Register)
+		pieces.add(new RegisterPiece((Register)stackTop, NOMEMORYSPLIT));
+	    else if (stackTop instanceof Long)
+		pieces.add(new MemoryPiece(((Long)stackTop).longValue(), NOMEMORYSPLIT));
+	}    
+	
+	return pieces;
     }
     
     /**
@@ -423,9 +811,6 @@ class LocationExpression {
     }
     
     public int getStackSize() {
-	if (stack != null)
-	    return stack.size();
-	else
-	    return 0;
+	return ((stack != null) ? stack.size() : 0);
     }
 }
