@@ -92,7 +92,7 @@ frysk::sys::StatelessFile::pwrite (jlong fileOffset,
 		(const char *)elements (unixPath));
 
   // XXX: 64-bit?
-  ssize_t rc = ::pwrite (fd, start + elements(bytes), length, fileOffset);
+  ssize_t rc = ::pwrite64 (fd, start + elements(bytes), length, fileOffset);
   if (rc < 0) {
     int savedErrno = errno;
     ::close (fd);

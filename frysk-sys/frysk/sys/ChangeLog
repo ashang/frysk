@@ -1,3 +1,7 @@
+2007-08-17  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* cni/StatlessFile.cxx (pwrite): Use pwrite64.
+
 2007-08-02  Andrew Cagney  <cagney@redhat.com>
 
 	* TestPipePair.java (testChildMask, testDaemonMask): New tests.
