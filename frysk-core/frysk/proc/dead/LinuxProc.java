@@ -89,13 +89,13 @@ public class LinuxProc
 
     // Executable is null (non-specified), find the executable
     // as it is written in the corefile. 
-    if (host.exeFile == null)
+    if ((host.exeFile == null) && (host.exeSetToNull == false))
       {
 	File exeFileName = new File(sendrecExe());
 	// XXX: Hack here, some processes do not have path information
 	// in the name. 
 	if ((exeFileName.exists()) && (exeFileName.canRead()))
-	  host.exeFile = new File(sendrecExe());
+	  host.exeFile = exeFileName;
 	else
 	  {
 	    String commonLocations[] = {"/bin/","/usr/bin/"};

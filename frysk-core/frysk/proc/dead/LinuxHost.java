@@ -61,6 +61,7 @@ public class LinuxHost
 {
 
   boolean hasRefreshed = false;
+  boolean exeSetToNull = false;
   protected File coreFile = null;
   protected File exeFile = null;
   Elf corefileElf;
@@ -93,6 +94,8 @@ public class LinuxHost
   public LinuxHost(EventLoop eventLoop, File coreFile, File exeFile)
   {
       this(eventLoop, coreFile, false);
+      if (exeFile == null)
+	  exeSetToNull = true;
       this.exeFile = exeFile;
       this.sendRefresh(true);
   }

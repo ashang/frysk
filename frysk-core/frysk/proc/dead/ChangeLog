@@ -1,3 +1,11 @@
+2007-08-17  Phil Muldoon  <pmuldoon@localhost.localdomain>
+
+	* LinuxProc.java (LinuxProc): If user set exeFile to null,
+	do not attempt to local exe. Do not create two Files for
+	one exe.
+	* LinuxHost.java (LinuxHost): Check is user intentionally set
+	exeFile to null, rather than accepting null as default value.
+
 2007-08-10  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestLinuxCore.java: Added virtualFrames boolean argument
