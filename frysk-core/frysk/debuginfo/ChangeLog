@@ -1,3 +1,9 @@
+2007-08-17  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DebugInfoStackFactory.java (printStackTrace): Moved bulk of frame printing from
+	here....
+	* DebugInfoFrame.java (toPrint): ... to here.
+
 2007-08-17  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestLocationExpression.java: Tests modified to accomodate a list

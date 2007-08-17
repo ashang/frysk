@@ -44,7 +44,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import frysk.proc.Task;
-import frysk.rt.Line;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 
@@ -140,44 +139,7 @@ public class DebugInfoStackFactory {
           
           writer.print("#" + count + " ");
           
-          Subprogram subprogram = frame.getSubprogram();
-    
-          if(subprogram != null){
-            writer.print("0x");
-            String addr = Long.toHexString(frame.getAddress());
-            int padding = 2 * frame.getTask().getIsa().getWordSize() - addr.length();
-            
-            for (int i = 0; i < padding; ++i)
-              writer.print('0');
-            
-            writer.print(addr);
-            
-            writer.print(" in " + subprogram.getName() + "(");
-            if(printParameters){
-    	    subprogram.printParameters(writer, frame);
-            }
-            writer.print(") ");
-            
-            if(fullpath){
-              Line line = frame.getLines()[0];
-              writer.print(line.getFile().getPath());
-              writer.print("#");
-              writer.print(line.getLine());
-            }else{
-              Line line = frame.getLines()[0];
-              writer.print(line.getFile().getName());
-              writer.print("#");
-              writer.print(line.getLine());
-            }
-            
-            if(printScopes){
-    	    subprogram.printScopes(writer, frame);
-            }
-            
-          } else {
-              frame.toPrint(writer, true);
-          }
-          
+          frame.toPrint(writer, printParameters, printScopes, fullpath);
           writer.println();
           writer.flush();
           count++;
