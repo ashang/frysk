@@ -39,27 +39,24 @@
 
 package frysk.util;
 
+import inua.eio.ByteOrder;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import inua.eio.ByteOrder;
+import lib.dwfl.Elf;
+import lib.dwfl.ElfCommand;
+import lib.dwfl.ElfEHeader;
+import lib.dwfl.ElfException;
+import lib.dwfl.ElfFileException;
+import lib.dwfl.ElfNhdr;
+import lib.dwfl.ElfPHeader;
 import frysk.proc.Isa;
 import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.sys.StatelessFile;
 import frysk.sys.proc.MapsBuilder;
-import lib.dwfl.Elf;
-import lib.dwfl.ElfCommand;
-import lib.dwfl.ElfData;
-import lib.dwfl.ElfEHeader;
-import lib.dwfl.ElfException;
-import lib.dwfl.ElfFileException;
-import lib.dwfl.ElfFlags;
-import lib.dwfl.ElfPHeader;
-import lib.dwfl.ElfSection;
-import lib.dwfl.ElfNhdr;
-import lib.dwfl.ElfSectionHeader;
-import lib.dwfl.ElfSectionHeaderTypes;
 
 public abstract class LinuxElfCorefile {
 
@@ -134,46 +131,93 @@ public abstract class LinuxElfCorefile {
 
 	// Build elf header.
 	elfSectionOffset = populateElfHeader(linuxElfCorefileImage);
-	mapsCount = countMaps();
 
+	// update in memory, so pheader size, no, and no of entries is valid
+	linuxElfCorefileImage.update(ElfCommand.ELF_C_NULL);
+
+	mapsCount = countMaps();
+	
 	// Build initial Program segment header including PT_NOTE program header.
 	linuxElfCorefileImage.createNewPHeader(mapsCount + 1);
-
-	// Update elfSectionOffset to phentsue * number of segments.
-	ElfEHeader elf_header = linuxElfCorefileImage.getEHeader();
-	elfSectionOffset += ((mapsCount + 1) * elf_header.phentsize);
+	ElfEHeader eHeader = linuxElfCorefileImage.getEHeader();
 
 	// Build notes section
-	elfSectionOffset += buildNotes(linuxElfCorefileImage);
-
-	// Tell elf to let us worry about layout
-	linuxElfCorefileImage.flag(ElfCommand.ELF_C_SET, ElfFlags.LAYOUT);
-
+	byte[] noteData = buildNotes();
+	
+	// Write note header
+	ElfPHeader noteSegment = linuxElfCorefileImage.getPHeader(0);
+	noteSegment.offset = (eHeader.phentsize * eHeader.phnum) + eHeader.ehsize;
+	noteSegment.memsz = 0;
+	noteSegment.filesz = noteData.length; 
+	//noteSegment.offset = 
+	noteSegment.type = ElfPHeader.PTYPE_NOTE;
+	noteSegment.vaddr = 0;
+	noteSegment.flags = ElfPHeader.PHFLAG_NONE;
+	noteSegment.align = 1;
+	noteSegment.flags = ElfPHeader.PHFLAG_READABLE;
+	linuxElfCorefileImage.updatePHeader(0, noteSegment);
+	
 	// Build, and write out memory segments to sections
 	final CoreMapsBuilder builder = new CoreMapsBuilder();
 	builder.construct(this.process.getMainTask().getTid());
-
-	// Build string table.
-	elfSectionOffset += buildStringTable(linuxElfCorefileImage);
-
-	elf_header = linuxElfCorefileImage.getEHeader();
-	elf_header.shoff = elfSectionOffset + 2;
-
-	// Elf Header is completed
-	linuxElfCorefileImage.updateEHeader(elf_header);
 
 	// Write elf file
 	final long i = linuxElfCorefileImage.update(ElfCommand.ELF_C_WRITE);
 	if (i < 0)
 	    throw new RuntimeException("LibElf elf_update failed with "
 		    + linuxElfCorefileImage.getLastErrorMsg());
-	
 	// Go home.
 	linuxElfCorefileImage.close();
 	
-
+	writeNoteData(noteData, getConstructedFileName(), noteSegment.offset);
+	writeSegments(mapsCount, getConstructedFileName());
     }
 
+    private void writeSegments(int mapCount, String name)  {
+	
+	// chunk size to read
+	int chunk_size = 0x1000;
+	long numOfReads = 0;
+	int currentOffset = 0;
+	
+	byte[] buffer = new byte[chunk_size];
+	
+	// Reopen corefile, to write segment data
+	StatelessFile rawCore = new StatelessFile(name);
+
+	try {
+	    linuxElfCorefileImage = openElf(getConstructedFileName(),
+		    ElfCommand.ELF_C_READ);
+	} catch (Exception e) {
+	    throw new RuntimeException(e);
+	}
+	
+	// Loop through maps
+	for (int i=1; i<=mapCount;i++)
+	{
+	    final ElfPHeader pheader = linuxElfCorefileImage.getPHeader(i);
+
+	    if (pheader.filesz <= 0)
+		continue;
+
+	    numOfReads = pheader.filesz / chunk_size;
+	    currentOffset = 0;
+	    
+	    for (int chunkRead = 0; chunkRead < numOfReads; chunkRead++)
+	    {
+		process.getMainTask().getMemory().get(pheader.vaddr+currentOffset, buffer,0,chunk_size);
+		rawCore.pwrite(pheader.offset+currentOffset, buffer,0,buffer.length);
+		currentOffset += chunk_size;
+	    }
+	}
+	
+	linuxElfCorefileImage.close();
+    }
+    
+    private void writeNoteData(byte[] data, String name, long offset) {
+	StatelessFile rawCore = new StatelessFile(name);
+	rawCore.pwrite(offset, data, 0, data.length);
+    }
     /**
      * 
      * Return the endian type as associated by this ISA
@@ -287,14 +331,14 @@ public abstract class LinuxElfCorefile {
      * @param list - List of note Headers
      * @return the number of valid ElfNhdr objects.
      */
-    protected int constructSectionData(ElfData noteSectionData, List nhdrList) {
+    protected byte[] constructSectionData(List nhdrList) {
 	int sectionSize = 0;
 	long entrySize = 0;
 	long startAddress = 0;
 
 	int size = nhdrList.size();
 	if (size <= 0)
-	    return 0;
+	    return null;
 
 	// Count the size of the whole PT_NOTE section.
 	for (int index = 0; index < size; index++) {
@@ -324,10 +368,7 @@ public abstract class LinuxElfCorefile {
 	    startAddress += entry.getNhdrEntrySize();
 	}
 
-	noteSectionData.setBuffer(noteSectionBuffer);
-	noteSectionData.setSize(noteSectionBuffer.length);
-
-	return size;
+	return noteSectionBuffer;
     }
 
     /**
@@ -337,7 +378,7 @@ public abstract class LinuxElfCorefile {
      * @param noteSection - note section to fill.
      * 
      */
-    protected void fillElfNoteSection(ElfSection noteSection) {
+    protected byte[] buildNotes() {
 	int entryCount = 0;
 
 	ArrayList list = new ArrayList();
@@ -383,9 +424,8 @@ public abstract class LinuxElfCorefile {
 
 	// Now all note sections are filled, write it out to
 	// to section data.
-	ElfData sectionData = noteSection.createNewElfData();
-	constructSectionData(sectionData, list);
-	sectionData.setType(0);
+	return constructSectionData(list);
+
     }
 
     /**
@@ -413,7 +453,7 @@ public abstract class LinuxElfCorefile {
 	elf_header.version = elfCore.getElfVersion();
 
 	// String Index
-	elf_header.shstrndx = 1;
+	elf_header.shstrndx = 0;
 
 	elf_header.machine = getElfMachineType();
 
@@ -427,103 +467,6 @@ public abstract class LinuxElfCorefile {
 	// Get size of written header
 	elf_header = elfCore.getEHeader();
 	return elf_header.ehsize;
-    }
-
-    /**
-     * Internal utility function to generate the NOTES section of the elf core
-     * file.
-     * 
-     * @param elfCore - Elf object to build header for, and to to store in.
-     * @return long - Size of the notes.
-     * 
-     */
-    protected long buildNotes(Elf elfCore) {
-	// Dump out PT_NOTE
-	ElfSection noteSection = elfCore.createNewSection();
-	ElfSectionHeader noteSectHeader = noteSection.getSectionHeader();
-	ElfPHeader noteProgramHeader = null;
-
-	this.fillElfNoteSection(noteSection);
-
-	// Modify PT_NOTE section header
-	noteSectHeader.type = ElfSectionHeaderTypes.SHTYPE_NOTE;
-	noteSectHeader.flags = ElfSectionHeaderTypes.SHFLAG_ALLOC;
-	noteSectHeader.nameAsNum = 16;
-	noteSectHeader.offset = 0;
-	noteSectHeader.addralign = 1;
-	noteSectHeader.size = noteSection.getData().getSize();
-	noteSection.update(noteSectHeader);
-
-	// Must first ask libelf to construct offset location before
-	// adding offset back to program header. Otherwise program offset
-	// will be 0.
-	if (elfCore.update(ElfCommand.ELF_C_NULL) < 0)
-	    throw new RuntimeException("Cannot calculate note section offset");
-
-	// Then re-fetch the elf modified header from section. Now offset
-	// is calculated and correct.
-	noteSectHeader = noteSection.getSectionHeader();
-
-	// Modify PT_NOTE program header
-	noteProgramHeader = elfCore.getPHeader(0);
-	noteProgramHeader.type = ElfPHeader.PTYPE_NOTE;
-	noteProgramHeader.flags = ElfPHeader.PHFLAG_READABLE;
-	noteProgramHeader.offset = noteSectHeader.offset;
-	noteProgramHeader.filesz = noteSectHeader.size;
-
-	// Calculate elf section offset.
-	noteProgramHeader.align = noteSectHeader.addralign;
-	elfCore.updatePHeader(0, noteProgramHeader);
-
-	return noteSectHeader.size;
-    }
-
-    /**
-     * Internal utility function to generate the string table for the elf file.
-     * Create a very small static string section. This is needed as the actual
-     * program segment data needs to be placed into Elf_Data, and that is a
-     * section function. Therefore needs a section table and a section string
-     * table. This is how gcore does it (and the only way using libelf).
-     * 
-     * @param elfCore - Elf object to build header from, and where to store in.
-     */
-    protected long buildStringTable(Elf elfCore) {
-
-	// Make a static string table.
-	String stringList = "\0" + "load" + "\0" + ".shstrtab" + "\0" + "note0"
-		+ "\0";
-	byte[] stringListBytes = stringList.getBytes();
-
-	ElfSection lastSection = elfCore
-		.getSection(elfCore.getSectionCount() - 1);
-
-	// Sections need a string lookup table
-	ElfSection stringSection = elfCore.createNewSection();
-	ElfData data = stringSection.createNewElfData();
-	ElfSectionHeader stringSectionHeader = stringSection.getSectionHeader();
-	stringSectionHeader.type = ElfSectionHeaderTypes.SHTYPE_STRTAB;
-	stringSectionHeader.size = stringListBytes.length;
-
-	stringSectionHeader.offset = lastSection.getSectionHeader().offset
-		+ lastSection.getSectionHeader().size;
-
-	stringSectionHeader.addralign = 1;
-	stringSectionHeader.nameAsNum = 6; // offset of .shrstrtab;
-
-	// Set elf data
-	data.setBuffer(stringListBytes);
-	data.setSize(stringListBytes.length);
-	// Update the section table back to elf structures.
-	stringSection.update(stringSectionHeader);
-
-	// Repoint shstrndx to string segment number
-	ElfEHeader elf_header = elfCore.getEHeader();
-	elf_header.shstrndx = (int) stringSection.getIndex();
-
-	// Calculate elf section offset.
-	elfCore.updateEHeader(elf_header);
-
-	return stringListBytes.length;
     }
 
     /**
@@ -611,80 +554,25 @@ public abstract class LinuxElfCorefile {
 		else
 		    pheader.filesz = 0;
 
-		// Set initial section flags (always ALLOC).
-		long sectionFlags = ElfSectionHeaderTypes.SHFLAG_ALLOC; // SHF_ALLOC;
-
 		// Build flags
 		if (permRead == true)
 		    pheader.flags = pheader.flags | ElfPHeader.PHFLAG_READABLE;
 
-		if (permWrite == true) {
+		if (permWrite == true)
 		    pheader.flags = pheader.flags | ElfPHeader.PHFLAG_WRITABLE;
-		    sectionFlags = sectionFlags
-			    | ElfSectionHeaderTypes.SHFLAG_WRITE;
-		}
 
-		if (permExecute == true) {
+		if (permExecute == true) 
 		    pheader.flags = pheader.flags
 			    | ElfPHeader.PHFLAG_EXECUTABLE;
-		    sectionFlags = sectionFlags
-			    | ElfSectionHeaderTypes.SHFLAG_EXECINSTR;
-		}
 
-		// Update section header
-		ElfSection section = linuxElfCorefileImage.createNewSection();
-		ElfSectionHeader sectionHeader = section.getSectionHeader();
-
-		// sectionHeader.Name holds the string value. We also need to store
-		// the offset into the
-		// string table when we write data back;
-		sectionHeader.nameAsNum = 1; // String offset of load string
-
-		// Set the rest of the header
-		sectionHeader.type = ElfSectionHeaderTypes.SHTYPE_PROGBITS;
-		sectionHeader.flags = sectionFlags;
-		sectionHeader.addr = pheader.vaddr;
-		sectionHeader.offset = pheader.offset;
-		sectionHeader.size = pheader.memsz;
-		sectionHeader.link = 0;
-		sectionHeader.info = 0;
-		sectionHeader.addralign = 1;
-		sectionHeader.entsize = 0;
-		elfSectionOffset += sectionHeader.size;
 
 		// Only actually write the segment if we have previously
 		// decided to write that segment.
-		if (writeMap) {
-
-		    ElfData data = section.createNewElfData();
-
-		    // Construct file size, if any
+		if (writeMap) 
 		    pheader.filesz = pheader.memsz;
 
-		    // Load data. How to fail here?
-		    byte[] memory = new byte[(int) (addressHigh - addressLow)];
-		    process.getMainTask().getMemory().get(addressLow, memory,
-			    0, (int) (addressHigh - addressLow));
+		pheader.align = 0x1;
 
-		    // Set and update back to native elf section
-		    data.setBuffer(memory);
-		    data.setSize(memory.length);
-		    data.setType(0);
-		}
-
-		section.update(sectionHeader);
-
-		// inefficient to do this for each map, but alternative is to rerun
-		// another builder
-		// so for right now, less of two evil. Needs a rethinks.
-		final long i = linuxElfCorefileImage
-			.update(ElfCommand.ELF_C_NULL);
-		if (i < 0)
-		    System.err.println("update in memory failed with message "
-			    + linuxElfCorefileImage.getLastErrorMsg());
-		sectionHeader = section.getSectionHeader();
-		// pheader.offset = sectionHeader.offset;
-		pheader.align = sectionHeader.addralign;
 		// Write back Segment header to elf structure
 		linuxElfCorefileImage.updatePHeader(numOfMaps + 1, pheader);
 

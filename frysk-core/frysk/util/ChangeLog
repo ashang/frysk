@@ -1,3 +1,27 @@
+2007-08-17  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestFCore.java (ProgramHeaderMapsTester): Delete.
+	(testAuxv): Delete core when done.
+	(findLowAddress): New.
+	(getElf): Made private.
+	(getIsa): Ditto.
+	(getArch): Ditto.
+	(giveMeABlockedProc): Ditto.
+	(giveMeAProc): Ditto.
+	(constructCore): Ditto.
+	(testProgramSegmentHeader): Refactored to check segments
+	are correctly includexd.	
+	* LinuxElfCorefile.java (writeNoteData): New. Don't use 
+	elf to write segments.
+	(writeSegments): Ditto. Write elf segment data.
+	(constructCorefile): Refactor, do not use Sections.
+	(FillENoteSection): Delete.
+	(constructSectionData): Return byte[].	
+	(buildNotes): Was fileENoteSection. Return
+	byte[].
+	(CoreMapsBuilder.buildMap): Just build Program Segment
+	header info. Do not write elf data.
+	
 2007-08-16  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestFCore.java (testAuxv): New.

@@ -52,24 +52,20 @@ import lib.dwfl.ElfEMachine;
 import lib.dwfl.ElfException;
 import lib.dwfl.ElfFileException;
 import lib.dwfl.ElfKind;
-import lib.dwfl.ElfPHeader;
-import lib.dwfl.ElfSection;
-import lib.dwfl.ElfSectionHeader;
-import lib.dwfl.ElfSectionHeaderTypes;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
+import frysk.proc.Auxv;
 import frysk.proc.Isa;
 import frysk.proc.Manager;
+import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.dead.LinuxHost;
-import frysk.sys.proc.MapsBuilder;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.SlaveOffspring;
 import frysk.testbed.TestLib;
-import frysk.proc.Auxv;
 
 public class TestFCore
     extends TestLib
@@ -176,21 +172,47 @@ public class TestFCore
 
 
     Proc ackProc = giveMeAProc();
+
+    // Create a corefile from process
     String coreFileName = constructCore(ackProc);
     File testCore = new File(coreFileName);
+ 
     assertTrue("Checking core file " + coreFileName + " exists.",
-               testCore.exists());
+            testCore.exists());
 
-    Elf local_elf = getElf(coreFileName);
+    // Model the corefile, and get the Process.
+    LinuxHost lcoreHost = new LinuxHost(Manager.eventLoop, 
+		   testCore,new File(ackProc.getExe()));      
 
-
-    assertNotNull("elf variable is null", local_elf);
-
-    // Build, and write out memory segments to sections
-    final ProgramHeaderMapsTester builder = new ProgramHeaderMapsTester(
-                                                                        local_elf);
-    builder.construct(ackProc.getMainTask().getTid());
-
+    assertNotNull("Checking core file Host", lcoreHost);
+    
+    // Get corefile process
+    Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid())); 
+    assertNotNull("Checking core file process", coreProc);    
+   
+    MemoryMap[] coreMaps = coreProc.getMaps();
+    MemoryMap[] liveMaps = ackProc.getMaps();
+    
+    for(int i=0; i<liveMaps.length; i++)
+    {
+	if (liveMaps[i].permRead == false)
+	    continue;
+	int index = findLowAddress(liveMaps[i].addressLow,coreMaps);
+	assertTrue("Check can locate core map 0x"+Long.toHexString(liveMaps[i].addressLow),
+		index >= 0);
+	assertEquals("addressLow matches in core and live proc", coreMaps[index].addressLow, 
+			liveMaps[i].addressLow);	
+	assertEquals("addressHigh matches in core and live proc", coreMaps[index].addressHigh, 
+			liveMaps[i].addressHigh);	
+	assertEquals("execute flag matches in core and live proc", coreMaps[index].permExecute, 
+		liveMaps[i].permExecute);	
+	assertEquals("write flag matches in core and live proc", coreMaps[index].permWrite, 
+		liveMaps[i].permWrite);	
+	assertEquals("read flag matches in core and live proc", coreMaps[index].permRead, 
+		liveMaps[i].permRead);	
+	
+    }
+    
     testCore.delete();
   }
 
@@ -369,6 +391,8 @@ public class TestFCore
 	  assertEquals("AuxV types matches live", coreAux[i].type, liveAux[i].type);
 	  assertEquals("AuxV value matches live", coreAux[i].val, liveAux[i].val);
 	}
+      
+      testCore.delete();
   }
 
 /**
@@ -377,7 +401,7 @@ public class TestFCore
    * @param ackProc - proc object to generate core from.
    * @return - name of constructed core file.
    */
-  public String constructCore (final Proc ackProc)
+  private String constructCore (final Proc ackProc)
   {
 
     final CoredumpAction coreDump = new CoredumpAction(ackProc, new Event()
@@ -395,111 +419,7 @@ public class TestFCore
     return coreDump.getConstructedFileName();
   }
 
-  /**
-   * Builder that matches the maps in the process to those in the core file, and
-   * lints the segment/program segment values.
-   */
-  class ProgramHeaderMapsTester
-      extends MapsBuilder
-  {
-
-    int numOfMaps = 0;
-
-    int count = 0;
-
-    Elf elf;
-
-    ProgramHeaderMapsTester (Elf elf)
-    {
-      this.elf = elf;
-      ElfEHeader header = elf.getEHeader();
-      count = header.phnum;
-    }
-
-    public void buildBuffer (final byte[] maps)
-    {
-      maps[maps.length - 1] = 0;
-    }
-
-    public void buildMap (final long addressLow, final long addressHigh,
-                          final boolean permRead, final boolean permWrite,
-                          final boolean permExecute,
-                          final boolean shared, final long offset,
-                          final int devMajor, final int devMinor,
-                          final int inode, final int pathnameOffset,
-                          final int pathnameLength)
-    {
-      if (permRead == true)
-        {
-          int flags = 0;
-
-          // Special Case For Notes. First entry in the maps and the first entry
-          // in the
-          // file will not match. Check sanity of the notes segment, then
-          // advance counter.
-          if (numOfMaps == 0)
-            {
-              ElfPHeader pheader = elf.getPHeader(numOfMaps);
-              assertEquals("Checking Program Header type for NOTES",
-                           ElfPHeader.PTYPE_NOTE, pheader.type);
-              ElfSection section = elf.getSection(numOfMaps + 1);
-              ElfSectionHeader sheader = section.getSectionHeader();
-
-              assertEquals("Testing section header type for NOTES",
-                           ElfSectionHeaderTypes.SHTYPE_NOTE, sheader.type);
-              numOfMaps++;
-            }
-
-          // Continue on with normal program header segment checking.
-          ElfPHeader pheader = elf.getPHeader(numOfMaps);
-          assertEquals("Checking Program Header type", ElfPHeader.PTYPE_LOAD,
-                       pheader.type);
-          assertEquals("Checking Program Header vaddr", addressLow,
-                       pheader.vaddr);
-          assertEquals("Checking Program Header memsz", addressHigh
-                                                        - addressLow,
-                       pheader.memsz);
-
-          // Check for flags. Have to build them first.
-          long sectionFlags = ElfSectionHeaderTypes.SHFLAG_ALLOC;
-          // Build flags
-          if (permRead == true)
-            flags = flags | ElfPHeader.PHFLAG_READABLE;
-
-          if (permWrite == true)
-            {
-              flags = flags | ElfPHeader.PHFLAG_WRITABLE;
-              sectionFlags = sectionFlags | ElfSectionHeaderTypes.SHFLAG_WRITE;
-            }
-
-          if (permExecute == true)
-            {
-              flags = flags | ElfPHeader.PHFLAG_EXECUTABLE;
-              sectionFlags = sectionFlags
-                             | ElfSectionHeaderTypes.SHFLAG_EXECINSTR;
-            }
-          assertEquals("Checking Program Header flags", flags, pheader.flags);
-
-          // Check if the should be a filez value, and if so, it is correct.
-          if (ElfPHeader.PHFLAG_WRITABLE == (flags & ElfPHeader.PHFLAG_WRITABLE))
-            assertEquals("Checking filesz", pheader.memsz, pheader.filesz);
-
-          // Now check the corresponding section and section data
-          // mappings to ensure they match.
-          ElfSection section = elf.getSection(numOfMaps + 1);
-          ElfSectionHeader sheader = section.getSectionHeader();
-
-          assertEquals("Testing section header type",
-                       ElfSectionHeaderTypes.SHTYPE_PROGBITS, sheader.type);
-          assertEquals("Testing section header flags", sectionFlags,
-                       sheader.flags);
-          assertEquals("Testing section size", sheader.size, pheader.memsz);
-
-          numOfMaps++;
-        }
-    }
-  }
-
+ 
   /**
    * Generate a process suitable for attaching to (ie detached when returned).
    * Stop the process, check that is is found in the frysk state machine, then
@@ -507,7 +427,7 @@ public class TestFCore
    * 
    * @return - Proc - generated process.
    */
-  protected Proc giveMeAProc ()
+  private Proc giveMeAProc ()
   {
     SlaveOffspring ackProc = SlaveOffspring.createDaemon();
     assertNotNull(ackProc);
@@ -516,7 +436,7 @@ public class TestFCore
     return proc;
   }
   
-  protected Proc giveMeABlockedProc ()
+  private Proc giveMeABlockedProc ()
   {
     String[] nocmds = {};
     DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(nocmds);
@@ -536,7 +456,7 @@ public class TestFCore
    * @param isa - Isa to test
    * @return String - a string corresponding to the arch.
    */
-  protected String getArch (Isa isa)
+  private String getArch (Isa isa)
   {
     String arch_test = isa.toString();
     String type = arch_test.substring(0, arch_test.lastIndexOf("@"));
@@ -544,13 +464,14 @@ public class TestFCore
     return type;
   }
 
+  
   /**
    * Returns the ISA that corresponds to the given Proc
    * 
    * @param Proc - the proc to test
    * @return Isa - the Isa that corresponds to given proc.
    */
-  protected Isa getIsa (Proc proc)
+  private Isa getIsa (Proc proc)
   {
     Isa arch = null;
     arch = proc.getMainTask().getIsa();
@@ -575,4 +496,15 @@ public class TestFCore
         }
       return local_elf;
   }
+  
+  private int findLowAddress(long address, MemoryMap[] maps)
+  {
+      for (int i=0; i<maps.length; i++)
+	  if (address == maps[i].addressLow)
+	      return i;
+
+      return -1;
+  }
+  
+
 }
