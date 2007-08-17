@@ -161,7 +161,10 @@ public class Scope
     iterator = this.getScopes().iterator();
     while(iterator.hasNext()){
       Scope scope = (Scope) iterator.next();
-      scope.toPrint(frame, writer, indent+1);
+      // Dont print empty scopes
+      if(scope.getScopes().size() >0 || scope.getVariables().size() >0){
+	  scope.toPrint(frame, writer, indent+1);
+      }
     }
     
     writer.print("\n"+indentString+"}");
