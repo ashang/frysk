@@ -43,6 +43,7 @@ package frysk.value;
 import lib.dwfl.BaseTypes;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
+import java.io.PrintWriter;
 
 /**
  * Type for a pointer.
@@ -73,14 +74,12 @@ public class PointerType
 	return strBuf.toString();
     }
 
-    public String getName () {
-	StringBuffer strBuf = new StringBuffer();
+    public void toPrint(PrintWriter writer) {
 	if (type == null)
-	    strBuf.append("void");
+	    writer.print("void");
 	else
-	    strBuf.append(type.getName());
-	strBuf.append(" *");
-	return strBuf.toString();
+	    type.toPrint(writer);
+	writer.print(" *");
     }
     
     /**

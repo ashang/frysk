@@ -101,10 +101,6 @@ public abstract class Type {
 	return typeId;
     }
 
-    String getName() {
-	return name;
-    }
-
     /**
      * Dump the type to the string.
      */
@@ -145,13 +141,8 @@ public abstract class Type {
     }
     /**
      * Print this Type.
-     *
-     * XXX: Will be made abstract once all sub-classes have
-     * implemented this.
      */
-    public void toPrint(PrintWriter writer) {
-	writer.print(getName());
-    }
+    public abstract void toPrint(PrintWriter writer);
     /**
      * Print this Type.
      */

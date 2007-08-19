@@ -43,6 +43,7 @@ import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.util.ArrayList;
 import lib.dwfl.BaseTypes;
+import java.io.PrintWriter;
 
 /**
  * Type for a class.
@@ -185,13 +186,15 @@ public class ClassType
 	strBuf.replace(strBuf.length()-1, strBuf.length(), "}");
 	return strBuf.toString();
     }
-  
-    public String getName () {
-	StringBuffer strBuf = new StringBuffer();
+
+    public void toPrint(PrintWriter writer) {
 	if (this.isTypedef && this.name != null && this.name.length() > 0) {
-	    strBuf.append(this.name);
-	    return strBuf.toString();
+	    writer.print(this.name);
+	    return;
 	}
+	// XXX: This code does evil things involving poking the
+	// StringBuffer
+	StringBuffer strBuf = new StringBuffer();
 	boolean putBrace = true;
 	int access, previousAccess = 0;
 	for (int i = 0; i < this.types.size(); i++) {
@@ -224,7 +227,7 @@ public class ClassType
 	    if (memberType.isTypedef())
 		strBuf.append(memberType.name);
 	    else
-		strBuf.append(memberType.getName());
+		strBuf.append(memberType.toPrint());
 	    if (memberType instanceof frysk.value.FunctionType == false)
 		strBuf.append(" " + (String) this.names.get(i));
 	    int mask = ((Integer)this.masks.get(i)).intValue();
@@ -240,7 +243,7 @@ public class ClassType
 	    strBuf.append(";\n  ");
 	}
 	strBuf.replace(strBuf.length(), strBuf.length(), "}");
-	return strBuf.toString();
+	writer.print(strBuf);
     }
 
     /**

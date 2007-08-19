@@ -1,3 +1,13 @@
+2007-08-19  Andrew Cagney  <cagney@redhat.com>
+
+	* Type.java (getName): Delete.
+	* ClassType.java (toPrint(PrintWriter)): New.
+	(getName): Delete.
+	* EnumType.java: Ditto.
+	* FunctionType.java: Ditto.
+	* PointerType.java: Ditto.
+	* ArrayType.java: Ditto.
+
 2007-08-17  Teresa Thomas  <tthomas@redhat.com>
 	
 	* Piece.java: New File.

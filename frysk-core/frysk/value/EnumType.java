@@ -41,7 +41,7 @@ package frysk.value;
 
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
-
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 /**
@@ -92,10 +92,6 @@ public class EnumType
     }
 
     public String toString (Value v, ByteBuffer b) {
-	return toString();
-    }
-  
-    public String toString () {
 	StringBuffer strBuf = new StringBuffer();
 	strBuf.append("{");
 	Iterator e = getIterator();
@@ -113,8 +109,21 @@ public class EnumType
 	return strBuf.toString();
     }
 
-    public String getName () {
-	return "enum " + this.toString();
+    public void toPrint(PrintWriter writer) {
+	writer.print("enum ");
+	writer.print("{");
+	Iterator e = getIterator();
+	boolean first = true;
+	while (e.hasNext()) {
+	    if (first)
+		first = false;
+	    else
+		writer.print(",");
+	    writer.print(e.nextName());
+	    writer.print("=");
+	    writer.print(e.next());
+	}
+	writer.print("}");
     }
   
     /**

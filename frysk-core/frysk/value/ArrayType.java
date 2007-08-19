@@ -41,7 +41,7 @@
 package frysk.value;
 
 import java.util.ArrayList;
-
+import java.io.PrintWriter;
 import lib.dwfl.BaseTypes;
 import inua.eio.ByteBuffer;
 
@@ -247,17 +247,15 @@ public class ArrayType
 	return strBuf.toString();
     }
 
-    public String getName () {
-	StringBuffer strBuf = new StringBuffer();
-	strBuf.append(type.getName());
-	strBuf.append(" [");
+    public void toPrint(PrintWriter writer) {
+	type.toPrint(writer);
+	writer.print(" [");
 	for(int i = 0; i < this.dimensions.size(); i++) {
 	    if (i > 0)
-		strBuf.append(",");
-	    strBuf.append(((Integer)this.dimensions.get(i)).intValue() + 1);
+		writer.print(",");
+	    writer.print(((Integer)this.dimensions.get(i)).intValue() + 1);
 	}
-	strBuf.append("]");
-	return strBuf.toString();
+	writer.print("]");
     }
 
     /**

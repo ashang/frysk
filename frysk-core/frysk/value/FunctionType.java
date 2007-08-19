@@ -42,6 +42,7 @@ package frysk.value;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.util.ArrayList;
+import java.io.PrintWriter;
 
 /**
  * Type for a function.
@@ -60,23 +61,23 @@ public class FunctionType
 	return "0x" + Long.toHexString(v.getLong());
     }
   
-    public String getName () {
-	StringBuffer strBuf = new StringBuffer();
+    public void toPrint(PrintWriter writer) {
 	if (returnType == null)
-	    strBuf.append("void");
+	    writer.print("void");
 	else
-	    strBuf.append(returnType.getName());
-	strBuf.append(" " + this.name + " (");
+	    returnType.toPrint(writer);
+	writer.print(" ");
+	writer.print(this.name);
+	writer.print(" (");
 	for (int i = 0; i < this.parmTypes.size(); i++) {
-	    strBuf.append(((Type)this.parmTypes.get(i)).getName() + " ");
-	    strBuf.append((String)this.parmNames.get(i));
-	    strBuf.append(",");
+	    ((Type)this.parmTypes.get(i)).toPrint(writer);
+	    writer.print(" ");
+	    writer.print((String)this.parmNames.get(i));
+	    if (i < this.parmTypes.size() - 1)
+		// Not last arg
+		writer.print(",");
 	}
-	if (this.parmTypes.size() == 0)
-	    strBuf.append(")");
-	else
-	    strBuf.setCharAt(strBuf.length() - 1, ')');
-	return strBuf.toString();
+	writer.print(")");
     }
     
     /**
