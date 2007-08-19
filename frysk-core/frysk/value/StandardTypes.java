@@ -44,52 +44,52 @@ import inua.eio.ByteOrder;
 import lib.dwfl.BaseTypes;
 
 public class StandardTypes {
-    public static final IntegerType byteLittleEndianType = new IntegerType(
+    public static final SignedType byteLittleEndianType = new SignedType(
 	    1, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeByte, "byte", false);
 
-    public static final IntegerType byteBigEndianType = new IntegerType(
+    public static final SignedType byteBigEndianType = new SignedType(
 	    1, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeByte, "byte", false);
 
-    public static IntegerType getByteType(Isa isa) {
+    public static SignedType getByteType(Isa isa) {
 	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
 	    return byteLittleEndianType;
 	else
 	    return byteBigEndianType;
     }
 
-    public static final IntegerType shortLittleEndianType = new IntegerType(
+    public static final SignedType shortLittleEndianType = new SignedType(
 	    2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeShort, "short", false);
 
-    public static final IntegerType shortBigEndianType = new IntegerType(
+    public static final SignedType shortBigEndianType = new SignedType(
 	    2, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeShort, "short", false);
 
-    public static IntegerType getShortType(Isa isa) {
+    public static SignedType getShortType(Isa isa) {
 	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
 	    return shortLittleEndianType;
 	else
 	    return shortBigEndianType;
     }
 
-    public static final IntegerType intLittleEndianType = new IntegerType(
+    public static final SignedType intLittleEndianType = new SignedType(
 	    4, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeInteger, "int", false);
 
-    public static final IntegerType intBigEndianType = new IntegerType(
+    public static final SignedType intBigEndianType = new SignedType(
 	    4, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeInteger, "int", false);
 
-    public static IntegerType getIntType(Isa isa) {
+    public static SignedType getIntType(Isa isa) {
 	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
 	    return intLittleEndianType;
 	else
 	    return intBigEndianType;
     }
 
-    public static final IntegerType longLittleEndianType = new IntegerType(
+    public static final SignedType longLittleEndianType = new SignedType(
 	    8, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeLong, "long", false);
 
-    public static final IntegerType longBigEndianType = new IntegerType(
+    public static final SignedType longBigEndianType = new SignedType(
 	    8, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeLong, "long", false);
 
-    public static IntegerType getLongType(Isa isa) {
+    public static SignedType getLongType(Isa isa) {
 	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
 	    return longLittleEndianType;
 	else

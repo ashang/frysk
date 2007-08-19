@@ -82,7 +82,8 @@ header
 
     import java.util.ArrayList;
     import frysk.value.ArithmeticType;
-    import frysk.value.IntegerType;
+    import frysk.value.SignedType;
+    import frysk.value.UnsignedType;
     import frysk.value.FloatingPointType;
     import frysk.value.Value;
     import frysk.debuginfo.DebugInfoFrame;
@@ -765,9 +766,9 @@ options {
 {
     ArrayList      refList;
     ArithmeticType arithmeticType;
-    IntegerType longType;
-    IntegerType intType;
-    IntegerType shortType;
+    ArithmeticType longType;
+    ArithmeticType intType;
+    ArithmeticType shortType;
     FloatingPointType doubleType;
     FloatingPointType floatType;
     private CppSymTab cppSymTabRef;
@@ -776,9 +777,9 @@ options {
         this();
 	    cppSymTabRef = symTab; 
         this.frame = frame;
-        shortType = new IntegerType(intSize / 2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeShort, "short", false);
-        intType = new IntegerType(intSize, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeInteger, "int", false);
-        longType = new IntegerType(intSize * 2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeLong, "long", false);
+        shortType = new SignedType(intSize / 2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeShort, "short", false);
+        intType = new SignedType(intSize, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeInteger, "int", false);
+        longType = new SignedType(intSize * 2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeLong, "long", false);
         floatType = new FloatingPointType(intSize, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeFloat, "float", false);
         doubleType = new FloatingPointType(intSize * 2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeDouble, "double", false);
     }

@@ -85,6 +85,7 @@ import frysk.stack.StackFactory;
 import frysk.stepping.TaskStepEngine;
 import frysk.value.ArithmeticType;
 import frysk.value.IntegerType;
+import frysk.value.UnsignedType;
 import frysk.value.FloatingPointType;
 import frysk.value.Format;
 import frysk.value.Value;
@@ -463,7 +464,7 @@ private void setValues(Task myTask, Isa isa, ListStore model) {
 	// re-create the type with a specific byte-order isn't going
 	// to scale.
 	if (register.type instanceof IntegerType)
-	    type = new IntegerType(register.type.getSize(), ByteOrder.LITTLE_ENDIAN, register.type.getTypeIdFIXME(), register.type.toPrint(), false);
+	    type = new UnsignedType(register.type.getSize(), ByteOrder.LITTLE_ENDIAN, register.type.getTypeIdFIXME(), register.type.toPrint(), false);
 	else if (register.type instanceof FloatingPointType)
 	    type = new FloatingPointType(register.type.getSize(), ByteOrder.LITTLE_ENDIAN, register.type.getTypeIdFIXME(), register.type.toPrint(), false);
 	else
@@ -490,7 +491,7 @@ private void setValues(Task myTask, Isa isa, ListStore model) {
 	// re-create the type with a specific byte-order isn't going
 	// to scale.
 	if (register.type instanceof IntegerType)
-	    type = new IntegerType(register.type.getSize(), ByteOrder.BIG_ENDIAN, register.type.getTypeIdFIXME(), register.type.toPrint(), false);
+	    type = new UnsignedType(register.type.getSize(), ByteOrder.BIG_ENDIAN, register.type.getTypeIdFIXME(), register.type.toPrint(), false);
 	else if (register.type instanceof FloatingPointType)
 	    type = new FloatingPointType(register.type.getSize(), ByteOrder.BIG_ENDIAN, register.type.getTypeIdFIXME(), register.type.toPrint(), false);
 	else

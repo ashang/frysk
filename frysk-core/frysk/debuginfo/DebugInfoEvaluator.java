@@ -65,7 +65,8 @@ import frysk.stack.Register;
 import frysk.stack.RegisterMap;
 import frysk.sys.Errno;
 import frysk.value.ArithmeticType;
-import frysk.value.IntegerType;
+import frysk.value.SignedType;
+import frysk.value.UnsignedType;
 import frysk.value.FloatingPointType;
 import frysk.value.ArrayType;
 import frysk.value.ClassType;
@@ -482,6 +483,7 @@ class DebugInfoEvaluator
       return arrayType;
     }
   
+    // XXX: What is this trying to do?
   private ArithmeticType fetchType (boolean haveTypeDef, ArithmeticType type,
                                     String name)
   {
@@ -490,18 +492,23 @@ class DebugInfoEvaluator
     switch (type.getTypeIdFIXME())
     {
       case BaseTypes.baseTypeLong:
+        return new SignedType(longType.getSize(), longType.getEndian(),
+			      BaseTypes.baseTypeLong, name, true);
       case BaseTypes.baseTypeUnsignedLong:
-        return new IntegerType(longType.getSize(), longType.getEndian(),
-			       BaseTypes.baseTypeLong, name, true);
+        return new UnsignedType(longType.getSize(), longType.getEndian(),
+				BaseTypes.baseTypeLong, name, true);
       case BaseTypes.baseTypeInteger:
+        return new SignedType(intType.getSize(), intType.getEndian(), BaseTypes.baseTypeInteger, name, true);
       case BaseTypes.baseTypeUnsignedInteger:
-        return new IntegerType(intType.getSize(), intType.getEndian(), BaseTypes.baseTypeInteger, name, true);
+        return new UnsignedType(intType.getSize(), intType.getEndian(), BaseTypes.baseTypeInteger, name, true);
       case BaseTypes.baseTypeShort:
+        return new SignedType(shortType.getSize(), shortType.getEndian(), BaseTypes.baseTypeShort, name, true);
       case BaseTypes.baseTypeUnsignedShort:
-        return new IntegerType(shortType.getSize(), shortType.getEndian(), BaseTypes.baseTypeShort, name, true);
+        return new UnsignedType(shortType.getSize(), shortType.getEndian(), BaseTypes.baseTypeShort, name, true);
       case BaseTypes.baseTypeByte:
+        return new SignedType(byteType.getSize(), byteType.getEndian(), BaseTypes.baseTypeByte, name, true);
       case BaseTypes.baseTypeUnsignedByte:
-        return new IntegerType(byteType.getSize(), byteType.getEndian(), BaseTypes.baseTypeByte, name, true);
+        return new UnsignedType(byteType.getSize(), byteType.getEndian(), BaseTypes.baseTypeByte, name, true);
       case BaseTypes.baseTypeFloat:
         return new FloatingPointType(floatType.getSize(), floatType.getEndian(), BaseTypes.baseTypeFloat, name, true);
       case BaseTypes.baseTypeDouble:

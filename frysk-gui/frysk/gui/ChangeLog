@@ -1,3 +1,8 @@
+2007-08-19  Andrew Cagney  <cagney@redhat.com>
+
+	* register/RegisterWindow.java: Instantiate UnsignedType instead
+	of IntegerType.
+
 2007-08-15  Andrew Cagney  <cagney@redhat.com>
 
 	* register/RegisterWindow.java: Replace Type.getName with

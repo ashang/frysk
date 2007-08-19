@@ -47,16 +47,16 @@ import java.math.BigInteger;
 /**
  * Type for an integer value.
  */
-public class IntegerType
+public abstract class IntegerType
     extends ArithmeticType
 {    
     /**
      * XXX: This is an interim constructor.  This will be replaced by
      * a constructor that replaces TYPE_ID with SIGNNESS.
      */
-    public IntegerType(int size, ByteOrder endian,
-		       int typeId, String typeStr,
-		       boolean haveTypeDef) {
+    protected IntegerType(int size, ByteOrder endian,
+			  int typeId, String typeStr,
+			  boolean haveTypeDef) {
 	super(size, endian, typeId, typeStr, haveTypeDef);
     }
 
@@ -68,10 +68,6 @@ public class IntegerType
 
     /**
      * Return the location as a big integer.
-     *
-     * XXX: Should be made abstract.
      */
-    BigInteger asBigInteger(Location location) {
-	throw new RuntimeException("unimplemented");
-    }
+    abstract BigInteger asBigInteger(Location location);
 }

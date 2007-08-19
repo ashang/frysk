@@ -1,3 +1,7 @@
+2007-08-19  Andrew Cagney  <cagney@redhat.com>
+
+	* cpp.g: Replace IntegerType with SignedType and UnsignedType.
+
 2007-08-15  Andrew Cagney  <cagney@redhat.com>
 
 	* cpp.g: Replace Type.getName with Type.toPrint.

@@ -1,5 +1,11 @@
 2007-08-19  Andrew Cagney  <cagney@redhat.com>
 
+	* StandardTypes.java: Replace IntegerType with SignedType.
+	* TestValue.java: Replace IntegerType with SignedType and
+	UnsignedType.
+	* IntegerType.java: Make abstract.
+	(asBigInteger): Make abstract.
+	
 	* TestIntegerType.java: New file.
 	* EnumType.java: Extend IntegerType.
 	(asBigInteger): New.
