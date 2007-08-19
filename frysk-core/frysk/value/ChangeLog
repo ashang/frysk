@@ -1,5 +1,9 @@
 2007-08-19  Andrew Cagney  <cagney@redhat.com>
 
+	* ArithmeticType.java: Replace BaseTypes.isInteger and
+	BaseTypes.isLong with instanceof IntegerType.  Replace isFloat
+	with instanceof FloatingPointType.
+	
 	* StandardTypes.java: Replace IntegerType with SignedType.
 	* TestValue.java: Replace IntegerType with SignedType and
 	UnsignedType.
