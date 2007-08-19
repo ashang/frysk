@@ -40,38 +40,28 @@
 package frysk.value;
 
 import inua.eio.ByteOrder;
-import inua.eio.ByteBuffer;
-import java.io.PrintWriter;
 import java.math.BigInteger;
 
 /**
- * Type for an integer value.
+ * A signed integer type.
+ *
+ * While C's "signed" type can be represented using this, this is
+ * not C's "signed" type.
  */
-public class IntegerType
-    extends ArithmeticType
+public class SignedType
+    extends IntegerType
 {    
     /**
      * XXX: This is an interim constructor.  This will be replaced by
      * a constructor that replaces TYPE_ID with SIGNNESS.
      */
-    public IntegerType(int size, ByteOrder endian,
+    public SignedType(int size, ByteOrder endian,
 		       int typeId, String typeStr,
 		       boolean haveTypeDef) {
 	super(size, endian, typeId, typeStr, haveTypeDef);
     }
 
-    public void toPrint(PrintWriter writer, Location location,
-			ByteBuffer memory, Format format) {
-	// double-dispatch.
-	format.print(writer, location, this);
-    }
-
-    /**
-     * Return the location as a big integer.
-     *
-     * XXX: Should be made abstract.
-     */
     BigInteger asBigInteger(Location location) {
-	throw new RuntimeException("unimplemented");
+	return new BigInteger(location.asByteArray(endian));
     }
 }

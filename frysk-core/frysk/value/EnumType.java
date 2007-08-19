@@ -43,12 +43,12 @@ import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.math.BigInteger;
 
 /**
- * Type for a class.
+ * Type for an enum.
  */
-public class EnumType
-    extends Type
+public class EnumType extends IntegerType
 {
     Type type;
 
@@ -132,7 +132,7 @@ public class EnumType
      * @param endian - Endianness of class
      */
     public EnumType (ByteOrder endian) {
-	super(0, endian, 0, "class");
+	super(0, endian, 0, "enum", false);
 	names = new ArrayList();
 	values = new ArrayList();
     }
@@ -147,195 +147,13 @@ public class EnumType
 	return returnVar;
     }
 
-    public Value add (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value subtract (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value logicalNegation(Value var1) 
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-  
-    public Value assign (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value timesEqual (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value divideEqual (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value minusEqual (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value plusEqual (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value modEqual (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value shiftLeftEqual (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value shiftRightEqual (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value bitWiseAndEqual (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value bitWiseOrEqual (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value bitWiseXorEqual (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value multiply (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value divide (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value mod (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value shiftLeft (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value shiftRight (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value lessThan (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value greaterThan (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value greaterThanOrEqualTo (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value lessThanOrEqualTo (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value equal (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value notEqual (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value bitWiseAnd (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value bitWiseOr (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value bitWiseXor (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value bitWiseComplement (Value var1)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value logicalAnd (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
-    public Value logicalOr (Value var1, Value var2)
-	throws InvalidOperatorException
-    {
-	throw (new InvalidOperatorException());
-    }
-
     public boolean getLogicalValue (Value var1)
 	throws InvalidOperatorException
     {
 	throw (new InvalidOperatorException());
+    }
+
+    BigInteger asBigInteger(Location location) {
+	return new BigInteger(location.asByteArray(endian));
     }
 }

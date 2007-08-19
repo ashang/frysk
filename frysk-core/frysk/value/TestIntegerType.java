@@ -39,39 +39,53 @@
 
 package frysk.value;
 
+import frysk.junit.TestCase;
 import inua.eio.ByteOrder;
-import inua.eio.ByteBuffer;
-import java.io.PrintWriter;
-import java.math.BigInteger;
 
 /**
  * Type for an integer value.
  */
-public class IntegerType
-    extends ArithmeticType
+public class TestIntegerType
+    extends TestCase
 {    
-    /**
-     * XXX: This is an interim constructor.  This will be replaced by
-     * a constructor that replaces TYPE_ID with SIGNNESS.
-     */
-    public IntegerType(int size, ByteOrder endian,
-		       int typeId, String typeStr,
-		       boolean haveTypeDef) {
-	super(size, endian, typeId, typeStr, haveTypeDef);
+    private void checkAsBigInteger(IntegerType type, int xff00, int x0102) {
+	assertEquals("0xff00", xff00,
+		     type.asBigInteger(new Location(new byte[] { (byte)0xff, 0x00 }))
+		     .intValue());
+	assertEquals("0x0102", x0102,
+		     type.asBigInteger(new Location(new byte[] { 0x01, 0x02 }))
+		     .intValue());
+	
     }
 
-    public void toPrint(PrintWriter writer, Location location,
-			ByteBuffer memory, Format format) {
-	// double-dispatch.
-	format.print(writer, location, this);
+    public void testAsSignedBig() {
+	checkAsBigInteger(new SignedType(2, ByteOrder.BIG_ENDIAN, -1,
+					 "signed-big-endian", false),
+			  (short)0xff00, 0x0102);
+    }
+    public void testAsSignedLittle() {
+	checkAsBigInteger(new SignedType(2, ByteOrder.LITTLE_ENDIAN, -1,
+					 "signed-little-endian", false),
+			  0x00ff, 0x0201);
     }
 
-    /**
-     * Return the location as a big integer.
-     *
-     * XXX: Should be made abstract.
-     */
-    BigInteger asBigInteger(Location location) {
-	throw new RuntimeException("unimplemented");
+    public void testAsUnsignedBig() {
+	checkAsBigInteger(new UnsignedType(2, ByteOrder.BIG_ENDIAN, -1,
+					   "unsigned-big-endian", false),
+			  0xff00, 0x0102);
+    }
+    public void testAsUnsignedLittle() {
+	checkAsBigInteger(new UnsignedType(2, ByteOrder.LITTLE_ENDIAN, -1,
+					   "unsigned-little-endian", false),
+			  0x00ff, 0x0201);
+    }
+
+    public void testAsEnumBig() {
+	checkAsBigInteger(new EnumType(ByteOrder.BIG_ENDIAN),
+			  (short)0xff00, 0x0102);
+    }
+    public void testAsEnumLittle() {
+	checkAsBigInteger(new EnumType(ByteOrder.LITTLE_ENDIAN),
+			  0x00ff, 0x0201);
     }
 }

@@ -1,5 +1,43 @@
 2007-08-19  Andrew Cagney  <cagney@redhat.com>
 
+	* TestIntegerType.java: New file.
+	* EnumType.java: Extend IntegerType.
+	(asBigInteger): New.
+	(add): Delete.
+	(subtract): Delete.
+	(logicalNegation): Delete.
+	(assign): Delete.
+	(timesEqual): Delete.
+	(divideEqual): Delete.
+	(minusEqual): Delete.
+	(plusEqual): Delete.
+	(modEqual): Delete.
+	(shiftLeftEqual): Delete.
+	(shiftRightEqual): Delete.
+	(bitWiseAndEqual): Delete.
+	(bitWiseOrEqual): Delete.
+	(bitWiseXorEqual): Delete.
+	(multiply): Delete.
+	(divide): Delete.
+	(mod): Delete.
+	(shiftLeft): Delete.
+	(shiftRight): Delete.
+	(lessThan): Delete.
+	(greaterThan): Delete.
+	(greaterThanOrEqualTo): Delete.
+	(lessThanOrEqualTo): Delete.
+	(equal): Delete.
+	(notEqual): Delete.
+	(bitWiseAnd): Delete.
+	(bitWiseOr): Delete.
+	(bitWiseXor): Delete.
+	(bitWiseComplement): Delete.
+	(logicalAnd): Delete.
+	(logicalOr): Delete.
+	* IntegerType.java (asBigInteger): New method.
+	* SignedType.java: New file.
+	* UnsignedType.java: New file.
+
 	* Type.java (getName): Delete.
 	* ClassType.java (toPrint(PrintWriter)): New.
 	(getName): Delete.
