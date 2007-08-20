@@ -5,6 +5,21 @@
 	
 	* TestSteppingEngine.java: Added comments.
 	* TestStepping.java: Ditto.
+	
+	* State.java: Formatted.
+	* InstructionStepState.java: Ditto.
+	* LineStepState.java: Ditto.
+	* NextInstructionStepState.java: Ditto.
+	* NextInstructionStepTestState.java: Ditto.
+	* RunningState.java: Ditto.
+	* StepAdvanceState.java: Ditto.
+	* StepOutState.java: Ditto.
+	* StepOverState.java: Ditto.
+	* StoppedState.java: Ditto.
+	* StepTerminatedState.java: Ditto.
+	* TestStepping.java: Ditto.
+	* TestSteppingEngine.java: Ditto.
+	* TaskStepEngine.java: Ditto.
 
 2007-08-16  Mike Cvet  <mcvet@redhat.com>
 

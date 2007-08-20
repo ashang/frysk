@@ -41,32 +41,27 @@ package frysk.stepping;
 
 import frysk.proc.Task;
 
-public class RunningState extends State
-{
-  public RunningState (Task task)
-  {
-    this.task = task;
-  }
-  
-  /**
-   * The only state change available from a RunningState is to a 
-   * StoppedState.
-   * 
-   * @param tse	The parent TaskStepEngine
-   * @return new StoppedState
-   */
-  public State handleUpdate (TaskStepEngine tse)
-  {
-    return new StoppedState(this.task);
-  }
-  
-  public boolean isStopped ()
-  {
-    return false;
-  }
-  
-  public boolean isAlive ()
-  {
-      return true;
-  }
+public class RunningState extends State {
+    public RunningState(Task task) {
+	this.task = task;
+    }
+
+    /**
+     * The only state change available from a RunningState is to a 
+     * StoppedState.
+     * 
+     * @param tse	The parent TaskStepEngine
+     * @return new StoppedState
+     */
+    public State handleUpdate(TaskStepEngine tse) {
+	return new StoppedState(this.task);
+    }
+
+    public boolean isStopped() {
+	return false;
+    }
+
+    public boolean isAlive() {
+	return true;
+    }
 }

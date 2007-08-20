@@ -42,34 +42,33 @@ package frysk.stepping;
 import frysk.proc.Task;
 
 /**
- * State interface for the stepping state machine. 
+ * State interface for the stepping state machine.
  */
-public abstract class State
-{
-  /* The Task that this State belongs to */
-  Task task = null;
-  
-  /**
-   * Handles updates from the SteppingEngine.SteppingObserver. Performs
-   * state transitions if necessary.
-   * 
-   * @return state 	The State of task after the SteppingObserver update
-   */
-  public abstract State handleUpdate (TaskStepEngine tse);
-  
-  /**
-   * Returns whether or not this State represents a stopped Task.
-   * 
-   * @return true If the Task is stopped
-   * @return false If the Task is not stopped
-   */
-  public abstract boolean isStopped ();
-  
-  /**
-   * Returns whether or not this State a Task which has just died.
-   * 
-   * @return true If the Task is alive
-   * @return false If the Task has died
-   */
-  public abstract boolean isAlive ();
+public abstract class State {
+    /* The Task that this State belongs to */
+    Task task = null;
+
+    /**
+         * Handles updates from the SteppingEngine.SteppingObserver. Performs
+         * state transitions if necessary.
+         * 
+         * @return state The State of task after the SteppingObserver update
+         */
+    public abstract State handleUpdate(TaskStepEngine tse);
+
+    /**
+         * Returns whether or not this State represents a stopped Task.
+         * 
+         * @return true If the Task is stopped
+         * @return false If the Task is not stopped
+         */
+    public abstract boolean isStopped();
+
+    /**
+         * Returns whether or not this State a Task which has just died.
+         * 
+         * @return true If the Task is alive
+         * @return false If the Task has died
+         */
+    public abstract boolean isAlive();
 }

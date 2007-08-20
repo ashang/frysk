@@ -46,186 +46,177 @@ import lib.dwfl.Dwfl;
 import lib.dwfl.DwflLine;
 
 /**
- * Maintains stepping-relevant information for a given task, including its
- * Dwfl object, its FrameIdentifier, line number and State. Used by
- * the SteppingEngine to manipulate the State of a given Task. 
+ * Maintains stepping-relevant information for a given task, including its Dwfl
+ * object, its FrameIdentifier, line number and State. Used by the
+ * SteppingEngine to manipulate the State of a given Task.
  * 
- *  Also performs state-transition work when called by SteppingEngine, by
- *  calling State.handleUpdate().
+ * Also performs state-transition work when called by SteppingEngine, by calling
+ * State.handleUpdate().
  */
-public class TaskStepEngine
-{
-  private SteppingEngine steppingEngine;
-  
-  /* The Task for this TaskStepEngine */
-  private Task task;
-  
-  /* The current State of task */
-  private State state;
-  
-  /* The FrameIdentifier for task */
-  private FrameIdentifier fi;
-  
-  /* task's current source line number */
-  private int line = 0;
-  
-  /* Task termination message */
-  String message = null;
-  
-  /**
-   * Builds a new TaskStepEngine, setting only the Task field and defaulting
-   * to the StoppedState.
-   * 
-   * @param task The Task for this TaskStepEngine to manage
-   * @param steppingEngine TODO
-   */
-  public TaskStepEngine (Task task, SteppingEngine steppingEngine)
-  {
-    this.task = task;
-    this.state = new StoppedState(task);
-    this.steppingEngine = steppingEngine;
-  }
-  
-  /**
-   * Returns true if the current State of this TaskStepEngine's Task field
-   * is a StoppedState.
-   * 
-   * @return true The Task is stopped
-   * @return false The Task is not stopped
-   */
-  public boolean isStopped ()
-  {
-    return this.state.isStopped();
-  }
-  
-  /**
-   * Returns true if the current State of this TaskStepEngine's Task field
-   * is a StepTerminatedState.
-   * 
-   * @return true The Task has terminated
-   * @return false The Task has not terminated
-   */
-  public boolean isAlive ()
-  {
-      return this.state.isAlive();
-  }
-  
-  /**
-   * Handles calls from the SteppingObserver in the SteppingEngine class. 
-   * Called when the TaskObserver.Instruction stepping callback is reached,
-   * which prompts this TaskStepEngine's State class to perform the next
-   * step in this particular State's state transition. 
-   *  
-   * @return true If the returned State is stopped
-   * @return false If the return State is no stopped
-   */
-  public boolean handleUpdate ()
-  {
-    /* Perform the next tentative state transition */
-    State s = this.state.handleUpdate(this);
-    this.state = s;
-    
-    return (s.isStopped());
-  }
-  
-  public SteppingEngine getSteppingEngine ()
-  {
-    return this.steppingEngine;
-  }
-  
+public class TaskStepEngine {
+    private SteppingEngine steppingEngine;
+
+    /* The Task for this TaskStepEngine */
+    private Task task;
+
+    /* The current State of task */
+    private State state;
+
+    /* The FrameIdentifier for task */
+    private FrameIdentifier fi;
+
+    /* task's current source line number */
+    private int line = 0;
+
+    /* Task termination message */
+    String message = null;
+
     /**
-     * Returns the Task's DwflLine object.
-     * 
-     * @return dline The DwflLine for this Engine's Task
-     *
-     * XXX: If the SourceLine should include information about all
-     * addresses of code for that line then, instead of re-fetching
-     * the source line after each stop, the code can cache the
-     * source/line information across the entire step operation
-     * halting when an address does not fall within the list of
-     * addresses.
-     */
-    public DwflLine getDwflLine () {
+         * Builds a new TaskStepEngine, setting only the Task field and
+         * defaulting to the StoppedState.
+         * 
+         * @param task
+         *                The Task for this TaskStepEngine to manage
+         * @param steppingEngine
+         *                TODO
+         */
+    public TaskStepEngine(Task task, SteppingEngine steppingEngine) {
+	this.task = task;
+	this.state = new StoppedState(task);
+	this.steppingEngine = steppingEngine;
+    }
+
+    /**
+         * Returns true if the current State of this TaskStepEngine's Task field
+         * is a StoppedState.
+         * 
+         * @return true The Task is stopped
+         * @return false The Task is not stopped
+         */
+    public boolean isStopped() {
+	return this.state.isStopped();
+    }
+
+    /**
+         * Returns true if the current State of this TaskStepEngine's Task field
+         * is a StepTerminatedState.
+         * 
+         * @return true The Task has terminated
+         * @return false The Task has not terminated
+         */
+    public boolean isAlive() {
+	return this.state.isAlive();
+    }
+
+    /**
+         * Handles calls from the SteppingObserver in the SteppingEngine class.
+         * Called when the TaskObserver.Instruction stepping callback is
+         * reached, which prompts this TaskStepEngine's State class to perform
+         * the next step in this particular State's state transition.
+         * 
+         * @return true If the returned State is stopped
+         * @return false If the return State is no stopped
+         */
+    public boolean handleUpdate() {
+	/* Perform the next tentative state transition */
+	State s = this.state.handleUpdate(this);
+	this.state = s;
+
+	return (s.isStopped());
+    }
+
+    public SteppingEngine getSteppingEngine() {
+	return this.steppingEngine;
+    }
+
+    /**
+         * Returns the Task's DwflLine object.
+         * 
+         * @return dline The DwflLine for this Engine's Task
+         * 
+         * XXX: If the SourceLine should include information about all addresses
+         * of code for that line then, instead of re-fetching the source line
+         * after each stop, the code can cache the source/line information
+         * across the entire step operation halting when an address does not
+         * fall within the list of addresses.
+         */
+    public DwflLine getDwflLine() {
 	Dwfl dwfl = DwflCache.getDwfl(task);
-        DwflLine dline = dwfl.getSourceLine(this.task.getIsa().pc(task));
+	DwflLine dline = dwfl.getSourceLine(this.task.getIsa().pc(task));
 	return dline;
     }
-  
-  /**
-   * Returns the current source line for this Task.
-   * 
-   * @return line The current source line for this Task
-   */
-  public int getLine ()
-  {
-    return this.line;
-  }
-  
-  /**
-   * Sets the current source line for this Task
-   * 
-   * @param line The current source line for this Task
-   */
-  public void setLine (int line)
-  {
-    this.line = line;
-  }
-  
-  /**
-   * Returns this TaskStepEngine's Task.
-   * 
-   * @return task The Task for this TaskStepEngine
-   */
-  public Task getTask ()
-  {
-    return this.task;
-  }
-  
-  /**
-   * Returns the current State of this TaskStepEngine's Task.
-   * 
-   * @param newState The current State of this TaskStepEngine's Task
-   */
-  public void setState (State newState)
-  {
-    this.state = newState;
-  }
-  
-  /**
-   * Sets the current State of this TaskStepEngine's Task.
-   * 
-   * @return state The current State of this TaskStepEngine's Task.
-   */
-  public State getState ()
-  {
-    return this.state;
-  }
-  
-  /**
-   * Sets the FrameIdentifier for this TaskStepEngine.
-   * 
-   * @param fi The new FrameIdentifier
-   */
-  public void setFrameIdentifier (FrameIdentifier fi)
-  {
-    this.fi = fi;
-  }
-  
-  /**
-   * Returns this TaskStepEngine's FrameIdentifier field.
-   * 
-   * @return fi This TaskStepEngine's FrameIdentifier
-   */
-  public FrameIdentifier getFrameIdentifier ()
-  {
-    return this.fi;
-  }
-  
-  public void setMessage (String message) {
-      this.message = message;
-  }
-  
-  public String getMessage () {
-      return this.message;
-  }
+
+    /**
+         * Returns the current source line for this Task.
+         * 
+         * @return line The current source line for this Task
+         */
+    public int getLine() {
+	return this.line;
+    }
+
+    /**
+         * Sets the current source line for this Task
+         * 
+         * @param line
+         *                The current source line for this Task
+         */
+    public void setLine(int line) {
+	this.line = line;
+    }
+
+    /**
+         * Returns this TaskStepEngine's Task.
+         * 
+         * @return task The Task for this TaskStepEngine
+         */
+    public Task getTask() {
+	return this.task;
+    }
+
+    /**
+         * Returns the current State of this TaskStepEngine's Task.
+         * 
+         * @param newState
+         *                The current State of this TaskStepEngine's Task
+         */
+    public void setState(State newState) {
+	this.state = newState;
+    }
+
+    /**
+         * Sets the current State of this TaskStepEngine's Task.
+         * 
+         * @return state The current State of this TaskStepEngine's Task.
+         */
+    public State getState() {
+	return this.state;
+    }
+
+    /**
+         * Sets the FrameIdentifier for this TaskStepEngine.
+         * 
+         * @param fi
+         *                The new FrameIdentifier
+         */
+    public void setFrameIdentifier(FrameIdentifier fi) {
+	this.fi = fi;
+    }
+
+    /**
+         * Returns this TaskStepEngine's FrameIdentifier field.
+         * 
+         * @return fi This TaskStepEngine's FrameIdentifier
+         */
+    public FrameIdentifier getFrameIdentifier() {
+	return this.fi;
+    }
+
+    public void setMessage(String message) {
+	this.message = message;
+    }
+
+    public String getMessage() {
+	return this.message;
+    }
 }

@@ -43,57 +43,50 @@ import frysk.proc.Task;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 
-public class NextInstructionStepTestState extends State
-{
-  public NextInstructionStepTestState (Task task)
-  {
-    this.task = task;
-  }
-  
-  /**
-   * Checks to see if the new current frame's FrameIdentifier is equivalent
-   * to the old frame's FrameIdentifier. If so, there has been no movement
-   * into a new frame and the operation is treated as an instruction step.
-   * Otherwise, the breakpoint is set and the instruction step-out begins.
-   * 
-   * @param tse	the Parent TaskStepEngine
-   * @return new StoppedState	No frame change has happened
-   * @return new NextInstructionStepState	The current frame has changed
-   */
-  public State handleUpdate (TaskStepEngine tse)
-  {
-    Frame newFrame = null;
-    newFrame = StackFactory.createFrame(this.task);
-   
-    if (newFrame.getFrameIdentifier().innerTo(tse.getFrameIdentifier()))
-      {
-        /* There is a different innermost frame on the stack - run until
-         * it exits - success! */
-        Frame frame = newFrame.getOuter();
-        tse.getSteppingEngine().setBreakpoint(this.task, frame.getAddress());
-        return new StepOverState(this.task);
-      }
-        /* The two frames are the same or we've actually stepped over a
-     * frame return; treat this step-over as an instruction step. */
-    else if (newFrame.getFrameIdentifier().equals(tse.getFrameIdentifier()) 
-        || newFrame.getFrameIdentifier().outerTo(tse.getFrameIdentifier()))
-          {
-            return new StoppedState(this.task);
-          }
-    else
-      {
-        /* Leaf function */
-        return new StoppedState(this.task);
-      }
-  }
-  
-  public boolean isStopped ()
-  {
-    return false;
-  }
-  
-  public boolean isAlive ()
-  {
-      return true;
-  }
+public class NextInstructionStepTestState extends State {
+    public NextInstructionStepTestState(Task task) {
+	this.task = task;
+    }
+
+    /**
+     * Checks to see if the new current frame's FrameIdentifier is equivalent
+     * to the old frame's FrameIdentifier. If so, there has been no movement
+     * into a new frame and the operation is treated as an instruction step.
+     * Otherwise, the breakpoint is set and the instruction step-out begins.
+     * 
+     * @param tse	the Parent TaskStepEngine
+     * @return new StoppedState	No frame change has happened
+     * @return new NextInstructionStepState	The current frame has changed
+     */
+    public State handleUpdate(TaskStepEngine tse) {
+	Frame newFrame = null;
+	newFrame = StackFactory.createFrame(this.task);
+
+	if (newFrame.getFrameIdentifier().innerTo(tse.getFrameIdentifier())) {
+	    /* There is a different innermost frame on the stack - run until
+	     * it exits - success! */
+	    Frame frame = newFrame.getOuter();
+	    tse.getSteppingEngine()
+		    .setBreakpoint(this.task, frame.getAddress());
+	    return new StepOverState(this.task);
+	}
+	/* The two frames are the same or we've actually stepped over a
+	 * frame return; treat this step-over as an instruction step. */
+	else if (newFrame.getFrameIdentifier().equals(tse.getFrameIdentifier())
+		|| newFrame.getFrameIdentifier().outerTo(
+			tse.getFrameIdentifier())) {
+	    return new StoppedState(this.task);
+	} else {
+	    /* Leaf function */
+	    return new StoppedState(this.task);
+	}
+    }
+
+    public boolean isStopped() {
+	return false;
+    }
+
+    public boolean isAlive() {
+	return true;
+    }
 }

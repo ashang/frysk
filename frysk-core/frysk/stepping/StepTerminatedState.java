@@ -42,24 +42,20 @@ package frysk.stepping;
 import frysk.proc.Task;
 
 public class StepTerminatedState extends State {
-    
-    public StepTerminatedState (Task task)
-    {
+
+    public StepTerminatedState(Task task) {
     }
-    
-    public State handleUpdate (TaskStepEngine tse)
-    {
+
+    public State handleUpdate(TaskStepEngine tse) {
 	return this;
     }
-    
-    public boolean isStopped ()
-    {
-      return true;
+
+    public boolean isStopped() {
+	return true;
     }
-    
-    public boolean isAlive ()
-    {
-        return false;
+
+    public boolean isAlive() {
+	return false;
     }
 
 }

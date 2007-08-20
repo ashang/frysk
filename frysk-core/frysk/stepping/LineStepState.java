@@ -42,57 +42,48 @@ package frysk.stepping;
 import lib.dwfl.DwflLine;
 import frysk.proc.Task;
 
-public class LineStepState extends State
-{
-  public LineStepState (Task task)
-  {
-    this.task = task;
-  }
-  
-  /**
-   * Continues to unblock this task instruction-by-instruction until it has
-   * performed a line step.
-   * 
-   * @param tse	The parent TaskStepEngine
-   * @return new StoppedState	If the line step is complete
-   * @return this	If the line has not changed yet
-   */
-  public State handleUpdate (TaskStepEngine tse)
-  {
-    int lineNum;
-    DwflLine line = tse.getDwflLine();
-    
-    if (line == null) /* We're in no-debuginfo land */
-      {
-	tse.setLine(0);
-	/* Returned a StoppedState because line-stepping has no meaning
-	 * when there is no debug information to relate the 'lines' to. */
-        return new StoppedState(this.task);
-      }
-    else
-      lineNum = line.getLineNum();
-    
-    int prev = tse.getLine();
-    
-    if (lineNum != prev)
-      {
-	tse.setLine(lineNum);
-        return new StoppedState(this.task);
-      }
-    else
-      {
-        tse.getSteppingEngine().continueForStepping(this.task, true);
-        return this;
-      }
-  }
-  
-  public boolean isStopped ()
-  {
-    return false;
-  }
-  
-  public boolean isAlive ()
-  {
-      return true;
-  }
+public class LineStepState extends State {
+    public LineStepState(Task task) {
+	this.task = task;
+    }
+
+    /**
+     * Continues to unblock this task instruction-by-instruction until it has
+     * performed a line step.
+     * 
+     * @param tse	The parent TaskStepEngine
+     * @return new StoppedState	If the line step is complete
+     * @return this	If the line has not changed yet
+     */
+    public State handleUpdate(TaskStepEngine tse) {
+	int lineNum;
+	DwflLine line = tse.getDwflLine();
+
+	if (line == null) /* We're in no-debuginfo land */
+	{
+	    tse.setLine(0);
+	    /* Returned a StoppedState because line-stepping has no meaning
+	     * when there is no debug information to relate the 'lines' to. */
+	    return new StoppedState(this.task);
+	} else
+	    lineNum = line.getLineNum();
+
+	int prev = tse.getLine();
+
+	if (lineNum != prev) {
+	    tse.setLine(lineNum);
+	    return new StoppedState(this.task);
+	} else {
+	    tse.getSteppingEngine().continueForStepping(this.task, true);
+	    return this;
+	}
+    }
+
+    public boolean isStopped() {
+	return false;
+    }
+
+    public boolean isAlive() {
+	return true;
+    }
 }

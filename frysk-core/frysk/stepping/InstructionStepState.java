@@ -41,33 +41,29 @@ package frysk.stepping;
 
 import frysk.proc.Task;
 
-public class InstructionStepState extends State
-{
-  public InstructionStepState (Task task)
-  {
-    this.task = task;
-  }
-  
-  /**
-   * When the instruction observer from SteppingEngine returns, a single
-   * step has been performed. All that is left to do is to reset the State for 
-   * this Task back to a StoppedState.
-   * 
-   * @param tse	The TaskStepEngine for this State.
-   * @return new StoppedState
-   */
-  public State handleUpdate (TaskStepEngine tse)
-  {
-    return new StoppedState(this.task);
-  }
-  
-  public boolean isStopped ()
-  {
-    return false;
-  }
-  
-  public boolean isAlive ()
-  {
-      return true;
-  }
+public class InstructionStepState extends State {
+    public InstructionStepState(Task task) {
+	this.task = task;
+    }
+
+    /**
+         * When the instruction observer from SteppingEngine returns, a single
+         * step has been performed. All that is left to do is to reset the State
+         * for this Task back to a StoppedState.
+         * 
+         * @param tse
+         *                The TaskStepEngine for this State.
+         * @return new StoppedState
+         */
+    public State handleUpdate(TaskStepEngine tse) {
+	return new StoppedState(this.task);
+    }
+
+    public boolean isStopped() {
+	return false;
+    }
+
+    public boolean isAlive() {
+	return true;
+    }
 }

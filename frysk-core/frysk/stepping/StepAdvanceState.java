@@ -41,32 +41,27 @@ package frysk.stepping;
 
 import frysk.proc.Task;
 
-public class StepAdvanceState extends State
-{
-  public StepAdvanceState (Task task)
-  {
-    this.task = task;
-  }
-  
-  /**
-   * Removes the step-advance breakpoint and returns a StoppedState.
-   * 
-   * @param tse	The Parent TaskStepEngine
-   * @return new StoppedState
-   */
-  public State handleUpdate (TaskStepEngine tse)
-  {
-    tse.getSteppingEngine().removeBreakpoint(this.task);
-    return new StoppedState(this.task);
-  }
-  
-  public boolean isStopped ()
-  {
-    return false;
-  }
-  
-  public boolean isAlive ()
-  {
-      return true;
-  }
+public class StepAdvanceState extends State {
+    public StepAdvanceState(Task task) {
+	this.task = task;
+    }
+
+    /**
+     * Removes the step-advance breakpoint and returns a StoppedState.
+     * 
+     * @param tse	The Parent TaskStepEngine
+     * @return new StoppedState
+     */
+    public State handleUpdate(TaskStepEngine tse) {
+	tse.getSteppingEngine().removeBreakpoint(this.task);
+	return new StoppedState(this.task);
+    }
+
+    public boolean isStopped() {
+	return false;
+    }
+
+    public boolean isAlive() {
+	return true;
+    }
 }

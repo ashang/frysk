@@ -82,8 +82,10 @@ public class TestSteppingEngine extends TestLib {
 	if (unresolvedOnPPC(3277))
 	    return;
 
-	/** SteppingTest Object definition - tell the stepping test
-	 * what to look for at the completion of the test. */
+	/**
+         * SteppingTest Object definition - tell the stepping test what to look
+         * for at the completion of the test.
+         */
 	class InstructionStepTest implements SteppingTest {
 
 	    Task testTask = null;
@@ -97,7 +99,8 @@ public class TestSteppingEngine extends TestLib {
 
 	    public void runAssertions() {
 
-		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(testTask);
+		DebugInfoFrame frame = DebugInfoStackFactory
+			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 		Manager.eventLoop.requestStop();
@@ -118,24 +121,26 @@ public class TestSteppingEngine extends TestLib {
 	int endLine = this.scanner.findTokenLine("_instructionStep_");
 
 	/* The test process */
-	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
-	
+	dbae = new DaemonBlockedAtEntry(Config
+		.getPkgLibFile("funit-stepping-asm"));
+
 	Task theTask = dbae.getMainTask();
-	
+
 	this.testStarted = false;
-	
+
 	initTaskWithTask(theTask, source, startLine, endLine);
 
 	this.currentTest = new InstructionStepTest(endLine, theTask);
 
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
+	DebugInfoFrame frame = DebugInfoStackFactory
+		.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
 	this.se.stepInstruction(theTask);
 
 	this.testStarted = true;
-	//System.err.println("waiting for finish");
+	// System.err.println("waiting for finish");
 	/** Run to completion */
 	assertRunUntilStop("Running test");
 	cleanup();
@@ -146,8 +151,10 @@ public class TestSteppingEngine extends TestLib {
 	if (unresolvedOnPPC(3277))
 	    return;
 
-	/** SteppingTest Object definition - tell the stepping test
-	 * what to look for at the completion of the test. */
+	/**
+         * SteppingTest Object definition - tell the stepping test what to look
+         * for at the completion of the test.
+         */
 	class InstructionStepListTest implements SteppingTest {
 
 	    Task testTask = null;
@@ -161,7 +168,8 @@ public class TestSteppingEngine extends TestLib {
 
 	    public void runAssertions() {
 
-		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(testTask);
+		DebugInfoFrame frame = DebugInfoStackFactory
+			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 		Manager.eventLoop.requestStop();
@@ -182,26 +190,28 @@ public class TestSteppingEngine extends TestLib {
 	int endLine = this.scanner.findTokenLine("_instructionStep_");
 
 	/* The test process */
-	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
-	
+	dbae = new DaemonBlockedAtEntry(Config
+		.getPkgLibFile("funit-stepping-asm"));
+
 	Task theTask = dbae.getMainTask();
-	
+
 	this.testStarted = false;
-	
+
 	initTaskWithTask(theTask, source, startLine, endLine);
 
 	this.currentTest = new InstructionStepListTest(endLine, theTask);
 
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
+	DebugInfoFrame frame = DebugInfoStackFactory
+		.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
-	
+
 	/** The stepping operation */
 	LinkedList l = new LinkedList();
 	l.add(theTask);
 	this.se.stepInstruction(l);
 
 	this.testStarted = true;
-	//System.err.println("waiting for finish");
+	// System.err.println("waiting for finish");
 	/** Run to completion */
 	assertRunUntilStop("Running test");
 	cleanup();
@@ -212,8 +222,10 @@ public class TestSteppingEngine extends TestLib {
 	if (unresolvedOnPPC(3277))
 	    return;
 
-	/** SteppingTest Object definition - tell the stepping test
-	 * what to look for at the completion of the test. */
+	/**
+         * SteppingTest Object definition - tell the stepping test what to look
+         * for at the completion of the test.
+         */
 	class LineStepList implements SteppingTest {
 
 	    Task testTask = null;
@@ -227,7 +239,8 @@ public class TestSteppingEngine extends TestLib {
 
 	    public void runAssertions() {
 
-		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(testTask);
+		DebugInfoFrame frame = DebugInfoStackFactory
+			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 		Manager.eventLoop.requestStop();
@@ -248,24 +261,26 @@ public class TestSteppingEngine extends TestLib {
 	int endLine = this.scanner.findTokenLine("_lineStepEnd_");
 
 	/* The test process */
-	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
-	
+	dbae = new DaemonBlockedAtEntry(Config
+		.getPkgLibFile("funit-stepping-asm"));
+
 	Task theTask = dbae.getMainTask();
-	
+
 	this.testStarted = false;
-	
+
 	initTaskWithTask(theTask, source, startLine, endLine);
 
 	this.currentTest = new LineStepList(endLine, theTask);
 
-	DebugInfoFrame sFrame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
+	DebugInfoFrame sFrame = DebugInfoStackFactory
+		.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", sFrame.getLines().length > 0);
 
 	/** The stepping operation */
 	this.se.stepLine(theTask);
 
 	this.testStarted = true;
-	//System.err.println("waiting for finish");
+	// System.err.println("waiting for finish");
 	/** Run to completion */
 	assertRunUntilStop("Running test");
 	cleanup();
@@ -276,8 +291,10 @@ public class TestSteppingEngine extends TestLib {
 	if (unresolvedOnPPC(3277))
 	    return;
 
-	/** SteppingTest Object definition - tell the stepping test
-	 * what to look for at the completion of the test. */
+	/**
+         * SteppingTest Object definition - tell the stepping test what to look
+         * for at the completion of the test.
+         */
 	class LineStepListTest implements SteppingTest {
 
 	    Task testTask = null;
@@ -291,7 +308,8 @@ public class TestSteppingEngine extends TestLib {
 
 	    public void runAssertions() {
 
-		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(testTask);
+		DebugInfoFrame frame = DebugInfoStackFactory
+			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 		Manager.eventLoop.requestStop();
@@ -312,17 +330,19 @@ public class TestSteppingEngine extends TestLib {
 	int endLine = this.scanner.findTokenLine("_lineStepEnd_");
 
 	/* The test process */
-	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
-	
+	dbae = new DaemonBlockedAtEntry(Config
+		.getPkgLibFile("funit-stepping-asm"));
+
 	Task theTask = dbae.getMainTask();
-	
+
 	this.testStarted = false;
-	
+
 	initTaskWithTask(theTask, source, startLine, endLine);
 
 	this.currentTest = new LineStepListTest(endLine, theTask);
 
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
+	DebugInfoFrame frame = DebugInfoStackFactory
+		.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
@@ -331,7 +351,7 @@ public class TestSteppingEngine extends TestLib {
 	this.se.stepLine(l);
 
 	this.testStarted = true;
-	//System.err.println("waiting for finish");
+	// System.err.println("waiting for finish");
 	/** Run to completion */
 	assertRunUntilStop("Running test");
 	cleanup();
@@ -342,8 +362,10 @@ public class TestSteppingEngine extends TestLib {
 	if (unresolvedOnPPC(3277))
 	    return;
 
-	/** SteppingTest Object definition - tell the stepping test
-	 * what to look for at the completion of the test. */
+	/**
+         * SteppingTest Object definition - tell the stepping test what to look
+         * for at the completion of the test.
+         */
 	class StepOverTest implements SteppingTest {
 
 	    Task testTask = null;
@@ -357,7 +379,8 @@ public class TestSteppingEngine extends TestLib {
 
 	    public void runAssertions() {
 
-		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(testTask);
+		DebugInfoFrame frame = DebugInfoStackFactory
+			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 
@@ -388,24 +411,27 @@ public class TestSteppingEngine extends TestLib {
 	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 
 	/* The test process */
-	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
-	
+	dbae = new DaemonBlockedAtEntry(Config
+		.getPkgLibFile("funit-stepping-asm"));
+
 	Task theTask = dbae.getMainTask();
-	
+
 	this.testStarted = false;
-	
+
 	initTaskWithTask(theTask, source, startLine, endLine);
 
 	this.currentTest = new StepOverTest(endLine, theTask);
 
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
+	DebugInfoFrame frame = DebugInfoStackFactory
+		.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
-	this.se.stepOver(theTask, DebugInfoStackFactory.createDebugInfoStackTrace(theTask));
+	this.se.stepOver(theTask, DebugInfoStackFactory
+		.createDebugInfoStackTrace(theTask));
 
 	this.testStarted = true;
-	//System.err.println("waiting for finish");
+	// System.err.println("waiting for finish");
 	/** Run to completion */
 	assertRunUntilStop("Running test");
 	cleanup();
@@ -416,13 +442,16 @@ public class TestSteppingEngine extends TestLib {
 	if (unresolvedOnPPC(3277))
 	    return;
 
-	/** SteppingTest Object definition - tell the stepping test
-	 * what to look for at the completion of the test. */
+	/**
+         * SteppingTest Object definition - tell the stepping test what to look
+         * for at the completion of the test.
+         */
 	class InstructionNextTest implements SteppingTest {
 
 	    Task testTask = null;
 
 	    int success = 0;
+
 	    boolean first = true;
 
 	    public InstructionNextTest(int s, Task task) {
@@ -431,14 +460,16 @@ public class TestSteppingEngine extends TestLib {
 	    }
 
 	    public void runAssertions() {
-		
+
 		if (first) {
 		    first = false;
-		    se.stepNextInstruction(testTask, DebugInfoStackFactory.createDebugInfoStackTrace(testTask));
+		    se.stepNextInstruction(testTask, DebugInfoStackFactory
+			    .createDebugInfoStackTrace(testTask));
 		    return;
 		}
-		
-		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(testTask);
+
+		DebugInfoFrame frame = DebugInfoStackFactory
+			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 
@@ -469,24 +500,26 @@ public class TestSteppingEngine extends TestLib {
 	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 
 	/* The test process */
-	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
-	
+	dbae = new DaemonBlockedAtEntry(Config
+		.getPkgLibFile("funit-stepping-asm"));
+
 	Task theTask = dbae.getMainTask();
-	
+
 	this.testStarted = false;
-	
+
 	initTaskWithTask(theTask, source, startLine, endLine);
 
 	this.currentTest = new InstructionNextTest(endLine, theTask);
 
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
+	DebugInfoFrame frame = DebugInfoStackFactory
+		.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
 	se.stepInstruction(theTask);
 
 	this.testStarted = true;
-	//System.err.println("waiting for finish");
+	// System.err.println("waiting for finish");
 	/** Run to completion */
 	assertRunUntilStop("Running test");
 	cleanup();
@@ -497,8 +530,10 @@ public class TestSteppingEngine extends TestLib {
 	if (unresolvedOnPPC(3277))
 	    return;
 
-	/** SteppingTest Object definition - tell the stepping test
-	 * what to look for at the completion of the test. */
+	/**
+         * SteppingTest Object definition - tell the stepping test what to look
+         * for at the completion of the test.
+         */
 	class StepOutTest implements SteppingTest {
 
 	    Task testTask = null;
@@ -512,7 +547,8 @@ public class TestSteppingEngine extends TestLib {
 
 	    public void runAssertions() {
 
-		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(testTask);
+		DebugInfoFrame frame = DebugInfoStackFactory
+			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 
@@ -543,24 +579,27 @@ public class TestSteppingEngine extends TestLib {
 	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 
 	/* The test process */
-	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
-	
+	dbae = new DaemonBlockedAtEntry(Config
+		.getPkgLibFile("funit-stepping-asm"));
+
 	Task theTask = dbae.getMainTask();
-	
+
 	this.testStarted = false;
-	
+
 	initTaskWithTask(theTask, source, startLine, endLine);
 
 	this.currentTest = new StepOutTest(endLine, theTask);
 
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
+	DebugInfoFrame frame = DebugInfoStackFactory
+		.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
-	this.se.stepOut(theTask, DebugInfoStackFactory.createDebugInfoStackTrace(theTask));
+	this.se.stepOut(theTask, DebugInfoStackFactory
+		.createDebugInfoStackTrace(theTask));
 
 	this.testStarted = true;
-	//System.err.println("waiting for finish");
+	// System.err.println("waiting for finish");
 	/** Run to completion */
 	assertRunUntilStop("Running test");
 	cleanup();
@@ -571,8 +610,10 @@ public class TestSteppingEngine extends TestLib {
 	if (unresolvedOnPPC(3277))
 	    return;
 
-	/** SteppingTest Object definition - tell the stepping test
-	 * what to look for at the completion of the test. */
+	/**
+         * SteppingTest Object definition - tell the stepping test what to look
+         * for at the completion of the test.
+         */
 	class StepAdvanceTest implements SteppingTest {
 
 	    Task testTask = null;
@@ -586,7 +627,8 @@ public class TestSteppingEngine extends TestLib {
 
 	    public void runAssertions() {
 
-		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(testTask);
+		DebugInfoFrame frame = DebugInfoStackFactory
+			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
 		assertTrue("line number", lineNr == success);
 
@@ -617,26 +659,28 @@ public class TestSteppingEngine extends TestLib {
 	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 
 	/* The test process */
-	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
-	
+	dbae = new DaemonBlockedAtEntry(Config
+		.getPkgLibFile("funit-stepping-asm"));
+
 	Task theTask = dbae.getMainTask();
-	
+
 	this.testStarted = false;
-	
+
 	initTaskWithTask(theTask, source, startLine, endLine);
 
 	this.currentTest = new StepAdvanceTest(endLine, theTask);
 
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
+	DebugInfoFrame frame = DebugInfoStackFactory
+		.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
-	this.se
-		.stepAdvance(theTask, DebugInfoStackFactory.createDebugInfoStackTrace(theTask)
-			.getOuterDebugInfoFrame().getOuterDebugInfoFrame());
+	this.se.stepAdvance(theTask, DebugInfoStackFactory
+		.createDebugInfoStackTrace(theTask).getOuterDebugInfoFrame()
+		.getOuterDebugInfoFrame());
 
 	this.testStarted = true;
-	//System.err.println("waiting for finish");
+	// System.err.println("waiting for finish");
 	/** Run to completion */
 	assertRunUntilStop("Running test");
 	cleanup();
@@ -660,23 +704,25 @@ public class TestSteppingEngine extends TestLib {
 	/* The line number the test should end up at */
 	int endLine = 0;
 
-	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-stepping-asm"));
-	
+	dbae = new DaemonBlockedAtEntry(Config
+		.getPkgLibFile("funit-stepping-asm"));
+
 	Task theTask = dbae.getMainTask();
-	
+
 	this.testStarted = false;
-	
+
 	initTaskWithTask(theTask, source, startLine, endLine);
 
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(theTask);
+	DebugInfoFrame frame = DebugInfoStackFactory
+		.createDebugInfoStackTrace(theTask);
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
 	breakpointAddress = frame.getOuterDebugInfoFrame().getAddress();
 	se.setBreakpoint(theTask, breakpointAddress);
-	
+
 	bpTask = theTask;
-	      Manager.eventLoop.add(new Event() {
+	Manager.eventLoop.add(new Event() {
 	    public void execute() {
 		Breakpoint b = se.getTaskBreakpoint(bpTask);
 		assertNotNull(b);
@@ -688,15 +734,17 @@ public class TestSteppingEngine extends TestLib {
 		cleanup();
 	    }
 	});
-	      assertRunUntilStop("Running test");	
+	assertRunUntilStop("Running test");
     }
 
     Task bpTask = null;
+
     long breakpointAddress = 0;
+
     boolean genericUpdate = false;
 
-    public Task initTask(Offspring process, String source,
-			 int startLine, int endLine) {
+    public Task initTask(Offspring process, String source, int startLine,
+	    int endLine) {
 	Task myTask = process.findTaskUsingRefresh(true);
 	initTaskWithTask(myTask, source, startLine, endLine);
 	return myTask;
@@ -767,22 +815,22 @@ public class TestSteppingEngine extends TestLib {
 
     class LockObserver implements Observer {
 	/**
-	 * Builtin Observer method - called whenever the Observable we're
-	 * concerned with - in this case the SteppingEngine's steppingObserver -
-	 * has changed.
-	 * 
-	 * @param o
-	 *                The Observable we're watching
-	 * @param arg
-	 * 		   A TaskStepEngine
-	 */
+         * Builtin Observer method - called whenever the Observable we're
+         * concerned with - in this case the SteppingEngine's steppingObserver -
+         * has changed.
+         * 
+         * @param o
+         *                The Observable we're watching
+         * @param arg
+         *                A TaskStepEngine
+         */
 	public synchronized void update(Observable o, Object arg) {
 	    TaskStepEngine tse = (TaskStepEngine) arg;
-//	    	    System.err.println("Lock.update " + tse.isStopped() + " " + testStarted);
+	    // System.err.println("Lock.update " + tse.isStopped() + " " +
+                // testStarted);
 	    if (testStarted == true && tse.isStopped()) {
 		currentTest.runAssertions();
-	    }
-	    else
+	    } else
 		return;
 	}
     }
