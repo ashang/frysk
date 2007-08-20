@@ -350,8 +350,7 @@ public class Value
      */
     public void toPrint(PrintWriter writer, ByteBuffer memory,
 			Format format) {
-	// XXX: Shouldn't this be location?
-	type.toPrint(writer, this, memory, format);
+	type.toPrint(writer, location, memory, format);
     }
 
 }

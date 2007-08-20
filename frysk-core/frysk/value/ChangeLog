@@ -1,3 +1,24 @@
+2007-08-20  Andrew Cagney  <cagney@redhat.com>
+
+	* TestEnum.java: New file.
+	* IntegerType.java
+	(toPrint(PrintWriter,Location,ByteBuffer,Format): Make package
+	private.
+	* EnumType.java (Member, valueToMember): New.
+	(values, names, type, toString): Delete.
+	(toPrint(PrintWriter)): Re-implement.
+	(toPrint(PrintWriter,Location,ByteBuffer,Format): New.
+	(addMember(String,long)): New.
+	(addMember(Type,String,long)): Delete.
+	* TestValue.java (testEnum): Delete.
+	* ArithmeticType.java
+	(toPrint(PrintWriter,Location,ByteBuffer,Format)): Delete.
+	* Type.java (toPrint()): Make final.
+	(toPrint(Location,ByteBuffer,Format): New.
+	(toPrint(PrintWriter,Value,ByteBuffer,Format)): Delete.
+	(toPrint(PrintWriter,Location,ByteBuffer,Format)): Call toString.
+	* Value.java: Update.
+	
 2007-08-19  Andrew Cagney  <cagney@redhat.com>
 
 	* ArithmeticType.java: Replace BaseTypes.isInteger and

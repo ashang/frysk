@@ -42,86 +42,56 @@ package frysk.value;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.math.BigInteger;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.Iterator;
 
 /**
  * Type for an enum.
  */
 public class EnumType extends IntegerType
 {
-    Type type;
-
-    ArrayList names;
-  
-    ArrayList values;
-
-    /**
-     * Iterate through the class members.
-     */
-    class Iterator
-	implements java.util.Iterator
-    {
-	private int idx;
-
-	Iterator () {
-	    idx = - 1;
-	}
-
-	public boolean hasNext () {
-	    idx += 1;
-	    if (idx < names.size())
-		return true;
-	    return false;
-	}
-
-	public String nextName () {
-	    return (String) names.get(idx);
-	}
-
-	public Object next () {
-	    return new Long(((Long)values.get(idx)).intValue());
-	}
-
-	public void remove () {
+    private static class Member {
+	final String name;
+	final BigInteger value;
+	Member(String name, BigInteger value) {
+	    this.name = name;
+	    this.value = value;
 	}
     }
 
-    public Iterator getIterator () {
-	return new Iterator();
-    }
+    
+    // Mapping from a Value to a member (ordered by Value (a big
+    // integer).
+    private SortedMap valueToMember = new TreeMap();
 
-    public String toString (Value v, ByteBuffer b) {
-	StringBuffer strBuf = new StringBuffer();
-	strBuf.append("{");
-	Iterator e = getIterator();
-	boolean first = true;
-	while (e.hasNext())
-	    {
-		if (first)
-		    first = false;
-		else
-		    strBuf.append(",");
-		strBuf.append(e.nextName() + "=");
-		strBuf.append(e.next());
-	    }
-	strBuf.append("}");
-	return strBuf.toString();
+    // Should Format be made responsible?  So that HEX would override
+    // printing the enum's name and print raw hex instead?
+    void toPrint (PrintWriter writer, Location location,
+		  ByteBuffer memory, Format format) {
+	BigInteger value = asBigInteger(location);
+	Member map = (Member)valueToMember.get(value);
+	if (map != null)
+	    writer.print(map.name);
+	else
+	    // Let the integer formater decide.
+	    format.print(writer, location, this);
     }
 
     public void toPrint(PrintWriter writer) {
 	writer.print("enum ");
 	writer.print("{");
-	Iterator e = getIterator();
 	boolean first = true;
-	while (e.hasNext()) {
+	for (Iterator i = valueToMember.values().iterator(); i.hasNext();) {
+	    Member m = (Member)i.next();
 	    if (first)
 		first = false;
 	    else
 		writer.print(",");
-	    writer.print(e.nextName());
+	    writer.print(m.name);
 	    writer.print("=");
-	    writer.print(e.next());
+	    writer.print(m.value.toString());
 	}
 	writer.print("}");
     }
@@ -129,17 +99,25 @@ public class EnumType extends IntegerType
     /**
      * Create an ClassType
      * 
+     * FIXME: This call is bogus; it contains no enum size.
+     *
      * @param endian - Endianness of class
      */
     public EnumType (ByteOrder endian) {
 	super(0, endian, 0, "enum", false);
-	names = new ArrayList();
-	values = new ArrayList();
     }
 
-    public void addMember (Type member, String name, long value) {
-	names.add(name);
-	values.add(new Long(value));
+    /**
+     * Create an Enum.
+     */
+    public EnumType(ByteOrder byteOrder, int size) {
+	super(size, byteOrder, 0, "enum", false);
+    }
+
+    public EnumType addMember (String name, long l) {
+	BigInteger value = BigInteger.valueOf(l);
+	valueToMember.put(value, new Member(name, value));
+	return this;
     }
 
     public static Value newEnumValue (Type type, String text) {

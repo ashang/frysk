@@ -161,7 +161,7 @@ public class TestPrint
 	e.expect (5, "attach.*\n" + prompt);
 	// enumeration
 	e.send ("print ssportscar\n");
-	e.expect ("print.*porsche.*" + prompt);
+	e.expect ("print.*bmw.*" + prompt);
 	e.send ("print porsche\n");
 	e.expect ("print.*porsche.*1.*" + prompt);
 	e.close();

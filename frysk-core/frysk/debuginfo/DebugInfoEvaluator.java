@@ -824,18 +824,25 @@ class DebugInfoEvaluator
             case DwTagEncodings.DW_TAG_enumeration_type_:
             {
               DwarfDie subrange;
-              long addr = variableAccessor[0].getAddr(varDie);
-              if (addr == 0)
-                continue;
+              long val = variableAccessor[0].getLong(varDie, 0);
               subrange = type.getChild();
-              EnumType enumType = new EnumType(byteorder);
-              while (subrange != null)
-                {
-                  enumType.addMember(byteType, subrange.getName(), 
+	      int size = type.getAttrConstant(DwAtEncodings.DW_AT_byte_size_);
+              EnumType enumType = new EnumType(byteorder, size);
+              while (subrange != null) {
+                  enumType.addMember(subrange.getName(), 
                                      subrange.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
                   subrange = subrange.getSibling();
-                }
-              return EnumType.newEnumValue(enumType, s);
+	      }
+	      // XXX: This is so wrong; should just have a Location
+	      // refering to the value.
+	      Value v = new Value(enumType, s);
+	      switch (size) {
+	      case 1: v.putByte((byte)val); break;
+	      case 2: v.putShort((short)val); break;
+	      case 4: v.putInt((int)val); break;
+	      case 8: v.putLong(val); break;
+	      }
+	      return v;
             }
             // special case members of an enumeration
             case DwTagEncodings.DW_TAG_enumerator_:
@@ -1051,12 +1058,11 @@ class DebugInfoEvaluator
     {
       DwarfDie subrange = type.getChild();
       EnumType enumType = new EnumType(byteorder);
-      while (subrange != null)
-        {
-          enumType.addMember(byteType, subrange.getName(), 
+      while (subrange != null) {
+          enumType.addMember(subrange.getName(), 
                              subrange.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
           subrange = subrange.getSibling();
-        }
+      }
       return new Value (enumType, varDie.getName());
     }
     }

@@ -216,24 +216,6 @@ public class TestValue
   }
 
   /**
-   * enum {}
-   */
-  public void testEnum ()
-  {
-    ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
-    EnumType enumType = new EnumType(byteOrder);
-    enumType.addMember(byteType, "red", 1);
-    enumType.addMember(byteType, "orange", 2);
-    enumType.addMember(byteType, "yellow", 3);
-    enumType.addMember(byteType, "green", 4);
-    enumType.addMember(byteType, "blue", 5);
-    enumType.addMember(byteType, "violet", 6);
-    Value e1 = EnumType.newEnumValue(enumType, "e1");
-    String s = e1.toPrint();
-    assertEquals ("enum", "{red=1,orange=2,yellow=3,green=4,blue=5,violet=6}", s);
-  }
-  
-  /**
    * int[] array 
    */
   public void testArrayOfNumber ()

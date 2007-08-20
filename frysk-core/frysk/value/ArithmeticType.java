@@ -40,7 +40,6 @@
 package frysk.value;
 
 import lib.dwfl.BaseTypes;
-import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.io.PrintWriter;
 
@@ -601,25 +600,5 @@ public abstract class ArithmeticType
 
     public void toPrint(PrintWriter writer) {
 	writer.print(name);
-    }
-
-    public void toPrint(PrintWriter writer, Location location,
-			ByteBuffer memory, Format format) {
-	switch (typeId) {
-	case BaseTypes.baseTypeByte:
-	case BaseTypes.baseTypeShort:
-	case BaseTypes.baseTypeInteger:
-	case BaseTypes.baseTypeLong:
-	    // XXX: Force the correct method using a NULL cast.
-	    format.print(writer, location, (IntegerType)null);
-	    break;
-	case BaseTypes.baseTypeFloat:
-	case BaseTypes.baseTypeDouble:
-	    // XXX: Force the correct method using a NULL cast.
-	    format.print(writer, location, (FloatingPointType)null);
-	    break;
-	default:
-	    format.printUnknown(writer, this);
-	}
     }
 }

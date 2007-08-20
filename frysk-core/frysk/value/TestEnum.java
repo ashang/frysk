@@ -40,34 +40,43 @@
 package frysk.value;
 
 import inua.eio.ByteOrder;
-import inua.eio.ByteBuffer;
-import java.io.PrintWriter;
-import java.math.BigInteger;
+import frysk.junit.TestCase;
 
-/**
- * Type for an integer value.
- */
-public abstract class IntegerType
-    extends ArithmeticType
-{    
-    /**
-     * XXX: This is an interim constructor.  This will be replaced by
-     * a constructor that replaces TYPE_ID with SIGNNESS.
-     */
-    protected IntegerType(int size, ByteOrder endian,
-			  int typeId, String typeStr,
-			  boolean haveTypeDef) {
-	super(size, endian, typeId, typeStr, haveTypeDef);
-    }
-
-    void toPrint(PrintWriter writer, Location location,
-		 ByteBuffer memory, Format format) {
-	// double-dispatch.
-	format.print(writer, location, this);
+public class TestEnum extends TestCase {
+    private EnumType anEnumType() {
+	EnumType enumType = new EnumType(ByteOrder.BIG_ENDIAN, 1)
+	    .addMember("red", 1)
+	    .addMember("orange", 2)
+	    .addMember("yellow", 3)
+	    .addMember("green", 4)
+	    .addMember("blue", 5)
+	    .addMember("violet", 6);
+	return enumType;
     }
 
     /**
-     * Return the location as a big integer.
+     * enum {};
      */
-    abstract BigInteger asBigInteger(Location location);
+    public void testEnumType() {
+	EnumType t = anEnumType();
+	assertEquals("enum type",
+		     "enum {red=1,orange=2,yellow=3,green=4,blue=5,violet=6}",
+		     t.toPrint());
+    }
+    /**
+     * enum { ... } v = orange;
+     */
+    public void testEnum() {
+	EnumType t = anEnumType();
+	Value v = new Value(t, new Location(new byte[] { 2 }));
+	assertEquals("enum", "orange", v.toPrint());
+    }
+    /**
+     * enum { ... } v = 0; // not valid
+     */
+    public void testEnumInt() {
+	EnumType t = anEnumType();
+	Value v = new Value(t, new Location(new byte[] { 0 }));
+	assertEquals("enum", "0", v.toPrint());
+    }
 }

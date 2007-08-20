@@ -119,15 +119,6 @@ public abstract class Type {
     }
 
     /**
-     * FIXME: Do not use.  This is going away.
-     */
-    public void toPrint(PrintWriter writer, Value value, ByteBuffer memory,
-			Format format) {
-	// XXX: Override this!
-	writer.print(toString(value, memory));
-    }
-
-    /**
      * Print Location as Type in user-readable form; use Format to
      * print basic types.  If needed, and when memory is non-NULL, it
      * can be used for dereferencing pointers.
@@ -135,18 +126,31 @@ public abstract class Type {
      * XXX: Will be made abstract once all sub-classes have
      * implemented this.
      */
-    public void toPrint(PrintWriter writer, Location location,
-			ByteBuffer memory, Format format) {
-	throw new RuntimeException("unimplemented");
+    void toPrint(PrintWriter writer, Location location,
+		 ByteBuffer memory, Format format) {
+	writer.print(toString(new Value(this, location), memory));
     }
+    /*
+     * Print Location as Type in user-readable form to a StringBuffer;
+     * use Format to print basic types.  If needed, and when memory is
+     * non-NULL, it can be used for dereferencing pointers.  Return
+     * the StringBuffer as a String.
+     */
+    final String toPrint(Location location, ByteBuffer memory, Format format) {
+	StringWriter stringWriter = new StringWriter();
+	PrintWriter writer = new PrintWriter(stringWriter);
+	toPrint(writer, location, memory, format);
+	return stringWriter.toString();
+    }
+
     /**
      * Print this Type.
      */
     public abstract void toPrint(PrintWriter writer);
     /**
-     * Print this Type.
+     * Print this Type to a StringBuffer and return the String.
      */
-    public String toPrint() {
+    public final String toPrint() {
 	StringWriter stringWriter = new StringWriter();
 	PrintWriter writer = new PrintWriter(stringWriter);
 	toPrint(writer);

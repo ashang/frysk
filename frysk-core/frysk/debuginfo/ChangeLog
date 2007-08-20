@@ -1,3 +1,10 @@
+2007-08-20  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfoEvaluator.java: Replace call to
+	EnumType.addMember(Type,String,long) with
+	EnumType.addMember(String,long).  Pass the enum's size to the
+	EnumType constructor.
+
 2007-08-19  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfoEvaluator.java: Replace IntegerType with SignedType and
