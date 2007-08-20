@@ -62,7 +62,6 @@ import frysk.proc.TaskObserver;
 import frysk.rt.Breakpoint;
 import frysk.rt.BreakpointManager;
 import frysk.stack.Frame;
-import frysk.stack.FrameIdentifier;
 import frysk.stack.StackFactory;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
@@ -141,6 +140,12 @@ public class SteppingEngine {
 	init(procs);
     }
 
+    /**
+     * Being populating the threadList, taskStateMap, and contextMap data
+     * structures with information from the incoming Proc array.
+     * 
+     * @param procs	The array of Procs this SteppingEngine is concerned with
+     */
     private void init(Proc[] procs) {
 	Task t = null;
 	LinkedList tasksList;
@@ -342,6 +347,7 @@ public class SteppingEngine {
 	    }
 	}
 
+	/* Record how many Tasks we're dealing with here */
 	this.contextMap.put(t.getProc(), new Integer(tasks.size()));
 
 	i = tasks.iterator();
@@ -389,11 +395,12 @@ public class SteppingEngine {
      * @param lastFrame The current innermost frame of the Task
      */
     public void stepNextInstruction(Task task, DebugInfoFrame lastFrame) {
-	this.frameIdentifier = lastFrame.getFrameIdentifier();
+	
+//	this.frameIdentifier = lastFrame.getFrameIdentifier();
 
 	TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
 	tse.setState(new NextInstructionStepTestState(task));
-	tse.setFrameIdentifier(this.frameIdentifier);
+	tse.setFrameIdentifier(lastFrame.getFrameIdentifier());
 	this.steppingObserver.notifyNotBlocked(tse);
 
 	int i = ((Integer) this.contextMap.get(task.getProc())).intValue();
@@ -408,6 +415,7 @@ public class SteppingEngine {
      * @param tasks The list of Tasks to be stepped
      */
     public void stepNextInstruction(LinkedList tasks) {
+	
 	if (tasks.size() < 1)
 	    return;
 
@@ -422,10 +430,10 @@ public class SteppingEngine {
 
 	    /* This is trouble. Need to figure out a way to map these properly,
 	     * *hopefully* not requiring another HashMap. */
-	    this.frameIdentifier = frame.getFrameIdentifier();
+//	    this.frameIdentifier = frame.getFrameIdentifier();
 
 	    TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(t);
-	    tse.setFrameIdentifier(this.frameIdentifier);
+	    tse.setFrameIdentifier(frame.getFrameIdentifier());
 	    tse.setState(new NextInstructionStepTestState(t));
 
 	    if (continueForStepping(t, true)) {
@@ -436,7 +444,8 @@ public class SteppingEngine {
 
     Breakpoint breakpoint;
 
-    FrameIdentifier frameIdentifier;
+    /* At some point this should be mapped to-Task */
+//    FrameIdentifier frameIdentifier;
 
     /**
      * Performs a step-operation - line-steps the given Task, unless presented
@@ -447,10 +456,11 @@ public class SteppingEngine {
      * @param lastFrame	The current innermost StackFrame of the given Task
      */
     public void stepOver(Task task, DebugInfoFrame lastFrame) {
-	this.frameIdentifier = lastFrame.getFrameIdentifier();
+	
+//	this.frameIdentifier = lastFrame.getFrameIdentifier();
 
 	TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
-	tse.setFrameIdentifier(this.frameIdentifier);
+	tse.setFrameIdentifier(lastFrame.getFrameIdentifier());
 	tse.setState(new StepOverTestState(task));
 
 	int i = ((Integer) this.contextMap.get(task.getProc())).intValue();
@@ -482,10 +492,10 @@ public class SteppingEngine {
 
 	    /* This is trouble. Need to figure out a way to map these properly,
 	     * *hopefully* not requiring another HashMap. */
-	    this.frameIdentifier = frame.getFrameIdentifier();
+//	    this.frameIdentifier = frame.getFrameIdentifier();
 
 	    TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(t);
-	    tse.setFrameIdentifier(this.frameIdentifier);
+	    tse.setFrameIdentifier(frame.getFrameIdentifier());
 	    tse.setState(new StepOverTestState(t));
 
 	    if (continueForStepping(t, true)) {
@@ -502,6 +512,7 @@ public class SteppingEngine {
      * @param frame The frame to step out of.
      */
     public void stepOut(Task task, DebugInfoFrame frame) {
+	
 	long address = frame.getOuterDebugInfoFrame().getAddress();
 
 	TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
@@ -523,6 +534,7 @@ public class SteppingEngine {
      * @param tasks The Tasks to step-out
      */
     public void stepOut(LinkedList tasks) {
+	
 	if (tasks.size() < 1)
 	    return;
 
@@ -1149,6 +1161,10 @@ public class SteppingEngine {
 
 	public Action updateTerminating(Task task, boolean signal, int value) {
 	    //      System.err.println("threadlife.updateTerminating " + task + " " + value);
+	    
+	    /* Watch for terminating Tasks. Set the stepping state of the task
+	     * as terminated and notify the observers of the event. */
+	    
 	    Integer context = (Integer) SteppingEngine.this.contextMap.get(task
 		    .getProc());
 	    SteppingEngine.this.contextMap.put(task.getProc(), new Integer(

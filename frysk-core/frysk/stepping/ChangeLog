@@ -1,3 +1,8 @@
+2007-08-20  Mike Cvet  <mcvet@redhat.com>
+
+	* SteppingEngine.java: Added some more comments.
+	(frameIdentifier): Redundant, removed.
+
 2007-08-16  Mike Cvet  <mcvet@redhat.com>
 
 	* State.java (isAlive): Added. Informs calling TaskStepEngine 
