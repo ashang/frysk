@@ -610,8 +610,8 @@ public class SourceWindow extends Window {
     /**
          * Populates the stack browser window
          * 
-         * @param frames
-         *                An array of StackFrames
+         * @param frames An array of DebugInfoFrames used to popuate information
+         * inside the stack frame window.
          */
     public void populateStackBrowser(DebugInfoFrame[][] frames) {
 	this.frames = frames;
@@ -2358,8 +2358,6 @@ public class SourceWindow extends Window {
 	    removeTags();
 	    this.view.load(selected, this.viewPicker.getActive());
 
-	    // if (SteppingEngine.getTaskState(selected.getTask()) ==
-	    // SteppingEngine.STOPPED)
 	    if (!this.steppingEngine.isTaskRunning(selected.getTask())) {
 		if (this.stop.isSensitive())
 		    resensitize();
@@ -2383,7 +2381,6 @@ public class SourceWindow extends Window {
 			.isProcRunning(this.swProc[current].getTasks());
 
 		if (current != this.current && !running)
-		// && SteppingEngine.getState() != SteppingEngine.RUNNING)
 		{
 		    this.symTab[current] = new DebugInfo(
 			    this.frames[current][0]);
@@ -3093,6 +3090,13 @@ public class SourceWindow extends Window {
 
 	}
 
+	/**
+	 * Notified from the CurrentStackView's listeners in the event of a new
+	 * stack frame selection from the tree in that window.
+	 * 
+	 * @param newFrame  The new frame that was selected
+	 * @param current   The process number that the frame was selected from
+	 */
 	public void currentStackChanged(DebugInfoFrame newFrame, int current) {
 	    if (newFrame == null)
 		return;
@@ -3104,6 +3108,7 @@ public class SourceWindow extends Window {
 			    .getTid())
 		SourceWindow.this.currentTask = newFrame.getTask();
 
+	    /* Make sure that a frame from a running task wasn't selected. */
 	    if (!SourceWindow.this.steppingEngine.isTaskRunning(newFrame
 		    .getTask())) {
 		if (SourceWindow.this.currentFrame != null
@@ -3161,17 +3166,22 @@ public class SourceWindow extends Window {
 
 	/**
 	 * Builtin Observer method - called whenever the Observable we're
-	 * concerned with - in this case the RunState - has changed.
+	 * concerned with - in this case the SteppingEngine - has changed.
 	 * 
 	 * @param o
 	 *                The Observable we're watching
 	 * @param arg
-	 *                An Object argument
+	 *                A TaskStepEngine with information about the current
+	 *                Task stepping state.
 	 */
 	public void update(Observable o, Object arg) {
 
 	    TaskStepEngine tse = (TaskStepEngine) arg;
-	    //	     System.err.println("LockObserver.update " + tse + " " + tse.isAlive());
+	    
+	    /* For some reason a task the window was dealing with has
+	     * mysteriously died. Here, push a message out to the sourceLabel
+	     * widget with information on the event. If it was the one and only
+	     * Task and Proc being watched, clean up everything. */ 
 	    if (!tse.isAlive()) {
 		LinkedList tasks = SourceWindow.this.swProc[SourceWindow.this.current]
 			.getTasks();
@@ -3191,6 +3201,8 @@ public class SourceWindow extends Window {
 		}
 	    }
 
+	    /* The updated task isn't dead, but it also isn't stopped, meaning
+	     * it is useless to bother doing anything with it. */
 	    if (!tse.getState().isStopped())
 		return;
 
