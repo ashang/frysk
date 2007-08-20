@@ -92,6 +92,16 @@ public class Location
 	return bytes;
     }
 
+    /**
+     * Return a slice of this Location starting at byte OFFSET, and
+     * going for LENGTH bytes.
+     */
+    Location slice(long offset, long length) {
+	ByteBuffer s = location.slice(offset, length);
+	s.order(location.order());
+	return new Location(s);
+    }
+
     public ByteBuffer getByteBuffer() { return location;}
     double getDouble() { return location.getDouble(index); }
     float getFloat() { return location.getFloat(index); }

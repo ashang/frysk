@@ -39,8 +39,6 @@
 
 package frysk.value;
 
-import java.util.ArrayList;
-
 import lib.dwfl.BaseTypes;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
@@ -213,58 +211,6 @@ public class TestValue
     assertEquals ("v3 /= 4", 4, v3.getDouble(), 0);
     v3 = v1.getType().modEqual(v3, v1);
     assertEquals ("v3 %= 4", 0, v3.getDouble(), 0);
-  }
-
-  /**
-   * int[] array 
-   */
-  public void testArrayOfNumber ()
-  {
-    // Also separate tests for 0 dimensioned arrays et.al.
-    ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
-    ArrayList dims = new ArrayList();
-    dims.add(new Integer(3));
-    ArrayType arrayType = new ArrayType(intType, 16, dims);
-    int [] intbuf = {0x1020304, 0x5060708, 0x090a0b0c, 0x0d0e0f10};
-    byte [] buf = new byte [intbuf.length * 4];
-    for (int i = 0; i < intbuf.length; i++)
-      {
-	buf[i*4] = (byte)((intbuf[i] & 0xff000000) >>> 24);
-	buf[i*4+1] = (byte)((intbuf[i] & 0x00ff0000) >>> 16);
-	buf[i*4+2] = (byte)((intbuf[i] & 0x0000ff00) >>> 8);
-	buf[i*4+3] = (byte)(intbuf[i] & 0x000000ff);
-      }
-    ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, buf.length);
-    abb.order(byteOrder);
-    Value c1 = new Value(arrayType, "a1", abb);
-    String s = c1.toPrint();
-    assertEquals ("array1dim", "{16909060,84281096,151653132,219025168}", s);
-  }
-
-  /**
-   * int[][]
-   */
-  public void testArrayOfArrayOfNumber ()
-  {
-    ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
-    ArrayList dims = new ArrayList();
-    dims.add(new Integer(1));
-    dims.add(new Integer(3));
-    ArrayType arrayType = new ArrayType(intType, 32, dims);
-    int [] intbuf = {0x0, 0x1, 0x2, 0x3, 0x0, 0x10, 0x20, 0x30};
-    byte [] buf = new byte [intbuf.length * 4];
-    for (int i = 0; i < intbuf.length; i++)
-      {
-	buf[i*4] = (byte)((intbuf[i] & 0xff000000) >>> 24);
-	buf[i*4+1] = (byte)((intbuf[i] & 0x00ff0000) >>> 16);
-	buf[i*4+2] = (byte)((intbuf[i] & 0x0000ff00) >>> 8);
-	buf[i*4+3] = (byte)(intbuf[i] & 0x000000ff);
-      }
-    ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, buf.length);
-    abb.order(byteOrder);
-    Value c1 = new Value(arrayType, "a2", abb);
-    String s = c1.toPrint();
-    assertEquals ("array2dim", "{{0,1,2,3},{0,16,32,48}}", s);
   }
 
   /**

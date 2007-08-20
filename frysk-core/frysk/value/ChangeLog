@@ -1,5 +1,21 @@
 2007-08-20  Andrew Cagney  <cagney@redhat.com>
 
+	* TestValue.java (testArrayOfArrayOfNumber)
+	(testArrayOfNumber): Delete; moved to TestArray.java.
+	* TestArray.java: New.
+	* Location.java (slice(long offset, long length)): New.
+	* TestLocation.java (testSlice()): New.
+	* ArrayType.java (toString(Value,ByteBuffer)): Delete.
+	(toPrint(PrintWriter,Location,ByteBuffer,Format)): New.
+	(stride): New array.
+	(ArrayType): Compute the stride.
+	(get): Do not compute the stride.
+	(ArrayIterator): Simplify, make private.
+	(dimension, nrElements): New.
+	(slice): New.
+	(getValue, iterator, buildArraySlice, dimensions): Delete.
+	(get): Update.
+
 	* TestEnum.java: New file.
 	* IntegerType.java
 	(toPrint(PrintWriter,Location,ByteBuffer,Format): Make package

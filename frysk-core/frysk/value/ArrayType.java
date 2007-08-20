@@ -42,7 +42,6 @@ package frysk.value;
 
 import java.util.ArrayList;
 import java.io.PrintWriter;
-import lib.dwfl.BaseTypes;
 import inua.eio.ByteBuffer;
 
 /**
@@ -52,8 +51,52 @@ public class ArrayType
     extends Type
 {
     private final Type type;
+    private final int[] dimension;
+    // The number of TYPE sized units between successive elements of
+    // the array.
+    private final int stride[];
+    // Total number of TYPE elements.
+    private int nrElements;
 
-    private final ArrayList dimensions;
+    /**
+     * Create an ArrayType
+     * 
+     * XXX: dimensions needs to be a set of ranges; this upper bound
+     * is sooooo confusing.
+     *
+     * @param typep - Type of each array element
+     * @param dimensions - ArrayList of dimension upper bounds.
+     */
+    public ArrayType (Type type, int size, ArrayList dimensions) {
+	super(size, type.endian, 0, "array");
+	this.type = type;
+	dimension = new int[dimensions.size()];
+	for (int i = 0; i < dimensions.size(); i++) {
+	    dimension[i] = ((Integer)dimensions.get(i)).intValue() + 1;
+	}
+	stride = new int[dimensions.size()];
+	stride[stride.length - 1] = 1;
+	for (int i = stride.length - 2; i >= 0; i--) {
+	    stride[i] = dimension[i + 1] * stride[i + 1];
+	}
+	nrElements = stride[0] * dimension[0];
+    }
+
+    public String toString() {
+	StringBuffer b = new StringBuffer();
+	b.append("{");
+	b.append(type.toString());
+	for (int i = 0; i < dimension.length; i++) {
+	    b.append("[");
+	    b.append("" + dimension[i]);
+	    b.append("/");
+	    b.append("" + stride[i]);
+	    b.append("]");
+	}
+	b.append("" + nrElements);
+	b.append("}");
+	return b.toString();
+    }
 
     public Type getType ()
     {
@@ -63,56 +106,23 @@ public class ArrayType
     /**
      * Iterate through the array members.
      */
-    class ArrayIterator
+    private class ArrayIterator
 	implements java.util.Iterator
     {
-	int dimCount = dimensions.size();
+	private int idx;
+	private Location location;
 
-	int stride[] = new int[dimCount + 1];
-
-	private int idx, dim, element;
-
-	Value v;
-
-	ArrayIterator (Value v) {
-	    idx = - 1;
-	    stride[0] = 1;
-	    this.v = v;
-
-	    for (int i = 1; i < dimCount; i++) {
-		int d = ((Integer) (dimensions.get(dimCount - i))).intValue() + 1;
-		stride[i] = d * stride[i - 1];
-	    }
-	    stride[dimCount] = (((Integer) (dimensions.get(0))).intValue() + 1) * stride[dimCount - 1]; 
+	ArrayIterator (Location location) {
+	    idx = 0;
+	    this.location = location;
 	}
 
 	public boolean hasNext () {
-	    idx += 1;
-	    element = idx;
-	    dim = dimCount;
-	    if (idx < stride[dimCount])
-		return true;
-	    return false;
+	    return idx < nrElements;
 	}
 
-	/**
-	 * @return The next dimension index for the corresponding array element
-	 */
-	public int nextIdx () {
-	    dim -= 1;
-	    if (dim > 0) {
-		if (element >= stride[dim]) {
-		    int newDim = element / (stride[dim]);
-		    element = element % (stride[dim]);
-		    return newDim;
-		}
-		return 0;
-	    }
-	    return element;
-	}
-	
 	public Object next () {
-	    return getValue (v, idx);
+	    return slice(location, idx++, 1);
 	}
 	
 	public void remove ()
@@ -120,154 +130,82 @@ public class ArrayType
 	}
     }
 
-    private Value getValue (Value v, int idx) {
+    private Location slice(Location location, int idx, int count) {
 	int off = idx * type.getSize();
-	switch (type.typeId) {
-	case (BaseTypes.baseTypeByte):
-	    return ArithmeticType.newByteValue((ArithmeticType)type, v.getByte((off)));
-	case (BaseTypes.baseTypeShort):
-	    return ArithmeticType.newShortValue((ArithmeticType)type, v.getShort(off));
-	case (BaseTypes.baseTypeInteger):
-	    return ArithmeticType.newIntegerValue((ArithmeticType)type, v.getInt(off));
-	    case (BaseTypes.baseTypeLong):
-		return ArithmeticType.newLongValue((ArithmeticType)type, v.getLong(off));
-	case (BaseTypes.baseTypeFloat):
-	    return ArithmeticType.newFloatValue((ArithmeticType)type, v.getFloat(off));
-	case (BaseTypes.baseTypeDouble):
-	    return ArithmeticType.newDoubleValue((ArithmeticType)type, v.getDouble(off));
-	}
-	if (type instanceof ClassType) {
-	    ByteBuffer abb = v.getLocation().getByteBuffer().slice(off, type.size);
-	    abb.order(type.getEndian());
-	    return new Value((ClassType)type, v.getTextFIXME(), abb);
-	}
-	return null;
+	return location.slice(off, type.getSize() * count);
     }
     
-    private Value buildArraySlice(Value v, int count, int offset) {
-	ArrayList dims = new ArrayList();
-	dims.add(new Integer(count));
-	ArrayType arrayType = new ArrayType(this.getType(), count * type.size, dims);
-	ByteBuffer abb = v.getLocation().getByteBuffer().slice(offset * type.size, count * type.size);
-	abb.order(type.getEndian());
-	return new Value(arrayType, v.getTextFIXME(), abb);
-    }
-    
-    public ArrayIterator iterator (Value v) {
-	return new ArrayIterator(v);
-    }
-
+    /**
+     * FIXME: What exactly does this do?  Why not pass in the indexes
+     * and then separatly the repeat count of that last element.
+     */
     public Value get (Value v, int componentsIdx, ArrayList components) {
-	int dimCount = dimensions.size();
-	int stride[] = new int[dimCount + 1];
-      
-	stride[0] = 1;
-	for (int i = 1; i < dimCount; i++) {
-	    int d = ((Integer) (dimensions.get(dimCount - i))).intValue() + 1;
-	    stride[i] = d * stride[i - 1];
-	}
-	stride[dimCount] = (((Integer) (dimensions.get(0))).intValue() + 1) * stride[dimCount - 1]; 
-	
-	int offset = 0;
-	
-	int d = dimCount;
 	if (componentsIdx >= components.size())	// want the entire array?
 	    return v;
-	
-	subscript_loop:
+	int offset = 0;
+	int d = 0;
 	while (componentsIdx < components.size()) {
 	    int lbound = Integer.parseInt((String)components.get(componentsIdx));
 	    int hbound = Integer.parseInt((String)components.get(componentsIdx+1));
 	    
-	    d -= 1;
-	    if (d < 0)
-		break subscript_loop;
-	    try {
-		offset += stride[d] * lbound;
-	    } catch (NumberFormatException e) {
-		break subscript_loop;
+	    offset += stride[d] * lbound;
+	    if (lbound != hbound) {
+		// FIXME: This doesn't handle multi-dimensional
+		// arrays.
+		int count = hbound-lbound;
+		ArrayList dims = new ArrayList();
+		dims.add(new Integer(count));
+		ArrayType arrayType = new ArrayType(type, count * type.size,
+						    dims);
+		return new Value(arrayType, v.getTextFIXME(),
+				 v.getLocation().slice(offset, count));
 	    }
-	    if (lbound != hbound)
-		return buildArraySlice(v, hbound - lbound, offset);
 	    componentsIdx += 2;
+	    d++;
 	}
-	v = getValue (v, offset);
-	if (v.getType() instanceof ClassType)
-	    return ((ClassType)v.getType()).get(v, componentsIdx, components);
-	else
-	    return v;
+	return new Value(type, v.getLocation().slice(offset, 1));
     }
     
-    public String toString (Value v, ByteBuffer b) {
-	StringBuffer strBuf = new StringBuffer();
-	ArrayIterator e = iterator(v);
-	boolean isString = false;
-	if (type.typeId == BaseTypes.baseTypeByte) {
-	    isString = true;
-	    strBuf.append("\"");
-	} else {
-	    for (int i = 1; i <= e.dimCount; i++)
-		strBuf.append("{");
-	}
-	boolean firstTime = true;
-	boolean eos = false;
-	while (e.hasNext()) {
-	    if (!isString) {
-		int dimCount = e.dimCount;
-		boolean putBraces = false;
-		for (int j = dimCount; j >= 1; j--) {
-		    int nextIdx = e.nextIdx();
-		    if (j != dimCount && nextIdx == 0) {
-			putBraces = true;
-			if (firstTime) {
-			    firstTime = false;
-			    putBraces = false;
-			}
-		    }
-		}
-		if (putBraces)
-		    strBuf.append("},{");
-		else if (e.idx != 0)
-		    strBuf.append(",");
-		strBuf.append(e.next());
-	    } else {
+    void toPrint(PrintWriter writer, Location location,
+		 ByteBuffer memory, Format format) {
+	ArrayIterator e = new ArrayIterator(location);
+	if (type instanceof IntegerType && type.getSize() == 1) {
+	    // Treat it as a character string
+	    writer.print("\"");
+	    while (e.hasNext()) {
 		char ch = (char)((Value)e.next()).getByte();
-		if (eos == false)
-		    if (ch == 0)
-			eos = true;
-		    else
-			strBuf.append(ch);
+		if (ch == 0)
+		    break;
+		writer.print(ch);
 	    }
+	    writer.print("\"");
+	} else {
+	    for (int i = 0; i < dimension.length; i++)
+		writer.print("{");
+	    while (e.hasNext()) {
+		if (e.idx > 0) {
+		    if ((e.idx % dimension[dimension.length - 1]) == 0)
+			writer.print("},{");
+		    else
+			writer.print(",");
+		}
+		Location l = (Location)e.next();
+		type.toPrint(writer, l, memory, format);
+	    }
+	    for (int i = 0; i < dimension.length; i++)
+		writer.print("}");
 	}
-	if (isString)
-	    strBuf.append("\"");
-	else
-	    for (int i = 1; i <= e.dimCount; i++)
-		strBuf.append("}");
-	return strBuf.toString();
     }
 
     public void toPrint(PrintWriter writer) {
 	type.toPrint(writer);
 	writer.print(" [");
-	for(int i = 0; i < this.dimensions.size(); i++) {
+	for(int i = 0; i < this.dimension.length; i++) {
 	    if (i > 0)
 		writer.print(",");
-	    writer.print(((Integer)this.dimensions.get(i)).intValue() + 1);
+	    writer.print(dimension[i]);
 	}
 	writer.print("]");
-    }
-
-    /**
-     * Create an ArrayType
-     * 
-     * @param typep - Type of each array element
-     * @param dimensionsp - ArrayList of dimension upper bounds.
-     */
-    public ArrayType (Type typep, int size, ArrayList dimensionsp) {
-	super(size, typep.endian, 0, "array");
-	type = typep;
-	dimensions = dimensionsp;
     }
 
     public Value add (Value var1, Value var2)

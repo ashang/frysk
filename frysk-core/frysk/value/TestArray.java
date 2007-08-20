@@ -37,31 +37,46 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/**
- * Test location code.
- */
-
 package frysk.value;
 
 import inua.eio.ByteOrder;
+import java.util.ArrayList;
 import frysk.junit.TestCase;
 
-public class TestLocation extends TestCase
-{
-    public void testByteArrayBig() {
-	Location l = new Location(new byte[] { 1, 2, 3, 4 });
-	assertEquals("byte array", new byte[] { 1, 2, 3, 4 },
-		     l.asByteArray(ByteOrder.BIG_ENDIAN));
+public class TestArray extends TestCase {
+    private final Type int4_t = new SignedType(4, ByteOrder.BIG_ENDIAN, 0,
+					       "int", false);
+    private final Type int2_t = new SignedType(2, ByteOrder.BIG_ENDIAN, 0,
+					       "int", false);
+    private final byte[] buf = new byte[] {
+	0x01, 0x02, 0x03, 0x04,
+	0x05, 0x06, 0x07, 0x08,
+	0x09, 0x0a, 0x0b, 0x0c,
+	0x0d, 0x0e, 0x0f, 0x10
+    };
+
+    /**
+     * int4_t[4] array 
+     */
+    public void testArrayOfNumber () {
+	ArrayList dims = new ArrayList();
+	dims.add(new Integer(4 - 1));
+	ArrayType arrayType = new ArrayType(int4_t, buf.length, dims);
+	Value c1 = new Value(arrayType, "a1", new Location(buf));
+	String s = c1.toPrint();
+	assertEquals ("int[]", "{16909060,84281096,151653132,219025168}", s);
     }
-    public void testByteArrayLittle() {
-	Location l = new Location(new byte[] { 1, 2, 3, 4 });
-	assertEquals("byte array", new byte[] { 4, 3, 2, 1 },
-		     l.asByteArray(ByteOrder.LITTLE_ENDIAN));
-    }
-    public void testSlice() {
-	Location l = new Location(new byte[] { 1, 2, 3, 4 });
-	Location s = l.slice(1, 2); // 2,3
-	assertEquals("slice", new byte[] { 2, 3 },
-		     s.asByteArray(ByteOrder.BIG_ENDIAN));
+
+    /**
+     * int2_t[2][4]
+     */
+    public void testArrayOfArrayOfNumber () {
+	ArrayList dims = new ArrayList();
+	dims.add(new Integer(2-1));
+	dims.add(new Integer(4-1));
+	ArrayType arrayType = new ArrayType(int2_t, 16, dims);
+	Value c1 = new Value(arrayType, "a2", new Location(buf));
+	String s = c1.toPrint();
+	assertEquals ("array2dim", "{{258,772,1286,1800},{2314,2828,3342,3856}}", s);
     }
 }
