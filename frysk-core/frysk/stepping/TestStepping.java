@@ -60,7 +60,29 @@ import frysk.sys.Sig;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.TestLib;
 import frysk.testbed.TestfileTokenScanner;
-
+/**
+ * Main testcase for frysk.stepping.
+ * 
+ * Test cases work as follows:
+ * 
+ * 1. Define a class implementing SteppingTest, with whatever assertions are to
+ * be made in the runAssertions() method.
+ * 
+ * 2. Define the source file, initialize the test string token scanner Object,
+ * and declare the starting and ending lines for the test.
+ * 
+ * 3. Create a new DaemonBlockedAtEntry for the process to be tested on.
+ * 
+ * 4. Call initTaskWithTask() to initialize the LockObserver and other data
+ * structures, as well as set the initial breakpoints for the test. This method
+ * will run the program to the initial breakpoint.
+ * 
+ * 5. Perform the actual stepping operation - i.e. SteppingEngine.stepLine(Task).
+ * 
+ * 6. When the step has completed, the LockObserver will update and call the 
+ * runAssertions() method in the current TestStepping class defined above.
+ *
+ */
 public class TestStepping extends TestLib {
 
     private HashMap lineMap = new HashMap();
@@ -1386,7 +1408,7 @@ public class TestStepping extends TestLib {
 	 * @param o
 	 *                The Observable we're watching
 	 * @param arg
-	 *                An Object argument, usually a Task when important
+	 *                A TaskStepEngine
 	 */
 	public synchronized void update(Observable o, Object arg) {
 	    TaskStepEngine tse = (TaskStepEngine) arg;
@@ -1399,6 +1421,10 @@ public class TestStepping extends TestLib {
 	}
     }
 
+    /**
+     * A custom SourceBreakpintObserver for stopping the event loop when hit.
+     *
+     */
     private class TestSteppingBreakpoint implements SourceBreakpointObserver {
 
 	public void updateHit(SourceBreakpoint breakpoint, Task task,

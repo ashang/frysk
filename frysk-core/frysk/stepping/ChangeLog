@@ -2,6 +2,9 @@
 
 	* SteppingEngine.java: Added some more comments.
 	(frameIdentifier): Redundant, removed.
+	
+	* TestSteppingEngine.java: Added comments.
+	* TestStepping.java: Ditto.
 
 2007-08-16  Mike Cvet  <mcvet@redhat.com>
 

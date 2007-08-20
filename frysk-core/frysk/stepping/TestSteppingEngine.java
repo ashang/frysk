@@ -61,6 +61,10 @@ import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.TestLib;
 import frysk.testbed.TestfileTokenScanner;
 
+/**
+ * Testsuite for testing SteppingEngine operations. See TestStepping for
+ * detailed description of how tests operate.
+ */
 public class TestSteppingEngine extends TestLib {
 
     private HashMap lineMap = new HashMap();
@@ -770,7 +774,7 @@ public class TestSteppingEngine extends TestLib {
 	 * @param o
 	 *                The Observable we're watching
 	 * @param arg
-	 *                An Object argument, usually a Task when important
+	 * 		   A TaskStepEngine
 	 */
 	public synchronized void update(Observable o, Object arg) {
 	    TaskStepEngine tse = (TaskStepEngine) arg;
