@@ -86,7 +86,7 @@ class WhereCommand extends CLIHandler {
 	    tmpFrame = cli.getTaskFrame(task);
 	    while (tmpFrame != null) {
 		cli.outWriter.print("#" + l + " ");
-		tmpFrame.toPrint(cli.outWriter, false);
+		tmpFrame.toPrint(cli.outWriter, true, false, true);
 		cli.outWriter.println();
 		tmpFrame = tmpFrame.getOuterDebugInfoFrame();
 		l += 1;

@@ -1,3 +1,7 @@
+2007-08-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFhd.java (testFhpdVirtualStackTrace): New test.
+
 2007-08-16  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFStep.java: When no disassembler report as unsupported.

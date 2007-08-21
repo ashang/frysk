@@ -1,3 +1,8 @@
+2007-08-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DebugInfoStackFactory.java: Change the default createDebugInfoStackTrace
+	function to create Virtual stack traces by default.
+
 2007-08-20  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfoEvaluator.java (getByteSize(DwarfDie)): New; use when
