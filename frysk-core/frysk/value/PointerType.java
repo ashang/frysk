@@ -40,7 +40,6 @@
 
 package frysk.value;
 
-import lib.dwfl.BaseTypes;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.io.PrintWriter;
