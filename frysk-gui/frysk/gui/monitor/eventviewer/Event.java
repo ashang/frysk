@@ -224,7 +224,7 @@ public class Event extends GuiObject
      stringWriter.write(this.getName() + ": " + this.getToolTip() + "\n");
     
     if(frame != null){
-	DebugInfoStackFactory.printStackTrace(new PrintWriter(stringWriter),frame, true, false, false);
+	DebugInfoStackFactory.printStackTrace(new PrintWriter(stringWriter),frame,20, true, false, false);
     }else{
       stringWriter.write("*Error capturing stack frame*");
     }
