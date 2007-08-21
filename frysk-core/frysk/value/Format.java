@@ -118,7 +118,8 @@ public class Format
 	}
     }
 
-    public void printPointer(PrintWriter writer, Location location) {
+    public void print(PrintWriter writer, Location location,
+		      PointerType type) {
 	long value;
 	long size = location.getByteBuffer().capacity();
 	switch ((int)size) {

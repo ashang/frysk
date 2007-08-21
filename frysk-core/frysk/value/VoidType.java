@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,83 +37,53 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.value;
 
 import lib.dwfl.BaseTypes;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.io.PrintWriter;
-import java.math.BigInteger;
 
 /**
  * Type for a pointer.
  */
-public class PointerType
-    extends Type // Extend ArithmeticType?
+public class VoidType
+    extends Type
 {
-    private final Type type;
-    
     /**
-     * Create a PointerType
-     * 
-     * @param typep - Type of pointed to value
+     * Create a Void type.
      */
-    public PointerType (ByteOrder byteOrder, int size, Type type,
-			String typeStr) {
-	super(size, byteOrder, 0, typeStr, false);
-	this.type = type;
-    }
-
-    public Type getType () {
-	return type;
-    }
-    
-    void toPrint(PrintWriter writer, Location location, ByteBuffer memory,
-		 Format format) {
-	format.print(writer, location, this);
-	if (type instanceof IntegerType && type.getSize() == 1) {
-	    BigInteger addr = asBigInteger(location);
-	    char ch = (char)memory.getByte(addr.longValue());
-	    writer.print(" \"");
-	    while (ch != 0) {
-		writer.print(ch);
-		addr.add(BigInteger.ONE);
-		ch = (char)memory.getByte(addr.longValue());
-	    }
-	    writer.print("\"");
-	}
+    public VoidType () {
+	super(8, ByteOrder.BIG_ENDIAN, 0, "void");
     }
 
     public void toPrint(PrintWriter writer) {
-	type.toPrint(writer);
-	writer.print(" *");
+	writer.print("void");
     }
     
-    public BigInteger asBigInteger(Location location) {
-	return new BigInteger(1, location.asByteArray(endian));
+    public void toPrint(PrintWriter writer, Location location,
+			ByteBuffer memory, Format format) {
+	writer.print("<<void>>");
     }
 
     public Value add (Value var1, Value var2)
 	throws InvalidOperatorException
     {
-	return ArithmeticType.newLongValue((ArithmeticType)type, 
-					   var1.asLong() + var2.asLong());
+	throw (new InvalidOperatorException());
     }
 
     public Value subtract (Value var1, Value var2)
 	throws InvalidOperatorException
     {
-	return ArithmeticType.newLongValue((ArithmeticType)type, 
-					   var1.asLong() - var2.asLong());
+	throw (new InvalidOperatorException());
     }
 
     public Value logicalNegation(Value var1) 
-        throws InvalidOperatorException
+	throws InvalidOperatorException
     {
 	throw (new InvalidOperatorException());
     }
-    
+  
     public Value assign (Value var1, Value var2)
 	throws InvalidOperatorException
     {
@@ -265,11 +235,11 @@ public class PointerType
     }
 
     public Value bitWiseComplement (Value var1)
-        throws InvalidOperatorException
+	throws InvalidOperatorException
     {
 	throw (new InvalidOperatorException());
     }
-    
+
     public Value logicalAnd (Value var1, Value var2)
 	throws InvalidOperatorException
     {

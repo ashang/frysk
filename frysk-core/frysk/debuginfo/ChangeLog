@@ -1,5 +1,9 @@
 2007-08-20  Andrew Cagney  <cagney@redhat.com>
 
+	* DebugInfoEvaluator.java (getByteSize(DwarfDie)): New; use when
+	creating PointerTypes.
+	(getPointerTarget): Take the pointee's die; update calls.
+	
 	* DebugInfoEvaluator.java: Replace call to
 	EnumType.addMember(Type,String,long) with
 	EnumType.addMember(String,long).  Pass the enum's size to the

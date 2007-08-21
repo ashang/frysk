@@ -74,6 +74,7 @@ import frysk.value.EnumType;
 import frysk.value.FunctionType;
 import frysk.value.PointerType;
 import frysk.value.StandardTypes;
+import frysk.value.VoidType;
 import frysk.value.Type;
 import frysk.value.Value;
 
@@ -101,6 +102,10 @@ class DebugInfoEvaluator
   {
     return false;
   }
+
+    private int getByteSize(DwarfDie die) {
+	return die.getAttrConstant(DwAtEncodings.DW_AT_byte_size_);
+    }
 
   /**
    * Create an DebugInfoEvaluator object which is the interface between
@@ -580,9 +585,8 @@ class DebugInfoEvaluator
           int bitOffset = 0;
           int byteSize = 0;
           int mask = 0;
-          if (bitSize != -1)
-            {
-              byteSize = member.getAttrConstant(DwAtEncodings.DW_AT_byte_size_);
+          if (bitSize != -1) {
+	      byteSize = getByteSize(member);
               bitOffset = member.getAttrConstant(DwAtEncodings.DW_AT_bit_offset_);
               mask = (0xffffffff >>> (byteSize * 8 - bitSize) << (4 * 8 - bitOffset - bitSize));
             }
@@ -629,13 +633,11 @@ class DebugInfoEvaluator
         
         case DwTagEncodings.DW_TAG_pointer_type_:
         {
-            DwarfDie ptrType = memberType.getUltimateType();
             ByteOrder byteorder = task.getIsa().getByteOrder();
             Type memberPtrType;
             
-            if (ptrType == null)
-              memberPtrType = new PointerType(byteorder, null, "void*");
-            memberPtrType = new PointerType(byteorder, getPointerTarget (ptrType), "*");
+	    memberPtrType = new PointerType(byteorder, getByteSize(memberType),
+					    getPointerTarget(memberType), "*");
             classType.addMember(memberPtrType, member.getName(), offset, 0, access);
             typeSize += memberPtrType.getSize();
             continue;
@@ -826,8 +828,7 @@ class DebugInfoEvaluator
               DwarfDie subrange;
               long val = variableAccessor[0].getLong(varDie, 0);
               subrange = type.getChild();
-	      int size = type.getAttrConstant(DwAtEncodings.DW_AT_byte_size_);
-              EnumType enumType = new EnumType(byteorder, size);
+              EnumType enumType = new EnumType(byteorder, getByteSize(type));
               while (subrange != null) {
                   enumType.addMember(subrange.getName(), 
                                      subrange.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
@@ -836,7 +837,7 @@ class DebugInfoEvaluator
 	      // XXX: This is so wrong; should just have a Location
 	      // refering to the value.
 	      Value v = new Value(enumType, s);
-	      switch (size) {
+	      switch (getByteSize(type)) {
 	      case 1: v.putByte((byte)val); break;
 	      case 2: v.putShort((short)val); break;
 	      case 4: v.putInt((int)val); break;
@@ -949,9 +950,18 @@ class DebugInfoEvaluator
     return null;
   }
   
-  private Type getPointerTarget (DwarfDie type)
-  {
+    /**
+     * Return the target of a pointer, as a type.
+     *
+     * XXX: Why isn't this recursive?
+     */
+    private Type getPointerTarget(DwarfDie pointer) {
+	DwarfDie type = pointer.getUltimateType();
+	if (type == null)
+	    return new VoidType();
+
     ByteOrder byteorder = task.getIsa().getByteOrder();
+
     switch (type.getBaseType())
     {
     case BaseTypes.baseTypeByte:
@@ -973,9 +983,9 @@ class DebugInfoEvaluator
     }
     switch (type.getTag())
     {
-    case DwTagEncodings.DW_TAG_pointer_type_:
-    {
-      return new PointerType(byteorder, getPointerTarget(type.getUltimateType()), "void*");
+    case DwTagEncodings.DW_TAG_pointer_type_: {
+	return new PointerType(byteorder, getByteSize(type),
+			       getPointerTarget(type), "void*");
     }
     }
     return null;
@@ -1033,10 +1043,9 @@ class DebugInfoEvaluator
     {
     case DwTagEncodings.DW_TAG_pointer_type_:
     {
-      type = type.getUltimateType();
-      if (type == null)
-        return new Value (new PointerType(byteorder, null, "void*"), varDie.getName());
-      return new Value (new PointerType(byteorder, getPointerTarget (type), "*"), varDie.getName());
+	  return new Value(new PointerType(byteorder, getByteSize(type),
+					   getPointerTarget(type), "*"),
+			   varDie.getName());
     }
     case DwTagEncodings.DW_TAG_array_type_:
     {
