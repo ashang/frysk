@@ -50,6 +50,7 @@ import java.util.LinkedList;
 import lib.dwfl.DwTagEncodings;
 import lib.dwfl.DwarfDie;
 import frysk.value.FunctionType;
+import frysk.value.Type;
 import frysk.value.Value;
 
 /**
@@ -75,8 +76,8 @@ public class Subprogram extends Subroutine
       while(die != null){
 //	System.out.print(" -> " + die.getName() + ": "+ DwTagEncodings.toName(die.getTag()));
 	if(die.getTag() == DwTagEncodings.DW_TAG_formal_parameter_){
-	  Value value = debugInfo.getValue(die);
-          Variable variable = new Variable(value, die);
+	  Type type = debugInfo.getType(die);
+          Variable variable = new Variable(new Value(type, die.getName()), die);
 	  parameters.add(variable);
 	}
 	die = die.getSibling();

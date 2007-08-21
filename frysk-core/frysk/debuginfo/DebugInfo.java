@@ -46,6 +46,7 @@ import frysk.expr.CppSymTab;
 import frysk.expr.CppTreeParser;
 import frysk.proc.Proc;
 import frysk.debuginfo.Subprogram;
+import frysk.value.Type;
 import frysk.value.Value;
 import java.io.StringReader;
 import java.text.ParseException;
@@ -184,20 +185,20 @@ public class DebugInfo {
             }
             case DwTagEncodings.DW_TAG_typedef_:
             case DwTagEncodings.DW_TAG_structure_type_: {
-		Value value = debugInfoEvaluator[0].getValue(varDie);
-		result.append(value.getType().toPrint());
+		Type type = debugInfoEvaluator[0].getType(varDie);
+		result.append(type.toPrint());
 		break;
             }
             default:
 		result.append(varDie + " " + varDie.getName());
 	    }
         } else {
-	    Value value = debugInfoEvaluator[0].getValue(varDie);
+	    Type type = debugInfoEvaluator[0].getType(varDie);
 	    if (varDie.getAttrBoolean(DwAtEncodings.DW_AT_external_))
 		result.append("extern ");
 
-	    if (value != null)
-		result.append(value.getType().toPrint());
+	    if (type != null)
+		result.append(type.toPrint());
         }
 	if (varDie != null) {
 	    try {
@@ -337,8 +338,8 @@ public class DebugInfo {
 	}
     }
      
-    public Value getValue (DwarfDie die) {
-	return debugInfoEvaluator[0].getValue(die);
+    public Type getType (DwarfDie die) {
+	return debugInfoEvaluator[0].getType(die);
     } 
 
     public Value get(DebugInfoFrame f, DwarfDie die) throws NameNotFoundException

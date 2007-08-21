@@ -145,7 +145,7 @@ public class ClassType
 	    ByteBuffer abb = v.getLocation().getByteBuffer().slice(off,type.size);
 	    return new Value((FunctionType)type, type.name, abb);
 	}
-	return null;
+        return new Value(new UnknownType(type.name), type.name);
     }
     
     public ClassIterator iterator (Value v) {

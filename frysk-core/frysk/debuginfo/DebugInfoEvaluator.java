@@ -66,6 +66,7 @@ import frysk.stack.RegisterMap;
 import frysk.sys.Errno;
 import frysk.value.ArithmeticType;
 import frysk.value.SignedType;
+import frysk.value.UnknownType;
 import frysk.value.UnsignedType;
 import frysk.value.FloatingPointType;
 import frysk.value.ArrayType;
@@ -488,7 +489,11 @@ class DebugInfoEvaluator
       return arrayType;
     }
   
-    // XXX: What is this trying to do?
+    /**
+     * If we have a typedef then generate a type for it, otherwise use a 
+     * basetype.
+     * 
+     */
   private ArithmeticType fetchType (boolean haveTypeDef, ArithmeticType type,
                                     String name)
   {
@@ -605,7 +610,7 @@ class DebugInfoEvaluator
           classType.addMember(fetchType(haveTypeDef, doubleType, dieType.getName()),
                               member.getName(), offset, 0, access);
           continue;
-        }
+         }
 
         // memberType is the ultimate type derived from chasing the thread of types
 	switch (memberType.getTag())
@@ -643,6 +648,7 @@ class DebugInfoEvaluator
             continue;
         }
 	}
+	classType.addMember((Type)(new UnknownType(member.getName())), member.getName(), offset, 0, access);
       }
 
     typeSize += 4 - (typeSize % 4);             // round up to mod 4
@@ -721,7 +727,7 @@ class DebugInfoEvaluator
 
     DwarfDie varDie = getDie(s);
     if (varDie == null)
-      return (null);
+      throw new NameNotFoundException();
     
     return get(f, varDie);
   }
@@ -835,7 +841,7 @@ class DebugInfoEvaluator
                   subrange = subrange.getSibling();
 	      }
 	      // XXX: This is so wrong; should just have a Location
-	      // refering to the value.
+	      // referring to the value.
 	      Value v = new Value(enumType, s);
 	      switch (getByteSize(type)) {
 	      case 1: v.putByte((byte)val); break;
@@ -859,7 +865,7 @@ class DebugInfoEvaluator
           {
           }
       }
-    return null;
+    return new Value(new UnknownType(varDie.getName()), varDie.getName());
   }
     
   public Value get (DebugInfoFrame f, ArrayList components) throws NameNotFoundException
@@ -876,7 +882,7 @@ class DebugInfoEvaluator
     else if (v.getType() instanceof ClassType)
       return ((ClassType)v.getType()).get(v, 0, components);
     else
-      return null;
+	return new Value(new UnknownType(varDie.getName()), varDie.getName());
   }
   
   public Value getAddress (DebugInfoFrame f, String s) throws NameNotFoundException
@@ -893,7 +899,7 @@ class DebugInfoEvaluator
     DwarfDie varDie = getDie(s);
     
     if (varDie == null)
-      return (null);
+	return new Value(new UnknownType(varDie.getName()), varDie.getName());
     
     DwarfDie type = varDie.getUltimateType();
     AccessMemory access = new AccessMemory();
@@ -947,7 +953,7 @@ class DebugInfoEvaluator
       return new Value(classType, s, abb);
     }
     }
-    return null;
+    return new Value(new UnknownType(varDie.getName()), varDie.getName());
   }
   
     /**
@@ -988,7 +994,8 @@ class DebugInfoEvaluator
 			       getPointerTarget(type), "void*");
     }
     }
-    return null;
+    return new UnknownType(type.getName());
+
   }
   
   public Value getSubprogramValue (DwarfDie varDie)
@@ -1002,13 +1009,10 @@ class DebugInfoEvaluator
     {
     case DwTagEncodings.DW_TAG_subprogram_:
     {
-      Value value = null;
       Type type = null;
       if (varDie.getUltimateType() != null)
         {
-          value = getValue(varDie);
-          if (value != null)
-            type = value.getType();
+	  type = getType(varDie);
         }
       FunctionType functionType = new FunctionType(byteorder, varDie.getName(), type);
       DwarfDie parm = varDie.getChild();
@@ -1016,19 +1020,18 @@ class DebugInfoEvaluator
         {
           if (parm.getAttrBoolean((DwAtEncodings.DW_AT_artificial_)) == false)
             {
-              value = getValue(parm);
-              if (value != null)
-        	  functionType.addParameter(value.getType(), value.getTextFIXME());
+              type = getType(parm);
+              functionType.addParameter(type, parm.getName());
         }
       parm = parm.getSibling();
         }
       return new Value (functionType, varDie.getName());
     }
     }
-    return null;
+    return new Value(new UnknownType(varDie.getName()), varDie.getName());
   }
   
-  public Value getValue (DwarfDie varDie)
+  public Type getType (DwarfDie varDie)
   {
     ByteOrder byteorder = task.getIsa().getByteOrder();
     
@@ -1043,14 +1046,13 @@ class DebugInfoEvaluator
     {
     case DwTagEncodings.DW_TAG_pointer_type_:
     {
-	  return new Value(new PointerType(byteorder, getByteSize(type),
-					   getPointerTarget(type), "*"),
-			   varDie.getName());
+	  return new PointerType(byteorder, getByteSize(type),
+				 getPointerTarget(type), "*");
     }
     case DwTagEncodings.DW_TAG_array_type_:
     {
       DwarfDie subrange = type.getChild();
-      return new Value (getArrayType(type, subrange), varDie.getName());
+      return getArrayType(type, subrange);
     }
     case DwTagEncodings.DW_TAG_union_type_:
     case DwTagEncodings.DW_TAG_structure_type_:
@@ -1058,10 +1060,10 @@ class DebugInfoEvaluator
       boolean noTypeDef = (varDie.getType() == null);
       String name = noTypeDef ? varDie.getName() 
                                                : varDie.getType().getName();
-      Value value = new Value (getClassType(type, name), varDie.getName());
+      ClassType classType = getClassType(type, name);
       if (type != varDie.getType() && noTypeDef == false)
-        value.getType().setTypedef(true);
-      return value;
+        classType.setTypedef(true);
+      return classType;
     }
     case DwTagEncodings.DW_TAG_enumeration_type_:
     {
@@ -1072,7 +1074,7 @@ class DebugInfoEvaluator
                              subrange.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
           subrange = subrange.getSibling();
       }
-      return new Value (enumType, varDie.getName());
+      return enumType;
     }
     }
     
@@ -1089,26 +1091,20 @@ class DebugInfoEvaluator
     switch (type.getBaseType())
     {
     case BaseTypes.baseTypeLong:
-      return ArithmeticType.newLongValue(fetchType(haveTypeDef, longType, dieType.getName()), 
-                                         varDie.getName(), 0);
+      return fetchType(haveTypeDef, longType, dieType.getName());
     case BaseTypes.baseTypeInteger:
-      return ArithmeticType.newIntegerValue(fetchType(haveTypeDef, intType, dieType.getName()), 
-                                            varDie.getName(), 0);
+      return fetchType(haveTypeDef, intType, dieType.getName()); 
     case BaseTypes.baseTypeShort:
-      return ArithmeticType.newShortValue(fetchType(haveTypeDef, shortType, dieType.getName()), 
-                                          varDie.getName(), (short)0);
+      return fetchType(haveTypeDef, shortType, dieType.getName()); 
     case BaseTypes.baseTypeByte:
-      return ArithmeticType.newByteValue(fetchType(haveTypeDef, byteType, dieType.getName()), 
-                                         varDie.getName(), (byte)0);
+      return fetchType(haveTypeDef, byteType, dieType.getName()); 
     case BaseTypes.baseTypeFloat:
-      return ArithmeticType.newFloatValue(fetchType(haveTypeDef, floatType, dieType.getName()), 
-                                          varDie.getName(), 0);
+      return fetchType(haveTypeDef, floatType, dieType.getName()); 
     case BaseTypes.baseTypeDouble:
-      return ArithmeticType.newDoubleValue(fetchType(haveTypeDef, doubleType, dieType.getName()), 
-                                          varDie.getName(), 0);
+      return fetchType(haveTypeDef, doubleType, dieType.getName()); 
     }
   
-    return null;
+    return new UnknownType (varDie.getName());
   }
 
   

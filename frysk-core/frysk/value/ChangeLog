@@ -1,3 +1,8 @@
+2007-08-20  Stan Cox  <scox@redhat.com>
+
+	* UnknownType.java: New file.
+	* ClassType.java (getValue): Use it.
+
 2007-08-21  Mark Wielaard  <mark@klomp.org>
 
 	* PointerType.java: Remove unused import lib.dwfl.BaseTypes.

@@ -46,6 +46,7 @@ import java.util.LinkedList;
 
 import lib.dwfl.DwTagEncodings;
 import lib.dwfl.DwarfDie;
+import frysk.value.Type;
 import frysk.value.Value;
 
 /**
@@ -87,8 +88,8 @@ public class Scope
 //      System.out.println(" -> " + die.getName() + ": "+ DwTagEncodings.toName(die.getTag()));
       
       if(die.getTag() == DwTagEncodings.DW_TAG_variable_){
-        Value value = debugInfo.getValue(die);
-        Variable variable = new Variable(value, die);
+        Type type = debugInfo.getType(die);
+        Variable variable = new Variable(new Value(type, die.getName()), die);
         variables.add(variable);
       }
       

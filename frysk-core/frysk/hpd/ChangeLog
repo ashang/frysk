@@ -1,3 +1,7 @@
+2007-08-21  Stan Cox  <scox@redhat.com>
+
+	* PrintCommand.java (handle): Don't addMessage for NameNotFoundException.
+
 2007-08-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* WhereCommand.java (handle): Now uses DebugInfoStackFactory

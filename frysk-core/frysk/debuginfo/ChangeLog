@@ -1,3 +1,12 @@
+2007-08-21  Stan Cox  <scox@redhat.com>
+
+	* DebugInfoEvaluator.java (getType): Renamed from getValue.  
+	Changed all callers.
+	(get): Return UnknownType for unrecognized types.
+	(getMemory): Likewise.
+	(getPointerTarget): Likewise.
+	(getSubprogramValue): Likewise.
+
 2007-08-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFrameDebugInfo.java (testFrameDebugInfoStackTrace): New passes number

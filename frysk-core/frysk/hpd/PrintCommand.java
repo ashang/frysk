@@ -133,7 +133,6 @@ class PrintCommand
                 result = cli.parseValue(task, sInput);	  
             }
             catch (NameNotFoundException nnfe) {
-                cli.addMessage(new Message(nnfe.getMessage(), Message.TYPE_ERROR));
                 continue;
             }
             catch (ValueUavailableException vue) {
