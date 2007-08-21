@@ -1,5 +1,12 @@
 2007-08-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* TestFrameDebugInfo.java (testFrameDebugInfoStackTrace): New passes number
+	of frames to printStackTrace.
+	* DebugInfoStackFactory.java (printStackTrace): Now takes a number frames
+	arguement.
+
+2007-08-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* DebugInfoStackFactory.java: Change the default createDebugInfoStackTrace
 	function to create Virtual stack traces by default.
 

@@ -45,6 +45,7 @@ import java.util.Iterator;
 import frysk.proc.Task;
 
 import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.DebugInfoStackFactory;
 
 class WhereCommand extends CLIHandler {
 
@@ -84,15 +85,7 @@ class WhereCommand extends CLIHandler {
 		stopLevel = 0;
 
 	    tmpFrame = cli.getTaskFrame(task);
-	    while (tmpFrame != null) {
-		cli.outWriter.print("#" + l + " ");
-		tmpFrame.toPrint(cli.outWriter, true, false, true);
-		cli.outWriter.println();
-		tmpFrame = tmpFrame.getOuterDebugInfoFrame();
-		l += 1;
-		if (l == stopLevel)
-		    break;
-	    }
+	    DebugInfoStackFactory.printStackTrace(cli.outWriter, tmpFrame, stopLevel, true, false, true);
 	}
 
     }

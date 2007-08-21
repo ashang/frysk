@@ -121,7 +121,7 @@ public class DebugInfoStackFactory {
       if (task != null){
         printWriter.println("Task #" + task.getTid());
         DebugInfoFrame frame = createDebugInfoStackTrace(task);
-        printStackTrace(printWriter, frame,printParameters,printScopes,fullpath);
+        printStackTrace(printWriter, frame, 20, printParameters,printScopes,fullpath);
       }
       printWriter.flush();
     }
@@ -131,12 +131,12 @@ public class DebugInfoStackFactory {
       if (task != null){
         printWriter.println("Task #" + task.getTid());
         DebugInfoFrame frame = createVirtualDebugInfoStackTrace(task);
-        printStackTrace(printWriter, frame,printParameters,printScopes,fullpath);
+        printStackTrace(printWriter,frame, 20, printParameters,printScopes,fullpath);
       }
       printWriter.flush();
     }
 
-    public static void printStackTrace(PrintWriter writer, DebugInfoFrame topFrame, boolean printParameters, boolean printScopes, boolean fullpath){
+    public static void printStackTrace(PrintWriter writer, DebugInfoFrame topFrame, int numberOfFrames, boolean printParameters, boolean printScopes, boolean fullpath){
         
         int count = 0;
         for (DebugInfoFrame frame = topFrame;
@@ -148,6 +148,11 @@ public class DebugInfoStackFactory {
           writer.println();
           writer.flush();
           count++;
+          if(count == numberOfFrames){
+              writer.println("...");
+              break;
+          }
+          
         }
     
       }

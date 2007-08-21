@@ -70,7 +70,7 @@ public class TestFrameDebugInfo
 
     StringWriter stringWriter = new StringWriter();
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
-    DebugInfoStackFactory.printStackTrace(new PrintWriter(stringWriter),frame, true, true, true);
+    DebugInfoStackFactory.printStackTrace(new PrintWriter(stringWriter),frame, 20, true, true, true);
       
     String string = stringWriter.getBuffer().toString();
     assertTrue("first", string.contains("first"));

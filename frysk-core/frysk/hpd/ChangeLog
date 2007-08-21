@@ -1,5 +1,10 @@
 2007-08-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* WhereCommand.java (handle): Now uses DebugInfoStackFactory
+	for printing.
+
+2007-08-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* WhereCommand.java (handle): Now prints richer function names,
 	parameters, and full path to source file, all retrieved from
 	debug infomation.
