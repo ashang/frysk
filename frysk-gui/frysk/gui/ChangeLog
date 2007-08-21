@@ -1,3 +1,16 @@
+2007-08-21  Zhao Shujing <pearly.zhao@oracle.com>
+
+	* disassembler/DisassemblyWindow.java: Fixes #4672. 
+	(fromBox.entryEvent): Use fromSpin.setValue to invoke fromSpin
+	entryEvent.
+	(toBox.entryEvent): Ditto.
+	(refreshList): Change to get next instruction after setValue to model
+	is finished.
+	(rowPrepend): New function.
+	(handleFromSpin): Prepend rows provided by rowPrepend and remove
+	redundant instructions according to the change of memory address.
+	Fixes #4929.
+
 2007-08-19  Andrew Cagney  <cagney@redhat.com>
 
 	* register/RegisterWindow.java: Instantiate UnsignedType instead
@@ -59,10 +72,10 @@
 
 	* memory/MemoryWindow.java: fromBox and toBox can be edited. Fixes
 	#4612.
-	* memory/MemoryWindow.java(handleFromSpin): synchronously display
+	* memory/MemoryWindow.java (handleFromSpin): synchronously display
 	column and fromBox when adjust the fromSpin.
 	* disassembler/DisassemblyWindow.java: fromBox and toBox can be edited.
-	* disassembler/DisassemblyWindow.java(rowAppend): synchronously display
+	* disassembler/DisassemblyWindow.java (rowAppend): synchronously display
 	column and toBox when adjust the toSpin.
 
 2007-07-27  Mike Cvet  <mcvet@redhat.com>

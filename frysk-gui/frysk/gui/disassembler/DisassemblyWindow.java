@@ -44,6 +44,7 @@ package frysk.gui.disassembler;
 import java.util.prefs.Preferences;
 import java.util.List;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -268,7 +269,7 @@ public class DisassemblyWindow
     this.diss = new Disassembler(myTask.getMemory());
     this.fromSpin.setRange(0.0, highestAddress);
     this.fromSpin.setValue((double) pc_inc);
-    this.fromBox.setText(Long.toHexString(pc_inc));
+    this.fromBox.setText("0x" + Long.toHexString(pc_inc));
     this.lastKnownFrom = pc_inc;
     this.toSpin.setRange(0.0, highestAddress);
     //this.toSpin.setValue((double) end);
@@ -351,14 +352,23 @@ public class DisassemblyWindow
               return;
           
             String str = fromBox.getText();
+            str = str.substring(2);
             try
             {
               double d = (double) Long.parseLong(str, 16);
-              handleFromSpin(d);
+              if (d > lastKnownTo)
+              {
+        	  if (lastKnownTo == lastKnownFrom)
+        	      handleFromSpin(lastKnownTo);
+        	  else
+        	      fromSpin.setValue(lastKnownTo);
+              }
+              else
+        	  fromSpin.setValue(d);
             }
             catch (NumberFormatException nfe)
             {
-              fromBox.setText(Long.toHexString((long) lastKnownFrom));
+              fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));
             }
           }
       }
@@ -373,15 +383,24 @@ public class DisassemblyWindow
             if (refreshLock)
               return;
             
-              String str = toBox.getText();             
+              String str = toBox.getText();
+              str = str.substring(2);
               try
               {
                 double d = (double) Long.parseLong(str, 16);
-                handleToSpin(d);
+                if (d < lastKnownFrom) 
+                {
+                    if (lastKnownFrom == lastKnownTo)
+                	handleToSpin(lastKnownFrom);
+                    else
+                	toSpin.setValue(lastKnownFrom);
+                }
+                else
+                    toSpin.setValue(d);
               }
               catch (NumberFormatException nfe)
               {
-                toBox.setText(Long.toHexString((long) lastKnownTo));
+                toBox.setText("0x" + Long.toHexString((long) lastKnownTo));
               }
           }
       }
@@ -537,21 +556,22 @@ public class DisassemblyWindow
             this.model.setValue(iter, (DataColumnString) cols[2], ins.instruction);
             
             this.pcOffset += ins.address;
-            
-            if (li.hasNext())
-              ins = (Instruction) li.next();
-            else
-              {
-                this.toSpin.setValue((double) ins.address);
-                this.toBox.setText(Long.toHexString(ins.address));
-                this.lastKnownTo = ins.address;
-                ins = null;
-              }
           }
         else
           this.model.setValue(iter, (DataColumnString) cols[1], "");
 
         this.model.setValue(iter, (DataColumnObject) cols[OBJ], ins);
+        
+        
+        if (li.hasNext())
+            ins = (Instruction) li.next();
+        else
+        {
+            this.toSpin.setValue((double) ins.address);
+            this.toBox.setText("0x" + Long.toHexString(ins.address));
+            this.lastKnownTo = ins.address;
+            ins = null;        
+        }
         
         iter = iter.getNextIter();
       }
@@ -568,7 +588,7 @@ public class DisassemblyWindow
   /**
    * Helper function for calculating memory information and putting it into rows
    * to be displayed.
-   * By default append rows to the end; occasionally prepend rows to the front.
+   * By default append rows to the end.
    * 
    * @param i   The address to be displayed
    * @param iter    The TreeIter representing the row to be added.
@@ -613,8 +633,72 @@ public class DisassemblyWindow
       }
     
     this.toSpin.setValue((double) ins.address);
-    this.toBox.setText(Long.toHexString(ins.address));
+    this.toBox.setText("0x" + Long.toHexString(ins.address));
     this.lastKnownTo = ins.address;
+  }
+  
+  /**
+   * Helper function for calculating memory information and putting it into rows
+   * to be displayed.
+   * By default prepend rows to the front.
+   * 
+   * @param val   The address to be displayed
+   * @param nums   The numbers of rows to be prepend.
+   */
+  private synchronized void rowPrepend(long val, int addressAdded)
+  {
+      TreeIter iter = model.getFirstIter();
+      TreePath path = iter.getPath();
+      List instructionsList = diss.disassembleInstructions((long)(val-20), addressAdded+20);
+      ListIterator li = instructionsList.listIterator(0);
+      Instruction ins = (Instruction) li.next();
+      while (li.hasNext() && ins.address < lastKnownFrom)
+      {
+	  ins = (Instruction) li.next();
+	  if (ins.address == lastKnownFrom)
+	      break;
+	  
+      }
+      while (li.hasPrevious())
+      {
+	  if (ins.address < (long) val) {
+	      ins = (Instruction) li.next();
+	      break;
+	  }
+	  ins = (Instruction) li.previous();	 
+      }
+      if (addressAdded > 1) // if num==1, it should fetch the previous instruction
+	  ins = (Instruction) li.next();
+      
+      long newlastFrom = ins.address;
+      
+      while (ins != null && ins.address < lastKnownFrom) {
+	  iter = model.insertRowBefore(model.getIter(path));
+	  this.lastPath.next();
+	  if (ins != null) {
+	      model.setValue(iter, (DataColumnString) cols[1], "<pc+"
+		      + (ins.address - this.pc) + ">: ");
+	      model.setValue(iter, (DataColumnString) cols[LOC], "0x"
+		      + Long.toHexString(ins.address));
+	      model.setValue(iter, (DataColumnString) cols[2],
+		      ins.instruction);
+	      model.setValue(iter, (DataColumnObject) cols[3], ins);
+	      this.numInstructions++;		  
+	      if (li.hasNext()) {
+		  ins = (Instruction) li.next();
+		  path.next();
+	      }
+	      else
+		  ins = null;
+	    }
+	  else
+	      model.setValue(iter, (DataColumnString) cols[1], "");
+	  
+      }
+
+      this.lastKnownFrom = newlastFrom;
+      this.fromSpin.setValue((double) newlastFrom);
+      this.fromBox.setText("0x" + Long.toHexString(newlastFrom));
   }
   
   private void desensitize ()
@@ -654,35 +738,45 @@ public class DisassemblyWindow
     if (val > this.lastKnownTo)
       {
         this.fromSpin.setValue(this.lastKnownTo);
-        this.fromBox.setText(Long.toHexString((long) this.lastKnownTo));
+        this.fromBox.setText("0x" + Long.toHexString((long) this.lastKnownTo));
         this.lastKnownFrom = this.lastKnownTo;
         return;
       }
 
     if (val > this.lastKnownFrom)
       {
-        TreeIter iter = model.getFirstIter();
+	if (this.numInstructions < 1)
+            return;
+        
+	TreeIter iter = model.getFirstIter();
+	Instruction ins = (Instruction) this.model.getValue(iter, (DataColumnObject) cols[OBJ]);
+	//--this.numInstructions;
+        
+	while (ins != null && ins.address < val)
+	{
+	    this.model.removeRow(iter);
+	    this.lastPath.previous();
+	    ins = (Instruction) this.model.getValue(iter,(DataColumnObject) cols[OBJ]);
+	    --this.numInstructions;
+	}
+	if (ins == null)
+	    return;
 
-        for (int i = (int) lastKnownFrom; i < (int) val; i++)
-          {
-            this.numInstructions--;
-            model.removeRow(iter);
-            iter = iter.getNextIter();
-          }
+	this.lastKnownFrom = ins.address;
+	this.fromBox.setText("0x" + Long.toHexString(ins.address));
+	this.fromSpin.setValue((double)ins.address);
+	refreshList();
+	return;
       }
     else
       {
-        for (long i = (long) val; i < lastKnownFrom; i++)
-          {
-            this.numInstructions++;
-            model.prependRow();
-          }
+	int addressAdded = 0;
+	for (long i = (long)lastKnownFrom; i > (long)val; i--)
+	    addressAdded++;
+	if (addressAdded == 0)
+	    return;
+	rowPrepend((long)val, addressAdded);
       }
-    
-    this.fromSpin.setValue(val);
-    this.lastKnownFrom = val;
-    this.fromBox.setText(Long.toHexString((long) val));
-    refreshList();
   }
 
   boolean toToggle = false;
@@ -708,7 +802,7 @@ public class DisassemblyWindow
     if (val < this.lastKnownFrom)
       {
         this.toSpin.setValue(lastKnownFrom);
-        this.toBox.setText(Long.toHexString((long) this.lastKnownFrom));
+        this.toBox.setText("0x" + Long.toHexString((long) this.lastKnownFrom));
         this.lastKnownTo = this.lastKnownFrom;
         return;
       }
@@ -751,7 +845,7 @@ public class DisassemblyWindow
         
         this.toSpin.setValue((double) ins.address);
         this.lastKnownTo = ins.address;
-        this.toBox.setText(Long.toHexString(ins.address));
+        this.toBox.setText("0x" + Long.toHexString(ins.address));
         
         refreshList();
       }
