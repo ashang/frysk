@@ -47,14 +47,25 @@ import frysk.proc.Task;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 
+/**
+ * Create a stack backtrace based on debug information.
+ */
 public class DebugInfoStackFactory {
 
+    /**
+     * Create an ABI stack backtrace, make the simpler debug-info
+     * methods.
+     */
     public static DebugInfoFrame createDebugInfoStackTrace (Task task)
     {
 	return new DebugInfoFrame(StackFactory.createFrame(task));
     }
 
-    public static DebugInfoFrame createVirtualDebugInfoStackTrace (Task task)
+    /**
+     * Create a full virtual stack backtrace where inlined functions
+     * exist as separate frames.
+     */
+    public static DebugInfoFrame createVirtualStackTrace (Task task)
     {
 	DebugInfoFrame frame = createDebugInfoStackTrace (task);
 	DebugInfoFrame tempFrame = null;
@@ -63,9 +74,6 @@ public class DebugInfoStackFactory {
 	DebugInfoFrame innermostFrame = null;
 	
 	while(frame != null){
-//	    System.out
-//	    .println("DebugInfoStackFactory.createVirtualDebugInfoStackTrace() " + frame.getUndecoratedFrame());
-
 	    LinkedList inlineList = frame.getInlinedSubprograms(); 
 	    if(inlineList.size() != 0 ){
 		Iterator iterator = inlineList.iterator();
@@ -125,7 +133,7 @@ public class DebugInfoStackFactory {
     {
       if (task != null){
         printWriter.println("Task #" + task.getTid());
-        DebugInfoFrame frame = createVirtualDebugInfoStackTrace(task);
+        DebugInfoFrame frame = createVirtualStackTrace(task);
         printStackTrace(printWriter,frame, 20, printParameters,printScopes,fullpath);
       }
       printWriter.flush();

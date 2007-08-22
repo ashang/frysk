@@ -1,3 +1,10 @@
+2007-08-22  Andrew Cagney  <cagney@redhat.com>
+
+	* CLI.java: Use DebugInfoStackFactory.createVirtualStackTrace.
+	* CoreCommand.java: Ditto.
+	* TestStackCommands.java (testFhpdVirtualStackTrace): Remove
+	unresolved 4947.
+
 2007-08-21  Andrew Cagney  <cagney@redhat.com>
 
 	* TestStackCommands.java (testFhpdVirtualStackTrace): Moved to

@@ -551,7 +551,7 @@ public class CLI
         {
           attached = task.getProc().getPid();
           DebugInfoFrame frame
-            = DebugInfoStackFactory.createDebugInfoStackTrace(task);
+            = DebugInfoStackFactory.createVirtualStackTrace(task);
           setTaskFrame(task, frame);
           setTaskDebugInfo(task, new DebugInfo(frame));
           synchronized (this.monitor)

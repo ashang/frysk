@@ -88,7 +88,7 @@ public class CoreCommand extends CLIHandler {
 
 	cli.targetset = new StaticPTSet(new ProcTasks[] { procTask });
 	DebugInfoFrame frame = DebugInfoStackFactory
-		.createDebugInfoStackTrace(task);
+		.createVirtualStackTrace(task);
 	cli.setTaskFrame(task, frame);
 	cli.setTaskDebugInfo(task, new DebugInfo(frame));
 	cli.addMessage("Attached to core file: " + params.get(0),

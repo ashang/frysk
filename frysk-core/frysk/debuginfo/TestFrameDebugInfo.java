@@ -151,7 +151,7 @@ public class TestFrameDebugInfo
     
   }
   
-  public void testVirtualDebugInfoStackTrace ()
+  public void testVirtualStackTrace ()
   {
     
     Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-inlined");
@@ -173,7 +173,7 @@ public class TestFrameDebugInfo
   
     Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-inlined");
     
-    DebugInfoFrame frame = DebugInfoStackFactory.createVirtualDebugInfoStackTrace(task);
+    DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
     Subprogram subprogram = null;
     
     while(frame.getOuterDebugInfoFrame() != null){

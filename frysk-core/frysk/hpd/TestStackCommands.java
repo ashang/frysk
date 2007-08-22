@@ -74,8 +74,6 @@ public class TestStackCommands
     }
 
     public void testFhpdVirtualStackTrace () {
-	if (unresolved(4947))
-	    return;
 	Proc proc = CoreFileAtSignal
 	    .constructCore(Config.getPkgLibFile("funit-inlined"));
         e = new Expect (new String[] {
