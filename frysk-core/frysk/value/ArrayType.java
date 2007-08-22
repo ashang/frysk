@@ -77,11 +77,10 @@ public class ArrayType
 	}
 	stride = new int[dimensions.size()];
 	stride[stride.length - 1] = 1;
-	for (int i = 1; i < dimensions.size(); i++) {
-	    int d = ((Integer) (dimensions.get(dimensions.size() - i))).intValue() + 1;
-	    stride[stride.length - i - 1] = d * stride[stride.length - i];
+	for (int i = stride.length - 2; i >= 0; i--) {
+	    stride[i] = dimension[i + 1] * stride[i + 1];
 	}
-	nrElements = (((Integer) (dimensions.get(0))).intValue() + 1) * stride[0]; 
+	nrElements = stride[0] * dimension[0];
     }
 
     public String toString() {
