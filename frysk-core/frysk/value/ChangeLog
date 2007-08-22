@@ -1,5 +1,8 @@
 2007-08-21  Andrew Cagney  <cagney@redhat.com>
 
+	* FunctionType.java (toString(Value,ByteBuffer): Delete.
+	(toPrint(PrintWriter,Location,ByteBuffer,Format): New.
+
 	* ClassType.java (toString(Value,ByteBuffer)): Delete.
 	(toPrint(PrintWriter,Location,ByteBuffer,Format)): New.
 	(baseClass, setBaseClass): Delete.

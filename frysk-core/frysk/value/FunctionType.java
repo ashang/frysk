@@ -43,6 +43,7 @@ import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.util.ArrayList;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 
 /**
  * Type for a function.
@@ -57,8 +58,12 @@ public class FunctionType
     ArrayList parmNames;	// Name of parameter
   
    
-    public String toString (Value v, ByteBuffer b) {
-	return "0x" + Long.toHexString(v.getLong());
+    void toPrint(PrintWriter writer, Location location,
+		 ByteBuffer memory, Format format) {
+	// XXX: Print the function's name?
+	writer.print("0x");
+	BigInteger v = new BigInteger(1, location.asByteArray(memory.order()));
+	writer.print(Long.toHexString(v.longValue()));
     }
   
     public void toPrint(PrintWriter writer) {
