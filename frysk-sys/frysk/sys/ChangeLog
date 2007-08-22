@@ -1,3 +1,8 @@
+2007-08-21  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Ptrace.cxx (op_as_string): New.
+	(request): Use.
+
 2007-08-17  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* cni/StatlessFile.cxx (pwrite): Use pwrite64.

@@ -65,14 +65,48 @@
 #include "frysk/sys/Errno$Esrch.h"
 #include "frysk/sys/cni/Errno.hxx"
 
+static const char*
+op_as_string (int op)
+{
+  switch (op)
+    {
+#define OP(NAME) case NAME: return #NAME
+      OP(PTRACE_ATTACH);
+      OP(PTRACE_DETACH);
+      OP(PTRACE_SINGLESTEP);
+      OP(PTRACE_CONT);
+      OP(PTRACE_SYSCALL);
+#if defined(__i386__)|| defined(__x86_64__)
+      OP(PTRACE_GETREGS);
+      OP(PTRACE_SETREGS);
+      OP(PTRACE_GETFPREGS);
+      OP(PTRACE_SETFPREGS);
+#endif
+#if defined(__i386__)
+      OP(PTRACE_GETFPXREGS);
+      OP(PTRACE_SETFPXREGS);
+#endif
+      OP(PTRACE_GETEVENTMSG);
+      OP(PTRACE_SETOPTIONS);
+      OP(PTRACE_PEEKDATA);
+      OP(PTRACE_POKEDATA);
+      OP(PTRACE_PEEKTEXT);
+      OP(PTRACE_POKETEXT);
+      OP(PTRACE_PEEKUSR);
+      OP(PTRACE_POKEUSR);
+    default: return "<unknown>";
+#undef OP
+    }
+}
+
 static long
 request (int op, int pid, void* addr, long data)
 {
   errno = 0;
   long result = ::ptrace ((enum __ptrace_request) op, pid, addr, data);
   if (errno != 0)
-    throwErrno (errno, "ptrace", "pt 0x%x, pid %d, addr 0x%lx, data 0x%lx",
-		op, pid, (long)addr, data);
+    throwErrno (errno, "ptrace", "op 0x%x (%s), pid %d, addr 0x%lx, data 0x%lx",
+		op, op_as_string(op), pid, (long)addr, data);
   return result;
 }
 
