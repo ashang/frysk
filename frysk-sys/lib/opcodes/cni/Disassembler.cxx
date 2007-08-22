@@ -195,7 +195,7 @@ jlong endAddress)
 void
 lib::opcodes::Disassembler::disassemble (jlong address, jlong instructions)
 {
-#ifdef HAVE_LIPOPCODES
+#ifdef WITH_LIBOPCODES
   disassemble_info disasm_info;
   int instr_length = 0;
   int (*disasm_func) (bfd_vma, disassemble_info*) = NULL;

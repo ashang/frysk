@@ -870,7 +870,7 @@ public class SourceBuffer extends TextBuffer {
 
 	this.firstLoad = false;
 
-	StringBuffer buffer = new StringBuffer();
+	StringBuilder buf = new StringBuilder();
 	Disassembler diss = new Disassembler(task.getMemory());
 
 	long address = frame.getAddress();
@@ -879,27 +879,23 @@ public class SourceBuffer extends TextBuffer {
 
 	List instructionsList = diss.disassembleInstructions(address, 40);
 	Iterator iter = instructionsList.iterator();
-	Instruction ins = (Instruction) iter.next();
 
 	while (iter.hasNext()) {
-	    StringBuffer buf = new StringBuffer();
-	    buf.append("<");
+	    Instruction ins = (Instruction) iter.next();
+	    buf.append('<');
 	    buf.append(frame.getSymbol().getDemangledName());
 	    buf.append(" pc");
-	    buf.append("+");
+	    buf.append('+');
 	    buf.append(ins.address - address);
 	    buf.append(">: ");
 	    buf.append("0x");
 	    buf.append(Long.toHexString(ins.address));
-	    buf.append(" ");
+	    buf.append(' ');
 	    buf.append(ins.instruction);
-	    buf.append("\n");
-
-	    buffer.append(buf.toString());
-	    ins = (Instruction) iter.next();
+	    buf.append('\n');
 	}
 
-	this.insertText(buffer.toString());
+	this.insertText(buf.toString());
     }
 
     /**
