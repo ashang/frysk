@@ -1,3 +1,60 @@
+2007-08-13  Roland McGrath  <roland@redhat.com>
+
+	* dwfl_module_addrsym.c: Add dead initializer for stupid compiler.
+
+2007-08-12  Roland McGrath  <roland@redhat.com>
+
+	* linux-kernel-modules.c (dwfl_linux_kernel_report_offline): Don't use
+	FTS_LOGICAL.
+
+	* elf-from-memory.c (elf_from_remote_memory): Don't reset LOADBASE on
+	a second phdr if it happens to match EHDR_VMA exactly.
+
+2007-08-08  Roland McGrath  <roland@redhat.com>
+
+	* dwfl_module_addrsym.c: Don't use STT_SECTION, STT_FILE symbols and
+	those with no names.  Rewrite best symbol algorithm not to assume a
+	sorted table and to be smarter handling sizeless symbols.
+
+2007-07-16  Roland McGrath  <roland@redhat.com>
+
+	* dwfl_module.c (dwfl_report_module): Increment DWFL->nmodules when
+	reviving an existing module.
+
+2007-06-08  Roland McGrath  <roland@redhat.com>
+
+	* libdwflP.h: Fix #ifndef for config.h to use PACKAGE_NAME.
+
+2007-05-17  Roland McGrath  <roland@redhat.com>
+
+	* linux-kernel-modules.c (dwfl_linux_kernel_report_offline): Look at
+	whole /lib/modules/VERSION tree, not just /lib/modules/VERSION/kernel.
+	(dwfl_linux_kernel_find_elf): Likewise.
+
+	* linux-kernel-modules.c (dwfl_linux_kernel_report_modules): Use
+	getline and sscanf instead of fscanf.
+
+2007-05-08  Roland McGrath  <roland@redhat.com>
+
+	* offline.c (dwfl_offline_section_address): Don't assume section
+	numbers match between stripped and debuginfo files.  Instead, assume
+	only that the ordering among SHF_ALLOC sections matches.
+
+	* linux-kernel-modules.c (report_kernel): Change RELEASE argument to
+	pointer to string.
+	(dwfl_linux_kernel_report_offline): Update caller.
+	(dwfl_linux_kernel_report_kernel): Likewise.
+
+2007-04-23  Roland McGrath  <roland@redhat.com>
+
+	* argp-std.c (options): Fix group title string.
+
+	* argp-std.c (parse_opt): Handle ARGP_KEY_ERROR, free the Dwfl.
+	Update via STATE->input every time we set STATE->hook, not only at
+	ARGP_KEY_SUCCESS.
+
+	* dwfl_module.c (free_file): Free FILE->name.
+
 2007-04-16  Roland McGrath  <roland@redhat.com>
 
 	* derelocate.c (cache_sections): Apply bias to sh_addr.

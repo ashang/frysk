@@ -134,7 +134,7 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
 
   /* Initialize the message catalog.  */
-  textdomain (PACKAGE);
+  textdomain (PACKAGE_TARNAME);
 
   /* Parse and process arguments.  */
   int remaining;
@@ -231,7 +231,7 @@ parse_opt (int key, char *arg __attribute__ ((unused)),
 static void
 print_version (FILE *stream, struct argp_state *state __attribute__ ((unused)))
 {
-  fprintf (stream, "elflint (%s) %s\n", PACKAGE_NAME, VERSION);
+  fprintf (stream, "elflint (%s) %s\n", PACKAGE_NAME, PACKAGE_VERSION);
   fprintf (stream, gettext ("\
 Copyright (C) %s Red Hat, Inc.\n\
 This is free software; see the source for copying conditions.  There is NO\n\
@@ -2509,6 +2509,9 @@ section [%2d] '%s' is contained in more than one section group\n"),
 static const char *
 section_flags_string (GElf_Word flags, char *buf, size_t len)
 {
+  if (flags == 0)
+    return "none";
+
   static const struct
   {
     GElf_Word flag;
@@ -3151,7 +3154,7 @@ static const struct
     { ".init_array", 12, SHT_INIT_ARRAY, exact, SHF_ALLOC | SHF_WRITE, 0 },
     { ".interp", 8, SHT_PROGBITS, atleast, 0, SHF_ALLOC }, // XXX more tests?
     { ".line", 6, SHT_PROGBITS, exact, 0, 0 },
-    { ".note", 6, SHT_NOTE, exact, 0, 0 },
+    { ".note", 6, SHT_NOTE, atleast, 0, SHF_ALLOC },
     { ".plt", 5, SHT_PROGBITS, unused, 0, 0 }, // XXX more tests
     { ".preinit_array", 15, SHT_PREINIT_ARRAY, exact, SHF_ALLOC | SHF_WRITE, 0 },
     { ".rela", 5, SHT_RELA, atleast, 0, SHF_ALLOC }, // XXX more tests
@@ -3456,7 +3459,9 @@ section [%2zu] '%s': merge flag set but entry size is zero\n"),
 		    || (phdr->p_type == PT_TLS
 			&& (shdr->sh_flags & SHF_TLS) != 0))
 		&& phdr->p_offset <= shdr->sh_offset
-		&& phdr->p_offset + phdr->p_memsz > shdr->sh_offset)
+		&& (phdr->p_offset + phdr->p_filesz > shdr->sh_offset
+		    || (phdr->p_offset + phdr->p_memsz > shdr->sh_offset
+			&& shdr->sh_type == SHT_NOBITS)))
 	      {
 		/* Found the segment.  */
 		if (phdr->p_offset + phdr->p_memsz
@@ -3741,16 +3746,28 @@ phdr[%d]: unknown core file note type %" PRIu64 " at offset %" PRIu64 "\n"),
 	    }
 	}
       else
-	{
-	  if (type != NT_VERSION)
+	switch (type)
+	  {
+	  case NT_GNU_ABI_TAG:	/* aka NT_VERSION */
+	  case NT_GNU_HWCAP:
+	  case NT_GNU_BUILD_ID:
+	    /* Known type.  */
+	    break;
+
+	  case 0:
+	    /* Linux vDSOs use a type 0 note for the kernel version word.  */
+	    if (namesz == sizeof "Linux"
+		&& !memcmp (notemem + idx + 3 * align, "Linux", sizeof "Linux"))
+	      break;
+
+	  default:
 	    ERROR (gettext ("\
 phdr[%d]: unknown object file note type %" PRIu64 " at offset %" PRIu64 "\n"),
 		   cnt, type, idx);
-	}
+	  }
 
       /* Move to the next entry.  */
       idx += 3 * align + ALIGNED_LEN (namesz) + ALIGNED_LEN (descsz);
-
     }
 
   gelf_freechunk (ebl->elf, notemem);

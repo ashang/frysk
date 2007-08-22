@@ -61,11 +61,12 @@ const char *argp_program_bug_address = PACKAGE_BUGREPORT;
 /* Definitions of arguments for argp functions.  */
 static const struct argp_option options[] =
 {
-  { NULL, 0, NULL, 0, N_("Output Selection:"), 0 },
+  { NULL, 0, NULL, 0, N_("Output selection options:"), 2 },
   { "basenames", 's', NULL, 0, N_("Show only base names of source files"), 0 },
   { "absolute", 'A', NULL, 0,
     N_("Show absolute file names using compilation directory"), 0 },
   { "functions", 'f', NULL, 0, N_("Also show function names"), 0 },
+  { "symbols", 'S', NULL, 0, N_("Also show symbol or section names"), 0 },
 
   { NULL, 0, NULL, 0, N_("Miscellaneous:"), 0 },
   /* Unsupported options.  */
@@ -107,6 +108,9 @@ static bool use_comp_dir;
 /* True if function names should be shown.  */
 static bool show_functions;
 
+/* True if ELF symbol or section info should be shown.  */
+static bool show_symbols;
+
 
 int
 main (int argc, char *argv[])
@@ -124,13 +128,14 @@ main (int argc, char *argv[])
   (void) setlocale (LC_ALL, "");
 
   /* Make sure the message catalog can be found.  */
-  (void) bindtextdomain (PACKAGE, LOCALEDIR);
+  (void) bindtextdomain (PACKAGE_TARNAME, LOCALEDIR);
 
   /* Initialize the message catalog.  */
-  (void) textdomain (PACKAGE);
+  (void) textdomain (PACKAGE_TARNAME);
 
   /* Parse and process arguments.  This includes opening the modules.  */
   argp_children[0].argp = dwfl_standard_argp ();
+  argp_children[0].group = 1;
   Dwfl *dwfl = NULL;
   (void) argp_parse (&argp, argc, argv, 0, &remaining, &dwfl);
   assert (dwfl != NULL);
@@ -181,7 +186,7 @@ main (int argc, char *argv[])
 static void
 print_version (FILE *stream, struct argp_state *state __attribute__ ((unused)))
 {
-  fprintf (stream, "addr2line (%s) %s\n", PACKAGE_NAME, VERSION);
+  fprintf (stream, "addr2line (%s) %s\n", PACKAGE_NAME, PACKAGE_VERSION);
   fprintf (stream, gettext ("\
 Copyright (C) %s Red Hat, Inc.\n\
 This is free software; see the source for copying conditions.  There is NO\n\
@@ -218,6 +223,10 @@ parse_opt (int key, char *arg __attribute__ ((unused)),
 
     case 'f':
       show_functions = true;
+      break;
+
+    case 'S':
+      show_symbols = true;
       break;
 
     default:
@@ -297,6 +306,29 @@ print_dwarf_function (Dwfl_Module *mod, Dwarf_Addr addr)
 }
 
 static void
+print_addrsym (Dwfl_Module *mod, GElf_Addr addr)
+{
+  GElf_Sym s;
+  GElf_Word shndx;
+  const char *name = dwfl_module_addrsym (mod, addr, &s, &shndx);
+  if (name == NULL)
+    {
+      /* No symbol name.  Get a section name instead.  */
+      int i = dwfl_module_relocate_address (mod, &addr);
+      if (i >= 0)
+	name = dwfl_module_relocation_info (mod, i, NULL);
+      if (name == NULL)
+	puts ("??");
+      else
+	printf ("(%s)+%#" PRIx64 "\n", name, addr);
+    }
+  else if (addr == s.st_value)
+    puts (name);
+  else
+    printf ("%s+%#" PRIx64 "\n", name, addr - s.st_value);
+}
+
+static void
 handle_address (GElf_Addr addr, Dwfl *dwfl)
 {
   Dwfl_Module *mod = dwfl_addrmodule (dwfl, addr);
@@ -305,9 +337,12 @@ handle_address (GElf_Addr addr, Dwfl *dwfl)
     {
       /* First determine the function name.  Use the DWARF information if
 	 possible.  */
-      if (! print_dwarf_function (mod, addr))
+      if (! print_dwarf_function (mod, addr) && !show_symbols)
 	puts (dwfl_module_addrname (mod, addr) ?: "??");
     }
+
+  if (show_symbols)
+    print_addrsym (mod, addr);
 
   Dwfl_Line *line = dwfl_module_getsrc (mod, addr);
 

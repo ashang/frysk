@@ -67,6 +67,7 @@ nofree (void *arg __attribute__ ((unused)))
 static void
 free_file (struct dwfl_file *file)
 {
+  free (file->name);
   if (file->elf != NULL)
     {
       elf_end (file->elf);
@@ -148,6 +149,7 @@ dwfl_report_module (Dwfl *dwfl, const char *name,
 	  m->next = *tailp;
 	  m->gc = false;
 	  *tailp = m;
+	  ++dwfl->nmodules;
 	  return m;
 	}
 

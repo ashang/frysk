@@ -70,7 +70,7 @@ const char *argp_program_bug_address = PACKAGE_BUGREPORT;
 static const struct argp_option options[] =
 {
   { NULL, 0, NULL, 0, N_("Output selection:"), 0 },
-  { NULL, 'o', "FILE", 0, N_("Place stripped output into FILE"), 0 },
+  { "output", 'o', "FILE", 0, N_("Place stripped output into FILE"), 0 },
   { NULL, 'f', "FILE", 0, N_("Extract the removed sections into FILE"), 0 },
   { NULL, 'F', "FILE", 0, N_("Embed name FILE instead of -f argument"), 0 },
 
@@ -118,7 +118,7 @@ static int handle_ar (int fd, Elf *elf, const char *prefix, const char *fname,
 
 #define INTERNAL_ERROR(fname) \
   error (EXIT_FAILURE, 0, gettext ("%s: INTERNAL ERROR %d (%s-%s): %s"),      \
-	 fname, __LINE__, VERSION, __DATE__, elf_errmsg (-1))
+	 fname, __LINE__, PACKAGE_VERSION, __DATE__, elf_errmsg (-1))
 
 
 /* Name of the output file.  */
@@ -161,10 +161,10 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
 
   /* Make sure the message catalog can be found.  */
-  bindtextdomain (PACKAGE, LOCALEDIR);
+  bindtextdomain (PACKAGE_TARNAME, LOCALEDIR);
 
   /* Initialize the message catalog.  */
-  textdomain (PACKAGE);
+  textdomain (PACKAGE_TARNAME);
 
   /* Parse and process arguments.  */
   if (argp_parse (&argp, argc, argv, 0, &remaining, NULL) != 0)
@@ -199,7 +199,7 @@ Only one input file allowed together with '-o' and '-f'"));
 static void
 print_version (FILE *stream, struct argp_state *state __attribute__ ((unused)))
 {
-  fprintf (stream, "strip (%s) %s\n", PACKAGE_NAME, VERSION);
+  fprintf (stream, "strip (%s) %s\n", PACKAGE_NAME, PACKAGE_VERSION);
   fprintf (stream, gettext ("\
 Copyright (C) %s Red Hat, Inc.\n\
 This is free software; see the source for copying conditions.  There is NO\n\
@@ -892,8 +892,9 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 		   elf_errmsg (-1));
 
 	  bool discard_section = (shdr_info[cnt].idx > 0
-				  && cnt != ehdr->e_shstrndx
-				  && shdr_info[cnt].debug_data == NULL);
+				  && shdr_info[cnt].debug_data == NULL
+				  && shdr_info[cnt].shdr.sh_type != SHT_NOTE
+				  && cnt != ehdr->e_shstrndx);
 
 	  /* Set the section header in the new file.  */
 	  GElf_Shdr debugshdr = shdr_info[cnt].shdr;
@@ -1316,6 +1317,24 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 	 symbol table.  */
       for (cnt = 1; cnt <= shdridx; ++cnt)
 	{
+	  /* Update section headers when the data size has changed.
+	     We also update the SHT_NOBITS section in the debug
+	     file so that the section headers match in sh_size.  */
+	  inline void update_section_size (const Elf_Data *newdata)
+	    {
+	      GElf_Shdr shdr_mem;
+	      GElf_Shdr *shdr = gelf_getshdr (scn, &shdr_mem);
+	      shdr->sh_size = newdata->d_size;
+	      (void) gelf_update_shdr (scn, shdr);
+	      if (debugelf != NULL)
+		{
+		  /* libelf will use d_size to set sh_size.  */
+		  Elf_Data *debugdata = elf_getdata (elf_getscn (debugelf,
+								 cnt), NULL);
+		  debugdata->d_size = newdata->d_size;
+		}
+	    }
+
 	  if (shdr_info[cnt].idx == 0 && debug_fname == NULL)
 	    /* Ignore sections which are discarded.  When we are saving a
 	       relocation section in a separate debug file, we must fix up
@@ -1433,12 +1452,9 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 		  Elf32_Word *chain = bucket + nbucket;
 
 		  /* New size of the section.  */
-		  GElf_Shdr shdr_mem;
-		  GElf_Shdr *shdr = gelf_getshdr (scn, &shdr_mem);
-		  shdr->sh_size = hashd->d_size
-		    = (2 + symd->d_size / elsize + nbucket)
-		      * sizeof (Elf32_Word);
-		  (void) gelf_update_shdr (scn, shdr);
+		  hashd->d_size = ((2 + symd->d_size / elsize + nbucket)
+				   * sizeof (Elf32_Word));
+		  update_section_size (hashd);
 
 		  /* Clear the arrays.  */
 		  memset (bucket, '\0',
@@ -1490,12 +1506,9 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 		  Elf64_Xword *chain = bucket + nbucket;
 
 		  /* New size of the section.  */
-		  GElf_Shdr shdr_mem;
-		  GElf_Shdr *shdr = gelf_getshdr (scn, &shdr_mem);
-		  shdr->sh_size = hashd->d_size
-		    = (2 + symd->d_size / elsize + nbucket)
-		      * sizeof (Elf64_Xword);
-		  (void) gelf_update_shdr (scn, shdr);
+		  hashd->d_size = ((2 + symd->d_size / elsize + nbucket)
+				   * sizeof (Elf64_Xword));
+		  update_section_size (hashd);
 
 		  /* Clear the arrays.  */
 		  memset (bucket, '\0',
@@ -1578,14 +1591,12 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 		  verstab[newsymidx[inner]] = verstab[inner];
 
 	      /* New size of the section.  */
-	      GElf_Shdr shdr_mem;
-	      GElf_Shdr *shdr = gelf_getshdr (scn, &shdr_mem);
-	      shdr->sh_size = verd->d_size
-		= gelf_fsize (newelf, verd->d_type,
-			      symd->d_size / gelf_fsize (elf, symd->d_type, 1,
-							 ehdr->e_version),
-			      ehdr->e_version);
-	      (void) gelf_update_shdr (scn, shdr);
+	      verd->d_size = gelf_fsize (newelf, verd->d_type,
+					 symd->d_size
+					 / gelf_fsize (elf, symd->d_type, 1,
+						       ehdr->e_version),
+					 ehdr->e_version);
+	      update_section_size (verd);
 	    }
 	  else if (shdr_info[cnt].shdr.sh_type == SHT_GROUP)
 	    {

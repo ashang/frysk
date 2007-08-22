@@ -1,9 +1,9 @@
 # -*- rpm-spec-*-
-Summary: A collection of utilities and DSOs to handle compiled objects.
+Summary: A collection of utilities and DSOs to handle compiled objects
 Name: elfutils
-Version: 0.126
+Version: 0.129
 Release: 1
-License: GPL
+License: GPLv2 with exceptions
 Group: Development/Tools
 Source: elfutils-%{version}.tar.gz
 Obsoletes: libelf libelf-devel
@@ -139,6 +139,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_bindir}/eu-strings
 %{_bindir}/eu-objdump
 %{_bindir}/eu-ar
+%{_bindir}/eu-unstrip
 #%{_bindir}/eu-ld
 #%{_libdir}/libasm-%{version}.so
 %{_libdir}/libdw-%{version}.so
@@ -179,6 +180,15 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_libdir}/libelf.a
 
 %changelog
+* Tue Aug 14 2007 Ulrich Drepper <drepper@redhat.com> 0.129-1
+- readelf: new options --hex-dump (or -x), --strings (or -p)
+- addr2line: new option --symbols (or -S)
+
+* Wed Apr 18 2007 Ulrich Drepper <drepper@redhat.com> 0.127-1
+- libdw: new function dwarf_getsrcdirs
+- libdwfl: new functions dwfl_module_addrsym, dwfl_report_begin_add,
+	 dwfl_module_address_section
+
 * Mon Feb  5 2007 Ulrich Drepper <drepper@redhat.com> 0.126-1
 - new program: ar
 
@@ -220,7 +230,7 @@ hes.
 - Bug fixes.
 - dwarf.h updated for DWARF 3.0 final specification.
 - libdwfl: New function dwfl_version.
-- The license is now GPL for most files.  The libelf, libebl, libdw,and 
+- The license is now GPL for most files.  The libelf, libebl, libdw,and
 libdwfl libraries have additional exceptions.  Add reference toOIN.
 
 * Thu Jan 12 2006 Roland McGrath <roland@redhat.com> 0.119-1
