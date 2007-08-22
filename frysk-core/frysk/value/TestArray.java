@@ -78,5 +78,19 @@ public class TestArray extends TestCase {
 	Value c1 = new Value(arrayType, "a2", new Location(buf));
 	String s = c1.toPrint();
 	assertEquals ("array2dim", "{{258,772,1286,1800},{2314,2828,3342,3856}}", s);
+	ArrayList components = new ArrayList();
+	components.add(new String("a2"));
+	components.add(new String("1"));
+	components.add(new String("1"));
+	components.add(new String("2"));
+	components.add(new String("2"));
+	Value c2 = arrayType.get (c1, 1, components);
+	s = c2.toPrint();
+	assertEquals ("1 element slice", "3342", s);
+	components.remove(4);
+	components.add(new String("3"));
+	Value c3 = arrayType.get (c1, 1, components);
+	s = c3.toPrint();
+	assertEquals ("2 element slice", "{3342,3856}", s);
     }
 }

@@ -53,7 +53,8 @@ public class ArrayType
     private final Type type;
     private final int[] dimension;
     // The number of TYPE sized units between successive elements of
-    // the array.
+    // each Nth index of the array.  e.g. stride[0] is the count to the
+    // beginning of the next row and stride[1] is the count to the next column.
     private final int stride[];
     // Total number of TYPE elements.
     private int nrElements;
@@ -76,10 +77,11 @@ public class ArrayType
 	}
 	stride = new int[dimensions.size()];
 	stride[stride.length - 1] = 1;
-	for (int i = stride.length - 2; i >= 0; i--) {
-	    stride[i] = dimension[i + 1] * stride[i + 1];
+	for (int i = 1; i < dimensions.size(); i++) {
+	    int d = ((Integer) (dimensions.get(dimensions.size() - i))).intValue() + 1;
+	    stride[stride.length - i - 1] = d * stride[stride.length - i];
 	}
-	nrElements = stride[0] * dimension[0];
+	nrElements = (((Integer) (dimensions.get(0))).intValue() + 1) * stride[0]; 
     }
 
     public String toString() {
@@ -137,7 +139,7 @@ public class ArrayType
     
     /**
      * FIXME: What exactly does this do?  Why not pass in the indexes
-     * and then separatly the repeat count of that last element.
+     * and then separately the repeat count of that last element.
      */
     public Value get (Value v, int componentsIdx, ArrayList components) {
 	if (componentsIdx >= components.size())	// want the entire array?
@@ -158,12 +160,14 @@ public class ArrayType
 		ArrayType arrayType = new ArrayType(type, count * type.size,
 						    dims);
 		return new Value(arrayType, v.getTextFIXME(),
-				 v.getLocation().slice(offset, count));
+				 v.getLocation().slice(offset * type.getSize(), 
+					 count * type.getSize()));
 	    }
 	    componentsIdx += 2;
 	    d++;
 	}
-	return new Value(type, v.getLocation().slice(offset, 1));
+	return new Value(type, v.getLocation().slice(offset * type.getSize(), 
+		type.getSize()));
     }
     
     void toPrint(PrintWriter writer, Location location,

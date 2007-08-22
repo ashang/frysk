@@ -1,3 +1,9 @@
+2007-08-22  Stan Cox  <scox@redhat.com>
+
+	* ArrayType.java (ArrayType): Adjust stride calculation.
+	(get): Consider type size when slicing.
+	* TestArray.java (testArrayOfArrayOfNumber): Test slicing.
+
 2007-08-21  Andrew Cagney  <cagney@redhat.com>
 
 	* FunctionType.java (toString(Value,ByteBuffer): Delete.
