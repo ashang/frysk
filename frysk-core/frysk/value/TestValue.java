@@ -109,7 +109,6 @@ public class TestValue
   }
   
   public void testIntOps ()
-    throws InvalidOperatorException
   {
     Value v1 = ArithmeticType.newIntegerValue((ArithmeticType)intType, 4);
     Value v2 = ArithmeticType.newShortValue((ArithmeticType)shortType, (short)9);
@@ -174,7 +173,6 @@ public class TestValue
   }
 
   public void testFloatOps ()
-    throws InvalidOperatorException
   {
     Value v1 = ArithmeticType.newFloatValue((ArithmeticType)floatType, (float)4.0);
     Value v2 = ArithmeticType.newDoubleValue((ArithmeticType)doubleType, 9.0);

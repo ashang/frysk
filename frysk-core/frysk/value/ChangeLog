@@ -1,5 +1,25 @@
+2007-08-22  Andrew Cagney  <cagney@redhat.com>
+
+	* Type.java: Remove throws clause.
+	* ClassType.java: Ditto.
+	* FunctionType.java: Ditto.
+	* ArithmeticType.java: Ditto.
+	* ArrayType.java: Ditto.
+	* PointerType.java: Ditto.
+	* TestValue.java: Ditto.
+	* UnknownType.java: Ditto.
+	* VoidType.java: Ditto.
+	* InvalidOperatorException.java: Extend RuntimeException.
+	(InvalidOperatorException()): Delete.
+	(InvalidOperatorException(String)): Pass string to super.
+	(toString): Delete.
+	* OperationNotDefinedException.java: Ditto.
+
 2007-08-22  Stan Cox  <scox@redhat.com>
 
+	* ArrayType.java (ArrayType): Revert adjustment to stride
+	caculation change.
+	
 	* ArrayType.java (ArrayType): Adjust stride calculation.
 	(get): Consider type size when slicing.
 	* TestArray.java (testArrayOfArrayOfNumber): Test slicing.

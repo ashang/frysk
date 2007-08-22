@@ -126,7 +126,6 @@ public class EnumType extends IntegerType
     }
 
     public boolean getLogicalValue (Value var1)
-	throws InvalidOperatorException
     {
 	throw (new InvalidOperatorException());
     }

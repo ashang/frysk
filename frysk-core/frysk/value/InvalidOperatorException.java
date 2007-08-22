@@ -1,7 +1,6 @@
-
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,17 +38,19 @@
 // exception.
 
 /**
- * Exception thrown when some operation is performed for an invalid type. 
+ * Exception thrown when some operation is performed for an invalid
+ * type.
  */
 
 package frysk.value;
-  public class InvalidOperatorException extends Exception
-  {
+
+public class InvalidOperatorException extends RuntimeException {
     static final long serialVersionUID = 1;
-    String sExceptionString;
-
-    public InvalidOperatorException() { sExceptionString = ""; }
-    public InvalidOperatorException(String str) { sExceptionString = str; }
-
-    public String toString() { return sExceptionString; }
-  }
+    /**
+     * FIXME: Don't use, should always pass in the operator.
+     */
+    public InvalidOperatorException() { }
+    public InvalidOperatorException(String reason) {
+	super(reason);
+    }
+}

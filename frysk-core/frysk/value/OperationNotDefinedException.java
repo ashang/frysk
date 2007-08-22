@@ -1,7 +1,6 @@
-
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,17 +38,17 @@
 // exception.
 
 /**
- * Exception thrown when some operation is not defined for a type. 
- * This happens when some operator opr is applied to objects of some type T but opr is not defined on T.
+ * Exception thrown when some operation is not defined for a type.
+ * This happens when some operator opr is applied to objects of some
+ * type T but opr is not defined on T.
  */
 
 package frysk.value;
-  public class OperationNotDefinedException extends Exception
-  {
+
+public class OperationNotDefinedException extends RuntimeException
+{
     static final long serialVersionUID = 1;
-    String sExceptionString;
-
-    public OperationNotDefinedException(String str) { sExceptionString = str; }
-
-    public String toString() { return sExceptionString; }
-  }
+    public OperationNotDefinedException(String reason) {
+	super(reason);
+    }
+}

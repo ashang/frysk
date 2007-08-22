@@ -141,7 +141,7 @@ public abstract class ArithmeticType
     return null;
   }
 
-  public Value shiftLeft(Value var1, Value var2) throws InvalidOperatorException 
+  public Value shiftLeft(Value var1, Value var2)
   {
     Type type;
     if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
@@ -158,7 +158,7 @@ public abstract class ArithmeticType
     return null;
   } 
 
-  public Value shiftRight(Value var1, Value var2) throws InvalidOperatorException 
+  public Value shiftRight(Value var1, Value var2)
   {
     Type type;
     if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
@@ -271,7 +271,7 @@ public abstract class ArithmeticType
     return null;
   }
   
-  public Value bitWiseAnd(Value var1, Value var2) throws InvalidOperatorException 
+  public Value bitWiseAnd(Value var1, Value var2)
   {
     Type type;
     if (var1.getType().typeId < var2.getType().typeId)
@@ -288,7 +288,7 @@ public abstract class ArithmeticType
     return null;
   }
 
-  public Value bitWiseOr(Value var1, Value var2) throws InvalidOperatorException 
+  public Value bitWiseOr(Value var1, Value var2)
   {
     Type type;
     if (var1.getType().typeId < var2.getType().typeId)
@@ -305,7 +305,7 @@ public abstract class ArithmeticType
     return null;
   }
   
-  public Value bitWiseXor(Value var1, Value var2) throws InvalidOperatorException 
+  public Value bitWiseXor(Value var1, Value var2)
   {
     Type type;
     if (var1.getType().typeId < var2.getType().typeId)
@@ -322,7 +322,7 @@ public abstract class ArithmeticType
     return null;
   }
 
-  public Value bitWiseComplement(Value var1) throws InvalidOperatorException 
+  public Value bitWiseComplement(Value var1)
   {
     Type type = var1.getType();
     
@@ -335,7 +335,7 @@ public abstract class ArithmeticType
     return null;
   }
 
-  public Value logicalAnd(Value var1, Value var2) throws InvalidOperatorException 
+  public Value logicalAnd(Value var1, Value var2)
   {
     Type type;
     if (var1.getType().typeId < var2.getType().typeId)
@@ -353,7 +353,7 @@ public abstract class ArithmeticType
     return null;
   }
   
-  public Value logicalOr(Value var1, Value var2) throws InvalidOperatorException 
+  public Value logicalOr(Value var1, Value var2)
   {
     Type type;
     if (var1.getType().typeId < var2.getType().typeId)
@@ -371,7 +371,7 @@ public abstract class ArithmeticType
     return null;
   }
 
-  public Value logicalNegation(Value var1) throws InvalidOperatorException 
+  public Value logicalNegation(Value var1)
   {
     Type type = var1.getType();
     if (type instanceof IntegerType)
@@ -413,27 +413,27 @@ public abstract class ArithmeticType
     return doAssignment(var1, mod(var1, var2));
   }
 
-  public Value shiftLeftEqual(Value var1, Value var2) throws InvalidOperatorException 
+  public Value shiftLeftEqual(Value var1, Value var2)
   {
     return doAssignment(var1, shiftLeft(var1, var2));
   } 
 
-  public Value shiftRightEqual(Value var1, Value var2) throws InvalidOperatorException 
+  public Value shiftRightEqual(Value var1, Value var2)
   {
     return doAssignment(var1, shiftRight(var1, var2));
   } 
 
-  public Value bitWiseOrEqual(Value var1, Value var2) throws InvalidOperatorException
+  public Value bitWiseOrEqual(Value var1, Value var2)
   {
     return doAssignment(var1, bitWiseOr(var1, var2));
   }
 
-  public Value bitWiseXorEqual(Value var1, Value var2) throws InvalidOperatorException
+  public Value bitWiseXorEqual(Value var1, Value var2)
   {
     return doAssignment(var1, bitWiseXor(var1, var2));
   }
 
-  public Value bitWiseAndEqual(Value var1, Value var2) throws InvalidOperatorException
+  public Value bitWiseAndEqual(Value var1, Value var2)
   {
     return doAssignment(var1, bitWiseAnd(var1, var2));
   }
@@ -463,9 +463,7 @@ public abstract class ArithmeticType
     return v1;
   }
 
-  public boolean getLogicalValue (Value var1)
-  throws InvalidOperatorException
-  {
+  public boolean getLogicalValue (Value var1) {
     if (var1.getType() instanceof FloatingPointType)
       throw (new InvalidOperatorException());
 

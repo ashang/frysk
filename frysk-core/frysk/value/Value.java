@@ -352,5 +352,4 @@ public class Value
 			Format format) {
 	type.toPrint(writer, location, memory, format);
     }
-
 }
