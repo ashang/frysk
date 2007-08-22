@@ -1,3 +1,8 @@
+2007-08-21  Andrew Cagney  <cagney@redhat.com>
+
+	* TestStackCommands.java (testFhpdVirtualStackTrace): Moved to
+	here from frysk.bindir.TestFhd.  Disable for now.  Bug 4947.
+
 2007-08-21  Stan Cox  <scox@redhat.com>
 
 	* PrintCommand.java (handle): Don't addMessage for NameNotFoundException.

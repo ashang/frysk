@@ -1,3 +1,8 @@
+2007-08-21  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFhd.java (testFhpdVirtualStackTrace): Move to
+	frysk.hpd.TestStackCommands.
+
 2007-08-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFhd.java (testFhpdVirtualStackTrace): New test.

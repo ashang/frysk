@@ -1,3 +1,7 @@
+2007-08-21  Andrew Cagney  <cagney@redhat.com>
+
+	* CoreFileAtSignal.java (constructCore(File)): New.
+
 2007-08-15  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestLib.java (assertStatState): New static method.

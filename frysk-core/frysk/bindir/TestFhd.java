@@ -41,13 +41,13 @@ package frysk.bindir;
 
 import frysk.Config;
 import frysk.expunit.Expect;
-import frysk.proc.Proc;
-import frysk.testbed.CoreFileAtSignal;
 import frysk.testbed.TestLib;
 
 /**
  * This performs a "sniff" test of Fstack, confirming basic
- * functionality.
+ * functionality of the command line interface.
+ *
+ * For more specific tests see frysk.hpd.
  */
 
 public class TestFhd
@@ -94,21 +94,4 @@ public class TestFhd
 	e.close();
     }
     
-    public void testFhpdVirtualStackTrace () {
-	Proc proc = CoreFileAtSignal.constructCore(getExecPath("funit-inlined"));
-        e = new Expect (new String[] {
-			    Config.getBinFile("fhpd").getAbsolutePath (),
-			    "core." + proc.getPid()
-			});
-        e.expect(5, "Attached to core file.*");
-        
-        e.send("where\n");
-        
-        e.expect ("third" +
-        	".*second" +
-        	".*first" +
-        ".*main");
-        e.close();
-  }
-
 }

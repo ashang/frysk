@@ -40,7 +40,6 @@
 package frysk.testbed;
 
 import java.io.File;
-
 import frysk.debuginfo.StoppedTestTaskFactory;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
@@ -54,6 +53,10 @@ import frysk.util.CoredumpAction;
 
 public class CoreFileAtSignal extends TestLib {
     
+    public static Proc constructCore(File file) {
+	return constructCore(file.getAbsolutePath());
+    }
+
     /**
      * Given a path to an executable it will run it until it sigfaults then
      * extracts a corefile at that point, and return a Proc representing

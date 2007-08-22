@@ -1,5 +1,8 @@
 2007-08-21  Andrew Cagney  <cagney@redhat.com>
 
+	* DebugInfoStackFactory.java: Revert enabling of virtual stack
+	backtraces by default for now.  Bug 4947.
+
 	* DebugInfoEvaluator.java: Update to use
 	ClassType.addMember(String,Type,long,int) and
 	ClassType.addMember(String,Type,long,int,int,int); remove bit

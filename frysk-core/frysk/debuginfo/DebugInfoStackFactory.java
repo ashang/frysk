@@ -51,17 +51,12 @@ public class DebugInfoStackFactory {
 
     public static DebugInfoFrame createDebugInfoStackTrace (Task task)
     {
-	return createVirtualDebugInfoStackTrace (task);
-    }
-
-    public static DebugInfoFrame createNonVirtualDebugInfoStackTrace (Task task)
-    {
 	return new DebugInfoFrame(StackFactory.createFrame(task));
     }
 
     public static DebugInfoFrame createVirtualDebugInfoStackTrace (Task task)
     {
-	DebugInfoFrame frame = createNonVirtualDebugInfoStackTrace (task);
+	DebugInfoFrame frame = createDebugInfoStackTrace (task);
 	DebugInfoFrame tempFrame = null;
 	DebugInfoFrame virtualFrame = null;
 	

@@ -41,6 +41,8 @@ package frysk.hpd;
 
 import frysk.expunit.Expect;
 import frysk.Config;
+import frysk.proc.Proc;
+import frysk.testbed.CoreFileAtSignal;
 
 public class TestStackCommands
     extends TestLib
@@ -69,5 +71,25 @@ public class TestStackCommands
 	e.send ("up\n");
 	e.expect ("up.*#0.*" + prompt);
 	e.close();
+    }
+
+    public void testFhpdVirtualStackTrace () {
+	if (unresolved(4947))
+	    return;
+	Proc proc = CoreFileAtSignal
+	    .constructCore(Config.getPkgLibFile("funit-inlined"));
+        e = new Expect (new String[] {
+			    Config.getBinFile("fhpd").getAbsolutePath (),
+			    "core." + proc.getPid()
+			});
+        e.expect(5, "Attached to core file.*");
+        
+        e.send("where\n");
+        
+        e.expect ("third" +
+		  ".*second" +
+		  ".*first" +
+		  ".*main");
+        e.close();
     }
 }
