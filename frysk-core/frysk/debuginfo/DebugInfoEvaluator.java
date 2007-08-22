@@ -562,7 +562,7 @@ class DebugInfoEvaluator
       	if (member.getTag() == DwTagEncodings.DW_TAG_subprogram_)
       	{
       	    Value v = getSubprogramValue(member);
-      	    classType.addMember(v.getType(), member.getName(), offset, 0, access);
+      	    classType.addMember(member.getName(), v.getType(), offset, access);
       	    continue;
       	}
 
@@ -574,41 +574,48 @@ class DebugInfoEvaluator
         {
         case BaseTypes.baseTypeByte:
         case BaseTypes.baseTypeUnsignedByte:
-          classType.addMember(fetchType(haveTypeDef, byteType, dieType.getName()),
-                              member.getName(), offset, 0, access);
+          classType.addMember(member.getName(),
+			      fetchType(haveTypeDef, byteType,
+					dieType.getName()),
+                              offset, access);
           continue;
         case BaseTypes.baseTypeShort:
         case BaseTypes.baseTypeUnsignedShort:
-          classType.addMember(fetchType(haveTypeDef, shortType, dieType.getName()),
-                              member.getName(), offset, 0, access);
+          classType.addMember(member.getName(),
+			      fetchType(haveTypeDef, shortType,
+					dieType.getName()),
+                              offset, access);
           continue;
         case BaseTypes.baseTypeInteger:
         case BaseTypes.baseTypeUnsignedInteger:
-          type = fetchType(haveTypeDef, intType, dieType.getName());
-          // System V ABI Supplements discuss bit field layout
-          int bitSize = member.getAttrConstant(DwAtEncodings.DW_AT_bit_size_);
-          int bitOffset = 0;
-          int byteSize = 0;
-          int mask = 0;
-          if (bitSize != -1) {
-	      byteSize = getByteSize(member);
-              bitOffset = member.getAttrConstant(DwAtEncodings.DW_AT_bit_offset_);
-              mask = (0xffffffff >>> (byteSize * 8 - bitSize) << (4 * 8 - bitOffset - bitSize));
-            }
-          classType.addMember(type, member.getName(), offset, mask, access);
-          continue;
+	    type = fetchType(haveTypeDef, intType, dieType.getName());
+	    // System V ABI Supplements discuss bit field layout
+	    int bitSize = member.getAttrConstant(DwAtEncodings.DW_AT_bit_size_);
+	    int bitOffset = 0;
+	    if (bitSize != -1) {
+		bitOffset = member.getAttrConstant(DwAtEncodings.DW_AT_bit_offset_);
+	    }
+	    classType.addMember(member.getName(), type, offset, access,
+				bitOffset, bitSize);
+	    continue;
         case BaseTypes.baseTypeLong:
         case BaseTypes.baseTypeUnsignedLong:
-          classType.addMember(fetchType(haveTypeDef, longType, dieType.getName()),
-                              member.getName(), offset, 0, access);
+          classType.addMember(member.getName(),
+			      fetchType(haveTypeDef, longType,
+					dieType.getName()),
+                              offset, access);
           continue;
         case BaseTypes.baseTypeFloat:
-          classType.addMember(fetchType(haveTypeDef, floatType, dieType.getName()),
-                              member.getName(), offset, 0, access);
+          classType.addMember(member.getName(),
+			      fetchType(haveTypeDef, floatType,
+					dieType.getName()),
+                              offset, access);
           continue;
         case BaseTypes.baseTypeDouble:
-          classType.addMember(fetchType(haveTypeDef, doubleType, dieType.getName()),
-                              member.getName(), offset, 0, access);
+          classType.addMember(member.getName(),
+			      fetchType(haveTypeDef, doubleType,
+					dieType.getName()),
+                              offset, access);
           continue;
          }
 
@@ -624,7 +631,8 @@ class DebugInfoEvaluator
               memberClassType.setInheritance(true);
           typeSize += memberClassType.getSize();
           typeSize += 4 - (typeSize % 4);             // round up to mod 4
-          classType.addMember(memberClassType, memberType.getName(), offset, 0, access);
+          classType.addMember(memberType.getName(), memberClassType,
+			      offset, access);
           continue;
 	}
         
@@ -632,7 +640,8 @@ class DebugInfoEvaluator
         {
           ArrayType memberArrayType = getArrayType(memberType, memberType.getChild());
           typeSize += memberArrayType.getSize();
-          classType.addMember(memberArrayType, member.getName(), offset, 0, access);
+          classType.addMember(member.getName(), memberArrayType, offset,
+			      access);
           continue;
         }
         
@@ -643,12 +652,15 @@ class DebugInfoEvaluator
             
 	    memberPtrType = new PointerType(byteorder, getByteSize(memberType),
 					    getPointerTarget(memberType), "*");
-            classType.addMember(memberPtrType, member.getName(), offset, 0, access);
+            classType.addMember(member.getName(), memberPtrType, offset,
+				access);
             typeSize += memberPtrType.getSize();
             continue;
         }
 	}
-	classType.addMember((Type)(new UnknownType(member.getName())), member.getName(), offset, 0, access);
+	classType.addMember(member.getName(),
+			    new UnknownType(member.getName()),
+			    offset, access);
       }
 
     typeSize += 4 - (typeSize % 4);             // round up to mod 4

@@ -1,3 +1,10 @@
+2007-08-21  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfoEvaluator.java: Update to use
+	ClassType.addMember(String,Type,long,int) and
+	ClassType.addMember(String,Type,long,int,int,int); remove bit
+	field code now handled by ClassType.
+
 2007-08-21  Stan Cox  <scox@redhat.com>
 
 	* DebugInfoEvaluator.java (getType): Renamed from getValue.  

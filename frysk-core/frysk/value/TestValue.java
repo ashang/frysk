@@ -40,7 +40,6 @@
 package frysk.value;
 
 import lib.dwfl.BaseTypes;
-import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
 import frysk.junit.TestCase;
 
@@ -211,34 +210,5 @@ public class TestValue
     assertEquals ("v3 /= 4", 4, v3.getDouble(), 0);
     v3 = v1.getType().modEqual(v3, v1);
     assertEquals ("v3 %= 4", 0, v3.getDouble(), 0);
-  }
-
-  /**
-   * struct {int; int; short; int:8; int:8;}
-   */
-  public void testStructure ()
-  {
-    // Also separate tests for 0 dimensioned arrays et.al.
-    ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
-    ClassType classType = new ClassType(byteOrder, null);
-    classType.addMember(intType, "alpha", 0, 0, 0);
-    classType.addMember(intType, "beta", 4, 0, 0);
-    classType.addMember(shortType, "gamma", 8, 0, 0);
-    classType.addMember(intType, "iota", 8, 0x0000ff00, 0);
-    classType.addMember(intType, "epsilon", 8, 0x000000ff, 0);
-    int [] intbuf = {0x1020304, 0x5060708, 0x9101112};
-    byte [] buf = new byte [intbuf.length * 4];
-    for (int i = 0; i < intbuf.length; i++)
-      {
-	buf[i*4] = (byte)((intbuf[i] & 0xff000000) >>> 24);
-	buf[i*4+1] = (byte)((intbuf[i] & 0x00ff0000) >>> 16);
-	buf[i*4+2] = (byte)((intbuf[i] & 0x0000ff00) >>> 8);
-	buf[i*4+3] = (byte)(intbuf[i] & 0x000000ff);
-      }
-    ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, buf.length);
-    abb.order(byteOrder);
-    Value c1 = new Value(classType, "c1", abb);
-    String s = c1.toPrint();
-    assertEquals ("class", "{alpha=16909060,\n beta=84281096,\n gamma=2320,\n iota=17,\n epsilon=18,\n}", s);
   }
 }

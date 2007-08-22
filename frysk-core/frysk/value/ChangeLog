@@ -1,3 +1,17 @@
+2007-08-21  Andrew Cagney  <cagney@redhat.com>
+
+	* ClassType.java (toString(Value,ByteBuffer)): Delete.
+	(toPrint(PrintWriter,Location,ByteBuffer,Format)): New.
+	(baseClass, setBaseClass): Delete.
+	(membersFIXME): New.
+	(nameToMember): New.
+	(bitValueFIXME): New.
+	(getValue(Value,Member)): Replace getValue(Value,int); use
+	bitValueFIXME.
+	(toPrint(PrintWriter)): Use Member and valueToMember.
+	* TestValue.java (testStructure): Delete; moved to TestClass.java.
+	* TestClass.java: New.
+
 2007-08-20  Stan Cox  <scox@redhat.com>
 
 	* UnknownType.java: New file.

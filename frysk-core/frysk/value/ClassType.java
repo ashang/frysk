@@ -42,6 +42,9 @@ package frysk.value;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
 import lib.dwfl.BaseTypes;
 import java.io.PrintWriter;
 
@@ -51,20 +54,106 @@ import java.io.PrintWriter;
 public class ClassType
     extends Type
 {
-    ArrayList types;	// Type of member
+    /**
+     * Class members.
+     */
+    private static class Member {
+	// XXX: To keep getValue working.
+	final int index;
+	final String name;
+	final Type type;
+	final long offset;
+	final int access;
+	final int bitOffset;
+	final int bitSize;
+	Member(int index, String name, Type type, long offset,
+	       int access, int bitOffset, int bitSize) {
+	    this.index = index;
+	    this.type = type;
+	    this.name = name;
+	    this.offset = offset;
+	    this.access = access;
+	    this.bitOffset = bitOffset;
+	    this.bitSize = bitSize;
+	}
+	int maskFIXME() {
+	    // System V ABI Supplements discuss bit field layout
+	    if (bitSize < 0)
+		return 0;
+	    else {
+		return (0xffffffff
+			>>> (type.getSize() * 8 - bitSize)
+			<< (4 * 8 - bitOffset - bitSize));
+	    }
+	}
+	public String toString() {
+	    return ("{"
+		    + "index=" + index
+		    + ",name=" + name
+		    + ",type=" + type
+		    + ",offset=" + offset
+		    + ",access=" + access
+		    + ",bitOffset=" + bitOffset
+		    + ",bitSize=" + bitSize
+		    + ",mask()=" + Integer.toHexString(maskFIXME())
+		    + "}");
+	}
+    }
+    /**
+     * A mapping from NAME to Member; only useful for named members.
+     */
+    private final Map nameToMember = new HashMap();
+    /**
+     * A list of all members, in insertion order.
+     */
+    private final ArrayList members = new ArrayList();
 
-    ArrayList names;	// String
+    // DW_AT_inheritance
+    private boolean inheritance;
   
-    ArrayList offsets;	// Long offset into class
-  
-    ArrayList masks;	// Integer mask for bitfields
-  
-    ArrayList baseClass;
-  
-    ArrayList accessibility;	// DW_AT_accessibility
+    /**
+     * Create an ClassType
+     * 
+     * @param endian - Endianness of class
+     * @param name TODO
+     */
+    public ClassType (ByteOrder endian, String name) {
+	super(0, endian, 0, name);
+	inheritance = false;
+    }
 
-    boolean inheritance;	// DW_AT_inheritance
-  
+    /**
+     * Dump the contents of this object.
+     */
+    public String toString() {
+	StringBuffer buf = new StringBuffer();
+	buf.append("{");
+	buf.append(super.toString());
+	buf.append(",inheritance=" + inheritance);
+	buf.append(",members={");
+	for (Iterator i = members.iterator(); i.hasNext(); ) {
+	    buf.append(i.next().toString());
+	}
+	buf.append("}}");
+	return buf.toString();
+    }
+
+    /**
+     * Add NAME as a member of the class.
+     */
+    public ClassType addMember(String name, Type type, long offset,
+			       int access) {
+	return addMember(name, type, offset, access, -1, -1);
+    }
+    public ClassType addMember(String name, Type type, long offset,
+			       int access, int bitOffset, int bitLength) {
+	Member member = new Member(members.size(), name, type, offset,
+				   access, bitOffset, bitLength);
+	nameToMember.put(name, member);
+	members.add(member);
+	return this;
+    }
+
     /**
      * Iterate through the class types.
      */
@@ -82,13 +171,13 @@ public class ClassType
 
 	public boolean hasNext () {
 	    idx += 1;
-	    if (idx < types.size())
+	    if (idx < members.size())
 		return true;
 	    return false;
 	}
 
 	public String nextName () {
-	    return (String) names.get(idx);
+	    return ((Member)members.get(idx)).name;
 	}
 
 	public Object next () {
@@ -98,30 +187,22 @@ public class ClassType
 	public void remove () {
 	}
     }
-
     private Value getValue (Value v, int idx)
     {
-	Type type = ((Type) (types.get(idx)));
-	int off = ((Long)offsets.get(idx)).intValue();
+	Member member = (Member)(members.get(idx));
+	Type type = member.type;
+	int off = (int)member.offset;
 
-	switch (((Type)types.get(idx)).typeId) {
+	switch (type.getTypeIdFIXME()) {
 	case BaseTypes.baseTypeByte:
 	    return ArithmeticType.newByteValue((ArithmeticType)type, v.getByte(off));
 	case BaseTypes.baseTypeShort:
 	    return ArithmeticType.newShortValue((ArithmeticType)type, v.getShort(off));
 	case BaseTypes.baseTypeInteger:
+	    int mask = member.maskFIXME();
+	    if (mask != 0)
+		return bitValueFIXME(v.getLocation(), member);
 	    int val = v.getInt(off);
-	    int mask = ((Integer)masks.get(idx)).intValue();
-	    if (mask != 0) {
-		int shift = 0;
-		int tmpMask = mask;
-		// ??? substitute numberOfTrailingZeros() for 1.5
-		while ((tmpMask & 0x1) == 0) {
-		    shift += 1;
-		    tmpMask = tmpMask >>> 1;
-		}
-		val = (val & mask) >>> shift;
-	    }
 	    return ArithmeticType.newIntegerValue((ArithmeticType)type, val);
 	case BaseTypes.baseTypeLong:
 	    return ArithmeticType.newLongValue((ArithmeticType)type, v.getLong(off));
@@ -155,36 +236,67 @@ public class ClassType
     public Value get (Value v, int componentsIdx, ArrayList components) {
 	while (componentsIdx < components.size()) {
 	    String component = (String)components.get(componentsIdx);
-	    for (int i = 0; i < names.size(); i++) {
-		if (((String)names.get(i)).equals(component)) {
-		    v = getValue (v, i);
-		    if (v.getType() instanceof ClassType)
-			return ((ClassType)v.getType()).get(v, componentsIdx, components);
-		    else if (v.getType() instanceof ArrayType)
-			v = ((ArrayType)v.getType()).get(v, ++componentsIdx, components);
-		}
+	    Member member = (Member)nameToMember.get(component);
+	    if (member != null) {
+		// XXX: What about the null case?  Just iterates :-/
+		v = getValue (v, member.index);
+		if (v.getType() instanceof ClassType)
+		    return ((ClassType)v.getType()).get(v, componentsIdx, components);
+		else if (v.getType() instanceof ArrayType)
+		    v = ((ArrayType)v.getType()).get(v, ++componentsIdx, components);
 	    }
 	    componentsIdx += 1;
 	}
 	return v;
     }
     
-    public String toString (Value v, ByteBuffer b) {
-	StringBuffer strBuf = new StringBuffer();
-	ClassIterator e = iterator(v);
-	strBuf.append("{");
-	while (e.hasNext()) {
-	    Value val = (Value)e.next();
-	    if (val.getType() instanceof frysk.value.FunctionType == true)
+    /**
+     * This bit manipulation should be pushed into Location.
+     */
+    private Value bitValueFIXME(Location location, Member member) {
+	int val = location.getInt(member.type.getEndian(), (int)member.offset);
+	int mask = member.maskFIXME();
+	int shift = 0;
+	for (int tmpMask = mask;
+	     (tmpMask & 0x1) == 0;
+	     tmpMask = tmpMask>>>1) {
+	    shift += 1;
+	}
+	int res = (val & mask) >>> shift;
+	return ArithmeticType.newIntegerValue((ArithmeticType)member.type,
+					      res);
+    }
+
+    void toPrint(PrintWriter writer, Location location, ByteBuffer memory,
+		 Format format) {
+	writer.print("{");
+	boolean first = true;
+	for (Iterator i = members.iterator(); i.hasNext();) {
+	    Member member = (Member)i.next();
+	    if (member.type instanceof frysk.value.FunctionType)
 		continue;
 	    else {
-		strBuf.append(e.nextName() + "=");
-		Type valType = val.getType();
-		strBuf.append(valType.toString(val, b) + ",\n ");
+		if (first)
+		    first = false;
+		else
+		    writer.print(" ");
+		Value val;
+		if (member.maskFIXME() != 0) {
+		    val = bitValueFIXME(location, member);
+		} else {
+		    Location loc = location.slice(member.offset,
+						  member.type.getSize());
+		    val = new Value(member.type, member.name, loc);
+		}
+		if (member.name != null) {
+		    writer.print(member.name);
+		    writer.print("=");
+		}
+		val.toPrint(writer, memory, format);
+		writer.print(",\n");
 	    }
 	}
-	strBuf.replace(strBuf.length()-1, strBuf.length(), "}");
-	return strBuf.toString();
+	writer.print("}");
     }
 
     public void toPrint(PrintWriter writer) {
@@ -192,91 +304,61 @@ public class ClassType
 	    writer.print(this.name);
 	    return;
 	}
-	// XXX: This code does evil things involving poking the
-	// StringBuffer
-	StringBuffer strBuf = new StringBuffer();
-	boolean putBrace = true;
-	int access, previousAccess = 0;
-	for (int i = 0; i < this.types.size(); i++) {
-	    Type memberType = ((Type)this.types.get(i));
-	    access = ((Integer)this.accessibility.get(i)).intValue();
-	    if (memberType instanceof frysk.value.ClassType == true
-		&& ((ClassType)memberType).inheritance == true) {
-		switch (access) {
-		case 1: strBuf.append("public "); break;
-		case 2: strBuf.append("protected "); break;
-		case 3: strBuf.append("private "); break;
-		}
-		strBuf.append(memberType.name + ", ");
-		continue;
-	    }
-	    if (putBrace) {
-		if (strBuf.length() > 5)	// rewind to extra ", "
-		    strBuf.delete(strBuf.length()-2, strBuf.length());
-		strBuf.append(" {\n  ");
-		putBrace = false;
-	    }
-	    if (access != previousAccess) {
-		previousAccess = access;
-		switch (access) {
-		case 1: strBuf.append("public:\n  "); break;
-		case 2: strBuf.append("protected:\n  "); break;
-		case 3: strBuf.append("private:\n  "); break;
-		}
-	    }
-	    if (memberType.isTypedef())
-		strBuf.append(memberType.name);
+	boolean first = true;
+	Member member = null;
+	Iterator i = members.iterator();
+	// Types this inherits come first; print them out.
+	while (i.hasNext()) {
+	    member = (Member)i.next();
+	    if (!(member.type instanceof frysk.value.ClassType)
+		|| !((ClassType)(member.type)).inheritance)
+		break;
+	    if (first)
+		first = false;
 	    else
-		strBuf.append(memberType.toPrint());
-	    if (memberType instanceof frysk.value.FunctionType == false)
-		strBuf.append(" " + (String) this.names.get(i));
-	    int mask = ((Integer)this.masks.get(i)).intValue();
-	    int bitCount = 0;
-	    // ??? substitute numberOfBits() for 1.5
-	    while (mask != 0) {
-		if ((mask & 0x1) == 1)
-		    bitCount += 1;
-		mask = mask >>> 1;
+		writer.print(", ");
+	    switch (member.access) {
+	    case 1: writer.print("public "); break;
+	    case 2: writer.print("protected "); break;
+	    case 3: writer.print("private "); break;
 	    }
-	    if (bitCount > 0)
-		strBuf.append(":" + bitCount);
-	    strBuf.append(";\n  ");
+	    writer.print(member.type.name);
+	    member = null;
 	}
-	strBuf.replace(strBuf.length(), strBuf.length(), "}");
-	writer.print(strBuf);
+	int previousAccess = 0;
+	writer.print(" {\n");
+	while (member != null) {
+	    if (member.access != previousAccess) {
+		previousAccess = member.access;
+		switch (member.access) {
+		case 1: writer.print("  public:\n"); break;
+		case 2: writer.print("  protected:\n"); break;
+		case 3: writer.print("  private:\n"); break;
+		}
+	    }
+	    writer.print("  ");
+	    if (member.type.isTypedef())
+		writer.print(member.type.name);
+	    else
+		member.type.toPrint(writer);
+	    if (!(member.type instanceof frysk.value.FunctionType)) {
+		writer.print(" ");
+		writer.print(member.name);
+	    }
+	    if (member.bitSize > 0) {
+		writer.print(":");
+		writer.print(member.bitSize);
+	    }
+	    writer.print(";\n  ");
+	    // Advance
+	    if (i.hasNext())
+		member = (Member)i.next();
+	    else
+		member = null;
+	}
+	writer.print("}");
     }
 
-    /**
-     * Create an ClassType
-     * 
-     * @param endian - Endianness of class
-     * @param name TODO
-     */
-    public ClassType (ByteOrder endian, String name) {
-	super(0, endian, 0, name);
-	types = new ArrayList();
-	names = new ArrayList();
-	offsets = new ArrayList();
-	masks = new ArrayList();
-	baseClass = new ArrayList();
-	accessibility = new ArrayList();
-	inheritance = false;
-    }
-
-    public void addMember (Type member, String name, long offset, int mask,
-			   int access) {
-	types.add(member);
-	names.add(name);
-	offsets.add(new Long(offset));
-	masks.add(new Integer(mask));
-	baseClass.add(new Boolean(false));
-	accessibility.add(new Integer(access));
-    }
-
-    public void setBaseClass () {
-	baseClass.add(new Boolean(true));
-    }
-  
     public void setSize (int size) {
 	this.size = size;
     }
