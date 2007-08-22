@@ -1,4 +1,4 @@
-2007-08-22  Mark Wielaard  <mark@klomp.org>
+2007-08-22  Mark Wielaard  <mwielaard@redhat.com>
 
 	* cni/Disassembler.cxx (disassemble): Use WITH_LIBOPCODES, not
 	HAVE_LIPOPCODES.
