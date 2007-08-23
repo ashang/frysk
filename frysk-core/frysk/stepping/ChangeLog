@@ -1,3 +1,20 @@
+2007-08-23  Mike Cvet  <mcvet@redhat.com>
+
+	* SteppingEngine.java (ThreadLifeObservable): Also implements 
+	TaskObserver.Terminated.
+	(ThreadLifeObservable.updateTerminated): Added.
+	(ThreadLifeObservable.updateTerminating): Added some logic to above
+	method.
+	(init): Add ThreadLifeObservable as a Terminated observer too.
+	(addProc): Ditto.
+	(detachProc): Remove ThreadLifeObservable as a Terminated observer.
+	(SteppingObserver.updateExecuted): Only clean task data structures
+	if the thread has terminated, as opposed to terminating.
+	* StepTerminatedState.java (terminating): Added. 
+	(StepTerminatedState): Added - takes a boolean
+	(isTerminating): Added.
+	* TaskStepEngine.java (isTerminating): Added.
+
 2007-08-20  Mike Cvet  <mcvet@redhat.com>
 
 	* SteppingEngine.java: Added some more comments.

@@ -43,7 +43,15 @@ import frysk.proc.Task;
 
 public class StepTerminatedState extends State {
 
+    /* Whether or not this state represents a terminating state, rather 
+     * than a terminated one. */
+    private boolean terminating = false;
+    
     public StepTerminatedState(Task task) {
+    }
+    
+    public StepTerminatedState(Task task, boolean terminating) {
+	this.terminating = terminating;
     }
 
     public State handleUpdate(TaskStepEngine tse) {
@@ -56,6 +64,10 @@ public class StepTerminatedState extends State {
 
     public boolean isAlive() {
 	return false;
+    }
+    
+    public boolean isTerminating() {
+	return this.terminating;
     }
 
 }

@@ -69,7 +69,7 @@ public class TaskStepEngine {
     private int line = 0;
 
     /* Task termination message */
-    String message = null;
+    String message = "";
 
     /**
          * Builds a new TaskStepEngine, setting only the Task field and
@@ -106,6 +106,14 @@ public class TaskStepEngine {
          */
     public boolean isAlive() {
 	return this.state.isAlive();
+    }
+    
+    public boolean isTerminating() {
+	if (!this.state.isAlive()) {
+	    return ((StepTerminatedState) this.state).isTerminating();
+	} else {
+	    return false;
+	}
     }
 
     /**

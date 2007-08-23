@@ -158,6 +158,7 @@ public class SteppingEngine {
 	    while (iter.hasNext()) {
 		t = (Task) iter.next();
 		t.requestAddTerminatingObserver(this.threadLifeObservable);
+		t.requestAddTerminatedObserver(this.threadLifeObservable);
 		t.requestAddClonedObserver(this.threadLifeObservable);
 		this.taskStateMap.put(t, new TaskStepEngine(t, this));
 	    }
@@ -184,6 +185,7 @@ public class SteppingEngine {
 	while (iter.hasNext()) {
 	    t = (Task) iter.next();
 	    t.requestAddTerminatingObserver(this.threadLifeObservable);
+	    t.requestAddTerminatedObserver(this.threadLifeObservable);
 	    t.requestAddClonedObserver(this.threadLifeObservable);
 	    this.taskStateMap.put(t, new TaskStepEngine(t, this));
 	}
@@ -395,8 +397,6 @@ public class SteppingEngine {
      * @param lastFrame The current innermost frame of the Task
      */
     public void stepNextInstruction(Task task, DebugInfoFrame lastFrame) {
-	
-//	this.frameIdentifier = lastFrame.getFrameIdentifier();
 
 	TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
 	tse.setState(new NextInstructionStepTestState(task));
@@ -415,7 +415,7 @@ public class SteppingEngine {
      * @param tasks The list of Tasks to be stepped
      */
     public void stepNextInstruction(LinkedList tasks) {
-	
+
 	if (tasks.size() < 1)
 	    return;
 
@@ -430,8 +430,6 @@ public class SteppingEngine {
 
 	    /* This is trouble. Need to figure out a way to map these properly,
 	     * *hopefully* not requiring another HashMap. */
-//	    this.frameIdentifier = frame.getFrameIdentifier();
-
 	    TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(t);
 	    tse.setFrameIdentifier(frame.getFrameIdentifier());
 	    tse.setState(new NextInstructionStepTestState(t));
@@ -444,9 +442,6 @@ public class SteppingEngine {
 
     Breakpoint breakpoint;
 
-    /* At some point this should be mapped to-Task */
-//    FrameIdentifier frameIdentifier;
-
     /**
      * Performs a step-operation - line-steps the given Task, unless presented
      * with an entry to a new frame on the stack, which will not be stepped
@@ -456,9 +451,7 @@ public class SteppingEngine {
      * @param lastFrame	The current innermost StackFrame of the given Task
      */
     public void stepOver(Task task, DebugInfoFrame lastFrame) {
-	
-//	this.frameIdentifier = lastFrame.getFrameIdentifier();
-
+    
 	TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
 	tse.setFrameIdentifier(lastFrame.getFrameIdentifier());
 	tse.setState(new StepOverTestState(task));
@@ -492,8 +485,6 @@ public class SteppingEngine {
 
 	    /* This is trouble. Need to figure out a way to map these properly,
 	     * *hopefully* not requiring another HashMap. */
-//	    this.frameIdentifier = frame.getFrameIdentifier();
-
 	    TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(t);
 	    tse.setFrameIdentifier(frame.getFrameIdentifier());
 	    tse.setState(new StepOverTestState(t));
@@ -512,7 +503,7 @@ public class SteppingEngine {
      * @param frame The frame to step out of.
      */
     public void stepOut(Task task, DebugInfoFrame frame) {
-	
+
 	long address = frame.getOuterDebugInfoFrame().getAddress();
 
 	TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
@@ -534,7 +525,7 @@ public class SteppingEngine {
      * @param tasks The Tasks to step-out
      */
     public void stepOut(LinkedList tasks) {
-	
+
 	if (tasks.size() < 1)
 	    return;
 
@@ -835,6 +826,7 @@ public class SteppingEngine {
 	    }
 
 	    t.requestDeleteTerminatingObserver(this.threadLifeObservable);
+	    t.requestDeleteTerminatedObserver(this.threadLifeObservable);
 	    t.requestDeleteClonedObserver(this.threadLifeObservable);
 	    t.requestDeleteInstructionObserver(this.steppingObserver);
 	    cleanTask(t);
@@ -1047,10 +1039,12 @@ public class SteppingEngine {
 	    TaskStepEngine tse = (TaskStepEngine) SteppingEngine.this.taskStateMap
 		    .get(task);
 	    if (tse.handleUpdate()) {
-		
-		if (!tse.isAlive())
-		    cleanTask(task);
-		
+
+		if (!tse.isAlive()) {
+		    if (!tse.isTerminating())
+			cleanTask(task);
+		}
+
 		Proc proc = task.getProc();
 		int i = ((Integer) SteppingEngine.this.contextMap.get(proc))
 			.intValue();
@@ -1133,7 +1127,7 @@ public class SteppingEngine {
      **********************************************************************/
 
     protected class ThreadLifeObservable extends Observable implements
-	    TaskObserver.Cloned, TaskObserver.Terminating {
+	    TaskObserver.Cloned, TaskObserver.Terminating, TaskObserver.Terminated {
 
 	private LinkedList exitingTasks;
 
@@ -1161,25 +1155,48 @@ public class SteppingEngine {
 
 	public Action updateTerminating(Task task, boolean signal, int value) {
 	    //      System.err.println("threadlife.updateTerminating " + task + " " + value);
-	    
+
 	    /* Watch for terminating Tasks. Set the stepping state of the task
 	     * as terminated and notify the observers of the event. */
-	    
+
+	    TaskStepEngine tse = (TaskStepEngine) SteppingEngine.this.taskStateMap
+		    .get(task);
+	    tse.setState(new StepTerminatedState(task, true));
+
+	    if (signal)
+		tse.setMessage(tse.getMessage() + "Task " + task.getTid()
+			+ " is terminating from signal " + value);
+	    else
+		tse.setMessage(tse.getMessage() + "Task " + task.getTid() + " is terminating");
+
+	    steppingObserver.notifyNotBlocked(tse);
+
+	    return Action.CONTINUE;
+	}
+	
+	public Action updateTerminated(Task task, boolean signal, int value) {
+	    //      System.err.println("threadlife.updateTerminating " + task + " " + value);
+
+	    /* Watch for terminating Tasks. Set the stepping state of the task
+	     * as terminated and notify the observers of the event. */
+
 	    Integer context = (Integer) SteppingEngine.this.contextMap.get(task
 		    .getProc());
 	    SteppingEngine.this.contextMap.put(task.getProc(), new Integer(
 		    context.intValue() - 1));
 
-	    TaskStepEngine tse = (TaskStepEngine) SteppingEngine.this.taskStateMap.get(task);
+	    TaskStepEngine tse = (TaskStepEngine) SteppingEngine.this.taskStateMap
+		    .get(task);
 	    tse.setState(new StepTerminatedState(task));
-	    
+
 	    if (signal)
-		tse.setMessage("Task " + task.getTid() + " terminated from signal " + value);
+		tse.setMessage(tse.getMessage() + "Task " + task.getTid()
+			+ " terminated from signal " + value);
 	    else
-		tse.setMessage ("Task " + task.getTid() + " terminated");
+		tse.setMessage(tse.getMessage() + "Task " + task.getTid() + " terminated");
 
 	    steppingObserver.notifyNotBlocked(tse);
-	    
+
 	    return Action.CONTINUE;
 	}
 
