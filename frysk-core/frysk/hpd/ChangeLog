@@ -1,3 +1,8 @@
+2007-08-23  Mike Cvet  <mcvet@redhat.com>
+	
+	* CLI.java (SteppingObserver.update): Notify monitor and blank
+	message after printing.
+
 2007-08-22  Andrew Cagney  <cagney@redhat.com>
 
 	* TestDisplayCommand.java (testHpdDisplayCommands): Mark as

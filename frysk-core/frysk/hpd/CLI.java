@@ -528,13 +528,13 @@ public class CLI
       
       if (!tse.isAlive()) {
 		addMessage(tse.getMessage(), Message.TYPE_VERBOSE);
+		tse.setMessage("");
 		flushMessages();
-		// DetachCommand detachCommand = new DetachCommand(CLI.this);
-		// try {
-		// Command command = new Command ("detach");
-		// detachCommand.handle(command);
-		// } catch (ParseException pe) {}
+
 		synchronized (CLI.this) {
+		    synchronized (this.monitor) {
+			this.monitor.notifyAll();
+		    }
 		    CLI.this.notifyAll();
 		}
 		return;
