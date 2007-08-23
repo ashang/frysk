@@ -212,19 +212,17 @@ public class ClassType
 	    return ((ArithmeticType)type).createValue(v.getDouble(off));
 	}
 	if (type instanceof ClassType) {
-	    ByteBuffer abb = v.getLocation().getByteBuffer().slice(off,type.size);
-	    abb.order(type.getEndian());
-	    return new Value((ClassType)type, type.name, abb);
+	    Location l = v.getLocation().slice(off,type.size);
+	    return new Value(type, type.name, l);
 	} else if (type instanceof ArrayType) {
-	    ByteBuffer abb = v.getLocation().getByteBuffer().slice(off,type.size);
-	    abb.order(type.getEndian());
-	    return new Value((ArrayType)type, type.name, abb);
+	    Location l = v.getLocation().slice(off,type.size);
+	    return new Value(type, type.name, l);
 	} else if (type instanceof PointerType) {
-	    ByteBuffer abb = v.getLocation().getByteBuffer().slice(off,type.size);
-	    return new Value((PointerType)type, type.name, abb);
+	    Location l = v.getLocation().slice(off,type.size);
+	    return new Value(type, type.name, l);
 	} else if (type instanceof FunctionType) {
-	    ByteBuffer abb = v.getLocation().getByteBuffer().slice(off,type.size);
-	    return new Value((FunctionType)type, type.name, abb);
+	    Location l = v.getLocation().slice(off,type.size);
+	    return new Value(type, type.name, l);
 	}
         return new Value(new UnknownType(type.name), type.name);
     }

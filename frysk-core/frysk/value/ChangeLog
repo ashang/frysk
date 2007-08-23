@@ -1,5 +1,8 @@
 2007-08-23  Andrew Cagney  <cagney@redhat.com>
 
+	* ClassType.java: Replace ByteBuffer.slice(long,long) and
+	Location.getByteBuffer() with Location.slice(long,long).
+
 	* Location.java (getByteBuffer()): Make package.private.
 	(toByteArray): New.	
 	(index): Delete.
