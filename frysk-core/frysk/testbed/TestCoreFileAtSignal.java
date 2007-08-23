@@ -50,6 +50,8 @@ public class TestCoreFileAtSignal extends TestLib
 {
 
     public void testCoreFileAtSignal() {
+	if (unresolved (4953))
+	    return;
 
 	StringWriter stringWriter = new StringWriter();
 	Proc coreProc = CoreFileAtSignal.constructCore(getExecPath("funit-stacks"));

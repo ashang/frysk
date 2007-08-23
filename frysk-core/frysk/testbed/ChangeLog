@@ -1,3 +1,7 @@
+2007-08-22  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCoreFileAtSignal.java: Mark as unresolved, bug 4953.
+
 2007-08-21  Andrew Cagney  <cagney@redhat.com>
 
 	* CoreFileAtSignal.java (constructCore(File)): New.
