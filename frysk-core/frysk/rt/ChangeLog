@@ -1,3 +1,8 @@
+2007-08-22  Andrew Cagney  <cagney@redhat.com>
+
+	* TestUpdatingDisplayValue.java (testTaskDead): Mark as
+	unresolved, bug 4952.
+
 2007-08-08  Tim Moore  <timoore@redhat.com>
 
 	* ProcTaskIDManager.java: New file.

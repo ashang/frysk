@@ -83,6 +83,8 @@ public class TestBreakpoints
     }
 
     public void testHpdBreakpointInline() {
+	if (unresolved(4950))
+	    return;
 	child = new Expect(Config.getPkgLibFile("test1"));
 	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);
@@ -102,6 +104,8 @@ public class TestBreakpoints
     }
 
     public void testHpdBreakpointLibrary() {
+	if (unresolved(4949))
+	    return;
 	child = new Expect(Config.getPkgLibFile("test1"));
 	e = new Expect(Config.getBinFile("fhpd"));
 	e.expect (prompt);

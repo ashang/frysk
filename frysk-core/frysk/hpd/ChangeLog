@@ -1,5 +1,11 @@
 2007-08-22  Andrew Cagney  <cagney@redhat.com>
 
+	* TestDisplayCommand.java (testHpdDisplayCommands): Mark as
+	unresolved, bug 4951.
+	* TestBreakpoints.java (testHpdBreakpointLibrary): Mark as
+	unresolved, bug 4950.
+	(testHpdBreakpointInline): Mark as unresolved, bug 4950.
+	
 	* CLI.java: Use DebugInfoStackFactory.createVirtualStackTrace.
 	* CoreCommand.java: Ditto.
 	* TestStackCommands.java (testFhpdVirtualStackTrace): Remove

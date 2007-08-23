@@ -293,6 +293,8 @@ public class TestUpdatingDisplayValue extends TestLib
    */
   public void testTaskDead()
   {
+      if (unresolved(4952))
+	  return;
       BreakpointManager bpManager = createDaemon("funit-rt-varsegv");
       
       myTask.requestAddTerminatedObserver(new TaskObserver.Terminated() {

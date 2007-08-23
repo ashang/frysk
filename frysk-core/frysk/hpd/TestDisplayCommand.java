@@ -46,6 +46,8 @@ public class TestDisplayCommand
     extends TestLib
 {
     public void testHpdDisplayCommands() {
+	if (unresolved(4951))
+	    return;
 	e = new Expect (new String[] {
 			    Config.getBinFile("fhpd").getPath (),
 			    Config.getPkgLibFile("hpd-c").getPath ()
