@@ -1,3 +1,7 @@
+2007-08-23  Mark Wielaard  <mwielaard@redhat.com>
+
+	* cni/UnwindH.hxx: Remove double include.
+
 2007-08-13  Nurdin Premji  <npremji@redhat.com>
 
 	* UnwindPPC64.java (getFPRegister): Added.

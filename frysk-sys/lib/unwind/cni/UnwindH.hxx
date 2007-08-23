@@ -67,7 +67,6 @@
 #include "lib/unwind/CachingPolicy.h"
 #include "lib/unwind/ProcInfo.h"
 #include "lib/unwind/ProcName.h"
-#include "lib/unwind/ProcInfo.h"
 #include "lib/unwind/ElfImage.h"
 
 #include "frysk/sys/cni/Errno.hxx"
