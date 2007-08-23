@@ -1,3 +1,7 @@
+2007-08-23  Petr Machata  <pmachata@redhat.com>
+
+	* fltrace.java (ltraceObserver): New member.
+
 2007-08-21  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFhd.java (testFhpdVirtualStackTrace): Move to

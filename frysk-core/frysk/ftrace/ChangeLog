@@ -1,0 +1,15 @@
+2007-08-23  Petr Machata  <pmachata@redhat.com>
+
+	* Ltrace.java: new file, refactored from ../util/Ltrace.java
+	* MemoryMapping.java: the same
+	* ObjectFile.java: the same
+	* Symbol.java: the same
+	* LtraceObserver.java: new file with interface
+	* SymbolFilter.java: the same
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

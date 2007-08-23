@@ -46,7 +46,11 @@ import gnu.classpath.tools.getopt.*;
 //import frysk.Config;
 //import frysk.EventLogger;
 import frysk.proc.*;
-import frysk.util.Ltrace;
+
+import frysk.ftrace.Ltrace;
+import frysk.ftrace.LtraceObserver;
+import frysk.ftrace.Symbol;
+
 import frysk.util.CommandlineParser;
 
 import inua.util.PrintWriter;
@@ -68,7 +72,67 @@ public class fltrace
   //Where to send output.
   PrintWriter writer;
 
-  Ltrace tracer = new Ltrace();
+  Ltrace tracer = new Ltrace(new frysk.ftrace.SymbolFilter() {
+      public boolean matchPltEntry(Task task, frysk.ftrace.Symbol symbol) {
+	String symFilename = symbol.getParent().getFilename();
+	String taskFilename = task.getProc().getExe();
+	return taskFilename.equals(symFilename);
+      }
+      public boolean matchDynamic(Task task, frysk.ftrace.Symbol symbol) {return false;}
+      public boolean matchSymbol(Task task, frysk.ftrace.Symbol symbol) {return false;}
+    });
+
+  LtraceObserver ltraceObserver = new LtraceObserver() {
+      private Map levelMap = new HashMap();
+
+      private synchronized int getLevel(Task task)
+      {
+	int level = 0;
+	Integer l = (Integer)levelMap.get(task);
+	if (l != null)
+	  level = l.intValue();
+	return level;
+      }
+
+      private synchronized void setLevel(Task task, int level)
+      {
+	levelMap.put(task, new Integer(level));
+      }
+
+      public void pltEntryEnter(Task task, Symbol symbol, Object[] args)
+      {
+	String symbolName = symbol.name;
+	String callerLibrary = symbol.getParent().getSoname();
+	int level = this.getLevel(task);
+
+	StringBuffer spaces = new StringBuffer();
+	for (int i = 0; i < level; ++i)
+	  spaces.append(' ');
+	this.setLevel(task, ++level);
+
+    	System.err.print("[" + task.getTaskId().intValue() + "] " + spaces + "call enter ");
+	System.err.print(callerLibrary + "->" + /*libraryName + ":" +*/ symbolName + "(");
+	for (int i = 0; i < args.length; ++i)
+	  System.err.print((i > 0 ? ", " : "") + args[i]);
+    	System.err.println(")");
+      }
+
+      public void pltEntryLeave(Task task, Symbol symbol, Object retVal)
+      {
+	int level = this.getLevel(task);
+	this.setLevel(task, --level);
+    	StringBuffer spaces = new StringBuffer();
+	for (int i = 0; i < level; ++i)
+	  spaces.append(' ');
+
+    	System.err.println("[" + task.getTaskId().intValue() + "] " + spaces + "call leave " + symbol.name);
+      }
+
+      public void dynamicEnter(Task task, Symbol symbol, Object[] args) {}
+      public void dynamicLeave(Task task, Symbol symbol, Object retVal) {}
+      public void staticEnter(Task task, Symbol symbol, Object[] args) {}
+      public void staticLeave(Task task, Symbol symbol, Object retVal) {}
+    };
 
   public static void main(String[] args)
   {
@@ -136,6 +200,7 @@ public class fltrace
     if (writer == null)
 	writer = new PrintWriter(System.out);
 
+    tracer.addObserver(ltraceObserver);
     if (commandAndArguments != null)
     {
 	String[] cmd = (String[]) commandAndArguments.toArray(new String[0]);

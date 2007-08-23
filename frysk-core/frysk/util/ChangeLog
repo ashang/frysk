@@ -1,3 +1,12 @@
+2007-08-23  Petr Machata  <pmachata@redhat.com>
+
+	* Ltrace.java: Delete.
+	(MappingInfo, MemMappedFiles): Merged and moved to
+	the frysk.ftrace.MemoryMapping
+	(LtraceSymbol): Moved to the frysk.ftrace.Symbol
+	(LtraceObjectFile): Moved to the frysk.ftrace.ObjectFile
+	(Ltrace): Moved to the frysk.ftrace.Ltrace
+
 2007-08-21  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxElfCorefilePPC*.java: Fix copyright
