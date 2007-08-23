@@ -26,23 +26,5 @@ uerror(const char * s)
 
 // fixme -- make these ioctl too
 
-void
-register_utracer(pid_t pid)
-{
-  register_cmd_s register_cmd = {CTL_CMD_REGISTER, (long)pid};
-  ssize_t sz = write (ctl_file_fd, &register_cmd, sizeof(register_cmd));
-  if (-1 == sz) uerror ("Writing register command");
-  else fprintf (stdout, "\t%d  registering\n", pid);
-}
-
-void
-unregister_utracer(pid_t pid)
-{
-  register_cmd_s register_cmd = {CTL_CMD_UNREGISTER, (long)pid};
-  ssize_t sz = write (ctl_file_fd, &register_cmd, sizeof(register_cmd));
-  if (-1 == sz) uerror ("Writing unregister command");
-  else fprintf (stdout, "\t%d  unregistering\n", pid);
-}
-
 
 

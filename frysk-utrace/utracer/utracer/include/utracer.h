@@ -26,7 +26,9 @@ typedef enum {
   IF_CMD_NULL,
   IF_CMD_ATTACH,
   IF_CMD_DETACH,
+#if 0			// not yet implemented
   IF_CMD_SET_REG,
+#endif
   IF_CMD_READ_REG,
   IF_CMD_RUN,
   IF_CMD_LIST_PIDS,
@@ -282,7 +284,9 @@ typedef enum {
 
 /***************** public i/f ****************/
 
-void utracer_set_environment (pid_t client_pid, int cmd_fd);  //temp
+void utracer_set_environment (pid_t client_pid,
+			      int cmd_fd,
+			      int ctl_file);  // fixme temp
 int utracer_get_printmmap (long pid,
 			   printmmap_resp_s ** printmmap_resp_p,
 			   vm_struct_subset_s ** vm_struct_subset_p,
@@ -306,5 +310,8 @@ int utracer_sync (long type);
 int utracer_get_regs (long pid, long regset, void ** regsinfo,
 		      unsigned int * nr_regs_p, unsigned int * reg_size_p);
 int utracer_set_syscall (short which, short cmd, long pid, long syscall);
+
+int utracer_register (long pid);
+int utracer_unregister (long pid);
   
 #endif  /* UTRACER_H */

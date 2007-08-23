@@ -67,7 +67,7 @@ sigterm_handler (int sig)
 #ifdef ENABLE_MODULE_OPS  
   unload_utracer();		// and have utracer unload itsef
 #endif
-  unregister_utracer (udb_pid);
+  utracer_unregister ((long)udb_pid);
   close_ctl_file();
   exit (0);			// when nothing else is registered
 }
@@ -313,7 +313,7 @@ main (int ac, char * av[])
       error (1, errno, "Error opening control file");
   }
   
-  register_utracer (udb_pid);
+  utracer_register ((long)udb_pid);
 
   {
     char * cfn;
@@ -323,7 +323,7 @@ main (int ac, char * av[])
     utracer_cmd_file_fd = open (cfn, O_RDWR);
     free (cfn);
     if (-1 == utracer_cmd_file_fd) {
-      unregister_utracer (udb_pid);
+      utracer_unregister (udb_pid);
       close_ctl_file();
       error (1, errno, "Error opening command file");
     }
@@ -333,14 +333,14 @@ main (int ac, char * av[])
     utracer_resp_file_fd = open (cfn, O_RDONLY);
     free (cfn);
     if (-1 == utracer_resp_file_fd) {
-      unregister_utracer (udb_pid);
+      utracer_unregister (udb_pid);
       close_ctl_file();
       close (utracer_cmd_file_fd);
       error (1, errno, "Error opening response file");
     }
   }
 
-  utracer_set_environment (udb_pid, utracer_cmd_file_fd);
+  utracer_set_environment (udb_pid, utracer_cmd_file_fd, ctl_file_fd);
 
   
 #ifdef USE_UTRACER_WAIT
@@ -373,7 +373,7 @@ main (int ac, char * av[])
     if (rc) {
       close (utracer_cmd_file_fd);
       close (utracer_resp_file_fd);
-      unregister_utracer (udb_pid);
+      utracer_unregister (udb_pid);
       close_ctl_file();
       error (1, errno, "pthread_create() failed");
     }
@@ -393,7 +393,7 @@ main (int ac, char * av[])
   text_ui();
 
   cleanup_udb();
-  unregister_utracer (udb_pid);
+  utracer_unregister (udb_pid);
   close_ctl_file();
   
 

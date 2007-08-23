@@ -8,15 +8,17 @@
 
 #include <utracer.h>
 
-// temporary
+// fixme temporary
 pid_t client_pid;
 int utracer_cmd_file_fd;
+int utracer_ctl_file_fd;
 
 void
-utracer_set_environment (pid_t cp, int cf)
+utracer_set_environment (pid_t cp, int cf, int xf)
 {
   client_pid = cp;
   utracer_cmd_file_fd = cf;
+  utracer_ctl_file_fd = xf;
 }
 
 
@@ -410,6 +412,36 @@ utracer_quiesce (long pid)
 		       pid};
 
   irc = ioctl (utracer_cmd_file_fd, sizeof(run_cmd_s), &run_cmd);
+
+  return irc;
+}
+
+
+/************************** register  ********************/
+
+
+int
+utracer_register (long pid)
+{
+  int irc;
+  register_cmd_s register_cmd = {CTL_CMD_REGISTER, pid};
+
+  irc = ioctl (utracer_ctl_file_fd, sizeof(register_cmd_s), &register_cmd);
+
+  return irc;
+}
+
+
+/************************** unregister  ********************/
+
+
+int
+utracer_unregister (long pid)
+{
+  int irc;
+  register_cmd_s register_cmd = {CTL_CMD_UNREGISTER, pid};
+
+  irc = ioctl (utracer_ctl_file_fd, sizeof(register_cmd_s), &register_cmd);
 
   return irc;
 }

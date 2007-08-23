@@ -305,11 +305,17 @@ const struct utrace_engine_ops utraced_utrace_ops = {
   .allow_access_process_vm = allow_access_process_vm,
 };
 
+
+/*
+ * this is more or less a no-op now but could be used in the future
+ * to pass bulk data (e.g., memory writes).
+ */
+
 int
 if_file_write (struct file *file,
-                    const char *buffer,
-                    unsigned long count,
-                    void * data)
+	       const char *buffer,
+	       unsigned long count,
+	       void * data)
 {
   if_cmd_u if_cmd;
   int wrc;
@@ -334,11 +340,6 @@ if_file_write (struct file *file,
     switch (if_cmd.cmd) {
     case IF_CMD_NULL:
       DB_PRINTK (KERN_ALERT "IF_CMD_NULL\n");
-      break;
-    case IF_CMD_SET_REG:
-      // fixme -- actually do it
-      DB_PRINTK (KERN_ALERT "IF_CMD_SET_REG--write\n");
-      rc = count;
       break;
     }
 

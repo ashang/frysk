@@ -1,0 +1,8 @@
+Thu Aug 23 17:08:48 2007  Chris Moller  <cmoller@redhat.com>
+
+	* Udb.java:
+	* RolloverSpinnerListModel.java:
+	* Makefile:
+	* readreg.gif:  New files for Java wrapper tester.
+	
+

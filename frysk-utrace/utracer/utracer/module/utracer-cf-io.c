@@ -98,6 +98,136 @@ cf_file_read ( char *buffer,
   else return -UTRACER_ETRACING;
 }
 
+
+int
+handle_register (register_cmd_s * register_cmd)
+{
+  int rc = 0;
+  long client_pid = register_cmd->client_pid;
+  utracing_info_s * utracing_info_found =
+    lookup_utracing_info (client_pid);
+
+  if (!utracing_info_found) {  // if non-null, entry already exists
+    struct proc_dir_entry * de_utracing_client;
+    struct proc_dir_entry * de_utracing_cmd;
+    struct proc_dir_entry * de_utracing_resp;
+    char * client_pid_dir =
+      kasprintf(GFP_KERNEL, "%ld", client_pid);
+    
+    if (client_pid_dir) {
+      de_utracing_client = proc_mkdir (client_pid_dir, de_utrace);
+      if (de_utracing_client) {
+	de_utracing_cmd = create_proc_entry(UTRACER_CMD_FN,
+						S_IFREG | 0666,
+						de_utracing_client);
+	if (de_utracing_cmd) {
+	  de_utracing_cmd->write_proc = if_file_write;
+	  de_utracing_cmd->read_proc = cf_file_read;
+	
+	  de_utracing_resp = create_proc_entry(UTRACER_RESP_FN,
+					       S_IFREG | 0444,
+					       de_utracing_client);
+	  if (de_utracing_resp) {
+	    struct task_struct * task;
+	    struct utrace_attached_engine * utracing_engine;
+	    de_utracing_resp->read_proc  = if_file_read;
+
+	    task = get_task (client_pid);
+	  
+	    if (task) {
+	      utracing_engine = utrace_attach (task,
+					       UTRACE_ATTACH_CREATE |
+					       UTRACE_ATTACH_EXCLUSIVE |
+					       UTRACE_ATTACH_MATCH_OPS,
+					       &utracing_utrace_ops,
+					       0UL);  //fixme -- maybe use?
+	      if (IS_ERR (utracing_engine)) {
+	      //fixme -- do something with rc?
+		rc = utrace_set_flags (task,utracing_engine,
+				       UTRACE_EVENT (EXEC)	|
+				       UTRACE_EVENT (EXIT)	|
+				       UTRACE_EVENT (DEATH));
+	  
+		rc = create_utracing_info_entry (client_pid,
+						 client_pid_dir,
+						 de_utracing_client,
+						 de_utracing_cmd,
+						 de_utracing_resp,
+						 utracing_engine);
+		if (0 == rc) {
+		  memcpy (&utracing_info_top->proc_dir_operations,
+			  de_utrace_control->proc_fops,
+			  sizeof(struct file_operations));
+		  utracing_info_top->proc_dir_operations.ioctl = utracer_ioctl;
+		  de_utracing_cmd->proc_fops =
+		    &utracing_info_top->proc_dir_operations;
+	    
+		  de_utracing_cmd->data       = utracing_info_top;
+		  de_utracing_resp->data      = utracing_info_top;
+		}
+		else {
+		  remove_proc_entry(UTRACER_RESP_FN, de_utracing_client);
+		  remove_proc_entry(UTRACER_CMD_FN, de_utracing_client);
+		  remove_proc_entry(client_pid_dir, de_utrace);
+		  kfree (client_pid_dir);
+		}
+	      }
+	      else {
+		remove_proc_entry(UTRACER_RESP_FN, de_utracing_client);
+		remove_proc_entry(UTRACER_CMD_FN, de_utracing_client);
+		remove_proc_entry(client_pid_dir, de_utrace);
+		kfree (client_pid_dir);
+		rc = -UTRACER_EENGINE;
+	      }
+	    }
+	    else {
+	      remove_proc_entry(UTRACER_RESP_FN, de_utracing_client);
+	      remove_proc_entry(UTRACER_CMD_FN, de_utracing_client);
+	      remove_proc_entry(client_pid_dir, de_utrace);
+	      kfree (client_pid_dir);
+	      rc = -ESRCH;
+	    }
+	  }
+	  else {
+	    remove_proc_entry(UTRACER_CMD_FN, de_utracing_client);
+	    remove_proc_entry(client_pid_dir, de_utrace);
+	    kfree (client_pid_dir);
+	    rc = -ENOMEM;
+	  }
+	}
+	else {
+	  remove_proc_entry(client_pid_dir, de_utrace);
+	  kfree (client_pid_dir);
+	  return -ENOMEM;
+	}
+      }
+      else {
+	kfree (client_pid_dir);
+	rc = -ENOMEM;
+      }
+    }
+    else rc = -ENOMEM;
+  }
+  else rc = -UTRACER_ETRACING;
+
+  return rc;
+}
+
+int
+handle_unregister (register_cmd_s * register_cmd)
+{
+  int rc = 0;
+  utracing_info_s * utracing_info_found =
+    lookup_utracing_info (register_cmd->client_pid);
+
+  if (utracing_info_found)
+    remove_utracing_info_entry (utracing_info_found);
+  else
+    rc = -UTRACER_ETRACING;
+
+  return rc;
+}
+
 int
 control_file_write (struct file *file,
                     const char *buffer,
@@ -113,128 +243,7 @@ control_file_write (struct file *file,
   switch ((ctl_cmd_e)(ctl_cmd.cmd)) {
   case CTL_CMD_NULL:
     break;
-  case CTL_CMD_UNREGISTER:
-    {
-      register_cmd_s register_cmd = ctl_cmd.register_cmd;
-      long client_pid = register_cmd.client_pid;
-      utracing_info_s * utracing_info_found =
-	lookup_utracing_info (client_pid);
-
-      if (utracing_info_found)
-	remove_utracing_info_entry (utracing_info_found);
-      else
-	return -UTRACER_ETRACING;
-    }
-    break;
-  case CTL_CMD_REGISTER:
-    {
-      register_cmd_s register_cmd = ctl_cmd.register_cmd;
-      long client_pid = register_cmd.client_pid;
-      utracing_info_s * utracing_info_found =
-        lookup_utracing_info (client_pid);
-
-      if (!utracing_info_found) {  // if non-null, entry already exists
-        struct proc_dir_entry * de_utracing_client;
-        struct proc_dir_entry * de_utracing_cmd;
-        struct proc_dir_entry * de_utracing_resp;
-        char * client_pid_dir =
-	  kasprintf(GFP_KERNEL, "%ld", client_pid);
-
-	if (!client_pid_dir)
-	  return -ENOMEM;
-
-	de_utracing_client = proc_mkdir (client_pid_dir, de_utrace);
-	if (!de_utracing_client) {
-	  kfree (client_pid_dir);
-	  return -ENOMEM;
-	}
-	
-	de_utracing_cmd = create_proc_entry(UTRACER_CMD_FN,
-						S_IFREG | 0666,
-						de_utracing_client);
-	if (!de_utracing_cmd) {
-	  remove_proc_entry(client_pid_dir, de_utrace);
-	  kfree (client_pid_dir);
-	  return -ENOMEM;
-	}
-	
-	de_utracing_cmd->write_proc = if_file_write;
-	de_utracing_cmd->read_proc = cf_file_read;
-	
-	de_utracing_resp = create_proc_entry(UTRACER_RESP_FN,
-					     S_IFREG | 0444,
-					     de_utracing_client);
-	if (!de_utracing_resp) {
-	  remove_proc_entry(UTRACER_CMD_FN, de_utracing_client);
-	  remove_proc_entry(client_pid_dir, de_utrace);
-	  kfree (client_pid_dir);
-	  return -ENOMEM;
-	}
-	de_utracing_resp->read_proc  = if_file_read;
-	
-	{
-          int rc;
-	  struct utrace_attached_engine * utracing_engine;
-	  struct task_struct * task = get_task (client_pid);
-	  
-	  if (!task) {
-	    remove_proc_entry(UTRACER_RESP_FN, de_utracing_client);
-	    remove_proc_entry(UTRACER_CMD_FN, de_utracing_client);
-	    remove_proc_entry(client_pid_dir, de_utrace);
-	    kfree (client_pid_dir);
-	    return -ESRCH;
-	  }
-	  
-	  utracing_engine = utrace_attach (task,
-					   UTRACE_ATTACH_CREATE |
-					   UTRACE_ATTACH_EXCLUSIVE |
-					   UTRACE_ATTACH_MATCH_OPS,
-					   &utracing_utrace_ops,
-					   0UL);  //fixme -- maybe use?
-	  if (IS_ERR (utracing_engine)) {
-	    remove_proc_entry(UTRACER_RESP_FN, de_utracing_client);
-	    remove_proc_entry(UTRACER_CMD_FN, de_utracing_client);
-	    remove_proc_entry(client_pid_dir, de_utrace);
-	    kfree (client_pid_dir);
-	    return -UTRACER_EENGINE;
-	  }
-
-	  //fixme -- do something with rc?
-	  rc = utrace_set_flags (task,utracing_engine,
-				 UTRACE_EVENT (EXEC)	|
-				 UTRACE_EVENT (EXIT)	|
-				 UTRACE_EVENT (DEATH));
-	  
-	  rc = create_utracing_info_entry (client_pid,
-					   client_pid_dir,
-					   de_utracing_client,
-					   de_utracing_cmd,
-					   de_utracing_resp,
-					   utracing_engine);
-          if (0 != rc) {
-	    remove_proc_entry(UTRACER_RESP_FN, de_utracing_client);
-	    remove_proc_entry(UTRACER_CMD_FN, de_utracing_client);
-	    remove_proc_entry(client_pid_dir, de_utrace);
-	    kfree (client_pid_dir);
-            return rc;
-          }
-
-	  memcpy (&utracing_info_top->proc_dir_operations,
-		  de_utrace_control->proc_fops,
-		  sizeof(struct file_operations));
-	  utracing_info_top->proc_dir_operations.ioctl = utracer_ioctl;
-	  de_utracing_cmd->proc_fops =
-	    &utracing_info_top->proc_dir_operations;
-	
-	  de_utracing_cmd->data       = utracing_info_top;
-	  de_utracing_resp->data      = utracing_info_top;
-	}
-
-	return count;
-      }
-      else 
-	return -UTRACER_ETRACING;
-    }
+  default:
     break;
   }
   return count;

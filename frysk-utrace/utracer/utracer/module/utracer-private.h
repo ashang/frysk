@@ -3,8 +3,10 @@
 
 #ifdef DO_INIT
 #define DECL(v,i) v = i
+#define DECLNI(v) v
 #else
 #define DECL(v,i) extern v
+#define DECLNI(v) extern v
 #endif
 
 #if 0
@@ -122,6 +124,9 @@ void queue_response (utracing_info_s * utracing_info_found,
 		     void * resp,   int resp_len,
 		     void * extra,  int extra_len,
 		     void * extra2, int extra2_len);
+
+int handle_register (register_cmd_s * register_cmd);
+int handle_unregister (register_cmd_s * register_cmd);
 
 #endif /* UTRACER_PRIVATE_H */
 

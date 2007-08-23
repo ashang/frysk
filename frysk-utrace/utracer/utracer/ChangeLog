@@ -1,14 +1,25 @@
+Thu Aug 23 16:55:40 2007  Chris Moller  <cmoller@redhat.com>
+
+	* include/utracer.h:
+	* module/utracer-base.c:
+	* module/utracer-cf-io.c:
+	* module/utracer-if-io.c:
+	* module/utracer-private.h:
+	* utracer/utracer.c: Move register/unregister stuff to ioctl.
+
 Tue Aug 14 10:32:18 2007  Chris Moller  <cmoller@redhat.com>
 
-	* utracer.h:
-	* utracer-if-io.c:
-	* utracer-ioctl.c:
-	* utracer.c: Move detach_fcn and sync functions to ioctl.
+	* include/utracer.h:
+	* module/utracer-if-io.c:
+	* module/utracer-ioctl.c:
+	* utracer/utracer.c: Move detach_fcn and sync functions to ioctl.
+	
+Mon Aug  6 12:03:18 2007  Chris Moller  <cmoller@redhat.com>
 
-Mon Aug  6 12:03:07 2007  Chris Moller  <cmoller@redhat.com>
-
-	* udb-text-ui.c:
-	* udb-utrace-if.c: Move quiesce and run cmds to ioctl.
+	* include/utracer.h:
+	* module/utracer-if-io.c:
+	* module/utracer-ioctl.c:
+	* utracer/utracer.c: Move quiesce and run cmds to ioctl.
 
 Mon Aug  6 10:42:01 2007  Chris Moller  <cmoller@redhat.com>
 

@@ -305,8 +305,37 @@ locate_engine (long utracing_pid, long utraced_pid)
   return engine;
 }
 
+int
+control_ioctl (struct inode * inode,
+	       struct file * file,
+	       unsigned int a1,
+	       unsigned long a2)
+{
+  ctl_cmd_u ctl_cmd;
+  int rc = 0;
+
+  printk (KERN_ALERT "control_ioctl\n");
+
+  if (copy_from_user(&ctl_cmd, (void *)a2, a1))
+    return -EFAULT;
+
+  switch (ctl_cmd.cmd) {
+  case CTL_CMD_REGISTER:
+    DB_PRINTK (KERN_ALERT "CTL_CMD_REGISTER--ioctl\n");
+    rc = handle_register (&ctl_cmd.register_cmd);
+    break;
+  case CTL_CMD_UNREGISTER:
+    DB_PRINTK (KERN_ALERT "CTL_CMD_UNREGISTER--ioctl\n");
+    rc = handle_unregister (&ctl_cmd.register_cmd);
+    break;
+  }
+  
+  return rc;
+}
+
 static int __init utracer_init(void)
 {
+  // create /proc/utrace
   de_utrace = proc_mkdir(UTRACER_BASE_DIR, NULL);
 
   if (!de_utrace) {
@@ -314,6 +343,7 @@ static int __init utracer_init(void)
     return -ENOMEM;
   }
 
+  // create /proc/utrace/control
   de_utrace_control = create_proc_entry(UTRACER_CONTROL_FN,
                                         S_IFREG | 0666, de_utrace);
 
@@ -322,6 +352,11 @@ static int __init utracer_init(void)
     return -ENOMEM;
   }
 
+  {
+    struct file_operations * proc_dir_operations =
+      (struct file_operations *)de_utrace_control->proc_fops;
+    proc_dir_operations->ioctl = control_ioctl;
+  }
   de_utrace_control->write_proc = control_file_write;
 #if 0
   de_utrace_control->read_proc  = control_file_read;
