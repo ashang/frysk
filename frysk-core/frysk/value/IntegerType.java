@@ -42,7 +42,6 @@ package frysk.value;
 import inua.eio.ByteOrder;
 import inua.eio.ByteBuffer;
 import java.io.PrintWriter;
-import java.math.BigInteger;
 
 /**
  * Type for an integer value.
@@ -65,9 +64,4 @@ public abstract class IntegerType
 	// double-dispatch.
 	format.print(writer, location, this);
     }
-
-    /**
-     * Return the location as a big integer.
-     */
-    abstract BigInteger asBigInteger(Location location);
 }

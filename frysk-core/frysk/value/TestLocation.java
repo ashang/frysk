@@ -37,31 +37,105 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/**
- * Test location code.
- */
-
 package frysk.value;
 
 import inua.eio.ByteOrder;
 import frysk.junit.TestCase;
 
+/**
+ * Test location code.
+ *
+ * Note, for big-endian the most significant bytes are on the LHS
+ * and the least significant are on the RHS.
+ *
+ * Note, and for little-endian the most significant are on the RHS and
+ * the least significant are on the LHS.
+ */
+
 public class TestLocation extends TestCase
 {
-    public void testByteArrayBig() {
-	Location l = new Location(new byte[] { 1, 2, 3, 4 });
+    private Location l;
+    public void setUp() {
+	l = new Location(new byte[] { 1, 2, 3, 4 });
+    }
+    public void tearDown() {
+	l = null;
+    }
+    public void testGetBig() {
 	assertEquals("byte array", new byte[] { 1, 2, 3, 4 },
-		     l.asByteArray(ByteOrder.BIG_ENDIAN));
+		     l.get(ByteOrder.BIG_ENDIAN));
     }
-    public void testByteArrayLittle() {
-	Location l = new Location(new byte[] { 1, 2, 3, 4 });
+    public void testGetLittle() {
 	assertEquals("byte array", new byte[] { 4, 3, 2, 1 },
-		     l.asByteArray(ByteOrder.LITTLE_ENDIAN));
+		     l.get(ByteOrder.LITTLE_ENDIAN));
     }
+
+    /**
+     * Since the write and location size are the same, this checks for
+     * a direct write.
+     */
+    public void testPutBig() {
+	l.put(ByteOrder.BIG_ENDIAN, new byte[] { 5, 6, 7, 8 }, 77);
+	assertEquals("byte array", new byte[] { 5, 6, 7, 8 },
+		     l.get(ByteOrder.BIG_ENDIAN));
+    }
+    /**
+     * Since the write and location size are the same, this checks for
+     * a direct write but with the order reversed.
+     */
+    public void testPutLittle() {
+	l.put(ByteOrder.LITTLE_ENDIAN, new byte[] { 5, 6, 7, 8 }, 77);
+	assertEquals("byte array", new byte[] { 8, 7, 6, 5 },
+		     l.get(ByteOrder.BIG_ENDIAN));
+    }
+
+    /**
+     * Since the most significant big-endian bytes are on the left,
+     * this test checks that those excess bytes are discarded during
+     * the store.
+     */
+    public void testPutBigLong() {
+	l.put(ByteOrder.BIG_ENDIAN, new byte[] { 5, 6, 7, 8, 9 }, 77);
+	assertEquals("byte array", new byte[] { 6, 7, 8, 9 },
+		     l.get(ByteOrder.BIG_ENDIAN));
+    }
+    /**
+     * Since the most sigificant big-endian bytes are on the left,
+     * this test checks that both those excess bytes are discared and
+     * that the least significant bytes are reversed (little-endian).
+     */
+    public void testPutLittleLong() {
+	l.put(ByteOrder.LITTLE_ENDIAN, new byte[] { 5, 6, 7, 8, 9 }, 77);
+	assertEquals("byte array", new byte[] { 9, 8, 7, 6 },
+		     l.get(ByteOrder.BIG_ENDIAN));
+    }
+
+    /**
+     * Since the least significant big-endian bytes are on the right,
+     * this test checks that the short value is stored in the RHS of
+     * the location with the LHS (most sigificant bytes) padded with
+     * FILL.
+     */
+    public void testPutBigShort() {
+	l.put(ByteOrder.BIG_ENDIAN, new byte[] { 5, 6 }, 77);
+	assertEquals("byte array", new byte[] { 77, 77, 5, 6 },
+		     l.get(ByteOrder.BIG_ENDIAN));
+    }
+    /**
+     * Since the least significant little-endian bytes are on the
+     * left, this test checks that the short value is stored in the
+     * LHS of the location (order reversed) with the RHS (most
+     * sigificant bytes) padded with FILL.
+     */
+    public void testPutLittleShort() {
+	l.put(ByteOrder.LITTLE_ENDIAN, new byte[] { 5, 6 }, 77);
+	assertEquals("byte array", new byte[] { 6, 5, 77, 77 },
+		     l.get(ByteOrder.BIG_ENDIAN));
+    }
+
     public void testSlice() {
-	Location l = new Location(new byte[] { 1, 2, 3, 4 });
 	Location s = l.slice(1, 2); // 2,3
 	assertEquals("slice", new byte[] { 2, 3 },
-		     s.asByteArray(ByteOrder.BIG_ENDIAN));
+		     s.get(ByteOrder.BIG_ENDIAN));
     }
 }

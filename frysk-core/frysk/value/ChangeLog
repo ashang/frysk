@@ -1,3 +1,29 @@
+2007-08-23  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLocation.java (testGetBig): Rename testByteArrayBig.
+	(testGetLittle): Rename testByteArrayLittle.
+	(testPutBig): New.
+	(testPutLittle): New.
+	* Location.java (get): Rename asByteArray.
+	(put(byte[],ByteOrder)): New.
+	(l, setUp, tearDown): new.
+	* UnsignedType.java: Update.
+	* SignedType.java: Update.
+	* PointerType.java: Update.
+	* FunctionType.java: Update.
+	* EnumType.java: Update.
+	* IntegerType.java (asBigInteger): Delete.
+	* ArithmeticType.java (getBigInteger(Location): New.
+	(putBigInteger(Location,BigInteger)): New.
+	* TestIntegerType.java: Update.
+	* UnsignedType.java (getBigInteger): Rename asBigInteger.
+	(putBigInteger): New.
+	* SignedType.java (getBigInteger): Rename asBigInteger.
+	(putBigInteger): New.
+	* EnumType.java (getBigInteger): Rename asBigInteger.
+	(putBigInteger): New.
+	* FloatingPointType.java (getBigInteger, putBigInteger): New.
+	
 2007-08-22  Andrew Cagney  <cagney@redhat.com>
 
 	* InvalidOperatorException.java (InvalidOperatorException())

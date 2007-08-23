@@ -42,6 +42,7 @@ package frysk.value;
 import lib.dwfl.BaseTypes;
 import inua.eio.ByteOrder;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 
 /**
  * Type for a arithmetic.
@@ -581,4 +582,18 @@ public abstract class ArithmeticType
     public void toPrint(PrintWriter writer) {
 	writer.print(name);
     }
+
+    /**
+     * Return the entire location, interpreting it as a big integer.
+     * This does not do type-conversion.  The underlying type
+     * determines if the the value is signed or unsigned.
+     */
+    abstract BigInteger getBigInteger(Location location);
+
+    /**
+     * Re-write the entire location with the big integer value.  This
+     * does not do type conversion.  The underlying type determines if
+     * the value should be zero or sign extended.
+     */
+    abstract void putBigInteger(Location location, BigInteger val);
 }

@@ -41,6 +41,7 @@ package frysk.value;
 
 import frysk.junit.TestCase;
 import inua.eio.ByteOrder;
+import java.math.BigInteger;
 
 /**
  * Type for an integer value.
@@ -48,44 +49,96 @@ import inua.eio.ByteOrder;
 public class TestIntegerType
     extends TestCase
 {    
-    private void checkAsBigInteger(IntegerType type, int xff00, int x0102) {
+    private void checkGetBigInteger(IntegerType type, int xff00, int x0102) {
 	assertEquals("0xff00", xff00,
-		     type.asBigInteger(new Location(new byte[] { (byte)0xff, 0x00 }))
+		     type.getBigInteger(new Location(new byte[] {
+							 (byte)0xff, 0x00
+						     }))
 		     .intValue());
 	assertEquals("0x0102", x0102,
-		     type.asBigInteger(new Location(new byte[] { 0x01, 0x02 }))
+		     type.getBigInteger(new Location(new byte[] {
+							 0x01, 0x02
+						     }))
 		     .intValue());
-	
     }
 
-    public void testAsSignedBig() {
-	checkAsBigInteger(new SignedType(2, ByteOrder.BIG_ENDIAN, -1,
+    public void testGetSignedBig() {
+	checkGetBigInteger(new SignedType(2, ByteOrder.BIG_ENDIAN, -1,
 					 "signed-big-endian", false),
 			  (short)0xff00, 0x0102);
     }
-    public void testAsSignedLittle() {
-	checkAsBigInteger(new SignedType(2, ByteOrder.LITTLE_ENDIAN, -1,
+    public void testGetSignedLittle() {
+	checkGetBigInteger(new SignedType(2, ByteOrder.LITTLE_ENDIAN, -1,
 					 "signed-little-endian", false),
 			  0x00ff, 0x0201);
     }
 
-    public void testAsUnsignedBig() {
-	checkAsBigInteger(new UnsignedType(2, ByteOrder.BIG_ENDIAN, -1,
+    public void testGetUnsignedBig() {
+	checkGetBigInteger(new UnsignedType(2, ByteOrder.BIG_ENDIAN, -1,
 					   "unsigned-big-endian", false),
 			  0xff00, 0x0102);
     }
-    public void testAsUnsignedLittle() {
-	checkAsBigInteger(new UnsignedType(2, ByteOrder.LITTLE_ENDIAN, -1,
+    public void testGetUnsignedLittle() {
+	checkGetBigInteger(new UnsignedType(2, ByteOrder.LITTLE_ENDIAN, -1,
 					   "unsigned-little-endian", false),
 			  0x00ff, 0x0201);
     }
 
-    public void testAsEnumBig() {
-	checkAsBigInteger(new EnumType(ByteOrder.BIG_ENDIAN),
+    public void testGetEnumBig() {
+	checkGetBigInteger(new EnumType(ByteOrder.BIG_ENDIAN),
 			  (short)0xff00, 0x0102);
     }
-    public void testAsEnumLittle() {
-	checkAsBigInteger(new EnumType(ByteOrder.LITTLE_ENDIAN),
+    public void testGetEnumLittle() {
+	checkGetBigInteger(new EnumType(ByteOrder.LITTLE_ENDIAN),
 			  0x00ff, 0x0201);
+    }
+
+    private void checkPut(ArithmeticType t, String val, byte[] check) {
+	Location l = new Location(new byte[] { 1, 2 });
+	t.putBigInteger(l, new BigInteger(val));
+	assertEquals("location", check, l.get(ByteOrder.BIG_ENDIAN));
+    }
+
+    public void testPutSignedPositiveBig() {
+	checkPut(new SignedType(2, ByteOrder.BIG_ENDIAN, -1, "type", false),
+		 "3", new byte[] { 0, 3 });
+    }
+    public void testPutSignedNegativeBig() {
+	checkPut(new SignedType(2, ByteOrder.BIG_ENDIAN, -1, "type", false),
+		 "-3", new byte[] { (byte)0xff, (byte)0xfd });
+    }
+    public void testPutSignedPositiveLittle() {
+	checkPut(new SignedType(2, ByteOrder.LITTLE_ENDIAN, -1, "type", false),
+		 "3", new byte[] { 3, 0 });
+    }
+    public void testPutSignedNegativeLittle() {
+	checkPut(new SignedType(2, ByteOrder.LITTLE_ENDIAN, -1, "type", false),
+		 "-3", new byte[] { (byte)0xfd, (byte)0xff });
+    }
+
+    public void testPutUnsignedPositiveBig() {
+	checkPut(new UnsignedType(2, ByteOrder.BIG_ENDIAN, -1, "type", false),
+		 "3", new byte[] { 0, 3 });
+    }
+    public void testPutUnsignedNegativeBig() {
+	checkPut(new UnsignedType(2, ByteOrder.BIG_ENDIAN, -1, "type", false),
+		 "-3", new byte[] { 0, (byte)0xfd });
+    }
+    public void testPutUnsignedPositiveLittle() {
+	checkPut(new UnsignedType(2, ByteOrder.LITTLE_ENDIAN, -1, "type", false),
+		 "3", new byte[] { 3, 0 });
+    }
+    public void testPutUnsignedNegativeLittle() {
+	checkPut(new UnsignedType(2, ByteOrder.LITTLE_ENDIAN, -1, "type", false),
+		 "-3", new byte[] { (byte)0xfd, 0 });
+    }
+
+    public void testPutEnumPositiveBig() {
+	checkPut(new EnumType(ByteOrder.BIG_ENDIAN, 2),
+		 "3", new byte[] { 0, 3 });
+    }
+    public void testPutEnumPositiveLittle() {
+	checkPut(new EnumType(ByteOrder.LITTLE_ENDIAN, 2),
+		 "3", new byte[] { 3, 0 });
     }
 }

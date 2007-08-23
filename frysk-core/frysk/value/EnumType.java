@@ -70,7 +70,7 @@ public class EnumType extends IntegerType
     // printing the enum's name and print raw hex instead?
     void toPrint (PrintWriter writer, Location location,
 		  ByteBuffer memory, Format format) {
-	BigInteger value = asBigInteger(location);
+	BigInteger value = getBigInteger(location);
 	Member map = (Member)valueToMember.get(value);
 	if (map != null)
 	    writer.print(map.name);
@@ -125,7 +125,12 @@ public class EnumType extends IntegerType
 	return returnVar;
     }
 
-    BigInteger asBigInteger(Location location) {
-	return new BigInteger(location.asByteArray(endian));
+    BigInteger getBigInteger(Location location) {
+	return new BigInteger(location.get(endian));
+    }
+
+    void putBigInteger(Location location, BigInteger val) {
+	location.put(endian, val.toByteArray(),
+		     val.signum() >= 0 ? 0 : (byte)0xff);
     }
 }

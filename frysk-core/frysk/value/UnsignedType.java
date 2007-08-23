@@ -60,7 +60,11 @@ public class UnsignedType
 	super(size, endian, typeId, typeStr, haveTypeDef);
     }
 
-    public BigInteger asBigInteger(Location location) {
-	return new BigInteger(1, location.asByteArray(endian));
+    BigInteger getBigInteger(Location location) {
+	return new BigInteger(1, location.get(endian));
+    }
+
+    void putBigInteger(Location location, BigInteger val) {
+	location.put(endian, val.toByteArray(), 0);
     }
 }

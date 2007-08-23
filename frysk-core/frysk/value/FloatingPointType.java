@@ -42,6 +42,7 @@ package frysk.value;
 import inua.eio.ByteOrder;
 import inua.eio.ByteBuffer;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 
 /**
  * Type for a floating-point value.
@@ -65,5 +66,19 @@ public class FloatingPointType
 			ByteBuffer memory, Format format) {
 	// double-dispatch.
 	format.print(writer, location, this);
+    }
+
+    /**
+     * Return the raw bytes as an unsigned integer.
+     */
+    BigInteger getBigInteger(Location location) {
+	return new BigInteger(1, location.get(endian));
+    }
+
+    /**
+     * Return the raw bytes as an unsigned integer.
+     */
+    void putBigInteger(Location location, BigInteger val) {
+	location.put(endian, val.toByteArray(), 0);
     }
 }

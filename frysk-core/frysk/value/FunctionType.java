@@ -62,7 +62,7 @@ public class FunctionType
 		 ByteBuffer memory, Format format) {
 	// XXX: Print the function's name?
 	writer.print("0x");
-	BigInteger v = new BigInteger(1, location.asByteArray(memory.order()));
+	BigInteger v = new BigInteger(1, location.get(memory.order()));
 	writer.print(Long.toHexString(v.longValue()));
     }
   

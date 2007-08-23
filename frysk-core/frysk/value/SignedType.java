@@ -61,7 +61,12 @@ public class SignedType
 	super(size, endian, typeId, typeStr, haveTypeDef);
     }
 
-    BigInteger asBigInteger(Location location) {
-	return new BigInteger(location.asByteArray(endian));
+    BigInteger getBigInteger(Location location) {
+	return new BigInteger(location.get(endian));
+    }
+
+    void putBigInteger(Location location, BigInteger val) {
+	location.put(endian, val.toByteArray(),
+		     val.signum() >= 0 ? 0 : -1);
     }
 }

@@ -90,7 +90,7 @@ public class PointerType
     }
     
     public BigInteger asBigInteger(Location location) {
-	return new BigInteger(1, location.asByteArray(endian));
+	return new BigInteger(1, location.get(endian));
     }
 
     public Value add (Value var1, Value var2)
