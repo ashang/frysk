@@ -125,11 +125,6 @@ public class EnumType extends IntegerType
 	return returnVar;
     }
 
-    public boolean getLogicalValue (Value var1)
-    {
-	throw (new InvalidOperatorException());
-    }
-
     BigInteger asBigInteger(Location location) {
 	return new BigInteger(location.asByteArray(endian));
     }

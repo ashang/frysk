@@ -152,9 +152,7 @@ public abstract class ArithmeticType
     if (type instanceof IntegerType)
 	return newValue(type, var1.asLong() << var2.asLong());
     else if (var1.getType() instanceof FloatingPointType)
-      throw new InvalidOperatorException(
-                                         "binary operator << not defined for type "
-					 + var1.getType().toPrint());
+	throw new InvalidOperatorException(var1.getType(), "<<");
     return null;
   } 
 
@@ -169,9 +167,7 @@ public abstract class ArithmeticType
     if (type instanceof IntegerType)
 	return newValue(type, var1.asLong() >> var2.asLong());
     else if (var1.getType() instanceof FloatingPointType)
-      throw new InvalidOperatorException(
-                                         "binary operator >> not defined for type "
-					 + var1.getType().toPrint());
+	throw new InvalidOperatorException(var1.getType(), ">>");
     return null;
   } 
   
@@ -282,9 +278,7 @@ public abstract class ArithmeticType
     if (type instanceof IntegerType)
       return newValue(type, var1.asLong() & var2.asLong());
       else if (var1.getType() instanceof FloatingPointType)
-      throw new InvalidOperatorException(
-                                         "binary operator & not defined for type "
-					 + var1.getType().toPrint());
+	  throw new InvalidOperatorException(var1.getType(), "&");
     return null;
   }
 
@@ -299,9 +293,7 @@ public abstract class ArithmeticType
     if (type instanceof IntegerType)
       return newValue(type, (var1.asLong() | var2.asLong()));
     else if (var1.getType() instanceof FloatingPointType)
-      throw new InvalidOperatorException(
-                                         "binary operator | not defined for type "
-					 + var1.getType().toPrint());
+	throw new InvalidOperatorException(var1.getType(), "|");
     return null;
   }
   
@@ -316,9 +308,7 @@ public abstract class ArithmeticType
     if (type instanceof IntegerType)
       return newValue(type, (var1.asLong() ^ var2.asLong()));
     else if (var1.getType() instanceof FloatingPointType)
-      throw new InvalidOperatorException(
-                                         "binary operator ^ not defined for type "
-					 + var1.getType().toPrint());
+	throw new InvalidOperatorException(var1.getType(), "^");
     return null;
   }
 
@@ -329,9 +319,7 @@ public abstract class ArithmeticType
     if (type instanceof IntegerType)
       return newValue(type, (~var1.asLong()));
     else if (var1.getType() instanceof FloatingPointType)
-      throw new InvalidOperatorException(
-                                         "unary operator ~ not defined for type "
-					 + var1.getType().toPrint());
+	throw new InvalidOperatorException(var1.getType(), "~");
     return null;
   }
 
@@ -347,9 +335,7 @@ public abstract class ArithmeticType
       return newValue(type, (var1.asLong() == 0 ? false : true)
                               && (var2.asLong() == 0 ? false : true) ? 1 : 0);
     else if (var1.getType() instanceof FloatingPointType)
-      throw new InvalidOperatorException(
-                                         "binary operator && not defined for type "
-					 + var1.getType().toPrint());
+	throw new InvalidOperatorException(var1.getType(), "&&");
     return null;
   }
   
@@ -365,9 +351,7 @@ public abstract class ArithmeticType
       return newValue(type, (var1.asLong() == 0 ? false : true)
                               || (var2.asLong() == 0 ? false : true) ? 1 : 0);
     else if (var1.getType() instanceof FloatingPointType)
-      throw new InvalidOperatorException(
-                                         "binary operator || not defined for type "
-					 + var1.getType().toPrint());
+	throw new InvalidOperatorException(var1.getType(), "||");
     return null;
   }
 
@@ -377,9 +361,7 @@ public abstract class ArithmeticType
     if (type instanceof IntegerType)
       return newValue(type, (var1.asLong() == 0 ? true : false) ? 1 : 0);
     else if (var1.getType() instanceof FloatingPointType)
-      throw new InvalidOperatorException(
-                                         "binary operator || not defined for type "
-                                         + var1.getType().toPrint());
+	throw new InvalidOperatorException(var1.getType(), "||");
     return null;
   }
 
@@ -465,7 +447,7 @@ public abstract class ArithmeticType
 
   public boolean getLogicalValue (Value var1) {
     if (var1.getType() instanceof FloatingPointType)
-      throw (new InvalidOperatorException());
+	throw (new InvalidOperatorException(this, ""));
 
     return ((var1.asLong() == 0) ? false : true);
   }

@@ -1,5 +1,19 @@
 2007-08-22  Andrew Cagney  <cagney@redhat.com>
 
+	* InvalidOperatorException.java (InvalidOperatorException())
+	(InvalidOperatorException(String)): Delete.
+	(InvalidOperatorException(Type,String)): New.
+	* ArithmeticType.java: Update
+	* Type.java: Make all abstract operations concrete; throw
+	InvalidOperatorException.
+	* FunctionType.java: Delete operator methods throwing exception.
+	* VoidType.java: Ditto.
+	* UnknownType.java: Ditto.
+	* PointerType.java: Ditto.
+	* ClassType.java: Ditto.
+	* ArrayType.java: Ditto.
+	* EnumType.java: Ditto.
+	
 	* Value.java (toString): Dump the Location and Type.
 	* Type.java (toString (Value value, ByteBuffer memory)): Delete.
 	(toPrint(PrintWriter,Location,ByteBuffer,Format): Make abstract.

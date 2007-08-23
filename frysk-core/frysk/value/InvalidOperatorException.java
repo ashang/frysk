@@ -37,20 +37,18 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/**
- * Exception thrown when some operation is performed for an invalid
- * type.
- */
-
 package frysk.value;
 
+/**
+ * An operation is not permitted on the specified type.
+ */
 public class InvalidOperatorException extends RuntimeException {
     static final long serialVersionUID = 1;
-    /**
-     * FIXME: Don't use, should always pass in the operator.
-     */
-    public InvalidOperatorException() { }
-    public InvalidOperatorException(String reason) {
-	super(reason);
+    public InvalidOperatorException(Type type, String operator) {
+	super("Invalid \""
+	      + operator
+	      + "\" for \""
+	      + type.toPrint()
+	      + "\"");
     }
 }

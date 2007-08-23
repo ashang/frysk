@@ -141,38 +141,102 @@ public abstract class Type {
 	return stringWriter.toString();
     }
 
-    public abstract Value add (Value var1, Value var2);
-    public abstract Value subtract (Value var1, Value var2);
-    public abstract Value multiply (Value var1, Value var2);
-    public abstract Value divide (Value var1, Value var2);
-    public abstract Value mod (Value var1, Value var2);
-    public abstract Value shiftLeft (Value var1, Value var2);
-    public abstract Value shiftRight (Value var1, Value var2);
-    public abstract Value lessThan (Value var1, Value var2);
-    public abstract Value greaterThan (Value var1, Value var2);
-    public abstract Value lessThanOrEqualTo (Value var1, Value var2);
-    public abstract Value greaterThanOrEqualTo (Value var1, Value var2);
-    public abstract Value equal (Value var1, Value var2);
-    public abstract Value notEqual (Value var1, Value var2);
-    public abstract Value bitWiseAnd (Value var1, Value var2);
-    public abstract Value bitWiseXor (Value var1, Value var2);
-    public abstract Value bitWiseOr (Value var1, Value var2);
-    public abstract Value bitWiseComplement (Value var1);
-    public abstract Value logicalAnd (Value var1, Value var2);
-    public abstract Value logicalOr (Value var1, Value var2);
-    public abstract Value logicalNegation(Value var1); 
-    public abstract Value assign (Value var1, Value var2);
-    public abstract Value timesEqual (Value var1, Value var2);
-    public abstract Value divideEqual (Value var1, Value var2);
-    public abstract Value modEqual (Value var1, Value var2);
-    public abstract Value plusEqual (Value var1, Value var2);
-    public abstract Value minusEqual (Value var1, Value var2);
-    public abstract Value shiftLeftEqual (Value var1, Value var2);
-    public abstract Value shiftRightEqual (Value var1, Value var2);
-    public abstract Value bitWiseOrEqual (Value var1, Value var2);
-    public abstract Value bitWiseXorEqual (Value var1, Value var2);
-    public abstract Value bitWiseAndEqual (Value var1, Value var2);
-    public abstract boolean getLogicalValue (Value var);
+    public Value add (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "+");
+    }
+    public Value subtract (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "-");
+    }
+    public Value multiply (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "*");
+    }
+    public Value divide (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "/");
+    }
+    public Value mod (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "%");
+    }
+    public Value shiftLeft (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "<<");
+    }
+    public Value shiftRight (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, ">>");
+    }
+    public Value lessThan (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "<");
+    }
+    public Value greaterThan (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, ">");
+    }
+    public Value lessThanOrEqualTo (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "<=");
+    }
+    public Value greaterThanOrEqualTo (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, ">=");
+    }
+    public Value equal (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "==");
+    }
+    public Value notEqual (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "!=");
+    }
+    public Value bitWiseAnd (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "&");
+    }
+    public Value bitWiseXor (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "^");
+    }
+    public Value bitWiseOr (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "|");
+    }
+    public Value bitWiseComplement (Value var1) {
+        throw new InvalidOperatorException(this, "~");
+    }
+    public Value logicalAnd (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "&&");
+    }
+    public Value logicalOr (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "||");
+    }
+    public Value logicalNegation(Value var1) {
+        throw new InvalidOperatorException(this, "!");
+    } 
+    public Value assign (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "=");
+    }
+    public Value timesEqual (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "*=");
+    }
+    public Value divideEqual (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "/=");
+    }
+    public Value modEqual (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "%=");
+    }
+    public Value plusEqual (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "+=");
+    }
+    public Value minusEqual (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "-=");
+    }
+    public Value shiftLeftEqual (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "<<=");
+    }
+    public Value shiftRightEqual (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, ">>=");
+    }
+    public Value bitWiseOrEqual (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "|=");
+    }
+    public Value bitWiseXorEqual (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "^=");
+    }
+    public Value bitWiseAndEqual (Value var1, Value var2) {
+        throw new InvalidOperatorException(this, "&=");
+    }
+    public boolean getLogicalValue (Value var) {
+        throw new InvalidOperatorException(this, "");
+    }
 
     public boolean isTypedef()
     {
@@ -183,5 +247,4 @@ public abstract class Type {
     {
 	this.isTypedef = isTypedef;
     }
-  
 }
