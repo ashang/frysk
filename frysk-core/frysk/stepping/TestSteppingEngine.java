@@ -44,14 +44,18 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
+
+import frysk.sys.Signal;
 import frysk.testbed.Offspring;
 import frysk.Config;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.event.Event;
+import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.proc.TaskObserver;
 import frysk.rt.Breakpoint;
 import frysk.rt.BreakpointManager;
 import frysk.rt.LineBreakpoint;
@@ -60,6 +64,8 @@ import frysk.rt.SourceBreakpointObserver;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.TestLib;
 import frysk.testbed.TestfileTokenScanner;
+
+import frysk.sys.Sig;
 
 /**
  * Testsuite for testing SteppingEngine operations. See TestStepping for
@@ -599,7 +605,7 @@ public class TestSteppingEngine extends TestLib {
 		.createDebugInfoStackTrace(theTask));
 
 	this.testStarted = true;
-	// System.err.println("waiting for finish");
+
 	/** Run to completion */
 	assertRunUntilStop("Running test");
 	cleanup();
@@ -680,7 +686,7 @@ public class TestSteppingEngine extends TestLib {
 		.getOuterDebugInfoFrame());
 
 	this.testStarted = true;
-	// System.err.println("waiting for finish");
+
 	/** Run to completion */
 	assertRunUntilStop("Running test");
 	cleanup();
@@ -735,6 +741,94 @@ public class TestSteppingEngine extends TestLib {
 	    }
 	});
 	assertRunUntilStop("Running test");
+    }
+    
+    public void testStepIntoMissingThread() {
+
+	if (unresolvedOnPPC(3277))
+	    return;
+
+	class SignalObserver implements TaskObserver.Signaled {
+
+	    public Action updateSignaled(Task task, int sig) {
+
+		return Action.CONTINUE;
+	    }
+
+	    public void addedTo(Object observable) {
+		    Signal.kill(((Task) observable).getProc().getPid(), Sig.KILL);
+	    }
+
+	    public void addFailed(Object observable, Throwable w) {
+		throw new RuntimeException("Failed to attach to created proc",
+			w);
+	    }
+
+	    public void deletedFrom(Object observable) {
+		se.stepLine((Task) observable);
+	    }
+	}
+	
+	/**
+         * SteppingTest Object definition - tell the stepping test what to look
+         * for at the completion of the test.
+         */
+	class testMissingThreadStep implements SteppingTest {
+
+	    Task testTask = null;
+	    
+	    public testMissingThreadStep(int s, Task task) {
+		this.testTask = task;
+	    }
+
+	    public void runAssertions() {
+
+		assertTrue(!tse.isAlive());
+		String msg = tse.getMessage();
+		assertTrue(msg.contains("Task " + this.testTask.getTid() + " terminated from signal 9"));
+
+		Manager.eventLoop.requestStop();
+	    }
+	}
+
+	/** Variable setup */
+
+	String source = Config.getRootSrcDir()
+		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
+
+	this.scanner = new TestfileTokenScanner(new File(source));
+
+	/* The line number where the test begins */
+	int startLine = this.scanner.findTokenLine("_stepAdvanceStart_");
+
+	/* The test process */
+	dbae = new DaemonBlockedAtEntry(Config
+		.getPkgLibFile("funit-stepping-asm"));
+
+	Task theTask = dbae.getMainTask();
+
+	this.testStarted = false;
+
+	initTaskWithTask(theTask, source, startLine, 0);
+
+	this.currentTest = new testMissingThreadStep(0, theTask);
+
+	DebugInfoFrame frame = DebugInfoStackFactory
+		.createDebugInfoStackTrace(theTask);
+	assertTrue("Line information present", frame.getLines().length > 0);
+	
+	theTask.requestAddSignaledObserver(new SignalObserver());
+
+	/** The stepping operation */
+//	this.se.stepAdvance(theTask, DebugInfoStackFactory
+//		.createDebugInfoStackTrace(theTask).getOuterDebugInfoFrame()
+//		.getOuterDebugInfoFrame());
+
+	this.testStarted = true;
+	// System.err.println("waiting for finish");
+	/** Run to completion */
+	assertRunUntilStop("Running test");
+	cleanup();
     }
 
     Task bpTask = null;
@@ -812,6 +906,7 @@ public class TestSteppingEngine extends TestLib {
     }
 
     boolean testStarted = false;
+    TaskStepEngine tse = null;
 
     class LockObserver implements Observer {
 	/**
@@ -825,7 +920,8 @@ public class TestSteppingEngine extends TestLib {
          *                A TaskStepEngine
          */
 	public synchronized void update(Observable o, Object arg) {
-	    TaskStepEngine tse = (TaskStepEngine) arg;
+	    
+	    tse = (TaskStepEngine) arg;
 	    // System.err.println("Lock.update " + tse.isStopped() + " " +
                 // testStarted);
 	    if (testStarted == true && tse.isStopped()) {

@@ -1,5 +1,5 @@
 2007-08-23  Mike Cvet  <mcvet@redhat.com>
-
+	
 	* SteppingEngine.java (ThreadLifeObservable): Also implements 
 	TaskObserver.Terminated.
 	(ThreadLifeObservable.updateTerminated): Added.
@@ -14,6 +14,9 @@
 	(StepTerminatedState): Added - takes a boolean
 	(isTerminating): Added.
 	* TaskStepEngine.java (isTerminating): Added.
+	
+	* TestSteppingEngine.java (testStepIntoMissingThread): Added. Tests a step
+	into a thread which has terminated.
 
 2007-08-20  Mike Cvet  <mcvet@redhat.com>
 
