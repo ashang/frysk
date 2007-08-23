@@ -319,7 +319,15 @@ public class Value
      * Dump this object into a string.
      */
     public String toString()  {
-	return type.toString(this, null/*no-memory*/);
+	StringBuffer b = new StringBuffer();
+	b.append("{");
+	b.append(super.toString());
+	b.append(",location=");
+	b.append(location.toString());
+	b.append(",type=");
+	b.append(type.toString());
+	b.append("}");
+	return b.toString();
     }
 
     /**

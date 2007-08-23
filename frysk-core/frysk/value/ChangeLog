@@ -1,5 +1,9 @@
 2007-08-22  Andrew Cagney  <cagney@redhat.com>
 
+	* Value.java (toString): Dump the Location and Type.
+	* Type.java (toString (Value value, ByteBuffer memory)): Delete.
+	(toPrint(PrintWriter,Location,ByteBuffer,Format): Make abstract.
+
 	* Type.java: Remove throws clause.
 	* ClassType.java: Ditto.
 	* FunctionType.java: Ditto.

@@ -37,7 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.value;
 
 import inua.eio.ByteBuffer;
@@ -102,34 +101,19 @@ public abstract class Type {
     }
 
     /**
-     * Dump the type to the string.
+     * For debugging and tracing; just dump the Type's name.
      */
     public String toString() {
 	return name;
     }
 
     /**
-     * FIXME: Do not use.  This is going away.
-     */
-    public String toString (Value value, ByteBuffer memory) {
-	StringWriter stringWriter = new StringWriter();
-	PrintWriter writer = new PrintWriter(stringWriter);
-	toPrint(writer, value.getLocation(), memory, Format.NATURAL);
-	return stringWriter.toString();
-    }
-
-    /**
      * Print Location as Type in user-readable form; use Format to
      * print basic types.  If needed, and when memory is non-NULL, it
      * can be used for dereferencing pointers.
-     *
-     * XXX: Will be made abstract once all sub-classes have
-     * implemented this.
      */
-    void toPrint(PrintWriter writer, Location location,
-		 ByteBuffer memory, Format format) {
-	writer.print(toString(new Value(this, location), memory));
-    }
+    abstract void toPrint(PrintWriter writer, Location location,
+			  ByteBuffer memory, Format format);
     /*
      * Print Location as Type in user-readable form to a StringBuffer;
      * use Format to print basic types.  If needed, and when memory is
