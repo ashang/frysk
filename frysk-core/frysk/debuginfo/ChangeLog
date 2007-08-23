@@ -1,5 +1,7 @@
 2007-08-22  Andrew Cagney  <cagney@redhat.com>
 
+	* Variable.java: Use Type.toPrint and Value.toPrint.
+
 	* DebugInfoStackFactory.java (createDebugInfoStackTrace)
 	(createVirtualStackTrace): Rename
 	createVirtualDebugInfoStackTrace.

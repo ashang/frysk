@@ -40,13 +40,12 @@
 package frysk.debuginfo;
 
 import java.io.PrintWriter;
-
 import javax.naming.NameNotFoundException;
-
 import lib.dwfl.DwException;
 import lib.dwfl.DwarfDie;
 import frysk.value.Type;
 import frysk.value.Value;
+import frysk.value.Format;
 
 /**
  * This class contains the static information corresponding to a
@@ -123,10 +122,14 @@ public class Variable {
 	    printWriter.print("<<unhandled type>>");
 	    return;
 	}
-	printWriter.print(this.getType() + " " + this.getName() + " = ");
+	type.toPrint(printWriter);
+	printWriter.print(" ");
+	printWriter.print(this.getName());
+	printWriter.print(" = ");
 	try {
 	    Value value = getValue(frame);
-	    printWriter.print(value.toString());
+	    value.toPrint(printWriter, frame.getTask().getMemory(),
+			  Format.NATURAL);
 	} catch (ValueUavailableException e) {
 	    printWriter.print("< value unavailable at pc=0x"+ Long.toHexString(frame.getAdjustedAddress())+">");
 	} catch (VariableOptimizedOutException e) {
