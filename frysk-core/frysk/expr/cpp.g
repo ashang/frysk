@@ -824,12 +824,12 @@ expr returns [Value returnVar=null]
     |   ( #(MINUS expr expr) )=> #(MINUS v1=expr v2=expr) 
         { returnVar = v1.getType().subtract(v1, v2);  }
     |   #(MINUS v1=expr ) 
-        { returnVar = ArithmeticType.newIntegerValue(intType, 0);
+        { returnVar = intType.createValue(0);
           returnVar = returnVar.getType().subtract(returnVar, v1); }
     |   ( #(STAR expr expr) )=> #(STAR  v1=expr v2=expr)  
 	{ returnVar = v1.getType().multiply(v1, v2); }
     |   #(MEMORY s1=identifier )
-	{ returnVar = ArithmeticType.newLongValue(longType, (long)0);
+	{ returnVar = longType.createValue(0);
           returnVar = (Value)cppSymTabRef.getMemory(frame, s1); }
     |   #(DIVIDE  v1=expr v2=expr)  { returnVar = v1.getType().divide(v1, v2); }
     |   #(MOD  v1=expr v2=expr)  {	returnVar = v1.getType().mod(v1, v2);  }
@@ -865,7 +865,7 @@ expr returns [Value returnVar=null]
     |   ( #(AMPERSAND expr expr) )=>#(AMPERSAND  v1=expr v2=expr)  
 	{ returnVar = v1.getType().bitWiseAnd(v1, v2);  }
     |   #(ADDRESS_OF s1=identifier )
-	{ returnVar = ArithmeticType.newLongValue(longType, (long)0);
+	{ returnVar = longType.createValue(0);
           returnVar = (Value)cppSymTabRef.getAddress(frame, s1); }
     |   #(BITWISEXOR  v1=expr v2=expr)  { returnVar = v1.getType().bitWiseXor(v1, v2);  }
     |   #(BITWISEOR  v1=expr v2=expr)  { returnVar = v1.getType().bitWiseOr(v1, v2);  }
@@ -881,40 +881,40 @@ expr returns [Value returnVar=null]
     	    int l = o.getText().length();
     	    if (c == 'u' || c == 'U' || c == 'l' || c == 'L')
     	       l -= 1;
-            returnVar = ArithmeticType.newLongValue (
-                longType, Long.parseLong(o.getText().substring(1, l), 8));
+            returnVar =
+                longType.createValue(Long.parseLong(o.getText().substring(1, l), 8));
         }
     |   i:DECIMALINT  {
     	    char c = i.getText().charAt(i.getText().length() - 1);
     	    int l = i.getText().length();
     	    if (c == 'u' || c == 'U' || c == 'l' || c == 'L')
     	       l -= 1;
-            returnVar = ArithmeticType.newLongValue (
-                longType, Long.parseLong(i.getText().substring(0, l)));
+            returnVar =
+                longType.createValue(Long.parseLong(i.getText().substring(0, l)));
         }
     |   h:HEXADECIMALINT  {
     	    char c = h.getText().charAt(h.getText().length() - 1);
     	    int l = h.getText().length();
     	    if (c == 'u' || c == 'U' || c == 'l' || c == 'L')
     	       l -= 1;
-            returnVar = ArithmeticType.newLongValue (
-                longType, Long.parseLong(h.getText().substring(2, l), 16));
+            returnVar =
+                longType.createValue(Long.parseLong(h.getText().substring(2, l), 16));
         }
     |   f:FLOAT  {
     	    char c = f.getText().charAt(f.getText().length() - 1);
     	    int l = f.getText().length();
     	    if (c == 'f' || c == 'F' || c == 'l' || c == 'L')
     	       l -= 1;
-            returnVar = ArithmeticType.newFloatValue (
-                floatType, Float.parseFloat(f.getText().substring(0, l)));
+            returnVar =
+                floatType.createValue(Float.parseFloat(f.getText().substring(0, l)));
         }
     |   d:DOUBLE  {
     	    char c = d.getText().charAt(d.getText().length() - 1);
     	    int l = d.getText().length();
     	    if (c == 'f' || c == 'F' || c == 'l' || c == 'L')
     	       l -= 1;
-            returnVar = ArithmeticType.newDoubleValue (
-                doubleType, Double.parseDouble(d.getText().substring(0, l)));
+            returnVar =
+                doubleType.createValue(Double.parseDouble(d.getText().substring(0, l)));
         }
     |   #(ASSIGNEQUAL v1=expr v2=expr)  {
             v1.getType().assign(v1, v2);
@@ -973,23 +973,23 @@ expr returns [Value returnVar=null]
         }
     |   #(CAST pt:primitiveType v2=expr) { 
 	    if(pt.getText().compareTo("long") == 0) {
-	      returnVar = ArithmeticType.newLongValue(longType, (long)0);
+	      returnVar = longType.createValue(0);
               returnVar.getType().assign(returnVar, v2);
 	      }
 	    else if(pt.getText().compareTo("int") == 0) {
-	      returnVar = ArithmeticType.newIntegerValue(intType, (int)0);
+	      returnVar = intType.createValue((int)0);
               returnVar.getType().assign(returnVar, v2);
 	      }
 	    else if(pt.getText().compareTo("short") == 0) {
-	      returnVar = ArithmeticType.newShortValue(shortType, (short)0);
+	      returnVar = shortType.createValue((short)0);
               returnVar.getType().assign(returnVar, v2);
 	      }
 	    else if(pt.getText().compareTo("double") == 0) {
-	      returnVar = ArithmeticType.newDoubleValue(doubleType, (double)0);
+	      returnVar = doubleType.createValue((double)0);
               returnVar.getType().assign(returnVar, v2);
 	      }
 	    else if(pt.getText().compareTo("float") == 0) {
-	      returnVar = ArithmeticType.newFloatValue(floatType, (float)0);
+	      returnVar = floatType.createValue((float)0);
               returnVar.getType().assign(returnVar, v2);
 	      }
 	    else returnVar = v2;
@@ -1002,14 +1002,14 @@ expr returns [Value returnVar=null]
     |   ident:IDENT  {
             if((returnVar = ((Value)cppSymTabRef.get(frame, ident.getText()))) == null
 		&& cppSymTabRef.putUndefined()) {
-                returnVar = ArithmeticType.newIntegerValue(intType, 0);
+                returnVar = intType.createValue(0);
                 cppSymTabRef.put(null, ident.getText(), returnVar);
             }
         }
     |   tident:TAB_IDENT  {
             if((returnVar = ((Value)cppSymTabRef.get(frame, tident.getText()))) == null
 		&& cppSymTabRef.putUndefined()) {
-                returnVar = ArithmeticType.newIntegerValue(intType, 0);
+                returnVar = intType.createValue(0);
                 cppSymTabRef.put(null, tident.getText(), returnVar);
             }
         }

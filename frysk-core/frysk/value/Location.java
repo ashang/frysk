@@ -77,6 +77,14 @@ public class Location
 	this(new ArrayByteBuffer(bytes));
     }
 
+    public String toString() {
+	return ("{"
+		+ super.toString()
+		+ ",size=" + location.capacity()
+		+ ",orderFIXME=" + location.order()
+		+ "}");
+    }
+
     /**
      * Get the entire contents of the location as a big-endian array
      * of bytes.  If ORDER is little-endian, the byte array will first

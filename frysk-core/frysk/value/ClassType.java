@@ -195,21 +195,21 @@ public class ClassType
 
 	switch (type.getTypeIdFIXME()) {
 	case BaseTypes.baseTypeByte:
-	    return ArithmeticType.newByteValue((ArithmeticType)type, v.getByte(off));
+	    return ((ArithmeticType)type).createValue(v.getByte(off));
 	case BaseTypes.baseTypeShort:
-	    return ArithmeticType.newShortValue((ArithmeticType)type, v.getShort(off));
+	    return ((ArithmeticType)type).createValue(v.getShort(off));
 	case BaseTypes.baseTypeInteger:
 	    int mask = member.maskFIXME();
 	    if (mask != 0)
 		return bitValueFIXME(v.getLocation(), member);
 	    int val = v.getInt(off);
-	    return ArithmeticType.newIntegerValue((ArithmeticType)type, val);
+	    return ((ArithmeticType)type).createValue(val);
 	case BaseTypes.baseTypeLong:
-	    return ArithmeticType.newLongValue((ArithmeticType)type, v.getLong(off));
+	    return ((ArithmeticType)type).createValue(v.getLong(off));
 	case BaseTypes.baseTypeFloat:
-	    return ArithmeticType.newFloatValue((ArithmeticType)type, v.getFloat(off));
+	    return ((ArithmeticType)type).createValue(v.getFloat(off));
 	case BaseTypes.baseTypeDouble:
-	    return ArithmeticType.newDoubleValue((ArithmeticType)type, v.getDouble(off));
+	    return ((ArithmeticType)type).createValue(v.getDouble(off));
 	}
 	if (type instanceof ClassType) {
 	    ByteBuffer abb = v.getLocation().getByteBuffer().slice(off,type.size);
@@ -263,8 +263,7 @@ public class ClassType
 	    shift += 1;
 	}
 	int res = (val & mask) >>> shift;
-	return ArithmeticType.newIntegerValue((ArithmeticType)member.type,
-					      res);
+	return ((ArithmeticType)member.type).createValue(res);
     }
 
     void toPrint(PrintWriter writer, Location location, ByteBuffer memory,

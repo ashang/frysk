@@ -1,5 +1,25 @@
 2007-08-23  Andrew Cagney  <cagney@redhat.com>
 
+	* ArithmeticType.java (createValue(BigInteger)): New.
+	(createValue(long)): New.
+	(createValue(float)): New.
+	(createValue(double)): New.
+	(createValueFIXME(String,long)): New.
+	(newByteValue): Delete.
+	(newShortValue): Delete.
+	(newIntegerValue): Delete.
+	(newLongValue): Delete.
+	(newValue(Type,int)): Delete.
+	(newValue(Type,long)): Delete.
+	(newValue(Type,double)): Delete.
+	(newFloatValue): Delete.
+	(newDoubleValue): Delete.
+	(toString): New; for debugging.
+	* ClassType.java: Update.
+	* PointerType.java: Update.
+	* TestValue.java: Update.
+	* Location.java (toString): New.
+
 	* TestLocation.java (testGetBig): Rename testByteArrayBig.
 	(testGetLittle): Rename testByteArrayLittle.
 	(testPutBig): New.

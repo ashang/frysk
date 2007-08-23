@@ -1,3 +1,8 @@
+2007-08-23  Andrew Cagney  <cagney@redhat.com>
+
+	* cpp.g: Replace ArithmeticType Value factory calls with calls to
+	ArithmeticType.createValue.
+
 2007-08-19  Andrew Cagney  <cagney@redhat.com>
 
 	* cpp.g: Replace IntegerType with SignedType and UnsignedType.

@@ -729,12 +729,13 @@ class DebugInfoEvaluator
     setCurrentFrame(f);
     if (s.charAt(0) == '$')
     {
+	// FIXME: This code doesn't need to access the dwarf register
+	// map; instead just do a direct register lookup.
 	RegisterMap regMap = DwarfRegisterMapFactory.getRegisterMap(f.getTask().getIsa());
 	Register reg = regMap.getRegister(s.substring(1).trim());
 	if (reg == null)
 	    return null;
-	long regval = f.getRegisterValue(reg).asLong();
-	return ArithmeticType.newLongValue(longType, s, regval);
+	return f.getRegisterValue(reg);
     }
 
     DwarfDie varDie = getDie(s);
@@ -773,35 +774,35 @@ class DebugInfoEvaluator
             case BaseTypes.baseTypeUnsignedLong:
             {
               long longVal = variableAccessor[i].getLong(varDie, 0);
-              return ArithmeticType.newLongValue(longType, s, longVal);
+              return longType.createValueFIXME(s, longVal);
             }
             case BaseTypes.baseTypeInteger:
             case BaseTypes.baseTypeUnsignedInteger:
             {
               int intVal = variableAccessor[i].getInt(varDie, 0);
-              return ArithmeticType.newIntegerValue(intType, s, intVal);
+              return intType.createValueFIXME(s, intVal);
             }
             case BaseTypes.baseTypeShort:
             case BaseTypes.baseTypeUnsignedShort:
             {
               short shortVal = variableAccessor[i].getShort(varDie, 0);
-              return ArithmeticType.newShortValue(shortType, s, shortVal);
+              return shortType.createValueFIXME(s, shortVal);
             }
             case BaseTypes.baseTypeByte:
             case BaseTypes.baseTypeUnsignedByte:
             {
               byte byteVal = variableAccessor[i].getByte(varDie, 0);
-              return ArithmeticType.newByteValue(byteType, s, byteVal);
+              return byteType.createValueFIXME(s, byteVal);
             }
             case BaseTypes.baseTypeFloat:
             {
               float floatVal = variableAccessor[i].getFloat(varDie, 0);
-              return ArithmeticType.newFloatValue(floatType, s, floatVal);
+              return floatType.createValueFIXME(s, floatVal);
             }
             case BaseTypes.baseTypeDouble:
             {
               double doubleVal = variableAccessor[i].getDouble(varDie, 0);
-              return ArithmeticType.newDoubleValue(doubleType, s, doubleVal);
+              return doubleType.createValueFIXME(s, doubleVal);
             }
             }
             // if there is no type then use this die's tag
@@ -839,7 +840,7 @@ class DebugInfoEvaluator
             case DwTagEncodings.DW_TAG_pointer_type_:
             {
               long addr = variableAccessor[i].getAddr(varDie);
-              return ArithmeticType.newLongValue(longType, addr);
+              return longType.createValue(addr);
             }
             case DwTagEncodings.DW_TAG_enumeration_type_:
             {
@@ -866,7 +867,7 @@ class DebugInfoEvaluator
             // special case members of an enumeration
             case DwTagEncodings.DW_TAG_enumerator_:
             {
-              return ArithmeticType.newLongValue(longType, varDie.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
+		return longType.createValue(varDie.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
             }
             }
           }
@@ -901,7 +902,7 @@ class DebugInfoEvaluator
   {
     setCurrentFrame(f);
     AccessMemory access = new AccessMemory();
-    return ArithmeticType.newLongValue(longType, access.getAddr(getDie(s))); 
+    return longType.createValue(access.getAddr(getDie(s))); 
   }
   
   public Value getMemory (DebugInfoFrame f, String s) throws NameNotFoundException
@@ -922,20 +923,20 @@ class DebugInfoEvaluator
       {
       case BaseTypes.baseTypeByte:
       case BaseTypes.baseTypeUnsignedByte:
-        return ArithmeticType.newByteValue(byteType, buffer.getByte(addrIndirect));
+	  return byteType.createValue(buffer.getByte(addrIndirect));
       case BaseTypes.baseTypeShort:
       case BaseTypes.baseTypeUnsignedShort:
-        return ArithmeticType.newShortValue(shortType, buffer.getShort(addrIndirect));
+	  return shortType.createValue(buffer.getShort(addrIndirect));
       case BaseTypes.baseTypeInteger:
       case BaseTypes.baseTypeUnsignedInteger:
-        return ArithmeticType.newIntegerValue(intType, buffer.getInt(addrIndirect));
+	  return intType.createValue(buffer.getInt(addrIndirect));
       case BaseTypes.baseTypeLong:
       case BaseTypes.baseTypeUnsignedLong:
-        return ArithmeticType.newLongValue(longType, buffer.getLong(addrIndirect));
+	  return longType.createValue(buffer.getLong(addrIndirect));
       case BaseTypes.baseTypeFloat:
-        return ArithmeticType.newFloatValue(floatType, buffer.getFloat(addrIndirect));
+	  return floatType.createValue(buffer.getFloat(addrIndirect));
       case BaseTypes.baseTypeDouble:
-        return ArithmeticType.newDoubleValue(doubleType, buffer.getDouble(addrIndirect));
+	  return doubleType.createValue(buffer.getDouble(addrIndirect));
       }
     int tag = type != null ? type.getTag() : varDie.getTag();
     switch (tag)

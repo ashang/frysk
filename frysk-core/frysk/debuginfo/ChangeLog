@@ -1,3 +1,10 @@
+2007-08-23  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfoEvaluator.java: Replace ArithmeticType factory methods
+	with ArithmeticType.createValue and
+	ArithmeticType.createValueFIXME.
+	(get(DebugInfoFrame,String)): Return the un-cast register value.
+	
 2007-08-22  Andrew Cagney  <cagney@redhat.com>
 
 	* Variable.java: Use Type.toPrint and Value.toPrint.

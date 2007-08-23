@@ -93,15 +93,21 @@ public class PointerType
 	return new BigInteger(1, location.get(endian));
     }
 
+    /**
+     * FIXME: Should be allowing for the sizef the RHS.
+     */
     public Value add (Value var1, Value var2)
     {
-	return ArithmeticType.newLongValue((ArithmeticType)type, 
-					   var1.asLong() + var2.asLong());
+	return ((ArithmeticType)type).createValue(var1.asLong()
+						  + var2.asLong());
     }
 
+    /**
+     * FIXME: Should be allowing for the sizef the RHS.
+     */
     public Value subtract (Value var1, Value var2)
     {
-	return ArithmeticType.newLongValue((ArithmeticType)type, 
-					   var1.asLong() - var2.asLong());
+	return ((ArithmeticType)type).createValue(var1.asLong()
+						  - var2.asLong());
     }
 }

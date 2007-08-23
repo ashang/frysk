@@ -62,6 +62,13 @@ public abstract class ArithmeticType
 	super(size, endian, typeId, typeStr, haveTypeDef);
     }
   
+    public String toString() {
+	return ("{"
+		+ super.toString()
+		+ ",endian=" + endian
+		+ "}");
+    }
+
   public Value add (Value var1, Value var2)
   {
     Type type;
@@ -71,10 +78,10 @@ public abstract class ArithmeticType
       type = var1.getType();
     
     if (type instanceof IntegerType)
-      return newValue(type, var1.asLong() + var2.asLong());
+      return ((ArithmeticType)type).createValue(var1.asLong() + var2.asLong());
     else if (var1.getType() instanceof FloatingPointType
 	     || var2.getType() instanceof FloatingPointType)
-      return newValue(type, var1.doubleValue() + var2.doubleValue());
+	return ((ArithmeticType)type).createValue(var1.doubleValue() + var2.doubleValue());
     return null;
   }
 
@@ -87,10 +94,10 @@ public abstract class ArithmeticType
       type = var1.getType();
     
     if (type instanceof IntegerType)
-      return newValue(type, var1.asLong() - var2.asLong());
+      return ((ArithmeticType)type).createValue(var1.asLong() - var2.asLong());
     else if (var1.getType() instanceof FloatingPointType
 	|| var2.getType() instanceof FloatingPointType)
-      return newValue(type, var1.doubleValue() - var2.doubleValue());
+      return ((ArithmeticType)type).createValue(var1.doubleValue() - var2.doubleValue());
     return null;
   }
 
@@ -103,10 +110,10 @@ public abstract class ArithmeticType
       type = var1.getType();
     
     if (type instanceof IntegerType)
-      return newValue(type, var1.asLong() * var2.asLong());
+      return ((ArithmeticType)type).createValue(var1.asLong() * var2.asLong());
     else if (var1.getType() instanceof FloatingPointType
 	|| var2.getType() instanceof FloatingPointType)
-      return newValue(type, var1.doubleValue() * var2.doubleValue());
+      return ((ArithmeticType)type).createValue(var1.doubleValue() * var2.doubleValue());
     return null;
   }
 
@@ -119,10 +126,10 @@ public abstract class ArithmeticType
       type = var1.getType();
     
     if (type instanceof IntegerType)
-      return newValue(type, var1.asLong() / var2.asLong());
+      return ((ArithmeticType)type).createValue(var1.asLong() / var2.asLong());
     else if (var1.getType() instanceof FloatingPointType
 	|| var2.getType() instanceof FloatingPointType)
-      return newValue(type, var1.doubleValue() / var2.doubleValue());
+      return ((ArithmeticType)type).createValue(var1.doubleValue() / var2.doubleValue());
     return null;
   }
 
@@ -135,10 +142,10 @@ public abstract class ArithmeticType
       type = var1.getType();
     
     if (type instanceof IntegerType)
-      return newValue(type, var1.asLong() % var2.asLong());
+      return ((ArithmeticType)type).createValue(var1.asLong() % var2.asLong());
     else if (var1.getType() instanceof FloatingPointType
 	|| var2.getType() instanceof FloatingPointType)
-      return newValue(type, var1.doubleValue() % var2.doubleValue());
+      return ((ArithmeticType)type).createValue(var1.doubleValue() % var2.doubleValue());
     return null;
   }
 
@@ -151,7 +158,7 @@ public abstract class ArithmeticType
       type = var1.getType();
     
     if (type instanceof IntegerType)
-	return newValue(type, var1.asLong() << var2.asLong());
+	return ((ArithmeticType)type).createValue(var1.asLong() << var2.asLong());
     else if (var1.getType() instanceof FloatingPointType)
 	throw new InvalidOperatorException(var1.getType(), "<<");
     return null;
@@ -166,7 +173,7 @@ public abstract class ArithmeticType
       type = var1.getType();
     
     if (type instanceof IntegerType)
-	return newValue(type, var1.asLong() >> var2.asLong());
+	return ((ArithmeticType)type).createValue(var1.asLong() >> var2.asLong());
     else if (var1.getType() instanceof FloatingPointType)
 	throw new InvalidOperatorException(var1.getType(), ">>");
     return null;
@@ -181,10 +188,10 @@ public abstract class ArithmeticType
       type = var1.getType();
     
     if (type instanceof IntegerType)
-      return newValue(type, (var1.asLong() < var2.asLong()) ? 1 : 0);
+      return ((ArithmeticType)type).createValue((var1.asLong() < var2.asLong()) ? 1 : 0);
     else if (var1.getType() instanceof FloatingPointType
 	|| var2.getType() instanceof FloatingPointType)
-      return newValue(type, (var1.doubleValue() < var2.doubleValue()) ? 1 : 0);
+      return ((ArithmeticType)type).createValue((var1.doubleValue() < var2.doubleValue()) ? 1 : 0);
     return null;
   }
   
@@ -197,10 +204,10 @@ public abstract class ArithmeticType
       type = var1.getType();
     
     if (type instanceof IntegerType)
-      return newValue(type, (var1.asLong() > var2.asLong()) ? 1 : 0);
+      return ((ArithmeticType)type).createValue((var1.asLong() > var2.asLong()) ? 1 : 0);
     else if (var1.getType() instanceof FloatingPointType
 	|| var2.getType() instanceof FloatingPointType)
-      return newValue(type, (var1.doubleValue() > var2.doubleValue()) ? 1 : 0);
+      return ((ArithmeticType)type).createValue((var1.doubleValue() > var2.doubleValue()) ? 1 : 0);
     return null;
   }
 
@@ -213,10 +220,10 @@ public abstract class ArithmeticType
       type = var1.getType();
     
     if (type instanceof IntegerType)
-      return newValue(type, (var1.asLong() <= var2.asLong()) ? 1 : 0);
+      return ((ArithmeticType)type).createValue((var1.asLong() <= var2.asLong()) ? 1 : 0);
     else if (var1.getType() instanceof FloatingPointType
 	|| var2.getType() instanceof FloatingPointType)
-      return newValue(type, (var1.doubleValue() <= var2.doubleValue()) ? 1 : 0);
+      return ((ArithmeticType)type).createValue((var1.doubleValue() <= var2.doubleValue()) ? 1 : 0);
     return null;
   }
   
@@ -229,10 +236,10 @@ public abstract class ArithmeticType
       type = var1.getType();
     
     if (type instanceof IntegerType)
-      return newValue(type, (var1.asLong() >= var2.asLong()) ? 1 : 0);
+      return ((ArithmeticType)type).createValue((var1.asLong() >= var2.asLong()) ? 1 : 0);
     else if (var1.getType() instanceof FloatingPointType
 	|| var2.getType() instanceof FloatingPointType)
-      return newValue(type, (var1.doubleValue() >= var2.doubleValue()) ? 1 : 0);
+      return ((ArithmeticType)type).createValue((var1.doubleValue() >= var2.doubleValue()) ? 1 : 0);
     return null;
   }
   
@@ -245,10 +252,10 @@ public abstract class ArithmeticType
       type = var1.getType();
     
     if (type instanceof IntegerType)
-      return newValue(type, (var1.asLong() == var2.asLong()) ? 1 : 0);
+      return ((ArithmeticType)type).createValue((var1.asLong() == var2.asLong()) ? 1 : 0);
     else if (var1.getType() instanceof FloatingPointType
 	|| var2.getType() instanceof FloatingPointType)
-      return newValue(type, (var1.doubleValue() == var2.doubleValue()) ? 1 : 0);
+      return ((ArithmeticType)type).createValue((var1.doubleValue() == var2.doubleValue()) ? 1 : 0);
     return null;
   }
 
@@ -261,10 +268,10 @@ public abstract class ArithmeticType
       type = var1.getType();
     
     if (type instanceof IntegerType)
-      return newValue(type, (var1.asLong() != var2.asLong()) ? 1 : 0);
+      return ((ArithmeticType)type).createValue((var1.asLong() != var2.asLong()) ? 1 : 0);
     else if (var1.getType() instanceof FloatingPointType
 	|| var2.getType() instanceof FloatingPointType)
-      return newValue(type, (var1.doubleValue() != var2.doubleValue()) ? 1 : 0);
+      return ((ArithmeticType)type).createValue((var1.doubleValue() != var2.doubleValue()) ? 1 : 0);
     return null;
   }
   
@@ -277,7 +284,7 @@ public abstract class ArithmeticType
       type = var1.getType();
     
     if (type instanceof IntegerType)
-      return newValue(type, var1.asLong() & var2.asLong());
+      return ((ArithmeticType)type).createValue(var1.asLong() & var2.asLong());
       else if (var1.getType() instanceof FloatingPointType)
 	  throw new InvalidOperatorException(var1.getType(), "&");
     return null;
@@ -292,7 +299,7 @@ public abstract class ArithmeticType
       type = var1.getType();
     
     if (type instanceof IntegerType)
-      return newValue(type, (var1.asLong() | var2.asLong()));
+      return ((ArithmeticType)type).createValue((var1.asLong() | var2.asLong()));
     else if (var1.getType() instanceof FloatingPointType)
 	throw new InvalidOperatorException(var1.getType(), "|");
     return null;
@@ -307,7 +314,7 @@ public abstract class ArithmeticType
       type = var1.getType();
     
     if (type instanceof IntegerType)
-      return newValue(type, (var1.asLong() ^ var2.asLong()));
+      return ((ArithmeticType)type).createValue((var1.asLong() ^ var2.asLong()));
     else if (var1.getType() instanceof FloatingPointType)
 	throw new InvalidOperatorException(var1.getType(), "^");
     return null;
@@ -318,7 +325,7 @@ public abstract class ArithmeticType
     Type type = var1.getType();
     
     if (type instanceof IntegerType)
-      return newValue(type, (~var1.asLong()));
+      return ((ArithmeticType)type).createValue((~var1.asLong()));
     else if (var1.getType() instanceof FloatingPointType)
 	throw new InvalidOperatorException(var1.getType(), "~");
     return null;
@@ -333,7 +340,7 @@ public abstract class ArithmeticType
       type = var1.getType();
 
     if (type instanceof IntegerType)
-      return newValue(type, (var1.asLong() == 0 ? false : true)
+      return ((ArithmeticType)type).createValue((var1.asLong() == 0 ? false : true)
                               && (var2.asLong() == 0 ? false : true) ? 1 : 0);
     else if (var1.getType() instanceof FloatingPointType)
 	throw new InvalidOperatorException(var1.getType(), "&&");
@@ -349,7 +356,7 @@ public abstract class ArithmeticType
       type = var1.getType();
     
     if (type instanceof IntegerType)
-      return newValue(type, (var1.asLong() == 0 ? false : true)
+      return ((ArithmeticType)type).createValue((var1.asLong() == 0 ? false : true)
                               || (var2.asLong() == 0 ? false : true) ? 1 : 0);
     else if (var1.getType() instanceof FloatingPointType)
 	throw new InvalidOperatorException(var1.getType(), "||");
@@ -360,7 +367,7 @@ public abstract class ArithmeticType
   {
     Type type = var1.getType();
     if (type instanceof IntegerType)
-      return newValue(type, (var1.asLong() == 0 ? true : false) ? 1 : 0);
+      return ((ArithmeticType)type).createValue((var1.asLong() == 0 ? true : false) ? 1 : 0);
     else if (var1.getType() instanceof FloatingPointType)
 	throw new InvalidOperatorException(var1.getType(), "||");
     return null;
@@ -453,134 +460,95 @@ public abstract class ArithmeticType
     return ((var1.asLong() == 0) ? false : true);
   }
 
-  public Value newValue(Type type, int val)
-    {
-      switch (type.typeId)
-      {
-	case BaseTypes.baseTypeByte:
-	  return ArithmeticType.newByteValue((ArithmeticType)type, (byte)val);
-	case BaseTypes.baseTypeShort:
-       	  return ArithmeticType.newShortValue((ArithmeticType)type, (short)val);
-	case BaseTypes.baseTypeInteger:
-	  return ArithmeticType.newIntegerValue((ArithmeticType)type, val);
-	case BaseTypes.baseTypeLong:
-	  return ArithmeticType.newLongValue((ArithmeticType)type, (long)val);
-	case BaseTypes.baseTypeFloat:
-	  return ArithmeticType.newFloatValue((ArithmeticType)type, (float)val);
-	case BaseTypes.baseTypeDouble:
-	  return ArithmeticType.newDoubleValue((ArithmeticType)type, (double)val);
-      }
-      return null;
-    }
-
-  public Value newValue (Type type, long val)
-  {
-    if (type.typeId < BaseTypes.baseTypeLong)
-      return this.newValue(type, (int) val);
-    switch (type.typeId)
-      {
-      case BaseTypes.baseTypeLong:
-	return ArithmeticType.newLongValue((ArithmeticType) type, val);
-      case BaseTypes.baseTypeFloat:
-	return ArithmeticType.newFloatValue((ArithmeticType) type, (float) val);
-      case BaseTypes.baseTypeDouble:
-	return ArithmeticType.newDoubleValue((ArithmeticType) type, (double) val);
-      }
-    return null;
-  }
-
-  public Value newValue (Type type, double val)
-  {
-    switch (type.typeId)
-      {
-      case BaseTypes.baseTypeFloat:
-	return ArithmeticType.newFloatValue((ArithmeticType) type, (float) val);
-      case BaseTypes.baseTypeDouble:
-	return ArithmeticType.newDoubleValue((ArithmeticType) type, val);
-      }
-    return null;
-  }
-  
-  public static Value newByteValue (ArithmeticType type, byte val)
-  {
-    return newByteValue (type, "temp", val);
-  }
-
-  public static Value newByteValue (ArithmeticType type, String text, 
-                                          byte val)
-  {
-    Value returnVar = new Value(type, text);
-    returnVar.getLocation().putByte(val);
-    return returnVar;
-  }
-
-  public static Value newShortValue (ArithmeticType type, short val)
-  {
-    return newShortValue (type, "temp", val);
-  }
-
-  public static Value newShortValue (ArithmeticType type, String text, 
-                                           short val)
-  {
-    Value returnVar = new Value(type, text);
-    returnVar.getLocation().putShort(val);
-    return returnVar;
-  }
-
-  public static Value newIntegerValue (ArithmeticType type, int val)
-  {
-    return newIntegerValue (type, "temp", val);
-  }
-
-  public static Value newIntegerValue (ArithmeticType type, String text, 
-                                             int val)
-  {
-    Value returnVar = new Value(type, text);
-    returnVar.getLocation().putInt(val);
-    return returnVar;
-  }
-
-  public static Value newLongValue (ArithmeticType type, long val)
-  {
-    return newLongValue (type, "temp", val);
-  }
-
-  public static Value newLongValue (ArithmeticType type, String text, 
-                                          long val)
-  {
-    Value returnVar = new Value(type, text);
-    returnVar.getLocation().putLong(val);
-    return returnVar;
-  }
-
-  public static Value newFloatValue (ArithmeticType type, float val)
-  {
-    return newFloatValue (type, "temp", val);
-  }
-
-  public static Value newFloatValue (ArithmeticType type, String text, 
-                                           float val)
-  {
-    Value returnVar = new Value(type, text);
-    returnVar.getLocation().putFloat(val);
-    return returnVar;
-  }
-
-  public static Value newDoubleValue (ArithmeticType type, double val)
-  {
-    return newDoubleValue (type, "temp", val);
-  }
-
-  public static Value newDoubleValue (ArithmeticType type, String text, 
-                                            double val)
-  {
-    Value returnVar = new Value(type, text);
-    returnVar.getLocation().putDouble(val);
-    return returnVar;
-  }
-
     public void toPrint(PrintWriter writer) {
 	writer.print(name);
+    }
+
+    /**
+     * Create a new Value of THIS Type, initialized to VAL.
+     *
+     * This is a convenience method for creating a simple arithmetic
+     * type from a constant.  In general code should be creating a
+     * Value using a Type and a Location.
+     */
+    public Value createValue(float val) {
+	return createValue(Float.floatToRawIntBits(val));
+    }
+    /**
+     * Create a new Value of THIS Type, initialized to VAL.
+     *
+     * FIXME: Code should be directly constructing the Value using
+     * Type and Location; that change is waiting on the implementation
+     * of a DWARF location-expression parser that returns Locations
+     * and not values .  FIXME: Code should not be trying to give a
+     * Value a name; that is a legacy from when Value and Variable
+     * were the same class.
+     */
+    public Value createValueFIXME(String name, float val) {
+	return createValueFIXME(name, Float.floatToRawIntBits(val));
+    }
+    /**
+     * Create a new Value of THIS Type, initialized to VAL.
+     *
+     * This is a convenience method for creating a simple arithmetic
+     * type from a constant.  In general code should be creating a
+     * Value using a Type and a Location.
+     */
+    public Value createValue(double val) {
+	return createValue(Double.doubleToRawLongBits(val));
+    }
+    /**
+     * Create a new Value of THIS Type, initialized to VAL.
+     *
+     * FIXME: Code should be directly constructing the Value using
+     * Type and Location; that change is waiting on the implementation
+     * of a DWARF location-expression parser that returns Locations
+     * and not values .  FIXME: Code should not be trying to give a
+     * Value a name; that is a legacy from when Value and Variable
+     * were the same class.
+     */
+    public Value createValueFIXME(String name, double val) {
+	return createValueFIXME(name, Double.doubleToRawLongBits(val));
+    }
+
+    /**
+     * Create a new Value of THIS Type, initialized to VAL.
+     */
+    Value createValue(BigInteger val) {
+	Location l = new Location(getSize());
+	// FIXME: Read path still uses Location byte-order.
+	l.getByteBuffer().order(endian);
+	putBigInteger(l, val);
+	return new Value(this, l);
+    }
+    /**
+     * Create a new Value of THIS type, initialized to the long VAL.
+     *
+     * This is a convenience method for creating a simple arithmetic
+     * type from a constant.  In general code should be creating a
+     * Value using a Type and a Location.
+     */ 
+    public Value createValue(long val) {
+	BigInteger b = new BigInteger(Long.toString(val));
+	return createValue(b);
+    }
+    /**
+     * Create a new Value of THIS Type, initialized to VAL.
+     *
+     * FIXME: Code should be directly constructing the Value using
+     * Type and Location; that change is waiting on the implementation
+     * of a DWARF location-expression parser that returns Locations
+     * and not values .  FIXME: Code should not be trying to give a
+     * Value a name; that is a legacy from when Value and Variable
+     * were the same class.
+     */
+    public Value createValueFIXME(String nameFIXME, long val) {
+	BigInteger b = new BigInteger(Long.toString(val));
+	Location l = new Location(getSize());
+	// FIXME: Read path still uses Location byte-order.
+	l.getByteBuffer().order(endian);
+	putBigInteger(l, b);
+	return new Value(this, nameFIXME, l);
     }
 
     /**
