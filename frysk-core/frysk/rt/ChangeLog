@@ -1,3 +1,7 @@
+2007-08-23  Andrew Cagney  <cagney@redhat.com>
+
+	* UpdatingDisplayValue.java: Use Location.toByteArray().
+
 2007-08-22  Andrew Cagney  <cagney@redhat.com>
 
 	* TestUpdatingDisplayValue.java (testTaskDead): Mark as

@@ -55,19 +55,9 @@ import inua.eio.ByteOrder;
 public class Location
 {
     private final ByteBuffer location;
-    private final int index;
-
-    Location (long capacity)  {
-	this (new ArrayByteBuffer(capacity));
-    }
 
     Location (ByteBuffer location) {
-	this (location, 0);
-    }
-
-    Location(ByteBuffer location, int index) {
 	this.location = location;
-	this.index = 0;
     }
 
     /**
@@ -94,8 +84,8 @@ public class Location
      * Useful for code trying to extract byte-order dependent data
      * such as that needed by BigInteger and BigDecimal.
      *
-     * Can re-implement this by decorating byte-order with a location
-     * specific get/put method.
+     * Could re-implement this by decorating byte-order with a
+     * location specific get/put method.
      */
     byte[] get(ByteOrder order) {
 	byte[] bytes = new byte[(int)location.capacity()];
@@ -109,6 +99,14 @@ public class Location
 	    }
 	}
 	return bytes;
+    }
+
+    /**
+     * Return the entire contents of the location as a sequence of raw
+     * bytes.
+     */
+    public byte[] toByteArray() {
+	return get(ByteOrder.BIG_ENDIAN);
     }
 
     /**
@@ -171,30 +169,30 @@ public class Location
     }
 
     /** FIXME: Do not use; this is going away.  */
-    public ByteBuffer getByteBuffer() { return location;}
+    ByteBuffer getByteBuffer() { return location;}
     /** FIXME: Do not use; this is going away.  */
-    double getDouble() { return location.getDouble(index); }
+    double getDouble() { return location.getDouble(0); }
     /** FIXME: Do not use; this is going away.  */
-    float getFloat() { return location.getFloat(index); }
+    float getFloat() { return location.getFloat(0); }
     /** FIXME: Do not use; this is going away.  */
-    long getLong() { return location.getLong(index); }
+    long getLong() { return location.getLong(0); }
     /** FIXME: Do not use; this is going away.  */
-    int getInt() { return location.getInt(index); }
+    int getInt() { return location.getInt(0); }
     /** FIXME: Do not use; this is going away.  */
-    short getShort() { return location.getShort(index); }
+    short getShort() { return location.getShort(0); }
     /** FIXME: Do not use; this is going away.  */
-    byte getByte() { return (byte)location.getByte(index); }
+    byte getByte() { return (byte)location.getByte(0); }
 
     /** FIXME: Do not use; this is going away.  */
-    double getDouble(ByteOrder order) { return location.getDouble(order, index); }
+    double getDouble(ByteOrder order) { return location.getDouble(order, 0); }
     /** FIXME: Do not use; this is going away.  */
-    float getFloat(ByteOrder order) { return location.getFloat(order, index); }
+    float getFloat(ByteOrder order) { return location.getFloat(order, 0); }
     /** FIXME: Do not use; this is going away.  */
-    long getLong(ByteOrder order) { return location.getLong(order, index); }
+    long getLong(ByteOrder order) { return location.getLong(order, 0); }
     /** FIXME: Do not use; this is going away.  */
-    int getInt(ByteOrder order) { return location.getInt(order, index); }
+    int getInt(ByteOrder order) { return location.getInt(order, 0); }
     /** FIXME: Do not use; this is going away.  */
-    short getShort(ByteOrder order) { return location.getShort(order, index); }
+    short getShort(ByteOrder order) { return location.getShort(order, 0); }
     
     /** FIXME: Do not use; this is going away.  */
     double getDouble(int idx) { return location.getDouble(idx); }
@@ -221,26 +219,26 @@ public class Location
     short getShort(ByteOrder order, int idx) { return location.getShort(order, idx); }
     
     /** FIXME: Do not use; this is going away.  */
-    void putDouble(double value)  {location.putDouble(index, value);}
+    void putDouble(double value)  {location.putDouble(0, value);}
     /** FIXME: Do not use; this is going away.  */
-    void putFloat(float value)  {location.putFloat(index, value);}
+    void putFloat(float value)  {location.putFloat(0, value);}
     /** FIXME: Do not use; this is going away.  */
-    void putLong(long value)  {location.putLong(index, value);}
+    void putLong(long value)  {location.putLong(0, value);}
     /** FIXME: Do not use; this is going away.  */
-    void putInt(int value)  {location.putInt(index, value);}
+    void putInt(int value)  {location.putInt(0, value);}
     /** FIXME: Do not use; this is going away.  */
-    void putShort(short value)  {location.putShort(index, value);}
+    void putShort(short value)  {location.putShort(0, value);}
     /** FIXME: Do not use; this is going away.  */
-    void putByte(byte value)  {location.putByte(index, (byte)value);}
+    void putByte(byte value)  {location.putByte(0, (byte)value);}
     
     /** FIXME: Do not use; this is going away.  */
-    void putDouble(ByteOrder order, double value)  {location.putDouble(order, index, value);}
+    void putDouble(ByteOrder order, double value)  {location.putDouble(order, 0, value);}
     /** FIXME: Do not use; this is going away.  */
-    void putFloat(ByteOrder order, float value)  {location.putFloat(order, index, value);}
+    void putFloat(ByteOrder order, float value)  {location.putFloat(order, 0, value);}
     /** FIXME: Do not use; this is going away.  */
-    void putLong(ByteOrder order, long value)  {location.putLong(order, index, value);}
+    void putLong(ByteOrder order, long value)  {location.putLong(order, 0, value);}
     /** FIXME: Do not use; this is going away.  */
-    void putInt(ByteOrder order, int value)  {location.putInt(order, index, value);}
+    void putInt(ByteOrder order, int value)  {location.putInt(order, 0, value);}
     /** FIXME: Do not use; this is going away.  */
-    void putShort(ByteOrder order, short value)  {location.putShort(order, index, value);}
+    void putShort(ByteOrder order, short value)  {location.putShort(order, 0, value);}
 }

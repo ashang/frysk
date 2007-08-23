@@ -62,7 +62,7 @@ public class Value
  
     public Value(Type type, String textFIXME)
     {
-      this(type, textFIXME, (new Location(type.getSize())));
+	this(type, textFIXME, new Location(new byte[type.getSize()]));
     }
 
     public Value(Type type, String textFIXME, ByteBuffer byteBuffer) 

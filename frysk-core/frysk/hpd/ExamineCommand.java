@@ -43,7 +43,6 @@ import java.text.ParseException;
 import java.util.Iterator;
 import frysk.value.Value;
 import javax.naming.NameNotFoundException;
-import inua.eio.ByteBuffer;
 import java.util.ArrayList;
 
 public class ExamineCommand extends CLIHandler {
@@ -80,9 +79,9 @@ public class ExamineCommand extends CLIHandler {
 	    // For moment, just print the bytes.
 	    cli.outWriter.println("[" + tdata.getParentID() + "."
 		    + tdata.getID() + "]");
-	    ByteBuffer bytes = value.getLocation().getByteBuffer();
-	    for (int i = 0; i < bytes.capacity(); i++) {
-		cli.outWriter.println(i + ": " + bytes.getByte(i));
+	    byte[] bytes = value.getLocation().toByteArray();
+	    for (int i = 0; i < bytes.length; i++) {
+		cli.outWriter.println(i + ": " + bytes[i]);
 	    }
 	}
     }

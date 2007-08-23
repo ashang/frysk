@@ -515,7 +515,7 @@ public abstract class ArithmeticType
      * Create a new Value of THIS Type, initialized to VAL.
      */
     Value createValue(BigInteger val) {
-	Location l = new Location(getSize());
+	Location l = new Location(new byte[getSize()]);
 	// FIXME: Read path still uses Location byte-order.
 	l.getByteBuffer().order(endian);
 	putBigInteger(l, val);
@@ -544,7 +544,7 @@ public abstract class ArithmeticType
      */
     public Value createValueFIXME(String nameFIXME, long val) {
 	BigInteger b = new BigInteger(Long.toString(val));
-	Location l = new Location(getSize());
+	Location l = new Location(new byte[getSize()]);
 	// FIXME: Read path still uses Location byte-order.
 	l.getByteBuffer().order(endian);
 	putBigInteger(l, b);

@@ -1,5 +1,13 @@
 2007-08-23  Andrew Cagney  <cagney@redhat.com>
 
+	* Location.java (getByteBuffer()): Make package.private.
+	(toByteArray): New.	
+	(index): Delete.
+	(Location(int,ByteBuffer)): Delete.
+	(Location(long)): Delete.
+	* Value.java: Update.
+	* ArithmeticType.java: Update.
+	
 	* ArithmeticType.java (createValue(BigInteger)): New.
 	(createValue(long)): New.
 	(createValue(float)): New.

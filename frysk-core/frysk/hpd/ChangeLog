@@ -1,3 +1,8 @@
+2007-08-23  Andrew Cagney  <cagney@redhat.com>
+
+	* ExamineCommand.java: Replace Location.getByteBuffer() with
+	Location.toByteArray().
+
 2007-08-23  Mike Cvet  <mcvet@redhat.com>
 	
 	* CLI.java (SteppingObserver.update): Notify monitor and blank

@@ -39,14 +39,11 @@
 
 package frysk.rt;
 
-import inua.eio.ByteBuffer;
-
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-
 import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
@@ -137,10 +134,8 @@ public class UpdatingDisplayValue extends DisplayValue {
 	if (observers != null) // (but only if there's someone to listen)
 	    notifyObserversAvailable();
 
-	ByteBuffer newBuffer = myVar.getLocation().getByteBuffer();
 	// TODO: is this kosher?
-	byte[] newValue = new byte[(int) newBuffer.capacity()];
-	newBuffer.get(newValue);
+	byte[] newValue = myVar.getLocation().toByteArray();
 
 	/*
          * On the first call to refresh, lastValue will be null, so we don't
