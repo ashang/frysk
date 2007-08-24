@@ -408,7 +408,7 @@ cat <<EOF
 noinst_LIBRARIES += lib${GEN_DIRNAME}.a
 ${sources} =
 ${nodist_lib_sources} =
-GEN_GCJ_LDADD += lib${GEN_DIRNAME}.a
+GEN_GCJ_LDADD_LIST += lib${GEN_DIRNAME}.a
 
 # Compile the .a into a .so; Makefile.rules contains the rule and does
 # not use libtool.
@@ -444,7 +444,7 @@ nodist_TestRunner_SOURCES = TestRunner.java
 CLEANFILES += TestRunner.java
 ${nodist_lib_sources} += ${GEN_SOURCENAME}/JUnitTests.java
 BUILT_SOURCES += ${GEN_SOURCENAME}/JUnitTests.java
-TestRunner_LDADD = \${LIBJUNIT} \${GEN_GCJ_LDADD}
+TestRunner_LDADD = \${LIBJUNIT} \${GEN_GCJ_LDADD_LIST}
 TESTS += TestRunner
 noinst_PROGRAMS += TestRunner
 EOF
@@ -491,7 +491,7 @@ for suffix in .java .mkjava .shjava .mkenum .shenum .javain ; do
 	    echo "${name_}_SOURCES ="
 	    echo "${name_}_LINK = \$(GCJLINK) \$(${name_}_LDFLAGS)"
 	    echo_LDFLAGS ${name}
-	    echo "${name_}_LDADD = \$(GEN_GCJ_LDADD)"
+	    echo "${name_}_LDADD = \$(GEN_GCJ_LDADD_LIST)"
 	fi
     done || exit 1
 done
