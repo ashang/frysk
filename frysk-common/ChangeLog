@@ -1,3 +1,7 @@
+2007-08-23  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (fryski, gij.sh): Delete targets.
+
 2007-08-16  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk-common.ac (WITH_LIBOPCODES): Add --with-libopcodes.

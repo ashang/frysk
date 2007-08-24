@@ -537,48 +537,6 @@ ARCH32_CXXLINK = $(subst $(space)-m64$(space), ,$(CXXLINK)) -m32
 endif
 
 
-if !USE_COVERAGE
-# Build a version of frysk that behaves like the Java interpreter
-# (while it is set up to be run anywhere it is not installed -- there
-# is one of these per-directory).
-
-# XXX: There is a horrible race condition here, fryski depends on all
-# the .so being created but the below only (via GEN_GCJ_LDADD)
-# explicitly mentions .a files.  Make will build fryski after the .a
-# but before the .so.  Work around this by prepending a list of the
-# local .so files to LDADD.
-
-fryski_SOURCES =
-fryski_LINK = $(GCJLINK) $(fryski_LDFLAGS)
-noinst_PROGRAMS += fryski
-fryski_LDFLAGS = \
-	-lgij \
-	-Wl,-rpath,$(GEN_GCJ_RPATH) \
-	$(GEN_GCJ_SO_FLAGS)
-fryski_LDADD = \
-	$(patsubst lib%.a, lib%.so, $(filter lib%.a,$(GEN_GCJ_LDADD))) \
-	$(GEN_GCJ_LDADD)
-
-# Wrap fryski in an interpreter script.
-
-# XXX: Do not use LD_PRELOAD here.  If frysk creates a child process
-# then that child will see and execute the LD_PRELOAD.
-
-# XXX: Do not use -Dgnu.gcj.precompiled.db.path=$(DBPATH) here.  For
-# reasons not yet explained it is ignored.
-
-noinst_PROGRAMS += gij.sh
-gij_sh_SOURCES =
-gij.sh: Makefile
-	rm -f $@.tmp
-	echo '#!/bin/sh' >> $@.tmp
-	echo 'export LD_LIBRARY_PATH="$(GEN_GCJ_RPATH)"' >> $@.tmp
-	echo 'export CLASSPATH="$(GEN_CLASSDIR):$(CLASSPATH):$${CLASSPATH}"' >> $@.tmp
-	echo 'exec ./fryski "$$@"' >> $@.tmp
-	chmod a+x $@.tmp
-	mv $@.tmp $@
-endif
-
 SUFFIXES += .fig .jpg .pdf .eps .gif .txt
 .fig.jpg:
 	mkdir -p `dirname $@`
