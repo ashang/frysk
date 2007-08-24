@@ -1,5 +1,10 @@
 2007-08-24  Andrew Cagney  <cagney@redhat.com>
 
+	* Location.java (orderFIXME): Delete.
+	(toString): Update.
+	* TestClass.java: Delete call to orderFIXME.
+	* ArithmeticType.java: Delete call to orderFIXME.
+
 	* Location.java (getDouble()): Delete.
 	(getFloat()): Delete.
 	(getLong()): Delete.

@@ -46,10 +46,12 @@ import inua.eio.ByteOrder;
 /**
  * Location of a variable.
  *
- * An stream of bytes accessable using get/put methods.  The
- * underlying buffer does NOT have a byte-ordering.  Instead, code
- * needing to interpret the bytes with a particular ordering (little,
- * big, et.al.) must provide an explicit byte-order parameter.
+ * An sequence of bytes accessable using get/put methods.  The
+ * underlying buffer does NOT have an implict byte-ordering
+ * (technically this makes the buffer big-endian).  Instead, code
+ * needing to interpret a sequence of bytes as having a particular
+ * ordering (little, big, et.al.) must specify that ordering
+ * explicitly.
  */
 
 public class Location
@@ -71,7 +73,6 @@ public class Location
 	return ("{"
 		+ super.toString()
 		+ ",size=" + location.capacity()
-		+ ",orderFIXME=" + location.order()
 		+ "}");
     }
 
@@ -166,16 +167,6 @@ public class Location
 	ByteBuffer s = location.slice(offset, length);
 	s.order(location.order());
 	return new Location(s);
-    }
-
-    /**
-     * Force the ByteBuffer's byte order.
-     *
-     * FIXME: Byte-order is a type thing, and types should specify the
-     * byte-order when fetching values.
-     */
-    void orderFIXME(ByteOrder order) {
-	location.order(order);
     }
 
     /** FIXME: Do not use; this is going away.  */
