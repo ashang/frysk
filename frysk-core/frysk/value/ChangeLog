@@ -1,3 +1,13 @@
+2007-08-24  Andrew Cagney  <cagney@redhat.com>
+
+	* PointerType.java (createValue): Delete call to
+	Location.orderFIXME, and use Location.putLong(ByteOrder,val);
+	* Value.java (getByte, putByte): Make package private.
+	(getChar, putChar): Ditto.
+	(getShort, putShort): Ditto.
+	(getInt, putInt): Ditto.
+	(getLong, putLong): Ditto.
+
 2007-08-24  Stan Cox  <scox@redhat.com>
 
 	* PointerType.java (toPrint): Increment char* address.

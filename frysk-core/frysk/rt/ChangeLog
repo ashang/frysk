@@ -1,3 +1,8 @@
+2007-08-24  Andrew Cagney  <cagney@redhat.com>
+
+	* TestDisplayValue.java: Replace Value.getInt, with Value.asLong.
+	* TestUpdatingDisplayValue.java: Ditto.
+
 2007-08-23  Andrew Cagney  <cagney@redhat.com>
 
 	* UpdatingDisplayValue.java: Use Location.toByteArray().

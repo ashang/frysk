@@ -102,7 +102,7 @@ public class Value
      * FIXME: Do not use this.  Get the location and then use it's
      * methods.
      */
-    public byte getByte() {
+    byte getByte() {
 	return location.getByte(0);
     }
 
@@ -110,7 +110,7 @@ public class Value
      * FIXME: Do not use this.  Get the location and then use it's
      * methods.
      */
-    public char getChar() {
+    char getChar() {
       return (char)location.getShort(type.getEndian(), 0);
     }
 
@@ -118,7 +118,7 @@ public class Value
      * FIXME: Do not use this.  Get the location and then use it's
      * methods.
      */
-    public short getShort() {
+    short getShort() {
       return location.getShort(type.getEndian(), 0);
     }
     
@@ -126,7 +126,7 @@ public class Value
      * FIXME: Do not use this.  Get the location and then use it's
      * methods.
      */
-    public int getInt() {
+    int getInt() {
       return location.getInt(type.getEndian(), 0);
     }
 
@@ -134,7 +134,7 @@ public class Value
      * FIXME: Do not use this.  Get the location and then use it's
      * methods.
      */
-    public long getLong() {
+    long getLong() {
       return location.getLong(type.getEndian(), 0);
     }
     
@@ -158,7 +158,7 @@ public class Value
      * FIXME: Do not use this.  Get the location and then use it's
      * methods.
      */
-    public byte getByte(int idx) {
+    byte getByte(int idx) {
       return (byte)location.getByte(idx);
     }
 
@@ -166,7 +166,7 @@ public class Value
      * FIXME: Do not use this.  Get the location and then use it's
      * methods.
      */
-    public char getChar(int idx) {
+    char getChar(int idx) {
       return (char)location.getShort(type.getEndian(), idx);
     }
 
@@ -174,7 +174,7 @@ public class Value
      * FIXME: Do not use this.  Get the location and then use it's
      * methods.
      */
-    public short getShort(int idx) {
+    short getShort(int idx) {
       return location.getShort(type.getEndian(), idx);
     }
 
@@ -182,7 +182,7 @@ public class Value
      * FIXME: Do not use this.  Get the location and then use it's
      * methods.
      */
-    public int getInt(int idx) {
+    int getInt(int idx) {
       return location.getInt(type.getEndian(), idx);
     }
 
@@ -190,7 +190,7 @@ public class Value
      * FIXME: Do not use this.  Get the location and then use it's
      * methods.
      */
-    public long getLong(int idx) {
+    long getLong(int idx) {
       return location.getLong(type.getEndian(), idx);
     }
 
@@ -214,7 +214,7 @@ public class Value
      * FIXME: Do not use this.  Get the location and then use it's
      * methods.
      */
-    public void putByte(byte val) {
+    void putByte(byte val) {
       location.putByte(val);
     }
 
@@ -222,7 +222,7 @@ public class Value
      * FIXME: Do not use this.  Get the location and then use it's
      * methods.
      */
-    public void putChar(char val) {
+    void putChar(char val) {
 	location.putShort(type.getEndian(), (short)val);
     }
 
@@ -230,7 +230,7 @@ public class Value
      * FIXME: Do not use this.  Get the location and then use it's
      * methods.
      */
-    public void putShort(short val) {
+    void putShort(short val) {
       location.putShort(type.getEndian(), val);
     }
 
@@ -238,7 +238,7 @@ public class Value
      * FIXME: Do not use this.  Get the location and then use it's
      * methods.
      */
-    public void putInt(int val) {
+    void putInt(int val) {
       location.putInt(type.getEndian(), val);
     }
 
@@ -246,7 +246,7 @@ public class Value
      * FIXME: Do not use this.  Get the location and then use it's
      * methods.
      */
-    public void putLong(long val) {
+    void putLong(long val) {
       location.putLong(type.getEndian(), val);
     }
 
@@ -283,7 +283,7 @@ public class Value
      * FIXME: Do not use this as it is assuming that Java's
      * floating-point double matches that of the host.
      */
-    public double doubleValue()
+    double doubleValue()
     {
       switch (type.getTypeIdFIXME())
       {

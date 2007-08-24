@@ -152,7 +152,7 @@ public class TestUpdatingDisplayValue extends TestLib
     
     DisplayObserver obs = new DisplayObserver();
     uDisp.addObserver(obs);
-    int oldValue = uDisp.getValue().getInt();
+    long oldValue = uDisp.getValue().asLong();
     
     /*
      * Second breakpoint
@@ -170,7 +170,7 @@ public class TestUpdatingDisplayValue extends TestLib
     steppingEngine.continueExecution(list);
     assertRunUntilStop("Second breakpoint");
     
-    assertTrue("Value did not change", oldValue != uDisp.getValue().getInt());
+    assertTrue("Value did not change", oldValue != uDisp.getValue().asLong());
     assertTrue("Observer was not notified of a value change", obs.hitChanged);
     
     steppingEngine.continueExecution(list);

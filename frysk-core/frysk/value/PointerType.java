@@ -96,9 +96,8 @@ public class PointerType
     public Value createValue (long val)
     {
 	Location l = new Location(new byte[getSize()]);
-	l.orderFIXME(endian);
 	Value returnVar = new Value(this, l);
-	returnVar.getLocation().putLong(val);
+	returnVar.getLocation().putLong(endian, val);
 	return returnVar;
     }
 

@@ -1,6 +1,14 @@
+2007-08-24  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfoEvaluator.java: Replace Value.getByte, Value.getShort,
+	Value.getInt, and Value.getLong with Value.asLong.  Replace
+	Value.putByte, Value.putShort, Value.putInt, and Value.putLong
+	with ArithmeticType.createValue.
+	
 2007-08-24  Stan Cox  <scox@redhat.com>
 
-	* DebugInfoEvaluator.java (get): Create a PointerType for a pointer_type tag.
+	* DebugInfoEvaluator.java (get): Create a PointerType for a
+	pointer_type tag.
 
 2007-08-23  Andrew Cagney  <cagney@redhat.com>
 

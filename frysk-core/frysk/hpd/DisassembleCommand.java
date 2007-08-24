@@ -152,7 +152,7 @@ public class DisassembleCommand extends CLIHandler {
 	    if (params.size() == 1) {
 		try {
 		    currentInstruction = cli.parseValue(task,
-			    (String) params.get(0)).getLong();
+			    (String) params.get(0)).asLong();
 		    symbol = SymbolFactory.getSymbol(task, currentInstruction);
 		} catch (NameNotFoundException nnfe) {
 		    cli.addMessage(new Message(nnfe.getMessage(),
@@ -163,9 +163,9 @@ public class DisassembleCommand extends CLIHandler {
 		long startInstruction, endInstruction;
 		try {
 		    startInstruction = cli.parseValue(task,
-			    (String) params.get(0)).getLong();
+			    (String) params.get(0)).asLong();
 		    endInstruction = cli.parseValue(task,
-			    (String) params.get(1)).getLong();
+			    (String) params.get(1)).asLong();
 		} catch (NameNotFoundException nnfe) {
 		    cli.addMessage(new Message(nnfe.getMessage(),
 			    Message.TYPE_ERROR));

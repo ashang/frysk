@@ -1,3 +1,8 @@
+2007-08-24  Andrew Cagney  <cagney@redhat.com>
+
+	* DisassembleCommand.java: Replace Value.getLong with
+	Value.asLong.
+
 2007-08-23  Andrew Cagney  <cagney@redhat.com>
 
 	* ExamineCommand.java: Replace Location.getByteBuffer() with

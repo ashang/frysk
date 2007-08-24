@@ -37,12 +37,10 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.debuginfo;
 
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -212,7 +210,7 @@ class DebugInfoEvaluator
     public void putLong (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long addr = getBufferAddr(varDieP);
-      buffer.putLong(addr + offset, v.getLong());
+      buffer.putLong(addr + offset, v.asLong());
     }
 
     public int getInt (DwarfDie varDieP, long offset) throws NameNotFoundException
@@ -224,7 +222,7 @@ class DebugInfoEvaluator
     public void putInt (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long addr = getBufferAddr(varDieP);
-      buffer.putInt(addr + offset, v.getInt());
+      buffer.putInt(addr + offset, (int)v.asLong());
     }
 
     public short getShort (DwarfDie varDieP, long offset) throws NameNotFoundException
@@ -236,7 +234,7 @@ class DebugInfoEvaluator
     public void putShort (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long addr = getBufferAddr(varDieP);
-      buffer.putShort(addr + offset, v.getShort());
+      buffer.putShort(addr + offset, (short)v.asLong());
     }
 
     public byte getByte (DwarfDie varDieP, long offset) throws NameNotFoundException
@@ -248,7 +246,7 @@ class DebugInfoEvaluator
     public void putByte (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long addr = getBufferAddr(varDieP);
-      buffer.putByte(addr + offset, v.getByte());
+      buffer.putByte(addr + offset, (byte)v.asLong());
     }
 
     public float getFloat (DwarfDie varDieP, long offset) throws NameNotFoundException
@@ -339,7 +337,7 @@ class DebugInfoEvaluator
     public void putLong (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long reg = getReg(varDieP);
-      currentFrame.setReg(reg, v.getLong());
+      currentFrame.setReg(reg, v.asLong());
     }
 
     public int getInt (DwarfDie varDieP, long offset) throws NameNotFoundException
@@ -350,7 +348,7 @@ class DebugInfoEvaluator
     public void putInt (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long reg = getReg(varDieP);
-      currentFrame.setReg(reg, v.getInt());
+      currentFrame.setReg(reg, (int)v.asLong());
     }
 
     public short getShort (DwarfDie varDieP, long offset) throws NameNotFoundException
@@ -361,7 +359,7 @@ class DebugInfoEvaluator
     public void putShort (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long reg = getReg(varDieP);
-      currentFrame.setReg(reg, v.getShort());
+      currentFrame.setReg(reg, (short)v.asLong());
     }
 
     public byte getByte (DwarfDie varDieP, long offset) throws NameNotFoundException
@@ -372,7 +370,7 @@ class DebugInfoEvaluator
     public void putByte (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long reg = getReg(varDieP);
-      currentFrame.setReg(reg, v.getByte());
+      currentFrame.setReg(reg, (byte)v.asLong());
     }
 
     public float getFloat (DwarfDie varDieP, long offset) throws NameNotFoundException
@@ -869,20 +867,15 @@ class DebugInfoEvaluator
                                      subrange.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
                   subrange = subrange.getSibling();
 	      }
-	      // XXX: This is so wrong; should just have a Location
-	      // referring to the value.
-	      Value v = new Value(enumType, s);
-	      switch (getByteSize(type)) {
-	      case 1: v.putByte((byte)val); break;
-	      case 2: v.putShort((short)val); break;
-	      case 4: v.putInt((int)val); break;
-	      case 8: v.putLong(val); break;
-	      }
-	      return v;
+	      return enumType.createValue(val);
             }
             // special case members of an enumeration
             case DwTagEncodings.DW_TAG_enumerator_:
             {
+		/**
+		 * FIXME: This should return an "enum", not an
+		 * integer.
+		 */
 		return longType.createValue(varDie.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
             }
             }
