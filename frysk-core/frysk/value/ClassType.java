@@ -187,44 +187,16 @@ public class ClassType
 	public void remove () {
 	}
     }
-    private Value getValue (Value v, int idx)
-    {
+
+    private Value getValue (Value v, int idx) {
 	Member member = (Member)(members.get(idx));
 	Type type = member.type;
 	int off = (int)member.offset;
-
-	switch (type.getTypeIdFIXME()) {
-	case BaseTypes.baseTypeByte:
-	    return ((ArithmeticType)type).createValue(v.getByte(off));
-	case BaseTypes.baseTypeShort:
-	    return ((ArithmeticType)type).createValue(v.getShort(off));
-	case BaseTypes.baseTypeInteger:
-	    int mask = member.maskFIXME();
-	    if (mask != 0)
-		return bitValueFIXME(v.getLocation(), member);
-	    int val = v.getInt(off);
-	    return ((ArithmeticType)type).createValue(val);
-	case BaseTypes.baseTypeLong:
-	    return ((ArithmeticType)type).createValue(v.getLong(off));
-	case BaseTypes.baseTypeFloat:
-	    return ((ArithmeticType)type).createValue(v.getFloat(off));
-	case BaseTypes.baseTypeDouble:
-	    return ((ArithmeticType)type).createValue(v.getDouble(off));
-	}
-	if (type instanceof ClassType) {
-	    Location l = v.getLocation().slice(off,type.size);
-	    return new Value(type, type.name, l);
-	} else if (type instanceof ArrayType) {
-	    Location l = v.getLocation().slice(off,type.size);
-	    return new Value(type, type.name, l);
-	} else if (type instanceof PointerType) {
-	    Location l = v.getLocation().slice(off,type.size);
-	    return new Value(type, type.name, l);
-	} else if (type instanceof FunctionType) {
-	    Location l = v.getLocation().slice(off,type.size);
-	    return new Value(type, type.name, l);
-	}
-        return new Value(new UnknownType(type.name), type.name);
+	if (type.getTypeIdFIXME() == BaseTypes.baseTypeInteger
+	    && member.maskFIXME() != 0)
+	    return bitValueFIXME(v.getLocation(), member);
+	else
+	    return new Value(type, v.getLocation().slice(off, type.size));
     }
     
     public ClassIterator iterator (Value v) {

@@ -82,19 +82,19 @@ public class TestValue
 	// IEEE-754.
 	Value f1 = floatType.createValue((float)1.0);
 	Value f2 = doubleType.createValue(2.0);
-	assertEquals("v1", 1, v1.getByte());
-	assertEquals("v2", 2, v2.getShort());
-	assertEquals("v3", 3, v3.getInt());
-	assertEquals("v4", 4, v4.getLong());
-	assertEquals("v5", 5, v5.getByte());
-	assertEquals("v6", 6, v6.getShort());
-	assertEquals("v7", 7, v7.getInt());
-	assertEquals("v8", 8, v8.getLong());
+	assertEquals("v1", 1, v1.asLong());
+	assertEquals("v2", 2, v2.asLong());
+	assertEquals("v3", 3, v3.asLong());
+	assertEquals("v4", 4, v4.asLong());
+	assertEquals("v5", 5, v5.asLong());
+	assertEquals("v6", 6, v6.asLong());
+	assertEquals("v7", 7, v7.asLong());
+	assertEquals("v8", 8, v8.asLong());
 	assertEquals("f1.0", 1.0, 1.0, f1.getFloat());
 	assertEquals("f2.0", 2.0, 2.0, f2.getDouble());
     }
 
-    private boolean isTrue (int i)
+    private boolean isTrue (long i)
     {
 	if (i != 0)
 	    return true;
@@ -115,63 +115,63 @@ public class TestValue
 	Value v1 = intType.createValue(4);
 	Value v2 = shortType.createValue(9);
 	Value v3 = v1.getType().add(v1, v2);
-	assertEquals ("4 + 9", 4 + 9, v3.getInt());
+	assertEquals ("4 + 9", 4 + 9, v3.asLong());
 	v3 = v1.getType().subtract(v2, v1);
-	assertEquals ("9 - 4", 9 - 4, v3.getInt());
+	assertEquals ("9 - 4", 9 - 4, v3.asLong());
 	v3 = v1.getType().multiply(v2, v1);
-	assertEquals ("9 * 4", 9 * 4, v3.getInt());
+	assertEquals ("9 * 4", 9 * 4, v3.asLong());
 	v3 = v1.getType().mod(v2, v1);
-	assertEquals ("9 % 4", 9 % 4, v3.getInt());
+	assertEquals ("9 % 4", 9 % 4, v3.asLong());
 	v3 = v1.getType().shiftLeft(v2, v1);
-	assertEquals ("9 << 4", 9 << 4, v3.getInt());
+	assertEquals ("9 << 4", 9 << 4, v3.asLong());
 	v3 = v1.getType().shiftRight(v2, v1);
-	assertEquals ("9 >> 4", 9 >> 4, v3.getInt());
+	assertEquals ("9 >> 4", 9 >> 4, v3.asLong());
 	v3 = v1.getType().lessThan(v2, v1);
-	assertEquals ("9 < 4", 9 < 4, isTrue(v3.getInt()));
+	assertEquals ("9 < 4", 9 < 4, isTrue(v3.asLong()));
 	v3 = v1.getType().greaterThan(v2, v1);
-	assertEquals ("9 > 4", 9 > 4, isTrue(v3.getInt()));
+	assertEquals ("9 > 4", 9 > 4, isTrue(v3.asLong()));
 	v3 = v1.getType().lessThanOrEqualTo(v2, v1);
-	assertEquals ("9 <= 4", 9 <= 4, isTrue(v3.getInt()));
+	assertEquals ("9 <= 4", 9 <= 4, isTrue(v3.asLong()));
 	v3 = v1.getType().greaterThanOrEqualTo(v2, v1);
-	assertEquals ("9 >= 4", 9 >= 4, isTrue(v3.getInt()));
+	assertEquals ("9 >= 4", 9 >= 4, isTrue(v3.asLong()));
 	v3 = v1.getType().equal(v2, v1);
-	assertEquals ("9 == 4", 9 == 4, isTrue(v3.getInt()));
+	assertEquals ("9 == 4", 9 == 4, isTrue(v3.asLong()));
 	v3 = v1.getType().notEqual(v2, v1);
-	assertEquals ("9 != 4", 9 != 4, isTrue(v3.getInt()));
+	assertEquals ("9 != 4", 9 != 4, isTrue(v3.asLong()));
 	v3 = v1.getType().bitWiseAnd(v2, v1);
-	assertEquals ("9 && 4", 9 & 4, v3.getInt());
+	assertEquals ("9 && 4", 9 & 4, v3.asLong());
 	v3 = v1.getType().bitWiseOr(v2, v1);
-	assertEquals ("9 || 4", 9 | 4, v3.getInt());
+	assertEquals ("9 || 4", 9 | 4, v3.asLong());
 	v3 = v1.getType().bitWiseXor(v2, v1);
-	assertEquals ("9 ^ 4", 9 ^ 4, v3.getInt());
+	assertEquals ("9 ^ 4", 9 ^ 4, v3.asLong());
 	v3 = v1.getType().bitWiseComplement(v1);
-	assertEquals ("~4", ~4, v3.getInt());
+	assertEquals ("~4", ~4, v3.asLong());
 	v3 = v1.getType().logicalAnd(v2, v1);
-	assertEquals ("9 & 4", 1, v3.getInt());
+	assertEquals ("9 & 4", 1, v3.asLong());
 	v3 = v1.getType().logicalOr(v2, v1);
-	assertEquals ("9 | 4", 1, v3.getInt());
+	assertEquals ("9 | 4", 1, v3.asLong());
 	v3 = v1.getType().assign(v3, v1);
-	assertEquals ("v3 = 4", 4, v3.getInt());
+	assertEquals ("v3 = 4", 4, v3.asLong());
 	v3 = v1.getType().plusEqual(v3, v1);
-	assertEquals ("v3 += 4", 8, v3.getInt());
+	assertEquals ("v3 += 4", 8, v3.asLong());
 	v3 = v1.getType().minusEqual(v3, v1);
-	assertEquals ("v3 -= 4", 4, v3.getInt());
+	assertEquals ("v3 -= 4", 4, v3.asLong());
 	v3 = v1.getType().timesEqual(v3, v1);
-	assertEquals ("v3 *= 4", 16, v3.getInt());
+	assertEquals ("v3 *= 4", 16, v3.asLong());
 	v3 = v1.getType().divideEqual(v3, v1);
-	assertEquals ("v3 /= 4", 4, v3.getInt());
+	assertEquals ("v3 /= 4", 4, v3.asLong());
 	v3 = v1.getType().modEqual(v3, v1);
-	assertEquals ("v3 %= 4", 0, v3.getInt());
+	assertEquals ("v3 %= 4", 0, v3.asLong());
 	v3 = v1.getType().shiftLeftEqual(v3, v1);
-	assertEquals ("v3 <<= 4", 0, v3.getInt());
+	assertEquals ("v3 <<= 4", 0, v3.asLong());
 	v3 = v1.getType().shiftRightEqual(v3, v1);
-	assertEquals ("v3 >>= 4", 0, v3.getInt());
+	assertEquals ("v3 >>= 4", 0, v3.asLong());
 	v3 = v1.getType().bitWiseOrEqual(v3, v1);
-	assertEquals ("v3 ||= 4", 4, v3.getInt());
+	assertEquals ("v3 ||= 4", 4, v3.asLong());
 	v3 = v1.getType().bitWiseXorEqual(v3, v1);
-	assertEquals ("v3 ^= 4", 0, v3.getInt());
+	assertEquals ("v3 ^= 4", 0, v3.asLong());
 	v3 = v1.getType().bitWiseAndEqual(v3, v1);
-	assertEquals ("v3 &&= 4", 0, v3.getInt());
+	assertEquals ("v3 &&= 4", 0, v3.asLong());
     }
 
     public void testFloatOps ()

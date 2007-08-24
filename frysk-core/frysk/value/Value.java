@@ -102,46 +102,6 @@ public class Value
      * FIXME: Do not use this.  Get the location and then use it's
      * methods.
      */
-    byte getByte() {
-	return location.getByte(0);
-    }
-
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
-    char getChar() {
-      return (char)location.getShort(type.getEndian(), 0);
-    }
-
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
-    short getShort() {
-      return location.getShort(type.getEndian(), 0);
-    }
-    
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
-    int getInt() {
-      return location.getInt(type.getEndian(), 0);
-    }
-
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
-    long getLong() {
-      return location.getLong(type.getEndian(), 0);
-    }
-    
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
     public float getFloat() {
       return location.getFloat(type.getEndian(), 0);
     }
@@ -154,46 +114,6 @@ public class Value
       return location.getDouble(type.getEndian(), 0);
     }
     
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
-    byte getByte(int idx) {
-      return (byte)location.getByte(idx);
-    }
-
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
-    char getChar(int idx) {
-      return (char)location.getShort(type.getEndian(), idx);
-    }
-
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
-    short getShort(int idx) {
-      return location.getShort(type.getEndian(), idx);
-    }
-
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
-    int getInt(int idx) {
-      return location.getInt(type.getEndian(), idx);
-    }
-
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
-    long getLong(int idx) {
-      return location.getLong(type.getEndian(), idx);
-    }
-
     /**
      * FIXME: Do not use this.  Get the location and then use it's
      * methods.

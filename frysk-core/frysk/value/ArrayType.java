@@ -176,7 +176,7 @@ public class ArrayType
 	    // Treat it as a character string
 	    writer.print("\"");
 	    while (e.hasNext()) {
-		char ch = (char)((Value)e.next()).getByte();
+		char ch = (char)((Value)e.next()).getLocation().getByte(0);
 		if (ch == 0)
 		    break;
 		writer.print(ch);

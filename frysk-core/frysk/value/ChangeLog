@@ -1,5 +1,16 @@
 2007-08-24  Andrew Cagney  <cagney@redhat.com>
 
+	* Value.java (getByte): Delete.
+	(getChar): Delte.
+	(getShort): Delete.
+	(getInt): Delete.
+	(getLong): Delete.
+	* ArrayType.java (toPrint(PrintWriter,Location,ByteBuffer,Format):
+	Replace Value.getByte with Location.getByte.
+	* ClassType.java (getValue(Value,int)): Use Location.slice.
+	* TestValue.java: Use Value.asLong.
+	(isTrue(long)): Replace isTrue(int).
+
 	* PointerType.java (createValue): Delete call to
 	Location.orderFIXME, and use Location.putLong(ByteOrder,val);
 	* Value.java (getByte, putByte): Make package private.
