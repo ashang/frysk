@@ -87,10 +87,10 @@ public class Format
 	long size = type.getSize();
 	switch((int) size) {
 	case 4:
-	    writer.print(location.getFloat());
+	    writer.print(location.getFloat(type.getEndian(), 0));
 	    break;
 	case 8:
-	    writer.print(location.getDouble());
+	    writer.print(location.getDouble(type.getEndian(), 0));
 	    break;
 	default:
 	    printUnknown(writer, "floating-point", size);

@@ -1,3 +1,30 @@
+2007-08-24  Andrew Cagney  <cagney@redhat.com>
+
+	* Location.java (getDouble()): Delete.
+	(getFloat()): Delete.
+	(getLong()): Delete.
+	(getInt())): Delete.
+	(getShort()): Delete.
+	(getByte()): Delete.
+	(getDouble(int)): Delete.
+	(getFloat(int)): Delete.
+	(getLong(int)): Delete.
+	(getInt(int))): Delete.
+	(getShort(int)): Delete.
+	(getDouble(ByteOrder)): Delete.
+	(getFloat(ByteOrder)): Delete.
+	(getLong(ByteOrder)): Delete.
+	(getInt(ByteOrder))): Delete.
+	(getShort(ByteOrder)): Delete.
+	(getByte(ByteOrder)): Delete.
+	(putDouble(double)): Delete.
+	(putFloat(float)): Delete.
+	(putLong(long)): Delete.
+	(putInt(int))): Delete.
+	(putShort(short)): Delete.
+	* Value.java: Update.
+	* Format.java: Update.
+
 2007-08-23  Andrew Cagney  <cagney@redhat.com>
 
 	* ArithmeticType.java: Update.

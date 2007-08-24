@@ -179,42 +179,8 @@ public class Location
     }
 
     /** FIXME: Do not use; this is going away.  */
-    double getDouble() { return location.getDouble(0); }
-    /** FIXME: Do not use; this is going away.  */
-    float getFloat() { return location.getFloat(0); }
-    /** FIXME: Do not use; this is going away.  */
-    long getLong() { return location.getLong(0); }
-    /** FIXME: Do not use; this is going away.  */
-    int getInt() { return location.getInt(0); }
-    /** FIXME: Do not use; this is going away.  */
-    short getShort() { return location.getShort(0); }
-    /** FIXME: Do not use; this is going away.  */
-    byte getByte() { return (byte)location.getByte(0); }
-
-    /** FIXME: Do not use; this is going away.  */
-    double getDouble(ByteOrder order) { return location.getDouble(order, 0); }
-    /** FIXME: Do not use; this is going away.  */
-    float getFloat(ByteOrder order) { return location.getFloat(order, 0); }
-    /** FIXME: Do not use; this is going away.  */
-    long getLong(ByteOrder order) { return location.getLong(order, 0); }
-    /** FIXME: Do not use; this is going away.  */
-    int getInt(ByteOrder order) { return location.getInt(order, 0); }
-    /** FIXME: Do not use; this is going away.  */
-    short getShort(ByteOrder order) { return location.getShort(order, 0); }
-    
-    /** FIXME: Do not use; this is going away.  */
-    double getDouble(int idx) { return location.getDouble(idx); }
-    /** FIXME: Do not use; this is going away.  */
-    float getFloat(int idx) { return location.getFloat(idx); }
-    /** FIXME: Do not use; this is going away.  */
-    long getLong(int idx) { return location.getLong(idx); }
-    /** FIXME: Do not use; this is going away.  */
-    int getInt(int idx) { return location.getInt(idx); }
-    /** FIXME: Do not use; this is going away.  */
-    short getShort(int idx) { return location.getShort(idx); }
-    /** FIXME: Do not use; this is going away.  */
     byte getByte(int idx) { return (byte)location.getByte(idx); }
-  
+
     /** FIXME: Do not use; this is going away.  */
     double getDouble(ByteOrder order, int idx) { return location.getDouble(order, idx); }
     /** FIXME: Do not use; this is going away.  */
@@ -226,16 +192,6 @@ public class Location
     /** FIXME: Do not use; this is going away.  */
     short getShort(ByteOrder order, int idx) { return location.getShort(order, idx); }
     
-    /** FIXME: Do not use; this is going away.  */
-    void putDouble(double value)  {location.putDouble(0, value);}
-    /** FIXME: Do not use; this is going away.  */
-    void putFloat(float value)  {location.putFloat(0, value);}
-    /** FIXME: Do not use; this is going away.  */
-    void putLong(long value)  {location.putLong(0, value);}
-    /** FIXME: Do not use; this is going away.  */
-    void putInt(int value)  {location.putInt(0, value);}
-    /** FIXME: Do not use; this is going away.  */
-    void putShort(short value)  {location.putShort(0, value);}
     /** FIXME: Do not use; this is going away.  */
     void putByte(byte value)  {location.putByte(0, (byte)value);}
     

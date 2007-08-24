@@ -103,7 +103,7 @@ public class Value
      * methods.
      */
     public byte getByte() {
-      return location.getByte();
+	return location.getByte(0);
     }
 
     /**
@@ -111,7 +111,7 @@ public class Value
      * methods.
      */
     public char getChar() {
-      return (char)location.getShort();
+      return (char)location.getShort(type.getEndian(), 0);
     }
 
     /**
@@ -119,7 +119,7 @@ public class Value
      * methods.
      */
     public short getShort() {
-      return location.getShort();
+      return location.getShort(type.getEndian(), 0);
     }
     
     /**
@@ -127,7 +127,7 @@ public class Value
      * methods.
      */
     public int getInt() {
-      return location.getInt();
+      return location.getInt(type.getEndian(), 0);
     }
 
     /**
@@ -135,7 +135,7 @@ public class Value
      * methods.
      */
     public long getLong() {
-      return location.getLong();
+      return location.getLong(type.getEndian(), 0);
     }
     
     /**
@@ -143,7 +143,7 @@ public class Value
      * methods.
      */
     public float getFloat() {
-      return location.getFloat();
+      return location.getFloat(type.getEndian(), 0);
     }
 
     /**
@@ -151,7 +151,7 @@ public class Value
      * methods.
      */
     public double getDouble() {
-      return location.getDouble();
+      return location.getDouble(type.getEndian(), 0);
     }
     
     /**
@@ -167,7 +167,7 @@ public class Value
      * methods.
      */
     public char getChar(int idx) {
-      return (char)location.getShort(idx);
+      return (char)location.getShort(type.getEndian(), idx);
     }
 
     /**
@@ -175,7 +175,7 @@ public class Value
      * methods.
      */
     public short getShort(int idx) {
-      return location.getShort(idx);
+      return location.getShort(type.getEndian(), idx);
     }
 
     /**
@@ -183,7 +183,7 @@ public class Value
      * methods.
      */
     public int getInt(int idx) {
-      return location.getInt(idx);
+      return location.getInt(type.getEndian(), idx);
     }
 
     /**
@@ -191,7 +191,7 @@ public class Value
      * methods.
      */
     public long getLong(int idx) {
-      return location.getLong(idx);
+      return location.getLong(type.getEndian(), idx);
     }
 
     /**
@@ -199,7 +199,7 @@ public class Value
      * methods.
      */
     public float getFloat(int idx) {
-      return location.getFloat(idx);
+      return location.getFloat(type.getEndian(), idx);
     }
 
     /**
@@ -207,7 +207,7 @@ public class Value
      * methods.
      */
     public double getDouble(int idx) {
-      return location.getDouble(idx);
+      return location.getDouble(type.getEndian(), idx);
     }
 
     /**
@@ -223,7 +223,7 @@ public class Value
      * methods.
      */
     public void putChar(char val) {
-      location.putShort((short)val);
+	location.putShort(type.getEndian(), (short)val);
     }
 
     /**
@@ -231,7 +231,7 @@ public class Value
      * methods.
      */
     public void putShort(short val) {
-      location.putShort(val);
+      location.putShort(type.getEndian(), val);
     }
 
     /**
@@ -239,7 +239,7 @@ public class Value
      * methods.
      */
     public void putInt(int val) {
-      location.putInt(val);
+      location.putInt(type.getEndian(), val);
     }
 
     /**
@@ -247,7 +247,7 @@ public class Value
      * methods.
      */
     public void putLong(long val) {
-      location.putLong(val);
+      location.putLong(type.getEndian(), val);
     }
 
     /**
@@ -255,7 +255,7 @@ public class Value
      * methods.
      */
     public void putFloat(float val) {
-      location.putFloat(val);
+      location.putFloat(type.getEndian(), val);
     }
 
     /**
@@ -263,7 +263,7 @@ public class Value
      * methods.
      */
     public void putDouble(double val) {
-      location.putDouble(val);
+      location.putDouble(type.getEndian(), val);
     }
 
     /**
@@ -288,17 +288,17 @@ public class Value
       switch (type.getTypeIdFIXME())
       {
 	case BaseTypes.baseTypeByte:
-	  return location.getByte();
+	  return location.getByte(0);
 	case BaseTypes.baseTypeShort:
-       	  return location.getShort();
+       	  return location.getShort(type.getEndian(), 0);
 	case BaseTypes.baseTypeInteger:
-	  return location.getInt();
+	  return location.getInt(type.getEndian(), 0);
 	case BaseTypes.baseTypeLong:
-	  return location.getLong();
+	  return location.getLong(type.getEndian(), 0);
 	case BaseTypes.baseTypeFloat:
-	  return location.getFloat();
+	  return location.getFloat(type.getEndian(), 0);
 	case BaseTypes.baseTypeDouble:
-	  return location.getDouble();
+	  return location.getDouble(type.getEndian(), 0);
 	default:
 	  return 0;
       }
