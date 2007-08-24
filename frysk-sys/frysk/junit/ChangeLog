@@ -1,3 +1,7 @@
+2007-08-23  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCase.java (unresolvedOffUtrace): New.
+
 2007-08-14  Andrew Cagney  <cagney@redhat.com>
 
 	* TestCase.java (asserEquals(String,byte[],byte[]): New.

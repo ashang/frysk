@@ -1,3 +1,7 @@
+2007-08-23  Andrew Cagney  <cagney@redhat.com>
+
+	* TestSteppingEngine.java: Mark as unresolvedOffUtrace, bug 4956.
+
 2007-08-23  Mike Cvet  <mcvet@redhat.com>
 	
 	* SteppingEngine.java (ThreadLifeObservable): Also implements 

@@ -747,6 +747,8 @@ public class TestSteppingEngine extends TestLib {
 
 	if (unresolvedOnPPC(3277))
 	    return;
+	if (unresolvedOffUtrace(4956))
+	    return;
 
 	class SignalObserver implements TaskObserver.Signaled {
 

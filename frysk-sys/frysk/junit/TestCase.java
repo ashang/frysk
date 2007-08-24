@@ -142,6 +142,22 @@ public class TestCase
     }
 
     /**
+     * A method that returns true, and prints UNRESOLVED, when the
+     * build kernel excludes utrace.
+     */
+    protected static boolean unresolvedOffUtrace(int bug) {
+	return unresolvedOn(bug, new KernelMatch() {
+		public boolean matches(KernelVersion version) {
+		    if (!version.isFedora() 
+			|| version.getFedoraRelease() <= 5) {
+			return true;
+		    }
+		    return false;
+		}
+	    });
+    }
+
+    /**
      * The two byte arrays have identical contents.
      */
     public static void assertEquals(String what, byte[] correct, byte[] test) {
