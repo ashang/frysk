@@ -529,8 +529,7 @@ public abstract class ArithmeticType
      * Value using a Type and a Location.
      */ 
     public Value createValue(long val) {
-	BigInteger b = new BigInteger(Long.toString(val));
-	return createValue(b);
+	return createValue(BigInteger.valueOf(val));
     }
     /**
      * Create a new Value of THIS Type, initialized to VAL.
@@ -543,11 +542,10 @@ public abstract class ArithmeticType
      * were the same class.
      */
     public Value createValueFIXME(String nameFIXME, long val) {
-	BigInteger b = new BigInteger(Long.toString(val));
 	Location l = new Location(new byte[getSize()]);
 	// FIXME: Read path still uses Location byte-order.
 	l.getByteBuffer().order(endian);
-	putBigInteger(l, b);
+	putBigInteger(l, BigInteger.valueOf(val));
 	return new Value(this, nameFIXME, l);
     }
 

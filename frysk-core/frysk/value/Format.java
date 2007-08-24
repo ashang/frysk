@@ -40,6 +40,7 @@
 package frysk.value;
 
 import java.io.PrintWriter;
+import java.math.BigInteger;
 
 /**
  * Formats a base type sending it to the printer.
@@ -73,28 +74,8 @@ public class Format
      */
     public void print(PrintWriter writer, Location location,
 		      IntegerType type) {
-	// FIXME: Should use information in IntegerType such as the
-	// value's sign and bit-size.
-	long value;
-	long size = location.getByteBuffer().capacity();
-	switch ((int)size) {
-	case 1:
-	    value = location.getByte();
-	    break;
-	case 2:
- 	    value = location.getShort();
-	    break;
-	case 4:
-	    value = location.getInt();
-	    break;
-	case 8:
-	    value = location.getLong();
-	    break;
-	default:
-	    printUnknown(writer, "integer", size);
-	    return;
-	}
-	writer.print(value);
+	BigInteger i = type.getBigInteger(location);
+	writer.print(i.toString());
     }
 
     /**
@@ -102,9 +83,8 @@ public class Format
      */
     public void print(PrintWriter writer, Location location,
 		      FloatingPointType type) {
-	// FIXME: Should use information in IntegerType, not location.
-	// For instance the SIGN.
-	long size = location.getByteBuffer().capacity();
+	// FIXME: Should use an abstract floating-point type.
+	long size = type.getSize();
 	switch((int) size) {
 	case 4:
 	    writer.print(location.getFloat());
@@ -120,27 +100,12 @@ public class Format
 
     public void print(PrintWriter writer, Location location,
 		      PointerType type) {
-	long value;
-	long size = location.getByteBuffer().capacity();
-	switch ((int)size) {
-	case 1:
-	    value = location.getByte();
-	    break;
-	case 2:
-	    value = location.getShort();
-	    break;
-	case 4:
-	    value = location.getInt();
-	    break;
-	case 8:
-	    value = location.getLong();
-	    break;
-	default:
-	    printUnknown(writer, "integer", size);
-	    return;
-	}
 	writer.print("0x");
-	writer.print(Long.toHexString(value));
+	byte[] bytes = location.get(type.getEndian());
+	for (int i = 0; i < bytes.length; i++) {
+	    writer.print(Integer.toHexString((bytes[i] / 16) & 0xf));
+	    writer.print(Integer.toHexString((bytes[i] % 16) & 0xf));
+	}
     }
 
     public static final Format NATURAL = new Format();

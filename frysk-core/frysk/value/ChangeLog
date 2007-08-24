@@ -1,5 +1,10 @@
 2007-08-23  Andrew Cagney  <cagney@redhat.com>
 
+	* ArithmeticType.java: Use BigInteger.valueOf.
+	* Format.java (print(PrintWriter,Location,IntegerType))
+	(print(PrintWriter,Location,PointerType)): Re-implement using
+	getBigInteger.
+
 	* ClassType.java: Replace ByteBuffer.slice(long,long) and
 	Location.getByteBuffer() with Location.slice(long,long).
 
