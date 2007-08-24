@@ -1,9 +1,16 @@
-2007-08-17  Phil Muldoon  <pmuldoon@localhost.localdomain>
+2007-08-24  Phil Muldoon  <pmuldoon@redhat.com>
 
-	* LinuxProc.java (LinuxProc): If user set exeFile to null,
-	do not attempt to local exe. Do not create two Files for
+	* LinuxProc.java (constructEnhancedMapMetadata): Remove vdso
+	labelling from here to ...
+	(constructBasicMapMetadata): .... Here.
+	* ChangeLog. Fix typos and email for last entry.
+
+2007-08-17  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxProc.java (LinuxProc): If user sets exeFile to null,
+	do not attempt to locate exe. Do not create two Files for
 	one exe.
-	* LinuxHost.java (LinuxHost): Check is user intentionally set
+	* LinuxHost.java (LinuxHost): Check if user intentionally set
 	exeFile to null, rather than accepting null as default value.
 
 2007-08-10  Sami Wagiaalla  <swagiaal@redhat.com>

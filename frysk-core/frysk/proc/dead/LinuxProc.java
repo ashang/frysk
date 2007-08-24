@@ -357,6 +357,7 @@ public class LinuxProc
   private MapAddressHeader[] constructBasicMapMetadata ()
   {
 
+    String name = "";
     ArrayList tempMetaData = new ArrayList ();
     // Read in contents of the corefile 
     Elf coreElf = openElf(this.corefileBackEnd);
@@ -365,6 +366,7 @@ public class LinuxProc
     if (coreElf == null)
       return null;
 
+    long coreVDSO = this.getCorefileVDSOAddress();
     ElfEHeader eHeader = coreElf.getEHeader();
     for (int i=0; i<eHeader.phnum; i++)
       {
@@ -379,6 +381,8 @@ public class LinuxProc
 	    boolean write =  (pHeader.flags & ElfPHeader.PHFLAG_WRITABLE) > 0 ? true:false;
 	    boolean execute = (pHeader.flags & ElfPHeader.PHFLAG_EXECUTABLE) > 0 ? true:false;	    
 
+	    if (coreVDSO == pHeader.vaddr)
+		name="[vdso]";
 	    // Add basic meta data to list
 	    tempMetaData.add(new MapAddressHeader(pHeader.vaddr,pHeader.vaddr+pHeader.memsz,read,
 						  write, execute,
@@ -386,7 +390,8 @@ public class LinuxProc
 						  0,
 						  pHeader.filesz, 
 						  pHeader.memsz, 
-						  "",0));
+						  name,0));
+	    name = "";
 	  }
       }  
 
@@ -427,10 +432,6 @@ public class LinuxProc
     // it can be paired with its name
     long interpAddr = getExeInterpreterAddress (); 
 
-    // Edge case: the vdso name is not stored but the address is. Save
-    // so we can pair with with [vdso] later.
-    long coreVDSO = getCorefileVDSOAddress();
-
     // Build the linkmap table from the linkmap tabl address
     class BuildLinkMap
       extends LinkmapBuilder
@@ -450,8 +451,6 @@ public class LinuxProc
     while (linkMapIterator.hasNext())
       {
 	Linkmap tempMap = (Linkmap) linkMapIterator.next();
-	if ((tempMap.l_addr == coreVDSO) && (coreVDSO !=0))
-	  tempMap.name = "[vdso]";
 	if (tempMap.s_addr == interpAddr)
 	  tempMap.name = interpName;
       }
