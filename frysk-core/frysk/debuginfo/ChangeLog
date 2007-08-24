@@ -1,3 +1,7 @@
+2007-08-24  Stan Cox  <scox@redhat.com>
+
+	* DebugInfoEvaluator.java (get): Create a PointerType for a pointer_type tag.
+
 2007-08-23  Andrew Cagney  <cagney@redhat.com>
 
 	* Variable.java (Variable(Type,DwarfDie)): Replace

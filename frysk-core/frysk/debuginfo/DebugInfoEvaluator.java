@@ -181,10 +181,8 @@ class DebugInfoEvaluator
   {
       
     /**
-     * Given a variable's Die return its address.
-     * 
-     * @param varDieP
-     * @return
+     * @param varDieP The die for a symbol
+     * @return The address corresponding to the symbol
      */
     protected long getBufferAddr (DwarfDie varDieP) throws NameNotFoundException
     {
@@ -289,7 +287,11 @@ class DebugInfoEvaluator
       return 0;
     }
 
-    
+    /**
+     * @param varDieP Die for a symbol
+     * @return Dwarf register number corresponding to the value of symbol
+     * @throws NameNotFoundException
+     */    
     private int getReg(DwarfDie varDieP) throws NameNotFoundException {
 	long pc = currentFrame.getAdjustedAddress();
 	
@@ -311,6 +313,11 @@ class DebugInfoEvaluator
         return reg;
 	}
     
+    /**
+     * @param varDieP Die for a symbol
+     * @return The contents of the register corresponding to the value of symbol
+     * @throws NameNotFoundException
+     */    
     private long getRegister(DwarfDie varDieP)
                      throws NameNotFoundException {
 	long pc = currentFrame.getAdjustedAddress();
@@ -396,10 +403,8 @@ class DebugInfoEvaluator
   }
 
   /**
-   * Given a variable, return its Die.
-   * 
-   * @param s
-   * @return DwarfDie
+   * @param s Symbol s
+   * @return The die for symbol s
    */
   private DwarfDie getDie (String s) throws NameNotFoundException
   {
@@ -438,6 +443,11 @@ class DebugInfoEvaluator
     return varDie;
   }
 
+  /**
+   * @param type An array die
+   * @param subrange Die for the array's first index
+   * @return ArrayType for the array
+   */
   private ArrayType getArrayType (DwarfDie type, DwarfDie subrange)
     {
       int elementCount = 1;
@@ -490,9 +500,7 @@ class DebugInfoEvaluator
     }
   
     /**
-     * If we have a typedef then generate a type for it, otherwise use a 
-     * basetype.
-     * 
+     * @return Generate a type for a typedef otherwise a basetype.
      */
   private ArithmeticType fetchType (boolean haveTypeDef, ArithmeticType type,
                                     String name)
@@ -528,6 +536,11 @@ class DebugInfoEvaluator
     }
   }
 
+  /**
+   * @param classDie A struct die
+   * @param name Name of the struct
+   * @return ClassType for the struct
+   */
   private ClassType getClassType (DwarfDie classDie, String name)
   {
     int typeSize = 0;
@@ -670,8 +683,7 @@ class DebugInfoEvaluator
   
   
   /*
-   * (non-Javadoc)
-   * 
+   * Sets the value of symbol s in frame f from value v.
    * @see frysk.expr.CppSymTab#put(java.lang.String, frysk.lang.Value)
    */
   public void put (DebugInfoFrame f, String s, Value v) throws NameNotFoundException
@@ -723,7 +735,9 @@ class DebugInfoEvaluator
       }
   }
 
-
+/**
+ * @return Value for symbol s in frame f
+ */
   public Value get (DebugInfoFrame f, String s) throws NameNotFoundException
   {
     setCurrentFrame(f);
@@ -746,7 +760,7 @@ class DebugInfoEvaluator
   }
   
   /**
-   * Returns the Value associated with the given DwarfDie.
+   * @return Value associated with the given DwarfDie.
    * @see frysk.expr.CppSymTab#get(java.lang.String)
    */
   public Value get (DebugInfoFrame f, DwarfDie varDie)
@@ -839,8 +853,10 @@ class DebugInfoEvaluator
             }
             case DwTagEncodings.DW_TAG_pointer_type_:
             {
-              long addr = variableAccessor[i].getAddr(varDie);
-              return longType.createValue(addr);
+              PointerType ptrType = new PointerType(byteorder, longType.getSize(),
+        	      getPointerTarget (type), "*");
+              long  addr = variableAccessor[i].getLong(varDie, 0);
+              return ptrType.createValue(addr);
             }
             case DwTagEncodings.DW_TAG_enumeration_type_:
             {
@@ -880,7 +896,14 @@ class DebugInfoEvaluator
       }
     return new Value(new UnknownType(varDie.getName()), varDie.getName());
   }
-    
+
+  /**
+   * Returns the value of symbol which is defined by components.
+   * @param f The frame containing the symbol
+   * @param components Token list of members and indices, e.g. given a.b.c[1][2]
+   * {a,b,c,1,1,2,2}
+   * @return Value of the symbol
+   */
   public Value get (DebugInfoFrame f, ArrayList components) throws NameNotFoundException
   {
     setCurrentFrame(f);
@@ -898,6 +921,11 @@ class DebugInfoEvaluator
 	return new Value(new UnknownType(varDie.getName()), varDie.getName());
   }
   
+  /**
+   * @param f Frame containing symbol s
+   * @param s Symbol s
+   * @return Value corresponding to the address of symbol s 
+   */
   public Value getAddress (DebugInfoFrame f, String s) throws NameNotFoundException
   {
     setCurrentFrame(f);
@@ -905,6 +933,11 @@ class DebugInfoEvaluator
     return longType.createValue(access.getAddr(getDie(s))); 
   }
   
+  /**
+   * @param f Frame containing symbol s
+   * @param s Symbol s
+   * @return Value corresponding to the memory location pointed to by symbol s.
+   */
   public Value getMemory (DebugInfoFrame f, String s) throws NameNotFoundException
   {     
     setCurrentFrame(f);
@@ -1011,6 +1044,10 @@ class DebugInfoEvaluator
 
   }
   
+  /**
+   * @param varDie The die for a symbol corresponding to a function
+   * @return The value of a subprogram die
+   */    
   public Value getSubprogramValue (DwarfDie varDie)
   {
     ByteOrder byteorder = task.getIsa().getByteOrder();
@@ -1035,8 +1072,8 @@ class DebugInfoEvaluator
             {
               type = getType(parm);
               functionType.addParameter(type, parm.getName());
-        }
-      parm = parm.getSibling();
+            }
+          parm = parm.getSibling();
         }
       return new Value (functionType, varDie.getName());
     }
@@ -1044,6 +1081,10 @@ class DebugInfoEvaluator
     return new Value(new UnknownType(varDie.getName()), varDie.getName());
   }
   
+  /**
+   * @param varDie This symbol's die
+   * @return a frysk.type for this varDie
+   */
   public Type getType (DwarfDie varDie)
   {
     ByteOrder byteorder = task.getIsa().getByteOrder();

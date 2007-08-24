@@ -77,7 +77,7 @@ public class PointerType
 	    writer.print(" \"");
 	    while (ch != 0) {
 		writer.print(ch);
-		addr.add(BigInteger.ONE);
+		addr = addr.add(BigInteger.ONE);
 		ch = (char)memory.getByte(addr.longValue());
 	    }
 	    writer.print("\"");
@@ -93,8 +93,17 @@ public class PointerType
 	return new BigInteger(1, location.get(endian));
     }
 
+    public Value createValue (long val)
+    {
+	Location l = new Location(new byte[getSize()]);
+	l.orderFIXME(endian);
+	Value returnVar = new Value(this, l);
+	returnVar.getLocation().putLong(val);
+	return returnVar;
+    }
+
     /**
-     * FIXME: Should be allowing for the sizef the RHS.
+     * FIXME: Should be allowing for the sizeof the RHS.
      */
     public Value add (Value var1, Value var2)
     {
