@@ -49,19 +49,19 @@ GEN_CLASSPATH += ../frysk-imports/junit.jar
 GEN_CLASSPATH += ../frysk-imports/getopt.jar
 GEN_CLASSPATH += ../frysk-imports/jdom.jar
 GEN_CLASSPATH += ../frysk-imports/cdtparser.jar 
-GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jline.a
-GEN_GCJ_LDADD += ../frysk-imports/libfrysk-antlr.a
-GEN_GCJ_LDADD += ../frysk-imports/libfrysk-junit.a
-GEN_GCJ_LDADD += ../frysk-imports/libfrysk-getopt.a
-GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jdom.a
-GEN_GCJ_LDADD += ../frysk-imports/libfrysk-cdtparser.a 
-GEN_GCJ_LDADD += ../frysk-imports/elfutils/libdwfl/libdwfl.a
-GEN_GCJ_LDADD += ../frysk-imports/elfutils/libdw/libdw.a
-GEN_GCJ_LDADD += ../frysk-imports/elfutils/libebl/libebl.a
-GEN_GCJ_LDADD += ../frysk-imports/elfutils/libelf/libelf.a
+GEN_GCJ_LDADD_LIST += ../frysk-imports/libfrysk-jline.a
+GEN_GCJ_LDADD_LIST += ../frysk-imports/libfrysk-antlr.a
+GEN_GCJ_LDADD_LIST += ../frysk-imports/libfrysk-junit.a
+GEN_GCJ_LDADD_LIST += ../frysk-imports/libfrysk-getopt.a
+GEN_GCJ_LDADD_LIST += ../frysk-imports/libfrysk-jdom.a
+GEN_GCJ_LDADD_LIST += ../frysk-imports/libfrysk-cdtparser.a 
+GEN_GCJ_LDADD_LIST += ../frysk-imports/elfutils/libdwfl/libdwfl.a
+GEN_GCJ_LDADD_LIST += ../frysk-imports/elfutils/libdw/libdw.a
+GEN_GCJ_LDADD_LIST += ../frysk-imports/elfutils/libebl/libebl.a
+GEN_GCJ_LDADD_LIST += ../frysk-imports/elfutils/libelf/libelf.a
 if USE_LIBUNWIND
-GEN_GCJ_LDADD += ../frysk-imports/libunwind-i386/src/.libs/libunwind-x86.a \
+GEN_GCJ_LDADD_LIST += ../frysk-imports/libunwind-i386/src/.libs/libunwind-x86.a \
                  ../frysk-imports/libunwind-x86_64/src/.libs/libunwind-x86_64.a \
                  ../frysk-imports/libunwind-ppc64/src/.libs/libunwind-ppc64.a
 endif
-GEN_GCJ_LDADD += -lstdc++ -laudit
+GEN_GCJ_LDADD_LIST += -lstdc++ -laudit

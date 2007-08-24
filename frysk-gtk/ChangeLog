@@ -1,3 +1,7 @@
+2007-08-24  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Makefile.am: Change GEN_GCJ_LDADD to GEN_GCJ_LDADD_LIST.
+
 2007-08-16  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (GEN_GCJ_LDADD): Remove -lopcodes; handed by

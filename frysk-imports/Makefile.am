@@ -71,18 +71,18 @@ uninstall-recursive: SUBDIRS = tests
 
 GEN_CLASSPATH += getopt.jar
 GEN_CLASSPATH += junit.jar
-GEN_GCJ_LDADD += libfrysk-getopt.a
-GEN_GCJ_LDADD += libfrysk-junit.a
-GEN_GCJ_LDADD += ./elfutils/libdwfl/libdwfl.a
-GEN_GCJ_LDADD += ./elfutils/libdw/libdw.a
-GEN_GCJ_LDADD += ./elfutils/libebl/libebl.a
-GEN_GCJ_LDADD += ./elfutils/libelf/libelf.a
-GEN_GCJ_LDADD += -lstdc++
-GEN_GCJ_LDADD += ./libunwind-i386/src/.libs/libunwind-x86.a
-GEN_GCJ_LDADD += ./libunwind-x86_64/src/.libs/libunwind-x86_64.a
-GEN_GCJ_LDADD += ./libunwind-ppc64/src/.libs/libunwind-ppc64.a
+GEN_GCJ_LDADD_LIST += libfrysk-getopt.a
+GEN_GCJ_LDADD_LIST += libfrysk-junit.a
+GEN_GCJ_LDADD_LIST += ./elfutils/libdwfl/libdwfl.a
+GEN_GCJ_LDADD_LIST += ./elfutils/libdw/libdw.a
+GEN_GCJ_LDADD_LIST += ./elfutils/libebl/libebl.a
+GEN_GCJ_LDADD_LIST += ./elfutils/libelf/libelf.a
+GEN_GCJ_LDADD_LIST += -lstdc++
+GEN_GCJ_LDADD_LIST += ./libunwind-i386/src/.libs/libunwind-x86.a
+GEN_GCJ_LDADD_LIST += ./libunwind-x86_64/src/.libs/libunwind-x86_64.a
+GEN_GCJ_LDADD_LIST += ./libunwind-ppc64/src/.libs/libunwind-ppc64.a
 # For auding of system calls.
-GEN_GCJ_LDADD += -laudit
+GEN_GCJ_LDADD_LIST += -laudit
 
 # Need to get this into the distribution
 noinst_HEADERS = \

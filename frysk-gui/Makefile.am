@@ -54,30 +54,30 @@ GEN_CLASSPATH += ../frysk-gtk/tlwidgets/ftk.jar
 GEN_CLASSPATH += $(FRYSK_GUI_JARS) 
 GEN_CLASSPATH += /usr/lib
 
-GEN_GCJ_LDADD += ../frysk-gtk/libfrysk-gtk.a
-GEN_GCJ_LDADD += ../frysk-core/libfrysk-core.a
-GEN_GCJ_LDADD += ../frysk-sys/libfrysk-sys.a
-GEN_GCJ_LDADD += ../frysk-imports/libfrysk-antlr.a
-GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jdom.a
-GEN_GCJ_LDADD += ../frysk-imports/libfrysk-cdtparser.a 
-GEN_GCJ_LDADD += ../frysk-imports/libfrysk-junit.a 
-GEN_GCJ_LDADD += ../frysk-imports/libfrysk-getopt.a 
-GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jline.a 
-GEN_GCJ_LDADD += ../frysk-imports/elfutils/libdwfl/libdwfl.a
-GEN_GCJ_LDADD += ../frysk-imports/elfutils/libdw/libdw.a
-GEN_GCJ_LDADD += ../frysk-imports/elfutils/libebl/libebl.a
-GEN_GCJ_LDADD += ../frysk-imports/elfutils/libelf/libelf.a
+GEN_GCJ_LDADD_LIST += ../frysk-gtk/libfrysk-gtk.a
+GEN_GCJ_LDADD_LIST += ../frysk-core/libfrysk-core.a
+GEN_GCJ_LDADD_LIST += ../frysk-sys/libfrysk-sys.a
+GEN_GCJ_LDADD_LIST += ../frysk-imports/libfrysk-antlr.a
+GEN_GCJ_LDADD_LIST += ../frysk-imports/libfrysk-jdom.a
+GEN_GCJ_LDADD_LIST += ../frysk-imports/libfrysk-cdtparser.a 
+GEN_GCJ_LDADD_LIST += ../frysk-imports/libfrysk-junit.a 
+GEN_GCJ_LDADD_LIST += ../frysk-imports/libfrysk-getopt.a 
+GEN_GCJ_LDADD_LIST += ../frysk-imports/libfrysk-jline.a 
+GEN_GCJ_LDADD_LIST += ../frysk-imports/elfutils/libdwfl/libdwfl.a
+GEN_GCJ_LDADD_LIST += ../frysk-imports/elfutils/libdw/libdw.a
+GEN_GCJ_LDADD_LIST += ../frysk-imports/elfutils/libebl/libebl.a
+GEN_GCJ_LDADD_LIST += ../frysk-imports/elfutils/libelf/libelf.a
 if USE_LIBUNWIND
-GEN_GCJ_LDADD += ../frysk-imports/libunwind-i386/src/.libs/libunwind-x86.a \
+GEN_GCJ_LDADD_LIST += ../frysk-imports/libunwind-i386/src/.libs/libunwind-x86.a \
                  ../frysk-imports/libunwind-x86_64/src/.libs/libunwind-x86_64.a \
                  ../frysk-imports/libunwind-ppc64/src/.libs/libunwind-ppc64.a
 endif
-GEN_GCJ_LDADD += -lstdc++
-GEN_GCJ_LDADD += ../frysk-gtk/libfrysk-ftk.a
-GEN_GCJ_LDADD += -L../frysk-gtk/EggTrayIcon
-GEN_GCJ_LDADD += -L../frysk-gtk/tlwidgets
-GEN_GCJ_LDADD += $(FRYSK_GUI_LIBS)
-GEN_GCJ_LDADD += -laudit
+GEN_GCJ_LDADD_LIST += -lstdc++
+GEN_GCJ_LDADD_LIST += ../frysk-gtk/libfrysk-ftk.a
+GEN_GCJ_LDADD_LIST += -L../frysk-gtk/EggTrayIcon
+GEN_GCJ_LDADD_LIST += -L../frysk-gtk/tlwidgets
+GEN_GCJ_LDADD_LIST += $(FRYSK_GUI_LIBS)
+GEN_GCJ_LDADD_LIST += -laudit
 
 # Skip the JUnit tests (exit with status 77) when there is no display; bug #3012.
 #TESTS_ENVIRONMENT = ( test $$tst != TestRunner || test -n "$$DISPLAY" || exit 77 ) && 
