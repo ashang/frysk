@@ -58,15 +58,16 @@ public class Variable {
     private DwarfDie variableDie;
     private Type type;
     private DwarfDie typeDie;
+    private final String name;
   
     public Variable(Value variable, DwarfDie variableDie) {
+	if (variableDie == null)
+	    throw new IllegalArgumentException();
 	this.variable = variable;
 	this.variableDie = variableDie;
+	this.name = variableDie.getName();
 	if (variable != null) {
 	    this.type = variable.getType();
-	}
-	if (variableDie == null) {
-	    throw new IllegalArgumentException();
 	}
 	//   this.typeDie =  typeDie;
     }
@@ -92,9 +93,7 @@ public class Variable {
      * this code should have its name set directly from the DIE.
      */
     public String getName() {
-	if (variable == null)
-	    return null;
-	return variable.getTextFIXME();
+	return name;
     }
     public Type getType() {
 	return type;

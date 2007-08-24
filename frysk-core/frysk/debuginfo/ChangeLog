@@ -1,5 +1,9 @@
 2007-08-23  Andrew Cagney  <cagney@redhat.com>
 
+	* Variable.java (name): New
+	(Variable(Value,DwarfDie)): Set "name".
+	(getName()): Return "name".
+
 	* DebugInfoEvaluator.java: Replace ArithmeticType factory methods
 	with ArithmeticType.createValue and
 	ArithmeticType.createValueFIXME.
