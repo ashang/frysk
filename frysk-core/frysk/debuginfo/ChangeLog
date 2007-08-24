@@ -1,5 +1,11 @@
 2007-08-23  Andrew Cagney  <cagney@redhat.com>
 
+	* Variable.java (Variable(Type,DwarfDie)): Replace
+	Variable(Type,DwarfDie)).
+	(variable, setVariable): Delete.
+	* Scope.java: Update.
+	* Subprogram.java: Update.
+	
 	* Variable.java (name): New
 	(Variable(Value,DwarfDie)): Set "name".
 	(getName()): Return "name".

@@ -47,7 +47,6 @@ import java.util.LinkedList;
 import lib.dwfl.DwTagEncodings;
 import lib.dwfl.DwarfDie;
 import frysk.value.Type;
-import frysk.value.Value;
 
 /**
  * A class to represent a Scope.
@@ -89,7 +88,7 @@ public class Scope
       
       if(die.getTag() == DwTagEncodings.DW_TAG_variable_){
         Type type = debugInfo.getType(die);
-        Variable variable = new Variable(new Value(type, die.getName()), die);
+        Variable variable = new Variable(type, die);
         variables.add(variable);
       }
       

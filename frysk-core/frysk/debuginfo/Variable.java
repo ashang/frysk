@@ -54,25 +54,15 @@ import frysk.value.Format;
  */
 
 public class Variable {
-    private Value variable;
     private DwarfDie variableDie;
     private Type type;
     private DwarfDie typeDie;
     private final String name;
   
-    public Variable(Value variable, DwarfDie variableDie) {
-	if (variableDie == null)
-	    throw new IllegalArgumentException();
-	this.variable = variable;
+    public Variable(Type type, DwarfDie variableDie) {
 	this.variableDie = variableDie;
 	this.name = variableDie.getName();
-	if (variable != null) {
-	    this.type = variable.getType();
-	}
-	//   this.typeDie =  typeDie;
-    }
-    public void setVariable (Value variable) {
-	this.variable = variable;
+	this.type = type;
     }
     public void setVariableDie (DwarfDie variableDie) {
 	if (variableDie == null) {
@@ -88,9 +78,6 @@ public class Variable {
     }
     /**
      * Return the variable's name.
-     *
-     * XXX: For moment return the Value's text field which is wrong;
-     * this code should have its name set directly from the DIE.
      */
     public String getName() {
 	return name;
@@ -114,7 +101,7 @@ public class Variable {
     }
   
     public void toPrint(PrintWriter printWriter, DebugInfoFrame frame) {
-	if (variable == null) {
+	if (type == null) {
 	    // FIXME: This should just send the request to the Value's
 	    // toPrint method and not try to figure out of the Type
 	    // information was delt with.
