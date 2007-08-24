@@ -428,30 +428,30 @@ public abstract class ArithmeticType
     return doAssignment(var1, bitWiseAnd(var1, var2));
   }
 
-  public Value doAssignment(Value v1, Value v2)
-  {
-    switch (v1.getType().typeId)
-    {
-    case BaseTypes.baseTypeByte:
-      v1.putByte((byte)v2.asLong());
-      break;
-    case BaseTypes.baseTypeShort:
-      v1.putShort((short)v2.asLong());
-      break;
-    case BaseTypes.baseTypeInteger:
-	v1.putInt((int)v2.asLong());
-      break;
-    case BaseTypes.baseTypeLong:
-      v1.putLong(v2.asLong());
-      break;
-    case BaseTypes.baseTypeFloat:
-      v1.putFloat((float)v2.doubleValue());
-      break;
-    case BaseTypes.baseTypeDouble:
-      v1.putDouble(v2.doubleValue());
+    public Value doAssignment(Value v1, Value v2) {
+	Location l = v1.getLocation();
+	ByteOrder order = v1.getType().getEndian();
+	switch (v1.getType().typeId) {
+	case BaseTypes.baseTypeByte:
+	    l.putByte((byte)v2.asLong());
+	    break;
+	case BaseTypes.baseTypeShort:
+	    l.putShort(order, (short)v2.asLong());
+	    break;
+	case BaseTypes.baseTypeInteger:
+	    l.putInt(order, (int)v2.asLong());
+	    break;
+	case BaseTypes.baseTypeLong:
+	    l.putLong(order, v2.asLong());
+	    break;
+	case BaseTypes.baseTypeFloat:
+	    l.putFloat(order, (float)v2.doubleValue());
+	    break;
+	case BaseTypes.baseTypeDouble:
+	    l.putDouble(order, v2.doubleValue());
+	}
+	return v1;
     }
-    return v1;
-  }
 
   public boolean getLogicalValue (Value var1) {
     if (var1.getType() instanceof FloatingPointType)

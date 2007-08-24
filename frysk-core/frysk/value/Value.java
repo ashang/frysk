@@ -134,46 +134,6 @@ public class Value
      * FIXME: Do not use this.  Get the location and then use it's
      * methods.
      */
-    void putByte(byte val) {
-      location.putByte(val);
-    }
-
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
-    void putChar(char val) {
-	location.putShort(type.getEndian(), (short)val);
-    }
-
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
-    void putShort(short val) {
-      location.putShort(type.getEndian(), val);
-    }
-
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
-    void putInt(int val) {
-      location.putInt(type.getEndian(), val);
-    }
-
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
-    void putLong(long val) {
-      location.putLong(type.getEndian(), val);
-    }
-
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
     public void putFloat(float val) {
       location.putFloat(type.getEndian(), val);
     }

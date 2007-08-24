@@ -1,5 +1,12 @@
 2007-08-24  Andrew Cagney  <cagney@redhat.com>
 
+	* Value.java (putByte): Delete.
+	(putChar): Delete.
+	(putShort): Delete.
+	(putInt): Delete.
+	(putLong): Delete.
+	* ArithmeticType.java: Use Location's put methods.
+	
 	* Value.java (getByte): Delete.
 	(getChar): Delte.
 	(getShort): Delete.
