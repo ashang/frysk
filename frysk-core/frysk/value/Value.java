@@ -276,18 +276,7 @@ public class Value
      * shouldn't add more methods here.
      */
     public long asLong() {
-	switch ((int)location.getByteBuffer().capacity()) {
-	case 1:
-	    return location.getByte();
-	case 2:
-	    return location.getShort();
-	case 4:
-	    return location.getInt();
-    	case 8:
-	    return location.getLong();
-	default:
-	    return 0;
-	}
+	return ((ArithmeticType)type).getBigInteger(location).longValue();
     }
     
     /**

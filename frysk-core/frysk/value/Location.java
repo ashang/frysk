@@ -168,8 +168,16 @@ public class Location
 	return new Location(s);
     }
 
-    /** FIXME: Do not use; this is going away.  */
-    ByteBuffer getByteBuffer() { return location;}
+    /**
+     * Force the ByteBuffer's byte order.
+     *
+     * FIXME: Byte-order is a type thing, and types should specify the
+     * byte-order when fetching values.
+     */
+    void orderFIXME(ByteOrder order) {
+	location.order(order);
+    }
+
     /** FIXME: Do not use; this is going away.  */
     double getDouble() { return location.getDouble(0); }
     /** FIXME: Do not use; this is going away.  */

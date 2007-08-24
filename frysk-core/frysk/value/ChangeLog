@@ -1,5 +1,12 @@
 2007-08-23  Andrew Cagney  <cagney@redhat.com>
 
+	* ArithmeticType.java: Update.
+	* TestClass.java: Ditto.
+	* Location.java (getByteBuffer()): Delete.
+	(orderFIXME): New.
+	* Value.java (asLong): Re-implement using
+	ArithmeticType.getBigInteger.
+
 	* ArithmeticType.java: Use BigInteger.valueOf.
 	* Format.java (print(PrintWriter,Location,IntegerType))
 	(print(PrintWriter,Location,PointerType)): Re-implement using
