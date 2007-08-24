@@ -1,3 +1,7 @@
+2007-08-24  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* CoreCommand.java (handle): Build multi-threaded set.
+
 2007-08-24  Andrew Cagney  <cagney@redhat.com>
 
 	* DisassembleCommand.java: Replace Value.getLong with

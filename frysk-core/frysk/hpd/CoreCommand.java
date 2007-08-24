@@ -42,6 +42,7 @@ package frysk.hpd;
 import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
@@ -80,17 +81,38 @@ public class CoreCommand extends CLIHandler {
 	    coreProc = frysk.util.Util.getProcFromCoreFile(coreFile, exeFile);
 	}
 
-	Task task = coreProc.getMainTask();
-	TaskData coreTaskData = new TaskData(task, 0, 0);
+	// Reserve slot 0 for mainTask
+	int currentTaskCount = 1;
+	boolean foundMainTask = false;
+	Iterator i = coreProc.getTasks().iterator();
+	
+        TaskData[] taskArray = new TaskData[coreProc.getTasks().size()];
+	Task mainTask = coreProc.getMainTask();
+
+	while (i.hasNext()) {
+	    Task currentTask = (Task) i.next();
+	    // Is Main Task?
+	    if (currentTask.getTid() == mainTask.getTid()) {
+		foundMainTask = true;
+		taskArray[0] = new TaskData(currentTask,0,0);
+		continue;
+	    }
+	    taskArray[currentTaskCount] = new TaskData(currentTask,currentTaskCount,0);	    
+	    currentTaskCount++;
+	}	
+
+	
+	if (foundMainTask == false)
+	    throw new RuntimeException("Cannot find main task in corefile");
+	
 	ProcData procData = new ProcData(coreProc, 0);
-	TaskData[] taskArray = new TaskData[] { coreTaskData };
 	ProcTasks procTask = new ProcTasks(procData, taskArray);
 
 	cli.targetset = new StaticPTSet(new ProcTasks[] { procTask });
 	DebugInfoFrame frame = DebugInfoStackFactory
-		.createVirtualStackTrace(task);
-	cli.setTaskFrame(task, frame);
-	cli.setTaskDebugInfo(task, new DebugInfo(frame));
+		.createVirtualStackTrace(taskArray[0].getTask());
+	cli.setTaskFrame(taskArray[0].getTask(), frame);
+	cli.setTaskDebugInfo(taskArray[0].getTask(), new DebugInfo(frame));
 	cli.addMessage("Attached to core file: " + params.get(0),
 		Message.TYPE_NORMAL);
     }
