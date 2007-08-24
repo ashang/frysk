@@ -96,9 +96,9 @@ GEN_GCC_RPATHS = $(top_builddir)/elfutils/libdw
 
 # The list of libraries for the GCJ programs is different to that of
 # the standalone .c programs.  Accumulate the GCJ list in
-# GEN_GCJ_LDADD.
+# GEN_GCJ_LDADD_LIST.
 
-GEN_GCJ_LDADD = 
+GEN_GCJ_LDADD_LIST =
 
 # Take the LDADD list and transform it into a dynamic shared library
 # list.  This can then, in turn be converted into an in-build-tree
@@ -107,7 +107,7 @@ GEN_GCJ_LDADD =
 
 # Convert LDADD's .a into -L<dir> -llib
 GEN_GCJ_SO_FLAGS = \
-	$(foreach lib, $(GEN_GCJ_LDADD), \
+	$(foreach lib, $(GEN_GCJ_LDADD_LIST), \
 		$(if $(filter -L%,$(lib)), $(lib)) \
 		$(if $(filter -l%,$(lib)), $(lib)) \
 		$(if $(filter %.a,$(lib)), \
