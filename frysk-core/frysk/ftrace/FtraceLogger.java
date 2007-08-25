@@ -39,56 +39,7 @@
 
 package frysk.ftrace;
 
-import frysk.proc.Task;
-import java.io.File;
-import frysk.proc.Syscall;
-
-/**
- * Ltrace observers implement this interface to get notified about
- * interesting events in traced program.
- *
- * XXX: Convert all Object[] arguments to Value[] or something.
- */
-public interface LtraceObserver
+public class FtraceLogger
 {
-  /** The task has hit PLT entry for given function. */
-  void pltEntryEnter(Task task, Symbol symbol, Object[] args);
-
-  /** The task has returned from given function traced via PLT
-      entry. */
-  void pltEntryLeave(Task task, Symbol symbol, Object retVal);
-
-  /** The task has entered given function traced via dynamic symbol
-      table. */
-  void dynamicEnter(Task task, Symbol symbol, Object[] args);
-
-  /** The task has left given function traced via dynamic symbol
-      table. */
-  void dynamicLeave(Task task, Symbol symbol, Object retVal);
-
-  /** The task has entered given function traced via static symbol
-      table. */
-  void staticEnter(Task task, Symbol symbol, Object[] args);
-
-  /** The task has left given function traced via static symbol
-      table. */
-  void staticLeave(Task task, Symbol symbol, Object retVal);
-
-  /** The task has entered a syscall. */
-  void syscallEnter(Task task, Syscall syscall, Object[] args);
-
-  /** The task has returned from a syscall. */
-  void syscallLeave(Task task, Syscall syscall, Object retVal);
-
-  /** New file was mapped. */
-  void fileMapped(Task task, File file);
-
-  /** Mapped file was unmapped. */
-  void fileUnmapped(Task task, File file);
-
-  /** New task was attached. */
-  void taskAttached(Task task);
-
-  /** Task was removed, died or detached. */
-  void taskRemoved(Task task);
+  public static final String LOGGER_ID = "frysk";
 }

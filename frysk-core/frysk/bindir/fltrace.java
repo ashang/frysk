@@ -40,6 +40,7 @@
 package frysk.bindir;
 
 import java.util.*;
+import java.io.File;
 
 import gnu.classpath.tools.getopt.*;
 
@@ -74,7 +75,7 @@ public class fltrace
 
   Ltrace tracer = new Ltrace(new frysk.ftrace.SymbolFilter() {
       public boolean matchPltEntry(Task task, frysk.ftrace.Symbol symbol) {
-	String symFilename = symbol.getParent().getFilename();
+	String symFilename = symbol.getParent().getFilename().getPath();
 	String taskFilename = task.getProc().getExe();
 	return taskFilename.equals(symFilename);
       }
@@ -85,7 +86,10 @@ public class fltrace
   LtraceObserver ltraceObserver = new LtraceObserver() {
       private Map levelMap = new HashMap();
 
-      private synchronized int getLevel(Task task)
+      private Object lastItem = null;
+      private Task lastTask = null;
+
+      private int getLevel(Task task)
       {
 	int level = 0;
 	Integer l = (Integer)levelMap.get(task);
@@ -94,44 +98,128 @@ public class fltrace
 	return level;
       }
 
-      private synchronized void setLevel(Task task, int level)
+      private void setLevel(Task task, int level)
       {
 	levelMap.put(task, new Integer(level));
       }
 
-      public void pltEntryEnter(Task task, Symbol symbol, Object[] args)
+      private boolean lineOpened()
       {
-	String symbolName = symbol.name;
-	String callerLibrary = symbol.getParent().getSoname();
-	int level = this.getLevel(task);
-
-	StringBuffer spaces = new StringBuffer();
-	for (int i = 0; i < level; ++i)
-	  spaces.append(' ');
-	this.setLevel(task, ++level);
-
-    	System.err.print("[" + task.getTaskId().intValue() + "] " + spaces + "call enter ");
-	System.err.print(callerLibrary + "->" + /*libraryName + ":" +*/ symbolName + "(");
-	for (int i = 0; i < args.length; ++i)
-	  System.err.print((i > 0 ? ", " : "") + args[i]);
-    	System.err.println(")");
+	return lastItem != null;
       }
 
-      public void pltEntryLeave(Task task, Symbol symbol, Object retVal)
+      private boolean myLineOpened(Task task, Object item)
+      {
+	return lastItem == item && lastTask == task;
+      }
+
+      private void updateOpenLine(Task task, Object item)
+      {
+	lastItem = item;
+	lastTask = task;
+      }
+
+      private String repeat(char c, int count)
+      {
+	// by Stephen Friedrich
+	char[] fill = new char[count];
+	Arrays.fill(fill, c);
+	return new String(fill);
+      }
+
+      private synchronized void eventEntry(Task task, Object item, String eventType,
+					   String eventName, Object[] args)
+      {
+	int level = this.getLevel(task);
+	String spaces = repeat(' ', level);
+	this.setLevel(task, ++level);
+
+        if (lineOpened())
+	  System.err.println("\\");
+
+    	System.err.print("[" + task.getTaskId().intValue() + "] "
+			 + spaces + eventType + " ");
+	System.err.print(eventName + "(");
+	for (int i = 0; i < args.length; ++i)
+	  System.err.print((i > 0 ? ", " : "") + args[i]);
+    	System.err.print(")");
+
+        updateOpenLine(task, item);
+      }
+
+      private synchronized void eventLeave(Task task, Object item, String eventType,
+					   String eventName, Object retVal)
       {
 	int level = this.getLevel(task);
 	this.setLevel(task, --level);
-    	StringBuffer spaces = new StringBuffer();
-	for (int i = 0; i < level; ++i)
-	  spaces.append(' ');
 
-    	System.err.println("[" + task.getTaskId().intValue() + "] " + spaces + "call leave " + symbol.name);
+        if (!myLineOpened(task, item))
+	  {
+            if (lineOpened())
+	      System.err.println();
+	    String spaces = repeat(' ', level);
+	    System.err.print("[" + task.getTaskId().intValue() + "] "
+			     + spaces + eventType + " " + eventName);
+	  }
+
+	System.err.println(" = " + retVal);
+
+        updateOpenLine(null, null);
+      }
+
+      public synchronized void pltEntryEnter(Task task, Symbol symbol, Object[] args)
+      {
+	String symbolName = symbol.name;
+	String callerLibrary = symbol.getParent().getSoname();
+	String eventName = callerLibrary + "->" + /*libraryName + ":" +*/ symbolName;
+	eventEntry(task, symbol, "plt call", eventName, args);
+      }
+
+      public synchronized void pltEntryLeave(Task task, Symbol symbol, Object retVal)
+      {
+	eventLeave(task, symbol, "plt leave", symbol.name, retVal);
       }
 
       public void dynamicEnter(Task task, Symbol symbol, Object[] args) {}
       public void dynamicLeave(Task task, Symbol symbol, Object retVal) {}
       public void staticEnter(Task task, Symbol symbol, Object[] args) {}
       public void staticLeave(Task task, Symbol symbol, Object retVal) {}
+
+      public synchronized void syscallEnter(Task task, Syscall syscall, Object[] args)
+      {
+	eventEntry(task, syscall, "syscall", syscall.getName(), args);
+      }
+
+      public synchronized void syscallLeave(Task task, Syscall syscall, Object retVal)
+      {
+	eventLeave(task, syscall, "syscall leave", syscall.getName(), retVal);
+      }
+
+      public synchronized void fileMapped(Task task, File file)
+      {
+	int pid = task.getTid();
+	int level = this.getLevel(task);
+	System.err.println("[" + pid + "] " + repeat(' ', level) + "map " + file);
+      }
+
+      public synchronized void fileUnmapped(Task task, File file)
+      {
+	int pid = task.getTid();
+	int level = this.getLevel(task);
+	System.err.println("[" + pid + "] " + repeat(' ', level) + "unmap " + file);
+      }
+
+      public synchronized void taskAttached(Task task)
+      {
+	int pid = task.getTid();
+	System.err.println("[" + pid + "] attached");
+      }
+
+      public synchronized void taskRemoved(Task task)
+      {
+	int pid = task.getTid();
+	System.err.println("[" + pid + "] detached");
+      }
     };
 
   public static void main(String[] args)

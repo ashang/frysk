@@ -39,56 +39,68 @@
 
 package frysk.ftrace;
 
+import inua.eio.ByteBuffer;
+
 import frysk.proc.Task;
-import java.io.File;
-import frysk.proc.Syscall;
+import frysk.proc.Register;
 
 /**
- * Ltrace observers implement this interface to get notified about
- * interesting events in traced program.
- *
- * XXX: Convert all Object[] arguments to Value[] or something.
+ * x86 implementation of Arch interface.
  */
-public interface LtraceObserver
+public class Archx86
+  implements Arch
 {
-  /** The task has hit PLT entry for given function. */
-  void pltEntryEnter(Task task, Symbol symbol, Object[] args);
+  public static final Arch instance = new Archx86();
 
-  /** The task has returned from given function traced via PLT
-      entry. */
-  void pltEntryLeave(Task task, Symbol symbol, Object retVal);
+  protected Archx86() {}
 
-  /** The task has entered given function traced via dynamic symbol
-      table. */
-  void dynamicEnter(Task task, Symbol symbol, Object[] args);
+  public long getReturnAddress(Task task, Symbol symbol)
+  {
+    ByteBuffer memBuf = task.getMemory();
+    Register espRegister = task.getIsa().getRegisterByName("esp");
+    long esp = espRegister.get(task);
+    long retAddr = memBuf.getInt(esp);
+    return retAddr;
+  }
 
-  /** The task has left given function traced via dynamic symbol
-      table. */
-  void dynamicLeave(Task task, Symbol symbol, Object retVal);
+  public Object[] getCallArguments(Task task, Symbol symbol)
+  {
+    ByteBuffer memBuf = task.getMemory();
+    Register espRegister = task.getIsa().getRegisterByName("esp");
+    long esp = espRegister.get(task);
+    esp += 4;
 
-  /** The task has entered given function traced via static symbol
-      table. */
-  void staticEnter(Task task, Symbol symbol, Object[] args);
+    // Poor man's arg extractor... both traditional ltrace-style and
+    // dwarf-enhanced formatters will be implemented in future, this
+    // is just to test some stuff...
+    if (symbol.name.equals("puts"))
+      {
+	long pointer = memBuf.getInt(esp);
+	int length = 0;
+	while(memBuf.getByte(pointer + length) != 0)
+	  length++;
+	byte[] bytes = new byte[length];
+	for (int i = 0; i < bytes.length; ++i)
+	  bytes[i] = memBuf.getByte(pointer + i);
+	String arg = new String(bytes);
+	Object[] ret = {arg};
+	return ret;
+      }
+    else
+      {
+	Object[] ret = new Object[4];
+	for (int i = 0; i < ret.length; ++i)
+	  {
+	    ret[i] = new Integer(memBuf.getInt(esp));
+	    esp += 4;
+	  }
+	return ret;
+      }
+  }
 
-  /** The task has left given function traced via static symbol
-      table. */
-  void staticLeave(Task task, Symbol symbol, Object retVal);
-
-  /** The task has entered a syscall. */
-  void syscallEnter(Task task, Syscall syscall, Object[] args);
-
-  /** The task has returned from a syscall. */
-  void syscallLeave(Task task, Syscall syscall, Object retVal);
-
-  /** New file was mapped. */
-  void fileMapped(Task task, File file);
-
-  /** Mapped file was unmapped. */
-  void fileUnmapped(Task task, File file);
-
-  /** New task was attached. */
-  void taskAttached(Task task);
-
-  /** Task was removed, died or detached. */
-  void taskRemoved(Task task);
+  public Object getReturnValue(Task task, Symbol symbol)
+  {
+    Register r = task.getIsa().getRegisterByName("eax");
+    return new Long(r.get(task));
+  }
 }

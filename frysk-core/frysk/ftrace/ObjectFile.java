@@ -69,7 +69,7 @@ import lib.stdcpp.Demangler;
 public class ObjectFile
 {
   private Map symbolMap = new HashMap();
-  private String filename;
+  private File filename;
   private String soname = null;
   private long baseAddress = 0;
   private static HashMap cachedFiles = new HashMap();
@@ -82,9 +82,9 @@ public class ObjectFile
     void symbol(Symbol symbol);
   }
 
-  protected ObjectFile (String name)
+  protected ObjectFile(File file)
   {
-    this.filename = name;
+    this.filename = file;
   }
 
   protected void addSymbol(Symbol symbol)
@@ -142,13 +142,13 @@ public class ObjectFile
     if (this.soname != null)
       return this.soname;
     else
-      return new File(this.filename).getName();
+      return this.filename.getName();
   }
 
   /**
    * Answer filename.
    */
-  public String getFilename()
+  public File getFilename()
   {
     return this.filename;
   }
@@ -176,7 +176,7 @@ public class ObjectFile
     return null;
   }
 
-  public static ObjectFile buildFromFile(String filename)
+  public static ObjectFile buildFromFile(File filename)
   {
     {
       ObjectFile objFile = (ObjectFile)cachedFiles.get(filename);
@@ -186,7 +186,7 @@ public class ObjectFile
 
     try
       {
-	final Elf elfFile = new Elf(filename, ElfCommand.ELF_C_READ);
+	final Elf elfFile = new Elf(filename.getPath(), ElfCommand.ELF_C_READ);
 	if (elfFile == null)
 	  return null;
 

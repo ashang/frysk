@@ -39,20 +39,21 @@
 
 package frysk.ftrace;
 
+import java.io.File;
 import java.util.Map;
 import java.util.HashMap;
 import frysk.sys.proc.MapsBuilder;
 
 class MemoryMapping
 {
-  public String path;
+  public File path;
   public long addressLow;
   public long addressHigh;
   public boolean permRead;
   public boolean permWrite;
   public boolean permExecute;
 
-  public MemoryMapping(String path, long addressLow, long addressHigh,
+  public MemoryMapping(File path, long addressLow, long addressHigh,
 		       boolean permRead, boolean permWrite, boolean permExecute)
   {
     this.path = path;
@@ -108,7 +109,7 @@ class MemoryMapping
 		  throw new AssertionError("Non-continuous mapping.");
 	      }
 	    else
-	      mappedFiles.put(path, new MemoryMapping(path, addressLow, addressHigh,
+	      mappedFiles.put(path, new MemoryMapping(new File(path), addressLow, addressHigh,
 						      permRead, permWrite, permExecute));
 	  }
       }

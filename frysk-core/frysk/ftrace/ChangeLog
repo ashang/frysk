@@ -1,3 +1,21 @@
+2007-08-25  Petr Machata  <pmachata@redhat.com>
+
+	* Arch.java: new file
+	* Archx86.java: new file
+	* ArchFactory.java: new file
+	* FtraceLogger.java: new file
+	* Ltrace.java: use logger for reporting.  Use observers for
+	client-side per-event activities.
+	(updateSyscallEnter): load syscall arguments
+	(updateSyscallLeave): load syscall return value
+	(getReturnAddress): moved to Archx86.java
+	(getArguments): the same
+	(updateHit): handle several breakpoints on same return site
+	* LtraceObserver.java: new interfaces syscallEnter, syscallLeave,
+	fileMapped, fileUnmapped, taskAttached, taskRemoved
+	* MemoryMapping.java: use File instead of String where makes sense
+	* ObjectFile.java: the same
+
 2007-08-23  Petr Machata  <pmachata@redhat.com>
 
 	* Ltrace.java: new file, refactored from ../util/Ltrace.java
