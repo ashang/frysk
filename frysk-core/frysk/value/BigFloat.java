@@ -74,4 +74,17 @@ public class BigFloat
     double doubleValue() {
 	return value;
     }
+
+    byte[] toByteArray(int size) {
+	switch (size) {
+	case 4:
+	    return BigInteger.valueOf(Float.floatToRawIntBits((float)value))
+		.toByteArray();
+	case 8:
+	    return BigInteger.valueOf(Double.doubleToRawLongBits(value))
+		.toByteArray();
+	default:
+	    return new byte[0];
+	}
+    }
 }

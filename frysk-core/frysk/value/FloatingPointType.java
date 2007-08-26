@@ -93,4 +93,10 @@ public class FloatingPointType
     BigInteger bigIntegerValue (Location location) {
 	return getBigFloat(location).bigIntegerValue();
     }
+
+    void assign(Location location, Value v) {
+	BigFloat f = ((ArithmeticType)v.getType())
+	    .bigFloatValue(v.getLocation());
+	location.put(endian, f.toByteArray(getSize()), 0);
+    }
 }

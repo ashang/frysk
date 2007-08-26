@@ -39,7 +39,6 @@
 
 package frysk.value;
 
-import lib.dwfl.BaseTypes;
 import inua.eio.ByteOrder;
 import java.io.PrintWriter;
 import java.math.BigInteger;
@@ -373,84 +372,48 @@ public abstract class ArithmeticType
     return null;
   }
 
-  public Value assign(Value var1, Value var2) 
-  {
-    return doAssignment(var1, var2);
-  }
+    public Value assign(Value var1, Value var2) {
+	return var1.assign(var2);
+    }
 
-  public Value plusEqual(Value var1, Value var2)
-  {
-    return doAssignment(var1, add(var1, var2));
-  }
+    public Value plusEqual(Value var1, Value var2) {
+	return var1.assign(add(var1, var2));
+    }
 
-  public Value minusEqual(Value var1, Value var2)
-  {
-    return doAssignment(var1, subtract(var1, var2));
-  }
+    public Value minusEqual(Value var1, Value var2) {
+	return var1.assign(subtract(var1, var2));
+    }
 
-  public Value timesEqual(Value var1, Value var2) 
-  {
-    return doAssignment(var1, multiply(var1, var2));
-  }
+    public Value timesEqual(Value var1, Value var2) {
+	return var1.assign(multiply(var1, var2));
+    }
 
-  public Value divideEqual(Value var1, Value var2)
-  {
-    return doAssignment(var1, divide(var1, var2));
-  }
+    public Value divideEqual(Value var1, Value var2) {
+	return var1.assign(divide(var1, var2));
+    }
 
-  public Value modEqual(Value var1, Value var2)
-  {
-    return doAssignment(var1, mod(var1, var2));
-  }
+    public Value modEqual(Value var1, Value var2) {
+	return var1.assign(mod(var1, var2));
+    }
 
-  public Value shiftLeftEqual(Value var1, Value var2)
-  {
-    return doAssignment(var1, shiftLeft(var1, var2));
-  } 
+    public Value shiftLeftEqual(Value var1, Value var2) {
+	return var1.assign(shiftLeft(var1, var2));
+    } 
 
-  public Value shiftRightEqual(Value var1, Value var2)
-  {
-    return doAssignment(var1, shiftRight(var1, var2));
-  } 
+    public Value shiftRightEqual(Value var1, Value var2) {
+	return var1.assign(shiftRight(var1, var2));
+    }
 
-  public Value bitWiseOrEqual(Value var1, Value var2)
-  {
-    return doAssignment(var1, bitWiseOr(var1, var2));
-  }
+    public Value bitWiseOrEqual(Value var1, Value var2) {
+	return var1.assign(bitWiseOr(var1, var2));
+    }
 
-  public Value bitWiseXorEqual(Value var1, Value var2)
-  {
-    return doAssignment(var1, bitWiseXor(var1, var2));
-  }
+    public Value bitWiseXorEqual(Value var1, Value var2) {
+	return var1.assign(bitWiseXor(var1, var2));
+    }
 
-  public Value bitWiseAndEqual(Value var1, Value var2)
-  {
-    return doAssignment(var1, bitWiseAnd(var1, var2));
-  }
-
-    public Value doAssignment(Value v1, Value v2) {
-	Location l = v1.getLocation();
-	ByteOrder order = v1.getType().getEndian();
-	switch (v1.getType().typeId) {
-	case BaseTypes.baseTypeByte:
-	    l.putByte((byte)v2.asLong());
-	    break;
-	case BaseTypes.baseTypeShort:
-	    l.putShort(order, (short)v2.asLong());
-	    break;
-	case BaseTypes.baseTypeInteger:
-	    l.putInt(order, (int)v2.asLong());
-	    break;
-	case BaseTypes.baseTypeLong:
-	    l.putLong(order, v2.asLong());
-	    break;
-	case BaseTypes.baseTypeFloat:
-	    l.putFloat(order, (float)v2.doubleValue());
-	    break;
-	case BaseTypes.baseTypeDouble:
-	    l.putDouble(order, v2.doubleValue());
-	}
-	return v1;
+    public Value bitWiseAndEqual(Value var1, Value var2) {
+	return var1.assign(bitWiseAnd(var1, var2));
     }
 
   public boolean getLogicalValue (Value var1) {

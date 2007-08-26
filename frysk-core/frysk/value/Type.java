@@ -238,6 +238,13 @@ public abstract class Type {
         throw new InvalidOperatorException(this, "");
     }
 
+    /**
+     * Assign VALUE to LOCATION; possibly performing type-conversion.
+     */
+    void assign(Location location, Value value) {
+	throw new InvalidOperatorException(this, "");
+    }
+
     public boolean isTypedef()
     {
 	return isTypedef;

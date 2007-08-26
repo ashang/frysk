@@ -1,5 +1,24 @@
 2007-08-26  Andrew Cagney  <cagney@redhat.com>
 
+	* Type.java (assign(Location,Value): New.
+	* IntegerType.java (assign(Location,Value)): New.
+	* FloatingPointType.java (assign(Location,Value)): New.
+	* TestBigFloat.java (testToByteArray): New.
+	* BigFloat.java (toByteArray): New.
+	* Value.java (assign(Value)): New.
+	* ArithmeticType.java (assign(Value,Value)): Use Value.assign.
+	(plusEqual(Value,Value)): Ditto.
+	(minusEqual(Value,Value)): Ditto.
+	(timesEqual(Value,Value)): Ditto.
+	(divideEqual(Value,Value)): Ditto.
+	(modEqual(Value,Value)): Ditto.
+	(shiftLeftEqual(Value,Value)): Ditto.
+	(shiftRightEqual(Value,Value)): Ditto.
+	(bigWiseOrEqual(Value,Value)): Ditto.
+	(bitWiseXorEqual(Value,Value)): Ditto.
+	(bitWiseAndEqual(Value,Value)): Ditto.
+	(doAssignment(Value,Value)): Delete.
+
 	* BigFloat.java: New file.
 	* TestBigFloat.java: New file.
 	* IntegerType.java (bigIntegerValue(Location)): New.

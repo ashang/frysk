@@ -147,6 +147,14 @@ public class Value
     }
 
     /**
+     * Assign VALUE to THIS; perform type conversion if necessary.
+     */
+    public Value assign(Value value) {
+	type.assign(location, value);
+	return this;
+    }
+
+    /**
      * Quick and dirty conversion of the value into a long.  Useful
      * for code wanting to use the raw value as a pointer for
      * instance.

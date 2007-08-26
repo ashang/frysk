@@ -122,4 +122,11 @@ public class TestBigFloat
 	checkEquals("double 2", 2.0,
 		     new BigFloat(DOUBLE_TWO).doubleValue());
     }
+
+    public void testToByteArray() {
+	assertEquals("float to double", DOUBLE_ONE,
+		     new BigFloat(FLOAT_ONE).toByteArray(8));
+	assertEquals("double to float", FLOAT_ONE,
+		     new BigFloat(DOUBLE_ONE).toByteArray(4));
+    }
 }

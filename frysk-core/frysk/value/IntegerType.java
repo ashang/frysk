@@ -76,4 +76,11 @@ public abstract class IntegerType
     BigFloat bigFloatValue(Location location) {
 	return new BigFloat(getBigInteger(location));
     }
+
+    void assign(Location location, Value value) {
+	BigInteger i = ((ArithmeticType)value.getType())
+	    .bigIntegerValue(value.getLocation());
+	// Let sub-type sort out sign extension et.al.
+	putBigInteger(location, i);
+    }
 }
