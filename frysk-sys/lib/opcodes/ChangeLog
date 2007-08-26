@@ -1,3 +1,8 @@
+2007-08-26  Andrew Cagney  <cagney@redhat.com>
+
+	* TestDisassembler.java (testOutOfBounds, testDisassembleStartEnd)
+	(testDisassembler): Mark as unsupported; disassembler.
+	
 2007-08-22  Mark Wielaard  <mwielaard@redhat.com>
 
 	* cni/Disassembler.cxx (disassemble): Use WITH_LIBOPCODES, not

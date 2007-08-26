@@ -119,6 +119,8 @@ public class TestDisassembler
     }
     
     public void testDisassembler() {
+	if (unsupported("disassembler", !Disassembler.available()))
+	    return;
 
 	final int numInstructions = 5;
 	Assembler assembler = getAssembler();
@@ -149,6 +151,8 @@ public class TestDisassembler
     }
     
     public void testDisassembleStartEnd() {
+	if (unsupported("disassembler", !Disassembler.available()))
+	    return;
 	
 	final int numInstructions = 5;
 	Assembler assembler = getAssembler();
@@ -179,6 +183,8 @@ public class TestDisassembler
     }
 
     public void testOutOfBounds() {
+	if (unsupported("disassembler", !Disassembler.available()))
+	    return;
 	ByteBuffer buffer = new ArrayByteBuffer(new byte[0]);
 	Disassembler disAsm = new Disassembler(buffer);
 	boolean exceptionThrown = false;
