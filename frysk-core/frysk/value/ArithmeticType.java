@@ -551,6 +551,11 @@ public abstract class ArithmeticType
      * determines if the the value is signed or unsigned.
      */
     abstract BigInteger getBigInteger(Location location);
+    /**
+     * Return the entire location, interpreting the raw bytes as a
+     * floating-point value.  This does not do type-conversion.
+     */
+    abstract BigFloat getBigFloat(Location location);
 
     /**
      * Re-write the entire location with the big integer value.  This
@@ -558,4 +563,15 @@ public abstract class ArithmeticType
      * the value should be zero or sign extended.
      */
     abstract void putBigInteger(Location location, BigInteger val);
+
+    /**
+     * Return the arthmetic type converted to a BigInteger, this may
+     * involve truncation and/or rounding.
+     */
+    abstract BigInteger bigIntegerValue(Location location);
+    /**
+     * Return the arthmetic type converted to a BigFloat, this may
+     * involve truncation and/or rounding.
+     */
+    abstract BigFloat bigFloatValue(Location location);
 }

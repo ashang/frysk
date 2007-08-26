@@ -1,3 +1,17 @@
+2007-08-26  Andrew Cagney  <cagney@redhat.com>
+
+	* BigFloat.java: New file.
+	* TestBigFloat.java: New file.
+	* IntegerType.java (bigIntegerValue(Location)): New.
+	(bigFloatValue(Location)): New.
+	(getBigFloat(Location)): New.
+	* FloatingPointType.java(getBigFloat(Location)): New
+	(bigFloatValue(Location)): New.
+	(bigIntegerValue(Location)): New.
+	* ArithmeticType.java (getBigFloat(Location)): New, abstract.
+	(bigIntegerValue(Location)): New, abstract.
+	(bigFloatValue(Location)): New, abstract.
+
 2007-08-24  Andrew Cagney  <cagney@redhat.com>
 
 	* Value.java (putByte): Delete.

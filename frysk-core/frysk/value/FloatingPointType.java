@@ -81,4 +81,16 @@ public class FloatingPointType
     void putBigInteger(Location location, BigInteger val) {
 	location.put(endian, val.toByteArray(), 0);
     }
+
+    BigFloat getBigFloat(Location location) {
+	return new BigFloat(location.get(endian));
+    }
+
+    BigFloat bigFloatValue(Location location) {
+	return getBigFloat(location);
+    }
+
+    BigInteger bigIntegerValue (Location location) {
+	return getBigFloat(location).bigIntegerValue();
+    }
 }

@@ -141,4 +141,17 @@ public class TestIntegerType
 	checkPut(new EnumType(ByteOrder.LITTLE_ENDIAN, 2),
 		 "3", new byte[] { 3, 0 });
     }
+
+    public void testBigFloatValue() {
+	IntegerType t = new SignedType(1, ByteOrder.BIG_ENDIAN, -1, "type",
+				       false);
+	Location l = new Location(new byte[] { 1 });
+	TestBigFloat.checkEquals("1", 1.0, t.bigFloatValue(l).doubleValue());
+    }
+    public void testBigIntegerValue() {
+	IntegerType t = new SignedType(1, ByteOrder.BIG_ENDIAN, -1, "type",
+				       false);
+	Location l = new Location(new byte[] { 1 });
+	assertEquals("1", 1, t.bigIntegerValue(l).longValue());
+    }
 }

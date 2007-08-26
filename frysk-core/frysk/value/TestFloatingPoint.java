@@ -40,40 +40,25 @@
 package frysk.value;
 
 import inua.eio.ByteOrder;
-import inua.eio.ByteBuffer;
-import java.io.PrintWriter;
-import java.math.BigInteger;
+import frysk.junit.TestCase;
 
 /**
- * Type for an integer value.
+ * Floating-Point type.
  */
-public abstract class IntegerType
-    extends ArithmeticType
-{    
-    /**
-     * XXX: This is an interim constructor.  This will be replaced by
-     * a constructor that replaces TYPE_ID with SIGNNESS.
-     */
-    protected IntegerType(int size, ByteOrder endian,
-			  int typeId, String typeStr,
-			  boolean haveTypeDef) {
-	super(size, endian, typeId, typeStr, haveTypeDef);
+public class TestFloatingPoint
+    extends TestCase
+{
+    public void testBigIntegerValue() {
+	FloatingPointType t = new FloatingPointType(4, ByteOrder.BIG_ENDIAN,
+						    -1, "type", false);
+	Location l = new Location(TestBigFloat.FLOAT_ONE);
+	assertEquals("float", 1, t.bigIntegerValue(l).longValue());
     }
-
-    void toPrint(PrintWriter writer, Location location,
-		 ByteBuffer memory, Format format) {
-	// double-dispatch.
-	format.print(writer, location, this);
-    }
-
-    BigFloat getBigFloat(Location location) {
-	return new BigFloat(location.get(endian));
-    }
-
-    BigInteger bigIntegerValue(Location location) {
-	return getBigInteger(location);
-    }
-    BigFloat bigFloatValue(Location location) {
-	return new BigFloat(getBigInteger(location));
+    public void testBigFloatValue() {
+	FloatingPointType t = new FloatingPointType(4, ByteOrder.BIG_ENDIAN,
+						    -1, "type", false);
+	Location l = new Location(TestBigFloat.FLOAT_ONE);
+	TestBigFloat.checkEquals("float", 1.0,
+				 t.bigFloatValue(l).doubleValue());
     }
 }

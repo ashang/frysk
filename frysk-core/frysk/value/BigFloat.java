@@ -39,41 +39,39 @@
 
 package frysk.value;
 
-import inua.eio.ByteOrder;
-import inua.eio.ByteBuffer;
-import java.io.PrintWriter;
 import java.math.BigInteger;
 
 /**
- * Type for an integer value.
+ * Type a "portable" floating-point type.
+ *
+ * This is currently implemented as a quick hack using "double".
  */
-public abstract class IntegerType
-    extends ArithmeticType
-{    
+public class BigFloat
+{
+    private final double value;
     /**
-     * XXX: This is an interim constructor.  This will be replaced by
-     * a constructor that replaces TYPE_ID with SIGNNESS.
+     * Create a BigFloat by converting the big-integer to
+     * floating-point; may involve rounding.
      */
-    protected IntegerType(int size, ByteOrder endian,
-			  int typeId, String typeStr,
-			  boolean haveTypeDef) {
-	super(size, endian, typeId, typeStr, haveTypeDef);
+    BigFloat(BigInteger b) {
+	this.value = b.doubleValue();
     }
-
-    void toPrint(PrintWriter writer, Location location,
-		 ByteBuffer memory, Format format) {
-	// double-dispatch.
-	format.print(writer, location, this);
+    /**
+     * Create a BigFloat from the big-endian raw bytes; if the byte
+     * buffer isn't exactly 4 or 8 bytes, the value will be truncated
+     * to fit.
+     */
+    BigFloat(byte[] bytes) {
+	BigInteger b = new BigInteger(bytes);
+	if (bytes.length <= 4)
+	    value = Float.intBitsToFloat(b.intValue());
+	else
+	    value = Double.longBitsToDouble(b.longValue());
     }
-
-    BigFloat getBigFloat(Location location) {
-	return new BigFloat(location.get(endian));
+    BigInteger bigIntegerValue() {
+	return BigInteger.valueOf((long)value);
     }
-
-    BigInteger bigIntegerValue(Location location) {
-	return getBigInteger(location);
-    }
-    BigFloat bigFloatValue(Location location) {
-	return new BigFloat(getBigInteger(location));
+    double doubleValue() {
+	return value;
     }
 }
