@@ -1,5 +1,10 @@
 2007-08-26  Andrew Cagney  <cagney@redhat.com>
 
+	* PointerType.java: Extend IntegerType.
+	(createValue(long)): Delete.
+	(getBigInteger(Location)): Rename asBigInteger(Location).
+	(putBigInteger(Location)): New.
+	
 	* Type.java (assign(Location,Value): New.
 	* IntegerType.java (assign(Location,Value)): New.
 	* FloatingPointType.java (assign(Location,Value)): New.

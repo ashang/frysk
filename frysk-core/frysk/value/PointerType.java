@@ -37,7 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.value;
 
 import inua.eio.ByteBuffer;
@@ -46,13 +45,12 @@ import java.io.PrintWriter;
 import java.math.BigInteger;
 
 /**
- * Type for a pointer.
+ * Type for a pointer (or address) of another type.
  */
 public class PointerType
-    extends Type // Extend ArithmeticType?
+    extends IntegerType
 {
     private final Type type;
-    
     /**
      * Create a PointerType
      * 
@@ -72,7 +70,7 @@ public class PointerType
 		 Format format) {
 	format.print(writer, location, this);
 	if (type instanceof IntegerType && type.getSize() == 1) {
-	    BigInteger addr = asBigInteger(location);
+	    BigInteger addr = getBigInteger(location);
 	    char ch = (char)memory.getByte(addr.longValue());
 	    writer.print(" \"");
 	    while (ch != 0) {
@@ -89,16 +87,11 @@ public class PointerType
 	writer.print(" *");
     }
     
-    public BigInteger asBigInteger(Location location) {
+    BigInteger getBigInteger(Location location) {
 	return new BigInteger(1, location.get(endian));
     }
-
-    public Value createValue (long val)
-    {
-	Location l = new Location(new byte[getSize()]);
-	Value returnVar = new Value(this, l);
-	returnVar.getLocation().putLong(endian, val);
-	return returnVar;
+    void putBigInteger(Location location, BigInteger val) {
+	location.put(endian, val.toByteArray(), 0);
     }
 
     /**
