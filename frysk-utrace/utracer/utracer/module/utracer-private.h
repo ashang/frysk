@@ -33,7 +33,8 @@ typedef struct _utraced_info_s {
 
 #define setbit(bv, b) (bv[(b)/(8*sizeof(long))] |= (1<<((b)%(8*sizeof(long)))))
 #define testbit(bv, b) (bv[(b)/(8*sizeof(long))] & (1<<((b)%(8*sizeof(long)))))
-#define clearbit(bv, b) (bv[(b)/(8*sizeof(long))] &= ~(1<<((b)%(8*sizeof(long)))))
+#define clearbit(bv, b) \
+  (bv[(b)/(8*sizeof(long))] &= ~(1<<((b)%(8*sizeof(long)))))
 
 typedef struct _utracing_info_s {
   long utracing_pid;
@@ -56,21 +57,14 @@ typedef struct _utracing_info_s {
   struct file_operations proc_dir_operations;
 } utracing_info_s;
 
-#ifndef DO_INIT
-extern
-#endif
-utracing_info_s * utracing_info_top
-#ifdef DO_INIT
-= NULL
-#endif
-  ;
+DECL (utracing_info_s * utracing_info_top, NULL);
 
+#if 0
 int control_file_write (struct file *file,
 			const char *buffer,
 			unsigned long count,
 			void *data);
 
-#if 0
 int control_file_read ( char *buffer,
 			char **buffer_location,
 			off_t offset,

@@ -492,7 +492,7 @@ typedef struct {
 
 static cmd_info_s printexe_info =
   {printexe_fcn, "(pexe) -- Print the user-supplied and interpreted \
-filenames of the binarie of the given PID."};
+filenames of the binary of the given PID."};
 static cmd_info_s printexe_info_brief =
   {printexe_fcn, NULL};
 

@@ -355,10 +355,11 @@ static int __init utracer_init(void)
       (struct file_operations *)de_utrace_control->proc_fops;
     proc_dir_operations->ioctl = control_ioctl;
   }
-  de_utrace_control->write_proc = control_file_write;
 #if 0
+  de_utrace_control->write_proc = control_file_write;
   de_utrace_control->read_proc  = control_file_read;
 #else
+  de_utrace_control->write_proc = NULL;
   de_utrace_control->read_proc  = NULL;
 #endif
 

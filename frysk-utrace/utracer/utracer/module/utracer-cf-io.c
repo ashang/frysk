@@ -228,6 +228,7 @@ handle_unregister (register_cmd_s * register_cmd)
   return rc;
 }
 
+#if 0
 int
 control_file_write (struct file *file,
                     const char *buffer,
@@ -249,7 +250,6 @@ control_file_write (struct file *file,
   return count;
 }
 
-#if 0
 int
 control_file_read ( char *buffer,
                     char **buffer_location,
