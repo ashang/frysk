@@ -60,32 +60,45 @@ public class Value
 	this.textFIXME = "textFIXME";
     }
  
-    public Value(Type type, String textFIXME)
-    {
+    /**
+     * FIXME: The string parameter, which is being used to track
+     * location using <<by name>>, is being removed.  Try to use
+     * Value(Type,Location).
+     */
+    public Value(Type type, String textFIXME) {
 	this(type, textFIXME, new Location(new byte[type.getSize()]));
     }
-
-    public Value(Type type, String textFIXME, ByteBuffer byteBuffer) 
-    {
-      this(type, textFIXME, (new Location(byteBuffer)));
+    /**
+     * FIXME: The string parameter, which is being used to track
+     * location using <<by name>>, is being removed.  Try to use
+     * Value(Type,Location).
+     */
+    public Value(Type type, String textFIXME, ByteBuffer byteBuffer) {
+	this(type, textFIXME, (new Location(byteBuffer)));
     }    
-
-    public Value(Type type, String textFIXME, Location location)
-    {
-       this.type = type;
-       this.location = location;
-       this.textFIXME = textFIXME;
+    /**
+     * FIXME: The string parameter, which is being used to track
+     * location using <<by name>>, is being removed.  Try to use
+     * Value(Type,Location).
+     */
+    public Value(Type type, String textFIXME, Location location) {
+	this.type = type;
+	this.location = location;
+	this.textFIXME = textFIXME;
     }
 
-
-    public Location getLocation()
-    {
-      return location;
+    /**
+     * Return the Value's Location.
+     */
+    public Location getLocation() {
+	return location;
     }
 
-    public Type getType()
-    {
-      return type;
+    /**
+     * Return the Value's Type.
+     */
+    public Type getType() {
+	return type;
     }
 
     /**
@@ -95,7 +108,7 @@ public class Value
      * class.  Code should instead ask the Variable for it's name.
      */
     public String getTextFIXME() {
-      return textFIXME;
+	return textFIXME;
     }
 
     /**
@@ -103,7 +116,7 @@ public class Value
      * methods.
      */
     public float getFloat() {
-      return location.getFloat(type.getEndian(), 0);
+	return location.getFloat(type.getEndian(), 0);
     }
 
     /**
@@ -111,7 +124,7 @@ public class Value
      * methods.
      */
     public double getDouble() {
-      return location.getDouble(type.getEndian(), 0);
+	return location.getDouble(type.getEndian(), 0);
     }
     
     /**
@@ -119,7 +132,7 @@ public class Value
      * methods.
      */
     public float getFloat(int idx) {
-      return location.getFloat(type.getEndian(), idx);
+	return location.getFloat(type.getEndian(), idx);
     }
 
     /**
@@ -127,7 +140,7 @@ public class Value
      * methods.
      */
     public double getDouble(int idx) {
-      return location.getDouble(type.getEndian(), idx);
+	return location.getDouble(type.getEndian(), idx);
     }
 
     /**
@@ -135,7 +148,7 @@ public class Value
      * methods.
      */
     public void putFloat(float val) {
-      location.putFloat(type.getEndian(), val);
+	location.putFloat(type.getEndian(), val);
     }
 
     /**
@@ -143,7 +156,7 @@ public class Value
      * methods.
      */
     public void putDouble(double val) {
-      location.putDouble(type.getEndian(), val);
+	location.putDouble(type.getEndian(), val);
     }
 
     /**
@@ -173,23 +186,23 @@ public class Value
      */
     double doubleValue()
     {
-      switch (type.getTypeIdFIXME())
-      {
-	case BaseTypes.baseTypeByte:
-	  return location.getByte(0);
-	case BaseTypes.baseTypeShort:
-       	  return location.getShort(type.getEndian(), 0);
-	case BaseTypes.baseTypeInteger:
-	  return location.getInt(type.getEndian(), 0);
-	case BaseTypes.baseTypeLong:
-	  return location.getLong(type.getEndian(), 0);
-	case BaseTypes.baseTypeFloat:
-	  return location.getFloat(type.getEndian(), 0);
-	case BaseTypes.baseTypeDouble:
-	  return location.getDouble(type.getEndian(), 0);
-	default:
-	  return 0;
-      }
+	switch (type.getTypeIdFIXME())
+	    {
+	    case BaseTypes.baseTypeByte:
+		return location.getByte(0);
+	    case BaseTypes.baseTypeShort:
+		return location.getShort(type.getEndian(), 0);
+	    case BaseTypes.baseTypeInteger:
+		return location.getInt(type.getEndian(), 0);
+	    case BaseTypes.baseTypeLong:
+		return location.getLong(type.getEndian(), 0);
+	    case BaseTypes.baseTypeFloat:
+		return location.getFloat(type.getEndian(), 0);
+	    case BaseTypes.baseTypeDouble:
+		return location.getDouble(type.getEndian(), 0);
+	    default:
+		return 0;
+	    }
     }
 
     /**
