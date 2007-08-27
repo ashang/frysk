@@ -39,6 +39,7 @@
 
 package frysk.value;
 
+import inua.eio.ByteOrder;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 
@@ -46,71 +47,122 @@ import java.math.BigInteger;
  * Formats a base type sending it to the printer.
  */
 
-public class Format
+public abstract class Format
 {
-    /**
-     * Report that formattting for Type is unknown.
-     */
-    public void printUnknown(PrintWriter writer, Type type) {
-	writer.print("<<format for ");
-	type.toPrint(writer);
-	writer.print(" unknown>>");
+    private static void printDecimal(PrintWriter writer, Location location,
+				     ByteOrder order) {
+	writer.print(new BigInteger(location.get(order)).toString());
     }
-
-    /**
-     * Report that formatting of TYPE of SIZE is unknown.
-     */
-    protected void printUnknown(PrintWriter writer, String type,
-				long size) {
-	writer.print("<<format for ");
-	writer.print(size);
-	writer.print(" byte ");
-	writer.print(type);
-	writer.print(" unknown>>");
+    private static void printHexadecimal(PrintWriter writer, Location location,
+					 ByteOrder order) {
+	writer.print("0x");
+	writer.print(new BigInteger(1, location.get(order)).toString(16));
+    }
+    private static void printOctal(PrintWriter writer, Location location,
+				   ByteOrder order) {
+	writer.print("0");
+	writer.print(new BigInteger(1, location.get(order)).toString(8));
+    }
+    private static void printBinary(PrintWriter writer, Location location,
+				    ByteOrder order) {
+	writer.print(new BigInteger(1, location.get(order)).toString(2));
+    }
+    private static void printFloatingPoint(PrintWriter writer,
+					   Location location,
+					   ArithmeticType type) {
+	BigFloat f = type.getBigFloat(location);
+	if (type.getSize() < 8)
+	    writer.print(f.floatValue());
+	else
+	    writer.print(f.doubleValue());
     }
 
     /**
      * Print the integer at LOCATION.
      */
-    public void print(PrintWriter writer, Location location,
-		      IntegerType type) {
-	BigInteger i = type.getBigInteger(location);
-	writer.print(i.toString());
-    }
+    abstract void print(PrintWriter writer, Location location,
+			IntegerType type);
 
     /**
      * Print the floating-point at LOCATION.
      */
-    public void print(PrintWriter writer, Location location,
-		      FloatingPointType type) {
-	// FIXME: Should use an abstract floating-point type.
-	long size = type.getSize();
-	switch((int) size) {
-	case 4:
-	    writer.print(location.getFloat(type.getEndian(), 0));
-	    break;
-	case 8:
-	    writer.print(location.getDouble(type.getEndian(), 0));
-	    break;
-	default:
-	    printUnknown(writer, "floating-point", size);
-	    break;
-	}
-    }
+    abstract void print(PrintWriter writer, Location location,
+			FloatingPointType type);
 
-    public void print(PrintWriter writer, Location location,
-		      PointerType type) {
-	writer.print("0x");
-	byte[] bytes = location.get(type.getEndian());
-	for (int i = 0; i < bytes.length; i++) {
-	    writer.print(Integer.toHexString((bytes[i] / 16) & 0xf));
-	    writer.print(Integer.toHexString((bytes[i] % 16) & 0xf));
-	}
-    }
+    /**
+     * Print the pointer at location.
+     */
+    abstract void print(PrintWriter writer, Location location,
+			PointerType type);
 
-    public static final Format NATURAL = new Format();
-    public static final Format HEXADECIMAL = new Format();
-    public static final Format OCTAL = new Format();
-    public static final Format DECIMAL = new Format();
-    public static final Format BINARY = new Format();
+    public static final Format NATURAL = new Format() {
+	    void print(PrintWriter writer, Location location,
+		       IntegerType type) {
+		writer.print(type.getBigInteger(location).toString());
+	    }
+	    void print(PrintWriter writer, Location location,
+		       FloatingPointType type) {
+		printFloatingPoint(writer, location, type);
+	    }
+	    void print(PrintWriter writer, Location location,
+		       PointerType type) {
+		printHexadecimal(writer, location, type.getEndian());
+	    }
+	};
+    public static final Format HEXADECIMAL = new Format() {
+	    void print(PrintWriter writer, Location location,
+		       IntegerType type) {
+		printHexadecimal(writer, location, type.getEndian());
+	    }
+	    void print(PrintWriter writer, Location location,
+		       FloatingPointType type) {
+		printHexadecimal(writer, location, type.getEndian());
+	    }
+	    void print(PrintWriter writer, Location location,
+		       PointerType type) {
+		printHexadecimal(writer, location, type.getEndian());
+	    }
+	};
+    public static final Format OCTAL = new Format() {
+	    void print(PrintWriter writer, Location location,
+		       IntegerType type) {
+		printOctal(writer, location, type.getEndian());
+	    }
+	    void print(PrintWriter writer, Location location,
+		       FloatingPointType type) {
+		printOctal(writer, location, type.getEndian());
+	    }
+	    void print(PrintWriter writer, Location location,
+		       PointerType type) {
+		printOctal(writer, location, type.getEndian());
+	    }
+	};
+    public static final Format DECIMAL = new Format() {
+	    void print(PrintWriter writer, Location location,
+		       IntegerType type) {
+		printDecimal(writer, location, type.getEndian());
+	    }
+	    void print(PrintWriter writer, Location location,
+		       FloatingPointType type) {
+		printDecimal(writer, location, type.getEndian());
+	    }
+	    void print(PrintWriter writer, Location location,
+		       PointerType type) {
+		printDecimal(writer, location, type.getEndian());
+	    }
+	};
+    public static final Format BINARY = new Format() {
+	    void print(PrintWriter writer, Location location,
+		       IntegerType type) {
+		printBinary(writer, location, type.getEndian());
+	    }
+	    void print(PrintWriter writer, Location location,
+		       FloatingPointType type) {
+		printBinary(writer, location, type.getEndian());
+	    }
+	    void print(PrintWriter writer, Location location,
+		       PointerType type) {
+		printBinary(writer, location, type.getEndian());
+	    }
+	};
 }

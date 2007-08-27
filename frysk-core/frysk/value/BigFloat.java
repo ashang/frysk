@@ -48,13 +48,18 @@ import java.math.BigInteger;
  */
 public class BigFloat
 {
-    private final double value;
+    /**
+     * Underlying value.  Delay conversion until the target value is
+     * known so that rounding and truncation errors don't come in to
+     * play when needed.
+     */
+    private final Number value;
     /**
      * Create a BigFloat by converting the big-integer to
      * floating-point; may involve rounding.
      */
-    BigFloat(BigInteger b) {
-	this.value = b.doubleValue();
+    BigFloat(BigInteger value) {
+	this.value = value;
     }
     /**
      * Create a BigFloat from the big-endian raw bytes; if the byte
@@ -63,25 +68,28 @@ public class BigFloat
      */
     BigFloat(byte[] bytes) {
 	BigInteger b = new BigInteger(bytes);
-	if (bytes.length <= 4)
-	    value = Float.intBitsToFloat(b.intValue());
+	if (bytes.length < 8)
+	    value = new Float(Float.intBitsToFloat(b.intValue()));
 	else
-	    value = Double.longBitsToDouble(b.longValue());
+	    value = new Double(Double.longBitsToDouble(b.longValue()));
     }
     BigInteger bigIntegerValue() {
-	return BigInteger.valueOf((long)value);
+	return BigInteger.valueOf(value.longValue());
     }
     double doubleValue() {
-	return value;
+	return value.doubleValue();
+    }
+    float floatValue() {
+	return value.floatValue();
     }
 
     byte[] toByteArray(int size) {
 	switch (size) {
 	case 4:
-	    return BigInteger.valueOf(Float.floatToRawIntBits((float)value))
+	    return BigInteger.valueOf(Float.floatToRawIntBits(value.floatValue()))
 		.toByteArray();
 	case 8:
-	    return BigInteger.valueOf(Double.doubleToRawLongBits(value))
+	    return BigInteger.valueOf(Double.doubleToRawLongBits(value.doubleValue()))
 		.toByteArray();
 	default:
 	    return new byte[0];

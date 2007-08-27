@@ -1,5 +1,21 @@
 2007-08-26  Andrew Cagney  <cagney@redhat.com>
 
+	* BigFloat.java (value): Change to Number.
+	(floatValue()): New.
+	(toByteArray(int), bigIntegerValue(), doubleValue)
+	(BigFloat(byte[] bytes): Update.
+	* Format.java (NATURAL, DECIMAL, HEXADECIMAL, BINARY, OCTAL):
+	Implement.
+	(printHexadecimal(PrintWriter,Location,ArithmeticType)): New.
+	(printDecimal(PrintWriter,Location,ArithmeticType)): New.
+	(printOctal(PrintWriter,Location,ArithmeticType)): New.
+	(printBinary(PrintWriter,Location,ArithmeticType)): New.
+	(printFloatingPoint(PrintWriter,Location,ArithmeticType)): New.
+	(print(PrintWriter,Location,FloatingPointType)):
+	(print(PrintWriter,Location,IntegerType)): Make abstract.
+	(print(PrintWriter,Location,PointerType)): Make abstract.
+	(print(PrintWriter,Location,FloatingPointType)): Make abstract.
+	
 	* PointerType.java: Extend IntegerType.
 	(createValue(long)): Delete.
 	(getBigInteger(Location)): Rename asBigInteger(Location).
