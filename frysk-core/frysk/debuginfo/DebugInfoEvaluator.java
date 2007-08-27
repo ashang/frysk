@@ -258,7 +258,7 @@ class DebugInfoEvaluator
     public void putFloat (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long addr = getBufferAddr(varDieP);
-      buffer.putFloat(addr + offset, v.getFloat());
+      buffer.putFloat(addr + offset, (float)v.doubleValue());
     }
 
     public double getDouble (DwarfDie varDieP, long offset) throws NameNotFoundException
@@ -270,7 +270,7 @@ class DebugInfoEvaluator
     public void putDouble (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long addr = getBufferAddr(varDieP);
-      buffer.putDouble(addr + offset, v.getDouble());
+      buffer.putDouble(addr + offset, v.doubleValue());
     }
   }
 
@@ -383,7 +383,7 @@ class DebugInfoEvaluator
     public void putFloat (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long reg = getReg(varDieP);
-      currentFrame.setReg(reg, (long) v.getFloat());
+      currentFrame.setReg(reg, (long) v.doubleValue());
     }
 
     public double getDouble (DwarfDie varDieP, long offset) throws NameNotFoundException
@@ -396,7 +396,7 @@ class DebugInfoEvaluator
     public void putDouble (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long reg = getReg(varDieP);
-      currentFrame.setReg(reg, (long) v.getDouble());
+      currentFrame.setReg(reg, (long) v.doubleValue());
     }
   }
 

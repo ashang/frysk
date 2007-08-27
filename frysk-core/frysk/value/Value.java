@@ -39,7 +39,6 @@
 
 package frysk.value;
 
-import lib.dwfl.BaseTypes;
 import inua.eio.ByteBuffer;
 import java.io.StringWriter;
 import java.io.PrintWriter;
@@ -115,38 +114,6 @@ public class Value
      * FIXME: Do not use this.  Get the location and then use it's
      * methods.
      */
-    public float getFloat() {
-	return location.getFloat(type.getEndian(), 0);
-    }
-
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
-    public double getDouble() {
-	return location.getDouble(type.getEndian(), 0);
-    }
-    
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
-    public float getFloat(int idx) {
-	return location.getFloat(type.getEndian(), idx);
-    }
-
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
-    public double getDouble(int idx) {
-	return location.getDouble(type.getEndian(), idx);
-    }
-
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
     public void putFloat(float val) {
 	location.putFloat(type.getEndian(), val);
     }
@@ -181,28 +148,10 @@ public class Value
     }
     
     /**
-     * FIXME: Do not use this as it is assuming that Java's
-     * floating-point double matches that of the host.
+     * Quick and dirty conversion to a floating-point.
      */
-    double doubleValue()
-    {
-	switch (type.getTypeIdFIXME())
-	    {
-	    case BaseTypes.baseTypeByte:
-		return location.getByte(0);
-	    case BaseTypes.baseTypeShort:
-		return location.getShort(type.getEndian(), 0);
-	    case BaseTypes.baseTypeInteger:
-		return location.getInt(type.getEndian(), 0);
-	    case BaseTypes.baseTypeLong:
-		return location.getLong(type.getEndian(), 0);
-	    case BaseTypes.baseTypeFloat:
-		return location.getFloat(type.getEndian(), 0);
-	    case BaseTypes.baseTypeDouble:
-		return location.getDouble(type.getEndian(), 0);
-	    default:
-		return 0;
-	    }
+    public double doubleValue() {
+	return ((ArithmeticType)type).bigFloatValue(location).doubleValue();
     }
 
     /**

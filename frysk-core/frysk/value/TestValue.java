@@ -90,8 +90,8 @@ public class TestValue
 	assertEquals("v6", 6, v6.asLong());
 	assertEquals("v7", 7, v7.asLong());
 	assertEquals("v8", 8, v8.asLong());
-	assertEquals("f1.0", 1.0, 1.0, f1.getFloat());
-	assertEquals("f2.0", 2.0, 2.0, f2.getDouble());
+	assertEquals("f1.0", 1.0, 1.0, f1.doubleValue());
+	assertEquals("f2.0", 2.0, 2.0, f2.doubleValue());
     }
 
     private boolean isTrue (long i)
@@ -179,36 +179,36 @@ public class TestValue
 	Value v1 = floatType.createValue((float)4.0);
 	Value v2 = doubleType.createValue(9.0);
 	Value v3 = v1.getType().add(v1, v2);
-	assertEquals ("4 + 9", 4 + 9, v3.getDouble(), 0);
+	assertEquals ("4 + 9", 4 + 9, v3.doubleValue(), 0);
 	v3 = v1.getType().subtract(v2, v1);
-	assertEquals ("9 - 4", 9 - 4, v3.getDouble(), 0);
+	assertEquals ("9 - 4", 9 - 4, v3.doubleValue(), 0);
 	v3 = v1.getType().multiply(v2, v1);
-	assertEquals ("9 * 4", 9 * 4, v3.getDouble(), 0);
+	assertEquals ("9 * 4", 9 * 4, v3.doubleValue(), 0);
 	v3 = v1.getType().mod(v2, v1);
-	assertEquals ("9 % 4", 9 % 4, v3.getDouble(), 0);
+	assertEquals ("9 % 4", 9 % 4, v3.doubleValue(), 0);
 	v3 = v1.getType().lessThan(v2, v1);
-	assertEquals ("9 < 4", 9 < 4, isTrue(v3.getDouble()));
+	assertEquals ("9 < 4", 9 < 4, isTrue(v3.doubleValue()));
 	v3 = v1.getType().greaterThan(v2, v1);
-	assertEquals ("9 > 4", 9 > 4, isTrue(v3.getDouble()));
+	assertEquals ("9 > 4", 9 > 4, isTrue(v3.doubleValue()));
 	v3 = v1.getType().lessThanOrEqualTo(v2, v1);
-	assertEquals ("9 <= 4", 9 <= 4, isTrue(v3.getDouble()));
+	assertEquals ("9 <= 4", 9 <= 4, isTrue(v3.doubleValue()));
 	v3 = v1.getType().greaterThanOrEqualTo(v2, v1);
-	assertEquals ("9 >= 4", 9 >= 4, isTrue(v3.getDouble()));
+	assertEquals ("9 >= 4", 9 >= 4, isTrue(v3.doubleValue()));
 	v3 = v1.getType().equal(v2, v1);
-	assertEquals ("9 == 4", 9 == 4, isTrue(v3.getDouble()));
+	assertEquals ("9 == 4", 9 == 4, isTrue(v3.doubleValue()));
 	v3 = v1.getType().notEqual(v2, v1);
-	assertEquals ("9 != 4", v2 != v1, isTrue(v3.getDouble()));
+	assertEquals ("9 != 4", v2 != v1, isTrue(v3.doubleValue()));
 	v3 = v1.getType().assign(v3, v1);
-	assertEquals ("v3 = 4", 4, v3.getDouble(), 0);
+	assertEquals ("v3 = 4", 4, v3.doubleValue(), 0);
 	v3 = v1.getType().plusEqual(v3, v1);
-	assertEquals ("v3 += 4", 8, v3.getDouble(), 0);
+	assertEquals ("v3 += 4", 8, v3.doubleValue(), 0);
 	v3 = v1.getType().minusEqual(v3, v1);
-	assertEquals ("v3 -= 4", 4, v3.getDouble(), 0);
+	assertEquals ("v3 -= 4", 4, v3.doubleValue(), 0);
 	v3 = v1.getType().timesEqual(v3, v1);
-	assertEquals ("v3 *= 4", 16, v3.getDouble(), 0);
+	assertEquals ("v3 *= 4", 16, v3.doubleValue(), 0);
 	v3 = v1.getType().divideEqual(v3, v1);
-	assertEquals ("v3 /= 4", 4, v3.getDouble(), 0);
+	assertEquals ("v3 /= 4", 4, v3.doubleValue(), 0);
 	v3 = v1.getType().modEqual(v3, v1);
-	assertEquals ("v3 %= 4", 0, v3.getDouble(), 0);
+	assertEquals ("v3 %= 4", 0, v3.doubleValue(), 0);
     }
 }
