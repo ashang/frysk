@@ -50,6 +50,12 @@ import frysk.proc.TaskObserver;
 public class ProcTaskIDManager
     implements TaskObserver.Cloned, TaskObserver.Forked,
                TaskObserver.Terminated {
+
+    private void addTaskObservers(Task task) {
+        task.requestAddForkedObserver(this);
+        task.requestAddClonedObserver(this);
+        task.requestAddTerminatedObserver(this);
+    }
     
     private class ProcEntry {
         int id;
@@ -65,9 +71,7 @@ public class ProcTaskIDManager
             for (int i = 0; i < tasks.size(); i++) {
                 Task task = (Task)tasks.get(i);
                 taskMap.put(task, new Integer(i));
-                task.requestAddForkedObserver(ProcTaskIDManager.this);
-                task.requestAddClonedObserver(ProcTaskIDManager.this);
-                task.requestAddTerminatedObserver(ProcTaskIDManager.this);
+                addTaskObservers(task);
             }
         }
     }
@@ -145,7 +149,8 @@ public class ProcTaskIDManager
         Proc newProc = offspring.getProc();
         int id = reserveProcID();
         manageProc(newProc, id);
-        return Action.CONTINUE;
+        parent.requestUnblock(this);
+        return Action.BLOCK;
     }
 
     public Action updateForkedOffspring(Task parent, Task offspring) {
@@ -165,7 +170,9 @@ public class ProcTaskIDManager
             entry.tasks.add(offspring);
             entry.taskMap.put(offspring, new Integer(taskID));
         }
-        return Action.CONTINUE;
+        addTaskObservers(offspring);
+        parent.requestUnblock(this);
+        return Action.BLOCK;
     }
 
     public Action updateClonedOffspring(Task parent, Task offspring) {
