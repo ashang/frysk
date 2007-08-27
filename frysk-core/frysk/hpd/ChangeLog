@@ -1,3 +1,9 @@
+2007-08-27  Tim Moore  <timoore@redhat.com>
+
+	* AllPTSet.java (getTaskData): Remove debugging cruft.
+	* ViewsetCommand.java (handle): Fix various mistakes in the set
+	listing.
+
 2007-08-24  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* CoreCommand.java (handle): Build multi-threaded set.

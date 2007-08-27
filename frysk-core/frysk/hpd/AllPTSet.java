@@ -115,7 +115,6 @@ class AllPTSet implements PTSet
             int numProcs = manager.getNumberOfProcs();
             for (int p = 0; p < numProcs; p++) {
                 int numTasks = manager.getNumberOfTasks(p);
-                System.out.println("procs " + numProcs + " tasks " + numTasks);
                 for (int t = 0; t < numTasks; t++) {
                     Task task = manager.getTask(p, t);
                     if (task != null)

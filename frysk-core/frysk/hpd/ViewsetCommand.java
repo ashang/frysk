@@ -64,13 +64,16 @@ class ViewsetCommand extends CLIHandler {
 	PTSet tempset = null;
 	TaskData temptd = null;
 	String setname = "";
+        String displayedName = "";
 	String output = "";
 
 	if (params.size() <= 1) {
-	    if (params.size() == 0)
+	    if (params.size() == 0) {
 		tempset = cli.targetset;
-	    else if (params.size() == 1) {
+                displayedName = "Target set";
+            } else if (params.size() == 1) {
 		setname = (String) params.get(0);
+                displayedName = "Set " + setname;
 		if (cli.namedPTSets.containsKey(setname))
 		    tempset = (PTSet) (cli.namedPTSets).get(setname);
 		else {
@@ -79,20 +82,18 @@ class ViewsetCommand extends CLIHandler {
 		    return;
 		}
 	    }
-	    boolean hasOneTask = false;
+            boolean hasOneTask = false;
+            output = displayedName;
 	    for (Iterator iter = tempset.getTaskData(); iter.hasNext();) {
-		hasOneTask = true;
 		// ??? this way of outputting is simple, but it's okay for now
 		temptd = (TaskData) iter.next();
-		output += "Set " + setname + " includes:\n";
-		output += "[" + temptd.getParentID() + "." + temptd.getID()
-			+ "]\n";
-		cli.addMessage(output, Message.TYPE_NORMAL);
+                hasOneTask = true;
+		output += "\n[" + temptd.getParentID() + "." + temptd.getID()
+			+ "]";
 	    }
-	    if (!hasOneTask) {
-		output = "Set " + setname + " is empty.\n";
-		cli.addMessage(output, Message.TYPE_NORMAL);
-	    }
+            if (!hasOneTask)
+                output += "\n";
+            cli.addMessage(output, Message.TYPE_NORMAL);
 	} else {
 	    cli.printUsage(cmd);
 	}
