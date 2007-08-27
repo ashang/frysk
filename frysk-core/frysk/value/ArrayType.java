@@ -175,11 +175,11 @@ public class ArrayType
 	if (type instanceof IntegerType && type.getSize() == 1) {
 	    // Treat it as a character string
 	    writer.print("\"");
-	    while (e.hasNext()) {
-		char ch = (char)((Value)e.next()).getLocation().getByte(0);
-		if (ch == 0)
-		    break;
-		writer.print(ch);
+	    byte[] string = location.toByteArray();
+	    for (int i = 0; i < string.length; i++) {
+		if (string[i] == 0)
+		    break; // NUL
+		writer.print((char)string[i]);
 	    }
 	    writer.print("\"");
 	} else {

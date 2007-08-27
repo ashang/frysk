@@ -1,3 +1,8 @@
+2007-08-27  Andrew Cagney  <cagney@redhat.com>
+
+	* TestPrint.java: Delete string test; handled by
+	frysk.value.TestArray.testString.
+
 2007-08-27  Tim Moore  <timoore@redhat.com>
 
 	* ViewsetCommand.java (handle): Add pid and tid command output.

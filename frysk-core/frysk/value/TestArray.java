@@ -93,4 +93,22 @@ public class TestArray extends TestCase {
 	s = c3.toPrint();
 	assertEquals ("2 element slice", "{3342,3856}", s);
     }
+
+    /**
+     * Check that an array of characters is treated special.
+     */
+    public void testString() {
+	// Create a string with a '0' in the middle
+	byte[] helloWorld = "Hello World".getBytes();
+	helloWorld["Hello".length()] = 0;
+	// Create a string value
+	ArrayList dims = new ArrayList();
+	dims.add(new Integer(helloWorld.length - 1));
+	Type char_t = new SignedType(1, ByteOrder.BIG_ENDIAN, -1, "char",
+				     false);
+	ArrayType t = new ArrayType(char_t, helloWorld.length, dims);
+	Value v = new Value(t, new Location(helloWorld));
+	// Now print it
+	assertEquals("char[]", "\"Hello\"", v.toPrint());
+    }
 }

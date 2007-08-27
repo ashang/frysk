@@ -1,3 +1,9 @@
+2007-08-27  Andrew Cagney  <cagney@redhat.com>
+
+	* ArrayType.java (toPrint(PrintWriter,Location,ByteBuffer): Use
+	Location.get to read a "string".
+	* TestArray.java (testString): New.
+
 2007-08-26  Andrew Cagney  <cagney@redhat.com>
 
 	* BigFloat.java (value): Change to Number.
