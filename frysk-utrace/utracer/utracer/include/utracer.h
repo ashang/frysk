@@ -284,9 +284,10 @@ typedef enum {
 
 /***************** public i/f ****************/
 
-void utracer_set_environment (pid_t client_pid,
-			      int cmd_fd,
-			      int ctl_file);  // fixme temp
+// fixme temp -- open files in utracer.c, not udb.c
+void utracer_set_environment (pid_t client_pid, int cmd_fd);
+void utracer_set_ctl_fd (int ctl_file);
+
 int utracer_get_printmmap (long pid,
 			   printmmap_resp_s ** printmmap_resp_p,
 			   vm_struct_subset_s ** vm_struct_subset_p,

@@ -14,11 +14,16 @@ int utracer_cmd_file_fd;
 int utracer_ctl_file_fd;
 
 void
-utracer_set_environment (pid_t cp, int cf, int xf)
+utracer_set_ctl_fd (int xf)
+{
+  utracer_ctl_file_fd = xf;
+}
+
+void
+utracer_set_environment (pid_t cp, int cf)
 {
   client_pid = cp;
   utracer_cmd_file_fd = cf;
-  utracer_ctl_file_fd = xf;
 }
 
 

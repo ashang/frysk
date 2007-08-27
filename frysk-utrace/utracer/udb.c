@@ -309,6 +309,7 @@ main (int ac, char * av[])
     asprintf (&cfn, "/proc/%s/%s", UTRACER_BASE_DIR, UTRACER_CONTROL_FN);
     ctl_file_fd = open (cfn, O_RDWR);
     free (cfn);
+    utracer_set_ctl_fd (ctl_file_fd);
     if (-1 == ctl_file_fd)
       error (1, errno, "Error opening control file");
   }
@@ -325,7 +326,8 @@ main (int ac, char * av[])
     if (-1 == utracer_cmd_file_fd) {
       utracer_unregister (udb_pid);
       close_ctl_file();
-      error (1, errno, "Error opening command file");
+      uerror ("Error opening command file");
+      _exit (1);
     }
     
     asprintf (&cfn, "/proc/%s/%ld/%s", UTRACER_BASE_DIR,
@@ -340,7 +342,7 @@ main (int ac, char * av[])
     }
   }
 
-  utracer_set_environment (udb_pid, utracer_cmd_file_fd, ctl_file_fd);
+  utracer_set_environment (udb_pid, utracer_cmd_file_fd);
 
   
 #ifdef USE_UTRACER_WAIT

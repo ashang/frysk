@@ -314,8 +314,6 @@ control_ioctl (struct inode * inode,
   ctl_cmd_u ctl_cmd;
   int rc = 0;
 
-  printk (KERN_ALERT "control_ioctl\n");
-
   if (copy_from_user(&ctl_cmd, (void *)a2, a1))
     return -EFAULT;
 

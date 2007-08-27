@@ -131,7 +131,7 @@ handle_register (register_cmd_s * register_cmd)
 	    struct task_struct * task;
 	    struct utrace_attached_engine * utracing_engine;
 	    de_utracing_resp->read_proc  = if_file_read;
-
+	    
 	    task = get_task (client_pid);
 	  
 	    if (task) {
@@ -141,7 +141,7 @@ handle_register (register_cmd_s * register_cmd)
 					       UTRACE_ATTACH_MATCH_OPS,
 					       &utracing_utrace_ops,
 					       0UL);  //fixme -- maybe use?
-	      if (IS_ERR (utracing_engine)) {
+	      if (!IS_ERR (utracing_engine)) {
 	      //fixme -- do something with rc?
 		rc = utrace_set_flags (task,utracing_engine,
 				       UTRACE_EVENT (EXEC)	|
