@@ -1,5 +1,7 @@
 2007-08-27  Tim Moore  <timoore@redhat.com>
 
+	* ViewsetCommand.java (handle): Add pid and tid command output.
+
 	* AllPTSet.java (getTaskData): Remove debugging cruft.
 	* ViewsetCommand.java (handle): Fix various mistakes in the set
 	listing.

@@ -43,6 +43,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import frysk.proc.Task;
+
 class ViewsetCommand extends CLIHandler {
 
     private static final String full = "The viewset command displays the "
@@ -83,13 +85,15 @@ class ViewsetCommand extends CLIHandler {
 		}
 	    }
             boolean hasOneTask = false;
-            output = displayedName;
+            output = displayedName + "\tpid\tid";
 	    for (Iterator iter = tempset.getTaskData(); iter.hasNext();) {
 		// ??? this way of outputting is simple, but it's okay for now
 		temptd = (TaskData) iter.next();
                 hasOneTask = true;
 		output += "\n[" + temptd.getParentID() + "." + temptd.getID()
 			+ "]";
+                Task task = temptd.getTask();
+                output += "\t" + task.getProc().getPid() + "\t" + task.getTid();
 	    }
             if (!hasOneTask)
                 output += "\n";
