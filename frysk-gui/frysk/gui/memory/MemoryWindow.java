@@ -332,8 +332,8 @@ public class MemoryWindow
     this.fromSpin.setValue((double) pc_inc);
     this.toSpin.setRange(0.0, highestAddress);
     this.toSpin.setValue((double) end);
-    this.fromBox.setText(Long.toHexString(pc_inc));
-    this.toBox.setText(Long.toHexString(end));
+    this.fromBox.setText("0x" + Long.toHexString(pc_inc));
+    this.toBox.setText("0x" + Long.toHexString(end));
     this.pcLabelDec.setText("" + pc_inc);
     this.pcLabelHex.setText("0x" + Long.toHexString(pc_inc));
 
@@ -481,6 +481,7 @@ public class MemoryWindow
               return;
             
             String str = fromBox.getText();
+            str = str.substring(2);
             try
             {
               double d = (double) Long.parseLong(str, 16);
@@ -496,7 +497,7 @@ public class MemoryWindow
             }
             catch (NumberFormatException nfe)
             {
-              fromBox.setText(Long.toHexString((long) lastKnownFrom));
+              fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));
             }
           }
       }
@@ -512,6 +513,7 @@ public class MemoryWindow
               return;
             
               String str = toBox.getText();
+              str = str.substring(2);
               try
               {
                 double d = (double) Long.parseLong(str, 16);
@@ -527,7 +529,7 @@ public class MemoryWindow
               }
               catch (NumberFormatException nfe)
               {
-                toBox.setText(Long.toHexString((long) lastKnownTo));
+                toBox.setText("0x" + Long.toHexString((long) lastKnownTo));
               }
           }
       }
@@ -879,7 +881,7 @@ public class MemoryWindow
     if (val > this.lastKnownTo)
       {
         this.fromSpin.setValue(this.lastKnownTo);
-        this.fromBox.setText(Long.toHexString((long) this.lastKnownTo));
+        this.fromBox.setText("0x" + Long.toHexString((long) this.lastKnownTo));
         this.lastKnownFrom = this.lastKnownTo;
         return;
       }
@@ -902,7 +904,7 @@ public class MemoryWindow
           }
       }
     
-    this.fromBox.setText(Long.toHexString((long) val));
+    this.fromBox.setText("0x" + Long.toHexString((long) val));
     refreshList();
     this.lastKnownFrom = val;
   }
@@ -922,7 +924,7 @@ public class MemoryWindow
     if (val < this.lastKnownFrom)
       {
         this.toSpin.setValue(lastKnownFrom);
-        this.toBox.setText(Long.toHexString((long) lastKnownFrom));
+        this.toBox.setText("0x" + Long.toHexString((long) lastKnownFrom));
         this.lastKnownTo = this.lastKnownFrom;
         return;
       }
@@ -941,7 +943,7 @@ public class MemoryWindow
           }
       }
 
-    this.toBox.setText(Long.toHexString((long) val));
+    this.toBox.setText("0x" + Long.toHexString((long) val));
     this.lastKnownTo = val;
     refreshList();
   }

@@ -1,3 +1,7 @@
+2007-08-28  Zhao Shujing <pearly.zhao@oracle.com>
+	
+	* memory/MemoryWindow.java: Fixes #4672.
+
 2007-08-21  Zhao Shujing <pearly.zhao@oracle.com>
 
 	* disassembler/DisassemblyWindow.java: Fixes #4672. 
