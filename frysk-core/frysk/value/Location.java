@@ -187,10 +187,4 @@ public class Location
     void putDouble(ByteOrder order, double value)  {location.putDouble(order, 0, value);}
     /** FIXME: Do not use; this is going away.  */
     void putFloat(ByteOrder order, float value)  {location.putFloat(order, 0, value);}
-    /** FIXME: Do not use; this is going away.  */
-    void putLong(ByteOrder order, long value)  {location.putLong(order, 0, value);}
-    /** FIXME: Do not use; this is going away.  */
-    void putInt(ByteOrder order, int value)  {location.putInt(order, 0, value);}
-    /** FIXME: Do not use; this is going away.  */
-    void putShort(ByteOrder order, short value)  {location.putShort(order, 0, value);}
 }

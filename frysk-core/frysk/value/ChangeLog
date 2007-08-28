@@ -1,3 +1,9 @@
+2007-08-28  Andrew Cagney  <cagney@redhat.com>
+
+	* Location.java	(putLong): Delete.
+	(putInt): Delete.
+	(putShort): Delete.
+
 2007-08-28  Teresa Thomas  <tthomas@redhat.com>
 
 	* UnavailablePiece.java: isEqual changed to equals.
