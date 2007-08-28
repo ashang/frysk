@@ -111,22 +111,6 @@ public class Value
     }
 
     /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
-    public void putFloat(float val) {
-	location.putFloat(type.getEndian(), val);
-    }
-
-    /**
-     * FIXME: Do not use this.  Get the location and then use it's
-     * methods.
-     */
-    public void putDouble(double val) {
-	location.putDouble(type.getEndian(), val);
-    }
-
-    /**
      * Assign VALUE to THIS; perform type conversion if necessary.
      */
     public Value assign(Value value) {

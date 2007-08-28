@@ -1,5 +1,10 @@
 2007-08-28  Andrew Cagney  <cagney@redhat.com>
 
+	* Location.java (putDouble): Delete.
+	(putFloat): Delete.
+	* Value.java (putDouble): Delete.
+	(putFloat): Delete.
+
 	* Location.java	(putLong): Delete.
 	(putInt): Delete.
 	(putShort): Delete.

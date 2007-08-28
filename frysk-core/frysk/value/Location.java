@@ -182,9 +182,4 @@ public class Location
     void putByte(long idx, byte value) {
 	location.putByte(idx, (byte)value);
     }
-    
-    /** FIXME: Do not use; this is going away.  */
-    void putDouble(ByteOrder order, double value)  {location.putDouble(order, 0, value);}
-    /** FIXME: Do not use; this is going away.  */
-    void putFloat(ByteOrder order, float value)  {location.putFloat(order, 0, value);}
 }
