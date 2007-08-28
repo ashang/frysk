@@ -150,7 +150,7 @@ public class TestValue
 	assertEquals ("9 & 4", 1, v3.asLong());
 	v3 = v1.getType().logicalOr(v2, v1);
 	assertEquals ("9 | 4", 1, v3.asLong());
-	v3 = v1.getType().assign(v3, v1);
+	v3 = v3.assign(v1);
 	assertEquals ("v3 = 4", 4, v3.asLong());
 	v3 = v1.getType().plusEqual(v3, v1);
 	assertEquals ("v3 += 4", 8, v3.asLong());
@@ -198,7 +198,7 @@ public class TestValue
 	assertEquals ("9 == 4", 9 == 4, isTrue(v3.doubleValue()));
 	v3 = v1.getType().notEqual(v2, v1);
 	assertEquals ("9 != 4", v2 != v1, isTrue(v3.doubleValue()));
-	v3 = v1.getType().assign(v3, v1);
+	v3 = v3.assign(v1);
 	assertEquals ("v3 = 4", 4, v3.doubleValue(), 0);
 	v3 = v1.getType().plusEqual(v3, v1);
 	assertEquals ("v3 += 4", 8, v3.doubleValue(), 0);

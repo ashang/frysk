@@ -1,5 +1,8 @@
 2007-08-28  Andrew Cagney  <cagney@redhat.com>
 
+	* Type.java (assign(Value,Value)): Delete.
+	* TestValue.java: Use Value.assign.
+
 	* Location.java (putDouble): Delete.
 	(putFloat): Delete.
 	* Value.java (putDouble): Delete.

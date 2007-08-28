@@ -917,7 +917,7 @@ expr returns [Value returnVar=null]
                 doubleType.createValue(Double.parseDouble(d.getText().substring(0, l)));
         }
     |   #(ASSIGNEQUAL v1=expr v2=expr)  {
-            v1.getType().assign(v1, v2);
+            v1.assign(v2);
             returnVar = v1;
             cppSymTabRef.put(frame, v1.getTextFIXME(), v1);
         }
@@ -974,23 +974,23 @@ expr returns [Value returnVar=null]
     |   #(CAST pt:primitiveType v2=expr) { 
 	    if(pt.getText().compareTo("long") == 0) {
 	      returnVar = longType.createValue(0);
-              returnVar.getType().assign(returnVar, v2);
+              returnVar.assign(v2);
 	      }
 	    else if(pt.getText().compareTo("int") == 0) {
-	      returnVar = intType.createValue((int)0);
-              returnVar.getType().assign(returnVar, v2);
+	      returnVar = intType.createValue(0);
+              returnVar.assign(v2);
 	      }
 	    else if(pt.getText().compareTo("short") == 0) {
-	      returnVar = shortType.createValue((short)0);
-              returnVar.getType().assign(returnVar, v2);
+	      returnVar = shortType.createValue(0);
+              returnVar.assign(v2);
 	      }
 	    else if(pt.getText().compareTo("double") == 0) {
-	      returnVar = doubleType.createValue((double)0);
-              returnVar.getType().assign(returnVar, v2);
+	      returnVar = doubleType.createValue(0.0);
+              returnVar.assign(v2);
 	      }
 	    else if(pt.getText().compareTo("float") == 0) {
-	      returnVar = floatType.createValue((float)0);
-              returnVar.getType().assign(returnVar, v2);
+	      returnVar = floatType.createValue(0.0);
+              returnVar.assign(v2);
 	      }
 	    else returnVar = v2;
         }

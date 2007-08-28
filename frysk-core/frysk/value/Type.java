@@ -201,9 +201,6 @@ public abstract class Type {
     public Value logicalNegation(Value var1) {
         throw new InvalidOperatorException(this, "!");
     } 
-    public Value assign (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "=");
-    }
     public Value timesEqual (Value var1, Value var2) {
         throw new InvalidOperatorException(this, "*=");
     }
