@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.util.*;
-import java.util.Random;
 import javax.swing.event.*;
 import javax.swing.border.*;
 import java.awt.*;
@@ -11,7 +10,6 @@ public class Udb extends JFrame {
 
     private JTabbedPane jtp;
     private JToolBar toolBar;
-    private Random random = new Random();
 
     static final String Dec   = "dec";
     static final String Bin   = "binary";
@@ -121,8 +119,10 @@ public class Udb extends JFrame {
 	public void actionPerformed(ActionEvent e) {
 	    String ac = e.getActionCommand();
 	    if (ac.equals (ReadRegs)) {
+		
+		Utrace.getregs (gprVals);
+		
 		for (int i = 0; i < gprs.length; i++) {
-		    gprVals[i] = random.nextInt();
 		    fields[i].setText (cvtVal (spinners[i], gprVals[i]));
 		}
 	    }
@@ -151,10 +151,6 @@ public class Udb extends JFrame {
 	jtp.addTab ("DESC",  new JLabel ("Descriptor Registers"));
 	jtp.addTab ("DEBUG", new JLabel ("Debug Registers"));
 
-	//	c.add (jtp, BorderLayout.CENTER);
-
-	setVisible(true);
-    
     }
 
     public static void main(String args[]) {

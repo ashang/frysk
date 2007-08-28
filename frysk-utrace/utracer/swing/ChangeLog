@@ -1,3 +1,13 @@
+Tue Aug 28 10:53:44 2007  Chris Moller  <cmoller@redhat.com>
+
+	* Makefile: Added stuff to build cni/Utrace.o and cni/utrace.h.
+	* Udb.java: Took out diagnostic code and replaced it with cni
+	stuff. Fixed a visibility bug.
+	* Utrace.java:  New file--boilerplate of the Java side of the cni
+	module wrapper.
+	* cni/Utrace.cxx: New file--boilerplate of the C++ side of the cni
+	module wrapper.
+
 Thu Aug 23 17:08:48 2007  Chris Moller  <cmoller@redhat.com>
 
 	* Udb.java:
