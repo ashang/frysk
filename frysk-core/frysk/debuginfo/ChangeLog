@@ -4,7 +4,11 @@
 
 2007-08-28  Teresa Thomas  <tthomas@redhat.com>
 
-	* TestLocationExpression.java (testBregx): Added
+	* LocationExpression.java (decode): DW_OP_pick added.
+	* TestLocationExpression.java (testPickMul): Test for DW_OP_pick 
+	added, testMul changed to testPickMul.
+	
+	* TestLocationExpression.java (testBregx): Added. 
 	
 	* TestLocationExpression.java (testBregxDup): Added.
 	(testPieceRegxAddr): Added.

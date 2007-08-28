@@ -62,22 +62,7 @@ public class TestLocationExpression
 	extends TestLib
 {
     Logger logger = Logger.getLogger("frysk");
-    
-    public void testPlus()
-    {
-	// Create dwarf operation list
-	List ops = new ArrayList();
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit10_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit7_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_plus_, 0, 0, 0) ) ;
-	
-	// Created expected result list
-	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)17, 12));
-	
-	checkLocExpected(ops, expectedLoc, 1);
-    }
-    
+       
     /*
      * Test for DW_OP_breg3/DW_OP_breg5 and DW_OP_dup
      */
@@ -167,22 +152,44 @@ public class TestLocationExpression
 	
 	checkLocExpected(ops, expectedLoc, 2);
     }
-    
-    public void testMul()
+
+    /*
+     * Tests DW_OP_mul and DW_OP_pick 
+     */
+    public void testPickMul()
     {
 	List ops = new ArrayList();
 	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit10_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit7_, 0, 0, 0) );	
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit10_, 0, 0, 0) );
 	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit7_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit6_, 0, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_pick_, 2, 0, 0) );
 	ops.add( new DwarfOp(DwOpEncodings.DW_OP_mul_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)70, 12));
+	expectedLoc.add(new MemoryPiece((long)60, 12));
 	
 	checkLocExpected(ops, expectedLoc, 3);
     }
 
+    /*
+     * Tests DW_OP_plus and DW_OP_over 
+     */    
+    public void testOverPlus()
+    {
+	// Create dwarf operation list
+	List ops = new ArrayList();
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit10_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit7_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_over_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOpEncodings.DW_OP_plus_, 0, 0, 0) ) ;
+	
+	// Created expected result list
+	List expectedLoc = new ArrayList();
+	expectedLoc.add(new MemoryPiece((long)17, 12));
+	
+	checkLocExpected(ops, expectedLoc, 2);
+    }
+    
     public void testDiv()
     {
 	List ops = new ArrayList();
@@ -207,19 +214,6 @@ public class TestLocationExpression
 	expectedLoc.add(new MemoryPiece((long)1, 12));
 	
 	checkLocExpected(ops, expectedLoc, 1);
-    }
-    
-    public void testOver()
-    {
-	List ops = new ArrayList();
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit10_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit7_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_over_, 0, 0, 0) ) ;
-	
-	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)10, 12));
-	
-	checkLocExpected(ops, expectedLoc, 3);
     }
 
     public void testDrop()
@@ -446,7 +440,10 @@ public class TestLocationExpression
 		Object oExpect = it2.next();
 
 		if ( o instanceof MemoryPiece && oExpect instanceof MemoryPiece)
+		{
 		    isEqual = ((MemoryPiece)o).equals((MemoryPiece)oExpect);
+		    assertEquals ("Value", ((MemoryPiece)o).getMemory(), ((MemoryPiece)oExpect).getMemory());
+		}
 		else if ( o instanceof RegisterPiece && oExpect instanceof RegisterPiece)
 		{   
 		    isEqual = ((RegisterPiece)o).equals((RegisterPiece)oExpect);

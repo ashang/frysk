@@ -595,10 +595,6 @@ class LocationExpression {
 		stack.addFirst(stack.getFirst());
 		break;
 
-	    case DwOpEncodings.DW_OP_over_:
-		stack.addFirst(stack.get(1));
-		break;
-
 	    case DwOpEncodings.DW_OP_drop_:
 		stack.removeFirst();
 		break;
@@ -617,8 +613,16 @@ class LocationExpression {
 		stack.addFirst(first);
 		stack.addFirst(third);
 		stack.addFirst(second);
-		break;			
+		break;		
+		
+	    case DwOpEncodings.DW_OP_over_:
+		stack.addFirst(stack.get(1));
+		break;
 
+	    case DwOpEncodings.DW_OP_pick_:
+		stack.addFirst (stack.get((int)(operand1))); 
+		break;
+		
 		// Arithmetic Operations
 	    case DwOpEncodings.DW_OP_plus_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
