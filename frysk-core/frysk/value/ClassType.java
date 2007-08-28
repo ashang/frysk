@@ -224,7 +224,10 @@ public class ClassType
      * This bit manipulation should be pushed into Location.
      */
     private Value bitValueFIXME(Location location, Member member) {
-	int val = location.getInt(member.type.getEndian(), (int)member.offset);
+	int val = (int)((ArithmeticType)member.type)
+	    .getBigInteger(location.slice(member.offset,
+					  member.type.getSize()))
+	    .longValue();
 	int mask = member.maskFIXME();
 	int shift = 0;
 	for (int tmpMask = mask;

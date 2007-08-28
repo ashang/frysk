@@ -1,5 +1,14 @@
 2007-08-27  Andrew Cagney  <cagney@redhat.com>
 
+	* ClassType.java (bitValueFIXME): Use ArithmeticType.getBigInteger.
+	* Location.java (getByte(long)): Replace getByte(int).
+	(putByte(long,byte)): Replace putByte(byte).
+	(getDouble): Delete.
+	(getFloat): Delete.
+	(getLong): Delete.
+	(getInt): Delete.
+	(getShort): Delete.
+	
 	* Value.java (getFloat, getDouble): Delete.
 	(doubleValue): Make public.
 	* TestValue.java: Update.

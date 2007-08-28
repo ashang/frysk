@@ -169,22 +169,19 @@ public class Location
 	return new Location(s);
     }
 
-    /** FIXME: Do not use; this is going away.  */
-    byte getByte(int idx) { return (byte)location.getByte(idx); }
+    /**
+     * Return the byte at IDX.
+     */
+    byte getByte(long idx) {
+	return (byte)location.getByte(idx);
+    }
 
-    /** FIXME: Do not use; this is going away.  */
-    double getDouble(ByteOrder order, int idx) { return location.getDouble(order, idx); }
-    /** FIXME: Do not use; this is going away.  */
-    float getFloat(ByteOrder order, int idx) { return location.getFloat(order, idx); }
-    /** FIXME: Do not use; this is going away.  */
-    long getLong(ByteOrder order, int idx) { return location.getLong(order, idx); }
-    /** FIXME: Do not use; this is going away.  */
-    int getInt(ByteOrder order, int idx) { return location.getInt(order, idx); }
-    /** FIXME: Do not use; this is going away.  */
-    short getShort(ByteOrder order, int idx) { return location.getShort(order, idx); }
-    
-    /** FIXME: Do not use; this is going away.  */
-    void putByte(byte value)  {location.putByte(0, (byte)value);}
+    /**
+     * Poke the byte at IDX.
+     */
+    void putByte(long idx, byte value) {
+	location.putByte(idx, (byte)value);
+    }
     
     /** FIXME: Do not use; this is going away.  */
     void putDouble(ByteOrder order, double value)  {location.putDouble(order, 0, value);}
