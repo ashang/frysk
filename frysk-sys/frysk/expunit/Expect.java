@@ -215,7 +215,7 @@ public class Expect
 		    Match p = matches[i];
 		    if (p != null) {
 			logger.log (Level.FINE,
-				    "{0} find {1} in <<{2}>>?\n",
+				    "{0} find <<{1}>> in <<{2}>>?\n",
 				    new Object[] { this, p, output });
 			if (p.find (output)) {
 			    logger.log (Level.FINE,

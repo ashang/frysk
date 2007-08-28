@@ -1,3 +1,8 @@
+2007-08-28  Andrew Cagney  <cagney@redhat.com>
+
+	* Expect.java (expectMilliseconds): Add <<>> round the search
+	target in log message.
+
 2007-08-01  Andrew Cagney  <cagney@redhat.com>
 
 	* Expect.java (Expect): Include args in the log.
