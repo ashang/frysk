@@ -79,7 +79,7 @@ public class TestLocationExpression
     }
     
     /*
-     * Test for DW_OP_bregX and DW_OP_dup
+     * Test for DW_OP_breg3/DW_OP_breg5 and DW_OP_dup
      */
     public void testBregxDup()
     {
@@ -104,6 +104,33 @@ public class TestLocationExpression
 	expectedLoc.add(new MemoryPiece((long)101, 12));
 	
 	checkLocExpected(ops, expectedLoc, 2);
+    }
+    
+    /*
+     * Test for DW_OP_bregx
+     */  
+    public void testBregx()
+    {
+	List ops = new ArrayList();
+	
+	// Note: REG1 in frysk-asm.h corresponds to registers 3 and 5 in i386 and x86_64 resp.
+	switch (getArch())
+	{
+	    case ElfEMachine.EM_386:
+		ops.add( new DwarfOp(DwOpEncodings.DW_OP_bregx_, 3, 2, 0) ); // Value in register ebx plus 2
+		break;
+	    case ElfEMachine.EM_X86_64:
+		ops.add( new DwarfOp(DwOpEncodings.DW_OP_bregx_, 5, 2, 0) ); // Value in register rdi plus 2
+		break;
+	    default:	
+		if (unresolvedOnPPC(4964))
+		    return;
+	}  
+	
+	List expectedLoc = new ArrayList();
+	expectedLoc.add(new MemoryPiece((long)101, 12));
+	
+	checkLocExpected(ops, expectedLoc, 1);
     }
     
     /*
@@ -400,7 +427,7 @@ public class TestLocationExpression
 	LocationExpression locExp = new LocationExpression(frame, die, ops);
 	List loc = locExp.decode(12);  
 	
-	assertEquals ("Stack size", locExp.getStackSize(), stackSize);
+	assertEquals ("Stack size", stackSize, locExp.getStackSize());
 	compareLocations (loc, expectedLoc);
 
     }
@@ -434,7 +461,7 @@ public class TestLocationExpression
 		    break;
 	    } 
 	}
-	assertEquals ("Result", isEqual, true);
+	assertEquals ("Result", true, isEqual);
     }
     
     private Task getStoppedTask()

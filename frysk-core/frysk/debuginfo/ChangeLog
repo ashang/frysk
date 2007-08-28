@@ -1,5 +1,7 @@
 2007-08-28  Teresa Thomas  <tthomas@redhat.com>
 
+	* TestLocationExpression.java (testBregx): Added
+	
 	* TestLocationExpression.java (testBregxDup): Added.
 	(testPieceRegxAddr): Added.
 	(compareLocations): Added.
