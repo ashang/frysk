@@ -1,41 +1,41 @@
-// This file is part of the program FRYSK.
-//
-// Copyright 2007, Red Hat Inc.
-//
-// FRYSK is free software; you can redistribute it and/or modify it
-// under the terms of the GNU General Public License as published by
-// the Free Software Foundation; version 2 of the License.
-//
-// FRYSK is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with FRYSK; if not, write to the Free Software Foundation,
-// Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-//
-// In addition, as a special exception, Red Hat, Inc. gives You the
-// additional right to link the code of FRYSK with code not covered
-// under the GNU General Public License ("Non-GPL Code") and to
-// distribute linked combinations including the two, subject to the
-// limitations in this paragraph. Non-GPL Code permitted under this
-// exception must only link to the code of FRYSK through those well
-// defined interfaces identified in the file named EXCEPTION found in
-// the source code files (the "Approved Interfaces"). The files of
-// Non-GPL Code may instantiate templates or use macros or inline
-// functions from the Approved Interfaces without causing the
-// resulting work to be covered by the GNU General Public
-// License. Only Red Hat, Inc. may make changes or additions to the
-// list of Approved Interfaces. You must obey the GNU General Public
-// License in all respects for all of the FRYSK code and other code
-// used in conjunction with FRYSK except the Non-GPL Code covered by
-// this exception. If you modify this file, you may extend this
-// exception to your version of the file, but you are not obligated to
-// do so. If you do not wish to provide this exception without
-// modification, you must delete this exception statement from your
-// version and license this file solely under the GPL without
-// exception.
+//This file is part of the program FRYSK.
+
+//Copyright 2007, Red Hat Inc.
+
+//FRYSK is free software; you can redistribute it and/or modify it
+//under the terms of the GNU General Public License as published by
+//the Free Software Foundation; version 2 of the License.
+
+//FRYSK is distributed in the hope that it will be useful, but
+//WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+//General Public License for more details.
+
+//You should have received a copy of the GNU General Public License
+//along with FRYSK; if not, write to the Free Software Foundation,
+//Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+
+//In addition, as a special exception, Red Hat, Inc. gives You the
+//additional right to link the code of FRYSK with code not covered
+//under the GNU General Public License ("Non-GPL Code") and to
+//distribute linked combinations including the two, subject to the
+//limitations in this paragraph. Non-GPL Code permitted under this
+//exception must only link to the code of FRYSK through those well
+//defined interfaces identified in the file named EXCEPTION found in
+//the source code files (the "Approved Interfaces"). The files of
+//Non-GPL Code may instantiate templates or use macros or inline
+//functions from the Approved Interfaces without causing the
+//resulting work to be covered by the GNU General Public
+//License. Only Red Hat, Inc. may make changes or additions to the
+//list of Approved Interfaces. You must obey the GNU General Public
+//License in all respects for all of the FRYSK code and other code
+//used in conjunction with FRYSK except the Non-GPL Code covered by
+//this exception. If you modify this file, you may extend this
+//exception to your version of the file, but you are not obligated to
+//do so. If you do not wish to provide this exception without
+//modification, you must delete this exception statement from your
+//version and license this file solely under the GPL without
+//exception.
 
 package frysk.debuginfo;
 
@@ -65,8 +65,7 @@ class LocationExpression {
     List ops;
     int locationType;
     LinkedList stack;
-    public static final long NOMEMORYSPLIT = -99;
-    
+
     public LocationExpression (DebugInfoFrame frame, DwarfDie die, List ops) {
 	locationType = 0;
 	this.frame = frame;
@@ -74,7 +73,7 @@ class LocationExpression {
 	this.ops = ops;
 	this.stack = null;
     }
-    
+
     /**
      *  Decode a location list and return the value.
      *
@@ -130,7 +129,7 @@ class LocationExpression {
 		stack.addFirst(new Long(operator - DwOpEncodings.DW_OP_lit0_));
 		break;
 
-	    // Register name Operators	
+		// Register name Operators	
 	    case DwOpEncodings.DW_OP_reg0_:
 	    case DwOpEncodings.DW_OP_reg1_:
 	    case DwOpEncodings.DW_OP_reg2_:
@@ -223,7 +222,7 @@ class LocationExpression {
 		stack.addFirst(new Long(operand1));
 		break;
 
-	    // DW_OP_fbreg calls recursively and pushes that value on the stack
+		// DW_OP_fbreg calls recursively and pushes that value on the stack
 	    case DwOpEncodings.DW_OP_fbreg_:
 		locationType = locationTypeRegDisp;
 		long pc = frame.getAdjustedAddress();
@@ -242,37 +241,37 @@ class LocationExpression {
 	    case DwOpEncodings.DW_OP_consts_:
 		stack.addFirst(new Long(operand1));
 		break;
-            
-            // Stack Operations
+
+		// Stack Operations
 	    case DwOpEncodings.DW_OP_dup_:
 		stack.addFirst(stack.getFirst());
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_over_:
 		stack.addFirst(stack.get(1));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_drop_:
 		stack.removeFirst();
 		break;
 
 	    case DwOpEncodings.DW_OP_swap_:
-                Long first = (Long) stack.removeFirst();
-                Long second = (Long) stack.removeFirst();
-                stack.addFirst(first);
-                stack.addFirst(second);
+		Long first = (Long) stack.removeFirst();
+		Long second = (Long) stack.removeFirst();
+		stack.addFirst(first);
+		stack.addFirst(second);
 		break;	
-		
+
 	    case DwOpEncodings.DW_OP_rot_:
-                first = (Long) stack.removeFirst();
-                second = (Long) stack.removeFirst();
-                Long third = (Long) stack.removeFirst();
-                stack.addFirst(first);
-                stack.addFirst(third);
-                stack.addFirst(second);
+		first = (Long) stack.removeFirst();
+		second = (Long) stack.removeFirst();
+		Long third = (Long) stack.removeFirst();
+		stack.addFirst(first);
+		stack.addFirst(third);
+		stack.addFirst(second);
 		break;			
 
-            // Arithmetic Operations
+		// Arithmetic Operations
 	    case DwOpEncodings.DW_OP_plus_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
@@ -289,13 +288,13 @@ class LocationExpression {
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 + operand2)); // - ?
 		break;
-	
+
 	    case DwOpEncodings.DW_OP_mul_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 * operand2));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_div_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
@@ -309,95 +308,95 @@ class LocationExpression {
 		// Should there be a check here for operand1!=0 ?
 		stack.addFirst(new Long(operand2 % operand1));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_abs_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(Math.abs(operand1)));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_and_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 & operand2));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_or_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 | operand2));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_shl_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand2 << operand1));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_shr_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand2 >>> operand1));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_shra_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand2 >> operand1));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_xor_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 ^ operand2));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_neg_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(0-operand1));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_not_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(~operand1));
 		break;
-	   
-	    // Control flow operations
+
+		// Control flow operations
 	    case DwOpEncodings.DW_OP_le_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 <= operand1)? 1:0));
 		break;	
-		
+
 	    case DwOpEncodings.DW_OP_ge_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 >= operand1)? 1:0));
 		break;	
-		
+
 	    case DwOpEncodings.DW_OP_eq_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 == operand1)? 1:0));
 		break;	
-		
+
 	    case DwOpEncodings.DW_OP_lt_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 < operand1)? 1:0));
 		break;	
-		
+
 	    case DwOpEncodings.DW_OP_gt_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 > operand1)? 1:0));
 		break;	
-		
+
 	    case DwOpEncodings.DW_OP_ne_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 != operand1)? 1:0));
 		break;	
-		
+
 		// ??? Support remaining operators
 	    default:
 		throw new ValueUavailableException();
@@ -408,8 +407,7 @@ class LocationExpression {
 
     /**
      * Decode a location list and return the value
-     * (Currently not being used by frysk)
-     * @param size Size of variable (currently unused)
+     * @param size - Size of variable 
      * @return List of memory or register pieces
      */
     public List decode (int size)
@@ -417,10 +415,8 @@ class LocationExpression {
 	stack = new LinkedList();
 	Isa isa = frame.getTask().getIsa();
 	int nops = ops.size();
-	
-	/*
-	 * pieces will contain a list of MemoryPiece or RegisterPiece
-	 */
+
+	//pieces will contain a list of MemoryPiece, RegisterPiece or UnavaiablePiece
 	ArrayList pieces = new ArrayList(); 
 
 	if (nops == 0)
@@ -430,10 +426,14 @@ class LocationExpression {
 		throw new ValueUavailableException();
 
 	for(int i = 0; i < nops; i++) {
+
 	    int operator = ((DwarfOp) ops.get(i)).operator;
 	    long operand1 = ((DwarfOp) ops.get(i)).operand1;
 	    long operand2 = ((DwarfOp) ops.get(i)).operand2;
+
 	    switch (operator) {
+
+	    // Literal Encodings
 	    case DwOpEncodings.DW_OP_lit0_:
 	    case DwOpEncodings.DW_OP_lit1_:
 	    case DwOpEncodings.DW_OP_lit2_:
@@ -469,7 +469,7 @@ class LocationExpression {
 		stack.addFirst(new Long(operator - DwOpEncodings.DW_OP_lit0_));
 		break;
 
-	    // Register name Operators	
+		// Register name Operators	
 	    case DwOpEncodings.DW_OP_reg0_:
 	    case DwOpEncodings.DW_OP_reg1_:
 	    case DwOpEncodings.DW_OP_reg2_:
@@ -506,7 +506,7 @@ class LocationExpression {
 		    locationType = locationTypeReg;
 		Register register = DwarfRegisterMapFactory.getRegisterMap(isa)
 		.getRegister(operator - DwOpEncodings.DW_OP_reg0_);
-		// Push the register onto the stack
+		// Push the register onto the dwfl stack
 		stack.addFirst(register);
 		break;
 
@@ -557,12 +557,20 @@ class LocationExpression {
 		stack.addFirst(register);
 		break;
 
+	    case DwOpEncodings.DW_OP_bregx_:
+		locationType = locationTypeRegDisp;
+		register = DwarfRegisterMapFactory.getRegisterMap(isa)
+		.getRegister((int)operand1);
+		regval = frame.getRegisterValue(register).asLong();
+		stack.addFirst(new Long(operand2 + regval));
+		break;
+
 	    case DwOpEncodings.DW_OP_addr_:
 		locationType = locationTypeAddress;
 		stack.addFirst(new Long(operand1));
 		break;
 
-	    // DW_OP_fbreg calls recursively and pushes that value on the stack
+		// DW_OP_fbreg calls recursively and pushes that value on the stack
 	    case DwOpEncodings.DW_OP_fbreg_:
 		locationType = locationTypeRegDisp;
 		long pc = frame.getAdjustedAddress();
@@ -581,37 +589,37 @@ class LocationExpression {
 	    case DwOpEncodings.DW_OP_consts_:
 		stack.addFirst(new Long(operand1));
 		break;
-            
-            // Stack Operations
+
+		// Stack Operations
 	    case DwOpEncodings.DW_OP_dup_:
 		stack.addFirst(stack.getFirst());
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_over_:
 		stack.addFirst(stack.get(1));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_drop_:
 		stack.removeFirst();
 		break;
 
 	    case DwOpEncodings.DW_OP_swap_:
-                Long first = (Long) stack.removeFirst();
-                Long second = (Long) stack.removeFirst();
-                stack.addFirst(first);
-                stack.addFirst(second);
+		Long first = (Long) stack.removeFirst();
+		Long second = (Long) stack.removeFirst();
+		stack.addFirst(first);
+		stack.addFirst(second);
 		break;	
-		
+
 	    case DwOpEncodings.DW_OP_rot_:
-                first = (Long) stack.removeFirst();
-                second = (Long) stack.removeFirst();
-                Long third = (Long) stack.removeFirst();
-                stack.addFirst(first);
-                stack.addFirst(third);
-                stack.addFirst(second);
+		first = (Long) stack.removeFirst();
+		second = (Long) stack.removeFirst();
+		Long third = (Long) stack.removeFirst();
+		stack.addFirst(first);
+		stack.addFirst(third);
+		stack.addFirst(second);
 		break;			
 
-            // Arithmetic Operations
+		// Arithmetic Operations
 	    case DwOpEncodings.DW_OP_plus_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
@@ -626,15 +634,15 @@ class LocationExpression {
 	    case DwOpEncodings.DW_OP_minus_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
-		stack.addFirst(new Long(operand1 + operand2)); // - ?
+		stack.addFirst(new Long(operand2 - operand1)); 
 		break;
-	
+
 	    case DwOpEncodings.DW_OP_mul_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 * operand2));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_div_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
@@ -648,156 +656,159 @@ class LocationExpression {
 		// Should there be a check here for operand1!=0 ?
 		stack.addFirst(new Long(operand2 % operand1));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_abs_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(Math.abs(operand1)));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_and_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 & operand2));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_or_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 | operand2));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_shl_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand2 << operand1));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_shr_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand2 >>> operand1));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_shra_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand2 >> operand1));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_xor_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 ^ operand2));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_neg_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(0-operand1));
 		break;
-		
+
 	    case DwOpEncodings.DW_OP_not_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(~operand1));
 		break;
-	   
-	    // Control flow operations
+
+		// Control flow operations
 	    case DwOpEncodings.DW_OP_le_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 <= operand1)? 1:0));
 		break;	
-		
+
 	    case DwOpEncodings.DW_OP_ge_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 >= operand1)? 1:0));
 		break;	
-		
+
 	    case DwOpEncodings.DW_OP_eq_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 == operand1)? 1:0));
 		break;	
-		
+
 	    case DwOpEncodings.DW_OP_lt_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 < operand1)? 1:0));
 		break;	
-		
+
 	    case DwOpEncodings.DW_OP_gt_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 > operand1)? 1:0));
 		break;	
-		
+
 	    case DwOpEncodings.DW_OP_ne_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 != operand1)? 1:0));
 		break;	
-				
-	    //Special Operations
+
+		//Special Operations
 	    case DwOpEncodings.DW_OP_nop_:
-		if (true) {
-		    // Do nothing 
-		}
+		// Do nothing 
 		break;
-		
-	    // Composition Operators
+
+		// Composition Operators
 	    case DwOpEncodings.DW_OP_piece_:
-		
-		//Case where some bytes of value is unavailable 
+		// Case where some bytes of value is unavailable 
 		if (i==0 || ((DwarfOp)(ops.get(i-1))).operator==DwOpEncodings.DW_OP_piece_)
 		{
 		    pieces.add(new UnavailablePiece(operand1));
 		    break;
 		}	
-		
-		/*
-		 * If stackTop is a Register, add it as a RegisterPiece to list pieces 
-		 * If it is a long value, add it as a MemoryPiece 
-		 */
-		Object stackTop = stack.getFirst();
-		if (stackTop instanceof Register)
-		    pieces.add(new RegisterPiece((Register)stackTop, operand1));
-		else if (stackTop instanceof Long)
-		    pieces.add(new MemoryPiece(((Long)stackTop).longValue(), operand1));
+		// Otherwise, check the type of element on stack top and add to list
+		addToList (pieces, operand1);	
 		break;
-		
+
 	    default:
 		throw new ValueUavailableException();
 	    }
 	}
-	
+
 	/* 
 	 * If pieces is empty, its the case where there is no memory split between registers and memory
-	 * Pop top of stack & add to the empty list
+	 * Then add element on stack top to the empty list
 	 */
 	if (pieces.isEmpty())
 	{    
-	    Object stackTop = stack.removeFirst();
-
-	    if (stackTop instanceof Register)
-		pieces.add(new RegisterPiece((Register)stackTop, NOMEMORYSPLIT));
-	    else if (stackTop instanceof Long)
-		pieces.add(new MemoryPiece(((Long)stackTop).longValue(), NOMEMORYSPLIT));
+	    addToList (pieces, size);
 	}    
-	
+
 	return pieces;
     }
-    
+
+    /**
+     * Function that checks the type of element on the stack top and adds it to the
+     * list of location
+     */
+    private void addToList (List pieces, long size)
+    {
+	/*
+	 * If stackTop is a Register, add it as a RegisterPiece to list pieces 
+	 * If it is a long value, add it as a MemoryPiece 
+	 */
+	Object stackTop = stack.getFirst();
+
+	if (stackTop instanceof Register)
+	    pieces.add(new RegisterPiece((Register)stackTop, size));
+	else if (stackTop instanceof Long)
+	    pieces.add(new MemoryPiece(((Long)stackTop).longValue(), size));
+    }
+
+
     /**
      *  Return register number for a one entry DW_OP_regX location list 
      *
      */
     public Register getRegisterNumber () {
 	Isa isa = frame.getTask().getIsa();
-	
+
 	if (ops.size() == 1) {
 	    int operator = ((DwarfOp) ops.get(0)).operator;
 	    if (operator >= DwOpEncodings.DW_OP_reg0_
-		|| operator <=  DwOpEncodings.DW_OP_reg31_) {
+		    || operator <=  DwOpEncodings.DW_OP_reg31_) {
 		locationType = locationTypeReg;
 		return DwarfRegisterMapFactory.getRegisterMap(isa)
 		.getRegister(operator - DwOpEncodings.DW_OP_reg0_);
@@ -809,7 +820,7 @@ class LocationExpression {
     public int getLocationType () {
 	return locationType;
     }
-    
+
     public int getStackSize() {
 	return ((stack != null) ? stack.size() : 0);
     }

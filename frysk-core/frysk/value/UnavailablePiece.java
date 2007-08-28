@@ -53,13 +53,11 @@ public class UnavailablePiece
     /**
      * Function that takes an unavailable piece and checks if their size are equal.
      * 
-     * @param p UnavailablePiece to be compared with
+     * @param p - UnavailablePiece to be compared with
      * @return true/false
      */
-    public boolean isEqual (UnavailablePiece p)
+    public boolean equals(Object p)
     {
-	if (this.size == p.size)
-	    return true;
-	return false;
+	return (this.size == ((UnavailablePiece)p).size);
     }	
 }

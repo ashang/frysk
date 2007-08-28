@@ -45,17 +45,17 @@ package frysk.value;
 public class MemoryPiece
 	extends Piece
 {
-    long location;   
+    private final long memory;   
 
-    public MemoryPiece (long loc, long size)
+    public MemoryPiece (long memory, long size)
     {
 	super (size);
-	location = loc;
+	this.memory = memory;
     }
     
-    public long getLocation()
+    public long getMemory()
     {
-	return location;
+	return memory;
     }
     
     /**
@@ -64,10 +64,8 @@ public class MemoryPiece
      * @param p MemoryPiece to be compared with
      * @return true/false
      */
-    public boolean isEqual (MemoryPiece p)
+    public boolean equals (Object p)
     {
-	if (this.location == p.location && this.size == p.size)
-	    return true;
-	return false;
+	return (this.memory == ((MemoryPiece)p).memory && this.size == ((MemoryPiece)p).size);
     }	
 }

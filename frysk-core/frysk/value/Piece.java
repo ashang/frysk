@@ -41,10 +41,15 @@ package frysk.value;
 
 public abstract class Piece
 {
-    long size; 	      // in bytes
+    protected final long size; 	      // in bytes
     
     public Piece(long size)
     {
 	this.size = size;
+    }
+    
+    public long getSize()
+    {
+	return size;
     }
 }

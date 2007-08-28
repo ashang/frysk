@@ -1,3 +1,13 @@
+2007-08-28  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestLocationExpression.java (testBregxDup): Added.
+	(testPieceRegxAddr): Added.
+	(compareLocations): Added.
+	(getStoppedTask): Use funit-location instead of funit-stacks.
+	* LocationExpression.java (decode): DW_OP_bregx added.
+	(addToList): Added.
+	(decode): Use size rather than NOMEMORYSPLIT.
+
 2007-08-27  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfoEvaluator.java: Replace Value.getFloat and

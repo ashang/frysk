@@ -44,12 +44,12 @@ import frysk.stack.Register;
 public class RegisterPiece 
 	extends Piece
 {
-    Register location;  
+    private final Register register;  
 
-    public RegisterPiece(Register loc, long size)
+    public RegisterPiece(Register register, long size)
     {
 	super (size);
-	location = new Register (loc.name, loc.type);
+	this.register = register;
     }
  
     /**
@@ -58,11 +58,14 @@ public class RegisterPiece
      * @param p RegisterPiece to be compared with
      * @return true/false
      */
-    public boolean isEqual (RegisterPiece p)
+    public boolean equals(Object p)
     {
-	if (this.location.name == p.location.name && this.location.type == p.location.type)
-	    if (this.size == p.size)
-		return true;
-	return false;
+	return ( this.size == ((RegisterPiece)p).size 
+		&& register.equals(((RegisterPiece)p).register) );
     }	    
+    
+    public Register getRegister()
+    {
+	return register;
+    }
 }
