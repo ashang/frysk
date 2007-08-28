@@ -65,7 +65,7 @@ public abstract class SOLibMapBuilder
    * Scan the maps file found in <tt>/proc/PID/auxv</tt> building up
    * a list of memory maps.  Return true if the scan was successful.
    */
-  public final void construct (File clientSolib)
+  public final void construct (File clientSolib, long base_addr)
   {
 
     Elf solib = openElf(clientSolib);
@@ -75,16 +75,20 @@ public abstract class SOLibMapBuilder
       {
 	
 	ElfPHeader pHeader = solib.getPHeader(z);
-	if ((pHeader.type == ElfPHeader.PTYPE_LOAD))
+	if ((pHeader.type == ElfPHeader.PTYPE_LOAD) )
 	  {
-	    boolean read = (pHeader.flags &  ElfPHeader.PHFLAG_READABLE) > 0 ? true:false;
-	    boolean write =  (pHeader.flags & ElfPHeader.PHFLAG_WRITABLE) > 0 ? true:false;
-	    boolean execute = (pHeader.flags & ElfPHeader.PHFLAG_EXECUTABLE) > 0 ? true:false;
-	    long mapBegin = (pHeader.vaddr &~ (pHeader.align-1));
-	    long mapEnd = ((pHeader.vaddr + pHeader.memsz) + pHeader.align -1) &~ (pHeader.align-1);
-	    long aOffset = (pHeader.offset &- pHeader.align);
-	    buildMap(mapBegin, mapEnd, read, write, execute, 
-		     aOffset, clientSolib.getPath(),pHeader.align);
+	    if (base_addr + pHeader.vaddr != 0) 
+	    {
+		boolean read = (pHeader.flags &  ElfPHeader.PHFLAG_READABLE) > 0 ? true:false;
+		boolean write =  (pHeader.flags & ElfPHeader.PHFLAG_WRITABLE) > 0 ? true:false;
+		boolean execute = (pHeader.flags & ElfPHeader.PHFLAG_EXECUTABLE) > 0 ? true:false;
+	    
+		long mapBegin = base_addr + (pHeader.vaddr &~ (pHeader.align-1));
+		long mapEnd = base_addr + ((pHeader.vaddr + pHeader.memsz) + pHeader.align -1) &~ (pHeader.align-1);
+		long aOffset = (pHeader.offset &- pHeader.align);
+		buildMap(mapBegin, mapEnd, read, write, execute, 
+			aOffset, clientSolib.getPath(),pHeader.align);
+	    }
 	  }
       }
     solib.close();
@@ -107,6 +111,8 @@ public abstract class SOLibMapBuilder
   private Elf openElf(File name)
   {
 
+    if ((!name.exists()) && (!name.canRead()) && (!name.isFile()))
+    	throw new RuntimeException(name.getPath() + " is an invalid file");
     Elf exeElf = null;
     // Open up corefile corresponding directory.
     try 

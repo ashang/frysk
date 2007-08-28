@@ -493,15 +493,16 @@ public class LinuxProc
       {
 	Linkmap singleLinkMap = (Linkmap) mapsIterator.next();
 	if ((!singleLinkMap.name.equals("")) && (!singleLinkMap.name.equals("[vdso]")))
-	  SOMaps.construct(new File(singleLinkMap.name));
+	  SOMaps.construct(new File(singleLinkMap.name),singleLinkMap.l_addr);
 	if (singleLinkMap.name.equals("[vdso]"))
 	  SOMaps.buildMap(singleLinkMap.l_addr,0,true,true,true,0,singleLinkMap.name,0x1000);
       }
 
 
     // Add in case for executables maps.
-    SOMaps.construct(this.exefileBackEnd);
+    SOMaps.construct(this.exefileBackEnd,0);
 
+    
     // Reconcile maps
     Iterator i = SOMaps.list.iterator();
     while (i.hasNext())
@@ -522,6 +523,7 @@ public class LinuxProc
       }
 
     
+ 
     return tempMaps;
   }
 

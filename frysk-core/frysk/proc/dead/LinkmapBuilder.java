@@ -62,49 +62,24 @@ public abstract class LinkmapBuilder
   public final void construct (long addr, ByteBuffer buffer)
   {
     
-    byte[] sbuffer = new byte[255];
     long linkStep = 0xff;
     long l_ld = 0;
     long l_addr = 0;
     long stringAddr = 0;
-    int count = 0;
     String name = "";
-    byte in = -1;
     if (buffer != null)
       {
 	buffer.position(addr);
+	
+	//buffer.position(addr);
 	while (linkStep != 0)
 	  {
-	    for (int i=0; i<sbuffer.length; i++)
-	      sbuffer[i] = 0; 
-	    
 	    l_addr = buffer.getUWord();
 	    stringAddr = buffer.getUWord();
 	    l_ld = buffer.getUWord();
 	    linkStep = buffer.getUWord();
+	    name = getString(stringAddr,buffer);
 
-	    try 
-	      {
-		// Construct string
-		if (stringAddr != 0)
-		{
-		  buffer.position(stringAddr);
-		  in = buffer.getByte();
-		  while (in != 0)
-		    {
-		      sbuffer[count] = in;
-		      count++;
-		      in = buffer.getByte();
-		    }
-		  name = new String(sbuffer);
-		  name = name.trim();
-		}
-	      } 
-	    catch (Exception e)
-	      {
-		name = "";
-	      }
-		
 	    buildMap(l_addr,l_ld,stringAddr,name);
 	    if (linkStep !=0)
 	      buffer.position(linkStep);
@@ -112,7 +87,7 @@ public abstract class LinkmapBuilder
       }
   }
 
-  
+ 
   /**
    * Build an address map covering [addressLow,addressHigh) with
    * permissions {permR, permW, permX, permP }, device devMajor
@@ -124,4 +99,40 @@ public abstract class LinkmapBuilder
   
   abstract public void buildMap (long l_addr, long l_ld, long saddr, String name);
 
+  private String getString(long address, ByteBuffer buffer)
+  {
+      byte[] sbuffer = new byte[255];
+      for (int i=0; i<sbuffer.length; i++)
+	  sbuffer[i] = 0; 
+      int count = 0;
+      byte in = -1;
+      String constructedName = "";
+      
+      long currentPos = buffer.position();
+      buffer.position(address);
+      
+      while (in != 0)
+      {
+	  // Read until end of buffer or null
+	  try
+	  {
+	      in = buffer.getByte();
+	  }
+	  catch (RuntimeException e)
+	  {
+	      break;
+	  }
+
+	  if (in == 0)
+	      break;
+	  sbuffer[count] = in;
+	  count++;
+      }
+
+      constructedName = new String(sbuffer);
+      constructedName = constructedName.trim();
+      
+      buffer.position(currentPos);
+      return constructedName;
+  }
 }

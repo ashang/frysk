@@ -1,5 +1,15 @@
 2007-08-28  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* LinuxProc.java (constructEnhancedMapMetadata): Pass in base address
+	from linkmap.
+	* LinkmapBuilder.java (getString): New. Construct filename from address.
+	(construct): Move linkmap lib string construction to getString.
+	* SOLibMapBuilder.java (construct): Pass in new base_address.
+	If base_address + vaddr = 0, discard mapping.
+	(openElf): Sanity check the file.
+
+2007-08-28  Phil Muldoon  <pmuldoon@redhat.com>
+
 	* LinuxProc.java (getLinkmapAddress): Do not call getMemory(). Create
 	own temporary instance of CorefileByteBuffer.
 	(constructEnhancedMapMetadata): Ditto.
