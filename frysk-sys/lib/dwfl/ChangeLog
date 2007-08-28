@@ -1,3 +1,8 @@
+2007-08-27  Stan Cox  <scox@redhat.com>
+
+	* cni/DwarfDie.cxx (skip_storage_attr): New.
+	(get_type): Use it.
+
 2007-08-16  Petr Machata  <pmachata@redhat.com>
 
 	* ElfSymbolBinding.java: New file.

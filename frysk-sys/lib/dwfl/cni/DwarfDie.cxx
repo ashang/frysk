@@ -322,6 +322,18 @@ lib::dwfl::DwarfDie::get_addr (jlong var_die, jlong pc)
     }
 }
 
+static Dwarf_Die* skip_storage_attr (Dwarf_Die *die)
+{
+  Dwarf_Attribute type_attr;
+  while (die && (dwarf_tag (die) == DW_TAG_volatile_type
+		 || (dwarf_tag (die) == DW_TAG_const_type)))
+    {
+      dwarf_attr_integrate (die, DW_AT_type, &type_attr);
+      dwarf_formref_die (&type_attr, die);
+    }
+  return die;
+}
+
 jlong
 lib::dwfl::DwarfDie::get_type (jlong var_die, jboolean follow_type_def)
 {
@@ -329,20 +341,18 @@ lib::dwfl::DwarfDie::get_type (jlong var_die, jboolean follow_type_def)
   Dwarf_Die * type_mem_die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
   Dwarf_Attribute type_attr;
   
-  while (die && (dwarf_tag (die) == DW_TAG_volatile_type
-		      || (dwarf_tag (die) == DW_TAG_const_type)))
-    {
-      dwarf_attr_integrate (die, DW_AT_type, &type_attr);
-      dwarf_formref_die (&type_attr, die);
-    }
+  die = skip_storage_attr (die);
   if (dwarf_attr_integrate (die, DW_AT_type, &type_attr))
     {
       if (dwarf_formref_die (&type_attr, type_mem_die))
-	while (dwarf_tag (type_mem_die) == DW_TAG_typedef && follow_type_def)
-	  {
-	    dwarf_attr_integrate (type_mem_die, DW_AT_type, &type_attr);
-	    dwarf_formref_die (&type_attr, type_mem_die);
-	  }
+	{
+	  type_mem_die = skip_storage_attr (type_mem_die);
+	  while (dwarf_tag (type_mem_die) == DW_TAG_typedef && follow_type_def)
+	    {
+	      dwarf_attr_integrate (type_mem_die, DW_AT_type, &type_attr);
+	      dwarf_formref_die (&type_attr, type_mem_die);
+	    }
+	}
       return (jlong) type_mem_die;
     }
   return 0;

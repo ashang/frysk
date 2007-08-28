@@ -1,3 +1,7 @@
+2007-08-27  Stan Cox  <scox@redhat.com>
+
+	* Makefile.am (pkglib_PROGRAMS): Add funit-class.cxx
+
 2007-08-24  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Makefile.am: Change GEN_GCJ_LDADD to GEN_GCJ_LDADD_LIST.
