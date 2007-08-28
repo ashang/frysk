@@ -3,6 +3,7 @@
 	* TestLocationExpression.java (testBregxDup): Added.
 	(testPieceRegxAddr): Added.
 	(compareLocations): Added.
+	(getArch): Added.
 	(getStoppedTask): Use funit-location instead of funit-stacks.
 	* LocationExpression.java (decode): DW_OP_bregx added.
 	(addToList): Added.
