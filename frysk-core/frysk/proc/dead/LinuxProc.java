@@ -438,15 +438,25 @@ public class LinuxProc
     {
 
       public ArrayList list = new ArrayList();
+      
       public void buildMap (long l_addr, long l_ld, long saddr, String name)
       {
 
 	list.add(new Linkmap(l_addr, l_ld, saddr, name));
       }
     }
-
+    
+    // Create a temporary, noncache resetting view into the corefile
+    // memory. We can pass metadata as basic metadata has already been constructed.
+    CorefileByteBuffer tempMemory = null;
+    try {
+	tempMemory = new CorefileByteBuffer(this.corefileBackEnd, metaData);
+    } catch (ElfException e) {
+	throw new RuntimeException(e);
+    }
+    
     BuildLinkMap linkMap = new BuildLinkMap();
-    linkMap.construct(linkmapAddress, getMemory());
+    linkMap.construct(linkmapAddress,tempMemory);
     Iterator linkMapIterator = linkMap.list.iterator();
     while (linkMapIterator.hasNext())
       {
@@ -610,10 +620,15 @@ public class LinuxProc
     long actualAddress = 0;
     long dtTest;
 
-    // Get an instance of the corefile's memory 
+    // Create an instance of the corefile's memory 
     // and position it at the corefile's dynamic
     // segment.
-    CorefileByteBuffer internalMem = getMemory();
+    CorefileByteBuffer internalMem = null;
+    try {
+	internalMem = new CorefileByteBuffer(this.corefileBackEnd, metaData);
+    } catch (ElfException e) {
+	throw new RuntimeException(e);
+    }
     internalMem.position(tuple.addr);
 
     // find DT_DEBUG field in table. The tabke is two
