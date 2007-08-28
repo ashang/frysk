@@ -42,6 +42,7 @@ package frysk.bindir;
 import frysk.proc.*;
 import frysk.util.CommandlineParser;
 import lib.opcodes.*;
+import inua.eio.ByteBuffer;
 import gnu.classpath.tools.getopt.*;
 import java.util.*;
 
@@ -186,12 +187,49 @@ public class fstep
     Manager.eventLoop.run();
   }
 
+  /**
+   * Disassembler to use when real disassembler isn't available.
+   * Only implements <code>disassembleInstructions</code> and just
+   * returns address and four bytes in raw hex form.
+   */
+  static class DummyDisassembler extends Disassembler
+  {
+    private final ByteBuffer memory;
+    DummyDisassembler(ByteBuffer memory)
+    {
+      super(memory);
+      this.memory = memory;
+    }
+
+    public List disassembleInstructions(long address, long count)
+    {
+      ArrayList list = new ArrayList();
+      memory.position(address);
+      while (count > 0)
+	{
+	  list.add("0x" + Long.toHexString(address)
+		   + "\t0x" + Integer.toHexString(memory.getByte() & 0xff)
+		   + " 0x" + Integer.toHexString(memory.getByte() & 0xff)
+		   + " 0x" + Integer.toHexString(memory.getByte() & 0xff)
+		   + " 0x" + Integer.toHexString(memory.getByte() & 0xff));
+          address++;
+	  count--;
+	}
+      return list;
+    }
+  }
+
   // TaskObserver.Attached interface
   public Action updateAttached(Task task)
   {
     // We only need one disassembler since all Tasks share their memory.
     if (disassembler == null)
-      disassembler = new Disassembler(task.getMemory());
+      {
+	if (Disassembler.available())
+	  disassembler = new Disassembler(task.getMemory());
+	else
+	  disassembler = new DummyDisassembler(task.getMemory());
+      }
 
     tasks.put(task, Long.valueOf(0));
 
@@ -226,9 +264,9 @@ public class fstep
   // TaskObserver.Code interface
   public Action updateHit(Task task, long address)
   {
-    task.requestDeleteCodeObserver(this, address);
     task.requestAddInstructionObserver(this);
     task.requestAddTerminatedObserver(this);
+    task.requestDeleteCodeObserver(this, address);
     return Action.BLOCK;
   }
 

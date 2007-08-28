@@ -1,3 +1,10 @@
+2007-08-28  Mark Wielaard  <mwielaard@redhat.com>
+
+	* fstep.java (DummyDisassembler): New static helper class.
+	(updateAttached): Create DummyDisassembler when needed.
+	(updateHit): Add new observers first before removing Code observer.
+	* TestFStep.java: Always supported.
+
 2007-08-25  Petr Machata  <pmachata@redhat.com>
 
 	* fltrace.java: Use File instead of String where it makes sense.
