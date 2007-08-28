@@ -1,3 +1,6 @@
+2007-08-28 Teresa Thomas <tthomas@redhat.com>
+	* funit-location.S: New file.
+
 2007-08-27  Stan Cox  <scox@redhat.com>
 
 	* funit-scalar.c: New file.
