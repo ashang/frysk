@@ -1,3 +1,7 @@
+2007-08-28  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestSymbol.java (symbolTest): Use DaemonBlockedAtSignal.
+
 2007-07-26  Andrew Cagney  <cagney@redhat.com>
 
 	* TestSymbol.java (testAfterGlobalContiningSize0): Add.

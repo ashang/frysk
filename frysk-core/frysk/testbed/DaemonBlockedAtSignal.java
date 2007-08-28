@@ -45,9 +45,10 @@ import frysk.proc.Task;
 import frysk.proc.Manager;
 
 /**
- * Creates an attached process that is run to crash. 
+ * Creates an attached process that is blocked at a signal. 
  */
 public class DaemonBlockedAtSignal {
+    
     private final Task mainTask;
   
     private class RunToSignal

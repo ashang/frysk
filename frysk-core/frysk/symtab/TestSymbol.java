@@ -39,13 +39,9 @@
 
 package frysk.symtab;
 
-import frysk.proc.Action;
-import frysk.proc.Manager;
 import frysk.proc.Task;
-import frysk.proc.TaskObserver;
 import frysk.testbed.TestLib;
-import frysk.testbed.TaskObserverBase;
-import frysk.testbed.DaemonBlockedAtEntry;
+import frysk.testbed.DaemonBlockedAtSignal;
 
 public class TestSymbol
     extends TestLib
@@ -61,22 +57,9 @@ public class TestSymbol
     	for (int i = 1; i < fullCommand.length; i++) {
 	    fullCommand[i] = Integer.toString(i);
 	}
-	// Get the target program started.
-	DaemonBlockedAtEntry daemon = new DaemonBlockedAtEntry(fullCommand);
-	Task task = daemon.getMainTask();
-	// Allow it to run through to a crash.
-	class RunToCrash
-	    extends TaskObserverBase
-	    implements TaskObserver.Signaled
-	{
-	    public Action updateSignaled (Task task, int value) {
-		Manager.eventLoop.requestStop();
-		return Action.BLOCK;
-	    }
-	}
-	task.requestAddSignaledObserver (new RunToCrash());
-	daemon.requestRemoveBlock();
-	assertRunUntilStop("Run to crash");
+    	
+    	DaemonBlockedAtSignal daemon = new DaemonBlockedAtSignal(fullCommand);
+    	Task task = daemon.getMainTask();
 
 	long pc = task.getIsa().pc(task);
 	Symbol symbol = SymbolFactory.getSymbol(task, pc);

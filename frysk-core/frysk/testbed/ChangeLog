@@ -1,4 +1,6 @@
 2007-08-28  Teresa Thomas  <tthomas@redhat.com>
+	
+	* DaemonBlockedAtSignal.java: Comments added.
 
 	* TestDaemonBlockedAtSignal.java: New file. 
 	* DaemonBlockedAtSignal.java: New file.

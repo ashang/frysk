@@ -40,15 +40,11 @@
 package frysk.stack;
 
 import frysk.symtab.Symbol;
-import frysk.proc.Action;
-import frysk.proc.Manager;
 import frysk.proc.Task;
-import frysk.proc.TaskObserver;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 import frysk.testbed.TestLib;
-import frysk.testbed.TaskObserverBase;
-import frysk.testbed.DaemonBlockedAtEntry;
+import frysk.testbed.DaemonBlockedAtSignal;
 
 /**
  * Checks that the frame's getSymbol method is wired up to the
@@ -59,26 +55,12 @@ public class TestFrameSymbol
     extends TestLib
 {
     public void testOneSymbol() {
-	// Get the target program started.
-	DaemonBlockedAtEntry daemon
-	    = new DaemonBlockedAtEntry(new String[] {
+	DaemonBlockedAtSignal daemon
+	    = new DaemonBlockedAtSignal(new String[] {
 					    getExecPath("funit-symbols"),
 					    "1"
 					});
 	Task task = daemon.getMainTask();
-	// Allow it to run through to a crash.
-	class RunToCrash
-	    extends TaskObserverBase
-	    implements TaskObserver.Signaled
-	{
-	    public Action updateSignaled (Task task, int value) {
-		Manager.eventLoop.requestStop();
-		return Action.BLOCK;
-	    }
-	}
-	task.requestAddSignaledObserver (new RunToCrash());
-	daemon.requestRemoveBlock();
-	assertRunUntilStop("Run to crash");
 
 	// Extract the stack from the signalled program and validate
 	// the inner-most frame's symbol matches the expected.
