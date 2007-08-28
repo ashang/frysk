@@ -1,3 +1,8 @@
+2007-08-28  Phil Muldoon  <pmuldoon@localhost.localdomain>
+
+	* LinuxElfCorefile.java (CoreMapsBuilder.buildMap): Check that module.getElf()
+	returns null. If it does, do not elide.
+
 2007-08-23  Petr Machata  <pmachata@redhat.com>
 
 	* Ltrace.java: Delete.

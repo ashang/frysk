@@ -44,6 +44,8 @@ import inua.eio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflModule;
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfEHeader;
@@ -51,6 +53,7 @@ import lib.dwfl.ElfException;
 import lib.dwfl.ElfFileException;
 import lib.dwfl.ElfNhdr;
 import lib.dwfl.ElfPHeader;
+import frysk.dwfl.DwflCache;
 import frysk.proc.Isa;
 import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
@@ -482,9 +485,15 @@ public abstract class LinuxElfCorefile {
 	int numOfMaps = 0;
 
 	byte[] mapsLocal;
-
+	
+	Dwfl dwfl = null;
 	Elf elf;
 
+	CoreMapsBuilder()
+	{
+	    dwfl = DwflCache.getDwfl(process.getMainTask());
+	}
+		
 	public void buildBuffer(final byte[] maps) {
 	    // Safe a refernce to the raw maps.
 	    mapsLocal = maps;
@@ -526,6 +535,15 @@ public abstract class LinuxElfCorefile {
 			writeMap = true;
 		}
 
+		if (!writeMap) {
+		    DwflModule module = null;
+		    if (dwfl != null) {
+			module = dwfl.getModule(addressLow);
+			if (module != null)
+			    if (module.getElf() == null)
+				writeMap = true;
+		    }	
+		}
 		// Get empty progam segment header corresponding to this entry.
 		// PT_NOTE's program header entry takes the index: 0. So we should
 		// begin from 1.
