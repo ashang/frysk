@@ -71,7 +71,7 @@ public abstract class ArithmeticType
   public Value add (Value var1, Value var2)
   {
     Type type;
-    if (var1.getType().typeId < var2.getType().typeId)
+    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
       type = var2.getType();
     else
       type = var1.getType();
@@ -87,7 +87,7 @@ public abstract class ArithmeticType
   public Value subtract (Value var1, Value var2)
   {
     Type type;
-    if (var1.getType().typeId < var2.getType().typeId)
+    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
       type = var2.getType();
     else
       type = var1.getType();
@@ -103,7 +103,7 @@ public abstract class ArithmeticType
   public Value multiply (Value var1, Value var2)
   {
     Type type;
-    if (var1.getType().typeId < var2.getType().typeId)
+    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
       type = var2.getType();
     else
       type = var1.getType();
@@ -119,7 +119,7 @@ public abstract class ArithmeticType
   public Value divide (Value var1, Value var2)
   {
     Type type;
-    if (var1.getType().typeId < var2.getType().typeId)
+    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
       type = var2.getType();
     else
       type = var1.getType();
@@ -135,7 +135,7 @@ public abstract class ArithmeticType
   public Value mod (Value var1, Value var2)
   {
     Type type;
-    if (var1.getType().typeId < var2.getType().typeId)
+    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
       type = var2.getType();
     else
       type = var1.getType();
@@ -181,7 +181,7 @@ public abstract class ArithmeticType
   public Value lessThan (Value var1, Value var2)
   {
     Type type;
-    if (var1.getType().typeId < var2.getType().typeId)
+    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
       type = var2.getType();
     else
       type = var1.getType();
@@ -197,7 +197,7 @@ public abstract class ArithmeticType
   public Value greaterThan (Value var1, Value var2)
   {
     Type type;
-    if (var1.getType().typeId < var2.getType().typeId)
+    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
       type = var2.getType();
     else
       type = var1.getType();
@@ -213,7 +213,7 @@ public abstract class ArithmeticType
   public Value lessThanOrEqualTo (Value var1, Value var2)
   {
     Type type;
-    if (var1.getType().typeId < var2.getType().typeId)
+    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
       type = var2.getType();
     else
       type = var1.getType();
@@ -229,7 +229,7 @@ public abstract class ArithmeticType
   public Value greaterThanOrEqualTo (Value var1, Value var2)
   {
     Type type;
-    if (var1.getType().typeId < var2.getType().typeId)
+    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
       type = var2.getType();
     else
       type = var1.getType();
@@ -245,7 +245,7 @@ public abstract class ArithmeticType
   public Value equal (Value var1, Value var2)
   {
     Type type;
-    if (var1.getType().typeId < var2.getType().typeId)
+    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
       type = var2.getType();
     else
       type = var1.getType();
@@ -261,7 +261,7 @@ public abstract class ArithmeticType
   public Value notEqual (Value var1, Value var2)
   {
     Type type;
-    if (var1.getType().typeId < var2.getType().typeId)
+    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
       type = var2.getType();
     else
       type = var1.getType();
@@ -277,7 +277,7 @@ public abstract class ArithmeticType
   public Value bitWiseAnd(Value var1, Value var2)
   {
     Type type;
-    if (var1.getType().typeId < var2.getType().typeId)
+    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
       type = var2.getType();
     else
       type = var1.getType();
@@ -292,7 +292,7 @@ public abstract class ArithmeticType
   public Value bitWiseOr(Value var1, Value var2)
   {
     Type type;
-    if (var1.getType().typeId < var2.getType().typeId)
+    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
       type = var2.getType();
     else
       type = var1.getType();
@@ -307,7 +307,7 @@ public abstract class ArithmeticType
   public Value bitWiseXor(Value var1, Value var2)
   {
     Type type;
-    if (var1.getType().typeId < var2.getType().typeId)
+    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
       type = var2.getType();
     else
       type = var1.getType();
@@ -333,7 +333,7 @@ public abstract class ArithmeticType
   public Value logicalAnd(Value var1, Value var2)
   {
     Type type;
-    if (var1.getType().typeId < var2.getType().typeId)
+    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
       type = var2.getType();
     else
       type = var1.getType();
@@ -349,7 +349,7 @@ public abstract class ArithmeticType
   public Value logicalOr(Value var1, Value var2)
   {
     Type type;
-    if (var1.getType().typeId < var2.getType().typeId)
+    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
       type = var2.getType();
     else
       type = var1.getType();

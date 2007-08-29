@@ -58,7 +58,8 @@ public abstract class Type {
     // thing; should be pushed to sub-class.
     protected final ByteOrder endian;
   
-    protected final int typeId;
+    // FIXME: TypeID isn't needed; sub-types provide equivalent.
+    private final int typeId;
 
     protected final String name;
   

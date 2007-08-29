@@ -69,7 +69,7 @@ public class UnsignedType
     }
 
     public Type pack(final int bitSize, final int bitOffset) {
-	return new UnsignedType(size, endian, typeId, name, false) {
+	return new UnsignedType(size, endian, getTypeIdFIXME(), name, false) {
 		Packing packing = new Packing(size, bitSize, bitOffset);
 		BigInteger getBigInteger(Location location) {
 		    return packing.unpackUnsigned(location.get(endian));
