@@ -79,7 +79,22 @@ public class TestFrameDebugInfo
     assertTrue("fourth",string.contains("fourth"));
     
   }
+  
+  public void testFrameCompilerIlinedFucntions ()
+  {
+    if(unresolved(4981))
+	return;
+  
+    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-empty-functions");
 
+    DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
+    
+    Subprogram subprogram = frame.getSubprogram();
+    
+    System.out.println("TestFrameDebugInfo.testFrameCompilerIlinedFucntions() suprogram "  + subprogram);
+    assertNotNull(subprogram);
+  }
+  
   public void testFrameAdjustedAddress ()
   {
     if(unresolved(4676))
