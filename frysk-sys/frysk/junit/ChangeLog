@@ -1,3 +1,16 @@
+2007-08-29  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCase.java (assertEquals(String,BigInteger,BigInteger): New.
+	(assertEquals(String,long,BigInteger)): New.
+	(assertEquals(String,byte[],byte[]): Simplify; print bytes in hex.
+	* TestAssert(testByteArrayNull): New.
+	(testBigIntegerEquals): New.
+	(testBigIntegerNull): New.
+	(testBigIntegerLeftNull): New.
+	(testBigIntegerRightNull): New.
+	(testBigIntegerDifferent): New.
+	(testLongBigIntegerEquals): New.
+
 2007-08-23  Andrew Cagney  <cagney@redhat.com>
 
 	* TestCase.java (unresolvedOffUtrace): New.

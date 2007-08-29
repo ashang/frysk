@@ -40,6 +40,7 @@
 package frysk.junit;
 
 import junit.framework.AssertionFailedError;
+import java.math.BigInteger;
 
 /**
  * Test additional assert()s added to TestCase.
@@ -48,49 +49,86 @@ import junit.framework.AssertionFailedError;
 public class TestAsserts
     extends TestCase
 {
+    public void testByteArrayNull() {
+	assertEquals("byte array", (byte[])null, (byte[])null);
+    }
     public void testByteArrayLeftNull() {
-	AssertionFailedError e;
+	AssertionFailedError e = null;
 	try {
 	    assertEquals("byte array", (byte[])null, new byte[0]);
-	    e = null;
 	} catch (AssertionFailedError a) {
 	    e = a;
 	}
 	assertNotNull("exception", e);
     }
     public void testByteArrayRightNull() {
-	AssertionFailedError e;
+	AssertionFailedError e = null;
 	try {
 	    assertEquals("byte array", new byte[0], (byte[])null);
-	    e = null;
 	} catch (AssertionFailedError a) {
 	    e = a;
 	}
 	assertNotNull("exception", e);
     }
     public void testByteArrayDifferentLength() {
-	AssertionFailedError e;
+	AssertionFailedError e = null;
 	try {
 	    assertEquals("byte array", new byte[0], new byte[1]);
-	    e = null;
 	} catch (AssertionFailedError a) {
 	    e = a;
 	}
 	assertNotNull("exception", e);
     }
     public void testByteArrayDifferentContent() {
-	AssertionFailedError e;
+	AssertionFailedError e = null;
 	try {
 	    assertEquals("byte array", new byte[] { 1 }, new byte[] { 2 });
-	    e = null;
 	} catch (AssertionFailedError a) {
 	    e = a;
 	}
 	assertNotNull("exception", e);
     }
     public void testByteArrayEquals() {
-	assertEquals("null byte array", (byte[])null, (byte[])null);
 	assertEquals("empty byte array", new byte[0], new byte[0]);
 	assertEquals("full byte array", new byte[] { 1 }, new byte[] { 1 });
+    }
+
+    public void testBigIntegerNull() {
+	assertEquals("null", (BigInteger)null, (BigInteger)null);
+    }
+    public void testBigIntegerRightNull() {
+	AssertionFailedError e = null;
+	try {
+	    assertEquals("null", BigInteger.valueOf(1), null);
+	} catch (AssertionFailedError a) {
+	    e = a;
+	}
+	assertNotNull("exception", e);
+    }
+    public void testBigIntegerLeftNull() {
+	AssertionFailedError e = null;
+	try {
+	    assertEquals("null", null, BigInteger.valueOf(1));
+	} catch (AssertionFailedError a) {
+	    e = a;
+	}
+	assertNotNull("exception", e);
+    }
+    public void testBigIntegerEquals() {
+	assertEquals("one", BigInteger.valueOf(1), BigInteger.valueOf(1));
+    }
+    public void testBigIntegerDifferent() {
+	AssertionFailedError e = null;
+	try {
+	    assertEquals("not equals", BigInteger.valueOf(1),
+			 BigInteger.valueOf(2));
+	} catch (AssertionFailedError a) {
+	    e = a;
+	}
+	assertNotNull("exception", e);
+    }
+    public void testLongBigIntegerEquals() {
+	// Test the plumming.
+	assertEquals("one", 1, BigInteger.valueOf(1));
     }
 }

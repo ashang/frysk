@@ -41,6 +41,7 @@ package frysk.junit;
 
 import frysk.Config;
 import frysk.sys.Uname;
+import java.math.BigInteger;
 
 /**
  * <em>frysk</em> specific extension to the JUnit test framework's
@@ -160,25 +161,48 @@ public class TestCase
     /**
      * The two byte arrays have identical contents.
      */
-    public static void assertEquals(String what, byte[] correct, byte[] test) {
-	if (correct == null) {
-	    if (test == null)
-		return;
-	    else
-		fail(what + ": expected <null> but was <" + test + ">");
-	}
-	if (test == null) {
-	    if (correct != null)
-		fail(what + ": expected <...> but was <null>");
+    public static void assertEquals(String what, byte[] correct,
+				    byte[] test) {
+	if (correct == null || test == null) {
+	    assertEquals(what, (Object)correct, (Object)test);
+	    return;
 	}
 	if (correct.length != test.length)
-	    fail(what + ": expected byte[].length <"
-		 + correct.length + "> but was <"
-		 + test.length + ">");
+	    fail(what + ":"
+		 + "expected byte[].length <" + correct.length + ">"
+		 + " but was <" + test.length + ">");
 	for (int i = 0; i < correct.length; i++) {
 	    if (correct[i] != test[i])
-		fail(what + ": expected byte[" + i + "] <" + correct[i]
-		     + "> but was <" + test[i] + ">");
+		fail(what + ":"
+		     + " expected byte[" + i + "] <"
+		     + Integer.toHexString(correct[i] & 0xff)
+		     + ">"
+		     + " but was <"
+		     + Integer.toHexString(test[i] & 0xff)
+		     + ">");
 	}
+    }
+
+    /**
+     * The BigIntegers have identical values.
+     */
+    public static void assertEquals(String what, BigInteger correct,
+				    BigInteger test) {
+	if (correct == null || test == null) {
+	    assertEquals(what, (Object)correct, (Object)test);
+	    return;
+	}
+	if (!correct.equals(test))
+	    fail(what + ":"
+		 + " expected <" + correct.toString() + ">"
+		 + " but was <" + test.toString() + ">");
+    }
+    /**
+     * The BigInteger is equal to the long value (when compared as
+     * BigIntegers).
+     */
+    public static void assertEquals(String what, long correct,
+				    BigInteger test) {
+	assertEquals(what, BigInteger.valueOf(correct), test);
     }
 }
