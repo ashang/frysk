@@ -1,5 +1,7 @@
 2007-08-29  Andrew Cagney  <cagney@redhat.com>
 
+	* Type.java (getTypeIdFIXME): Make package private.
+
 	* Type.java (typeId): Make private.
 	* ArithmeticType.java: Use getTypeIdFIXME.
 	* SignedType.java: Ditto.

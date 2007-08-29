@@ -834,22 +834,8 @@ expr returns [Value returnVar=null]
     |   #(DIVIDE  v1=expr v2=expr)  { returnVar = v1.getType().divide(v1, v2); }
     |   #(MOD  v1=expr v2=expr)  {	returnVar = v1.getType().mod(v1, v2);  }
     |   #(SHIFTLEFT  v1=expr v2=expr)  {	
-            if((v1.getType().getTypeIdFIXME() < BaseTypes.baseTypeByte && v1.getType().getTypeIdFIXME() > BaseTypes.baseTypeLong) ||
-                (v2.getType().getTypeIdFIXME() < BaseTypes.baseTypeByte && v2.getType().getTypeIdFIXME() > BaseTypes.baseTypeLong)) {
-
-                throw new OperationNotDefinedException("binary operator << not defined for types " + 
-                    v1.getType().toPrint() + " and " + v2.getType().toPrint());
-            }
-
             returnVar = v1.getType().shiftLeft(v1, v2);  }
     |   #(SHIFTRIGHT  v1=expr v2=expr)  {	
-            if((v1.getType().getTypeIdFIXME() < BaseTypes.baseTypeByte && v1.getType().getTypeIdFIXME() > BaseTypes.baseTypeLong) ||
-                (v2.getType().getTypeIdFIXME() < BaseTypes.baseTypeByte && v2.getType().getTypeIdFIXME() > BaseTypes.baseTypeLong)) {
-
-                throw new OperationNotDefinedException("binary operator >> not defined for types " + 
-                    v1.getType().toPrint() + " and " + v2.getType().toPrint());
-            }
-
             returnVar = v1.getType().shiftRight(v1, v2);  }
     |   #(LESSTHAN  v1=expr v2=expr)  { returnVar = v1.getType().lessThan(v1, v2);  }
 

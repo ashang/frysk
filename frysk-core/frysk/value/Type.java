@@ -97,7 +97,7 @@ public abstract class Type {
      * (signed? size?) and not coding switches based on this return
      * value (== baseTypeUnsignedShort).
      */
-    public int getTypeIdFIXME() {
+    int getTypeIdFIXME() {
 	return typeId;
     }
 

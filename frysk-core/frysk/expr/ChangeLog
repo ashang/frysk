@@ -1,3 +1,7 @@
+2007-08-29  Andrew Cagney  <cagney@redhat.com>
+
+	* cpp.g: Remove references to Type.getTypeIdFIXME.
+
 2007-08-28  Andrew Cagney  <cagney@redhat.com>
 
 	* cpp.g: Replace Type.assign with Value.assign.  Do not cast

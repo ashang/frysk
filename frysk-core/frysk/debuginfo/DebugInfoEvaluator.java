@@ -464,35 +464,29 @@ class DebugInfoEvaluator
     /**
      * @return Generate a type for a typedef otherwise a basetype.
      */
-    private ArithmeticType fetchType (boolean haveTypeDef, ArithmeticType type,
+    private Type fetchType (boolean haveTypeDef, DwarfDie type,
 				      String name) {
-	if (haveTypeDef == false) 
-	    return type;
-	switch (type.getTypeIdFIXME()) {
-	case BaseTypes.baseTypeLong:
-	    return new SignedType(longType.getSize(), longType.getEndian(),
-				  BaseTypes.baseTypeLong, name, true);
-	case BaseTypes.baseTypeUnsignedLong:
-	    return new UnsignedType(longType.getSize(), longType.getEndian(),
-				    BaseTypes.baseTypeLong, name, true);
+	int size = getByteSize(type);
+	int baseType = type.getBaseType();
+	// XXX: Order might come from TYPE; XXX: sign vs unsigned vs
+	// float can come directly from TYPE.
+	ByteOrder order = intType.getEndian();
+	switch (baseType) {
 	case BaseTypes.baseTypeInteger:
-	    return new SignedType(intType.getSize(), intType.getEndian(), BaseTypes.baseTypeInteger, name, true);
-	case BaseTypes.baseTypeUnsignedInteger:
-	    return new UnsignedType(intType.getSize(), intType.getEndian(), BaseTypes.baseTypeInteger, name, true);
 	case BaseTypes.baseTypeShort:
-	    return new SignedType(shortType.getSize(), shortType.getEndian(), BaseTypes.baseTypeShort, name, true);
-	case BaseTypes.baseTypeUnsignedShort:
-	    return new UnsignedType(shortType.getSize(), shortType.getEndian(), BaseTypes.baseTypeShort, name, true);
+	case BaseTypes.baseTypeLong:
 	case BaseTypes.baseTypeByte:
-	    return new SignedType(byteType.getSize(), byteType.getEndian(), BaseTypes.baseTypeByte, name, true);
+	    return new SignedType(size, order, baseType, name, haveTypeDef);
+	case BaseTypes.baseTypeUnsignedLong:
+	case BaseTypes.baseTypeUnsignedInteger:
+	case BaseTypes.baseTypeUnsignedShort:
 	case BaseTypes.baseTypeUnsignedByte:
-	    return new UnsignedType(byteType.getSize(), byteType.getEndian(), BaseTypes.baseTypeByte, name, true);
+	    return new UnsignedType(size, order, baseType, name, haveTypeDef);
 	case BaseTypes.baseTypeFloat:
-	    return new FloatingPointType(floatType.getSize(), floatType.getEndian(), BaseTypes.baseTypeFloat, name, true);
 	case BaseTypes.baseTypeDouble:
-	    return new FloatingPointType(doubleType.getSize(), doubleType.getEndian(), BaseTypes.baseTypeDouble, name, true);
+	    return new FloatingPointType(size, order, baseType, name, true);
 	default:
-	    return null;
+	    return new UnknownType(name);
 	}
     }
 
@@ -537,24 +531,8 @@ class DebugInfoEvaluator
 		continue;
 
 	    typeSize = (int)offset + BaseTypes.getTypeSize(memberType.getBaseType());
-	    switch (memberType.getBaseType()) {
-	    case BaseTypes.baseTypeByte:
-	    case BaseTypes.baseTypeUnsignedByte:
-		classType.addMember(member.getName(),
-				    fetchType(haveTypeDef, byteType,
-					      dieType.getName()),
-				    offset, access);
-		continue;
-	    case BaseTypes.baseTypeShort:
-	    case BaseTypes.baseTypeUnsignedShort:
-		classType.addMember(member.getName(),
-				    fetchType(haveTypeDef, shortType,
-					      dieType.getName()),
-				    offset, access);
-		continue;
-	    case BaseTypes.baseTypeInteger:
-	    case BaseTypes.baseTypeUnsignedInteger:
-		type = fetchType(haveTypeDef, intType, dieType.getName());
+	    if (memberType.getBaseType() > 0) {
+		type = fetchType(haveTypeDef, memberType, dieType.getName());
 		// System V ABI Supplements discuss bit field layout
 		int bitSize = member.getAttrConstant(DwAtEncodings.DW_AT_bit_size_);
 		int bitOffset = 0;
@@ -563,25 +541,6 @@ class DebugInfoEvaluator
 		}
 		classType.addMember(member.getName(), type, offset, access,
 				    bitOffset, bitSize);
-		continue;
-	    case BaseTypes.baseTypeLong:
-	    case BaseTypes.baseTypeUnsignedLong:
-		classType.addMember(member.getName(),
-				    fetchType(haveTypeDef, longType,
-					      dieType.getName()),
-				    offset, access);
-		continue;
-	    case BaseTypes.baseTypeFloat:
-		classType.addMember(member.getName(),
-				    fetchType(haveTypeDef, floatType,
-					      dieType.getName()),
-				    offset, access);
-		continue;
-	    case BaseTypes.baseTypeDouble:
-		classType.addMember(member.getName(),
-				    fetchType(haveTypeDef, doubleType,
-					      dieType.getName()),
-				    offset, access);
 		continue;
 	    }
 
@@ -1042,22 +1001,7 @@ class DebugInfoEvaluator
 	else
 	    haveTypeDef = false;
 
-	switch (type.getBaseType()) {
-	case BaseTypes.baseTypeLong:
-	    return fetchType(haveTypeDef, longType, dieType.getName());
-	case BaseTypes.baseTypeInteger:
-	    return fetchType(haveTypeDef, intType, dieType.getName()); 
-	case BaseTypes.baseTypeShort:
-	    return fetchType(haveTypeDef, shortType, dieType.getName()); 
-	case BaseTypes.baseTypeByte:
-	    return fetchType(haveTypeDef, byteType, dieType.getName()); 
-	case BaseTypes.baseTypeFloat:
-	    return fetchType(haveTypeDef, floatType, dieType.getName()); 
-	case BaseTypes.baseTypeDouble:
-	    return fetchType(haveTypeDef, doubleType, dieType.getName()); 
-	}
-  
-	return new UnknownType (varDie.getName());
+	return fetchType(haveTypeDef, type, dieType.getName());
     }
 
   
