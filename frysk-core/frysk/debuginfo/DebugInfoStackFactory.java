@@ -73,13 +73,18 @@ public class DebugInfoStackFactory {
 	
 	DebugInfoFrame innermostFrame = null;
 	
+	int count = 0;
+	
 	while(frame != null){
+
 	    LinkedList inlineList = frame.getInlinedSubprograms(); 
 	    if(inlineList.size() != 0 ){
+		int inlineCount = 1;
 		Iterator iterator = inlineList.iterator();
 		while (iterator.hasNext()) {
 		    InlinedSubroutine subroutine = (InlinedSubroutine) iterator.next();
-		    tempFrame = new DebugInfoFrame(frame.getUndecoratedFrame());
+		    tempFrame = new VirtualDebugInfoFrame(frame.getUndecoratedFrame());
+		    ((VirtualDebugInfoFrame)tempFrame).setIndex(count, inlineCount++);
 		    tempFrame.setSubprogram(subroutine);
 		    
 		    if(virtualFrame!=null){
@@ -94,6 +99,7 @@ public class DebugInfoStackFactory {
 	    }
 	    
 	    tempFrame = new DebugInfoFrame(frame.getUndecoratedFrame());
+	    tempFrame.setIndex(count++);
 	    
 	    if(virtualFrame!=null){
 		virtualFrame.setOuterDebugInfoFrame(tempFrame);
@@ -144,9 +150,11 @@ public class DebugInfoStackFactory {
         int count = 0;
         for (DebugInfoFrame frame = topFrame;
         frame != null; frame = frame.getOuterDebugInfoFrame()) {
-          
-          writer.print("#" + count + " ");
-          
+            
+          writer.print("#");
+          frame.printIndex(writer);
+          writer.print(" ");
+            
           frame.toPrint(writer, printParameters, printScopes, fullpath);
           writer.println();
           writer.flush();

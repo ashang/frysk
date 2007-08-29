@@ -1,3 +1,11 @@
+2007-08-29  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* VirtualDebugInfoFrame.java: New file.
+	* DebugInfoStackFactory.java (createVirtualDebugInfoStackTrace): Now set index
+	and subIndex for regular, and Virtual frames.
+	(printStackTrace): now Calls DebugInfoFrame.printIndex;
+	* DebugInfoFrame.java: Added index, set, getter, and printer.
+
 2007-08-28  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfoEvaluator.java: Re-indent.

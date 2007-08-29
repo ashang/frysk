@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,57 +37,31 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.hpd;
+package frysk.debuginfo;
 
-import frysk.expunit.Expect;
-import frysk.Config;
-import frysk.proc.Proc;
-import frysk.testbed.CoreFileAtSignal;
+import java.io.PrintWriter;
 
-public class TestStackCommands
-    extends TestLib
-{
-    public void testHpdTraceStack () {
-	child = new Expect(Config.getPkgLibFile("hpd-c"));
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect (prompt);
-	// Attach
-	e.send ("attach " + child.getPid () + "\n\n");
-	e.expect (5, "attach.*\n" + prompt);
-	// Where
-	e.send ("where\n");
-	e.expect ("where.*#0.*" + prompt);
-	// int_21
-	e.send ("print int_21\n");
-	e.expect ("print.*2.*\r\n" + prompt);
-	// Down
-	e.send ("d\t");
-	e.expect (".*defset.*delete.*detach.*disable.*down.*" + prompt + ".*");
-	e.send ("own\n");
-	e.expect ("own.*#1.*" + prompt);
-	// int_21
-	e.send ("print int_21\n");
-	e.expect ("print.*int_21.*(fhpd)");
-	e.send ("up\n");
-	e.expect ("up.*#0.*" + prompt);
-	e.close();
+import frysk.stack.Frame;
+
+public class VirtualDebugInfoFrame extends DebugInfoFrame{
+
+    int subIndex;
+    
+    protected VirtualDebugInfoFrame(Frame frame) {
+	super(frame);
     }
 
-    public void testFhpdVirtualStackTrace () {
-	Proc proc = CoreFileAtSignal
-	    .constructCore(Config.getPkgLibFile("funit-inlined"));
-        e = new Expect (new String[] {
-			    Config.getBinFile("fhpd").getAbsolutePath (),
-			    "core." + proc.getPid()
-			});
-        e.expect(5, "Attached to core file.*");
-        
-        e.send("where\n");
-        
-        e.expect ("0.1.*third" +
-		  ".*0.2.*second" +
-		  ".*0.3.*first" +
-		  ".*main");
-        e.close();
+    public void setIndex(int index, int subIndex){
+	super.setIndex(index);
+	this.subIndex = subIndex;
     }
+    
+    public int getSubIndex(){
+	return this.subIndex;
+    }
+    
+    public void printIndex(PrintWriter writer){
+	writer.print(this.index + "." +this.getSubIndex());
+    }
+
 }

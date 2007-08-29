@@ -66,6 +66,8 @@ public class DebugInfoFrame extends FrameDecorator{
 
     private LinkedList inlinedSubprograms;
 
+    int index;
+    
     protected DebugInfoFrame(Frame frame) {
 	super(frame);
     }
@@ -190,9 +192,13 @@ public class DebugInfoFrame extends FrameDecorator{
       return this.lines;
     }
 
+    public void printIndex(PrintWriter writer){
+	writer.print(this.index);
+    }
+    
     public void toPrint(PrintWriter writer, boolean printParameters, boolean printScopes, boolean fullpath){
         Subprogram subprogram = this.getSubprogram();
-        
+
         if(subprogram != null){
           writer.print("0x");
           String addr = Long.toHexString(this.getAddress());
@@ -254,5 +260,13 @@ public class DebugInfoFrame extends FrameDecorator{
 	      
       public void setOuterDebugInfoFrame(DebugInfoFrame frame){
 	  outerDebugInfoFrame = frame;
+      }
+      
+      public void setIndex(int index){
+	  this.index = index;
+      }
+      
+      public int getIndex(){
+	return this.index;  
       }
 }
