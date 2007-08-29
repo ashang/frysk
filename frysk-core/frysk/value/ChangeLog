@@ -1,5 +1,12 @@
 2007-08-29  Andrew Cagney  <cagney@redhat.com>
 
+	* ClassType.java (addMember): When a bit-field, create a packed
+	type.
+	(Member.maskFIXME): Delete.
+	(getValue): Simplify.
+	(bitValueFIXME): Delete.
+	(toPrint(PrintWriter,Location,ByteBuffer,Format)): Simplify.
+
 	* TestIntegerType.java (testPackedEnum): New.
 	(testPackedSigned): New.
 	(testPackedUnsigned): New.

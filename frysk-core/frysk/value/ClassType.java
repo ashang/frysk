@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
-import lib.dwfl.BaseTypes;
 import java.io.PrintWriter;
 
 /**
@@ -76,16 +75,6 @@ public class ClassType
 	    this.bitOffset = bitOffset;
 	    this.bitSize = bitSize;
 	}
-	int maskFIXME() {
-	    // System V ABI Supplements discuss bit field layout
-	    if (bitSize < 0)
-		return 0;
-	    else {
-		return (0xffffffff
-			>>> (type.getSize() * 8 - bitSize)
-			<< (4 * 8 - bitOffset - bitSize));
-	    }
-	}
 	public String toString() {
 	    return ("{"
 		    + "index=" + index
@@ -95,7 +84,6 @@ public class ClassType
 		    + ",access=" + access
 		    + ",bitOffset=" + bitOffset
 		    + ",bitSize=" + bitSize
-		    + ",mask()=" + Integer.toHexString(maskFIXME())
 		    + "}");
 	}
     }
@@ -147,6 +135,8 @@ public class ClassType
     }
     public ClassType addMember(String name, Type type, long offset,
 			       int access, int bitOffset, int bitLength) {
+	if (bitOffset >= 0 && bitLength > 0)
+	    type = type.pack(bitOffset, bitLength);
 	Member member = new Member(members.size(), name, type, offset,
 				   access, bitOffset, bitLength);
 	nameToMember.put(name, member);
@@ -192,11 +182,7 @@ public class ClassType
 	Member member = (Member)(members.get(idx));
 	Type type = member.type;
 	int off = (int)member.offset;
-	if (type.getTypeIdFIXME() == BaseTypes.baseTypeInteger
-	    && member.maskFIXME() != 0)
-	    return bitValueFIXME(v.getLocation(), member);
-	else
-	    return new Value(type, v.getLocation().slice(off, type.size));
+	return new Value(type, v.getLocation().slice(off, type.size));
     }
     
     public ClassIterator iterator (Value v) {
@@ -220,25 +206,6 @@ public class ClassType
 	return v;
     }
     
-    /**
-     * This bit manipulation should be pushed into Location.
-     */
-    private Value bitValueFIXME(Location location, Member member) {
-	int val = (int)((ArithmeticType)member.type)
-	    .getBigInteger(location.slice(member.offset,
-					  member.type.getSize()))
-	    .longValue();
-	int mask = member.maskFIXME();
-	int shift = 0;
-	for (int tmpMask = mask;
-	     (tmpMask & 0x1) == 0;
-	     tmpMask = tmpMask>>>1) {
-	    shift += 1;
-	}
-	int res = (val & mask) >>> shift;
-	return ((ArithmeticType)member.type).createValue(res);
-    }
-
     void toPrint(PrintWriter writer, Location location, ByteBuffer memory,
 		 Format format) {
 	writer.print("{");
@@ -252,18 +219,13 @@ public class ClassType
 		    first = false;
 		else
 		    writer.print(" ");
-		Value val;
-		if (member.maskFIXME() != 0) {
-		    val = bitValueFIXME(location, member);
-		} else {
-		    Location loc = location.slice(member.offset,
-						  member.type.getSize());
-		    val = new Value(member.type, member.name, loc);
-		}
 		if (member.name != null) {
 		    writer.print(member.name);
 		    writer.print("=");
 		}
+		Location loc = location.slice(member.offset,
+					      member.type.getSize());
+		Value val = new Value(member.type, member.name, loc);
 		val.toPrint(writer, memory, format);
 		writer.print(",\n");
 	    }
