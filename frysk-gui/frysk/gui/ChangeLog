@@ -1,3 +1,8 @@
+2007-08-29  Andrew Cagney  <cagney@redhat.com>
+
+	* register/RegisterWindow.java: Delete calls to
+	Type.getTypeIdFIXME.
+
 2007-08-28  Zhao Shujing <pearly.zhao@oracle.com>
 	
 	* memory/MemoryWindow.java: Fixes #4672.
