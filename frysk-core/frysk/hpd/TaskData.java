@@ -45,35 +45,30 @@ import frysk.proc.*;
  */
 class TaskData
 {
-	int id;
-	int parentid;
+    int id;
+    int parentid;
 
-	Task task;
+    Task task;
 
-	public TaskData(Task task, int id, int parentid)
-	{
-		this.id = id;
-		this.parentid = parentid;
-		this.task = task;
-	}
+    public TaskData(Task task, int id, int parentid) {
+        this.id = id;
+        this.parentid = parentid;
+        this.task = task;
+    }
 
-	public int getID()
-	{
-		return id;
-	}
+    public int getID() {
+        return id;
+    }
 
-	public int getParentID()
-	{
-		return parentid;
-	}
+    public int getParentID() {
+        return parentid;
+    }
 
-	public Task getTask()
-	{
-		return task;
-	}
+    public Task getTask() {
+        return task;
+    }
 
-	public String toString()
-	{
-		return parentid + "." + id;
-	}
+    public String toString() {
+        return parentid + "." + id;
+    }
 }
