@@ -110,8 +110,8 @@ public class DisplayCommand extends CLIHandler {
 		displays.add(uDisp);
 		uDisp.addObserver(new DisplayValueObserver() {
 		    public void updateValueChanged(UpdatingDisplayValue value) {
-			output.println(value.getId() + ": " + value.getName()
-				+ " = " + value.getValue());
+			output.print(value.getId() + ": " + value.getName()
+				+ " = " + value.getValue().toPrint());
 			output.flush();
 		    }
 
@@ -134,14 +134,14 @@ public class DisplayCommand extends CLIHandler {
 		    }
 		});
 	    }
-
+	    
 	    Value v = uDisp.getValue();
 	    if (v == null)
 		output.println(uDisp.getId() + ": " + args.get(0)
 			+ " = <unavailable>");
 	    else
 		output.println(uDisp.getId() + ": " + uDisp.getName() + " = "
-			+ v);
+			+ v.toPrint());
 	    output.flush();
 	}
     }

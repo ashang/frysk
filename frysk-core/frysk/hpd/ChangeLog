@@ -1,3 +1,9 @@
+2007-08-29  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DisplayCommand.java (handle): Now uses Value.toPrint().
+	* TestDisplayCommand.java (testHpdDisplayCommands): Now uses
+	funit-rt-varchange instead of hpd-c, marked unresolved 4941.
+
 2007-08-29  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestStackCommands.java (testFhpdVirtualStackTrace): Now checks
