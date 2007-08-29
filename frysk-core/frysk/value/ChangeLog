@@ -1,5 +1,16 @@
 2007-08-29  Andrew Cagney  <cagney@redhat.com>
 
+	* TestIntegerType.java (testPackedEnum): New.
+	(testPackedSigned): New.
+	(testPackedUnsigned): New.
+	* Packing.java: New.
+	* TestPacking.java: New.
+	* Type.java (pack(int,int)): New.
+	* EnumType.java (pack(int,int)): New.
+	(EnumType(ByteOrder,int,SortedMap)): New.
+	* SignedType.java (pack(int,int)): New.
+	* UnsignedType.java (pack(int,int)): New.
+	
 	* EnumType.java (EnumType(ByteOrder)): Delete.
 	* TestIntegerType.java: Update.
 

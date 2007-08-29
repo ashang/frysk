@@ -154,4 +154,31 @@ public class TestIntegerType
 	Location l = new Location(new byte[] { 1 });
 	assertEquals("1", 1, t.bigIntegerValue(l).longValue());
     }
+
+    public void checkPacking(IntegerType t, int value) {
+	Location l = new Location(new byte[] { (byte)0x3c });
+	assertEquals("unpack", value,
+		     ((IntegerType)t.pack(2,4)).getBigInteger(l));
+	l.putByte(0, (byte)0);
+	assertEquals("zeroed", 0, l.getByte(0));
+	((IntegerType)t.pack(2,4)).putBigInteger(l, BigInteger.valueOf(value));
+	assertEquals("pack", 0x3c, l.getByte(0));
+		      
+    }
+
+    public void testPackedSigned() {
+	checkPacking(new SignedType(1, ByteOrder.BIG_ENDIAN, -1, "type",
+				    false),
+		     -1);
+    }
+
+    public void testPackedUnsigned() {
+	checkPacking(new UnsignedType(1, ByteOrder.BIG_ENDIAN, -1, "type",
+				      false),
+		     15);
+    }
+
+    public void testPackedEnum() {
+	checkPacking(new EnumType(ByteOrder.BIG_ENDIAN, 1), 15);
+    }
 }

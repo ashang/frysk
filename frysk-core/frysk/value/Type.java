@@ -251,4 +251,11 @@ public abstract class Type {
     {
 	this.isTypedef = isTypedef;
     }
+
+    /**
+     * Pack this TYPE into bigSize and bitOffset.
+     */
+    public Type pack(int bitSize, int bitOffset) {
+	throw new InvalidOperatorException(this, "pack");
+    }
 }

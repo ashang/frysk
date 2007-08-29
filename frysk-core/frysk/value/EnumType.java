@@ -60,7 +60,6 @@ public class EnumType extends IntegerType
 	    this.value = value;
 	}
     }
-
     
     // Mapping from a Value to a member (ordered by Value (a big
     // integer).
@@ -103,6 +102,11 @@ public class EnumType extends IntegerType
 	super(size, byteOrder, 0, "enum", false);
     }
 
+    private EnumType(ByteOrder byteOrder, int size, SortedMap valueToMember) {
+	this(byteOrder, size);
+	this.valueToMember.putAll(valueToMember);
+    }
+
     public EnumType addMember (String name, long l) {
 	BigInteger value = BigInteger.valueOf(l);
 	valueToMember.put(value, new Member(name, value));
@@ -121,5 +125,19 @@ public class EnumType extends IntegerType
     void putBigInteger(Location location, BigInteger val) {
 	location.put(endian, val.toByteArray(),
 		     val.signum() >= 0 ? 0 : (byte)0xff);
+    }
+
+    public Type pack(final int bitSize, final int bitOffset) {
+	return new EnumType(endian, size, valueToMember) {
+		Packing packing = new Packing(size, bitSize, bitOffset);
+		BigInteger getBigInteger(Location location) {
+		    return packing.unpackUnsigned(location.get(endian));
+		}
+		void putBigInteger(Location location, BigInteger val) {
+		    location.put(endian,
+				 packing.pack(location.get(endian), val),
+				 0);
+		}
+	    };
     }
 }

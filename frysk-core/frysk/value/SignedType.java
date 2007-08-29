@@ -69,4 +69,18 @@ public class SignedType
 	location.put(endian, val.toByteArray(),
 		     val.signum() >= 0 ? 0 : -1);
     }
+
+    public Type pack(final int bitSize, final int bitOffset) {
+	return new SignedType(size, endian, typeId, name, false) {
+		Packing packing = new Packing(size, bitSize, bitOffset);
+		BigInteger getBigInteger(Location location) {
+		    return packing.unpackSigned(location.get(endian));
+		}
+		void putBigInteger(Location location, BigInteger val) {
+		    location.put(endian,
+				 packing.pack(location.get(endian), val),
+				 0);
+		}
+	    };
+    }
 }

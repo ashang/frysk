@@ -67,4 +67,18 @@ public class UnsignedType
     void putBigInteger(Location location, BigInteger val) {
 	location.put(endian, val.toByteArray(), 0);
     }
+
+    public Type pack(final int bitSize, final int bitOffset) {
+	return new UnsignedType(size, endian, typeId, name, false) {
+		Packing packing = new Packing(size, bitSize, bitOffset);
+		BigInteger getBigInteger(Location location) {
+		    return packing.unpackUnsigned(location.get(endian));
+		}
+		void putBigInteger(Location location, BigInteger val) {
+		    location.put(endian,
+				 packing.pack(location.get(endian), val),
+				 0);
+		}
+	    };
+    }
 }
