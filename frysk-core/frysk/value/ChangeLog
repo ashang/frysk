@@ -1,3 +1,8 @@
+2007-08-29  Andrew Cagney  <cagney@redhat.com>
+
+	* EnumType.java (EnumType(ByteOrder)): Delete.
+	* TestIntegerType.java: Update.
+
 2007-08-28  Andrew Cagney  <cagney@redhat.com>
 
 	* Type.java (assign(Value,Value)): Delete.

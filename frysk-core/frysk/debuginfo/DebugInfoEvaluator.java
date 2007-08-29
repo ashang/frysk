@@ -1022,7 +1022,7 @@ class DebugInfoEvaluator
 	}
 	case DwTagEncodings.DW_TAG_enumeration_type_: {
 	    DwarfDie subrange = type.getChild();
-	    EnumType enumType = new EnumType(byteorder);
+	    EnumType enumType = new EnumType(byteorder, getByteSize(type));
 	    while (subrange != null) {
 		enumType.addMember(subrange.getName(), 
 				   subrange.getAttrConstant(DwAtEncodings.DW_AT_const_value_));

@@ -1,3 +1,8 @@
+2007-08-29  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfoEvaluator.java: Use constructor
+	EnumType(ByteOrder,int).
+
 2007-08-29  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* VirtualDebugInfoFrame.java: New file.

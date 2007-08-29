@@ -85,11 +85,11 @@ public class TestIntegerType
     }
 
     public void testGetEnumBig() {
-	checkGetBigInteger(new EnumType(ByteOrder.BIG_ENDIAN),
+	checkGetBigInteger(new EnumType(ByteOrder.BIG_ENDIAN, 2),
 			  (short)0xff00, 0x0102);
     }
     public void testGetEnumLittle() {
-	checkGetBigInteger(new EnumType(ByteOrder.LITTLE_ENDIAN),
+	checkGetBigInteger(new EnumType(ByteOrder.LITTLE_ENDIAN, 2),
 			  0x00ff, 0x0201);
     }
 

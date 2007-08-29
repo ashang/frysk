@@ -97,17 +97,6 @@ public class EnumType extends IntegerType
     }
   
     /**
-     * Create an ClassType
-     * 
-     * FIXME: This call is bogus; it contains no enum size.
-     *
-     * @param endian - Endianness of class
-     */
-    public EnumType (ByteOrder endian) {
-	super(0, endian, 0, "enum", false);
-    }
-
-    /**
      * Create an Enum.
      */
     public EnumType(ByteOrder byteOrder, int size) {
