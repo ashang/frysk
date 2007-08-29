@@ -339,7 +339,7 @@ public class CLI
     // initialize PT set stuff
     setparser = new SetNotationParser();
 
-    allset = new AllPTSet();
+    allset = new AllPTSet(this);
     targetset = allset;
 
     builtinPTSets = new HashMap();

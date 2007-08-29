@@ -1,3 +1,15 @@
+2007-08-29  Tim Moore  <timoore@redhat.com>
+
+	* AllPTSet.java (AllPTSet constructor): take CLI argument
+	(getSubsetByState): Implement
+	* CLI.java (CLI constructor): Pass this to AllPTSet constructor.
+	* PrintCommand.java (handle): Skip p/t set specification if any.
+	* TaskData.java (toPrint): New method.
+	* ViewsetCommand.java (handle): Parse any p/t set specification,
+	not just named sets.
+	* WhereCommand (handle): Don't print set if there's only one
+	task. Don't get traceback info from tasks that aren't stopped.
+
 2007-08-27  Stan Cox  <scox@redhat.com>
 
 	* TestPrint.java (testHpdScalar): Use funit-scalar.

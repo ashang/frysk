@@ -38,6 +38,7 @@
 // exception.
 package frysk.hpd;
 
+import java.io.PrintWriter;
 import frysk.proc.*;
 
 /**
@@ -70,5 +71,22 @@ class TaskData
 
     public String toString() {
         return parentid + "." + id;
+    }
+
+    public void toPrint(PrintWriter printWriter, boolean brackets) {
+        if (brackets)
+            printWriter.write("[");
+        printWriter.write(toString());
+        if (brackets)
+            printWriter.write("]");
+    }
+
+    public void toPrint(PrintWriter printWriter) {
+        toPrint(printWriter, false);
+    }
+
+    // XXX Better way to do this?
+    public boolean isStopped() {
+        return task.getBlockers().length != 0;
     }
 }

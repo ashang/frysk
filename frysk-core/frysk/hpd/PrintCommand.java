@@ -80,9 +80,12 @@ class PrintCommand
 	    cli.printUsage(cmd);
 	    return;
         }
-
+        // Skip set specification, if any
+        String commandString = cmd.getFullCommand()
+            .substring(cmd.getFullCommand().indexOf(cmd.getAction()));
 	String sInput 
-	    = cmd.getFullCommand().substring(cmd.getAction().length()).trim();
+            = commandString.substring(cmd.getAction().length()).trim();
+
 
 	Format format = null;
 	for (int i = 0; i < params.size(); i++) {

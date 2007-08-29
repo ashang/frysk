@@ -99,7 +99,7 @@ public class ProcTaskIDManager
 
     public synchronized Proc getProc(int id) {
         if (id < procList.size())
-            return (Proc)procList.get(id);
+            return ((ProcEntry)procList.get(id)).proc;
         else
             return null;
     }

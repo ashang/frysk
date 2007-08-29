@@ -72,9 +72,13 @@ class WhereCommand extends CLIHandler {
 
 	if (params.size() != 0)
 	    level = Integer.parseInt((String) params.get(0));
-	Iterator taskIter = ptset.getTasks();
+	Iterator taskIter = ptset.getTaskData();
+        boolean moreThanOneTask = false;
 	while (taskIter.hasNext()) {
-	    Task task = (Task) taskIter.next();
+            TaskData td = (TaskData)taskIter.next();
+            if (!moreThanOneTask && taskIter.hasNext())
+                moreThanOneTask = true;
+            Task task = (Task)td.getTask();
 	    DebugInfoFrame tmpFrame = null;
 	    int l = cli.getTaskStackLevel(task);
 	    int stopLevel;
@@ -85,7 +89,16 @@ class WhereCommand extends CLIHandler {
 		stopLevel = 0;
 
 	    tmpFrame = cli.getTaskFrame(task);
-	    DebugInfoStackFactory.printStackTrace(cli.outWriter, tmpFrame, stopLevel, true, false, true);
+            if (moreThanOneTask) {
+                td.toPrint(cli.outWriter, true);
+                cli.outWriter.println();
+            }
+            if (cli.getSteppingEngine() == null
+                || !cli.getSteppingEngine().isTaskRunning(task)) {
+                DebugInfoStackFactory.printStackTrace(cli.outWriter, tmpFrame,
+                                                      stopLevel, true, false,
+                                                      true);
+            }
 	}
 
     }

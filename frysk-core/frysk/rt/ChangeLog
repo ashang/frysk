@@ -1,3 +1,8 @@
+2007-08-29  Tim Moore  <timoore@redhat.com>
+
+	* ProcTaskIDManager.java: (getProc): Return the proc from the
+	ProcEntry, not the entire ProcEntry.
+
 2007-08-27  Tim Moore  <timoore@redhat.com>
 
 	* ProcTaskIDManager.java (addTaskObservers): New method.

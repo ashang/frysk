@@ -76,9 +76,8 @@ class ViewsetCommand extends CLIHandler {
             } else if (params.size() == 1) {
 		setname = (String) params.get(0);
                 displayedName = "Set " + setname;
-		if (cli.namedPTSets.containsKey(setname))
-		    tempset = (PTSet) (cli.namedPTSets).get(setname);
-		else {
+                tempset = cli.createSet(setname);
+		if (tempset == null) {
 		    cli.addMessage(new Message("Set \"" + setname
 			    + "\" does not exist.", Message.TYPE_NORMAL));
 		    return;

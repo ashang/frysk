@@ -74,8 +74,10 @@ class AllPTSet implements PTSet
 	 */
 
     private final ProcTaskIDManager manager;
+    private final CLI cli;
 
-    public AllPTSet(){
+    public AllPTSet(CLI cli) {
+        this.cli = cli;
         manager = ProcTaskIDManager.getSingleton();
     }
 
@@ -165,10 +167,46 @@ class AllPTSet implements PTSet
 		return result;
 	}
 
-	public ProcTasks[] getSubsetByState(int state)
-	{
-		return null;
-	}
+    public ProcTasks[] getSubsetByState(int state) {
+        ArrayList alist = new ArrayList();
+        synchronized (manager) {
+            int numProcs = manager.getNumberOfProcs();
+            for (int p = 0; p < numProcs; p++) {
+                ProcTasks procTasks
+                    = new ProcTasks(new ProcData(manager.getProc(p), p));
+                int numTasks = manager.getNumberOfTasks(p);
+                for (int t = 0; t < numTasks; t++) {
+                    Task task = manager.getTask(p, t);
+                    if (task != null) {
+                        boolean addTask = false;
+                        boolean taskIsRunning
+                            = cli.getSteppingEngine().isTaskRunning(task);
+                        switch (state) {
+                        case TASK_STATE_RUNNING:
+                            if (taskIsRunning)
+                                addTask = true;
+                            break;
+                        case TASK_STATE_STOPPED:
+                            if (!taskIsRunning)
+                                addTask = true;
+                            break;
+                        // Other states will come later.
+                        default:
+                            addTask = false;
+                            break;
+                        }
+                        if (addTask)
+                            procTasks.addTaskData(new TaskData(task, t, p));
+                    }
+                        
+
+                }
+                if (procTasks.getTaskData().size() > 0)
+                    alist.add(procTasks);
+            }
+        }
+        return (ProcTasks[])alist.toArray(new ProcTasks[0]);
+    }
 
 	public ProcTasks[] getSubsetByExec(String execname)
 	{
