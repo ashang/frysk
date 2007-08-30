@@ -51,10 +51,10 @@ public class Value
 {
     private final Type type;
     private final Location location;
+    private final String textFIXME;
 
     public Value(Type type, Location location) {
-	this.type = type;
-	this.location = location;
+	this(type, "textFIXME", location);
     }
  
     /**
@@ -81,6 +81,11 @@ public class Value
     public Value(Type type, String textFIXME, Location location) {
 	this.type = type;
 	this.location = location;
+	this.textFIXME = textFIXME;
+    }
+
+    public String getTextFIXME() {
+	return textFIXME;
     }
 
     /**

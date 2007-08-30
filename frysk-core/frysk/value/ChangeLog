@@ -1,5 +1,8 @@
 2007-08-30  Andrew Cagney  <cagney@redhat.com>
 
+	* Value.java (getTextFIXME(), textFIXME): Restore; revert previous
+	change.
+
 	* Value.java (getTextFIXME()): Delete.
 	(textFIXME): Delete.
 	* ArrayType.java: Update.
