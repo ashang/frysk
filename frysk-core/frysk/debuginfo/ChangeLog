@@ -1,3 +1,7 @@
+2007-08-30  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Variable.java: Removed typeDie and references.
+
 2007-08-30  Andrew Cagney  <cagney@redhat.com>
 
 	Replace DwAtEncodings, DwInlEncodings, DwTagEncodings, and

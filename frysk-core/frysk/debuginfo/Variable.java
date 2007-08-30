@@ -56,7 +56,7 @@ import frysk.value.Format;
 public class Variable {
     private DwarfDie variableDie;
     private Type type;
-    private DwarfDie typeDie;
+    
     private final String name;
   
     public Variable(Type type, DwarfDie variableDie) {
@@ -85,13 +85,7 @@ public class Variable {
     public Type getType() {
 	return type;
     }
-    public void setTypeDie (DwarfDie typeDie) {
-	this.typeDie = typeDie;
-    }
-    public DwarfDie getTypeDie() {
-	return typeDie;
-    }
-
+    
     public long getLineNumber() {
 	return this.variableDie.getDeclLine();
     }
