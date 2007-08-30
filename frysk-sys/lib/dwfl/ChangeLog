@@ -1,5 +1,7 @@
 2007-08-29  Andrew Cagney  <cagney@redhat.com>
 
+	* DwarfDie.java: Re-indent.
+
 	* DwOp.shenum: New.
 	* DwAt.shenum: New.
 	* DwTag.shenum: New.
