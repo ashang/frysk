@@ -1,5 +1,11 @@
 2007-08-30  Andrew Cagney  <cagney@redhat.com>
 
+	* Type.java (getTypeIdFIXME()): Delete.
+	(typeId): Delete.
+	* TypeDecorator.java: Update.
+	* SignedType.java: Update.
+	* UnsignedType.java: Update.
+
 	* TestDecoratorTypes.java (testUltimateType): New.
 	* ArithmeticType.java (returnType(Value,Value)): New.
 	(add(Value,Value)): Simplify.

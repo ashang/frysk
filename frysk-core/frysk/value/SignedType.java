@@ -71,7 +71,7 @@ public class SignedType
     }
 
     public Type pack(final int bitSize, final int bitOffset) {
-	return new SignedType(size, endian, getTypeIdFIXME(), name, false) {
+	return new SignedType(size, endian, -1, name, false) {
 		Packing packing = new Packing(size, bitSize, bitOffset);
 		BigInteger getBigInteger(Location location) {
 		    return packing.unpackSigned(location.get(endian));

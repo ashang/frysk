@@ -51,8 +51,7 @@ import inua.eio.ByteBuffer;
 abstract class TypeDecorator extends Type {
     private Type decorated;
     TypeDecorator(String name, Type decorated) {
-	super(decorated.getSize(), decorated.getEndian(),
-	      decorated.getTypeIdFIXME(), name);
+	super(decorated.getSize(), decorated.getEndian(), -1, name);
 	this.decorated = decorated;
     }
 
@@ -73,10 +72,6 @@ abstract class TypeDecorator extends Type {
 
     public ByteOrder getEndian() {
 	return decorated.getEndian();
-    }
-
-    int getTypeIdFIXME() {
-	return decorated.getTypeIdFIXME();
     }
 
     void toPrint(PrintWriter writer, Location location,

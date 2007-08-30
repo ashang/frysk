@@ -58,9 +58,6 @@ public abstract class Type {
     // thing; should be pushed to sub-class.
     protected final ByteOrder endian;
   
-    // FIXME: TypeID isn't needed; sub-types provide equivalent.
-    private final int typeId;
-
     protected final String name;
   
     protected boolean isTypedef;
@@ -77,7 +74,6 @@ public abstract class Type {
 	  boolean typedef) {
 	this.size = size;
 	this.endian = endian;
-	this.typeId = typeId;
 	this.name = name;
 	this.isTypedef = false;
     }
@@ -96,17 +92,6 @@ public abstract class Type {
      */
     public Type getUltimateType() {
 	return this;
-    }
-
-    /**
-     * This returns the DWARF type identifier.
-     *
-     * XXX: Client code should be querying the type's attributes
-     * (signed? size?) and not coding switches based on this return
-     * value (== baseTypeUnsignedShort).
-     */
-    int getTypeIdFIXME() {
-	return typeId;
     }
 
     /**
