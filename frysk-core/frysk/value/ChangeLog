@@ -1,3 +1,16 @@
+2007-08-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Type.java (getUltimateType()): New.
+	* TypeDef.java: New.
+	* ConstType: New.
+	* VolatileType: New.
+	* PackedType.java: New.
+	* RestrictType.java: New.
+	* SharedType.java: New.
+	* ReferenceType.java: New.
+	* TypeDecorator.java: New.
+	* TestDecoratorTypes.java: New.
+	
 2007-08-29  Andrew Cagney  <cagney@redhat.com>
 
 	* Type.java (getTypeIdFIXME): Make package private.

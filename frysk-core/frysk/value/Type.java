@@ -91,6 +91,14 @@ public abstract class Type {
     }
 
     /**
+     * Return the ultimate type (ignoring any decorator and other
+     * attributes).
+     */
+    public Type getUltimateType() {
+	return this;
+    }
+
+    /**
      * This returns the DWARF type identifier.
      *
      * XXX: Client code should be querying the type's attributes
