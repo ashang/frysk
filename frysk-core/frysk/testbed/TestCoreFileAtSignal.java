@@ -60,10 +60,10 @@ public class TestCoreFileAtSignal extends TestLib
 
 	String stackString = stringWriter.getBuffer().toString();
 	
-	assertTrue(stackString.contains("fourth"));
-	assertTrue(stackString.contains("third"));
-	assertTrue(stackString.contains("second"));
-	assertTrue(stackString.contains("first"));	
+	assertTrue("Correct stack trace extracted from core file", stackString.contains("fourth"));
+	assertTrue("Correct stack trace extracted from core file", stackString.contains("third"));
+	assertTrue("Correct stack trace extracted from core file", stackString.contains("second"));
+	assertTrue("Correct stack trace extracted from core file", stackString.contains("first"));	
     }
 
 }

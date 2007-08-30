@@ -1,3 +1,8 @@
+2007-08-30  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestCoreFileAtSignal.java (testCoreFileAtSignal): Added
+	comment to asserstions.
+
 2007-08-28  Teresa Thomas  <tthomas@redhat.com>
 	
 	* DaemonBlockedAtSignal.java: Comments added.
