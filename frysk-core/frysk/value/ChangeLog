@@ -1,5 +1,9 @@
 2007-08-30  Andrew Cagney  <cagney@redhat.com>
 
+	* Value.java (getTextFIXME()): Delete.
+	(textFIXME): Delete.
+	* ArrayType.java: Update.
+
 	* Type.java (getTypeIdFIXME()): Delete.
 	(typeId): Delete.
 	* TypeDecorator.java: Update.

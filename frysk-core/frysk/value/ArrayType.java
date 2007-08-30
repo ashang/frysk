@@ -158,7 +158,7 @@ public class ArrayType
 		dims.add(new Integer(count));
 		ArrayType arrayType = new ArrayType(type, count * type.size,
 						    dims);
-		return new Value(arrayType, v.getTextFIXME(),
+		return new Value(arrayType, null,
 				 v.getLocation().slice(offset * type.getSize(), 
 					 count * type.getSize()));
 	    }

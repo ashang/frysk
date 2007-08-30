@@ -1,3 +1,7 @@
+2007-08-30  Andrew Cagney  <cagney@redhat.com>
+
+	* cpp.g: Remove calls to Value.getTextFIXME.
+
 2007-08-29  Andrew Cagney  <cagney@redhat.com>
 
 	* cpp.g: Remove references to Type.getTypeIdFIXME.

@@ -51,12 +51,10 @@ public class Value
 {
     private final Type type;
     private final Location location;
-    private final String textFIXME;
 
     public Value(Type type, Location location) {
 	this.type = type;
 	this.location = location;
-	this.textFIXME = "textFIXME";
     }
  
     /**
@@ -83,7 +81,6 @@ public class Value
     public Value(Type type, String textFIXME, Location location) {
 	this.type = type;
 	this.location = location;
-	this.textFIXME = textFIXME;
     }
 
     /**
@@ -98,16 +95,6 @@ public class Value
      */
     public Type getType() {
 	return type;
-    }
-
-    /**
-     * Return what is probably the variable's name.
-     *
-     * XXX: This dates back to when Variable and Value were the same
-     * class.  Code should instead ask the Variable for it's name.
-     */
-    public String getTextFIXME() {
-	return textFIXME;
     }
 
     /**
