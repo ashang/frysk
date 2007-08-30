@@ -39,8 +39,11 @@
 
 package frysk.gui.srcwin;
 
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.naming.NameNotFoundException;
 
 import org.gnu.gdk.Color;
 import org.gnu.gdk.Cursor;
@@ -71,6 +74,7 @@ import org.gnu.pango.Alignment;
 import org.gnu.pango.FontDescription;
 import org.gnu.pango.Layout;
 
+import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMLine;
@@ -576,9 +580,9 @@ public class SourceView extends TextView implements View, ExposeListener {
          * @param var
          *                The value to remove from the list of watches
          */
-    public void removeVar(Value var) {
-	if (varMap.containsKey(var.getTextFIXME()))
-	    varMap.remove(var.getTextFIXME());
+    public void removeVar(String var) {
+	if (varMap.containsKey(var))
+	    varMap.remove(var);
 	else
 	    return;
 
@@ -863,7 +867,7 @@ public class SourceView extends TextView implements View, ExposeListener {
 	if (event.getButtonPressed() == MouseEvent.BUTTON3) {
 	    TextIter iter = this.getIterFromWindowCoords((int) event.getX(),
 		    (int) event.getY());
-	    final Value var = this.buf.getVariable(iter);
+	    final String varText = this.buf.getVariable(iter);
 
 	    Menu m = new Menu();
 
@@ -874,37 +878,54 @@ public class SourceView extends TextView implements View, ExposeListener {
                  * Watch window is another item.
                  */
 
-	    if (var != null) {
+	    if (varText != null) {
 		MenuItem valueItem;
-		valueItem = new MenuItem("Value of " + var.getTextFIXME()
-					 + ": "
-			+ var.toString(), true);
+		Value var = null;
+		DebugInfo debugInfo = new DebugInfo(buf.scope);
+		try {
+		    var = debugInfo.print(varText, buf.scope);
+		    
+		    if (var == null)
+		    {
+			// XXX: This shouldn't happen, since we were
+			// able to get the variable a second ago in
+			// SourceBuffer.getVariable(iter). What to do?
+		    }
+		     
+		} catch (ParseException e) {
+		    System.out.println(e.getMessage());
+		} catch (NameNotFoundException n) {
+		    System.err.println(n.getMessage());
+		}
+		
+		valueItem = new MenuItem("Value of " + varText + ": "
+			+ var.toPrint(), true);
 		valueItem.setSensitive(false);
 		m.append(valueItem);
 		/*
                  * Only show this item in the menu if the variable is not
                  * already there
                  */
-		if (!varMap.containsKey(var.getTextFIXME())) {
+		if (!varMap.containsKey(varText)) {
 		    MenuItem traceItem = new MenuItem(
 			    "Add to Variable Watches", false);
 		    m.append(traceItem);
 		    traceItem.setSensitive(true);
 		    traceItem.addListener(new MenuItemListener() {
 			public void menuItemEvent(MenuItemEvent arg0) {
-			    if (varMap.containsKey(var.getTextFIXME()))
+			    if (varMap.containsKey(varText))
 				return;
 			    else
-				varMap.put(var.getTextFIXME(), var);
+				varMap.put(varText, varText);
 
-			    SourceView.this.parent.addVariableTrace(var);
+			    SourceView.this.parent.addVariableTrace(varText);
 			}
 		    });
 		}
 		/*
                  * Only show this item if the variable is indeed in the list
                  */
-		if (varMap.containsKey(var.getTextFIXME())) {
+		if (varMap.containsKey(varText)) {
 
 		    MenuItem removeItem = new MenuItem(
 			    "Remove from Variable Watches", false);
@@ -913,7 +934,7 @@ public class SourceView extends TextView implements View, ExposeListener {
 		    removeItem.setSensitive(true);
 		    removeItem.addListener(new MenuItemListener() {
 			public void menuItemEvent(MenuItemEvent arg0) {
-			    removeVar(var);
+			    removeVar(varText);
 			}
 		    });
 		}

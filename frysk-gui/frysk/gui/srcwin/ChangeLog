@@ -1,3 +1,24 @@
+2007-08-30  Adam Jocksch  <ajocksch@redhat.com>
+	
+	* InlineBuffer.java (getVariable): Now returns a String, specifically
+	the name of the variable.
+	* InlineSourceView.java (mouseEvent): Refactored to reflect above
+	change, now gets the value direct from the symbol table.
+	* SourceBuffer.java (getVariable): Now returns a String, specifically
+	the name of the variable.
+	(getWordAtIter): Added, protected method.
+	* SourceView.java (removeVar): Now takes the name of the value, not the
+	Value object itself.
+	(clickedOnTextArea): Refactored to reflect changes in
+	SourceBuffer:getVariable, also gets the value direct from the symbol 
+	table.
+	* SourceWindow.java (addVariableTrace): Now takes the name of the value
+	rather than the value object.
+	(removeVariableTrace): Ditto.
+	* VariableWatchView.java (variableWatchAdded): Now uses Value:toPrint().
+	(variableWatchChanged): Ditto.
+	
+
 2007-08-22  Mark Wielaard  <mwielaard@redhat.com>
 
 	* SourceBuffer.java (disassembleFrame): Use one StringBuffer,

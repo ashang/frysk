@@ -144,7 +144,6 @@ import frysk.rt.UpdatingDisplayValue;
 import frysk.stack.FrameIdentifier;
 import frysk.stepping.SteppingEngine;
 import frysk.stepping.TaskStepEngine;
-import frysk.value.Value;
 
 /**
  * The SourceWindow displays the source or assembly level view of a Task's
@@ -774,10 +773,9 @@ public class SourceWindow extends Window {
          * @param var
          *                The variable to trace
          */
-    public void addVariableTrace(Value var) {
+    public void addVariableTrace(String var) {
 	UpdatingDisplayValue disp = DisplayManager.createDisplay(currentTask,
-		currentFrame.getFrameIdentifier(), steppingEngine, var
-			.getTextFIXME());
+		currentFrame.getFrameIdentifier(), steppingEngine, var);
 	getCurrentDebugProcess().getWatchList().addVariable(disp);
     }
 
@@ -788,10 +786,9 @@ public class SourceWindow extends Window {
          * @param var
          *                The value to remove
          */
-    public void removeVariableTrace(Value var) {
+    public void removeVariableTrace(String var) {
 	UpdatingDisplayValue disp = DisplayManager.createDisplay(currentTask,
-		currentFrame.getFrameIdentifier(), steppingEngine, var
-			.getTextFIXME());
+		currentFrame.getFrameIdentifier(), steppingEngine, var);
 	getCurrentDebugProcess().getWatchList().removeVariable(disp);
     }
 

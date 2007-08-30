@@ -193,7 +193,7 @@ public class InlineBuffer
    * We need to do a little fancier Voodoo than the superclass to actually
    * calculate variable values, since we're only displaying the inline function
    */
-  public Value getVariable (TextIter iter)
+  public String getVariable (TextIter iter)
   {
     if (this.scope == null || this.scope.getLines().length == 0)
       return null;
@@ -211,13 +211,15 @@ public class InlineBuffer
       return null;
 
     stab.toString();
-    Value var;
+    Value var = null;
     try
       {
         var = stab.print(line.getText().substring(
                                                     tag.getStart(),
                                                     tag.getStart()
                                                         + tag.getLength()), scope);
+        if(var == null)
+            return null;
       }
     catch (ParseException e)
       {
@@ -227,8 +229,8 @@ public class InlineBuffer
       {
         return null;
       }
-
-    return var;
+    
+    return getWordAtIter(iter);
   }
 
   /**

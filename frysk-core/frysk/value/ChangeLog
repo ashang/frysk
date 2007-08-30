@@ -1,3 +1,7 @@
+2007-08-30  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Value.java (getTextFIXME(), textFIXME): Removed.
+
 2007-08-30  Andrew Cagney  <cagney@redhat.com>
 
 	* Value.java (getTextFIXME(), textFIXME): Restore; revert previous

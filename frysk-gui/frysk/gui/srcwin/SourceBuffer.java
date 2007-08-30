@@ -618,7 +618,7 @@ public class SourceBuffer extends TextBuffer {
          *                The location to look for a variable
          * @return The variable at that location, or null
          */
-    public Value getVariable(TextIter iter) {
+    public String getVariable(TextIter iter) {
 	
 	if (this.scope == null || this.scope.getLines().length == 0 
 		|| debugInfo == null)
@@ -655,8 +655,8 @@ public class SourceBuffer extends TextBuffer {
 	    System.err.println(n.getMessage());
 	    return null;
 	}
-
-	return var;
+	
+	return getWordAtIter(iter);
     }
 
     /**
@@ -1303,6 +1303,33 @@ public class SourceBuffer extends TextBuffer {
 	    this.startCurrentFind = null;
 	    this.endCurrentFind = null;
 	}
+    }
+    
+    /*
+     * Attempts to find the word in which the given textiter is located. If iter is 
+     * at a space between two words, it will be default return the word ahead of it.
+     * If iter is in a block of whitespace 2 spaces or larger, then the empty string
+     * will be returned
+     */
+    protected String getWordAtIter(TextIter iter)
+    {
+	TextIter startIter = this.getIter(iter.getOffset());
+	// First, we back up iter to a point where there is a non-alphanumeric character
+	while(Character.isLetter(startIter.getChar()) ||
+		Character.isDigit(startIter.getChar())){
+	    startIter.moveBackwardChar();
+	}
+	
+	// Now, find the end of the word
+	TextIter endIter = this.getIter(iter.getOffset()+1);
+	while(Character.isLetter(endIter.getChar()) ||
+		Character.isDigit(endIter.getChar())) {
+	    endIter.moveForwardChar();
+	}
+	
+	String word = this.getText(startIter, endIter, true);
+	
+	return word.trim();
     }
 
     private class TagPreferenceListener implements SyntaxPreferenceListener {

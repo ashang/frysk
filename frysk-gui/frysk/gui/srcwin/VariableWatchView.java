@@ -217,7 +217,7 @@ public class VariableWatchView extends TreeView implements
 	this.model.setValue(iter, (DataColumnString) this.traceColumns[0], disp
 		.getName());
 	this.model.setValue(iter, (DataColumnString) this.traceColumns[1], ""
-		+ (disp.isAvailable() ? disp.getValue().toString()
+		+ (disp.isAvailable() ? disp.getValue().toPrint()
 			: "<unavailable>"));
 	this.model
 		.setValue(iter, (DataColumnObject) this.traceColumns[2], disp);
@@ -244,7 +244,7 @@ public class VariableWatchView extends TreeView implements
 		this.model.setValue(iter,
 			(DataColumnString) this.traceColumns[1], ""
 				+ (disp.isAvailable() ? disp.getValue()
-					.toString() : "<unavailable>"));
+					.toPrint() : "<unavailable>"));
 		return;
 	    }
 

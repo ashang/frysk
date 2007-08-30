@@ -38,6 +38,10 @@
 // exception.
 package frysk.gui.srcwin;
 
+import java.text.ParseException;
+
+import javax.naming.NameNotFoundException;
+
 import org.gnu.gdk.GC;
 import org.gnu.gdk.Point;
 import org.gnu.gdk.Window;
@@ -54,6 +58,7 @@ import org.gnu.gtk.event.MouseEvent;
 import org.gnu.pango.Alignment;
 import org.gnu.pango.Layout;
 
+import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.dom.DOMInlineInstance;
 import frysk.gui.prefs.IntPreference;
@@ -232,15 +237,32 @@ public class InlineSourceView extends SourceView{
 			
 			TextIter iter = this.getIterAtLocation(p.getX(), p.getY());
 			
-			final Value var = this.buf.getVariable(iter);
+			final String varText = this.buf.getVariable(iter);
 			
             Menu m = new Menu();
             MenuItem traceItem = new MenuItem("Add Trace", false);
             m.append(traceItem);
-            if (var != null)
+            if (varText != null)
               {
                 MenuItem valueItem;
-		valueItem = new MenuItem("Value: " + var.asLong(), true);
+                Value var = null;
+		DebugInfo debugInfo = new DebugInfo(buf.scope);
+		try {
+		    var = debugInfo.print(varText, buf.scope);
+		    
+		    if (var == null)
+		    {
+			// XXX: This shouldn't happen, since we were
+			// able to get the variable a second ago in
+			// SourceBuffer.getVariable(iter). What to do?
+		    }
+		     
+		} catch (ParseException e) {
+		    System.out.println(e.getMessage());
+		} catch (NameNotFoundException n) {
+		    System.err.println(n.getMessage());
+		}
+		valueItem = new MenuItem("Value: " + var.toPrint(), true);
 		valueItem.setSensitive(false);
 		m.append(valueItem);
                 
@@ -248,7 +270,7 @@ public class InlineSourceView extends SourceView{
                 {
                   public void menuItemEvent (MenuItemEvent arg0)
                   {
-                    InlineSourceView.this.parent.addVariableTrace(var);
+                    InlineSourceView.this.parent.addVariableTrace(varText);
                   }
                 });
               }

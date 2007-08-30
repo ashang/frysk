@@ -1,5 +1,8 @@
 2007-08-30  Adam Jocksch  <ajocksch@redhat.com>
 
+	* sessions/WatchList.java (removeVariable): Clarified
+	comment.
+
 	* sessions/WatchList.java (removeVariable): Now uses
 	Display.getName rather than the method from Value.
 

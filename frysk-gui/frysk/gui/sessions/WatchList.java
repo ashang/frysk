@@ -133,8 +133,11 @@ public class WatchList implements SaveableXXX {
 	Iterator iter = vars.iterator();
 	while (iter.hasNext()) {
 	    UpdatingDisplayValue uDisp = (UpdatingDisplayValue) iter.next();
-	    // TODO: Do we need a better way of identifying whether two
-	    // variables are the same?
+	    /*
+	     * Make sure that the names, and the types are the same. If so,
+	     * we'll assume these to be the same variable
+	     * FIXME: More scoping information?
+	     */
 	    if (uDisp.getName().equals(disp.getName())
 		    && uDisp.getValue().getType().toPrint().equals(
 			    disp.getValue().getType().toPrint())) {
