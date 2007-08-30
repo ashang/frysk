@@ -1,5 +1,7 @@
 2007-08-30  Andrew Cagney  <cagney@redhat.com>
 
+	* ArithmeticType.java: Re-indent.
+
 	* Type.java (getUltimateType()): New.
 	* TypeDef.java: New.
 	* ConstType: New.

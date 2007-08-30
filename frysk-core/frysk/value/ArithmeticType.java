@@ -49,14 +49,14 @@ import java.math.BigInteger;
 public abstract class ArithmeticType
     extends Type
 {    
-    protected ArithmeticType (int size, ByteOrder endian,
-			      int typeId, String typeStr)
+    protected ArithmeticType(int size, ByteOrder endian,
+			     int typeId, String typeStr)
     {
 	super(size, endian, typeId, typeStr);
     }
   
-    protected ArithmeticType (int size, ByteOrder endian, 
-			      int typeId, String typeStr, boolean haveTypeDef)
+    protected ArithmeticType(int size, ByteOrder endian, 
+			     int typeId, String typeStr, boolean haveTypeDef)
     {
 	super(size, endian, typeId, typeStr, haveTypeDef);
     }
@@ -68,309 +68,289 @@ public abstract class ArithmeticType
 		+ "}");
     }
 
-  public Value add (Value var1, Value var2)
-  {
-    Type type;
-    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
-      type = var2.getType();
-    else
-      type = var1.getType();
+    public Value add(Value var1, Value var2) {
+	Type type;
+	if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
+	    type = var2.getType();
+	else
+	    type = var1.getType();
     
-    if (type instanceof IntegerType)
-      return ((ArithmeticType)type).createValue(var1.asLong() + var2.asLong());
-    else if (var1.getType() instanceof FloatingPointType
-	     || var2.getType() instanceof FloatingPointType)
-	return ((ArithmeticType)type).createValue(var1.doubleValue() + var2.doubleValue());
-    return null;
-  }
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue(var1.asLong() + var2.asLong());
+	else if (var1.getType() instanceof FloatingPointType
+		 || var2.getType() instanceof FloatingPointType)
+	    return ((ArithmeticType)type).createValue(var1.doubleValue() + var2.doubleValue());
+	return null;
+    }
 
-  public Value subtract (Value var1, Value var2)
-  {
-    Type type;
-    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
-      type = var2.getType();
-    else
-      type = var1.getType();
+    public Value subtract(Value var1, Value var2) {
+	Type type;
+	if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
+	    type = var2.getType();
+	else
+	    type = var1.getType();
     
-    if (type instanceof IntegerType)
-      return ((ArithmeticType)type).createValue(var1.asLong() - var2.asLong());
-    else if (var1.getType() instanceof FloatingPointType
-	|| var2.getType() instanceof FloatingPointType)
-      return ((ArithmeticType)type).createValue(var1.doubleValue() - var2.doubleValue());
-    return null;
-  }
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue(var1.asLong() - var2.asLong());
+	else if (var1.getType() instanceof FloatingPointType
+		 || var2.getType() instanceof FloatingPointType)
+	    return ((ArithmeticType)type).createValue(var1.doubleValue() - var2.doubleValue());
+	return null;
+    }
 
-  public Value multiply (Value var1, Value var2)
-  {
-    Type type;
-    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
-      type = var2.getType();
-    else
-      type = var1.getType();
+    public Value multiply(Value var1, Value var2) {
+	Type type;
+	if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
+	    type = var2.getType();
+	else
+	    type = var1.getType();
     
-    if (type instanceof IntegerType)
-      return ((ArithmeticType)type).createValue(var1.asLong() * var2.asLong());
-    else if (var1.getType() instanceof FloatingPointType
-	|| var2.getType() instanceof FloatingPointType)
-      return ((ArithmeticType)type).createValue(var1.doubleValue() * var2.doubleValue());
-    return null;
-  }
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue(var1.asLong() * var2.asLong());
+	else if (var1.getType() instanceof FloatingPointType
+		 || var2.getType() instanceof FloatingPointType)
+	    return ((ArithmeticType)type).createValue(var1.doubleValue() * var2.doubleValue());
+	return null;
+    }
 
-  public Value divide (Value var1, Value var2)
-  {
-    Type type;
-    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
-      type = var2.getType();
-    else
-      type = var1.getType();
+    public Value divide(Value var1, Value var2) {
+	Type type;
+	if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
+	    type = var2.getType();
+	else
+	    type = var1.getType();
     
-    if (type instanceof IntegerType)
-      return ((ArithmeticType)type).createValue(var1.asLong() / var2.asLong());
-    else if (var1.getType() instanceof FloatingPointType
-	|| var2.getType() instanceof FloatingPointType)
-      return ((ArithmeticType)type).createValue(var1.doubleValue() / var2.doubleValue());
-    return null;
-  }
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue(var1.asLong() / var2.asLong());
+	else if (var1.getType() instanceof FloatingPointType
+		 || var2.getType() instanceof FloatingPointType)
+	    return ((ArithmeticType)type).createValue(var1.doubleValue() / var2.doubleValue());
+	return null;
+    }
 
-  public Value mod (Value var1, Value var2)
-  {
-    Type type;
-    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
-      type = var2.getType();
-    else
-      type = var1.getType();
+    public Value mod(Value var1, Value var2) {
+	Type type;
+	if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
+	    type = var2.getType();
+	else
+	    type = var1.getType();
     
-    if (type instanceof IntegerType)
-      return ((ArithmeticType)type).createValue(var1.asLong() % var2.asLong());
-    else if (var1.getType() instanceof FloatingPointType
-	|| var2.getType() instanceof FloatingPointType)
-      return ((ArithmeticType)type).createValue(var1.doubleValue() % var2.doubleValue());
-    return null;
-  }
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue(var1.asLong() % var2.asLong());
+	else if (var1.getType() instanceof FloatingPointType
+		 || var2.getType() instanceof FloatingPointType)
+	    return ((ArithmeticType)type).createValue(var1.doubleValue() % var2.doubleValue());
+	return null;
+    }
 
-  public Value shiftLeft(Value var1, Value var2)
-  {
-    Type type;
-    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
-      type = var2.getType();
-    else
-      type = var1.getType();
+    public Value shiftLeft(Value var1, Value var2) {
+	Type type;
+	if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
+	    type = var2.getType();
+	else
+	    type = var1.getType();
     
-    if (type instanceof IntegerType)
-	return ((ArithmeticType)type).createValue(var1.asLong() << var2.asLong());
-    else if (var1.getType() instanceof FloatingPointType)
-	throw new InvalidOperatorException(var1.getType(), "<<");
-    return null;
-  } 
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue(var1.asLong() << var2.asLong());
+	else if (var1.getType() instanceof FloatingPointType)
+	    throw new InvalidOperatorException(var1.getType(), "<<");
+	return null;
+    } 
 
-  public Value shiftRight(Value var1, Value var2)
-  {
-    Type type;
-    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
-      type = var2.getType();
-    else
-      type = var1.getType();
+    public Value shiftRight(Value var1, Value var2) {
+	Type type;
+	if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
+	    type = var2.getType();
+	else
+	    type = var1.getType();
     
-    if (type instanceof IntegerType)
-	return ((ArithmeticType)type).createValue(var1.asLong() >> var2.asLong());
-    else if (var1.getType() instanceof FloatingPointType)
-	throw new InvalidOperatorException(var1.getType(), ">>");
-    return null;
-  } 
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue(var1.asLong() >> var2.asLong());
+	else if (var1.getType() instanceof FloatingPointType)
+	    throw new InvalidOperatorException(var1.getType(), ">>");
+	return null;
+    } 
   
-  public Value lessThan (Value var1, Value var2)
-  {
-    Type type;
-    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
-      type = var2.getType();
-    else
-      type = var1.getType();
+    public Value lessThan(Value var1, Value var2) {
+	Type type;
+	if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
+	    type = var2.getType();
+	else
+	    type = var1.getType();
     
-    if (type instanceof IntegerType)
-      return ((ArithmeticType)type).createValue((var1.asLong() < var2.asLong()) ? 1 : 0);
-    else if (var1.getType() instanceof FloatingPointType
-	|| var2.getType() instanceof FloatingPointType)
-      return ((ArithmeticType)type).createValue((var1.doubleValue() < var2.doubleValue()) ? 1 : 0);
-    return null;
-  }
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue((var1.asLong() < var2.asLong()) ? 1 : 0);
+	else if (var1.getType() instanceof FloatingPointType
+		 || var2.getType() instanceof FloatingPointType)
+	    return ((ArithmeticType)type).createValue((var1.doubleValue() < var2.doubleValue()) ? 1 : 0);
+	return null;
+    }
   
-  public Value greaterThan (Value var1, Value var2)
-  {
-    Type type;
-    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
-      type = var2.getType();
-    else
-      type = var1.getType();
+    public Value greaterThan(Value var1, Value var2) {
+	Type type;
+	if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
+	    type = var2.getType();
+	else
+	    type = var1.getType();
     
-    if (type instanceof IntegerType)
-      return ((ArithmeticType)type).createValue((var1.asLong() > var2.asLong()) ? 1 : 0);
-    else if (var1.getType() instanceof FloatingPointType
-	|| var2.getType() instanceof FloatingPointType)
-      return ((ArithmeticType)type).createValue((var1.doubleValue() > var2.doubleValue()) ? 1 : 0);
-    return null;
-  }
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue((var1.asLong() > var2.asLong()) ? 1 : 0);
+	else if (var1.getType() instanceof FloatingPointType
+		 || var2.getType() instanceof FloatingPointType)
+	    return ((ArithmeticType)type).createValue((var1.doubleValue() > var2.doubleValue()) ? 1 : 0);
+	return null;
+    }
 
-  public Value lessThanOrEqualTo (Value var1, Value var2)
-  {
-    Type type;
-    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
-      type = var2.getType();
-    else
-      type = var1.getType();
+    public Value lessThanOrEqualTo(Value var1, Value var2) {
+	Type type;
+	if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
+	    type = var2.getType();
+	else
+	    type = var1.getType();
     
-    if (type instanceof IntegerType)
-      return ((ArithmeticType)type).createValue((var1.asLong() <= var2.asLong()) ? 1 : 0);
-    else if (var1.getType() instanceof FloatingPointType
-	|| var2.getType() instanceof FloatingPointType)
-      return ((ArithmeticType)type).createValue((var1.doubleValue() <= var2.doubleValue()) ? 1 : 0);
-    return null;
-  }
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue((var1.asLong() <= var2.asLong()) ? 1 : 0);
+	else if (var1.getType() instanceof FloatingPointType
+		 || var2.getType() instanceof FloatingPointType)
+	    return ((ArithmeticType)type).createValue((var1.doubleValue() <= var2.doubleValue()) ? 1 : 0);
+	return null;
+    }
   
-  public Value greaterThanOrEqualTo (Value var1, Value var2)
-  {
-    Type type;
-    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
-      type = var2.getType();
-    else
-      type = var1.getType();
+    public Value greaterThanOrEqualTo(Value var1, Value var2) {
+	Type type;
+	if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
+	    type = var2.getType();
+	else
+	    type = var1.getType();
     
-    if (type instanceof IntegerType)
-      return ((ArithmeticType)type).createValue((var1.asLong() >= var2.asLong()) ? 1 : 0);
-    else if (var1.getType() instanceof FloatingPointType
-	|| var2.getType() instanceof FloatingPointType)
-      return ((ArithmeticType)type).createValue((var1.doubleValue() >= var2.doubleValue()) ? 1 : 0);
-    return null;
-  }
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue((var1.asLong() >= var2.asLong()) ? 1 : 0);
+	else if (var1.getType() instanceof FloatingPointType
+		 || var2.getType() instanceof FloatingPointType)
+	    return ((ArithmeticType)type).createValue((var1.doubleValue() >= var2.doubleValue()) ? 1 : 0);
+	return null;
+    }
   
-  public Value equal (Value var1, Value var2)
-  {
-    Type type;
-    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
-      type = var2.getType();
-    else
-      type = var1.getType();
+    public Value equal(Value var1, Value var2) {
+	Type type;
+	if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
+	    type = var2.getType();
+	else
+	    type = var1.getType();
     
-    if (type instanceof IntegerType)
-      return ((ArithmeticType)type).createValue((var1.asLong() == var2.asLong()) ? 1 : 0);
-    else if (var1.getType() instanceof FloatingPointType
-	|| var2.getType() instanceof FloatingPointType)
-      return ((ArithmeticType)type).createValue((var1.doubleValue() == var2.doubleValue()) ? 1 : 0);
-    return null;
-  }
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue((var1.asLong() == var2.asLong()) ? 1 : 0);
+	else if (var1.getType() instanceof FloatingPointType
+		 || var2.getType() instanceof FloatingPointType)
+	    return ((ArithmeticType)type).createValue((var1.doubleValue() == var2.doubleValue()) ? 1 : 0);
+	return null;
+    }
 
-  public Value notEqual (Value var1, Value var2)
-  {
-    Type type;
-    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
-      type = var2.getType();
-    else
-      type = var1.getType();
+    public Value notEqual(Value var1, Value var2) {
+	Type type;
+	if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
+	    type = var2.getType();
+	else
+	    type = var1.getType();
     
-    if (type instanceof IntegerType)
-      return ((ArithmeticType)type).createValue((var1.asLong() != var2.asLong()) ? 1 : 0);
-    else if (var1.getType() instanceof FloatingPointType
-	|| var2.getType() instanceof FloatingPointType)
-      return ((ArithmeticType)type).createValue((var1.doubleValue() != var2.doubleValue()) ? 1 : 0);
-    return null;
-  }
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue((var1.asLong() != var2.asLong()) ? 1 : 0);
+	else if (var1.getType() instanceof FloatingPointType
+		 || var2.getType() instanceof FloatingPointType)
+	    return ((ArithmeticType)type).createValue((var1.doubleValue() != var2.doubleValue()) ? 1 : 0);
+	return null;
+    }
   
-  public Value bitWiseAnd(Value var1, Value var2)
-  {
-    Type type;
-    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
-      type = var2.getType();
-    else
-      type = var1.getType();
+    public Value bitWiseAnd(Value var1, Value var2) {
+	Type type;
+	if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
+	    type = var2.getType();
+	else
+	    type = var1.getType();
     
-    if (type instanceof IntegerType)
-      return ((ArithmeticType)type).createValue(var1.asLong() & var2.asLong());
-      else if (var1.getType() instanceof FloatingPointType)
-	  throw new InvalidOperatorException(var1.getType(), "&");
-    return null;
-  }
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue(var1.asLong() & var2.asLong());
+	else if (var1.getType() instanceof FloatingPointType)
+	    throw new InvalidOperatorException(var1.getType(), "&");
+	return null;
+    }
 
-  public Value bitWiseOr(Value var1, Value var2)
-  {
-    Type type;
-    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
-      type = var2.getType();
-    else
-      type = var1.getType();
+    public Value bitWiseOr(Value var1, Value var2) {
+	Type type;
+	if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
+	    type = var2.getType();
+	else
+	    type = var1.getType();
     
-    if (type instanceof IntegerType)
-      return ((ArithmeticType)type).createValue((var1.asLong() | var2.asLong()));
-    else if (var1.getType() instanceof FloatingPointType)
-	throw new InvalidOperatorException(var1.getType(), "|");
-    return null;
-  }
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue((var1.asLong() | var2.asLong()));
+	else if (var1.getType() instanceof FloatingPointType)
+	    throw new InvalidOperatorException(var1.getType(), "|");
+	return null;
+    }
   
-  public Value bitWiseXor(Value var1, Value var2)
-  {
-    Type type;
-    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
-      type = var2.getType();
-    else
-      type = var1.getType();
+    public Value bitWiseXor(Value var1, Value var2) {
+	Type type;
+	if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
+	    type = var2.getType();
+	else
+	    type = var1.getType();
     
-    if (type instanceof IntegerType)
-      return ((ArithmeticType)type).createValue((var1.asLong() ^ var2.asLong()));
-    else if (var1.getType() instanceof FloatingPointType)
-	throw new InvalidOperatorException(var1.getType(), "^");
-    return null;
-  }
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue((var1.asLong() ^ var2.asLong()));
+	else if (var1.getType() instanceof FloatingPointType)
+	    throw new InvalidOperatorException(var1.getType(), "^");
+	return null;
+    }
 
-  public Value bitWiseComplement(Value var1)
-  {
-    Type type = var1.getType();
+    public Value bitWiseComplement(Value var1) {
+	Type type = var1.getType();
     
-    if (type instanceof IntegerType)
-      return ((ArithmeticType)type).createValue((~var1.asLong()));
-    else if (var1.getType() instanceof FloatingPointType)
-	throw new InvalidOperatorException(var1.getType(), "~");
-    return null;
-  }
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue((~var1.asLong()));
+	else if (var1.getType() instanceof FloatingPointType)
+	    throw new InvalidOperatorException(var1.getType(), "~");
+	return null;
+    }
 
-  public Value logicalAnd(Value var1, Value var2)
-  {
-    Type type;
-    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
-      type = var2.getType();
-    else
-      type = var1.getType();
+    public Value logicalAnd(Value var1, Value var2) {
+	Type type;
+	if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
+	    type = var2.getType();
+	else
+	    type = var1.getType();
 
-    if (type instanceof IntegerType)
-      return ((ArithmeticType)type).createValue((var1.asLong() == 0 ? false : true)
-                              && (var2.asLong() == 0 ? false : true) ? 1 : 0);
-    else if (var1.getType() instanceof FloatingPointType)
-	throw new InvalidOperatorException(var1.getType(), "&&");
-    return null;
-  }
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue((var1.asLong() == 0 ? false : true)
+						      && (var2.asLong() == 0 ? false : true) ? 1 : 0);
+	else if (var1.getType() instanceof FloatingPointType)
+	    throw new InvalidOperatorException(var1.getType(), "&&");
+	return null;
+    }
   
-  public Value logicalOr(Value var1, Value var2)
-  {
-    Type type;
-    if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
-      type = var2.getType();
-    else
-      type = var1.getType();
+    public Value logicalOr(Value var1, Value var2) {
+	Type type;
+	if (var1.getType().getTypeIdFIXME() < var2.getType().getTypeIdFIXME())
+	    type = var2.getType();
+	else
+	    type = var1.getType();
     
-    if (type instanceof IntegerType)
-      return ((ArithmeticType)type).createValue((var1.asLong() == 0 ? false : true)
-                              || (var2.asLong() == 0 ? false : true) ? 1 : 0);
-    else if (var1.getType() instanceof FloatingPointType)
-	throw new InvalidOperatorException(var1.getType(), "||");
-    return null;
-  }
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue((var1.asLong() == 0 ? false : true)
+						      || (var2.asLong() == 0 ? false : true) ? 1 : 0);
+	else if (var1.getType() instanceof FloatingPointType)
+	    throw new InvalidOperatorException(var1.getType(), "||");
+	return null;
+    }
 
-  public Value logicalNegation(Value var1)
-  {
-    Type type = var1.getType();
-    if (type instanceof IntegerType)
-      return ((ArithmeticType)type).createValue((var1.asLong() == 0 ? true : false) ? 1 : 0);
-    else if (var1.getType() instanceof FloatingPointType)
-	throw new InvalidOperatorException(var1.getType(), "||");
-    return null;
-  }
+    public Value logicalNegation(Value var1) {
+	Type type = var1.getType();
+	if (type instanceof IntegerType)
+	    return ((ArithmeticType)type).createValue((var1.asLong() == 0 ? true : false) ? 1 : 0);
+	else if (var1.getType() instanceof FloatingPointType)
+	    throw new InvalidOperatorException(var1.getType(), "||");
+	return null;
+    }
 
     public Value assign(Value var1, Value var2) {
 	return var1.assign(var2);
@@ -416,12 +396,12 @@ public abstract class ArithmeticType
 	return var1.assign(bitWiseAnd(var1, var2));
     }
 
-  public boolean getLogicalValue (Value var1) {
-    if (var1.getType() instanceof FloatingPointType)
-	throw (new InvalidOperatorException(this, ""));
+    public boolean getLogicalValue (Value var1) {
+	if (var1.getType() instanceof FloatingPointType)
+	    throw (new InvalidOperatorException(this, ""));
 
-    return ((var1.asLong() == 0) ? false : true);
-  }
+	return ((var1.asLong() == 0) ? false : true);
+    }
 
     public void toPrint(PrintWriter writer) {
 	writer.print(name);
