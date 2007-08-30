@@ -1,5 +1,30 @@
 2007-08-30  Andrew Cagney  <cagney@redhat.com>
 
+	* TestDecoratorTypes.java (testUltimateType): New.
+	* ArithmeticType.java (returnType(Value,Value)): New.
+	(add(Value,Value)): Simplify.
+	(subtract(Value,Value)): Simplify.
+	(multiply(Value,Value)): Simplify.
+	(divide(Value,Value)): Simplify.
+	(mod(Value,Value)): Simplify.
+	(shiftLeft(Value,Value)): Simplify.
+	(shiftRight(Value,Value)): Simplify.
+	(lessThan(Value,Value)): Simplify.
+	(greaterThan(Value,Value)): Simplify.
+	(lessThanOrEqualTo(Value,Value)): Simplify.
+	(greaterThanOrEqualTo(Value,Value)): Simplify.
+	(equal(Value,Value)): Simplify.
+	(notEqual(Value,Value)): Simplify.
+	(bitWiseAnd(Value,Value)): Simplify.
+	(bitWiseOr(Value,Value)): Simplify.
+	(bitWiseXor(Value,Value)): Simplify.
+	(bitWiseComplement(Value)): Simplify.
+	(logicalAnd(Value,Value)): Simplify.
+	(logicalOr(Value,Value)): Simplify.
+	(logicalNegation(Value)): Simplify.
+	(assign(Value,Value)): Simplify.
+	(getLogicalValue(Value)): Simplify.
+
 	* ArithmeticType.java: Re-indent.
 
 	* Type.java (getUltimateType()): New.

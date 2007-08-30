@@ -90,4 +90,16 @@ public class TestDecoratorTypes
 						      -1, "int", false));
 	assertEquals("toPrint", "a-type", t.toPrint());
     }
+
+    public void testUltimateType() {
+	Type t = new SignedType(1, ByteOrder.BIG_ENDIAN, -1, "int", false);
+	assertEquals("ultimate type", t,
+		     new ConstType
+		     (new PackedType
+		      (new ReferenceType
+		       (new RestrictType
+			(new SharedType
+			 (new VolatileType
+			  (new TypeDef("type-def", t))))))).getUltimateType());
+    }
 }
