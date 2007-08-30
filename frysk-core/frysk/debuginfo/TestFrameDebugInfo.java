@@ -47,7 +47,7 @@ import java.util.logging.Logger;
 
 import javax.naming.NameNotFoundException;
 
-import lib.dwfl.DwTagEncodings;
+import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
@@ -129,9 +129,9 @@ public class TestFrameDebugInfo
     
     assertEquals("number of scopes", 3, scopes.length);
     
-    assertEquals("inlined die" , DwTagEncodings.DW_TAG_inlined_subroutine_,scopes[0].getTag());
-    assertEquals("function die", DwTagEncodings.DW_TAG_subprogram_, scopes[1].getTag());
-    assertEquals("compliation unit die", DwTagEncodings.DW_TAG_compile_unit_, scopes[0].getTag());
+    assertEquals("inlined die" , DwTag.INLINED_SUBROUTINE_,scopes[0].getTag());
+    assertEquals("function die", DwTag.SUBPROGRAM_, scopes[1].getTag());
+    assertEquals("compliation unit die", DwTag.COMPILE_UNIT_, scopes[0].getTag());
     
   }
   
@@ -148,9 +148,9 @@ public class TestFrameDebugInfo
     
     assertEquals("number of scopes", 4, scopes.length);
     
-    assertEquals("inlined die" , DwTagEncodings.DW_TAG_inlined_subroutine_,scopes[1].getTag());
-    assertEquals("function die", DwTagEncodings.DW_TAG_subprogram_, scopes[2].getTag());
-    assertEquals("compliation unit die", DwTagEncodings.DW_TAG_compile_unit_, scopes[3].getTag());
+    assertEquals("inlined die" , DwTag.INLINED_SUBROUTINE_,scopes[1].getTag());
+    assertEquals("function die", DwTag.SUBPROGRAM_, scopes[2].getTag());
+    assertEquals("compliation unit die", DwTag.COMPILE_UNIT_, scopes[3].getTag());
     
   }
   

@@ -344,7 +344,7 @@ abstract public class DwarfDie {
   
     public StringBuilder toPrint(){
 	StringBuilder stringBuilder = new StringBuilder();
-	stringBuilder.append(DwTagEncodings.toName(this.getTag()) + " Name: " + this.getName());
+	stringBuilder.append(DwTag.toName(this.getTag()) + " Name: " + this.getName());
 	return stringBuilder;
     }
   

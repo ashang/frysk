@@ -1,3 +1,12 @@
+2007-08-30  Andrew Cagney  <cagney@redhat.com>
+
+	* DwTagEncodings.shenum: Delete.
+	* DwOpEncodings.shenum: Delete.
+	* DwInlEncodings.shenum: Delete.
+	* DwAtEncodings.shenum: Delete.
+	* DwarfDie.java: Use DwTag.
+	* DwarfDieFactory.java: Use DwTag; use DwTag.toPrint().
+
 2007-08-29  Andrew Cagney  <cagney@redhat.com>
 
 	* DwarfDie.java: Re-indent.

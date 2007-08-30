@@ -54,8 +54,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.naming.NameNotFoundException;
-import lib.dwfl.DwAtEncodings;
-import lib.dwfl.DwTagEncodings;
+import lib.dwfl.DwAt;
+import lib.dwfl.DwTag;
 import lib.dwfl.Dwarf;
 import lib.dwfl.DwarfCommand;
 import lib.dwfl.DwarfDie;
@@ -175,16 +175,16 @@ public class DebugInfo {
 	    varDie = DwarfDie.getDecl(dwarf, sInput);
 	    if (varDie == null)
 		throw new NameNotFoundException(sInput + " not found in scope.");
-	    if (varDie.getAttrBoolean(DwAtEncodings.DW_AT_external_))
+	    if (varDie.getAttrBoolean(DwAt.EXTERNAL_))
 		result.append("extern ");
 	    switch (varDie.getTag()) {
-            case DwTagEncodings.DW_TAG_subprogram_: {
+            case DwTag.SUBPROGRAM_: {
 		Value value = debugInfoEvaluator[0].getSubprogramValue(varDie);
 		result.append(value.getType().toPrint());
 		break;
             }
-            case DwTagEncodings.DW_TAG_typedef_:
-            case DwTagEncodings.DW_TAG_structure_type_: {
+            case DwTag.TYPEDEF_:
+            case DwTag.STRUCTURE_TYPE_: {
 		Type type = debugInfoEvaluator[0].getType(varDie);
 		result.append(type.toPrint());
 		break;
@@ -194,7 +194,7 @@ public class DebugInfo {
 	    }
         } else {
 	    Type type = debugInfoEvaluator[0].getType(varDie);
-	    if (varDie.getAttrBoolean(DwAtEncodings.DW_AT_external_))
+	    if (varDie.getAttrBoolean(DwAt.EXTERNAL_))
 		result.append("extern ");
 
 	    if (type != null)

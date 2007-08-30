@@ -73,18 +73,18 @@ public class DwarfDieFactory {
     private DwarfDieFactory() {
 	constructorMap = new HashMap();
 	visitor = new DieVisitor();
-	DwTagEncodings[] tagEncodings = DwTagEncodings.values();
+	DwTag[] tagEncodings = DwTag.values();
 	Pattern pattern = Pattern.compile("_.");
 	HashMap dieClasses = loadDies();
 	Class[] constructorArgTypes = new Class[] {Long.TYPE,
 						   lib.dwfl.Dwfl.class};
 	for (int i = 0; i < tagEncodings.length; i++) {
-	    DwTagEncodings tag = tagEncodings[i];
+	    DwTag tag = tagEncodings[i];
 	    int tagValue = tag.hashCode();
-	    String enumName = tag.toName();
+	    String enumName = tag.toPrint();
 	    if (!enumName.startsWith(tagPrefix, 0)) {
-		throw new DwarfException("enum name " + enumName
-					 + " is bogus.");
+		throw new DwarfException("enum name <" + enumName
+					 + "> is bogus.");
 	    }
 	    Matcher m = pattern.matcher(enumName.substring(tagPrefix.length()));
 	    StringBuffer sb = new StringBuffer();

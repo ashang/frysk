@@ -44,7 +44,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import lib.dwfl.DwTagEncodings;
+import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 import frysk.value.Type;
 
@@ -79,20 +79,20 @@ public class Scope
     this.variables = new LinkedList();
     this.scopes = new LinkedList();
     
-//    System.out.println("\nScope.Scope() name: " + die.getName() + " " + DwTagEncodings.toName(die.getTag()));
+//    System.out.println("\nScope.Scope() name: " + die.getName() + " " + DwTag.toName(die.getTag()));
     
     die = die.getChild();
     
     while(die != null){
-//      System.out.println(" -> " + die.getName() + ": "+ DwTagEncodings.toName(die.getTag()));
+//      System.out.println(" -> " + die.getName() + ": "+ DwTag.toName(die.getTag()));
       
-      if(die.getTag() == DwTagEncodings.DW_TAG_variable_){
+      if(die.getTag() == DwTag.VARIABLE_){
         Type type = debugInfo.getType(die);
         Variable variable = new Variable(type, die);
         variables.add(variable);
       }
       
-      if(die.getTag() == DwTagEncodings.DW_TAG_lexical_block_){
+      if(die.getTag() == DwTag.LEXICAL_BLOCK_){
         this.scopes.add(new LexicalBlock(die, debugInfo));
       }else{
         if(isScopeDie(die)){
@@ -120,17 +120,17 @@ public class Scope
   public static boolean isScopeDie(DwarfDie die){
     switch (die.getTag())
       {
-      case DwTagEncodings.DW_TAG_compile_unit_:
-      case DwTagEncodings.DW_TAG_module_:
-      case DwTagEncodings.DW_TAG_lexical_block_:
-      case DwTagEncodings.DW_TAG_with_stmt_:
-      case DwTagEncodings.DW_TAG_catch_block_:
-      case DwTagEncodings.DW_TAG_try_block_:
-      case DwTagEncodings.DW_TAG_entry_point_:
-      case DwTagEncodings.DW_TAG_inlined_subroutine_:
-      case DwTagEncodings.DW_TAG_subprogram_:
-      case DwTagEncodings.DW_TAG_namespace_:
-      case DwTagEncodings.DW_TAG_imported_unit_:
+      case DwTag.COMPILE_UNIT_:
+      case DwTag.MODULE_:
+      case DwTag.LEXICAL_BLOCK_:
+      case DwTag.WITH_STMT_:
+      case DwTag.CATCH_BLOCK_:
+      case DwTag.TRY_BLOCK_:
+      case DwTag.ENTRY_POINT_:
+      case DwTag.INLINED_SUBROUTINE_:
+      case DwTag.SUBPROGRAM_:
+      case DwTag.NAMESPACE_:
+      case DwTag.IMPORTED_UNIT_:
         return true;
       default:
         return false;

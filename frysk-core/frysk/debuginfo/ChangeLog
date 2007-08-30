@@ -1,3 +1,16 @@
+2007-08-30  Andrew Cagney  <cagney@redhat.com>
+
+	Replace DwAtEncodings, DwInlEncodings, DwTagEncodings, and
+	DwOpEncodings with DwAt, DwInl, DwTag, and DwOp.
+	* DebugInfoFrame.java: Update.
+	* Subprogram.java: Update.
+	* DebugInfo.java: Update.
+	* Scope.java: Update
+	* DebugInfoEvaluator.java: Update.
+	* LocationExpression.java: Update.
+	* TestFrameDebugInfo.java: Update.
+	* TestLocationExpression.java: Update.
+
 2007-08-29  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfoEvaluator.java

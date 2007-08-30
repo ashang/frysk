@@ -49,8 +49,8 @@ import java.util.List;
 import javax.naming.NameNotFoundException;
 
 import lib.dwfl.BaseTypes;
-import lib.dwfl.DwTagEncodings;
-import lib.dwfl.DwAtEncodings;
+import lib.dwfl.DwTag;
+import lib.dwfl.DwAt;
 import lib.dwfl.DwException;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
@@ -102,7 +102,7 @@ class DebugInfoEvaluator
     }
 
     private int getByteSize(DwarfDie die) {
-	return die.getAttrConstant(DwAtEncodings.DW_AT_byte_size_);
+	return die.getAttrConstant(DwAt.BYTE_SIZE_);
     }
 
     /**
@@ -419,7 +419,7 @@ class DebugInfoEvaluator
 	// System.out.println("die=" + Long.toHexString(type.getOffset()) + " tag=" + Long.toHexString(type.getTag()) + " "+ type.getName());
 	ArrayList dims = new ArrayList();
 	while (subrange != null) {
-	    int arrDim = subrange.getAttrConstant(DwAtEncodings.DW_AT_upper_bound_);
+	    int arrDim = subrange.getAttrConstant(DwAt.UPPER_BOUND_);
 	    dims.add(new Integer(arrDim));
 	    subrange = subrange.getSibling();
 	    elementCount *= arrDim + 1;
@@ -453,7 +453,7 @@ class DebugInfoEvaluator
 	}
 
 	type = type.getUltimateType();
-	if (type.getTag() == DwTagEncodings.DW_TAG_structure_type_) {
+	if (type.getTag() == DwTag.STRUCTURE_TYPE_) {
 	    ClassType classType = getClassType(type, null);
 	    typeSize = classType.getSize();
 	    arrayType = new ArrayType(classType, elementCount * typeSize, dims);
@@ -511,7 +511,7 @@ class DebugInfoEvaluator
 		offset = 0;                           // union
 	    }
         
-	    int access = member.getAttrConstant(DwAtEncodings.DW_AT_accessibility_);
+	    int access = member.getAttrConstant(DwAt.ACCESSIBILITY_);
 	    DwarfDie dieType = member.getType();
 	    DwarfDie memberType = member.getUltimateType();
 	    Type type;
@@ -521,7 +521,7 @@ class DebugInfoEvaluator
 	    else
 		haveTypeDef = false;
         
-	    if (member.getTag() == DwTagEncodings.DW_TAG_subprogram_) {
+	    if (member.getTag() == DwTag.SUBPROGRAM_) {
 		Value v = getSubprogramValue(member);
 		classType.addMember(member.getName(), v.getType(), offset, access);
 		continue;
@@ -534,10 +534,10 @@ class DebugInfoEvaluator
 	    if (memberType.getBaseType() > 0) {
 		type = fetchType(haveTypeDef, memberType, dieType.getName());
 		// System V ABI Supplements discuss bit field layout
-		int bitSize = member.getAttrConstant(DwAtEncodings.DW_AT_bit_size_);
+		int bitSize = member.getAttrConstant(DwAt.BIT_SIZE_);
 		int bitOffset = 0;
 		if (bitSize != -1) {
-		    bitOffset = member.getAttrConstant(DwAtEncodings.DW_AT_bit_offset_);
+		    bitOffset = member.getAttrConstant(DwAt.BIT_OFFSET_);
 		}
 		classType.addMember(member.getName(), type, offset, access,
 				    bitOffset, bitSize);
@@ -546,9 +546,9 @@ class DebugInfoEvaluator
 
 	    // memberType is the ultimate type derived from chasing the thread of types
 	    switch (memberType.getTag()) {
-	    case DwTagEncodings.DW_TAG_structure_type_: {
+	    case DwTag.STRUCTURE_TYPE_: {
 		ClassType memberClassType = getClassType(memberType, memberType.getName());
-		if (member.getTag() != DwTagEncodings.DW_TAG_inheritance_)
+		if (member.getTag() != DwTag.INHERITANCE_)
 		    memberClassType.setTypedef(haveTypeDef);
 		else
 		    memberClassType.setInheritance(true);
@@ -559,7 +559,7 @@ class DebugInfoEvaluator
 		continue;
 	    }
         
-	    case DwTagEncodings.DW_TAG_array_type_: {
+	    case DwTag.ARRAY_TYPE_: {
 		ArrayType memberArrayType = getArrayType(memberType, memberType.getChild());
 		typeSize += memberArrayType.getSize();
 		classType.addMember(member.getName(), memberArrayType, offset,
@@ -567,7 +567,7 @@ class DebugInfoEvaluator
 		continue;
 	    }
         
-	    case DwTagEncodings.DW_TAG_pointer_type_: {
+	    case DwTag.POINTER_TYPE_: {
 		ByteOrder byteorder = task.getIsa().getByteOrder();
 		Type memberPtrType;
             
@@ -713,7 +713,7 @@ class DebugInfoEvaluator
 		// if there is no type then use this die's tag
 		int tag = type != null ? type.getTag() : varDie.getTag();
 		switch (tag) {
-		case DwTagEncodings.DW_TAG_array_type_: {
+		case DwTag.ARRAY_TYPE_: {
 		    DwarfDie subrange;
 		    long addr = variableAccessor[0].getAddr(varDie);
 		    if (addr == 0)
@@ -728,8 +728,8 @@ class DebugInfoEvaluator
 		    abb.order(byteorder);
 		    return new Value(arrayType, s, abb);
 		}
-		case DwTagEncodings.DW_TAG_union_type_:
-		case DwTagEncodings.DW_TAG_structure_type_: {
+		case DwTag.UNION_TYPE_:
+		case DwTag.STRUCTURE_TYPE_: {
 		    long addr = variableAccessor[0].getAddr(varDie);
 		    if (addr == 0)
 			continue;
@@ -739,31 +739,31 @@ class DebugInfoEvaluator
 		    abb.order(byteorder);
 		    return new Value(classType, s, abb);
 		}
-		case DwTagEncodings.DW_TAG_pointer_type_: {
+		case DwTag.POINTER_TYPE_: {
 		    PointerType ptrType = new PointerType(byteorder, longType.getSize(),
 							  getPointerTarget (type), "*");
 		    long  addr = variableAccessor[i].getLong(varDie, 0);
 		    return ptrType.createValue(addr);
 		}
-		case DwTagEncodings.DW_TAG_enumeration_type_: {
+		case DwTag.ENUMERATION_TYPE_: {
 		    DwarfDie subrange;
 		    long val = variableAccessor[0].getLong(varDie, 0);
 		    subrange = type.getChild();
 		    EnumType enumType = new EnumType(byteorder, getByteSize(type));
 		    while (subrange != null) {
 			enumType.addMember(subrange.getName(), 
-					   subrange.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
+					   subrange.getAttrConstant(DwAt.CONST_VALUE_));
 			subrange = subrange.getSibling();
 		    }
 		    return enumType.createValue(val);
 		}
 		    // special case members of an enumeration
-		case DwTagEncodings.DW_TAG_enumerator_: {
+		case DwTag.ENUMERATOR_: {
 		    /**
 		     * FIXME: This should return an "enum", not an
 		     * integer.
 		     */
-		    return longType.createValue(varDie.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
+		    return longType.createValue(varDie.getAttrConstant(DwAt.CONST_VALUE_));
 		}
 		}
 	    } catch (NameNotFoundException ignore) {
@@ -845,7 +845,7 @@ class DebugInfoEvaluator
 	}
 	int tag = type != null ? type.getTag() : varDie.getTag();
 	switch (tag) {
-	case DwTagEncodings.DW_TAG_array_type_: {
+	case DwTag.ARRAY_TYPE_: {
 	    DwarfDie subrange;
 	    subrange = type.getChild();
 	    ArrayType arrayType = getArrayType(type, subrange);
@@ -857,8 +857,8 @@ class DebugInfoEvaluator
 	    abb.order(byteorder);
 	    return new Value(arrayType, s, abb);
 	}
-	case DwTagEncodings.DW_TAG_union_type_:
-	case DwTagEncodings.DW_TAG_structure_type_: {
+	case DwTag.UNION_TYPE_:
+	case DwTag.STRUCTURE_TYPE_: {
 	    ClassType classType = getClassType(type, null);
 
 	    if (classType == null)
@@ -904,7 +904,7 @@ class DebugInfoEvaluator
 	    }
 	switch (type.getTag())
 	    {
-	    case DwTagEncodings.DW_TAG_pointer_type_: {
+	    case DwTag.POINTER_TYPE_: {
 		return new PointerType(byteorder, getByteSize(type),
 				       getPointerTarget(type), "void*");
 	    }
@@ -925,15 +925,15 @@ class DebugInfoEvaluator
 	    return (null);
 
 	switch (varDie.getTag()) {
-	case DwTagEncodings.DW_TAG_subprogram_: {
+	case DwTag.SUBPROGRAM_: {
 	    Type type = null;
 	    if (varDie.getUltimateType() != null) {
 		type = getType(varDie);
 	    }
 	    FunctionType functionType = new FunctionType(byteorder, varDie.getName(), type);
 	    DwarfDie parm = varDie.getChild();
-	    while (parm != null && parm.getTag() == DwTagEncodings.DW_TAG_formal_parameter_) {
-		if (parm.getAttrBoolean((DwAtEncodings.DW_AT_artificial_)) == false) {
+	    while (parm != null && parm.getTag() == DwTag.FORMAL_PARAMETER_) {
+		if (parm.getAttrBoolean((DwAt.ARTIFICIAL_)) == false) {
 		    type = getType(parm);
 		    functionType.addParameter(type, parm.getName());
 		}
@@ -961,16 +961,16 @@ class DebugInfoEvaluator
 	    type = varDie;
     
 	switch (type.getTag()) {
-	case DwTagEncodings.DW_TAG_pointer_type_: {
+	case DwTag.POINTER_TYPE_: {
 	    return new PointerType(byteorder, getByteSize(type),
 				   getPointerTarget(type), "*");
 	}
-	case DwTagEncodings.DW_TAG_array_type_: {
+	case DwTag.ARRAY_TYPE_: {
 	    DwarfDie subrange = type.getChild();
 	    return getArrayType(type, subrange);
 	}
-	case DwTagEncodings.DW_TAG_union_type_:
-	case DwTagEncodings.DW_TAG_structure_type_: {
+	case DwTag.UNION_TYPE_:
+	case DwTag.STRUCTURE_TYPE_: {
 	    boolean noTypeDef = (varDie.getType() == null);
 	    String name = noTypeDef ? varDie.getName() 
 		: varDie.getType().getName();
@@ -979,12 +979,12 @@ class DebugInfoEvaluator
 		classType.setTypedef(true);
 	    return classType;
 	}
-	case DwTagEncodings.DW_TAG_enumeration_type_: {
+	case DwTag.ENUMERATION_TYPE_: {
 	    DwarfDie subrange = type.getChild();
 	    EnumType enumType = new EnumType(byteorder, getByteSize(type));
 	    while (subrange != null) {
 		enumType.addMember(subrange.getName(), 
-				   subrange.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
+				   subrange.getAttrConstant(DwAt.CONST_VALUE_));
 		subrange = subrange.getSibling();
 	    }
 	    return enumType;

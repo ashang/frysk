@@ -53,8 +53,8 @@ import frysk.value.UnavailablePiece;
 
 import lib.dwfl.DwarfDie;
 import lib.dwfl.DwarfOp;
-import lib.dwfl.DwOpEncodings;
-import lib.dwfl.DwAtEncodings;
+import lib.dwfl.DwOp;
+import lib.dwfl.DwAt;
 
 class LocationExpression {
     public final static int locationTypeRegDisp = 1,
@@ -84,7 +84,7 @@ class LocationExpression {
 	int nops = ops.size();
 
 	if (nops == 0)
-	    if (die.getAttrBoolean(DwAtEncodings.DW_AT_location_)) 
+	    if (die.getAttrBoolean(DwAt.LOCATION_)) 
 		throw new VariableOptimizedOutException();  
 	    else 
 		throw new ValueUavailableException();
@@ -94,136 +94,136 @@ class LocationExpression {
 	    long operand1 = ((DwarfOp) ops.get(i)).operand1;
 	    long operand2 = ((DwarfOp) ops.get(i)).operand2;
 	    switch (operator) {
-	    case DwOpEncodings.DW_OP_lit0_:
-	    case DwOpEncodings.DW_OP_lit1_:
-	    case DwOpEncodings.DW_OP_lit2_:
-	    case DwOpEncodings.DW_OP_lit3_:
-	    case DwOpEncodings.DW_OP_lit4_:
-	    case DwOpEncodings.DW_OP_lit5_:
-	    case DwOpEncodings.DW_OP_lit6_:
-	    case DwOpEncodings.DW_OP_lit7_:
-	    case DwOpEncodings.DW_OP_lit8_:
-	    case DwOpEncodings.DW_OP_lit9_:
-	    case DwOpEncodings.DW_OP_lit10_:
-	    case DwOpEncodings.DW_OP_lit11_:
-	    case DwOpEncodings.DW_OP_lit12_:
-	    case DwOpEncodings.DW_OP_lit13_:
-	    case DwOpEncodings.DW_OP_lit14_:
-	    case DwOpEncodings.DW_OP_lit15_:
-	    case DwOpEncodings.DW_OP_lit16_:
-	    case DwOpEncodings.DW_OP_lit17_:
-	    case DwOpEncodings.DW_OP_lit18_:
-	    case DwOpEncodings.DW_OP_lit19_:
-	    case DwOpEncodings.DW_OP_lit20_:
-	    case DwOpEncodings.DW_OP_lit21_:
-	    case DwOpEncodings.DW_OP_lit22_:
-	    case DwOpEncodings.DW_OP_lit23_:
-	    case DwOpEncodings.DW_OP_lit24_:
-	    case DwOpEncodings.DW_OP_lit25_:
-	    case DwOpEncodings.DW_OP_lit26_:
-	    case DwOpEncodings.DW_OP_lit27_:
-	    case DwOpEncodings.DW_OP_lit28_:
-	    case DwOpEncodings.DW_OP_lit29_:
-	    case DwOpEncodings.DW_OP_lit30_:
-	    case DwOpEncodings.DW_OP_lit31_:
-		stack.addFirst(new Long(operator - DwOpEncodings.DW_OP_lit0_));
+	    case DwOp.LIT0_:
+	    case DwOp.LIT1_:
+	    case DwOp.LIT2_:
+	    case DwOp.LIT3_:
+	    case DwOp.LIT4_:
+	    case DwOp.LIT5_:
+	    case DwOp.LIT6_:
+	    case DwOp.LIT7_:
+	    case DwOp.LIT8_:
+	    case DwOp.LIT9_:
+	    case DwOp.LIT10_:
+	    case DwOp.LIT11_:
+	    case DwOp.LIT12_:
+	    case DwOp.LIT13_:
+	    case DwOp.LIT14_:
+	    case DwOp.LIT15_:
+	    case DwOp.LIT16_:
+	    case DwOp.LIT17_:
+	    case DwOp.LIT18_:
+	    case DwOp.LIT19_:
+	    case DwOp.LIT20_:
+	    case DwOp.LIT21_:
+	    case DwOp.LIT22_:
+	    case DwOp.LIT23_:
+	    case DwOp.LIT24_:
+	    case DwOp.LIT25_:
+	    case DwOp.LIT26_:
+	    case DwOp.LIT27_:
+	    case DwOp.LIT28_:
+	    case DwOp.LIT29_:
+	    case DwOp.LIT30_:
+	    case DwOp.LIT31_:
+		stack.addFirst(new Long(operator - DwOp.LIT0_));
 		break;
 
 		// Register name Operators	
-	    case DwOpEncodings.DW_OP_reg0_:
-	    case DwOpEncodings.DW_OP_reg1_:
-	    case DwOpEncodings.DW_OP_reg2_:
-	    case DwOpEncodings.DW_OP_reg3_:
-	    case DwOpEncodings.DW_OP_reg4_:
-	    case DwOpEncodings.DW_OP_reg5_:
-	    case DwOpEncodings.DW_OP_reg6_:
-	    case DwOpEncodings.DW_OP_reg7_:
-	    case DwOpEncodings.DW_OP_reg8_:
-	    case DwOpEncodings.DW_OP_reg9_:
-	    case DwOpEncodings.DW_OP_reg10_:
-	    case DwOpEncodings.DW_OP_reg11_:
-	    case DwOpEncodings.DW_OP_reg12_:
-	    case DwOpEncodings.DW_OP_reg13_:
-	    case DwOpEncodings.DW_OP_reg14_:
-	    case DwOpEncodings.DW_OP_reg15_:
-	    case DwOpEncodings.DW_OP_reg16_:
-	    case DwOpEncodings.DW_OP_reg17_:
-	    case DwOpEncodings.DW_OP_reg18_:
-	    case DwOpEncodings.DW_OP_reg19_:
-	    case DwOpEncodings.DW_OP_reg20_:
-	    case DwOpEncodings.DW_OP_reg21_:
-	    case DwOpEncodings.DW_OP_reg22_:
-	    case DwOpEncodings.DW_OP_reg23_:
-	    case DwOpEncodings.DW_OP_reg24_:
-	    case DwOpEncodings.DW_OP_reg25_:
-	    case DwOpEncodings.DW_OP_reg26_:
-	    case DwOpEncodings.DW_OP_reg27_:
-	    case DwOpEncodings.DW_OP_reg28_:
-	    case DwOpEncodings.DW_OP_reg29_:
-	    case DwOpEncodings.DW_OP_reg30_:
-	    case DwOpEncodings.DW_OP_reg31_:
+	    case DwOp.REG0_:
+	    case DwOp.REG1_:
+	    case DwOp.REG2_:
+	    case DwOp.REG3_:
+	    case DwOp.REG4_:
+	    case DwOp.REG5_:
+	    case DwOp.REG6_:
+	    case DwOp.REG7_:
+	    case DwOp.REG8_:
+	    case DwOp.REG9_:
+	    case DwOp.REG10_:
+	    case DwOp.REG11_:
+	    case DwOp.REG12_:
+	    case DwOp.REG13_:
+	    case DwOp.REG14_:
+	    case DwOp.REG15_:
+	    case DwOp.REG16_:
+	    case DwOp.REG17_:
+	    case DwOp.REG18_:
+	    case DwOp.REG19_:
+	    case DwOp.REG20_:
+	    case DwOp.REG21_:
+	    case DwOp.REG22_:
+	    case DwOp.REG23_:
+	    case DwOp.REG24_:
+	    case DwOp.REG25_:
+	    case DwOp.REG26_:
+	    case DwOp.REG27_:
+	    case DwOp.REG28_:
+	    case DwOp.REG29_:
+	    case DwOp.REG30_:
+	    case DwOp.REG31_:
 		if (locationType == 0) 
 		    locationType = locationTypeReg;
 		Register register = DwarfRegisterMapFactory.getRegisterMap(isa)
-		.getRegister(operator - DwOpEncodings.DW_OP_reg0_);
+		.getRegister(operator - DwOp.REG0_);
 		long regval = frame.getRegisterValue(register).asLong();
 		stack.addFirst(new Long(regval));
 		break;
 
-	    case DwOpEncodings.DW_OP_breg0_:
-	    case DwOpEncodings.DW_OP_breg1_:
-	    case DwOpEncodings.DW_OP_breg2_:
-	    case DwOpEncodings.DW_OP_breg3_:
-	    case DwOpEncodings.DW_OP_breg4_:
-	    case DwOpEncodings.DW_OP_breg5_:
-	    case DwOpEncodings.DW_OP_breg6_:
-	    case DwOpEncodings.DW_OP_breg7_:
-	    case DwOpEncodings.DW_OP_breg8_:
-	    case DwOpEncodings.DW_OP_breg9_:
-	    case DwOpEncodings.DW_OP_breg10_:
-	    case DwOpEncodings.DW_OP_breg11_:
-	    case DwOpEncodings.DW_OP_breg12_:
-	    case DwOpEncodings.DW_OP_breg13_:
-	    case DwOpEncodings.DW_OP_breg14_:
-	    case DwOpEncodings.DW_OP_breg15_:
-	    case DwOpEncodings.DW_OP_breg16_:
-	    case DwOpEncodings.DW_OP_breg17_:
-	    case DwOpEncodings.DW_OP_breg18_:
-	    case DwOpEncodings.DW_OP_breg19_:
-	    case DwOpEncodings.DW_OP_breg20_:
-	    case DwOpEncodings.DW_OP_breg21_:
-	    case DwOpEncodings.DW_OP_breg22_:
-	    case DwOpEncodings.DW_OP_breg23_:
-	    case DwOpEncodings.DW_OP_breg24_:
-	    case DwOpEncodings.DW_OP_breg25_:
-	    case DwOpEncodings.DW_OP_breg26_:
-	    case DwOpEncodings.DW_OP_breg27_:
-	    case DwOpEncodings.DW_OP_breg28_:
-	    case DwOpEncodings.DW_OP_breg29_:
-	    case DwOpEncodings.DW_OP_breg30_:
-	    case DwOpEncodings.DW_OP_breg31_:
+	    case DwOp.BREG0_:
+	    case DwOp.BREG1_:
+	    case DwOp.BREG2_:
+	    case DwOp.BREG3_:
+	    case DwOp.BREG4_:
+	    case DwOp.BREG5_:
+	    case DwOp.BREG6_:
+	    case DwOp.BREG7_:
+	    case DwOp.BREG8_:
+	    case DwOp.BREG9_:
+	    case DwOp.BREG10_:
+	    case DwOp.BREG11_:
+	    case DwOp.BREG12_:
+	    case DwOp.BREG13_:
+	    case DwOp.BREG14_:
+	    case DwOp.BREG15_:
+	    case DwOp.BREG16_:
+	    case DwOp.BREG17_:
+	    case DwOp.BREG18_:
+	    case DwOp.BREG19_:
+	    case DwOp.BREG20_:
+	    case DwOp.BREG21_:
+	    case DwOp.BREG22_:
+	    case DwOp.BREG23_:
+	    case DwOp.BREG24_:
+	    case DwOp.BREG25_:
+	    case DwOp.BREG26_:
+	    case DwOp.BREG27_:
+	    case DwOp.BREG28_:
+	    case DwOp.BREG29_:
+	    case DwOp.BREG30_:
+	    case DwOp.BREG31_:
 		locationType = locationTypeRegDisp;
 		register = DwarfRegisterMapFactory.getRegisterMap(isa)
-		.getRegister(operator - DwOpEncodings.DW_OP_breg0_);
+		.getRegister(operator - DwOp.BREG0_);
 		regval = frame.getRegisterValue(register).asLong();
 		stack.addFirst(new Long(operand1 + regval));
 		break;
 
 
-	    case DwOpEncodings.DW_OP_regx_:
+	    case DwOp.REGX_:
 		register = DwarfRegisterMapFactory.getRegisterMap(isa)
 		.getRegister((int)operand1);
 		regval = frame.getRegisterValue(register).asLong();
 		stack.addFirst(new Long(regval));
 		break;
 
-	    case DwOpEncodings.DW_OP_addr_:
+	    case DwOp.ADDR_:
 		locationType = locationTypeAddress;
 		stack.addFirst(new Long(operand1));
 		break;
 
 		// DW_OP_fbreg calls recursively and pushes that value on the stack
-	    case DwOpEncodings.DW_OP_fbreg_:
+	    case DwOp.FBREG_:
 		locationType = locationTypeRegDisp;
 		long pc = frame.getAdjustedAddress();
 		LocationExpression frameBaseOps = new LocationExpression (frame, die, die.getFrameBase(pc));
@@ -231,38 +231,38 @@ class LocationExpression {
 		break;
 
 		// ??? unsigned not properly handled (use bignum?) See DwarfDie.java
-	    case DwOpEncodings.DW_OP_const1u_:
-	    case DwOpEncodings.DW_OP_const1s_:
-	    case DwOpEncodings.DW_OP_const2u_:
-	    case DwOpEncodings.DW_OP_const2s_:
-	    case DwOpEncodings.DW_OP_const4u_:
-	    case DwOpEncodings.DW_OP_const4s_:
-	    case DwOpEncodings.DW_OP_constu_:
-	    case DwOpEncodings.DW_OP_consts_:
+	    case DwOp.CONST1U_:
+	    case DwOp.CONST1S_:
+	    case DwOp.CONST2U_:
+	    case DwOp.CONST2S_:
+	    case DwOp.CONST4U_:
+	    case DwOp.CONST4S_:
+	    case DwOp.CONSTU_:
+	    case DwOp.CONSTS_:
 		stack.addFirst(new Long(operand1));
 		break;
 
 		// Stack Operations
-	    case DwOpEncodings.DW_OP_dup_:
+	    case DwOp.DUP_:
 		stack.addFirst(stack.getFirst());
 		break;
 
-	    case DwOpEncodings.DW_OP_over_:
+	    case DwOp.OVER_:
 		stack.addFirst(stack.get(1));
 		break;
 
-	    case DwOpEncodings.DW_OP_drop_:
+	    case DwOp.DROP_:
 		stack.removeFirst();
 		break;
 
-	    case DwOpEncodings.DW_OP_swap_:
+	    case DwOp.SWAP_:
 		Long first = (Long) stack.removeFirst();
 		Long second = (Long) stack.removeFirst();
 		stack.addFirst(first);
 		stack.addFirst(second);
 		break;	
 
-	    case DwOpEncodings.DW_OP_rot_:
+	    case DwOp.ROT_:
 		first = (Long) stack.removeFirst();
 		second = (Long) stack.removeFirst();
 		Long third = (Long) stack.removeFirst();
@@ -272,126 +272,126 @@ class LocationExpression {
 		break;			
 
 		// Arithmetic Operations
-	    case DwOpEncodings.DW_OP_plus_:
+	    case DwOp.PLUS_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 + operand2));
 		break;
 
-	    case DwOpEncodings.DW_OP_plus_uconst_:
+	    case DwOp.PLUS_UCONST_:
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 + operand2));
 		break;
 
-	    case DwOpEncodings.DW_OP_minus_:
+	    case DwOp.MINUS_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 + operand2)); // - ?
 		break;
 
-	    case DwOpEncodings.DW_OP_mul_:
+	    case DwOp.MUL_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 * operand2));
 		break;
 
-	    case DwOpEncodings.DW_OP_div_:
+	    case DwOp.DIV_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		// Should there be a check here for operand1!=0 ?
 		stack.addFirst(new Long(operand2 / operand1));
 		break;
 
-	    case DwOpEncodings.DW_OP_mod_:
+	    case DwOp.MOD_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		// Should there be a check here for operand1!=0 ?
 		stack.addFirst(new Long(operand2 % operand1));
 		break;
 
-	    case DwOpEncodings.DW_OP_abs_:
+	    case DwOp.ABS_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(Math.abs(operand1)));
 		break;
 
-	    case DwOpEncodings.DW_OP_and_:
+	    case DwOp.AND_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 & operand2));
 		break;
 
-	    case DwOpEncodings.DW_OP_or_:
+	    case DwOp.OR_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 | operand2));
 		break;
 
-	    case DwOpEncodings.DW_OP_shl_:
+	    case DwOp.SHL_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand2 << operand1));
 		break;
 
-	    case DwOpEncodings.DW_OP_shr_:
+	    case DwOp.SHR_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand2 >>> operand1));
 		break;
 
-	    case DwOpEncodings.DW_OP_shra_:
+	    case DwOp.SHRA_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand2 >> operand1));
 		break;
 
-	    case DwOpEncodings.DW_OP_xor_:
+	    case DwOp.XOR_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 ^ operand2));
 		break;
 
-	    case DwOpEncodings.DW_OP_neg_:
+	    case DwOp.NEG_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(0-operand1));
 		break;
 
-	    case DwOpEncodings.DW_OP_not_:
+	    case DwOp.NOT_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(~operand1));
 		break;
 
 		// Control flow operations
-	    case DwOpEncodings.DW_OP_le_:
+	    case DwOp.LE_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 <= operand1)? 1:0));
 		break;	
 
-	    case DwOpEncodings.DW_OP_ge_:
+	    case DwOp.GE_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 >= operand1)? 1:0));
 		break;	
 
-	    case DwOpEncodings.DW_OP_eq_:
+	    case DwOp.EQ_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 == operand1)? 1:0));
 		break;	
 
-	    case DwOpEncodings.DW_OP_lt_:
+	    case DwOp.LT_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 < operand1)? 1:0));
 		break;	
 
-	    case DwOpEncodings.DW_OP_gt_:
+	    case DwOp.GT_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 > operand1)? 1:0));
 		break;	
 
-	    case DwOpEncodings.DW_OP_ne_:
+	    case DwOp.NE_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 != operand1)? 1:0));
@@ -420,7 +420,7 @@ class LocationExpression {
 	ArrayList pieces = new ArrayList(); 
 
 	if (nops == 0)
-	    if (die.getAttrBoolean(DwAtEncodings.DW_AT_location_)) 
+	    if (die.getAttrBoolean(DwAt.LOCATION_)) 
 		throw new VariableOptimizedOutException();  
 	    else 
 		throw new ValueUavailableException();
@@ -434,122 +434,122 @@ class LocationExpression {
 	    switch (operator) {
 
 	    // Literal Encodings
-	    case DwOpEncodings.DW_OP_lit0_:
-	    case DwOpEncodings.DW_OP_lit1_:
-	    case DwOpEncodings.DW_OP_lit2_:
-	    case DwOpEncodings.DW_OP_lit3_:
-	    case DwOpEncodings.DW_OP_lit4_:
-	    case DwOpEncodings.DW_OP_lit5_:
-	    case DwOpEncodings.DW_OP_lit6_:
-	    case DwOpEncodings.DW_OP_lit7_:
-	    case DwOpEncodings.DW_OP_lit8_:
-	    case DwOpEncodings.DW_OP_lit9_:
-	    case DwOpEncodings.DW_OP_lit10_:
-	    case DwOpEncodings.DW_OP_lit11_:
-	    case DwOpEncodings.DW_OP_lit12_:
-	    case DwOpEncodings.DW_OP_lit13_:
-	    case DwOpEncodings.DW_OP_lit14_:
-	    case DwOpEncodings.DW_OP_lit15_:
-	    case DwOpEncodings.DW_OP_lit16_:
-	    case DwOpEncodings.DW_OP_lit17_:
-	    case DwOpEncodings.DW_OP_lit18_:
-	    case DwOpEncodings.DW_OP_lit19_:
-	    case DwOpEncodings.DW_OP_lit20_:
-	    case DwOpEncodings.DW_OP_lit21_:
-	    case DwOpEncodings.DW_OP_lit22_:
-	    case DwOpEncodings.DW_OP_lit23_:
-	    case DwOpEncodings.DW_OP_lit24_:
-	    case DwOpEncodings.DW_OP_lit25_:
-	    case DwOpEncodings.DW_OP_lit26_:
-	    case DwOpEncodings.DW_OP_lit27_:
-	    case DwOpEncodings.DW_OP_lit28_:
-	    case DwOpEncodings.DW_OP_lit29_:
-	    case DwOpEncodings.DW_OP_lit30_:
-	    case DwOpEncodings.DW_OP_lit31_:
-		stack.addFirst(new Long(operator - DwOpEncodings.DW_OP_lit0_));
+	    case DwOp.LIT0_:
+	    case DwOp.LIT1_:
+	    case DwOp.LIT2_:
+	    case DwOp.LIT3_:
+	    case DwOp.LIT4_:
+	    case DwOp.LIT5_:
+	    case DwOp.LIT6_:
+	    case DwOp.LIT7_:
+	    case DwOp.LIT8_:
+	    case DwOp.LIT9_:
+	    case DwOp.LIT10_:
+	    case DwOp.LIT11_:
+	    case DwOp.LIT12_:
+	    case DwOp.LIT13_:
+	    case DwOp.LIT14_:
+	    case DwOp.LIT15_:
+	    case DwOp.LIT16_:
+	    case DwOp.LIT17_:
+	    case DwOp.LIT18_:
+	    case DwOp.LIT19_:
+	    case DwOp.LIT20_:
+	    case DwOp.LIT21_:
+	    case DwOp.LIT22_:
+	    case DwOp.LIT23_:
+	    case DwOp.LIT24_:
+	    case DwOp.LIT25_:
+	    case DwOp.LIT26_:
+	    case DwOp.LIT27_:
+	    case DwOp.LIT28_:
+	    case DwOp.LIT29_:
+	    case DwOp.LIT30_:
+	    case DwOp.LIT31_:
+		stack.addFirst(new Long(operator - DwOp.LIT0_));
 		break;
 
 		// Register name Operators	
-	    case DwOpEncodings.DW_OP_reg0_:
-	    case DwOpEncodings.DW_OP_reg1_:
-	    case DwOpEncodings.DW_OP_reg2_:
-	    case DwOpEncodings.DW_OP_reg3_:
-	    case DwOpEncodings.DW_OP_reg4_:
-	    case DwOpEncodings.DW_OP_reg5_:
-	    case DwOpEncodings.DW_OP_reg6_:
-	    case DwOpEncodings.DW_OP_reg7_:
-	    case DwOpEncodings.DW_OP_reg8_:
-	    case DwOpEncodings.DW_OP_reg9_:
-	    case DwOpEncodings.DW_OP_reg10_:
-	    case DwOpEncodings.DW_OP_reg11_:
-	    case DwOpEncodings.DW_OP_reg12_:
-	    case DwOpEncodings.DW_OP_reg13_:
-	    case DwOpEncodings.DW_OP_reg14_:
-	    case DwOpEncodings.DW_OP_reg15_:
-	    case DwOpEncodings.DW_OP_reg16_:
-	    case DwOpEncodings.DW_OP_reg17_:
-	    case DwOpEncodings.DW_OP_reg18_:
-	    case DwOpEncodings.DW_OP_reg19_:
-	    case DwOpEncodings.DW_OP_reg20_:
-	    case DwOpEncodings.DW_OP_reg21_:
-	    case DwOpEncodings.DW_OP_reg22_:
-	    case DwOpEncodings.DW_OP_reg23_:
-	    case DwOpEncodings.DW_OP_reg24_:
-	    case DwOpEncodings.DW_OP_reg25_:
-	    case DwOpEncodings.DW_OP_reg26_:
-	    case DwOpEncodings.DW_OP_reg27_:
-	    case DwOpEncodings.DW_OP_reg28_:
-	    case DwOpEncodings.DW_OP_reg29_:
-	    case DwOpEncodings.DW_OP_reg30_:
-	    case DwOpEncodings.DW_OP_reg31_:
+	    case DwOp.REG0_:
+	    case DwOp.REG1_:
+	    case DwOp.REG2_:
+	    case DwOp.REG3_:
+	    case DwOp.REG4_:
+	    case DwOp.REG5_:
+	    case DwOp.REG6_:
+	    case DwOp.REG7_:
+	    case DwOp.REG8_:
+	    case DwOp.REG9_:
+	    case DwOp.REG10_:
+	    case DwOp.REG11_:
+	    case DwOp.REG12_:
+	    case DwOp.REG13_:
+	    case DwOp.REG14_:
+	    case DwOp.REG15_:
+	    case DwOp.REG16_:
+	    case DwOp.REG17_:
+	    case DwOp.REG18_:
+	    case DwOp.REG19_:
+	    case DwOp.REG20_:
+	    case DwOp.REG21_:
+	    case DwOp.REG22_:
+	    case DwOp.REG23_:
+	    case DwOp.REG24_:
+	    case DwOp.REG25_:
+	    case DwOp.REG26_:
+	    case DwOp.REG27_:
+	    case DwOp.REG28_:
+	    case DwOp.REG29_:
+	    case DwOp.REG30_:
+	    case DwOp.REG31_:
 		if (locationType == 0) 
 		    locationType = locationTypeReg;
 		Register register = DwarfRegisterMapFactory.getRegisterMap(isa)
-		.getRegister(operator - DwOpEncodings.DW_OP_reg0_);
+		.getRegister(operator - DwOp.REG0_);
 		// Push the register onto the dwfl stack
 		stack.addFirst(register);
 		break;
 
-	    case DwOpEncodings.DW_OP_breg0_:
-	    case DwOpEncodings.DW_OP_breg1_:
-	    case DwOpEncodings.DW_OP_breg2_:
-	    case DwOpEncodings.DW_OP_breg3_:
-	    case DwOpEncodings.DW_OP_breg4_:
-	    case DwOpEncodings.DW_OP_breg5_:
-	    case DwOpEncodings.DW_OP_breg6_:
-	    case DwOpEncodings.DW_OP_breg7_:
-	    case DwOpEncodings.DW_OP_breg8_:
-	    case DwOpEncodings.DW_OP_breg9_:
-	    case DwOpEncodings.DW_OP_breg10_:
-	    case DwOpEncodings.DW_OP_breg11_:
-	    case DwOpEncodings.DW_OP_breg12_:
-	    case DwOpEncodings.DW_OP_breg13_:
-	    case DwOpEncodings.DW_OP_breg14_:
-	    case DwOpEncodings.DW_OP_breg15_:
-	    case DwOpEncodings.DW_OP_breg16_:
-	    case DwOpEncodings.DW_OP_breg17_:
-	    case DwOpEncodings.DW_OP_breg18_:
-	    case DwOpEncodings.DW_OP_breg19_:
-	    case DwOpEncodings.DW_OP_breg20_:
-	    case DwOpEncodings.DW_OP_breg21_:
-	    case DwOpEncodings.DW_OP_breg22_:
-	    case DwOpEncodings.DW_OP_breg23_:
-	    case DwOpEncodings.DW_OP_breg24_:
-	    case DwOpEncodings.DW_OP_breg25_:
-	    case DwOpEncodings.DW_OP_breg26_:
-	    case DwOpEncodings.DW_OP_breg27_:
-	    case DwOpEncodings.DW_OP_breg28_:
-	    case DwOpEncodings.DW_OP_breg29_:
-	    case DwOpEncodings.DW_OP_breg30_:
-	    case DwOpEncodings.DW_OP_breg31_:
+	    case DwOp.BREG0_:
+	    case DwOp.BREG1_:
+	    case DwOp.BREG2_:
+	    case DwOp.BREG3_:
+	    case DwOp.BREG4_:
+	    case DwOp.BREG5_:
+	    case DwOp.BREG6_:
+	    case DwOp.BREG7_:
+	    case DwOp.BREG8_:
+	    case DwOp.BREG9_:
+	    case DwOp.BREG10_:
+	    case DwOp.BREG11_:
+	    case DwOp.BREG12_:
+	    case DwOp.BREG13_:
+	    case DwOp.BREG14_:
+	    case DwOp.BREG15_:
+	    case DwOp.BREG16_:
+	    case DwOp.BREG17_:
+	    case DwOp.BREG18_:
+	    case DwOp.BREG19_:
+	    case DwOp.BREG20_:
+	    case DwOp.BREG21_:
+	    case DwOp.BREG22_:
+	    case DwOp.BREG23_:
+	    case DwOp.BREG24_:
+	    case DwOp.BREG25_:
+	    case DwOp.BREG26_:
+	    case DwOp.BREG27_:
+	    case DwOp.BREG28_:
+	    case DwOp.BREG29_:
+	    case DwOp.BREG30_:
+	    case DwOp.BREG31_:
 		locationType = locationTypeRegDisp;
 		register = DwarfRegisterMapFactory.getRegisterMap(isa)
-		.getRegister(operator - DwOpEncodings.DW_OP_breg0_);
+		.getRegister(operator - DwOp.BREG0_);
 		long regval = frame.getRegisterValue(register).asLong();
 		stack.addFirst(new Long(operand1 + regval));
 		break;
 
-	    case DwOpEncodings.DW_OP_regx_:
+	    case DwOp.REGX_:
 		if (locationType == 0) 
 		    locationType = locationTypeReg;
 		register = DwarfRegisterMapFactory.getRegisterMap(isa)
@@ -557,7 +557,7 @@ class LocationExpression {
 		stack.addFirst(register);
 		break;
 
-	    case DwOpEncodings.DW_OP_bregx_:
+	    case DwOp.BREGX_:
 		locationType = locationTypeRegDisp;
 		register = DwarfRegisterMapFactory.getRegisterMap(isa)
 		.getRegister((int)operand1);
@@ -565,13 +565,13 @@ class LocationExpression {
 		stack.addFirst(new Long(operand2 + regval));
 		break;
 
-	    case DwOpEncodings.DW_OP_addr_:
+	    case DwOp.ADDR_:
 		locationType = locationTypeAddress;
 		stack.addFirst(new Long(operand1));
 		break;
 
 		// DW_OP_fbreg calls recursively and pushes that value on the stack
-	    case DwOpEncodings.DW_OP_fbreg_:
+	    case DwOp.FBREG_:
 		locationType = locationTypeRegDisp;
 		long pc = frame.getAdjustedAddress();
 		LocationExpression frameBaseOps = new LocationExpression (frame, die, die.getFrameBase(pc));
@@ -579,34 +579,34 @@ class LocationExpression {
 		break;
 
 		// ??? unsigned not properly handled (use bignum?) See DwarfDie.java
-	    case DwOpEncodings.DW_OP_const1u_:
-	    case DwOpEncodings.DW_OP_const1s_:
-	    case DwOpEncodings.DW_OP_const2u_:
-	    case DwOpEncodings.DW_OP_const2s_:
-	    case DwOpEncodings.DW_OP_const4u_:
-	    case DwOpEncodings.DW_OP_const4s_:
-	    case DwOpEncodings.DW_OP_constu_:
-	    case DwOpEncodings.DW_OP_consts_:
+	    case DwOp.CONST1U_:
+	    case DwOp.CONST1S_:
+	    case DwOp.CONST2U_:
+	    case DwOp.CONST2S_:
+	    case DwOp.CONST4U_:
+	    case DwOp.CONST4S_:
+	    case DwOp.CONSTU_:
+	    case DwOp.CONSTS_:
 		stack.addFirst(new Long(operand1));
 		break;
 
 		// Stack Operations
-	    case DwOpEncodings.DW_OP_dup_:
+	    case DwOp.DUP_:
 		stack.addFirst(stack.getFirst());
 		break;
 
-	    case DwOpEncodings.DW_OP_drop_:
+	    case DwOp.DROP_:
 		stack.removeFirst();
 		break;
 
-	    case DwOpEncodings.DW_OP_swap_:
+	    case DwOp.SWAP_:
 		Long first = (Long) stack.removeFirst();
 		Long second = (Long) stack.removeFirst();
 		stack.addFirst(first);
 		stack.addFirst(second);
 		break;	
 
-	    case DwOpEncodings.DW_OP_rot_:
+	    case DwOp.ROT_:
 		first = (Long) stack.removeFirst();
 		second = (Long) stack.removeFirst();
 		Long third = (Long) stack.removeFirst();
@@ -615,149 +615,149 @@ class LocationExpression {
 		stack.addFirst(second);
 		break;		
 		
-	    case DwOpEncodings.DW_OP_over_:
+	    case DwOp.OVER_:
 		stack.addFirst(stack.get(1));
 		break;
 
-	    case DwOpEncodings.DW_OP_pick_:
+	    case DwOp.PICK_:
 		stack.addFirst (stack.get((int)(operand1))); 
 		break;
 		
 		// Arithmetic Operations
-	    case DwOpEncodings.DW_OP_plus_:
+	    case DwOp.PLUS_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 + operand2));
 		break;
 
-	    case DwOpEncodings.DW_OP_plus_uconst_:
+	    case DwOp.PLUS_UCONST_:
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 + operand2));
 		break;
 
-	    case DwOpEncodings.DW_OP_minus_:
+	    case DwOp.MINUS_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand2 - operand1)); 
 		break;
 
-	    case DwOpEncodings.DW_OP_mul_:
+	    case DwOp.MUL_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 * operand2));
 		break;
 
-	    case DwOpEncodings.DW_OP_div_:
+	    case DwOp.DIV_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		// Should there be a check here for operand1!=0 ?
 		stack.addFirst(new Long(operand2 / operand1));
 		break;
 
-	    case DwOpEncodings.DW_OP_mod_:
+	    case DwOp.MOD_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		// Should there be a check here for operand1!=0 ?
 		stack.addFirst(new Long(operand2 % operand1));
 		break;
 
-	    case DwOpEncodings.DW_OP_abs_:
+	    case DwOp.ABS_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(Math.abs(operand1)));
 		break;
 
-	    case DwOpEncodings.DW_OP_and_:
+	    case DwOp.AND_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 & operand2));
 		break;
 
-	    case DwOpEncodings.DW_OP_or_:
+	    case DwOp.OR_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 | operand2));
 		break;
 
-	    case DwOpEncodings.DW_OP_shl_:
+	    case DwOp.SHL_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand2 << operand1));
 		break;
 
-	    case DwOpEncodings.DW_OP_shr_:
+	    case DwOp.SHR_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand2 >>> operand1));
 		break;
 
-	    case DwOpEncodings.DW_OP_shra_:
+	    case DwOp.SHRA_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand2 >> operand1));
 		break;
 
-	    case DwOpEncodings.DW_OP_xor_:
+	    case DwOp.XOR_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(operand1 ^ operand2));
 		break;
 
-	    case DwOpEncodings.DW_OP_neg_:
+	    case DwOp.NEG_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(0-operand1));
 		break;
 
-	    case DwOpEncodings.DW_OP_not_:
+	    case DwOp.NOT_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long(~operand1));
 		break;
 
 		// Control flow operations
-	    case DwOpEncodings.DW_OP_le_:
+	    case DwOp.LE_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 <= operand1)? 1:0));
 		break;	
 
-	    case DwOpEncodings.DW_OP_ge_:
+	    case DwOp.GE_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 >= operand1)? 1:0));
 		break;	
 
-	    case DwOpEncodings.DW_OP_eq_:
+	    case DwOp.EQ_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 == operand1)? 1:0));
 		break;	
 
-	    case DwOpEncodings.DW_OP_lt_:
+	    case DwOp.LT_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 < operand1)? 1:0));
 		break;	
 
-	    case DwOpEncodings.DW_OP_gt_:
+	    case DwOp.GT_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 > operand1)? 1:0));
 		break;	
 
-	    case DwOpEncodings.DW_OP_ne_:
+	    case DwOp.NE_:
 		operand1 = ((Long)stack.removeFirst()).longValue();
 		operand2 = ((Long)stack.removeFirst()).longValue();
 		stack.addFirst(new Long((operand2 != operand1)? 1:0));
 		break;	
 
 		//Special Operations
-	    case DwOpEncodings.DW_OP_nop_:
+	    case DwOp.NOP_:
 		// Do nothing 
 		break;
 
 		// Composition Operators
-	    case DwOpEncodings.DW_OP_piece_:
+	    case DwOp.PIECE_:
 		// Case where some bytes of value is unavailable 
-		if (i==0 || ((DwarfOp)(ops.get(i-1))).operator==DwOpEncodings.DW_OP_piece_)
+		if (i==0 || ((DwarfOp)(ops.get(i-1))).operator==DwOp.PIECE_)
 		{
 		    pieces.add(new UnavailablePiece(operand1));
 		    break;
@@ -811,11 +811,11 @@ class LocationExpression {
 
 	if (ops.size() == 1) {
 	    int operator = ((DwarfOp) ops.get(0)).operator;
-	    if (operator >= DwOpEncodings.DW_OP_reg0_
-		    || operator <=  DwOpEncodings.DW_OP_reg31_) {
+	    if (operator >= DwOp.REG0_
+		    || operator <=  DwOp.REG31_) {
 		locationType = locationTypeReg;
 		return DwarfRegisterMapFactory.getRegisterMap(isa)
-		.getRegister(operator - DwOpEncodings.DW_OP_reg0_);
+		.getRegister(operator - DwOp.REG0_);
 	    }
 	}
 	return null;

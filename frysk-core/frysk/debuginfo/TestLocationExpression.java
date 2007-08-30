@@ -54,7 +54,7 @@ import frysk.stack.IA32Registers;
 import frysk.stack.X8664Registers;
 
 import lib.dwfl.ElfEMachine;
-import lib.dwfl.DwOpEncodings;
+import lib.dwfl.DwOp;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.DwarfOp;
 
@@ -74,16 +74,16 @@ public class TestLocationExpression
 	switch (getArch())
 	{
 	    case ElfEMachine.EM_386:
-		ops.add( new DwarfOp(DwOpEncodings.DW_OP_breg3_, 2, 0, 0) ); // Value in register ebx plus 2
+		ops.add( new DwarfOp(DwOp.BREG3_, 2, 0, 0) ); // Value in register ebx plus 2
 		break;
 	    case ElfEMachine.EM_X86_64:
-		ops.add( new DwarfOp(DwOpEncodings.DW_OP_breg5_, 2, 0, 0) ); // Value in register rdi plus 2
+		ops.add( new DwarfOp(DwOp.BREG5_, 2, 0, 0) ); // Value in register rdi plus 2
 		break;
 	    default:	
 		if (unresolvedOnPPC(4964))
 		    return;
 	}    
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_dup_, 0, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.DUP_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new MemoryPiece((long)101, 12));
@@ -102,10 +102,10 @@ public class TestLocationExpression
 	switch (getArch())
 	{
 	    case ElfEMachine.EM_386:
-		ops.add( new DwarfOp(DwOpEncodings.DW_OP_bregx_, 3, 2, 0) ); // Value in register ebx plus 2
+		ops.add( new DwarfOp(DwOp.BREGX_, 3, 2, 0) ); // Value in register ebx plus 2
 		break;
 	    case ElfEMachine.EM_X86_64:
-		ops.add( new DwarfOp(DwOpEncodings.DW_OP_bregx_, 5, 2, 0) ); // Value in register rdi plus 2
+		ops.add( new DwarfOp(DwOp.BREGX_, 5, 2, 0) ); // Value in register rdi plus 2
 		break;
 	    default:	
 		if (unresolvedOnPPC(4964))
@@ -126,11 +126,11 @@ public class TestLocationExpression
 	List ops = new ArrayList();
 
 	// First 6 bytes unavailable, next 4 bytes in Reg 1 and next 2 byes in memory address 0x1234
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_piece_, 6, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_reg1_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_piece_, 4, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_addr_, 0x1234, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_piece_, 2, 0, 0) );
+	ops.add( new DwarfOp(DwOp.PIECE_, 6, 0, 0) );
+	ops.add( new DwarfOp(DwOp.REG1_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.PIECE_, 4, 0, 0) );
+	ops.add( new DwarfOp(DwOp.ADDR_, 0x1234, 0, 0) );
+	ops.add( new DwarfOp(DwOp.PIECE_, 2, 0, 0) );
 	
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new UnavailablePiece (6));
@@ -159,11 +159,11 @@ public class TestLocationExpression
     public void testPickMul()
     {
 	List ops = new ArrayList();
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit10_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit7_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit6_, 0, 0, 0) ) ;
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_pick_, 2, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_mul_, 0, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.LIT10_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.LIT7_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.LIT6_, 0, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.PICK_, 2, 0, 0) );
+	ops.add( new DwarfOp(DwOp.MUL_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new MemoryPiece((long)60, 12));
@@ -178,10 +178,10 @@ public class TestLocationExpression
     {
 	// Create dwarf operation list
 	List ops = new ArrayList();
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit10_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit7_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_over_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_plus_, 0, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.LIT10_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.LIT7_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.OVER_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.PLUS_, 0, 0, 0) ) ;
 	
 	// Created expected result list
 	List expectedLoc = new ArrayList();
@@ -193,9 +193,9 @@ public class TestLocationExpression
     public void testDiv()
     {
 	List ops = new ArrayList();
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit30_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit10_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_div_, 0, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.LIT30_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.LIT10_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.DIV_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new MemoryPiece((long)3, 12));
@@ -206,9 +206,9 @@ public class TestLocationExpression
     public void testMod()
     {
 	List ops = new ArrayList();
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit31_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit10_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_mod_, 0, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.LIT31_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.LIT10_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.MOD_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new MemoryPiece((long)1, 12));
@@ -219,9 +219,9 @@ public class TestLocationExpression
     public void testDrop()
     {
 	List ops = new ArrayList();
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit30_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit1_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_drop_, 0, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.LIT30_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.LIT1_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.DROP_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new MemoryPiece((long)30, 12));
@@ -232,9 +232,9 @@ public class TestLocationExpression
     public void testSwap()
     {
 	List ops = new ArrayList();
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit12_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit15_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_swap_, 0, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.LIT12_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.LIT15_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.SWAP_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new MemoryPiece((long)12, 12));
@@ -245,10 +245,10 @@ public class TestLocationExpression
     public void testRot()
     {
 	List ops = new ArrayList();
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit31_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit7_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit5_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_rot_, 0, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.LIT31_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.LIT7_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.LIT5_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.ROT_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new MemoryPiece((long)7, 12));
@@ -259,8 +259,8 @@ public class TestLocationExpression
     public void testAbs()
     {
 	List ops = new ArrayList();
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_const1s_, -5, 0, 0) ) ;
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_abs_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.CONST1S_, -5, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.ABS_, 0, 0, 0) );
 	
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new MemoryPiece((long)5, 12));
@@ -271,8 +271,8 @@ public class TestLocationExpression
     public void testNeg()
     {
 	List ops = new ArrayList();
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_const1s_, 5, 0, 0) ) ;
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_neg_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.CONST1S_, 5, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.NEG_, 0, 0, 0) );
 	
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new MemoryPiece((long)-5, 12));
@@ -283,8 +283,8 @@ public class TestLocationExpression
     public void testNot()
     {
 	List ops = new ArrayList();
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_const1s_, 5, 0, 0) ) ;
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_not_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.CONST1S_, 5, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.NOT_, 0, 0, 0) );
 	
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new MemoryPiece((long)-6, 12));
@@ -295,9 +295,9 @@ public class TestLocationExpression
     public void testAnd()
     {
 	List ops = new ArrayList();
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit3_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit4_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_and_, 0, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.LIT3_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.LIT4_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.AND_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new MemoryPiece((long)0, 12));
@@ -309,9 +309,9 @@ public class TestLocationExpression
     {
 	List ops = new ArrayList();
 
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit3_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit4_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_or_, 0, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.LIT3_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.LIT4_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.OR_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new MemoryPiece((long)7, 12));
@@ -323,9 +323,9 @@ public class TestLocationExpression
     {
 	List ops = new ArrayList();
 
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit9_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit3_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_shl_, 0, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.LIT9_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.LIT3_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.SHL_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new MemoryPiece((long)72, 12));
@@ -337,9 +337,9 @@ public class TestLocationExpression
     {
 	List ops = new ArrayList();
 
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_const1s_, 12, 0, 0) ) ;
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit2_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_shr_, 0, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.CONST1S_, 12, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.LIT2_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.SHR_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new MemoryPiece((long)3, 12));
@@ -351,9 +351,9 @@ public class TestLocationExpression
     {
 	List ops = new ArrayList();
 
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_const1s_, -28, 0, 0) ) ;
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit2_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_shra_, 0, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.CONST1S_, -28, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.LIT2_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.SHRA_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new MemoryPiece((long)-7, 12));
@@ -365,9 +365,9 @@ public class TestLocationExpression
     {
 	List ops = new ArrayList();
 
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit9_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit14_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_xor_, 0, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.LIT9_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.LIT14_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.XOR_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new MemoryPiece((long)7, 12));
@@ -379,9 +379,9 @@ public class TestLocationExpression
     {
 	List ops = new ArrayList();
 
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit9_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit14_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_le_, 0, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.LIT9_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.LIT14_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.LE_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new MemoryPiece((long)1, 12));
@@ -393,9 +393,9 @@ public class TestLocationExpression
     {
 	List ops = new ArrayList();
 
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit9_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_lit14_, 0, 0, 0) );
-	ops.add( new DwarfOp(DwOpEncodings.DW_OP_ge_, 0, 0, 0) ) ;
+	ops.add( new DwarfOp(DwOp.LIT9_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.LIT14_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.GE_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new MemoryPiece((long)0, 12));
