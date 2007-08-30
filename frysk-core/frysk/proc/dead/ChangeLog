@@ -1,3 +1,10 @@
+2007-08-30  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinkmapBuilder.java (getString): Rewrite. Simplify.
+	
+	* LinkmapBuilder.java: Reformat file.
+	
+
 2007-08-28  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxProc.java (constructEnhancedMapMetadata): Pass in base address

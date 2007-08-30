@@ -45,85 +45,75 @@ import inua.eio.ByteBuffer;
  * Build a list of maps from the contents of the file linkmap
  * table at address specified
  */
-public abstract class LinkmapBuilder
-{
+public abstract class LinkmapBuilder {
 
-  /**
-   * Create a LinkmapBuilder; can only extend.
-   */
-  protected LinkmapBuilder ()
-  {
-  }
-  
-  /**
-   * Scan the maps file found in <tt>/proc/PID/auxv</tt> building up
-   * a list of memory maps.  Return true if the scan was successful.
-   */
-  public final void construct (long addr, ByteBuffer buffer)
-  {
-    
-    long linkStep = 0xff;
-    long l_ld = 0;
-    long l_addr = 0;
-    long stringAddr = 0;
-    String name = "";
-    if (buffer != null)
-      {
-	buffer.position(addr);
-	
-	//buffer.position(addr);
-	while (linkStep != 0)
-	  {
-	    l_addr = buffer.getUWord();
-	    stringAddr = buffer.getUWord();
-	    l_ld = buffer.getUWord();
-	    linkStep = buffer.getUWord();
-	    name = getString(stringAddr,buffer);
+    /**
+     * Create a LinkmapBuilder; can only extend.
+     */
+    protected LinkmapBuilder() {
+    }
 
-	    buildMap(l_addr,l_ld,stringAddr,name);
-	    if (linkStep !=0)
-	      buffer.position(linkStep);
-	  }
-      }
-  }
+    /**
+     * Scan the maps file found in <tt>/proc/PID/auxv</tt> building up
+     * a list of memory maps.  Return true if the scan was successful.
+     */
+    public final void construct(long addr, ByteBuffer buffer) {
 
- 
-  /**
-   * Build an address map covering [addressLow,addressHigh) with
-   * permissions {permR, permW, permX, permP }, device devMajor
-   * devMinor, inode, and the pathname's offset/length within the
-   * buf.
-   *
-   * !shared implies private, they are mutually exclusive.
-   */
-  
-  abstract public void buildMap (long l_addr, long l_ld, long saddr, String name);
+	long linkStep = 0xff;	
+	long l_ld = 0;
+	long l_addr = 0;
+	long stringAddr = 0;
+	String name = "";
+	if (buffer != null) {
+	    buffer.position(addr);
 
-  private String getString(long startAddr, ByteBuffer buffer)
-  {
-      StringBuffer stringBuffer = new StringBuffer();
-      byte in = -1;      
-      long currentAddr = startAddr;
-      
-      while (in != 0)
-      {
-	  // Read until end of buffer or null
-	  try
-	  {
-	      in = buffer.getByte(currentAddr);
-	  }
-	  catch (RuntimeException e)
-	  {
-	      break;
-	  }
+	    //buffer.position(addr);
+	    while (linkStep != 0) {
+		l_addr = buffer.getUWord();
+		stringAddr = buffer.getUWord();
+		l_ld = buffer.getUWord();
+		linkStep = buffer.getUWord();
+		name = getString(stringAddr, buffer);
 
-	  if (in == 0)
-	      break;
+		buildMap(l_addr, l_ld, stringAddr, name);
+		if (linkStep != 0)
+		    buffer.position(linkStep);
+	    }
+	}
+    }
 
-	  stringBuffer.append((char)in);
-	  currentAddr++;
-      }
+    /**
+     * Build an address map covering [addressLow,addressHigh) with
+     * permissions {permR, permW, permX, permP }, device devMajor
+     * devMinor, inode, and the pathname's offset/length within the
+     * buf.
+     *
+     * !shared implies private, they are mutually exclusive.
+     */
 
-      return stringBuffer.toString();
-  }
+    abstract public void buildMap(long l_addr, long l_ld, long saddr,
+	    String name);
+
+    private String getString(long startAddr, ByteBuffer buffer) {
+	StringBuffer stringBuffer = new StringBuffer();
+	byte in = -1;
+	long currentAddr = startAddr;
+
+	while (in != 0) {
+	    // Read until end of buffer or null
+	    try {
+		in = buffer.getByte(currentAddr);
+	    } catch (RuntimeException e) {
+		break;
+	    }
+
+	    if (in == 0)
+		break;
+
+	    stringBuffer.append((char) in);
+	    currentAddr++;
+	}
+
+	return stringBuffer.toString();
+    }
 }
