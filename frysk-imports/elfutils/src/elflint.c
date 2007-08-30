@@ -1,5 +1,5 @@
 /* Pedantic checking of ELF files compliance with gABI/psABI spec.
-   Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006 Red Hat, Inc.
+   Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007 Red Hat, Inc.
    This file is part of Red Hat elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 2001.
 
@@ -134,7 +134,7 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
 
   /* Initialize the message catalog.  */
-  textdomain (PACKAGE);
+  textdomain (PACKAGE_TARNAME);
 
   /* Parse and process arguments.  */
   int remaining;
@@ -231,12 +231,12 @@ parse_opt (int key, char *arg __attribute__ ((unused)),
 static void
 print_version (FILE *stream, struct argp_state *state __attribute__ ((unused)))
 {
-  fprintf (stream, "elflint (%s) %s\n", PACKAGE_NAME, VERSION);
+  fprintf (stream, "elflint (%s) %s\n", PACKAGE_NAME, PACKAGE_VERSION);
   fprintf (stream, gettext ("\
 Copyright (C) %s Red Hat, Inc.\n\
 This is free software; see the source for copying conditions.  There is NO\n\
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\
-"), "2006");
+"), "2007");
   fprintf (stream, gettext ("Written by %s.\n"), "Ulrich Drepper");
 }
 
@@ -343,7 +343,7 @@ static const int valid_e_machine[] =
     EM_68HC16, EM_68HC11, EM_68HC08, EM_68HC05, EM_SVX, EM_ST19, EM_VAX,
     EM_CRIS, EM_JAVELIN, EM_FIREPATH, EM_ZSP, EM_MMIX, EM_HUANY, EM_PRISM,
     EM_AVR, EM_FR30, EM_D10V, EM_D30V, EM_V850, EM_M32R, EM_MN10300,
-    EM_MN10200, EM_PJ, EM_OPENRISC, EM_ARC_A5, EM_XTENSA
+    EM_MN10200, EM_PJ, EM_OPENRISC, EM_ARC_A5, EM_XTENSA, EM_ALPHA
   };
 #define nvalid_e_machine \
   (sizeof (valid_e_machine) / sizeof (valid_e_machine[0]))
@@ -1501,8 +1501,7 @@ check_dynamic (Ebl *ebl, GElf_Ehdr *ehdr, GElf_Shdr *shdr, int idx)
       [DT_PLTRELSZ] = { [DT_JMPREL] = true },
       [DT_HASH] = { [DT_SYMTAB] = true },
       [DT_STRTAB] = { [DT_STRSZ] = true },
-      [DT_SYMTAB] = { [DT_STRTAB] = true, [DT_HASH] = true,
-		      [DT_SYMENT] = true },
+      [DT_SYMTAB] = { [DT_STRTAB] = true, [DT_SYMENT] = true },
       [DT_RELA] = { [DT_RELASZ] = true, [DT_RELAENT] = true },
       [DT_RELASZ] = { [DT_RELA] = true },
       [DT_RELAENT] = { [DT_RELA] = true },
@@ -1519,6 +1518,8 @@ check_dynamic (Ebl *ebl, GElf_Ehdr *ehdr, GElf_Shdr *shdr, int idx)
       [DT_PLTRELSZ] = { [DT_JMPREL] = true }
     };
   bool has_dt[DT_NUM];
+  bool has_val_dt[DT_VALNUM];
+  bool has_addr_dt[DT_ADDRNUM];
   static const bool level2[DT_NUM] =
     {
       [DT_RPATH] = true,
@@ -1529,7 +1530,6 @@ check_dynamic (Ebl *ebl, GElf_Ehdr *ehdr, GElf_Shdr *shdr, int idx)
   static const bool mandatory[DT_NUM] =
     {
       [DT_NULL] = true,
-      [DT_HASH] = true,
       [DT_STRTAB] = true,
       [DT_SYMTAB] = true,
       [DT_STRSZ] = true,
@@ -1541,6 +1541,8 @@ check_dynamic (Ebl *ebl, GElf_Ehdr *ehdr, GElf_Shdr *shdr, int idx)
   GElf_Word pltrelsz = 0;
 
   memset (has_dt, '\0', sizeof (has_dt));
+  memset (has_val_dt, '\0', sizeof (has_val_dt));
+  memset (has_addr_dt, '\0', sizeof (has_addr_dt));
 
   if (++ndynamic == 2)
     ERROR (gettext ("more than one dynamic section present\n"));
@@ -1622,6 +1624,12 @@ section [%2d] '%s': entry %zu: level 2 tag %s used\n"),
 
 	  has_dt[dyn->d_tag] = true;
 	}
+      else if (dyn->d_tag <= DT_VALRNGHI
+	       && DT_VALTAGIDX (dyn->d_tag) < DT_VALNUM)
+	has_val_dt[DT_VALTAGIDX (dyn->d_tag)] = true;
+      else if (dyn->d_tag <= DT_ADDRRNGHI
+	       && DT_ADDRTAGIDX (dyn->d_tag) < DT_ADDRNUM)
+	has_addr_dt[DT_ADDRTAGIDX (dyn->d_tag)] = true;
 
       if (dyn->d_tag == DT_PLTREL && dyn->d_un.d_val != DT_REL
 	  && dyn->d_un.d_val != DT_RELA)
@@ -1744,6 +1752,20 @@ section [%2d] '%s': mandatory tag %s not present\n"),
 	  }
       }
 
+  /* Make sure we have an hash table.  */
+  if (!has_dt[DT_HASH] && !has_addr_dt[DT_ADDRTAGIDX (DT_GNU_HASH)])
+    ERROR (gettext ("\
+section [%2d] '%s': no hash section present\n"),
+	   idx, section_name (ebl, idx));
+
+  /* The GNU-style hash table also needs a symbol table.  */
+  if (!has_dt[DT_HASH] && has_addr_dt[DT_ADDRTAGIDX (DT_GNU_HASH)]
+      && !has_dt[DT_SYMTAB])
+    ERROR (gettext ("\
+section [%2d] '%s': contains %s entry but not %s\n"),
+	   idx, section_name (ebl, idx),
+	   "DT_GNU_HASH", "DT_SYMTAB");
+
   /* Check the rel/rela tags.  At least one group must be available.  */
   if ((has_dt[DT_RELA] || has_dt[DT_RELASZ] || has_dt[DT_RELAENT])
       && (!has_dt[DT_RELA] || !has_dt[DT_RELASZ] || !has_dt[DT_RELAENT]))
@@ -1758,6 +1780,49 @@ section [%2d] '%s': not all of %s, %s, and %s are present\n"),
 section [%2d] '%s': not all of %s, %s, and %s are present\n"),
 	   idx, section_name (ebl, idx),
 	   "DT_REL", "DT_RELSZ", "DT_RELENT");
+
+  /* Check that all prelink sections are present if any of them is.  */
+  if (has_val_dt[DT_VALTAGIDX (DT_GNU_PRELINKED)]
+      || has_val_dt[DT_VALTAGIDX (DT_CHECKSUM)])
+    {
+      if (!has_val_dt[DT_VALTAGIDX (DT_GNU_PRELINKED)])
+	ERROR (gettext ("\
+section [%2d] '%s': %s tag missing in DSO marked during prelinking\n"),
+	       idx, section_name (ebl, idx), "DT_GNU_PRELINKED");
+      if (!has_val_dt[DT_VALTAGIDX (DT_CHECKSUM)])
+	ERROR (gettext ("\
+section [%2d] '%s': %s tag missing in DSO marked during prelinking\n"),
+	       idx, section_name (ebl, idx), "DT_CHECKSUM");
+
+      /* Only DSOs can be marked like this.  */
+      if (ehdr->e_type != ET_DYN)
+	ERROR (gettext ("\
+section [%2d] '%s': non-DSO file marked as dependency during prelink\n"),
+	       idx, section_name (ebl, idx));
+    }
+
+  if (has_val_dt[DT_VALTAGIDX (DT_GNU_CONFLICTSZ)]
+      || has_val_dt[DT_VALTAGIDX (DT_GNU_LIBLISTSZ)]
+      || has_addr_dt[DT_ADDRTAGIDX (DT_GNU_CONFLICT)]
+      || has_addr_dt[DT_ADDRTAGIDX (DT_GNU_LIBLIST)])
+    {
+      if (!has_val_dt[DT_VALTAGIDX (DT_GNU_CONFLICTSZ)])
+	ERROR (gettext ("\
+section [%2d] '%s': %s tag missing in prelinked executable\n"),
+	       idx, section_name (ebl, idx), "DT_GNU_CONFLICTSZ");
+      if (!has_val_dt[DT_VALTAGIDX (DT_GNU_LIBLISTSZ)])
+	ERROR (gettext ("\
+section [%2d] '%s': %s tag missing in prelinked executable\n"),
+	       idx, section_name (ebl, idx), "DT_GNU_LIBLISTSZ");
+      if (!has_addr_dt[DT_ADDRTAGIDX (DT_GNU_CONFLICT)])
+	ERROR (gettext ("\
+section [%2d] '%s': %s tag missing in prelinked executable\n"),
+	       idx, section_name (ebl, idx), "DT_GNU_CONFLICT");
+      if (!has_addr_dt[DT_ADDRTAGIDX (DT_GNU_LIBLIST)])
+	ERROR (gettext ("\
+section [%2d] '%s': %s tag missing in prelinked executable\n"),
+	       idx, section_name (ebl, idx), "DT_GNU_LIBLIST");
+    }
 }
 
 
@@ -2031,7 +2096,8 @@ section [%2d] '%s': hash chain for bucket %zu lower than symbol index bias\n"),
 	      /* Check that the referenced symbol is not undefined.  */
 	      GElf_Sym sym_mem;
 	      GElf_Sym *sym = gelf_getsym (symdata, symidx, &sym_mem);
-	      if (sym != NULL && sym->st_shndx == SHN_UNDEF)
+	      if (sym != NULL && sym->st_shndx == SHN_UNDEF
+		  && GELF_ST_TYPE (sym->st_info) != STT_FUNC)
 		ERROR (gettext ("\
 section [%2d] '%s': symbol %u referenced in chain for bucket %zu is undefined\n"),
 		       idx, section_name (ebl, idx), symidx, cnt / 2 - 1);
@@ -2154,6 +2220,141 @@ section [%2d] '%s': hash table has not even room for initial administrative entr
     default:
       assert (! "should not happen");
     }
+}
+
+
+/* Compare content of both hash tables, it must be identical.  */
+static void
+compare_hash_gnu_hash (Ebl *ebl, GElf_Ehdr *ehdr, size_t hash_idx,
+		       size_t gnu_hash_idx)
+{
+  Elf_Scn *hash_scn = elf_getscn (ebl->elf, hash_idx);
+  Elf_Data *hash_data = elf_getdata (hash_scn, NULL);
+  GElf_Shdr hash_shdr_mem;
+  GElf_Shdr *hash_shdr = gelf_getshdr (hash_scn, &hash_shdr_mem);
+  Elf_Scn *gnu_hash_scn = elf_getscn (ebl->elf, gnu_hash_idx);
+  Elf_Data *gnu_hash_data = elf_getdata (gnu_hash_scn, NULL);
+  GElf_Shdr gnu_hash_shdr_mem;
+  GElf_Shdr *gnu_hash_shdr = gelf_getshdr (gnu_hash_scn, &gnu_hash_shdr_mem);
+
+  if (hash_shdr == NULL || gnu_hash_shdr == NULL
+      || hash_data == NULL || gnu_hash_data == NULL)
+    /* None of these pointers should be NULL since we used the
+       sections already.  We are careful nonetheless.  */
+    return;
+
+  /* The link must point to the same symbol table.  */
+  if (hash_shdr->sh_link != gnu_hash_shdr->sh_link)
+    {
+      ERROR (gettext ("\
+sh_link in hash sections [%2zu] '%s' and [%2zu] '%s' not identical\n"),
+	     hash_idx, elf_strptr (ebl->elf, shstrndx, hash_shdr->sh_name),
+	     gnu_hash_idx,
+	     elf_strptr (ebl->elf, shstrndx, gnu_hash_shdr->sh_name));
+      return;
+    }
+
+  Elf_Scn *sym_scn = elf_getscn (ebl->elf, hash_shdr->sh_link);
+  Elf_Data *sym_data = elf_getdata (sym_scn, NULL);
+  GElf_Shdr sym_shdr_mem;
+  GElf_Shdr *sym_shdr = gelf_getshdr (sym_scn, &sym_shdr_mem);
+
+  if (sym_data == NULL || sym_shdr == NULL)
+    return;
+
+  int nentries = sym_shdr->sh_size / sym_shdr->sh_entsize;
+  char *used = alloca (nentries);
+  memset (used, '\0', nentries);
+
+  /* First go over the GNU_HASH table and mark the entries as used.  */
+  const Elf32_Word *gnu_hasharr = (Elf32_Word *) gnu_hash_data->d_buf;
+  Elf32_Word gnu_nbucket = gnu_hasharr[0];
+  const int bitmap_factor = ehdr->e_ident[EI_CLASS] == ELFCLASS32 ? 1 : 2;
+  const Elf32_Word *gnu_bucket = (gnu_hasharr
+				  + (4 + gnu_hasharr[2] * bitmap_factor));
+  const Elf32_Word *gnu_chain = gnu_bucket + gnu_hasharr[0] - gnu_hasharr[1];
+
+  for (Elf32_Word cnt = 0; cnt < gnu_nbucket; ++cnt)
+    {
+      Elf32_Word symidx = gnu_bucket[cnt];
+      if (symidx != STN_UNDEF)
+	do
+	  used[symidx] |= 1;
+	while ((gnu_chain[symidx++] & 1u) == 0);
+    }
+
+  /* Now go over the old hash table and check that we cover the same
+     entries.  */
+  if (hash_shdr->sh_entsize == sizeof (Elf32_Word))
+    {
+      const Elf32_Word *hasharr = (Elf32_Word *) hash_data->d_buf;
+      Elf32_Word nbucket = hasharr[0];
+      const Elf32_Word *bucket = &hasharr[2];
+      const Elf32_Word *chain = &hasharr[2 + nbucket];
+
+      for (Elf32_Word cnt = 0; cnt < nbucket; ++cnt)
+	{
+	  Elf32_Word symidx = bucket[cnt];
+	  while (symidx != STN_UNDEF)
+	    {
+	      used[symidx] |= 2;
+	      symidx = chain[symidx];
+	    }
+	}
+    }
+  else
+    {
+      const Elf64_Xword *hasharr = (Elf64_Xword *) hash_data->d_buf;
+      Elf64_Xword nbucket = hasharr[0];
+      const Elf64_Xword *bucket = &hasharr[2];
+      const Elf64_Xword *chain = &hasharr[2 + nbucket];
+
+      for (Elf64_Xword cnt = 0; cnt < nbucket; ++cnt)
+	{
+	  Elf64_Xword symidx = bucket[cnt];
+	  while (symidx != STN_UNDEF)
+	    {
+	      used[symidx] |= 2;
+	      symidx = chain[symidx];
+	    }
+	}
+    }
+
+  /* Now see which entries are not set in one or both hash tables
+     (unless the symbol is undefined in which case it can be omitted
+     in the new table format).  */
+  if ((used[0] & 1) != 0)
+    ERROR (gettext ("section [%2zu] '%s': reference to symbol index 0\n"),
+	   gnu_hash_idx,
+	   elf_strptr (ebl->elf, shstrndx, gnu_hash_shdr->sh_name));
+  if ((used[0] & 2) != 0)
+    ERROR (gettext ("section [%2zu] '%s': reference to symbol index 0\n"),
+	   hash_idx, elf_strptr (ebl->elf, shstrndx, hash_shdr->sh_name));
+
+  for (int cnt = 1; cnt < nentries; ++cnt)
+    if (used[cnt] != 0 && used[cnt] != 3)
+      {
+	if (used[cnt] == 1)
+	  ERROR (gettext ("\
+symbol %d referenced in new hash table in [%2zu] '%s' but not in old hash table in [%2zu] '%s'\n"),
+		 cnt, gnu_hash_idx,
+		 elf_strptr (ebl->elf, shstrndx, gnu_hash_shdr->sh_name),
+		 hash_idx,
+		 elf_strptr (ebl->elf, shstrndx, hash_shdr->sh_name));
+	else
+	  {
+	    GElf_Sym sym_mem;
+	    GElf_Sym *sym = gelf_getsym (sym_data, cnt, &sym_mem);
+
+	    if (sym != NULL && sym->st_shndx != STN_UNDEF)
+	      ERROR (gettext ("\
+symbol %d referenced in old hash table in [%2zu] '%s' but not in new hash table in [%2zu] '%s'\n"),
+		     cnt, hash_idx,
+		     elf_strptr (ebl->elf, shstrndx, hash_shdr->sh_name),
+		     gnu_hash_idx,
+		     elf_strptr (ebl->elf, shstrndx, gnu_hash_shdr->sh_name));
+	  }
+      }
 }
 
 
@@ -2308,6 +2509,9 @@ section [%2d] '%s' is contained in more than one section group\n"),
 static const char *
 section_flags_string (GElf_Word flags, char *buf, size_t len)
 {
+  if (flags == 0)
+    return "none";
+
   static const struct
   {
     GElf_Word flag;
@@ -2422,14 +2626,14 @@ static struct version_namelist
 {
   const char *objname;
   const char *name;
-  GElf_Word ndx;
+  GElf_Versym ndx;
   enum { ver_def, ver_need } type;
   struct version_namelist *next;
 } *version_namelist;
 
 
 static int
-add_version (const char *objname, const char *name, GElf_Word ndx, int type)
+add_version (const char *objname, const char *name, GElf_Versym ndx, int type)
 {
   /* Check that there are no duplications.  */
   struct version_namelist *nlp = version_namelist;
@@ -2542,7 +2746,7 @@ section [%2d] '%s': symbol %d: local symbol with version\n"),
 	     index we need for this symbol.  */
 	  struct version_namelist *runp = version_namelist;
 	  while (runp != NULL)
-	    if (runp->ndx == (*versym & 0x7fff))
+	    if (runp->ndx == (*versym & (GElf_Versym) 0x7fff))
 	      break;
 	    else
 	      runp = runp->next;
@@ -2950,7 +3154,7 @@ static const struct
     { ".init_array", 12, SHT_INIT_ARRAY, exact, SHF_ALLOC | SHF_WRITE, 0 },
     { ".interp", 8, SHT_PROGBITS, atleast, 0, SHF_ALLOC }, // XXX more tests?
     { ".line", 6, SHT_PROGBITS, exact, 0, 0 },
-    { ".note", 6, SHT_NOTE, exact, 0, 0 },
+    { ".note", 6, SHT_NOTE, atleast, 0, SHF_ALLOC },
     { ".plt", 5, SHT_PROGBITS, unused, 0, 0 }, // XXX more tests
     { ".preinit_array", 15, SHT_PREINIT_ARRAY, exact, SHF_ALLOC | SHF_WRITE, 0 },
     { ".rela", 5, SHT_RELA, atleast, 0, SHF_ALLOC }, // XXX more tests
@@ -3021,6 +3225,9 @@ zeroth section has nonzero link value while ELF header does not signal overflow 
     }
 
   bool dot_interp_section = false;
+
+  size_t hash_idx = 0;
+  size_t gnu_hash_idx = 0;
 
   size_t versym_scnndx = 0;
   for (size_t cnt = 1; cnt < shnum; ++cnt)
@@ -3252,7 +3459,9 @@ section [%2zu] '%s': merge flag set but entry size is zero\n"),
 		    || (phdr->p_type == PT_TLS
 			&& (shdr->sh_flags & SHF_TLS) != 0))
 		&& phdr->p_offset <= shdr->sh_offset
-		&& phdr->p_offset + phdr->p_memsz > shdr->sh_offset)
+		&& (phdr->p_offset + phdr->p_filesz > shdr->sh_offset
+		    || (phdr->p_offset + phdr->p_memsz > shdr->sh_offset
+			&& shdr->sh_type == SHT_NOBITS)))
 	      {
 		/* Found the segment.  */
 		if (phdr->p_offset + phdr->p_memsz
@@ -3322,8 +3531,13 @@ section [%2zu] '%s': relocatable files cannot have dynamic symbol tables\n"),
 	  break;
 
 	case SHT_HASH:
+	  check_hash (shdr->sh_type, ebl, ehdr, shdr, cnt);
+	  hash_idx = cnt;
+	  break;
+
 	case SHT_GNU_HASH:
 	  check_hash (shdr->sh_type, ebl, ehdr, shdr, cnt);
+	  gnu_hash_idx = cnt;
 	  break;
 
 	case SHT_NULL:
@@ -3392,6 +3606,9 @@ no .gnu.versym section present but .gnu.versym_d or .gnu.versym_r section exist\
   else if (versym_scnndx != 0)
     ERROR (gettext ("\
 .gnu.versym section present without .gnu.versym_d or .gnu.versym_r\n"));
+
+  if (hash_idx != 0 && gnu_hash_idx != 0)
+    compare_hash_gnu_hash (ebl, ehdr, hash_idx, gnu_hash_idx);
 
   free (scnref);
 }
@@ -3529,16 +3746,28 @@ phdr[%d]: unknown core file note type %" PRIu64 " at offset %" PRIu64 "\n"),
 	    }
 	}
       else
-	{
-	  if (type != NT_VERSION)
+	switch (type)
+	  {
+	  case NT_GNU_ABI_TAG:	/* aka NT_VERSION */
+	  case NT_GNU_HWCAP:
+	  case NT_GNU_BUILD_ID:
+	    /* Known type.  */
+	    break;
+
+	  case 0:
+	    /* Linux vDSOs use a type 0 note for the kernel version word.  */
+	    if (namesz == sizeof "Linux"
+		&& !memcmp (notemem + idx + 3 * align, "Linux", sizeof "Linux"))
+	      break;
+
+	  default:
 	    ERROR (gettext ("\
 phdr[%d]: unknown object file note type %" PRIu64 " at offset %" PRIu64 "\n"),
 		   cnt, type, idx);
-	}
+	  }
 
       /* Move to the next entry.  */
       idx += 3 * align + ALIGNED_LEN (namesz) + ALIGNED_LEN (descsz);
-
     }
 
   gelf_freechunk (ebl->elf, notemem);
@@ -3694,7 +3923,8 @@ loadable segment GNU_RELRO applies to is executable\n"));
 program header offset in ELF header and PHDR entry do not match"));
 	}
 
-      if (phdr->p_filesz > phdr->p_memsz)
+      if (phdr->p_filesz > phdr->p_memsz
+	  && (phdr->p_memsz != 0 || phdr->p_type != PT_NOTE))
 	ERROR (gettext ("\
 program header entry %d: file size greater than memory size\n"),
 	       cnt);

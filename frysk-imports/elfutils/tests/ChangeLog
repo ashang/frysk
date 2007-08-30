@@ -1,48 +1,78 @@
-2007-05-01  Andrew Cagney  <cagney@redhat.com>
+2007-08-12  Roland McGrath  <roland@redhat.com>
 
-	* Makefile.am (dwfl_bug_fd_leak_LDADD): Delete redundant
-	definition, added during merge.
+	* run-strip-test7.sh: New file.
+	* testfile39.bz2: New data file.
+	* testfile40.bz2: New data file.
+	* testfile40.debug.bz2: New data file.
+	* Makefile.am (TESTS, EXTRA_DIST): Add them.
 
-2007-02-16  Nurdin Premji <npremji@redhat.com>
+2007-08-09  Roland McGrath  <roland@redhat.com>
 
-	* run-elflit-self.sh: Comment out broken tests.
+	* dwfl-bug-report.c: Fix header inclusion.
 
-	* Makefile.am (noinst_PROGRAMS): Added missing \, builds dwfl-bug-addr-overflow
-	and arls.
+2007-08-08  Roland McGrath  <roland@redhat.com>
 
-2007-02-15  Nurdin Premji <npremji@redhat.com>
+	* run-addrname-test.sh: Add a new case using addr2line -S.
+	* testfile38.bz2: New data file.
+	* Makefile.am (EXTRA_DIST): Add it.
 
-	* Makefile.am (noinst_PROGRAMS): Re-enabled dwfl-bug-addr-overflow.
-	(TESTS): Ditto.
-	(dwfl_bug_addr_overflow_LDADD): Ditto.
+2007-07-16  Roland McGrath  <roland@redhat.com>
 
-2007-02-06  Nurdin Premji  <npremji@redhat.com>
+	* dwfl-bug-report.c: New file.
+	* Makefile.am (noinst_PROGRAMS, TESTS): Add it.
+	(dwfl_bug_report_LDADD): New variable.
 
-	* Makefile.am: Removed CFLAG line.
+2007-06-06  Roland McGrath  <roland@redhat.com>
 
-2007-02-02  Nurdin Premji  <npremji@redhat.com>
+	* run-unstrip-test.sh: Declare testfile.unstrip for removal.
 
-	* Makefile.am (noinst_PROGRAMS): Removed dwfl-bug-addr-overflow.
-	(TESTS): Ditto.
-	(dwfl_bug_addr_overflow_LDADD): Removed.
+2007-06-05  Ulrich Drepper  <drepper@redhat.com>
 
-2006-08-10  Andrew Cagney  <cagney@redhat.com>
+	* Makefile.am (EXTRA_DIST): Add missing line continuation and
+	testfile37.bz and testfile37.debug.bz2.
 
-	* Makefile.am (XFAIL_TESTS): Delete.
-	(TESTS): Disable run-elflint-self.sh.
+2007-05-23  Roland McGrath  <roland@redhat.com>
 
-2006-08-09  Stepan Kasal  <kasal@ucw.cz>
+	* run-allregs.sh: Update expected Alpha results.
 
-	* Makefile.am: Fix a typo in my previous change
-	  s/XFAIL_TEST/XFAIL_TESTS/
+2007-05-18  Roland McGrath  <roland@redhat.com>
 
-2006-08-08  Stepan Kasal  <kasal@ucw.cz>
+	* run-strip-test4.sh (stripped, debugfile): Use new reference files.
+	* testfile37.bz2: New data file.
+	* testfile37.debug.bz2: New data file.
+	* run-unstrip-test2.sh: New file.
+	* Makefile.am (TESTS, EXTRA_DIST): Add them.
 
-	* Makefile.am: Add XFAIL_TESTS = run-elflint-self.sh (frysk #2947)
+2007-05-10  Roland McGrath  <roland@redhat.com>
 
-2006-06-23  Stepan Kasal  <kasal@ucw.cz>
+	* run-dwfl-bug-offline-rel.sh: New file.
+	* testfile36.bz2: New data file.
+	* testfile36.debug.bz2: New data file.
+	* Makefile.am (TESTS, EXTRA_DIST): Add them.
 
-	* line2addr.c (main): Avoid using sscanf() to prevent a warning.
+2007-04-28  Roland McGrath  <roland@redhat.com>
+
+	* run-strip-test6.sh (stripped, debugfile): Use new reference files.
+	* testfile35.bz2: New data file.
+	* testfile35.debug.bz2: New data file.
+	* run-unstrip-test.sh: New file.
+	* Makefile.am (TESTS, EXTRA_DIST): Add them.
+
+	* run-strip-test.sh: Do all elflint and cmp runs even when some fail.
+
+2007-04-26  Roland McGrath  <roland@redhat.com>
+
+	* run-elflint-self.sh: Run all tests even if one fails.
+
+	* run-allregs.sh: Add expected output for alpha.
+
+2007-04-24  Roland McGrath  <roland@redhat.com>
+
+	* run-strip-test.sh: When we saved the debug info, test unstrip too.
+
+2007-04-22  Roland McGrath  <roland@redhat.com>
+
+	* run-allregs.sh: Update expected register info.
 
 2007-04-16  Roland McGrath  <roland@redhat.com>
 
@@ -144,6 +174,10 @@
 	* allregs.c (struct reginfo): Increase size of name.
 	(one_register): Assert that it's big enough.
 
+2006-06-23  Stepan Kasal  <kasal@ucw.cz>
+	
+	* line2addr.c (main): Avoid using sscanf() to prevent a warning.
+ 
 2006-04-04  Roland McGrath  <roland@redhat.com>
 
 	* run-bug1-test.sh: Test a second case, to cover both byte orders.
@@ -573,7 +607,7 @@
 
 	* show-abbrev.c (main): Adjust for dwarf_getabbrev interface change.
 
-2005-04-04  Roland McGrath  <roland@frob.com>
+2005-04-04  Roland McGrath  <roland@redhat.com>
 
 	* line2addr.c (main): Initialize LINES and NLINES before calling
 	dwarf_getsrc_file, and free LINES afterwards.

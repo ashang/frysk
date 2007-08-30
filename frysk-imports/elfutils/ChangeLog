@@ -1,48 +1,16 @@
-2007-05-28  Nurdin Premji  <npremji@redhat.com>
+2007-06-05  Ulrich Drepper  <drepper@redhat.com>
 
+	* Makefile.am: Remove traces of mini builds.
+	* configure.ac: Don't use libelf-po/POTFILES.in as config file
+	anymore.
+
+2007-05-28  Nurdin Premji  <npremji@redhat.com>
+ 
 	* libdwfl/libdwfl.h: Publicize elf_from_remote_memory.
 
-2007-05-21  Stepan Kasal  <skasal@redhat.com>
+2007-05-16  Roland McGrath  <roland@redhat.com>
 
-	* configure.ac: Add -Wno-portability to AM_INIT_AUTOMAKE, to
-	fix bug 4530.
-
-2007-03-28  Nurdin Premji  <npremji@redhat.com>
-
-	* libdw/ChangeLog
-	* libdw/libdw.map
-	* libdwfl/ChangeLog
-	* libdwfl/dwfl_module_addrname.c
-	* libdwfl/dwfl_module_addrsym.c
-	* libdwfl/libdwfl.h
-	* libdwfl/libdwflP.h
-	* libdwfl/Makefile.am
-	* NEWS
-	Apply elfutils-0.127 dwfl_module_addrsym patches.
-
-2007-03-09  Jan Kratochvil  <jan.kratochvil@redhat.com>
-
-	* libdwfl/dwfl_module.c: Include files updated.
-	Bugfix https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=230793
-	to be included in the next release, elfutils-0.127.
-	(__libdwfl_module_free): Close the file descriptors being leaked before.
-	(dwfl_report_module): Init `main.fd' and `debug.fd' to unambiguous -1.
-	* tests/Makefile.am (dwfl-bug-fd-leak): New testcase.
-	* tests/dwfl-bug-fd-leak.c: New file.
-
-2006-08-20  Stepan Kasal  <kasal@ucw.cz>
-
-	* po/elfutils.pot, libelf-po/libelf.pot: Removed from the CVS.
-	* po/.cvsignore, libelf-po/.cvsignore: New files, add the above files.
-
-2006-08-19  Stepan Kasal  <skasal@redhat.com>
-
-	* Makefile.am: Do not run installcheck nor uninstall either.
-	Do not define all targets on one line, attach explanation.
-
-2006-06-27  Rick Moseley  <rmoseley@redhat.com>
-
-	* Makefile.am: Change to not install for frysk.
+	* configure.ac (AM_INIT_AUTOMAKE): Use -Wno-portability.
 
 2006-11-02  Roland McGrath  <roland@redhat.com>
 
@@ -52,6 +20,11 @@
 
 	* configure.ac: Use AM_MAINTAINER_MODE.
 
+2006-08-19  Stepan Kasal  <skasal@redhat.com>
+ 
+	* Makefile.am: Do not run installcheck nor uninstall either.
+	Do not define all targets on one line, attach explanation.
+ 
 2006-07-12  Ulrich Drepper  <drepper@redhat.com>
 
 	* configure.ac (internal_function): Don't use internal visibility.
@@ -61,6 +34,10 @@
 	* configure.ac: Add dummy automake conditional to get dependencies
 	for non-generic linker right.  See src/Makefile.am.
 
+2006-06-27  Rick Moseley  <rmoseley@redhat.com>
+	
+	* Makefile.am: Change to not install for frysk.
+	
 2005-11-18  Roland McGrath  <roland@redhat.com>
 
 	* Makefile.am (DISTCHECK_CONFIGURE_FLAGS): New variable.

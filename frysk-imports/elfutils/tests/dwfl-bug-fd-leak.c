@@ -32,14 +32,15 @@
 #include <dirent.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <error.h>
 #include <unistd.h>
 #include <dwarf.h>
+#include <sys/resource.h>
 #include ELFUTILS_HEADER(dwfl)
 
 
-static void
-elfutils_open (pid_t pid, Dwarf_Addr ip, Dwfl **dwfl_return,
-	       Dwarf_Die **funcdie_return)
+static Dwfl *
+elfutils_open (pid_t pid, Dwarf_Addr address)
 {
   static char *debuginfo_path;
   static const Dwfl_Callbacks proc_callbacks =
@@ -50,36 +51,34 @@ elfutils_open (pid_t pid, Dwarf_Addr ip, Dwfl **dwfl_return,
       .find_elf = dwfl_linux_proc_find_elf,
     };
   Dwfl *dwfl = dwfl_begin (&proc_callbacks);
-  assert (dwfl != NULL);
-  *dwfl_return = dwfl;
+  if (dwfl == NULL)
+    error (2, 0, "dwfl_begin: %s", dwfl_errmsg (-1));
 
-  if (dwfl_linux_proc_report (dwfl, pid) != 0)
-    abort ();
+  int result = dwfl_linux_proc_report (dwfl, pid);
+  if (result < 0)
+    error (2, 0, "dwfl_linux_proc_report: %s", dwfl_errmsg (-1));
+  else if (result > 0)
+    error (2, result, "dwfl_linux_proc_report");
 
   if (dwfl_report_end (dwfl, NULL, NULL) != 0)
-    abort ();
+    error (2, 0, "dwfl_report_end: %s", dwfl_errmsg (-1));
 
-  Dwfl_Module *mod = dwfl_addrmodule (dwfl, ip);
-  assert (mod != NULL);
+  Dwarf_Addr bias;
+  Dwarf *dbg = dwfl_addrdwarf (dwfl, address, &bias);
+  if (dbg != NULL)
+    {
+      Elf *elf = dwarf_getelf (dbg);
+      if (elf == NULL)
+	error (2, 0, "dwarf_getelf: %s", dwarf_errmsg (-1));
+    }
+  else
+    {
+      Elf *elf = dwfl_module_getelf (dwfl_addrmodule (dwfl, address), &bias);
+      if (elf == NULL)
+	error (2, 0, "dwfl_module_getelf: %s", dwfl_errmsg (-1));
+    }
 
-  Dwarf_Addr bias = 0;
-  Dwarf_Die *cudie = dwfl_module_addrdie (mod, ip, &bias);
-  assert (cudie != NULL);
-
-  Dwarf_Die *scopes;
-  int nscopes = dwarf_getscopes (cudie, ip - bias, &scopes);
-  assert (nscopes > 0);
-
-  Dwarf_Die *funcdie = NULL;
-  int i;
-  for (i = 0; i < nscopes; ++i)
-    if (dwarf_tag (&scopes[i]) == DW_TAG_subprogram)
-      {
-	funcdie = &scopes[i];
-	break;
-      }
-  assert (funcdie != NULL);
-  *funcdie_return = funcdie;
+  return dwfl;
 }
 
 static void
@@ -88,50 +87,24 @@ elfutils_close (Dwfl *dwfl)
   dwfl_end (dwfl);
 }
 
-/* Function returns even "."/".." entries.
-   We compare only that count did not change.  */
-
-static int
-fd_count (void)
-{
-  DIR *dir;
-  int retval = 0;
-
-  dir = opendir ("/proc/self/fd");
-  assert (dir != NULL);
-
-  while (errno = 0, readdir (dir) != 0)
-    retval++;
-  assert (errno == 0);
-
-  if (closedir (dir) != 0)
-    abort();
-
-  return retval;
-}
-
 int
 main (void)
 {
-  int fd_counted;
-
-  fd_counted = fd_count ();
-
   /* We use no threads here which can interfere with handling a stream.  */
   (void) __fsetlocking (stdout, FSETLOCKING_BYCALLER);
 
   /* Set locale.  */
   (void) setlocale (LC_ALL, "");
 
-  assert (fd_counted == fd_count ());
+  struct rlimit fd_limit = { .rlim_cur = 32, .rlim_max = 32 };
+  if (setrlimit (RLIMIT_NOFILE, &fd_limit) < 0)
+    error (2, errno, "setrlimit");
 
-  Dwfl *dwfl;
-  Dwarf_Die *funcdie;
-  elfutils_open (getpid (), (Dwarf_Addr) main, &dwfl, &funcdie);
-  
-  elfutils_close (dwfl);
-
-  assert (fd_counted == fd_count ());
+  for (int i = 0; i < 5000; ++i)
+    {
+      Dwfl *dwfl = elfutils_open (getpid (), (Dwarf_Addr) main);
+      elfutils_close (dwfl);
+    }
 
   return 0;
 }

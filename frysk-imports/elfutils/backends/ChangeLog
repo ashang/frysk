@@ -1,7 +1,24 @@
-2006-06-23  Stepan Kasal  <kasal@ucw.cz>
+2007-05-23  Roland McGrath  <roland@redhat.com>
 
-	* Makefile.am: Work around a bug in GNU make -jN by mentioning *.map.
-	* Makefile.am: Mention the *.o files.
+	* alpha_regs.c (alpha_register_info): fp -> s6
+
+2007-04-26  Roland McGrath  <roland@redhat.com>
+
+	* alpha_symbol.c (alpha_machine_section_flag_check): New function.
+	* alpha_init.c (alpha_init): Initialize hook.
+
+	* alpha_regs.c: New file.
+	* Makefile.am (alpha_SRCS): Add it.
+	* alpha_init.c (alpha_init): Initialize register_info hook.
+
+2007-04-22  Roland McGrath  <roland@redhat.com>
+
+	* ppc_regs.c (ppc_register_info): Use some names instead of sprNNN:
+	mq, xer, lr, ctr, dsisr, dar, dec, vrsave.
+	Set *BITS to 64 for FPU registers.
+
+	* i386_regs.c (i386_register_info): Set *BITS to 16 for fctrl, fstat.
+	* x86_64_regs.c (x86_64_register_info): Likewise for fcw, fsw.
 
 2007-04-01  Roland McGrath  <roland@redhat.com>
 
@@ -48,6 +65,11 @@
 	need static object for anything here.  This rule is the only source of
 	.deps/ files.
 
+2006-06-23  Stepan Kasal  <kasal@ucw.cz>
+	
+	* Makefile.am: Work around a bug in GNU make -jN by mentioning *.map.
+	* Makefile.am: Mention the *.o files.
+	
 2006-06-23  Stepan Kasal  <skasal@redhat.com>
 
 	* Makefile.am (PACKAGE_VERSION): Remove superfluous definition.
