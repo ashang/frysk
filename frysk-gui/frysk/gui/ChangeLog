@@ -1,3 +1,8 @@
+2007-08-30  Adam Jocksch  <ajocksch@redhat.com>
+
+	* sessions/WatchList.java (removeVariable): Now uses
+	Display.getName rather than the method from Value.
+
 2007-08-29  Andrew Cagney  <cagney@redhat.com>
 
 	* register/RegisterWindow.java: Delete calls to
