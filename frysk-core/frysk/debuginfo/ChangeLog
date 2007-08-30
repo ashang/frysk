@@ -1,5 +1,11 @@
 2007-08-30  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* TestFrameDebugInfo.java (testFrameCompilerIlinedFucntions): enabled test;
+	bug fixed in elfutils 0.129.
+	(testFrameScopes): Corrected, and enabled test; bug fixed in elfutils 0.129.
+
+2007-08-30  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* Variable.java: Removed typeDie and references.
 
 2007-08-30  Andrew Cagney  <cagney@redhat.com>

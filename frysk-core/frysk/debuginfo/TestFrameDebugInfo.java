@@ -82,12 +82,11 @@ public class TestFrameDebugInfo
   
   public void testFrameCompilerIlinedFucntions ()
   {
-    if(unresolved(4981))
-	return;
   
     Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-empty-functions");
 
     DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
+    DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(System.out), task, false, false, false);
     
     Subprogram subprogram = frame.getSubprogram();
     
@@ -117,8 +116,6 @@ public class TestFrameDebugInfo
   
   public void testFrameScopes ()
   {
-    if(unresolved(4677))
-        return;
 
     Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-scopes");
     Frame frame = StackFactory.createFrame(task);
@@ -129,9 +126,9 @@ public class TestFrameDebugInfo
     
     assertEquals("number of scopes", 3, scopes.length);
     
-    assertEquals("inlined die" , DwTag.INLINED_SUBROUTINE_,scopes[0].getTag());
-    assertEquals("function die", DwTag.SUBPROGRAM_, scopes[1].getTag());
-    assertEquals("compliation unit die", DwTag.COMPILE_UNIT_, scopes[0].getTag());
+    assertEquals("lexical block die" , DwTag.LEXICAL_BLOCK_,scopes[0].getTag());
+    assertEquals("inlined function die", DwTag.INLINED_SUBROUTINE_, scopes[1].getTag());
+    assertEquals("compliation unit die", DwTag.COMPILE_UNIT_, scopes[2].getTag());
     
   }
   
