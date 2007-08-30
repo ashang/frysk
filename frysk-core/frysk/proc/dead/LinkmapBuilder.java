@@ -99,24 +99,18 @@ public abstract class LinkmapBuilder
   
   abstract public void buildMap (long l_addr, long l_ld, long saddr, String name);
 
-  private String getString(long address, ByteBuffer buffer)
+  private String getString(long startAddr, ByteBuffer buffer)
   {
-      byte[] sbuffer = new byte[255];
-      for (int i=0; i<sbuffer.length; i++)
-	  sbuffer[i] = 0; 
-      int count = 0;
-      byte in = -1;
-      String constructedName = "";
-      
-      long currentPos = buffer.position();
-      buffer.position(address);
+      StringBuffer stringBuffer = new StringBuffer();
+      byte in = -1;      
+      long currentAddr = startAddr;
       
       while (in != 0)
       {
 	  // Read until end of buffer or null
 	  try
 	  {
-	      in = buffer.getByte();
+	      in = buffer.getByte(currentAddr);
 	  }
 	  catch (RuntimeException e)
 	  {
@@ -125,14 +119,11 @@ public abstract class LinkmapBuilder
 
 	  if (in == 0)
 	      break;
-	  sbuffer[count] = in;
-	  count++;
+
+	  stringBuffer.append((char)in);
+	  currentAddr++;
       }
 
-      constructedName = new String(sbuffer);
-      constructedName = constructedName.trim();
-      
-      buffer.position(currentPos);
-      return constructedName;
+      return stringBuffer.toString();
   }
 }
