@@ -1,3 +1,10 @@
+2007-08-29  Andrew Cagney  <cagney@redhat.com>
+
+	* DwOp.shenum: New.
+	* DwAt.shenum: New.
+	* DwTag.shenum: New.
+	* DwInl.shenum: New.
+
 2007-08-27  Stan Cox  <scox@redhat.com>
 
 	* cni/DwarfDie.cxx (skip_storage_attr): New.
