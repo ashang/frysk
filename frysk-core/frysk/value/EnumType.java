@@ -113,11 +113,6 @@ public class EnumType extends IntegerType
 	return this;
     }
 
-    public static Value newEnumValue (Type type, String text) {
-	Value returnVar = new Value(type, text);
-	return returnVar;
-    }
-
     BigInteger getBigInteger(Location location) {
 	return new BigInteger(location.get(endian));
     }
