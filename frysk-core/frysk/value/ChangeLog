@@ -1,5 +1,9 @@
 2007-08-30  Andrew Cagney  <cagney@redhat.com>
 
+	* ArithmeticType.java (createValueFIXME(String,float)): Delete.
+	(createValueFIXME(String,double)): Delete.
+	(createValueFIXME(String,long)): Delete.
+	
 	* Value.java (Value(Type,String,ByteBuffer)): Delete.
 	(Value(Type,ByteBuffer)): New.
 	

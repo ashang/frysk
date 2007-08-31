@@ -374,38 +374,12 @@ public abstract class ArithmeticType
     /**
      * Create a new Value of THIS Type, initialized to VAL.
      *
-     * FIXME: Code should be directly constructing the Value using
-     * Type and Location; that change is waiting on the implementation
-     * of a DWARF location-expression parser that returns Locations
-     * and not values .  FIXME: Code should not be trying to give a
-     * Value a name; that is a legacy from when Value and Variable
-     * were the same class.
-     */
-    public Value createValueFIXME(String name, float val) {
-	return createValueFIXME(name, Float.floatToRawIntBits(val));
-    }
-    /**
-     * Create a new Value of THIS Type, initialized to VAL.
-     *
      * This is a convenience method for creating a simple arithmetic
      * type from a constant.  In general code should be creating a
      * Value using a Type and a Location.
      */
     public Value createValue(double val) {
 	return createValue(Double.doubleToRawLongBits(val));
-    }
-    /**
-     * Create a new Value of THIS Type, initialized to VAL.
-     *
-     * FIXME: Code should be directly constructing the Value using
-     * Type and Location; that change is waiting on the implementation
-     * of a DWARF location-expression parser that returns Locations
-     * and not values .  FIXME: Code should not be trying to give a
-     * Value a name; that is a legacy from when Value and Variable
-     * were the same class.
-     */
-    public Value createValueFIXME(String name, double val) {
-	return createValueFIXME(name, Double.doubleToRawLongBits(val));
     }
 
     /**
@@ -425,21 +399,6 @@ public abstract class ArithmeticType
      */ 
     public Value createValue(long val) {
 	return createValue(BigInteger.valueOf(val));
-    }
-    /**
-     * Create a new Value of THIS Type, initialized to VAL.
-     *
-     * FIXME: Code should be directly constructing the Value using
-     * Type and Location; that change is waiting on the implementation
-     * of a DWARF location-expression parser that returns Locations
-     * and not values .  FIXME: Code should not be trying to give a
-     * Value a name; that is a legacy from when Value and Variable
-     * were the same class.
-     */
-    public Value createValueFIXME(String nameFIXME, long val) {
-	Location l = new Location(new byte[getSize()]);
-	putBigInteger(l, BigInteger.valueOf(val));
-	return new Value(this, l);
     }
 
     /**

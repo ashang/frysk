@@ -673,8 +673,6 @@ class DebugInfoEvaluator
 	if (varDie == null)
 	    return (null);
 
-	String s = varDie.getName();
-    
 	for (int i = 0; i < variableAccessor.length; i++) {
 	    try {
 		DwarfDie type = varDie.getUltimateType();
@@ -684,30 +682,30 @@ class DebugInfoEvaluator
 		case BaseTypes.baseTypeLong:
 		case BaseTypes.baseTypeUnsignedLong: {
 		    long longVal = variableAccessor[i].getLong(varDie, 0);
-		    return longType.createValueFIXME(s, longVal);
+		    return longType.createValue(longVal);
 		}
 		case BaseTypes.baseTypeInteger:
 		case BaseTypes.baseTypeUnsignedInteger: {
 		    int intVal = variableAccessor[i].getInt(varDie, 0);
-		    return intType.createValueFIXME(s, intVal);
+		    return intType.createValue(intVal);
 		}
 		case BaseTypes.baseTypeShort:
 		case BaseTypes.baseTypeUnsignedShort: {
 		    short shortVal = variableAccessor[i].getShort(varDie, 0);
-		    return shortType.createValueFIXME(s, shortVal);
+		    return shortType.createValue(shortVal);
 		}
 		case BaseTypes.baseTypeByte:
 		case BaseTypes.baseTypeUnsignedByte: {
 		    byte byteVal = variableAccessor[i].getByte(varDie, 0);
-		    return byteType.createValueFIXME(s, byteVal);
+		    return byteType.createValue(byteVal);
 		}
 		case BaseTypes.baseTypeFloat: {
 		    float floatVal = variableAccessor[i].getFloat(varDie, 0);
-		    return floatType.createValueFIXME(s, floatVal);
+		    return floatType.createValue(floatVal);
 		}
 		case BaseTypes.baseTypeDouble: {
 		    double doubleVal = variableAccessor[i].getDouble(varDie, 0);
-		    return doubleType.createValueFIXME(s, doubleVal);
+		    return doubleType.createValue(doubleVal);
 		}
 		}
 		// if there is no type then use this die's tag
