@@ -52,8 +52,12 @@ public class Value
     private final Type type;
     private final Location location;
 
+    /**
+     * Create Value with TYPE and LOCATION.
+     */
     public Value(Type type, Location location) {
-	this(type, "textFIXME", location);
+	this.type = type;
+	this.location = location;
     }
  
     /**
@@ -62,7 +66,7 @@ public class Value
      * Value(Type,Location).
      */
     public Value(Type type, String textFIXME) {
-	this(type, textFIXME, new Location(new byte[type.getSize()]));
+	this(type, new Location(new byte[type.getSize()]));
     }
     /**
      * FIXME: The string parameter, which is being used to track
@@ -70,17 +74,8 @@ public class Value
      * Value(Type,Location).
      */
     public Value(Type type, String textFIXME, ByteBuffer byteBuffer) {
-	this(type, textFIXME, (new Location(byteBuffer)));
+	this(type, new Location(byteBuffer));
     }    
-    /**
-     * FIXME: The string parameter, which is being used to track
-     * location using <<by name>>, is being removed.  Try to use
-     * Value(Type,Location).
-     */
-    public Value(Type type, String textFIXME, Location location) {
-	this.type = type;
-	this.location = location;
-    }
 
     /**
      * Return the Value's Location.

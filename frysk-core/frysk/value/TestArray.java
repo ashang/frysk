@@ -62,7 +62,7 @@ public class TestArray extends TestCase {
 	ArrayList dims = new ArrayList();
 	dims.add(new Integer(4 - 1));
 	ArrayType arrayType = new ArrayType(int4_t, buf.length, dims);
-	Value c1 = new Value(arrayType, "a1", new Location(buf));
+	Value c1 = new Value(arrayType, new Location(buf));
 	String s = c1.toPrint();
 	assertEquals ("int[]", "{16909060,84281096,151653132,219025168}", s);
     }
@@ -75,7 +75,7 @@ public class TestArray extends TestCase {
 	dims.add(new Integer(2-1));
 	dims.add(new Integer(4-1));
 	ArrayType arrayType = new ArrayType(int2_t, 16, dims);
-	Value c1 = new Value(arrayType, "a2", new Location(buf));
+	Value c1 = new Value(arrayType, new Location(buf));
 	String s = c1.toPrint();
 	assertEquals ("array2dim", "{{258,772,1286,1800},{2314,2828,3342,3856}}", s);
 	ArrayList components = new ArrayList();

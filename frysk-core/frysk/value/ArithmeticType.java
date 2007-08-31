@@ -439,7 +439,7 @@ public abstract class ArithmeticType
     public Value createValueFIXME(String nameFIXME, long val) {
 	Location l = new Location(new byte[getSize()]);
 	putBigInteger(l, BigInteger.valueOf(val));
-	return new Value(this, nameFIXME, l);
+	return new Value(this, l);
     }
 
     /**

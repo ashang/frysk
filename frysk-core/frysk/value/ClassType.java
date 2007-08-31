@@ -225,7 +225,7 @@ public class ClassType
 		}
 		Location loc = location.slice(member.offset,
 					      member.type.getSize());
-		Value val = new Value(member.type, member.name, loc);
+		Value val = new Value(member.type, loc);
 		val.toPrint(writer, memory, format);
 		writer.print(",\n");
 	    }

@@ -1,5 +1,13 @@
 2007-08-30  Andrew Cagney  <cagney@redhat.com>
 
+	* Value.java (Value(Type,String,Location)): Delete.
+	(Value(Type,Location)): Simplify.
+	* ArithmeticType.java: Update.
+	* ArrayType.java: Update.
+	* ClassType.java: Update.
+	* TestArray.java: Update.
+	* TestClass.java: Update.
+	
 	* EnumType.java (newEnumValue(Type,String)): Delete.
 
 2007-08-30  Adam Jocksch  <ajocksch@redhat.com>

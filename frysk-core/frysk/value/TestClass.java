@@ -69,7 +69,7 @@ public class TestClass
 	    0x05, 0x06, 0x07, 0x08, // beta
 	    0x09, 0x10, 0x11, 0x12  // gama, iota, epsilon
 	};
-	Value c1 = new Value(classType, "c1", new Location(buf));
+	Value c1 = new Value(classType, new Location(buf));
 	String s = c1.toPrint();
 	assertEquals ("class", "{alpha=16909060,\n beta=84281096,\n gamma=2320,\n iota=17,\n epsilon=18,\n}", s);
     }
@@ -88,7 +88,7 @@ public class TestClass
 	    0x05, 0x06, 0x07, 0x08, // beta
 	    0x09, 0x10, 0x11, 0x12  // gama, iota, epsilon
 	};
-	Value c1 = new Value(classType, "c1", new Location(buf));
+	Value c1 = new Value(classType, new Location(buf));
 	String s = c1.toPrint();
 	assertEquals ("class", "{alpha=67305985,\n beta=134678021,\n gamma=4105,\n iota=17,\n epsilon=18,\n}", s);
     }
@@ -111,7 +111,7 @@ public class TestClass
 	    0x05, 0x06, 0x07, 0x08, // beta
 	    0x09, 0x10, 0x11, 0x12  // gama, iota, epsilon
 	};
-	Value c1 = new Value(classType, "c1", new Location(buf));
+	Value c1 = new Value(classType, new Location(buf));
 	String s = c1.toPrint();
 	assertEquals ("class", "{a={alpha=67305985,\n beta=134678021,\n},\n b={gamma=4105,\n iota=17,\n epsilon=18,\n},\n}", s);
     }
@@ -134,7 +134,7 @@ public class TestClass
 	    0x05, 0x06, 0x07, 0x08, // beta
 	    0x09, 0x10, 0x11, 0x12  // gama, iota, epsilon
 	};
-	Value c1 = new Value(classType, "c1", new Location(buf));
+	Value c1 = new Value(classType, new Location(buf));
 	String s = c1.toPrint();
 	assertEquals ("class", "{{67305985,\n 134678021,\n},\n {4105,\n 17,\n 18,\n},\n}", s);
     }
