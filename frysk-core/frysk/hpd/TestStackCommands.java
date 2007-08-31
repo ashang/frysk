@@ -92,6 +92,9 @@ public class TestStackCommands
     }
     
     public void testFhpdVirtualStackTraceWithScopes () {
+	// This test is very very slow.
+	if (unresolved(4985))
+	    return;
 	Proc proc = CoreFileAtSignal
 	    .constructCore(Config.getPkgLibFile("funit-inlined"));
         e = new Expect (new String[] {

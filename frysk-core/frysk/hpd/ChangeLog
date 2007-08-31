@@ -1,3 +1,8 @@
+2007-08-31  Andrew Cagney  <cagney@redhat.com>
+
+	* TestStackCommands.java (testFhpdVirtualStackTraceWithScopes):
+	Mark as unresolved, bug 4985.
+
 2007-08-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestStackCommands.java (testFhpdVirtualStackTraceWithScopes): 
