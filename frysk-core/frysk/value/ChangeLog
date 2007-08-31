@@ -1,5 +1,11 @@
 2007-08-31  Andrew Cagney  <cagney@redhat.com>
 
+	* BooleanType.java: New.
+	* TestIntegerType.java (testGetBooleanNonZero): New.
+	(testGetBooleanZero): New..
+	(testPutBooleanNonZero): New.
+	(testPutBooleanZero): New.
+
 	* IntegerTypeDecorator.java: New.
 	* PointerType.java: Extend IntegerTypeDecorator.
 	(getBigInteger(Location)): Delete.

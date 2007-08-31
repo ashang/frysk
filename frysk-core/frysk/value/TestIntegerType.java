@@ -100,6 +100,20 @@ public class TestIntegerType
 	checkGetBigInteger(new CharType("c", ByteOrder.BIG_ENDIAN, 2, false),
 			  0xff00, 0x0102);
     }
+    public void testGetBooleanNonZero() {
+	assertEquals("true", BigInteger.ONE,
+		     (new BooleanType("b", ByteOrder.BIG_ENDIAN, 2)
+		      .getBigInteger(new Location(new byte[] {
+						      (byte)0xff, 0x00
+						  }))));
+    }
+    public void testGetBooleanZero() {
+	assertEquals("false", BigInteger.ZERO,
+		     (new BooleanType("b", ByteOrder.BIG_ENDIAN, 2)
+		      .getBigInteger(new Location(new byte[] {
+						      0, 0
+						  }))));
+    }
 
     private void checkPut(ArithmeticType t, String val, byte[] check) {
 	Location l = new Location(new byte[] { 1, 2 });
@@ -165,6 +179,14 @@ public class TestIntegerType
     public void testPutUnsignedNegativeChar() {
 	checkPut(new CharType("type", ByteOrder.BIG_ENDIAN, 2, false),
 		 "-3", new byte[] { 0, (byte)0xfd });
+    }
+    public void testPutBooleanNonZero() {
+	checkPut(new BooleanType("b", ByteOrder.BIG_ENDIAN, 2),
+		 "-3", new byte[] { 0, 1 });
+    }
+    public void testPutBooleanZero() {
+	checkPut(new BooleanType("b", ByteOrder.BIG_ENDIAN, 2),
+		 "0", new byte[] { 0, 0 });
     }
 
     public void testBigFloatValue() {
