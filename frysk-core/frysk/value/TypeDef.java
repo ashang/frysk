@@ -51,6 +51,7 @@ public class TypeDef extends TypeDecorator {
 	super(name, decorated);
     }
     public void toPrint(PrintWriter writer) {
-	writer.print(name);
+	// Do not recurse; as a typedef.
+	writer.print(getName());
     }
 }

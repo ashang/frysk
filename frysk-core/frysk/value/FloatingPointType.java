@@ -72,18 +72,18 @@ public class FloatingPointType
      * Return the raw bytes as an unsigned integer.
      */
     BigInteger getBigInteger(Location location) {
-	return new BigInteger(1, location.get(endian));
+	return new BigInteger(1, location.get(order()));
     }
 
     /**
      * Return the raw bytes as an unsigned integer.
      */
     void putBigInteger(Location location, BigInteger val) {
-	location.put(endian, val.toByteArray(), 0);
+	location.put(order(), val.toByteArray(), 0);
     }
 
     BigFloat getBigFloat(Location location) {
-	return new BigFloat(location.get(endian));
+	return new BigFloat(location.get(order()));
     }
 
     BigFloat bigFloatValue(Location location) {
@@ -97,6 +97,6 @@ public class FloatingPointType
     void assign(Location location, Value v) {
 	BigFloat f = ((ArithmeticType)v.getType())
 	    .bigFloatValue(v.getLocation());
-	location.put(endian, f.toByteArray(getSize()), 0);
+	location.put(order(), f.toByteArray(getSize()), 0);
     }
 }

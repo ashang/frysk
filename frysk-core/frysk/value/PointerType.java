@@ -88,10 +88,10 @@ public class PointerType
     }
     
     BigInteger getBigInteger(Location location) {
-	return new BigInteger(1, location.get(endian));
+	return new BigInteger(1, location.get(order()));
     }
     void putBigInteger(Location location, BigInteger val) {
-	location.put(endian, val.toByteArray(), 0);
+	location.put(order(), val.toByteArray(), 0);
     }
 
     /**

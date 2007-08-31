@@ -67,7 +67,7 @@ public abstract class IntegerType
     }
 
     BigFloat getBigFloat(Location location) {
-	return new BigFloat(location.get(endian));
+	return new BigFloat(location.get(order()));
     }
 
     BigInteger bigIntegerValue(Location location) {

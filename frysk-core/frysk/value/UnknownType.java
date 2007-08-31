@@ -54,7 +54,7 @@ public class UnknownType
     }
 
     public void toPrint (PrintWriter writer) {
-      writer.print("Symbol \"" + name + "\" has an unknown type.");
+	writer.print("Symbol \"" + getName() + "\" has an unknown type.");
     }
    
     /**

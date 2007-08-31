@@ -69,7 +69,7 @@ public class ArrayType
      * @param dimensions - ArrayList of dimension upper bounds.
      */
     public ArrayType (Type type, int size, ArrayList dimensions) {
-	super(size, type.endian, 0, "array");
+	super(size, type.order(), 0, "array");
 	this.type = type;
 	dimension = new int[dimensions.size()];
 	for (int i = 0; i < dimensions.size(); i++) {

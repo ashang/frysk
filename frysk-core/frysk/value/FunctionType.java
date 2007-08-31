@@ -72,7 +72,7 @@ public class FunctionType
 	else
 	    returnType.toPrint(writer);
 	writer.print(" ");
-	writer.print(this.name);
+	writer.print(this.getName());
 	writer.print(" (");
 	for (int i = 0; i < this.parmTypes.size(); i++) {
 	    ((Type)this.parmTypes.get(i)).toPrint(writer);

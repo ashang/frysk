@@ -234,8 +234,9 @@ public class ClassType
     }
 
     public void toPrint(PrintWriter writer) {
-	if (this.isTypedef && this.name != null && this.name.length() > 0) {
-	    writer.print(this.name);
+	if (this.isTypedef() && this.getName() != null
+	    && this.getName().length() > 0) {
+	    writer.print(this.getName());
 	    return;
 	}
 	boolean first = true;
@@ -256,7 +257,7 @@ public class ClassType
 	    case 2: writer.print("protected "); break;
 	    case 3: writer.print("private "); break;
 	    }
-	    writer.print(member.type.name);
+	    writer.print(member.type.getName());
 	    member = null;
 	}
 	int previousAccess = 0;
@@ -272,7 +273,7 @@ public class ClassType
 	    }
 	    writer.print("  ");
 	    if (member.type.isTypedef())
-		writer.print(member.type.name);
+		writer.print(member.type.getName());
 	    else
 		member.type.toPrint(writer);
 	    if (!(member.type instanceof frysk.value.FunctionType)) {

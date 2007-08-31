@@ -56,20 +56,22 @@ public abstract class Type {
 
     // XXX: ByteOrder is an arithmetic-type thing; not a generic type
     // thing; should be pushed to sub-class.
-    protected final ByteOrder endian;
+    private final ByteOrder order;
   
-    protected final String name;
+    // XXX: Is NAME a more target dependant attribute?
+    private final String name;
   
-    protected boolean isTypedef;
+    // XXX: Not needed; made redundant by TypeDef.
+    private boolean isTypedef;
 
     Type (int size, ByteOrder endian, int typeId, String name) {
 	this(size, endian, typeId, name, false);
     }
 
-    Type (int size, ByteOrder endian, int typeId, String name,
+    Type (int size, ByteOrder order, int typeId, String name,
 	  boolean typedef) {
 	this.size = size;
-	this.endian = endian;
+	this.order = order;
 	this.name = name;
 	this.isTypedef = false;
     }
@@ -78,11 +80,12 @@ public abstract class Type {
 	return size;
     }
 
-    public ByteOrder getEndian() {
-	return endian;
-    }
     public ByteOrder order() {
-	return endian;
+	return order;
+    }
+
+    String getName() {
+	return name;
     }
 
     /**
@@ -97,7 +100,12 @@ public abstract class Type {
      * For debugging and tracing; just dump the Type's name.
      */
     public String toString() {
-	return name;
+	return ("{"
+		+ super.toString()
+		+ ",name=" + name
+		+ ",size=" + size
+		+ ",order=" + order
+		+ "}");
     }
 
     /**

@@ -54,29 +54,29 @@ public class UnsignedType
     /**
      * XXX: This is an interim constructor.
      */
-    public UnsignedType(int size, ByteOrder endian,
+    public UnsignedType(int size, ByteOrder order,
 			int typeId, String typeStr,
 			boolean haveTypeDef) {
-	super(size, endian, typeId, typeStr, haveTypeDef);
+	super(size, order, typeId, typeStr, haveTypeDef);
     }
 
     BigInteger getBigInteger(Location location) {
-	return new BigInteger(1, location.get(endian));
+	return new BigInteger(1, location.get(order()));
     }
 
     void putBigInteger(Location location, BigInteger val) {
-	location.put(endian, val.toByteArray(), 0);
+	location.put(order(), val.toByteArray(), 0);
     }
 
     public Type pack(final int bitSize, final int bitOffset) {
-	return new UnsignedType(size, endian, -1, name, false) {
+	return new UnsignedType(size, order(), -1, getName(), false) {
 		Packing packing = new Packing(size, bitSize, bitOffset);
 		BigInteger getBigInteger(Location location) {
-		    return packing.unpackUnsigned(location.get(endian));
+		    return packing.unpackUnsigned(location.get(order()));
 		}
 		void putBigInteger(Location location, BigInteger val) {
-		    location.put(endian,
-				 packing.pack(location.get(endian), val),
+		    location.put(order(),
+				 packing.pack(location.get(order()), val),
 				 0);
 		}
 	    };

@@ -55,30 +55,30 @@ public class SignedType
      * XXX: This is an interim constructor.  This will be replaced by
      * a constructor that replaces TYPE_ID with SIGNNESS.
      */
-    public SignedType(int size, ByteOrder endian,
+    public SignedType(int size, ByteOrder order,
 		       int typeId, String typeStr,
 		       boolean haveTypeDef) {
-	super(size, endian, typeId, typeStr, haveTypeDef);
+	super(size, order, typeId, typeStr, haveTypeDef);
     }
 
     BigInteger getBigInteger(Location location) {
-	return new BigInteger(location.get(endian));
+	return new BigInteger(location.get(order()));
     }
 
     void putBigInteger(Location location, BigInteger val) {
-	location.put(endian, val.toByteArray(),
+	location.put(order(), val.toByteArray(),
 		     val.signum() >= 0 ? 0 : -1);
     }
 
     public Type pack(final int bitSize, final int bitOffset) {
-	return new SignedType(size, endian, -1, name, false) {
+	return new SignedType(size, order(), -1, getName(), false) {
 		Packing packing = new Packing(size, bitSize, bitOffset);
 		BigInteger getBigInteger(Location location) {
-		    return packing.unpackSigned(location.get(endian));
+		    return packing.unpackSigned(location.get(order()));
 		}
 		void putBigInteger(Location location, BigInteger val) {
-		    location.put(endian,
-				 packing.pack(location.get(endian), val),
+		    location.put(order(),
+				 packing.pack(location.get(order()), val),
 				 0);
 		}
 	    };

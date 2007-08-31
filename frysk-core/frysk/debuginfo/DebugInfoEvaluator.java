@@ -470,7 +470,7 @@ class DebugInfoEvaluator
 	int baseType = type.getBaseType();
 	// XXX: Order might come from TYPE; XXX: sign vs unsigned vs
 	// float can come directly from TYPE.
-	ByteOrder order = intType.getEndian();
+	ByteOrder order = intType.order();
 	switch (baseType) {
 	case BaseTypes.baseTypeInteger:
 	case BaseTypes.baseTypeShort:

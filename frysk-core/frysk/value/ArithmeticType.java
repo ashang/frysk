@@ -64,7 +64,6 @@ public abstract class ArithmeticType
     public String toString() {
 	return ("{"
 		+ super.toString()
-		+ ",endian=" + endian
 		+ "}");
     }
 
@@ -358,7 +357,7 @@ public abstract class ArithmeticType
     }
 
     public void toPrint(PrintWriter writer) {
-	writer.print(name);
+	writer.print(getName());
     }
 
     /**

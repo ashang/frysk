@@ -174,7 +174,7 @@ class RemoteFrame extends Frame
 	    return null;
 	}
 	ArrayByteBuffer buffer = new ArrayByteBuffer(word);
-	buffer.order(register.type.getEndian());
+	buffer.order(register.type.order());
 	return new Value(register.type, buffer);
     }
   

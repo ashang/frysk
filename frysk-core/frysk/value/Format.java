@@ -106,63 +106,63 @@ public abstract class Format
 	    }
 	    void print(PrintWriter writer, Location location,
 		       PointerType type) {
-		printHexadecimal(writer, location, type.getEndian());
+		printHexadecimal(writer, location, type.order());
 	    }
 	};
     public static final Format HEXADECIMAL = new Format() {
 	    void print(PrintWriter writer, Location location,
 		       IntegerType type) {
-		printHexadecimal(writer, location, type.getEndian());
+		printHexadecimal(writer, location, type.order());
 	    }
 	    void print(PrintWriter writer, Location location,
 		       FloatingPointType type) {
-		printHexadecimal(writer, location, type.getEndian());
+		printHexadecimal(writer, location, type.order());
 	    }
 	    void print(PrintWriter writer, Location location,
 		       PointerType type) {
-		printHexadecimal(writer, location, type.getEndian());
+		printHexadecimal(writer, location, type.order());
 	    }
 	};
     public static final Format OCTAL = new Format() {
 	    void print(PrintWriter writer, Location location,
 		       IntegerType type) {
-		printOctal(writer, location, type.getEndian());
+		printOctal(writer, location, type.order());
 	    }
 	    void print(PrintWriter writer, Location location,
 		       FloatingPointType type) {
-		printOctal(writer, location, type.getEndian());
+		printOctal(writer, location, type.order());
 	    }
 	    void print(PrintWriter writer, Location location,
 		       PointerType type) {
-		printOctal(writer, location, type.getEndian());
+		printOctal(writer, location, type.order());
 	    }
 	};
     public static final Format DECIMAL = new Format() {
 	    void print(PrintWriter writer, Location location,
 		       IntegerType type) {
-		printDecimal(writer, location, type.getEndian());
+		printDecimal(writer, location, type.order());
 	    }
 	    void print(PrintWriter writer, Location location,
 		       FloatingPointType type) {
-		printDecimal(writer, location, type.getEndian());
+		printDecimal(writer, location, type.order());
 	    }
 	    void print(PrintWriter writer, Location location,
 		       PointerType type) {
-		printDecimal(writer, location, type.getEndian());
+		printDecimal(writer, location, type.order());
 	    }
 	};
     public static final Format BINARY = new Format() {
 	    void print(PrintWriter writer, Location location,
 		       IntegerType type) {
-		printBinary(writer, location, type.getEndian());
+		printBinary(writer, location, type.order());
 	    }
 	    void print(PrintWriter writer, Location location,
 		       FloatingPointType type) {
-		printBinary(writer, location, type.getEndian());
+		printBinary(writer, location, type.order());
 	    }
 	    void print(PrintWriter writer, Location location,
 		       PointerType type) {
-		printBinary(writer, location, type.getEndian());
+		printBinary(writer, location, type.order());
 	    }
 	};
 }

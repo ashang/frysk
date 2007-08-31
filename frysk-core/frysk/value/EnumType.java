@@ -114,23 +114,23 @@ public class EnumType extends IntegerType
     }
 
     BigInteger getBigInteger(Location location) {
-	return new BigInteger(location.get(endian));
+	return new BigInteger(location.get(order()));
     }
 
     void putBigInteger(Location location, BigInteger val) {
-	location.put(endian, val.toByteArray(),
+	location.put(order(), val.toByteArray(),
 		     val.signum() >= 0 ? 0 : (byte)0xff);
     }
 
     public Type pack(final int bitSize, final int bitOffset) {
-	return new EnumType(endian, size, valueToMember) {
+	return new EnumType(order(), size, valueToMember) {
 		Packing packing = new Packing(size, bitSize, bitOffset);
 		BigInteger getBigInteger(Location location) {
-		    return packing.unpackUnsigned(location.get(endian));
+		    return packing.unpackUnsigned(location.get(order()));
 		}
 		void putBigInteger(Location location, BigInteger val) {
-		    location.put(endian,
-				 packing.pack(location.get(endian), val),
+		    location.put(order(),
+				 packing.pack(location.get(order()), val),
 				 0);
 		}
 	    };
