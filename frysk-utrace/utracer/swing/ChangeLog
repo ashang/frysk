@@ -1,3 +1,7 @@
+Thu Aug 30 20:33:33 2007  Chris Moller  <cmoller@redhat.com>
+
+	* Added copyright notices to all files.
+
 Tue Aug 28 10:53:44 2007  Chris Moller  <cmoller@redhat.com>
 
 	* Makefile: Added stuff to build cni/Utrace.o and cni/utrace.h.

@@ -1,3 +1,7 @@
+Thu Aug 30 20:34:55 2007  Chris Moller  <cmoller@redhat.com>
+
+	* Added copyright notices to all files.
+
 Mon Aug 27 10:31:26 2007  Chris Moller  <cmoller@redhat.com>
 
 	* module/utracer-cf-io.c: Fixed real fumducker bug in handle_register.

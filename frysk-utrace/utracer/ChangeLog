@@ -1,3 +1,7 @@
+Thu Aug 30 20:34:34 2007  Chris Moller  <cmoller@redhat.com>
+
+	* Added copyright notices to all files.
+
 Thu Aug 23 16:53:19 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-i386.c:
