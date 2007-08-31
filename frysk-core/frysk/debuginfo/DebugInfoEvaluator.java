@@ -62,6 +62,7 @@ import frysk.proc.Task;
 import frysk.stack.Register;
 import frysk.stack.RegisterMap;
 import frysk.sys.Errno;
+import frysk.value.CharType;
 import frysk.value.ArithmeticType;
 import frysk.value.SignedType;
 import frysk.value.UnknownType;
@@ -472,15 +473,19 @@ class DebugInfoEvaluator
 	// float can come directly from TYPE.
 	ByteOrder order = intType.order();
 	switch (baseType) {
+	case BaseTypes.baseTypeByte:
+	    // XXX: Bogus; should be switching off the DW_AT_encoding.
+	    return new CharType(name, order, size, true);
+	case BaseTypes.baseTypeUnsignedByte:
+	    // XXX: Bogus; should be switching off the DW_AT_encoding.
+	    return new CharType(name, order, size, false);
 	case BaseTypes.baseTypeInteger:
 	case BaseTypes.baseTypeShort:
 	case BaseTypes.baseTypeLong:
-	case BaseTypes.baseTypeByte:
 	    return new SignedType(name, order, size);
 	case BaseTypes.baseTypeUnsignedLong:
 	case BaseTypes.baseTypeUnsignedInteger:
 	case BaseTypes.baseTypeUnsignedShort:
-	case BaseTypes.baseTypeUnsignedByte:
 	    return new UnsignedType(name, order, size);
 	case BaseTypes.baseTypeFloat:
 	case BaseTypes.baseTypeDouble:

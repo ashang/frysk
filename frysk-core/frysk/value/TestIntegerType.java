@@ -64,7 +64,8 @@ public class TestIntegerType
 
     public void testGetSignedBig() {
 	checkGetBigInteger(new SignedType("signed-big-endian", ByteOrder.BIG_ENDIAN, 2),
-			   (short)0xff00, 0x0102);
+			   (short)0xff00, // cause sign extension
+			   0x0102);
     }
     public void testGetSignedLittle() {
 	checkGetBigInteger(new SignedType("signed-little-endian", ByteOrder.LITTLE_ENDIAN, 2),
@@ -82,11 +83,22 @@ public class TestIntegerType
 
     public void testGetEnumBig() {
 	checkGetBigInteger(new EnumType(ByteOrder.BIG_ENDIAN, 2),
-			  (short)0xff00, 0x0102);
+			   (short)0xff00, // cause sign extension
+			   0x0102);
     }
     public void testGetEnumLittle() {
 	checkGetBigInteger(new EnumType(ByteOrder.LITTLE_ENDIAN, 2),
 			  0x00ff, 0x0201);
+    }
+
+    public void testGetSignedChar() {
+	checkGetBigInteger(new CharType("c", ByteOrder.BIG_ENDIAN, 2, true),
+			   (short)0xff00, // cause sign extension
+			   0x0102);
+    }
+    public void testGetUnsignedChar() {
+	checkGetBigInteger(new CharType("c", ByteOrder.BIG_ENDIAN, 2, false),
+			  0xff00, 0x0102);
     }
 
     private void checkPut(ArithmeticType t, String val, byte[] check) {
@@ -138,6 +150,23 @@ public class TestIntegerType
 		 "3", new byte[] { 3, 0 });
     }
 
+    public void testPutSignedPositiveChar() {
+	checkPut(new CharType("type", ByteOrder.BIG_ENDIAN, 2, true),
+		 "3", new byte[] { 0, 3 });
+    }
+    public void testPutSignedNegativeChar() {
+	checkPut(new CharType("type", ByteOrder.BIG_ENDIAN, 2, true),
+		 "-3", new byte[] { (byte)0xff, (byte)0xfd });
+    }
+    public void testPutUnsignedPositiveChar() {
+	checkPut(new CharType("type", ByteOrder.BIG_ENDIAN, 2, false),
+		 "3", new byte[] { 0, 3 });
+    }
+    public void testPutUnsignedNegativeChar() {
+	checkPut(new CharType("type", ByteOrder.BIG_ENDIAN, 2, false),
+		 "-3", new byte[] { 0, (byte)0xfd });
+    }
+
     public void testBigFloatValue() {
 	IntegerType t = new SignedType("type", ByteOrder.BIG_ENDIAN, 1);
 	Location l = new Location(new byte[] { 1 });
@@ -169,6 +198,19 @@ public class TestIntegerType
     }
 
     public void testPackedEnum() {
-	checkPacking(new EnumType(ByteOrder.BIG_ENDIAN, 1), 15);
+	checkPacking(new EnumType(ByteOrder.BIG_ENDIAN, 1), -1);
+    }
+    public void testPackedSignedChar() {
+	checkPacking(new CharType("char", ByteOrder.BIG_ENDIAN, 1, true), -1);
+    }
+    public void testPackedUnsignedChar() {
+	checkPacking(new CharType("char", ByteOrder.BIG_ENDIAN, 1, false), 15);
+    }
+
+    public void testCharToPrint() {
+	Location x = new Location(new byte[] { (byte) 'x' });
+	String s = new CharType("char", ByteOrder.BIG_ENDIAN, 2, true)
+	    .toPrint(x, null, null);
+	assertEquals("toPrint", "'x'", s);
     }
 }

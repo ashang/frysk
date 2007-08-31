@@ -1,3 +1,35 @@
+2007-08-31  Andrew Cagney  <cagney@redhat.com>
+
+	* IntegerTypeDecorator.java: New.
+	* PointerType.java: Extend IntegerTypeDecorator.
+	(getBigInteger(Location)): Delete.
+	(putBigInteger(Location, BigInteger)): Delete.
+	(add(Value,Value)): Delete.
+	(subtract(Value,Value)): Delete.
+	(clone(IntegerType)): New.
+	(toPrint): Check for CharType.
+	* EnumType.java: Extend IntegerTypeDecorator.
+	(EnumType(ByteOrder,int,SortedMap)): Delete.
+	(getBigInteger(Location)): Delete.
+	(putBigInteger(Location, BigInteger)): Delete.
+	(pack(int,int)): Delete.
+	(clone(IntegerType)): New.
+	* CharType.java: New; extend IntegerTypeDecorator.
+	* TestIntegerType.java (testGetSignedChar): New.
+	(testGetUnsignedChar): New.
+	(testPutSignedPositiveChar): New.
+	(testPutSignedNegativeChar): New.
+	(testPutUnsignedPositiveChar): New.
+	(testPutUnsignedNegativeChar): New.
+	(testPackedSignedChar): New.
+	(testPackedUnsignedChar): new.
+	(testCharToPrint): New.	
+	* ArrayType.java (toPrint): Check for CharType.
+	* TestArray.java (testString()): Create a CharType array.
+	* TestPointer.java: New.
+	* StandardTypes.java (byteLittleEndianType)
+	(byteBigEndianType): Construct a CharType.
+
 2007-08-31  Teresa Thomas  <tthomas@redhat.com>
 
 	* Location.java (get): Use getByte.

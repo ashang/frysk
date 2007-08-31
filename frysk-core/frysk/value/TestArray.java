@@ -102,7 +102,7 @@ public class TestArray extends TestCase {
 	// Create a string value
 	ArrayList dims = new ArrayList();
 	dims.add(new Integer(helloWorld.length - 1));
-	Type char_t = new SignedType("char", ByteOrder.BIG_ENDIAN, 1);
+	Type char_t = new CharType("char", ByteOrder.BIG_ENDIAN, 1, true);
 	ArrayType t = new ArrayType(char_t, helloWorld.length, dims);
 	Value v = new Value(t, new Location(helloWorld));
 	// Now print it

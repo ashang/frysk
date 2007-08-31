@@ -43,12 +43,12 @@ import frysk.proc.Isa;
 import inua.eio.ByteOrder;
 
 public class StandardTypes {
-    public static final SignedType byteLittleEndianType
-	= new SignedType("byte", ByteOrder.LITTLE_ENDIAN, 1);
-    public static final SignedType byteBigEndianType
-	= new SignedType("byte", ByteOrder.BIG_ENDIAN, 1);
+    public static final CharType byteLittleEndianType
+	= new CharType("byte", ByteOrder.LITTLE_ENDIAN, 1, true);
+    public static final CharType byteBigEndianType
+	= new CharType("byte", ByteOrder.BIG_ENDIAN, 1, true);
 
-    public static SignedType getByteType(Isa isa) {
+    public static CharType getByteType(Isa isa) {
 	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
 	    return byteLittleEndianType;
 	else

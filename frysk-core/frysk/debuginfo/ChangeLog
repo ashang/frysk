@@ -1,3 +1,8 @@
+2007-08-31  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfoEvaluator.java (fetchType): When either baseTypeByte or
+	baseTypeUnsignedByte, return a CharType.
+
 2007-08-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Scope.java: Now ignores INLINED_SUBROUTINE.

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,65 +39,41 @@
 
 package frysk.value;
 
-import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
-import java.io.PrintWriter;
 import java.math.BigInteger;
 
 /**
- * Type for a pointer (or address) of another type.
+ * Decorate an IntegerType (signed or unsigned).
+ *
+ * For instance a Char, which can be either be a SignedType or an
+ * UnsignedType, can be implemented by decorating that type.
  */
-public class PointerType
-    extends IntegerTypeDecorator
-{
-    private final Type type;
-    private PointerType(String name, ByteOrder order, int size, Type type,
-			IntegerType accessor) {
-	super(name, order, size, accessor);
-	this.type = type;
+abstract class IntegerTypeDecorator
+    extends IntegerType
+{    
+    // Used to perform get/put/pack operations.
+    private final IntegerType accessor;
+    protected IntegerTypeDecorator(String name, ByteOrder order, int size,
+				   IntegerType accessor) {
+	super(name, order, size);
+	this.accessor = accessor;
+    }
+    BigInteger getBigInteger(Location location) {
+	return accessor.getBigInteger(location);
+    }
+    void putBigInteger(Location location, BigInteger val) {
+	accessor.putBigInteger(location, val);
     }
     /**
-     * Create a PointerType.
-     * 
-     * @param typep - Type of pointed to value
-     *
-     * FIXME: Name is redundant here.
+     * Create a clone of this type, but with the specified acdcessor.
      */
-    public PointerType(String name, ByteOrder order, int size, Type type) {
-	// For moment assume that all pointers are unsigned (which
-	// isn't true for MIPS ;-).
-	this(name, order, size, type, new UnsignedType("name", order, size));
-    }
-
-    public Type getType () {
-	return type;
-    }
-    
-    void toPrint(PrintWriter writer, Location location, ByteBuffer memory,
-		 Format format) {
-	format.print(writer, location, this);
-	if (type instanceof CharType) {
-	    // XXX: ByteBuffer.slice wants longs.
-	    long addr = getBigInteger(location).longValue();
-	    writer.print(" \"");
-	    while (true) {
-		Location l = new Location(memory.slice(addr, type.getSize()));
-		BigInteger c = ((CharType)type).getBigInteger(l);
-		if (c.equals(BigInteger.ZERO))
-		    break; // NUL
-		writer.print((char)c.longValue());
-		addr += type.getSize();
-	    }
-	    writer.print("\"");
-	}
-    }
-
-    public void toPrint(PrintWriter writer) {
-	type.toPrint(writer);
-	writer.print(" *");
-    }
-
-    protected Type clone(IntegerType accessor) {
-	return new PointerType(getName(), order(), getSize(), type, accessor);
+    protected abstract Type clone(IntegerType accessor);
+    /**
+     * Pack the type into bitfields.
+     */
+    public Type pack(int bitSize, int bitOffset) {
+	// An alternative implementation would be to make this
+	// cloneable and use Object.clone.
+	return clone((IntegerType)accessor.pack(bitSize, bitOffset));
     }
 }

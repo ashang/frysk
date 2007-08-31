@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,65 +39,26 @@
 
 package frysk.value;
 
-import inua.eio.ByteBuffer;
+import frysk.junit.TestCase;
 import inua.eio.ByteOrder;
-import java.io.PrintWriter;
-import java.math.BigInteger;
+import inua.eio.ArrayByteBuffer;
 
 /**
- * Type for a pointer (or address) of another type.
+ * Type for an integer value.
  */
-public class PointerType
-    extends IntegerTypeDecorator
-{
-    private final Type type;
-    private PointerType(String name, ByteOrder order, int size, Type type,
-			IntegerType accessor) {
-	super(name, order, size, accessor);
-	this.type = type;
-    }
-    /**
-     * Create a PointerType.
-     * 
-     * @param typep - Type of pointed to value
-     *
-     * FIXME: Name is redundant here.
-     */
-    public PointerType(String name, ByteOrder order, int size, Type type) {
-	// For moment assume that all pointers are unsigned (which
-	// isn't true for MIPS ;-).
-	this(name, order, size, type, new UnsignedType("name", order, size));
-    }
-
-    public Type getType () {
-	return type;
-    }
-    
-    void toPrint(PrintWriter writer, Location location, ByteBuffer memory,
-		 Format format) {
-	format.print(writer, location, this);
-	if (type instanceof CharType) {
-	    // XXX: ByteBuffer.slice wants longs.
-	    long addr = getBigInteger(location).longValue();
-	    writer.print(" \"");
-	    while (true) {
-		Location l = new Location(memory.slice(addr, type.getSize()));
-		BigInteger c = ((CharType)type).getBigInteger(l);
-		if (c.equals(BigInteger.ZERO))
-		    break; // NUL
-		writer.print((char)c.longValue());
-		addr += type.getSize();
-	    }
-	    writer.print("\"");
-	}
-    }
-
-    public void toPrint(PrintWriter writer) {
-	type.toPrint(writer);
-	writer.print(" *");
-    }
-
-    protected Type clone(IntegerType accessor) {
-	return new PointerType(getName(), order(), getSize(), type, accessor);
+public class TestPointer
+    extends TestCase
+{    
+    public void testCharPointer() {
+	// Construct a buffer with a string in it.
+	ArrayByteBuffer memory
+	    = new ArrayByteBuffer("0123Hello World\0>>>".getBytes());
+	Type t = new PointerType("xxx", ByteOrder.BIG_ENDIAN, 1,
+				 new CharType("char", ByteOrder.BIG_ENDIAN,
+					      1, true));
+	// Construct the pointer and try it.
+	Location l = new Location(new byte[] { 4 });
+	assertEquals("toPrint", "0x4 \"Hello World\"",
+		     t.toPrint(l, memory, Format.NATURAL));
     }
 }

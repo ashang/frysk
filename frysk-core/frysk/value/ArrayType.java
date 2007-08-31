@@ -37,9 +37,9 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.value;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.io.PrintWriter;
 import inua.eio.ByteBuffer;
@@ -172,21 +172,23 @@ public class ArrayType
     
     void toPrint(PrintWriter writer, Location location,
 		 ByteBuffer memory, Format format) {
-	ArrayIterator e = new ArrayIterator(location);
-	if (type instanceof IntegerType && type.getSize() == 1) {
+	if (type instanceof CharType) {
 	    // Treat it as a character string
 	    writer.print("\"");
-	    byte[] string = location.toByteArray();
-	    for (int i = 0; i < string.length; i++) {
-		if (string[i] == 0)
+	    for (ArrayIterator e = new ArrayIterator(location);
+		 e.hasNext(); ) {
+		Location l = (Location)e.next();
+		BigInteger c = ((CharType)type).getBigInteger(l);
+		if (c.equals(BigInteger.ZERO))
 		    break; // NUL
-		writer.print((char)string[i]);
+		writer.print((char)c.longValue());
 	    }
 	    writer.print("\"");
 	} else {
 	    for (int i = 0; i < dimension.length; i++)
 		writer.print("{");
-	    while (e.hasNext()) {
+	    for (ArrayIterator e = new ArrayIterator(location);
+		 e.hasNext(); ) {
 		if (e.idx > 0) {
 		    if ((e.idx % dimension[dimension.length - 1]) == 0)
 			writer.print("},{");

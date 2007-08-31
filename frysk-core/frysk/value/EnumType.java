@@ -50,7 +50,7 @@ import java.util.Iterator;
 /**
  * Type for an enum.
  */
-public class EnumType extends IntegerType
+public class EnumType extends IntegerTypeDecorator
 {
     private static class Member {
 	final String name;
@@ -95,44 +95,22 @@ public class EnumType extends IntegerType
 	writer.print("}");
     }
   
+    private EnumType(ByteOrder order, int size, IntegerType accessor) {
+	super("enum", order, size, accessor);
+    }
+    protected Type clone(IntegerType accessor) {
+	return new EnumType(order(), getSize(), accessor);
+    }
     /**
      * Create an Enum.
      */
     public EnumType(ByteOrder order, int size) {
-	super("enum", order, size);
-    }
-
-    private EnumType(ByteOrder byteOrder, int size, SortedMap valueToMember) {
-	this(byteOrder, size);
-	this.valueToMember.putAll(valueToMember);
+	this(order, size, new SignedType("enum", order, size));
     }
 
     public EnumType addMember (String name, long l) {
 	BigInteger value = BigInteger.valueOf(l);
 	valueToMember.put(value, new Member(name, value));
 	return this;
-    }
-
-    BigInteger getBigInteger(Location location) {
-	return new BigInteger(location.get(order()));
-    }
-
-    void putBigInteger(Location location, BigInteger val) {
-	location.put(order(), val.toByteArray(),
-		     val.signum() >= 0 ? 0 : (byte)0xff);
-    }
-
-    public Type pack(final int bitSize, final int bitOffset) {
-	return new EnumType(order(), size, valueToMember) {
-		Packing packing = new Packing(size, bitSize, bitOffset);
-		BigInteger getBigInteger(Location location) {
-		    return packing.unpackUnsigned(location.get(order()));
-		}
-		void putBigInteger(Location location, BigInteger val) {
-		    location.put(order(),
-				 packing.pack(location.get(order()), val),
-				 0);
-		}
-	    };
     }
 }
