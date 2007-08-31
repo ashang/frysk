@@ -48,58 +48,49 @@ import frysk.junit.TestCase;
 public class TestDecoratorTypes
     extends TestCase
 {
+    private final SignedType int_t = new SignedType("int", ByteOrder.BIG_ENDIAN, 1);
+
     public void testConstType() {
-	Type t = new ConstType(new SignedType(1, ByteOrder.BIG_ENDIAN,
-					      -1, "int", false));
+	Type t = new ConstType(int_t);
 	assertEquals("const", "const int", t.toPrint());
     }
     public void testPackedType() {
-	Type t = new PackedType(new SignedType(1, ByteOrder.BIG_ENDIAN,
-					      -1, "int", false));
+	Type t = new PackedType(int_t);
 	assertEquals("toPrint", "packed int", t.toPrint());
     }
     public void testPointerType() {
-	Type t = new PointerType(ByteOrder.BIG_ENDIAN, 4,
-				 new SignedType(1, ByteOrder.BIG_ENDIAN,
-						-1, "int", false),
-				 "xxx");
+	Type t = new PointerType("xxx", ByteOrder.BIG_ENDIAN, 4, int_t);
 	assertEquals("toPrint", "int *", t.toPrint());
     }
     public void testReferenceType() {
-	Type t = new ReferenceType(new SignedType(1, ByteOrder.BIG_ENDIAN,
-					      -1, "int", false));
+	Type t = new ReferenceType(int_t);
 	assertEquals("toPrint", "& int", t.toPrint());
     }
     public void testRestrictType() {
-	Type t = new RestrictType(new SignedType(1, ByteOrder.BIG_ENDIAN,
-					      -1, "int", false));
+	Type t = new RestrictType(int_t);
 	assertEquals("toPrint", "restrict int", t.toPrint());
     }
     public void testSharedType() {
-	Type t = new SharedType(new SignedType(1, ByteOrder.BIG_ENDIAN,
-					      -1, "int", false));
+	Type t = new SharedType(int_t);
 	assertEquals("toPrint", "shared int", t.toPrint());
     }
     public void testVolatileType() {
-	Type t = new VolatileType(new SignedType(1, ByteOrder.BIG_ENDIAN,
-						 -1, "int", false));
+	Type t = new VolatileType(int_t);
 	assertEquals("toPrint", "volatile int", t.toPrint());
     }
     public void testTypeDef() {
-	Type t = new TypeDef("a-type", new SignedType(1, ByteOrder.BIG_ENDIAN,
-						      -1, "int", false));
+	Type t = new TypeDef("a-type", int_t);
 	assertEquals("toPrint", "a-type", t.toPrint());
     }
 
     public void testUltimateType() {
-	Type t = new SignedType(1, ByteOrder.BIG_ENDIAN, -1, "int", false);
-	assertEquals("ultimate type", t,
+	assertEquals("ultimate type", int_t,
 		     new ConstType
 		     (new PackedType
 		      (new ReferenceType
 		       (new RestrictType
 			(new SharedType
 			 (new VolatileType
-			  (new TypeDef("type-def", t))))))).getUltimateType());
+			  (new TypeDef("type-def", int_t))))))).getUltimateType());
     }
 }

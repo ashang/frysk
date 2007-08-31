@@ -44,10 +44,8 @@ import java.util.ArrayList;
 import frysk.junit.TestCase;
 
 public class TestArray extends TestCase {
-    private final Type int4_t = new SignedType(4, ByteOrder.BIG_ENDIAN, 0,
-					       "int", false);
-    private final Type int2_t = new SignedType(2, ByteOrder.BIG_ENDIAN, 0,
-					       "int", false);
+    private final Type int4_t = new SignedType("int", ByteOrder.BIG_ENDIAN, 4);
+    private final Type int2_t = new SignedType("int", ByteOrder.BIG_ENDIAN, 2);
     private final byte[] buf = new byte[] {
 	0x01, 0x02, 0x03, 0x04,
 	0x05, 0x06, 0x07, 0x08,
@@ -104,8 +102,7 @@ public class TestArray extends TestCase {
 	// Create a string value
 	ArrayList dims = new ArrayList();
 	dims.add(new Integer(helloWorld.length - 1));
-	Type char_t = new SignedType(1, ByteOrder.BIG_ENDIAN, -1, "char",
-				     false);
+	Type char_t = new SignedType("char", ByteOrder.BIG_ENDIAN, 1);
 	ArrayType t = new ArrayType(char_t, helloWorld.length, dims);
 	Value v = new Value(t, new Location(helloWorld));
 	// Now print it

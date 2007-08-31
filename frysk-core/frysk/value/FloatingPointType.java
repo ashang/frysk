@@ -51,15 +51,8 @@ import java.math.BigInteger;
 public class FloatingPointType
     extends ArithmeticType
 {    
-    /**
-     * XXX: This is an interim constructor.  This will be replaced by
-     * a constructor that replaces TYPE_ID with a description of the
-     * underlying floating-point format.
-     */
-    public FloatingPointType(int size, ByteOrder endian,
-			     int typeId, String typeStr,
-			     boolean haveTypeDef) {
-	super(size, endian, typeId, typeStr, haveTypeDef);
+    public FloatingPointType(String name, ByteOrder order, int size) {
+	super(name, order, size);
     }
 
     public void toPrint(PrintWriter writer, Location location,

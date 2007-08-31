@@ -51,13 +51,8 @@ import java.math.BigInteger;
 public class UnsignedType
     extends IntegerType
 {    
-    /**
-     * XXX: This is an interim constructor.
-     */
-    public UnsignedType(int size, ByteOrder order,
-			int typeId, String typeStr,
-			boolean haveTypeDef) {
-	super(size, order, typeId, typeStr, haveTypeDef);
+    public UnsignedType(String name, ByteOrder order, int size) {
+	super(name, order, size);
     }
 
     BigInteger getBigInteger(Location location) {
@@ -69,7 +64,7 @@ public class UnsignedType
     }
 
     public Type pack(final int bitSize, final int bitOffset) {
-	return new UnsignedType(size, order(), -1, getName(), false) {
+	return new UnsignedType(getName(), order(), size) {
 		Packing packing = new Packing(size, bitSize, bitOffset);
 		BigInteger getBigInteger(Location location) {
 		    return packing.unpackUnsigned(location.get(order()));

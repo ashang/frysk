@@ -55,10 +55,11 @@ public class PointerType
      * Create a PointerType
      * 
      * @param typep - Type of pointed to value
+     *
+     * FIXME: Name is redundant here.
      */
-    public PointerType (ByteOrder byteOrder, int size, Type type,
-			String typeStr) {
-	super(size, byteOrder, 0, typeStr, false);
+    public PointerType (String name, ByteOrder order, int size, Type type) {
+	super(name, order, size);
 	this.type = type;
     }
 

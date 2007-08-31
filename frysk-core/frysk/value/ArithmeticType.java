@@ -49,16 +49,8 @@ import java.math.BigInteger;
 public abstract class ArithmeticType
     extends Type
 {    
-    protected ArithmeticType(int size, ByteOrder endian,
-			     int typeId, String typeStr)
-    {
-	super(size, endian, typeId, typeStr);
-    }
-  
-    protected ArithmeticType(int size, ByteOrder endian, 
-			     int typeId, String typeStr, boolean haveTypeDef)
-    {
-	super(size, endian, typeId, typeStr, haveTypeDef);
+    protected ArithmeticType(String name, ByteOrder order, int size) {
+	super(name, order, size);
     }
   
     public String toString() {

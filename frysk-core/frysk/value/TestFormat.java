@@ -51,15 +51,15 @@ public class TestFormat
     extends TestCase
 {
     private IntegerType int_t
-	= new SignedType(4, ByteOrder.BIG_ENDIAN, -1, "i", false);
+	= new SignedType("i", ByteOrder.BIG_ENDIAN, 4);
     private IntegerType uint_t
-	= new UnsignedType(4, ByteOrder.BIG_ENDIAN, -1, "u", false);
+	= new UnsignedType("u", ByteOrder.BIG_ENDIAN, 4);
     private FloatingPointType float_t
-	= new FloatingPointType(4, ByteOrder.BIG_ENDIAN, -1, "f", false);
+	= new FloatingPointType("f", ByteOrder.BIG_ENDIAN, 4);
     private FloatingPointType double_t
-	= new FloatingPointType(8, ByteOrder.BIG_ENDIAN, -1, "d", false);
+	= new FloatingPointType("d", ByteOrder.BIG_ENDIAN, 8);
     private PointerType pointer_t
-	= new PointerType(ByteOrder.BIG_ENDIAN, 4, int_t, "p");
+	= new PointerType("p", ByteOrder.BIG_ENDIAN, 4, int_t);
 
     private void checkInteger(Format format, byte[] bytes,
 			      IntegerType type, String value) {

@@ -53,7 +53,7 @@ public class VoidType
      * Create a Void type.
      */
     public VoidType () {
-	super(8, ByteOrder.BIG_ENDIAN, 0, "void");
+	super("void", ByteOrder.BIG_ENDIAN, 8);
     }
 
     public void toPrint(PrintWriter writer) {

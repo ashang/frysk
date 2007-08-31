@@ -51,7 +51,7 @@ import inua.eio.ByteBuffer;
 abstract class TypeDecorator extends Type {
     private Type decorated;
     TypeDecorator(String name, Type decorated) {
-	super(decorated.getSize(), decorated.order(), -1, name);
+	super(name, decorated.order(), decorated.getSize());
 	this.decorated = decorated;
     }
 

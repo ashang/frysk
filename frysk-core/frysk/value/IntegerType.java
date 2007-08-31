@@ -50,14 +50,8 @@ import java.math.BigInteger;
 public abstract class IntegerType
     extends ArithmeticType
 {    
-    /**
-     * XXX: This is an interim constructor.  This will be replaced by
-     * a constructor that replaces TYPE_ID with SIGNNESS.
-     */
-    protected IntegerType(int size, ByteOrder endian,
-			  int typeId, String typeStr,
-			  boolean haveTypeDef) {
-	super(size, endian, typeId, typeStr, haveTypeDef);
+    protected IntegerType(String name, ByteOrder order, int size) {
+	super(name, order, size);
     }
 
     void toPrint(PrintWriter writer, Location location,

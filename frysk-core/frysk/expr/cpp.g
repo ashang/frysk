@@ -777,11 +777,11 @@ options {
         this();
 	    cppSymTabRef = symTab; 
         this.frame = frame;
-        shortType = new SignedType(intSize / 2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeShort, "short", false);
-        intType = new SignedType(intSize, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeInteger, "int", false);
-        longType = new SignedType(intSize * 2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeLong, "long", false);
-        floatType = new FloatingPointType(intSize, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeFloat, "float", false);
-        doubleType = new FloatingPointType(intSize * 2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeDouble, "double", false);
+        shortType = new SignedType("short", ByteOrder.LITTLE_ENDIAN, intSize / 2);
+        intType = new SignedType("int", ByteOrder.LITTLE_ENDIAN, intSize);
+        longType = new SignedType("long", ByteOrder.LITTLE_ENDIAN, intSize * 2);
+        floatType = new FloatingPointType("false", ByteOrder.LITTLE_ENDIAN, intSize);
+        doubleType = new FloatingPointType("double", ByteOrder.LITTLE_ENDIAN, intSize * 2);
     }
 }
 

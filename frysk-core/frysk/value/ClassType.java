@@ -105,8 +105,8 @@ public class ClassType
      * @param endian - Endianness of class
      * @param name TODO
      */
-    public ClassType (ByteOrder endian, String name) {
-	super(0, endian, 0, name);
+    public ClassType (String name, ByteOrder order) {
+	super(name, order, 0);
 	inheritance = false;
     }
 

@@ -41,14 +41,12 @@ package frysk.value;
 
 import frysk.proc.Isa;
 import inua.eio.ByteOrder;
-import lib.dwfl.BaseTypes;
 
 public class StandardTypes {
-    public static final SignedType byteLittleEndianType = new SignedType(
-	    1, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeByte, "byte", false);
-
-    public static final SignedType byteBigEndianType = new SignedType(
-	    1, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeByte, "byte", false);
+    public static final SignedType byteLittleEndianType
+	= new SignedType("byte", ByteOrder.LITTLE_ENDIAN, 1);
+    public static final SignedType byteBigEndianType
+	= new SignedType("byte", ByteOrder.BIG_ENDIAN, 1);
 
     public static SignedType getByteType(Isa isa) {
 	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
@@ -57,11 +55,10 @@ public class StandardTypes {
 	    return byteBigEndianType;
     }
 
-    public static final SignedType shortLittleEndianType = new SignedType(
-	    2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeShort, "short", false);
-
-    public static final SignedType shortBigEndianType = new SignedType(
-	    2, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeShort, "short", false);
+    public static final SignedType shortLittleEndianType
+	= new SignedType("short", ByteOrder.LITTLE_ENDIAN, 2);
+    public static final SignedType shortBigEndianType
+	= new SignedType("short", ByteOrder.BIG_ENDIAN, 2);
 
     public static SignedType getShortType(Isa isa) {
 	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
@@ -70,11 +67,10 @@ public class StandardTypes {
 	    return shortBigEndianType;
     }
 
-    public static final SignedType intLittleEndianType = new SignedType(
-	    4, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeInteger, "int", false);
-
-    public static final SignedType intBigEndianType = new SignedType(
-	    4, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeInteger, "int", false);
+    public static final SignedType intLittleEndianType
+	= new SignedType("int", ByteOrder.LITTLE_ENDIAN, 4);
+    public static final SignedType intBigEndianType
+	= new SignedType("int", ByteOrder.BIG_ENDIAN, 4);
 
     public static SignedType getIntType(Isa isa) {
 	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
@@ -83,11 +79,10 @@ public class StandardTypes {
 	    return intBigEndianType;
     }
 
-    public static final SignedType longLittleEndianType = new SignedType(
-	    8, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeLong, "long", false);
-
-    public static final SignedType longBigEndianType = new SignedType(
-	    8, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeLong, "long", false);
+    public static final SignedType longLittleEndianType
+	= new SignedType("long", ByteOrder.LITTLE_ENDIAN, 8);
+    public static final SignedType longBigEndianType
+	= new SignedType("long", ByteOrder.BIG_ENDIAN, 8);
 
     public static SignedType getLongType(Isa isa) {
 	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
@@ -96,11 +91,10 @@ public class StandardTypes {
 	    return longBigEndianType;
     }
 
-    public static final FloatingPointType floatLittleEndianType = new FloatingPointType(
-	    4, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeFloat, "float", false);
-
-    public static final FloatingPointType floatBigEndianType = new FloatingPointType(
-	    4, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeFloat, "float", false);
+    public static final FloatingPointType floatLittleEndianType
+	= new FloatingPointType("float", ByteOrder.LITTLE_ENDIAN, 4);
+    public static final FloatingPointType floatBigEndianType
+	= new FloatingPointType("float", ByteOrder.BIG_ENDIAN, 4);
 
     public static FloatingPointType getFloatType(Isa isa) {
 	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
@@ -109,11 +103,10 @@ public class StandardTypes {
 	    return floatBigEndianType;
     }
 
-    public static final FloatingPointType doubleLittleEndianType = new FloatingPointType(
-	    8, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeDouble, "double", false);
-
-    public static final FloatingPointType doubleBigEndianType = new FloatingPointType(
-	    8, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeDouble, "double", false);
+    public static final FloatingPointType doubleLittleEndianType
+	= new FloatingPointType("double", ByteOrder.LITTLE_ENDIAN, 8);
+    public static final FloatingPointType doubleBigEndianType
+	= new FloatingPointType("double", ByteOrder.BIG_ENDIAN, 8);
 
     public static FloatingPointType getDoubleType(Isa isa) {
 	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)

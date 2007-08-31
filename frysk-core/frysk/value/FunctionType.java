@@ -90,8 +90,8 @@ public class FunctionType
      * 
      * @param endian - Endianness of class
      */
-    public FunctionType (ByteOrder endian, String name, Type returnType) {
-	super(8, endian, 0, name);
+    public FunctionType (String name, ByteOrder order, Type returnType) {
+	super(name, order, 8);
 	this.returnType = returnType;
 	parmTypes = new ArrayList();
 	parmNames = new ArrayList();

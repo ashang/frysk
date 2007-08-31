@@ -476,15 +476,15 @@ class DebugInfoEvaluator
 	case BaseTypes.baseTypeShort:
 	case BaseTypes.baseTypeLong:
 	case BaseTypes.baseTypeByte:
-	    return new SignedType(size, order, baseType, name, haveTypeDef);
+	    return new SignedType(name, order, size);
 	case BaseTypes.baseTypeUnsignedLong:
 	case BaseTypes.baseTypeUnsignedInteger:
 	case BaseTypes.baseTypeUnsignedShort:
 	case BaseTypes.baseTypeUnsignedByte:
-	    return new UnsignedType(size, order, baseType, name, haveTypeDef);
+	    return new UnsignedType(name, order, size);
 	case BaseTypes.baseTypeFloat:
 	case BaseTypes.baseTypeDouble:
-	    return new FloatingPointType(size, order, baseType, name, true);
+	    return new FloatingPointType(name, order, size);
 	default:
 	    return new UnknownType(name);
 	}
@@ -498,7 +498,8 @@ class DebugInfoEvaluator
     private ClassType getClassType (DwarfDie classDie, String name) {
 	int typeSize = 0;
 	// System.out.println("die=" + Long.toHexString(classDie.getOffset()) + " tag=" + Long.toHexString(classDie.getTag()) + " " + classDie.getName());
-	ClassType classType = new ClassType(task.getIsa().getByteOrder(), name);
+	ClassType classType = new ClassType(name,
+					    task.getIsa().getByteOrder());
 	for (DwarfDie member = classDie.getChild();
 	     member != null;
 	     member = member.getSibling()) {
@@ -571,8 +572,8 @@ class DebugInfoEvaluator
 		ByteOrder byteorder = task.getIsa().getByteOrder();
 		Type memberPtrType;
             
-		memberPtrType = new PointerType(byteorder, getByteSize(memberType),
-						getPointerTarget(memberType), "*");
+		memberPtrType = new PointerType("*", byteorder, getByteSize(memberType),
+						getPointerTarget(memberType));
 		classType.addMember(member.getName(), memberPtrType, offset,
 				    access);
 		typeSize += memberPtrType.getSize();
@@ -738,8 +739,8 @@ class DebugInfoEvaluator
 		    return new Value(classType, abb);
 		}
 		case DwTag.POINTER_TYPE_: {
-		    PointerType ptrType = new PointerType(byteorder, longType.getSize(),
-							  getPointerTarget (type), "*");
+		    PointerType ptrType = new PointerType("*", byteorder, longType.getSize(),
+							  getPointerTarget (type));
 		    long  addr = variableAccessor[i].getLong(varDie, 0);
 		    return ptrType.createValue(addr);
 		}
@@ -903,8 +904,8 @@ class DebugInfoEvaluator
 	switch (type.getTag())
 	    {
 	    case DwTag.POINTER_TYPE_: {
-		return new PointerType(byteorder, getByteSize(type),
-				       getPointerTarget(type), "void*");
+		return new PointerType("void*", byteorder, getByteSize(type),
+				       getPointerTarget(type));
 	    }
 	    }
 	return new UnknownType(type.getName());
@@ -928,7 +929,7 @@ class DebugInfoEvaluator
 	    if (varDie.getUltimateType() != null) {
 		type = getType(varDie);
 	    }
-	    FunctionType functionType = new FunctionType(byteorder, varDie.getName(), type);
+	    FunctionType functionType = new FunctionType(varDie.getName(), byteorder, type);
 	    DwarfDie parm = varDie.getChild();
 	    while (parm != null && parm.getTag() == DwTag.FORMAL_PARAMETER_) {
 		if (parm.getAttrBoolean((DwAt.ARTIFICIAL_)) == false) {
@@ -960,8 +961,8 @@ class DebugInfoEvaluator
     
 	switch (type.getTag()) {
 	case DwTag.POINTER_TYPE_: {
-	    return new PointerType(byteorder, getByteSize(type),
-				   getPointerTarget(type), "*");
+	    return new PointerType("*", byteorder, getByteSize(type),
+				   getPointerTarget(type));
 	}
 	case DwTag.ARRAY_TYPE_: {
 	    DwarfDie subrange = type.getChild();

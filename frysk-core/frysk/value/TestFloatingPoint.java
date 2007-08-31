@@ -49,14 +49,12 @@ public class TestFloatingPoint
     extends TestCase
 {
     public void testBigIntegerValue() {
-	FloatingPointType t = new FloatingPointType(4, ByteOrder.BIG_ENDIAN,
-						    -1, "type", false);
+	FloatingPointType t = new FloatingPointType("type", ByteOrder.BIG_ENDIAN, 4);
 	Location l = new Location(TestBigFloat.FLOAT_ONE);
 	assertEquals("float", 1, t.bigIntegerValue(l).longValue());
     }
     public void testBigFloatValue() {
-	FloatingPointType t = new FloatingPointType(4, ByteOrder.BIG_ENDIAN,
-						    -1, "type", false);
+	FloatingPointType t = new FloatingPointType("type", ByteOrder.BIG_ENDIAN, 4);
 	Location l = new Location(TestBigFloat.FLOAT_ONE);
 	TestBigFloat.checkEquals("float", 1.0,
 				 t.bigFloatValue(l).doubleValue());

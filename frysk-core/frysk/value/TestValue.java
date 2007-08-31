@@ -39,25 +39,23 @@
 
 package frysk.value;
 
-import lib.dwfl.BaseTypes;
 import inua.eio.ByteOrder;
 import frysk.junit.TestCase;
 
 public class TestValue
     extends TestCase
 {
-    private ArithmeticType longBEType = new SignedType(8, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeLong, "long", false);
-    private ArithmeticType intBEType = new SignedType(4, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeInteger, "int", false);
-    private ArithmeticType shortBEType = new SignedType(2, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeShort, "short", false);
-    private ArithmeticType byteBEType = new SignedType(1, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeByte, "byte", false);
+    private ArithmeticType longBEType = new SignedType("long", ByteOrder.BIG_ENDIAN, 8);
+    private ArithmeticType intBEType = new SignedType("int", ByteOrder.BIG_ENDIAN, 8);
+    private ArithmeticType shortBEType = new SignedType("short", ByteOrder.BIG_ENDIAN, 2);
+    private ArithmeticType byteBEType = new SignedType("byte", ByteOrder.BIG_ENDIAN, 1);
   
-    private ArithmeticType longType = new SignedType(8, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeLong, "long", false);
-    private ArithmeticType intType = new SignedType(4, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeInteger, "int", false);
-    private ArithmeticType shortType = new SignedType(2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeShort, "short", false);
-    private ArithmeticType byteType = new SignedType(1, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeByte, "byte", false);
-    private ArithmeticType floatType = new FloatingPointType(4, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeFloat, "float", false);
-    private ArithmeticType doubleType = new FloatingPointType(8, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeDouble, "double", false);
-  
+    private ArithmeticType longType = new SignedType("long", ByteOrder.LITTLE_ENDIAN, 8);
+    private ArithmeticType intType = new SignedType("int", ByteOrder.LITTLE_ENDIAN, 4);
+    private ArithmeticType shortType = new SignedType("short", ByteOrder.LITTLE_ENDIAN, 2);
+    private ArithmeticType byteType = new SignedType("byte", ByteOrder.LITTLE_ENDIAN, 1);
+    private ArithmeticType floatType = new FloatingPointType("float", ByteOrder.LITTLE_ENDIAN, 4);
+    private ArithmeticType doubleType = new FloatingPointType("double", ByteOrder.LITTLE_ENDIAN, 8);
     public void testNumber ()
     {
 	Value v1 = byteType.createValue(1);

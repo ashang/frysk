@@ -63,25 +63,21 @@ public class TestIntegerType
     }
 
     public void testGetSignedBig() {
-	checkGetBigInteger(new SignedType(2, ByteOrder.BIG_ENDIAN, -1,
-					 "signed-big-endian", false),
-			  (short)0xff00, 0x0102);
+	checkGetBigInteger(new SignedType("signed-big-endian", ByteOrder.BIG_ENDIAN, 2),
+			   (short)0xff00, 0x0102);
     }
     public void testGetSignedLittle() {
-	checkGetBigInteger(new SignedType(2, ByteOrder.LITTLE_ENDIAN, -1,
-					 "signed-little-endian", false),
-			  0x00ff, 0x0201);
+	checkGetBigInteger(new SignedType("signed-little-endian", ByteOrder.LITTLE_ENDIAN, 2),
+			   0x00ff, 0x0201);
     }
 
     public void testGetUnsignedBig() {
-	checkGetBigInteger(new UnsignedType(2, ByteOrder.BIG_ENDIAN, -1,
-					   "unsigned-big-endian", false),
-			  0xff00, 0x0102);
+	checkGetBigInteger(new UnsignedType("unsigned-big-endian", ByteOrder.BIG_ENDIAN, 2),
+			   0xff00, 0x0102);
     }
     public void testGetUnsignedLittle() {
-	checkGetBigInteger(new UnsignedType(2, ByteOrder.LITTLE_ENDIAN, -1,
-					   "unsigned-little-endian", false),
-			  0x00ff, 0x0201);
+	checkGetBigInteger(new UnsignedType("unsigned-little-endian", ByteOrder.LITTLE_ENDIAN, 2),
+			   0x00ff, 0x0201);
     }
 
     public void testGetEnumBig() {
@@ -100,36 +96,36 @@ public class TestIntegerType
     }
 
     public void testPutSignedPositiveBig() {
-	checkPut(new SignedType(2, ByteOrder.BIG_ENDIAN, -1, "type", false),
+	checkPut(new SignedType("type", ByteOrder.BIG_ENDIAN, 2),
 		 "3", new byte[] { 0, 3 });
     }
     public void testPutSignedNegativeBig() {
-	checkPut(new SignedType(2, ByteOrder.BIG_ENDIAN, -1, "type", false),
+	checkPut(new SignedType("type", ByteOrder.BIG_ENDIAN, 2),
 		 "-3", new byte[] { (byte)0xff, (byte)0xfd });
     }
     public void testPutSignedPositiveLittle() {
-	checkPut(new SignedType(2, ByteOrder.LITTLE_ENDIAN, -1, "type", false),
+	checkPut(new SignedType("type", ByteOrder.LITTLE_ENDIAN, 2),
 		 "3", new byte[] { 3, 0 });
     }
     public void testPutSignedNegativeLittle() {
-	checkPut(new SignedType(2, ByteOrder.LITTLE_ENDIAN, -1, "type", false),
+	checkPut(new SignedType("type", ByteOrder.LITTLE_ENDIAN, 2),
 		 "-3", new byte[] { (byte)0xfd, (byte)0xff });
     }
 
     public void testPutUnsignedPositiveBig() {
-	checkPut(new UnsignedType(2, ByteOrder.BIG_ENDIAN, -1, "type", false),
+	checkPut(new UnsignedType("type", ByteOrder.BIG_ENDIAN, 2),
 		 "3", new byte[] { 0, 3 });
     }
     public void testPutUnsignedNegativeBig() {
-	checkPut(new UnsignedType(2, ByteOrder.BIG_ENDIAN, -1, "type", false),
+	checkPut(new UnsignedType("type", ByteOrder.BIG_ENDIAN, 2),
 		 "-3", new byte[] { 0, (byte)0xfd });
     }
     public void testPutUnsignedPositiveLittle() {
-	checkPut(new UnsignedType(2, ByteOrder.LITTLE_ENDIAN, -1, "type", false),
+	checkPut(new UnsignedType("type", ByteOrder.LITTLE_ENDIAN, 2),
 		 "3", new byte[] { 3, 0 });
     }
     public void testPutUnsignedNegativeLittle() {
-	checkPut(new UnsignedType(2, ByteOrder.LITTLE_ENDIAN, -1, "type", false),
+	checkPut(new UnsignedType("type", ByteOrder.LITTLE_ENDIAN, 2),
 		 "-3", new byte[] { (byte)0xfd, 0 });
     }
 
@@ -143,14 +139,12 @@ public class TestIntegerType
     }
 
     public void testBigFloatValue() {
-	IntegerType t = new SignedType(1, ByteOrder.BIG_ENDIAN, -1, "type",
-				       false);
+	IntegerType t = new SignedType("type", ByteOrder.BIG_ENDIAN, 1);
 	Location l = new Location(new byte[] { 1 });
 	TestBigFloat.checkEquals("1", 1.0, t.bigFloatValue(l).doubleValue());
     }
     public void testBigIntegerValue() {
-	IntegerType t = new SignedType(1, ByteOrder.BIG_ENDIAN, -1, "type",
-				       false);
+	IntegerType t = new SignedType("type", ByteOrder.BIG_ENDIAN, 1);
 	Location l = new Location(new byte[] { 1 });
 	assertEquals("1", 1, t.bigIntegerValue(l).longValue());
     }
@@ -167,15 +161,11 @@ public class TestIntegerType
     }
 
     public void testPackedSigned() {
-	checkPacking(new SignedType(1, ByteOrder.BIG_ENDIAN, -1, "type",
-				    false),
-		     -1);
+	checkPacking(new SignedType("type", ByteOrder.BIG_ENDIAN, 1), -1);
     }
 
     public void testPackedUnsigned() {
-	checkPacking(new UnsignedType(1, ByteOrder.BIG_ENDIAN, -1, "type",
-				      false),
-		     15);
+	checkPacking(new UnsignedType("type", ByteOrder.BIG_ENDIAN, 1), 15);
     }
 
     public void testPackedEnum() {

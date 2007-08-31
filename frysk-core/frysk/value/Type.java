@@ -64,15 +64,10 @@ public abstract class Type {
     // XXX: Not needed; made redundant by TypeDef.
     private boolean isTypedef;
 
-    Type (int size, ByteOrder endian, int typeId, String name) {
-	this(size, endian, typeId, name, false);
-    }
-
-    Type (int size, ByteOrder order, int typeId, String name,
-	  boolean typedef) {
-	this.size = size;
-	this.order = order;
+    Type (String name, ByteOrder order, int size) {
 	this.name = name;
+	this.order = order;
+	this.size = size;
 	this.isTypedef = false;
     }
 

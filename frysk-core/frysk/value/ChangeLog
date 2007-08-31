@@ -1,5 +1,27 @@
 2007-08-31  Andrew Cagney  <cagney@redhat.com>
 
+	* Type.java (Type(int,ByteOrder,int,String,boolean)): Delete.
+	(Type(int,ByteOrder,int,String)): Delete.
+	(Type(String,ByteOrder,int)): New.
+	* ArithmeticType.java: Ditto.
+	* ArrayType.java: Ditto.
+	* ClassType.java: Ditto.
+	* TypeDecorator.java: Ditto.
+	* UnknownType.java: Ditto.
+	* VoidType.java: Ditto.
+	* FloatingPointType.java: Ditto.
+	* IntegerType.java: Ditto.
+	* UnsignedType.java: Ditto.
+	* EnumType.java: Ditto.
+	* PointerType.java: Ditto.
+	* SignedType.java: Ditto.
+	* TestClass.java: Update.
+	* TestIntegerType.java: Update.
+	* TestFormat.java: Update.
+	* StandardTypes.java: Update.
+	* TestDecoratorTypes.java: Update.
+	* TestValue.java: Update.
+
 	* TestValue.java: Make all fields private.
 	(longBEUnsignedType): Delete.
 	(intBEUnsignedType): Delete.

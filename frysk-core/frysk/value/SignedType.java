@@ -51,14 +51,8 @@ import java.math.BigInteger;
 public class SignedType
     extends IntegerType
 {    
-    /**
-     * XXX: This is an interim constructor.  This will be replaced by
-     * a constructor that replaces TYPE_ID with SIGNNESS.
-     */
-    public SignedType(int size, ByteOrder order,
-		       int typeId, String typeStr,
-		       boolean haveTypeDef) {
-	super(size, order, typeId, typeStr, haveTypeDef);
+    public SignedType(String name, ByteOrder order, int size) {
+	super(name, order, size);
     }
 
     BigInteger getBigInteger(Location location) {
@@ -71,7 +65,7 @@ public class SignedType
     }
 
     public Type pack(final int bitSize, final int bitOffset) {
-	return new SignedType(size, order(), -1, getName(), false) {
+	return new SignedType(getName(), order(), size) {
 		Packing packing = new Packing(size, bitSize, bitOffset);
 		BigInteger getBigInteger(Location location) {
 		    return packing.unpackSigned(location.get(order()));

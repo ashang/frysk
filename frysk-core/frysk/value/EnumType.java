@@ -98,8 +98,8 @@ public class EnumType extends IntegerType
     /**
      * Create an Enum.
      */
-    public EnumType(ByteOrder byteOrder, int size) {
-	super(size, byteOrder, 0, "enum", false);
+    public EnumType(ByteOrder order, int size) {
+	super("enum", order, size);
     }
 
     private EnumType(ByteOrder byteOrder, int size, SortedMap valueToMember) {
