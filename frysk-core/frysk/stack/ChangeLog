@@ -1,3 +1,8 @@
+2007-08-30  Andrew Cagney  <cagney@redhat.com>
+
+	* RemoteFrame.java: Instead of constructor
+	Value(Type,String,ByteBuffer), use Value(Type,ByteBuffer).
+
 2007-08-28  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestFrameSymbol.java (testOneSymbol): Use DaemonBlockedAtSignal. 

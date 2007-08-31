@@ -1,5 +1,8 @@
 2007-08-30  Andrew Cagney  <cagney@redhat.com>
 
+	* Value.java (Value(Type,String,ByteBuffer)): Delete.
+	(Value(Type,ByteBuffer)): New.
+	
 	* Value.java (Value(Type,String)): Delete.
 	(Value(Type)): New.
 

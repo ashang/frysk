@@ -59,7 +59,6 @@ public class Value
 	this.type = type;
 	this.location = location;
     }
- 
     /**
      * Create a scratch TYPE value.
      */
@@ -67,11 +66,9 @@ public class Value
 	this(type, new Location(new byte[type.getSize()]));
     }
     /**
-     * FIXME: The string parameter, which is being used to track
-     * location using <<by name>>, is being removed.  Try to use
-     * Value(Type,Location).
+     * FIXME: Callers should use Value(Type,Location).
      */
-    public Value(Type type, String textFIXME, ByteBuffer byteBuffer) {
+    public Value(Type type, ByteBuffer byteBuffer) {
 	this(type, new Location(byteBuffer));
     }    
 

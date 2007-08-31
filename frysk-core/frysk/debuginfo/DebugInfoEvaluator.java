@@ -726,7 +726,7 @@ class DebugInfoEvaluator
 		    int typeSize = arrayType.getSize();
 		    ByteBuffer  abb = buffer.slice (addr, typeSize);
 		    abb.order(byteorder);
-		    return new Value(arrayType, s, abb);
+		    return new Value(arrayType, abb);
 		}
 		case DwTag.UNION_TYPE_:
 		case DwTag.STRUCTURE_TYPE_: {
@@ -737,7 +737,7 @@ class DebugInfoEvaluator
 
 		    ByteBuffer  abb = buffer.slice (addr, classType.getSize());
 		    abb.order(byteorder);
-		    return new Value(classType, s, abb);
+		    return new Value(classType, abb);
 		}
 		case DwTag.POINTER_TYPE_: {
 		    PointerType ptrType = new PointerType(byteorder, longType.getSize(),
@@ -855,7 +855,7 @@ class DebugInfoEvaluator
 	    int typeSize = arrayType.getSize();
 	    ByteBuffer  abb = buffer.slice (addrIndirect, typeSize);
 	    abb.order(byteorder);
-	    return new Value(arrayType, s, abb);
+	    return new Value(arrayType, abb);
 	}
 	case DwTag.UNION_TYPE_:
 	case DwTag.STRUCTURE_TYPE_: {
@@ -865,7 +865,7 @@ class DebugInfoEvaluator
 		return null;
 	    ByteBuffer  abb = buffer.slice (addrIndirect, classType.getSize());
 	    abb.order(byteorder);
-	    return new Value(classType, s, abb);
+	    return new Value(classType, abb);
 	}
 	}
 	return new Value(new UnknownType(varDie.getName()));

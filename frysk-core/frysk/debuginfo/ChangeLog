@@ -1,6 +1,9 @@
 2007-08-30  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfoEvaluator.java: Instead of constructor
+	Value(Type,String,ByteBuffer), use Value(Type,ByteBuffer).
+	
+	* DebugInfoEvaluator.java: Instead of constructor
 	Value(Type,String), use Value(Type).
 
 2007-08-30  Sami Wagiaalla  <swagiaal@redhat.com>
