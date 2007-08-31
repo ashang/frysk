@@ -1,5 +1,8 @@
 2007-08-30  Andrew Cagney  <cagney@redhat.com>
 
+	* Value.java (Value(Type,String)): Delete.
+	(Value(Type)): New.
+
 	* Value.java (Value(Type,String,Location)): Delete.
 	(Value(Type,Location)): Simplify.
 	* ArithmeticType.java: Update.

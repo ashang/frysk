@@ -61,11 +61,9 @@ public class Value
     }
  
     /**
-     * FIXME: The string parameter, which is being used to track
-     * location using <<by name>>, is being removed.  Try to use
-     * Value(Type,Location).
+     * Create a scratch TYPE value.
      */
-    public Value(Type type, String textFIXME) {
+    public Value(Type type) {
 	this(type, new Location(new byte[type.getSize()]));
     }
     /**

@@ -770,7 +770,7 @@ class DebugInfoEvaluator
 	    } catch (Errno ignore) {
 	    }
 	}
-	return new Value(new UnknownType(varDie.getName()), varDie.getName());
+	return new Value(new UnknownType(varDie.getName()));
     }
 
     /**
@@ -793,7 +793,7 @@ class DebugInfoEvaluator
 	else if (v.getType() instanceof ClassType)
 	    return ((ClassType)v.getType()).get(v, 0, components);
 	else
-	    return new Value(new UnknownType(varDie.getName()), varDie.getName());
+	    return new Value(new UnknownType(varDie.getName()));
     }
   
     /**
@@ -818,7 +818,7 @@ class DebugInfoEvaluator
 	DwarfDie varDie = getDie(s);
     
 	if (varDie == null)
-	    return new Value(new UnknownType(varDie.getName()), varDie.getName());
+	    return new Value(new UnknownType(varDie.getName()));
     
 	DwarfDie type = varDie.getUltimateType();
 	AccessMemory access = new AccessMemory();
@@ -868,7 +868,7 @@ class DebugInfoEvaluator
 	    return new Value(classType, s, abb);
 	}
 	}
-	return new Value(new UnknownType(varDie.getName()), varDie.getName());
+	return new Value(new UnknownType(varDie.getName()));
     }
   
     /**
@@ -939,10 +939,10 @@ class DebugInfoEvaluator
 		}
 		parm = parm.getSibling();
 	    }
-	    return new Value (functionType, varDie.getName());
+	    return new Value (functionType);
 	}
 	}
-	return new Value(new UnknownType(varDie.getName()), varDie.getName());
+	return new Value(new UnknownType(varDie.getName()));
     }
   
     /**
