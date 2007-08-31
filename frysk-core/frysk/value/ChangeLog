@@ -1,5 +1,17 @@
 2007-08-31  Andrew Cagney  <cagney@redhat.com>
 
+	* TestValue.java: Make all fields private.
+	(longBEUnsignedType): Delete.
+	(intBEUnsignedType): Delete.
+	(shortBEUnsignedType): Delete.
+	(byteBEUnsignedType): Delete.
+	(floatBEType): Delete.
+	(doubleBEType): Delete.
+	(longUnsignedType): Delete.
+	(intUnsignedType): Delete.
+	(shortUnsignedType): Delete.
+	(byteUnsignedType): Delete.	
+	
 	* Type.java (toString): Dump more detail.
 	(name, isTypedef): Make private.
 	(order): Replace endian.

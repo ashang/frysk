@@ -46,27 +46,17 @@ import frysk.junit.TestCase;
 public class TestValue
     extends TestCase
 {
-    ArithmeticType longBEType = new SignedType(8, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeLong, "long", false);
-    ArithmeticType longBEUnsignedType = new UnsignedType(8, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeUnsignedLong, "unsigned long", false);
-    ArithmeticType intBEType = new SignedType(4, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeInteger, "int", false);
-    ArithmeticType intBEUnsignedType = new UnsignedType(4, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeUnsignedInteger, "unsigned int", false);
-    ArithmeticType shortBEType = new SignedType(2, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeShort, "short", false);
-    ArithmeticType shortBEUnsignedType = new UnsignedType(2, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeUnsignedShort, "unsigned short", false);
-    ArithmeticType byteBEType = new SignedType(1, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeByte, "byte", false);
-    ArithmeticType byteBEUnsignedType = new UnsignedType(1, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeUnsignedByte, "unsigned byte", false);
-    ArithmeticType floatBEType = new FloatingPointType(4, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeFloat, "float", false);
-    ArithmeticType doubleBEType = new FloatingPointType(8, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeDouble, "double", false);
+    private ArithmeticType longBEType = new SignedType(8, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeLong, "long", false);
+    private ArithmeticType intBEType = new SignedType(4, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeInteger, "int", false);
+    private ArithmeticType shortBEType = new SignedType(2, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeShort, "short", false);
+    private ArithmeticType byteBEType = new SignedType(1, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeByte, "byte", false);
   
-    ArithmeticType longType = new SignedType(8, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeLong, "long", false);
-    ArithmeticType longUnsignedType = new UnsignedType(8, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeUnsignedLong, "unsigned long", false);
-    ArithmeticType intType = new SignedType(4, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeInteger, "int", false);
-    ArithmeticType intUnsignedType = new UnsignedType(4, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeUnsignedInteger, "unsigned int", false);
-    ArithmeticType shortType = new SignedType(2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeShort, "short", false);
-    ArithmeticType shortUnsignedType = new UnsignedType(2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeUnsignedShort, "unsigned short", false);
-    ArithmeticType byteType = new SignedType(1, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeByte, "byte", false);
-    ArithmeticType byteUnsignedType = new UnsignedType(1, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeUnsignedByte, "unsigned byte", false);
-    ArithmeticType floatType = new FloatingPointType(4, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeFloat, "float", false);
-    ArithmeticType doubleType = new FloatingPointType(8, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeDouble, "double", false);
+    private ArithmeticType longType = new SignedType(8, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeLong, "long", false);
+    private ArithmeticType intType = new SignedType(4, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeInteger, "int", false);
+    private ArithmeticType shortType = new SignedType(2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeShort, "short", false);
+    private ArithmeticType byteType = new SignedType(1, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeByte, "byte", false);
+    private ArithmeticType floatType = new FloatingPointType(4, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeFloat, "float", false);
+    private ArithmeticType doubleType = new FloatingPointType(8, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeDouble, "double", false);
   
     public void testNumber ()
     {
