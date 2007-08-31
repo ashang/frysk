@@ -61,8 +61,11 @@ class WhereCommand extends CLIHandler {
     }
 
     public void handle(Command cmd) throws ParseException {
+	boolean printScopes = false;
+	
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
+	
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
@@ -70,8 +73,21 @@ class WhereCommand extends CLIHandler {
 
 	int level = 0;
 
-	if (params.size() != 0)
-	    level = Integer.parseInt((String) params.get(0));
+	for (int i = 0; i < params.size(); i++) {
+	    System.out.println("WhereCommand.handle() [" + (String) params.get(i)+"]");
+	    try {
+		level = Integer.parseInt((String) params.get(i));
+		continue;
+	    } catch (NumberFormatException e) {
+		// continue parsing
+	    }
+	    
+	    if (((String) params.get(i)).equals("-scopes")) {
+		System.out.println("WhereCommand.handle() printScopes = true");
+		printScopes = true;
+	    }
+	} 
+	
 	Iterator taskIter = ptset.getTaskData();
         boolean moreThanOneTask = false;
 	while (taskIter.hasNext()) {
@@ -96,7 +112,7 @@ class WhereCommand extends CLIHandler {
             if (cli.getSteppingEngine() == null
                 || !cli.getSteppingEngine().isTaskRunning(task)) {
                 DebugInfoStackFactory.printStackTrace(cli.outWriter, tmpFrame,
-                                                      stopLevel, true, false,
+                                                      stopLevel, true, printScopes,
                                                       true);
             }
 	}

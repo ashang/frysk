@@ -94,10 +94,12 @@ public class Scope
       
       if(die.getTag() == DwTag.LEXICAL_BLOCK_){
         this.scopes.add(new LexicalBlock(die, debugInfo));
+      }else if(die.getTag() == DwTag.INLINED_SUBROUTINE_){
+	  // ignore inlined subroutines
       }else{
-        if(isScopeDie(die)){
-          this.scopes.add(new Scope(die,debugInfo));
-        }
+	  if(isScopeDie(die)){
+	      this.scopes.add(new Scope(die,debugInfo));
+	  }
       }
       die = die.getSibling();
     }

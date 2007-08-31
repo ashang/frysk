@@ -1,3 +1,9 @@
+2007-08-31  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestStackCommands.java (testFhpdVirtualStackTraceWithScopes): 
+	New test.
+	* WhereCommand.java (handle): Added handling for -scopes.
+
 2007-08-29  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DisplayCommand.java (handle): Now uses Value.toPrint().

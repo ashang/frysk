@@ -90,4 +90,22 @@ public class TestStackCommands
 		  ".*main");
         e.close();
     }
+    
+    public void testFhpdVirtualStackTraceWithScopes () {
+	Proc proc = CoreFileAtSignal
+	    .constructCore(Config.getPkgLibFile("funit-inlined"));
+        e = new Expect (new String[] {
+			    Config.getBinFile("fhpd").getAbsolutePath (),
+			    "core." + proc.getPid()
+			});
+        e.expect(5, "Attached to core file.*");
+        
+        e.send("where -scopes\n");
+        
+        e.expect (".*var3" +
+		  ".*var2" +
+		  ".*var1" +
+		  ".*");
+        e.close();
+    }
 }
