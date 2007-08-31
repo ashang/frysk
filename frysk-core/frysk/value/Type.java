@@ -62,10 +62,6 @@ public abstract class Type {
   
     protected boolean isTypedef;
 
-    Type(int size, ByteOrder endian, int typeId) {
-	this(size, endian, typeId, "", false);
-    }
-
     Type (int size, ByteOrder endian, int typeId, String name) {
 	this(size, endian, typeId, name, false);
     }
@@ -83,6 +79,9 @@ public abstract class Type {
     }
 
     public ByteOrder getEndian() {
+	return endian;
+    }
+    public ByteOrder order() {
 	return endian;
     }
 
