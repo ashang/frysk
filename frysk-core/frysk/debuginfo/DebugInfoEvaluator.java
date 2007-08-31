@@ -550,7 +550,7 @@ class DebugInfoEvaluator
 	    case DwTag.STRUCTURE_TYPE_: {
 		ClassType memberClassType = getClassType(memberType, memberType.getName());
 		if (member.getTag() != DwTag.INHERITANCE_)
-		    memberClassType.setTypedef(haveTypeDef);
+		    memberClassType.setTypedefFIXME(haveTypeDef);
 		else
 		    memberClassType.setInheritance(true);
 		typeSize += memberClassType.getSize();
@@ -975,7 +975,7 @@ class DebugInfoEvaluator
 		: varDie.getType().getName();
 	    ClassType classType = getClassType(type, name);
 	    if (type != varDie.getType() && noTypeDef == false)
-		classType.setTypedef(true);
+		classType.setTypedefFIXME(true);
 	    return classType;
 	}
 	case DwTag.ENUMERATION_TYPE_: {

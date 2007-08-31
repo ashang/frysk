@@ -243,7 +243,11 @@ public abstract class Type {
 	return isTypedef;
     }
 
-    public void setTypedef(boolean isTypedef)
+    /**
+     * FIXME: Instead of setting the typedef, a TypeDef type can be
+     * created.
+     */
+    public void setTypedefFIXME(boolean isTypedef)
     {
 	this.isTypedef = isTypedef;
     }

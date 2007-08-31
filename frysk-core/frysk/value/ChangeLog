@@ -1,5 +1,7 @@
 2007-08-31  Andrew Cagney  <cagney@redhat.com>
 
+	* Type.java (setTypedefFIXME(boolean)): Rename setTypedef.
+
 	* Type.java (Type(int,ByteOrder,int,String,boolean)): Delete.
 	(Type(int,ByteOrder,int,String)): Delete.
 	(Type(String,ByteOrder,int)): New.
