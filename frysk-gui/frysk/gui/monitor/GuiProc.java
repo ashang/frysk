@@ -161,11 +161,16 @@ public class GuiProc extends GuiCoreObjectWrapper{
      * returns false.
      * Also checks that the user has acces to /pro/exe if not
      * false is returned.
+     * Checks if this process is the init process, return false
+     * if so.
 	 * @return boolean; true of the user owns this
 	 * process, and can debug it false otherwise;
 	 */
 	public boolean isOwned(){
-		boolean owned = false;
+	    boolean owned = false;
+	    if(this.getProc().getPid() == 1){
+		return false;
+	    }
 		try {
 			owned = (this.proc.getUID() == Manager.host.getSelf().getUID() ||
 					this.proc.getGID() == Manager.host.getSelf().getGID());

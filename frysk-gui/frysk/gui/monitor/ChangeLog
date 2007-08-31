@@ -1,3 +1,7 @@
+2007-08-31  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* GuiProc.java (isOwned): Added a check for the init process.
+
 2007-08-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* eventviewer/Event.java (setStackFrame): Passes number of frames
