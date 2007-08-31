@@ -87,10 +87,12 @@ public class Location
      *
      * Could re-implement this by decorating byte-order with a
      * location specific get/put method.
-     */
+     */    
     byte[] get(ByteOrder order) {
 	byte[] bytes = new byte[(int)location.capacity()];
-	location.get(0, bytes, 0, bytes.length);
+	for (int i=0; i < bytes.length; i++)
+	    bytes[i] = getByte(i);
+
 	if (order == ByteOrder.LITTLE_ENDIAN) {
 	    for (int i = 0; i < bytes.length / 2; i++) {
 		int j = bytes.length - 1 - i;
@@ -138,23 +140,23 @@ public class Location
 	    // significant end of the big-endian byte array (i.e.,
 	    // RHS).
 	    for (int i = 0; i < xfer; i++) {
-		location.putByte(i, bytes[bytes.length - i - 1]);
+		putByte(i, bytes[bytes.length - i - 1]);
 	    }
 	    // Pad the little-endian most significant end with FILL.
 	    for (int i = xfer; i < location.capacity(); i++) {
-		location.putByte(i, (byte)fill);
+		putByte(i, (byte)fill);
 	    }
 	} else {
 	    // Write to the least significant end of big-endian memory
 	    // (i.e., RHS) using bytes from the least significant end
 	    // of the byte array (i.e., RHS also).
 	    for (int i = 0; i < xfer; i++) {
-		location.putByte(location.capacity() - i - 1,
+		putByte(location.capacity() - i - 1,
 				 bytes[bytes.length - i - 1]);
 	    }
 	    // Pad the big-endian most significant end with FILL.
 	    for (int i = xfer; i < location.capacity(); i++) {
-		location.putByte(i - xfer, (byte)fill);
+		putByte(i - xfer, (byte)fill);
 	    }
 	}
     }

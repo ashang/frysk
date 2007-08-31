@@ -1,3 +1,8 @@
+2007-08-31  Teresa Thomas  <tthomas@redhat.com>
+
+	* Location.java (get): Use getByte.
+	(put): Use putByte.
+
 2007-08-31  Andrew Cagney  <cagney@redhat.com>
 
 	* Type.java (setTypedefFIXME(boolean)): Rename setTypedef.
