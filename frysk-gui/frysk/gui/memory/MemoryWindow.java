@@ -53,6 +53,7 @@ import org.gnu.glib.CustomEvents;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.CellRenderer;
 import org.gnu.gtk.CellRendererText;
+import org.gnu.pango.FontDescription;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnDouble;
 import org.gnu.gtk.DataColumnObject;
@@ -325,6 +326,8 @@ public class MemoryWindow
     this.bitsCombo.setActive(currentFormat + 1);
 
     this.memoryView = (TreeView) this.glade.getWidget("memoryView");
+    FontDescription fontDesc = new FontDescription("monospace 10");
+    memoryView.setFont(fontDesc);
 
     this.bitsCombo.showAll();
     this.diss = new Disassembler(myTask.getMemory());
@@ -649,29 +652,33 @@ public class MemoryWindow
         String dec = "";
 
         if (bi.signum() < 0)
-          {
-            for (int i = 0; i < b.length; i++)
-              {
-                bin = bin + Integer.toBinaryString(b[i] & 0xff);
-                oct = oct + Integer.toOctalString(b[i] & 0xff);
-                hex = hex + Integer.toHexString(b[i] & 0xff);
-              }
-          }
-        else
-          {
-            bin = bi.toString(2);
-            oct = bi.toString(8);
-            hex = bi.toString(16);
-          }
+            bi = new BigInteger(1, b);
+        bin = bi.toString(2);
+        oct = bi.toString(8);
+        hex = bi.toString(16);
         dec = bi.toString(10);
 
         int diff = bin.length() % BYTE_BITS;
         if (diff != 0)
           bin = padBytes(bin, false, diff);
+        int length = (int)Math.pow(2, currentFormat + 3);
+            
+        while (bin.length() < length)
+        {
+            bin = "0" + bin;            
+        }
+        while (oct.length() < (length/3 + 1))
+        {
+            oct = "0" + oct;
+        }      
+        while (hex.length() < length/4 )
+        {
+            hex = "0" + hex;
+        }            
 
         /* Little endian first */
         this.model.setValue(iter, (DataColumnString) cols[1], bin);
-        this.model.setValue(iter, (DataColumnString) cols[3], oct);
+        this.model.setValue(iter, (DataColumnString) cols[3], "0"+oct);
         this.model.setValue(iter, (DataColumnString) cols[5], dec);
         this.model.setValue(iter, (DataColumnString) cols[7], "0x" + hex);
 
@@ -687,9 +694,21 @@ public class MemoryWindow
           dec = bi.toString(10);
         else
           dec = bii.toString(10);
-
+        
+        while (bin2.length() < length)
+        {
+            bin2 = "0" + bin2;            
+        }
+        while (oct.length() < (length/3 + 1))
+        {
+            oct = "0" + oct;
+        }      
+        while (hex.length() < length/4 )
+        {
+            hex = "0" + hex;
+        }
         this.model.setValue(iter, (DataColumnString) cols[2], bin2);
-        this.model.setValue(iter, (DataColumnString) cols[4], oct);
+        this.model.setValue(iter, (DataColumnString) cols[4], "0"+oct);
         this.model.setValue(iter, (DataColumnString) cols[6], dec);
         this.model.setValue(iter, (DataColumnString) cols[8], "0x" + hex);
 

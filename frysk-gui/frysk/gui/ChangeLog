@@ -1,3 +1,9 @@
+2007-09-03  Zhao Shujing <pearly.zhao@oracle.com>
+
+	* memory/MemoryWindow.java: Fixed #4617.
+	Fixed bug with incorrect converting when memory value is negative.
+	Add prefix zero to octal format.
+
 2007-08-31  Andrew Cagney  <cagney@redhat.com>
 
 	* register/RegisterWindow.java: Use Type(String,ByteOrder,int) and
