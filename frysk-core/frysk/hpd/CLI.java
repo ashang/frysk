@@ -187,47 +187,40 @@ public class CLI
    * Command handlers
    */
 
-  public void startAttach(int pid, Proc proc, Task task)
-  {
-    // At some point we will be able to use a RunState object
-    // created elsewhere e.g., by the SourceWindowFactory.
-    if (steppingObserver == null) 
-      {
-	steppingObserver = new SteppingObserver();
-      }
-    Proc[] temp = new Proc[1];
-    temp[0] = proc;
-    attached = -1;
-    if (steppingEngine == null)
-      steppingEngine = new SteppingEngine(temp, steppingObserver);
-    else
-      steppingEngine.addProc(proc);
-  }
+    public void startAttach(int pid, Proc proc, Task task) {
+        // At some point we will be able to use a RunState object
+        // created elsewhere e.g., by the SourceWindowFactory.
+        if (steppingObserver == null) {
+                steppingObserver = new SteppingObserver();
+        }
+        Proc[] temp = new Proc[1];
+        temp[0] = proc;
+        attached = -1;
+        if (steppingEngine == null)
+            steppingEngine = new SteppingEngine(temp, steppingObserver);
+        else
+            steppingEngine.addProc(proc);
+    }
   
-  public void startAttach(Task task)
-  {
-    Proc proc = task.getProc();
-    startAttach(proc.getPid(), proc, task);
-  }
+    public void startAttach(Task task) {
+        Proc proc = task.getProc();
+        startAttach(proc.getPid(), proc, task);
+    }
 
-  public synchronized void finishAttach()
-  {
-    // Wait till we are attached.
-    while (attached < 0)
-      {
-	try
-	{
-	  wait();
-	}	
-	catch (InterruptedException ie)
-	{
-	  addMessage("Attach interrupted.", Message.TYPE_ERROR);
-	  return;
-	}
-      }
-    addMessage("Attached to process " + attached, Message.TYPE_NORMAL);
-    attached = -1;
-  }
+    public synchronized void finishAttach()  {
+        // Wait till we are attached.
+        while (attached < 0) {
+            try {
+                wait();
+            }	
+            catch (InterruptedException ie) {
+                addMessage("Attach interrupted.", Message.TYPE_ERROR);
+                return;
+            }
+        }
+        addMessage("Attached to process " + attached, Message.TYPE_NORMAL);
+        attached = -1;
+    }
   
   //private static PrintStream out = null;// = System.out;
   final PrintWriter outWriter;
@@ -281,79 +274,78 @@ public class CLI
    * @param prompt String initially to be used as the prompt
    * @param out Stream for output. This really should be a PrintWriter
    */
-  public CLI(String prompt, PrintStream out)
-  {
-    this.prompt = prompt;
-    outWriter = new PrintWriter(out, true);
-    idManager = ProcTaskIDManager.getSingleton();
+    public CLI(String prompt, PrintStream out) {
+        this.prompt = prompt;
+        outWriter = new PrintWriter(out, true);
+        idManager = ProcTaskIDManager.getSingleton();
 
-    prepro = new Preprocessor();
-    handlers = new HashMap();
-    userhelp = new UserHelp();
-    dbgvars = new DbgVariables();
+        prepro = new Preprocessor();
+        handlers = new HashMap();
+        userhelp = new UserHelp();
+        dbgvars = new DbgVariables();
     
-    //XXX: Must make a reference to every command that is used otherwise build
-    //system will discard those classes. Therefore CLI cannot be made to be a 
-    //singleton.
-    new ActionsCommand(this);
-    new AliasCommand(this);
-    new AssignCommand(this);
-    new AttachCommand(this);
-    new BreakpointCommand(this);
-    new DebuginfoCommand(this);
-    new DefsetCommand(this);
-    new DeleteCommand(this);
-    new DetachCommand(this);
-    new DisableCommand(this);
-    new UpDownCommand(this, "down");
-    new EnableCommand(this);
-    new StepFinishCommand(this);
-    new FocusCommand(this);
-    new GoCommand(this);
-    new HaltCommand(this);
-    new HelpCommand(this);
-    new ListCommand(this);
-    new StepNextCommand(this);
-    new StepNextiCommand(this);
-    new PrintCommand(this);
-    new QuitCommand(this, "quit");
-    new QuitCommand(this, "exit");
-    new SetCommand(this, dbgvars);
-    new StepCommand(this);
-    new StepInstructionCommand(this);
-    new UnaliasCommand(this);
-    new UndefsetCommand(this);
-    new UnsetCommand(this, dbgvars);
-    new UpDownCommand(this, "up");
-    new ViewsetCommand(this);
-    new WhatCommand(this);
-    new WhereCommand(this);
-    new WhichsetsCommand(this);
-    new DisplayCommand(this);
-    new RunCommand(this);
-    new CoreCommand(this);
-    new DisassembleCommand(this);
-    new RegsCommand(this);
-    new ExamineCommand(this);
+        //XXX: Must make a reference to every command that is used otherwise build
+        //system will discard those classes. Therefore CLI cannot be made to be a 
+        //singleton.
+        new ActionsCommand(this);
+        new AliasCommand(this);
+        new AssignCommand(this);
+        new AttachCommand(this);
+        new BreakpointCommand(this);
+        new DebuginfoCommand(this);
+        new DefsetCommand(this);
+        new DeleteCommand(this);
+        new DetachCommand(this);
+        new DisableCommand(this);
+        new UpDownCommand(this, "down");
+        new EnableCommand(this);
+        new StepFinishCommand(this);
+        new FocusCommand(this);
+        new GoCommand(this);
+        new HaltCommand(this);
+        new HelpCommand(this);
+        new ListCommand(this);
+        new StepNextCommand(this);
+        new StepNextiCommand(this);
+        new PrintCommand(this);
+        new QuitCommand(this, "quit");
+        new QuitCommand(this, "exit");
+        new SetCommand(this, dbgvars);
+        new StepCommand(this);
+        new StepInstructionCommand(this);
+        new UnaliasCommand(this);
+        new UndefsetCommand(this);
+        new UnsetCommand(this, dbgvars);
+        new UpDownCommand(this, "up");
+        new ViewsetCommand(this);
+        new WhatCommand(this);
+        new WhereCommand(this);
+        new WhichsetsCommand(this);
+        new DisplayCommand(this);
+        new RunCommand(this);
+        new CoreCommand(this);
+        new DisassembleCommand(this);
+        new RegsCommand(this);
+        new ExamineCommand(this);
 
-    // initialize PT set stuff
-    setparser = new SetNotationParser();
+        // initialize PT set stuff
+        setparser = new SetNotationParser();
 
-    allset = new AllPTSet(this);
-    targetset = allset;
+        allset = new AllPTSet(this);
+        targetset = allset;
 
-    builtinPTSets = new HashMap();
-    builtinPTSets.put("all", allset);
+        builtinPTSets = new HashMap();
+        builtinPTSets.put("all", allset);
 
-    namedPTSets = new HashMap();
-    namedPTSets.toString(); // avoid unused variable warnings
+        namedPTSets = new HashMap();
+        namedPTSets.toString(); // avoid unused variable warnings
 
-    messages = new LinkedList();
+        messages = new LinkedList();
 
-    //initialize alias table
-    aliases = new HashMap();
-    aliases.toString(); // avoid unused variable warnings
-  }
+        //initialize alias table
+        aliases = new HashMap();
+        aliases.toString(); // avoid unused variable warnings
+    }
 
   public String getPrompt()
   {

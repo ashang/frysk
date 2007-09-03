@@ -1,5 +1,10 @@
-2007-08-31  Andrew Cagney  <cagney@redhat.com>
+2007-09-03  Tim Moore  <timoore@redhat.com>
 
+	* CLI.java (startAttach, finishAttach, CLI constructor): Java
+	formatting.
+
+2007-08-31  Andrew Cagney  <cagney@redhat.com>
+	
 	* TestStackCommands.java (testFhpdVirtualStackTraceWithScopes):
 	Mark as unresolved, bug 4985.
 
