@@ -188,18 +188,10 @@ public class CLI
    */
 
     public void startAttach(int pid, Proc proc, Task task) {
-        // At some point we will be able to use a RunState object
-        // created elsewhere e.g., by the SourceWindowFactory.
-        if (steppingObserver == null) {
-                steppingObserver = new SteppingObserver();
-        }
         Proc[] temp = new Proc[1];
         temp[0] = proc;
         attached = -1;
-        if (steppingEngine == null)
-            steppingEngine = new SteppingEngine(temp, steppingObserver);
-        else
-            steppingEngine.addProc(proc);
+        steppingEngine.addProc(proc);
     }
   
     public void startAttach(Task task) {
@@ -273,10 +265,12 @@ public class CLI
    * Constructor
    * @param prompt String initially to be used as the prompt
    * @param out Stream for output. This really should be a PrintWriter
+   * @param steppingEngine existing SteppingEngine
    */
-    public CLI(String prompt, PrintStream out) {
+    public CLI(String prompt, PrintStream out, SteppingEngine steppingEngine) {
         this.prompt = prompt;
         outWriter = new PrintWriter(out, true);
+        this.steppingEngine = steppingEngine;
         idManager = ProcTaskIDManager.getSingleton();
 
         prepro = new Preprocessor();
@@ -345,8 +339,20 @@ public class CLI
         //initialize alias table
         aliases = new HashMap();
         aliases.toString(); // avoid unused variable warnings
+
+        steppingObserver = new SteppingObserver();
+        this.steppingEngine.addObserver(steppingObserver);
     }
 
+    /**
+   * Constructor that creates a new steppingEngine
+   * @param prompt String initially to be used as the prompt
+   * @param out Stream for output. This really should be a PrintWriter
+   */
+    public CLI(String prompt, PrintStream out) {
+        this(prompt, out, new SteppingEngine());
+    }
+    
   public String getPrompt()
   {
     return prompt;
@@ -517,7 +523,6 @@ public class CLI
     public void update (Observable observable, Object arg)
     {
       TaskStepEngine tse = (TaskStepEngine) arg;
-      
       if (!tse.isAlive()) {
 		addMessage(tse.getMessage(), Message.TYPE_VERBOSE);
 		tse.setMessage("");
@@ -538,9 +543,9 @@ public class CLI
           return;
         }
       Task task = tse.getTask();
-      // Breakpoint.PersistentBreakpoint bpt = null;
       synchronized (CLI.this)
         {
+          // Notify tasks waiting on attach
           attached = task.getProc().getPid();
           DebugInfoFrame frame
             = DebugInfoStackFactory.createVirtualStackTrace(task);

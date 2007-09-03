@@ -55,6 +55,7 @@ import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.stepping.SteppingEngine;
+import frysk.util.CountDownLatch;
 import lib.dwfl.DwarfDie;
 
 /**
@@ -238,6 +239,7 @@ public class BreakpointManager
             return;
         long sharedLibBptAddr
             = ((Long)sharedLibBptAddrs.getFirst()).longValue();
+        final CountDownLatch codeObserverLatch = new CountDownLatch(1);
         task.requestAddCodeObserver(new TaskObserver.Code() {
                 public Action updateHit(Task task, long address) {
                     refreshBreakpoints(task);
@@ -245,17 +247,24 @@ public class BreakpointManager
                 }
 
                 public void addedTo(Object observable) {
+                    codeObserverLatch.countDown();
                 }
 
                 public void addFailed(Object observable, Throwable w) {
                     logger.log(Level.SEVERE,
                                "_dl_debug_state breakpoint couldn't be added: {0}",
                                w.toString());
+                    codeObserverLatch.countDown();
                 }
 
                 public void deletedFrom(Object observable) {
                 }
             },
             sharedLibBptAddr);
+        try {
+            codeObserverLatch.await();
+        }
+        catch (InterruptedException e) {
+        }
     }
 }

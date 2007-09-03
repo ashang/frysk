@@ -47,6 +47,7 @@ import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.stepping.TaskStepEngine;
+import frysk.util.CountDownLatch;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -58,12 +59,15 @@ class RunCommand extends CLIHandler implements TaskObserver.Attached, Observer {
     private static final String descr = "run program and immediately attach";
 
     private HashSet launchedTasks = new HashSet();
+    // Used to synchronize with update method called by the SteppingEngine.
+    private CountDownLatch latch = null;
+    private Task launchedTask = null;
 
     RunCommand(CLI cli) {
 	super(cli, "run", descr, "run executable arguments*", descr);
     }
 
-    // Observer for Stepping engine; called when attach is finished.
+    // SteppingEngine Observer callback; called when attach is finished.
     public void update(Observable observable, Object arg) {
 	TaskStepEngine tse = (TaskStepEngine) arg;
 	Task task = tse.getTask();
@@ -77,11 +81,8 @@ class RunCommand extends CLIHandler implements TaskObserver.Attached, Observer {
 	}
 	if (removeObserver) {
 	    cli.getSteppingEngine().removeObserver(this, task.getProc(), false);
-	    cli.getSteppingEngine().getBreakpointManager().manageProcess(
-		    task.getProc());
-	    cli.idManager.manageProc(task.getProc(), cli.idManager
-		    .reserveProcID());
-	    task.requestUnblock(this);
+            launchedTask = task;
+            latch.countDown();
 	}
     }
 
@@ -118,8 +119,9 @@ class RunCommand extends CLIHandler implements TaskObserver.Attached, Observer {
 		}
 	    }
 	});
+        cli.getSteppingEngine().addObserver(this);
+        // register with SteppingEngine
 	cli.startAttach(task);
-	cli.getSteppingEngine().addObserver(this);
 	// Keep task blocked until the SteppingEngine notifies us that its
 	// instruction observers, etc. have been inserted.
 	return Action.BLOCK;
@@ -149,8 +151,22 @@ class RunCommand extends CLIHandler implements TaskObserver.Attached, Observer {
 	    cli.printUsage(cmd);
 	    return;
 	}
+        latch = new CountDownLatch(1);
 	Manager.host.requestCreateAttachedProc(toStringArray(params.toArray()),
 		this);
+        try {
+            latch.await();
+        }
+        catch (InterruptedException e) {
+            return;
+        }
+        latch = null;
+        cli.getSteppingEngine().getBreakpointManager()
+            .manageProcess(launchedTask.getProc());
+        cli.idManager.manageProc(launchedTask.getProc(), cli.idManager
+                                 .reserveProcID());
+        launchedTask.requestUnblock(this);
+        launchedTask = null;
 	cli.finishAttach();
     }
 

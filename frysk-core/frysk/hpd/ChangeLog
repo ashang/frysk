@@ -1,5 +1,16 @@
 2007-09-03  Tim Moore  <timoore@redhat.com>
 
+	Fix for bug 4914
+	* CLI.java (startAttach): Don't initialize steppingEngine and
+	stepping observer.
+	(CLI): New constructor that takes steppingEngine argument, and a
+	default version that initializes the steppingEngine.
+	* RunCommand.java (updateAttach): Add this object as a stepping
+	observer before calling cli.startAttach() (which registers the
+	task with the SteppingEngine).
+	(update, handle): Synchronize to block until the SteppingEngine
+	reports that the task is attached.
+
 	* CLI.java (startAttach, finishAttach, CLI constructor): Java
 	formatting.
 

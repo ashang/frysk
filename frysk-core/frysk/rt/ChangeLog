@@ -1,3 +1,8 @@
+2007-09-03  Tim Moore  <timoore@redhat.com>
+
+	* BreakpointManager.java (manageProcess): Block until the shared
+	library breakpoint is established.
+
 2007-08-29  Tim Moore  <timoore@redhat.com>
 
 	* ProcTaskIDManager.java: (getProc): Return the proc from the
