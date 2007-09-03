@@ -1,5 +1,7 @@
 2007-09-03  Tim Moore  <timoore@redhat.com>
 
+	* TestCountDownLatch.java: New class for tests of CountDownLatch.
+
 	* CountDownLatch.java: New class.
 
 2007-08-28  Phil Muldoon  <pmuldoon@localhost.localdomain>
