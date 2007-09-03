@@ -147,25 +147,9 @@ public class SteppingEngine {
      * @param procs	The array of Procs this SteppingEngine is concerned with
      */
     private void init(Proc[] procs) {
-	Task t = null;
-	LinkedList tasksList;
-
 	for (int i = procs.length - 1; i >= 0; i--) {
-	    tasksList = procs[i].getTasks();
-	    this.threadsList.addAll(tasksList);
-
-	    Iterator iter = tasksList.iterator();
-	    while (iter.hasNext()) {
-		t = (Task) iter.next();
-		t.requestAddTerminatingObserver(this.threadLifeObservable);
-		t.requestAddTerminatedObserver(this.threadLifeObservable);
-		t.requestAddClonedObserver(this.threadLifeObservable);
-		this.taskStateMap.put(t, new TaskStepEngine(t, this));
-	    }
-
-	    this.contextMap.put(t.getProc(), new Integer(tasksList.size()));
+            addProcAux(procs[i]);
 	}
-
 	requestAdd();
     }
 
@@ -176,25 +160,27 @@ public class SteppingEngine {
      * @param proc The Proc to be added to SteppingEngine
      */
     public boolean addProc(Proc proc) {
-	Task t = null;
+        addProcAux(proc);
+	requestAdd();
+	return true;
+    }
 
+    private void addProcAux(Proc proc) {
 	LinkedList tasksList = proc.getTasks();
 	this.threadsList.addAll(tasksList);
 
 	Iterator iter = tasksList.iterator();
 	while (iter.hasNext()) {
-	    t = (Task) iter.next();
+            Task t = (Task) iter.next();
 	    t.requestAddTerminatingObserver(this.threadLifeObservable);
 	    t.requestAddTerminatedObserver(this.threadLifeObservable);
 	    t.requestAddClonedObserver(this.threadLifeObservable);
 	    this.taskStateMap.put(t, new TaskStepEngine(t, this));
 	}
 
-	this.contextMap.put(t.getProc(), new Integer(tasksList.size()));
-	requestAdd();
-	return true;
+	this.contextMap.put(proc, new Integer(tasksList.size()));
     }
-
+    
     /***********************************************************************
      * STEP HANDLING METHODS
      **********************************************************************/
