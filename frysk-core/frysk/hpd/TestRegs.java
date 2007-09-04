@@ -59,10 +59,12 @@ public class TestRegs extends TestLib {
 	// Regs
 	e.send("regs\n");
 
+	// Match the first register (with two values) and the last
+	// register.
 	if (isa instanceof IsaIA32)
-	    e.expect("eax:.*esp:.*" + prompt);
+	    e.expect("eax:\t[0-9][^\t]*\t0x.*esp:.*" + prompt);
 	else if (isa instanceof IsaX8664)
-	    e.expect("rax:.*rip:.*" + prompt);
+	    e.expect("rax:\t[0-9][^\t]*\t0x.*rip:.*" + prompt);
 	else
 	    fail("Architecture not supported");
     }

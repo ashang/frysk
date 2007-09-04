@@ -42,7 +42,8 @@ package frysk.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
-
+import frysk.value.Value;
+import frysk.value.Format;
 import frysk.proc.Isa;
 import frysk.stack.RegisterGroup;
 import frysk.stack.RegisterGroupFactory;
@@ -78,19 +79,21 @@ public class RegsCommand extends CLIHandler {
 		if (i == regs.length) {
 		    cli.addMessage("Register group name: " + groupName
 			    + " not found", Message.TYPE_ERROR);
-
 		    return;
 		}
 	    }
 	    cli.outWriter.println("[" + td.getParentID() + "." + td.getID()
 		    + "]");
 	    for (int i = 0; i < selectedGroup.registers.length; i++) {
-		cli.outWriter.println(selectedGroup.registers[i].name
-			+ ":\t"
-			+ cli.getTaskFrame(td.getTask()).getRegisterValue(
-				selectedGroup.registers[i]));
+		cli.outWriter.print(selectedGroup.registers[i].name);
+		cli.outWriter.print(":\t");
+		Value r = (cli.getTaskFrame(td.getTask())
+			   .getRegisterValue(selectedGroup.registers[i]));
+		r.toPrint(cli.outWriter, Format.NATURAL);
+		cli.outWriter.print("\t");
+		r.toPrint(cli.outWriter, Format.HEXADECIMAL);
+		cli.outWriter.println();
 	    }
 	}
-
     }
 }

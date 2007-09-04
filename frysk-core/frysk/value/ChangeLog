@@ -1,5 +1,7 @@
 2007-09-04  Andrew Cagney  <cagney@redhat.com>
 
+	* Value.java (toPrint(PrintWriter,Format)): New.
+	
 	* Value.java (Value(Type,ByteBuffer)): Delete.
 	(Value(Type)): Use ScratchLocation.
 	* Location.java: Make abstract.

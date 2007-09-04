@@ -1,6 +1,11 @@
+2007-09-04  Andrew Cagney  <cagney@redhat.com>
+
+	* RegsCommand.java: Print the registers both native and in HEX.
+	* TestRegs.java: Check that the first register has two values.
+
 2007-09-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
-	* WhereCommand.java	(WhereCommand): Corrected help statements.
+	* WhereCommand.java (WhereCommand): Corrected help statements.
 
 2007-09-04  Sami Wagiaalla  <swagiaal@redhat.com>
 

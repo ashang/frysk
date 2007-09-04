@@ -134,16 +134,16 @@ public class Value
 	return stringWriter.toString();
     }
     /**
-     * Return this as a printable string using the default formatting.
-     */
-    public String toPrint() {
-	return toPrint(Format.NATURAL, null/*memory*/);
-    }
-    /**
      * Return this as a printable string using the specified FORMAT.
      */
     public String toPrint(Format format) {
 	return toPrint(format, null/*memory*/);
+    }
+    /**
+     * Return this as a printable string using the default formatting.
+     */
+    public String toPrint() {
+	return toPrint(Format.NATURAL, null/*memory*/);
     }
 
     /**
@@ -152,5 +152,11 @@ public class Value
     public void toPrint(PrintWriter writer, ByteBuffer memory,
 			Format format) {
 	type.toPrint(writer, location, memory, format);
+    }
+    /**
+     * Write THIS value to WRITER; using the specified format.
+     */
+    public void toPrint(PrintWriter writer, Format format) {
+	toPrint(writer, null/*memory*/, format);
     }
 }
