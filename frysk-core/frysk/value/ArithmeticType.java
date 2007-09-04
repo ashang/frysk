@@ -377,7 +377,7 @@ public abstract class ArithmeticType
      * Create a new Value of THIS Type, initialized to VAL.
      */
     Value createValue(BigInteger val) {
-	Location l = new Location(new byte[getSize()]);
+	Location l = new ScratchLocation(getSize());
 	putBigInteger(l, val);
 	return new Value(this, l);
     }

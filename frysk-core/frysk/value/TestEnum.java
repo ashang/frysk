@@ -68,7 +68,7 @@ public class TestEnum extends TestCase {
      */
     public void testEnum() {
 	EnumType t = anEnumType();
-	Value v = new Value(t, new Location(new byte[] { 2 }));
+	Value v = new Value(t, new ScratchLocation(new byte[] { 2 }));
 	assertEquals("enum", "orange", v.toPrint());
     }
     /**
@@ -76,7 +76,7 @@ public class TestEnum extends TestCase {
      */
     public void testEnumInt() {
 	EnumType t = anEnumType();
-	Value v = new Value(t, new Location(new byte[] { 0 }));
+	Value v = new Value(t, new ScratchLocation(new byte[] { 0 }));
 	assertEquals("enum", "0", v.toPrint());
     }
 }

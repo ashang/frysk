@@ -77,6 +77,7 @@ import frysk.value.StandardTypes;
 import frysk.value.VoidType;
 import frysk.value.Type;
 import frysk.value.Value;
+import frysk.value.ByteBufferLocation;
 
 class DebugInfoEvaluator
     implements CppSymTab
@@ -117,9 +118,6 @@ class DebugInfoEvaluator
     DebugInfoEvaluator (DebugInfoFrame frame) {
 	this.task = frame.getTask();
 	buffer = this.task.getMemory();
-
-	ByteOrder byteorder = this.task.getIsa().getByteOrder();
-	buffer.order(byteorder);
 
 	currentFrame = frame;
 	Isa isa = this.task.getIsa();
@@ -728,9 +726,9 @@ class DebugInfoEvaluator
 		    if (arrayType == null)
 			return null;
 		    int typeSize = arrayType.getSize();
-		    ByteBuffer  abb = buffer.slice (addr, typeSize);
-		    abb.order(byteorder);
-		    return new Value(arrayType, abb);
+		    return new Value(arrayType,
+				     new ByteBufferLocation(buffer, addr,
+							    typeSize));
 		}
 		case DwTag.UNION_TYPE_:
 		case DwTag.STRUCTURE_TYPE_: {
@@ -738,10 +736,9 @@ class DebugInfoEvaluator
 		    if (addr == 0)
 			continue;
 		    ClassType classType = getClassType(type, null);
-
-		    ByteBuffer  abb = buffer.slice (addr, classType.getSize());
-		    abb.order(byteorder);
-		    return new Value(classType, abb);
+		    return new Value(classType,
+				     new ByteBufferLocation(buffer, addr,
+							    classType.getSize()));
 		}
 		case DwTag.POINTER_TYPE_: {
 		    PointerType ptrType = new PointerType("*", byteorder, longType.getSize(),
@@ -818,7 +815,6 @@ class DebugInfoEvaluator
      */
     public Value getMemory (DebugInfoFrame f, String s) throws NameNotFoundException {     
 	setCurrentFrame(f);
-	ByteOrder byteorder = task.getIsa().getByteOrder();
 	DwarfDie varDie = getDie(s);
     
 	if (varDie == null)
@@ -857,9 +853,9 @@ class DebugInfoEvaluator
 	    if (arrayType == null)
 		return null;
 	    int typeSize = arrayType.getSize();
-	    ByteBuffer  abb = buffer.slice (addrIndirect, typeSize);
-	    abb.order(byteorder);
-	    return new Value(arrayType, abb);
+	    return new Value(arrayType,
+			     new ByteBufferLocation(buffer, addrIndirect,
+						    typeSize));
 	}
 	case DwTag.UNION_TYPE_:
 	case DwTag.STRUCTURE_TYPE_: {
@@ -867,9 +863,9 @@ class DebugInfoEvaluator
 
 	    if (classType == null)
 		return null;
-	    ByteBuffer  abb = buffer.slice (addrIndirect, classType.getSize());
-	    abb.order(byteorder);
-	    return new Value(classType, abb);
+	    return new Value(classType,
+			     new ByteBufferLocation(buffer, addrIndirect,
+						    classType.getSize()));
 	}
 	}
 	return new Value(new UnknownType(varDie.getName()));

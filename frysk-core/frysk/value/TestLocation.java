@@ -56,7 +56,7 @@ public class TestLocation extends TestCase
 {
     private Location l;
     public void setUp() {
-	l = new Location(new byte[] { 1, 2, 3, 4 });
+	l = new ScratchLocation(new byte[] { 1, 2, 3, 4 });
     }
     public void tearDown() {
 	l = null;

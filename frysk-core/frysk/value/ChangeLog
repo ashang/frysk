@@ -1,3 +1,25 @@
+2007-09-04  Andrew Cagney  <cagney@redhat.com>
+
+	* Value.java (Value(Type,ByteBuffer)): Delete.
+	(Value(Type)): Use ScratchLocation.
+	* Location.java: Make abstract.
+	(slice(long,long)): Make protected abstract.
+	(getByte(long)): Make protected abstract.
+	(putByte(long,byte)): Make protected abstract.
+	(size()): New; abstract.
+	* ByteBufferLocation.java: New.
+	* ScratchLocation.java: New.
+	* ArithmeticType.java: Update.
+	* PointerType.java: Update.
+	* TestArray.java: Update.
+	* TestClass.java: Update.
+	* TestEnum.java: Update.
+	* TestFloatingPoint.java: Update.
+	* TestFormat.java: Update.
+	* TestIntegerType.java: Update.
+	* TestLocation.java: Update.
+	* TestPointer.java: Update.
+
 2007-08-31  Andrew Cagney  <cagney@redhat.com>
 
 	* BooleanType.java: New.

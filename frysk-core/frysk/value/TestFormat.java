@@ -65,21 +65,21 @@ public class TestFormat
 			      IntegerType type, String value) {
 	StringWriter stringWriter = new StringWriter();
 	PrintWriter writer = new PrintWriter(stringWriter);
-	format.print(writer, new Location(bytes), type);
+	format.print(writer, new ScratchLocation(bytes), type);
 	assertEquals(type.toString(), value, stringWriter.toString());
     }
     private void checkFloatingPoint(Format format, byte[] bytes,
 				    FloatingPointType type, String value) {
 	StringWriter stringWriter = new StringWriter();
 	PrintWriter writer = new PrintWriter(stringWriter);
-	format.print(writer, new Location(bytes), type);
+	format.print(writer, new ScratchLocation(bytes), type);
 	assertEquals(type.toString(), value, stringWriter.toString());
     }
     private void checkPointer(Format format, byte[] bytes,
 			      String value) {
 	StringWriter stringWriter = new StringWriter();
 	PrintWriter writer = new PrintWriter(stringWriter);
-	format.print(writer, new Location(bytes), pointer_t);
+	format.print(writer, new ScratchLocation(bytes), pointer_t);
 	assertEquals(pointer_t.toString(), value, stringWriter.toString());
     }
 

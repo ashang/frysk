@@ -39,15 +39,13 @@
 
 package frysk.stack;
 
-import inua.eio.ArrayByteBuffer;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import lib.unwind.Cursor;
 import lib.unwind.ProcInfo;
 import lib.unwind.ProcName;
-
+import frysk.value.ScratchLocation;
 import frysk.proc.Isa;
 import frysk.proc.Task;
 
@@ -173,9 +171,7 @@ class RemoteFrame extends Frame
 	    logger.log(Level.WARNING, "{0}: couldn't get register: {1}\n", new Object[] {this, register});
 	    return null;
 	}
-	ArrayByteBuffer buffer = new ArrayByteBuffer(word);
-	buffer.order(register.type.order());
-	return new Value(register.type, buffer);
+	return new Value(register.type, new ScratchLocation(word));
     }
   
   /**

@@ -1,3 +1,7 @@
+2007-09-04  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfoEvaluator.java: Use ByteBufferLocation.
+
 2007-08-31  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfoEvaluator.java (fetchType): When either baseTypeByte or

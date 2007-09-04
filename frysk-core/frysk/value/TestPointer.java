@@ -57,7 +57,7 @@ public class TestPointer
 				 new CharType("char", ByteOrder.BIG_ENDIAN,
 					      1, true));
 	// Construct the pointer and try it.
-	Location l = new Location(new byte[] { 4 });
+	Location l = new ScratchLocation(new byte[] { 4 });
 	assertEquals("toPrint", "0x4 \"Hello World\"",
 		     t.toPrint(l, memory, Format.NATURAL));
     }

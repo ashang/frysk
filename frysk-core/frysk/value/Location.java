@@ -39,8 +39,6 @@
 
 package frysk.value;
 
-import inua.eio.ArrayByteBuffer;
-import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
 /**
@@ -54,25 +52,18 @@ import inua.eio.ByteOrder;
  * explicitly.
  */
 
-public class Location
+public abstract class Location
 {
-    private final ByteBuffer location;
-
-    Location (ByteBuffer location) {
-	this.location = location;
-    }
-
     /**
-     * Create a location containing BYTES.
+     * Permit extension by anyone.
      */
-    Location(byte[] bytes) {
-	this(new ArrayByteBuffer(bytes));
+    protected Location() {
     }
 
     public String toString() {
 	return ("{"
 		+ super.toString()
-		+ ",size=" + location.capacity()
+		+ ",length=" + length()
 		+ "}");
     }
 
@@ -89,7 +80,7 @@ public class Location
      * location specific get/put method.
      */    
     byte[] get(ByteOrder order) {
-	byte[] bytes = new byte[(int)location.capacity()];
+	byte[] bytes = new byte[(int)length()];
 	for (int i=0; i < bytes.length; i++)
 	    bytes[i] = getByte(i);
 
@@ -129,8 +120,8 @@ public class Location
     void put(ByteOrder order, byte[] bytes, int fill) {
 	// FIXME: Bug introduced into inua.nio.ByteBuffer forces this
 	// cast; it should not be needed.
-	int xfer = (int)(bytes.length > location.capacity()
-			 ? location.capacity()
+	int xfer = (int)(bytes.length > length()
+			 ? length()
 			 : bytes.length);
 	// FIXME: There isn't a useful bulk transfer method that can store a
 	// sub-section of a byte array.
@@ -143,7 +134,7 @@ public class Location
 		putByte(i, bytes[bytes.length - i - 1]);
 	    }
 	    // Pad the little-endian most significant end with FILL.
-	    for (int i = xfer; i < location.capacity(); i++) {
+	    for (int i = xfer; i < length(); i++) {
 		putByte(i, (byte)fill);
 	    }
 	} else {
@@ -151,11 +142,11 @@ public class Location
 	    // (i.e., RHS) using bytes from the least significant end
 	    // of the byte array (i.e., RHS also).
 	    for (int i = 0; i < xfer; i++) {
-		putByte(location.capacity() - i - 1,
+		putByte(length() - i - 1,
 				 bytes[bytes.length - i - 1]);
 	    }
 	    // Pad the big-endian most significant end with FILL.
-	    for (int i = xfer; i < location.capacity(); i++) {
+	    for (int i = xfer; i < length(); i++) {
 		putByte(i - xfer, (byte)fill);
 	    }
 	}
@@ -165,23 +156,19 @@ public class Location
      * Return a slice of this Location starting at byte OFFSET, and
      * going for LENGTH bytes.
      */
-    Location slice(long offset, long length) {
-	ByteBuffer s = location.slice(offset, length);
-	s.order(location.order());
-	return new Location(s);
-    }
-
+    protected abstract Location slice(long offset, long length);
     /**
      * Return the byte at IDX.
      */
-    byte getByte(long idx) {
-	return (byte)location.getByte(idx);
-    }
-
+    protected abstract byte getByte(long idx);
     /**
      * Poke the byte at IDX.
      */
-    void putByte(long idx, byte value) {
-	location.putByte(idx, (byte)value);
-    }
+    protected abstract void putByte(long idx, byte value);
+
+    /**
+     * The length of the location, in bytes.  This MUST be a long (or
+     * BigIneger) as a value's size could be bigger than 32-bits.
+     */
+    protected abstract long length();
 }

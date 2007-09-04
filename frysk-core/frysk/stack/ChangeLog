@@ -1,3 +1,7 @@
+2007-09-04  Andrew Cagney  <cagney@redhat.com>
+
+	* RemoteFrame.java: Use ScratchLocation.
+
 2007-08-31  Andrew Cagney  <cagney@redhat.com>
 
 	* RemoteFrame.java: Use Type.order.

@@ -81,7 +81,8 @@ public class PointerType
 	    long addr = getBigInteger(location).longValue();
 	    writer.print(" \"");
 	    while (true) {
-		Location l = new Location(memory.slice(addr, type.getSize()));
+		Location l = new ByteBufferLocation(memory, addr,
+						    type.getSize());
 		BigInteger c = ((CharType)type).getBigInteger(l);
 		if (c.equals(BigInteger.ZERO))
 		    break; // NUL

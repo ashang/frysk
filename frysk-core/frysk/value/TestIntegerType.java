@@ -51,12 +51,12 @@ public class TestIntegerType
 {    
     private void checkGetBigInteger(IntegerType type, int xff00, int x0102) {
 	assertEquals("0xff00", xff00,
-		     type.getBigInteger(new Location(new byte[] {
+		     type.getBigInteger(new ScratchLocation(new byte[] {
 							 (byte)0xff, 0x00
 						     }))
 		     .intValue());
 	assertEquals("0x0102", x0102,
-		     type.getBigInteger(new Location(new byte[] {
+		     type.getBigInteger(new ScratchLocation(new byte[] {
 							 0x01, 0x02
 						     }))
 		     .intValue());
@@ -103,20 +103,20 @@ public class TestIntegerType
     public void testGetBooleanNonZero() {
 	assertEquals("true", BigInteger.ONE,
 		     (new BooleanType("b", ByteOrder.BIG_ENDIAN, 2)
-		      .getBigInteger(new Location(new byte[] {
+		      .getBigInteger(new ScratchLocation(new byte[] {
 						      (byte)0xff, 0x00
 						  }))));
     }
     public void testGetBooleanZero() {
 	assertEquals("false", BigInteger.ZERO,
 		     (new BooleanType("b", ByteOrder.BIG_ENDIAN, 2)
-		      .getBigInteger(new Location(new byte[] {
+		      .getBigInteger(new ScratchLocation(new byte[] {
 						      0, 0
 						  }))));
     }
 
     private void checkPut(ArithmeticType t, String val, byte[] check) {
-	Location l = new Location(new byte[] { 1, 2 });
+	Location l = new ScratchLocation(new byte[] { 1, 2 });
 	t.putBigInteger(l, new BigInteger(val));
 	assertEquals("location", check, l.get(ByteOrder.BIG_ENDIAN));
     }
@@ -191,17 +191,17 @@ public class TestIntegerType
 
     public void testBigFloatValue() {
 	IntegerType t = new SignedType("type", ByteOrder.BIG_ENDIAN, 1);
-	Location l = new Location(new byte[] { 1 });
+	Location l = new ScratchLocation(new byte[] { 1 });
 	TestBigFloat.checkEquals("1", 1.0, t.bigFloatValue(l).doubleValue());
     }
     public void testBigIntegerValue() {
 	IntegerType t = new SignedType("type", ByteOrder.BIG_ENDIAN, 1);
-	Location l = new Location(new byte[] { 1 });
+	Location l = new ScratchLocation(new byte[] { 1 });
 	assertEquals("1", 1, t.bigIntegerValue(l).longValue());
     }
 
     public void checkPacking(IntegerType t, int value) {
-	Location l = new Location(new byte[] { (byte)0x3c });
+	Location l = new ScratchLocation(new byte[] { (byte)0x3c });
 	assertEquals("unpack", value,
 		     ((IntegerType)t.pack(2,4)).getBigInteger(l));
 	l.putByte(0, (byte)0);
@@ -230,7 +230,7 @@ public class TestIntegerType
     }
 
     public void testCharToPrint() {
-	Location x = new Location(new byte[] { (byte) 'x' });
+	Location x = new ScratchLocation(new byte[] { (byte) 'x' });
 	String s = new CharType("char", ByteOrder.BIG_ENDIAN, 2, true)
 	    .toPrint(x, null, null);
 	assertEquals("toPrint", "'x'", s);

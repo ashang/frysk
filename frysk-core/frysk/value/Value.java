@@ -63,14 +63,8 @@ public class Value
      * Create a scratch TYPE value.
      */
     public Value(Type type) {
-	this(type, new Location(new byte[type.getSize()]));
+	this(type, new ScratchLocation(type.getSize()));
     }
-    /**
-     * FIXME: Callers should use Value(Type,Location).
-     */
-    public Value(Type type, ByteBuffer byteBuffer) {
-	this(type, new Location(byteBuffer));
-    }    
 
     /**
      * Return the Value's Location.
