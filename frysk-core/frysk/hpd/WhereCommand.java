@@ -57,7 +57,7 @@ class WhereCommand extends CLIHandler {
     WhereCommand(CLI cli) {
 	super(cli, "where",
 		"Display the current execution location and call stack",
-		"where [ {num-levels | -all} ] [-args]", full);
+		"where [ {num-levels | -all} ] [-scopes]", full);
     }
 
     public void handle(Command cmd) throws ParseException {
@@ -114,6 +114,6 @@ class WhereCommand extends CLIHandler {
                                                       true);
             }
 	}
-//        cli.outWriter.flush();
+        cli.outWriter.flush();
     }
 }

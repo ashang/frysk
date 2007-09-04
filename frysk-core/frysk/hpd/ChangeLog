@@ -1,5 +1,9 @@
 2007-09-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* WhereCommand.java	(WhereCommand): Corrected help statements.
+
+2007-09-04  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* WhereCommand.java: Removed print statements.
 
 2007-09-04  Tim Moore  <timoore@redhat.com>
