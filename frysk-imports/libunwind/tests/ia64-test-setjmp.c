@@ -70,10 +70,16 @@ sighandler (int signal, void *siginfo, void *sigcontext)
   siglongjmp (env, 1);
 }
 
+/* Direct call of doit () at the end of doit () would get optimized by GCC to
+   a branch.  */
+static void doit (int n);
+static volatile void (*doit_pointer) (int n) = doit;
+
 static void
 doit (int n)
 {
   uintptr_t guard_page_addr, bsp = get_bsp ();
+  void *ret;
 
   if (n == 0)
     {
@@ -82,10 +88,15 @@ doit (int n)
       guard_page_addr = (bsp + page_size - 1) & -page_size;
       if (verbose)
 	printf ("guard_page_addr = 0x%lx\n", (unsigned long) guard_page_addr);
-      if (mmap ((void *) guard_page_addr, page_size, PROT_NONE,
-		MAP_SHARED | MAP_ANONYMOUS, -1, 0) != (void *) guard_page_addr)
+      ret = mmap ((void *) guard_page_addr, page_size, PROT_NONE,
+		  MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+      if (ret != (void *) guard_page_addr)
 	{
-	  perror ("mmap");
+	  if (ret == MAP_FAILED)
+	    perror ("mmap");
+	  else
+	    fprintf (stderr, "mmap() returned %p, expected 0x%lx\n",
+		     ret, guard_page_addr);
 	  exit (EXIT_FAILURE);
 	}
     }
@@ -96,7 +107,7 @@ doit (int n)
       return_bsp = bsp;
     }
   else
-    doit (n + 1);
+    (*doit_pointer) (n + 1);
 }
 
 int

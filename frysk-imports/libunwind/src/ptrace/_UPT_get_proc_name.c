@@ -1,6 +1,7 @@
 /* libunwind - a platform-independent unwind library
    Copyright (C) 2003 Hewlett-Packard Co
-	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
+   Copyright (C) 2007 David Mosberger-Tang
+	Contributed by David Mosberger-Tang <dmosberger@gmail.com>
 
 This file is part of libunwind.
 
@@ -32,9 +33,9 @@ _UPT_get_proc_name (unw_addr_space_t as, unw_word_t ip,
   struct UPT_info *ui = arg;
 
 #if ELF_CLASS == ELFCLASS64
-  return _Uelf64_get_proc_name (ui->pid, ip, buf, buf_len, offp);
+  return _Uelf64_get_proc_name (as, ui->pid, ip, buf, buf_len, offp);
 #elif ELF_CLASS == ELFCLASS32
-  return _Uelf32_get_proc_name (ui->pid, ip, buf, buf_len, offp);
+  return _Uelf32_get_proc_name (as, ui->pid, ip, buf, buf_len, offp);
 #else
   return -UNW_ENOINFO;
 #endif

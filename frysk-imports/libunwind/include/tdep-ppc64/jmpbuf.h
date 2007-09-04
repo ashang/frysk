@@ -1,6 +1,8 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (C) 2004 Hewlett-Packard Co
-	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
+   Copyright (C) 2006-2007 IBM
+   Contributed by
+     Corey Ashford <cjashfor@us.ibm.com>
+     Jose Flavio Aguilar Paulino <jflavio@br.ibm.com> <joseflavio@gmail.com>
 
    Copied from libunwind-x86_64.h, modified slightly for building
    frysk successfully on ppc64, by Wu Zhou <woodzltc@cn.ibm.com>

@@ -1,10 +1,7 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (C) 2004-2005 Hewlett-Packard Co
-	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
 
-   Copied from src/x86_64/, modified slightly (or made empty stubs) for 
+   Copied from src/x86_64/, modified slightly (or made empty stubs) for
    building frysk successfully on ppc64, by Wu Zhou <woodzltc@cn.ibm.com>
-   Will be replaced when libunwind is ready on ppc64 platform.
 
 This file is part of libunwind.
 

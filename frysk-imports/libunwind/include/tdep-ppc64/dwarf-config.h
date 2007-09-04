@@ -1,6 +1,8 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (c) 2003, 2005 Hewlett-Packard Development Company, L.P.
-	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
+   Copyright (C) 2006-2007 IBM
+   Contributed by
+     Corey Ashford <cjashfor@us.ibm.com>
+     Jose Flavio Aguilar Paulino <jflavio@br.ibm.com> <joseflavio@gmail.com>
 
    Copied from libunwind-x86_64.h, modified slightly for building
    frysk successfully on ppc64, by Wu Zhou <woodzltc@cn.ibm.com>
@@ -30,13 +32,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 #ifndef dwarf_config_h
 #define dwarf_config_h
 
-/* XXX: For PPC64, 48 GPRs + 33 FPRs.  */
-#define DWARF_NUM_PRESERVED_REGS	81	
+/* For PPC64, 48 GPRs + 33 FPRs + 33 AltiVec + 1 SPE  */
+#define DWARF_NUM_PRESERVED_REGS	115
 
-#define DWARF_REGNUM_MAP_LENGTH		81
+#define DWARF_REGNUM_MAP_LENGTH		115
 
 /* Return TRUE if the ADDR_SPACE uses big-endian byte-order.  */
-#define dwarf_is_big_endian(addr_space) 1	
+#define dwarf_is_big_endian(addr_space) 1
 
 /* Convert a pointer to a dwarf_cursor structure to a pointer to
    unw_cursor_t.  */

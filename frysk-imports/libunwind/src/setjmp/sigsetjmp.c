@@ -27,7 +27,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 #include <setjmp.h>
 #include <stdlib.h>
 
-#include "tdep/jmpbuf.h"
+#include "jmpbuf.h"
 
 int
 sigsetjmp (sigjmp_buf env, int savemask)

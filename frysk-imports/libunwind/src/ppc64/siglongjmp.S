@@ -1,10 +1,4 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (C) 2004 Hewlett-Packard Co
-	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
-
-   Copied from src/x86_64/, modified slightly (or made empty stubs) for
-   building frysk successfully on ppc64, by Wu Zhou <woodzltc@cn.ibm.com>
-   Will be replaced when libunwind is ready on ppc64 platform.
 
 This file is part of libunwind.
 
@@ -29,5 +23,4 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
 	.globl _UI_siglongjmp_cont
 
-/*_UI_siglongjmp_cont:
-	retq */
+	_UI_siglongjmp_cont:

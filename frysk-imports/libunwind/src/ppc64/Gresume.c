@@ -1,10 +1,8 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (c) 2002-2004 Hewlett-Packard Development Company, L.P.
-	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
-
-   Copied from src/x86_64/, modified slightly (or made empty stubs) for 
-   building frysk successfully on ppc64, by Wu Zhou <woodzltc@cn.ibm.com>
-   Will be replaced when libunwind is ready on ppc64 platform.
+   Copyright (C) 2006-2007 IBM
+   Contributed by
+     Corey Ashford cjashfor@us.ibm.com
+     Jose Flavio Aguilar Paulino <jflavio@br.ibm.com> <joseflavio@gmail.com>
 
 This file is part of libunwind.
 
@@ -41,7 +39,7 @@ static NORETURN inline long
 my_rt_sigreturn (void *new_sp)
 {
   /* XXX: empty stub.  */
-  abort (); 
+  abort ();
 }
 
 HIDDEN inline int

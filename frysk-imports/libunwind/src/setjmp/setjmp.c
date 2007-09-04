@@ -26,7 +26,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 #include <libunwind.h>
 #include <setjmp.h>
 
-#include "tdep/jmpbuf.h"
+#include "jmpbuf.h"
 
 /* Why use K&R syntax here?  setjmp() is often a macro and that
    expands into a call to, say, __setjmp() and we need to define the
