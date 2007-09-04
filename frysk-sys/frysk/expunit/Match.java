@@ -43,7 +43,7 @@ package frysk.expunit;
  * Match the specified input, and remember what matched.  Loosely
  * modeled on the corresponding Java Pattern and Matcher objects.
  */
-abstract class Match
+public abstract class Match
 {
     /**
      * Find the pattern in the output, normally this is an unanchored
