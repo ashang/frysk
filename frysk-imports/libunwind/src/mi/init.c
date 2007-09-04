@@ -28,7 +28,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 HIDDEN intrmask_t unwi_full_mask;
 
 static const char rcsid[] UNUSED =
-  "$Id: init.c,v 1.1 2006/05/31 19:04:20 rth Exp $";
+  "$Id: init.c,v 1.2 2007/03/12 15:26:08 npremji Exp $";
 
 #if UNW_DEBUG
 
