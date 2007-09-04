@@ -74,7 +74,6 @@ class WhereCommand extends CLIHandler {
 	int level = 0;
 
 	for (int i = 0; i < params.size(); i++) {
-	    System.out.println("WhereCommand.handle() [" + (String) params.get(i)+"]");
 	    try {
 		level = Integer.parseInt((String) params.get(i));
 		continue;
@@ -83,7 +82,6 @@ class WhereCommand extends CLIHandler {
 	    }
 	    
 	    if (((String) params.get(i)).equals("-scopes")) {
-		System.out.println("WhereCommand.handle() printScopes = true");
 		printScopes = true;
 	    }
 	} 
@@ -116,6 +114,6 @@ class WhereCommand extends CLIHandler {
                                                       true);
             }
 	}
-
+//        cli.outWriter.flush();
     }
 }
