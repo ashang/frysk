@@ -1,3 +1,10 @@
+2007-09-04  Tim Moore  <timoore@redhat.com>
+
+	* AttachCommand.java (update): New SteppingEngine observer method.
+	(handle): Synchronize with stepping engine observer to know when
+	process is attached; wait until then to register with breakpoint
+	manager and ID manager.
+
 2007-09-03  Tim Moore  <timoore@redhat.com>
 
 	Fix for bug 4914
