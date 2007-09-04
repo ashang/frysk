@@ -50,8 +50,7 @@ public class TestRegs extends TestLib {
     public void testRegsCommand() {
 	child = new Expect(Config.getPkgLibFile("hpd-c"));
 	Isa isa = getChild().getMainTask().getIsa();
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect(prompt);
+	e = new HpdTestbed();
 	// Attach
 	e.send("attach " + child.getPid() + "\n\n");
 	e.expect(5, "attach.*\n" + prompt);

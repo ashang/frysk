@@ -39,7 +39,6 @@
 
 package frysk.hpd;
 
-import frysk.expunit.Expect;
 import frysk.Config;
 
 public class TestDisplayCommand
@@ -48,11 +47,7 @@ public class TestDisplayCommand
     public void testHpdDisplayCommands() {
 	if (unresolved(4941))
 	    return;
-	e = new Expect (new String[] {
-			    Config.getBinFile("fhpd").getPath (),
-			    Config.getPkgLibFile("funit-rt-varchange").getPath ()
-			});
-	e.expect (prompt);
+	e = new HpdTestbed(Config.getPkgLibFile("funit-rt-varchange"));
 	// Break
 	
 	// FIXME: 4941

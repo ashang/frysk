@@ -49,8 +49,7 @@ public class TestDisassemblerCommand
 	if (unsupported("disassembler", !lib.opcodes.Disassembler.available()))
 	    return;
 	child = new Expect(Config.getPkgLibFile("hpd-c"));
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect(prompt);
+	e = new HpdTestbed();
 	// Attach
 	e.send("attach " + child.getPid() + "\n\n");
 	e.expect(5, "attach.*\n" + prompt);
@@ -65,8 +64,7 @@ public class TestDisassemblerCommand
 	if (unsupported("disassembler", !lib.opcodes.Disassembler.available()))
 	    return;
 	child = new Expect(Config.getPkgLibFile("hpd-c"));
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect(prompt);
+	e = new HpdTestbed();
 	// Attach
 	e.send("attach " + child.getPid() + "\n\n");
 	e.expect(5, "attach.*\n" + prompt);

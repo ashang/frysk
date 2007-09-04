@@ -47,8 +47,7 @@ public class TestBreakpoints
 {
     public void testHpdBreakpoint() {
 	child = new Expect(Config.getPkgLibFile("hpd-c"));
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect (prompt);
+	e = new HpdTestbed();
 	// Attach
 	e.send ("attach " + child.getPid () + "\n\n");
 	e.expect (5, "attach.*\n" + prompt);
@@ -67,8 +66,7 @@ public class TestBreakpoints
 	if (unresolved(4914))
 	    return;
 	
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect (prompt);
+	e = new HpdTestbed();
 	// Attach
 	e.send ("run " + Config.getPkgLibFile("hpd-c"));
 	e.expect (5, "Attached.*\n" + prompt);
@@ -86,8 +84,7 @@ public class TestBreakpoints
 	if (unresolved(4950))
 	    return;
 	child = new Expect(Config.getPkgLibFile("test1"));
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect (prompt);
+	e = new HpdTestbed();
 	// Attach
 	e.send ("attach " + child.getPid () + " -cli\n");
 	e.expect ("attach.*" + prompt);
@@ -107,8 +104,7 @@ public class TestBreakpoints
 	if (unresolved(4949))
 	    return;
 	child = new Expect(Config.getPkgLibFile("test1"));
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect (prompt);
+	e = new HpdTestbed();
 	// Attach
 	e.send ("attach " + child.getPid () + " -cli\n");
 	e.expect ("attach.*" + prompt);
@@ -126,8 +122,7 @@ public class TestBreakpoints
 
     public void testHpdBreakStep() {
 	child = new Expect(Config.getPkgLibFile("test1"));
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect (prompt);
+	e = new HpdTestbed();
 	// Attach
 	e.send ("attach " + child.getPid () + " -cli\n");
 	e.expect ("attach.*" + prompt);

@@ -42,7 +42,6 @@ package frysk.hpd;
 import java.io.File;
 
 import frysk.Config;
-import frysk.expunit.Expect;
 import frysk.testbed.TestfileTokenScanner;
 
 public class TestFhpdStepping extends TestLib {
@@ -54,8 +53,7 @@ public class TestFhpdStepping extends TestLib {
 	if (unresolved(4914))
 	    return;
 	
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect (prompt);
+	e = new HpdTestbed();
 	
 	String source = Config.getAbsRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 	this.scanner = new TestfileTokenScanner(new File(source));
@@ -87,8 +85,7 @@ public class TestFhpdStepping extends TestLib {
 	if (unresolved(4914))
 	    return;
 	
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect (prompt);
+	e = new HpdTestbed();
 	
 	String source = Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 	this.scanner = new TestfileTokenScanner(new File(source));
@@ -120,8 +117,7 @@ public class TestFhpdStepping extends TestLib {
 	if (unresolved(4914))
 	    return;
 	
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect (prompt);
+	e = new HpdTestbed();
 	
 	String source = Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 	this.scanner = new TestfileTokenScanner(new File(source));
@@ -153,8 +149,7 @@ public class TestFhpdStepping extends TestLib {
 	if (unresolved(4914))
 	    return;
 	
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect (prompt);
+	e = new HpdTestbed();
 	
 	String source = Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 	this.scanner = new TestfileTokenScanner(new File(source));
@@ -186,8 +181,7 @@ public class TestFhpdStepping extends TestLib {
 	if (unresolved(4914))
 	    return;
 	
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect (prompt);
+	e = new HpdTestbed();
 	
 	String source = Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 	this.scanner = new TestfileTokenScanner(new File(source));

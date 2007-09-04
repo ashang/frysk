@@ -50,17 +50,14 @@ public class TestPrint
     extends TestLib
 {
     public void testUnattached() {
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect (prompt);
+	e = new HpdTestbed();
 	// Add with no process; shouldn't crash.
-	e.send ("print 2+2\n");
-	e.expect ("\r\n4\r\n" + prompt);
+	e.sendExpectPrompt("print 2+2", "4\r\n");
     }
 
     public void testHpdScalar () {
         child = new Expect(Config.getPkgLibFile("funit-scalar"));
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect (prompt);
+	e = new HpdTestbed();
 	// Attach
         e.send ("attach " + child.getPid () + "\n\n");
         e.expect (5, "attach.*\n" + prompt);
@@ -103,8 +100,7 @@ public class TestPrint
     
     public void testHpdEnum () {
         child = new Expect(Config.getPkgLibFile("funit-enum"));
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect (prompt);
+	e = new HpdTestbed();
 	// Attach
         e.send ("attach " + child.getPid () + "\n\n");
         e.expect (5, "attach.*\n" + prompt);
@@ -123,8 +119,7 @@ public class TestPrint
     
     public void testHpdArray () {
         child = new Expect(Config.getPkgLibFile("funit-array"));
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect (prompt);
+	e = new HpdTestbed();
 	// Attach
         e.send ("attach " + child.getPid () + "\n\n");
         e.expect (5, "attach.*\n" + prompt);
@@ -152,8 +147,7 @@ public class TestPrint
 
     public void testHpdStruct () {
         child = new Expect(Config.getPkgLibFile("funit-struct"));
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect (prompt);
+	e = new HpdTestbed();
 	// Attach
         e.send ("attach " + child.getPid () + "\n\n");
         e.expect (5, "attach.*\n" + prompt);
@@ -186,8 +180,7 @@ public class TestPrint
 
     public void testHpdClass () {
         child = new Expect(Config.getPkgLibFile("funit-class"));
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect (prompt);
+	e = new HpdTestbed();
 	// Attach
         e.send ("attach " + child.getPid () + "\n\n");
         e.expect (5, "attach.*\n" + prompt);

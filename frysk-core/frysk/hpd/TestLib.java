@@ -57,7 +57,7 @@ import frysk.expunit.Expect;
 class TestLib
     extends TestCase
 {
-    Expect e;
+    HpdTestbed e;
     Expect child;
     String prompt = "\\(fhpd\\) ";
     public void tearDown () {

@@ -41,7 +41,6 @@ package frysk.hpd;
 
 import java.io.File;
 
-import frysk.expunit.Expect;
 import frysk.proc.Proc;
 import frysk.proc.dead.TestLinuxCore;
 import frysk.testbed.SlaveOffspring;
@@ -49,8 +48,7 @@ import frysk.Config;
 
 public class TestCoreCommand extends TestLib {
     public void testCoreCommand() {
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect(prompt);
+	e = new HpdTestbed();
 	e.send("core " + Config.getPkgDataFile("test-core-x86").getPath()
 		+ "\n");
 	e.expect(5, "Attached to core file.*");
@@ -62,8 +60,7 @@ public class TestCoreCommand extends TestLib {
 	SlaveOffspring funit = SlaveOffspring.createDaemon();
 	Proc funitProc = funit.assertFindProcAndTasks();
 	File core = new File(tester.constructCore(funitProc));
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect(prompt);
+	e = new HpdTestbed();
 	e.send("core " + core.getPath() + " "
 	       + SlaveOffspring.getExecutable().getPath() + "\n");
 	e.expect(5, "Attached to core file.*");

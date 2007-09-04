@@ -1,5 +1,17 @@
 2007-09-04  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (e): Change type to HpdTestbed.
+	* HpdTestbed.java: New file.
+	* TestPrint.java: Use.
+	* TestBreakpoints.java: Use.
+	* TestCoreCommand.java: Use.
+	* TestDisassemblerCommand.java: Use.
+	* TestExamineCommand.java: Use.
+	* TestDisplayCommand.java: Use.
+	* TestFhpdStepping.java: Use.
+	* TestRegs.java: Use.
+	* TestStackCommands.java: Use.
+
 	* RegsCommand.java: Print the registers both native and in HEX.
 	* TestRegs.java: Check that the first register has two values.
 

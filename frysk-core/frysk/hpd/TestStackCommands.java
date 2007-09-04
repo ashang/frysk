@@ -49,8 +49,7 @@ public class TestStackCommands
 {
     public void testHpdTraceStack () {
 	child = new Expect(Config.getPkgLibFile("hpd-c"));
-	e = new Expect(Config.getBinFile("fhpd"));
-	e.expect (prompt);
+	e = new HpdTestbed();
 	// Attach
 	e.send ("attach " + child.getPid () + "\n\n");
 	e.expect (5, "attach.*\n" + prompt);
@@ -76,11 +75,7 @@ public class TestStackCommands
     public void testFhpdVirtualStackTrace () {
 	Proc proc = CoreFileAtSignal
 	    .constructCore(Config.getPkgLibFile("funit-inlined"));
-        e = new Expect (new String[] {
-			    Config.getBinFile("fhpd").getAbsolutePath (),
-			    "core." + proc.getPid()
-			});
-        e.expect(5, "Attached to core file.*");
+        e = new HpdTestbed("core." + proc.getPid(), "Attached to core file.*");
         
         e.send("where\n");
         
@@ -97,11 +92,7 @@ public class TestStackCommands
 	    return;
 	Proc proc = CoreFileAtSignal
 	    .constructCore(Config.getPkgLibFile("funit-inlined"));
-        e = new Expect (new String[] {
-			    Config.getBinFile("fhpd").getAbsolutePath (),
-			    "core." + proc.getPid()
-			});
-        e.expect(5, "Attached to core file.*");
+        e = new HpdTestbed("core." + proc.getPid(), "Attached to core file.*");
         
         e.send("where -scopes\n");
         
