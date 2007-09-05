@@ -1,3 +1,10 @@
+2007-09-05  Andrew Cagney  <cagney@redhat.com>
+
+	* StackFactory.java: Update.
+	* LibunwindAddressSpace.java: Rename UnwindAddressSpace.java.
+	* LibunwindFrame.java: Rename RemoteFrame.java.
+	* LibunwindRegisterMapFactory.java: Rename UnwindRegisterMapFactory.java.
+
 2007-09-04  Andrew Cagney  <cagney@redhat.com>
 
 	* RemoteFrame.java: Use ScratchLocation.

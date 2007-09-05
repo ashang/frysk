@@ -63,7 +63,7 @@ import lib.unwind.ElfImage;
 import lib.unwind.ProcInfo;
 import lib.unwind.ProcName;
 
-class UnwindAddressSpace extends AddressSpace {
+class LibunwindAddressSpace extends AddressSpace {
     private static final Logger logger = Logger.getLogger("frysk");
     private final Task task;
 
@@ -80,7 +80,7 @@ class UnwindAddressSpace extends AddressSpace {
 	    return new UnwindX8664();
     }
 
-    UnwindAddressSpace(Task task, ByteOrder byteOrder) {
+    LibunwindAddressSpace(Task task, ByteOrder byteOrder) {
 	super(unwinder(task),
 	      // FIXME: Do something useful with the byteOrder!
 	      lib.unwind.ByteOrder.DEFAULT);

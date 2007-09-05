@@ -79,12 +79,12 @@ public class StackFactory
           taskMap.remove(task);
       }
 
-    UnwindAddressSpace addressSpace
-	= new UnwindAddressSpace(task, lib.unwind.ByteOrder.DEFAULT);
+    LibunwindAddressSpace addressSpace
+	= new LibunwindAddressSpace(task, lib.unwind.ByteOrder.DEFAULT);
 	    
     Cursor innermost = new Cursor(addressSpace);
 	    
-	RemoteFrame innerFrame = new RemoteFrame(innermost, task);
+    LibunwindFrame innerFrame = new LibunwindFrame(innermost, task);
 	       
         taskMap.put(task, new FrameCounter(innerFrame, task.getMod()));
 	return innerFrame;

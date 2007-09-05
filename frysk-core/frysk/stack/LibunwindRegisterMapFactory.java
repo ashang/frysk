@@ -45,7 +45,7 @@ import frysk.proc.Isa;
 import frysk.proc.IsaIA32;
 import frysk.proc.IsaX8664;
 
-public class UnwindRegisterMapFactory {
+public class LibunwindRegisterMapFactory {
 
     public static RegisterMap getRegisterMap(Isa isa) {
 	if (isa instanceof IsaIA32)
@@ -56,7 +56,7 @@ public class UnwindRegisterMapFactory {
 	    throw new RuntimeException("Isa not supported");
     }
 
-static final RegisterMap IA32 = new RegisterMap() 
+    static final RegisterMap IA32 = new RegisterMap() 
 	.add(IA32Registers.EAX, new Integer(UnwindRegistersX86.EAX_))
 	.add(IA32Registers.EDX, new Integer(UnwindRegistersX86.EDX_))
 	.add(IA32Registers.ECX, new Integer(UnwindRegistersX86.ECX_))
@@ -68,7 +68,7 @@ static final RegisterMap IA32 = new RegisterMap()
 	.add(IA32Registers.EIP, new Integer(UnwindRegistersX86.EIP_))
 	.add(IA32Registers.EFLAGS, new Integer(UnwindRegistersX86.EFLAGS_))
 	.add(IA32Registers.TRAPS, new Integer(UnwindRegistersX86.TRAPNO_))
-	// MMX registers
+    // MMX registers
 	.add(IA32Registers.ST0, new Integer(UnwindRegistersX86.ST0_))
 	.add(IA32Registers.ST1, new Integer(UnwindRegistersX86.ST1_))
 	.add(IA32Registers.ST2, new Integer(UnwindRegistersX86.ST2_))
@@ -85,10 +85,10 @@ static final RegisterMap IA32 = new RegisterMap()
 	.add(IA32Registers.FIP, new Integer(UnwindRegistersX86.FIP_))
 	.add(IA32Registers.FEA, new Integer(UnwindRegistersX86.FEA_))
 	.add(IA32Registers.FDS, new Integer(UnwindRegistersX86.FDS_))
-	// SSE Registers
-	//TODO: XMMx registers.
-	//.add(IA32Registers.MXCSR, new Integer(UnwindRegistersX86.MXCSR_))
-	// Segment registers
+    // SSE Registers
+    //TODO: XMMx registers.
+    //.add(IA32Registers.MXCSR, new Integer(UnwindRegistersX86.MXCSR_))
+    // Segment registers
 	.add(IA32Registers.GS, new Integer(UnwindRegistersX86.GS_))
 	.add(IA32Registers.FS, new Integer(UnwindRegistersX86.FS_))
 	.add(IA32Registers.ES, new Integer(UnwindRegistersX86.ES_))
@@ -97,13 +97,13 @@ static final RegisterMap IA32 = new RegisterMap()
 	.add(IA32Registers.CS, new Integer(UnwindRegistersX86.CS_))
 	.add(IA32Registers.TSS, new Integer(UnwindRegistersX86.TSS_))
 	.add(IA32Registers.LDT, new Integer(UnwindRegistersX86.LDT_))
-	// frame info
+    // frame info
 	.add(IA32Registers.CFA, new Integer(UnwindRegistersX86.CFA_));
 	
     
 
 
-static final RegisterMap X8664 = new RegisterMap() 
+    static final RegisterMap X8664 = new RegisterMap() 
 	.add(X8664Registers.RAX, new Integer(UnwindRegistersX8664.RAX_))
 	.add(X8664Registers.RDX, new Integer(UnwindRegistersX8664.RDX_))
 	.add(X8664Registers.RCX, new Integer(UnwindRegistersX8664.RCX_))

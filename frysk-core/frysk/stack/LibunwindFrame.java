@@ -55,59 +55,54 @@ import frysk.symtab.SymbolFactory;
 import frysk.value.StandardTypes;
 import frysk.value.Value;
 
-class RemoteFrame extends Frame
+class LibunwindFrame extends Frame
 {  
-  private static Logger logger = Logger.getLogger("frysk");
-  private Symbol symbol;
+    private static Logger logger = Logger.getLogger("frysk");
+    private Symbol symbol;
   
-  /* Identifies this frame by its CFA and frame start address */
-  private FrameIdentifier frameIdentifier;
+    /* Identifies this frame by its CFA and frame start address */
+    private FrameIdentifier frameIdentifier;
   
-  RemoteFrame inner = null;
-  RemoteFrame outer = null;
+    LibunwindFrame inner = null;
+    LibunwindFrame outer = null;
    
     private final Cursor cursor;
     private final Task task;
 
-  /**
-   * Creates a new RemoteFrame object. Represents a frame on the stack of a 
-   * remote (non-local) process.
-   * 
-   * @param cursor The Cursor used to unwind this Frame 
-   * @param task The Task whose stack this Frame belongs to
-   */
-  RemoteFrame (Cursor cursor, Task task)
-  {
-    this.cursor = cursor;
-    this.task = task;
-  }
+    /**
+     * Creates a new LibunwindFrame object. Represents a frame on the stack of a 
+     * remote (non-local) process.
+     * 
+     * @param cursor The Cursor used to unwind this Frame 
+     * @param task The Task whose stack this Frame belongs to
+     */
+    LibunwindFrame (Cursor cursor, Task task) {
+	this.cursor = cursor;
+	this.task = task;
+    }
   
-  /**
-   * Returns the Frame outer to this Frame on the stack. If that Frame object
-   * has not yet been created, it is created using this Frame's Cursor and
-   * unwinding outwards a single frame.
-   */
-  public Frame getOuter()
-  {
-   if (outer == null)
-      {
-	Cursor newCursor = this.cursor.unwind();
-	if (newCursor != null) 
-	  {
-	    outer = new RemoteFrame(newCursor, task);
-	    outer.inner = this;
-	  }
-      }
-    return outer;
-  }
+    /**
+     * Returns the Frame outer to this Frame on the stack. If that Frame object
+     * has not yet been created, it is created using this Frame's Cursor and
+     * unwinding outwards a single frame.
+     */
+    public Frame getOuter() {
+	if (outer == null) {
+	    Cursor newCursor = this.cursor.unwind();
+	    if (newCursor != null) {
+		outer = new LibunwindFrame(newCursor, task);
+		outer.inner = this;
+	    }
+	}
+	return outer;
+    }
   
-  /**
-   * Returns the Frame inner to this frame on the stack.
-   */
-  public Frame getInner()
-  {
-    return inner;
-  }
+    /**
+     * Returns the Frame inner to this frame on the stack.
+     */
+    public Frame getInner() {
+	return inner;
+    }
   
     /**
      * Return's the frame's task.
@@ -116,77 +111,78 @@ class RemoteFrame extends Frame
 	return task;
     }
 
-  /**
-   * Returns the ProcInfo object for this Frame.
-   */
-  public ProcInfo getProcInfo ()
-  {
-    return cursor.getProcInfo();
-  }
+    /**
+     * Returns the ProcInfo object for this Frame.
+     */
+    public ProcInfo getProcInfo () {
+	return cursor.getProcInfo();
+    }
   
-  /**
-   * Returns the current program counter of this Frame.
-   */
-  public long getAddress()
-  {
-    ProcInfo myInfo = cursor.getProcInfo();
-    ProcName myName = cursor.getProcName(0);
+    /**
+     * Returns the current program counter of this Frame.
+     */
+    public long getAddress() {
+	ProcInfo myInfo = cursor.getProcInfo();
+	ProcName myName = cursor.getProcName(0);
     
-    if (myInfo.getError() != 0 || myName.getError() != 0)
-      	return 0;
+	if (myInfo.getError() != 0 || myName.getError() != 0)
+	    return 0;
     
-   return myInfo.getStartIP() + myName.getOffset();
-  }
+	return myInfo.getStartIP() + myName.getOffset();
+    }
   
-  /**
-   * Returns the adjusted address of this frame. If this Frame is an innermost
-   * frame, the current program counter is returned as-is. Otherwise, it is 
-   * decremented by one, to represent the frame address pointing to its inner
-   * frame, rather than the inner frame's return address.
-   */
-  public long getAdjustedAddress()
-  {
-    if (this.inner != null && !this.cursor.isSignalFrame())
-      return getAddress() - 1;
-    else
-      return getAddress();
-  }
+    /**
+     * Returns the adjusted address of this frame. If this Frame is an innermost
+     * frame, the current program counter is returned as-is. Otherwise, it is 
+     * decremented by one, to represent the frame address pointing to its inner
+     * frame, rather than the inner frame's return address.
+     */
+    public long getAdjustedAddress() {
+	if (this.inner != null && !this.cursor.isSignalFrame())
+	    return getAddress() - 1;
+	else
+	    return getAddress();
+    }
   
-  public Value getRegisterValue(Register register) {
+    public Value getRegisterValue(Register register) {
 	logger.log(Level.FINE, "{0}: getRegisterValue register: {1}\n",
-		new Object[] { this, register });
+		   new Object[] { this, register });
 	Isa isa = task.getIsa();
 	byte[] word = new byte[register.type.getSize()];
-	RegisterMap map = UnwindRegisterMapFactory.getRegisterMap(isa);
+	RegisterMap map = LibunwindRegisterMapFactory.getRegisterMap(isa);
 
 	try {
 	    if (register.type == StandardTypes.getIntType(isa) || register.type == StandardTypes.getLongType(isa)) {
 		if (cursor.getRegister(map.getRegisterNumber(register), word) < 0)
-		    return null;
+		    throw new RuntimeException("Register " + register
+					       + " unavailable");
+
 	    } else {
 		if (cursor.getFPRegister(map.getRegisterNumber(register), word) < 0)
-		    return null;
+		    throw new RuntimeException("Floating-point register "
+					       + register
+					       + " unavailable");
+
 	    }
 	} catch (NullPointerException exception) {
-	    logger.log(Level.WARNING, "{0}: couldn't get register: {1}\n", new Object[] {this, register});
-	    return null;
+	    throw new RuntimeException("Register " + register
+				       + " unavailable (libunwind error)");
 	}
 	return new Value(register.type, new ScratchLocation(word));
     }
   
-  /**
-   * Returns the given byte array as a long.
-   * 
-   * @param word The byte array
-   * @return val The converted long
-   */
-  public long byteArrayToLong(byte[] word)
-  {
-    long val = 0;
-    for (int i = 0; i < word.length; i++)
-      val = val << 8 | (word[i] & 0xff);
-    return val;
-  }
+    /**
+     * Returns the given byte array as a long.
+     * 
+     * @param word The byte array
+     * @return val The converted long
+     */
+    public long byteArrayToLong(byte[] word) {
+	long val = 0;
+	for (int i = 0; i < word.length; i++)
+	    val = val << 8 | (word[i] & 0xff);
+	return val;
+    }
   
     /**
      * Return this frame's FrameIdentifier.
@@ -204,35 +200,32 @@ class RemoteFrame extends Frame
 	return this.frameIdentifier;
     }
   
-  /**
-   * Sets the value of the given register number with the word value.
-   */
-  public int setReg(int regNum, long word)
-  {
-    return cursor.setRegister(regNum, word);
-  }
+    /**
+     * Sets the value of the given register number with the word value.
+     */
+    public int setReg(int regNum, long word) {
+	return cursor.setRegister(regNum, word);
+    }
   
-  /**
-   * Sets the value of the given register number with the word value.
-   */
-  public long setReg (long regNum, long word)
-  {
-    return (long) setReg ((int) regNum, word);
-  }
+    /**
+     * Sets the value of the given register number with the word value.
+     */
+    public long setReg (long regNum, long word) {
+	return (long) setReg ((int) regNum, word);
+    }
   
-  /**
-   * Returns whether or not this frame's execution was interrupted by
-   * a signal.
-   * @return true If this Frame is a signal frame.
-   */
-  public boolean isSignalFrame()
-  {
-    return cursor.isSignalFrame();
-  }
+    /**
+     * Returns whether or not this frame's execution was interrupted by
+     * a signal.
+     * @return true If this Frame is a signal frame.
+     */
+    public boolean isSignalFrame() {
+	return cursor.isSignalFrame();
+    }
 
-   /**
-   * Return this frame's symbol; UNKNOWN if there is no symbol.
-   */
+    /**
+     * Return this frame's symbol; UNKNOWN if there is no symbol.
+     */
     public Symbol getSymbol() {
 	if (symbol == null) {
 	    symbol = SymbolFactory.getSymbol(task, getAdjustedAddress());
