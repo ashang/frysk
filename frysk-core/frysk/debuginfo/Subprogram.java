@@ -50,7 +50,6 @@ import java.util.LinkedList;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 import frysk.value.FunctionType;
-import frysk.value.Type;
 
 /**
  * A Subprogram refers to a concrete (not inlined) instance of a function.
@@ -75,8 +74,7 @@ public class Subprogram extends Subroutine
       while(die != null){
 //	System.out.print(" -> " + die.getName() + ": "+ DwTag.toName(die.getTag()));
 	if(die.getTag() == DwTag.FORMAL_PARAMETER_){
-	  Type type = debugInfo.getType(die);
-          Variable variable = new Variable(type, die);
+          Variable variable = new Variable(debugInfo, die);
 	  parameters.add(variable);
 	}
 	die = die.getSibling();

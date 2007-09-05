@@ -54,27 +54,19 @@ import frysk.value.Format;
  */
 
 public class Variable {
-    private DwarfDie variableDie;
-    private Type type;
+    private final Type type;
+    private final DwarfDie variableDie;
     
     private final String name;
   
-    public Variable(Type type, DwarfDie variableDie) {
+    public Variable(DebugInfo debugInfo, DwarfDie variableDie) {
+	// XXX: Should be able to do this on-demand.
+	this.type = debugInfo.getType(variableDie);
 	this.variableDie = variableDie;
 	this.name = variableDie.getName();
-	this.type = type;
-    }
-    public void setVariableDie (DwarfDie variableDie) {
-	if (variableDie == null) {
-	    throw new IllegalArgumentException();
-	}
-	this.variableDie = variableDie;
     }
     public DwarfDie getVariableDie() {
 	return variableDie;
-    }
-    public void setType (Type type) {
-	this.type = type;
     }
     /**
      * Return the variable's name.

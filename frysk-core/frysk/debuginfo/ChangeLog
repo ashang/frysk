@@ -1,5 +1,13 @@
 2007-09-05  Andrew Cagney  <cagney@redhat.com>
 
+	* Variable.java (type): Make final.
+	(variableDie): Make final.
+	(Variable(DebugInfo,DwarfDie)): Replace Variable(Type,DwarfDie).
+	(setVariableDie(DwarfDie)): Delete.
+	(setType(Type)): Delete.
+	* Scope.java: Update.
+	* Subprogram.java: Update.
+	
 	* DebugInfo.java (TmpSymTab.put(DebugInfoFrame,String,Value)):
 	Delete.
 	* DebugInfoEvaluator.java (putUndefined()): Delete.
