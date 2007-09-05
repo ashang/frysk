@@ -139,8 +139,8 @@ public class HpdTestbed
      * the prompt (OUTPUT must match everything up to the prompt
      * including newlines); if other ooutput, or a timeout, fail.
      */
-    public HpdTestbed sendExpectPrompt(final String command,
-				       final String output) {
+    public HpdTestbed sendCommandExpectPrompt(final String command,
+					      final String output) {
 	send(command);
 	send("\n");
 	return expectPrompt("sent: <" + command

@@ -1,5 +1,16 @@
 2007-09-04  Andrew Cagney  <cagney@redhat.com>
 
+	* FormatOption.java: New file.
+	* PrintCommand.java: Recognize "t" as binary.
+	* HpdTestbed.java (sendCommandExpectPrompt): Rename
+	sendExpectPrompt.
+	* TestPrint.java (testFormatInteger()): New.
+	(testFormatInteger_d()): New.
+	(testFormatInteger_t()): New.
+	(testFormatInteger_o()): New.
+	(testFormatInteger_x()): New.
+	(testFormatUnknown()): New.
+
 	* TestLib.java (e): Change type to HpdTestbed.
 	* HpdTestbed.java: New file.
 	* TestPrint.java: Use.

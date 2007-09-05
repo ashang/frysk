@@ -55,7 +55,7 @@ class PrintCommand
     PrintCommand(CLI cli)
     {
 	this(cli, "print", "Evaluate and display the value of a program variable or expression.",
-		"print expression [-name] [-index] [-format d|o|x]", "The print command evaluates and displays an expression. The debugger\n" +
+		"print expression [-name] [-index] [-format d|o|x|t]", "The print command evaluates and displays an expression. The debugger\n" +
 		"interprets the expression by looking up the value(s) associated with\n" +
 		"each symbol and applying the operators.  The result of an expression may\n" +
 		"be a scalar value or an aggregate (array, array slice, record, or\n" +
@@ -98,6 +98,11 @@ class PrintCommand
 		    format = Format.OCTAL;
 		else if (arg.compareTo("x") == 0) 
 		    format = Format.HEXADECIMAL;
+		else if (arg.compareTo("t") == 0)
+		    format = Format.BINARY;
+		else
+		    throw new ParseException("unrecognized format: " + arg,
+					     0);
 	    }
 	}
 	if (format != null)

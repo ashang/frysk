@@ -43,7 +43,12 @@ import frysk.expunit.Expect;
 import frysk.Config;
 
 /**
- * Test parsing and printing of types.
+ * Test the functionality of the print command; for instance that the
+ * formatting options work.
+ *
+ * The intent here is not to test underlying code such as the type
+ * parser or the formatter; that is the responsibility of underlying
+ * tests.
  */
 
 public class TestPrint
@@ -52,7 +57,33 @@ public class TestPrint
     public void testUnattached() {
 	e = new HpdTestbed();
 	// Add with no process; shouldn't crash.
-	e.sendExpectPrompt("print 2+2", "4\r\n");
+	e.sendCommandExpectPrompt("print 2+2", "4\r\n");
+    }
+
+    public void testFormatInteger() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("print 17 -format d", "\r\n17\r\n");
+    }
+    public void testFormatInteger_d() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("print 17 -format d", "\r\n17\r\n");
+    }
+    public void testFormatInteger_t() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("print 17 -format t", "\r\n10001\r\n");
+    }
+    public void testFormatInteger_o() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("print 17 -format o", "\r\n021\r\n");
+    }
+    public void testFormatInteger_x() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("print 17 -format x", "\r\n0x11\r\n");
+    }
+    public void testFormatUnknown() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("print 17 -format unknown",
+				  "unrecognized format: unknown\r\n");
     }
 
     public void testHpdScalar () {
