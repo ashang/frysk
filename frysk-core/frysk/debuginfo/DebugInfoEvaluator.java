@@ -547,14 +547,16 @@ class DebugInfoEvaluator
 	    switch (memberType.getTag()) {
 	    case DwTag.STRUCTURE_TYPE_: {
 		ClassType memberClassType = getClassType(memberType, memberType.getName());
-		if (member.getTag() != DwTag.INHERITANCE_)
+		if (member.getTag() != DwTag.INHERITANCE_) {
 		    memberClassType.setTypedefFIXME(haveTypeDef);
-		else
-		    memberClassType.setInheritance(true);
+		    classType.addMember(memberType.getName(), memberClassType,
+					offset, access);
+		} else {
+		    classType.addInheritance(memberType.getName(), memberClassType,
+					     offset, access);
+		}
 		typeSize += memberClassType.getSize();
 		typeSize += 4 - (typeSize % 4);             // round up to mod 4
-		classType.addMember(memberType.getName(), memberClassType,
-				    offset, access);
 		continue;
 	    }
         

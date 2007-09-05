@@ -1,3 +1,11 @@
+2007-09-05  Andrew Cagney  <cagney@redhat.com>
+
+	* ClassType.java (setInheritance): Delete.
+	(inheritance): Delete.
+	(Member): Add field inheritance.
+	(addInheritance(String,Type,long,int)): New.
+	(add(String,Type,long,int,int,int,boolean)): New.
+
 2007-09-04  Andrew Cagney  <cagney@redhat.com>
 
 	* Value.java (toPrint(PrintWriter,Format)): New.

@@ -1,3 +1,7 @@
+2007-09-05  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfoEvaluator.java: Use ClassType.addInheritance.
+
 2007-09-05  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Variable.java: Changed type retrieval to be on demand.

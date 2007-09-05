@@ -65,8 +65,10 @@ public class ClassType
 	final int access;
 	final int bitOffset;
 	final int bitSize;
+	final boolean inheritance;
 	Member(int index, String name, Type type, long offset,
-	       int access, int bitOffset, int bitSize) {
+	       int access, int bitOffset, int bitSize,
+	       boolean inheritance) {
 	    this.index = index;
 	    this.type = type;
 	    this.name = name;
@@ -74,6 +76,7 @@ public class ClassType
 	    this.access = access;
 	    this.bitOffset = bitOffset;
 	    this.bitSize = bitSize;
+	    this.inheritance = inheritance;
 	}
 	public String toString() {
 	    return ("{"
@@ -81,6 +84,7 @@ public class ClassType
 		    + ",name=" + name
 		    + ",type=" + type
 		    + ",offset=" + offset
+		    + ",inheritance=" + inheritance
 		    + ",access=" + access
 		    + ",bitOffset=" + bitOffset
 		    + ",bitSize=" + bitSize
@@ -96,9 +100,6 @@ public class ClassType
      */
     private final ArrayList members = new ArrayList();
 
-    // DW_AT_inheritance
-    private boolean inheritance;
-  
     /**
      * Create an ClassType
      * 
@@ -107,7 +108,6 @@ public class ClassType
      */
     public ClassType (String name, ByteOrder order) {
 	super(name, order, 0);
-	inheritance = false;
     }
 
     /**
@@ -117,7 +117,6 @@ public class ClassType
 	StringBuffer buf = new StringBuffer();
 	buf.append("{");
 	buf.append(super.toString());
-	buf.append(",inheritance=" + inheritance);
 	buf.append(",members={");
 	for (Iterator i = members.iterator(); i.hasNext(); ) {
 	    buf.append(i.next().toString());
@@ -129,19 +128,28 @@ public class ClassType
     /**
      * Add NAME as a member of the class.
      */
-    public ClassType addMember(String name, Type type, long offset,
-			       int access) {
-	return addMember(name, type, offset, access, -1, -1);
-    }
-    public ClassType addMember(String name, Type type, long offset,
-			       int access, int bitOffset, int bitLength) {
+    private ClassType add(String name, Type type, long offset, int access,
+			  int bitOffset, int bitLength, boolean inheritance) {
 	if (bitOffset >= 0 && bitLength > 0)
 	    type = type.pack(bitOffset, bitLength);
 	Member member = new Member(members.size(), name, type, offset,
-				   access, bitOffset, bitLength);
+				   access, bitOffset, bitLength, inheritance);
 	nameToMember.put(name, member);
 	members.add(member);
 	return this;
+    }
+
+    public ClassType addMember(String name, Type type, long offset,
+			       int access) {
+	return add(name, type, offset, access, -1, -1, false);
+    }
+    public ClassType addMember(String name, Type type, long offset,
+			       int access, int bitOffset, int bitLength) {
+	return add(name, type, offset, access, bitOffset, bitLength, false);
+    }
+    public ClassType addInheritance(String name, Type type, long offset,
+				    int access) {
+	return add(name, type, offset, access, -1, -1, true);
     }
 
     /**
@@ -245,8 +253,7 @@ public class ClassType
 	// Types this inherits come first; print them out.
 	while (i.hasNext()) {
 	    member = (Member)i.next();
-	    if (!(member.type instanceof frysk.value.ClassType)
-		|| !((ClassType)(member.type)).inheritance)
+	    if (!member.inheritance)
 		break;
 	    if (first)
 		first = false;
@@ -296,9 +303,5 @@ public class ClassType
 
     public void setSize (int size) {
 	this.size = size;
-    }
-  
-    public void setInheritance(boolean inheritance) {
-	this.inheritance = inheritance;
     }
 }
