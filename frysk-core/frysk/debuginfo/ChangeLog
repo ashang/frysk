@@ -1,5 +1,8 @@
 2007-09-05  Andrew Cagney  <cagney@redhat.com>
 
+	* DebugInfoEvaluator.java (fetchType(DwarfType,String)): Drop
+	boolean haveTypeDef parameter.
+
 	* Variable.java (type): Make final.
 	(variableDie): Make final.
 	(Variable(DebugInfo,DwarfDie)): Replace Variable(Type,DwarfDie).

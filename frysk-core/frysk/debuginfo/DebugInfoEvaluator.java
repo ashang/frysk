@@ -459,8 +459,7 @@ class DebugInfoEvaluator
     /**
      * @return Generate a type for a typedef otherwise a basetype.
      */
-    private Type fetchType (boolean haveTypeDef, DwarfDie type,
-				      String name) {
+    private Type fetchType (DwarfDie type, String name) {
 	int size = getByteSize(type);
 	int baseType = type.getBaseType();
 	// XXX: Order might come from TYPE; XXX: sign vs unsigned vs
@@ -532,7 +531,7 @@ class DebugInfoEvaluator
 
 	    typeSize = (int)offset + BaseTypes.getTypeSize(memberType.getBaseType());
 	    if (memberType.getBaseType() > 0) {
-		type = fetchType(haveTypeDef, memberType, dieType.getName());
+		type = fetchType(memberType, dieType.getName());
 		// System V ABI Supplements discuss bit field layout
 		int bitSize = member.getAttrConstant(DwAt.BIT_SIZE_);
 		int bitOffset = 0;
@@ -941,15 +940,9 @@ class DebugInfoEvaluator
     
 	type = varDie.getUltimateType();
 	if (type == null)
-	    return null;
+	    return new UnknownType(varDie.getName());
 	DwarfDie dieType = varDie.getType();
-	boolean haveTypeDef;
-	if (type != dieType)
-	    haveTypeDef = true;
-	else
-	    haveTypeDef = false;
-
-	return fetchType(haveTypeDef, type, dieType.getName());
+	return fetchType(type, dieType.getName());
     }
 
   
