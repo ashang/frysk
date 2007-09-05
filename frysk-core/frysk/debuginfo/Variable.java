@@ -54,14 +54,14 @@ import frysk.value.Format;
  */
 
 public class Variable {
-    private final Type type;
+    private Type type;
     private final DwarfDie variableDie;
-    
+    private DebugInfo debugInfo;
     private final String name;
   
     public Variable(DebugInfo debugInfo, DwarfDie variableDie) {
-	// XXX: Should be able to do this on-demand.
-	this.type = debugInfo.getType(variableDie);
+	this.debugInfo = debugInfo;
+	this.type = null;
 	this.variableDie = variableDie;
 	this.name = variableDie.getName();
     }
@@ -75,6 +75,9 @@ public class Variable {
 	return name;
     }
     public Type getType() {
+	if(this.type == null){
+	    this.type = debugInfo.getType(variableDie);
+	}
 	return type;
     }
     
@@ -87,7 +90,7 @@ public class Variable {
     }
   
     public void toPrint(PrintWriter printWriter, DebugInfoFrame frame) {
-	if (type == null) {
+	if (this.getType() == null) {
 	    // FIXME: This should just send the request to the Value's
 	    // toPrint method and not try to figure out of the Type
 	    // information was delt with.
