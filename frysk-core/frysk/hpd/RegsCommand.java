@@ -77,8 +77,15 @@ public class RegsCommand extends CLIHandler {
 			break;
 		    }
 		if (i == regs.length) {
-		    cli.addMessage("Register group name: " + groupName
-			    + " not found", Message.TYPE_ERROR);
+		    StringBuffer b = new StringBuffer();
+		    b.append("Register group <");
+		    b.append(groupName);
+		    b.append("> not recognized; possible groups are:");
+		    for (int r = 0; r < regs.length; r++) {
+			b.append(" ");
+			b.append(regs[r].name);
+		    }
+		    cli.addMessage(b.toString(), Message.TYPE_ERROR);
 		    return;
 		}
 	    }

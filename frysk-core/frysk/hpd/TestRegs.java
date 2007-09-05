@@ -50,10 +50,7 @@ public class TestRegs extends TestLib {
     public void testRegsCommand() {
 	child = new Expect(Config.getPkgLibFile("hpd-c"));
 	Isa isa = getChild().getMainTask().getIsa();
-	e = new HpdTestbed();
-	// Attach
-	e.send("attach " + child.getPid() + "\n\n");
-	e.expect(5, "attach.*\n" + prompt);
+	e = new HpdTestbed(child.getPid());
 
 	// Regs
 	e.send("regs\n");
@@ -61,10 +58,17 @@ public class TestRegs extends TestLib {
 	// Match the first register (with two values) and the last
 	// register.
 	if (isa instanceof IsaIA32)
-	    e.expect("eax:\t[0-9][^\t]*\t0x.*esp:.*" + prompt);
+	    e.expectPrompt("eax:\t[0-9][^\t]*\t0x.*esp:.*");
 	else if (isa instanceof IsaX8664)
-	    e.expect("rax:\t[0-9][^\t]*\t0x.*rip:.*" + prompt);
+	    e.expectPrompt("rax:\t[0-9][^\t]*\t0x.*rip:.*");
 	else
 	    fail("Architecture not supported");
+    }
+
+    public void testRegsBlah() {
+	child = new Expect(Config.getPkgLibFile("hpd-c"));
+	e = new HpdTestbed(child.getPid());
+	e.sendCommandExpectPrompt("regs blah",
+				  "<blah> not recognized; possible groups.*");
     }
 }

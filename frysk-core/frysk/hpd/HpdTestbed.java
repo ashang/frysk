@@ -47,6 +47,7 @@ import frysk.expunit.Regex;
 import frysk.expunit.EofException;
 import frysk.expunit.TimeoutException;
 import java.io.File;
+import frysk.sys.ProcessIdentifier;
 
 /**
  * Variation on frysk.expunit.Expect that drives the HPD.
@@ -91,6 +92,17 @@ public class HpdTestbed
 	      });
 	expectPrompt(startup);
     }
+
+    /**
+     * Create a HPD attached to PID.
+     */
+     public HpdTestbed(ProcessIdentifier pid) {
+	 super(new String[] {
+		  Config.getBinFile("fhpd").getPath (),
+		  pid.toString()
+	       });
+	 expectPrompt("Attached to process " + pid.toString() + "\r\n");
+     }
 
     /**
      * Expect; OUTPUT followed by PROMPT; report WHY.

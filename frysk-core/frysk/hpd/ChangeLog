@@ -1,5 +1,9 @@
 2007-09-04  Andrew Cagney  <cagney@redhat.com>
 
+	* HpdTestbed.java (HpdTestbed(int)): New.
+	* RegsCommand.java: Print the valid register groups.
+	* TestRegs (testRegsBlah()): New.
+
 	* FormatOption.java: New file.
 	* PrintCommand.java: Recognize "t" as binary.
 	* HpdTestbed.java (sendCommandExpectPrompt): Rename
