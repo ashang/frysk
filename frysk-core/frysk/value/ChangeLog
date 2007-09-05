@@ -1,5 +1,7 @@
 2007-09-05  Andrew Cagney  <cagney@redhat.com>
 
+	* ByteBufferLocation.java (ByteBufferLocation(ByteBuffer)): Delete.
+
 	* ClassType.java (setInheritance): Delete.
 	(inheritance): Delete.
 	(Member): Add field inheritance.

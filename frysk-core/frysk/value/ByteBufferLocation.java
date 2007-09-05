@@ -53,7 +53,7 @@ public class ByteBufferLocation
 {
     private final ByteBuffer buffer;
     public ByteBufferLocation(ByteBuffer memory, long offset, long length) {
-	this(memory.slice(offset, length));
+	this.buffer = memory.slice(offset, length);
     }
     public ByteBufferLocation (ByteBuffer buffer) {
 	this.buffer = buffer;
