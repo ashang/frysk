@@ -1,3 +1,9 @@
+2007-09-05  Andrew Cagney  <cagney@redhat.com>
+
+	* CppSymTab.java (put(DebugInfoFrame,String,Value)): Delete.
+	(putUndefined()): Delete.
+	* cpp.g: Remove putUndefined calls.
+
 2007-08-30  Andrew Cagney  <cagney@redhat.com>
 
 	* cpp.g: Remove calls to Value.getTextFIXME.

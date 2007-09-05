@@ -99,10 +99,6 @@ class DebugInfoEvaluator
     private ArithmeticType floatType;
     private ArithmeticType doubleType;
   
-    public boolean putUndefined () {
-	return false;
-    }
-
     private int getByteSize(DwarfDie die) {
 	return die.getAttrConstant(DwAt.BYTE_SIZE_);
     }
@@ -594,54 +590,6 @@ class DebugInfoEvaluator
     }
   
   
-    /*
-     * Sets the value of symbol s in frame f from value v.
-     * @see frysk.expr.CppSymTab#put(java.lang.String, frysk.lang.Value)
-     */
-    public void put (DebugInfoFrame f, String s, Value v) throws NameNotFoundException
-    {
-	setCurrentFrame(f);
-	VariableAccessor[] variableAccessor = { new AccessMemory()
-						// new AccessDwOpData()
-	};
-	DwarfDie varDie = getDie(s);
-	if (varDie == null)
-	    return;
-
-	try {
-	    DwarfDie type = varDie.getUltimateType();
-	    if (type == null)
-		return;
-	    for (int i = 0; i < variableAccessor.length; i++) {
-		switch (type.getBaseType()) {
-		case BaseTypes.baseTypeLong:
-		case BaseTypes.baseTypeUnsignedLong:
-		    variableAccessor[i].putLong(varDie, 0, v);
-		    break;
-		case BaseTypes.baseTypeInteger:
-		case BaseTypes.baseTypeUnsignedInteger:
-		    variableAccessor[i].putInt(varDie, 0, v);
-		    break;
-		case BaseTypes.baseTypeShort:
-		case BaseTypes.baseTypeUnsignedShort:
-		    variableAccessor[i].putShort(varDie, 0, v);
-		    break;
-		case BaseTypes.baseTypeByte:
-		case BaseTypes.baseTypeUnsignedByte:
-		    variableAccessor[i].putByte(varDie, 0, v);
-		    break;
-		case BaseTypes.baseTypeFloat:
-		    variableAccessor[i].putFloat(varDie, 0, v);
-		    break;
-		case BaseTypes.baseTypeDouble:
-		    variableAccessor[i].putDouble(varDie, 0, v);
-		    break;
-		}
-	    }
-	} catch (Errno ignore) {
-	}
-    }
-
     /**
      * @return Value for symbol s in frame f
      */

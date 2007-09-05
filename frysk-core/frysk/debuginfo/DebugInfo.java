@@ -274,10 +274,6 @@ public class DebugInfo {
     
 	final class TmpSymTab
 	    implements CppSymTab {
-	  public void put (DebugInfoFrame f, String s, Value v) throws NameNotFoundException {
-		throw new NameNotFoundException("No symbol table is available.");
-	    }
-
 	  public Value get (DebugInfoFrame f, String s) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");
 	    }
@@ -292,11 +288,7 @@ public class DebugInfo {
 	  public Value getMemory (DebugInfoFrame f, String s) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");        
 	    }
-      
-	    public boolean putUndefined () {
-		return false;
-	    }
-	}
+      	}
     
 	CppLexer lexer = new CppLexer(new StringReader(sInput));
 	CppParser parser = new CppParser(lexer);

@@ -975,17 +975,9 @@ expr returns [Value returnVar=null]
           returnVar = (Value)cppSymTabRef.get(frame, el);
           }
     |   ident:IDENT  {
-            if((returnVar = ((Value)cppSymTabRef.get(frame, ident.getText()))) == null
-		&& cppSymTabRef.putUndefined()) {
-                returnVar = intType.createValue(0);
-                cppSymTabRef.put(null, ident.getText(), returnVar);
-            }
+            returnVar = ((Value)cppSymTabRef.get(frame, ident.getText()));
         }
     |   tident:TAB_IDENT  {
-            if((returnVar = ((Value)cppSymTabRef.get(frame, tident.getText()))) == null
-		&& cppSymTabRef.putUndefined()) {
-                returnVar = intType.createValue(0);
-                cppSymTabRef.put(null, tident.getText(), returnVar);
-            }
+            returnVar = ((Value)cppSymTabRef.get(frame, tident.getText()));
         }
     ;
