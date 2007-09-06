@@ -497,8 +497,7 @@ class DebugInfoEvaluator
     /**
      * @return Value for symbol s in frame f
      */
-    public Value get (DebugInfoFrame ig,
-		      String s) throws NameNotFoundException {
+    public Value get (String s) throws NameNotFoundException {
 	if (s.charAt(0) == '$') {
 	    // FIXME: This code doesn't need to access the dwarf register
 	    // map; instead just do a direct register lookup.
@@ -513,14 +512,14 @@ class DebugInfoEvaluator
 	if (varDie == null)
 	    throw new NameNotFoundException();
     
-	return get(frame, varDie);
+	return get(varDie);
     }
   
     /**
      * @return Value associated with the given DwarfDie.
      * @see frysk.expr.CppSymTab#get(java.lang.String)
      */
-    public Value get (DebugInfoFrame ig, DwarfDie varDie) {
+    public Value get (DwarfDie varDie) {
 	VariableAccessor[] variableAccessor = { new AccessMemory(),
 						new AccessRegisters()};
 	ByteOrder byteorder = task.getIsa().getByteOrder();
@@ -632,13 +631,13 @@ class DebugInfoEvaluator
      * {a,b,c,1,1,2,2}
      * @return Value of the symbol
      */
-    public Value get (DebugInfoFrame ig, ArrayList components) throws NameNotFoundException {
+    public Value get (ArrayList components) throws NameNotFoundException {
 	String s = (String)components.get(0);
 	DwarfDie varDie = getDie(s);
 	if (varDie == null)
 	    return (null);
 
-	Value v = get(frame, s);
+	Value v = get(s);
 	if (v.getType() instanceof ArrayType)
 	    return ((ArrayType)v.getType()).get(v, 1, components);
 	else if (v.getType() instanceof ClassType)
@@ -652,7 +651,7 @@ class DebugInfoEvaluator
      * @param s Symbol s
      * @return Value corresponding to the address of symbol s 
      */
-    public Value getAddress (DebugInfoFrame ig, String s) throws NameNotFoundException {
+    public Value getAddress (String s) throws NameNotFoundException {
 	AccessMemory access = new AccessMemory();
 	return longType.createValue(access.getAddr(getDie(s))); 
     }
@@ -662,7 +661,7 @@ class DebugInfoEvaluator
      * @param s Symbol s
      * @return Value corresponding to the memory location pointed to by symbol s.
      */
-    public Value getMemory (DebugInfoFrame ig, String s) throws NameNotFoundException {     
+    public Value getMemory (String s) throws NameNotFoundException {     
 	DwarfDie varDie = getDie(s);
     
 	if (varDie == null)

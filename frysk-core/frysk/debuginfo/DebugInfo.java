@@ -243,8 +243,7 @@ public class DebugInfo {
 	 * all of the threads have to be checked. If there's only one thread;
 	 * than this loop will run only once anyways.
 	 */
-	treeParser = new CppTreeParser(4, frame,
-				       new DebugInfoEvaluator(frame));
+	treeParser = new CppTreeParser(4, new DebugInfoEvaluator(frame));
 	try {
 	    result = treeParser.expr(t);
 	} catch (ArithmeticException ae) {
@@ -268,18 +267,18 @@ public class DebugInfo {
     
 	final class TmpSymTab
 	    implements CppSymTab {
-	  public Value get (DebugInfoFrame f, String s) throws NameNotFoundException {
+	  public Value get (String s) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");
 	    }
 
-	  public Value get (DebugInfoFrame f, ArrayList v) throws NameNotFoundException {
+	  public Value get (ArrayList v) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");
 	    }
       
-	public Value getAddress (DebugInfoFrame f, String s) throws NameNotFoundException {
+	public Value getAddress (String s) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");
 	    }
-	  public Value getMemory (DebugInfoFrame f, String s) throws NameNotFoundException {
+	  public Value getMemory (String s) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");        
 	    }
       	}
@@ -299,7 +298,7 @@ public class DebugInfo {
 	CommonAST t = (CommonAST) parser.getAST();
 	CppTreeParser treeParser;
 	TmpSymTab tmpSymTab = new TmpSymTab();
-	treeParser = new CppTreeParser(4, null, tmpSymTab);
+	treeParser = new CppTreeParser(4, tmpSymTab);
         
 	try {
 	    result = treeParser.expr(t);
@@ -325,7 +324,7 @@ public class DebugInfo {
 
     public Value get(DebugInfoFrame f, DwarfDie die) throws NameNotFoundException
     {
-	return new DebugInfoEvaluator(f).get(f, die);
+	return new DebugInfoEvaluator(f).get(die);
     } 
 
 }

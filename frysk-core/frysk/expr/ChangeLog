@@ -1,3 +1,11 @@
+2007-09-06  Andrew Cagney  <cagney@redhat.com>
+
+	* CppSymTab.java (get(String)): Replace get(DebugInfoFrame,String).
+	(get(ArrayList)): Replace get(DebugInfoFrame,ArrayList).
+	(getAddress(String)): Replace getAddress(DebugInfoFrame,String).
+	(getMemory(String)): Replace getMemory(DebugInfoFrame,String).
+	* cpp.g: Update.
+
 2007-09-05  Andrew Cagney  <cagney@redhat.com>
 
 	* CppSymTab.java (put(DebugInfoFrame,String,Value)): Delete.

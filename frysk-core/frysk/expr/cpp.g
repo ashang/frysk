@@ -86,7 +86,6 @@ header
     import frysk.value.UnsignedType;
     import frysk.value.FloatingPointType;
     import frysk.value.Value;
-    import frysk.debuginfo.DebugInfoFrame;
     import javax.naming.NameNotFoundException;
     import frysk.value.InvalidOperatorException;
     import frysk.value.OperationNotDefinedException;
@@ -772,11 +771,9 @@ options {
     FloatingPointType doubleType;
     FloatingPointType floatType;
     private CppSymTab cppSymTabRef;
-    private DebugInfoFrame frame;
-    public CppTreeParser(int intSize, DebugInfoFrame frame, CppSymTab symTab) {
+    public CppTreeParser(int intSize, CppSymTab symTab) {
         this();
 	    cppSymTabRef = symTab; 
-        this.frame = frame;
         shortType = new SignedType("short", ByteOrder.LITTLE_ENDIAN, intSize / 2);
         intType = new SignedType("int", ByteOrder.LITTLE_ENDIAN, intSize);
         longType = new SignedType("long", ByteOrder.LITTLE_ENDIAN, intSize * 2);
@@ -830,7 +827,7 @@ expr returns [Value returnVar=null]
 	{ returnVar = v1.getType().multiply(v1, v2); }
     |   #(MEMORY s1=identifier )
 	{ returnVar = longType.createValue(0);
-          returnVar = (Value)cppSymTabRef.getMemory(frame, s1); }
+          returnVar = (Value)cppSymTabRef.getMemory(s1); }
     |   #(DIVIDE  v1=expr v2=expr)  { returnVar = v1.getType().divide(v1, v2); }
     |   #(MOD  v1=expr v2=expr)  {	returnVar = v1.getType().mod(v1, v2);  }
     |   #(SHIFTLEFT  v1=expr v2=expr)  {	
@@ -852,7 +849,7 @@ expr returns [Value returnVar=null]
 	{ returnVar = v1.getType().bitWiseAnd(v1, v2);  }
     |   #(ADDRESS_OF s1=identifier )
 	{ returnVar = longType.createValue(0);
-          returnVar = (Value)cppSymTabRef.getAddress(frame, s1); }
+          returnVar = (Value)cppSymTabRef.getAddress(s1); }
     |   #(BITWISEXOR  v1=expr v2=expr)  { returnVar = v1.getType().bitWiseXor(v1, v2);  }
     |   #(BITWISEOR  v1=expr v2=expr)  { returnVar = v1.getType().bitWiseOr(v1, v2);  }
     |   #(AND  v1=expr v2=expr)  { returnVar = v1.getType().logicalAnd(v1, v2);  }
@@ -972,12 +969,12 @@ expr returns [Value returnVar=null]
     |   #(EXPR_LIST v1=expr)  { returnVar = v1; }
     |   #(FUNC_CALL v1=expr v2=expr)  { returnVar = v1; }
     |   #(REFERENCE el=references) {
-          returnVar = (Value)cppSymTabRef.get(frame, el);
+          returnVar = (Value)cppSymTabRef.get(el);
           }
     |   ident:IDENT  {
-            returnVar = ((Value)cppSymTabRef.get(frame, ident.getText()));
+            returnVar = ((Value)cppSymTabRef.get(ident.getText()));
         }
     |   tident:TAB_IDENT  {
-            returnVar = ((Value)cppSymTabRef.get(frame, tident.getText()));
+            returnVar = ((Value)cppSymTabRef.get(tident.getText()));
         }
     ;

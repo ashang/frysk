@@ -1,5 +1,10 @@
 2007-09-06  Andrew Cagney  <cagney@redhat.com>
 
+	* DebugInfo.java (TmpSymTab): Update CppSymTab interfaces dropping
+	DebugInfoFrame parameter.
+	* DebugInfoEvaluator.java: Ditto.
+	(get(DwarfDie)): Ditto.
+
 	* DebugInfoEvaluator.java (currentFrame): Make final.
 	(getInnerMostFrame()): Delete.
 	(setCurrentFrame(DebugInfoFrame)): Delete.
