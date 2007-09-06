@@ -84,7 +84,7 @@ class DebugInfoEvaluator
 {
     private Task task;
 
-    private DebugInfoFrame currentFrame;
+    private final DebugInfoFrame frame;
   
     private ByteBuffer buffer;
 
@@ -115,7 +115,7 @@ class DebugInfoEvaluator
 	this.task = frame.getTask();
 	buffer = this.task.getMemory();
 
-	currentFrame = frame;
+	this.frame = frame;
 	Isa isa = this.task.getIsa();
 	byteType = StandardTypes.getByteType(isa);
 	// byteUnsignedType = new ArithmeticType(1, byteorder,
@@ -164,11 +164,11 @@ class DebugInfoEvaluator
 	 * @return The address corresponding to the symbol
 	 */
 	protected long getBufferAddr (DwarfDie varDieP) throws NameNotFoundException {
-	    long pc = currentFrame.getAdjustedAddress();
+	    long pc = frame.getAdjustedAddress();
        
 	    List ops = varDieP.getFormData(pc);
       
-	    LocationExpression locExp = new LocationExpression(currentFrame, varDieP, ops);
+	    LocationExpression locExp = new LocationExpression(frame, varDieP, ops);
 	    long value = locExp.decode();
 	    if (locExp.getLocationType() != LocationExpression.locationTypeAddress
 		&& locExp.getLocationType() != LocationExpression.locationTypeRegDisp)
@@ -227,11 +227,11 @@ class DebugInfoEvaluator
 	 * @throws NameNotFoundException
 	 */    
 	private long getRegister(DwarfDie varDieP) throws NameNotFoundException {
-	    long pc = currentFrame.getAdjustedAddress();
+	    long pc = frame.getAdjustedAddress();
        
 	    List ops = varDieP.getFormData(pc);
       
-	    LocationExpression locExp = new LocationExpression(currentFrame, varDieP, ops);
+	    LocationExpression locExp = new LocationExpression(frame, varDieP, ops);
 	    long value  = locExp.decode();
 	    if (locExp.getLocationType() != LocationExpression.locationTypeReg)
 		throw new NameNotFoundException();
@@ -276,7 +276,7 @@ class DebugInfoEvaluator
 	Dwfl dwfl;
 	DwarfDie[] allDies;
 	DwarfDie varDie;
-	long pc = this.currentFrame.getAdjustedAddress();
+	long pc = this.frame.getAdjustedAddress();
 
 	dwfl = DwflCache.getDwfl(task);
 	DwflDieBias bias = dwfl.getDie(pc);
@@ -284,7 +284,7 @@ class DebugInfoEvaluator
 	    return null;
 	DwarfDie die = bias.die;
 
-	Subprogram b = currentFrame.getSubprogram();
+	Subprogram b = frame.getSubprogram();
 	LinkedList vars = b.getVariables();
      
 	Iterator iterator = vars.iterator();
@@ -497,31 +497,30 @@ class DebugInfoEvaluator
     /**
      * @return Value for symbol s in frame f
      */
-    public Value get (DebugInfoFrame f, String s) throws NameNotFoundException {
-	setCurrentFrame(f);
+    public Value get (DebugInfoFrame ig,
+		      String s) throws NameNotFoundException {
 	if (s.charAt(0) == '$') {
 	    // FIXME: This code doesn't need to access the dwarf register
 	    // map; instead just do a direct register lookup.
-	    RegisterMap regMap = DwarfRegisterMapFactory.getRegisterMap(f.getTask().getIsa());
+	    RegisterMap regMap = DwarfRegisterMapFactory.getRegisterMap(frame.getTask().getIsa());
 	    Register reg = regMap.getRegister(s.substring(1).trim());
 	    if (reg == null)
 		return null;
-	    return f.getRegisterValue(reg);
+	    return frame.getRegisterValue(reg);
 	}
 
 	DwarfDie varDie = getDie(s);
 	if (varDie == null)
 	    throw new NameNotFoundException();
     
-	return get(f, varDie);
+	return get(frame, varDie);
     }
   
     /**
      * @return Value associated with the given DwarfDie.
      * @see frysk.expr.CppSymTab#get(java.lang.String)
      */
-    public Value get (DebugInfoFrame f, DwarfDie varDie) {
-	setCurrentFrame(f);
+    public Value get (DebugInfoFrame ig, DwarfDie varDie) {
 	VariableAccessor[] variableAccessor = { new AccessMemory(),
 						new AccessRegisters()};
 	ByteOrder byteorder = task.getIsa().getByteOrder();
@@ -633,14 +632,13 @@ class DebugInfoEvaluator
      * {a,b,c,1,1,2,2}
      * @return Value of the symbol
      */
-    public Value get (DebugInfoFrame f, ArrayList components) throws NameNotFoundException {
-	setCurrentFrame(f);
+    public Value get (DebugInfoFrame ig, ArrayList components) throws NameNotFoundException {
 	String s = (String)components.get(0);
 	DwarfDie varDie = getDie(s);
 	if (varDie == null)
 	    return (null);
 
-	Value v = get(f, s);
+	Value v = get(frame, s);
 	if (v.getType() instanceof ArrayType)
 	    return ((ArrayType)v.getType()).get(v, 1, components);
 	else if (v.getType() instanceof ClassType)
@@ -654,8 +652,7 @@ class DebugInfoEvaluator
      * @param s Symbol s
      * @return Value corresponding to the address of symbol s 
      */
-    public Value getAddress (DebugInfoFrame f, String s) throws NameNotFoundException {
-	setCurrentFrame(f);
+    public Value getAddress (DebugInfoFrame ig, String s) throws NameNotFoundException {
 	AccessMemory access = new AccessMemory();
 	return longType.createValue(access.getAddr(getDie(s))); 
     }
@@ -665,8 +662,7 @@ class DebugInfoEvaluator
      * @param s Symbol s
      * @return Value corresponding to the memory location pointed to by symbol s.
      */
-    public Value getMemory (DebugInfoFrame f, String s) throws NameNotFoundException {     
-	setCurrentFrame(f);
+    public Value getMemory (DebugInfoFrame ig, String s) throws NameNotFoundException {     
 	DwarfDie varDie = getDie(s);
     
 	if (varDie == null)
@@ -846,36 +842,5 @@ class DebugInfoEvaluator
 	    return new UnknownType(varDie.getName());
 	DwarfDie dieType = varDie.getType();
 	return fetchType(type, dieType.getName());
-    }
-
-  
-    /**
-     * Get the current stack frame.
-     * 
-     * @return StackFrame
-     */
-    DebugInfoFrame getCurrentFrame () {
-	return currentFrame;
-    }
-
-    /**
-     * Set the current stack frame.
-     * 
-     * @param sf_p
-     */
-    void setCurrentFrame (DebugInfoFrame f) {
-	currentFrame = f;
-    }
-
-    /**
-     * Get the most recent stack frame.
-     * 
-     * @return StackFrame
-     */
-    DebugInfoFrame getInnerMostFrame () {
-	DebugInfoFrame curr = currentFrame;
-	while (curr.getInnerDebugInfoFrame() != null)
-	    curr = curr.getInnerDebugInfoFrame();
-	return curr;
     }
 }

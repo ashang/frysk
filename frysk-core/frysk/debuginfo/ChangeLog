@@ -1,3 +1,10 @@
+2007-09-06  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfoEvaluator.java (currentFrame): Make final.
+	(getInnerMostFrame()): Delete.
+	(setCurrentFrame(DebugInfoFrame)): Delete.
+	(getCurrentFrame()): Delete.
+	
 2007-09-05  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfo.java (subprogram): Delete.
