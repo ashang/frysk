@@ -1,3 +1,12 @@
+2007-09-06  Andrew Cagney  <cagney@redhat.com>
+
+	* DwAccess.shenum: New.
+	* DwEnd.shenum: New.
+	* DwDsc.shenum: New.
+	* DwOrd.shenum: New.
+	* DwDs.shenum: New.
+	* DwAte.shenum: New.
+
 2007-08-30  Andrew Cagney  <cagney@redhat.com>
 
 	* DwTagEncodings.shenum: Delete.
