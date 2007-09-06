@@ -105,8 +105,8 @@ public class ClassType
      * @param endian - Endianness of class
      * @param name TODO
      */
-    public ClassType (String name) {
-	super(name, 0);
+    public ClassType (String name, int size) {
+	super(name, size);
     }
 
     /**
@@ -189,7 +189,7 @@ public class ClassType
 	Member member = (Member)(members.get(idx));
 	Type type = member.type;
 	int off = (int)member.offset;
-	return new Value(type, v.getLocation().slice(off, type.size));
+	return new Value(type, v.getLocation().slice(off, type.getSize()));
     }
     
     public ClassIterator iterator (Value v) {
@@ -298,9 +298,5 @@ public class ClassType
 		member = null;
 	}
 	writer.print("}");
-    }
-
-    public void setSize (int size) {
-	this.size = size;
     }
 }

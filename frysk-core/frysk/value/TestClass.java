@@ -54,7 +54,7 @@ public class TestClass
      * struct {int; int; short; int:8; int:8;}
      */
     public void testBigStructure () {
-	ClassType classType = new ClassType(null)
+	ClassType classType = new ClassType(null, 12)
 	    .addMember("alpha", bigInt32, 0, 0)
 	    .addMember("beta", bigInt32, 4, 0)
 	    .addMember("gamma", bigInt16, 8, 0)
@@ -73,7 +73,7 @@ public class TestClass
      * struct {int; int; short; int:8; int:8;}
      */
     public void testLittleStructure () {
-	ClassType classType = new ClassType(null)
+	ClassType classType = new ClassType(null, 12)
 	    .addMember("alpha", littleInt32, 0, 0)
 	    .addMember("beta", littleInt32, 4, 0)
 	    .addMember("gamma", littleInt16, 8, 0)
@@ -92,12 +92,12 @@ public class TestClass
      * struct { struct { int, int } struct { short, int:8, int:8 }}
      */
     public void testNextedStructure () {
-	ClassType classType = new ClassType(null)
-	    .addMember("a", new ClassType(null)
+	ClassType classType = new ClassType(null, 12)
+	    .addMember("a", new ClassType(null, 8)
 		       .addMember("alpha", littleInt32, 0, 0)
 		       .addMember("beta", littleInt32, 4, 0),
 		       0, 0)
-	    .addMember("b", new ClassType(null)
+	    .addMember("b", new ClassType(null, 4)
 		       .addMember("gamma", littleInt16, 0, 0)
 		       .addMember("iota", littleInt32, 0, 0, 8, 8) // 0x00ff0000
 		       .addMember("epsilon", littleInt32, 0, 0, 0, 8), // 0xff000000
@@ -115,12 +115,12 @@ public class TestClass
      * struct { struct { int, int } struct { short, int:8, int:8 }}
      */
     public void testNamelessFields () {
-	ClassType classType = new ClassType(null)
-	    .addMember(null, new ClassType(null)
+	ClassType classType = new ClassType(null, 12)
+	    .addMember(null, new ClassType(null, 8)
 		       .addMember(null, littleInt32, 0, 0)
 		       .addMember(null, littleInt32, 4, 0),
 		       0, 0)
-	    .addMember(null, new ClassType(null)
+	    .addMember(null, new ClassType(null, 4)
 		       .addMember(null, littleInt16, 0, 0)
 		       .addMember(null, littleInt32, 0, 0, 8, 8) // 0x00ff0000
 		       .addMember(null, littleInt32, 0, 0, 0, 8), // 0xff000000

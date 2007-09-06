@@ -64,8 +64,8 @@ public class UnsignedType
     }
 
     public Type pack(final int bitSize, final int bitOffset) {
-	return new UnsignedType(getName(), order(), size) {
-		Packing packing = new Packing(size, bitSize, bitOffset);
+	return new UnsignedType(getName(), order(), getSize()) {
+		Packing packing = new Packing(getSize(), bitSize, bitOffset);
 		BigInteger getBigInteger(Location location) {
 		    return packing.unpackUnsigned(location.get(order()));
 		}

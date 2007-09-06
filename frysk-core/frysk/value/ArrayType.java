@@ -156,7 +156,8 @@ public class ArrayType
 		int count = hbound-lbound;
 		ArrayList dims = new ArrayList();
 		dims.add(new Integer(count));
-		ArrayType arrayType = new ArrayType(type, count * type.size,
+		ArrayType arrayType = new ArrayType(type,
+						    (count * type.getSize()),
 						    dims);
 		return new Value(arrayType,
 				 (v.getLocation()

@@ -400,7 +400,7 @@ class DebugInfoEvaluator
     private ClassType getClassType (DwarfDie classDie, String name) {
 	int typeSize = 0;
 	// System.out.println("die=" + Long.toHexString(classDie.getOffset()) + " tag=" + Long.toHexString(classDie.getTag()) + " " + classDie.getName());
-	ClassType classType = new ClassType(name);
+	ClassType classType = new ClassType(name, getByteSize(classDie));
 	for (DwarfDie member = classDie.getChild();
 	     member != null;
 	     member = member.getSibling()) {
@@ -489,7 +489,6 @@ class DebugInfoEvaluator
 	}
 
 	typeSize += 4 - (typeSize % 4);             // round up to mod 4
-	classType.setSize(typeSize);
 	return classType;
     }
   

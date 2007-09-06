@@ -1,3 +1,13 @@
+2007-09-06  Andrew Cagney  <cagney@redhat.com>
+
+	* Type.java (size): Make private.
+	* ArrayType.java: Update.
+	* SignedType.java: Update.
+	* UnsignedType.java: Update.
+	* ClassType.java (setSize(int)): Delete.
+	(ClassType(String,int)): Replace ClassType(String).
+	* TestClass.java: Update.
+
 2007-09-05  Andrew Cagney  <cagney@redhat.com>
 
 	* Type.java(order(), order): Delete.

@@ -65,8 +65,8 @@ public class SignedType
     }
 
     public Type pack(final int bitSize, final int bitOffset) {
-	return new SignedType(getName(), order(), size) {
-		Packing packing = new Packing(size, bitSize, bitOffset);
+	return new SignedType(getName(), order(), getSize()) {
+		Packing packing = new Packing(getSize(), bitSize, bitOffset);
 		BigInteger getBigInteger(Location location) {
 		    return packing.unpackSigned(location.get(order()));
 		}

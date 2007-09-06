@@ -51,7 +51,7 @@ import java.io.StringWriter;
  */
 
 public abstract class Type {
-    protected int size;
+    private final int size;
 
     // XXX: Is NAME a more target dependant attribute?
     private final String name;

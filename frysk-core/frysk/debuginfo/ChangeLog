@@ -1,5 +1,8 @@
 2007-09-06  Andrew Cagney  <cagney@redhat.com>
 
+	* DebugInfoEvaluator.java: Replace call to ClassType.setSize()
+	with use of ClassType(string,int) constructor.
+	
 	* DebugInfo.java (TmpSymTab): Update CppSymTab interfaces dropping
 	DebugInfoFrame parameter.
 	* DebugInfoEvaluator.java: Ditto.
