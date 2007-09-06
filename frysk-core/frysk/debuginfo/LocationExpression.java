@@ -50,7 +50,7 @@ import frysk.stack.Register;
 import frysk.value.RegisterPiece;
 import frysk.value.MemoryPiece;
 import frysk.value.UnavailablePiece;
-
+import frysk.stack.Frame;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.DwarfOp;
 import lib.dwfl.DwOp;
@@ -60,13 +60,13 @@ class LocationExpression {
     public final static int locationTypeRegDisp = 1,
     locationTypeAddress = 2,
     locationTypeReg = 3;
-    DebugInfoFrame frame;
+    private final Frame frame;
     DwarfDie die;
     List ops;
     int locationType;
     LinkedList stack;
 
-    public LocationExpression (DebugInfoFrame frame, DwarfDie die, List ops) {
+    LocationExpression(Frame frame, DwarfDie die, List ops) {
 	locationType = 0;
 	this.frame = frame;
 	this.die = die;
