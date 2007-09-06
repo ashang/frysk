@@ -1,5 +1,10 @@
 2007-09-05  Andrew Cagney  <cagney@redhat.com>
 
+	* DebugInfo.java (subprogram): Delete.
+	(debugInfoEvaluator): Delete; replace with constructor.
+	(elf, dwarf): Make private.
+	(setFrames(DebugInfoFrame[]): Delete.
+
 	* LocationExpression.java
 	(LocationExpression(Frame,DwarfDie,List): Replace
 	LocationExpression(DebugInfoFrame,DwarfDie,List); make package

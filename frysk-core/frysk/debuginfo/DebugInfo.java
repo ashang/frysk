@@ -45,7 +45,6 @@ import frysk.expr.CppParser;
 import frysk.expr.CppSymTab;
 import frysk.expr.CppTreeParser;
 import frysk.proc.Proc;
-import frysk.debuginfo.Subprogram;
 import frysk.value.Type;
 import frysk.value.Value;
 import java.io.StringReader;
@@ -66,18 +65,20 @@ import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 
 public class DebugInfo {
-    Elf elf;
-    Dwarf dwarf;
+    private Elf elf;
+    private Dwarf dwarf;
+    // FIXME: This is only used by getType() and for that call it
+    // really should not be needed; unfortunatly getType() uses
+    // DebugInfoEvaluator.getType and that requires a frame.  Just the
+    // [default] byte-order should be required.
+    private final DebugInfoFrame frameFIXME;
   
-    DebugInfoEvaluator[] debugInfoEvaluator;
-  
-    Subprogram[] subprogram;
-
     /**
      * Create a symbol table object.  There should be one SymTab per process.
      * @param frame
      */
     public DebugInfo (DebugInfoFrame frame) {
+	this.frameFIXME = frame;
 	Proc proc = frame.getTask().getProc();
 	try {
 	    elf = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
@@ -86,9 +87,6 @@ public class DebugInfo {
 	catch (lib.dwfl.ElfException ignore) {
 	    // FIXME: Why is this ignored?
 	}
-	debugInfoEvaluator = new DebugInfoEvaluator[1];
-	subprogram = new Subprogram[1];
-	debugInfoEvaluator[0] = new DebugInfoEvaluator (frame);
     }
 
 
@@ -179,13 +177,14 @@ public class DebugInfo {
 		result.append("extern ");
 	    switch (varDie.getTag()) {
             case DwTag.SUBPROGRAM_: {
-		Value value = debugInfoEvaluator[0].getSubprogramValue(varDie);
+		Value value = new DebugInfoEvaluator(frame)
+		    .getSubprogramValue(varDie);
 		result.append(value.getType().toPrint());
 		break;
             }
             case DwTag.TYPEDEF_:
             case DwTag.STRUCTURE_TYPE_: {
-		Type type = debugInfoEvaluator[0].getType(varDie);
+		Type type = new DebugInfoEvaluator(frame).getType(varDie);
 		result.append(type.toPrint());
 		break;
             }
@@ -193,7 +192,7 @@ public class DebugInfo {
 		result.append(varDie + " " + varDie.getName());
 	    }
         } else {
-	    Type type = debugInfoEvaluator[0].getType(varDie);
+	    Type type = new DebugInfoEvaluator(frame).getType(varDie);
 	    if (varDie.getAttrBoolean(DwAt.EXTERNAL_))
 		result.append("extern ");
 
@@ -244,24 +243,19 @@ public class DebugInfo {
 	 * all of the threads have to be checked. If there's only one thread;
 	 * than this loop will run only once anyways.
 	 */
-	int j = 0;
-	while (result == null && j < debugInfoEvaluator.length) {
-	  treeParser = new CppTreeParser(4, frame, debugInfoEvaluator[j]);
-
-	    try {
-		result = treeParser.expr(t);
-	    } catch (ArithmeticException ae) {
-		ae.printStackTrace();
-		throw ae;
-	    } catch (antlr.RecognitionException r) {
-		// FIXME: Why is this ignored?
-	    } catch (frysk.value.InvalidOperatorException i) {
-		// FIXME: Why is this ignored?
-	    } catch (frysk.value.OperationNotDefinedException o) {
-		// FIXME: Why is this ignored?
-	    }
-            
-	    ++j;
+	treeParser = new CppTreeParser(4, frame,
+				       new DebugInfoEvaluator(frame));
+	try {
+	    result = treeParser.expr(t);
+	} catch (ArithmeticException ae) {
+	    ae.printStackTrace();
+	    throw ae;
+	} catch (antlr.RecognitionException r) {
+	    // FIXME: Why is this ignored?
+	} catch (frysk.value.InvalidOperatorException i) {
+	    // FIXME: Why is this ignored?
+	} catch (frysk.value.OperationNotDefinedException o) {
+	    // FIXME: Why is this ignored?
 	}
         
 	return result;
@@ -323,20 +317,15 @@ public class DebugInfo {
 	return result;
     }
    
-    public void setFrames (DebugInfoFrame newFrames[]) {
-	debugInfoEvaluator = new DebugInfoEvaluator[newFrames.length];
-	for (int i = 0; i < newFrames.length; i++) {
-	    debugInfoEvaluator[i] = new DebugInfoEvaluator (newFrames[i]);
-	}
-    }
-     
     public Type getType (DwarfDie die) {
-	return debugInfoEvaluator[0].getType(die);
+	// FIXME: This has ZERO to do with frames and CppSymTab (nee
+	// DebugInfoEvaluator).
+	return new DebugInfoEvaluator(frameFIXME).getType(die);
     } 
 
     public Value get(DebugInfoFrame f, DwarfDie die) throws NameNotFoundException
     {
-      return debugInfoEvaluator[0].get(f, die);
+	return new DebugInfoEvaluator(f).get(f, die);
     } 
 
 }
