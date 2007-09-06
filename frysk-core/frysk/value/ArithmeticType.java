@@ -49,14 +49,21 @@ import java.math.BigInteger;
 public abstract class ArithmeticType
     extends Type
 {    
+    private final ByteOrder order;
+  
     protected ArithmeticType(String name, ByteOrder order, int size) {
-	super(name, order, size);
+	super(name, size);
+	this.order = order;
     }
   
     public String toString() {
 	return ("{"
 		+ super.toString()
 		+ "}");
+    }
+
+    public ByteOrder order() {
+	return order;
     }
 
     /**

@@ -40,7 +40,6 @@
 package frysk.value;
 
 import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -54,29 +53,20 @@ import java.io.StringWriter;
 public abstract class Type {
     protected int size;
 
-    // XXX: ByteOrder is an arithmetic-type thing; not a generic type
-    // thing; should be pushed to sub-class.
-    private final ByteOrder order;
-  
     // XXX: Is NAME a more target dependant attribute?
     private final String name;
   
     // XXX: Not needed; made redundant by TypeDef.
     private boolean isTypedef;
 
-    Type (String name, ByteOrder order, int size) {
+    Type (String name, int size) {
 	this.name = name;
-	this.order = order;
 	this.size = size;
 	this.isTypedef = false;
     }
 
     public int getSize() {
 	return size;
-    }
-
-    public ByteOrder order() {
-	return order;
     }
 
     String getName() {
@@ -99,7 +89,6 @@ public abstract class Type {
 		+ super.toString()
 		+ ",name=" + name
 		+ ",size=" + size
-		+ ",order=" + order
 		+ "}");
     }
 

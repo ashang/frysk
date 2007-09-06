@@ -63,6 +63,6 @@ public class UnknownType
      * @param typep - Type of pointed to value
      */
     public UnknownType (String name) {
-	super(name, null, 0);
+	super(name, 0);
     }
 }

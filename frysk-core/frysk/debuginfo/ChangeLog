@@ -1,5 +1,8 @@
 2007-09-05  Andrew Cagney  <cagney@redhat.com>
 
+	* DebugInfoEvaluator.java: Use ClassType(String),
+	FunctionType(String,Type).
+
 	* DebugInfoEvaluator.java (VariableAccessor): Make private; remove
 	unused put and get methods.
 	(AccessMemory, AccessRegisters): Ditto.

@@ -40,7 +40,6 @@
 package frysk.value;
 
 import java.io.PrintWriter;
-import inua.eio.ByteOrder;
 import inua.eio.ByteBuffer;
 
 /**
@@ -51,7 +50,7 @@ import inua.eio.ByteBuffer;
 abstract class TypeDecorator extends Type {
     private Type decorated;
     TypeDecorator(String name, Type decorated) {
-	super(name, decorated.order(), decorated.getSize());
+	super(name, decorated.getSize());
 	this.decorated = decorated;
     }
 
@@ -68,10 +67,6 @@ abstract class TypeDecorator extends Type {
 
     public int getSize() {
 	return decorated.getSize();
-    }
-
-    public ByteOrder order() {
-	return decorated.order();
     }
 
     void toPrint(PrintWriter writer, Location location,

@@ -1,5 +1,19 @@
 2007-09-05  Andrew Cagney  <cagney@redhat.com>
 
+	* Type.java(order(), order): Delete.
+	(Type(String,int)): Replace Type(String,ByteOrder,int)).
+	* ArithmeticType.java (order, order()): New.
+	* ArrayType.java: Update.
+	* ClassType.java (ClassType(String)): Replace
+	ClassType(String,ByteOrder).
+	* FunctionType.java (FunctionType(String,Type)): Replace
+	FunctionType(String,ByteOrder,Type)).
+	* TypeDecorator.java: Update.
+	(order()): Delete.
+	* TestClass.java: Update.
+	* UnknownType.java: Update.
+	* VoidType.java: Update.
+	
 	* ByteBufferLocation.java (ByteBufferLocation(ByteBuffer)): Delete.
 
 	* ClassType.java (setInheritance): Delete.

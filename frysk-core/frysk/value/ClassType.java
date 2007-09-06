@@ -40,7 +40,6 @@
 package frysk.value;
 
 import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
@@ -106,8 +105,8 @@ public class ClassType
      * @param endian - Endianness of class
      * @param name TODO
      */
-    public ClassType (String name, ByteOrder order) {
-	super(name, order, 0);
+    public ClassType (String name) {
+	super(name, 0);
     }
 
     /**

@@ -40,7 +40,6 @@
 package frysk.value;
 
 import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
 import java.io.PrintWriter;
 
 /**
@@ -53,7 +52,7 @@ public class VoidType
      * Create a Void type.
      */
     public VoidType () {
-	super("void", ByteOrder.BIG_ENDIAN, 8);
+	super("void", 1);
     }
 
     public void toPrint(PrintWriter writer) {

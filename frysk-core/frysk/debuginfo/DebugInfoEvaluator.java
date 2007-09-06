@@ -400,8 +400,7 @@ class DebugInfoEvaluator
     private ClassType getClassType (DwarfDie classDie, String name) {
 	int typeSize = 0;
 	// System.out.println("die=" + Long.toHexString(classDie.getOffset()) + " tag=" + Long.toHexString(classDie.getTag()) + " " + classDie.getName());
-	ClassType classType = new ClassType(name,
-					    task.getIsa().getByteOrder());
+	ClassType classType = new ClassType(name);
 	for (DwarfDie member = classDie.getChild();
 	     member != null;
 	     member = member.getSibling()) {
@@ -772,8 +771,6 @@ class DebugInfoEvaluator
      */    
     public Value getSubprogramValue (DwarfDie varDie)
     {
-	ByteOrder byteorder = task.getIsa().getByteOrder();
-    
 	if (varDie == null)
 	    return (null);
 
@@ -783,7 +780,7 @@ class DebugInfoEvaluator
 	    if (varDie.getUltimateType() != null) {
 		type = getType(varDie);
 	    }
-	    FunctionType functionType = new FunctionType(varDie.getName(), byteorder, type);
+	    FunctionType functionType = new FunctionType(varDie.getName(), type);
 	    DwarfDie parm = varDie.getChild();
 	    while (parm != null && parm.getTag() == DwTag.FORMAL_PARAMETER_) {
 		if (parm.getAttrBoolean((DwAt.ARTIFICIAL_)) == false) {

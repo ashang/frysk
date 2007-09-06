@@ -40,7 +40,6 @@
 package frysk.value;
 
 import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
 import java.util.ArrayList;
 import java.io.PrintWriter;
 import java.math.BigInteger;
@@ -87,11 +86,9 @@ public class FunctionType
     
     /**
      * Create an FunctionType
-     * 
-     * @param endian - Endianness of class
      */
-    public FunctionType (String name, ByteOrder order, Type returnType) {
-	super(name, order, 8);
+    public FunctionType (String name, Type returnType) {
+	super(name, 8);
 	this.returnType = returnType;
 	parmTypes = new ArrayList();
 	parmNames = new ArrayList();
