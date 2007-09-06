@@ -1,4 +1,5 @@
 2007-09-06  Teresa Thomas  <tthomas@redhat.com>
+	* TestPieceLocation.java: Unused imports removed.
 
 	* TestPieceLocation.java: New file. 
 	* PieceLocation.java: New file.

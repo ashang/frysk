@@ -39,10 +39,8 @@
 
 package frysk.debuginfo;
 
-//import frysk.value.RegisterPiece;
 import frysk.debuginfo.Piece;
 import frysk.debuginfo.MemoryPiece;
-//import frysk.value.UnavailablePiece;
 import frysk.value.Location;
 import inua.eio.ByteBuffer;
 
@@ -234,5 +232,3 @@ extends Location
 	return length;	
     }
 }
-
-
