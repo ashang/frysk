@@ -1,3 +1,7 @@
+2007-09-06  Andrew Cagney  <cagney@redhat.com>
+
+	* SourceWindow.java (symTab): Delete.
+
 2007-08-30  Adam Jocksch  <ajocksch@redhat.com>
 	
 	* InlineBuffer.java (getVariable): Now returns a String, specifically
