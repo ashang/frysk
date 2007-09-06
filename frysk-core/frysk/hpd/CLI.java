@@ -10,11 +10,11 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-// 
+//
 // In addition, as a special exception, Red Hat, Inc. gives You the
 // additional right to link the code of FRYSK with code not covered
 // under the GNU General Public License ("Non-GPL Code") and to
@@ -64,15 +64,14 @@ import frysk.stepping.SteppingEngine;
 import frysk.stepping.TaskStepEngine;
 import frysk.value.Value;
 
-public class CLI 
-{
-  boolean running = false;
-  ProcTaskIDManager idManager;
-  SteppingObserver steppingObserver;
-  SteppingEngine steppingEngine;
-  int attached = -1;
-  
-  final HashSet runningProcs = new HashSet(); //Processes started with run command
+public class CLI {
+    boolean running = false;
+    ProcTaskIDManager idManager;
+    SteppingObserver steppingObserver;
+    SteppingEngine steppingEngine;
+    int attached = -1;
+    //Processes started with run command
+    final HashSet runningProcs = new HashSet();
 
     private class TaskInfo {
         DebugInfoFrame frame;
@@ -81,7 +80,7 @@ public class CLI
     }
 
     WeakHashMap taskInfoMap = new WeakHashMap();
-    
+   
     DebugInfoFrame getTaskFrame(Task task) {
         TaskInfo taskInfo = (TaskInfo)taskInfoMap.get(task);
         if (taskInfo == null)
@@ -132,60 +131,55 @@ public class CLI
         }
         taskInfo.stackLevel = stackLevel;
     }
-    
-  /**
-   * Handle ConsoleReader Completor
-   * @param buffer Input buffer.
-   * @param cursor Position of TAB in buffer.
-   * @param candidates List that may complete token.
-   * @return cursor position in buffer
-   */
-  public int complete (String buffer, int cursor, List candidates)
-  {
-    int first_ws = buffer.indexOf(' ');
-    int offset = 0;
-    // Complete the request name for help
-    if (buffer.startsWith("help "))
-      offset = 5;
-    // Complete the request name or help request
-    if (first_ws == -1 || offset > 0)
-      {
-	Set commands = handlers.keySet();
-	Iterator it = commands.iterator();
-	while(it.hasNext())
-	  {
-	    String command = (String)it.next();
-	    if (command.startsWith(buffer.substring(offset)))
-	      candidates.add(command + " ");
-	  }
-        java.util.Collections.sort(candidates);
-      }
-    // Otherwise assume a symbol is being completed
-    else
-      {
-        // XXX We should support the p/t set specified in the current
-        // command, if any.
-        Iterator taskIterator = targetset.getTasks();
-        int newCursor = -1;
+   
+    /**
+     * Handle ConsoleReader Completor
+     * @param buffer Input buffer.
+     * @param cursor Position of TAB in buffer.
+     * @param candidates List that may complete token.
+     * @return cursor position in buffer
+     */
+    public int complete (String buffer, int cursor, List candidates) {
+        int first_ws = buffer.indexOf(' ');
+        int offset = 0;
+        // Complete the request name for help
+        if (buffer.startsWith("help "))
+            offset = 5;
+        // Complete the request name or help request
+        if (first_ws == -1 || offset > 0) {
+            Set commands = handlers.keySet();
+            Iterator it = commands.iterator();
+            while(it.hasNext()) {
+                String command = (String)it.next();
+                if (command.startsWith(buffer.substring(offset)))
+                    candidates.add(command + " ");
+            }
+            java.util.Collections.sort(candidates);
+        }
+        // Otherwise assume a symbol is being completed
+        else {
+            // XXX We should support the p/t set specified in the current
+            // command, if any.
+            Iterator taskIterator = targetset.getTasks();
+            int newCursor = -1;
 
-        while (taskIterator.hasNext())
-          {
-            Task task = (Task)taskIterator.next();
-            DebugInfoFrame frame = getTaskFrame(task);
-            DebugInfo debugInfo = getTaskDebugInfo(task);
-            if (debugInfo != null)
-              newCursor = debugInfo.complete(frame, buffer.substring(first_ws),
-                                             cursor - first_ws, candidates);
-          }
-        if (newCursor >= 0)
-          return newCursor + first_ws;
-      }
-    return 1 + offset;
-  }
+            while (taskIterator.hasNext()) {
+                Task task = (Task)taskIterator.next();
+                DebugInfoFrame frame = getTaskFrame(task);
+                DebugInfo debugInfo = getTaskDebugInfo(task);
+                if (debugInfo != null)
+                    newCursor = debugInfo.complete(frame, buffer.substring(first_ws),
+                                                   cursor - first_ws, candidates);
+            }
+            if (newCursor >= 0)
+                return newCursor + first_ws;
+        }
+        return 1 + offset;
+    }
 
-  /*
-   * Command handlers
-   */
+    /*
+     * Command handlers
+     */
 
     public void startAttach(int pid, Proc proc, Task task) {
         Proc[] temp = new Proc[1];
@@ -193,7 +187,7 @@ public class CLI
         attached = -1;
         steppingEngine.addProc(proc);
     }
-  
+ 
     public void startAttach(Task task) {
         Proc proc = task.getProc();
         startAttach(proc.getPid(), proc, task);
@@ -204,7 +198,7 @@ public class CLI
         while (attached < 0) {
             try {
                 wait();
-            }	
+            }
             catch (InterruptedException ie) {
                 addMessage("Attach interrupted.", Message.TYPE_ERROR);
                 return;
@@ -213,60 +207,59 @@ public class CLI
         addMessage("Attached to process " + attached, Message.TYPE_NORMAL);
         attached = -1;
     }
-  
-  //private static PrintStream out = null;// = System.out;
-  final PrintWriter outWriter;
-  private Preprocessor prepro;
-  private String prompt; // string to represent prompt, will be moved
-  final HashMap handlers;
-  final UserHelp userhelp;
-  private DbgVariables dbgvars;
+ 
+    //private static PrintStream out = null;// = System.out;
+    final PrintWriter outWriter;
+    private Preprocessor prepro;
+    private String prompt; // string to represent prompt, will be moved
+    final HashMap handlers;
+    final UserHelp userhelp;
+    private DbgVariables dbgvars;
 
-  // PT set related stuff
-  private SetNotationParser setparser;
-  private AllPTSet allset; // the "all" set
-  final HashMap namedPTSets; // user-created named sets
-  final HashMap builtinPTSets; // predefined named sets
-  PTSet targetset;
+    // PT set related stuff
+    private SetNotationParser setparser;
+    private AllPTSet allset; // the "all" set
+    final HashMap namedPTSets; // user-created named sets
+    final HashMap builtinPTSets; // predefined named sets
+    PTSet targetset;
 
-  // other
-  // debugger output messages, e.g. the Message class
-  private LinkedList messages; 
+    // other
+    // debugger output messages, e.g. the Message class
+    private LinkedList messages;
 
-  // alias
-  final HashMap aliases;
+    // alias
+    final HashMap aliases;
 
-  /*
-   * Public methods
-   */
+    /*
+     * Public methods
+     */
 
-  /**
-   * Add a CLIHandler, along with its help messages.
-   * @param handler the handler
-   */
-  public void addHandler(CLIHandler handler)
-  {
-    String name = handler.getName(); 
-    handlers.put(name, handler);
-    userhelp.addHelp(name, handler.getHelp());
-  }
-  
-  Value parseValue(Task task, String value)
-    throws ParseException, NameNotFoundException  {
-      DebugInfoFrame frame = getTaskFrame(task);
-      DebugInfo debugInfo = getTaskDebugInfo(task);
-      if (debugInfo != null)
-          return debugInfo.print(value, frame);
-      else
-          return DebugInfo.printNoSymbolTable(value);        
-  }
-  
-  /**
-   * Constructor
-   * @param prompt String initially to be used as the prompt
-   * @param out Stream for output. This really should be a PrintWriter
-   * @param steppingEngine existing SteppingEngine
-   */
+    /**
+     * Add a CLIHandler, along with its help messages.
+     * @param handler the handler
+     */
+    public void addHandler(CLIHandler handler) {
+        String name = handler.getName();
+        handlers.put(name, handler);
+        userhelp.addHelp(name, handler.getHelp());
+    }
+ 
+    Value parseValue(Task task, String value)
+        throws ParseException, NameNotFoundException  {
+        DebugInfoFrame frame = getTaskFrame(task);
+        DebugInfo debugInfo = getTaskDebugInfo(task);
+        if (debugInfo != null)
+            return debugInfo.print(value, frame);
+        else
+            return DebugInfo.printNoSymbolTable(value);       
+    }
+ 
+    /**
+     * Constructor
+     * @param prompt String initially to be used as the prompt
+     * @param out Stream for output. This really should be a PrintWriter
+     * @param steppingEngine existing SteppingEngine
+     */
     public CLI(String prompt, PrintStream out, SteppingEngine steppingEngine) {
         this.prompt = prompt;
         outWriter = new PrintWriter(out, true);
@@ -277,9 +270,9 @@ public class CLI
         handlers = new HashMap();
         userhelp = new UserHelp();
         dbgvars = new DbgVariables();
-    
+   
         //XXX: Must make a reference to every command that is used otherwise build
-        //system will discard those classes. Therefore CLI cannot be made to be a 
+        //system will discard those classes. Therefore CLI cannot be made to be a
         //singleton.
         new ActionsCommand(this);
         new AliasCommand(this);
@@ -345,185 +338,159 @@ public class CLI
     }
 
     /**
-   * Constructor that creates a new steppingEngine
-   * @param prompt String initially to be used as the prompt
-   * @param out Stream for output. This really should be a PrintWriter
-   */
+     * Constructor that creates a new steppingEngine
+     * @param prompt String initially to be used as the prompt
+     * @param out Stream for output. This really should be a PrintWriter
+     */
     public CLI(String prompt, PrintStream out) {
         this(prompt, out, new SteppingEngine());
     }
-    
-  public String getPrompt()
-  {
-    return prompt;
-  }
-
-  public String execCommand(String cmd)
-  {
-    String pcmd = ""; // preprocessed command
-    Command command;
-    CommandHandler handler = null;
-
-    if (cmd != null)
-      {
-	try
-	  {
-	    // preprocess and iterate
-	    for (Iterator iter = prepro.preprocess(cmd); iter.hasNext();) 
-	      {
-		pcmd = (String)iter.next();
-		command = new Command(pcmd);
-
-		if (command.getAction() != null)
-		  {
-		    handler = (CommandHandler)handlers.get(command.getAction());
-		    if (handler != null)
-		      handler.handle(command);
-		    else
-		      addMessage("Unrecognized command: " 
-				 + command.getAction() + ".",
-				 Message.TYPE_ERROR);
-		  }
-		else
-		  {
-		    addMessage("No action specified.", Message.TYPE_ERROR);
-		  }
-	      }
-	  }
-	catch (ParseException e)
-	  {	
-	    String msg = "";
-	    if (e.getMessage() != null)
-	      msg = e.getMessage();
-	    addMessage(msg, Message.TYPE_ERROR);
-	  }
-	catch (RuntimeException e)
-	  {
-	    e.printStackTrace();
-	    String msg = "";
-	    if (e.getMessage() != null)
-	      msg = e.getMessage();
-
-	    addMessage(msg, Message.TYPE_DBG_ERROR);
-	  }
-	flushMessages();
-      }
-    return null;
-  }
-
-  void addMessage(Message msg)
-  {
-    messages.add(msg);
-  }
-
-  void addMessage(String msg, int type)
-  {
-    addMessage(new Message(msg, type));
-  }
-	
-  private void flushMessages()
-  {
-    String prefix = null;
-    Message tempmsg;
-
-    for (Iterator iter = messages.iterator(); iter.hasNext();)
-      {
-	tempmsg = (Message) iter.next();
-	if (tempmsg.getType() == Message.TYPE_DBG_ERROR)
-	  prefix = "Internal debugger error:  ";
-	else if (tempmsg.getType() == Message.TYPE_ERROR)
-	  prefix = "Error: ";
-	else if (tempmsg.getType() == Message.TYPE_WARNING)
-	  prefix = "Warning: ";
-	if (prefix != null)
-	  outWriter.print(prefix);
-	outWriter.println(tempmsg.getMessage());
-	iter.remove();
-      }
-  }
-
-  PTSet createSet(String set) throws ParseException
-  {
-    ParsedSet parsed = setparser.parse(set);
-    PTSet result = null;
-
-    if (parsed.getType() == ParsedSet.TYPE_STATE)
-      {
-	int state = 0;
-	if (parsed.getName().equals("running"))
-	  state = AllPTSet.TASK_STATE_RUNNING;
-	else if (parsed.getName().equals("stopped"))
-	  state = AllPTSet.TASK_STATE_STOPPED;
-	else if (parsed.getName().equals("runnable"))
-	  state = AllPTSet.TASK_STATE_RUNNABLE;
-	else if (parsed.getName().equals("held"))
-	  state = AllPTSet.TASK_STATE_HELD;
-	else
-	  {
-	    throw new RuntimeException("Illegal state name when creating set.");
-	  }
-	if (parsed.isStatic())
-	  result = new StaticPTSet(allset.getSubsetByState(state));
-	else
-	  result = new StatePTSet(allset, state);
-	addMessage("Creating new " + parsed.getName() + " state set.",
-		   Message.TYPE_VERBOSE);
-      }
-    else if (parsed.getType() == ParsedSet.TYPE_HPD)
-      {
-	if (parsed.isStatic())
-	  result 
-	    = new StaticPTSet(allset.getSubset(parsed.getParseTreeNodes()));
-	else
-	  result = new DynamicPTSet(allset, parsed.getParseTreeNodes());
-
-	addMessage("Creating new HPD notation set.", Message.TYPE_VERBOSE);
-      }
-    else if (parsed.getType() == ParsedSet.TYPE_NAMED)
-      {
-	if (parsed.isStatic())
-	  {
-	    addMessage("Cannot create a static set from a predefined set.",
-		       Message.TYPE_ERROR);
-	  }
-	else
-	  {
-	    addMessage("Creating new set from named set \""
-		       + parsed.getName() + "\".", Message.TYPE_VERBOSE);
-	    result = (PTSet) namedPTSets.get(parsed.getName());
-	  }
-
-      }
-    else if (parsed.getType() == ParsedSet.TYPE_EXEC)
-      {
-	if (parsed.isStatic())
-	  {
-	    result = new StaticPTSet(allset.getSubsetByExec(parsed.getName()));
-	  }
-	else
-	  {
-	    result = new ExecPTSet(allset, parsed.getName());
-	  }
-	addMessage("Creating new set from executable \"" + parsed.getName()
-		   + "\".", Message.TYPE_VERBOSE);
-      }
-    return result;
-  }
-  
-  class SteppingObserver
-      implements Observer
-  {
-    private Object monitor = new Object();
-
-    public Object getMonitor ()
-    {
-      return this.monitor;
+   
+    public String getPrompt() {
+        return prompt;
     }
 
-    public void update (Observable observable, Object arg)
-    {
-      TaskStepEngine tse = (TaskStepEngine) arg;
-      if (!tse.isAlive()) {
+    public String execCommand(String cmd) {
+        String pcmd = ""; // preprocessed command
+        Command command;
+        CommandHandler handler = null;
+
+        if (cmd != null) {
+            try {
+                // preprocess and iterate
+                for (Iterator iter = prepro.preprocess(cmd); iter.hasNext();) {
+                    pcmd = (String)iter.next();
+                    command = new Command(pcmd);
+
+                    if (command.getAction() != null) {
+                        handler = (CommandHandler)handlers.get(command.getAction());
+                        if (handler != null)
+                            handler.handle(command);
+                        else
+                            addMessage("Unrecognized command: "
+                                       + command.getAction() + ".",
+                                       Message.TYPE_ERROR);
+                    }
+                    else {
+                        addMessage("No action specified.", Message.TYPE_ERROR);
+                    }
+                }
+            }
+            catch (ParseException e) {
+                String msg = "";
+                if (e.getMessage() != null)
+                    msg = e.getMessage();
+                addMessage(msg, Message.TYPE_ERROR);
+            }
+            catch (RuntimeException e) {
+                e.printStackTrace();
+                String msg = "";
+                if (e.getMessage() != null)
+                    msg = e.getMessage();
+
+                addMessage(msg, Message.TYPE_DBG_ERROR);
+            }
+            flushMessages();
+        }
+        return null;
+    }
+
+    void addMessage(Message msg) {
+        messages.add(msg);
+    }
+
+    void addMessage(String msg, int type) {
+        addMessage(new Message(msg, type));
+    }
+
+    private void flushMessages() {
+        String prefix = null;
+        Message tempmsg;
+
+        for (Iterator iter = messages.iterator(); iter.hasNext();) {
+            tempmsg = (Message) iter.next();
+            if (tempmsg.getType() == Message.TYPE_DBG_ERROR)
+                prefix = "Internal debugger error:  ";
+            else if (tempmsg.getType() == Message.TYPE_ERROR)
+                prefix = "Error: ";
+            else if (tempmsg.getType() == Message.TYPE_WARNING)
+                prefix = "Warning: ";
+            if (prefix != null)
+                outWriter.print(prefix);
+            outWriter.println(tempmsg.getMessage());
+            iter.remove();
+        }
+    }
+
+    PTSet createSet(String set) throws ParseException {
+        ParsedSet parsed = setparser.parse(set);
+        PTSet result = null;
+
+        if (parsed.getType() == ParsedSet.TYPE_STATE) {
+            int state = 0;
+            if (parsed.getName().equals("running"))
+                state = AllPTSet.TASK_STATE_RUNNING;
+            else if (parsed.getName().equals("stopped"))
+                state = AllPTSet.TASK_STATE_STOPPED;
+            else if (parsed.getName().equals("runnable"))
+                state = AllPTSet.TASK_STATE_RUNNABLE;
+            else if (parsed.getName().equals("held"))
+                state = AllPTSet.TASK_STATE_HELD;
+            else {
+                throw new RuntimeException("Illegal state name when creating set.");
+            }
+            if (parsed.isStatic())
+                result = new StaticPTSet(allset.getSubsetByState(state));
+            else
+                result = new StatePTSet(allset, state);
+            addMessage("Creating new " + parsed.getName() + " state set.",
+                       Message.TYPE_VERBOSE);
+        }
+        else if (parsed.getType() == ParsedSet.TYPE_HPD) {
+            if (parsed.isStatic())
+                result
+                    = new StaticPTSet(allset.getSubset(parsed.getParseTreeNodes()));
+            else
+                result = new DynamicPTSet(allset, parsed.getParseTreeNodes());
+
+            addMessage("Creating new HPD notation set.", Message.TYPE_VERBOSE);
+        }
+        else if (parsed.getType() == ParsedSet.TYPE_NAMED) {
+            if (parsed.isStatic()) {
+                addMessage("Cannot create a static set from a predefined set.",
+                           Message.TYPE_ERROR);
+            }
+            else {
+                addMessage("Creating new set from named set \""
+                           + parsed.getName() + "\".", Message.TYPE_VERBOSE);
+                result = (PTSet) namedPTSets.get(parsed.getName());
+            }
+
+        }
+        else if (parsed.getType() == ParsedSet.TYPE_EXEC) {
+            if (parsed.isStatic()) {
+                result = new StaticPTSet(allset.getSubsetByExec(parsed.getName()));
+            }
+            else {
+                result = new ExecPTSet(allset, parsed.getName());
+            }
+            addMessage("Creating new set from executable \"" + parsed.getName()
+                       + "\".", Message.TYPE_VERBOSE);
+        }
+        return result;
+    }
+ 
+    class SteppingObserver
+        implements Observer {
+        private Object monitor = new Object();
+
+        public Object getMonitor () {
+            return this.monitor;
+        }
+
+        public void update (Observable observable, Object arg) {
+            TaskStepEngine tse = (TaskStepEngine) arg;
+            if (!tse.isAlive()) {
 		addMessage(tse.getMessage(), Message.TYPE_VERBOSE);
 		tse.setMessage("");
 		flushMessages();
@@ -536,68 +503,60 @@ public class CLI
 		}
 		return;
 	    }
-      
-      if (! tse.getState().isStopped())
-        {
-          attached = -1;
-          return;
-        }
-      Task task = tse.getTask();
-      synchronized (CLI.this)
-        {
-          // Notify tasks waiting on attach
-          attached = task.getProc().getPid();
-          DebugInfoFrame frame
-            = DebugInfoStackFactory.createVirtualStackTrace(task);
-          setTaskFrame(task, frame);
-          setTaskDebugInfo(task, new DebugInfo(frame));
-          synchronized (this.monitor)
-            {
-              this.monitor.notifyAll();
+     
+            if (! tse.getState().isStopped()) {
+                attached = -1;
+                return;
             }
-          CLI.this.notifyAll();
+            Task task = tse.getTask();
+            synchronized (CLI.this) {
+                // Notify tasks waiting on attach
+                attached = task.getProc().getPid();
+                DebugInfoFrame frame
+                    = DebugInfoStackFactory.createVirtualStackTrace(task);
+                setTaskFrame(task, frame);
+                setTaskDebugInfo(task, new DebugInfo(frame));
+                synchronized (this.monitor) {
+                    this.monitor.notifyAll();
+                }
+                CLI.this.notifyAll();
+            }
         }
     }
-  }
 
-  /**
-   * Prints a usage message for a command.
-   * 
-   * @param cmd the command
-   */
-  public void printUsage(Command cmd)
-  {
-    addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), 
-	       Message.TYPE_NORMAL);
-  }
-  
-  /**
-   * Return output writer.
-   */
-  public PrintWriter getPrintWriter()
-  {
-    return outWriter;
-  }
+    /**
+     * Prints a usage message for a command.
+     *
+     * @param cmd the command
+     */
+    public void printUsage(Command cmd) {
+        addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()),
+                   Message.TYPE_NORMAL);
+    }
+ 
+    /**
+     * Return output writer.
+     */
+    public PrintWriter getPrintWriter() {
+        return outWriter;
+    }
 
-  /**
-   * Get the set of processes (Proc) started by the run command. Access to the
-   * CLI object should be synchronized when using the set.
-   * @return the set
-   */
-  public HashSet getRunningProcs()
-  {
-    return runningProcs;
-  }
-  
-  boolean isRunning ()
-  {
-    return this.running;
-  }
-  
-  SteppingEngine getSteppingEngine ()
-  {
-    return this.steppingEngine;
-  }
+    /**
+     * Get the set of processes (Proc) started by the run command. Access to the
+     * CLI object should be synchronized when using the set.
+     * @return the set
+     */
+    public HashSet getRunningProcs() {
+        return runningProcs;
+    }
+ 
+    boolean isRunning () {
+        return this.running;
+    }
+ 
+    SteppingEngine getSteppingEngine () {
+        return this.steppingEngine;
+    }
 
     public PTSet getCommandPTSet(Command cmd) throws ParseException {
         String setString = cmd.getSet();
