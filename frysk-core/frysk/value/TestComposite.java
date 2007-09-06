@@ -138,21 +138,21 @@ public class TestComposite
     public void testUnionType() {
 	CompositeType t = new UnionType("UNION", 4)
 	    .addMember("a", bigInt32, 0, null);
-	assertEquals("union",
+	assertEquals("toPrint",
 		     "union UNION {\n  int32_t a;\n}",
 		     t.toPrint());
     }
     public void testClassType() {
 	CompositeType t = new ClassType("CLASS", 4)
 	    .addMember("a", bigInt32, 0, null);
-	assertEquals("class",
+	assertEquals("toPrint",
 		     "class CLASS {\n  int32_t a;\n}",
 		     t.toPrint());
     }
     public void testStructType() {
 	CompositeType t = new StructType("STRUCT", 4)
 	    .addMember("a", bigInt32, 0, null);
-	assertEquals("struct",
+	assertEquals("toPrint",
 		     "struct STRUCT {\n  int32_t a;\n}",
 		     t.toPrint());
     }
@@ -162,14 +162,14 @@ public class TestComposite
 			    0, Access.PUBLIC)
 	    .addInheritance("XXXX", new ClassType("P2", 0),
 			    0, Access.PRIVATE);
-	assertEquals("class",
+	assertEquals("toPrint",
 		     "class CLASS : public P1, private P2 {\n}",
 		     t.toPrint());
     }
     public void testConfoundedStructType() {
 	CompositeType t = new ConfoundedType("STRUCT", 4)
 	    .addMember("a", bigInt32, 0, null);
-	assertEquals("struct",
+	assertEquals("toPrint",
 		     "struct STRUCT {\n  int32_t a;\n}",
 		     t.toPrint());
     }
@@ -179,7 +179,7 @@ public class TestComposite
 	    .addMember("pub2", bigInt32, 0, Access.PUBLIC)
 	    .addMember("priv1", bigInt32, 0, Access.PRIVATE)
 	    .addMember("prot1", bigInt32, 0, Access.PROTECTED);
-	assertEquals("struct",
+	assertEquals("toPrint",
 		     "struct STRUCT {\n"
 		     + " public:\n"
 		     + "  int32_t pub1;\n"
@@ -190,5 +190,9 @@ public class TestComposite
 		     + "  int32_t prot1;\n"
 		     + "}",
 		     t.toPrint());
+    }
+    public void testAnonType() {
+	CompositeType t = new StructType(null, 4);
+	assertEquals("toPrint", "struct {\n}", t.toPrint());
     }
 }

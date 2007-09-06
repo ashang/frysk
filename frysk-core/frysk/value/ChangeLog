@@ -1,5 +1,7 @@
 2007-09-06  Andrew Cagney  <cagney@redhat.com>
 
+	* TestComposite.java (testAnonType): New.
+	
 	* TestComposite.java (testUnionType): New.
 	(testClassType): New.
 	(testStructType): New.
