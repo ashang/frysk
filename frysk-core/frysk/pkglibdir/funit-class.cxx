@@ -1,9 +1,14 @@
 #include <iostream>
 using namespace std;
 
-volatile int vx = 1;
+static void crash (){
+  char* a = 0;
+  a[0] = 0;
+}
+
+static int assign_ (int) __attribute__ ((noinline));
 int
-loop_ (int a)
+assign_ (int a)
 {
   return 2;
 }
@@ -92,8 +97,8 @@ func ()
   xyz.do_this ((int)3);
   xyz.do_this ((float) 4.1);
   int x = xyz.do_this ((int)1);
-  x = loop_(vx);
-  while(vx);
+  x = assign_(x);
+  crash();
 }
 
 int

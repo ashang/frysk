@@ -1,0 +1,246 @@
+// This file is part of the program FRYSK.
+//
+// Copyright 2007, Red Hat Inc.
+//
+// FRYSK is free software; you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+//
+// FRYSK is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with FRYSK; if not, write to the Free Software Foundation,
+// Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+// 
+// In addition, as a special exception, Red Hat, Inc. gives You the
+// additional right to link the code of FRYSK with code not covered
+// under the GNU General Public License ("Non-GPL Code") and to
+// distribute linked combinations including the two, subject to the
+// limitations in this paragraph. Non-GPL Code permitted under this
+// exception must only link to the code of FRYSK through those well
+// defined interfaces identified in the file named EXCEPTION found in
+// the source code files (the "Approved Interfaces"). The files of
+// Non-GPL Code may instantiate templates or use macros or inline
+// functions from the Approved Interfaces without causing the
+// resulting work to be covered by the GNU General Public
+// License. Only Red Hat, Inc. may make changes or additions to the
+// list of Approved Interfaces. You must obey the GNU General Public
+// License in all respects for all of the FRYSK code and other code
+// used in conjunction with FRYSK except the Non-GPL Code covered by
+// this exception. If you modify this file, you may extend this
+// exception to your version of the file, but you are not obligated to
+// do so. If you do not wish to provide this exception without
+// modification, you must delete this exception statement from your
+// version and license this file solely under the GPL without
+// exception.
+
+package frysk.debuginfo;
+
+import java.io.PrintWriter;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import lib.dwfl.DwarfDie;
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflDieBias;
+import frysk.dwfl.DwflCache;
+import frysk.proc.Task;
+import frysk.testbed.TestLib;
+import frysk.value.Type;
+
+public class TestTypeEntry
+    extends TestLib
+{
+    private class Expect
+    {
+	String symbol;
+	String output;
+	Expect (String symbol, String expect)
+	{
+	    this.symbol = symbol;
+	    this.output = expect;
+	}
+    }
+  Logger logger = Logger.getLogger("frysk");
+
+  public void testScalar () {
+      Expect [] expect  = {
+	      new Expect("long_21", "long int"),
+	      new Expect("int_21","int"),
+	      new Expect("int_22", "simode"),
+	      new Expect("static_int", "int"),
+	      new Expect("int_p", "int *"),
+	      new Expect("short_21", "short int"),
+	      new Expect("char_21", "char"),
+	      new Expect("float_21", "float"),
+	      new Expect("double_21", "double"),
+      };
+  
+      Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-scalar");
+
+      DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
+      DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(System.out), task, false, false, false);
+
+      Dwfl dwfl;
+      DwarfDie[] allDies;
+      Type varType;
+      DwarfDie varDie;
+      long pc = frame.getAdjustedAddress();
+      dwfl = DwflCache.getDwfl(frame.getTask());
+      DwflDieBias bias = dwfl.getDie(pc);
+      DwarfDie die = bias.die;
+      allDies = die.getScopes(pc - bias.bias);
+      TypeEntry typeEntry = new TypeEntry();
+    
+      for (int i = 0; i < expect.length; i++) {
+	  varDie = die.getScopeVar(allDies, expect[i].symbol);
+	  assertNotNull(varDie);
+	  varType = typeEntry.getType(frame, varDie.getType());
+	  assertNotNull(varType);
+	  assertEquals(varType.toPrint(), expect[i].output);
+      }
+  }
+
+  public void testArray () {
+      Expect[] expect = {
+	      new Expect("arr_1", "long int [32]"),
+	      new Expect("arr_2","int [5,6]"),
+	      new Expect("arr_3", "float [4,5]"),
+	      new Expect("arr_4", "char [4]"),
+      };
+  
+      Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-array");
+
+      DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
+      DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(System.out), task, false, false, false);
+
+      Dwfl dwfl;
+      DwarfDie[] allDies;
+      Type varType;
+      DwarfDie varDie;
+      long pc = frame.getAdjustedAddress();
+      dwfl = DwflCache.getDwfl(frame.getTask());
+      DwflDieBias bias = dwfl.getDie(pc);
+      DwarfDie die = bias.die;
+      allDies = die.getScopes(pc - bias.bias);
+      TypeEntry typeEntry = new TypeEntry();
+    
+      for (int i = 0; i < expect.length; i++) {
+	  varDie = die.getScopeVar(allDies, expect[i].symbol);
+	  assertNotNull(varDie);
+	  varType = typeEntry.getType(frame, varDie.getType());
+	  assertNotNull(varType);
+	  assertEquals(varType.toPrint(), expect[i].output);
+      }
+  }
+
+  public void testEnum () {
+      Expect[] expect = {
+	      new Expect("sportscar", "enum {bmw=0,porsche=1}"),
+	      new Expect("ssportscar", "enum {bmw=0,porsche=1}"),
+      };
+  
+      Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-enum");
+      DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
+      DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(System.out), task, false, false, false);
+
+      Dwfl dwfl;
+      DwarfDie[] allDies;
+      Type varType;
+      DwarfDie varDie;
+      long pc = frame.getAdjustedAddress();
+      dwfl = DwflCache.getDwfl(frame.getTask());
+      DwflDieBias bias = dwfl.getDie(pc);
+      DwarfDie die = bias.die;
+      allDies = die.getScopes(pc - bias.bias);
+      TypeEntry typeEntry = new TypeEntry();
+    
+      for (int i = 0; i < expect.length; i++) {
+	  varDie = die.getScopeVar(allDies, expect[i].symbol);
+	  if (varDie == null)
+	      varDie = DwarfDie.getDeclCU(allDies, expect[i].symbol);
+	  if (varDie == null) {
+	      unsupported("funit-enum exited?", true);
+	      continue;
+	  }
+	  varType = typeEntry.getType(frame, varDie.getType());
+	  assertEquals(varType.toPrint(), expect[i].output);
+      }
+  }
+
+  public void testStruct () {
+      Expect[] expect = {
+	      new Expect("static_class", ".*double.*double_1;.*int.*int_1;.*"),
+	      new Expect("class_1", ".*double.*double_1;.*int int_1;.*"),
+	      new Expect("class_2", ".*c1;.*c2;.*"),
+	      new Expect("class_3", ".*int.*[2,2].*arr.*"),
+	      new Expect("class_4", ".*int x;.*float y;.*"),
+	      new Expect("class_5", ".*simode.*x;.*float.*y;.*"),
+	      new Expect("union_1", ".*double.*double_1;.*long.*ll_1;.*"),
+	      new Expect("class_p", ".*double.*double_1;.*int.*int_1;.*"),
+      };
+  
+      Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-struct");
+
+      DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
+      DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(System.out), task, false, false, false);
+
+      Dwfl dwfl;
+      DwarfDie[] allDies;
+      Type varType;
+      DwarfDie varDie;
+      long pc = frame.getAdjustedAddress();
+      dwfl = DwflCache.getDwfl(frame.getTask());
+      DwflDieBias bias = dwfl.getDie(pc);
+      DwarfDie die = bias.die;
+      allDies = die.getScopes(pc - bias.bias);
+      TypeEntry typeEntry = new TypeEntry();
+    
+      for (int i = 0; i < expect.length; i++) {
+	  varDie = die.getScopeVar(allDies, expect[i].symbol);
+	  varType = typeEntry.getType(frame, varDie.getType());
+	  Pattern p = Pattern.compile(expect[i].output, Pattern.DOTALL);
+	  Matcher m = p.matcher(varType.toPrint());
+	  assertTrue(m.matches());
+      }
+  }
+
+  public void testClass () {
+      Expect[] expect = {
+	      new Expect("mb", ".*public:.*char.*\\*.*msg;.*void.*Base1.*"
+		      + "char.*\\*.*void.*~Base1.*char.*\\*.*msg;.*" 
+		      + "void.*Base2.*char.*\\*.*void.*~Base2.*private:.*"
+		      + "char.*\\*.*note;.*void.*Type.*char.*\\*.*,char.*\\*.*"
+		      + ",char.*void.*~Type.*"
+		      )
+      };
+  
+      Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-class");
+
+      DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
+      DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(System.out), task, false, false, false);
+
+      Dwfl dwfl;
+      DwarfDie[] allDies;
+      Type varType;
+      DwarfDie varDie;
+      long pc = frame.getAdjustedAddress();
+      dwfl = DwflCache.getDwfl(frame.getTask());
+      DwflDieBias bias = dwfl.getDie(pc);
+      DwarfDie die = bias.die;
+      allDies = die.getScopes(pc - bias.bias);
+      TypeEntry typeEntry = new TypeEntry();
+    
+      for (int i = 0; i < expect.length; i++) {
+	  varDie = die.getScopeVar(allDies, expect[i].symbol);
+	  varType = typeEntry.getType(frame, varDie.getType());
+	  Pattern p = Pattern.compile(expect[i].output, Pattern.DOTALL);
+	  Matcher m = p.matcher(varType.toPrint());
+	  assertTrue(m.matches());
+      }
+  }
+}  

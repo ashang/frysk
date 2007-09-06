@@ -1,3 +1,11 @@
+2007-09-06  Stan Cox  <scox@redhat.com>
+
+	* funit-class.cxx (crash): New.  Use it instead of looping.
+	* funit-scalar.c (crash): Likewise.
+	* funit-enum.c (crash): Likewise.
+	* funit-array.c (crash): Likewise.
+	* funit-struct.c (crash): Likewise.
+
 2007-08-29  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
 
 	* funit-empty-functions.c : New file.

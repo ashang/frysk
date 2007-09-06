@@ -1,3 +1,8 @@
+2007-09-06  Stan Cox  <scox@redhat.com>
+
+	* TypeEntry.java: New file.
+	* TestTypeEntry.java: New file.
+
 2007-09-06  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfoEvaluator.java: Replace call to ClassType.setSize()

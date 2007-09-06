@@ -1,10 +1,14 @@
+static void crash (){
+  char* a = 0;
+  a[0] = 0;
+}
+
 static int func_1 (int x, int y)  __attribute__ ((noinline));
 static int func_2 (int x, int y)  __attribute__ ((noinline));
-volatile int vx = 1;
 
-static int loop_ (long, int, float, char) __attribute__ ((noinline));
+static int assign_ (long, int, float, char) __attribute__ ((noinline));
 int
-loop_ (long a, int b, float f, char c)
+assign_ (long a, int b, float f, char c)
 {
   return 2;
 }
@@ -60,9 +64,8 @@ func_2 (int x, int y)
   assign_float_arr ((float*)arr_3, sizeof (arr_3) / sizeof (float));
   assign_char_arr (arr_4, sizeof (arr_4));
 
-  x = loop_(arr_1[0], arr_2[0][0], arr_3[0][0], arr_4[0]);
-  while (vx)
-    ;
+  x = assign_(arr_1[0], arr_2[0][0], arr_3[0][0], arr_4[0]);
+  crash();
   return x;
 }
 

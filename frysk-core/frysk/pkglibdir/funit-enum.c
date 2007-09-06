@@ -1,5 +1,16 @@
+static void crash (){
+  char* a = 0;
+  a[0] = 0;
+}
+
+static int assign_ (int) __attribute__ ((noinline));
+static int
+assign_ (int i1)
+{
+  return 2;
+}
+
 static enum cars {bmw, porsche} ssportscar;
-volatile int vx = 1;
 
 static int func_2 (int, int) __attribute__ ((noinline));
 static int
@@ -9,8 +20,8 @@ func_2 (int x, int y)
   enum cars {bmw, porsche} sportscar  __attribute__ ((unused));
 
   ssportscar = porsche;
-  while (vx)
-    ;
+  crash();
+  int_21 = assign_(int_21);
   return int_21;
 }
 

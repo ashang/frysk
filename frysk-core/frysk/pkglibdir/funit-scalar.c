@@ -1,9 +1,12 @@
-volatile int vx = 1;
-static int loop_ (double,int,int,short,int,float,double,int,int,int,char)
+static void crash (){
+  char* a = 0;
+  a[0] = 0;
+}
+
+static int assign_ (double,int,int,short,int,float,double,int,int,int,char)
  __attribute__ ((noinline));
-static int
-loop_ (double d1, int i1, int i2, short s, int i3, float f, double d2, int i4,
-       int i5, int i6, char ch)
+static int assign_ (double d1, int i1, int i2, short s, int i3, float f, 
+		    double d2, int i4, int i5, int i6, char ch)
 {
   return 2;
 }
@@ -68,10 +71,9 @@ func_2 (int x, int y)
   double_21 = assign_double (1.2l);
   int_p = &int_22;
 
-  int_21 = loop_(double_21,*int_p, int_22, short_21,
+  int_21 = assign_(double_21,*int_p, int_22, short_21,
 		 int_21, float_21,double_21,x,y, int_23, char_21);
-  while (vx)
-    ;
+  crash();
   return int_21;
 }
 

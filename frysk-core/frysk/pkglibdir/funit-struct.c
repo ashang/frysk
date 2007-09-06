@@ -1,7 +1,11 @@
-volatile int vx = 1;
-static int loop_ (int, int, int, int, int, double, double) __attribute__ ((noinline));
+static void crash (){
+  char* a = 0;
+  a[0] = 0;
+}
+
+static int assign_ (int, int, int, int, int, double, double) __attribute__ ((noinline));
 int
-loop_ (int a, int b, int c, int d, int e, double f, double g)
+assign_ (int a, int b, int c, int d, int e, double f, double g)
 {
   return 2;
 }
@@ -41,10 +45,9 @@ func_2 (int x, int y)
   class_p->int_1 = assign_int (123456789);
   class_1.double_1 = assign_double (12.34);
   
-  x = loop_(class_1.int_1, classes[0].int_1, class_3.arr[0][0],
+  x = assign_(class_1.int_1, classes[0].int_1, class_3.arr[0][0],
 	    class_4.x, class_5.x, union_1.double_1, class_2.c1.double_1);
-  while (vx)
-    ;
+  crash();
   return x;
 }
 
