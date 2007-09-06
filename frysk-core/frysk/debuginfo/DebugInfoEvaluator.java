@@ -133,40 +133,29 @@ class DebugInfoEvaluator
 	doubleType = StandardTypes.getDoubleType(isa);
     }
 
-    interface VariableAccessor {
+    private interface VariableAccessor {
 	DwarfDie varDie = null;
 
 	long getAddr (DwarfDie die) throws NameNotFoundException;
 
 	long getLong (DwarfDie varDieP, long offset) throws NameNotFoundException;
 
-	void putLong (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException;
-
 	int getInt (DwarfDie varDieP, long offset) throws NameNotFoundException;
-
-	void putInt (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException;
 
 	short getShort (DwarfDie varDieP, long offset) throws NameNotFoundException;
 
-	void putShort (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException;
-
 	byte getByte (DwarfDie varDieP, long offset) throws NameNotFoundException;
-
-	void putByte (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException;
 
 	float getFloat (DwarfDie varDieP, long offset) throws NameNotFoundException;
 
-	void putFloat (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException;
-
 	double getDouble (DwarfDie varDieP, long offset) throws NameNotFoundException;
 
-	void putDouble (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException;
     }
 
     /**
      * Access by DW_FORM_block. Typically this is a static address or ptr+disp.
      */
-    class AccessMemory
+    private class AccessMemory
 	implements VariableAccessor
     {
       
@@ -196,19 +185,9 @@ class DebugInfoEvaluator
 	    return buffer.getLong(addr + offset);
 	}
 
-	public void putLong (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException {
-	    long addr = getBufferAddr(varDieP);
-	    buffer.putLong(addr + offset, v.asLong());
-	}
-
 	public int getInt (DwarfDie varDieP, long offset) throws NameNotFoundException {
 	    long addr = getBufferAddr(varDieP);
 	    return buffer.getInt(addr + offset);
-	}
-
-	public void putInt (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException {
-	    long addr = getBufferAddr(varDieP);
-	    buffer.putInt(addr + offset, (int)v.asLong());
 	}
 
 	public short getShort (DwarfDie varDieP, long offset) throws NameNotFoundException {
@@ -216,19 +195,9 @@ class DebugInfoEvaluator
 	    return buffer.getShort(addr + offset);
 	}
 
-	public void putShort (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException {
-	    long addr = getBufferAddr(varDieP);
-	    buffer.putShort(addr + offset, (short)v.asLong());
-	}
-
 	public byte getByte (DwarfDie varDieP, long offset) throws NameNotFoundException {
 	    long addr = getBufferAddr(varDieP);
 	    return buffer.getByte(addr + offset);
-	}
-
-	public void putByte (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException {
-	    long addr = getBufferAddr(varDieP);
-	    buffer.putByte(addr + offset, (byte)v.asLong());
 	}
 
 	public float getFloat (DwarfDie varDieP, long offset) throws NameNotFoundException {
@@ -236,19 +205,9 @@ class DebugInfoEvaluator
 	    return buffer.getFloat(addr + offset);
 	}
 
-	public void putFloat (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException {
-	    long addr = getBufferAddr(varDieP);
-	    buffer.putFloat(addr + offset, (float)v.doubleValue());
-	}
-
 	public double getDouble (DwarfDie varDieP, long offset) throws NameNotFoundException {
 	    long addr = getBufferAddr(varDieP);
 	    return buffer.getDouble(addr + offset);
-	}
-
-	public void putDouble (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException {
-	    long addr = getBufferAddr(varDieP);
-	    buffer.putDouble(addr + offset, v.doubleValue());
 	}
     }
 
@@ -262,32 +221,6 @@ class DebugInfoEvaluator
 	    return 0;
 	}
 
-	/**
-	 * @param varDieP Die for a symbol
-	 * @return Dwarf register number corresponding to the value of symbol
-	 * @throws NameNotFoundException
-	 */    
-	private int getReg(DwarfDie varDieP) throws NameNotFoundException {
-	    long pc = currentFrame.getAdjustedAddress();
-	
-	    List ops = varDieP.getFormData(pc);
-	    Isa isa;
-	
-	    LocationExpression locExp = new LocationExpression(currentFrame, varDieP, ops);
-	    Register register = locExp.getRegisterNumber();
-	    if (register == null)
-		throw new NameNotFoundException();
-
-	    if (currentFrame.getInnerDebugInfoFrame() == null)
-		isa = task.getIsa();
-	    else
-		isa = currentFrame.getTask().getIsa();
-
-	    int reg = DwarfRegisterMapFactory.getRegisterMap(isa)
-                .getRegisterNumber(register);
-	    return reg;
-	}
-    
 	/**
 	 * @param varDieP Die for a symbol
 	 * @return The contents of the register corresponding to the value of symbol
@@ -310,36 +243,16 @@ class DebugInfoEvaluator
 	    return getRegister(varDieP);
 	}
 
-	public void putLong (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException {
-	    long reg = getReg(varDieP);
-	    currentFrame.setReg(reg, v.asLong());
-	}
-
 	public int getInt (DwarfDie varDieP, long offset) throws NameNotFoundException {
 	    return (int) getRegister(varDieP);
-	}
-
-	public void putInt (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException {
-	    long reg = getReg(varDieP);
-	    currentFrame.setReg(reg, (int)v.asLong());
 	}
 
 	public short getShort (DwarfDie varDieP, long offset) throws NameNotFoundException {
 	    return (short) getRegister(varDieP);
 	}
 
-	public void putShort (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException {
-	    long reg = getReg(varDieP);
-	    currentFrame.setReg(reg, (short)v.asLong());
-	}
-
 	public byte getByte (DwarfDie varDieP, long offset) throws NameNotFoundException {
 	    return (byte) getRegister(varDieP);
-	}
-
-	public void putByte (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException {
-	    long reg = getReg(varDieP);
-	    currentFrame.setReg(reg, (byte)v.asLong());
 	}
 
 	public float getFloat (DwarfDie varDieP, long offset) throws NameNotFoundException {
@@ -348,19 +261,10 @@ class DebugInfoEvaluator
 	    return fval;
 	}
 
-	public void putFloat (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException {
-	    long reg = getReg(varDieP);
-	    currentFrame.setReg(reg, (long) v.doubleValue());
-	}
 	public double getDouble (DwarfDie varDieP, long offset) throws NameNotFoundException {
 	    long val = getRegister(varDieP);
 	    double dval = Double.longBitsToDouble(val);
 	    return dval;
-	}
-
-	public void putDouble (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException {
-	    long reg = getReg(varDieP);
-	    currentFrame.setReg(reg, (long) v.doubleValue());
 	}
     }
 
