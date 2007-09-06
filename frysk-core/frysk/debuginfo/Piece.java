@@ -37,35 +37,24 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.value;
+package frysk.debuginfo;
 
-import frysk.stack.Register;
-
-public class RegisterPiece 
-	extends Piece
+public abstract class Piece
 {
-    private final Register register;  
-
-    public RegisterPiece(Register register, long size)
-    {
-	super (size);
-	this.register = register;
-    }
- 
-    /**
-     * Function that takes a register piece and checks if their contents are equal.
-     * 
-     * @param p RegisterPiece to be compared with
-     * @return true/false
-     */
-    public boolean equals(Object p)
-    {
-	return ( this.size == ((RegisterPiece)p).size 
-		&& register.equals(((RegisterPiece)p).register) );
-    }	    
+    protected long size; 	      // in bytes
     
-    public Register getRegister()
+    public Piece(long size)
     {
-	return register;
+	this.size = size;
+    }
+    
+    public long getSize()
+    {
+	return size;
+    }
+    
+    public void setSize (long size)
+    {
+	this.size = size;
     }
 }

@@ -1,3 +1,9 @@
+2007-09-06  Teresa Thomas  <tthomas@redhat.com>
+	* Piece.java: Removed.
+	* MemoryPiece.java: Removed.
+	* RegisterPiece.java: Removed.
+	* UnavailablePiece.java: Removed.
+
 2007-09-06  Andrew Cagney  <cagney@redhat.com>
 
 	* TestCompositeType.java: Rename TestClass.java.

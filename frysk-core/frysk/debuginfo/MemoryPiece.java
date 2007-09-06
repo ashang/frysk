@@ -37,7 +37,9 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.value;
+package frysk.debuginfo;
+
+import inua.eio.ByteBuffer;
 
 /*
  *  Class to represent a piece of memory
@@ -46,6 +48,7 @@ public class MemoryPiece
 	extends Piece
 {
     private final long memory;   
+    private ByteBuffer byteBuf;
 
     public MemoryPiece (long memory, long size)
     {
@@ -53,9 +56,21 @@ public class MemoryPiece
 	this.memory = memory;
     }
     
+    public MemoryPiece (long memory, long size, ByteBuffer byteBuf)
+    {
+	super (size);
+	this.memory = memory;
+	this.byteBuf = byteBuf; 
+    }
+    
     public long getMemory()
     {
 	return memory;
+    }
+    
+    public ByteBuffer getByteBuf()
+    {
+	return byteBuf;
     }
     
     /**

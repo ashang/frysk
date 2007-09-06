@@ -1,5 +1,13 @@
 2007-09-06  Teresa Thomas  <tthomas@redhat.com>
 
+	* TestPieceLocation.java: New file. 
+	* PieceLocation.java: New file.
+	* Piece.java: Added.
+	* MemoryPiece.java: Added.
+	* RegisterPiece.java: Added.
+	* UnavailablePiece.java: Added.
+	* LocationExpression.java: Imports updated for previous changes.
+	 
 	* TestLocationExpression.java (compareLocations): Remove 
 	explicit casting, re-indented.
 	

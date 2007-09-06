@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.value;
+package frysk.debuginfo;
 
 /*
  *  Class to represent an unavailable piece of memory
@@ -51,7 +51,8 @@ public class UnavailablePiece
     }
     
     /**
-     * Function that takes an unavailable piece and checks if their size are equal.
+     * Function that takes an unavailable piece and checks if 
+     * their size are equal.
      * 
      * @param p - UnavailablePiece to be compared with
      * @return true/false
