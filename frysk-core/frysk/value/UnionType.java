@@ -42,13 +42,13 @@ package frysk.value;
 /**
  * Type for a union
  */
-public class ClassType
+public class UnionType
     extends CompositeType
 {
     protected String getPrefix() {
-	return "class";
+	return "union";
     }
-    public ClassType(String name, int size) {
+    public UnionType(String name, int size) {
 	super(name, size);
     }
 }

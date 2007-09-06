@@ -40,15 +40,19 @@
 package frysk.value;
 
 /**
- * Type for a union
+ * Type for either a class or a struct; root around in CompositeType
+ * internals to decide which.
  */
-public class ClassType
+public class ConfoundedType
     extends CompositeType
 {
     protected String getPrefix() {
-	return "class";
+	if (isClassLike())
+	    return "class";
+	else
+	    return "struct";
     }
-    public ClassType(String name, int size) {
+    public ConfoundedType(String name, int size) {
 	super(name, size);
     }
 }

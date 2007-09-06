@@ -42,7 +42,7 @@ package frysk.value;
 import inua.eio.ByteOrder;
 import frysk.junit.TestCase;
 
-public class TestClass
+public class TestComposite
     extends TestCase
 {
     private Type bigInt32 = new SignedType("int32_t", ByteOrder.BIG_ENDIAN, 4);
@@ -54,7 +54,7 @@ public class TestClass
      * struct {int; int; short; int:8; int:8;}
      */
     public void testBigStructure () {
-	ClassType classType = new ClassType(null, 12)
+	CompositeType classType = new ClassType(null, 12)
 	    .addMember("alpha", bigInt32, 0, 0)
 	    .addMember("beta", bigInt32, 4, 0)
 	    .addMember("gamma", bigInt16, 8, 0)
@@ -73,7 +73,7 @@ public class TestClass
      * struct {int; int; short; int:8; int:8;}
      */
     public void testLittleStructure () {
-	ClassType classType = new ClassType(null, 12)
+	CompositeType classType = new ClassType(null, 12)
 	    .addMember("alpha", littleInt32, 0, 0)
 	    .addMember("beta", littleInt32, 4, 0)
 	    .addMember("gamma", littleInt16, 8, 0)
@@ -92,7 +92,7 @@ public class TestClass
      * struct { struct { int, int } struct { short, int:8, int:8 }}
      */
     public void testNextedStructure () {
-	ClassType classType = new ClassType(null, 12)
+	CompositeType classType = new ClassType(null, 12)
 	    .addMember("a", new ClassType(null, 8)
 		       .addMember("alpha", littleInt32, 0, 0)
 		       .addMember("beta", littleInt32, 4, 0),
@@ -115,7 +115,7 @@ public class TestClass
      * struct { struct { int, int } struct { short, int:8, int:8 }}
      */
     public void testNamelessFields () {
-	ClassType classType = new ClassType(null, 12)
+	CompositeType classType = new ClassType(null, 12)
 	    .addMember(null, new ClassType(null, 8)
 		       .addMember(null, littleInt32, 0, 0)
 		       .addMember(null, littleInt32, 4, 0),

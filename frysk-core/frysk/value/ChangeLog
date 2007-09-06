@@ -1,5 +1,11 @@
 2007-09-06  Andrew Cagney  <cagney@redhat.com>
 
+	* TestCompositeType.java: Rename TestClass.java.
+	* CompositeType.java: New; based on old ClassType.java.
+	* ClassType.java: Re-write.
+	* StructType.java: New.
+	* UnionType.java: New.
+
 	* Type.java (size): Make private.
 	* ArrayType.java: Update.
 	* SignedType.java: Update.
