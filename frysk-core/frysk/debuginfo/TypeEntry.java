@@ -119,9 +119,8 @@ class TypeEntry
      * @return ClassType for the struct
      */
     public ClassType getClassType(DebugInfoFrame f, DwarfDie classDie, String name) {
-	int typeSize = 0;
 	dumpDie("classDie=", classDie);
-	ClassType classType = new ClassType(name);
+	ClassType classType = new ClassType(name, getByteSize(classDie));
 	
 
 	for (DwarfDie member = classDie.getChild(); member != null; member = member
@@ -149,7 +148,6 @@ class TypeEntry
 		continue;
 
 	    Type memberType = getType (f, member.getType());
-	    typeSize = (int) offset + memberType.getSize();
 	    if (memberType instanceof UnknownType == false) {
 		// System V ABI Supplements discuss bit field layout
 		int bitSize = member
@@ -170,8 +168,6 @@ class TypeEntry
 			.getName()), offset, access);
 	}
 
-	typeSize += 4 - (typeSize % 4); // round up to mod 4
-	classType.setSize(typeSize);
 	return classType;
     }
 

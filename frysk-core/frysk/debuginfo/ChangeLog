@@ -1,5 +1,9 @@
 2007-09-06  Stan Cox  <scox@redhat.com>
 
+	* TypeEntry.java (getClassType): Update ClassType constructor.
+
+2007-09-06  Stan Cox  <scox@redhat.com>
+
 	* TypeEntry.java: New file.
 	* TestTypeEntry.java: New file.
 
