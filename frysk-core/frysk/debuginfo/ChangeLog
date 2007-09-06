@@ -1,3 +1,8 @@
+2007-09-06  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestLocationExpression.java (compareLocations): Remove 
+	explicit casting, re-indented.
+	
 2007-09-06  Stan Cox  <scox@redhat.com>
 
 	* TypeEntry.java (getClassType): Update ClassType constructor.

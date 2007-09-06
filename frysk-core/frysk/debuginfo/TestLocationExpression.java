@@ -47,9 +47,9 @@ import java.util.Iterator;
 import frysk.proc.Task;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
-import frysk.value.RegisterPiece;
-import frysk.value.MemoryPiece;
-import frysk.value.UnavailablePiece;
+import frysk.debuginfo.RegisterPiece;
+import frysk.debuginfo.MemoryPiece;
+import frysk.debuginfo.UnavailablePiece;
 import frysk.stack.IA32Registers;
 import frysk.stack.X8664Registers;
 
@@ -58,7 +58,7 @@ import lib.dwfl.DwOp;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.DwarfOp;
 
-public class TestLocationExpression
+public class TestLocationExpression 
 	extends TestLib
 {
     Logger logger = Logger.getLogger("frysk");
@@ -70,7 +70,8 @@ public class TestLocationExpression
     {
 	List ops = new ArrayList();
 
-	// Note: REG1 in frysk-asm.h corresponds to registers 3 and 5 in i386 and x86_64 resp.
+	// Note: REG1 in frysk-asm.h corresponds to registers 3 
+	// and 5 in i386 and x86_64 resp.
 	switch (getArch())
 	{
 	    case ElfEMachine.EM_386:
@@ -98,7 +99,8 @@ public class TestLocationExpression
     {
 	List ops = new ArrayList();
 	
-	// Note: REG1 in frysk-asm.h corresponds to registers 3 and 5 in i386 and x86_64 resp.
+	// Note: REG1 in frysk-asm.h corresponds to registers 3 
+	// and 5 in i386 and x86_64 resp.
 	switch (getArch())
 	{
 	    case ElfEMachine.EM_386:
@@ -125,7 +127,8 @@ public class TestLocationExpression
     {
 	List ops = new ArrayList();
 
-	// First 6 bytes unavailable, next 4 bytes in Reg 1 and next 2 byes in memory address 0x1234
+	// First 6 bytes unavailable, next 4 bytes in Reg 1 and next 2 
+	// bytes in memory address 0x1234
 	ops.add( new DwarfOp(DwOp.PIECE_, 6, 0, 0) );
 	ops.add( new DwarfOp(DwOp.REG1_, 0, 0, 0) );
 	ops.add( new DwarfOp(DwOp.PIECE_, 4, 0, 0) );
@@ -434,29 +437,29 @@ public class TestLocationExpression
 	boolean isEqual = false;
 	if (loc.size() == locExpect.size())
 	{    
-	    for (Iterator it=loc.iterator(), it2=locExpect.iterator(); it.hasNext () && it2.hasNext(); )
+	    for (Iterator it=loc.iterator(), it2=locExpect.iterator(); 
+	         it.hasNext () && it2.hasNext(); )
 	    {
 		Object o = it.next();
 		Object oExpect = it2.next();
 
-		if ( o instanceof MemoryPiece && oExpect instanceof MemoryPiece)
+		if (o.getClass().getName().equals(oExpect.getClass().getName()))
 		{
-		    isEqual = ((MemoryPiece)o).equals((MemoryPiece)oExpect);
-		    assertEquals ("Value", ((MemoryPiece)o).getMemory(), ((MemoryPiece)oExpect).getMemory());
-		}
-		else if ( o instanceof RegisterPiece && oExpect instanceof RegisterPiece)
-		{   
-		    isEqual = ((RegisterPiece)o).equals((RegisterPiece)oExpect);
-		    assertEquals ("Register", ((RegisterPiece)o).getRegister(), ((RegisterPiece)oExpect).getRegister());
-		}
-		else if (o instanceof UnavailablePiece && oExpect instanceof UnavailablePiece)
-		    isEqual = ((UnavailablePiece)o).equals((UnavailablePiece)oExpect);
-		else 
-		    isEqual = false;
+		    // Note: equals() overridden for the pieces.
+		    isEqual = o.equals(oExpect);
 
-		if (!isEqual)
-		    break;
-	    } 
+		    if (o instanceof MemoryPiece)
+			assertEquals ("Memory", ((MemoryPiece)o).getMemory(), 
+				      ((MemoryPiece)oExpect).getMemory());		  
+
+		    else if (o instanceof RegisterPiece)  	
+			assertEquals ("Register", ((RegisterPiece)o).getRegister(), 
+				      ((RegisterPiece)oExpect).getRegister());		    
+
+		    if (!isEqual)
+			break;
+		} 
+	    }
 	}
 	assertEquals ("Result", true, isEqual);
     }
@@ -468,8 +471,9 @@ public class TestLocationExpression
     
     private Task getStoppedTask (String process)
     {
-	// Starts program and runs it to crash.
-	DaemonBlockedAtSignal daemon = new DaemonBlockedAtSignal (new String[] { getExecPath(process) });
+	// Starts program and runs it to crash/signal.
+	DaemonBlockedAtSignal daemon = new DaemonBlockedAtSignal 
+	                               	(new String[] { getExecPath(process) });
 	return daemon.getMainTask();
     }  
     
