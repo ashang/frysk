@@ -44,7 +44,6 @@
 package frysk.debuginfo;
 
 import lib.dwfl.DwarfDie;
-import frysk.debuginfo.DebugInfo;
 
 
 public class LexicalBlock extends Scope
@@ -54,9 +53,9 @@ public class LexicalBlock extends Scope
     super();  
   }
   
-  public LexicalBlock (DwarfDie die, DebugInfo debugInfo)
+  public LexicalBlock (DwarfDie die)
   {
-    super(die, debugInfo);
+    super(die);
   }
      
 }

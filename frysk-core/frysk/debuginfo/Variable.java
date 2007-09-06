@@ -40,12 +40,14 @@
 package frysk.debuginfo;
 
 import java.io.PrintWriter;
+
 import javax.naming.NameNotFoundException;
+
 import lib.dwfl.DwException;
 import lib.dwfl.DwarfDie;
+import frysk.value.Format;
 import frysk.value.Type;
 import frysk.value.Value;
-import frysk.value.Format;
 
 /**
  * This class contains the static information corresponding to a
@@ -56,11 +58,9 @@ import frysk.value.Format;
 public class Variable {
     private Type type;
     private final DwarfDie variableDie;
-    private DebugInfo debugInfo;
     private final String name;
   
-    public Variable(DebugInfo debugInfo, DwarfDie variableDie) {
-	this.debugInfo = debugInfo;
+    public Variable(DwarfDie variableDie) {
 	this.type = null;
 	this.variableDie = variableDie;
 	this.name = variableDie.getName();
@@ -74,13 +74,15 @@ public class Variable {
     public String getName() {
 	return name;
     }
-    public Type getType() {
+    
+    public Type getType(DebugInfoFrame frame) {
 	if(this.type == null){
-	    this.type = debugInfo.getType(variableDie);
+	    TypeEntry typeEntry = new TypeEntry();
+	    this.type = typeEntry.getType(frame, variableDie);
 	}
 	return type;
     }
-    
+     
     public long getLineNumber() {
 	return this.variableDie.getDeclLine();
     }
@@ -90,7 +92,7 @@ public class Variable {
     }
   
     public void toPrint(PrintWriter printWriter, DebugInfoFrame frame) {
-	if (this.getType() == null) {
+	if (this.getType(frame) == null) {
 	    // FIXME: This should just send the request to the Value's
 	    // toPrint method and not try to figure out of the Type
 	    // information was delt with.

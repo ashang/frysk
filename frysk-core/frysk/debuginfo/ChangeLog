@@ -1,3 +1,13 @@
+2007-09-06  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Variable.java (Variable): Removed DebugInfo from constructor.
+	* InlinedSubroutine.java: Ditto.
+	* LexicalBlock.java: Ditto.
+	* Scope.java: Ditto.
+	* Subprogram.java: Ditto.
+	* Subroutine.java: Ditto.
+	* DebugInfo.java: updated.
+
 2007-09-06  Teresa Thomas  <tthomas@redhat.com>
 	* TestPieceLocation.java: Unused imports removed.
 

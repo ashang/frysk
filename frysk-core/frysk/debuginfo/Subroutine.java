@@ -40,7 +40,6 @@
 package frysk.debuginfo;
 
 import lib.dwfl.DwarfDie;
-import frysk.debuginfo.DebugInfo;
 
 /**
  * In DWARF a subroutine is used to refer to an entity that can either
@@ -50,9 +49,9 @@ import frysk.debuginfo.DebugInfo;
 public class Subroutine extends Scope
 {
 
-  public Subroutine (DwarfDie die, DebugInfo debugInfo)
+  public Subroutine (DwarfDie die)
   {
-    super(die, debugInfo);
+    super(die);
   }
 
   public Subroutine ()

@@ -75,8 +75,6 @@ public class DebugInfoFrame extends FrameDecorator{
     public final Subprogram getSubprogram ()
     {
       if (subprogram == null) {
-        DebugInfo debugInfo = new DebugInfo(this);
-        
         Dwfl dwfl = DwflCache.getDwfl(this.getTask());
         DwflDieBias bias = dwfl.getDie(getAdjustedAddress());
 
@@ -95,7 +93,7 @@ public class DebugInfoFrame extends FrameDecorator{
   	  if (scopes[i].getTag() == DwTag.SUBPROGRAM_ && 
   		  scopes[i].getAttrConstant(DwAt.INLINE_) != DwInl.INLINED_ &&
   		  scopes[i].getAttrConstant(DwAt.INLINE_) != DwInl.DECLARED_INLINED_) {
-  	    subprogram = new Subprogram(scopes[i], debugInfo);
+  	    subprogram = new Subprogram(scopes[i]);
   	    break;
   	  }
 
@@ -119,8 +117,6 @@ public class DebugInfoFrame extends FrameDecorator{
       if (inlinedSubprograms == null) {
 	  this.inlinedSubprograms = new LinkedList();
 	  
-        DebugInfo debugInfo = new DebugInfo(this);
-        
         Dwfl dwfl = DwflCache.getDwfl(this.getTask());
         DwflDieBias bias = dwfl.getDie(getAdjustedAddress());
 
@@ -137,7 +133,7 @@ public class DebugInfoFrame extends FrameDecorator{
             for (int i = 0; i < scopes.length; i++) {
         	if (scopes[i].getTag() == DwTag.INLINED_SUBROUTINE_ ||
         		scopes[i].getAttrConstant(DwAt.INLINE_) == DwInl.INLINED_) {
-	  	    inlinedSubprograms.add(new InlinedSubroutine(scopes[i], debugInfo));
+	  	    inlinedSubprograms.add(new InlinedSubroutine(scopes[i]));
         	}
             }
         }

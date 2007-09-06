@@ -74,7 +74,7 @@ public class Scope
   
     LinkedList variables;
     
-  public Scope(DwarfDie die, DebugInfo debugInfo){
+  public Scope(DwarfDie die){
     this.variables = new LinkedList();
     this.scopes = new LinkedList();
     
@@ -86,17 +86,17 @@ public class Scope
 //      System.out.println(" -> " + die.getName() + ": "+ DwTag.toName(die.getTag()));
       
       if(die.getTag() == DwTag.VARIABLE_){
-        Variable variable = new Variable(debugInfo, die);
+        Variable variable = new Variable(die);
         variables.add(variable);
       }
       
       if(die.getTag() == DwTag.LEXICAL_BLOCK_){
-        this.scopes.add(new LexicalBlock(die, debugInfo));
+        this.scopes.add(new LexicalBlock(die));
       }else if(die.getTag() == DwTag.INLINED_SUBROUTINE_){
 	  // ignore inlined subroutines
       }else{
 	  if(isScopeDie(die)){
-	      this.scopes.add(new Scope(die,debugInfo));
+	      this.scopes.add(new Scope(die));
 	  }
       }
       die = die.getSibling();

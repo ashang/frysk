@@ -47,7 +47,7 @@ import lib.dwfl.DwarfDie;
  */
 public class InlinedSubroutine extends Subprogram
 {
-    public InlinedSubroutine(DwarfDie die, DebugInfo debugInfo) {
-	super(die,debugInfo);
+    public InlinedSubroutine(DwarfDie die) {
+	super(die);
     }
 }

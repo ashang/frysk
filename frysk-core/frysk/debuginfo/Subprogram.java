@@ -62,9 +62,9 @@ public class Subprogram extends Subroutine
     
     private String name;
     
-    public Subprogram (DwarfDie die, DebugInfo debugInfo)
+    public Subprogram (DwarfDie die)
     {
-      super(die, debugInfo);
+      super(die);
       this.name = die.getName();
       
 //      System.out.println("\nSubprogram.Subprogram() name: " + name + " " + DwTag.toName(die.getTag()));
@@ -74,7 +74,7 @@ public class Subprogram extends Subroutine
       while(die != null){
 //	System.out.print(" -> " + die.getName() + ": "+ DwTag.toName(die.getTag()));
 	if(die.getTag() == DwTag.FORMAL_PARAMETER_){
-          Variable variable = new Variable(debugInfo, die);
+          Variable variable = new Variable(die);
 	  parameters.add(variable);
 	}
 	die = die.getSibling();
