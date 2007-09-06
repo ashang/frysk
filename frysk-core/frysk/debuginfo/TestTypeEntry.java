@@ -164,7 +164,7 @@ public class TestTypeEntry
 	  if (varDie == null)
 	      varDie = DwarfDie.getDeclCU(allDies, expect[i].symbol);
 	  if (varDie == null) {
-	      unsupported("funit-enum exited?", true);
+	      unresolved(4998);
 	      continue;
 	  }
 	  varType = typeEntry.getType(frame, varDie.getType());

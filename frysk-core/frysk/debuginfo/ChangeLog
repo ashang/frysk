@@ -1,6 +1,7 @@
 2007-09-06  Stan Cox  <scox@redhat.com>
 
 	* TypeEntry.java (getClassType): Update ClassType constructor.
+	* TestTypeEntry.java (testEnum): Mark as unresolved.
 
 2007-09-06  Stan Cox  <scox@redhat.com>
 
