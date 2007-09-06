@@ -49,7 +49,7 @@ import lib.dwfl.DwTag;
 import lib.dwfl.DwAt;
 import frysk.proc.Isa;
 import frysk.value.ArrayType;
-import frysk.value.ClassType;
+import frysk.value.ConfoundedType;
 import frysk.value.EnumType;
 import frysk.value.FunctionType;
 import frysk.value.PointerType;
@@ -61,6 +61,8 @@ import frysk.value.UnsignedType;
 import frysk.value.Value;
 import frysk.value.VoidType;
 import inua.eio.ByteOrder;
+import frysk.value.Access;
+import lib.dwfl.DwAccess;
 
 class TypeEntry
 {
@@ -116,11 +118,11 @@ class TypeEntry
      *                A struct die
      * @param name
      *                Name of the struct
-     * @return ClassType for the struct
+     * @return ConfoundedType for the struct
      */
-    public ClassType getClassType(DebugInfoFrame f, DwarfDie classDie, String name) {
+    public ConfoundedType getConfoundedType(DebugInfoFrame f, DwarfDie classDie, String name) {
 	dumpDie("classDie=", classDie);
-	ClassType classType = new ClassType(name, getByteSize(classDie));
+	ConfoundedType classType = new ConfoundedType(name, getByteSize(classDie));
 	
 
 	for (DwarfDie member = classDie.getChild(); member != null; member = member
@@ -133,8 +135,12 @@ class TypeEntry
 		offset = 0; // union
 	    }
 
-	    int access = member
-	    .getAttrConstant(DwAt.ACCESSIBILITY_);
+	    Access access = null;
+	    switch (member.getAttrConstant(DwAt.ACCESSIBILITY_)) {
+	    case DwAccess.PUBLIC_: access = Access.PUBLIC; break;
+	    case DwAccess.PROTECTED_: access = Access.PROTECTED; break;
+	    case DwAccess.PRIVATE_: access = Access.PRIVATE; break;
+	    }
 	    DwarfDie memberDieType = member.getUltimateType();
 
 	    if (member.getTag() == DwTag.SUBPROGRAM_) {
@@ -274,7 +280,7 @@ class TypeEntry
 	    boolean noTypeDef = (typeDie.getType() == null);
 	    String name = noTypeDef ? typeDie.getName() : typeDie.getType()
 		    .getName();
-	    ClassType classType = getClassType(f, type, name);
+	    ConfoundedType classType = getConfoundedType(f, type, name);
 	    if (type != typeDie.getType() && noTypeDef == false)
 		classType.setTypedefFIXME(true);
 	    returnType = classType;

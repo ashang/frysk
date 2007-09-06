@@ -61,12 +61,12 @@ abstract class CompositeType
 	final String name;
 	final Type type;
 	final long offset;
-	final int access;
+	final Access access;
 	final int bitOffset;
 	final int bitSize;
 	final boolean inheritance;
 	Member(int index, String name, Type type, long offset,
-	       int access, int bitOffset, int bitSize,
+	       Access access, int bitOffset, int bitSize,
 	       boolean inheritance) {
 	    this.index = index;
 	    this.type = type;
@@ -118,7 +118,7 @@ abstract class CompositeType
     protected boolean isClassLike() {
 	for (Iterator i = members.iterator(); i.hasNext(); ) {
 	    Member m = (Member)(i.next());
-	    if (m.access > 0)
+	    if (m.access != null)
 		return true;
 	    if (m.inheritance)
 		return true;
@@ -144,8 +144,8 @@ abstract class CompositeType
     /**
      * Add NAME as a member of the class.
      */
-    private CompositeType add(String name, Type type, long offset, int access,
-			      int bitOffset, int bitLength,
+    private CompositeType add(String name, Type type, long offset,
+			      Access access, int bitOffset, int bitLength,
 			      boolean inheritance) {
 	if (bitOffset >= 0 && bitLength > 0)
 	    type = type.pack(bitOffset, bitLength);
@@ -157,15 +157,16 @@ abstract class CompositeType
     }
 
     public CompositeType addMember(String name, Type type, long offset,
-				   int access) {
+				   Access access) {
 	return add(name, type, offset, access, -1, -1, false);
     }
     public CompositeType addMember(String name, Type type, long offset,
-				   int access, int bitOffset, int bitLength) {
+				   Access access, int bitOffset,
+				   int bitLength) {
 	return add(name, type, offset, access, bitOffset, bitLength, false);
     }
     public CompositeType addInheritance(String name, Type type, long offset,
-					int access) {
+					Access access) {
 	return add(name, type, offset, access, -1, -1, true);
     }
 
@@ -259,11 +260,19 @@ abstract class CompositeType
     }
 
     public void toPrint(PrintWriter writer) {
+	// FIXME: going away.
 	if (this.isTypedef() && this.getName() != null
 	    && this.getName().length() > 0) {
 	    writer.print(this.getName());
 	    return;
 	}
+	// {class,union,struct} NAME
+	writer.print(getPrefix());
+	if (getName() != null) {
+	    writer.print(" ");
+	    writer.print(getName());
+	}
+	// : public PARENT ...
 	boolean first = true;
 	Member member = null;
 	Iterator i = members.iterator();
@@ -272,27 +281,29 @@ abstract class CompositeType
 	    member = (Member)i.next();
 	    if (!member.inheritance)
 		break;
-	    if (first)
+	    if (first) {
+		writer.print(" : ");
 		first = false;
-	    else
+	    } else {
 		writer.print(", ");
-	    switch (member.access) {
-	    case 1: writer.print("public "); break;
-	    case 2: writer.print("protected "); break;
-	    case 3: writer.print("private "); break;
+	    }
+	    if (member.access != null) {
+		writer.print(member.access.toPrint());
+		writer.print(" ");
 	    }
 	    writer.print(member.type.getName());
 	    member = null;
 	}
-	int previousAccess = 0;
+	// { content ... }
+	Access previousAccess = null;
 	writer.print(" {\n");
 	while (member != null) {
 	    if (member.access != previousAccess) {
 		previousAccess = member.access;
-		switch (member.access) {
-		case 1: writer.print("  public:\n"); break;
-		case 2: writer.print("  protected:\n"); break;
-		case 3: writer.print("  private:\n"); break;
+		if (member.access != null) {
+		    writer.print(" ");
+		    writer.print(member.access.toPrint());
+		    writer.print(":\n");
 		}
 	    }
 	    writer.print("  ");
@@ -308,7 +319,7 @@ abstract class CompositeType
 		writer.print(":");
 		writer.print(member.bitSize);
 	    }
-	    writer.print(";\n  ");
+	    writer.print(";\n");
 	    // Advance
 	    if (i.hasNext())
 		member = (Member)i.next();

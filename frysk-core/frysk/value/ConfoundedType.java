@@ -40,8 +40,12 @@
 package frysk.value;
 
 /**
- * Type for either a class or a struct; root around in CompositeType
- * internals to decide which.
+ * Type that might either be a class or a struct; roots around in
+ * CompositeType internals to decide which.
+ *
+ * GCC, as of 2007-09-06, forgets to output DW_ATE_class_type.
+ *
+ * For unions, use UnionClass.
  */
 public class ConfoundedType
     extends CompositeType

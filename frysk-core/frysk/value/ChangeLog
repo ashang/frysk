@@ -1,4 +1,17 @@
+2007-09-06  Andrew Cagney  <cagney@redhat.com>
+
+	* TestComposite.java (testUnionType): New.
+	(testClassType): New.
+	(testStructType): New.
+	(testConfoundedClassType): New.
+	(testConfoundedStructType): New.
+	* Access.mkenum: New.
+	* CompositeType.java (toPrint(PrintWriter): Include the class,
+	type, or union prefix.
+	(addMember): Change "access" parameter's type to Access.
+
 2007-09-06  Teresa Thomas  <tthomas@redhat.com>
+
 	* Piece.java: Removed.
 	* MemoryPiece.java: Removed.
 	* RegisterPiece.java: Removed.

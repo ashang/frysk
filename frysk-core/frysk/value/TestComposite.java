@@ -55,11 +55,11 @@ public class TestComposite
      */
     public void testBigStructure () {
 	CompositeType classType = new ClassType(null, 12)
-	    .addMember("alpha", bigInt32, 0, 0)
-	    .addMember("beta", bigInt32, 4, 0)
-	    .addMember("gamma", bigInt16, 8, 0)
-	    .addMember("iota", bigInt32, 8, 0, 16, 8) // 0x0000ff00
-	    .addMember("epsilon", bigInt32, 8, 0, 24, 8); // 0x000000ff
+	    .addMember("alpha", bigInt32, 0, null)
+	    .addMember("beta", bigInt32, 4, null)
+	    .addMember("gamma", bigInt16, 8, null)
+	    .addMember("iota", bigInt32, 8, null, 16, 8) // 0x0000ff00
+	    .addMember("epsilon", bigInt32, 8, null, 24, 8); // 0x000000ff
 	byte[] buf = {
 	    0x01, 0x02, 0x03, 0x04, // alpha
 	    0x05, 0x06, 0x07, 0x08, // beta
@@ -74,11 +74,11 @@ public class TestComposite
      */
     public void testLittleStructure () {
 	CompositeType classType = new ClassType(null, 12)
-	    .addMember("alpha", littleInt32, 0, 0)
-	    .addMember("beta", littleInt32, 4, 0)
-	    .addMember("gamma", littleInt16, 8, 0)
-	    .addMember("iota", littleInt32, 8, 0, 8, 8) // 0x00ff0000
-	    .addMember("epsilon", littleInt32, 8, 0, 0, 8); // 0xff000000
+	    .addMember("alpha", littleInt32, 0, null)
+	    .addMember("beta", littleInt32, 4, null)
+	    .addMember("gamma", littleInt16, 8, null)
+	    .addMember("iota", littleInt32, 8, null, 8, 8) // 0x00ff0000
+	    .addMember("epsilon", littleInt32, 8, null, 0, 8); // 0xff000000
 	byte[] buf = {
 	    0x01, 0x02, 0x03, 0x04, // alpha
 	    0x05, 0x06, 0x07, 0x08, // beta
@@ -94,14 +94,14 @@ public class TestComposite
     public void testNextedStructure () {
 	CompositeType classType = new ClassType(null, 12)
 	    .addMember("a", new ClassType(null, 8)
-		       .addMember("alpha", littleInt32, 0, 0)
-		       .addMember("beta", littleInt32, 4, 0),
-		       0, 0)
+		       .addMember("alpha", littleInt32, 0, null)
+		       .addMember("beta", littleInt32, 4, null),
+		       0, null)
 	    .addMember("b", new ClassType(null, 4)
-		       .addMember("gamma", littleInt16, 0, 0)
-		       .addMember("iota", littleInt32, 0, 0, 8, 8) // 0x00ff0000
-		       .addMember("epsilon", littleInt32, 0, 0, 0, 8), // 0xff000000
-		       8, 0);
+		       .addMember("gamma", littleInt16, 0, null)
+		       .addMember("iota", littleInt32, 0, null, 8, 8) // 0x00ff0000
+		       .addMember("epsilon", littleInt32, 0, null, 0, 8), // 0xff000000
+		       8, null);
 	byte[] buf = {
 	    0x01, 0x02, 0x03, 0x04, // alpha
 	    0x05, 0x06, 0x07, 0x08, // beta
@@ -117,14 +117,14 @@ public class TestComposite
     public void testNamelessFields () {
 	CompositeType classType = new ClassType(null, 12)
 	    .addMember(null, new ClassType(null, 8)
-		       .addMember(null, littleInt32, 0, 0)
-		       .addMember(null, littleInt32, 4, 0),
-		       0, 0)
+		       .addMember(null, littleInt32, 0, null)
+		       .addMember(null, littleInt32, 4, null),
+		       0, null)
 	    .addMember(null, new ClassType(null, 4)
-		       .addMember(null, littleInt16, 0, 0)
-		       .addMember(null, littleInt32, 0, 0, 8, 8) // 0x00ff0000
-		       .addMember(null, littleInt32, 0, 0, 0, 8), // 0xff000000
-		       8, 0);
+		       .addMember(null, littleInt16, 0, null)
+		       .addMember(null, littleInt32, 0, null, 8, 8) // 0x00ff0000
+		       .addMember(null, littleInt32, 0, null, 0, 8), // 0xff000000
+		       8, null);
 	byte[] buf = {
 	    0x01, 0x02, 0x03, 0x04, // alpha
 	    0x05, 0x06, 0x07, 0x08, // beta
@@ -133,5 +133,62 @@ public class TestComposite
 	Value c1 = new Value(classType, new ScratchLocation(buf));
 	String s = c1.toPrint();
 	assertEquals ("class", "{{67305985,\n 134678021,\n},\n {4105,\n 17,\n 18,\n},\n}", s);
+    }
+
+    public void testUnionType() {
+	CompositeType t = new UnionType("UNION", 4)
+	    .addMember("a", bigInt32, 0, null);
+	assertEquals("union",
+		     "union UNION {\n  int32_t a;\n}",
+		     t.toPrint());
+    }
+    public void testClassType() {
+	CompositeType t = new ClassType("CLASS", 4)
+	    .addMember("a", bigInt32, 0, null);
+	assertEquals("class",
+		     "class CLASS {\n  int32_t a;\n}",
+		     t.toPrint());
+    }
+    public void testStructType() {
+	CompositeType t = new StructType("STRUCT", 4)
+	    .addMember("a", bigInt32, 0, null);
+	assertEquals("struct",
+		     "struct STRUCT {\n  int32_t a;\n}",
+		     t.toPrint());
+    }
+    public void testConfoundedClassType() {
+	CompositeType t = new ConfoundedType("CLASS", 4)
+	    .addInheritance("XXXX", new ClassType("P1", 0),
+			    0, Access.PUBLIC)
+	    .addInheritance("XXXX", new ClassType("P2", 0),
+			    0, Access.PRIVATE);
+	assertEquals("class",
+		     "class CLASS : public P1, private P2 {\n}",
+		     t.toPrint());
+    }
+    public void testConfoundedStructType() {
+	CompositeType t = new ConfoundedType("STRUCT", 4)
+	    .addMember("a", bigInt32, 0, null);
+	assertEquals("struct",
+		     "struct STRUCT {\n  int32_t a;\n}",
+		     t.toPrint());
+    }
+    public void testPublicPrivateType() {
+	CompositeType t = new StructType("STRUCT", 4)
+	    .addMember("pub1", bigInt32, 0, Access.PUBLIC)
+	    .addMember("pub2", bigInt32, 0, Access.PUBLIC)
+	    .addMember("priv1", bigInt32, 0, Access.PRIVATE)
+	    .addMember("prot1", bigInt32, 0, Access.PROTECTED);
+	assertEquals("struct",
+		     "struct STRUCT {\n"
+		     + " public:\n"
+		     + "  int32_t pub1;\n"
+		     + "  int32_t pub2;\n"
+		     + " private:\n"
+		     + "  int32_t priv1;\n"
+		     + " protected:\n"
+		     + "  int32_t prot1;\n"
+		     + "}",
+		     t.toPrint());
     }
 }

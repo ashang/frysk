@@ -47,7 +47,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.naming.NameNotFoundException;
-
+import lib.dwfl.DwAccess;
+import frysk.value.Access;
 import lib.dwfl.BaseTypes;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwAt;
@@ -69,7 +70,7 @@ import frysk.value.UnknownType;
 import frysk.value.UnsignedType;
 import frysk.value.FloatingPointType;
 import frysk.value.ArrayType;
-import frysk.value.ClassType;
+import frysk.value.ConfoundedType;
 import frysk.value.EnumType;
 import frysk.value.FunctionType;
 import frysk.value.PointerType;
@@ -353,7 +354,7 @@ class DebugInfoEvaluator
 
 	type = type.getUltimateType();
 	if (type.getTag() == DwTag.STRUCTURE_TYPE_) {
-	    ClassType classType = getClassType(type, null);
+	    ConfoundedType classType = getConfoundedType(type, null);
 	    typeSize = classType.getSize();
 	    arrayType = new ArrayType(classType, elementCount * typeSize, dims);
 	}
@@ -395,12 +396,12 @@ class DebugInfoEvaluator
     /**
      * @param classDie A struct die
      * @param name Name of the struct
-     * @return ClassType for the struct
+     * @return ConfoundedType for the struct
      */
-    private ClassType getClassType (DwarfDie classDie, String name) {
+    private ConfoundedType getConfoundedType (DwarfDie classDie, String name) {
 	int typeSize = 0;
 	// System.out.println("die=" + Long.toHexString(classDie.getOffset()) + " tag=" + Long.toHexString(classDie.getTag()) + " " + classDie.getName());
-	ClassType classType = new ClassType(name, getByteSize(classDie));
+	ConfoundedType classType = new ConfoundedType(name, getByteSize(classDie));
 	for (DwarfDie member = classDie.getChild();
 	     member != null;
 	     member = member.getSibling()) {
@@ -413,7 +414,12 @@ class DebugInfoEvaluator
 		offset = 0;                           // union
 	    }
         
-	    int access = member.getAttrConstant(DwAt.ACCESSIBILITY_);
+	    Access access = null;
+	    switch (member.getAttrConstant(DwAt.ACCESSIBILITY_)) {
+	    case DwAccess.PUBLIC_: access = Access.PUBLIC; break;
+	    case DwAccess.PROTECTED_: access = Access.PROTECTED; break;
+	    case DwAccess.PRIVATE_: access = Access.PRIVATE; break;
+	    }
 	    DwarfDie dieType = member.getType();
 	    DwarfDie memberType = member.getUltimateType();
 	    Type type;
@@ -425,7 +431,8 @@ class DebugInfoEvaluator
         
 	    if (member.getTag() == DwTag.SUBPROGRAM_) {
 		Value v = getSubprogramValue(member);
-		classType.addMember(member.getName(), v.getType(), offset, access);
+		classType.addMember(member.getName(), v.getType(), offset,
+				    access);
 		continue;
 	    }
 
@@ -449,16 +456,16 @@ class DebugInfoEvaluator
 	    // memberType is the ultimate type derived from chasing the thread of types
 	    switch (memberType.getTag()) {
 	    case DwTag.STRUCTURE_TYPE_: {
-		ClassType memberClassType = getClassType(memberType, memberType.getName());
+		ConfoundedType memberConfoundedType = getConfoundedType(memberType, memberType.getName());
 		if (member.getTag() != DwTag.INHERITANCE_) {
-		    memberClassType.setTypedefFIXME(haveTypeDef);
-		    classType.addMember(memberType.getName(), memberClassType,
+		    memberConfoundedType.setTypedefFIXME(haveTypeDef);
+		    classType.addMember(memberType.getName(), memberConfoundedType,
 					offset, access);
 		} else {
-		    classType.addInheritance(memberType.getName(), memberClassType,
+		    classType.addInheritance(memberType.getName(), memberConfoundedType,
 					     offset, access);
 		}
-		typeSize += memberClassType.getSize();
+		typeSize += memberConfoundedType.getSize();
 		typeSize += 4 - (typeSize % 4);             // round up to mod 4
 		continue;
 	    }
@@ -584,7 +591,7 @@ class DebugInfoEvaluator
 		    long addr = variableAccessor[0].getAddr(varDie);
 		    if (addr == 0)
 			continue;
-		    ClassType classType = getClassType(type, null);
+		    ConfoundedType classType = getConfoundedType(type, null);
 		    return new Value(classType,
 				     new ByteBufferLocation(buffer, addr,
 							    classType.getSize()));
@@ -639,8 +646,8 @@ class DebugInfoEvaluator
 	Value v = get(s);
 	if (v.getType() instanceof ArrayType)
 	    return ((ArrayType)v.getType()).get(v, 1, components);
-	else if (v.getType() instanceof ClassType)
-	    return ((ClassType)v.getType()).get(v, 0, components);
+	else if (v.getType() instanceof ConfoundedType)
+	    return ((ConfoundedType)v.getType()).get(v, 0, components);
 	else
 	    return new Value(new UnknownType(varDie.getName()));
     }
@@ -705,7 +712,7 @@ class DebugInfoEvaluator
 	}
 	case DwTag.UNION_TYPE_:
 	case DwTag.STRUCTURE_TYPE_: {
-	    ClassType classType = getClassType(type, null);
+	    ConfoundedType classType = getConfoundedType(type, null);
 
 	    if (classType == null)
 		return null;
@@ -818,7 +825,7 @@ class DebugInfoEvaluator
 	    boolean noTypeDef = (varDie.getType() == null);
 	    String name = noTypeDef ? varDie.getName() 
 		: varDie.getType().getName();
-	    ClassType classType = getClassType(type, name);
+	    ConfoundedType classType = getConfoundedType(type, name);
 	    if (type != varDie.getType() && noTypeDef == false)
 		classType.setTypedefFIXME(true);
 	    return classType;
