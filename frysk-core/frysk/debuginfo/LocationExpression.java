@@ -795,7 +795,7 @@ class LocationExpression {
 	if (stackTop instanceof Register)
 	    pieces.add(new RegisterPiece((Register)stackTop, size));
 	else if (stackTop instanceof Long)
-	    pieces.add(new MemoryPiece(((Long)stackTop).longValue(), size));
+	    pieces.add(new MemoryPiece(((Long)stackTop).longValue(), size, frame.getTask().getMemory()));
     }
 
 

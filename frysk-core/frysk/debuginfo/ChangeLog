@@ -1,3 +1,8 @@
+2007-09-06  Teresa Thomas  <tthomas@redhat.com>
+
+	* LocationExpression.java (decode): Use ctor MemoryPiece(long, long, ByteBuffer)
+	instead of MemoryPiece(long, long).
+	
 2007-09-06  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfoEvaluator.java: Pass Access to CompositeType.addMember
