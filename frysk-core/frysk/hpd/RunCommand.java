@@ -46,20 +46,15 @@ import frysk.proc.ProcObserver.ProcTasks;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.stepping.TaskStepEngine;
 import frysk.util.CountDownLatch;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Observable;
-import java.util.Observer;
 
-class RunCommand extends CLIHandler implements TaskObserver.Attached, Observer {
+class RunCommand extends CLIHandler implements TaskObserver.Attached {
     private static final String descr = "run program and immediately attach";
-
-    private HashSet launchedTasks = new HashSet();
-    // Used to synchronize with update method called by the SteppingEngine.
+    // Used to synchronize with updateAttached method
     private CountDownLatch latch = null;
     private Task launchedTask = null;
 
@@ -67,29 +62,10 @@ class RunCommand extends CLIHandler implements TaskObserver.Attached, Observer {
 	super(cli, "run", descr, "run executable arguments*", descr);
     }
 
-    // SteppingEngine Observer callback; called when attach is finished.
-    public void update(Observable observable, Object arg) {
-	TaskStepEngine tse = (TaskStepEngine) arg;
-	Task task = tse.getTask();
-	boolean removeObserver = false;
-
-	synchronized (this) {
-	    if (launchedTasks.contains(task)) {
-		launchedTasks.remove(task);
-		removeObserver = true;
-	    }
-	}
-	if (removeObserver) {
-	    cli.getSteppingEngine().removeObserver(this, task.getProc(), false);
-            launchedTask = task;
-            latch.countDown();
-	}
-    }
-
     public Action updateAttached(final Task task) {
 	final Proc proc = task.getProc();
 	synchronized (this) {
-	    launchedTasks.add(task);
+            launchedTask = task;
 	}
 	synchronized (cli) {
 	    cli.getRunningProcs().add(proc);
@@ -119,9 +95,7 @@ class RunCommand extends CLIHandler implements TaskObserver.Attached, Observer {
 		}
 	    }
 	});
-        cli.getSteppingEngine().addObserver(this);
-        // register with SteppingEngine
-	cli.startAttach(task);
+        latch.countDown();
 	// Keep task blocked until the SteppingEngine notifies us that its
 	// instruction observers, etc. have been inserted.
 	return Action.BLOCK;
@@ -160,14 +134,16 @@ class RunCommand extends CLIHandler implements TaskObserver.Attached, Observer {
         catch (InterruptedException e) {
             return;
         }
-        latch = null;
+        finally {
+            latch = null;
+        }
+        // register with SteppingEngine
+	cli.doAttach(launchedTask);
         cli.getSteppingEngine().getBreakpointManager()
             .manageProcess(launchedTask.getProc());
         cli.idManager.manageProc(launchedTask.getProc(), cli.idManager
                                  .reserveProcID());
         launchedTask.requestUnblock(this);
         launchedTask = null;
-	cli.finishAttach();
     }
-
 }

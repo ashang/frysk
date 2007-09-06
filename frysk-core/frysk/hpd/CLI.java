@@ -62,6 +62,7 @@ import frysk.proc.Task;
 import frysk.rt.ProcTaskIDManager;
 import frysk.stepping.SteppingEngine;
 import frysk.stepping.TaskStepEngine;
+import frysk.util.CountDownLatch;
 import frysk.value.Value;
 
 public class CLI {
@@ -70,6 +71,7 @@ public class CLI {
     SteppingObserver steppingObserver;
     SteppingEngine steppingEngine;
     int attached = -1;
+    CountDownLatch attachedLatch;
     //Processes started with run command
     final HashSet runningProcs = new HashSet();
 
@@ -181,33 +183,36 @@ public class CLI {
      * Command handlers
      */
 
-    public void startAttach(int pid, Proc proc, Task task) {
+    public void doAttach(int pid, Proc proc, Task task) {
         Proc[] temp = new Proc[1];
         temp[0] = proc;
-        attached = -1;
+        synchronized (this) {
+            attached = -1;
+            attachedLatch = new CountDownLatch(1);
+        }
         steppingEngine.addProc(proc);
-    }
- 
-    public void startAttach(Task task) {
-        Proc proc = task.getProc();
-        startAttach(proc.getPid(), proc, task);
-    }
-
-    public synchronized void finishAttach()  {
-        // Wait till we are attached.
-        while (attached < 0) {
-            try {
-                wait();
-            }
-            catch (InterruptedException ie) {
-                addMessage("Attach interrupted.", Message.TYPE_ERROR);
-                return;
+                // Wait till we are attached.
+        try {
+            attachedLatch.await();
+            addMessage("Attached to process " + attached, Message.TYPE_NORMAL);
+        }
+        catch (InterruptedException ie) {
+            addMessage("Attach interrupted.", Message.TYPE_ERROR);
+            return;
+        }
+        finally {
+            synchronized (this) {
+                attached = -1;
+                attachedLatch = null;
             }
         }
-        addMessage("Attached to process " + attached, Message.TYPE_NORMAL);
-        attached = -1;
     }
- 
+
+    public void doAttach(Task task) {
+        Proc proc = task.getProc();
+        doAttach(proc.getPid(), proc, task);
+    }
+    
     //private static PrintStream out = null;// = System.out;
     final PrintWriter outWriter;
     private Preprocessor prepro;
@@ -510,16 +515,19 @@ public class CLI {
             }
             Task task = tse.getTask();
             synchronized (CLI.this) {
-                // Notify tasks waiting on attach
-                attached = task.getProc().getPid();
                 DebugInfoFrame frame
                     = DebugInfoStackFactory.createVirtualStackTrace(task);
                 setTaskFrame(task, frame);
                 setTaskDebugInfo(task, new DebugInfo(frame));
+                // XXX Who's waiting on that monitor at this point?
                 synchronized (this.monitor) {
                     this.monitor.notifyAll();
                 }
-                CLI.this.notifyAll();
+                if (attachedLatch != null) {
+                    // Notify tasks waiting on attach
+                    attached = task.getProc().getPid();
+                    attachedLatch.countDown();
+                }
             }
         }
     }

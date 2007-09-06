@@ -1,3 +1,17 @@
+2007-09-06  Tim Moore  <timoore@redhat.com>
+	* CLI.java (startAttach, finishAttach): Remove. replace with:
+	(doAttach): New method that attaches process and waits until it is
+	attached, as signalled by the SteppingEngine.
+	(update): Signal that process is attached via a CountDownLatch
+	instead of notifying threads waiting on the CLI object.
+	* AttachCommand.java (update): Remove.
+	(handle): Don't register object as a SteppingEngine
+	observer. Instead, use cli.doAttach to perform the attach and wait
+	for its completion.
+	* RunCommand.java (update, handle): ditto.
+
+	* CLI.java: Java reformatting.
+
 2007-09-04  Andrew Cagney  <cagney@redhat.com>
 
 	* HpdTestbed.java (HpdTestbed(int)): New.
@@ -39,8 +53,6 @@
 	* WhereCommand.java: Removed print statements.
 
 2007-09-04  Tim Moore  <timoore@redhat.com>
-
-	* CLI.java: Java reformatting.
 
 	* AttachCommand.java (update): New SteppingEngine observer method.
 	(handle): Synchronize with stepping engine observer to know when

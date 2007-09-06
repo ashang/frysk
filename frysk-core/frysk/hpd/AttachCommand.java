@@ -42,18 +42,14 @@ package frysk.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Observable;
-import java.util.Observer;
 import frysk.proc.Host;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.Manager;
-import frysk.stepping.TaskStepEngine;
-import frysk.util.CountDownLatch;
 
 class AttachCommand
-    extends CLIHandler implements Observer {
+    extends CLIHandler {
     private class FindProc implements Host.FindProc {
 	Proc proc = null;
 
@@ -88,25 +84,6 @@ class AttachCommand
 		"attach [executable] pid [-task tid] [-cli]", full);
     }
 
-    // synchronization between stepping engine observer update method,
-    // which tells us that the process is attached, and the main
-    // command loop thread from which this command is run.
-    Task attachingTask;
-    CountDownLatch attachLatch;
-
-    // Observer method called by stepping engine.
-    public void update(Observable observable, Object arg) {
-	TaskStepEngine tse = (TaskStepEngine) arg;
-	Task task = tse.getTask();
-        // Access to the AttachCommand's members shouldn't need to be
-        // synchronized because handle() initializes them, fires up
-        // the stepping engine, and then waits on attachLatch.
-        if (task != attachingTask)
-            return;
-        cli.getSteppingEngine().removeObserver(this, task.getProc(), false);
-        attachLatch.countDown();
-    }
-    
     public void handle(Command cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	int pid = 0;
@@ -166,25 +143,10 @@ class AttachCommand
 		if (task.getTid() == tid)
 		    break;
 	    }
-        attachingTask = task;
-        attachLatch = new CountDownLatch(1);
-        cli.getSteppingEngine().addObserver(this);
-	cli.startAttach(pid, findProc.proc, task);
-        try {
-            attachLatch.await();
-        }
-        catch (InterruptedException e) {
-            cli.addMessage("Attach of process " + pid + " interrupted.",
-                           Message.TYPE_ERROR);
-            return;
-        }
-        finally {
-            attachingTask = null;
-            attachLatch = null;
-        }
+	cli.doAttach(pid, findProc.proc, task);
         cli.getSteppingEngine().getBreakpointManager()
             .manageProcess(findProc.proc);
 	cli.idManager.manageProc(findProc.proc, procID);
-        cli.finishAttach();
+
     }
 }
