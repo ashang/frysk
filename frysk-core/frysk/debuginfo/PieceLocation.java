@@ -39,8 +39,6 @@
 
 package frysk.debuginfo;
 
-import frysk.debuginfo.Piece;
-import frysk.debuginfo.MemoryPiece;
 import frysk.value.Location;
 import inua.eio.ByteBuffer;
 
@@ -221,7 +219,7 @@ extends Location
     }
 
     /**
-     *  Helper function for slice - returns the number of bytes in slice list.
+     * Helper function for slice - returns the number of bytes in slice list.
      * Similar to length but takes List instead of PieceLocation.
      */
     private long sliceLength(List slice)

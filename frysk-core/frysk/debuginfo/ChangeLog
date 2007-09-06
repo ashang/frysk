@@ -1,3 +1,10 @@
+2007-09-06  Teresa Thomas  <tthomas@redhat.com>
+
+	* PieceLocation.java: Remove unused imports.
+	* TestPieceLocation.java: Ditto.
+	* LocationExpression.java: Ditto.
+	* TestLocationExpression.java: Ditto.
+	
 2007-09-06  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Variable.java (Variable): Removed DebugInfo from constructor.
@@ -9,6 +16,7 @@
 	* DebugInfo.java: updated.
 
 2007-09-06  Teresa Thomas  <tthomas@redhat.com>
+	
 	* TestPieceLocation.java: Unused imports removed.
 
 	* TestPieceLocation.java: New file. 

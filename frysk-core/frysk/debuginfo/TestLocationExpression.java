@@ -47,9 +47,6 @@ import java.util.Iterator;
 import frysk.proc.Task;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
-import frysk.debuginfo.RegisterPiece;
-import frysk.debuginfo.MemoryPiece;
-import frysk.debuginfo.UnavailablePiece;
 import frysk.stack.IA32Registers;
 import frysk.stack.X8664Registers;
 

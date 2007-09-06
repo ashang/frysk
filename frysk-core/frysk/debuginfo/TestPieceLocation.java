@@ -42,7 +42,6 @@ package frysk.debuginfo;
 import inua.eio.ArrayByteBuffer;
 
 import frysk.junit.TestCase;
-import frysk.debuginfo.MemoryPiece;
 import frysk.value.Location;
 
 import java.util.List;
@@ -86,7 +85,6 @@ extends TestCase
     public void testGetPut()
     {
 	// Test for putByte & getByte
-
 	l.putByte(6, (byte)99);
 	//  New list should be: { 5 6 7 8 9 } { 1 99 3 } { 12 14 16 } 
 	assertEquals("byte", 99, l.getByte(6));

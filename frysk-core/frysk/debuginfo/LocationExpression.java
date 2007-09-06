@@ -47,9 +47,6 @@ import java.util.List;
 
 import frysk.proc.Isa;
 import frysk.stack.Register;
-import frysk.debuginfo.RegisterPiece;
-import frysk.debuginfo.MemoryPiece;
-import frysk.debuginfo.UnavailablePiece;
 import frysk.stack.Frame;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.DwarfOp;
