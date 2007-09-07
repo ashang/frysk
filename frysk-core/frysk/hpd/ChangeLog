@@ -2,6 +2,10 @@
 
 	* CoreCommand.java (handle): Add coreProc to idManager.
 
+	* CoreComamnd. java (handle): Simplify. Let manageProc build
+	set. Do not use StaticPTSet. Find main task, and generate
+	stack-trace.
+
 2007-09-06  Andrew Cagney  <cagney@redhat.com>
 
 	* TestPrint.java (testHpdClass): Delete.

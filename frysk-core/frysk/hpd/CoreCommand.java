@@ -83,41 +83,23 @@ public class CoreCommand extends CLIHandler {
 
 	int procID = cli.idManager.reserveProcID();
 	cli.idManager.manageProc(coreProc, procID);
+		
+	Iterator foo = cli.targetset.getTasks();
+	while (foo.hasNext()) {
+	    Task task = (Task) foo.next();
+	    if (task.getTid() == coreProc.getMainTask().getTid()) {
 
-	// Reserve slot 0 for mainTask
-	int currentTaskCount = 1;
-	boolean foundMainTask = false;
-	Iterator i = coreProc.getTasks().iterator();
-	
-        TaskData[] taskArray = new TaskData[coreProc.getTasks().size()];
-	Task mainTask = coreProc.getMainTask();
-
-	while (i.hasNext()) {
-	    Task currentTask = (Task) i.next();
-	    // Is Main Task?
-	    if (currentTask.getTid() == mainTask.getTid()) {
-		foundMainTask = true;
-		taskArray[0] = new TaskData(currentTask,0,0);
-		continue;
+		DebugInfoFrame frame = DebugInfoStackFactory
+			.createVirtualStackTrace(task);
+		cli.setTaskFrame(task, frame);
+		cli.setTaskDebugInfo(task, new DebugInfo(
+			frame));
 	    }
-	    taskArray[currentTaskCount] = new TaskData(currentTask,currentTaskCount,0);	    
-	    currentTaskCount++;
-	}	
-
-	
-	if (foundMainTask == false)
-	    throw new RuntimeException("Cannot find main task in corefile");
-	
-	ProcData procData = new ProcData(coreProc, 0);
-	ProcTasks procTask = new ProcTasks(procData, taskArray);
-
-	cli.targetset = new StaticPTSet(new ProcTasks[] { procTask });
-	DebugInfoFrame frame = DebugInfoStackFactory
-		.createVirtualStackTrace(taskArray[0].getTask());
-	cli.setTaskFrame(taskArray[0].getTask(), frame);
-	cli.setTaskDebugInfo(taskArray[0].getTask(), new DebugInfo(frame));
+	}
 	cli.addMessage("Attached to core file: " + params.get(0),
 		Message.TYPE_NORMAL);
+
+	
     }
 
 }
