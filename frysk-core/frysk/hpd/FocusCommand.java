@@ -41,6 +41,12 @@ package frysk.hpd;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
+
+import frysk.debuginfo.DebugInfo;
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.DebugInfoStackFactory;
+import frysk.proc.Task;
 
 class FocusCommand extends CLIHandler {
     private static String full = "Changes the current p/t set. As a "
@@ -62,7 +68,17 @@ class FocusCommand extends CLIHandler {
 	}
 	if (params.size() <= 1) {
 	    if (params.size() == 1)
+	    {
 		cli.targetset = cli.createSet((String) params.get(0));
+	    	Iterator i = cli.targetset.getTasks();
+	    	while (i.hasNext()) {
+	    	    Task task = (Task) i.next();
+	    	    DebugInfoFrame frame = DebugInfoStackFactory
+	    	    .createVirtualStackTrace(task);
+	    	    cli.setTaskFrame(task, frame);
+	    	    cli.setTaskDebugInfo(task, new DebugInfo(frame));
+	    	}
+	    }
 	    else
 		((CommandHandler) cli.handlers.get("viewset"))
 			.handle(new Command("viewset"));

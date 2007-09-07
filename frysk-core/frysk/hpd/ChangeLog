@@ -1,5 +1,8 @@
 2007-09-06  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* FocusCommand.java (handle): Build debug, stack-trace and frame
+	info for newly focused set.
+	
 	* CoreCommand.java (handle): Add coreProc to idManager.
 
 	* CoreComamnd. java (handle): Simplify. Let manageProc build
