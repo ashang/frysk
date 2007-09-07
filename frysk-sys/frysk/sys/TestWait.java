@@ -40,6 +40,7 @@
 package frysk.sys;
 
 import frysk.junit.TestCase;
+import frysk.sys.Errno;
 
 /**
  * Test the wait interface, in particular waitAll with blocking.
@@ -115,6 +116,19 @@ public class TestWait
 	assertEquals ("pid", pid, waitOnChild.pid);
     }
 
+
+    public void testTimeoutWithoutChildren() {
+	WaitOnChild waitOnChild = new WaitOnChild ();
+	Errno e = null;
+	try {
+	    assertFalse("timeout",
+			Wait.wait (-1, waitOnChild, unhandledSignalBuilder,
+				   shortTimeout, false));
+	} catch (Errno.Echild c) {
+	    e = c;
+	}
+	assertNotNull("errno.echild", e);
+    }
 
     public void testSignals ()
     {

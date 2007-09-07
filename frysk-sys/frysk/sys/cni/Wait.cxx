@@ -419,7 +419,8 @@ jboolean
 frysk::sys::Wait::wait (jint waitPid,
 			frysk::sys::WaitBuilder* waitBuilder,
 			frysk::sys::SignalBuilder* signalBuilder,
-			jlong millisecondTimeout)
+			jlong millisecondTimeout,
+			jboolean ignoreECHILD)
 {
   java::util::logging::Logger *logger = frysk::sys::Wait::getLogger ();
   // Zero the existing timeout, and drain any pending SIGALRM
@@ -486,7 +487,7 @@ frysk::sys::Wait::wait (jint waitPid,
   if (waitBuilder != NULL) {
     pid = ::waitpid (waitPid, &wait_jmpbuf.status,
 		     __WALL | (block ? 0 : WNOHANG));
-    if (pid < 0 && errno == ECHILD && block)
+    if (ignoreECHILD && pid < 0 && errno == ECHILD && block)
       // No children; block anyway.
       pid = ::select (0, NULL, NULL, NULL, NULL);
   }
@@ -572,9 +573,14 @@ frysk::sys::Wait::wait (jint waitPid,
 	}
     }
   
+  // Now that all signals have been delivered (don't want to loose
+  // them); re-consider that PID status.  If there are no PID events
+  // and ECHILD and not ignoring it, throw the exception.
+  if (!ignoreECHILD && -pid == ECHILD && firstEvent == NULL)
+    throwErrno(ECHILD, "waitpid");
+
   // Deliver all pending waitpid() events.
-  struct event *curr;
-  for (curr = firstEvent; curr != NULL; curr = curr->next) {
+  for (struct event *curr = firstEvent; curr != NULL; curr = curr->next) {
     processStatus (curr->pid, curr->status, waitBuilder);
   }
 

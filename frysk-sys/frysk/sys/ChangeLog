@@ -1,3 +1,10 @@
+2007-09-07  Andrew Cagney  <cagney@redhat.com>
+
+	* Wait.java (wait(int,WaitBuilder,SignalBuilder,long,boolean)):
+	New.
+	(wait(int,WaitBuilder,SignalBuilder,long)): Use above.
+	* TestWait.java (testTimeoutWithoutChildren): New.
+
 2007-09-06  Andrew Cagney  <cagney@redhat.com>
 
 	* TestWait.java (testNoTimeout): New.

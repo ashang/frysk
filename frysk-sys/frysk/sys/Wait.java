@@ -85,6 +85,12 @@ public final class Wait
      * Wait for a waitpid or signal event.  Returns when at least one
      * event has been received, or the specified timeout has expired.
      *
+     * Specify a -ve timeout to block until any event; a zero timeout
+     * to not block.
+     *
+     * Specify ignoreECHILD to block even when there are no children;
+     * if you're implementing an event-loop, this is what you want.
+     *
      * Note that this implements the timeout using ITIMER_REAL and
      * SIGALRM.
      *
@@ -94,20 +100,29 @@ public final class Wait
     public static native boolean wait (int pid,
 				       WaitBuilder waitBuilder,
 				       SignalBuilder signalBuilder,
-				       long millisecondTimeout);
+				       long millisecondTimeout,
+				       boolean ignoreECHILD);
+    public static boolean wait (int pid,
+				WaitBuilder waitBuilder,
+				SignalBuilder signalBuilder,
+				long millisecondTimeout) {
+	return wait(pid, waitBuilder, signalBuilder,
+		    millisecondTimeout, true);
+    }
     public static boolean wait (ProcessIdentifier pid,
 				WaitBuilder waitBuilder,
 				SignalBuilder signalBuilder,
 				long millisecondTimeout)
     {
 	return wait (pid.hashCode (), waitBuilder, signalBuilder,
-		     millisecondTimeout);
+		     millisecondTimeout, true);
     }
     public static boolean waitAll (long millisecondTimeout,
 				   WaitBuilder waitBuilder,
 				   SignalBuilder signalBuilder)
     {
-	return wait (-1, waitBuilder, signalBuilder, millisecondTimeout);
+	return wait (-1, waitBuilder, signalBuilder, millisecondTimeout,
+		     true);
     }
     /**
      * Wait for a single process or task event.  Block if no event is
