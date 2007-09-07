@@ -40,6 +40,7 @@
 package frysk.debuginfo;
 
 import java.io.PrintWriter;
+import java.util.List;
 
 import javax.naming.NameNotFoundException;
 
@@ -133,11 +134,21 @@ public class Variable {
     }
   
     public Value getValue(DebugInfoFrame frame) {
-	DebugInfo debugInfo = new DebugInfo(frame);
-	try {
-	    return debugInfo.get(frame, getVariableDie());
-	} catch (NameNotFoundException e) {
-	    throw new RuntimeException(e);
+	boolean useLocationExpresstion = false;
+
+	if (useLocationExpresstion) {
+	    List ops = variableDie.getFormData(frame.getAdjustedAddress());
+	    LocationExpression locationExpression = new LocationExpression(frame, variableDie, ops);
+	    PieceLocation pieceLocation = new PieceLocation(locationExpression.decode(this.getType(frame).getSize()));
+	    Value value = new Value(this.getType(frame), pieceLocation);
+	    return value;
+	} else {
+	    DebugInfo debugInfo = new DebugInfo(frame);
+	    try {
+		return debugInfo.get(frame, getVariableDie());
+	    } catch (NameNotFoundException e) {
+		throw new RuntimeException(e);
+	    }
 	}
     }
 }

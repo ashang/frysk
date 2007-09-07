@@ -1,3 +1,7 @@
+2007-09-06  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Variable.java (getValue): added use of LocationExpression.
+
 2007-09-07  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTypeEntry.java: Delete stray System.out output.
