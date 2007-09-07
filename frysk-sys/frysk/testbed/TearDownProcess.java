@@ -39,6 +39,7 @@
 
 package frysk.testbed;
 
+import frysk.junit.TestCase;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.Set;
@@ -51,6 +52,7 @@ import frysk.sys.proc.ProcBuilder;
 import frysk.sys.ProcessIdentifier;
 import java.util.Iterator;
 import frysk.sys.Ptrace;
+import frysk.sys.SignalBuilder;
 import frysk.sys.WaitBuilder;
 
 /**
@@ -235,74 +237,85 @@ public class TearDownProcess
 	// For attached tasks, which will generate non-exit wait
 	// events (clone et.al.), the task is detached / killed.
 	// Doing that frees up the task so that it can run to exit.
+	//
+	// Put a timeout on the wait so this doesn't be comewedged
+	// when a child process fails to exit (for instance because it
+	// wasn't registered).
 	try {
-	    while (! pidsToKillDuringTearDown.isEmpty()) {
-		log("waitAll -1 ....");
-		Wait.waitAll(-1, new WaitBuilder() {
-			public void cloneEvent (int pid, int clone)
-			{
-			    capturedSendDetachContKill(pid);
-			}
+	    boolean timedOut = false;
+	    while (!timedOut && ! pidsToKillDuringTearDown.isEmpty()) {
+		log("wait -1 ....");
+		timedOut = Wait.wait
+		    (-1,
+		     new WaitBuilder() {
+			 public void cloneEvent (int pid, int clone) {
+			     capturedSendDetachContKill(pid);
+			 }
 
-			public void forkEvent (int pid, int child)
-			{
-			    capturedSendDetachContKill(pid);
-			}
-
-			public void exitEvent (int pid, boolean signal, int value,
-					       boolean coreDumped)
-			{
-			    capturedSendDetachContKill(pid);
-			    // Do not remove PID from
-			    // pidsToKillDuringTearDown list; need to
-			    // let the terminated event behind it
-			    // bubble up.
-			}
-
-			public void execEvent (int pid)
-			{
-			    capturedSendDetachContKill(pid);
-			}
-
-			public void syscallEvent (int pid)
-			{
-			    capturedSendDetachContKill(pid);
-			}
-
-			public void stopped (int pid, int signal)
-			{
-			    capturedSendDetachContKill(pid);
-			}
-
-			private void drainTerminated (int pid)
-			{
-			    // To be absolutly sure, again make
-			    // certain that the thread is detached.
-			    ProcessIdentifier id = capturedSendDetachContKill(pid);
-			    // True pidsToKillDuringTearDown can have
-			    // a second exit status behind this first
-			    // one, drain that also. Give up when
-			    // this PID has no outstanding events.
-			    log("Wait.drain", id, "\n");
-			    id.blockingDrain ();
-			    // Hopefully done with this PID.
-			    pidsToKillDuringTearDown.remove(id);
-			}
-
-			public void terminated (int pid, boolean signal,
+			 public void forkEvent (int pid, int child) {
+			     capturedSendDetachContKill(pid);
+			 }
+			 
+			 public void exitEvent (int pid, boolean signal,
 						int value,
-						boolean coreDumped)
-			{
-			    drainTerminated(pid);
-			}
-
-			public void disappeared (int pid, Throwable w)
-			{
-			    // The task vanished somehow, drain it.
-			    drainTerminated(pid);
-			}
-		    });
+						boolean coreDumped) {
+			     capturedSendDetachContKill(pid);
+			     // Do not remove PID from
+			     // pidsToKillDuringTearDown list; need to
+			     // let the terminated event behind it
+			     // bubble up.
+			 }
+			 
+			 public void execEvent (int pid) {
+			     capturedSendDetachContKill(pid);
+			 }
+			 
+			 public void syscallEvent (int pid) {
+			     capturedSendDetachContKill(pid);
+			 }
+			 
+			 public void stopped (int pid, int signal) {
+			     capturedSendDetachContKill(pid);
+			 }
+			 
+			 private void drainTerminated (int pid) {
+			     // To be absolutly sure, again make
+			     // certain that the thread is detached.
+			     ProcessIdentifier id = capturedSendDetachContKill(pid);
+			     // True pidsToKillDuringTearDown can have
+			     // a second exit status behind this first
+			     // one, drain that also. Give up when
+			     // this PID has no outstanding events.
+			     log("Wait.drain", id, "\n");
+			     id.blockingDrain ();
+			     // Hopefully done with this PID.
+			     pidsToKillDuringTearDown.remove(id);
+			 }
+			 
+			 public void terminated (int pid, boolean signal,
+						 int value,
+						 boolean coreDumped) {
+			     drainTerminated(pid);
+			 }
+			 
+			 public void disappeared (int pid, Throwable w) {
+			     // The task vanished somehow, drain it.
+			     drainTerminated(pid);
+			 }
+		     },
+		     new SignalBuilder() {
+			 public void signal(Sig sig) {
+			     // ignore
+			 }
+		     },
+		     TestCase.getTimeoutMilliseconds(),
+		     false // do not ignore ECHILD
+		     );
 	    }
+	    // An assert better?
+	    if (timedOut)
+		logger.log(Level.WARNING,
+			   "tearDown wait timed out; check for hung pids");
 	}
 	catch (Errno.Echild e) {
 	    // No more events.
