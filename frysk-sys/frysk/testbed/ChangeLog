@@ -1,3 +1,9 @@
+2007-09-06  Kris Van Hees  <kris.van.hees@oracle.com>
+
+	* TearDownProcess.java: Changed to deal better with stray children,
+	and to incorporate a timeout to ensure tests do not get into a blocked
+	(hanging) state.
+
 2007-08-02  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/ForkTestLib.cxx: Delete.

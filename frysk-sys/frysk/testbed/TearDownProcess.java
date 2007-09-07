@@ -1,5 +1,6 @@
 // This file is part of the program FRYSK.
 //
+// Copyright 2007 Oracle Corporation.
 // Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
@@ -43,15 +44,16 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.Set;
 import java.util.HashSet;
+import frysk.junit.TestCase;
 import frysk.sys.Errno;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.sys.Wait;
 import frysk.sys.proc.ProcBuilder;
 import frysk.sys.ProcessIdentifier;
-import java.util.Iterator;
 import frysk.sys.Ptrace;
 import frysk.sys.WaitBuilder;
+import frysk.sys.SignalBuilder;
 
 /**
  * Framework for cleaning up temporary processes created as part of a
@@ -160,7 +162,7 @@ public class TearDownProcess
      * continued. Work around this by first sending all tasks a
      * continue ...
      */
-    private static ProcessIdentifier capturedSendDetachContKill (ProcessIdentifier pid)
+    private static boolean capturedSendDetachContKill (ProcessIdentifier pid)
     {
 	// Do the detach
 	try {
@@ -181,11 +183,10 @@ public class TearDownProcess
 	    log("tkill -CONT", pid, "(failed - ESRCH)\n");
 	}
 	// Finally send it a kill to finish things off.
-	capturedSendTkill(pid);
-	return pid;
+	return capturedSendTkill(pid);
     }
 
-    private static ProcessIdentifier capturedSendDetachContKill (int pid)
+    private static boolean capturedSendDetachContKill (int pid)
     {
 	return capturedSendDetachContKill (new ProcessIdentifier (pid));
     }
@@ -195,9 +196,11 @@ public class TearDownProcess
 	// Make a preliminary pass through all the registered
 	// pidsToKillDuringTearDown trying to simply kill
 	// each. Someone else may have waited on their deaths already.
-	for (Iterator i = pidsToKillDuringTearDown.iterator(); i.hasNext();) {
-	    ProcessIdentifier child = (ProcessIdentifier) i.next();
-	    capturedSendTkill(child);
+	Object[] pidsToKill = pidsToKillDuringTearDown.toArray();
+	for (int i = 0; i < pidsToKill.length; i++) {
+	    ProcessIdentifier child = (ProcessIdentifier) pidsToKill[i];
+	    if (!capturedSendTkill(child))
+		pidsToKillDuringTearDown.remove(child);
 	}
 
 	// Go through all registered processes / tasks adding any of
@@ -214,16 +217,18 @@ public class TearDownProcess
 	// Iterate over a copy of the tids's collection as the
 	// missingTidsToKillDuringTearDown may modify the underlying
 	// collection.
-	Object[] pidsToKill = pidsToKillDuringTearDown.toArray();
+	pidsToKill = pidsToKillDuringTearDown.toArray();
 	for (int i = 0; i < pidsToKill.length; i++) {
 	    ProcessIdentifier child = (ProcessIdentifier) pidsToKill[i];
 	    missingTidsToKillDuringTearDown.construct(child);
 	}
 
 	// Blast all the processes for real.
-	for (Iterator i = pidsToKillDuringTearDown.iterator(); i.hasNext();) {
-	    ProcessIdentifier child = (ProcessIdentifier) i.next();
-	    capturedSendDetachContKill(child);
+	pidsToKill = pidsToKillDuringTearDown.toArray();
+	for (int i = 0; i < pidsToKill.length; i++) {
+	    ProcessIdentifier child = (ProcessIdentifier) pidsToKill[i];
+	    if (!capturedSendDetachContKill(child))
+		pidsToKillDuringTearDown.remove(child);
 	}
 
 	// Drain the wait event queue. This ensures that: there are
@@ -235,77 +240,77 @@ public class TearDownProcess
 	// For attached tasks, which will generate non-exit wait
 	// events (clone et.al.), the task is detached / killed.
 	// Doing that frees up the task so that it can run to exit.
-	try {
-	    while (! pidsToKillDuringTearDown.isEmpty()) {
-		log("waitAll -1 ....");
-		Wait.waitAll(-1, new WaitBuilder() {
-			public void cloneEvent (int pid, int clone)
-			{
-			    capturedSendDetachContKill(pid);
-			}
+	if (!pidsToKillDuringTearDown.isEmpty()) {
+	    log("waitAll " + pidsToKillDuringTearDown + " ....");
+	    Wait.waitAll(
+		TestCase.getTimeoutMilliseconds(),
+		new WaitBuilder() {
+		    public void cloneEvent (int pid, int clone)
+		    {
+			capturedSendDetachContKill(pid);
+		    }
 
-			public void forkEvent (int pid, int child)
-			{
-			    capturedSendDetachContKill(pid);
-			}
+		    public void forkEvent (int pid, int child)
+		    {
+			capturedSendDetachContKill(pid);
+		    }
 
-			public void exitEvent (int pid, boolean signal, int value,
-					       boolean coreDumped)
-			{
-			    capturedSendDetachContKill(pid);
-			    // Do not remove PID from
-			    // pidsToKillDuringTearDown list; need to
-			    // let the terminated event behind it
-			    // bubble up.
-			}
+		    public void exitEvent (int pid, boolean signal, int value,
+					   boolean coreDumped)
+		    {
+			capturedSendDetachContKill(pid);
+			// Do not remove PID from
+			// pidsToKillDuringTearDown list; need to
+			// let the terminated event behind it
+			// bubble up.
+		    }
 
-			public void execEvent (int pid)
-			{
-			    capturedSendDetachContKill(pid);
-			}
+		    public void execEvent (int pid)
+		    {
+			capturedSendDetachContKill(pid);
+		    }
 
-			public void syscallEvent (int pid)
-			{
-			    capturedSendDetachContKill(pid);
-			}
+		    public void syscallEvent (int pid)
+		    {
+			capturedSendDetachContKill(pid);
+		    }
 
-			public void stopped (int pid, int signal)
-			{
-			    capturedSendDetachContKill(pid);
-			}
+		    public void stopped (int pid, int signal)
+		    {
+			capturedSendDetachContKill(pid);
+		    }
 
-			private void drainTerminated (int pid)
-			{
-			    // To be absolutly sure, again make
-			    // certain that the thread is detached.
-			    ProcessIdentifier id = capturedSendDetachContKill(pid);
-			    // True pidsToKillDuringTearDown can have
-			    // a second exit status behind this first
-			    // one, drain that also. Give up when
-			    // this PID has no outstanding events.
-			    log("Wait.drain", id, "\n");
-			    id.blockingDrain ();
-			    // Hopefully done with this PID.
-			    pidsToKillDuringTearDown.remove(id);
-			}
+		    private void drainTerminated (int pid)
+		    {
+			// To be absolutly sure, again make
+			// certain that the thread is detached.
+			capturedSendDetachContKill(pid);
+			ProcessIdentifier id = new ProcessIdentifier (pid);
+			// True pidsToKillDuringTearDown can have
+			// a second exit status behind this first
+			// one, drain that also. Give up when
+			// this PID has no outstanding events.
+			log("Wait.drain", id, "\n");
+			id.blockingDrain ();
+			// Hopefully done with this PID.
+			pidsToKillDuringTearDown.remove(id);
+		    }
 
-			public void terminated (int pid, boolean signal,
-						int value,
-						boolean coreDumped)
-			{
-			    drainTerminated(pid);
-			}
+		    public void terminated (int pid, boolean signal, int value,
+					    boolean coreDumped)
+		    {
+			drainTerminated(pid);
+		    }
 
-			public void disappeared (int pid, Throwable w)
-			{
-			    // The task vanished somehow, drain it.
-			    drainTerminated(pid);
-			}
-		    });
-	    }
-	}
-	catch (Errno.Echild e) {
-	    // No more events.
+		    public void disappeared (int pid, Throwable w)
+		    {
+			// The task vanished somehow, drain it.
+			drainTerminated(pid);
+		    }
+		},
+		new SignalBuilder() {
+		    public void signal(Sig sig) {}
+		});
 	}
 
 	// Drain all the pending signals. Note that the process of killing
