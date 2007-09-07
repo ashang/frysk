@@ -1,5 +1,10 @@
 2007-09-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* DebugInfoFrame.java (getScopes): New function.
+	* TestFrameDebugInfo.java (testDebugInfoFrameScopes): New test.
+
+2007-09-07  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* Scope.java: Added setter and getter for Scope outer.
 
 2007-09-07  Sami Wagiaalla  <swagiaal@redhat.com>

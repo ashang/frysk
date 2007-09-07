@@ -128,6 +128,22 @@ public class TestFrameDebugInfo
     
   }
   
+  public void testDebugInfoFrameScopes ()
+  {
+
+    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-scopes");
+    DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
+    
+    Scope scope1 = frame.getScopes();
+    Scope scope2 = scope1.getOuter();
+    Scope scope3 = scope2.getOuter();
+    
+    assertTrue("lexical block scope" , scope1 instanceof LexicalBlock);
+    assertTrue("InlinedSubroutine scope" , scope2 instanceof InlinedSubroutine);
+    assertTrue("lexical block scope" , scope3 instanceof Scope);
+    
+  }
+  
   public void testFrameScopesWorkAround ()
   {
     

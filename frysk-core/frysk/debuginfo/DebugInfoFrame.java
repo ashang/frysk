@@ -58,6 +58,7 @@ import frysk.stack.FrameDecorator;
 public class DebugInfoFrame extends FrameDecorator{
 
     private Subprogram subprogram;
+    private Scope scope;
 
     private DebugInfoFrame innerDebugInfoFrame;
     private DebugInfoFrame outerDebugInfoFrame;
@@ -106,12 +107,46 @@ public class DebugInfoFrame extends FrameDecorator{
     }
 
     /**
-     * returns a LinkedList of all the inlined instances
-     * in this frame.
-     * The first item in the list is the inner most (narrowest scope)
-     * inlined function.
+     * Returns a linked list of scopes starting
+     * with the innermost scope containing the current pc.
      * @return
      */
+    public final Scope getScopes() {
+	if (scope == null) {
+	    Dwfl dwfl = DwflCache.getDwfl(this.getTask());
+	    DwflDieBias bias = dwfl.getDie(getAdjustedAddress());
+
+	    if (bias != null) {
+
+		DwarfDie[] scopes = bias.die.getScopes(getAdjustedAddress());
+
+		if (scopes.length == 0) {
+		    return null;
+		}
+
+		scopes = scopes[0].getScopesDie();
+		scope = ScopeFactory.theFactory.getScope(scopes[0]);
+		Scope tempScope = scope;
+		
+		Scope outer = null;
+		for (int i = 1; i < scopes.length; i++) {
+		    outer = ScopeFactory.theFactory.getScope(scopes[i]);
+		    tempScope.setOuter(outer);
+		    tempScope = outer;
+		}
+	    }
+	}
+
+	return scope;
+    }
+
+    /**
+         * returns a LinkedList of all the inlined instances in this frame. The
+         * first item in the list is the inner most (narrowest scope) inlined
+         * function.
+         * 
+         * @return
+         */
     public final LinkedList getInlinedSubprograms ()
     {
       if (inlinedSubprograms == null) {
