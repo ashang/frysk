@@ -1,12 +1,25 @@
 2007-09-07  Tim Moore  <timoore@redhat.com>
 
+	Fix for 4949 and 4950.
+	* BreakpointCommand.java (CLIBreakpointObserver,
+	CLIBreakpointObserver.updateHit): Don't need cli or cli.running;
+	variable has gone away. Make class and updateHit() abstract.
+	(handle): Output "breakpoint hit" messages from the execute()
+	method of an Event in order to allow all actions to run before the
+	user (or tester!) is notified.
+	* CLI.java (running, isRunning): Remove; has been vestigial for
+	some time.
+	* TestBreakpoints.java (testHpdBreakpointInline, 
+	testHpdBreakpointLibrary): Remove unresolved(), expect inlined
+	function to be in the backtrace.
+
 	* QuitCommand.java (KillRequest): event.Request class to kill
 	processes in event loop to avoid stomping on in-progress
 	operations.
 	(QuitCommand): Initialize kill request.
 	(handle): use kill request.
 	* TestBreakpoints (testHpdBreakpointRunProcess): Remove
-	unresolved. Fix bug in test: the run command wasn't actually sent
+	unresolved 4914. Fix bug in test: the run command wasn't actually sent
 	to fhpd.
 
 2007-09-06  Andrew Cagney  <cagney@redhat.com>

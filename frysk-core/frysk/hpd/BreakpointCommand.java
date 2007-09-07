@@ -40,6 +40,8 @@
 package frysk.hpd;
 
 import frysk.debuginfo.DebugInfo;
+import frysk.event.Event;
+import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.rt.BreakpointManager;
 import frysk.rt.FunctionBreakpoint;
@@ -74,13 +76,8 @@ class BreakpointCommand extends CLIHandler {
 		"break {proc | line | #file#line} [-stop stop-set]", full);
     }
 
-    static private class CLIBreakpointObserver implements
+    static private abstract class CLIBreakpointObserver implements
 	    SourceBreakpointObserver {
-	private CLI cli;
-
-	public CLIBreakpointObserver(CLI cli) {
-	    this.cli = cli;
-	}
 
 	public void addedTo(Object observable) {
 	}
@@ -91,12 +88,8 @@ class BreakpointCommand extends CLIHandler {
 	public void deletedFrom(Object observable) {
 	}
 
-	public void updateHit(SourceBreakpoint bpt, Task task, long address) {
-	    // XXX This cli.running business is a hack for other
-	    // commands in CLI (where) and needs to go away when
-	    // multiple processes / tasks are supported.
-	    cli.running = false;
-	}
+	public abstract void updateHit(SourceBreakpoint bpt, Task task,
+                                       long address);
     }
 
     public void handle(Command cmd) throws ParseException {
@@ -126,17 +119,23 @@ class BreakpointCommand extends CLIHandler {
 	    fileName = bptParams[1];
 	    lineNumber = Integer.parseInt((String) bptParams[2]);
 	    actionpoint = bpManager.addLineBreakpoint(fileName, lineNumber, 0);
-	    actionpoint.addObserver(new CLIBreakpointObserver(cli) {
-		public void updateHit(SourceBreakpoint bpt, Task task,
+	    actionpoint.addObserver(new CLIBreakpointObserver() {
+		public void updateHit(final SourceBreakpoint bpt, Task task,
 			long address) {
-		    super.updateHit(bpt, task, address);
-		    LineBreakpoint lbpt = (LineBreakpoint) bpt;
-		    outWriter.print("Breakpoint ");
-		    outWriter.print(lbpt.getId());
-		    outWriter.print(" #");
-		    outWriter.print(lbpt.getFileName());
-		    outWriter.print("#");
-		    outWriter.println(lbpt.getLineNumber());
+                    // Output the message in an Event in order to
+                    // allow all actions, fired by events currently in
+                    // the loop, to run.
+                    Manager.eventLoop.add(new Event() {
+                            public void execute() {
+                                LineBreakpoint lbpt = (LineBreakpoint) bpt;
+                                outWriter.print("Breakpoint ");
+                                outWriter.print(lbpt.getId());
+                                outWriter.print(" #");
+                                outWriter.print(lbpt.getFileName());
+                                outWriter.print("#");
+                                outWriter.println(lbpt.getLineNumber());
+                            }
+                        });
 		}
 	    });
 	    while (taskIter.hasNext()) {
@@ -151,19 +150,22 @@ class BreakpointCommand extends CLIHandler {
 		    try {
 			die = debugInfo.getSymbolDie(breakpt);
 		    } catch (NameNotFoundException e) {
-			// cli.getPrintWriter().println(e.getMessage());
-			// return;
 		    }
 		    actionpoint = bpManager.addFunctionBreakpoint(breakpt, die);
-		    actionpoint.addObserver(new CLIBreakpointObserver(cli) {
-			public void updateHit(SourceBreakpoint bpt, Task task,
-				long address) {
-			    super.updateHit(bpt, task, address);
-			    FunctionBreakpoint fbpt = (FunctionBreakpoint) bpt;
-			    outWriter.print("Breakpoint ");
-			    outWriter.print(fbpt.getId());
-			    outWriter.print(" ");
-			    outWriter.println(fbpt.getName());
+		    actionpoint.addObserver(new CLIBreakpointObserver() {
+			public void updateHit(final SourceBreakpoint bpt,
+                                              Task task, long address) {
+                            // See comment in case above.
+                            Manager.eventLoop.add(new Event() {
+                                    public void execute() {
+                                        FunctionBreakpoint fbpt
+                                            = (FunctionBreakpoint) bpt;
+                                        outWriter.print("Breakpoint ");
+                                        outWriter.print(fbpt.getId());
+                                        outWriter.print(" ");
+                                        outWriter.println(fbpt.getName());
+                                    }
+                                });
 			}
 		    });
 		    bptMap.put(task, actionpoint);

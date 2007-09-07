@@ -66,7 +66,6 @@ import frysk.util.CountDownLatch;
 import frysk.value.Value;
 
 public class CLI {
-    boolean running = false;
     ProcTaskIDManager idManager;
     SteppingObserver steppingObserver;
     SteppingEngine steppingEngine;
@@ -556,10 +555,6 @@ public class CLI {
      */
     public HashSet getRunningProcs() {
         return runningProcs;
-    }
- 
-    boolean isRunning () {
-        return this.running;
     }
  
     SteppingEngine getSteppingEngine () {

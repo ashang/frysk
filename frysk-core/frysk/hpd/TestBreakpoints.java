@@ -77,8 +77,6 @@ public class TestBreakpoints
     }
 
     public void testHpdBreakpointInline() {
-	if (unresolved(4950))
-	    return;
 	child = new Expect(Config.getPkgLibFile("test1"));
 	e = new HpdTestbed();
 	// Attach
@@ -90,15 +88,13 @@ public class TestBreakpoints
 	e.send("go\n");
 	e.expect("go.*" + prompt + ".*Breakpoint.*add.*");
 	e.send("where\n");
-	e.expect("where.*#0.* main \\(\\).*" + prompt);
+	e.expect("where.*#0.* add *\\(.+\\).*" + prompt);
 	e.send("quit\n");
 	e.expect("Quitting...");
 	e.close();
     }
 
     public void testHpdBreakpointLibrary() {
-	if (unresolved(4949))
-	    return;
 	child = new Expect(Config.getPkgLibFile("test1"));
 	e = new HpdTestbed();
 	// Attach
