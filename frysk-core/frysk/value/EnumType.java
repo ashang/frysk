@@ -79,8 +79,12 @@ public class EnumType extends IntegerTypeDecorator
     }
 
     public void toPrint(PrintWriter writer) {
-	writer.print("enum ");
-	writer.print("{");
+	writer.print("enum");
+	if (getName() != null) {
+	    writer.print(" ");
+	    writer.print(getName());
+	}
+	writer.print(" {");
 	boolean first = true;
 	for (Iterator i = valueToMember.values().iterator(); i.hasNext();) {
 	    Member m = (Member)i.next();
@@ -88,24 +92,26 @@ public class EnumType extends IntegerTypeDecorator
 		first = false;
 	    else
 		writer.print(",");
+	    writer.print("\n  ");
 	    writer.print(m.name);
-	    writer.print("=");
+	    writer.print(" = ");
 	    writer.print(m.value.toString());
 	}
-	writer.print("}");
+	writer.print("\n}");
     }
   
-    private EnumType(ByteOrder order, int size, IntegerType accessor) {
-	super("enum", order, size, accessor);
+    private EnumType(String name, ByteOrder order, int size,
+		     IntegerType accessor) {
+	super(name, order, size, accessor);
     }
     protected Type clone(IntegerType accessor) {
-	return new EnumType(order(), getSize(), accessor);
+	return new EnumType(getName(), order(), getSize(), accessor);
     }
     /**
-     * Create an Enum.
+     * Create an Enum; assume signed.
      */
-    public EnumType(ByteOrder order, int size) {
-	this(order, size, new SignedType("enum", order, size));
+    public EnumType(String name, ByteOrder order, int size) {
+	this(name, order, size, new SignedType("enum", order, size));
     }
 
     public EnumType addMember (String name, long l) {

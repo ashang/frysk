@@ -606,7 +606,9 @@ class DebugInfoEvaluator
 		    DwarfDie subrange;
 		    long val = variableAccessor[0].getLong(varDie, 0);
 		    subrange = type.getChild();
-		    EnumType enumType = new EnumType(byteorder, getByteSize(type));
+		    EnumType enumType = new EnumType(type.getName(),
+						     byteorder,
+						     getByteSize(type));
 		    while (subrange != null) {
 			enumType.addMember(subrange.getName(), 
 					   subrange.getAttrConstant(DwAt.CONST_VALUE_));
@@ -832,7 +834,8 @@ class DebugInfoEvaluator
 	}
 	case DwTag.ENUMERATION_TYPE_: {
 	    DwarfDie subrange = type.getChild();
-	    EnumType enumType = new EnumType(byteorder, getByteSize(type));
+	    EnumType enumType = new EnumType(type.getName(), byteorder,
+					     getByteSize(type));
 	    while (subrange != null) {
 		enumType.addMember(subrange.getName(), 
 				   subrange.getAttrConstant(DwAt.CONST_VALUE_));

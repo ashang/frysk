@@ -288,8 +288,9 @@ class TypeEntry
 	}
 	case DwTag.ENUMERATION_TYPE_: {
 	    DwarfDie subrange = type.getChild();
-	    EnumType enumType = new EnumType(byteorder, 
-		    typeDie.getAttrConstant(DwAt.BYTE_SIZE_));
+	    EnumType enumType = new EnumType(typeDie.getName(),
+					     byteorder, 
+					     typeDie.getAttrConstant(DwAt.BYTE_SIZE_));
 	    while (subrange != null) {
 		enumType.addMember(subrange.getName(), subrange
 			.getAttrConstant(DwAt.CONST_VALUE_));

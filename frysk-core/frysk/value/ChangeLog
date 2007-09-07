@@ -1,5 +1,12 @@
 2007-09-06  Andrew Cagney  <cagney@redhat.com>
 
+	* TestEnum.java (testPrintAnonEnumType): New.
+	(testPrintEmptyEnumType): New.
+	* EnumType.java (EnumType(String,ByteOrder,int)): Replace
+	EnumType(ByteOrder,int).
+	(toPrint(PrintWriter)): Print the enum's name, when known.
+	* TestIntegerType.java: Update.
+
 	* TestComposite.java (testAnonType): New.
 	
 	* TestComposite.java (testUnionType): New.

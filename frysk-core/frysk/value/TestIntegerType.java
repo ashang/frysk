@@ -82,12 +82,12 @@ public class TestIntegerType
     }
 
     public void testGetEnumBig() {
-	checkGetBigInteger(new EnumType(ByteOrder.BIG_ENDIAN, 2),
+	checkGetBigInteger(new EnumType(null, ByteOrder.BIG_ENDIAN, 2),
 			   (short)0xff00, // cause sign extension
 			   0x0102);
     }
     public void testGetEnumLittle() {
-	checkGetBigInteger(new EnumType(ByteOrder.LITTLE_ENDIAN, 2),
+	checkGetBigInteger(new EnumType(null, ByteOrder.LITTLE_ENDIAN, 2),
 			  0x00ff, 0x0201);
     }
 
@@ -156,11 +156,11 @@ public class TestIntegerType
     }
 
     public void testPutEnumPositiveBig() {
-	checkPut(new EnumType(ByteOrder.BIG_ENDIAN, 2),
+	checkPut(new EnumType(null, ByteOrder.BIG_ENDIAN, 2),
 		 "3", new byte[] { 0, 3 });
     }
     public void testPutEnumPositiveLittle() {
-	checkPut(new EnumType(ByteOrder.LITTLE_ENDIAN, 2),
+	checkPut(new EnumType(null, ByteOrder.LITTLE_ENDIAN, 2),
 		 "3", new byte[] { 3, 0 });
     }
 
@@ -220,7 +220,7 @@ public class TestIntegerType
     }
 
     public void testPackedEnum() {
-	checkPacking(new EnumType(ByteOrder.BIG_ENDIAN, 1), -1);
+	checkPacking(new EnumType(null, ByteOrder.BIG_ENDIAN, 1), -1);
     }
     public void testPackedSignedChar() {
 	checkPacking(new CharType("char", ByteOrder.BIG_ENDIAN, 1, true), -1);

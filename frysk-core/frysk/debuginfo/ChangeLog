@@ -1,7 +1,14 @@
+2007-09-06  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTypeEntry.java (testEnum()): Move "unresolved" to start of
+	function.
+	* DebugInfoEvaluator.java: Use EnumType(String,ByteOrder,int).
+	* TypeEntry.java: Ditto.
+
 2007-09-06  Teresa Thomas  <tthomas@redhat.com>
 
-	* LocationExpression.java (decode): Use ctor MemoryPiece(long, long, ByteBuffer)
-	instead of MemoryPiece(long, long).
+	* LocationExpression.java (decode): Use ctor MemoryPiece(long,
+	long, ByteBuffer) instead of MemoryPiece(long, long).
 	
 2007-09-06  Andrew Cagney  <cagney@redhat.com>
 

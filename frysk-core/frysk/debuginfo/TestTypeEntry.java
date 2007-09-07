@@ -139,6 +139,9 @@ public class TestTypeEntry
   }
 
   public void testEnum () {
+      if (unresolved(4998))
+	  return;
+
       Expect[] expect = {
 	      new Expect("sportscar", "enum {bmw=0,porsche=1}"),
 	      new Expect("ssportscar", "enum {bmw=0,porsche=1}"),
@@ -164,7 +167,6 @@ public class TestTypeEntry
 	  if (varDie == null)
 	      varDie = DwarfDie.getDeclCU(allDies, expect[i].symbol);
 	  if (varDie == null) {
-	      unresolved(4998);
 	      continue;
 	  }
 	  varType = typeEntry.getType(frame, varDie.getType());

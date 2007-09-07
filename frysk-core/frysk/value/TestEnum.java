@@ -44,7 +44,7 @@ import frysk.junit.TestCase;
 
 public class TestEnum extends TestCase {
     private EnumType anEnumType() {
-	EnumType enumType = new EnumType(ByteOrder.BIG_ENDIAN, 1)
+	EnumType enumType = new EnumType(null, ByteOrder.BIG_ENDIAN, 1)
 	    .addMember("red", 1)
 	    .addMember("orange", 2)
 	    .addMember("yellow", 3)
@@ -59,8 +59,15 @@ public class TestEnum extends TestCase {
      */
     public void testEnumType() {
 	EnumType t = anEnumType();
-	assertEquals("enum type",
-		     "enum {red=1,orange=2,yellow=3,green=4,blue=5,violet=6}",
+	assertEquals("toPrint",
+		     "enum {\n"
+		     + "  red = 1,\n"
+		     + "  orange = 2,\n"
+		     + "  yellow = 3,\n"
+		     + "  green = 4,\n"
+		     + "  blue = 5,\n"
+		     + "  violet = 6\n"
+		     + "}",
 		     t.toPrint());
     }
     /**
@@ -69,7 +76,7 @@ public class TestEnum extends TestCase {
     public void testEnum() {
 	EnumType t = anEnumType();
 	Value v = new Value(t, new ScratchLocation(new byte[] { 2 }));
-	assertEquals("enum", "orange", v.toPrint());
+	assertEquals("toPrint", "orange", v.toPrint());
     }
     /**
      * enum { ... } v = 0; // not valid
@@ -77,6 +84,17 @@ public class TestEnum extends TestCase {
     public void testEnumInt() {
 	EnumType t = anEnumType();
 	Value v = new Value(t, new ScratchLocation(new byte[] { 0 }));
-	assertEquals("enum", "0", v.toPrint());
+	assertEquals("toPrint", "0", v.toPrint());
+    }
+
+
+    public void testPrintAnonEnumType() {
+	EnumType e = new EnumType(null, ByteOrder.BIG_ENDIAN, 4)
+	    .addMember("e", 1);
+	assertEquals("toPrint", "enum {\n  e = 1\n}", e.toPrint());
+    }
+    public void testPrintEmptyEnumType() {
+	EnumType e = new EnumType("ENUM", ByteOrder.BIG_ENDIAN, 4);
+	assertEquals("toPrint", "enum ENUM {\n}", e.toPrint());
     }
 }
