@@ -1,3 +1,8 @@
+2007-09-07  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTearDownProcess.java: Revert 2007-09-06 change; see bug
+	4996.
+
 2007-09-06  Andrew Cagney  <cagney@redhat.com>
 
 	* TearDownExpect.java: New file.
