@@ -1,3 +1,7 @@
+2007-09-06  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* CoreCommand.java (handle): Add coreProc to idManager.
+
 2007-09-06  Andrew Cagney  <cagney@redhat.com>
 
 	* TestPrint.java (testHpdClass): Delete.

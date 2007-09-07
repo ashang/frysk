@@ -81,6 +81,9 @@ public class CoreCommand extends CLIHandler {
 	    coreProc = frysk.util.Util.getProcFromCoreFile(coreFile, exeFile);
 	}
 
+	int procID = cli.idManager.reserveProcID();
+	cli.idManager.manageProc(coreProc, procID);
+
 	// Reserve slot 0 for mainTask
 	int currentTaskCount = 1;
 	boolean foundMainTask = false;
