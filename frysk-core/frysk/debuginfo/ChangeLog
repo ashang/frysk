@@ -1,3 +1,8 @@
+2007-09-07  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestScopeFactory.java: New test.
+	* ScopeFactory.java: New file.
+	
 2007-09-06  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Variable.java (getValue): added use of LocationExpression.
