@@ -68,7 +68,7 @@ import lib.dwfl.DwarfDie;
 public class Scope
 {
   
-    Scope outer;
+    private Scope outer;
     
     LinkedList scopes;
   
@@ -102,6 +102,14 @@ public class Scope
       die = die.getSibling();
     }
     
+  }
+  
+  public Scope getOuter(){
+      return this.outer;
+  }
+  
+  public void setOuter(Scope outer){
+      this.outer = outer;
   }
   
   public LinkedList getScopes(){
