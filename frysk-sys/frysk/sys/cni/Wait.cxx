@@ -415,7 +415,7 @@ frysk::sys::Wait::signalAdd (frysk::sys::Sig* sig)
   sigaction (signum, &sa, NULL);
 }
 
-void
+jboolean
 frysk::sys::Wait::wait (jint waitPid,
 			frysk::sys::WaitBuilder* waitBuilder,
 			frysk::sys::SignalBuilder* signalBuilder,
@@ -553,18 +553,30 @@ frysk::sys::Wait::wait (jint waitPid,
 
   // Deliver any signals received during the waitpid; XXX: Is there a
   // more efficient way of doing this?
-  for (int i = 1; i < 32; i++) {
-    if (i != SIGALRM && sigismember (&wait_jmpbuf.signals, i)) {
-      // Find the signal object.
-      frysk::sys::Sig* sig = frysk::sys::Sig::valueOf (i);
-      // Notify the client of the signal.
-      signalBuilder->signal (sig);
+  bool timedOut = false;
+  for (int i = 1; i < 32; i++)
+    {
+      if (sigismember (&wait_jmpbuf.signals, i))
+	{
+	  if (i == SIGALRM)
+	    {
+	      timedOut = true;
+	    }
+	  else
+	    {
+	      // Find the signal object.
+	      frysk::sys::Sig* sig = frysk::sys::Sig::valueOf (i);
+	      // Notify the client of the signal.
+	      signalBuilder->signal (sig);
+	    }
+	}
     }
-  }
-
+  
   // Deliver all pending waitpid() events.
   struct event *curr;
   for (curr = firstEvent; curr != NULL; curr = curr->next) {
     processStatus (curr->pid, curr->status, waitBuilder);
   }
+
+  return timedOut;
 }

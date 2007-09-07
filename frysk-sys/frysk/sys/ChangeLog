@@ -1,3 +1,13 @@
+2007-09-06  Andrew Cagney  <cagney@redhat.com>
+
+	* TestWait.java (testNoTimeout): New.
+	(testZeroTimeout, testShortTimeout): Check return status.
+	* Wait.java (wait(int,WaitBuilder,SignalBuilder,long))
+	(wait(ProcessIdentifier,WaitBuilder,SignalBuilder,long))
+	(waitAll(long,WaitBuilder,SignalBuilder)): Change return type to
+	boolean.
+	* cni/Wait.cxx (wait): Update.
+
 2007-08-21  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Ptrace.cxx (op_as_string): New.

@@ -87,23 +87,27 @@ public final class Wait
      *
      * Note that this implements the timeout using ITIMER_REAL and
      * SIGALRM.
+     *
+     * Return true if the timeout expired; note that waitpid events
+     * may have also been processed.
      */
-    public static native void wait (int pid,
-				    WaitBuilder waitBuilder,
-				    SignalBuilder signalBuilder,
-				    long millisecondTimeout);
-    public static void wait (ProcessIdentifier pid,
-			     WaitBuilder waitBuilder,
-			     SignalBuilder signalBuilder,
-			     long millisecondTimeout)
-    {
-	wait (pid.hashCode (), waitBuilder, signalBuilder, millisecondTimeout);
-    }
-    public static void waitAll (long millisecondTimeout,
+    public static native boolean wait (int pid,
+				       WaitBuilder waitBuilder,
+				       SignalBuilder signalBuilder,
+				       long millisecondTimeout);
+    public static boolean wait (ProcessIdentifier pid,
 				WaitBuilder waitBuilder,
-				SignalBuilder signalBuilder)
+				SignalBuilder signalBuilder,
+				long millisecondTimeout)
     {
-	wait (-1, waitBuilder, signalBuilder, millisecondTimeout);
+	return wait (pid.hashCode (), waitBuilder, signalBuilder,
+		     millisecondTimeout);
+    }
+    public static boolean waitAll (long millisecondTimeout,
+				   WaitBuilder waitBuilder,
+				   SignalBuilder signalBuilder)
+    {
+	return wait (-1, waitBuilder, signalBuilder, millisecondTimeout);
     }
     /**
      * Wait for a single process or task event.  Block if no event is

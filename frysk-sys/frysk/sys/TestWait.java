@@ -91,17 +91,31 @@ public class TestWait
 
     public void testZeroTimeout ()
     {
-	Wait.waitAll (0, unhandledWaitBuilder, unhandledSignalBuilder);
+	assertFalse("waitAll",
+		    Wait.waitAll (0, unhandledWaitBuilder,
+				  unhandledSignalBuilder));
     }
 
     public void testShortTimeout ()
     {
-	Wait.waitAll (shortTimeout, unhandledWaitBuilder,
-		      unhandledSignalBuilder);
-	assertTrue ("more than shortTime passed",
+	assertTrue("waitAll",
+		   Wait.waitAll (shortTimeout, unhandledWaitBuilder,
+				 unhandledSignalBuilder));
+	assertTrue ("some time passed",
 		    System.currentTimeMillis () > startTime + shortTimeout);
     }
     
+
+    public void testNoTimeout() {
+	WaitOnChild waitOnChild = new WaitOnChild ();
+	int pid = Fork.exec (new String[] { "/bin/false" });
+	assertFalse("timeout",
+		    Wait.waitAll (getTimeoutMilliseconds (), waitOnChild,
+				  unhandledSignalBuilder));
+	assertEquals ("pid", pid, waitOnChild.pid);
+    }
+
+
     public void testSignals ()
     {
 	Wait.signalAdd (Sig.USR1);
