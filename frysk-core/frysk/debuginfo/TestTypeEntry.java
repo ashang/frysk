@@ -39,7 +39,6 @@
 
 package frysk.debuginfo;
 
-import java.io.PrintWriter;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -83,8 +82,6 @@ public class TestTypeEntry
       Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-scalar");
 
       DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
-      DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(System.out), task, false, false, false);
-
       Dwfl dwfl;
       DwarfDie[] allDies;
       Type varType;
@@ -116,8 +113,6 @@ public class TestTypeEntry
       Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-array");
 
       DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
-      DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(System.out), task, false, false, false);
-
       Dwfl dwfl;
       DwarfDie[] allDies;
       Type varType;
@@ -149,8 +144,6 @@ public class TestTypeEntry
   
       Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-enum");
       DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
-      DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(System.out), task, false, false, false);
-
       Dwfl dwfl;
       DwarfDie[] allDies;
       Type varType;
@@ -189,8 +182,6 @@ public class TestTypeEntry
       Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-struct");
 
       DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
-      DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(System.out), task, false, false, false);
-
       Dwfl dwfl;
       DwarfDie[] allDies;
       Type varType;
@@ -224,7 +215,7 @@ public class TestTypeEntry
       Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-class");
 
       DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
-      DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(System.out), task, false, false, false);
+     
 
       Dwfl dwfl;
       DwarfDie[] allDies;

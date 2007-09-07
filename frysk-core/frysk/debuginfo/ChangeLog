@@ -1,3 +1,8 @@
+2007-09-07  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTypeEntry.java: Delete stray System.out output.
+	* TestFrameDebugInfo.java: Delete stray System.out output.
+
 2007-09-06  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTypeEntry.java (testEnum()): Move "unresolved" to start of

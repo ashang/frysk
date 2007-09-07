@@ -86,11 +86,7 @@ public class TestFrameDebugInfo
     Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-empty-functions");
 
     DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
-    DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(System.out), task, false, false, false);
-    
     Subprogram subprogram = frame.getSubprogram();
-    
-    System.out.println("TestFrameDebugInfo.testFrameCompilerIlinedFucntions() suprogram "  + subprogram);
     assertNotNull(subprogram);
   }
   
