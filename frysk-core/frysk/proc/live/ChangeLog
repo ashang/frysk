@@ -1,3 +1,9 @@
+2007-09-06  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxWaitBuilder.java (logMissing): New.
+	(terminated(int,boolean,int,boolean)): Use.
+	(exitEvent(pid,boolean,int,boolean): Use.
+	
 2007-08-15  Mark Wielaard  <mwielaard@redhat.com>
 
 	* LinuxTaskState.java (Stepping.handleTrappedpEvent): Always check

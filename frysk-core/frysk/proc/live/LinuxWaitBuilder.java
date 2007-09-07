@@ -133,6 +133,13 @@ class LinuxWaitBuilder
     }
     private final SearchId searchId;
     
+    private void logMissing(String what, int pid) {
+	logger.log(Level.WARNING,
+		   "No task for {0} pid {1,number,integer}\n",
+		   new Object[] { what, new Integer(pid) });
+
+    }
+
     public void cloneEvent (int pid, int clonePid)
     {
         // Find the task, create its new peer, and then tell the task
@@ -168,7 +175,11 @@ class LinuxWaitBuilder
 			   boolean coreDumped)
     {
         LinuxTask task = searchId.get(pid, "{0} exitEvent\n");
-        task.processTerminatingEvent(signal, value);
+	if (task == null)
+	    // Stray pid from uncontrolled fork.
+	    logMissing("exited", pid);
+	else
+	    task.processTerminatingEvent(signal, value);
     }
     
     public void execEvent (int pid)
@@ -219,8 +230,8 @@ class LinuxWaitBuilder
     {
         LinuxTask task = searchId.get(pid, "{0} terminated\n");
 	if (task == null)
-	    logger.log(Level.WARNING, "No task for pid {0,number,integer}\n",
-		       new Integer(pid));
+	    // Stray pid from uncontrolled fork.
+	    logMissing("terminated", pid);
 	else
 	    task.processTerminatedEvent(signal, value);
     }
