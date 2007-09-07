@@ -1,4 +1,13 @@
+2007-09-06  Andrew Cagney  <cagney@redhat.com>
+
+	* TestPrint.java (testHpdClass): Delete.
+	(testHpdStruct): Delete.
+	(testHpdArray): Delete.
+	(testHpdEnum): Delete.
+	(testHpdScalar): Delete.
+
 2007-09-06  Tim Moore  <timoore@redhat.com>
+	
 	* CLI.java (startAttach, finishAttach): Remove. replace with:
 	(doAttach): New method that attaches process and waits until it is
 	attached, as signalled by the SteppingEngine.
