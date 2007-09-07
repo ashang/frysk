@@ -1,5 +1,8 @@
 2007-09-07  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/Wait.cxx (wait): Make ignoring ECHILD when there's a signal
+	more explicit.
+
 	* Wait.java (wait(int,WaitBuilder,SignalBuilder,long,boolean)):
 	New.
 	(wait(int,WaitBuilder,SignalBuilder,long)): Use above.

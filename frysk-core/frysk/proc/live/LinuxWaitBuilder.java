@@ -135,7 +135,9 @@ class LinuxWaitBuilder
     
     private void logMissing(String what, int pid) {
 	logger.log(Level.WARNING,
-		   "No task for {0} pid {1,number,integer}\n",
+		   "No task for {0} pid {1,number,integer};"
+		   + " possibly caused by earlier [test] code"
+		   + " failing to clean up all childen",
 		   new Object[] { what, new Integer(pid) });
 
     }

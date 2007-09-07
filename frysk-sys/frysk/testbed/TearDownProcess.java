@@ -238,14 +238,14 @@ public class TearDownProcess
 	// events (clone et.al.), the task is detached / killed.
 	// Doing that frees up the task so that it can run to exit.
 	//
-	// Put a timeout on the wait so this doesn't be comewedged
+	// Put a timeout on the wait so this doesn't be come wedged
 	// when a child process fails to exit (for instance because it
 	// wasn't registered).
+	boolean waitTimedOut = false;
 	try {
-	    boolean timedOut = false;
-	    while (!timedOut && ! pidsToKillDuringTearDown.isEmpty()) {
+	    while (!waitTimedOut && ! pidsToKillDuringTearDown.isEmpty()) {
 		log("wait -1 ....");
-		timedOut = Wait.wait
+		waitTimedOut = Wait.wait
 		    (-1,
 		     new WaitBuilder() {
 			 public void cloneEvent (int pid, int clone) {
@@ -312,10 +312,6 @@ public class TearDownProcess
 		     false // do not ignore ECHILD
 		     );
 	    }
-	    // An assert better?
-	    if (timedOut)
-		logger.log(Level.WARNING,
-			   "tearDown wait timed out; check for hung pids");
 	}
 	catch (Errno.Echild e) {
 	    // No more events.
@@ -331,5 +327,17 @@ public class TearDownProcess
 	Signal.drain (Sig.USR2);
 
 	pidsToKillDuringTearDown.clear ();
+
+	if (waitTimedOut) {
+	    TestCase.fail("tearDown timed out waiting for children;"
+			  + " this is caused by either:"
+			  + " a wedged process (kernel, unlikely);"
+			  + " or a process not registered for tear-down."
+			  + "  Either way this is bad as the stray"
+			  + " process will likely confuse the next test."
+			  + "  The fix is to find and register the"
+			  + " unknown process."
+			  + "  Workaround by running tests individually.");
+	}
     }
 }

@@ -555,10 +555,12 @@ frysk::sys::Wait::wait (jint waitPid,
   // Deliver any signals received during the waitpid; XXX: Is there a
   // more efficient way of doing this?
   bool timedOut = false;
+  bool interrupted = false;
   for (int i = 1; i < 32; i++)
     {
       if (sigismember (&wait_jmpbuf.signals, i))
 	{
+	  interrupted = true;
 	  if (i == SIGALRM)
 	    {
 	      timedOut = true;
@@ -573,16 +575,15 @@ frysk::sys::Wait::wait (jint waitPid,
 	}
     }
   
-  // Now that all signals have been delivered (don't want to loose
-  // them); re-consider that PID status.  If there are no PID events
-  // and ECHILD and not ignoring it, throw the exception.
-  if (!ignoreECHILD && -pid == ECHILD && firstEvent == NULL)
-    throwErrno(ECHILD, "waitpid");
-
   // Deliver all pending waitpid() events.
   for (struct event *curr = firstEvent; curr != NULL; curr = curr->next) {
     processStatus (curr->pid, curr->status, waitBuilder);
   }
+
+  if (!ignoreECHILD && firstEvent == NULL && !interrupted && -pid == ECHILD)
+    // There's no obvious reason (waitpid, signal such as alarm) for
+    // the event-loop to be returning; return the ECHILD.
+    throwErrno(ECHILD, "waitpid");
 
   return timedOut;
 }

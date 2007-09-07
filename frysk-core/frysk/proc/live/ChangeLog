@@ -1,3 +1,7 @@
+2007-09-07  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxWaitBuilder.java (logMissing): Expand log message.
+
 2007-09-06  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxWaitBuilder.java (logMissing): New.

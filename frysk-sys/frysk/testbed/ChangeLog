@@ -1,5 +1,8 @@
 2007-09-07  Andrew Cagney  <cagney@redhat.com>
 
+	* TearDownProcess.java (tearDown): Handle a wait timeout by
+	throwing a very verbose fail; but after everything else.
+	
 	* TearDownProcess.java (tearDown): Add a a timeout to the wait
 	call; from discussion with Kris Van Hess on IRC.
 	
