@@ -87,6 +87,7 @@ import frysk.gui.monitor.SimpleComboBox;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.stepping.TaskStepEngine;
+import frysk.proc.MemoryMap;
 
 import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
@@ -194,6 +195,8 @@ public class MemoryWindow
   private boolean toggle = true;
   
   private boolean closed = false;
+  
+  private MemoryMap[] mmaps;
 
   /**
    * The MemoryWindow displays the information stored at various locations in
@@ -294,7 +297,7 @@ public class MemoryWindow
   {
     this.myTask = myTask;
     long pc_inc;
-    double highestAddress = Math.pow(2.0, (double)(8 * myTask.getIsa().getWordSize())) - 1.0;
+    final double highestAddress = Math.pow(2.0, (double)(8 * myTask.getIsa().getWordSize())) - 1.0;
     
     if (currentFormat == 0)
       {
@@ -303,6 +306,8 @@ public class MemoryWindow
         else
           currentFormat = THIRTYTWO_BIT;
       }
+    
+    this.mmaps = this.myTask.getProc().getMaps();
     
     this.diss = new Disassembler(myTask.getMemory());
     pc_inc = myTask.getIsa().pc(myTask);
@@ -458,7 +463,18 @@ public class MemoryWindow
           return;
         
         if (arg0.getType() == SpinEvent.Type.VALUE_CHANGED)
-          handleFromSpin(fromSpin.getValue());
+        {
+            double value = fromSpin.getValue();
+            if (value <= 0.0 || value >= highestAddress)
+        	fromSpin.setValue(lastKnownFrom);
+            else
+            {
+        	if (addressAccessible((long)value))
+        	    handleFromSpin(value);
+        	else
+        	    fromSpin.setValue(lastKnownFrom);
+            }
+        }
       }
     });
 
@@ -470,7 +486,18 @@ public class MemoryWindow
           return;
         
         if (arg0.getType() == SpinEvent.Type.VALUE_CHANGED)
-          handleToSpin(toSpin.getValue());
+        {
+            double value = toSpin.getValue();
+            if (value <= 0.0 || value >= highestAddress)
+        	toSpin.setValue(lastKnownTo);
+            else
+            {
+        	if (addressAccessible((long)value))
+        	    handleToSpin(value);
+        	else
+        	    toSpin.setValue(lastKnownTo);      	
+            }
+        } 
       }
     });
     
@@ -488,15 +515,20 @@ public class MemoryWindow
             try
             {
               double d = (double) Long.parseLong(str, 16);
-              if (d > lastKnownTo)
-              {
-        	  if (lastKnownTo == lastKnownFrom)
-        	      handleFromSpin(lastKnownTo);
-        	  else
-        	      fromSpin.setValue(lastKnownTo);
-              }
+              if (!addressAccessible((long)d))
+        	  fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));
               else
-        	  fromSpin.setValue(d);
+              {
+                  if (d > lastKnownTo)
+                  {
+                      if (lastKnownTo == lastKnownFrom)
+                	  handleFromSpin(lastKnownTo);
+                      else
+                	  fromSpin.setValue(lastKnownTo);                      
+                  }
+                  else
+                      fromSpin.setValue(d);
+              }
             }
             catch (NumberFormatException nfe)
             {
@@ -538,6 +570,19 @@ public class MemoryWindow
       }
     });
     
+  }
+  
+  /**
+   * return a boolean indicating whether or not this address is accessible.
+   * 
+   * @return whether or not this address is accessible
+   */
+  private boolean addressAccessible(long address)
+  {
+      for (int i=0; i< this.mmaps.length; i++)
+	  if (mmaps[i].addressLow <= address && address < mmaps[i].addressHigh)
+	      return true;
+      return false;
   }
   
   private boolean refreshLock = false;

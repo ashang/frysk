@@ -1,3 +1,10 @@
+2007-09-07  Zhao Shujing <pearly.zhao@oracle.com>
+	
+	* memroy/MemoryWindow.java: When right-click up or down spin
+	button, it would be ignored. When access invalid memory address,
+	the requirement would be ignored. Fixes #4621 #4622 and # 4613
+	* disassembler/DisassemblyWindow.java: Ditto
+
 2007-09-03  Zhao Shujing <pearly.zhao@oracle.com>
 
 	* memory/MemoryWindow.java: Fixed #4617.

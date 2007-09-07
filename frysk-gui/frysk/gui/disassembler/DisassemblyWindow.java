@@ -80,6 +80,7 @@ import frysk.gui.monitor.Saveable;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.stepping.TaskStepEngine;
+import frysk.proc.MemoryMap;
 
 import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
@@ -156,6 +157,8 @@ public class DisassemblyWindow
   private boolean toggle = true;
   
   private boolean closed = false;
+  
+  private MemoryMap[] mmaps;
   
   /**
    * The DisassmblyWindow, given a Task, will disassemble the instructions
@@ -253,7 +256,7 @@ public class DisassemblyWindow
   {
     this.myTask = myTask;
     long pc_inc;
-    double highestAddress = Math.pow(2.0, (double)(8 * myTask.getIsa().getWordSize())) - 1.0;
+    final double highestAddress = Math.pow(2.0, (double)(8 * myTask.getIsa().getWordSize())) - 1.0;
 
     this.diss = new Disassembler(myTask.getMemory());
 
@@ -265,6 +268,8 @@ public class DisassemblyWindow
                   + " " + this.myTask.getName());
 
     this.disassemblerView = (TreeView) this.glade.getWidget("disassemblerView");
+
+    this.mmaps = this.myTask.getProc().getMaps();
 
     this.diss = new Disassembler(myTask.getMemory());
     this.fromSpin.setRange(0.0, highestAddress);
@@ -326,7 +331,18 @@ public class DisassemblyWindow
           return;
         
         if (arg0.getType() == SpinEvent.Type.VALUE_CHANGED)
-          handleFromSpin(fromSpin.getValue());
+        {
+            double value = fromSpin.getValue();
+            if (value <= 0.0 || value >= highestAddress)
+        	fromSpin.setValue(lastKnownFrom);
+            else
+            {
+        	if (addressAccessible((long)value))
+        	    handleFromSpin(value);
+        	else
+        	    fromSpin.setValue(lastKnownFrom);
+            }
+        }
       }
     });
 
@@ -338,7 +354,18 @@ public class DisassemblyWindow
           return;
         
         if (arg0.getType() == SpinEvent.Type.VALUE_CHANGED)
-          handleToSpin(toSpin.getValue());
+        {
+            double value = toSpin.getValue();
+            if (value <= 0.0 || value >= highestAddress)
+        	toSpin.setValue(lastKnownTo);
+            else
+            {
+        	if (addressAccessible((long)value))
+        	    handleToSpin(value);
+        	else
+        	    toSpin.setValue(lastKnownTo);      	
+            }
+        }          
       }
     });
     
@@ -356,15 +383,20 @@ public class DisassemblyWindow
             try
             {
               double d = (double) Long.parseLong(str, 16);
-              if (d > lastKnownTo)
-              {
-        	  if (lastKnownTo == lastKnownFrom)
-        	      handleFromSpin(lastKnownTo);
-        	  else
-        	      fromSpin.setValue(lastKnownTo);
-              }
+              if (!addressAccessible((long)d))
+        	  fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));
               else
-        	  fromSpin.setValue(d);
+              {
+                  if (d > lastKnownTo)
+                  {
+                      if (lastKnownTo == lastKnownFrom)
+                	  handleFromSpin(lastKnownTo);
+                      else
+                	  fromSpin.setValue(lastKnownTo);
+                  }
+                  else
+                      fromSpin.setValue(d);
+              }
             }
             catch (NumberFormatException nfe)
             {
@@ -388,15 +420,20 @@ public class DisassemblyWindow
               try
               {
                 double d = (double) Long.parseLong(str, 16);
-                if (d < lastKnownFrom) 
+                if (!(addressAccessible((long)d)))
+                    toBox.setText("0x" + Long.toHexString((long) lastKnownTo));
+                else 
                 {
-                    if (lastKnownFrom == lastKnownTo)
-                	handleToSpin(lastKnownFrom);
+                    if (d < lastKnownFrom) 
+                    {
+                        if (lastKnownFrom == lastKnownTo)
+                    	handleToSpin(lastKnownFrom);
+                        else
+                    	toSpin.setValue(lastKnownFrom);
+                    }
                     else
-                	toSpin.setValue(lastKnownFrom);
+                        toSpin.setValue(d);
                 }
-                else
-                    toSpin.setValue(d);
               }
               catch (NumberFormatException nfe)
               {
@@ -501,6 +538,18 @@ public class DisassemblyWindow
         columns[i] = col;
       }
     this.refreshList();
+  }
+  /**
+   * return a boolean indicating whether or not this address is accessible.
+   * 
+   * @return whether or not this address is accessible
+   */
+  private boolean addressAccessible(long address)
+  {
+      for (int i=0; i< this.mmaps.length; i++)
+	  if (mmaps[i].addressLow <= address && address < mmaps[i].addressHigh)
+	      return true;
+      return false;
   }
 
   protected void resetPCAndList ()
@@ -822,11 +871,7 @@ public class DisassemblyWindow
           return;
 
         this.toToggle = true;
-
-        this.model.removeRow(this.model.getIter(this.lastPath));
-        this.lastPath.previous();
-        --this.numInstructions;
-        
+  
         Instruction ins = (Instruction) this.model.getValue(this.model.getIter(this.lastPath),
                                                 (DataColumnObject) cols[OBJ]);
         
