@@ -1,3 +1,14 @@
+2007-09-07  Tim Moore  <timoore@redhat.com>
+
+	* QuitCommand.java (KillRequest): event.Request class to kill
+	processes in event loop to avoid stomping on in-progress
+	operations.
+	(QuitCommand): Initialize kill request.
+	(handle): use kill request.
+	* TestBreakpoints (testHpdBreakpointRunProcess): Remove
+	unresolved. Fix bug in test: the run command wasn't actually sent
+	to fhpd.
+
 2007-09-06  Andrew Cagney  <cagney@redhat.com>
 
 	* TestHpdCommandParser.java (setUp, tearDown): Delete.

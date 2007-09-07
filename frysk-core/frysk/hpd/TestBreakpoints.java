@@ -62,13 +62,9 @@ public class TestBreakpoints
     }
     
     public void testHpdBreakpointRunProcess() {
-	
-	if (unresolved(4914))
-	    return;
-	
 	e = new HpdTestbed();
 	// Attach
-	e.send ("run " + Config.getPkgLibFile("hpd-c"));
+	e.send ("run " + Config.getPkgLibFile("hpd-c") + "\n\n");
 	e.expect (5, "Attached.*\n" + prompt);
 	// Break
 	e.send("break #hpd-c.c#196\n");	// This has to break on: while (int_21)

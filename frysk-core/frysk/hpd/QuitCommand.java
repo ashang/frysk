@@ -40,23 +40,70 @@
 package frysk.hpd;
 
 import java.util.Iterator;
+import java.text.ParseException;
+import frysk.event.Event;
+import frysk.event.Request;
+import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.sys.Signal;
 import frysk.sys.Sig;
-import java.text.ParseException;
+import frysk.util.CountDownLatch;
 
 class QuitCommand extends CLIHandler {
+    private CountDownLatch quitLatch;
+
+    // Do the killing in the event loop in order to not invalidate
+    // operations that are already in flight in the event loop. This
+    // avoids a race seen in testing where a "quit" command is sent as
+    // soon as the message from a breakpoint hit is output.
+    private class KillRequest extends Request {
+        KillRequest() {
+            super(Manager.eventLoop);
+        }
+
+        public final void execute() {
+            for (Iterator iterator = cli.runningProcs.iterator(); iterator
+                     .hasNext();) {
+                Proc p = (Proc) iterator.next();
+                Signal.kill(p.getPid(), Sig.KILL);
+            }
+            // Throw the countDown on the queue so that the command
+            // thread will wait until events provoked by Signal.kill()
+            // are handled.
+            Manager.eventLoop.add(new Event() {
+                    public void execute() {
+                        quitLatch.countDown();
+                    }
+                });
+        }
+
+        public void request () {
+	    if (isEventLoopThread())
+		execute();
+	    else {
+                synchronized (this) {
+                    super.request();
+                }
+            }
+	}
+    }
+
+    private final KillRequest killRequest;
+
     QuitCommand(CLI cli, String name) {
 	super(cli, name, "Terminate the debugging session.", name,
 		"Terminate the debugging session.");
+        killRequest = new KillRequest();
     }
 
     public void handle(Command cmd) throws ParseException {
-	for (Iterator iterator = cli.runningProcs.iterator(); iterator
-		.hasNext();) {
-	    Proc p = (Proc) iterator.next();
-	    Signal.kill(p.getPid(), Sig.KILL);
-	}
+        quitLatch = new CountDownLatch(1);
+        killRequest.request();
+        try {
+            quitLatch.await();
+        }
+        catch (InterruptedException e) {
+        }
 	cli.addMessage("Quitting...", Message.TYPE_NORMAL);
 	DetachCommand detachCommand = new DetachCommand(cli);
 	Command command = new Command("detach");
