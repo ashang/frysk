@@ -1,3 +1,9 @@
+2007-09-06  Andrew Cagney  <cagney@redhat.com>
+
+	* TestHpdCommandParser.java (setUp, tearDown): Delete.
+	* TestLib.java: Extend frysk.testbed.TestLib.
+	* HpdTestbed.java: Add to TearDownExpect.
+
 2007-09-06  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* FocusCommand.java (handle): Build debug, stack-trace and frame

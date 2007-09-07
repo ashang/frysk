@@ -39,15 +39,12 @@
 
 package frysk.hpd;
 
-import frysk.junit.TestCase;
-
 import frysk.proc.Manager;
 import frysk.proc.Host;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
-
+import frysk.testbed.TearDownExpect;
 import frysk.sys.ProcessIdentifier;
-
 import frysk.expunit.Expect;
 
 /**
@@ -55,18 +52,20 @@ import frysk.expunit.Expect;
  */
 
 class TestLib
-    extends TestCase
+    extends frysk.testbed.TestLib
 {
     HpdTestbed e;
     Expect child;
     String prompt = "\\(fhpd\\) ";
+
     public void tearDown () {
-	if (e != null)
-	    e.close ();
+	// Bit of a kludge, only adding the child here.
+	if (child != null) {
+	    TearDownExpect.add(child);
+	    child = null;
+	}
 	e = null;
-	if (child != null)
-	    child.close ();
-	child = null;
+	super.tearDown();
     }
     
     public Proc getChild() {

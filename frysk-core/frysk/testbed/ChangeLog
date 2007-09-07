@@ -1,3 +1,7 @@
+2007-09-06  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java (tearDown): Call TearDownExpect.tearDown().
+
 2007-08-30  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestCoreFileAtSignal.java (testCoreFileAtSignal): Added

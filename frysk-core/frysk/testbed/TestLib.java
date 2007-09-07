@@ -270,9 +270,14 @@ public class TestLib
 	    assertFalse("pending signal " + sig, pendingSignals.contains(sig));
 	}
 
+	// Do this first, it tends to make the most mess :-)
+	TearDownProcess.tearDown();
+
+	// Remove any stray Expects
+	TearDownExpect.tearDown();
+
 	// Remove any stray files.
 	TearDownFile.tearDown();
-	TearDownProcess.tearDown();
 
 	// Drain all the pending signals used by children to notify
 	// this parent. Note that the process of killing off the

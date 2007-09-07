@@ -47,6 +47,7 @@ import frysk.expunit.Regex;
 import frysk.expunit.EofException;
 import frysk.expunit.TimeoutException;
 import java.io.File;
+import frysk.testbed.TearDownExpect;
 import frysk.sys.ProcessIdentifier;
 
 /**
@@ -66,6 +67,7 @@ public class HpdTestbed
      */
     public HpdTestbed() {
 	super(Config.getBinFile("fhpd"));
+	TearDownExpect.add(this);
 	expectPrompt();
     }
 

@@ -74,16 +74,6 @@ public class TestHpdCommandParser extends TestLib {
 
     DummyParseCommand parser = new DummyParseCommand(cli);
 
-    protected void setUp() throws Exception {
-	super.setUp();
-    }
-
-    public void test() {
-	cli.execCommand("parser ");
-	assertTrue("Params list should be empty", parser.params.isEmpty());
-
-    }
-
     public void testDashDash() {
 	cli.execCommand("parser --");
 	assertTrue("Params list should be empty", parser.params.isEmpty());
