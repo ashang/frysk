@@ -1,10 +1,8 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (C) 2002-2003 Hewlett-Packard Co
-	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
-
-   Copied from src/x86_64/, modified slightly (or made empty stubs) for 
-   building frysk successfully on ppc64, by Wu Zhou <woodzltc@cn.ibm.com>
-   Will be replaced when libunwind is ready on ppc64 platform.
+   Copyright (C) 2006-2007 IBM
+   Contributed by
+     Corey Ashford <cjashfor@us.ibm.com>
+     Jose Flavio Aguilar Paulino <jflavio@br.ibm.com> <joseflavio@gmail.com>
 
 This file is part of libunwind.
 
@@ -30,8 +28,39 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 #include "unwind_i.h"
 
 PROTECTED int
-unw_is_signal_frame (unw_cursor_t *cursor)
+unw_is_signal_frame (unw_cursor_t * cursor)
 {
-  /* XXX: empty stub.  */
-  return 0;
+  struct cursor *c = (struct cursor *) cursor;
+  unw_word_t w0, w1, ip;
+  unw_addr_space_t as;
+  unw_accessors_t *a;
+  void *arg;
+  int ret;
+
+  as = c->dwarf.as;
+  as->validate = 1;		/* Don't trust the ip */
+  arg = c->dwarf.as_arg;
+
+  /* Check if return address points at sigreturn sequence.
+     on ppc64 Linux that is (see libc.so):
+     0x38210080  addi r1, r1, 128  // pop the stack
+     0x380000ac  li r0, 172        // invoke system service 172
+     0x44000002  sc
+   */
+
+  ip = c->dwarf.ip;
+  if (ip == 0)
+    return 0;
+
+  /* Read up two 8-byte words at the IP.  We are only looking at 3
+     consecutive 32-bit words, so the second 8-byte word needs to be
+     shifted right by 32 bits (think big-endian) */
+
+  a = unw_get_accessors (as);
+  if ((ret = (*a->access_mem) (as, ip, &w0, 0, arg)) < 0
+      || (ret = (*a->access_mem) (as, ip + 8, &w1, 0, arg)) < 0)
+    return 0;
+  w1 >>= 32;
+  return (w0 == 0x38210080380000ac && w1 == 0x44000002);
+
 }

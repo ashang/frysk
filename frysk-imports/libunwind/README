@@ -8,6 +8,7 @@ several architecture/operating-system combinations:
  Linux/x86:	Works well, but C library is missing some unwind-info.
  Linux/PARISC:	Works well, but C library missing unwind-info.
  HP-UX/IA-64:	Mostly works but known to have some serious limitations.
+ Linux/PPC64:	Newly added.
 
 
 * General Build Instructions
@@ -36,23 +37,6 @@ should look like this:
     $ ./configure CC=icc CFLAGS="-g -O3 -ip" CXX=icc CCAS=gcc CCASFLAGS=-g \
 		LDFLAGS="-L$PWD/src/.libs"
 
-** Version 7
-
-To build libunwind with the Intel Electron compiler (ECC), it is
-recommended to run configure like this:
-
-	$ ./configure CC=ecc CXX=ecc CCAS=gcc CCASFLAGS=-g \
-		LDFLAGS="-L$PWD/src/.libs"
-
-The reason for this is that ECC uses the Intel assembler, which
-doesn't grok some of the IA-64 assembly code in the "tests" directory.
-
-For an ECC-built version of libunwind to work properly, you also need
-to ensure that /usr/include/asm/fpu.h contains a "long double" member
-called "__dummy" in the declaration of "struct ia64_fpreg".  Without
-that member, variables of type unw_context_t won't be aligned
-properly.
-
 
 * Building on HP-UX
 
@@ -76,6 +60,24 @@ workaround is to issue the following commands before running
 
 GCC v3.3.2 or later have been fixed and do not require this
 workaround.
+
+* Building for PowerPC64 / Linux
+
+For building for power64 you should use:
+
+  $ ./configure CFLAGS="-g -O2 -m64" CXXFLAGS="-g -O2 -m64"
+
+If your power support altivec registers:
+  $ ./configure CFLAGS="-g -O2 -m64 -maltivec" CXXFLAGS="-g -O2 -m64 -maltivec"
+
+To check if your processor has support for vector registers (altivec):
+    cat /proc/cpuinfo | grep altivec
+and should have something like this:
+    cpu             : PPC970, altivec supported
+
+If libunwind seems to not work (backtracing failing), try to compile
+it with -O0, without optimizations. There are some compiler problems
+depending on the version of your gcc.
 
 
 * Regression Testing
@@ -109,22 +111,13 @@ Note: If you get lots of errors in Gia64-test-nat and Lia64-test-nat, it's
 
 The following tests are expected to fail on x86 Linux:
 
-	Gtest-bt (see http://sources.redhat.com/bugzilla/show_bug.cgi?id=595)
-	Ltest-bt (likewise)
-	Gtest-resume-sig (likewise)
-	Ltest-resume-sig (likewise)
+	Gtest-resume-sig	(fails to get SIGUSR2)
+	Ltest-resume-sig	(likewise)
 	Gtest-dyn1		(no dynamic unwind info support yet)
 	Ltest-dyn1		(no dynamic unwind info support yet)
 	test-setjmp		(longjmp() not implemented yet)
 	run-check-namespace	(no _Ux86_getcontext yet)
-
-In addition, the following are failing on Debian (Sarge):
-
-	Gtest-init	   (lack of unwind info for __libc_start_main,
-			    libc ought to be compiled without
-			    -fno-frame-pointer or with -fexceptions)
-	Ltest-init	   (likewise)
-	test-ptrace	   (likewise?)
+	test-ptrace
 
 ** Expected results on x86-64 Linux
 
@@ -174,6 +167,11 @@ only test programs that are known to work at this time are:
      tests/Ltest-init
      tests/Gtest-resume-sig
      tests/Ltest-resume-sig
+
+** Expected results on PPC64 Linux
+
+"make check" should run with no more than 10 out of 24 tests failed.
+
 
 * Performance Testing
 

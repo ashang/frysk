@@ -1,10 +1,8 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (c) 2002-2004 Hewlett-Packard Development Company, L.P.
-	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
-
-   Copied from src/x86_64/, modified slightly (or made empty stubs) for
-   building frysk successfully on ppc64, by Wu Zhou <woodzltc@cn.ibm.com>
-   Will be replaced when libunwind is ready on ppc64 platform.
+   Copyright (C) 2006-2007 IBM
+   Contributed by
+     Corey Ashford <cjashfor@us.ibm.com>
+     Jose Flavio Aguilar Paulino <jflavio@br.ibm.com> <joseflavio@gmail.com>
 
 This file is part of libunwind.
 
@@ -33,14 +31,70 @@ HIDDEN int
 tdep_access_reg (struct cursor *c, unw_regnum_t reg, unw_word_t *valp,
 		 int write)
 {
-  /* XXX: empty stub.  */
-  return -UNW_EBADREG;
+  struct dwarf_loc loc;
+
+  switch (reg)
+    {
+    case UNW_TDEP_IP:
+      if (write)
+	{
+	  c->dwarf.ip = *valp;	/* update the IP cache */
+	  if (c->dwarf.pi_valid && (*valp < c->dwarf.pi.start_ip
+				    || *valp >= c->dwarf.pi.end_ip))
+	    c->dwarf.pi_valid = 0;	/* new IP outside of current proc */
+	}
+      else
+	*valp = c->dwarf.ip;
+      return 0;
+
+    case UNW_TDEP_SP:
+      if (write)
+	return -UNW_EREADONLYREG;
+      *valp = c->dwarf.cfa;
+      return 0;
+
+
+    default:
+      break;
+    }
+
+  /* make sure it's not an FP or VR register */
+  if ((((unsigned) (reg - UNW_PPC64_F0)) <= 31) ||
+      (((unsigned) (reg - UNW_PPC64_V0)) <= 31))
+    return -UNW_EBADREG;
+
+  loc = c->dwarf.loc[reg];
+
+  if (write)
+    return dwarf_put (&c->dwarf, loc, *valp);
+  else
+    return dwarf_get (&c->dwarf, loc, valp);
 }
 
 HIDDEN int
 tdep_access_fpreg (struct cursor *c, unw_regnum_t reg, unw_fpreg_t *valp,
 		   int write)
 {
-  /* XXX: empty stub.  */
+  struct dwarf_loc loc;
+
+  if ((unsigned) (reg - UNW_PPC64_F0) < 32)
+  {
+    loc = c->dwarf.loc[reg];
+    if (write)
+      return dwarf_putfp (&c->dwarf, loc, *valp);
+    else
+      return dwarf_getfp (&c->dwarf, loc, valp);
+  }
+  else
+  if ((unsigned) (reg - UNW_PPC64_V0) < 32)
+  {
+    loc = c->dwarf.loc[reg];
+    if (write)
+      return dwarf_putvr (&c->dwarf, loc, *valp);
+    else
+      return dwarf_getvr (&c->dwarf, loc, valp);
+  }
+
   return -UNW_EBADREG;
 }
+

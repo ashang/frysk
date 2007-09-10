@@ -1,10 +1,8 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (C) 2002 Hewlett-Packard Co
-	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
-
-   Copied from src/x86_64/, modified slightly (or made empty stubs) for 
-   building frysk successfully on ppc64, by Wu Zhou <woodzltc@cn.ibm.com>
-   Will be replaced when libunwind is ready on ppc64 platform.
+   Copyright (C) 2006-2007 IBM
+   Contributed by
+     Corey Ashford <cjashfor@us.ibm.com>
+     Jose Flavio Aguilar Paulino <jflavio@br.ibm.com> <joseflavio@gmail.com>
 
 This file is part of libunwind.
 
@@ -29,8 +27,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
 #include <stdlib.h>
 #include <string.h>
-#include <sys/mman.h>
 
+#include "ucontext_i.h"
 #include "unwind_i.h"
 
 #ifdef UNW_REMOTE_ONLY
@@ -44,11 +42,52 @@ static struct unw_addr_space local_addr_space;
 
 PROTECTED unw_addr_space_t unw_local_addr_space = &local_addr_space;
 
-static inline void *
+
+#define PAGE_SIZE 4096
+#define PAGE_START(a)	((a) & ~(PAGE_SIZE-1))
+
+
+static void *
 uc_addr (ucontext_t *uc, int reg)
 {
-  /* XXX: empty stub.  */
-  return NULL;
+  void *addr;
+
+  if ((unsigned) (reg - UNW_PPC64_R0) < 32)
+    addr = &uc->uc_mcontext.gp_regs[reg - UNW_PPC64_R0];
+
+  else if ((unsigned) (reg - UNW_PPC64_F0) < 32)
+    addr = &uc->uc_mcontext.fp_regs[reg - UNW_PPC64_F0];
+
+  else if ((unsigned) (reg - UNW_PPC64_V0) < 32)
+    addr = (uc->uc_mcontext.v_regs == 0) ? NULL : &uc->uc_mcontext.v_regs->vrregs[reg - UNW_PPC64_V0][0];
+
+  else
+    {
+      unsigned gregs_idx;
+
+      switch (reg)
+	{
+	case UNW_PPC64_NIP:
+	  gregs_idx = NIP_IDX;
+	  break;
+	case UNW_PPC64_CTR:
+	  gregs_idx = CTR_IDX;
+	  break;
+	case UNW_PPC64_LR:
+	  gregs_idx = LINK_IDX;
+	  break;
+	case UNW_PPC64_XER:
+	  gregs_idx = XER_IDX;
+	  break;
+	case UNW_PPC64_CR0:
+	  gregs_idx = CCR_IDX;
+	  break;
+	default:
+	  return NULL;
+	}
+      addr = &uc->uc_mcontext.gp_regs[gregs_idx];
+    }
+  return addr;
 }
 
 # ifdef UNW_LOCAL_ONLY
@@ -59,14 +98,10 @@ tdep_uc_addr (ucontext_t *uc, int reg)
   return uc_addr (uc, reg);
 }
 
-# endif /* UNW_LOCAL_ONLY */
+# endif	/* UNW_LOCAL_ONLY */
 
 HIDDEN unw_dyn_info_list_t _U_dyn_info_list;
 
-/* XXX fix me: there is currently no way to locate the dyn-info list
-       by a remote unwinder.  On ia64, this is done via a special
-       unwind-table entry.  Perhaps something similar can be done with
-       DWARF2 unwind info.  */
 
 static void
 put_unwind_info (unw_addr_space_t as, unw_proc_info_t *proc_info, void *arg)
@@ -82,34 +117,53 @@ get_dyn_info_list_addr (unw_addr_space_t as, unw_word_t *dyn_info_list_addr,
   return 0;
 }
 
-#define PAGE_SIZE 4096
-#define PAGE_START(a)	((a) & ~(PAGE_SIZE-1))
-
-/* Cache of already validated addresses */
-#define NLGA 4
-static unw_word_t last_good_addr[NLGA];
-static int lga_victim;
-
-static int
-validate_mem (unw_word_t addr)
-{
-  /* XXX: empty stub.  */
-  return 0;
-}
-
 static int
 access_mem (unw_addr_space_t as, unw_word_t addr, unw_word_t *val, int write,
 	    void *arg)
 {
-   /* XXX: empty stub.  */
+  if (write)
+    {
+      Debug (12, "mem[%lx] <- %lx\n", addr, *val);
+      *(unw_word_t *) addr = *val;
+    }
+  else
+    {
+      *val = *(unw_word_t *) addr;
+      Debug (12, "mem[%lx] -> %lx\n", addr, *val);
+    }
   return 0;
 }
 
 static int
-access_reg (unw_addr_space_t as, unw_regnum_t reg, unw_word_t *val, int write,
-	    void *arg)
+access_reg (unw_addr_space_t as, unw_regnum_t reg, unw_word_t *val,
+	    int write, void *arg)
 {
-  /* XXX: empty stub.  */
+  unw_word_t *addr;
+  ucontext_t *uc = arg;
+
+  if ((unsigned int) (reg - UNW_PPC64_F0) < 32)
+    goto badreg;
+  if ((unsigned int) (reg - UNW_PPC64_V0) < 32)
+    goto badreg;
+
+  addr = uc_addr (uc, reg);
+  if (!addr)
+    goto badreg;
+
+  if (write)
+    {
+      *(unw_word_t *) addr = *val;
+      Debug (12, "%s <- %lx\n", unw_regname (reg), *val);
+    }
+  else
+    {
+      *val = *(unw_word_t *) addr;
+      Debug (12, "%s -> %lx\n", unw_regname (reg), *val);
+    }
+  return 0;
+
+badreg:
+  Debug (1, "bad register number %u\n", reg);
   return -UNW_EBADREG;
 }
 
@@ -117,7 +171,35 @@ static int
 access_fpreg (unw_addr_space_t as, unw_regnum_t reg, unw_fpreg_t *val,
 	      int write, void *arg)
 {
-  /* XXX: empty stub.  */
+  ucontext_t *uc = arg;
+  unw_fpreg_t *addr;
+
+  if ((unsigned) (reg - UNW_PPC64_F0) < 0)
+    goto badreg;
+
+  if ((unsigned) (reg - UNW_PPC64_V0) >= 32)
+    goto badreg;
+
+
+  addr = uc_addr (uc, reg);
+  if (!addr)
+    goto badreg;
+
+  if (write)
+    {
+      Debug (12, "%s <- %016Lf\n", unw_regname (reg), *val);
+      *(unw_fpreg_t *) addr = *val;
+    }
+  else
+    {
+      *val = *(unw_fpreg_t *) addr;
+      Debug (12, "%s -> %016Lf\n", unw_regname (reg), *val);
+    }
+  return 0;
+
+badreg:
+  Debug (1, "bad register number %u\n", reg);
+  /* attempt to access a non-preserved register */
   return -UNW_EBADREG;
 }
 
@@ -126,7 +208,7 @@ get_static_proc_name (unw_addr_space_t as, unw_word_t ip,
 		      char *buf, size_t buf_len, unw_word_t *offp,
 		      void *arg)
 {
-  return _Uelf64_get_proc_name (as, getpid (), ip, buf, buf_len, offp, arg);
+  return _Uelf64_get_proc_name (as, getpid (), ip, buf, buf_len, offp);
 }
 
 HIDDEN void
@@ -143,9 +225,6 @@ ppc64_local_addr_space_init (void)
   local_addr_space.acc.resume = ppc64_local_resume;
   local_addr_space.acc.get_proc_name = get_static_proc_name;
   unw_flush_cache (&local_addr_space, 0, 0);
-
-  bzero(last_good_addr, sizeof(unw_word_t) * NLGA);
-  lga_victim = 0;
 }
 
 #endif /* !UNW_REMOTE_ONLY */

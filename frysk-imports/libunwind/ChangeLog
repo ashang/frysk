@@ -1,3 +1,7 @@
+2007-09-10  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Imported and merged with libunwind 20070829.
+
 2007-06-19  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (EXTRA_DIST): Add include/tdep-ppc64/jmpbuf.h,

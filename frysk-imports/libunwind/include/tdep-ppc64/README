@@ -1,3 +1,0 @@
-Header files in this directory are copied from include/tdep-x86_64, modified
-slightly to build frysk successfully on ppc64.  When libunwind is ready for
-ppc64 usage, all code here will be replaced.  

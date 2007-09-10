@@ -1,6 +1,8 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (C) 2002-2004 Hewlett-Packard Co
-	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
+   Copyright (C) 2006-2007 IBM
+   Contributed by
+     Corey Ashford <cjashfor@us.ibm.com>
+     Jose Flavio Aguilar Paulino <jflavio@br.ibm.com> <joseflavio@gmail.com>
 
    Copied from libunwind-x86_64.h, modified slightly for building
    frysk successfully on ppc64, by Wu Zhou <woodzltc@cn.ibm.com>
@@ -42,25 +44,47 @@ extern "C" {
 
 #define _U_TDEP_QP_TRUE	0	/* see libunwind-dynamic.h  */
 
-/* This needs to be big enough to accommodate "struct cursor", while
-   leaving some slack for future expansion.  Changing this value will
-   require recompiling all users of this library.  Stack allocation is
-   relatively cheap and unwind-state copying is relatively rare, so we
-   want to err on making it rather too big than too small.  
+/*
+ * This needs to be big enough to accommodate "struct cursor", while
+ * leaving some slack for future expansion.  Changing this value will
+ * require recompiling all users of this library.  Stack allocation is
+ * relatively cheap and unwind-state copying is relatively rare, so we want
+ * to err on making it rather too big than too small.
+ *
+ * To simplify this whole process, we are at least initially taking the
+ * tack that UNW_PPC64_* map straight across to the .eh_frame column register
+ * numbers.  These register numbers come from gcc's source in
+ * gcc/config/rs6000/rs6000.h
+ *
+ * UNW_TDEP_CURSOR_LEN is in terms of unw_word_t size.  Since we have 115
+ * elements in the loc array, each sized 2 * unw_word_t, plus the rest of
+ * the cursor struct, this puts us at about 2 * 115 + 40 = 270.  Let's
+ * round that up to 280.
+ */
 
-   XXX: how big should this be for ppc64?  127 was too small.  */
+#define UNW_TDEP_CURSOR_LEN 280
 
-#define UNW_TDEP_CURSOR_LEN	255
-
+#if __WORDSIZE==32
+typedef uint32_t unw_word_t;
+typedef int32_t unw_sword_t;
+#else
 typedef uint64_t unw_word_t;
 typedef int64_t unw_sword_t;
+#endif
 
 typedef long double unw_tdep_fpreg_t;
+
+/*
+ * Vector register (in PowerPC64 used for AltiVec registers)
+ */
+typedef struct {
+    uint64_t halves[2];
+} unw_tdep_vreg_t;
 
 typedef enum
   {
     UNW_PPC64_R0,
-    UNW_PPC64_R1,
+    UNW_PPC64_R1, /* called STACK_POINTER in gcc */
     UNW_PPC64_R2,
     UNW_PPC64_R3,
     UNW_PPC64_R4,
@@ -70,7 +94,7 @@ typedef enum
     UNW_PPC64_R8,
     UNW_PPC64_R9,
     UNW_PPC64_R10,
-    UNW_PPC64_R11,
+    UNW_PPC64_R11, /* called STATIC_CHAIN in gcc */
     UNW_PPC64_R12,
     UNW_PPC64_R13,
     UNW_PPC64_R14,
@@ -90,22 +114,9 @@ typedef enum
     UNW_PPC64_R28,
     UNW_PPC64_R29,
     UNW_PPC64_R30,
-    UNW_PPC64_R31,
+    UNW_PPC64_R31, /* called HARD_FRAME_POINTER in gcc */
 
-    UNW_PPC64_NIP,
-    UNW_PPC64_MSR,
-    UNW_PPC64_ORIG_GPR3,
-    UNW_PPC64_CTR,
-    UNW_PPC64_LR,
-    UNW_PPC64_XER,
-    UNW_PPC64_CCR,
-    UNW_PPC64_MQ,
-    UNW_PPC64_TRAP,
-    UNW_PPC64_DAR,
-    UNW_PPC64_DSISR,
-    UNW_PPC64_RESULT,
-
-    UNW_PPC64_F0 = 48,
+    UNW_PPC64_F0 = 32,
     UNW_PPC64_F1,
     UNW_PPC64_F2,
     UNW_PPC64_F3,
@@ -137,14 +148,73 @@ typedef enum
     UNW_PPC64_F29,
     UNW_PPC64_F30,
     UNW_PPC64_F31,
-    UNW_PPC64_FPSCR,
+    /* Note that there doesn't appear to be an .eh_frame register column
+       for the FPSCR register.  I don't know why this is.  Since .eh_frame
+       info is what this implementation uses for unwinding, we have no way
+       to unwind this register, and so we will not expose an FPSCR register
+       number in the libunwind API.
+     */
 
-    /* XXX Add other regs here */
+    UNW_PPC64_LR = 65,
+    UNW_PPC64_CTR = 66,
+    UNW_PPC64_ARG_POINTER = 67,
+
+    UNW_PPC64_CR0 = 68,
+    UNW_PPC64_CR1,
+    UNW_PPC64_CR2,
+    UNW_PPC64_CR3,
+    UNW_PPC64_CR4,
+    /* CR5 .. CR7 are currently unused */
+    UNW_PPC64_CR5,
+    UNW_PPC64_CR6,
+    UNW_PPC64_CR7,
+
+    UNW_PPC64_XER = 76,
+
+    UNW_PPC64_V0 = 77,
+    UNW_PPC64_V1,
+    UNW_PPC64_V2,
+    UNW_PPC64_V3,
+    UNW_PPC64_V4,
+    UNW_PPC64_V5,
+    UNW_PPC64_V6,
+    UNW_PPC64_V7,
+    UNW_PPC64_V8,
+    UNW_PPC64_V9,
+    UNW_PPC64_V10,
+    UNW_PPC64_V11,
+    UNW_PPC64_V12,
+    UNW_PPC64_V13,
+    UNW_PPC64_V14,
+    UNW_PPC64_V15,
+    UNW_PPC64_V16,
+    UNW_PPC64_V17,
+    UNW_PPC64_V18,
+    UNW_PPC64_V19,
+    UNW_PPC64_V20,
+    UNW_PPC64_V21,
+    UNW_PPC64_V22,
+    UNW_PPC64_V23,
+    UNW_PPC64_V24,
+    UNW_PPC64_V25,
+    UNW_PPC64_V26,
+    UNW_PPC64_V27,
+    UNW_PPC64_V28,
+    UNW_PPC64_V29,
+    UNW_PPC64_V30,
+    UNW_PPC64_V31,
+
+    UNW_PPC64_VRSAVE = 109,
+    UNW_PPC64_VSCR = 110,
+    UNW_PPC64_SPE_ACC = 111,
+    UNW_PPC64_SPEFSCR = 112,
 
     /* frame info (read-only) */
-    UNW_PPC64_CFA,
+    UNW_PPC64_FRAME_POINTER,
+    UNW_PPC64_NIP,
 
-    UNW_TDEP_LAST_REG = UNW_PPC64_F31,
+
+    UNW_TDEP_LAST_REG = UNW_PPC64_NIP,
 
     UNW_TDEP_IP = UNW_PPC64_NIP,
     UNW_TDEP_SP = UNW_PPC64_R1,
@@ -152,9 +222,12 @@ typedef enum
   }
 ppc64_regnum_t;
 
-/* XXX: the number of exception arguments.  Not sure what is the value
-   for PPC64 at this time.  */
-#define UNW_TDEP_NUM_EH_REGS	2
+/*
+ * According to David Edelsohn, GNU gcc uses R3, R4, R5, and maybe R6 for
+ * passing parameters to exception handlers.
+ */
+
+#define UNW_TDEP_NUM_EH_REGS	4
 
 typedef struct unw_tdep_save_loc
   {
