@@ -1,5 +1,12 @@
 2007-09-10  Mark Wielaard  <mwielaard@redhat.com>
 
+	* aux/config.guess: Remove generated file.
+	* aux/config.sub: Likewise.
+	* aux/ltmain.sh: Likewise.
+	* src/ppc64/Make-arch.in: Likewise.
+
+2007-09-10  Mark Wielaard  <mwielaard@redhat.com>
+
 	* Imported and merged with libunwind 20070829.
 
 2007-06-19  Andrew Cagney  <cagney@redhat.com>
