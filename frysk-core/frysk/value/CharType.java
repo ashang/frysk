@@ -41,6 +41,8 @@ package frysk.value;
 
 import inua.eio.ByteOrder;
 import java.io.PrintWriter;
+import java.math.BigInteger;
+
 import inua.eio.ByteBuffer;
 
 /**
@@ -59,6 +61,25 @@ public class CharType
 	      ? (IntegerType)new SignedType(name, order, size)
 	      : (IntegerType)new UnsignedType(name, order, size)));
     }
+    /**
+     * Create a new Value of THIS Type, initialized to VAL.
+     */
+    Value createValue(BigInteger val) {
+        Location l = new ScratchLocation(getSize());
+        putBigInteger(l, val);
+        return new Value(this, l);
+    }
+    /**
+     * Create a new Value of THIS type, initialized to the long VAL.
+     *
+     * This is a convenience method for creating a simple arithmetic
+     * type from a constant.  In general code should be creating a
+     * Value using a Type and a Location.
+     */ 
+    public Value createValue(long val) {
+        return createValue(BigInteger.valueOf(val));
+    }
+
     public void toPrint(PrintWriter writer, Location location,
 			ByteBuffer memory, Format format) {
 	writer.print("'");

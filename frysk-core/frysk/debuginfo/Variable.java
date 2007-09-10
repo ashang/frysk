@@ -62,7 +62,7 @@ public class Variable {
     private final String name;
   
     public Variable(DwarfDie variableDie) {
-	this.type = null;
+        this.type = null;
 	this.variableDie = variableDie;
 	this.name = variableDie.getName();
     }
@@ -75,7 +75,7 @@ public class Variable {
     public String getName() {
 	return name;
     }
-    
+
     public Type getType(DebugInfoFrame frame) {
 	if(this.type == null){
 	    TypeEntry typeEntry = new TypeEntry();
@@ -145,7 +145,7 @@ public class Variable {
 	} else {
 	    DebugInfo debugInfo = new DebugInfo(frame);
 	    try {
-		return debugInfo.get(frame, getVariableDie());
+		return debugInfo.get(frame, this);
 	    } catch (NameNotFoundException e) {
 		throw new RuntimeException(e);
 	    }

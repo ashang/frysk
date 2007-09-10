@@ -47,16 +47,18 @@ package lib.dwfl;
 public final class BaseTypes {
   public final static int baseTypeByte = 1,
   baseTypeUnsignedByte = 2,
-  baseTypeShort = 3,
-  baseTypeUnsignedShort = 4,
-  baseTypeUnicode = 4,
-  baseTypeInteger = 5,
-  baseTypeUnsignedInteger = 6,
-  baseTypeLong = 7,
-  baseTypeUnsignedLong = 8,
-  baseTypeFloat = 9,
-  baseTypeDouble = 10,
-  baseTypeLongDouble = 11;
+  baseTypeChar = 3,
+  baseTypeUnsignedChar = 4,
+  baseTypeShort = 5,
+  baseTypeUnsignedShort = 6,
+  baseTypeUnicode = 7,
+  baseTypeInteger = 8,
+  baseTypeUnsignedInteger = 9,
+  baseTypeLong = 10,
+  baseTypeUnsignedLong = 11,
+  baseTypeFloat = 12,
+  baseTypeDouble = 13,
+  baseTypeLongDouble = 14;
       
   public final static int getTypeSize(int type) 
   {
@@ -66,6 +68,10 @@ public final class BaseTypes {
       return 1;
     case baseTypeUnsignedByte:
       return 1;
+    case baseTypeChar:
+      return 2;
+    case baseTypeUnsignedChar:
+      return 2;
     case baseTypeShort:
       return 2;
     case baseTypeUnsignedShort:

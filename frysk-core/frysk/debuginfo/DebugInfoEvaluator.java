@@ -40,19 +40,15 @@
 package frysk.debuginfo;
 
 import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.naming.NameNotFoundException;
-import lib.dwfl.DwAccess;
-import frysk.value.Access;
 import lib.dwfl.BaseTypes;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwAt;
-import lib.dwfl.DwException;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
@@ -63,19 +59,18 @@ import frysk.proc.Task;
 import frysk.stack.Register;
 import frysk.stack.RegisterMap;
 import frysk.sys.Errno;
-import frysk.value.CharType;
 import frysk.value.ArithmeticType;
-import frysk.value.SignedType;
+import frysk.value.CharType;
+import frysk.value.ClassType;
+import frysk.value.IntegerType;
+import frysk.value.TypeDef;
 import frysk.value.UnknownType;
-import frysk.value.UnsignedType;
 import frysk.value.FloatingPointType;
 import frysk.value.ArrayType;
 import frysk.value.ConfoundedType;
 import frysk.value.EnumType;
-import frysk.value.FunctionType;
 import frysk.value.PointerType;
 import frysk.value.StandardTypes;
-import frysk.value.VoidType;
 import frysk.value.Type;
 import frysk.value.Value;
 import frysk.value.ByteBufferLocation;
@@ -100,10 +95,6 @@ class DebugInfoEvaluator
     private ArithmeticType floatType;
     private ArithmeticType doubleType;
   
-    private int getByteSize(DwarfDie die) {
-	return die.getAttrConstant(DwAt.BYTE_SIZE_);
-    }
-
     /**
      * Create an DebugInfoEvaluator object which is the interface between
      * DebugInfo and CppTreeParser, the expression parser.
@@ -273,10 +264,10 @@ class DebugInfoEvaluator
      * @param s Symbol s
      * @return The die for symbol s
      */
-    private DwarfDie getDie (String s) throws NameNotFoundException {
+     private Variable getDie (String s) throws NameNotFoundException {
 	Dwfl dwfl;
 	DwarfDie[] allDies;
-	DwarfDie varDie;
+	Variable variable;
 	long pc = this.frame.getAdjustedAddress();
 
 	dwfl = DwflCache.getDwfl(task);
@@ -285,221 +276,32 @@ class DebugInfoEvaluator
 	    return null;
 	DwarfDie die = bias.die;
 
+ 	allDies = die.getScopes(pc - bias.bias);
 	Subprogram b = frame.getSubprogram();
 	LinkedList vars = b.getVariables();
-     
-	Iterator iterator = vars.iterator();
-	while (iterator.hasNext()) {
-	    Variable variable = (Variable) iterator.next();
-	    if (variable.getName() != null && variable.getName().compareTo(s) == 0)
-		{
-		    allDies = die.getScopes(pc - bias.bias);
-		    variable.getVariableDie().setScopes(allDies);
-		    return variable.getVariableDie();
-		}
-	}
 
-	allDies = die.getScopes(pc - bias.bias);
-	varDie = die.getScopeVar(allDies, s);
+ 	Iterator iterator = vars.iterator();
+ 	while (iterator.hasNext()) {
+ 	    variable = (Variable) iterator.next();
+ 	    if (variable.getName() != null && variable.getName().compareTo(s) == 0)
+ 		{
+ 		    variable.getVariableDie().setScopes(allDies);
+ 		    return variable;
+ 		}
+ 	}
+
+	// Do we have something above didn't find, e.g. a static symbol?
+        DwarfDie varDie = die.getScopeVar(allDies, s);
 	// Do we have something above didn't find, e.g. DW_TAG_enumerator?
 	if (varDie == null)
+            // e.g. DW_TAG_enumerator 
 	    varDie = DwarfDie.getDeclCU(allDies, s);
 	if (varDie == null)
-	    return null;
-	return varDie;
+            throw new NameNotFoundException();
+        variable = new Variable(varDie);
+        return variable;
     }
 
-    /**
-     * @param type An array die
-     * @param subrange Die for the array's first index
-     * @return ArrayType for the array
-     */
-    private ArrayType getArrayType (DwarfDie type, DwarfDie subrange) {
-	int elementCount = 1;
-	// System.out.println("die=" + Long.toHexString(type.getOffset()) + " tag=" + Long.toHexString(type.getTag()) + " "+ type.getName());
-	ArrayList dims = new ArrayList();
-	while (subrange != null) {
-	    int arrDim = subrange.getAttrConstant(DwAt.UPPER_BOUND_);
-	    dims.add(new Integer(arrDim));
-	    subrange = subrange.getSibling();
-	    elementCount *= arrDim + 1;
-	}
-
-	ArrayType arrayType = null;
-	int typeSize = BaseTypes.getTypeSize(type.getUltimateType().getBaseType());
-	switch (type.getUltimateType().getBaseType()) {
-	case BaseTypes.baseTypeByte:
-	case BaseTypes.baseTypeUnsignedByte:
-	    arrayType = new ArrayType(byteType, elementCount * typeSize, dims);
-	    break;
-	case BaseTypes.baseTypeShort:
-	case BaseTypes.baseTypeUnsignedShort:
-	    arrayType = new ArrayType(shortType, elementCount * typeSize, dims);
-	    break;
-	case BaseTypes.baseTypeInteger:
-	case BaseTypes.baseTypeUnsignedInteger:
-	    arrayType = new ArrayType(intType, elementCount * typeSize, dims);
-	    break;
-	case BaseTypes.baseTypeLong:
-	case BaseTypes.baseTypeUnsignedLong:
-	    arrayType = new ArrayType(longType, elementCount * typeSize, dims);
-	    break;
-	case BaseTypes.baseTypeFloat:
-	    arrayType = new ArrayType(floatType, elementCount * typeSize, dims);
-	    break;
-	case BaseTypes.baseTypeDouble:
-	    arrayType = new ArrayType(doubleType, elementCount * typeSize, dims);
-	    break;
-	}
-
-	type = type.getUltimateType();
-	if (type.getTag() == DwTag.STRUCTURE_TYPE_) {
-	    ConfoundedType classType = getConfoundedType(type, null);
-	    typeSize = classType.getSize();
-	    arrayType = new ArrayType(classType, elementCount * typeSize, dims);
-	}
-	return arrayType;
-    }
-  
-    /**
-     * @return Generate a type for a typedef otherwise a basetype.
-     */
-    private Type fetchType (DwarfDie type, String name) {
-	int size = getByteSize(type);
-	int baseType = type.getBaseType();
-	// XXX: Order might come from TYPE; XXX: sign vs unsigned vs
-	// float can come directly from TYPE.
-	ByteOrder order = intType.order();
-	switch (baseType) {
-	case BaseTypes.baseTypeByte:
-	    // XXX: Bogus; should be switching off the DW_AT_encoding.
-	    return new CharType(name, order, size, true);
-	case BaseTypes.baseTypeUnsignedByte:
-	    // XXX: Bogus; should be switching off the DW_AT_encoding.
-	    return new CharType(name, order, size, false);
-	case BaseTypes.baseTypeInteger:
-	case BaseTypes.baseTypeShort:
-	case BaseTypes.baseTypeLong:
-	    return new SignedType(name, order, size);
-	case BaseTypes.baseTypeUnsignedLong:
-	case BaseTypes.baseTypeUnsignedInteger:
-	case BaseTypes.baseTypeUnsignedShort:
-	    return new UnsignedType(name, order, size);
-	case BaseTypes.baseTypeFloat:
-	case BaseTypes.baseTypeDouble:
-	    return new FloatingPointType(name, order, size);
-	default:
-	    return new UnknownType(name);
-	}
-    }
-
-    /**
-     * @param classDie A struct die
-     * @param name Name of the struct
-     * @return ConfoundedType for the struct
-     */
-    private ConfoundedType getConfoundedType (DwarfDie classDie, String name) {
-	int typeSize = 0;
-	// System.out.println("die=" + Long.toHexString(classDie.getOffset()) + " tag=" + Long.toHexString(classDie.getTag()) + " " + classDie.getName());
-	ConfoundedType classType = new ConfoundedType(name, getByteSize(classDie));
-	for (DwarfDie member = classDie.getChild();
-	     member != null;
-	     member = member.getSibling()) {
-	    // System.out.println("member=" + Long.toHexString(member.getOffset()) + " tag=" + Long.toHexString(member.getTag()) + " " + member.getName());
-	    long offset;
-	    boolean haveTypeDef;
-	    try {
-		offset = member.getDataMemberLocation();
-	    } catch (DwException de) {
-		offset = 0;                           // union
-	    }
-        
-	    Access access = null;
-	    switch (member.getAttrConstant(DwAt.ACCESSIBILITY_)) {
-	    case DwAccess.PUBLIC_: access = Access.PUBLIC; break;
-	    case DwAccess.PROTECTED_: access = Access.PROTECTED; break;
-	    case DwAccess.PRIVATE_: access = Access.PRIVATE; break;
-	    }
-	    DwarfDie dieType = member.getType();
-	    DwarfDie memberType = member.getUltimateType();
-	    Type type;
-        
-	    if (dieType != memberType)
-		haveTypeDef = true;
-	    else
-		haveTypeDef = false;
-        
-	    if (member.getTag() == DwTag.SUBPROGRAM_) {
-		Value v = getSubprogramValue(member);
-		classType.addMember(member.getName(), v.getType(), offset,
-				    access);
-		continue;
-	    }
-
-	    if (memberType == null)
-		continue;
-
-	    typeSize = (int)offset + BaseTypes.getTypeSize(memberType.getBaseType());
-	    if (memberType.getBaseType() > 0) {
-		type = fetchType(memberType, dieType.getName());
-		// System V ABI Supplements discuss bit field layout
-		int bitSize = member.getAttrConstant(DwAt.BIT_SIZE_);
-		int bitOffset = 0;
-		if (bitSize != -1) {
-		    bitOffset = member.getAttrConstant(DwAt.BIT_OFFSET_);
-		}
-		classType.addMember(member.getName(), type, offset, access,
-				    bitOffset, bitSize);
-		continue;
-	    }
-
-	    // memberType is the ultimate type derived from chasing the thread of types
-	    switch (memberType.getTag()) {
-	    case DwTag.STRUCTURE_TYPE_: {
-		ConfoundedType memberConfoundedType = getConfoundedType(memberType, memberType.getName());
-		if (member.getTag() != DwTag.INHERITANCE_) {
-		    memberConfoundedType.setTypedefFIXME(haveTypeDef);
-		    classType.addMember(memberType.getName(), memberConfoundedType,
-					offset, access);
-		} else {
-		    classType.addInheritance(memberType.getName(), memberConfoundedType,
-					     offset, access);
-		}
-		typeSize += memberConfoundedType.getSize();
-		typeSize += 4 - (typeSize % 4);             // round up to mod 4
-		continue;
-	    }
-        
-	    case DwTag.ARRAY_TYPE_: {
-		ArrayType memberArrayType = getArrayType(memberType, memberType.getChild());
-		typeSize += memberArrayType.getSize();
-		classType.addMember(member.getName(), memberArrayType, offset,
-				    access);
-		continue;
-	    }
-        
-	    case DwTag.POINTER_TYPE_: {
-		ByteOrder byteorder = task.getIsa().getByteOrder();
-		Type memberPtrType;
-            
-		memberPtrType = new PointerType("*", byteorder, getByteSize(memberType),
-						getPointerTarget(memberType));
-		classType.addMember(member.getName(), memberPtrType, offset,
-				    access);
-		typeSize += memberPtrType.getSize();
-		continue;
-	    }
-	    }
-	    classType.addMember(member.getName(),
-				new UnknownType(member.getName()),
-				offset, access);
-	}
-
-	typeSize += 4 - (typeSize % 4);             // round up to mod 4
-	return classType;
-    }
-  
-  
     /**
      * @return Value for symbol s in frame f
      */
@@ -514,116 +316,99 @@ class DebugInfoEvaluator
 	    return frame.getRegisterValue(reg);
 	}
 
-	DwarfDie varDie = getDie(s);
+	Variable var = getDie(s);
+	DwarfDie varDie = var.getVariableDie();
 	if (varDie == null)
 	    throw new NameNotFoundException();
     
-	return get(varDie);
+	return get(var);
     }
   
     /**
      * @return Value associated with the given DwarfDie.
      * @see frysk.expr.CppSymTab#get(java.lang.String)
      */
-    public Value get (DwarfDie varDie) {
+    public Value get (Variable var) {
 	VariableAccessor[] variableAccessor = { new AccessMemory(),
 						new AccessRegisters()};
-	ByteOrder byteorder = task.getIsa().getByteOrder();
-
-	if (varDie == null)
+	if (var == null)
 	    return (null);
+
+        DwarfDie varDie = var.getVariableDie();
+        
+        Isa isa = this.task.getIsa();
 
 	for (int i = 0; i < variableAccessor.length; i++) {
 	    try {
-		DwarfDie type = varDie.getUltimateType();
-		// if there is no type then setup a sentinel
-		int baseType = type != null ? type.getBaseType() : 0;
-		switch (baseType) {
-		case BaseTypes.baseTypeLong:
-		case BaseTypes.baseTypeUnsignedLong: {
-		    long longVal = variableAccessor[i].getLong(varDie, 0);
-		    return longType.createValue(longVal);
+		Type varType = var.getType(frame);
+	    	if (varType instanceof TypeDef) {
+	    	    varType = varType.getUltimateType();
+	    	}
+		if (varType instanceof ArrayType) {
+		    int typeSize = varType.getSize();
+		    long addr = variableAccessor[0].getAddr(varDie);
+                    if (addr == 0)
+                        continue;
+		    return new Value(varType, 
+			    new ByteBufferLocation(buffer, addr, typeSize));
 		}
-		case BaseTypes.baseTypeInteger:
-		case BaseTypes.baseTypeUnsignedInteger: {
-		    int intVal = variableAccessor[i].getInt(varDie, 0);
-		    return intType.createValue(intVal);
-		}
-		case BaseTypes.baseTypeShort:
-		case BaseTypes.baseTypeUnsignedShort: {
-		    short shortVal = variableAccessor[i].getShort(varDie, 0);
-		    return shortType.createValue(shortVal);
-		}
-		case BaseTypes.baseTypeByte:
-		case BaseTypes.baseTypeUnsignedByte: {
-		    byte byteVal = variableAccessor[i].getByte(varDie, 0);
-		    return byteType.createValue(byteVal);
-		}
-		case BaseTypes.baseTypeFloat: {
-		    float floatVal = variableAccessor[i].getFloat(varDie, 0);
-		    return floatType.createValue(floatVal);
-		}
-		case BaseTypes.baseTypeDouble: {
-		    double doubleVal = variableAccessor[i].getDouble(varDie, 0);
-		    return doubleType.createValue(doubleVal);
-		}
-		}
-		// if there is no type then use this die's tag
-		int tag = type != null ? type.getTag() : varDie.getTag();
-		switch (tag) {
-		case DwTag.ARRAY_TYPE_: {
-		    DwarfDie subrange;
+		else if (varType instanceof ConfoundedType
+			|| varType instanceof ClassType) {
 		    long addr = variableAccessor[0].getAddr(varDie);
 		    if (addr == 0)
 			continue;
-		    subrange = type.getChild();
-		    ArrayType arrayType = getArrayType(type, subrange);
-
-		    if (arrayType == null)
-			return null;
-		    int typeSize = arrayType.getSize();
-		    return new Value(arrayType,
-				     new ByteBufferLocation(buffer, addr,
-							    typeSize));
+		    return new Value(varType, 
+			    new ByteBufferLocation(buffer, addr, varType.getSize()));
 		}
-		case DwTag.UNION_TYPE_:
-		case DwTag.STRUCTURE_TYPE_: {
-		    long addr = variableAccessor[0].getAddr(varDie);
-		    if (addr == 0)
-			continue;
-		    ConfoundedType classType = getConfoundedType(type, null);
-		    return new Value(classType,
-				     new ByteBufferLocation(buffer, addr,
-							    classType.getSize()));
+		else if (varType instanceof PointerType) {
+		    long addr = variableAccessor[i].getLong(varDie, 0);
+		    return ((PointerType)varType).createValue(addr);
 		}
-		case DwTag.POINTER_TYPE_: {
-		    PointerType ptrType = new PointerType("*", byteorder, longType.getSize(),
-							  getPointerTarget (type));
-		    long  addr = variableAccessor[i].getLong(varDie, 0);
-		    return ptrType.createValue(addr);
-		}
-		case DwTag.ENUMERATION_TYPE_: {
-		    DwarfDie subrange;
-		    long val = variableAccessor[0].getLong(varDie, 0);
-		    subrange = type.getChild();
-		    EnumType enumType = new EnumType(type.getName(),
-						     byteorder,
-						     getByteSize(type));
-		    while (subrange != null) {
-			enumType.addMember(subrange.getName(), 
-					   subrange.getAttrConstant(DwAt.CONST_VALUE_));
-			subrange = subrange.getSibling();
+		else if (varType instanceof EnumType) {
+		    long val = 0;
+		    switch (varType.getSize()) {
+		    case (2): val = variableAccessor[0].getShort(varDie, 0);
+		    case (4): val = variableAccessor[0].getInt(varDie, 0);
+		    case (8): val = variableAccessor[0].getLong(varDie, 0);
 		    }
-		    return enumType.createValue(val);
+		    return ((EnumType)varType).createValue(val);
 		}
-		    // special case members of an enumeration
-		case DwTag.ENUMERATOR_: {
-		    /**
-		     * FIXME: This should return an "enum", not an
-		     * integer.
-		     */
-		    return longType.createValue(varDie.getAttrConstant(DwAt.CONST_VALUE_));
+		// special case members of an enumeration ??? improve this
+		else if (var.getVariableDie().getTag() == DwTag.ENUMERATOR_) {
+		    return longType.createValue(varDie
+			    .getAttrConstant(DwAt.CONST_VALUE_));
 		}
+		else if (varType instanceof IntegerType) {
+		    if (varType.getSize() == StandardTypes.getLongType(isa).getSize()) {
+			long longVal = variableAccessor[i].getLong(varDie, 0);
+			return ((ArithmeticType)varType).createValue(longVal);
+		    }
+		    else if (varType.getSize() == StandardTypes.getIntType(isa).getSize()) {
+			int intVal = variableAccessor[i].getInt(varDie, 0);
+			return ((ArithmeticType)varType).createValue(intVal);
+		    }
+		    else if (varType.getSize() == StandardTypes.getShortType(isa).getSize()) {
+			short shortVal = variableAccessor[i].getShort(varDie, 0);
+			return ((ArithmeticType)varType).createValue(shortVal);
+		    }
+		    else if (varType.getSize() == StandardTypes.getByteType(isa).getSize()) {
+			byte byteVal = variableAccessor[i].getByte(varDie, 0);
+			return ((ArithmeticType)varType).createValue(byteVal);
+		    }
+		}
+		else if (varType instanceof CharType) {
+		    	char charVal = (char)variableAccessor[i].getShort(varDie, 0);
+			return ((CharType)varType).createValue(charVal);
+		}
+		else if (varType instanceof FloatingPointType) {
+		    if (varType.getSize() == StandardTypes.getFloatType(isa).getSize()) {
+			float floatVal = variableAccessor[i].getFloat(varDie, 0);
+			return ((ArithmeticType)varType).createValue(floatVal);
+		    }
+		    else if (varType.getSize() == StandardTypes.getDoubleType(isa).getSize()) {
+			double doubleVal = variableAccessor[i].getDouble(varDie, 0);
+			return ((ArithmeticType)varType).createValue(doubleVal);
+		    }
 		}
 	    } catch (NameNotFoundException ignore) {
 	    } catch (Errno ignore) {
@@ -641,8 +426,8 @@ class DebugInfoEvaluator
      */
     public Value get (ArrayList components) throws NameNotFoundException {
 	String s = (String)components.get(0);
-	DwarfDie varDie = getDie(s);
-	if (varDie == null)
+	Variable variable = getDie(s);
+	if (variable == null)
 	    return (null);
 
 	Value v = get(s);
@@ -651,7 +436,7 @@ class DebugInfoEvaluator
 	else if (v.getType() instanceof ConfoundedType)
 	    return ((ConfoundedType)v.getType()).get(v, 0, components);
 	else
-	    return new Value(new UnknownType(varDie.getName()));
+	    return new Value(new UnknownType(variable.getName()));
     }
   
     /**
@@ -661,7 +446,7 @@ class DebugInfoEvaluator
      */
     public Value getAddress (String s) throws NameNotFoundException {
 	AccessMemory access = new AccessMemory();
-	return longType.createValue(access.getAddr(getDie(s))); 
+	return longType.createValue(access.getAddr(getDie(s).getVariableDie())); 
     }
   
     /**
@@ -670,14 +455,13 @@ class DebugInfoEvaluator
      * @return Value corresponding to the memory location pointed to by symbol s.
      */
     public Value getMemory (String s) throws NameNotFoundException {     
-	DwarfDie varDie = getDie(s);
+	Variable variable= getDie(s);
+	if (variable == null)
+	    return new Value(new UnknownType(variable.getName()));
     
-	if (varDie == null)
-	    return new Value(new UnknownType(varDie.getName()));
-    
-	DwarfDie type = varDie.getUltimateType();
+	DwarfDie type = variable.getVariableDie().getUltimateType();
 	AccessMemory access = new AccessMemory();
-	long addr = access.getAddr(getDie(s)); 
+	long addr = access.getAddr(getDie(s).getVariableDie()); 
 	long addrIndirect = buffer.getLong(addr);
     
 	switch (type.getUltimateType().getBaseType()) {
@@ -698,12 +482,13 @@ class DebugInfoEvaluator
 	case BaseTypes.baseTypeDouble:
 	    return doubleType.createValue(buffer.getDouble(addrIndirect));
 	}
-	int tag = type != null ? type.getTag() : varDie.getTag();
+	int tag = type != null ? type.getTag() : variable.getVariableDie().getTag();
 	switch (tag) {
 	case DwTag.ARRAY_TYPE_: {
 	    DwarfDie subrange;
 	    subrange = type.getChild();
-	    ArrayType arrayType = getArrayType(type, subrange);
+	    TypeEntry debugInfoType = new TypeEntry();
+	    ArrayType arrayType = debugInfoType.getArrayType(frame, type, subrange);
 
 	    if (arrayType == null)
 		return null;
@@ -714,7 +499,9 @@ class DebugInfoEvaluator
 	}
 	case DwTag.UNION_TYPE_:
 	case DwTag.STRUCTURE_TYPE_: {
-	    ConfoundedType classType = getConfoundedType(type, null);
+	    TypeEntry debugInfoType = new TypeEntry();
+//	    ClassType classType = debugInfoType.getClassType(frame, type, null);
+	    ConfoundedType classType = debugInfoType.getConfoundedType(frame, type, null);
 
 	    if (classType == null)
 		return null;
@@ -723,132 +510,6 @@ class DebugInfoEvaluator
 						    classType.getSize()));
 	}
 	}
-	return new Value(new UnknownType(varDie.getName()));
-    }
-  
-    /**
-     * Return the target of a pointer, as a type.
-     *
-     * XXX: Why isn't this recursive?
-     */
-    private Type getPointerTarget(DwarfDie pointer) {
-	DwarfDie type = pointer.getUltimateType();
-	if (type == null)
-	    return new VoidType();
-
-	ByteOrder byteorder = task.getIsa().getByteOrder();
-
-	switch (type.getBaseType())
-	    {
-	    case BaseTypes.baseTypeByte:
-	    case BaseTypes.baseTypeUnsignedByte:
-		return byteType;
-	    case BaseTypes.baseTypeShort:
-	    case BaseTypes.baseTypeUnsignedShort:
-		return shortType;
-	    case BaseTypes.baseTypeInteger:
-	    case BaseTypes.baseTypeUnsignedInteger:
-		return intType;
-	    case BaseTypes.baseTypeLong:
-	    case BaseTypes.baseTypeUnsignedLong:
-		return longType;
-	    case BaseTypes.baseTypeFloat:
-		return floatType;
-	    case BaseTypes.baseTypeDouble:
-		return doubleType;
-	    }
-	switch (type.getTag())
-	    {
-	    case DwTag.POINTER_TYPE_: {
-		return new PointerType("void*", byteorder, getByteSize(type),
-				       getPointerTarget(type));
-	    }
-	    }
-	return new UnknownType(type.getName());
-
-    }
-  
-    /**
-     * @param varDie The die for a symbol corresponding to a function
-     * @return The value of a subprogram die
-     */    
-    public Value getSubprogramValue (DwarfDie varDie)
-    {
-	if (varDie == null)
-	    return (null);
-
-	switch (varDie.getTag()) {
-	case DwTag.SUBPROGRAM_: {
-	    Type type = null;
-	    if (varDie.getUltimateType() != null) {
-		type = getType(varDie);
-	    }
-	    FunctionType functionType = new FunctionType(varDie.getName(), type);
-	    DwarfDie parm = varDie.getChild();
-	    while (parm != null && parm.getTag() == DwTag.FORMAL_PARAMETER_) {
-		if (parm.getAttrBoolean((DwAt.ARTIFICIAL_)) == false) {
-		    type = getType(parm);
-		    functionType.addParameter(type, parm.getName());
-		}
-		parm = parm.getSibling();
-	    }
-	    return new Value (functionType);
-	}
-	}
-	return new Value(new UnknownType(varDie.getName()));
-    }
-  
-    /**
-     * @param varDie This symbol's die
-     * @return a frysk.type for this varDie
-     */
-    public Type getType (DwarfDie varDie)
-    {
-	ByteOrder byteorder = task.getIsa().getByteOrder();
-    
-	if (varDie == null)
-	    return (null);
-
-	DwarfDie type = varDie.getUltimateType();
-	if (type == null)
-	    type = varDie;
-    
-	switch (type.getTag()) {
-	case DwTag.POINTER_TYPE_: {
-	    return new PointerType("*", byteorder, getByteSize(type),
-				   getPointerTarget(type));
-	}
-	case DwTag.ARRAY_TYPE_: {
-	    DwarfDie subrange = type.getChild();
-	    return getArrayType(type, subrange);
-	}
-	case DwTag.UNION_TYPE_:
-	case DwTag.STRUCTURE_TYPE_: {
-	    boolean noTypeDef = (varDie.getType() == null);
-	    String name = noTypeDef ? varDie.getName() 
-		: varDie.getType().getName();
-	    ConfoundedType classType = getConfoundedType(type, name);
-	    if (type != varDie.getType() && noTypeDef == false)
-		classType.setTypedefFIXME(true);
-	    return classType;
-	}
-	case DwTag.ENUMERATION_TYPE_: {
-	    DwarfDie subrange = type.getChild();
-	    EnumType enumType = new EnumType(type.getName(), byteorder,
-					     getByteSize(type));
-	    while (subrange != null) {
-		enumType.addMember(subrange.getName(), 
-				   subrange.getAttrConstant(DwAt.CONST_VALUE_));
-		subrange = subrange.getSibling();
-	    }
-	    return enumType;
-	}
-	}
-    
-	type = varDie.getUltimateType();
-	if (type == null)
-	    return new UnknownType(varDie.getName());
-	DwarfDie dieType = varDie.getType();
-	return fetchType(type, dieType.getName());
+	return new Value(new UnknownType(variable.getVariableDie().getName()));
     }
 }

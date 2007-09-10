@@ -98,7 +98,7 @@ public class TestTypeEntry
 	  assertNotNull(varDie);
 	  varType = typeEntry.getType(frame, varDie.getType());
 	  assertNotNull(varType);
-	  assertEquals(varType.toPrint(), expect[i].output);
+	  assertEquals("testScalar " + expect[i].symbol, expect[i].output, varType.toPrint());
       }
   }
 
@@ -129,7 +129,7 @@ public class TestTypeEntry
 	  assertNotNull(varDie);
 	  varType = typeEntry.getType(frame, varDie.getType());
 	  assertNotNull(varType);
-	  assertEquals(varType.toPrint(), expect[i].output);
+	  assertEquals("testArray " + expect[i].symbol, expect[i].output, varType.toPrint());
       }
   }
 
@@ -138,8 +138,8 @@ public class TestTypeEntry
 	  return;
 
       Expect[] expect = {
-	      new Expect("sportscar", "enum {bmw=0,porsche=1}"),
-	      new Expect("ssportscar", "enum {bmw=0,porsche=1}"),
+	      new Expect("sportscar", ".*enum.*bmw=0.*porsche=1.*"),
+	      new Expect("ssportscar", ".*enum.*bmw.*porsche.*"),
       };
   
       Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-enum");
@@ -163,19 +163,21 @@ public class TestTypeEntry
 	      continue;
 	  }
 	  varType = typeEntry.getType(frame, varDie.getType());
-	  assertEquals(varType.toPrint(), expect[i].output);
+	  Pattern p = Pattern.compile(expect[i].output, Pattern.DOTALL);
+	  Matcher m = p.matcher(varType.toPrint());
+	  assertTrue("testEnum " + expect[i].symbol, m.matches());
       }
   }
 
   public void testStruct () {
       Expect[] expect = {
-	      new Expect("static_class", ".*double.*double_1;.*int.*int_1;.*"),
-	      new Expect("class_1", ".*double.*double_1;.*int int_1;.*"),
+	      new Expect("static_class", ".*static_class_t.*"),
+	      new Expect("class_1", ".*static_class_t.*"),
 	      new Expect("class_2", ".*c1;.*c2;.*"),
 	      new Expect("class_3", ".*int.*[2,2].*arr.*"),
 	      new Expect("class_4", ".*int x;.*float y;.*"),
 	      new Expect("class_5", ".*simode.*x;.*float.*y;.*"),
-	      new Expect("union_1", ".*double.*double_1;.*long.*ll_1;.*"),
+	      new Expect("union_1", ".*union_t.*"),
 	      new Expect("class_p", ".*double.*double_1;.*int.*int_1;.*"),
       };
   
@@ -198,7 +200,7 @@ public class TestTypeEntry
 	  varType = typeEntry.getType(frame, varDie.getType());
 	  Pattern p = Pattern.compile(expect[i].output, Pattern.DOTALL);
 	  Matcher m = p.matcher(varType.toPrint());
-	  assertTrue(m.matches());
+	  assertTrue("testStruct " + expect[i].symbol, m.matches());
       }
   }
 
@@ -233,7 +235,7 @@ public class TestTypeEntry
 	  varType = typeEntry.getType(frame, varDie.getType());
 	  Pattern p = Pattern.compile(expect[i].output, Pattern.DOTALL);
 	  Matcher m = p.matcher(varType.toPrint());
-	  assertTrue(m.matches());
+	  assertTrue("testClass " + expect[i].symbol, m.matches());
       }
   }
 }  

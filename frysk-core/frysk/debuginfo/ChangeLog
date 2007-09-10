@@ -1,3 +1,22 @@
+2007-09-10  Stan Cox  <scox@redhat.com>
+
+	* DebugInfoEvaluator.java (getDie): Change signature to return Variable 
+	instead of DwarfDie.
+	(getArrayType): Move to TypeEntry.java.
+	(getConfoundedType): Likewise.
+	(getSubprogramValue): Likewise.
+	(getType): Likewise.
+	(get): Change case to use Variable instead of DwarfDie.
+	(fetchType): Remove.
+	(getPointerTarget): Remove.
+	* TypeEntry.java (getType): Use TypeDef.
+	Add BaseTypes.baseTypeChar and  BaseTypes.baseTypeUnsignedChar.
+	* DebugInfo.java (typeEntry): New.
+	(DebugInfo): Set it.
+	(what): Use it.
+	(get): Change signature to use Variable instead of DwarfDie.
+	* TestTypeEntry.java (testStruct): Tweak expected output.
+
 2007-09-10  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* StoppedTestTaskFactory.java: Removed Termiating observer.

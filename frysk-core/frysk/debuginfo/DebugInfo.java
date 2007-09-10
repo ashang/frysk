@@ -73,6 +73,8 @@ public class DebugInfo {
     // [default] byte-order should be required.
     private final DebugInfoFrame frameFIXME;
   
+    TypeEntry typeEntry;
+
     /**
      * Create a symbol table object.  There should be one SymTab per process.
      * @param frame
@@ -87,6 +89,7 @@ public class DebugInfo {
 	catch (lib.dwfl.ElfException ignore) {
 	    // FIXME: Why is this ignored?
 	}
+	typeEntry = new TypeEntry();
     }
 
 
@@ -177,14 +180,13 @@ public class DebugInfo {
 		result.append("extern ");
 	    switch (varDie.getTag()) {
             case DwTag.SUBPROGRAM_: {
-		Value value = new DebugInfoEvaluator(frame)
-		    .getSubprogramValue(varDie);
+		Value value = typeEntry.getSubprogramValue(frame, varDie);
 		result.append(value.getType().toPrint());
 		break;
             }
             case DwTag.TYPEDEF_:
             case DwTag.STRUCTURE_TYPE_: {
-		Type type = new DebugInfoEvaluator(frame).getType(varDie);
+		Type type = typeEntry.getType(frame, varDie.getType());
 		result.append(type.toPrint());
 		break;
             }
@@ -192,7 +194,7 @@ public class DebugInfo {
 		result.append(varDie + " " + varDie.getName());
 	    }
         } else {
-	    Type type = new DebugInfoEvaluator(frame).getType(varDie);
+	    Type type = typeEntry.getType(frame, varDie.getType());
 	    if (varDie.getAttrBoolean(DwAt.EXTERNAL_))
 		result.append("extern ");
 
@@ -319,12 +321,12 @@ public class DebugInfo {
     public Type getType (DwarfDie die) {
 	// FIXME: This has ZERO to do with frames and CppSymTab (nee
 	// DebugInfoEvaluator).
-	return new DebugInfoEvaluator(frameFIXME).getType(die);
+        return typeEntry.getType(frameFIXME, die);
     } 
 
-    public Value get(DebugInfoFrame f, DwarfDie die) throws NameNotFoundException
+    public Value get(DebugInfoFrame f, Variable var) throws NameNotFoundException
     {
-	return new DebugInfoEvaluator(f).get(die);
+	return new DebugInfoEvaluator(f).get(var);
     } 
 
 }

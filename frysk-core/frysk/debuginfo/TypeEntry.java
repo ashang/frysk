@@ -49,6 +49,7 @@ import lib.dwfl.DwTag;
 import lib.dwfl.DwAt;
 import frysk.proc.Isa;
 import frysk.value.ArrayType;
+import frysk.value.CharType;
 import frysk.value.ConfoundedType;
 import frysk.value.EnumType;
 import frysk.value.FunctionType;
@@ -56,6 +57,7 @@ import frysk.value.PointerType;
 import frysk.value.SignedType;
 import frysk.value.StandardTypes;
 import frysk.value.Type;
+import frysk.value.TypeDef;
 import frysk.value.UnknownType;
 import frysk.value.UnsignedType;
 import frysk.value.Value;
@@ -81,7 +83,7 @@ class TypeEntry
     
     private void dumpDie(String s, DwarfDie die)
     {
-      // ??? convert this to use tracing
+      //??? convert this to use tracing
 //    	System.out.println(s + Long.toHexString(die.getOffset()) + " "
 //		+ DwTag.toName(die.getTag())
 //		+ " " + die.getName());
@@ -251,15 +253,7 @@ class TypeEntry
 
 	switch (type.getTag()) {
 	case DwTag.TYPEDEF_: {
-	    // ??? Need to hook this up to TypeDef.java
-	    Type tagType = getType(f, type.getType());
-	    if (tagType instanceof SignedType)
-		returnType = new SignedType(type.getName(), isa.getByteOrder(),
-			tagType.getSize());
-	    else {
-		returnType = tagType;
-		returnType.setTypedefFIXME(true);
-	    }
+	    returnType = new TypeDef(type.getName(), getType (f, type.getType()));
 	    break;
 	}
 	case DwTag.POINTER_TYPE_: {
@@ -290,7 +284,7 @@ class TypeEntry
 	    DwarfDie subrange = type.getChild();
 	    EnumType enumType = new EnumType(typeDie.getName(),
 					     byteorder, 
-					     typeDie.getAttrConstant(DwAt.BYTE_SIZE_));
+					     type.getAttrConstant(DwAt.BYTE_SIZE_));
 	    while (subrange != null) {
 		enumType.addMember(subrange.getName(), subrange
 			.getAttrConstant(DwAt.CONST_VALUE_));
@@ -324,6 +318,14 @@ class TypeEntry
 		break;
 	    case BaseTypes.baseTypeUnsignedByte:
 		returnType = new UnsignedType(type.getName(), byteorder, 1);
+		break;
+	    case BaseTypes.baseTypeChar:
+		returnType = new CharType(type.getName(), byteorder, 
+			type.getAttrConstant(DwAt.BYTE_SIZE_), false);
+		break;
+	    case BaseTypes.baseTypeUnsignedChar:
+		returnType = new CharType(type.getName(), byteorder, 
+			type.getAttrConstant(DwAt.BYTE_SIZE_), true);
 		break;
 	    case BaseTypes.baseTypeFloat:
 		returnType = StandardTypes.getFloatType(isa);
