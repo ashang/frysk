@@ -1,10 +1,14 @@
+2007-09-10  Kris Van Hees  <kris.van.hees@oracle.com>
+
+	* TestTearDownProcess.java: Re-insert copyright statement.
+
 2007-09-07  Andrew Cagney  <cagney@redhat.com>
 
 	* TearDownProcess.java (tearDown): Handle a wait timeout by
 	throwing a very verbose fail; but after everything else.
 	
 	* TearDownProcess.java (tearDown): Add a a timeout to the wait
-	call; from discussion with Kris Van Hess on IRC.
+	call; from discussion with Kris Van Hees on IRC.
 	
 	* TestTearDownProcess.java: Revert 2007-09-06 change; see bug
 	4996.
