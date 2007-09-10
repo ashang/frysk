@@ -44,6 +44,7 @@ import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.testbed.DaemonBlockedAtEntry;
+import frysk.testbed.TearDownProcess;
 import frysk.testbed.TestLib;
 
 public class StoppedTestTaskFactory extends TestLib {
@@ -53,10 +54,9 @@ public class StoppedTestTaskFactory extends TestLib {
 		new String[] { path });
 
 	Task task = ackProc.getMainTask();
-
+	TearDownProcess.add(task.getProc().getPid());
 	task.requestAddSignaledObserver(new TerminatingSignaledObserver());
-	task.requestAddTerminatingObserver(new TerminatingSignaledObserver());
-
+	
 	ackProc.requestRemoveBlock();
 	assertRunUntilStop("Add TerminatingSignaledObserver");
 
@@ -71,8 +71,7 @@ public class StoppedTestTaskFactory extends TestLib {
 	return getStoppedTask(getExecPath(process));
     }
 
-    static class TerminatingSignaledObserver implements TaskObserver.Signaled,
-	    TaskObserver.Terminating {
+    static class TerminatingSignaledObserver implements TaskObserver.Signaled{
 	public void deletedFrom(Object observable) {
 	}
 
@@ -88,9 +87,5 @@ public class StoppedTestTaskFactory extends TestLib {
 	    return Action.BLOCK;
 	}
 
-	public Action updateTerminating(Task task, boolean signal, int value) {
-	    Manager.eventLoop.requestStop();
-	    return Action.BLOCK;
-	}
     }
 }

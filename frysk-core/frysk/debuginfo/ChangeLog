@@ -1,3 +1,7 @@
+2007-09-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* StoppedTestTaskFactory.java: Removed Termiating observer.
+
 2007-09-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DebugInfoFrame.java (getScopes): New function.

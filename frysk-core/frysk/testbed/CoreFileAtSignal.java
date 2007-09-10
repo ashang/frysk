@@ -40,9 +40,9 @@
 package frysk.testbed;
 
 import java.io.File;
+
 import frysk.debuginfo.StoppedTestTaskFactory;
 import frysk.event.Event;
-import frysk.event.RequestStopEvent;
 import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -70,8 +70,7 @@ public class CoreFileAtSignal extends TestLib {
 		new Event() {
 	    
 	    public void execute() {
-		ackProc.requestAbandonAndRunEvent(new RequestStopEvent(
-			Manager.eventLoop));
+		Manager.eventLoop.requestStop();
 	    }
 	}, false);
 
