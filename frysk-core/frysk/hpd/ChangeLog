@@ -1,3 +1,9 @@
+2007-09-11  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestRegs.java (testRegsCommand): Added e.close().
+	(testRegsBlah): Ditto.
+	fixes widget process problem.
+
 2007-09-07  Tim Moore  <timoore@redhat.com>
 
 	Fix for 4949 and 4950.

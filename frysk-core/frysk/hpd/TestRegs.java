@@ -63,6 +63,7 @@ public class TestRegs extends TestLib {
 	    e.expectPrompt("rax:\t[0-9][^\t]*\t0x.*rip:.*");
 	else
 	    fail("Architecture not supported");
+	e.close();
     }
 
     public void testRegsBlah() {
@@ -70,5 +71,6 @@ public class TestRegs extends TestLib {
 	e = new HpdTestbed(child.getPid());
 	e.sendCommandExpectPrompt("regs blah",
 				  "<blah> not recognized; possible groups.*");
+	e.close();
     }
 }
