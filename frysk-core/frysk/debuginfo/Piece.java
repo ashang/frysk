@@ -57,4 +57,10 @@ public abstract class Piece
     {
 	this.size = size;
     }
+    
+    abstract protected Piece slice (long offset, long length);
+    
+    abstract protected byte getByte(long index);
+    
+    abstract protected void putByte(long index, byte value);
 }

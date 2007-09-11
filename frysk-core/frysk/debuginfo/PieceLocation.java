@@ -40,7 +40,6 @@
 package frysk.debuginfo;
 
 import frysk.value.Location;
-import inua.eio.ByteBuffer;
 
 import java.util.Iterator;
 import java.util.List;
@@ -132,7 +131,7 @@ extends Location
 	Piece p = pieceOf(offset);
 	long index = indexOf (offset);
 	// XXX: Change cast as other pieces gets supported.
-	return ((MemoryPiece)p).getByteBuf().getByte(index);
+	return p.getByte(index);
     }
 
     /**
@@ -179,14 +178,14 @@ extends Location
 	    if (idx+newLen-1 < oldP.getSize())
 	    {
 		// Slice the piece from idx going to newLen bytes.
-		newP = sliceMemPiece (oldP, idx, newLen);
+		newP = oldP.slice(idx, newLen);
 	    }
 
 	    else 
 	    {
 		// Slice the piece from idx to the end of piece. 
 		// (oldP.getSize()-idx) gives the number of remaining bytes.
-		newP = sliceMemPiece (oldP, idx, oldP.getSize()-idx);
+		newP = oldP.slice(idx, oldP.getSize()-idx);
 	    }
 
 	    slice.add(newP);
@@ -198,25 +197,7 @@ extends Location
 	return new PieceLocation(slice);
     }
 
-    /**
-     * Function to slice a MemoryPiece - slices a piece from byte OFFSET 
-     * going for LENGTH bytes.
-     * 
-     * @param oldP - piece to be sliced
-     * @param offset - byte position where slice should start from 
-     * @param length - number of bytes of slice
-     * @return slice
-     */
-    private Piece sliceMemPiece (Piece oldP, long offset, long length)
-    {
-	// Assuming byte-addressable memory  
-	// FIXME - Endianness?
-	long memory = ((MemoryPiece)oldP).getMemory() + offset;
-	ByteBuffer b = ((MemoryPiece)oldP).getByteBuf().slice(offset, length);
-	Piece newP = new MemoryPiece(memory, length, b);
 
-	return newP;
-    }
 
     /**
      * Helper function for slice - returns the number of bytes in slice list.

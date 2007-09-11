@@ -79,7 +79,7 @@ public abstract class Location
      * Could re-implement this by decorating byte-order with a
      * location specific get/put method.
      */    
-    byte[] get(ByteOrder order) {
+    public byte[] get(ByteOrder order) {
 	byte[] bytes = new byte[(int)length()];
 	for (int i=0; i < bytes.length; i++)
 	    bytes[i] = getByte(i);
@@ -117,7 +117,7 @@ public abstract class Location
      * Can re-implement this by decorating byte-order with a location
      * specific get/put method.
      */
-    void put(ByteOrder order, byte[] bytes, int fill) {
+    public void put(ByteOrder order, byte[] bytes, int fill) {
 	// FIXME: Bug introduced into inua.nio.ByteBuffer forces this
 	// cast; it should not be needed.
 	int xfer = (int)(bytes.length > length()

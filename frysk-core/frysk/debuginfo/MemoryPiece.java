@@ -47,7 +47,7 @@ import inua.eio.ByteBuffer;
 public class MemoryPiece
 	extends Piece
 {
-    private final long memory;   
+    private final long memory;  
     private ByteBuffer byteBuf;
 
     public MemoryPiece (long memory, long size)
@@ -60,12 +60,45 @@ public class MemoryPiece
     {
 	super (size);
 	this.memory = memory;
-	this.byteBuf = byteBuf; 
+	this.byteBuf = byteBuf.slice(memory, size);
+    }
+    
+    private MemoryPiece (long memory, long size, long offset, ByteBuffer byteBuf)
+    {
+	super (size);
+	this.memory = memory + offset;
+	this.byteBuf = byteBuf.slice(offset, size);
+    }
+    
+    /**
+     * Function to slice a MemoryPiece - slices a piece from byte OFFSET 
+     * going for LENGTH bytes.
+     * 
+     * @param oldP - piece to be sliced
+     * @param offset - byte position where slice should start from 
+     * @param length - number of bytes of slice
+     * @return slice
+     */
+    protected Piece slice (long offset, long length)
+    {
+	// Assuming byte-addressable memory  
+	Piece newP = new MemoryPiece(memory, length, offset, this.byteBuf);
+	return newP;
     }
     
     public long getMemory()
     {
 	return memory;
+    }
+    
+    protected byte getByte(long index) 
+    {
+	return byteBuf.getByte(index);
+    }
+    
+    protected void putByte(long index, byte value) 
+    {
+	byteBuf.putByte(index, value);
     }
     
     public ByteBuffer getByteBuf()

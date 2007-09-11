@@ -1,3 +1,18 @@
+2007-09-11  Teresa Thomas  <tthomas@redhat.com>
+
+	* Piece.java: Abstract methods slice, getByte, putByte added.
+	* MemoryPiece.java: Methods slice, getByte, putByte added.
+	* RegisterPiece.java: Ditto.
+	* UnavailablePiece.java: Ditto.
+	* TestPieceLocation.java (setUp): Change test values of memory offset.
+	(testGetPut): Removed.
+	(testGetPutByte): Added.
+	(testSlice): Updated for new memory values.
+	(testGet): Added.
+	* PieceLocation.java (getByte): Use Piece.getByte.
+	(slice): Use Piece.slice.
+	(sliceMemPiece): Removed.
+
 2007-09-10  Stan Cox  <scox@redhat.com>
 
 	* DebugInfoEvaluator.java (getDie): Change signature to return Variable 

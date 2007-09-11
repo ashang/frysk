@@ -68,4 +68,19 @@ public class RegisterPiece
     {
 	return register;
     }
+    
+    protected Piece slice (long offset, long length)
+    {
+	throw new RuntimeException();
+    }
+    
+    protected void putByte(long index, byte value) 
+    {
+	throw new RuntimeException();
+    }
+       
+    protected byte getByte(long index) 
+    {
+	throw new RuntimeException();
+    }
 }

@@ -40,6 +40,7 @@
 package frysk.debuginfo;
 
 import inua.eio.ArrayByteBuffer;
+import inua.eio.ByteOrder;
 
 import frysk.junit.TestCase;
 import frysk.value.Location;
@@ -54,14 +55,13 @@ extends TestCase
 
     public void setUp() 
     {
-
 	//  Creating: { 5 6 7 8 9 } { 1 2 3 } { 12 14 16 }
 	List pieces = new ArrayList();
-	pieces.add(new MemoryPiece(1234, 5, 
-		   new ArrayByteBuffer(new byte[] { 5, 6, 7, 8, 9 })));
-	pieces.add(new MemoryPiece(5678, 3, 
-		   new ArrayByteBuffer(new byte[] { 1, 2, 3 })));
-	pieces.add(new MemoryPiece(1111, 3, 
+	pieces.add(new MemoryPiece( 3, 5, 
+		   new ArrayByteBuffer(new byte[] { 127,127,127, 5, 6, 7, 8, 9, 127, 127 })));
+	pieces.add(new MemoryPiece( 1, 3, 
+		   new ArrayByteBuffer(new byte[] { 127, 1, 2, 3 })));
+	pieces.add(new MemoryPiece( 0, 3, 
 		   new ArrayByteBuffer(new byte[] { 12, 14, 16 })));
 
 	l = new PieceLocation (pieces);
@@ -82,7 +82,7 @@ extends TestCase
 	assertEquals("piece", l.getPieces().get(1), l.pieceOf(6));
     }
 
-    public void testGetPut()
+    public void testGetPutByte()
     {
 	// Test for putByte & getByte
 	l.putByte(6, (byte)99);
@@ -95,12 +95,21 @@ extends TestCase
 	// Test for slice
 	Location slice = l.slice(4, 6);
 	PieceLocation pSlice = (PieceLocation)slice;
+	
+	// Slice should be { 9 } { 1 2 3 } { 12 14 }
 	assertEquals("# of pieces", 3, pSlice.getPieces().size());
 	assertEquals("# of bytes", 6, pSlice.length());
 	assertEquals("byte", 2, pSlice.getByte(2));
-	assertEquals("address", 1238, 
+	assertEquals("byte", 12, pSlice.getByte(4));
+	assertEquals("byte", 14, pSlice.getByte(5));
+	assertEquals("address", 7, 
 		     ((MemoryPiece)pSlice.getPieces().get(0)).getMemory());
-	assertEquals("address", 5678, 
-		     ((MemoryPiece)pSlice.getPieces().get(1)).getMemory());
+    }
+    
+    public void testGet()
+    {
+	byte bytes[] = l.get(ByteOrder.BIG_ENDIAN);
+	assertEquals ("bytes",  new byte[] { 5, 6, 7, 8, 9, 1, 2, 3, 12, 14, 16 }, 
+		      bytes);
     }
 }
