@@ -914,6 +914,35 @@ public class TestElf
       public int dynamicSonameIdx = -1;
     }
     final Locals locals = new Locals();
+    final int[] expectedDynamicTags = {
+         ElfDynamic.ELF_DT_NEEDED,
+	 ElfDynamic.ELF_DT_SONAME,
+	 ElfDynamic.ELF_DT_INIT,
+	 ElfDynamic.ELF_DT_FINI,
+	 ElfDynamic.ELF_DT_GNU_HASH,
+	 ElfDynamic.ELF_DT_STRTAB,
+	 ElfDynamic.ELF_DT_SYMTAB,
+	 ElfDynamic.ELF_DT_STRSZ,
+	 ElfDynamic.ELF_DT_SYMENT,
+	 ElfDynamic.ELF_DT_PLTGOT,
+	 ElfDynamic.ELF_DT_PLTRELSZ,
+	 ElfDynamic.ELF_DT_PLTREL,
+	 ElfDynamic.ELF_DT_JMPREL,
+	 ElfDynamic.ELF_DT_REL,
+	 ElfDynamic.ELF_DT_RELSZ,
+	 ElfDynamic.ELF_DT_RELENT,
+	 ElfDynamic.ELF_DT_VERDEF,
+	 ElfDynamic.ELF_DT_VERDEFNUM,
+	 ElfDynamic.ELF_DT_VERNEED,
+	 ElfDynamic.ELF_DT_VERNEEDNUM,
+	 ElfDynamic.ELF_DT_VERSYM,
+	 ElfDynamic.ELF_DT_RELCOUNT,
+	 ElfDynamic.ELF_DT_NULL,
+	 ElfDynamic.ELF_DT_NULL,
+	 ElfDynamic.ELF_DT_NULL,
+	 ElfDynamic.ELF_DT_NULL,
+	 ElfDynamic.ELF_DT_NULL
+       };
 
     for (ElfSection section = elfFile.getSection(0);
 	 section != null;
@@ -924,8 +953,12 @@ public class TestElf
 	  {
 	    haveDynamic = true;
 	    ElfDynamic.loadFrom(section, new ElfDynamic.Builder() {
+	        private int entryIndex = 0;
 		public void entry (int tag, long value)
 		{
+		  assertEquals("Dynamic entry #" + entryIndex,
+			       tag, expectedDynamicTags[entryIndex]);
+		  entryIndex++;
 		  if (tag == ElfDynamic.ELF_DT_STRTAB)
 		    locals.dynamicStrtab = getElfSectionWithAddr(elfFile, value);
 		  else if (tag == ElfDynamic.ELF_DT_SONAME)

@@ -1,3 +1,10 @@
+2007-09-11  Petr Machata  <pmachata@redhat.com>
+
+	* ElfSymbol.java: Commentary changes.
+	* ElfDynamic.java: Bring in more enum values.
+	(loadFrom): start iteration from 0
+	* TestElf.java: Test loading of dynamic section.
+
 2007-09-10  Stan Cox  <scox@redhat.com>
 
 	* BaseTypes.java (baseTypeChar): New.

@@ -48,8 +48,6 @@ import java.util.Map;
  * and constants.
  */
 public class ElfSymbol {
-    // Constants defined in this class were copied from elf.h.
-
     public static interface Builder {
       /**
        * Called for each symbol.
@@ -96,14 +94,18 @@ public class ElfSymbol {
      * Calls {@see Builder.symbol} with each symbol in given
      * section.
      *
-     * @param section Section of type STRTAB or DYNSYM, contains
-     * symbol table.  May not be null.
-     * @param versym Section of type GNU_versym.  May be null, but in
-     * that case both verdef and verneed have to be null, too.
-     * @param verdef Section with version definitions, typed GNU_verdef.
+     * @param symbolsS Section of type STRTAB or DYNSYM, contains
+     * symbol table.  Must not be null.
+     * @param versymS Section of type GNU_versym.  May be null, but in
+     * that case verdefS and verneedS have to be null, too.
+     * @param verdefS Section with version definitions, typed GNU_verdef.
      * May be null, if verneed is not null.
+     * @param verdefCount Number of verdef entries.  If verdefS is
+     * null, this has to be 0.
      * @param verneed Section with version requirements, typed
      * GNU_verneed.  May be null, if verdef is not null.
+     * @param verneedCount Number of verdneed entries.  If verneedS is
+     * null, this has to be 0.
      */
     public static void loadFrom(ElfSection symbolsS, ElfSection versymS,
 				ElfSection verdefS, int verdefCount,
@@ -111,6 +113,8 @@ public class ElfSymbol {
 				ElfSymbol.Builder builder)
       throws ElfException
     {
+	// Sanity checks...
+
 	Elf parent = symbolsS.getParent();
 	ElfSectionHeader symbolsH = symbolsS.getSectionHeader();
 	if (!(symbolsH.type == ElfSectionHeader.ELF_SHT_SYMTAB
@@ -130,8 +134,13 @@ public class ElfSymbol {
 	    versymP = d.getPointer();
 	  }
 
+
+	// Contains list of all found versions (verdefs as well as
+	// verneeds).  It's keyed by unique version ID.  The value is
+	// list of defs and needs associated with given ID.
 	Map versionMap = new HashMap();
 
+	// Load verdefs and store to versionMap.
 	if (verdefS != null)
 	  {
 	    ElfSectionHeader verdefH = verdefS.getSectionHeader();
@@ -162,6 +171,7 @@ public class ElfSymbol {
 	else if (verdefCount != 0)
 	  throw new AssertionError("Inconsistent verdef count.");
 
+	// Load verneeds and store to versionMap.
 	if (verneedS != null)
 	  {
 	    ElfSectionHeader verneedH = verneedS.getSectionHeader();
@@ -192,6 +202,7 @@ public class ElfSymbol {
 	else if (verneedCount != 0)
 	  throw new AssertionError("Inconsistent verneed count.");
 
+	// And call the builder with each symbol in table.
 	// Note: ignoring special symbol entry on index 0.
 	for (long i = 1; i < symbolsCount; ++i)
 	  {

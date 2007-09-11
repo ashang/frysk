@@ -89,6 +89,32 @@ public class ElfDynamic {
     public static int ELF_DT_NUM = 34;
     public static int ELF_DT_LOOS = 0x6000000d;
     public static int ELF_DT_HIOS = 0x6ffff000;
+    public static int ELF_DT_VALRNGLO = 0x6ffffd00;
+    public static int ELF_DT_GNU_PRELINKED = 0x6ffffdf5;
+    public static int ELF_DT_GNU_CONFLICTSZ = 0x6ffffdf6;
+    public static int ELF_DT_GNU_LIBLISTSZ = 0x6ffffdf7;
+    public static int ELF_DT_CHECKSUM = 0x6ffffdf8;
+    public static int ELF_DT_PLTPADSZ = 0x6ffffdf9;
+    public static int ELF_DT_MOVEENT = 0x6ffffdfa;
+    public static int ELF_DT_MOVESZ = 0x6ffffdfb;
+    public static int ELF_DT_FEATURE_1 = 0x6ffffdfc;
+    public static int ELF_DT_POSFLAG_1 = 0x6ffffdfd;
+    public static int ELF_DT_SYMINSZ = 0x6ffffdfe;
+    public static int ELF_DT_SYMINENT = 0x6ffffdff;
+    public static int ELF_DT_VALRNGHI = 0x6ffffdff;
+    public static int ELF_DT_ADDRRNGLO = 0x6ffffe00;
+    public static int ELF_DT_GNU_HASH = 0x6ffffef5;
+    public static int ELF_DT_TLSDESC_PLT = 0x6ffffef6;
+    public static int ELF_DT_TLSDESC_GOT = 0x6ffffef7;
+    public static int ELF_DT_GNU_CONFLICT = 0x6ffffef8;
+    public static int ELF_DT_GNU_LIBLIST = 0x6ffffef9;
+    public static int ELF_DT_CONFIG = 0x6ffffefa;
+    public static int ELF_DT_DEPAUDIT = 0x6ffffefb;
+    public static int ELF_DT_AUDIT = 0x6ffffefc;
+    public static int ELF_DT_PLTPAD = 0x6ffffefd;
+    public static int ELF_DT_MOVETAB = 0x6ffffefe;
+    public static int ELF_DT_SYMINFO = 0x6ffffeff;
+    public static int ELF_DT_ADDRRNGHI = 0x6ffffeff;
     public static int ELF_DT_VERSYM = 0x6ffffff0;
     public static int ELF_DT_RELACOUNT = 0x6ffffff9;
     public static int ELF_DT_RELCOUNT = 0x6ffffffa;
@@ -102,6 +128,7 @@ public class ElfDynamic {
     public static int ELF_DT_FILTER = 0x7fffffff;
     public static int ELF_DT_HIPROC = 0x7fffffff;
 
+   
     /**
      * Calls {@see Builder.symbol} with each symbol in given section.
      * Only makes sense for DYNAMIC section.
@@ -116,8 +143,7 @@ public class ElfDynamic {
 	Elf parent = section.getParent();
 	long data_pointer = section.getData().getPointer();
 	long count = header.size / header.entsize;
-	// Note: ignoring special symbol entry on index 0.
-	for (long i = 1; i < count; ++i)
+	for (long i = 0; i < count; ++i)
 	    if (!elf_buildentry(parent, data_pointer, i, builder))
 		throw new ElfException("Dynamic entry #" + i + " couldn't be retrieved.");
     }
