@@ -54,9 +54,4 @@ public class Subroutine extends Scope
     super(die);
   }
 
-  public Subroutine ()
-  {
-  }
-
-  
 }

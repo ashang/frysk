@@ -109,10 +109,6 @@ public class Scope
     return this.scopes;
   }
   
-  public Scope(){
-    
-  }
-  
   public LinkedList getVariables ()
   {
     return variables;

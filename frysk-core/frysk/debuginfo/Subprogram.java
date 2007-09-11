@@ -81,12 +81,6 @@ public class Subprogram extends Subroutine
       }
     }
 
-    public Subprogram ()
-    {
-      super();
-      parameters = new LinkedList();
-    }
-
     public String getName(){
       return this.name;
     }

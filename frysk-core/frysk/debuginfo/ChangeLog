@@ -1,5 +1,12 @@
 2007-09-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* LexicalBlock.java: Removed no argument constructor.
+	* Subroutine.java: Ditto.
+	* Subprogram.java: Ditto.
+	* Scope.java: Ditto.
+
+2007-09-11  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* Scope.java (toPrint): changed int indent to 
 	String indentString.
 	* DebugInfoFrame.java (printScope): updated.

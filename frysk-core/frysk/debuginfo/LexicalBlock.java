@@ -49,10 +49,6 @@ import lib.dwfl.DwarfDie;
 public class LexicalBlock extends Scope
 {
 
-  public LexicalBlock(){
-    super();  
-  }
-  
   public LexicalBlock (DwarfDie die)
   {
     super(die);
