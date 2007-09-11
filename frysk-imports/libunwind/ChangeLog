@@ -1,3 +1,7 @@
+2007-09-11  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Makefile.am (SUBDIRS): Exclude docs.
+
 2007-09-10  Mark Wielaard  <mwielaard@redhat.com>
 
 	* aux/config.guess: Remove generated file.

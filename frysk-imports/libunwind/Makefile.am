@@ -30,7 +30,10 @@ endif
 
 nodist_include_HEADERS = include/libunwind-common.h
 
-SUBDIRS = src tests doc
+# FRYSK LOCAL
+# Exclude the docs since we don't want to build or install them.
+SUBDIRS = src tests
+# END FRYSK LOCAL
 
 EXTRA_DIST = include/dwarf.h include/dwarf_i.h include/dwarf-eh.h	\
 	include/libunwind_i.h include/mempool.h				\
