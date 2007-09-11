@@ -1,5 +1,12 @@
 2007-09-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* Scope.java (toPrint): changed int indent to 
+	String indentString.
+	* DebugInfoFrame.java (printScope): updated.
+	* Subprogram.java (printScopes): updated
+
+2007-09-11  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* DebugInfoFrame.java (printScope): New function.
 	(getSubprogram): Now uses getScopes().
 	* DebugInfoStackFactory.java (createVirtualStackTrace): Now uses

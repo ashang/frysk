@@ -126,6 +126,6 @@ public class Subprogram extends Subroutine
       
     }
     public void printScopes(PrintWriter writer, DebugInfoFrame frame){
-	super.toPrint(frame, writer, 1);
+	super.toPrint(frame, writer, " ");
     }
 }

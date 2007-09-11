@@ -40,7 +40,6 @@
 package frysk.debuginfo;
 
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -140,12 +139,8 @@ public class Scope
   }
   
 
-  public void toPrint(DebugInfoFrame frame, PrintWriter writer, int indent){
+  public void toPrint(DebugInfoFrame frame, PrintWriter writer, String indentString){
   
-    char[] indentArray = new char[indent];
-    Arrays.fill(indentArray, ' ');
-    String indentString = new String(indentArray);
-    
     Iterator iterator = this.variables.iterator();
     while(iterator.hasNext()){
 	Variable variable = (Variable) iterator.next();

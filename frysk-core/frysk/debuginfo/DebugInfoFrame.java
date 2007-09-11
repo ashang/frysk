@@ -254,7 +254,7 @@ public class DebugInfoFrame extends FrameDecorator{
 	
 	if (scope != null) {
 	    writer.print(indentString + "{");
-	    scope.toPrint(this, writer, indentString.length());
+	    scope.toPrint(this, writer, indentString);
 	    if(!(scope.getInner() instanceof InlinedSubroutine)){
 		printScope(writer, scope.getInner(), indentString+" ");
 	    }
