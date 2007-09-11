@@ -76,33 +76,8 @@ public class DebugInfoFrame extends FrameDecorator{
     public final Subprogram getSubprogram ()
     {
       if (subprogram == null) {
-        Dwfl dwfl = DwflCache.getDwfl(this.getTask());
-        DwflDieBias bias = dwfl.getDie(getAdjustedAddress());
-
-        if (bias != null) {
-
-  	DwarfDie[] scopes = bias.die.getScopes(getAdjustedAddress());
-  	
-  	if(scopes.length == 0){
-  	    return null;
-  	}
-  	
-  	scopes = scopes[0].getScopesDie();
-  	
-  	for (int i = 0; i < scopes.length; i++) {
-  	  
-  	  if (scopes[i].getTag() == DwTag.SUBPROGRAM_ && 
-  		  scopes[i].getAttrConstant(DwAt.INLINE_) != DwInl.INLINED_ &&
-  		  scopes[i].getAttrConstant(DwAt.INLINE_) != DwInl.DECLARED_INLINED_) {
-  	    subprogram = new Subprogram(scopes[i]);
-  	    break;
-  	  }
-
-  	}
-        }
-        this.setSubprogram(subprogram);
+	  this.getScopes();
       }
-
       return subprogram;
     }
 
@@ -119,24 +94,32 @@ public class DebugInfoFrame extends FrameDecorator{
 	    if (bias != null) {
 
 		DwarfDie[] scopes = bias.die.getScopes(getAdjustedAddress());
-
+		
 		if (scopes.length == 0) {
 		    return null;
 		}
 
 		scopes = scopes[0].getScopesDie();
 		scope = ScopeFactory.theFactory.getScope(scopes[0]);
+		
 		Scope tempScope = scope;
 		
+		if (tempScope instanceof Subprogram && !(tempScope instanceof InlinedSubroutine) && subprogram == null) {
+		    subprogram = (Subprogram) tempScope;
+		}
+		    
 		Scope outer = null;
 		for (int i = 1; i < scopes.length; i++) {
 		    outer = ScopeFactory.theFactory.getScope(scopes[i]);
 		    tempScope.setOuter(outer);
 		    tempScope = outer;
+		    
+		    if (tempScope instanceof Subprogram && !(tempScope instanceof InlinedSubroutine) && subprogram == null) {
+			subprogram = (Subprogram) tempScope;
+		    }
 		}
 	    }
 	}
-
 	return scope;
     }
 
@@ -239,7 +222,6 @@ public class DebugInfoFrame extends FrameDecorator{
             writer.print('0');
           
           writer.print(addr);
-          
           writer.print(" in " + subprogram.getName() + "(");
           if(printParameters){
   	    subprogram.printParameters(writer, this);
@@ -259,14 +241,28 @@ public class DebugInfoFrame extends FrameDecorator{
           }
           
           if(printScopes){
-  	    subprogram.printScopes(writer, this);
+              writer.println();
+              this.printScope(writer, this.getSubprogram(), " ");
           }
           
         } else {
             super.toPrint(writer, true);
         }
     }
-      public final void setSubprogram (Subprogram subprogram)
+    
+    private void printScope(PrintWriter writer, Scope scope, String indentString) {
+	
+	if (scope != null) {
+	    writer.print(indentString + "{");
+	    scope.toPrint(this, writer, indentString.length());
+	    if(!(scope.getInner() instanceof InlinedSubroutine)){
+		printScope(writer, scope.getInner(), indentString+" ");
+	    }
+	    writer.println(indentString+"}");
+	}
+    }
+
+    public final void setSubprogram (Subprogram subprogram)
       {
         this.subprogram = subprogram;
       }

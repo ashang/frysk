@@ -40,8 +40,6 @@
 package frysk.debuginfo;
 
 import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.LinkedList;
 
 import frysk.proc.Task;
 import frysk.stack.Frame;
@@ -77,24 +75,28 @@ public class DebugInfoStackFactory {
 	
 	while(frame != null){
 
-	    LinkedList inlineList = frame.getInlinedSubprograms(); 
-	    if(inlineList.size() != 0 ){
+	    Scope scope = frame.getScopes(); 
+	    if(scope != null){
 		int inlineCount = 1;
-		Iterator iterator = inlineList.iterator();
-		while (iterator.hasNext()) {
-		    InlinedSubroutine subroutine = (InlinedSubroutine) iterator.next();
-		    tempFrame = new VirtualDebugInfoFrame(frame.getUndecoratedFrame());
-		    ((VirtualDebugInfoFrame)tempFrame).setIndex(count, inlineCount++);
-		    tempFrame.setSubprogram(subroutine);
-		    
-		    if(virtualFrame!=null){
-			virtualFrame.setOuterDebugInfoFrame(tempFrame);
-			tempFrame.setInnerDebugInfoFrame(virtualFrame);
-			virtualFrame = virtualFrame.getOuterDebugInfoFrame();
-		    }else{
-			virtualFrame = tempFrame;
-			innermostFrame = tempFrame;
+		
+		while (scope != null) {
+		    if (scope instanceof InlinedSubroutine) {
+			InlinedSubroutine subroutine = (InlinedSubroutine) scope;
+			tempFrame = new VirtualDebugInfoFrame(frame.getUndecoratedFrame());
+			((VirtualDebugInfoFrame) tempFrame).setIndex(count,inlineCount++);
+			tempFrame.setSubprogram(subroutine);
+
+			if (virtualFrame != null) {
+			    virtualFrame.setOuterDebugInfoFrame(tempFrame);
+			    tempFrame.setInnerDebugInfoFrame(virtualFrame);
+			    virtualFrame = virtualFrame
+				    .getOuterDebugInfoFrame();
+			} else {
+			    virtualFrame = tempFrame;
+			    innermostFrame = tempFrame;
+			}
 		    }
+		    scope = scope.getOuter();
 		}
 	    }
 	    

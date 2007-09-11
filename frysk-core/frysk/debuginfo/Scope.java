@@ -69,8 +69,9 @@ public class Scope
 {
   
     private Scope outer;
+    private Scope inner;
     
-    LinkedList scopes;
+    private LinkedList scopes;
   
     LinkedList variables;
     
@@ -78,27 +79,15 @@ public class Scope
     this.variables = new LinkedList();
     this.scopes = new LinkedList();
     
-//    System.out.println("\nScope.Scope() name: " + die.getName() + " " + DwTag.toName(die.getTag()));
-    
     die = die.getChild();
     
     while(die != null){
-//      System.out.println(" -> " + die.getName() + ": "+ DwTag.toName(die.getTag()));
       
       if(die.getTag() == DwTag.VARIABLE_){
         Variable variable = new Variable(die);
         variables.add(variable);
       }
       
-      if(die.getTag() == DwTag.LEXICAL_BLOCK_){
-        this.scopes.add(new LexicalBlock(die));
-      }else if(die.getTag() == DwTag.INLINED_SUBROUTINE_){
-	  // ignore inlined subroutines
-      }else{
-	  if(isScopeDie(die)){
-	      this.scopes.add(new Scope(die));
-	  }
-      }
       die = die.getSibling();
     }
     
@@ -108,8 +97,13 @@ public class Scope
       return this.outer;
   }
   
+  public Scope getInner(){
+      return this.inner;
+  }
+  
   public void setOuter(Scope outer){
       this.outer = outer;
+      outer.inner = this;
   }
   
   public LinkedList getScopes(){
@@ -152,9 +146,6 @@ public class Scope
     Arrays.fill(indentArray, ' ');
     String indentString = new String(indentArray);
     
-    writer.println();
-    writer.print(indentString+"{");
-	
     Iterator iterator = this.variables.iterator();
     while(iterator.hasNext()){
 	Variable variable = (Variable) iterator.next();
@@ -165,16 +156,8 @@ public class Scope
 	variable.printLineCol(writer);
 	writer.flush();
     }
-    
-    iterator = this.getScopes().iterator();
-    while(iterator.hasNext()){
-      Scope scope = (Scope) iterator.next();
-      // Dont print empty scopes
-      if(scope.getScopes().size() >0 || scope.getVariables().size() >0){
-	  scope.toPrint(frame, writer, indent+1);
-      }
-    }
-    
-    writer.print("\n"+indentString+"}");
+    writer.println();
+
   }
+  
 }

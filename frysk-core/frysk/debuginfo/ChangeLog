@@ -1,3 +1,15 @@
+2007-09-11  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DebugInfoFrame.java (printScope): New function.
+	(getSubprogram): Now uses getScopes().
+	* DebugInfoStackFactory.java (createVirtualStackTrace): Now uses
+	Frame.getScopes().
+	* Scope.java: Now longer searches for scopes with in the
+	current scope.
+	Added a pointer and getter() to the inner scope.
+	* ScopeFactory.java (createScope): Added handling for 
+	inlinedSubroutines.
+
 2007-09-11  Teresa Thomas  <tthomas@redhat.com>
 
 	* Piece.java: Abstract methods slice, getByte, putByte added.
