@@ -71,15 +71,7 @@ public class TestCppVariableSearchEngine extends TestLib{
 	String execPath = getExecPath(fileName);
 	String srcPath = Config.getPkgLibSrcDir() + fileName + ".c";
 	
-	TestfileTokenScanner scanner = new TestfileTokenScanner(new File(srcPath));
-	int variableLine = scanner.findTokenLine(variableToken);
-	Task task = StoppedTestTaskFactory.getStoppedTask(execPath);
-	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
-	
-	Variable variable = cppVariableSearchEngine.get(frame, variableName);
-
-	assertNotNull("Variable found", variable);
-	assertTrue("Found the correct variable", variable.getLineNumber() == variableLine);
+	verifyVariable(variableName, variableToken, fileName, execPath, srcPath);
     }
     
     public void testFindVar2(){
@@ -88,6 +80,37 @@ public class TestCppVariableSearchEngine extends TestLib{
 	String fileName = "funit-c-scopes";
 	String execPath = getExecPath(fileName);
 	String srcPath = Config.getPkgLibSrcDir() + fileName + ".c";
+	
+	verifyVariable(variableName, variableToken, fileName, execPath, srcPath);
+    }
+    
+    
+    
+    
+    /**
+         * Runs the given executable until it sigfaults then searches for the
+         * variable with the given name from that point. Then it verifies that
+         * the line number of the variable found is the same as the line number
+         * in the source file where the given token is.
+         * 
+         * @param variableName
+         *                Name of the variable to search for.
+         * @param variableToken
+         *                a token string from the source file that is found on
+         *                the same line as the variable.
+         * @param fileName
+         *                name of the test file.
+         * @param execPath
+         *                path to the executable to be run.
+         * @param srcPath
+         *                path to the source file from which the executable was
+         *                created
+         */
+    private void verifyVariable(String variableName,
+	    String variableToken,
+	    String fileName,
+	    String execPath,
+	    String srcPath){
 	
 	TestfileTokenScanner scanner = new TestfileTokenScanner(new File(srcPath));
 	int variableLine = scanner.findTokenLine(variableToken);
