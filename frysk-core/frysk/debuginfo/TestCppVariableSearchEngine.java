@@ -81,4 +81,22 @@ public class TestCppVariableSearchEngine extends TestLib{
 	assertNotNull("Variable found", variable);
 	assertTrue("Found the correct variable", variable.getLineNumber() == variableLine);
     }
+    
+    public void testFindVar2(){
+	String variableName = "var2"; 
+	String variableToken = variableName; 
+	String fileName = "funit-c-scopes";
+	String execPath = getExecPath(fileName);
+	String srcPath = Config.getPkgLibSrcDir() + fileName + ".c";
+	
+	TestfileTokenScanner scanner = new TestfileTokenScanner(new File(srcPath));
+	int variableLine = scanner.findTokenLine(variableToken);
+	Task task = StoppedTestTaskFactory.getStoppedTask(execPath);
+	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
+	
+	Variable variable = cppVariableSearchEngine.get(frame, variableName);
+
+	assertNotNull("Variable found", variable);
+	assertTrue("Found the correct variable", variable.getLineNumber() == variableLine);
+    }
 }

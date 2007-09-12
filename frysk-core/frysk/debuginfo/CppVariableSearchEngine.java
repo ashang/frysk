@@ -58,6 +58,7 @@ public class CppVariableSearchEngine {
 	    if(variable != null){
 		return variable;
 	    }
+	    scope = scope.getOuter();
 	}
 	
 	return null;
