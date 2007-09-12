@@ -134,7 +134,19 @@ public class Scope
       }
   }
   
-
+  public Variable getVariableByName(String name){
+      Variable variable = null;
+      
+      Iterator iterator = this.variables.iterator();
+      while (iterator.hasNext()) {
+	variable = (Variable) iterator.next();
+	if(variable.getName().equals(name)){
+	    return variable;
+	}
+    }
+      return null;
+  }
+  
   public void toPrint(DebugInfoFrame frame, PrintWriter writer, String indentString){
   
     Iterator iterator = this.variables.iterator();

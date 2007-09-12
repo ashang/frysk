@@ -1,3 +1,7 @@
+2007-09-12  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Config.java (getPkgLibSrcDir): New function.
+
 2007-07-28  Andrew Cagney  <cagney@redhat.com>
 
 	* Config.java (createBuildConfig64, createBuildConfig32): New.

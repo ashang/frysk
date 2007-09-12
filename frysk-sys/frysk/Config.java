@@ -271,6 +271,10 @@ public class Config
      */
     public static final native String getRootSrcDir ();
 
+    public static final String getPkgLibSrcDir (){
+	return getRootSrcDir() + "frysk-core/frysk/pkglibdir/";
+    }
+
     /**
      * The absolute source root directory against which the build was
      * created; this is an install time option since, with debug-info

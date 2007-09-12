@@ -1,3 +1,7 @@
+2007-09-12  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
+
+	* funit-c-scopes.c: New file.
+
 2007-09-12  Petr Machata  <pmachata@redhat.com>
 
 	* funit-empty.c: New file.

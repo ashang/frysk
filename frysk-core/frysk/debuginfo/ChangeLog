@@ -1,3 +1,10 @@
+2007-09-12  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Scope.java (getVariableByName): New function.
+	* TestCppVariableSearchEngine.java: New file.
+	* CppVariableSearchEngine.java: New file.
+	
+
 2007-09-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* LexicalBlock.java: Removed no argument constructor.
