@@ -98,7 +98,7 @@ public class TestLtrace
 
   public void testCallRecorded()
   {
-    class MyFilter implements TracePointFilter {
+    class MyFilter2 implements TracePointFilter {
       public boolean tracePoint(Task task, TracePoint tp) {
 	if (tp.origin != frysk.ftrace.TracePointOrigin.PLT)
 	  return false;
@@ -107,7 +107,7 @@ public class TestLtrace
 	return taskFilename.equals(symFilename);
       }
     }
-    Ltrace ltrace = new Ltrace(new MyFilter());
+    Ltrace ltrace = new Ltrace(new MyFilter2());
 
     class MyObserver extends DummyLtraceObserver {
       public ArrayList events = new ArrayList();

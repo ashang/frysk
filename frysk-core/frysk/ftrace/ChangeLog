@@ -1,5 +1,9 @@
 2007-09-12  Petr Machata  <pmachata@redhat.com>
 
+	* TestLtrace.java (testCallRecorded): rename MyFilter to MyFilter2.
+
+2007-09-12  Petr Machata  <pmachata@redhat.com>
+
 	* Archx86.java: convert C signed to java long properly
 	* SymbolFilter.java: deleted
 	* TracePoint.java: new file
