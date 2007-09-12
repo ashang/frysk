@@ -40,16 +40,32 @@
 package frysk.debuginfo;
 
 import frysk.stack.Register;
+import frysk.stack.Frame;
+
+import java.math.BigInteger;
 
 public class RegisterPiece 
 	extends Piece
 {
     private final Register register;  
+    protected Frame frame;
+    private byte[] byteArray;
 
     public RegisterPiece(Register register, long size)
     {
 	super (size);
 	this.register = register;
+    }
+    
+    public RegisterPiece(Register register, long size, Frame frame)
+    {
+	super (size);
+	this.register = register;
+  	this.frame = frame;
+  	
+  	// Get the value inside the register as a byte array.
+	BigInteger big = new BigInteger(Long.toString(frame.getRegisterValue(register).asLong()));
+	byteArray = big.toByteArray();
     }
  
     /**
@@ -81,6 +97,9 @@ public class RegisterPiece
        
     protected byte getByte(long index) 
     {
-	throw new RuntimeException();
+	if (index >= byteArray.length)
+	    return (byte)0;
+	else 
+	    return byteArray[(int)(byteArray.length-index-1)];
     }
 }

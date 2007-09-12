@@ -1,3 +1,9 @@
+2007-09-12  Teresa Thomas  <tthomas@redhat.com>
+
+	* LocationExpression.java (decode): Use ctor RegisterPiece(long,
+	long, Frame) instead of MemoryPiece(long, long).
+	* RegisterPiece.java: getByte implemented; frame added.
+	
 2007-09-12  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestCppVariableSearchEngine.java (testFindArg1): New test.
