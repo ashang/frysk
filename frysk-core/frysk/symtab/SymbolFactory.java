@@ -73,7 +73,7 @@ public class SymbolFactory
 	    return UNKNOWN;
 
 	DwflSymbol symbol = new DwflSymbol();
-	DwflCache.getDwfl(task).getModule(address).getSymbol(address, symbol);
+	module.getSymbol(address, symbol);
 	if (symbol.getName() == null)
 	    return UNKNOWN;
 

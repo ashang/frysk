@@ -1,3 +1,7 @@
+2007-09-12  Kris Van Hees  <kris.van.hees@oracle.com>
+
+	* SymbolFactory.java (getSymbol): Use prefetched values.
+
 2007-08-28  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestSymbol.java (symbolTest): Use DaemonBlockedAtSignal.
