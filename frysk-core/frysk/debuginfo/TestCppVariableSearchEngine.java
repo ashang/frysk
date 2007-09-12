@@ -84,6 +84,16 @@ public class TestCppVariableSearchEngine extends TestLib{
 	verifyVariable(variableName, variableToken, fileName, execPath, srcPath);
     }
     
+    public void testFindArg1(){
+	String variableName = "arg1"; 
+	String variableToken = variableName; 
+	String fileName = "funit-c-scopes";
+	String execPath = getExecPath(fileName);
+	String srcPath = Config.getPkgLibSrcDir() + fileName + ".c";
+	
+	verifyVariable(variableName, variableToken, fileName, execPath, srcPath);
+    }
+    
     
     
     

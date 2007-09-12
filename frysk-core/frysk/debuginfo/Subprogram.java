@@ -122,4 +122,19 @@ public class Subprogram extends Subroutine
     public void printScopes(PrintWriter writer, DebugInfoFrame frame){
 	super.toPrint(frame, writer, " ");
     }
+    
+    public Variable getVariableByName(String name) {
+	Variable variable = null;
+
+	Iterator iterator = this.parameters.iterator();
+	while (iterator.hasNext()) {
+	    variable = (Variable) iterator.next();
+	    if (variable.getName().equals(name)) {
+		return variable;
+	    }
+	}
+	
+	return super.getVariableByName(name);
+    }
+
 }

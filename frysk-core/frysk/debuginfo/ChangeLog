@@ -1,5 +1,10 @@
 2007-09-12  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* TestCppVariableSearchEngine.java (testFindArg1): New test.
+	* Subprogram.java (getVariableByName): Added paramter search.
+
+2007-09-12  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* TestCppVariableSearchEngine.java (verifyVariable): New function.
 	
 2007-09-12  Sami Wagiaalla  <swagiaal@redhat.com>
