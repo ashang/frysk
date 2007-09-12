@@ -40,8 +40,8 @@
 package frysk.ftrace;
 
 import java.io.File;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import frysk.sys.proc.MapsBuilder;
 
 class MemoryMapping
@@ -64,53 +64,94 @@ class MemoryMapping
     this.permExecute = permExecute;
   }
 
+  public boolean equals(Object other)
+  {
+    if (!(other instanceof MemoryMapping))
+      return false;
+    MemoryMapping m = (MemoryMapping)other;
+    return path.equals(m.path)
+      && addressLow == m.addressLow
+      && addressHigh == m.addressHigh
+      && permRead == m.permRead
+      && permWrite == m.permWrite
+      && permExecute == m.permExecute;
+  }
+
+  public int hashCode()
+  {
+    return path.hashCode();
+  }
+
   /**
    * Return a map of address space of process with given `pid'.  The
    * map is constructed in such a way that consecutive mappings of the
    * same file are merged, with their flags or-ed.
    */
-  public static Map buildForPid (int pid)
+  public static Set buildForPid (int pid)
   {
     class MyMapsBuilder
       extends MapsBuilder
     {
       private byte[] buf;
-      private Map mappedFiles = new HashMap();
-      public void buildBuffer (byte[] buf) { this.buf = buf; }
+      private Set mappedFiles = new HashSet();
+      private String lastFile = null;
+      private MemoryMapping lastMapping = null;
 
-      public void buildMap (long addressLow, long addressHigh,
-			    boolean permRead, boolean permWrite,
-			    boolean permExecute, boolean shared,
-			    long offset,
-			    int devMajor, int devMinor,
-			    int inode,
-			    int pathnameOffset, int pathnameLength)
+      public void buildBuffer(byte[] buf)
       {
+	this.buf = buf;
+      }
+
+      public MemoryMapping newMemoryMapping(String path, long addressLow, long addressHigh,
+					    boolean permRead, boolean permWrite, boolean permExecute)
+      {
+	MemoryMapping ret = new MemoryMapping(new File(path), addressLow, addressHigh,
+					      permRead, permWrite, permExecute);
+	mappedFiles.add(ret);
+	return ret;
+      }
+
+      public void buildMap(long addressLow, long addressHigh,
+			   boolean permRead, boolean permWrite,
+			   boolean permExecute, boolean shared,
+			   long offset,
+			   int devMajor, int devMinor,
+			   int inode,
+			   int pathnameOffset, int pathnameLength)
+      {
+	/// Note: This assumes that buildMap is called in the same order
+	/// mappings are found in /proc/pid/maps.  This is reasonable
+	/// assumption, given that whole scheme is built around
+	/// buildBuffer and buildMap calls, with the latter giving
+	/// indices into the buffer established by the former.
+
 	String path = new String(this.buf, pathnameOffset, pathnameLength);
-	if (path.length () > 0 && path.charAt(0) != '[')
+	if (path.length() > 0 && path.charAt(0) != '[')
 	  {
 	    if (path.charAt(0) != '/')
 	      throw new AssertionError("Unexpected: first character of path in map is neither '[', nor '/'.");
-	    MemoryMapping info = (MemoryMapping)mappedFiles.get(path);
-	    if (info != null)
+
+	    MemoryMapping info = lastMapping;
+	    if (lastFile != null && lastFile.equals(path))
 	      {
-		if (info.addressLow == addressHigh
-		    || info.addressHigh == addressLow)
-		  {
-		    if (addressHigh > info.addressHigh)
-		      info.addressHigh = addressHigh;
-		    if (addressLow < info.addressLow)
-		      info.addressLow = addressLow;
-		    if (permRead) info.permRead = true;
-		    if (permWrite) info.permWrite = true;
-		    if (permExecute) info.permExecute = true;
-		  }
-		else
-		  throw new AssertionError("Non-continuous mapping.");
+		if (info.addressLow != addressHigh
+		    && info.addressHigh != addressLow)
+		  info = newMemoryMapping(path, addressLow, addressHigh,
+					  permRead, permWrite, permExecute);
 	      }
 	    else
-	      mappedFiles.put(path, new MemoryMapping(new File(path), addressLow, addressHigh,
-						      permRead, permWrite, permExecute));
+	      info = newMemoryMapping(path, addressLow, addressHigh,
+				      permRead, permWrite, permExecute);
+	    lastFile = path;
+	    lastMapping = info;
+
+	    if (addressHigh > info.addressHigh)
+	      info.addressHigh = addressHigh;
+	    if (addressLow < info.addressLow)
+	      info.addressLow = addressLow;
+	    if (permRead) info.permRead = true;
+	    if (permWrite) info.permWrite = true;
+	    if (permExecute) info.permExecute = true;
 	  }
       }
     }

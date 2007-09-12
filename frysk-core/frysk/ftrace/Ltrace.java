@@ -49,9 +49,7 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
-
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import java.util.logging.*;
 
 import frysk.proc.Action;
 import frysk.proc.Host;
@@ -62,11 +60,6 @@ import frysk.proc.ProcObserver;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-
-/*import frysk.stack.Frame;
-import frysk.stack.StackFactory;*/
-
-import frysk.sys.Sig;
 
 public class Ltrace
 {
@@ -84,16 +77,15 @@ public class Ltrace
   // Task counter.
   int numTasks = 0;
 
-  private List observers = new ArrayList();
+  // List of observers.
+  protected List observers = new ArrayList();
 
-  final SymbolFilter symbolFilter;
+  // The filter that decides what should be traced.
+  protected final TracePointFilter tracePointFilter;
 
-  /**
-   *
-   */
-  public Ltrace (SymbolFilter symbolFilter)
+  public Ltrace(TracePointFilter tracePointFilter)
   {
-    this.symbolFilter = symbolFilter;
+    this.tracePointFilter = tracePointFilter;
   }
 
   /**
@@ -142,32 +134,56 @@ public class Ltrace
   }
 
   /**
-   * Trace new process.
+   * Trace new process.  Processes all existing tasks of a process,
+   * and monitors the process for new tasks.
+   *
+   * @param blocker An observer that blocks current process until
+   * the tasks are processed.  Unblock is requested here.
    */
-  private void addProc(Proc proc)
+  private void addProc(Proc proc, TaskObserver blocker)
   {
+    Task mainTask = proc.getMainTask();
+
+    // If a task appears after the getTasks() list is generated, but
+    // before ProcTasks iteration below, it will be reported as
+    // existing at ProcTasks iteration.  This set exists to
+    // differentiate between yet-unprocessed and already processed
+    // "existing" tasks.
+    final Set processedTasks = new HashSet();
+
+    for (Iterator it = proc.getTasks().iterator(); it.hasNext(); )
+      {
+	Task task = (Task)it.next();
+	processedTasks.add(task);
+	if (task.getTid() == mainTask.getTid())
+	  perProcInit(task.getProc());
+	addTask(task);
+      }
+
     new ProcTasksObserver(proc, new ProcObserver.ProcTasks() {
-	public void existingTask (Task task)
+	public void existingTask(Task task)
 	{
-	  if (task.getTid() == task.getProc().getMainTask().getTid())
-	    perProcInit(task.getProc());
+	  if (!processedTasks.contains(task))
+	    addTask(task);
+	}
+
+	public void taskAdded(Task task)
+	{
 	  addTask(task);
 	}
 
-	public void taskAdded (Task task)
-	{
-	  addTask(task);
-	}
-
-	public void taskRemoved (Task task)
+	public void taskRemoved(Task task)
 	{
 	  removeTask(task);
 	}
 
-	public void addFailed (Object arg0, Throwable w) {}
-	public void addedTo (Object arg0) {}
-	public void deletedFrom (Object arg0) {}
+	public void addFailed(Object arg0, Throwable w) {}
+	public void addedTo(Object arg0) {}
+	public void deletedFrom(Object arg0) {}
       });
+
+    if (blocker != null)
+      mainTask.requestUnblock(blocker);
   }
 
   /**
@@ -212,13 +228,6 @@ public class Ltrace
   {
     numTasks--;
 
-    // note this method is already synchronized
-    for (Iterator it = observers.iterator(); it.hasNext(); )
-      {
-	LtraceObserver o = (LtraceObserver)it.next();
-	o.taskRemoved(task);
-      }
-
     if (numTasks == 0)
       Manager.eventLoop.requestStop();
   }
@@ -226,7 +235,7 @@ public class Ltrace
   /**
    * Start tracing a set of PIDs defined on commandline.
    */
-  public void trace ()
+  public void trace()
   {
     // This observer should only be used to pick up a proc if we are
     // tracing a process given a pid.  Otherwise use forkobserver.
@@ -238,7 +247,7 @@ public class Ltrace
 	ProcId id = proc.getId();
 	if (pidsToTrace.contains(id))
 	  {
-	    addProc(proc);
+	    addProc(proc, null);
 	    pidsToTrace.remove(id);
 	    if (pidsToTrace.isEmpty())
 	      Manager.host.observableProcAddedXXX.deleteObserver(this);
@@ -267,7 +276,7 @@ public class Ltrace
   /**
    * Start tracing a command given on commandline.
    */
-  public void trace (String[] command)
+  public void trace(String[] command)
   {
     if (!pidsToTrace.isEmpty())
       throw new AssertionError("Unexpected: tracing both pids and command.");
@@ -275,9 +284,8 @@ public class Ltrace
     Manager.host.requestCreateAttachedProc(command, new TaskObserver.Attached() {
 	public Action updateAttached (Task task)
 	{
-	  addProc(task.getProc());
+	  addProc(task.getProc(), this);
 	  ltraceTaskObserver.updateAttached(task);
-	  task.requestUnblock(this);
 	  return Action.BLOCK;
 	}
 	public void addFailed (Object arg0, Throwable w) {}
@@ -296,6 +304,18 @@ public class Ltrace
 	       TaskObserver.Terminated,
 	       TaskObserver.Terminating
   {
+    /** Remembers which files are currently mapped in which task. */
+    private HashMap mapsForTask = new HashMap();
+
+    /** Remembers which tracepoint is associated with which breakpoint..
+	Map&lt;task, Map&lt;address, TracePoint&gt;&gt; */
+    private HashMap breakpointsForTask = new HashMap();
+
+    /** Remembers return from which tracepoint is associated with
+	which breakpoint.
+        Map&lt;task, Map&lt;address, List&lt;TracePoint&gt;&gt;&gt; */
+    private HashMap retBreakpointsForTask = new HashMap();
+
     // ------------------------
     // --- syscall observer ---
     // ------------------------
@@ -305,11 +325,6 @@ public class Ltrace
 
     public Action updateSyscallEnter (Task task)
     {
-      if (syscallCache.containsKey(task))
-	System.err.println("Warning: syscallCache contains "
-			   + ((frysk.proc.Syscall)syscallCache.get(task)).getName()
-			   + ".");
-
       frysk.proc.Syscall syscall = task.getSyscallEventInfo().getSyscall(task);
 
       /*
@@ -379,56 +394,51 @@ public class Ltrace
     {
       frysk.proc.Syscall syscall = (frysk.proc.Syscall) syscallCache.remove(task);
 
-      if (syscall == null)
-	System.err.println("Warning: syscallCache should be set.");
-      else
+      // Unfortunately, I know of no reasonable, (as in platform
+      // independent) way to find whether a syscall is mmap,
+      // munmap, or anything else.  Hence this hack, which is
+      // probably still much better than rescanning the map on
+      // each syscall.
+      String name = syscall.getName();
+
+      Object ret = null;
+      char fmt = syscall.argList.charAt(0);
+      switch (fmt)
 	{
-	  // Unfortunately, I know of no reasonable, (as in platform
-	  // independent) way to find whether a syscall is mmap,
-	  // munmap, or anything else.  Hence this hack, which is
-	  // probably still much better than rescanning the map on
-	  // each syscall.
-	  String name = syscall.getName();
-
-	  Object ret = null;
-	  char fmt = syscall.argList.charAt(0);
-	  switch (fmt)
+	case 's':
+	case 'S':
+	  long addr = syscall.getReturnCode(task);
+	  if (addr == 0)
+	    ret = new Long(0);
+	  else
 	    {
-	    case 's':
-	    case 'S':
-	      long addr = syscall.getReturnCode(task);
-	      if (addr == 0)
-		ret = new Long(0);
-	      else
-		{
-		  StringBuffer x = new StringBuffer();
-		  task.getMemory().get(addr, 20, x);
-		  ret = new String(x);
-		}
-	      break;
-
-	    default:
-	      long arg = syscall.getReturnCode(task);
-	      ret = new Long(arg);
-	      break;
+	      StringBuffer x = new StringBuffer();
+	      task.getMemory().get(addr, 20, x);
+	      ret = new String(x);
 	    }
+	  break;
 
-	  synchronized(observers)
+	default:
+	  long arg = syscall.getReturnCode(task);
+	  ret = new Long(arg);
+	  break;
+	}
+
+      synchronized(observers)
+	{
+	  for (Iterator it = observers.iterator(); it.hasNext(); )
 	    {
-	      for (Iterator it = observers.iterator(); it.hasNext(); )
-		{
-		  LtraceObserver o = (LtraceObserver)it.next();
-		  o.syscallLeave(task, syscall, ret);
-		}
+	      LtraceObserver o = (LtraceObserver)it.next();
+	      o.syscallLeave(task, syscall, ret);
 	    }
+	}
 
-	  if (name.indexOf("mmap") != -1
-	      || name.indexOf("munmap") != -1)
-	    {
-	      this.checkMapUnmapUpdates(task, false);
-	      task.requestUnblock(this);
-	      return Action.BLOCK;
-	    }
+      if (name.indexOf("mmap") != -1
+	  || name.indexOf("munmap") != -1)
+	{
+	  this.checkMapUnmapUpdates(task, false);
+	  task.requestUnblock(this);
+	  return Action.BLOCK;
 	}
 
       return Action.CONTINUE;
@@ -439,12 +449,6 @@ public class Ltrace
     // ------------------------------------------
     // --- code observer, breakpoint handling ---
     // ------------------------------------------
-
-    // XXX: Following fields will have to be made task-aware.
-    private HashMap pltBreakpoints = new HashMap();
-    private HashMap dynamicBreakpoints = new HashMap();
-    private HashMap staticBreakpoints = new HashMap();
-    private HashMap pltBreakpointsRet = new HashMap();
 
     /*
     public Action libcallEnter(Task task, Symbol symbol, long address)
@@ -476,64 +480,96 @@ public class Ltrace
 
     public Action updateHit (Task task, long address)
     {
+      logger.log(Level.FINE, "Breakpoint at 0x" + Long.toHexString(address), this);
       Long laddress = new Long(address);
 
-      Symbol pltEnter = null;
-      Symbol pltLeave = null;
+      TracePoint enter = null;
+      TracePoint leave = null;
       Arch arch = (Arch)taskArchHandlers.get(task);
 
-      Symbol symbol = (Symbol)pltBreakpoints.get(laddress);
-      if (symbol != null)
+      // Obtain breakpoint maps for this task.
+      HashMap breakpoints;
+      HashMap breakpointsRet;
+      synchronized (this)
 	{
-	  // Install breakpoint to return address.
-	  long retAddr = arch.getReturnAddress(task, symbol);
-	  Long retAddrL = new Long(retAddr);
-	  List symList = (List)pltBreakpointsRet.get(retAddrL);
-	  if (symList == null)
-	    {
-	      task.requestAddCodeObserver(this, retAddr);
-	      symList = new LinkedList();
-	      pltBreakpointsRet.put(retAddrL, symList);
-	    }
-	  symList.add(symbol);
-
-	  pltEnter = symbol;
+	  breakpoints = (HashMap)breakpointsForTask.get(task);
+	  breakpointsRet = (HashMap)retBreakpointsForTask.get(task);
 	}
 
-      List symList = (List)pltBreakpointsRet.get(laddress);
-      if (symList != null)
+      // See if we enter somewhere.
+      TracePoint tp = (TracePoint)breakpoints.get(laddress);
+      if (tp != null)
 	{
-	  pltLeave = (Symbol)symList.remove(symList.size() - 1);
-	  if (symList.isEmpty())
+	  if (address != tp.symbol.getParent().getEntryPoint())
 	    {
-	      pltBreakpointsRet.remove(new Long(address));
+	      // Install breakpoint to return address.
+	      long retAddr = arch.getReturnAddress(task, tp.symbol);
+	      logger.log(Level.FINER,
+			 "It's enter tracepoint, return address 0x"
+			 + Long.toHexString(retAddr) + ".", this);
+	      Long retAddrL = new Long(retAddr);
+	      List tpList = (List)breakpointsRet.get(retAddrL);
+	      if (tpList == null)
+		{
+		  task.requestAddCodeObserver(this, retAddr);
+		  tpList = new LinkedList();
+		  breakpointsRet.put(retAddrL, tpList);
+		}
+	      tpList.add(tp);
+	    }
+	  else
+	    logger.log(Level.FINEST,
+		       "It's _start, no return breakpoint established..", this);
+
+	  enter = tp;
+	}
+
+      // See if we returned from somewhere.
+      List tpList = (List)breakpointsRet.get(laddress);
+      if (tpList != null)
+	{
+	  logger.log(Level.FINER, "It's leave tracepoint.", this);
+	  leave = (TracePoint)tpList.remove(tpList.size() - 1);
+	  if (tpList.isEmpty())
+	    {
+	      logger.log(Level.FINEST, "Removing leave breakpoint.", this);
+	      breakpointsRet.remove(new Long(address));
 	      task.requestDeleteCodeObserver(this, address);
 	    }
 	}
 
-      Object[] args = null;
-      if (pltEnter != null)
-	args = arch.getCallArguments(task, pltEnter);
+      if (enter != null || leave != null)
+	{
+	  Object[] args = null;
+	  if (enter != null)
+	    {
+	      logger.log(Level.FINEST, "Building arglist.", this);
+	      args = arch.getCallArguments(task, enter.symbol);
+	    }
 
-      Object ret = null;
-      if (pltLeave != null)
-	ret = arch.getReturnValue(task, pltLeave);
+	  Object ret = null;
+	  if (leave != null)
+	    {
+	      logger.log(Level.FINEST, "Fetching retval.", this);
+	      ret = arch.getReturnValue(task, leave.symbol);
+	    }
 
-      if (pltEnter != null || pltLeave != null)
-	synchronized(observers)
-	  {
-	    for (Iterator it = observers.iterator(); it.hasNext(); )
-	      {
-		LtraceObserver o = (LtraceObserver)it.next();
-		if (pltEnter != null)
-		  o.pltEntryEnter(task, pltEnter, args);
-		if (pltLeave != null)
-		  o.pltEntryLeave(task, pltLeave, ret);
-	      }
-	  }
+	  synchronized(observers)
+	    {
+	      for (Iterator it = observers.iterator(); it.hasNext(); )
+		{
+		  LtraceObserver o = (LtraceObserver)it.next();
+		  if (enter != null)
+		    o.funcallEnter(task, enter.symbol, args);
+		  if (leave != null)
+		    o.funcallLeave(task, leave.symbol, ret);
+		}
+	    }
+	}
       else
 	System.err.println("[" + task.getTaskId().intValue() + "] UNKNOWN BREAKPOINT 0x" + Long.toHexString(address));
 
+      logger.log(Level.FINE, "Breakpoint handled.", this);
       task.requestUnblock(this);
       return Action.BLOCK;
     }
@@ -548,10 +584,16 @@ public class Ltrace
     {
       // Per-task initialization.
       long pc = task.getIsa().pc(task);
-      System.err.print("[" + task.getTaskId().intValue() + "] ");
-      System.err.println("new task attached at 0x" + Long.toHexString(pc));
+      logger.log(Level.FINE,
+		 "new task attached at 0x" + Long.toHexString(pc)
+		 + ", pid=" + task.getTaskId().intValue(), this);
 
-      this.mapsForTask.put(task, new HashMap());
+      this.mapsForTask.put(task, java.util.Collections.EMPTY_SET);
+
+      // Can't use the EMPTY_MAPs here, cause these get modified directly.
+      this.breakpointsForTask.put(task, new HashMap());
+      this.retBreakpointsForTask.put(task, new HashMap());
+
       this.checkMapUnmapUpdates(task, false);
 
       task.requestUnblock(this);
@@ -565,13 +607,16 @@ public class Ltrace
       return Action.BLOCK;
     }
 
-    public Action updateTerminated (Task task, boolean signal, int value)
+    public Action updateTerminated(Task task, boolean signal, int value)
     {
-      System.err.print("[" + task.getTaskId().intValue() + "] ");
-      if (signal)
-	System.err.println("+++ killed by " + Sig.toPrintString(value) + " +++");
-      else
-	System.err.println("+++ exited (status " + value + ") +++");
+      synchronized(observers)
+	{
+	  for (Iterator it = observers.iterator(); it.hasNext(); )
+	    {
+	      LtraceObserver o = (LtraceObserver)it.next();
+	      o.taskTerminated(task, signal, value);
+	    }
+	}
 
       return Action.CONTINUE;
     }
@@ -586,7 +631,7 @@ public class Ltrace
     {
       if(traceChildren)
 	{
-	  addProc(offspring.getProc());
+	  addProc(offspring.getProc(), null);
 	  offspring.requestUnblock(this);
 	  return Action.BLOCK;
 	}
@@ -604,32 +649,24 @@ public class Ltrace
     // --- mmap/munmap handling ---
     // ----------------------------
 
-    /// Remembers which files are currently mapped in which task.
-    HashMap mapsForTask = new HashMap();
-
     private void checkMapUnmapUpdates(Task task, boolean terminating)
     {
-      Map mappedFiles = (Map)this.mapsForTask.get(task);
-      Map newMappedFiles = terminating
-	? new HashMap ()
-	: MemoryMapping.buildForPid(task.getTid());
+      Set mappedFiles = (Set)this.mapsForTask.get(task);
+      Set newMappedFiles = terminating ?
+	java.util.Collections.EMPTY_SET : MemoryMapping.buildForPid(task.getTid());
 
-      Set mappedFilesSet = mappedFiles.keySet();
-      Set newMappedFilesSet = newMappedFiles.keySet();
-
-      if (!newMappedFilesSet.equals(mappedFilesSet))
+      // Assume that files get EITHER mapped, OR unmapped.  Because
+      // under normal conditions, each map/unmap will get spotted,
+      // this is a reasonable assumption.
+      if (newMappedFiles.size() != mappedFiles.size())
 	{
-	  // Assume that files get EITHER mapped, OR unmapped.
-	  // Because under normal conditions, each map/unmap will
-	  // get spotted, this is a reasonable assumption.
-	  if (newMappedFilesSet.containsAll(mappedFilesSet))
+	  if (newMappedFiles.size() > mappedFiles.size())
 	    {
-	      Set diff = new HashSet(newMappedFilesSet);
-	      diff.removeAll(mappedFilesSet);
+	      Set diff = new HashSet(newMappedFiles);
+	      diff.removeAll(mappedFiles);
 	      for (Iterator it = diff.iterator(); it.hasNext(); )
 		{
-		  String path = (String)it.next();
-		  MemoryMapping info = (MemoryMapping)newMappedFiles.get(path);
+		  MemoryMapping info = (MemoryMapping)it.next();
 		  this.updateMappedFile(task, info);
 		}
 	    }
@@ -637,11 +674,10 @@ public class Ltrace
 	    {
 	      // We can avoid artificial `diff' set here, to gain a
 	      // little performance.
-	      mappedFilesSet.removeAll(newMappedFilesSet);
-	      for (Iterator it = mappedFilesSet.iterator(); it.hasNext(); )
+	      mappedFiles.removeAll(newMappedFiles);
+	      for (Iterator it = mappedFiles.iterator(); it.hasNext(); )
 		{
-		  String path = (String)it.next();
-		  MemoryMapping info = (MemoryMapping)mappedFiles.get(path);
+		  MemoryMapping info = (MemoryMapping)it.next();
 		  this.updateUnmappedFile(task, info);
 		}
 	    }
@@ -666,62 +702,45 @@ public class Ltrace
       if (!mapping.permExecute)
 	return;
       ObjectFile objf = ObjectFile.buildFromFile(mapping.path);
-      if (objf != null)
-	{
-	  final long relocation = mapping.addressLow - objf.getBaseAddress();
-	  final Long tracepoints[] = {null, null, null};
-	  objf.eachSymbol(new ObjectFile.SymbolIterator() {
-	      public void symbol(Symbol sym)
+      if (objf == null)
+	return;
+
+      final long relocation = mapping.addressLow - objf.getBaseAddress();
+      objf.eachTracePoint(new ObjectFile.TracePointIterator() {
+	  public void tracePoint(TracePoint tp)
+	  {
+	    if (tp.address != 0
+		&& tracePointFilter.tracePoint(task, tp))
 	      {
-    		if (sym.pltAddress != 0
-		    && symbolFilter.matchPltEntry(task, sym))
+		long addr = tp.address + relocation;
+		Long laddr = new Long(addr);
+		logger.log(Level.CONFIG, "Will trace `" + tp.symbol.name
+			   + "' at 0x" + Long.toHexString(addr), this);
+
+		// FIXME: probably handle aliases at a lower
+		// lever.  Each tracepoint should point to a list
+		// of symbols that alias it, and should be present
+		// only once in an ObjectFile.
+		synchronized (this)
 		  {
-		    Long laddr = new Long(sym.pltAddress + relocation);
-		    tracepoints[0] = laddr;
-		    logger.log(Level.CONFIG, "Will trace PLT for " + sym.name + "\n", this);
-		  }
-		else
-		  tracepoints[0] = null;
-
-		if (sym.entryAddress != 0
-		    && symbolFilter.matchDynamic(task, sym))
-		  {
-		    Long laddr = new Long(sym.entryAddress + relocation);
-		    tracepoints[1] = laddr;
-		    logger.log(Level.CONFIG, "Will trace (dynamic) entry for " + sym.name + "\n", this);
-		  }
-		else
-		  tracepoints[1] = null;
-
-		tracepoints[2] = null;
-
-		Map[] breakpointMaps = {
-		  pltBreakpoints, dynamicBreakpoints, staticBreakpoints
-		};
-
-		for (int i = 0; i < 3; ++i)
-		  {
-		    Long laddr = tracepoints[i];
-		    if (laddr != null)
+		    HashMap breakpoints = (HashMap)breakpointsForTask.get(task);
+		    if (breakpoints.containsKey(laddr))
 		      {
-			if (breakpointMaps[i].containsKey(laddr))
-			  {
-			    // We got an alias.  Put the symbol with the
-			    // shorter name into the map.
-			    Symbol original = (Symbol)breakpointMaps[i].get(laddr);
-			    if (sym.name.length() < original.name.length())
-			      breakpointMaps[i].put(laddr, sym);
-			  }
-			else
-			  {
-			    task.requestAddCodeObserver(ltraceTaskObserver, laddr.longValue());
-			    breakpointMaps[i].put(laddr, sym);
-			  }
+			// We got an alias.  Put the symbol with the
+			// shorter name into the map.
+			TracePoint original = (TracePoint)breakpoints.get(laddr);
+			if (tp.symbol.name.length() < original.symbol.name.length())
+			  breakpoints.put(laddr, tp);
+		      }
+		    else
+		      {
+			task.requestAddCodeObserver(ltraceTaskObserver, laddr.longValue());
+			breakpoints.put(laddr, tp);
 		      }
 		  }
 	      }
-	    });
-	}
+	  }
+	});
     }
 
     private void updateUnmappedFile (Task task, MemoryMapping mapping)

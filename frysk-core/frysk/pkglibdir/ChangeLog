@@ -1,3 +1,7 @@
+2007-09-12  Petr Machata  <pmachata@redhat.com>
+
+	* funit-empty.c: New file.
+
 2007-09-06  Stan Cox  <scox@redhat.com>
 
 	* funit-class.cxx (crash): New.  Use it instead of looping.

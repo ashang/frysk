@@ -39,73 +39,21 @@
 
 package frysk.ftrace;
 
-import inua.eio.ByteBuffer;
-
-import frysk.proc.Task;
-import frysk.proc.Register;
-
-/**
- * x86 implementation of Arch interface.
- */
-public class Archx86
-  implements Arch
+public class TracePoint
 {
-  public static final Arch instance = new Archx86();
+  /** The address of the tracepoint. */
+  public final long address;
 
-  protected Archx86() {}
+  /** The symbol this tracepoint belongs to. */
+  public final Symbol symbol;
 
-  private long unsigned(long l)
+  /** The origin of this tracepoint. */
+  public final TracePointOrigin origin;
+
+  TracePoint(long address, Symbol symbol, TracePointOrigin origin)
   {
-    return l & 0x00000000ffffffffL;
-  }
-
-  public long getReturnAddress(Task task, Symbol symbol)
-  {
-    ByteBuffer memBuf = task.getMemory();
-    Register espRegister = task.getIsa().getRegisterByName("esp");
-    long esp = espRegister.get(task);
-    long retAddr = unsigned(memBuf.getInt(esp));
-    return retAddr;
-  }
-
-  public Object[] getCallArguments(Task task, Symbol symbol)
-  {
-    ByteBuffer memBuf = task.getMemory();
-    Register espRegister = task.getIsa().getRegisterByName("esp");
-    long esp = espRegister.get(task);
-    esp += 4;
-
-    // Poor man's arg extractor... both traditional ltrace-style and
-    // dwarf-enhanced formatters will be implemented in future, this
-    // is just to test some stuff...
-    if (symbol.name.equals("puts"))
-      {
-	long pointer = unsigned(memBuf.getInt(esp));
-	int length = 0;
-	while(memBuf.getByte(pointer + length) != 0)
-	  length++;
-	byte[] bytes = new byte[length];
-	for (int i = 0; i < bytes.length; ++i)
-	  bytes[i] = memBuf.getByte(pointer + i);
-	String arg = new String(bytes);
-	Object[] ret = {arg};
-	return ret;
-      }
-    else
-      {
-	Object[] ret = new Object[4];
-	for (int i = 0; i < ret.length; ++i)
-	  {
-	    ret[i] = new Long(unsigned(memBuf.getInt(esp)));
-	    esp += 4;
-	  }
-	return ret;
-      }
-  }
-
-  public Object getReturnValue(Task task, Symbol symbol)
-  {
-    Register r = task.getIsa().getRegisterByName("eax");
-    return new Long(r.get(task));
+    this.address = address;
+    this.symbol = symbol;
+    this.origin = origin;
   }
 }

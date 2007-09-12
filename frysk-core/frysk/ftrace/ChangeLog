@@ -1,3 +1,34 @@
+2007-09-12  Petr Machata  <pmachata@redhat.com>
+
+	* Archx86.java: convert C signed to java long properly
+	* SymbolFilter.java: deleted
+	* TracePoint.java: new file
+	* TracePointFilter.java: new file
+	* TracePointOrigin.java: new file
+	* Ltrace.java:
+	  - use logger where possible
+	  - use TracePoints
+	(addProc, trace(String[])): unblock main task only after all tasks
+	are iterated
+	(taskRemoved, updateTerminated): observer handling moved from
+	former to latter
+	(breakpointsForTask, retBreakpointsForTask): use these instead of
+	pltBreakpoints, dynamicBreakpoints, staticBreakpoints,
+	pltBreakpointsRet
+	(checkMapUnmapUpdates): compare set sizes instead of contents
+	* LtraceObserver.java: use TracePoints
+	(taskRemoved): renamed to taskTerminated, with arguments
+	* MemoryMapping.java: support double mappings
+	* ObjectFile.java:
+	  - use logger where possible
+	  - use TracePoints
+	  - support entryPoint
+	  - load TracePoints also from symtab
+	  - support statically linked binaries
+	* Symbol.java: don't record addresses at symbol, that's what
+	TracePoints are for
+	* TestLtrace.java: new file
+
 2007-08-25  Petr Machata  <pmachata@redhat.com>
 
 	* Arch.java: new file

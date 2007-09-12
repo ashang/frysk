@@ -51,28 +51,12 @@ import frysk.proc.Syscall;
  */
 public interface LtraceObserver
 {
-  /** The task has hit PLT entry for given function. */
-  void pltEntryEnter(Task task, Symbol symbol, Object[] args);
+  /** The task has entered a function.  ARGS holds a vector of
+      arguments passed to that function. */
+  void funcallEnter(Task task, Symbol symbol, Object[] args);
 
-  /** The task has returned from given function traced via PLT
-      entry. */
-  void pltEntryLeave(Task task, Symbol symbol, Object retVal);
-
-  /** The task has entered given function traced via dynamic symbol
-      table. */
-  void dynamicEnter(Task task, Symbol symbol, Object[] args);
-
-  /** The task has left given function traced via dynamic symbol
-      table. */
-  void dynamicLeave(Task task, Symbol symbol, Object retVal);
-
-  /** The task has entered given function traced via static symbol
-      table. */
-  void staticEnter(Task task, Symbol symbol, Object[] args);
-
-  /** The task has left given function traced via static symbol
-      table. */
-  void staticLeave(Task task, Symbol symbol, Object retVal);
+  /** The task has returned from the function. */
+  void funcallLeave(Task task, Symbol symbol, Object retVal);
 
   /** The task has entered a syscall. */
   void syscallEnter(Task task, Syscall syscall, Object[] args);
@@ -89,6 +73,10 @@ public interface LtraceObserver
   /** New task was attached. */
   void taskAttached(Task task);
 
-  /** Task was removed, died or detached. */
-  void taskRemoved(Task task);
+  /**
+   * Task has (been) terminated.
+   * @param signal True if the task died due to a signal, otherwise false.
+   * @param value Either the signal that caused the task to be ended,
+   * or exit code of the task. */
+  void taskTerminated(Task task, boolean signal, int value);
 }

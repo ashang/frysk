@@ -39,28 +39,27 @@
 
 package frysk.ftrace;
 
-import frysk.proc.Task;
-
-/**
- * Messages in this interface are used to filter all candidate
- * tracepoints in executable or shared library, and hence construct a
- * working set of ltrace.
- *
- * Candidate tracepoints are all PLT entries, all entry points of
- * _defined_ function symbols from dynamic symbol table, and similarly
- * for ordinary symbol table (if present).
- *
- * Working set then consists of all candidate tracepoints whose call
- * yields true.  Working set is evaluated for each task individually.
- */
-public interface SymbolFilter
+/** Enum representing origin of tracepoints. */
+public class TracePointOrigin
 {
-    /** Called for PLT entries. */
-    boolean matchPltEntry(Task task, Symbol symbol);
+  /** The tracepoint comes from the PLT. */
+  public static final TracePointOrigin PLT = new TracePointOrigin(0);
+  /** The tracepoint comes from the dynamic symbol table. */
+  public static final TracePointOrigin DYNAMIC = new TracePointOrigin(1);
+  /** The tracepoint comes from the ordinary symbol table. */
+  public static final TracePointOrigin SYMTAB = new TracePointOrigin(2);
 
-    /** Called for defined function symbols in dynamic symbol table. */
-    boolean matchDynamic(Task task, Symbol symbol);
+  private int value;
 
-    /** Called for defined function symbols in static symbol table. */
-    boolean matchSymbol(Task task, Symbol symbol);
+  private TracePointOrigin(int value)
+  {
+    this.value = value;
+  }
+
+  public boolean equals(Object obj)
+  {
+    if(!(obj instanceof TracePointOrigin))
+      return false;
+    return ((TracePointOrigin)obj).value == this.value;
+  }
 }

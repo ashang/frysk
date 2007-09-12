@@ -62,9 +62,6 @@ public class Symbol
 
   protected ObjectFile parent = null;
 
-  public long entryAddress;
-  public long pltAddress;
-
   /**
    * Build ltrace symbol.
    *
@@ -131,13 +128,5 @@ public class Symbol
 
   public ObjectFile getParent() {
     return this.parent;
-  }
-
-  public void setEntryAddress(long address) {
-    this.entryAddress = address;
-  }
-
-  public void setPltAddress(long address) {
-    this.pltAddress = address;
   }
 }

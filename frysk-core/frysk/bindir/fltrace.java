@@ -41,20 +41,19 @@ package frysk.bindir;
 
 import java.util.*;
 import java.io.File;
+import inua.util.PrintWriter;
 
 import gnu.classpath.tools.getopt.*;
 
 //import frysk.Config;
 //import frysk.EventLogger;
 import frysk.proc.*;
+import frysk.sys.Sig;
+import frysk.util.CommandlineParser;
 
 import frysk.ftrace.Ltrace;
 import frysk.ftrace.LtraceObserver;
 import frysk.ftrace.Symbol;
-
-import frysk.util.CommandlineParser;
-
-import inua.util.PrintWriter;
 
 public class fltrace
 {
@@ -73,14 +72,14 @@ public class fltrace
   //Where to send output.
   PrintWriter writer;
 
-  Ltrace tracer = new Ltrace(new frysk.ftrace.SymbolFilter() {
-      public boolean matchPltEntry(Task task, frysk.ftrace.Symbol symbol) {
-	String symFilename = symbol.getParent().getFilename().getPath();
+  Ltrace tracer = new Ltrace(new frysk.ftrace.TracePointFilter() {
+      public boolean tracePoint(Task task, frysk.ftrace.TracePoint tp) {
+	if (tp.origin != frysk.ftrace.TracePointOrigin.PLT)
+	  return false;
+	String symFilename = tp.symbol.getParent().getFilename().getPath();
 	String taskFilename = task.getProc().getExe();
 	return taskFilename.equals(symFilename);
       }
-      public boolean matchDynamic(Task task, frysk.ftrace.Symbol symbol) {return false;}
-      public boolean matchSymbol(Task task, frysk.ftrace.Symbol symbol) {return false;}
     });
 
   LtraceObserver ltraceObserver = new LtraceObserver() {
@@ -127,8 +126,8 @@ public class fltrace
 	return new String(fill);
       }
 
-      private synchronized void eventEntry(Task task, Object item, String eventType,
-					   String eventName, Object[] args)
+      private void eventEntry(Task task, Object item, String eventType,
+			      String eventName, Object[] args)
       {
 	int level = this.getLevel(task);
 	String spaces = repeat(' ', level);
@@ -147,8 +146,8 @@ public class fltrace
         updateOpenLine(task, item);
       }
 
-      private synchronized void eventLeave(Task task, Object item, String eventType,
-					   String eventName, Object retVal)
+      private void eventLeave(Task task, Object item, String eventType,
+			      String eventName, Object retVal)
       {
 	int level = this.getLevel(task);
 	this.setLevel(task, --level);
@@ -167,23 +166,30 @@ public class fltrace
         updateOpenLine(null, null);
       }
 
-      public synchronized void pltEntryEnter(Task task, Symbol symbol, Object[] args)
+      private void eventSingle(Task task, String eventName)
+      {
+	int pid = task.getTid();
+	int level = this.getLevel(task);
+
+        if (lineOpened())
+	  System.err.println("\\");
+	System.err.println("[" + pid + "] " + repeat(' ', level) + eventName);
+
+        updateOpenLine(null, null);
+      }
+
+      public synchronized void funcallEnter(Task task, Symbol symbol, Object[] args)
       {
 	String symbolName = symbol.name;
 	String callerLibrary = symbol.getParent().getSoname();
 	String eventName = callerLibrary + "->" + /*libraryName + ":" +*/ symbolName;
-	eventEntry(task, symbol, "plt call", eventName, args);
+	eventEntry(task, symbol, "call", eventName, args);
       }
 
-      public synchronized void pltEntryLeave(Task task, Symbol symbol, Object retVal)
+      public synchronized void funcallLeave(Task task, Symbol symbol, Object retVal)
       {
-	eventLeave(task, symbol, "plt leave", symbol.name, retVal);
+	eventLeave(task, symbol, "leave", symbol.name, retVal);
       }
-
-      public void dynamicEnter(Task task, Symbol symbol, Object[] args) {}
-      public void dynamicLeave(Task task, Symbol symbol, Object retVal) {}
-      public void staticEnter(Task task, Symbol symbol, Object[] args) {}
-      public void staticLeave(Task task, Symbol symbol, Object retVal) {}
 
       public synchronized void syscallEnter(Task task, Syscall syscall, Object[] args)
       {
@@ -197,28 +203,27 @@ public class fltrace
 
       public synchronized void fileMapped(Task task, File file)
       {
-	int pid = task.getTid();
-	int level = this.getLevel(task);
-	System.err.println("[" + pid + "] " + repeat(' ', level) + "map " + file);
+	eventSingle(task, "map " + file);
       }
 
       public synchronized void fileUnmapped(Task task, File file)
       {
-	int pid = task.getTid();
-	int level = this.getLevel(task);
-	System.err.println("[" + pid + "] " + repeat(' ', level) + "unmap " + file);
+	eventSingle(task, "unmap " + file);
       }
 
       public synchronized void taskAttached(Task task)
       {
-	int pid = task.getTid();
-	System.err.println("[" + pid + "] attached");
+	eventSingle(task, "attached");
       }
 
-      public synchronized void taskRemoved(Task task)
+      public synchronized void taskTerminated(Task task, boolean signal, int value)
       {
 	int pid = task.getTid();
-	System.err.println("[" + pid + "] detached");
+	System.err.print("[" + pid + "] ");
+	if (signal)
+	  System.err.println("killed by " + Sig.toPrintString(value));
+	else
+	  System.err.println("+++ exited (status " + value + ") +++");
       }
     };
 
