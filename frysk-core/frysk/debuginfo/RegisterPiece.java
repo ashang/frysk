@@ -100,6 +100,7 @@ public class RegisterPiece
 	if (index >= byteArray.length)
 	    return (byte)0;
 	else 
+	    // byteArray contains bytes in opposite order 
 	    return byteArray[(int)(byteArray.length-index-1)];
     }
 }

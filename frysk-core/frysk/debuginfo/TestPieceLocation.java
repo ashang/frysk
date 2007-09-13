@@ -42,20 +42,26 @@ package frysk.debuginfo;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
 
-import frysk.junit.TestCase;
+import frysk.stack.IA32Registers;
+import frysk.stack.X8664Registers;
+import frysk.testbed.TestLib;
+import frysk.proc.Task;
+import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.value.Location;
 
 import java.util.List;
 import java.util.ArrayList;
 
+import lib.dwfl.ElfEMachine;
+
 public class TestPieceLocation 
-extends TestCase
+extends TestLib
 {
     private PieceLocation l;
 
     public void setUp() 
     {
-	//  Creating: { 5 6 7 8 9 } { 1 2 3 } { 12 14 16 }
+	//  Creating: { 5 6 7 8 9 } { 1 2 3 } { 12 14 16 } { (REG1=987) or -37 3 0 0 }
 	List pieces = new ArrayList();
 	pieces.add(new MemoryPiece( 3, 5, 
 		   new ArrayByteBuffer(new byte[] { 127,127,127, 5, 6, 7, 8, 9, 127, 127 })));
@@ -63,6 +69,21 @@ extends TestCase
 		   new ArrayByteBuffer(new byte[] { 127, 1, 2, 3 })));
 	pieces.add(new MemoryPiece( 0, 3, 
 		   new ArrayByteBuffer(new byte[] { 12, 14, 16 })));
+	
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(getStoppedTask());
+	
+	switch (getArch())
+	{
+	    case ElfEMachine.EM_386:
+		pieces.add(new RegisterPiece(IA32Registers.EBX, 4,frame));  	// Reg 1 mapped to EBX in 386
+		break;
+	    case ElfEMachine.EM_X86_64:
+		pieces.add(new RegisterPiece(X8664Registers.RDI, 4,frame)); 	//Reg 1 mapped to RDI in X86_64   
+		break;
+	    default:	
+		if (unresolvedOnPPC(4964))
+		    return;
+	} 
 
 	l = new PieceLocation (pieces);
     }
@@ -75,7 +96,7 @@ extends TestCase
     public void testMapping() 
     {
 	// Test for length
-	assertEquals ("total bytes", l.length(), 11);
+	assertEquals ("total bytes", l.length(), 15); 
 
 	// Test for index and piece mapping
 	assertEquals("piece index", 1, l.indexOf(6));
@@ -84,10 +105,15 @@ extends TestCase
 
     public void testGetPutByte()
     {
-	// Test for putByte & getByte
-	l.putByte(6, (byte)99);
-	//  New list should be: { 5 6 7 8 9 } { 1 99 3 } { 12 14 16 } 
-	assertEquals("byte", 99, l.getByte(6));
+	// Test for putByte & getByte of MemoryPiece
+	l.putByte(6, (byte)88);
+	//  New list should be: { 5 6 7 8 9 } { 1 99 3 } { 12 14 16 } { 3 -37 0 0}
+	assertEquals("byte", 88, l.getByte(6));
+	
+	// Test for getByte of RegisterPiece
+	assertEquals("byte", -37, l.getByte(11));
+	assertEquals("byte", 3, l.getByte(12));
+	assertEquals("byte", 0, l.getByte(14));
     }
 
     public void testSlice() 
@@ -102,14 +128,36 @@ extends TestCase
 	assertEquals("byte", 2, pSlice.getByte(2));
 	assertEquals("byte", 12, pSlice.getByte(4));
 	assertEquals("byte", 14, pSlice.getByte(5));
-	assertEquals("address", 7, 
+	assertEquals("memory offset", 7, 
 		     ((MemoryPiece)pSlice.getPieces().get(0)).getMemory());
     }
     
-    public void testGet()
+    public void testGet() 
     {
 	byte bytes[] = l.get(ByteOrder.BIG_ENDIAN);
-	assertEquals ("bytes",  new byte[] { 5, 6, 7, 8, 9, 1, 2, 3, 12, 14, 16 }, 
+	assertEquals ("bytes",  new byte[] { 5, 6, 7, 8, 9, 1, 2, 3, 12, 14, 16, -37, 3,  0, 0}, 
 		      bytes);
+    }
+    
+    private Task getStoppedTask ()
+    {
+	return this.getStoppedTask("funit-location");
+    }
+    
+    private Task getStoppedTask (String process)
+    {
+	// Starts program and runs it to crash/signal.
+	DaemonBlockedAtSignal daemon = new DaemonBlockedAtSignal 
+	                               (new String[] { getExecPath(process) });
+	return daemon.getMainTask();
+    }  
+    
+    /**
+     * Function that returns the Machine type as defined in ElfEMachine.java 
+     */
+    private int getArch ()
+    {
+	Task task = getStoppedTask();
+	return task.getIsa().getElfMachineType();
     }
 }

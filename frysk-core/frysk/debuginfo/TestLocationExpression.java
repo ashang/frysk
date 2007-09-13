@@ -84,7 +84,7 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.DUP_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)101, 12));
+	expectedLoc.add(new MemoryPiece((long)989, 12));
 	
 	checkLocExpected(ops, expectedLoc, 2);
     }
@@ -112,7 +112,7 @@ public class TestLocationExpression
 	}  
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)101, 12));
+	expectedLoc.add(new MemoryPiece((long)989, 12));
 	
 	checkLocExpected(ops, expectedLoc, 1);
     }

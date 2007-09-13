@@ -43,7 +43,7 @@ FUNCTION_BEGIN(main,0)
 MAIN_PROLOGUE(0)
 
 LOAD_IMMED_WORD (REG0, 0)
-LOAD_IMMED_WORD (REG1, 99)
+LOAD_IMMED_WORD (REG1, 987)
 LOAD_IMMED_WORD (REG2, memory)
 STORE (REG0, REG0)   				// To crash program
 
@@ -51,5 +51,5 @@ MAIN_EPILOGUE(0)
 FUNCTION_RETURN(main,0)
 FUNCTION_END(main,0)
 
-memory:								// Set up memory locations
+memory:						// Set up memory locations
 	.word 0x1234

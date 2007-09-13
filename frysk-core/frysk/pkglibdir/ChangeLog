@@ -1,3 +1,7 @@
+2007-08-28 Teresa Thomas <tthomas@redhat.com>
+
+	* funit-location.S: Value in REG1 changed.
+	
 2007-09-13  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
 
 	* funit-c-scopes-shadowing.c: New file.
@@ -23,6 +27,7 @@
 	* funit-empty-functions.c : New file.
 
 2007-08-28 Teresa Thomas <tthomas@redhat.com>
+
 	* funit-location.S: New file.
 
 2007-08-27  Stan Cox  <scox@redhat.com>

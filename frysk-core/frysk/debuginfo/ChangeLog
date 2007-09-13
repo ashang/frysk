@@ -1,3 +1,16 @@
+2007-09-13  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestPieceLocation.java: Tests updated for RegisterPieces; now
+	runs funit-location.
+	(setUp): Append a RegisterPiece to pieces list.
+	(testGetPutByte): Updated.
+	(testGet): Updated.
+	(getStoppedTask): Added.
+	(getArch): Added.
+	* RegisterPiece.java (getByte): Comments added.
+	* TestLocationExpression.java (testBregxDup): Updated.
+	(testBregx): Updated.
+	
 2007-09-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestCppVariableSearchEngine.java (testFindIScopesShadowing): 
