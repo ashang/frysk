@@ -64,7 +64,7 @@ public class TestCppVariableSearchEngine extends TestLib{
     
     CppVariableSearchEngine cppVariableSearchEngine = new CppVariableSearchEngine();
     
-    public void testFindVar1(){
+    public void testFindVar1Scopes(){
 	String variableName = "var1"; 
 	String variableToken = variableName; 
 	String fileName = "funit-c-scopes";
@@ -74,7 +74,7 @@ public class TestCppVariableSearchEngine extends TestLib{
 	verifyVariable(variableName, variableToken, fileName, execPath, srcPath);
     }
     
-    public void testFindVar2(){
+    public void testFindVar2Scopes(){
 	String variableName = "var2"; 
 	String variableToken = variableName; 
 	String fileName = "funit-c-scopes";
@@ -84,7 +84,7 @@ public class TestCppVariableSearchEngine extends TestLib{
 	verifyVariable(variableName, variableToken, fileName, execPath, srcPath);
     }
     
-    public void testFindArg1(){
+    public void testFindArg1Scope(){
 	String variableName = "arg1"; 
 	String variableToken = variableName; 
 	String fileName = "funit-c-scopes";

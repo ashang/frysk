@@ -1,3 +1,9 @@
+2007-09-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestCppVariableSearchEngine.java (testFindArg1Scope): Renamed.
+	(testFindVar2Scopes): Renamed.
+	(testFindVar1Scopes): Renamed.
+
 2007-09-12  Teresa Thomas  <tthomas@redhat.com>
 
 	* LocationExpression.java (decode): Use ctor RegisterPiece(long,
