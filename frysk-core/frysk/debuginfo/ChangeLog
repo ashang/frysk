@@ -1,5 +1,10 @@
 2007-09-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* TestCppVariableSearchEngine.java (testFindIScopesShadowing): 
+	New test.
+
+2007-09-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* TestCppVariableSearchEngine.java (testFindArg1Scope): Renamed.
 	(testFindVar2Scopes): Renamed.
 	(testFindVar1Scopes): Renamed.
