@@ -97,7 +97,7 @@ public class TestCppVariableSearchEngine extends TestLib{
     public void testFindIScopesShadowing(){
 	String variableName = "i"; 
 	String variableToken = "second i"; 
-	String fileName = "funit-c-scopes";
+	String fileName = "funit-c-scopes-shadowing";
 	String execPath = getExecPath(fileName);
 	String srcPath = Config.getPkgLibSrcDir() + fileName + ".c";
 	

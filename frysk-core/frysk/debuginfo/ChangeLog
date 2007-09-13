@@ -1,6 +1,11 @@
 2007-09-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestCppVariableSearchEngine.java (testFindIScopesShadowing): 
+	Corrected test.
+
+2007-09-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestCppVariableSearchEngine.java (testFindIScopesShadowing): 
 	New test.
 
 2007-09-13  Sami Wagiaalla  <swagiaal@redhat.com>
