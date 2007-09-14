@@ -134,7 +134,7 @@ public class Variable {
     }
   
     public Value getValue(DebugInfoFrame frame) {
-	boolean useLocationExpresstion = true;
+	boolean useLocationExpresstion = false;
 
 	if (useLocationExpresstion) {
 	    List ops = variableDie.getFormData(frame.getAdjustedAddress());
