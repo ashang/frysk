@@ -130,7 +130,6 @@ extends Location
     {
 	Piece p = pieceOf(offset);
 	long index = indexOf (offset);
-	// XXX: Change cast as other pieces gets supported.
 	return p.getByte(index);
     }
 
@@ -141,8 +140,7 @@ extends Location
     {
 	Piece p = pieceOf(offset);
 	long index = indexOf (offset);
-	// XXX: Change cast as other pieces gets supported.
-	((MemoryPiece)p).getByteBuf().putByte(index, value);
+	p.putByte(index, value);
     }
 
     /**
@@ -159,8 +157,6 @@ extends Location
     /**
      * Return a slice of this Location starting at byte OFFSET, and
      * going for LENGTH bytes. The slice can contain multiple pieces.
-     * 
-     * XXX: Currently supports only MemoryPiece
      */
     protected Location slice(long offset, long length)
     {

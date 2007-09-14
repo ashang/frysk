@@ -1,3 +1,13 @@
+2007-09-14  Teresa Thomas  <tthomas@redhat.com>
+
+	* RegisterPiece.java (RegisterPiece): Evaluate byteArray here.
+	(getByte): Updated for above change.
+	(slice): Implemented.
+	(putByte): Implemented.
+	* TestPieceLocation.java (testSlice): Updated for RegisterPiece.
+	* TestLocationExpression.java: Extra white space removed.
+	* PieceLocation.java (slice): Comments updated.
+
 2007-09-13  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestPieceLocation.java: Tests updated for RegisterPieces; now
@@ -75,7 +85,7 @@
 	* DebugInfoStackFactory.java (createVirtualStackTrace): Now uses
 	Frame.getScopes().
 	* Scope.java: Now longer searches for scopes with in the
-	current scope.
+	current scope.setReg of libunwind does not "work"
 	Added a pointer and getter() to the inner scope.
 	* ScopeFactory.java (createScope): Added handling for 
 	inlinedSubroutines.

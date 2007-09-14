@@ -71,7 +71,6 @@ extends TestLib
 		   new ArrayByteBuffer(new byte[] { 12, 14, 16 })));
 	
 	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(getStoppedTask());
-	
 	switch (getArch())
 	{
 	    case ElfEMachine.EM_386:
@@ -107,10 +106,13 @@ extends TestLib
     {
 	// Test for putByte & getByte of MemoryPiece
 	l.putByte(6, (byte)88);
-	//  New list should be: { 5 6 7 8 9 } { 1 99 3 } { 12 14 16 } { 3 -37 0 0}
+	//  New list should be: { 5 6 7 8 9 } { 1 99 3 } { 12 14 16 } { -37 3 0 0}
 	assertEquals("byte", 88, l.getByte(6));
 	
 	// Test for getByte of RegisterPiece
+	l.putByte(13, (byte)1);
+
+//	assertEquals("byte", 1, l.getByte(13));  	//Fails - setReg not changing register's value
 	assertEquals("byte", -37, l.getByte(11));
 	assertEquals("byte", 3, l.getByte(12));
 	assertEquals("byte", 0, l.getByte(14));
@@ -119,16 +121,16 @@ extends TestLib
     public void testSlice() 
     {
 	// Test for slice
-	Location slice = l.slice(4, 6);
+	Location slice = l.slice(7, 5);
 	PieceLocation pSlice = (PieceLocation)slice;
 	
-	// Slice should be { 9 } { 1 2 3 } { 12 14 }
+	// Slice should be { 3 } { 12 14 16 } { (reg) -37 }
 	assertEquals("# of pieces", 3, pSlice.getPieces().size());
-	assertEquals("# of bytes", 6, pSlice.length());
-	assertEquals("byte", 2, pSlice.getByte(2));
-	assertEquals("byte", 12, pSlice.getByte(4));
-	assertEquals("byte", 14, pSlice.getByte(5));
-	assertEquals("memory offset", 7, 
+	assertEquals("# of bytes", 5, pSlice.length());
+	assertEquals("byte", 14, pSlice.getByte(2));
+	assertEquals("byte", 3, pSlice.getByte(0));
+	assertEquals("byte", -37, pSlice.getByte(4));
+	assertEquals("memory offset", 3, 
 		     ((MemoryPiece)pSlice.getPieces().get(0)).getMemory());
     }
     

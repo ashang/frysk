@@ -402,9 +402,7 @@ public class TestLocationExpression
 	
 	checkLocExpected(ops, expectedLoc, 1);
     }
-    
-
-    
+       
     /**
      * Function that creates Dwarf stack and checks its values
      * 
