@@ -49,13 +49,17 @@ public class RegisterPiece
 	extends Piece
 {
     private final Register register;  
-    protected Frame frame;
+    private final Frame frame;
     private byte[] byteArray;
 
+    /**
+     * Used for testing LocationExpression.
+     */
     public RegisterPiece(Register register, long size)
     {
 	super (size);
 	this.register = register;
+	frame = null;
     }
     
     public RegisterPiece(Register register, long size, Frame frame)
@@ -74,23 +78,28 @@ public class RegisterPiece
 	else
 	    for (int i=0; i<byteArray.length; i++)
 		byteArray[i] = regBytes [regBytes.length-byteArray.length+i];
-    }
- 
-    /**
-     * Function that takes a register piece and checks if their contents are equal.
-     * 
-     * @param p RegisterPiece to be compared with
-     * @return true/false
-     */
-    public boolean equals(Object p)
-    {
-	return ( this.size == ((RegisterPiece)p).size 
-		&& register.equals(((RegisterPiece)p).register) );
-    }	    
+    }  
     
     public Register getRegister()
     {
 	return register;
+    }
+        
+    protected void putByte(long index, byte value) 
+    {
+	// Set byte at specified index, convert value to long 
+	// and write to register.
+	byteArray[(int)(size-index-1)] = value;          
+	BigInteger regVal = new BigInteger(byteArray);
+	RegisterMap map = DwarfRegisterMapFactory.getRegisterMap(frame.getTask().getIsa());
+	// FIXME: setReg fails
+	frame.setReg(map.getRegisterNumber(register), regVal.longValue()); 
+    }
+       
+    protected byte getByte(long index) 
+    {
+	// Bytes in byteBuffer is in opposite order.
+	return byteArray[(int)(byteArray.length-index-1)];
     }
     
     protected Piece slice (long offset, long length)
@@ -115,20 +124,9 @@ public class RegisterPiece
 	return newP;
     }
     
-    protected void putByte(long index, byte value) 
+    public boolean equals(Object p)
     {
-	// Set byte at specified index, convert value to long 
-	// and write to register.
-	byteArray[(int)(size-index-1)] = value;          
-	BigInteger regVal = new BigInteger(byteArray);
-	RegisterMap map = DwarfRegisterMapFactory.getRegisterMap(frame.getTask().getIsa());
-	// FIXME: setReg fails
-	frame.setReg(map.getRegisterNumber(register), regVal.longValue()); 
-    }
-       
-    protected byte getByte(long index) 
-    {
-	// Bytes in byteBuffer is in opposite order.
-	return byteArray[(int)(byteArray.length-index-1)];
-    }
+	return ( this.size == ((RegisterPiece)p).size 
+		&& register.equals(((RegisterPiece)p).register) );
+    }	
 }

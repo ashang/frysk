@@ -1,3 +1,10 @@
+2007-09-17  Teresa Thomas  <tthomas@redhat.com>
+
+	* UnavailablePiece.java (slice): Implemented.
+	* MemoryPiece.java (MemoryPiece): byteBuf made private final.
+	* Piece.java (equals): Added.
+	* RegisterPiece.java: frame made private final.
+
 2007-09-14  Teresa Thomas  <tthomas@redhat.com>
 
 	* RegisterPiece.java (RegisterPiece): Evaluate byteArray here.

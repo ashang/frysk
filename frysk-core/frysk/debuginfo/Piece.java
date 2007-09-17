@@ -58,9 +58,25 @@ public abstract class Piece
 	this.size = size;
     }
     
+    /**
+     * Function to slice a Piece - slices a piece from byte OFFSET 
+     * going for LENGTH bytes.
+     * 
+     * @param offset - byte position where slice should start from 
+     * @param length - number of bytes to be sliced
+     * @return slice
+     */
     abstract protected Piece slice (long offset, long length);
     
     abstract protected byte getByte(long index);
     
     abstract protected void putByte(long index, byte value);
+    
+    /**
+     * Function that checks if the contents of two pieces are equal.
+     * 
+     * @param p Piece to be compared with
+     * @return true/false
+     */
+    abstract public boolean equals (Object p);
 }

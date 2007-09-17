@@ -41,19 +41,23 @@ package frysk.debuginfo;
 
 import inua.eio.ByteBuffer;
 
-/*
+/**
  *  Class to represent a piece of memory
  */
 public class MemoryPiece
 	extends Piece
 {
     private final long memory;  
-    private ByteBuffer byteBuf;
+    private final ByteBuffer byteBuf;
 
-    public MemoryPiece (long memory, long size)
+    /**
+     * Used for testing LocationExpression.
+     */
+    protected MemoryPiece (long memory, long size)
     {
 	super (size);
 	this.memory = memory;
+	byteBuf = null;
     }
     
     public MemoryPiece (long memory, long size, ByteBuffer byteBuf)
@@ -70,25 +74,16 @@ public class MemoryPiece
 	this.byteBuf = byteBuf.slice(offset, size);
     }
     
-    /**
-     * Function to slice a MemoryPiece - slices a piece from byte OFFSET 
-     * going for LENGTH bytes.
-     * 
-     * @param oldP - piece to be sliced
-     * @param offset - byte position where slice should start from 
-     * @param length - number of bytes of slice
-     * @return slice
-     */
+    public long getMemory()
+    {
+	return memory;
+    }
+    
     protected Piece slice (long offset, long length)
     {
 	// Assuming byte-addressable memory  
 	Piece newP = new MemoryPiece(memory, length, offset, this.byteBuf);
 	return newP;
-    }
-    
-    public long getMemory()
-    {
-	return memory;
     }
     
     protected byte getByte(long index) 
@@ -106,14 +101,9 @@ public class MemoryPiece
 	return byteBuf;
     }
     
-    /**
-     * Function that takes a memory piece and checks if their contents are equal.
-     * 
-     * @param p MemoryPiece to be compared with
-     * @return true/false
-     */
     public boolean equals (Object p)
     {
-	return (this.memory == ((MemoryPiece)p).memory && this.size == ((MemoryPiece)p).size);
+	return (this.memory == ((MemoryPiece)p).memory 
+		&& this.size == ((MemoryPiece)p).size);
     }	
 }

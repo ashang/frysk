@@ -40,7 +40,7 @@
 package frysk.debuginfo;
 
 
-/*
+/**
  *  Class to represent an unavailable piece of memory
  */
 public class UnavailablePiece
@@ -51,13 +51,6 @@ public class UnavailablePiece
 	super (size);
     }
     
-    /**
-     * Function that takes an unavailable piece and checks if 
-     * their size are equal.
-     * 
-     * @param p - UnavailablePiece to be compared with
-     * @return true/false
-     */
     public boolean equals(Object p)
     {
 	return (this.size == ((UnavailablePiece)p).size);
@@ -65,7 +58,7 @@ public class UnavailablePiece
     
     protected Piece slice (long offset, long length)
     {
-	throw new RuntimeException();
+	return new UnavailablePiece(length);
     }
     
     protected void putByte(long index, byte value) 
