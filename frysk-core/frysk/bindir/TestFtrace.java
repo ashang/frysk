@@ -43,8 +43,8 @@ package frysk.bindir;
 import frysk.Config;
 import frysk.expunit.Expect;
 import frysk.proc.Task;
-import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
+import frysk.testbed.TestLib;
 
 public class TestFtrace
     extends TestLib
@@ -97,4 +97,21 @@ public class TestFtrace
 	expect.expect("rt_sigsuspend");
 	expect.expect("rt_sigsuspend");    
     }
+    
+    public void testFtraceHandlesPrcoessNotFound() {
+	expect = new Expect(new String[] {
+				Config.getBinFile("ftrace").getAbsolutePath(),
+				"0"
+			    });
+	expect.expect("No process with ID 0 found");
+    }
+
+    public void testFtraceHandlesExecutableNotFound() {
+	expect = new Expect(new String[] {
+				Config.getBinFile("ftrace").getAbsolutePath(),
+				"someNoneExistantExecutable.exe"
+			    });
+//	expect.expect("No process with ID 0 found");
+    }
+
 }

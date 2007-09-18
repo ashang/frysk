@@ -1,3 +1,8 @@
+2007-09-18  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Ftrace.java (trace): Now stops event loop when process
+	is not found.
+
 2007-09-03  Tim Moore  <timoore@redhat.com>
 
 	* TestCountDownLatch.java: New class for tests of CountDownLatch.

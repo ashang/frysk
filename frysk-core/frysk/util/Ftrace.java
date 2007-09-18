@@ -154,18 +154,22 @@ public class Ftrace
   public void trace ()
   {
     init();
-    for (Iterator it = tracedParents.iterator(); it.hasNext(); )
+    for (Iterator it = tracedParents.iterator(); it.hasNext(); ){
+	
+    
       Manager.host.requestFindProc(
 	(ProcId)it.next(),
 	new Host.FindProc() {
 	  public void procFound (ProcId procId) {}
 	  public void procNotFound (ProcId procId, Exception e) {
 	    System.err.println("No process with ID " + procId.intValue() + " found.");
+	    Manager.eventLoop.requestStop();
 	  }
 	}
       );
 
-    Manager.eventLoop.run();
+      Manager.eventLoop.run();
+    }
   }
 
   synchronized void generateStacKTrace (Task task, String syscallStackTraceName)

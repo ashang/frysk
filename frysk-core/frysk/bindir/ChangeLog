@@ -1,3 +1,7 @@
+2007-09-18  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFtrace.java (testFtraceHandlesPrcoessNotFound): New test.
+
 2007-08-28  Mark Wielaard  <mwielaard@redhat.com>
 
 	* fstep.java (DummyDisassembler): New static helper class.
