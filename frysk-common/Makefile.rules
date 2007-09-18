@@ -453,15 +453,14 @@ endif
 # current compiler.  The problem here is that raw ANTLR output
 # contains compiler warnings such as unused-variable - fix this by
 # running the generated files through the compiler and then "fix" the
-# warnings.
+# warnings.  Reuse the tmp directory for successive runs on related .g files.
 
 SUFFIXES += .antlered .g
 .g.antlered:
-	rm -rf $*.tmp
-	mkdir -p $*.tmp
-	$(ANTLR) -o $*.tmp \$(srcdir)/$*.g
+	mkdir -p $(@D)/antlr.tmp
+	$(ANTLR) -o $(@D)/antlr.tmp \$(srcdir)/$*.g
 	@echo "Setting up generated files ..." ; \
-	d=$*.tmp ; for gen in $$d/*.java ; do \
+	d=$(@D)/antlr.tmp ; for gen in $$d/*.java ; do \
 	    b=`basename $$gen .java` ; \
 	    ( set -x ; mv $$gen $$d/$$b.gen ) ; \
 	    ( set -x ; rm -f $$d/../$$b.java ) ; \
@@ -472,7 +471,7 @@ SUFFIXES += .antlered .g
 	        fi ; \
 	    done ; \
 	done
-	@edits=true ; d=$*.tmp ; \
+	@edits=true ; d=$(@D)/antlr.tmp ; \
 	while $$edits ; do \
 	    edits=false ; \
 	    echo "Applying fixes ..." ; \
@@ -518,7 +517,7 @@ SUFFIXES += .antlered .g
 	    done ; \
 	done || true
 	@echo Installing .java files ... ; \
-	d=$*.tmp ; for java in $$d/*.java ; do \
+	d=$(@D)/antlr.tmp ; for java in $$d/*.java ; do \
 	    b=`basename $$java` ; \
 	    ( set -x ; cp $$java $$d/../$$b ) ; \
 	done

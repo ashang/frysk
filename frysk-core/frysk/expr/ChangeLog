@@ -1,3 +1,8 @@
+2007-09-17  Stan Cox  <scox@redhat.com>
+
+	* CExpr.g: Rename from cpp.g.
+	* CExprEvaluator.g: Moved TreeParser from cpp.g.
+
 2007-09-06  Andrew Cagney  <cagney@redhat.com>
 
 	* CppSymTab.java (get(String)): Replace get(DebugInfoFrame,String).

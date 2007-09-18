@@ -40,10 +40,10 @@ package frysk.debuginfo;
 
 import antlr.CommonAST;
 import frysk.dwfl.DwflCache;
-import frysk.expr.CppLexer;
-import frysk.expr.CppParser;
+import frysk.expr.CExprLexer;
+import frysk.expr.CExprParser;
 import frysk.expr.CppSymTab;
-import frysk.expr.CppTreeParser;
+import frysk.expr.CExprEvaluator;
 import frysk.proc.Proc;
 import frysk.value.Type;
 import frysk.value.Value;
@@ -112,8 +112,8 @@ public class DebugInfo {
 							      ? buffer.substring(cursor) : "");
 
 	sInput += (char)3;
-	CppLexer lexer = new CppLexer(new StringReader(sInput));
-	CppParser parser = new CppParser(lexer);
+	CExprLexer lexer = new CExprLexer(new StringReader(sInput));
+	CExprParser parser = new CExprParser(lexer);
 	try {
 	    parser.start();
 	} catch (antlr.RecognitionException ignore) {
@@ -224,8 +224,8 @@ public class DebugInfo {
 	Value result = null;
 	sInput += (char) 3;
     
-	CppLexer lexer = new CppLexer(new StringReader(sInput));
-	CppParser parser = new CppParser(lexer);
+	CExprLexer lexer = new CExprLexer(new StringReader(sInput));
+	CExprParser parser = new CExprParser(lexer);
 	try {
 	    parser.start();
 	} catch (antlr.RecognitionException r) {
@@ -237,7 +237,7 @@ public class DebugInfo {
 	}
     
 	CommonAST t = (CommonAST) parser.getAST();
-	CppTreeParser treeParser;
+	CExprEvaluator cExprEvaluator;
 	/*
 	 * If this request has come from the SourceWindow, there's no way to
 	 * know which thread the mouse request came from; if there are multiple
@@ -245,9 +245,9 @@ public class DebugInfo {
 	 * all of the threads have to be checked. If there's only one thread;
 	 * than this loop will run only once anyways.
 	 */
-	treeParser = new CppTreeParser(4, new DebugInfoEvaluator(frame));
+	cExprEvaluator = new CExprEvaluator(4, new DebugInfoEvaluator(frame));
 	try {
-	    result = treeParser.expr(t);
+	    result = cExprEvaluator.expr(t);
 	} catch (ArithmeticException ae) {
 	    ae.printStackTrace();
 	    throw ae;
@@ -285,8 +285,8 @@ public class DebugInfo {
 	    }
       	}
     
-	CppLexer lexer = new CppLexer(new StringReader(sInput));
-	CppParser parser = new CppParser(lexer);
+	CExprLexer lexer = new CExprLexer(new StringReader(sInput));
+	CExprParser parser = new CExprParser(lexer);
 	try {
 	    parser.start();
 	} catch (antlr.RecognitionException r) {
@@ -298,12 +298,12 @@ public class DebugInfo {
 	}
     
 	CommonAST t = (CommonAST) parser.getAST();
-	CppTreeParser treeParser;
+	CExprEvaluator cExprEvaluator;
 	TmpSymTab tmpSymTab = new TmpSymTab();
-	treeParser = new CppTreeParser(4, tmpSymTab);
+	cExprEvaluator = new CExprEvaluator(4, tmpSymTab);
         
 	try {
-	    result = treeParser.expr(t);
+	    result = cExprEvaluator.expr(t);
 	} catch (ArithmeticException ae) {
 	    ae.printStackTrace();
 	    throw ae;

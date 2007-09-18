@@ -1,3 +1,9 @@
+2007-09-17  Stan Cox  <scox@redhat.com>
+
+	* Makefile.rules (.g.antlered): Use common antlr.tmp to accommodate
+	multiple related .g files.
+	* Makefile.gen.sh (.g): Add dependencies for related generated files.
+
 2007-08-24  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Makefile.rules: Change GEN_GCJ_LDADD to GEN_GCJ_LDADD_LIST.

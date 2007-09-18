@@ -93,7 +93,7 @@ header
     import lib.dwfl.BaseTypes;
 }
 
-class CppParser extends Parser;
+class CExprParser extends Parser;
 
 options {
     defaultErrorHandler=false;
@@ -111,7 +111,7 @@ options {
     private int assign_stmt_RHS_found;
     //private String sInputExpression;
 
-    protected CppParser(TokenStream lexer, String sInput)
+    protected CExprParser(TokenStream lexer, String sInput)
     {
         this(lexer);
         bTabPressed = false;
@@ -164,7 +164,7 @@ expression! throws TabException
   * ## refers to the AST returned by this rule (expression)
   */
 
-## = #assign_expr1;
+            ## = #assign_expr1;
         }
     ;
 
@@ -194,30 +194,29 @@ assignment_expression! throws TabException
             (a:assign_op   r:remainder_expression)?)
         {
             if (#a != null)
-## = #(#a, #c, #r);
+                ## = #(#a, #c, #r);
             else
-## = #c;
+                ## = #c;
         }
     ;
 
 remainder_expression throws TabException 
     :   ((conditional_expression 
                 (COMMA|SEMICOLON|RPAREN))=>
-            {assign_stmt_RHS_found += 1;}
-
-            assignment_expression
-            {
-                if (assign_stmt_RHS_found > 0)
-                  assign_stmt_RHS_found -= 1;
-                else
-                {
-                    System.out.println(LT(1).getLine() + 
-                        "warning Error in assign_stmt_RHS_found = " +
-                        assign_stmt_RHS_found + "\n");
-                    System.out.println("Press return to continue\n");
-                }
+            { assign_stmt_RHS_found += 1;}
+        
+            assignment_expression 
+        {
+            if (assign_stmt_RHS_found > 0)
+                assign_stmt_RHS_found -= 1;
+            else {
+                System.out.println(LT(1).getLine() + 
+                    "warning Error in assign_stmt_RHS_found = " +
+                    assign_stmt_RHS_found + "\n");
+                System.out.println("Press return to continue\n");
             }
-        |	assignment_expression
+        }
+            |	assignment_expression
         )
     ;
 
@@ -230,10 +229,10 @@ conditional_expression! throws TabException
         (ques:QUESTIONMARK expr:expression colon:COLON 
             cond_expr:conditional_expression)?
         {
-            if (ques != null)
-## = #([COND_EXPR, "ConditionalExpression"], #log_or_expr, #expr, #cond_expr);
-            else
-## = #log_or_expr;
+          if (ques != null)
+            ## = #([COND_EXPR, "ConditionalExpression"], #log_or_expr, #expr, #cond_expr);
+          else
+            ## = #log_or_expr;
         }
     ;
 
@@ -294,8 +293,8 @@ multiplicative_expression throws TabException
 unary_expression throws TabException 
     :   PLUS^ unary_expression
     |   MINUS^ unary_expression
-    |   PLUSPLUS^ pm_expression
-    |   MINUSMINUS^ pm_expression
+    |   PLUSPLUS^ postfix_expression
+    |   MINUSMINUS^ postfix_expression
     |   TILDE^ unary_expression
     |   NOT^ unary_expression
     |   unary_expression_simple
@@ -304,15 +303,15 @@ unary_expression throws TabException
 unary_expression_simple throws TabException 
     :   AMPERSAND prim_expr: id_expression
         {
-## = #([ADDRESS_OF, "Address Of"], #prim_expr); 
+            ## = #([ADDRESS_OF, "Address Of"], #prim_expr); 
         }
     |   STAR mem_expr: id_expression
         {
-## = #([MEMORY, "Memory"], #mem_expr); 
+            ## = #([MEMORY, "Memory"], #mem_expr); 
         }
     |   cast_expression
-//    |   pm_expression selector* (PLUSPLUS |MINUSMINUS)?
-    | pm_expression
+//    |   postfix_expression selector* (PLUSPLUS |MINUSMINUS)?
+    | postfix_expression
     ;
 
 primitiveType
@@ -331,31 +330,44 @@ cast_expression! throws TabException
 //       | LPAREN (expression) RPAREN unary_expression_simple
 //       |  LPAREN (expression | primitiveType) RPAREN unary_expression_simple
         {
-## = #([CAST, "Cast"], #type, #expr);
+            ## = #([CAST, "Cast"], #type, #expr);
         }
 	;
 
-pm_expression throws TabException 
+postfix_expression throws TabException 
 {String sTabText;}
+    //  should subscript, component, call, post inc/dec be moved here?
     :	post_expr1:primary_expression 
         {
-          if (bTabPressed)
-            {
+          if (bTabPressed) {
 	      // ??? Use antlr expressions instead of tree surgery.
-              if (#post_expr1.getFirstChild() != null)
-		if (#post_expr1.getFirstChild().getNextSibling() != null)
-                  sTabText = #post_expr1.getFirstChild().getNextSibling().getText();
-		else
-		  sTabText = #post_expr1.getFirstChild().getText();
-              else 
-                sTabText = #post_expr1.getText();
+            if (#post_expr1.getFirstChild() != null)
+              if (#post_expr1.getFirstChild().getNextSibling() != null)
+                sTabText = #post_expr1.getFirstChild().getNextSibling().getText();
+		      else
+		  		sTabText = #post_expr1.getFirstChild().getText();
+            else 
+              sTabText = #post_expr1.getText();
 
-	      if (#post_expr1.getText().startsWith("Class Reference"))
-		sTabText += ".";
+	        if (#post_expr1.getText().startsWith("Class Reference"))
+		      sTabText += ".";
 
-              throw new TabException(#post_expr1, sTabText);
-            }
+            throw new TabException(#post_expr1, sTabText);
+          }
         }
+    ;
+
+/**
+  *	The TAB over here is not part of the C++ grammar.
+  *	This enables auto-completion by allowing the user
+  *	to press TAB whenever auto-completion is required
+  */
+primary_expression throws TabException 
+    :   (TAB {bTabPressed = true;}
+	    | primary_identifier)
+    |   constant
+    |   "this"
+    |   LPAREN! expression RPAREN!
     ;
 
 /**
@@ -365,7 +377,7 @@ pm_expression throws TabException
   */
 /* ??? add (id_expression | (TAB {bTabPressed = true;})) */
 
-variable! throws TabException 
+primary_identifier! throws TabException 
 {
     AST astPostExpr = null, astDotExpr = null;
 } 
@@ -381,38 +393,41 @@ variable! throws TabException
 	        | LSQUARE arrExpr1:expression (COLON arrExpr2:expression)? RSQUARE
                 // a[b][c] => (Array Reference a (Subscript b-lbound)
                 //            (Subscript b-hbound) (Subscript c-lbound)...)
-                {AST sub = null;
-		 		 if (astPostExpr.getFirstChild() != null) {
+                {
+                  AST sub = null;
+		 		  if (astPostExpr.getFirstChild() != null) {
 		      	    #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
                     astPostExpr.addChild(#sub);
                     // arr[n] is treated as arr[n:n]
                     if (#arrExpr2 != null)
-		      	       #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr2);
+		      	      #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr2);
                     else
-                       #sub =  #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
+                      #sub =  #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
                     astPostExpr.addChild(#sub);
-                    }
-                 else {
+                  }
+                  else {
 		      	    #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
                     #astPostExpr = #(#[REFERENCE,"Array Reference"], #astPostExpr, #sub);
                     if (#arrExpr2 != null)
-		      	       #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr2);
+		      	      #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr2);
                     else
-                       #sub =  #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
+                      #sub =  #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
                     astPostExpr.addChild(#sub);
-                 }
+                  }
                 }
 
-	        | AT at_expr:expression
-                // a@N => (Array Reference a (Subscript N) (Subscript N))
-                {AST sub = null;
-		      	 #sub = #(#[SUBSCRIPT,"Subscript"], #[DECIMALINT,"0"]);
-                 #astPostExpr = #(#[REFERENCE,"Array Reference"], #astPostExpr, #sub);
-                 // allow for 0 origin lower bound
-                 #at_expr.setText(new String(Integer.toString(Integer.parseInt(#at_expr.getText()) - 1)));
-		      	 #sub = #(#[SUBSCRIPT,"Subscript"], #at_expr);
-                 astPostExpr.addChild(#sub);
-                }
+// causes nondeterminism warnings
+// 	        | AT at_expr:expression
+//                 // a@N => (Array Reference a (Subscript N) (Subscript N))
+//                 {
+// 			      AST sub = null;
+// 		      	  #sub = #(#[SUBSCRIPT,"Subscript"], #[DECIMALINT,"0"]);
+//                   #astPostExpr = #(#[REFERENCE,"Array Reference"], #astPostExpr, #sub);
+//                   // allow for 0 origin lower bound
+//                   #at_expr.setText(new String(Integer.toString(Integer.parseInt(#at_expr.getText()) - 1)));
+// 		      	  #sub = #(#[SUBSCRIPT,"Subscript"], #at_expr);
+//                   astPostExpr.addChild(#sub);
+//                 }
 
             |   DOT!
                 (   tb:TAB
@@ -424,41 +439,29 @@ variable! throws TabException
                     { astDotExpr = #id_expr1;}
                 )
                 // a.b.c => (Class Reference a b c))
-                {if (astPostExpr.getFirstChild() != null) {
+                {
+				  if (astPostExpr.getFirstChild() != null) {
 		            if (#astDotExpr.getText().endsWith("\t") == false)
-                       astPostExpr.addChild(#astDotExpr); 
-		            }
-                    else {
-		     	       if (#astDotExpr.getText().endsWith("\t") == false)
-		       			  #astPostExpr = #(#[REFERENCE,"Class Reference"], #astPostExpr, #astDotExpr);
-		     		   else
-                          #astPostExpr = #(#[REFERENCE,"Class Reference"], #astPostExpr);
-		   			}
+                      astPostExpr.addChild(#astDotExpr); 
+		          }
+                  else {
+		     	    if (#astDotExpr.getText().endsWith("\t") == false)
+		       		  #astPostExpr = #(#[REFERENCE,"Class Reference"], #astPostExpr, #astDotExpr);
+		     		else
+                      #astPostExpr = #(#[REFERENCE,"Class Reference"], #astPostExpr);
+		   		  }
                 }
             |   POINTERTO id_expr2:id_expression
                 { astPostExpr = #(POINTERTO, #astPostExpr, #id_expr2); }
             |   PLUSPLUS
-                {astPostExpr = #(PLUSPLUS, #astPostExpr); }
+                { astPostExpr = #(PLUSPLUS, #astPostExpr); }
             |   MINUSMINUS
-                {astPostExpr = #(MINUSMINUS, #astPostExpr); }
+                { astPostExpr = #(MINUSMINUS, #astPostExpr); }
             )*
         )
         { 
-## = #astPostExpr; 
+            ## = #astPostExpr; 
         }
-    ;
-
-/**
-  *	The TAB over here is not part of the C++ grammar.
-  *	This enables auto-completion by allowing the user
-  *	to press TAB whenever auto-completion is required
-  */
-primary_expression throws TabException 
-    :   (TAB {bTabPressed = true;}
-	    | variable)
-    |   constant
-    |   "this"
-    |   LPAREN! expression RPAREN!
     ;
 
 constant
@@ -485,7 +488,7 @@ tid_expression
    * The Lexer
    *----------------------------------------------------------------------------*/
 
-class CppLexer extends Lexer;
+class CExprLexer extends Lexer;
 
 options {
     charVocabulary = '\0'..'\377';
@@ -498,75 +501,63 @@ tokens
     OPERATOR = "operator";
 }
 
-/* Operators: */
-
-ASSIGNEQUAL     : '=' ;
-COLON           : ':' ;
-COMMA           : ',' ;
-QUESTIONMARK    : '?' ;
-SEMICOLON       : ';' ;
-POINTERTO       : "->";
-
-
-ETX	    : '\3'  ;
-LPAREN    : '('   ;
-RPAREN    : ')'   ;
-
-LSQUARE   : '[' ;
-RSQUARE   : ']' ;
-
-LCURLY    : '{' ;
-RCURLY    : '}' ;
-
-AT : '@' ;
-
-EQUAL			: "==" ;
-NOTEQUAL		: "!=" ;
-LESSTHANOREQUALTO     : "<=" ;
-LESSTHAN              : "<" ;
-GREATERTHANOREQUALTO  : ">=" ;
-GREATERTHAN           : ">" ;
-
-DIVIDE          : '/' ;
-DIVIDEEQUAL     : "/=" ;
-PLUS            : '+' ;
-PLUSEQUAL       : "+=" ;
-PLUSPLUS        : "++" ;
-MINUS           : '-' ;
-MINUSEQUAL      : "-=" ;
-MINUSMINUS      : "--" ;
-STAR            : '*' ;
-TIMESEQUAL      : "*=" ;
-MOD             : '%' ;
-MODEQUAL        : "%=" ;
-SHIFTRIGHT      : ">>" ;
-SHIFTRIGHTEQUAL : ">>=" ;
-SHIFTLEFT       : "<<" ;
-SHIFTLEFTEQUAL  : "<<=" ;
-
-AND		  : "&&" ;
-NOT		  : '!' ;
-OR		  : "||" ;
-
 AMPERSAND       : '&' ;
+AND		        : "&&" ;
+ASSIGNEQUAL     : '=' ;
+AT              : '@' ;
 BITWISEANDEQUAL : "&=" ;
-TILDE           : '~' ;
 BITWISEOR       : '|'	  ;
 BITWISEOREQUAL  : "|="  ;
 BITWISEXOR      : '^'	  ;
 BITWISEXOREQUAL : "^="  ;
+COLON           : ':' ;
+COMMA           : ',' ;
+DIVIDE          : '/' ;
+DIVIDEEQUAL     : "/=" ;
+EQUAL			: "==" ;
+ETX	            : '\3'  ;
+GREATERTHAN     : ">" ;
+GREATERTHANOREQUALTO  : ">=" ;
+LCURLY          : '{' ;
+LESSTHAN        : "<" ;
+LESSTHANOREQUALTO     : "<=" ;
+LPAREN          : '('   ;
+LSQUARE         : '[' ;
+MINUS           : '-' ;
+MINUSEQUAL      : "-=" ;
+MINUSMINUS      : "--" ;
+MOD             : '%' ;
+MODEQUAL        : "%=" ;
+NOT		        : '!' ;
+NOTEQUAL		: "!=" ;
+OR		        : "||" ;
+PLUS            : '+' ;
+PLUSEQUAL       : "+=" ;
+PLUSPLUS        : "++" ;
+POINTERTO       : "->";
+QUESTIONMARK    : '?' ;
+RCURLY          : '}' ;
+RPAREN          : ')'   ;
+RSQUARE         : ']' ;
+SCOPE           : "::"  ;
+SEMICOLON       : ';' ;
+SHIFTLEFT       : "<<" ;
+SHIFTLEFTEQUAL  : "<<=" ;
+SHIFTRIGHT      : ">>" ;
+SHIFTRIGHTEQUAL : ">>=" ;
+STAR            : '*' ;
+TILDE           : '~' ;
+TIMESEQUAL      : "*=" ;
 
 protected
 ELLIPSIS  : "..." ;
-
-SCOPE           : "::"  ;
 
 protected
 IDENT
 options {testLiterals = true;}
     :   ('$')*('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
-    
 ;
+
 /**
   *  A <TAB> token is returned not only on regular tabs
   *  but also when a TAB is hit after an incomplete variable
@@ -754,227 +745,3 @@ protected
 FLOAT_SUFFIX
 	:	'f'|'F'|'d'|'D'
 	;
-
-
-class CppTreeParser extends TreeParser;
-
-options {
-    importVocab=CppParser;
-}
-
-{
-    ArrayList      refList;
-    ArithmeticType arithmeticType;
-    ArithmeticType longType;
-    ArithmeticType intType;
-    ArithmeticType shortType;
-    FloatingPointType doubleType;
-    FloatingPointType floatType;
-    private CppSymTab cppSymTabRef;
-    public CppTreeParser(int intSize, CppSymTab symTab) {
-        this();
-	    cppSymTabRef = symTab; 
-        shortType = new SignedType("short", ByteOrder.LITTLE_ENDIAN, intSize / 2);
-        intType = new SignedType("int", ByteOrder.LITTLE_ENDIAN, intSize);
-        longType = new SignedType("long", ByteOrder.LITTLE_ENDIAN, intSize * 2);
-        floatType = new FloatingPointType("false", ByteOrder.LITTLE_ENDIAN, intSize);
-        doubleType = new FloatingPointType("double", ByteOrder.LITTLE_ENDIAN, intSize * 2);
-    }
-}
-
-
-primitiveType
-    :   "boolean"
-    |   "char"
-    |   "byte"
-    |   "short"
-    |   "int"
-    |   "long"
-    |   "float"
-    |   "double"
-    ;
-
-identifier returns [String idSpelling=null]
-    :   ident:IDENT  {idSpelling=ident.getText();} ;
-
-references returns [ArrayList el = null;]
-	throws  InvalidOperatorException, 
-		OperationNotDefinedException,
-		NameNotFoundException
-    {   refList = new ArrayList();}
-    :   (subscript_or_member)* {el=refList;};
-
-subscript_or_member returns [String id=null;] 
-	throws  InvalidOperatorException, 
-		OperationNotDefinedException,
-		NameNotFoundException
-    {   Value s; }
-    :   #(SUBSCRIPT s=expr) {refList.add(new Integer((int)s.asLong()).toString());}
-    |    id=identifier {refList.add(id);};
-
-expr returns [Value returnVar=null] 
-	throws  InvalidOperatorException, 
-		OperationNotDefinedException,
-		NameNotFoundException
-{ Value v1, v2, log_expr; String s1; ArrayList el;}
-    :   #(PLUS  v1=expr v2=expr)  {	returnVar = v1.getType().add(v1, v2);  }
-    |   ( #(MINUS expr expr) )=> #(MINUS v1=expr v2=expr) 
-        { returnVar = v1.getType().subtract(v1, v2);  }
-    |   #(MINUS v1=expr ) 
-        { returnVar = intType.createValue(0);
-          returnVar = returnVar.getType().subtract(returnVar, v1); }
-    |   ( #(STAR expr expr) )=> #(STAR  v1=expr v2=expr)  
-	{ returnVar = v1.getType().multiply(v1, v2); }
-    |   #(MEMORY s1=identifier )
-	{ returnVar = longType.createValue(0);
-          returnVar = (Value)cppSymTabRef.getMemory(s1); }
-    |   #(DIVIDE  v1=expr v2=expr)  { returnVar = v1.getType().divide(v1, v2); }
-    |   #(MOD  v1=expr v2=expr)  {	returnVar = v1.getType().mod(v1, v2);  }
-    |   #(SHIFTLEFT  v1=expr v2=expr)  {	
-            returnVar = v1.getType().shiftLeft(v1, v2);  }
-    |   #(SHIFTRIGHT  v1=expr v2=expr)  {	
-            returnVar = v1.getType().shiftRight(v1, v2);  }
-    |   #(LESSTHAN  v1=expr v2=expr)  { returnVar = v1.getType().lessThan(v1, v2);  }
-
-    |   #(GREATERTHAN  v1=expr v2=expr)  { returnVar = v1.getType().greaterThan(v1, v2);  }
-
-    |   #(LESSTHANOREQUALTO  v1=expr v2=expr)  { returnVar = v1.getType().lessThanOrEqualTo(v1, v2);  }
-
-    |   #(GREATERTHANOREQUALTO  v1=expr v2=expr)  { returnVar = v1.getType().greaterThanOrEqualTo(v1, v2);  }
-
-    |   #(NOTEQUAL  v1=expr v2=expr)  { returnVar = v1.getType().notEqual(v1, v2);  }
-
-    |   #(EQUAL  v1=expr v2=expr)  { returnVar = v1.getType().equal(v1, v2);  }
-    |   ( #(AMPERSAND expr expr) )=>#(AMPERSAND  v1=expr v2=expr)  
-	{ returnVar = v1.getType().bitWiseAnd(v1, v2);  }
-    |   #(ADDRESS_OF s1=identifier )
-	{ returnVar = longType.createValue(0);
-          returnVar = (Value)cppSymTabRef.getAddress(s1); }
-    |   #(BITWISEXOR  v1=expr v2=expr)  { returnVar = v1.getType().bitWiseXor(v1, v2);  }
-    |   #(BITWISEOR  v1=expr v2=expr)  { returnVar = v1.getType().bitWiseOr(v1, v2);  }
-    |   #(AND  v1=expr v2=expr)  { returnVar = v1.getType().logicalAnd(v1, v2);  }
-    |   #(OR  v1=expr v2=expr)  { returnVar = v1.getType().logicalOr(v1, v2);  }
-    |   #(NOT  v1=expr)  { returnVar = v1.getType().logicalNegation(v1);  }
-    |   #(TILDE v1=expr)  { returnVar = v1.getType().bitWiseComplement(v1);  }
-    |   #(COND_EXPR  log_expr=expr v1=expr v2=expr)  { 
-            returnVar = ((log_expr.getType().getLogicalValue(log_expr)) ? v1 : v2);  
-        }
-    |   o:OCTALINT  {
-    	    char c = o.getText().charAt(o.getText().length() - 1);
-    	    int l = o.getText().length();
-    	    if (c == 'u' || c == 'U' || c == 'l' || c == 'L')
-    	       l -= 1;
-            returnVar =
-                longType.createValue(Long.parseLong(o.getText().substring(1, l), 8));
-        }
-    |   i:DECIMALINT  {
-    	    char c = i.getText().charAt(i.getText().length() - 1);
-    	    int l = i.getText().length();
-    	    if (c == 'u' || c == 'U' || c == 'l' || c == 'L')
-    	       l -= 1;
-            returnVar =
-                longType.createValue(Long.parseLong(i.getText().substring(0, l)));
-        }
-    |   h:HEXADECIMALINT  {
-    	    char c = h.getText().charAt(h.getText().length() - 1);
-    	    int l = h.getText().length();
-    	    if (c == 'u' || c == 'U' || c == 'l' || c == 'L')
-    	       l -= 1;
-            returnVar =
-                longType.createValue(Long.parseLong(h.getText().substring(2, l), 16));
-        }
-    |   f:FLOAT  {
-    	    char c = f.getText().charAt(f.getText().length() - 1);
-    	    int l = f.getText().length();
-    	    if (c == 'f' || c == 'F' || c == 'l' || c == 'L')
-    	       l -= 1;
-            returnVar =
-                floatType.createValue(Float.parseFloat(f.getText().substring(0, l)));
-        }
-    |   d:DOUBLE  {
-    	    char c = d.getText().charAt(d.getText().length() - 1);
-    	    int l = d.getText().length();
-    	    if (c == 'f' || c == 'F' || c == 'l' || c == 'L')
-    	       l -= 1;
-            returnVar =
-                doubleType.createValue(Double.parseDouble(d.getText().substring(0, l)));
-        }
-    |   #(ASSIGNEQUAL v1=expr v2=expr)  {
-            v1.assign(v2);
-            returnVar = v1;
-        }
-    |   #(TIMESEQUAL v1=expr v2=expr)  {
-            v1.getType().timesEqual(v1, v2);
-            returnVar = v1;
-        }
-    |   #(DIVIDEEQUAL v1=expr v2=expr)  {
-            v1.getType().divideEqual(v1, v2);
-            returnVar = v1;
-        }
-    |   #(MINUSEQUAL v1=expr v2=expr)  {
-            v1.getType().minusEqual(v1, v2);
-            returnVar = v1;
-        }
-    |   #(PLUSEQUAL v1=expr v2=expr)  {
-            v1.getType().plusEqual(v1, v2);
-            returnVar = v1;
-        }
-    |   #(MODEQUAL v1=expr v2=expr)  {
-            v1.getType().modEqual(v1, v2);
-            returnVar = v1;
-        }
-    |   #(SHIFTLEFTEQUAL v1=expr v2=expr)  {
-            v1.getType().shiftLeftEqual(v1, v2);
-            returnVar = v1;
-        }
-    |   #(SHIFTRIGHTEQUAL v1=expr v2=expr)  {
-            v1.getType().shiftRightEqual(v1, v2);
-            returnVar = v1;
-        }
-    |   #(BITWISEANDEQUAL v1=expr v2=expr)  {
-            v1.getType().bitWiseAndEqual(v1, v2);
-            returnVar = v1;
-        }
-    |   #(BITWISEXOREQUAL v1=expr v2=expr)  {
-            v1.getType().bitWiseXorEqual(v1, v2);
-            returnVar = v1;
-        }
-    |   #(BITWISEOREQUAL v1=expr v2=expr)  {
-            v1.getType().bitWiseOrEqual(v1, v2);
-            returnVar = v1;
-        }
-    |   #(CAST pt:primitiveType v2=expr) { 
-	    if(pt.getText().compareTo("long") == 0) {
-	      returnVar = longType.createValue(0);
-              returnVar.assign(v2);
-	      }
-	    else if(pt.getText().compareTo("int") == 0) {
-	      returnVar = intType.createValue(0);
-              returnVar.assign(v2);
-	      }
-	    else if(pt.getText().compareTo("short") == 0) {
-	      returnVar = shortType.createValue(0);
-              returnVar.assign(v2);
-	      }
-	    else if(pt.getText().compareTo("double") == 0) {
-	      returnVar = doubleType.createValue(0.0);
-              returnVar.assign(v2);
-	      }
-	    else if(pt.getText().compareTo("float") == 0) {
-	      returnVar = floatType.createValue(0.0);
-              returnVar.assign(v2);
-	      }
-	    else returnVar = v2;
-        }
-    |   #(EXPR_LIST v1=expr)  { returnVar = v1; }
-    |   #(FUNC_CALL v1=expr v2=expr)  { returnVar = v1; }
-    |   #(REFERENCE el=references) {
-          returnVar = (Value)cppSymTabRef.get(el);
-          }
-    |   ident:IDENT  {
-            returnVar = ((Value)cppSymTabRef.get(ident.getText()));
-        }
-    |   tident:TAB_IDENT  {
-            returnVar = ((Value)cppSymTabRef.get(tident.getText()));
-        }
-    ;
