@@ -1,3 +1,8 @@
+2007-09-18  Teresa Thomas  <tthomas@redhat.com>
+
+	* PieceLocation.java: Comments updated.
+	* MemoryPiece.java: Comments updated. 
+	
 2007-09-17  Stan Cox  <scox@redhat.com>
 
 	* DebugInfo.java: Import CExprLexer and CExprParser instead of cppLexer and 

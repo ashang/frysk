@@ -70,6 +70,7 @@ public class MemoryPiece
     private MemoryPiece (long memory, long size, long offset, ByteBuffer byteBuf)
     {
 	super (size);
+	// Assuming byte-addressable memory
 	this.memory = memory + offset;
 	this.byteBuf = byteBuf.slice(offset, size);
     }
@@ -80,8 +81,7 @@ public class MemoryPiece
     }
     
     protected Piece slice (long offset, long length)
-    {
-	// Assuming byte-addressable memory  
+    {  
 	Piece newP = new MemoryPiece(memory, length, offset, this.byteBuf);
 	return newP;
     }

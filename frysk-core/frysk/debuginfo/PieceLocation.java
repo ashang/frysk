@@ -45,8 +45,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 
-//XXX: Currently supports only MemoryPieces
-
 public class PieceLocation
 extends Location
 {
@@ -192,8 +190,6 @@ extends Location
 	}   
 	return new PieceLocation(slice);
     }
-
-
 
     /**
      * Helper function for slice - returns the number of bytes in slice list.
