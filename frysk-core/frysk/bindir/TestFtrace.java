@@ -69,6 +69,16 @@ public class TestFtrace
 	expect.expect(""+task.getProc().getPid()+"."+ task.getTid());
     }
 
+    public void testFtraceTracesExecutables () {
+	expect = new Expect(new String[] {
+				Config.getBinFile("ftrace").getAbsolutePath(),
+				"/bin/ls"
+			    });
+	expect.expect("execve");
+	expect.expect("close");
+    }
+
+
     public void testFtraceFollowsClones() {
 	// Create an unattached child process.
 	SlaveOffspring child = SlaveOffspring.createChild();
@@ -105,13 +115,4 @@ public class TestFtrace
 			    });
 	expect.expect("No process with ID 0 found");
     }
-
-    public void testFtraceHandlesExecutableNotFound() {
-	expect = new Expect(new String[] {
-				Config.getBinFile("ftrace").getAbsolutePath(),
-				"someNoneExistantExecutable.exe"
-			    });
-//	expect.expect("No process with ID 0 found");
-    }
-
 }

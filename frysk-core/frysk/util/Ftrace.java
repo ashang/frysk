@@ -147,7 +147,7 @@ public class Ftrace
   public void trace (String[] command)
   {
     init();
-    Manager.host.requestCreateAttachedProc(command, new AttachedObserver());
+    Manager.host.requestCreateAttachedProc(command, attachedObserver);
     Manager.eventLoop.run();
   }
 
@@ -268,13 +268,11 @@ public class Ftrace
    * An observer that sets up things once frysk has set up the requested
    * proc and attached to it.
    */
-  private class AttachedObserver
-      implements TaskObserver.Attached
+  private TaskObserver.Attached attachedObserver = new TaskObserver.Attached()
   {
     public Action updateAttached (Task task)
     {
       addProc(task.getProc());
-      task.requestUnblock(this);
       return Action.BLOCK;
     }
 
@@ -290,7 +288,7 @@ public class Ftrace
     public void deletedFrom (Object observable)
     {
     }
-  }
+  };
 
   /**
          * The syscallObserver added to the traced proc.
@@ -304,7 +302,7 @@ public class Ftrace
       syscallCache.put(task, syscall);
 
       /*
-         * if this system call is in the stack tracing HashSet, get a stack
+         * if this systsysem call is in the stack tracing HashSet, get a stack
          * trace before continuing on.
          */
       if (syscallStackTraceSet != null
@@ -329,7 +327,8 @@ public class Ftrace
 
     public void addedTo (Object observable)
     {
-
+	Task task = (Task) observable;
+	task.requestUnblock(attachedObserver);
     }
 
     public void addFailed (Object observable, Throwable w)
