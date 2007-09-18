@@ -1,3 +1,8 @@
+2007-09-18  Teresa Thomas  <tthomas@redhat.com>
+ 
+	* TestPieceLocation.java (testGetPutByte): Enabled RegisterPiece.getByte
+	test.
+
 2007-09-18  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Scope.java (getVariableByName): Added Enum search.
@@ -7,7 +12,7 @@
 	(testFindTwoScopesEnum): New test.
 
 2007-09-18  Teresa Thomas  <tthomas@redhat.com>
-
+	
 	* PieceLocation.java: Comments updated.
 	* MemoryPiece.java: Comments updated. 
 	

@@ -112,7 +112,7 @@ extends TestLib
 	// Test for getByte of RegisterPiece
 	l.putByte(13, (byte)1);
 
-//	assertEquals("byte", 1, l.getByte(13));  	//Fails - setReg not changing register's value
+	assertEquals("byte", 1, l.getByte(13));  	
 	assertEquals("byte", -37, l.getByte(11));
 	assertEquals("byte", 3, l.getByte(12));
 	assertEquals("byte", 0, l.getByte(14));
