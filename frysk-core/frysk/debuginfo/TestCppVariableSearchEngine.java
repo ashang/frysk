@@ -104,6 +104,14 @@ public class TestCppVariableSearchEngine extends TestLib{
 	verifyVariable(variableName, variableToken, fileName, execPath, srcPath);
     }
     
+    public void testFindTwoScopesEnum(){
+	String variableName = "two"; 
+	String fileName = "funit-c-scopes-enum";
+	String execPath = getExecPath(fileName);
+	
+	verifyVariableLongValue(variableName, execPath, 2);
+    }
+    
     
     
     
@@ -142,4 +150,40 @@ public class TestCppVariableSearchEngine extends TestLib{
 	assertNotNull("Variable found", variable);
 	assertTrue("Found the correct variable", variable.getLineNumber() == variableLine);
     }
+    
+    
+    /**
+     * Runs the given executable until it sigfaults then searches for the
+     * variable with the given name from that point. Then it verifies that
+     * the line number of the variable found is the same as the line number
+     * in the source file where the given token is.
+     * 
+     * @param variableName
+     *                Name of the variable to search for.
+     * @param variableToken
+     *                a token string from the source file that is found on
+     *                the same line as the variable.
+     * @param fileName
+     *                name of the test file.
+     * @param execPath
+     *                path to the executable to be run.
+     * @param srcPath
+     *                path to the source file from which the executable was
+     *                created
+     */
+    private void verifyVariableLongValue(String variableName,
+    	    String execPath,
+    	    long value){
+    	
+    	Task task = StoppedTestTaskFactory.getStoppedTask(execPath);
+    	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
+    	
+    	Variable variable = cppVariableSearchEngine.get(frame, variableName);
+    
+    	assertNotNull("Variable found", variable);
+    	assertEquals("Variable has the correct value", value, variable.getValue(frame).asLong());
+    }
+
+
+
 }

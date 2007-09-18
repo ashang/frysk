@@ -73,20 +73,26 @@ public class Scope
     private LinkedList scopes;
   
     LinkedList variables;
+
+    LinkedList collections;
     
   public Scope(DwarfDie die){
     this.variables = new LinkedList();
     this.scopes = new LinkedList();
-    
+    this.collections = new LinkedList(); 
     die = die.getChild();
     
     while(die != null){
-      
+	      
       if(die.getTag() == DwTag.VARIABLE_){
         Variable variable = new Variable(die);
         variables.add(variable);
       }
-      
+     
+      if(die.getTag() == DwTag.ENUMERATION_TYPE_){
+	  this.collections.add(new Enumiration(die));
+      }
+	     
       die = die.getSibling();
     }
     
@@ -143,7 +149,19 @@ public class Scope
 	if(variable.getName().equals(name)){
 	    return variable;
 	}
-    }
+      }
+      
+      iterator = this.collections.iterator();
+      while (iterator.hasNext()) {
+	Enumiration enumiration = (Enumiration) iterator.next();
+	variable = enumiration.getVariableByName(name);
+	
+	if(variable != null){
+	    return variable;
+	}
+      }
+      
+      
       return null;
   }
   
