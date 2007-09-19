@@ -69,6 +69,9 @@ public class TestLtrace
 
   public void testAllLibrariesGetDetected()
   {
+      if(unresolvedOnx8664(5048))
+	  return;
+      
     class MyFilter implements TracePointFilter {
       public HashSet allLibraries = new HashSet();
       public boolean tracePoint(Task task, TracePoint tp) {
@@ -98,6 +101,9 @@ public class TestLtrace
 
   public void testCallRecorded()
   {
+      if(unresolvedOnx8664(5048))
+	  return;
+      
     class MyFilter2 implements TracePointFilter {
       public boolean tracePoint(Task task, TracePoint tp) {
 	if (tp.origin != frysk.ftrace.TracePointOrigin.PLT)

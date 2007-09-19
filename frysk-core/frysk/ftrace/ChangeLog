@@ -1,3 +1,8 @@
+2007-09-19  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestLtrace.java (testCallRecorded): Added unresolvedX8664.
+	(testAllLibrariesGetDetected): Ditto.
+
 2007-09-12  Petr Machata  <pmachata@redhat.com>
 
 	* TestLtrace.java (testCallRecorded): rename MyFilter to MyFilter2.
