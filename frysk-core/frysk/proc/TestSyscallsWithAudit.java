@@ -92,6 +92,8 @@ public class TestSyscallsWithAudit
 	    // Below we test for auditNum, which is the lowest number.
 	    // assertEquals("auditlib sanity", i, auditNum);
 
+	    assertTrue("syscall " + auditName + " " + auditNum +" is supported by frysk", i < syscallList.length);
+	    
 	    Syscall syscall = syscallList[i];
 	    String fryskName = syscall.getName();
 	    int fryskNum = syscall.getNumber();

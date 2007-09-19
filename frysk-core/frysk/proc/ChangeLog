@@ -1,3 +1,10 @@
+2007-09-19  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestSyscallsWithAudit.java (syscallTest): added new asserstion.
+	* LinuxIa32Syscall.java (syscallList): Added new syscalls.
+	* LinuxPowerPCSyscall.java (syscallList): Added new syscalls.
+	* LinuxX8664Syscall.java (syscallList): Added new syscalls.
+
 2007-08-15  Mark Wielaard  <mwielaard@redhat.com>
 
 	* getSetupAddress (getSetupAddress): New method.

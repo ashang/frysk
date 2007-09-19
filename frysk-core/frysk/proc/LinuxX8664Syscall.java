@@ -397,7 +397,13 @@ public class LinuxX8664Syscall
     new X8664Syscall ("tee", 276),
     new X8664Syscall ("sync_file_range", 277),
     new X8664Syscall ("vmsplice", 278),
-    new X8664Syscall ("move_pages", 279)
+    new X8664Syscall ("move_pages", 279),
+    new X8664Syscall ("utimensat", 280),
+    new X8664Syscall ("epoll_pwait", 281),
+    new X8664Syscall ("signalfd", 282),
+    new X8664Syscall ("timerfd", 283),
+    new X8664Syscall ("eventfd", 284),
+    new X8664Syscall ("fallocate", 285)
   };
 
   public static Syscall syscallByNum (Task task, int number)

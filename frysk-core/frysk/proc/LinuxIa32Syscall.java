@@ -442,7 +442,12 @@ public class LinuxIa32Syscall
     new Ia32Syscall ("vmsplice", 316),
     new Ia32Syscall ("move_pages", 317),
     new Ia32Syscall ("getcpu", 318),
-    new Ia32Syscall ("epoll_pwait", 319)
+    new Ia32Syscall ("epoll_pwait", 319),
+    new Ia32Syscall ("utimensat", 320),
+    new Ia32Syscall ("signalfd", 321),
+    new Ia32Syscall ("timerfd", 322),
+    new Ia32Syscall ("eventfd", 323),
+    new Ia32Syscall ("fallocate", 324)
     };
 
 

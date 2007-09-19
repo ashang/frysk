@@ -432,7 +432,13 @@ public class LinuxPowerPCSyscall
     new PowerPCSyscall ("set_robust_list", 300),
     new PowerPCSyscall ("move_pages", 301),
     new PowerPCSyscall ("getcpu", 302),
-    new PowerPCSyscall ("epoll_pwait", 303)
+    new PowerPCSyscall ("epoll_pwait", 303),
+    new PowerPCSyscall ("utimensat", 304),
+    new PowerPCSyscall ("signalfd", 305),
+    new PowerPCSyscall ("timerfd", 306),
+    new PowerPCSyscall ("eventfd", 307),
+    new PowerPCSyscall ("sync_file_range2", 308),
+    new PowerPCSyscall ("fallocate", 309)
     };
 
   static class SocketSubSyscall
