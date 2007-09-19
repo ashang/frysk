@@ -67,6 +67,7 @@ import lib.dwfl.DwarfDie;
 public class Scope
 {
   
+    private final DwarfDie die;
     private Scope outer;
     private Scope inner;
     
@@ -77,25 +78,8 @@ public class Scope
     LinkedList collections;
     
   public Scope(DwarfDie die){
-    this.variables = new LinkedList();
-    this.scopes = new LinkedList();
-    this.collections = new LinkedList(); 
-    die = die.getChild();
-    
-    while(die != null){
-	      
-      if(die.getTag() == DwTag.VARIABLE_){
-        Variable variable = new Variable(die);
-        variables.add(variable);
-      }
-     
-      if(die.getTag() == DwTag.ENUMERATION_TYPE_){
-	  this.collections.add(new Enumiration(die));
-      }
-	     
-      die = die.getSibling();
-    }
-    
+      this.die = die;
+      this.scopes = new LinkedList();
   }
   
   public Scope getOuter(){
@@ -115,11 +99,40 @@ public class Scope
     return this.scopes;
   }
   
-  public LinkedList getVariables ()
-  {
-    return variables;
+  public LinkedList getVariables() {
+      if (this.variables == null) {
+	  this.variables = new LinkedList();
+	  DwarfDie die = this.die.getChild();
+	  
+	  while (die != null) {
+	      
+	      if (die.getTag() == DwTag.VARIABLE_) {
+		  Variable variable = new Variable(die);
+		  variables.add(variable);
+	      }
+	      die = die.getSibling();
+	  }
+      }
+      return variables;
   }
 
+  public LinkedList getEnums(){
+      if(this.collections == null){
+	  this.collections = new LinkedList();
+	  DwarfDie die = this.die.getChild();
+	    
+	  while(die != null){
+		      
+	      if(die.getTag() == DwTag.ENUMERATION_TYPE_){
+		  this.collections.add(new Enumiration(die));
+	      }
+
+	      die = die.getSibling();
+	  }
+      }
+      return collections;
+  }
+  
   public static boolean isScopeDie(DwarfDie die){
     switch (die.getTag())
       {
@@ -143,7 +156,7 @@ public class Scope
   public Variable getVariableByName(String name){
       Variable variable = null;
       
-      Iterator iterator = this.variables.iterator();
+      Iterator iterator = this.getVariables().iterator();
       while (iterator.hasNext()) {
 	variable = (Variable) iterator.next();
 	if(variable.getName().equals(name)){
@@ -151,7 +164,7 @@ public class Scope
 	}
       }
       
-      iterator = this.collections.iterator();
+      iterator = this.getEnums().iterator();
       while (iterator.hasNext()) {
 	Enumiration enumiration = (Enumiration) iterator.next();
 	variable = enumiration.getVariableByName(name);
@@ -167,7 +180,7 @@ public class Scope
   
   public void toPrint(DebugInfoFrame frame, PrintWriter writer, String indentString){
   
-    Iterator iterator = this.variables.iterator();
+    Iterator iterator = this.getVariables().iterator();
     while(iterator.hasNext()){
 	Variable variable = (Variable) iterator.next();
 	writer.println();

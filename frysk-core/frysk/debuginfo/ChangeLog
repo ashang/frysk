@@ -1,3 +1,9 @@
+2007-09-19  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Scope.java: Variables and enumerations now get initialized
+	only when rquested.
+	(getEnums): new function.
+
 2007-09-18  Teresa Thomas  <tthomas@redhat.com>
  
 	* TestPieceLocation.java (testGetPutByte): Enabled RegisterPiece.getByte
