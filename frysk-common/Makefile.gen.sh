@@ -300,7 +300,7 @@ has_main ()
 	*.java )
 	    has_java_main $1
 	    ;;
-        *.c | *.cxx )
+        *.c | *.cxx | *.cpp)
 	    grep -e '^main[( ]' -e ' main[( ]' $1 > /dev/null 2>&1
 	    ;;
         *.S | *.s )

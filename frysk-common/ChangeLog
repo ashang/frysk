@@ -1,3 +1,8 @@
+2007-09-20 Sami Wagiaalla <swagiaal@redhat.com>
+
+	* Makefile.gen.sh: Now executbales are generated
+	from .cpp files containing a main function.
+
 2007-09-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Makefile.gen.sh (TestRunner_LDADD): Added .cpp to the list
