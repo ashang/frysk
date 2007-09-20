@@ -1,3 +1,4 @@
+
 #!/bin/sh -eu
 # This file is part of the program FRYSK.
 #
@@ -506,7 +507,7 @@ for suffix in .cxxin ; do
     done
 done
 
-for suffix in .cxx .c .hxx .s .S ; do
+for suffix in .cxx .c .hxx .s .S .cpp ; do
     print_header "... ${suffix}"
     grep -e "\\${suffix}\$" files.list | while read file ; do
 	d=`dirname ${file}`

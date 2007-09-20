@@ -1,3 +1,8 @@
+2007-09-19  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Makefile.gen.sh (TestRunner_LDADD): Added .cpp to the list
+	of types to be included in the the file-list.
+
 2007-09-17  Stan Cox  <scox@redhat.com>
 
 	* Makefile.rules (.g.antlered): Use common antlr.tmp to accommodate
