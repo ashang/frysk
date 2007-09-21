@@ -117,13 +117,13 @@ public class TestDwfl
   {
     Dwfl dwfl = new Dwfl(Pid.get());
     assertNotNull("dwfl", dwfl);
-    DwflLine line = dwfl.getSourceLine(LocalMemory.getFuncAddr());
+    DwflLine line = dwfl.getSourceLine(LocalMemory.getCodeAddr());
     assertNotNull("line", line);
     String filename = line.getSourceFile();
     assertEquals("file",
-		 new File(LocalMemory.getFuncFile()).getName(),
+		 new File(LocalMemory.getCodeFile()).getName(),
                  new File(filename).getName());
-    assertEquals("line", LocalMemory.getFuncLine(), line.getLineNum());
+    assertEquals("line", LocalMemory.getCodeLine(), line.getLineNum());
 
     assertEquals("column", 0, line.getColumn());
   }
@@ -133,7 +133,7 @@ public class TestDwfl
     Dwfl dwfl = new Dwfl(Pid.get());
     assertNotNull(dwfl);
     
-    DwflDieBias bias = dwfl.getDie(LocalMemory.getFuncAddr());
+    DwflDieBias bias = dwfl.getDie(LocalMemory.getCodeAddr());
     assertNotNull(bias);
     
     assertEquals(0, bias.bias);
@@ -142,15 +142,15 @@ public class TestDwfl
     assertNotNull(die);
     
     assertEquals("file",
-		 new File(LocalMemory.getFuncFile()).getName(),
+		 new File(LocalMemory.getCodeFile()).getName(),
 		 new File(die.getName()).getName());
 
-    DwarfDie[] allDies = die.getScopes(LocalMemory.getFuncAddr() - bias.bias);
+    DwarfDie[] allDies = die.getScopes(LocalMemory.getCodeAddr() - bias.bias);
     assertNotNull(allDies);
 
     String[] names = {
-	"getFuncLine",
-	new File(LocalMemory.getFuncFile()).getName()
+	"getCodeLine",
+	new File(LocalMemory.getCodeFile()).getName()
     };
 
     for (int i = 0; i < allDies.length; i++)
@@ -197,7 +197,7 @@ public class TestDwfl
   {
     Dwfl dwfl = new Dwfl(Pid.get());
     assertNotNull(dwfl);
-    long addr = LocalMemory.getFuncAddr();
+    long addr = LocalMemory.getCodeAddr();
     DwflLine line = dwfl.getSourceLine(addr);
     assertNotNull(line);
     List lines = dwfl.getLineAddresses(line.getSourceFile(), 

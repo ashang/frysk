@@ -1,3 +1,29 @@
+2007-09-21  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLocalMemory.java: New file.
+	* LocalMemory.java (byteData): Rename byteVal;
+	(shortData): Rename shortVal.
+	(intData): Rename intVal.
+	(longData): Rename longVal.
+	(getByteDataAddr): Rename getByteValAddr.
+	(getShortDataAddr): Rename getShortValAddr.
+	(getIntDataAddr): Rename getIntValAddr.
+	(getLongDataAddr): Rename getLongValAddr.
+	(getBytes): New.
+	(getDataAddr): Rename getValAddr.
+	(getDataBytes): Rename getValBytes.
+	(getCodeAddr): Replace getFuncAddr.
+	(getFuncBytes): Replace getFuncBytes.
+	(getCodeLine): Rename getFuncLine.
+	(getCodeFile): Rename getFuncFile.
+	(StackBuilder): New.
+	(constructStack): New.
+	* cni/LocalMemory.cxx: Update.
+	(constructStack): Implement.
+	(getBytes): Implement.
+	(getFuncBytes): Delete.
+	(getValBytes): Delete.
+	
 2007-09-10  Kris Van Hees  <kris.van.hees@oracle.com>
 
 	* TestTearDownProcess.java: Re-insert copyright statement.

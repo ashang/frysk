@@ -1,3 +1,8 @@
+2007-09-21  Andrew Cagney  <cagney@redhat.com>
+
+	* TestByteBuffer.java: Update; LocalMemory's getVal* and getFunc*
+	renamed to getData* and getCode*.
+
 2007-09-07  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxWaitBuilder.java (logMissing): Expand log message.

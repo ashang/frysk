@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,73 +39,68 @@
 
 package frysk.testbed;
 
-public class LocalMemory
+import frysk.junit.TestCase;
+
+/**
+ * Check that LocalMemory addresses are pointing where expected.
+ */
+public class TestLocalMemory
+    extends TestCase
 {
     /**
-     * Known memory values.
+     * Check that the stack address changes as new stack frames are
+     * created.
      */
-     public static final byte byteData = 43;
-     public static final short shortData = 45;
-     public static final int intData = 42;
-     public static final long longData = 44;
-
-    public static final int SIZE = 32;
-
-    /**
-     * Returns the address of a variable for inspection.
-     */
-    public static native long getByteDataAddr();
-    public static native long getShortDataAddr();
-    public static native long getIntDataAddr();
-    public static native long getLongDataAddr();
-
-    private static native byte[] getBytes(long addr, int bytes);
-
-    /**
-     * Returns the address of the variables.
-     */
-    public static native long getDataAddr ();
-    /**
-     * Returns a copy of SIZE data bytes starting at getDataAddr.
-     */
-    public static byte[] getDataBytes () {
-	return getBytes(getDataAddr(), SIZE);
+    public void testStackChanging() {
+	// Capture a sequence of stack addresses.
+	class Stacks implements LocalMemory.StackBuilder {
+		int level = 0;
+		long[] addresses = new long[2];
+		public void stack(long addr, byte[] bytes) {
+		    if (level >= addresses.length)
+			return;
+		    addresses[level++] = addr;
+		    LocalMemory.constructStack(this);
+		}
+	}
+	Stacks stacks = new Stacks();
+	LocalMemory.constructStack(stacks);
+	assertEquals("level", stacks.addresses.length, stacks.level);
+	for (int i = 0; i < stacks.addresses.length - 1; i++) {
+	    for (int j = i + 1; j < stacks.addresses.length; j++) {
+		assertTrue("stack address " + i + " and " + j,
+			   stacks.addresses[i] != stacks.addresses[j]);
+	    }
+	}
     }
 
     /**
-     * Returns the address of a function.
+     * Check that the stack contents are as expected.
      */
-    public static native long getCodeAddr();
-    /*
-     * Returns a copy of SIZE instruction bytes starting at
-     * getCodeAddr().
-     */
-    public static byte[] getCodeBytes() {
-	return getBytes(getCodeAddr(), SIZE);
+    public void testStackContents() {
+	LocalMemory.constructStack(new LocalMemory.StackBuilder() {
+		public void stack(long addr, byte[] bytes) {
+		    // The stack contains a copy of the data.
+		    assertEquals("bytes", LocalMemory.getDataBytes(), bytes);
+		    // The stack isn't the same address as the data or code.
+		    assertTrue("data", LocalMemory.getDataAddr() != addr);
+		    assertTrue("code", LocalMemory.getCodeAddr() != addr);
+		}
+	    });
     }
 
-
     /**
-     * Returns the line number of a function.
+     * Check that at least the first data byte is as expected.
      */
-    public static native int getCodeLine ();
-
-    /**
-     * Returns the file-name of a function.
-     */
-    public static native String getCodeFile ();
-
-    /**
-     * Callback or builder describing the constructed stack.
-     */
-    interface StackBuilder {
-	void stack(long addr, byte[] contents);
+    public void testDataContents() {
+	byte[] bytes = LocalMemory.getDataBytes();
+	assertEquals("data byte[0]", LocalMemory.byteData, bytes[0]);
     }
     /**
-     * Allocate a bit of stack, with known content, and pass it back
-     * to the client.  Since stack is in "high" memory, this provides
-     * an address in higher memory.  For instance, on the i386, ADDR
-     * will be so large that it is negative.
+     * Check the data addresses have the expected offsets.
      */
-    public static native void constructStack(StackBuilder builder);
+    public void testDataAddresses() {
+	assertEquals("byteData address", LocalMemory.getDataAddr(),
+		     LocalMemory.getByteDataAddr());
+    }
 }

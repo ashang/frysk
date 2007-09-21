@@ -182,26 +182,26 @@ public class TestPtrace
     public void testTextValPeek ()
     {
 	verifyPeek ("TextVal", AddressSpace.TEXT,
-		    LocalMemory.getValBytes (),
-		    LocalMemory.getValAddr());
+		    LocalMemory.getDataBytes (),
+		    LocalMemory.getDataAddr());
     }
     public void testDataValPeek ()
     {
 	verifyPeek ("DataVal", AddressSpace.DATA,
-		    LocalMemory.getValBytes (),
-		    LocalMemory.getValAddr());
+		    LocalMemory.getDataBytes (),
+		    LocalMemory.getDataAddr());
     }
     public void testTextFuncPeek ()
     {
 	verifyPeek ("TextFunc", AddressSpace.TEXT,
-		    LocalMemory.getFuncBytes (),
-		    LocalMemory.getFuncAddr());
+		    LocalMemory.getCodeBytes (),
+		    LocalMemory.getCodeAddr());
     }
     public void testDataFuncPeek ()
     {
 	verifyPoke ("DataFunc", AddressSpace.DATA,
-		    LocalMemory.getFuncBytes (),
-		    LocalMemory.getFuncAddr());
+		    LocalMemory.getCodeBytes (),
+		    LocalMemory.getCodeAddr());
     }
 
     public void verifyPoke (String what, AddressSpace space,
@@ -217,26 +217,26 @@ public class TestPtrace
     public void testTextValPoke ()
     {
 	verifyPoke ("TextVal", AddressSpace.TEXT,
-		    LocalMemory.getValBytes (),
-		    LocalMemory.getValAddr ());
+		    LocalMemory.getDataBytes (),
+		    LocalMemory.getDataAddr ());
     }
     public void testDataValPoke ()
     {
 	verifyPoke ("DataVal", AddressSpace.DATA,
-		    LocalMemory.getValBytes (),
-		    LocalMemory.getValAddr ());
+		    LocalMemory.getDataBytes (),
+		    LocalMemory.getDataAddr ());
     }
     public void testTextFuncPoke ()
     {
 	verifyPoke ("TextFunc", AddressSpace.TEXT,
-		    LocalMemory.getFuncBytes (),
-		    LocalMemory.getFuncAddr ());
+		    LocalMemory.getCodeBytes (),
+		    LocalMemory.getCodeAddr ());
     }
     public void testDataFuncPoke ()
     {
 	verifyPoke ("DataFunc", AddressSpace.DATA,
-		    LocalMemory.getFuncBytes (),
-		    LocalMemory.getFuncAddr ());
+		    LocalMemory.getCodeBytes (),
+		    LocalMemory.getCodeAddr ());
     }
 
     private void verifyPeekBytes (String why, AddressSpace space,
@@ -269,26 +269,26 @@ public class TestPtrace
     public void testTextValPeekBytes ()
     {
 	verifyPeekBytes ("TextVal", AddressSpace.TEXT,
-			 LocalMemory.getValBytes (),
-			 LocalMemory.getValAddr ());
+			 LocalMemory.getDataBytes (),
+			 LocalMemory.getDataAddr ());
     }
     public void testDataValPeekBytes ()
     {
 	verifyPeekBytes ("DataVal", AddressSpace.DATA,
-			 LocalMemory.getValBytes (),
-			 LocalMemory.getValAddr ());
+			 LocalMemory.getDataBytes (),
+			 LocalMemory.getDataAddr ());
     }
     public void testTextFuncPeekBytes ()
     {
 	verifyPeekBytes ("TextFunc", AddressSpace.TEXT,
-			 LocalMemory.getFuncBytes (),
-			 LocalMemory.getFuncAddr ());
+			 LocalMemory.getCodeBytes (),
+			 LocalMemory.getCodeAddr ());
     }
     public void testDataFuncPeekBytes ()
     {
 	verifyPeekBytes ("DataFunc", AddressSpace.DATA,
-			 LocalMemory.getFuncBytes (),
-			 LocalMemory.getFuncAddr ());
+			 LocalMemory.getCodeBytes (),
+			 LocalMemory.getCodeAddr ());
     }
 
     private void verifyOutOfBounds (String why, boolean expected,
@@ -297,7 +297,7 @@ public class TestPtrace
 	int pid = new AttachedSelf().hashCode();
 	boolean caught = false;
 	try {
-	    AddressSpace.DATA.peek (pid, LocalMemory.getFuncAddr (), length,
+	    AddressSpace.DATA.peek (pid, LocalMemory.getCodeAddr (), length,
 				    bytes, offset);
 	}
 	catch (ArrayIndexOutOfBoundsException e) {

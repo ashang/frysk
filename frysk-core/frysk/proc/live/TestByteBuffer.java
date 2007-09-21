@@ -152,8 +152,8 @@ public class TestByteBuffer
     public void testSliceAddressBuffers()
     {
       for (int i = 0; i < addressBuffers.length; i++)
-	verifySlice(addressBuffers[i], LocalMemory.getFuncAddr(),
-		    LocalMemory.getFuncBytes().length);
+	verifySlice(addressBuffers[i], LocalMemory.getCodeAddr(),
+		    LocalMemory.getCodeBytes().length);
     }
 
     public void testSliceRegisterBuffers()
@@ -180,7 +180,7 @@ public class TestByteBuffer
     {
       for (int i = 0; i < addressBuffers.length; i++)
 	if (! (addressBuffers[i] instanceof LogicalMemoryBuffer))
-	  verifyModify(addressBuffers[i], LocalMemory.getFuncAddr());
+	  verifyModify(addressBuffers[i], LocalMemory.getCodeAddr());
     }
 
     private void verifyAsyncModify(ByteBuffer buffer, long addr) {
@@ -238,7 +238,7 @@ public class TestByteBuffer
       for (int i = 0; i < addressBuffers.length; i++)
 	if (! (addressBuffers[i] instanceof LogicalMemoryBuffer))
 	  verifyAsyncModify(addressBuffers[i],
-			    LocalMemory.getFuncAddr());
+			    LocalMemory.getCodeAddr());
     }
 
     public void verifyPeeks(ByteBuffer buffer, long addr, byte[] origBytes)
@@ -251,8 +251,8 @@ public class TestByteBuffer
   
     public void testAddressBufferPeeks()
     {
-      long addr = LocalMemory.getFuncAddr();
-      byte[] origBytes = LocalMemory.getFuncBytes();
+      long addr = LocalMemory.getCodeAddr();
+      byte[] origBytes = LocalMemory.getCodeBytes();
       for (int i = 0; i < addressBuffers.length; i++)
 	verifyPeeks(addressBuffers[i], addr, origBytes);
     }
@@ -312,10 +312,10 @@ public class TestByteBuffer
 
     public void testAsyncPeeks ()
     {
-      byte[] origBytes = LocalMemory.getFuncBytes();
+      byte[] origBytes = LocalMemory.getCodeBytes();
       for (int i = 0; i < addressBuffers.length; i++)
-	new AsyncPeeks(addressBuffers[i], LocalMemory.getFuncAddr(),
-		       LocalMemory.getFuncBytes().length).call(origBytes);
+	new AsyncPeeks(addressBuffers[i], LocalMemory.getCodeAddr(),
+		       LocalMemory.getCodeBytes().length).call(origBytes);
     }
 
     public void testAsycnPeeksRegisters()
@@ -358,8 +358,8 @@ public class TestByteBuffer
   {
     for (int i = 0; i < addressBuffers.length; i++)
       if (! (addressBuffers[i] instanceof LogicalMemoryBuffer))
-	verifyBulkPut(addressBuffers[i], LocalMemory.getFuncAddr(),
-		      LocalMemory.getFuncBytes().length);
+	verifyBulkPut(addressBuffers[i], LocalMemory.getCodeAddr(),
+		      LocalMemory.getCodeBytes().length);
   }
 
 }
