@@ -1,3 +1,13 @@
+2007-09-21  Teresa Thomas  <tthomas@redhat.com>
+
+	* RegisterPiece.java: Remove byteArray. 
+	(getRegValue): Added.
+	(putByte): Call getRegVal.
+	(getByte): Ditto.
+	(slice): Ditto.
+	* TestPieceLocation.java (testGetPutByte): Disable RegisterPiece.putByte
+	test.
+	
 2007-09-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Enumerator.java (getValue): Removed print statement.
