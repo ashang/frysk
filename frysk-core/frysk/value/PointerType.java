@@ -98,14 +98,6 @@ public class PointerType
 	writer.print(" *");
     }
 
-    public Value createValue (long val)
-    {
-	Value returnValue = new Value(this,  new ScratchLocation(type.getSize()));
-	BigInteger bigInteger = BigInteger.valueOf(val);
-	returnValue.getLocation().put(order(), bigInteger.toByteArray(), 0);
-	return returnValue;
-    }
-
     protected Type clone(IntegerType accessor) {
 	return new PointerType(getName(), order(), getSize(), type, accessor);
     }

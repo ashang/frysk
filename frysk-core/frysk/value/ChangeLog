@@ -1,3 +1,9 @@
+2007-09-21  Andrew Cagney  <cagney@redhat.com>
+
+	* CharType.java (createValue(BigInteger)): Delete.
+	(createValue(long)): Delete.
+	* PointerType.java (createValue(long)): Delete.
+
 2007-09-11  Teresa Thomas  <tthomas@redhat.com>
 
 	* Location.java (get): Visibility changed to public.
