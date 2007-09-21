@@ -56,6 +56,7 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.stepping.SteppingEngine;
 import frysk.util.CountDownLatch;
+import frysk.symtab.SymbolFactory;
 import lib.dwfl.DwarfDie;
 
 /**
@@ -234,7 +235,7 @@ public class BreakpointManager
         managedProcs.add(proc);
 	// Assume that the Proc's main task is stopped.
         LinkedList sharedLibBptAddrs
-            = FunctionBreakpoint.addressesForSymbol("_dl_debug_state", task);
+            = SymbolFactory.getSymbol(task, "_dl_debug_state");
         if (sharedLibBptAddrs.size() == 0)
             return;
         long sharedLibBptAddr

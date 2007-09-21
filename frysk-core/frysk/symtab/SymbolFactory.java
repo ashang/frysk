@@ -40,10 +40,12 @@
 
 package frysk.symtab;
 
+import java.util.LinkedList;
 import frysk.proc.Task;
 import frysk.dwfl.DwflCache;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
+import lib.dwfl.SymbolBuilder;
 
 /**
  * The object-file symbol.  Typically obtained by reading ELF
@@ -78,5 +80,32 @@ public class SymbolFactory
 	    return UNKNOWN;
 
 	return symbol;
+    }
+    
+    /**
+     * Get address list by symbol name.
+     * @param task
+     * @param name
+     * @return address list
+     */
+    public static LinkedList getSymbol(Task task, String name) {
+	Dwfl dwfl = DwflCache.getDwfl(task);
+	DwflModule[] modules = dwfl.getModules();
+	final LinkedList addrs = new LinkedList();
+	SymbolBuilder builder = new SymbolBuilder() {
+		public void symbol(String name, long value, long size,
+				   int type, int bind, int visibility) {
+		    addrs.add(new Long(value));		    
+		}	    
+	};
+	for (int i = 0; i < modules.length; i++)
+	{
+	    DwflModule module = modules[i];
+	    module.getSymbolByName(name, builder);	    
+	}
+	if (addrs.size() == 0)
+	    throw new RuntimeException("Couldn't find symbol " + name);
+	else
+	    return addrs;
     }
 }

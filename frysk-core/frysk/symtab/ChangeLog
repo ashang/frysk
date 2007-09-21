@@ -1,3 +1,7 @@
+2007-09-21  Zhao Shujing <pearly.zhao@oracle.com>
+
+	* SymbolFactory.java (getSymbol(Task task, String name)): Add.
+
 2007-09-12  Kris Van Hees  <kris.van.hees@oracle.com>
 
 	* SymbolFactory.java (getSymbol): Use prefetched values.

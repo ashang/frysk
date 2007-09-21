@@ -42,6 +42,7 @@
 package frysk.gui.disassembler;
 
 import java.util.prefs.Preferences;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ListIterator;
@@ -81,6 +82,8 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.stepping.TaskStepEngine;
 import frysk.proc.MemoryMap;
+import frysk.symtab.Symbol;
+import frysk.symtab.SymbolFactory;
 
 import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
@@ -379,28 +382,42 @@ public class DisassemblyWindow
               return;
           
             String str = fromBox.getText();
-            str = str.substring(2);
-            try
+            
+            if (str.startsWith("0x"))
             {
-              double d = (double) Long.parseLong(str, 16);
-              if (!addressAccessible((long)d))
-        	  fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));
-              else
-              {
-                  if (d > lastKnownTo)
-                  {
-                      if (lastKnownTo == lastKnownFrom)
-                	  handleFromSpin(lastKnownTo);
-                      else
-                	  fromSpin.setValue(lastKnownTo);
-                  }
+                str = str.substring(2);            
+                try
+                {
+                  double d = (double) Long.parseLong(str, 16);
+                  if (!addressAccessible((long)d))
+            	  fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));
                   else
-                      fromSpin.setValue(d);
-              }
+                  {
+                      if (d > lastKnownTo)
+                      {
+                          if (lastKnownTo == lastKnownFrom)
+                    	  handleFromSpin(lastKnownTo);
+                          else
+                    	  fromSpin.setValue(lastKnownTo);
+                      }
+                      else
+                          fromSpin.setValue(d);
+                  }
+                }
+                catch (NumberFormatException nfe)
+                {
+                  fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));
+                }
             }
-            catch (NumberFormatException nfe)
-            {
-              fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));
+            else
+            {        	   	
+        	try
+        	{
+        	    handleSymbol(str);
+        	}
+        	catch (RuntimeException e){
+        	    fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));        	    
+        	}       
             }
           }
       }
@@ -416,28 +433,41 @@ public class DisassemblyWindow
               return;
             
               String str = toBox.getText();
-              str = str.substring(2);
-              try
+              if (str.startsWith("0x"))
               {
-                double d = (double) Long.parseLong(str, 16);
-                if (!(addressAccessible((long)d)))
-                    toBox.setText("0x" + Long.toHexString((long) lastKnownTo));
-                else 
-                {
-                    if (d < lastKnownFrom) 
+        	  str = str.substring(2);        	  
+                  try
+                  {
+                    double d = (double) Long.parseLong(str, 16);
+                    if (!(addressAccessible((long)d)))
+                        toBox.setText("0x" + Long.toHexString((long) lastKnownTo));
+                    else 
                     {
-                        if (lastKnownFrom == lastKnownTo)
-                    	handleToSpin(lastKnownFrom);
+                        if (d < lastKnownFrom) 
+                        {
+                            if (lastKnownFrom == lastKnownTo)
+                        	handleToSpin(lastKnownFrom);
+                            else
+                        	toSpin.setValue(lastKnownFrom);
+                        }
                         else
-                    	toSpin.setValue(lastKnownFrom);
+                            toSpin.setValue(d);
                     }
-                    else
-                        toSpin.setValue(d);
-                }
+                  }
+                  catch (NumberFormatException nfe)
+                  {
+                    toBox.setText("0x" + Long.toHexString((long) lastKnownTo));
+                  }
               }
-              catch (NumberFormatException nfe)
-              {
-                toBox.setText("0x" + Long.toHexString((long) lastKnownTo));
+              else
+              {        	   	
+          	try
+          	{
+          	    handleSymbol(str);
+          	}
+          	catch (RuntimeException e){
+          	    toBox.setText("0x" + Long.toHexString((long) lastKnownTo));        	    
+          	}       
               }
           }
       }
@@ -539,6 +569,8 @@ public class DisassemblyWindow
       }
     this.refreshList();
   }
+  
+
   /**
    * return a boolean indicating whether or not this address is accessible.
    * 
@@ -640,16 +672,17 @@ public class DisassemblyWindow
    * By default append rows to the end.
    * 
    * @param i   The address to be displayed
+   * @param numIns  The Instructions that maybe be added
    * @param iter    The TreeIter representing the row to be added.
    */
-  public synchronized void rowAppend (long i, TreeIter iter)
+  public synchronized void rowAppend (long i, int numIns, TreeIter iter)
   {
 //    if (iter == null)
 //      iter = model.appendRow();
     
     List instructionsList
 	= diss.disassembleInstructions((long) this.lastKnownTo,
-				       numInstructions);
+				       numInstructions+numIns);
     Iterator li = instructionsList.listIterator(0);
     Instruction ins = (Instruction) li.next();
     
@@ -661,8 +694,10 @@ public class DisassemblyWindow
         this.lastPath.next();
         if (ins != null)
           {
-            if (li.hasNext())
+            if (li.hasNext()){
                 ins = (Instruction) li.next();
+                this.numInstructions++;
+            }
               else
                 {
                   this.toSpin.setValue((double) ins.address);
@@ -858,10 +893,11 @@ public class DisassemblyWindow
 
     if (val > this.lastKnownTo)
       {
-        for (long i = (long) lastKnownTo + 1; i < val + 1; i++)
-          ++this.numInstructions;
+        int numIns = 0;
+	for (long i = (long) lastKnownTo + 1; i < val + 1; i++)
+          ++numIns;
           
-        rowAppend((long) val, null);
+        rowAppend((long) val, numIns, null);
 
         return;
       }
@@ -894,6 +930,48 @@ public class DisassemblyWindow
         
         refreshList();
       }
+  }
+  
+  /**
+   * When the box is inputed a symbol, update the displayed information to the symbol.
+   * @param symbolName
+   */
+  private synchronized void handleSymbol(String symbolName)
+  {
+      LinkedList addressList = SymbolFactory.getSymbol(this.myTask, symbolName);
+      long startAddress = ((Long)addressList.getFirst()).longValue();
+      Symbol symbol = SymbolFactory.getSymbol(this.myTask, startAddress);
+      long endAddress = symbol.getAddress() + symbol.getSize();
+            
+      List instructionsList
+	= diss.disassembleInstructionsStartEnd((long)startAddress, (long)endAddress);
+      Iterator li = instructionsList.listIterator(0);
+      int insnum = 1;
+      Instruction ins = (Instruction)li.next();
+      this.lastKnownFrom = (double)ins.address;
+      while (li.hasNext()){
+	  ins = (Instruction)li.next();
+	  insnum++;
+      }
+      this.lastKnownTo = (double)ins.address;
+
+      TreeIter iter = this.model.getFirstIter();
+      while (insnum < numInstructions)
+      {
+	  this.model.removeRow(iter);
+	  this.lastPath.previous();
+	  numInstructions--;	  
+      }
+      while(insnum > numInstructions)
+      {
+	  this.model.appendRow();
+	  this.lastPath.next();
+	  numInstructions++;	  
+      }
+
+      refreshList();
+      fromBox.setText("0x" + Long.toHexString((long)lastKnownFrom));
+      fromSpin.setValue(lastKnownFrom);
   }
 
   /****************************************************************************

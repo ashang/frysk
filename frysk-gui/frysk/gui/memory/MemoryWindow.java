@@ -42,6 +42,7 @@
 package frysk.gui.memory;
 
 import java.util.prefs.Preferences;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Observable;
@@ -87,6 +88,8 @@ import frysk.gui.monitor.SimpleComboBox;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.stepping.TaskStepEngine;
+import frysk.symtab.Symbol;
+import frysk.symtab.SymbolFactory;
 import frysk.proc.MemoryMap;
 
 import lib.opcodes.Disassembler;
@@ -511,28 +514,41 @@ public class MemoryWindow
               return;
             
             String str = fromBox.getText();
-            str = str.substring(2);
-            try
+            if (str.startsWith("0x"))
             {
-              double d = (double) Long.parseLong(str, 16);
-              if (!addressAccessible((long)d))
-        	  fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));
-              else
-              {
-                  if (d > lastKnownTo)
-                  {
-                      if (lastKnownTo == lastKnownFrom)
-                	  handleFromSpin(lastKnownTo);
-                      else
-                	  fromSpin.setValue(lastKnownTo);                      
-                  }
+                str = str.substring(2);            
+                try
+                {
+                  double d = (double) Long.parseLong(str, 16);
+                  if (!addressAccessible((long)d))
+            	  fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));
                   else
-                      fromSpin.setValue(d);
-              }
+                  {
+                      if (d > lastKnownTo)
+                      {
+                          if (lastKnownTo == lastKnownFrom)
+                    	  handleFromSpin(lastKnownTo);
+                          else
+                    	  fromSpin.setValue(lastKnownTo);
+                      }
+                      else
+                          fromSpin.setValue(d);
+                  }
+                }
+                catch (NumberFormatException nfe)
+                {
+                  fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));
+                }
             }
-            catch (NumberFormatException nfe)
-            {
-              fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));
+            else
+            {        	   	
+        	try
+        	{
+        	    handleSymbol(str);
+        	}
+        	catch (RuntimeException e){
+        	    fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));        	    
+        	}       
             }
           }
       }
@@ -548,23 +564,41 @@ public class MemoryWindow
               return;
             
               String str = toBox.getText();
-              str = str.substring(2);
-              try
+              if (str.startsWith("0x"))
               {
-                double d = (double) Long.parseLong(str, 16);
-                if (d < lastKnownFrom)
-                {
-                    if (lastKnownFrom == lastKnownTo)
-                	handleToSpin(lastKnownFrom);
-                    else
-                	toSpin.setValue(lastKnownFrom);
-                }
-                else
-                    toSpin.setValue(d);
+        	  str = str.substring(2);        	  
+                  try
+                  {
+                    double d = (double) Long.parseLong(str, 16);
+                    if (!(addressAccessible((long)d)))
+                        toBox.setText("0x" + Long.toHexString((long) lastKnownTo));
+                    else 
+                    {
+                        if (d < lastKnownFrom) 
+                        {
+                            if (lastKnownFrom == lastKnownTo)
+                        	handleToSpin(lastKnownFrom);
+                            else
+                        	toSpin.setValue(lastKnownFrom);
+                        }
+                        else
+                            toSpin.setValue(d);
+                    }
+                  }
+                  catch (NumberFormatException nfe)
+                  {
+                    toBox.setText("0x" + Long.toHexString((long) lastKnownTo));
+                  }
               }
-              catch (NumberFormatException nfe)
-              {
-                toBox.setText("0x" + Long.toHexString((long) lastKnownTo));
+              else
+              {        	   	
+          	try
+          	{
+          	    handleSymbol(str);
+          	}
+          	catch (RuntimeException e){
+          	    toBox.setText("0x" + Long.toHexString((long) lastKnownTo));        	    
+          	}       
               }
           }
       }
@@ -572,6 +606,7 @@ public class MemoryWindow
     
   }
   
+ 
   /**
    * return a boolean indicating whether or not this address is accessible.
    * 
@@ -611,6 +646,7 @@ public class MemoryWindow
     recalculate();
     this.refreshLock = false;
   }
+
 
   /*****************************************************************************
    * Calculation, memory reading, and information display methods
@@ -1010,6 +1046,47 @@ public class MemoryWindow
     this.toBox.setText("0x" + Long.toHexString((long) val));
     this.lastKnownTo = val;
     refreshList();
+  }
+  
+  /**
+   * When the box is inputed a symbol, update the displayed information to the symbol.
+   * @param symbolName
+   */
+  private synchronized void handleSymbol(String symbolName)
+  {
+      LinkedList addressList = SymbolFactory.getSymbol(this.myTask, symbolName);
+      long startAddress = ((Long)addressList.getFirst()).longValue();
+      Symbol symbol = SymbolFactory.getSymbol(this.myTask, startAddress);
+      long endAddress = symbol.getAddress() + symbol.getSize();
+      long size = endAddress - startAddress + 1;
+      long modelSize = (long)lastKnownTo - (long)lastKnownFrom + 1;
+      TreeIter iter = this.model.getFirstIter();      
+      while (size < modelSize)
+      {
+	  this.model.removeRow(iter);
+	  this.lastPath.previous();
+	  modelSize--;	  
+      }
+      while(size > modelSize)
+      {
+	  this.model.appendRow();
+	  this.lastPath.next();
+	  modelSize++;	  
+      }
+      this.lastKnownFrom = (double)startAddress;
+      this.lastKnownTo = (double)endAddress;
+      iter = this.model.getFirstIter();
+      this.lastPath = iter.getPath();
+      for(long i= startAddress; i < endAddress+1; i++)
+      {
+	  rowAppend(i, iter);
+	  iter = iter.getNextIter();
+      }
+      refreshList();
+      fromBox.setText("0x" + Long.toHexString((long)lastKnownFrom));
+      fromSpin.setValue(lastKnownFrom);
+      toBox.setText("0x" + Long.toHexString((long)lastKnownTo));
+      toSpin.setValue(lastKnownTo);
   }
 
   /****************************************************************************

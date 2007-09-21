@@ -1,3 +1,9 @@
+2007-09-21  Zhao Shujing <pearly.zhao@oracle.com>
+	
+	* FunctionBreakpoint.java: Use method SymbolFactory.getSymbol instead
+	of the one defined by itself.
+	* SymbolFactory.getSymbol: Use SymbolFactory.getSymbol.
+
 2007-09-03  Tim Moore  <timoore@redhat.com>
 
 	* BreakpointManager.java (manageProcess): Block until the shared

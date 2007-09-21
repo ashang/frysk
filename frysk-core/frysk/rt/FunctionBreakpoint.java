@@ -46,12 +46,9 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import lib.dwfl.DwarfDie;
-import lib.dwfl.Dwfl;
-import lib.dwfl.DwflModule;
-import lib.dwfl.SymbolBuilder;
 import lib.dwfl.die.InlinedSubroutine;
 import frysk.proc.Task;
-import frysk.dwfl.DwflCache;
+import frysk.symtab.SymbolFactory;
 
 public class FunctionBreakpoint
   extends SourceBreakpoint
@@ -93,7 +90,7 @@ public class FunctionBreakpoint
 	    return addrs;
 	}
 	else {
-	    return addressesForSymbol(name, task);
+	    return SymbolFactory.getSymbol(task, name);
 	}
     }
 
@@ -120,26 +117,4 @@ public class FunctionBreakpoint
       writer.print("*");
     return writer;
   }
-
-    static LinkedList addressesForSymbol(String name, Task task)  {
-	Dwfl dwfl = DwflCache.getDwfl(task);
-	DwflModule[] modules = dwfl.getModules();
-	final LinkedList addrs = new LinkedList();
-	SymbolBuilder builder = new SymbolBuilder() {
-		public void symbol(String name, long value, long size,
-				   int type, int bind, int visibility) {
-		    addrs.add(new Long(value));
-		}
-	    };
-	for (int i = 0; i < modules.length; i++)
-	    {
-		DwflModule module = modules[i];
-		module.getSymbolByName(name, builder);
-	    }
-	if (addrs.size() == 0)
-	    throw new RuntimeException("Couldn't find symbol " + name);
-	else
-	    return addrs;
-
-    }
 }
