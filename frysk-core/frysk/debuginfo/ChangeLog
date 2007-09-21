@@ -1,3 +1,7 @@
+2007-09-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Enumerator.java (getValue): Removed print statement.
+
 2007-09-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Scope.java: Variables and enumerations now get initialized
