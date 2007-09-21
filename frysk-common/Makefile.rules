@@ -80,6 +80,7 @@ noinst_LIBRARIES =
 man_MANS =
 LDADD = 
 ANTLR_BUILT =
+AM_LDFLAGS = -lstdc++
 
 check_SCRIPTS =
 check_PROGRAMS =
