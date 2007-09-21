@@ -1,3 +1,11 @@
+2007-09-21  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfo.java (get(DebugInfoFrame,Variable)): Delete.
+	* DebugInfoEvaluator.java: Check
+	Variable.useLocationExpressionFIXME.
+	* Variable.java (useLocationExpressionFIXME): New.
+	(getValue): Update; call DebugInfoEvaluator.get(Variable) direct.
+
 2007-09-21  Teresa Thomas  <tthomas@redhat.com>
 
 	* RegisterPiece.java: Remove byteArray. 

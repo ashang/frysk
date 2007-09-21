@@ -41,9 +41,6 @@ package frysk.debuginfo;
 
 import java.io.PrintWriter;
 import java.util.List;
-
-import javax.naming.NameNotFoundException;
-
 import lib.dwfl.DwException;
 import lib.dwfl.DwarfDie;
 import frysk.value.Format;
@@ -133,22 +130,16 @@ public class Variable {
 	//      }
     }
   
-    public Value getValue(DebugInfoFrame frame) {
-	boolean useLocationExpresstion = false;
+    static boolean useLocationExpressionFIXME = false;
 
-	if (useLocationExpresstion) {
-	    List ops = variableDie.getFormData(frame.getAdjustedAddress());
-	    LocationExpression locationExpression = new LocationExpression(frame, variableDie, ops);
-	    PieceLocation pieceLocation = new PieceLocation(locationExpression.decode(this.getType(frame).getSize()));
-	    Value value = new Value(this.getType(frame), pieceLocation);
-	    return value;
-	} else {
-	    DebugInfo debugInfo = new DebugInfo(frame);
-	    try {
-		return debugInfo.get(frame, this);
-	    } catch (NameNotFoundException e) {
-		throw new RuntimeException(e);
-	    }
+    public Value getValue(DebugInfoFrame frame) {
+	if (!useLocationExpressionFIXME) {
+	    return new DebugInfoEvaluator(frame).get(this);
 	}
+	List ops = variableDie.getFormData(frame.getAdjustedAddress());
+	LocationExpression locationExpression = new LocationExpression(frame, variableDie, ops);
+	PieceLocation pieceLocation = new PieceLocation(locationExpression.decode(this.getType(frame).getSize()));
+	Value value = new Value(this.getType(frame), pieceLocation);
+	return value;
     }
 }

@@ -329,92 +329,83 @@ class DebugInfoEvaluator
      * @see frysk.expr.CppSymTab#get(java.lang.String)
      */
     public Value get (Variable var) {
-	VariableAccessor[] variableAccessor = { new AccessMemory(),
-						new AccessRegisters()};
 	if (var == null)
 	    return (null);
-
-        DwarfDie varDie = var.getVariableDie();
-        
-        Isa isa = this.task.getIsa();
-
-	for (int i = 0; i < variableAccessor.length; i++) {
-	    try {
-		Type varType = var.getType(frame);
-	    	if (varType instanceof TypeDef) {
-	    	    varType = varType.getUltimateType();
-	    	}
-		if (varType instanceof ArrayType) {
-		    int typeSize = varType.getSize();
-		    long addr = variableAccessor[0].getAddr(varDie);
-                    if (addr == 0)
-                        continue;
-		    return new Value(varType, 
-			    new ByteBufferLocation(buffer, addr, typeSize));
-		}
-		else if (varType instanceof ConfoundedType
-			|| varType instanceof ClassType) {
-		    long addr = variableAccessor[0].getAddr(varDie);
-		    if (addr == 0)
-			continue;
-		    return new Value(varType, 
-			    new ByteBufferLocation(buffer, addr, varType.getSize()));
-		}
-		else if (varType instanceof PointerType) {
-		    long addr = variableAccessor[i].getLong(varDie, 0);
-		    return ((PointerType)varType).createValue(addr);
-		}
-		else if (varType instanceof EnumType) {
-		    long val = 0;
-		    switch (varType.getSize()) {
-		    case (2): val = variableAccessor[0].getShort(varDie, 0);
-		    case (4): val = variableAccessor[0].getInt(varDie, 0);
-		    case (8): val = variableAccessor[0].getLong(varDie, 0);
+	if (!Variable.useLocationExpressionFIXME) {
+	    VariableAccessor[] variableAccessor = { new AccessMemory(),
+						    new AccessRegisters()};
+	    DwarfDie varDie = var.getVariableDie();
+	    Isa isa = this.task.getIsa();
+	    for (int i = 0; i < variableAccessor.length; i++) {
+		try {
+		    Type varType = var.getType(frame);
+		    if (varType instanceof TypeDef) {
+			varType = varType.getUltimateType();
 		    }
-		    return ((EnumType)varType).createValue(val);
-		}
-		// special case members of an enumeration ??? improve this
-		else if (var.getVariableDie().getTag() == DwTag.ENUMERATOR_) {
-		    return longType.createValue(varDie
-			    .getAttrConstant(DwAt.CONST_VALUE_));
-		}
-		else if (varType instanceof IntegerType) {
-		    if (varType.getSize() == StandardTypes.getLongType(isa).getSize()) {
-			long longVal = variableAccessor[i].getLong(varDie, 0);
-			return ((ArithmeticType)varType).createValue(longVal);
-		    }
-		    else if (varType.getSize() == StandardTypes.getIntType(isa).getSize()) {
-			int intVal = variableAccessor[i].getInt(varDie, 0);
-			return ((ArithmeticType)varType).createValue(intVal);
-		    }
-		    else if (varType.getSize() == StandardTypes.getShortType(isa).getSize()) {
-			short shortVal = variableAccessor[i].getShort(varDie, 0);
-			return ((ArithmeticType)varType).createValue(shortVal);
-		    }
-		    else if (varType.getSize() == StandardTypes.getByteType(isa).getSize()) {
-			byte byteVal = variableAccessor[i].getByte(varDie, 0);
-			return ((ArithmeticType)varType).createValue(byteVal);
-		    }
-		}
-		else if (varType instanceof CharType) {
+		    if (varType instanceof ArrayType) {
+			int typeSize = varType.getSize();
+			long addr = variableAccessor[0].getAddr(varDie);
+			if (addr == 0)
+			    continue;
+			return new Value(varType, 
+					 new ByteBufferLocation(buffer, addr, typeSize));
+		    } else if (varType instanceof ConfoundedType
+			       || varType instanceof ClassType) {
+			long addr = variableAccessor[0].getAddr(varDie);
+			if (addr == 0)
+			    continue;
+			return new Value(varType, 
+					 new ByteBufferLocation(buffer, addr, varType.getSize()));
+		    } else if (varType instanceof PointerType) {
+			long addr = variableAccessor[i].getLong(varDie, 0);
+			return ((PointerType)varType).createValue(addr);
+		    } else if (varType instanceof EnumType) {
+			long val = 0;
+			switch (varType.getSize()) {
+			case (2): val = variableAccessor[0].getShort(varDie, 0);
+			case (4): val = variableAccessor[0].getInt(varDie, 0);
+			case (8): val = variableAccessor[0].getLong(varDie, 0);
+			}
+			return ((EnumType)varType).createValue(val);
+		    } else if (var.getVariableDie().getTag() == DwTag.ENUMERATOR_) {
+			// special case members of an enumeration ??? improve this
+			return longType.createValue(varDie
+						    .getAttrConstant(DwAt.CONST_VALUE_));
+		    } else if (varType instanceof IntegerType) {
+			if (varType.getSize() == StandardTypes.getLongType(isa).getSize()) {
+			    long longVal = variableAccessor[i].getLong(varDie, 0);
+			    return ((ArithmeticType)varType).createValue(longVal);
+			} else if (varType.getSize() == StandardTypes.getIntType(isa).getSize()) {
+			    int intVal = variableAccessor[i].getInt(varDie, 0);
+			    return ((ArithmeticType)varType).createValue(intVal);
+			} else if (varType.getSize() == StandardTypes.getShortType(isa).getSize()) {
+			    short shortVal = variableAccessor[i].getShort(varDie, 0);
+			    return ((ArithmeticType)varType).createValue(shortVal);
+			} else if (varType.getSize() == StandardTypes.getByteType(isa).getSize()) {
+			    byte byteVal = variableAccessor[i].getByte(varDie, 0);
+			    return ((ArithmeticType)varType).createValue(byteVal);
+			}
+		    } else if (varType instanceof CharType) {
 		    	char charVal = (char)variableAccessor[i].getShort(varDie, 0);
 			return ((CharType)varType).createValue(charVal);
-		}
-		else if (varType instanceof FloatingPointType) {
-		    if (varType.getSize() == StandardTypes.getFloatType(isa).getSize()) {
-			float floatVal = variableAccessor[i].getFloat(varDie, 0);
-			return ((ArithmeticType)varType).createValue(floatVal);
+		    } else if (varType instanceof FloatingPointType) {
+			if (varType.getSize() == StandardTypes.getFloatType(isa).getSize()) {
+			    float floatVal = variableAccessor[i].getFloat(varDie, 0);
+			    return ((ArithmeticType)varType).createValue(floatVal);
+			} else if (varType.getSize() == StandardTypes.getDoubleType(isa).getSize()) {
+			    double doubleVal = variableAccessor[i].getDouble(varDie, 0);
+			    return ((ArithmeticType)varType).createValue(doubleVal);
+			}
 		    }
-		    else if (varType.getSize() == StandardTypes.getDoubleType(isa).getSize()) {
-			double doubleVal = variableAccessor[i].getDouble(varDie, 0);
-			return ((ArithmeticType)varType).createValue(doubleVal);
-		    }
+		} catch (NameNotFoundException ignore) {
+		    // FIXME: Why is this ignored?
+		} catch (Errno ignore) {
+		    // FIXME: Why is this ignored?
 		}
-	    } catch (NameNotFoundException ignore) {
-	    } catch (Errno ignore) {
 	    }
+	    return new Value(new UnknownType(varDie.getName()));
 	}
-	return new Value(new UnknownType(varDie.getName()));
+	return var.getValue(frame);
     }
 
     /**

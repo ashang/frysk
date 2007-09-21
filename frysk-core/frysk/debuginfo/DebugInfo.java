@@ -323,10 +323,4 @@ public class DebugInfo {
 	// DebugInfoEvaluator).
         return typeEntry.getType(frameFIXME, die);
     } 
-
-    public Value get(DebugInfoFrame f, Variable var) throws NameNotFoundException
-    {
-	return new DebugInfoEvaluator(f).get(var);
-    } 
-
 }
