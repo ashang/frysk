@@ -69,7 +69,8 @@ public class TestLtrace
 
   public void testAllLibrariesGetDetected()
   {
-      if(unresolvedOnx8664(5048))
+      if(unresolvedOnx8664(5048)
+	 || unresolvedOffUtrace(5054))
 	  return;
       
     class MyFilter implements TracePointFilter {
@@ -101,7 +102,8 @@ public class TestLtrace
 
   public void testCallRecorded()
   {
-      if(unresolvedOnx8664(5048))
+      if(unresolvedOnx8664(5048)
+	 || unresolvedOffUtrace(5053))
 	  return;
       
     class MyFilter2 implements TracePointFilter {

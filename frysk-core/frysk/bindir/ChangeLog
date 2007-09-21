@@ -1,3 +1,8 @@
+2007-09-21  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFtrace.java (testFtraceTracesExecutables): Mark as
+	unresolvedOffUtrace; bug 5055.
+
 2007-09-18  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFtrace.java: Now only unblocks task after 

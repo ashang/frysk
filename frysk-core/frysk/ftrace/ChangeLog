@@ -1,3 +1,9 @@
+2007-09-21  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLtrace.java (testCallRecorded): Add unresolvedOffUtrace; bug
+	5053.
+	(testAllLibrariesGetDetected): Ditt; bug 5054.
+
 2007-09-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestLtrace.java (testCallRecorded): Added unresolvedX8664.

@@ -37,7 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.bindir;
 
 import frysk.Config;
@@ -70,6 +69,8 @@ public class TestFtrace
     }
 
     public void testFtraceTracesExecutables () {
+	if (unresolvedOffUtrace(5055))
+	    return;
 	expect = new Expect(new String[] {
 				Config.getBinFile("ftrace").getAbsolutePath(),
 				"/bin/ls"
