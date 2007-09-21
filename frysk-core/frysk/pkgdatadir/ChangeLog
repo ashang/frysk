@@ -1,3 +1,8 @@
+2007-09-21  Rick Moseley  <rmoseley@redhat.com>
+
+	* test-exe-x86.bz2.uu: New.
+	* test-exe-x86.c.source: New.
+
 2007-01-09  Andrew Cagney  <cagney@redhat.com>
 
 	* test_main_looper.c: Delete, moved to frysk/pkglibdir/.
