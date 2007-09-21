@@ -1,3 +1,7 @@
+Fri Sep 21 11:12:12 2007  Chris Moller  <cmoller@redhat.com>
+
+	* utracer/utracer.c:  Moved uerror() here from udb.
+
 Fri Sep 21 11:02:42 2007  Chris Moller  <cmoller@redhat.com>
 
 	* Extensive re-write to further isolate OS-dependent code from Java.

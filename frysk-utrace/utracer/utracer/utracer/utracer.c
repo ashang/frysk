@@ -49,6 +49,7 @@
 #include <fcntl.h>
 
 #include <utracer.h>
+#include <utracer-errmsgs.h>
 
 // fixme temporary
 pid_t client_pid;
@@ -57,6 +58,14 @@ int cmd_file_fd;
 int resp_file_fd;
 int ctl_file_fd;
 
+void
+uerror(const char * s)
+{
+  if ((UTRACER_EBASE <= errno) && (errno < UTRACER_EMAX)) {
+    fprintf (stderr, "%s: %s\n", s, utrace_emsg[errno - UTRACER_EBASE]);
+  }
+  else perror (s);
+}
 
 void
 utracer_close_ctl_file()

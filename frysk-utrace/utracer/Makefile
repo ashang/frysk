@@ -5,9 +5,10 @@ UDB_CFLAGS = -g
 UDB_INCLUDES = -I./utracer/include
 #UDB_CFLAGS = -g -DENABLE_MODULE_OPS
 UDB_LDFLAGS =
-UDB_LIBS = -L./utracer/utracer -lutracer -lreadline -lhistory -lcurses -lpthread
+UDB_LIBS = -L./utracer/utracer -lutracer -lreadline -lhistory \
+           -lcurses -lpthread
 
-UDB_SOURCE_FILES = udb.c udb-text-ui.c udb-utrace-if.c udb-module.c \
+UDB_SOURCE_FILES = udb.c udb-text-ui.c udb-module.c \
                    udb-response.c udb-i386.c
 UDB_OBJECT_FILES = $(UDB_SOURCE_FILES:.c=.o)
 
