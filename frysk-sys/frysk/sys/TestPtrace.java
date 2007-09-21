@@ -340,6 +340,82 @@ public class TestPtrace
 	    });
     }
 
+    private void verifyPokeBytes (String why, AddressSpace space,
+				  byte[] startBytes, long startAddr)
+    {
+	int pid = new AttachedSelf().hashCode();
+	byte[] newBytes = new byte[startBytes.length];
+	byte[] myBytes = new byte[startBytes.length];
+	byte[] pidBytes = new byte[startBytes.length];
+	for (int i = 0; i < pidBytes.length; i++) {
+	    myBytes[i] = startBytes[i];
+	}
+	for (int addr = 4; addr < 9; addr++) {
+	    for (int length = 0; length < 9; length++) {
+		for (int offset = 0; offset < 9; offset++) {
+		    // Create some randomish data.
+		    for (int i = 0; i < newBytes.length; i++)
+			newBytes[i] = (byte)(addr + length + offset + i);
+		    // Copy the sub buffer out.
+		    space.poke(pid, startAddr + addr,
+			       length, newBytes, offset);
+		    // Fake the copy using local data.
+		    for (int i = 0; i < length; i++)
+			myBytes[addr + i] = newBytes[offset + i];
+		    // Verify
+		    space.peek(pid, startAddr, startBytes.length, pidBytes, 0);
+		    for (int i = 0; i < myBytes.length; i++)
+			assertEquals (why
+				      + " addr=" + addr
+				      + " length=" + length
+				      + " offset=" + offset
+				      + " byte=" + i,
+				      myBytes[i], pidBytes[i]);
+		}
+	    }
+	}
+    }
+    public void testTextValPokeBytes ()
+    {
+	verifyPokeBytes ("TextVal", AddressSpace.TEXT,
+			 LocalMemory.getDataBytes (),
+			 LocalMemory.getDataAddr ());
+    }
+    public void testDataValPokeBytes ()
+    {
+	verifyPokeBytes ("DataVal", AddressSpace.DATA,
+			 LocalMemory.getDataBytes (),
+			 LocalMemory.getDataAddr ());
+    }
+    public void testTextFuncPokeBytes ()
+    {
+	verifyPokeBytes ("TextFunc", AddressSpace.TEXT,
+			 LocalMemory.getCodeBytes (),
+			 LocalMemory.getCodeAddr ());
+    }
+    public void testDataFuncPokeBytes ()
+    {
+	verifyPokeBytes ("DataFunc", AddressSpace.DATA,
+			 LocalMemory.getCodeBytes (),
+			 LocalMemory.getCodeAddr ());
+    }
+    public void testDataStackPokeBytes() {
+	LocalMemory.constructStack(new StackBuilder() {
+		public void stack(long addr, byte[] bytes) {
+		    verifyPokeBytes("DataStack", AddressSpace.DATA,
+				    bytes, addr);
+		}
+	    });
+    }
+    public void testTextStackPokeBytes() {
+	LocalMemory.constructStack(new StackBuilder() {
+		public void stack(long addr, byte[] bytes) {
+		    verifyPokeBytes("DataStack", AddressSpace.TEXT,
+				    bytes, addr);
+		}
+	    });
+    }
+
     private void verifyOutOfBounds (String why, boolean expected,
 				    int length, byte[] bytes, int offset)
     {

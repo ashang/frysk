@@ -190,8 +190,20 @@ public class Ptrace
 	 * Fetch up-to LENGTH bytes starting at ADDR of process PID,
 	 * store them in BYTES, starting at OFFSET.
 	 */
-	public native int peek (int pid, long addr, int length,
-				byte[] bytes, int offset);
+	public int peek (int pid, long addr, int length,
+			 byte[] bytes, int offset) {
+	    return transfer(pid, addr, length, bytes, offset, ptPeek);
+	}
+	/**
+	 * Store up-to LENGTH bytes starting at ADDR of process PID,
+	 * get values from BYTES, starting at OFFSET.
+	 */
+	public int poke (int pid, long addr, int length,
+			 byte[] bytes, int offset) {
+	    return transfer(pid, addr, length, bytes, offset, ptPoke);
+	}
+	private native final int transfer(int pid, long addr, int length,
+					  byte[] bytes, int offset, int op);
 	private static native AddressSpace text ();
 	private static native AddressSpace data ();
 	private static native AddressSpace usr ();

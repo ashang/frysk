@@ -1,5 +1,15 @@
 2007-09-21  Andrew Cagney  <cagney@redhat.com>
 
+	* TestPtrace.java (verifyPokeBytes): New.
+	(testTextValPokeBytes, testDataValPokeBytes): New.
+	(testTextFuncPokeBytes, testDataFuncPokeBytes): New.
+	(testDataStackPokeBytes, testTextStackPokeBytes): New.
+	* cni/Ptrace.cxx (peek): Delete.
+	(transfer): New.
+	* Ptrace.java (AddressSpace.poke(int,long,int,byte[],int)): New.
+	(AddressSpace.transfer(int,long,int,byte[],int,int)): New.
+	(AddressSpace.peek(int,long,int,byte[],int)): Use transfer.
+
 	* TestPtrace.java (testTextFuncPeek): Call verifyPeek, not verifyPoke.
 	(testDataStackPeekBytes, testTextStackPeekBytes): New.
 	(testTextStackPoke, testDataStackPoke): New.

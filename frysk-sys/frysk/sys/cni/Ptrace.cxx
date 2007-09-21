@@ -246,47 +246,91 @@ frysk::sys::Ptrace$AddressSpace::peek (jint pid, jlong addr)
 {
   union word w;
   long paddr = addr & -sizeof(long);
-  // fprintf (stderr, "peek 0x%lx paddr 0x%lx", (long)addr, paddr);
+#if DEBUG
+  fprintf (stderr, "peek 0x%lx paddr 0x%lx", (long)addr, paddr);
+#endif
   w.l = request (ptPeek, pid, (void*)paddr, 0);
-  // fprintf (stderr, " word 0x%lx", w.l);
+#if DEBUG
+  fprintf (stderr, " word 0x%lx", w.l);
+#endif
   int index = addr & (sizeof(long) - 1);
-  // fprintf (stderr, " index %d", index);
+#if DEBUG
+  fprintf (stderr, " index %d", index);
+#endif
   uint8_t byte = w.b[index];
-  // fprintf (stderr, " byte %d/0x%x\n", byte, byte);
+#if DEBUG
+  fprintf (stderr, " byte %d/0x%x\n", byte, byte);
+#endif
   return byte;
 }
 
 jint
-frysk::sys::Ptrace$AddressSpace::peek (jint pid, jlong addr, jint length,
-				       jbyteArray bytes, jint offset)
+frysk::sys::Ptrace$AddressSpace::transfer (jint pid, jlong addr, jint length,
+					   jbyteArray bytes, jint offset,
+					   jint op)
 {
-   if (offset < 0)
+  if (offset < 0)
     throw new java::lang::ArrayIndexOutOfBoundsException (JvNewStringUTF("Offset < 0"));
-   if (length < 0)
+  if (length < 0)
     throw new java::lang::ArrayIndexOutOfBoundsException (JvNewStringUTF("length < 0"));
   if (offset +  length >  bytes->length)
     throw new java::lang::ArrayIndexOutOfBoundsException (JvNewStringUTF("offset + length > bytes->length"));
    
   // Somewhat more clueful implementation
-  // fprintf (stderr, "starting from %#08x to offset %d, length %d\n",
-  //          (unsigned int)addr, (int)offset, (int)length);
   for (jlong i = 0; i < length;) {
+#if DEBUG
+    fprintf (stderr,
+	     "transfer pid %d addr 0x%lx length %d offset %d op %d (%s)",
+	     (int)pid, (long)addr, (int)length, (int)offset,
+	     (int)op, op_as_string(op));
+#endif
+
     union word w;
-    long waddr = addr & -sizeof(long);
-    long woff = (addr - waddr);
-    long wlen = sizeof(long) - woff;
-    long ilen = length - i;
-    wlen = (wlen < ilen) ? wlen : ilen;
+    unsigned long waddr = addr & -sizeof(long);
+    unsigned long woff = (addr - waddr);
+    unsigned long remaining = length - i;
+    unsigned long wend;
+    if (remaining > sizeof(long) - woff)
+      wend = sizeof(long);
+    else
+      wend = woff + remaining;
+    long wlen = wend - woff;
 
-    w.l = request (ptPeek, pid, (void*)waddr, 0);
-    //fprintf (stderr, "waddr %#08x contains %#08x\n",
-    //         (unsigned int)waddr, (unsigned int)w.l);
+#if DEBUG
+    fprintf (stderr,
+	     " i %ld waddr 0x%lx woff %lu wend %lu remaining %lu wlen %lu",
+	     (long)i, waddr, woff, wend, remaining, wlen);
+#endif
 
-    memcpy (offset + i +  elements(bytes), &w.b[woff], wlen);
-    //fprintf (stderr, "i = %d, length = %d, wlen = %d\n",
-    //       (int)i, (int)length, (int)wlen);
+    // Either a peek; or a partial write requiring read/modify/write.
+    if (op == ptPeek || woff != 0 || wend != sizeof(long))
+      {
+	w.l = request (ptPeek, pid, (void*)waddr, 0);
+#if DEBUG
+	fprintf (stderr, " peek 0x%lx", w.l);
+#endif
+      }
+
+    // extract or modify
+    if (op == ptPeek)
+      memcpy (offset + i + elements(bytes), &w.b[woff], wlen);
+    else
+      memcpy (&w.b[woff], offset + i + elements(bytes), wlen);
+      
+    if (op == ptPoke)
+      {
+#if DEBUG
+	fprintf (stderr, " poke 0x%lx", w.l);
+#endif
+	w.l = request (ptPoke, pid, (void*)waddr, w.l);
+      }
+
     i += wlen;
     addr += wlen;
+
+#if DEBUG
+    fprintf (stderr, "\n");
+#endif
   }
   return length;
 }
@@ -296,15 +340,25 @@ frysk::sys::Ptrace$AddressSpace::poke (jint pid, jlong addr, jint data)
 {
   // Implement read-modify-write
   union word w;
-  // fprintf (stderr, "poke 0x%x", (int)(data & 0xff));
+#if DEBUG
+  fprintf (stderr, "poke 0x%x", (int)(data & 0xff));
+#endif
   long paddr = addr & -sizeof(long);
-  // fprintf (stderr, " addr 0x%lx paddr 0x%lx", (long)addr, paddr);
+#if DEBUG
+  fprintf (stderr, " addr 0x%lx paddr 0x%lx", (long)addr, paddr);
+#endif
   w.l = request (ptPeek, pid, (void*)paddr, 0);
-  // fprintf (stderr, " word 0x%lx", w.l);
+#if DEBUG
+  fprintf (stderr, " word 0x%lx", w.l);
+#endif
   int index = addr & (sizeof(long) - 1);
-  // fprintf (stderr, " index %d", index);
+#if DEBUG
+  fprintf (stderr, " index %d", index);
+#endif
   w.b[index] = data;
-  // fprintf (stderr, " word 0x%lx\n", w.l);
+#if DEBUG
+  fprintf (stderr, " word 0x%lx\n", w.l);
+#endif
   request (ptPoke, pid, (void*)(addr & -sizeof(long)), w.l);
 }
 
