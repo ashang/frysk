@@ -246,11 +246,13 @@ frysk::sys::Ptrace$AddressSpace::peek (jint pid, jlong addr)
 {
   union word w;
   long paddr = addr & -sizeof(long);
-  // fprintf (stderr, "peek %lx paddr %lx", (long)addr, paddr);
+  // fprintf (stderr, "peek 0x%lx paddr 0x%lx", (long)addr, paddr);
   w.l = request (ptPeek, pid, (void*)paddr, 0);
-  // fprintf (stderr, " word %lx", w.l);
-  uint8_t byte = w.b[addr % sizeof(long)];
-  // fprintf (stderr, " byte %d/%x\n", byte, byte);
+  // fprintf (stderr, " word 0x%lx", w.l);
+  int index = addr & (sizeof(long) - 1);
+  // fprintf (stderr, " index %d", index);
+  uint8_t byte = w.b[index];
+  // fprintf (stderr, " byte %d/0x%x\n", byte, byte);
   return byte;
 }
 
@@ -294,12 +296,15 @@ frysk::sys::Ptrace$AddressSpace::poke (jint pid, jlong addr, jint data)
 {
   // Implement read-modify-write
   union word w;
+  // fprintf (stderr, "poke 0x%x", (int)(data & 0xff));
   long paddr = addr & -sizeof(long);
-  // fprintf (stderr, "poke %lx paddr %lx", (long)addr, paddr);
+  // fprintf (stderr, " addr 0x%lx paddr 0x%lx", (long)addr, paddr);
   w.l = request (ptPeek, pid, (void*)paddr, 0);
-  // fprintf (stderr, " word %lx\n", w.l);
-  w.b[addr % sizeof(long)] = data;
-  // fprintf (stderr, " word %lx\n", w.l);
+  // fprintf (stderr, " word 0x%lx", w.l);
+  int index = addr & (sizeof(long) - 1);
+  // fprintf (stderr, " index %d", index);
+  w.b[index] = data;
+  // fprintf (stderr, " word 0x%lx\n", w.l);
   request (ptPoke, pid, (void*)(addr & -sizeof(long)), w.l);
 }
 

@@ -1,5 +1,7 @@
 2007-09-21  Andrew Cagney  <cagney@redhat.com>
 
+	* LocalMemory.java (StackBuilder): Make public.
+	
 	* TestLocalMemory.java: New file.
 	* LocalMemory.java (byteData): Rename byteVal;
 	(shortData): Rename shortVal.

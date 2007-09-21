@@ -98,7 +98,7 @@ public class LocalMemory
     /**
      * Callback or builder describing the constructed stack.
      */
-    interface StackBuilder {
+    public interface StackBuilder {
 	void stack(long addr, byte[] contents);
     }
     /**

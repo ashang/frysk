@@ -1,5 +1,12 @@
 2007-09-21  Andrew Cagney  <cagney@redhat.com>
 
+	* TestPtrace.java (testTextFuncPeek): Call verifyPeek, not verifyPoke.
+	(testDataStackPeekBytes, testTextStackPeekBytes): New.
+	(testTextStackPoke, testDataStackPoke): New.
+	(testTextStackPeek, testDataStackPeek): New.
+	* cni/Ptrace.cxx (peek, poke): Use &, not %, to get the address
+	low bits.
+
 	* TestPtrace.java: Update; LocalMemory's getVal* and getFunc*
 	renamed to getData* and getCode*.
 

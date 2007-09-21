@@ -44,6 +44,7 @@ import frysk.testbed.TearDownProcess;
 import frysk.testbed.AttachedSelf;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.testbed.LocalMemory;
+import frysk.testbed.LocalMemory.StackBuilder;
 
 /**
  * Check the plumming of Ptrace.
@@ -199,9 +200,25 @@ public class TestPtrace
     }
     public void testDataFuncPeek ()
     {
-	verifyPoke ("DataFunc", AddressSpace.DATA,
+	verifyPeek ("DataFunc", AddressSpace.DATA,
 		    LocalMemory.getCodeBytes (),
 		    LocalMemory.getCodeAddr());
+    }
+    public void testDataStackPeek() {
+	LocalMemory.constructStack(new StackBuilder() {
+		public void stack(long addr, byte[] bytes) {
+		    verifyPeek("DataStack", AddressSpace.DATA,
+			       bytes, addr);
+		}
+	    });
+    }
+    public void testTextStackPeek() {
+	LocalMemory.constructStack(new StackBuilder() {
+		public void stack(long addr, byte[] bytes) {
+		    verifyPeek("DataStack", AddressSpace.TEXT,
+			       bytes, addr);
+		}
+	    });
     }
 
     public void verifyPoke (String what, AddressSpace space,
@@ -237,6 +254,22 @@ public class TestPtrace
 	verifyPoke ("DataFunc", AddressSpace.DATA,
 		    LocalMemory.getCodeBytes (),
 		    LocalMemory.getCodeAddr ());
+    }
+    public void testDataStackPoke() {
+	LocalMemory.constructStack(new StackBuilder() {
+		public void stack(long addr, byte[] bytes) {
+		    verifyPoke("DataStack", AddressSpace.DATA,
+			       bytes, addr);
+		}
+	    });
+    }
+    public void testTextStackPoke() {
+	LocalMemory.constructStack(new StackBuilder() {
+		public void stack(long addr, byte[] bytes) {
+		    verifyPoke("DataStack", AddressSpace.TEXT,
+			       bytes, addr);
+		}
+	    });
     }
 
     private void verifyPeekBytes (String why, AddressSpace space,
@@ -289,6 +322,22 @@ public class TestPtrace
 	verifyPeekBytes ("DataFunc", AddressSpace.DATA,
 			 LocalMemory.getCodeBytes (),
 			 LocalMemory.getCodeAddr ());
+    }
+    public void testDataStackPeekBytes() {
+	LocalMemory.constructStack(new StackBuilder() {
+		public void stack(long addr, byte[] bytes) {
+		    verifyPeekBytes("DataStack", AddressSpace.DATA,
+				    bytes, addr);
+		}
+	    });
+    }
+    public void testTextStackPeekBytes() {
+	LocalMemory.constructStack(new StackBuilder() {
+		public void stack(long addr, byte[] bytes) {
+		    verifyPeekBytes("DataStack", AddressSpace.TEXT,
+				    bytes, addr);
+		}
+	    });
     }
 
     private void verifyOutOfBounds (String why, boolean expected,
