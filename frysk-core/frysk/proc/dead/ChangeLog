@@ -1,3 +1,13 @@
+2007-09-21  Rick Moseley <rmoseley@redhat.com>
+
+	* ExeByteBuffer.java: New.
+	* LinuxExeHost.java: New.
+	* LinuxExeProc.java: New.
+	* LinuxExeProcState.java: New.
+	* LinuxExeTask.java: New.
+	* LinuxExeTaskState.java: New.
+	* TestLinuxExe.java: New.
+
 2007-08-30  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinkmapBuilder.java (getString): Rewrite. Simplify.
