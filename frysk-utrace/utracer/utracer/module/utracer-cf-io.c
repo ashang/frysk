@@ -144,6 +144,8 @@ handle_register (register_cmd_s * register_cmd)
   utracing_info_s * utracing_info_found =
     lookup_utracing_info (client_pid);
 
+  DB_PRINTK ("in handle_register(), pid = %ld\n", client_pid);
+
   if (!utracing_info_found) {  // if non-null, entry already exists
     struct proc_dir_entry * de_utracing_client;
     struct proc_dir_entry * de_utracing_cmd;
@@ -154,6 +156,8 @@ handle_register (register_cmd_s * register_cmd)
     if (client_pid_dir) {
       de_utracing_client = proc_mkdir (client_pid_dir, de_utrace);
       if (de_utracing_client) {
+	DB_PRINTK ("module opening %d/%s with ioctl to utracer_ioctl\n",
+		   (int)client_pid, UTRACER_CMD_FN);
 	de_utracing_cmd = create_proc_entry(UTRACER_CMD_FN,
 						S_IFREG | 0666,
 						de_utracing_client);
@@ -161,6 +165,8 @@ handle_register (register_cmd_s * register_cmd)
 	  de_utracing_cmd->write_proc = if_file_write;
 	  de_utracing_cmd->read_proc = cf_file_read;
 	
+	DB_PRINTK ("module opening %d/%s with ioctl to utracer_ioctl\n",
+		   (int)client_pid, UTRACER_RESP_FN);
 	  de_utracing_resp = create_proc_entry(UTRACER_RESP_FN,
 					       S_IFREG | 0444,
 					       de_utracing_client);

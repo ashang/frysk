@@ -428,10 +428,13 @@ handle_sync (sync_cmd_s * sync_cmd)
   utracing_info_s * utracing_info_found =
     lookup_utracing_info (sync_cmd->utracing_pid);
 
+  DB_PRINTK ("in handle_sync(), utracing_info_found = %p, pid = %ld\n",
+	     utracing_info_found, sync_cmd->utracing_pid);
   if (utracing_info_found) {
     sync_resp_s sync_resp = {IF_RESP_SYNC_DATA,
 			     sync_cmd->utracing_pid,
 			     sync_cmd->sync_type};
+    DB_PRINTK ("queuing IF_RESP_SYNC_DATA\n");
     queue_response (utracing_info_found,
 		    &sync_resp, sizeof(sync_resp),
 		    NULL, 0,
@@ -782,10 +785,11 @@ utracer_ioctl (struct inode * inode,
 {
   int rc = 0;
   if_cmd_u if_cmd;
-  
+
   if (copy_from_user(&if_cmd, (void *)a2, a1))
     return -EFAULT;
 
+  DB_PRINTK ("in utracer_ioctl() with cmd = %d\n", (int)if_cmd.cmd);
   switch (if_cmd.cmd) {
   case IF_CMD_SYNC:
     DB_PRINTK (KERN_ALERT "IF_CMD_SYNC--ioctl\n");

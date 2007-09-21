@@ -1,3 +1,7 @@
+Fri Sep 21 11:04:00 2007  Chris Moller  <cmoller@redhat.com>
+
+	* Extensive re-write to further isolate OS-dependent code from Java.
+
 Thu Aug 30 20:34:34 2007  Chris Moller  <cmoller@redhat.com>
 
 	* Added copyright notices to all files.

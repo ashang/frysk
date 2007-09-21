@@ -41,6 +41,18 @@
 #ifndef UTRACER_H
 #define UTRACER_H
 
+#ifndef __KERNEL__
+#include <syslog.h>
+
+#ifdef DEBUG
+#define LOGIT(fmt,args...) \
+  syslog (LOG_ALERT, fmt, ## args); \
+  fprintf (stderr, fmt, ## args);
+#else
+#define LOGIT(fmt,args...)
+#endif
+#endif //  __KERNEL__
+
 #define UTRACER_BASE_DIR	"utrace"
 #define UTRACER_CONTROL_FN	"control"
 #define UTRACER_CMD_FN		"cmd"
@@ -324,10 +336,6 @@ typedef enum {
 
 /***************** public i/f ****************/
 
-// fixme temp -- open files in utracer.c, not udb.c
-void utracer_set_environment (pid_t client_pid, int cmd_fd);
-void utracer_set_ctl_fd (int ctl_file);
-
 int utracer_get_printmmap (long pid,
 			   printmmap_resp_s ** printmmap_resp_p,
 			   vm_struct_subset_s ** vm_struct_subset_p,
@@ -352,7 +360,13 @@ int utracer_get_regs (long pid, long regset, void ** regsinfo,
 		      unsigned int * nr_regs_p, unsigned int * reg_size_p);
 int utracer_set_syscall (short which, short cmd, long pid, long syscall);
 
-int utracer_register (long pid);
 int utracer_unregister (long pid);
+
+int utracer_open(long pid);
+
+void utracer_cleanup(void);
+void utracer_close_ctl_file(void);
+void utracer_shutdown(long pid);
+int  utracer_resp_file_fd(void);
   
 #endif  /* UTRACER_H */

@@ -119,7 +119,7 @@ create_sys_hash_table()
   if (0 == rc) {
     cleanup_udb();
     utracer_unregister (udb_pid);
-    close_ctl_file();
+    utracer_close_ctl_file();
     fprintf (stderr, "\tCreating syscall hash table failed.\n");
     _exit (1);
   }
@@ -129,7 +129,7 @@ create_sys_hash_table()
     if (0 == hsearch_r (syscall_names[i], ENTER, &entry, &sys_hash_table)) {
       cleanup_udb();
       utracer_unregister (udb_pid);
-      close_ctl_file();
+      utracer_close_ctl_file();
       error (1, errno, "Error building syscall hash.");
     }
   }

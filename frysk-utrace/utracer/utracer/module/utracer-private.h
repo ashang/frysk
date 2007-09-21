@@ -49,7 +49,7 @@
 #define DECLNI(v) extern v
 #endif
 
-#if 0
+#ifdef DEBUG
 #define DB_PRINTK printk
 #else
 #define DB_PRINTK(fmt, a...)

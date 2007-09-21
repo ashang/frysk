@@ -66,15 +66,6 @@ pthread_t resp_listener_thread;
 extern void * resp_listener (void * arg);
 
 void
-close_ctl_file()
-{
-  if (-1 != ctl_file_fd) {
-    close (ctl_file_fd);
-    ctl_file_fd = -1;
-  }
-}
-
-void
 cleanup_udb()
 {
   int rc;
@@ -87,14 +78,7 @@ cleanup_udb()
   if (0 != rc) perror ("pthread_cancel");
 
   
-  if (-1 != utracer_cmd_file_fd) {
-    close (utracer_cmd_file_fd);
-    utracer_cmd_file_fd = -1;
-  }
-  if (-1 != utracer_resp_file_fd) {
-    close (utracer_resp_file_fd);
-    utracer_resp_file_fd = -1;
-  }
+  utracer_cleanup();
 
   text_ui_terminate();
   arch_specific_terminate();
@@ -108,7 +92,7 @@ sigterm_handler (int sig)
   unload_utracer();		// and have utracer unload itsef
 #endif
   utracer_unregister ((long)udb_pid);
-  close_ctl_file();
+  utracer_close_ctl_file();
   exit (0);			// when nothing else is registered
 }
 
@@ -184,8 +168,11 @@ utracer_wait()
       
     utracer_sync (SYNC_INIT);
 
-    sz = pread (utracer_resp_file_fd, &if_resp,
+    LOGIT ("starting utracer_wait pread pass %d fd %d\n",
+	   i, utracer_resp_file_fd());
+    sz = pread (utracer_resp_file_fd(), &if_resp,
 		  sizeof(if_resp), 0);
+    LOGIT ("got utracer_wait pread, sz = %d\n", sz);
     if (-1 == sz) {
       uerror ("Response pread");
       // fixme -- close things
@@ -193,7 +180,7 @@ utracer_wait()
     }
 
     if (IF_RESP_SYNC_DATA == if_resp.type) {
-      fprintf (stdout, "\tsync respose received.\n");
+      fprintf (stdout, "\tsync response received.\n");
       break;
     }
   }
@@ -343,55 +330,22 @@ main (int ac, char * av[])
   if (!utracer_loaded()) load_utracer();
 #endif
   
-  
-  {
-    char * cfn;
-    asprintf (&cfn, "/proc/%s/%s", UTRACER_BASE_DIR, UTRACER_CONTROL_FN);
-    ctl_file_fd = open (cfn, O_RDWR);
-    free (cfn);
-    utracer_set_ctl_fd (ctl_file_fd);
-    if (-1 == ctl_file_fd)
-      error (1, errno, "Error opening control file");
+
+  LOGIT ("calling utracer_open()\n");
+  if (!utracer_open((long)udb_pid)) {
+    fprintf (stderr, "Exiting due to errors.\n");
+    exit (1);
   }
-  
-  utracer_register ((long)udb_pid);
-
-  {
-    char * cfn;
-    
-    asprintf (&cfn, "/proc/%s/%ld/%s", UTRACER_BASE_DIR,
-	      udb_pid, UTRACER_CMD_FN);
-    utracer_cmd_file_fd = open (cfn, O_RDWR);
-    free (cfn);
-    if (-1 == utracer_cmd_file_fd) {
-      utracer_unregister (udb_pid);
-      close_ctl_file();
-      uerror ("Error opening command file");
-      _exit (1);
-    }
-    
-    asprintf (&cfn, "/proc/%s/%ld/%s", UTRACER_BASE_DIR,
-	      udb_pid, UTRACER_RESP_FN);
-    utracer_resp_file_fd = open (cfn, O_RDONLY);
-    free (cfn);
-    if (-1 == utracer_resp_file_fd) {
-      utracer_unregister (udb_pid);
-      close_ctl_file();
-      close (utracer_cmd_file_fd);
-      error (1, errno, "Error opening response file");
-    }
-  }
-
-  utracer_set_environment (udb_pid, utracer_cmd_file_fd);
-
   
 #ifdef USE_UTRACER_WAIT
+  LOGIT ("calling utracer_wait()\n");
   utracer_wait();
 #endif
       
 
   if (0 < nr_pids_to_attach) {
     int i;
+    LOGIT ("attaching pids()\n");
     for (i = 0; i < nr_pids_to_attach; i++) {
       int rc;
       rc =  utracer_attach (pids_to_attach[i].pid,
@@ -403,20 +357,21 @@ main (int ac, char * av[])
       else uerror ("attaching cl pids");
     }
     free (pids_to_attach);
+    LOGIT ("done attaching pids()\n");
   }
 
+  LOGIT ("calling start_runnables()\n");
   start_runnables ();
 
+  
+  LOGIT ("creating response thread\n");
   {
     int rc = pthread_create (&resp_listener_thread,
 			     NULL,
 			     resp_listener,
 			     NULL);
     if (rc) {
-      close (utracer_cmd_file_fd);
-      close (utracer_resp_file_fd);
-      utracer_unregister (udb_pid);
-      close_ctl_file();
+      utracer_shutdown((long)udb_pid);
       error (1, errno, "pthread_create() failed");
     }
   }
@@ -425,18 +380,17 @@ main (int ac, char * av[])
     ssize_t sz;
     int resp;
 
-    sz = pread (utracer_cmd_file_fd, &resp, sizeof(int), 0);
-    if (-1 == sz) error (1, errno, "pread listener sync");
-
+    LOGIT ("calling utracer_sync()\n");
     utracer_sync (SYNC_INIT);
+    LOGIT ("returning from utracer_sync()\n");
   }
   
 
   text_ui();
 
   cleanup_udb();
-  utracer_unregister (udb_pid);
-  close_ctl_file();
+  utracer_unregister ((long)udb_pid);
+  utracer_close_ctl_file();
   
 
 #ifdef ENABLE_MODULE_OPS  

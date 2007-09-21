@@ -396,11 +396,13 @@ if_file_read ( char *buffer,
                void *data)
 {
   utracing_info_s * utracing_info_found  = (utracing_info_s *)data;
-  
+
+  DB_PRINTK ("in if_file_read()\n");
   if (utracing_info_found) {
     int wrc = 0;
     int rc = 0;
 
+    DB_PRINTK ("utracing_info_found okay\n");
     if (1 != utracing_info_found->response_ready) {
       utracing_info_found->response_ready = 1;
       wake_up (&(utracing_info_found->ifx_wait));
@@ -409,15 +411,18 @@ if_file_read ( char *buffer,
     if (0 == offset) {
       // wrc == 0		==> condition true
       // wrc == -ERESTARTSYS	==> signal intr
+      DB_PRINTK ("about to wait\n");
       wrc = wait_event_interruptible (utracing_info_found->ifr_wait,
 			      (0 < utracing_info_found->queued_data_length));
-      //      DB_PRINTK (KERN_ALERT "if_file_read wrc = %s\n",
-      //		 (0 == wrc) ? "okay" : "intr");
+      DB_PRINTK (KERN_ALERT "if_file_read wrc = %s\n",
+      		 (0 == wrc) ? "okay" : "intr");
     }
     
     // might return 0 length if wait ended by som random interrupt
+    DB_PRINTK ("done waiting\ n");
     if (utracing_info_found->queued_data &&
 	(0 < utracing_info_found->queued_data_length)) {
+      DB_PRINTK ("returning data\n");
       rc = utracing_info_found->queued_data_length;
       if (rc > buffer_length) rc = buffer_length;
       memcpy (buffer, utracing_info_found->queued_data + offset, rc);

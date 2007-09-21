@@ -38,6 +38,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <malloc.h>
 #include <sys/ioctl.h>
@@ -45,25 +46,110 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <limits.h>
+#include <fcntl.h>
 
 #include <utracer.h>
 
 // fixme temporary
 pid_t client_pid;
-int utracer_cmd_file_fd;
-int utracer_ctl_file_fd;
+
+int cmd_file_fd;
+int resp_file_fd;
+int ctl_file_fd;
+
 
 void
-utracer_set_ctl_fd (int xf)
+utracer_close_ctl_file()
 {
-  utracer_ctl_file_fd = xf;
+  if (-1 != ctl_file_fd) {
+    close (ctl_file_fd);
+    ctl_file_fd = -1;
+  }
 }
 
 void
-utracer_set_environment (pid_t cp, int cf)
+utracer_cleanup()
 {
-  client_pid = cp;
-  utracer_cmd_file_fd = cf;
+  if (-1 != cmd_file_fd) {
+    close (cmd_file_fd);
+    cmd_file_fd = -1;
+  }
+  if (-1 != resp_file_fd) {
+    close (resp_file_fd);
+    resp_file_fd = -1;
+  }
+}
+
+void
+utracer_shutdown(long pid)
+{
+  utracer_cleanup();
+  utracer_unregister (pid);
+  utracer_close_ctl_file();
+}
+
+int
+utracer_resp_file_fd()
+{
+  return resp_file_fd;
+}
+
+int
+utracer_open (long pid)
+{
+  char * cfn;
+  int irc;
+  
+  client_pid = pid;
+
+  asprintf (&cfn, "/proc/%s/%s", UTRACER_BASE_DIR, UTRACER_CONTROL_FN);
+  LOGIT ("opening %s\n", cfn);
+  ctl_file_fd = open (cfn, O_RDWR);
+  LOGIT ("   fd = %d\n", ctl_file_fd);
+  free (cfn);
+  if (-1 == ctl_file_fd) {
+    perror ("Error opening control file");
+    return -1;
+  }
+  
+  LOGIT ("calling utracer_register()\n");
+  irc = utracer_register (pid);
+  LOGIT ("returning from utracer_register(), irc = %d\n", irc);
+  if (0 > irc) {
+    uerror ("Initial registration");
+    close (ctl_file_fd);
+    return -1;
+  }
+
+  asprintf (&cfn, "/proc/%s/%ld/%s", UTRACER_BASE_DIR,
+	    pid, UTRACER_CMD_FN);
+  LOGIT ("opening %s\n", cfn);
+  cmd_file_fd = open (cfn, O_RDWR);
+  LOGIT ("   fd = %d\n", cmd_file_fd);
+  free (cfn);
+  if (-1 == cmd_file_fd) {
+    utracer_unregister (pid);
+    close (ctl_file_fd);
+    uerror ("Error opening command file");
+    return -1;
+  }
+    
+  asprintf (&cfn, "/proc/%s/%ld/%s", UTRACER_BASE_DIR,
+	    pid, UTRACER_RESP_FN);
+  LOGIT ("opening %s\n", cfn);
+  resp_file_fd = open (cfn, O_RDONLY);
+  LOGIT ("   fd = %d\n", resp_file_fd);
+  free (cfn);
+  if (-1 == resp_file_fd) {
+    utracer_unregister (pid);
+    close (ctl_file_fd);
+    close (cmd_file_fd);
+    uerror ("Error opening command file");
+    return -1;
+  }
+
+  LOGIT ("leaving utracer_open()\n");
+  return 1;
 }
 
 
@@ -99,7 +185,7 @@ do_get_mmap (long pid,
 				   *pr,
 				   *vss,
 				   *vs};
-  irc = ioctl (utracer_cmd_file_fd,
+  irc = ioctl (cmd_file_fd,
 	       sizeof(printmmap_cmd),
 	       &printmmap_cmd);
 
@@ -169,7 +255,7 @@ do_get_pids (long ** pids_p, long nr_pids_req, long *nr_pids_actual_p)
 				 nr_pids_req,
 				 &nr_pids_actual,
 				 *pids_p};
-  irc = ioctl (utracer_cmd_file_fd,
+  irc = ioctl (cmd_file_fd,
 	       sizeof(listpids_cmd_s),
 	       &listpids_cmd);
 
@@ -233,7 +319,7 @@ do_get_mem (long pid,
 			     (long)addr,
 			     *mem_p,
 			     actual};
-  irc = ioctl (utracer_cmd_file_fd,
+  irc = ioctl (cmd_file_fd,
 	       sizeof(getmem_cmd_s),
 	       &getmem_cmd);
 
@@ -284,7 +370,7 @@ do_get_env (long pid,
 				 env_req,
 				 &env_length,
 				 *env_p};
-  irc = ioctl (utracer_cmd_file_fd,
+  irc = ioctl (cmd_file_fd,
 	       sizeof(printenv_cmd_s),
 	       &printenv_cmd);
 
@@ -345,7 +431,7 @@ utracer_get_regs (long pid, long regset, void ** regsinfo_p,
 			       nr_regs_p,
 			       reg_size_p};
 
-  irc = ioctl (utracer_cmd_file_fd, sizeof(readreg_cmd_s), &readreg_cmd);
+  irc = ioctl (cmd_file_fd, sizeof(readreg_cmd_s), &readreg_cmd);
 
   if  (0 != irc) {
     if (regsinfo)	free (regsinfo);
@@ -375,7 +461,7 @@ utracer_set_syscall (short which, short cmd, long pid, long syscall)
   syscall_cmd_cmd (&syscall_cmd)	= cmd;
   syscall_cmd.syscall_nr		= syscall;
 
-  irc = ioctl (utracer_cmd_file_fd, sizeof(syscall_cmd_s), &syscall_cmd);
+  irc = ioctl (cmd_file_fd, sizeof(syscall_cmd_s), &syscall_cmd);
 
   return irc;
 }
@@ -391,7 +477,9 @@ utracer_sync (long type)
   sync_cmd_s sync_cmd = {IF_CMD_SYNC,
 			 (long)client_pid, type};
 
-  irc = ioctl (utracer_cmd_file_fd, sizeof(sync_cmd_s), &sync_cmd);
+  LOGIT ("in utracer_sync(), pid = %d\n", client_pid);
+
+  irc = ioctl (cmd_file_fd, sizeof(sync_cmd_s), &sync_cmd);
 
   return irc;
 }
@@ -407,7 +495,7 @@ utracer_detach (long pid)
   attach_cmd_s attach_cmd = {IF_CMD_DETACH,
 			     (long)client_pid, pid, 0, 0};
 
-  irc = ioctl (utracer_cmd_file_fd, sizeof(attach_cmd_s), &attach_cmd);
+  irc = ioctl (cmd_file_fd, sizeof(attach_cmd_s), &attach_cmd);
 
   return irc;
 }
@@ -424,7 +512,7 @@ utracer_attach (long pid, long quiesce, long exec_quiesce)
   attach_cmd_s attach_cmd = {IF_CMD_ATTACH,
 			     (long)client_pid, pid, quiesce, exec_quiesce};
 
-  irc = ioctl (utracer_cmd_file_fd, sizeof(attach_cmd_s), &attach_cmd);
+  irc = ioctl (cmd_file_fd, sizeof(attach_cmd_s), &attach_cmd);
 
   return irc;
 }
@@ -442,7 +530,7 @@ utracer_run (long pid)
 		       (long)client_pid,
 		       pid};
 
-  irc = ioctl (utracer_cmd_file_fd, sizeof(run_cmd_s), &run_cmd);
+  irc = ioctl (cmd_file_fd, sizeof(run_cmd_s), &run_cmd);
 
   return irc;
 }
@@ -456,7 +544,7 @@ utracer_quiesce (long pid)
 		       (long)client_pid,
 		       pid};
 
-  irc = ioctl (utracer_cmd_file_fd, sizeof(run_cmd_s), &run_cmd);
+  irc = ioctl (cmd_file_fd, sizeof(run_cmd_s), &run_cmd);
 
   return irc;
 }
@@ -471,7 +559,7 @@ utracer_register (long pid)
   int irc;
   register_cmd_s register_cmd = {CTL_CMD_REGISTER, pid};
 
-  irc = ioctl (utracer_ctl_file_fd, sizeof(register_cmd_s), &register_cmd);
+  irc = ioctl (ctl_file_fd, sizeof(register_cmd_s), &register_cmd);
 
   return irc;
 }
@@ -486,7 +574,7 @@ utracer_unregister (long pid)
   int irc;
   register_cmd_s register_cmd = {CTL_CMD_UNREGISTER, pid};
 
-  irc = ioctl (utracer_ctl_file_fd, sizeof(register_cmd_s), &register_cmd);
+  irc = ioctl (ctl_file_fd, sizeof(register_cmd_s), &register_cmd);
 
   return irc;
 }
@@ -503,7 +591,7 @@ utracer_switch_pid (long pid)
 				   (long)client_pid,
 				   pid};
 
-  irc = ioctl (utracer_cmd_file_fd, sizeof(switchpid_cmd_s), &switchpid_cmd);
+  irc = ioctl (cmd_file_fd, sizeof(switchpid_cmd_s), &switchpid_cmd);
 
   return irc;
 }
@@ -527,7 +615,7 @@ utracer_get_exe (long pid,
 				 interp,
 				 PATH_MAX};
 
-  irc = ioctl (utracer_cmd_file_fd, sizeof(printexe_cmd_s), &printexe_cmd);
+  irc = ioctl (cmd_file_fd, sizeof(printexe_cmd_s), &printexe_cmd);
 
   if  (0 != irc) {
     if (filename)	free (filename);

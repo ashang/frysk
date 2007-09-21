@@ -37,6 +37,7 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 #ifndef UDB_H
 #define UDB_H
 
@@ -62,10 +63,6 @@ pid_t udb_pid;
 DECL (char * prompt, NULL);
 
 DECL (long current_pid, -1);
-
-DECL (int ctl_file_fd, -1);
-DECL (int utracer_cmd_file_fd, -1);
-DECL (int utracer_resp_file_fd, -1);
 
 #ifdef ENABLE_MODULE_OPS
 DECL (char * module_name, NULL);

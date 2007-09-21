@@ -379,6 +379,8 @@ static int __init utracer_init(void)
   }
 
   // create /proc/utrace/control
+  DB_PRINTK ("module opening %s with ioctl to control_ioctl\n",
+	     UTRACER_CONTROL_FN);
   de_utrace_control = create_proc_entry(UTRACER_CONTROL_FN,
                                         S_IFREG | 0666, de_utrace);
 

@@ -673,7 +673,7 @@ create_cmd_hash_table()
   if (0 == rc) {
     cleanup_udb();
     utracer_unregister (udb_pid);
-    close_ctl_file();
+    utracer_close_ctl_file();
     fprintf (stderr, "\tCreating command hash table failed.\n");
     _exit (1);
   }
@@ -683,7 +683,7 @@ create_cmd_hash_table()
     if (0 == hsearch_r (cmds[i], ENTER, &entry, &cmd_hash_table)) {
       cleanup_udb();
       utracer_unregister (udb_pid);
-      close_ctl_file();
+      utracer_close_ctl_file();
       error (1, errno, "Error building commands hash.");
     }
   }

@@ -59,14 +59,19 @@ resp_listener (void * arg)
   if_resp_u if_resp;
   ssize_t sz;
 
+  LOGIT ("in response thread\n");
+
   while (1) {
-    sz = pread (utracer_resp_file_fd, &if_resp,
+  LOGIT ("starting response thread pread\n");
+    sz = pread (utracer_resp_file_fd(), &if_resp,
 		sizeof(if_resp), 0);
     if (-1 == sz) {
       uerror ("Response pread");
       _exit (4);
     }
     
+    LOGIT ("returned from response thread pread, type = %d\n",
+	   (int)(if_resp.type));
     switch (if_resp.type) {
     case IF_RESP_EXEC_DATA:
       {
@@ -84,7 +89,7 @@ resp_listener (void * arg)
 	}
 
 	if (0 < bytes_to_get) {
-	  sz = pread (utracer_resp_file_fd,
+	  sz = pread (utracer_resp_file_fd(),
 		      (void *)cstr + bytes_gotten,
 		      bytes_to_get, sz);
 	  bytes_gotten += sz;
@@ -112,7 +117,7 @@ resp_listener (void * arg)
 	}
 
 	if (0 < bytes_to_get) {
-	  sz = pread (utracer_resp_file_fd,
+	  sz = pread (utracer_resp_file_fd(),
 		      (void *)regs + bytes_gotten,
 		      bytes_to_get, sz);
 	}
