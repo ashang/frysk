@@ -1,3 +1,8 @@
+2007-09-24  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfoEvaluator.java (get(String)): Remove redundant call to
+	Variable.getVariableDie; call Variable.getValue directly.
+	
 2007-09-24  Teresa Thomas  <tthomas@redhat.com>
 
 	* RegisterPiece.java (putByte): Debug statements removed.

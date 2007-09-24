@@ -317,11 +317,7 @@ class DebugInfoEvaluator
 	}
 
 	Variable var = getDie(s);
-	DwarfDie varDie = var.getVariableDie();
-	if (varDie == null)
-	    throw new NameNotFoundException();
-    
-	return get(var);
+	return var.getValue(frame);
     }
   
     /**
