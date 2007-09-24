@@ -38,28 +38,29 @@
 // exception.
 
 
-package frysk.stack;
+package frysk.debuginfo;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
-import frysk.testbed.SynchronizedOffspring;
-import frysk.debuginfo.DebugInfoFrame;
-import frysk.debuginfo.DebugInfoStackFactory;
+
 import frysk.event.Event;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.rt.Line;
+import frysk.stack.Frame;
+import frysk.stack.StackFactory;
 import frysk.stepping.SteppingEngine;
 import frysk.stepping.TaskStepEngine;
 import frysk.symtab.Symbol;
 import frysk.sys.Pid;
 import frysk.sys.Sig;
+import frysk.testbed.SynchronizedOffspring;
 import frysk.testbed.TestLib;
 
-public class TestStackBacktrace
+public class TestDebugInfoStackTrace
     extends TestLib
 {
   private Task myTask;
