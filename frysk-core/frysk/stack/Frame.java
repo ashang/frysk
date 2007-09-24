@@ -51,40 +51,40 @@ import frysk.value.Value;
 
 public abstract class Frame
 {
-  /**
-   * Returns the program counter for this StackFrame.
-   * 
-   * @return The program counter for this StackFrame.
-   */
-  public abstract long getAddress ();
+    /**
+     * Returns the program counter for this StackFrame.
+     * 
+     * @return The program counter for this StackFrame.
+     */
+    public abstract long getAddress ();
   
-  /**
-   * Returns the pre-call PC for this non-interrupted StackFrame.
-   * 
-   * @return The pre-call program counter for this StackFrame.
-   */
-  public abstract long getAdjustedAddress ();
+    /**
+     * Returns the pre-call PC for this non-interrupted StackFrame.
+     * 
+     * @return The pre-call program counter for this StackFrame.
+     */
+    public abstract long getAdjustedAddress ();
 
-  /**
-   * Returns the Task this StackFrame belongs to.
-   * 
-   * @return The Task this StackFrame belongs to.
-   */
-  public abstract Task getTask ();
+    /**
+     * Returns the Task this StackFrame belongs to.
+     * 
+     * @return The Task this StackFrame belongs to.
+     */
+    public abstract Task getTask ();
 
-  /**
-   * Returns this StackFrame's inner frame.
-   * 
-   * @return This StackFrame's inner frame.
-   */
-  public abstract Frame getInner ();
+    /**
+     * Returns this StackFrame's inner frame.
+     * 
+     * @return This StackFrame's inner frame.
+     */
+    public abstract Frame getInner ();
 
-  /**
-   * Returns this StackFrame's outer frame.
-   * 
-   * @return This StackFrame's outer frame.
-   */
-  public abstract Frame getOuter ();
+    /**
+     * Returns this StackFrame's outer frame.
+     * 
+     * @return This StackFrame's outer frame.
+     */
+    public abstract Frame getOuter ();
   
     /**
      * Return a simple string representation of this stack frame.
@@ -109,36 +109,37 @@ public abstract class Frame
 	if (symbol != SymbolFactory.UNKNOWN)
 	    printWriter.write(" ()");
 	
-	if(printSourceLibrary){
+	if (printSourceLibrary) {
 	    printWriter.print(" from " + this.getLibraryName());
 	}
     }
   
-  public String getLibraryName(){
-      Dwfl dwfl = DwflCache.getDwfl(getTask());
-      DwflModule dwflModule = dwfl.getModule(getAdjustedAddress()); 
-      if(dwflModule != null){
-	  return dwflModule.getName();
-      }else{
-	  return "Unknown";
-      }
-  }
+    public String getLibraryName() {
+	Dwfl dwfl = DwflCache.getDwfl(getTask());
+	DwflModule dwflModule = dwfl.getModule(getAdjustedAddress()); 
+	if (dwflModule != null) {
+	    return dwflModule.getName();
+	} else {
+	    return "Unknown";
+	}
+    }
   
-  /**
-   * Returns the value stored at the given register.
-   */
-  public abstract Value getRegisterValue(Register reg);
+
+    /**
+     * Returns the value stored at the given register.
+     */
+    public abstract Value getRegisterValue(Register reg);
   
-  public abstract long setReg(long reg, long val);
+    public abstract long setReg(long reg, long val);
   
     /**
      * Return this frame's FrameIdentifier.
      */
-  public abstract FrameIdentifier getFrameIdentifier ();
+    public abstract FrameIdentifier getFrameIdentifier ();
 
     /**
      * Return this frame's symbol; UNKNOWN if there is no symbol.
      */
-  public abstract Symbol getSymbol ();
+    public abstract Symbol getSymbol ();
   
 }
