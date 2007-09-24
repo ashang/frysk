@@ -49,7 +49,6 @@ import frysk.proc.Isa;
 import frysk.proc.Manager;
 import frysk.proc.MemoryMap;
 import frysk.proc.Task;
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -104,11 +103,11 @@ class LibunwindAddressSpace extends AddressSpace {
     }
 
     public long getReg(int regnum) {
+	Isa isa = task.getIsa();
+	String registerName = isa.getRegisterNameByUnwindRegnum(regnum);
 	logger.log(Level.FINE,
 		   "reading from register {0}, regnum: {1}\n",
 		   new Object[] { registerName, new Long(regnum) });
-	Isa isa = task.getIsa();
-	String registerName = isa.getRegisterNameByUnwindRegnum(regnum);
 	long val = isa.getRegisterByName(registerName).get(task);
 	logger.log(Level.FINE, "accessReg: read value: 0x{0}\n",
 		   Long.toHexString(val));
@@ -116,6 +115,8 @@ class LibunwindAddressSpace extends AddressSpace {
     }
 
     public void setReg(int regnum, long regval) {
+	Isa isa = task.getIsa();
+	String registerName = isa.getRegisterNameByUnwindRegnum(regnum);
 	logger.log(Level.FINE,
 		   "writing to register {0}, regnum: {1}, val: {2}\n",
 		   new Object[] {
@@ -123,8 +124,6 @@ class LibunwindAddressSpace extends AddressSpace {
 		       new Long(regnum),
 		       new Long(regval)
 		   });
-	Isa isa = task.getIsa();
-	String registerName = isa.getRegisterNameByUnwindRegnum(regnum);
 	isa.getRegisterByName(registerName).put(task, regval);
     }
 

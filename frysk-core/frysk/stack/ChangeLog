@@ -1,5 +1,8 @@
 2007-09-24  Andrew Cagney  <cagney@redhat.com>
 
+	* LibunwindAddressSpace.java: Fix typo, move logging of
+	registerName back after its declaration.
+	
 	* LibunwindAddressSpace.java: Update; AddressSpace.accessReg
 	replaced by getReg and setReg.
 
