@@ -1,3 +1,11 @@
+2007-09-24  Andrew Cagney  <cagney@redhat.com>
+
+	* AddressSpace.java (accessReg): Delete.
+	(getReg(int)): New.
+	(setReg(int, long)): New.
+	* TestUnwind.java: Update.
+	* cni/UnwindH.hxx (access_reg): Update.
+
 2007-08-23  Mark Wielaard  <mwielaard@redhat.com>
 
 	* cni/UnwindH.hxx: Remove double include.

@@ -92,7 +92,14 @@ public abstract class AddressSpace
 
     public abstract int accessMem (long addr, byte[] valp, boolean write);
 
-    public abstract int accessReg (int regnum, byte[] valp, boolean write);
+    /**
+     * See access_reg(write=false).
+     */
+    public abstract long getReg(int regnum);
+    /**
+     * See access_reg(write=true).
+     */
+    public abstract void setReg(int regnum, long regval);
 
     public abstract int accessFPReg (int regnum, byte[] fpvalp, boolean write);
 

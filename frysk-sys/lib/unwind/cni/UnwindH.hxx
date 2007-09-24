@@ -157,9 +157,11 @@ access_reg(::unw_addr_space_t as, ::unw_regnum_t regnum,
 {
   jbyteArray tmp = JvNewByteArray(sizeof (unw_word_t));
   memcpy (elements (tmp), valp, JvGetArrayLength(tmp));
-  int ret = addressSpace(arg)->accessReg((jint) regnum, tmp, (jint) write);
-  memcpy(valp, elements (tmp), JvGetArrayLength(tmp));
-  return ret;
+  if (write)
+    addressSpace(arg)->setReg(regnum, *valp);
+  else
+    *valp = addressSpace(arg)->getReg(regnum);
+  return 0;
 }
 
 /*

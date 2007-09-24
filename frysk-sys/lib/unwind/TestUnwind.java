@@ -62,8 +62,10 @@ public class TestUnwind
 	public int accessMem (long addr, byte[] valp, boolean write) {
 	    return 0;
 	}
-	public int accessReg (int regnum, byte[] valp, boolean write) {
+	public long getReg (int regnum) {
 	    return 0;
+	}
+	public void setReg (int regnum, long regval) {
 	}
 	public ProcInfo findProcInfo (long ip, boolean needUnwindInfo) {
 	    return null;

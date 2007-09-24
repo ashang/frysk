@@ -1,3 +1,8 @@
+2007-09-24  Andrew Cagney  <cagney@redhat.com>
+
+	* LibunwindAddressSpace.java: Update; AddressSpace.accessReg
+	replaced by getReg and setReg.
+
 2007-09-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestStackBacktrace.java: Moved to 

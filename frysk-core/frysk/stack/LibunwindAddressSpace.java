@@ -103,27 +103,29 @@ class LibunwindAddressSpace extends AddressSpace {
 	return 0;
     }
 
-    public int accessReg (int regnum, byte[] valp, boolean write)
-    {
+    public long getReg(int regnum) {
+	logger.log(Level.FINE,
+		   "reading from register {0}, regnum: {1}\n",
+		   new Object[] { registerName, new Long(regnum) });
 	Isa isa = task.getIsa();
 	String registerName = isa.getRegisterNameByUnwindRegnum(regnum);
-	logger.log(Level.FINE,
-		   "Libunwind: reading from register {0}, regnum: {1}\n",
-		   new Object[] { registerName, new Long(regnum) });
-
-	byte[] tmp = isa.getRegisterByName(registerName).getBytes(task);
-
-	if (tmp.length != valp.length) {
-	    throw new RuntimeException("Register sizes don't match");
-	}
-    
-	for (int i = 0; i < valp.length; i++)
-	    valp[i] = tmp[i];
-
+	long val = isa.getRegisterByName(registerName).get(task);
 	logger.log(Level.FINE, "accessReg: read value: 0x{0}\n",
-		   Long.toHexString(new BigInteger(valp).longValue()));
+		   Long.toHexString(val));
+	return val;
+    }
 
-	return 0;
+    public void setReg(int regnum, long regval) {
+	logger.log(Level.FINE,
+		   "writing to register {0}, regnum: {1}, val: {2}\n",
+		   new Object[] {
+		       registerName,
+		       new Long(regnum),
+		       new Long(regval)
+		   });
+	Isa isa = task.getIsa();
+	String registerName = isa.getRegisterNameByUnwindRegnum(regnum);
+	isa.getRegisterByName(registerName).put(task, regval);
     }
 
     public ProcInfo findProcInfo (long ip, boolean needUnwindInfo) {
