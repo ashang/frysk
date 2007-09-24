@@ -109,9 +109,9 @@ extends TestLib
 	//  New list should be: { 5 6 7 8 9 } { 1 99 3 } { 12 14 16 } { -37 3 0 0}
 	assertEquals("byte", 88, l.getByte(6));
 	
-	// Test for getByte of RegisterPiece - setReg fails
-	//l.putByte(13, (byte)1);
-	//assertEquals("byte", 1, l.getByte(13));  	
+	// Test for putByte & getByte of RegisterPiece
+	l.putByte(13, (byte)1);
+	assertEquals("byte", 1, l.getByte(13));  	
 	
 	assertEquals("byte", -37, l.getByte(11));
 	assertEquals("byte", 3, l.getByte(12));

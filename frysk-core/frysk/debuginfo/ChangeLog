@@ -1,3 +1,9 @@
+2007-09-24  Teresa Thomas  <tthomas@redhat.com>
+
+	* RegisterPiece.java (putByte): Debug statements removed.
+	* TestPieceLocation.java (testGetPutByte): Test for RegisterPiece.putByte
+	enabled.
+
 2007-09-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestDebugInfoStackTrace.java: Moved here from 

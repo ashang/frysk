@@ -81,12 +81,7 @@ public class RegisterPiece
 	regBytes[(int)(size-index-1)] = value;          
 	BigInteger regVal = new BigInteger(regBytes);
 	RegisterMap map = DwarfRegisterMapFactory.getRegisterMap(frame.getTask().getIsa());
-	
-	// FIXME: setReg fails
-	System.out.println("Before setReg"+frame.getRegisterValue(register).asLong());
-	System.out.println("Val="+ regVal.longValue());
 	frame.setReg(map.getRegisterNumber(register), regVal.longValue()); 
-	System.out.println("After setReg"+frame.getRegisterValue(register).asLong());
     }
        
     protected byte getByte(long index) 
@@ -104,13 +99,12 @@ public class RegisterPiece
 	// adjust offset accordingly.
 	long offAdjust = size-offset-1;
 	
-	// Write bytes from offset going to length to slice
+	// Get bytes from offset going to length to slice
 	int iSlice = (int)length;
 	for (int i=(int)offAdjust; i>=size-length; i--)
 	    slice[--iSlice] = regBytes[i];
 
 	RegisterMap map = DwarfRegisterMapFactory.getRegisterMap(frame.getTask().getIsa());
-	// FIXME: setReg fails
 	frame.setReg(map.getRegisterNumber(register), new BigInteger(slice).longValue());
 	
 	Piece newP =  new RegisterPiece (register, length, frame);    
