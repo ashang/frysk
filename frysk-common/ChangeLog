@@ -1,3 +1,8 @@
+2007-09-24  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (.g): Remove conditional dependency of generated
+	file on .sed file.
+
 2007-09-21  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
 
 	* Makefile.rules : Added AM_LDFLAGS += -lstdc++.

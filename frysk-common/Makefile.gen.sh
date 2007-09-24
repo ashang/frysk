@@ -1,4 +1,3 @@
-
 #!/bin/sh -eu
 # This file is part of the program FRYSK.
 #
@@ -665,9 +664,6 @@ do
     echo "ANTLR_BUILT += $d/$c.java"
     echo "BUILT_SOURCES += $d/$c.java"
     echo "${nodist_lib_sources} += $d/$c.java"
-    if test -r $d/$c.sed ; then
-	echo "$d/$b.antlered: $d/$c.sed"
-    fi
   done
 done
 

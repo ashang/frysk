@@ -1,3 +1,7 @@
+2007-09-24  Andrew Cagney  <cagney@redhat.com>
+
+	* CppParser.sed: Delete.
+
 2007-09-17  Stan Cox  <scox@redhat.com>
 
 	* CExpr.g: Rename from cpp.g.
