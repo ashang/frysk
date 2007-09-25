@@ -130,7 +130,7 @@ public class Variable {
 	//      }
     }
   
-    static boolean useLocationExpressionFIXME = false;
+    static boolean useLocationExpressionFIXME = true;
 
     public Value getValue(DebugInfoFrame frame) {
 	if (!useLocationExpressionFIXME) {
