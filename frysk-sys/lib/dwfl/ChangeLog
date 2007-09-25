@@ -1,3 +1,9 @@
+2007-09-25  Sami Wagiaalla  <swagiaal@redhat.com>
+	
+	* cni/DwarfDie.cxx (DwarfDie::hasattr): New function.
+	* TestDwarfDie.java: New file.
+	(getAttrConstant): New function.
+
 2007-09-21  Andrew Cagney  <cagney@redhat.com>
 
 	* TestDwfl.java: Update; LocalMemory's getVal* and getFunc*

@@ -320,6 +320,10 @@ abstract public class DwarfDie {
 	return is_inline_func();
     }
   
+    public boolean hasAttribute(int attr){
+	return hasattr(getPointer(), attr);
+    }
+    
     public String toString() {
 	String typeStr;
 	DwarfDie type = getUltimateType();
@@ -382,6 +386,7 @@ abstract public class DwarfDie {
 	return die;
     }
   
+    
     abstract public void accept(DieVisitor visitor);
 
     public native ArrayList getEntryBreakpoints();
@@ -442,4 +447,6 @@ abstract public class DwarfDie {
     private static native long get_decl_cu (long dw, String sym);
 
     protected native void finalize();
+    
+    private native boolean hasattr(long pointer, int attr);
 }

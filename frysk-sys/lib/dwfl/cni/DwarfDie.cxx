@@ -691,9 +691,17 @@ lib::dwfl::DwarfDie::getInlinedInstances()
     return cbArgs.arrayList;
 }
 
+jboolean
+lib::dwfl::DwarfDie::hasattr(jlong pointer, jint attr)
+{
+  Dwarf_Die *die = (Dwarf_Die*) pointer;
+  return dwarf_hasattr(die, attr) != 0;
+}
+
 void
 lib::dwfl::DwarfDie::finalize()
 {
   if (manageDie)
     JvFree(DWARF_DIE_POINTER);
 }
+
