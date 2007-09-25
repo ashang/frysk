@@ -1,3 +1,9 @@
+2007-09-25  Teresa Thomas  <tthomas@redhat.com>
+
+	* PtypeCommand.java: New file.
+	* TestPtypeCommand.java: New file.
+	* CLI.java (CLI): PtypeCommand added.
+
 2007-09-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestRegs.java (testRegsCommand): Added e.close().

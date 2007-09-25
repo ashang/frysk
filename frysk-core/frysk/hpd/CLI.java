@@ -299,6 +299,7 @@ public class CLI {
         new StepNextCommand(this);
         new StepNextiCommand(this);
         new PrintCommand(this);
+        new PtypeCommand(this);
         new QuitCommand(this, "quit");
         new QuitCommand(this, "exit");
         new SetCommand(this, dbgvars);
