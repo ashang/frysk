@@ -97,7 +97,6 @@ JARS=`echo ${JARS}`
     -o -name "[A-Za-z]*\.h" -print \
     -o -name "[A-Za-z]*\.c" -print \
     -o -name "[A-Za-z]*\.cpp" -print \
-    -o -name "[A-Za-z]*\.cxx" -print \
     -o -name "[A-Za-z]*\.java" -print \
     -o -name "[A-Za-z]*\.shjava" -print \
     -o -name "[A-Za-z]*\.javain" -print \
@@ -117,15 +116,12 @@ JARS=`echo ${JARS}`
     -o -path "*dir/[A-Za-z_]*\.uu" -print \
     -o -path "*dir/[A-Za-z]*\.sh" -print \
     -o -path "*dir/[A-Za-z]*\.py" -print \
+    -o -path '[A-Za-z]*\.hxx' -print \
+    -o -path '[A-Za-z]*\.cxxin' -print \
+    -o -path '[A-Za-z]*\.cxx' -print \
+    -o -path '*/cni/[A-Za-z]*\.[sS]' -print
     -o -type f -name 'test*' -print
-    if $cni ; then
-	find ${dirs} -name '\.' -prune \
-	    -o -path '*/cni/[A-Za-z]*\.hxx' -print \
-	    -o -path '*/cni/[A-Za-z]*\.cxxin' -print \
-	#    -o -path '*/cni/[A-Za-z]*\.cxx' -print \
-	    -o -path '*/cni/[A-Za-z]*\.[sS]' -print
-    fi
-) | sort -f > files.tmp
+    ) | if $cni ; then cat ; else grep -v '/cni/' ; fi | sort -f > files.tmp
 
 if cmp files.tmp files.list > /dev/null 2>&1
 then

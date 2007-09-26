@@ -1,3 +1,9 @@
+2007-09-26  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
+
+	* Makefile.gen.sh: Reversed the -cni filter (all files
+	are included by default and removed of the flag is not
+	specified).
+
 2007-09-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Makefile.rules: Removed AM_LDFLAGS += -lstdc++.
