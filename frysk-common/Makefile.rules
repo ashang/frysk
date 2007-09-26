@@ -210,7 +210,7 @@ SUFFIXES += .shjava
 .shjava.java:
 	rm -f $*.tmp
 	CC='$(CC)'; export CC ; \
-	$(SHELL) $< | $(SHELL) $(MKJAVA) > $*.tmp $@
+	$(SHELL) $< > $*.tmp $@
 	chmod a-w $*.tmp
 	mv -f $*.tmp $@
 

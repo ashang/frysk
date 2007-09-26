@@ -1,3 +1,7 @@
+2007-09-26  Andrew Cagney  <cagney@redhat.com>
+
+	* elf/AT.shjava: Pass through mkjava.sh.
+
 2007-08-13  Nurdin Premji  <npremji@redhat.com>
 
 	* eio/ByteBuffer.java (putULong): Added, takes a ByteOrder.

@@ -1,3 +1,12 @@
+2007-09-26  Andrew Cagney  <cagney@redhat.com>
+
+	* UnwindX86.java: Delete.
+	* UnwindX8664.java: Delete.
+	* UnwindPPC64.java: Delete.
+	* UnwindX86.shjava: New.
+	* UnwindX8664.shjava: New.
+	* UnwindPPC64.shjava: New.
+
 2007-09-24  Andrew Cagney  <cagney@redhat.com>
 
 	* AddressSpace.java (accessReg): Delete.

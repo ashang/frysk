@@ -21,4 +21,4 @@ sed -n < $auxv '
   s,\*/,,
   p
 }
-'
+' | sh $(dirname $0)/../../common/mkjava.sh "$*"

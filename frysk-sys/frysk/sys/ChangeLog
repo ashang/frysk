@@ -1,3 +1,7 @@
+2007-09-26  Andrew Cagney  <cagney@redhat.com>
+
+	* SyscallNum.shjava: Pass through mkjava.sh.
+
 2007-09-21  Andrew Cagney  <cagney@redhat.com>
 
 	* TestPtrace.java (verifyPokeBytes): New.
