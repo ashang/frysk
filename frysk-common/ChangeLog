@@ -1,3 +1,11 @@
+2007-09-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Makefile.rules: Removed AM_LDFLAGS += -lstdc++.
+	* Makefile.gen.sh: Removed .cpp to the list of types to be
+	included in the file list.
+	Removed .cpp from list of files to be checked for main.
+	Added .cxx to the file list.
+
 2007-09-25  Stan Cox  <scox@redhat.com>
 
 	* antlr-warnings.awk: Handle ExprAST warnings.

@@ -97,6 +97,7 @@ JARS=`echo ${JARS}`
     -o -name "[A-Za-z]*\.h" -print \
     -o -name "[A-Za-z]*\.c" -print \
     -o -name "[A-Za-z]*\.cpp" -print \
+    -o -name "[A-Za-z]*\.cxx" -print \
     -o -name "[A-Za-z]*\.java" -print \
     -o -name "[A-Za-z]*\.shjava" -print \
     -o -name "[A-Za-z]*\.javain" -print \
@@ -121,7 +122,7 @@ JARS=`echo ${JARS}`
 	find ${dirs} -name '\.' -prune \
 	    -o -path '*/cni/[A-Za-z]*\.hxx' -print \
 	    -o -path '*/cni/[A-Za-z]*\.cxxin' -print \
-	    -o -path '*/cni/[A-Za-z]*\.cxx' -print \
+	#    -o -path '*/cni/[A-Za-z]*\.cxx' -print \
 	    -o -path '*/cni/[A-Za-z]*\.[sS]' -print
     fi
 ) | sort -f > files.tmp
@@ -299,7 +300,7 @@ has_main ()
 	*.java )
 	    has_java_main $1
 	    ;;
-        *.c | *.cxx | *.cpp)
+        *.c | *.cxx )
 	    grep -e '^main[( ]' -e ' main[( ]' $1 > /dev/null 2>&1
 	    ;;
         *.S | *.s )
@@ -506,7 +507,7 @@ for suffix in .cxxin ; do
     done
 done
 
-for suffix in .cxx .c .hxx .s .S .cpp ; do
+for suffix in .cxx .c .hxx .s .S ; do
     print_header "... ${suffix}"
     grep -e "\\${suffix}\$" files.list | while read file ; do
 	d=`dirname ${file}`
