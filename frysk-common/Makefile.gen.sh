@@ -119,7 +119,7 @@ JARS=`echo ${JARS}`
     -o -path '[A-Za-z]*\.hxx' -print \
     -o -path '[A-Za-z]*\.cxxin' -print \
     -o -path '[A-Za-z]*\.cxx' -print \
-    -o -path '*/cni/[A-Za-z]*\.[sS]' -print
+    -o -path '*/cni/[A-Za-z]*\.[sS]' -print \
     -o -type f -name 'test*' -print
     ) | if $cni ; then cat ; else grep -v '/cni/' ; fi | sort -f > files.tmp
 

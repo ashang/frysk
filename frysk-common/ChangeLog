@@ -1,5 +1,11 @@
 2007-09-26  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
 
+	* Makefile.gen.sh: Removed .cpp from the file list.
+	Added missing \ (fixes ./common/Makefile.gen.sh: line 
+	123: -o: command not found).
+	
+2007-09-26  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
+
 	* Makefile.gen.sh: Reversed the -cni filter (all files
 	are included by default and removed of the flag is not
 	specified).
