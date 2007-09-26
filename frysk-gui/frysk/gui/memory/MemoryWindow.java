@@ -314,7 +314,7 @@ public class MemoryWindow
     
     this.diss = new Disassembler(myTask.getMemory());
     pc_inc = myTask.getIsa().pc(myTask);
-    long end = pc_inc + 50;
+    long end = pc_inc + 20*8;
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
 
@@ -666,8 +666,8 @@ public class MemoryWindow
 
     memoryView.setModel(model);
 
-    for (long i = start; i < end + 1; i++)
-      rowAppend(i, null);
+    for (int i = 0; i <= end - start; i = i + 8)
+      rowAppend((long)(start + i), null);
 
     this.refreshList();
   }
@@ -689,8 +689,8 @@ public class MemoryWindow
     this.toSpin.setValue(this.lastKnownTo);
     
     this.model.clear();
-    for (long i = (long) lastKnownFrom; i < this.lastKnownTo + 1; i++)
-      rowAppend(i, null);
+    for (int i = 0; i <= this.lastKnownTo - this.lastKnownFrom; i = i + 8)
+      rowAppend((long)(this.lastKnownFrom + i), null);
     
     refreshList();
     this.refreshLock = false;
@@ -728,70 +728,178 @@ public class MemoryWindow
 
         byte[] b = bi.toByteArray();
         String bin = "";
-        String oct = "";
+        //String oct = "";
         String hex = "";
-        String dec = "";
+        //String dec = "";
 
         if (bi.signum() < 0)
             bi = new BigInteger(1, b);
         bin = bi.toString(2);
-        oct = bi.toString(8);
+        //oct = bi.toString(8);
         hex = bi.toString(16);
-        dec = bi.toString(10);
+        //dec = bi.toString(10);
 
         int diff = bin.length() % BYTE_BITS;
         if (diff != 0)
           bin = padBytes(bin, false, diff);
-        int length = (int)Math.pow(2, currentFormat + 3);
             
-        while (bin.length() < length)
+        while (bin.length() < Long.SIZE)
         {
             bin = "0" + bin;            
         }
-        while (oct.length() < (length/3 + 1))
-        {
-            oct = "0" + oct;
-        }      
-        while (hex.length() < length/4 )
+ 
+        while (hex.length() < Long.SIZE/4 )
         {
             hex = "0" + hex;
         }            
 
         /* Little endian first */
-        this.model.setValue(iter, (DataColumnString) cols[1], bin);
-        this.model.setValue(iter, (DataColumnString) cols[3], "0"+oct);
-        this.model.setValue(iter, (DataColumnString) cols[5], dec);
-        this.model.setValue(iter, (DataColumnString) cols[7], "0x" + hex);
+        String newbin = "";
+        String newoct = "";
+        String newdec = "";
+        String newhex = "";
+        int bit = (int) Math.pow(2, currentFormat + 3);
+        long len = Math.round((double)bin.length()/bit);
+        String[] binArray = new String[(int)len];
+        String[] octArray = new String[(int)len];
+        String[] hexArray = new String[(int)len];        
+        for (int i=0; i< len; i++)
+        {
+    	    if (bit*(i+1) < bin.length())
+    	    {
+    		binArray[i] = bin.substring(bit*i, bit*(i+1));
+    		hexArray[i] = hex.substring(bit/4*i, bit/4*(i+1));
+    	    }
+    	    else
+    	    {
+    		binArray[i] = bin.substring(bit*i);
+    		hexArray[i] = hex.substring(bit/4*i, bit/4*(i+1));
+    	    }    	    
+    	    if (currentFormat == EIGHT_BIT)
+    	    {
+    		byte bb = (byte)Integer.parseInt(binArray[i], 2);
+    		newdec = newdec + bb + " ";
+    		octArray[i]= Integer.toOctalString( bb & 0xff);
+    		
+    	    }
+    	    if (currentFormat == SIXTEEN_BIT)
+    	    {
+    		short s = (short)Integer.parseInt(binArray[i], 2);
+    		newdec = newdec + s + " ";
+    		
+    		octArray[i] = Integer.toOctalString(s & 0xffff);
+    	    }
+    	    if (currentFormat == THIRTYTWO_BIT)
+    	    {
+		int in = (int)Long.parseLong(binArray[i], 2);
+		newdec = newdec + in + " ";
+    		octArray[i] = Integer.toOctalString(in);
+    	    }
+    	    if (currentFormat == SIXTYFOUR_BIT)
+    	    {
+    		long l;
+    		if( binArray[i].length() == bit && 
+        		    binArray[i].startsWith("1"))
+    		{
+    		    l = (long)Long.parseLong(binArray[i].substring(1), 2);    		    
+    		    l = (long)(l-(long)Math.pow(2, bit-1));
+        		
+    		}
+    		else
+    		    l = (long)Long.parseLong(binArray[i], 2);
+    		newdec = newdec + l + " ";
+    		octArray[i] = Long.toOctalString((long)l);		
+    	    }
+	    
+    	    newbin += binArray[i] + " ";
+    	    newoct += "0"+octArray[i] + " ";    	    
+    	    newhex += "0x"+hexArray[i]+ " ";
+        }
+        this.model.setValue(iter, (DataColumnString) cols[1], newbin);
+        this.model.setValue(iter, (DataColumnString) cols[3], newoct);
+        this.model.setValue(iter, (DataColumnString) cols[5], newdec);
+        this.model.setValue(iter, (DataColumnString) cols[7], newhex);
 
         /* Big endian second */
         String bin2 = switchEndianness(bin, true);
         BigInteger bii = new BigInteger(bin2, 2);
 
-        oct = bii.toString(8);
-        hex = bii.toString(16);
-
+        hex = bii.toString(16);        
+        newbin = "";
+        newoct = "";
+        newdec = "";
+        newhex = "";
         /* Bad hack to get around weird BigInteger endian bug */
-        if (bin2.equals(bin))
+        /*if (bin2.equals(bin))
           dec = bi.toString(10);
         else
-          dec = bii.toString(10);
+          dec = bii.toString(10);*/
         
-        while (bin2.length() < length)
+        while (bin2.length() < Long.SIZE)
         {
             bin2 = "0" + bin2;            
-        }
-        while (oct.length() < (length/3 + 1))
-        {
-            oct = "0" + oct;
         }      
-        while (hex.length() < length/4 )
+        while (hex.length() < Long.SIZE/4 )
         {
             hex = "0" + hex;
         }
-        this.model.setValue(iter, (DataColumnString) cols[2], bin2);
-        this.model.setValue(iter, (DataColumnString) cols[4], "0"+oct);
-        this.model.setValue(iter, (DataColumnString) cols[6], dec);
-        this.model.setValue(iter, (DataColumnString) cols[8], "0x" + hex);
+        
+        for (int i=0; i< len; i++)
+        {
+    	    if (bit*(i+1) < bin2.length())
+    	    {
+    		binArray[i] = bin2.substring(bit*i, bit*(i+1));
+    		hexArray[i] = hex.substring(bit/4*i, bit/4*(i+1));
+    	    }
+    	    else
+    	    {
+    		binArray[i] = bin2.substring(bit*i);
+    		hexArray[i] = hex.substring(bit/4*i, bit/4*(i+1));
+    	    }    	    
+    	    if (currentFormat == EIGHT_BIT)
+    	    {
+    		byte bb = (byte)Integer.parseInt(binArray[i], 2);
+    		newdec = newdec + bb + " ";
+    		octArray[i]= Integer.toOctalString( bb & 0xff);
+    		
+    	    }
+    	    if (currentFormat == SIXTEEN_BIT)
+    	    {
+    		short s = (short)Integer.parseInt(binArray[i], 2);
+    		newdec = newdec + s + " ";
+    		
+    		octArray[i] = Integer.toOctalString(s & 0xffff);
+    	    }
+    	    if (currentFormat == THIRTYTWO_BIT)
+    	    {
+		int in = (int)Long.parseLong(binArray[i], 2);
+		newdec = newdec + in + " ";
+    		octArray[i] = Integer.toOctalString(in);
+    	    }
+    	    if (currentFormat == SIXTYFOUR_BIT)
+    	    {
+    		long l;
+    		if( binArray[i].length() == bit && 
+        		    binArray[i].startsWith("1"))
+    		{
+    		    l = (long)Long.parseLong(binArray[i].substring(1), 2);    		    
+    		    l = (long)(l-(long)Math.pow(2, bit-1));
+        		
+    		}
+    		else
+    		    l = (long)Long.parseLong(binArray[i], 2);
+    		newdec = newdec + l + " ";
+    		octArray[i] = Long.toOctalString((long)l);		
+    	    }
+	    
+    	    newbin += binArray[i] + " ";
+    	    newoct += "0"+octArray[i] + " ";    	    
+    	    newhex += "0x"+hexArray[i]+ " ";
+        }
+        this.model.setValue(iter, (DataColumnString) cols[2], newbin);
+        this.model.setValue(iter, (DataColumnString) cols[4], newoct);
+        this.model.setValue(iter, (DataColumnString) cols[6], newdec);
+        this.model.setValue(iter, (DataColumnString) cols[8], newhex);
 
         if (ins != null && Long.toHexString(ins.address).equals(addr))
           {
@@ -837,58 +945,16 @@ public class MemoryWindow
     model.setValue(iter, (DataColumnString) cols[LOC], "0x"
                                                        + Long.toHexString(i));
     model.setValue(iter, (DataColumnDouble) cols[11], 1.0);
-
-    switch (currentFormat)
-      {
-      case EIGHT_BIT:
-        try
-          {
-            model.setValue(iter, (DataColumnObject) cols[OBJ],
-                           "" + myTask.getMemory().getByte(i));
-          }
-        catch (Exception e)
-          {
-            return;
-          }
-        break;
-
-      case SIXTEEN_BIT:
-        try
-          {
-            model.setValue(iter, (DataColumnObject) cols[OBJ],
-                           "" + myTask.getMemory().getShort(i));
-          }
-        catch (Exception e)
-          {
-            return;
-          }
-        break;
-
-      case THIRTYTWO_BIT:
-        try
-          {
-            model.setValue(iter, (DataColumnObject) cols[OBJ],
-                           "" + myTask.getMemory().getInt(i));
-          }
-        catch (Exception e)
-          {
-            return;
-          }
-        break;
-
-      case SIXTYFOUR_BIT:
-        try
-          {
-            model.setValue(iter, (DataColumnObject) cols[OBJ],
-                           "" + myTask.getMemory().getLong(i));
-          }
-        catch (Exception e)
-          {
-            return;
-          }
-        break;
-      }
-
+    
+    try
+    {
+      model.setValue(iter, (DataColumnObject) cols[OBJ],
+                     "" + myTask.getMemory().getLong(i));
+    }
+    catch (Exception e)
+    {
+      return;
+    }    
   }
   
   private void desensitize ()
@@ -990,17 +1056,17 @@ public class MemoryWindow
       {
         TreeIter iter = model.getFirstIter();
 
-        for (long i = (long) lastKnownFrom; i < (long) val; i++)
+        for (long i = (long) lastKnownFrom; i < (long) val; i = i+8)
           {
             model.removeRow(iter);
           }
       }
     else
       {
-        for (long i = (long) lastKnownFrom - 1; i >= (long) val; i--)
+        for (long i = (long) lastKnownFrom - 8; i >= (long) val; i = i-8)
           {
             TreeIter newRow = model.prependRow();
-            rowAppend(i, newRow);
+            rowAppend((long)(i- 8*(lastKnownFrom-i -8)), newRow);
           }
       }
     
@@ -1031,12 +1097,12 @@ public class MemoryWindow
 
     if (val > this.lastKnownTo)
       {
-        for (long i = (long) lastKnownTo + 1; i < val + 1; i++)
-          rowAppend(i, null);
+        for (long i = (long) lastKnownTo + 8; i < val + 1; i = i+8)
+          rowAppend((long)(i+8*(i-lastKnownTo-8)), null);
       }
     else
       {
-        for (; this.lastKnownTo > val; this.lastKnownTo--)
+        for (; this.lastKnownTo > val; this.lastKnownTo = this.lastKnownTo-8)
           {
             this.model.removeRow(this.model.getIter(this.lastPath));
             this.lastPath.previous();
@@ -1058,8 +1124,8 @@ public class MemoryWindow
       long startAddress = ((Long)addressList.getFirst()).longValue();
       Symbol symbol = SymbolFactory.getSymbol(this.myTask, startAddress);
       long endAddress = symbol.getAddress() + symbol.getSize();
-      long size = endAddress - startAddress + 1;
-      long modelSize = (long)lastKnownTo - (long)lastKnownFrom + 1;
+      long size = (endAddress - startAddress)/8 + 1;
+      long modelSize = ((long)lastKnownTo - (long)lastKnownFrom)/8 + 1;
       TreeIter iter = this.model.getFirstIter();      
       while (size < modelSize)
       {
@@ -1074,12 +1140,12 @@ public class MemoryWindow
 	  modelSize++;	  
       }
       this.lastKnownFrom = (double)startAddress;
-      this.lastKnownTo = (double)endAddress;
+      this.lastKnownTo = (double)(double)(startAddress+(long)(endAddress-startAddress)/8*8);
       iter = this.model.getFirstIter();
       this.lastPath = iter.getPath();
-      for(long i= startAddress; i < endAddress+1; i++)
+      for(int i = 0; i <= lastKnownTo-lastKnownFrom; i=i+8)
       {
-	  rowAppend(i, iter);
+	  rowAppend((long)(i+startAddress), iter);
 	  iter = iter.getNextIter();
       }
       refreshList();
