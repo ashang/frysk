@@ -122,9 +122,7 @@ frysk/pkglibdir/arch32/funit-symbols-stripped: frysk/pkglibdir/arch32/funit-symb
 	strip -o $@ frysk/pkglibdir/arch32/funit-symbols
 
 endif
-pkglib_PROGRAMS += frysk/pkglibdir/funit-class
-frysk_pkglibdir_funit_class_SOURCES = frysk/pkglibdir/funit-class.cxx
-
+
 # frysk-core code needs to be able to find the core files found in
 # frysk-sys/frysk/pkgdatadir/.  Since frysk-core can only see
 # frysk-core/frysk/pkgdatadir/ add links to the unpacked core files in

@@ -1,3 +1,8 @@
+2007-09-26  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
+
+	* Makefile.am: Removed hardwired rule for building 
+	funit-class.cxx
+
 2007-08-27  Stan Cox  <scox@redhat.com>
 
 	* Makefile.am (pkglib_PROGRAMS): Add funit-class.cxx
