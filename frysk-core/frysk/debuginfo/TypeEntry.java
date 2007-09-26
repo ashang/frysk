@@ -68,13 +68,15 @@ import lib.dwfl.DwAccess;
 
 class TypeEntry
 {
-    DebugInfoFrame f;
-    HashMap dieHash;
+    private final Isa isa;
+    private final ByteOrder byteorder;
+    private final HashMap dieHash;
 
-    public TypeEntry ()
+    public TypeEntry (Isa isa)
     {
-	f = null;
-	dieHash = null;
+	this.isa = isa;
+	this.byteorder = isa.getByteOrder();
+	this.dieHash = new HashMap();
     }
 
     private int getByteSize(DwarfDie die) {
@@ -95,7 +97,7 @@ class TypeEntry
      *                Die for the array's first index
      * @return ArrayType for the array
      */
-    public ArrayType getArrayType(DebugInfoFrame f, DwarfDie dieType, DwarfDie subrange) {
+    public ArrayType getArrayType(DwarfDie dieType, DwarfDie subrange) {
 	int elementCount = 1;
 	dumpDie("arrayDie=", dieType);
 	dumpDie("subrange=", subrange);
@@ -109,7 +111,7 @@ class TypeEntry
 	}
 
 	ArrayType arrayType = null;
-	Type type = getType (f, dieType);
+	Type type = getType (dieType);
 	int typeSize = type.getSize();
 	arrayType = new ArrayType(type, elementCount * typeSize, dims);
 	return arrayType;
@@ -122,7 +124,7 @@ class TypeEntry
      *                Name of the struct
      * @return ConfoundedType for the struct
      */
-    public ConfoundedType getConfoundedType(DebugInfoFrame f, DwarfDie classDie, String name) {
+    public ConfoundedType getConfoundedType(DwarfDie classDie, String name) {
 	dumpDie("classDie=", classDie);
 	ConfoundedType classType = new ConfoundedType(name, getByteSize(classDie));
 	
@@ -146,7 +148,7 @@ class TypeEntry
 	    DwarfDie memberDieType = member.getUltimateType();
 
 	    if (member.getTag() == DwTag.SUBPROGRAM_) {
-		Value v = getSubprogramValue(f, member);
+		Value v = getSubprogramValue(member);
 		classType.addMember(member.getName(), v.getType(), offset,
 			access);
 		continue;
@@ -155,7 +157,7 @@ class TypeEntry
 	    if (memberDieType == null)
 		continue;
 
-	    Type memberType = getType (f, member.getType());
+	    Type memberType = getType (member.getType());
 	    if (memberType instanceof UnknownType == false) {
 		// System V ABI Supplements discuss bit field layout
 		int bitSize = member
@@ -185,7 +187,7 @@ class TypeEntry
      *                The die for a symbol corresponding to a function
      * @return The value of a subprogram die
      */
-    public Value getSubprogramValue(DebugInfoFrame f, DwarfDie varDie) {
+    public Value getSubprogramValue(DwarfDie varDie) {
 	if (varDie == null)
 	    return (null);
 
@@ -193,14 +195,14 @@ class TypeEntry
 	case DwTag.SUBPROGRAM_: {
 	    Type type = null;
 	    if (varDie.getUltimateType() != null) {
-		type = getType(f, varDie);
+		type = getType(varDie.getType());
 	    }
 	    FunctionType functionType = new FunctionType(varDie.getName(), type);
 	    DwarfDie parm = varDie.getChild();
 	    while (parm != null
 		    && parm.getTag() == DwTag.FORMAL_PARAMETER_) {
 		if (parm.getAttrBoolean((DwAt.ARTIFICIAL_)) == false) {
-		    type = getType(f, parm);
+		    type = getType(parm);
 		    functionType.addParameter(type, parm.getName());
 		}
 		parm = parm.getSibling();
@@ -217,8 +219,7 @@ class TypeEntry
      *                This symbol's die
      * @return a frysk.type for this varDie
      */
-    public Type getType(DebugInfoFrame f, DwarfDie typeDie) {
-	ByteOrder byteorder = f.getTask().getIsa().getByteOrder();
+    public Type getType(DwarfDie typeDie) {
 
 	if (typeDie == null)
 	    return (null);
@@ -233,10 +234,6 @@ class TypeEntry
 	else
 	    type = typeDie;
 
-	if (this.f != f) {
-	    this.f = f;
-	    dieHash = new HashMap();
-	}
 	Type mappedType = (Type)dieHash.get(new Integer(type.getOffset()));
 	if (mappedType != null)
 	    return mappedType;
@@ -249,15 +246,13 @@ class TypeEntry
 	dieHash.put(new Integer(type.getOffset()), null);
 	Type returnType = null;
 	
-	Isa isa = f.getTask().getIsa();
-
 	switch (type.getTag()) {
 	case DwTag.TYPEDEF_: {
-	    returnType = new TypeDef(type.getName(), getType (f, type.getType()));
+	    returnType = new TypeDef(type.getName(), getType (type.getType()));
 	    break;
 	}
 	case DwTag.POINTER_TYPE_: {
-	    Type ptrTarget = getType(f, type.getUltimateType());
+	    Type ptrTarget = getType(type.getUltimateType());
 	    if (ptrTarget == null)
 		ptrTarget = new VoidType();
 	    returnType = new PointerType("*", byteorder, getByteSize(type),
@@ -266,7 +261,7 @@ class TypeEntry
 	}
 	case DwTag.ARRAY_TYPE_: {
 	    DwarfDie subrange = type.getChild();
-	    returnType = getArrayType(f, type.getType(), subrange);
+	    returnType = getArrayType(type.getType(), subrange);
 	    break;
 	}
 	case DwTag.UNION_TYPE_:
@@ -274,7 +269,7 @@ class TypeEntry
 	    boolean noTypeDef = (typeDie.getType() == null);
 	    String name = noTypeDef ? typeDie.getName() : typeDie.getType()
 		    .getName();
-	    ConfoundedType classType = getConfoundedType(f, type, name);
+	    ConfoundedType classType = getConfoundedType(type, name);
 	    if (type != typeDie.getType() && noTypeDef == false)
 		classType.setTypedefFIXME(true);
 	    returnType = classType;

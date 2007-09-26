@@ -86,6 +86,8 @@ header
     import frysk.value.UnsignedType;
     import frysk.value.FloatingPointType;
     import frysk.value.Value;
+    import frysk.expr.ExprSymTab;
+    import frysk.expr.ExprAST;
     import javax.naming.NameNotFoundException;
     import frysk.value.InvalidOperatorException;
     import frysk.value.OperationNotDefinedException;
@@ -97,6 +99,7 @@ class CExprEvaluator extends TreeParser;
 
 options {
     importVocab=CExprParser;
+    ASTLabelType = "ExprAST";
 }
 
 {
@@ -107,10 +110,10 @@ options {
     ArithmeticType shortType;
     FloatingPointType doubleType;
     FloatingPointType floatType;
-    private CppSymTab cppSymTabRef;
-    public CExprEvaluator(int intSize, CppSymTab symTab) {
+    private ExprSymTab exprSymTab;
+    public CExprEvaluator(int intSize, ExprSymTab symTab) {
         this();
-	    cppSymTabRef = symTab; 
+	    exprSymTab = symTab; 
         shortType = new SignedType("short", ByteOrder.LITTLE_ENDIAN, intSize / 2);
         intType = new SignedType("int", ByteOrder.LITTLE_ENDIAN, intSize);
         longType = new SignedType("long", ByteOrder.LITTLE_ENDIAN, intSize * 2);
@@ -169,7 +172,7 @@ expr returns [Value returnVar=null]
         }
     |   #(MEMORY s1=identifier ) {
             returnVar = longType.createValue(0);
-            returnVar = (Value)cppSymTabRef.getMemory(s1); 
+            returnVar = (Value)exprSymTab.getMemory(s1); 
         }
     |   #(DIVIDE  v1=expr v2=expr) {
             returnVar = v1.getType().divide(v1, v2); 
@@ -205,7 +208,7 @@ expr returns [Value returnVar=null]
             returnVar = v1.getType().bitWiseAnd(v1, v2); 
         }
     |   #(ADDRESS_OF s1=identifier ) {
-            returnVar = (Value)cppSymTabRef.getAddress(s1);
+            returnVar = (Value)exprSymTab.getAddress(s1);
         }
     |   #(BITWISEXOR  v1=expr v2=expr) {
             returnVar = v1.getType().bitWiseXor(v1, v2); 
@@ -342,12 +345,12 @@ expr returns [Value returnVar=null]
             returnVar = v1;
         }
     |   #(REFERENCE el=references) {
-            returnVar = (Value)cppSymTabRef.get(el);
+            returnVar = (Value)exprSymTab.getValue(el);
         }
     |   ident:IDENT  {
-            returnVar = ((Value)cppSymTabRef.get(ident.getText()));
+            returnVar = ((Value)exprSymTab.getValue(ident.getText()));
         }
     |   tident:TAB_IDENT  {
-            returnVar = ((Value)cppSymTabRef.get(tident.getText()));
+            returnVar = ((Value)exprSymTab.getValue(tident.getText()));
         }
     ;

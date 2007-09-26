@@ -53,7 +53,7 @@ import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
 import frysk.dwfl.DwflCache;
-import frysk.expr.CppSymTab;
+import frysk.expr.ExprSymTab;
 import frysk.proc.Isa;
 import frysk.proc.Task;
 import frysk.stack.Register;
@@ -76,7 +76,7 @@ import frysk.value.Value;
 import frysk.value.ByteBufferLocation;
 
 class DebugInfoEvaluator
-    implements CppSymTab
+    implements ExprSymTab
 {
     private Task task;
 
@@ -264,7 +264,7 @@ class DebugInfoEvaluator
      * @param s Symbol s
      * @return The die for symbol s
      */
-     private Variable getDie (String s) throws NameNotFoundException {
+    public Variable getVariable (String s) throws NameNotFoundException {
 	Dwfl dwfl;
 	DwarfDie[] allDies;
 	Variable variable;
@@ -305,7 +305,7 @@ class DebugInfoEvaluator
     /**
      * @return Value for symbol s in frame f
      */
-    public Value get (String s) throws NameNotFoundException {
+    public Value getValue (String s) throws NameNotFoundException {
 	if (s.charAt(0) == '$') {
 	    // FIXME: This code doesn't need to access the dwarf register
 	    // map; instead just do a direct register lookup.
@@ -316,15 +316,15 @@ class DebugInfoEvaluator
 	    return frame.getRegisterValue(reg);
 	}
 
-	Variable var = getDie(s);
+	Variable var = getVariable(s);
 	return var.getValue(frame);
     }
   
     /**
      * @return Value associated with the given DwarfDie.
-     * @see frysk.expr.CppSymTab#get(java.lang.String)
+     * @see frysk.expr.ExprSymTab#getValue(java.lang.String)
      */
-    public Value get (Variable var) {
+    public Value getValue (Variable var) {
 	if (var == null)
 	    return (null);
 	if (!Variable.useLocationExpressionFIXME) {
@@ -411,13 +411,13 @@ class DebugInfoEvaluator
      * {a,b,c,1,1,2,2}
      * @return Value of the symbol
      */
-    public Value get (ArrayList components) throws NameNotFoundException {
+    public Value getValue (ArrayList components) throws NameNotFoundException {
 	String s = (String)components.get(0);
-	Variable variable = getDie(s);
+	Variable variable = getVariable(s);
 	if (variable == null)
 	    return (null);
 
-	Value v = get(s);
+	Value v = getValue(s);
 	if (v.getType() instanceof ArrayType)
 	    return ((ArrayType)v.getType()).get(v, 1, components);
 	else if (v.getType() instanceof ConfoundedType)
@@ -433,7 +433,7 @@ class DebugInfoEvaluator
      */
     public Value getAddress (String s) throws NameNotFoundException {
 	AccessMemory access = new AccessMemory();
-	return longType.createValue(access.getAddr(getDie(s).getVariableDie())); 
+	return longType.createValue(access.getAddr(getVariable(s).getVariableDie())); 
     }
   
     /**
@@ -442,13 +442,13 @@ class DebugInfoEvaluator
      * @return Value corresponding to the memory location pointed to by symbol s.
      */
     public Value getMemory (String s) throws NameNotFoundException {     
-	Variable variable= getDie(s);
+	Variable variable= getVariable(s);
 	if (variable == null)
 	    return new Value(new UnknownType(variable.getName()));
     
 	DwarfDie type = variable.getVariableDie().getUltimateType();
 	AccessMemory access = new AccessMemory();
-	long addr = access.getAddr(getDie(s).getVariableDie()); 
+	long addr = access.getAddr(getVariable(s).getVariableDie()); 
 	long addrIndirect = buffer.getLong(addr);
     
 	switch (type.getUltimateType().getBaseType()) {
@@ -474,8 +474,8 @@ class DebugInfoEvaluator
 	case DwTag.ARRAY_TYPE_: {
 	    DwarfDie subrange;
 	    subrange = type.getChild();
-	    TypeEntry debugInfoType = new TypeEntry();
-	    ArrayType arrayType = debugInfoType.getArrayType(frame, type, subrange);
+	    TypeEntry debugInfoType = new TypeEntry(frame.getTask().getIsa());
+	    ArrayType arrayType = debugInfoType.getArrayType(type, subrange);
 
 	    if (arrayType == null)
 		return null;
@@ -486,9 +486,9 @@ class DebugInfoEvaluator
 	}
 	case DwTag.UNION_TYPE_:
 	case DwTag.STRUCTURE_TYPE_: {
-	    TypeEntry debugInfoType = new TypeEntry();
+	    TypeEntry debugInfoType = new TypeEntry(frame.getTask().getIsa());
 //	    ClassType classType = debugInfoType.getClassType(frame, type, null);
-	    ConfoundedType classType = debugInfoType.getConfoundedType(frame, type, null);
+	    ConfoundedType classType = debugInfoType.getConfoundedType(type, null);
 
 	    if (classType == null)
 		return null;

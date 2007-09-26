@@ -91,12 +91,12 @@ public class TestTypeEntry
       DwflDieBias bias = dwfl.getDie(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
-      TypeEntry typeEntry = new TypeEntry();
+      TypeEntry typeEntry = new TypeEntry(frame.getTask().getIsa());
     
       for (int i = 0; i < expect.length; i++) {
 	  varDie = die.getScopeVar(allDies, expect[i].symbol);
 	  assertNotNull(varDie);
-	  varType = typeEntry.getType(frame, varDie.getType());
+	  varType = typeEntry.getType(varDie.getType());
 	  assertNotNull(varType);
 	  assertEquals("testScalar " + expect[i].symbol, expect[i].output, varType.toPrint());
       }
@@ -122,12 +122,12 @@ public class TestTypeEntry
       DwflDieBias bias = dwfl.getDie(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
-      TypeEntry typeEntry = new TypeEntry();
+      TypeEntry typeEntry = new TypeEntry(frame.getTask().getIsa());
     
       for (int i = 0; i < expect.length; i++) {
 	  varDie = die.getScopeVar(allDies, expect[i].symbol);
 	  assertNotNull(varDie);
-	  varType = typeEntry.getType(frame, varDie.getType());
+	  varType = typeEntry.getType(varDie.getType());
 	  assertNotNull(varType);
 	  assertEquals("testArray " + expect[i].symbol, expect[i].output, varType.toPrint());
       }
@@ -153,7 +153,7 @@ public class TestTypeEntry
       DwflDieBias bias = dwfl.getDie(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
-      TypeEntry typeEntry = new TypeEntry();
+      TypeEntry typeEntry = new TypeEntry(frame.getTask().getIsa());
     
       for (int i = 0; i < expect.length; i++) {
 	  varDie = die.getScopeVar(allDies, expect[i].symbol);
@@ -162,7 +162,7 @@ public class TestTypeEntry
 	  if (varDie == null) {
 	      continue;
 	  }
-	  varType = typeEntry.getType(frame, varDie.getType());
+	  varType = typeEntry.getType(varDie.getType());
 	  Pattern p = Pattern.compile(expect[i].output, Pattern.DOTALL);
 	  Matcher m = p.matcher(varType.toPrint());
 	  assertTrue("testEnum " + expect[i].symbol, m.matches());
@@ -193,11 +193,11 @@ public class TestTypeEntry
       DwflDieBias bias = dwfl.getDie(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
-      TypeEntry typeEntry = new TypeEntry();
+      TypeEntry typeEntry = new TypeEntry(frame.getTask().getIsa());
     
       for (int i = 0; i < expect.length; i++) {
 	  varDie = die.getScopeVar(allDies, expect[i].symbol);
-	  varType = typeEntry.getType(frame, varDie.getType());
+	  varType = typeEntry.getType(varDie.getType());
 	  Pattern p = Pattern.compile(expect[i].output, Pattern.DOTALL);
 	  Matcher m = p.matcher(varType.toPrint());
 	  assertTrue("testStruct " + expect[i].symbol, m.matches());
@@ -228,11 +228,11 @@ public class TestTypeEntry
       DwflDieBias bias = dwfl.getDie(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
-      TypeEntry typeEntry = new TypeEntry();
+      TypeEntry typeEntry = new TypeEntry(frame.getTask().getIsa());
     
       for (int i = 0; i < expect.length; i++) {
 	  varDie = die.getScopeVar(allDies, expect[i].symbol);
-	  varType = typeEntry.getType(frame, varDie.getType());
+	  varType = typeEntry.getType(varDie.getType());
 	  Pattern p = Pattern.compile(expect[i].output, Pattern.DOTALL);
 	  Matcher m = p.matcher(varType.toPrint());
 	  assertTrue("testClass " + expect[i].symbol, m.matches());

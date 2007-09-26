@@ -1,3 +1,18 @@
+2007-09-25  Stan Cox  <scox@redhat.com>
+
+	* TypeEntry.java (f): Remove
+	(isa): New.
+	(byteorder): New.
+	(TypeEntry(Isa)): New signature.  Change all callers.
+	(getArrayType): Remove DebugInfoFrame parameter.  Change all callers.
+	(getConfoundedType): Likewise.
+	(getSubprogramValue): Likewise.
+	(getType): Likewise.
+	* DebugInfoEvaluator.java (getVariable): Rename from getDie.
+	* DebugInfo.java (DebugInfo): Remove frameFIXME.
+	(print): Allow dumping of the expression tree.  Run the CExprAnnotator.
+	(printNoSymbolTable): Likewise.
+
 2007-09-24  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfoEvaluator.java (get(String)): Remove redundant call to
@@ -198,7 +213,6 @@
 	(DebugInfo): Set it.
 	(what): Use it.
 	(get): Change signature to use Variable instead of DwarfDie.
-	* TestTypeEntry.java (testStruct): Tweak expected output.
 
 2007-09-10  Sami Wagiaalla  <swagiaal@redhat.com>
 

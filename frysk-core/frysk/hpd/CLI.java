@@ -249,13 +249,18 @@ public class CLI {
     }
  
     Value parseValue(Task task, String value)
-        throws ParseException, NameNotFoundException  {
+    throws ParseException, NameNotFoundException  {
+	return parseValue(task, value, false);
+    }
+
+    Value parseValue(Task task, String value, boolean dumpTree)
+    throws ParseException, NameNotFoundException  {
         DebugInfoFrame frame = getTaskFrame(task);
         DebugInfo debugInfo = getTaskDebugInfo(task);
         if (debugInfo != null)
-            return debugInfo.print(value, frame);
+            return debugInfo.print(value, frame, dumpTree);
         else
-            return DebugInfo.printNoSymbolTable(value);       
+            return DebugInfo.printNoSymbolTable(value, dumpTree);       
     }
  
     /**

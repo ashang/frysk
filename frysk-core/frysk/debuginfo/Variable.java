@@ -75,8 +75,8 @@ public class Variable {
 
     public Type getType(DebugInfoFrame frame) {
 	if(this.type == null){
-	    TypeEntry typeEntry = new TypeEntry();
-	    this.type = typeEntry.getType(frame, variableDie);
+	    TypeEntry typeEntry = new TypeEntry(frame.getTask().getIsa());
+	    this.type = typeEntry.getType(variableDie);
 	}
 	return type;
     }
@@ -134,7 +134,7 @@ public class Variable {
 
     public Value getValue(DebugInfoFrame frame) {
 	if (!useLocationExpressionFIXME) {
-	    return new DebugInfoEvaluator(frame).get(this);
+	    return new DebugInfoEvaluator(frame).getValue(this);
 	}
 	List ops = variableDie.getFormData(frame.getAdjustedAddress());
 	LocationExpression locationExpression = new LocationExpression(frame, variableDie, ops);

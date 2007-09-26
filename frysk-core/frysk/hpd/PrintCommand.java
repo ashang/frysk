@@ -71,6 +71,7 @@ class PrintCommand
     public void handle(Command cmd) throws ParseException {
         PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
+	boolean dumpTree = false;
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
@@ -104,11 +105,15 @@ class PrintCommand
 		    throw new ParseException("unrecognized format: " + arg,
 					     0);
 	    }
+	    else if (((String)params.get(i)).equals("-dump-tree")) 
+		dumpTree = true;
 	}
 	if (format != null)
 	    sInput = sInput.substring(0,sInput.indexOf("-format"));
 	else
 	    format = Format.NATURAL;
+	if (dumpTree == true)
+	    sInput = sInput.substring(0,sInput.indexOf("-dump-tree"));
 
 	if (sInput.length() == 0) {
 	    cli.printUsage(cmd);
@@ -138,7 +143,7 @@ class PrintCommand
             }
             doWithoutTask = false;
             try {
-                result = cli.parseValue(task, sInput);	  
+                result = cli.parseValue(task, sInput, dumpTree);	  
             }
             catch (NameNotFoundException nnfe) {
                 continue;

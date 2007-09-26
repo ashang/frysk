@@ -42,8 +42,10 @@ import antlr.CommonAST;
 import frysk.dwfl.DwflCache;
 import frysk.expr.CExprLexer;
 import frysk.expr.CExprParser;
-import frysk.expr.CppSymTab;
+import frysk.expr.ExprAST;
+import frysk.expr.ExprSymTab;
 import frysk.expr.CExprEvaluator;
+import frysk.expr.CExprAnnotator;
 import frysk.proc.Proc;
 import frysk.value.Type;
 import frysk.value.Value;
@@ -53,13 +55,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.naming.NameNotFoundException;
-import lib.dwfl.DwAt;
-import lib.dwfl.DwTag;
 import lib.dwfl.Dwarf;
 import lib.dwfl.DwarfCommand;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.DwarfException;
 import lib.dwfl.Dwfl;
+import lib.dwfl.DwTag;
+import lib.dwfl.DwAt;
 import lib.dwfl.DwflDieBias;
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
@@ -67,20 +69,12 @@ import lib.dwfl.ElfCommand;
 public class DebugInfo {
     private Elf elf;
     private Dwarf dwarf;
-    // FIXME: This is only used by getType() and for that call it
-    // really should not be needed; unfortunatly getType() uses
-    // DebugInfoEvaluator.getType and that requires a frame.  Just the
-    // [default] byte-order should be required.
-    private final DebugInfoFrame frameFIXME;
-  
-    TypeEntry typeEntry;
 
     /**
      * Create a symbol table object.  There should be one SymTab per process.
      * @param frame
      */
     public DebugInfo (DebugInfoFrame frame) {
-	this.frameFIXME = frame;
 	Proc proc = frame.getTask().getProc();
 	try {
 	    elf = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
@@ -89,7 +83,6 @@ public class DebugInfo {
 	catch (lib.dwfl.ElfException ignore) {
 	    // FIXME: Why is this ignored?
 	}
-	typeEntry = new TypeEntry();
     }
 
 
@@ -114,6 +107,7 @@ public class DebugInfo {
 	sInput += (char)3;
 	CExprLexer lexer = new CExprLexer(new StringReader(sInput));
 	CExprParser parser = new CExprParser(lexer);
+	parser.setASTNodeClass("frysk.expr.ExprAST");
 	try {
 	    parser.start();
 	} catch (antlr.RecognitionException ignore) {
@@ -165,6 +159,7 @@ public class DebugInfo {
 	long pc = frame.getAdjustedAddress();
 	Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
 	DwflDieBias bias = dwfl.getDie(pc);
+	TypeEntry typeEntry = new TypeEntry(frame.getTask().getIsa());
 	if (bias == null)
 	    throw new NameNotFoundException("No symbol table is available.");
 	DwarfDie die = bias.die;
@@ -180,13 +175,13 @@ public class DebugInfo {
 		result.append("extern ");
 	    switch (varDie.getTag()) {
             case DwTag.SUBPROGRAM_: {
-		Value value = typeEntry.getSubprogramValue(frame, varDie);
+		Value value = typeEntry.getSubprogramValue(varDie);
 		result.append(value.getType().toPrint());
 		break;
             }
             case DwTag.TYPEDEF_:
             case DwTag.STRUCTURE_TYPE_: {
-		Type type = typeEntry.getType(frame, varDie.getType());
+		Type type = typeEntry.getType(varDie.getType());
 		result.append(type.toPrint());
 		break;
             }
@@ -194,7 +189,7 @@ public class DebugInfo {
 		result.append(varDie + " " + varDie.getName());
 	    }
         } else {
-	    Type type = typeEntry.getType(frame, varDie.getType());
+	    Type type = typeEntry.getType(varDie.getType());
 	    if (varDie.getAttrBoolean(DwAt.EXTERNAL_))
 		result.append("extern ");
 
@@ -219,13 +214,19 @@ public class DebugInfo {
      * @return Variable
      * @throws ParseException
      */
-      public Value print (String sInput, DebugInfoFrame frame) throws ParseException,
-					      NameNotFoundException {
+      public Value print (String sInput, DebugInfoFrame frame) 
+      throws ParseException, NameNotFoundException {
+	  return print (sInput, frame, false);
+      }
+    
+      public Value print (String sInput, DebugInfoFrame frame, boolean dumpTree) 
+      throws ParseException, NameNotFoundException {
 	Value result = null;
 	sInput += (char) 3;
     
 	CExprLexer lexer = new CExprLexer(new StringReader(sInput));
 	CExprParser parser = new CExprParser(lexer);
+	parser.setASTNodeClass("frysk.expr.ExprAST");
 	try {
 	    parser.start();
 	} catch (antlr.RecognitionException r) {
@@ -236,8 +237,11 @@ public class DebugInfo {
 	    // FIXME: Why is this ignored?
 	}
     
-	CommonAST t = (CommonAST) parser.getAST();
+	ExprAST exprAST = (ExprAST) parser.getAST();
+	if (dumpTree)
+	    System.out.println("parse tree: " + exprAST.toStringTree());
 	CExprEvaluator cExprEvaluator;
+	CExprAnnotator cExprAnnotator;
 	/*
 	 * If this request has come from the SourceWindow, there's no way to
 	 * know which thread the mouse request came from; if there are multiple
@@ -245,9 +249,13 @@ public class DebugInfo {
 	 * all of the threads have to be checked. If there's only one thread;
 	 * than this loop will run only once anyways.
 	 */
-	cExprEvaluator = new CExprEvaluator(4, new DebugInfoEvaluator(frame));
+	DebugInfoEvaluator debugInfoEvaluator = new DebugInfoEvaluator(frame);
+	cExprAnnotator = new CExprAnnotator(frame, debugInfoEvaluator);
+	cExprEvaluator = new CExprEvaluator(4, debugInfoEvaluator);
 	try {
-	    result = cExprEvaluator.expr(t);
+	    cExprAnnotator.setASTNodeClass("frysk.expr.ExprAST");
+	    cExprAnnotator.expr(exprAST);
+	    result = cExprEvaluator.expr(exprAST);
 	} catch (ArithmeticException ae) {
 	    ae.printStackTrace();
 	    throw ae;
@@ -262,31 +270,35 @@ public class DebugInfo {
 	return result;
     }
    
-    static public Value printNoSymbolTable (String sInput) throws ParseException,
-								  NameNotFoundException {
+    static public Value printNoSymbolTable (String sInput, boolean dump_tree) 
+    throws ParseException, NameNotFoundException {
 	Value result = null;
 	sInput += (char) 3;
     
 	final class TmpSymTab
-	    implements CppSymTab {
-	  public Value get (String s) throws NameNotFoundException {
+	    implements ExprSymTab {
+	  public Value getValue (String s) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");
 	    }
 
-	  public Value get (ArrayList v) throws NameNotFoundException {
+	  public Value getValue (ArrayList v) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");
 	    }
       
-	public Value getAddress (String s) throws NameNotFoundException {
+	  public Value getAddress (String s) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");
 	    }
 	  public Value getMemory (String s) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");        
 	    }
+	  public Variable getVariable (String s)throws NameNotFoundException {
+	        throw new NameNotFoundException("No symbol table is available.");
+	  } 
       	}
     
 	CExprLexer lexer = new CExprLexer(new StringReader(sInput));
 	CExprParser parser = new CExprParser(lexer);
+	parser.setASTNodeClass("frysk.expr.ExprAST");
 	try {
 	    parser.start();
 	} catch (antlr.RecognitionException r) {
@@ -298,6 +310,9 @@ public class DebugInfo {
 	}
     
 	CommonAST t = (CommonAST) parser.getAST();
+	if (dump_tree)
+	    // Print the resulting tree out in LISP notation
+	    System.out.println("parse tree: " + t.toStringTree());
 	CExprEvaluator cExprEvaluator;
 	TmpSymTab tmpSymTab = new TmpSymTab();
 	cExprEvaluator = new CExprEvaluator(4, tmpSymTab);
@@ -317,10 +332,4 @@ public class DebugInfo {
       
 	return result;
     }
-   
-    public Type getType (DwarfDie die) {
-	// FIXME: This has ZERO to do with frames and CppSymTab (nee
-	// DebugInfoEvaluator).
-        return typeEntry.getType(frameFIXME, die);
-    } 
 }

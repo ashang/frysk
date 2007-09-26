@@ -1,3 +1,8 @@
+2007-09-25  Stan Cox  <scox@redhat.com>
+
+	* PrintCommand.java (handle): Add -dump-tree option.
+	* CLI.java (parseValue): Add dumpTree parameter.
+
 2007-09-25  Teresa Thomas  <tthomas@redhat.com>
 
 	* PtypeCommand.java: New file.

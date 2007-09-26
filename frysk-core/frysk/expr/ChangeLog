@@ -1,3 +1,11 @@
+2007-09-25  Stan Cox  <scox@redhat.com>
+
+	* ExprSymTab.java: Rename from CppSymTab.java.
+	* ExprAST.java: New.
+	* CExprAnnotator.g: New.
+	* CExpr.g: Use ExprAST.java.
+	* CExprEvaluator.g: Likewise.
+
 2007-09-24  Andrew Cagney  <cagney@redhat.com>
 
 	* CppParser.sed: Delete.

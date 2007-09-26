@@ -89,6 +89,18 @@ prob ~ /The local variable .* is never read/ {
 	sed = sed_comment(code)
     } else if (code ~ /^AST [_[:alnum:]]*_AST_in = \(_t == ASTNULL) \? null : \(AST)_t;/) {
 	sed = sed_comment(code)
+    } else if (code ~ /^ExprAST [_[:alnum:]]*_AST_in = null;/) {
+	sed = sed_comment(code)
+    } else if (code ~ /^ExprAST [_[:alnum:]]*_AST = null;/) {
+	sed = sed_comment(code)
+    } else if (code ~ /^ExprAST [_[:alnum:]]*_AST = .ExprAST.*null;/) {
+	sed = sed_comment(code)
+    } else if (code ~ /^ExprAST [_[:alnum:]]*_AST_in = .ExprAST._t;/) {
+	sed = sed_comment(code)
+    } else if (code ~ /^ExprAST [_[:alnum:]]*_AST_in = \(_t == ASTNULL) \? null : .ExprAST._t;/) {
+	sed = sed_comment(code)
+    } else if (code ~ /Token *[_[:alnum:]]* = null;/) {
+	sed = sed_comment(code)
     } else if (code ~ /Token _token = null;/) {
 	sed = sed_comment(code)
     } else if (code ~ /Token theRetToken=null;/) {
@@ -98,8 +110,12 @@ prob ~ /The local variable .* is never read/ {
 
 prob ~ /.* cannot be resolved/ {
     if (code ~ /[_[:alnum:]]*_AST = /) {
-	sed = "s,\\([a-zA-Z0-9]*_AST =\\),/* \\1 */,"
+	sed = "s,^,//,"
+    } else if (code ~ /[_[:alnum:]]*_AST_in = /) {
+	sed = "s,^,//,"
     } else if (code ~ /theRetToken=_returnToken;/) {
+	sed = sed_comment(code);
+    } else if (code ~ /colon = LT.*;/) {
 	sed = sed_comment(code);
     }
 }

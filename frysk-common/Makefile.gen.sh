@@ -652,8 +652,8 @@ do
   b=`basename $g .g`
   echo "CLEANFILES += $d/$b.antlered"
   echo "CLEANDIRS += $d/$b.tmp"
-  IMPORTVOCAB=$(awk -F = '/importVocab/ {gsub("Parser;",".antlered",$2);print $2}' $g)
-  echo "$d/$b.antlered: $g ${IMPORTVOCAB:+$d/${IMPORTVOCAB}}"
+  IMPORTVOCAB=$(awk -v DIR=$d -F = '/importVocab/ {gsub("Parser;",".antlered",$2);printf "%s/%s ",DIR,$2}' $g)
+  echo "$d/$b.antlered: $g ${IMPORTVOCAB}"
   (
       awk '/class/ { print $2 }' $g
       awk '/class .* extends .*Parser/ { print $2"TokenTypes" }' $g

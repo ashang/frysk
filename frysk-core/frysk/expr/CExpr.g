@@ -79,18 +79,6 @@ header
 // version and license this file solely under the GPL without
 // exception.
     package frysk.expr;
-
-    import java.util.ArrayList;
-    import frysk.value.ArithmeticType;
-    import frysk.value.SignedType;
-    import frysk.value.UnsignedType;
-    import frysk.value.FloatingPointType;
-    import frysk.value.Value;
-    import javax.naming.NameNotFoundException;
-    import frysk.value.InvalidOperatorException;
-    import frysk.value.OperationNotDefinedException;
-    import inua.eio.ByteOrder;
-    import lib.dwfl.BaseTypes;
 }
 
 class CExprParser extends Parser;
@@ -98,6 +86,7 @@ class CExprParser extends Parser;
 options {
     defaultErrorHandler=false;
     buildAST=true;
+    ASTLabelType = "ExprAST";
     k=2;
 }
 
@@ -379,7 +368,7 @@ primary_expression throws TabException
 
 primary_identifier! throws TabException 
 {
-    AST astPostExpr = null, astDotExpr = null;
+    ExprAST astPostExpr = null, astDotExpr = null;
 } 
     :   (   prim_expr: id_expression
             {
@@ -394,7 +383,7 @@ primary_identifier! throws TabException
                 // a[b][c] => (Array Reference a (Subscript b-lbound)
                 //            (Subscript b-hbound) (Subscript c-lbound)...)
                 {
-                  AST sub = null;
+                  ExprAST sub = null;
 		 		  if (astPostExpr.getFirstChild() != null) {
 		      	    #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
                     astPostExpr.addChild(#sub);
@@ -420,7 +409,7 @@ primary_identifier! throws TabException
 // 	        | AT at_expr:expression
 //                 // a@N => (Array Reference a (Subscript N) (Subscript N))
 //                 {
-// 			      AST sub = null;
+// 			      ExprAST sub = null;
 // 		      	  #sub = #(#[SUBSCRIPT,"Subscript"], #[DECIMALINT,"0"]);
 //                   #astPostExpr = #(#[REFERENCE,"Array Reference"], #astPostExpr, #sub);
 //                   // allow for 0 origin lower bound

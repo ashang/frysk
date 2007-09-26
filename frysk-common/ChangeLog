@@ -1,3 +1,8 @@
+2007-09-25  Stan Cox  <scox@redhat.com>
+
+	* antlr-warnings.awk: Handle ExprAST warnings.
+	* Makefile.gen.sh (.g): Tweak conditional dependency handling.
+
 2007-09-24  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (.g): Remove conditional dependency of generated
