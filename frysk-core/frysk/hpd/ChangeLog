@@ -1,3 +1,8 @@
+2007-09-26  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestPtypeCommand.java (testPtype): Renamed.
+	(testPtypeFails): Renamed.
+
 2007-09-25  Stan Cox  <scox@redhat.com>
 
 	* PrintCommand.java (handle): Add -dump-tree option.

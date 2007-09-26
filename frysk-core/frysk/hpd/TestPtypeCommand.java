@@ -43,19 +43,18 @@ package frysk.hpd;
  * Test the functionality of the ptype command.
  *
  * The intent here is not to test underlying code such as the type
- * parser or the formatter; that is the responsibility of underlying
- * tests.
+ * parser; that is the responsibility of underlying tests.
  */
 
 public class TestPtypeCommand
     extends TestLib
 {
-    public void testType() {
+    public void testPtype() {
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("ptype 2+2", "long\r\n");
     }
 
-    public void testTypeFails() {
+    public void testPtypeFails() {
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("ptype bogus", "Error: Symbol \"bogus\" is not found " +
 				  "in the current context.\r\n");

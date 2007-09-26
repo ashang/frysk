@@ -17,6 +17,10 @@
 	(print): Allow dumping of the expression tree.  Run the CExprAnnotator.
 	(printNoSymbolTable): Likewise.
 
+2007-09-25  Teresa Thomas  <tthomas@redhat.com>
+
+	* Variable.java (useLocationExpressionFIXME): Enable Location Expression.
+
 2007-09-24  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfoEvaluator.java (get(String)): Remove redundant call to
