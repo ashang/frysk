@@ -1,3 +1,8 @@
+2007-09-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* cni/DwarfDie.cxx (DwarfDie::get_decl_line): now uses
+ 	dwarf_attr_integrate when get_decl_line fails.
+
 2007-09-25  Sami Wagiaalla  <swagiaal@redhat.com>
 	
 	* cni/DwarfDie.cxx (DwarfDie::hasattr): New function.

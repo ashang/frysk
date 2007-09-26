@@ -106,8 +106,17 @@ lib::dwfl::DwarfDie::get_decl_line(jlong var_die)
 {
   Dwarf_Die *die = (Dwarf_Die*) var_die;
   int lineno;
-  if (dwarf_decl_line (die, &lineno) != 0)
-    lib::dwfl::DwException::throwDwException();
+  if (dwarf_decl_line (die, &lineno) != 0){
+    Dwarf_Attribute type_attr;
+    Dwarf_Word constant;
+    if (dwarf_attr_integrate (die, DW_AT_decl_line, &type_attr)){
+      dwarf_formudata (&type_attr, &constant);
+      return constant;
+    }else{
+      lib::dwfl::DwException::throwDwException();
+    }
+  }
+
   return lineno;
 }
 
