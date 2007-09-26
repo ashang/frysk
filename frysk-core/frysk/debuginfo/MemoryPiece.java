@@ -39,6 +39,8 @@
 
 package frysk.debuginfo;
 
+import java.io.PrintWriter;
+
 import inua.eio.ByteBuffer;
 
 /**
@@ -99,6 +101,15 @@ public class MemoryPiece
     public ByteBuffer getByteBuf()
     {
 	return byteBuf;
+    }
+    
+    protected void toPrint(PrintWriter writer)
+    {
+	writer.print("Address 0x");
+	writer.print(Long.toHexString(memory));
+	writer.print(" - ");
+	writer.print(size);
+	writer.print(" byte(s)");
     }
     
     public boolean equals (Object p)

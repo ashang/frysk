@@ -39,6 +39,8 @@
 
 package frysk.value;
 
+import java.io.PrintWriter;
+
 import inua.eio.ByteBuffer;
 
 /**
@@ -64,6 +66,12 @@ public class ByteBufferLocation
 		+ super.toString()
 		+ ",buffer=" + buffer
 		+ "}");
+    }
+    
+    public void toPrint(PrintWriter writer)
+    {	
+	//XXX: Change implementation as required. 
+	writer.print(toString());
     }
 
     /**

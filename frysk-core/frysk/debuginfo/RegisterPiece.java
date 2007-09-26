@@ -43,6 +43,7 @@ import frysk.stack.Register;
 import frysk.stack.RegisterMap;
 import frysk.stack.Frame;
 
+import java.io.PrintWriter;
 import java.math.BigInteger;
 
 public class RegisterPiece 
@@ -99,7 +100,7 @@ public class RegisterPiece
 	// adjust offset accordingly.
 	long offAdjust = size-offset-1;
 	
-	// Get bytes from offset going to length to slice
+	// Write bytes from offset going to length to slice
 	int iSlice = (int)length;
 	for (int i=(int)offAdjust; i>=size-length; i--)
 	    slice[--iSlice] = regBytes[i];
@@ -116,6 +117,15 @@ public class RegisterPiece
 	return ( this.size == ((RegisterPiece)p).size 
 		&& register.equals(((RegisterPiece)p).register) );
     }	
+    
+    protected void toPrint(PrintWriter writer)
+    {
+	writer.print("Register ");
+	writer.print(register.name);
+	writer.print(" - ");
+	writer.print(size);
+	writer.print(" byte(s)");
+    }
     
     private byte[] getRegValue (Register register, Frame frame)
     {

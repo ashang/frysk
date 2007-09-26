@@ -1,3 +1,11 @@
+2007-09-26  Teresa Thomas  <tthomas@redhat.com>
+
+	* UnavailablePiece.java (toPrint): New.
+	* RegisterPiece.java (toPrint): New.
+	* PieceLocation.java (toPrint): New.
+	* MemoryPiece.java (toPrint): New.
+	* Piece.java (toPrint): New.
+
 2007-09-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestDie.java (testGetLine): New test.

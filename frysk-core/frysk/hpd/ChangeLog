@@ -1,5 +1,9 @@
 2007-09-26  Teresa Thomas  <tthomas@redhat.com>
 
+	* TestPlocationCommand.java: New file.
+	* PlocationCommand.java: New file.
+	* CLI.java (CLI): PlocationCommand added.
+	
 	* TestPtypeCommand.java (testPtype): Renamed.
 	(testPtypeFails): Renamed.
 

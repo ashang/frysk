@@ -39,6 +39,8 @@
 
 package frysk.value;
 
+import java.io.PrintWriter;
+
 import inua.eio.ByteOrder;
 
 /**
@@ -171,4 +173,9 @@ public abstract class Location
      * BigIneger) as a value's size could be bigger than 32-bits.
      */
     protected abstract long length();
+    
+    /**
+     * Print this Location.
+     */
+    public abstract void toPrint(PrintWriter writer);
 }

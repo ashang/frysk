@@ -304,6 +304,7 @@ public class CLI {
         new StepNextCommand(this);
         new StepNextiCommand(this);
         new PrintCommand(this);
+        new PlocationCommand(this);
         new PtypeCommand(this);
         new QuitCommand(this, "quit");
         new QuitCommand(this, "exit");

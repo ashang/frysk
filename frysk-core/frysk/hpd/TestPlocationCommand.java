@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,47 +37,32 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.debuginfo;
+package frysk.hpd;
 
-import java.io.PrintWriter;
-
+import frysk.Config;
+import frysk.expunit.Expect;
 
 /**
- *  Class to represent an unavailable piece of memory
+ * Test the functionality of the plocation command.
+ *
+ * The intent here is not to test underlying code such as the Location 
+ * evaluator; that is the responsibility of underlying tests.
  */
-public class UnavailablePiece
-	extends Piece
+
+public class TestPlocationCommand
+    extends TestLib
 {
-    public UnavailablePiece (long size)
-    {
-	super (size);
+    public void testPlocation() {
+	child = new Expect(Config.getPkgLibFile("hpd-c"));
+	e = new HpdTestbed(child.getPid());
+	e.sendCommandExpectPrompt("plocation static_char", 
+				  "\r\nAddress 0x[0-9a-f]+ - [0-9]+ byte\\(s\\).*");
     }
     
-    public boolean equals(Object p)
-    {
-	return (this.size == ((UnavailablePiece)p).size);
-    }
-    
-    protected Piece slice (long offset, long length)
-    {
-	return new UnavailablePiece(length);
-    }
-    
-    protected void putByte(long index, byte value) 
-    {
-	throw new RuntimeException();
-    }
-       
-    protected byte getByte(long index) 
-    {
-	throw new RuntimeException();
-    }
-    
-    protected void toPrint(PrintWriter writer)
-    {
-	writer.print("Unavailable");
-	writer.print(" - ");
-	writer.print(size);
-	writer.print(" byte(s)");
+    public void testPlocationFails() {
+	child = new Expect(Config.getPkgLibFile("hpd-c"));
+	e = new HpdTestbed(child.getPid());
+	e.sendCommandExpectPrompt("plocation bogus\n", 
+		                  "\r\nError: Symbol \"bogus\" is not found in the current context..*");
     }
 }

@@ -39,6 +39,8 @@
 
 package frysk.debuginfo;
 
+import java.io.PrintWriter;
+
 public abstract class Piece
 {
     protected long size; 	      // in bytes
@@ -71,6 +73,8 @@ public abstract class Piece
     abstract protected byte getByte(long index);
     
     abstract protected void putByte(long index, byte value);
+    
+    abstract protected void toPrint(PrintWriter writer);
     
     /**
      * Function that checks if the contents of two pieces are equal.

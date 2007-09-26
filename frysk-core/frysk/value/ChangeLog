@@ -1,3 +1,8 @@
+2007-09-26  Teresa Thomas  <tthomas@redhat.com>
+
+	* ByteBufferLocation.java (toPrint): New.
+	* Location.java (toPrint): New.
+
 2007-09-21  Andrew Cagney  <cagney@redhat.com>
 
 	* CharType.java (createValue(BigInteger)): Delete.

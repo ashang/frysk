@@ -41,6 +41,7 @@ package frysk.debuginfo;
 
 import frysk.value.Location;
 
+import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
@@ -58,6 +59,21 @@ extends Location
     public List getPieces()
     {
 	return pieces;
+    }
+    
+    public void toPrint(PrintWriter writer)
+    {
+	int i = 0;
+	for (Iterator it = pieces.iterator(); it.hasNext(); )
+	{
+	    Piece o = (Piece)it.next();
+	    
+	    // Show piece index only in case of memory split.
+	    if (pieces.size() > 1)
+		writer.print("Piece "+ i++ + ": ");
+	    
+	    o.toPrint(writer);
+	}
     }
 
     /**
