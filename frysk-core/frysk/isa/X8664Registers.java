@@ -41,7 +41,7 @@ package frysk.isa;
 
 import frysk.value.StandardTypes;
 
-public class X8664Registers {
+public class X8664Registers extends Registers {
 
     public static final Register RAX = new Register("rax", StandardTypes.longLittleEndianType);
 
@@ -77,22 +77,27 @@ public class X8664Registers {
 
     public static final Register RIP = new Register("rip", StandardTypes.longLittleEndianType);
 
-    /* frame info (read-only) */
-    public static final Register CFA = new Register("cfa", StandardTypes.longLittleEndianType);
-
     public static final RegisterGroup GENERAL = new RegisterGroup("general",
 	    new Register[] { RAX, RDX, RCX, RBX, RSI, RDI, RBP, RSP, R8, R9,
 		    R10, R11, R12, R13, R14, R15, RIP });
 
     public static final RegisterGroup ALL;
     static {
-	Register[] allRegs = new Register[GENERAL.registers.length + 1 /* cfa */];
+	Register[] allRegs = new Register[GENERAL.registers.length];
 	System.arraycopy(GENERAL.registers, 0, allRegs, 0,
 		GENERAL.registers.length);
-
-	allRegs[allRegs.length - 1] = CFA;
-
 	ALL = new RegisterGroup("all", allRegs);
     }
 
+    protected X8664Registers() {
+	super(new RegisterGroup[] { GENERAL, ALL });
+    }
+
+    public Register getProgramCounter() {
+	return RIP;
+    }
+
+    public Register getStackPointer() {
+	return RSP;
+    }
 }

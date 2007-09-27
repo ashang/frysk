@@ -100,11 +100,7 @@ public class LibunwindRegisterMapFactory {
 	.add(IA32Registers.CS, new Integer(UnwindRegistersX86.CS_))
 	.add(IA32Registers.TSS, new Integer(UnwindRegistersX86.TSS_))
 	.add(IA32Registers.LDT, new Integer(UnwindRegistersX86.LDT_))
-    // frame info
-	.add(IA32Registers.CFA, new Integer(UnwindRegistersX86.CFA_));
-	
-    
-
+	;
 
     static final RegisterMap X8664 = new RegisterMap() 
 	.add(X8664Registers.RAX, new Integer(UnwindRegistersX8664.RAX_))
@@ -124,5 +120,5 @@ public class LibunwindRegisterMapFactory {
 	.add(X8664Registers.R14, new Integer(UnwindRegistersX8664.R14_))
 	.add(X8664Registers.R15, new Integer(UnwindRegistersX8664.R15_))
 	.add(X8664Registers.RIP, new Integer(UnwindRegistersX8664.RIP_))
-	.add(X8664Registers.CFA, new Integer(UnwindRegistersX8664.CFA_));
+	;
 }

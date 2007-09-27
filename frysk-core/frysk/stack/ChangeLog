@@ -1,5 +1,8 @@
 2007-09-27  Andrew Cagney  <cagney@redhat.com>
 
+	* LibunwindRegisterMapFactory.java (IA32): Delete definition of CFA.
+	(X8664): Ditto.
+	
  	* Register.java: Move to frysk.isa.Registers
 	* IA32Registers.java: Move to frysk.isa.IA32Registers.
 	* RegisterFactory.java: Move to frysk.isa.RegisterFactory.

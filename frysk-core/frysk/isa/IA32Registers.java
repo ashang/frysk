@@ -41,7 +41,7 @@ package frysk.isa;
 
 import frysk.value.StandardTypes;
 
-public class IA32Registers {
+public class IA32Registers extends Registers {
 
     public final static Register EAX = new Register("eax", StandardTypes.intLittleEndianType);
 
@@ -137,9 +137,6 @@ public class IA32Registers {
 
     public final static Register LDT = new Register("ldt", StandardTypes.intLittleEndianType);
 
-    /* frame info (read-only) */
-    public final static Register CFA = new Register("cfa", StandardTypes.intLittleEndianType);
-
     public final static RegisterGroup GENERAL = new RegisterGroup("general",
 	    new Register[] { EAX, EBX, ECX, EDX, ESI, EDI, EBP, EIP, EFLAGS,
 		    ESP});
@@ -159,7 +156,7 @@ public class IA32Registers {
     static {
 	Register[] allRegs = new Register[GENERAL.registers.length
 		+ MMX.registers.length + SSE.registers.length
-		+ SEGMENT.registers.length + 1 /* cfa */];
+		+ SEGMENT.registers.length];
 
 	int count = 0;
 	System.arraycopy(GENERAL.registers, 0, allRegs, count,
@@ -176,8 +173,20 @@ public class IA32Registers {
 	System.arraycopy(SEGMENT.registers, 0, allRegs, count,
 		SEGMENT.registers.length);
 
-	allRegs[allRegs.length - 1] = CFA;
 	ALL = new RegisterGroup("all", allRegs);
     }
 
+    IA32Registers() {
+	super (new RegisterGroup[] {
+		   GENERAL, MMX, SSE, SEGMENT, ALL
+	       });
+    }
+
+    public Register getProgramCounter() {
+	return EIP;
+    }
+
+    public Register getStackPointer() {
+	return ESP;
+    }
 }

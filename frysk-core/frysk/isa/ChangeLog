@@ -1,5 +1,11 @@
 2007-09-27  Andrew Cagney  <cagney@redhat.com>
 
+	* Registers.java: New.
+	* TestRegisters.java: New.
+	* X8664Registers.java: Extend Registers.
+	(CFA): Delete.
+	* IA32Registers.java: Ditto.
+
 	* package.html: New.
  	* Register.java: Move from frysk.stack.Registers
 	* IA32Registers.java: Move from frysk.stack.IA32Registers.
