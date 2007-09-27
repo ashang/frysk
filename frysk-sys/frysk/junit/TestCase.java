@@ -205,4 +205,26 @@ public class TestCase
 				    BigInteger test) {
 	assertEquals(what, BigInteger.valueOf(correct), test);
     }
+
+    /**
+     * The two String arrays are equal.
+     */
+    public static void assertEquals(String what, String[] correct,
+				    String[] test) {
+	if (correct == null || test == null) {
+	    assertEquals(what, (Object)correct, (Object)test);
+	    return;
+	}
+	assertEquals(what + " (String[].length)",
+		     correct.length, test.length);
+	for (int i = 0; i < correct.length; i++) {
+	    if (correct[i] == null || test[i] == null) {
+		assertEquals(what + " (String[" + i + "])",
+			     (Object)(correct[i]), (Object)(test[i]));
+	    } else {
+		assertEquals(what + " (String[" + i + "])",
+			     correct[i], test[i]);
+	    }
+	}
+    }
 }

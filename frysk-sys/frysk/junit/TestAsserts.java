@@ -131,4 +131,48 @@ public class TestAsserts
 	// Test the plumming.
 	assertEquals("one", 1, BigInteger.valueOf(1));
     }
+
+    public void testStringArrayNull() {
+	assertEquals("String array", (String[])null, (String[])null);
+    }
+    public void testStringArrayLeftNull() {
+	AssertionFailedError e = null;
+	try {
+	    assertEquals("String array", (String[])null, new String[0]);
+	} catch (AssertionFailedError a) {
+	    e = a;
+	}
+	assertNotNull("exception", e);
+    }
+    public void testStringArrayRightNull() {
+	AssertionFailedError e = null;
+	try {
+	    assertEquals("String array", new String[0], (String[])null);
+	} catch (AssertionFailedError a) {
+	    e = a;
+	}
+	assertNotNull("exception", e);
+    }
+    public void testStringArrayDifferentLength() {
+	AssertionFailedError e = null;
+	try {
+	    assertEquals("String array", new String[0], new String[1]);
+	} catch (AssertionFailedError a) {
+	    e = a;
+	}
+	assertNotNull("exception", e);
+    }
+    public void testStringArrayDifferentContent() {
+	AssertionFailedError e = null;
+	try {
+	    assertEquals("String array", new String[] { "1" }, new String[] { "2" });
+	} catch (AssertionFailedError a) {
+	    e = a;
+	}
+	assertNotNull("exception", e);
+    }
+    public void testStringArrayEquals() {
+	assertEquals("empty String array", new String[0], new String[0]);
+	assertEquals("full String array", new String[] { "1" }, new String[] { "1" });
+    }
 }
