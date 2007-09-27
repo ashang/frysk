@@ -1,3 +1,9 @@
+2007-09-27  Teresa Thomas  <tthomas@redhat.com>
+
+	* DebugInfoEvaluator.java (getValue): Updated; deleted disabled code.
+	* Variable.java (useLocationExpressionFIXME): Removed. 
+	(getValue): Updated; deleted disabled code.
+
 2007-09-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestCppVariableSearchEngine.java

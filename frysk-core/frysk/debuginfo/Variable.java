@@ -129,13 +129,8 @@ public class Variable {
 	//	  printWriter.print("< error >");
 	//      }
     }
-  
-    static boolean useLocationExpressionFIXME = true;
 
     public Value getValue(DebugInfoFrame frame) {
-	if (!useLocationExpressionFIXME) {
-	    return new DebugInfoEvaluator(frame).getValue(this);
-	}
 	List ops = variableDie.getFormData(frame.getAdjustedAddress());
 	LocationExpression locationExpression = new LocationExpression(frame, variableDie, ops);
 	PieceLocation pieceLocation = new PieceLocation(locationExpression.decode(this.getType(frame).getSize()));
