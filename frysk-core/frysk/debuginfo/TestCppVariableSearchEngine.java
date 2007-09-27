@@ -104,6 +104,16 @@ public class TestCppVariableSearchEngine extends TestLib{
 	verifyVariable(variableName, variableToken, fileName, execPath, srcPath);
     }
     
+    public void testFindFirstScopesNamespace(){
+	String variableName = "first"; 
+	String variableToken = variableName; 
+	String fileName = "funit-cpp-scopes-namespace";
+	String execPath = getExecPath(fileName);
+	String srcPath = Config.getPkgLibSrcDir() + fileName + ".cxx";
+	
+	verifyVariable(variableName, variableToken, fileName, execPath, srcPath);
+    }
+    
     public void testFindTwoScopesEnum(){
 	String variableName = "two"; 
 	String fileName = "funit-c-scopes-enum";
