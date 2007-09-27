@@ -39,6 +39,7 @@
 
 package frysk.stack;
 
+import frysk.isa.Register;
 import frysk.proc.BankRegister;
 import lib.unwind.Unwind;
 import lib.unwind.UnwindX8664;
@@ -62,10 +63,14 @@ import lib.unwind.Cursor;
 import lib.unwind.ElfImage;
 import lib.unwind.ProcInfo;
 import lib.unwind.ProcName;
+import frysk.isa.RegisterMap;
 
 class LibunwindAddressSpace extends AddressSpace {
+
     private static final Logger logger = Logger.getLogger("frysk");
     private final Task task;
+    private final Isa isa;
+    private final RegisterMap registerMap;
 
     // procInfo is a wrapper for a RawDataManaged object, keep a reference
     // to it for as long as needed.
@@ -85,6 +90,8 @@ class LibunwindAddressSpace extends AddressSpace {
 	      // FIXME: Do something useful with the byteOrder!
 	      lib.unwind.ByteOrder.DEFAULT);
 	this.task = task;
+	this.isa = task.getIsa();
+	this.registerMap = LibunwindRegisterMapFactory.getRegisterMap(isa);
     }
 
     public int accessMem (long addr, byte[] valp, boolean write) {
@@ -104,16 +111,15 @@ class LibunwindAddressSpace extends AddressSpace {
     }
 
     private BankRegister getProcRegister(int regnum) {
-	Isa isa = task.getIsa();
-	String regName = isa.getRegisterNameByUnwindRegnum(regnum);
-	if (regName == null)
+	Register reg = registerMap.getRegister(regnum);
+	if (reg == null)
 	    throw new RuntimeException("unknown libunwind register: "
 				       + regnum);
-	BankRegister reg = isa.getRegisterByName(regName);
-	if (reg == null)
+	BankRegister bankReg = isa.getRegisterByName(reg.name);
+	if (bankReg == null)
 	    throw new RuntimeException("unknown proc register: "
-				       + regName);
-	return reg;
+				       + reg.name);
+	return bankReg;
     }
 
     public long getReg(int regnum) {

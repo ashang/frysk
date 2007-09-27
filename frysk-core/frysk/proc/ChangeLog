@@ -1,5 +1,10 @@
 2007-09-27  Andrew Cagney  <cagney@redhat.com>
 
+	* Isa.java (getRegisterNameByUnwindRegnum): Delete.
+	* IsaIA32.java (getRegisterNameByUnwindRegnum): Ditto.
+	* IsaPowerPC.java (getRegisterNameByUnwindRegnum): Ditto.
+	* IsaX8664.java (getRegisterNameByUnwindRegnum): Ditto.
+
 	* BankRegister.java: Rename Register.java.
 	* FPRegister.java: Update.
 	* IsaIA32.java: Update.

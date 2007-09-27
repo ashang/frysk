@@ -45,13 +45,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import inua.eio.ByteOrder;
-import lib.unwind.RegisterX86;
 import inua.eio.ByteBuffer;
 import frysk.sys.Ptrace.RegisterSet;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.proc.live.RegisterSetByteBuffer;
 import frysk.proc.live.AddressSpaceByteBuffer;
-
 import lib.dwfl.ElfEMachine;
 
 public class IsaIA32 implements Isa
@@ -204,11 +202,6 @@ public class IsaIA32 implements Isa
   public Iterator RegisterIterator()
   {
     return registerMap.values().iterator();
-  }
-
-    public String getRegisterNameByUnwindRegnum(long regnum)
-  {
-    return RegisterX86.getUnwindRegister(regnum);
   }
 
     public BankRegister getRegisterByName(String name)

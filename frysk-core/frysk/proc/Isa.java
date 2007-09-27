@@ -60,8 +60,6 @@ public interface Isa
    */
   Iterator RegisterIterator();
 
-  String getRegisterNameByUnwindRegnum(long regnum);
-
   /**
    * Get a <code>Register</code> object by name.
    *

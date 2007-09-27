@@ -50,10 +50,7 @@ import frysk.sys.Ptrace.RegisterSet;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.proc.live.RegisterSetByteBuffer;
 import frysk.proc.live.AddressSpaceByteBuffer;
-
 import lib.dwfl.ElfEMachine;
-import lib.unwind.RegisterAMD64;
-
 
 public class IsaX8664 implements Isa
 {
@@ -201,11 +198,6 @@ public class IsaX8664 implements Isa
   public Iterator RegisterIterator()
   {
     return registerMap.values().iterator();
-  }
-
-  public String getRegisterNameByUnwindRegnum(long regnum)
-  {
-    return RegisterAMD64.getUnwindRegister(regnum);
   }
 
   public BankRegister getRegisterByName(String name)

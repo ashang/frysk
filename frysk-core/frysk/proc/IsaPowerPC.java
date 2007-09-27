@@ -66,12 +66,6 @@ abstract class IsaPowerPC
     return registerMap.values().iterator();
   }
   
-  public String getRegisterNameByUnwindRegnum(long regnum)
-  {
-    /* FIXME: needs implementation.  */
-    return null;
-  }
-
   public BankRegister getRegisterByName (String name)
   {
     return (BankRegister)registerMap.get(name);
