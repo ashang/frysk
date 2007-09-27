@@ -96,7 +96,6 @@ JARS=`echo ${JARS}`
     -o -name "ChangeLog" -print \
     -o -name "[A-Za-z]*\.h" -print \
     -o -name "[A-Za-z]*\.c" -print \
-    -o -name "[A-Za-z]*\.cpp" -print \
     -o -name "[A-Za-z]*\.java" -print \
     -o -name "[A-Za-z]*\.shjava" -print \
     -o -name "[A-Za-z]*\.javain" -print \
