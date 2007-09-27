@@ -80,7 +80,9 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 
 import frysk.isa.Register;
-import frysk.isa.RegisterFactory;
+import frysk.isa.RegisterGroup;
+import frysk.isa.Registers;
+import frysk.isa.RegistersFactory;
 import frysk.stack.StackFactory;
 import frysk.stepping.TaskStepEngine;
 import frysk.value.ArithmeticType;
@@ -335,25 +337,25 @@ public class RegisterWindow
     this.refreshList();
   }
 
-private void setValues(Task myTask, Isa isa, ListStore model) {
+    private void setValues(Task myTask, Isa isa, ListStore model) {
     
-    Register[] registers = RegisterFactory.getRegisters(isa);
-    
-    for (int i = 0; i < registers.length; i++)
-      {
-        Register register = registers[i];
-        TreeIter iter = model.appendRow();
-
-        model.setValue(iter, registerNameColumn, register.name);
-        model.setValue(iter, registerColumn, register);
-        model.setValue(iter, alignmentColumn, 1.0);
-        model.setValue(iter, typeColumn,
-                       register.type);
-
-        Value value = StackFactory.createFrame(myTask).getRegisterValue(register);
-        saveBinaryValue(value, iter.getPath());
-      }
-}
+	Registers registers = RegistersFactory.getRegisters(isa);
+	RegisterGroup group = registers.getAllRegistersGroup();
+	
+	for (int i = 0; i < group.registers.length; i++) {
+	    Register register = group.registers[i];
+	    TreeIter iter = model.appendRow();
+	    
+	    model.setValue(iter, registerNameColumn, register.name);
+	    model.setValue(iter, registerColumn, register);
+	    model.setValue(iter, alignmentColumn, 1.0);
+	    model.setValue(iter, typeColumn,
+			   register.type);
+	    
+	    Value value = StackFactory.createFrame(myTask).getRegisterValue(register);
+	    saveBinaryValue(value, iter.getPath());
+	}
+    }
   
   public void resetTask (Task task)
   {

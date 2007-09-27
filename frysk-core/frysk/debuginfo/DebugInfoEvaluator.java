@@ -56,7 +56,6 @@ import frysk.expr.ExprSymTab;
 import frysk.proc.Isa;
 import frysk.proc.Task;
 import frysk.isa.Register;
-import frysk.isa.RegisterMap;
 import frysk.value.ArithmeticType;
 import frysk.value.UnknownType;
 import frysk.value.ArrayType;
@@ -64,6 +63,8 @@ import frysk.value.ConfoundedType;
 import frysk.value.StandardTypes;
 import frysk.value.Value;
 import frysk.value.ByteBufferLocation;
+import frysk.isa.Registers;
+import frysk.isa.RegistersFactory;
 
 class DebugInfoEvaluator
     implements ExprSymTab
@@ -297,12 +298,11 @@ class DebugInfoEvaluator
      */
     public Value getValue (String s) throws NameNotFoundException {
 	if (s.charAt(0) == '$') {
-	    // FIXME: This code doesn't need to access the dwarf register
-	    // map; instead just do a direct register lookup.
-	    RegisterMap regMap = DwarfRegisterMapFactory.getRegisterMap(frame.getTask().getIsa());
-	    Register reg = regMap.getRegister(s.substring(1).trim());
+	    Registers regs = RegistersFactory.getRegisters(frame.getTask().getIsa());
+	    String regName = s.substring(1).trim();
+	    Register reg = regs.getRegister(regName);
 	    if (reg == null) {
-		throw new RuntimeException("unknown register " + s);
+		throw new RuntimeException("unknown register: " + regName);
 	    }
 	    List pieces = new LinkedList();
 	    pieces.add(new RegisterPiece(reg, reg.type.getSize()));

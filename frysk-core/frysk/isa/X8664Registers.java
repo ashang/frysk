@@ -100,4 +100,12 @@ public class X8664Registers extends Registers {
     public Register getStackPointer() {
 	return RSP;
     }
+
+    public RegisterGroup getDefaultRegisterGroup() {
+	return GENERAL;
+    }
+
+    public RegisterGroup getAllRegistersGroup() {
+	return ALL;
+    }
 }

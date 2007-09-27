@@ -41,16 +41,16 @@ package frysk.isa;
 
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * The set of registers belonging to an ISA.
  */
 public abstract class Registers {
 
-    private final Map registerGroupByName = new HashMap();
-    private final Map registerByName = new HashMap();
+    private final SortedMap registerGroupByName = new TreeMap();
+    private final SortedMap registerByName = new TreeMap();
     private final String[] registerGroupNames;
 
     protected Registers(RegisterGroup[] registerGroups) {
@@ -69,8 +69,22 @@ public abstract class Registers {
 	groupNames.toArray(registerGroupNames);
     }
 
+    /**
+     * Return the program-counter register.
+     */
     public abstract Register getProgramCounter();
+    /**
+     * Return the stack-pointer register.
+     */
     public abstract Register getStackPointer();
+    /**
+     * Return the "default" register group.
+     */
+    public abstract RegisterGroup getDefaultRegisterGroup();
+    /**
+     * Return the "all" register group.
+     */
+    public abstract RegisterGroup getAllRegistersGroup();
 
     /**
      * Return the register group; searched by NAME.

@@ -69,4 +69,14 @@ public class TestRegisters extends TestCase {
 		     new String[] { "general", "mmx", "sse", "segment", "all" },
 		     regs.getGroupNames());
     }
+
+    public void testDefaultRegisterGroup() {
+	assertEquals("getDefaultRegisterGroup", IA32Registers.GENERAL,
+		     regs.getDefaultRegisterGroup());
+    }
+
+    public void testAllRegistersGroup() {
+	assertEquals("getAllRegistersGroup", IA32Registers.ALL,
+		     regs.getAllRegistersGroup());
+    }
 }

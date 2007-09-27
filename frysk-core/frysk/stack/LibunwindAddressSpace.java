@@ -39,6 +39,7 @@
 
 package frysk.stack;
 
+import frysk.proc.Register;
 import lib.unwind.Unwind;
 import lib.unwind.UnwindX8664;
 import lib.unwind.UnwindX86;
@@ -102,29 +103,37 @@ class LibunwindAddressSpace extends AddressSpace {
 	return 0;
     }
 
-    public long getReg(int regnum) {
+    private Register getProcRegister(int regnum) {
 	Isa isa = task.getIsa();
-	String registerName = isa.getRegisterNameByUnwindRegnum(regnum);
-	logger.log(Level.FINE,
-		   "reading from register {0}, regnum: {1}\n",
-		   new Object[] { registerName, new Long(regnum) });
-	long val = isa.getRegisterByName(registerName).get(task);
+	String regName = isa.getRegisterNameByUnwindRegnum(regnum);
+	if (regName == null)
+	    throw new RuntimeException("unknown libunwind register: "
+				       + regnum);
+	Register reg = isa.getRegisterByName(regName);
+	if (reg == null)
+	    throw new RuntimeException("unknown proc register: "
+				       + regName);
+	return reg;
+    }
+
+    public long getReg(int regnum) {
+	logger.log(Level.FINE, "reading from regnum: {1}\n",
+		   new Long(regnum));
+	Register r = getProcRegister(regnum);
+	long val = r.get(task);
 	logger.log(Level.FINE, "accessReg: read value: 0x{0}\n",
 		   Long.toHexString(val));
 	return val;
     }
 
     public void setReg(int regnum, long regval) {
-	Isa isa = task.getIsa();
-	String registerName = isa.getRegisterNameByUnwindRegnum(regnum);
-	logger.log(Level.FINE,
-		   "writing to register {0}, regnum: {1}, val: {2}\n",
+	logger.log(Level.FINE, "writing to regnum: {1}, val: {2}\n",
 		   new Object[] {
-		       registerName,
 		       new Long(regnum),
 		       new Long(regval)
 		   });
-	isa.getRegisterByName(registerName).put(task, regval);
+	Register r = getProcRegister(regnum);
+	r.put(task, regval);
     }
 
     public ProcInfo findProcInfo (long ip, boolean needUnwindInfo) {

@@ -189,4 +189,12 @@ public class IA32Registers extends Registers {
     public Register getStackPointer() {
 	return ESP;
     }
+
+    public RegisterGroup getDefaultRegisterGroup() {
+	return GENERAL;
+    }
+
+    public RegisterGroup getAllRegistersGroup() {
+	return ALL;
+    }
 }

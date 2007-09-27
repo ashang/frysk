@@ -1,5 +1,15 @@
 2007-09-27  Andrew Cagney  <cagney@redhat.com>
 
+	* Registers.java (getDefaultRegisterGroup()): New.
+	(getAllRegistersGroup()): New.
+	* X8664Registers.java: Update.
+	* IA32Registers.java: Update.
+	* RegistersFactory.java: New.
+	* RegisterGroupFactory.java: Delete.
+	* RegisterFactory.java: Delete.
+	* TestRegisters.java (testDefaultRegisterGroup): New.
+	(testAllRegistersGroup): New.
+
 	* Registers.java: New.
 	* TestRegisters.java: New.
 	* X8664Registers.java: Extend Registers.

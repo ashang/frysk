@@ -1,5 +1,8 @@
 2007-09-27  Andrew Cagney  <cagney@redhat.com>
 
+	* register/RegisterWindow.java (setValues): Use RegistersFactory;
+	display the default group.
+	
 	Move frysk.stack.Register to frysk.isa.Register.
 	* register/RegisterWindow.java: Update.
 

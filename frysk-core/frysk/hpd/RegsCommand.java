@@ -46,7 +46,8 @@ import frysk.value.Value;
 import frysk.value.Format;
 import frysk.proc.Isa;
 import frysk.isa.RegisterGroup;
-import frysk.isa.RegisterGroupFactory;
+import frysk.isa.Registers;
+import frysk.isa.RegistersFactory;
 
 public class RegsCommand extends CLIHandler {
 
@@ -62,28 +63,23 @@ public class RegsCommand extends CLIHandler {
 	while (taskDataIter.hasNext()) {
 	    TaskData td = (TaskData) taskDataIter.next();
 	    Isa isa = td.getTask().getIsa();
-	    RegisterGroup[] regs = RegisterGroupFactory.getRegisterGroups(isa);
-
-	    RegisterGroup selectedGroup = regs[0];
+	    Registers regs = RegistersFactory.getRegisters(isa);
+	    RegisterGroup selectedGroup = regs.getDefaultRegisterGroup();
 
 	    ArrayList params = cmd.getParameters();
 
 	    if (params.size() > 0) {
 		String groupName = (String) params.get(0);
-		int i;
-		for (i = 0; i < regs.length; i++)
-		    if (regs[i].name.equals(groupName)) {
-			selectedGroup = regs[i];
-			break;
-		    }
-		if (i == regs.length) {
+		selectedGroup = regs.getGroup(groupName);
+		if (selectedGroup == null) {
 		    StringBuffer b = new StringBuffer();
 		    b.append("Register group <");
 		    b.append(groupName);
 		    b.append("> not recognized; possible groups are:");
-		    for (int r = 0; r < regs.length; r++) {
+		    String[] groupNames = regs.getGroupNames();
+		    for (int r = 0; r < groupNames.length; r++) {
 			b.append(" ");
-			b.append(regs[r].name);
+			b.append(groupNames[r]);
 		    }
 		    cli.addMessage(b.toString(), Message.TYPE_ERROR);
 		    return;
@@ -94,11 +90,15 @@ public class RegsCommand extends CLIHandler {
 	    for (int i = 0; i < selectedGroup.registers.length; i++) {
 		cli.outWriter.print(selectedGroup.registers[i].name);
 		cli.outWriter.print(":\t");
-		Value r = (cli.getTaskFrame(td.getTask())
-			   .getRegisterValue(selectedGroup.registers[i]));
-		r.toPrint(cli.outWriter, Format.NATURAL);
-		cli.outWriter.print("\t");
-		r.toPrint(cli.outWriter, Format.HEXADECIMAL);
+		try {
+		    Value r = (cli.getTaskFrame(td.getTask())
+			       .getRegisterValue(selectedGroup.registers[i]));
+		    r.toPrint(cli.outWriter, Format.NATURAL);
+		    cli.outWriter.print("\t");
+		    r.toPrint(cli.outWriter, Format.HEXADECIMAL);
+		} catch (RuntimeException e) {
+		    cli.outWriter.print(e.getMessage());
+		}
 		cli.outWriter.println();
 	    }
 	}

@@ -43,14 +43,18 @@ import frysk.proc.Isa;
 import frysk.proc.IsaIA32;
 import frysk.proc.IsaX8664;
 
-public class RegisterFactory {
+/**
+ * Given an ISA return its registers.
+ */
+public class RegistersFactory {
+    private static final Registers IA32 = new IA32Registers();
+    private static final Registers X8664 = new X8664Registers();
     
-    static public Register[] getRegisters(Isa isa) {
+    static public Registers getRegisters(Isa isa) {
 	if (isa instanceof IsaIA32)
-	    return IA32Registers.ALL.registers;
+	    return IA32;
 	if (isa instanceof IsaX8664)
-	    return X8664Registers.GENERAL.registers;
-
+	    return X8664;
 	throw new RuntimeException("Unsupported architecture");
     }
 
