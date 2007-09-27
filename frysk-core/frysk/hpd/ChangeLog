@@ -1,3 +1,7 @@
+2007-09-27  Teresa Thomas  <tthomas@redhat.com>
+
+	* PtypeCommand.java: Comments updated.
+
 2007-09-27  Andrew Cagney  <cagney@redhat.com>
 
 	Move frysk.stack.Register to frysk.isa.Register.

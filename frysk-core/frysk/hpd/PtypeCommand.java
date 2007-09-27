@@ -41,7 +41,6 @@ package frysk.hpd;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-//import frysk.value.Format;
 import frysk.debuginfo.ValueUavailableException;
 import frysk.debuginfo.VariableOptimizedOutException;
 import java.util.Iterator;
