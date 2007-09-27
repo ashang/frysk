@@ -41,19 +41,13 @@ package frysk.stack;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import lib.unwind.Cursor;
 import lib.unwind.ProcInfo;
 import lib.unwind.ProcName;
-import frysk.value.ScratchLocation;
 import frysk.proc.Isa;
 import frysk.proc.Task;
-
 import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
-
-import frysk.value.StandardTypes;
-import frysk.value.Value;
 
 class LibunwindFrame extends Frame
 {  
@@ -68,6 +62,8 @@ class LibunwindFrame extends Frame
    
     private final Cursor cursor;
     private final Task task;
+    private final RegisterMap registerMap;
+    private final Isa isa;
 
     /**
      * Creates a new LibunwindFrame object. Represents a frame on the stack of a 
@@ -79,6 +75,8 @@ class LibunwindFrame extends Frame
     LibunwindFrame (Cursor cursor, Task task) {
 	this.cursor = cursor;
 	this.task = task;
+	this.isa = task.getIsa();
+	this.registerMap = LibunwindRegisterMapFactory.getRegisterMap(isa);
     }
   
     /**
@@ -144,31 +142,20 @@ class LibunwindFrame extends Frame
 	    return getAddress();
     }
   
-    public Value getRegisterValue(Register register) {
+    public void getRegister(Register register, long offset, int length,
+			    byte[] bytes, int start) {
 	logger.log(Level.FINE, "{0}: getRegisterValue register: {1}\n",
 		   new Object[] { this, register });
-	Isa isa = task.getIsa();
-	byte[] word = new byte[register.type.getSize()];
-	RegisterMap map = LibunwindRegisterMapFactory.getRegisterMap(isa);
-
-	try {
-	    if (register.type == StandardTypes.getIntType(isa) || register.type == StandardTypes.getLongType(isa)) {
-		if (cursor.getRegister(map.getRegisterNumber(register), word) < 0)
-		    throw new RuntimeException("Register " + register
-					       + " unavailable");
-
-	    } else {
-		if (cursor.getFPRegister(map.getRegisterNumber(register), word) < 0)
-		    throw new RuntimeException("Floating-point register "
-					       + register
-					       + " unavailable");
-
-	    }
-	} catch (NullPointerException exception) {
-	    throw new RuntimeException("Register " + register
-				       + " unavailable (libunwind error)");
-	}
-	return new Value(register.type, new ScratchLocation(word));
+	cursor.getRegister(registerMap.getRegisterNumber(register),
+			   offset, length, bytes, start);
+    }
+  
+    public void setRegister(Register register, long offset, int length,
+			    byte[] bytes, int start) {
+	logger.log(Level.FINE, "{0}: getRegisterValue register: {1}\n",
+		   new Object[] { this, register });
+	cursor.setRegister(registerMap.getRegisterNumber(register),
+			   offset, length, bytes, start);
     }
   
     /**
@@ -198,20 +185,6 @@ class LibunwindFrame extends Frame
 						       cfa);
 	}
 	return this.frameIdentifier;
-    }
-  
-    /**
-     * Sets the value of the given register number with the word value.
-     */
-    public int setReg(int regNum, long word) {
-	return cursor.setRegister(regNum, word);
-    }
-  
-    /**
-     * Sets the value of the given register number with the word value.
-     */
-    public long setReg (long regNum, long word) {
-	return (long) setReg ((int) regNum, word);
     }
   
     /**

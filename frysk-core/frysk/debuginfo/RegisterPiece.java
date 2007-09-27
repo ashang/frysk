@@ -40,33 +40,35 @@
 package frysk.debuginfo;
 
 import frysk.stack.Register;
-import frysk.stack.RegisterMap;
 import frysk.stack.Frame;
-
 import java.io.PrintWriter;
-import java.math.BigInteger;
 
 public class RegisterPiece 
 	extends Piece
 {
+    private final long base;
     private final Register register;  
     private final Frame frame;
+
+    private RegisterPiece(Register register, long size, Frame frame,
+			  long base) {
+	super(size);
+	this.register = register;
+	this.frame = frame;
+	this.base = base;
+    }
 
     /**
      * Used for testing LocationExpression.
      */
     public RegisterPiece(Register register, long size)
     {
-	super (size);
-	this.register = register;
-	frame = null;
+	this(register, size, null, 0);
     }
     
     public RegisterPiece(Register register, long size, Frame frame)
     {
-	super (size);
-	this.register = register;
-  	this.frame = frame;
+	this(register, size, frame, 0);
     }  
     
     public Register getRegister()
@@ -76,40 +78,19 @@ public class RegisterPiece
         
     protected void putByte(long index, byte value) 
     {
-	byte[] regBytes = getRegValue (register, frame);
-	// Set byte at specified index, convert value to long 
-	// and write to register.
-	regBytes[(int)(size-index-1)] = value;          
-	BigInteger regVal = new BigInteger(regBytes);
-	RegisterMap map = DwarfRegisterMapFactory.getRegisterMap(frame.getTask().getIsa());
-	frame.setReg(map.getRegisterNumber(register), regVal.longValue()); 
+	byte[] bytes = new byte[] { value };
+	frame.setRegister(register, base + index, 1, bytes, 0);
     }
        
     protected byte getByte(long index) 
     {
-	byte[] regBytes = getRegValue (register, frame);
-	// Bytes in byteBuffer is in opposite order.
-	return regBytes[(int)(regBytes.length-index-1)];
+	byte[] bytes = new byte[1];
+	frame.getRegister(register, base + index, 1, bytes, 0);
+	return bytes[0];
     }
     
-    protected Piece slice (long offset, long length)
-    {
-	byte[] slice = new byte[(int)length];
-	byte[] regBytes = getRegValue (register, frame);
-	// Since byteArray has bytes in opposite order
-	// adjust offset accordingly.
-	long offAdjust = size-offset-1;
-	
-	// Write bytes from offset going to length to slice
-	int iSlice = (int)length;
-	for (int i=(int)offAdjust; i>=size-length; i--)
-	    slice[--iSlice] = regBytes[i];
-
-	RegisterMap map = DwarfRegisterMapFactory.getRegisterMap(frame.getTask().getIsa());
-	frame.setReg(map.getRegisterNumber(register), new BigInteger(slice).longValue());
-	
-	Piece newP =  new RegisterPiece (register, length, frame);    
-	return newP;
+    protected Piece slice (long offset, long length) {
+	return new RegisterPiece(register, length, frame, base + offset);
     }
     
     public boolean equals(Object p)
@@ -125,22 +106,5 @@ public class RegisterPiece
 	writer.print(" - ");
 	writer.print(size);
 	writer.print(" byte(s)");
-    }
-    
-    private byte[] getRegValue (Register register, Frame frame)
-    {
-	byte[] byteArray = new byte[(int)size];
-  	// Get the value inside the register as a byte array of size SIZE.
-	BigInteger big = new BigInteger(Long.toString(frame.getRegisterValue(register).asLong()));
-	byte[] regBytes = big.toByteArray();
-
-	if (regBytes.length <= byteArray.length)
-	    for (int i=0; i<regBytes.length; i++)
-		byteArray[(int)(byteArray.length-regBytes.length+i)] = regBytes[i];
-	else
-	    for (int i=0; i<byteArray.length; i++)
-		byteArray[i] = regBytes [regBytes.length-byteArray.length+i];
-	
-	return byteArray;
     }
 }

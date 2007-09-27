@@ -57,6 +57,7 @@
 #include <java/lang/Object.h>
 #include <java/util/logging/Logger.h>
 #include <java/util/logging/Level.h>
+#include <java/lang/ArrayIndexOutOfBoundsException.h>
 
 #include "inua/eio/ByteBuffer.h"
 #include "lib/dwfl/Dwfl.h"
@@ -314,28 +315,80 @@ lib::unwind::TARGET::getProcName(gnu::gcj::RawDataManaged* cursor, jint maxNameS
   return new lib::unwind::ProcName((jlong) offset, jName);
 }
 
-jint
+static void
+verifyBounds(jlong offset, jint length, jbyteArray bytes, jint start, int size)
+{
+  verifyBounds(bytes, start, length);
+  if (offset < 0)
+    throw new java::lang::ArrayIndexOutOfBoundsException(offset);
+  if (offset + length > size)
+    throw new java::lang::ArrayIndexOutOfBoundsException(offset + length);
+}
+
+void
 lib::unwind::TARGET::getRegister(gnu::gcj::RawDataManaged* cursor,
-                                 jint regNum, jbyteArray word)
+                                 jint regNum, jlong offset, jint length,
+				 jbyteArray bytes, jint start)
 {
-  return (jint) unw_get_reg((::unw_cursor_t *) cursor,
-                            (::unw_regnum_t) regNum, (::unw_word_t *) elements(word));
+  int status;
+  union {
+    unw_word_t w;
+    unw_fpreg_t fp;
+  } word;
+  if (unw_is_fpreg(regNum))
+    {
+      verifyBounds(offset, length, bytes, start, sizeof(word.fp));
+      status = unw_get_fpreg((::unw_cursor_t *) cursor,
+			     (::unw_regnum_t) regNum,
+			     &word.fp);
+    }
+  else
+    {
+      verifyBounds(offset, length, bytes, start, sizeof(word.w));
+      status = unw_get_reg((::unw_cursor_t *) cursor,
+			   (::unw_regnum_t) regNum,
+			   &word.w);
+    }
+  if (status != 0)
+    throwRuntimeException("get register failed");
+  memcpy(elements(bytes) + start, (uint8_t*)&word + offset, length);
 }
 
-jint
-lib::unwind::TARGET::getFPRegister(gnu::gcj::RawDataManaged* cursor,
-                                 jint regNum, jbyteArray word)
-{
-  return (jint) unw_get_fpreg((::unw_cursor_t *) cursor,
-                            (::unw_regnum_t) regNum, (::unw_fpreg_t *) elements(word));
-}
-
-jint
+void
 lib::unwind::TARGET::setRegister(gnu::gcj::RawDataManaged* cursor,
-                                 jint regNum, jlong word)
+                                 jint regNum, jlong offset, jint length,
+				 jbyteArray bytes, jint start)
 {
-  return (jint) unw_set_reg((::unw_cursor_t *) cursor,
-                            (::unw_regnum_t) regNum, (::unw_word_t ) word);
+  int status;
+  union {
+    unw_word_t w;
+    unw_fpreg_t fp;
+  } word;
+  if (unw_is_fpreg(regNum))
+    {
+      verifyBounds(offset, length, bytes, start, sizeof(word.fp));
+      status = unw_get_fpreg((::unw_cursor_t *) cursor,
+			     (::unw_regnum_t) regNum,
+			     &word.fp);
+    }
+  else
+    {
+      verifyBounds(offset, length, bytes, start, sizeof(word.w));
+      status = unw_get_reg((::unw_cursor_t *) cursor,
+			   (::unw_regnum_t) regNum,
+			   &word.w);
+    }
+  if (status != 0)
+    throwRuntimeException("set register failed");
+  memcpy((uint8_t*)&word + offset, elements(bytes) + start, length);
+  if (unw_is_fpreg(regNum))
+    status = unw_set_fpreg((::unw_cursor_t *) cursor,
+			   regNum, word.fp);
+  else
+    status = unw_set_reg((::unw_cursor_t *) cursor,
+			 regNum, word.w);
+  if (status != 0)
+    throwRuntimeException("set register failed");
 }
 
 jint

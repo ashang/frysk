@@ -311,9 +311,12 @@ class DebugInfoEvaluator
 	    // map; instead just do a direct register lookup.
 	    RegisterMap regMap = DwarfRegisterMapFactory.getRegisterMap(frame.getTask().getIsa());
 	    Register reg = regMap.getRegister(s.substring(1).trim());
-	    if (reg == null)
-		return null;
-	    return frame.getRegisterValue(reg);
+	    if (reg == null) {
+		throw new RuntimeException("unknown register " + s);
+	    }
+	    List pieces = new LinkedList();
+	    pieces.add(new RegisterPiece(reg, reg.type.getSize()));
+	    return new Value(reg.type, new PieceLocation(pieces));
 	}
 
 	Variable var = getVariable(s);

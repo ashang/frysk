@@ -42,7 +42,6 @@ package frysk.stack;
 import java.io.PrintWriter;
 import frysk.proc.Task;
 import frysk.symtab.Symbol;
-import frysk.value.Value;
 
 /**
  * Decorator wrapper for the ABI frame.  More abstract frames, such as
@@ -80,12 +79,13 @@ public abstract class FrameDecorator extends Frame
 	frame.toPrint(printWriter, name,true);
     }
 
-    public Value getRegisterValue(Register reg){
-	return frame.getRegisterValue(reg);
+    public void getRegister(Register reg, long offset, int length,
+			    byte[] bytes, int start){
+	frame.getRegister(reg, offset, length, bytes, start);
     }
-    
-    public long setReg(long reg, long val){
-	return frame.setReg(reg, val);
+    public void setRegister(Register reg, long offset, int length,
+			    byte[] bytes, int start){
+	frame.setRegister(reg, offset, length, bytes, start);
     }
 
     public FrameIdentifier getFrameIdentifier() {

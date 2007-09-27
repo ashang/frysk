@@ -69,20 +69,20 @@ public class Cursor
 	return (unwinder.isSignalFrame(cursor) == 1);
     }
   
-    public int  getRegister(int regNum, byte[] word) {
-	return unwinder.getRegister(cursor, regNum, word);
+    public void getRegister(int regNum, long offset, int length,
+			    byte[] bytes, int start) {
+	unwinder.getRegister(cursor, regNum, offset, length,
+			     bytes, start);
     }
-    
-    public int getFPRegister(int regNum, byte[] word) {
-	return unwinder.getFPRegister(cursor, regNum, word);
+
+    public void setRegister(int regNum, long offset, int length,
+			    byte[] bytes, int start) {
+	unwinder.setRegister(cursor, regNum, offset, length,
+			     bytes, start);
     }
-  
+
     public int getSP(byte[] word) {
 	return unwinder.getSP(cursor, word);
-    }
-  
-    public int setRegister(int regNum, long word) {
-	return unwinder.setRegister(cursor, regNum, word);
     }
   
     public int step() {

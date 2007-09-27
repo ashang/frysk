@@ -1,5 +1,20 @@
 2007-09-26  Andrew Cagney  <cagney@redhat.com>
 
+	* Unwind.java (getRegister(RawDataManaged,int,byte[])): Delete.
+	(getFPRegister(RawDataManaged,int,byte[])): Delete.
+	(setRegister(RawDataManaged,int,byte[])): Delete.
+	(setRegister(RawDataManaged,int,long)): Delete.
+	(getRegister(RawDataManaged,int,int,int,byte[],int)): New.
+	(setRegister(RawDataManaged,int,int,int,byte[],int)): New.
+	* cni/UnwindH.hxx: Implement.
+	* Cursor.java (getRegister(int,byte[])): Delete.
+	(setRegister(int,long)): Delete.
+	(getFPRegister(int,byte[])): Delete.
+	(getRegister(int,int,int,byte[],int)): New.
+	(setRegister(int,int,int,byte[],int)): New.
+	
+2007-09-26  Andrew Cagney  <cagney@redhat.com>
+
 	* UnwindX86.java: Delete.
 	* UnwindX8664.java: Delete.
 	* UnwindPPC64.java: Delete.

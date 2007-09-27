@@ -1,3 +1,14 @@
+2007-09-26  Andrew Cagney  <cagney@redhat.com>
+
+	* Frame.java (getRegister(Register,long,int,byte[],int): New.
+	(setRegister(Register,long,int,byte[],int): New.
+	(getRegister(Register)): New.
+	(getRegisterBytes(Register)): New.
+	(getRegisterValue(Register)): Make concrete.
+	(setReg(long,long)): Delete.
+	* FrameDecorator.java: Update.
+	* LibunwindFrame.java: Update.
+	
 2007-09-24  Andrew Cagney  <cagney@redhat.com>
 
 	* Frame.java: Indent.

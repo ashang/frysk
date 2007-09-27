@@ -48,6 +48,7 @@ import frysk.proc.Task;
 import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
 import frysk.value.Value;
+import frysk.value.ScratchLocation;
 
 public abstract class Frame
 {
@@ -126,11 +127,31 @@ public abstract class Frame
   
 
     /**
-     * Returns the value stored at the given register.
+     * Extracts OFFSET:LENGTH bytes of REGISTER storing them from
+     * START in BYTES (in the target's byte order).
      */
-    public abstract Value getRegisterValue(Register reg);
-  
-    public abstract long setReg(long reg, long val);
+    public abstract void getRegister(Register register,
+				     long offset, int length,
+				     byte[] bytes, int start);
+    private byte[] getRegisterBytes(Register register) {
+	byte[] bytes = new byte[register.type.getSize()];
+	getRegister(register, 0, register.type.getSize(), bytes, 0);
+	return bytes;
+    }
+    public final Value getRegisterValue(Register register) {
+	return new Value(register.type,
+			 new ScratchLocation(getRegisterBytes(register)));
+    }
+    public final long getRegister(Register register) {
+	return getRegisterValue(register).asLong();
+    }
+    /**
+     * Stores BYTES from START into REGISTER at OFFSET:LENGTH (in the
+     * target's byte order).
+     */
+    public abstract void setRegister(Register register,
+				     long offset, int length,
+				     byte[] bytes, int start);
   
     /**
      * Return this frame's FrameIdentifier.
