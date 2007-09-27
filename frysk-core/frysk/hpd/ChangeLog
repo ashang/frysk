@@ -1,3 +1,8 @@
+2007-09-27  Andrew Cagney  <cagney@redhat.com>
+
+	Move frysk.stack.Register to frysk.isa.Register.
+	* RegsCommand.java: Update.
+
 2007-09-26  Andrew Cagney  <cagney@redhat.com>
 
 	* HpdTestbed.java (HpdTestbed): Add to TearDownProcess.

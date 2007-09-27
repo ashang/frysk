@@ -41,6 +41,7 @@ package frysk.stack;
 
 import java.io.PrintWriter;
 
+import frysk.isa.Register;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
 import frysk.dwfl.DwflCache;

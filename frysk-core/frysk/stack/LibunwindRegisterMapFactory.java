@@ -39,11 +39,14 @@
 
 package frysk.stack;
 
+import frysk.isa.RegisterMap;
 import lib.unwind.UnwindRegistersX86;
 import lib.unwind.UnwindRegistersX8664;
 import frysk.proc.Isa;
 import frysk.proc.IsaIA32;
 import frysk.proc.IsaX8664;
+import frysk.isa.IA32Registers;
+import frysk.isa.X8664Registers;
 
 public class LibunwindRegisterMapFactory {
 

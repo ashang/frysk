@@ -45,8 +45,8 @@ import java.util.Iterator;
 import frysk.value.Value;
 import frysk.value.Format;
 import frysk.proc.Isa;
-import frysk.stack.RegisterGroup;
-import frysk.stack.RegisterGroupFactory;
+import frysk.isa.RegisterGroup;
+import frysk.isa.RegisterGroupFactory;
 
 public class RegsCommand extends CLIHandler {
 

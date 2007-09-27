@@ -37,16 +37,22 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.stack;
+package frysk.isa;
 
-public class RegisterGroup {
+import frysk.value.Type;
 
-    public RegisterGroup(String name, Register[] registers) {
+public class Register {
+
+    public Register(String name, Type type) {
 	this.name = name;
-	this.registers = registers;
+	this.type = type;
     }
 
     public final String name;
 
-    public final Register[] registers;
+    public final Type type;
+
+    public String toString() {
+	return "[Register: " + name + " type: " + type + "]";
+    }
 }

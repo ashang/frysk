@@ -1,3 +1,8 @@
+2007-09-27  Andrew Cagney  <cagney@redhat.com>
+
+	Move frysk.stack.Register to frysk.isa.Register.
+	* register/RegisterWindow.java: Update.
+
 2007-09-25  Zhao Shujing <pearly.zhao@oracle.com>
 	
 	* memory/MemoryWindow.java: Fixes #4674.

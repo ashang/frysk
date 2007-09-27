@@ -1,0 +1,17 @@
+2007-09-27  Andrew Cagney  <cagney@redhat.com>
+
+	* package.html: New.
+ 	* Register.java: Move from frysk.stack.Registers
+	* IA32Registers.java: Move from frysk.stack.IA32Registers.
+	* RegisterFactory.java: Move from frysk.stack.RegisterFactory.
+	* RegisterGroup.java: Move from frysk.stack.RegisterGroup.
+	* RegisterGroupFactory.java: Move from frysk.stack.RegisterGroupFactory.
+	* RegisterMap.java: Move from frysk.stack.RegisterMap.
+	* X8664Registers.java: Move from frysk.stack.X8664Registers.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

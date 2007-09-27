@@ -42,6 +42,7 @@ package frysk.stack;
 import java.io.PrintWriter;
 import frysk.proc.Task;
 import frysk.symtab.Symbol;
+import frysk.isa.Register;
 
 /**
  * Decorator wrapper for the ABI frame.  More abstract frames, such as

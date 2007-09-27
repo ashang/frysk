@@ -47,8 +47,8 @@ import java.util.Iterator;
 import frysk.proc.Task;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
-import frysk.stack.IA32Registers;
-import frysk.stack.X8664Registers;
+import frysk.isa.IA32Registers;
+import frysk.isa.X8664Registers;
 
 import lib.dwfl.ElfEMachine;
 import lib.dwfl.DwOp;

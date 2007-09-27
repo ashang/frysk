@@ -79,8 +79,8 @@ import frysk.proc.Isa;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 
-import frysk.stack.Register;
-import frysk.stack.RegisterFactory;
+import frysk.isa.Register;
+import frysk.isa.RegisterFactory;
 import frysk.stack.StackFactory;
 import frysk.stepping.TaskStepEngine;
 import frysk.value.ArithmeticType;

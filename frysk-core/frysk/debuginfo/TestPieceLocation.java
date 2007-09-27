@@ -42,8 +42,8 @@ package frysk.debuginfo;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
 
-import frysk.stack.IA32Registers;
-import frysk.stack.X8664Registers;
+import frysk.isa.IA32Registers;
+import frysk.isa.X8664Registers;
 import frysk.testbed.TestLib;
 import frysk.proc.Task;
 import frysk.testbed.DaemonBlockedAtSignal;

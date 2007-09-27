@@ -46,7 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import frysk.proc.Isa;
-import frysk.stack.Register;
+import frysk.isa.Register;
 import frysk.stack.Frame;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.DwarfOp;

@@ -1,3 +1,17 @@
+2007-09-27  Andrew Cagney  <cagney@redhat.com>
+
+ 	* Register.java: Move to frysk.isa.Registers
+	* IA32Registers.java: Move to frysk.isa.IA32Registers.
+	* RegisterFactory.java: Move to frysk.isa.RegisterFactory.
+	* RegisterGroup.java: Move to frysk.isa.RegisterGroup.
+	* RegisterGroupFactory.java: Move to frysk.isa.RegisterGroupFactory.
+	* RegisterMap.java: Move to frysk.isa.RegisterMap.
+	* X8664Registers.java: Move to frysk.isa.X8664Registers.
+	* FrameDecorator.java: Update.
+	* Frame.java: Update.
+	* LibunwindFrame.java: Update.
+	* LibunwindRegisterMapFactory.java: Update.
+
 2007-09-26  Andrew Cagney  <cagney@redhat.com>
 
 	* Frame.java (getRegister(Register,long,int,byte[],int): New.

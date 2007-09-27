@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.stack;
+package frysk.isa;
 
 import frysk.proc.Isa;
 import frysk.proc.IsaIA32;

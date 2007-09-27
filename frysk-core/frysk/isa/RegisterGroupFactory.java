@@ -37,22 +37,23 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.stack;
+package frysk.isa;
 
-import frysk.value.Type;
+import frysk.proc.Isa;
+import frysk.proc.IsaIA32;
+import frysk.proc.IsaX8664;
 
-public class Register {
+public class RegisterGroupFactory {
 
-    public Register(String name, Type type) {
-	this.name = name;
-	this.type = type;
-    }
+    static public RegisterGroup[] getRegisterGroups(Isa isa) {
+	if (isa instanceof IsaIA32)
+	    return new RegisterGroup[] { IA32Registers.GENERAL,
+		    IA32Registers.ALL, IA32Registers.MMX, IA32Registers.SSE,
+		    IA32Registers.SEGMENT };
+	if (isa instanceof IsaX8664)
+	    return new RegisterGroup[] { X8664Registers.GENERAL,
+		    X8664Registers.ALL };
 
-    public final String name;
-
-    public final Type type;
-
-    public String toString() {
-	return "[Register: " + name + " type: " + type + "]";
+	throw new RuntimeException("Unsupported architecture");
     }
 }
