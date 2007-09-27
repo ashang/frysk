@@ -1,3 +1,15 @@
+2007-09-27  Andrew Cagney  <cagney@redhat.com>
+
+	* BankRegister.java: Rename Register.java.
+	* FPRegister.java: Update.
+	* IsaIA32.java: Update.
+	* IsaPowerPC.java: Update.
+	* IsaPPC64.java: Update.
+	* IsaPPC.java: Update.
+	* IsaX8664.java: Update.
+	* LinuxIa32On64.java: Update.
+	* LinuxPPC32On64.java: Update.
+
 2007-09-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestSyscallsWithAudit.java (syscallTest): added new asserstion.

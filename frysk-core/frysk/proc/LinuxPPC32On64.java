@@ -71,11 +71,11 @@ class LinuxPPC32On64
   
   // Map ppc32 registers to the ppc64 registers returned by ptrace on ppc64.
   private class IndirectRegister
-    extends Register 
+    extends BankRegister 
   {
     String name;
-    Register ppc32Reg;
-    Register ppc64Reg;
+      BankRegister ppc32Reg;
+      BankRegister ppc64Reg;
     // Masks for cutting the 64 bit values down to 32. XXX Is this needed?
     long longMask;
     BigInteger bigIntMask;
@@ -195,11 +195,11 @@ class LinuxPPC32On64
     return registerMap.values().iterator();
   }
 
-  public Register getRegisterByName(String name)
+  public BankRegister getRegisterByName(String name)
   {
-    return (Register)registerMap.get(name);
+    return (BankRegister)registerMap.get(name);
   }
-  private Register getRegisterByNameSuper(String name)
+  private BankRegister getRegisterByNameSuper(String name)
   {
     return super.getRegisterByName(name);
   }

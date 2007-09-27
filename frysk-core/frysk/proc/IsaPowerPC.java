@@ -72,9 +72,9 @@ abstract class IsaPowerPC
     return null;
   }
 
-  public Register getRegisterByName (String name)
+  public BankRegister getRegisterByName (String name)
   {
-    return (Register)registerMap.get(name);
+    return (BankRegister)registerMap.get(name);
   }
 
   public long pc (Task task)

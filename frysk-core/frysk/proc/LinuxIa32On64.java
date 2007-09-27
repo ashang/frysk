@@ -93,12 +93,12 @@ extends LinuxIa32
   
   // Map i386 registers to the x86_64 registers returned by ptrace on x86_64.
   private class IndirectRegister
-    extends Register 
+    extends BankRegister 
   {
     String ia32Name;
     String x8664Name;
-    Register ia32Reg;
-    Register x8664Reg;
+      BankRegister ia32Reg;
+      BankRegister x8664Reg;
     // Masks for cutting the 64 bit values down to 32. XXX Is this needed?
     long longMask;
     BigInteger bigIntMask;
@@ -186,12 +186,12 @@ extends LinuxIa32
     }
   }
 
-  private class ConstantRegister extends Register 
+  private class ConstantRegister extends BankRegister 
   {
     String ia32Name;
     final long value;
     final BigInteger bigValue;
-    Register ia32Reg;
+      BankRegister ia32Reg;
     
     ConstantRegister(String name, long value) 
     {    
@@ -236,7 +236,7 @@ extends LinuxIa32
   {
     super();
     // TODO: floating point
-    final Register[] regDefs = new Register[] 
+    final BankRegister[] regDefs = new BankRegister[] 
       { new IndirectRegister("eax", "rax"),
 	new IndirectRegister("ebx", "rbx"),
 	new IndirectRegister("ecx", "rcx"),
@@ -286,12 +286,12 @@ extends LinuxIa32
     return registerMap.values().iterator();
   }
 
-  public Register getRegisterByName(String name)
+  public BankRegister getRegisterByName(String name)
   {
-    return (Register)registerMap.get(name);
+    return (BankRegister)registerMap.get(name);
   }
 
-  private Register getRegisterByNameSuper(String name)
+  private BankRegister getRegisterByNameSuper(String name)
   {
     return super.getRegisterByName(name);
   }

@@ -68,7 +68,7 @@ public interface Isa
    * @param name the register name
    * @return a register object
    */
-  Register getRegisterByName(String name);
+    BankRegister getRegisterByName(String name);
 
   /**
    * Get the value of the program counter in a task.

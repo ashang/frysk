@@ -91,7 +91,7 @@ public class IsaIA32 implements Isa
   }
   
   static class IA32Register 
-    extends Register
+    extends BankRegister
   {
     IA32Register(String name, int wordOffset)
     {
@@ -113,7 +113,7 @@ public class IsaIA32 implements Isa
   }
 
   static class I387ConfigRegister
-    extends Register
+    extends BankRegister
   {
     I387ConfigRegister(String name, int wordOffset) 
     {
@@ -132,7 +132,7 @@ public class IsaIA32 implements Isa
   }
 
   static class XMMRegister 
-    extends Register 
+    extends BankRegister 
   {
     XMMRegister(String name, int regNum) 
     {
@@ -145,7 +145,7 @@ public class IsaIA32 implements Isa
    * DBG_OFFSET, are 4 bytes long and are named d0 till d7.
    */
   static class DBGRegister
-    extends Register
+    extends BankRegister
   {
     DBGRegister(int d)
     {
@@ -196,7 +196,7 @@ public class IsaIA32 implements Isa
       }
     for (int i = 0; i < 8; i++) 
       {
-	Register reg = new DBGRegister(i);
+	BankRegister reg = new DBGRegister(i);
 	registerMap.put(reg.getName(), reg);
       }
   }
@@ -211,9 +211,9 @@ public class IsaIA32 implements Isa
     return RegisterX86.getUnwindRegister(regnum);
   }
 
-    public Register getRegisterByName(String name)
+    public BankRegister getRegisterByName(String name)
   {
-    return (Register)registerMap.get(name);
+    return (BankRegister)registerMap.get(name);
   }
 
   public long pc(Task task)
@@ -298,7 +298,7 @@ public class IsaIA32 implements Isa
    */
   public boolean isTaskStepped(Task task)
   {
-    Register d6 = getRegisterByName("d6");
+    BankRegister d6 = getRegisterByName("d6");
     long value = d6.get(task);
     boolean stepped = (value & 0x4000) != 0;
     d6.put(task, value & ~0x4000);
@@ -340,7 +340,7 @@ public class IsaIA32 implements Isa
 		      && task.getMemory().getByte(address + 1) == (byte) 0x80);
     if (result)
       {
-	Register eax = getRegisterByName("eax");
+	BankRegister eax = getRegisterByName("eax");
 	long syscall_num = eax.get(task);
 	result &= syscall_num == 0x77;
       }

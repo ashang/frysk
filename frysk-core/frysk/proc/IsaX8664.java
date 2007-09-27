@@ -77,7 +77,7 @@ public class IsaX8664 implements Isa
   private static final Instruction X8664Breakpoint
     = new Instruction(new byte[] { (byte)0xcc }, false);
   
-  static class X8664Register extends Register
+  static class X8664Register extends BankRegister
   {
     X8664Register(String name, int wordOffset)
     {
@@ -97,7 +97,7 @@ public class IsaX8664 implements Isa
   }
 
   static class X8664FPRegister 
-    extends Register 
+    extends BankRegister 
   {
     X8664FPRegister(String name, int regNum) 
     {
@@ -106,7 +106,7 @@ public class IsaX8664 implements Isa
   }
 
   static class XMMRegister 
-    extends Register 
+    extends BankRegister 
   {
     XMMRegister(String name, int regNum) 
     {
@@ -115,7 +115,7 @@ public class IsaX8664 implements Isa
   }
 
   static class FPConfigRegister
-    extends Register
+    extends BankRegister
   {
     FPConfigRegister(String name, int wordOffset, int length) 
     {
@@ -128,7 +128,7 @@ public class IsaX8664 implements Isa
    * DBG_OFFSET, are 8 bytes long and are named d0 till d7.
    */
   static class DBGRegister
-    extends Register
+    extends BankRegister
   {
     DBGRegister(int d)
     {
@@ -193,7 +193,7 @@ public class IsaX8664 implements Isa
       }
     for (int i = 0; i < 8; i++)
       {
-	Register reg = new DBGRegister(i);
+	  BankRegister reg = new DBGRegister(i);
 	registerMap.put(reg.getName(), reg);
       }
   }
@@ -208,9 +208,9 @@ public class IsaX8664 implements Isa
     return RegisterAMD64.getUnwindRegister(regnum);
   }
 
-  public Register getRegisterByName(String name)
+  public BankRegister getRegisterByName(String name)
   {
-    return (Register)registerMap.get(name);
+    return (BankRegister)registerMap.get(name);
   }
 
   public long pc(Task task)
@@ -295,7 +295,7 @@ public class IsaX8664 implements Isa
    */
   public boolean isTaskStepped(Task task)
   {
-    Register d6 = getRegisterByName("d6");
+      BankRegister d6 = getRegisterByName("d6");
     long value = d6.get(task);
     boolean stepped = (value & 0x4000) != 0;
     d6.put(task, value & ~0x4000);
@@ -338,7 +338,7 @@ public class IsaX8664 implements Isa
 		      && task.getMemory().getByte(address + 1) == (byte) 0x05);
     if (result)
       {
-	Register rax = getRegisterByName("rax");
+	  BankRegister rax = getRegisterByName("rax");
 	long syscall_num = rax.get(task);
 	result &= syscall_num == 0x0f;
       }

@@ -1,5 +1,8 @@
 2007-09-27  Andrew Cagney  <cagney@redhat.com>
 
+	* LibunwindAddressSpace.java: Update; frysk.proc.Register renamed
+	to frysk.proc.BankRegister.
+	
 	* LibunwindAddressSpace.java (getProcRegister): New.
 	(getReg, setReg): Use.
 

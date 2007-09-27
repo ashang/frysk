@@ -44,7 +44,7 @@ package frysk.proc;
  * some semantic information.
  */
 public class FPRegister 
-  extends Register
+  extends BankRegister
 {
   /**
    * Constructor. The register views defaults to an integer view.

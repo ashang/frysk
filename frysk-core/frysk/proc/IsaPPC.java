@@ -45,7 +45,7 @@ public class IsaPPC
   extends IsaPowerPC
 {
   static class PPCRegister
-    extends Register
+    extends BankRegister
   {
     PPCRegister (String name, int wordOffset)
     {

@@ -39,7 +39,7 @@
 
 package frysk.stack;
 
-import frysk.proc.Register;
+import frysk.proc.BankRegister;
 import lib.unwind.Unwind;
 import lib.unwind.UnwindX8664;
 import lib.unwind.UnwindX86;
@@ -103,13 +103,13 @@ class LibunwindAddressSpace extends AddressSpace {
 	return 0;
     }
 
-    private Register getProcRegister(int regnum) {
+    private BankRegister getProcRegister(int regnum) {
 	Isa isa = task.getIsa();
 	String regName = isa.getRegisterNameByUnwindRegnum(regnum);
 	if (regName == null)
 	    throw new RuntimeException("unknown libunwind register: "
 				       + regnum);
-	Register reg = isa.getRegisterByName(regName);
+	BankRegister reg = isa.getRegisterByName(regName);
 	if (reg == null)
 	    throw new RuntimeException("unknown proc register: "
 				       + regName);
@@ -119,7 +119,7 @@ class LibunwindAddressSpace extends AddressSpace {
     public long getReg(int regnum) {
 	logger.log(Level.FINE, "reading from regnum: {1}\n",
 		   new Long(regnum));
-	Register r = getProcRegister(regnum);
+	BankRegister r = getProcRegister(regnum);
 	long val = r.get(task);
 	logger.log(Level.FINE, "accessReg: read value: 0x{0}\n",
 		   Long.toHexString(val));
@@ -132,7 +132,7 @@ class LibunwindAddressSpace extends AddressSpace {
 		       new Long(regnum),
 		       new Long(regval)
 		   });
-	Register r = getProcRegister(regnum);
+	BankRegister r = getProcRegister(regnum);
 	r.put(task, regval);
     }
 

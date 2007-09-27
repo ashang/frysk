@@ -42,7 +42,7 @@ package frysk.ftrace;
 import inua.eio.ByteBuffer;
 
 import frysk.proc.Task;
-import frysk.proc.Register;
+import frysk.proc.BankRegister;
 
 /**
  * x86 implementation of Arch interface.
@@ -62,7 +62,7 @@ public class Archx86
   public long getReturnAddress(Task task, Symbol symbol)
   {
     ByteBuffer memBuf = task.getMemory();
-    Register espRegister = task.getIsa().getRegisterByName("esp");
+    BankRegister espRegister = task.getIsa().getRegisterByName("esp");
     long esp = espRegister.get(task);
     long retAddr = unsigned(memBuf.getInt(esp));
     return retAddr;
@@ -71,7 +71,7 @@ public class Archx86
   public Object[] getCallArguments(Task task, Symbol symbol)
   {
     ByteBuffer memBuf = task.getMemory();
-    Register espRegister = task.getIsa().getRegisterByName("esp");
+    BankRegister espRegister = task.getIsa().getRegisterByName("esp");
     long esp = espRegister.get(task);
     esp += 4;
 
@@ -105,7 +105,7 @@ public class Archx86
 
   public Object getReturnValue(Task task, Symbol symbol)
   {
-    Register r = task.getIsa().getRegisterByName("eax");
+    BankRegister r = task.getIsa().getRegisterByName("eax");
     return new Long(r.get(task));
   }
 }

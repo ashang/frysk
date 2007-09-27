@@ -1,3 +1,8 @@
+2007-09-27  Andrew Cagney  <cagney@redhat.com>
+
+	* Archx86.java: Update; frysk.proc.Register renamed to
+	frysk.proc.BankRegister.
+
 2007-09-21  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLtrace.java (testCallRecorded): Add unresolvedOffUtrace; bug
