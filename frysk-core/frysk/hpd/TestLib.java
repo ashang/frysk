@@ -44,6 +44,7 @@ import frysk.proc.Host;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.testbed.TearDownExpect;
+import frysk.testbed.TearDownProcess;
 import frysk.sys.ProcessIdentifier;
 import frysk.expunit.Expect;
 
@@ -62,6 +63,7 @@ class TestLib
 	// Bit of a kludge, only adding the child here.
 	if (child != null) {
 	    TearDownExpect.add(child);
+	    TearDownProcess.add(child.getPid());
 	    child = null;
 	}
 	e = null;

@@ -61,9 +61,15 @@ public class TestTearDownExpect
     public void testOnSleeping() {
 	Expect e = new Expect("sleep 5");
 	ProcessIdentifier pid = e.getPid();
+	TearDownProcess.add(pid);
 	TearDownExpect.add(e);
+	// The close shuts down the pid with a SIGHUP.
 	TearDownExpect.tearDown ();
 	assertGone(pid);
 	assertNull("getPid", e.getPid());
+    }
+
+    public void tearDown() {
+	TearDownProcess.tearDown();
     }
 }

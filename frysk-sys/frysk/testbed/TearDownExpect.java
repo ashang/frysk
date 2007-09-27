@@ -61,13 +61,10 @@ public class TearDownExpect
      * blown away.
      */
     public static void add (Expect expect) {
-	TearDownProcess.add(expect.getPid());
 	expects.add(expect);
     }
 
     public static void tearDown () {
-	// Since this uses that.
-	TearDownProcess.tearDown();
 	for (Iterator i = expects.iterator(); i.hasNext(); ) {
 	    Expect e = (Expect)i.next();
 	    try {

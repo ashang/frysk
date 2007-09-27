@@ -1,3 +1,8 @@
+2007-09-26  Andrew Cagney  <cagney@redhat.com>
+
+	* TearDownExpect.java (add): Do not add pid to TearDownProcess.
+	(tearDown): Do not call TearDownProcess.
+
 2007-09-21  Andrew Cagney  <cagney@redhat.com>
 
 	* LocalMemory.java (StackBuilder): Make public.

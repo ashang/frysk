@@ -1,3 +1,7 @@
+2007-09-26  Andrew Cagney  <cagney@redhat.com>
+
+	* HpdTestbed.java (HpdTestbed): Add to TearDownProcess.
+
 2007-09-26  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestPlocationCommand.java: New file.

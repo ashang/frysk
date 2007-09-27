@@ -48,6 +48,7 @@ import frysk.expunit.EofException;
 import frysk.expunit.TimeoutException;
 import java.io.File;
 import frysk.testbed.TearDownExpect;
+import frysk.testbed.TearDownProcess;
 import frysk.sys.ProcessIdentifier;
 
 /**
@@ -62,12 +63,19 @@ public class HpdTestbed
      */
     private final String prompt = "\\(fhpd\\) ";
 
+    private HpdTestbed(String[] command) {
+	super(command);
+	TearDownExpect.add(this);
+	TearDownProcess.add(getPid());
+    }
+
     /**
      * Create an FHPD process managed by Expect.
      */
     public HpdTestbed() {
-	super(Config.getBinFile("fhpd"));
-	TearDownExpect.add(this);
+	this(new String[] {
+		Config.getBinFile("fhpd").getPath()
+	     });
 	expectPrompt();
     }
 
@@ -76,10 +84,10 @@ public class HpdTestbed
      * the prompt.
      */
     public HpdTestbed(File param) {
-	super(new String[] {
-		  Config.getBinFile("fhpd").getPath (),
-		  param.getAbsolutePath()
-	      });
+	this(new String[] {
+		 Config.getBinFile("fhpd").getPath (),
+		 param.getAbsolutePath()
+	     });
 	expectPrompt();
     }
 
@@ -88,7 +96,7 @@ public class HpdTestbed
      * the STARTUP message followed immediatly by the prompt.
      */
     public HpdTestbed(String param, String startup) {
-	super(new String[] {
+	this(new String[] {
 		  Config.getBinFile("fhpd").getPath (),
 		  param
 	      });
@@ -99,7 +107,7 @@ public class HpdTestbed
      * Create a HPD attached to PID.
      */
      public HpdTestbed(ProcessIdentifier pid) {
-	 super(new String[] {
+	 this(new String[] {
 		  Config.getBinFile("fhpd").getPath (),
 		  pid.toString()
 	       });
