@@ -1,3 +1,7 @@
+2007-09-26  Tim Moore  <timoore@redhat.com>
+
+	* Breakpoint.java: Java indentation.
+
 2007-09-21  Zhao Shujing <pearly.zhao@oracle.com>
 	
 	* FunctionBreakpoint.java: Use method SymbolFactory.getSymbol instead

@@ -49,210 +49,174 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.stepping.SteppingEngine;
 
-public class Breakpoint implements TaskObserver.Code 
-{
-  protected static Logger logger = Logger.getLogger ("frysk");
-  
-  protected long address;
+public class Breakpoint implements TaskObserver.Code {
+    protected static Logger logger = Logger.getLogger ("frysk");
 
-  protected int triggered;
+    protected long address;
 
-  protected boolean added;
+    protected int triggered;
 
-  protected boolean removed;
-  
-  protected Object monitor = new Object();
-  
-  protected SteppingEngine steppingEngine;
-  
-  public Breakpoint (SteppingEngine steppingEngine) 
-  {
-    this.steppingEngine = steppingEngine;
-  }
+    protected boolean added;
 
-  public Breakpoint (SteppingEngine steppingEngine, long address)
-  {
-//    System.out.println("Setting address to 0x" + Long.toHexString(address));
-    this.steppingEngine = steppingEngine;
-    this.address = address;
-  }
+    protected boolean removed;
 
-  protected void logHit (Task task, long address, String message)
-  {
-    if (logger.isLoggable(Level.FINEST))
-      {
-        Object[] logArgs = { task, Long.toHexString(address),
-                            Long.toHexString(task.getIsa().pc(task)),
-                            Long.toHexString(this.address) };
-        logger.logp(Level.FINEST, "RunState.Breakpoint", "updateHit",
-                    message, logArgs);
-      }
-  }
-  
-  public Action updateHit (Task task, long address)
-  {
-//    System.err.println("SteppingBreakpoint.updateHIt " + task);
-    logHit(task, address, "task {0} at 0x{1}\n");
-    if (address != this.address)
-      {
-        logger.logp(Level.WARNING, "RunState.Breakpoint", "updateHit",
-                    "Hit wrong address!");
-        return Action.CONTINUE;
-      }
-    else
-      {
-        logHit(task, address, "adding instructionobserver {0} 0x{2}");
-        task.requestAddInstructionObserver(this.steppingEngine.getSteppingObserver());
-        this.steppingEngine.addBlocker(task, this);
-      }
+    protected Object monitor = new Object();
 
-    ++triggered;
-    return Action.BLOCK;
-  }
+    protected SteppingEngine steppingEngine;
 
-  public int getTriggered ()
-  {
-    return triggered;
-  }
-
-  public void addFailed (Object observable, Throwable w)
-  {
-    w.printStackTrace();
-  }
-
-  public void addedTo (Object observable)
-  {
-    synchronized (monitor)
-      {
-        added = true;
-        removed = false;
-        monitor.notifyAll();
-      }
-//    System.err.println("BreakPoint.addedTo");
-    ((Task) observable).requestDeleteInstructionObserver(this.steppingEngine.getSteppingObserver());
-  }
-
-  public boolean isAdded ()
-  {
-    return added;
-  }
-
-  public void deletedFrom (Object observable)
-  {
-    synchronized (monitor)
-      {
-        removed = true;
-        added = false;
-        monitor.notifyAll();
-      }
-  }
-
-  public boolean isRemoved ()
-  {
-    return removed;
-  }
-
-  public long getAddress()
-  {
-    return address;
-  }
-  
-  static public class PersistentBreakpoint extends Breakpoint
-  {
-    
-    private Observable observable;
-    
-    /*
-     * A breakpoint added by a high-level action e.g., set by the
-     * user. It is not meant to be transient.
-     */
-    public PersistentBreakpoint(long address, SteppingEngine steppingEngine) 
-    {
-      super(steppingEngine, address);
-      observable = new Observable(this);
+    public Breakpoint (SteppingEngine steppingEngine) {
+        this.steppingEngine = steppingEngine;
     }
 
-    // These operations synchronize on the breakpoint, not the
-    // observable object, so that other users of PersistentBreakpoint
-    // can synchronize too without having to make the observable public.
-    public synchronized void addObserver(BreakpointObserver observer)
-    {
-      observable.add(observer);
+    public Breakpoint (SteppingEngine steppingEngine, long address) {
+        //    System.out.println("Setting address to 0x" + Long.toHexString(address));
+        this.steppingEngine = steppingEngine;
+        this.address = address;
     }
 
-    public synchronized void deleteObserver(BreakpointObserver observer)
-    {
-      observable.delete(observer);
+    protected void logHit (Task task, long address, String message) {
+        if (logger.isLoggable(Level.FINEST)) {
+            Object[] logArgs = { task, Long.toHexString(address),
+                                 Long.toHexString(task.getIsa().pc(task)),
+                                 Long.toHexString(this.address) };
+            logger.logp(Level.FINEST, "RunState.Breakpoint", "updateHit",
+                        message, logArgs);
+        }
     }
 
-    public Iterator observersIterator()
-    {
-      return observable.iterator();
+    public Action updateHit (Task task, long address) {
+        //    System.err.println("SteppingBreakpoint.updateHIt " + task);
+        logHit(task, address, "task {0} at 0x{1}\n");
+        if (address != this.address) {
+            logger.logp(Level.WARNING, "RunState.Breakpoint", "updateHit",
+                        "Hit wrong address!");
+            return Action.CONTINUE;
+        }
+        else {
+            logHit(task, address, "adding instructionobserver {0} 0x{2}");
+            task.requestAddInstructionObserver(this.steppingEngine.getSteppingObserver());
+            this.steppingEngine.addBlocker(task, this);
+        }
+
+        ++triggered;
+        return Action.BLOCK;
     }
 
-    public synchronized int numberOfObservers()
-    {
-      return observable.numberOfObservers();
+    public int getTriggered () {
+        return triggered;
     }
 
-    public synchronized void removeAllObservers()
-    {
-      observable.removeAllObservers();
-    }
-      
-    public Action updateHit(Task task, long address)
-    {
-      //logger.entering("RunState.PersistentBreakpoint",
-      //"updateHit");
-      logHit(task, address, "Persistent.Breakpoint.updateHit at 0x{1}");
-      Action action = super.updateHit(task, address);
-      
-      synchronized (SteppingEngine.class)
-	{
-	  steppingEngine.getRunningTasks().remove(task);
-	}
-      
-      synchronized (this)
-	{
-	  Iterator iterator = observable.iterator();
-	  while (iterator.hasNext())
-	    {
-	      BreakpointObserver observer
-		= (BreakpointObserver)iterator.next();
-	      observer.updateHit(this, task, address);
-	    }
-	}
-      return action;
+    public void addFailed (Object observable, Throwable w) {
+        w.printStackTrace();
     }
 
-    public void addedTo (Object observable)
-    {
-      synchronized (monitor)
-	{
-	  added = true;
-	  removed = false;
-	  monitor.notifyAll();
-	}
-      // Don't remove the current insturction observer.
-    }
-  }
-
-
-
-//    public PersistentBreakpoint getTaskPersistentBreakpoint(Task task)
-//    {
-//      return (PersistentBreakpoint) SteppingEngine.getTaskBreakpoint(task);
-//    }
-    
-    public void addPersistentBreakpoint(Task task, PersistentBreakpoint bp)
-    {
-      task.requestAddCodeObserver(bp, bp.getAddress());
+    public void addedTo (Object observable) {
+        synchronized (monitor) {
+            added = true;
+            removed = false;
+            monitor.notifyAll();
+        }
+        //    System.err.println("BreakPoint.addedTo");
+        ((Task) observable).requestDeleteInstructionObserver(this.steppingEngine.getSteppingObserver());
     }
 
-    public void deletePersistentBreakpoint(Task task, PersistentBreakpoint bp)
-    {
-      task.requestDeleteCodeObserver(bp, bp.getAddress());
+    public boolean isAdded () {
+        return added;
     }
 
-  }
-  
+    public void deletedFrom (Object observable) {
+        synchronized (monitor) {
+            removed = true;
+            added = false;
+            monitor.notifyAll();
+        }
+    }
+
+    public boolean isRemoved () {
+        return removed;
+    }
+
+    public long getAddress() {
+        return address;
+    }
+
+    static public class PersistentBreakpoint extends Breakpoint {
+
+        /*
+         * A breakpoint added by a high-level action e.g., set by the
+         * user. It is not meant to be transient and applies only to one task.
+         */
+        private Observable observable;
+
+        public PersistentBreakpoint(long address, SteppingEngine steppingEngine) {
+            super(steppingEngine, address);
+            observable = new Observable(this);
+        }
+
+        // These operations synchronize on the breakpoint, not the
+        // observable object, so that other users of PersistentBreakpoint
+        // can synchronize too without having to make the observable public.
+        public synchronized void addObserver(BreakpointObserver observer) {
+            observable.add(observer);
+        }
+
+        public synchronized void deleteObserver(BreakpointObserver observer) {
+            observable.delete(observer);
+        }
+
+        public Iterator observersIterator() {
+            return observable.iterator();
+        }
+
+        public synchronized int numberOfObservers() {
+            return observable.numberOfObservers();
+        }
+
+        public synchronized void removeAllObservers() {
+            observable.removeAllObservers();
+        }
+
+        public Action updateHit(Task task, long address) {
+            //logger.entering("RunState.PersistentBreakpoint",
+            //"updateHit");
+            logHit(task, address, "Persistent.Breakpoint.updateHit at 0x{1}");
+            Action action = super.updateHit(task, address);
+
+            synchronized (SteppingEngine.class) {
+                steppingEngine.getRunningTasks().remove(task);
+            }
+
+            synchronized (this) {
+                Iterator iterator = observable.iterator();
+                while (iterator.hasNext()) {
+                    BreakpointObserver observer
+                        = (BreakpointObserver)iterator.next();
+                    observer.updateHit(this, task, address);
+                }
+            }
+            return action;
+        }
+
+        public void addedTo (Object observable) {
+            synchronized (monitor) {
+                added = true;
+                removed = false;
+                monitor.notifyAll();
+            }
+            // Don't remove the current insturction observer.
+        }
+    }
+
+    //    public PersistentBreakpoint getTaskPersistentBreakpoint(Task task)
+    //    {
+    //      return (PersistentBreakpoint) SteppingEngine.getTaskBreakpoint(task);
+    //    }
+
+    public void addPersistentBreakpoint(Task task, PersistentBreakpoint bp) {
+        task.requestAddCodeObserver(bp, bp.getAddress());
+    }
+
+    public void deletePersistentBreakpoint(Task task, PersistentBreakpoint bp) {
+        task.requestDeleteCodeObserver(bp, bp.getAddress());
+    }
+}
