@@ -42,7 +42,6 @@ package frysk.proc.dead;
 import frysk.Config;
 import inua.eio.ByteBuffer;
 
-//import java.io.File;
 import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.Proc;
@@ -56,7 +55,6 @@ public class TestLinuxExe
     extends TestLib
 	    
 {
-    //File test = new File("/home/rmoseley/mcvet");
 
   Host exeHost = new LinuxExeHost(Manager.eventLoop, 
 				Config.getPkgDataFile("test-exe-x86"));
@@ -84,24 +82,6 @@ public class TestLinuxExe
 	assertEquals("Peek a byte at 0x080497dc", (byte) 0xFF, buffer.getUByte());
 	assertEquals("Peek a byte at 0x080497dd", (byte) 0xFF, buffer.getUByte());
   }
-  
-  /**
-   * Returns the address of the requested function through query the
-   * Proc Elf and DwarfDie. Asserts that the function has only 1
-   * entry point.
-   */
-  /* private static long getFunctionEntryAddress(Proc proc, String func)
-    throws ElfException
-  {
-    Elf elf = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
-    Dwarf dwarf = new Dwarf(elf, DwarfCommand.READ, null);
-    DwarfDie die = DwarfDie.getDecl(dwarf, func);
-    ArrayList entryAddrs = die.getEntryBreakpoints();
-    
-    // We really expect just one entry point.
-    assertEquals(entryAddrs.size(), 1);
-    return ((Long) entryAddrs.get(0)).longValue();
-  } */
 
   // Helper class for inserting a Code breakpoint observer.
   static class CodeObserver

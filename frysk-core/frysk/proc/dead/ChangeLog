@@ -1,3 +1,7 @@
+2007-09-28  Rick Moseley  <rmoseley@redhat.com>
+
+	* TestLinuxExe.java: Remove unused/commented out code.
+
 2007-09-21  Rick Moseley <rmoseley@redhat.com>
 
 	* ExeByteBuffer.java: New.
