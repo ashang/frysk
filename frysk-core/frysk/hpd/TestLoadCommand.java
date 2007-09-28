@@ -39,11 +39,6 @@
 
 package frysk.hpd;
 
-//import java.io.File;
-
-//import frysk.proc.Proc;
-//import frysk.proc.dead.TestLinuxCore;
-//import frysk.testbed.SlaveOffspring;
 import frysk.Config;
 
 /**
