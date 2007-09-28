@@ -1039,14 +1039,15 @@ public class SteppingEngine {
 			SteppingEngine.this.contextMap.put(proc, new Integer(
 				threadsList.size() + i));
 			requestAdd();
-			return Action.BLOCK;
-		    }
-
-		    this.setChanged();
-		    this.notifyObservers(tse);
-		}
-
-		SteppingEngine.this.contextMap.put(proc, new Integer(i));
+		    } else {
+                        SteppingEngine.this.contextMap.put(proc,
+                                                           new Integer(i));
+                    }
+                } else {
+                    SteppingEngine.this.contextMap.put(proc, new Integer(i));
+                }
+                this.setChanged();
+                this.notifyObservers(tse);
 	    }
 
 	    return Action.BLOCK;

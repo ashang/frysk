@@ -1,3 +1,8 @@
+2007-09-28  Tim Moore  <timoore@redhat.com>
+
+	* SteppingEngine.java: (SteppingObserver.updateExecuted): Always
+	notify observers if a task hits the instruction observer.
+
 2007-09-03  Tim Moore  <timoore@redhat.com>
 
 	* SteppingEngine.java (addProcAux): Refactor common code into

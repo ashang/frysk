@@ -218,7 +218,8 @@ public abstract class SourceBreakpoint
 	Object bpt = bpts.next();
 	long address = getRawAddress(bpt);
 	Breakpoint.PersistentBreakpoint breakpoint
-	  = new Breakpoint.PersistentBreakpoint(address, steppingEngine);
+            = new Breakpoint.PersistentBreakpoint(task, address,
+                                                  steppingEngine);
 	breakpoint.addObserver(this);
 	procEntry.breakpoints.add(breakpoint);
 	steppingEngine.addBreakpoint(task, breakpoint);

@@ -147,10 +147,17 @@ public class Breakpoint implements TaskObserver.Code {
          * user. It is not meant to be transient and applies only to one task.
          */
         private Observable observable;
+        private final Task targetTask;
 
-        public PersistentBreakpoint(long address, SteppingEngine steppingEngine) {
+        public Task getTargetTask() {
+            return targetTask;
+        }
+
+        public PersistentBreakpoint(Task targetTask, long address,
+                                    SteppingEngine steppingEngine) {
             super(steppingEngine, address);
             observable = new Observable(this);
+            this.targetTask = targetTask;
         }
 
         // These operations synchronize on the breakpoint, not the
@@ -179,6 +186,8 @@ public class Breakpoint implements TaskObserver.Code {
         public Action updateHit(Task task, long address) {
             //logger.entering("RunState.PersistentBreakpoint",
             //"updateHit");
+            if (task != targetTask)
+                return Action.CONTINUE;
             logHit(task, address, "Persistent.Breakpoint.updateHit at 0x{1}");
             Action action = super.updateHit(task, address);
 

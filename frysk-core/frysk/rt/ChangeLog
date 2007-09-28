@@ -1,4 +1,12 @@
-2007-09-26  Tim Moore  <timoore@redhat.com>
+2007-09-28  Tim Moore  <timoore@redhat.com>
+
+	* Breakpoint.java (PersistentBreakpoint constructor): Take a
+	targetTask argument, to which this breakpoint applies.
+	(PersistentBreakpoint.updateHit): Continue if this is not the
+	target task.
+	(PersistentBreakpoint.getTargetTask): New method.
+	* SourceBreakpoint.java (enableBreakpoint): Pass task to
+	PersistentBreakpoint constructor.
 
 	* Breakpoint.java: Java indentation.
 
