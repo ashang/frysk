@@ -64,7 +64,7 @@ public class Enumerator extends Variable{
     
     public Value getValue(DebugInfoFrame frame) {
 	if(this.value == null){
-	    this.value = ((ArithmeticType)getType(frame)).createValue(getVariableDie().getAttrConstant(DwAt.CONST_VALUE_));
+	    this.value = ((ArithmeticType)getType(frame)).createValue(getVariableDie().getAttrConstant(DwAt.CONST_VALUE));
 	}
 	return value;
     }

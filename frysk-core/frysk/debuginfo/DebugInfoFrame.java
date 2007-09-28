@@ -87,6 +87,7 @@ public class DebugInfoFrame extends FrameDecorator{
      * @return
      */
     public final Scope getScopes() {
+	
 	if (scope == null) {
 	    Dwfl dwfl = DwflCache.getDwfl(this.getTask());
 	    DwflDieBias bias = dwfl.getDie(getAdjustedAddress());
@@ -101,7 +102,6 @@ public class DebugInfoFrame extends FrameDecorator{
 
 		scopes = scopes[0].getScopesDie();
 		scope = ScopeFactory.theFactory.getScope(scopes[0]);
-		
 		Scope tempScope = scope;
 		
 		if (tempScope instanceof Subprogram && !(tempScope instanceof InlinedSubroutine) && subprogram == null) {
@@ -149,8 +149,8 @@ public class DebugInfoFrame extends FrameDecorator{
             scopes = scopes[0].getScopesDie();
             
             for (int i = 0; i < scopes.length; i++) {
-        	if (scopes[i].getTag() == DwTag.INLINED_SUBROUTINE_ ||
-        		scopes[i].getAttrConstant(DwAt.INLINE_) == DwInl.INLINED_) {
+        	if ((scopes[i].getTag()).equals(DwTag.INLINED_SUBROUTINE) ||
+        		scopes[i].getAttrConstant(DwAt.INLINE) == DwInl.INLINED_) {
 	  	    inlinedSubprograms.add(new InlinedSubroutine(scopes[i]));
         	}
             }

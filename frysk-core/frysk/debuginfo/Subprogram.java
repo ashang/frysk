@@ -73,7 +73,7 @@ public class Subprogram extends Subroutine
       die = die.getChild();
       while(die != null){
 //	System.out.print(" -> " + die.getName() + ": "+ DwTag.toName(die.getTag()));
-	if(die.getTag() == DwTag.FORMAL_PARAMETER_){
+	if(die.getTag().equals(DwTag.FORMAL_PARAMETER)){
           Variable variable = new Variable(die);
 	  parameters.add(variable);
 	}

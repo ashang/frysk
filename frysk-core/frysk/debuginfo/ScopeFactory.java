@@ -75,9 +75,9 @@ public class ScopeFactory {
 
     private Scope createScope(DwarfDie die) {
 
-	long inlineAttribute = die.getAttrConstant(DwAt.INLINE_); 
+	long inlineAttribute = die.getAttrConstant(DwAt.INLINE); 
 	    
-	switch (die.getTag()) {
+	switch (die.getTag().hashCode()) {
 	
 	case DwTag.INLINED_SUBROUTINE_:
 	    if(inlineAttribute == DwInl.DECLARED_NOT_INLINED_){
@@ -101,8 +101,9 @@ public class ScopeFactory {
 	case DwTag.ENTRY_POINT_:
 	case DwTag.NAMESPACE_:
 	case DwTag.IMPORTED_UNIT_:
-	default:
 	    return new Scope(die);
+	default:
+	    throw new IllegalArgumentException("The given die ["+die + ": " + die.getTag()+"]is not a scope die");
 	}
     }
 

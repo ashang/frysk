@@ -106,7 +106,7 @@ public class Scope
 	  
 	  while (die != null) {
 	      
-	      if (die.getTag() == DwTag.VARIABLE_) {
+	      if (die.getTag().equals(DwTag.VARIABLE)) {
 		  Variable variable = new Variable(die);
 		  variables.add(variable);
 	      }
@@ -123,7 +123,7 @@ public class Scope
 	    
 	  while(die != null){
 		      
-	      if(die.getTag() == DwTag.ENUMERATION_TYPE_){
+	      if(die.getTag().equals(DwTag.ENUMERATION_TYPE)){
 		  this.collections.add(new Enumiration(die));
 	      }
 
@@ -134,7 +134,7 @@ public class Scope
   }
   
   public static boolean isScopeDie(DwarfDie die){
-    switch (die.getTag())
+    switch (die.getTag().hashCode())
       {
       case DwTag.COMPILE_UNIT_:
       case DwTag.MODULE_:

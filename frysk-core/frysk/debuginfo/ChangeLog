@@ -1,3 +1,19 @@
+2007-09-28  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Changed DwarfDie.getAttrBoolean and DwarfDie.getAttrConst
+	to take	DwAt arguments. Changed getTag to return DwTag object.
+	* DebugInfoEvaluator.java: Updated.
+	* DebugInfoFrame.java: Updated.
+	* Enumerator.java: Updated.
+	* Enumiration.java: Updated.
+	* LocationExpression.java: Updated.
+	* Scope.java: Updated.
+	* ScopeFactory.java: Updated.
+	* Subprogram.java: Updated.
+	* TypeEntry.java: Updated.
+	* TestFrameDebugInfo.java: Updated.
+	* DebugInfo.java: Updated.
+	
 2007-09-27  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfoEvaluator.java (getValue(String)): Use

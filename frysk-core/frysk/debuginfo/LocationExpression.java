@@ -81,7 +81,7 @@ class LocationExpression {
 	int nops = ops.size();
 
 	if (nops == 0)
-	    if (die.getAttrBoolean(DwAt.LOCATION_)) 
+	    if (die.getAttrBoolean(DwAt.LOCATION)) 
 		throw new VariableOptimizedOutException();  
 	    else 
 		throw new ValueUavailableException();
@@ -417,7 +417,7 @@ class LocationExpression {
 	ArrayList pieces = new ArrayList(); 
 
 	if (nops == 0)
-	    if (die.getAttrBoolean(DwAt.LOCATION_)) 
+	    if (die.getAttrBoolean(DwAt.LOCATION)) 
 		throw new VariableOptimizedOutException();  
 	    else 
 		throw new ValueUavailableException();

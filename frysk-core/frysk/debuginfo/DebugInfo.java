@@ -171,9 +171,9 @@ public class DebugInfo {
 	    varDie = DwarfDie.getDecl(dwarf, sInput);
 	    if (varDie == null)
 		throw new NameNotFoundException(sInput + " not found in scope.");
-	    if (varDie.getAttrBoolean(DwAt.EXTERNAL_))
+	    if (varDie.getAttrBoolean(DwAt.EXTERNAL))
 		result.append("extern ");
-	    switch (varDie.getTag()) {
+	    switch (varDie.getTag().hashCode()) {
             case DwTag.SUBPROGRAM_: {
 		Value value = typeEntry.getSubprogramValue(varDie);
 		result.append(value.getType().toPrint());
@@ -190,7 +190,7 @@ public class DebugInfo {
 	    }
         } else {
 	    Type type = typeEntry.getType(varDie.getType());
-	    if (varDie.getAttrBoolean(DwAt.EXTERNAL_))
+	    if (varDie.getAttrBoolean(DwAt.EXTERNAL))
 		result.append("extern ");
 
 	    if (type != null)

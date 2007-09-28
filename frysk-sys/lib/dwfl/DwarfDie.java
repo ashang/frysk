@@ -233,19 +233,19 @@ abstract public class DwarfDie {
 	return get_base_type(this.getPointer());
     }
   
-    public boolean getAttrBoolean(int attr) {
-	return get_attr_boolean(this.getPointer(), attr);
+    public boolean getAttrBoolean(DwAt attr) {
+	return get_attr_boolean(this.getPointer(), attr.hashCode());
     }
   
-    public int getTag() {
-	return get_tag(this.getPointer());
+    public DwTag getTag() {
+	return DwTag.valueOf(get_tag(this.getPointer()));
     }
   
     /**
      * @return The upper bound for this subrange die.
      */
-    public int getAttrConstant(int attr) {
-	return get_attr_constant(this.getPointer(), attr);
+    public int getAttrConstant(DwAt attr) {
+	return get_attr_constant(this.getPointer(), attr.hashCode());
     }
 
     /**
@@ -320,8 +320,8 @@ abstract public class DwarfDie {
 	return is_inline_func();
     }
   
-    public boolean hasAttribute(int attr){
-	return hasattr(getPointer(), attr);
+    public boolean hasAttribute(DwAt attr){
+	return hasattr(getPointer(), attr.hashCode());
     }
     
     public String toString() {
@@ -348,7 +348,7 @@ abstract public class DwarfDie {
   
     public StringBuilder toPrint(){
 	StringBuilder stringBuilder = new StringBuilder();
-	stringBuilder.append(DwTag.toName(this.getTag()) + " Name: " + this.getName());
+	stringBuilder.append(this.getTag() + " Name: " + this.getName());
 	return stringBuilder;
     }
   

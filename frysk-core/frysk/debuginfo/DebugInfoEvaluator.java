@@ -388,7 +388,7 @@ class DebugInfoEvaluator
 	case BaseTypes.baseTypeDouble:
 	    return doubleType.createValue(buffer.getDouble(addrIndirect));
 	}
-	int tag = type != null ? type.getTag() : variable.getVariableDie().getTag();
+	int tag = type != null ? type.getTag().hashCode() : variable.getVariableDie().getTag().hashCode();
 	switch (tag) {
 	case DwTag.ARRAY_TYPE_: {
 	    DwarfDie subrange;

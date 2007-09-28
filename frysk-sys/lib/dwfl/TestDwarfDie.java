@@ -54,11 +54,11 @@ public class TestDwarfDie extends TestCase {
 	DwflDieBias bias = dwfl.getDie(LocalMemory.getCodeAddr());
 	assertNotNull(bias);
 	DwarfDie die = bias.die;
-	assertEquals("Die has the correct tag", DwTag.COMPILE_UNIT_, die
+	assertEquals("Die has the correct tag", DwTag.COMPILE_UNIT, die
 		.getTag());
 
-	assertTrue("Has name attribute", die.hasAttribute(DwAt.NAME_));
+	assertTrue("Has name attribute", die.hasAttribute(DwAt.NAME));
 	assertFalse("Does not have location attribute", die
-		.hasAttribute(DwAt.LOCATION_));
+		.hasAttribute(DwAt.LOCATION));
     }
 }

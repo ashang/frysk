@@ -122,9 +122,9 @@ public class TestFrameDebugInfo
     
     assertEquals("number of scopes", 3, scopes.length);
     
-    assertEquals("lexical block die" , DwTag.LEXICAL_BLOCK_,scopes[0].getTag());
-    assertEquals("inlined function die", DwTag.INLINED_SUBROUTINE_, scopes[1].getTag());
-    assertEquals("compliation unit die", DwTag.COMPILE_UNIT_, scopes[2].getTag());
+    assertEquals("lexical block die" , DwTag.LEXICAL_BLOCK,scopes[0].getTag());
+    assertEquals("inlined function die", DwTag.INLINED_SUBROUTINE, scopes[1].getTag());
+    assertEquals("compliation unit die", DwTag.COMPILE_UNIT, scopes[2].getTag());
     
   }
   
@@ -157,9 +157,9 @@ public class TestFrameDebugInfo
     
     assertEquals("number of scopes", 4, scopes.length);
     
-    assertEquals("inlined die" , DwTag.INLINED_SUBROUTINE_,scopes[1].getTag());
-    assertEquals("function die", DwTag.SUBPROGRAM_, scopes[2].getTag());
-    assertEquals("compliation unit die", DwTag.COMPILE_UNIT_, scopes[3].getTag());
+    assertEquals("inlined die" , DwTag.INLINED_SUBROUTINE,scopes[1].getTag());
+    assertEquals("function die", DwTag.SUBPROGRAM, scopes[2].getTag());
+    assertEquals("compliation unit die", DwTag.COMPILE_UNIT, scopes[3].getTag());
     
   }
   

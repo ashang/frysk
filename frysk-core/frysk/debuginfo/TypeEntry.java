@@ -80,7 +80,7 @@ class TypeEntry
     }
 
     private int getByteSize(DwarfDie die) {
-	return die.getAttrConstant(DwAt.BYTE_SIZE_);
+	return die.getAttrConstant(DwAt.BYTE_SIZE);
     }
     
     private void dumpDie(String s, DwarfDie die)
@@ -104,7 +104,7 @@ class TypeEntry
 	ArrayList dims = new ArrayList();
 	while (subrange != null) {
 	    int arrDim = subrange
-	    .getAttrConstant(DwAt.UPPER_BOUND_);
+	    .getAttrConstant(DwAt.UPPER_BOUND);
 	    dims.add(new Integer(arrDim));
 	    subrange = subrange.getSibling();
 	    elementCount *= arrDim + 1;
@@ -140,14 +140,14 @@ class TypeEntry
 	    }
 
 	    Access access = null;
-	    switch (member.getAttrConstant(DwAt.ACCESSIBILITY_)) {
+	    switch (member.getAttrConstant(DwAt.ACCESSIBILITY)) {
 	    case DwAccess.PUBLIC_: access = Access.PUBLIC; break;
 	    case DwAccess.PROTECTED_: access = Access.PROTECTED; break;
 	    case DwAccess.PRIVATE_: access = Access.PRIVATE; break;
 	    }
 	    DwarfDie memberDieType = member.getUltimateType();
 
-	    if (member.getTag() == DwTag.SUBPROGRAM_) {
+	    if (member.getTag() == DwTag.SUBPROGRAM) {
 		Value v = getSubprogramValue(member);
 		classType.addMember(member.getName(), v.getType(), offset,
 			access);
@@ -161,10 +161,10 @@ class TypeEntry
 	    if (memberType instanceof UnknownType == false) {
 		// System V ABI Supplements discuss bit field layout
 		int bitSize = member
-		.getAttrConstant(DwAt.BIT_SIZE_);
+		.getAttrConstant(DwAt.BIT_SIZE);
 		if (bitSize != -1) {
 		    int bitOffset = member
-		    .getAttrConstant(DwAt.BIT_OFFSET_);
+		    .getAttrConstant(DwAt.BIT_OFFSET);
 		    classType.addMember(member.getName(), memberType, offset, access,
 			    bitOffset, bitSize);
 		}
@@ -191,7 +191,7 @@ class TypeEntry
 	if (varDie == null)
 	    return (null);
 
-	switch (varDie.getTag()) {
+	switch (varDie.getTag().hashCode()) {
 	case DwTag.SUBPROGRAM_: {
 	    Type type = null;
 	    if (varDie.getUltimateType() != null) {
@@ -200,8 +200,8 @@ class TypeEntry
 	    FunctionType functionType = new FunctionType(varDie.getName(), type);
 	    DwarfDie parm = varDie.getChild();
 	    while (parm != null
-		    && parm.getTag() == DwTag.FORMAL_PARAMETER_) {
-		if (parm.getAttrBoolean((DwAt.ARTIFICIAL_)) == false) {
+		    && parm.getTag().equals(DwTag.FORMAL_PARAMETER)) {
+		if (parm.getAttrBoolean((DwAt.ARTIFICIAL)) == false) {
 		    type = getType(parm);
 		    functionType.addParameter(type, parm.getName());
 		}
@@ -226,8 +226,8 @@ class TypeEntry
 
 	dumpDie("getType typeDie=", typeDie);
 	DwarfDie type;
-	if (typeDie.getTag() == DwTag.FORMAL_PARAMETER_
-		|| typeDie.getTag() == DwTag.VARIABLE_) {
+	if (typeDie.getTag().equals(DwTag.FORMAL_PARAMETER)
+		|| typeDie.getTag().equals(DwTag.VARIABLE)) {
 	    type = typeDie.getType();
 	    dumpDie("getType type=", type);
 	}
@@ -246,7 +246,7 @@ class TypeEntry
 	dieHash.put(new Integer(type.getOffset()), null);
 	Type returnType = null;
 	
-	switch (type.getTag()) {
+	switch (type.getTag().hashCode()) {
 	case DwTag.TYPEDEF_: {
 	    returnType = new TypeDef(type.getName(), getType (type.getType()));
 	    break;
@@ -279,10 +279,10 @@ class TypeEntry
 	    DwarfDie subrange = type.getChild();
 	    EnumType enumType = new EnumType(typeDie.getName(),
 					     byteorder, 
-					     type.getAttrConstant(DwAt.BYTE_SIZE_));
+					     type.getAttrConstant(DwAt.BYTE_SIZE));
 	    while (subrange != null) {
 		enumType.addMember(subrange.getName(), subrange
-			.getAttrConstant(DwAt.CONST_VALUE_));
+			.getAttrConstant(DwAt.CONST_VALUE));
 		subrange = subrange.getSibling();
 	    }
 	    returnType = enumType;
@@ -316,11 +316,11 @@ class TypeEntry
 		break;
 	    case BaseTypes.baseTypeChar:
 		returnType = new CharType(type.getName(), byteorder, 
-			type.getAttrConstant(DwAt.BYTE_SIZE_), false);
+			type.getAttrConstant(DwAt.BYTE_SIZE), false);
 		break;
 	    case BaseTypes.baseTypeUnsignedChar:
 		returnType = new CharType(type.getName(), byteorder, 
-			type.getAttrConstant(DwAt.BYTE_SIZE_), true);
+			type.getAttrConstant(DwAt.BYTE_SIZE), true);
 		break;
 	    case BaseTypes.baseTypeFloat:
 		returnType = StandardTypes.getFloatType(isa);

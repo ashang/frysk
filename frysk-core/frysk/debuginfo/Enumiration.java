@@ -53,7 +53,7 @@ public class Enumiration {
     EnumType enumType;
     
     Enumiration(DwarfDie die){
-	if(die.getTag() != DwTag.ENUMERATION_TYPE_){
+	if(die.getTag() != DwTag.ENUMERATION_TYPE){
 	    throw new RuntimeException("Given die is not of type ENUMERATION_TYPE");
 	}
 	
