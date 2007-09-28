@@ -325,6 +325,7 @@ public class CLI {
         new DisassembleCommand(this);
         new RegsCommand(this);
         new ExamineCommand(this);
+        new LoadCommand(this);
 
         // initialize PT set stuff
         setparser = new SetNotationParser();
@@ -577,5 +578,15 @@ public class CLI {
             ptset = createSet(setString);
         }
         return ptset;
+    }
+    
+    /**
+     * Sets the LinuxExeTask for an executable file so we can access its memory.
+     * 
+     */
+    Task exeTask;
+    
+    public void setExeTask (Task task) {
+	this.exeTask = task;
     }
 }

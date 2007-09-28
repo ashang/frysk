@@ -1,3 +1,9 @@
+2007-09-28  Rick Moseley  <rmoseley@redhat.com>
+
+	* CLI.java: Add code for the "load" command.
+	* LoadCommand.java: New for "load" command.
+	* TestLoadCommand.java: New; test for LoadCommand.
+
 2007-09-28  Tim Moore  <timoore@redhat.com>
 
 	* TestBreakpoints.java (testHpdBreakMultiThreaded): New test.
