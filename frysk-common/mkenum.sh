@@ -121,6 +121,7 @@ parse_class ()
 
     print_comment "${sp}"
     echo "${sp}${scope} class ${class}"
+    echo "${sp}  extends Number"
     echo "${sp}  implements Comparable"
     echo "${sp}{"
     cat <<EOF
@@ -150,12 +151,12 @@ ${sp}  public String toName ()
 ${sp}  {
 ${sp}    return enumName;
 ${sp}  }
+${sp}  /**
+${sp}   * Return true if OBJECT has the same value.
+${sp}   */
 ${sp}  public boolean equals (Object o)
 ${sp}  {
-${sp}    if (o instanceof ${class})
-${sp}      return ((${class}) o).enumValue == this.enumValue;
-${sp}    else
-${sp}      return false;
+${sp}    return ((${class})o).intValue() == this.intValue();
 ${sp}  }
 ${sp}  public int hashCode ()
 ${sp}  {
@@ -318,6 +319,36 @@ ${sp}      return def;
 ${sp}    else
 ${sp}      return c.toName ();
 ${sp}  }
+${sp}
+${sp}  /**
+${sp}   * Return the equivalent of the enum.
+${sp}   */
+${sp}  public int intValue () {
+${sp}    return enumValue;
+${sp}  }
+${sp}
+${sp}  /**
+${sp}   * Return the equivalent of the enum.
+${sp}   */
+${sp}  public long longValue () {
+${sp}    return enumValue;
+${sp}  }
+${sp}
+${sp}  /**
+${sp}   * Return the equivalent of the enum.
+${sp}   */
+${sp}  public float floatValue () {
+${sp}    return enumValue;
+${sp}  }
+${sp}
+${sp}  /**
+${sp}   * Return the equivalent of the enum.
+${sp}   */
+${sp}  public double doubleValue () {
+${sp}    return enumValue;
+${sp}  }
+${sp}
+${sp}  static final long serialVersionUID = 0;
 ${sp}}
 EOF
 }
