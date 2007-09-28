@@ -53,7 +53,10 @@ import inua.eio.ByteOrder;
 abstract class IsaPowerPC
   implements Isa
 {
-  protected LinkedHashMap registerMap = new LinkedHashMap();
+    protected void add(BankRegister register) {
+	registerMap.put(register.getName(), register);
+    }
+    protected final LinkedHashMap registerMap = new LinkedHashMap();
 
   // the illegal instruction for powerpc: 0x7d821008.
   // the default order is BIG_ENDIAN

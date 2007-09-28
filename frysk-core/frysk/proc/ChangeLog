@@ -1,5 +1,25 @@
 2007-09-28  Andrew Cagney  <cagney@redhat.com>
 
+	* IsaX8664.java: Simplify; use BankRegister(int,int,int,Register)
+	constructor where possible.
+	(regDefs): Delete.
+	(DBGRegister): Delete.
+	(FPConfigRegister): Delete.
+	(XMMRegister): Delete.
+	(X8664FPRegister): Delete.
+	(X8664SegmentRegister): Delete.
+	(X8664Register): Delete.
+	(DBG_OFFSET): Delete.
+	* IsaPowerPC.java (add(BankRegister)): New.
+	* IsaPPC64.java (IsaPPC64): Simplify addition of registers to
+	registerMap.
+	(PPC64Register): Delete.
+	(PPC6432BitRegister): Delete.
+	(PPC6432BitRegister): Delete.
+	(gprs(), fprs()): Delete.
+	(gpr, nip, msr, orig_r3, ctr, lnk, xer, ccr): Delete.
+	(softe, trap, dar, dsisr, result, fpr): Delete.
+
 	* IsaIA32.java (IsaIA32()): Simplify; use
 	BankRegister(int,int,int,Register) constructor where possible.
 	(DBGRegister): Delete.

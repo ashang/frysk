@@ -51,149 +51,87 @@ import frysk.sys.Ptrace.AddressSpace;
 import frysk.proc.live.RegisterSetByteBuffer;
 import frysk.proc.live.AddressSpaceByteBuffer;
 import lib.dwfl.ElfEMachine;
+import frysk.isa.X8664Registers;
 
 public class IsaX8664 implements Isa
 {
-  /**
-   * Offset into user struct from user.h. Determined with:
-   *
-   * #include <sys/types.h>
-   * #include <sys/user.h>
-   * #include <stdio.h>
-   *
-   * #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
-   * 
-   * int
-   * main (int argc, char **argv)
-   * {
-   *   printf("DBG_OFFSET = %d\n", offsetof(struct user, u_debugreg[0]));
-   * }
-   */
-  private static final int DBG_OFFSET = 848;
-
   private static final Instruction X8664Breakpoint
     = new Instruction(new byte[] { (byte)0xcc }, false);
   
-  static class X8664Register extends BankRegister
-  {
-    X8664Register(String name, int wordOffset)
-    {
-      super(0, wordOffset * 8, 8, name);
+    private final LinkedHashMap registerMap = new LinkedHashMap();
+    private void add(BankRegister register) {
+	registerMap.put(register.getName(), register);
     }
-  }
-  static class X8664SegmentRegister extends X8664Register
-  {
-    X8664SegmentRegister (String name, int wordOffset)
-    {
-      super (name, wordOffset);
+
+    IsaX8664()  {
+	add(new BankRegister(0, 80, 8, X8664Registers.RAX));
+	add(new BankRegister(0, 40, 8, X8664Registers.RBX));
+	add(new BankRegister(0, 88, 8, X8664Registers.RCX));
+	add(new BankRegister(0, 96, 8, X8664Registers.RDX));
+	add(new BankRegister(0, 104, 8, X8664Registers.RSI));
+	add(new BankRegister(0, 112, 8, X8664Registers.RDI));
+	add(new BankRegister(0, 32, 8, X8664Registers.RBP));
+	add(new BankRegister(0, 152, 8, X8664Registers.RSP));
+	add(new BankRegister(0, 72, 8, X8664Registers.R8));
+	add(new BankRegister(0, 64, 8, X8664Registers.R9));
+	add(new BankRegister(0, 56, 8, X8664Registers.R10));
+	add(new BankRegister(0, 48, 8, X8664Registers.R11));
+	add(new BankRegister(0, 24, 8, X8664Registers.R12));
+	add(new BankRegister(0, 16, 8, X8664Registers.R13));
+	add(new BankRegister(0, 8, 8, X8664Registers.R14));
+	add(new BankRegister(0, 0, 8, X8664Registers.R15));
+	add(new BankRegister(0, 128, 8, X8664Registers.RIP));
+	add(new BankRegister(0, 144, 8, "eflags"));
+	add(new BankRegister(0, 136, 8, "cs"));
+	add(new BankRegister(0, 160, 8, "ss"));
+	add(new BankRegister(0, 184, 8, "ds"));
+	add(new BankRegister(0, 192, 8, "es"));
+	add(new BankRegister(0, 200, 8, "fs"));
+	add(new BankRegister(0, 208, 8, "gs"));
+	add(new BankRegister(0, 120, 8, "orig_rax"));
+	add(new BankRegister(0, 168, 8, "fs_base"));
+	add(new BankRegister(0, 176, 8, "gs_base"));
+	add(new BankRegister(1, 0, 2, "cwd"));
+	add(new BankRegister(1, 2, 2, "swd"));
+	add(new BankRegister(1, 4, 2, "ftw"));
+	add(new BankRegister(1, 6, 2, "fop"));
+	add(new BankRegister(1, 8, 8, "fprip"));
+	add(new BankRegister(1, 16, 8, "rdp"));
+	add(new BankRegister(1, 24, 4, "mxcsr"));
+	add(new BankRegister(1, 28, 4, "mxcsr_mask"));
+	add(new BankRegister(1, 32, 10, "st0"));
+	add(new BankRegister(1, 48, 10, "st1"));
+	add(new BankRegister(1, 64, 10, "st2"));
+	add(new BankRegister(1, 80, 10, "st3"));
+	add(new BankRegister(1, 96, 10, "st4"));
+	add(new BankRegister(1, 112, 10, "st5"));
+	add(new BankRegister(1, 128, 10, "st6"));
+	add(new BankRegister(1, 144, 10, "st7"));
+	add(new BankRegister(1, 160, 16, "xmm0"));
+	add(new BankRegister(1, 176, 16, "xmm1"));
+	add(new BankRegister(1, 192, 16, "xmm2"));
+	add(new BankRegister(1, 208, 16, "xmm3"));
+	add(new BankRegister(1, 224, 16, "xmm4"));
+	add(new BankRegister(1, 240, 16, "xmm5"));
+	add(new BankRegister(1, 256, 16, "xmm6"));
+	add(new BankRegister(1, 272, 16, "xmm7"));
+	add(new BankRegister(1, 288, 16, "xmm8"));
+	add(new BankRegister(1, 304, 16, "xmm9"));
+	add(new BankRegister(1, 320, 16, "xmm10"));
+	add(new BankRegister(1, 336, 16, "xmm11"));
+	add(new BankRegister(1, 352, 16, "xmm12"));
+	add(new BankRegister(1, 368, 16, "xmm13"));
+	add(new BankRegister(1, 384, 16, "xmm14"));
+	add(new BankRegister(1, 400, 16, "xmm15"));
+	add(new BankRegister(2, 848, 8, "d0"));
+	add(new BankRegister(2, 856, 8, "d1"));
+	add(new BankRegister(2, 864, 8, "d2"));
+	add(new BankRegister(2, 872, 8, "d3"));
+	add(new BankRegister(2, 880, 8, "d4"));
+	add(new BankRegister(2, 888, 8, "d5"));
+	add(new BankRegister(2, 896, 8, "d6"));
+	add(new BankRegister(2, 904, 8, "d7"));
     }
-    public int getLength()
-    {
-      return 4;
-    }
-  }
-
-  static class X8664FPRegister 
-    extends BankRegister 
-  {
-    X8664FPRegister(String name, int regNum) 
-    {
-      super(1, 32 + regNum * 16, 10, name);
-    }
-  }
-
-  static class XMMRegister 
-    extends BankRegister 
-  {
-    XMMRegister(String name, int regNum) 
-    {
-      super(1, 160 + regNum * 16, 16, name);
-    }
-  }
-
-  static class FPConfigRegister
-    extends BankRegister
-  {
-    FPConfigRegister(String name, int wordOffset, int length) 
-    {
-      super(1, wordOffset, length, name);
-    }
-  }
-
-  /**
-   * Debug registers come from the debug bank (USR area) starting at
-   * DBG_OFFSET, are 8 bytes long and are named d0 till d7.
-   */
-  static class DBGRegister
-    extends BankRegister
-  {
-    DBGRegister(int d)
-    {
-      super(2, DBG_OFFSET + d * 8, 8, "d" + d);
-    }
-  }
-
-  private static final X8664Register[] regDefs
-  = { new X8664Register("rax", 10),
-      new X8664Register("rbx", 5),
-      new X8664Register("rcx", 11),
-      new X8664Register("rdx", 12),
-      new X8664Register("rsi", 13),
-      new X8664Register("rdi", 14),
-      new X8664Register("rbp", 4),
-      new X8664Register("rsp", 19),
-      new X8664Register("r8", 9),
-      new X8664Register("r9", 8),
-      new X8664Register("r10", 7),
-      new X8664Register("r11", 6),
-      new X8664Register("r12", 3),
-      new X8664Register("r13", 2),
-      new X8664Register("r14", 1),
-      new X8664Register("r15", 0),
-      new X8664Register("rip", 16),
-      new X8664Register("eflags", 18),
-      new X8664SegmentRegister("cs", 17),
-      new X8664SegmentRegister("ss", 20),
-      new X8664SegmentRegister("ds", 23),
-      new X8664SegmentRegister("es", 24),
-      new X8664SegmentRegister("fs", 25),
-      new X8664SegmentRegister("gs", 26),
-      new X8664Register("orig_rax", 15),
-      new X8664Register("fs_base", 21),
-      new X8664Register("gs_base", 22) };
-
-
-  private LinkedHashMap registerMap = new LinkedHashMap();
-
-  IsaX8664()
-  {
-    for (int i = 0; i < regDefs.length; i++) {
-      registerMap.put(regDefs[i].getName(), regDefs[i]);
-    }
-    registerMap.put("cwd", new FPConfigRegister("cwd", 0, 2));
-    registerMap.put("swd", new FPConfigRegister("swd", 2, 2));
-    registerMap.put("ftw", new FPConfigRegister("ftw", 4, 2));
-    registerMap.put("fop", new FPConfigRegister("fop", 6, 2));
-    registerMap.put("fprip", new FPConfigRegister("fprip", 8, 8));
-    registerMap.put("rdp", new FPConfigRegister("rdp", 16, 8));
-    registerMap.put("mxcsr", new FPConfigRegister("mxcsr", 24, 4));
-    registerMap.put("mxcsr_mask", new FPConfigRegister("mxcsr_mask", 28, 4));
-    for (int i = 0; i < 8; i++) 
-      {
-	String name = "st" + i;
-        registerMap.put(name, new X8664FPRegister(name, i));
-      }
-    for (int i = 0; i < 16; i++) 
-      {
-	String name = "xmm" + i;
-        registerMap.put(name, new XMMRegister(name, i));
-      }
-    for (int i = 0; i < 8; i++)
-      {
-	  BankRegister reg = new DBGRegister(i);
-	registerMap.put(reg.getName(), reg);
-      }
-  }
 
   public Iterator RegisterIterator()
   {
