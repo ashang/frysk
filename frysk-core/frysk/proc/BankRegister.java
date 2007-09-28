@@ -42,6 +42,7 @@ package frysk.proc;
 import java.math.BigInteger;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
+import frysk.isa.Register;
 
 /**
  * Register that is part of a register bank.
@@ -78,7 +79,19 @@ public class BankRegister {
 	this.length = length;
 	this.name = name;
     }
+
+    BankRegister(int bank, int offset, int length, Register register) {
+	this(bank,offset,length,register.name);
+    }
   
+    public String toString() {
+	return (super.toString()
+		+ ",bank=" + bank
+		+ ",offset=" + offset
+		+ ",length=" + length
+		+ ",name=" + name);
+    }
+
     /**
      * Get the value of the register as a long.
      *

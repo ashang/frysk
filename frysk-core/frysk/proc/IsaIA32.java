@@ -51,26 +51,10 @@ import frysk.sys.Ptrace.AddressSpace;
 import frysk.proc.live.RegisterSetByteBuffer;
 import frysk.proc.live.AddressSpaceByteBuffer;
 import lib.dwfl.ElfEMachine;
+import frysk.isa.IA32Registers;
 
 public class IsaIA32 implements Isa
 {
-  /**
-   * Offset into user struct from user.h. Determined with:
-   *
-   * #include <sys/types.h>
-   * #include <sys/user.h>
-   * #include <stdio.h>
-   *
-   * #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
-   * 
-   * int
-   * main (int argc, char **argv)
-   * {
-   *   printf("DBG_OFFSET = %d\n", offsetof(struct user, u_debugreg[0]));
-   * }
-   */
-  private static final int DBG_OFFSET = 252;
-
   private static final Instruction IA32Breakpoint
     = new Instruction(new byte[] { (byte)0xcc }, false);
   
@@ -88,116 +72,61 @@ public class IsaIA32 implements Isa
     return bankBuffers;
   }
   
-  static class IA32Register 
-    extends BankRegister
-  {
-    IA32Register(String name, int wordOffset)
-    {
-      super(0, wordOffset * 4, 4, name);
+    private final LinkedHashMap registerMap = new LinkedHashMap();
+    private void add(BankRegister bankRegister) {
+	registerMap.put(bankRegister.getName(), bankRegister);
     }
-  }
 
-  static class IA32SegmentRegister 
-    extends IA32Register
-  {
-    IA32SegmentRegister(String name, int wordOffset)
-    {
-      super(name, wordOffset);
+    IsaIA32() {
+	add(new BankRegister (0, 24, 4,IA32Registers.EAX));
+	add(new BankRegister (0, 0, 4, IA32Registers.EBX));
+	add(new BankRegister (0, 4, 4, IA32Registers.ECX));
+	add(new BankRegister (0, 8, 4, IA32Registers.EDX));
+	add(new BankRegister (0, 12, 4, IA32Registers.ESI));
+	add(new BankRegister (0, 16, 4, IA32Registers.EDI));
+	add(new BankRegister (0, 20, 4, IA32Registers.EBP));
+	add(new BankRegister (0, 52, 4, IA32Registers.CS));
+	add(new BankRegister (0, 28, 4, IA32Registers.DS));
+	add(new BankRegister (0, 32, 4, IA32Registers.ES));
+	add(new BankRegister (0, 36, 4, IA32Registers.FS));
+	add(new BankRegister (0, 40, 4, IA32Registers.GS));
+	add(new BankRegister (0, 64, 4, IA32Registers.SS));
+	add(new BankRegister (0, 44, 4, "orig_eax"));
+	add(new BankRegister (0, 48, 4, IA32Registers.EIP));
+	add(new BankRegister (0, 56, 4, IA32Registers.EFLAGS));
+	add(new BankRegister (0, 60, 4, IA32Registers.ESP));
+	add(new BankRegister (1, 0, 4, "cwd"));
+	add(new BankRegister (1, 4, 4, "swd"));
+	add(new BankRegister (1, 8, 4, "twd"));
+	add(new BankRegister (1, 12, 4, IA32Registers.FIP));
+	add(new BankRegister (1, 16, 4, IA32Registers.FCS));
+	add(new BankRegister (1, 20, 4, "foo"));
+	add(new BankRegister (1, 24, 4, "fos"));
+	add(new BankRegister (1, 28, 10, IA32Registers.ST0));
+	add(new BankRegister (1, 38, 10, IA32Registers.ST1));
+	add(new BankRegister (1, 48, 10, IA32Registers.ST2));
+	add(new BankRegister (1, 58, 10, IA32Registers.ST3));
+	add(new BankRegister (1, 68, 10, IA32Registers.ST4));
+	add(new BankRegister (1, 78, 10, IA32Registers.ST5));
+	add(new BankRegister (1, 88, 10, IA32Registers.ST6));
+	add(new BankRegister (1, 98, 10, IA32Registers.ST7));
+	add(new BankRegister (2, 160, 16, IA32Registers.XMM0));
+	add(new BankRegister (2, 176, 16, IA32Registers.XMM1));
+	add(new BankRegister (2, 192, 16, IA32Registers.XMM2));
+	add(new BankRegister (2, 208, 16, IA32Registers.XMM3));
+	add(new BankRegister (2, 224, 16, IA32Registers.XMM4));
+	add(new BankRegister (2, 240, 16, IA32Registers.XMM5));
+	add(new BankRegister (2, 256, 16, IA32Registers.XMM6));
+	add(new BankRegister (2, 272, 16, IA32Registers.XMM7));
+	add(new BankRegister (3, 252, 4, "d0"));
+	add(new BankRegister (3, 256, 4, "d1"));
+	add(new BankRegister (3, 260, 4, "d2"));
+	add(new BankRegister (3, 264, 4, "d3"));
+	add(new BankRegister (3, 268, 4, "d4"));
+	add(new BankRegister (3, 272, 4, "d5"));
+	add(new BankRegister (3, 276, 4, "d6"));
+	add(new BankRegister (3, 280, 4, "d7"));
     }
-    public int getLength()
-    {
-      return 2;
-    }
-  }
-
-  static class I387ConfigRegister
-    extends BankRegister
-  {
-    I387ConfigRegister(String name, int wordOffset) 
-    {
-      super(1, wordOffset * 4, 4, name);
-    }
-  }
-    
-  static class IA32FPRegister 
-    extends FPRegister
-  {
-    IA32FPRegister(String name, int regNum) 
-    {
-      super(1, 7*4 + regNum * 10, 10, name);
-    }
-    
-  }
-
-  static class XMMRegister 
-    extends BankRegister 
-  {
-    XMMRegister(String name, int regNum) 
-    {
-      super(2, 160 + regNum * 16, 16, name);
-    }
-  }
-
-  /**
-   * Debug registers come from the debug bank (USR area) starting at
-   * DBG_OFFSET, are 4 bytes long and are named d0 till d7.
-   */
-  static class DBGRegister
-    extends BankRegister
-  {
-    DBGRegister(int d)
-    {
-      super(3, DBG_OFFSET + d * 4, 4, "d" + d);
-    }
-  }
-
-  private static final IA32Register[] 
-  regDefs = { new IA32Register("eax", 6),
-	      new IA32Register("ebx", 0),
-	      new IA32Register("ecx", 1),
-	      new IA32Register("edx", 2),
-	      new IA32Register("esi", 3),
-	      new IA32Register("edi", 4),
-	      new IA32Register("ebp", 5),
-	      new IA32SegmentRegister("cs", 13),
-	      new IA32SegmentRegister("ds", 7),
-	      new IA32SegmentRegister("es", 8),
-	      new IA32SegmentRegister("fs", 9),
-	      new IA32SegmentRegister("gs", 10),
-	      new IA32SegmentRegister("ss", 16),
-	      new IA32Register("orig_eax", 11),
-	      new IA32Register("eip", 12),
-	      new IA32Register("eflags", 14),
-	      new IA32Register("esp", 15) };
-
-  private LinkedHashMap registerMap = new LinkedHashMap();
-
-  IsaIA32()
-  {
-    for (int i = 0; i < regDefs.length; i++) 
-      {
-        registerMap.put(regDefs[i].getName(), regDefs[i]);
-      }
-    String[] i387CntlNames = {"cwd", "swd", "twd", "fip", "fcs", "foo", "fos"};
-    for (int i = 0; i < i387CntlNames.length; i++) 
-      registerMap.put(i387CntlNames[i],
-		      new I387ConfigRegister(i387CntlNames[i], i));
-    for (int i = 0; i < 8; i++) 
-      {
-        String name = "st" + i;
-        registerMap.put(name, new IA32FPRegister(name, i));
-      }
-    for (int i = 0; i < 8; i++) 
-      {
-	String name = "xmm" + i;
-	registerMap.put(name, new XMMRegister(name, i));
-      }
-    for (int i = 0; i < 8; i++) 
-      {
-	BankRegister reg = new DBGRegister(i);
-	registerMap.put(reg.getName(), reg);
-      }
-  }
     
   public Iterator RegisterIterator()
   {

@@ -1,3 +1,18 @@
+2007-09-28  Andrew Cagney  <cagney@redhat.com>
+
+	* IsaIA32.java (IsaIA32()): Simplify; use
+	BankRegister(int,int,int,Register) constructor where possible.
+	(DBGRegister): Delete.
+	(XMMRegister): Delete.
+	(IA387ConfigRegister): Delete.
+	(IA32FPRegister): Delete.
+	(IA32SegmentRegister): Delete.
+	(IA32Register): Delete.
+	(regDefs): Delete.
+	(DBG_OFFSET): Delete.
+	* BankRegister.java (toString): New.
+	(BankRegister(int,int,int,Register)): New.
+
 2007-09-27  Andrew Cagney  <cagney@redhat.com>
 
 	* Isa.java (getRegisterNameByUnwindRegnum): Delete.
