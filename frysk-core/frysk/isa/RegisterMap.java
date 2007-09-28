@@ -39,40 +39,26 @@
 
 package frysk.isa;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class RegisterMap {
     
-    private Map numbers = new HashMap();
-    private Map registers = new HashMap();
+    private final Map integerToRegister = new HashMap();
+    private final Map registerToNumber = new HashMap();
     
-    public int getRegisterNumber(Register register) {
-	return ((Integer) numbers.get(register)).intValue(); 
-    }
-    
-    public final RegisterMap add(Register register, Integer regNum) {
-	numbers.put(register, regNum);
-	registers.put(regNum, register);
+    public final RegisterMap add(Register register,
+				 Number number) {
+	registerToNumber.put(register, number);
+	integerToRegister.put(new Integer(number.intValue()), register);
 	return this;
     }
     
-    public Register getRegister(int regNum) {
-	return (Register) registers.get(new Integer(regNum));
+    public Number getRegisterNumber(Register register) {
+	return (Number) registerToNumber.get(register);
     }
-
-    public Register getRegister(String s) {
-	Collection regs = registers.values();
-	Iterator it = regs.iterator();
-	Register val;
-	while (it.hasNext()) {
-	    val = (Register)it.next();
-	    if (val.name.compareTo(s) == 0)
-		return val;
-	}
-	
-	return null;
+    
+    public Register getRegister(int regNum) {
+	return (Register) integerToRegister.get(new Integer(regNum));
     }
 }

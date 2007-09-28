@@ -1,3 +1,8 @@
+2007-09-28  Andrew Cagney  <cagney@redhat.com>
+
+	* DwarfRegisterMapFactory.java: Pass the DwarfRegister object, and
+	not int, to RegisterMap.add.  Simplify.
+
 2007-09-28  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Changed DwarfDie.getAttrBoolean and DwarfDie.getAttrConst

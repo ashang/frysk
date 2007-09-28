@@ -69,15 +69,15 @@ public class Cursor
 	return (unwinder.isSignalFrame(cursor) == 1);
     }
   
-    public void getRegister(int regNum, long offset, int length,
+    public void getRegister(Number regNum, long offset, int length,
 			    byte[] bytes, int start) {
-	unwinder.getRegister(cursor, regNum, offset, length,
+	unwinder.getRegister(cursor, regNum.intValue(), offset, length,
 			     bytes, start);
     }
 
-    public void setRegister(int regNum, long offset, int length,
+    public void setRegister(Number regNum, long offset, int length,
 			    byte[] bytes, int start) {
-	unwinder.setRegister(cursor, regNum, offset, length,
+	unwinder.setRegister(cursor, regNum.intValue(), offset, length,
 			     bytes, start);
     }
 
