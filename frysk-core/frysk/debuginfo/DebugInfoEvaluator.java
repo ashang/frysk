@@ -351,8 +351,19 @@ class DebugInfoEvaluator
      * @return Value corresponding to the address of symbol s 
      */
     public Value getAddress (String s) throws NameNotFoundException {
-	AccessMemory access = new AccessMemory();
-	return longType.createValue(access.getAddr(getVariable(s).getVariableDie())); 
+	Variable var = getVariable(s);
+	DwarfDie variableDie = var.getVariableDie();
+	List ops = variableDie.getFormData(frame.getAdjustedAddress());
+	LocationExpression locExpr = new LocationExpression(frame, variableDie, ops);
+	PieceLocation pieceLoc = new PieceLocation(locExpr.decode(var.getType(frame).getSize()));
+	
+	// Throw exception in case of non-contiguous memory or
+	// if value not in memory.
+	if (pieceLoc.getPieces().size() > 1 || 
+	    !(pieceLoc.getPieces().get(0) instanceof MemoryPiece))
+	    throw new RuntimeException();
+	else
+	    return longType.createValue(((MemoryPiece)pieceLoc.getPieces().get(0)).getMemory());
     }
   
     /**
