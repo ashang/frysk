@@ -1,5 +1,7 @@
 2007-09-28  Andrew Cagney  <cagney@redhat.com>
 
+	* mkenum.sh (equals): Return false when null.
+	
 	* mkenum.sh: Extend java.lang.Number.
 	(intValue()): New.
 	(longValue()): New.

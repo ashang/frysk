@@ -156,6 +156,10 @@ ${sp}   * Return true if OBJECT has the same value.
 ${sp}   */
 ${sp}  public boolean equals (Object o)
 ${sp}  {
+${sp}    if (o == null)
+${sp}      return false;
+${sp}    if (! (o instanceof ${class}))
+${sp}      return false;
 ${sp}    return ((${class})o).intValue() == this.intValue();
 ${sp}  }
 ${sp}  public int hashCode ()
