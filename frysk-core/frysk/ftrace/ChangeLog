@@ -1,5 +1,13 @@
 2007-09-29  Petr Machata  <pmachata@redhat.com>
 
+	* ObjectFile.java: Adjust to ElfSymbol changes.
+	Even lazier loading, only load dynamic symbols that are necessary
+	for PLT trace points.
+	Added assertions before long->int conversions.
+	* TestLtrace.java: Remove `nresolvedOffUtrace for #5054.
+
+2007-09-29  Petr Machata  <pmachata@redhat.com>
+
 	* Archx8664.java: New file.
 	* ArchFactory.java: Recognize x86_64.
 	* TestLtrace.java: Simplify tests, recognize x86_64's ld-linux.

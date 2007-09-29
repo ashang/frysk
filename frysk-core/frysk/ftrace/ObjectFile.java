@@ -106,14 +106,19 @@ public class ObjectFile
     void tracePoint(TracePoint tracePoint);
   }
 
+  private static void assertFitsToInt(long num, String context)
+  {
+    int numi = (int)num;
+    if ((long)numi != num)
+      throw new ArithmeticException(context + ": " + num + " doesn't fit into int.");
+  }
+
   /**
    * All-purpose builder for ftrace Symbols and TracePoints.
    */
   private class ObjFBuilder
     implements ElfSymbol.Builder
   {
-    //private Set loadedSymbols = new HashSet();
-
     /** Used for tracking of what is currently being loaded. */
     private TracePointOrigin origin = null;
 
@@ -124,7 +129,8 @@ public class ObjectFile
      * This is the array where symbols from DYNAMIC are stored, should
      * they be needed for PLT tracepoints.
      */
-    private ArrayList dynamicSymbolList = new ArrayList();
+    private Symbol[] dynamicSymbolList = null;
+    private ElfSymbol.Loader dynamicLoader = null;
 
     /**
      * Map with tracepoints of various origin.
@@ -135,10 +141,10 @@ public class ObjectFile
     /** Whether this file takes part in dynamic linking. */
     private boolean haveDynamic = false;
 
-    public void symbol (final String name, long value, long size,
-			ElfSymbolType type, ElfSymbolBinding bind,
-			ElfSymbolVisibility visibility, long shndx,
-			List versions)
+    public void symbol (long index, String name,
+			long value, long size,
+			ElfSymbolType type, ElfSymbolBinding bind, ElfSymbolVisibility visibility,
+			long shndx, List versions)
     {
       /// XXX FIXME: We probably want to share symbols to some extent,
       /// so that entries from SYMTAB that are also present in DYNSYM
@@ -147,15 +153,20 @@ public class ObjectFile
 
       String dName = Demangler.demangle(name);
       logger.log(Level.FINEST, "Got new symbol `" + dName + "'.");
-      final Symbol sym = new Symbol(dName, type, value, size, shndx, versions);
+      Symbol sym = new Symbol(dName, type, value, size, shndx, versions);
       sym.addedTo(ObjectFile.this);
 
       // Keep track of loaded dynamic symbols.  We will need this when
       // building PLT entries.
-      if (this.origin == TracePointOrigin.DYNAMIC)
-	this.dynamicSymbolList.add(sym);
+      if (this.origin == TracePointOrigin.DYNAMIC
+	  || this.origin == TracePointOrigin.PLT)
+	{
+	  assertFitsToInt(index, "Symbol index");
+	  this.dynamicSymbolList[(int)index] = sym;
+	}
 
-      if (type == ElfSymbolType.ELF_STT_FUNC)
+      if (type == ElfSymbolType.ELF_STT_FUNC
+	  && value != 0)
 	this.addNewTracepoint(value, sym);
     }
 
@@ -180,34 +191,59 @@ public class ObjectFile
 	   || origin == TracePointOrigin.DYNAMIC)
 	  && this.haveDynamic)
 	{
-	  // Load dynamic symtab and PLT entries.
-	  logger.log(Level.FINER, "Loading dynamic symtab.");
-	  this.origin = TracePointOrigin.DYNAMIC;
-	  this.tracePoints = new ArrayList();
-	  this.tracePointMap.put(this.origin, this.tracePoints);
+	  // Initialize dynamic symbol list for PLT if necessary...
+	  if (this.dynamicSymbolList == null)
+	    {
+	      long count = ElfSymbol.symbolsCount(ObjectFile.this.dynamicSymtab);
+	      assertFitsToInt(count, "Symbol count");
+	      this.dynamicSymbolList = new Symbol[(int)count];
+	      this.dynamicLoader
+		= new ElfSymbol.Loader(ObjectFile.this.dynamicSymtab, ObjectFile.this.dynamicVersym,
+				       ObjectFile.this.dynamicVerdef, ObjectFile.this.dynamicVerdefCount,
+				       ObjectFile.this.dynamicVerneed, ObjectFile.this.dynamicVerneedCount);
+	    }
 
-	  ElfSymbol.loadFrom(ObjectFile.this.dynamicSymtab, ObjectFile.this.dynamicVersym,
-			     ObjectFile.this.dynamicVerdef, ObjectFile.this.dynamicVerdefCount,
-			     ObjectFile.this.dynamicVerneed, ObjectFile.this.dynamicVerneedCount,
-			     this);
+	  if (origin == TracePointOrigin.DYNAMIC)
+	    {
+	      // Load dynamic symtab and PLT entries.
+	      logger.log(Level.FINER, "Loading dynamic symtab.");
+	      this.origin = TracePointOrigin.DYNAMIC;
+	      this.tracePoints = new ArrayList();
+	      this.tracePointMap.put(this.origin, this.tracePoints);
+
+	      this.dynamicLoader.loadAll(this);
+	    }
 
 	  if (origin == TracePointOrigin.PLT)
 	    {
-	      logger.log(Level.FINER, "Loading PLT entries.");
+	      int pltCount = ObjectFile.this.pltRelocs.length;
+	      logger.log(Level.FINER, "Loading " + pltCount + " PLT entries.");
 	      this.origin = TracePointOrigin.PLT;
 	      this.tracePoints = new ArrayList();
 	      this.tracePointMap.put(this.origin, this.tracePoints);
 
 	      long pltEntrySize = ObjectFile.this.pltSize / (ObjectFile.this.pltRelocs.length + 1);
-	      for (int i = 0; i < ObjectFile.this.pltRelocs.length; ++i)
-		/* XXX HACK: 386 specific.  In general we want
+	      for (int i = 0; i < pltCount; ++i)
+		/* XXX HACK: 386/x64 specific.  In general we want
 		 * platform-independent way of asking whether it's
 		 * JMP_SLOT relocation. */
 		if (ObjectFile.this.pltRelocs[i].type == 7)
 		  {
 		    long pltEntryAddr = ObjectFile.this.pltAddr + pltEntrySize * (i + 1);
 		    long symbolIndex = ObjectFile.this.pltRelocs[i].symbolIndex;
-		    Symbol symbol = (Symbol)this.dynamicSymbolList.get((int)symbolIndex - 1);
+
+		    assertFitsToInt(symbolIndex, "Symbol associated with PLT entry");
+		    Symbol symbol = this.dynamicSymbolList[(int)symbolIndex];
+		    if (symbol == null)
+		      {
+			logger.log(Level.FINEST,
+				   "Lazy loading symbol #" + symbolIndex);
+			this.dynamicLoader.load(symbolIndex, this);
+			symbol = this.dynamicSymbolList[(int)symbolIndex];
+		      }
+		    if (symbol == null)
+		      throw new AssertionError("Dynamic symbol still not initialized.");
+
 		    logger.log(Level.FINEST,
 			       "Got plt entry for `" + symbol.name
 			       + "' at 0x" + Long.toHexString(pltEntryAddr) + ".");
@@ -224,7 +260,7 @@ public class ObjectFile
 	  this.tracePoints = new ArrayList();
 	  this.tracePointMap.put(this.origin, this.tracePoints);
 
-	  ElfSymbol.loadFrom(ObjectFile.this.staticSymtab, this);
+	  new ElfSymbol.Loader(ObjectFile.this.staticSymtab).loadAll(this);
 	}
 
       return this.tracePoints;
@@ -307,6 +343,7 @@ public class ObjectFile
 		  else if (tag == ElfDynamic.ELF_DT_SONAME)
 		    {
 		      logger.log(Level.FINEST, " * soname index = 0x" + Long.toHexString(value));
+		      assertFitsToInt(value, "SONAME index");
 		      locals.dynamicSonameIdx = (int)value;
 		    }
 		  else if (tag == ElfDynamic.ELF_DT_SYMTAB)
@@ -327,6 +364,7 @@ public class ObjectFile
 		  else if (tag == ElfDynamic.ELF_DT_VERDEFNUM)
 		    {
 		      logger.log(Level.FINEST, " * verdefnum = " + Long.toString(value));
+		      assertFitsToInt(value, "Count of VERDEF entries");
 		      ObjectFile.this.dynamicVerdefCount = (int)value;
 		    }
 		  else if (tag == ElfDynamic.ELF_DT_VERNEED)
@@ -337,6 +375,7 @@ public class ObjectFile
 		  else if (tag == ElfDynamic.ELF_DT_VERNEEDNUM)
 		    {
 		      logger.log(Level.FINEST, " * verneednum = " + Long.toString(value));
+		      assertFitsToInt(value, "Count of VERNEED entries");
 		      ObjectFile.this.dynamicVerneedCount = (int)value;
 		    }
 		}

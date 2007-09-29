@@ -69,9 +69,6 @@ public class TestLtrace
 
   public void testAllLibrariesGetDetected()
   {
-      if(unresolvedOffUtrace(5054))
-	  return;
-
     class MyController1
       implements LtraceController
     {
@@ -106,9 +103,9 @@ public class TestLtrace
 
   public void testCallRecorded()
   {
-      if(unresolvedOffUtrace(5053))
-	  return;
-    
+    if(unresolvedOffUtrace(5053))
+      return;
+
     class MyController2
       implements LtraceController
     {

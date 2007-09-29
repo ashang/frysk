@@ -844,7 +844,7 @@ public class TestElf
         ElfSectionHeader sheader = section.getSectionHeader();
 	if (sheader.type == ElfSectionHeader.ELF_SHT_SYMTAB)
 	  {
-	    ElfSymbol.loadFrom(section, symbolChecker);
+	    new ElfSymbol.Loader(section).loadAll(symbolChecker);
 	    symbolChecker.postCheck();
 	  }
 	else if (sheader.type == ElfSectionHeader.ELF_SHT_REL)
@@ -1048,15 +1048,15 @@ public class TestElf
 	false, false, true, true, false, false, false, false, false
       };
 
-      ElfSymbol.loadFrom(locals.dynamicSymtab, locals.dynamicVersym,
-			 locals.dynamicVerdef, locals.dynamicVerdefCount,
-			 locals.dynamicVerneed, locals.dynamicVerneedCount,
-			 new ElfSymbol.Builder() {
+      new ElfSymbol.Loader(locals.dynamicSymtab, locals.dynamicVersym,
+			   locals.dynamicVerdef, locals.dynamicVerdefCount,
+			   locals.dynamicVerneed, locals.dynamicVerneedCount)
+	.loadAll(new ElfSymbol.Builder() {
 	  private int counter = 0;
-	  public void symbol (String name, long value, long size,
-			      ElfSymbolType type, ElfSymbolBinding bind,
-			      ElfSymbolVisibility visibility, long shndx,
-			      List versions)
+	  public void symbol (long index, String name,
+			      long value, long size,
+			      ElfSymbolType type, ElfSymbolBinding bind, ElfSymbolVisibility visibility,
+			      long shndx, List versions)
 	  {
 	    assertEquals("symbol-" + counter + "-name", expectedSymNames[counter], name);
 	    assertEquals("symbol-" + counter + "-value", expectedSymValues[counter], value);
@@ -1174,31 +1174,39 @@ public class TestElf
 
   class SymbolChecker implements ElfSymbol.Builder {
     String[] expectedSymbolNames
-      = {"helloworld.c", "", "",
+      = {null,
+	 "helloworld.c", "", "",
 	 "", "", "",
 	 "", "main", "prinf"};
     ElfSymbolType[] expectedSymbolTypes
-      = {ElfSymbolType.ELF_STT_FILE,    ElfSymbolType.ELF_STT_SECTION, ElfSymbolType.ELF_STT_SECTION,
+      = {null,
+	 ElfSymbolType.ELF_STT_FILE,    ElfSymbolType.ELF_STT_SECTION, ElfSymbolType.ELF_STT_SECTION,
 	 ElfSymbolType.ELF_STT_SECTION, ElfSymbolType.ELF_STT_SECTION, ElfSymbolType.ELF_STT_SECTION,
 	 ElfSymbolType.ELF_STT_SECTION, ElfSymbolType.ELF_STT_FUNC,    ElfSymbolType.ELF_STT_NOTYPE};
     ElfSymbolBinding[] expectedSymbolBinds
-      = {ElfSymbolBinding.ELF_STB_LOCAL, ElfSymbolBinding.ELF_STB_LOCAL,  ElfSymbolBinding.ELF_STB_LOCAL,
+      = {null,
+	 ElfSymbolBinding.ELF_STB_LOCAL, ElfSymbolBinding.ELF_STB_LOCAL,  ElfSymbolBinding.ELF_STB_LOCAL,
 	 ElfSymbolBinding.ELF_STB_LOCAL, ElfSymbolBinding.ELF_STB_LOCAL,  ElfSymbolBinding.ELF_STB_LOCAL,
 	 ElfSymbolBinding.ELF_STB_LOCAL, ElfSymbolBinding.ELF_STB_GLOBAL, ElfSymbolBinding.ELF_STB_GLOBAL};
     long[] expectedSymbolShndxs
-      = {ElfSectionHeader.ELF_SHN_ABS, 1, 3,
+      = {-1,
+	 ElfSectionHeader.ELF_SHN_ABS, 1, 3,
 	 4, 5, 7,
 	 6, 1, ElfSectionHeader.ELF_SHN_UNDEF};
     long[] expectedSymbolSizes
-      = {0, 0,  0,
+      = {-1,
+	 0, 0,  0,
 	 0, 0,  0,
 	 0, 43, 0};
 
-    int index = 0;
-    public void symbol (String name, long value, long size, ElfSymbolType type,
-			ElfSymbolBinding bind, ElfSymbolVisibility visibility,
+    int counter = 1; // Special first entry is skipped.
+    public void symbol (long idx, String name,
+			long value, long size,
+			ElfSymbolType type, ElfSymbolBinding bind, ElfSymbolVisibility visibility,
 			long shndx, List versions)
     {
+      int index = (int)idx; // Java can't index arrays with long.  It
+			    // doesn't matter here though...
       assertTrue("symbol table length", index < expectedSymbolNames.length);
 
       assertEquals("symbol-" + index + "-name", expectedSymbolNames[index], name);
@@ -1209,12 +1217,12 @@ public class TestElf
       assertEquals("symbol-" + index + "-visibility", ElfSymbolVisibility.ELF_STV_DEFAULT, visibility);
       assertEquals("symbol-" + index + "-shndx", expectedSymbolShndxs[index], shndx);
 
-      ++index;
+      counter++;
     }
 
     public void postCheck()
     {
-      assertEquals("symbol table length", expectedSymbolNames.length, index);
+      assertEquals("symbol table length", expectedSymbolNames.length, counter);
     }
   }
   private SymbolChecker symbolChecker = new SymbolChecker();

@@ -75,7 +75,7 @@ lib::dwfl::ElfSymbol::elf_buildsymbol (lib::dwfl::Elf * parent,
   ElfSymbolVisibility * visibility = ElfSymbolVisibility::intern(ELF64_ST_VISIBILITY(sym.st_other));
   jlong shndx = sym.st_shndx;
 
-  builder->symbol(name, value, size, type, bind, visibility, shndx, versions);
+  builder->symbol(symbol_index, name, value, size, type, bind, visibility, shndx, versions);
 
   return true;
 }

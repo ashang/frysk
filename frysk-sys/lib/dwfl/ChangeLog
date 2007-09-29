@@ -1,3 +1,12 @@
+2007-09-29  Petr Machata  <pmachata@redhat.com>
+
+	* ElfSymbol.java (Builder.symbol): Pass additional `index'
+	parameter to builders.
+	(Loader): New class.  Allows for incremental loading of symbols.
+	(symbolsCount): New static method.
+	* TestElf.java: Adjust for API changes.
+	* cni/ElfSymbol.cxx (elf_buildsymbol): Pass `index' to builder.
+
 2007-09-28  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DwarfDie.java (getAttrBoolean): Now takes a DwAt object.

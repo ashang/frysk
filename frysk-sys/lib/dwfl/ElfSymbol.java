@@ -52,6 +52,7 @@ public class ElfSymbol {
       /**
        * Called for each symbol.
        *
+       * @param index Index of symbol in symbol table.
        * @param name Name of symbol.
        * @param value Address of symbol if symbol is defined, or 0.
        * @param size Size of object associated with the symbol.
@@ -64,8 +65,9 @@ public class ElfSymbol {
        *   symbol. If there are none, null is passed instead of
        *   empty list.
        */
-      void symbol (String name, long value, long size, ElfSymbolType type,
-		   ElfSymbolBinding bind, ElfSymbolVisibility visibility,
+      void symbol (long index, String name,
+		   long value, long size,
+		   ElfSymbolType type, ElfSymbolBinding bind, ElfSymbolVisibility visibility,
 		   long shndx, List versions);
     }
 
@@ -90,55 +92,90 @@ public class ElfSymbol {
       Aux[] aux;	// associated auxiliary entries
     }
 
-    /**
-     * Calls {@see Builder.symbol} with each symbol in given
-     * section.
-     *
-     * @param symbolsS Section of type STRTAB or DYNSYM, contains
-     * symbol table.  Must not be null.
-     * @param versymS Section of type GNU_versym.  May be null, but in
-     * that case verdefS and verneedS have to be null, too.
-     * @param verdefS Section with version definitions, typed GNU_verdef.
-     * May be null, if verneed is not null.
-     * @param verdefCount Number of verdef entries.  If verdefS is
-     * null, this has to be 0.
-     * @param verneed Section with version requirements, typed
-     * GNU_verneed.  May be null, if verdef is not null.
-     * @param verneedCount Number of verdneed entries.  If verneedS is
-     * null, this has to be 0.
-     */
-    public static void loadFrom(ElfSection symbolsS, ElfSection versymS,
-				ElfSection verdefS, int verdefCount,
-				ElfSection verneedS, int verneedCount,
-				ElfSymbol.Builder builder)
+    private static ElfSectionHeader getSymtabHeader(ElfSection symbolsS)
       throws ElfException
     {
+      ElfSectionHeader symbolsH = symbolsS.getSectionHeader();
+      if (!(symbolsH.type == ElfSectionHeader.ELF_SHT_SYMTAB
+	    || symbolsH.type == ElfSectionHeader.ELF_SHT_DYNSYM))
+	throw new ElfException("Section " + symbolsH.name + " doesn't contain symbol table.");
+      return symbolsH;
+    }
+
+    public static long symbolsCount(ElfSection symbolsS)
+      throws ElfException
+    {
+      ElfSectionHeader symbolsH = getSymtabHeader(symbolsS);
+      return symbolsH.size / symbolsH.entsize;
+    }
+
+    public static class Loader
+    {
+      private final Elf parent;
+      private final ElfSectionHeader symbolsH;
+      private final long symbolsCount;
+      private final long symbolsP;
+      private final long versymP;
+
+      // Contains list of all found versions (verdefs as well as
+      // verneeds).  It's keyed by unique version ID.  The value is
+      // list of defs and needs associated with given ID.
+      private final Map versionMap = new HashMap();
+
+      /**
+       * Initializes symbol loader, assuming you have no version
+       * information associated.
+       *
+       * @param symbolsS Section of type STRTAB or DYNSYM, contains
+       * symbol table.  Must not be null.
+       */
+      public Loader(ElfSection symbolsS)
+	throws ElfException
+      {
+	this(symbolsS, null,
+	     null, 0,
+	     null, 0);
+      }
+
+      /**
+       * Initializes symbol loader.
+       *
+       * @param symbolsS Section of type STRTAB or DYNSYM, contains
+       * symbol table.  Must not be null.
+       * @param versymS Section of type GNU_versym.  May be null, but in
+       * that case verdefS and verneedS have to be null, too.
+       * @param verdefS Section with version definitions, typed GNU_verdef.
+       * May be null, if verneed is not null.
+       * @param verdefCount Number of verdef entries.  If verdefS is
+       * null, this has to be 0.
+       * @param verneed Section with version requirements, typed
+       * GNU_verneed.  May be null, if verdef is not null.
+       * @param verneedCount Number of verdneed entries.  If verneedS is
+       * null, this has to be 0.
+       */
+      public Loader(ElfSection symbolsS, ElfSection versymS,
+		    ElfSection verdefS, int verdefCount,
+		    ElfSection verneedS, int verneedCount)
+	throws ElfException
+      {
 	// Sanity checks...
 
-	Elf parent = symbolsS.getParent();
-	ElfSectionHeader symbolsH = symbolsS.getSectionHeader();
-	if (!(symbolsH.type == ElfSectionHeader.ELF_SHT_SYMTAB
-	      || symbolsH.type == ElfSectionHeader.ELF_SHT_DYNSYM))
-	  throw new ElfException("Section " + symbolsH.name + " doesn't contain symbol table.");
-	long symbolsP = symbolsS.getData().getPointer();
-	long symbolsCount = symbolsH.size / symbolsH.entsize;
+	parent = symbolsS.getParent();
+	symbolsH = getSymtabHeader(symbolsS);
+	symbolsP = symbolsS.getData().getPointer();
+	symbolsCount = symbolsH.size / symbolsH.entsize;
 
-	ElfSectionHeader versymH = null;
-	long versymP = 0;
 	if (versymS != null)
 	  {
-	    versymH = versymS.getSectionHeader();
+	    ElfSectionHeader versymH = versymS.getSectionHeader();
 	    if (versymH.type != ElfSectionHeader.ELF_SHT_GNU_versym)
 	      throw new ElfException("Section " + versymH.name + " doesn't contain versym info.");
 	    ElfData d = versymS.getData();
 	    versymP = d.getPointer();
 	  }
+	else
+	  versymP = 0;
 
-
-	// Contains list of all found versions (verdefs as well as
-	// verneeds).  It's keyed by unique version ID.  The value is
-	// list of defs and needs associated with given ID.
-	Map versionMap = new HashMap();
 
 	// Load verdefs and store to versionMap.
 	if (verdefS != null)
@@ -201,38 +238,51 @@ public class ElfSymbol {
 	  }
 	else if (verneedCount != 0)
 	  throw new AssertionError("Inconsistent verneed count.");
+      }
 
-	// And call the builder with each symbol in table.
-	// Note: ignoring special symbol entry on index 0.
-	for (long i = 1; i < symbolsCount; ++i)
+      private void privateLoad(long index, ElfSymbol.Builder builder)
+	throws ElfException
+      {
+	List versions = null;
+
+	if (versymP != 0)
 	  {
-	    List versions = null;
-
-	    if (versymS != null)
+	    int version = elf_getversym(versymP, index);
+	    if ((version & 0x8000) != 0)
 	      {
-		int version = elf_getversym(versymP, i);
-		if ((version & 0x8000) != 0)
-		  {
-		    //hidden = true;
-		    version ^= 0x8000;
-		  }
-
-		versions = (List)versionMap.get(new Integer(version));
+		//hidden = true;
+		version ^= 0x8000;
 	      }
 
-
-	    if (!elf_buildsymbol(parent, symbolsP, i, symbolsH.link, versions, builder))
-	      throw new ElfException("Symbol on index " + i + " couldn't be retrieved.");
+	    versions = (List)versionMap.get(new Integer(version));
 	  }
-    }
 
-    public static void loadFrom(ElfSection symbols, ElfSymbol.Builder builder)
-      throws ElfException
-    {
-      loadFrom(symbols, null,
-	       null, 0,
-	       null, 0,
-	       builder);
+	if (!elf_buildsymbol(parent, symbolsP, index, symbolsH.link, versions, builder))
+	  throw new ElfException("Symbol on index " + index + " couldn't be retrieved.");
+      }
+
+      /**
+       * Load all symbols in prepared symbol tables.  Calls
+       * ElfSymbol.Builder.symbol for each symbol found.
+       */
+      public void loadAll(ElfSymbol.Builder builder)
+	throws ElfException
+      {
+	// Note: ignoring special symbol entry on index 0.
+	for (long i = 1; i < symbolsCount; ++i)
+	  privateLoad(i, builder);
+      }
+
+      /**
+       * Request loading symbol on given index.
+       */
+      public void load(long index, ElfSymbol.Builder builder)
+	throws ElfException
+      {
+	if (index < 0 || index >= symbolsCount)
+	  throw new IllegalArgumentException("Invalid index.");
+	privateLoad(index, builder);
+      }
     }
 
     protected static native boolean elf_buildsymbol(Elf parent, long data_pointer,
