@@ -1,5 +1,11 @@
 2007-09-29  Petr Machata  <pmachata@redhat.com>
 
+	* Archx8664.java: New file.
+	* ArchFactory.java: Recognize x86_64.
+	* TestLtrace.java: Simplify tests, recognize x86_64's ld-linux.
+
+2007-09-29  Petr Machata  <pmachata@redhat.com>
+
 	* Ltrace.java: Instead of pre-loading all tracepoints and
 	filtering them through user-provided filter, let user provide a
 	controller that drives the tracing process.

@@ -67,86 +67,70 @@ public class TestLtrace
     public void taskTerminated(Task task, boolean signal, int value) { }
   }
 
-  class MyController
-    implements LtraceController
-  {
-    private TracePointFilter filter;
-
-    public MyController(TracePointFilter filter)
-    {
-      this.filter = filter;
-    }
-
-    public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver)
-    {
-      try
-	{
-	  objf.eachTracePoint(new ObjectFile.TracePointIterator() {
-	      public void tracePoint(TracePoint tp)
-	      {
-		if (tp.address != 0
-		    && filter.tracePoint(task, tp))
-		  driver.tracePoint(task, tp);
-	      }
-	    });
-	}
-      catch (lib.dwfl.ElfException ee)
-	{
-	  ee.printStackTrace();
-	}
-    }
-  }
-
   public void testAllLibrariesGetDetected()
   {
-      if(unresolvedOnx8664(5048)
-	 || unresolvedOffUtrace(5054))
+      if(unresolvedOffUtrace(5054))
 	  return;
 
-    class MyFilter implements TracePointFilter {
-      public HashSet allLibraries = new HashSet();
-      public boolean tracePoint(Task task, TracePoint tp) {
-	String soname = tp.symbol.getParent().getSoname();
-	allLibraries.add(soname);
-	return false;
+    class MyController1
+      implements LtraceController
+    {
+      public ArrayList allLibraries = new ArrayList();
+      public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver)
+      {
+	allLibraries.add(objf.getSoname());
       }
     }
-    MyFilter filter = new MyFilter();
-    MyController controller = new MyController(filter);
-    Ltrace ltrace = new Ltrace(controller);
 
     String[] cmd = {Config.getPkgLibFile("funit-empty").getPath()};
-    ltrace.addObserver(new DummyLtraceObserver() {
-	public void fileMapped(Task task, File file) {
-	}
-      });
-    ltrace.trace(cmd);
+    MyController1 controller = new MyController1();
+    new Ltrace(controller).trace(cmd);
 
-    String[] expectedSonames = {"libc.so.6", "ld-linux.so.2", "funit-empty"};
+    String[] expectedSonames = {"libc\\.so\\.6", "ld-linux.*\\.so\\.2", "funit-empty"};
     for (int i = 0; i < expectedSonames.length; ++i)
       {
-	String soname = expectedSonames[i];
-	assertTrue("library `" + soname + "' found", filter.allLibraries.contains(soname));
+	boolean found = false;
+	for (Iterator it = controller.allLibraries.iterator(); it.hasNext(); )
+	  {
+	    String soname = (String)it.next();
+	    if (Pattern.matches(expectedSonames[i], soname))
+	      {
+		found = true;
+		break;
+	      }
+	  }
+	assertTrue("library with pattern `" + expectedSonames[i] + "' found", found);
       }
-    assertEquals("number of recorded libraries", expectedSonames.length, filter.allLibraries.size());
+    assertEquals("number of recorded libraries", expectedSonames.length, controller.allLibraries.size());
   }
 
   public void testCallRecorded()
   {
-      if(unresolvedOnx8664(5048)
-	 || unresolvedOffUtrace(5053))
+      if(unresolvedOffUtrace(5053))
+	  return;
+    
+    class MyController2
+      implements LtraceController
+    {
+      public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver)
+      {
+	if (!task.getProc().getExe().equals(objf.getFilename().getPath()))
 	  return;
 
-    class MyFilter2 implements TracePointFilter {
-      public boolean tracePoint(Task task, TracePoint tp) {
-	if (tp.origin != frysk.ftrace.TracePointOrigin.PLT)
-	  return false;
-	String symFilename = tp.symbol.getParent().getFilename().getPath();
-	String taskFilename = task.getProc().getExe();
-	return taskFilename.equals(symFilename);
+	try {
+	  objf.eachTracePoint(new ObjectFile.TracePointIterator() {
+	      public void tracePoint(TracePoint tp) {
+		driver.tracePoint(task, tp);
+	      }
+	    }, TracePointOrigin.PLT);
+	}
+	catch (lib.dwfl.ElfException ee) {
+	  ee.printStackTrace();
+	}
       }
     }
-    Ltrace ltrace = new Ltrace(new MyController(new MyFilter2()));
+
+    Ltrace ltrace = new Ltrace(new MyController2());
 
     class MyObserver extends DummyLtraceObserver {
       public ArrayList events = new ArrayList();

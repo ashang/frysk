@@ -39,25 +39,39 @@
 
 package frysk.ftrace;
 
+import inua.eio.ByteBuffer;
+
 import frysk.proc.Task;
-import lib.dwfl.ElfEMachine;
+import frysk.proc.BankRegister;
 
-public class ArchFactory
-{
-  public static final ArchFactory instance = new ArchFactory();
-
-  protected ArchFactory()
-  {
+/**
+ * x86_64 implementation of Arch interface.
+ */
+public class Archx8664
+  implements Arch
+{ 
+  public static final Arch instance = new Archx8664();
+  
+  protected Archx8664() {}
+  
+  public long getReturnAddress(Task task, Symbol symbol)
+  { 
+    ByteBuffer memBuf = task.getMemory();
+    BankRegister rspRegister = task.getIsa().getRegisterByName("rsp");
+    long rsp = rspRegister.get(task);
+    long retAddr = memBuf.getLong(rsp);
+    return retAddr;
   }
-
-  public Arch getArch(Task task)
-  {
-    int machine = task.getIsa().getElfMachineType();
-    if (machine == ElfEMachine.EM_386)
-      return Archx86.instance;
-    else if (machine == ElfEMachine.EM_X86_64)
-      return Archx8664.instance;
-    else
-      throw new AssertionError("Arch not supported.");
+  
+  public Object[] getCallArguments(Task task, Symbol symbol)
+  { 
+    Object[] ret = {};
+    return ret;
+  }
+  
+  public Object getReturnValue(Task task, Symbol symbol)
+  { 
+    BankRegister r = task.getIsa().getRegisterByName("rax");
+    return new Long(r.get(task));
   }
 }
