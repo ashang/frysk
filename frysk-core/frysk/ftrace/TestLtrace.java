@@ -67,12 +67,42 @@ public class TestLtrace
     public void taskTerminated(Task task, boolean signal, int value) { }
   }
 
+  class MyController
+    implements LtraceController
+  {
+    private TracePointFilter filter;
+
+    public MyController(TracePointFilter filter)
+    {
+      this.filter = filter;
+    }
+
+    public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver)
+    {
+      try
+	{
+	  objf.eachTracePoint(new ObjectFile.TracePointIterator() {
+	      public void tracePoint(TracePoint tp)
+	      {
+		if (tp.address != 0
+		    && filter.tracePoint(task, tp))
+		  driver.tracePoint(task, tp);
+	      }
+	    });
+	}
+      catch (lib.dwfl.ElfException ee)
+	{
+	  ee.printStackTrace();
+	}
+    }
+  }
+
   public void testAllLibrariesGetDetected()
   {
       if(unresolvedOnx8664(5048)
 	 || unresolvedOffUtrace(5054))
 	  return;
-      
+
     class MyFilter implements TracePointFilter {
       public HashSet allLibraries = new HashSet();
       public boolean tracePoint(Task task, TracePoint tp) {
@@ -82,7 +112,8 @@ public class TestLtrace
       }
     }
     MyFilter filter = new MyFilter();
-    Ltrace ltrace = new Ltrace(filter);
+    MyController controller = new MyController(filter);
+    Ltrace ltrace = new Ltrace(controller);
 
     String[] cmd = {Config.getPkgLibFile("funit-empty").getPath()};
     ltrace.addObserver(new DummyLtraceObserver() {
@@ -105,7 +136,7 @@ public class TestLtrace
       if(unresolvedOnx8664(5048)
 	 || unresolvedOffUtrace(5053))
 	  return;
-      
+
     class MyFilter2 implements TracePointFilter {
       public boolean tracePoint(Task task, TracePoint tp) {
 	if (tp.origin != frysk.ftrace.TracePointOrigin.PLT)
@@ -115,7 +146,7 @@ public class TestLtrace
 	return taskFilename.equals(symFilename);
       }
     }
-    Ltrace ltrace = new Ltrace(new MyFilter2());
+    Ltrace ltrace = new Ltrace(new MyController(new MyFilter2()));
 
     class MyObserver extends DummyLtraceObserver {
       public ArrayList events = new ArrayList();

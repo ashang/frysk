@@ -39,34 +39,15 @@
 
 package frysk.ftrace;
 
-/** Enum representing origin of tracepoints. */
-public class TracePointOrigin
+/**
+ * The LtraceController interface is used for decisions on what should
+ * be done with each loaded library.
+ */
+public interface LtraceController
 {
-  /** The tracepoint comes from the PLT. */
-  public static final TracePointOrigin PLT = new TracePointOrigin(0);
-  /** The tracepoint comes from the dynamic symbol table. */
-  public static final TracePointOrigin DYNAMIC = new TracePointOrigin(1);
-  /** The tracepoint comes from the ordinary symbol table. */
-  public static final TracePointOrigin SYMTAB = new TracePointOrigin(2);
-
-  private static final String[] rep = {"PLT", "DYNAMIC", "SYMTAB"};
-
-  private int value;
-
-  private TracePointOrigin(int value)
-  {
-    this.value = value;
-  }
-
-  public boolean equals(Object obj)
-  {
-    if(!(obj instanceof TracePointOrigin))
-      return false;
-    return ((TracePointOrigin)obj).value == this.value;
-  }
-
-  public String toString()
-  {
-    return rep[value];
-  }
+  /**
+   * New library FILE was mapped in task TASK.  Use DRIVER to tell
+   * ltrace what to do.
+   */
+  void fileMapped(frysk.proc.Task task, ObjectFile file, Ltrace.Driver driver);
 }

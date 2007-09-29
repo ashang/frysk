@@ -51,9 +51,7 @@ import frysk.proc.*;
 import frysk.sys.Sig;
 import frysk.util.CommandlineParser;
 
-import frysk.ftrace.Ltrace;
-import frysk.ftrace.LtraceObserver;
-import frysk.ftrace.Symbol;
+import frysk.ftrace.*;
 
 public class fltrace
 {
@@ -72,13 +70,22 @@ public class fltrace
   //Where to send output.
   PrintWriter writer;
 
-  Ltrace tracer = new Ltrace(new frysk.ftrace.TracePointFilter() {
-      public boolean tracePoint(Task task, frysk.ftrace.TracePoint tp) {
-	if (tp.origin != frysk.ftrace.TracePointOrigin.PLT)
-	  return false;
-	String symFilename = tp.symbol.getParent().getFilename().getPath();
-	String taskFilename = task.getProc().getExe();
-	return taskFilename.equals(symFilename);
+  Ltrace tracer = new Ltrace(new LtraceController() {
+      public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver)
+      {
+	if (!task.getProc().getExe().equals(objf.getFilename().getPath()))
+	  return;
+
+	try {
+	  objf.eachTracePoint(new ObjectFile.TracePointIterator() {
+	      public void tracePoint(TracePoint tp) {
+		driver.tracePoint(task, tp);
+	      }
+	    }, TracePointOrigin.PLT);
+	}
+	catch (lib.dwfl.ElfException ee) {
+	  ee.printStackTrace();
+	}
       }
     });
 
@@ -134,7 +141,7 @@ public class fltrace
 	this.setLevel(task, ++level);
 
         if (lineOpened())
-	  System.err.println("\\");
+	  System.err.println('\\');
 
     	System.err.print("[" + task.getTaskId().intValue() + "] "
 			 + spaces + eventType + " ");
@@ -218,6 +225,8 @@ public class fltrace
 
       public synchronized void taskTerminated(Task task, boolean signal, int value)
       {
+	if (lineOpened())
+	  System.err.println('\\');
 	int pid = task.getTid();
 	System.err.print("[" + pid + "] ");
 	if (signal)

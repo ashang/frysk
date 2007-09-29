@@ -1,3 +1,16 @@
+2007-09-29  Petr Machata  <pmachata@redhat.com>
+
+	* Ltrace.java: Instead of pre-loading all tracepoints and
+	filtering them through user-provided filter, let user provide a
+	controller that drives the tracing process.
+	(DriverImpl): New class.
+	* LtraceController.java: New file.
+	* ObjectFile.java: Support lazy loading of tracepoint tables.
+	Support statically linked binaries.
+	(ObjFBuilder): New class.
+	* TestLtrace.java: Adjust to match API changes.
+	* TracePointOrigin.java (toString): New method.
+
 2007-09-27  Andrew Cagney  <cagney@redhat.com>
 
 	* Archx86.java: Update; frysk.proc.Register renamed to

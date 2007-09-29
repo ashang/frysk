@@ -1,3 +1,8 @@
+2007-09-29  Petr Machata  <pmachata@redhat.com>
+
+	* fltrace.java (tracer): Adjust to changes in Ltrace API.
+	(taskTerminated): Print out \ marker at the end of the line.
+
 2007-09-21  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFtrace.java (testFtraceTracesExecutables): Mark as

@@ -80,12 +80,17 @@ public class Ltrace
   // List of observers.
   protected List observers = new ArrayList();
 
-  // The filter that decides what should be traced.
-  protected final TracePointFilter tracePointFilter;
+  // The controller that decides what should be traced.
+  protected final LtraceController ltraceController;
 
-  public Ltrace(TracePointFilter tracePointFilter)
+  public Ltrace(LtraceController ltraceController)
   {
-    this.tracePointFilter = tracePointFilter;
+    this.ltraceController = ltraceController;
+  }
+
+  public interface Driver
+  {
+    void tracePoint(Task task, TracePoint tp);
   }
 
   /**
@@ -315,6 +320,51 @@ public class Ltrace
 	which breakpoint.
         Map&lt;task, Map&lt;address, List&lt;TracePoint&gt;&gt;&gt; */
     private HashMap retBreakpointsForTask = new HashMap();
+
+    // ---------------------
+    // --- ltrace driver ---
+    // ---------------------
+
+    private class DriverImpl
+      implements Ltrace.Driver
+    {
+      final long relocation;
+
+      public DriverImpl(long relocation)
+      {
+	this.relocation = relocation;
+      }
+
+      public void tracePoint(Task task, TracePoint tp)
+      {
+	long addr = tp.address + this.relocation;
+	Long laddr = new Long(addr);
+	logger.log(Level.CONFIG, "Will trace `" + tp.symbol.name
+		   + "' at 0x" + Long.toHexString(addr), this);
+
+	// FIXME: probably handle aliases at a lower
+	// lever.  Each tracepoint should point to a list
+	// of symbols that alias it, and should be present
+	// only once in an ObjectFile.
+	synchronized (LtraceTaskObserver.this)
+	  {
+	    HashMap breakpoints = (HashMap)breakpointsForTask.get(task);
+	    if (breakpoints.containsKey(laddr))
+	      {
+		// We got an alias.  Put the symbol with the
+		// shorter name into the map.
+		TracePoint original = (TracePoint)breakpoints.get(laddr);
+		if (tp.symbol.name.length() < original.symbol.name.length())
+		  breakpoints.put(laddr, tp);
+	      }
+	    else
+	      {
+		task.requestAddCodeObserver(ltraceTaskObserver, laddr.longValue());
+		breakpoints.put(laddr, tp);
+	      }
+	  }
+      }
+    }
 
     // ------------------------
     // --- syscall observer ---
@@ -686,7 +736,7 @@ public class Ltrace
       this.mapsForTask.put(task, newMappedFiles);
     }
 
-    private void updateMappedFile (final Task task, MemoryMapping mapping)
+    private void updateMappedFile(final Task task, MemoryMapping mapping)
     {
       synchronized(observers)
 	{
@@ -705,42 +755,12 @@ public class Ltrace
       if (objf == null)
 	return;
 
-      final long relocation = mapping.addressLow - objf.getBaseAddress();
-      objf.eachTracePoint(new ObjectFile.TracePointIterator() {
-	  public void tracePoint(TracePoint tp)
-	  {
-	    if (tp.address != 0
-		&& tracePointFilter.tracePoint(task, tp))
-	      {
-		long addr = tp.address + relocation;
-		Long laddr = new Long(addr);
-		logger.log(Level.CONFIG, "Will trace `" + tp.symbol.name
-			   + "' at 0x" + Long.toHexString(addr), this);
-
-		// FIXME: probably handle aliases at a lower
-		// lever.  Each tracepoint should point to a list
-		// of symbols that alias it, and should be present
-		// only once in an ObjectFile.
-		synchronized (this)
-		  {
-		    HashMap breakpoints = (HashMap)breakpointsForTask.get(task);
-		    if (breakpoints.containsKey(laddr))
-		      {
-			// We got an alias.  Put the symbol with the
-			// shorter name into the map.
-			TracePoint original = (TracePoint)breakpoints.get(laddr);
-			if (tp.symbol.name.length() < original.symbol.name.length())
-			  breakpoints.put(laddr, tp);
-		      }
-		    else
-		      {
-			task.requestAddCodeObserver(ltraceTaskObserver, laddr.longValue());
-			breakpoints.put(laddr, tp);
-		      }
-		  }
-	      }
-	  }
-	});
+      // It's actually cheaper to create one driver per task and file
+      // loaded, than to look up relocation for each TracePoint
+      // processed by the driver.
+      long relocation = mapping.addressLow - objf.getBaseAddress();
+      DriverImpl driver = new DriverImpl(relocation);
+      ltraceController.fileMapped(task, objf, driver);
     }
 
     private void updateUnmappedFile (Task task, MemoryMapping mapping)
