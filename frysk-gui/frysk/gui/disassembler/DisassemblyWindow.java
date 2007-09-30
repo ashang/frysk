@@ -58,7 +58,6 @@ import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
-import org.gnu.gtk.Label;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.SpinButton;
 import org.gnu.gtk.TreeIter;
@@ -68,6 +67,8 @@ import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
+import org.gnu.gtk.event.ComboBoxEvent;
+import org.gnu.gtk.event.ComboBoxListener;
 import org.gnu.gtk.event.EntryEvent;
 import org.gnu.gtk.event.EntryListener;
 import org.gnu.gtk.event.LifeCycleEvent;
@@ -76,8 +77,12 @@ import org.gnu.gtk.event.SpinEvent;
 import org.gnu.gtk.event.SpinListener;
 
 import frysk.gui.common.IconManager;
+import frysk.gui.dialogs.WarnDialog;
 import frysk.gui.prefs.PreferenceManager;
+import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.Saveable;
+import frysk.gui.monitor.SimpleComboBox;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.stepping.TaskStepEngine;
@@ -129,10 +134,6 @@ public class DisassemblyWindow
 
   private SpinButton toSpin;
 
-  private Label pcLabelDec;
-
-  private Label pcLabelHex;
-  
   private Entry fromBox;
     
   private Entry toBox;
@@ -143,7 +144,7 @@ public class DisassemblyWindow
 
   private double lastKnownTo;
   
-  private int numInstructions;
+  private int numInstructions = 50;
   
   private long pcOffset = 0;
   
@@ -163,6 +164,14 @@ public class DisassemblyWindow
   
   private MemoryMap[] mmaps;
   
+  private SimpleComboBox segmentCombo;
+  
+  private ObservableLinkedList segmentList;
+  
+  private int segmentIndex = 0;
+  
+  private int row = numInstructions*3;
+  
   /**
    * The DisassmblyWindow, given a Task, will disassemble the instructions
    * and parameters for that task in memory and display them, as well as their
@@ -180,9 +189,10 @@ public class DisassemblyWindow
     this.toSpin = (SpinButton) this.glade.getWidget("toSpin");
     this.fromBox = (Entry) this.glade.getWidget("fromBox");
     this.toBox = (Entry) this.glade.getWidget ("toBox");
-    this.pcLabelDec = (Label) this.glade.getWidget("PCLabelDec");
-    this.pcLabelHex = (Label) this.glade.getWidget("PCLabelHex");
+    this.segmentCombo = new SimpleComboBox(
+	    (this.glade.getWidget("segmentCombo")).getHandle());
     this.model = new ListStore(cols);
+    this.segmentList = new ObservableLinkedList();
     
     this.lock = new LockObserver();
     this.DW_active = true;
@@ -273,7 +283,23 @@ public class DisassemblyWindow
     this.disassemblerView = (TreeView) this.glade.getWidget("disassemblerView");
 
     this.mmaps = this.myTask.getProc().getMaps();
+    
+    for (int i = 0; i < this.mmaps.length; i++)
+    {
+	GuiObject segment = new GuiObject(Long.toHexString(mmaps[i].addressLow)
+		+ " - " + Long.toHexString(mmaps[i].addressHigh), "");
+	segmentList.add(i, segment);
+	if (mmaps[i].addressLow <= pc_inc && pc_inc < mmaps[i].addressHigh)
+	    this.segmentIndex = i;
+    }
+    
+    this.segmentCombo.watchLinkedList(segmentList);
+    
+    this.segmentCombo.setSelectedObject((GuiObject) segmentList.get(segmentIndex));
 
+    this.segmentCombo.setActive(segmentIndex + 1);
+    this.segmentCombo.showAll();
+    
     this.diss = new Disassembler(myTask.getMemory());
     this.fromSpin.setRange(0.0, highestAddress);
     this.fromSpin.setValue((double) pc_inc);
@@ -281,9 +307,7 @@ public class DisassemblyWindow
     this.lastKnownFrom = pc_inc;
     this.toSpin.setRange(0.0, highestAddress);
     //this.toSpin.setValue((double) end);
-    this.pcLabelDec.setText("" + pc_inc);
-    this.pcLabelHex.setText("0x" + Long.toHexString(pc_inc));
-
+    
     setUpColumns();
 
     disassemblerView.setAlternateRowColor(true);
@@ -326,6 +350,26 @@ public class DisassemblyWindow
     
     ((Button) this.glade.getWidget("formatButton")).hideAll();
     
+    segmentCombo.addListener(new ComboBoxListener()
+    {
+	public void comboBoxEvent (ComboBoxEvent arg0)
+	{
+	    if(arg0.isOfType(ComboBoxEvent.Type.CHANGED))
+	    {
+		if (segmentList.indexOf(segmentCombo.getSelectedObject()) == -1)
+		    return;
+		int temp = segmentList.indexOf(segmentCombo.getSelectedObject());
+		long startAddress = mmaps[temp].addressLow;
+		long endAddress = mmaps[temp].addressHigh;
+		if (endAddress - startAddress > row)
+		    handleSegment (startAddress, startAddress+20*8);
+		else
+		    handleSegment (startAddress, endAddress);
+		segmentIndex = temp;		
+	    }
+	}
+    });
+    
     this.fromSpin.addListener(new SpinListener()
     {
       public void spinEvent (SpinEvent arg0)
@@ -343,7 +387,13 @@ public class DisassemblyWindow
         	if (addressAccessible((long)value))
         	    handleFromSpin(value);
         	else
+        	{        	
         	    fromSpin.setValue(lastKnownFrom);
+        	    WarnDialog dialog = new WarnDialog(
+        		    " No function contains specified address");
+        	    dialog.showAll();
+        	    dialog.run();
+        	}
             }
         }
       }
@@ -366,7 +416,13 @@ public class DisassemblyWindow
         	if (addressAccessible((long)value))
         	    handleToSpin(value);
         	else
-        	    toSpin.setValue(lastKnownTo);      	
+        	{
+        	    toSpin.setValue(lastKnownTo);
+        	    WarnDialog dialog = new WarnDialog(
+        		    " No function contains specified address");
+        	    dialog.showAll();
+        	    dialog.run();
+        	}
             }
         }          
       }
@@ -390,7 +446,13 @@ public class DisassemblyWindow
                 {
                   double d = (double) Long.parseLong(str, 16);
                   if (!addressAccessible((long)d))
-            	  fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));
+                  {
+                      fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));
+        	      WarnDialog dialog = new WarnDialog(
+        		      " No function contains specified address");
+        	      dialog.showAll();
+        	      dialog.run();
+                  }
                   else
                   {
                       if (d > lastKnownTo)
@@ -401,8 +463,14 @@ public class DisassemblyWindow
                     	  fromSpin.setValue(lastKnownTo);
                       }
                       else
-                          fromSpin.setValue(d);
+                      {
+                	  if ( (d < lastKnownFrom) && (lastKnownFrom - d > row*8))
+                              handleSegment((long)d, (long)(d + row));
+                          else
+                              fromSpin.setValue(d);
+                      }
                   }
+                     
                 }
                 catch (NumberFormatException nfe)
                 {
@@ -416,7 +484,11 @@ public class DisassemblyWindow
         	    handleSymbol(str);
         	}
         	catch (RuntimeException e){
-        	    fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));        	    
+        	    fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));
+        	    WarnDialog dialog = new WarnDialog(
+        		    " No Symbol \"" + str + "\" in current context");
+        	    dialog.showAll();
+        	    dialog.run();
         	}       
             }
           }
@@ -440,7 +512,13 @@ public class DisassemblyWindow
                   {
                     double d = (double) Long.parseLong(str, 16);
                     if (!(addressAccessible((long)d)))
-                        toBox.setText("0x" + Long.toHexString((long) lastKnownTo));
+                    {
+                	toBox.setText("0x" + Long.toHexString((long) lastKnownTo));
+                	WarnDialog dialog = new WarnDialog(
+                		" No function contains specified address");
+                	dialog.showAll();
+                	dialog.run();
+                    }
                     else 
                     {
                         if (d < lastKnownFrom) 
@@ -451,7 +529,12 @@ public class DisassemblyWindow
                         	toSpin.setValue(lastKnownFrom);
                         }
                         else
-                            toSpin.setValue(d);
+                        {
+                            if ((d > lastKnownTo) && (d - lastKnownTo > row))                            
+                        	handleSegment((long)(d - row), (long)d);
+                            else
+                        	toSpin.setValue(d);
+                        }
                     }
                   }
                   catch (NumberFormatException nfe)
@@ -466,7 +549,11 @@ public class DisassemblyWindow
           	    handleSymbol(str);
           	}
           	catch (RuntimeException e){
-          	    toBox.setText("0x" + Long.toHexString((long) lastKnownTo));        	    
+          	    toBox.setText("0x" + Long.toHexString((long) lastKnownTo));
+          	    WarnDialog dialog = new WarnDialog(
+          		    " No Symbol \"" + str + "\" in current context");
+          	    dialog.showAll();
+          	    dialog.run();
           	}       
               }
           }
@@ -495,8 +582,6 @@ public class DisassemblyWindow
     this.lastKnownFrom = pc_inc;
     this.toSpin.setRange(0.0, highestAddress);
     // this.toSpin.setValue((double) end);
-    this.pcLabelDec.setText("" + pc_inc);
-    this.pcLabelHex.setText("0x" + Long.toHexString(pc_inc));
     
     this.model.clear();
     this.model.appendRow();
@@ -580,7 +665,7 @@ public class DisassemblyWindow
   {
       for (int i=0; i< this.mmaps.length; i++)
 	  if (mmaps[i].addressLow <= address && address < mmaps[i].addressHigh)
-	      return true;
+	      return true;	  
       return false;
   }
 
@@ -589,8 +674,6 @@ public class DisassemblyWindow
     this.refreshLock = true;
     long pc_inc = 0;
     pc_inc = myTask.getIsa().pc(myTask);
-    this.pcLabelDec.setText("" + pc_inc);
-    this.pcLabelHex.setText("0x" + Long.toHexString(pc_inc));
     
     this.lastKnownFrom = pc_inc;
     this.fromSpin.setValue((double) pc_inc);
@@ -788,6 +871,7 @@ public class DisassemblyWindow
   private void desensitize ()
   {
     this.disassemblerView.setSensitive(false);
+    this.segmentCombo.setSensitive(false);
     this.fromSpin.setSensitive(false);
     this.toSpin.setSensitive(false);
     this.fromBox.setSensitive(false);
@@ -797,6 +881,7 @@ public class DisassemblyWindow
   private void resensitize ()
   {
     this.disassemblerView.setSensitive(true);
+    this.segmentCombo.setSensitive(true);
     this.fromSpin.setSensitive(true);
     this.toSpin.setSensitive(true);
     this.fromBox.setSensitive(true);
@@ -942,37 +1027,47 @@ public class DisassemblyWindow
       long startAddress = ((Long)addressList.getFirst()).longValue();
       Symbol symbol = SymbolFactory.getSymbol(this.myTask, startAddress);
       long endAddress = symbol.getAddress() + symbol.getSize();
-            
-      List instructionsList
-	= diss.disassembleInstructionsStartEnd((long)startAddress, (long)endAddress);
-      Iterator li = instructionsList.listIterator(0);
-      int insnum = 1;
-      Instruction ins = (Instruction)li.next();
-      this.lastKnownFrom = (double)ins.address;
-      while (li.hasNext()){
-	  ins = (Instruction)li.next();
-	  insnum++;
-      }
-      this.lastKnownTo = (double)ins.address;
-
-      TreeIter iter = this.model.getFirstIter();
-      while (insnum < numInstructions)
-      {
-	  this.model.removeRow(iter);
-	  this.lastPath.previous();
-	  numInstructions--;	  
-      }
-      while(insnum > numInstructions)
-      {
-	  this.model.appendRow();
-	  this.lastPath.next();
-	  numInstructions++;	  
-      }
-
-      refreshList();
-      fromBox.setText("0x" + Long.toHexString((long)lastKnownFrom));
-      fromSpin.setValue(lastKnownFrom);
+      handleSegment(startAddress, endAddress);      
   }
+  
+  /**
+   * Display the whole segment
+   * @param startAddress
+   * @param endAddress
+   */
+  private synchronized void handleSegment(long startAddress, long endAddress)
+  {
+      	List instructionsList
+    	= diss.disassembleInstructionsStartEnd((long)startAddress, (long)endAddress);
+        Iterator li = instructionsList.listIterator(0);
+        int insnum = 1;
+        Instruction ins = (Instruction)li.next();
+        this.lastKnownFrom = (double)ins.address;
+        while (li.hasNext()){
+    	  ins = (Instruction)li.next();
+    	  insnum++;
+        }
+        this.lastKnownTo = (double)ins.address;
+    
+        TreeIter iter = this.model.getFirstIter();
+        while (insnum < numInstructions)
+        {
+    	  this.model.removeRow(iter);
+    	  this.lastPath.previous();
+    	  numInstructions--;	  
+        }
+        while(insnum > numInstructions)
+        {
+    	  this.model.appendRow();
+    	  this.lastPath.next();
+    	  numInstructions++;	  
+        }
+    
+        refreshList();
+        fromBox.setText("0x" + Long.toHexString((long)lastKnownFrom));
+        fromSpin.setValue(lastKnownFrom);
+  }
+
 
   /****************************************************************************
    * Save and Load

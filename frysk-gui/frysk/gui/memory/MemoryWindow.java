@@ -60,7 +60,6 @@ import org.gnu.gtk.DataColumnDouble;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
-import org.gnu.gtk.Label;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.SpinButton;
 import org.gnu.gtk.TreeIter;
@@ -80,6 +79,7 @@ import org.gnu.gtk.event.SpinEvent;
 import org.gnu.gtk.event.SpinListener;
 
 import frysk.gui.common.IconManager;
+import frysk.gui.dialogs.WarnDialog;
 import frysk.gui.prefs.PreferenceManager;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
@@ -159,9 +159,9 @@ public class MemoryWindow
 
   private SpinButton toSpin;
 
-  private Label pcLabelDec;
+  //private Label pcLabelDec;
 
-  private Label pcLabelHex;
+  //private Label pcLabelHex;
   
   private Entry fromBox;
   
@@ -169,6 +169,8 @@ public class MemoryWindow
 
   private SimpleComboBox bitsCombo;
 
+  private SimpleComboBox segmentCombo;
+  
   private GuiObject eight;
 
   private GuiObject sixteen;
@@ -178,6 +180,8 @@ public class MemoryWindow
   private GuiObject sixtyfour;
 
   private ObservableLinkedList bitsList;
+  
+  private ObservableLinkedList segmentList;
 
   private ListStore model;
 
@@ -200,6 +204,10 @@ public class MemoryWindow
   private boolean closed = false;
   
   private MemoryMap[] mmaps;
+  
+  private int segmentIndex = 0;
+  
+  private int row = 20;
 
   /**
    * The MemoryWindow displays the information stored at various locations in
@@ -221,12 +229,15 @@ public class MemoryWindow
     this.toSpin = (SpinButton) this.glade.getWidget("toSpin");
     this.fromBox = (Entry) this.glade.getWidget("fromBox");
     this.toBox = (Entry) this.glade.getWidget("toBox");
-    this.pcLabelDec = (Label) this.glade.getWidget("PCLabelDec");
-    this.pcLabelHex = (Label) this.glade.getWidget("PCLabelHex");
+    //this.pcLabelDec = (Label) this.glade.getWidget("PCLabelDec");
+    //this.pcLabelHex = (Label) this.glade.getWidget("PCLabelHex");
     this.bitsCombo = new SimpleComboBox(
                                         (this.glade.getWidget("bitsCombo")).getHandle());
+    this.segmentCombo = new SimpleComboBox(
+            (this.glade.getWidget("segmentCombo")).getHandle());
     this.model = new ListStore(cols);
     this.bitsList = new ObservableLinkedList();
+    this.segmentList = new ObservableLinkedList();
 
     this.setIcon(IconManager.windowIcon);
     this.lock = new LockObserver();
@@ -314,7 +325,7 @@ public class MemoryWindow
     
     this.diss = new Disassembler(myTask.getMemory());
     pc_inc = myTask.getIsa().pc(myTask);
-    long end = pc_inc + 20*8;
+    long end = pc_inc + row*8;
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
 
@@ -332,12 +343,29 @@ public class MemoryWindow
     this.bitsCombo.setSelectedObject((GuiObject) bitsList.get(currentFormat));
 
     this.bitsCombo.setActive(currentFormat + 1);
+    
+    for (int i = 0; i < this.mmaps.length; i++)
+    {
+	GuiObject segment = new GuiObject(Long.toHexString(mmaps[i].addressLow)
+		+ " - " + Long.toHexString(mmaps[i].addressHigh), "");
+	segmentList.add(i, segment);
+	if (mmaps[i].addressLow <= pc_inc && pc_inc < mmaps[i].addressHigh)
+	    this.segmentIndex = i;
+    }
+    
+    this.segmentCombo.watchLinkedList(segmentList);
+    
+    this.segmentCombo.setSelectedObject((GuiObject) segmentList.get(segmentIndex));
+
+    this.segmentCombo.setActive(segmentIndex + 1);
+    
 
     this.memoryView = (TreeView) this.glade.getWidget("memoryView");
     FontDescription fontDesc = new FontDescription("monospace 10");
     memoryView.setFont(fontDesc);
 
     this.bitsCombo.showAll();
+    this.segmentCombo.showAll();
     this.diss = new Disassembler(myTask.getMemory());
     this.fromSpin.setRange(0.0, highestAddress);
     this.fromSpin.setValue((double) pc_inc);
@@ -345,8 +373,8 @@ public class MemoryWindow
     this.toSpin.setValue((double) end);
     this.fromBox.setText("0x" + Long.toHexString(pc_inc));
     this.toBox.setText("0x" + Long.toHexString(end));
-    this.pcLabelDec.setText("" + pc_inc);
-    this.pcLabelHex.setText("0x" + Long.toHexString(pc_inc));
+    //this.pcLabelDec.setText("" + pc_inc);
+    //this.pcLabelHex.setText("0x" + Long.toHexString(pc_inc));
 
     TreeViewColumn col = new TreeViewColumn();
     col.setTitle("Location");
@@ -435,6 +463,27 @@ public class MemoryWindow
           }
       }
     });
+    
+    segmentCombo.addListener(new ComboBoxListener()
+    {
+	public void comboBoxEvent (ComboBoxEvent arg0)
+	{
+	    if(arg0.isOfType(ComboBoxEvent.Type.CHANGED))
+	    {
+		if (segmentList.indexOf(segmentCombo.getSelectedObject()) == -1)
+		    return;
+		int temp = segmentList.indexOf(segmentCombo.getSelectedObject());
+		long startAddress = mmaps[temp].addressLow;
+		long endAddress = mmaps[temp].addressHigh;
+		if (endAddress - startAddress > row*8)
+		    handleSegment (startAddress, startAddress+20*8);
+		else
+		    handleSegment (startAddress, endAddress);
+		segmentIndex = temp;
+		recalculate();
+	    }
+	}
+    });
 
     ((Button) this.glade.getWidget("closeButton")).addListener(new ButtonListener()
     {
@@ -475,7 +524,14 @@ public class MemoryWindow
         	if (addressAccessible((long)value))
         	    handleFromSpin(value);
         	else
+        	{
         	    fromSpin.setValue(lastKnownFrom);
+        	    WarnDialog dialog = new WarnDialog(
+        		    "Cannot access memory at address 0x" + Long.toHexString((long)value));
+        	    dialog.showAll();
+        	    dialog.run();
+        	}
+
             }
         }
       }
@@ -498,7 +554,13 @@ public class MemoryWindow
         	if (addressAccessible((long)value))
         	    handleToSpin(value);
         	else
-        	    toSpin.setValue(lastKnownTo);      	
+        	{
+        	    toSpin.setValue(lastKnownTo);
+        	    WarnDialog dialog = new WarnDialog(
+        		    "Cannot access memory at address 0x" + Long.toHexString((long)value));
+        	    dialog.showAll();
+        	    dialog.run();
+        	}
             }
         } 
       }
@@ -521,7 +583,13 @@ public class MemoryWindow
                 {
                   double d = (double) Long.parseLong(str, 16);
                   if (!addressAccessible((long)d))
-            	  fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));
+                  {
+                      fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));
+          	      WarnDialog dialog = new WarnDialog(
+        		      "Cannot access memory at address 0x" + Long.toHexString((long)d));
+        	      dialog.showAll();
+        	      dialog.run();
+                  }
                   else
                   {
                       if (d > lastKnownTo)
@@ -532,7 +600,12 @@ public class MemoryWindow
                     	  fromSpin.setValue(lastKnownTo);
                       }
                       else
-                          fromSpin.setValue(d);
+                      {
+                          if ( (d < lastKnownFrom) && (lastKnownFrom - d > row*8))
+                              handleSegment((long)d, (long)(d + row*8));
+                          else
+                              fromSpin.setValue(d);                          
+                      }
                   }
                 }
                 catch (NumberFormatException nfe)
@@ -547,7 +620,11 @@ public class MemoryWindow
         	    handleSymbol(str);
         	}
         	catch (RuntimeException e){
-        	    fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));        	    
+        	    fromBox.setText("0x" + Long.toHexString((long) lastKnownFrom));
+        	    WarnDialog dialog = new WarnDialog(
+        		    " No Symbol \"" + str + "\" in current context");
+        	    dialog.showAll();
+        	    dialog.run();
         	}       
             }
           }
@@ -571,7 +648,13 @@ public class MemoryWindow
                   {
                     double d = (double) Long.parseLong(str, 16);
                     if (!(addressAccessible((long)d)))
+                    {
                         toBox.setText("0x" + Long.toHexString((long) lastKnownTo));
+                        WarnDialog dialog = new WarnDialog(
+          		      "Cannot access memory at address 0x" + Long.toHexString((long)d));
+          	      	dialog.showAll();
+          	      	dialog.run();
+                    }          	      	
                     else 
                     {
                         if (d < lastKnownFrom) 
@@ -582,7 +665,12 @@ public class MemoryWindow
                         	toSpin.setValue(lastKnownFrom);
                         }
                         else
-                            toSpin.setValue(d);
+                        {
+                            if ((d > lastKnownTo) && (d - lastKnownTo > row*8))                            
+                        	handleSegment((long)(d - row*8), (long)d);
+                            else
+                        	toSpin.setValue(d);
+                        }
                     }
                   }
                   catch (NumberFormatException nfe)
@@ -597,7 +685,11 @@ public class MemoryWindow
           	    handleSymbol(str);
           	}
           	catch (RuntimeException e){
-          	    toBox.setText("0x" + Long.toHexString((long) lastKnownTo));        	    
+          	    toBox.setText("0x" + Long.toHexString((long) lastKnownTo));
+        	    WarnDialog dialog = new WarnDialog(
+        		    " No Symbol \"" + str + "\" in current context");
+        	    dialog.showAll();
+        	    dialog.run();
           	}       
               }
           }
@@ -632,7 +724,7 @@ public class MemoryWindow
     this.diss = new Disassembler(myTask.getMemory());
 
     pc_inc = myTask.getIsa().pc(myTask);
-    long end = pc_inc + 20;
+    long end = pc_inc + row*8;
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
     this.model.clear();
@@ -640,8 +732,8 @@ public class MemoryWindow
     this.fromSpin.setValue((double) pc_inc);
     this.toSpin.setRange(0.0, highestAddress);
     this.toSpin.setValue((double) end);
-    this.pcLabelDec.setText("" + pc_inc);
-    this.pcLabelHex.setText("0x" + Long.toHexString(pc_inc));
+    //this.pcLabelDec.setText("" + pc_inc);
+    //this.pcLabelHex.setText("0x" + Long.toHexString(pc_inc));
 
     recalculate();
     this.refreshLock = false;
@@ -677,8 +769,8 @@ public class MemoryWindow
     this.refreshLock = true;
     long pc_inc = 0;
     pc_inc = myTask.getIsa().pc(myTask);
-    this.pcLabelDec.setText("" + pc_inc);
-    this.pcLabelHex.setText("0x" + Long.toHexString(pc_inc));
+    //this.pcLabelDec.setText("" + pc_inc);
+    //this.pcLabelHex.setText("0x" + Long.toHexString(pc_inc));
     
     long diff = (long) this.toSpin.getValue() - (long) this.fromSpin.getValue();
 
@@ -961,6 +1053,7 @@ public class MemoryWindow
   {
     this.memoryView.setSensitive(false);
     this.bitsCombo.setSensitive(false);
+    this.segmentCombo.setSensitive(false);
     this.fromSpin.setSensitive(false);
     this.toSpin.setSensitive(false);
     this.fromBox.setSensitive(false);
@@ -971,6 +1064,7 @@ public class MemoryWindow
   {
     this.memoryView.setSensitive(true);
     this.bitsCombo.setSensitive(true);
+    this.segmentCombo.setSensitive(true);
     this.fromSpin.setSensitive(true);
     this.toSpin.setSensitive(true);
     this.fromBox.setSensitive(true);
@@ -1124,36 +1218,46 @@ public class MemoryWindow
       long startAddress = ((Long)addressList.getFirst()).longValue();
       Symbol symbol = SymbolFactory.getSymbol(this.myTask, startAddress);
       long endAddress = symbol.getAddress() + symbol.getSize();
-      long size = (endAddress - startAddress)/8 + 1;
-      long modelSize = ((long)lastKnownTo - (long)lastKnownFrom)/8 + 1;
-      TreeIter iter = this.model.getFirstIter();      
-      while (size < modelSize)
-      {
+      handleSegment(startAddress, endAddress);
+  }
+  
+ /**
+  * Display the whole segment
+  * @param startAddress
+  * @param endAddress
+  */
+ private synchronized void handleSegment(long startAddress, long endAddress)
+ {
+     long size = (endAddress - startAddress)/8 + 1;
+     long modelSize = ((long)lastKnownTo - (long)lastKnownFrom)/8 + 1;
+     TreeIter iter = this.model.getFirstIter();      
+     while (size < modelSize)
+     {
 	  this.model.removeRow(iter);
 	  this.lastPath.previous();
 	  modelSize--;	  
-      }
-      while(size > modelSize)
-      {
+     }
+     while(size > modelSize)
+     {
 	  this.model.appendRow();
 	  this.lastPath.next();
 	  modelSize++;	  
-      }
-      this.lastKnownFrom = (double)startAddress;
-      this.lastKnownTo = (double)(double)(startAddress+(long)(endAddress-startAddress)/8*8);
-      iter = this.model.getFirstIter();
-      this.lastPath = iter.getPath();
-      for(int i = 0; i <= lastKnownTo-lastKnownFrom; i=i+8)
-      {
+     }
+     this.lastKnownFrom = (double)startAddress;
+     this.lastKnownTo = (double)(double)(startAddress+(long)(endAddress-startAddress)/8*8);
+     iter = this.model.getFirstIter();
+     this.lastPath = iter.getPath();
+     for(int i = 0; i <= lastKnownTo-lastKnownFrom; i=i+8)
+     {
 	  rowAppend((long)(i+startAddress), iter);
 	  iter = iter.getNextIter();
-      }
-      refreshList();
-      fromBox.setText("0x" + Long.toHexString((long)lastKnownFrom));
-      fromSpin.setValue(lastKnownFrom);
-      toBox.setText("0x" + Long.toHexString((long)lastKnownTo));
-      toSpin.setValue(lastKnownTo);
-  }
+     }
+     refreshList();
+     fromBox.setText("0x" + Long.toHexString((long)lastKnownFrom));
+     fromSpin.setValue(lastKnownFrom);
+     toBox.setText("0x" + Long.toHexString((long)lastKnownTo));
+     toSpin.setValue(lastKnownTo);
+ }
 
   /****************************************************************************
    * Save and Load

@@ -1,3 +1,14 @@
+2007-09-30  Zhao Shujing <pearly.zhao@oracle.com>
+	
+	* gladedir/memorywindow.glade: Change the top text "current program
+	counter" to segment combox. Fixes #4614 and #4619.
+	* gladedir/disassemblywindow.glade: Ditto.
+	* memory/MemoryWindow.java: Added handling for segment.
+	Added warning dialogs when the address can't be accessed and wne the
+	symbol is not in current context.
+	Added handling when too many rows be added. Fixes #4870. 
+	* diassembler/DisassemblyWindow.java: Ditto.
+
 2007-09-27  Andrew Cagney  <cagney@redhat.com>
 
 	* register/RegisterWindow.java (setValues): Use RegistersFactory;
