@@ -154,6 +154,7 @@ public class DebugInfoStackFactory {
         frame != null; frame = frame.getOuterDebugInfoFrame()) {
             
           writer.print("#");
+          frame.setIndex(count);
           frame.printIndex(writer);
           writer.print(" ");
             

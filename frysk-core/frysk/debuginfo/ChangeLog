@@ -1,5 +1,10 @@
 2007-10-01  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* DebugInfoStackFactory.java (printStackTrace): Now sets frame
+	index.
+
+2007-10-01  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* TestCppVariableSearchEngine.java (verifyVariableLongValue):
 	Added ngative test.
 	(verifyVariable): Ditto.
