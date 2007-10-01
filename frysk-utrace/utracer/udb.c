@@ -166,7 +166,7 @@ utracer_wait()
     if_resp_u if_resp;
     ssize_t sz;
       
-    utracer_sync (SYNC_INIT);
+    utracer_sync (udb_pid, SYNC_INIT);
 
     LOGIT ("starting utracer_wait pread pass %d fd %d\n",
 	   i, utracer_resp_file_fd());
@@ -217,7 +217,8 @@ start_runnables ()
 	int args_max  = 0;
 #define ARGS_INCR 4
 
-	rc = utracer_attach (cp, 0, runnables_to_attach[i].quiesce);
+	rc = utracer_attach (udb_pid, cp, 0,
+			     runnables_to_attach[i].quiesce);
 	if (0 == rc) {
 	  while (tok) {
 	    if (args_max >= args_next) {
@@ -261,8 +262,6 @@ main (int ac, char * av[])
     _exit (1);
   }
 #endif
-
-  udb_pid = getpid();
 
   text_ui_init();
 
@@ -321,6 +320,13 @@ main (int ac, char * av[])
     }
   }
 
+  LOGIT ("calling utracer_open()\n");
+  udb_pid = utracer_open();
+  if (-1 == udb_pid) {
+    fprintf (stderr, "Exiting due to errors.\n");
+    exit (1);
+  }
+
   for (;optind < ac; optind++) append_runnable (av[optind], default_quiesce);
 
 #ifdef ENABLE_MODULE_OPS
@@ -330,12 +336,6 @@ main (int ac, char * av[])
   if (!utracer_loaded()) load_utracer();
 #endif
   
-
-  LOGIT ("calling utracer_open()\n");
-  if (!utracer_open((long)udb_pid)) {
-    fprintf (stderr, "Exiting due to errors.\n");
-    exit (1);
-  }
   
 #ifdef USE_UTRACER_WAIT
   LOGIT ("calling utracer_wait()\n");
@@ -348,7 +348,7 @@ main (int ac, char * av[])
     LOGIT ("attaching pids()\n");
     for (i = 0; i < nr_pids_to_attach; i++) {
       int rc;
-      rc =  utracer_attach (pids_to_attach[i].pid,
+      rc =  utracer_attach (udb_pid, pids_to_attach[i].pid,
 			    pids_to_attach[i].quiesce, 0);
       if (0 == rc) {
 	current_pid = pids_to_attach[i].pid;
@@ -381,7 +381,7 @@ main (int ac, char * av[])
     int resp;
 
     LOGIT ("calling utracer_sync()\n");
-    utracer_sync (SYNC_INIT);
+    utracer_sync (udb_pid, SYNC_INIT);
     LOGIT ("returning from utracer_sync()\n");
   }
   

@@ -136,7 +136,8 @@ syscall_fcn(char ** saveptr)
   if (got_it) {
     switch (sy_state) {
     case SY_STATE_A2:
-      utracer_set_syscall (((SY_MODE_ENTRY == sy_mode) ?
+      utracer_set_syscall (udb_pid, 
+			   ((SY_MODE_ENTRY == sy_mode) ?
 			    SYSCALL_CMD_ENTRY : SYSCALL_CMD_EXIT),
 			   ((SY_ENABLE_ON == sy_enable) ?
 			    SYSCALL_CMD_ENABLE : SYSCALL_CMD_DISABLE),
@@ -144,7 +145,8 @@ syscall_fcn(char ** saveptr)
 			   0);
       break;
     case SY_STATE_A3:
-      utracer_set_syscall (((SY_MODE_ENTRY == sy_mode) ?
+      utracer_set_syscall (udb_pid,
+			   ((SY_MODE_ENTRY == sy_mode) ?
 			    SYSCALL_CMD_ENTRY : SYSCALL_CMD_EXIT),
 			   ((SY_ADD_ADD == sy_add) ?
 			    SYSCALL_CMD_ADD : SYSCALL_CMD_REMOVE),
@@ -166,7 +168,7 @@ watch_fcn(char ** saveptr)
   long pid = -1;
   char * pid_c = strtok_r (NULL, " \t", saveptr);
   pid = pid_c ? atol (pid_c) : current_pid;
-  rc = utracer_attach (pid, 0, 0);
+  rc = utracer_attach (udb_pid, pid, 0, 0);
   if (0 == rc) {
     current_pid = pid;
     set_prompt();
@@ -182,7 +184,7 @@ attach_fcn(char ** saveptr)
   long pid = -1;
   char * pid_c = strtok_r (NULL, " \t", saveptr);
   pid = pid_c ? atol (pid_c) : current_pid;
-  rc = utracer_attach (pid, 1, 0);
+  rc = utracer_attach (udb_pid, pid, 1, 0);
   if (0 == rc) {
     current_pid = pid;
     set_prompt();
@@ -198,7 +200,7 @@ detach_fcn(char ** saveptr)
   char * pid_c = strtok_r (NULL, " \t", saveptr);
   pid = pid_c ? atol (pid_c) : current_pid;
   if (-1 != pid) {
-    int rc = utracer_detach (pid);
+    int rc = utracer_detach (udb_pid, pid);
     if (0 == rc) {
       // fixme -- switch to next pid?
       current_pid = -1;
@@ -219,7 +221,7 @@ run_fcn(char ** saveptr)
   char * pid_c = strtok_r (NULL, " \t", saveptr);
   pid = pid_c ? atol (pid_c) : current_pid;
   if (-1 != pid) {
-    rc = utracer_run (pid);
+    rc = utracer_run (udb_pid, pid);
     if (0 == rc) fprintf (stderr, "%d running\n", pid);
     else uerror ("run");
   }
@@ -235,7 +237,7 @@ quiesce_fcn(char ** saveptr)
   char * pid_c = strtok_r (NULL, " \t", saveptr);
   pid = pid_c ? atol (pid_c) : current_pid;
   if (-1 != pid) {
-    rc = utracer_quiesce (pid);
+    rc = utracer_quiesce (udb_pid, pid);
     if (0 == rc) fprintf (stderr, "%d quiesced\n", pid);
     else uerror ("quiesce");
   }
@@ -261,7 +263,7 @@ switchpid_fcn (char ** saveptr)
   char * pid_c = strtok_r (NULL, " \t", saveptr);
   if (pid_c) {
     pid = atol (pid_c);
-    rc = utracer_switch_pid (pid);
+    rc = utracer_switch_pid (udb_pid, pid);
     if (0 == rc) {
       current_pid = pid;
       set_prompt();
@@ -290,7 +292,8 @@ printreg_fcn (char ** saveptr)
       regset = 0;
     }
 
-    rc = utracer_get_regs (pid, regset, &regsinfo, &nr_regs, &reg_size);
+    rc = utracer_get_regs (udb_pid, pid, regset, &regsinfo,
+			   &nr_regs, &reg_size);
     if (0 == rc) show_regs (pid, regset, reg, regsinfo, nr_regs, reg_size);
     else uerror ("printreg");
 
@@ -313,7 +316,7 @@ printregall_fcn (char ** saveptr)
   if (tok && ('[' == *tok)) pid = atol (tok+1);
 
   // fixme allow selection of regset
-  rc = utracer_get_regs (pid, 0, &regsinfo, &nr_regs, &reg_size);
+  rc = utracer_get_regs (udb_pid, pid, 0, &regsinfo, &nr_regs, &reg_size);
   if (0 == rc) show_regs (pid, 0, -1, regsinfo, nr_regs, reg_size);
   else uerror ("printreg");
 
@@ -394,7 +397,7 @@ printmmap_fcn (char ** saveptr)
   char * tok = strtok_r (NULL, " \t", saveptr);
 
   if (tok && ('[' == *tok)) pid = atol (tok+1);
-  rc = utracer_get_printmmap (pid,
+  rc = utracer_get_printmmap (udb_pid, pid,
 			      &printmmap_resp, &vm_struct_subset, &vm_strings);
   if (0 == rc) 
     handle_printmmap (printmmap_resp, vm_struct_subset, vm_strings);
@@ -416,7 +419,7 @@ printenv_fcn (char ** saveptr)
   char * tok = strtok_r (NULL, " \t", saveptr);
 
   if (tok && ('[' == *tok)) pid = atol (tok+1);
-  rc = utracer_get_env (pid, &env);
+  rc = utracer_get_env (udb_pid, pid, &env);
   if (0 == rc) fprintf (stdout, "%s\n", env);
   else uerror ("printenv");
   return 1;
@@ -429,7 +432,7 @@ listpids_fcn(char ** saveptr)
   long nr_pids = 0;
   long * pids = NULL;
   
-  rc = utracer_get_pids (&nr_pids, &pids);
+  rc = utracer_get_pids (udb_pid, &nr_pids, &pids);
   if (pids && (0 == rc)) {
     long i;
     
@@ -451,7 +454,7 @@ printexe_fcn (char ** saveptr)
   char * tok = strtok_r (NULL, " \t", saveptr);
 
   if (tok && ('[' == *tok)) pid = atol (tok+1);
-  rc = utracer_get_exe (pid, &filename, &interp);
+  rc = utracer_get_exe (udb_pid, pid, &filename, &interp);
   if (0 == rc) {
     fprintf (stdout, "\t filename: \"%s\"\n", filename);
     fprintf (stdout, "\t   interp: \"%s\"\n", interp);
@@ -493,7 +496,7 @@ requested length are invlaid.\n");
   }
 
   fprintf (stderr, "addr = %08x, len = %lu\n", addr, bffr_length_req);
-  rc = utracer_get_mem (pid, (void *)addr, bffr_length_req, &bffr,
+  rc = utracer_get_mem (udb_pid, pid, (void *)addr, bffr_length_req, &bffr,
 			&bffr_length_actual);
   
   if (0 == rc) {

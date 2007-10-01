@@ -47,12 +47,10 @@
 #include <errno.h>
 #include <limits.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #include <utracer.h>
 #include <utracer-errmsgs.h>
-
-// fixme temporary
-pid_t client_pid;
 
 int cmd_file_fd;
 int resp_file_fd;
@@ -103,13 +101,14 @@ utracer_resp_file_fd()
   return resp_file_fd;
 }
 
-int
-utracer_open (long pid)
+long
+utracer_open (void)
 {
+  long rc_pid;
   char * cfn;
   int irc;
   
-  client_pid = pid;
+  rc_pid = (long)getpid();
 
   asprintf (&cfn, "/proc/%s/%s", UTRACER_BASE_DIR, UTRACER_CONTROL_FN);
   LOGIT ("opening %s\n", cfn);
@@ -122,7 +121,7 @@ utracer_open (long pid)
   }
   
   LOGIT ("calling utracer_register()\n");
-  irc = utracer_register (pid);
+  irc = utracer_register (rc_pid);
   LOGIT ("returning from utracer_register(), irc = %d\n", irc);
   if (0 > irc) {
     uerror ("Initial registration");
@@ -131,26 +130,26 @@ utracer_open (long pid)
   }
 
   asprintf (&cfn, "/proc/%s/%ld/%s", UTRACER_BASE_DIR,
-	    pid, UTRACER_CMD_FN);
+	    rc_pid, UTRACER_CMD_FN);
   LOGIT ("opening %s\n", cfn);
   cmd_file_fd = open (cfn, O_RDWR);
   LOGIT ("   fd = %d\n", cmd_file_fd);
   free (cfn);
   if (-1 == cmd_file_fd) {
-    utracer_unregister (pid);
+    utracer_unregister (rc_pid);
     close (ctl_file_fd);
     uerror ("Error opening command file");
     return -1;
   }
     
   asprintf (&cfn, "/proc/%s/%ld/%s", UTRACER_BASE_DIR,
-	    pid, UTRACER_RESP_FN);
+	    rc_pid, UTRACER_RESP_FN);
   LOGIT ("opening %s\n", cfn);
   resp_file_fd = open (cfn, O_RDONLY);
   LOGIT ("   fd = %d\n", resp_file_fd);
   free (cfn);
   if (-1 == resp_file_fd) {
-    utracer_unregister (pid);
+    utracer_unregister (rc_pid);
     close (ctl_file_fd);
     close (cmd_file_fd);
     uerror ("Error opening command file");
@@ -158,14 +157,16 @@ utracer_open (long pid)
   }
 
   LOGIT ("leaving utracer_open()\n");
-  return 1;
+
+  return rc_pid;
 }
 
 
 /************************** printmmap ********************/
 
 static int
-do_get_mmap (long pid,
+do_get_mmap (long client_pid,
+	     long pid,
 	     printmmap_resp_s ** pr,
 	     vm_struct_subset_s ** vss,
 	     char ** vs,
@@ -185,7 +186,7 @@ do_get_mmap (long pid,
   *vs  = malloc (vsl_req);
   
   printmmap_cmd_s printmmap_cmd = {IF_CMD_PRINTMMAP,
-				   (long)client_pid,
+				   client_pid,
 				   pid,
 				   vssl_req,
 				   vsl_req,
@@ -205,7 +206,8 @@ do_get_mmap (long pid,
 }
 
 int
-utracer_get_printmmap (long pid,
+utracer_get_printmmap (long client_pid,
+		       long pid,
 		       printmmap_resp_s ** printmmap_resp_p,
 		       vm_struct_subset_s ** vm_struct_subset_p,
 		       char ** vm_strings_p)
@@ -217,7 +219,15 @@ utracer_get_printmmap (long pid,
   long vssl;
   long vsl;
 
-  irc = do_get_mmap (pid, &pr, &vss, &vs, PAGE_SIZE, PAGE_SIZE, &vssl, &vsl);
+  irc = do_get_mmap (client_pid,
+		     pid,
+		     &pr,
+		     &vss,
+		     &vs,
+		     PAGE_SIZE,
+		     PAGE_SIZE,
+		     &vssl,
+		     &vsl);
 
   if (0 == irc) {
     if ((vssl > PAGE_SIZE) ||
@@ -225,7 +235,8 @@ utracer_get_printmmap (long pid,
       if (pr)  free (pr);
       if (vss) free (vss);
       if (vs)  free (vs);
-      irc = do_get_mmap (pid, &pr, &vss, &vs, vssl, vsl, NULL, NULL);
+      irc = do_get_mmap (client_pid, pid, &pr, &vss, &vs,
+			 vssl, vsl, NULL, NULL);
     }
   }
   
@@ -250,7 +261,8 @@ utracer_get_printmmap (long pid,
 /************************** listpids  ********************/
 
 static int
-do_get_pids (long ** pids_p, long nr_pids_req, long *nr_pids_actual_p)
+do_get_pids (long client_pid, long ** pids_p,
+	     long nr_pids_req, long *nr_pids_actual_p)
 {
   int irc;
   long nr_pids_actual;
@@ -260,7 +272,7 @@ do_get_pids (long ** pids_p, long nr_pids_req, long *nr_pids_actual_p)
   *pids_p  = malloc (nr_pids_req * sizeof(long));
 
   listpids_cmd_s listpids_cmd = {IF_CMD_LIST_PIDS,
-				 (long)client_pid,
+				 client_pid,
 				 nr_pids_req,
 				 &nr_pids_actual,
 				 *pids_p};
@@ -275,7 +287,7 @@ do_get_pids (long ** pids_p, long nr_pids_req, long *nr_pids_actual_p)
 
 
 int
-utracer_get_pids (long * nr_pids_p, long ** pids_p)
+utracer_get_pids (long client_pid, long * nr_pids_p, long ** pids_p)
 {
   int irc;
   long nr_pids;
@@ -283,12 +295,12 @@ utracer_get_pids (long * nr_pids_p, long ** pids_p)
   long nr_pids_actual;
   long nr_pids_req = PAGE_SIZE/sizeof(long);
   
-  irc = do_get_pids (&pids, nr_pids_req, &nr_pids_actual);
+  irc = do_get_pids (client_pid, &pids, nr_pids_req, &nr_pids_actual);
 
   if (0 == irc) {
     if (nr_pids_actual > nr_pids_req) {
       if (pids)  free (pids);
-      irc = do_get_pids (&pids, nr_pids_actual, NULL);
+      irc = do_get_pids (client_pid, &pids, nr_pids_actual, NULL);
     }
   }
   
@@ -309,7 +321,8 @@ utracer_get_pids (long * nr_pids_p, long ** pids_p)
 
 
 static int
-do_get_mem (long pid,
+do_get_mem (long client_pid,
+	    long pid,
 	    void ** mem_p,
 	    void * addr,
 	    long mem_req,
@@ -322,7 +335,7 @@ do_get_mem (long pid,
   *mem_p  = malloc (mem_req);
 
   getmem_cmd_s getmem_cmd = {IF_CMD_GETMEM,
-			     (long)client_pid,
+			     client_pid,
 			     pid,
 			     mem_req,
 			     (long)addr,
@@ -336,13 +349,13 @@ do_get_mem (long pid,
 }
 
 int
-utracer_get_mem (long pid, void * addr, unsigned long length,
+utracer_get_mem (long client_pid, long pid, void * addr, unsigned long length,
 		 void ** mem_p, unsigned long * actual)
 {
   int irc;
   void * mem  = NULL;
   
-  irc = do_get_mem (pid, &mem, addr, length, actual);
+  irc = do_get_mem (client_pid, pid, &mem, addr, length, actual);
 
   if  (0 != irc) {
     if (mem)  free (mem);
@@ -361,7 +374,8 @@ utracer_get_mem (long pid, void * addr, unsigned long length,
 
 
 static int
-do_get_env (long pid,
+do_get_env (long client_pid,
+	    long pid,
 	    char ** env_p,
 	    long env_req,
 	    long * env_actual)
@@ -374,7 +388,7 @@ do_get_env (long pid,
   *env_p  = malloc (env_req);
 
   printenv_cmd_s printenv_cmd = {IF_CMD_PRINTENV,
-				 (long)client_pid,
+				 client_pid,
 				 pid,
 				 env_req,
 				 &env_length,
@@ -389,18 +403,18 @@ do_get_env (long pid,
 }
 
 int
-utracer_get_env (long pid, char ** env_p)
+utracer_get_env (long client_pid, long pid, char ** env_p)
 {
   int irc;
   char * env  = NULL;
   long envl;
   
-  irc = do_get_env (pid, &env, PAGE_SIZE, &envl);
+  irc = do_get_env (client_pid, pid, &env, PAGE_SIZE, &envl);
 
   if (0 == irc) {
     if (envl > PAGE_SIZE) {
       if (env)  free (env);
-      irc = do_get_env (pid, &env, envl, NULL);
+      irc = do_get_env (client_pid, pid, &env, envl, NULL);
     }
   }
   
@@ -424,14 +438,14 @@ utracer_get_env (long pid, char ** env_p)
 
 
 int
-utracer_get_regs (long pid, long regset, void ** regsinfo_p,
+utracer_get_regs (long client_pid, long pid, long regset, void ** regsinfo_p,
 		  unsigned int * nr_regs_p, unsigned int * reg_size_p)
 {
   int irc;
   long actual_size;
   void * regsinfo = malloc (PAGE_SIZE);
   readreg_cmd_s readreg_cmd = {IF_CMD_READ_REG,
-			       (long)client_pid,
+			       client_pid,
 			       pid,
 			       regset,
 			       regsinfo,
@@ -458,13 +472,14 @@ utracer_get_regs (long pid, long regset, void ** regsinfo_p,
 
 
 int
-utracer_set_syscall (short which, short cmd, long pid, long syscall)
+utracer_set_syscall (long client_pid, short which, short cmd,
+		     long pid, long syscall)
 {
   int irc;
   syscall_cmd_s syscall_cmd;
 
   syscall_cmd.cmd			= IF_CMD_SYSCALL;
-  syscall_cmd.utracing_pid		= (long)client_pid;
+  syscall_cmd.utracing_pid		= client_pid;
   syscall_cmd.utraced_pid		= pid;
   syscall_cmd_which (&syscall_cmd)	= which;
   syscall_cmd_cmd (&syscall_cmd)	= cmd;
@@ -480,11 +495,11 @@ utracer_set_syscall (short which, short cmd, long pid, long syscall)
 
 
 int
-utracer_sync (long type)
+utracer_sync (long client_pid, long type)
 {
   int irc;
   sync_cmd_s sync_cmd = {IF_CMD_SYNC,
-			 (long)client_pid, type};
+			 client_pid, type};
 
   LOGIT ("in utracer_sync(), pid = %d\n", client_pid);
 
@@ -498,11 +513,11 @@ utracer_sync (long type)
 
 
 int
-utracer_detach (long pid)
+utracer_detach (long client_pid, long pid)
 {
   int irc;
   attach_cmd_s attach_cmd = {IF_CMD_DETACH,
-			     (long)client_pid, pid, 0, 0};
+			     client_pid, pid, 0, 0};
 
   irc = ioctl (cmd_file_fd, sizeof(attach_cmd_s), &attach_cmd);
 
@@ -515,11 +530,11 @@ utracer_detach (long pid)
 
 
 int
-utracer_attach (long pid, long quiesce, long exec_quiesce)
+utracer_attach (long client_pid, long pid, long quiesce, long exec_quiesce)
 {
   int irc;
   attach_cmd_s attach_cmd = {IF_CMD_ATTACH,
-			     (long)client_pid, pid, quiesce, exec_quiesce};
+			     client_pid, pid, quiesce, exec_quiesce};
 
   irc = ioctl (cmd_file_fd, sizeof(attach_cmd_s), &attach_cmd);
 
@@ -532,11 +547,11 @@ utracer_attach (long pid, long quiesce, long exec_quiesce)
 
 
 int
-utracer_run (long pid)
+utracer_run (long client_pid, long pid)
 {
   int irc;
   run_cmd_s run_cmd = {IF_CMD_RUN,
-		       (long)client_pid,
+		       client_pid,
 		       pid};
 
   irc = ioctl (cmd_file_fd, sizeof(run_cmd_s), &run_cmd);
@@ -546,11 +561,11 @@ utracer_run (long pid)
 
 
 int
-utracer_quiesce (long pid)
+utracer_quiesce (long client_pid, long pid)
 {
   int irc;
   run_cmd_s run_cmd = {IF_CMD_QUIESCE,
-		       (long)client_pid,
+		       client_pid,
 		       pid};
 
   irc = ioctl (cmd_file_fd, sizeof(run_cmd_s), &run_cmd);
@@ -593,11 +608,11 @@ utracer_unregister (long pid)
 
 
 int
-utracer_switch_pid (long pid)
+utracer_switch_pid (long client_pid, long pid)
 {
   int irc;
   switchpid_cmd_s switchpid_cmd = {IF_CMD_SWITCHPID,
-				   (long)client_pid,
+				   client_pid,
 				   pid};
 
   irc = ioctl (cmd_file_fd, sizeof(switchpid_cmd_s), &switchpid_cmd);
@@ -609,7 +624,8 @@ utracer_switch_pid (long pid)
 
 
 int
-utracer_get_exe (long pid,
+utracer_get_exe (long client_pid,
+		 long pid,
 		 char ** filename_p,
 		 char ** interp_p)
 {
@@ -617,7 +633,7 @@ utracer_get_exe (long pid,
   char * filename = malloc (PATH_MAX);
   char * interp   = malloc (PATH_MAX);
   printexe_cmd_s printexe_cmd = {IF_CMD_PRINTEXE,
-				 (long)client_pid,
+				 client_pid,
 				 pid,
 				 filename,
 				 PATH_MAX,

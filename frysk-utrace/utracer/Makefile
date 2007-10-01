@@ -33,10 +33,10 @@ $(TARGET): $(UDB_OBJECT_FILES) ./utracer/utracer/libutracer.a
 #	gcc -o $@ $(UDB_LDFLAGS) $^ $(UDB_LIBS)
 
 udb.o:           udb.c          $(UDB_INCS) $(UTRACER_INCS)
-udb-i386.o:      udb-i386.c     $(UDB_INCS)
+udb-i386.o:      udb-i386.c     $(UDB_INCS) $(UTRACER_INCS)
 udb-module.o:    udb-module.c   $(UDB_INCS) $(UTRACER_INCS)
 udb-response.o:  udb-response.c $(UDB_INCS) $(UTRACER_INCS)
-udb-text-ui.o:   udb-text-ui.c  $(UDB_INCS)
+udb-text-ui.o:   udb-text-ui.c  $(UDB_INCS) $(UTRACER_INCS)
 udb-utrace-if.o: udb-text-ui.c  $(UDB_INCS) $(UTRACER_INCS)
 
 clean:

@@ -336,34 +336,40 @@ typedef enum {
 
 /***************** public i/f ****************/
 
-int utracer_get_printmmap (long pid,
+int utracer_get_printmmap (long client_pid,
+			   long pid,
 			   printmmap_resp_s ** printmmap_resp_p,
 			   vm_struct_subset_s ** vm_struct_subset_p,
 			   char ** vm_strings_p);
-int utracer_get_exe (long pid,
-		     char ** filename_p,
-		     char ** interp_p);
-int utracer_get_env (long pid, char ** env_p);
-int utracer_get_mem (long pid,
+int utracer_get_pids (long client_pid, long * nr_pids, long ** pids);
+int utracer_get_mem (long client_pid,
+		     long pid,
 		     void * addr,
 		     unsigned long length,
 		     void ** mem_p,
 		     unsigned long * actual_length);
-int utracer_get_pids (long * nr_pids, long ** pids);
-int utracer_switch_pid (long pid);
-int utracer_run (long pid);
-int utracer_quiesce (long pid);
-int utracer_attach (long pid, long quiesce, long exec_quiesce);
-int utracer_detach (long pid);
-int utracer_sync (long type);
-int utracer_get_regs (long pid, long regset, void ** regsinfo,
-		      unsigned int * nr_regs_p, unsigned int * reg_size_p);
-int utracer_set_syscall (short which, short cmd, long pid, long syscall);
-
+int utracer_get_env (long client_pid, long pid, char ** env_p);
+int utracer_get_regs (long client_pid,
+		      long pid,
+		      long regset,
+		      void ** regsinfo,
+		      unsigned int * nr_regs_p,
+		      unsigned int * reg_size_p);
+int utracer_set_syscall (long client_pid, short which,
+			 short cmd, long pid, long syscall);
+int utracer_sync (long client_pid, long type);
+int utracer_detach (long client_pid, long pid);
+int utracer_attach (long client_pid, long pid, long quiesce,
+		    long exec_quiesce);
+int utracer_run (long client_pid, long pid);
+int utracer_quiesce (long client_pid, long pid);
+int utracer_switch_pid (long client_pid, long pid);
+int utracer_get_exe (long client_pid,
+		     long pid,
+		     char ** filename_p,
+		     char ** interp_p);
 int utracer_unregister (long pid);
-
-int utracer_open(long pid);
-
+long utracer_open(void);
 void utracer_cleanup(void);
 void utracer_close_ctl_file(void);
 void utracer_shutdown(long pid);

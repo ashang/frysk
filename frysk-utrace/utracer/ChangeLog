@@ -1,3 +1,9 @@
+Mon Oct  1 13:34:29 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-i386.c:
+	* udb-text-ui.c:
+	* udb.c: More stuff to isolate Java from the system.
+
 Fri Sep 21 11:10:29 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-utrace-if.c:  Removed.
