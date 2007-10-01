@@ -54,6 +54,7 @@ public class BankRegister {
     final int offset;
     private final int length;
     private final String name;
+    final Register register;
   
     // Does this really not exist somewhere else?
     private static void reverseArray(byte[] array) {
@@ -65,6 +66,15 @@ public class BankRegister {
 	}
     }
   
+    private BankRegister(int bank, int offset, int length,
+			 Register register, String name) {
+	this.bank = bank;
+	this.offset = offset;
+	this.length = length;
+	this.register = register;
+	this.name = name;
+    }
+
     /**
      * Constructor. The register views defaults to an integer view.
      *
@@ -74,14 +84,11 @@ public class BankRegister {
      * @param name name of the register
      */
     BankRegister(int bank, int offset, int length, String name) {
-	this.bank = bank;
-	this.offset = offset;
-	this.length = length;
-	this.name = name;
+	this(bank, offset, length, null, name);
     }
 
     BankRegister(int bank, int offset, int length, Register register) {
-	this(bank,offset,length,register.name);
+	this(bank, offset, length, register, register.name);
     }
   
     public String toString() {

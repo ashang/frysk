@@ -40,7 +40,6 @@
 package frysk.proc;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import inua.eio.ByteOrder;
@@ -57,85 +56,83 @@ public class IsaX8664 implements Isa
   private static final Instruction X8664Breakpoint
     = new Instruction(new byte[] { (byte)0xcc }, false);
   
-    private final LinkedHashMap registerMap = new LinkedHashMap();
-    private void add(BankRegister register) {
-	registerMap.put(register.getName(), register);
-    }
+    private final BankRegisterMap registerMap = new BankRegisterMap();
 
     IsaX8664()  {
-	add(new BankRegister(0, 80, 8, X8664Registers.RAX));
-	add(new BankRegister(0, 40, 8, X8664Registers.RBX));
-	add(new BankRegister(0, 88, 8, X8664Registers.RCX));
-	add(new BankRegister(0, 96, 8, X8664Registers.RDX));
-	add(new BankRegister(0, 104, 8, X8664Registers.RSI));
-	add(new BankRegister(0, 112, 8, X8664Registers.RDI));
-	add(new BankRegister(0, 32, 8, X8664Registers.RBP));
-	add(new BankRegister(0, 152, 8, X8664Registers.RSP));
-	add(new BankRegister(0, 72, 8, X8664Registers.R8));
-	add(new BankRegister(0, 64, 8, X8664Registers.R9));
-	add(new BankRegister(0, 56, 8, X8664Registers.R10));
-	add(new BankRegister(0, 48, 8, X8664Registers.R11));
-	add(new BankRegister(0, 24, 8, X8664Registers.R12));
-	add(new BankRegister(0, 16, 8, X8664Registers.R13));
-	add(new BankRegister(0, 8, 8, X8664Registers.R14));
-	add(new BankRegister(0, 0, 8, X8664Registers.R15));
-	add(new BankRegister(0, 128, 8, X8664Registers.RIP));
-	add(new BankRegister(0, 144, 8, "eflags"));
-	add(new BankRegister(0, 136, 8, "cs"));
-	add(new BankRegister(0, 160, 8, "ss"));
-	add(new BankRegister(0, 184, 8, "ds"));
-	add(new BankRegister(0, 192, 8, "es"));
-	add(new BankRegister(0, 200, 8, "fs"));
-	add(new BankRegister(0, 208, 8, "gs"));
-	add(new BankRegister(0, 120, 8, "orig_rax"));
-	add(new BankRegister(0, 168, 8, "fs_base"));
-	add(new BankRegister(0, 176, 8, "gs_base"));
-	add(new BankRegister(1, 0, 2, "cwd"));
-	add(new BankRegister(1, 2, 2, "swd"));
-	add(new BankRegister(1, 4, 2, "ftw"));
-	add(new BankRegister(1, 6, 2, "fop"));
-	add(new BankRegister(1, 8, 8, "fprip"));
-	add(new BankRegister(1, 16, 8, "rdp"));
-	add(new BankRegister(1, 24, 4, "mxcsr"));
-	add(new BankRegister(1, 28, 4, "mxcsr_mask"));
-	add(new BankRegister(1, 32, 10, "st0"));
-	add(new BankRegister(1, 48, 10, "st1"));
-	add(new BankRegister(1, 64, 10, "st2"));
-	add(new BankRegister(1, 80, 10, "st3"));
-	add(new BankRegister(1, 96, 10, "st4"));
-	add(new BankRegister(1, 112, 10, "st5"));
-	add(new BankRegister(1, 128, 10, "st6"));
-	add(new BankRegister(1, 144, 10, "st7"));
-	add(new BankRegister(1, 160, 16, "xmm0"));
-	add(new BankRegister(1, 176, 16, "xmm1"));
-	add(new BankRegister(1, 192, 16, "xmm2"));
-	add(new BankRegister(1, 208, 16, "xmm3"));
-	add(new BankRegister(1, 224, 16, "xmm4"));
-	add(new BankRegister(1, 240, 16, "xmm5"));
-	add(new BankRegister(1, 256, 16, "xmm6"));
-	add(new BankRegister(1, 272, 16, "xmm7"));
-	add(new BankRegister(1, 288, 16, "xmm8"));
-	add(new BankRegister(1, 304, 16, "xmm9"));
-	add(new BankRegister(1, 320, 16, "xmm10"));
-	add(new BankRegister(1, 336, 16, "xmm11"));
-	add(new BankRegister(1, 352, 16, "xmm12"));
-	add(new BankRegister(1, 368, 16, "xmm13"));
-	add(new BankRegister(1, 384, 16, "xmm14"));
-	add(new BankRegister(1, 400, 16, "xmm15"));
-	add(new BankRegister(2, 848, 8, "d0"));
-	add(new BankRegister(2, 856, 8, "d1"));
-	add(new BankRegister(2, 864, 8, "d2"));
-	add(new BankRegister(2, 872, 8, "d3"));
-	add(new BankRegister(2, 880, 8, "d4"));
-	add(new BankRegister(2, 888, 8, "d5"));
-	add(new BankRegister(2, 896, 8, "d6"));
-	add(new BankRegister(2, 904, 8, "d7"));
+	registerMap
+	    .add(new BankRegister(0, 80, 8, X8664Registers.RAX))
+	    .add(new BankRegister(0, 40, 8, X8664Registers.RBX))
+	    .add(new BankRegister(0, 88, 8, X8664Registers.RCX))
+	    .add(new BankRegister(0, 96, 8, X8664Registers.RDX))
+	    .add(new BankRegister(0, 104, 8, X8664Registers.RSI))
+	    .add(new BankRegister(0, 112, 8, X8664Registers.RDI))
+	    .add(new BankRegister(0, 32, 8, X8664Registers.RBP))
+	    .add(new BankRegister(0, 152, 8, X8664Registers.RSP))
+	    .add(new BankRegister(0, 72, 8, X8664Registers.R8))
+	    .add(new BankRegister(0, 64, 8, X8664Registers.R9))
+	    .add(new BankRegister(0, 56, 8, X8664Registers.R10))
+	    .add(new BankRegister(0, 48, 8, X8664Registers.R11))
+	    .add(new BankRegister(0, 24, 8, X8664Registers.R12))
+	    .add(new BankRegister(0, 16, 8, X8664Registers.R13))
+	    .add(new BankRegister(0, 8, 8, X8664Registers.R14))
+	    .add(new BankRegister(0, 0, 8, X8664Registers.R15))
+	    .add(new BankRegister(0, 128, 8, X8664Registers.RIP))
+	    .add(new BankRegister(0, 144, 8, "eflags"))
+	    .add(new BankRegister(0, 136, 8, "cs"))
+	    .add(new BankRegister(0, 160, 8, "ss"))
+	    .add(new BankRegister(0, 184, 8, "ds"))
+	    .add(new BankRegister(0, 192, 8, "es"))
+	    .add(new BankRegister(0, 200, 8, "fs"))
+	    .add(new BankRegister(0, 208, 8, "gs"))
+	    .add(new BankRegister(0, 120, 8, "orig_rax"))
+	    .add(new BankRegister(0, 168, 8, "fs_base"))
+	    .add(new BankRegister(0, 176, 8, "gs_base"))
+	    .add(new BankRegister(1, 0, 2, "cwd"))
+	    .add(new BankRegister(1, 2, 2, "swd"))
+	    .add(new BankRegister(1, 4, 2, "ftw"))
+	    .add(new BankRegister(1, 6, 2, "fop"))
+	    .add(new BankRegister(1, 8, 8, "fprip"))
+	    .add(new BankRegister(1, 16, 8, "rdp"))
+	    .add(new BankRegister(1, 24, 4, "mxcsr"))
+	    .add(new BankRegister(1, 28, 4, "mxcsr_mask"))
+	    .add(new BankRegister(1, 32, 10, "st0"))
+	    .add(new BankRegister(1, 48, 10, "st1"))
+	    .add(new BankRegister(1, 64, 10, "st2"))
+	    .add(new BankRegister(1, 80, 10, "st3"))
+	    .add(new BankRegister(1, 96, 10, "st4"))
+	    .add(new BankRegister(1, 112, 10, "st5"))
+	    .add(new BankRegister(1, 128, 10, "st6"))
+	    .add(new BankRegister(1, 144, 10, "st7"))
+	    .add(new BankRegister(1, 160, 16, "xmm0"))
+	    .add(new BankRegister(1, 176, 16, "xmm1"))
+	    .add(new BankRegister(1, 192, 16, "xmm2"))
+	    .add(new BankRegister(1, 208, 16, "xmm3"))
+	    .add(new BankRegister(1, 224, 16, "xmm4"))
+	    .add(new BankRegister(1, 240, 16, "xmm5"))
+	    .add(new BankRegister(1, 256, 16, "xmm6"))
+	    .add(new BankRegister(1, 272, 16, "xmm7"))
+	    .add(new BankRegister(1, 288, 16, "xmm8"))
+	    .add(new BankRegister(1, 304, 16, "xmm9"))
+	    .add(new BankRegister(1, 320, 16, "xmm10"))
+	    .add(new BankRegister(1, 336, 16, "xmm11"))
+	    .add(new BankRegister(1, 352, 16, "xmm12"))
+	    .add(new BankRegister(1, 368, 16, "xmm13"))
+	    .add(new BankRegister(1, 384, 16, "xmm14"))
+	    .add(new BankRegister(1, 400, 16, "xmm15"))
+	    .add(new BankRegister(2, 848, 8, "d0"))
+	    .add(new BankRegister(2, 856, 8, "d1"))
+	    .add(new BankRegister(2, 864, 8, "d2"))
+	    .add(new BankRegister(2, 872, 8, "d3"))
+	    .add(new BankRegister(2, 880, 8, "d4"))
+	    .add(new BankRegister(2, 888, 8, "d5"))
+	    .add(new BankRegister(2, 896, 8, "d6"))
+	    .add(new BankRegister(2, 904, 8, "d7"))
+	    ;
     }
 
-  public BankRegister getRegisterByName(String name)
-  {
-    return (BankRegister)registerMap.get(name);
-  }
+    public BankRegister getRegisterByName(String name) {
+	return registerMap.get(name);
+    }
 
   public long pc(Task task)
   {

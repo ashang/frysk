@@ -1,5 +1,17 @@
 2007-10-01  Andrew Cagney  <cagney@redhat.com>
 
+	* BankRegister.java (register): New.
+	(BankRegister(int,int,int,Register,String)): New; update other
+	constructors.
+	* BankRegisterMap.java: New.
+	* IsaPowerPC.java (registerMap): Change type to BankRegisterMap.
+	(add): Delete.
+	(getRegisterByName()): Update.
+	(IsaPowerPC()): Update.
+	* IsaIA32.java: Ditto.
+	* IsaX8664.java: Ditto.
+	* IsaPPC.java: Ditto.
+
 	* Isa.java (RegisterIterator()): Delete.
 	* IsaPowerPC.java (RegisterIterator()): Ditto.
 	* IsaX8664.java (RegisterIterator()): Ditto.
