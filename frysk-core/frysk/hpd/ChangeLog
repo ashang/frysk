@@ -1,3 +1,8 @@
+2007-10-01  Tim Moore  <timoore@redhat.com>
+
+	* TestBreakpoints.java (testHpdBreakMultiThreadedContinue): New
+	test; see bug 5082.
+
 2007-09-28  Rick Moseley  <rmoseley@redhat.com>
 
 	* CLI.java: Add code for the "load" command.

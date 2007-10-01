@@ -156,4 +156,33 @@ public class TestBreakpoints
         e.expect("Quitting...");
         e.close();
     }
+
+    public void testHpdBreakMultiThreadedContinue() {
+        if (unresolved(5082))
+            return;
+	e = new HpdTestbed();
+        e.send ("run " + Config.getPkgLibFile("funit-fib-clone") + " 3\n\n");
+        	e.expect (5, "Attached.*\n" + prompt);
+	// Break
+	e.send("break fib\n");	
+	e.expect("breakpoint.*" + prompt);
+	e.send("go\n");
+        e.expect("go.*" + prompt + "Breakpoint.*fib.*");
+        e.send("viewset\n");
+        e.expect("viewset.*Target set.*pid.*id.*\\[0\\.0\\].*" + prompt);
+        e.send("go\n");
+        e.expect("go.*" + prompt);
+        e.expect("(Breakpoint 0 fib.*){2}");
+        e.send("viewset\n");
+        e.expect("viewset.*Target set.*pid.*id.*\\[0\\.0\\].*\\[0\\.1\\].*\\[0\\.2\\].*"
+                 + prompt);
+        e.send("where\n");
+        e.expect("where.*\\[0\\.0\\].*\\[0\\.1\\].*#0 0x[0-9a-f]+ in fib\\(.*\\[0\\.2\\].*#0 0x[0-9a-f]+ in fib\\(.*"
+                 + prompt);
+        e.send("go\n");
+        e.expect("go.*fib (3) = 2.*");
+        e.send("quit\n");
+        e.expect("Quitting...");
+        e.close();
+    }
 }
