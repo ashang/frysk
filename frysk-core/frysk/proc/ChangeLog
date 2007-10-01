@@ -1,5 +1,17 @@
 2007-10-01  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPPC32On64.java (registerMap): Change type to
+	BankRegisterMap.
+	(LinuxIsa32On64()): Simplify.
+	(regDefs): Delete.
+	(RegisterIterator()): Delete
+	(getRegisterByName(String)): Update.
+	* LinuxIa32On64.java (registerMap): Change type to BankRegisterMap.
+	(LinuxIsa32On64()): Simplify.
+	(regDefs): Delete.
+	(RegisterIterator()): Delete.
+	(getRegisterByName(String)): Update.
+
 	* BankRegister.java (register): New.
 	(BankRegister(int,int,int,Register,String)): New; update other
 	constructors.

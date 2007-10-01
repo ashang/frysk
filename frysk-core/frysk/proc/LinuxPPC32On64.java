@@ -40,8 +40,6 @@
 package frysk.proc;
 
 import java.math.BigInteger;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import inua.eio.ByteBuffer;
 
 class LinuxPPC32On64
@@ -149,56 +147,40 @@ class LinuxPPC32On64
     }
   }
   
-  private final IndirectRegister[] regDefs;
-  private LinkedHashMap registerMap = new LinkedHashMap();  
+    private BankRegisterMap registerMap = new BankRegisterMap();  
   
-  /**
-   * Default constructor
-   */
-  public LinuxPPC32On64() 
-  {
-    super();
-    IndirectRegister[] gprs = new IndirectRegister[32];
-    for (int i = 0; i < gprs.length; i++) 
-      {
-	gprs[i] = new IndirectRegister ("gpr" + i);
-	registerMap.put(gprs[i].getName(), gprs[i]);
-      }
-    regDefs = new IndirectRegister[] { 
-      new IndirectRegister("nip"),
-      new IndirectRegister("msr"),
-      new IndirectRegister("orig_r3"),
-      new IndirectRegister("ctr"),
-      new IndirectRegister("lnk"),
-      new IndirectRegister("xer"),
-      new IndirectRegister("ccr"),
-      // No such register on ppc64.
-      // new IndirectRegister("mq"),
-      new IndirectRegister("trap"),
-      new IndirectRegister("dar"),
-      new IndirectRegister("dsisr"),
-      new IndirectRegister("result")};
-    
-    for (int i = 0; i < regDefs.length; i++)
-      registerMap.put(regDefs[i].getName(), regDefs[i]);
+    /**
+     * Default constructor
+     */
+    public LinuxPPC32On64() {
+	for (int i = 0; i < 32; i++) {
+	    BankRegister gpr = new IndirectRegister ("gpr" + i);
+	    registerMap.add(gpr);
+	}
+	registerMap
+	    .add (new IndirectRegister("nip"))
+	    .add (new IndirectRegister("msr"))
+	    .add (new IndirectRegister("orig_r3"))
+	    .add (new IndirectRegister("ctr"))
+	    .add (new IndirectRegister("lnk"))
+	    .add (new IndirectRegister("xer"))
+	    .add (new IndirectRegister("ccr"))
+	    // No such register on ppc64.
+	    // .add (new IndirectRegister("mq"))
+	    .add (new IndirectRegister("trap"))
+	    .add (new IndirectRegister("dar"))
+	    .add (new IndirectRegister("dsisr"))
+	    .add (new IndirectRegister("result"))
+	    ;
+	for (int i = 0; i < 32; i++) {
+	    BankRegister fpr = new IndirectRegister ("fpr" + i);
+	    registerMap.add(fpr);
+	}
+    }
 
-    IndirectRegister[] fprs = new IndirectRegister[32];
-    for (int i = 0; i < fprs.length; i++) 
-      {
-	fprs[i] = new IndirectRegister ("fpr" + i);
-	registerMap.put(fprs[i].getName(), fprs[i]);
-      }
-  }
-
-  public Iterator RegisterIterator()
-  {
-    return registerMap.values().iterator();
-  }
-
-  public BankRegister getRegisterByName(String name)
-  {
-    return (BankRegister)registerMap.get(name);
-  }
+    public BankRegister getRegisterByName(String name) {
+	return registerMap.get(name);
+    }
   private BankRegister getRegisterByNameSuper(String name)
   {
     return super.getRegisterByName(name);

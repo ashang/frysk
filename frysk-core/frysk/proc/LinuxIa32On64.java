@@ -39,8 +39,6 @@
 
 package frysk.proc;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.math.BigInteger;
 import inua.eio.ByteBuffer;
 
@@ -227,69 +225,56 @@ extends LinuxIa32
     }
   }
   
-  private LinkedHashMap registerMap = new LinkedHashMap();  
+    private BankRegisterMap registerMap = new BankRegisterMap();  
   
-  /**
-   * Default constructor
-   */
-  public LinuxIa32On64() 
-  {
-    super();
-    // TODO: floating point
-    final BankRegister[] regDefs = new BankRegister[] 
-      { new IndirectRegister("eax", "rax"),
-	new IndirectRegister("ebx", "rbx"),
-	new IndirectRegister("ecx", "rcx"),
-	new IndirectRegister("edx", "rdx"),
-	new IndirectRegister("esi", "rsi"),
-	new IndirectRegister("edi", "rdi"),
-	new IndirectRegister("ebp", "rbp"),
-	new IndirectRegister("cs", "cs"),
-	new IndirectRegister("ds", "ds"),
-	new IndirectRegister("es", "es"),
-	new IndirectRegister("fs", "fs"),
-	new IndirectRegister("gs", "gs"),
-	new IndirectRegister("ss", "gs"),
-	new IndirectRegister("orig_eax", "orig_rax"),
-	new IndirectRegister("eip", "rip"),
-	new IndirectRegister("eflags","eflags"),
-	new IndirectRegister("esp", "rsp"),
-	new IndirectRegister("cwd", "cwd"),
-	new IndirectRegister("swd", "swd"),
-	new IndirectRegister("twd", "ftw"),
-	new IndirectRegister("fip", "fprip"),
-	new ConstantRegister("fcs", 0),
-	new IndirectRegister("foo", "rdp"),
-	new ConstantRegister("fos", 0)
-      };
-    for (int i = 0; i < regDefs.length; i++)
-      registerMap.put(regDefs[i].getName(), regDefs[i]);
-    for (int i = 0; i < 8; i++) 
-      {
-	String fpName = "st" + i;
-	registerMap.put(fpName, new IndirectRegister(fpName, fpName));
-      }
-    for (int i = 0; i < 8; i++) 
-      {
-	String fpName = "xmm" + i;
-	registerMap.put(fpName, new IndirectRegister(fpName, fpName));
-      }
-    for (int i = 0; i < 8; i++)
-      {
-	String dbName = "d" + i;
-	registerMap.put(dbName, new IndirectRegister(dbName, dbName));
-      }
-  }
+    /**
+     * Default constructor
+     */
+    public LinuxIa32On64() {
+	// TODO: floating point
+	registerMap
+	    .add(new IndirectRegister("eax", "rax"))
+	    .add(new IndirectRegister("ebx", "rbx"))
+	    .add(new IndirectRegister("ecx", "rcx"))
+	    .add(new IndirectRegister("edx", "rdx"))
+	    .add(new IndirectRegister("esi", "rsi"))
+	    .add(new IndirectRegister("edi", "rdi"))
+	    .add(new IndirectRegister("ebp", "rbp"))
+	    .add(new IndirectRegister("cs", "cs"))
+	    .add(new IndirectRegister("ds", "ds"))
+	    .add(new IndirectRegister("es", "es"))
+	    .add(new IndirectRegister("fs", "fs"))
+	    .add(new IndirectRegister("gs", "gs"))
+	    .add(new IndirectRegister("ss", "gs"))
+	    .add(new IndirectRegister("orig_eax", "orig_rax"))
+	    .add(new IndirectRegister("eip", "rip"))
+	    .add(new IndirectRegister("eflags","eflags"))
+	    .add(new IndirectRegister("esp", "rsp"))
+	    .add(new IndirectRegister("cwd", "cwd"))
+	    .add(new IndirectRegister("swd", "swd"))
+	    .add(new IndirectRegister("twd", "ftw"))
+	    .add(new IndirectRegister("fip", "fprip"))
+	    .add(new ConstantRegister("fcs", 0))
+	    .add(new IndirectRegister("foo", "rdp"))
+	    .add(new ConstantRegister("fos", 0))
+	    ;
+	for (int i = 0; i < 8; i++) {
+	    String fpName = "st" + i;
+	    registerMap.add(new IndirectRegister(fpName, fpName));
+	}
+	for (int i = 0; i < 8; i++) {
+	    String fpName = "xmm" + i;
+	    registerMap.add(new IndirectRegister(fpName, fpName));
+	}
+	for (int i = 0; i < 8; i++) {
+	    String dbName = "d" + i;
+	    registerMap.add(new IndirectRegister(dbName, dbName));
+	}
+    }
 
-  public Iterator RegisterIterator()
-  {
-    return registerMap.values().iterator();
-  }
-
-  public BankRegister getRegisterByName(String name)
-  {
-    return (BankRegister)registerMap.get(name);
-  }
+    public BankRegister getRegisterByName(String name) {
+	return registerMap.get(name);
+    }
 
   private BankRegister getRegisterByNameSuper(String name)
   {
