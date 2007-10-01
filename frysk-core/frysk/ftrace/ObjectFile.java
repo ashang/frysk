@@ -260,7 +260,9 @@ public class ObjectFile
 	  this.tracePoints = new ArrayList();
 	  this.tracePointMap.put(this.origin, this.tracePoints);
 
-	  new ElfSymbol.Loader(ObjectFile.this.staticSymtab).loadAll(this);
+	  ElfSymbol.Loader loader;
+	  loader = new ElfSymbol.Loader(ObjectFile.this.staticSymtab);
+	  loader.loadAll(this);
 	}
 
       return this.tracePoints;

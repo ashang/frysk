@@ -1,3 +1,8 @@
+2007-10-01  Mark Wielaard  <mwielaard@redhat.com>
+
+	* ObjectFile.java (ObjFBuilder.getTracePoints):
+	Expand ElfSymbol.Loader.loadAll() sequence.
+
 2007-09-29  Petr Machata  <pmachata@redhat.com>
 
 	* ObjectFile.java: Adjust to ElfSymbol changes.
