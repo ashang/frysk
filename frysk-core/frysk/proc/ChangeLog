@@ -1,5 +1,10 @@
 2007-10-01  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (getRegister(Register)): New.
+	(setRegister(Register,long)): New.
+	(getBankRegister(String name)): New.
+	(accessRegister(Register,int,int,byte[],int)): New.
+
 	* LinuxPPC32On64.java (registerMap): Change type to
 	BankRegisterMap.
 	(LinuxIsa32On64()): Simplify.

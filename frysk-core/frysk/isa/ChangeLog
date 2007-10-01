@@ -1,3 +1,8 @@
+2007-10-01  Andrew Cagney  <cagney@redhat.com>
+
+	* Register.java (getName()): New.
+	(getType()): New.
+
 2007-09-28  Andrew Cagney  <cagney@redhat.com>
 
 	* RegisterMap.java (integerToRegister): Replace numbers;

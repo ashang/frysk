@@ -49,8 +49,14 @@ public class Register {
     }
 
     public final String name;
+    public String getName() {
+	return name;
+    }
 
     public final Type type;
+    public Type getType() {
+	return type;
+    }
 
     public String toString() {
 	return "[Register: " + name + " type: " + type + "]";

@@ -49,6 +49,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Observer;
 import java.util.Observable;
+import frysk.isa.Register;
 
 public abstract class Task
 {
@@ -1004,6 +1005,44 @@ public abstract class Task
    * XXX: Should not be public.
    */
   public LinkedList pendingObservations = new LinkedList();
+
+    /**
+     * Return the underlying bank register.
+     */
+    public BankRegister getBankRegister(String name) {
+	return isa.getRegisterByName(name);
+    }
+    /**
+     * Return the Task's Register as a long.
+     */
+    public long getRegister(Register register) {
+	BankRegister bankRegister = isa.getRegisterByName(register.getName());
+	return bankRegister.get(this);
+    }
+    /**
+     * Store the long value in the Task's register.
+     */
+    public void setRegister(Register register, long value) {
+	BankRegister bankRegister = isa.getRegisterByName(register.getName());
+	bankRegister.put(this, value);
+    }
+    /**
+     * Access bytes OFFSET:LENGTH of the Task's register read/writing
+     * it into the byte buffer from START.
+     */
+    public void accessRegister(Register register, int offset, int length,
+			       byte[] bytes, int start, boolean write) {
+	if (write)
+	    throw new RuntimeException("accessRegister:write not implemented");
+	else {
+	    BankRegister bankRegister
+		= isa.getRegisterByName(register.getName());
+	    byte[] tmp = bankRegister.getBytes(this);
+	    for (int i = 0; i < length; i++) {
+		bytes[start + i] = tmp[offset + i];
+	    }
+	}
+    }
 
   private ByteBuffer[] registerBanks;
   protected abstract ByteBuffer[] sendrecRegisterBanks();

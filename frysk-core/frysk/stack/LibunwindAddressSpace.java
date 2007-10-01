@@ -40,7 +40,6 @@
 package frysk.stack;
 
 import frysk.isa.Register;
-import frysk.proc.BankRegister;
 import lib.unwind.Unwind;
 import lib.unwind.UnwindX8664;
 import lib.unwind.UnwindX86;
@@ -104,30 +103,32 @@ class LibunwindAddressSpace extends AddressSpace {
 	return 0;
     }
 
-    public int accessFPReg (int regnum, byte[] fpvalp, boolean write)
-    {
-	// XXX: TODO.
-	return 0;
-    }
-
-    private BankRegister getProcRegister(int regnum) {
+    /**
+     * Why not map from libunwind's regnum straight through to
+     * frysk.proc.BankRegister?  "banks" are an underlying
+     * implementation detail that may not apply to all tasks; and for
+     * a 32-bit tasks different maps are used dependant on it being a
+     * 32-bit or 64-bit system - something that isn't relevant here..
+     */
+    private Register findRegister(int regnum) {
 	Register reg = registerMap.getRegister(regnum);
 	if (reg == null)
 	    throw new RuntimeException("unknown libunwind register: "
 				       + regnum);
-	BankRegister bankReg = isa.getRegisterByName(reg.name);
-	if (bankReg == null)
-	    throw new RuntimeException("unknown proc register: "
-				       + reg.name);
-	return bankReg;
+	return reg;
+    }
+
+    public int accessFPReg (int regnum, byte[] fpvalp, boolean write) {
+	Register reg = registerMap.getRegister(regnum);
+	task.accessRegister(reg, 0, fpvalp.length, fpvalp, 0, write);
+	return 0;
     }
 
     public long getReg(int regnum) {
 	logger.log(Level.FINE, "reading from regnum: {1}\n",
 		   new Long(regnum));
-	BankRegister r = getProcRegister(regnum);
-	long val = r.get(task);
-	logger.log(Level.FINE, "accessReg: read value: 0x{0}\n",
+	long val = task.getRegister(findRegister(regnum));
+	logger.log(Level.FINE, "read value: 0x{0}\n",
 		   Long.toHexString(val));
 	return val;
     }
@@ -138,8 +139,7 @@ class LibunwindAddressSpace extends AddressSpace {
 		       new Long(regnum),
 		       new Long(regval)
 		   });
-	BankRegister r = getProcRegister(regnum);
-	r.put(task, regval);
+	task.setRegister(findRegister(regnum), regval);
     }
 
     public ProcInfo findProcInfo (long ip, boolean needUnwindInfo) {
