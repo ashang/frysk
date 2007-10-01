@@ -159,6 +159,10 @@ public class TestCppVariableSearchEngine extends TestLib{
 
 	assertNotNull("Variable found", variable);
 	assertTrue("Found the correct variable", variable.getLineNumber() == variableLine);
+	
+	//Negative test:
+	variable = cppVariableSearchEngine.get(frame, "NOT"+variableName);
+	assertNull("Bogus object was not found", variable);
     }
     
     
@@ -192,6 +196,10 @@ public class TestCppVariableSearchEngine extends TestLib{
     
     	assertNotNull("Variable found", variable);
     	assertEquals("Variable has the correct value", value, variable.getValue(frame).asLong());
+    	
+//    	Negative test:
+	variable = cppVariableSearchEngine.get(frame, "NOT"+variableName);
+	assertNull("Bogus object was not found", variable);
     }
 
 
