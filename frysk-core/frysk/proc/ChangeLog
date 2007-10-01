@@ -1,5 +1,10 @@
 2007-10-01  Andrew Cagney  <cagney@redhat.com>
 
+	* Isa.java (RegisterIterator()): Delete.
+	* IsaPowerPC.java (RegisterIterator()): Ditto.
+	* IsaX8664.java (RegisterIterator()): Ditto.
+	* IsaIA32.java (RegisterIterator()): Ditto.
+
 	* FPRegister.java: Delete.
 
 	* IsaPPC.java (IsaPPC()): Simplify.

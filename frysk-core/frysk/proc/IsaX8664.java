@@ -40,7 +40,6 @@
 package frysk.proc;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -132,11 +131,6 @@ public class IsaX8664 implements Isa
 	add(new BankRegister(2, 896, 8, "d6"));
 	add(new BankRegister(2, 904, 8, "d7"));
     }
-
-  public Iterator RegisterIterator()
-  {
-    return registerMap.values().iterator();
-  }
 
   public BankRegister getRegisterByName(String name)
   {

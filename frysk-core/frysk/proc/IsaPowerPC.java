@@ -40,7 +40,6 @@
 package frysk.proc;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,11 +63,6 @@ abstract class IsaPowerPC
     = new Instruction(new byte[] { (byte)0x7d, (byte)0x82, 
 				   (byte)0x10, (byte)0x08 }, false);
 
-  public Iterator RegisterIterator ()
-  {
-    return registerMap.values().iterator();
-  }
-  
   public BankRegister getRegisterByName (String name)
   {
     return (BankRegister)registerMap.get(name);

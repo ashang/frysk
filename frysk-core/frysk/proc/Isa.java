@@ -40,7 +40,6 @@
 package frysk.proc;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import inua.eio.ByteOrder;
 import inua.eio.ByteBuffer;
@@ -52,14 +51,6 @@ import inua.eio.ByteBuffer;
 
 public interface Isa
 {
-  /**
-   * Return an iterator that will iterate over every user-visible
-   * register in the <code>Isa</code>.
-   *
-   * @return the iterator
-   */
-  Iterator RegisterIterator();
-
   /**
    * Get a <code>Register</code> object by name.
    *
