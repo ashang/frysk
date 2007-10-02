@@ -51,10 +51,25 @@ class BankRegisterMap {
     private final LinkedHashMap registerToBankRegister = new LinkedHashMap();
     private final LinkedHashMap nameToBankRegister = new LinkedHashMap();
 
-    BankRegisterMap add(BankRegister br) {
+    protected BankRegisterMap add(BankRegister br) {
 	if (br.register != null)
 	    registerToBankRegister.put(br.register, br);
 	nameToBankRegister.put(br.getName(), br);
+	return this;
+    }
+
+    BankRegisterMap add(int bank, int offset, int length, Register register) {
+	return add(new BankRegister(bank, offset, length, register));
+    }
+    BankRegisterMap add(int bank, int offset, int length, String name) {
+	return add(new BankRegister(bank, offset, length, name));
+    }
+    BankRegisterMap add(int bank, int offset, int length,
+			Register[] registers) {
+	for (int i = 0; i < registers.length; i++) {
+	    add(new BankRegister(bank, offset, length, registers[i]));
+	    offset += length;
+	}
 	return this;
     }
 

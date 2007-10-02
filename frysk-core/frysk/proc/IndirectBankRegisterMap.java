@@ -41,6 +41,7 @@ package frysk.proc;
 
 import inua.eio.ByteOrder;
 import java.math.BigInteger;
+import frysk.isa.Register;
 
 /**
  * Mapping between bank registers, in particular a 32-bit register's
@@ -83,6 +84,21 @@ class IndirectBankRegisterMap extends BankRegisterMap {
 
     IndirectBankRegisterMap add(String name) {
 	return add(name, name);
+    }
+
+    IndirectBankRegisterMap add(Register reg32, Register reg64) {
+	return add(reg32.getName(), reg64.getName());
+    }
+    IndirectBankRegisterMap add(Register reg) {
+	return add(reg.getName(), reg.getName());
+    }
+    IndirectBankRegisterMap add(Register[] regs) {
+	for (int i = 0; i < regs.length; i++)
+	    add(regs[i]);
+	return this;
+    }
+    IndirectBankRegisterMap add(Register reg, long val) {
+	return add(reg.getName(), val);
     }
 
     IndirectBankRegisterMap add(String name, final long value) {

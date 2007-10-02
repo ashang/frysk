@@ -1,3 +1,14 @@
+2007-10-02  Andrew Cagney  <cagney@redhat.com>
+
+	* IndirectBankRegisterMap.java (add(Register)): New.
+	(add(Register,Register)): New.
+	(add(Register[])): New.
+	(add(Register,long)): New.
+	* BankRegisterMap.java (add(int,int,int,Register)): New.
+	(add(int,int,int,Register[])): New.
+	(add(int,int,int,String)): New.
+	(add(BankRegister)): Make protected.
+
 2007-10-01  Andrew Cagney  <cagney@redhat.com>
 
 	* BankRegister.java: Update; use Register.getName().
