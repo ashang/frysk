@@ -43,7 +43,7 @@
 for s in */bootstrap.sh
 do
   d=`dirname $s`
-  ( test -d $d && cd $d && ./bootstrap.sh )
+  ( test -d $d -a x"$d" != x"frysk-top" && cd $d && ./bootstrap.sh )
 done
 
 # Generate everything (always run with --add-missing).
