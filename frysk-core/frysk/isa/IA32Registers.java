@@ -154,24 +154,23 @@ public class IA32Registers extends Registers {
 
     public final static RegisterGroup ALL;
     static {
-	Register[] allRegs = new Register[GENERAL.registers.length
-		+ MMX.registers.length + SSE.registers.length
-		+ SEGMENT.registers.length];
-
+	Register[] allRegs
+	    = new Register[GENERAL.getRegisters().length
+			   + MMX.getRegisters().length
+			   + SSE.getRegisters().length
+			   + SEGMENT.getRegisters().length];
 	int count = 0;
-	System.arraycopy(GENERAL.registers, 0, allRegs, count,
-		GENERAL.registers.length);
-	count += GENERAL.registers.length;
-	System
-		.arraycopy(MMX.registers, 0, allRegs, count,
-			MMX.registers.length);
-	count += MMX.registers.length;
-	System
-		.arraycopy(SSE.registers, 0, allRegs, count,
-			SSE.registers.length);
-	count += SSE.registers.length;
-	System.arraycopy(SEGMENT.registers, 0, allRegs, count,
-		SEGMENT.registers.length);
+	System.arraycopy(GENERAL.getRegisters(), 0, allRegs, count,
+			 GENERAL.getRegisters().length);
+	count += GENERAL.getRegisters().length;
+	System.arraycopy(MMX.getRegisters(), 0, allRegs, count,
+			 MMX.getRegisters().length);
+	count += MMX.getRegisters().length;
+	System.arraycopy(SSE.getRegisters(), 0, allRegs, count,
+			 SSE.getRegisters().length);
+	count += SSE.getRegisters().length;
+	System.arraycopy(SEGMENT.getRegisters(), 0, allRegs, count,
+			 SEGMENT.getRegisters().length);
 
 	ALL = new RegisterGroup("all", allRegs);
     }

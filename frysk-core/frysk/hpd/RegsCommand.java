@@ -87,12 +87,12 @@ public class RegsCommand extends CLIHandler {
 	    }
 	    cli.outWriter.println("[" + td.getParentID() + "." + td.getID()
 		    + "]");
-	    for (int i = 0; i < selectedGroup.registers.length; i++) {
-		cli.outWriter.print(selectedGroup.registers[i].name);
+	    for (int i = 0; i < selectedGroup.getRegisters().length; i++) {
+		cli.outWriter.print(selectedGroup.getRegisters()[i].getName());
 		cli.outWriter.print(":\t");
 		try {
 		    Value r = (cli.getTaskFrame(td.getTask())
-			       .getRegisterValue(selectedGroup.registers[i]));
+			       .getRegisterValue(selectedGroup.getRegisters()[i]));
 		    r.toPrint(cli.outWriter, Format.NATURAL);
 		    cli.outWriter.print("\t");
 		    r.toPrint(cli.outWriter, Format.HEXADECIMAL);

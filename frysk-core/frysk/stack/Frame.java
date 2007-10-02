@@ -135,12 +135,12 @@ public abstract class Frame
 				     long offset, int length,
 				     byte[] bytes, int start);
     private byte[] getRegisterBytes(Register register) {
-	byte[] bytes = new byte[register.type.getSize()];
-	getRegister(register, 0, register.type.getSize(), bytes, 0);
+	byte[] bytes = new byte[register.getType().getSize()];
+	getRegister(register, 0, register.getType().getSize(), bytes, 0);
 	return bytes;
     }
     public final Value getRegisterValue(Register register) {
-	return new Value(register.type,
+	return new Value(register.getType(),
 			 new ScratchLocation(getRegisterBytes(register)));
     }
     public final long getRegister(Register register) {

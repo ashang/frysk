@@ -88,7 +88,7 @@ public class BankRegister {
     }
 
     BankRegister(int bank, int offset, int length, Register register) {
-	this(bank, offset, length, register, register.name);
+	this(bank, offset, length, register, register.getName());
     }
   
     public String toString() {

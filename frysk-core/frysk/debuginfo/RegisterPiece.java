@@ -102,7 +102,7 @@ public class RegisterPiece
     protected void toPrint(PrintWriter writer)
     {
 	writer.print("Register ");
-	writer.print(register.name);
+	writer.print(register.getName());
 	writer.print(" - ");
 	writer.print(size);
 	writer.print(" byte(s)");

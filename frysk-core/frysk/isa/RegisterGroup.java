@@ -46,7 +46,13 @@ public class RegisterGroup {
 	this.registers = registers;
     }
 
-    public final String name;
+    private final String name;
+    public String getName() {
+	return name;
+    }
 
-    public final Register[] registers;
+    private final Register[] registers;
+    public Register[] getRegisters() {
+	return registers;
+    }
 }

@@ -305,8 +305,8 @@ class DebugInfoEvaluator
 		throw new RuntimeException("unknown register: " + regName);
 	    }
 	    List pieces = new LinkedList();
-	    pieces.add(new RegisterPiece(reg, reg.type.getSize()));
-	    return new Value(reg.type, new PieceLocation(pieces));
+	    pieces.add(new RegisterPiece(reg, reg.getType().getSize()));
+	    return new Value(reg.getType(), new PieceLocation(pieces));
 	}
 
 	Variable var = getVariable(s);

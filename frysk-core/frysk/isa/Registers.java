@@ -58,11 +58,11 @@ public abstract class Registers {
 	List groupNames = new LinkedList();
 	for (int i = 0; i < registerGroups.length; i++) {
 	    RegisterGroup registerGroup = registerGroups[i];
-	    groupNames.add(registerGroup.name);
-	    registerGroupByName.put(registerGroup.name, registerGroup);
-	    for (int j = 0; j < registerGroup.registers.length; j++) {
-		Register register = registerGroup.registers[j];
-		registerByName.put(register.name, register);
+	    groupNames.add(registerGroup.getName());
+	    registerGroupByName.put(registerGroup.getName(), registerGroup);
+	    for (int j = 0; j < registerGroup.getRegisters().length; j++) {
+		Register register = registerGroup.getRegisters()[j];
+		registerByName.put(register.getName(), register);
 	    }
 	}
 	registerGroupNames = new String[groupNames.size()];

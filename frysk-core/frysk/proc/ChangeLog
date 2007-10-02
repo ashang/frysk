@@ -1,5 +1,7 @@
 2007-10-01  Andrew Cagney  <cagney@redhat.com>
 
+	* BankRegister.java: Update; use Register.getName().
+
 	* IndirectBankRegisterMap.java: New.
 	* LinuxIa32On64.java (registerMap): Change type to
 	IndirectBankRegisterMap.

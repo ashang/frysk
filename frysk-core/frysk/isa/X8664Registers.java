@@ -83,9 +83,9 @@ public class X8664Registers extends Registers {
 
     public static final RegisterGroup ALL;
     static {
-	Register[] allRegs = new Register[GENERAL.registers.length];
-	System.arraycopy(GENERAL.registers, 0, allRegs, 0,
-		GENERAL.registers.length);
+	Register[] allRegs = new Register[GENERAL.getRegisters().length];
+	System.arraycopy(GENERAL.getRegisters(), 0, allRegs, 0,
+			 GENERAL.getRegisters().length);
 	ALL = new RegisterGroup("all", allRegs);
     }
 

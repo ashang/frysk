@@ -48,12 +48,12 @@ public class Register {
 	this.type = type;
     }
 
-    public final String name;
+    private final String name;
     public String getName() {
 	return name;
     }
 
-    public final Type type;
+    private final Type type;
     public Type getType() {
 	return type;
     }

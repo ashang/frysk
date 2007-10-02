@@ -1,3 +1,7 @@
+2007-10-01  Andrew Cagney  <cagney@redhat.com>
+
+	* RegsCommand.java: Update; use RegisterGroup.getRegisters().
+
 2007-10-01  Tim Moore  <timoore@redhat.com>
 
 	* TestBreakpoints.java (testHpdBreakMultiThreadedContinue): New

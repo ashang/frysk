@@ -342,15 +342,15 @@ public class RegisterWindow
 	Registers registers = RegistersFactory.getRegisters(isa);
 	RegisterGroup group = registers.getAllRegistersGroup();
 	
-	for (int i = 0; i < group.registers.length; i++) {
-	    Register register = group.registers[i];
+	for (int i = 0; i < group.getRegisters().length; i++) {
+	    Register register = group.getRegisters()[i];
 	    TreeIter iter = model.appendRow();
 	    
-	    model.setValue(iter, registerNameColumn, register.name);
+	    model.setValue(iter, registerNameColumn, register.getName());
 	    model.setValue(iter, registerColumn, register);
 	    model.setValue(iter, alignmentColumn, 1.0);
 	    model.setValue(iter, typeColumn,
-			   register.type);
+			   register.getType());
 	    
 	    Value value = StackFactory.createFrame(myTask).getRegisterValue(register);
 	    saveBinaryValue(value, iter.getPath());
@@ -465,12 +465,14 @@ public class RegisterWindow
 	// complex types such as union; this use of instanceof to
 	// re-create the type with a specific byte-order isn't going
 	// to scale.
-	if (register.type instanceof IntegerType)
-	    type = new UnsignedType(register.type.toPrint(), ByteOrder.LITTLE_ENDIAN,
-				    register.type.getSize());
-	else if (register.type instanceof FloatingPointType)
-	    type = new FloatingPointType(register.type.toPrint(), ByteOrder.LITTLE_ENDIAN,
-					 register.type.getSize());
+	if (register.getType() instanceof IntegerType)
+	    type = new UnsignedType(register.getType().toPrint(),
+				    ByteOrder.LITTLE_ENDIAN,
+				    register.getType().getSize());
+	else if (register.getType() instanceof FloatingPointType)
+	    type = new FloatingPointType(register.getType().toPrint(),
+					 ByteOrder.LITTLE_ENDIAN,
+					 register.getType().getSize());
 	else
 	    throw new RuntimeException("type botch");
 
@@ -494,12 +496,14 @@ public class RegisterWindow
 	// complex types such as union; this use of instanceof to
 	// re-create the type with a specific byte-order isn't going
 	// to scale.
-	if (register.type instanceof IntegerType)
-	    type = new UnsignedType(register.type.toPrint(), ByteOrder.BIG_ENDIAN,
-				    register.type.getSize());
-	else if (register.type instanceof FloatingPointType)
-	    type = new FloatingPointType(register.type.toPrint(), ByteOrder.BIG_ENDIAN,
-					 register.type.getSize());
+	if (register.getType() instanceof IntegerType)
+	    type = new UnsignedType(register.getType().toPrint(),
+				    ByteOrder.BIG_ENDIAN,
+				    register.getType().getSize());
+	else if (register.getType() instanceof FloatingPointType)
+	    type = new FloatingPointType(register.getType().toPrint(),
+					 ByteOrder.BIG_ENDIAN,
+					 register.getType().getSize());
 	else
 	    throw new RuntimeException("type botch");
 
@@ -596,7 +600,7 @@ public class RegisterWindow
     TreeIter iter = model.getIter(path);
     Register register = (Register)model.getValue(iter,
 						 registerColumn);
-    int bitLength = register.type.getSize() * 8;
+    int bitLength = register.getType().getSize() * 8;
 
     try
       {

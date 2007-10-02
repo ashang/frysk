@@ -1,5 +1,11 @@
 2007-10-01  Andrew Cagney  <cagney@redhat.com>
 
+	* RegisterGroup.java (name, registers): Make private.
+	(getName(), getRegisters()): New.
+	* Register.java (name, type): Make private.
+	* IA32Registers.java: Update.
+	* X8664Registers.java: Update.
+	
 	* Register.java (getName()): New.
 	(getType()): New.
 
