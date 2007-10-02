@@ -48,6 +48,7 @@ import inua.eio.ByteOrder;
 import frysk.proc.Task;
 import frysk.proc.TaskId;
 import frysk.proc.Isa;
+import frysk.isa.ISA;
 
 public class LinuxTask
     extends Task
@@ -130,6 +131,10 @@ public class LinuxTask
 
   }
 
+
+    protected ISA sendrecISA() {
+	return ((LinuxProc)getProc()).sendrecISA();
+    }
 
   protected Isa sendrecIsa() 
   {

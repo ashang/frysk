@@ -1,3 +1,7 @@
+2007-10-02  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java (sendrecISA()): Add.
+
 2007-05-18  Andrew Cagney  <cagney@redhat.com>
 
 	* Proc.java (sendRefresh): Make public.

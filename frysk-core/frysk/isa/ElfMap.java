@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,67 +37,77 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc.dead;
+package frysk.isa;
 
-import inua.eio.ArrayByteBuffer;
-import inua.eio.ByteBuffer;
-import frysk.proc.Isa;
-import frysk.proc.Task;
-import frysk.proc.TaskId;
-import frysk.proc.TaskState;
-import frysk.isa.ISA;
+import lib.dwfl.ElfEMachine;
+import lib.dwfl.ElfEHeader;
+import java.io.File;
+import java.io.IOException;
+import lib.dwfl.ElfException;
+import lib.dwfl.ElfFileException;
+import lib.dwfl.Elf;
+import lib.dwfl.ElfCommand;
+import java.util.Map;
+import java.util.HashMap;
 
-public class LinuxExeTask extends Task {
-
-    LinuxExeProc proc = null;
-    TaskId id = null;
-    
-
-    protected LinuxExeTask(LinuxExeProc proc, TaskId id, TaskState state) {
-	super(proc, id, state);
-	this.proc = proc;
-	this.id = id;
+/**
+ * Factory returning an ISA based on ELF header information.
+ */
+public final class ElfMap {
+    private static final Map isaToMachine;
+    private static void add(int m, ISA isa) {
+	Integer machine = new Integer(m);
+	isaToMachine.put(isa, machine);
+    }
+    static {
+	isaToMachine = new HashMap();
+	add(ElfEMachine.EM_PPC, ISA.PPC32BE);
+	add(ElfEMachine.EM_PPC64, ISA.PPC64BE);
+	add(ElfEMachine.EM_386, ISA.IA32);
+	add(ElfEMachine.EM_X86_64, ISA.X8664);
     }
 
-    /**
-     * sendrecISA does nothing here as it has no info about it at this
-     * point?
-     */
-    protected ISA sendrecISA() {
-	return null;
+    public static int getElfMachine(ISA isa) {
+	Integer machine = (Integer)isaToMachine.get(isa);
+	if (machine == null)
+	    throw new RuntimeException("no ELF machine for " + isa);
+	return machine.intValue();
     }
 
-    /**
-     * sendrecIsa does nothing here as it has no info about it at this point.
-     */
-    protected Isa sendrecIsa() {
-	return null;
+    public static ISA getISA(ElfEHeader header) {
+	// XXX: Little endian PPC?
+	switch (header.machine) {
+	case ElfEMachine.EM_PPC:
+	    return ISA.PPC32BE;
+	case ElfEMachine.EM_PPC64:
+	    return ISA.PPC64BE;
+	case ElfEMachine.EM_386:
+	    return ISA.IA32;
+	case ElfEMachine.EM_X86_64:
+	    return ISA.X8664;
+	default:
+	    throw new RuntimeException("unhandled elf machine "
+				       + header.machine);
+	}
     }
 
-    /**
-     * sendrecMemory does nothing here as it has no info about it at this point.
-     */
-    protected ByteBuffer sendrecMemory() {
-	return this.proc.sendrecMemory();
+    public static ISA getISA(File exe) {
+	Elf elfFile;
+	try {
+	    elfFile = new Elf(exe.getCanonicalPath(), ElfCommand.ELF_C_READ);
+	} catch (IOException e) {
+	    throw new RuntimeException("opening " + exe.getPath(), e);
+	} catch (ElfFileException e) {
+	    throw new RuntimeException ("opening " + exe.getPath(), e);
+	} catch (ElfException e) {
+	    throw new RuntimeException ("opening " + exe.getPath(), e);
+	}
+	try {
+	    ElfEHeader header = elfFile.getEHeader();
+	    return getISA(header);
+	}
+	finally {
+	    elfFile.close();
+	}
     }
-
-    /**
-     * sendrecRegisterBanks fakes out what the register values are at this point
-     * as there is no info to be had at this moment in time.
-     */
-    protected ByteBuffer[] sendrecRegisterBanks() {
-	ByteBuffer[] bankBuffers = new ByteBuffer[4];
-
-	    // Create an empty page
-	byte[] emptyBuffer = new byte[4096];
-	for (int i=0; i<emptyBuffer.length; i++)
-	    emptyBuffer[i]=0;
-
-	bankBuffers[0] = new ArrayByteBuffer(emptyBuffer);
-	bankBuffers[1] = new ArrayByteBuffer(emptyBuffer);
-	bankBuffers[2] = new ArrayByteBuffer(emptyBuffer);
-	bankBuffers[3] = new ArrayByteBuffer(emptyBuffer);
-	return bankBuffers;
-    }
-
 }

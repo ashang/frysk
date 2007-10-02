@@ -42,6 +42,7 @@ package frysk.proc.dummy;
 import inua.eio.ByteBuffer;
 import frysk.proc.TaskObserver;
 import frysk.proc.Isa;
+import frysk.isa.ISA;
 
 public class Task
     extends frysk.proc.Task
@@ -55,6 +56,10 @@ public class Task
 	return "Attached";
     }
     protected Isa sendrecIsa()
+    {
+	return null;
+    }
+    protected ISA sendrecISA()
     {
 	return null;
     }

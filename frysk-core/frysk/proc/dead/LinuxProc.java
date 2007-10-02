@@ -64,6 +64,8 @@ import frysk.proc.Auxv;
 import frysk.proc.Isa;
 import frysk.proc.IsaFactory;
 import frysk.proc.MemoryMap;
+import frysk.isa.ISA;
+import frysk.isa.ElfMap;
 
 public class LinuxProc
     extends Proc
@@ -302,6 +304,12 @@ public class LinuxProc
     auxv.construct (prAuxv.getAuxvBuffer());
     return auxv.vec;
   }
+
+    protected ISA sendrecISA() {
+	ElfEHeader header = elfData.getParent().getEHeader();
+	return ElfMap.getISA(header);
+    }
+
 
   protected Isa sendrecIsa() 
   {

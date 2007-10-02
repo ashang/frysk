@@ -50,6 +50,7 @@ import java.util.logging.Logger;
 import java.util.Observer;
 import java.util.Observable;
 import frysk.isa.Register;
+import frysk.isa.ISA;
 
 public abstract class Task
 {
@@ -86,6 +87,17 @@ public abstract class Task
   {
     return "Task " + getTid();
   }
+
+    /**
+     * Return's this Task's Instruction Set Architecture.
+     */
+    public final ISA getISA() {
+	if (currentISA == null)
+	    currentISA = sendrecISA();
+	return currentISA;
+    }
+    private ISA currentISA;
+    protected abstract ISA sendrecISA();
 
   /**
    * Returns this Task's Instruction Set Architecture.

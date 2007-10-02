@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,67 +37,35 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc.dead;
+package frysk.isa;
 
-import inua.eio.ArrayByteBuffer;
-import inua.eio.ByteBuffer;
-import frysk.proc.Isa;
-import frysk.proc.Task;
-import frysk.proc.TaskId;
-import frysk.proc.TaskState;
-import frysk.isa.ISA;
+import frysk.junit.TestCase;
+import frysk.Config;
 
-public class LinuxExeTask extends Task {
+/**
+ * Searchable, hashable key sufficient for identifying the supported
+ * Instruction Set Architectures
+ *
+ * Client code, rather than extending this key should implement local
+ * or more global structures indexed by this key.
+ */
 
-    LinuxExeProc proc = null;
-    TaskId id = null;
-    
-
-    protected LinuxExeTask(LinuxExeProc proc, TaskId id, TaskState state) {
-	super(proc, id, state);
-	this.proc = proc;
-	this.id = id;
+public class TestISA extends TestCase {
+    public void testEquals() {
+	assertTrue("equals", ISA.IA32.equals(ISA.IA32));
+	assertFalse("!equals", ISA.IA32.equals(ISA.X8664));
     }
-
-    /**
-     * sendrecISA does nothing here as it has no info about it at this
-     * point?
-     */
-    protected ISA sendrecISA() {
-	return null;
+    public void testToString() {
+	assertEquals("toString", "32-bit big-endian PowerPC",
+		     ISA.PPC32BE.toString());
     }
+    public void testElfGet() {
+	assertSame("IA32 core", ISA.IA32,
+		   ElfMap.getISA(Config.getPkgDataFile("test-core-x86")));
+	assertSame("X8664 core", ISA.X8664,
+		   ElfMap.getISA(Config.getPkgDataFile("test-core-x8664")));
 
-    /**
-     * sendrecIsa does nothing here as it has no info about it at this point.
-     */
-    protected Isa sendrecIsa() {
-	return null;
+	assertSame("IA32 exe", ISA.IA32,
+		   ElfMap.getISA(Config.getPkgDataFile("test-exe-x86")));
     }
-
-    /**
-     * sendrecMemory does nothing here as it has no info about it at this point.
-     */
-    protected ByteBuffer sendrecMemory() {
-	return this.proc.sendrecMemory();
-    }
-
-    /**
-     * sendrecRegisterBanks fakes out what the register values are at this point
-     * as there is no info to be had at this moment in time.
-     */
-    protected ByteBuffer[] sendrecRegisterBanks() {
-	ByteBuffer[] bankBuffers = new ByteBuffer[4];
-
-	    // Create an empty page
-	byte[] emptyBuffer = new byte[4096];
-	for (int i=0; i<emptyBuffer.length; i++)
-	    emptyBuffer[i]=0;
-
-	bankBuffers[0] = new ArrayByteBuffer(emptyBuffer);
-	bankBuffers[1] = new ArrayByteBuffer(emptyBuffer);
-	bankBuffers[2] = new ArrayByteBuffer(emptyBuffer);
-	bankBuffers[3] = new ArrayByteBuffer(emptyBuffer);
-	return bankBuffers;
-    }
-
 }

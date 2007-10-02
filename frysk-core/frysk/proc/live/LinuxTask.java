@@ -56,7 +56,9 @@ import frysk.sys.Ptrace;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
-
+import frysk.isa.ISA;
+import frysk.isa.ElfMap;
+import java.io.File;
 
 /**
  * A Linux Task tracked using PTRACE.
@@ -122,6 +124,17 @@ public class LinuxTask
     {
 	return getIsa().getRegisterBankBuffers(getTid());
     }
+    /**
+     * Return the Task's ISA.
+     *
+     * Can this instead look at AUXV?
+     */
+    protected ISA sendrecISA () {
+	// FIXME: This should use task.proc.getExe().  Only that
+	// causes wierd failures; take a rain-check :-(
+	return ElfMap.getISA(new File("/proc/" + getTid() + "/exe"));
+    }
+
     /**
      * Return the Task's ISA.
      *
