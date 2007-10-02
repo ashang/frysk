@@ -385,7 +385,18 @@ abstract public class DwarfDie {
 	}
 	return die;
     }
-  
+
+    /**
+     * If this die has a DW_AT_abstract_origin or DW_AT_specification
+     * this function returns the die pointed to by those attributes.
+     */
+    public DwarfDie getOriginalDie() {
+	long original_die = get_original_die(this.getPointer());
+	DwarfDie die = null;
+	if (original_die != 0)
+	    die = DwarfDieFactory.getFactory().makeDie(original_die, null);
+	return die;
+    }
     
     abstract public void accept(DieVisitor visitor);
 
@@ -449,4 +460,7 @@ abstract public class DwarfDie {
     protected native void finalize();
     
     private native boolean hasattr(long pointer, int attr);
+
+    private native long get_original_die(long pointer);
+
 }

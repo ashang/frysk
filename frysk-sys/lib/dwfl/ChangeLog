@@ -1,3 +1,8 @@
+2007-10-02  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* cni/DwarfDie.cxx (get_original_die): New function. 
+	* DwarfDie.java (getOriginalDie): New function.
+
 2007-09-29  Petr Machata  <pmachata@redhat.com>
 
 	* ElfSymbol.java (Builder.symbol): Pass additional `index'

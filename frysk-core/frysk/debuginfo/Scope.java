@@ -99,6 +99,10 @@ public class Scope
     return this.scopes;
   }
   
+  protected DwarfDie getDie(){
+      return this.die;
+  }
+  
   public LinkedList getVariables() {
       if (this.variables == null) {
 	  this.variables = new LinkedList();

@@ -39,8 +39,14 @@
 
 package frysk.debuginfo;
 
+import java.io.File;
+
+import lib.dwfl.DwAt;
+import lib.dwfl.DwarfDie;
+import frysk.Config;
 import frysk.proc.Task;
 import frysk.testbed.TestLib;
+import frysk.testbed.TestfileTokenScanner;
 
 public class TestDie
     extends TestLib
@@ -48,7 +54,8 @@ public class TestDie
     
     
     public void testGetLine(){
-	Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-cpp-scopes-namespace");
+	String fileName = "funit-cpp-scopes-namespace";
+	Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir(fileName);
 	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
 	CppVariableSearchEngine cppVariableSearchEngine = new CppVariableSearchEngine();
 	
@@ -56,7 +63,32 @@ public class TestDie
 	
 	assertNotNull("Variable found", variable);
 	
-	System.out.println("TestDie.testGetLine() " + variable.getLineNumber());
+	
+	TestfileTokenScanner scanner = new TestfileTokenScanner(new File(Config.getPkgLibSrcDir() + fileName + ".cxx"));
+	int expectedLine = scanner.findTokenLine("first");
+
+	assertEquals("Correct line number was found", expectedLine, variable.getLineNumber());
+    }
+
+    public void testGetOriginalDie(){
+	Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-cpp-scopes-class");
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
+	DwarfDie die = frame.getSubprogram().getDie();
+	
+	System.out.println("TestDie.testGetOriginalDie() 0x" + Integer.toHexString(die.getOffset()));
+	
+	boolean hasAttribute = die.hasAttribute(DwAt.ABSTRACT_ORIGIN) ||
+	                       die.hasAttribute(DwAt.SPECIFICATION);
+	
+	System.out.println("TestDie.testGetOriginalDie() hasAttribute " + hasAttribute);
+	assertTrue("Function has abstract origin ", hasAttribute);
+	
+	die = die.getOriginalDie();
+	
+	assertNotNull("Found original die", die);
+	assertEquals("Die has correct name", "crash" ,die.getName());
+	
 	
     }
+
 }

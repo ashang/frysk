@@ -389,6 +389,28 @@ lib::dwfl::DwarfDie::get_sibling (jlong var_die)
   return 0;
 }
 
+jlong
+lib::dwfl::DwarfDie::get_original_die (jlong var_die)
+{
+  Dwarf_Die *die = (Dwarf_Die*) var_die;
+  Dwarf_Die *original_die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
+  
+  Dwarf_Attribute attr_mem;
+  if (dwarf_hasattr (die, DW_AT_abstract_origin)
+      && dwarf_formref_die (dwarf_attr (die, DW_AT_abstract_origin, &attr_mem),
+			    original_die) != NULL){
+    return (jlong)original_die;
+  }
+
+  if (dwarf_hasattr (die, DW_AT_specification)
+      && dwarf_formref_die (dwarf_attr (die, DW_AT_specification, &attr_mem),
+			    original_die) != NULL){
+    return (jlong)original_die;
+  }
+
+  return 0;
+}
+
 jint
 lib::dwfl::DwarfDie::get_base_type (jlong var_die)
 {
