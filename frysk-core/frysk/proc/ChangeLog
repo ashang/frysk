@@ -1,5 +1,14 @@
 2007-10-01  Andrew Cagney  <cagney@redhat.com>
 
+	* IndirectBankRegisterMap.java: New.
+	* LinuxIa32On64.java (registerMap): Change type to
+	IndirectBankRegisterMap.
+	(LinuxIa32On64()): Update.
+	(IndirectRegister): Delete.
+	(ConstantRegister): Delete.
+	(getRegisterByNameSuper(String)): Delete.
+	* LinuxPPC32On64.java: Ditto.
+
 	* Task.java (getRegister(Register)): New.
 	(setRegister(Register,long)): New.
 	(getBankRegister(String name)): New.

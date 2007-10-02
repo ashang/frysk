@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006 IBM Corp.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -10,11 +10,11 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-//
+// 
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-//
+// 
 // In addition, as a special exception, Red Hat, Inc. gives You the
 // additional right to link the code of FRYSK with code not covered
 // under the GNU General Public License ("Non-GPL Code") and to
@@ -39,65 +39,68 @@
 
 package frysk.proc;
 
-import inua.eio.ByteBuffer;
+import inua.eio.ByteOrder;
+import java.math.BigInteger;
 
-class LinuxPPC32On64
-  extends LinuxPPC
-{
-  private static LinuxPPC32On64 isa;
+/**
+ * Mapping between bank registers, in particular a 32-bit register's
+ * projection onto an underlying 64-bit register bank.
+ */
 
-  static LinuxPPC isaSingleton ()
-  {
-    if (isa == null)
-      isa = new LinuxPPC32On64 ();
-    return isa;
-  }
-  // The Isa object used to actually access registers in the target.
-  private final IsaPPC64 isa64 = new IsaPPC64();
+class IndirectBankRegisterMap extends BankRegisterMap {
+    private final ByteOrder order;
+    private final Isa isa32;
+    private final Isa isa64;
+    
+    IndirectBankRegisterMap(Isa isa32, Isa isa64) {
+	this.order = isa32.getByteOrder();
+	this.isa32 = isa32;
+	this.isa64 = isa64;
+    }
 
-  /**
-   * Get the buffers used to access registers in the different
-   * banks.
-   *
-   * @return the <code>ByteBuffer</code>s used to access registers.
-   */
-  public ByteBuffer[] getRegisterBankBuffers(int pid) 
-  {
-    return isa64.getRegisterBankBuffers(pid);
-  }
-  
-    private IndirectBankRegisterMap registerMap
-	= new IndirectBankRegisterMap(LinuxPPC.isaSingleton(),
-				      LinuxPPC64.isaSingleton());
-  
-    /**
-     * Default constructor
-     */
-    public LinuxPPC32On64() {
-	for (int i = 0; i < 32; i++) {
-	    registerMap.add("gpr" + i);
-	}
-	registerMap
-	    .add("nip")
-	    .add("msr")
-	    .add("orig_r3")
-	    .add("ctr")
-	    .add("lnk")
-	    .add("xer")
-	    .add("ccr")
-	    // No such register on ppc64.
-	    // .add("mq"))
-	    .add("trap")
-	    .add("dar")
-	    .add("dsisr")
-	    .add("result")
-	    ;
-	for (int i = 0; i < 32; i++) {
-	    registerMap.add("fpr" + i);
+    private int offset(BankRegister reg32, BankRegister reg64) {
+	if (order == ByteOrder.BIG_ENDIAN) {
+	    // least significant bytes on RHS
+	    return (reg64.offset + reg64.getLength()
+		    - reg32.getLength());
+	} else {
+	    // least significant bytes on LHS
+	    return reg64.offset;
 	}
     }
 
-    public BankRegister getRegisterByName(String name) {
-	return registerMap.get(name);
+    private IndirectBankRegisterMap add(BankRegister reg32,
+					BankRegister reg64) {
+	add(new BankRegister(reg64.bank, offset(reg32, reg64),
+			     reg32.getLength(), reg32.getName()));
+	return this;
+    }
+
+    IndirectBankRegisterMap add(String isa32Name, String isa64Name) {
+	return add(isa32.getRegisterByName(isa32Name),
+		   isa64.getRegisterByName(isa64Name));
+    }
+
+    IndirectBankRegisterMap add(String name) {
+	return add(name, name);
+    }
+
+    IndirectBankRegisterMap add(String name, final long value) {
+	BankRegister reg32 = isa32.getRegisterByName(name);
+	add(new BankRegister(0, 0, reg32.getLength(), name) {
+		private final long longVal = value;
+		private final BigInteger bigVal = BigInteger.valueOf(value);
+		public long get(Task task) {
+		    return longVal;
+		}
+		public BigInteger getBigInteger(Task task) {
+		    return bigVal;
+		}
+		public void put(Task task, long val) {
+		}
+		public void putBigInteger(Task task, BigInteger val) {
+		}
+	    });
+	return this;
     }
 }

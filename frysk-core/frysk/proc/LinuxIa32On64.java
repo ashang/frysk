@@ -39,7 +39,6 @@
 
 package frysk.proc;
 
-import java.math.BigInteger;
 import inua.eio.ByteBuffer;
 
 /**
@@ -89,143 +88,9 @@ extends LinuxIa32
     return isa64.getRegisterBankBuffers(pid);
   }
   
-  // Map i386 registers to the x86_64 registers returned by ptrace on x86_64.
-  private class IndirectRegister
-    extends BankRegister 
-  {
-    String ia32Name;
-    String x8664Name;
-      BankRegister ia32Reg;
-      BankRegister x8664Reg;
-    // Masks for cutting the 64 bit values down to 32. XXX Is this needed?
-    long longMask;
-    BigInteger bigIntMask;
-    
-    IndirectRegister(String ia32Name, String x8664Name) 
-    {
-      super(0, 0, 0, ia32Name);	// Dummy values, mostly
-      this.ia32Name = ia32Name;
-      this.x8664Name = x8664Name;
-      ia32Reg = getRegisterByNameSuper(ia32Name);
-      x8664Reg = isa64.getRegisterByName(x8664Name);
-
-      if (getLength() != x8664Reg.getLength()) 
-	{
-	  longMask = (1L << (getLength() * 8)) - 1L;
-	  bigIntMask = BigInteger.ONE.shiftLeft(getLength() * 8)
-	    .subtract(BigInteger.ONE); 
-	}
-      else 
-	{
-	  longMask = 0;
-	  bigIntMask = null;
-	}
-    }
-    
-    public int getLength()
-    {
-      return ia32Reg.getLength();
-    }
-
-    public long get(Task task) 
-    {
-      long rawVal = x8664Reg.get(task);
-      
-      if (longMask != 0)
-	return longMask & rawVal;
-      else
-	return rawVal;
-    }
-    
-    public byte[] getBytes(Task task)
-        {
-          byte[] bytes = x8664Reg.getBytes(task);
-          byte[] ret = new byte[4];
-          
-          for (int i = 0; i < 4; i++)
-            {
-              ret[i] = bytes[i];
-            }
-          
-          
-          return ret;
-        }
-
-    public BigInteger getBigInteger(Task task) 
-    {
-      BigInteger rawVal = x8664Reg.getBigInteger(task);
-
-      if (bigIntMask != null)
-	return bigIntMask.and(rawVal);
-      else
-	return rawVal;
-    }
-    
-    public void put(Task task, long val) 
-    {
-      long realVal;
-      
-      if (longMask != 0)
-	realVal = longMask & val;
-      else
-	realVal = val;
-      x8664Reg.put(task, realVal);
-    }
-    
-    public void putBigInteger(Task task, BigInteger val) 
-    {
-      BigInteger realVal;
-      
-      if (bigIntMask != null) 
-	realVal = bigIntMask.and(val);
-      else
-	realVal = val;
-      x8664Reg.putBigInteger(task, realVal);
-    }
-  }
-
-  private class ConstantRegister extends BankRegister 
-  {
-    String ia32Name;
-    final long value;
-    final BigInteger bigValue;
-      BankRegister ia32Reg;
-    
-    ConstantRegister(String name, long value) 
-    {    
-      super(0, 0, 0, name);	// Dummy values, mostly
-      ia32Name = name;
-      this.value = value;
-      bigValue = BigInteger.valueOf(value);
-      ia32Reg = getRegisterByNameSuper(ia32Name);
-    }
-
-    public int getLength()
-    {
-      return ia32Reg.getLength();
-    }
-    
-
-    public long get(Task task) 
-    {
-      return value;
-    }
-    
-    public BigInteger getBigInteger(Task task) 
-    {
-      return bigValue;
-    }
-    
-    public void put(Task task, long val) 
-    {
-    }
-    
-    public void putBigInteger(Task task, BigInteger val) 
-    {
-    }
-  }
-  
-    private BankRegisterMap registerMap = new BankRegisterMap();  
+    private IndirectBankRegisterMap registerMap
+	= new IndirectBankRegisterMap(LinuxIa32.isaSingleton(),
+				      LinuxX8664.isaSingleton());
   
     /**
      * Default constructor
@@ -233,53 +98,48 @@ extends LinuxIa32
     public LinuxIa32On64() {
 	// TODO: floating point
 	registerMap
-	    .add(new IndirectRegister("eax", "rax"))
-	    .add(new IndirectRegister("ebx", "rbx"))
-	    .add(new IndirectRegister("ecx", "rcx"))
-	    .add(new IndirectRegister("edx", "rdx"))
-	    .add(new IndirectRegister("esi", "rsi"))
-	    .add(new IndirectRegister("edi", "rdi"))
-	    .add(new IndirectRegister("ebp", "rbp"))
-	    .add(new IndirectRegister("cs", "cs"))
-	    .add(new IndirectRegister("ds", "ds"))
-	    .add(new IndirectRegister("es", "es"))
-	    .add(new IndirectRegister("fs", "fs"))
-	    .add(new IndirectRegister("gs", "gs"))
-	    .add(new IndirectRegister("ss", "gs"))
-	    .add(new IndirectRegister("orig_eax", "orig_rax"))
-	    .add(new IndirectRegister("eip", "rip"))
-	    .add(new IndirectRegister("eflags","eflags"))
-	    .add(new IndirectRegister("esp", "rsp"))
-	    .add(new IndirectRegister("cwd", "cwd"))
-	    .add(new IndirectRegister("swd", "swd"))
-	    .add(new IndirectRegister("twd", "ftw"))
-	    .add(new IndirectRegister("fip", "fprip"))
-	    .add(new ConstantRegister("fcs", 0))
-	    .add(new IndirectRegister("foo", "rdp"))
-	    .add(new ConstantRegister("fos", 0))
+	    .add("eax", "rax")
+	    .add("ebx", "rbx")
+	    .add("ecx", "rcx")
+	    .add("edx", "rdx")
+	    .add("esi", "rsi")
+	    .add("edi", "rdi")
+	    .add("ebp", "rbp")
+	    .add("cs", "cs")
+	    .add("ds", "ds")
+	    .add("es", "es")
+	    .add("fs", "fs")
+	    .add("gs", "gs")
+	    .add("ss", "gs")
+	    .add("orig_eax", "orig_rax")
+	    .add("eip", "rip")
+	    .add("eflags","eflags")
+	    .add("esp", "rsp")
+	    .add("cwd", "cwd")
+	    .add("swd", "swd")
+	    .add("twd", "ftw")
+	    .add("fip", "fprip")
+	    .add("fcs", 0)
+	    .add("foo", "rdp")
+	    .add("fos", 0)
 	    ;
 	for (int i = 0; i < 8; i++) {
 	    String fpName = "st" + i;
-	    registerMap.add(new IndirectRegister(fpName, fpName));
+	    registerMap.add(fpName, fpName);
 	}
 	for (int i = 0; i < 8; i++) {
 	    String fpName = "xmm" + i;
-	    registerMap.add(new IndirectRegister(fpName, fpName));
+	    registerMap.add(fpName, fpName);
 	}
 	for (int i = 0; i < 8; i++) {
 	    String dbName = "d" + i;
-	    registerMap.add(new IndirectRegister(dbName, dbName));
+	    registerMap.add(dbName, dbName);
 	}
     }
 
     public BankRegister getRegisterByName(String name) {
 	return registerMap.get(name);
     }
-
-  private BankRegister getRegisterByNameSuper(String name)
-  {
-    return super.getRegisterByName(name);
-  }
 
 }
 
