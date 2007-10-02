@@ -48,13 +48,11 @@ import frysk.isa.Register;
  * Register that is part of a register bank.
  */
 public class BankRegister {
-    // Type type;
-    // boolean readWrite;
-    final int bank;
-    final int offset;
+    private final int bank;
+    private final int offset;
     private final int length;
     private final String name;
-    final Register register;
+    private final Register register;
   
     // Does this really not exist somewhere else?
     private static void reverseArray(byte[] array) {
@@ -233,5 +231,26 @@ public class BankRegister {
      */
     public int getLength() {
 	return length;
+    }
+
+    /**
+     * Get the Register.
+     */
+    public Register getRegister() {
+	return register;
+    }
+
+    /**
+     * Return the offset into the register bank.
+     */
+    public int getOffset() {
+	return offset;
+    }
+
+    /**
+     * Return the register bank, as an index.
+     */
+    public int getBank() {
+	return bank;
     }
 }

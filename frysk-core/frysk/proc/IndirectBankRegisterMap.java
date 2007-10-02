@@ -62,17 +62,17 @@ class IndirectBankRegisterMap extends BankRegisterMap {
     private int offset(BankRegister reg32, BankRegister reg64) {
 	if (order == ByteOrder.BIG_ENDIAN) {
 	    // least significant bytes on RHS
-	    return (reg64.offset + reg64.getLength()
+	    return (reg64.getOffset() + reg64.getLength()
 		    - reg32.getLength());
 	} else {
 	    // least significant bytes on LHS
-	    return reg64.offset;
+	    return reg64.getOffset();
 	}
     }
 
     private IndirectBankRegisterMap add(BankRegister reg32,
 					BankRegister reg64) {
-	add(new BankRegister(reg64.bank, offset(reg32, reg64),
+	add(new BankRegister(reg64.getBank(), offset(reg32, reg64),
 			     reg32.getLength(), reg32.getName()));
 	return this;
     }

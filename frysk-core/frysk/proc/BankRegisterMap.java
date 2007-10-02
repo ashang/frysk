@@ -52,8 +52,8 @@ class BankRegisterMap {
     private final LinkedHashMap nameToBankRegister = new LinkedHashMap();
 
     protected BankRegisterMap add(BankRegister br) {
-	if (br.register != null)
-	    registerToBankRegister.put(br.register, br);
+	if (br.getRegister() != null)
+	    registerToBankRegister.put(br.getRegister(), br);
 	nameToBankRegister.put(br.getName(), br);
 	return this;
     }
