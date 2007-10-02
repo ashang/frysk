@@ -47,6 +47,7 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import lib.dwfl.DwAt;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 import frysk.value.FunctionType;
@@ -62,23 +63,24 @@ public class Subprogram extends Subroutine
     
     private String name;
     
-    public Subprogram (DwarfDie die)
-    {
-      super(die);
-      this.name = die.getName();
-      
-//      System.out.println("\nSubprogram.Subprogram() name: " + name + " " + DwTag.toName(die.getTag()));
-      
-      parameters = new LinkedList();
-      die = die.getChild();
-      while(die != null){
-//	System.out.print(" -> " + die.getName() + ": "+ DwTag.toName(die.getTag()));
-	if(die.getTag().equals(DwTag.FORMAL_PARAMETER)){
-          Variable variable = new Variable(die);
-	  parameters.add(variable);
+    public Subprogram(DwarfDie die) {
+	super(die);
+	this.name = die.getName();
+
+	parameters = new LinkedList();
+	die = die.getChild();
+	while (die != null) {
+	    
+	    boolean artificial = die.hasAttribute(DwAt.ARTIFICIAL)
+		    && die.getAttrConstant(DwAt.ARTIFICIAL) != 1;
+
+	    if (die.getTag().equals(DwTag.FORMAL_PARAMETER) && !artificial) {
+		Variable variable = new Variable(die);
+		parameters.add(variable);
+	    }
+	    
+	    die = die.getSibling();
 	}
-	die = die.getSibling();
-      }
     }
 
     public String getName(){

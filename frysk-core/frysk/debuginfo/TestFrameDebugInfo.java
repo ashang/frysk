@@ -324,5 +324,22 @@ public class TestFrameDebugInfo
       assertEquals("Name", variable.getName(), "var4");
       assertEquals("line number", variable.getLineNumber(), 10);
   }
-  
+
+  public void testThatArtificialParametersAreIgnored() {
+
+	Task task = StoppedTestTaskFactory
+		.getStoppedTaskFromExecDir("funit-cpp-scopes-class");
+	DebugInfoFrame frame = DebugInfoStackFactory
+		.createVirtualStackTrace(task);
+	Subprogram subprogram = frame.getSubprogram();
+
+	LinkedList parameters = subprogram.getParameters();
+	assertEquals("Correct number of parameters", 1, parameters.size());
+
+	// Check that the non artificial variable was not ignored
+	Variable variable = (Variable) parameters.getFirst();
+	assertEquals("Correct variable was found", "i", variable.getName());
+
+    }
+
 }
