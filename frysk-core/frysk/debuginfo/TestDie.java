@@ -75,12 +75,10 @@ public class TestDie
 	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
 	DwarfDie die = frame.getSubprogram().getDie();
 	
-	System.out.println("TestDie.testGetOriginalDie() 0x" + Integer.toHexString(die.getOffset()));
 	
 	boolean hasAttribute = die.hasAttribute(DwAt.ABSTRACT_ORIGIN) ||
 	                       die.hasAttribute(DwAt.SPECIFICATION);
 	
-	System.out.println("TestDie.testGetOriginalDie() hasAttribute " + hasAttribute);
 	assertTrue("Function has abstract origin ", hasAttribute);
 	
 	die = die.getOriginalDie();

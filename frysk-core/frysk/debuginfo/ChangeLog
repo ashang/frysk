@@ -1,5 +1,9 @@
 2007-10-02  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* TestDie.java (testGetLine): Removed print statements.
+
+2007-10-02  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* TestDie.java (testGetLine): Now checks line number.
 	(testGetOriginalDie): New test.
 	* Scope.java (getDie): New function.
