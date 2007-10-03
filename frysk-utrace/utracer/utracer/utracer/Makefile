@@ -1,3 +1,4 @@
+#  TARGET = libutracer.a libutracer.so
   TARGET = libutracer.a
 
  LDFLAGS =

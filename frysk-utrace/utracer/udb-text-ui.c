@@ -397,8 +397,8 @@ printmmap_fcn (char ** saveptr)
   char * tok = strtok_r (NULL, " \t", saveptr);
 
   if (tok && ('[' == *tok)) pid = atol (tok+1);
-  rc = utracer_get_printmmap (udb_pid, pid,
-			      &printmmap_resp, &vm_struct_subset, &vm_strings);
+  rc = utracer_get_mmap (udb_pid, pid,
+			 &printmmap_resp, &vm_struct_subset, &vm_strings);
   if (0 == rc) 
     handle_printmmap (printmmap_resp, vm_struct_subset, vm_strings);
   else uerror ("printmmap");

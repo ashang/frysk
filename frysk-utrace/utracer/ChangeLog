@@ -1,3 +1,8 @@
+Tue Oct  2 23:30:23 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-text-ui.c:
+	* udb-i386.c: Minor tinkering.
+
 Mon Oct  1 13:34:29 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-i386.c:

@@ -184,8 +184,8 @@ parse_regspec (char ** saveptr, long * pid_p, long * regset_p, long *reg_p)
     int i;
 
     fprintf (stderr, "\nformat: pr {[pid]} regset, reg\n");
-      fprintf (stderr, "        pr {[pid]} symbol\n");
-      fprintf (stderr, "        pr {[pid]} symbol, reg\n\n");
+    fprintf (stderr, "        pr {[pid]} symbol\n");
+    fprintf (stderr, "        pr {[pid]} symbol, reg\n\n");
     fprintf (stderr,
 	     "where regset and reg are numeric and symbol is from the \
 following list.\nA register value of -1 or \"all\" prints all of the regs in \
@@ -366,12 +366,12 @@ show_regs (long pid, long regset, long reg, void * regsinfo,
   
   for (; i < k; i++) {
     switch (regset) {
-    case 0:			// gprs
+    case REGSET_GPRS:			// gprs
       rn = (i < mx) ? reg_mapping[i].key : "";
       fprintf (stdout, "\t\t [%d (%s)]: [%#08x] %ld\n",
 	       i, rn, ((long *)regsinfo)[i], ((long *)regsinfo)[i]);
       break;
-    case 1:			// fprs
+    case REGSET_FPRS:			// fprs
       {
 	int j;
 	char * fp_vec = (char *)&i387_regs->st_space;
@@ -381,9 +381,9 @@ show_regs (long pid, long regset, long reg, void * regsinfo,
 	fprintf (stdout, "\n");
       }
       break;
-    case 2:			// fprx
+    case REGSET_FPRX:			// fprx
       break;
-    case 3:			// descriptors
+    case REGSET_DESC:			// descriptors
       rn = (i < mx) ? descriptor_names[i] : "";
       fprintf (stdout, "\t\t [%d (%s)]:\t", i, rn);
       fprintf (stdout,
@@ -398,7 +398,7 @@ show_regs (long pid, long regset, long reg, void * regsinfo,
 	       ud[i].seg_not_present,
 	       ud[i].useable);
       break;
-    case 4:			// debug
+    case REGSET_DEBUG:			// debug
       fprintf (stdout, "\t\t [%d]: [%#08x] %ld\n",
 	       i, ((long *)regsinfo)[i], ((long *)regsinfo)[i]);
       break;

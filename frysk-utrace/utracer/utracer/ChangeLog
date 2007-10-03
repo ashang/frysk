@@ -1,3 +1,9 @@
+Tue Oct  2 23:31:49 2007  Chris Moller  <cmoller@redhat.com>
+
+	* include/utracer-errmsgs.h:
+	* include/utracer.h: Minor tweaks for the wrapper.
+	* utracer/utracer.c: Minor tweak.
+
 Mon Oct  1 13:35:44 2007  Chris Moller  <cmoller@redhat.com>
 
 	* include/utracer.h:

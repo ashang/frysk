@@ -58,6 +58,10 @@
 #define UTRACER_CMD_FN		"cmd"
 #define UTRACER_RESP_FN		"resp"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
   CTL_CMD_NULL,
   CTL_CMD_REGISTER,
@@ -336,11 +340,11 @@ typedef enum {
 
 /***************** public i/f ****************/
 
-int utracer_get_printmmap (long client_pid,
-			   long pid,
-			   printmmap_resp_s ** printmmap_resp_p,
-			   vm_struct_subset_s ** vm_struct_subset_p,
-			   char ** vm_strings_p);
+int utracer_get_mmap (long client_pid,
+		      long pid,
+		      printmmap_resp_s ** printmmap_resp_p,
+		      vm_struct_subset_s ** vm_struct_subset_p,
+		      char ** vm_strings_p);
 int utracer_get_pids (long client_pid, long * nr_pids, long ** pids);
 int utracer_get_mem (long client_pid,
 		     long pid,
@@ -374,5 +378,9 @@ void utracer_cleanup(void);
 void utracer_close_ctl_file(void);
 void utracer_shutdown(long pid);
 int  utracer_resp_file_fd(void);
+
+#ifdef __cplusplus
+}
+#endif
   
 #endif  /* UTRACER_H */

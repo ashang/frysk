@@ -41,6 +41,10 @@
 #ifndef UTRACER_ERRMSGS_H
 #define UTRACER_ERRMSGS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+  
 const char * utrace_emsg[] = {
   "No errors.",				  // UTRACER_EBASE         
   "Invalid engine.",			  // UTRACER_EENGINE,    
@@ -52,7 +56,10 @@ const char * utrace_emsg[] = {
   "Error reading user pages.",		  // UTRACER_EPAGES,     
   "Null mm_struct, task probably died.",  // UTRACER_EMM,        
   "Invalid regset."			  // UTRACER_EREGSET,    
-};					  
-  
+};
+
+#ifdef __cplusplus
+}
+#endif  
 
 #endif  /* UTRACER_ERRMSGS_H */

@@ -206,11 +206,11 @@ do_get_mmap (long client_pid,
 }
 
 int
-utracer_get_printmmap (long client_pid,
-		       long pid,
-		       printmmap_resp_s ** printmmap_resp_p,
-		       vm_struct_subset_s ** vm_struct_subset_p,
-		       char ** vm_strings_p)
+utracer_get_mmap (long client_pid,
+		  long pid,
+		  printmmap_resp_s ** printmmap_resp_p,
+		  vm_struct_subset_s ** vm_struct_subset_p,
+		  char ** vm_strings_p)
 {
   int irc;
   printmmap_resp_s * pr = NULL;
