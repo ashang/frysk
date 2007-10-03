@@ -45,16 +45,9 @@ import lib.unwind.UnwindRegistersX8664;
 import frysk.isa.ISA;
 import frysk.isa.IA32Registers;
 import frysk.isa.X8664Registers;
-import java.util.HashMap;
+import frysk.isa.ISAMap;
 
 public class LibunwindRegisterMapFactory {
-
-    public static RegisterMap getRegisterMap(ISA isa) {
-	Object map = isaToMap.get(isa);
-	if (map == null)
-	    throw new RuntimeException("ISA " + isa + " not supported");
-	return (RegisterMap)map;
-    }
 
     private static final RegisterMap IA32 = new RegisterMap() 
 	.add(IA32Registers.EAX, UnwindRegistersX86.EAX)
@@ -119,9 +112,14 @@ public class LibunwindRegisterMapFactory {
 	.add(X8664Registers.RIP, UnwindRegistersX8664.RIP)
 	;
 
-    private static final HashMap isaToMap = new HashMap();
-    static {
-	isaToMap.put(ISA.IA32, IA32);
-	isaToMap.put(ISA.X8664, X8664);
+
+    private static final ISAMap isaToMap
+	= new ISAMap("LibunwindRegisterMapFactory")
+	.put(ISA.IA32, IA32)
+	.put(ISA.X8664, X8664)
+	;
+    public static RegisterMap getRegisterMap(ISA isa) {
+	return (RegisterMap)isaToMap.get(isa);
     }
+
 }

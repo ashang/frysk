@@ -39,53 +39,41 @@
 
 package frysk.isa;
 
-import frysk.junit.TestCase;
-import frysk.Config;
+import java.util.LinkedHashMap;
 
 /**
- * Searchable, hashable key sufficient for identifying the supported
- * Instruction Set Architectures
- *
- * Client code, rather than extending this key should implement local
- * or more global structures indexed by this key.
+ * Searchable, table indexed by ISA.
  */
 
-public class TestISA extends TestCase {
-    public void testEquals() {
-	assertTrue("equals", ISA.IA32.equals(ISA.IA32));
-	assertFalse("!equals", ISA.IA32.equals(ISA.X8664));
-    }
-    public void testToString() {
-	assertEquals("toString", "32-bit big-endian PowerPC",
-		     ISA.PPC32BE.toString());
-    }
-    public void testElfGet() {
-	assertSame("IA32 core", ISA.IA32,
-		   ElfMap.getISA(Config.getPkgDataFile("test-core-x86")));
-	assertSame("X8664 core", ISA.X8664,
-		   ElfMap.getISA(Config.getPkgDataFile("test-core-x8664")));
+public class ISAMap {
 
-	assertSame("IA32 exe", ISA.IA32,
-		   ElfMap.getISA(Config.getPkgDataFile("test-exe-x86")));
+    private final LinkedHashMap map = new LinkedHashMap();
+    private final String what;
+    public ISAMap(String what) {
+	this.what = what;
     }
-    public void testMappedIsa() {
-	ISAMap map = new ISAMap("good")
-	    .put(ISA.IA32, "ia32");
-	assertEquals("get", "ia32", (String)(map.get(ISA.IA32)));
+
+    /**
+     * Add the ISA to the table; this allows cascaded calls vis:
+     * .put(IA32, O1).put(X8664, O2).
+     */
+    public ISAMap put(ISA isa, Object o) {
+	map.put(isa, o);
+	return this;
     }
-    public void testUnmappedIsa() {
-	ISAMap map = new ISAMap("BAD")
-	    .put(ISA.IA32, "ia32");
-	Object o = null;
-	RuntimeException e = null;
-	try {
-	    o = map.get(ISA.X8664);
-	} catch (RuntimeException r) {
-	    e = r;
-	}
-	assertNull("no result", o);
-	assertEquals("exception",
-		     "The "+ISA.X8664+" is not supported (required by BAD)",
-		     e.getMessage());
+
+    /**
+     * Find the ISA object, throw an exception if it isn't found.
+     */
+    public Object get(ISA isa) {
+	Object o = map.get(isa);
+	if (o == null)
+	    throw new RuntimeException("The " + isa + " is not supported"
+				       + " (required by " + what + ")");
+	return o;
+    }
+
+    public String toString() {
+	return map.toString();
     }
 }

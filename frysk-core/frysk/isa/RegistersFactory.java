@@ -39,23 +39,17 @@
 
 package frysk.isa;
 
-import java.util.HashMap;
-
 /**
  * Given an ISA return its registers.
  */
 
 public class RegistersFactory {
-    private static final HashMap isaToRegisters = new HashMap();
-    static {
-	isaToRegisters.put(ISA.IA32, new IA32Registers());
-	isaToRegisters.put(ISA.X8664, new X8664Registers());
-    }
-    
+    private static final ISAMap isaToRegisters
+	= new ISAMap("RegistersFactory")
+	.put(ISA.IA32, new IA32Registers())
+	.put(ISA.X8664, new X8664Registers())
+	;
     static public Registers getRegisters(ISA isa) {
-	Object o = isaToRegisters.get(isa);
-	if (o == null)
-	    throw new RuntimeException("Unsupported architecture " + isa);
-	return (Registers)o;
+	return (Registers)isaToRegisters.get(isa);
     }
 }
