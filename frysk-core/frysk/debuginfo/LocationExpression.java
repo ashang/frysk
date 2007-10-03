@@ -45,7 +45,7 @@ import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.List;
 
-import frysk.proc.Isa;
+import frysk.isa.ISA;
 import frysk.isa.Register;
 import frysk.stack.Frame;
 import lib.dwfl.DwarfDie;
@@ -62,6 +62,7 @@ class LocationExpression {
     List ops;
     int locationType;
     LinkedList stack;
+    private final ISA isa;
 
     LocationExpression(Frame frame, DwarfDie die, List ops) {
 	locationType = 0;
@@ -69,6 +70,7 @@ class LocationExpression {
 	this.die = die;
 	this.ops = ops;
 	this.stack = null;
+	this.isa = frame.getTask().getISA();
     }
 
     /**
@@ -77,7 +79,6 @@ class LocationExpression {
      */
     public long decode () {
 	stack = new LinkedList();
-	Isa isa = frame.getTask().getIsa();
 	int nops = ops.size();
 
 	if (nops == 0)
@@ -410,7 +411,6 @@ class LocationExpression {
     public List decode (int size)
     {
 	stack = new LinkedList();
-	Isa isa = frame.getTask().getIsa();
 	int nops = ops.size();
 
 	//pieces will contain a list of MemoryPiece, RegisterPiece or UnavaiablePiece
@@ -804,8 +804,6 @@ class LocationExpression {
      *
      */
     public Register getRegisterNumber () {
-	Isa isa = frame.getTask().getIsa();
-
 	if (ops.size() == 1) {
 	    int operator = ((DwarfOp) ops.get(0)).operator;
 	    if (operator >= DwOp.REG0_

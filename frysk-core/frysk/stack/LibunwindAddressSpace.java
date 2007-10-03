@@ -46,7 +46,7 @@ import lib.unwind.UnwindX86;
 import frysk.dwfl.DwflCache;
 import frysk.dwfl.DwflFactory;
 import frysk.event.Event;
-import frysk.proc.Isa;
+import frysk.isa.ISA;
 import frysk.proc.Manager;
 import frysk.proc.MemoryMap;
 import frysk.proc.Task;
@@ -68,7 +68,7 @@ class LibunwindAddressSpace extends AddressSpace {
 
     private static final Logger logger = Logger.getLogger("frysk");
     private final Task task;
-    private final Isa isa;
+    private final ISA isa;
     private final RegisterMap registerMap;
 
     // procInfo is a wrapper for a RawDataManaged object, keep a reference
@@ -76,20 +76,22 @@ class LibunwindAddressSpace extends AddressSpace {
     ProcInfo procInfo;
 
 
-    static private Unwind unwinder(Task task) {
-	// FIXME: Call UnwindFactory.singleton(task.getIsa())!
-	if (task.getIsa().getWordSize() == 4)
+    static private Unwind unwinder(ISA isa) {
+	// FIXME: Call UnwindFactory.singleton(task.getISA())!
+	if (isa == ISA.IA32)
 	    return new UnwindX86();
-	else
+	else if (isa == ISA.X8664)
 	    return new UnwindX8664();
+	else
+	    throw new RuntimeException("unhandled ISA: " + isa);
     }
 
     LibunwindAddressSpace(Task task, ByteOrder byteOrder) {
-	super(unwinder(task),
+	super(unwinder(task.getISA()),
 	      // FIXME: Do something useful with the byteOrder!
 	      lib.unwind.ByteOrder.DEFAULT);
 	this.task = task;
-	this.isa = task.getIsa();
+	this.isa = task.getISA();
 	this.registerMap = LibunwindRegisterMapFactory.getRegisterMap(isa);
     }
 

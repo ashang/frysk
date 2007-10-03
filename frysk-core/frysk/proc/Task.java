@@ -1022,20 +1022,22 @@ public abstract class Task
      * Return the underlying bank register.
      */
     public BankRegister getBankRegister(String name) {
-	return isa.getRegisterByName(name);
+	return getIsa().getRegisterByName(name);
     }
     /**
      * Return the Task's Register as a long.
      */
     public long getRegister(Register register) {
-	BankRegister bankRegister = isa.getRegisterByName(register.getName());
+	BankRegister bankRegister
+	    = getIsa().getRegisterByName(register.getName());
 	return bankRegister.get(this);
     }
     /**
      * Store the long value in the Task's register.
      */
     public void setRegister(Register register, long value) {
-	BankRegister bankRegister = isa.getRegisterByName(register.getName());
+	BankRegister bankRegister
+	    = getIsa().getRegisterByName(register.getName());
 	bankRegister.put(this, value);
     }
     /**
@@ -1048,7 +1050,7 @@ public abstract class Task
 	    throw new RuntimeException("accessRegister:write not implemented");
 	else {
 	    BankRegister bankRegister
-		= isa.getRegisterByName(register.getName());
+		= getIsa().getRegisterByName(register.getName());
 	    byte[] tmp = bankRegister.getBytes(this);
 	    for (int i = 0; i < length; i++) {
 		bytes[start + i] = tmp[offset + i];

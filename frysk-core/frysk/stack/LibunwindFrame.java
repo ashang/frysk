@@ -45,7 +45,7 @@ import java.util.logging.Logger;
 import lib.unwind.Cursor;
 import lib.unwind.ProcInfo;
 import lib.unwind.ProcName;
-import frysk.proc.Isa;
+import frysk.isa.ISA;
 import frysk.proc.Task;
 import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
@@ -65,7 +65,7 @@ class LibunwindFrame extends Frame
     private final Cursor cursor;
     private final Task task;
     private final RegisterMap registerMap;
-    private final Isa isa;
+    private final ISA isa;
 
     /**
      * Creates a new LibunwindFrame object. Represents a frame on the stack of a 
@@ -77,7 +77,7 @@ class LibunwindFrame extends Frame
     LibunwindFrame (Cursor cursor, Task task) {
 	this.cursor = cursor;
 	this.task = task;
-	this.isa = task.getIsa();
+	this.isa = task.getISA();
 	this.registerMap = LibunwindRegisterMapFactory.getRegisterMap(isa);
     }
   
@@ -179,7 +179,7 @@ class LibunwindFrame extends Frame
     public FrameIdentifier getFrameIdentifier () {
 	if (this.frameIdentifier == null) {
 	    ProcInfo myInfo = getProcInfo();
-	    byte[] word = new byte[task.getIsa().getWordSize()];
+	    byte[] word = new byte[isa.wordSize()];
 	    long cfa = 0;
 	    if (cursor.getSP(word) >= 0)
 		cfa = byteArrayToLong(word);

@@ -99,7 +99,7 @@ public abstract class Frame
 	// Pad the address based on the task's word size.
 	printWriter.write("0x");
 	String addr = Long.toHexString(getAddress());
-	int padding = 2 * getTask().getIsa().getWordSize() - addr.length();
+	int padding = 2 * getTask().getISA().wordSize() - addr.length();
 	for (int i = 0; i < padding; ++i)
 	    printWriter.write('0');
 	printWriter.write(addr);
