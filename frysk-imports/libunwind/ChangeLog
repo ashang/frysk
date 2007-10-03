@@ -1,3 +1,9 @@
+2007-10-03  Mark Wielaard  <mwielaard@redhat.com>
+
+	* src/Makefile.am: Don't special case libunwind-ptrace. Use upstream
+	.a archive rules.
+	* tests/Makefile.am: Likewise.
+
 2007-09-11  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Makefile.am (SUBDIRS): Exclude docs.

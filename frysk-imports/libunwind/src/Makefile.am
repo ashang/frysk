@@ -6,13 +6,17 @@ SETJMP_SO_VERSION=0:0:0
 COMMON_SO_LDFLAGS =	-XCClinker -nostartfiles
 
 if REMOTE_ONLY
-lib_LTLIBRARIES_cdep =
+LIBRARIES_cdep			=
+lib_LTLIBRARIES_cdep		=
+lib_LTLIBRARIES_cdep_setjmp	=
 else
-lib_LTLIBRARIES_cdep = libunwind.la libunwind-ptrace.la libunwind-setjmp.la
+LIBRARIES_cdep			= libunwind-ptrace.a
+lib_LTLIBRARIES_cdep		= libunwind.la
+lib_LTLIBRARIES_cdep_setjmp	= libunwind-setjmp.la
 endif
 
 ### libunwind-ptrace:
-libunwind_ptrace_la_SOURCES =						  \
+libunwind_ptrace_a_SOURCES =						  \
 	ptrace/_UPT_elf.c						  \
 	ptrace/_UPT_internal.h						  \
 	ptrace/_UPT_accessors.c ptrace/_UPT_access_fpreg.c		  \
@@ -238,14 +242,9 @@ else
 # alias for a library.
 #
 install-exec-hook:
-	test -e $(DESTDIR)$(libdir)/libunwind-$(arch).a		\
-		&& $(LN_S) -f libunwind-$(arch).a		\
-			$(DESTDIR)$(libdir)/libunwind-generic.a	\
-		|| true
-	test -e $(DESTDIR)$(libdir)/libunwind-$(arch).so		\
-		&& $(LN_S) -f libunwind-$(arch).so			\
-			$(DESTDIR)$(libdir)/libunwind-generic.so	\
-		|| true
+	$(LN_S) -f libunwind-$(arch).a  $(DESTDIR)$(libdir)/libunwind-generic.a
+	$(LN_S) -f libunwind-$(arch).so \
+		$(DESTDIR)$(libdir)/libunwind-generic.so
 endif
 
 if OS_LINUX
@@ -336,7 +335,9 @@ libunwind_la_LDFLAGS =	$(COMMON_SO_LDFLAGS) -XCClinker -nostdlib \
 			$(LDFLAGS_STATIC_LIBCXA) -version-info $(SOVERSION)
 libunwind_la_LIBADD  = -lc $(LIBCRTS)
 
-lib_LTLIBRARIES = $(lib_LTLIBRARIES_cdep) $(lib_LTLIBRARIES_arch)
+lib_LIBRARIES = $(LIBRARIES_cdep)
+lib_LTLIBRARIES = $(lib_LTLIBRARIES_cdep) $(lib_LTLIBRARIES_arch) \
+		  $(lib_LTLIBRARIES_cdep_setjmp)
 
 AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/include/tdep-$(arch) -I.
 AM_CCASFLAGS = $(AM_CPPFLAGS)
@@ -354,7 +355,7 @@ EXTRA_DIST =	elfxx.h elfxx.c unwind/unwind-internal.h	\
 		$(libunwind_ia64_la_SOURCES_ia64)		\
 		$(libunwind_x86_la_SOURCES_x86)			\
 		$(libunwind_x86_64_la_SOURCES_x86_64)		\
-		$(libunwind_ptrace_la_SOURCES)			\
+		$(libunwind_ptrace_a_SOURCES)			\
 		$(libunwind_setjmp_la_SOURCES_common)		\
 		$(libunwind_setjmp_la_SOURCES_hppa)		\
 		$(libunwind_setjmp_la_SOURCES_ia64)		\
