@@ -9,6 +9,8 @@ public class Judb {
     private final int REGSET_DESC  = 3;
     private final int REGSET_DEBUG = 4;
 
+    private int current_pid = -1;
+
     private class RegDesc {
 	String regid;
 	int regset;
@@ -53,81 +55,164 @@ public class Judb {
     private void doGetRegs (long udb_pid, String[] tokens) {
 	int regset = -1;
 	int regnr  = -1;
-	
+	int tidx   =  1;
+	int this_pid = current_pid;
+
 	if (1 < tokens.length) {
-	    RegDesc rd = (RegDesc)reg_hash_table.get (tokens[1]);
-	    if (null != rd) {
-		regset = rd.regset;
-		regnr  = rd.regnr;
-		if ((-1 == regnr) && (2 < tokens.length)) {
-		    RegDesc rd2 = (RegDesc)reg_hash_table.get (tokens[2]);
-		    if (null != rd2) {
-			if (rd2.regset == regset) regnr = rd2.regnr;
-			else {
-			    System.out.println ("Inconsistent argument.");
-			    regset = -1;
-			}
-		    }
-		    else {
-			try {
-			    regnr = Integer.parseInt (tokens[2]);
-			} catch (NumberFormatException nfe) {
-			    System.out.println ("Incvalid numeric argument.");
-			    regset = -1;
-			}
-		    }
+	    if (tokens[1].startsWith ("[")) {
+		String nr = (tokens[1].replace ('[', ' ')).replace (']', ' ');
+		System.out.println ("nr = \"" + nr + "\"");
+		try {
+		    this_pid = Integer.parseInt (nr.trim());
+		    System.out.println ("this_pid = " + this_pid);
+		} catch (NumberFormatException nfe) {
+		    System.out.println ("Invalid numeric argument.");
+		    this_pid = -1;
 		}
+		tidx++;
 	    }
-	    else System.out.println ("keyword " + tokens[1] +
-				     " not found.");
+
+	    if (-1 != this_pid) {
+		if (tidx < tokens.length) {
+		    RegDesc rd = (RegDesc)reg_hash_table.get (tokens[tidx]);
+		    if (null != rd) {
+			regset = rd.regset;
+			regnr  = rd.regnr;
+			if ((-1 == regnr) && ((tidx + 1) < tokens.length)) {
+			    RegDesc rd2 =
+				(RegDesc)reg_hash_table.get (tokens[tidx + 1]);
+			    if (null != rd2) {
+				if (rd2.regset == regset) regnr = rd2.regnr;
+				else {
+				    System.out.println ("Inconsistent argument.");
+				    regset = -1;
+				}
+			    }
+			    else {
+				try {
+				    regnr = Integer.parseInt (tokens[tidx + 1]);
+				} catch (NumberFormatException nfe) {
+				    System.out.println ("Invalid numeric argument.");
+				    regset = -1;
+				}
+			    }
+			}
+		    }
+		    else System.out.println ("keyword " + tokens[tidx + 1] +
+					     " not found.");
+		}
+		else System.out.println ("getregs requires a argument.");
+	    }
+	    else System.out.println ("Invalid pid.");
 	}
 	else System.out.println ("getregs requires a argument.");
 
 	if (-1 != regset) {
-	    System.out.println ("Found " + tokens[1] +
-				" in set " + regset +
-				" at " + regnr);
+	    switch (regset) {
+	    case REGSET_GPRS:
+		long gprs[] = Utrace.get_gprs (udb_pid, this_pid);
+		if (null != gprs) {
+		    int si;
+		    int sf;
+		    
+		    if (-1 != regnr) { si = regnr; sf = regnr + 1; }
+		    else { si = 0; sf = gprs.length; }
+		    for (int i = si; i < sf; i++) {
+			System.out.println ("gprs[" + i + "] = " + gprs[i]);
+		    }
+		}
+		else System.out.println ("Reading GPRS failed.");
+		break;
+	    case REGSET_FPRS:
+		break;
+	    case REGSET_FPRX:
+		break;
+	    case REGSET_DESC:
+		break;
+	    case REGSET_DEBUG:
+		break;
+	    }
 	}
     }
     
     private void doAttach (long udb_pid, String[] tokens) {
+	int this_pid = current_pid;
+	
 	if (1 < tokens.length) {
-	    int pid = Integer.parseInt (tokens[1]);
-	    System.out.print ("attaching " + pid);
-	    int rc = Utrace.attach (udb_pid, pid, 1, 0);
+	    try {
+		this_pid = Integer.parseInt (tokens[1]);
+	    } catch (NumberFormatException nfe) {
+		System.out.println ("Invalid numeric argument.");
+		this_pid = -1;
+	    }
+	}
+	if (-1 != this_pid) {
+	    current_pid = this_pid;
+	    System.out.print ("attaching " + this_pid);
+	    int rc = Utrace.attach (udb_pid, this_pid, 1, 0);
 	    System.out.println ("   rc = " + rc);
 	}
-	else System.out.println ("attach requires a argument.");
+	else System.out.println ("Invalid pid.");
     }
     
     private void doDetach (long udb_pid, String[] tokens) {
+	int this_pid = current_pid;
+	
 	if (1 < tokens.length) {
-	    int pid = Integer.parseInt (tokens[1]);
-	    System.out.print ("detaching " + pid);
-	    int rc = Utrace.detach (udb_pid, pid);
+	    try {
+		this_pid = Integer.parseInt (tokens[1]);
+	    } catch (NumberFormatException nfe) {
+		System.out.println ("Invalid numeric argument.");
+		this_pid = -1;
+	    }
+	}
+	if (-1 != this_pid) {
+	    current_pid = this_pid;
+	    System.out.print ("detaching " + this_pid);
+	    int rc = Utrace.detach (udb_pid, this_pid);
 	    System.out.println ("   rc = " + rc);
 	}
-	else System.out.println ("detach requires a argument.");
+	else System.out.println ("Invalid pid.");
     }
     
     private void doRun (long udb_pid, String[] tokens) {
+	int this_pid = current_pid;
+	
 	if (1 < tokens.length) {
-	    int pid = Integer.parseInt (tokens[1]);
-	    System.out.print ("running " + pid);
-	    int rc = Utrace.run (udb_pid, pid);
+	    try {
+		this_pid = Integer.parseInt (tokens[1]);
+	    } catch (NumberFormatException nfe) {
+		System.out.println ("Invalid numeric argument.");
+		this_pid = -1;
+	    }
+	}
+	if (-1 != this_pid) {
+	    current_pid = this_pid;
+	    System.out.print ("running " + this_pid);
+	    int rc = Utrace.run (udb_pid, this_pid);
 	    System.out.println ("   rc = " + rc);
 	}
-	else System.out.println ("run requires a argument.");
+	else System.out.println ("Invalid pid.");
     }
     
     private void doQuiesce (long udb_pid, String[] tokens) {
+	int this_pid = current_pid;
+	
 	if (1 < tokens.length) {
-	    int pid = Integer.parseInt (tokens[1]);
-	    System.out.print ("stopping " + pid);
-	    int rc = Utrace.quiesce (udb_pid, pid);
+	    try {
+		this_pid = Integer.parseInt (tokens[1]);
+	    } catch (NumberFormatException nfe) {
+		System.out.println ("Invalid numeric argument.");
+		this_pid = -1;
+	    }
+	}
+	if (-1 != this_pid) {
+	    current_pid = this_pid;
+	    System.out.print ("stopping " + this_pid);
+	    int rc = Utrace.quiesce (udb_pid, this_pid);
 	    System.out.println ("   rc = " + rc);
 	}
-	else System.out.println ("quiesce requires a argument.");
+	else System.out.println ("Invalid pid.");
     }
     
     public Judb() {

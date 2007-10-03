@@ -46,5 +46,6 @@ public class Utrace {
     public static native int  detach  (long clien_pid, long pid);
     public static native int  run     (long clien_pid, long pid);
     public static native int  quiesce (long clien_pid, long pid);
+    public static native long[] get_gprs (long clien_pid, long pid);
 }
 

@@ -88,6 +88,32 @@ Utrace::run (jlong client_pid, jlong pid)
 jint
 Utrace::quiesce (jlong client_pid, jlong pid)
 {
-  //  fprintf (stderr, "in run( )\n");
+  //  fprintf (stderr, "in quiesce( )\n");
   return utracer_quiesce (client_pid, pid);
+}
+
+jlongArray
+Utrace::get_gprs (jlong client_pid, jlong pid)
+{
+  jlongArray rc;
+  jlong * rc_elements;
+  void * regsinfo = NULL;
+  unsigned int nr_regs;
+  unsigned int reg_size;
+  int irc;
+
+  // fprintf (stderr, "in get_gprs( )\n");
+
+  irc = utracer_get_regs (client_pid, pid, 0, &regsinfo,
+			  &nr_regs, &reg_size);
+
+  if (regsinfo) {
+    rc = JvNewLongArray (nr_regs);
+    rc_elements = elements (rc);
+
+    for (int i = 0; i < 17; i++) rc_elements[i] = ((long *)regsinfo)[i];
+  }
+  else rc = NULL;
+  
+  return rc;
 }

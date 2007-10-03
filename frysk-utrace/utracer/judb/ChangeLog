@@ -1,3 +1,9 @@
+Wed Oct  3 13:35:06 2007  Chris Moller  <cmoller@redhat.com>
+
+	* Judb.java: Added stuff for reading regs.  Cleaned up some stuff.
+	* Utrace.java:
+	* cni/Utrace.cxx:  Added stuff for reading regs.
+
 Tue Oct  2 23:22:52 2007  Chris Moller  <cmoller@redhat.com>
 
 	* Judb.java: New-utracer wrapper test driver.
