@@ -1,3 +1,7 @@
+2007-10-03 Teresa Thomas <tthomas@redhat.com>
+
+	* funit-addresses.c: New file.
+
 2007-10-02  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
 
 	* funit-cpp-scopes-class.cxx: New file.
