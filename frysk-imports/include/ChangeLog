@@ -1,5 +1,7 @@
 2007-10-03  Andrew Cagney  <cagney@redhat.com>
 
+	* frysk-asm.h (SP) [__x8664__]: Fix typo, %4sp -> %rsp.
+
 	* frysk-asm.h (SP): Define.
 
 2007-08-02  Mike Cvet  <mcvet@redhat.com

@@ -131,7 +131,7 @@
 #  define REG1 %rdi
 #  define REG2 %rsi
 #  define REG3 %rdx
-#  define SP   %4sp
+#  define SP   %rsp
 #elif defined __powerpc__
 #  define REG0 3
 #  define REG1 4
