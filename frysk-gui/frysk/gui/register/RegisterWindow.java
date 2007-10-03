@@ -75,7 +75,6 @@ import frysk.gui.common.UBigInteger;
 import frysk.gui.prefs.PreferenceManager;
 import frysk.gui.monitor.Saveable;
 
-import frysk.proc.Isa;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 
@@ -228,8 +227,6 @@ public class RegisterWindow
   public void setTask (Task myTask)
   {
     this.myTask = myTask;
-    Isa isa;
-    isa = this.myTask.getIsa();
     this.setTitle(this.getTitle() + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
 
@@ -238,7 +235,7 @@ public class RegisterWindow
     ListStore model = new ListStore(cols);
     registerView.setModel(model);
 
-    setValues(myTask, isa, model);
+    setValues(myTask, model);
 
     TreeViewColumn col = new TreeViewColumn();
     col.setTitle("Name");
@@ -337,9 +334,9 @@ public class RegisterWindow
     this.refreshList();
   }
 
-    private void setValues(Task myTask, Isa isa, ListStore model) {
+    private void setValues(Task myTask, ListStore model) {
     
-	Registers registers = RegistersFactory.getRegisters(isa);
+	Registers registers = RegistersFactory.getRegisters(myTask.getISA());
 	RegisterGroup group = registers.getAllRegistersGroup();
 	
 	for (int i = 0; i < group.getRegisters().length; i++) {
@@ -360,15 +357,13 @@ public class RegisterWindow
   public void resetTask (Task task)
   {
     this.myTask = task;
-    Isa isa;
-    isa = this.myTask.getIsa();
     this.setTitle(this.getTitle() + this.myTask.getProc().getCommand() + " "
                   + this.myTask.getName());
 
     ListStore model = (ListStore) this.registerView.getModel();
     model.clear();
 
-    setValues(task, isa, model);
+    setValues(task, model);
     
     refreshList();
   }
@@ -425,12 +420,10 @@ public class RegisterWindow
 
   private void resetList ()
   {
-    Isa isa;
-    isa = this.myTask.getIsa();
     ListStore model = (ListStore) this.registerView.getModel();
     model.clear();
     
-    setValues(myTask, isa, model);
+    setValues(myTask, model);
     
     refreshList();
   }

@@ -46,6 +46,7 @@ import lib.dwfl.DwarfDie;
 import frysk.value.Format;
 import frysk.value.Type;
 import frysk.value.Value;
+import frysk.isa.ISA;
 
 /**
  * This class contains the static information corresponding to a
@@ -73,9 +74,9 @@ public class Variable {
 	return name;
     }
 
-    public Type getType(DebugInfoFrame frame) {
+    public Type getType(ISA isa) {
 	if(this.type == null){
-	    TypeEntry typeEntry = new TypeEntry(frame.getTask().getIsa());
+	    TypeEntry typeEntry = new TypeEntry(isa);
 	    this.type = typeEntry.getType(variableDie);
 	}
 	return type;
@@ -90,7 +91,7 @@ public class Variable {
     }
   
     public void toPrint(PrintWriter printWriter, DebugInfoFrame frame) {
-	if (this.getType(frame) == null) {
+	if (this.getType(frame.getTask().getISA()) == null) {
 	    // FIXME: This should just send the request to the Value's
 	    // toPrint method and not try to figure out of the Type
 	    // information was delt with.
@@ -132,9 +133,12 @@ public class Variable {
 
     public Value getValue(DebugInfoFrame frame) {
 	List ops = variableDie.getFormData(frame.getAdjustedAddress());
+	ISA isa = frame.getTask().getISA();
 	LocationExpression locationExpression = new LocationExpression(frame, variableDie, ops);
-	PieceLocation pieceLocation = new PieceLocation(locationExpression.decode(this.getType(frame).getSize()));
-	Value value = new Value(this.getType(frame), pieceLocation);
+	PieceLocation pieceLocation
+	    = new PieceLocation(locationExpression.decode(this.getType(isa)
+							  .getSize()));
+	Value value = new Value(this.getType(isa), pieceLocation);
 	return value;
     }
 }

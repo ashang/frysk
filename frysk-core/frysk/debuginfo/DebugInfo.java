@@ -159,7 +159,7 @@ public class DebugInfo {
 	long pc = frame.getAdjustedAddress();
 	Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
 	DwflDieBias bias = dwfl.getDie(pc);
-	TypeEntry typeEntry = new TypeEntry(frame.getTask().getIsa());
+	TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
 	if (bias == null)
 	    throw new NameNotFoundException("No symbol table is available.");
 	DwarfDie die = bias.die;

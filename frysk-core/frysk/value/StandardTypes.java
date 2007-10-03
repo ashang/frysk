@@ -39,7 +39,6 @@
 
 package frysk.value;
 
-import frysk.proc.Isa;
 import inua.eio.ByteOrder;
 
 public class StandardTypes {
@@ -48,8 +47,8 @@ public class StandardTypes {
     public static final CharType byteBigEndianType
 	= new CharType("byte", ByteOrder.BIG_ENDIAN, 1, true);
 
-    public static CharType getByteType(Isa isa) {
-	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
+    public static CharType getByteType(ByteOrder order) {
+	if (order == ByteOrder.LITTLE_ENDIAN)
 	    return byteLittleEndianType;
 	else
 	    return byteBigEndianType;
@@ -60,8 +59,8 @@ public class StandardTypes {
     public static final SignedType shortBigEndianType
 	= new SignedType("short", ByteOrder.BIG_ENDIAN, 2);
 
-    public static SignedType getShortType(Isa isa) {
-	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
+    public static SignedType getShortType(ByteOrder order) {
+	if (order == ByteOrder.LITTLE_ENDIAN)
 	    return shortLittleEndianType;
 	else
 	    return shortBigEndianType;
@@ -72,8 +71,8 @@ public class StandardTypes {
     public static final SignedType intBigEndianType
 	= new SignedType("int", ByteOrder.BIG_ENDIAN, 4);
 
-    public static SignedType getIntType(Isa isa) {
-	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
+    public static SignedType getIntType(ByteOrder order) {
+	if (order == ByteOrder.LITTLE_ENDIAN)
 	    return intLittleEndianType;
 	else
 	    return intBigEndianType;
@@ -84,8 +83,8 @@ public class StandardTypes {
     public static final SignedType longBigEndianType
 	= new SignedType("long", ByteOrder.BIG_ENDIAN, 8);
 
-    public static SignedType getLongType(Isa isa) {
-	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
+    public static SignedType getLongType(ByteOrder order) {
+	if (order == ByteOrder.LITTLE_ENDIAN)
 	    return longLittleEndianType;
 	else
 	    return longBigEndianType;
@@ -96,8 +95,8 @@ public class StandardTypes {
     public static final FloatingPointType floatBigEndianType
 	= new FloatingPointType("float", ByteOrder.BIG_ENDIAN, 4);
 
-    public static FloatingPointType getFloatType(Isa isa) {
-	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
+    public static FloatingPointType getFloatType(ByteOrder order) {
+	if (order == ByteOrder.LITTLE_ENDIAN)
 	    return floatLittleEndianType;
 	else
 	    return floatBigEndianType;
@@ -108,8 +107,8 @@ public class StandardTypes {
     public static final FloatingPointType doubleBigEndianType
 	= new FloatingPointType("double", ByteOrder.BIG_ENDIAN, 8);
 
-    public static FloatingPointType getDoubleType(Isa isa) {
-	if (isa.getByteOrder() == ByteOrder.LITTLE_ENDIAN)
+    public static FloatingPointType getDoubleType(ByteOrder order) {
+	if (order == ByteOrder.LITTLE_ENDIAN)
 	    return doubleLittleEndianType;
 	else
 	    return doubleBigEndianType;

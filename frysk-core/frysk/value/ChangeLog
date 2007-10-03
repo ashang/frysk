@@ -1,3 +1,7 @@
+2007-10-02  Andrew Cagney  <cagney@redhat.com>
+
+	* StandardTypes.java: Parameterize with ByteOrder, not ISA.
+
 2007-09-26  Teresa Thomas  <tthomas@redhat.com>
 
 	* ByteBufferLocation.java (toPrint): New.

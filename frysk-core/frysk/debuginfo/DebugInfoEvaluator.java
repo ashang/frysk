@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
+import inua.eio.ByteOrder;
 import javax.naming.NameNotFoundException;
 import lib.dwfl.BaseTypes;
 import lib.dwfl.DwTag;
@@ -53,7 +53,7 @@ import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
 import frysk.dwfl.DwflCache;
 import frysk.expr.ExprSymTab;
-import frysk.proc.Isa;
+import frysk.isa.ISA;
 import frysk.proc.Task;
 import frysk.isa.Register;
 import frysk.value.ArithmeticType;
@@ -70,10 +70,9 @@ class DebugInfoEvaluator
     implements ExprSymTab
 {
     private Task task;
-
     private final DebugInfoFrame frame;
-  
     private ByteBuffer buffer;
+    private final ISA isa;
 
     private ArithmeticType byteType;
     // private ArithmeticType byteUnsignedType;
@@ -95,25 +94,25 @@ class DebugInfoEvaluator
      * @param pid_p Pid
      */
     DebugInfoEvaluator (DebugInfoFrame frame) {
+	this.frame = frame;
 	this.task = frame.getTask();
 	buffer = this.task.getMemory();
-
-	this.frame = frame;
-	Isa isa = this.task.getIsa();
-	byteType = StandardTypes.getByteType(isa);
+	isa = task.getISA();
+	ByteOrder order = isa.order();
+	byteType = StandardTypes.getByteType(order);
 	// byteUnsignedType = new ArithmeticType(1, byteorder,
 	// BaseTypes.baseTypeUnsignedByte, "unsigned byte");
-	shortType = StandardTypes.getShortType(isa);
+	shortType = StandardTypes.getShortType(order);
 	// shortUnsignedType = new ArithmeticType(2, byteorder,
 	// BaseTypes.baseTypeUnsignedShort, "unsigned short");
-	intType = StandardTypes.getIntType(isa);
+	intType = StandardTypes.getIntType(order);
 	// intUnsignedType = new ArithmeticType(4, byteorder,
 	// BaseTypes.baseTypeUnsignedInteger, "unsigned int");
-	longType = StandardTypes.getLongType(isa);
+	longType = StandardTypes.getLongType(order);
 	// longUnsignedType = new ArithmeticType(8, byteorder,
 	// BaseTypes.baseTypeUnsignedLong, "unsigned long");
-	floatType = StandardTypes.getFloatType(isa);
-	doubleType = StandardTypes.getDoubleType(isa);
+	floatType = StandardTypes.getFloatType(order);
+	doubleType = StandardTypes.getDoubleType(order);
     }
 
     private interface VariableAccessor {
@@ -298,7 +297,8 @@ class DebugInfoEvaluator
      */
     public Value getValue (String s) throws NameNotFoundException {
 	if (s.charAt(0) == '$') {
-	    Registers regs = RegistersFactory.getRegisters(frame.getTask().getIsa());
+	    Registers regs = RegistersFactory.getRegisters(frame.getTask()
+							   .getISA());
 	    String regName = s.substring(1).trim();
 	    Register reg = regs.getRegister(regName);
 	    if (reg == null) {
@@ -355,7 +355,8 @@ class DebugInfoEvaluator
 	DwarfDie variableDie = var.getVariableDie();
 	List ops = variableDie.getFormData(frame.getAdjustedAddress());
 	LocationExpression locExpr = new LocationExpression(frame, variableDie, ops);
-	PieceLocation pieceLoc = new PieceLocation(locExpr.decode(var.getType(frame).getSize()));
+	PieceLocation pieceLoc
+	    = new PieceLocation(locExpr.decode(var.getType(isa).getSize()));
 	
 	// Throw exception in case of non-contiguous memory or
 	// if value not in memory.
@@ -404,7 +405,7 @@ class DebugInfoEvaluator
 	case DwTag.ARRAY_TYPE_: {
 	    DwarfDie subrange;
 	    subrange = type.getChild();
-	    TypeEntry debugInfoType = new TypeEntry(frame.getTask().getIsa());
+	    TypeEntry debugInfoType = new TypeEntry(isa);
 	    ArrayType arrayType = debugInfoType.getArrayType(type, subrange);
 
 	    if (arrayType == null)
@@ -416,7 +417,7 @@ class DebugInfoEvaluator
 	}
 	case DwTag.UNION_TYPE_:
 	case DwTag.STRUCTURE_TYPE_: {
-	    TypeEntry debugInfoType = new TypeEntry(frame.getTask().getIsa());
+	    TypeEntry debugInfoType = new TypeEntry(isa);
 //	    ClassType classType = debugInfoType.getClassType(frame, type, null);
 	    ConfoundedType classType = debugInfoType.getConfoundedType(type, null);
 

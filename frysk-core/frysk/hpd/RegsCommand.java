@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import frysk.value.Value;
 import frysk.value.Format;
-import frysk.proc.Isa;
+import frysk.isa.ISA;
 import frysk.isa.RegisterGroup;
 import frysk.isa.Registers;
 import frysk.isa.RegistersFactory;
@@ -62,7 +62,7 @@ public class RegsCommand extends CLIHandler {
 	Iterator taskDataIter = ptset.getTaskData();
 	while (taskDataIter.hasNext()) {
 	    TaskData td = (TaskData) taskDataIter.next();
-	    Isa isa = td.getTask().getIsa();
+	    ISA isa = td.getTask().getISA();
 	    Registers regs = RegistersFactory.getRegisters(isa);
 	    RegisterGroup selectedGroup = regs.getDefaultRegisterGroup();
 

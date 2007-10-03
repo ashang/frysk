@@ -216,7 +216,7 @@ public class DebugInfoFrame extends FrameDecorator{
         if(subprogram != null){
           writer.print("0x");
           String addr = Long.toHexString(this.getAddress());
-          int padding = 2 * this.getTask().getIsa().getWordSize() - addr.length();
+          int padding = 2 * this.getTask().getISA().wordSize() - addr.length();
           
           for (int i = 0; i < padding; ++i)
             writer.print('0');

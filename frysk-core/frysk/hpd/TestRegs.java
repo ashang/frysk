@@ -41,15 +41,13 @@ package frysk.hpd;
 
 import frysk.Config;
 import frysk.expunit.Expect;
-import frysk.proc.Isa;
-import frysk.proc.IsaIA32;
-import frysk.proc.IsaX8664;
+import frysk.isa.ISA;
 
 public class TestRegs extends TestLib {
 
     public void testRegsCommand() {
 	child = new Expect(Config.getPkgLibFile("hpd-c"));
-	Isa isa = getChild().getMainTask().getIsa();
+	ISA isa = getChild().getMainTask().getISA();
 	e = new HpdTestbed(child.getPid());
 
 	// Regs
@@ -57,12 +55,12 @@ public class TestRegs extends TestLib {
 
 	// Match the first register (with two values) and the last
 	// register.
-	if (isa instanceof IsaIA32)
+	if (isa == ISA.IA32)
 	    e.expectPrompt("eax:\t[0-9][^\t]*\t0x.*esp:.*");
-	else if (isa instanceof IsaX8664)
+	else if (isa == ISA.X8664)
 	    e.expectPrompt("rax:\t[0-9][^\t]*\t0x.*rip:.*");
 	else
-	    fail("Architecture not supported");
+	    fail("Architecture " + isa + " unhandled");
 	e.close();
     }
 

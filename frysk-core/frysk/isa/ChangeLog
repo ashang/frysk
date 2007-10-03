@@ -1,5 +1,8 @@
 2007-10-02  Andrew Cagney  <cagney@redhat.com>
 
+	* RegistersFactory.java (getRegisters(ISA)): Replace
+	getRegisters(Isa).
+
 	* ElfMap.java: New.
 	* TestISA.java: New.
 	* ISA.java: New.

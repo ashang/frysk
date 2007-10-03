@@ -91,7 +91,7 @@ public class TestTypeEntry
       DwflDieBias bias = dwfl.getDie(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
-      TypeEntry typeEntry = new TypeEntry(frame.getTask().getIsa());
+      TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
     
       for (int i = 0; i < expect.length; i++) {
 	  varDie = die.getScopeVar(allDies, expect[i].symbol);
@@ -122,7 +122,7 @@ public class TestTypeEntry
       DwflDieBias bias = dwfl.getDie(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
-      TypeEntry typeEntry = new TypeEntry(frame.getTask().getIsa());
+      TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
     
       for (int i = 0; i < expect.length; i++) {
 	  varDie = die.getScopeVar(allDies, expect[i].symbol);
@@ -153,7 +153,7 @@ public class TestTypeEntry
       DwflDieBias bias = dwfl.getDie(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
-      TypeEntry typeEntry = new TypeEntry(frame.getTask().getIsa());
+      TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
     
       for (int i = 0; i < expect.length; i++) {
 	  varDie = die.getScopeVar(allDies, expect[i].symbol);
@@ -193,7 +193,7 @@ public class TestTypeEntry
       DwflDieBias bias = dwfl.getDie(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
-      TypeEntry typeEntry = new TypeEntry(frame.getTask().getIsa());
+      TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
     
       for (int i = 0; i < expect.length; i++) {
 	  varDie = die.getScopeVar(allDies, expect[i].symbol);
@@ -228,7 +228,7 @@ public class TestTypeEntry
       DwflDieBias bias = dwfl.getDie(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
-      TypeEntry typeEntry = new TypeEntry(frame.getTask().getIsa());
+      TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
     
       for (int i = 0; i < expect.length; i++) {
 	  varDie = die.getScopeVar(allDies, expect[i].symbol);

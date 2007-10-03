@@ -1,5 +1,16 @@
 2007-10-02  Andrew Cagney  <cagney@redhat.com>
 
+	* Variable.java (getType(ISA)): Replace getType(DebugInfoFrame).
+	* Enumerator.java (getType(ISA)): Replace getType(DebugInfoFrame);
+	note that frysk.value.EnumType is a better alternative.
+	* TypeEntry.java (TypeEntry(ISA)): Replace TypeEntry(Isa).
+	(isa): Delete.
+	* DebugInfoEvaluator.java: Update; StandardTypes indexed by
+	ByteOrder.
+	* DebugInfo.java: Ditto.
+	* TestTypeEntry.java: Ditto.
+	* DebugInfoFrame.java: Update; use Task.getISA.
+
 	* LocationExpression.java (isa): New private field.
 	(LocationExpression): Initialize; use through out.
 	* DwarfRegisterMapFactory.java (getRegisterMap): Re-implement

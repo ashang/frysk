@@ -111,10 +111,12 @@ options {
     ArrayList      refList;
     DebugInfoFrame frame;
     private ExprSymTab exprSymTab;
+    // FIXME: Why is is this parameterized with FRAME when symTab
+    // is ment to be able to provide everything needed by the annotator?
     public CExprAnnotator(DebugInfoFrame frame, ExprSymTab symTab) {
 	    this();
-        this.frame = frame;
-	    exprSymTab = symTab; 
+            this.frame = frame;
+            exprSymTab = symTab;
     }
 }
 
@@ -237,7 +239,7 @@ expr
             Variable var;
             try {
                 var = exprSymTab.getVariable(ident.getText());
-                ident.exprType = var.getType(frame);
+                ident.exprType = var.getType(frame.getTask().getISA());
             }
             catch (NameNotFoundException ignore) {
             }
@@ -246,7 +248,7 @@ expr
             Variable var;
             try {
                 var = exprSymTab.getVariable(tident.getText());
-                tident.exprType = var.getType(frame);
+                tident.exprType = var.getType(frame.getTask().getISA());
             }
             catch (NameNotFoundException ignore) {
             }

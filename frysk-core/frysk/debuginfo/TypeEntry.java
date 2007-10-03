@@ -41,13 +41,12 @@ package frysk.debuginfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import lib.dwfl.BaseTypes;
 import lib.dwfl.DwException;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwAt;
-import frysk.proc.Isa;
+import frysk.isa.ISA;
 import frysk.value.ArrayType;
 import frysk.value.CharType;
 import frysk.value.ConfoundedType;
@@ -68,14 +67,11 @@ import lib.dwfl.DwAccess;
 
 class TypeEntry
 {
-    private final Isa isa;
     private final ByteOrder byteorder;
     private final HashMap dieHash;
 
-    public TypeEntry (Isa isa)
-    {
-	this.isa = isa;
-	this.byteorder = isa.getByteOrder();
+    public TypeEntry (ISA isa) {
+	this.byteorder = isa.order();
 	this.dieHash = new HashMap();
     }
 
@@ -323,10 +319,10 @@ class TypeEntry
 			type.getAttrConstant(DwAt.BYTE_SIZE), true);
 		break;
 	    case BaseTypes.baseTypeFloat:
-		returnType = StandardTypes.getFloatType(isa);
+		returnType = StandardTypes.getFloatType(byteorder);
 		break;
 	    case BaseTypes.baseTypeDouble:
-		returnType = StandardTypes.getDoubleType(isa);
+		returnType = StandardTypes.getDoubleType(byteorder);
 		break;
 	    }
 	}
