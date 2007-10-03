@@ -1,3 +1,10 @@
+2007-10-03  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Struct.java: New file.
+	* TestScopes.java: New file.
+	* Subroutine.java: Reindented.
+	(getStruct): New function.
+
 2007-10-02  Andrew Cagney  <cagney@redhat.com>
 
 	* Variable.java (getType(ISA)): Replace getType(DebugInfoFrame).

@@ -39,42 +39,12 @@
 
 package frysk.debuginfo;
 
-import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 
-/**
- * In DWARF a subroutine is used to refer to an entity that can either be a
- * concrete function (Subprogram) or an inlined function (InlinedSubprogram).
- */
-public class Subroutine extends Scope {
+public class Struct extends Scope {
 
-    Struct struct;
-
-    public Subroutine(DwarfDie die) {
+    public Struct(DwarfDie die) {
 	super(die);
     }
-
-    /**
-     * Returns the structure that this subroutine belongs to. If this
-     * subroutine does not belong to any structs/classes it returns null.
-     * 
-     * @return Struct containing this Subroutine or null
-     */
-    public Struct getStruct() {
-	if (struct == null) {
-	    DwarfDie die = this.getDie().getOriginalDie();
-	    if (die == null) {
-		die = this.getDie();
-	    }
-
-	    DwarfDie[] scopes = die.getScopesDie();
-	    for (int i = 0; i < scopes.length; i++) {
-		if (scopes[i].getTag().equals(DwTag.STRUCTURE_TYPE)) {
-		    this.struct = new Struct(scopes[i]);
-		}
-	    }
-	}
-	return struct;
-    }
-
+    
 }

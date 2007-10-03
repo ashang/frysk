@@ -39,42 +39,25 @@
 
 package frysk.debuginfo;
 
-import lib.dwfl.DwTag;
-import lib.dwfl.DwarfDie;
+import frysk.proc.Task;
+import frysk.testbed.TestLib;
 
-/**
- * In DWARF a subroutine is used to refer to an entity that can either be a
- * concrete function (Subprogram) or an inlined function (InlinedSubprogram).
- */
-public class Subroutine extends Scope {
-
-    Struct struct;
-
-    public Subroutine(DwarfDie die) {
-	super(die);
-    }
+public class TestScopes extends TestLib{
 
     /**
-     * Returns the structure that this subroutine belongs to. If this
-     * subroutine does not belong to any structs/classes it returns null.
-     * 
-     * @return Struct containing this Subroutine or null
+     * This tests that we can retrieve a the die corresponding to the declaration
+     * of a function that belongs to a class. 
+     *
      */
-    public Struct getStruct() {
-	if (struct == null) {
-	    DwarfDie die = this.getDie().getOriginalDie();
-	    if (die == null) {
-		die = this.getDie();
-	    }
-
-	    DwarfDie[] scopes = die.getScopesDie();
-	    for (int i = 0; i < scopes.length; i++) {
-		if (scopes[i].getTag().equals(DwTag.STRUCTURE_TYPE)) {
-		    this.struct = new Struct(scopes[i]);
-		}
-	    }
-	}
-	return struct;
+    public void testGetOriginalSubprogram(){
+	Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-cpp-scopes-class");
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
+	Subprogram subprogram = frame.getSubprogram();
+	
+	Struct struct = subprogram.getStruct();
+	
+	assertEquals("Correct struct was found", "A", struct.getDie().getName());
+	
     }
 
 }
