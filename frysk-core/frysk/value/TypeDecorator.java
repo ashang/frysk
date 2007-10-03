@@ -41,6 +41,7 @@ package frysk.value;
 
 import java.io.PrintWriter;
 import inua.eio.ByteBuffer;
+import inua.eio.ByteOrder;
 
 /**
  * Type decorator class, so that a base or composite type can be
@@ -170,6 +171,9 @@ abstract class TypeDecorator extends Type {
     }
     public Value bitWiseAndEqual(Value var1, Value var2) {
         return decorated.bitWiseAndEqual(var1, var2);
+    }
+    public Value addressOf (Value var1, ByteOrder order) {
+	return decorated.addressOf(var1, order);
     }
     public boolean getLogicalValue(Value var1) {
         return decorated.getLogicalValue(var1);

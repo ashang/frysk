@@ -141,6 +141,27 @@ extends TestLib
 		      bytes);
     }
     
+    public void testBadAddress ()
+    {
+	RuntimeException runTimeE = null;
+	try {
+	    l.getAddress();
+	} catch (RuntimeException e) {
+	    runTimeE = e;
+	}
+	assertNotNull ("runTimeE", runTimeE);
+	
+	// slice out a pure RegisterPiece
+	Location slice = l.slice(12, 0);
+	try {
+	    slice.getAddress();
+	} catch (RuntimeException e) {
+	    runTimeE = e;
+	}
+	assertNotNull ("runTimeE", runTimeE);
+	
+    }
+    
     private Task getStoppedTask ()
     {
 	return this.getStoppedTask("funit-location");

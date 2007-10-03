@@ -1,3 +1,8 @@
+2007-10-03  Teresa Thomas  <tthomas@redhat.com>
+
+	* ExprSymTab.java (getOrder): New.
+	* CExprEvaluator.g (ADDRESS_OF): Use addressOf.
+
 2007-09-25  Stan Cox  <scox@redhat.com>
 
 	* ExprSymTab.java: Rename from CppSymTab.java.

@@ -40,6 +40,8 @@
 package frysk.value;
 
 import inua.eio.ByteBuffer;
+import inua.eio.ByteOrder;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -219,7 +221,11 @@ public abstract class Type {
     public boolean getLogicalValue (Value var) {
         throw new InvalidOperatorException(this, "");
     }
-
+    public Value addressOf(Value var1, ByteOrder order) {
+	PointerType pType = new PointerType("AddressPtr", order, this.getSize(), this);
+	return pType.createValue(var1.getLocation().getAddress());
+    }
+    
     /**
      * Assign VALUE to LOCATION; possibly performing type-conversion.
      */

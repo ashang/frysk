@@ -75,6 +75,17 @@ extends Location
 	    o.toPrint(writer);
 	}
     }
+    
+    /**
+     * Returns the address only if value is in a _contiguous memory_
+     * location. 
+     */
+    public long getAddress()
+    {
+	if (pieces.size()==1 && (pieces.get(0) instanceof MemoryPiece))
+	   return ((MemoryPiece)pieces.get(0)).getMemory();
+	throw new RuntimeException();
+    }
 
     /**
      * Function to map overall byte index to piece byte index.

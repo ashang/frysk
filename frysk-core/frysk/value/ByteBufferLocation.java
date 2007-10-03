@@ -68,6 +68,11 @@ public class ByteBufferLocation
 		+ "}");
     }
     
+    public long getAddress()
+    {
+	throw new RuntimeException();
+    }
+    
     public void toPrint(PrintWriter writer)
     {	
 	//XXX: Change implementation as required. 

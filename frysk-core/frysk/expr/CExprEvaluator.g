@@ -207,8 +207,8 @@ expr returns [Value returnVar=null]
     |   ( #(AMPERSAND expr expr) )=>#(AMPERSAND  v1=expr v2=expr) {
             returnVar = v1.getType().bitWiseAnd(v1, v2); 
         }
-    |   #(ADDRESS_OF s1=identifier ) {
-            returnVar = (Value)exprSymTab.getAddress(s1);
+    |   #(ADDRESS_OF v1=expr ) {
+            returnVar = v1.getType().addressOf(v1, exprSymTab.getOrder());
         }
     |   #(BITWISEXOR  v1=expr v2=expr) {
             returnVar = v1.getType().bitWiseXor(v1, v2); 

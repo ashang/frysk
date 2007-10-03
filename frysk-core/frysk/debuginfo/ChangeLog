@@ -1,3 +1,12 @@
+2007-10-03  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestPieceLocation.java (testBadAddress): New test.
+	* TestAddress.java: New file.
+	* PieceLocation.java (getAddress): New function.
+	* DebugInfoEvaluator.java (getOrder): New function.
+	(getAddress): Use PieceLocation.getAddress.
+	* DebugInfo.java (TmpSymTab.getOrder): New function.
+
 2007-10-03  Andrew Cagney  <cagney@redhat.com>
 
 	* DwarfRegisterMapFactory.java: Replace HashMap with ISAMap.

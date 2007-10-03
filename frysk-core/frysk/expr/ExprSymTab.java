@@ -45,6 +45,8 @@ import javax.naming.NameNotFoundException;
 import frysk.value.Value;
 import frysk.debuginfo.Variable;
 
+import inua.eio.ByteOrder;
+
 public interface ExprSymTab
 {
   Value getValue(String s) throws NameNotFoundException;
@@ -52,4 +54,5 @@ public interface ExprSymTab
   Value getAddress(String s) throws NameNotFoundException;
   Value getMemory(String s) throws NameNotFoundException;
   Variable getVariable(String s) throws NameNotFoundException;
+  ByteOrder getOrder () throws NameNotFoundException;
 }

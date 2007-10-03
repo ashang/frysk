@@ -357,14 +357,7 @@ class DebugInfoEvaluator
 	LocationExpression locExpr = new LocationExpression(frame, variableDie, ops);
 	PieceLocation pieceLoc
 	    = new PieceLocation(locExpr.decode(var.getType(isa).getSize()));
-	
-	// Throw exception in case of non-contiguous memory or
-	// if value not in memory.
-	if (pieceLoc.getPieces().size() > 1 || 
-	    !(pieceLoc.getPieces().get(0) instanceof MemoryPiece))
-	    throw new RuntimeException();
-	else
-	    return longType.createValue(((MemoryPiece)pieceLoc.getPieces().get(0)).getMemory());
+	return longType.createValue(pieceLoc.getAddress());
     }
   
     /**
@@ -429,5 +422,10 @@ class DebugInfoEvaluator
 	}
 	}
 	return new Value(new UnknownType(variable.getVariableDie().getName()));
+    }
+    
+    public ByteOrder getOrder()
+    {
+	return isa.order();
     }
 }

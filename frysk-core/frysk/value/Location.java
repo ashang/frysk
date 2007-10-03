@@ -178,4 +178,6 @@ public abstract class Location
      * Print this Location.
      */
     public abstract void toPrint(PrintWriter writer);
+    
+    public abstract long getAddress();
 }
