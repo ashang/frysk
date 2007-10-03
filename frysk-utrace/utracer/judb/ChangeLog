@@ -1,0 +1,8 @@
+Tue Oct  2 23:22:52 2007  Chris Moller  <cmoller@redhat.com>
+
+	* Judb.java: New-utracer wrapper test driver.
+	* Makefile: New--wrapper and wrapper tester.
+	* ChangeLog: New--wrapper and wrapper tester.
+	* Utrace.Java: New--Java component.
+	* cni/Utrace.cxx: New--utracer wrapper, C++ component.
+
