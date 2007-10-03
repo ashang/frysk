@@ -68,6 +68,7 @@ classify_die (Dwarf_Die *die)
     case DW_TAG_catch_block:
     case DW_TAG_try_block:
     case DW_TAG_entry_point:
+    case DW_TAG_structure_type:
       return match;
     case DW_TAG_inlined_subroutine:
       return match_inline;
