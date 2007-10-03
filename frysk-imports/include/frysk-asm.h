@@ -118,26 +118,32 @@
 // contain the system call information.  REG0 contains the SYSCALL
 // number, REG1-REG3 contain the system-call parameters.
 
+// SP is reserved for future use.
+
 #if defined __i386__
 #  define REG0 %eax
 #  define REG1 %ebx
 #  define REG2 %ecx
 #  define REG3 %edx
+#  define SP   %esp
 #elif defined __x86_64__
 #  define REG0 %rax
 #  define REG1 %rdi
 #  define REG2 %rsi
 #  define REG3 %rdx
+#  define SP   %4sp
 #elif defined __powerpc__
 #  define REG0 3
 #  define REG1 4
 #  define REG2 5
 #  define REG3 6
+#  define SP   1
 #elif defined __powerpc64__
 #  define REG0 %gpr3
 #  define REG1 %gpr4
 #  define REG2 %gpr5
 #  define REG3 %gpr6
+#  define SP   %gpr1
 #else
 #  warning "no general purpose registers"
 #endif
