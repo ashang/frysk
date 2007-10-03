@@ -47,8 +47,6 @@ main (int argc, char **argv)
 #include <sys/ptrace.h>
 #include <sys/wait.h>
 
-static const int nerrors_max = 100;
-
 int nerrors;
 static const int nerrors_max = 100;
 int verbose;
@@ -202,12 +200,6 @@ do_backtrace (pid_t target_pid)
 	       n, *backtrace_ptr);
       killed = 1;
     }
-}
-
-static pid_t target_pid;
-static void target_pid_kill (void)
-{
-  kill (target_pid, SIGKILL);
 }
 
 static pid_t target_pid;

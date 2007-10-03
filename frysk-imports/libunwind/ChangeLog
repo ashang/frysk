@@ -1,5 +1,11 @@
 2007-10-03  Mark Wielaard  <mwielaard@redhat.com>
 
+	* tests/test-async-sig.c: Remove duplicate nerrors_max (merge error).
+	* tests/test-ptrace.c: Remove duplicate
+	and target_pid_kill definitions (merge error).
+
+2007-10-03  Mark Wielaard  <mwielaard@redhat.com>
+
 	* src/Makefile.am: Don't special case libunwind-ptrace. Use upstream
 	.a archive rules.
 	* tests/Makefile.am: Likewise.

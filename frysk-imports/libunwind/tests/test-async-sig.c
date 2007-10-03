@@ -43,7 +43,6 @@ struct itimerval interval =
 
 int verbose;
 int nerrors;
-static const int nerrors_max = 100;
 int sigcount;
 
 #define panic(args...)					\
