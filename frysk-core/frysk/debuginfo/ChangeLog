@@ -1,3 +1,9 @@
+2007-10-03  Andrew Cagney  <cagney@redhat.com>
+
+	* TypeEntry.java: Update; ConfoundedType renamed to
+	GccStructOrUnionType.
+	* DebugInfoEvaluator.java: Ditto.
+
 2007-10-03  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestPieceLocation.java (testBadAddress): New test.

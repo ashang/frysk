@@ -53,9 +53,9 @@ abstract class CompositeType
     extends Type
 {
     /**
-     * Class members.
+     * Class members; package private.
      */
-    private static class Member {
+    static class Member {
 	// XXX: To keep getValue working.
 	final int index;
 	final String name;
@@ -98,6 +98,14 @@ abstract class CompositeType
      * A list of all members, in insertion order.
      */
     private final ArrayList members = new ArrayList();
+    /**
+     * Return the composit's members as an array.  PACKAGE PRIVATE.
+     */
+    Member[] members() {
+	Member[] m = new Member[members.size()];
+	members.toArray(m);
+	return m;
+    }
 
     /**
      * Create a composite type.
@@ -110,21 +118,6 @@ abstract class CompositeType
      * Return the prefix (class, union, struct), or null.
      */
     abstract protected String getPrefix();
-
-    /**
-     * Do the members suggest a C++ class object; work-around for GCC
-     * which doesn't generate DW_TAG_class_type (2007-09-06).
-     */
-    protected boolean isClassLike() {
-	for (Iterator i = members.iterator(); i.hasNext(); ) {
-	    Member m = (Member)(i.next());
-	    if (m.access != null)
-		return true;
-	    if (m.inheritance)
-		return true;
-	}
-	return false;
-    }
 
     /**
      * Dump the contents of this object.

@@ -59,7 +59,7 @@ import frysk.isa.Register;
 import frysk.value.ArithmeticType;
 import frysk.value.UnknownType;
 import frysk.value.ArrayType;
-import frysk.value.ConfoundedType;
+import frysk.value.GccStructOrClassType;
 import frysk.value.StandardTypes;
 import frysk.value.Value;
 import frysk.value.ByteBufferLocation;
@@ -339,8 +339,8 @@ class DebugInfoEvaluator
 	Value v = getValue(s);
 	if (v.getType() instanceof ArrayType)
 	    return ((ArrayType)v.getType()).get(v, 1, components);
-	else if (v.getType() instanceof ConfoundedType)
-	    return ((ConfoundedType)v.getType()).get(v, 0, components);
+	else if (v.getType() instanceof GccStructOrClassType)
+	    return ((GccStructOrClassType)v.getType()).get(v, 0, components);
 	else
 	    return new Value(new UnknownType(variable.getName()));
     }
@@ -412,7 +412,7 @@ class DebugInfoEvaluator
 	case DwTag.STRUCTURE_TYPE_: {
 	    TypeEntry debugInfoType = new TypeEntry(isa);
 //	    ClassType classType = debugInfoType.getClassType(frame, type, null);
-	    ConfoundedType classType = debugInfoType.getConfoundedType(type, null);
+	    GccStructOrClassType classType = debugInfoType.getGccStructOrClassType(type, null);
 
 	    if (classType == null)
 		return null;

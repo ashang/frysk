@@ -49,7 +49,7 @@ import lib.dwfl.DwAt;
 import frysk.isa.ISA;
 import frysk.value.ArrayType;
 import frysk.value.CharType;
-import frysk.value.ConfoundedType;
+import frysk.value.GccStructOrClassType;
 import frysk.value.EnumType;
 import frysk.value.FunctionType;
 import frysk.value.PointerType;
@@ -118,11 +118,11 @@ class TypeEntry
      *                A struct die
      * @param name
      *                Name of the struct
-     * @return ConfoundedType for the struct
+     * @return GccStructOrClassType for the struct
      */
-    public ConfoundedType getConfoundedType(DwarfDie classDie, String name) {
+    public GccStructOrClassType getGccStructOrClassType(DwarfDie classDie, String name) {
 	dumpDie("classDie=", classDie);
-	ConfoundedType classType = new ConfoundedType(name, getByteSize(classDie));
+	GccStructOrClassType classType = new GccStructOrClassType(name, getByteSize(classDie));
 	
 
 	for (DwarfDie member = classDie.getChild(); member != null; member = member
@@ -261,11 +261,12 @@ class TypeEntry
 	    break;
 	}
 	case DwTag.UNION_TYPE_:
+	    // FIXME: A UNION is not a STRUCT or CLASS.
 	case DwTag.STRUCTURE_TYPE_: {
 	    boolean noTypeDef = (typeDie.getType() == null);
 	    String name = noTypeDef ? typeDie.getName() : typeDie.getType()
 		    .getName();
-	    ConfoundedType classType = getConfoundedType(type, name);
+	    GccStructOrClassType classType = getGccStructOrClassType(type, name);
 	    if (type != typeDie.getType() && noTypeDef == false)
 		classType.setTypedefFIXME(true);
 	    returnType = classType;

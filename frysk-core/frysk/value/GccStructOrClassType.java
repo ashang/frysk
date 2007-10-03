@@ -47,16 +47,36 @@ package frysk.value;
  *
  * For unions, use UnionClass.
  */
-public class ConfoundedType
+public class GccStructOrClassType
     extends CompositeType
 {
-    protected String getPrefix() {
-	if (isClassLike())
-	    return "class";
-	else
-	    return "struct";
+    /**
+     * Do the members suggest a C++ class object; work-around for GCC
+     * which doesn't generate DW_TAG_class_type (2007-09-06).
+     */
+    private boolean isClassLike() {
+	Member[] members = members();
+	for (int i = 0; i < members.length; i++) {
+	    Member m = members[i];
+	    if (m.access != null)
+		return true;
+	    if (m.inheritance)
+		return true;
+	}
+	return false;
     }
-    public ConfoundedType(String name, int size) {
+
+    private String prefix = null;
+    protected String getPrefix() {
+	if (prefix == null) {
+	    if (isClassLike())
+		prefix = "class";
+	    else
+		prefix = "struct";
+	}
+	return prefix;
+    }
+    public GccStructOrClassType(String name, int size) {
 	super(name, size);
     }
 }

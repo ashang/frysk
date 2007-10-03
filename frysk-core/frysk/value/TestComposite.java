@@ -157,7 +157,7 @@ public class TestComposite
 		     t.toPrint());
     }
     public void testConfoundedClassType() {
-	CompositeType t = new ConfoundedType("CLASS", 4)
+	CompositeType t = new GccStructOrClassType("CLASS", 4)
 	    .addInheritance("XXXX", new ClassType("P1", 0),
 			    0, Access.PUBLIC)
 	    .addInheritance("XXXX", new ClassType("P2", 0),
@@ -167,7 +167,7 @@ public class TestComposite
 		     t.toPrint());
     }
     public void testConfoundedStructType() {
-	CompositeType t = new ConfoundedType("STRUCT", 4)
+	CompositeType t = new GccStructOrClassType("STRUCT", 4)
 	    .addMember("a", bigInt32, 0, null);
 	assertEquals("toPrint",
 		     "struct STRUCT {\n  int32_t a;\n}",
