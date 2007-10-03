@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,51 +39,62 @@
 
 package frysk.testbed;
 
-import frysk.proc.Action;
-import frysk.proc.TaskObserver;
 import frysk.proc.Task;
-import frysk.proc.Manager;
+import frysk.isa.Register;
+import frysk.symtab.SymbolFactory;
 
 /**
- * Creates an attached process that is blocked at a signal. 
+ * frysk-asm.h provides a simple macro language for writing assembler;
+ * this class provides corresponding local definitions that match that
+ * assembler.
  */
-public class DaemonBlockedAtSignal {
-    
-    private final Task mainTask;
-  
-    private class RunToSignal
-    extends TaskObserverBase
-    implements TaskObserver.Signaled, TaskObserver.Terminated
-    {
-	public Action updateSignaled (Task task, int value) {
-	    Manager.eventLoop.requestStop();
-	    return Action.BLOCK;
-	}
-	
-	public Action updateTerminated (Task task, boolean sig, int value) {
-	    throw new RuntimeException("Program Exited.");
-	}
+
+public class TestFryskAsm extends TestLib {
+
+    private Task task;
+    private FryskAsm regs;
+    public void setUp() {
+	super.setUp();
+	task = new DaemonBlockedAtSignal("funit-asm").getMainTask();
+	regs = FryskAsm.createFryskAsm(task.getISA());
     }
-    
-    private DaemonBlockedAtSignal(DaemonBlockedAtEntry daemon) {
-	mainTask = daemon.getMainTask();
-	// Allow it to run through to a crash.
-	RunToSignal sig = new RunToSignal();
-	mainTask.requestAddSignaledObserver (sig);
-	mainTask.requestAddTerminatedObserver (sig);
-	daemon.requestRemoveBlock();	
-	TestLib.assertRunUntilStop("Run to crash");
-    }
-    public DaemonBlockedAtSignal(String[] process) {
-	// Get the target program started and blocked at entry point.
-	this(new DaemonBlockedAtEntry(process));
-    }
-        
-    public DaemonBlockedAtSignal(String program) {
-	this(new DaemonBlockedAtEntry(program));
+    public void tearDown() {
+	task = null;
+	regs = null;
+	super.tearDown();
     }
 
-    public Task getMainTask () {
-	return this.mainTask;
+    private void check(String name, long value, Register reg) {
+	assertEquals(name, value, task.getRegister(reg));
     }
+
+    public void testREG0() {
+	check("REG0", 1, regs.REG0);
+    }
+    public void testREG1() {
+	check("REG1", 2, regs.REG1);
+    }
+    public void testREG2() {
+	check("REG2", 3, regs.REG2);
+    }
+    public void testREG3() {
+	check("REG3", 4, regs.REG3);
+    }
+
+    public void testREG() {
+	for (int i = 0; i < regs.REG.length; i++) {
+	    check("REG" + i, i + 1, regs.REG[i]);
+	}
+    }
+
+    public void testPC() {
+	assertEquals("PC", "crash",
+		     SymbolFactory.getSymbol(task, task.getRegister(regs.PC))
+		     .getName());
+    }
+
+    public void testSP() {
+	check("SP", 5, regs.SP);
+    }
+
 }

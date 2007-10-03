@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,51 +39,58 @@
 
 package frysk.testbed;
 
-import frysk.proc.Action;
-import frysk.proc.TaskObserver;
-import frysk.proc.Task;
-import frysk.proc.Manager;
+import frysk.isa.Register;
+import frysk.isa.IA32Registers;
+import frysk.isa.X8664Registers;
+import frysk.isa.ISA;
+import frysk.isa.ISAMap;
 
 /**
- * Creates an attached process that is blocked at a signal. 
+ * The file "include/frysk-asm.h" describes a simple abstract
+ * load-store architecture implemented using native assembler.
+ *
+ * This class provides register definitions that match the underlying
+ * frysk-asm definitions.
  */
-public class DaemonBlockedAtSignal {
-    
-    private final Task mainTask;
-  
-    private class RunToSignal
-    extends TaskObserverBase
-    implements TaskObserver.Signaled, TaskObserver.Terminated
-    {
-	public Action updateSignaled (Task task, int value) {
-	    Manager.eventLoop.requestStop();
-	    return Action.BLOCK;
-	}
-	
-	public Action updateTerminated (Task task, boolean sig, int value) {
-	    throw new RuntimeException("Program Exited.");
-	}
-    }
-    
-    private DaemonBlockedAtSignal(DaemonBlockedAtEntry daemon) {
-	mainTask = daemon.getMainTask();
-	// Allow it to run through to a crash.
-	RunToSignal sig = new RunToSignal();
-	mainTask.requestAddSignaledObserver (sig);
-	mainTask.requestAddTerminatedObserver (sig);
-	daemon.requestRemoveBlock();	
-	TestLib.assertRunUntilStop("Run to crash");
-    }
-    public DaemonBlockedAtSignal(String[] process) {
-	// Get the target program started and blocked at entry point.
-	this(new DaemonBlockedAtEntry(process));
-    }
-        
-    public DaemonBlockedAtSignal(String program) {
-	this(new DaemonBlockedAtEntry(program));
-    }
 
-    public Task getMainTask () {
-	return this.mainTask;
+public class FryskAsm {
+    public final Register PC;
+    public final Register SP;
+    public final Register REG0;
+    public final Register REG1;
+    public final Register REG2;
+    public final Register REG3;
+    public final Register[] REG;
+    private FryskAsm(Register PC, Register SP,
+		     Register REG0, Register REG1,
+		     Register REG2, Register REG3) {
+	this.PC = PC;
+	this.SP = SP;
+	this.REG = new Register[] { REG0, REG1, REG2, REG3 };
+	this.REG0 = REG0;
+	this.REG1 = REG1;
+	this.REG2 = REG2;
+	this.REG3 = REG3;
+    }
+  
+    public static final FryskAsm IA32 = new FryskAsm(IA32Registers.EIP,
+						     IA32Registers.ESP,
+						     IA32Registers.EAX,
+						     IA32Registers.EBX,
+						     IA32Registers.ECX,
+						     IA32Registers.EDX);
+    public static final FryskAsm X8664 = new FryskAsm(X8664Registers.RIP,
+						      X8664Registers.RSP,
+						      X8664Registers.RAX,
+						      X8664Registers.RBX,
+						      X8664Registers.RCX,
+						      X8664Registers.RDX);
+    private static final ISAMap isaToFryskAsm
+	= new ISAMap("FryskAsm")
+	.put(ISA.IA32, IA32)
+	.put(ISA.X8664, X8664)
+	;
+    public static FryskAsm createFryskAsm(ISA isa) {
+	return (FryskAsm) isaToFryskAsm.get(isa);
     }
 }

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,53 +37,27 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.testbed;
+// Simple test program for frysk-asm.h header.  Set the registers to
+// known values and then, from frysk examine them.
 
-import frysk.proc.Action;
-import frysk.proc.TaskObserver;
-import frysk.proc.Task;
-import frysk.proc.Manager;
+#include "frysk-asm.h"
 
-/**
- * Creates an attached process that is blocked at a signal. 
- */
-public class DaemonBlockedAtSignal {
-    
-    private final Task mainTask;
-  
-    private class RunToSignal
-    extends TaskObserverBase
-    implements TaskObserver.Signaled, TaskObserver.Terminated
-    {
-	public Action updateSignaled (Task task, int value) {
-	    Manager.eventLoop.requestStop();
-	    return Action.BLOCK;
-	}
-	
-	public Action updateTerminated (Task task, boolean sig, int value) {
-	    throw new RuntimeException("Program Exited.");
-	}
-    }
-    
-    private DaemonBlockedAtSignal(DaemonBlockedAtEntry daemon) {
-	mainTask = daemon.getMainTask();
-	// Allow it to run through to a crash.
-	RunToSignal sig = new RunToSignal();
-	mainTask.requestAddSignaledObserver (sig);
-	mainTask.requestAddTerminatedObserver (sig);
-	daemon.requestRemoveBlock();	
-	TestLib.assertRunUntilStop("Run to crash");
-    }
-    public DaemonBlockedAtSignal(String[] process) {
-	// Get the target program started and blocked at entry point.
-	this(new DaemonBlockedAtEntry(process));
-    }
-        
-    public DaemonBlockedAtSignal(String program) {
-	this(new DaemonBlockedAtEntry(program));
-    }
+	// A known global symbol for checking the PC.
+.global crash
+crash:
+	STORE(REG0,REG0)
+	NOP
 
-    public Task getMainTask () {
-	return this.mainTask;
-    }
-}
+	FUNCTION_BEGIN(main,0)
+	MAIN_PROLOGUE(0)
+
+	LOAD_IMMED_WORD(REG0, 1)
+	LOAD_IMMED_WORD(REG1, 2)
+	LOAD_IMMED_WORD(REG2, 3)
+	LOAD_IMMED_WORD(REG3, 4)
+	LOAD_IMMED_WORD(SP, 5)
+	JUMP(crash)
+
+	MAIN_EPILOGUE(0)
+	FUNCTION_RETURN(main,0)
+	FUNCTION_END(main,0)

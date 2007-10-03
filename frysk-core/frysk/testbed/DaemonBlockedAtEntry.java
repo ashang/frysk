@@ -39,6 +39,7 @@
 
 package frysk.testbed;
 
+import frysk.Config;
 import java.io.File;
 import frysk.proc.Action;
 import frysk.proc.TaskObserver;
@@ -101,6 +102,10 @@ public class DaemonBlockedAtEntry {
      */
     public DaemonBlockedAtEntry(File program) {
 	this(new String[] { program.getAbsolutePath() });
+    }
+
+    public DaemonBlockedAtEntry(String program) {
+	this(Config.getPkgLibFile(program));
     }
 
     /**

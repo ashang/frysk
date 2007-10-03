@@ -1,3 +1,10 @@
+2007-10-03  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFryskAsm.java: New.
+	* FryskAsm.java: New.
+	* DaemonBlockedAtEntry.java (DaemonBlockedAtEntry(String)): New.
+	* DaemonBlockedAtSignal.java (DaemonBlockedAtSignal(String)): New.
+
 2007-09-10  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* CoreFileAtSignal.java (.execute): Replaced 
