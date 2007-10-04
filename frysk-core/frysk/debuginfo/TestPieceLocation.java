@@ -42,17 +42,14 @@ package frysk.debuginfo;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
 
-import frysk.isa.IA32Registers;
-import frysk.isa.X8664Registers;
-import frysk.testbed.TestLib;
 import frysk.proc.Task;
 import frysk.testbed.DaemonBlockedAtSignal;
+import frysk.testbed.FryskAsm;
+import frysk.testbed.TestLib;
 import frysk.value.Location;
 
 import java.util.List;
 import java.util.ArrayList;
-
-import lib.dwfl.ElfEMachine;
 
 public class TestPieceLocation 
 extends TestLib
@@ -61,6 +58,10 @@ extends TestLib
 
     public void setUp() 
     {
+	super.setUp();
+	Task task = getStoppedTask();
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
+	
 	//  Creating: { 5 6 7 8 9 } { 1 2 3 } { 12 14 16 } { (REG1=987) or -37 3 0 0 }
 	List pieces = new ArrayList();
 	pieces.add(new MemoryPiece( 3, 5, 
@@ -69,26 +70,16 @@ extends TestLib
 		   new ArrayByteBuffer(new byte[] { 127, 1, 2, 3 })));
 	pieces.add(new MemoryPiece( 0, 3, 
 		   new ArrayByteBuffer(new byte[] { 12, 14, 16 })));
-	
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(getStoppedTask());
-	switch (getArch())
-	{
-	    case ElfEMachine.EM_386:
-		pieces.add(new RegisterPiece(IA32Registers.EBX, 4,frame));  	// Reg 1 mapped to EBX in 386
-		break;
-	    case ElfEMachine.EM_X86_64:
-		pieces.add(new RegisterPiece(X8664Registers.RDI, 4,frame)); 	//Reg 1 mapped to RDI in X86_64   
-		break;
-	    default:	
-		if (unresolvedOnPPC(4964))
-		    return;
-	} 
+
+	FryskAsm asmRegs = FryskAsm.createFryskAsm(task.getISA());
+	pieces.add(new RegisterPiece(asmRegs.REG1, 4, frame));  
 
 	l = new PieceLocation (pieces);
     }
 
     public void tearDown() 
     {
+	super.tearDown();
 	l = null;
     }
 
@@ -174,13 +165,4 @@ extends TestLib
 	                               (new String[] { getExecPath(process) });
 	return daemon.getMainTask();
     }  
-    
-    /**
-     * Function that returns the Machine type as defined in ElfEMachine.java 
-     */
-    private int getArch ()
-    {
-	Task task = getStoppedTask();
-	return task.getIsa().getElfMachineType();
-    }
 }

@@ -46,9 +46,8 @@ import java.util.Iterator;
 
 import frysk.proc.Task;
 import frysk.testbed.DaemonBlockedAtSignal;
+import frysk.testbed.FryskAsm;
 import frysk.testbed.TestLib;
-import frysk.isa.IA32Registers;
-import frysk.isa.X8664Registers;
 
 import lib.dwfl.ElfEMachine;
 import lib.dwfl.DwOp;
@@ -69,7 +68,7 @@ public class TestLocationExpression
 
 	// Note: REG1 in frysk-asm.h corresponds to registers 3 
 	// and 5 in i386 and x86_64 resp.
-	switch (getArch())
+	switch (getStoppedTask().getIsa().getElfMachineType())
 	{
 	    case ElfEMachine.EM_386:
 		ops.add( new DwarfOp(DwOp.BREG3_, 2, 0, 0) ); // Value in register ebx plus 2
@@ -95,22 +94,12 @@ public class TestLocationExpression
     public void testBregx()
     {
 	List ops = new ArrayList();
-	
-	// Note: REG1 in frysk-asm.h corresponds to registers 3 
-	// and 5 in i386 and x86_64 resp.
-	switch (getArch())
-	{
-	    case ElfEMachine.EM_386:
-		ops.add( new DwarfOp(DwOp.BREGX_, 3, 2, 0) ); // Value in register ebx plus 2
-		break;
-	    case ElfEMachine.EM_X86_64:
-		ops.add( new DwarfOp(DwOp.BREGX_, 5, 2, 0) ); // Value in register rdi plus 2
-		break;
-	    default:	
-		if (unresolvedOnPPC(4964))
-		    return;
-	}  
-	
+
+	FryskAsm asmRegs = FryskAsm.createFryskAsm(getStoppedTask().getISA());
+	Number dwarfReg1 = DwarfRegisterMapFactory.getRegisterMap(getStoppedTask().getISA())
+	                           .getRegisterNumber(asmRegs.REG1);
+	ops.add( new DwarfOp(DwOp.BREGX_, dwarfReg1.intValue(), 2, 0) );
+		
 	List expectedLoc = new ArrayList();
 	expectedLoc.add(new MemoryPiece((long)989, 12));
 	
@@ -124,30 +113,18 @@ public class TestLocationExpression
     {
 	List ops = new ArrayList();
 
-	// First 6 bytes unavailable, next 4 bytes in Reg 1 and next 2 
+	// First 6 bytes unavailable, next 4 bytes in Register and next 2 
 	// bytes in memory address 0x1234
 	ops.add( new DwarfOp(DwOp.PIECE_, 6, 0, 0) );
-	ops.add( new DwarfOp(DwOp.REG1_, 0, 0, 0) );
+	ops.add( new DwarfOp(DwOp.REG0_, 0, 0, 0) );  // ECX or RDX
 	ops.add( new DwarfOp(DwOp.PIECE_, 4, 0, 0) );
 	ops.add( new DwarfOp(DwOp.ADDR_, 0x1234, 0, 0) );
 	ops.add( new DwarfOp(DwOp.PIECE_, 2, 0, 0) );
 	
 	List expectedLoc = new ArrayList();
+	FryskAsm asmRegs = FryskAsm.createFryskAsm(getStoppedTask().getISA());
 	expectedLoc.add(new UnavailablePiece (6));
-	
-	switch (getArch())
-	{
-	    case ElfEMachine.EM_386:
-		expectedLoc.add(new RegisterPiece(IA32Registers.ECX, 4)); // Reg 1 mapped to ECX in 386
-		break;
-	    case ElfEMachine.EM_X86_64:
-		expectedLoc.add(new RegisterPiece(X8664Registers.RDX, 4)); //Reg 1 mapped to RDX in X86_64
-		break;
-	    default:	
-		if (unresolvedOnPPC(4964))
-		    return;
-	} 
-
+	expectedLoc.add(new RegisterPiece(asmRegs.REG0, 4));  
 	expectedLoc.add(new MemoryPiece((long)0x1234, 2));
 	
 	checkLocExpected(ops, expectedLoc, 2);
@@ -444,12 +421,12 @@ public class TestLocationExpression
 		    isEqual = o.equals(oExpect);
 
 		    if (o instanceof MemoryPiece)
-			assertEquals ("Memory", ((MemoryPiece)o).getMemory(), 
-				      ((MemoryPiece)oExpect).getMemory());		  
+			assertEquals ("Memory", ((MemoryPiece)oExpect).getMemory(), 
+				      ((MemoryPiece)o).getMemory());		  
 
 		    else if (o instanceof RegisterPiece)  	
-			assertEquals ("Register", ((RegisterPiece)o).getRegister(), 
-				      ((RegisterPiece)oExpect).getRegister());		    
+			assertEquals ("Register", ((RegisterPiece)oExpect).getRegister(), 
+				      ((RegisterPiece)o).getRegister());		    
 
 		    if (!isEqual)
 			break;
@@ -471,13 +448,4 @@ public class TestLocationExpression
 	                               	(new String[] { getExecPath(process) });
 	return daemon.getMainTask();
     }  
-    
-    /**
-     * Function that returns the Machine type as defined in ElfEMachine.java 
-     */
-    private int getArch ()
-    {
-	Task task = getStoppedTask();
-	return task.getIsa().getElfMachineType();
-    }
 }  

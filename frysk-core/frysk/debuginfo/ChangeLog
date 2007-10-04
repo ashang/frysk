@@ -1,3 +1,13 @@
+2007-10-04  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestPieceLocation.java (setUp): Call super.setUp.
+	(tearDown): Call super.tearDown.
+	(getArch): Deleted.
+	(setUp): Use FryskAsm.
+	* TestLocationExpression.java (testPieceRegxAddr): Use FryskAsm.
+	(testBregx): Ditto.
+	(getArch): Deleted. 
+	
 2007-10-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* VirtualDebugInfoFrame.java (setIndex): Removed first index
