@@ -1,3 +1,8 @@
+2007-10-04  Andrew Cagney  <cagney@redhat.com>
+
+	* RegsCase.java: New file.
+	* TestRegs.java: New file.
+
 2007-10-04  Teresa Thomas  <tthomas@redhat.com>
 
 	* FryskAsm.java (X8664): REG1, REG2 mapping fixed.

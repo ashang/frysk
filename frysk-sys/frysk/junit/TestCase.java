@@ -192,10 +192,17 @@ public class TestCase
 	    assertEquals(what, (Object)correct, (Object)test);
 	    return;
 	}
-	if (!correct.equals(test))
-	    fail(what + ":"
-		 + " expected <" + correct.toString() + ">"
-		 + " but was <" + test.toString() + ">");
+	if (!correct.equals(test)) {
+	    if (correct.signum() < 0 || test.signum() < 0) {
+		fail(what + ":"
+		     + " expected <" + correct.toString() + ">"
+		     + " but was <" + test.toString() + ">");
+	    } else {
+		fail(what + ":"
+		     + " expected <0x" + correct.toString(16) + ">"
+		     + " but was <0x" + test.toString(16) + ">");
+	    }
+	}
     }
     /**
      * The BigInteger is equal to the long value (when compared as
