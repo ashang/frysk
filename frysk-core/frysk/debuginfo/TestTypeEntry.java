@@ -48,7 +48,7 @@ import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
-import frysk.testbed.StoppedTestTaskFactory;
+import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
 import frysk.value.Type;
 
@@ -80,8 +80,8 @@ public class TestTypeEntry
 	      new Expect("double_21", "double"),
       };
   
-      Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-scalar");
-
+      Task task = (new DaemonBlockedAtSignal("funit-scalar")).getMainTask();
+      
       DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
       Dwfl dwfl;
       DwarfDie[] allDies;
@@ -111,8 +111,8 @@ public class TestTypeEntry
 	      new Expect("arr_4", "char [4]"),
       };
   
-      Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-array");
-
+      Task task = (new DaemonBlockedAtSignal("funit-array")).getMainTask();
+      
       DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
       Dwfl dwfl;
       DwarfDie[] allDies;
@@ -143,7 +143,7 @@ public class TestTypeEntry
 	      new Expect("ssportscar", ".*enum.*bmw.*porsche.*"),
       };
   
-      Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-enum");
+      Task task = (new DaemonBlockedAtSignal("funit-enum")).getMainTask();
       DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
       Dwfl dwfl;
       DwarfDie[] allDies;
@@ -182,7 +182,7 @@ public class TestTypeEntry
 	      new Expect("class_p", ".*double.*double_1;.*int.*int_1;.*"),
       };
   
-      Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-struct");
+      Task task = (new DaemonBlockedAtSignal("funit-struct")).getMainTask();
 
       DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
       Dwfl dwfl;
@@ -215,7 +215,7 @@ public class TestTypeEntry
 		      )
       };
   
-      Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-class");
+      Task task = (new DaemonBlockedAtSignal("funit-class")).getMainTask();
 
       DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
      

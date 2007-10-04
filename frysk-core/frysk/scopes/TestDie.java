@@ -49,7 +49,7 @@ import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.proc.Task;
 import frysk.scopes.Variable;
-import frysk.testbed.StoppedTestTaskFactory;
+import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
 import frysk.testbed.TestfileTokenScanner;
 
@@ -60,7 +60,7 @@ public class TestDie
     
     public void testGetLine(){
 	String fileName = "funit-cpp-scopes-namespace";
-	Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir(fileName);
+	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
 	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
 	CppVariableSearchEngine cppVariableSearchEngine = new CppVariableSearchEngine();
 	
@@ -76,7 +76,8 @@ public class TestDie
     }
 
     public void testGetOriginalDie(){
-	Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-cpp-scopes-class");
+	String fileName = "funit-cpp-scopes-class";
+	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
 	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
 	DwarfDie die = frame.getSubprogram().getDie();
 	

@@ -74,7 +74,7 @@ public class TestStackCommands
 
     public void testFhpdVirtualStackTrace () {
 	Proc proc = CoreFileAtSignal
-	    .constructCore(Config.getPkgLibFile("funit-inlined"));
+	    .constructCore("funit-inlined");
         e = new HpdTestbed("core." + proc.getPid(), "Attached to core file.*");
         
         e.send("where\n");
@@ -91,7 +91,7 @@ public class TestStackCommands
 	if (unresolved(4985))
 	    return;
 	Proc proc = CoreFileAtSignal
-	    .constructCore(Config.getPkgLibFile("funit-inlined"));
+	    .constructCore("funit-inlined");
         e = new HpdTestbed("core." + proc.getPid(), "Attached to core file.*");
         
         e.send("where -scopes\n");

@@ -1,3 +1,9 @@
+2007-10-04  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CoreFileAtSignal.java: Use DeamonBlockedAtSignal instead of
+	StoppedTestTaskFactory.
+	* StoppedTestTaskFactory.java: Removed.
+
 2007-10-04  Andrew Cagney  <cagney@redhat.com>
 
 	* RegsCase.java: New file.

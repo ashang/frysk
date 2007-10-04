@@ -65,7 +65,7 @@ public class TestFstack
 
     public void testBackTrace () {
 	
-	Proc proc = CoreFileAtSignal.constructCore(getExecPath("funit-stacks"));
+	Proc proc = CoreFileAtSignal.constructCore("funit-stacks");
 	e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
 			    "core." + proc.getPid()
@@ -75,7 +75,7 @@ public class TestFstack
     }
     
     public void testBackTraceWithParams () {
-	Proc proc = CoreFileAtSignal.constructCore(getExecPath("funit-stacks"));
+	Proc proc = CoreFileAtSignal.constructCore("funit-stacks");
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
 			    "core." + proc.getPid(),
@@ -85,7 +85,7 @@ public class TestFstack
     }
 
     public void testBackTraceWithScopes () {
-	Proc proc = CoreFileAtSignal.constructCore(getExecPath("funit-stacks"));
+	Proc proc = CoreFileAtSignal.constructCore("funit-stacks");
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
 			    "core." + proc.getPid(),
@@ -95,7 +95,7 @@ public class TestFstack
     }
 
     public void testBackTraceWithFullpath () {
-	Proc proc = CoreFileAtSignal.constructCore(getExecPath("funit-stacks"));
+	Proc proc = CoreFileAtSignal.constructCore("funit-stacks");
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
 			    "core." + proc.getPid(),
@@ -108,7 +108,7 @@ public class TestFstack
     }
 
     public void testBackTraceWithDashA () {
-	Proc proc = CoreFileAtSignal.constructCore(getExecPath("funit-stacks"));
+	Proc proc = CoreFileAtSignal.constructCore("funit-stacks");
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
 			    "core." + proc.getPid(),
@@ -123,7 +123,7 @@ public class TestFstack
     }
 
     public void testBackTraceWithDashC () {
-	Proc proc = CoreFileAtSignal.constructCore(getExecPath("funit-stacks"));
+	Proc proc = CoreFileAtSignal.constructCore("funit-stacks");
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
 			    "core." + proc.getPid(),
@@ -138,7 +138,7 @@ public class TestFstack
   }
 
     public void testBackTraceWithDashV () {
-	Proc proc = CoreFileAtSignal.constructCore(getExecPath("funit-inlined"));
+	Proc proc = CoreFileAtSignal.constructCore("funit-inlined");
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
 			    "-v",

@@ -44,7 +44,7 @@ import java.io.File;
 import frysk.Config;
 import frysk.proc.Task;
 import frysk.scopes.Variable;
-import frysk.testbed.StoppedTestTaskFactory;
+import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
 import frysk.testbed.TestfileTokenScanner;
 
@@ -70,58 +70,52 @@ public class TestCppVariableSearchEngine extends TestLib{
 	String variableName = "var1"; 
 	String variableToken = variableName; 
 	String fileName = "funit-c-scopes";
-	String execPath = getExecPath(fileName);
 	String srcPath = Config.getPkgLibSrcDir() + fileName + ".c";
 	
-	verifyVariable(variableName, variableToken, fileName, execPath, srcPath);
+	verifyVariable(variableName, variableToken, fileName, srcPath);
     }
     
     public void testFindVar2Scopes(){
 	String variableName = "var2"; 
 	String variableToken = variableName; 
 	String fileName = "funit-c-scopes";
-	String execPath = getExecPath(fileName);
 	String srcPath = Config.getPkgLibSrcDir() + fileName + ".c";
 	
-	verifyVariable(variableName, variableToken, fileName, execPath, srcPath);
+	verifyVariable(variableName, variableToken, fileName, srcPath);
     }
     
     public void testFindArg1Scopes(){
 	String variableName = "arg1"; 
 	String variableToken = variableName; 
 	String fileName = "funit-c-scopes";
-	String execPath = getExecPath(fileName);
 	String srcPath = Config.getPkgLibSrcDir() + fileName + ".c";
 	
-	verifyVariable(variableName, variableToken, fileName, execPath, srcPath);
+	verifyVariable(variableName, variableToken, fileName, srcPath);
     }
     
     public void testFindIScopesShadowing(){
 	String variableName = "i"; 
 	String variableToken = "second i"; 
 	String fileName = "funit-c-scopes-shadowing";
-	String execPath = getExecPath(fileName);
 	String srcPath = Config.getPkgLibSrcDir() + fileName + ".c";
 	
-	verifyVariable(variableName, variableToken, fileName, execPath, srcPath);
+	verifyVariable(variableName, variableToken, fileName, srcPath);
     }
     
     public void testFindFirstScopesNamespace(){
 	String variableName = "first"; 
 	String variableToken = variableName; 
 	String fileName = "funit-cpp-scopes-namespace";
-	String execPath = getExecPath(fileName);
 	String srcPath = Config.getPkgLibSrcDir() + fileName + ".cxx";
 	
-	verifyVariable(variableName, variableToken, fileName, execPath, srcPath);
+	verifyVariable(variableName, variableToken, fileName, srcPath);
     }
     
     public void testFindTwoScopesEnum(){
 	String variableName = "two"; 
 	String fileName = "funit-c-scopes-enum";
-	String execPath = getExecPath(fileName);
 	
-	verifyVariableLongValue(variableName, execPath, 2);
+	verifyVariableLongValue(variableName, fileName, 2);
     }
     
     
@@ -149,12 +143,11 @@ public class TestCppVariableSearchEngine extends TestLib{
     private void verifyVariable(String variableName,
 	    String variableToken,
 	    String fileName,
-	    String execPath,
 	    String srcPath){
 	
 	TestfileTokenScanner scanner = new TestfileTokenScanner(new File(srcPath));
 	int variableLine = scanner.findTokenLine(variableToken);
-	Task task = StoppedTestTaskFactory.getStoppedTask(execPath);
+	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
 	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
 	
 	Variable variable = cppVariableSearchEngine.get(frame, variableName);
@@ -188,10 +181,10 @@ public class TestCppVariableSearchEngine extends TestLib{
      *                created
      */
     private void verifyVariableLongValue(String variableName,
-    	    String execPath,
+    	    String fileName,
     	    long value){
     	
-    	Task task = StoppedTestTaskFactory.getStoppedTask(execPath);
+	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
     	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
     	
     	Variable variable = cppVariableSearchEngine.get(frame, variableName);

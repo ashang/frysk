@@ -42,7 +42,7 @@ package frysk.scopes;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.proc.Task;
-import frysk.testbed.StoppedTestTaskFactory;
+import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
 
 public class TestScopes extends TestLib{
@@ -53,7 +53,7 @@ public class TestScopes extends TestLib{
      *
      */
     public void testGetOriginalSubprogram(){
-	Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-cpp-scopes-class");
+	Task task = (new DaemonBlockedAtSignal("funit-cpp-scopes-class")).getMainTask();
 	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
 	Subprogram subprogram = frame.getSubprogram();
 	

@@ -46,7 +46,7 @@ import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
-import frysk.testbed.StoppedTestTaskFactory;
+import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
 
 public class TestScopeFactory
@@ -54,7 +54,7 @@ public class TestScopeFactory
 {
     public void testFrameScopes ()
     {
-      Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-scopes");
+      Task task = (new DaemonBlockedAtSignal("funit-scopes")).getMainTask();
       Frame frame = StackFactory.createFrame(task);
       
       Dwfl dwfl = DwflCache.getDwfl(task);

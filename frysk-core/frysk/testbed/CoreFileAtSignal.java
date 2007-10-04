@@ -41,7 +41,6 @@ package frysk.testbed;
 
 import java.io.File;
 
-import frysk.testbed.StoppedTestTaskFactory;
 import frysk.event.Event;
 import frysk.proc.Host;
 import frysk.proc.Manager;
@@ -53,18 +52,15 @@ import frysk.util.CoredumpAction;
 
 public class CoreFileAtSignal extends TestLib {
     
-    public static Proc constructCore(File file) {
-	return constructCore(file.getAbsolutePath());
-    }
-
+    
     /**
      * Given a path to an executable it will run it until it sigfaults then
      * extracts a corefile at that point, and return a Proc representing
      * that core file.
      */
-    public static Proc constructCore(String procPath) {
+    public static Proc constructCore(String process) {
 	
-	final Proc ackProc = StoppedTestTaskFactory.getStoppedTask(procPath).getProc();
+	final Proc ackProc = (new DaemonBlockedAtSignal(process)).getMainTask().getProc();
 
 	final CoredumpAction coreDump = new CoredumpAction(ackProc,
 		new Event() {

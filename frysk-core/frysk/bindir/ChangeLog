@@ -1,3 +1,8 @@
+2007-10-04  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFstack.java: Use DeamonBlockedAtSignal instead of
+	StoppedTestTaskFactory.
+	
 2007-09-29  Petr Machata  <pmachata@redhat.com>
 
 	* fltrace.java (tracer): Adjust to changes in Ltrace API.

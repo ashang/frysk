@@ -60,7 +60,7 @@ import frysk.scopes.Subprogram;
 import frysk.scopes.Variable;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
-import frysk.testbed.StoppedTestTaskFactory;
+import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
 
 public class TestFrameDebugInfo
@@ -72,8 +72,8 @@ public class TestFrameDebugInfo
   public void testFrameDebugInfoStackTrace ()
   {
       
-    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir();
-
+    Task task = (new DaemonBlockedAtSignal("funit-stacks")).getMainTask();
+    
     StringWriter stringWriter = new StringWriter();
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
     DebugInfoStackFactory.printStackTrace(new PrintWriter(stringWriter),frame, 20, true, true, true);
@@ -88,9 +88,9 @@ public class TestFrameDebugInfo
   
   public void testFrameCompilerIlinedFucntions ()
   {
-  
-    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-empty-functions");
 
+    Task task = (new DaemonBlockedAtSignal("funit-empty-functions")).getMainTask();
+    
     DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
     Subprogram subprogram = frame.getSubprogram();
     assertNotNull(subprogram);
@@ -101,8 +101,8 @@ public class TestFrameDebugInfo
     if(unresolved(4676))
         return;
 
-    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-stacks-exit");
-
+    Task task = (new DaemonBlockedAtSignal("funit-stacks-exit")).getMainTask();
+    
     Frame frame = StackFactory.createFrame(task);
     StringWriter stringWriter = new StringWriter();
     StackFactory.printStackTrace(new PrintWriter(stringWriter),frame, true);
@@ -119,7 +119,8 @@ public class TestFrameDebugInfo
   public void testFrameScopes ()
   {
 
-    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-scopes");
+      Task task = (new DaemonBlockedAtSignal("funit-scopes")).getMainTask();
+    
     Frame frame = StackFactory.createFrame(task);
     
     Dwfl dwfl = DwflCache.getDwfl(task);
@@ -137,7 +138,7 @@ public class TestFrameDebugInfo
   public void testDebugInfoFrameScopes ()
   {
 
-    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-scopes");
+      Task task = (new DaemonBlockedAtSignal("funit-scopes")).getMainTask();
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
     
     Scope scope1 = frame.getScopes();
@@ -153,7 +154,7 @@ public class TestFrameDebugInfo
   public void testFrameScopesWorkAround ()
   {
     
-    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-scopes-workaround");
+      Task task = (new DaemonBlockedAtSignal("funit-scopes-workaround")).getMainTask();
     Frame frame = StackFactory.createFrame(task);
     
     Dwfl dwfl = DwflCache.getDwfl(task);
@@ -172,7 +173,7 @@ public class TestFrameDebugInfo
   public void testGetInlinedSubroutines ()
   {
     
-    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-inlined");
+      Task task = (new DaemonBlockedAtSignal("funit-inlined")).getMainTask();
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
     
     LinkedList inlinedSubprograms =  frame.getInlinedSubprograms();
@@ -184,7 +185,7 @@ public class TestFrameDebugInfo
   public void testVirtualStackTrace ()
   {
     
-    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-inlined");
+      Task task = (new DaemonBlockedAtSignal("funit-inlined")).getMainTask();
     StringWriter stringWriter = new StringWriter();
     
     DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(stringWriter), task, true, true, true);
@@ -201,7 +202,7 @@ public class TestFrameDebugInfo
   public void testInlinedFunctionDerailment ()
   {
   
-    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-inlined");
+      Task task = (new DaemonBlockedAtSignal("funit-inlined")).getMainTask();
     
     DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
     Subprogram subprogram = null;
@@ -221,7 +222,7 @@ public class TestFrameDebugInfo
   
   public void testValues() throws NameNotFoundException
   {
-    Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-stacks-values");
+      Task task = (new DaemonBlockedAtSignal("funit-stacks-values")).getMainTask();
     Subprogram subprogram;
     DebugInfoFrame frame;
     Variable variable;
@@ -281,7 +282,7 @@ public class TestFrameDebugInfo
   }
   
   public void testLineNumbers(){
-      Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-stacks-linenum");
+      Task task = (new DaemonBlockedAtSignal("funit-stacks-linenum")).getMainTask();
       
       Subprogram subprogram;
       DebugInfoFrame frame;
@@ -333,8 +334,8 @@ public class TestFrameDebugInfo
 
   public void testThatArtificialParametersAreIgnored() {
 
-	Task task = StoppedTestTaskFactory
-		.getStoppedTaskFromExecDir("funit-cpp-scopes-class");
+	Task task = (new DaemonBlockedAtSignal("funit-cpp-scopes-class")).getMainTask();
+	      
 	DebugInfoFrame frame = DebugInfoStackFactory
 		.createVirtualStackTrace(task);
 	Subprogram subprogram = frame.getSubprogram();
