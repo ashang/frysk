@@ -82,8 +82,8 @@ public class FryskAsm {
     public static final FryskAsm X8664 = new FryskAsm(X8664Registers.RIP,
 						      X8664Registers.RSP,
 						      X8664Registers.RAX,
-						      X8664Registers.RBX,
-						      X8664Registers.RCX,
+						      X8664Registers.RDI,
+						      X8664Registers.RSI,
 						      X8664Registers.RDX);
     private static final ISAMap isaToFryskAsm
 	= new ISAMap("FryskAsm")
