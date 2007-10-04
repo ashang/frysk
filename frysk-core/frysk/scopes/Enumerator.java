@@ -37,17 +37,46 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.debuginfo;
+package frysk.scopes;
 
+import lib.dwfl.DwAt;
 import lib.dwfl.DwarfDie;
+import frysk.value.ArithmeticType;
+import frysk.value.StandardTypes;
+import frysk.value.Type;
+import frysk.value.Value;
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.isa.ISA;
 
-/**
- * An InlinedSubroutine represents an instance of a function
- * that has been inlined.
- */
-public class InlinedSubroutine extends Subprogram
-{
-    public InlinedSubroutine(DwarfDie die) {
-	super(die);
+public class Enumerator extends Variable{
+
+    Value value;
+    private Type type;
+    
+    public Enumerator(DwarfDie variableDie) {
+	super(variableDie);
     }
+    
+    public Type getType(ISA isa) {
+	if(this.type == null){
+	    // FIXME: An enumerator is a type field, not a variable;
+	    // and its type is not long.  Should be refering to
+	    // frysk.value.EnumType (constructed using TypeEntry for
+	    // this enum information and its actual size.
+	    this.type = StandardTypes.getLongType(isa.order());
+	}
+	return type;
+    }
+    
+    public Value getValue(DebugInfoFrame frame) {
+	if(this.value == null){
+	    // FIXME: An enumerator is a type field, not a variable;
+	    // and its type is not long.  Should be refering to
+	    // frysk.value.EnumType (constructed using TypeEntry for
+	    // this enum information and its actual size.
+	    this.value = ((ArithmeticType)getType(frame.getTask().getISA())).createValue(getVariableDie().getAttrConstant(DwAt.CONST_VALUE));
+	}
+	return value;
+    }
+    
 }

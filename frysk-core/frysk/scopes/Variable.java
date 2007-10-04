@@ -37,16 +37,23 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.debuginfo;
+package frysk.scopes;
 
 import java.io.PrintWriter;
 import java.util.List;
+
 import lib.dwfl.DwException;
 import lib.dwfl.DwarfDie;
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.LocationExpression;
+import frysk.debuginfo.PieceLocation;
+import frysk.debuginfo.TypeEntry;
+import frysk.debuginfo.ValueUavailableException;
+import frysk.debuginfo.VariableOptimizedOutException;
+import frysk.isa.ISA;
 import frysk.value.Format;
 import frysk.value.Type;
 import frysk.value.Value;
-import frysk.isa.ISA;
 
 /**
  * This class contains the static information corresponding to a

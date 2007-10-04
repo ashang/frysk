@@ -46,6 +46,7 @@ import javax.naming.NameNotFoundException;
 import lib.dwfl.DwarfDie;
 
 import frysk.proc.Task;
+import frysk.scopes.Variable;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
 import frysk.value.Value;

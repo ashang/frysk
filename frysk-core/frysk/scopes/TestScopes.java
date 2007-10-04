@@ -37,8 +37,10 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.debuginfo;
+package frysk.scopes;
 
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.proc.Task;
 import frysk.testbed.StoppedTestTaskFactory;
 import frysk.testbed.TestLib;

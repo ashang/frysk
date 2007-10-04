@@ -37,14 +37,17 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.debuginfo;
+package frysk.scopes;
 
 import lib.dwfl.DwarfDie;
 
-public class Struct extends Scope {
-
-    public Struct(DwarfDie die) {
+/**
+ * An InlinedSubroutine represents an instance of a function
+ * that has been inlined.
+ */
+public class InlinedSubroutine extends Subprogram
+{
+    public InlinedSubroutine(DwarfDie die) {
 	super(die);
     }
-    
 }

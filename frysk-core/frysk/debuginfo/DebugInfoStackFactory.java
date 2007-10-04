@@ -42,6 +42,8 @@ package frysk.debuginfo;
 import java.io.PrintWriter;
 
 import frysk.proc.Task;
+import frysk.scopes.InlinedSubroutine;
+import frysk.scopes.Scope;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 

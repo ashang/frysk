@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import javax.naming.NameNotFoundException;
 
 import frysk.value.Value;
-import frysk.debuginfo.Variable;
+import frysk.scopes.Variable;
 
 import inua.eio.ByteOrder;
 

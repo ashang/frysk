@@ -1,3 +1,20 @@
+2007-10-04  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* frysk/scopes/Enumerator.java: Moved from frysk/debuginfo to 
+	frysk/scopes.
+	* frysk/scopes/Enumiration.java: Ditto.
+	* frysk/scopes/InlinedSubroutine.java: Ditto.
+	* frysk/scopes/LexicalBlock.java: Ditto.
+	* frysk/scopes/Scope.java: Ditto.
+	* frysk/scopes/ScopeFactory.java: Ditto.
+	* frysk/scopes/Struct.java: Ditto.
+	* frysk/scopes/Subprogram.java: Ditto.
+	* frysk/scopes/Subroutine.java: Ditto.
+	* frysk/scopes/TestDie.java: Ditto.
+	* frysk/scopes/TestScopeFactory.java: Ditto.
+	* frysk/scopes/TestScopes.java: Ditto.
+	* frysk/scopes/Variable.java: Ditto.
+
 2007-09-26  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
 
 	* Makefile.am: Removed hardwired rule for building 

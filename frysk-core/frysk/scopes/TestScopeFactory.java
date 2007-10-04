@@ -37,45 +37,45 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.debuginfo;
+package frysk.scopes;
 
-import lib.dwfl.DwAt;
 import lib.dwfl.DwarfDie;
-import frysk.value.ArithmeticType;
-import frysk.value.StandardTypes;
-import frysk.value.Type;
-import frysk.value.Value;
-import frysk.isa.ISA;
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflDieBias;
+import frysk.dwfl.DwflCache;
+import frysk.proc.Task;
+import frysk.stack.Frame;
+import frysk.stack.StackFactory;
+import frysk.testbed.StoppedTestTaskFactory;
+import frysk.testbed.TestLib;
 
-public class Enumerator extends Variable{
+public class TestScopeFactory
+    extends TestLib
+{
+    public void testFrameScopes ()
+    {
+      Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-scopes");
+      Frame frame = StackFactory.createFrame(task);
+      
+      Dwfl dwfl = DwflCache.getDwfl(task);
+      DwflDieBias bias = dwfl.getDie(frame.getAdjustedAddress());
+      DwarfDie[] scopes = bias.die.getScopes(frame.getAdjustedAddress() - bias.bias);
 
-    Value value;
-    private Type type;
-    
-    public Enumerator(DwarfDie variableDie) {
-	super(variableDie);
-    }
-    
-    public Type getType(ISA isa) {
-	if(this.type == null){
-	    // FIXME: An enumerator is a type field, not a variable;
-	    // and its type is not long.  Should be refering to
-	    // frysk.value.EnumType (constructed using TypeEntry for
-	    // this enum information and its actual size.
-	    this.type = StandardTypes.getLongType(isa.order());
-	}
-	return type;
-    }
-    
-    public Value getValue(DebugInfoFrame frame) {
-	if(this.value == null){
-	    // FIXME: An enumerator is a type field, not a variable;
-	    // and its type is not long.  Should be refering to
-	    // frysk.value.EnumType (constructed using TypeEntry for
-	    // this enum information and its actual size.
-	    this.value = ((ArithmeticType)getType(frame.getTask().getISA())).createValue(getVariableDie().getAttrConstant(DwAt.CONST_VALUE));
-	}
-	return value;
-    }
-    
+      Scope scope1 = ScopeFactory.theFactory.getScope(scopes[0]);
+      Scope scope2 = ScopeFactory.theFactory.getScope(scopes[1]);
+      Scope scope3 = ScopeFactory.theFactory.getScope(scopes[2]);
+      
+      Scope scope4 = ScopeFactory.theFactory.getScope(scopes[0]);
+      Scope scope5 = ScopeFactory.theFactory.getScope(scopes[1]);
+      Scope scope6 = ScopeFactory.theFactory.getScope(scopes[2]);
+      
+      assertTrue("lexical block scope" , scope1 instanceof LexicalBlock);
+      assertTrue("InlinedSubroutine scope" , scope2 instanceof InlinedSubroutine);
+      assertTrue("lexical block scope" , scope3 instanceof Scope);
+      
+      assertTrue("same object" , scope1 == scope4);
+      assertTrue("same object" , scope2 == scope5);
+      assertTrue("same object" , scope3 == scope6);
+      
+    }    
 }

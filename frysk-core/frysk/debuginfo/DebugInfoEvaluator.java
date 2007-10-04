@@ -55,6 +55,8 @@ import frysk.dwfl.DwflCache;
 import frysk.expr.ExprSymTab;
 import frysk.isa.ISA;
 import frysk.proc.Task;
+import frysk.scopes.Subprogram;
+import frysk.scopes.Variable;
 import frysk.isa.Register;
 import frysk.value.ArithmeticType;
 import frysk.value.UnknownType;

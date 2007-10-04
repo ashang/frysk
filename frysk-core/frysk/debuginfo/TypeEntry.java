@@ -65,7 +65,7 @@ import inua.eio.ByteOrder;
 import frysk.value.Access;
 import lib.dwfl.DwAccess;
 
-class TypeEntry
+public class TypeEntry
 {
     private final ByteOrder byteorder;
     private final HashMap dieHash;

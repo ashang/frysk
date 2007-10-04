@@ -1,3 +1,16 @@
+2007-10-04  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Moved scope structures to frysk.scopes.
+	* DebugInfoEvaluator.java: Updated.
+	* DebugInfoFrame.java: Updated.
+	* DebugInfoStackFactory.java: Updated.
+	* TestCppVariableSearchEngine.java: Updated.
+	* TestFrameDebugInfo.java: Updated.
+	* TestAddress.java: Updated.
+	* CppVariableSearchEngine.java (get): Changed visibility to public.
+	* LocationExpression.java: Changed to a public class.
+	* TypeEntry.java: Changed to a public class.
+	
 2007-10-03  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Moved from StoppedTestTaskFactory frysk.debuginfo to frysk.testbed

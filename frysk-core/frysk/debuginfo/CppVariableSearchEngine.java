@@ -39,6 +39,9 @@
 
 package frysk.debuginfo;
 
+import frysk.scopes.Scope;
+import frysk.scopes.Variable;
+
 /**
  * This engine implements the c++ scoping rules and uses when searching for
  * a variable by name:
@@ -48,7 +51,7 @@ package frysk.debuginfo;
  */
 public class CppVariableSearchEngine {
 
-    Variable get(DebugInfoFrame frame, String name){
+    public Variable get(DebugInfoFrame frame, String name){
 	Variable variable = null;
 	
 	Scope scope = frame.getScopes();

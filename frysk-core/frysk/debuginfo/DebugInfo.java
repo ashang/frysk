@@ -47,6 +47,7 @@ import frysk.expr.ExprSymTab;
 import frysk.expr.CExprEvaluator;
 import frysk.expr.CExprAnnotator;
 import frysk.proc.Proc;
+import frysk.scopes.Variable;
 import frysk.value.Type;
 import frysk.value.Value;
 import inua.eio.ByteOrder;

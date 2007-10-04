@@ -37,45 +37,44 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.debuginfo;
+package frysk.scopes;
 
+import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
-import lib.dwfl.Dwfl;
-import lib.dwfl.DwflDieBias;
-import frysk.dwfl.DwflCache;
-import frysk.proc.Task;
-import frysk.stack.Frame;
-import frysk.stack.StackFactory;
-import frysk.testbed.StoppedTestTaskFactory;
-import frysk.testbed.TestLib;
 
-public class TestScopeFactory
-    extends TestLib
-{
-    public void testFrameScopes ()
-    {
-      Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-scopes");
-      Frame frame = StackFactory.createFrame(task);
-      
-      Dwfl dwfl = DwflCache.getDwfl(task);
-      DwflDieBias bias = dwfl.getDie(frame.getAdjustedAddress());
-      DwarfDie[] scopes = bias.die.getScopes(frame.getAdjustedAddress() - bias.bias);
+/**
+ * In DWARF a subroutine is used to refer to an entity that can either be a
+ * concrete function (Subprogram) or an inlined function (InlinedSubprogram).
+ */
+public class Subroutine extends Scope {
 
-      Scope scope1 = ScopeFactory.theFactory.getScope(scopes[0]);
-      Scope scope2 = ScopeFactory.theFactory.getScope(scopes[1]);
-      Scope scope3 = ScopeFactory.theFactory.getScope(scopes[2]);
-      
-      Scope scope4 = ScopeFactory.theFactory.getScope(scopes[0]);
-      Scope scope5 = ScopeFactory.theFactory.getScope(scopes[1]);
-      Scope scope6 = ScopeFactory.theFactory.getScope(scopes[2]);
-      
-      assertTrue("lexical block scope" , scope1 instanceof LexicalBlock);
-      assertTrue("InlinedSubroutine scope" , scope2 instanceof InlinedSubroutine);
-      assertTrue("lexical block scope" , scope3 instanceof Scope);
-      
-      assertTrue("same object" , scope1 == scope4);
-      assertTrue("same object" , scope2 == scope5);
-      assertTrue("same object" , scope3 == scope6);
-      
-    }    
+    Struct struct;
+
+    public Subroutine(DwarfDie die) {
+	super(die);
+    }
+
+    /**
+     * Returns the structure that this subroutine belongs to. If this
+     * subroutine does not belong to any structs/classes it returns null.
+     * 
+     * @return Struct containing this Subroutine or null
+     */
+    public Struct getStruct() {
+	if (struct == null) {
+	    DwarfDie die = this.getDie().getOriginalDie();
+	    if (die == null) {
+		die = this.getDie();
+	    }
+
+	    DwarfDie[] scopes = die.getScopesDie();
+	    for (int i = 0; i < scopes.length; i++) {
+		if (scopes[i].getTag().equals(DwTag.STRUCTURE_TYPE)) {
+		    this.struct = new Struct(scopes[i]);
+		}
+	    }
+	}
+	return struct;
+    }
+
 }

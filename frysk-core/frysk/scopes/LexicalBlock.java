@@ -41,7 +41,7 @@
  * Lexical Block
  */
 
-package frysk.debuginfo;
+package frysk.scopes;
 
 import lib.dwfl.DwarfDie;
 

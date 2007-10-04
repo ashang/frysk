@@ -37,44 +37,61 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.debuginfo;
+package frysk.scopes;
 
-import lib.dwfl.DwTag;
+import java.io.File;
+
+import lib.dwfl.DwAt;
 import lib.dwfl.DwarfDie;
+import frysk.Config;
+import frysk.debuginfo.CppVariableSearchEngine;
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.DebugInfoStackFactory;
+import frysk.proc.Task;
+import frysk.scopes.Variable;
+import frysk.testbed.StoppedTestTaskFactory;
+import frysk.testbed.TestLib;
+import frysk.testbed.TestfileTokenScanner;
 
-/**
- * In DWARF a subroutine is used to refer to an entity that can either be a
- * concrete function (Subprogram) or an inlined function (InlinedSubprogram).
- */
-public class Subroutine extends Scope {
+public class TestDie
+    extends TestLib
+{
+    
+    
+    public void testGetLine(){
+	String fileName = "funit-cpp-scopes-namespace";
+	Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir(fileName);
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
+	CppVariableSearchEngine cppVariableSearchEngine = new CppVariableSearchEngine();
+	
+	Variable variable = cppVariableSearchEngine.get(frame, "first");
+	
+	assertNotNull("Variable found", variable);
+	
+	
+	TestfileTokenScanner scanner = new TestfileTokenScanner(new File(Config.getPkgLibSrcDir() + fileName + ".cxx"));
+	int expectedLine = scanner.findTokenLine("first");
 
-    Struct struct;
-
-    public Subroutine(DwarfDie die) {
-	super(die);
+	assertEquals("Correct line number was found", expectedLine, variable.getLineNumber());
     }
 
-    /**
-     * Returns the structure that this subroutine belongs to. If this
-     * subroutine does not belong to any structs/classes it returns null.
-     * 
-     * @return Struct containing this Subroutine or null
-     */
-    public Struct getStruct() {
-	if (struct == null) {
-	    DwarfDie die = this.getDie().getOriginalDie();
-	    if (die == null) {
-		die = this.getDie();
-	    }
-
-	    DwarfDie[] scopes = die.getScopesDie();
-	    for (int i = 0; i < scopes.length; i++) {
-		if (scopes[i].getTag().equals(DwTag.STRUCTURE_TYPE)) {
-		    this.struct = new Struct(scopes[i]);
-		}
-	    }
-	}
-	return struct;
+    public void testGetOriginalDie(){
+	Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-cpp-scopes-class");
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
+	DwarfDie die = frame.getSubprogram().getDie();
+	
+	
+	boolean hasAttribute = die.hasAttribute(DwAt.ABSTRACT_ORIGIN) ||
+	                       die.hasAttribute(DwAt.SPECIFICATION);
+	
+	assertTrue("Function has abstract origin ", hasAttribute);
+	
+	die = die.getOriginalDie();
+	
+	assertNotNull("Found original die", die);
+	assertEquals("Die has correct name", "crash" ,die.getName());
+	
+	
     }
 
 }

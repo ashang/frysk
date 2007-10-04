@@ -41,7 +41,7 @@
  * A concrete instance of a subprogram.
  */
 
-package frysk.debuginfo;
+package frysk.scopes;
 
 import java.io.PrintWriter;
 import java.util.Iterator;
@@ -50,6 +50,7 @@ import java.util.LinkedList;
 import lib.dwfl.DwAt;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
+import frysk.debuginfo.DebugInfoFrame;
 import frysk.value.FunctionType;
 
 /**

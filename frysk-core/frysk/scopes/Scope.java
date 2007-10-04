@@ -37,11 +37,13 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.debuginfo;
+package frysk.scopes;
 
 import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import frysk.debuginfo.DebugInfoFrame;
 
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;

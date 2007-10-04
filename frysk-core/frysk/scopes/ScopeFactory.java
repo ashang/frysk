@@ -37,57 +37,74 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.debuginfo;
+package frysk.scopes;
 
-import java.io.File;
+import java.util.HashMap;
 
 import lib.dwfl.DwAt;
+import lib.dwfl.DwInl;
+import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
-import frysk.Config;
-import frysk.proc.Task;
-import frysk.testbed.StoppedTestTaskFactory;
-import frysk.testbed.TestLib;
-import frysk.testbed.TestfileTokenScanner;
 
-public class TestDie
-    extends TestLib
-{
-    
-    
-    public void testGetLine(){
-	String fileName = "funit-cpp-scopes-namespace";
-	Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir(fileName);
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
-	CppVariableSearchEngine cppVariableSearchEngine = new CppVariableSearchEngine();
-	
-	Variable variable = cppVariableSearchEngine.get(frame, "first");
-	
-	assertNotNull("Variable found", variable);
-	
-	
-	TestfileTokenScanner scanner = new TestfileTokenScanner(new File(Config.getPkgLibSrcDir() + fileName + ".cxx"));
-	int expectedLine = scanner.findTokenLine("first");
+public class ScopeFactory {
 
-	assertEquals("Correct line number was found", expectedLine, variable.getLineNumber());
+    public static final ScopeFactory theFactory = new ScopeFactory();
+
+    private final HashMap scopes;
+
+    private ScopeFactory() {
+	this.scopes = new HashMap();
     }
 
-    public void testGetOriginalDie(){
-	Task task = StoppedTestTaskFactory.getStoppedTaskFromExecDir("funit-cpp-scopes-class");
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
-	DwarfDie die = frame.getSubprogram().getDie();
+    public Scope getScope(DwarfDie die) {
+	// this uses the object as a key so if 
+	// a second DwarfDie object is created that refers
+	// to the same underlying die it will not match.
+	// the problem can be solved by using an attribute of
+	// the die that is constant.
+	// Or DwarfDieFactory should prevent creation of
+	// redundant Die objects
+ 	Scope scope = (Scope) scopes.get(die);
 	
+	if (scope == null) {
+	    scope = createScope(die);
+	    this.scopes.put(die, scope);
+	}
+	return scope;
+    }
+
+    private Scope createScope(DwarfDie die) {
+
+	long inlineAttribute = die.getAttrConstant(DwAt.INLINE); 
+	    
+	switch (die.getTag().hashCode()) {
 	
-	boolean hasAttribute = die.hasAttribute(DwAt.ABSTRACT_ORIGIN) ||
-	                       die.hasAttribute(DwAt.SPECIFICATION);
+	case DwTag.INLINED_SUBROUTINE_:
+	    if(inlineAttribute == DwInl.DECLARED_NOT_INLINED_){
+		return new Subprogram(die);
+	    }
+	    return new InlinedSubroutine(die);
 	
-	assertTrue("Function has abstract origin ", hasAttribute);
-	
-	die = die.getOriginalDie();
-	
-	assertNotNull("Found original die", die);
-	assertEquals("Die has correct name", "crash" ,die.getName());
-	
-	
+	case DwTag.SUBPROGRAM_:
+	    if(inlineAttribute == DwInl.INLINED_){
+		return new InlinedSubroutine(die);
+	    }
+	    return new Subprogram(die);
+
+	case DwTag.LEXICAL_BLOCK_:
+	    return new LexicalBlock(die);
+	case DwTag.COMPILE_UNIT_:
+	case DwTag.MODULE_:
+	case DwTag.WITH_STMT_:
+	case DwTag.CATCH_BLOCK_:
+	case DwTag.TRY_BLOCK_:
+	case DwTag.ENTRY_POINT_:
+	case DwTag.NAMESPACE_:
+	case DwTag.IMPORTED_UNIT_:
+	    return new Scope(die);
+	default:
+	    throw new IllegalArgumentException("The given die ["+die + ": " + die.getTag()+"]is not a scope die");
+	}
     }
 
 }

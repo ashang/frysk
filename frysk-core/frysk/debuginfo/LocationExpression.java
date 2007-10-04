@@ -53,7 +53,7 @@ import lib.dwfl.DwarfOp;
 import lib.dwfl.DwOp;
 import lib.dwfl.DwAt;
 
-class LocationExpression {
+public class LocationExpression {
     public final static int locationTypeRegDisp = 1,
     locationTypeAddress = 2,
     locationTypeReg = 3;
@@ -64,7 +64,7 @@ class LocationExpression {
     LinkedList stack;
     private final ISA isa;
 
-    LocationExpression(Frame frame, DwarfDie die, List ops) {
+    public LocationExpression(Frame frame, DwarfDie die, List ops) {
 	locationType = 0;
 	this.frame = frame;
 	this.die = die;

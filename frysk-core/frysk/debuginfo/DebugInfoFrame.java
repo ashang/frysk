@@ -52,6 +52,10 @@ import lib.dwfl.DwflDieBias;
 import lib.dwfl.DwflLine;
 import frysk.dwfl.DwflCache;
 import frysk.rt.Line;
+import frysk.scopes.InlinedSubroutine;
+import frysk.scopes.Scope;
+import frysk.scopes.ScopeFactory;
+import frysk.scopes.Subprogram;
 import frysk.stack.Frame;
 import frysk.stack.FrameDecorator;
 

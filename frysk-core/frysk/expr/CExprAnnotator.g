@@ -86,7 +86,7 @@ header
     import frysk.value.UnsignedType;
     import frysk.value.FloatingPointType;
     import frysk.value.Value;
-    import frysk.debuginfo.Variable;
+    import frysk.scopes.Variable;
     import frysk.debuginfo.DebugInfoFrame;
     import frysk.expr.ExprSymTab;
     import frysk.expr.ExprAST;
