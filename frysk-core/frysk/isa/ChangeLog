@@ -1,3 +1,8 @@
+2007-10-04  Andrew Cagney  <cagney@redhat.com>
+
+	* ISAMap.java (containsKey(ISA)): New.
+	* TestISA.java: Update.
+
 2007-10-03  Andrew Cagney  <cagney@redhat.com>
 
 	* ISAMap.java: New.

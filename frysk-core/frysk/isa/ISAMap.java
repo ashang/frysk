@@ -42,7 +42,7 @@ package frysk.isa;
 import java.util.LinkedHashMap;
 
 /**
- * Searchable, table indexed by ISA.
+ * Searchable, insertion ordered table indexed by ISA.
  */
 
 public class ISAMap {
@@ -71,6 +71,13 @@ public class ISAMap {
 	    throw new RuntimeException("The " + isa + " is not supported"
 				       + " (required by " + what + ")");
 	return o;
+    }
+
+    /**
+     * Return true iff the map contains ISA.
+     */
+    public boolean containsKey(ISA isa) {
+	return map.containsKey(isa);
     }
 
     public String toString() {

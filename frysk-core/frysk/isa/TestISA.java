@@ -72,10 +72,12 @@ public class TestISA extends TestCase {
 	ISAMap map = new ISAMap("good")
 	    .put(ISA.IA32, "ia32");
 	assertEquals("get", "ia32", (String)(map.get(ISA.IA32)));
+	assertTrue("containsKey", map.containsKey(ISA.IA32));
     }
     public void testUnmappedIsa() {
 	ISAMap map = new ISAMap("BAD")
 	    .put(ISA.IA32, "ia32");
+	assertFalse("containsKey", map.containsKey(ISA.X8664));
 	Object o = null;
 	RuntimeException e = null;
 	try {
