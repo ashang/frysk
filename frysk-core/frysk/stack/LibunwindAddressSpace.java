@@ -127,8 +127,9 @@ class LibunwindAddressSpace extends AddressSpace {
     }
 
     public long getReg(int regnum) {
-	logger.log(Level.FINE, "reading from regnum: {1}\n",
-		   new Long(regnum));
+	Register register = findRegister(regnum);
+	logger.log(Level.FINE, "{0}: getReg {1} ({2})",
+		   new Object[] { this, new Integer(regnum), register });
 	long val = task.getRegister(findRegister(regnum));
 	logger.log(Level.FINE, "read value: 0x{0}\n",
 		   Long.toHexString(val));
@@ -136,12 +137,12 @@ class LibunwindAddressSpace extends AddressSpace {
     }
 
     public void setReg(int regnum, long regval) {
-	logger.log(Level.FINE, "writing to regnum: {1}, val: {2}\n",
+	Register register = findRegister(regnum);
+	logger.log(Level.FINE, "{0}: setReg {1} ({2}), val {3}",
 		   new Object[] {
-		       new Long(regnum),
-		       new Long(regval)
+		       this, new Integer(regnum), register, new Long(regval)
 		   });
-	task.setRegister(findRegister(regnum), regval);
+	task.setRegister(register, regval);
     }
 
     public ProcInfo findProcInfo (long ip, boolean needUnwindInfo) {

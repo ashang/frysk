@@ -146,16 +146,17 @@ class LibunwindFrame extends Frame
   
     public void getRegister(Register register, long offset, int length,
 			    byte[] bytes, int start) {
-	logger.log(Level.FINE, "{0}: getRegisterValue register: {1}\n",
-		   new Object[] { this, register });
-	cursor.getRegister(registerMap.getRegisterNumber(register),
-			   offset, length, bytes, start);
+	Number number = registerMap.getRegisterNumber(register);
+	logger.log(Level.FINE, "{0}: getRegister register: {1} ({2})\n",
+		   new Object[] { this, register, number });
+	cursor.getRegister(number, offset, length, bytes, start);
     }
   
     public void setRegister(Register register, long offset, int length,
 			    byte[] bytes, int start) {
-	logger.log(Level.FINE, "{0}: getRegisterValue register: {1}\n",
-		   new Object[] { this, register });
+	Number number = registerMap.getRegisterNumber(register);
+	logger.log(Level.FINE, "{0}: getRegister register: {1} ({2})\n",
+		   new Object[] { this, register, number });
 	cursor.setRegister(registerMap.getRegisterNumber(register),
 			   offset, length, bytes, start);
     }

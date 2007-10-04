@@ -1,5 +1,10 @@
 2007-10-04  Andrew Cagney  <cagney@redhat.com>
 
+	* LibunwindFrame.java (getRegister, setRegister): Log libunwind's
+	register number.
+	* LibunwindAddressSpace.java (getReg, setReg): Fix typo in log
+	message.
+
 	* TestRegs.java: New.
 
 2007-10-03  Andrew Cagney  <cagney@redhat.com>

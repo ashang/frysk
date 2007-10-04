@@ -49,6 +49,8 @@ import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.math.BigInteger;
 import inua.eio.ByteOrder;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * A base class for test-cases that need to check all register values.
@@ -58,6 +60,8 @@ import inua.eio.ByteOrder;
  */
 
 public abstract class RegsCase extends TestLib {
+
+    private static final Logger logger = Logger.getLogger("frysk");
 
     private Object taskObject;
     private ValueMap values;
@@ -96,6 +100,27 @@ public abstract class RegsCase extends TestLib {
 					   int start, boolean write);
     protected abstract long getRegister(Object task, Register reg);
 
+    private void checkRegisterRead(Register register, Object value) {
+	if (value == null)
+	    return;
+	String name = register.getName();
+	// When the compare fails, BigInteteger gives a more
+	// meaningful message.
+	BigInteger correct;
+	if (value instanceof BigInteger) {
+	    correct = (BigInteger)value;
+	} else {
+	    correct = toBigInteger((byte[])value);
+	}
+	logger.log(Level.FINE, "checking register {0} expected {1}",
+		   new Object[] { name, correct });
+	byte[] bytes = new byte[register.getType().getSize()];
+	accessRegister(taskObject, register, 0, bytes.length,
+		       bytes, 0, false);
+	BigInteger check = toBigInteger(bytes);
+	assertEquals(name, correct, check);
+    }
+
     public void testAccessRegisterRead() {
 	if (unresolved(5107))
 	    return;
@@ -103,23 +128,7 @@ public abstract class RegsCase extends TestLib {
 	    return;
 	for (Iterator i = values.entrySet().iterator(); i.hasNext(); ) {
 	    Entry entry = (Entry)i.next();
-	    Register register = (Register)entry.getKey();
-	    if (entry.getValue() == null)
-		continue;
-	    String name = register.getName();
-	    // When the compare fails, BigInteteger gives a more
-	    // meaningful message.
-	    BigInteger correct;
-	    if (entry.getValue() instanceof BigInteger) {
-		correct = (BigInteger)entry.getValue();
-	    } else {
-		correct = toBigInteger((byte[])entry.getValue());
-	    }
-	    byte[] bytes = new byte[register.getType().getSize()];
-	    accessRegister(taskObject, register, 0, bytes.length,
-			   bytes, 0, false);
-	    BigInteger check = toBigInteger(bytes);
- 	    assertEquals(name, correct, check);
+	    checkRegisterRead((Register)entry.getKey(), entry.getValue());
 	}
     }
 
