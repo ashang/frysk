@@ -1,5 +1,12 @@
 2007-10-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* VirtualDebugInfoFrame.java (setIndex): Removed first index
+	argument; no long set the index of its parent frame.
+	(getOuterDebugInfoFrame): Sets the index when an outer frame
+	is requested.
+
+2007-10-04  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* TestFrameDebugInfo.java: Replaced StoppedTaskFactory with
 	DeamonBlockedAtSignal.
 	* TestCppVariableSearchEngine.java: Ditto.

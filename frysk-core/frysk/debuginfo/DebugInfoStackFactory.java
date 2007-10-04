@@ -85,7 +85,7 @@ public class DebugInfoStackFactory {
 		    if (scope instanceof InlinedSubroutine) {
 			InlinedSubroutine subroutine = (InlinedSubroutine) scope;
 			tempFrame = new VirtualDebugInfoFrame(frame.getUndecoratedFrame());
-			((VirtualDebugInfoFrame) tempFrame).setIndex(count,inlineCount++);
+			((VirtualDebugInfoFrame) tempFrame).setIndex(inlineCount++);
 			tempFrame.setSubprogram(subroutine);
 
 			if (virtualFrame != null) {
@@ -156,7 +156,7 @@ public class DebugInfoStackFactory {
         frame != null; frame = frame.getOuterDebugInfoFrame()) {
             
           writer.print("#");
-          frame.setIndex(count);
+
           frame.printIndex(writer);
           writer.print(" ");
             

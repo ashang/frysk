@@ -281,6 +281,9 @@ public class DebugInfoFrame extends FrameDecorator{
       public DebugInfoFrame getOuterDebugInfoFrame(){
 	  if(outerDebugInfoFrame == null){
 	      outerDebugInfoFrame = DebugInfoStackFactory.createDebugInfoFrame(this.getUndecoratedFrame().getOuter());
+	      if(outerDebugInfoFrame != null){
+		  outerDebugInfoFrame.setIndex(getIndex()+1);
+	      }
 	  }
 	  return outerDebugInfoFrame;
       }

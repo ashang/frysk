@@ -51,8 +51,7 @@ public class VirtualDebugInfoFrame extends DebugInfoFrame{
 	super(frame);
     }
 
-    public void setIndex(int index, int subIndex){
-	super.setIndex(index);
+    public void setIndex(int subIndex){
 	this.subIndex = subIndex;
     }
     
