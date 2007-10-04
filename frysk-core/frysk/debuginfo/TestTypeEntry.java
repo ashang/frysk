@@ -48,6 +48,7 @@ import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
+import frysk.testbed.StoppedTestTaskFactory;
 import frysk.testbed.TestLib;
 import frysk.value.Type;
 

@@ -40,6 +40,7 @@
 package frysk.debuginfo;
 
 import frysk.proc.Task;
+import frysk.testbed.StoppedTestTaskFactory;
 import frysk.testbed.TestLib;
 
 public class TestScopes extends TestLib{

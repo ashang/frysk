@@ -41,7 +41,7 @@ package frysk.testbed;
 
 import java.io.File;
 
-import frysk.debuginfo.StoppedTestTaskFactory;
+import frysk.testbed.StoppedTestTaskFactory;
 import frysk.event.Event;
 import frysk.proc.Host;
 import frysk.proc.Manager;

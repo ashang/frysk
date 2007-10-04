@@ -1,3 +1,8 @@
+2007-10-03  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Moved from StoppedTestTaskFactory frysk.debuginfo to frysk.testbed
+	* CoreFileAtSignal.java: Updated.
+
 2007-10-03  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFryskAsm.java: New.

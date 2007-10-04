@@ -45,6 +45,7 @@ import lib.dwfl.DwAt;
 import lib.dwfl.DwarfDie;
 import frysk.Config;
 import frysk.proc.Task;
+import frysk.testbed.StoppedTestTaskFactory;
 import frysk.testbed.TestLib;
 import frysk.testbed.TestfileTokenScanner;
 

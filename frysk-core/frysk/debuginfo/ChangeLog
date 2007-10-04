@@ -1,3 +1,13 @@
+2007-10-03  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Moved from StoppedTestTaskFactory frysk.debuginfo to frysk.testbed
+	* TestCppVariableSearchEngine.java: Updated.
+	* TestDie.java: Updated.
+	* TestFrameDebugInfo.java: Updated.
+	* TestScopeFactory.java: Updated.
+	* TestScopes.java: Updated.
+	* TestTypeEntry.java: Updated.
+
 2007-10-03  Andrew Cagney  <cagney@redhat.com>
 
 	* TypeEntry.java: Update; ConfoundedType renamed to

@@ -55,6 +55,7 @@ import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
+import frysk.testbed.StoppedTestTaskFactory;
 import frysk.testbed.TestLib;
 
 public class TestFrameDebugInfo

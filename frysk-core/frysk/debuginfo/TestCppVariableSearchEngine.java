@@ -43,6 +43,7 @@ import java.io.File;
 
 import frysk.Config;
 import frysk.proc.Task;
+import frysk.testbed.StoppedTestTaskFactory;
 import frysk.testbed.TestLib;
 import frysk.testbed.TestfileTokenScanner;
 

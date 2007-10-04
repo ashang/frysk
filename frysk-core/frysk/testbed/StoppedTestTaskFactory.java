@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.debuginfo;
+package frysk.testbed;
 
 import frysk.proc.Action;
 import frysk.proc.Manager;
