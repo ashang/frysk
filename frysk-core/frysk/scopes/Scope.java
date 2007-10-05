@@ -159,7 +159,7 @@ public class Scope
       }
   }
   
-  public Variable getVariableByName(String name){
+  public CxxObject getCxxObjectByName(String name){
       Variable variable = null;
       
       Iterator iterator = this.getVariables().iterator();

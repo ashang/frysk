@@ -126,7 +126,7 @@ public class Subprogram extends Subroutine
 	super.toPrint(frame, writer, " ");
     }
     
-    public Variable getVariableByName(String name) {
+    public CxxObject getCxxObjectByName(String name) {
 	Variable variable = null;
 
 	Iterator iterator = this.parameters.iterator();
@@ -137,7 +137,7 @@ public class Subprogram extends Subroutine
 	    }
 	}
 	
-	return super.getVariableByName(name);
+	return super.getCxxObjectByName(name);
     }
 
 }

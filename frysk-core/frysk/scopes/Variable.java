@@ -61,7 +61,7 @@ import frysk.value.Value;
  * corresponding to this Variable
  */
 
-public class Variable {
+public class Variable implements CxxObject{
     private Type type;
     private final DwarfDie variableDie;
     private final String name;

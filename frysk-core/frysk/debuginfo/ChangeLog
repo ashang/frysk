@@ -1,3 +1,10 @@
+2007-10-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CppVariableSearchEngine.java: Renamed..
+	* CxxObjectSearchEngine.java: ..to this.
+	(get): Now return CxxObject.
+	* TestCxxObjectSearchEngine.java: Updated.
+
 2007-10-04  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestPieceLocation.java (setUp): Call super.setUp.

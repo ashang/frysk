@@ -51,7 +51,7 @@ import frysk.testbed.TestfileTokenScanner;
 /**
  * Tests @link CppVariableSearchEngine.
  * 
- * Each tests is testing the the @link {@link CppVariableSearchEngine} can find the
+ * Each tests is testing the the @link {@link CxxObjectSearchEngine} can find the
  * correct variable, by insuring that the line number of the found 
  * {@link Variable} is the same as the line number of the variable in the source
  * file.
@@ -62,9 +62,9 @@ import frysk.testbed.TestfileTokenScanner;
  * other than the default. 
  *
  */
-public class TestCppVariableSearchEngine extends TestLib{
+public class TestCxxObjectSearchEngine extends TestLib{
     
-    CppVariableSearchEngine cppVariableSearchEngine = new CppVariableSearchEngine();
+    CxxObjectSearchEngine cxxObjectSearchEngine = new CxxObjectSearchEngine();
     
     public void testFindVar1Scopes(){
 	String variableName = "var1"; 
@@ -150,13 +150,13 @@ public class TestCppVariableSearchEngine extends TestLib{
 	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
 	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
 	
-	Variable variable = cppVariableSearchEngine.get(frame, variableName);
+	Variable variable = (Variable) cxxObjectSearchEngine.get(frame, variableName);
 
 	assertNotNull("Variable found", variable);
 	assertTrue("Found the correct variable", variable.getLineNumber() == variableLine);
 	
 	//Negative test:
-	variable = cppVariableSearchEngine.get(frame, "NOT"+variableName);
+	variable = (Variable) cxxObjectSearchEngine.get(frame, "NOT"+variableName);
 	assertNull("Bogus object was not found", variable);
     }
     
@@ -187,13 +187,13 @@ public class TestCppVariableSearchEngine extends TestLib{
 	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
     	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
     	
-    	Variable variable = cppVariableSearchEngine.get(frame, variableName);
+    	Variable variable = (Variable) cxxObjectSearchEngine.get(frame, variableName);
     
     	assertNotNull("Variable found", variable);
     	assertEquals("Variable has the correct value", value, variable.getValue(frame).asLong());
     	
 //    	Negative test:
-	variable = cppVariableSearchEngine.get(frame, "NOT"+variableName);
+	variable = (Variable) cxxObjectSearchEngine.get(frame, "NOT"+variableName);
 	assertNull("Bogus object was not found", variable);
     }
 

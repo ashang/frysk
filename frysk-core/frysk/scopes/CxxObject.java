@@ -39,60 +39,13 @@
 
 package frysk.scopes;
 
-import java.io.File;
+/**
+ * A {@link CxxObject} is an object with a symbole that can be searched
+ * for.
+ * Current know implementors:
+ *   Variable
+ */
+public interface CxxObject {
 
-import lib.dwfl.DwAt;
-import lib.dwfl.DwarfDie;
-import frysk.Config;
-import frysk.debuginfo.CxxObjectSearchEngine;
-import frysk.debuginfo.DebugInfoFrame;
-import frysk.debuginfo.DebugInfoStackFactory;
-import frysk.proc.Task;
-import frysk.scopes.Variable;
-import frysk.testbed.DaemonBlockedAtSignal;
-import frysk.testbed.TestLib;
-import frysk.testbed.TestfileTokenScanner;
-
-public class TestDie
-    extends TestLib
-{
-    
-    
-    public void testGetLine(){
-	String fileName = "funit-cpp-scopes-namespace";
-	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
-	CxxObjectSearchEngine cppVariableSearchEngine = new CxxObjectSearchEngine();
-	
-	Variable variable = (Variable) cppVariableSearchEngine.get(frame, "first");
-	
-	assertNotNull("Variable found", variable);
-	
-	
-	TestfileTokenScanner scanner = new TestfileTokenScanner(new File(Config.getPkgLibSrcDir() + fileName + ".cxx"));
-	int expectedLine = scanner.findTokenLine("first");
-
-	assertEquals("Correct line number was found", expectedLine, variable.getLineNumber());
-    }
-
-    public void testGetOriginalDie(){
-	String fileName = "funit-cpp-scopes-class";
-	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
-	DwarfDie die = frame.getSubprogram().getDie();
-	
-	
-	boolean hasAttribute = die.hasAttribute(DwAt.ABSTRACT_ORIGIN) ||
-	                       die.hasAttribute(DwAt.SPECIFICATION);
-	
-	assertTrue("Function has abstract origin ", hasAttribute);
-	
-	die = die.getOriginalDie();
-	
-	assertNotNull("Found original die", die);
-	assertEquals("Die has correct name", "crash" ,die.getName());
-	
-	
-    }
-
+    public String getName();
 }
