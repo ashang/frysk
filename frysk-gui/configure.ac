@@ -62,10 +62,6 @@ cairo-java >= 1.0 vte-java
 # Rerun configure if the jars disappear.
 AC_SUBST([CONFIG_STATUS_DEPENDENCIES], [$FRYSK_GUI_JARS])
 
-# Do after PKG_CHECK_MODULES, which sets PKG_CONFIG.
-RPATH=${libdir}:`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java glib-java vte-java | sed -e 's/  */:/' -e 's/-L//'  -e 's/:*$//'`
-AC_SUBST(RPATH)
-
 # Grab the libglade prefix at config time, used to find the .xml
 # definitions for glade.
 FRYSK_PKG_MODULE_VARIABLE(LIBGLADE_PREFIX, prefix, [libglade-2.0])

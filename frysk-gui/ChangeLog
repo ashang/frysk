@@ -1,5 +1,7 @@
 2007-10-05  Andrew Cagney  <cagney@redhat.com>
 
+	* configure.ac (RPATH): Delete.
+
 	* Makefile.am (checked-glade-xml): Delete.  Replace with ...
 	(checked-glade-xml-for-gnome): Use dist_glade_DATA instead of
 	glade_DATA.  Require a list of files.

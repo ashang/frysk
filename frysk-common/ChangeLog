@@ -1,3 +1,12 @@
+2007-10-05  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules: (GEN_GCJ_BUILDTREE_RPATH): Rename GEN_GCJ_RPATH.
+	(GEN_GCJ_BUILDTREE_RPATH_FLAGS): Rename GEN_GCJ_RPATH_FLAGS.
+	(GEN_GCC_BUILDTREE_RPATHS): Rename GEN_GCC_RPATHS.
+	(GEN_${GEN_UBASENAME}_RPATH_FLAGS): Define.
+	* Makefile.gen.sh: Update.
+	(GEN_${GEN_UBASENAME}_RPATH_FLAGS): Delete.
+	
 2007-09-28  Andrew Cagney  <cagney@redhat.com>
 
 	* mkenum.sh (equals): Return false when null.

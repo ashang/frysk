@@ -265,10 +265,11 @@ echo_LDFLAGS ()
     echo "${name_}_LDFLAGS = --main=${class}"
     case "${name}" in
 	*dir/* )
+                # set during non-standard builds such as RHEL 4.
                 echo "${name_}_LDFLAGS += \${GEN_${GEN_UBASENAME}_RPATH_FLAGS}"
 		;;
 	* )
-                echo "${name_}_LDFLAGS += \$(GEN_GCJ_RPATH_FLAGS)"
+                echo "${name_}_LDFLAGS += \$(GEN_GCJ_BUILDTREE_RPATH_FLAGS)"
 		;;
     esac
     echo "${name_}_LDFLAGS += \${GEN_GCJ_NO_SIGCHLD_FLAGS}"
@@ -322,7 +323,6 @@ echo GEN_PACKAGENAME=${GEN_PACKAGENAME}
 echo GEN_SOURCENAME=${GEN_SOURCENAME}
 echo GEN_BASENAME=${GEN_BASENAME}
 echo GEN_UBASENAME=${GEN_UBASENAME}
-echo GEN_${GEN_UBASENAME}_RPATH_FLAGS = -Djava.library.path=@RPATH@ -Wl,-rpath,@RPATH@
 
 
 # Generate rules to compile any .jar and _JAR files.
