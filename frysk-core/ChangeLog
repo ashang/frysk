@@ -1,5 +1,10 @@
 2007-10-05  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* frysk/scopes/CxxObject.java (getName): removed public
+	modifier.
+
+2007-10-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* frysk/scopes/CxxObject.java: New file
 	CxxObjectSearchEngine.java now return CxxObject.
 	* frysk/scopes/TestDie.java (testGetLine): Updated.

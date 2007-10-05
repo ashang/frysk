@@ -47,5 +47,5 @@ package frysk.scopes;
  */
 public interface CxxObject {
 
-    public String getName();
+    String getName();
 }
