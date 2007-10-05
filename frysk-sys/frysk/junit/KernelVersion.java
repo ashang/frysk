@@ -58,8 +58,6 @@ public class KernelVersion
   private boolean isFedora = false;
   private boolean isVanilla = false;
   private int fedoraRelease = 0;
-  private int fedoraMajor = 0;
-  private int fedoraMinor = 0;
 
   public int getVersion()
   {
@@ -96,16 +94,6 @@ public class KernelVersion
     return fedoraRelease;
   }
 
-  public int getFedoraMajor()
-  {
-    return fedoraMajor;
-  }
-
-    public int getFedoraMinor()
-  {
-    return fedoraMinor;
-  }
-
   /**
    * Construct a kernel version object using the kernel release string
    * from uname.
@@ -116,7 +104,7 @@ public class KernelVersion
     if (kernelPattern == null)
       {
 	kernelPattern = Pattern.compile("^(\\d+)\\.(\\d+)\\.(\\d+)");
-	fedoraPattern = Pattern.compile("^-(\\d+).(\\d+)\\.fc(\\d+)(.*)$");
+	fedoraPattern = Pattern.compile("\\.fc(\\d+)(.*)$");
 	vanillaPattern = Pattern.compile("^\\.(\\d+)$");
       }
     Matcher kernelMatcher = kernelPattern.matcher(release);
@@ -129,12 +117,10 @@ public class KernelVersion
     int extra = kernelMatcher.end();
     extraVersion = release.substring(extra);
     Matcher fedoraMatcher = fedoraPattern.matcher(extraVersion);
-    if (fedoraMatcher.lookingAt())
+    if (fedoraMatcher.find())
       {
 	isFedora = true;
-	fedoraMajor = Integer.parseInt(fedoraMatcher.group(1));
-	fedoraMinor = Integer.parseInt(fedoraMatcher.group(2));
-	fedoraRelease = Integer.parseInt(fedoraMatcher.group(3));
+	fedoraRelease = Integer.parseInt(fedoraMatcher.group(1));
 	return;
       }
     Matcher vanillaMatcher = vanillaPattern.matcher(extraVersion);
@@ -156,8 +142,7 @@ public class KernelVersion
       return false;
     if (isFedora && kv.isFedora)
       {
-	if (fedoraRelease == kv.fedoraRelease && fedoraMajor == kv.fedoraMajor
-	    && fedoraMinor == kv.fedoraMinor)
+	if (fedoraRelease == kv.fedoraRelease)
 	  return true;
 	else
 	  return false;
@@ -193,13 +178,8 @@ public class KernelVersion
       {
 	if (fedoraRelease > kv.fedoraRelease)
 	  return true;
-	else if (fedoraRelease < kv.fedoraRelease)
+	else
 	  return false;
-	if (fedoraMajor > kv.fedoraMajor)
-	  return true;
-	else if (fedoraMajor < kv.fedoraMajor)
-	  return false;
-	return fedoraMinor > kv.fedoraMinor;
       }
     else if (isVanilla && kv.isVanilla)
       {

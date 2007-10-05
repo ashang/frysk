@@ -1,3 +1,9 @@
+2007-10-05  Mark Wielaard  <mwielaard@redhat.com>
+
+	* KernelVersion.java (fedoraMajor, fedoraMinor): Removed.
+	(KernelVersion): Adjust fedoraPattern to only check for fc ending.
+	(newer): Don't check fedoraMajor or fedoraMinor.
+
 2007-10-04  Andrew Cagney  <cagney@redhat.com>
 
 	* TestCase.java (assertEquals(String,BigInteger,BigInteger)):

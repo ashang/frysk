@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -63,6 +63,8 @@ public class TestProcStopped
 
   public void testStoppedAckDaemon ()
   {
+    if (unresolvedOnUtrace(5114))
+      return;
     SlaveOffspring ackProc = SlaveOffspring.createDaemon();
     stopped(ackProc, 1);
     assertRunUntilStop("testStoppedAckDaemon");
@@ -70,6 +72,8 @@ public class TestProcStopped
 
   public void testStoppedDetached ()
   {
+    if (unresolvedOnUtrace(5114))
+      return;
     SlaveOffspring ackProc = SlaveOffspring.createChild();
     stopped(ackProc, 1);
     assertRunUntilStop("testStoppedDetached");
