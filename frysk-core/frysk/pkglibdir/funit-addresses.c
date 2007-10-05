@@ -39,7 +39,11 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-int global_char = 'a';
+char global_char = 'a';
+
+int *static_int_address;
+volatile int *volatile_int_address;
+char *global_char_address;
 
 int main()
 {
@@ -47,13 +51,13 @@ int main()
   volatile int volatile_int = 33;
   register int reg = 44;	
   
-  static long static_int_address = (long)&static_int;
-  volatile long volatile_int_address = (long)&volatile_int;
-  static long global_char_address = (long)&global_char;
-  
-  printf("%s%ld\n", "Address of static_int = " , static_int_address);
-  printf("%s%ld\n", "Address of volatile_int = " , volatile_int_address);
-  printf("%s%ld\n", "Address of volatile_int = " , global_char_address);
+  static_int_address = &static_int;
+  volatile_int_address = &volatile_int;
+  global_char_address = &global_char;
+
+  printf("%s%p\n", "Address of static_int = " , static_int_address);
+  printf("%s%p\n", "Address of volatile_int = " , volatile_int_address);
+  printf("%s%p\n", "Address of global_char = " , global_char_address);
   printf("%s%d\n", "Value in reg = " , reg);
   
   char* c = 0;

@@ -1,3 +1,10 @@
+2007-10-05  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-addresses.c (global_char): Make type "char".
+	(static_int_address, volatile_int_address)
+	(global_char_address): Moved from main(); changed to pointers.
+	(main): Update..
+
 2007-10-03  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-asm.S: New file.

@@ -1,3 +1,8 @@
+2007-10-05  Andrew Cagney  <cagney@redhat.com>
+
+	* IA32Registers.java: Update types; use INT32L_T, VOIDPTR32L_T,
+	INT128L_T, FLOAT80L_T, INT16L_T.
+
 2007-10-04  Andrew Cagney  <cagney@redhat.com>
 
 	* ISAMap.java (containsKey(ISA)): New.

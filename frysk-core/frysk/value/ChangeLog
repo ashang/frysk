@@ -1,3 +1,22 @@
+2007-10-05  Andrew Cagney  <cagney@redhat.com>
+
+	* StandardTypes.java (OrderMap): New.
+	(INT8B_T, INT8L_T, int8_t, int8_t()): New.
+	(INT16B_T, INT16L_T, int16_t, int16_t()): New.
+	(INT32B_T, INT32L_T, int32_t, int32_t()): New.
+	(INT64B_T, INT64L_T, int64_t, int64_t()): New.
+	(INT128B_T, INT128L_T, int128_t, int128_t()): New.
+	(UINT8B_T, UINT8L_T, uint8_t, uint8_t()): New.
+	(UINT16B_T, UINT16L_T, uint16_t, uint16_t()): New.
+	(UINT32B_T, UINT32L_T, uint32_t, uint32_t()): New.
+	(UINT64B_T, UINT64L_T, uint64_t, uint64_t()): New.
+	(UINT128B_T, UINT128L_T, uint128_t, uint128_t()): New.
+	(FLOAT32B_T, FLOAT32L_T, float32_t, float32_t()): New.
+	(FLOAT64B_T, FLOAT64L_T, float64_t, float64_t()): New.
+	(FLOAT80B_T, FLOAT80L_T, float80_t, float80_t()): New.
+	(VOIDPTR32B_T, VOIDPTR32L_T, voidptr32_t, voidptr32_t()): New.
+	(VOIDPTR64B_T, VOIDPTR64L_T, voidptr64_t, voidptr64_t()): New.
+
 2007-10-03  Andrew Cagney  <cagney@redhat.com>
 
 	* ConfoundedType.java: Rename to ...

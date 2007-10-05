@@ -40,6 +40,7 @@
 package frysk.value;
 
 import inua.eio.ByteOrder;
+import java.util.HashMap;
 
 public class StandardTypes {
     public static final CharType byteLittleEndianType
@@ -113,4 +114,171 @@ public class StandardTypes {
 	else
 	    return doubleBigEndianType;
     }
+
+
+    private static class OrderMap extends HashMap {
+	static final long serialVersionUID = 0;
+	OrderMap put(ArithmeticType type) {
+	    super.put(type.order(), type);
+	    return this;
+	}
+	ArithmeticType get(ByteOrder order) {
+	    return (ArithmeticType)super.get(order);
+	}
+    }
+
+    public static final ArithmeticType INT8B_T
+	= new SignedType("int8b_t", ByteOrder.BIG_ENDIAN, 1);
+    public static final ArithmeticType INT8L_T
+	= new SignedType("int8l_t", ByteOrder.LITTLE_ENDIAN, 1);
+    private static final OrderMap int8_t = new OrderMap()
+	.put(INT8B_T).put(INT8L_T);
+    public static ArithmeticType int8_t(ByteOrder order) {
+	return int8_t.get(order);
+    }
+
+    public static final ArithmeticType INT16B_T
+	= new SignedType("int16b_t", ByteOrder.BIG_ENDIAN, 2);
+    public static final ArithmeticType INT16L_T
+	= new SignedType("int16l_t", ByteOrder.LITTLE_ENDIAN, 2);
+    private static final OrderMap int16_t = new OrderMap()
+	.put(INT16B_T).put(INT16L_T);
+    public static ArithmeticType int16_t(ByteOrder order) {
+	return int16_t.get(order);
+    }
+
+    public static final ArithmeticType INT32B_T
+	= new SignedType("int32b_t", ByteOrder.BIG_ENDIAN, 4);
+    public static final ArithmeticType INT32L_T
+	= new SignedType("int32l_t", ByteOrder.LITTLE_ENDIAN, 4);
+    private static final OrderMap int32_t = new OrderMap()
+	.put(INT32B_T).put(INT32L_T);
+    public static ArithmeticType int32_t(ByteOrder order) {
+	return int32_t.get(order);
+    }
+
+    public static final ArithmeticType INT64B_T
+	= new SignedType("int64b_t", ByteOrder.BIG_ENDIAN, 8);
+    public static final ArithmeticType INT64L_T
+	= new SignedType("int64l_t", ByteOrder.LITTLE_ENDIAN, 8);
+    private static final OrderMap int64_t = new OrderMap()
+	.put(INT64B_T).put(INT64L_T);
+    public static ArithmeticType int64_t(ByteOrder order) {
+	return int64_t.get(order);
+    }
+
+    public static final ArithmeticType INT128B_T
+	= new SignedType("int128b_t", ByteOrder.BIG_ENDIAN, 16);
+    public static final ArithmeticType INT128L_T
+	= new SignedType("int128l_t", ByteOrder.LITTLE_ENDIAN, 16);
+    private static final OrderMap int128_t = new OrderMap()
+	.put(INT128B_T).put(INT128L_T);
+    public static ArithmeticType int128_t(ByteOrder order) {
+	return int128_t.get(order);
+    }
+
+    public static final ArithmeticType UINT8B_T
+	= new UnsignedType("uint8b_t", ByteOrder.BIG_ENDIAN, 1);
+    public static final ArithmeticType UINT8L_T
+	= new UnsignedType("uint8l_t", ByteOrder.LITTLE_ENDIAN, 1);
+    private static final OrderMap uint8_t = new OrderMap()
+	.put(UINT8B_T).put(UINT8L_T);
+    public static ArithmeticType uint8_t(ByteOrder order) {
+	return uint8_t.get(order);
+    }
+
+    public static final ArithmeticType UINT16B_T
+	= new UnsignedType("uint16b_t", ByteOrder.BIG_ENDIAN, 2);
+    public static final ArithmeticType UINT16L_T
+	= new UnsignedType("uint16l_t", ByteOrder.LITTLE_ENDIAN, 2);
+    private static final OrderMap uint16_t = new OrderMap()
+	.put(UINT16B_T).put(UINT16L_T);
+    public static ArithmeticType uint16_t(ByteOrder order) {
+	return uint16_t.get(order);
+    }
+
+    public static final ArithmeticType UINT32B_T
+	= new UnsignedType("uint32b_t", ByteOrder.BIG_ENDIAN, 4);
+    public static final ArithmeticType UINT32L_T
+	= new UnsignedType("uint32l_t", ByteOrder.LITTLE_ENDIAN, 4);
+    private static final OrderMap uint32_t = new OrderMap()
+	.put(UINT32B_T).put(UINT32L_T);
+    public static ArithmeticType uint32_t(ByteOrder order) {
+	return uint32_t.get(order);
+    }
+
+    public static final ArithmeticType UINT64B_T
+	= new UnsignedType("uint64b_t", ByteOrder.BIG_ENDIAN, 8);
+    public static final ArithmeticType UINT64L_T
+	= new UnsignedType("uint64l_t", ByteOrder.LITTLE_ENDIAN, 8);
+    private static final OrderMap uint64_t = new OrderMap()
+	.put(UINT64B_T).put(UINT64L_T);
+    public static ArithmeticType uint64_t(ByteOrder order) {
+	return uint64_t.get(order);
+    }
+
+    public static final ArithmeticType UINT128B_T
+	= new UnsignedType("uint128b_t", ByteOrder.BIG_ENDIAN, 16);
+    public static final ArithmeticType UINT128L_T
+	= new UnsignedType("uint128l_t", ByteOrder.LITTLE_ENDIAN, 16);
+    private static final OrderMap uint128_t = new OrderMap()
+	.put(UINT128B_T).put(UINT128L_T);
+    public static ArithmeticType uint128_t(ByteOrder order) {
+	return uint128_t.get(order);
+    }
+
+    public static final ArithmeticType FLOAT32B_T
+	= new FloatingPointType("float32b_t", ByteOrder.BIG_ENDIAN, 4);
+    public static final ArithmeticType FLOAT32L_T
+	= new FloatingPointType("float32l_t", ByteOrder.LITTLE_ENDIAN, 4);
+    private static final OrderMap float32_t = new OrderMap()
+	.put(FLOAT32B_T).put(FLOAT32L_T);
+    public static ArithmeticType float32_t(ByteOrder order) {
+	return float32_t.get(order);
+    }
+
+    public static final ArithmeticType FLOAT64B_T
+	= new FloatingPointType("float64b_t", ByteOrder.BIG_ENDIAN, 8);
+    public static final ArithmeticType FLOAT64L_T
+	= new FloatingPointType("float64l_t", ByteOrder.LITTLE_ENDIAN, 8);
+    private static final OrderMap float64_t = new OrderMap()
+	.put(FLOAT64B_T).put(FLOAT64L_T);
+    public static ArithmeticType float64_t(ByteOrder order) {
+	return float64_t.get(order);
+    }
+
+    public static final ArithmeticType FLOAT80B_T
+	= new FloatingPointType("float80b_t", ByteOrder.BIG_ENDIAN, 10);
+    public static final ArithmeticType FLOAT80L_T
+	= new FloatingPointType("float80l_t", ByteOrder.LITTLE_ENDIAN, 10);
+    private static final OrderMap float80_t = new OrderMap()
+	.put(FLOAT80B_T).put(FLOAT80L_T);
+    public static ArithmeticType float80_t(ByteOrder order) {
+	return float80_t.get(order);
+    }
+
+    public static final ArithmeticType VOIDPTR32B_T
+	= new PointerType("voidptr32b_t", ByteOrder.BIG_ENDIAN, 4,
+			  new VoidType());
+    public static final ArithmeticType VOIDPTR32L_T
+	= new PointerType("voidptr32l_t", ByteOrder.LITTLE_ENDIAN, 4,
+			  new VoidType());
+    public static final OrderMap voidptr32_t = new OrderMap()
+	.put(VOIDPTR32B_T).put(VOIDPTR32L_T);
+    public static ArithmeticType voidptr32_t(ByteOrder order) {
+	return voidptr32_t.get(order);
+    }
+	
+    public static final ArithmeticType VOIDPTR64B_T
+	= new PointerType("VOIDPTR64B_T", ByteOrder.BIG_ENDIAN, 4,
+			  new VoidType());
+    public static final ArithmeticType VOIDPTR64L_T
+	= new PointerType("VOIDPTR64L_T", ByteOrder.LITTLE_ENDIAN, 4,
+			  new VoidType());
+    public static final OrderMap voidptr64_t = new OrderMap()
+	.put(VOIDPTR64B_T).put(VOIDPTR64L_T);
+    public static ArithmeticType voidptr64_t(ByteOrder order) {
+	return voidptr64_t.get(order);
+    }
+	
 }
