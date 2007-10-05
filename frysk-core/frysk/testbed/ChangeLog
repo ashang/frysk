@@ -1,3 +1,11 @@
+2007-10-05  Andrew Cagney  <cagney@redhat.com>
+
+	* RegsCase.java (X8664): New.
+	(isaValues): Add X8664.
+	(testAccessRegisterRead): Remove unresolved 5107.
+	* TestRegs.java (checkRegisterGroupPresent): Clean up code
+	formatting.
+
 2007-10-04  Andrew Cagney  <cagney@redhat.com>
 
 	* RegsCase.java (checkRegisterRead): New.

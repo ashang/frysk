@@ -42,6 +42,7 @@ package frysk.testbed;
 import java.util.Map.Entry;
 import frysk.isa.Register;
 import frysk.isa.IA32Registers;
+import frysk.isa.X8664Registers;
 import frysk.isa.ISA;
 import frysk.isa.ISAMap;
 import frysk.proc.Task;
@@ -122,8 +123,6 @@ public abstract class RegsCase extends TestLib {
     }
 
     public void testAccessRegisterRead() {
-	if (unresolved(5107))
-	    return;
 	if (values == null && unresolved(0))
 	    return;
 	for (Iterator i = values.entrySet().iterator(); i.hasNext(); ) {
@@ -187,7 +186,59 @@ public abstract class RegsCase extends TestLib {
  	.put(IA32Registers.EIP, null)
 	;
 
+    private ValueMap X8664 = new ValueMap()
+        .put(X8664Registers.RAX, // 0x837bb4e2d8209ca3
+             new byte[] { (byte)0xa3,(byte)0x9c,0x20,(byte)0xd8,
+                          (byte)0xe2,(byte)0xb4,0x7b,(byte)0x83 })
+        .put(X8664Registers.RDX, // 0x16d196be91fb2b92
+             new byte[] { (byte)0x92,0x2b,(byte)0xfb,(byte)0x91,
+                          (byte)0xbe,(byte)0x96,(byte)0xd1,0x16 })
+        .put(X8664Registers.RCX, // 0x2b9f5c8f2d8cc8f9
+             new byte[] { (byte)0xf9,(byte)0xc8,(byte)0x8c,0x2d,
+                          (byte)0x8f,0x5c,(byte)0x9f,0x2b })
+        .put(X8664Registers.RBX, // 0x96c38e833b3f5b12
+             new byte[] { 0x12,0x5b,0x3f,0x3b,
+                          (byte)0x83,(byte)0x8e,(byte)0xc3,(byte)0x96 })
+        .put(X8664Registers.RSI, // 0x79a4d3db85249938
+             new byte[] { 0x38,(byte)0x99,0x24,(byte)0x85,
+                          (byte)0xdb,(byte)0xd3,(byte)0xa4,0x79 })
+        .put(X8664Registers.RDI, // 0x20f76067e815c3b3
+             new byte[] { (byte)0xb3,(byte)0xc3,0x15,(byte)0xe8,
+                          0x67,0x60,(byte)0xf7,0x20 })
+        .put(X8664Registers.RBP, // 0x187298d02605a3d
+             new byte[] { 0x3d,0x5a,0x60,0x2,
+                          (byte)0x8d,0x29,(byte)0x87,0x1 })
+        .put(X8664Registers.RSP, // 0x284732dfa61c4a30
+             new byte[] { 0x30,0x4a,0x1c,(byte)0xa6,
+                          (byte)0xdf,0x32,0x47,0x28 })
+        .put(X8664Registers.R8, // 0xb3323ac248cb3a9
+             new byte[] { (byte)0xa9,(byte)0xb3,(byte)0x8c,0x24,
+                          (byte)0xac,0x23,0x33,0xb })
+        .put(X8664Registers.R9, // 0x4bbb808dda0214ec
+             new byte[] { (byte)0xec,0x14,0x2,(byte)0xda,
+                          (byte)0x8d,(byte)0x80,(byte)0xbb,0x4b })
+        .put(X8664Registers.R10, // 0xb21dd4b61174f4b2
+             new byte[] { (byte)0xb2,(byte)0xf4,0x74,0x11,
+                          (byte)0xb6,(byte)0xd4,0x1d,(byte)0xb2 })
+        .put(X8664Registers.R11, // 0x8c5582abde79fd44
+             new byte[] { 0x44,(byte)0xfd,0x79,(byte)0xde,
+                          (byte)0xab,(byte)0x82,0x55,(byte)0x8c })
+        .put(X8664Registers.R12, // 0xad1a8867c8bd5a68
+             new byte[] { 0x68,0x5a,(byte)0xbd,(byte)0xc8,
+                          0x67,(byte)0x88,0x1a,(byte)0xad })
+        .put(X8664Registers.R13, // 0xe0fb8a51946f37a0
+             new byte[] { (byte)0xa0,0x37,0x6f,(byte)0x94,
+                          0x51,(byte)0x8a,(byte)0xfb,(byte)0xe0 })
+        .put(X8664Registers.R14, // 0x3f22bc816a35f02d
+             new byte[] { 0x2d,(byte)0xf0,0x35,0x6a,
+                          (byte)0x81,(byte)0xbc,0x22,0x3f })
+        .put(X8664Registers.R15, // 0x46bf65d4d966290
+             new byte[] { (byte)0x90,0x62,(byte)0x96,0x4d,
+                          0x5d,(byte)0xf6,0x6b,0x4 })
+        .put(X8664Registers.RIP, null)
+	;
+
     private final ISAMap isaValues = new ISAMap("RegsCase")
-	.put(ISA.IA32, IA32)
+	.put(ISA.IA32, IA32).put(ISA.X8664, X8664)
 	;
 }

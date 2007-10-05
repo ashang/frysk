@@ -46,6 +46,7 @@
 	MAIN_PROLOGUE(0)
 
 #if defined __i386__
+	
 	mov $0x7eb03efc, %eax
 	mov $0x35a322a0, %ebx
 	mov $0x7f198cab, %ecx
@@ -57,7 +58,29 @@
 	// %eflags
 	mov $0x93d4a6ed, %esp
 	jmp 0 // SIGILL
+	
+#elif defined __x86_64__
+
+        mov $0x837bb4e2d8209ca3, %rax
+        mov $0x16d196be91fb2b92, %rdx
+        mov $0x2b9f5c8f2d8cc8f9, %rcx
+        mov $0x96c38e833b3f5b12, %rbx
+        mov $0x79a4d3db85249938, %rsi
+        mov $0x20f76067e815c3b3, %rdi
+        mov $0x187298d02605a3d, %rbp
+        mov $0x284732dfa61c4a30, %rsp
+        mov $0xb3323ac248cb3a9, %r8
+        mov $0x4bbb808dda0214ec, %r9
+        mov $0xb21dd4b61174f4b2, %r10
+        mov $0x8c5582abde79fd44, %r11
+        mov $0xad1a8867c8bd5a68, %r12
+        mov $0xe0fb8a51946f37a0, %r13
+        mov $0x3f22bc816a35f02d, %r14
+        mov $0x46bf65d4d966290, %r15
+        // mov $0x9a602112ce465ffa, %rip
+
 #else
+	
 	LOAD_IMMED_WORD(REG0, 0)
 	STORE(REG0, REG0)
 #endif

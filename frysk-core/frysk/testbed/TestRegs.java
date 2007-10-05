@@ -147,8 +147,6 @@ public class TestRegs extends TestLib {
      * values.
      */
     public void testDefaultRegistersPresent() {
-	if (regsCase.values() == null && unresolved(0))
-	    return;
 	checkRegisterGroupPresent(RegistersFactory.getRegisters(regsCase.isa())
 				  .getDefaultRegisterGroup());
     }
@@ -158,7 +156,7 @@ public class TestRegs extends TestLib {
 	LinkedList missing = new LinkedList();
 	for (int i = 0; i < registers.length; i++) {
 	    Register r = registers[i];
-	    if (!regsCase.values().containsKey(r))
+	    if (regsCase.values() == null || !regsCase.values().containsKey(r))
 		missing.add(r);
 	}
 	// Helpful, if naughty.  Dump out suggested code for the
@@ -175,17 +173,22 @@ public class TestRegs extends TestLib {
 		System.out.print(regsCase.toBigInteger(bytes).toString(16));
 		System.out.println();
 		System.out.print("\t     ");
-		System.out.print("new byte[] {");
+		System.out.print("new byte[] { ");
 		for (int j = 0; j < bytes.length; j++) {
+		    if (j > 0) {
+			System.out.print(",");
+			if (j % 4 == 0) {
+			    System.out.println();
+			    System.out.print("\t\t\t  ");
+			}
+		    }
 		    if (bytes[j] > 0) {
-			System.out.print(" 0x");
+			System.out.print("0x");
 			System.out.print(Integer.toHexString(bytes[j]));
 		    } else {
-			System.out.print(" (byte)0x");
+			System.out.print("(byte)0x");
 			System.out.print(Integer.toHexString(bytes[j] & 0xff));
 		    }
-		    if (j < bytes.length - 1)
-			System.out.print(",");
 		}
 		System.out.print(" })");
 		System.out.println();
