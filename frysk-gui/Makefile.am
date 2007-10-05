@@ -96,26 +96,42 @@ $(FRYSK_GUI_JARS):
 	: no-op
 
 # Run through the glade files and check to see that they don't contain
-# references to glade libraries.  Create a local catalog so that it
-# doesn't try to down load the XML definition stuff from the internet.
+# references to glade libraries.  This is part of all-local, since, if
+# this fails the installed program, via libglade, will try to load
+# gnome which isn't always there.
 
-# This is part of all-local, since, if this fails the build won't fly.
+# This requires a non-empty list of files since an empty list
+# indicates something going wrong.
 
-all-local: checked-glade-xml
-CLEANFILES += checked-glade-xml
-checked-glade-xml: $(glade_DATA) glade.catalog
+all-local: checked-glade-xml-for-gnome
+CLEANFILES += checked-glade-xml-for-gnome
+checked-glade-xml-for-gnome: $(dist_glade_DATA)
+	test x'$(dist_glade_DATA)' != x
+	for f in $(dist_glade_DATA) ; do \
+		echo de-gnome $(srcdir)/$$f; \
+		if grep 'lib="gnome"' $(srcdir)/$$f; then \
+			echo Gnome library found in $(srcdir)/$$f;\
+			exit 1; \
+		fi; \
+	done
+	touch $@
+
+# Run through the glade files and check that they contain valid XML;
+# if to see that they don't contain references to glade libraries.
+# This is part of all-local, since, if this fails the installed
+# program can fail to read the invalid XML.
+
+all-local: checked-glade-xml-with-xmllint
+CLEANFILES += checked-glade-xml-with-xmllint
+checked-glade-xml-with-xmllint: $(dist_glade_DATA) glade.catalog
+	test x'$(dist_glade_DATA)' != x
 	export SGML_CATALOG_FILES=glade.catalog ; \
-	for f in x $(glade_DATA) ; do \
-		test $$f = x && continue; \
-		echo checking $(srcdir)/$$f; \
+	for f in $(dist_glade_DATA) ; do \
+		echo xmllint $(srcdir)/$$f; \
 		if $(XMLLINT) --catalogs --nonet --noout --valid \
 			$(srcdir)/$$f ; then : ; \
 		else \
 			echo Malformed glade xml file: $(srcdir)/$$f; \
-			exit 1; \
-		fi; \
-		if grep 'lib="gnome"' $(srcdir)/$$f; then \
-			echo Gnome library found in $(srcdir)/$$f;\
 			exit 1; \
 		fi; \
 	done

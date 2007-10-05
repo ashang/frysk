@@ -1,3 +1,10 @@
+2007-10-05  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (checked-glade-xml): Delete.  Replace with ...
+	(checked-glade-xml-for-gnome): Use dist_glade_DATA instead of
+	glade_DATA.  Require a list of files.
+	(checked-glade-xml-with-xmllint): Ditto.
+
 2007-08-24  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Makefile.am: Change GEN_GCJ_LDADD to GEN_GCJ_LDADD_LIST.

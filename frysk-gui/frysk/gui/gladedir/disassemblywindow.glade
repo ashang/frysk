@@ -706,7 +706,7 @@
   </child>
 </widget>
 
-<widget class="GtkWindow" id="Warning!">
+<widget class="GtkWindow" id="Warning">
   <property name="visible">True</property>
   <property name="title" translatable="yes">Warning!</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
