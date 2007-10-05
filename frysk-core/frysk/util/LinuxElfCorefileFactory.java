@@ -56,12 +56,10 @@ public class LinuxElfCorefileFactory
 	    return new LinuxElfCorefilex86(process, blockedTasks);
 	if (arch_test.equals("frysk.proc.LinuxX8664"))
 	    return new LinuxElfCorefilex8664(process, blockedTasks);
-	if (arch_test.equals("frysk.proc.LinuxPPC32"))
+	if (arch_test.equals("frysk.proc.LinuxPPC32")
+	    || arch_test.equals("frysk.proc.LinuxPPC64")
+	    || arch_test.equals("frysk.proc.LinuxPPC32On64"))
 	    return new LinuxElfCorefilePPC32(process, blockedTasks);
-	if (arch_test.equals("frysk.proc.LinuxPPC64"))
-	    return new LinuxElfCorefilePPC64(process, blockedTasks);
-	if (arch_test.equals("frysk.proc.LinuxPPC32On64"))
-	    return new LinuxElfCorefilePPC32on64(process, blockedTasks);
 	return null;
     }
 
