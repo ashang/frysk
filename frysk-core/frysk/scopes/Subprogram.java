@@ -51,6 +51,7 @@ import lib.dwfl.DwAt;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.TypeEntry;
 import frysk.value.FunctionType;
 
 /**
@@ -64,8 +65,8 @@ public class Subprogram extends Subroutine
     
     private String name;
     
-    public Subprogram(DwarfDie die) {
-	super(die);
+    public Subprogram(DwarfDie die, TypeEntry typeEntry) {
+	super(die, typeEntry);
 	this.name = die.getName();
 
 	parameters = new LinkedList();

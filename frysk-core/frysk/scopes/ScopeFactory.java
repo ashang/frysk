@@ -41,6 +41,8 @@ package frysk.scopes;
 
 import java.util.HashMap;
 
+import frysk.debuginfo.TypeEntry;
+
 import lib.dwfl.DwAt;
 import lib.dwfl.DwInl;
 import lib.dwfl.DwTag;
@@ -56,7 +58,7 @@ public class ScopeFactory {
 	this.scopes = new HashMap();
     }
 
-    public Scope getScope(DwarfDie die) {
+    public Scope getScope(DwarfDie die, TypeEntry typeEntry) {
 	// this uses the object as a key so if 
 	// a second DwarfDie object is created that refers
 	// to the same underlying die it will not match.
@@ -67,13 +69,13 @@ public class ScopeFactory {
  	Scope scope = (Scope) scopes.get(die);
 	
 	if (scope == null) {
-	    scope = createScope(die);
+	    scope = createScope(die, typeEntry);
 	    this.scopes.put(die, scope);
 	}
 	return scope;
     }
 
-    private Scope createScope(DwarfDie die) {
+    private Scope createScope(DwarfDie die, TypeEntry typeEntry) {
 
 	long inlineAttribute = die.getAttrConstant(DwAt.INLINE); 
 	    
@@ -81,18 +83,18 @@ public class ScopeFactory {
 	
 	case DwTag.INLINED_SUBROUTINE_:
 	    if(inlineAttribute == DwInl.DECLARED_NOT_INLINED_){
-		return new Subprogram(die);
+		return new Subprogram(die, typeEntry);
 	    }
-	    return new InlinedSubroutine(die);
+	    return new InlinedSubroutine(die, typeEntry);
 	
 	case DwTag.SUBPROGRAM_:
 	    if(inlineAttribute == DwInl.INLINED_){
-		return new InlinedSubroutine(die);
+		return new InlinedSubroutine(die, typeEntry);
 	    }
-	    return new Subprogram(die);
+	    return new Subprogram(die, typeEntry);
 
 	case DwTag.LEXICAL_BLOCK_:
-	    return new LexicalBlock(die);
+	    return new LexicalBlock(die, typeEntry);
 	case DwTag.COMPILE_UNIT_:
 	case DwTag.MODULE_:
 	case DwTag.WITH_STMT_:
@@ -101,7 +103,7 @@ public class ScopeFactory {
 	case DwTag.ENTRY_POINT_:
 	case DwTag.NAMESPACE_:
 	case DwTag.IMPORTED_UNIT_:
-	    return new Scope(die);
+	    return new Scope(die, typeEntry);
 	default:
 	    throw new IllegalArgumentException("The given die ["+die + ": " + die.getTag()+"]is not a scope die");
 	}

@@ -72,9 +72,12 @@ public class DebugInfoFrame extends FrameDecorator{
     private LinkedList inlinedSubprograms;
 
     int index;
+
+    TypeEntry typeEntry;
     
     protected DebugInfoFrame(Frame frame) {
 	super(frame);
+	this.typeEntry = new TypeEntry(getTask().getISA());
     }
 
     public final Subprogram getSubprogram ()
@@ -105,7 +108,7 @@ public class DebugInfoFrame extends FrameDecorator{
 		}
 
 		scopes = scopes[0].getScopesDie();
-		scope = ScopeFactory.theFactory.getScope(scopes[0]);
+		scope = ScopeFactory.theFactory.getScope(scopes[0], typeEntry);
 		Scope tempScope = scope;
 		
 		if (tempScope instanceof Subprogram && !(tempScope instanceof InlinedSubroutine) && subprogram == null) {
@@ -114,7 +117,7 @@ public class DebugInfoFrame extends FrameDecorator{
 		    
 		Scope outer = null;
 		for (int i = 1; i < scopes.length; i++) {
-		    outer = ScopeFactory.theFactory.getScope(scopes[i]);
+		    outer = ScopeFactory.theFactory.getScope(scopes[i], typeEntry);
 		    tempScope.setOuter(outer);
 		    tempScope = outer;
 		    
@@ -155,7 +158,7 @@ public class DebugInfoFrame extends FrameDecorator{
             for (int i = 0; i < scopes.length; i++) {
         	if ((scopes[i].getTag()).equals(DwTag.INLINED_SUBROUTINE) ||
         		scopes[i].getAttrConstant(DwAt.INLINE) == DwInl.INLINED_) {
-	  	    inlinedSubprograms.add(new InlinedSubroutine(scopes[i]));
+	  	    inlinedSubprograms.add(new InlinedSubroutine(scopes[i], typeEntry));
         	}
             }
         }

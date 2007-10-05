@@ -39,6 +39,7 @@
 
 package frysk.scopes;
 
+import frysk.debuginfo.TypeEntry;
 import lib.dwfl.DwarfDie;
 
 /**
@@ -47,7 +48,7 @@ import lib.dwfl.DwarfDie;
  */
 public class InlinedSubroutine extends Subprogram
 {
-    public InlinedSubroutine(DwarfDie die) {
-	super(die);
+    public InlinedSubroutine(DwarfDie die, TypeEntry typeEntry) {
+	super(die, typeEntry);
     }
 }

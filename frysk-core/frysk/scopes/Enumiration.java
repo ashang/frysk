@@ -44,6 +44,7 @@ import java.util.LinkedList;
 
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
+import frysk.debuginfo.TypeEntry;
 import frysk.value.EnumType;
 
 public class Enumiration {
@@ -52,13 +53,15 @@ public class Enumiration {
     DwarfDie die;
     EnumType enumType;
     
-    Enumiration(DwarfDie die){
+    Enumiration(DwarfDie die, TypeEntry typeEntry){
 	if(die.getTag() != DwTag.ENUMERATION_TYPE){
 	    throw new RuntimeException("Given die is not of type ENUMERATION_TYPE");
 	}
 	
 	this.die = die;
 	this.elements = new LinkedList();
+	
+	this.enumType = (EnumType) typeEntry.getType(die);
 	
 	die = die.getChild();
 	while(die!=null){

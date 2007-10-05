@@ -44,6 +44,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.TypeEntry;
 
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
@@ -79,9 +80,12 @@ public class Scope
 
     LinkedList collections;
     
-  public Scope(DwarfDie die){
+    final TypeEntry typeEntry;
+    
+  public Scope(DwarfDie die, TypeEntry typeEntry){
       this.die = die;
       this.scopes = new LinkedList();
+      this.typeEntry = typeEntry;
   }
   
   public Scope getOuter(){
@@ -130,7 +134,7 @@ public class Scope
 	  while(die != null){
 		      
 	      if(die.getTag().equals(DwTag.ENUMERATION_TYPE)){
-		  this.collections.add(new Enumiration(die));
+		  this.collections.add(new Enumiration(die, typeEntry));
 	      }
 
 	      die = die.getSibling();

@@ -39,6 +39,7 @@
 
 package frysk.scopes;
 
+import frysk.debuginfo.TypeEntry;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 
@@ -49,9 +50,9 @@ import lib.dwfl.DwarfDie;
 public class Subroutine extends Scope {
 
     Struct struct;
-
-    public Subroutine(DwarfDie die) {
-	super(die);
+    
+    public Subroutine(DwarfDie die, TypeEntry typeEntry) {
+	super(die, typeEntry);
     }
 
     /**
@@ -70,7 +71,7 @@ public class Subroutine extends Scope {
 	    DwarfDie[] scopes = die.getScopesDie();
 	    for (int i = 0; i < scopes.length; i++) {
 		if (scopes[i].getTag().equals(DwTag.STRUCTURE_TYPE)) {
-		    this.struct = new Struct(scopes[i]);
+		    this.struct = new Struct(scopes[i], typeEntry);
 		}
 	    }
 	}

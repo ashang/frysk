@@ -1,5 +1,19 @@
 2007-10-05  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* frysk/scopes/ScopeFactory.java: Passes TypeEntry argument
+	to scopes it constructs.
+	* frysk/scopes/TestScopeFactory.java: Updated.
+	* frysk/scopes/Enumiration.java (Enumiration): Now Takes 
+	TypeEntry argument.
+	* frysk/scopes/Struct.java: Ditto.
+	* frysk/scopes/Subprogram.java: Ditto.
+	* frysk/scopes/Subroutine.java: Ditto.
+	* frysk/scopes/Scope.java: Ditto.
+	* frysk/scopes/InlinedSubroutine.java: Ditto.
+	* frysk/scopes/LexicalBlock.java: Ditto.
+
+2007-10-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* frysk/scopes/CxxObject.java (getName): removed public
 	modifier.
 

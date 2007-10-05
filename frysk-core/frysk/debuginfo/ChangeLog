@@ -1,5 +1,10 @@
 2007-10-05  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* DebugInfoFrame.java: Now creates a TypeEntry object and
+	passes it on to scopes it constructs.
+
+2007-10-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* CppVariableSearchEngine.java: Renamed..
 	* CxxObjectSearchEngine.java: ..to this.
 	(get): Now return CxxObject.

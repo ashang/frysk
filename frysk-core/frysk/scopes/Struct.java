@@ -39,12 +39,13 @@
 
 package frysk.scopes;
 
+import frysk.debuginfo.TypeEntry;
 import lib.dwfl.DwarfDie;
 
 public class Struct extends Scope {
 
-    public Struct(DwarfDie die) {
-	super(die);
+    public Struct(DwarfDie die, TypeEntry typeEntry) {
+	super(die, typeEntry);
     }
     
 }
