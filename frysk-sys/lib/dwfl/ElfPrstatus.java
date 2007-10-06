@@ -81,12 +81,13 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
   private long raw_registers[];
   private byte raw_core_registers[];
   private int reg_length = 0;
-
+  private int size = 32;
 
   static ArrayList internalThreads = new ArrayList();
 
-  public ElfPrstatus()
+  public ElfPrstatus(int size)
   {  
+    this.size = size;
   }
 
   private ElfPrstatus(byte[] singleNoteData, Elf elf)
@@ -583,7 +584,10 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
   }
 
 
-
+  public int getSize()
+  {
+    return this.size;
+  }
 
 
   /** 

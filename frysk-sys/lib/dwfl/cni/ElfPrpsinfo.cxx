@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, IBM Inc.
+// Copyright 2005, 2007, IBM Inc.
 // Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
@@ -56,31 +56,20 @@ extern "C"
 {
 #endif
 
-//XXX We're not sure how to deal with bi-arch. For one 32-bit application
-//    on 64-bit machine, which size(uint32_t and uint16_t) should we use for
-//    pr_uid/pr_gid? If uint16_t should be choosen, should we define nother 
-//    "struct elf_prpsinfo"?
- 
-typedef struct elf_prpsinfo {   /* Information about process                 */
+
+
+typedef struct elf_prpsinfo32 {   /* Information about process                 */
   unsigned char  pr_state;      /* Numeric process state                     */
   char           pr_sname;      /* Char for pr_state                         */
   unsigned char  pr_zomb;       /* Zombie                                    */
   signed char    pr_nice;       /* Nice val                                  */
-  unsigned long  pr_flag;       /* Flags                                     */
-#ifdef __x86_64__
-  uint32_t       pr_uid;        /* User ID                                   */
-  uint32_t       pr_gid;        /* Group ID                                  */
-#else 
-# if defined __i386__
+  uint32_t       pr_flag;       /* Flags                                     */
   uint16_t       pr_uid;        /* User ID                                   */
   uint16_t       pr_gid;        /* Group ID                                  */
-# else 
 # if defined __powerpc__ || defined __powerpc64__
   uint32_t       pr_uid;        /* User ID */
   uint32_t       pr_gid;        /* Group ID */
 # endif
-# endif
-#endif
 
   pid_t          pr_pid;        /* Process ID                                */
   pid_t          pr_ppid;       /* Parent's process ID                       */
@@ -88,54 +77,115 @@ typedef struct elf_prpsinfo {   /* Information about process                 */
   pid_t          pr_sid;        /* Session ID                                */
   char           pr_fname[16];  /* Filename of executable                    */
   char           pr_psargs[80]; /* Initial part of arg list                  */
-} elf_prpsinfo;
+} elf_prpsinfo32;
+ 
+typedef struct elf_prpsinfo64 {   /* Information about process                 */
+  unsigned char  pr_state;      /* Numeric process state                     */
+  char           pr_sname;      /* Char for pr_state                         */
+  unsigned char  pr_zomb;       /* Zombie                                    */
+  signed char    pr_nice;       /* Nice val                                  */
+  unsigned long  pr_flag;       /* Flags                                     */
+  uint32_t       pr_uid;        /* User ID                                   */
+  uint32_t       pr_gid;        /* Group ID                                  */
+# if defined __powerpc__ || defined __powerpc64__
+  uint32_t       pr_uid;        /* User ID */
+  uint32_t       pr_gid;        /* Group ID */
+# endif
+
+  pid_t          pr_pid;        /* Process ID                                */
+  pid_t          pr_ppid;       /* Parent's process ID                       */
+  pid_t          pr_pgrp;       /* Group ID                                  */
+  pid_t          pr_sid;        /* Session ID                                */
+  char           pr_fname[16];  /* Filename of executable                    */
+  char           pr_psargs[80]; /* Initial part of arg list                  */
+} elf_prpsinfo64;
 
 jlong
 lib::dwfl::ElfPrpsinfo::getEntrySize()
 {
-	return sizeof(struct elf_prpsinfo);
+  if (this->size == 32)
+	return sizeof(struct elf_prpsinfo32);
+  else
+        return sizeof(struct elf_prpsinfo64);
 }
 
 jlong 
-lib::dwfl::ElfPrpsinfo::fillMemRegion(jbyteArray buffer, jlong startAddress)
+lib::dwfl::ElfPrpsinfo::fillMemRegion(jbyteArray buffer, jlong
+				      startAddress)
 {
-
 	jbyte *bs = elements(buffer);
-	struct elf_prpsinfo *prpsinfo = NULL;
-	
-	prpsinfo = (struct elf_prpsinfo *)alloca(sizeof(struct elf_prpsinfo));
-	
-	memset(prpsinfo, 0, sizeof(struct elf_prpsinfo));
-	
-	prpsinfo->pr_state = this->pr_state;
-	prpsinfo->pr_sname = this->pr_sname;
-	prpsinfo->pr_zomb = this->pr_zomb;
-	prpsinfo->pr_nice = this->pr_nice;
-	prpsinfo->pr_flag = this->pr_flag;
-	
-	prpsinfo->pr_uid = this->pr_uid;
-	prpsinfo->pr_gid = this->pr_gid;
+	if (this->size == 32) 
+	  {
+	    struct elf_prpsinfo32 *prpsinfo = NULL;
+	    prpsinfo = (struct elf_prpsinfo32 *)alloca(sizeof(struct elf_prpsinfo32));
+	    memset(prpsinfo, 0, sizeof(struct elf_prpsinfo32));
 
-	prpsinfo->pr_pid = this->pr_pid;
-	prpsinfo->pr_ppid = this->pr_ppid;
-	prpsinfo->pr_pgrp = this->pr_pgrp;
+	    prpsinfo->pr_state = this->pr_state;
+	    prpsinfo->pr_sname = this->pr_sname;
+	    prpsinfo->pr_zomb = this->pr_zomb;
+	    prpsinfo->pr_nice = this->pr_nice;
+	    prpsinfo->pr_flag = this->pr_flag;
 	
-	prpsinfo->pr_sid = this->pr_sid;
+	    prpsinfo->pr_uid = this->pr_uid;
+	    prpsinfo->pr_gid = this->pr_gid;
+	    
+	    prpsinfo->pr_pid = this->pr_pid;
+	    prpsinfo->pr_ppid = this->pr_ppid;
+	    prpsinfo->pr_pgrp = this->pr_pgrp;
+	    
+	    prpsinfo->pr_sid = this->pr_sid;
+	    
+	    int name_length = JvGetStringUTFLength(this->pr_fname);
+	    if (name_length > 15)
+	      name_length = 15;
+	    JvGetStringUTFRegion (this->pr_fname, 0, name_length, prpsinfo->pr_fname);
+	    prpsinfo->pr_fname[name_length] = '\0';
+	    
+	    int args_length = JvGetStringUTFLength(this->pr_psargs);
+	    if (args_length > 79)
+	      args_length = 79;
+	    JvGetStringUTFRegion (this->pr_psargs, 0, args_length, prpsinfo->pr_psargs);
+	    prpsinfo->pr_psargs[args_length] = '\0';
+	    memcpy(bs + startAddress, prpsinfo, sizeof(struct elf_prpsinfo32));
+	    return sizeof(struct elf_prpsinfo32);
 
-	int name_length = JvGetStringUTFLength(this->pr_fname);
-	if (name_length > 15)
-	  name_length = 15;
-	JvGetStringUTFRegion (this->pr_fname, 0, name_length, prpsinfo->pr_fname);
-	prpsinfo->pr_fname[name_length] = '\0';
+	  }
+	else
+	  {
+	    struct elf_prpsinfo64 *prpsinfo = NULL;
+	    prpsinfo = (struct elf_prpsinfo64 *)alloca(sizeof(struct  elf_prpsinfo64));
+	    memset(prpsinfo, 0, sizeof(struct elf_prpsinfo64));
 
-	int args_length = JvGetStringUTFLength(this->pr_psargs);
-	if (args_length > 79)
-	  args_length = 79;
-	JvGetStringUTFRegion (this->pr_psargs, 0, args_length, prpsinfo->pr_psargs);
-	prpsinfo->pr_psargs[args_length] = '\0';
-	memcpy(bs + startAddress, prpsinfo, sizeof(struct elf_prpsinfo));
+	    prpsinfo->pr_state = this->pr_state;
+	    prpsinfo->pr_sname = this->pr_sname;
+	    prpsinfo->pr_zomb = this->pr_zomb;
+	    prpsinfo->pr_nice = this->pr_nice;
+	    prpsinfo->pr_flag = this->pr_flag;
 	
-	return sizeof(struct elf_prpsinfo);
+	    prpsinfo->pr_uid = this->pr_uid;
+	    prpsinfo->pr_gid = this->pr_gid;
+	    
+	    prpsinfo->pr_pid = this->pr_pid;
+	    prpsinfo->pr_ppid = this->pr_ppid;
+	    prpsinfo->pr_pgrp = this->pr_pgrp;
+	    
+	    prpsinfo->pr_sid = this->pr_sid;
+	    
+	    int name_length = JvGetStringUTFLength(this->pr_fname);
+	    if (name_length > 15)
+	      name_length = 15;
+	    JvGetStringUTFRegion (this->pr_fname, 0, name_length, prpsinfo->pr_fname);
+	    prpsinfo->pr_fname[name_length] = '\0';
+	    
+	    int args_length = JvGetStringUTFLength(this->pr_psargs);
+	    if (args_length > 79)
+	      args_length = 79;
+	    JvGetStringUTFRegion (this->pr_psargs, 0, args_length, prpsinfo->pr_psargs);
+	    prpsinfo->pr_psargs[args_length] = '\0';
+	    memcpy(bs + startAddress, prpsinfo, sizeof(struct elf_prpsinfo64));
+	    return sizeof(struct elf_prpsinfo64);
+
+	  }
 }
 
 

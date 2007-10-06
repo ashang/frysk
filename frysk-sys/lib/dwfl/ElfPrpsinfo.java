@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, IBM Inc.
+// Copyright 2005, 2007, IBM Inc.
 // Copyright 2007, Red Hat, Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
@@ -71,15 +71,16 @@ public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
   
   // filename of executable
   private String  pr_fname;
+  private int size = 32;
   
   // initial part of arg list
   private String pr_psargs;
   
   //private int pid;
   
-  public ElfPrpsinfo()
+  public ElfPrpsinfo(int size)
   {
-    
+    this.size = size;
   }
 
   /** 
@@ -311,7 +312,11 @@ public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
   {
     return this.pr_psargs;
   }
- 
+
+  public int getSize()
+  {
+    return this.size;
+  }
  
   public native static byte[] getNoteData(ElfData data);
   public native long getEntrySize();

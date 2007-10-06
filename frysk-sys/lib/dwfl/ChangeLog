@@ -1,3 +1,22 @@
+2007-10-05  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ElfPrpsinfo.java (ElfPrpsinfo): Take size hint parameter
+	for 32 on 64.
+	* ElfPrstatus.java (ElfPrstatus): Ditto
+	* cni/ElfPrpsinfo.cxx (ElfPrpsinfo::getEntrySize): Use size
+	parameter to decide wordsize.
+	(ElfPrpsinfo::fillMemRegion): Use size parameter to define what
+	structure to use, regardless of native wordsize.
+	(ElfPrpsinfo): Split structures into 32 and 64 bit structures
+	to deal with 32 on 64.
+	* cni/ElfPrstatus.cxx (ElfPrstatus::getEntrySize): Use size
+	parameter to decide wordsize.
+	(ElfPrstatus::fillMemRegion): Use size parameter to define what
+	structure to use, regardless of native wordsize.
+	(ElfPrstatus): Split structures into 32 and 64 bit structures
+	to deal with 32 on 64. Redefine several system structures locally
+	to negate long usage.
+
 2007-10-02  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* cni/DwarfDie.cxx (get_original_die): New function. 

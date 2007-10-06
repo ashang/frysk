@@ -54,6 +54,7 @@ typedef __u32 u32;
 #include "gelf.h"
 
 #include "asm/elf.h"
+#include "asm/user.h"
 #include "lib/dwfl/ElfPrstatus.h"
 #include "lib/dwfl/ElfData.h"
 #include "lib/dwfl/ElfException.h"
@@ -77,10 +78,36 @@ struct elf_siginfo
 };
 
 
-//XXX We're not sure how to deal with bi-arch. For one 32-bit application
-//    on 64-bit machine, which size(uint32_t and uint16_t) should we use for
-//    pr_uid/pr_gid? If uint16_t should be choosen, should we define nother 
-//    "struct elf_prpsinfo"?
+// To deal with 32 on 64 bit scenarios, have to define timevals as
+// they would appear on thier native systems.
+struct timeval64
+{
+    int64_t tv_sec;            /* Seconds.  */
+    int64_t tv_usec;      /* Microseconds.  */
+};
+
+
+struct timeval32
+{
+    int32_t tv_sec;            /* Seconds.  */
+    int32_t tv_usec;      /* Microseconds.  */
+};
+
+
+// To deal with 32 on 64 scenarios, have to alter the storage
+// allocation for register so they appear in the structure on thier
+// native systems. In the system includes elf_greg_t is unsigned long.
+typedef uint32_t elf_greg_t_32;
+typedef uint64_t elf_greg_t_64;
+
+  // Allocate space regarding true native sizes.
+#define ELF_NGREG32 (sizeof (struct user_regs_struct) / sizeof(elf_greg_t_32))
+#define ELF_NGREG64 (sizeof (struct user_regs_struct) /	\
+		     sizeof(elf_greg_t_64))
+
+  // Define the register space
+typedef elf_greg_t_32 elf_gregset_t_32[ELF_NGREG32];
+typedef elf_greg_t_64 elf_gregset_t_64[ELF_NGREG64];
 
 /*
  * Definitions to generate Intel SVR4-like core files.
@@ -91,33 +118,25 @@ struct elf_siginfo
  * not support and which gdb doesn't really use excluded.
  * Fields present but not used are marked with "XXX".
  */
-struct elf_prstatus
+
+// For 32 on 64 sceanrios, longs are not sufficient, as they will be
+// wrongly sized. Replaces instanced of signed and unsigned longs with
+// unint32_t and int32_t
+struct elf_prstatus32
 {
-#if 0
-	long	pr_flags;	/* XXX Process flags */
-	short	pr_why;		/* XXX Reason for process halt */
-	short	pr_what;	/* XXX More detailed reason */
-#endif
 	struct elf_siginfo pr_info;	/* Info associated with signal */
 	short	pr_cursig;		/* Current signal */
-	unsigned long pr_sigpend;	/* Set of pending signals */
-	unsigned long pr_sighold;	/* Set of held signals */
-#if 0
-	struct sigaltstack pr_altstack;	/* Alternate stack info */
-	struct sigaction pr_action;	/* Signal action for current sig */
-#endif
+	uint32_t pr_sigpend;	/* Set of pending signals */
+	uint32_t pr_sighold;	/* Set of held signals */
 	pid_t	pr_pid;
 	pid_t	pr_ppid;
 	pid_t	pr_pgrp;
 	pid_t	pr_sid;
-	struct timeval pr_utime;	/* User time */
-	struct timeval pr_stime;	/* System time */
-	struct timeval pr_cutime;	/* Cumulative user time */
-	struct timeval pr_cstime;	/* Cumulative system time */
-#if 0
-	long	pr_instr;		/* Current instruction */
-#endif
-	elf_gregset_t pr_reg;	/* GP registers */
+	struct timeval32 pr_utime;	/* User time */
+	struct timeval32 pr_stime;	/* System time */
+	struct timeval32 pr_cutime;	/* Cumulative user time */
+	struct timeval32 pr_cstime;	/* Cumulative system time */
+	elf_gregset_t_32 pr_reg;	/* GP registers */
 #ifdef CONFIG_BINFMT_ELF_FDPIC
 	/* When using FDPIC, the loadmap addresses need to be communicated
 	 * to GDB in order for GDB to do the necessary relocations.  The
@@ -125,8 +144,39 @@ struct elf_prstatus
 	 * immediately after ``pr_reg'', so that the loadmap addresses may
 	 * be viewed as part of the register set if so desired.
 	 */
-	unsigned long pr_exec_fdpic_loadmap;
-	unsigned long pr_interp_fdpic_loadmap;
+	uint32_t pr_exec_fdpic_loadmap;
+	uint32_t pr_interp_fdpic_loadmap;
+#endif
+	int pr_fpvalid;		/* True if math co-processor being used.  */
+};
+
+// For 32 on 64 sceanrios, longs are not sufficient, as they will be
+// wrongly sized. Replaces instanced of signed and unsigned longs with
+// unint64_t and int64_t
+struct elf_prstatus64
+{
+	struct elf_siginfo pr_info;	/* Info associated with signal */
+	short	pr_cursig;		/* Current signal */
+	uint64_t pr_sigpend;	/* Set of pending signals */
+	uint64_t pr_sighold;	/* Set of held signals */
+	pid_t	pr_pid;
+	pid_t	pr_ppid;
+	pid_t	pr_pgrp;
+	pid_t	pr_sid;
+	struct timeval64 pr_utime;	/* User time */
+	struct timeval64 pr_stime;	/* System time */
+	struct timeval64 pr_cutime;	/* Cumulative user time */
+	struct timeval64 pr_cstime;	/* Cumulative system time */
+	elf_gregset_t_64 pr_reg;	/* GP registers */
+#ifdef CONFIG_BINFMT_ELF_FDPIC
+	/* When using FDPIC, the loadmap addresses need to be communicated
+	 * to GDB in order for GDB to do the necessary relocations.  The
+	 * fields (below) used to communicate this information are placed
+	 * immediately after ``pr_reg'', so that the loadmap addresses may
+	 * be viewed as part of the register set if so desired.
+	 */
+	uint64_t pr_exec_fdpic_loadmap;
+	uint64_t pr_interp_fdpic_loadmap;
 #endif
 	int pr_fpvalid;		/* True if math co-processor being used.  */
 };
@@ -135,7 +185,10 @@ struct elf_prstatus
 jlong
 lib::dwfl::ElfPrstatus::getEntrySize()
 {
-	return sizeof(struct elf_prstatus);
+  if (this->size == 32)
+	return sizeof(struct elf_prstatus32);
+  else
+    	return sizeof(struct elf_prstatus64);
 }
 
 
@@ -144,39 +197,78 @@ lib::dwfl::ElfPrstatus::fillMemRegion(jbyteArray buffer, jlong startAddress)
 {
 
 	jbyte *bs = elements(buffer);
-	struct elf_prstatus *prstatus = NULL;
-
-	prstatus = (struct elf_prstatus *)alloca(sizeof(struct elf_prstatus));
-
-	memset(prstatus, 0, sizeof(struct elf_prstatus));
-
-	// Current and pending signals are only known to the kernel it seems?
-
-	prstatus->pr_info.si_signo = 0;
-	prstatus->pr_info.si_code = 0;
-	prstatus->pr_info.si_errno = 0;
-
-	prstatus->pr_cursig = 0;
-	prstatus->pr_sigpend = this->pr_sigpend;
-	prstatus->pr_sighold = 0;
-
-	prstatus->pr_pid = this->pr_pid;
-	prstatus->pr_ppid = this->pr_ppid;
-	prstatus->pr_pgrp = this->pr_pgrp;
-	prstatus->pr_sid = this->pr_sid;
-
-	this->convertToLong ();
-	jlong *registers = elements(raw_registers);
-	for(int i=0; i<this->reg_length; i++)
+	if (this->size == 32)
 	  {
-	    prstatus->pr_reg[i] = registers[i];
+	    struct elf_prstatus32 *prstatus = NULL;
+
+	    prstatus = (struct elf_prstatus32 *)alloca(sizeof(struct elf_prstatus32));
+
+	    memset(prstatus, 0, sizeof(struct elf_prstatus32));
+
+	    // Current and pending signals are only known to the kernel it seems?
+
+	    prstatus->pr_info.si_signo = 0;
+	    prstatus->pr_info.si_code = 0;
+	    prstatus->pr_info.si_errno = 0;
+	    
+	    prstatus->pr_cursig = 0;
+	    prstatus->pr_sigpend = this->pr_sigpend;
+	    prstatus->pr_sighold = 0;
+
+	    prstatus->pr_pid = this->pr_pid;
+	    prstatus->pr_ppid = this->pr_ppid;
+	    prstatus->pr_pgrp = this->pr_pgrp;
+	    prstatus->pr_sid = this->pr_sid;
+	    
+	    this->convertToLong ();
+	    jlong *registers = elements(raw_registers);
+	    for(int i=0; i<this->reg_length; i++)
+	      {
+		prstatus->pr_reg[i] = registers[i];
+	      }
+	    
+	    prstatus->pr_fpvalid = 1;		/* True if math co-processor being used.  */
+	    
+	    memcpy(bs + startAddress, prstatus, sizeof(struct elf_prstatus32));
+
+	    return sizeof(struct elf_prstatus32);
 	  }
+	else
+	  {
+	    struct elf_prstatus64 *prstatus = NULL;
 
-	prstatus->pr_fpvalid = 1;		/* True if math co-processor being used.  */
+	    prstatus = (struct elf_prstatus64 *)alloca(sizeof(struct elf_prstatus64));
 
-	memcpy(bs + startAddress, prstatus, sizeof(struct elf_prstatus));
+	    memset(prstatus, 0, sizeof(struct elf_prstatus64));
 
-	return sizeof(struct elf_prstatus);
+	    // Current and pending signals are only known to the kernel it seems?
+
+	    prstatus->pr_info.si_signo = 0;
+	    prstatus->pr_info.si_code = 0;
+	    prstatus->pr_info.si_errno = 0;
+	    
+	    prstatus->pr_cursig = 0;
+	    prstatus->pr_sigpend = this->pr_sigpend;
+	    prstatus->pr_sighold = 0;
+
+	    prstatus->pr_pid = this->pr_pid;
+	    prstatus->pr_ppid = this->pr_ppid;
+	    prstatus->pr_pgrp = this->pr_pgrp;
+	    prstatus->pr_sid = this->pr_sid;
+	    
+	    this->convertToLong ();
+	    jlong *registers = elements(raw_registers);
+	    for(int i=0; i<this->reg_length; i++)
+	      {
+		prstatus->pr_reg[i] = registers[i];
+	      }
+	    
+	    prstatus->pr_fpvalid = 1;		/* True if math co-processor being used.  */
+	    
+	    memcpy(bs + startAddress, prstatus, sizeof(struct elf_prstatus64));
+
+	    return sizeof(struct elf_prstatus64);
+	  }
 }
 
 
