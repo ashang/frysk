@@ -66,6 +66,7 @@ import frysk.proc.dead.LinuxHost;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.SlaveOffspring;
 import frysk.testbed.TestLib;
+import frysk.Config;
 
 public class TestFCore
     extends TestLib
@@ -219,7 +220,12 @@ public class TestFCore
   
   public void testGeneralPurposeRegisters ()
   {
-      
+   
+      File exec32 = Config.getPkgLib32File(null);
+      File nativeFile = Config.getPkgLibFile(null);
+      if (nativeFile == exec32)
+        return;
+
       // Construct a process
       Proc ackProc = giveMeABlockedProc();
       assertNotNull("Found Process",ackProc);
@@ -259,7 +265,8 @@ public class TestFCore
       
       // Compare
       for (int i=0; i<liveRegBuffer.length; i++)
-	  assertEquals("General Purpose Register buffer postion "+i,coreRegBuffer[i],liveRegBuffer[i]);
+	assertEquals("General Purpose Register buffer postion "+i,coreRegBuffer[i],liveRegBuffer[i]);
+
 
       testCore.delete();
  }

@@ -1,3 +1,19 @@
+2007-10-06  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestFCore.java (testGeneralPurposeRegisters): Disable test on 32
+	on 64.
+
+2007-10-05  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxElfCorefilex86.java (LinuxElfCorefilex86): Set size.
+	(writeNotePrpsinfo): Pass size to elf note.
+	(writeNotePrstatus): Ditto.
+	* LinuxElfCorefilex8664.java: Ditto..
+	* LinuxElfCorefilexPPC32.java : Ditto..
+	* LinuxElfCorefilexPPC64.java: Ditto.	
+	* LinuxelfCorefilex86.java (writeNotePRXFPRegset): Check XFP size, and return false if 
+	empty
+	
 2007-10-05  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxElfCorefilePPC32on64.java: Delete.

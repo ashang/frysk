@@ -1,6 +1,6 @@
 //This file is part of the program FRYSK.
 
-//Copyright 2006, IBM Corp.
+//Copyright 2006, 2007, IBM Corp.
 //Copyright 2007, Red Hat Inc.
 
 //FRYSK is free software; you can redistribute it and/or modify it
@@ -71,6 +71,7 @@ public class LinuxElfCorefilePPC64 extends LinuxElfCorefile {
 
     Task[] blockedTasks;
 
+  int size;
     /**
      * 
      * LinuxElfCoreFile. Construct a corefile from a given process, and that process's
@@ -83,6 +84,7 @@ public class LinuxElfCorefilePPC64 extends LinuxElfCorefile {
 	super(process, blockedTasks);
 	this.process = process;
 	this.blockedTasks = blockedTasks;
+	this.size = 64;
     }
 
     /* (non-Javadoc)
@@ -92,7 +94,7 @@ public class LinuxElfCorefilePPC64 extends LinuxElfCorefile {
 
 	int pid = process.getPid();
 
-	ElfPrpsinfo prpsInfo = new ElfPrpsinfo();
+	ElfPrpsinfo prpsInfo = new ElfPrpsinfo(this.size);
 	Stat processStat = new Stat();
 
 	processStat.refresh(pid);
@@ -162,7 +164,7 @@ public class LinuxElfCorefilePPC64 extends LinuxElfCorefile {
      */
     protected void writeNotePrstatus(ElfNhdr nhdrEntry, Task task) {
 
-	ElfPrstatus prStatus = new ElfPrstatus();
+	ElfPrstatus prStatus = new ElfPrstatus(this.size);
 	Isa register = task.getIsa();
 
 	Stat processStat = new Stat();

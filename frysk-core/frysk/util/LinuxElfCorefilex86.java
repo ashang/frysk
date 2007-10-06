@@ -66,8 +66,8 @@ import frysk.sys.proc.Status;
 public class LinuxElfCorefilex86 extends LinuxElfCorefile {
 
     Proc process;
-
     Task[] blockedTasks;
+    int size;
 
     /**
      * 
@@ -81,6 +81,7 @@ public class LinuxElfCorefilex86 extends LinuxElfCorefile {
 	super(process, blockedTasks);
 	this.process = process;
 	this.blockedTasks = blockedTasks;
+	this.size = 32;
     }
 
     /* (non-Javadoc)
@@ -90,7 +91,7 @@ public class LinuxElfCorefilex86 extends LinuxElfCorefile {
 
 	int pid = process.getPid();
 
-	ElfPrpsinfo prpsInfo = new ElfPrpsinfo();
+	ElfPrpsinfo prpsInfo = new ElfPrpsinfo(this.size);
 	Stat processStat = new Stat();
 
 	processStat.refresh(pid);
@@ -160,7 +161,7 @@ public class LinuxElfCorefilex86 extends LinuxElfCorefile {
      */
     protected void writeNotePrstatus(ElfNhdr nhdrEntry, Task task) {
 
-	ElfPrstatus prStatus = new ElfPrstatus();
+        ElfPrstatus prStatus = new ElfPrstatus(this.size);
 	Isa register = task.getIsa();
 
 	Stat processStat = new Stat();
@@ -218,6 +219,10 @@ public class LinuxElfCorefilex86 extends LinuxElfCorefile {
 
 	// Write FP Register info over wholesae. Do not interpret.
 	ByteBuffer registerMaps[] = task.getRegisterBanks();
+	if (registerMaps[2].capacity() <=0)
+	  {
+	    return false;
+	  }
 	byte[] regBuffer = new byte[(int) registerMaps[2].capacity()];
 	registerMaps[2].get(regBuffer);
 

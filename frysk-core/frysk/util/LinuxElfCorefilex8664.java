@@ -68,6 +68,7 @@ public class LinuxElfCorefilex8664 extends LinuxElfCorefile {
 
     Task[] blockedTasks;
 
+    int size;
     /**
      * 
      * LinuxElfCoreFile. Construct a corefile from a given process, and that process's
@@ -80,6 +81,7 @@ public class LinuxElfCorefilex8664 extends LinuxElfCorefile {
 	super(process, blockedTasks);
 	this.process = process;
 	this.blockedTasks = blockedTasks;
+	this.size = 64;
     }
 
     /* (non-Javadoc)
@@ -89,7 +91,7 @@ public class LinuxElfCorefilex8664 extends LinuxElfCorefile {
 
 	int pid = process.getPid();
 
-	ElfPrpsinfo prpsInfo = new ElfPrpsinfo();
+	ElfPrpsinfo prpsInfo = new ElfPrpsinfo(this.size);
 	Stat processStat = new Stat();
 
 	processStat.refresh(pid);
@@ -159,7 +161,7 @@ public class LinuxElfCorefilex8664 extends LinuxElfCorefile {
      */
     protected void writeNotePrstatus(ElfNhdr nhdrEntry, Task task) {
 
-	ElfPrstatus prStatus = new ElfPrstatus();
+	ElfPrstatus prStatus = new ElfPrstatus(this.size);
 	Isa register = task.getIsa();
 
 	Stat processStat = new Stat();
