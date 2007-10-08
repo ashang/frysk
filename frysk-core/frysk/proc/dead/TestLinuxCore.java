@@ -45,7 +45,6 @@ import inua.eio.ByteBuffer;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 
 import frysk.proc.Action;
 import frysk.proc.Isa;
@@ -67,6 +66,7 @@ import frysk.proc.ProcCoreAction;
 import frysk.testbed.LegacyOffspring;
 
 import lib.dwfl.*;
+import frysk.dwfl.*;
 
 public class TestLinuxCore
     extends TestLib
@@ -387,22 +387,66 @@ public class TestLinuxCore
     assertEquals(origb, coreb);
   }
 
+
+  // Helper class since there there isn't a get symbol method in Dwfl,
+  // so we need to wrap it all in a builder pattern.
+  static class Symbol implements SymbolBuilder
+  {
+    private String name;
+    private long address;
+
+    private boolean found;
+
+    private Symbol()
+    {
+      // properties get set in public static get() method.
+    }
+
+    static Symbol get(Dwfl dwfl, String name)
+    {
+      Symbol sym = new Symbol();
+      sym.name = name;
+      DwflModule[] modules = dwfl.getModules();
+      for (int i = 0; i < modules.length && ! sym.found; i++)
+        modules[i].getSymbolByName(name, sym);
+
+      if (sym.found)
+        return sym;
+      else
+        return null;
+    }
+
+    String getName()
+    {
+      return name;
+    }
+
+    long getAddress()
+    {
+      return address;
+    }
+
+    public void symbol(String name, long value, long size,
+                       int type, int bind, int visibility)
+    {
+      if (name.equals(this.name))
+        {
+          this.address = value;
+          this.found = true;
+        }
+    }
+  }
+
   /**
-   * Returns the address of the requested function through query the
-   * Proc Elf and DwarfDie. Asserts that the function has only 1
-   * entry point.
+   * Returns the address of the requested function through query Dwfl
+   * of the main Task of the given Proc.
    */
   private static long getFunctionEntryAddress(Proc proc, String func)
-    throws ElfException
   {
-    Elf elf = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
-    Dwarf dwarf = new Dwarf(elf, DwarfCommand.READ, null);
-    DwarfDie die = DwarfDie.getDecl(dwarf, func);
-    ArrayList entryAddrs = die.getEntryBreakpoints();
-    
-    // We really expect just one entry point.
-    assertEquals(entryAddrs.size(), 1);
-    return ((Long) entryAddrs.get(0)).longValue();
+    Task task = proc.getMainTask();
+    Dwfl dwfl = DwflCache.getDwfl(task);
+    Symbol sym = Symbol.get(dwfl, func);
+    return sym.getAddress();
   }
 
   /**

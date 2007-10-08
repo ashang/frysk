@@ -1,3 +1,9 @@
+2007-10-08  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestLinuxCore.java (Symbol): New static helper class.
+	(getFunctionEntryAddress): Use Dwfl directly instead of
+	constructing Elf and Dwarf objects directly.
+	
 2007-10-02  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxProc.java (sendrecISA()): Add.
