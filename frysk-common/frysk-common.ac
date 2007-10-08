@@ -221,6 +221,22 @@ test $UUDECODE = no && AC_ERROR([no uudecode program found, please install sharu
 
 FRYSK_USE_LIBUNWIND
 
+AM_CONDITIONAL(ARCH_X86, test x$libunwind_cpu = xx86)
+AM_CONDITIONAL(ARCH_X86_64, test x$libunwind_cpu = xx86_64)
+AM_CONDITIONAL(ARCH_PPC32, test x$libunwind_cpu = xppc32)
+AM_CONDITIONAL(ARCH_PPC64, test x$libunwind_cpu = xppc64)
+
+AC_ARG_ENABLE([check-libunwind],
+    [AS_HELP_STRING([--enable-check-libunwind],
+        [Enable make check for embedded libunwind library.])],
+    [case "${enableval}" in
+       yes) check_libunwind=yes  ;;
+       no) check_libunwind=no ;;
+       *) check_libunwind=yes ;;
+     esac],
+    [check_libunwind=no])
+AM_CONDITIONAL(CHECK_LIBUNWIND, test x$check_libunwind = xyes)
+
 case "${libdir}:${lib}" in
   *64*:* )
 	# 64-bit in /usr/lib64, 32-bit in /usr/lib
