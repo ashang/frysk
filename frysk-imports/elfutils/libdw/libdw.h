@@ -61,10 +61,12 @@
 # define __nonnull_attribute__(args...)
 #endif
 
+#ifndef __extern_inline
 #ifdef __GNUC_STDC_INLINE__
 # define __extern_inline extern __inline __attribute__ ((__gnu_inline__))
 #else
 # define __extern_inline extern __inline
+#endif
 #endif
 
 
