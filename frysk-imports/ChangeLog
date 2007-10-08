@@ -1,3 +1,8 @@
+2007-10-04  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Makefile.am: Set LIBUNWIND_ARCH_DIR and LIBUNWIND_OTHER_DIRS
+	depending on CHECK_LIBUNWIND for CHECK_SUBDIRS.
+
 2007-08-24  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Makefile.am: Change GEN_GCJ_LDADD to GEN_GCJ_LDADD_LIST.

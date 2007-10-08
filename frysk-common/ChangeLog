@@ -1,3 +1,8 @@
+2007-10-03  Mark Wielaard  <mwielaard@redhat.com>
+
+	* frysk-common.ac: Define CHECK_LIBUNWIND, ARCH_X86, ARCH_X86_64,
+	ARCH_PPC32, ARCH_PPC64.
+
 2007-10-05  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules: (GEN_GCJ_BUILDTREE_RPATH): Rename GEN_GCJ_RPATH.
