@@ -40,45 +40,28 @@
 package frysk.util;
 
 
-import frysk.proc.Isa;
+import frysk.isa.ISA;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 
 public class LinuxElfCorefileFactory
 {
 
-    public static LinuxElfCorefile getCorefile(Proc process,
-					       Task blockedTasks[]) {
-	// Get machine architecture
-	String arch_test = getArch(process);
+	// Returns an instance of a corefile depending on the
+	// current active ISA.
+	public static LinuxElfCorefile getCorefile(Proc process,
+			Task blockedTasks[]) {
 
-	if (arch_test.equals("frysk.proc.LinuxIa32") || arch_test.equals("frysk.proc.LinuxIa32On64"))
-	    return new LinuxElfCorefilex86(process, blockedTasks);
-	if (arch_test.equals("frysk.proc.LinuxX8664"))
-	    return new LinuxElfCorefilex8664(process, blockedTasks);
-	if (arch_test.equals("frysk.proc.LinuxPPC32")
-	    || arch_test.equals("frysk.proc.LinuxPPC64")
-	    || arch_test.equals("frysk.proc.LinuxPPC32On64"))
-	    return new LinuxElfCorefilePPC32(process, blockedTasks);
-	return null;
-    }
 
-    /**
-     * Function to return a string denoting architecture name.
-     * 
-     * @return String describe architecture.
-     */
-    private static String getArch (Proc proc) {
+		ISA isa = process.getMainTask().getISA();
+		if (isa.equals(ISA.IA32)) return new LinuxElfCorefilex86(process, blockedTasks);
+		if (isa.equals(ISA.X8664)) return new LinuxElfCorefilex8664(process, blockedTasks);
+		if (isa.equals(ISA.PPC32BE) || isa.equals(ISA.PPC32LE)) 
+					return new LinuxElfCorefilePPC32(process, blockedTasks);
+		if (isa.equals(ISA.PPC64BE) || isa.equals(ISA.PPC64LE)) 
+			return new LinuxElfCorefilePPC64(process, blockedTasks);
+		
+		throw new RuntimeException("Cannot find arch for process PID " + process.getPid());
 
-	// XXX: I hate this, there must be a better way to get
-	// architecture than this ugly, ugly hack
-	
-	Isa arch = null;
-	arch = proc.getMainTask().getIsa();
-
-	String arch_test = arch.toString();
-	String type = arch_test.substring(0, arch_test.lastIndexOf("@"));
-
-	return type;
-    }
+	}
 }

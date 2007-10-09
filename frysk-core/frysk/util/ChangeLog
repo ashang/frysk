@@ -1,3 +1,8 @@
+2007-10-09  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxElfCorefileFactory.java (getCorefile): Rewrite.
+	(getArch): Delete.
+
 2007-10-06  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestFCore.java (testGeneralPurposeRegisters): Disable test on 32
