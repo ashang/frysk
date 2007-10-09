@@ -1,3 +1,9 @@
+2007-10-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestCxxObjectSearchEngine.java (testFindTwoScopesEnum): Now checks
+	the name of the enumirator.
+	(verifyVariableLongValue): Removed.
+
 2007-10-09  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestPieceLocation.java (testcreateSimpleLoc): New test.

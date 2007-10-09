@@ -39,16 +39,13 @@
 
 package frysk.scopes;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 import frysk.debuginfo.TypeEntry;
 import frysk.value.EnumType;
 
 public class Enumiration {
-    LinkedList elements;
+    
     String name;
     DwarfDie die;
     EnumType enumType;
@@ -59,15 +56,8 @@ public class Enumiration {
 	}
 	
 	this.die = die;
-	this.elements = new LinkedList();
 	
 	this.enumType = (EnumType) typeEntry.getType(die);
-	
-	die = die.getChild();
-	while(die!=null){
-	    this.elements.add(new Enumerator(die));
-	    die = die.getSibling();
-	}
 	
     }
     
@@ -78,16 +68,8 @@ public class Enumiration {
 	return this.name;
     }
 
-    public Variable getVariableByName(String name) {
-	Iterator iterator = elements.iterator();
-	
-	while (iterator.hasNext()) {
-	    Variable variable = (Variable) iterator.next();
-	    if(variable.getName().equals(name)){
-		return variable;
-	    }
-	}
-	
-	return null;
+    public CxxObject getVariableByName(String name) {
+	return this.enumType.getMemberByName(name);
     }
+    
 }

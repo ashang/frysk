@@ -1,3 +1,8 @@
+2007-10-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* EnumType.java (Member): Now implements CxxObject.
+	(getMemberByName): New function.
+
 2007-10-05  Andrew Cagney  <cagney@redhat.com>
 
 	* StandardTypes.java (OrderMap): New.

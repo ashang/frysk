@@ -164,23 +164,23 @@ public class Scope
   }
   
   public CxxObject getCxxObjectByName(String name){
-      Variable variable = null;
+      CxxObject cxxObject = null;
       
       Iterator iterator = this.getVariables().iterator();
       while (iterator.hasNext()) {
-	variable = (Variable) iterator.next();
-	if(variable.getName().equals(name)){
-	    return variable;
+	cxxObject = (Variable) iterator.next();
+	if(cxxObject.getName().equals(name)){
+	    return cxxObject;
 	}
       }
       
       iterator = this.getEnums().iterator();
       while (iterator.hasNext()) {
 	Enumiration enumiration = (Enumiration) iterator.next();
-	variable = enumiration.getVariableByName(name);
+	cxxObject = enumiration.getVariableByName(name);
 	
-	if(variable != null){
-	    return variable;
+	if(cxxObject != null){
+	    return cxxObject;
 	}
       }
       

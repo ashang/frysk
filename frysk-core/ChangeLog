@@ -1,3 +1,10 @@
+2007-10-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* frysk/scopes/Scope.java (getCxxObjectByName): Replaced Variable
+	with CxxObject.
+	* frysk/scopes/Enumiration.java (getVariableByName): Now reuses
+	EnumType instead of searching through the die's.
+
 2007-10-05  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* frysk/scopes/ScopeFactory.java: Passes TypeEntry argument

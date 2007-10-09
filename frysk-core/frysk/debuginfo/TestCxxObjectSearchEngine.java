@@ -43,6 +43,7 @@ import java.io.File;
 
 import frysk.Config;
 import frysk.proc.Task;
+import frysk.scopes.CxxObject;
 import frysk.scopes.Variable;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
@@ -115,7 +116,13 @@ public class TestCxxObjectSearchEngine extends TestLib{
 	String variableName = "two"; 
 	String fileName = "funit-c-scopes-enum";
 	
-	verifyVariableLongValue(variableName, fileName, 2);
+	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
+    	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
+    	
+    	CxxObject cxxObject = cxxObjectSearchEngine.get(frame, variableName);
+ 
+    	assertEquals("Object has the correct name", cxxObject.getName(), variableName);
+
     }
     
     
@@ -159,44 +166,5 @@ public class TestCxxObjectSearchEngine extends TestLib{
 	variable = (Variable) cxxObjectSearchEngine.get(frame, "NOT"+variableName);
 	assertNull("Bogus object was not found", variable);
     }
-    
-    
-    /**
-     * Runs the given executable until it sigfaults then searches for the
-     * variable with the given name from that point. Then it verifies that
-     * the line number of the variable found is the same as the line number
-     * in the source file where the given token is.
-     * 
-     * @param variableName
-     *                Name of the variable to search for.
-     * @param variableToken
-     *                a token string from the source file that is found on
-     *                the same line as the variable.
-     * @param fileName
-     *                name of the test file.
-     * @param execPath
-     *                path to the executable to be run.
-     * @param srcPath
-     *                path to the source file from which the executable was
-     *                created
-     */
-    private void verifyVariableLongValue(String variableName,
-    	    String fileName,
-    	    long value){
-    	
-	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
-    	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
-    	
-    	Variable variable = (Variable) cxxObjectSearchEngine.get(frame, variableName);
-    
-    	assertNotNull("Variable found", variable);
-    	assertEquals("Variable has the correct value", value, variable.getValue(frame).asLong());
-    	
-//    	Negative test:
-	variable = (Variable) cxxObjectSearchEngine.get(frame, "NOT"+variableName);
-	assertNull("Bogus object was not found", variable);
-    }
-
-
 
 }

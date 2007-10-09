@@ -41,23 +41,30 @@ package frysk.value;
 
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
+
 import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Iterator;
+
+import frysk.scopes.CxxObject;
 
 /**
  * Type for an enum.
  */
 public class EnumType extends IntegerTypeDecorator
 {
-    private static class Member {
+    private static class Member implements CxxObject {
 	final String name;
 	final BigInteger value;
 	Member(String name, BigInteger value) {
 	    this.name = name;
 	    this.value = value;
+	}
+	
+	public String getName() {
+	    return name;
 	}
     }
     
@@ -118,5 +125,17 @@ public class EnumType extends IntegerTypeDecorator
 	BigInteger value = BigInteger.valueOf(l);
 	valueToMember.put(value, new Member(name, value));
 	return this;
+    }
+    
+    public Member getMemberByName(String name){
+	Member member;
+	Iterator iterator = this.valueToMember.keySet().iterator();
+	while(iterator.hasNext()){
+	    member = (Member) valueToMember.get((iterator.next()));
+	    if(member.name.equals(name)){
+		return member;
+	    }
+	}
+	return null;
     }
 }
