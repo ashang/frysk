@@ -1,5 +1,7 @@
 2007-10-09  Teresa Thomas  <tthomas@redhat.com>
 
+	* DebugInfoEvaluator.java (AccessRegisters): Class deleted.
+
 	* DebugInfoEvaluator.java (getOrder): Deleted.
 	(getTask): New.
 	* DebugInfo.java (TmpSymTab.getOrder): Deleted.

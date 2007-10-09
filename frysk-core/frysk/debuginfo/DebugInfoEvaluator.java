@@ -196,63 +196,6 @@ class DebugInfoEvaluator
     }
 
     /**
-     * Access by DW_FORM_data. Typically this is a location list.
-     */
-    class AccessRegisters
-	implements VariableAccessor
-    {
-	public long getAddr (DwarfDie die) throws NameNotFoundException {
-	    return 0;
-	}
-
-	/**
-	 * @param varDieP Die for a symbol
-	 * @return The contents of the register corresponding to the value of symbol
-	 * @throws NameNotFoundException
-	 */    
-	private long getRegister(DwarfDie varDieP) throws NameNotFoundException {
-	    long pc = frame.getAdjustedAddress();
-       
-	    List ops = varDieP.getFormData(pc);
-      
-	    LocationExpression locExp = new LocationExpression(frame, varDieP, ops);
-	    long value  = locExp.decode();
-	    if (locExp.getLocationType() != LocationExpression.locationTypeReg)
-		throw new NameNotFoundException();
-	    return value;
-	}
-
-	public long getLong (DwarfDie varDieP, long offset) throws NameNotFoundException
-	{
-	    return getRegister(varDieP);
-	}
-
-	public int getInt (DwarfDie varDieP, long offset) throws NameNotFoundException {
-	    return (int) getRegister(varDieP);
-	}
-
-	public short getShort (DwarfDie varDieP, long offset) throws NameNotFoundException {
-	    return (short) getRegister(varDieP);
-	}
-
-	public byte getByte (DwarfDie varDieP, long offset) throws NameNotFoundException {
-	    return (byte) getRegister(varDieP);
-	}
-
-	public float getFloat (DwarfDie varDieP, long offset) throws NameNotFoundException {
-	    long val = getRegister(varDieP);
-	    float fval = Float.intBitsToFloat((int)val);
-	    return fval;
-	}
-
-	public double getDouble (DwarfDie varDieP, long offset) throws NameNotFoundException {
-	    long val = getRegister(varDieP);
-	    double dval = Double.longBitsToDouble(val);
-	    return dval;
-	}
-    }
-
-    /**
      * @param s Symbol s
      * @return The die for symbol s
      */
