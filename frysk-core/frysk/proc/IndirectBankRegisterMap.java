@@ -105,12 +105,8 @@ class IndirectBankRegisterMap extends BankRegisterMap {
 	BankRegister reg32 = isa32.getRegisterByName(name);
 	add(new BankRegister(0, 0, reg32.getLength(), name) {
 		private final long longVal = value;
-		private final BigInteger bigVal = BigInteger.valueOf(value);
 		public long get(Task task) {
 		    return longVal;
-		}
-		public BigInteger getBigInteger(Task task) {
-		    return bigVal;
 		}
 		public void put(Task task, long val) {
 		}

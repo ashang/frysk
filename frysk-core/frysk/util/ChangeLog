@@ -1,3 +1,11 @@
+2007-10-09  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxElfCorefilePPC32.java: Update; replace BankRegister
+	.getBigInteger(Task) with Task. .getBigIntegerRegisterFIXME.
+	* LinuxElfCorefilePPC64.java: Ditto.
+	* LinuxElfCorefilex8664.java: Ditto.
+	* LinuxElfCorefilex86.java: Ditto.
+
 2007-10-09  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxElfCorefileFactory.java (getCorefile): Rewrite.

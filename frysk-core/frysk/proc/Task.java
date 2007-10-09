@@ -51,6 +51,8 @@ import java.util.Observer;
 import java.util.Observable;
 import frysk.isa.Register;
 import frysk.isa.ISA;
+import java.math.BigInteger;
+import inua.eio.ByteOrder;
 
 public abstract class Task
 {
@@ -1024,6 +1026,26 @@ public abstract class Task
     public BankRegister getBankRegister(String name) {
 	return getIsa().getRegisterByName(name);
     }
+
+    /**
+     * Return the underlying bank register's value as a BigInteger.
+     * This is being used to read large register but for that there
+     * the more efficient accessRegister available for that.
+     */
+    public BigInteger getBigIntegerRegisterFIXME(String name) {
+	BankRegister bankRegister = getBankRegister(name);
+	byte[] bytes = bankRegister.getBytes(this);
+    	if (getISA().order() == ByteOrder.LITTLE_ENDIAN) {
+	    for (int left = 0; left < bytes.length / 2; left++) {
+		int right = bytes.length - 1 - left;
+		byte temp = bytes[left];
+		bytes[left] = bytes[right];
+		bytes[right] = temp;
+	    }
+	}
+	return new BigInteger(bytes);
+    }
+
     /**
      * Return the Task's Register as a long.
      */

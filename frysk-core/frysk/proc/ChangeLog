@@ -1,3 +1,11 @@
+2007-10-09  Andrew Cagney  <cagney@redhat.com>
+
+	* BankRegister.java (getBigInteger(Task)): Delete.
+	* Task.java (getBigIntegerRegisterFIXME(String)): New.
+	* ByteOrder.java: Delete.
+	* IndirectBankRegisterMap.java (add(String,long)): Delete nexted
+	class method getBigInteger.
+
 2007-10-09  Mark Wielaard  <mwielaard@redhat.com>
 
 	Fixes bug #5082

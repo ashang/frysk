@@ -117,22 +117,6 @@ public class BankRegister {
     }
 
     /**
-     * Returns the value of a register as a BigInteger.
-     *
-     * @param task the task from which to get the register
-     * @return BigInteger value preserving the sign.
-     */
-    public BigInteger getBigInteger(frysk.proc.Task task) {
-	ByteBuffer b = task.getRegisterBanks()[bank];
-	byte[] bytes = new byte[length];
-	b.get(offset, bytes, 0, length);
-    
-	if (b.order() == ByteOrder.LITTLE_ENDIAN)
-	    reverseArray(bytes);
-	return new BigInteger(bytes);
-    }
-  
-    /**
      * Returns the value of a register as a byte[].
      *
      * @param task the task from which to get the register

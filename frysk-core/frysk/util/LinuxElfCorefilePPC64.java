@@ -44,7 +44,6 @@ import java.math.BigInteger;
 
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.Isa;
 import inua.eio.ByteBuffer;
 
 import lib.dwfl.ElfNhdr;
@@ -165,7 +164,6 @@ public class LinuxElfCorefilePPC64 extends LinuxElfCorefile {
     protected void writeNotePrstatus(ElfNhdr nhdrEntry, Task task) {
 
 	ElfPrstatus prStatus = new ElfPrstatus(this.size);
-	Isa register = task.getIsa();
 
 	Stat processStat = new Stat();
 	processStat.refresh(task.getTid());
@@ -199,13 +197,14 @@ public class LinuxElfCorefilePPC64 extends LinuxElfCorefile {
 
         // Set the general purpose registers.
 	for (int index = 0; index < gprSize; index++)
-	    prStatus.setPrGPReg(index, register
-		    .getRegisterByName("gpr" + index).getBigInteger(task));
+	    prStatus.setPrGPReg
+		(index, task.getBigIntegerRegisterFIXME("gpr" + index));
 
 	// Set the PPC64 specific registers
 	for (int index = 0; index < ppc64RegMap.length; index++)
-	    prStatus.setPrGPReg(index + gprSize, register.getRegisterByName(
-		    ppc64RegMap[index]).getBigInteger(task));
+	    prStatus.setPrGPReg
+		(index + gprSize,
+		 task.getBigIntegerRegisterFIXME(ppc64RegMap[index]));
 
         blankRegisterIndex = gprSize + ppc64RegMap.length;
 

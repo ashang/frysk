@@ -41,7 +41,6 @@ package frysk.util;
 
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.Isa;
 import inua.eio.ByteBuffer;
 
 import lib.dwfl.ElfNhdr;
@@ -162,7 +161,6 @@ public class LinuxElfCorefilex86 extends LinuxElfCorefile {
     protected void writeNotePrstatus(ElfNhdr nhdrEntry, Task task) {
 
         ElfPrstatus prStatus = new ElfPrstatus(this.size);
-	Isa register = task.getIsa();
 
 	Stat processStat = new Stat();
 	processStat.refresh(task.getTid());
@@ -185,8 +183,7 @@ public class LinuxElfCorefilex86 extends LinuxElfCorefile {
 
 	// Set GP register info
 	for (int i = 0; i < regMap.length; i++) {
-	    prStatus.setPrGPReg(i, register.getRegisterByName(regMap[i])
-		    .getBigInteger(task));
+	    prStatus.setPrGPReg(i, task.getBigIntegerRegisterFIXME(regMap[i]));
 	}
 
 	// Write it
