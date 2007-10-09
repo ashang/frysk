@@ -43,11 +43,12 @@ import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-import frysk.proc.Proc;
-import frysk.proc.ProcId;
-import frysk.proc.Task;
 import frysk.proc.Host;
 import frysk.proc.dead.LinuxExeHost;
+import frysk.proc.dead.LinuxExeProc;
+import frysk.proc.Manager;
+import frysk.proc.Proc;
+import frysk.proc.ProcId;
 
 /**
  * LoadCommand handles the "load path-to-executable" command on the fhpd
@@ -86,10 +87,13 @@ public class LoadCommand extends CLIHandler {
 	    return;
 	}
 
-	Host exeHost = new LinuxExeHost(null, executableFile);
-	Proc proc = exeHost.getProc(new ProcId(0));
-	Task task = proc.getMainTask();
-	cli.setExeTask(task);
+	Host exeHost = new LinuxExeHost(Manager.eventLoop, executableFile);
+	Proc exeProc = new LinuxExeProc(exeHost, null ,new ProcId(0));
+	cli.setExeHost(exeHost);
+	
+	cli.setExeProc(exeProc);
+	int procID = cli.idManager.reserveProcID();
+	cli.idManager.manageProc(exeProc, procID);
 	
 	cli.addMessage("Loaded executable file: " + params.get(0),
 		Message.TYPE_NORMAL);

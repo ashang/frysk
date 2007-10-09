@@ -2,6 +2,7 @@
 
 	* CLI.java: Add peek command.
 	* PeekCommand.java: New.
+	* LoadCommand.java: Attempt to wire in "load" command.
 
 2007-10-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
