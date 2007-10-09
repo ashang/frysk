@@ -48,6 +48,8 @@ import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+// XXX: frysk.value should be abstract and _not_ depend on scope;
+// especially C++ specific scopes.
 import frysk.scopes.CxxObject;
 
 /**
@@ -127,7 +129,12 @@ public class EnumType extends IntegerTypeDecorator
 	return this;
     }
     
-    public Member getMemberByName(String name){
+    /**
+     * XXX: What's the intent here?  If the enum's value is needed,
+     * create/return a Value.  If the list of enum fields are needed
+     * for searching, create and return a String list.
+     */
+    public CxxObject getMemberByName(String name){
 	Member member;
 	Iterator iterator = this.valueToMember.keySet().iterator();
 	while(iterator.hasNext()){

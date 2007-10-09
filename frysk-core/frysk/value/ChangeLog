@@ -1,3 +1,9 @@
+2007-10-09  Andrew Cagney  <cagney@redhat.com>
+
+	* EnumType.java (getMemberByName(String)): Change return type to
+	CxxObject; note that frysk.value should not depend on
+	frysk.scopes.
+
 2007-10-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* EnumType.java (Member): Now implements CxxObject.
