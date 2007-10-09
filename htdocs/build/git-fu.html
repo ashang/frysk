@@ -1,0 +1,348 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+  <head>
+    <title>Git Fu</title>
+    <link rel="stylesheet" href="../frysk.css" type="text/css">
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+  </head>
+
+<body>
+    <table cellspacing="2" cellpadding="2" border="0" width="100%">
+      <tr>
+        <td valign="bottom" height="80">
+          <img src="../frysklogo.png" alt="Frysk logo">
+        </td>
+        <td valign="bottom" class="topnavright" align="right">
+          <a href="../">Home</a>
+          &nbsp;|&nbsp;
+          <a href="../usecases/">Use Cases</a>
+          &nbsp;|&nbsp;
+          <a href="../workflow/">Work Flows</a>
+          &nbsp;|&nbsp;
+          <a href="../questions/">FAQ</a>
+          &nbsp;|&nbsp;
+          <a href="../getinvolved/">Get Involved</a>
+          &nbsp;|&nbsp;
+          <a href="../bugzilla/">Bugzilla</a>
+          &nbsp;|&nbsp;
+          Build
+          &nbsp;|&nbsp;
+          <a href="../blog/">Blog</a>
+          &nbsp;|&nbsp;
+          <a href="../documentation/">Documentation</a>
+        </td>
+      </tr>
+    </table>
+    <div class="mainbackground">
+      <div class="maintextregion">
+        <img src="../fryskcorner.gif" alt="triangle">
+        <table cellspacing="2" cellpadding="4" border="0" width="99%" style="margin-top:17px;">
+          <tr>
+            <td width="200" valign="top" align="left">
+	      &nbsp;
+	    </td>
+            <td valign="bottom">
+<!-- start title -->
+        <h1>Notes on using Git</h1>
+	      <!-- end title -->
+            </td>
+          </tr>
+          <tr>
+	    <td valign="top">
+	      <!-- start logo -->
+<p>
+<a href="#resources">Git resources</a><br>
+<a href="#concepts">Git concepts</a><br>
+<a href="#gitversion">Git version</a><br>
+<a href="#repository">The Git Repository</a><br>
+<a href="#gettingstarted">Getting Started</a><br>
+<a href="#branches">Branches and Rebasing</a><br>
+<a href="#names">Names</a><br>
+<a href="#reset">Backing Out Commits</a><br>
+<a href="#rhel4">RHEL 4</a><br>
+<a href="#debian">Debian</a><br>
+</p>
+	      <!-- end logo -->
+	    </td>
+            <td valign="top">
+	      <!-- start text -->
+<p> 
+<em>frysk</em> is changing from CVS
+to <a href="http://www.kernel.org/pub/software/scm/git/docs/">Git</a>
+for its source control system. This page is meant to ease the
+transition for new Git users and point the way towards the more
+advanced usage that motivated the switch in the first place.</p>
+
+<a name="resources"><h2>Git Resources</h2></a>
+
+<p>
+The Git manual pages can be a bit opaque, but there are several good
+sources of information about Git on the Web.
+
+<ul>
+<li> The
+  official
+ <a href="http://www.kernel.org/pub/software/scm/git/docs/tutorial.html">Git
+  tutorial.</a> Read this first.
+<li>Notes on
+<a href="http://www.kernel.org/pub/software/scm/git/docs/cvs-migration.html">
+Git for CVS users.</a> This describes the basic workflow we will use to update
+our local trees and the <em>frysk</em> repository.
+<li>A <a href="http://www.kernel.org/pub/software/scm/git/docs/everyday.html">
+summary</a> of useful commands and workflows, from basic to advanced.
+<li> The Wine project has 
+<a href="http://wiki.winehq.org/GitWine#head-5a7127efaedaae0f9d9b09bf4a681d9121e0dc85">
+a useful Wiki page</a> about Git, describing many common operations.
+<li>An <a href="http://bec-systems.com/web/content/view/77/9/">interesting
+page</a> describing the uses of branches and rebasing of branches.
+</ul>
+</p>
+
+<a name="concepts"><h2>Git Concepts for CVS Refugees</h2></a>
+
+<p>
+You can use Git in a similar way to CVS and ignore many of its features, but if
+you know a little background information about Git and its repository structure
+you will be able to start doing more advanced operations and get out of trouble
+if you mess something
+up. This
+ <a href="http://www.kernel.org/pub/software/scm/git/docs/user-manual.html#git-concepts">chapter</a>
+in the Git manual tells the whole story, but a quick introduction will get you
+ started.</p>
+<p>
+The Git repository stores the history of a project as a chain of revisions
+which describe changes (file and directory additions, deletions, and
+modifications) to the project's source tree. These revisions, called <em>commit
+objects,</em> are named by an SHA1 hash over the contents of the commit, the
+date and author, and the SHA1 hashes of the commit's parents. It is important
+to note that two commits, whose contents (diff) are identical and that were
+based on identical "snapshots" of the source tree, will have different SHA1
+names if the history that preceeded them is different.</p>
+<p>
+When you start work on a project that is in a remote git repository,
+you <em>clone</em> that repository; that is, you copy all the commit objects to
+your machine. As you work on the project you create new commit objects with
+your changes. You update the remote repository by publishing your new commit
+objects to it. One way to publish is by emailing your new commit objects to a
+centeral maintainer (e.g., Linus) who either commits them to the remote
+repository, rejects them, or hacks on them locally and then commits new
+ones. In the <em>frysk</em> project we are allowing developers to have write
+access to the remote repository and publish the commits themselves.</p>
+<p>
+The chain of commits is actually a directed acyclic graph, supporting branches
+of development. A commit object can have multiple children at a branch point;
+similarly, a commit can have multiple parents where branches merge back
+together. In Git a <em>branch name</em> is not much more than a nickname for
+the commit object on the end of a chain of commit objects.</p>
+<p>
+A Git repository contains other auxiliary data structures to speed up common
+operations. The most important one is the <em>index,</em> which supports very
+fast diff operations over the entire tree. When you create a new commit, you
+first have to update the index with the content of the new commit. In CVS you
+have to <tt>cvs add</tt> new files, but not new changes; in Git you have
+to <tt>git add</tt> every change, including file modifications. In practice you
+don't have to deal with it that much because the <tt>git commit</tt> command
+has a flag to automatically add changed files to the index before a commit,
+though you do need to explicitly add new files. Also, when the Git commands
+that do merges fail because of a conflict, they put conflict markers in the
+offending files and exit. After editing the files and resolving the conflict,
+you signal that the conflict is resolved by adding the changes to the
+index. You can then restart the merge command and continue.</p>
+
+<a name="gitversion"><h2>Git Version</h2></a>
+<p>
+Version 1.5.2.2 of Git is currently available in <tt>yum</tt> for Fedora Core
+6, but it is recommended that you download 1.5.3.2 or later
+from <a href="http://www.kernel.org/pub/software/scm/git/">kernel.org.</a></p>
+
+<a name="repository"><h2>The <em>frysk</em> Git Repository</h2></a>
+<p>
+You can see a view of the <em>frysk</em> Git
+repository <a href="http://sourceware.org/git/?p=frysk.git;a=summary">here.</a>
+Like most Git repositories, It contains a branch called <tt>master</tt> which
+is the official "mainline" of development. It also has a branch
+called <tt>cvs-sync</tt> which is updated semi-automatically from CVS
+checkins. When we switch over from CVS to Git for real the <tt>cvs-sync</tt>
+branch will stay frozen at the last commit derived from CVS. Developers are
+encouraged to create their own branches for learning Git and for publishing
+long-lived lines of development that aren't ready for <tt>master.</tt></p>
+
+<a name="gettingstarted"><h2>Getting Started</h2></a>
+<p>
+Let's start hacking. Clone the repository with <pre>
+    git clone ssh://sources.redhat.com/git/frysk.git</pre></p>
+
+<p>If you're not a <em>frysk</em> developer, you can use the
+URL <tt>git://sources.redhat.com/git/frysk.git</tt> instead.</p>
+<p>
+In the <tt>frysk</tt> subdirectory you will find a checked-out <em>frysk</em>
+tree. The Git repository is in the hidden directory <tt>.git.</tt> What state
+are we in?
+<pre>
+$ git status
+# On branch master
+nothing to commit (working directory clean)</pre></p>
+<p>
+The <tt>gitk --all</tt> command is useful for getting a graphic representation
+of the branch and history structure of the repository. Using it we see that
+our <tt>master</tt> branch is branched from <tt>remotes/origin/master</tt>,
+which is a remote branch. We have a copy all the commit objects from that
+remote branch in our repository and we get fetch updates to it, but we can
+never switch to a remote branch and make actual changes there.</p>
+<p>
+Make some changes and commit them locally:
+<pre>
+$ edit newfile.java <b>(1)</b>
+$ edit ChangeLog <b>(2)</b>
+$ git add newfile.java <b>(3)</b>
+$ git commit -a <b>(4></b>
+$ git pull origin <b>(5)</b>
+$ git push origin <b>(6)</b>
+</pre></p>
+<ol>
+  <li><p>create a new file</p>
+  <li><p>edit an existing file</p>
+  <li><p>add the new file to the index</p>
+  <li><p>commit the changes. The <tt>-a</tt> option to <tt>git commit</tt>
+  causes it to add the changes to <tt>ChangeLog</tt> to the index.</p>
+  <li><p>update our repository with any changes from the remote repository.</p>
+  <li><p>push our changes to the remote repository.</p>
+</ol>
+<p>
+In step <b>5</b> we could have gotten a merge conflict if we had touched files
+that had been updated in the remote repository. In that case we would look for
+the conflict markers (like in CVS), edit them, add our changes with 
+<tt>git add</tt>, and make a commit with <tt>git commit.</tt>Git will fashion a
+special merge commit for us.</p>
+<p>
+In step <b>6</b> the push would have failed if our copy of the <tt>master</tt>
+branch wasn't up to date with the remote branch. In that case we would have
+done a <tt>git pull</tt>, resolved any merge conflicts, and tried again.</p>
+
+<a name="branches"><h2>Branches and Rebasing</h2></a>
+<p>
+In the above example we made changes directly to the <tt>master</tt> branch,
+but it's generally desirable to create a local branch for all but the most
+trivial changes. In this way you can work on several bug fixes and other
+development at once. Also, in the above example, if there had been a conflict
+at the pull step, our merge commit would have been pushed to the remote
+repository where it would be an ugly distraction. By doing work in a local
+branch and then rebasing that onto the current upstream state we can commit a
+very clean series of commits to the upstream repository.</p>
+<p>First, let's make our change on the <tt>master</tt> branch and rebase that
+  onto the remote branch:
+<pre>
+$ edit frysk-core/frysk/hpd/BreakpointCommand.java 
+$ git commit -a <b>(1)</b>
+$ git fetch origin <b>(2)</b>
+$ git rebase origin <b>(3)</b>
+$ git push origin
+</pre></p>
+<ol>
+  <li><p>commit changes to <tt>master</tt> branch</p>
+  <li><p>fetch updates from the remote repository without updating local branches</p>
+  <li><p>Rewind this branch to the branch point, merge in updates from the
+  remote repository, and then replay the new commits on top of that</p>
+</ol>
+
+<p>Here is the same work, done on a branch:
+<pre>
+$ git branch topic/fixbreakpoints master<b>(1)</b>
+$ git checkout topic/fixbreakpoints<b>(2)</b>
+$ edit frysk-core/frysk/hpd/BreakpointCommand.java
+$ git commit -a
+$ git checkout master<b>(3)</b>
+$ git pull origin
+$ git rebase master topic/fixbreakpoints<b>(4)</b>
+$ git checkout master<b>(5)</b>
+$ git merge topic/fixbreakpoints<b>(6)</b>
+$ git push orign
+</pre></p>
+<ol>
+  <li><p>create a new branch from the head of <tt>master</tt>. You can use a
+  path-like syntax in the branch names; it is common practice to put short
+  lived local branches under the <tt>topic</tt> path.</p>
+  <li><p>switch to the new branch. If you are creating a new branch from the head
+  of an existing branch like we just did, you can do it all with 
+<div><code>
+      git checkout -b topic/fixbreakpoints master
+      </code></div>
+      </p>which creates a new branch and checks it out.</p>
+<li><p>switch back to <tt>master</tt> and pull in updates</p>
+<li><p>rebase the <tt>topic/fixbreakpoints</tt> branch onto the head
+    of <tt>master.</tt> This checks out <tt>topic/fixbreakpoints.</tt></p>
+<li><p>get back to <tt>master.</tt></p>
+<li><p>merge changes from the topic branch to <tt>master.</tt> Because the
+    topic branch is rooted at the current head of <tt>master,</tt> the merge
+    can be done simply by changing the name <tt>master</tt> to point to the
+    commit object at the head of the topic branch. This is a special kind of
+    merge called a <em>fast forward merge</em> that is guaranteed not to cause
+    any merge conflicts.</p>
+  </ol>
+<p>
+When you switch from one branch to another you will lose uncommitted work. It's
+customary to create a quick "work in progress" commit to save that work and then
+undo it later to when continuing with that branch.</p>
+<p>
+<tt>git rebase</tt> is very powerful and can be used to graft strings of
+commits from one branch to another. However, you shouldn't rebase branches
+whose head has been pushed to a public repository if you expect others to track
+that branch. <tt>rebase</tt> changes the history in a way that screws up later
+merges from the branch.</p>
+
+<a name="names"><h2>Names</h2></a>
+<p>
+So far we have used branch names, but there many other ways to name interesting
+commit objects:
+<ul>
+  <li><tt>HEAD</tt> is the name of the most recent object on the current branch
+  <li><tt>^</tt> indicates the parent of an object. So <tt>HEAD^</tt> is the
+  parent of the most recent commit object on this branch, and <tt>HEAD^^</tt>
+  is its grandparent. If <tt>HEAD</tt> had several parents due to a merge, then
+  they would be named <tt>HEAD^2</tt>, <tt>HEAD^3</tt>, etc.
+  <li><tt>~</tt> is used to number previous generations of commits going
+  through the first parent at each step. The direct ancestors of <tt>HEAD</tt>
+  are <tt>HEAD~1</tt>, <tt>HEAD~2</tt>, <tt>HEAD~3</tt>, etc.
+  <li>You can create new names for arbitrary commit objects using <tt>git
+  tag</tt>.
+</ul>
+See the documentation for
+ <a href="http://www.kernel.org/pub/software/scm/git/docs/git-rev-parse.html">
+   <tt>git-rev-parse</tt></a> for the full story.</p>
+
+<a name="reset"><h2>Backing Out Commits</h2></a>
+<p>
+You often need to "uncommit" commits, either because they were a bad idea, or
+they need further work. There's local way that resets the names of local
+branches and the indes, and a more formal way that creates the inverse of a
+particular commit.</p>
+<p>
+To reset to two revisions back, blowing away all newer changes:
+<pre>
+$ git-reset --hard HEAD~2
+</pre></p>
+<p>
+A more likely scenario is to undo a commit but leave the changes in your
+working tree so you can work on them further. <tt>git-reset</tt> with no
+options does that:<pre>
+$ git-reset HEAD^    
+</pre></p>
+<p>
+You can collapse several commits on a branch into one commit
+using <tt>git-reset</tt> in this way.</p>
+<p>
+To create a commit that reverts another commit, and is suitable for pushing to
+a public repository, use the <tt>git-revert</tt> command.
+
+<a name="diff"><h2>Examining History</h2></a>
+<tt>git diff</tt> is used to examine differences between the working tree and
+the index, as well as between arbitrary branches and commits.
+</td>
+</tr>
+</table>
+      </div>
+    </div>
+</body>
+</html>
