@@ -48,19 +48,24 @@ import frysk.testbed.FryskAsm;
 import frysk.testbed.TestLib;
 import frysk.value.Location;
 
+
 import java.util.List;
 import java.util.ArrayList;
+
+import javax.naming.NameNotFoundException;
 
 public class TestPieceLocation 
 extends TestLib
 {
     private PieceLocation l;
-
+    private Task task;
+    DebugInfoFrame frame;
+    
     public void setUp() 
     {
 	super.setUp();
-	Task task = getStoppedTask();
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
+	task = getStoppedTask();
+	frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
 	
 	//  Creating: { 5 6 7 8 9 } { 1 2 3 } { 12 14 16 } { (REG1=987) or -37 3 0 0 }
 	List pieces = new ArrayList();
@@ -151,6 +156,14 @@ extends TestLib
 	}
 	assertNotNull ("runTimeE", runTimeE);
 	
+    }
+    
+    public void testcreateSimpleLoc() throws NameNotFoundException
+    {
+	Location simple = PieceLocation.createSimpleLoc (3, 5, 
+		new ArrayByteBuffer(new byte[] { 127,127,127, 5, 6, 7, 8, 9, 127, 127 }));
+	assertEquals ("Address", 3, simple.getAddress());
+	assertEquals ("Length", 5, ((PieceLocation)simple).length());
     }
     
     private Task getStoppedTask ()

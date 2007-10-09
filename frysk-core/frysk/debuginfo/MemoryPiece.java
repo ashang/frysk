@@ -40,6 +40,10 @@
 package frysk.debuginfo;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+import frysk.value.Location;
 
 import inua.eio.ByteBuffer;
 
@@ -110,6 +114,17 @@ public class MemoryPiece
 	writer.print(" - ");
 	writer.print(size);
 	writer.print(" byte(s)");
+    }
+    
+    /**
+     * Creates a Location with one MemoryPiece
+     */
+    protected static Location createSimpleLoc (long address, long size, ByteBuffer buf)
+    {
+	MemoryPiece memP = new MemoryPiece(address, size, buf);
+	List list =  new ArrayList();
+	list.add(memP);
+	return new PieceLocation (list);
     }
     
     public boolean equals (Object p)

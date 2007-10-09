@@ -46,6 +46,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 
+import inua.eio.ByteBuffer;
+
 public class PieceLocation
 extends Location
 {
@@ -85,6 +87,14 @@ extends Location
 	if (pieces.size()==1 && (pieces.get(0) instanceof MemoryPiece))
 	   return ((MemoryPiece)pieces.get(0)).getMemory();
 	throw new RuntimeException();
+    }
+    
+    /**
+     *  Creates a simple single piece memory location.
+     */
+    public static Location createSimpleLoc (long address, long size, ByteBuffer buf)
+    {
+	return MemoryPiece.createSimpleLoc(address, size, buf);
     }
 
     /**

@@ -1,5 +1,9 @@
 2007-10-09  Teresa Thomas  <tthomas@redhat.com>
 
+	* TestPieceLocation.java (testcreateSimpleLoc): New test.
+	* PieceLocation.java (createSimpleLoc): New function.
+	* MemoryPiece.java (createSimpleLoc): New function.
+	
 	* DebugInfoEvaluator.java (AccessRegisters): Class deleted.
 
 	* DebugInfoEvaluator.java (getOrder): Deleted.
