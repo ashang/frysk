@@ -56,15 +56,9 @@ public class Breakpoint implements Comparable
   private final long address;
   private final Proc proc;
 
-  // Different ways to setup a breakpoint for stepping.
-  private static final byte NOT_STEPPING = 0;
-  private static final byte OUT_OF_LINE_STEPPING = 1;
-  private static final byte SIMULATE_STEPPING = 2;
-  private static final byte RESET_STEPPING = 3;
-
-  // Whether the breakpoint is setup for a step instruction.
-  // And if so how according to one of the above constants.
-  private byte stepping;
+  // Records how many tasks are reset stepping this Breakpoint
+  // currently.  Only when zero can the breakpoint be put back.
+  private int reset_stepping_tasks;
 
   // Static cache of installed break points.
   private static HashMap installed = new HashMap();
@@ -74,6 +68,8 @@ public class Breakpoint implements Comparable
   private Instruction origInstruction;
 
   // The address to execute out of line if any.
+  // FIXME - this depends on the Task stepping and isn't an intrinsic
+  // property of Breakpoint.
   private long oo_address;
 
   /**
@@ -121,8 +117,7 @@ public class Breakpoint implements Comparable
    */
   public long getSetupAddress()
   {
-    if (stepping == NOT_STEPPING)
-      throw new IllegalStateException("Not currently stepping");
+    // XXX - FIXME - This depends on the Task stepping.
     return oo_address != 0 ? oo_address : address;
   }
 
@@ -168,9 +163,6 @@ public class Breakpoint implements Comparable
    */
   public void remove(Task task)
   {
-    if (stepping != NOT_STEPPING)
-      throw new IllegalStateException("Currently stepping: " + this);
-
     synchronized (installed)
       {
 	if (! this.equals(installed.remove(this)))
@@ -212,9 +204,6 @@ public class Breakpoint implements Comparable
    */
   public void prepareStep(Task task)
   {
-    if (stepping != NOT_STEPPING)
-      throw new IllegalStateException("Already stepping");
-
     // We like out of line stepping above simulating the instruction
     // and if neither is possible we reset the instruction and risk
     // other Tasks missing the breakpoint (FIXME: the right way in
@@ -224,7 +213,6 @@ public class Breakpoint implements Comparable
 	// Proc will collect an address for our usage, our wait
 	// till one if available. We need to return it to Proc
 	// afterwards in stepDone().
-	stepping = OUT_OF_LINE_STEPPING;
 	oo_address = proc.getOutOfLineAddress();
 	origInstruction.setupExecuteOutOfLine(task, address, oo_address);
       }
@@ -236,14 +224,17 @@ public class Breakpoint implements Comparable
 	// stepDone().  Luckily no Instructions can actually simulate
 	// themselves at this time.  stepDone() will warn if it does
 	// happen in the future.
-	stepping = SIMULATE_STEPPING;
 	origInstruction.simulate(task);
       }
     else
       {
-	// WARNING, WILL ROBINSON!
-	stepping = RESET_STEPPING;
-	reset(task);
+	// WARNING, WILL ROBINSON! (Temporarily disable breakpoint)
+	// Record the number of concurrent stepping tasks.
+	// The breakpoint instruction can only be set back if all
+	// these tasks get passed it.
+	if (reset_stepping_tasks == 0)
+	  reset(task);
+	reset_stepping_tasks++;
       }
   }
 
@@ -256,9 +247,7 @@ public class Breakpoint implements Comparable
   {
     if (isInstalled())
       {
-	if (stepping == NOT_STEPPING)
-	  throw new IllegalStateException("Not stepping");
-	else if (stepping == OUT_OF_LINE_STEPPING)
+	if (origInstruction.canExecuteOutOfLine())
 	  {
 	    // Fixup any registers depending on the instruction being
 	    // at the original pc address. And let Proc know the address
@@ -267,23 +256,23 @@ public class Breakpoint implements Comparable
 	    proc.doneOutOfLine(oo_address);
 	    oo_address = 0;
 	  }
-	else if (stepping == SIMULATE_STEPPING)
+	else if (origInstruction.canSimulate())
 	  {
 	    // FIXME: See prepareStep().
 	    System.err.println("Instruction simulation not finished! "
 			       + "Already stepped next instruction. Sorry.");
 	  }
-	else if (stepping == RESET_STEPPING)
+	else // Reset stepping
 	  {
 	    // Put the breakpoint instruction quickly back.
-	    set(task);
+	    // If all Tasks concurrently stepping it are done.
+	    reset_stepping_tasks--;
+	    if (reset_stepping_tasks == 0)
+	      set(task);
+	    else
+	      return;
 	  }
-	else
-	  throw new IllegalStateException("Impossible stepping state: "
-					  + stepping);
       }
-
-    stepping = NOT_STEPPING;
   }
 
   /**
@@ -293,9 +282,7 @@ public class Breakpoint implements Comparable
   {
     if (isInstalled())
       {
-	if (stepping == NOT_STEPPING)
-	  throw new IllegalStateException("Not stepping");
-	else if (stepping == OUT_OF_LINE_STEPPING)
+	if (origInstruction.canExecuteOutOfLine())
 	  {
 	    // No step took place, so no fixup needed. Just but
 	    // breakpoint back and cleaer oo_address for Proc.
@@ -303,23 +290,23 @@ public class Breakpoint implements Comparable
 	    proc.doneOutOfLine(oo_address);
 	    oo_address = 0;
 	  }
-	else if (stepping == SIMULATE_STEPPING)
+	else if (origInstruction.canSimulate())
 	  {
 	    // FIXME: See prepareStep().
 	    System.err.println("Instruction simulation not finished! "
 			       + "Already stepped next instruction. Sorry.");
 	  }
-	else if (stepping == RESET_STEPPING)
+	else // Reset stepping
 	  {
 	    // Put the breakpoint instruction quickly back.
-	    set(task);
+	    // If all Tasks concurrently stepping it are done.
+	    reset_stepping_tasks--;
+	    if (reset_stepping_tasks == 0)
+	      set(task);
+	    else
+	      return;
 	  }
-	else
-	  throw new IllegalStateException("Impossible stepping state: "
-					  + stepping);
       }
-
-    stepping = NOT_STEPPING;
   }
 
   /**

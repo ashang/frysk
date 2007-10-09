@@ -1,3 +1,13 @@
+2007-10-09  Mark Wielaard  <mwielaard@redhat.com>
+
+	Fixes bug #5082
+	* Breakpoint.java (stepping): Removed, state is Task specific.
+	(reset_stepping_tasks): New field.
+	(prepareStep): Check Instruction properties not stepping.
+	Adjust reset_stepping_tasks and only reset when zero.
+	(stepDone): Likewise.
+	(stepAbort): Likewise.
+
 2007-10-05  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestProcStopped.java (testStoppedAckDaemon): Mark

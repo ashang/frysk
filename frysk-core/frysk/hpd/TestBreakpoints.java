@@ -158,8 +158,6 @@ public class TestBreakpoints
     }
 
     public void testHpdBreakMultiThreadedContinue() {
-        if (unresolved(5082))
-            return;
 	e = new HpdTestbed();
         e.send ("run " + Config.getPkgLibFile("funit-fib-clone") + " 3\n\n");
         	e.expect (5, "Attached.*\n" + prompt);
@@ -180,7 +178,16 @@ public class TestBreakpoints
         e.expect("where.*\\[0\\.0\\].*\\[0\\.1\\].*#0 0x[0-9a-f]+ in fib\\(.*\\[0\\.2\\].*#0 0x[0-9a-f]+ in fib\\(.*"
                  + prompt);
         e.send("go\n");
-        e.expect("go.*fib (3) = 2.*");
+        e.expect("go.*" + prompt + "Task \\d+ is terminating");
+        e.expect("(Breakpoint 0 fib.*){2}");
+        e.send("go\n");
+        e.expect("go.*" + prompt);
+        e.expect("Task \\d+ is terminating");
+        e.expect("Task \\d+ is terminating");
+        e.expect("Task \\d+ is terminating");
+        e.expect("fib \\(3\\) = 2");
+        e.expect("Task \\d+ is terminating");
+        e.expect("Task \\d+ terminated");
         e.send("quit\n");
         e.expect("Quitting...");
         e.close();
