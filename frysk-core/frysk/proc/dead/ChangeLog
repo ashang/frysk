@@ -1,3 +1,8 @@
+2007-10-08  Rick Moseley  <rmoseley@redhat.com>
+
+	* LinuxExeProc.java: Make sure executable is registered
+	with CLI properly.
+
 2007-10-08  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestLinuxCore.java (Symbol): New static helper class.

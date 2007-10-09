@@ -59,6 +59,7 @@ import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.proc.Host;
 import frysk.rt.ProcTaskIDManager;
 import frysk.stepping.SteppingEngine;
 import frysk.stepping.TaskStepEngine;
@@ -326,6 +327,7 @@ public class CLI {
         new RegsCommand(this);
         new ExamineCommand(this);
         new LoadCommand(this);
+        new PeekCommand(this);
 
         // initialize PT set stuff
         setparser = new SetNotationParser();
@@ -581,12 +583,24 @@ public class CLI {
     }
     
     /**
-     * Sets the LinuxExeTask for an executable file so we can access its memory.
+     * Sets the LinuxExeHost for an executable file so we can access its memory
+     * via the "peek" command.
      * 
      */
-    Task exeTask;
+    Host exeHost;
     
-    public void setExeTask (Task task) {
-	this.exeTask = task;
+    public void setExeHost (Host host) {
+	this.exeHost = host;
+    }
+    
+    /**
+     * Sets the LinuxExeProc for an executable file so we can access its memory
+     * via the "peek" command.
+     * 
+     */
+    Proc exeProc;
+    
+    public void setExeProc (Proc proc) {
+	this.exeProc = proc;
     }
 }
