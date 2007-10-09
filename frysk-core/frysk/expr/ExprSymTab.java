@@ -51,7 +51,6 @@ public interface ExprSymTab
 {
   Value getValue(String s) throws NameNotFoundException;
   Value getValue(ArrayList v) throws NameNotFoundException;
-  Value getAddress(String s) throws NameNotFoundException;
   Value getMemory(String s) throws NameNotFoundException;
   Variable getVariable(String s) throws NameNotFoundException;
   ByteOrder getOrder () throws NameNotFoundException;

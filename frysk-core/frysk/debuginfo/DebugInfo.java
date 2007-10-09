@@ -286,10 +286,6 @@ public class DebugInfo {
 	  public Value getValue (ArrayList v) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");
 	    }
-      
-	  public Value getAddress (String s) throws NameNotFoundException {
-		throw new NameNotFoundException("No symbol table is available.");
-	    }
 	  public Value getMemory (String s) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");        
 	    }

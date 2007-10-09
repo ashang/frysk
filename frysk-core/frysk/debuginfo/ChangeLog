@@ -1,3 +1,8 @@
+2007-10-09  Teresa Thomas  <tthomas@redhat.com>
+
+	* DebugInfo.java (TmpSymTab.getAddress): Deleted.
+	* DebugInfoEvaluator.java (getAddress): Deleted.
+
 2007-10-05  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DebugInfoFrame.java: Now creates a TypeEntry object and

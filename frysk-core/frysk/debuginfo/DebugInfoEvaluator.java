@@ -350,21 +350,6 @@ class DebugInfoEvaluator
     /**
      * @param f Frame containing symbol s
      * @param s Symbol s
-     * @return Value corresponding to the address of symbol s 
-     */
-    public Value getAddress (String s) throws NameNotFoundException {
-	Variable var = getVariable(s);
-	DwarfDie variableDie = var.getVariableDie();
-	List ops = variableDie.getFormData(frame.getAdjustedAddress());
-	LocationExpression locExpr = new LocationExpression(frame, variableDie, ops);
-	PieceLocation pieceLoc
-	    = new PieceLocation(locExpr.decode(var.getType(isa).getSize()));
-	return longType.createValue(pieceLoc.getAddress());
-    }
-  
-    /**
-     * @param f Frame containing symbol s
-     * @param s Symbol s
      * @return Value corresponding to the memory location pointed to by symbol s.
      */
     public Value getMemory (String s) throws NameNotFoundException {     
