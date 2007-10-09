@@ -1,5 +1,9 @@
 2007-10-09  Teresa Thomas  <tthomas@redhat.com>
 
+	* CExprEvaluator.g (ADDRESS_OF): Use getTask.
+	* ExprSymTab.java (getOrder): Deleted. 
+	(getTask): New.
+	
 	* ExprSymTab.java (getAddress): Deleted. 
 
 2007-10-04  Sami Wagiaalla  <swagiaal@redhat.com>

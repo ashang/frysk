@@ -411,8 +411,8 @@ class DebugInfoEvaluator
 	return new Value(new UnknownType(variable.getVariableDie().getName()));
     }
     
-    public ByteOrder getOrder()
+    public Task getTask()
     {
-	return isa.order();
+	return task;
     }
 }

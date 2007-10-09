@@ -47,10 +47,10 @@ import frysk.expr.ExprSymTab;
 import frysk.expr.CExprEvaluator;
 import frysk.expr.CExprAnnotator;
 import frysk.proc.Proc;
+import frysk.proc.Task;
 import frysk.scopes.Variable;
 import frysk.value.Type;
 import frysk.value.Value;
-import inua.eio.ByteOrder;
 import java.io.StringReader;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -292,7 +292,7 @@ public class DebugInfo {
 	  public Variable getVariable (String s)throws NameNotFoundException {
 	        throw new NameNotFoundException("No symbol table is available.");
 	  } 
-	  public ByteOrder getOrder ()throws NameNotFoundException {
+	  public Task getTask()throws NameNotFoundException {
 	        throw new NameNotFoundException("No symbol table is available.");
 	  }   
       	}

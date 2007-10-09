@@ -1,5 +1,10 @@
 2007-10-09  Teresa Thomas  <tthomas@redhat.com>
 
+	* DebugInfoEvaluator.java (getOrder): Deleted.
+	(getTask): New.
+	* DebugInfo.java (TmpSymTab.getOrder): Deleted.
+	(TmpSymTab.getTask): New.
+	
 	* DebugInfo.java (TmpSymTab.getAddress): Deleted.
 	* DebugInfoEvaluator.java (getAddress): Deleted.
 
