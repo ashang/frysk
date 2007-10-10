@@ -1,3 +1,8 @@
+2007-10-10  Teresa Thomas  <tthomas@redhat.com>
+
+	* TypeDecorator.java (dereference): New.
+	* Type.java (dereference): New.
+
 2007-10-09  Andrew Cagney  <cagney@redhat.com>
 
 	* EnumType.java (getMemberByName(String)): Change return type to

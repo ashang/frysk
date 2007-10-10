@@ -39,6 +39,9 @@
 
 package frysk.hpd;
 
+import frysk.Config;
+import frysk.expunit.Expect;
+
 /**
  * Test the functionality of the print command; for instance that the
  * formatting options work.
@@ -81,5 +84,15 @@ public class TestPrint
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("print 17 -format unknown",
 				  "unrecognized format: unknown\r\n");
+    }
+    public void testAddressOf() {
+	child = new Expect(Config.getPkgLibFile("hpd-c"));
+	e = new HpdTestbed(child.getPid());
+	e.sendCommandExpectPrompt("print &static_int", "\r\n0x[0-9a-f]+\r\n");
+    }
+    public void testDereference() {
+	child = new Expect(Config.getPkgLibFile("hpd-c"));
+	e = new HpdTestbed(child.getPid());
+	e.sendCommandExpectPrompt("print *static_int_ptr", "\r\n4\r\n");
     }
 }

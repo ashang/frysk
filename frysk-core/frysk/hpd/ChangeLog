@@ -1,3 +1,8 @@
+2007-10-10  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestPrint.java (testAddressOf): New.
+	(testDereference): New.
+
 2007-10-09  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestBreakpoints.java (testHpdBreakMultiThreadedContinue): Don't

@@ -175,6 +175,9 @@ abstract class TypeDecorator extends Type {
     public Value addressOf (Value var1, ByteOrder order) {
 	return decorated.addressOf(var1, order);
     }
+    public Value dereference (Value var1, ByteBuffer taskMem) {
+	return decorated.dereference(var1, taskMem);
+    }
     public boolean getLogicalValue(Value var1) {
         return decorated.getLogicalValue(var1);
     }
