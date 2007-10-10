@@ -1,3 +1,7 @@
+2007-10-10 Teresa Thomas <tthomas@redhat.com>
+
+	* hpd-c.c (static_int_ptr): New.
+	
 2007-10-05  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-regs.S [__x86_64__]: Initialize registers.

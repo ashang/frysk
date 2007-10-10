@@ -148,6 +148,7 @@ static int func_1 (int x, int y) __attribute__ ((noinline));
 
 char static_char = 5;
 int static_int = 4;
+int* static_int_ptr = &static_int;
 typedef struct {double double_1; int int_1;} static_class_t;
 static_class_t  static_class = {12.34, 51};
 enum cars {bmw, porsche} ssportscar;
