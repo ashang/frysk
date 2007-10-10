@@ -27,7 +27,7 @@
           &nbsp;|&nbsp;
           <a href="../bugzilla/">Bugzilla</a>
           &nbsp;|&nbsp;
-          Build
+          <a href="./index.html">Build</a>
           &nbsp;|&nbsp;
           <a href="../blog/">Blog</a>
           &nbsp;|&nbsp;
@@ -61,8 +61,8 @@
 <a href="#branches">Branches and Rebasing</a><br>
 <a href="#names">Names</a><br>
 <a href="#reset">Backing Out Commits</a><br>
-<a href="#rhel4">RHEL 4</a><br>
-<a href="#debian">Debian</a><br>
+<a href="#diff">Examining History</a><br>
+<a href="#others">Other Git Commands</a><br>
 </p>
 	      <!-- end logo -->
 	    </td>
@@ -97,6 +97,9 @@ summary</a> of useful commands and workflows, from basic to advanced.
 a useful Wiki page</a> about Git, describing many common operations.
 <li>An <a href="http://bec-systems.com/web/content/view/77/9/">interesting
 page</a> describing the uses of branches and rebasing of branches.
+<li>The <a href="http://kernel.org/pub/software/scm/git/docs/user-manual.html">
+Git user's manual</a> is more of an exotic cookbook than a proper user's
+  manual, but it is useful once you've learned the basics elsewhere.
 </ul>
 </p>
 
@@ -123,12 +126,14 @@ names if the history that preceeded them is different.</p>
 <p>
 When you start work on a project that is in a remote git repository,
 you <em>clone</em> that repository; that is, you copy all the commit objects to
-your machine. As you work on the project you create new commit objects with
+your machine. The "checked out" copy of the sources where you do your work is
+called the <em>working tree.</em> As you work on the project you create new
+commit objects with
 your changes. You update the remote repository by publishing your new commit
 objects to it. One way to publish is by emailing your new commit objects to a
 centeral maintainer (e.g., Linus) who either commits them to the remote
 repository, rejects them, or hacks on them locally and then commits new
-ones. In the <em>frysk</em> project we are allowing developers to have write
+ones. In the <em>frysk</em> project we allow developers to have write
 access to the remote repository and publish the commits themselves.</p>
 <p>
 The chain of commits is actually a directed acyclic graph, supporting branches
@@ -142,8 +147,8 @@ operations. The most important one is the <em>index,</em> which supports very
 fast diff operations over the entire tree. When you create a new commit, you
 first have to update the index with the content of the new commit. In CVS you
 have to <tt>cvs add</tt> new files, but not new changes; in Git you have
-to <tt>git add</tt> every change, including file modifications. In practice you
-don't have to deal with it that much because the <tt>git commit</tt> command
+to <a href="http://www.kernel.org/pub/software/scm/git/docs/git-add.html"><tt>git-add</tt></a> every change, including file modifications. In practice you
+don't have to deal with it that much because the <a href="http://www.kernel.org/pub/software/scm/git/docs/git-commit.html"><tt>git-commit</tt></a> command
 has a flag to automatically add changed files to the index before a commit,
 though you do need to explicitly add new files. Also, when the Git commands
 that do merges fail because of a conflict, they put conflict markers in the
@@ -172,7 +177,7 @@ long-lived lines of development that aren't ready for <tt>master.</tt></p>
 <a name="gettingstarted"><h2>Getting Started</h2></a>
 <p>
 Let's start hacking. Clone the repository with <pre>
-    git clone ssh://sources.redhat.com/git/frysk.git</pre></p>
+    git-clone ssh://sources.redhat.com/git/frysk.git</pre></p>
 
 <p>If you're not a <em>frysk</em> developer, you can use the
 URL <tt>git://sources.redhat.com/git/frysk.git</tt> instead.</p>
@@ -181,11 +186,11 @@ In the <tt>frysk</tt> subdirectory you will find a checked-out <em>frysk</em>
 tree. The Git repository is in the hidden directory <tt>.git.</tt> What state
 are we in?
 <pre>
-$ git status
+$ git-status
 # On branch master
 nothing to commit (working directory clean)</pre></p>
 <p>
-The <tt>gitk --all</tt> command is useful for getting a graphic representation
+The <tt><a href="http://www.kernel.org/pub/software/scm/git/docs/gitk.html">gitk</a> --all</tt> command is useful for getting a graphic representation
 of the branch and history structure of the repository. Using it we see that
 our <tt>master</tt> branch is branched from <tt>remotes/origin/master</tt>,
 which is a remote branch. We have a copy all the commit objects from that
@@ -196,16 +201,16 @@ Make some changes and commit them locally:
 <pre>
 $ edit newfile.java <b>(1)</b>
 $ edit ChangeLog <b>(2)</b>
-$ git add newfile.java <b>(3)</b>
-$ git commit -a <b>(4></b>
-$ git pull origin <b>(5)</b>
-$ git push origin <b>(6)</b>
+$ git-add newfile.java <b>(3)</b>
+$ git-commit -a <b>(4></b>
+$ git-pull origin <b>(5)</b>
+$ git-push origin <b>(6)</b>
 </pre></p>
 <ol>
   <li><p>create a new file</p>
   <li><p>edit an existing file</p>
   <li><p>add the new file to the index</p>
-  <li><p>commit the changes. The <tt>-a</tt> option to <tt>git commit</tt>
+  <li><p>commit the changes. The <tt>-a</tt> option to <a href="http://www.kernel.org/pub/software/scm/git/docs/git-commit.html"><tt>git-commit</tt></a>
   causes it to add the changes to <tt>ChangeLog</tt> to the index.</p>
   <li><p>update our repository with any changes from the remote repository.</p>
   <li><p>push our changes to the remote repository.</p>
@@ -214,12 +219,12 @@ $ git push origin <b>(6)</b>
 In step <b>5</b> we could have gotten a merge conflict if we had touched files
 that had been updated in the remote repository. In that case we would look for
 the conflict markers (like in CVS), edit them, add our changes with 
-<tt>git add</tt>, and make a commit with <tt>git commit.</tt>Git will fashion a
+<a href="http://www.kernel.org/pub/software/scm/git/docs/git-add.html"><tt>git-add</tt></a>, and make a commit with <a href="http://www.kernel.org/pub/software/scm/git/docs/git-commit..html"><tt>git-commit.</tt></a>Git will fashion a
 special merge commit for us.</p>
 <p>
 In step <b>6</b> the push would have failed if our copy of the <tt>master</tt>
 branch wasn't up to date with the remote branch. In that case we would have
-done a <tt>git pull</tt>, resolved any merge conflicts, and tried again.</p>
+done a <a href="http://www.kernel.org/pub/software/scm/git/docs/git-pull.html"><tt>git-pull</tt></a>, resolved any merge conflicts, and tried again.</p>
 
 <a name="branches"><h2>Branches and Rebasing</h2></a>
 <p>
@@ -235,10 +240,10 @@ very clean series of commits to the upstream repository.</p>
   onto the remote branch:
 <pre>
 $ edit frysk-core/frysk/hpd/BreakpointCommand.java 
-$ git commit -a <b>(1)</b>
-$ git fetch origin <b>(2)</b>
-$ git rebase origin <b>(3)</b>
-$ git push origin
+$ git-commit -a <b>(1)</b>
+$ git-fetch origin <b>(2)</b>
+$ git-rebase origin <b>(3)</b>
+$ git-push origin
 </pre></p>
 <ol>
   <li><p>commit changes to <tt>master</tt> branch</p>
@@ -249,16 +254,16 @@ $ git push origin
 
 <p>Here is the same work, done on a branch:
 <pre>
-$ git branch topic/fixbreakpoints master<b>(1)</b>
-$ git checkout topic/fixbreakpoints<b>(2)</b>
+$ git-branch topic/fixbreakpoints master<b>(1)</b>
+$ git-checkout topic/fixbreakpoints<b>(2)</b>
 $ edit frysk-core/frysk/hpd/BreakpointCommand.java
-$ git commit -a
-$ git checkout master<b>(3)</b>
-$ git pull origin
-$ git rebase master topic/fixbreakpoints<b>(4)</b>
-$ git checkout master<b>(5)</b>
-$ git merge topic/fixbreakpoints<b>(6)</b>
-$ git push orign
+$ git-commit -a
+$ git-checkout master<b>(3)</b>
+$ git-pull origin
+$ git-rebase master topic/fixbreakpoints<b>(4)</b>
+$ git-checkout master<b>(5)</b>
+$ git-merge topic/fixbreakpoints<b>(6)</b>
+$ git-push orign
 </pre></p>
 <ol>
   <li><p>create a new branch from the head of <tt>master</tt>. You can use a
@@ -284,10 +289,18 @@ $ git push orign
 <p>
 When you switch from one branch to another you will lose uncommitted work. It's
 customary to create a quick "work in progress" commit to save that work and then
-undo it later to when continuing with that branch.</p>
+undo it later to when continuing with that branch; see the "Interrupted
+Workflow" example on the
+ <a href="http://www.kernel.org/pub/software/scm/git/docs/git-reset.html">
+<tt>git-reset</tt></a> man page.. Git versions newer than 1.5.3 have a 
+<a href="http://www.kernel.org/pub/software/scm/git/docs/git-stash.html">
+<tt>git-stash</tt></a> command that allows to to save uncommitted work when
+changing branches without creating a commit..</p>
 <p>
-<tt>git rebase</tt> is very powerful and can be used to graft strings of
-commits from one branch to another. However, you shouldn't rebase branches
+<a href="http://www.kernel.org/pub/software/scm/git/docs/git-rebase.html"><tt>git-rebase</tt></a> is very powerful and can be used to graft chains of
+commits from one branch to another. It is smart enough to recognize if a commit
+in the branch being rebased already exists in the target branch and not cause a
+conflict. However, you shouldn't rebase branches
 whose head has been pushed to a public repository if you expect others to track
 that branch. <tt>rebase</tt> changes the history in a way that screws up later
 merges from the branch.</p>
@@ -305,8 +318,11 @@ commit objects:
   <li><tt>~</tt> is used to number previous generations of commits going
   through the first parent at each step. The direct ancestors of <tt>HEAD</tt>
   are <tt>HEAD~1</tt>, <tt>HEAD~2</tt>, <tt>HEAD~3</tt>, etc.
-  <li>You can create new names for arbitrary commit objects using <tt>git
-  tag</tt>.
+  <li>You can create new names for arbitrary commit objects using 
+    <a href="http://www.kernel.org/pub/software/scm/git/docs/git-tag.html">
+      <tt>git-tag</tt></a>.
+  <li>A few magic names like <tt>ORIG_HEAD</tt> (set when merging to
+  the <tt>HEAD</tt> before the merge) exist.
 </ul>
 See the documentation for
  <a href="http://www.kernel.org/pub/software/scm/git/docs/git-rev-parse.html">
@@ -325,20 +341,55 @@ $ git-reset --hard HEAD~2
 </pre></p>
 <p>
 A more likely scenario is to undo a commit but leave the changes in your
-working tree so you can work on them further. <tt>git-reset</tt> with no
+working tree so you can work on them further. <a href="http://www.kernel.org/pub/software/scm/git/docs/git-reset.html"><tt>git-reset</tt></a> with no
 options does that:<pre>
 $ git-reset HEAD^    
 </pre></p>
 <p>
 You can collapse several commits on a branch into one commit
-using <tt>git-reset</tt> in this way.</p>
+using <a href="http://www.kernel.org/pub/software/scm/git/docs/git-reset.html"><tt>git-reset</tt></a> in this way.</p>
 <p>
 To create a commit that reverts another commit, and is suitable for pushing to
-a public repository, use the <tt>git-revert</tt> command.
+a public repository, use the <a href="http://www.kernel.org/pub/software/scm/git/docs/git-revert.html"><tt>git-revert</tt></a> command.
 
 <a name="diff"><h2>Examining History</h2></a>
-<tt>git diff</tt> is used to examine differences between the working tree and
-the index, as well as between arbitrary branches and commits.
+<p>
+<a href="http://www.kernel.org/pub/software/scm/git/docs/git-log.html">
+</tt>git-log</tt></a> prints out the commit log messages for an entire tree or
+a specific file.</p>
+<p>
+<a href="http://www.kernel.org/pub/software/scm/git/docs/git-diff.html"><tt>git-diff</tt></a> is used to examine differences between the working tree and
+the index, as well as between arbitrary branches and commits. For example:<pre>
+$ git-diff ChangeLog <b>1</b>
+$ git-diff HEAD^..HEAD ChangeLog <b>2</b>
+</pre></p>
+<ol>
+  <li><p>difference between <tt>ChangeLog</tt> in the working directory and the
+  index</p>
+  <li><p>differences in <tt>ChangeLog</tt> betwen the most recent revision and
+      its predecessor.</p>
+    </ol>
+
+<a name="others"><h2>Other Git Commands</h2></a>
+<p>
+<a href="http://www.kernel.org/pub/software/scm/git/docs/git-cherry-pick.html">
+<tt>git-cherry-pick</tt></a> picks a commit from anywhere and commits it to the
+current branch.</p>
+<p>
+<a href="http://www.kernel.org/pub/software/scm/git/docs/git-whatchanged.html">
+<tt>git-whatchanged</tt></a> can, among other things, search for commits that
+match a string or regular expression.</p>
+<p>
+<a href="http://www.kernel.org/pub/software/scm/git/docs/git-remote.html">
+  <tt>git-remote</tt></a> configures access to remote repositories and default
+actions when pulling from and pushing to them. You would use this command to
+track branches in repositories other than the one from which yours is
+cloned.</p>
+<p>
+<a href="http://www.kernel.org/pub/software/scm/git/docs/git-bisect.html">
+  <tt>git-bisect</tt></a> will do a binary search through the revision history
+  to zero in on the first "bad" commit. At each stage you tell it whether its
+  current choice is "good" or "bad" before it chooses the next.
 </td>
 </tr>
 </table>
