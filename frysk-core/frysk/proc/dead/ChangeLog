@@ -1,3 +1,8 @@
+2007-10-10  Rick Moseley  <rmoseley@redhat.com>
+
+	* LinuxExeProc.java: Return correct state and instantiate
+	LinuxExeTask with a non-null initial state.
+
 2007-10-08  Rick Moseley  <rmoseley@redhat.com>
 
 	* LinuxExeProc.java: Make sure executable is registered

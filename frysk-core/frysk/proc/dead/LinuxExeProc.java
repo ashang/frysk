@@ -66,11 +66,12 @@ public class LinuxExeProc extends Proc {
     }
 
     protected ProcState getInitialState(boolean procStarting) {
-	return null;
+	return LinuxProcState.initial(this);
     }
 
     public void sendRefresh() {
-	 LinuxExeTask newTask = new LinuxExeTask(this, new TaskId(0), null);
+	 LinuxExeTask newTask = new LinuxExeTask(this, new TaskId(0),
+		 LinuxExeTaskState.initial());
 	 newTask.getClass();
     }
 
