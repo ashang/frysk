@@ -1,3 +1,7 @@
+2007-10-10  Andrew Cagney  <cagney@redhat.com>
+
+	* src/x86/init.h (common_init): Use UNW_X86_ESI for dwarf.loc[ESI].
+
 2007-10-03  Mark Wielaard  <mwielaard@redhat.com>
 
 	* tests/test-async-sig.c: Remove duplicate nerrors_max (merge error).
