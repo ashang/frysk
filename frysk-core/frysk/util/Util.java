@@ -134,4 +134,27 @@ public class Util
       Manager.eventLoop.run();
       return finder.proc;
   }
+  
+  /**
+   * Return the Proc associated with an executable File.
+   * @param exeHost the Host associated with the desired Proc.
+   * @return The Proc for the given executable File.
+   */
+  public static Proc getProcFromExeFile(Host exeHost)
+  {
+      Iterator iterator = exeHost.getProcIterator();
+
+      Proc proc;
+      if (iterator.hasNext())
+        proc = (Proc) iterator.next();
+      else
+        {
+          proc = null;
+          throw new RuntimeException("No proc in this exefile");
+        }
+      if (iterator.hasNext())
+        throw new RuntimeException("Too many procs in this exefile");
+      
+      return proc;
+    }
 }
