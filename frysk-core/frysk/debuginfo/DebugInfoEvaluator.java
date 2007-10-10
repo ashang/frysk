@@ -367,4 +367,9 @@ class DebugInfoEvaluator
     {
 	return task.getISA().order();
     }
+    
+    public ByteBuffer taskMemory()
+    {
+	return task.getMemory();
+    }
 }

@@ -38,6 +38,7 @@
 // exception.
 package frysk.debuginfo;
 
+import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import antlr.CommonAST;
 import frysk.dwfl.DwflCache;
@@ -294,6 +295,9 @@ public class DebugInfo {
 	        throw new NameNotFoundException("No symbol table is available.");
 	  } 
 	  public ByteOrder order() {
+	        throw new RuntimeException("No symbol table is available.");
+	  }
+	  public ByteBuffer taskMemory() {
 	        throw new RuntimeException("No symbol table is available.");
 	  }
 	  public Type getType(Variable variable) {

@@ -1,3 +1,7 @@
+2007-10-10  Teresa Thomas  <tthomas@redhat.com>
+
+	* ExprSymTab.java (taskMemory): New.
+
 2007-10-09  Andrew Cagney  <cagney@redhat.com>
 
 	* CExprEvaluator.g (CExprEvaluator(ExprSymTab)): Replace

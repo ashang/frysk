@@ -41,6 +41,7 @@ package frysk.expr;
 
 import java.util.ArrayList;
 import javax.naming.NameNotFoundException;
+import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import frysk.value.Value;
 import frysk.value.Type;
@@ -60,6 +61,10 @@ public interface ExprSymTab
      * The byte order to use when creating new values.
      */
     ByteOrder order();
+    /**
+     * Return the task's memory buffer
+     */
+    ByteBuffer taskMemory();
     /**
      * Return the variable's value.
      */

@@ -1,3 +1,8 @@
+2007-10-10  Teresa Thomas  <tthomas@redhat.com>
+
+	* DebugInfo.java (TmpSymTab.taskMemory): New.
+	* DebugInfoEvaluator.java (taskMemory): New.
+
 2007-10-09  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfoEvaluator.java (order()): New.
