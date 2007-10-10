@@ -87,7 +87,6 @@ header
     import frysk.value.FloatingPointType;
     import frysk.value.Value;
     import frysk.scopes.Variable;
-    import frysk.debuginfo.DebugInfoFrame;
     import frysk.expr.ExprSymTab;
     import frysk.expr.ExprAST;
     import javax.naming.NameNotFoundException;
@@ -109,13 +108,8 @@ options {
 
 {
     ArrayList      refList;
-    DebugInfoFrame frame;
     private ExprSymTab exprSymTab;
-    // FIXME: Why is is this parameterized with FRAME when symTab
-    // is ment to be able to provide everything needed by the annotator?
-    public CExprAnnotator(DebugInfoFrame frame, ExprSymTab symTab) {
-	    this();
-            this.frame = frame;
+    public CExprAnnotator(ExprSymTab symTab) {
             exprSymTab = symTab;
     }
 }
@@ -239,18 +233,20 @@ expr
             Variable var;
             try {
                 var = exprSymTab.getVariable(ident.getText());
-                ident.exprType = var.getType(frame.getTask().getISA());
+                ident.exprType = exprSymTab.getType(var);
             }
             catch (NameNotFoundException ignore) {
+                // FIXME: why is this ignored?
             }
         }
     |   tident:TAB_IDENT  {
             Variable var;
             try {
                 var = exprSymTab.getVariable(tident.getText());
-                tident.exprType = var.getType(frame.getTask().getISA());
+                tident.exprType = exprSymTab.getType(var);
             }
             catch (NameNotFoundException ignore) {
+                // FIXME: why is this ignored?
             }
         }
     ;

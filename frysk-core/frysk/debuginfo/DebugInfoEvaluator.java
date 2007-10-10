@@ -41,6 +41,7 @@ package frysk.debuginfo;
 
 import inua.eio.ByteBuffer;
 import java.util.ArrayList;
+import frysk.value.Type;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -259,13 +260,21 @@ class DebugInfoEvaluator
     }
   
     /**
-     * @return Value associated with the given DwarfDie.
-     * @see frysk.expr.ExprSymTab#getValue(java.lang.String)
+     * @return Value associated with the given Variable.
      */
-    public Value getValue (Variable var) {
+    public Value getValue(Variable var) {
 	if (var == null)
 	    return (null);
 	return var.getValue(frame);
+    }
+
+    /**
+     * @return Type associated with the given Variable.
+     */
+    public Type getType(Variable var) {
+	if (var == null)
+	    return (null);
+	return var.getType(frame.getTask().getISA());
     }
 
     /**
@@ -275,7 +284,7 @@ class DebugInfoEvaluator
      * {a,b,c,1,1,2,2}
      * @return Value of the symbol
      */
-    public Value getValue (ArrayList components) throws NameNotFoundException {
+    public Value getValueFIXME (ArrayList components) throws NameNotFoundException {
 	String s = (String)components.get(0);
 	Variable variable = getVariable(s);
 	if (variable == null)
@@ -295,7 +304,7 @@ class DebugInfoEvaluator
      * @param s Symbol s
      * @return Value corresponding to the memory location pointed to by symbol s.
      */
-    public Value getMemory (String s) throws NameNotFoundException {     
+    public Value getMemoryFIXME (String s) throws NameNotFoundException {     
 	Variable variable= getVariable(s);
 	if (variable == null)
 	    return new Value(new UnknownType(variable.getName()));
@@ -354,8 +363,8 @@ class DebugInfoEvaluator
 	return new Value(new UnknownType(variable.getVariableDie().getName()));
     }
     
-    public Task getTask()
+    public ByteOrder order()
     {
-	return task;
+	return task.getISA().order();
     }
 }

@@ -38,6 +38,7 @@
 // exception.
 package frysk.debuginfo;
 
+import inua.eio.ByteOrder;
 import antlr.CommonAST;
 import frysk.dwfl.DwflCache;
 import frysk.expr.CExprLexer;
@@ -47,7 +48,6 @@ import frysk.expr.ExprSymTab;
 import frysk.expr.CExprEvaluator;
 import frysk.expr.CExprAnnotator;
 import frysk.proc.Proc;
-import frysk.proc.Task;
 import frysk.scopes.Variable;
 import frysk.value.Type;
 import frysk.value.Value;
@@ -252,8 +252,9 @@ public class DebugInfo {
 	 * than this loop will run only once anyways.
 	 */
 	DebugInfoEvaluator debugInfoEvaluator = new DebugInfoEvaluator(frame);
-	cExprAnnotator = new CExprAnnotator(frame, debugInfoEvaluator);
-	cExprEvaluator = new CExprEvaluator(4, debugInfoEvaluator);
+        // Adding the separate anotation pass broke << (foo.<TAB> >>
+	cExprAnnotator = new CExprAnnotator(debugInfoEvaluator);
+	cExprEvaluator = new CExprEvaluator(debugInfoEvaluator);
 	try {
 	    cExprAnnotator.setASTNodeClass("frysk.expr.ExprAST");
 	    cExprAnnotator.expr(exprAST);
@@ -283,18 +284,24 @@ public class DebugInfo {
 		throw new NameNotFoundException("No symbol table is available.");
 	    }
 
-	  public Value getValue (ArrayList v) throws NameNotFoundException {
+	  public Value getValueFIXME (ArrayList v) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");
 	    }
-	  public Value getMemory (String s) throws NameNotFoundException {
+	  public Value getMemoryFIXME (String s) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");        
 	    }
 	  public Variable getVariable (String s)throws NameNotFoundException {
 	        throw new NameNotFoundException("No symbol table is available.");
 	  } 
-	  public Task getTask()throws NameNotFoundException {
-	        throw new NameNotFoundException("No symbol table is available.");
-	  }   
+	  public ByteOrder order() {
+	        throw new RuntimeException("No symbol table is available.");
+	  }
+	  public Type getType(Variable variable) {
+	        throw new RuntimeException("No symbol table is available.");
+	  }
+	  public Value getValue(Variable variable) {
+	        throw new RuntimeException("No symbol table is available.");
+	  }
       	}
     
 	CExprLexer lexer = new CExprLexer(new StringReader(sInput));
@@ -316,7 +323,7 @@ public class DebugInfo {
 	    System.out.println("parse tree: " + t.toStringTree());
 	CExprEvaluator cExprEvaluator;
 	TmpSymTab tmpSymTab = new TmpSymTab();
-	cExprEvaluator = new CExprEvaluator(4, tmpSymTab);
+	cExprEvaluator = new CExprEvaluator(tmpSymTab);
         
 	try {
 	    result = cExprEvaluator.expr(t);

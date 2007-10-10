@@ -41,16 +41,46 @@ package frysk.expr;
 
 import java.util.ArrayList;
 import javax.naming.NameNotFoundException;
-
+import inua.eio.ByteOrder;
 import frysk.value.Value;
+import frysk.value.Type;
 import frysk.scopes.Variable;
-import frysk.proc.Task;
 
 public interface ExprSymTab
 {
-  Value getValue(String s) throws NameNotFoundException;
-  Value getValue(ArrayList v) throws NameNotFoundException;
-  Value getMemory(String s) throws NameNotFoundException;
-  Variable getVariable(String s) throws NameNotFoundException;
-  Task getTask() throws NameNotFoundException;
+    /**
+     * Lookup S, assuming S is variable or constant.
+     */
+    Value getValue(String s) throws NameNotFoundException;
+    /**
+     * Lookup S, assuming S is a variable.
+     */
+    Variable getVariable(String s) throws NameNotFoundException;
+    /**
+     * The byte order to use when creating new values.
+     */
+    ByteOrder order();
+    /**
+     * Return the variable's value.
+     */
+    Value getValue(Variable v);
+    /**
+     * Given a variable, return its type.
+     */
+    Type getType(Variable variable);
+
+    /**
+     * FIXME: This method implements index, member, slice, and
+     * possibly other selection operations.  This can be better
+     * implemented by first generating INDEX (a[i]), SLICE (a[i:j]),
+     * SELECT (a[i;j], and MEMBER (a.j) nodes in the AST and then
+     * directly requesting that the type/value perform the operation.
+     */
+    Value getValueFIXME(ArrayList v) throws NameNotFoundException;
+    /**
+     * FIXME: This implements memory indirection (the C unary "*"
+     * operator).  That is better implemented directly using Type
+     * operators.
+     */
+    Value getMemoryFIXME(String s) throws NameNotFoundException;
 }

@@ -1,3 +1,16 @@
+2007-10-09  Andrew Cagney  <cagney@redhat.com>
+
+	* CExprEvaluator.g (CExprEvaluator(ExprSymTab)): Replace
+	CExprEvaluator(int,ExprSymTab).
+	* CExprAnnotator.g: Use ExprSymTab.getType(Variable).
+	(CExprAnnotator(ExprSymTab)): Replace
+	CExprAnnotator(Frame,ExprSymTab).
+	* ExprSymTab.java (order()): New.
+	(getTask()): Delete.
+	(getType(Varable)): New.
+	(getMemoryFIXME(String)): Rename getMemory(String).
+	(getValueFIXME(String)): Rename getValue(String).
+	
 2007-10-09  Teresa Thomas  <tthomas@redhat.com>
 
 	* CExprEvaluator.g (ADDRESS_OF): Use getTask.

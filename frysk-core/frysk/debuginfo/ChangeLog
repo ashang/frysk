@@ -1,3 +1,14 @@
+2007-10-09  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfoEvaluator.java (order()): New.
+	(getValueFIXME(ArrayList)): Rename getValue(ArrayList).
+	(getTask()): Delete.
+	(getType(Variable)): New.
+	(getMemoryFIXME(String)): Rename getMemory(String).
+	* DebugInfo.java (TmpSymTab): Ditto.
+	(print(String,DebugInfoFrame,boolean)): Do not pass frame to
+	CExprAnnotator or intSize to CExprEvaluator.
+
 2007-10-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestCxxObjectSearchEngine.java (testFindTwoScopesEnum): Now checks

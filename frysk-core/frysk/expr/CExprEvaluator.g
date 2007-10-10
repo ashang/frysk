@@ -111,14 +111,14 @@ options {
     FloatingPointType doubleType;
     FloatingPointType floatType;
     private ExprSymTab exprSymTab;
-    public CExprEvaluator(int intSize, ExprSymTab symTab) {
-        this();
-	    exprSymTab = symTab; 
-        shortType = new SignedType("short", ByteOrder.LITTLE_ENDIAN, intSize / 2);
-        intType = new SignedType("int", ByteOrder.LITTLE_ENDIAN, intSize);
-        longType = new SignedType("long", ByteOrder.LITTLE_ENDIAN, intSize * 2);
-        floatType = new FloatingPointType("false", ByteOrder.LITTLE_ENDIAN, intSize);
-        doubleType = new FloatingPointType("double", ByteOrder.LITTLE_ENDIAN, intSize * 2);
+    public CExprEvaluator(ExprSymTab symTab) {
+	    exprSymTab = symTab;
+        // FIXME: The ExprSymTab can provide types such as this.
+        shortType = new SignedType("short", ByteOrder.LITTLE_ENDIAN, 2);
+        intType = new SignedType("int", ByteOrder.LITTLE_ENDIAN, 4);
+        longType = new SignedType("long", ByteOrder.LITTLE_ENDIAN, 8);
+        floatType = new FloatingPointType("false", ByteOrder.LITTLE_ENDIAN, 4);
+        doubleType = new FloatingPointType("double", ByteOrder.LITTLE_ENDIAN, 8);
     }
 }
 
@@ -172,7 +172,7 @@ expr returns [Value returnVar=null]
         }
     |   #(MEMORY s1=identifier ) {
             returnVar = longType.createValue(0);
-            returnVar = (Value)exprSymTab.getMemory(s1); 
+            returnVar = (Value)exprSymTab.getMemoryFIXME(s1); 
         }
     |   #(DIVIDE  v1=expr v2=expr) {
             returnVar = v1.getType().divide(v1, v2); 
@@ -208,8 +208,7 @@ expr returns [Value returnVar=null]
             returnVar = v1.getType().bitWiseAnd(v1, v2); 
         }
     |   #(ADDRESS_OF v1=expr ) {
-            returnVar = v1.getType().addressOf
-                        (v1, exprSymTab.getTask().getIsa().getByteOrder());
+            returnVar = v1.getType().addressOf(v1, exprSymTab.order());
         }
     |   #(BITWISEXOR  v1=expr v2=expr) {
             returnVar = v1.getType().bitWiseXor(v1, v2); 
@@ -346,7 +345,7 @@ expr returns [Value returnVar=null]
             returnVar = v1;
         }
     |   #(REFERENCE el=references) {
-            returnVar = (Value)exprSymTab.getValue(el);
+            returnVar = (Value)exprSymTab.getValueFIXME(el);
         }
     |   ident:IDENT  {
             returnVar = ((Value)exprSymTab.getValue(ident.getText()));
