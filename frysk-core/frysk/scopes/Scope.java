@@ -43,11 +43,11 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import frysk.debuginfo.DebugInfoFrame;
-import frysk.debuginfo.TypeEntry;
-
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.TypeEntry;
+import frysk.value.ObjectDeclaration;
 
 /**
  * A class to represent a Scope.
@@ -163,8 +163,8 @@ public class Scope
       }
   }
   
-  public CxxObject getCxxObjectByName(String name){
-      CxxObject cxxObject = null;
+  public ObjectDeclaration getDeclaredObjectByName(String name){
+      ObjectDeclaration cxxObject = null;
       
       Iterator iterator = this.getVariables().iterator();
       while (iterator.hasNext()) {
@@ -174,15 +174,15 @@ public class Scope
 	}
       }
       
-      iterator = this.getEnums().iterator();
-      while (iterator.hasNext()) {
-	Enumiration enumiration = (Enumiration) iterator.next();
-	cxxObject = enumiration.getVariableByName(name);
-	
-	if(cxxObject != null){
-	    return cxxObject;
-	}
-      }
+//      iterator = this.getEnums().iterator();
+//      while (iterator.hasNext()) {
+//	Enumiration enumiration = (Enumiration) iterator.next();
+//	cxxObject = enumiration.getVariableByName(name);
+//	
+//	if(cxxObject != null){
+//	    return cxxObject;
+//	}
+//      }
       
       
       return null;

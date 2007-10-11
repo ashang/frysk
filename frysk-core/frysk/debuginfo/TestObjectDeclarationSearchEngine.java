@@ -43,16 +43,16 @@ import java.io.File;
 
 import frysk.Config;
 import frysk.proc.Task;
-import frysk.scopes.CxxObject;
 import frysk.scopes.Variable;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
 import frysk.testbed.TestfileTokenScanner;
+import frysk.value.ObjectDeclaration;
 
 /**
  * Tests @link CppVariableSearchEngine.
  * 
- * Each tests is testing the the @link {@link CxxObjectSearchEngine} can find the
+ * Each tests is testing the the @link {@link ObjectDeclarationSearchEngine} can find the
  * correct variable, by insuring that the line number of the found 
  * {@link Variable} is the same as the line number of the variable in the source
  * file.
@@ -63,9 +63,9 @@ import frysk.testbed.TestfileTokenScanner;
  * other than the default. 
  *
  */
-public class TestCxxObjectSearchEngine extends TestLib{
+public class TestObjectDeclarationSearchEngine extends TestLib{
     
-    CxxObjectSearchEngine cxxObjectSearchEngine = new CxxObjectSearchEngine();
+    ObjectDeclarationSearchEngine objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine();
     
     public void testFindVar1Scopes(){
 	String variableName = "var1"; 
@@ -119,9 +119,9 @@ public class TestCxxObjectSearchEngine extends TestLib{
 	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
     	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
     	
-    	CxxObject cxxObject = cxxObjectSearchEngine.get(frame, variableName);
+    	ObjectDeclaration declaredObject = objectDeclarationSearchEngine.get(frame, variableName);
  
-    	assertEquals("Object has the correct name", cxxObject.getName(), variableName);
+    	assertEquals("Object has the correct name", declaredObject.getName(), variableName);
 
     }
     
@@ -157,13 +157,13 @@ public class TestCxxObjectSearchEngine extends TestLib{
 	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
 	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
 	
-	Variable variable = (Variable) cxxObjectSearchEngine.get(frame, variableName);
+	Variable variable = (Variable) objectDeclarationSearchEngine.get(frame, variableName);
 
 	assertNotNull("Variable found", variable);
 	assertTrue("Found the correct variable", variable.getLineNumber() == variableLine);
 	
 	//Negative test:
-	variable = (Variable) cxxObjectSearchEngine.get(frame, "NOT"+variableName);
+	variable = (Variable) objectDeclarationSearchEngine.get(frame, "NOT"+variableName);
 	assertNull("Bogus object was not found", variable);
     }
 

@@ -52,6 +52,7 @@ import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.TypeEntry;
+import frysk.value.ObjectDeclaration;
 import frysk.value.FunctionType;
 
 /**
@@ -127,7 +128,7 @@ public class Subprogram extends Subroutine
 	super.toPrint(frame, writer, " ");
     }
     
-    public CxxObject getCxxObjectByName(String name) {
+    public ObjectDeclaration getDeclaredObjectByName(String name) {
 	Variable variable = null;
 
 	Iterator iterator = this.parameters.iterator();
@@ -138,7 +139,7 @@ public class Subprogram extends Subroutine
 	    }
 	}
 	
-	return super.getCxxObjectByName(name);
+	return super.getDeclaredObjectByName(name);
     }
 
 }

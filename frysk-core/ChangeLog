@@ -1,3 +1,11 @@
+2007-10-11  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
+
+	* frysk/scopes/Variable.java: No longer implements CxxObject.
+	Now extends ObjectDeclaration.
+	* frysk/scopes/Scope.java: Updated.
+	* frysk/scopes/Subprogram.java: Updated.
+	* frysk/scopes/TestDie.java: Updated
+
 2007-10-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* frysk/scopes/Scope.java (getCxxObjectByName): Replaced Variable

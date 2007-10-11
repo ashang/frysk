@@ -39,8 +39,8 @@
 
 package frysk.debuginfo;
 
-import frysk.scopes.CxxObject;
 import frysk.scopes.Scope;
+import frysk.value.ObjectDeclaration;
 
 /**
  * This engine implements the c++ scoping rules and uses when searching for
@@ -49,17 +49,17 @@ import frysk.scopes.Scope;
  * given frame, and return the first encounter. 
  *
  */
-public class CxxObjectSearchEngine {
+public class ObjectDeclarationSearchEngine {
 
-    public CxxObject get(DebugInfoFrame frame, String name){
-	CxxObject cxxObject = null;
+    public ObjectDeclaration get(DebugInfoFrame frame, String name){
+	ObjectDeclaration declaredObject = null;
 	
 	Scope scope = frame.getScopes();
 	
 	while(scope != null){
-	    cxxObject = scope.getCxxObjectByName(name);
-	    if(cxxObject != null){
-		return cxxObject;
+	    declaredObject = scope.getDeclaredObjectByName(name);
+	    if(declaredObject != null){
+		return declaredObject;
 	    }
 	    scope = scope.getOuter();
 	}

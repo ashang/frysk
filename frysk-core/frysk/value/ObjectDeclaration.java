@@ -37,62 +37,14 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.scopes;
+package frysk.value;
 
-import java.io.File;
-
-import lib.dwfl.DwAt;
-import lib.dwfl.DwarfDie;
-import frysk.Config;
-import frysk.debuginfo.ObjectDeclarationSearchEngine;
 import frysk.debuginfo.DebugInfoFrame;
-import frysk.debuginfo.DebugInfoStackFactory;
-import frysk.proc.Task;
-import frysk.scopes.Variable;
-import frysk.testbed.DaemonBlockedAtSignal;
-import frysk.testbed.TestLib;
-import frysk.testbed.TestfileTokenScanner;
+import frysk.isa.ISA;
 
-public class TestDie
-    extends TestLib
-{
+public abstract class ObjectDeclaration {
     
-    
-    public void testGetLine(){
-	String fileName = "funit-cpp-scopes-namespace";
-	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
-	ObjectDeclarationSearchEngine objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine();
-	
-	Variable variable = (Variable) objectDeclarationSearchEngine.get(frame, "first");
-	
-	assertNotNull("Variable found", variable);
-	
-	
-	TestfileTokenScanner scanner = new TestfileTokenScanner(new File(Config.getPkgLibSrcDir() + fileName + ".cxx"));
-	int expectedLine = scanner.findTokenLine("first");
-
-	assertEquals("Correct line number was found", expectedLine, variable.getLineNumber());
-    }
-
-    public void testGetOriginalDie(){
-	String fileName = "funit-cpp-scopes-class";
-	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
-	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
-	DwarfDie die = frame.getSubprogram().getDie();
-	
-	
-	boolean hasAttribute = die.hasAttribute(DwAt.ABSTRACT_ORIGIN) ||
-	                       die.hasAttribute(DwAt.SPECIFICATION);
-	
-	assertTrue("Function has abstract origin ", hasAttribute);
-	
-	die = die.getOriginalDie();
-	
-	assertNotNull("Found original die", die);
-	assertEquals("Die has correct name", "crash" ,die.getName());
-	
-	
-    }
-
+    public abstract String getName();
+    public abstract Value getValue(DebugInfoFrame frame);
+    public abstract Type getType(ISA isa);
 }

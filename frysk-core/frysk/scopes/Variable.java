@@ -51,6 +51,7 @@ import frysk.debuginfo.TypeEntry;
 import frysk.debuginfo.ValueUavailableException;
 import frysk.debuginfo.VariableOptimizedOutException;
 import frysk.isa.ISA;
+import frysk.value.ObjectDeclaration;
 import frysk.value.Format;
 import frysk.value.Type;
 import frysk.value.Value;
@@ -61,7 +62,7 @@ import frysk.value.Value;
  * corresponding to this Variable
  */
 
-public class Variable implements CxxObject{
+public class Variable extends ObjectDeclaration{
     private Type type;
     private final DwarfDie variableDie;
     private final String name;

@@ -1,3 +1,10 @@
+2007-10-11  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
+
+	* TestCxxObjectSearchEngine.java: Renamed to...
+	* TestObjectDeclarationSearchEngine.java: ... this.
+	* CxxObjectSearchEngine.java: Renamed to...
+	* ObjectDeclarationSearchEngine.java: ...this.
+
 2007-10-11  Teresa Thomas  <tthomas@redhat.com>
 
 	* DebugInfo.java (TmpSymTab.getMemoryFIXME): Delete.
