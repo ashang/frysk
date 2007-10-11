@@ -1,3 +1,9 @@
+Thu Oct 11 13:32:00 2007  Chris Moller  <cmoller@redhat.com>
+
+	* module/utracer-base.c: Replaced direct manipulation of
+	de_utrace_control->proc_fops with manipulation a copy
+	thereof--reflects a change in the 2.6.22 kernel.
+
 Tue Oct  2 23:31:49 2007  Chris Moller  <cmoller@redhat.com>
 
 	* include/utracer-errmsgs.h:

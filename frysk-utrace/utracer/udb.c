@@ -71,8 +71,7 @@ cleanup_udb()
   int rc;
   void * rc_ptr;
 
-  rc = pthread_cancel (resp_listener_thread);
-  if (0 != rc) perror ("pthread_cancel");
+  utracer_sync (udb_pid, SYNC_HALT);
 
   rc = pthread_join(resp_listener_thread, &rc_ptr);
   if (0 != rc) perror ("pthread_cancel");

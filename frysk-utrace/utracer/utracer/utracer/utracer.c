@@ -52,6 +52,7 @@
 #include <utracer.h>
 #include <utracer-errmsgs.h>
 
+//fixme -- does this need to be reentrant?
 int cmd_file_fd;
 int resp_file_fd;
 int ctl_file_fd;
@@ -501,7 +502,8 @@ utracer_sync (long client_pid, long type)
   sync_cmd_s sync_cmd = {IF_CMD_SYNC,
 			 client_pid, type};
 
-  LOGIT ("in utracer_sync(), pid = %d\n", client_pid);
+  LOGIT ("in utracer_sync(), pid = %d type = %d\n",
+	 client_pid, type);
 
   irc = ioctl (cmd_file_fd, sizeof(sync_cmd_s), &sync_cmd);
 

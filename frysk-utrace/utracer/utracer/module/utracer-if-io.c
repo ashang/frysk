@@ -419,7 +419,7 @@ if_file_read ( char *buffer,
     }
     
     // might return 0 length if wait ended by som random interrupt
-    DB_PRINTK ("done waiting\ n");
+    DB_PRINTK ("done waiting\n");
     if (utracing_info_found->queued_data &&
 	(0 < utracing_info_found->queued_data_length)) {
       DB_PRINTK ("returning data\n");

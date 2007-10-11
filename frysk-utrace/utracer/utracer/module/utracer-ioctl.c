@@ -428,8 +428,8 @@ handle_sync (sync_cmd_s * sync_cmd)
   utracing_info_s * utracing_info_found =
     lookup_utracing_info (sync_cmd->utracing_pid);
 
-  DB_PRINTK ("in handle_sync(), utracing_info_found = %p, pid = %ld\n",
-	     utracing_info_found, sync_cmd->utracing_pid);
+  DB_PRINTK ("in handle_sync(), utracing_info_found = %p, pid = %ld type = %ld\n",
+	     utracing_info_found, sync_cmd->utracing_pid, sync_cmd->sync_type);
   if (utracing_info_found) {
     sync_resp_s sync_resp = {IF_RESP_SYNC_DATA,
 			     sync_cmd->utracing_pid,
@@ -596,7 +596,7 @@ attach_cmd_fcn (long utracing_pid, long utraced_pid,
 	//fixme -- do something with rc?
 	rc = utrace_set_flags (task,engine, flags);
 
-	engine->data = (unsigned long)utracing_info_found;
+	engine->data = utracing_info_found;
 	rc = create_utraced_info_entry (utracing_info_found,
 					utraced_pid,
 					engine,

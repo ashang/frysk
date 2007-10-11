@@ -383,6 +383,7 @@ static int __init utracer_init(void)
 	     UTRACER_CONTROL_FN);
   de_utrace_control = create_proc_entry(UTRACER_CONTROL_FN,
                                         S_IFREG | 0666, de_utrace);
+  DB_PRINTK ("de_utrace_control = %p\n", de_utrace_control);
 
   if (!de_utrace_control) {
     remove_proc_entry(UTRACER_CONTROL_FN, de_utrace);
@@ -390,8 +391,12 @@ static int __init utracer_init(void)
   }
 
   {
+    // struct file_operations from include/linux/fs.h
     struct file_operations * proc_dir_operations =
-      (struct file_operations *)de_utrace_control->proc_fops;
+      kmalloc (sizeof(struct file_operations), GFP_KERNEL);
+    memcpy (proc_dir_operations, de_utrace_control->proc_fops,
+	    sizeof(struct file_operations)); 
+    de_utrace_control->proc_fops = proc_dir_operations;
     proc_dir_operations->ioctl = control_ioctl;
   }
 #if 0
@@ -414,6 +419,8 @@ static void __exit utracer_exit (void)
        utracing_info_entry = remove_utracing_info_entry (utracing_info_entry));
 
   remove_proc_entry (UTRACER_CONTROL_FN, de_utrace);
+  if (de_utrace_control && de_utrace_control->proc_fops)
+    kfree (de_utrace_control->proc_fops);
   remove_proc_entry (UTRACER_BASE_DIR, &proc_root);
 }
 

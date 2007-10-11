@@ -58,11 +58,12 @@ resp_listener (void * arg)
 {
   if_resp_u if_resp;
   ssize_t sz;
+  int run = 1;
 
   LOGIT ("in response thread\n");
 
-  while (1) {
-  LOGIT ("starting response thread pread\n");
+  while (run) {
+    LOGIT ("starting response thread pread\n");
     sz = pread (utracer_resp_file_fd(), &if_resp,
 		sizeof(if_resp), 0);
     if (-1 == sz) {
@@ -135,23 +136,30 @@ resp_listener (void * arg)
     case IF_RESP_SYNC_DATA:
       {
 	sync_resp_s sync_resp = if_resp.sync_resp;
-	fprintf (stdout, "\tsync %ld received\n",
-		 sync_resp.sync_type);
+	LOGIT ("\tsync %ld received\n", sync_resp.sync_type);
 
-	if (cl_cmds && (0 < cl_cmds_next)) {
-	  int i;
+	switch(sync_resp.sync_type) {
+	case SYNC_INIT:
+	  if (cl_cmds && (0 < cl_cmds_next)) {
+	    int i;
 
-	  for (i = 0; i < cl_cmds_next; i++) {
-	    int rc;
+	    for (i = 0; i < cl_cmds_next; i++) {
+	      int rc;
 	    
-	    fprintf (stderr, "cmd \"%s\"\n", cl_cmds[i]);
-	    rc = exec_cmd (cl_cmds[i]);
+	      fprintf (stderr, "cmd \"%s\"\n", cl_cmds[i]);
+	      rc = exec_cmd (cl_cmds[i]);
 
-	    if (0 == rc) {
-	      kill (udb_pid, SIGTERM);
-	      break;
+	      if (0 == rc) {
+		kill (udb_pid, SIGTERM);
+		break;
+	      }
 	    }
 	  }
+	  break;
+	case SYNC_HALT:
+	  LOGIT ("stopping listener\n");
+	  run = 0;
+	  break;
 	}
       }
       break;

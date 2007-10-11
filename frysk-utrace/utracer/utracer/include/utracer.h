@@ -44,6 +44,8 @@
 #ifndef __KERNEL__
 #include <syslog.h>
 
+// #define DEBUG
+
 #ifdef DEBUG
 #define LOGIT(fmt,args...) \
   syslog (LOG_ALERT, fmt, ## args); \
@@ -131,8 +133,10 @@ typedef struct {
 } run_cmd_s;
 
 typedef enum {
+  SYNC_NULL,
   SYNC_INIT,
-  SYNC_RESP
+  SYNC_RESP,
+  SYNC_HALT
 } sync_cmd_e;
 
 typedef struct {
@@ -311,7 +315,7 @@ typedef struct {
   long utraced_pid;
   long data_length;
 } exec_resp_s;
-
+  
 typedef union {
   long type;
   clone_resp_s		clone_resp;

@@ -39,13 +39,16 @@
 // exception.
 
 public class Utrace {
-    public static native long open ();
-    public static native int  unregister (long client_pid);
-    public static native int  attach  (long clien_pid, long pid,
-				       long quiesce, long exec_quiesce);
-    public static native int  detach  (long clien_pid, long pid);
-    public static native int  run     (long clien_pid, long pid);
-    public static native int  quiesce (long clien_pid, long pid);
-    public static native long[] get_gprs (long clien_pid, long pid);
+  public static native long open ();
+  public static native int  unregister (long client_pid);
+  public static native int  attach  (long clien_pid, long pid,
+				     long quiesce, long exec_quiesce);
+  public static native int  detach  (long clien_pid, long pid);
+  public static native int  run     (long clien_pid, long pid);
+  public static native int  quiesce (long clien_pid, long pid);
+  public static native int  sync    (long clien_pid, long type);
+  public static native long[] get_gprs (long clien_pid, long pid);
+  //  public static native int  read_response ();
+  public static Response  read_response ();
 }
 

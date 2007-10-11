@@ -262,8 +262,9 @@ handle_unregister (register_cmd_s * register_cmd)
   int rc = 0;
   utracing_info_s * utracing_info_found =
     lookup_utracing_info (register_cmd->client_pid);
+  DB_PRINTK (KERN_ALERT "handling unregister\n");
 
-  if (utracing_info_found)
+  if (utracing_info_found) 
     remove_utracing_info_entry (utracing_info_found);
   else
     rc = -UTRACER_ETRACING;

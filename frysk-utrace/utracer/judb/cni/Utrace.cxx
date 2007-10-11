@@ -38,9 +38,11 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#define _XOPEN_SOURCE 500
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 #include <gcj/cni.h>
 
@@ -92,6 +94,13 @@ Utrace::quiesce (jlong client_pid, jlong pid)
   return utracer_quiesce (client_pid, pid);
 }
 
+jint
+Utrace::sync (jlong client_pid, jlong type)
+{
+  //  fprintf (stderr, "in quiesce( )\n");
+  return utracer_sync (client_pid, type);
+}
+
 jlongArray
 Utrace::get_gprs (jlong client_pid, jlong pid)
 {
@@ -117,3 +126,22 @@ Utrace::get_gprs (jlong client_pid, jlong pid)
   
   return rc;
 }
+
+static if_resp_u if_resp;
+
+jint
+Utrace::read_response ()
+{
+  int sz;
+  int rc;
+  
+  fprintf (stderr, "in read_response( )\n");
+
+  sz = pread (utracer_resp_file_fd(), &if_resp,
+	      sizeof(if_resp), 0);
+
+  rc = (-1 == sz) ? -1 : if_resp.type;
+  
+  return rc;
+}
+

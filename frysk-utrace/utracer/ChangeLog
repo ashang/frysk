@@ -1,3 +1,9 @@
+Thu Oct 11 13:28:58 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-response.c: Added LKM-initiated shutdown.
+	* udb.c: Replaced pthread_cancel shutdown of the listener thread
+	with synchronised shutdown via LKM-initiated shutdown.
+
 Tue Oct  2 23:30:23 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-text-ui.c:

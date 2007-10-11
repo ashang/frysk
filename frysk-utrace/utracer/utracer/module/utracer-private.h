@@ -49,11 +49,15 @@
 #define DECLNI(v) extern v
 #endif
 
+// #define DEBUG
+
 #ifdef DEBUG
 #define DB_PRINTK printk
 #else
 #define DB_PRINTK(fmt, a...)
 #endif
+
+// struct proc_dir_entry from include/linux/proc_fs.h
 
 DECL (struct proc_dir_entry * de_utrace, NULL);
 DECL (struct proc_dir_entry * de_utrace_control, NULL);
