@@ -4,6 +4,8 @@
 	(ADDRESS_OF): Use expr.
 	* ExprSymTab.java (getMemoryFIXME): Deleted.
 	
+2007-10-10  Teresa Thomas  <tthomas@redhat.com>
+	
 	* CExprEvaluator.g (MEMORY): Refactor, Use dereference.
 
 	* ExprSymTab.java (taskMemory): New.

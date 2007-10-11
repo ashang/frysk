@@ -14,6 +14,8 @@
 	(isa): Delete.
 	(DebugInfoEvaluator): Update.
 	
+2007-10-10  Teresa Thomas  <tthomas@redhat.com>
+	
 	* DebugInfo.java (TmpSymTab.taskMemory): New.
 	* DebugInfoEvaluator.java (taskMemory): New.
 
