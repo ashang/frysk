@@ -8,7 +8,6 @@ Judb
 all::$(TARGETS)
 
 JAVA_SRCS = Judb.java \
-	Response.java \
 	ResponseListener.java \
 	Utrace.java
 
@@ -29,9 +28,6 @@ Judb: $(JAVA_OBJS) cni/Utrace.o
 Judb.o:		Judb.java Utrace.class
 Utrace.o:	Utrace.java
 ResponseListener.o: ResponseListener.java
-Response.o:	Response.java
-
-	gcjh  Response
 
 cni/Utrace.o: 	cni/Utrace.cxx cni/Utrace.h
 	gcc -o $@ -c $(UDB_INCLUDES) $<
@@ -43,7 +39,7 @@ Utrace.class:   Utrace.java
 	javac Utrace.java
 
 clean:
-	rm -f *.o *.class cni/*.o cni/Utrace.h Response.h
+	rm -f *.o *.class cni/*.o cni/Utrace.h
 
 veryclean: clean
 	rm -f $(TARGETS) *~

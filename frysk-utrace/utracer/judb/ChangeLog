@@ -1,3 +1,12 @@
+Thu Oct 11 14:09:39 2007  Chris Moller  <cmoller@redhat.com>
+
+	* ResponseListener.java: New file--should have added it a long
+	time ago, but forgot.
+	* cni/Utrace.cxx:
+	* Utrace.java:  Added crummy i/f to retrieve sync type--Java is
+	clueless about unions and this way is quicker to implement than
+	the abstract class weirdness/workaround some Sun guy suggested.
+
 Wed Oct  3 13:35:06 2007  Chris Moller  <cmoller@redhat.com>
 
 	* Judb.java: Added stuff for reading regs.  Cleaned up some stuff.

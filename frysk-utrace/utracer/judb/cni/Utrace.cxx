@@ -145,3 +145,13 @@ Utrace::read_response ()
   return rc;
 }
 
+jlong
+Utrace::read_response_sync_type ()
+{
+  sync_resp_s sync_resp = if_resp.sync_resp;
+  
+  fprintf (stderr, "in read_response_sync_type( )\n");
+  
+  return sync_resp.sync_type;
+}
+
