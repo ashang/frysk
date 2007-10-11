@@ -46,6 +46,8 @@ public class TestBreakpoints
     extends TestLib
 {
     public void testHpdBreakpoint() {
+	if (unresolved(5165))
+	    return;
 	child = new Expect(Config.getPkgLibFile("hpd-c"));
 	e = new HpdTestbed();
 	// Attach
