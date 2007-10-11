@@ -40,7 +40,6 @@
 package frysk.proc;
 
 import inua.eio.ByteOrder;
-import java.math.BigInteger;
 import frysk.isa.Register;
 
 /**
@@ -109,8 +108,6 @@ class IndirectBankRegisterMap extends BankRegisterMap {
 		    return longVal;
 		}
 		public void put(Task task, long val) {
-		}
-		public void putBigInteger(Task task, BigInteger val) {
 		}
 	    });
 	return this;

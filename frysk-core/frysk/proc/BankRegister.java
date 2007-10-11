@@ -39,7 +39,6 @@
 
 package frysk.proc;
 
-import java.math.BigInteger;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import frysk.isa.Register;
@@ -155,50 +154,6 @@ public class BankRegister {
 	}
     }
 
-    /**
-     * Write a BigInteger register value.
-     *
-     * @param task task in which to write the register
-     * @param val the value
-     */
-    public void putBigInteger(frysk.proc.Task task, BigInteger bigVal) {
-	ByteBuffer b = task.getRegisterBanks()[bank];
-	byte[] bytes = bigVal.toByteArray();
-	int valLen = bytes.length;
-	byte signExtension = (bigVal.signum() < 0 ? (byte)-1 : 0);
-	
-	// XXX Refactor this test so it's done at creation time.
-	if (length == 4 || length == 8) {
-	    long val = 0;
-	    
-	    for (int i = 0; i < length - valLen; i++)
-		val = (val << 8) | (signExtension & 0xff);
-	    for (int i = 0; i < valLen; i++)
-		val = (val << 8) | (bytes[i] & 0xff);
-	    if (length == 4)
-		b.putUInt(offset, val);
-	    else
-		b.putULong(offset, val);
-	} else {
-	    int i;
-	    if (b.order() == ByteOrder.LITTLE_ENDIAN) {
-		for (i = 0; i < bytes.length; i++) {
-		    b.putByte(i + offset, bytes[bytes.length - 1 - i]);
-		}
-		for (; i < length; i++) {
-		    b.putByte(i + offset, signExtension);
-		}
-	    } else {
-		for (i = length; i >= bytes.length; i--) {
-		    b.putByte(i + offset, signExtension);
-		}
-		for (; i >= 0; i--) {
-		    b.putByte(i + offset, bytes[i]);
-		}
-	    }
-	}
-    }
-    
     /**
      * Get the name of the register.
      *

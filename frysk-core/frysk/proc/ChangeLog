@@ -1,5 +1,9 @@
 2007-10-11  Andrew Cagney  <cagney@redhat.com>
 
+	* IndirectBankRegisterMap.java (add(String,long)): Delete
+	putBigInteger(Task,BigInteger) from nested class.
+	* BankRegister.java (putBigIntege(Task,BigInteger)): Delete.
+
 	* PPCRegisterBanksFactory.java: New.
 	* X86RegisterBanksFactory.java: New.
 	* AbstractRegisterBanksFactory.java: New.
