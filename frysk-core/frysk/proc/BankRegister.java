@@ -134,7 +134,7 @@ public class BankRegister {
      * @param task task in which to write the register
      * @param val the value
      */
-    public void put(frysk.proc.Task task, long val) {
+    void put(frysk.proc.Task task, long val) {
 	ByteBuffer b = task.getRegisterBanks()[bank];
 
 	if (length == 4) {

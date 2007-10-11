@@ -1,5 +1,7 @@
 2007-10-11  Andrew Cagney  <cagney@redhat.com>
 
+	* BankRegister.java (put(Task,long)): Make package-private.
+	
 	* IndirectBankRegisterMap.java (add(String,long)): Delete
 	putBigInteger(Task,BigInteger) from nested class.
 	* BankRegister.java (putBigIntege(Task,BigInteger)): Delete.
