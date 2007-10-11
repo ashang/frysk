@@ -47,25 +47,19 @@ import java.util.LinkedList;
 import java.util.List;
 import inua.eio.ByteOrder;
 import javax.naming.NameNotFoundException;
-import lib.dwfl.BaseTypes;
-import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
 import frysk.dwfl.DwflCache;
 import frysk.expr.ExprSymTab;
-import frysk.isa.ISA;
 import frysk.proc.Task;
 import frysk.scopes.Subprogram;
 import frysk.scopes.Variable;
 import frysk.isa.Register;
-import frysk.value.ArithmeticType;
 import frysk.value.UnknownType;
 import frysk.value.ArrayType;
 import frysk.value.GccStructOrClassType;
-import frysk.value.StandardTypes;
 import frysk.value.Value;
-import frysk.value.ByteBufferLocation;
 import frysk.isa.Registers;
 import frysk.isa.RegistersFactory;
 
@@ -74,19 +68,6 @@ class DebugInfoEvaluator
 {
     private Task task;
     private final DebugInfoFrame frame;
-    private ByteBuffer buffer;
-    private final ISA isa;
-
-    private ArithmeticType byteType;
-    // private ArithmeticType byteUnsignedType;
-    private ArithmeticType shortType;
-    // private ArithmeticType shortUnsignedType;
-    private ArithmeticType intType;
-    // private ArithmeticType intUnsignedType;
-    private ArithmeticType longType;
-    // private ArithmeticType longUnsignedType;
-    private ArithmeticType floatType;
-    private ArithmeticType doubleType;
   
     /**
      * Create an DebugInfoEvaluator object which is the interface between
@@ -99,101 +80,6 @@ class DebugInfoEvaluator
     DebugInfoEvaluator (DebugInfoFrame frame) {
 	this.frame = frame;
 	this.task = frame.getTask();
-	buffer = this.task.getMemory();
-	isa = task.getISA();
-	ByteOrder order = isa.order();
-	byteType = StandardTypes.getByteType(order);
-	// byteUnsignedType = new ArithmeticType(1, byteorder,
-	// BaseTypes.baseTypeUnsignedByte, "unsigned byte");
-	shortType = StandardTypes.getShortType(order);
-	// shortUnsignedType = new ArithmeticType(2, byteorder,
-	// BaseTypes.baseTypeUnsignedShort, "unsigned short");
-	intType = StandardTypes.getIntType(order);
-	// intUnsignedType = new ArithmeticType(4, byteorder,
-	// BaseTypes.baseTypeUnsignedInteger, "unsigned int");
-	longType = StandardTypes.getLongType(order);
-	// longUnsignedType = new ArithmeticType(8, byteorder,
-	// BaseTypes.baseTypeUnsignedLong, "unsigned long");
-	floatType = StandardTypes.getFloatType(order);
-	doubleType = StandardTypes.getDoubleType(order);
-    }
-
-    private interface VariableAccessor {
-	DwarfDie varDie = null;
-
-	long getAddr (DwarfDie die) throws NameNotFoundException;
-
-	long getLong (DwarfDie varDieP, long offset) throws NameNotFoundException;
-
-	int getInt (DwarfDie varDieP, long offset) throws NameNotFoundException;
-
-	short getShort (DwarfDie varDieP, long offset) throws NameNotFoundException;
-
-	byte getByte (DwarfDie varDieP, long offset) throws NameNotFoundException;
-
-	float getFloat (DwarfDie varDieP, long offset) throws NameNotFoundException;
-
-	double getDouble (DwarfDie varDieP, long offset) throws NameNotFoundException;
-
-    }
-
-    /**
-     * Access by DW_FORM_block. Typically this is a static address or ptr+disp.
-     */
-    private class AccessMemory
-	implements VariableAccessor
-    {
-      
-	/**
-	 * @param varDieP The die for a symbol
-	 * @return The address corresponding to the symbol
-	 */
-	protected long getBufferAddr (DwarfDie varDieP) throws NameNotFoundException {
-	    long pc = frame.getAdjustedAddress();
-       
-	    List ops = varDieP.getFormData(pc);
-      
-	    LocationExpression locExp = new LocationExpression(frame, varDieP, ops);
-	    long value = locExp.decode();
-	    if (locExp.getLocationType() != LocationExpression.locationTypeAddress
-		&& locExp.getLocationType() != LocationExpression.locationTypeRegDisp)
-		throw new NameNotFoundException();
-	    return value;
-	}
-
-	public long getAddr (DwarfDie die) throws NameNotFoundException {
-	    return getBufferAddr(die);
-	}
-
-	public long getLong (DwarfDie varDieP, long offset) throws NameNotFoundException {
-	    long addr = getBufferAddr(varDieP);
-	    return buffer.getLong(addr + offset);
-	}
-
-	public int getInt (DwarfDie varDieP, long offset) throws NameNotFoundException {
-	    long addr = getBufferAddr(varDieP);
-	    return buffer.getInt(addr + offset);
-	}
-
-	public short getShort (DwarfDie varDieP, long offset) throws NameNotFoundException {
-	    long addr = getBufferAddr(varDieP);
-	    return buffer.getShort(addr + offset);
-	}
-
-	public byte getByte (DwarfDie varDieP, long offset) throws NameNotFoundException {
-	    long addr = getBufferAddr(varDieP);
-	    return buffer.getByte(addr + offset);
-	}
-
-	public float getFloat (DwarfDie varDieP, long offset) throws NameNotFoundException {
-	    long addr = getBufferAddr(varDieP);
-	    return buffer.getFloat(addr + offset);
-	}
-
-	public double getDouble (DwarfDie varDieP, long offset) throws NameNotFoundException {
-	    long addr = getBufferAddr(varDieP);
-	    return buffer.getDouble(addr + offset);
-	}
     }
 
     /**
@@ -297,70 +183,6 @@ class DebugInfoEvaluator
 	    return ((GccStructOrClassType)v.getType()).get(v, 0, components);
 	else
 	    return new Value(new UnknownType(variable.getName()));
-    }
-  
-    /**
-     * @param f Frame containing symbol s
-     * @param s Symbol s
-     * @return Value corresponding to the memory location pointed to by symbol s.
-     */
-    public Value getMemoryFIXME (String s) throws NameNotFoundException {     
-	Variable variable= getVariable(s);
-	if (variable == null)
-	    return new Value(new UnknownType(variable.getName()));
-    
-	DwarfDie type = variable.getVariableDie().getUltimateType();
-	AccessMemory access = new AccessMemory();
-	long addr = access.getAddr(getVariable(s).getVariableDie()); 
-	long addrIndirect = buffer.getLong(addr);
-    
-	switch (type.getUltimateType().getBaseType()) {
-	case BaseTypes.baseTypeByte:
-	case BaseTypes.baseTypeUnsignedByte:
-	    return byteType.createValue(buffer.getByte(addrIndirect));
-	case BaseTypes.baseTypeShort:
-	case BaseTypes.baseTypeUnsignedShort:
-	    return shortType.createValue(buffer.getShort(addrIndirect));
-	case BaseTypes.baseTypeInteger:
-	case BaseTypes.baseTypeUnsignedInteger:
-	    return intType.createValue(buffer.getInt(addrIndirect));
-	case BaseTypes.baseTypeLong:
-	case BaseTypes.baseTypeUnsignedLong:
-	    return longType.createValue(buffer.getLong(addrIndirect));
-	case BaseTypes.baseTypeFloat:
-	    return floatType.createValue(buffer.getFloat(addrIndirect));
-	case BaseTypes.baseTypeDouble:
-	    return doubleType.createValue(buffer.getDouble(addrIndirect));
-	}
-	int tag = type != null ? type.getTag().hashCode() : variable.getVariableDie().getTag().hashCode();
-	switch (tag) {
-	case DwTag.ARRAY_TYPE_: {
-	    DwarfDie subrange;
-	    subrange = type.getChild();
-	    TypeEntry debugInfoType = new TypeEntry(isa);
-	    ArrayType arrayType = debugInfoType.getArrayType(type, subrange);
-
-	    if (arrayType == null)
-		return null;
-	    int typeSize = arrayType.getSize();
-	    return new Value(arrayType,
-			     new ByteBufferLocation(buffer, addrIndirect,
-						    typeSize));
-	}
-	case DwTag.UNION_TYPE_:
-	case DwTag.STRUCTURE_TYPE_: {
-	    TypeEntry debugInfoType = new TypeEntry(isa);
-//	    ClassType classType = debugInfoType.getClassType(frame, type, null);
-	    GccStructOrClassType classType = debugInfoType.getGccStructOrClassType(type, null);
-
-	    if (classType == null)
-		return null;
-	    return new Value(classType,
-			     new ByteBufferLocation(buffer, addrIndirect,
-						    classType.getSize()));
-	}
-	}
-	return new Value(new UnknownType(variable.getVariableDie().getName()));
     }
     
     public ByteOrder order()

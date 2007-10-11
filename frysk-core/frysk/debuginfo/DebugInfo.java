@@ -288,9 +288,6 @@ public class DebugInfo {
 	  public Value getValueFIXME (ArrayList v) throws NameNotFoundException {
 		throw new NameNotFoundException("No symbol table is available.");
 	    }
-	  public Value getMemoryFIXME (String s) throws NameNotFoundException {
-		throw new NameNotFoundException("No symbol table is available.");        
-	    }
 	  public Variable getVariable (String s)throws NameNotFoundException {
 	        throw new NameNotFoundException("No symbol table is available.");
 	  } 

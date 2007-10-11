@@ -1,5 +1,9 @@
-2007-10-10  Teresa Thomas  <tthomas@redhat.com>
+2007-10-11  Teresa Thomas  <tthomas@redhat.com>
 
+	* CExprAnnotator.g (MEMORY): Use expr.
+	(ADDRESS_OF): Use expr.
+	* ExprSymTab.java (getMemoryFIXME): Deleted.
+	
 	* CExprEvaluator.g (MEMORY): Refactor, Use dereference.
 
 	* ExprSymTab.java (taskMemory): New.

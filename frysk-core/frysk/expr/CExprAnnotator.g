@@ -141,7 +141,7 @@ expr
         }
     |   ( #(STAR expr expr) )=> #(STAR  expr expr) {
         }
-    |   #(MEMORY identifier) {
+    |   #(MEMORY expr) {
         }
     |   #(DIVIDE  expr expr) {
         }
@@ -165,7 +165,7 @@ expr
         }
     |   ( #(AMPERSAND expr expr) )=>#(AMPERSAND  expr expr) {
         }
-    |   #(ADDRESS_OF identifier ) {
+    |   #(ADDRESS_OF expr ) {
         }
     |   #(BITWISEXOR  expr expr) {
         }

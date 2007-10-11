@@ -1,5 +1,19 @@
-2007-10-10  Teresa Thomas  <tthomas@redhat.com>
+2007-10-11  Teresa Thomas  <tthomas@redhat.com>
 
+	* DebugInfo.java (TmpSymTab.getMemoryFIXME): Delete.
+	* DebugInfoEvaluator.java (getMemoryFIXME): Delete.
+	(AccessMemory): Class deleted.
+	(VariableAccessor): Interface deleted.
+	(buffer): Delete.
+	(byteType): Delete.
+	(shortType): Delete.
+	(intType): Delete.
+	(longType): Delete.
+	(floatType): Delete.
+	(doubleType): Delete.
+	(isa): Delete.
+	(DebugInfoEvaluator): Update.
+	
 	* DebugInfo.java (TmpSymTab.taskMemory): New.
 	* DebugInfoEvaluator.java (taskMemory): New.
 

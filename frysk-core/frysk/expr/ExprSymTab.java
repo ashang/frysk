@@ -82,10 +82,4 @@ public interface ExprSymTab
      * directly requesting that the type/value perform the operation.
      */
     Value getValueFIXME(ArrayList v) throws NameNotFoundException;
-    /**
-     * FIXME: This implements memory indirection (the C unary "*"
-     * operator).  That is better implemented directly using Type
-     * operators.
-     */
-    Value getMemoryFIXME(String s) throws NameNotFoundException;
 }
