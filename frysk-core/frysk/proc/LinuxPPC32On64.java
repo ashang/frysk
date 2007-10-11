@@ -66,38 +66,7 @@ class LinuxPPC32On64
     return isa64.getRegisterBankBuffers(pid);
   }
   
-    private IndirectBankRegisterMap registerMap
-	= new IndirectBankRegisterMap(LinuxPPC.isaSingleton(),
-				      LinuxPPC64.isaSingleton());
-  
-    /**
-     * Default constructor
-     */
-    public LinuxPPC32On64() {
-	for (int i = 0; i < 32; i++) {
-	    registerMap.add("gpr" + i);
-	}
-	registerMap
-	    .add("nip")
-	    .add("msr")
-	    .add("orig_r3")
-	    .add("ctr")
-	    .add("lnk")
-	    .add("xer")
-	    .add("ccr")
-	    // No such register on ppc64.
-	    // .add("mq"))
-	    .add("trap")
-	    .add("dar")
-	    .add("dsisr")
-	    .add("result")
-	    ;
-	for (int i = 0; i < 32; i++) {
-	    registerMap.add("fpr" + i);
-	}
-    }
-
     public BankRegister getRegisterByName(String name) {
-	return registerMap.get(name);
+	return PPCRegisterBanksFactory.PPC32BE_ON_PPC64BE.get(name);
     }
 }

@@ -49,7 +49,6 @@ import frysk.sys.Ptrace.AddressSpace;
 import frysk.proc.live.RegisterSetByteBuffer;
 import frysk.proc.live.AddressSpaceByteBuffer;
 import lib.dwfl.ElfEMachine;
-import frysk.isa.IA32Registers;
 
 public class IsaIA32 implements Isa
 {
@@ -70,63 +69,8 @@ public class IsaIA32 implements Isa
     return bankBuffers;
   }
   
-    private final BankRegisterMap registerMap = new BankRegisterMap();
-
-    IsaIA32() {
-	registerMap
-	    .add(new BankRegister (0, 24, 4,IA32Registers.EAX))
-	    .add(new BankRegister (0, 0, 4, IA32Registers.EBX))
-	    .add(new BankRegister (0, 4, 4, IA32Registers.ECX))
-	    .add(new BankRegister (0, 8, 4, IA32Registers.EDX))
-	    .add(new BankRegister (0, 12, 4, IA32Registers.ESI))
-	    .add(new BankRegister (0, 16, 4, IA32Registers.EDI))
-	    .add(new BankRegister (0, 20, 4, IA32Registers.EBP))
-	    .add(new BankRegister (0, 52, 4, IA32Registers.CS))
-	    .add(new BankRegister (0, 28, 4, IA32Registers.DS))
-	    .add(new BankRegister (0, 32, 4, IA32Registers.ES))
-	    .add(new BankRegister (0, 36, 4, IA32Registers.FS))
-	    .add(new BankRegister (0, 40, 4, IA32Registers.GS))
-	    .add(new BankRegister (0, 64, 4, IA32Registers.SS))
-	    .add(new BankRegister (0, 44, 4, "orig_eax"))
-	    .add(new BankRegister (0, 48, 4, IA32Registers.EIP))
-	    .add(new BankRegister (0, 56, 4, IA32Registers.EFLAGS))
-	    .add(new BankRegister (0, 60, 4, IA32Registers.ESP))
-	    .add(new BankRegister (1, 0, 4, "cwd"))
-	    .add(new BankRegister (1, 4, 4, "swd"))
-	    .add(new BankRegister (1, 8, 4, "twd"))
-	    .add(new BankRegister (1, 12, 4, IA32Registers.FIP))
-	    .add(new BankRegister (1, 16, 4, IA32Registers.FCS))
-	    .add(new BankRegister (1, 20, 4, "foo"))
-	    .add(new BankRegister (1, 24, 4, "fos"))
-	    .add(new BankRegister (1, 28, 10, IA32Registers.ST0))
-	    .add(new BankRegister (1, 38, 10, IA32Registers.ST1))
-	    .add(new BankRegister (1, 48, 10, IA32Registers.ST2))
-	    .add(new BankRegister (1, 58, 10, IA32Registers.ST3))
-	    .add(new BankRegister (1, 68, 10, IA32Registers.ST4))
-	    .add(new BankRegister (1, 78, 10, IA32Registers.ST5))
-	    .add(new BankRegister (1, 88, 10, IA32Registers.ST6))
-	    .add(new BankRegister (1, 98, 10, IA32Registers.ST7))
-	    .add(new BankRegister (2, 160, 16, IA32Registers.XMM0))
-	    .add(new BankRegister (2, 176, 16, IA32Registers.XMM1))
-	    .add(new BankRegister (2, 192, 16, IA32Registers.XMM2))
-	    .add(new BankRegister (2, 208, 16, IA32Registers.XMM3))
-	    .add(new BankRegister (2, 224, 16, IA32Registers.XMM4))
-	    .add(new BankRegister (2, 240, 16, IA32Registers.XMM5))
-	    .add(new BankRegister (2, 256, 16, IA32Registers.XMM6))
-	    .add(new BankRegister (2, 272, 16, IA32Registers.XMM7))
-	    .add(new BankRegister (3, 252, 4, "d0"))
-	    .add(new BankRegister (3, 256, 4, "d1"))
-	    .add(new BankRegister (3, 260, 4, "d2"))
-	    .add(new BankRegister (3, 264, 4, "d3"))
-	    .add(new BankRegister (3, 268, 4, "d4"))
-	    .add(new BankRegister (3, 272, 4, "d5"))
-	    .add(new BankRegister (3, 276, 4, "d6"))
-	    .add(new BankRegister (3, 280, 4, "d7"))
-	    ;
-    }
-    
     public BankRegister getRegisterByName(String name) {
-	return registerMap.get(name);
+	return X86RegisterBanksFactory.IA32.get(name);
     }
 
   public long pc(Task task)

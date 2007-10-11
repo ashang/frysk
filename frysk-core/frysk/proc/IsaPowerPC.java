@@ -51,17 +51,11 @@ import inua.eio.ByteOrder;
 abstract class IsaPowerPC
   implements Isa
 {
-    protected BankRegisterMap registerMap = new BankRegisterMap();
-
   // the illegal instruction for powerpc: 0x7d821008.
   // the default order is BIG_ENDIAN
   protected static final Instruction ppcBreakpoint
     = new Instruction(new byte[] { (byte)0x7d, (byte)0x82, 
 				   (byte)0x10, (byte)0x08 }, false);
-
-    public BankRegister getRegisterByName (String name) {
-	return registerMap.get(name);
-    }
 
   public long pc (Task task)
   {

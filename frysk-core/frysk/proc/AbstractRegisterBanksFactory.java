@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006 IBM Corp.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -10,11 +10,11 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-//
+// 
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-//
+// 
 // In addition, as a special exception, Red Hat, Inc. gives You the
 // additional right to link the code of FRYSK with code not covered
 // under the GNU General Public License ("Non-GPL Code") and to
@@ -39,24 +39,10 @@
 
 package frysk.proc;
 
-import lib.dwfl.ElfEMachine;
+/**
+ * Factory to create a RegiserBank.
+ */
 
-public class IsaPPC64 extends IsaPowerPC {
-  public int getWordSize ()
-  {
-    return 8;
-  }
-
-  public int getElfMachineType()
-  {
-    return ElfEMachine.EM_PPC64;
-  }
-
-
-
-    public BankRegister getRegisterByName (String name) {
-	return PPCRegisterBanksFactory.PPC64BE.get(name);
-    }
-
+abstract class AbstractRegisterBanksFactory {
 
 }

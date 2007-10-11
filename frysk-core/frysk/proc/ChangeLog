@@ -1,3 +1,33 @@
+2007-10-11  Andrew Cagney  <cagney@redhat.com>
+
+	* PPCRegisterBanksFactory.java: New.
+	* X86RegisterBanksFactory.java: New.
+	* AbstractRegisterBanksFactory.java: New.
+	* IndirectBankRegisterMap.java (IndirectBankRegisterMap(ByteOrder,
+	BankRegisterMap,BankRegisterMap)): New.
+	(map32, map64): Replace isa32 and isa64; update references.
+	(IndirectBankRegisterMap(Isa,Isa)): Delete.
+	* IsaPPC64.java (IsaPPC64()): Delete.
+	(getRegisterByName(String)): New.
+	* IsaPowerPC.java (registerMap): Delete.
+	(getRegisterByName(String)): Delete.
+	* IsaPPC.java (IsaPPC()): Delete.
+	(getRegisterByName(String)): New.
+	* LinuxPPC32On64.java (registerMap): Delete.
+	(LinuxPPC32On64()): Delete.
+	(getRegisterByName(String)): Use
+	X86RegisterBanksFactory.PPC32_ON_PPC64.
+	* LinuxIa32On64.java (registerMap): Delete.
+	(LinuxIa32On64()): Delete.
+	(getRegisterByName(String)): Use
+	X86RegisterBanksFactory.IA32_ON_X8664..
+	* IsaX8664.java (registerMap): Delete.
+	(IsaX8664()): Delete.
+	(getRegisterByName(String)): Use X86RegisterBanksFactory.X8664.
+	* IsaIA32.java (registerMap): Delete.
+	(IsaIA32()): Delete.
+	(getRegisterByName(String)): Use X86RegisterBanksFactory.IA32.
+
 2007-10-09  Andrew Cagney  <cagney@redhat.com>
 
 	* BankRegister.java (getBigInteger(Task)): Delete.

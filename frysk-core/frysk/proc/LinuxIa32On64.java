@@ -88,57 +88,8 @@ extends LinuxIa32
     return isa64.getRegisterBankBuffers(pid);
   }
   
-    private IndirectBankRegisterMap registerMap
-	= new IndirectBankRegisterMap(LinuxIa32.isaSingleton(),
-				      LinuxX8664.isaSingleton());
-  
-    /**
-     * Default constructor
-     */
-    public LinuxIa32On64() {
-	// TODO: floating point
-	registerMap
-	    .add("eax", "rax")
-	    .add("ebx", "rbx")
-	    .add("ecx", "rcx")
-	    .add("edx", "rdx")
-	    .add("esi", "rsi")
-	    .add("edi", "rdi")
-	    .add("ebp", "rbp")
-	    .add("cs", "cs")
-	    .add("ds", "ds")
-	    .add("es", "es")
-	    .add("fs", "fs")
-	    .add("gs", "gs")
-	    .add("ss", "gs")
-	    .add("orig_eax", "orig_rax")
-	    .add("eip", "rip")
-	    .add("eflags","eflags")
-	    .add("esp", "rsp")
-	    .add("cwd", "cwd")
-	    .add("swd", "swd")
-	    .add("twd", "ftw")
-	    .add("fip", "fprip")
-	    .add("fcs", 0)
-	    .add("foo", "rdp")
-	    .add("fos", 0)
-	    ;
-	for (int i = 0; i < 8; i++) {
-	    String fpName = "st" + i;
-	    registerMap.add(fpName, fpName);
-	}
-	for (int i = 0; i < 8; i++) {
-	    String fpName = "xmm" + i;
-	    registerMap.add(fpName, fpName);
-	}
-	for (int i = 0; i < 8; i++) {
-	    String dbName = "d" + i;
-	    registerMap.add(dbName, dbName);
-	}
-    }
-
     public BankRegister getRegisterByName(String name) {
-	return registerMap.get(name);
+	return X86RegisterBanksFactory.IA32_ON_X8664.get(name);
     }
 
 }

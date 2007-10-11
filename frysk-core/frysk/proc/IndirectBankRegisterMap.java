@@ -50,13 +50,14 @@ import frysk.isa.Register;
 
 class IndirectBankRegisterMap extends BankRegisterMap {
     private final ByteOrder order;
-    private final Isa isa32;
-    private final Isa isa64;
+    private final BankRegisterMap map32;
+    private final BankRegisterMap map64;
     
-    IndirectBankRegisterMap(Isa isa32, Isa isa64) {
-	this.order = isa32.getByteOrder();
-	this.isa32 = isa32;
-	this.isa64 = isa64;
+    IndirectBankRegisterMap(ByteOrder order, BankRegisterMap map32,
+			    BankRegisterMap map64) {
+	this.order = order;
+	this.map32 = map32;
+	this.map64 = map64;
     }
 
     private int offset(BankRegister reg32, BankRegister reg64) {
@@ -77,9 +78,8 @@ class IndirectBankRegisterMap extends BankRegisterMap {
 	return this;
     }
 
-    IndirectBankRegisterMap add(String isa32Name, String isa64Name) {
-	return add(isa32.getRegisterByName(isa32Name),
-		   isa64.getRegisterByName(isa64Name));
+    IndirectBankRegisterMap add(String map32Name, String map64Name) {
+	return add(map32.get(map32Name), map64.get(map64Name));
     }
 
     IndirectBankRegisterMap add(String name) {
@@ -102,7 +102,7 @@ class IndirectBankRegisterMap extends BankRegisterMap {
     }
 
     IndirectBankRegisterMap add(String name, final long value) {
-	BankRegister reg32 = isa32.getRegisterByName(name);
+	BankRegister reg32 = map32.get(name);
 	add(new BankRegister(0, 0, reg32.getLength(), name) {
 		private final long longVal = value;
 		public long get(Task task) {
