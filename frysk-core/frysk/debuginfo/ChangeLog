@@ -1,3 +1,8 @@
+2007-10-11  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestObjectDeclarationSearchEngine.java (testFindTwoScopesEnum): Marked
+	test as unresolved.
+
 2007-10-11  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
 
 	* TestCxxObjectSearchEngine.java: Renamed to...
