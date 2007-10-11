@@ -1,3 +1,10 @@
+2007-10-11  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ChangeLog.elf: New. Recreate pre-refactor ChangeLog
+	entries from frysk-imports/lib/elf/ChangeLog.
+	* ChangeLog.dw: New. Recreate pre-refactor ChangeLog
+	entries from frysk-imports/lib/dw/ChangeLog.
+
 2007-10-05  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ElfPrpsinfo.java (ElfPrpsinfo): Take size hint parameter
