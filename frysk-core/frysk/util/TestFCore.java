@@ -235,7 +235,7 @@ public class TestFCore
       assertNotNull("Found main live task",mainLiveTask);
       
       // Get the live process register banks and store them
-      ByteBuffer liveRegisterMaps[] = mainLiveTask.getRegisterBanks();
+      ByteBuffer liveRegisterMaps[] = mainLiveTask.getRegisterBuffersFIXME();
       byte[] liveRegBuffer = new byte[(int) liveRegisterMaps[0].capacity()];
       liveRegisterMaps[0].get(0,liveRegBuffer,0,(int) liveRegisterMaps[0].capacity());
       
@@ -259,7 +259,7 @@ public class TestFCore
       assertNotNull("Checking core main task", mainCoreTask);
  
       // Get corefile registers
-      ByteBuffer coreRegisterMaps[] = mainCoreTask.getRegisterBanks(); 
+      ByteBuffer coreRegisterMaps[] = mainCoreTask.getRegisterBuffersFIXME(); 
       byte[] coreRegBuffer = new byte[(int) coreRegisterMaps[0].capacity()];
       coreRegisterMaps[0].get(coreRegBuffer);
       
@@ -283,7 +283,7 @@ public class TestFCore
       assertNotNull("Found main live task",mainLiveTask);
       
       // Get the live process register banks and store them
-      ByteBuffer liveRegisterMaps[] = mainLiveTask.getRegisterBanks();
+      ByteBuffer liveRegisterMaps[] = mainLiveTask.getRegisterBuffersFIXME();
       byte[] liveRegBuffer = new byte[(int) liveRegisterMaps[1].capacity()];
       liveRegisterMaps[1].get(0,liveRegBuffer,0,(int) liveRegisterMaps[1].capacity());
       
@@ -307,7 +307,7 @@ public class TestFCore
       assertNotNull("Checking core main task", mainCoreTask);
  
       // Get corefile registers
-      ByteBuffer coreRegisterMaps[] = mainCoreTask.getRegisterBanks(); 
+      ByteBuffer coreRegisterMaps[] = mainCoreTask.getRegisterBuffersFIXME(); 
       byte[] coreRegBuffer = new byte[(int) coreRegisterMaps[1].capacity()];
       coreRegisterMaps[1].get(coreRegBuffer);
       
@@ -333,7 +333,7 @@ public class TestFCore
       assertNotNull("Found main live task",mainLiveTask);
       
       // Get the live process register banks and store them
-      ByteBuffer liveRegisterMaps[] = mainLiveTask.getRegisterBanks();
+      ByteBuffer liveRegisterMaps[] = mainLiveTask.getRegisterBuffersFIXME();
       byte[] liveRegBuffer = new byte[(int) liveRegisterMaps[2].capacity()];
       liveRegisterMaps[2].get(0,liveRegBuffer,0,(int) liveRegisterMaps[2].capacity());
       
@@ -357,7 +357,7 @@ public class TestFCore
       assertNotNull("Checking core main task", mainCoreTask);
  
       // Get corefile registers
-      ByteBuffer coreRegisterMaps[] = mainCoreTask.getRegisterBanks(); 
+      ByteBuffer coreRegisterMaps[] = mainCoreTask.getRegisterBuffersFIXME(); 
       byte[] coreRegBuffer = new byte[(int) coreRegisterMaps[2].capacity()];
       coreRegisterMaps[2].get(coreRegBuffer);
       

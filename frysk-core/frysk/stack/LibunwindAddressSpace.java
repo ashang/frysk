@@ -122,7 +122,7 @@ class LibunwindAddressSpace extends AddressSpace {
 
     public int accessFPReg (int regnum, byte[] fpvalp, boolean write) {
 	Register reg = registerMap.getRegister(regnum);
-	task.accessRegister(reg, 0, fpvalp.length, fpvalp, 0, write);
+	task.access(reg, 0, fpvalp.length, fpvalp, 0, write);
 	return 0;
     }
 

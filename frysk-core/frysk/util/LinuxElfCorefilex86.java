@@ -197,7 +197,7 @@ public class LinuxElfCorefilex86 extends LinuxElfCorefile {
 	ElfPrFPRegSet fpRegSet = new ElfPrFPRegSet();
 
 	// Write FP Register info over wholesae. Do not interpret.
-	ByteBuffer registerMaps[] = task.getRegisterBanks();
+	ByteBuffer registerMaps[] = task.getRegisterBuffersFIXME();
 	byte[] regBuffer = new byte[(int) registerMaps[1].capacity()];
 	registerMaps[1].get(regBuffer);
 
@@ -215,7 +215,7 @@ public class LinuxElfCorefilex86 extends LinuxElfCorefile {
 	ElfPrXFPRegSet xfpRegSet = new ElfPrXFPRegSet();
 
 	// Write FP Register info over wholesae. Do not interpret.
-	ByteBuffer registerMaps[] = task.getRegisterBanks();
+	ByteBuffer registerMaps[] = task.getRegisterBuffersFIXME();
 	if (registerMaps[2].capacity() <=0)
 	  {
 	    return false;

@@ -85,7 +85,7 @@ public class LinuxExeTask extends Task {
      * sendrecRegisterBanks fakes out what the register values are at this point
      * as there is no info to be had at this moment in time.
      */
-    protected ByteBuffer[] sendrecRegisterBanks() {
+    protected ByteBuffer[] sendrecRegisterBuffersFIXME() {
 	ByteBuffer[] bankBuffers = new ByteBuffer[4];
 
 	    // Create an empty page

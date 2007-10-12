@@ -104,7 +104,7 @@ public class BankRegister {
      * @return value of register
      */
     public long get(frysk.proc.Task task) {
-	ByteBuffer b = task.getRegisterBanks()[bank];
+	ByteBuffer b = task.getRegisterBuffersFIXME()[bank];
 	long val = 0;
 	byte[] bytes = new byte[length];
 	b.get(offset, bytes, 0, length);
@@ -122,7 +122,7 @@ public class BankRegister {
      * @return byte[] value.
      */
     public byte[] getBytes(frysk.proc.Task task) {
-	ByteBuffer b = task.getRegisterBanks()[bank];
+	ByteBuffer b = task.getRegisterBuffersFIXME()[bank];
 	byte[] bytes = new byte[length];
 	b.get(offset, bytes, 0, length);
 	return bytes;
@@ -135,7 +135,7 @@ public class BankRegister {
      * @param val the value
      */
     void put(frysk.proc.Task task, long val) {
-	ByteBuffer b = task.getRegisterBanks()[bank];
+	ByteBuffer b = task.getRegisterBuffersFIXME()[bank];
 
 	if (length == 4) {
 	    b.putUInt(offset, val);

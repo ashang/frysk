@@ -70,7 +70,7 @@ public class LinuxTask
     return parent.getMemory();
   }
 
-  protected ByteBuffer[] sendrecRegisterBanks () 
+  protected ByteBuffer[] sendrecRegisterBuffersFIXME () 
   {
     ByteBuffer[] bankBuffers = new ByteBuffer[4];
 

@@ -55,8 +55,7 @@ public class TestRegs extends RegsCase {
     public void accessRegister(Object task,
 			       Register register, int offset, int length,
 			       byte[] bytes, int start, boolean write) {
-	((Task)task).accessRegister(register, offset, length, bytes,
-				    start, write);
+	((Task)task).access(register, offset, length, bytes, start, write);
     }
 
     public long getRegister(Object task, Register register) {

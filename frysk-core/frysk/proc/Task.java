@@ -1030,7 +1030,7 @@ public abstract class Task
     /**
      * Return the underlying bank register's value as a BigInteger.
      * This is being used to read large register but for that there
-     * the more efficient accessRegister available for that.
+     * the more efficient access(Register) available for that.
      */
     public BigInteger getBigIntegerRegisterFIXME(String name) {
 	BankRegister bankRegister = getBankRegister(name);
@@ -1066,8 +1066,8 @@ public abstract class Task
      * Access bytes OFFSET:LENGTH of the Task's register read/writing
      * it into the byte buffer from START.
      */
-    public void accessRegister(Register register, int offset, int length,
-			       byte[] bytes, int start, boolean write) {
+    public void access(Register register, int offset, int length,
+		       byte[] bytes, int start, boolean write) {
 	if (write)
 	    throw new RuntimeException("accessRegister:write not implemented");
 	else {
@@ -1080,16 +1080,20 @@ public abstract class Task
 	}
     }
 
-  private ByteBuffer[] registerBanks;
-  protected abstract ByteBuffer[] sendrecRegisterBanks();
+  private ByteBuffer[] registerBuffers;
+  protected abstract ByteBuffer[] sendrecRegisterBuffersFIXME();
   /**
    * Return the machine's register banks as an array.
+   *
+   * XXX: This is being replaced by "getRegisterBanks()" that returns
+   * a class that abstracts the ByteArray[] + BankRegister
+   * combination.
    */
-  public ByteBuffer[] getRegisterBanks ()
+  public ByteBuffer[] getRegisterBuffersFIXME ()
   {
-    if (registerBanks == null)
-      registerBanks = sendrecRegisterBanks();
-    return registerBanks;
+    if (registerBuffers == null)
+      registerBuffers = sendrecRegisterBuffersFIXME();
+    return registerBuffers;
   }
   
   /**
@@ -1135,7 +1139,7 @@ public abstract class Task
  {
    isa = null;
    memory = null;
-   registerBanks = null;
+   registerBuffers = null;
  }
   
   /**

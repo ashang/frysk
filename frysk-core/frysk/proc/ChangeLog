@@ -1,3 +1,13 @@
+2007-10-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java (access(Register,int,int,byte[],int,boolean)): Rename
+	accessRegister(...).
+	(registerBuffers): Rename registerBanks.
+	(getRegisterBuffersFIXME()): Rename getRegisterBanks().
+	(sendrecRegisterBuffersFIXME()): Rename sendrecRegisterBanks().
+	* BankRegister.java: Update.
+	* TestRegs.java: Update.
+
 2007-10-11  Andrew Cagney  <cagney@redhat.com>
 
 	* BankRegister.java (put(Task,long)): Make package-private.

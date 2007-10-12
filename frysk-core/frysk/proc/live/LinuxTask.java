@@ -120,7 +120,7 @@ public class LinuxTask
     /**
      * Return the ISA's register-bank byte-buffers.
      */
-    protected ByteBuffer[] sendrecRegisterBanks () 
+    protected ByteBuffer[] sendrecRegisterBuffersFIXME () 
     {
 	return getIsa().getRegisterBankBuffers(getTid());
     }
