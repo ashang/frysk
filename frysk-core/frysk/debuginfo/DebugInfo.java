@@ -314,8 +314,6 @@ public class DebugInfo {
 	    // FIXME: Why is this ignored?
 	} catch (antlr.TokenStreamException t) {
 	    // FIXME: Why is this ignored?
-	} catch (frysk.expr.TabException t) {
-	    // FIXME: Why is this ignored?
 	}
     
 	CommonAST t = (CommonAST) parser.getAST();

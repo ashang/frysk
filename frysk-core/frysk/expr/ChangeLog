@@ -1,3 +1,9 @@
+2007-10-12  Andrew Cagney  <cagney@redhat.com>
+
+	* TabException.java: Extend RuntimeException; make package
+	private.
+	* CExpr.g: Remove all explict throws of TabException.
+
 2007-10-11  Teresa Thomas  <tthomas@redhat.com>
 
 	* CExprAnnotator.g (MEMORY): Use expr.

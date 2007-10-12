@@ -132,19 +132,19 @@ imaginaryTokenDefinitions
   * The TabException propagates all the way up, to the start rule,
   * which then propagates it up to the calling program.
   */
-start throws TabException
+start
     :   expressionList ETX
     ;
 
 /**
   *  This rule looks for comma separated expressions.
   */
-expressionList throws TabException
+expressionList
     :   expression (COMMA! expression)*
         {#expressionList = #(#[EXPR_LIST,"Expr list"], expressionList);}
         ;
 
-expression! throws TabException
+expression!
     :   assign_expr1: assignment_expression 
         {
 /** 
@@ -160,7 +160,7 @@ expression! throws TabException
 /**
   *  Various types of assignment operators like +=, *=, /= etc.
   */
-assign_op  throws TabException 
+assign_op  
     :   ASSIGNEQUAL^
     |   TIMESEQUAL^
     |   DIVIDEEQUAL^
@@ -178,7 +178,7 @@ assign_op  throws TabException
   *  Assignment expressions of the form "expr1 = expr2 = expr3".
   *  Notice that the operator can by any assignment operator.
   */
-assignment_expression! throws TabException 
+assignment_expression! 
     :   (c:conditional_expression
             (a:assign_op   r:remainder_expression)?)
         {
@@ -189,7 +189,7 @@ assignment_expression! throws TabException
         }
     ;
 
-remainder_expression throws TabException 
+remainder_expression 
     :   ((conditional_expression 
                 (COMMA|SEMICOLON|RPAREN))=>
             { assign_stmt_RHS_found += 1;}
@@ -213,7 +213,7 @@ remainder_expression throws TabException
   *  Conditional expressions of the form
   *  (logical_expr)?expr:expr
   */
-conditional_expression! throws TabException 
+conditional_expression! 
     :   log_or_expr:logical_or_expression
         (ques:QUESTIONMARK expr:expression colon:COLON 
             cond_expr:conditional_expression)?
@@ -225,31 +225,31 @@ conditional_expression! throws TabException
         }
     ;
 
-logical_or_expression throws TabException 
+logical_or_expression 
     :	logical_and_expression (OR^ logical_and_expression)* 
     ;
 
-logical_and_expression throws TabException 
+logical_and_expression 
     :	inclusive_or_expression (AND^ inclusive_or_expression)* 
     ;
 
-inclusive_or_expression throws TabException 
+inclusive_or_expression 
     :	exclusive_or_expression (BITWISEOR^ exclusive_or_expression)*
     ;
 
-exclusive_or_expression throws TabException 
+exclusive_or_expression 
     :   and_expression (BITWISEXOR^ and_expression)*
     ;
 
-and_expression throws TabException 
+and_expression 
     :   equality_expression (AMPERSAND^  equality_expression)*
     ;
 
-equality_expression throws TabException 
+equality_expression 
     :   relational_expression ((NOTEQUAL^ | EQUAL^) relational_expression)*
     ;
 
-relational_expression throws TabException 
+relational_expression 
     :   shift_expression
         (options {warnWhenFollowAmbig = false;}:
 	    (	LESSTHAN^
@@ -261,25 +261,25 @@ relational_expression throws TabException
         )*
     ;
 
-shift_expression throws TabException 
+shift_expression 
     :   additive_expression ((SHIFTLEFT^ | SHIFTRIGHT^) additive_expression)*
     ;
 
-additive_expression throws TabException 
+additive_expression 
     :   multiplicative_expression
         (options	{warnWhenFollowAmbig = false;}:
             (PLUS^ | MINUS^) multiplicative_expression
         )*
     ;
 
-multiplicative_expression throws TabException 
+multiplicative_expression 
     :	unary_expression
         (options{warnWhenFollowAmbig = false;}:
             (STAR^ | DIVIDE^ | MOD^) unary_expression
         )*
     ;
  
-unary_expression throws TabException 
+unary_expression 
     :   PLUS^ unary_expression
     |   MINUS^ unary_expression
     |   PLUSPLUS^ postfix_expression
@@ -289,7 +289,7 @@ unary_expression throws TabException
     |   unary_expression_simple
     ;
 
-unary_expression_simple throws TabException 
+unary_expression_simple 
     :   AMPERSAND prim_expr: id_expression
         {
             ## = #([ADDRESS_OF, "Address Of"], #prim_expr); 
@@ -314,7 +314,7 @@ primitiveType
     |   "double"
     ;
 
-cast_expression! throws TabException 
+cast_expression! 
     :  LPAREN type:primitiveType RPAREN expr:unary_expression
 //       | LPAREN (expression) RPAREN unary_expression_simple
 //       |  LPAREN (expression | primitiveType) RPAREN unary_expression_simple
@@ -323,7 +323,7 @@ cast_expression! throws TabException
         }
 	;
 
-postfix_expression throws TabException 
+postfix_expression 
 {String sTabText;}
     //  should subscript, component, call, post inc/dec be moved here?
     :	post_expr1:primary_expression 
@@ -351,7 +351,7 @@ postfix_expression throws TabException
   *	This enables auto-completion by allowing the user
   *	to press TAB whenever auto-completion is required
   */
-primary_expression throws TabException 
+primary_expression 
     :   (TAB {bTabPressed = true;}
 	    | primary_identifier)
     |   constant
@@ -359,14 +359,14 @@ primary_expression throws TabException
     |   LPAREN! expression RPAREN!
     ;
 
-/**
+/***
   *  TabException is raised everytime the TAB is pressed.
   *  The parser thus bails out immediately and returns the
   *  parse tree constructed so far.
   */
 /* ??? add (id_expression | (TAB {bTabPressed = true;})) */
 
-primary_identifier! throws TabException 
+primary_identifier! 
 {
     ExprAST astPostExpr = null, astDotExpr = null;
 } 

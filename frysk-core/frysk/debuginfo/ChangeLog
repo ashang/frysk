@@ -1,3 +1,8 @@
+2007-10-12  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfo.java (printNoSymbolTable(String,boolean)): Do not
+	catch/discard TabException.
+
 2007-10-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestObjectDeclarationSearchEngine.java (testFindTwoScopesEnum): Marked

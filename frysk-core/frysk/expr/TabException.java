@@ -1,6 +1,7 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2006 IBM Corp.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,6 +38,10 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.expr;
+
+import antlr.collections.AST;
+
 /** 
  * An that should be thrown when a <TAB> key is pressed.
  *
@@ -45,12 +50,7 @@
  * parser.
  */
 
-package frysk.expr;
-
-import antlr.collections.*;
-
-public class TabException
-    extends Exception
+public class TabException extends RuntimeException
 {
     static final long serialVersionUID = 1;
 
@@ -63,8 +63,7 @@ public class TabException
      * parser. The second argument is the incomplete identifier that
      * the user may have typed in. It may or may not be null
      */
-    public TabException(AST astPartial, String sTabExpression)
-    {
+    public TabException(AST astPartial, String sTabExpression) {
 	astExpression = astPartial;
 	this.sTabExpression = sTabExpression;
     }
@@ -73,16 +72,14 @@ public class TabException
      * As the name suggests, this function returns the partial AST
      * associated with this Exception
      */
-    public AST getAst ()
-    {
+    public AST getAst() {
 	return astExpression;
     }
 
     /**
      * Return the partial identifier that the user may have keyed in
      */
-    public String getTabExpression ()
-    {
+    public String getTabExpression() {
 	return sTabExpression;
     }
 
@@ -90,8 +87,7 @@ public class TabException
     /**
      * Returns a lisp style representation of the AST
      */
-    public String toString()
-    {
-	return astExpression.toStringList ();
+    public String toString() {
+	return astExpression.toStringList();
     }
 }
