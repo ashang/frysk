@@ -1,5 +1,9 @@
 2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (useRegisterBanksXXX): New.
+	(getRegister(Register)): Check.
+	(setRegister(Register)): Check.
+
 	* BankRegister.java (getFIXME(Task)): Rename get(Task).
 	(putFIXME(Task)): Rename put(Task).
 	* IsaIA32.java: Update; use Task .getRegister, and IA32Registers.

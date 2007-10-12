@@ -1050,17 +1050,24 @@ public abstract class Task
      * Return the Task's Register as a long.
      */
     public long getRegister(Register register) {
-	BankRegister bankRegister
-	    = getIsa().getRegisterByName(register.getName());
-	return bankRegister.getFIXME(this);
+	if (!useRegisterBanksXXX) {
+	    BankRegister bankRegister
+		= getIsa().getRegisterByName(register.getName());
+	    return bankRegister.getFIXME(this);
+	}
+	return getRegisterBanks().get(register);
     }
     /**
      * Store the long value in the Task's register.
      */
     public void setRegister(Register register, long value) {
-	BankRegister bankRegister
-	    = getIsa().getRegisterByName(register.getName());
-	bankRegister.putFIXME(this, value);
+	if (!useRegisterBanksXXX) {
+	    BankRegister bankRegister
+		= getIsa().getRegisterByName(register.getName());
+	    bankRegister.putFIXME(this, value);
+	    return;
+	}
+	getRegisterBanks().set(register, value);
     }
     /**
      * Access bytes OFFSET:LENGTH of the Task's register read/writing
@@ -1080,6 +1087,7 @@ public abstract class Task
 	}
     }
 
+    public static boolean useRegisterBanksXXX = false;
     private RegisterBanks registerBanks;
     protected abstract RegisterBanks sendrecRegisterBanks();
     RegisterBanks getRegisterBanks() {
