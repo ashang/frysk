@@ -1,3 +1,12 @@
+2007-10-12  Teresa Thomas  <tthomas@redhat.com>
+
+	* CExpr.g: Add MEMBER. 
+	(DOT): Use MEMBER instead of REFERENCE.
+	(astDotExpr): Delete.
+	(AMPERSAND): Use postfix_expression.
+	(STAR): Ditto.
+	* CExprEvaluator.g (MEMBER): Implement.
+
 2007-10-12  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Moved Variable.java from frysk.scope to frysk.value

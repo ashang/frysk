@@ -321,4 +321,12 @@ abstract class CompositeType
 	}
 	writer.print("}");
     }
+    
+    public Value member(Value var1, String member)
+    {
+	Member mem = (Member)nameToMember.get(member);
+	if (mem == null)
+	    throw new RuntimeException("Invalid data member: " + member);
+	return getValue (var1, mem.index);
+    }
 }

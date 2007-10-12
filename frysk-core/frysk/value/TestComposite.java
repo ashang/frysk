@@ -195,4 +195,23 @@ public class TestComposite
 	CompositeType t = new StructType(null, 4);
 	assertEquals("toPrint", "struct {\n}", t.toPrint());
     }
+    
+    public void testMember()
+    {
+	Type t = new StructType("STRUCT", 4)
+	    .addMember("pub1", littleInt32, 0, null)
+	    .addMember("priv1", littleInt32, 4, null)
+	    .addMember("prot1", littleInt16, 8, null);
+	
+	byte[] buf = {
+		      0x01, 0x02, 0x03, 0x04, // pub1
+		      0x05, 0x06, 0x07, 0x08, // priv1
+		      0x09, 0x10              // prot1
+		     };
+	Value val = new Value(t, new ScratchLocation(buf));
+	
+	assertEquals ( "Member1", 67305985, t.member(val, "pub1").asLong());
+	assertEquals ( "Member2", 134678021, t.member(val, "priv1").asLong());
+	assertEquals ( "Member3", 4105, t.member(val, "prot1").asLong());
+    }
 }

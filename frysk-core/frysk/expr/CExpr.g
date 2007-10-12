@@ -123,6 +123,7 @@ imaginaryTokenDefinitions
 	EXPR_LIST
 	FUNC_CALL
 	MEMORY
+	MEMBER
     ;
 
 /** 
@@ -136,7 +137,7 @@ start
     :   expressionList ETX
     ;
 
-/**
+/** 
   *  This rule looks for comma separated expressions.
   */
 expressionList
@@ -290,11 +291,11 @@ unary_expression
     ;
 
 unary_expression_simple 
-    :   AMPERSAND prim_expr: id_expression
+    :   AMPERSAND prim_expr: postfix_expression
         {
             ## = #([ADDRESS_OF, "Address Of"], #prim_expr); 
         }
-    |   STAR mem_expr: id_expression
+    |   STAR mem_expr: postfix_expression
         {
             ## = #([MEMORY, "Memory"], #mem_expr); 
         }
@@ -368,7 +369,7 @@ primary_expression
 
 primary_identifier! 
 {
-    ExprAST astPostExpr = null, astDotExpr = null;
+    ExprAST astPostExpr = null;
 } 
     :   (   prim_expr: id_expression
             {
@@ -422,24 +423,12 @@ primary_identifier!
                 (   tb:TAB
                     {
                         bTabPressed = true;
-                        astDotExpr = #tb; 
+           		astPostExpr = #(#[MEMBER, "Member"], #astPostExpr, #tb);
                     }
                 |   id_expr1:id_expression
-                    { astDotExpr = #id_expr1;}
+                    {   astPostExpr = #(#[MEMBER, "Member"], #astPostExpr, #id_expr1); }
                 )
-                // a.b.c => (Class Reference a b c))
-                {
-				  if (astPostExpr.getFirstChild() != null) {
-		            if (#astDotExpr.getText().endsWith("\t") == false)
-                      astPostExpr.addChild(#astDotExpr); 
-		          }
-                  else {
-		     	    if (#astDotExpr.getText().endsWith("\t") == false)
-		       		  #astPostExpr = #(#[REFERENCE,"Class Reference"], #astPostExpr, #astDotExpr);
-		     		else
-                      #astPostExpr = #(#[REFERENCE,"Class Reference"], #astPostExpr);
-		   		  }
-                }
+                
             |   POINTERTO id_expr2:id_expression
                 { astPostExpr = #(POINTERTO, #astPostExpr, #id_expr2); }
             |   PLUSPLUS

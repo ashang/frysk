@@ -233,8 +233,10 @@ public abstract class Type {
 	Type type = ((PointerType)var1.getType()).getType();
 	return new Value (type, loc);  
     }
-    
-    /**
+    public Value member(Value var1, String member) {
+	throw new InvalidOperatorException(this, ".");
+    }
+   /**
      * Assign VALUE to LOCATION; possibly performing type-conversion.
      */
     void assign(Location location, Value value) {

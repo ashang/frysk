@@ -40,6 +40,7 @@
 package frysk.value;
 
 import java.io.PrintWriter;
+
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
@@ -186,5 +187,8 @@ abstract class TypeDecorator extends Type {
     }
     public Type pack(int bitSize, int bitOffset) {
 	return decorated.pack(bitSize, bitOffset);
+    }
+    public Value member(Value v, String member) {
+	return decorated.member(v, member);
     }
 }

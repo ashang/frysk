@@ -156,7 +156,7 @@ expr returns [Value returnVar=null]
 	throws  InvalidOperatorException, 
 		OperationNotDefinedException,
 		NameNotFoundException
-{ Value v1, v2, log_expr; ArrayList el;}
+{ Value v1, v2, log_expr; String s1; ArrayList el;}
     :   #(PLUS  v1=expr v2=expr)  {	
 		    returnVar = v1.getType().add(v1, v2);  
         }
@@ -343,6 +343,9 @@ expr returns [Value returnVar=null]
     |   #(FUNC_CALL v1=expr v2=expr) {
             returnVar = v1;
         }
+    |   #(MEMBER v1=expr s1=identifier) {
+           returnVar = v1.getType().member(v1, s1);
+        }  
     |   #(REFERENCE el=references) {
             returnVar = (Value)exprSymTab.getValueFIXME(el);
         }

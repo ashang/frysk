@@ -1,3 +1,10 @@
+2007-10-12  Teresa Thomas  <tthomas@redhat.com>
+
+	* TypeDecorator.java (member): New.
+	* CompositeType.java (member): New.
+	* Type.java (member): New.
+	* TestComposite.java (testMember): New.
+
 2007-10-11  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
 
 	* ObjectDeclaration.java: New file.
