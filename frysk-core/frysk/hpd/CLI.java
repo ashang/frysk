@@ -51,9 +51,6 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 import java.util.WeakHashMap;
-
-import javax.naming.NameNotFoundException;
-
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
@@ -249,13 +246,11 @@ public class CLI {
         userhelp.addHelp(name, handler.getHelp());
     }
  
-    Value parseValue(Task task, String value)
-    throws ParseException, NameNotFoundException  {
+    Value parseValue(Task task, String value) throws ParseException {
 	return parseValue(task, value, false);
     }
 
-    Value parseValue(Task task, String value, boolean dumpTree)
-    throws ParseException, NameNotFoundException  {
+    Value parseValue(Task task, String value, boolean dumpTree) throws ParseException {
         DebugInfoFrame frame = getTaskFrame(task);
         DebugInfo debugInfo = getTaskDebugInfo(task);
         if (debugInfo != null)

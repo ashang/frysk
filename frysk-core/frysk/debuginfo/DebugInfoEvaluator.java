@@ -46,9 +46,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.naming.NameNotFoundException;
-
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
@@ -89,7 +86,7 @@ class DebugInfoEvaluator
      * @param s Symbol s
      * @return The die for symbol s
      */
-    public Variable getVariable (String s) throws NameNotFoundException {
+    public Variable getVariable (String s) {
 	Dwfl dwfl;
 	DwarfDie[] allDies;
 	Variable variable;
@@ -122,7 +119,7 @@ class DebugInfoEvaluator
             // e.g. DW_TAG_enumerator 
 	    varDie = DwarfDie.getDeclCU(allDies, s);
 	if (varDie == null)
-            throw new NameNotFoundException();
+            throw new RuntimeException("can't find debug info for " + s);
         variable = new Variable(varDie);
         return variable;
     }
@@ -130,7 +127,7 @@ class DebugInfoEvaluator
     /**
      * @return Value for symbol s in frame f
      */
-    public Value getValue (String s) throws NameNotFoundException {
+    public Value getValue (String s) {
 	if (s.charAt(0) == '$') {
 	    Registers regs = RegistersFactory.getRegisters(frame.getTask()
 							   .getISA());
@@ -173,7 +170,7 @@ class DebugInfoEvaluator
      * {a,b,c,1,1,2,2}
      * @return Value of the symbol
      */
-    public Value getValueFIXME (ArrayList components) throws NameNotFoundException {
+    public Value getValueFIXME (ArrayList components) {
 	String s = (String)components.get(0);
 	Variable variable = getVariable(s);
 	if (variable == null)

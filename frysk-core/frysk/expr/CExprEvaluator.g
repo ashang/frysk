@@ -88,9 +88,6 @@ header
     import frysk.value.Value;
     import frysk.expr.ExprSymTab;
     import frysk.expr.ExprAST;
-    import javax.naming.NameNotFoundException;
-    import frysk.value.InvalidOperatorException;
-    import frysk.value.OperationNotDefinedException;
     import inua.eio.ByteOrder;
     import lib.dwfl.BaseTypes;
 }
@@ -138,24 +135,15 @@ identifier returns [String idSpelling=null]
     :   ident:IDENT  {idSpelling=ident.getText();} ;
 
 references returns [ArrayList el = null;]
-	throws  InvalidOperatorException, 
-		OperationNotDefinedException,
-		NameNotFoundException
     {   refList = new ArrayList();}
     :   (subscript_or_member)* {el=refList;};
 
 subscript_or_member
-	throws  InvalidOperatorException, 
-		OperationNotDefinedException,
-		NameNotFoundException
     {   Value s; String id;}
     :   #(SUBSCRIPT s=expr) {refList.add(new Integer((int)s.asLong()).toString());}
     |    id=identifier {refList.add(id);};
 
 expr returns [Value returnVar=null] 
-	throws  InvalidOperatorException, 
-		OperationNotDefinedException,
-		NameNotFoundException
 { Value v1, v2, log_expr; String s1; ArrayList el;}
     :   #(PLUS  v1=expr v2=expr)  {	
 		    returnVar = v1.getType().add(v1, v2);  

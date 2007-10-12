@@ -43,9 +43,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.naming.NameNotFoundException;
-
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.proc.Task;
 import frysk.symtab.Symbol;
@@ -154,9 +151,9 @@ public class DisassembleCommand extends CLIHandler {
 		    currentInstruction = cli.parseValue(task,
 			    (String) params.get(0)).asLong();
 		    symbol = SymbolFactory.getSymbol(task, currentInstruction);
-		} catch (NameNotFoundException nnfe) {
+		} catch (RuntimeException nnfe) {
 		    cli.addMessage(new Message(nnfe.getMessage(),
-			    Message.TYPE_ERROR));
+					       Message.TYPE_ERROR));
 		    continue;
 		}
 	    } else if (params.size() == 2) {
@@ -166,9 +163,9 @@ public class DisassembleCommand extends CLIHandler {
 			    (String) params.get(0)).asLong();
 		    endInstruction = cli.parseValue(task,
 			    (String) params.get(1)).asLong();
-		} catch (NameNotFoundException nnfe) {
+		} catch (RuntimeException nnfe) {
 		    cli.addMessage(new Message(nnfe.getMessage(),
-			    Message.TYPE_ERROR));
+					       Message.TYPE_ERROR));
 		    continue;
 		}
 		cli.outWriter.println("Dump of assembler code from 0x"

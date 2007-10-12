@@ -1,3 +1,15 @@
+2007-10-12  Andrew Cagney  <cagney@redhat.com>
+
+	* CLI.java: Do not catch, throw, or ignore NameNotFoundException.
+	* BreakpointCommand.java: Ditto.
+	* ListCommand.java: Ditto.
+	* ExamineCommand.java: Ditto.
+	* DisassembleCommand.java: Ditto.
+	* PlocationCommand.java: Ditto.
+	* PrintCommand.java: Ditto.
+	* PtypeCommand.java: Ditto.
+	* WhatCommand.java: Ditto.
+
 2007-10-11  Andrew Cagney  <cagney@redhat.com>
 
 	* TestBreakpoints.java: Mark as unresolved; 5165.

@@ -41,11 +41,7 @@ package frysk.expr;
 
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
-
 import java.util.ArrayList;
-
-import javax.naming.NameNotFoundException;
-
 import frysk.value.Type;
 import frysk.value.Value;
 import frysk.value.Variable;
@@ -55,11 +51,11 @@ public interface ExprSymTab
     /**
      * Lookup S, assuming S is variable or constant.
      */
-    Value getValue(String s) throws NameNotFoundException;
+    Value getValue(String s);
     /**
      * Lookup S, assuming S is a variable.
      */
-    Variable getVariable(String s) throws NameNotFoundException;
+    Variable getVariable(String s);
     /**
      * The byte order to use when creating new values.
      */
@@ -84,5 +80,5 @@ public interface ExprSymTab
      * SELECT (a[i;j], and MEMBER (a.j) nodes in the AST and then
      * directly requesting that the type/value perform the operation.
      */
-    Value getValueFIXME(ArrayList v) throws NameNotFoundException;
+    Value getValueFIXME(ArrayList v);
 }

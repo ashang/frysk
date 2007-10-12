@@ -1,3 +1,8 @@
+2007-10-12  Andrew Cagney  <cagney@redhat.com>
+
+	* DisplayValue.java: Update; catch RuntimeException instead of
+	NameNotFoundException.
+
 2007-09-28  Tim Moore  <timoore@redhat.com>
 
 	* Breakpoint.java (PersistentBreakpoint constructor): Take a

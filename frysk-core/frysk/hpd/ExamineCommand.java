@@ -42,7 +42,6 @@ package frysk.hpd;
 import java.text.ParseException;
 import java.util.Iterator;
 import frysk.value.Value;
-import javax.naming.NameNotFoundException;
 import java.util.ArrayList;
 
 public class ExamineCommand extends CLIHandler {
@@ -70,9 +69,9 @@ public class ExamineCommand extends CLIHandler {
 	    try {
 		// XXX: Is this right, is this the entire expresson?
 		value = cli.parseValue(tdata.getTask(), (String) params.get(0));
-	    } catch (NameNotFoundException nnfe) {
+	    } catch (RuntimeException nnfe) {
 		cli.addMessage(new Message(nnfe.getMessage(),
-			Message.TYPE_ERROR));
+					   Message.TYPE_ERROR));
 		return;
 	    }
 

@@ -1,5 +1,13 @@
 2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
+	* ExprSymTab.java (getValue(String)): Do not throw
+	NameNotFoundException.
+	(getVariable(String)): Ditto.
+	(getValueFIXME(String)): Ditto.
+	* CExprEvaluator.g: Ditto; ditto for OperationNotDefinedException
+	and InvalidOperatorException.
+	* CExprAnnotator.g: Ditto.
+
 	* Completer.g: Delete unused variables.
 
 2007-10-12  Teresa Thomas  <tthomas@redhat.com>

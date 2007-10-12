@@ -40,9 +40,6 @@
 package frysk.rt;
 
 import java.text.ParseException;
-
-import javax.naming.NameNotFoundException;
-
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
@@ -120,20 +117,15 @@ class DisplayValue
     
     // We found the correct frame, now refresh the variable
     DebugInfo info = new DebugInfo(current);
-    try
-      {
+    try {
         myVar = info.print(varLabel, current);
-      }
-    catch (NameNotFoundException e)
-      {
-//        e.printStackTrace();
+    } catch (RuntimeException e) {
+	// e.printStackTrace();
         myVar = null;
-      }
-    catch (ParseException e)
-      {
-//        e.printStackTrace();
+    } catch (ParseException e) {
+	// e.printStackTrace();
         myVar = null;
-      }
+    }
   }
   
   /**

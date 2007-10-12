@@ -42,12 +42,9 @@ package frysk.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 import frysk.value.Format;
-import frysk.debuginfo.ValueUavailableException;
-import frysk.debuginfo.VariableOptimizedOutException;
 import java.util.Iterator;
 import frysk.proc.Task;
 import frysk.value.Value;
-import javax.naming.NameNotFoundException;
 
 class PrintCommand
     extends CLIHandler
@@ -144,21 +141,10 @@ class PrintCommand
             doWithoutTask = false;
             try {
                 result = cli.parseValue(task, sInput, dumpTree);	  
-            }
-            catch (NameNotFoundException nnfe) {
+            } catch (RuntimeException nnfe) {
+		cli.addMessage(nnfe.getMessage(), Message.TYPE_ERROR);
                 continue;
             }
-            catch (ValueUavailableException vue) {
-                cli.addMessage("Symbol \"" + sInput + "\" is not available in the current context.",
-                               Message.TYPE_ERROR);
-                continue;
-            }
-            catch (VariableOptimizedOutException vooe) {
-                cli.addMessage("Value of symbol \"" + sInput + "\" is optimized out.",
-                               Message.TYPE_ERROR);
-                continue;
-            }
-
 
 	    // XXX: Would it be better to just always have some sort
 	    // of fake task?

@@ -46,9 +46,6 @@ import java.io.LineNumberReader;
 import java.util.Iterator;
 import java.text.ParseException;
 import java.util.ArrayList;
-
-import javax.naming.NameNotFoundException;
-
 import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfo;
@@ -102,14 +99,10 @@ class ListCommand
                         line = frame.getLines()[0].getLine() - 10;
                     else {
                         DwarfDie funcDie = null;
-                        try {
-                            DebugInfo debugInfo = cli.getTaskDebugInfo(task);
-                            if (debugInfo != null)
-                                funcDie = debugInfo
-                                    .getSymbolDie((String)params.get(0));
-                        }
-                        catch (NameNotFoundException none) {
-                            // XXX: Ignored?
+			DebugInfo debugInfo = cli.getTaskDebugInfo(task);
+			if (debugInfo != null) {
+			    funcDie = debugInfo
+				.getSymbolDie((String)params.get(0));
                         }
                         line = (int)funcDie.getDeclLine();
                     }

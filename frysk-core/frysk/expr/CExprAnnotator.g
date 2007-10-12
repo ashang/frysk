@@ -89,9 +89,6 @@ header
     import frysk.value.Variable;
     import frysk.expr.ExprSymTab;
     import frysk.expr.ExprAST;
-    import javax.naming.NameNotFoundException;
-    import frysk.value.InvalidOperatorException;
-    import frysk.value.OperationNotDefinedException;
     import inua.eio.ByteOrder;
     import lib.dwfl.BaseTypes;
 }
@@ -130,9 +127,6 @@ identifier
     :   ident:IDENT  {ident.getText();} ;
 
 expr
-	throws  InvalidOperatorException, 
-		OperationNotDefinedException,
-		NameNotFoundException
     :   #(PLUS  expr expr)  {	
         }
     |   ( #(MINUS expr expr) )=> #(MINUS expr expr) {
@@ -233,22 +227,12 @@ expr
         }   
     |   ident:IDENT  {
             Variable var;
-            try {
-                var = exprSymTab.getVariable(ident.getText());
-                ident.exprType = exprSymTab.getType(var);
-            }
-            catch (NameNotFoundException ignore) {
-                // FIXME: why is this ignored?
-            }
+            var = exprSymTab.getVariable(ident.getText());
+            ident.exprType = exprSymTab.getType(var);
         }
     |   tident:TAB_IDENT  {
             Variable var;
-            try {
-                var = exprSymTab.getVariable(tident.getText());
-                tident.exprType = exprSymTab.getType(var);
-            }
-            catch (NameNotFoundException ignore) {
-                // FIXME: why is this ignored?
-            }
+            var = exprSymTab.getVariable(tident.getText());
+            tident.exprType = exprSymTab.getType(var);
         }
     ;

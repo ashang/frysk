@@ -47,18 +47,15 @@ import frysk.expr.CExprParser;
 import frysk.expr.ExprAST;
 import frysk.expr.ExprSymTab;
 import frysk.expr.CExprEvaluator;
-import frysk.expr.CExprAnnotator;
 import frysk.proc.Proc;
 import frysk.value.Type;
 import frysk.value.Value;
 import frysk.value.Variable;
-
 import java.io.StringReader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import javax.naming.NameNotFoundException;
 import lib.dwfl.Dwarf;
 import lib.dwfl.DwarfCommand;
 import lib.dwfl.DwarfDie;
@@ -141,11 +138,10 @@ public class DebugInfo {
     /**
      * Get the DwarfDie for a function symbol
      */
-    public DwarfDie getSymbolDie(String input)
-	throws NameNotFoundException {
+    public DwarfDie getSymbolDie(String input) {
 	DwarfDie result = DwarfDie.getDecl(dwarf, input);
 	if (result == null)
-	    throw new NameNotFoundException("symbol " + input + " not found.");
+	    throw new RuntimeException("symbol " + input + " not found.");
 	else
 	    return result;
     }
@@ -156,16 +152,14 @@ public class DebugInfo {
      * @param sInput
      * @return String
      * @throws ParseException
-     * @throws NameNotFoundException
      */
-    public String what(DebugInfoFrame frame, String sInput) throws ParseException,
-					     NameNotFoundException {
+    public String what(DebugInfoFrame frame, String sInput) throws ParseException {
 	long pc = frame.getAdjustedAddress();
 	Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
 	DwflDieBias bias = dwfl.getDie(pc);
 	TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
 	if (bias == null)
-	    throw new NameNotFoundException("No symbol table is available.");
+	    throw new RuntimeException("No symbol table is available.");
 	DwarfDie die = bias.die;
 	StringBuffer result = new StringBuffer();
 
@@ -174,7 +168,7 @@ public class DebugInfo {
 	if (varDie == null) {
 	    varDie = DwarfDie.getDecl(dwarf, sInput);
 	    if (varDie == null)
-		throw new NameNotFoundException(sInput + " not found in scope.");
+		throw new RuntimeException(sInput + " not found in scope.");
 	    if (varDie.getAttrBoolean(DwAt.EXTERNAL))
 		result.append("extern ");
 	    switch (varDie.getTag().hashCode()) {
@@ -218,13 +212,11 @@ public class DebugInfo {
      * @return Variable
      * @throws ParseException
      */
-      public Value print (String sInput, DebugInfoFrame frame) 
-      throws ParseException, NameNotFoundException {
+      public Value print (String sInput, DebugInfoFrame frame) throws ParseException {
 	  return print (sInput, frame, false);
       }
     
-      public Value print (String sInput, DebugInfoFrame frame, boolean dumpTree) 
-      throws ParseException, NameNotFoundException {
+      public Value print (String sInput, DebugInfoFrame frame, boolean dumpTree) throws ParseException {
 	Value result = null;
 	sInput += (char) 3;
     
@@ -245,7 +237,6 @@ public class DebugInfo {
 	if (dumpTree)
 	    System.out.println("parse tree: " + exprAST.toStringTree());
 	CExprEvaluator cExprEvaluator;
-	CExprAnnotator cExprAnnotator;
 	/*
 	 * If this request has come from the SourceWindow, there's no way to
 	 * know which thread the mouse request came from; if there are multiple
@@ -254,12 +245,8 @@ public class DebugInfo {
 	 * than this loop will run only once anyways.
 	 */
 	DebugInfoEvaluator debugInfoEvaluator = new DebugInfoEvaluator(frame);
-        // Adding the separate anotation pass broke << (foo.<TAB> >>
-	cExprAnnotator = new CExprAnnotator(debugInfoEvaluator);
 	cExprEvaluator = new CExprEvaluator(debugInfoEvaluator);
 	try {
-	    cExprAnnotator.setASTNodeClass("frysk.expr.ExprAST");
-	    cExprAnnotator.expr(exprAST);
 	    result = cExprEvaluator.expr(exprAST);
 	} catch (ArithmeticException ae) {
 	    ae.printStackTrace();
@@ -275,23 +262,21 @@ public class DebugInfo {
 	return result;
     }
    
-    static public Value printNoSymbolTable (String sInput, boolean dump_tree) 
-    throws ParseException, NameNotFoundException {
+    static public Value printNoSymbolTable (String sInput, boolean dump_tree) throws ParseException {
 	Value result = null;
 	sInput += (char) 3;
     
-	final class TmpSymTab
-	    implements ExprSymTab {
-	  public Value getValue (String s) throws NameNotFoundException {
-		throw new NameNotFoundException("No symbol table is available.");
+	final class TmpSymTab implements ExprSymTab {
+	    public Value getValue (String s){
+		throw new RuntimeException("No symbol table is available.");
 	    }
 
-	  public Value getValueFIXME (ArrayList v) throws NameNotFoundException {
-		throw new NameNotFoundException("No symbol table is available.");
+	    public Value getValueFIXME(ArrayList v) {
+		throw new RuntimeException("No symbol table is available.");
 	    }
-	  public Variable getVariable (String s)throws NameNotFoundException {
-	        throw new NameNotFoundException("No symbol table is available.");
-	  } 
+	    public Variable getVariable(String s) {
+	        throw new RuntimeException("No symbol table is available.");
+	    }
 	  public ByteOrder order() {
 	        throw new RuntimeException("No symbol table is available.");
 	  }

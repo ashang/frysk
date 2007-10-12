@@ -54,7 +54,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import javax.naming.NameNotFoundException;
 import lib.dwfl.DwarfDie;
 
 class BreakpointCommand extends CLIHandler {
@@ -146,10 +145,12 @@ class BreakpointCommand extends CLIHandler {
 		Task task = (Task) taskIter.next();
 		DebugInfo debugInfo = cli.getTaskDebugInfo(task);
 		if (debugInfo != null) {
-		    DwarfDie die = null;
+		    DwarfDie die;
 		    try {
 			die = debugInfo.getSymbolDie(breakpt);
-		    } catch (NameNotFoundException e) {
+		    } catch (RuntimeException e) {
+			// Symbol not yet visible.
+			die = null;
 		    }
 		    actionpoint = bpManager.addFunctionBreakpoint(breakpt, die);
 		    actionpoint.addObserver(new CLIBreakpointObserver() {

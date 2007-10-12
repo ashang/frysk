@@ -1,3 +1,9 @@
+2007-10-12  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfo.java: Update; do not throw NameNotFoundException.  Do
+	not use CExprAnnotator.
+	* DebugInfoEvaluator.java: Ditto.
+	
 2007-10-12  Sami Wagiaalla  <swagiaal@redhat.com>
 	
 	Moved Variable.java from frysk.scope to frysk.value.

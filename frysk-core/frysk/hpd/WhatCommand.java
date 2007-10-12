@@ -42,7 +42,6 @@ package frysk.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import javax.naming.NameNotFoundException;
 import frysk.proc.Task;
 
 class WhatCommand extends CLIHandler {
@@ -77,7 +76,7 @@ class WhatCommand extends CLIHandler {
 	    try {
 		cli.outWriter.println(cli.getTaskDebugInfo(task).what(
 			cli.getTaskFrame(task), sInput));
-	    } catch (NameNotFoundException nnfe) {
+	    } catch (RuntimeException nnfe) {
 		cli.addMessage(nnfe.getMessage(), Message.TYPE_ERROR);
 	    }
 
