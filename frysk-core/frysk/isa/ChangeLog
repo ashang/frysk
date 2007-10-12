@@ -1,3 +1,12 @@
+2007-10-12  Andrew Cagney  <cagney@redhat.com>
+
+	* X8664Registers.java (DR0, DR1, DR2, DR3): Add.
+	(DR4, DR5, DR6, DR7): Add.
+	* PPC64Registers.java: New file.
+	* PPC32Registers.java: New file.
+	* IA32Registers.java (D0, D1, D2, D3, D4, D5, D6, D7): Add.
+	(ORIG_EAX): Add.	
+
 2007-10-05  Andrew Cagney  <cagney@redhat.com>
 
 	* IA32Registers.java: Update types; use INT32L_T, VOIDPTR32L_T,

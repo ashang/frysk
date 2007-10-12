@@ -40,6 +40,7 @@
 package frysk.proc;
 
 import java.util.HashMap;
+import frysk.isa.X8664Registers;
 
 public class LinuxX8664Syscall
 {
@@ -72,50 +73,29 @@ public class LinuxX8664Syscall
     {
       super (number);
     }
-    public long getArguments (Task task, int n)
-    {
-      Isa isa;
-      try
-	{
-	  isa = task.getIsa();
-	}
-      catch (Exception e)
-	{
-	  throw new RuntimeException ("Could not get isa");
-	}
-
-      switch (n) {
-      case 0:
-	return isa.getRegisterByName ("orig_rax").get(task);
-      case 1:
-	return isa.getRegisterByName("rdi").get(task);
-      case 2:
-	return isa.getRegisterByName("rsi").get (task);
-      case 3:
-	return isa.getRegisterByName("rdx").get (task);
-      case 4:
-	return isa.getRegisterByName("r10").get (task);
-      case 5:
-	return isa.getRegisterByName("r8").get (task);
-      case 6:
-	return isa.getRegisterByName("r9").get (task);
-      default:
-	throw new RuntimeException ("unknown syscall arg");
+      public long getArguments (Task task, int n) {
+	  switch (n) {
+	  case 0:
+	      return task.getRegister(X8664Registers.ORIG_RAX);
+	  case 1:
+	      return task.getRegister(X8664Registers.RDI);
+	  case 2:
+	      return task.getRegister(X8664Registers.RSI);
+	  case 3:
+	      return task.getRegister(X8664Registers.RDX);
+	  case 4:
+	      return task.getRegister(X8664Registers.R10);
+	  case 5:
+	      return task.getRegister(X8664Registers.R8);
+	  case 6:
+	      return task.getRegister(X8664Registers.R9);
+	  default:
+	      throw new RuntimeException ("unknown syscall arg");
+	  }
       }
-    }
-    public long getReturnCode (Task task)
-    {
-      Isa isa;
-      try
-	{
-	  isa = task.getIsa();
-	}
-      catch (Exception e)
-	{
-	  throw new RuntimeException ("Could not get isa");
-	}
-      return isa.getRegisterByName ("rax").get (task);
-    }
+      public long getReturnCode (Task task) {
+	  return task.getRegister(X8664Registers.RAX);
+      }
   }
   static Syscall[] syscallList = {
     new X8664Syscall ("read",  0, 3, "i:ibn "),

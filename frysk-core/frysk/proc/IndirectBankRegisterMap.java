@@ -104,10 +104,10 @@ class IndirectBankRegisterMap extends BankRegisterMap {
 	BankRegister reg32 = map32.get(name);
 	add(new BankRegister(0, 0, reg32.getLength(), name) {
 		private final long longVal = value;
-		public long get(Task task) {
+		public long getFIXME(Task task) {
 		    return longVal;
 		}
-		public void put(Task task, long val) {
+		public void putFIXME(Task task, long val) {
 		}
 	    });
 	return this;

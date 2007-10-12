@@ -1,13 +1,12 @@
 2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLinuxCore.java: Update; Use Task.getRegister and
+	Task.getBankRegisterByName.
+
 	* LinuxExeTask.java (sendrecRegisterBanks()): Implement.
 	* LinuxTask.java (sendrecRegisterBanks()): Ditto.
 
-2007-10-11  Andrew Cagney  <cagney@redhat.com>
-
 	* CorefileRegisterBanksFactory.java: New.
-
-2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxExeTask.java: Update; renamed sendrecRegisterBanks() to
 	sendrecRegisterBuffersFIXME.

@@ -42,6 +42,7 @@ package frysk.proc;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import frysk.isa.PPC64Registers;
 
 class LinuxPPC64
   extends IsaPPC64 implements SyscallEventDecoder
@@ -60,25 +61,19 @@ class LinuxPPC64
   // know.
   static HashMap unknownSyscalls = new HashMap();
 
-  private SyscallEventInfo info;
-  public SyscallEventInfo getSyscallEventInfo ()
-  {
-    if (info == null)
-      info = new SyscallEventInfo ()
-      {
-        public int number (Task task)
-	{
-          logger.log (Level.FINE, "Get GPR0 {0}\n",getRegisterByName("gpr0"));
-          return (int)getRegisterByName("gpr0").get(task);
-	}
-
-	public Syscall getSyscall(Task task)
-	{
-	  int number = this.number(task);
-	  return LinuxPowerPCSyscall.syscallByNum (task, number);
-	}
-
-	};
-    return info;
-  }
+    private SyscallEventInfo info;
+    public SyscallEventInfo getSyscallEventInfo () {
+	if (info == null)
+	    info = new SyscallEventInfo () {
+		    public int number (Task task) {
+			logger.log (Level.FINE, "Get GPR0 {0}\n",getRegisterByName("gpr0"));
+			return (int)task.getRegister(PPC64Registers.GPR0);
+		    }
+		    public Syscall getSyscall(Task task) {
+			int number = this.number(task);
+			return LinuxPowerPCSyscall.syscallByNum (task, number);
+		    }
+		};
+	return info;
+    }
 }

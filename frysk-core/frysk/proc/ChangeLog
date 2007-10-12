@@ -1,5 +1,23 @@
 2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
+	* BankRegister.java (getFIXME(Task)): Rename get(Task).
+	(putFIXME(Task)): Rename put(Task).
+	* IsaIA32.java: Update; use Task .getRegister, and IA32Registers.
+	* IsaX8664.java: Same with X8664Registers.
+	* LinuxIa32.java: Same.
+	* LinuxIa32Syscall.java: Same.
+	* LinuxX8664.java: Same.
+	* LinuxX8664Syscall.java: Same.
+	* IsaPowerPC.java Same.
+	(IsaPowerPC(Register)): New constructor.
+	(NIP): New final field.
+	* IsaPPC.java: Update.
+	* IsaPPC64.java: Update.
+	* LinuxPowerPCSyscall.java: Update.
+	* LinuxPPC64.java: Update.
+	* LinuxPPC.java: Update.
+	* IndirectBankRegisterMap.java: Update.
+
 	* Task.java (registerBanks): New.
 	(sendrecRegisterBanks()): New.
 	(getRegisterBanks()): New.

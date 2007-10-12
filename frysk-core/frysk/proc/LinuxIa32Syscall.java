@@ -40,6 +40,7 @@
 package frysk.proc;
 
 import java.util.HashMap;
+import frysk.isa.IA32Registers;
 
 public class LinuxIa32Syscall
 {
@@ -75,51 +76,29 @@ public class LinuxIa32Syscall
       super (number);
     }
 
-    public long getArguments (Task task, int n)
-    {
-      Isa isa;
-      try
-	{
-	  isa = task.getIsa();
-	}
-      catch (Exception e)
-	{
-	  throw new RuntimeException ("Could not get isa");
-	}
-
-      switch (n)
-	{
-	case 0:
-	  return isa.getRegisterByName ("orig_eax").get (task);
-	case 1:
-	  return isa.getRegisterByName("ebx").get (task);
-	case 2:
-	  return isa.getRegisterByName("ecx").get (task);
-	case 3:
-	  return isa.getRegisterByName("edx").get (task);
-	case 4:
-	  return isa.getRegisterByName("esi").get (task);
-	case 5:
-	  return isa.getRegisterByName("edi").get (task);
-	case 6:
-	  return isa.getRegisterByName("eax").get (task);
-	default:
-	  throw new RuntimeException ("unknown syscall arg");
-	}
-    }
-    public long getReturnCode (Task task)
-    {
-      Isa isa;
-      try
-	{
-	  isa = task.getIsa();
-	}
-      catch (Exception e)
-	{
-	  throw new RuntimeException ("Could not get isa");
-	}
-      return isa.getRegisterByName ("eax").get (task);
-    }
+      public long getArguments (Task task, int n) {
+	  switch (n) {
+	  case 0:
+	      return task.getRegister(IA32Registers.ORIG_EAX);
+	  case 1:
+	      return task.getRegister(IA32Registers.EBX);
+	  case 2:
+	      return task.getRegister(IA32Registers.ECX);
+	  case 3:
+	      return task.getRegister(IA32Registers.EDX);
+	  case 4:
+	      return task.getRegister(IA32Registers.ESI);
+	  case 5:
+	      return task.getRegister(IA32Registers.EDI);
+	  case 6:
+	      return task.getRegister(IA32Registers.EAX);
+	  default:
+	      throw new RuntimeException ("unknown syscall arg");
+	  }
+      }
+      public long getReturnCode (Task task) {
+	  return task.getRegister(IA32Registers.EAX);
+      }
   }
   
   static Syscall[] syscallList = {
@@ -463,23 +442,12 @@ public class LinuxIa32Syscall
       super (name, number, numArgs, argList);
     }
 
-    public long getArguments (Task task, int n)
-    {
-      /** Arguments in socket subcalls are dereferenced. */
-      Isa isa;
-      try
-	{
-	  isa = task.getIsa();
-	}
-      catch (Exception e)
-	{
-	  throw new RuntimeException ("Could not get isa");
-	}
-      long base = isa.getRegisterByName("ecx").get (task);
-	
-      //System.out.println(Long.toHexString(base) + " " + n);
-      return task.getMemory().getInt(base + (n-1) * isa.getWordSize());
-    }
+      public long getArguments (Task task, int n) {
+	  long base = task.getRegister(IA32Registers.ECX);
+	  //System.out.println(Long.toHexString(base) + " " + n);
+	  /** Arguments in socket subcalls are dereferenced. */
+	  return task.getMemory().getInt(base + (n-1) * 4);
+      }
   }
 
   static Syscall[] socketSubcallList = {
@@ -563,18 +531,9 @@ public class LinuxIa32Syscall
   {
     if (number != SOCKET_NUM && number != IPC_NUM)
       return Syscall.syscallByNum (number, task);
-    else
-      {
+    else {
 	/** sub syscall number is in %ebx.  */
-	int subSyscallNumber = 0;
-	try
-	  {
-	    subSyscallNumber = (int) task.getIsa().getRegisterByName("ebx").get (task);
-	  }
-	catch (Exception e)
-	  {
-	    throw new RuntimeException ("Could not get isa");
-	  }
+	int subSyscallNumber = (int) task.getRegister(IA32Registers.EBX);
 	
 	if (number == SOCKET_NUM)
 	  {

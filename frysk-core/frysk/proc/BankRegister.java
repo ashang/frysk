@@ -103,7 +103,7 @@ public class BankRegister {
      * the register
      * @return value of register
      */
-    public long get(frysk.proc.Task task) {
+    long getFIXME(frysk.proc.Task task) {
 	ByteBuffer b = task.getRegisterBuffersFIXME()[bank];
 	long val = 0;
 	byte[] bytes = new byte[length];
@@ -134,7 +134,7 @@ public class BankRegister {
      * @param task task in which to write the register
      * @param val the value
      */
-    void put(frysk.proc.Task task, long val) {
+    void putFIXME(frysk.proc.Task task, long val) {
 	ByteBuffer b = task.getRegisterBuffersFIXME()[bank];
 
 	if (length == 4) {

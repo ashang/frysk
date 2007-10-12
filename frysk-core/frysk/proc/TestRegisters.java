@@ -114,34 +114,34 @@ public class TestRegisters
           syscallNum = syscall.number (task);
           if (syscallNum == 20)
             { 
-              ebx = isa.getRegisterByName ("ebx").get (task);
+              ebx = isa.getRegisterByName ("ebx").getFIXME(task);
               assertEquals ("ebx register", 22, ebx);
-              ecx = isa.getRegisterByName ("ecx").get (task);
+              ecx = isa.getRegisterByName ("ecx").getFIXME(task);
               assertEquals ("ecx register", 23, ecx);
               // edx contains address of memory location we
               // are expected to write 8 to
-              edx = isa.getRegisterByName ("edx").get (task);
+              edx = isa.getRegisterByName ("edx").getFIXME(task);
               int mem = task.getMemory().getInt (edx);
               assertEquals ("old mem value", 3, mem);
               task.getMemory().putInt (edx, 8);
               mem = task.getMemory().getInt (edx);
               assertEquals ("new mem value", 8, mem);
-              ebp = isa.getRegisterByName ("ebp").get (task);
+              ebp = isa.getRegisterByName ("ebp").getFIXME(task);
               assertEquals ("ebp register", 21, ebp);
               // esi contains the address we want to jump to
               // when we return from the syscall
-              esi = isa.getRegisterByName ("esi").get (task);
-              isa.getRegisterByName ("edi").put (task, esi);
+              esi = isa.getRegisterByName ("esi").getFIXME(task);
+              isa.getRegisterByName ("edi").putFIXME(task, esi);
               // set a number of the registers as expected
-              isa.getRegisterByName ("ebx").put (task, 2);
-              isa.getRegisterByName ("ecx").put (task, 3);
-              isa.getRegisterByName ("edx").put (task, 4);
-              isa.getRegisterByName ("ebp").put (task, 5);
-              isa.getRegisterByName ("esi").put (task, 6);
+              isa.getRegisterByName ("ebx").putFIXME(task, 2);
+              isa.getRegisterByName ("ecx").putFIXME(task, 3);
+              isa.getRegisterByName ("edx").putFIXME(task, 4);
+              isa.getRegisterByName ("ebp").putFIXME(task, 5);
+              isa.getRegisterByName ("esi").putFIXME(task, 6);
             }
           else if (syscallNum == 1)
             {
-              ebx = isa.getRegisterByName ("ebx").get (task);
+              ebx = isa.getRegisterByName ("ebx").getFIXME(task);
               assertEquals ("exit code", 2, ebx);
               exitSyscall = true;
             }
@@ -265,27 +265,27 @@ public class TestRegisters
     syscallNum = syscall.number (task);
     if (syscallNum == SyscallNum.SYSgetpid)
       { 
-        rsi = isa.getRegisterByName ("rsi").get (task);
+        rsi = isa.getRegisterByName ("rsi").getFIXME(task);
         assertEquals ("rsi register", 22, rsi);
-        rdx = isa.getRegisterByName ("rdx").get (task);
+        rdx = isa.getRegisterByName ("rdx").getFIXME(task);
         assertEquals ("rdx register", 23, rdx);
         // r10 contains address of memory location we
         // are expected to write 8 to
-        r10 = isa.getRegisterByName ("r10").get (task);
+        r10 = isa.getRegisterByName ("r10").getFIXME(task);
         memDataAddress = r10;
         int mem = task.getMemory().getInt (r10);
         assertEquals ("old mem value", 3, mem);
         
-        rdi = isa.getRegisterByName ("rdi").get (task);
+        rdi = isa.getRegisterByName ("rdi").getFIXME(task);
         assertEquals ("rdi register", 21, rdi);
         // r8 contains the address we want to jump to
         // when we return from the syscall
-        r8 = isa.getRegisterByName ("r8").get (task);
+        r8 = isa.getRegisterByName ("r8").getFIXME(task);
         branchRightAddress = r8;
       }
     else if (syscallNum == SyscallNum.SYSexit) 
       {
-        rdi = isa.getRegisterByName ("rdi").get (task);
+        rdi = isa.getRegisterByName ("rdi").getFIXME(task);
         assertEquals ("exit code", 2, rdi);
         exitSyscall = true;
       }
@@ -311,12 +311,12 @@ public class TestRegisters
             int mem = task.getMemory().getInt (r10);
             assertEquals ("new mem value", 8, mem);
             
-            isa.getRegisterByName ("r9").put (task, this.branchRightAddress);
+            isa.getRegisterByName ("r9").putFIXME(task, this.branchRightAddress);
             // set a number of the registers as expected
-            isa.getRegisterByName ("rdi").put (task, 2);
-            isa.getRegisterByName ("rsi").put (task, 3);
-            isa.getRegisterByName ("rdx").put (task, 0xdeadbeefL);
-            isa.getRegisterByName ("r8").put (task, 0xdeadbeefdeadbeefL);
+            isa.getRegisterByName ("rdi").putFIXME(task, 2);
+            isa.getRegisterByName ("rsi").putFIXME(task, 3);
+            isa.getRegisterByName ("rdx").putFIXME(task, 0xdeadbeefL);
+            isa.getRegisterByName ("r8").putFIXME(task, 0xdeadbeefdeadbeefL);
           }
         return Action.CONTINUE;
       }
@@ -428,16 +428,16 @@ public class TestRegisters
         {
           // In the assembler program, we store 21 to gpr3, 22 to gpr4
           // and 23 to gpr5 before syscalling
-          gpr3 = isa.getRegisterByName ("gpr3").get (task);
+          gpr3 = isa.getRegisterByName ("gpr3").getFIXME(task);
           assertEquals ("gpr3 register", 21, gpr3);
           
-          gpr4 = isa.getRegisterByName ("gpr4").get (task);
+          gpr4 = isa.getRegisterByName ("gpr4").getFIXME(task);
           assertEquals ("rsi register", 22, gpr4);
           
-          gpr5 = isa.getRegisterByName ("gpr5").get (task);
+          gpr5 = isa.getRegisterByName ("gpr5").getFIXME(task);
           assertEquals ("rdx register", 23, gpr5);
           
-          gpr6 = isa.getRegisterByName ("gpr6").get (task);
+          gpr6 = isa.getRegisterByName ("gpr6").getFIXME(task);
           int mem = task.getMemory().getInt (gpr6);
           
           // gpr6 store the value 3 first and then we will modify it to 8
@@ -451,7 +451,7 @@ public class TestRegisters
         }
         else if (syscallNum == SyscallNum.SYSexit)
         {
-          gpr3 = isa.getRegisterByName ("gpr3").get (task);
+          gpr3 = isa.getRegisterByName ("gpr3").getFIXME(task);
           assertEquals ("exit code", 3, gpr3);
           exitSyscall = true;
         }
@@ -472,10 +472,10 @@ public class TestRegisters
         {
           // Set a number of the registers as expected.
           // Then check them in assembly
-          isa.getRegisterByName ("gpr3").put (task, 3);
-          isa.getRegisterByName ("gpr4").put (task, 4);
-          isa.getRegisterByName ("gpr5").put (task, 5);
-          isa.getRegisterByName ("gpr7").put (task, 7);
+          isa.getRegisterByName ("gpr3").putFIXME(task, 3);
+          isa.getRegisterByName ("gpr4").putFIXME(task, 4);
+          isa.getRegisterByName ("gpr5").putFIXME(task, 5);
+          isa.getRegisterByName ("gpr7").putFIXME(task, 7);
         }
         return Action.CONTINUE;
       }

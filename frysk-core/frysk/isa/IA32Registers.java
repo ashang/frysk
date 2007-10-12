@@ -60,9 +60,9 @@ public class IA32Registers extends Registers {
     public final static Register EBP
 	= new Register("ebp", StandardTypes.VOIDPTR32L_T);
     public final static Register ESP
-	= new Register("esp", StandardTypes.VOIDPTR32L_T)
-;
-    // segment registers
+	= new Register("esp", StandardTypes.VOIDPTR32L_T);
+
+    // Segment registers
 
     public final static Register GS
 	= new Register("gs", StandardTypes.INT16L_T);
@@ -150,6 +150,28 @@ public class IA32Registers extends Registers {
 	= new Register("ldt", StandardTypes.INT32L_T);
     public final static Register TRAPS
 	= new Register("traps", StandardTypes.INT32L_T);
+
+    public static final Register D0
+	= new Register("d0", StandardTypes.INT32L_T);
+    public static final Register D1
+	= new Register("d1", StandardTypes.INT32L_T);
+    public static final Register D2
+	= new Register("d2", StandardTypes.INT32L_T);
+    public static final Register D3
+	= new Register("d3", StandardTypes.INT32L_T);
+    public static final Register D4
+	= new Register("d4", StandardTypes.INT32L_T);
+    public static final Register D5
+	= new Register("d5", StandardTypes.INT32L_T);
+    public static final Register D6
+	= new Register("d6", StandardTypes.INT32L_T);
+    public static final Register D7
+	= new Register("d7", StandardTypes.INT32L_T);
+
+    // Magic; on Linux contains EAX (or syscall number) at the start
+    // of a system call.
+    public static final Register ORIG_EAX
+	= new Register("orig_eax", StandardTypes.INT32L_T);
 
     public final static RegisterGroup GENERAL
 	= new RegisterGroup("general",

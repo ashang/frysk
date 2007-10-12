@@ -45,9 +45,8 @@ import inua.eio.ByteBuffer;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-
+import frysk.isa.IA32Registers;
 import frysk.proc.Action;
-import frysk.proc.Isa;
 import frysk.proc.Task;
 import frysk.proc.Proc;
 import frysk.proc.Host;
@@ -325,24 +324,22 @@ public class TestLinuxCore
 	assertNotNull("Task ISA",tasks[i].getIsa());
 	assertSame("Task getParent",proc,tasks[i].getProc());
 
-	Isa isa = tasks[i].getIsa();	
-
-	assertEquals("note: ebx",ebx[i], isa.getRegisterByName("ebx").get(tasks[i]));
-	assertEquals("note: ecx",ecx[i], isa.getRegisterByName("ecx").get(tasks[i]));
-	assertEquals("note: edx",edx[i], isa.getRegisterByName("edx").get(tasks[i]));
-	assertEquals("note: esi",esi[i], isa.getRegisterByName("esi").get(tasks[i]));
-	assertEquals("note: edi",edi[i], isa.getRegisterByName("edi").get(tasks[i]));
-	assertEquals("note: ebp",ebp[i], isa.getRegisterByName("ebp").get(tasks[i]));
-	assertEquals("note: eax",eax[i], isa.getRegisterByName("eax").get(tasks[i]));
-	assertEquals("note: ds",ds[i],   isa.getRegisterByName("ds").get(tasks[i]));
-	assertEquals("note: es",es[i], isa.getRegisterByName("es").get(tasks[i]));
-	assertEquals("note: fs",fs[i], isa.getRegisterByName("fs").get(tasks[i]));
-	assertEquals("note: gs",gs[i],	isa.getRegisterByName("gs").get(tasks[i]));
-	assertEquals("note: oeax",oeax[i], isa.getRegisterByName("orig_eax").get(tasks[i]));
-	assertEquals("note: eip",eip[i], isa.getRegisterByName("eip").get(tasks[i]));
-	assertEquals("note: cs",cs[i], isa.getRegisterByName("cs").get(tasks[i]));
-	assertEquals("note: eflags",eflags[i], isa.getRegisterByName("eflags").get(tasks[i]));
-	assertEquals("note: esp",esp[i], isa.getRegisterByName("esp").get(tasks[i]));
+	assertEquals("note: ebx", ebx[i], tasks[i].getRegister(IA32Registers.EBX));
+	assertEquals("note: ecx", ecx[i], tasks[i].getRegister(IA32Registers.ECX));
+	assertEquals("note: edx", edx[i], tasks[i].getRegister(IA32Registers.EDX));
+	assertEquals("note: esi", esi[i], tasks[i].getRegister(IA32Registers.ESI));
+	assertEquals("note: edi", edi[i], tasks[i].getRegister(IA32Registers.EDI));
+	assertEquals("note: ebp", ebp[i], tasks[i].getRegister(IA32Registers.EBP));
+	assertEquals("note: eax", eax[i], tasks[i].getRegister(IA32Registers.EAX));
+	assertEquals("note: ds", ds[i],   tasks[i].getRegister(IA32Registers.DS));
+	assertEquals("note: es", es[i], tasks[i].getRegister(IA32Registers.ES));
+	assertEquals("note: fs", fs[i], tasks[i].getRegister(IA32Registers.FS));
+	assertEquals("note: gs", gs[i],	tasks[i].getRegister(IA32Registers.GS));
+	assertEquals("note: oeax", oeax[i], tasks[i].getRegister(IA32Registers.ORIG_EAX));
+	assertEquals("note: eip", eip[i], tasks[i].getRegister(IA32Registers.EIP));
+	assertEquals("note: cs", cs[i], tasks[i].getRegister(IA32Registers.CS));
+	assertEquals("note: eflags", eflags[i], tasks[i].getRegister(IA32Registers.EFLAGS));
+	assertEquals("note: esp", esp[i], tasks[i].getRegister(IA32Registers.ESP));
 
       }
   }

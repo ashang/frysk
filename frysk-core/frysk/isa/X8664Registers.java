@@ -77,6 +77,28 @@ public class X8664Registers extends Registers {
 
     public static final Register RIP = new Register("rip", StandardTypes.longLittleEndianType);
 
+    public static final Register DR0
+	= new Register("dr0", StandardTypes.INT32L_T);
+    public static final Register DR1
+	= new Register("dr1", StandardTypes.INT32L_T);
+    public static final Register DR2
+	= new Register("dr2", StandardTypes.INT32L_T);
+    public static final Register DR3
+	= new Register("dr3", StandardTypes.INT32L_T);
+    public static final Register DR4
+	= new Register("dr4", StandardTypes.INT32L_T);
+    public static final Register DR5
+	= new Register("dr5", StandardTypes.INT32L_T);
+    public static final Register DR6
+	= new Register("dr6", StandardTypes.INT32L_T);
+    public static final Register DR7
+	= new Register("dr7", StandardTypes.INT32L_T);
+
+    // Magic; on Linux contains EAX (or syscall number) at the start
+    // of a system call.
+    public static final Register ORIG_RAX
+	= new Register("orig_rax", StandardTypes.INT64L_T);
+
     public static final RegisterGroup GENERAL = new RegisterGroup("general",
 	    new Register[] { RAX, RDX, RCX, RBX, RSI, RDI, RBP, RSP, R8, R9,
 		    R10, R11, R12, R13, R14, R15, RIP });

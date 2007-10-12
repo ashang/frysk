@@ -49,6 +49,7 @@ import frysk.sys.Ptrace.AddressSpace;
 import frysk.proc.live.RegisterSetByteBuffer;
 import frysk.proc.live.AddressSpaceByteBuffer;
 import lib.dwfl.ElfEMachine;
+import frysk.isa.X8664Registers;
 
 public class IsaX8664 implements Isa
 {
@@ -59,15 +60,13 @@ public class IsaX8664 implements Isa
 	return X86BankRegisters.X8664.get(name);
     }
 
-  public long pc(Task task)
-  {
-    return getRegisterByName("rip").get(task);
-  }
+    public long pc(Task task) {
+	return task.getRegister(X8664Registers.RIP);
+    }
 
-  public void setPC(Task task, long address)
-  {
-    getRegisterByName("rip").put(task, address);
-  }
+    public void setPC(Task task, long address) {
+	task.setRegister(X8664Registers.RIP, address);
+    }
 
   public int getWordSize()
   {
@@ -133,20 +132,20 @@ public class IsaX8664 implements Isa
     return addrs;
   }
 
-  /**
-   * Reports whether or not the given Task just did a step of an
-   * instruction.  This can be deduced by examining the single step
-   * flag (BS bit 14) in the debug status register (DR6) on x86_64.
-   * This resets the stepping flag.
-   */
-  public boolean isTaskStepped(Task task)
-  {
-      BankRegister d6 = getRegisterByName("d6");
-    long value = d6.get(task);
-    boolean stepped = (value & 0x4000) != 0;
-    d6.put(task, value & ~0x4000);
-    return stepped;
-  }
+    /**
+     * Reports whether or not the given Task just did a step of an
+     * instruction.  This can be deduced by examining the single step
+     * flag (BS bit 14) in the debug status register (DR6) on x86_64.
+     * This resets the stepping flag.
+     */
+    public boolean isTaskStepped(Task task) {
+	// FIXME: There's a name screwup - d6 vs dr6.
+	BankRegister d6 = task.getBankRegister("d6");
+	long value = d6.getFIXME(task);
+	boolean stepped = (value & 0x4000) != 0;
+	d6.putFIXME(task, value & ~0x4000);
+	return stepped;
+    }
 
   /**
    * Returns true if the last instruction executed by the given Task
@@ -170,26 +169,23 @@ public class IsaX8664 implements Isa
             && task.getMemory().getByte(address - 2) == (byte) 0x0f);
   }
 
-  /**
-   * Returns true if the given Task is at an instruction that will invoke
-   * the sig return system call.
-   *
-   * On x86_64 this is when the pc is at a 'syscall' instruction and the
-   * rax register contains 0x0f.
-   */
-  public boolean isAtSyscallSigReturn(Task task)
-  {
-    long address = pc(task);
-    boolean result = (task.getMemory().getByte(address) == (byte) 0x0f
-		      && task.getMemory().getByte(address + 1) == (byte) 0x05);
-    if (result)
-      {
-	  BankRegister rax = getRegisterByName("rax");
-	long syscall_num = rax.get(task);
-	result &= syscall_num == 0x0f;
-      }
-    return result;
-  }
+    /**
+     * Returns true if the given Task is at an instruction that will
+     * invoke the sig return system call.
+     *
+     * On x86_64 this is when the pc is at a 'syscall' instruction and
+     * the rax register contains 0x0f.
+     */
+    public boolean isAtSyscallSigReturn(Task task) {
+	long address = pc(task);
+	boolean result = (task.getMemory().getByte(address) == (byte) 0x0f
+			  && task.getMemory().getByte(address + 1) == (byte) 0x05);
+	if (result) {
+	    long syscall_num = task.getRegister(X8664Registers.RAX);
+	    result &= syscall_num == 0x0f;
+	}
+	return result;
+    }
 
   public Syscall[] getSyscallList ()
   {

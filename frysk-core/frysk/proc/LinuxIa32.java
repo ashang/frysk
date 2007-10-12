@@ -39,6 +39,8 @@
 
 package frysk.proc;
 
+import frysk.isa.IA32Registers;
+
 class LinuxIa32
   extends IsaIA32 implements SyscallEventDecoder
 {
@@ -50,23 +52,18 @@ class LinuxIa32
     return isa;
   }
 
-  private SyscallEventInfo info;
-  public SyscallEventInfo getSyscallEventInfo ()
-  {
-    if (info == null)
-      info = new SyscallEventInfo ()
-      {
-	public int number (Task task)
-	{
-	  return (int)getRegisterByName ("orig_eax").get (task);
-	}
-	public Syscall getSyscall(Task task)
-	{
-	  int number = this.number(task);
-	  return LinuxIa32Syscall.syscallByNum (task, number);
-	}
-	};
-    return info;
-  }
-
+    private SyscallEventInfo info;
+    public SyscallEventInfo getSyscallEventInfo() {
+	if (info == null)
+	    info = new SyscallEventInfo() {
+		    public int number (Task task) {
+			return (int)task.getRegister(IA32Registers.ORIG_EAX);
+		    }
+		    public Syscall getSyscall(Task task) {
+			int number = this.number(task);
+			return LinuxIa32Syscall.syscallByNum (task, number);
+		    }
+		};
+	return info;
+    }
 }

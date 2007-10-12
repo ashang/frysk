@@ -1052,7 +1052,7 @@ public abstract class Task
     public long getRegister(Register register) {
 	BankRegister bankRegister
 	    = getIsa().getRegisterByName(register.getName());
-	return bankRegister.get(this);
+	return bankRegister.getFIXME(this);
     }
     /**
      * Store the long value in the Task's register.
@@ -1060,7 +1060,7 @@ public abstract class Task
     public void setRegister(Register register, long value) {
 	BankRegister bankRegister
 	    = getIsa().getRegisterByName(register.getName());
-	bankRegister.put(this, value);
+	bankRegister.putFIXME(this, value);
     }
     /**
      * Access bytes OFFSET:LENGTH of the Task's register read/writing

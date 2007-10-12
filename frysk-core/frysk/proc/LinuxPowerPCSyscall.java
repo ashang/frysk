@@ -90,19 +90,19 @@ public class LinuxPowerPCSyscall
       switch (n)
 	{
 	case 0:
-	  return isa.getRegisterByName("gpr0").get(task);
+	  return isa.getRegisterByName("gpr0").getFIXME(task);
 	case 1:
-	  return isa.getRegisterByName("orig_r3").get(task);
+	  return isa.getRegisterByName("orig_r3").getFIXME(task);
 	case 2:
-	  return isa.getRegisterByName("gpr4").get(task);
+	  return isa.getRegisterByName("gpr4").getFIXME(task);
 	case 3:
-	  return isa.getRegisterByName("gpr5").get(task);
+	  return isa.getRegisterByName("gpr5").getFIXME(task);
 	case 4:
-	  return isa.getRegisterByName("gpr6").get(task);
+	  return isa.getRegisterByName("gpr6").getFIXME(task);
 	case 5:
-	  return isa.getRegisterByName("gpr7").get(task);
+	  return isa.getRegisterByName("gpr7").getFIXME(task);
 	case 6:
-	  return isa.getRegisterByName("gpr8").get(task);
+	  return isa.getRegisterByName("gpr8").getFIXME(task);
 	default:
 	  throw new RuntimeException ("unknown syscall arg");
 	}
@@ -119,12 +119,12 @@ public class LinuxPowerPCSyscall
 	  throw new RuntimeException ("Could not get isa");
 	}
 
-      int flag = (int) isa.getRegisterByName("ccr").get(task);
+      int flag = (int) isa.getRegisterByName("ccr").getFIXME(task);
       
       if ((flag & 0x10000000) != 0)
-	return -isa.getRegisterByName("gpr3").get(task);
+	return -isa.getRegisterByName("gpr3").getFIXME(task);
       else
-	return isa.getRegisterByName("gpr3").get(task);
+	return isa.getRegisterByName("gpr3").getFIXME(task);
     }
   }
 
@@ -464,7 +464,7 @@ public class LinuxPowerPCSyscall
 	{
 	  throw new RuntimeException ("Could not get isa");
 	}
-      long base = isa.getRegisterByName("gpr4").get (task);
+      long base = isa.getRegisterByName("gpr4").getFIXME(task);
 	
       // FIXME: There are some bi-arch issues
       return task.getMemory().getInt(base + (n-1) * isa.getWordSize());
@@ -552,7 +552,7 @@ public class LinuxPowerPCSyscall
 	int subSyscallNumber = 0;
 	try
 	  {
-	    subSyscallNumber = (int) task.getIsa().getRegisterByName("orig_r3").get(task);
+	    subSyscallNumber = (int) task.getIsa().getRegisterByName("orig_r3").getFIXME(task);
 	  }
 	catch (Exception e)
 	  {

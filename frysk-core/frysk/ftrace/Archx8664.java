@@ -42,36 +42,30 @@ package frysk.ftrace;
 import inua.eio.ByteBuffer;
 
 import frysk.proc.Task;
-import frysk.proc.BankRegister;
+import frysk.isa.X8664Registers;
 
 /**
  * x86_64 implementation of Arch interface.
  */
-public class Archx8664
-  implements Arch
-{ 
-  public static final Arch instance = new Archx8664();
+public class Archx8664 implements Arch { 
+    public static final Arch instance = new Archx8664();
   
-  protected Archx8664() {}
+    private Archx8664() {
+    }
   
-  public long getReturnAddress(Task task, Symbol symbol)
-  { 
-    ByteBuffer memBuf = task.getMemory();
-    BankRegister rspRegister = task.getIsa().getRegisterByName("rsp");
-    long rsp = rspRegister.get(task);
-    long retAddr = memBuf.getLong(rsp);
-    return retAddr;
-  }
+    public long getReturnAddress(Task task, Symbol symbol) { 
+	ByteBuffer memBuf = task.getMemory();
+	long rsp = task.getRegister(X8664Registers.RSP);
+	long retAddr = memBuf.getLong(rsp);
+	return retAddr;
+    }
   
-  public Object[] getCallArguments(Task task, Symbol symbol)
-  { 
-    Object[] ret = {};
-    return ret;
-  }
+    public Object[] getCallArguments(Task task, Symbol symbol) { 
+	Object[] ret = {};
+	return ret;
+    }
   
-  public Object getReturnValue(Task task, Symbol symbol)
-  { 
-    BankRegister r = task.getIsa().getRegisterByName("rax");
-    return new Long(r.get(task));
-  }
+    public Object getReturnValue(Task task, Symbol symbol) { 
+	return new Long(task.getRegister(X8664Registers.RAX));
+    }
 }

@@ -49,6 +49,7 @@ import frysk.sys.Ptrace.AddressSpace;
 import frysk.proc.live.RegisterSetByteBuffer;
 import frysk.proc.live.AddressSpaceByteBuffer;
 import lib.dwfl.ElfEMachine;
+import frysk.isa.IA32Registers;
 
 public class IsaIA32 implements Isa
 {
@@ -73,15 +74,13 @@ public class IsaIA32 implements Isa
 	return X86BankRegisters.IA32.get(name);
     }
 
-  public long pc(Task task)
-  {
-    return getRegisterByName("eip").get(task);
-  }
+    public long pc(Task task) {
+	return task.getRegister(IA32Registers.EIP);
+    }
 
-  public void setPC(Task task, long address)
-  {
-    getRegisterByName("eip").put(task, address);
-  }
+    public void setPC(Task task, long address) {
+	task.setRegister(IA32Registers.EIP, address);
+    }
 
   public int getWordSize()
   {
@@ -147,20 +146,18 @@ public class IsaIA32 implements Isa
     return addrs;
   }
 
-  /**
-   * Reports whether or not the given Task just did a step of an
-   * instruction.  This can be deduced by examining the single step
-   * flag (BS bit 14) in the debug status register (DR6) on x86.
-   * This resets the stepping flag.
-   */
-  public boolean isTaskStepped(Task task)
-  {
-    BankRegister d6 = getRegisterByName("d6");
-    long value = d6.get(task);
-    boolean stepped = (value & 0x4000) != 0;
-    d6.put(task, value & ~0x4000);
-    return stepped;
-  }
+    /**
+     * Reports whether or not the given Task just did a step of an
+     * instruction.  This can be deduced by examining the single step
+     * flag (BS bit 14) in the debug status register (DR6) on x86.
+     * This resets the stepping flag.
+     */
+    public boolean isTaskStepped(Task task) {
+	long value = task.getRegister(IA32Registers.D6);
+	boolean stepped = (value & 0x4000) != 0;
+	task.setRegister(IA32Registers.D6, value & ~0x4000);
+	return stepped;
+    }
 
   /**
    * Returns true if the last instruction executed by the given Task
@@ -183,26 +180,24 @@ public class IsaIA32 implements Isa
 	    && task.getMemory().getByte(address - 2) == (byte) 0xcd);
   }
 
-  /**
-   * Returns true if the given Task is at an instruction that will invoke
-   * the sig return system call.
-   *
-   * On x86 this is when the pc is at a int 0x80 instruction and the
-   * eax register contains 0x77.
-   */
-  public boolean isAtSyscallSigReturn(Task task)
-  {
-    long address = pc(task);
-    boolean result = (task.getMemory().getByte(address) == (byte) 0xcd
-		      && task.getMemory().getByte(address + 1) == (byte) 0x80);
-    if (result)
-      {
-	BankRegister eax = getRegisterByName("eax");
-	long syscall_num = eax.get(task);
-	result &= syscall_num == 0x77;
-      }
-    return result;
-  }
+    /**
+     * Returns true if the given Task is at an instruction that will
+     * invoke the sig return system call.
+     *
+     * On x86 this is when the pc is at a int 0x80 instruction and the
+     * eax register contains 0x77.
+     */
+    public boolean isAtSyscallSigReturn(Task task) {
+	long address = pc(task);
+	boolean result = (task.getMemory().getByte(address) == (byte) 0xcd
+			  && (task.getMemory().getByte(address + 1)
+			      == (byte) 0x80));
+	if (result) {
+	    long syscallNum = task.getRegister(IA32Registers.EAX);
+	    result &= syscallNum == 0x77;
+	}
+	return result;
+    }
 
   public Syscall[] getSyscallList ()
   {

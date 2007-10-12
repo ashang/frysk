@@ -45,27 +45,29 @@ import java.util.List;
 import inua.eio.ByteBuffer;
 import frysk.proc.live.AddressSpaceByteBuffer;
 import frysk.sys.Ptrace.AddressSpace;
-
+import frysk.isa.Register;
 import inua.eio.ByteOrder;
 
-abstract class IsaPowerPC
-  implements Isa
-{
+abstract class IsaPowerPC implements Isa {
+    private final Register NIP;
+
+    protected IsaPowerPC(Register NIP) {
+	this.NIP = NIP;
+    }
+
   // the illegal instruction for powerpc: 0x7d821008.
   // the default order is BIG_ENDIAN
   protected static final Instruction ppcBreakpoint
     = new Instruction(new byte[] { (byte)0x7d, (byte)0x82, 
 				   (byte)0x10, (byte)0x08 }, false);
 
-  public long pc (Task task)
-  {
-    return getRegisterByName("nip").get(task);
-  }
+    public long pc (Task task) {
+	return task.getRegister(NIP);
+    }
 
-  public void setPC (Task task, long address)
-  {
-    getRegisterByName("nip").put(task, address);
-  }
+    public void setPC (Task task, long address) {
+	task.setRegister(NIP, address);
+    }
 
   abstract public int getWordSize ();
   

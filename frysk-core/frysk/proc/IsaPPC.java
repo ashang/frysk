@@ -40,10 +40,14 @@
 package frysk.proc;
 
 import lib.dwfl.ElfEMachine;
+import frysk.isa.PPC32Registers;
 
-public class IsaPPC
-  extends IsaPowerPC
-{
+public class IsaPPC extends IsaPowerPC {
+
+    IsaPPC() {
+	super(PPC32Registers.NIP);
+    }
+
   public int getWordSize ()
   {
     return 4;

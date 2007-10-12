@@ -1,3 +1,9 @@
+2007-10-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Archx8664.java: Replace BankRegister .get(Task) with Task
+	.get(Register); make constructor private.
+	* Archx86.java: Ditto.
+
 2007-10-01  Mark Wielaard  <mwielaard@redhat.com>
 
 	* ObjectFile.java (ObjFBuilder.getTracePoints):
