@@ -49,6 +49,7 @@ import frysk.proc.Task;
 import frysk.proc.TaskId;
 import frysk.proc.Isa;
 import frysk.isa.ISA;
+import frysk.proc.RegisterBanks;
 
 public class LinuxTask
     extends Task
@@ -116,6 +117,11 @@ public class LinuxTask
     bankBuffers[3] = new ArrayByteBuffer(emptyBuffer);
     return bankBuffers;
   }
+
+    protected RegisterBanks sendrecRegisterBanks() {
+	return CorefileRegisterBanksFactory.create
+	    (getISA(), sendrecRegisterBuffersFIXME());
+    }
 
   /**
    * Create a new unattached Task.

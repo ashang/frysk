@@ -1080,6 +1080,14 @@ public abstract class Task
 	}
     }
 
+    private RegisterBanks registerBanks;
+    protected abstract RegisterBanks sendrecRegisterBanks();
+    RegisterBanks getRegisterBanks() {
+	if (registerBanks == null)
+	    registerBanks = sendrecRegisterBanks();
+	return registerBanks;
+    }
+
   private ByteBuffer[] registerBuffers;
   protected abstract ByteBuffer[] sendrecRegisterBuffersFIXME();
   /**
@@ -1135,12 +1143,13 @@ public abstract class Task
    return modCount;
  }
  
- public void clearIsa()
- {
-   isa = null;
-   memory = null;
-   registerBuffers = null;
- }
+    public void clearIsa() {
+	isa = null;
+	memory = null;
+	registerBuffers = null;
+	registerBanks = null;
+	currentISA = null;
+    }
   
   /**
    * XXX: Temporary until .observable's are converted to .requestAddObserver.

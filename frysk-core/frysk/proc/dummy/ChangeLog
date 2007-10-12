@@ -1,5 +1,7 @@
 2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (sendrecRegisterBanks()): Implement.
+	
 	* Task.java: Update; renamed sendrecRegisterBanks() to
 	sendrecRegisterBuffersFIXME.
 

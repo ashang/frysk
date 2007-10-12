@@ -1,5 +1,10 @@
 2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (registerBanks): New.
+	(sendrecRegisterBanks()): New.
+	(getRegisterBanks()): New.
+	(clearIsa()): Clear registerBanks and currentISA.
+
 	* PPCBankRegisters.java: Rename PPCRegisterBanksFactory.java.
 	* X86BankRegisters.java: Rename X86RegisterBanksFactory.java.
 	* BankRegisterMap.java: Make public.

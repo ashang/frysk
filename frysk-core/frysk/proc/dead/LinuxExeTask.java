@@ -41,6 +41,7 @@ package frysk.proc.dead;
 
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
+import frysk.proc.RegisterBanks;
 import frysk.proc.Isa;
 import frysk.proc.Task;
 import frysk.proc.TaskId;
@@ -98,6 +99,11 @@ public class LinuxExeTask extends Task {
 	bankBuffers[2] = new ArrayByteBuffer(emptyBuffer);
 	bankBuffers[3] = new ArrayByteBuffer(emptyBuffer);
 	return bankBuffers;
+    }
+
+    protected RegisterBanks sendrecRegisterBanks() {
+	return CorefileRegisterBanksFactory.create
+	    (getISA(), sendrecRegisterBuffersFIXME());
     }
 
 }

@@ -59,6 +59,7 @@ import frysk.sys.Signal;
 import frysk.isa.ISA;
 import frysk.isa.ElfMap;
 import java.io.File;
+import frysk.proc.RegisterBanks;
 
 /**
  * A Linux Task tracked using PTRACE.
@@ -124,6 +125,11 @@ public class LinuxTask
     {
 	return getIsa().getRegisterBankBuffers(getTid());
     }
+
+    protected RegisterBanks sendrecRegisterBanks() {
+	return PtraceRegisterBanksFactory.create(getISA(), getTid());
+    }
+
     /**
      * Return the Task's ISA.
      *

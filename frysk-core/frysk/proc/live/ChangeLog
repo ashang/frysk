@@ -1,8 +1,8 @@
-2007-10-11  Andrew Cagney  <cagney@redhat.com>
+2007-10-12  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxTask.java (sendrecRegisterBanks()): Implement.
 
 	* PtraceRegisterBanksFactory.java: New file.
-
-2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxTask.java: Update; renamed sendrecRegisterBanks() to
 	sendrecRegisterBuffersFIXME.
