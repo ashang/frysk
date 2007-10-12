@@ -112,11 +112,11 @@ expr
     |   #(NOT  expr)
     |   #(TILDE expr)
     |   #(COND_EXPR  expr expr expr)
-    |   o:OCTALINT
-    |   i:DECIMALINT
-    |   h:HEXADECIMALINT
-    |   f:FLOAT
-    |   d:DOUBLE
+    |   OCTALINT
+    |   DECIMALINT
+    |   HEXADECIMALINT
+    |   FLOAT
+    |   DOUBLE
     |   #(ASSIGNEQUAL expr expr)
     |   #(TIMESEQUAL expr expr)
     |   #(DIVIDEEQUAL expr expr)
