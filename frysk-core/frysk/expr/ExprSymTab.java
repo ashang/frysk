@@ -39,13 +39,16 @@
 
 package frysk.expr;
 
-import java.util.ArrayList;
-import javax.naming.NameNotFoundException;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
-import frysk.value.Value;
+
+import java.util.ArrayList;
+
+import javax.naming.NameNotFoundException;
+
 import frysk.value.Type;
-import frysk.scopes.Variable;
+import frysk.value.Value;
+import frysk.value.Variable;
 
 public interface ExprSymTab
 {

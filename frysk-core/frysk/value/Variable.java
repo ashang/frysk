@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.scopes;
+package frysk.value;
 
 import java.io.PrintWriter;
 import java.util.List;

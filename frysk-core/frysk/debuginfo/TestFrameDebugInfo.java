@@ -57,11 +57,11 @@ import frysk.scopes.InlinedSubroutine;
 import frysk.scopes.LexicalBlock;
 import frysk.scopes.Scope;
 import frysk.scopes.Subprogram;
-import frysk.scopes.Variable;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
+import frysk.value.Variable;
 
 public class TestFrameDebugInfo
     extends TestLib

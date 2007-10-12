@@ -49,9 +49,10 @@ import frysk.expr.ExprSymTab;
 import frysk.expr.CExprEvaluator;
 import frysk.expr.CExprAnnotator;
 import frysk.proc.Proc;
-import frysk.scopes.Variable;
 import frysk.value.Type;
 import frysk.value.Value;
+import frysk.value.Variable;
+
 import java.io.StringReader;
 import java.text.ParseException;
 import java.util.ArrayList;

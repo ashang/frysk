@@ -43,11 +43,11 @@ import java.io.File;
 
 import frysk.Config;
 import frysk.proc.Task;
-import frysk.scopes.Variable;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
 import frysk.testbed.TestfileTokenScanner;
 import frysk.value.ObjectDeclaration;
+import frysk.value.Variable;
 
 /**
  * Tests @link CppVariableSearchEngine.

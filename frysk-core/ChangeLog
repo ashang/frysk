@@ -1,3 +1,12 @@
+2007-10-12  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* frysk/scopes/Variable.java: Moved Variable.java 
+	from frysk.scopes to frysk.value.
+	* frysk/scopes/TestDie.java: Updated.
+	* frysk/scopes/Subprogram.java: Updated.
+	* frysk/scopes/Scope.java: Updated.
+	* frysk/scopes/Enumerator.java: Updated.
+	
 2007-10-11  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
 
 	* frysk/scopes/Variable.java: No longer implements CxxObject.

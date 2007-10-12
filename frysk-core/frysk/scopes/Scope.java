@@ -48,6 +48,7 @@ import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.TypeEntry;
 import frysk.value.ObjectDeclaration;
+import frysk.value.Variable;
 
 /**
  * A class to represent a Scope.

@@ -48,10 +48,10 @@ import frysk.debuginfo.ObjectDeclarationSearchEngine;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.proc.Task;
-import frysk.scopes.Variable;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
 import frysk.testbed.TestfileTokenScanner;
+import frysk.value.Variable;
 
 public class TestDie
     extends TestLib

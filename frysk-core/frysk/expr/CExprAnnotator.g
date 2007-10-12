@@ -86,7 +86,7 @@ header
     import frysk.value.UnsignedType;
     import frysk.value.FloatingPointType;
     import frysk.value.Value;
-    import frysk.scopes.Variable;
+    import frysk.value.Variable;
     import frysk.expr.ExprSymTab;
     import frysk.expr.ExprAST;
     import javax.naming.NameNotFoundException;

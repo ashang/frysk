@@ -1,3 +1,8 @@
+2007-10-12  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Moved Variable.java from frysk.scope to frysk.value
+	* ExprSymTab.java: Updated.
+
 2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
 	* TabException.java: Extend RuntimeException; make package

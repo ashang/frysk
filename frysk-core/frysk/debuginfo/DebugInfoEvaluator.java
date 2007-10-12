@@ -40,28 +40,31 @@
 package frysk.debuginfo;
 
 import inua.eio.ByteBuffer;
+import inua.eio.ByteOrder;
+
 import java.util.ArrayList;
-import frysk.value.Type;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import inua.eio.ByteOrder;
+
 import javax.naming.NameNotFoundException;
+
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
 import frysk.dwfl.DwflCache;
 import frysk.expr.ExprSymTab;
-import frysk.proc.Task;
-import frysk.scopes.Subprogram;
-import frysk.scopes.Variable;
 import frysk.isa.Register;
-import frysk.value.UnknownType;
-import frysk.value.ArrayType;
-import frysk.value.GccStructOrClassType;
-import frysk.value.Value;
 import frysk.isa.Registers;
 import frysk.isa.RegistersFactory;
+import frysk.proc.Task;
+import frysk.scopes.Subprogram;
+import frysk.value.ArrayType;
+import frysk.value.GccStructOrClassType;
+import frysk.value.Type;
+import frysk.value.UnknownType;
+import frysk.value.Value;
+import frysk.value.Variable;
 
 class DebugInfoEvaluator
     implements ExprSymTab
