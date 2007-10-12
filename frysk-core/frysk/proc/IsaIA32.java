@@ -70,7 +70,7 @@ public class IsaIA32 implements Isa
   }
   
     public BankRegister getRegisterByName(String name) {
-	return X86RegisterBanksFactory.IA32.get(name);
+	return X86BankRegisters.IA32.get(name);
     }
 
   public long pc(Task task)

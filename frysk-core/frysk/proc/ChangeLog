@@ -1,5 +1,17 @@
 2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
+	* PPCBankRegisters.java: Rename PPCRegisterBanksFactory.java.
+	* X86BankRegisters.java: Rename X86RegisterBanksFactory.java.
+	* BankRegisterMap.java: Make public.
+	* AbstractRegisterBanksFactory.java: Delete.
+	* RegisterBanks.java: New.
+	* IsaIA32.java: Update.
+	* IsaPPC.java: Update.
+	* IsaPPC64.java: Update.
+	* IsaX8664.java: Update.
+	* LinuxIa32On64.java: Update.
+	* LinuxPPC32On64.java: Update.
+
 	* Task.java (access(Register,int,int,byte[],int,boolean)): Rename
 	accessRegister(...).
 	(registerBuffers): Rename registerBanks.

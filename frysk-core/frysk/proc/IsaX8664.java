@@ -56,7 +56,7 @@ public class IsaX8664 implements Isa
     = new Instruction(new byte[] { (byte)0xcc }, false);
   
     public BankRegister getRegisterByName(String name) {
-	return X86RegisterBanksFactory.X8664.get(name);
+	return X86BankRegisters.X8664.get(name);
     }
 
   public long pc(Task task)

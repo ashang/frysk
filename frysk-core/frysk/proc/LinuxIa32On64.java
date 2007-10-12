@@ -89,7 +89,7 @@ extends LinuxIa32
   }
   
     public BankRegister getRegisterByName(String name) {
-	return X86RegisterBanksFactory.IA32_ON_X8664.get(name);
+	return X86BankRegisters.IA32_ON_X8664.get(name);
     }
 
 }

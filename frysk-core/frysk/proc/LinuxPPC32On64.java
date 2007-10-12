@@ -67,6 +67,6 @@ class LinuxPPC32On64
   }
   
     public BankRegister getRegisterByName(String name) {
-	return PPCRegisterBanksFactory.PPC32BE_ON_PPC64BE.get(name);
+	return PPCBankRegisters.PPC32BE_ON_PPC64BE.get(name);
     }
 }

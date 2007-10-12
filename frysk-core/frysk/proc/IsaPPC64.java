@@ -55,7 +55,7 @@ public class IsaPPC64 extends IsaPowerPC {
 
 
     public BankRegister getRegisterByName (String name) {
-	return PPCRegisterBanksFactory.PPC64BE.get(name);
+	return PPCBankRegisters.PPC64BE.get(name);
     }
 
 

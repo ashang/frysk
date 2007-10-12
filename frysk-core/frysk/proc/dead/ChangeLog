@@ -1,3 +1,7 @@
+2007-10-11  Andrew Cagney  <cagney@redhat.com>
+
+	* CorefileRegisterBanksFactory.java: New.
+
 2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxExeTask.java: Update; renamed sendrecRegisterBanks() to

@@ -42,9 +42,9 @@ package frysk.proc;
 
 import inua.eio.ByteOrder;
 
-class PPCRegisterBanksFactory extends AbstractRegisterBanksFactory {
+public class PPCBankRegisters {
 
-    static final BankRegisterMap PPC32BE = new BankRegisterMap()
+    public static final BankRegisterMap PPC32BE = new BankRegisterMap()
 	.add(new BankRegister(0, 0, 4, "gpr0"))
 	.add(new BankRegister(0, 4, 4, "gpr1"))
 	.add(new BankRegister(0, 8, 4, "gpr2"))
@@ -123,7 +123,7 @@ class PPCRegisterBanksFactory extends AbstractRegisterBanksFactory {
 	.add(new BankRegister(0, 440, 8, "fpr31"))
 	;
 
-    static final BankRegisterMap PPC64BE = new BankRegisterMap()
+    public static final BankRegisterMap PPC64BE = new BankRegisterMap()
 	.add(new BankRegister(0, 0, 8, "gpr0"))
 	.add(new BankRegister(0, 8, 8, "gpr1"))
 	.add(new BankRegister(0, 16, 8, "gpr2"))
@@ -202,7 +202,7 @@ class PPCRegisterBanksFactory extends AbstractRegisterBanksFactory {
 	.add(new BankRegister(0, 632, 8, "fpr31"))
 	;
 
-    static final BankRegisterMap PPC32BE_ON_PPC64BE
+    public static final BankRegisterMap PPC32BE_ON_PPC64BE
 	= new IndirectBankRegisterMap(ByteOrder.BIG_ENDIAN,
 				      PPC32BE, PPC64BE)
 	.add("gpr0")
@@ -283,5 +283,4 @@ class PPCRegisterBanksFactory extends AbstractRegisterBanksFactory {
 	.add("fpr30")
 	.add("fpr31")
 	;
-
 }

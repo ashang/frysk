@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006 IBM Corp.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -10,11 +10,11 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-//
+// 
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-//
+// 
 // In addition, as a special exception, Red Hat, Inc. gives You the
 // additional right to link the code of FRYSK with code not covered
 // under the GNU General Public License ("Non-GPL Code") and to
@@ -39,24 +39,59 @@
 
 package frysk.proc;
 
-import lib.dwfl.ElfEMachine;
+import inua.eio.ByteBuffer;
+import frysk.isa.Register;
 
-public class IsaPPC
-  extends IsaPowerPC
-{
-  public int getWordSize ()
-  {
-    return 4;
-  }
+/**
+ * The target has registers scattered across one or more register
+ * banks.  Map register requests onto the corresponding bank-register.
+ */
 
-  public int getElfMachineType()
-  {
-    return ElfEMachine.EM_PPC64;
-  }
+public class RegisterBanks {
+    private final ByteBuffer[] banks;
+    private final BankRegisterMap bankRegisters;
 
-
-    public BankRegister getRegisterByName (String name) {
-	return PPCBankRegisters.PPC32BE.get(name);
+    public RegisterBanks(BankRegisterMap bankRegisters, ByteBuffer[] banks) {
+	this.banks = banks;
+	this.bankRegisters = bankRegisters;
     }
 
+    long get(Register register) {
+	BankRegister bankRegister = bankRegisters.get(register);
+	ByteBuffer bank = banks[bankRegister.getBank()];
+	switch (bankRegister.getLength()) {
+	case 1: return bank.getUByte(bankRegister.getOffset());
+	case 2: return bank.getUShort(bankRegister.getOffset());
+	case 4: return bank.getUInt(bankRegister.getOffset());
+	case 8: return bank.getULong(bankRegister.getOffset());
+	default:
+	    throw new RuntimeException("unhandled register size: "
+				       + bankRegister.getLength());
+	}
+    }
+
+    void set(Register register, long value) {
+	BankRegister bankRegister = bankRegisters.get(register);
+	ByteBuffer bank = banks[bankRegister.getBank()];
+	switch (bankRegister.getLength()) {
+	case 1: bank.putUByte(bankRegister.getOffset(), (byte)value); break;
+	case 2: bank.putUShort(bankRegister.getOffset(), (short)value); break;
+	case 4: bank.putUInt(bankRegister.getOffset(), (int)value); break;
+	case 8: bank.putULong(bankRegister.getOffset(), value); break;
+	default:
+	    throw new RuntimeException("unhandled register size: "
+				       + bankRegister.getLength());
+	}
+    }
+
+    void access(Register register, long offset, long size,
+		byte[] bytes, int start, boolean write) {
+	BankRegister bankRegister = bankRegisters.get(register);
+	ByteBuffer bank = banks[bankRegister.getBank()];
+	if (write)
+	    throw new RuntimeException("Not implemented");
+	else
+	    bank.get(offset + bankRegister.getOffset(), bytes,
+		     start, (int)size);
+    }
 }

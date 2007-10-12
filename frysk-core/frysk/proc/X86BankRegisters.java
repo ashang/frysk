@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -47,9 +47,9 @@ import frysk.isa.X8664Registers;
  * Factory to create either IA32 or X8664 RegisterBanks.
  */
 
-class X86RegisterBanksFactory extends AbstractRegisterBanksFactory {
+public class X86BankRegisters {
 
-    static final BankRegisterMap IA32 = new BankRegisterMap()
+    public static final BankRegisterMap IA32 = new BankRegisterMap()
 	.add(new BankRegister (0, 24, 4,IA32Registers.EAX))
 	.add(new BankRegister (0, 0, 4, IA32Registers.EBX))
 	.add(new BankRegister (0, 4, 4, IA32Registers.ECX))
@@ -100,7 +100,7 @@ class X86RegisterBanksFactory extends AbstractRegisterBanksFactory {
 	.add(new BankRegister (3, 280, 4, "d7"))
 	;
 
-    static final BankRegisterMap X8664 = new BankRegisterMap()
+    public static final BankRegisterMap X8664 = new BankRegisterMap()
 	.add(new BankRegister(0, 80, 8, X8664Registers.RAX))
 	.add(new BankRegister(0, 40, 8, X8664Registers.RBX))
 	.add(new BankRegister(0, 88, 8, X8664Registers.RCX))
@@ -170,7 +170,7 @@ class X86RegisterBanksFactory extends AbstractRegisterBanksFactory {
 	.add(new BankRegister(2, 904, 8, "d7"))
 	;
 
-    static BankRegisterMap IA32_ON_X8664
+    public static BankRegisterMap IA32_ON_X8664
 	= new IndirectBankRegisterMap(ByteOrder.LITTLE_ENDIAN, IA32, X8664)
 	.add("eax", "rax")
 	.add("ebx", "rbx")

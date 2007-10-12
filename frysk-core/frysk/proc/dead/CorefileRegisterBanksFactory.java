@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,12 +37,38 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.dead;
+
+import inua.eio.ByteBuffer;
+import frysk.isa.ISA;
+import frysk.isa.ISAMap;
+import frysk.proc.RegisterBanks;
+import frysk.proc.X86BankRegisters;
+import frysk.proc.PPCBankRegisters;
+import frysk.proc.BankRegisterMap;
 
 /**
- * Factory to create a RegiserBank.
+ * The target has registers scattered across one or more register
+ * banks.  Map register requests onto the corresponding bank-register.
  */
 
-abstract class AbstractRegisterBanksFactory {
+class CorefileRegisterBanksFactory {
 
+    private static ISAMap isaToBankRegisters
+	= new ISAMap("corefile register bank")
+	.put(ISA.X8664, X86BankRegisters.X8664)
+	.put(ISA.IA32, X86BankRegisters.IA32)
+	.put(ISA.PPC64BE, PPCBankRegisters.PPC64BE)
+	.put(ISA.PPC32BE, PPCBankRegisters.PPC32BE)
+	;
+
+    /**
+     * FIXME: Should also handle the creation of banks here.
+     */
+    static RegisterBanks create(ISA isa, ByteBuffer[] banks) {
+	BankRegisterMap bankRegisterMap
+	    = (BankRegisterMap)isaToBankRegisters.get(isa);
+	return new RegisterBanks(bankRegisterMap, banks);
+    }
+    
 }

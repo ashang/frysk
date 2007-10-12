@@ -47,7 +47,7 @@ import java.util.LinkedHashMap;
  * For compatibility, also implement a name map.
  */
 
-class BankRegisterMap {
+public class BankRegisterMap {
     private final LinkedHashMap registerToBankRegister = new LinkedHashMap();
     private final LinkedHashMap nameToBankRegister = new LinkedHashMap();
 
