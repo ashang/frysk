@@ -229,6 +229,8 @@ expr
         }
     |   #(FUNC_CALL expr expr) {
         }
+    |   #(MEMBER expr identifier) {
+        }   
     |   ident:IDENT  {
             Variable var;
             try {

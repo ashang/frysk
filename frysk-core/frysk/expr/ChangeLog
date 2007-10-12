@@ -1,3 +1,7 @@
+2007-10-12  Teresa Thomas  <tthomas@redhat.com>
+
+	* CExprAnnotator.g (MEMBER): Add.
+	
 2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
 	* Completer.g: New file.
