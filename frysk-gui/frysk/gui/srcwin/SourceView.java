@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,8 +42,6 @@ package frysk.gui.srcwin;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.naming.NameNotFoundException;
 
 import org.gnu.gdk.Color;
 import org.gnu.gdk.Cursor;
@@ -894,8 +892,6 @@ public class SourceView extends TextView implements View, ExposeListener {
 		     
 		} catch (ParseException e) {
 		    System.out.println(e.getMessage());
-		} catch (NameNotFoundException n) {
-		    System.err.println(n.getMessage());
 		}
 		
 		valueItem = new MenuItem("Value of " + varText + ": "

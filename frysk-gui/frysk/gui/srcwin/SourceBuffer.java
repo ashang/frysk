@@ -49,8 +49,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.naming.NameNotFoundException;
-
 import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
 
@@ -651,9 +649,6 @@ public class SourceBuffer extends TextBuffer {
 	} catch (ParseException e) {
 	    System.out.println(e.getMessage());
 	    return null;
-	} catch (NameNotFoundException n) {
-	    System.err.println(n.getMessage());
-	    return null;
 	}
 	
 	return getWordAtIter(iter);
@@ -681,9 +676,6 @@ public class SourceBuffer extends TextBuffer {
 		    tag.getStart() + tag.getLength()), scope);
 	} catch (ParseException e) {
 	    System.out.println(e.getMessage());
-	    return null;
-	} catch (NameNotFoundException n) {
-	    // n.printStackTrace();
 	    return null;
 	}
 

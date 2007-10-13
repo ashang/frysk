@@ -1,3 +1,11 @@
+2007-09-13  Mark Wielaard  <mwielaard@redhat.com>
+
+	* SourceView.java (clickedOnTextArea): Don't catch
+	NameNotFoundException.
+	* SourceBuffer.java (getVariable): Likewise.
+	* InlineSourceView.java (mouseEvent): Likewise.
+	* InlineBuffer.java (getVariable): Likewise.
+
 2007-09-06  Andrew Cagney  <cagney@redhat.com>
 
 	* SourceWindow.java (symTab): Delete.
