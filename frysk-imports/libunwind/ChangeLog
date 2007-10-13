@@ -1,3 +1,7 @@
+2007-10-13  Mark Wielaard  <mwielaard@redhat.com>
+
+	* config/.cvsignore: New. Ignore generated files.
+
 2007-10-12  Mark Wielaard  <mwielaard@redhat.com>
 
 	* src/ppc32/ucontext_i.h: Use locally defined reg structs.
