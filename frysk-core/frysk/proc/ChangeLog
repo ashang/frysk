@@ -1,3 +1,11 @@
+2007-10-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java (useRegisterBanksXXX): Set to true.
+	* RegisterBanks.java (findBankRegister(Register)): New.
+	(set(Register,long)): Use
+	(get(Register)): Use.
+	(access(Register,long,long,byte[],int,boolean)): Use.
+
 2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
 	* Task.java (useRegisterBanksXXX): New.

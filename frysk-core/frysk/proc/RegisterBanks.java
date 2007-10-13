@@ -56,8 +56,19 @@ public class RegisterBanks {
 	this.bankRegisters = bankRegisters;
     }
 
-    long get(Register register) {
+    private BankRegister findBankRegister(Register register) {
 	BankRegister bankRegister = bankRegisters.get(register);
+	if (bankRegister != null)
+	    return bankRegister;
+	// Workaround for code still relying on string names.
+	bankRegister = bankRegisters.get(register.getName());
+	if (bankRegister != null)
+	    return bankRegister;
+	throw new RuntimeException("unknown register: " + register);
+    }
+
+    long get(Register register) {
+	BankRegister bankRegister = findBankRegister(register);
 	ByteBuffer bank = banks[bankRegister.getBank()];
 	switch (bankRegister.getLength()) {
 	case 1: return bank.getUByte(bankRegister.getOffset());
@@ -71,7 +82,7 @@ public class RegisterBanks {
     }
 
     void set(Register register, long value) {
-	BankRegister bankRegister = bankRegisters.get(register);
+	BankRegister bankRegister = findBankRegister(register);
 	ByteBuffer bank = banks[bankRegister.getBank()];
 	switch (bankRegister.getLength()) {
 	case 1: bank.putUByte(bankRegister.getOffset(), (byte)value); break;
@@ -86,7 +97,7 @@ public class RegisterBanks {
 
     void access(Register register, long offset, long size,
 		byte[] bytes, int start, boolean write) {
-	BankRegister bankRegister = bankRegisters.get(register);
+	BankRegister bankRegister = findBankRegister(register);
 	ByteBuffer bank = banks[bankRegister.getBank()];
 	if (write)
 	    throw new RuntimeException("Not implemented");

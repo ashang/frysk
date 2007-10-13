@@ -1087,7 +1087,7 @@ public abstract class Task
 	}
     }
 
-    public static boolean useRegisterBanksXXX = false;
+    public static boolean useRegisterBanksXXX = true;
     private RegisterBanks registerBanks;
     protected abstract RegisterBanks sendrecRegisterBanks();
     RegisterBanks getRegisterBanks() {
