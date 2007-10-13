@@ -28,6 +28,77 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
 #include <ucontext.h>
 
+/* FRYSK LOCAL - since we are compiling on different architectures
+   use use local (renamed) definitions from
+http://www.linux-foundation.org/spec/refspecs/LSB_3.0.0/LSB-PPC32/LSB-PPC32.html
+*/
+struct local_pt_regs
+{
+  unsigned long int gpr[32];
+  unsigned long int nip;
+  unsigned long int msr;
+  unsigned long int orig_gpr3;
+  unsigned long int ctr;
+  unsigned long int link;
+  unsigned long int xer;
+  unsigned long int ccr;
+  unsigned long int mq;
+  unsigned long int trap;
+  unsigned long int dar;
+  unsigned long int dsisr;
+  unsigned long int result;
+}
+ ;
+typedef struct local_libc_vrstate
+{
+  unsigned int vrregs[128];
+  unsigned int vrsave;
+  unsigned int _pad[2];
+  unsigned int vscr;
+}
+local_vrregset_t __attribute__ ((__aligned__ (16)));
+
+#define NGREG	48
+
+typedef unsigned long int local_gregset_t[48];
+
+typedef struct local_libc_fpstate
+{
+  double fpregs[32];
+  double fpscr;
+  int _pad[2];
+}
+local_fpregset_t;
+
+typedef struct
+{
+  local_gregset_t gregs;
+  local_fpregset_t fpregs;
+  local_vrregset_t vrregs;
+}
+local_mcontext_t;
+
+union local_uc_regs_ptr
+{
+  struct local_pt_regs *regs;
+  local_mcontext_t *uc_regs;
+}
+ ;
+
+typedef struct local_ucontext
+{
+  unsigned long int uc_flags;
+  struct ucontext *uc_link;
+  stack_t uc_stack;
+  int uc_pad[7];
+  union local_uc_regs_ptr uc_mcontext;
+  sigset_t uc_sigmask;
+  char uc_reg_space[sizeof (mcontext_t) + 12];
+}
+local_ucontext_t;
+/* END FRYSK LOCAL */
+
+
 /* These values were derived by reading
    /usr/src/linux-2.6.18-1.8/arch/um/include/sysdep-ppc/ptrace.h and
    /usr/src/linux-2.6.18-1.8/arch/powerpc/kernel/ppc32.h
@@ -43,8 +114,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
 /* These are dummy structures used only for obtaining the offsets of the
    various structure members. */
-static ucontext_t dmy_ctxt;
-static vrregset_t dmy_vrregset;
+static local_ucontext_t dmy_ctxt;
+static local_vrregset_t dmy_vrregset;
 
 #define UC_MCONTEXT_GREGS_R0 ((void *)&dmy_ctxt.uc_mcontext.uc_regs->gregs[0] - (void *)&dmy_ctxt)
 #define UC_MCONTEXT_GREGS_R1 ((void *)&dmy_ctxt.uc_mcontext.uc_regs->gregs[1] - (void *)&dmy_ctxt)

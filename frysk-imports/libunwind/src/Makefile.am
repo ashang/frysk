@@ -207,12 +207,14 @@ libunwind_x86_64_la_SOURCES_x86_64 = $(libunwind_la_SOURCES_x86_64_common)  \
 # The list of local files that go to Power 64 and 32:
 libunwind_la_SOURCES_ppc = ppc/Lcreate_addr_space.c 			\
 	ppc/Lget_proc_info.c ppc/Lget_save_loc.c ppc/Linit_local.c	\
-	ppc/Linit_remote.c ppc/Lis_signal_frame.c
+	ppc/Linit_remote.c ppc/Lis_signal_frame.c			\
+	ppc/Lfetch_proc_info_post.c
 
 # The list of generic files that go to Power 64 and 32:
 libunwind_ppc_la_SOURCES_ppc_generic = ppc/Gcreate_addr_space.c		\
 	ppc/Gget_proc_info.c ppc/Gget_save_loc.c ppc/Ginit_local.c	\
-	ppc/Ginit_remote.c ppc/Gis_signal_frame.c
+	ppc/Ginit_remote.c ppc/Gis_signal_frame.c			\
+	ppc/Gfetch_proc_info_post.c
 
 # The list of files that go both into libunwind and libunwind-ppc32:
 libunwind_la_SOURCES_ppc32_common = $(libunwind_la_SOURCES_common)      \

@@ -1,3 +1,8 @@
+2007-10-12  Mark Wielaard  <mwielaard@redhat.com>
+
+	* m4/frysk-use-libunwind.m4: Check for and transform powerpc target
+	to ppc32.
+
 2007-10-03  Mark Wielaard  <mwielaard@redhat.com>
 
 	* frysk-common.ac: Define CHECK_LIBUNWIND, ARCH_X86, ARCH_X86_64,

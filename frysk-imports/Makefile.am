@@ -46,19 +46,23 @@ include Makefile.gen
 if CHECK_LIBUNWIND
 if ARCH_X86
     LIBUNWIND_ARCH_DIR = libunwind-i386
-    LIBUNWIND_OTHER_DIRS = libunwind-x86_64 libunwind-ppc64
+    LIBUNWIND_OTHER_DIRS = libunwind-x86_64 libunwind-ppc32 libunwind-ppc64
 endif # ARCH_X86
 if ARCH_X86_64
     LIBUNWIND_ARCH_DIR = libunwind-x86_64
-    LIBUNWIND_OTHER_DIRS = libunwind-i386 libunwind-ppc64
+    LIBUNWIND_OTHER_DIRS = libunwind-i386 libunwind-ppc32 libunwind-ppc64
 endif # ARCH_X86_64
+if ARCH_PPC32
+    LIBUNWIND_ARCH_DIR = libunwind-ppc32
+    LIBUNWIND_OTHER_DIRS = libunwind-i386 libunwind-x86_64 libunwind-ppc64
+endif # ARCH_PPC32
 if ARCH_PPC64
     LIBUNWIND_ARCH_DIR = libunwind-ppc64
-    LIBUNWIND_OTHER_DIRS = libunwind-i386 libunwind-x86_64
+    LIBUNWIND_OTHER_DIRS = libunwind-i386 libunwind-x86_64 libunwind-ppc32
 endif # ARCH_PPC64
 else
   LIBUNWIND_ARCH_DIR = 
-  LIBUNWIND_OTHER_DIRS = libunwind-i386 libunwind-x86_64 libunwind-ppc64
+  LIBUNWIND_OTHER_DIRS = libunwind-i386 libunwind-x86_64 libunwind-ppc32 libunwind-ppc64
 endif # CHECK_LIBUNWIND
 
 # List of directories that should both be included in the distro and
@@ -105,6 +109,7 @@ GEN_GCJ_LDADD_LIST += ./elfutils/libelf/libelf.a
 GEN_GCJ_LDADD_LIST += -lstdc++
 GEN_GCJ_LDADD_LIST += ./libunwind-i386/src/.libs/libunwind-x86.a
 GEN_GCJ_LDADD_LIST += ./libunwind-x86_64/src/.libs/libunwind-x86_64.a
+GEN_GCJ_LDADD_LIST += ./libunwind-ppc32/src/.libs/libunwind-ppc32.a
 GEN_GCJ_LDADD_LIST += ./libunwind-ppc64/src/.libs/libunwind-ppc64.a
 # For auding of system calls.
 GEN_GCJ_LDADD_LIST += -laudit

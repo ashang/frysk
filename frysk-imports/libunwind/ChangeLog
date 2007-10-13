@@ -1,3 +1,21 @@
+2007-10-12  Mark Wielaard  <mwielaard@redhat.com>
+
+	* src/ppc32/ucontext_i.h: Use locally defined reg structs.
+
+2007-10-12  Jose Flavio Aguilar Paulino  <jflavio@br.ibm.com>
+
+	* include/tdep-ppc32/libunwind_i.h: Define tdep_fetch_proc_info_post.
+	(tdep_get_elf_image): Add void *arg argument.
+	* include/tdep-ppc64/libunwind_i.h: Likewise.
+	* src/Makefile.am (libunwind_la_SOURCES_ppc): Add
+	ppc/Lfetch_proc_info_post.c.
+	(libunwind_ppc_la_SOURCES_ppc_generic): Add
+	ppc/Gfetch_proc_info_post.c.
+	* src/ppc/Gfetch_proc_info_post.c: New file.
+	* src/ppc/Lfetch_proc_info_post.c: New file.
+	* src/ppc32/Ginit.c (get_static_proc_name): Pass through arg.
+	* src/ppc64/Ginit.c (get_static_proc_name): Likewise.
+
 2007-10-11  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Imported and merged with libunwind 20071010.

@@ -69,7 +69,7 @@ FILE_LIST="\
     autoconf -Werror -f
 )
 
-for isa in i386 x86_64 ppc64
+for isa in i386 x86_64 ppc32 ppc64
 do
     mkdir -p libunwind-$isa
     # Something to include in EXTRA_DIST that these directories are

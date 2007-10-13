@@ -58,7 +58,7 @@ AC_CONFIG_FILES([
 	cdtparser/Makefile
 	junit/Makefile])
 
-for isa in i386 x86_64 ppc64
+for isa in i386 x86_64 ppc32 ppc64
 do
   AC_MSG_NOTICE([configuring libunwind-$isa])
   mkdir -p libunwind-$isa

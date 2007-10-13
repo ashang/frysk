@@ -1,3 +1,9 @@
+2007-10-12  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Makefile.am: Set LIBUNWIND_ARCH_DIR, LIBUNWIND_OTHER_DIRS and
+	GEN_GCJ_LDADD_LIST to include ppc32 target.
+	* bootstrap.sh: Add ppc32 to isa list.
+
 2007-10-04  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Makefile.am: Set LIBUNWIND_ARCH_DIR and LIBUNWIND_OTHER_DIRS

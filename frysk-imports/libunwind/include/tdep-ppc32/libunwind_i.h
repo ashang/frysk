@@ -255,6 +255,7 @@ dwarf_put (struct dwarf_cursor *c, dwarf_loc_t loc, unw_word_t val)
 #define tdep_get_elf_image		UNW_ARCH_OBJ(get_elf_image)
 #define tdep_access_reg			UNW_OBJ(access_reg)
 #define tdep_access_fpreg		UNW_OBJ(access_fpreg)
+#define tdep_fetch_proc_info_post       UNW_OBJ(fetch_proc_info_post)
 #define tdep_get_func_addr		UNW_OBJ(get_func_addr)
 
 #ifdef UNW_LOCAL_ONLY
@@ -287,8 +288,10 @@ extern int tdep_search_unwind_table (unw_addr_space_t as, unw_word_t ip,
 				     unw_proc_info_t * pi,
 				     int need_unwind_info, void *arg);
 extern void *tdep_uc_addr (ucontext_t * uc, int reg);
-extern int tdep_get_elf_image (struct elf_image *ei, pid_t pid, unw_word_t ip,
-			       unsigned long *segbase, unsigned long *mapoff);
+extern int tdep_get_elf_image (unw_addr_space_t as, struct elf_image *ei,
+			       pid_t pid, unw_word_t ip,
+			       unsigned long *segbase, unsigned long *mapoff,
+			       void *arg);
 extern int tdep_access_reg (struct cursor *c, unw_regnum_t reg,
 			    unw_word_t * valp, int write);
 extern int tdep_access_fpreg (struct cursor *c, unw_regnum_t reg,
