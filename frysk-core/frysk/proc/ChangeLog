@@ -1,5 +1,16 @@
 2007-10-13  Andrew Cagney  <cagney@redhat.com>
 
+	* IndirectBankRegisterMap.java (add(Register)): Delete.
+	(add(String,String)): Check for null.
+	(add(Register,Register)): Delete.
+	(add(Register,long)): Delete.
+	(add(Register[])): Delete.
+	(add(String,long)): Check for null.
+	* PPCBankRegisters.java: Replace more strings with PPC32Registers
+	and PPC64Registers.
+	* X86BankRegisters.java: Replace more strings with IA32Registers
+	or X8664Registers constants.
+
 	* Task.java (useRegisterBanksXXX): Set to true.
 	* RegisterBanks.java (findBankRegister(Register)): New.
 	(set(Register,long)): Use

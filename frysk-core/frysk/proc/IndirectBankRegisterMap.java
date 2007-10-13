@@ -40,7 +40,6 @@
 package frysk.proc;
 
 import inua.eio.ByteOrder;
-import frysk.isa.Register;
 
 /**
  * Mapping between bank registers, in particular a 32-bit register's
@@ -78,30 +77,23 @@ class IndirectBankRegisterMap extends BankRegisterMap {
     }
 
     IndirectBankRegisterMap add(String map32Name, String map64Name) {
-	return add(map32.get(map32Name), map64.get(map64Name));
+	BankRegister reg32 = map32.get(map32Name);
+	if (reg32 == null)
+	    throw new RuntimeException("unknown register: " + map32Name);
+	BankRegister reg64 = map64.get(map64Name);
+	if (reg64 == null)
+	    throw new RuntimeException("unknown register: " + map64Name);
+	return add(reg32, reg64);
     }
 
     IndirectBankRegisterMap add(String name) {
 	return add(name, name);
     }
 
-    IndirectBankRegisterMap add(Register reg32, Register reg64) {
-	return add(reg32.getName(), reg64.getName());
-    }
-    IndirectBankRegisterMap add(Register reg) {
-	return add(reg.getName(), reg.getName());
-    }
-    IndirectBankRegisterMap add(Register[] regs) {
-	for (int i = 0; i < regs.length; i++)
-	    add(regs[i]);
-	return this;
-    }
-    IndirectBankRegisterMap add(Register reg, long val) {
-	return add(reg.getName(), val);
-    }
-
     IndirectBankRegisterMap add(String name, final long value) {
 	BankRegister reg32 = map32.get(name);
+	if (reg32 == null)
+	    throw new RuntimeException("unknown register: " + name);
 	add(new BankRegister(0, 0, reg32.getLength(), name) {
 		private final long longVal = value;
 		public long getFIXME(Task task) {
