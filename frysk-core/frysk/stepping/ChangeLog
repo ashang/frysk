@@ -1,5 +1,8 @@
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 
+	* TestSteppingEngine.java (AssertLine): New; use.  Use assertEquals.
+	* TestStepping.java (AssertLine): New; use through out.
+	
 	* TestStepping.java: Use assertEquals.
 
 2007-09-28  Tim Moore  <timoore@redhat.com>

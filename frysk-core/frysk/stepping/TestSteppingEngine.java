@@ -88,31 +88,6 @@ public class TestSteppingEngine extends TestLib {
 	if (unresolvedOnPPC(3277))
 	    return;
 
-	/**
-         * SteppingTest Object definition - tell the stepping test what to look
-         * for at the completion of the test.
-         */
-	class InstructionStepTest implements SteppingTest {
-
-	    Task testTask = null;
-
-	    int success = 0;
-
-	    public InstructionStepTest(int s, Task task) {
-		success = s;
-		testTask = task;
-	    }
-
-	    public void runAssertions() {
-
-		DebugInfoFrame frame = DebugInfoStackFactory
-			.createDebugInfoStackTrace(testTask);
-		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
-		Manager.eventLoop.requestStop();
-	    }
-	}
-
 	/** Variable setup */
 
 	String source = Config.getRootSrcDir()
@@ -136,7 +111,7 @@ public class TestSteppingEngine extends TestLib {
 
 	initTaskWithTask(theTask, source, startLine, endLine);
 
-	this.currentTest = new InstructionStepTest(endLine, theTask);
+	this.currentTest = new AssertLine(endLine, theTask);
 
 	DebugInfoFrame frame = DebugInfoStackFactory
 		.createDebugInfoStackTrace(theTask);
@@ -157,31 +132,6 @@ public class TestSteppingEngine extends TestLib {
 	if (unresolvedOnPPC(3277))
 	    return;
 
-	/**
-         * SteppingTest Object definition - tell the stepping test what to look
-         * for at the completion of the test.
-         */
-	class InstructionStepListTest implements SteppingTest {
-
-	    Task testTask = null;
-
-	    int success = 0;
-
-	    public InstructionStepListTest(int s, Task task) {
-		success = s;
-		testTask = task;
-	    }
-
-	    public void runAssertions() {
-
-		DebugInfoFrame frame = DebugInfoStackFactory
-			.createDebugInfoStackTrace(testTask);
-		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
-		Manager.eventLoop.requestStop();
-	    }
-	}
-
 	/** Variable setup */
 
 	String source = Config.getRootSrcDir()
@@ -205,7 +155,7 @@ public class TestSteppingEngine extends TestLib {
 
 	initTaskWithTask(theTask, source, startLine, endLine);
 
-	this.currentTest = new InstructionStepListTest(endLine, theTask);
+	this.currentTest = new AssertLine(endLine, theTask);
 
 	DebugInfoFrame frame = DebugInfoStackFactory
 		.createDebugInfoStackTrace(theTask);
@@ -228,31 +178,6 @@ public class TestSteppingEngine extends TestLib {
 	if (unresolvedOnPPC(3277))
 	    return;
 
-	/**
-         * SteppingTest Object definition - tell the stepping test what to look
-         * for at the completion of the test.
-         */
-	class LineStepList implements SteppingTest {
-
-	    Task testTask = null;
-
-	    int success = 0;
-
-	    public LineStepList(int s, Task task) {
-		success = s;
-		testTask = task;
-	    }
-
-	    public void runAssertions() {
-
-		DebugInfoFrame frame = DebugInfoStackFactory
-			.createDebugInfoStackTrace(testTask);
-		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
-		Manager.eventLoop.requestStop();
-	    }
-	}
-
 	/** Variable setup */
 
 	String source = Config.getRootSrcDir()
@@ -276,7 +201,7 @@ public class TestSteppingEngine extends TestLib {
 
 	initTaskWithTask(theTask, source, startLine, endLine);
 
-	this.currentTest = new LineStepList(endLine, theTask);
+	this.currentTest = new AssertLine(endLine, theTask);
 
 	DebugInfoFrame sFrame = DebugInfoStackFactory
 		.createDebugInfoStackTrace(theTask);
@@ -297,31 +222,6 @@ public class TestSteppingEngine extends TestLib {
 	if (unresolvedOnPPC(3277))
 	    return;
 
-	/**
-         * SteppingTest Object definition - tell the stepping test what to look
-         * for at the completion of the test.
-         */
-	class LineStepListTest implements SteppingTest {
-
-	    Task testTask = null;
-
-	    int success = 0;
-
-	    public LineStepListTest(int s, Task task) {
-		success = s;
-		testTask = task;
-	    }
-
-	    public void runAssertions() {
-
-		DebugInfoFrame frame = DebugInfoStackFactory
-			.createDebugInfoStackTrace(testTask);
-		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
-		Manager.eventLoop.requestStop();
-	    }
-	}
-
 	/** Variable setup */
 
 	String source = Config.getRootSrcDir()
@@ -345,7 +245,7 @@ public class TestSteppingEngine extends TestLib {
 
 	initTaskWithTask(theTask, source, startLine, endLine);
 
-	this.currentTest = new LineStepListTest(endLine, theTask);
+	this.currentTest = new AssertLine(endLine, theTask);
 
 	DebugInfoFrame frame = DebugInfoStackFactory
 		.createDebugInfoStackTrace(theTask);
@@ -388,7 +288,7 @@ public class TestSteppingEngine extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 
 		assertEquals("demanged name", "second", frame.getSymbol()
 			.getDemangledName());
@@ -477,7 +377,7 @@ public class TestSteppingEngine extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 
 		assertEquals("demanged name", "second", frame.getSymbol()
 			.getDemangledName());
@@ -556,7 +456,7 @@ public class TestSteppingEngine extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 
 		assertEquals("demanged name", "second", frame.getSymbol()
 			.getDemangledName());
@@ -636,7 +536,7 @@ public class TestSteppingEngine extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 
 		assertEquals("demanged name", "second", frame.getSymbol()
 			.getDemangledName());
@@ -901,6 +801,22 @@ public class TestSteppingEngine extends TestLib {
 	lock = null;
 	scanner = null;
 	dbae = null;
+    }
+
+    static class AssertLine implements SteppingTest {
+	private final Task task;
+	private final int success;
+	AssertLine(int success, Task task) {
+	    this.task = task;
+	    this.success = success;
+	}
+	public void runAssertions() {
+	    DebugInfoFrame frame = DebugInfoStackFactory
+		.createDebugInfoStackTrace(task);
+	    int lineNr = frame.getLines()[0].getLine();
+	    assertEquals("line number", success, lineNr);
+	    Manager.eventLoop.requestStop();
+	}
     }
 
     private interface SteppingTest {
