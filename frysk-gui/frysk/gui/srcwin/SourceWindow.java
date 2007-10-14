@@ -117,7 +117,6 @@ import frysk.dom.DOMFrysk;
 import frysk.dom.DOMSource;
 import frysk.gui.common.IconManager;
 import frysk.gui.console.ConsoleWindow;
-import frysk.gui.dialogs.WarnDialog;
 import frysk.gui.disassembler.DisassemblyWindow;
 import frysk.gui.disassembler.DisassemblyWindowFactory;
 import frysk.gui.memory.MemoryWindow;
@@ -134,7 +133,6 @@ import frysk.gui.sessions.SessionManager;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.gui.terminal.TermWindow;
-import frysk.proc.Isa;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.rt.DisplayManager;
@@ -939,10 +937,6 @@ public class SourceWindow extends Window {
 	    return this.swProc[this.current];
 	else
 	    return null;
-    }
-
-    private Isa getProcIsa() {
-	return swProc[this.current].getMainTask().getIsa();
     }
 
     public DOMFrysk getDOM() {
@@ -2808,17 +2802,6 @@ public class SourceWindow extends Window {
          * Creates and toggles the display of the MemoryWindow.
          */
     private void toggleMemoryWindow() {
-	Isa isa = getProcIsa();
-	if (!(isa instanceof frysk.proc.IsaIA32
-		|| isa instanceof frysk.proc.IsaPPC || isa instanceof frysk.proc.IsaX8664)) {
-	    WarnDialog dialog = new WarnDialog(
-		    " The Memory Window is yet not supported\n"
-			    + " on this architectures! ");
-	    dialog.showAll();
-	    dialog.run();
-	    // return;
-	}
-
 	MemoryWindow memWin = MemoryWindowFactory.memWin;
 	if (memWin == null) {
 	    MemoryWindowFactory.createMemoryWindow(swProc[this.current],
@@ -2835,17 +2818,6 @@ public class SourceWindow extends Window {
          * Creates and toggles the display of the DisassemblyWindow.
          */
     private void toggleDisassemblyWindow() {
-	Isa isa = getProcIsa();
-	if (!(isa instanceof frysk.proc.IsaIA32
-		|| isa instanceof frysk.proc.IsaPPC || isa instanceof frysk.proc.IsaX8664)) {
-	    WarnDialog dialog = new WarnDialog(
-		    " The Disassembly Window is yet not supported\n"
-			    + " on this architectures! ");
-	    dialog.showAll();
-	    dialog.run();
-	    // return;
-	}
-
 	DisassemblyWindow disWin = DisassemblyWindowFactory.disWin;
 	if (disWin == null) {
 	    DisassemblyWindowFactory.createDisassemblyWindow(

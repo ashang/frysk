@@ -1,3 +1,8 @@
+2007-10-14  Andrew Cagney  <cagney@redhat.com>
+
+	* actions/ShowMemWin.java: Delete instanceof checks for
+	frysk.proc.IsaX8664 and frysk.proc.IsaPPC64.
+
 2007-08-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* GuiProc.java (isOwned): Added a check for the init process.

@@ -1,3 +1,8 @@
+2007-10-14  Andrew Cagney  <cagney@redhat.com>
+
+	* SourceWindow.java: Delete instanceof tests.
+	(getProcIsa()): Delete.
+
 2007-09-13  Mark Wielaard  <mwielaard@redhat.com>
 
 	* SourceView.java (clickedOnTextArea): Don't catch

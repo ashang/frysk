@@ -40,13 +40,11 @@
 
 package frysk.gui.monitor.actions;
 
-import frysk.gui.dialogs.WarnDialog;
 import frysk.gui.memory.MemoryWindowFactory;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.eventviewer.Event;
 import frysk.gui.monitor.observers.TaskObserverRoot;
-import frysk.proc.Isa;
 import frysk.proc.Task;
 import frysk.stepping.SteppingEngine;
 
@@ -64,26 +62,10 @@ public class ShowMemWin
     super(other);
   }
 
-  public void execute (Task task, TaskObserverRoot observer, Event event)
-  {
-    Isa isa = null;
-    isa = task.getIsa();
-    if (isa == null || isa instanceof frysk.proc.IsaX8664
-	|| isa instanceof frysk.proc.IsaPPC64) 
-      {
-	String warning;
-	if (isa == null)
-	  warning = "Can't get architecture!";
-	else
-	  warning = " The Memory Window is yet not supported\n"
-	    + " on 64-bit architectures! ";
-	WarnDialog dialog = new WarnDialog(warning);
-        dialog.showAll();
-        dialog.run();
-        return;
-      }
-    MemoryWindowFactory.createMemoryWindow(task.getProc(), new SteppingEngine());
-  }
+    public void execute (Task task, TaskObserverRoot observer, Event event) {
+	MemoryWindowFactory.createMemoryWindow(task.getProc(),
+					       new SteppingEngine());
+    }
 
   public GuiObject getCopy ()
   {

@@ -313,9 +313,8 @@ public class MemoryWindow
     long pc_inc;
     final double highestAddress = Math.pow(2.0, (double)(8 * myTask.getISA().wordSize())) - 1.0;
     
-    if (currentFormat == 0)
-      {
-        if (myTask.getIsa() instanceof frysk.proc.IsaX8664 || myTask.getIsa() instanceof frysk.proc.IsaPPC64)
+    if (currentFormat == 0) {
+        if (myTask.getISA().wordSize() == 8)
           currentFormat = SIXTYFOUR_BIT;
         else
           currentFormat = THIRTYTWO_BIT;
