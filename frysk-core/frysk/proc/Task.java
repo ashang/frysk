@@ -1027,7 +1027,9 @@ public abstract class Task
      */
     public BigInteger getBigIntegerRegisterFIXME(String name) {
 	BankRegister bankRegister = getRegisterBanks().getBankRegister(name);
-	byte[] bytes = bankRegister.getBytesFIXME(this);
+	byte[] bytes = new byte[bankRegister.getLength()];
+	ByteBuffer b = getRegisterBuffersFIXME()[bankRegister.getBank()];
+	b.get(bankRegister.getOffset(), bytes, 0, bankRegister.getLength());
     	if (getISA().order() == ByteOrder.LITTLE_ENDIAN) {
 	    for (int left = 0; left < bytes.length / 2; left++) {
 		int right = bytes.length - 1 - left;
@@ -1043,23 +1045,12 @@ public abstract class Task
      * Return the Task's Register as a long.
      */
     public long getRegister(Register register) {
-	if (!useRegisterBanksXXX) {
-	    BankRegister bankRegister
-		= getIsa().getRegisterByName(register.getName());
-	    return bankRegister.getFIXME(this);
-	}
 	return getRegisterBanks().get(register);
     }
     /**
      * Store the long value in the Task's register.
      */
     public void setRegister(Register register, long value) {
-	if (!useRegisterBanksXXX) {
-	    BankRegister bankRegister
-		= getIsa().getRegisterByName(register.getName());
-	    bankRegister.putFIXME(this, value);
-	    return;
-	}
 	getRegisterBanks().set(register, value);
     }
     /**
@@ -1068,23 +1059,10 @@ public abstract class Task
      */
     public void access(Register register, int offset, int length,
 		       byte[] bytes, int start, boolean write) {
-	if (!useRegisterBanksXXX) {
-	    if (write)
-		throw new RuntimeException("accessRegister:write not implemented");
-	    else {
-		BankRegister bankRegister
-		    = getIsa().getRegisterByName(register.getName());
-		byte[] tmp = bankRegister.getBytesFIXME(this);
-		for (int i = 0; i < length; i++) {
-		    bytes[start + i] = tmp[offset + i];
-		}
-	    }
-	}
 	getRegisterBanks().access(register, offset, length, bytes,
 				  start, write);
     }
 
-    public static boolean useRegisterBanksXXX = true;
     private RegisterBanks registerBanks;
     protected abstract RegisterBanks sendrecRegisterBanks();
     RegisterBanks getRegisterBanks() {

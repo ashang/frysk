@@ -51,14 +51,6 @@ import inua.eio.ByteBuffer;
 public interface Isa
 {
   /**
-   * Get a <code>Register</code> object by name.
-   *
-   * @param name the register name
-   * @return a register object
-   */
-    BankRegister getRegisterByName(String name);
-
-  /**
    * Get the value of the program counter in a task.
    * @param task the task
    * @return program counter, which might be negative!

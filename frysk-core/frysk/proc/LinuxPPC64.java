@@ -50,10 +50,6 @@ class LinuxPPC64 extends IsaPowerPC implements SyscallEventDecoder
 	super(PPC64Registers.NIP);
     }
 
-    public BankRegister getRegisterByName (String name) {
-	return PPCBankRegisters.PPC64BE.get(name);
-    }
-
   private static Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
   private static LinuxPPC64 isa;
 
@@ -73,7 +69,7 @@ class LinuxPPC64 extends IsaPowerPC implements SyscallEventDecoder
 	if (info == null)
 	    info = new SyscallEventInfo () {
 		    public int number (Task task) {
-			logger.log (Level.FINE, "Get GPR0 {0}\n",getRegisterByName("gpr0"));
+			logger.log (Level.FINE, "Get GPR0\n");
 			return (int)task.getRegister(PPC64Registers.GPR0);
 		    }
 		    public Syscall getSyscall(Task task) {

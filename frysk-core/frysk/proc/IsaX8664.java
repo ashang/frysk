@@ -55,10 +55,6 @@ public class IsaX8664 implements Isa
   private static final Instruction X8664Breakpoint
     = new Instruction(new byte[] { (byte)0xcc }, false);
   
-    public BankRegister getRegisterByName(String name) {
-	return X86BankRegisters.X8664.get(name);
-    }
-
     public long pc(Task task) {
 	return task.getRegister(X8664Registers.RIP);
     }

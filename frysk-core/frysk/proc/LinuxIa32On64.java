@@ -88,10 +88,6 @@ extends LinuxIa32
     return isa64.getRegisterBankBuffers(pid);
   }
   
-    public BankRegister getRegisterByName(String name) {
-	return X86BankRegisters.IA32_ON_X8664.get(name);
-    }
-
 }
 
   

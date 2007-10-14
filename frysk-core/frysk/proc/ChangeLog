@@ -1,5 +1,19 @@
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Isa.java (getRegisterByName(String)): Delete.
+	* IsaIA32.java: Update.
+	* IsaX8664.java: Update.
+	* LinuxIa32On64.java: Update.
+	* LinuxPPC64.java: Update.
+	* LinuxPPC.java: Update.
+	* Task.java (getRegister(Register)): Simplify.
+	(setRegister(Register,long)): Simplify.
+	(access(Register,int,int,byte[],int,boolean): Simplify.
+	(useRegisterBanksXXX): Delete.
+	(getBigIntegerRegisterFIXME(String)): Simplify.
+	* TestRegisters.java: Delete.
+	* BankRegister.java (getBytesFIXME(Task)): Delete.
+	
 	* RegisterBanks.java (getBankRegister(String)): New.
 	* Task.java (getBankRegister()): Delete.
 	(getBigIntegerRegisterFIXME(String)): Update.

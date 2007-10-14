@@ -69,10 +69,6 @@ public class IsaIA32 implements Isa
     return bankBuffers;
   }
   
-    public BankRegister getRegisterByName(String name) {
-	return X86BankRegisters.IA32.get(name);
-    }
-
     public long pc(Task task) {
 	return task.getRegister(IA32Registers.EIP);
     }

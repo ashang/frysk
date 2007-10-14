@@ -1,3 +1,7 @@
+2007-10-14  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-registers.S: Delete.
+
 2007-10-10 Teresa Thomas <tthomas@redhat.com>
 
 	* hpd-c.c (static_int_ptr): New.

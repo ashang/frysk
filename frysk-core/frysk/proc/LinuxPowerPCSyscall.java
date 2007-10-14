@@ -75,57 +75,34 @@ public class LinuxPowerPCSyscall
       super (number);
     }
 
-    public long getArguments (Task task, int n)
-    {
-      Isa isa;
-      try
-	{
-	  isa = task.getIsa();
-	}
-      catch (Exception e)
-	{
-	  throw new RuntimeException ("Could not get isa");
-	}
-
-      switch (n)
-	{
-	case 0:
-	  return isa.getRegisterByName("gpr0").getFIXME(task);
-	case 1:
-	  return isa.getRegisterByName("orig_r3").getFIXME(task);
-	case 2:
-	  return isa.getRegisterByName("gpr4").getFIXME(task);
-	case 3:
-	  return isa.getRegisterByName("gpr5").getFIXME(task);
-	case 4:
-	  return isa.getRegisterByName("gpr6").getFIXME(task);
-	case 5:
-	  return isa.getRegisterByName("gpr7").getFIXME(task);
-	case 6:
-	  return isa.getRegisterByName("gpr8").getFIXME(task);
-	default:
-	  throw new RuntimeException ("unknown syscall arg");
-	}
-    }
-    public long getReturnCode (Task task)
-    {
-      Isa isa;
-      try
-	{
-	  isa = task.getIsa();
-	}
-      catch (Exception e)
-	{
-	  throw new RuntimeException ("Could not get isa");
-	}
-
-      int flag = (int) isa.getRegisterByName("ccr").getFIXME(task);
-      
-      if ((flag & 0x10000000) != 0)
-	return -isa.getRegisterByName("gpr3").getFIXME(task);
-      else
-	return isa.getRegisterByName("gpr3").getFIXME(task);
-    }
+      public long getArguments (Task task, int n) {
+	  switch (n) {
+	  case 0:
+	      return task.getRegisterBanks().getBankRegister("gpr0").getFIXME(task);
+	  case 1:
+	      return task.getRegisterBanks().getBankRegister("orig_r3").getFIXME(task);
+	  case 2:
+	      return task.getRegisterBanks().getBankRegister("gpr4").getFIXME(task);
+	  case 3:
+	      return task.getRegisterBanks().getBankRegister("gpr5").getFIXME(task);
+	  case 4:
+	      return task.getRegisterBanks().getBankRegister("gpr6").getFIXME(task);
+	  case 5:
+	      return task.getRegisterBanks().getBankRegister("gpr7").getFIXME(task);
+	  case 6:
+	      return task.getRegisterBanks().getBankRegister("gpr8").getFIXME(task);
+	  default:
+	      throw new RuntimeException ("unknown syscall arg");
+	  }
+      }
+      public long getReturnCode (Task task) {
+	  int flag = (int) task.getRegisterBanks().getBankRegister("ccr").getFIXME(task);
+	  
+	  if ((flag & 0x10000000) != 0)
+	      return -task.getRegisterBanks().getBankRegister("gpr3").getFIXME(task);
+	  else
+	      return task.getRegisterBanks().getBankRegister("gpr3").getFIXME(task);
+      }
   }
 
   static Syscall[] syscallList = {
@@ -441,34 +418,21 @@ public class LinuxPowerPCSyscall
     new PowerPCSyscall ("fallocate", 309)
     };
 
-  static class SocketSubSyscall
-    extends PowerPCSyscall
-  {
-    SocketSubSyscall (String name, int number)
-    {
-      super (name, number);
-    }
-    SocketSubSyscall (String name, int number, int numArgs, String argList)
-    {
-      super (name, number, numArgs, argList);
-    }
-    public long getArguments (Task task, int n)
-    {
-      /** Arguments in socket subcalls are dereferenced. */
-      Isa isa;
-      try
-	{
-	  isa = task.getIsa();
+    static class SocketSubSyscall extends PowerPCSyscall {
+	SocketSubSyscall (String name, int number) {
+	    super (name, number);
 	}
-      catch (Exception e)
-	{
-	  throw new RuntimeException ("Could not get isa");
+	SocketSubSyscall (String name, int number, int numArgs,
+			  String argList) {
+	    super (name, number, numArgs, argList);
 	}
-      long base = isa.getRegisterByName("gpr4").getFIXME(task);
-      // FIXME: There are some bi-arch issues
-      return task.getMemory().getInt(base + (n-1) * task.getISA().wordSize());
+	public long getArguments (Task task, int n) {
+	    long base = task.getRegisterBanks()
+		.getBankRegister("gpr4").getFIXME(task);
+	    // FIXME: There are some bi-arch issues
+	    return task.getMemory().getInt(base + (n-1) * task.getISA().wordSize());
+	}
     }
-  }
 
   static Syscall[] socketSubcallList = {
     new SocketSubSyscall ("", SOCKET_NUM),
@@ -541,31 +505,18 @@ public class LinuxPowerPCSyscall
     new IpcSubSyscall("shmctl", IPC_NUM)
   };
 
-  public static Syscall syscallByNum (Task task, int number)
-  {
-    if (number != SOCKET_NUM && number != IPC_NUM)
-      return Syscall.syscallByNum (number, task);
-    else
-      {
-	/** sub syscall number is in .  */
-	int subSyscallNumber = 0;
-	try
-	  {
-	    subSyscallNumber = (int) task.getIsa().getRegisterByName("orig_r3").getFIXME(task);
-	  }
-	catch (Exception e)
-	  {
-	    throw new RuntimeException ("Could not get isa");
-	  }
-	
-	if (number == SOCKET_NUM)
-	  {
-	    return socketSubcallList[subSyscallNumber];
-	  }
-	else
-	  {
-	    return ipcSubcallList[subSyscallNumber];
-	  }
-      }
-  }
+    public static Syscall syscallByNum (Task task, int number) {
+	if (number != SOCKET_NUM && number != IPC_NUM)
+	    return Syscall.syscallByNum (number, task);
+	else {
+	    /** sub syscall number is in .  */
+	    int subSyscallNumber = 0;
+	    subSyscallNumber = (int) task.getRegisterBanks().getBankRegister("orig_r3").getFIXME(task);
+	    if (number == SOCKET_NUM) {
+		return socketSubcallList[subSyscallNumber];
+	    } else {
+		return ipcSubcallList[subSyscallNumber];
+	    }
+	}
+    }
 }
