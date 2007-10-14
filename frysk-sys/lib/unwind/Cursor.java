@@ -81,8 +81,8 @@ public class Cursor
 			     bytes, start);
     }
 
-    public int getSP(byte[] word) {
-	return unwinder.getSP(cursor, word);
+    public long getSP() {
+	return unwinder.getSP(cursor);
     }
   
     public int step() {

@@ -70,7 +70,7 @@ public abstract class Unwind
     abstract void setRegister(RawDataManaged cursor, int regNum,
 			      long offset, int length, byte[] word, int start);
   
-  public abstract int getSP(RawDataManaged cursor, byte[] word);
+    public abstract long getSP(RawDataManaged cursor);
   
   abstract RawDataManaged copyCursor(RawDataManaged cursor);  
  abstract int getContext(RawDataManaged context);

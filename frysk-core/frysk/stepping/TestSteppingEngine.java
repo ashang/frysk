@@ -358,21 +358,12 @@ public class TestSteppingEngine extends TestLib {
 
 	    int success = 0;
 
-	    boolean first = true;
-
 	    public InstructionNextTest(int s, Task task) {
 		success = s;
 		testTask = task;
 	    }
 
 	    public void runAssertions() {
-
-		if (first) {
-		    first = false;
-		    se.stepNextInstruction(testTask, DebugInfoStackFactory
-			    .createDebugInfoStackTrace(testTask));
-		    return;
-		}
 
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
@@ -422,7 +413,8 @@ public class TestSteppingEngine extends TestLib {
 	assertTrue("Line information present", frame.getLines().length > 0);
 
 	/** The stepping operation */
-	se.stepInstruction(theTask);
+	se.stepNextInstruction(theTask, DebugInfoStackFactory
+			       .createDebugInfoStackTrace(theTask));
 
 	this.testStarted = true;
 	// System.err.println("waiting for finish");

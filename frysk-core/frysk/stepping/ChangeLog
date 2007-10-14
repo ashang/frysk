@@ -1,5 +1,10 @@
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 
+	* TestSteppingEngine.java (testInstructionNext()): Call
+	stepNextInstruction.
+	* TestStepping.java (testASMFunctionStepOver()): Start at
+	_stepASMFunctionCall_.
+	
 	* TestSteppingEngine.java (AssertLine): New; use.  Use assertEquals.
 	* TestStepping.java (AssertLine): New; use through out.
 	

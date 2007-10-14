@@ -391,11 +391,15 @@ lib::unwind::TARGET::setRegister(gnu::gcj::RawDataManaged* cursor,
     throwRuntimeException("set register failed");
 }
 
-jint
-lib::unwind::TARGET::getSP(gnu::gcj::RawDataManaged* cursor, jbyteArray word)
+jlong
+lib::unwind::TARGET::getSP(gnu::gcj::RawDataManaged* cursor)
 {
-  return (jint) unw_get_reg((::unw_cursor_t *) cursor,
-                            UNW_REG_SP, (::unw_word_t *) elements(word));
+  unw_word_t sp;
+  int status = unw_get_reg((::unw_cursor_t *) cursor, UNW_REG_SP, &sp);
+  if (status < 0)
+    return 0; // bottom of stack.
+  else
+    return sp;
 }
 
 

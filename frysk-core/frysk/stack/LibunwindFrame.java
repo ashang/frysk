@@ -81,12 +81,7 @@ class LibunwindFrame extends Frame
 	this.registerMap = LibunwindRegisterMapFactory.getRegisterMap(isa);
     }
   
-    /**
-     * Returns the Frame outer to this Frame on the stack. If that Frame object
-     * has not yet been created, it is created using this Frame's Cursor and
-     * unwinding outwards a single frame.
-     */
-    public Frame getOuter() {
+    private LibunwindFrame getLibunwindOuter() {
 	if (outer == null) {
 	    Cursor newCursor = this.cursor.unwind();
 	    if (newCursor != null) {
@@ -95,6 +90,15 @@ class LibunwindFrame extends Frame
 	    }
 	}
 	return outer;
+    }
+
+    /**
+     * Returns the Frame outer to this Frame on the stack. If that Frame object
+     * has not yet been created, it is created using this Frame's Cursor and
+     * unwinding outwards a single frame.
+     */
+    public Frame getOuter() {
+	return getLibunwindOuter();
     }
   
     /**
@@ -178,14 +182,17 @@ class LibunwindFrame extends Frame
      * Return this frame's FrameIdentifier.
      */
     public FrameIdentifier getFrameIdentifier () {
-	if (this.frameIdentifier == null) {
+	if (frameIdentifier == null) {
 	    ProcInfo myInfo = getProcInfo();
-	    byte[] word = new byte[isa.wordSize()];
 	    long cfa = 0;
-	    if (cursor.getSP(word) >= 0)
-		cfa = byteArrayToLong(word);
-	    this.frameIdentifier = new FrameIdentifier(myInfo.getStartIP(),
-						       cfa);
+	    LibunwindFrame outer = getLibunwindOuter();
+	    if (outer != null)
+		// The previous frame's SP makes for a good CFA for
+		// this frame.  It's a value that needs to be constant
+		// through out the life-time of this frame, and hence
+		// this frame's SP (which changes) is no good.
+		cfa = outer.cursor.getSP();
+	    frameIdentifier = new FrameIdentifier(myInfo.getStartIP(), cfa);
 	}
 	return this.frameIdentifier;
     }

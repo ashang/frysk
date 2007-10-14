@@ -663,7 +663,7 @@ public class TestStepping extends TestLib {
 	this.scanner = new TestfileTokenScanner(new File(source));
 
 	/* The line number where the test begins */
-	int startLine = this.scanner.findTokenLine("_stepASMFunctionEntry_");
+	int startLine = this.scanner.findTokenLine("_stepASMFunctionCall_");
 
 	/* The line number the test should end up at */
 	int endLine = this.scanner.findTokenLine("_stepASMFunctionReturned_");

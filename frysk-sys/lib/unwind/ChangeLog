@@ -1,3 +1,10 @@
+2007-10-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Unwind.java (getSP(RawDataManaged)): Relace
+	getSP(RawDataManaged,byte[]).
+	* cni/UnwindH.hxx (getSP): Update.
+	* Cursor.java (getSP()): Replace getSP(byte[]).
+
 2007-10-02  Andrew Cagney  <cagney@redhat.com>
 
 	* RegisterX86.java: Delete.
