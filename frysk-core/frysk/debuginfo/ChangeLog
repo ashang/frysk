@@ -1,3 +1,9 @@
+2007-10-14  Andrew Cagney  <cagney@redhat.com>
+
+	* RegisterPiece.java (RegisterPiece(Register,long)): Delete.
+	* DebugInfoEvaluator.java: Update.
+	* TestLocationExpression.java: Update; use StackFactory.
+
 2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfo.java: Update; do not throw NameNotFoundException.  Do

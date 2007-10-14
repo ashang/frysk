@@ -58,14 +58,6 @@ public class RegisterPiece
 	this.base = base;
     }
 
-    /**
-     * Used for testing LocationExpression.
-     */
-    public RegisterPiece(Register register, long size)
-    {
-	this(register, size, null, 0);
-    }
-    
     public RegisterPiece(Register register, long size, Frame frame)
     {
 	this(register, size, frame, 0);

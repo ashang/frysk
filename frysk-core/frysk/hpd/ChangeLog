@@ -1,3 +1,7 @@
+2007-10-14  Andrew Cagney  <cagney@redhat.com>
+
+	* TestPrint.java (testRegister()): New.
+
 2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
 	* CLI.java: Do not catch, throw, or ignore NameNotFoundException.

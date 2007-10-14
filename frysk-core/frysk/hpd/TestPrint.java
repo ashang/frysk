@@ -40,7 +40,12 @@
 package frysk.hpd;
 
 import frysk.Config;
+import frysk.testbed.FryskAsm;
 import frysk.expunit.Expect;
+import frysk.isa.ISA;
+import frysk.isa.Register;
+import frysk.isa.ElfMap;
+import java.io.File;
 
 /**
  * Test the functionality of the print command; for instance that the
@@ -94,5 +99,15 @@ public class TestPrint
 	child = new Expect(Config.getPkgLibFile("hpd-c"));
 	e = new HpdTestbed(child.getPid());
 	e.sendCommandExpectPrompt("print *static_int_ptr", "\r\n4\r\n");
+    }
+    public void testRegister() {
+	// FIXME: Should use funit-regs.
+	File exe = Config.getPkgLibFile("hpd-c");
+	child = new Expect(exe);
+	e = new HpdTestbed(child.getPid());
+	ISA isa = ElfMap.getISA(exe);
+	Register r = FryskAsm.createFryskAsm(isa).REG0;
+	e.sendCommandExpectPrompt("print $" + r.getName() + " -format d",
+				  "\r\n[0-9]+\r\n");
     }
 }
