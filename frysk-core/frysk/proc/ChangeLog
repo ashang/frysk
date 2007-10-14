@@ -1,5 +1,11 @@
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Isa.java (getElfMachineType()): Delete.	
+	* IsaIA32.java: Update.
+	* IsaPPC64.java: Update.
+	* IsaPPC.java: Update.
+	* IsaX8664.java: Update.
+
 	* Isa.java (getWordSize()): Delete.
 	(getByteOrder()): Delete.
 	* IsaIA32.java: Update.

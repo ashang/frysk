@@ -40,24 +40,21 @@
 package frysk.ftrace;
 
 import frysk.proc.Task;
-import lib.dwfl.ElfEMachine;
+import frysk.isa.ISA;
 
-public class ArchFactory
-{
-  public static final ArchFactory instance = new ArchFactory();
+public class ArchFactory {
+    public static final ArchFactory instance = new ArchFactory();
+    
+    private ArchFactory() {
+    }
 
-  protected ArchFactory()
-  {
-  }
-
-  public Arch getArch(Task task)
-  {
-    int machine = task.getIsa().getElfMachineType();
-    if (machine == ElfEMachine.EM_386)
-      return Archx86.instance;
-    else if (machine == ElfEMachine.EM_X86_64)
-      return Archx8664.instance;
-    else
-      throw new AssertionError("Arch not supported.");
+    public Arch getArch(Task task) {
+	ISA isa = task.getISA();
+	if (isa == ISA.IA32)
+	    return Archx86.instance;
+	else if (isa == ISA.X8664)
+	    return Archx8664.instance;
+	else
+	    throw new AssertionError("Arch not supported.");
   }
 }

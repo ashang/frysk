@@ -39,7 +39,6 @@
 
 package frysk.proc;
 
-import lib.dwfl.ElfEMachine;
 import frysk.isa.PPC32Registers;
 
 public class IsaPPC extends IsaPowerPC {
@@ -47,12 +46,6 @@ public class IsaPPC extends IsaPowerPC {
     IsaPPC() {
 	super(PPC32Registers.NIP);
     }
-
-  public int getElfMachineType()
-  {
-    return ElfEMachine.EM_PPC64;
-  }
-
 
     public BankRegister getRegisterByName (String name) {
 	return PPCBankRegisters.PPC32BE.get(name);

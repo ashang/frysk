@@ -48,7 +48,6 @@ import frysk.sys.Ptrace.RegisterSet;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.proc.live.RegisterSetByteBuffer;
 import frysk.proc.live.AddressSpaceByteBuffer;
-import lib.dwfl.ElfEMachine;
 import frysk.isa.X8664Registers;
 
 public class IsaX8664 implements Isa
@@ -203,10 +202,5 @@ public class IsaX8664 implements Isa
 	  bankBuffers[i].order(ByteOrder.LITTLE_ENDIAN);
       }
       return bankBuffers;
-  }
-
-  public int getElfMachineType()
-  {
-    return ElfEMachine.EM_X86_64;
   }
 }

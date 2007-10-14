@@ -48,7 +48,6 @@ import frysk.sys.Ptrace.RegisterSet;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.proc.live.RegisterSetByteBuffer;
 import frysk.proc.live.AddressSpaceByteBuffer;
-import lib.dwfl.ElfEMachine;
 import frysk.isa.IA32Registers;
 
 public class IsaIA32 implements Isa
@@ -216,10 +215,5 @@ public class IsaIA32 implements Isa
       return syscall;
 
     return null;
-  }
-
-  public int getElfMachineType()
-  {
-    return ElfEMachine.EM_386;
   }
 }

@@ -43,13 +43,13 @@ import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
+import frysk.isa.ISA;
 import frysk.stack.StackFactory;
 import frysk.proc.Task;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.FryskAsm;
 import frysk.testbed.TestLib;
 import frysk.stack.Frame;
-import lib.dwfl.ElfEMachine;
 import lib.dwfl.DwOp;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.DwarfOp;
@@ -62,23 +62,24 @@ public class TestLocationExpression
     /*
      * Test for DW_OP_breg3/DW_OP_breg5 and DW_OP_dup
      */
-    public void testBregxDup()
-    {
+    public void testBregxDup() {
+	if (unresolvedOnPPC(4964))
+	    return;
 	List ops = new ArrayList();
 
-	// Note: REG1 in frysk-asm.h corresponds to registers 3 
-	// and 5 in i386 and x86_64 resp.
-	switch (getStoppedTask().getIsa().getElfMachineType())
-	{
-	    case ElfEMachine.EM_386:
-		ops.add( new DwarfOp(DwOp.BREG3_, 2, 0, 0) ); // Value in register ebx plus 2
-		break;
-	    case ElfEMachine.EM_X86_64:
-		ops.add( new DwarfOp(DwOp.BREG5_, 2, 0, 0) ); // Value in register rdi plus 2
-		break;
-	    default:	
-		if (unresolvedOnPPC(4964))
-		    return;
+	Task task = getStoppedTask();
+	ISA isa = task.getISA();
+
+	// Note: REG1 in frysk-asm.h corresponds to registers 3 and 5
+	// in i386 and x86_64 resp.  FIXME: Can use
+	// frysk.testbed.FryskAsm to determine the register
+	// name/number.
+	if (isa == ISA.IA32) {
+	    ops.add( new DwarfOp(DwOp.BREG3_, 2, 0, 0) ); // Value in register ebx plus 2
+	} else if (isa == ISA.X8664) {
+	    ops.add( new DwarfOp(DwOp.BREG5_, 2, 0, 0) ); // Value in register rdi plus 2
+	} else {
+	    throw new RuntimeException("unknown isa: " + isa);
 	}    
 	ops.add( new DwarfOp(DwOp.DUP_, 0, 0, 0) ) ;
 	

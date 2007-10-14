@@ -1,5 +1,8 @@
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLocationExpression.java: Update; use Task .getISA instead of
+	Isa .getElfMachineType().
+
 	* RegisterPiece.java (RegisterPiece(Register,long)): Delete.
 	* DebugInfoEvaluator.java: Update.
 	* TestLocationExpression.java: Update; use StackFactory.

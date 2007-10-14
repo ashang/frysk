@@ -1,3 +1,8 @@
+2007-10-14  Andrew Cagney  <cagney@redhat.com>
+
+	* ArchFactory.java: Update; use Task .getISA() instead of Isa
+	.getElfMachineType().
+
 2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
 	* Archx8664.java: Replace BankRegister .get(Task) with Task
