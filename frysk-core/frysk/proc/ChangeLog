@@ -1,5 +1,8 @@
 2007-10-13  Andrew Cagney  <cagney@redhat.com>
 
+	* BankRegister.java (getBytesFIXME(Task)): Rename getBytes(Task).
+	* Task.java: Update.
+
 	* IndirectBankRegisterMap.java (add(Register)): Delete.
 	(add(String,String)): Check for null.
 	(add(Register,Register)): Delete.

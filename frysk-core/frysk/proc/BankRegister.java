@@ -121,7 +121,7 @@ public class BankRegister {
      * @param task the task from which to get the register
      * @return byte[] value.
      */
-    public byte[] getBytes(frysk.proc.Task task) {
+    byte[] getBytesFIXME(frysk.proc.Task task) {
 	ByteBuffer b = task.getRegisterBuffersFIXME()[bank];
 	byte[] bytes = new byte[length];
 	b.get(offset, bytes, 0, length);

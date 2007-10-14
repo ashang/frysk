@@ -1034,7 +1034,7 @@ public abstract class Task
      */
     public BigInteger getBigIntegerRegisterFIXME(String name) {
 	BankRegister bankRegister = getBankRegister(name);
-	byte[] bytes = bankRegister.getBytes(this);
+	byte[] bytes = bankRegister.getBytesFIXME(this);
     	if (getISA().order() == ByteOrder.LITTLE_ENDIAN) {
 	    for (int left = 0; left < bytes.length / 2; left++) {
 		int right = bytes.length - 1 - left;
@@ -1080,7 +1080,7 @@ public abstract class Task
 	else {
 	    BankRegister bankRegister
 		= getIsa().getRegisterByName(register.getName());
-	    byte[] tmp = bankRegister.getBytes(this);
+	    byte[] tmp = bankRegister.getBytesFIXME(this);
 	    for (int i = 0; i < length; i++) {
 		bytes[start + i] = tmp[offset + i];
 	    }
