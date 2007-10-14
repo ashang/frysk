@@ -1,5 +1,10 @@
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 
+	* RegisterBanks.java (getBankRegister(String)): New.
+	* Task.java (getBankRegister()): Delete.
+	(getBigIntegerRegisterFIXME(String)): Update.
+	* IsaX8664.java: Update.
+
 	* LinuxPPC32On64.java (isa64): Delete.
 	(getRegisterBankBuffers(int)): Delete.
 	* IsaPPC64.java: Delete.

@@ -56,15 +56,19 @@ public class RegisterBanks {
 	this.bankRegisters = bankRegisters;
     }
 
+    BankRegister getBankRegister(String name) {
+	BankRegister bankRegister = bankRegisters.get(name);
+	if (bankRegister != null)
+	    return bankRegister;
+	throw new RuntimeException("unknown register: " + name);
+    }
+
     private BankRegister findBankRegister(Register register) {
 	BankRegister bankRegister = bankRegisters.get(register);
 	if (bankRegister != null)
 	    return bankRegister;
 	// Workaround for code still relying on string names.
-	bankRegister = bankRegisters.get(register.getName());
-	if (bankRegister != null)
-	    return bankRegister;
-	throw new RuntimeException("unknown register: " + register);
+	return getBankRegister(register.getName());
     }
 
     long get(Register register) {

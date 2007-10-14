@@ -1021,19 +1021,12 @@ public abstract class Task
   public LinkedList pendingObservations = new LinkedList();
 
     /**
-     * Return the underlying bank register.
-     */
-    public BankRegister getBankRegister(String name) {
-	return getIsa().getRegisterByName(name);
-    }
-
-    /**
      * Return the underlying bank register's value as a BigInteger.
      * This is being used to read large register but for that there
      * the more efficient access(Register) available for that.
      */
     public BigInteger getBigIntegerRegisterFIXME(String name) {
-	BankRegister bankRegister = getBankRegister(name);
+	BankRegister bankRegister = getRegisterBanks().getBankRegister(name);
 	byte[] bytes = bankRegister.getBytesFIXME(this);
     	if (getISA().order() == ByteOrder.LITTLE_ENDIAN) {
 	    for (int left = 0; left < bytes.length / 2; left++) {
