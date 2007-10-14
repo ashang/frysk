@@ -1075,16 +1075,20 @@ public abstract class Task
      */
     public void access(Register register, int offset, int length,
 		       byte[] bytes, int start, boolean write) {
-	if (write)
-	    throw new RuntimeException("accessRegister:write not implemented");
-	else {
-	    BankRegister bankRegister
-		= getIsa().getRegisterByName(register.getName());
-	    byte[] tmp = bankRegister.getBytesFIXME(this);
-	    for (int i = 0; i < length; i++) {
-		bytes[start + i] = tmp[offset + i];
+	if (!useRegisterBanksXXX) {
+	    if (write)
+		throw new RuntimeException("accessRegister:write not implemented");
+	    else {
+		BankRegister bankRegister
+		    = getIsa().getRegisterByName(register.getName());
+		byte[] tmp = bankRegister.getBytesFIXME(this);
+		for (int i = 0; i < length; i++) {
+		    bytes[start + i] = tmp[offset + i];
+		}
 	    }
 	}
+	getRegisterBanks().access(register, offset, length, bytes,
+				  start, write);
     }
 
     public static boolean useRegisterBanksXXX = true;

@@ -1,3 +1,8 @@
+2007-10-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java (access(Register,long,long,byte[],int,boolean)): Use
+	RegisterBanks when useRegisterBanksXXX.
+
 2007-10-13  Andrew Cagney  <cagney@redhat.com>
 
 	* BankRegister.java (getBytesFIXME(Task)): Rename getBytes(Task).
