@@ -1,3 +1,7 @@
+2007-10-14  Andrew Cagney  <cagney@redhat.com>
+
+	* TestStepping.java: Use assertEquals.
+
 2007-09-28  Tim Moore  <timoore@redhat.com>
 
 	* SteppingEngine.java: (SteppingObserver.updateExecuted): Always

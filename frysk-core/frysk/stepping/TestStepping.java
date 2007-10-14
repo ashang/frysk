@@ -119,7 +119,7 @@ public class TestStepping extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 		Manager.eventLoop.requestStop();
 	    }
 	}
@@ -185,7 +185,7 @@ public class TestStepping extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 		Manager.eventLoop.requestStop();
 	    }
 	}
@@ -251,7 +251,7 @@ public class TestStepping extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 		Manager.eventLoop.requestStop();
 	    }
 	}
@@ -317,7 +317,7 @@ public class TestStepping extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 		Manager.eventLoop.requestStop();
 	    }
 	}
@@ -387,7 +387,7 @@ public class TestStepping extends TestLib {
 		    return;
 		}
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 		Manager.eventLoop.requestStop();
 	    }
 	}
@@ -453,7 +453,7 @@ public class TestStepping extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 		Manager.eventLoop.requestStop();
 	    }
 	}
@@ -522,7 +522,7 @@ public class TestStepping extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 		Manager.eventLoop.requestStop();
 	    }
 	}
@@ -588,7 +588,7 @@ public class TestStepping extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 		Manager.eventLoop.requestStop();
 	    }
 	}
@@ -655,7 +655,7 @@ public class TestStepping extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 		Manager.eventLoop.requestStop();
 	    }
 	}
@@ -722,7 +722,7 @@ public class TestStepping extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 		Manager.eventLoop.requestStop();
 	    }
 	}
@@ -789,7 +789,7 @@ public class TestStepping extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 		Manager.eventLoop.requestStop();
 	    }
 	}
@@ -856,7 +856,7 @@ public class TestStepping extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 		Manager.eventLoop.requestStop();
 	    }
 	}
@@ -923,7 +923,7 @@ public class TestStepping extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 		Manager.eventLoop.requestStop();
 	    }
 	}
@@ -990,7 +990,7 @@ public class TestStepping extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 		Manager.eventLoop.requestStop();
 	    }
 	}
@@ -1057,7 +1057,7 @@ public class TestStepping extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 		Manager.eventLoop.requestStop();
 	    }
 	}
@@ -1124,7 +1124,7 @@ public class TestStepping extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 		Manager.eventLoop.requestStop();
 	    }
 	}
@@ -1191,7 +1191,7 @@ public class TestStepping extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 		Manager.eventLoop.requestStop();
 	    }
 	}
@@ -1257,7 +1257,7 @@ public class TestStepping extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 		Manager.eventLoop.requestStop();
 	    }
 	}
@@ -1323,7 +1323,7 @@ public class TestStepping extends TestLib {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(testTask);
 		int lineNr = frame.getLines()[0].getLine();
-		assertTrue("line number", lineNr == success);
+		assertEquals("line number", success, lineNr);
 		Manager.eventLoop.requestStop();
 	    }
 	}
