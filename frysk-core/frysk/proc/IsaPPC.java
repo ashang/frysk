@@ -48,11 +48,6 @@ public class IsaPPC extends IsaPowerPC {
 	super(PPC32Registers.NIP);
     }
 
-  public int getWordSize ()
-  {
-    return 4;
-  }
-
   public int getElfMachineType()
   {
     return ElfEMachine.EM_PPC64;

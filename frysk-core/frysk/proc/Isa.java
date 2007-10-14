@@ -41,7 +41,6 @@ package frysk.proc;
 
 import java.util.HashMap;
 import java.util.List;
-import inua.eio.ByteOrder;
 import inua.eio.ByteBuffer;
 
 /**
@@ -72,20 +71,6 @@ public interface Isa
    */
   void setPC(Task task, long address);
 
-  /**
-   * Get the word size.
-   *
-   * @return  word size in bytes.
-   */
-  int getWordSize();
-
-  /**
-   * Get <code>ByteOrder</code> for this <code>Isa</code>.
-   *
-   * @return the byte order.
-   */
-  ByteOrder getByteOrder();
-  
   /**
    * Get the breakpoint instruction.
    * 
@@ -151,25 +136,6 @@ public interface Isa
    */
   ByteBuffer[] getRegisterBankBuffers(int pid);
   
-  // int addressSize;
-  // InstructionSet;
-  // FloatingPointFormat;
-  // Breakpoint;
-  // howToDoWatchpoints;
-  // howToComputePcAfterTrap;
-  // howToStepOutOfRange;
-
-  /**
-   * Return the System Call Decoder.
-   *
-   * XXX: This ISA object should be re-named; it is really the
-   * OS+ISA object.
-   */
-  //SyscallEventInfo getSyscallEventInfo ()
-  //{
-  //throw new RuntimeException ("not implemented");
-  //}
-
   /** @return Syscall[] return system call list for this Linux<ISA>. */
   Syscall[] getSyscallList ();
   /** @return HashMap return a HashMap for unknown system calls. */

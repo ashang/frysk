@@ -42,9 +42,8 @@ package frysk.util;
 
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
-
+import frysk.isa.ISA;
 import java.io.File;
-
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfEHeader;
@@ -94,7 +93,8 @@ public class TestFCore
                testCore.exists());
 
     Isa arch = getIsa(ackProc);
-    ByteOrder order = arch.getByteOrder();
+    ISA isa = getISA(ackProc);
+    ByteOrder order = isa.order();
 
     Elf local_elf = getElf(coreFileName);
     assertNotNull("elf variable is null", local_elf);
@@ -472,12 +472,15 @@ public class TestFCore
   }
 
   
-  /**
-   * Returns the ISA that corresponds to the given Proc
-   * 
-   * @param Proc - the proc to test
-   * @return Isa - the Isa that corresponds to given proc.
-   */
+    /**
+     * Returns the ISA that corresponds to the given Proc
+     * 
+     * @param Proc - the proc to test
+     * @return Isa - the Isa that corresponds to given proc.
+     */
+    private ISA getISA (Proc proc) {
+	return proc.getMainTask().getISA();
+    }
   private Isa getIsa (Proc proc)
   {
     Isa arch = null;

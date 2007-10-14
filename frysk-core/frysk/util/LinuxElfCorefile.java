@@ -40,10 +40,9 @@
 package frysk.util;
 
 import inua.eio.ByteOrder;
-
+import frysk.isa.ISA;
 import java.util.ArrayList;
 import java.util.List;
-
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
 import lib.dwfl.Elf;
@@ -54,7 +53,6 @@ import lib.dwfl.ElfFileException;
 import lib.dwfl.ElfNhdr;
 import lib.dwfl.ElfPHeader;
 import frysk.dwfl.DwflCache;
-import frysk.proc.Isa;
 import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
 import frysk.proc.Task;
@@ -222,16 +220,13 @@ public abstract class LinuxElfCorefile {
 	rawCore.pwrite(offset, data, 0, data.length);
     }
     /**
-     * 
      * Return the endian type as associated by this ISA
      * 
      * @return byte - endian type.
-     * 
      */
     protected byte getElfEndianType() {
-	Isa currentArch = process.getMainTask().getIsa();
-	ByteOrder order = currentArch.getByteOrder();
-
+	ISA currentArch = process.getMainTask().getISA();
+	ByteOrder order = currentArch.order();
 	if (order == ByteOrder.BIG_ENDIAN)
 	    return ElfEHeader.PHEADER_ELFDATA2MSB;
 	else
@@ -246,8 +241,8 @@ public abstract class LinuxElfCorefile {
      * 
      */
     protected int getElfWordSize() {
-	Isa currentArch = process.getMainTask().getIsa();
-	return currentArch.getWordSize();
+	ISA currentArch = process.getMainTask().getISA();
+	return currentArch.wordSize();
     }
 
     /**

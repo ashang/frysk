@@ -465,9 +465,8 @@ public class LinuxPowerPCSyscall
 	  throw new RuntimeException ("Could not get isa");
 	}
       long base = isa.getRegisterByName("gpr4").getFIXME(task);
-	
       // FIXME: There are some bi-arch issues
-      return task.getMemory().getInt(base + (n-1) * isa.getWordSize());
+      return task.getMemory().getInt(base + (n-1) * task.getISA().wordSize());
     }
   }
 

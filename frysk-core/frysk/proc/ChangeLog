@@ -1,5 +1,15 @@
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Isa.java (getWordSize()): Delete.
+	(getByteOrder()): Delete.
+	* IsaIA32.java: Update.
+	* IsaPowerPC.java: Update.
+	* IsaPPC64.java: Update.
+	* IsaPPC.java: Update.
+	* IsaX8664.java: Update.
+	* LinuxPowerPCSyscall.java: Update.
+	* TestMemory.java: Update.
+
 	* Task.java (access(Register,long,long,byte[],int,boolean)): Use
 	RegisterBanks when useRegisterBanksXXX.
 

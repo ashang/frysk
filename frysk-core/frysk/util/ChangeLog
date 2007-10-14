@@ -1,3 +1,10 @@
+2007-10-14  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxElfCorefile.java: Update; use ISA .order() and ISA
+	.wordSize().
+	* TestFCore.java: Ditto.
+	(getISA(Proc)): New.
+
 2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxElfCorefilePPC32.java: Update; Task .getRegisterBanks

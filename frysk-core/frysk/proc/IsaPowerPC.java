@@ -69,13 +69,6 @@ abstract class IsaPowerPC implements Isa {
 	task.setRegister(NIP, address);
     }
 
-  abstract public int getWordSize ();
-  
-  public ByteOrder getByteOrder ()
-  {
-    return ByteOrder.BIG_ENDIAN;
-  }
-  
   /**
    * Get the breakpoint instruction of the PowerPC platform.
    */
@@ -189,7 +182,7 @@ abstract class IsaPowerPC implements Isa {
   public ByteBuffer[] getRegisterBankBuffers(int pid) 
   {
       ByteBuffer registers = new AddressSpaceByteBuffer(pid, AddressSpace.USR);
-      registers.order(getByteOrder());
+      registers.order(ByteOrder.BIG_ENDIAN);
       return new ByteBuffer[] { registers };
   }
  }

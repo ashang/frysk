@@ -65,7 +65,7 @@ public class IsaIA32 implements Isa
 	  new AddressSpaceByteBuffer(pid, AddressSpace.USR)
     };
     for (int i = 0; i < bankBuffers.length; i++) {
-	  bankBuffers[i].order(getByteOrder());
+	  bankBuffers[i].order(ByteOrder.LITTLE_ENDIAN);
     }
     return bankBuffers;
   }
@@ -82,16 +82,6 @@ public class IsaIA32 implements Isa
 	task.setRegister(IA32Registers.EIP, address);
     }
 
-  public int getWordSize()
-  {
-    return 4;
-  }
-
-  public ByteOrder getByteOrder()
-  {
-    return ByteOrder.LITTLE_ENDIAN;
-  }
-  
   /**
    * Get the breakpoint instruction for IA32.
    */

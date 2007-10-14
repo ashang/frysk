@@ -1,3 +1,7 @@
+2007-10-14  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxTask.java: Update; Use ISA.order() and ISA.wordSize().
+
 2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLinuxCore.java: Update; Use Task.getRegister and

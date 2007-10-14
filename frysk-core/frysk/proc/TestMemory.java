@@ -103,8 +103,8 @@ public class TestMemory
 			byte[] buf = new byte[16];
 			int len = memAddrFile.read (buf);
 			b = new ArrayByteBuffer (buf, 0, len);
-			b.order (task.getIsa ().getByteOrder ());
-			b.wordSize (task.getIsa ().getWordSize ());
+			b.order (task.getISA().order());
+			b.wordSize (task.getISA().wordSize());
 			memAddrFile.close ();
 			// Make sure file is deleted.
 			java.io.File f = new java.io.File (memAddrFileName);

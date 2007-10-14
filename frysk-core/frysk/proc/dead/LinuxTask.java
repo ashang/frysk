@@ -81,8 +81,8 @@ public class LinuxTask
       emptyBuffer[i]=0;
 
     // Get ISA specific data
-    ByteOrder byteOrder = getIsa().getByteOrder();
-    int  wordSize = getIsa().getWordSize();
+    ByteOrder byteOrder = getISA().order();
+    int  wordSize = getISA().wordSize();
     
     // Set GP Registers
     bankBuffers[0] = new ArrayByteBuffer(elfTask.getRawCoreRegisters());

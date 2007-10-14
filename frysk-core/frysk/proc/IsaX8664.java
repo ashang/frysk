@@ -68,16 +68,6 @@ public class IsaX8664 implements Isa
 	task.setRegister(X8664Registers.RIP, address);
     }
 
-  public int getWordSize()
-  {
-    return 8;
-  }
-
-  public ByteOrder getByteOrder()
-  {
-    return ByteOrder.LITTLE_ENDIAN;
-  }
-  
   /**
    * Get the breakpoint instruction for X8664.
    */
@@ -210,7 +200,7 @@ public class IsaX8664 implements Isa
 	  new AddressSpaceByteBuffer(pid, AddressSpace.USR)
       };
       for (int i = 0; i < bankBuffers.length; i++) {
-	  bankBuffers[i].order(getByteOrder());
+	  bankBuffers[i].order(ByteOrder.LITTLE_ENDIAN);
       }
       return bankBuffers;
   }

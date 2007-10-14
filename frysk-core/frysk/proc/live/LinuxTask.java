@@ -99,7 +99,7 @@ public class LinuxTask
     public ByteBuffer getRawMemory ()
     {
 	logger.log(Level.FINE, "Begin fillMemory\n", this);
-	ByteOrder byteOrder = getIsa().getByteOrder();
+	ByteOrder byteOrder = getISA().order();
 	ByteBuffer memory = new AddressSpaceByteBuffer(getTid(),
 						       AddressSpace.DATA);
 	memory.order(byteOrder);
@@ -110,7 +110,7 @@ public class LinuxTask
     protected ByteBuffer sendrecMemory ()
     {
       int tid = getTid();
-      ByteOrder byteOrder = getIsa().getByteOrder();
+      ByteOrder byteOrder = getISA().order();
       BreakpointAddresses breakpoints = getProc().breakpoints;
       ByteBuffer memory = new LogicalMemoryBuffer(tid, AddressSpace.DATA,
 						  breakpoints);
