@@ -1,3 +1,8 @@
+2007-10-14  Andrew Cagney  <cagney@redhat.com>
+
+	* FrameIdentifier.java: Re-indent; make members final.
+	(getCfa()): Delete.
+
 2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
 	* LibunwindAddressSpace.java: Update; Task.accessRegister renamed
