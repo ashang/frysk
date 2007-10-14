@@ -40,6 +40,7 @@
 package frysk.proc;
 
 import java.util.Observable;
+import frysk.isa.ISA;
 import java.util.Observer;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
@@ -545,74 +546,54 @@ public class TestRegisters
     }
   }
 
-  private void checkI386Modify () {   
-      // Create program making syscalls
-      DaemonBlockedAtEntry ackProc
-	  = new DaemonBlockedAtEntry (Config.getPkgLibFile("funit-registers"));
-    
-    TestI386ModifyXXX t = new TestI386ModifyXXX(ackProc.getMainTask().getProc().getPid());
-    
-    ackProc.requestUnblock ();
-    assertRunUntilStop ("run \"x86modify\" to exit");
-
-    if (t.ia32Isa) {
-        assertTrue ("proc exited", t.exited);
-        assertTrue ("exit syscall found", t.exitSyscall);
+    private void checkI386Modify (DaemonBlockedAtEntry ackProc) {   
+	TestI386ModifyXXX t = new TestI386ModifyXXX(ackProc.getMainTask().getProc().getPid());
+	
+	ackProc.requestUnblock ();
+	assertRunUntilStop ("run \"x86modify\" to exit");
+	
+	if (t.ia32Isa) {
+	    assertTrue ("proc exited", t.exited);
+	    assertTrue ("exit syscall found", t.exitSyscall);
+	}
     }
- }
-  
-  private void checkX8664Modify ()
-  {
-    if (MachineType.getMachineType() != MachineType.X8664)
-      return;
     
-    // Create program making syscalls
-    DaemonBlockedAtEntry ackProc
-	= new DaemonBlockedAtEntry (Config.getPkgLibFile("funit-registers"));
-    
-    TestX8664ModifyXXX t = new TestX8664ModifyXXX (ackProc.getMainTask().getProc().getPid());
-    
-    ackProc.requestUnblock();
-    assertRunUntilStop ("run \"x86modify\" to exit");
-
-    if (t.X8664Isa) {
-      assertTrue ("proc exited", t.exited);
-      assertTrue ("exit syscall found", t.exitSyscall);
+    private void checkX8664Modify (DaemonBlockedAtEntry ackProc) {
+	TestX8664ModifyXXX t = new TestX8664ModifyXXX (ackProc.getMainTask().getProc().getPid());
+	
+	ackProc.requestUnblock();
+	assertRunUntilStop ("run \"x86modify\" to exit");
+	
+	if (t.X8664Isa) {
+	    assertTrue ("proc exited", t.exited);
+	    assertTrue ("exit syscall found", t.exitSyscall);
+	}
     }
-  }
 
-  private void checkPPC64Modify ()
-  {
-    if (MachineType.getMachineType() != MachineType.PPC64)
-      return;
-   
-    
-    // Call assembler program making syscalls
-    DaemonBlockedAtEntry ackProc
-	= new DaemonBlockedAtEntry (Config.getPkgLibFile("funit-registers"));
-    
-    TestPPC64ModifyXXX t = new TestPPC64ModifyXXX (ackProc.getMainTask().getProc().getPid());
-    
-    ackProc.requestUnblock();
-    assertRunUntilStop ("run \"ppc64modify\" to exit");
-    
-    if (t.isPPC64Isa)
-    {
-      assertTrue ("proc exited", t.exited);
-      assertTrue ("exit syscall found", t.exitSyscall);
+    private void checkPPC64Modify(DaemonBlockedAtEntry ackProc) {
+	TestPPC64ModifyXXX t = new TestPPC64ModifyXXX (ackProc.getMainTask().getProc().getPid());
+	
+	ackProc.requestUnblock();
+	assertRunUntilStop ("run \"ppc64modify\" to exit");
+	
+	if (t.isPPC64Isa) {
+	    assertTrue ("proc exited", t.exited);
+	    assertTrue ("exit syscall found", t.exitSyscall);
+	}
     }
-  }
-  
-  public void testRegMemModify()
-  {
-    if (MachineType.getMachineType() == MachineType.IA32)
-      checkI386Modify();
-    else if (MachineType.getMachineType() == MachineType.X8664)
-      checkX8664Modify();
-    else if (MachineType.getMachineType() == MachineType.PPC64)
-      checkPPC64Modify();
-    else
-      throw new UnsupportedOperationException(MachineType.getMachineType() + 
-                                              " is not supported now.");
-  }
+    
+    public void testRegMemModify() {
+	// Create program making syscalls
+	DaemonBlockedAtEntry ackProc
+	    = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-registers"));
+	ISA isa = ackProc.getMainTask().getISA();
+	if (isa == ISA.IA32)
+	    checkI386Modify(ackProc);
+	else if (isa == ISA.X8664)
+	    checkX8664Modify(ackProc);
+	else if (isa == ISA.PPC64BE)
+	    checkPPC64Modify(ackProc);
+	else
+	    throw new RuntimeException("unknown isa: " + isa);
+    }
 }

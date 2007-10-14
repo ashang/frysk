@@ -1,5 +1,8 @@
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 
+	* MachineType.java: Delete.
+	* TestRegisters.java: Use Task.getISA().
+
 	* Isa.java (getElfMachineType()): Delete.	
 	* IsaIA32.java: Update.
 	* IsaPPC64.java: Update.
