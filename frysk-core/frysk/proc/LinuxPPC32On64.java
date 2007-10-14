@@ -39,8 +39,6 @@
 
 package frysk.proc;
 
-import inua.eio.ByteBuffer;
-
 class LinuxPPC32On64
   extends LinuxPPC
 {
@@ -52,20 +50,7 @@ class LinuxPPC32On64
       isa = new LinuxPPC32On64 ();
     return isa;
   }
-  // The Isa object used to actually access registers in the target.
-  private final IsaPPC64 isa64 = new IsaPPC64();
 
-  /**
-   * Get the buffers used to access registers in the different
-   * banks.
-   *
-   * @return the <code>ByteBuffer</code>s used to access registers.
-   */
-  public ByteBuffer[] getRegisterBankBuffers(int pid) 
-  {
-    return isa64.getRegisterBankBuffers(pid);
-  }
-  
     public BankRegister getRegisterByName(String name) {
 	return PPCBankRegisters.PPC32BE_ON_PPC64BE.get(name);
     }

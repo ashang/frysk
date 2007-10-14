@@ -1,5 +1,11 @@
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPPC32On64.java (isa64): Delete.
+	(getRegisterBankBuffers(int)): Delete.
+	* IsaPPC64.java: Delete.
+	* IsaPPC.java: Delete.
+	* LinuxPPC.java: Update.
+
 	* MachineType.java: Delete.
 	* TestRegisters.java: Use Task.getISA().
 

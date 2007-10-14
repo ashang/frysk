@@ -44,9 +44,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import frysk.isa.PPC64Registers;
 
-class LinuxPPC64
-  extends IsaPPC64 implements SyscallEventDecoder
+class LinuxPPC64 extends IsaPowerPC implements SyscallEventDecoder
 {
+    LinuxPPC64() {
+	super(PPC64Registers.NIP);
+    }
+
+    public BankRegister getRegisterByName (String name) {
+	return PPCBankRegisters.PPC64BE.get(name);
+    }
+
   private static Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
   private static LinuxPPC64 isa;
 
