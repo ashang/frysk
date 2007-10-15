@@ -1,5 +1,7 @@
 2007-10-15  Andrew Cagney  <cagney@redhat.com>
 
+	* TestDisplayCommand.java: Remove unused import of Config.
+	
 	* HpdTestbed.java (attachXXX(String)): New.
 	(run(String)): New.
 	(HpdTestbed(ProcessIdentifier)): Delete.

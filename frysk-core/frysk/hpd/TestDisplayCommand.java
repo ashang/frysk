@@ -39,8 +39,6 @@
 
 package frysk.hpd;
 
-import frysk.Config;
-
 public class TestDisplayCommand
     extends TestLib
 {
