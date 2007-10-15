@@ -27,40 +27,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
 #include "unwind_i.h"
 
-PROTECTED int
-unw_is_signal_frame (unw_cursor_t * cursor)
+int
+tdep_get_func_addr (unw_addr_space_t as, unw_word_t symbol_val_addr,
+		    unw_word_t *real_func_addr)
 {
-  struct cursor *c = (struct cursor *) cursor;
-  unw_word_t w0, w1, ip;
-  unw_addr_space_t as;
-  unw_accessors_t *a;
-  void *arg;
-  int ret;
-
-  as = c->dwarf.as;
-  as->validate = 1;		/* Don't trust the ip */
-  arg = c->dwarf.as_arg;
-
-  /* Check if return address points at sigreturn sequence.
-     on ppc64 Linux that is (see libc.so):
-     0x38210080  addi r1, r1, 128  // pop the stack
-     0x380000ac  li r0, 172        // invoke system service 172
-     0x44000002  sc
-   */
-
-  ip = c->dwarf.ip;
-  if (ip == 0)
-    return 0;
-
-  /* Read up two 8-byte words at the IP.  We are only looking at 3
-     consecutive 32-bit words, so the second 8-byte word needs to be
-     shifted right by 32 bits (think big-endian) */
-
-  a = unw_get_accessors (as);
-  if ((ret = (*a->access_mem) (as, ip, &w0, 0, arg)) < 0
-      || (ret = (*a->access_mem) (as, ip + 8, &w1, 0, arg)) < 0)
-    return 0;
-  w1 >>= 32;
-  return (w0 == 0x38210080380000ac && w1 == 0x44000002);
-
+  *real_func_addr = symbol_val_addr;
+  return 0;
 }

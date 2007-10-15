@@ -1,6 +1,7 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (C) 2003-2004 Hewlett-Packard Co
-	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
+
+   Copied from src/x86_64/, modified slightly (or made empty stubs) for
+   building frysk successfully on ppc64, by Wu Zhou <woodzltc@cn.ibm.com>
 
 This file is part of libunwind.
 
@@ -23,47 +24,11 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
-#include "jmpbuf.h"
+#include <libunwind_i.h>
 
-#define SIG_BLOCK 0
-
-	.align 32
-
-	.global __sigsetjmp
-	.global sigprocmask
-
-	.proc __sigsetjmp
-
-__sigsetjmp:
-	.prologue
-	.save ar.pfs, r35
-	alloc loc1 = ar.pfs, 2, 3, 3, 0
-	add out2 = JB_MASK*8, in0
-	.save rp, loc0
-	mov loc0 = rp
-	mov out0 = SIG_BLOCK
-	.body
-	;;
-	cmp.ne p6, p0 = in1, r0
-	mov out1 = r0
-	mov loc2 = ar.bsp
-(p6)	br.call.sptk.many rp = sigprocmask // sigjmp_buf[JB_MASK] = sigmask
-	;;
-
-	add r16 = JB_MASK_SAVED*8, in0
-	st8 [in0] = sp, (JB_RP-JB_SP)*8	// sigjmp_buf[JB_SP] = sp
-	mov r8 = 0
-	;;
-	st8 [in0] = loc0, (JB_BSP-JB_RP)*8	// sigjmp_buf[JB_RP] = rp
-	st8 [r16] = in1			// sigjmp_buf[JB_MASK_SAVED] = savemask
-	mov rp = loc0
-	;;
-	st8 [in0] = loc2		// sigjmp_buf[JB_BSP] = bsp
-	mov.i ar.pfs = loc1
-	br.ret.sptk.many rp
-
-	.endp __sigsetjmp
-#ifdef __linux__
-	/* We do not need executable stack.  */
-	.section	.note.GNU-stack,"",@progbits
-#endif
+PROTECTED int
+unw_get_save_loc (unw_cursor_t *cursor, int reg, unw_save_loc_t *sloc)
+{
+  /* XXX: empty stub.  */
+  return 0;
+}

@@ -47,7 +47,17 @@ flush_cache:
         bv      %r0(%rp)
         .procend
 #elif defined(__powerpc64__)
-# warning IMPLEMENT ME!!
+# warning IMPLEMENT ME FOR PPC64!!
+	.globl flush_cache
+flush_cache:
+	lwz    11,  0(1)  ;
+	lwz     0,  4(11) ;
+	mtlr    0         ;
+	lwz    31, -4(11) ;
+	mr      1, 11     ;
+	blr
+#elif defined(__powerpc__)
+# warning IMPLEMENT ME FOR PPC32!!
 	.globl flush_cache
 flush_cache:
 	lwz    11,  0(1)  ;
@@ -58,4 +68,9 @@ flush_cache:
 	blr
 #else
 # error Need flush_cache code for this architecture.
+#endif
+
+#ifdef __linux__
+        /* We do not need executable stack.  */
+        .section        .note.GNU-stack,"",@progbits
 #endif

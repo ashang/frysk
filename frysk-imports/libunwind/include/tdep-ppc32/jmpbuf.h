@@ -1,7 +1,12 @@
 /* libunwind - a platform-independent unwind library
+   Copyright (C) 2006-2007 IBM
+   Contributed by
+     Corey Ashford <cjashfor@us.ibm.com>
+     Jose Flavio Aguilar Paulino <jflavio@br.ibm.com> <joseflavio@gmail.com>
 
-   Copied from src/x86_64/, modified slightly (or made empty stubs) for
-   building frysk successfully on ppc64, by Wu Zhou <woodzltc@cn.ibm.com>
+   Copied from libunwind-x86_64.h, modified slightly for building
+   frysk successfully on ppc64, by Wu Zhou <woodzltc@cn.ibm.com>
+   Will be replaced when libunwind is ready on ppc64 platform.
 
 This file is part of libunwind.
 
@@ -24,33 +29,9 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
-#include "unwind_i.h"
-#include "init.h"
+/* Use glibc's jump-buffer indices; NPTL peeks at SP: */
 
-#ifdef UNW_REMOTE_ONLY
-
-PROTECTED int
-unw_init_local (unw_cursor_t *cursor, ucontext_t *uc)
-{
-  /* XXX: empty stub.  */
-  return -UNW_EINVAL;
-}
-
-#else /* !UNW_REMOTE_ONLY */
-
-PROTECTED int
-unw_init_local (unw_cursor_t *cursor, ucontext_t *uc)
-{
-  struct cursor *c = (struct cursor *) cursor;
-
-  if (tdep_needs_initialization)
-    tdep_init ();
-
-  Debug (1, "(cursor=%p)\n", c);
-
-  c->dwarf.as = unw_local_addr_space;
-  c->dwarf.as_arg = uc;
-  return common_init (c);
-}
-
-#endif /* !UNW_REMOTE_ONLY */
+#define JB_SP		6
+#define JB_RP		7
+#define JB_MASK_SAVED	8
+#define JB_MASK		9

@@ -1,8 +1,4 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (C) 2006-2007 IBM
-   Contributed by
-     Corey Ashford <cjashfor@us.ibm.com>
-     Jose Flavio Aguilar Paulino <jflavio@br.ibm.com> <joseflavio@gmail.com>
 
 This file is part of libunwind.
 
@@ -25,30 +21,11 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
-#include <stdlib.h>
+	.globl _UI_siglongjmp_cont
 
-#include "unwind_i.h"
+	_UI_siglongjmp_cont:
 
-PROTECTED unw_addr_space_t
-unw_create_addr_space (unw_accessors_t *a, int byte_order)
-{
-#ifdef UNW_LOCAL_ONLY
-  return NULL;
-#else
-  unw_addr_space_t as = malloc (sizeof (*as));
-
-  if (!as)
-    return NULL;
-
-  memset (as, 0, sizeof (*as));
-
-  as->acc = *a;
-
-  /*
-   * Linux ppc64 supports only big-endian.
-   */
-  if (byte_order != 0 && byte_order != __BIG_ENDIAN)
-    return NULL;
-  return as;
+#ifdef __linux__
+        /* We do not need executable stack.  */
+        .section        .note.GNU-stack,"",@progbits
 #endif
-}

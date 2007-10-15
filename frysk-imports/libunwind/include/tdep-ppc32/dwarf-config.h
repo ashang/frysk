@@ -1,6 +1,12 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (C) 2003-2004 Hewlett-Packard Co
-	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
+   Copyright (C) 2006-2007 IBM
+   Contributed by
+     Corey Ashford <cjashfor@us.ibm.com>
+     Jose Flavio Aguilar Paulino <jflavio@br.ibm.com> <joseflavio@gmail.com>
+
+   Copied from libunwind-x86_64.h, modified slightly for building
+   frysk successfully on ppc64, by Wu Zhou <woodzltc@cn.ibm.com>
+   Will be replaced when libunwind is ready on ppc64 platform.
 
 This file is part of libunwind.
 
@@ -23,47 +29,28 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
-#include "jmpbuf.h"
+#ifndef dwarf_config_h
+#define dwarf_config_h
 
-#define SIG_BLOCK 0
+/* For PPC64, 48 GPRs + 33 FPRs + 33 AltiVec + 1 SPE  */
+#define DWARF_NUM_PRESERVED_REGS	115
 
-	.align 32
+#define DWARF_REGNUM_MAP_LENGTH		115
 
-	.global __sigsetjmp
-	.global sigprocmask
+/* Return TRUE if the ADDR_SPACE uses big-endian byte-order.  */
+#define dwarf_is_big_endian(addr_space) 1
 
-	.proc __sigsetjmp
+/* Convert a pointer to a dwarf_cursor structure to a pointer to
+   unw_cursor_t.  */
+#define dwarf_to_cursor(c)	((unw_cursor_t *) (c))
 
-__sigsetjmp:
-	.prologue
-	.save ar.pfs, r35
-	alloc loc1 = ar.pfs, 2, 3, 3, 0
-	add out2 = JB_MASK*8, in0
-	.save rp, loc0
-	mov loc0 = rp
-	mov out0 = SIG_BLOCK
-	.body
-	;;
-	cmp.ne p6, p0 = in1, r0
-	mov out1 = r0
-	mov loc2 = ar.bsp
-(p6)	br.call.sptk.many rp = sigprocmask // sigjmp_buf[JB_MASK] = sigmask
-	;;
-
-	add r16 = JB_MASK_SAVED*8, in0
-	st8 [in0] = sp, (JB_RP-JB_SP)*8	// sigjmp_buf[JB_SP] = sp
-	mov r8 = 0
-	;;
-	st8 [in0] = loc0, (JB_BSP-JB_RP)*8	// sigjmp_buf[JB_RP] = rp
-	st8 [r16] = in1			// sigjmp_buf[JB_MASK_SAVED] = savemask
-	mov rp = loc0
-	;;
-	st8 [in0] = loc2		// sigjmp_buf[JB_BSP] = bsp
-	mov.i ar.pfs = loc1
-	br.ret.sptk.many rp
-
-	.endp __sigsetjmp
-#ifdef __linux__
-	/* We do not need executable stack.  */
-	.section	.note.GNU-stack,"",@progbits
+typedef struct dwarf_loc
+  {
+    unw_word_t val;
+#ifndef UNW_LOCAL_ONLY
+    unw_word_t type;		/* see X86_LOC_TYPE_* macros.  */
 #endif
+  }
+dwarf_loc_t;
+
+#endif /* dwarf_config_h */

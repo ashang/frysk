@@ -1,6 +1,8 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (C) 2003-2004 Hewlett-Packard Co
-	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
+   Copyright (C) 2006-2007 IBM
+   Contributed by
+     Corey Ashford <cjashfor@us.ibm.com>
+     Jose Flavio Aguilar Paulino <jflavio@br.ibm.com> <joseflavio@gmail.com>
 
 This file is part of libunwind.
 
@@ -23,47 +25,36 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
-#include "jmpbuf.h"
+#include <libunwind_i.h>
 
-#define SIG_BLOCK 0
-
-	.align 32
-
-	.global __sigsetjmp
-	.global sigprocmask
-
-	.proc __sigsetjmp
-
-__sigsetjmp:
-	.prologue
-	.save ar.pfs, r35
-	alloc loc1 = ar.pfs, 2, 3, 3, 0
-	add out2 = JB_MASK*8, in0
-	.save rp, loc0
-	mov loc0 = rp
-	mov out0 = SIG_BLOCK
-	.body
-	;;
-	cmp.ne p6, p0 = in1, r0
-	mov out1 = r0
-	mov loc2 = ar.bsp
-(p6)	br.call.sptk.many rp = sigprocmask // sigjmp_buf[JB_MASK] = sigmask
-	;;
-
-	add r16 = JB_MASK_SAVED*8, in0
-	st8 [in0] = sp, (JB_RP-JB_SP)*8	// sigjmp_buf[JB_SP] = sp
-	mov r8 = 0
-	;;
-	st8 [in0] = loc0, (JB_BSP-JB_RP)*8	// sigjmp_buf[JB_RP] = rp
-	st8 [r16] = in1			// sigjmp_buf[JB_MASK_SAVED] = savemask
-	mov rp = loc0
-	;;
-	st8 [in0] = loc2		// sigjmp_buf[JB_BSP] = bsp
-	mov.i ar.pfs = loc1
-	br.ret.sptk.many rp
-
-	.endp __sigsetjmp
-#ifdef __linux__
-	/* We do not need executable stack.  */
-	.section	.note.GNU-stack,"",@progbits
+#ifdef UNW_TARGET_PPC64
+#include "../ppc64/init.h"
+#else
+#include "../ppc32/init.h"
 #endif
+
+PROTECTED int
+unw_init_remote (unw_cursor_t *cursor, unw_addr_space_t as, void *as_arg)
+{
+#ifdef UNW_LOCAL_ONLY
+  return -UNW_EINVAL;
+#else /* !UNW_LOCAL_ONLY */
+  struct cursor *c = (struct cursor *) cursor;
+
+  if (tdep_needs_initialization)
+    tdep_init ();
+
+  Debug (1, "(cursor=%p)\n", c);
+
+  c->dwarf.as = as;
+  c->dwarf.as_arg = as_arg;
+
+  #ifdef UNW_TARGET_PPC64
+    return common_init_ppc64(c);
+  #elif UNW_TARGET_PPC32
+    return common_init_ppc32 (c);
+  #else
+    #error init_remote :: NO VALID PPC ARCH!
+  #endif
+#endif /* !UNW_LOCAL_ONLY */
+}

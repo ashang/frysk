@@ -1,5 +1,8 @@
 /* libunwind - a platform-independent unwind library
 
+   Copied from src/x86_64/, modified slightly (or made empty stubs) for
+   building frysk successfully on ppc64, by Wu Zhou <woodzltc@cn.ibm.com>
+
 This file is part of libunwind.
 
 Permission is hereby granted, free of charge, to any person obtaining
@@ -21,6 +24,42 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
-	.globl _UI_siglongjmp_cont
+#include <libunwind_i.h>
 
-	_UI_siglongjmp_cont:
+#ifdef UNW_TARGET_PPC64
+#include "../ppc64/init.h"
+#else
+#include "../ppc32/init.h"
+#endif
+
+#ifdef UNW_REMOTE_ONLY
+
+PROTECTED int
+unw_init_local (unw_cursor_t *cursor, ucontext_t *uc)
+{
+  /* XXX: empty stub.  */
+  return -UNW_EINVAL;
+}
+
+#else /* !UNW_REMOTE_ONLY */
+
+PROTECTED int
+unw_init_local (unw_cursor_t *cursor, ucontext_t *uc)
+{
+  struct cursor *c = (struct cursor *) cursor;
+
+  if (tdep_needs_initialization)
+    tdep_init ();
+
+  Debug (1, "(cursor=%p)\n", c);
+
+  c->dwarf.as = unw_local_addr_space;
+  c->dwarf.as_arg = uc;
+  #ifdef UNW_TARGET_PPC64
+    return common_init_ppc64 (c);
+  #else
+    return common_init_ppc32 (c);
+  #endif
+}
+
+#endif /* !UNW_REMOTE_ONLY */

@@ -24,8 +24,11 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
-	.globl _UI_longjmp_cont
+#include <libunwind_i.h>
 
-	.type _UI_longjmp_cont, @function
-_UI_longjmp_cont:
-	.size _UI_longjmp_cont, .-_UI_longjmp_cont
+PROTECTED int
+unw_get_proc_info (unw_cursor_t *cursor, unw_proc_info_t *pi)
+{
+  /* XXX: empty stub.  */
+  return 0;
+}
