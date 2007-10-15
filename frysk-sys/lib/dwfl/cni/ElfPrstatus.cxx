@@ -106,8 +106,13 @@ typedef uint64_t elf_greg_t_64;
 		     sizeof(elf_greg_t_64))
 
   // Define the register space
+#if defined __powerpc__
+typedef elf_greg_t_32 elf_gregset_t_32[96];
+typedef elf_greg_t_64 elf_gregset_t_64[280];
+#else
 typedef elf_greg_t_32 elf_gregset_t_32[ELF_NGREG32];
 typedef elf_greg_t_64 elf_gregset_t_64[ELF_NGREG64];
+#endif
 
 /*
  * Definitions to generate Intel SVR4-like core files.

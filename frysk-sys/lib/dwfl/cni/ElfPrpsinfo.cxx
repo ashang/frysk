@@ -64,13 +64,13 @@ typedef struct elf_prpsinfo32 {   /* Information about process                 *
   unsigned char  pr_zomb;       /* Zombie                                    */
   signed char    pr_nice;       /* Nice val                                  */
   uint32_t       pr_flag;       /* Flags                                     */
-  uint16_t       pr_uid;        /* User ID                                   */
-  uint16_t       pr_gid;        /* Group ID                                  */
 # if defined __powerpc__ || defined __powerpc64__
   uint32_t       pr_uid;        /* User ID */
   uint32_t       pr_gid;        /* Group ID */
+# else
+  uint16_t       pr_uid;        /* User ID                                   */
+  uint16_t       pr_gid;        /* Group ID                                  */
 # endif
-
   pid_t          pr_pid;        /* Process ID                                */
   pid_t          pr_ppid;       /* Parent's process ID                       */
   pid_t          pr_pgrp;       /* Group ID                                  */
@@ -85,11 +85,12 @@ typedef struct elf_prpsinfo64 {   /* Information about process                 *
   unsigned char  pr_zomb;       /* Zombie                                    */
   signed char    pr_nice;       /* Nice val                                  */
   unsigned long  pr_flag;       /* Flags                                     */
-  uint32_t       pr_uid;        /* User ID                                   */
-  uint32_t       pr_gid;        /* Group ID                                  */
 # if defined __powerpc__ || defined __powerpc64__
   uint32_t       pr_uid;        /* User ID */
   uint32_t       pr_gid;        /* Group ID */
+# else
+  uint32_t       pr_uid;        /* User ID                                   */
+  uint32_t       pr_gid;        /* Group ID                                  */
 # endif
 
   pid_t          pr_pid;        /* Process ID                                */
