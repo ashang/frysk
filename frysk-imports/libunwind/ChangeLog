@@ -1,3 +1,7 @@
+2007-10-11  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Imported and merged with libunwind 20071010.
+
 2007-10-10  Andrew Cagney  <cagney@redhat.com>
 
 	* src/x86/init.h (common_init): Use UNW_X86_ESI for dwarf.loc[ESI].

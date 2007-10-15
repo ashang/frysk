@@ -1,6 +1,12 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (C) 2004 Hewlett-Packard Co
-	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
+   Copyright (C) 2006-2007 IBM
+   Contributed by
+     Corey Ashford <cjashfor@us.ibm.com>
+     Jose Flavio Aguilar Paulino <jflavio@br.ibm.com> <joseflavio@gmail.com>
+
+   Copied from libunwind-x86_64.h, modified slightly for building
+   frysk successfully on ppc64, by Wu Zhou <woodzltc@cn.ibm.com>
+   Will be replaced when libunwind is ready on ppc64 platform.
 
 This file is part of libunwind.
 
@@ -23,33 +29,9 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
-	.text
+/* Use glibc's jump-buffer indices; NPTL peeks at SP: */
 
-	.global test_func
-	.proc test_func
-test_func:
-	.prologue
-	.regstk 1, 3, 0, 0
-	.save ar.pfs, loc0
-	alloc loc0 = ar.pfs, 1, 3, 0, 0
-	mov loc1 = rp
-	.save rp, r0
-	.save ar.lc, r0
-	.body
-	mov loc2 = gp
-	ld8 r2 = [in0], 8;;
-	ld8 r1 = [in0];;
-	mov b6 = r2
-	br.call.sptk.many rp = b6
-
-	mov gp = loc2
-	mov rp = loc1
-	mov ar.pfs = loc0
-	br.ret.sptk.many rp
-
-	.endp test_func
-
-#ifdef __linux__
-        /* We do not need executable stack.  */
-        .section        .note.GNU-stack,"",@progbits
-#endif
+#define JB_SP		6
+#define JB_RP		7
+#define JB_MASK_SAVED	8
+#define JB_MASK		9

@@ -1,6 +1,12 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (C) 2004 Hewlett-Packard Co
-	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
+   Copyright (C) 2006-2007 IBM
+   Contributed by
+     Corey Ashford <cjashfor@us.ibm.com>
+     Jose Flavio Aguilar Paulino <jflavio@br.ibm.com> <joseflavio@gmail.com>
+
+   Copied from libunwind-x86_64.h, modified slightly for building
+   frysk successfully on ppc64, by Wu Zhou <woodzltc@cn.ibm.com>
+   Will be replaced when libunwind is ready on ppc64 platform.
 
 This file is part of libunwind.
 
@@ -23,33 +29,28 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
-	.text
+#ifndef dwarf_config_h
+#define dwarf_config_h
 
-	.global test_func
-	.proc test_func
-test_func:
-	.prologue
-	.regstk 1, 3, 0, 0
-	.save ar.pfs, loc0
-	alloc loc0 = ar.pfs, 1, 3, 0, 0
-	mov loc1 = rp
-	.save rp, r0
-	.save ar.lc, r0
-	.body
-	mov loc2 = gp
-	ld8 r2 = [in0], 8;;
-	ld8 r1 = [in0];;
-	mov b6 = r2
-	br.call.sptk.many rp = b6
+/* For PPC64, 48 GPRs + 33 FPRs + 33 AltiVec + 1 SPE  */
+#define DWARF_NUM_PRESERVED_REGS	115
 
-	mov gp = loc2
-	mov rp = loc1
-	mov ar.pfs = loc0
-	br.ret.sptk.many rp
+#define DWARF_REGNUM_MAP_LENGTH		115
 
-	.endp test_func
+/* Return TRUE if the ADDR_SPACE uses big-endian byte-order.  */
+#define dwarf_is_big_endian(addr_space) 1
 
-#ifdef __linux__
-        /* We do not need executable stack.  */
-        .section        .note.GNU-stack,"",@progbits
+/* Convert a pointer to a dwarf_cursor structure to a pointer to
+   unw_cursor_t.  */
+#define dwarf_to_cursor(c)	((unw_cursor_t *) (c))
+
+typedef struct dwarf_loc
+  {
+    unw_word_t val;
+#ifndef UNW_LOCAL_ONLY
+    unw_word_t type;		/* see X86_LOC_TYPE_* macros.  */
 #endif
+  }
+dwarf_loc_t;
+
+#endif /* dwarf_config_h */

@@ -1,6 +1,7 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (C) 2004 Hewlett-Packard Co
-	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
+
+   Copied from src/x86_64/, modified slightly (or made empty stubs) for
+   building frysk successfully on ppc64, by Wu Zhou <woodzltc@cn.ibm.com>
 
 This file is part of libunwind.
 
@@ -23,33 +24,11 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
-	.text
+#include <libunwind_i.h>
 
-	.global test_func
-	.proc test_func
-test_func:
-	.prologue
-	.regstk 1, 3, 0, 0
-	.save ar.pfs, loc0
-	alloc loc0 = ar.pfs, 1, 3, 0, 0
-	mov loc1 = rp
-	.save rp, r0
-	.save ar.lc, r0
-	.body
-	mov loc2 = gp
-	ld8 r2 = [in0], 8;;
-	ld8 r1 = [in0];;
-	mov b6 = r2
-	br.call.sptk.many rp = b6
-
-	mov gp = loc2
-	mov rp = loc1
-	mov ar.pfs = loc0
-	br.ret.sptk.many rp
-
-	.endp test_func
-
-#ifdef __linux__
-        /* We do not need executable stack.  */
-        .section        .note.GNU-stack,"",@progbits
-#endif
+PROTECTED int
+unw_get_save_loc (unw_cursor_t *cursor, int reg, unw_save_loc_t *sloc)
+{
+  /* XXX: empty stub.  */
+  return 0;
+}

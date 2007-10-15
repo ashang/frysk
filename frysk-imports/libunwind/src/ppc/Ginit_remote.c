@@ -1,6 +1,8 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (C) 2004 Hewlett-Packard Co
-	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
+   Copyright (C) 2006-2007 IBM
+   Contributed by
+     Corey Ashford <cjashfor@us.ibm.com>
+     Jose Flavio Aguilar Paulino <jflavio@br.ibm.com> <joseflavio@gmail.com>
 
 This file is part of libunwind.
 
@@ -23,33 +25,36 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
-	.text
+#include <libunwind_i.h>
 
-	.global test_func
-	.proc test_func
-test_func:
-	.prologue
-	.regstk 1, 3, 0, 0
-	.save ar.pfs, loc0
-	alloc loc0 = ar.pfs, 1, 3, 0, 0
-	mov loc1 = rp
-	.save rp, r0
-	.save ar.lc, r0
-	.body
-	mov loc2 = gp
-	ld8 r2 = [in0], 8;;
-	ld8 r1 = [in0];;
-	mov b6 = r2
-	br.call.sptk.many rp = b6
-
-	mov gp = loc2
-	mov rp = loc1
-	mov ar.pfs = loc0
-	br.ret.sptk.many rp
-
-	.endp test_func
-
-#ifdef __linux__
-        /* We do not need executable stack.  */
-        .section        .note.GNU-stack,"",@progbits
+#ifdef UNW_TARGET_PPC64
+#include "../ppc64/init.h"
+#else
+#include "../ppc32/init.h"
 #endif
+
+PROTECTED int
+unw_init_remote (unw_cursor_t *cursor, unw_addr_space_t as, void *as_arg)
+{
+#ifdef UNW_LOCAL_ONLY
+  return -UNW_EINVAL;
+#else /* !UNW_LOCAL_ONLY */
+  struct cursor *c = (struct cursor *) cursor;
+
+  if (tdep_needs_initialization)
+    tdep_init ();
+
+  Debug (1, "(cursor=%p)\n", c);
+
+  c->dwarf.as = as;
+  c->dwarf.as_arg = as_arg;
+
+  #ifdef UNW_TARGET_PPC64
+    return common_init_ppc64(c);
+  #elif UNW_TARGET_PPC32
+    return common_init_ppc32 (c);
+  #else
+    #error init_remote :: NO VALID PPC ARCH!
+  #endif
+#endif /* !UNW_LOCAL_ONLY */
+}

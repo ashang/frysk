@@ -1,6 +1,8 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (C) 2004 Hewlett-Packard Co
-	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
+   Copyright (C) 2006-2007 IBM
+   Contributed by
+     Corey Ashford <cjashfor@us.ibm.com>
+     Jose Flavio Aguilar Paulino <jflavio@br.ibm.com> <joseflavio@gmail.com>
 
 This file is part of libunwind.
 
@@ -23,33 +25,30 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
-	.text
+#include <stdlib.h>
 
-	.global test_func
-	.proc test_func
-test_func:
-	.prologue
-	.regstk 1, 3, 0, 0
-	.save ar.pfs, loc0
-	alloc loc0 = ar.pfs, 1, 3, 0, 0
-	mov loc1 = rp
-	.save rp, r0
-	.save ar.lc, r0
-	.body
-	mov loc2 = gp
-	ld8 r2 = [in0], 8;;
-	ld8 r1 = [in0];;
-	mov b6 = r2
-	br.call.sptk.many rp = b6
+#include <libunwind_i.h>
 
-	mov gp = loc2
-	mov rp = loc1
-	mov ar.pfs = loc0
-	br.ret.sptk.many rp
+PROTECTED unw_addr_space_t
+unw_create_addr_space (unw_accessors_t *a, int byte_order)
+{
+#ifdef UNW_LOCAL_ONLY
+  return NULL;
+#else
+  unw_addr_space_t as = malloc (sizeof (*as));
 
-	.endp test_func
+  if (!as)
+    return NULL;
 
-#ifdef __linux__
-        /* We do not need executable stack.  */
-        .section        .note.GNU-stack,"",@progbits
+  memset (as, 0, sizeof (*as));
+
+  as->acc = *a;
+
+  /*
+   * Linux ppc64 supports only big-endian.
+   */
+  if (byte_order != 0 && byte_order != __BIG_ENDIAN)
+    return NULL;
+  return as;
 #endif
+}

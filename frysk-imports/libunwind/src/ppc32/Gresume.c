@@ -1,6 +1,8 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (C) 2002-2005 Hewlett-Packard Co
-	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
+   Copyright (C) 2006-2007 IBM
+   Contributed by
+     Corey Ashford cjashfor@us.ibm.com
+     Jose Flavio Aguilar Paulino <jflavio@br.ibm.com> <joseflavio@gmail.com>
 
 This file is part of libunwind.
 
@@ -23,38 +25,53 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
-#include "libunwind_i.h"
+#include <stdlib.h>
 
-HIDDEN intrmask_t unwi_full_mask;
+#include "unwind_i.h"
 
-static const char rcsid[] UNUSED =
-  "$Id: init.c,v 1.4 2007/10/11 11:21:43 mark Exp $";
+#ifndef UNW_REMOTE_ONLY
 
-#if UNW_DEBUG
+#include <sys/syscall.h>
 
-/* Must not be declared HIDDEN/PROTECTED because libunwind.so and
-   libunwind-PLATFORM.so will both define their own copies of this
-   variable and we want to use only one or the other when both
-   libraries are loaded.  */
-long unwi_debug_level;
+/* sigreturn() is a no-op on x86_64 glibc.  */
 
-#endif /* UNW_DEBUG */
-
-HIDDEN void
-mi_init (void)
+static NORETURN inline long
+my_rt_sigreturn (void *new_sp)
 {
-#if UNW_DEBUG
-  const char *str = getenv ("UNW_DEBUG_LEVEL");
+  /* XXX: empty stub.  */
+  abort ();
+}
 
-  if (str)
-    unwi_debug_level = atoi (str);
+HIDDEN inline int
+ppc32_local_resume (unw_addr_space_t as, unw_cursor_t *cursor, void *arg)
+{
+  /* XXX: empty stub.  */
+  return -UNW_EINVAL;
+}
 
-  if (unwi_debug_level > 0)
-    {
-      setbuf (stdout, NULL);
-      setbuf (stderr, NULL);
-    }
-#endif
+#endif /* !UNW_REMOTE_ONLY */
 
-  assert (sizeof (struct cursor) <= sizeof (unw_cursor_t));
+/* This routine is responsible for copying the register values in
+   cursor C and establishing them as the current machine state. */
+
+static inline int
+establish_machine_state (struct cursor *c)
+{
+  /* XXX: empty stub.  */
+  return 0;
+}
+
+PROTECTED int
+unw_resume (unw_cursor_t *cursor)
+{
+  struct cursor *c = (struct cursor *) cursor;
+  int ret;
+
+  Debug (1, "(cursor=%p)\n", c);
+
+  if ((ret = establish_machine_state (c)) < 0)
+    return ret;
+
+  return (*c->dwarf.as->acc.resume) (c->dwarf.as, (unw_cursor_t *) c,
+				     c->dwarf.as_arg);
 }

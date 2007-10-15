@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: run-ptrace-signull,v 1.2 2007/03/12 15:26:11 npremji Exp $
+# $Id: run-ptrace-signull,v 1.4 2007/10/11 11:21:44 mark Exp $
 
 # On i?86 it assumes the default `/proc/sys/kernel/vdso' == 1.
 sigframe=__kernel_sigreturn
