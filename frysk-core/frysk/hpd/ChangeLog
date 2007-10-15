@@ -1,3 +1,8 @@
+2007-10-15  Andrew Cagney  <cagney@redhat.com>
+
+	* TestBreakpoints.java: Do not pass -cli to attach.
+	* AttachCommand.java: Delete undocumented -cli option.
+
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 
 	* TestPrint.java (testRegister()): New.

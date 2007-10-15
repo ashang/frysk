@@ -82,7 +82,7 @@ public class TestBreakpoints
 	child = new Expect(Config.getPkgLibFile("test1"));
 	e = new HpdTestbed();
 	// Attach
-	e.send ("attach " + child.getPid () + " -cli\n");
+	e.send ("attach " + child.getPid () + "\n");
 	e.expect ("attach.*" + prompt);
 	// Break
 	e.send("break add\n");
@@ -100,7 +100,7 @@ public class TestBreakpoints
 	child = new Expect(Config.getPkgLibFile("test1"));
 	e = new HpdTestbed();
 	// Attach
-	e.send ("attach " + child.getPid () + " -cli\n");
+	e.send ("attach " + child.getPid () + "\n");
 	e.expect ("attach.*" + prompt);
 	// Break
 	e.send("break sin\n");
@@ -118,7 +118,7 @@ public class TestBreakpoints
 	child = new Expect(Config.getPkgLibFile("test1"));
 	e = new HpdTestbed();
 	// Attach
-	e.send ("attach " + child.getPid () + " -cli\n");
+	e.send ("attach " + child.getPid () + "\n");
 	e.expect ("attach.*" + prompt);
 	// Break
         e.send("break anotherFunction\n");

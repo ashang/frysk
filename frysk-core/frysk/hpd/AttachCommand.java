@@ -81,7 +81,7 @@ class AttachCommand
 
     AttachCommand(CLI cli) {
 	super(cli, "attach", "Attach to a running process.",
-		"attach [executable] pid [-task tid] [-cli]", full);
+		"attach [executable] pid [-task tid]", full);
     }
 
     public void handle(Command cmd) throws ParseException {
@@ -92,7 +92,6 @@ class AttachCommand
 	    cli.printUsage(cmd);
 	    return;
 	}
-	boolean cliOption = true;
 
 	if (params.size() < 1) {
 	    cli.printUsage(cmd);
@@ -100,11 +99,7 @@ class AttachCommand
 	}
 
 	for (int idx = 0; idx < params.size(); idx++) {
-	    if (((String) params.get(idx)).equals("-cli"))
-		cliOption = true;
-	    else if (((String) params.get(idx)).equals("-no-cli"))
-		cliOption = false;
-	    else if (((String) params.get(idx)).equals("-task")) {
+	    if (((String) params.get(idx)).equals("-task")) {
 		idx += 1;
 		tid = Integer.parseInt(((String) params.get(idx)));
 	    } else if (((String) params.get(idx)).indexOf('-') == 0) {
@@ -115,19 +110,15 @@ class AttachCommand
 	}
 
 	FindProc findProc = new FindProc();
-	if (cliOption) {
-	    Manager.host.requestFindProc(new ProcId(pid), findProc);
-	    synchronized (findProc) {
-		while (!findProc.procSearchFinished) {
-		    try {
-			findProc.wait();
-		    } catch (InterruptedException ie) {
-			findProc.proc = null;
-		    }
+	Manager.host.requestFindProc(new ProcId(pid), findProc);
+	synchronized (findProc) {
+	    while (!findProc.procSearchFinished) {
+		try {
+		    findProc.wait();
+		} catch (InterruptedException ie) {
+		    findProc.proc = null;
 		}
 	    }
-	} else {
-	    return; // no-cli really doesn't work.
 	}
 	if (findProc.proc == null) {
 	    cli.addMessage("Couldn't find process " + pid, Message.TYPE_ERROR);
