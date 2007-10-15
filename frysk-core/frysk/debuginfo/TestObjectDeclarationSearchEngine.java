@@ -113,9 +113,10 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
     }
     
     public void testFindTwoScopesEnum(){
-	if(unresolved(5166)){
-	    return;
-	}
+//	if(unresolved(5166)){
+//	    return;
+//	}
+	
 	String variableName = "two"; 
 	String fileName = "funit-c-scopes-enum";
 	

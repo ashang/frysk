@@ -165,25 +165,25 @@ public class Scope
   }
   
   public ObjectDeclaration getDeclaredObjectByName(String name){
-      ObjectDeclaration cxxObject = null;
+      ObjectDeclaration objectDeclaration = null;
       
       Iterator iterator = this.getVariables().iterator();
       while (iterator.hasNext()) {
-	cxxObject = (Variable) iterator.next();
-	if(cxxObject.getName().equals(name)){
-	    return cxxObject;
+	objectDeclaration = (Variable) iterator.next();
+	if(objectDeclaration.getName().equals(name)){
+	    return objectDeclaration;
 	}
       }
       
-//      iterator = this.getEnums().iterator();
-//      while (iterator.hasNext()) {
-//	Enumiration enumiration = (Enumiration) iterator.next();
-//	cxxObject = enumiration.getVariableByName(name);
-//	
-//	if(cxxObject != null){
-//	    return cxxObject;
-//	}
-//      }
+      iterator = this.getEnums().iterator();
+      while (iterator.hasNext()) {
+	Enumiration enumiration = (Enumiration) iterator.next();
+	objectDeclaration = enumiration.getVariableByName(name);
+	
+	if(objectDeclaration != null){
+	    return objectDeclaration;
+	}
+      }
       
       
       return null;

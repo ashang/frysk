@@ -37,40 +37,12 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.scopes;
+package frysk.value;
 
-import lib.dwfl.DwTag;
-import lib.dwfl.DwarfDie;
-import frysk.debuginfo.TypeEntry;
-import frysk.value.EnumType;
-import frysk.value.ObjectDeclaration;
+/**
+ * Class representing constants
+ *
+ */
+public abstract class Constant extends ObjectDeclaration{
 
-public class Enumiration {
-    
-    String name;
-    DwarfDie die;
-    EnumType enumType;
-    
-    Enumiration(DwarfDie die, TypeEntry typeEntry){
-	if(die.getTag() != DwTag.ENUMERATION_TYPE){
-	    throw new RuntimeException("Given die is not of type ENUMERATION_TYPE");
-	}
-	
-	this.die = die;
-	
-	this.enumType = (EnumType) typeEntry.getType(die);
-	
-    }
-    
-    public String getName(){
-	if(this.name == null){
-	    this.name = die.getName();
-	}
-	return this.name;
-    }
-
-    public ObjectDeclaration getVariableByName(String name) {
-	return this.enumType.getMemberByName(name);
-    }
-    
 }

@@ -1,3 +1,7 @@
+2007-10-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestObjectDeclarationSearchEngine.java (testFindTwoScopesEnum): Re-enabled
+
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLocationExpression.java: Update; use Task .getISA instead of

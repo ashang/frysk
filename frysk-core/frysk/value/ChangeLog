@@ -1,3 +1,12 @@
+2007-10-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Constant.java: New.
+	* EnumType.java (Member.Member): Constructor now takes
+	a Type and a Value.
+	(Member.getType): New.
+	(Member.getValue): New.
+	(getMemberByName): Now returns ObjectDeclaration.
+
 2007-10-12  Teresa Thomas  <tthomas@redhat.com>
 
 	* TypeDecorator.java (member): New.

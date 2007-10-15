@@ -1,3 +1,10 @@
+2007-10-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* frysk/scopes/Scope.java (getDeclaredObjectByName): re-enabled
+	enum searching.
+	* frysk/scopes/Enumiration.java (getVariableByName): Now returns
+	an ObjectDeclaration instad of CxxObject.
+
 2007-10-12  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* frysk/scopes/Variable.java: Moved Variable.java 

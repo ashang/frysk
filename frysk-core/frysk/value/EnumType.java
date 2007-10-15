@@ -48,25 +48,34 @@ import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-// XXX: frysk.value should be abstract and _not_ depend on scope;
-// especially C++ specific scopes.
-import frysk.scopes.CxxObject;
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.isa.ISA;
 
 /**
  * Type for an enum.
  */
 public class EnumType extends IntegerTypeDecorator
 {
-    private static class Member implements CxxObject {
+    private static class Member extends Constant {
 	final String name;
-	final BigInteger value;
-	Member(String name, BigInteger value) {
+	final Value value;
+	final Type type;
+	Member(String name, Value value, Type type) {
 	    this.name = name;
 	    this.value = value;
+	    this.type = type;
 	}
 	
 	public String getName() {
 	    return name;
+	}
+
+	public Type getType(ISA isa) {
+	    return type;
+	}
+
+	public Value getValue(DebugInfoFrame frame) {
+	    return value;
 	}
     }
     
@@ -125,7 +134,7 @@ public class EnumType extends IntegerTypeDecorator
 
     public EnumType addMember (String name, long l) {
 	BigInteger value = BigInteger.valueOf(l);
-	valueToMember.put(value, new Member(name, value));
+	valueToMember.put(value, new Member(name, createValue(value), this));
 	return this;
     }
     
@@ -134,7 +143,7 @@ public class EnumType extends IntegerTypeDecorator
      * create/return a Value.  If the list of enum fields are needed
      * for searching, create and return a String list.
      */
-    public CxxObject getMemberByName(String name){
+    public ObjectDeclaration getMemberByName(String name){
 	Member member;
 	Iterator iterator = this.valueToMember.keySet().iterator();
 	while(iterator.hasNext()){
