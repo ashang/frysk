@@ -39,8 +39,6 @@
 
 package frysk.value;
 
-import frysk.debuginfo.PieceLocation;
-
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
@@ -228,10 +226,7 @@ public abstract class Type {
 	return pType.createValue(var1.getLocation().getAddress());
     }
     public Value dereference(Value var1, ByteBuffer taskMem) {
-	Location loc = PieceLocation.createSimpleLoc
-		       (var1.asLong(), (long)this.getSize(), taskMem);
-	Type type = ((PointerType)var1.getType()).getType();
-	return new Value (type, loc);  
+	throw new InvalidOperatorException(this, "*");
     }
     public Value member(Value var1, String member) {
 	throw new InvalidOperatorException(this, ".");

@@ -39,6 +39,7 @@
 
 package frysk.value;
 
+import frysk.debuginfo.PieceLocation;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.io.PrintWriter;
@@ -100,5 +101,11 @@ public class PointerType
 
     protected Type clone(IntegerType accessor) {
 	return new PointerType(getName(), order(), getSize(), type, accessor);
+    }
+    
+    public Value dereference(Value var1, ByteBuffer taskMem) {
+	Location loc = PieceLocation.createSimpleLoc
+		       (var1.asLong(), this.getType().getSize(), taskMem);
+	return new Value (this.getType(), loc);  
     }
 }
