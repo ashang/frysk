@@ -41,7 +41,6 @@ package frysk.hpd;
 
 import frysk.Config;
 import frysk.testbed.FryskAsm;
-import frysk.expunit.Expect;
 import frysk.isa.ISA;
 import frysk.isa.Register;
 import frysk.isa.ElfMap;
@@ -91,20 +90,17 @@ public class TestPrint
 				  "unrecognized format: unknown\r\n");
     }
     public void testAddressOf() {
-	child = new Expect(Config.getPkgLibFile("hpd-c"));
-	e = new HpdTestbed(child.getPid());
+	e = HpdTestbed.attachXXX("hpd-c");
 	e.sendCommandExpectPrompt("print &static_int", "\r\n0x[0-9a-f]+\r\n");
     }
     public void testDereference() {
-	child = new Expect(Config.getPkgLibFile("hpd-c"));
-	e = new HpdTestbed(child.getPid());
+	e = HpdTestbed.attachXXX("hpd-c");
 	e.sendCommandExpectPrompt("print *static_int_ptr", "\r\n4\r\n");
     }
     public void testRegister() {
 	// FIXME: Should use funit-regs.
+	e = HpdTestbed.attachXXX("hpd-c");
 	File exe = Config.getPkgLibFile("hpd-c");
-	child = new Expect(exe);
-	e = new HpdTestbed(child.getPid());
 	ISA isa = ElfMap.getISA(exe);
 	Register r = FryskAsm.createFryskAsm(isa).REG0;
 	e.sendCommandExpectPrompt("print $" + r.getName() + " -format d",

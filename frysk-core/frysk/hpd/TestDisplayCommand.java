@@ -47,7 +47,7 @@ public class TestDisplayCommand
     public void testHpdDisplayCommands() {
 	if (unresolved(4941))
 	    return;
-	e = new HpdTestbed(Config.getPkgLibFile("funit-rt-varchange"));
+	e = HpdTestbed.run("funit-rt-varchange");
 	// Break
 	
 	// FIXME: 4941

@@ -40,15 +40,16 @@
 package frysk.hpd;
 
 import frysk.Config;
-import frysk.expunit.Expect;
 import frysk.isa.ISA;
+import java.io.File;
+import frysk.isa.ElfMap;
 
 public class TestRegs extends TestLib {
 
     public void testRegsCommand() {
-	child = new Expect(Config.getPkgLibFile("hpd-c"));
-	ISA isa = getChild().getMainTask().getISA();
-	e = new HpdTestbed(child.getPid());
+	e = HpdTestbed.attachXXX("hpd-c");
+	File exe = Config.getPkgLibFile("hpd-c");
+	ISA isa = ElfMap.getISA(exe);
 
 	// Regs
 	e.send("regs\n");
@@ -65,8 +66,7 @@ public class TestRegs extends TestLib {
     }
 
     public void testRegsBlah() {
-	child = new Expect(Config.getPkgLibFile("hpd-c"));
-	e = new HpdTestbed(child.getPid());
+	e = HpdTestbed.attachXXX("hpd-c");
 	e.sendCommandExpectPrompt("regs blah",
 				  "<blah> not recognized; possible groups.*");
 	e.close();

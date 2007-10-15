@@ -39,9 +39,6 @@
 
 package frysk.hpd;
 
-import frysk.expunit.Expect;
-import frysk.Config;
-
 /**
  * Test parsing and printing of types.
  */
@@ -50,11 +47,7 @@ public class TestExamineCommand
     extends TestLib
 {
     public void testExamine () {
-	child = new Expect(Config.getPkgLibFile("hpd-c"));
-	e = new HpdTestbed();
-	// Attach
-	e.send ("attach " + child.getPid () + "\n\n");
-	e.expect (5, "attach.*\n" + prompt);
+	e = HpdTestbed.attachXXX("hpd-c");
 	// volatile int_22
 	e.send ("examine static_char\n");
 	e.expect ("examine.*5\r\n.*" + prompt);

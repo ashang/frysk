@@ -39,20 +39,15 @@
 
 package frysk.hpd;
 
-import frysk.expunit.Expect;
-import frysk.Config;
+import lib.opcodes.Disassembler;
 
 public class TestDisassemblerCommand
     extends TestLib
 {
     public void testHpdDisassemble() {
-	if (unsupported("disassembler", !lib.opcodes.Disassembler.available()))
+	if (unsupported("disassembler", !Disassembler.available()))
 	    return;
-	child = new Expect(Config.getPkgLibFile("hpd-c"));
-	e = new HpdTestbed();
-	// Attach
-	e.send("attach " + child.getPid() + "\n\n");
-	e.expect(5, "attach.*\n" + prompt);
+	e = HpdTestbed.attachXXX("hpd-c");
 	e.send("disassemble\n");
 	e.expect(5, "\\*.*test.*\n(.*\n)*" + prompt);
 	e.send("quit\n");
@@ -63,11 +58,7 @@ public class TestDisassemblerCommand
     public void testDisassembleRange() {
 	if (unsupported("disassembler", !lib.opcodes.Disassembler.available()))
 	    return;
-	child = new Expect(Config.getPkgLibFile("hpd-c"));
-	e = new HpdTestbed();
-	// Attach
-	e.send("attach " + child.getPid() + "\n\n");
-	e.expect(5, "attach.*\n" + prompt);
+	e = HpdTestbed.attachXXX("hpd-c");
 	e.send("disassemble 0x804860f  0x80487ea\n");
 	e.expect(5, " 0x804860f.*\n");
 	e.expect(5, " 0x80487ea.*\n" + prompt);

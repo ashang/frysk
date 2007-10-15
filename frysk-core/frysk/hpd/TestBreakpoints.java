@@ -39,20 +39,13 @@
 
 package frysk.hpd;
 
-import frysk.expunit.Expect;
-import frysk.Config;
-
 public class TestBreakpoints
     extends TestLib
 {
     public void testHpdBreakpoint() {
 	if (unresolved(5165))
 	    return;
-	child = new Expect(Config.getPkgLibFile("hpd-c"));
-	e = new HpdTestbed();
-	// Attach
-	e.send ("attach " + child.getPid () + "\n\n");
-	e.expect (5, "attach.*\n" + prompt);
+	e = HpdTestbed.attachXXX("hpd-c");
 	// Break
 	e.send("break #hpd-c.c#196\n");	// This has to break on: while (int_21)
 	e.expect("breakpoint.*" + prompt);
@@ -64,10 +57,7 @@ public class TestBreakpoints
     }
     
     public void testHpdBreakpointRunProcess() {
-	e = new HpdTestbed();
-	// Attach
-	e.send ("run " + Config.getPkgLibFile("hpd-c") + "\n\n");
-	e.expect (5, "Attached.*\n" + prompt);
+	e = HpdTestbed.run("hpd-c");
 	// Break
 	e.send("break #hpd-c.c#196\n");	// This has to break on: while (int_21)
 	e.expect("breakpoint.*" + prompt);
@@ -79,11 +69,7 @@ public class TestBreakpoints
     }
 
     public void testHpdBreakpointInline() {
-	child = new Expect(Config.getPkgLibFile("test1"));
-	e = new HpdTestbed();
-	// Attach
-	e.send ("attach " + child.getPid () + "\n");
-	e.expect ("attach.*" + prompt);
+	e = HpdTestbed.attachXXX("test1");
 	// Break
 	e.send("break add\n");
 	e.expect("break.*" + prompt);
@@ -97,11 +83,7 @@ public class TestBreakpoints
     }
 
     public void testHpdBreakpointLibrary() {
-	child = new Expect(Config.getPkgLibFile("test1"));
-	e = new HpdTestbed();
-	// Attach
-	e.send ("attach " + child.getPid () + "\n");
-	e.expect ("attach.*" + prompt);
+	e = HpdTestbed.attachXXX("test1");
 	// Break
 	e.send("break sin\n");
 	e.expect("break.*" + prompt);
@@ -115,11 +97,7 @@ public class TestBreakpoints
     }
 
     public void testHpdBreakStep() {
-	child = new Expect(Config.getPkgLibFile("test1"));
-	e = new HpdTestbed();
-	// Attach
-	e.send ("attach " + child.getPid () + "\n");
-	e.expect ("attach.*" + prompt);
+	e = HpdTestbed.attachXXX("test1");
 	// Break
         e.send("break anotherFunction\n");
         e.expect("break.*" + prompt);
@@ -135,9 +113,7 @@ public class TestBreakpoints
     }
 
     public void testHpdBreakMultiThreaded() {
-	e = new HpdTestbed();
-        e.send ("run " + Config.getPkgLibFile("funit-fib-clone") + " 3\n\n");
-        	e.expect (5, "Attached.*\n" + prompt);
+	e = HpdTestbed.run("funit-fib-clone", "3");
 	// Break
 	e.send("break fib\n");	
 	e.expect("breakpoint.*" + prompt);
@@ -160,9 +136,7 @@ public class TestBreakpoints
     }
 
     public void testHpdBreakMultiThreadedContinue() {
-	e = new HpdTestbed();
-        e.send ("run " + Config.getPkgLibFile("funit-fib-clone") + " 3\n\n");
-        	e.expect (5, "Attached.*\n" + prompt);
+	e = HpdTestbed.run("funit-fib-clone", "3");
 	// Break
 	e.send("break fib\n");	
 	e.expect("breakpoint.*" + prompt);

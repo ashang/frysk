@@ -39,9 +39,6 @@
 
 package frysk.hpd;
 
-import frysk.Config;
-import frysk.expunit.Expect;
-
 /**
  * Test the functionality of the plocation command.
  *
@@ -53,15 +50,13 @@ public class TestPlocationCommand
     extends TestLib
 {
     public void testPlocation() {
-	child = new Expect(Config.getPkgLibFile("hpd-c"));
-	e = new HpdTestbed(child.getPid());
+	e = HpdTestbed.attachXXX("hpd-c");
 	e.sendCommandExpectPrompt("plocation static_char", 
 				  "\r\nAddress 0x[0-9a-f]+ - [0-9]+ byte\\(s\\).*");
     }
     
     public void testPlocationFails() {
-	child = new Expect(Config.getPkgLibFile("hpd-c"));
-	e = new HpdTestbed(child.getPid());
+	e = HpdTestbed.attachXXX("hpd-c");
 	e.sendCommandExpectPrompt("plocation bogus\n", 
 		                  "\r\nError: Symbol \"bogus\" is not found in the current context..*");
     }

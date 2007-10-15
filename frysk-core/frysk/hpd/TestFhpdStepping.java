@@ -59,8 +59,7 @@ public class TestFhpdStepping extends TestLib {
 	this.scanner = new TestfileTokenScanner(new File(source));
 	int startLine = this.scanner.findTokenLine("_instructionStep_");
 	
-	e.send("run " + "/home/mcvet/workspace/build/frysk-core/frysk/pkglibdir/funit-stepping-asm" + "\n");
-	e.expect(5, "Attached.*\n" + prompt);
+	e = HpdTestbed.run("funit-stepping-asm");
 	
 	// Remove this - #4919 and #4914.
 	try { Thread.sleep(2000); } catch (Exception e) {}
@@ -85,15 +84,12 @@ public class TestFhpdStepping extends TestLib {
 	if (unresolved(4914))
 	    return;
 	
-	e = new HpdTestbed();
-	
 	String source = Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 	this.scanner = new TestfileTokenScanner(new File(source));
 	int startLine = this.scanner.findTokenLine("_instructionStep_");
 	int endLine = this.scanner.findTokenLine("_lineStepEnd_");
 	
-	e.send("run " + Config.getPkgLibFile("funit-stepping-asm") + "\n");
-	e.expect(5, "Attached.*\n" + prompt);
+	e = HpdTestbed.run("funit-stepping-asm");
 	
 	// Remove this - #4919 and #4914.
 	try { Thread.sleep(2000); } catch (Exception e) {}
@@ -117,15 +113,12 @@ public class TestFhpdStepping extends TestLib {
 	if (unresolved(4914))
 	    return;
 	
-	e = new HpdTestbed();
-	
 	String source = Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 	this.scanner = new TestfileTokenScanner(new File(source));
 	int startLine = this.scanner.findTokenLine("_stepOverStart_");
 	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 	
-	e.send("run " + Config.getPkgLibFile("funit-stepping-asm") + "\n");
-	e.expect(5, "Attached.*\n" + prompt);
+	e = HpdTestbed.run("funit-stepping-asm");
 	
 	// Remove this - #4919 and #4914.
 	try { Thread.sleep(2000); } catch (Exception e) {}
@@ -149,15 +142,12 @@ public class TestFhpdStepping extends TestLib {
 	if (unresolved(4914))
 	    return;
 	
-	e = new HpdTestbed();
-	
 	String source = Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 	this.scanner = new TestfileTokenScanner(new File(source));
 	int startLine = this.scanner.findTokenLine("_stepOverStart_");
 	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 	
-	e.send("run " + Config.getPkgLibFile("funit-stepping-asm") + "\n");
-	e.expect(5, "Attached.*\n" + prompt);
+	e = HpdTestbed.run("funit-stepping-asm");
 	
 	// Remove this - #4919 and #4914.
 	try { Thread.sleep(2000); } catch (Exception e) {}
@@ -181,15 +171,12 @@ public class TestFhpdStepping extends TestLib {
 	if (unresolved(4914))
 	    return;
 	
-	e = new HpdTestbed();
-	
 	String source = Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
 	this.scanner = new TestfileTokenScanner(new File(source));
 	int startLine = this.scanner.findTokenLine("_stepOutStart_");
 	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 	
-	e.send("run " + Config.getPkgLibFile("funit-stepping-asm") + "\n");
-	e.expect(5, "Attached.*\n" + prompt);
+	e = HpdTestbed.run("funit-stepping-asm");
 	
 	// Remove this - #4919 and #4914.
 	try { Thread.sleep(2000); } catch (Exception e) {}

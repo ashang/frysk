@@ -81,18 +81,6 @@ public class HpdTestbed
 
     /**
      * Create an FHPD process, with PARAM, managed by expect; wait for
-     * the prompt.
-     */
-    public HpdTestbed(File param) {
-	this(new String[] {
-		 Config.getBinFile("fhpd").getPath (),
-		 param.getAbsolutePath()
-	     });
-	expectPrompt();
-    }
-
-    /**
-     * Create an FHPD process, with PARAM, managed by expect; wait for
      * the STARTUP message followed immediatly by the prompt.
      */
     public HpdTestbed(String param, String startup) {
@@ -102,17 +90,6 @@ public class HpdTestbed
 	      });
 	expectPrompt(startup);
     }
-
-    /**
-     * Create a HPD attached to PID.
-     */
-     public HpdTestbed(ProcessIdentifier pid) {
-	 this(new String[] {
-		  Config.getBinFile("fhpd").getPath (),
-		  pid.toString()
-	       });
-	 expectPrompt("Attached to process " + pid.toString() + "\r\n");
-     }
 
     /**
      * Expect; OUTPUT followed by PROMPT; report WHY.
@@ -168,5 +145,66 @@ public class HpdTestbed
 	return expectPrompt("sent: <" + command
 			    + "> expecting: <" + output + ">",
 			    output);
+    }
+
+
+    /**
+     * Start the specified program as a separate process and then
+     * attach to it.
+     *
+     * XXX: This implementation of broken as there is a race between
+     * the process and the hpd starting, leading to the started
+     * processes state not being well defined when HPD attaches to it.
+     */
+    static HpdTestbed attachXXX(String program) {
+	Expect child = new Expect(Config.getPkgLibFile(program));
+	TearDownExpect.add(child);
+	ProcessIdentifier pid = child.getPid();
+	TearDownProcess.add(pid);
+	return new HpdTestbed(pid.toString(),
+			      "Attached to process "
+			      + pid
+			      + "\r\n");
+    }
+
+    /**
+     * Run the specified program from under HPD.
+     */
+    static HpdTestbed run(String program, String args) {
+	HpdTestbed h = new HpdTestbed();
+	File exe = Config.getPkgLibFile(program);
+	h.send("run ");
+	h.send(exe.getAbsolutePath());
+	if (args != null) {
+	    h.send(" ");
+	    h.send(args);
+	}
+	h.send("\n");
+	try {
+	    h.expect(new Match[] {
+			 new Regex("Attached to process ([0-9]+)\r\n"
+				   + h.prompt) {
+			     public void execute() {
+				 int pid = Integer.parseInt(group(1));
+				 TearDownProcess.add(pid);
+			     }
+			 },
+			 new Regex(".*\r\n" + h.prompt) {
+			     public void execute() {
+				 TestCase.fail("Expecting <run> got: <"
+					       + group() + ">");
+			     }
+			 }
+		     });
+	} catch (EofException e) {
+	    TestCase.fail("Expecting <run " + program + "> got: <EOF>");
+	} catch (TimeoutException t) {
+	    TestCase.fail("Expecting <run " + program + "> got: <TIMEOUT>");
+	}
+	return h;
+    }
+
+    static HpdTestbed run(String program) {
+	return run(program, null);
     }
 }

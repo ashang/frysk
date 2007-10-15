@@ -1,5 +1,16 @@
 2007-10-15  Andrew Cagney  <cagney@redhat.com>
 
+	* HpdTestbed.java (attachXXX(String)): New.
+	(run(String)): New.
+	(HpdTestbed(ProcessIdentifier)): Delete.
+	(HpdTestbed(File)): Delete.
+	* TestBreakpoints.java: Use.
+	* TestDisassemblerCommand.java: Ditto.
+	* TestPlocationCommand.java: Ditto.
+	* TestExamineCommand.java: Ditto.
+	* TestFhpdStepping.java: Ditto.
+	* TestDisplayCommand.java: Ditto.
+
 	* TestBreakpoints.java: Do not pass -cli to attach.
 	* AttachCommand.java: Delete undocumented -cli option.
 
