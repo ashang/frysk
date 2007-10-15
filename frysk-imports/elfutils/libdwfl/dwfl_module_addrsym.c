@@ -140,6 +140,15 @@ dwfl_module_addrsym (Dwfl_Module *mod, GElf_Addr addr,
 		  closest ();
 		  continue;
 		}
+	      if (sym.st_value == closest_sym->st_value
+		  && sym.st_size == closest_sym->st_size
+		  && closest_name != NULL && name != NULL
+		  && strcmp(name, closest_name) < 0)
+		{
+		  /* Idenitical; take the first alphabetically.  */
+		  closest();
+		  continue;
+		}
 	      /* Discard this candidate, no better than the previous
 		 sized symbol that contained ADDR.  */
 	      continue;
@@ -155,7 +164,27 @@ dwfl_module_addrsym (Dwfl_Module *mod, GElf_Addr addr,
 	     symbol wins (unsized symbols are typically created using
 	     hand-written assembler).  */
 	  if (sym.st_value + sym.st_size
-	      >= closest_sym->st_value + closest_sym->st_size
+	      > closest_sym->st_value + closest_sym->st_size
+	      && same_section (&sym, shndx))
+	    {
+	      closest ();
+	      continue;
+	    }
+	  /* Same end address; try start address.  */
+	  if (sym.st_value + sym.st_size
+	      == closest_sym->st_value + closest_sym->st_size
+	      && sym.st_value > closest_sym->st_value
+	      && same_section (&sym, shndx))
+	    {
+	      closest ();
+	      continue;
+	    }
+	  /* Identical symbols; try name.  */
+	  if (sym.st_value + sym.st_size
+	      == closest_sym->st_value + closest_sym->st_size
+	      && sym.st_value == closest_sym->st_value
+	      && closest_name != NULL && name != NULL
+	      && strcmp(name, closest_name) < 0
 	      && same_section (&sym, shndx))
 	    {
 	      closest ();

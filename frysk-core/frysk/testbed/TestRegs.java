@@ -44,10 +44,8 @@ import frysk.isa.Register;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Iterator;
-import frysk.proc.Task;
 import frysk.isa.RegistersFactory;
 import frysk.isa.RegisterGroup;
-import java.math.BigInteger;
 
 /**
  * Sanity check of the RegsCase - that everything needed is present.
@@ -59,15 +57,9 @@ public class TestRegs extends TestLib {
 
     public void setUp() {
 	regsCase = new RegsCase() {
-		public Object taskObject(Task task) {
-		    return task;
-		}
-		// Here, should not be called.
-		public void accessRegister(Object taskObject,
-					   Register register,
-					   int offset, int length,
-					   byte[] bytes, int start,
-					   boolean write) {
+		// Should not be called.
+		public void access(Register register, int offset, int length,
+				   byte[] bytes, int start, boolean write) {
 		    fail("getRegister called");
 		}
 		public long getRegister(Object taskObject, Register register) {
@@ -90,7 +82,6 @@ public class TestRegs extends TestLib {
 	assertNotNull(regsCase.isa().toString(), regsCase.values());
     }
 
-
     /**
      * Create a byte array with all elements filled in with random
      * non-zero values.
@@ -103,43 +94,14 @@ public class TestRegs extends TestLib {
 	return bytes;
     }
 
-    public void testValuesNonZero() {
-	for (Iterator i = regsCase.values().entrySet().iterator();
-	     i.hasNext(); ) {
+    public void testValues() {
+	for (Iterator i = regsCase.values().iterator(); i.hasNext(); ) {
 	    Entry entry = (Entry)i.next();
-	    Register r = (Register) entry.getKey();
-	    if (entry.getValue() == null)
-		continue;
-	    if (entry.getValue() instanceof BigInteger)
-		continue;
-	    byte[] bytes = (byte[]) entry.getValue();
-	    for (int j = 0; j < bytes.length; j++) {
-		assertTrue(r.getName() + " byte " + j, bytes[j] != 0);
-	    }
+	    Register register = (Register)entry.getKey();
+	    RegsCase.Value value = (RegsCase.Value)entry.getValue();
+	    value.checkValue(register);
 	}
     }
-
-    public void testValueSizes() {
-	for (Iterator i = regsCase.values().entrySet().iterator();
-	     i.hasNext(); ) {
-	    Entry entry = (Entry)i.next();
-	    Register register = (Register) entry.getKey();
-	    if (entry.getValue() == null)
-		continue;
-	    if (entry.getValue() instanceof BigInteger)
-		continue;
-	    byte[] bytes = (byte[]) entry.getValue();
-	    for (int j = 0; j < bytes.length; j++) {
-		assertEquals(register.getName() + " size",
-			     register.getType().getSize(),
-			     bytes.length);
-	    }
-	}
-    }
-
-    /**
-     * 
-     */
 
     /**
      * Called by TestRegsCase; to verify that all registers are

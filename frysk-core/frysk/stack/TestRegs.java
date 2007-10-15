@@ -41,26 +41,29 @@ package frysk.stack;
 
 import frysk.isa.Register;
 import frysk.testbed.RegsCase;
-import frysk.proc.Task;
 
 /**
  * Check all register values.
  */
 
 public class TestRegs extends RegsCase {
-
-    public Object taskObject(Task task) {
-	return StackFactory.createFrame(task);
+    private Frame frame;
+    public void setUp() {
+	super.setUp();
+	frame =  StackFactory.createFrame(task());
+    }
+    public void tearDown() {
+	frame = null;
+	super.tearDown();
     }
 
-    public void accessRegister(Object task,
-			       Register register, int offset, int length,
-			       byte[] bytes, int start, boolean write) {
-	((Frame)task).getRegister(register, offset, length, bytes, start);
+    public void access(Register register, int offset, int length,
+		       byte[] bytes, int start, boolean write) {
+	frame.getRegister(register, offset, length, bytes, start);
     }
 
     public long getRegister(Object task, Register register) {
-	return ((Frame)task).getRegister(register);
+	return frame.getRegister(register);
     }
 
 }

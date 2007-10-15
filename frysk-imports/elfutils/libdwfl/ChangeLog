@@ -1,3 +1,8 @@
+2007-10-15  Andrew Cagney  <cagney@redhat.com>
+
+	* dwfl_module_addrsym.c (dwfl_module_addrsym): Check for identical
+	symbols.
+
 2007-07-26  Andrew Cagney  <cagney@redhat.com>
 
 	* dwfl_module_addrsym.c (dwfl_module_addrsym): When looking for a

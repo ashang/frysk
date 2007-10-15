@@ -42,6 +42,7 @@
 
 #include "frysk-asm.h"
 
+
 	FUNCTION_BEGIN(main,0)
 	MAIN_PROLOGUE(0)
 
@@ -57,7 +58,7 @@
 	// eip
 	// %eflags
 	mov $0x93d4a6ed, %esp
-	jmp 0 // SIGILL
+	jmp crash
 	
 #elif defined __x86_64__
 
@@ -88,3 +89,11 @@
 	MAIN_EPILOGUE(0)
 	FUNCTION_RETURN(main,0)
 	FUNCTION_END(main,0)
+
+// For the PC, get it to crash at a known symbol.
+
+.global crash
+crash:
+#if defined __i386__
+	mov 0, %eax
+#endif

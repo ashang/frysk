@@ -1,3 +1,10 @@
+2007-10-15  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRegs.java (taskObject(Task)): Delete.
+	(access(Register,int,int,byte[],int,boolean)): Replace
+	accessRegister(...).
+	(setUp(), tearDown(), frame): New.
+	
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 
 	* LibunwindFrame.java (getLibunwindOuter()): New.

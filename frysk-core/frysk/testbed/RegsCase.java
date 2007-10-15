@@ -50,8 +50,8 @@ import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.math.BigInteger;
 import inua.eio.ByteOrder;
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import frysk.symtab.Symbol;
+import frysk.symtab.SymbolFactory;
 
 /**
  * A base class for test-cases that need to check all register values.
@@ -62,72 +62,49 @@ import java.util.logging.Level;
 
 public abstract class RegsCase extends TestLib {
 
-    private static final Logger logger = Logger.getLogger("frysk");
-
-    private Object taskObject;
-    private ValueMap values;
+    private Task task;
+    private Values values;
     private ByteOrder order;
     private ISA isa;
     public void setUp() {
 	super.setUp();
-	Task task = new DaemonBlockedAtSignal("funit-regs").getMainTask();
-	taskObject = taskObject(task);
+	task = new DaemonBlockedAtSignal("funit-regs").getMainTask();
 	isa = task.getISA();
 	order = isa.order();
 	if (isaValues.containsKey(isa))
-	    values = (ValueMap)isaValues.get(isa);
+	    values = (Values)isaValues.get(isa);
     }
     public void tearDown() {
-	taskObject = null;
+	task = null;
 	values = null;
-	order = null;
 	super.tearDown();
     }
 
-    // Package private.
-    LinkedHashMap values() {
-	return values;
+    protected Task task() {
+	return task;
     }
 
-    // Package private.
+    // Package-private
+    Values values() {
+	return values;
+    }
     ISA isa() {
 	return isa;
     }
 
-    protected abstract Object taskObject(Task task);
-    protected abstract void accessRegister(Object task,
-					   Register reg, int offset,
-					   int length, byte[] bytes,
-					   int start, boolean write);
+    protected abstract void access(Register register,
+				   int offset, int length, byte[] bytes,
+				   int start, boolean write);
     protected abstract long getRegister(Object task, Register reg);
-
-    private void checkRegisterRead(Register register, Object value) {
-	if (value == null)
-	    return;
-	String name = register.getName();
-	// When the compare fails, BigInteteger gives a more
-	// meaningful message.
-	BigInteger correct;
-	if (value instanceof BigInteger) {
-	    correct = (BigInteger)value;
-	} else {
-	    correct = toBigInteger((byte[])value);
-	}
-	logger.log(Level.FINE, "checking register {0} expected {1}",
-		   new Object[] { name, correct });
-	byte[] bytes = new byte[register.getType().getSize()];
-	accessRegister(taskObject, register, 0, bytes.length,
-		       bytes, 0, false);
-	BigInteger check = toBigInteger(bytes);
-	assertEquals(name, correct, check);
-    }
 
     public void testAccessRegisterRead() {
 	if (values == null && unresolved(0))
 	    return;
-	for (Iterator i = values.entrySet().iterator(); i.hasNext(); ) {
+	for (Iterator i = values.iterator(); i.hasNext(); ) {
 	    Entry entry = (Entry)i.next();
-	    checkRegisterRead((Register)entry.getKey(), entry.getValue());
+	    Register register = (Register)entry.getKey();
+	    Value value = (Value)entry.getValue();
+	    value.checkRegister(this, register);
 	}
     }
 
@@ -148,11 +125,141 @@ public abstract class RegsCase extends TestLib {
 	return new BigInteger(1, ordered);
     }
 
-    private static class ValueMap extends LinkedHashMap {
-	static final long serialVersionUID = 0;
-	// Add a chaining put method.
-	ValueMap put(Register r, Object o) {
-	    put((Object)r, o);
+    /**
+     * Possible register values;; package private.
+     */
+    static abstract class Value {
+	abstract void checkValue(Register register);
+	abstract void checkRegister(RegsCase c, Register register);
+	BigInteger registerValue(RegsCase c, Register register) {
+	    byte[] bytes = new byte[register.getType().getSize()];
+	    c.access(register, 0, bytes.length, bytes, 0, false);
+	    BigInteger check = c.toBigInteger(bytes);
+	    return check;
+	}
+    }
+
+    /**
+     * Don't check the register; not yet used.
+     */
+//     private static class NoValue extends Value {
+// 	void checkValue(Register register) { }
+// 	void checkRegister(RegsCase c, Register register) { }
+//     }
+
+    /**
+     * Compare the register against the BigInteger (the register is
+     * converted to an unsigned big integer using the native byte
+     * order).
+     *
+     * The BigInteger must have a non-zero value for all register
+     * bytes.
+     */
+    private static class BigIntegerValue extends Value {
+	private final BigInteger correct;
+	BigIntegerValue(Register register, BigInteger correct) {
+	    this.correct = correct;
+	}
+	// Check that the least significant bytes are all non-zero.
+	void checkValue(Register register) {
+	    byte[] bytes = correct.toByteArray();
+	    for (int i = bytes.length - register.getType().getSize();
+		 i < bytes.length; i++) {
+		RegsCase.assertTrue(register.getName() + "[" + i + "] != 0",
+				    bytes[i] != 0);
+	    }
+	}
+	void checkRegister(RegsCase c, Register register) {
+	    RegsCase.assertEquals(register.getName(), correct,
+				  registerValue(c, register));
+	}
+    }
+
+    private static class ByteValue extends Value {
+	private final byte[] bytes;
+	ByteValue(Register register, byte[] bytes) {
+	    this.bytes = bytes;
+	}
+	void checkValue(Register register) {
+	    RegsCase.assertEquals(register.getName() + " size",
+				  bytes.length, register.getType().getSize());
+	    for (int i = 0; i < bytes.length; i++) {
+		RegsCase.assertTrue(register.getName() + "[" + i + "] != 0",
+				    bytes[i] != 0);
+	    }
+	}
+	void checkRegister(RegsCase c, Register register) {
+	    BigInteger correct = c.toBigInteger(bytes);
+	    RegsCase.assertEquals(register.getName(), correct,
+				  registerValue(c, register));
+	}
+    }
+
+    private static class SymbolValue extends Value {
+	private final String correct;
+	SymbolValue(Register register, String correct) {
+	    this.correct = correct;
+	}
+	void checkValue(Register register) { }
+	void checkRegister(RegsCase c, Register register) {
+	    BigInteger value = registerValue(c, register);
+	    Symbol check = SymbolFactory.getSymbol(c.task(),
+						   value.longValue());
+	    RegsCase.assertEquals(register.getName(), correct,
+				  check.getName());
+	}
+    }
+
+    private static class MaskedValue extends Value {
+	private final BigInteger mask;
+	private final BigInteger correct;
+	MaskedValue(Register register, BigInteger correct, BigInteger mask) {
+	    this.correct = correct;
+	    this.mask = mask;
+	}
+	void checkValue(Register register) {
+	    // can't verify this one
+	}
+	void checkRegister(RegsCase c, Register register) {
+	    BigInteger check = registerValue(c, register).andNot(mask);
+	    RegsCase.assertEquals(register.getName(), correct, check);
+	}
+    }
+
+    /**
+     * Possible register values; package private.
+     */
+    static class Values {
+	// XXX: Do not extend LinkedHashMap as want to restrict the
+	// "add" methods available.
+	private final LinkedHashMap map = new LinkedHashMap();
+	Iterator iterator() {
+	    return map.entrySet().iterator();
+	}
+	boolean containsKey(Register key) {
+	    return map.containsKey(key);
+	}
+	Values put(Register register, byte[] bytes) {
+	    map.put(register, new ByteValue(register, bytes));
+	    return this;
+	}
+	Values put(Register register, BigInteger correct) {
+	    map.put(register, new BigIntegerValue(register, correct));
+	    return this;
+	}
+	Values put(Register register, long correct) {
+	    map.put(register, new BigIntegerValue(register,
+					BigInteger.valueOf(correct)));
+	    return this;
+	}
+	Values put(Register register, long correct, long mask) {
+	    map.put(register, new MaskedValue(register,
+				    BigInteger.valueOf(correct),
+				    BigInteger.valueOf(mask)));
+	    return this;
+	}
+	Values put(Register register, String correct) {
+	    map.put(register, new SymbolValue(register, correct));
 	    return this;
 	}
     }
@@ -160,12 +267,9 @@ public abstract class RegsCase extends TestLib {
     /**
      * The registers should all be compared against non-zero ramdom
      * byte[] arrays, and not simple constants.
-     *
-     * For exceptions, such as PC or STATUS, which can't be set,
-     * specify either NULL (skip check) or BigInteger (weaker check).
      */
 
-    private ValueMap IA32 = new ValueMap()
+    private Values IA32 = new Values()
         .put(IA32Registers.EAX, // 0x7eb03efc
              new byte[] { (byte)0xfc, 0x3e, (byte)0xb0, 0x7e })
         .put(IA32Registers.EBX, // 0x35a322a0
@@ -180,15 +284,15 @@ public abstract class RegsCase extends TestLib {
              new byte[] { (byte)0xf3, 0x19, 0x73, 0x45 })
         .put(IA32Registers.EBP, // 0xcbfed73c
              new byte[] { 0x3c, (byte)0xd7, (byte)0xfe, (byte)0xcb })
-        // eflags depend partly on hardware (like the ID flag)
-        // so don't test for now... BigInteger.valueOf(0x200246))
-        .put(IA32Registers.EFLAGS, null)
+        .put(IA32Registers.EFLAGS, 0x10246,
+	     1 << (21 - 1) // Mask CPUID
+	     )
         .put(IA32Registers.ESP, // 0x93d4a6ed
              new byte[] { (byte)0xed, (byte)0xa6, (byte)0xd4, (byte)0x93 })
- 	.put(IA32Registers.EIP, null)
+ 	.put(IA32Registers.EIP, "crash")
 	;
 
-    private ValueMap X8664 = new ValueMap()
+    private Values X8664 = new Values()
         .put(X8664Registers.RAX, // 0x837bb4e2d8209ca3
              new byte[] { (byte)0xa3,(byte)0x9c,0x20,(byte)0xd8,
                           (byte)0xe2,(byte)0xb4,0x7b,(byte)0x83 })
@@ -237,7 +341,7 @@ public abstract class RegsCase extends TestLib {
         .put(X8664Registers.R15, // 0x46bf65d4d966290
              new byte[] { (byte)0x90,0x62,(byte)0x96,0x4d,
                           0x5d,(byte)0xf6,0x6b,0x4 })
-        .put(X8664Registers.RIP, null)
+        .put(X8664Registers.RIP, "crash")
 	;
 
     private final ISAMap isaValues = new ISAMap("RegsCase")

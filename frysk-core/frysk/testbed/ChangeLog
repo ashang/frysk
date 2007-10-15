@@ -1,3 +1,14 @@
+2007-10-15  Andrew Cagney  <cagney@redhat.com>
+
+	* RegsCase.java (taskObject(Task)): Delete.
+	(access(Register,int,int,byte[],int,boolean)): Relace
+	accessRegister(Object,Register,int,int,byte[],int,boolean).
+	(Value, ByteValue, BigIntegerValue, MaskedValue, SymbolValue)
+	(NoValue): New.
+	(Values): Replace ValueMap.
+	(IA32): Provide values for EIP and maksed EFLAGS.
+	* TestRegs.java: Update.
+
 2007-10-10  Mark Wielaard  <mwielaard@redhat.com>
 
 	* RegsCase.java (IA32): Set EFLAGS value to null for now.

@@ -48,18 +48,13 @@ import frysk.testbed.RegsCase;
 
 public class TestRegs extends RegsCase {
 
-    public Object taskObject(Task task) {
-	return task;
-    }
-
-    public void accessRegister(Object task,
-			       Register register, int offset, int length,
-			       byte[] bytes, int start, boolean write) {
-	((Task)task).access(register, offset, length, bytes, start, write);
+    public void access(Register register, int offset, int length,
+		       byte[] bytes, int start, boolean write) {
+	task().access(register, offset, length, bytes, start, write);
     }
 
     public long getRegister(Object task, Register register) {
-	return ((Task)task).getRegister(register);
+	return task().getRegister(register);
     }
 
 }
