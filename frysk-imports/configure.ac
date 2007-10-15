@@ -1,0 +1,81 @@
+# This file is part of the program FRYSK.
+#
+# Copyright 2005, 2006, 2007, Red Hat Inc.
+#
+# FRYSK is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# FRYSK is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with FRYSK; if not, write to the Free Software Foundation,
+# Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+# 
+# In addition, as a special exception, Red Hat, Inc. gives You the
+# additional right to link the code of FRYSK with code not covered
+# under the GNU General Public License ("Non-GPL Code") and to
+# distribute linked combinations including the two, subject to the
+# limitations in this paragraph. Non-GPL Code permitted under this
+# exception must only link to the code of FRYSK through those well
+# defined interfaces identified in the file named EXCEPTION found in
+# the source code files (the "Approved Interfaces"). The files of
+# Non-GPL Code may instantiate templates or use macros or inline
+# functions from the Approved Interfaces without causing the
+# resulting work to be covered by the GNU General Public
+# License. Only Red Hat, Inc. may make changes or additions to the
+# list of Approved Interfaces. You must obey the GNU General Public
+# License in all respects for all of the FRYSK code and other code
+# used in conjunction with FRYSK except the Non-GPL Code covered by
+# this exception. If you modify this file, you may extend this
+# exception to your version of the file, but you are not obligated to
+# do so. If you do not wish to provide this exception without
+# modification, you must delete this exception statement from your
+# version and license this file solely under the GPL without
+# exception.
+
+AC_PREREQ(2.59)
+
+sinclude(common/version.ac)
+AC_INIT(frysk, [FRYSK_VERSION])
+
+m4_include([common/frysk-common.ac])
+
+AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext no-dist])
+
+AC_FIND_FILE([antlr.jar], [/usr/share/java /usr/share/frysk/java], ANTLR_JAR)
+AC_FIND_FILE([jdom.jar], [/usr/share/java /usr/share/frysk/java], JDOM_JAR)
+AC_FIND_FILE([libaudit.h], [/usr/include/], LIBAUDIT_H)
+
+AC_CONFIG_FILES([
+	Makefile
+	jline/Makefile
+	getopt/Makefile
+	tests/Makefile
+	cdtparser/Makefile
+	junit/Makefile])
+
+for isa in i386 x86_64 ppc64
+do
+  AC_MSG_NOTICE([configuring libunwind-$isa])
+  mkdir -p libunwind-$isa
+  confdir=`cd "$srcdir";pwd`
+  # FIXME - This is wrong since it discards any configure flags given
+  # except those explicitly passed on...
+  ( cd libunwind-$isa ; $confdir/libunwind/configure \
+	--target=$isa-unknown-linux-gnu \
+	--build=${build} \
+	--host=${host} \
+	--prefix=${prefix} ) || exit $?
+done
+
+# Even though "libunwind" is not built, it is still included in the
+# list of configured subdirectories so that it can be included in
+# "make dist" (or the recursive "make distdir").
+
+AC_CONFIG_SUBDIRS([elfutils libunwind])
+
+AC_OUTPUT

@@ -29,6 +29,12 @@ stack frame with an instruction-pointer value of 0x40003080 would
 return a value of 0x80 in the word pointed to by \Var{offp} (assuming
 the procedure is at least 0x80 bytes long).
 
+If \Var{bufp} is \Const{NULL}, \Var{buf\_len} is still verified to fit
+and \Var{offp} is set.  Passing \Var{buf\_len} as zero to indicate no
+limits on the buffer length is only safe if \Var{buf} is \Const{NULL},
+otherwise the callback is entitled and likely to scribble anywhere in
+the entire address space.
+
 Note that on some platforms there is no reliable way to distinguish
 between procedure names and ordinary labels.  Furthermore, if symbol
 information has been stripped from a program, procedure names may be

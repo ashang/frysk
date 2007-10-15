@@ -33,16 +33,25 @@ intern_string (unw_addr_space_t as, unw_accessors_t *a,
   size_t i;
   int ret;
 
-  for (i = 0; i < buf_len; ++i)
+  buf_len--;
+
+  for (i = 0; i <= buf_len; ++i)
     {
-      if ((ret = fetch8 (as, a, &addr, (int8_t *) buf + i, arg)) < 0)
+      int8_t c, *p = buf ? (int8_t *)buf + i : &c;
+
+      if ((ret = fetch8 (as, a, &addr, p, arg)) < 0)
 	return ret;
 
-      if (buf[i] == '\0')
+      if (*p == '\0')
 	return 0;		/* copied full string; return success */
     }
-  buf[buf_len - 1] = '\0';	/* ensure string is NUL terminated */
-  return -UNW_ENOMEM;
+  if (buf)
+    {
+      buf[buf_len] = '\0';	/* ensure string is NUL terminated */
+      return -UNW_ENOMEM;
+    }
+  else
+    return 0;
 }
 
 static inline int
@@ -53,7 +62,8 @@ get_proc_name (unw_addr_space_t as, unw_word_t ip,
   unw_proc_info_t pi;
   int ret;
 
-  buf[0] = '\0';	/* always return a valid string, even if it's empty */
+  if (buf)
+    buf[0] = '\0';	/* always return a valid string, even if it's empty */
 
   ret = unwi_find_dynamic_proc_info (as, ip, &pi, 1, arg);
   if (ret == 0)

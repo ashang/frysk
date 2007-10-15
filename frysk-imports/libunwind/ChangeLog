@@ -1,3 +1,577 @@
+2007-10-11  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Imported and merged with libunwind 20071010.
+
+2007-10-10  Andrew Cagney  <cagney@redhat.com>
+
+	* src/x86/init.h (common_init): Use UNW_X86_ESI for dwarf.loc[ESI].
+
+2007-10-03  Mark Wielaard  <mwielaard@redhat.com>
+
+	* tests/test-async-sig.c: Remove duplicate nerrors_max (merge error).
+	* tests/test-ptrace.c: Remove duplicate
+	and target_pid_kill definitions (merge error).
+
+2007-10-03  Mark Wielaard  <mwielaard@redhat.com>
+
+	* src/Makefile.am: Don't special case libunwind-ptrace. Use upstream
+	.a archive rules.
+	* tests/Makefile.am: Likewise.
+
+2007-09-11  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Makefile.am (SUBDIRS): Exclude docs.
+
+2007-09-10  Mark Wielaard  <mwielaard@redhat.com>
+
+	* aux/config.guess: Remove generated file.
+	* aux/config.sub: Likewise.
+	* aux/ltmain.sh: Likewise.
+	* src/ppc64/Make-arch.in: Likewise.
+
+2007-09-10  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Imported and merged with libunwind 20070829.
+
+2007-06-19  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (EXTRA_DIST): Add include/tdep-ppc64/jmpbuf.h,
+	include/tdep-ppc64/libunwind_i.h, and include/tdep-ppc64/README.
+	
+	* Makefile.am (include_HEADERS_tdep): Add
+	include/libunwind-ppc64.h.
+
+	* src/Makefile.am (libunwind_la_SOURCES_x86_64_common): Remove
+	stray '\'.
+
+2007-06-14  Nurdin Premji <npremji@redhat.com>
+
+	* src/Makefile.am: Removed src/x86_64/setcontext.S.
+	* src/x86_64/setcontext.S: Removed.
+
+2007-05-10  Nurdin Premji  <npremji@redhat.com>
+
+	* src/mi/Gget_unwind_table.c (unw_get_unwind_table): Don't abort, just
+	return an error.
+	Cleaned up logging.
+
+2007-04-30  Nurdin Premji  <npremji@redhat.com>
+
+	* src/mi/Gget_unwind_table.c (unw_get_unwind_table): Changed to return
+	UNW_ENOINFO instead of -1. Allows stepping to continue.
+
+2007-04-25  Nurdin Premji  <npremji@redhat.com>
+
+	* src/mi/Gget_unwind_table.c (unw_get_unwind_table): Cleaned up logging.
+
+	* include/libunwind-common.h.in (unw_get_unwind_table): Added.
+	* src/elfxx.h (elf_map_image): map image using MAP_32BIT to avoid address
+	truncation issues in cross-platform unwinding.
+	* src/os-linux.h: (tdep_get_elf_image) Ditto for VDSO section.
+	* src/Makefile.am (libunwind_la_SOURCES_generic): Added Gget_unwind_table.c.
+	* src/mi/Gget_unwind_table.c: Added.
+	* src/ptrace/_UPT_find_proc_info.c (_UPTi_find_unwind_table): 
+	Added dummy local address space for cross-platform unwinding.
+
+2007-04-05  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* src/hppa/getcontext.S, src/hppa/setcontext.S, src/hppa/siglongjmp.S,
+	src/ia64/Ginstall_cursor.S, src/ia64/Linstall_cursor.S,
+	src/ia64/dyn_info_list.S, src/ia64/getcontext.S, src/ia64/longjmp.S,
+	src/ia64/setjmp.S, src/ia64/siglongjmp.S, src/ia64/sigsetjmp.S,
+	src/ppc64/longjmp.S, src/ppc64/siglongjmp.S, src/x86/longjmp.S,
+	src/x86/siglongjmp.S, src/x86_64/longjmp.S, src/x86_64/setcontext.S,
+	src/x86_64/siglongjmp.S: Stack should be non-executable, for SELinux.
+
+	* tests/test-ptrace.c (target_pid_kill): New function.
+	(target_pid, main): TARGET_PID made static, for target_pid_kill ().
+	(main): Register target_pid_kill () for atexit(3).
+
+	* tests/ia64-test-setjmp.c (doit): New forward declaration.
+	(doit_pointer): New function pointer variable initialized to DOIT.
+	(doit): Self-call made by an unoptimizable volatile indirect call.
+
+	* src/Makefile.am (LIBRARIES_cdep, lib_LTLIBRARIES_cdep_setjmp):
+	Removed, moved into ...
+	(lib_LTLIBRARIES_cdep) ... here to fix libtool --disable-static.
+	(libunwind_ptrace_a_SOURCES): Renamed to ...
+	(libunwind_ptrace_la_SOURCES) ... here to fix libtool --disable-static.
+	(install-exec-hook): Fixed for conditional compilations.
+	(lib_LIBRARIES): Removed.
+	(lib_LTLIBRARIES): Updated for removed `lib_LTLIBRARIES_cdep_setjmp'.
+	(EXTRA_DIST): Updated for new renamed `libunwind_ptrace_la_SOURCES'.
+        * tests/Makefile.am (test_ptrace_LDADD): Updated for libtool.
+
+2007-04-04  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* acinclude.m4, config/compile, config/config.guess, config/config.sub,
+	config/depcomp, config/install-sh, config/ltmain.sh, config/missing,
+	config/mkinstalldirs: Removed the autotools generated files.
+	* .cvsignore: `config' is no longer a repository stored directory.
+
+	* include/libunwind-ppc64.h (UNW_TDEP_CURSOR_LEN): Fixed for assert()s.
+	* include/tdep-ppc64/libunwind_i.h (mempool.h): Version update even for
+	the ppc64 architecture.
+	* src/Makefile.am (ppc64): Version forward-ported the ppc64 port.
+	* src/ppc64/Ginit.c (ppc64_local_addr_space_init): Removed VALIDATE
+	initialization as it is no longer a cross-architecture field.
+	* src/ppc64/Lcreate_addr_space.c, src/ppc64/Lget_proc_info.c,
+	src/ppc64/Lget_save_loc.c, src/ppc64/Lglobal.c, src/ppc64/Linit.c,
+	src/ppc64/Linit_local.c, src/ppc64/Linit_remote.c,
+	src/ppc64/Lis_signal_frame.c, src/ppc64/Lregs.c, src/ppc64/Lresume.c,
+	src/ppc64/Lstep.c: New files.
+	* src/ppc64/setcontext.S: Removed file as it had invalid unused content.
+	* src/ppc64/siglongjmp.S (_UI_siglongjmp_cont): New stub function.
+	* tests/flush-cache.S (flush_cache): New stub function for ppc64.
+	* tests/test-ptrace-stepper.c (lockup): New ppc64 and crossplatform
+	implementations.
+
+	* tests/Gtest-dyn1.c, tests/Gtest-resume-sig.c, tests/test-async-sig.c,
+	tests/test-ptrace.c: Fixed lockups on broken libunwind (as ppc64 is).
+
+2007-03-31  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.in (AM_MAINTAINER_MODE): Delete.
+	(get_arch): Map powerpc64 onto ppc64.
+	(pkg_extra): Append -frysk.
+	(pkg_maintainer): Change to frysk@sourceware.org.
+	
+2007-03-20  Nurdin Premji  <npremji@redhat.com>
+
+	* tests/mapper.c: Change alarm timeout to 80.
+
+2007-03-19  Nurdin Premji  <npremji@redhat.com>
+
+	* tests/Makefile.am: Added test_ptrace_stepper, and test_ptrace_signull
+	to list of tests to run.
+	(XFAIL): Added test_ptrace_signull.
+	* .cvsignore: Added Makefile.in.
+	* doc/.cvsignore: Ditto.
+	* src/.cvsignore: Ditto.
+	* tests/.cvsignore: Ditto.
+
+2007-03-07  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* include/tdep-hppa/libunwind_i.h, include/tdep-ppc64/libunwind_i.h,
+	include/tdep-x86/libunwind_i.h, include/tdep-x86_64/libunwind_i.h
+	(tdep_fetch_proc_info_post): Fixed its UNW_OBJ()-duality.
+	* src/Makefile.am (libunwind_la_SOURCES_x86_common)
+	(libunwind_la_SOURCES_x86, libunwind_x86_la_SOURCES_x86): Fixed
+	x86/Gfetch_proc_info_post.c and x86/Lfetch_proc_info_post.c duality.
+	(libunwind_la_SOURCES_x86_64_common, libunwind_la_SOURCES_x86_64)
+	(libunwind_x86_64_la_SOURCES_x86_64): Fixed
+	x86_64/Gfetch_proc_info_post.c and x86_64/Lfetch_proc_info_post.c
+	duality.
+	* src/x86/Lfetch_proc_info_post.c, src/x86_64/Lfetch_proc_info_post.c:
+	New files.
+
+2007-03-14  Nurdin Premji  <npremji@redhat.com>
+
+	* tests/check-namespace.sh.in: Reverted so lib search to libunwind version.
+
+	* Makefile.am: Added.
+	* configure.in: Added.
+	* config/ltmain.sh: Added.
+	* doc/Makefile.am: Added.
+	* src/Makefile.am: Added.
+	* tests/Makefile.am: Added.
+	* src/dwarf/Lexpr.c: Added.
+	* src/dwarf/Lfde.c: Added
+	* src/dwarf/Lfind_proc_info-lsb.c: Added
+	* src/dwarf/Lparser.c: Added
+	* src/dwarf/Lpe.c: Added
+	* src/dwarf/Lstep.c: Added
+	* src/hppa/Lcreate_addr_space.c: Added
+	* src/hppa/Lget_proc_info.c: Added
+	* src/hppa/Lget_save_loc.c: Added
+	* src/hppa/Lglobal.c: Added
+	* src/hppa/Linit.c: Added
+	* src/hppa/Linit_local.c: Added
+	* src/hppa/Linit_remote.c: Added
+	* src/hppa/Lis_signal_frame.c: Added
+	* src/hppa/Lregs.c: Added
+	* src/hppa/Lresume.c: Added
+	* src/hppa/Lstep.c: Added
+	* src/ia64/Lcreate_addr_space.c: Added
+	* src/ia64/Lget_proc_info.c: Added
+	* src/ia64/Lget_save_loc.c: Added
+	* src/ia64/Lglobal.c: Added
+	* src/ia64/Linit.c: Added
+	* src/ia64/Linit_local.c: Added
+	* src/ia64/Linit_remote.c: Added
+	* src/ia64/Linstall_cursor.S: Added
+	* src/ia64/Lis_signal_frame.c: Added
+	* src/ia64/Lparser.c: Added
+	* src/ia64/Lrbs.c: Added
+	* src/ia64/Lregs.c: Added
+	* src/ia64/Lresume.c: Added
+	* src/ia64/Lscript.c: Added
+	* src/ia64/Lstep.c: Added
+	* src/ia64/Ltables.c: Added
+	* src/mi/Ldestroy_addr_space.c: Added
+	* src/mi/Ldyn-extract.c: Added
+	* src/mi/Lfind_dynamic_proc_info.c: Added
+	* src/mi/Lget_accessors.c: Added
+	* src/mi/Lget_fpreg.c: Added
+	* src/mi/Lget_proc_info_by_ip.c: Added
+	* src/mi/Lget_proc_name.c: Added
+	* src/mi/Lget_reg.c: Added
+	* src/mi/Lput_dynamic_unwind_info.c: Added
+	* src/mi/Lset_caching_policy.c: Added
+	* src/mi/Lset_fpreg.c: Added
+	* src/mi/Lset_reg.c: Added
+	* src/x86/Lcreate_addr_space.c: Added
+	* src/x86/Lget_proc_info.c: Added
+	* src/x86/Lget_save_loc.c: Added
+	* src/x86/Lglobal.c: Added
+	* src/x86/Linit.c: Added
+	* src/x86/Linit_local.c: Added
+	* src/x86/Linit_remote.c: Added
+	* src/x86/Lis_signal_frame.c: Added
+	* src/x86/Lregs.c: Added
+	* src/x86/Lresume.c: Added
+	* src/x86/Lstep.c: Added
+	* src/x86_64/Lcreate_addr_space.c: Added
+	* src/x86_64/Lget_proc_info.c: Added
+	* src/x86_64/Lget_save_loc.c: Added
+	* src/x86_64/Lglobal.c: Added
+	* src/x86_64/Linit.c: Added
+	* src/x86_64/Linit_local.c: Added
+	* src/x86_64/Linit_remote.c: Added
+	* src/x86_64/Lis_signal_frame.c: Added
+	* src/x86_64/Lregs.c: Added
+	* src/x86_64/Lresume.c: Added
+	* src/x86_64/Lstep.c: Added
+	* tests/Lia64-test-nat.c: Added
+	* tests/Lia64-test-rbs.c: Added
+	* tests/Lia64-test-readonly.c: Added
+	* tests/Lia64-test-stack.c: Added
+	* tests/Lperf-simple.c: Added
+	* tests/Ltest-bt.c: Added
+	* tests/Ltest-concurrent.c: Added
+	* tests/Ltest-dyn1.c: Added
+	* tests/Ltest-exc.c: Added
+	* tests/Ltest-init.cxx: Added
+	* tests/Ltest-resume-sig.c: Added
+	* Makefile.in: Removed.
+	* doc/Makefile.in: Removed.
+	* src/Makefile.in: Removed.
+	* tests/Makefile.in: Removed.
+	* configure.ac: Removed.
+	* scripts/kernel-diff.sh: Removed.
+	* scripts/kernel-files.txt: Removed.
+	* scripts/make-L-files: Removed.
+	* src/Make-hpux.in: Removed.
+	* src/Make-linux.in: Removed.
+	* src/hppa/Make-arch.in: Removed.
+	* src/hppa/get_accessors.c: Removed.
+	* src/hppa/tables.c: Removed.
+	* src/ia64/Make-arch.in: Removed.
+	* src/ia64/NOTES: Removed.
+	* src/setjmp/setjmp.c: Removed.
+	* src/setjmp/sigsetjmp.c: Removed.
+	* src/x86/Make-arch.in: Removed.
+	* src/x86_64/Make-arch.in: Removed.
+	* tests/perf-startup: Removed.
+	* include/dwarf.h: Modified.
+	* include/dwarf_i.h: Modified.
+	* include/libunwind-common.h.in: Modified.
+	* include/tdep-x86/libunwind_i.h: Modified.
+	* include/tdep-x86_64/libunwind_i.h: Modified.
+	* src/os-linux.h: Modified.
+	* src/dwarf/Gparser.c: Modified.
+	* src/hppa/init.h: Modified.
+	* src/ia64/setjmp.S: Modified.
+	* src/ia64/sigsetjmp.S: Modified.
+	* src/mi/mempool.c: Modified.
+	* src/ptrace/_UPT_find_proc_info.c: Modified.
+	* src/setjmp/longjmp.c: Modified.
+	* src/setjmp/siglongjmp.c: Modified.
+	* src/x86_64/Ginit.c: Modified.
+	* src/x86_64/Gis_signal_frame.c: Modified.
+	* tests/Gia64-test-readonly.c: Modified.
+	* tests/ia64-test-readonly-asm.S: Modified.
+
+2007-03-07  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* tests/test-async-sig.c (do_backtrace): Limit maximum backtrace depth
+	to 100 iterations; it workarounds FC6 DWARF-broken glibc.
+
+2007-03-02  Nurdin Premji  <npremji@redhat.com>
+
+	* src/elfxx.c (lookup_symbol): Undo previous correction, buf_len is decremented previously.
+
+2007-02-28  Nurdin Premji  <npremji@redhat.com>
+
+	* src/elfxx.c (lookup_symbol): Fix stack smashing buf memcpy.
+
+2007-02-28  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* tests/Makefile.in (clean): No longer remove some source scripts.
+
+2007-02-28  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* tests/check-namespace.sh.in: Backward compatible $(top_builddir) fix
+	for the autoconf-2.59c compatibility.
+
+2007-01-24  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* src/elfxx.c (lookup_symbol): Fix false preceding zero-sized function
+	resolving (printed `_start' symbols for stripped binaries).
+
+2006-12-18  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* src/elfxx.c (lookup_symbol): Fix regression in the 2006-12-10 bugfix;
+	on already prelink(8)ed libraries loaded at a different address.
+	No testcase provided as prelink(8) need `root' privileges.
+
+2006-12-17  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* tests/check-namespace.sh.in (check_local_unw_abi): Restrict the
+	checking of `unw_tdep_getcontext' only for platforms it is built on.
+
+2006-12-16  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* tests/Gtest-resume-sig.c (main): Return SKIP instead of FAIL on ia64
+	as the libunwind functionality is still not implemented for non-ia64.
+
+2006-12-11  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* tests/Makefile.in (XFAIL_TESTS): `run-ptrace-signull' is now XFAIL
+	until the clone() CFI unwind stopping gets resolved in glibc.
+
+2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* src/x86/Gstep.c (code_descriptor_trap): Handle the cases of signal
+	frame leaving stale address due to page fault on an instruction fetch.
+	(unw_step): Call `code_descriptor_trap' above.
+	Debug dump the content of signal frame set from CFI.
+	Fixed non-CFI signal frame detection regarding its false positives.
+	Debug dump whether non-CFI unwinding as signal frame or not.
+	* src/x86/offsets.h: New signal frame value `LINUX_SC_TRAPNO_PF'.
+
+2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* src/x86/Gfetch_proc_info_post.c: Set `cursor->sigcontext_addr'
+	even for CFI-unwinded signal frames.
+	* src/x86/Make-arch.in: Include `Gfetch_proc_info_post.o'.
+	* include/tdep-x86/libunwind_i.h (tdep_fetch_proc_info_post): Now
+	declaration.
+
+2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* src/x86_64/Gstep.c (unw_step): Fixed debug message exhanged values.
+
+2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+        * src/x86/Gstep.c (unw_step): Handle the case of `c->dwarf.ip == 0'.
+	* src/x86_64/Gstep.c (code_descriptor_trap): Handle the cases of signal
+	frame leaving stale address due to page fault on an instruction fetch.
+	(unw_step): Call `code_descriptor_trap' above.
+	Debug dump the content of signal frame set from CFI.
+	Handle the case of `c->dwarf.ip == 0'.
+        * src/x86_64/ucontext_i.h: New signal frames fields `err' and `trapno'.
+        * tests/Makefile.in: New `run-ptrace-signull'.
+	* tests/run-ptrace-signull: New (NULL handling: gdb `signull' testcase).
+	* tests/test-ptrace-signull.c: Likewise.
+
+2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* src/x86_64/Gfetch_proc_info_post.c: Set `cursor->sigcontext_addr'
+	even for CFI-unwinded signal frames.
+	* src/dwarf/Gparser.c (fetch_proc_info): Call it.
+	* src/x86_64/Make-arch.in: Include `Gfetch_proc_info_post.o'.
+	* include/tdep-x86_64/libunwind_i.h (tdep_fetch_proc_info_post): New
+	(declaration).
+	* include/tdep-hppa/libunwind_i.h (tdep_fetch_proc_info_post): New
+	(empty definition).
+	* include/tdep-ia64/libunwind_i.h (tdep_fetch_proc_info_post):
+	Likewise.
+	* include/tdep-ppc64/libunwind_i.h (tdep_fetch_proc_info_post):
+	Likewise.
+	* include/tdep-x86/libunwind_i.h (tdep_fetch_proc_info_post):
+	Likewise.
+
+2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* src/elfxx.c (lookup_symbol): Avoid returning irrelevant symbols
+	defined as the last ones before the address in different section.
+
+2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* src/elfxx.c (lookup_symbol): Fixed excessive buffer size requirement.
+
+2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* tests/test-ptrace.c (main): Check for too many unexpected child
+	signals, such as the common `SIGSEGV'.
+
+2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* tests/Gtest-resume-sig.c (handler): Fixed false PASS on non-ia64.
+	Be adaptive to the number of unwinding steps from `SIGUSR1'.
+
+2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* src/dwarf/Gparser.c (apply_reg_state): Handle undefined PC by
+	`c->ip = 0' as in the case of the outermost frame of clone(3).
+
+2006-12-01  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* tests/test-ptrace.c: Fixed `-b' to report missed target function.
+
+2006-11-25  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* tests/test-ptrace.c: Fixed `-b' to never leave a stale child process.
+
+2006-11-24  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* tests/run-ptrace-stepper: Fixed signal frame name for x86_64.
+
+2006-11-24  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* src/Makefile.in (INCFLAGS): Backward compatible $(top_builddir) fix
+	for the autoconf-2.59c compatibility.
+	* tests/Makefile.in (INCFLAGS, LDFLAGS): Likewise.
+
+2006-11-24  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* include/dwarf.h (dwarf_cie_info): New `signal_frame' marker.
+	(dwarf_cursor): New `decrease_ip' marker.
+	* src/dwarf/Gfde.c (parse_cie): Set the `signal_frame' marker.
+	* src/dwarf/Gparser.c (run_cfi_program): Fixed occassionally offbyone
+	`ip' missed CFI instructions, related to `fetch_proc_info'.
+	(fetch_proc_info): Decrease parent `ip' only by `decrease_ip' marker.
+	(is_signal_frame): Detect signal frames by the `signal_frame' marker.
+	(uncached_dwarf_find_save_locs): Update the `decrease_ip' marker.
+	(dwarf_find_save_locs): Likewise.
+	* src/hppa/init.h (common_init): Initialize the `decrease_ip' marker.
+	* src/ppc64/init.h (common_init): Likewise.
+	* src/x86/init.h (common_init): Likewise.
+	* src/x86_64/init.h (common_init): Likewise.
+	* tests/Makefile.in: New `run-ptrace-stepper' and `test-ptrace-stepper'.
+	* tests/test-ptrace.c (backtrace_check): New for `-b'.
+	(do_exit): Variable to support breaking of the `main' mainloop.
+	(do_backtrace): Implemented `-b' based on `backtrace_check'.
+	Fixed compile warning for 32-bit platforms
+	(main): Fixed segfault for some `argv's.
+	Support backtrace option `-b' - `,'-delimited backtrace list to check.
+	Support `do_exit'.
+	* test-ptrace-stepper.c: New, test corner backtrace conditions.
+	* run-ptrace-stepper: New, test `test-ptrace' on `test-ptrace-stepper'.
+
+2006-09-27  Alexandre Oliva  <aoliva@redhat.com>
+
+	* src/elfxx.c (lookup_symbol): Cope with NULL buf and zero buf_len.
+	* src/mi/Gget_proc_name.c (intern_string, get_proc_name): Likewise.
+	* src/hppa/Gget_proc_info.c (unw_get_proc_info): Use it.
+	* src/x86/Gget_proc_info.c (unw_get_proc_info): Likewise.
+	* src/x86_64/Gget_proc_info.c (unw_get_proc_info): Likewise.
+	* doc/unw_get_proc_name.tex: Document NULL buf and zero buf_len.
+	* doc/unw_create_addr_space.tex (get_proc_name): Likewise.
+	* doc/unw_get_proc_name.man: Rebuilt.
+	* doc/unw_create_addr_space.man: Likewise.
+
+2006-09-20	Arun Sharma	<arun.sharma@google.com>
+
+	* src/dwarf/Gparser.c (hash): Fixes the compiler warning on x86-32.
+
+2006-09-20  Alexandre Oliva  <aoliva@redhat.com>
+
+	* src/os-linux.h (maps_next): Don't error out just because
+	path is missing.
+	* include/tdep-hppa/libunwind_i.h (tdep_get_elf_image): Add as
+	and arg to the parameter list.
+	* include/tdep-ia64/libunwind_i.h (tdep_get_elf_image): Ditto.
+	* include/tdep-ppc64/libunwind_i.h (tdep_get_elf_image): Ditto.
+	* include/tdep-x86/libunwind_i.h (tdep_get_elf_image): Ditto.
+	* include/tdep-x86_64/libunwind_i.h (tdep_get_elf_image): Ditto.
+	* src/elfxx.h (get_proc_name): Ditto.
+	* src/elfxx.c (get_proc_name): Ditto.  Adjust.
+	* src/hppa/Ginit.c (get_static_proc_name): Adjust.
+	* src/ia64/Ginit.c (get_static_proc_name): Ditto.
+	* src/ppc64/Ginit.c (get_static_proc_name): Ditto.
+	* src/x86/Ginit.c (get_static_proc_name): Ditto.
+	* src/x86_64/Ginit.c (get_static_proc_name): Ditto.
+	* src/ptrace/_UPT_find_proc_info.c (get_unwind_info): Ditto.
+	* src/ptrace/_UPT_get_proc_name.c (_UPT_get_proc_name): Ditto.
+	* src/os-hpux.c (tdep_get_elf_image): Ditto.
+	* src/os-linux.c (tdep_get_elf_image): Ditto.  Read in 1-page
+	segments that start with the ELF magic.
+	(MAX_VDSO_SIZE): New.
+
+2006-09-16  Alexandre Oliva  <aoliva@redhat.com>
+
+	* src/x86/Gget_proc_info.c (unw_get_proc_info): Use
+	unw_get_proc_name to build a proper proc_info_t.
+	* src/x86_64/Gget_proc_info.c (unw_get_proc_info): Likewise.
+	* src/hppa/Gget_proc_info.c (unw_get_proc_info): Likewise.
+
+2006-09-16  Alexandre Oliva  <aoliva@redhat.com>
+
+	* configure.ac: Don't define UNW_REMOTE_ONLY.
+	* src/os-linux.c: Restore #ifndef removed it previous patch.
+
+2006-09-12  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* src/ptrace/_UPT_find_proc_info.c: Add UNW_TARGET_PPC64 in #elif.
+
+2006-09-08	Alexandre Oliva  <aoliva@redhat.com>
+
+	* src/os-linux.c (tdep_get_elf_image): Define for remote only too.
+
+2006-08-29  Wu Zhou  <woodzltc@cn.ibm.com>
+
+	* include/libunwind-ppc64.h: New header file for ppc64 stubs.
+	* include/tdep-ppc64/dwarf-config.h: Ditto.
+	* include/tdep-ppc64/jmpbuf.h: Ditto.
+	* include/tdep-ppc64/libunwind_i.h: Ditto.
+	* include/tdep-ppc64/README: Readme file for this directory.
+	* src/ppc64/Gcreate_addr_space.c: New file for ppc64 stubs.
+	* src/ppc64/Gget_proc_info.c: Ditto.
+	* src/ppc64/Gget_save_loc.c: Ditto.
+	* src/ppc64/Gglobal.c: Ditto.
+	* src/ppc64/Ginit.c: Ditto.
+	* src/ppc64/Ginit_local.c: Ditto.
+	* src/ppc64/Ginit_remote.c: Ditto.
+	* src/ppc64/Gis_signal_frame.c: Ditto.
+	* src/ppc64/Gregs.c: Ditto.
+	* src/ppc64/Gresume.c: Ditto.
+	* src/ppc64/Gstep.c: Ditto.
+	* src/ppc64/init.h: Ditto.
+	* src/ppc64/is_fpreg.c: Ditto.
+	* src/ppc64/longjmp.S: Ditto.
+	* src/ppc64/Make-arch.in: Ditto.
+	* src/ppc64/README: Readme file for directory src/ppc64.
+	* src/ppc64/regname.c: New file for ppc64 stubs.
+	* src/ppc64/setcontext.S: Ditto.
+	* src/ppc64/siglongjmp.S: Ditto.
+	* src/ppc64/ucontext_i.h: Ditto.
+	* src/ppc64/unwind_i.h: Ditto.
+	* src/ptrace/_UPT_reg_offset.c (_UPT_reg_offset): Define empty
+	register offset for target PPC64.
+
+2006-08-17  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.in (installcheck): Another stub target.
+
+2006-08-16  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.in (dvi): Add phony target.
+
+2006-08-10  Rick Moseley  <rmoseley@redhat.com>
+
+	* configure.ac: Turn on UNW_REMOTE_ONLY always for Frysk.
+
+2006-07-14  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.in: Do not install for frysk.
+
+2006-07-12  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.in: Add a dangerous temporary implementtation of the
+	``distdir'' target.
+
 ***********************************************************
 
  Discontinued.  See git log instead at

@@ -54,6 +54,19 @@ return a value of 0x80 in the word pointed to by offp
 (assuming 
 the procedure is at least 0x80 bytes long). 
 .PP
+If bufp
+is NULL
+, buf_len
+is still verified to fit
+and offp
+is set.  Passing buf_len
+as zero to indicate no
+limits on the buffer length is only safe if buf
+is NULL
+,
+otherwise the callback is entitled and likely to scribble anywhere in
+the entire address space.
+.PP
 Note that on some platforms there is no reliable way to distinguish 
 between procedure names and ordinary labels. Furthermore, if symbol 
 information has been stripped from a program, procedure names may be 

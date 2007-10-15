@@ -57,7 +57,7 @@ libunwind_la_SOURCES_generic =						\
 	mi/Gput_dynamic_unwind_info.c mi/Gdestroy_addr_space.c		\
 	mi/Gget_reg.c mi/Gset_reg.c					\
 	mi/Gget_fpreg.c mi/Gset_fpreg.c					\
-	mi/Gset_caching_policy.c
+	mi/Gset_caching_policy.c mi/Gget_unwind_table.c
 
 # List of arch-independent files needed by local-only library (libunwind):
 libunwind_la_SOURCES_local =						\
@@ -165,7 +165,7 @@ libunwind_la_SOURCES_x86 = $(libunwind_la_SOURCES_x86_common)		\
 	x86/Lcreate_addr_space.c x86/Lget_save_loc.c x86/Lglobal.c	\
 	x86/Linit.c x86/Linit_local.c x86/Linit_remote.c		\
 	x86/Lis_signal_frame.c x86/Lget_proc_info.c x86/Lregs.c		\
-	x86/Lresume.c x86/Lstep.c
+	x86/Lresume.c x86/Lstep.c x86/Lfetch_proc_info_post.c
 
 # The list of files that go into libunwind-x86:
 libunwind_x86_la_SOURCES_x86 = $(libunwind_la_SOURCES_x86_common)	\
@@ -175,7 +175,7 @@ libunwind_x86_la_SOURCES_x86 = $(libunwind_la_SOURCES_x86_common)	\
 	x86/Gcreate_addr_space.c x86/Gget_save_loc.c x86/Gglobal.c	\
 	x86/Ginit.c x86/Ginit_local.c x86/Ginit_remote.c		\
 	x86/Gis_signal_frame.c x86/Gget_proc_info.c x86/Gregs.c		\
-	x86/Gresume.c x86/Gstep.c
+	x86/Gresume.c x86/Gstep.c x86/Gfetch_proc_info_post.c
 
 # The list of files that go both into libunwind and libunwind-x86_64:
 libunwind_la_SOURCES_x86_64_common = $(libunwind_la_SOURCES_common)	\
@@ -189,11 +189,10 @@ libunwind_la_SOURCES_x86_64 = $(libunwind_la_SOURCES_x86_64_common)	    \
 	$(libunwind_la_SOURCES_local)					    \
 	$(dwarf_SOURCES_local)						    \
 	dwarf/Lfind_proc_info-lsb.c					    \
-	x86_64/setcontext.S						\
 	x86_64/Lcreate_addr_space.c x86_64/Lget_save_loc.c x86_64/Lglobal.c \
 	x86_64/Linit.c x86_64/Linit_local.c x86_64/Linit_remote.c	    \
 	x86_64/Lis_signal_frame.c x86_64/Lget_proc_info.c x86_64/Lregs.c    \
-	x86_64/Lresume.c x86_64/Lstep.c
+	x86_64/Lresume.c x86_64/Lstep.c x86_64/Lfetch_proc_info_post.c
 
 # The list of files that go into libunwind-x86_64:
 libunwind_x86_64_la_SOURCES_x86_64 = $(libunwind_la_SOURCES_x86_64_common)  \
@@ -203,7 +202,7 @@ libunwind_x86_64_la_SOURCES_x86_64 = $(libunwind_la_SOURCES_x86_64_common)  \
 	x86_64/Gcreate_addr_space.c x86_64/Gget_save_loc.c x86_64/Gglobal.c \
 	x86_64/Ginit.c x86_64/Ginit_local.c x86_64/Ginit_remote.c	    \
 	x86_64/Gis_signal_frame.c x86_64/Gget_proc_info.c x86_64/Gregs.c    \
-	x86_64/Gresume.c x86_64/Gstep.c
+	x86_64/Gresume.c x86_64/Gstep.c x86_64/Gfetch_proc_info_post.c
 
 # The list of local files that go to Power 64 and 32:
 libunwind_la_SOURCES_ppc = ppc/Lcreate_addr_space.c 			\

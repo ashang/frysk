@@ -35,8 +35,13 @@ unw_get_proc_info (unw_cursor_t *cursor, unw_proc_info_t *pi)
       /* On x86, it's relatively common to be missing DWARF unwind
 	 info.  We don't want to fail in that case, because the
 	 frame-chain still would let us do a backtrace at least.  */
+      unw_word_t offset;
+
+      if (unw_get_proc_name (cursor, NULL, 0, &offset) < 0)
+	offset = 0;
+
       memset (pi, 0, sizeof (*pi));
-      pi->start_ip = c->dwarf.ip;
+      pi->start_ip = c->dwarf.ip - offset;
       pi->end_ip = c->dwarf.ip + 1;
       return 0;
     }

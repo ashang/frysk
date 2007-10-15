@@ -1,7 +1,8 @@
 AM_CPPFLAGS = -I$(top_srcdir)/include
 
 EXTRA_DIST =	run-ia64-test-dyn1 run-ptrace-mapper run-ptrace-misc	\
-		run-check-namespace check-namespace.sh.in
+		run-check-namespace check-namespace.sh.in run-ptrace-signull 	\
+		run-ptrace-stepper
 
 noinst_PROGRAMS_common =
 check_PROGRAMS_common = test-proc-info test-static-link \
@@ -42,7 +43,7 @@ endif #ARCH_IA64
 			test-async-sig test-flush-cache test-init-remote \
 			test-mem test-setjmp test-ptrace
  noinst_PROGRAMS_cdep = forker mapper test-ptrace-misc test-varargs	\
-			Gperf-simple Lperf-simple
+			Gperf-simple Lperf-simple test-ptrace-stepper test-ptrace-signull
 
 perf: perf-startup Gperf-simple Lperf-simple
 	@echo "########## Basic performance of generic libunwind:"
@@ -61,6 +62,9 @@ check_SCRIPTS =	$(check_SCRIPTS_common) $(check_SCRIPTS_cdep) \
 
 
 TESTS = $(check_PROGRAMS) $(check_SCRIPTS)
+# Until http://sourceware.org/ml/libc-alpha/2006-11/msg00082.html
+# gets finally resolved, fix was present in RawHide glibc-2.5.90-11.
+XFAIL_TESTS = run-ptrace-signull
 
 noinst_PROGRAMS = $(noinst_PROGRAMS_common) $(noinst_PROGRAMS_cdep) \
 	$(noinst_PROGRAMS_arch)
@@ -88,6 +92,8 @@ forker_LDFLAGS = -static
 Gtest_bt_SOURCES = Gtest-bt.c ident.c
 Ltest_bt_SOURCES = Ltest-bt.c ident.c
 test_ptrace_misc_SOURCES = test-ptrace-misc.c ident.c
+test_ptrace_stepper_SOURCES = test-ptrace-stepper.c
+test_ptrace_signull_SOURCES = test-ptrace-signull.c
 
 LIBUNWIND = ../src/libunwind-$(arch).la $(LIBUNWIND_local)
 LDADD = $(LIBUNWIND)
@@ -98,3 +104,4 @@ test_ptrace_LDADD = ../src/libunwind-ptrace.a $(LIBUNWIND)
 Ltest_concurrent_LDADD = $(LIBUNWIND) -lpthread
 Gtest_concurrent_LDADD = $(LIBUNWIND) -lpthread
 test_async_sig_LDADD = $(LIBUNWIND) -lpthread
+test_ptrace_stepper_LDADD = $(LIBUNWIND) -lpthread

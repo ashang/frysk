@@ -413,6 +413,19 @@ pointed to by offp
 (assuming the procedure is at least 0x80 
 bytes long). 
 .PP
+If bufp
+is NULL
+, buf_len
+is still verified to fit
+and offp
+is set.  Passing buf_len
+as zero to indicate no
+limits on the buffer length is only safe if buf
+is NULL
+,
+otherwise the callback is entitled and likely to scribble anywhere in
+the entire address space.
+.PP
 On successful completion, the get_proc_name()
 call\-back must 
 return zero. Otherwise, the negative value of one of the 

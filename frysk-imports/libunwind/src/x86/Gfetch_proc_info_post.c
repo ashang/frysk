@@ -1,6 +1,6 @@
 /* libunwind - a platform-independent unwind library
-   Copyright (C) 2007 Google, Inc
-	Contributed by Arun Sharma <arun.sharma@google.com>
+   Copyright (c) 2006 Hewlett-Packard Development Company, L.P.
+	Contributed by Jan Kratochvil <jan.kratochvil@redhat.com>
 
 This file is part of libunwind.
 
@@ -23,41 +23,29 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
-#include "offsets.h"
+#include "libunwind_i.h"
 
-	.global _x86_64_setcontext
+HIDDEN int
+tdep_fetch_proc_info_post (struct dwarf_cursor *c, unw_word_t ip, int need_unwind_info)
+{
+  struct cursor *cursor = (struct cursor *) c;
 
-_x86_64_setcontext:
+  /* Should happen only if `!need_unwind_info'.  */
+  if (!c->pi_valid)
+    return 0;
+  /* Should happen only if `!need_unwind_info'.  */
+  if (!c->pi.unwind_info)
+    return 0;
 
-        /* restore fp state */
-	mov    REG_OFFSET_FPREGS_PTR(%rdi),%r8
-	fldenv (%r8)
-	ldmxcsr FPREG_OFFSET_MXCR(%r8)
+  /* Reset the value for this frame.  */
+  cursor->sigcontext_format = X86_SCF_NONE;
 
-	/* restore the rest of the state */
-	mov    REG_OFFSET_R8(%rdi),%r8
-	mov    REG_OFFSET_R9(%rdi),%r9
-	mov    REG_OFFSET_RBX(%rdi),%rbx
-	mov    REG_OFFSET_RBP(%rdi),%rbp
-	mov    REG_OFFSET_R12(%rdi),%r12
-	mov    REG_OFFSET_R13(%rdi),%r13
-	mov    REG_OFFSET_R14(%rdi),%r14
-	mov    REG_OFFSET_R15(%rdi),%r15
-	mov    REG_OFFSET_RSI(%rdi),%rsi
-	mov    REG_OFFSET_RDX(%rdi),%rdx
-	mov    REG_OFFSET_RAX(%rdi),%rax
-	mov    REG_OFFSET_RCX(%rdi),%rcx
-	mov    REG_OFFSET_RSP(%rdi),%rsp
+  /* Normal non-signal frames case.  */
+  if (!((struct dwarf_cie_info *) c->pi.unwind_info)->signal_frame)
+    return 0;
 
-        /* push the return address on the stack */
-	mov    REG_OFFSET_RIP(%rdi),%rcx
-	push   %rcx
+  cursor->sigcontext_format = X86_SCF_LINUX_SIGFRAME;
+  cursor->sigcontext_addr = c->cfa + 4;
 
-	mov    REG_OFFSET_RCX(%rdi),%rcx
-	mov    REG_OFFSET_RDI(%rdi),%rdi
-	retq
-
-#ifdef __linux__
-      /* We do not need executable stack.  */
-      .section        .note.GNU-stack,"",@progbits
-#endif
+  return 0;
+}

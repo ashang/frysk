@@ -47,9 +47,8 @@ main (int argc, char **argv)
 #include <sys/ptrace.h>
 #include <sys/wait.h>
 
-static const int nerrors_max = 100;
-
 int nerrors;
+static const int nerrors_max = 100;
 int verbose;
 int print_names = 1;
 
@@ -60,6 +59,8 @@ enum
     TRIGGER
   }
 trace_mode = SYSCALL;
+
+static char *backtrace_check[64];
 
 #define panic(args...)						\
 	do { fprintf (stderr, args); ++nerrors; } while (0)
@@ -78,6 +79,7 @@ do_backtrace (pid_t target_pid)
   unw_cursor_t c;
   char buf[512];
   size_t len;
+  char **backtrace_ptr = NULL;
 
   ret = unw_init_remote (&c, as, ui);
   if (ret < 0)
@@ -85,6 +87,8 @@ do_backtrace (pid_t target_pid)
 
   do
     {
+      char buf2[512];
+
       if ((ret = unw_get_reg (&c, UNW_REG_IP, &ip)) < 0
 	  || (ret = unw_get_reg (&c, UNW_REG_SP, &sp)) < 0)
 	panic ("unw_get_reg/unw_get_proc_name() failed: ret=%d\n", ret);
@@ -95,6 +99,38 @@ do_backtrace (pid_t target_pid)
       buf[0] = '\0';
       if (print_names)
 	unw_get_proc_name (&c, buf, sizeof (buf), &off);
+
+      if (*backtrace_check != NULL)
+        {
+	  strcpy (buf2, buf);
+	  if (off)
+	    {
+	      char *s;
+
+	      s = buf2 + strlen (buf2);
+	      if (s < buf2 + sizeof (buf2) - 1)
+	      *s++ = '+';
+	      *s = 0;
+	    }
+        }
+      if (n == 0 && *backtrace_check != NULL)
+        {
+	  if (strcmp (*backtrace_check, buf2) == 0)
+	    backtrace_ptr = backtrace_check;
+	}
+      if (backtrace_ptr != NULL)
+        {
+	  if (*backtrace_ptr == NULL)
+	    panic ("Excessive backtrace on level==%d, got \"%s\"\n",
+	           n, buf);
+	  else
+	    {
+	      if (strcmp (*backtrace_ptr, buf2) != 0)
+		panic ("Backtrace does not match on level==%d, want \"%s\", got \"%s\"\n",
+		       n, *backtrace_ptr, buf);
+	      backtrace_ptr++;
+	    }
+        }
 
       if (verbose)
 	{
@@ -156,6 +192,14 @@ do_backtrace (pid_t target_pid)
 
   if (verbose)
     printf ("================\n\n");
+
+  if (backtrace_ptr != NULL)
+    {
+      if (*backtrace_ptr != NULL)
+	panic ("Too short backtrace on level==%d, want \"%s\"\n",
+	       n, *backtrace_ptr);
+      killed = 1;
+    }
 }
 
 static pid_t target_pid;
@@ -180,8 +224,8 @@ main (int argc, char **argv)
       /* automated test case */
       argv = args;
     }
-  else if (argc > 1)
-    while (argv[optind][0] == '-')
+  else
+    while (argv[optind] && argv[optind][0] == '-')
       {
 	if (strcmp (argv[optind], "-v") == 0)
 	  ++optind, verbose = 1;
@@ -199,7 +243,44 @@ main (int argc, char **argv)
 	else if (strcmp (argv[optind], "-n") == 0)
 	  /* Don't look-up and print symbol names.  */
 	  ++optind, print_names = 0;
+	else if (strcmp (argv[optind], "-b") == 0 && argv[optind + 1])
+	  {
+	    /* Check the backtrace if it matches this ','-delimited list
+	       after the first backtrace function is the first of the list.
+	       Omit the trailing numbers after "+" but "+" should be present.  */
+	    char *arg = argv[optind + 1];
+	    char *s;
+	    char **dp;
+
+	    optind += 2;
+	    dp = backtrace_check;
+	    if (*backtrace_check != NULL)
+	      panic ("-b specified twice is unsupported");
+	    else
+	      while (*arg)
+		{
+		  char end_orig;
+
+		  s = strchr (arg, ',');
+		  if (!s)
+		    s = arg + strlen (arg);
+		  end_orig = *s;
+		  *s = 0;
+		  if (dp >= backtrace_check - 1
+			    + (sizeof (backtrace_check) / sizeof (*backtrace_check)))
+		    panic ("Too many arguments to -b\n");
+		  else
+		    *dp++ = arg;
+		  if (end_orig)
+		    arg = s + 1;
+		  else
+		    break;
+		}
+	      *dp = NULL;
+	  }
       }
+  if (*backtrace_check && !print_names)
+    panic ("Options -b and -n conflict\n");
 
   target_pid = fork ();
   if (!target_pid)
@@ -299,6 +380,9 @@ main (int argc, char **argv)
     }
 
   _UPT_destroy (ui);
+
+  if (*backtrace_check != NULL && !killed)
+    panic ("-b requested but the first function was never found\n");
 
   if (nerrors)
     {

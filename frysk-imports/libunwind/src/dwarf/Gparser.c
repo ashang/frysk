@@ -76,7 +76,10 @@ run_cfi_program (struct dwarf_cursor *c, dwarf_state_record_t *sr,
   a = unw_get_accessors (as);
   curr_ip = c->pi.start_ip;
 
-  while (curr_ip < ip && *addr < end_addr)
+  /* Process all the instructions including the ones after `DW_CFA_advance_loc'
+     up to the next advance higher than the current `ip' (therefore `<=').
+     See also the `c->decrease_ip' handling in `fetch_proc_info'.  */
+  while (curr_ip <= ip && *addr < end_addr)
     {
       if ((ret = dwarf_readu8 (as, a, addr, &op, arg)) < 0)
 	return ret;
@@ -381,7 +384,14 @@ fetch_proc_info (struct dwarf_cursor *c, unw_word_t ip, int need_unwind_info)
 {
   int ret, dynamic = 1;
 
-  --ip;
+  /* In the current (lowest) frame we must not touch `ip' as the current
+     address is where we stand.  On the other hand any upper frames will stand
+     on the next instruction behind our call which may have a different stack
+     DWARF information (for `stdcall' called functions) or the next instruction
+     even may belong already to a different continuing function.
+     Also signal frames got invoked from the instruction we want to analyze.  */
+  if (c->decrease_ip)
+    --ip;
 
   if (c->pi_valid && !need_unwind_info)
     return 0;
@@ -400,6 +410,10 @@ fetch_proc_info (struct dwarf_cursor *c, unw_word_t ip, int need_unwind_info)
 
   c->pi_valid = 1;
   c->pi_is_dynamic = dynamic;
+
+  if (ret >= 0)
+    tdep_fetch_proc_info_post (c, ip, need_unwind_info);
+
   return ret;
 }
 
@@ -533,7 +547,7 @@ hash (unw_word_t ip)
   /* based on (sqrt(5)/2-1)*2^64 */
 # define magic	((unw_word_t) 0x9e3779b97f4a7c16ULL)
 
-  return ip * magic >> ((sizeof(unw_word_t) * 8) - DWARF_LOG_UNW_HASH_SIZE);
+  return (ip) * magic >> ((sizeof(unw_word_t) * 8) - DWARF_LOG_UNW_HASH_SIZE);
 }
 
 static inline long
@@ -763,10 +777,18 @@ apply_reg_state (struct dwarf_cursor *c, struct dwarf_reg_state *rs)
 	}
     }
   c->cfa = cfa;
-  ret = dwarf_get (c, c->loc[c->ret_addr_column], &ip);
-  if (ret < 0)
-    return ret;
-  c->ip = ip;
+  /* After fixing glibc's `__restore_rt' unwinding by CFI in:
+     	http://sources.redhat.com/cgi-bin/cvsweb.cgi/libc/sysdeps/unix/sysv/linux/x86_64/sigaction.c.diff?cvsroot=glibc&r1=text&tr1=1.10&r2=text&tr2=1.12&f=u
+     we need to check for the frame stop (indicated by `ip == 0').  */
+  if (DWARF_IS_NULL_LOC (c->loc[c->ret_addr_column]))
+    c->ip = 0;
+  else
+    {
+      ret = dwarf_get (c, c->loc[c->ret_addr_column], &ip);
+      if (ret < 0)
+	return ret;
+      c->ip = ip;
+    }
   /* XXX: check for ip to be code_aligned */
 
   if (c->ip == prev_ip && c->cfa == prev_cfa)
@@ -779,6 +801,17 @@ apply_reg_state (struct dwarf_cursor *c, struct dwarf_reg_state *rs)
 }
 
 static int
+is_signal_frame (struct dwarf_cursor *c)
+{
+  struct dwarf_cie_info *dci;
+
+  assert (c->pi_valid);
+
+  dci = c->pi.unwind_info;
+  return dci->signal_frame;
+}
+
+static int
 uncached_dwarf_find_save_locs (struct dwarf_cursor *c)
 {
   dwarf_state_record_t sr;
@@ -786,6 +819,8 @@ uncached_dwarf_find_save_locs (struct dwarf_cursor *c)
 
   if ((ret = fetch_proc_info (c, c->ip, 1)) < 0)
     return ret;
+
+  c->decrease_ip = !is_signal_frame (c);
 
   if ((ret = create_state_record_for (c, &sr, c->ip)) < 0)
     return ret;
@@ -824,6 +859,8 @@ dwarf_find_save_locs (struct dwarf_cursor *c)
 
   if ((ret = fetch_proc_info (c, c->ip, 1)) < 0)
     goto out;
+
+  c->decrease_ip = !is_signal_frame (c);
 
   if ((ret = create_state_record_for (c, &sr, c->ip)) < 0)
     goto out;

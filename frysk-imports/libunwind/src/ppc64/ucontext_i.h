@@ -28,6 +28,58 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
 #include <ucontext.h>
 
+/* FRYSK LOCAL - since we are compiling on different architectures
+   use use local (renamed) definitions from
+http://www.linux-foundation.org/spec/refspecs/LSB_3.0.0/LSB-PPC64/LSB-PPC64.html
+*/
+typedef struct local_libc_vscr
+{
+  int __pad[3];
+  int vscr_word;
+}
+local_vscr_t;
+typedef struct local_libc_vrstate
+{
+  unsigned int vrregs[128];
+  local_vscr_t vscr;
+  unsigned int vrsave;
+  unsigned int __pad[3];
+}
+local_vrregset_t __attribute__ ((__aligned__ (16)));
+
+#define NGREG	48
+
+typedef unsigned long int local_gregset_t[48];
+
+typedef double local_fpregset_t[33];
+
+typedef struct
+{
+  unsigned long int __unused[4];
+  int signal;
+  int pad0;
+  unsigned long int handler;
+  unsigned long int oldmask;
+  struct pt_regs *regs;
+  local_gregset_t gp_regs;
+  local_fpregset_t fp_regs;
+  local_vrregset_t *v_regs;
+  long int vmx_reserve[69];
+}
+local_mcontext_t;
+
+typedef struct local_ucontext
+{
+  unsigned long int uc_flags;
+  struct local_ucontext *uc_link;
+  stack_t uc_stack;
+  sigset_t uc_sigmask;
+  local_mcontext_t uc_mcontext;
+}
+local_ucontext_t;
+/* END FRYSK LOCAL */
+
+
 /* These values were derived by reading
    /usr/src/linux-2.6.18-1.8/arch/um/include/sysdep-ppc/ptrace.h and
    /usr/src/linux-2.6.18-1.8/arch/powerpc/kernel/ppc32.h
@@ -51,8 +103,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
 /* These are dummy structures used only for obtaining the offsets of the
    various structure members. */
-static ucontext_t dmy_ctxt;
-static vrregset_t dmy_vrregset;
+static local_ucontext_t dmy_ctxt;
+static local_vrregset_t dmy_vrregset;
 
 #define UC_MCONTEXT_GREGS_R0 ((void *)&dmy_ctxt.uc_mcontext.gp_regs[0] - (void *)&dmy_ctxt)
 #define UC_MCONTEXT_GREGS_R1 ((void *)&dmy_ctxt.uc_mcontext.gp_regs[1] - (void *)&dmy_ctxt)

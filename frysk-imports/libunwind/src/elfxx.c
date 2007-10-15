@@ -51,11 +51,14 @@ elf_w (lookup_symbol) (unw_addr_space_t as,
   Elf_W (Off) soff, str_soff;
   Elf_W (Shdr) *shdr, *str_shdr;
   Elf_W (Addr) val, min_dist = ~(Elf_W (Addr))0;
+  Elf_W (Addr) val_max_below = 0;
   int i, ret = 0;
   char *strtab;
 
   if (!elf_w (valid_object) (ei))
     return -UNW_ENOINFO;
+
+  buf_len--;	/* Terminating 0. */
 
   soff = ehdr->e_shoff;
   if (soff + ehdr->e_shnum * ehdr->e_shentsize > ei->size)
@@ -100,21 +103,69 @@ elf_w (lookup_symbol) (unw_addr_space_t as,
 	      if (ELF_W (ST_TYPE) (sym->st_info) == STT_FUNC
 		  && sym->st_shndx != SHN_UNDEF)
 		{
+		  Elf_W (Shdr) *shdr2;
+		  int i2;
+
 		  if (tdep_get_func_addr (as, sym->st_value, &val) < 0)
 		    continue;
 		  if (sym->st_shndx != SHN_ABS)
 		    val += load_offset;
+
+		  if (ip < val)
+		    continue;
+		  if (val + sym->st_size < val_max_below)
+		    continue;
+		  val_max_below = val + sym->st_size;
+		  if (sym->st_size && ip >= val + sym->st_size)
+		    continue;
+
+		  if ((Elf_W (Addr)) (ip - val) >= min_dist)
+		    continue;
+
+		  /* Check both the address and the symbol belong to the same
+		     section.  */
+		  shdr2 = (Elf_W (Shdr) *) ((char *) ei->image + soff);
+		  for (i2 = 0; i2 < ehdr->e_shnum; ++i2,
+		       shdr2 = (Elf_W (Shdr) *) (((char *) shdr2) + ehdr->e_shentsize))
+		    {
+		      unw_word_t addr_start;
+
+		      if (shdr2->sh_type != SHT_PROGBITS)
+			continue;
+		      /* `load_offset' is no absolute address.
+		         `shdr2->sh_addr' is address where the library was prelink(8)ed to.
+			 `load_offset + shdr2->sh_addr' will give the loaded address.
+			 `shdr2->sh_addr == 0' is for sections not in the memory image.
+			 prelink(8) at offset 0x0:
+			 	load_offset=0x360000,segbase=0x360000,p_vaddr=0x0,p_paddr=0x0
+			 	segbase=0x360000,load_offset=0x360000,shdr2->sh_addr=0x1b4,shdr2->sh_offset=0x1b4,ip=0x3601c5
+			 prelink(8) at offset 0x8048000:
+			 	load_offset=0xf80c9000,segbase=0x111000,p_vaddr=0x8048000,p_paddr=0x8048000
+			 	segbase=0x111000,load_offset=0xf80c9000,shdr2->sh_addr=0x80481b4,shdr2->sh_offset=0x1b4,ip=0x1111c5
+			 */
+		      if (shdr2->sh_addr == 0)
+			continue;
+		      addr_start = load_offset + shdr2->sh_addr;
+		      if (ip >= addr_start
+			  && ip < addr_start + shdr2->sh_size
+			  && val >= addr_start
+			  && val < addr_start + shdr2->sh_size)
+			break;
+		    }
+		  if (i2 >= ehdr->e_shnum)
+		    continue;
+
 		  Debug (16, "0x%016lx info=0x%02x %s\n",
 			 (long) val, sym->st_info, strtab + sym->st_name);
 
-		  if ((Elf_W (Addr)) (ip - val) < min_dist)
+		  min_dist = (Elf_W (Addr)) (ip - val);
+		  if (buf)
 		    {
-		      min_dist = (Elf_W (Addr)) (ip - val);
 		      strncpy (buf, strtab + sym->st_name, buf_len);
-		      buf[buf_len - 1] = '\0';
-		      if (strlen (strtab + sym->st_name) >= buf_len)
-			ret = -UNW_ENOMEM;
+		      buf[buf_len] = '\0';
 		    }
+		  if (strlen (strtab + sym->st_name) > buf_len)
+		    ret = -UNW_ENOMEM;
 		}
 	    }
 	  break;
@@ -138,7 +189,7 @@ elf_w (lookup_symbol) (unw_addr_space_t as,
 
 HIDDEN int
 elf_w (get_proc_name) (unw_addr_space_t as, pid_t pid, unw_word_t ip,
-		       char *buf, size_t buf_len, unw_word_t *offp)
+		       char *buf, size_t buf_len, unw_word_t *offp, void *arg)
 {
   unsigned long segbase, mapoff;
   Elf_W (Addr) load_offset = 0;
@@ -147,7 +198,7 @@ elf_w (get_proc_name) (unw_addr_space_t as, pid_t pid, unw_word_t ip,
   Elf_W (Phdr) *phdr;
   int i, ret;
 
-  ret = tdep_get_elf_image (&ei, pid, ip, &segbase, &mapoff);
+  ret = tdep_get_elf_image (as, &ei, pid, ip, &segbase, &mapoff, arg);
   if (ret < 0)
     return ret;
 

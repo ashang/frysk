@@ -1,6 +1,7 @@
 /* libunwind - a platform-independent unwind library
    Copyright (C) 2003-2004 Hewlett-Packard Co
 	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
+   Copyright Red Hat 2007
 
 This file is part of libunwind.
 
@@ -170,7 +171,6 @@ _UPTi_find_unwind_table (struct UPT_info *ui, unw_addr_space_t as,
   unw_word_t addr, eh_frame_start, fde_count, load_base;
   struct dwarf_eh_frame_hdr *hdr;
   unw_proc_info_t pi;
-  unw_accessors_t *a;
   Elf_W(Ehdr) *ehdr;
   int i, ret;
 
@@ -236,8 +236,7 @@ _UPTi_find_unwind_table (struct UPT_info *ui, unw_addr_space_t as,
 	     path, hdr->version);
       return 0;
     }
-
-  a = unw_get_accessors (unw_local_addr_space);
+ 
   addr = (unw_word_t) (hdr + 1);
 
   /* Fill in a dummy proc_info structure.  We just need to fill in
@@ -247,14 +246,37 @@ _UPTi_find_unwind_table (struct UPT_info *ui, unw_addr_space_t as,
   memset (&pi, 0, sizeof (pi));
   pi.gp = ui->di_cache.gp;
 
+//The following is a dummy local address space used by dwarf_read_encoded_pointer.
+  int 
+  local_access_mem (unw_addr_space_t as, unw_word_t addr,
+		unw_word_t *val, int write, void *arg) 
+  {	
+	if (write)
+    	{
+     	  Debug (16, "mem[%x] <- %x\n", addr, *val);
+          *(unw_word_t *) addr = *val;
+    	}
+  	else
+    	{
+          *val = *(unw_word_t *) addr;
+          Debug (16, "mem[%x] -> %x\n", addr, *val);
+    	}
+    	return 0;
+  }
+  
+  unw_accessors_t temp_local_accessors = {NULL, NULL, NULL, local_access_mem, 
+  					  NULL, NULL,	NULL, NULL, NULL};
+  unw_addr_space_t temp_local_addr_space 
+  	= unw_create_addr_space(&temp_local_accessors, 0);
+
   /* (Optionally) read eh_frame_ptr: */
-  if ((ret = dwarf_read_encoded_pointer (unw_local_addr_space, a,
+  if ((ret = dwarf_read_encoded_pointer (temp_local_addr_space, &temp_local_accessors,
 					 &addr, hdr->eh_frame_ptr_enc, &pi,
 					 &eh_frame_start, NULL)) < 0)
     return NULL;
 
   /* (Optionally) read fde_count: */
-  if ((ret = dwarf_read_encoded_pointer (unw_local_addr_space, a,
+  if ((ret = dwarf_read_encoded_pointer (temp_local_addr_space, &temp_local_accessors,
 					 &addr, hdr->fde_count_enc, &pi,
 					 &fde_count, NULL)) < 0)
     return NULL;
@@ -337,7 +359,7 @@ get_unwind_info (struct UPT_info *ui, unw_addr_space_t as, unw_word_t ip)
       ui->di_cache.start_ip = ui->di_cache.end_ip = 0;
     }
 
-  if (tdep_get_elf_image (&ui->ei, ui->pid, ip, &segbase, &mapoff) < 0)
+  if (tdep_get_elf_image (as, &ui->ei, ui->pid, ip, &segbase, &mapoff, ui) < 0)
     return NULL;
 
   /* Here, SEGBASE is the starting-address of the (mmap'ped) segment
