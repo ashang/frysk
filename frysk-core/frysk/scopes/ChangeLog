@@ -1,4 +1,8 @@
-2007-10-16  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
+2007-10-16  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CxxObject.java: Removed.
+
+2007-10-16  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* package.html: New file.
 
