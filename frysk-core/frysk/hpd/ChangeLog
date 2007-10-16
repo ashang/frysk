@@ -1,5 +1,11 @@
 2007-10-15  Andrew Cagney  <cagney@redhat.com>
 
+	* TestStackCommands.java: Split into ...
+	* TestFrameCommands.java: New, from TestStackCommands.java.
+	* TestWhereCommand.java: New, from TestStackCommands.java.
+	* FrameCommands.java: Rename UpDownCommand.java.
+	* CLI.java: Update.
+
 	* TestDisplayCommand.java: Remove unused import of Config.
 	
 	* HpdTestbed.java (attachXXX(String)): New.

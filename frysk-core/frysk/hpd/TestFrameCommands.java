@@ -39,20 +39,9 @@
 
 package frysk.hpd;
 
-import frysk.expunit.Expect;
-import frysk.Config;
-import frysk.proc.Proc;
-import frysk.testbed.CoreFileAtSignal;
-
-public class TestStackCommands
-    extends TestLib
-{
+public class TestFrameCommands extends TestLib {
     public void testHpdTraceStack () {
-	child = new Expect(Config.getPkgLibFile("hpd-c"));
-	e = new HpdTestbed();
-	// Attach
-	e.send ("attach " + child.getPid () + "\n\n");
-	e.expect (5, "attach.*\n" + prompt);
+	e = HpdTestbed.attachXXX("hpd-c");
 	// Where
 	e.send ("where\n");
 	e.expect ("where.*#0.*" + prompt);
@@ -70,36 +59,5 @@ public class TestStackCommands
 	e.send ("up\n");
 	e.expect ("up.*#0.*" + prompt);
 	e.close();
-    }
-
-    public void testFhpdVirtualStackTrace () {
-	Proc proc = CoreFileAtSignal
-	    .constructCore("funit-inlined");
-        e = new HpdTestbed("core." + proc.getPid(), "Attached to core file.*");
-        
-        e.send("where\n");
-        
-        e.expect ("0.1.*third" +
-		  ".*0.2.*second" +
-		  ".*0.3.*first" +
-		  ".*main");
-        e.close();
-    }
-    
-    public void testFhpdVirtualStackTraceWithScopes () {
-	// This test is very very slow.
-	if (unresolved(4985))
-	    return;
-	Proc proc = CoreFileAtSignal
-	    .constructCore("funit-inlined");
-        e = new HpdTestbed("core." + proc.getPid(), "Attached to core file.*");
-        
-        e.send("where -scopes\n");
-        
-        e.expect (".*var3" +
-		  ".*var2" +
-		  ".*var1" +
-		  ".*");
-        e.close();
     }
 }

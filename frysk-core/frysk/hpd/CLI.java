@@ -289,7 +289,7 @@ public class CLI {
         new DeleteCommand(this);
         new DetachCommand(this);
         new DisableCommand(this);
-        new UpDownCommand(this, "down");
+        new FrameCommands(this, "down");
         new EnableCommand(this);
         new StepFinishCommand(this);
         new FocusCommand(this);
@@ -310,7 +310,7 @@ public class CLI {
         new UnaliasCommand(this);
         new UndefsetCommand(this);
         new UnsetCommand(this, dbgvars);
-        new UpDownCommand(this, "up");
+        new FrameCommands(this, "up");
         new ViewsetCommand(this);
         new WhatCommand(this);
         new WhereCommand(this);

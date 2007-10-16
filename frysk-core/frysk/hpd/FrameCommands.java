@@ -46,7 +46,7 @@ import java.util.Iterator;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.proc.Task;
 
-class UpDownCommand extends CLIHandler {
+class FrameCommands extends CLIHandler {
 
     private static final String full = "The up (down) command modifies the "
 	    + "current frame location(s) by adding\n"
@@ -57,7 +57,7 @@ class UpDownCommand extends CLIHandler {
 	    + "has existed longer, while down \"moves down\" in the call "
 	    + "stack,\n" + "following the progress of program execution.";
 
-    UpDownCommand(CLI cli, String name) {
+    FrameCommands(CLI cli, String name) {
 	super(cli, name, "Move " + name
 		+ " one or more levels in the call stack", name
 		+ " [num-levels]", full);
