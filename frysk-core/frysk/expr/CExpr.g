@@ -430,7 +430,10 @@ primary_identifier!
                 )
                 
             |   POINTERTO id_expr2:id_expression
-                { astPostExpr = #(POINTERTO, #astPostExpr, #id_expr2); }
+                {
+                  astPostExpr = #([MEMORY, "Memory"], #astPostExpr); 
+                  astPostExpr = #(#[MEMBER, "Member"], #astPostExpr, #id_expr2); 
+                }
             |   PLUSPLUS
                 { astPostExpr = #(PLUSPLUS, #astPostExpr); }
             |   MINUSMINUS

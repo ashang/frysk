@@ -1,3 +1,9 @@
+2007-10-16  Teresa Thomas  <tthomas@redhat.com>
+
+	* CExprAnnotator.g (POINTERTO): Add.
+	* CExpr.g (POINTERTO): Implement using MEMBER and
+	MEMORY operations.
+	
 2007-10-12  Andrew Cagney  <cagney@redhat.com>
 
 	* ExprSymTab.java (getValue(String)): Do not throw
