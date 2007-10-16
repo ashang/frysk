@@ -188,7 +188,7 @@ abstract class TypeDecorator extends Type {
     public Type pack(int bitSize, int bitOffset) {
 	return decorated.pack(bitSize, bitOffset);
     }
-    public Value member(Value v, String member) {
-	return decorated.member(v, member);
+    public Value member(Value var1, String member) {
+	return decorated.member(var1, member);
     }
 }

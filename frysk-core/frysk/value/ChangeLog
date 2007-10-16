@@ -1,3 +1,13 @@
+2007-10-16  Teresa Thomas  <tthomas@redhat.com>
+
+	* TypeDecorator.java (member): Rename v to var1.
+
+2007-10-15  Teresa Thomas  <tthomas@redhat.com>
+
+	* Type.java (dereference): Remove implementation; throw
+	exception.
+	* PointerType.java (dereference): Implement here.
+
 2007-10-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Constant.java: New.
