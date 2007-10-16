@@ -289,7 +289,7 @@ public class MemoryWindow
   {
     this.myTask = myTask;
     long pc_inc;
-    final double highestAddress = Math.pow(2.0, (double)(8 * myTask.getIsa().getWordSize())) - 1.0;
+    final double highestAddress = Math.pow(2.0, (double)(8 * myTask.getISA().wordSize())) - 1.0;
     
     this.mmaps = this.myTask.getProc().getMaps();
     
@@ -653,7 +653,7 @@ public class MemoryWindow
     this.refreshLock = true;
     this.myTask = task;
     long pc_inc;
-    double highestAddress = Math.pow(2.0, (double)(8 * myTask.getIsa().getWordSize())) - 1.0;
+    double highestAddress = Math.pow(2.0, (double)(8 * myTask.getISA().wordSize())) - 1.0;
     
     this.diss = new Disassembler(myTask.getMemory());
 

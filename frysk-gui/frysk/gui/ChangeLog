@@ -1,3 +1,9 @@
+2007-10-16  Tim Moore  <timoore@redhat.com>
+
+	* MemoryWindow.java (setTask, resetTask): Restore
+	getISA().wordSize() use that got clobbered by the last change to
+	MemoryWindow.
+
 2007-10-16  Zhao Shujing <pearly.zhao@oracle.com>
 
 	* gladedir/memorywindow.glade: Remove "Number of bits:" label and
