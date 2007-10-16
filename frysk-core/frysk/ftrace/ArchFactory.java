@@ -40,21 +40,23 @@
 package frysk.ftrace;
 
 import frysk.proc.Task;
+import frysk.isa.ISAMap;
 import frysk.isa.ISA;
 
 public class ArchFactory {
+
     public static final ArchFactory instance = new ArchFactory();
     
     private ArchFactory() {
     }
 
+    private ISAMap map = new ISAMap("ftrace Arch")
+	.put(ISA.IA32, IA32Arch.instance)
+	.put(ISA.X8664, X8664Arch.instance)
+	;
+
     public Arch getArch(Task task) {
 	ISA isa = task.getISA();
-	if (isa == ISA.IA32)
-	    return Archx86.instance;
-	else if (isa == ISA.X8664)
-	    return Archx8664.instance;
-	else
-	    throw new AssertionError("Arch not supported.");
-  }
+	return (Arch)map.get(isa);
+    }
 }

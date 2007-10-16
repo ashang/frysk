@@ -1,41 +1,41 @@
-//This file is part of the program FRYSK.
-
-//Copyright 2007, Red Hat Inc.
-
-//FRYSK is free software; you can redistribute it and/or modify it
-//under the terms of the GNU General Public License as published by
-//the Free Software Foundation; version 2 of the License.
-
-//FRYSK is distributed in the hope that it will be useful, but
-//WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-//General Public License for more details.
-
-//You should have received a copy of the GNU General Public License
-//along with FRYSK; if not, write to the Free Software Foundation,
-//Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-
-//In addition, as a special exception, Red Hat, Inc. gives You the
-//additional right to link the code of FRYSK with code not covered
-//under the GNU General Public License ("Non-GPL Code") and to
-//distribute linked combinations including the two, subject to the
-//limitations in this paragraph. Non-GPL Code permitted under this
-//exception must only link to the code of FRYSK through those well
-//defined interfaces identified in the file named EXCEPTION found in
-//the source code files (the "Approved Interfaces"). The files of
-//Non-GPL Code may instantiate templates or use macros or inline
-//functions from the Approved Interfaces without causing the
-//resulting work to be covered by the GNU General Public
-//License. Only Red Hat, Inc. may make changes or additions to the
-//list of Approved Interfaces. You must obey the GNU General Public
-//License in all respects for all of the FRYSK code and other code
-//used in conjunction with FRYSK except the Non-GPL Code covered by
-//this exception. If you modify this file, you may extend this
-//exception to your version of the file, but you are not obligated to
-//do so. If you do not wish to provide this exception without
-//modification, you must delete this exception statement from your
-//version and license this file solely under the GPL without
-//exception.
+// This file is part of the program FRYSK.
+// 
+// Copyright 2007, Red Hat Inc.
+// 
+// FRYSK is free software; you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// FRYSK is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with FRYSK; if not, write to the Free Software Foundation,
+// Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+// 
+// In addition, as a special exception, Red Hat, Inc. gives You the
+// additional right to link the code of FRYSK with code not covered
+// under the GNU General Public License ("Non-GPL Code") and to
+// distribute linked combinations including the two, subject to the
+// limitations in this paragraph. Non-GPL Code permitted under this
+// exception must only link to the code of FRYSK through those well
+// defined interfaces identified in the file named EXCEPTION found in
+// the source code files (the "Approved Interfaces"). The files of
+// Non-GPL Code may instantiate templates or use macros or inline
+// functions from the Approved Interfaces without causing the
+// resulting work to be covered by the GNU General Public
+// License. Only Red Hat, Inc. may make changes or additions to the
+// list of Approved Interfaces. You must obey the GNU General Public
+// License in all respects for all of the FRYSK code and other code
+// used in conjunction with FRYSK except the Non-GPL Code covered by
+// this exception. If you modify this file, you may extend this
+// exception to your version of the file, but you are not obligated to
+// do so. If you do not wish to provide this exception without
+// modification, you must delete this exception statement from your
+// version and license this file solely under the GPL without
+// exception.
 
 package frysk.util;
 
@@ -51,23 +51,23 @@ import lib.dwfl.ElfPrAuxv;
 import lib.dwfl.ElfPrpsinfo;
 import lib.dwfl.ElfPrstatus;
 import lib.dwfl.ElfPrFPRegSet;
+import lib.dwfl.ElfPrXFPRegSet;
 import frysk.sys.proc.AuxvBuilder;
 import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.Stat;
 import frysk.sys.proc.Status;
 
 /**
- * LinuxElfCorefilex8664. Extends LinuxCorefile. Fill in
- * specific x8664 information for corefiles.
+ * LinuxElfCorefilex86. Extends LinuxCorefile. Fill in
+ * specific x86 information for corefiles.
  * 
  */
-public class LinuxElfCorefilex8664 extends LinuxElfCorefile {
+public class IA32LinuxElfCorefile extends LinuxElfCorefile {
 
     Proc process;
-
     Task[] blockedTasks;
-
     int size;
+
     /**
      * 
      * LinuxElfCoreFile. Construct a corefile from a given process, and that process's
@@ -76,11 +76,11 @@ public class LinuxElfCorefilex8664 extends LinuxElfCorefile {
      * @param process - The parent process to construct the core from.
      * @param blockedTasks - The process's tasks, in a stopped state
      */
-    public LinuxElfCorefilex8664(Proc process, Task blockedTasks[]) {
+    public IA32LinuxElfCorefile(Proc process, Task blockedTasks[]) {
 	super(process, blockedTasks);
 	this.process = process;
 	this.blockedTasks = blockedTasks;
-	this.size = 64;
+	this.size = 32;
     }
 
     /* (non-Javadoc)
@@ -160,7 +160,7 @@ public class LinuxElfCorefilex8664 extends LinuxElfCorefile {
      */
     protected void writeNotePrstatus(ElfNhdr nhdrEntry, Task task) {
 
-	ElfPrstatus prStatus = new ElfPrstatus(this.size);
+        ElfPrstatus prStatus = new ElfPrstatus(this.size);
 
 	Stat processStat = new Stat();
 	processStat.refresh(task.getTid());
@@ -176,11 +176,10 @@ public class LinuxElfCorefilex8664 extends LinuxElfCorefile {
 	// This is not the same order that frysk iterators print out, nor
 	// are the names are the same. Create a string[] map to bridge
 	// gap between frysk and core file register order.
-	String regMap[] = { "r15", "r14", "r13", "r12", "rbp", "rbx", "r11",
-		"r10", "r9", "r8", "rax", "rcx", "rdx", "rsi",
-		"rdi", "orig_rax", "rip", "cs", "eflags", "rsp",
-		"ss", "fs_base", "gs_base", "ds", "es", "fs", "gs" };
 
+	String regMap[] = { "ebx", "ecx", "edx", "esi", "edi", "ebp", "eax",
+		"ds", "es", "fs", "gs", "orig_eax", "eip", "cs", "eflags",
+		"esp", "ss" };
 
 	// Set GP register info
 	for (int i = 0; i < regMap.length; i++) {
@@ -211,8 +210,25 @@ public class LinuxElfCorefilex8664 extends LinuxElfCorefile {
     /* (non-Javadoc)
      * @see frysk.util.LinuxElfCorefile#writeNotePRXFPRegset(lib.dwfl.ElfNhdr, frysk.proc.Task)
      */
-    protected  boolean writeNotePRXFPRegset(ElfNhdr nhdrEntry, Task task) {
-        return false;
+    protected boolean writeNotePRXFPRegset(ElfNhdr nhdrEntry, Task task)
+    {
+	ElfPrXFPRegSet xfpRegSet = new ElfPrXFPRegSet();
+
+	// Write FP Register info over wholesae. Do not interpret.
+	ByteBuffer registerMaps[] = task.getRegisterBuffersFIXME();
+	if (registerMaps[2].capacity() <=0)
+	  {
+	    return false;
+	  }
+	byte[] regBuffer = new byte[(int) registerMaps[2].capacity()];
+	registerMaps[2].get(regBuffer);
+
+	xfpRegSet.setXFPRegisterBuffer(regBuffer);
+
+	// Write it
+	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_PRXFPREG, xfpRegSet);
+
+	return true;
     }
 
     /* (non-Javadoc)
@@ -243,13 +259,13 @@ public class LinuxElfCorefilex8664 extends LinuxElfCorefile {
      * @see frysk.util.LinuxElfCorefile#getElfMachineType()
      */
     protected byte getElfMachineType() {
-	return ElfEMachine.EM_X86_64;
+	return ElfEMachine.EM_386;
     }
 
     /* (non-Javadoc)
      * @see frysk.util.LinuxElfCorefile#getElfMachineClass()
      */
     protected byte getElfMachineClass() {
-	return ElfEHeader.PHEADER_ELFCLASS64;
+	return ElfEHeader.PHEADER_ELFCLASS32;
     }
 }

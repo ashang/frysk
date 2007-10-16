@@ -1,3 +1,9 @@
+2007-10-16  Andrew Cagney  <cagney@redhat.com>
+
+	* X8664Arch.java: Rename Archx8664.java.
+	* IA32Arch.java: Rename Archx86.java.
+	* ArchFactory.java: Update; use ISAMap.
+
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 
 	* ArchFactory.java: Update; use Task .getISA() instead of Isa

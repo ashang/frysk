@@ -47,10 +47,9 @@ import frysk.isa.X8664Registers;
 /**
  * x86_64 implementation of Arch interface.
  */
-public class Archx8664 implements Arch { 
-    public static final Arch instance = new Archx8664();
-  
-    private Archx8664() {
+public class X8664Arch implements Arch { 
+    static final Arch instance = new X8664Arch();
+    private X8664Arch() {
     }
   
     public long getReturnAddress(Task task, Symbol symbol) { 

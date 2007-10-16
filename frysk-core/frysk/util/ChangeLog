@@ -1,3 +1,11 @@
+2007-10-16  Andrew Cagney  <cagney@redhat.com>
+
+	* IA32LinuxElfCorefile.java: Rename LinuxElfCorefilex86.java.
+	* PPC32LinuxElfCorefile.java: Rename LinuxElfCorefilePPC32.java.
+	* PPC64LinuxElfCorefile.java: Rename LinuxElfCorefilePPC64.java.
+	* X8664LinuxElfCorefile.java: Rename LinuxElfCorefilex8664.java.
+	* LinuxElfCorefileFactory.java: Update.
+
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxElfCorefile.java: Update; use ISA .order() and ISA

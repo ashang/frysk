@@ -47,11 +47,9 @@ import frysk.isa.IA32Registers;
 /**
  * x86 implementation of Arch interface.
  */
-public class Archx86 implements Arch {
-
-    public static final Arch instance = new Archx86();
-
-    private Archx86() {
+public class IA32Arch implements Arch {
+    static final Arch instance = new IA32Arch();
+    private IA32Arch() {
     }
 
     public long getReturnAddress(Task task, Symbol symbol) {

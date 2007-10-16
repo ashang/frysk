@@ -54,12 +54,14 @@ public class LinuxElfCorefileFactory
 
 
 		ISA isa = process.getMainTask().getISA();
-		if (isa.equals(ISA.IA32)) return new LinuxElfCorefilex86(process, blockedTasks);
-		if (isa.equals(ISA.X8664)) return new LinuxElfCorefilex8664(process, blockedTasks);
+		if (isa.equals(ISA.IA32))
+		    return new IA32LinuxElfCorefile(process, blockedTasks);
+		if (isa.equals(ISA.X8664))
+		    return new X8664LinuxElfCorefile(process, blockedTasks);
 		if (isa.equals(ISA.PPC32BE) || isa.equals(ISA.PPC32LE)) 
-					return new LinuxElfCorefilePPC32(process, blockedTasks);
+		    return new PPC32LinuxElfCorefile(process, blockedTasks);
 		if (isa.equals(ISA.PPC64BE) || isa.equals(ISA.PPC64LE)) 
-			return new LinuxElfCorefilePPC64(process, blockedTasks);
+		    return new PPC64LinuxElfCorefile(process, blockedTasks);
 		
 		throw new RuntimeException("Cannot find arch for process PID " + process.getPid());
 
