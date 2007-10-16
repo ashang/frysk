@@ -113,7 +113,7 @@ public class EnumType extends IntegerTypeDecorator
 	    writer.print("\n  ");
 	    writer.print(m.name);
 	    writer.print(" = ");
-	    writer.print(m.value.toString());
+	    writer.print(m.value.asBigInteger().toString());
 	}
 	writer.print("\n}");
     }

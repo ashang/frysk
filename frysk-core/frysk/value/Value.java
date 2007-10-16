@@ -42,6 +42,7 @@ package frysk.value;
 import inua.eio.ByteBuffer;
 import java.io.StringWriter;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 
 /**
  * Stores the type and location of a variable
@@ -99,6 +100,11 @@ public class Value
      */
     public long asLong() {
 	return ((ArithmeticType)type).getBigInteger(location).longValue();
+    }
+    
+    
+    public BigInteger asBigInteger() {
+	return ((ArithmeticType)type).getBigInteger(location);
     }
     
     /**

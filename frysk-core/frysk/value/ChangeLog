@@ -1,3 +1,9 @@
+2007-10-16  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* EnumType.java (toPrint): Now uses value.asBigInteger().toString()
+	instead of value.toString().
+	* Value.java (asBigInteger): New function.
+
 2007-10-16  Teresa Thomas  <tthomas@redhat.com>
 
 	* TypeDecorator.java (member): Rename v to var1.
