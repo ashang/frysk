@@ -136,10 +136,16 @@ public class MemoryFormatDialog
       {
         TreePath path = new TreePath(arg0.getPath());
 
-        TreeIter iter = model.getIter(path);
-
-        boolean prev = model.getValue(iter, (DataColumnBoolean) cols[0]);
-        model.setValue(iter, (DataColumnBoolean) cols[0], ! prev);
+        //TreeIter iter = model.getIter(path);
+        TreeIter iter = model.getFirstIter();
+        for (int i = 0; i < MemoryWindow.colNames.length; i++)
+        {
+            model.setValue(iter, (DataColumnBoolean) cols[0], false);
+            iter = iter.getNextIter();
+        }
+        iter = model.getIter(path);
+        //boolean prev = model.getValue(iter, (DataColumnBoolean) cols[0]);
+        model.setValue(iter, (DataColumnBoolean) cols[0], true);
       }
     });
 

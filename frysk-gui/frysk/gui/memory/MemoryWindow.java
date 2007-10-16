@@ -1,42 +1,42 @@
-// This file is part of the program FRYSK.
-// 
-// Copyright 2005, 2006, 2007, Red Hat Inc.
-// Copyright 2007 Oracle Corporation.
-// 
-// FRYSK is free software; you can redistribute it and/or modify it
-// under the terms of the GNU General Public License as published by
-// the Free Software Foundation; version 2 of the License.
-// 
-// FRYSK is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with FRYSK; if not, write to the Free Software Foundation,
-// Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-// 
-// In addition, as a special exception, Red Hat, Inc. gives You the
-// additional right to link the code of FRYSK with code not covered
-// under the GNU General Public License ("Non-GPL Code") and to
-// distribute linked combinations including the two, subject to the
-// limitations in this paragraph. Non-GPL Code permitted under this
-// exception must only link to the code of FRYSK through those well
-// defined interfaces identified in the file named EXCEPTION found in
-// the source code files (the "Approved Interfaces"). The files of
-// Non-GPL Code may instantiate templates or use macros or inline
-// functions from the Approved Interfaces without causing the
-// resulting work to be covered by the GNU General Public
-// License. Only Red Hat, Inc. may make changes or additions to the
-// list of Approved Interfaces. You must obey the GNU General Public
-// License in all respects for all of the FRYSK code and other code
-// used in conjunction with FRYSK except the Non-GPL Code covered by
-// this exception. If you modify this file, you may extend this
-// exception to your version of the file, but you are not obligated to
-// do so. If you do not wish to provide this exception without
-// modification, you must delete this exception statement from your
-// version and license this file solely under the GPL without
-// exception.
+//This file is part of the program FRYSK.
+//
+//Copyright 2007 Oracle Corporation.
+//Copyright 2005, Red Hat Inc.
+//
+//FRYSK is free software; you can redistribute it and/or modify it
+//under the terms of the GNU General Public License as published by
+//the Free Software Foundation; version 2 of the License.
+//
+//FRYSK is distributed in the hope that it will be useful, but
+//WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+//General Public License for more details.
+//
+//You should have received a copy of the GNU General Public License
+//along with FRYSK; if not, write to the Free Software Foundation,
+//Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+//
+//In addition, as a special exception, Red Hat, Inc. gives You the
+//additional right to link the code of FRYSK with code not covered
+//under the GNU General Public License ("Non-GPL Code") and to
+//distribute linked combinations including the two, subject to the
+//limitations in this paragraph. Non-GPL Code permitted under this
+//exception must only link to the code of FRYSK through those well
+//defined interfaces identified in the file named EXCEPTION found in
+//the source code files (the "Approved Interfaces"). The files of
+//Non-GPL Code may instantiate templates or use macros or inline
+//functions from the Approved Interfaces without causing the
+//resulting work to be covered by the GNU General Public
+//License. Only Red Hat, Inc. may make changes or additions to the
+//list of Approved Interfaces. You must obey the GNU General Public
+//License in all respects for all of the FRYSK code and other code
+//used in conjunction with FRYSK except the Non-GPL Code covered by
+//this exception. If you modify this file, you may extend this
+//exception to your version of the file, but you are not obligated to
+//do so. If you do not wish to provide this exception without
+//modification, you must delete this exception statement from your
+//version and license this file solely under the GPL without
+//exception.
 
 
 package frysk.gui.memory;
@@ -100,17 +100,9 @@ public class MemoryWindow
     implements Saveable
 {
 
-  private final int EIGHT_BIT = 0;
-
-  private final int SIXTEEN_BIT = 1;
-
-  private final int THIRTYTWO_BIT = 2;
-
-  private final int SIXTYFOUR_BIT = 3;
-
   private final int LOC = 0; /* Memory address */
 
-  private final int OBJ = 10; /* Object stored in above address */
+  private final int OBJ = 11; /* Object stored in above address */
 
   private final int BYTE_BITS = 8;
 
@@ -123,6 +115,7 @@ public class MemoryWindow
   public static String gladePath;
 
   private DataColumn[] cols = { new DataColumnString(), /* memory location */
+  new DataColumnString(), /* 8-bit hexadecimal little endian */
   new DataColumnString(), /* binary little endian */
   new DataColumnString(), /* binary big endian */
   new DataColumnString(), /* octal little endian */
@@ -136,7 +129,7 @@ public class MemoryWindow
   new DataColumnDouble() /* alignment field */
   };
 
-  protected static String[] colNames = { "X-bit Binary (LE)",
+  protected static String[] colNames = {"X-bit Binary (LE)",
                                         "X-bit Binary (BE)",
                                         "X-bit Octal (LE)", "X-bit Octal (BE)",
                                         "X-bit Decimal (LE)",
@@ -144,7 +137,7 @@ public class MemoryWindow
                                         "X-bit Hexadecimal (LE)",
                                         "X-bit Hexadecimal (BE)", "Instruction" };
 
-  protected boolean[] colVisible = { true, false, false, false, false, false,
+  protected boolean[] colVisible = { true, true, false, false, false, false, false,
                                     false, false, false };
 
   private TreeViewColumn[] columns = new TreeViewColumn[10];
@@ -167,19 +160,7 @@ public class MemoryWindow
   
   private Entry toBox;
 
-  private SimpleComboBox bitsCombo;
-
   private SimpleComboBox segmentCombo;
-  
-  private GuiObject eight;
-
-  private GuiObject sixteen;
-
-  private GuiObject thirtytwo;
-
-  private GuiObject sixtyfour;
-
-  private ObservableLinkedList bitsList;
   
   private ObservableLinkedList segmentList;
 
@@ -189,7 +170,7 @@ public class MemoryWindow
 
   private double lastKnownTo;
 
-  protected static int currentFormat = 0;
+  protected static int currentFormat = 2;
   
   private boolean MW_active = false;
   
@@ -231,12 +212,9 @@ public class MemoryWindow
     this.toBox = (Entry) this.glade.getWidget("toBox");
     //this.pcLabelDec = (Label) this.glade.getWidget("PCLabelDec");
     //this.pcLabelHex = (Label) this.glade.getWidget("PCLabelHex");
-    this.bitsCombo = new SimpleComboBox(
-                                        (this.glade.getWidget("bitsCombo")).getHandle());
     this.segmentCombo = new SimpleComboBox(
             (this.glade.getWidget("segmentCombo")).getHandle());
     this.model = new ListStore(cols);
-    this.bitsList = new ObservableLinkedList();
     this.segmentList = new ObservableLinkedList();
 
     this.setIcon(IconManager.windowIcon);
@@ -311,14 +289,7 @@ public class MemoryWindow
   {
     this.myTask = myTask;
     long pc_inc;
-    final double highestAddress = Math.pow(2.0, (double)(8 * myTask.getISA().wordSize())) - 1.0;
-    
-    if (currentFormat == 0) {
-        if (myTask.getISA().wordSize() == 8)
-          currentFormat = SIXTYFOUR_BIT;
-        else
-          currentFormat = THIRTYTWO_BIT;
-      }
+    final double highestAddress = Math.pow(2.0, (double)(8 * myTask.getIsa().getWordSize())) - 1.0;
     
     this.mmaps = this.myTask.getProc().getMaps();
     
@@ -328,21 +299,6 @@ public class MemoryWindow
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
 
-    this.eight = new GuiObject("8", "");
-    this.sixteen = new GuiObject("16", "");
-    this.thirtytwo = new GuiObject("32", "");
-    this.sixtyfour = new GuiObject("64", "");
-
-    bitsList.add(EIGHT_BIT, eight);
-    bitsList.add(SIXTEEN_BIT, sixteen);
-    bitsList.add(THIRTYTWO_BIT, thirtytwo);
-    bitsList.add(SIXTYFOUR_BIT, sixtyfour);
-
-    this.bitsCombo.watchLinkedList(bitsList);
-    this.bitsCombo.setSelectedObject((GuiObject) bitsList.get(currentFormat));
-
-    this.bitsCombo.setActive(currentFormat + 1);
-    
     for (int i = 0; i < this.mmaps.length; i++)
     {
 	GuiObject segment = new GuiObject(Long.toHexString(mmaps[i].addressLow)
@@ -363,7 +319,6 @@ public class MemoryWindow
     FontDescription fontDesc = new FontDescription("monospace 10");
     memoryView.setFont(fontDesc);
 
-    this.bitsCombo.showAll();
     this.segmentCombo.showAll();
     this.diss = new Disassembler(myTask.getMemory());
     this.fromSpin.setRange(0.0, highestAddress);
@@ -382,6 +337,16 @@ public class MemoryWindow
     col.setReorderable(false);
     col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
                             cols[LOC]);
+    memoryView.appendColumn(col);
+    
+    col = new TreeViewColumn();
+    col.setTitle("Raw-bytes (Hexadecimal)");
+    renderer = new CellRendererText();
+    ((CellRendererText) renderer).setEditable(false);
+    col.packStart(renderer, false);
+    col.setReorderable(true);
+    col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
+                            cols[1]);
     memoryView.appendColumn(col);
 
     /* Replace the X in the title of the column with the bitsize to be displayed,
@@ -402,12 +367,12 @@ public class MemoryWindow
 
         col.packStart(renderer, false);
         col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
-                                cols[i + 1]);
+                                cols[i + 2]);
 
         memoryView.appendColumn(col);
 
         col.addAttributeMapping(renderer, CellRendererText.Attribute.XALIGN,
-                                cols[11]);
+                                cols[12]);
         col.setVisible(this.prefs.getBoolean(colNames[i], colVisible[i]));
 
         columns[i] = col;
@@ -432,37 +397,7 @@ public class MemoryWindow
 
     });
 
-    bitsCombo.addListener(new ComboBoxListener()
-    {
-      public void comboBoxEvent (ComboBoxEvent arg0)
-      {
-        if (arg0.isOfType(ComboBoxEvent.Type.CHANGED))
-          {
-            if (bitsList.indexOf(bitsCombo.getSelectedObject()) == - 1)
-              {
-                return;
-              }
-            
-            int temp = bitsList.indexOf(bitsCombo.getSelectedObject());
-            
-            /* Replace the X in the title of the column with the bitsize to be displayed,
-             * and then append the columns into the view. */
-            for (int i = 0; i < columns.length - 1; i++)
-              {
-                TreeViewColumn col = columns[i];
-                col.setTitle(colNames[i].replaceFirst(
-                                                      "X",
-                                                      ""
-                                                          + (int) Math.pow(
-                                                                           2,
-                                                                           temp + 3)));
-              }
-            currentFormat = temp;
-            recalculate();
-          }
-      }
-    });
-    
+  
     segmentCombo.addListener(new ComboBoxListener()
     {
 	public void comboBoxEvent (ComboBoxEvent arg0)
@@ -718,7 +653,7 @@ public class MemoryWindow
     this.refreshLock = true;
     this.myTask = task;
     long pc_inc;
-    double highestAddress = Math.pow(2.0, (double)(8 * myTask.getISA().wordSize())) - 1.0;
+    double highestAddress = Math.pow(2.0, (double)(8 * myTask.getIsa().getWordSize())) - 1.0;
     
     this.diss = new Disassembler(myTask.getMemory());
 
@@ -849,7 +784,13 @@ public class MemoryWindow
         String newoct = "";
         String newdec = "";
         String newhex = "";
-        int bit = (int) Math.pow(2, currentFormat + 3);
+        String bytehex = "";
+        int bit = Byte.SIZE;        
+        for (int i = 0; i < Math.round((double)bin.length()/bit); i++)
+        {
+            bytehex = "0x" + hex.substring(bit/4*i, bit/4*(i+1)) + " " + bytehex;    	    
+        }
+        bit = (int) Math.pow(2, currentFormat + 3);
         long len = Math.round((double)bin.length()/bit);
         String[] binArray = new String[(int)len];
         String[] octArray = new String[(int)len];
@@ -866,50 +807,19 @@ public class MemoryWindow
     		binArray[i] = bin.substring(bit*i);
     		hexArray[i] = hex.substring(bit/4*i, bit/4*(i+1));
     	    }    	    
-    	    if (currentFormat == EIGHT_BIT)
-    	    {
-    		byte bb = (byte)Integer.parseInt(binArray[i], 2);
-    		newdec = newdec + bb + " ";
-    		octArray[i]= Integer.toOctalString( bb & 0xff);
-    		
-    	    }
-    	    if (currentFormat == SIXTEEN_BIT)
-    	    {
-    		short s = (short)Integer.parseInt(binArray[i], 2);
-    		newdec = newdec + s + " ";
-    		
-    		octArray[i] = Integer.toOctalString(s & 0xffff);
-    	    }
-    	    if (currentFormat == THIRTYTWO_BIT)
-    	    {
-		int in = (int)Long.parseLong(binArray[i], 2);
-		newdec = newdec + in + " ";
-    		octArray[i] = Integer.toOctalString(in);
-    	    }
-    	    if (currentFormat == SIXTYFOUR_BIT)
-    	    {
-    		long l;
-    		if( binArray[i].length() == bit && 
-        		    binArray[i].startsWith("1"))
-    		{
-    		    l = (long)Long.parseLong(binArray[i].substring(1), 2);    		    
-    		    l = (long)(l-(long)Math.pow(2, bit-1));
-        		
-    		}
-    		else
-    		    l = (long)Long.parseLong(binArray[i], 2);
-    		newdec = newdec + l + " ";
-    		octArray[i] = Long.toOctalString((long)l);		
-    	    }
-	    
-    	    newbin += binArray[i] + " ";
-    	    newoct += "0"+octArray[i] + " ";    	    
-    	    newhex += "0x"+hexArray[i]+ " ";
+    	    int in = (int)Long.parseLong(binArray[i], 2);
+    	    newdec = newdec + in + " ";
+    	    octArray[i] = Integer.toOctalString(in);
+    	    	    
+    	    newbin = binArray[i] + " " + newbin;
+    	    newoct = "0"+octArray[i] + " " + newoct;    	    
+    	    newhex = "0x"+hexArray[i]+ " " + newhex;
         }
-        this.model.setValue(iter, (DataColumnString) cols[1], newbin);
-        this.model.setValue(iter, (DataColumnString) cols[3], newoct);
-        this.model.setValue(iter, (DataColumnString) cols[5], newdec);
-        this.model.setValue(iter, (DataColumnString) cols[7], newhex);
+        this.model.setValue(iter, (DataColumnString) cols[1], bytehex);
+        this.model.setValue(iter, (DataColumnString) cols[2], newbin);
+        this.model.setValue(iter, (DataColumnString) cols[4], newoct);
+        this.model.setValue(iter, (DataColumnString) cols[6], newdec);
+        this.model.setValue(iter, (DataColumnString) cols[8], newhex);
 
         /* Big endian second */
         String bin2 = switchEndianness(bin, true);
@@ -947,61 +857,29 @@ public class MemoryWindow
     		binArray[i] = bin2.substring(bit*i);
     		hexArray[i] = hex.substring(bit/4*i, bit/4*(i+1));
     	    }    	    
-    	    if (currentFormat == EIGHT_BIT)
-    	    {
-    		byte bb = (byte)Integer.parseInt(binArray[i], 2);
-    		newdec = newdec + bb + " ";
-    		octArray[i]= Integer.toOctalString( bb & 0xff);
-    		
-    	    }
-    	    if (currentFormat == SIXTEEN_BIT)
-    	    {
-    		short s = (short)Integer.parseInt(binArray[i], 2);
-    		newdec = newdec + s + " ";
-    		
-    		octArray[i] = Integer.toOctalString(s & 0xffff);
-    	    }
-    	    if (currentFormat == THIRTYTWO_BIT)
-    	    {
-		int in = (int)Long.parseLong(binArray[i], 2);
-		newdec = newdec + in + " ";
-    		octArray[i] = Integer.toOctalString(in);
-    	    }
-    	    if (currentFormat == SIXTYFOUR_BIT)
-    	    {
-    		long l;
-    		if( binArray[i].length() == bit && 
-        		    binArray[i].startsWith("1"))
-    		{
-    		    l = (long)Long.parseLong(binArray[i].substring(1), 2);    		    
-    		    l = (long)(l-(long)Math.pow(2, bit-1));
-        		
-    		}
-    		else
-    		    l = (long)Long.parseLong(binArray[i], 2);
-    		newdec = newdec + l + " ";
-    		octArray[i] = Long.toOctalString((long)l);		
-    	    }
-	    
-    	    newbin += binArray[i] + " ";
-    	    newoct += "0"+octArray[i] + " ";    	    
-    	    newhex += "0x"+hexArray[i]+ " ";
+    	    int in = (int)Long.parseLong(binArray[i], 2);
+    	    newdec = newdec + in + " ";
+    	    octArray[i] = Integer.toOctalString(in);
+    	    
+    	    newbin = binArray[i] + " " + newbin;
+    	    newoct = "0"+octArray[i] + " " + newoct;    	    
+    	    newhex = "0x"+hexArray[i]+ " " + newhex;
         }
-        this.model.setValue(iter, (DataColumnString) cols[2], newbin);
-        this.model.setValue(iter, (DataColumnString) cols[4], newoct);
-        this.model.setValue(iter, (DataColumnString) cols[6], newdec);
-        this.model.setValue(iter, (DataColumnString) cols[8], newhex);
+        this.model.setValue(iter, (DataColumnString) cols[3], newbin);
+        this.model.setValue(iter, (DataColumnString) cols[5], newoct);
+        this.model.setValue(iter, (DataColumnString) cols[7], newdec);
+        this.model.setValue(iter, (DataColumnString) cols[9], newhex);
 
         if (ins != null && Long.toHexString(ins.address).equals(addr))
           {
-            this.model.setValue(iter, (DataColumnString) cols[9], ins.instruction);
+            this.model.setValue(iter, (DataColumnString) cols[10], ins.instruction);
             if (li.hasNext())
               ins = (Instruction) li.next();
             else
               ins = null;
           }
         else
-          this.model.setValue(iter, (DataColumnString) cols[9], "");
+          this.model.setValue(iter, (DataColumnString) cols[10], "");
 
         iter = iter.getNextIter();
       }
@@ -1010,7 +888,7 @@ public class MemoryWindow
       this.columns[i].setVisible(this.prefs.getBoolean(
                                                        MemoryWindow.colNames[i],
                                                        this.colVisible[i]));
-
+    
     this.showAll();
   }
 
@@ -1035,7 +913,7 @@ public class MemoryWindow
 
     model.setValue(iter, (DataColumnString) cols[LOC], "0x"
                                                        + Long.toHexString(i));
-    model.setValue(iter, (DataColumnDouble) cols[11], 1.0);
+    model.setValue(iter, (DataColumnDouble) cols[12], 1.0);
     
     try
     {
@@ -1051,7 +929,6 @@ public class MemoryWindow
   private void desensitize ()
   {
     this.memoryView.setSensitive(false);
-    this.bitsCombo.setSensitive(false);
     this.segmentCombo.setSensitive(false);
     this.fromSpin.setSensitive(false);
     this.toSpin.setSensitive(false);
@@ -1062,7 +939,6 @@ public class MemoryWindow
   private void resensitize ()
   {
     this.memoryView.setSensitive(true);
-    this.bitsCombo.setSensitive(true);
     this.segmentCombo.setSensitive(true);
     this.fromSpin.setSensitive(true);
     this.toSpin.setSensitive(true);

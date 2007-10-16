@@ -1,3 +1,12 @@
+2007-10-16  Zhao Shujing <pearly.zhao@oracle.com>
+
+	* gladedir/memorywindow.glade: Remove "Number of bits:" label and
+	bitsCombo.
+	* memory/MemoryFormatDialog.java (CellRendererToggleListener): Only
+	one format are selected to display every time.
+	* memory/MemoryWindow.java: Add a "Raw-bytes (Hexadecimal)" column.
+	Fixs #4675.
+
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 
 	* memory/MemoryWindow.java (setTask(Task)): Use Task.getISA()
