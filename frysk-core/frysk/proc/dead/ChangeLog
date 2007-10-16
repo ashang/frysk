@@ -1,3 +1,10 @@
+2007-10-16  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxTask.java (sendrecRegisterBuffersFIXME): Delete contents,
+	Return simulateRegisterBanks().
+	(simulateRegisterBanks): New.
+	(sendrecRegisterBanks): Return contents of simulateRegisterBanks.
+
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxTask.java: Update; Use ISA.order() and ISA.wordSize().

@@ -71,8 +71,12 @@ public class LinuxTask
     return parent.getMemory();
   }
 
-  protected ByteBuffer[] sendrecRegisterBuffersFIXME () 
-  {
+  private ByteBuffer[] simulateRegisterBanks ()  {
+	  
+	// XXX: Potentially this information should be constructed 
+	// in CorefileRegisterBanksFactory. However that would require the factory to 
+	// know about elf constructs which is not desirable.
+	  
     ByteBuffer[] bankBuffers = new ByteBuffer[4];
 
     // Create an empty page
@@ -120,7 +124,15 @@ public class LinuxTask
 
     protected RegisterBanks sendrecRegisterBanks() {
 	return CorefileRegisterBanksFactory.create
-	    (getISA(), sendrecRegisterBuffersFIXME());
+	    (getISA(), simulateRegisterBanks());
+    }
+
+    
+    protected ByteBuffer[] sendrecRegisterBuffersFIXME() {
+    	// XXX: Have to return this here as this method is still used in
+    	// tests. Cannot convert tests until Task,getRegisterBanks() is
+    	// made public.
+    	return simulateRegisterBanks();
     }
 
   /**
@@ -137,13 +149,13 @@ public class LinuxTask
 
   }
 
-
     protected ISA sendrecISA() {
-	return ((LinuxProc)getProc()).sendrecISA();
+    	return ((LinuxProc)getProc()).sendrecISA();
     }
 
   protected Isa sendrecIsa() 
   {
     return getProc().getIsa();
   }
+
 }
