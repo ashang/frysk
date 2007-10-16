@@ -1,3 +1,7 @@
+2007-10-16  Andrew Cagney  <cagney@redhat.com>
+
+	* Completer.g: Delete for now; workaround makefile race.
+
 2007-10-16  Teresa Thomas  <tthomas@redhat.com>
 
 	* CExprAnnotator.g (POINTERTO): Add.
