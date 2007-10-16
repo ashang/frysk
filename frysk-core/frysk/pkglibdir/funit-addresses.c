@@ -38,6 +38,7 @@
 // exception.
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 
 char global_char = 'a';
 
@@ -45,21 +46,38 @@ int *static_int_address;
 volatile int *volatile_int_address;
 char *global_char_address;
 
-int main()
+struct cars {
+  int skoda[2];
+  long* audi;
+  int lexus;		
+} my_cars;
+
+struct cars* my_cars_ptr = &my_cars;
+
+int num[2][2] = { {99, 88},
+ 	          {11, 12}
+                };  
+char* string = "hello world\n";
+
+int main(int argc, char* argv[])
 {
   static int static_int = 22;
   volatile int volatile_int = 33;
-  register int reg = 44;	
+  register int reg = 5;	
   
   static_int_address = &static_int;
   volatile_int_address = &volatile_int;
   global_char_address = &global_char;
-
-  printf("%s%p\n", "Address of static_int = " , static_int_address);
-  printf("%s%p\n", "Address of volatile_int = " , volatile_int_address);
-  printf("%s%p\n", "Address of global_char = " , global_char_address);
-  printf("%s%d\n", "Value in reg = " , reg);
   
+  my_cars.skoda[0] = 2;
+  my_cars.skoda[1] = 3;
+  my_cars.audi = malloc (sizeof(int));
+  *(my_cars.audi) = 3;
+  my_cars.lexus = reg;
+
+  if (strcmp(argv[1], "loop") == 0) 
+    while (1) {}
+ 
   char* c = 0;
   c[0] = 'a';
   

@@ -1,3 +1,8 @@
+2007-10-16 Teresa Thomas <tthomas@redhat.com>
+
+	* funit-addresses.c: Add loop option; add more variable
+	types.
+	
 2007-10-15  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-regs.S (crash) [__i386__]: Set %eip by crashing at a known
