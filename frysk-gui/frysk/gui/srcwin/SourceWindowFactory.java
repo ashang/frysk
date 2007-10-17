@@ -58,7 +58,7 @@ import frysk.dom.DOMFrysk;
 import frysk.gui.Gui;
 import frysk.gui.monitor.WindowManager;
 import frysk.proc.Action;
-import frysk.proc.Host;
+import frysk.proc.FindProc;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
@@ -172,7 +172,7 @@ public class SourceWindowFactory
   {
     ProcId procID = new ProcId(pid);
 
-    Manager.host.requestFindProc(procID, new Host.FindProc()
+    Manager.host.requestFindProc(procID, new FindProc()
     {
       public void procFound (ProcId procId)
       {
