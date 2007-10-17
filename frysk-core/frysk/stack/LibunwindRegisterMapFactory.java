@@ -45,6 +45,7 @@ import lib.unwind.UnwindRegistersX8664;
 import frysk.isa.ISA;
 import frysk.isa.IA32Registers;
 import frysk.isa.X8664Registers;
+import frysk.isa.X87Registers;
 import frysk.isa.ISAMap;
 
 public class LibunwindRegisterMapFactory {
@@ -62,14 +63,14 @@ public class LibunwindRegisterMapFactory {
 	.add(IA32Registers.EFLAGS, UnwindRegistersX86.EFLAGS)
 	.add(IA32Registers.TRAPS, UnwindRegistersX86.TRAPNO)
     // MMX registers
-	.add(IA32Registers.ST0, UnwindRegistersX86.ST0)
-	.add(IA32Registers.ST1, UnwindRegistersX86.ST1)
-	.add(IA32Registers.ST2, UnwindRegistersX86.ST2)
-	.add(IA32Registers.ST3, UnwindRegistersX86.ST3)
-	.add(IA32Registers.ST4, UnwindRegistersX86.ST4)
-	.add(IA32Registers.ST5, UnwindRegistersX86.ST5)
-	.add(IA32Registers.ST6, UnwindRegistersX86.ST6)
-	.add(IA32Registers.ST7, UnwindRegistersX86.ST7)
+	.add(X87Registers.ST0, UnwindRegistersX86.ST0)
+	.add(X87Registers.ST1, UnwindRegistersX86.ST1)
+	.add(X87Registers.ST2, UnwindRegistersX86.ST2)
+	.add(X87Registers.ST3, UnwindRegistersX86.ST3)
+	.add(X87Registers.ST4, UnwindRegistersX86.ST4)
+	.add(X87Registers.ST5, UnwindRegistersX86.ST5)
+	.add(X87Registers.ST6, UnwindRegistersX86.ST6)
+	.add(X87Registers.ST7, UnwindRegistersX86.ST7)
 	.add(IA32Registers.FCW, UnwindRegistersX86.FCW)
 	.add(IA32Registers.FSW, UnwindRegistersX86.FSW)
 	.add(IA32Registers.FTW, UnwindRegistersX86.FTW)

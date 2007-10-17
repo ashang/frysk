@@ -1,5 +1,7 @@
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
+	* LibunwindRegisterMapFactory.java: Use X87Registers.ST*
+
 	* Frame.java (getOuter()): Make concrete.
 	(unwind()): New, abstract.
 	(Frame(Frame,Task)): Replace Frame(Frame).

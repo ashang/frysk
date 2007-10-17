@@ -1,5 +1,9 @@
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
+	* IA32Registers.java (ST0, ST1, ST2, ST3, ST4, ST5, ST6)
+	(ST7): Move to ...
+	* X87Registers.java: ... to here.  New file.
+
 	* X8664Registers.java: Use INT64L_T, and VOIDPTR64_T.
 	(RFLAGS, CS, DS, ES, FS, GS, SS): Add.
 

@@ -42,6 +42,7 @@ package frysk.proc;
 import inua.eio.ByteOrder;
 import frysk.isa.IA32Registers;
 import frysk.isa.X8664Registers;
+import frysk.isa.X87Registers;
 
 /**
  * Factory to create either IA32 or X8664 RegisterBanks.
@@ -74,14 +75,14 @@ public class X86BankRegisters {
 	.add(new BankRegister (1, 16, 4, IA32Registers.FCS))
 	.add(new BankRegister (1, 20, 4, "foo"))
 	.add(new BankRegister (1, 24, 4, "fos"))
-	.add(new BankRegister (1, 28, 10, IA32Registers.ST0))
-	.add(new BankRegister (1, 38, 10, IA32Registers.ST1))
-	.add(new BankRegister (1, 48, 10, IA32Registers.ST2))
-	.add(new BankRegister (1, 58, 10, IA32Registers.ST3))
-	.add(new BankRegister (1, 68, 10, IA32Registers.ST4))
-	.add(new BankRegister (1, 78, 10, IA32Registers.ST5))
-	.add(new BankRegister (1, 88, 10, IA32Registers.ST6))
-	.add(new BankRegister (1, 98, 10, IA32Registers.ST7))
+	.add(new BankRegister (1, 28, 10, X87Registers.ST0))
+	.add(new BankRegister (1, 38, 10, X87Registers.ST1))
+	.add(new BankRegister (1, 48, 10, X87Registers.ST2))
+	.add(new BankRegister (1, 58, 10, X87Registers.ST3))
+	.add(new BankRegister (1, 68, 10, X87Registers.ST4))
+	.add(new BankRegister (1, 78, 10, X87Registers.ST5))
+	.add(new BankRegister (1, 88, 10, X87Registers.ST6))
+	.add(new BankRegister (1, 98, 10, X87Registers.ST7))
 	.add(new BankRegister (2, 160, 16, IA32Registers.XMM0))
 	.add(new BankRegister (2, 176, 16, IA32Registers.XMM1))
 	.add(new BankRegister (2, 192, 16, IA32Registers.XMM2))
@@ -136,14 +137,14 @@ public class X86BankRegisters {
 	.add(new BankRegister(1, 16, 8, "rdp"))
 	.add(new BankRegister(1, 24, 4, "mxcsr"))
 	.add(new BankRegister(1, 28, 4, "mxcsr_mask"))
-	.add(new BankRegister(1, 32, 10, "st0"))
-	.add(new BankRegister(1, 48, 10, "st1"))
-	.add(new BankRegister(1, 64, 10, "st2"))
-	.add(new BankRegister(1, 80, 10, "st3"))
-	.add(new BankRegister(1, 96, 10, "st4"))
-	.add(new BankRegister(1, 112, 10, "st5"))
-	.add(new BankRegister(1, 128, 10, "st6"))
-	.add(new BankRegister(1, 144, 10, "st7"))
+	.add(new BankRegister(1, 32, 10, X87Registers.ST0))
+	.add(new BankRegister(1, 48, 10, X87Registers.ST1))
+	.add(new BankRegister(1, 64, 10, X87Registers.ST2))
+	.add(new BankRegister(1, 80, 10, X87Registers.ST3))
+	.add(new BankRegister(1, 96, 10, X87Registers.ST4))
+	.add(new BankRegister(1, 112, 10, X87Registers.ST5))
+	.add(new BankRegister(1, 128, 10, X87Registers.ST6))
+	.add(new BankRegister(1, 144, 10, X87Registers.ST7))
 	.add(new BankRegister(1, 160, 16, "xmm0"))
 	.add(new BankRegister(1, 176, 16, "xmm1"))
 	.add(new BankRegister(1, 192, 16, "xmm2"))

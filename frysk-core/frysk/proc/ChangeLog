@@ -1,5 +1,7 @@
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
+	* X86BankRegisters.java: Use X87Registers.ST*
+
 	* Host.java (FindProc): Delete; moved to ...
 	* FindProc.java: ... here.
 	* HostState.java: Update.

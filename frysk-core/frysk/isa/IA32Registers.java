@@ -89,22 +89,6 @@ public class IA32Registers extends Registers {
 
     // Floating-point registers
 
-    public final static Register ST0
-	= new Register("st0", StandardTypes.FLOAT80L_T);
-    public final static Register ST1
-	= new Register("st1", StandardTypes.FLOAT80L_T);
-    public final static Register ST2
-	= new Register("st2", StandardTypes.FLOAT80L_T);
-    public final static Register ST3
-	= new Register("st3", StandardTypes.FLOAT80L_T);
-    public final static Register ST4
-	= new Register("st4", StandardTypes.FLOAT80L_T);
-    public final static Register ST5
-	= new Register("st5", StandardTypes.FLOAT80L_T);
-    public final static Register ST6
-	= new Register("st6", StandardTypes.FLOAT80L_T);
-    public final static Register ST7
-	= new Register("st7", StandardTypes.FLOAT80L_T);
     public final static Register FCW
 	= new Register("fcw", StandardTypes.INT32L_T);
     public final static Register FSW
@@ -183,7 +167,10 @@ public class IA32Registers extends Registers {
     public final static RegisterGroup MMX
 	= new RegisterGroup("mmx",
 			    new Register[] {
-				ST0, ST1, ST2, ST3, ST4, ST5, ST6, ST7,
+				X87Registers.ST0, X87Registers.ST1,
+				X87Registers.ST2, X87Registers.ST3,
+				X87Registers.ST4, X87Registers.ST5,
+				X87Registers.ST6, X87Registers.ST7,
 				FCW, FSW, FTW, FOP, FCS, FIP, FEA, FDS
 			    });
 
