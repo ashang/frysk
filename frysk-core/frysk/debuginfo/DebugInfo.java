@@ -226,11 +226,11 @@ public class DebugInfo {
 	try {
 	    parser.start();
 	} catch (antlr.RecognitionException r) {
-	    // FIXME: Why is this ignored?
+	    throw new RuntimeException(r);
 	} catch (antlr.TokenStreamException t) {
-	    // FIXME: Why is this ignored?
+	    throw new RuntimeException(t);
 	} catch (frysk.expr.TabException t) {
-	    // FIXME: Why is this ignored?
+	    throw new RuntimeException(t);
 	}
     
 	ExprAST exprAST = (ExprAST) parser.getAST();
@@ -252,11 +252,11 @@ public class DebugInfo {
 	    ae.printStackTrace();
 	    throw ae;
 	} catch (antlr.RecognitionException r) {
-	    // FIXME: Why is this ignored?
+	    throw new RuntimeException(r);
 	} catch (frysk.value.InvalidOperatorException i) {
-	    // FIXME: Why is this ignored?
+	    throw new RuntimeException(i);
 	} catch (frysk.value.OperationNotDefinedException o) {
-	    // FIXME: Why is this ignored?
+	    throw new RuntimeException(o);
 	}
         
 	return result;
@@ -297,9 +297,9 @@ public class DebugInfo {
 	try {
 	    parser.start();
 	} catch (antlr.RecognitionException r) {
-	    // FIXME: Why is this ignored?
+	    throw new RuntimeException(r);
 	} catch (antlr.TokenStreamException t) {
-	    // FIXME: Why is this ignored?
+	    throw new RuntimeException(t);
 	}
     
 	CommonAST t = (CommonAST) parser.getAST();
@@ -316,11 +316,11 @@ public class DebugInfo {
 	    ae.printStackTrace();
 	    throw ae;
 	} catch (antlr.RecognitionException r) {
-	    // FIXME: Why is this ignored?
+	    throw new RuntimeException(r);
 	} catch (frysk.value.InvalidOperatorException i) {
-	    // FIXME: Why is this ignored?
+	    throw new RuntimeException(i);
 	} catch (frysk.value.OperationNotDefinedException o) {
-	    // FIXME: Why is this ignored?
+	    throw new RuntimeException(o);
 	}
       
 	return result;

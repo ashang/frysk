@@ -1,3 +1,9 @@
+2007-10-17  Teresa Thomas  <tthomas@redhat.com>
+
+	* DebugInfo.java (print): Throw exceptions at unhandled
+	catch statements.  
+	(printNoSymbolTable): Ditto. 
+
 2007-10-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestObjectDeclarationSearchEngine.java (testFindTwoScopesEnum): Re-enabled
