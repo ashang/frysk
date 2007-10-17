@@ -45,13 +45,13 @@ import frysk.debuginfo.TypeEntry;
 import frysk.value.EnumType;
 import frysk.value.ObjectDeclaration;
 
-public class Enumiration {
-    
+public class Enumeration {
+
     String name;
     DwarfDie die;
     EnumType enumType;
     
-    Enumiration(DwarfDie die, TypeEntry typeEntry){
+    Enumeration(DwarfDie die, TypeEntry typeEntry){
 	if(die.getTag() != DwTag.ENUMERATION_TYPE){
 	    throw new RuntimeException("Given die is not of type ENUMERATION_TYPE");
 	}

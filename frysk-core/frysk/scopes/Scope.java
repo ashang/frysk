@@ -135,7 +135,7 @@ public class Scope
 	  while(die != null){
 		      
 	      if(die.getTag().equals(DwTag.ENUMERATION_TYPE)){
-		  this.collections.add(new Enumiration(die, typeEntry));
+		  this.collections.add(new Enumeration(die, typeEntry));
 	      }
 
 	      die = die.getSibling();
@@ -177,7 +177,7 @@ public class Scope
       
       iterator = this.getEnums().iterator();
       while (iterator.hasNext()) {
-	Enumiration enumiration = (Enumiration) iterator.next();
+	Enumeration enumiration = (Enumeration) iterator.next();
 	objectDeclaration = enumiration.getVariableByName(name);
 	
 	if(objectDeclaration != null){

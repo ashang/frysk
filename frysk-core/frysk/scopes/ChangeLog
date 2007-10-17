@@ -1,3 +1,9 @@
+2007-10-17  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Enumeration.java: Renamed from Enumiration to
+	Enumeration.
+	* Scope.java: Updated.
+
 2007-10-16  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* CxxObject.java: Removed.
