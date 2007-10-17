@@ -59,14 +59,11 @@ import frysk.scopes.Subprogram;
 import frysk.stack.Frame;
 import frysk.stack.FrameDecorator;
 
-public class DebugInfoFrame extends FrameDecorator{
+public class DebugInfoFrame extends FrameDecorator {
 
     private Subprogram subprogram;
     private Scope scope;
 
-    private DebugInfoFrame innerDebugInfoFrame;
-    private DebugInfoFrame outerDebugInfoFrame;
-    
     private Line[] lines;
 
     private LinkedList inlinedSubprograms;
@@ -75,8 +72,8 @@ public class DebugInfoFrame extends FrameDecorator{
 
     private final TypeEntry typeEntry;
     
-    protected DebugInfoFrame(Frame frame) {
-	super(frame);
+    protected DebugInfoFrame(FrameDecorator inner, Frame decorated) {
+	super(inner, decorated);
 	this.typeEntry = new TypeEntry(getTask().getISA());
     }
 
@@ -274,31 +271,24 @@ public class DebugInfoFrame extends FrameDecorator{
         this.subprogram = subprogram;
       }
       
-      public DebugInfoFrame getInnerDebugInfoFrame(){
-	if(innerDebugInfoFrame == null){
-	    innerDebugInfoFrame = DebugInfoStackFactory.createDebugInfoFrame(this.getUndecoratedFrame().getInner());
-	}
-	return innerDebugInfoFrame;
+      public DebugInfoFrame getInnerDebugInfoFrame() {
+	  return (DebugInfoFrame) getInner();
       }
       
-      public DebugInfoFrame getOuterDebugInfoFrame(){
-	  if(outerDebugInfoFrame == null){
-	      outerDebugInfoFrame = DebugInfoStackFactory.createDebugInfoFrame(this.getUndecoratedFrame().getOuter());
-	      if(outerDebugInfoFrame != null){
-		  outerDebugInfoFrame.setIndex(getIndex()+1);
-	      }
-	  }
-	  return outerDebugInfoFrame;
+      public DebugInfoFrame getOuterDebugInfoFrame() {
+	  return (DebugInfoFrame) getOuter();
+      }
+      
+      public Frame unwind(){
+	  Frame undecorated = getUndecoratedFrame().getOuter();
+	  if (undecorated == null)
+	      // Oops, nothing left.
+	      return null;
+	  DebugInfoFrame outer = new DebugInfoFrame(this, undecorated);
+	  outer.setIndex(getIndex()+1);
+	  return outer;
       }
 	
-      public void setInnerDebugInfoFrame(DebugInfoFrame frame){
-	  innerDebugInfoFrame = frame;
-      }
-	      
-      public void setOuterDebugInfoFrame(DebugInfoFrame frame){
-	  outerDebugInfoFrame = frame;
-      }
-      
       public void setIndex(int index){
 	  this.index = index;
       }

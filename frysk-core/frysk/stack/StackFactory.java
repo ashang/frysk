@@ -62,34 +62,28 @@ public class StackFactory
   
   private static WeakHashMap taskMap = new WeakHashMap();
   
-  /**
-   * Find and return the stack backtrace for the provided task
-   * 
-   * @param task The task to get stack information for
-   * @return The stack frames as a linked list
-   */
-  public static Frame createFrame (Task task)
-  {
-    if (taskMap.containsKey(task))
-      {
-        FrameCounter frameCounter = (FrameCounter) taskMap.get(task);
-        if (frameCounter.counter == task.getMod())
-          return frameCounter.frame;
-        else
-          taskMap.remove(task);
-      }
-
-    LibunwindAddressSpace addressSpace
-	= new LibunwindAddressSpace(task, lib.unwind.ByteOrder.DEFAULT);
-	    
-    Cursor innermost = new Cursor(addressSpace);
-	    
-    LibunwindFrame innerFrame = new LibunwindFrame(innermost, task);
-	       
-        taskMap.put(task, new FrameCounter(innerFrame, task.getMod()));
+    /**
+     * Find and return the stack backtrace for the provided task
+     * 
+     * @param task The task to get stack information for
+     * @return The stack frames as a linked list
+     */
+    public static Frame createFrame (Task task) {
+	if (taskMap.containsKey(task)) {
+	    FrameCounter frameCounter = (FrameCounter) taskMap.get(task);
+	    if (frameCounter.counter == task.getMod())
+		return frameCounter.frame;
+	    else
+		taskMap.remove(task);
+	}
+	LibunwindAddressSpace addressSpace
+	    = new LibunwindAddressSpace(task, lib.unwind.ByteOrder.DEFAULT);
+	Cursor innermost = new Cursor(addressSpace);
+	LibunwindFrame innerFrame
+	    = new LibunwindFrame(innermost, null, task);
+	taskMap.put(task, new FrameCounter(innerFrame, task.getMod()));
 	return innerFrame;
-      
-  }
+    }
 
   public static final void printTaskStackTrace (PrintWriter printWriter, Task task, boolean printSourceLibrary)
   {

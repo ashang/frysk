@@ -44,7 +44,6 @@ import java.io.PrintWriter;
 import frysk.proc.Task;
 import frysk.scopes.InlinedSubroutine;
 import frysk.scopes.Scope;
-import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 
 /**
@@ -56,77 +55,51 @@ public class DebugInfoStackFactory {
      * Create an ABI stack backtrace, make the simpler debug-info
      * methods.
      */
-    public static DebugInfoFrame createDebugInfoStackTrace (Task task)
-    {
-	return new DebugInfoFrame(StackFactory.createFrame(task));
+    public static DebugInfoFrame createDebugInfoStackTrace (Task task) {
+	return new DebugInfoFrame(null, StackFactory.createFrame(task));
     }
 
     /**
      * Create a full virtual stack backtrace where inlined functions
-     * exist as separate frames.
+     * exist as separate frames; backed by debug-info frames.
+     *
+     * FIXME: This creates the entire tree of frames when only the
+     * inner most might be needed.
      */
-    public static DebugInfoFrame createVirtualStackTrace (Task task)
-    {
-	DebugInfoFrame frame = createDebugInfoStackTrace (task);
-	DebugInfoFrame tempFrame = null;
-	DebugInfoFrame virtualFrame = null;
-	
+    public static DebugInfoFrame createVirtualStackTrace (Task task) {
+	DebugInfoFrame currentFrame = null;
 	DebugInfoFrame innermostFrame = null;
 	
 	int count = 0;
 	
-	while(frame != null){
-
-	    Scope scope = frame.getScopes(); 
-	    if(scope != null){
-		int inlineCount = 1;
-		
-		while (scope != null) {
-		    if (scope instanceof InlinedSubroutine) {
-			InlinedSubroutine subroutine = (InlinedSubroutine) scope;
-			tempFrame = new VirtualDebugInfoFrame(frame.getUndecoratedFrame());
-			((VirtualDebugInfoFrame) tempFrame).setIndex(inlineCount++);
-			tempFrame.setSubprogram(subroutine);
-
-			if (virtualFrame != null) {
-			    virtualFrame.setOuterDebugInfoFrame(tempFrame);
-			    tempFrame.setInnerDebugInfoFrame(virtualFrame);
-			    virtualFrame = virtualFrame
-				    .getOuterDebugInfoFrame();
-			} else {
-			    virtualFrame = tempFrame;
-			    innermostFrame = tempFrame;
-			}
-		    }
-		    scope = scope.getOuter();
+	for (DebugInfoFrame debugFrame = createDebugInfoStackTrace (task);
+	     debugFrame != null;
+	     debugFrame = debugFrame.getOuterDebugInfoFrame()) {
+	    
+	    // For any inlined scopes, create virtual frames.
+	    int inlineCount = 1;
+	    for (Scope scope = debugFrame.getScopes();
+		 scope != null; scope = scope.getOuter()) {
+		if (scope instanceof InlinedSubroutine) {
+		    InlinedSubroutine subroutine = (InlinedSubroutine) scope;
+		    currentFrame = new VirtualDebugInfoFrame(currentFrame,
+							     debugFrame);
+		    currentFrame.setIndex(inlineCount++);
+		    currentFrame.setSubprogram(subroutine);
+		    if (innermostFrame == null)
+			innermostFrame = currentFrame;
 		}
 	    }
 	    
-	    tempFrame = new DebugInfoFrame(frame.getUndecoratedFrame());
-	    tempFrame.setIndex(count++);
+	    // Append to that a non-virtual frame.
+	    currentFrame = new DebugInfoFrame(currentFrame, debugFrame);
+	    currentFrame.setIndex(count++);
 	    
-	    if(virtualFrame!=null){
-		virtualFrame.setOuterDebugInfoFrame(tempFrame);
-		tempFrame.setInnerDebugInfoFrame(virtualFrame);
-		virtualFrame = virtualFrame.getOuterDebugInfoFrame();
-	    }else{
-		virtualFrame = tempFrame;
-		innermostFrame = tempFrame;
-	    }
-	    
-	    frame = frame.getOuterDebugInfoFrame();
+	    if (innermostFrame == null)
+		innermostFrame = currentFrame;
 	}
 	
 	return innermostFrame;
-    }
-
-    public static DebugInfoFrame createDebugInfoFrame (Frame frame)
-    {
-	if(frame == null){
-	    return null;
-	}
-	
-	return new DebugInfoFrame(frame);
     }
 
     public static final void printTaskStackTrace (PrintWriter printWriter, Task task, boolean printParameters, boolean printScopes, boolean fullpath)

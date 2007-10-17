@@ -1,5 +1,22 @@
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
+	* DebugInfoFrame.java (DebugInfoFrame(FrameDecorator,Frame)):
+	Replace DebugInfoFrame(Frame).
+	(setInnerDebugInfoFrame(DebugInfoFrame))
+	(setOuterDebugInfoFrame(DebugInfoFrame)): Delete.
+	(innerDebugInfoFrame, outerDebugInfoFrame): Delete.    
+	(getOuterDebugInfoFrame()): Simplify.
+	(getInnerDebugInfoFrame()): Simplify.
+	(unwind()): New.
+	* VirtualDebugInfoFrame.java
+	(VirtualDebugInfoFrame(FrameDecorator,Frame)): Replace
+	VirtualDebugInfoFrame(Frame).
+	* DebugInfoStackFactory.java (createVirtualStackTrace(Task)):
+	Simplify.
+	(createDebugInfoStackTrace(Task)): Update.
+	(createDebugInfoFrame(Frame)): Delete.
+	* TestDebugInfoStackTrace.java: Update.
+	
 	* VirtualDebugInfoFrame.java (subIndex): Make private.
 	* DebugInfoFrame.java (index): Make private.
 	(typeEntry): Make private and final.

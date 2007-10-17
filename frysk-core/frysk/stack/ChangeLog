@@ -1,5 +1,18 @@
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
+	* Frame.java (getOuter()): Make concrete.
+	(unwind()): New, abstract.
+	(Frame(Frame,Task)): Replace Frame(Frame).
+	* FrameDecorator.java (getOuter()): Delete.
+	(FrameDecorator(FrameDecorator,Frame)): Replace
+	FrameDecorator(Frame).
+	* LibunwindFrame.java (getOuter()): Delete.
+	(outer): Delete.
+	(getLibunwindOuter()): Delete.
+	(unwind()): New.
+	(LibunwindFrame(Cursor,Frame,Task)): Replace
+	LibunwindFrame(Cursor,Task).
+
 	* FrameDecorator.java (getInner()): Delete.
 	* LibunwindFrame.java (getInner()): Delete.
 	(inner): Delete.

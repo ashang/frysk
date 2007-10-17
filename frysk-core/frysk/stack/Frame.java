@@ -55,25 +55,20 @@ public abstract class Frame {
 
     private final Task task;
     private final Frame inner;
-    // private Frame outer;
+    private Frame outer;
 
     /**
-     * Construct an inner-most frame.
+     * Construct a frame.  For the inner most frame "inner" is NULL.
      *
-     * XXX: pacakge-private if you need to extend use FrameDecorator.
+     * XXX: pacakge-private if you need to extend this, use
+     * FrameDecorator.
      */
-    Frame(Task task) {
-	this.task = task;
-	this.inner = null;
-    }
-
-    /**
-     * Construct a frame outer to INNER.
-     */
-    Frame(Frame inner) {
-	this.task = inner.task;
+    Frame(Frame inner, Task task) {
 	this.inner = inner;
-	// inner.outer = this;
+	this.task = task;
+	if (inner != null) {
+	    inner.outer = this;
+	}
     }
 
     /**
@@ -113,8 +108,25 @@ public abstract class Frame {
      * 
      * @return This StackFrame's outer frame.
      */
-    public abstract Frame getOuter ();
+    public final Frame getOuter () {
+	if (!unwound && outer == null) {
+	    // Only try to unwind once.
+	    unwound = true;
+	    outer = unwind();
+	}
+	return outer;
+    }
   
+    /**
+     * Has there already been an unwind attempt?
+     */
+    private boolean unwound = false;
+
+    /**
+     * Returns this Frame's outer frame; or null if there is no frame.
+     */
+    protected abstract Frame unwind();
+
     /**
      * Return a simple string representation of this stack frame.
      * The returned string is suitable for display to the user.

@@ -59,52 +59,28 @@ class LibunwindFrame extends Frame
     /* Identifies this frame by its CFA and frame start address */
     private FrameIdentifier frameIdentifier;
   
-    LibunwindFrame outer = null;
-   
     private final Cursor cursor;
     private final RegisterMap registerMap;
     private final ISA isa;
 
     /**
-     * Creates a new LibunwindFrame object. Represents a frame on the stack of a 
-     * remote (non-local) process.
-     * 
-     * @param cursor The Cursor used to unwind this Frame 
-     * @param task The Task whose stack this Frame belongs to
+     * Creates a new LibunwindFrame object. Represents a frame on the
+     * stack of a remote (non-local) process.
      */
-    LibunwindFrame (Cursor cursor, Task task) {
-	super(task);
+    LibunwindFrame(Cursor cursor, Frame inner, Task task) {
+	super(inner, task);
 	this.cursor = cursor;
 	this.isa = task.getISA();
 	this.registerMap = LibunwindRegisterMapFactory.getRegisterMap(isa);
     }
-
-    LibunwindFrame(Cursor cursor, Frame inner) {
-	super(inner);
-	this.cursor = cursor;
-	this.isa = inner.getTask().getISA();
-	this.registerMap = LibunwindRegisterMapFactory.getRegisterMap(isa);
-    }
   
-    private LibunwindFrame getLibunwindOuter() {
-	if (outer == null) {
-	    Cursor newCursor = this.cursor.unwind();
-	    if (newCursor != null) {
-		outer = new LibunwindFrame(newCursor, this);
-	    }
-	}
-	return outer;
+    protected Frame unwind() {
+	Cursor newCursor = this.cursor.unwind();
+	if (newCursor == null)
+	    return null;
+	return new LibunwindFrame(newCursor, this, getTask());
     }
 
-    /**
-     * Returns the Frame outer to this Frame on the stack. If that Frame object
-     * has not yet been created, it is created using this Frame's Cursor and
-     * unwinding outwards a single frame.
-     */
-    public Frame getOuter() {
-	return getLibunwindOuter();
-    }
-  
     /**
      * Returns the ProcInfo object for this Frame.
      */
@@ -176,13 +152,13 @@ class LibunwindFrame extends Frame
 	if (frameIdentifier == null) {
 	    ProcInfo myInfo = getProcInfo();
 	    long cfa = 0;
-	    LibunwindFrame outer = getLibunwindOuter();
+	    Frame outer = getOuter();
 	    if (outer != null)
 		// The previous frame's SP makes for a good CFA for
 		// this frame.  It's a value that needs to be constant
 		// through out the life-time of this frame, and hence
 		// this frame's SP (which changes) is no good.
-		cfa = outer.cursor.getSP();
+		cfa = ((LibunwindFrame)outer).cursor.getSP();
 	    frameIdentifier = new FrameIdentifier(myInfo.getStartIP(), cfa);
 	}
 	return this.frameIdentifier;

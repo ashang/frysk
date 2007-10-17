@@ -40,15 +40,18 @@
 package frysk.debuginfo;
 
 import java.io.PrintWriter;
-
 import frysk.stack.Frame;
+import frysk.stack.FrameDecorator;
 
-public class VirtualDebugInfoFrame extends DebugInfoFrame{
+public class VirtualDebugInfoFrame extends DebugInfoFrame {
 
     private int subIndex;
     
-    protected VirtualDebugInfoFrame(Frame frame) {
-	super(frame);
+    /**
+     * Create a frame, outer to OUTER, and decorating frame.
+     */
+    protected VirtualDebugInfoFrame(FrameDecorator inner, Frame decorated) {
+	super(inner, decorated);
     }
 
     public void setIndex(int subIndex){

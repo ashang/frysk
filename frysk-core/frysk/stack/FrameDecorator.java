@@ -48,49 +48,49 @@ import frysk.isa.Register;
  * the DebuginfoFrame extend this class.
  */
 
-public abstract class FrameDecorator extends Frame
-{
+public abstract class FrameDecorator extends Frame {
     
-    private final Frame frame;
-    protected FrameDecorator(Frame frame) {
-	super(frame.getTask());
-	this.frame = frame;
+    private final Frame undecoratedFrame;
+
+    /**
+     * Construct a new frame, decorating UNDECORATEDFRAME, and outer
+     * two INNER.
+     */
+    protected FrameDecorator(FrameDecorator inner, Frame undecoratedFrame) {
+	super(inner, undecoratedFrame.getTask());
+	this.undecoratedFrame = undecoratedFrame;
     }
 
     public long getAddress() {
-	return frame.getAddress();
+	return undecoratedFrame.getAddress();
     }
 
     public long getAdjustedAddress() {
-	return frame.getAdjustedAddress();
-    }
-
-    public Frame getOuter() {
-	return frame.getOuter();
+	return undecoratedFrame.getAdjustedAddress();
     }
 
     public void toPrint(PrintWriter printWriter, boolean name) {
-	frame.toPrint(printWriter, name,true);
+	undecoratedFrame.toPrint(printWriter, name,true);
     }
 
     public void getRegister(Register reg, long offset, int length,
 			    byte[] bytes, int start){
-	frame.getRegister(reg, offset, length, bytes, start);
+	undecoratedFrame.getRegister(reg, offset, length, bytes, start);
     }
     public void setRegister(Register reg, long offset, int length,
 			    byte[] bytes, int start){
-	frame.setRegister(reg, offset, length, bytes, start);
+	undecoratedFrame.setRegister(reg, offset, length, bytes, start);
     }
 
     public FrameIdentifier getFrameIdentifier() {
-	return frame.getFrameIdentifier();
+	return undecoratedFrame.getFrameIdentifier();
     }
 
     public Symbol getSymbol() {
-	return frame.getSymbol();
+	return undecoratedFrame.getSymbol();
     }
     
     public Frame getUndecoratedFrame(){
-	return this.frame;
+	return this.undecoratedFrame;
     }
 }
