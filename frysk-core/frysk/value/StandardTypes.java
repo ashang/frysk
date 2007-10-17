@@ -270,10 +270,10 @@ public class StandardTypes {
     }
 	
     public static final ArithmeticType VOIDPTR64B_T
-	= new PointerType("VOIDPTR64B_T", ByteOrder.BIG_ENDIAN, 4,
+	= new PointerType("VOIDPTR64B_T", ByteOrder.BIG_ENDIAN, 8,
 			  new VoidType());
     public static final ArithmeticType VOIDPTR64L_T
-	= new PointerType("VOIDPTR64L_T", ByteOrder.LITTLE_ENDIAN, 4,
+	= new PointerType("VOIDPTR64L_T", ByteOrder.LITTLE_ENDIAN, 8,
 			  new VoidType());
     public static final OrderMap voidptr64_t = new OrderMap()
 	.put(VOIDPTR64B_T).put(VOIDPTR64L_T);
