@@ -1,3 +1,9 @@
+2007-10-17  Andrew Cagney  <cagney@redhat.com>
+
+	* VirtualDebugInfoFrame.java (subIndex): Make private.
+	* DebugInfoFrame.java (index): Make private.
+	(typeEntry): Make private and final.
+
 2007-10-17  Teresa Thomas  <tthomas@redhat.com>
 
 	* DebugInfo.java (print): Throw exceptions at unhandled

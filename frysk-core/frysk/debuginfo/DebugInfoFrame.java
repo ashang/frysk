@@ -71,9 +71,9 @@ public class DebugInfoFrame extends FrameDecorator{
 
     private LinkedList inlinedSubprograms;
 
-    int index;
+    private int index;
 
-    TypeEntry typeEntry;
+    private final TypeEntry typeEntry;
     
     protected DebugInfoFrame(Frame frame) {
 	super(frame);

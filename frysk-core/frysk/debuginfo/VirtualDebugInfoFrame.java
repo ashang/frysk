@@ -45,7 +45,7 @@ import frysk.stack.Frame;
 
 public class VirtualDebugInfoFrame extends DebugInfoFrame{
 
-    int subIndex;
+    private int subIndex;
     
     protected VirtualDebugInfoFrame(Frame frame) {
 	super(frame);
@@ -60,7 +60,7 @@ public class VirtualDebugInfoFrame extends DebugInfoFrame{
     }
     
     public void printIndex(PrintWriter writer){
-	writer.print(this.index + "." +this.getSubIndex());
+	writer.print(this.getIndex() + "." +this.getSubIndex());
     }
 
 }
