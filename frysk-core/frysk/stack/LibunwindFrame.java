@@ -59,7 +59,6 @@ class LibunwindFrame extends Frame
     /* Identifies this frame by its CFA and frame start address */
     private FrameIdentifier frameIdentifier;
   
-    LibunwindFrame inner = null;
     LibunwindFrame outer = null;
    
     private final Cursor cursor;
@@ -79,13 +78,19 @@ class LibunwindFrame extends Frame
 	this.isa = task.getISA();
 	this.registerMap = LibunwindRegisterMapFactory.getRegisterMap(isa);
     }
+
+    LibunwindFrame(Cursor cursor, Frame inner) {
+	super(inner);
+	this.cursor = cursor;
+	this.isa = inner.getTask().getISA();
+	this.registerMap = LibunwindRegisterMapFactory.getRegisterMap(isa);
+    }
   
     private LibunwindFrame getLibunwindOuter() {
 	if (outer == null) {
 	    Cursor newCursor = this.cursor.unwind();
 	    if (newCursor != null) {
-		outer = new LibunwindFrame(newCursor, getTask());
-		outer.inner = this;
+		outer = new LibunwindFrame(newCursor, this);
 	    }
 	}
 	return outer;
@@ -98,13 +103,6 @@ class LibunwindFrame extends Frame
      */
     public Frame getOuter() {
 	return getLibunwindOuter();
-    }
-  
-    /**
-     * Returns the Frame inner to this frame on the stack.
-     */
-    public Frame getInner() {
-	return inner;
     }
   
     /**
@@ -128,13 +126,14 @@ class LibunwindFrame extends Frame
     }
   
     /**
-     * Returns the adjusted address of this frame. If this Frame is an innermost
-     * frame, the current program counter is returned as-is. Otherwise, it is 
-     * decremented by one, to represent the frame address pointing to its inner
-     * frame, rather than the inner frame's return address.
+     * Returns the adjusted address of this frame. If this Frame is an
+     * innermost frame, the current program counter is returned
+     * as-is. Otherwise, it is decremented by one, to represent the
+     * frame address pointing to its inner frame, rather than the
+     * inner frame's return address.
      */
     public long getAdjustedAddress() {
-	if (this.inner != null && !this.cursor.isSignalFrame())
+	if (getInner() != null && !this.cursor.isSignalFrame())
 	    return getAddress() - 1;
 	else
 	    return getAddress();

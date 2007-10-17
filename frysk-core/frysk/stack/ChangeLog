@@ -1,5 +1,15 @@
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
+	* FrameDecorator.java (getInner()): Delete.
+	* LibunwindFrame.java (getInner()): Delete.
+	(inner): Delete.
+	(LibunwindFrame(Cursor,Frame)): New.
+	(getLibunwindOuter()): Update.
+	(getAdjustedAddress()): Update.
+	* Frame.java(Frame(Frame)): New.
+	(getInner()): Make concrete.
+	(inner, outer): New.
+
 	* FrameDecorator.java (getTask()): Delete.
 	(FrameDecorator(Frame)): Call super(Task).
 	* LibunwindFrame.java (getTask()): Delete.

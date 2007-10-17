@@ -65,9 +65,6 @@ public abstract class FrameDecorator extends Frame
 	return frame.getAdjustedAddress();
     }
 
-    public Frame getInner() {
-	return frame.getInner();
-    }
     public Frame getOuter() {
 	return frame.getOuter();
     }

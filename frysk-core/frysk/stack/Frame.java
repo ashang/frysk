@@ -54,13 +54,26 @@ import frysk.value.ScratchLocation;
 public abstract class Frame {
 
     private final Task task;
+    private final Frame inner;
+    // private Frame outer;
 
     /**
-     * Construct an abstract frame.  XXX: pacakge-private if you need
-     * to extend use FrameDecorator.
+     * Construct an inner-most frame.
+     *
+     * XXX: pacakge-private if you need to extend use FrameDecorator.
      */
     Frame(Task task) {
 	this.task = task;
+	this.inner = null;
+    }
+
+    /**
+     * Construct a frame outer to INNER.
+     */
+    Frame(Frame inner) {
+	this.task = inner.task;
+	this.inner = inner;
+	// inner.outer = this;
     }
 
     /**
@@ -91,7 +104,9 @@ public abstract class Frame {
      * 
      * @return This StackFrame's inner frame.
      */
-    public abstract Frame getInner ();
+    public final Frame getInner () {
+	return inner;
+    }
 
     /**
      * Returns this StackFrame's outer frame.
