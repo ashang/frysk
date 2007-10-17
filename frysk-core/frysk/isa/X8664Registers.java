@@ -43,39 +43,62 @@ import frysk.value.StandardTypes;
 
 public class X8664Registers extends Registers {
 
-    public static final Register RAX = new Register("rax", StandardTypes.longLittleEndianType);
+    // General purpose registers.
 
-    public static final Register RDX = new Register("rdx", StandardTypes.longLittleEndianType);
+    public static final Register RAX
+	= new Register("rax", StandardTypes.INT64L_T);
+    public static final Register RDX
+	= new Register("rdx", StandardTypes.INT64L_T);
+    public static final Register RCX
+	= new Register("rcx", StandardTypes.INT64L_T);
+    public static final Register RBX
+	= new Register("rbx", StandardTypes.INT64L_T);
+    public static final Register RSI
+	= new Register("rsi", StandardTypes.INT64L_T);
+    public static final Register RDI
+	= new Register("rdi", StandardTypes.INT64L_T);
+    public static final Register RBP
+	= new Register("rbp", StandardTypes.VOIDPTR64L_T);
+    public static final Register RSP
+	= new Register("rsp", StandardTypes.VOIDPTR64L_T);
+    public static final Register R8
+	= new Register("r8", StandardTypes.INT64L_T);
+    public static final Register R9
+	= new Register("r9", StandardTypes.INT64L_T);
+    public static final Register R10
+	= new Register("r10", StandardTypes.INT64L_T);
+    public static final Register R11
+	= new Register("r11", StandardTypes.INT64L_T);
+    public static final Register R12
+	= new Register("r12", StandardTypes.INT64L_T);
+    public static final Register R13
+	= new Register("r13", StandardTypes.INT64L_T);
+    public static final Register R14
+	= new Register("r14", StandardTypes.INT64L_T);
+    public static final Register R15
+	= new Register("r15", StandardTypes.INT64L_T);
 
-    public static final Register RCX = new Register("rcx", StandardTypes.longLittleEndianType);
+    // Flags and instruction pointer
 
-    public static final Register RBX = new Register("rbx", StandardTypes.longLittleEndianType);
+    public static final Register RFLAGS
+	= new Register("rflags", StandardTypes.INT64L_T);
+    public static final Register RIP
+	= new Register("rip", StandardTypes.VOIDPTR64L_T);
 
-    public static final Register RSI = new Register("rsi", StandardTypes.longLittleEndianType);
-
-    public static final Register RDI = new Register("rdi", StandardTypes.longLittleEndianType);
-
-    public static final Register RBP = new Register("rbp", StandardTypes.longLittleEndianType);
-
-    public static final Register RSP = new Register("rsp", StandardTypes.longLittleEndianType);
-
-    public static final Register R8 = new Register("r8", StandardTypes.longLittleEndianType);
-
-    public static final Register R9 = new Register("r9", StandardTypes.longLittleEndianType);
-
-    public static final Register R10 = new Register("r10", StandardTypes.longLittleEndianType);
-
-    public static final Register R11 = new Register("r11", StandardTypes.longLittleEndianType);
-
-    public static final Register R12 = new Register("r12", StandardTypes.longLittleEndianType);
-
-    public static final Register R13 = new Register("r13", StandardTypes.longLittleEndianType);
-
-    public static final Register R14 = new Register("r14", StandardTypes.longLittleEndianType);
-
-    public static final Register R15 = new Register("r15", StandardTypes.longLittleEndianType);
-
-    public static final Register RIP = new Register("rip", StandardTypes.longLittleEndianType);
+    // Segment registers
+    
+    public static final Register CS
+	= new Register("cs", StandardTypes.INT16L_T);
+    public static final Register DS
+	= new Register("ds", StandardTypes.INT16L_T);
+    public static final Register ES
+	= new Register("es", StandardTypes.INT16L_T);
+    public static final Register FS
+	= new Register("fs", StandardTypes.INT16L_T);
+    public static final Register GS
+	= new Register("gs", StandardTypes.INT16L_T);
+    public static final Register SS
+	= new Register("ss", StandardTypes.INT16L_T);
 
     public static final Register DR0
 	= new Register("dr0", StandardTypes.INT32L_T);
@@ -100,8 +123,8 @@ public class X8664Registers extends Registers {
 	= new Register("orig_rax", StandardTypes.INT64L_T);
 
     public static final RegisterGroup GENERAL = new RegisterGroup("general",
-	    new Register[] { RAX, RDX, RCX, RBX, RSI, RDI, RBP, RSP, R8, R9,
-		    R10, R11, R12, R13, R14, R15, RIP });
+								  new Register[] { RAX, RDX, RCX, RBX, RSI, RDI, RBP, RSP, R8, R9,
+										   R10, R11, R12, R13, R14, R15, RIP });
 
     public static final RegisterGroup ALL;
     static {
