@@ -51,8 +51,18 @@ import frysk.symtab.SymbolFactory;
 import frysk.value.Value;
 import frysk.value.ScratchLocation;
 
-public abstract class Frame
-{
+public abstract class Frame {
+
+    private final Task task;
+
+    /**
+     * Construct an abstract frame.  XXX: pacakge-private if you need
+     * to extend use FrameDecorator.
+     */
+    Frame(Task task) {
+	this.task = task;
+    }
+
     /**
      * Returns the program counter for this StackFrame.
      * 
@@ -72,7 +82,9 @@ public abstract class Frame
      * 
      * @return The Task this StackFrame belongs to.
      */
-    public abstract Task getTask ();
+    public final Task getTask() {
+	return task;
+    }
 
     /**
      * Returns this StackFrame's inner frame.

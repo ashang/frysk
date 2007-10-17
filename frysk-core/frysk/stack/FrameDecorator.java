@@ -40,7 +40,6 @@
 package frysk.stack;
 
 import java.io.PrintWriter;
-import frysk.proc.Task;
 import frysk.symtab.Symbol;
 import frysk.isa.Register;
 
@@ -54,6 +53,7 @@ public abstract class FrameDecorator extends Frame
     
     private final Frame frame;
     protected FrameDecorator(Frame frame) {
+	super(frame.getTask());
 	this.frame = frame;
     }
 
@@ -63,10 +63,6 @@ public abstract class FrameDecorator extends Frame
 
     public long getAdjustedAddress() {
 	return frame.getAdjustedAddress();
-    }
-
-    public Task getTask() {
-	return frame.getTask();
     }
 
     public Frame getInner() {

@@ -63,7 +63,6 @@ class LibunwindFrame extends Frame
     LibunwindFrame outer = null;
    
     private final Cursor cursor;
-    private final Task task;
     private final RegisterMap registerMap;
     private final ISA isa;
 
@@ -75,8 +74,8 @@ class LibunwindFrame extends Frame
      * @param task The Task whose stack this Frame belongs to
      */
     LibunwindFrame (Cursor cursor, Task task) {
+	super(task);
 	this.cursor = cursor;
-	this.task = task;
 	this.isa = task.getISA();
 	this.registerMap = LibunwindRegisterMapFactory.getRegisterMap(isa);
     }
@@ -85,7 +84,7 @@ class LibunwindFrame extends Frame
 	if (outer == null) {
 	    Cursor newCursor = this.cursor.unwind();
 	    if (newCursor != null) {
-		outer = new LibunwindFrame(newCursor, task);
+		outer = new LibunwindFrame(newCursor, getTask());
 		outer.inner = this;
 	    }
 	}
@@ -108,13 +107,6 @@ class LibunwindFrame extends Frame
 	return inner;
     }
   
-    /**
-     * Return's the frame's task.
-     */
-    public Task getTask() {
-	return task;
-    }
-
     /**
      * Returns the ProcInfo object for this Frame.
      */
@@ -211,7 +203,7 @@ class LibunwindFrame extends Frame
      */
     public Symbol getSymbol() {
 	if (symbol == null) {
-	    symbol = SymbolFactory.getSymbol(task, getAdjustedAddress());
+	    symbol = SymbolFactory.getSymbol(getTask(), getAdjustedAddress());
 	}
 	return symbol;
     }

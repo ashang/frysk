@@ -1,3 +1,14 @@
+2007-10-17  Andrew Cagney  <cagney@redhat.com>
+
+	* FrameDecorator.java (getTask()): Delete.
+	(FrameDecorator(Frame)): Call super(Task).
+	* LibunwindFrame.java (getTask()): Delete.
+	(task): Delete.
+	(LibunwindFrame(Cursor,Task)): Call super(Task).
+	* Frame.java (getTask()): Make concrete.
+	(task): New field.
+	(Frame(Task)): New constructor.
+
 2007-10-15  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRegs.java (taskObject(Task)): Delete.
