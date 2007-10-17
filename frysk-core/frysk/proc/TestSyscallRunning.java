@@ -89,7 +89,7 @@ public class TestSyscallRunning
 
     // Make sure the core knows about it.
     Manager.host.requestFindProc(new ProcId(process.pid.hashCode()),
-				 new Host.FindProc()
+				 new FindProc()
 	{
 	    public void procFound (ProcId procId)
 	    {

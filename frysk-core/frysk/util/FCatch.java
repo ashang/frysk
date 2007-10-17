@@ -46,9 +46,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import frysk.proc.FindProc;
 import frysk.proc.Action;
-import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
@@ -129,7 +128,7 @@ public class FCatch {
     private void init() {
 	logger.log(Level.FINE, "{0} init", this);
 
-	Manager.host.requestFindProc(this.procID, new Host.FindProc() {
+	Manager.host.requestFindProc(this.procID, new FindProc() {
 	    public void procFound(ProcId procId) {
 		iterateTasks(Manager.host.getProc(procId));
 	    }

@@ -44,13 +44,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.logging.Level;
-
+import frysk.proc.FindProc;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.proc.Action;
-import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
@@ -129,7 +128,7 @@ public class TestFCatch
     {
       logger.log(Level.FINE, "{0} init", this);
 
-      Manager.host.requestFindProc(this.procID, new Host.FindProc()
+      Manager.host.requestFindProc(this.procID, new FindProc()
       {
         public void procFound (ProcId procId)
         {

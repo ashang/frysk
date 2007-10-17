@@ -40,6 +40,7 @@
 package frysk.ftrace;
 
 import java.util.ArrayList;
+import frysk.proc.FindProc;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -50,9 +51,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 import java.util.logging.*;
-
 import frysk.proc.Action;
-import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
@@ -264,17 +263,16 @@ public class Ltrace
     // same set in observer installed before.  See if there's no
     // problem with that.
     for (Iterator it = pidsToTrace.iterator(); it.hasNext(); )
-      Manager.host.requestFindProc(
-	(ProcId)it.next(),
-	new Host.FindProc() {
-	  public void procFound (ProcId procId) {}
-	  public void procNotFound (ProcId procId, Exception e)
-	  {
-	    System.err.println("No process with ID " + procId.intValue() + " found.");
-	  }
-	}
-      );
-
+      Manager.host.requestFindProc
+	  ((ProcId)it.next(),
+	   new FindProc() {
+	       public void procFound (ProcId procId) {}
+	       public void procNotFound (ProcId procId, Exception e) {
+		   System.err.println("No process with ID " + procId.intValue() + " found.");
+	       }
+	   }
+	   );
+    
     Manager.eventLoop.run();
   }
 

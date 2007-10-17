@@ -55,6 +55,7 @@ import frysk.proc.Host;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.TaskObserver;
+import frysk.proc.FindProc;
 
 public class LinuxHost 
   extends Host 

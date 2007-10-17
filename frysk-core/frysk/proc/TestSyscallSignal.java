@@ -91,7 +91,7 @@ public class TestSyscallSignal
 
     // Make sure the core knows about it.
     Manager.host.requestFindProc(new ProcId(pid.hashCode()),
-				 new Host.FindProc()
+				 new FindProc()
 	{
 	    public void procFound (ProcId procId)
 	    {

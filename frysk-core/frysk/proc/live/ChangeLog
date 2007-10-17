@@ -1,3 +1,7 @@
+2007-10-17  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxHost.java: Update; import frysk.proc.FindProc.
+
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxTask.java: Update; use ISA's order().

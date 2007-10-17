@@ -78,7 +78,7 @@ public abstract class HostState
 				     attached);
 	return this;
     }
-    HostState handleRefresh (Host host, ProcId procId, Host.FindProc finder)
+    HostState handleRefresh (Host host, ProcId procId, FindProc finder)
     {
 	logger.log (Level.FINE, "{0} handleRefresh\n", host); 
 	host.sendRefresh (procId, finder);

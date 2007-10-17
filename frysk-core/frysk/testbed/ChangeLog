@@ -1,3 +1,7 @@
+2007-10-17  Andrew Cagney  <cagney@redhat.com>
+
+	* Offspring.java: Update; import frysk.proc.FindHost.
+
 2007-10-15  Andrew Cagney  <cagney@redhat.com>
 
 	* RegsCase.java (taskObject(Task)): Delete.

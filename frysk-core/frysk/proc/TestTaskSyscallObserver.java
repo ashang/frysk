@@ -591,7 +591,7 @@ public class TestTaskSyscallObserver
 
     TestSyscallInterruptXXX (final int pid)
     {
-      Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc()
+      Manager.host.requestFindProc(new ProcId(pid), new FindProc()
       {
 
         public void procFound (ProcId procId)

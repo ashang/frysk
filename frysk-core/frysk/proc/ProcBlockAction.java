@@ -155,7 +155,7 @@ public class ProcBlockAction
   {
     logger.log(Level.FINE, "{0} new\n", this);
     
-    Manager.host.requestFindProc(procId, new Host.FindProc() {
+    Manager.host.requestFindProc(procId, new FindProc() {
 
       public void procFound (ProcId procId)
       {

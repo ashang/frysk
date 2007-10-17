@@ -42,15 +42,15 @@ package frysk.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import frysk.proc.Host;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.Manager;
+import frysk.proc.FindProc;
 
 class AttachCommand
     extends CLIHandler {
-    private class FindProc implements Host.FindProc {
+    private class ProcFinder implements FindProc {
 	Proc proc = null;
 
 	boolean procSearchFinished = false;
@@ -109,7 +109,7 @@ class AttachCommand
 		pid = Integer.parseInt((String) params.get(idx));
 	}
 
-	FindProc findProc = new FindProc();
+	ProcFinder findProc = new ProcFinder();
 	Manager.host.requestFindProc(new ProcId(pid), findProc);
 	synchronized (findProc) {
 	    while (!findProc.procSearchFinished) {

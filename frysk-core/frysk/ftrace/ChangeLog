@@ -1,3 +1,7 @@
+2007-10-17  Andrew Cagney  <cagney@redhat.com>
+
+	* Ltrace.java: Update; use frysk.proc.FindProc.
+
 2007-10-16  Andrew Cagney  <cagney@redhat.com>
 
 	* X8664Arch.java: Rename Archx8664.java.

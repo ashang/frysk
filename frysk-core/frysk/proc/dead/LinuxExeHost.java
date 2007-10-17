@@ -41,7 +41,7 @@ package frysk.proc.dead;
 
 import java.io.File;
 import java.util.Iterator;
-
+import frysk.proc.FindProc;
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 

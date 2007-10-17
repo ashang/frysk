@@ -1,3 +1,8 @@
+2007-10-17  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxHost.java: Update; import frysk.proc.FindProc.
+	* LinuxExeHost.java: Ditto.
+
 2007-10-16  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxTask.java (sendrecRegisterBuffersFIXME): Delete contents,

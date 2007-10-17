@@ -43,6 +43,7 @@ import java.io.File;
 import java.util.Iterator;
 
 import frysk.proc.Host;
+import frysk.proc.FindProc;
 import frysk.proc.Manager;
 import frysk.proc.ProcId;
 import frysk.proc.dead.LinuxHost;
@@ -114,7 +115,7 @@ public class Util
    */
   public static Proc getProcFromPid(ProcId procId)
   {
-      class ProcFinder implements Host.FindProc {
+      class ProcFinder implements FindProc {
 	  Proc proc;
 	  public void procFound (ProcId procId)
 	  {

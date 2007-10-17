@@ -40,13 +40,13 @@
 package frysk.hpd;
 
 import frysk.proc.Manager;
-import frysk.proc.Host;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.testbed.TearDownExpect;
 import frysk.testbed.TearDownProcess;
 import frysk.sys.ProcessIdentifier;
 import frysk.expunit.Expect;
+import frysk.proc.FindProc;
 
 /**
  * Generic framework for testing the HPD command line interface.
@@ -73,7 +73,7 @@ class TestLib
     public Proc getChild() {
 	ProcessIdentifier pid = child.getPid();
 
-	class Finder implements Host.FindProc {
+	class Finder implements FindProc {
 
 	    Proc proc;
 

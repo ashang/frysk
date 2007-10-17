@@ -58,6 +58,7 @@ import frysk.sys.Fork;
 import frysk.sys.Tid;
 import frysk.sys.Pid;
 import frysk.event.Event;
+import frysk.proc.FindProc;
 
 /**
  * A Linux Host tracked using PTRACE.

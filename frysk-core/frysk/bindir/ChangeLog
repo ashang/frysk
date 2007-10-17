@@ -1,3 +1,7 @@
+2007-10-17  Andrew Cagney  <cagney@redhat.com>
+
+	* fstep.java: Update; use frysk.proc.FindProc.
+
 2007-10-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFstack.java: Use DeamonBlockedAtSignal instead of

@@ -39,12 +39,23 @@
 
 package frysk.bindir;
 
-import frysk.proc.*;
+import frysk.proc.FindProc;
+import java.util.List;
+import frysk.proc.Auxv;
+import frysk.proc.Manager;
 import frysk.util.CommandlineParser;
-import lib.opcodes.*;
 import inua.eio.ByteBuffer;
-import gnu.classpath.tools.getopt.*;
-import java.util.*;
+import frysk.proc.TaskObserver;
+import lib.opcodes.Disassembler;
+import java.util.HashMap;
+import java.util.ArrayList;
+import gnu.classpath.tools.getopt.OptionException;
+import gnu.classpath.tools.getopt.Option;
+import java.util.Iterator;
+import frysk.proc.Action;
+import frysk.proc.ProcId;
+import frysk.proc.Proc;
+import frysk.proc.Task;
 
 public class fstep
   implements TaskObserver.Attached,
@@ -165,7 +176,7 @@ public class fstep
     final fstep step = new fstep();
     if (pid != 0)
       {
-	Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc() {
+	Manager.host.requestFindProc(new ProcId(pid), new FindProc() {
 	    
 	    public void procFound (ProcId procId)
 	    {

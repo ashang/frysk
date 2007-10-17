@@ -1,3 +1,10 @@
+2007-10-17  Andrew Cagney  <cagney@redhat.com>
+
+	* Util.java: Update; use frysk.proc.FindProc.
+	* FCatch.java: Ditto.
+	* Ftrace.java: Ditto.
+	* TestFCatch.java: Ditto.
+
 2007-10-16  Andrew Cagney  <cagney@redhat.com>
 
 	* IA32LinuxElfCorefile.java: Rename LinuxElfCorefilex86.java.

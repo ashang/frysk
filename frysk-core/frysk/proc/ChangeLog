@@ -1,3 +1,14 @@
+2007-10-17  Andrew Cagney  <cagney@redhat.com>
+
+	* Host.java (FindProc): Delete; moved to ...
+	* FindProc.java: ... here.
+	* HostState.java: Update.
+	* ProcBlockAction.java: Update.
+	* TestFindProc.java: Update.
+	* TestSyscallRunning.java: Update.
+	* TestSyscallSignal.java: Update.
+	* TestTaskSyscallObserver.java: Update.
+
 2007-10-15  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRegs.java (taskObject(Task)): Delete.

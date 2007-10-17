@@ -66,8 +66,7 @@ public class TestFindProc
     }
   }
 
-  class MyFinder
-      implements Host.FindProc
+  class MyFinder implements FindProc
   {
     ProcId expectedId;
     
@@ -130,7 +129,7 @@ public class TestFindProc
      * Find out how many processes are associated with the test process.
      * Should be just the one.
      */
-    Host.FindProc finder = new MyFinder(new ProcId(ackProc.getPid()));
+    FindProc finder = new MyFinder(new ProcId(ackProc.getPid()));
     Manager.host.requestFindProc(new ProcId(ackProc.getPid()), finder);
     assertRunUntilStop("testFindProc");
 
@@ -142,7 +141,7 @@ public class TestFindProc
   
   public void testFindAndRefreshFailed ()
   {
-    Host.FindProc finder = new Host.FindProc()
+    FindProc finder = new FindProc()
     {
       public void procFound (ProcId procId)
       {

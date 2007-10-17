@@ -39,11 +39,11 @@
 
 package frysk.testbed;
 
+import frysk.proc.FindProc;
 import frysk.sys.Sig;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.sys.Errno;
-import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.ProcId;
 import java.util.Iterator;
@@ -88,8 +88,7 @@ public abstract class Offspring {
      * Find/return the child's Proc, polling /proc if necessary.
      */
     public Proc assertFindProcAndTasks () {
-	class FindProc
-	    implements Host.FindProc
+	class ProcFinder implements FindProc
 	{
 	    Proc proc;
 	    public void procFound (ProcId procId) {
@@ -100,7 +99,7 @@ public abstract class Offspring {
 		TestCase.fail("Couldn't find the given proc");
 	    }
 	}
-	FindProc findProc = new FindProc();
+	ProcFinder findProc = new ProcFinder();
 	Manager.host.requestFindProc(new ProcId(getPid()), findProc);
 	Manager.eventLoop.run();
 	return findProc.proc;

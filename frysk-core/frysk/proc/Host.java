@@ -211,27 +211,6 @@ public abstract class Host
     }
     
     /**
-     * Interface to be used with requestFindProc.
-     */
-    public interface FindProc
-  {
-    
-    /**
-     * The process was successfully found and added to the Host's list of processes.
-     * @param procId the procId that was found.
-     */
-    void procFound (ProcId procId);
-
-    /**
-     * The process with the given ID was not found.
-     * @param procId the procId that was not found.
-     * @param e The exception that occurred.
-     */
-    void procNotFound (ProcId procId, Exception e);    
-  }
-    
-    
-    /**
      * Request that a new attached and running process be created.
      */
     public final void requestCreateAttachedProc (final String stdin,

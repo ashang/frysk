@@ -1,3 +1,8 @@
+2007-10-17  Andrew Cagney  <cagney@redhat.com>
+
+	* AttachCommand.java: Update; use frysk.proc.FindProc.
+	* TestLib.java: Ditto.
+
 2007-10-15  Andrew Cagney  <cagney@redhat.com>
 
 	* TestStackCommands.java: Split into ...
