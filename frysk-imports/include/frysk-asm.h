@@ -133,17 +133,14 @@
 #  define REG3 %rdx
 #  define SP   %rsp
 #elif defined __powerpc__
-#  define REG0 3
-#  define REG1 4
-#  define REG2 5
-#  define REG3 6
+// System call number goes in GPR00
+#  define REG0 0
+// Function (integer) parameters should be in GPR03 to GPR10
+#  define REG1 3
+#  define REG2 4
+#  define REG3 5
+// PowerPC Abi defines that the GPR01 should be used as stack pointer
 #  define SP   1
-#elif defined __powerpc64__
-#  define REG0 %gpr3
-#  define REG1 %gpr4
-#  define REG2 %gpr5
-#  define REG3 %gpr6
-#  define SP   %gpr1
 #else
 #  warning "no general purpose registers"
 #endif
@@ -289,8 +286,8 @@
 #  define ADD(DEST_REG, SOURCE_REG) addl DEST_REG, SOURCE_REG
 #elif defined __x86_64__
 #  define ADD(DEST_REG, SOURCE_REG) addq DEST_REG, SOURCE_REG
-//#elif defined __powerpc__
-//#  define ADD(DEST_REG, SOURCE_REG)
+#elif defined __powerpc__
+#  define ADD(DEST_REG, SOURCE_REG) add DEST_REG, SOURCE_REG, DEST_REG
 //#elif defined __powerpc64__
 //#  define ADD(DEST_REG, SOURCE_REG)
 #else
@@ -301,8 +298,8 @@
 #  define SUB(DEST_REG, SOURCE_REG) subl DEST_REG, SOURCE_REG
 #elif defined __x86_64__
 #  define SUB(DEST_REG, SOURCE_REG) subq DEST_REG, SOURCE_REG
-//#elif defined __powerpc__
-//#  define SUB(DEST_REG, SOURCE_REG)
+#elif defined __powerpc__
+#  define SUB(DEST_REG, SOURCE_REG) subf DEST_REG, SOURCE_REG, DEST_REG
 //#elif defined __powerpc64__
 //#  define SUB(DEST_REG, SOURCE_REG)
 #else
@@ -313,8 +310,8 @@
 #  define MOV(SOURCE_REG, DEST_REG) movl SOURCE_REG, DEST_REG
 #elif defined __x86_64__
 #  define MOV(SOURCE_REG, DEST_REG) movq SOURCE_REG, DEST_REG
-//#elif defined __powerpc__
-//#  define MOV(SOURCE_REG, DEST_REG)
+#elif defined __powerpc__
+#  define MOV(SOURCE_REG, DEST_REG) mr DEST_REG, SOURCE_REG
 //#elif defined __powerpc64__
 //#  define MOV(SOURCE_REG, DEST_REG)
 #else
@@ -325,8 +322,8 @@
 #  define COMPARE(LHS_REG,RHS_REG) cmpl LHS_REG, RHS_REG
 #elif defined __x86_64__
 #  define COMPARE(LHS_REG,RHS_REG) cmpq LHS_REG, RHS_REG
-//#elif defined __powerpc__
-//#  define COMPARE(LHS_REG,RHS_REG)
+#elif defined __powerpc__
+#  define COMPARE(LHS_REG,RHS_REG) cmpw cr7, LHS_REG, RHS_REG
 //#elif defined __powerpc64__
 //#  define COMPARE(LHS_REG,RHS_REG)
 #else
@@ -381,9 +378,11 @@
 #elif defined __x86_64__
 #  define JUMP_REG(REG) jmp *REG
 #elif defined __powerpc__
-#  define JUMP_REG(REG) br *REG
-#elif defined __powerpc64__
-#  define JUMP_REG(REG) br *REG
+// PowerPC do not have a instructio for jumping for a REG,
+// so the solution is to use a special reg (here counter reg)
+// copy the value to him, and them jump. The problem is that you
+// will lose the old value of CTR reg
+#  define JUMP_REG(REG) mtctr REG; bctrl
 #else
 #  warning "No indirect or register jump instruction defined"
 #endif
@@ -521,15 +520,11 @@
 	mflr    0          ; \
 	stw     0,  36(1)  ; \
 	stw    31,  28(1)  ; \
-        mr     31,   1     ; \
-        stw  REG1,  12(31) ; \
-	stw  REG2,  16(31) ; \
-	stw  REG3,  20(31) ; \
-	stw  REG4,  24(31)
-#elif defined __powerpc64__
-#  define FUNCTION_PROLOGUE(FUNC,SLOTS) \
-	push %gpr0; \
-	push %gpr3
+        mr     31,   1	   ; \
+        stw  REG0,  12(31) ; \
+	stw  REG1,  16(31) ; \
+	stw  REG2,  20(31) ; \
+	stw  REG3,  24(31)
 #else
 #  warning "No function-prologue compound instruction defined"
 #endif
@@ -546,17 +541,15 @@
 	.cfi_adjust_cfa_offset -8
 #elif defined __powerpc__
 #  define FUNCTION_EPILOGUE(FUNC,SLOTS) \
-	lwz  REG4, 24(31) ; \
-        lwz  REG3, 20(31) ; \
-	lwz  REG2, 16(31) ; \
-	lwz  REG1, 12(31) ; \
+	lwz  REG3, 24(31) ; \
+        lwz  REG2, 20(31) ; \
+	lwz  REG1, 16(31) ; \
+	lwz  REG0, 12(31) ; \
 	lwz    11,  0(1)  ; \
 	lwz     0,  4(11) ; \
 	mtlr    0         ; \
 	lwz    31, -4(11) ; \
 	mr      1, 11
-#elif defined __powerpc64__
-#  define FUNCTION_EPILOGUE(FUNC,SLOTS) pop %gpr0
 #else
 #  warning "No function-epilogue instruction sequence defined"
 #endif
@@ -655,10 +648,11 @@
 #  define SYSCALL int $0x80
 #elif defined __x86_64__
 #  define SYSCALL syscall
-//#elif defined __powerpc__
+#elif defined __powerpc__
+#  define SYSCALL sc
 //#elif defined __powerpc64__
 #else
-#  warning "No stack-store instruction sequence defined"
+#  warning "No sys-call instruction sequence defined"
 #endif
 
 
@@ -706,6 +700,10 @@
 	.cfi_startproc; \
 	.cfi_def_cfa rsp, 0; \
 	.cfi_return_column rax
+#elif defined __powerpc64__
+#define FRAMELESS_FUNCTION_BEGIN(FUNC) \
+	FUNC: \
+
 #else
 #  warning "No frameless function beginning instructions defined"
 #endif
@@ -716,6 +714,8 @@
 #elif defined __x86_64__
 #define FRAMELESS_ADJ_RETURN(REG) \
 	.cfi_register rax, REG
+#elif defined __powerpc64__
+#define FRAMELESS_ADJ_RETURN(REG)
 #else
 #  warning "No frameless function return adjustment defined"
 #endif
@@ -726,6 +726,9 @@
 #elif defined __x86_64__
 #define FRAMELESS_FUNCTION_END(FUNC) \
 	.cfi_endproc
+#elif defined __powerpc64__
+#define FRAMELESS_FUNCTION_END(FUNC) \
+	blr
 #else
 #  warning "No frameless function ending instructions defined"
 #endif

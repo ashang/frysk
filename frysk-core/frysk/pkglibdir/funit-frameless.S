@@ -50,8 +50,10 @@
 	MOV(REG0, REG1)
 	FRAMELESS_ADJ_RETURN (REG1)
 	NO_OP ; NO_OP
+#if !defined __powerpc__
 	LOAD_IMMED_WORD(REG0, .L1)
 	JUMP(bar)				// _stepFramelessEntry_
+#endif
 .L1: 
 	NO_OP ; NO_OP				// _stepFramelessReturn_
 	JUMP_REG(REG1)			
@@ -59,9 +61,11 @@
 
 	
 	FUNCTION_BEGIN(main, 0)
-	MAIN_PROLOGUE(0)	
+	MAIN_PROLOGUE(0)
+#if !defined __powerpc__
 	LOAD_IMMED_WORD(REG0, .L2)
 	JUMP(foo)
+#endif
 .L2:	
 	NO_OP
 	MAIN_EPILOGUE(0)
