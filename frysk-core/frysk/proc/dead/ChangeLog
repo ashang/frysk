@@ -1,5 +1,15 @@
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
+	* DeadHost.java: New.
+	* DeadProc.java: New.
+	* DeadTask.java: New.
+	* LinuxExeTask.java: Extend DeadTask.
+	* LinuxExeProc.java: Extend DeadProc.
+	* LinuxExeHost.java: Extend DeadHost.
+	* LinuxHost.java: Extend DeadHost.
+	* LinuxProc.java: Extend DeadProc.
+	* LinuxTask.java: Extend DeadTask.
+
 	* LinuxHost.java: Update; import frysk.proc.FindProc.
 	* LinuxExeHost.java: Ditto.
 

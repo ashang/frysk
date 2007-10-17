@@ -45,15 +45,12 @@ import lib.dwfl.ElfPrXFPRegSet;
 import inua.eio.ByteBuffer;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
-import frysk.proc.Task;
 import frysk.proc.TaskId;
 import frysk.proc.Isa;
 import frysk.isa.ISA;
 import frysk.proc.RegisterBanks;
 
-public class LinuxTask
-    extends Task
-{
+public class LinuxTask extends DeadTask {
 
   ElfPrstatus elfTask = null;
   ElfPrFPRegSet elfFPRegs = null;

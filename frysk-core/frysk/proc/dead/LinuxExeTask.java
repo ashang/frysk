@@ -43,12 +43,11 @@ import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
 import frysk.proc.RegisterBanks;
 import frysk.proc.Isa;
-import frysk.proc.Task;
 import frysk.proc.TaskId;
 import frysk.proc.TaskState;
 import frysk.isa.ISA;
 
-public class LinuxExeTask extends Task {
+public class LinuxExeTask extends DeadTask {
 
     LinuxExeProc proc = null;
     TaskId id = null;

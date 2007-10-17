@@ -37,98 +37,16 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc.dead;
+package frysk.proc.live;
 
-import inua.eio.ByteBuffer;
-import java.util.ArrayList;
 import frysk.proc.Host;
-import frysk.proc.Proc;
-import frysk.proc.Auxv;
-import frysk.proc.Isa;
-import frysk.proc.MemoryMap;
-import frysk.proc.ProcId;
-import frysk.proc.ProcState;
-import frysk.proc.TaskId;
 
-public class LinuxExeProc extends DeadProc {
+/**
+ * A live Host/Proc/Task is characterised by its stateful nature;
+ * i.e., an ability to respond to stateful requests such as add/remove
+ * observers.
+ */
 
-    ArrayList metaData = new ArrayList();
-    LinuxExeHost host = null;
-    ProcId id = null;	
-
-    public LinuxExeProc(Host host, Proc parent, ProcId id) {
-	super(host, parent, id);
-	this.host = (LinuxExeHost) host;
-	this.id = id;
-	buildMetaData();
-    }
-
-    protected ProcState getInitialState(boolean procStarting) {
-	return LinuxProcState.initial(this);
-    }
-
-    public void sendRefresh() {
-	 LinuxExeTask newTask = new LinuxExeTask(this, new TaskId(0),
-		 LinuxExeTaskState.initial());
-	 newTask.getClass();
-    }
-
-    protected Auxv[] sendrecAuxv() {
-	return null;
-    }
-    
-    protected int sendrecUID() 
-    {
-      return 0;
-    }
-
-    protected String[] sendrecCmdLine() {
-	return null;
-    }
-
-    protected String sendrecCommand() {
-	return this.host.exeFile.getName();
-    }
-
-    protected String sendrecExe() {
-	return host.exeFile.getAbsolutePath();
-    }
-
-    protected int sendrecGID() {
-	return 0;
-    }
-
-    protected Isa sendrecIsa() {
-	return null;
-    }
-
-    protected MemoryMap[] sendrecMaps() {
-	return null;
-    }
-
-    public ByteBuffer sendrecMemory() {
-	ByteBuffer memory = new ExeByteBuffer(metaData);
-	return memory;
-    }
-    
-    private void buildMetaData()
-    {
-	class BuildExeMaps extends SOLibMapBuilder
-
-	{
-	    public void buildMap(long addrLow, long addrHigh, boolean permRead,
-		    boolean permWrite, boolean permExecute, long offset,
-		    String name, long align) 
-	    {
-		
-		metaData.add(new MapAddressHeader(addrLow, addrHigh, permRead,
-			permWrite, permExecute, 0, offset, 0, 0, name, align));
-	    }
-	}
-	
-	BuildExeMaps SOMaps = new BuildExeMaps();
-	// Add in case for executables maps.
-	SOMaps.construct(this.host.exeFile, 0);
-    }
+abstract class LiveHost extends Host {
 
 }

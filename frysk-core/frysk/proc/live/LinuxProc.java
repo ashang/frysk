@@ -67,9 +67,7 @@ import java.io.File;
  * A Linux Proc tracked using PTRACE.
  */
 
-public class LinuxProc
-    extends Proc
-{
+public class LinuxProc extends LiveProc {
     /**
      * Create a new detached process.  RUNNING makes no sense here.
      * Since PARENT could be NULL, also explicitly pass in the host.

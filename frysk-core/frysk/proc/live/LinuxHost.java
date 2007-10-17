@@ -40,7 +40,6 @@
 package frysk.proc.live;
 
 import frysk.event.EventLoop;
-import frysk.proc.Host;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.HashMap;
@@ -64,8 +63,7 @@ import frysk.proc.FindProc;
  * A Linux Host tracked using PTRACE.
  */
 
-public class LinuxHost
-    extends Host
+public class LinuxHost extends LiveHost
 {
     /**
      * Construct an instance of the LinuxHost that uses the

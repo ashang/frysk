@@ -1,5 +1,12 @@
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
+	* LiveHost.java: New.
+	* LiveProc.java: New.
+	* LiveTask.java: New.
+	* LinuxHost.java: Extend LiveHost.
+	* LinuxProc.java: Extend LiveProc.
+	* LinuxTask.java: Extend LiveTask.
+
 	* LinuxHost.java: Update; import frysk.proc.FindProc.
 
 2007-10-14  Andrew Cagney  <cagney@redhat.com>

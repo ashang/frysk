@@ -56,7 +56,6 @@ import java.util.logging.Level;
 import java.util.Iterator;
 import java.io.File;
 import java.util.ArrayList;
-import frysk.proc.Proc;
 import frysk.proc.ProcState;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
@@ -67,9 +66,7 @@ import frysk.proc.MemoryMap;
 import frysk.isa.ISA;
 import frysk.isa.ElfMap;
 
-public class LinuxProc
-    extends Proc
-{
+public class LinuxProc extends DeadProc {
   
   private ElfData elfData = null;
   private ElfPrpsinfo elfProc = null;

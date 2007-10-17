@@ -37,90 +37,24 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc.dead;
+package frysk.proc.live;
 
-import java.io.File;
-import java.util.Iterator;
-import frysk.proc.FindProc;
-import lib.dwfl.Elf;
-import lib.dwfl.ElfCommand;
-import frysk.event.EventLoop;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
-import frysk.proc.TaskObserver.Attached;
+import frysk.proc.Host;
+import frysk.proc.Task;
 
-public class LinuxExeHost extends DeadHost {
+/**
+ * A live Host/Proc/Task is characterised by its stateful nature;
+ * i.e., an ability to respond to stateful requests such as add/remove
+ * observers.
+ */
 
-    protected File exeFile = null;
-    EventLoop eventLoop = null;
-    Elf exeFileElf = null;
-    private boolean hasRefreshed;
-    
-    public LinuxExeHost(EventLoop eventLoop, File exeFile)
-    {
-	this.exeFile = exeFile;
-	this.eventLoop = eventLoop;
-	try
-	{
-	    this.exeFileElf = new Elf (exeFile.getPath(), ElfCommand.ELF_C_READ);
-	}
-	catch (Exception e)
-	{
-	    throw new RuntimeException("ExeFile " + this.exeFile + " is "+ 
-	    "not a valid ELF file.");
-	}
-	
-	this.sendRefresh(true);
+abstract class LiveProc extends Proc {
+    LiveProc(Host host, Proc parent, ProcId pid) {
+	super(host, parent, pid);
     }
-    
-    protected void sendCreateAttachedProc(String stdin, String stdout,
-	    String stderr, String[] args, Attached attached) {
-
+    LiveProc(Task task, ProcId forkId) {
+	super(task, forkId);
     }
-
-    /**
-     * sendRefresh refreshes the list of processes.
-     * 
-     * @param refreshAll is a boolean, true=refresh, false=not
-     */
-    protected void sendRefresh(boolean refreshAll) {	
-	if (this.hasRefreshed)
-	    return;
-	// Iterate (build) the /proc tree, passing each found PID to
-	// procChanges where it can update the /proc tree.
-	// Changes individual process.
-	Proc newProc = new LinuxExeProc(this, null ,new ProcId(0));
-	newProc.getClass();
-	
-	for (Iterator i = procPool.values().iterator(); i.hasNext();)
-	{
-	    LinuxExeProc proc = (LinuxExeProc) i.next();
-	    proc.sendRefresh();
-	}
-	this.hasRefreshed = true;
-    }
-
-    /**
-     * sendRefresh refreshes a list of PIDs for this process, although
-     * at this point in time for an executable none have been assigned.
-     */
-    protected void sendRefresh(ProcId procId, FindProc finder) {
-	return;
-    }
-
-    /**
-     * sendrecSelf sends a point to frysk back, but no need for this 
-     * for an executable.
-     */
-    protected Proc sendrecSelf() {
-	return null;
-    }
-    /**
-     * finalize closes the file descriptor for the executable.
-     */
-    protected void finalize()
-    {
-	this.exeFileElf.close();
-    }
-
 }

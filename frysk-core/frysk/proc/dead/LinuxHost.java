@@ -51,15 +51,12 @@ import lib.dwfl.ElfData;
 import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfPHeader;
 import lib.dwfl.ElfPrpsinfo;
-import frysk.proc.Host;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.TaskObserver;
 import frysk.proc.FindProc;
 
-public class LinuxHost 
-  extends Host 
-{
+public class LinuxHost extends DeadHost {
 
   boolean hasRefreshed = false;
   boolean exeSetToNull = false;

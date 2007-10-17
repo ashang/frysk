@@ -65,9 +65,7 @@ import frysk.proc.RegisterBanks;
  * A Linux Task tracked using PTRACE.
  */
 
-public class LinuxTask
-    extends Task
-{
+public class LinuxTask extends LiveTask {
     /**
      * Create a new unattached Task.
      */
