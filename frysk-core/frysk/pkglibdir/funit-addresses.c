@@ -1,5 +1,6 @@
 // This file is part of the program FRYSK.
 //
+// Copyright 2007 Oracle Corporation.
 // Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
@@ -38,6 +39,7 @@
 // exception.
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdlib.h>
 #include <string.h>
 
 char global_char = 'a';

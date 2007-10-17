@@ -1,3 +1,7 @@
+2007-10-17 Kris Van Hees <kris.van.hees@oracle.com>
+
+	* funit-addresses.c: Add include of stdlib.h - required for malloc().
+
 2007-10-16 Teresa Thomas <tthomas@redhat.com>
 
 	* funit-addresses.c: Add loop option; add more variable
