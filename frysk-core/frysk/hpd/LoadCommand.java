@@ -42,16 +42,20 @@ package frysk.hpd;
 import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
+import frysk.debuginfo.DebugInfo;
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.proc.Host;
 import frysk.proc.dead.LinuxExeHost;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
+import frysk.proc.Task;
 
 /**
  * LoadCommand handles the "load path-to-executable" command on the fhpd
- * commandline.  The user can load an executable and then view its memory
- * contents via the "peek" command.
+ * commandline.
  *
  */
 
@@ -90,10 +94,22 @@ public class LoadCommand extends CLIHandler {
 	cli.setExeHost(exeHost);
 	cli.setExeProc(exeProc);
 	int procID = cli.idManager.reserveProcID();
-	if (exeProc == null) System.out.println("LoadCommand: exeProc == null");
+
 	cli.idManager.manageProc(exeProc, procID);
 	
 	cli.addMessage("Loaded executable file: " + params.get(0),
 		Message.TYPE_NORMAL);
+	
+	Iterator foo = cli.targetset.getTasks();
+	while (foo.hasNext()) {
+	    Task task = (Task) foo.next();
+	    if (task.getTid() == exeProc.getMainTask().getTid()) {
+		DebugInfoFrame frame = DebugInfoStackFactory
+			.createDebugInfoStackTrace(task);
+		cli.setTaskFrame(task, frame);
+		cli.setTaskDebugInfo(task, new DebugInfo(
+			frame));
+	    }
+	}
     }
 }

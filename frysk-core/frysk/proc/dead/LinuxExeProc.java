@@ -40,9 +40,16 @@
 package frysk.proc.dead;
 
 import inua.eio.ByteBuffer;
+
 import java.util.ArrayList;
-import frysk.proc.Host;
-import frysk.proc.Proc;
+import java.util.logging.Level;
+
+import lib.dwfl.ElfEHeader;
+import lib.dwfl.ElfData;
+
+import frysk.isa.ISA;
+import frysk.isa.ElfMap;
+import frysk.proc.IsaFactory;
 import frysk.proc.Auxv;
 import frysk.proc.Isa;
 import frysk.proc.MemoryMap;
@@ -52,13 +59,15 @@ import frysk.proc.TaskId;
 
 public class LinuxExeProc extends DeadProc {
 
+    private ElfData elfData = null;
     ArrayList metaData = new ArrayList();
     LinuxExeHost host = null;
     ProcId id = null;	
 
-    public LinuxExeProc(Host host, Proc parent, ProcId id) {
-	super(host, parent, id);
-	this.host = (LinuxExeHost) host;
+    public LinuxExeProc(ElfData data, LinuxExeHost host, ProcId id) {
+	super(host, null, id);
+	this.host = host;
+	this.elfData = data;
 	this.id = id;
 	buildMetaData();
     }
@@ -97,13 +106,23 @@ public class LinuxExeProc extends DeadProc {
     protected int sendrecGID() {
 	return 0;
     }
+    
+    protected ISA sendrecISA() {
+	ElfEHeader header = elfData.getParent().getEHeader();
+	return ElfMap.getISA(header);
+    }
 
     protected Isa sendrecIsa() {
-	return null;
+	logger.log(Level.FINE, "{0} sendrecIsa\n", this);
+
+	ElfEHeader header = elfData.getParent().getEHeader();
+	    
+	IsaFactory factory = IsaFactory.getSingleton();
+	return factory.getIsaForCoreFile(header.machine);
     }
 
     protected MemoryMap[] sendrecMaps() {
-	return null;
+	return (MemoryMap[]) metaData.toArray(new MemoryMap[metaData.size()]);
     }
 
     public ByteBuffer sendrecMemory() {
@@ -120,9 +139,9 @@ public class LinuxExeProc extends DeadProc {
 		    boolean permWrite, boolean permExecute, long offset,
 		    String name, long align) 
 	    {
-		
-		metaData.add(new MapAddressHeader(addrLow, addrHigh, permRead,
-			permWrite, permExecute, 0, offset, 0, 0, name, align));
+		metaData.add(new MemoryMap(addrLow, addrHigh, permRead,
+			permWrite, permExecute, false, offset, -1, -1, -1, -1, -1,
+			host.exeFile.getAbsolutePath()));
 	    }
 	}
 	

@@ -1,3 +1,14 @@
+2007-10-18  Rick Moseley  <rmoseley@redhat.com>
+
+	* LinuxExeHost.java: Add DeconstructExeFile class and update
+	method.
+	* LinuxExeProc.java: Pass ElfData to the constructor; add 
+	sendrecISA method; change MapAddressHeader to MemoryMap in
+	buildMetaData.
+	* LinuxExeTask.java: Merger my changes with changes below; return
+	info instead of null for sendrecISA and sendrecIsa.
+	* ExeByteBuffer.java: Change MapAddressHeader to MemoryMap.
+
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
 	* DeadHost.java: New.

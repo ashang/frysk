@@ -49,9 +49,9 @@ import frysk.proc.ProcId;
 import frysk.proc.Task;
 
 /**
- * LoadCommand handles the "load path-to-executable" command on the fhpd
- * commandline.  The user can load an executable and then view its memory
- * contents via the "peek" command.
+ * PeekCommand handles the "peek memory-location" command on the fhpd
+ * commandline.  This command is only used after a "load" command has
+ * been issued.
  *
  */
 
@@ -82,11 +82,8 @@ public class PeekCommand extends CLIHandler {
 	    return;
 	}
 	
-	//Proc proc = cli.exeProc;
 	Proc proc = cli.exeHost.getProc(new ProcId(0));
 	Task task = proc.getMainTask();
-	System.out.println("PeekCommand): proc = " + proc.toString() +
-		"\ntask = " + task.getName());
 	
 	ByteBuffer buffer = task.getMemory();
 	if (buffer == null) {
@@ -103,7 +100,7 @@ public class PeekCommand extends CLIHandler {
 	    if (memposition.lastIndexOf("L") != -1)
 		memposition = memposition.substring(0, memposition.lastIndexOf("L"));
 	}
-	System.out.println("PeekCommand: memposition = " + memposition);
+	
 	try {
 	    long value = Long.parseLong(memposition.trim(), radix);
 	    buffer.position(value);

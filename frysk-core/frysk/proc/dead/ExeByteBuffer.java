@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import frysk.sys.StatelessFile;
+import frysk.proc.MemoryMap;
 
 import inua.eio.ByteBuffer;
 
@@ -65,16 +66,16 @@ public class ExeByteBuffer extends ByteBuffer {
     protected int peek(long caret) {
 	
 	Iterator i = metaData.iterator();
-	MapAddressHeader line = null;
+	MemoryMap line = null;
 	long offset = -1;
 	byte[] buffer = new byte[1];
 	
 	while (i.hasNext())
 	{
-	    line = ((MapAddressHeader)i.next());
-	    if ((caret >= line.vaddr) && (caret<= line.vaddr_end))
+	    line = ((MemoryMap)i.next());
+	    if ((caret >= line.addressLow) && (caret<= line.addressHigh))
 		    {
-			offset = line.solibOffset + (caret - line.vaddr);
+			offset = line.offset + (caret - line.addressLow);
 			break;
 		    }
 	}

@@ -47,62 +47,52 @@ import frysk.proc.TaskId;
 import frysk.proc.TaskState;
 import frysk.isa.ISA;
 
-public class LinuxExeTask extends DeadTask {
 
-    LinuxExeProc proc = null;
-    TaskId id = null;
-    
+public class LinuxExeTask extends DeadTask
+{
 
-    protected LinuxExeTask(LinuxExeProc proc, TaskId id, TaskState state) {
-	super(proc, id, state);
-	this.proc = proc;
-	this.id = id;
+  LinuxExeProc proc = null;
+  TaskId id = null;
+  
+  protected LinuxExeTask(LinuxExeProc proc, TaskId id, TaskState state) {
+      super(proc, id, state);
+      this.proc = proc;
+      this.id = id;
+  }
+  
+  protected ISA sendrecISA() {
+      return ((LinuxExeProc)getProc()).sendrecISA();
+  }
+
+  protected Isa sendrecIsa() {
+      return getProc().getIsa();
+  }
+
+  protected ByteBuffer sendrecMemory () {
+    return this.proc.sendrecMemory();
+  }
+  
+  /**
+   * sendrecRegisterBuffers fakes out what the register values are at this point
+   * as there is no info to be had at this moment in time.
+   */
+  protected ByteBuffer[] sendrecRegisterBuffersFIXME() {
+      ByteBuffer[] bankBuffers = new ByteBuffer[4];
+
+	// Create an empty page
+      byte[] emptyBuffer = new byte[4096];
+      for (int i = 0; i < emptyBuffer.length; i++)
+	  emptyBuffer[i] = 0;
+
+      bankBuffers[0] = new ArrayByteBuffer(emptyBuffer);
+      bankBuffers[1] = new ArrayByteBuffer(emptyBuffer);
+      bankBuffers[2] = new ArrayByteBuffer(emptyBuffer);
+      bankBuffers[3] = new ArrayByteBuffer(emptyBuffer);
+      return bankBuffers;
     }
 
-    /**
-     * sendrecISA does nothing here as it has no info about it at this
-     * point?
-     */
-    protected ISA sendrecISA() {
-	return null;
-    }
-
-    /**
-     * sendrecIsa does nothing here as it has no info about it at this point.
-     */
-    protected Isa sendrecIsa() {
-	return null;
-    }
-
-    /**
-     * sendrecMemory does nothing here as it has no info about it at this point.
-     */
-    protected ByteBuffer sendrecMemory() {
-	return this.proc.sendrecMemory();
-    }
-
-    /**
-     * sendrecRegisterBanks fakes out what the register values are at this point
-     * as there is no info to be had at this moment in time.
-     */
-    protected ByteBuffer[] sendrecRegisterBuffersFIXME() {
-	ByteBuffer[] bankBuffers = new ByteBuffer[4];
-
-	    // Create an empty page
-	byte[] emptyBuffer = new byte[4096];
-	for (int i=0; i<emptyBuffer.length; i++)
-	    emptyBuffer[i]=0;
-
-	bankBuffers[0] = new ArrayByteBuffer(emptyBuffer);
-	bankBuffers[1] = new ArrayByteBuffer(emptyBuffer);
-	bankBuffers[2] = new ArrayByteBuffer(emptyBuffer);
-	bankBuffers[3] = new ArrayByteBuffer(emptyBuffer);
-	return bankBuffers;
-    }
-
-    protected RegisterBanks sendrecRegisterBanks() {
-	return CorefileRegisterBanksFactory.create
-	    (getISA(), sendrecRegisterBuffersFIXME());
-    }
-
+  protected RegisterBanks sendrecRegisterBanks() {
+      return CorefileRegisterBanksFactory.create
+      	  (getISA(), sendrecRegisterBuffersFIXME());
+  }
 }
