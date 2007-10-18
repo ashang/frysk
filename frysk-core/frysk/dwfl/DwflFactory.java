@@ -79,9 +79,11 @@ public class DwflFactory
      */
     private static long VDSOAddressLow (Proc proc) {
 	Auxv[] auxv = proc.getAuxv();
-	for (int i = 0; i < auxv.length; i++) {
-	    if (auxv[i].type == inua.elf.AT.SYSINFO_EHDR) {
-		return auxv[i].val;
+	if (auxv != null) {
+	    for (int i = 0; i < auxv.length; i++) {
+		if (auxv[i].type == inua.elf.AT.SYSINFO_EHDR) {
+		    return auxv[i].val;
+		}
 	    }
 	}
 	logger.log(Level.FINE, "Couldn't get vdso address\n");
