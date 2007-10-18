@@ -216,6 +216,9 @@ public class TestDisplayValue
    */
   public void testVarOutOfScope()
   {
+      if(unresolved(5199)){
+	  return;
+      }
     BreakpointManager bpManager = createDaemon();
     
     /* 
