@@ -40,13 +40,13 @@
 package frysk.bindir;
 
 import java.util.*;
+import java.util.logging.*;
+import java.util.regex.*;
 import java.io.File;
 import inua.util.PrintWriter;
 
 import gnu.classpath.tools.getopt.*;
 
-//import frysk.Config;
-//import frysk.EventLogger;
 import frysk.proc.*;
 import frysk.sys.Sig;
 import frysk.util.CommandlineParser;
@@ -55,6 +55,8 @@ import frysk.ftrace.*;
 
 public class fltrace
 {
+  protected static final Logger logger = Logger.getLogger("frysk");
+
   // The command to execute
   static String[] command;
 
@@ -70,24 +72,107 @@ public class fltrace
   //Where to send output.
   PrintWriter writer;
 
-  Ltrace tracer = new Ltrace(new LtraceController() {
-      public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver)
-      {
-	if (!task.getProc().getExe().equals(objf.getFilename().getPath()))
-	  return;
+    class WorkingSetRule {
+	final public boolean addition;
 
-	try {
-	  objf.eachTracePoint(new ObjectFile.TracePointIterator() {
-	      public void tracePoint(TracePoint tp) {
-		driver.tracePoint(task, tp);
-	      }
-	    }, TracePointOrigin.PLT);
+	/**
+	 * Object that performs a pattern matching of symbol
+	 * name. null for "anything" matcher.
+	 */
+	final public Pattern namePattern;
+
+	/** See namePattern */
+	final public Pattern sonamePattern, versionPattern;
+
+	public WorkingSetRule(boolean addition, String nameRe, String sonameRe, String versionRe) {
+	    this.addition = addition;
+	    this.namePattern = Pattern.compile((nameRe != null) ? nameRe : ".*");
+	    this.sonamePattern = Pattern.compile((sonameRe != null) ? sonameRe : ".*");
+	    this.versionPattern = Pattern.compile((versionRe != null) ? versionRe : ".*");
 	}
-	catch (lib.dwfl.ElfException ee) {
-	  ee.printStackTrace();
+
+	public String toString() {
+	    return ""
+		+ (this.addition ? '+' : '-')
+		+ this.namePattern.pattern()
+		+ "@" + this.sonamePattern.pattern()
+		+ "@@" + this.versionPattern.pattern();
 	}
-      }
-    });
+    }
+
+    class MyController
+	implements LtraceController
+    {
+	// ArrayList<WorkingSetRule>
+	private final List pltRules = new ArrayList()/*, dynRules, symRules*/;
+
+	public void gotPltRules(List pltRules) {
+	    this.pltRules.addAll(pltRules);
+	}
+
+	public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver) {
+	    try {
+		if (pltRules.size() > 0) {
+		    final Set candidates = new HashSet(); // Set<TracePoint>
+		    final Set workingSet = new HashSet(); // Set<TracePoint>
+		    boolean candidatesInited = false;
+
+		    for (Iterator it = pltRules.iterator(); it.hasNext(); ) {
+			final WorkingSetRule rule = (WorkingSetRule)it.next();
+			if ((rule.sonamePattern.pattern().equals("MAIN")
+			     && task.getProc().getExe().equals(objf.getFilename().getPath()))
+			    || rule.sonamePattern.matcher(objf.getSoname()).matches())
+			{
+			    if (!candidatesInited) {
+				candidatesInited = true;
+				objf.eachTracePoint(new ObjectFile.TracePointIterator() {
+					public void tracePoint(TracePoint tp) {
+					    if (candidates.add(tp))
+						logger.log(Level.FINE, "candidate `" + tp.symbol.name + "'.", this);
+					}
+				    }, TracePointOrigin.PLT);
+			    }
+
+			    Set iterateOver = rule.addition ? candidates : workingSet;
+			    for (Iterator jt = iterateOver.iterator(); jt.hasNext(); ) {
+				TracePoint tp = (TracePoint)jt.next();
+				if (rule.namePattern.matcher(tp.symbol.name).matches()) {
+				    // This is PLT rule, so we will use verneeds.
+				    // If any of the matches...
+				    boolean versionMatch = false;
+				    for (int i = 0; i < tp.symbol.verneeds.length; ++i)
+					if (rule.versionPattern.matcher(tp.symbol.verneeds[i].name).matches()) {
+					    versionMatch = true;
+					    break;
+					}
+
+				    if (versionMatch) {
+					if (rule.addition) {
+					    if (workingSet.add(tp))
+						logger.log(Level.CONFIG, rule + ": add `" + tp.symbol.name + "'.", this);
+					}
+					else {
+					    jt.remove();
+					    logger.log(Level.CONFIG, rule + ": remove `" + tp.symbol.name + "'.", this);
+					}
+				    }
+				}
+			    }
+			}
+		    }
+
+		    for (Iterator it = workingSet.iterator(); it.hasNext(); )
+			driver.tracePoint(task, (TracePoint)it.next());
+		}
+	    }
+	    catch (lib.dwfl.ElfException ee) {
+		ee.printStackTrace();
+	    }
+	}
+    }
+
+    final MyController controller = new MyController();
+    final Ltrace tracer = new Ltrace(controller);
 
   LtraceObserver ltraceObserver = new LtraceObserver() {
       private Map levelMap = new HashMap();
@@ -241,6 +326,68 @@ public class fltrace
     (new fltrace()).run(args);
   }
 
+    public List parseRules(String arg) {
+	String[] strs = arg.split(":", -1);
+	List rules = new ArrayList();
+	for (int i = 0; i < strs.length; ++i) {
+	    // 111 single fully qualified symbol:           'symbol@soname@@version'
+	    // 101 symbol of given version in all dsos:     'symbol@@version'
+	    // 100 symbol of given name from any dso:       'symbol'
+	    // 011 all symbols of given version of the dso: '@soname@@version'
+	    // 010 all symbols of given soname:             '@soname'
+	    // 001 all symbols of given version:            '@@version'
+	    // 000 all symbols of all versions in all dsos: ''
+
+	    String str = strs[i];
+	    final String symbolRe, sonameRe, versionRe;
+	    final boolean addition;
+	    int pos;
+
+	    if ((pos = str.indexOf("@@")) != -1) {
+		versionRe = str.substring(pos + 2);
+		str = str.substring(0, pos);
+	    }
+	    else
+		versionRe = null;
+
+	    if ((pos = str.indexOf('@')) != -1) {
+		sonameRe = str.substring(pos + 1);
+		str = str.substring(0, pos);
+	    }
+	    else
+		sonameRe = null;
+
+	    if (str.length() > 0) {
+		if (str.charAt(0) == '+') {
+		    addition = true;
+		    str = str.substring(1);
+		}
+		else if (str.charAt(0) == '-') {
+		    addition = false;
+		    str = str.substring(1);
+		}
+		else if (i == 0)
+		    addition = true;
+		else
+		    throw new RuntimeException("Syntax error in rule, first letter has to be + or -.");
+	    }
+	    else if (i == 0)
+		addition = true;
+	    else
+		throw new RuntimeException("Syntax error in rule, missing + or -.");
+
+	    if (!str.equals(""))
+		symbolRe = str;
+	    else
+		symbolRe = null;
+
+	    logger.log(Level.FINE, i + ": " + str + ": symbol=" + symbolRe + ", soname=" + sonameRe + ", version=" + versionRe);
+	    WorkingSetRule rule = new WorkingSetRule(addition, symbolRe, sonameRe, versionRe);
+	    rules.add(rule);
+	}
+	return rules;
+    }
+
   public void run(String[] args)
   {
     CommandlineParser parser = new CommandlineParser("fltrace") {
@@ -289,10 +436,15 @@ public class fltrace
     });
 
     parser.add(new Option('S', "also trace signals") {
-	public void parsed(String arg) throws OptionException
-	{
-	  tracer.setTraceSignals();
-	}
+	    public void parsed(String arg) {
+		tracer.setTraceSignals();
+	    }
+    });
+
+    parser.add(new Option("plt", "trace library calls done via PLT", "RULE[,RULE]...") {
+	    public void parsed(String arg) {
+		controller.gotPltRules(parseRules(arg));
+	    }
     });
 
     parser.setHeader("usage: fltrace [OPTIONS] COMMAND ARGS...");
