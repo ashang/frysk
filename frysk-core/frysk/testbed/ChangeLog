@@ -1,3 +1,8 @@
+2007-10-18  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* RegsCase.java (testAccessRegisterRead): Marked 
+	as unreslovedX8664.
+
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
 	* Offspring.java: Update; import frysk.proc.FindHost.
