@@ -38,8 +38,6 @@
 // exception.
 package frysk.debuginfo;
 
-import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
 import antlr.CommonAST;
 import frysk.dwfl.DwflCache;
 import frysk.expr.CExprLexer;
@@ -50,10 +48,8 @@ import frysk.expr.CExprEvaluator;
 import frysk.proc.Proc;
 import frysk.value.Type;
 import frysk.value.Value;
-import frysk.value.Variable;
 import java.io.StringReader;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import lib.dwfl.Dwarf;
@@ -66,6 +62,7 @@ import lib.dwfl.DwAt;
 import lib.dwfl.DwflDieBias;
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
+import frysk.expr.ScratchSymTab;
 
 public class DebugInfo {
     private Elf elf;
@@ -266,31 +263,6 @@ public class DebugInfo {
 	Value result = null;
 	sInput += (char) 3;
     
-	final class TmpSymTab implements ExprSymTab {
-	    public Value getValue (String s){
-		throw new RuntimeException("No symbol table is available.");
-	    }
-
-	    public Value getValueFIXME(ArrayList v) {
-		throw new RuntimeException("No symbol table is available.");
-	    }
-	    public Variable getVariable(String s) {
-	        throw new RuntimeException("No symbol table is available.");
-	    }
-	  public ByteOrder order() {
-	        throw new RuntimeException("No symbol table is available.");
-	  }
-	  public ByteBuffer taskMemory() {
-	        throw new RuntimeException("No symbol table is available.");
-	  }
-	  public Type getType(Variable variable) {
-	        throw new RuntimeException("No symbol table is available.");
-	  }
-	  public Value getValue(Variable variable) {
-	        throw new RuntimeException("No symbol table is available.");
-	  }
-      	}
-    
 	CExprLexer lexer = new CExprLexer(new StringReader(sInput));
 	CExprParser parser = new CExprParser(lexer);
 	parser.setASTNodeClass("frysk.expr.ExprAST");
@@ -307,7 +279,7 @@ public class DebugInfo {
 	    // Print the resulting tree out in LISP notation
 	    System.out.println("parse tree: " + t.toStringTree());
 	CExprEvaluator cExprEvaluator;
-	TmpSymTab tmpSymTab = new TmpSymTab();
+	ExprSymTab tmpSymTab = new ScratchSymTab();
 	cExprEvaluator = new CExprEvaluator(tmpSymTab);
         
 	try {
