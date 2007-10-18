@@ -45,13 +45,40 @@ import java.util.ArrayList;
 import frysk.value.Type;
 import frysk.value.Value;
 import frysk.value.Variable;
+import java.util.HashMap;
+import frysk.value.StandardTypes;
+import frysk.value.ClassType;
+import frysk.value.ScratchLocation;
 
-public class TestbedSymTab {
+class TestbedSymTab implements ExprSymTab {
+
+    private Type classType = new ClassType(null, 12)
+	.addMember("alpha", StandardTypes.INT32B_T, 0, null)
+	.addMember("beta", StandardTypes.INT32B_T, 4, null)
+	.addMember("gamma", StandardTypes.INT16B_T, 8, null)
+	.addMember("iota", StandardTypes.INT32B_T, 8, null, 16, 8) // 0x0000ff00
+	.addMember("epsilon", StandardTypes.INT32B_T, 8, null, 24, 8); // 0x000000ff
+    private byte[] buf = {
+	0x01, 0x02, 0x03, 0x04, // alpha
+	0x05, 0x06, 0x07, 0x08, // beta
+	0x09, 0x10, 0x11, 0x12  // gama, iota, epsilon
+    };
+    private Value c1 = new Value(classType, new ScratchLocation(buf));
+
+    private HashMap symtab;
+    TestbedSymTab () {
+	symtab = new HashMap();
+	symtab.put("a", c1);
+    }
+
     /**
      * Lookup S, assuming S is variable or constant.
      */
     public Value getValue(String s) {
-	throw new RuntimeException("no values");
+	Object v = symtab.get(s);
+	if (v == null)
+	    throw new RuntimeException("no symbol: " + s);
+	return (Value)v;
     }
     /**
      * Lookup S, assuming S is a variable.
@@ -91,7 +118,7 @@ public class TestbedSymTab {
      * SELECT (a[i;j], and MEMBER (a.j) nodes in the AST and then
      * directly requesting that the type/value perform the operation.
      */
-    Value getValueFIXME(ArrayList v) {
+    public Value getValueFIXME(ArrayList v) {
 	throw new RuntimeException("no values");
     }
 }

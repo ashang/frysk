@@ -49,7 +49,7 @@ import java.io.PrintWriter;
 /**
  * Type for a composite object.
  */
-abstract class CompositeType
+public abstract class CompositeType
     extends Type
 {
     /**
@@ -109,8 +109,10 @@ abstract class CompositeType
 
     /**
      * Create a composite type.
+     *
+     * XXX: only allow package-local extension.
      */
-    protected CompositeType(String name, int size) {
+    CompositeType(String name, int size) {
 	super(name, size);
     }
 

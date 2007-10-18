@@ -1,3 +1,8 @@
+2007-10-17  Andrew Cagney  <cagney@redhat.com>
+
+	* CompositeType.java: Make public.
+	(CompositeType(String,int)): Make package-local.
+
 2007-10-17  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* StandardTypes.java: Changed the size of VOIDPTR64B_T and

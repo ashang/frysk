@@ -1,5 +1,8 @@
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
+	* TestbedSymTab.java: Add a simple symbol table.
+	* TestVariables.java: New.
+
 	* TestArithmetics.java: New.
 	* TestbedSymTab.java: New.
 	* ScratchSymTab.java: New.
