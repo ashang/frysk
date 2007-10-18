@@ -1,3 +1,8 @@
+2007-10-18  Andrew Cagney  <cagney@redhat.com>
+
+	* FrameLevel.java: New.
+	* TestFrameLevel.java: New.
+
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
 	* LibunwindRegisterMapFactory.java: Use X87Registers.ST*
