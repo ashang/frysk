@@ -152,7 +152,7 @@ public class ObjectFile
       /// indicate we want a mapping of (name x verdefs) -> symbol.
 
       String dName = Demangler.demangle(name);
-      logger.log(Level.FINEST, "Got new symbol `" + dName + "'.");
+      logger.log(Level.FINEST, "Got new symbol `" + dName + "' with origin " + this.origin + ".");
       Symbol sym = new Symbol(dName, type, value, size, shndx, versions);
       sym.addedTo(ObjectFile.this);
 
@@ -172,6 +172,7 @@ public class ObjectFile
 
     public void addNewTracepoint(long address, Symbol symbol)
     {
+      logger.log(Level.FINE, "New tracepoint for `" + symbol + "', origin " + this.origin + ".");
       TracePoint tp = new TracePoint(address, symbol, this.origin);
       tracePoints.add(tp);
     }
@@ -218,9 +219,15 @@ public class ObjectFile
 	    {
 	      int pltCount = ObjectFile.this.pltRelocs.length;
 	      logger.log(Level.FINER, "Loading " + pltCount + " PLT entries.");
-	      this.origin = TracePointOrigin.PLT;
-	      this.tracePoints = new ArrayList();
-	      this.tracePointMap.put(this.origin, this.tracePoints);
+
+	      ArrayList tracePointsPlt = new ArrayList();
+	      this.tracePointMap.put(TracePointOrigin.PLT, new ArrayList());
+
+	      ArrayList tracePointsDynamic
+		= (ArrayList)this.tracePointMap.get(TracePointOrigin.DYNAMIC);
+	      if (tracePointsDynamic == null)
+		this.tracePointMap.put(TracePointOrigin.DYNAMIC,
+				       tracePointsDynamic = new ArrayList());
 
 	      long pltEntrySize = ObjectFile.this.pltSize / (ObjectFile.this.pltRelocs.length + 1);
 	      for (int i = 0; i < pltCount; ++i)
@@ -238,6 +245,8 @@ public class ObjectFile
 		      {
 			logger.log(Level.FINEST,
 				   "Lazy loading symbol #" + symbolIndex);
+			this.origin = TracePointOrigin.DYNAMIC;
+			this.tracePoints = tracePointsDynamic;
 			this.dynamicLoader.load(symbolIndex, this);
 			symbol = this.dynamicSymbolList[(int)symbolIndex];
 		      }
@@ -247,6 +256,8 @@ public class ObjectFile
 		    logger.log(Level.FINEST,
 			       "Got plt entry for `" + symbol.name
 			       + "' at 0x" + Long.toHexString(pltEntryAddr) + ".");
+		    this.origin = TracePointOrigin.PLT;
+		    this.tracePoints = tracePointsPlt;
 		    this.addNewTracepoint(pltEntryAddr, symbol);
 		  }
 	    }
@@ -498,6 +509,7 @@ public class ObjectFile
     for (Iterator it = tracePoints.iterator(); it.hasNext();)
       {
 	TracePoint tp = (TracePoint)it.next();
+	logger.log(Level.FINEST, "Tracepoint for `" + tp.symbol.name + "', origin " + tp.origin);
 	client.tracePoint(tp);
       }
 

@@ -1,3 +1,7 @@
+2007-10-18  Petr Machata  <pmachata@redhat.com>
+
+	* ObjectFile.java: Fix assignment of symbols to origins.
+
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
 	* Ltrace.java: Update; use frysk.proc.FindProc.
