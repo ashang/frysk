@@ -180,17 +180,10 @@ public class FCatch {
 	    e.printStackTrace();
 	}
 
-	int i = 0;
-	while (frame != null) {
-	    this.stackTrace.append("#" + i + " ");
-	    StringWriter stringWriter = new StringWriter();
-	    PrintWriter printWriter = new PrintWriter(stringWriter);
-	    frame.toPrint(printWriter, false, true);
-	    this.stackTrace.append(stringWriter.getBuffer());
-	    this.stackTrace.append("\n");
-	    frame = frame.getOuter();
-	    i++;
-	}
+	StringWriter stringWriter = new StringWriter();
+	PrintWriter printWriter = new PrintWriter(stringWriter);
+	StackFactory.printStack(printWriter, frame);
+	this.stackTrace.append(stringWriter.getBuffer());
 
 	logger.log(Level.FINE, "{0} exiting generateStackTrace", task);
     }

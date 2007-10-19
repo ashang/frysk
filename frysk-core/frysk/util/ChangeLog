@@ -1,3 +1,10 @@
+2007-10-19  Andrew Cagney  <cagney@redhat.com>
+
+	* FCatch.java (generateStackTrace(Task)): Use
+	StackFactory.printStack(PrintWriter,Frame).
+	* TestFCatch.java: Ditto.
+	* Ftrace.java (generateStackTrace(Task)): Ditto.
+
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
 	* Util.java: Update; use frysk.proc.FindProc.

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -305,36 +305,24 @@ public class TestFCatch
       }
     }
 
-    private void generateStackTrace (Task task)
-    {
-      logger.log(Level.FINE, "{0} generateStackTrace", task);
-      --numTasks;
-      Frame frame = null;
-      try
-        {
-          frame = StackFactory.createFrame(task);
-        }
-      catch (Exception e)
-        {
-          System.out.println(e.getMessage());
-          System.exit(1);
-        }
+      private void generateStackTrace (Task task) {
+	  logger.log(Level.FINE, "{0} generateStackTrace", task);
+	  --numTasks;
+	  Frame frame = null;
+	  try {
+	      frame = StackFactory.createFrame(task);
+	  } catch (Exception e) {
+	      System.out.println(e.getMessage());
+	      System.exit(1);
+	  }
 
-      int i = 0;
-      while (frame != null)
-        {
-          this.stackTrace.append("#" + i + " ");
-          StringWriter stringWriter = new StringWriter();
-          PrintWriter printWriter = new PrintWriter(stringWriter);
-          frame.toPrint(printWriter,false,true);
-          this.stackTrace.append(stringWriter.getBuffer());
-          this.stackTrace.append("\n");
-          frame = frame.getOuter();
-          i++;
-        }
-
-      logger.log(Level.FINE, "{0} exiting generateStackTrace", task);
-    }
+	  StringWriter stringWriter = new StringWriter();
+	  PrintWriter printWriter = new PrintWriter(stringWriter);
+	  StackFactory.printStack(printWriter, frame);
+	  this.stackTrace.append(stringWriter.getBuffer());
+      
+	  logger.log(Level.FINE, "{0} exiting generateStackTrace", task);
+      }
 
     public String getStackTrace ()
     {
