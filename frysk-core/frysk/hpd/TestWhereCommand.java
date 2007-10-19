@@ -54,12 +54,11 @@ public class TestWhereCommand extends TestLib {
 	Proc proc = CoreFileAtSignal
 	    .constructCore("funit-inlined");
         e = new HpdTestbed("core." + proc.getPid(), "Attached to core file.*");
-        e.send("where\n");
-        e.expect ("0.1.*third" +
-		  ".*0.2.*second" +
-		  ".*0.3.*first" +
-		  ".*main");
-        e.close();
+        e.sendCommandExpectPrompt("where",
+				  ("0.1.*third[^\r\n]*\\[inline\\]"
+				   + ".*0.2.*second[^\r\n]*\\[inline\\]"
+				   + ".*0.3.*first[^\r\n]*\\[inline\\]"
+				   + ".*main.*"));
     }
     
     public void testFhpdVirtualStackTraceWithScopes () {

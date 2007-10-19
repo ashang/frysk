@@ -1,5 +1,10 @@
 2007-10-19  Andrew Cagney  <cagney@redhat.com>
 
+	* VirtualDebugInfoFrame.java
+	(toPrint(PrintWriter,boolean,boolean)): New.
+	* TestFrameDebugInfo.java (testVirtualStackTrace()): Check for
+	inline.
+	
 	* DebugInfoFrame.java (toPrint(PrintWriter,boolean,boolean)):
 	Replace toPrint(PrintWriter,boolean,boolean,boolean), remove
 	printScopes parameter.

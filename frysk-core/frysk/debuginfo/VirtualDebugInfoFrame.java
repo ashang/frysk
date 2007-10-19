@@ -66,4 +66,10 @@ public class VirtualDebugInfoFrame extends DebugInfoFrame {
 	writer.print(this.getIndex() + "." +this.getSubIndex());
     }
 
+    void toPrint(PrintWriter writer, boolean printParameters,
+		 boolean fullpath) {
+	super.toPrint(writer, printParameters, fullpath);
+	writer.print(" [inline]");
+    }
+
 }

@@ -1,3 +1,8 @@
+2007-10-19  Andrew Cagney  <cagney@redhat.com>
+
+	* TestWhereCommand.java (testFhpdVirtualStackTrace()): Check for
+	"inline".
+
 2007-10-18  Rick Moseley  <rmoseley@redhat.com>
 
 	* LoadCommand.java: Add loop to add DebugInfoFrame stuff.

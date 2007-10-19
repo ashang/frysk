@@ -190,6 +190,7 @@ public class TestFrameDebugInfo
     
     DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(stringWriter), task, true, true, true);
     
+    assertTrue("contains inline", stringWriter.getBuffer().toString().contains("inline"));
     assertTrue("contains first", stringWriter.getBuffer().toString().contains("first"));
     assertTrue("contains second", stringWriter.getBuffer().toString().contains("second"));
     assertTrue("contains third", stringWriter.getBuffer().toString().contains("third"));
