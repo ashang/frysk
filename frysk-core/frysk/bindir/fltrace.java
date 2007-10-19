@@ -495,21 +495,21 @@ public class fltrace
     });
 
     final List pltRules = new ArrayList();
-    parser.add(new Option("plt", "trace library calls done via PLT", "RULE[,RULE]...") {
+    parser.add(new Option("plt", "trace library calls done via PLT", "RULE[:RULE]...") {
 	    public void parsed(String arg) {
 		pltRules.add(arg);
 	    }
     });
 
     final List dynRules = new ArrayList();
-    parser.add(new Option("dyn", "trace entry points from DYNAMIC symtab", "RULE[,RULE]...") {
+    parser.add(new Option("dyn", "trace entry points from DYNAMIC symtab", "RULE[:RULE]...") {
 	    public void parsed(String arg) {
 		dynRules.add(arg);
 	    }
     });
 
     final List symRules = new ArrayList();
-    parser.add(new Option("sym", "trace entry points from symbol table", "RULE[,RULE]...") {
+    parser.add(new Option("sym", "trace entry points from symbol table", "RULE[:RULE]...") {
 	    public void parsed(String arg) {
 		symRules.add(arg);
 	    }

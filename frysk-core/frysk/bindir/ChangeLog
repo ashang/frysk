@@ -1,5 +1,10 @@
 2007-10-19  Petr Machata  <pmachata@redhat.com>
 
+	* fltrace.java: Fix synopsis.
+	* fltrace.xml: Write manual.
+
+2007-10-19  Petr Machata  <pmachata@redhat.com>
+
 	* fltrace.java:
 	Support -dyn, -sym commandline parameters.
 	Support version matching.
