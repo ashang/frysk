@@ -1,3 +1,9 @@
+2007-10-19  Petr Machata  <pmachata@redhat.com>
+
+	* fltrace.java:
+	Support -dyn, -sym commandline parameters.
+	Support version matching.
+
 2007-10-18  Petr Machata  <pmachata@redhat.com>
 
 	* fltrace.java: Support -plt commandline parameter.

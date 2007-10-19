@@ -50,6 +50,7 @@ import gnu.classpath.tools.getopt.*;
 import frysk.proc.*;
 import frysk.sys.Sig;
 import frysk.util.CommandlineParser;
+import lib.dwfl.ElfSymbolVersion;
 
 import frysk.ftrace.*;
 
@@ -104,66 +105,118 @@ public class fltrace
 	implements LtraceController
     {
 	// ArrayList<WorkingSetRule>
-	private final List pltRules = new ArrayList()/*, dynRules, symRules*/;
+	private final List pltRules = new ArrayList();
+	private final List dynRules = new ArrayList();
+	private final List symRules = new ArrayList();
 
-	public void gotPltRules(List pltRules) {
-	    this.pltRules.addAll(pltRules);
+	public void gotPltRules(List rules) {
+	    logger.log(Level.FINER, "Got " + rules.size() + " PLT rules.", this);
+	    this.pltRules.addAll(rules);
 	}
 
-	public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver) {
-	    try {
-		if (pltRules.size() > 0) {
-		    final Set candidates = new HashSet(); // Set<TracePoint>
-		    final Set workingSet = new HashSet(); // Set<TracePoint>
-		    boolean candidatesInited = false;
+	public void gotDynRules(List rules) {
+	    logger.log(Level.FINER, "Got " + rules.size() + " DYNAMIC rules.", this);
+	    this.dynRules.addAll(rules);
+	}
 
-		    for (Iterator it = pltRules.iterator(); it.hasNext(); ) {
-			final WorkingSetRule rule = (WorkingSetRule)it.next();
-			if ((rule.sonamePattern.pattern().equals("MAIN")
-			     && task.getProc().getExe().equals(objf.getFilename().getPath()))
-			    || rule.sonamePattern.matcher(objf.getSoname()).matches())
-			{
-			    if (!candidatesInited) {
-				candidatesInited = true;
-				objf.eachTracePoint(new ObjectFile.TracePointIterator() {
-					public void tracePoint(TracePoint tp) {
-					    if (candidates.add(tp))
-						logger.log(Level.FINE, "candidate `" + tp.symbol.name + "'.", this);
-					}
-				    }, TracePointOrigin.PLT);
-			    }
+	public void gotSymRules(List rules) {
+	    logger.log(Level.FINER, "Got " + rules.size() + " SYMTAB rules.", this);
+	    this.symRules.addAll(rules);
+	}
 
-			    Set iterateOver = rule.addition ? candidates : workingSet;
-			    for (Iterator jt = iterateOver.iterator(); jt.hasNext(); ) {
-				TracePoint tp = (TracePoint)jt.next();
-				if (rule.namePattern.matcher(tp.symbol.name).matches()) {
-				    // This is PLT rule, so we will use verneeds.
-				    // If any of the matches...
-				    boolean versionMatch = false;
-				    for (int i = 0; i < tp.symbol.verneeds.length; ++i)
-					if (rule.versionPattern.matcher(tp.symbol.verneeds[i].name).matches()) {
+	public void applyTracingRules(final Task task, final ObjectFile objf, final Ltrace.Driver driver,
+				      List rules, TracePointOrigin origin)
+	    throws lib.dwfl.ElfException
+	{
+	    logger.log(Level.FINER, "Building working set for origin " + origin + ".", this);
+
+	    // Skip the set if it's empty...
+	    if (rules.isEmpty())
+		return;
+
+	    final Set candidates = new HashSet(); // Set<TracePoint>, all tracepoints in objfile
+	    final Set workingSet = new HashSet(); // Set<TracePoint>, incrementally built working set
+	    boolean candidatesInited = false;
+
+	    // Loop through all the rules, and use them to build
+	    // workingSet from candidates.  Candidates are initialized
+	    // lazily inside the loop.
+	    for (Iterator it = rules.iterator(); it.hasNext(); ) {
+		final WorkingSetRule rule = (WorkingSetRule)it.next();
+		logger.log(Level.FINEST, "Considering rule " + rule + ".", this);
+
+		// MAIN is meta-symbol meaning "main executable".
+		if ((rule.sonamePattern.pattern().equals("MAIN")
+		     && task.getProc().getExe().equals(objf.getFilename().getPath()))
+		    || rule.sonamePattern.matcher(objf.getSoname()).matches())
+		    {
+			if (!candidatesInited) {
+			    candidatesInited = true;
+			    objf.eachTracePoint(new ObjectFile.TracePointIterator() {
+				    public void tracePoint(TracePoint tp) {
+					if (candidates.add(tp))
+					    logger.log(Level.FINE, "candidate `" + tp.symbol.name + "'.", this);
+				    }
+				}, origin);
+			}
+
+			// For '+' rules add subset of matching elements candidates to workingSet.
+			// For '-' rules remove matching elements from workingSet.
+			Set iterateOver = rule.addition ? candidates : workingSet;
+			for (Iterator jt = iterateOver.iterator(); jt.hasNext(); ) {
+			    TracePoint tp = (TracePoint)jt.next();
+			    if (rule.namePattern.matcher(tp.symbol.name).matches()) {
+				// Decide which set of versions should be taken into account.
+				boolean versionMatch = false;
+				ElfSymbolVersion[] vers = (origin == TracePointOrigin.PLT)
+				    ? (ElfSymbolVersion[])tp.symbol.verneeds
+				    : (ElfSymbolVersion[])tp.symbol.verdefs;
+
+				// When there is no version assigned to symbol, we pretend it has
+				// a version of ''.  Otherwise we require one of the versions to
+				// match the version pattern.
+				if (vers.length == 0) {
+				    if (rule.versionPattern.matcher("").matches()) {
+					logger.log(Level.FINE, rule + ": `" + tp.symbol.name
+						   + "' version match, no version.", this);
+					versionMatch = true;
+				    }
+				}
+				else
+				    for (int i = 0; i < vers.length; ++i)
+					if (rule.versionPattern.matcher(vers[i].name).matches()) {
+					    logger.log(Level.FINE, rule + ": `" + tp.symbol.name
+						       + "' version match `" + vers[i].name+ "'.", this);
 					    versionMatch = true;
 					    break;
 					}
 
-				    if (versionMatch) {
-					if (rule.addition) {
-					    if (workingSet.add(tp))
-						logger.log(Level.CONFIG, rule + ": add `" + tp.symbol.name + "'.", this);
-					}
-					else {
-					    jt.remove();
-					    logger.log(Level.CONFIG, rule + ": remove `" + tp.symbol.name + "'.", this);
-					}
+				if (versionMatch) {
+				    if (rule.addition) {
+					if (workingSet.add(tp))
+					    logger.log(Level.CONFIG, rule + ": add `" + tp.symbol.name + "'.", this);
+				    }
+				    else {
+					jt.remove();
+					logger.log(Level.CONFIG, rule + ": remove `" + tp.symbol.name + "'.", this);
 				    }
 				}
 			    }
 			}
 		    }
+	    }
 
-		    for (Iterator it = workingSet.iterator(); it.hasNext(); )
-			driver.tracePoint(task, (TracePoint)it.next());
-		}
+	    // Finally, apply constructed working set.
+	    logger.log(Level.FINER, "Applying working set for origin " + origin + ".", this);
+	    for (Iterator it = workingSet.iterator(); it.hasNext(); )
+		driver.tracePoint(task, (TracePoint)it.next());
+	}
+
+	public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver) {
+	    try {
+		applyTracingRules(task, objf, driver, pltRules, TracePointOrigin.PLT);
+		applyTracingRules(task, objf, driver, dynRules, TracePointOrigin.DYNAMIC);
+		applyTracingRules(task, objf, driver, symRules, TracePointOrigin.SYMTAB);
 	    }
 	    catch (lib.dwfl.ElfException ee) {
 		ee.printStackTrace();
@@ -441,15 +494,39 @@ public class fltrace
 	    }
     });
 
+    final List pltRules = new ArrayList();
     parser.add(new Option("plt", "trace library calls done via PLT", "RULE[,RULE]...") {
 	    public void parsed(String arg) {
-		controller.gotPltRules(parseRules(arg));
+		pltRules.add(arg);
+	    }
+    });
+
+    final List dynRules = new ArrayList();
+    parser.add(new Option("dyn", "trace entry points from DYNAMIC symtab", "RULE[,RULE]...") {
+	    public void parsed(String arg) {
+		dynRules.add(arg);
+	    }
+    });
+
+    final List symRules = new ArrayList();
+    parser.add(new Option("sym", "trace entry points from symbol table", "RULE[,RULE]...") {
+	    public void parsed(String arg) {
+		symRules.add(arg);
 	    }
     });
 
     parser.setHeader("usage: fltrace [OPTIONS] COMMAND ARGS...");
 
     command = parser.parse(args);
+
+    // We need to load/apply rules this roundabout way to get all log
+    // messages.
+    for (Iterator it = pltRules.iterator(); it.hasNext(); )
+	controller.gotPltRules(parseRules((String)it.next()));
+    for (Iterator it = dynRules.iterator(); it.hasNext(); )
+	controller.gotDynRules(parseRules((String)it.next()));
+    for (Iterator it = symRules.iterator(); it.hasNext(); )
+	controller.gotSymRules(parseRules((String)it.next()));
 
     if (writer == null)
 	writer = new PrintWriter(System.out);
