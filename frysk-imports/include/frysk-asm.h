@@ -324,8 +324,6 @@
 #  define COMPARE(LHS_REG,RHS_REG) cmpq LHS_REG, RHS_REG
 #elif defined __powerpc__
 #  define COMPARE(LHS_REG,RHS_REG) cmpw cr7, LHS_REG, RHS_REG
-//#elif defined __powerpc64__
-//#  define COMPARE(LHS_REG,RHS_REG)
 #else
 #  warning "No register-compare instruction defined"
 #endif
@@ -342,9 +340,7 @@
 #elif defined __x86_64__
 #  define JUMP_EQ(LABEL) je LABEL
 #elif defined __powerpc__
-#  define JUMP_EQ(LABEL) bf eq, LABEL
-#elif defined __powerpc64__
-#  define JUMP_EQ(LABEL) bf eq, LABEL
+#  define JUMP_EQ(LABEL) beq cr7, LABEL
 #else
 #  warning "No jump equal instruction defined"
 #endif
@@ -354,9 +350,7 @@
 #elif defined __x86_64__
 #  define JUMP_NE(LABEL) jne LABEL
 #elif defined __powerpc__
-#  define JUMP_NE(LABEL) bf ne, LABEL
-#elif defined __powerpc64__
-#  define JUMP_NE(LABEL) bf ne, LABEL
+#  define JUMP_NE(LABEL) bne cr7, LABEL
 #else
 #  warning "No jump not-equal instruction defined"
 #endif
@@ -700,7 +694,7 @@
 	.cfi_startproc; \
 	.cfi_def_cfa rsp, 0; \
 	.cfi_return_column rax
-#elif defined __powerpc64__
+#elif defined __powerpc__
 #define FRAMELESS_FUNCTION_BEGIN(FUNC) \
 	FUNC: \
 
@@ -714,7 +708,7 @@
 #elif defined __x86_64__
 #define FRAMELESS_ADJ_RETURN(REG) \
 	.cfi_register rax, REG
-#elif defined __powerpc64__
+#elif defined __powerpc__
 #define FRAMELESS_ADJ_RETURN(REG)
 #else
 #  warning "No frameless function return adjustment defined"
@@ -726,7 +720,7 @@
 #elif defined __x86_64__
 #define FRAMELESS_FUNCTION_END(FUNC) \
 	.cfi_endproc
-#elif defined __powerpc64__
+#elif defined __powerpc__
 #define FRAMELESS_FUNCTION_END(FUNC) \
 	blr
 #else

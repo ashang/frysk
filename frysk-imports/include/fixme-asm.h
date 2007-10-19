@@ -69,17 +69,11 @@
 
 #elif defined __powerpc__
 
-#define REG1 3
-#define REG2 4
-#define REG3 5
-#define REG4 6
-
-#elif defined __powerpc64__
-
-#define REG1 %gpr3
-#define REG2 %gpr4
-#define REG3 %gpr5
-#define REG4 %gpr5
+#define REG1 0
+#define REG2 3
+#define REG3 4
+#define REG4 5
+#define REG_TMP_IMMED 6
 
 #endif
 

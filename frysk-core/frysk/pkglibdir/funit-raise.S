@@ -48,6 +48,10 @@
 #if defined(__i386__) || defined(__x86_64__)
 	#define DIV_ZERO(REG)	div REG;
 	#define ILL_INST	.word 0xffff;
+#elif defined(__powerpc__)
+	#define DIV_ZERO(REG)	li 5, 0; divw 6, REG, 5
+	//PowePC64 has fixed size instructions upcodes, 16 bytes (64bits) long
+	#define ILL_INST	.8byte 0xffff; .8byte 0xffff;
 #else
 	#error unsuported architecture
 #endif
@@ -136,8 +140,14 @@ FUNCTION_BEGIN(main,0)
 	// Unknown, print usage.
 	LOAD_IMMED_BYTE(REG0, SYS_write)
 	LOAD_IMMED_BYTE(REG1, 1)
-	LOAD_IMMED_WORD(REG2, usage)
-	LOAD_IMMED_WORD(REG3, .usage-usage)
+
+	#if defined(__powerpc__)
+		#warning You cant load a LABEL as an immediate in PowerPC
+	#else
+		LOAD_IMMED_WORD(REG2, usage)
+		LOAD_IMMED_WORD(REG3, .usage-usage)
+	#endif
+
 	SYSCALL
 
 	// Non-zero return
@@ -148,6 +158,8 @@ exit_main:
 	FUNCTION_RETURN(main,0)
 FUNCTION_END(main,0)
 
+//In PowerPC you cant have unaligned upcodes in executable segment
+#if !defined(__powerpc__)
 usage:	.asciz "Usage:\r\n\
 	ARG1 ...\r\n\
 The number of arguments determines the function which this program\r\n\
@@ -159,3 +171,4 @@ calls and how it will raise a signal/trap because:\r\n\
 5: SIGURG ignore signal (ign_sig_urg)\r\n\
 "
 .usage:
+#endif

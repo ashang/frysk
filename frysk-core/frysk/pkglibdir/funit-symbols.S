@@ -339,8 +339,13 @@ LOCAL(small_local_at_large_local)
 
 	LOAD_IMMED_BYTE(REG0, SYS_write)
 	LOAD_IMMED_BYTE(REG1, 1)
+
+#if defined(__powerpc__)
+	#warning You cant load a LABEL as an immediate in PowerPC
+#else
 	LOAD_IMMED_WORD(REG2, usage)
 	LOAD_IMMED_WORD(REG3, .usage-usage)
+#endif
 	SYSCALL
 		// exit with a non-zero status
 	LOAD_IMMED_BYTE(REG0, 1)
@@ -348,6 +353,9 @@ LOCAL(small_local_at_large_local)
 	FUNCTION_RETURN(main,0)
 	FUNCTION_END(main,0)
 
+#if defined(__powerpc__)
+#warning In PowerPC you cant have unaligned upcodes in executable segment
+#else
 usage:	.asciz "Usage:\r\n\
 	ARG1 ...\r\n\
 The number of arguments determines the symbol at which this program\r\n\
@@ -378,3 +386,4 @@ crashes:\r\n\
 24: No symbol after local with nested zero-sized symbols\r\n\
 "
 .usage:
+#endif
