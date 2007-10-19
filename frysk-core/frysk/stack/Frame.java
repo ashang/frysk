@@ -187,11 +187,6 @@ public abstract class Frame {
 	    printWriter.print(" from " + this.getLibraryName());
 	}
     }
-
-    public void toPrint (PrintWriter printWriter, boolean name,
-			 boolean printSourceLibrary) {
-	toPrint(printWriter, printSourceLibrary);
-    }
   
     public String getLibraryName() {
 	Dwfl dwfl = DwflCache.getDwfl(getTask());

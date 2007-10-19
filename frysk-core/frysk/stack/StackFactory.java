@@ -85,26 +85,24 @@ public class StackFactory
 	return innerFrame;
     }
 
-  public static final void printTaskStackTrace (PrintWriter printWriter, Task task, boolean printSourceLibrary)
-  {
-    if (task != null){
-      printWriter.println("Task #" + task.getTid());
-      Frame frame = StackFactory.createFrame(task);
-      printStackTrace(printWriter, frame, printSourceLibrary);
+    public static final void printTaskStackTrace(PrintWriter writer,
+						 Task task,
+						 boolean printSourceLibrary) {
+	if (task != null) {
+	    writer.print("Task #");
+	    writer.print(task.getTid());
+	    writer.println();
+	    Frame frame = StackFactory.createFrame(task);
+	    for (; frame != null; frame = frame.getOuter()) {
+		writer.print("#");
+		writer.print(frame.level());
+		writer.print(" ");
+		frame.toPrint(writer, printSourceLibrary);
+		writer.println();
+	    }
+	}
+	writer.flush();
     }
-    printWriter.flush();
-  }
-
-  public static void printStackTrace(PrintWriter printWriter, Frame topFrame, boolean printSourceLibrary){
-    int count = 0;
-    for (Frame frame = topFrame;
-    frame != null; frame = frame.getOuter()) {
-      printWriter.print("#" + count + " ");
-      frame.toPrint(printWriter,false, printSourceLibrary);
-      printWriter.println();
-      count++;
-    }
-  }
 
     public static void printStack(PrintWriter writer, Frame frame) {
 	for (; frame != null; frame = frame.getOuter()) {

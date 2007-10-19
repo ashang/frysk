@@ -1,5 +1,12 @@
 2007-10-19  Andrew Cagney  <cagney@redhat.com>
 
+	* Frame.java (toPrint(PrintWriter,boolean,boolean)): Delete.
+	(toPrint(PrintWriter,boolean)): Delete.
+	* StackFactory.java (printStackTrace(PrintWriter,Frame,boolean)):
+	Delete.
+	(printTaskStackTrace(PrintWriter,Task,boolean)): Update.
+	* FrameDecorator.java (toPrint(PrintWriter,boolean)): Delete.
+	
 	* StackFactory.java (printStack(PrintWriter,Frame)): New.
 	* Frame.java (toPrint(PrintWriter)): New.
 	
