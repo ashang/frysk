@@ -1,5 +1,13 @@
 2007-10-19  Andrew Cagney  <cagney@redhat.com>
 
+	* StackFactory.java (printStack(PrintWriter,Frame)): Call
+	Frame.printLevel().
+	(printTaskStackTrace(PrintWriter,Task,boolean)): Call
+	Frame.printLevel().
+	* Frame.java(toPrint(PrintWriter,boolean)): Print frame level.
+	(toPrint(PrintFrame)): Call toPrint(PrintWriter,boolean).
+	(printLevel()): New.
+
 	* Frame.java (toPrint(PrintWriter,boolean,boolean)): Delete.
 	(toPrint(PrintWriter,boolean)): Delete.
 	* StackFactory.java (printStackTrace(PrintWriter,Frame,boolean)):

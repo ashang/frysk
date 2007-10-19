@@ -1,3 +1,19 @@
+2007-10-19  Andrew Cagney  <cagney@redhat.com>
+
+	* VirtualDebugInfoFrame.java (printIndex(PrintWriter)): Delete.
+	(getSubIndex()): Delete.
+	(setIndex()): Delete.
+	(subIndex): Delete.
+	* DebugInfoFrame.java (printIndex(PrintWriter)): Delete.
+	(getIndex()): Delete.
+	(setIndex(int)): Delete.
+	(index): Delete.
+	(unwind()): Don't call setIndex(int).
+	* DebugInfoStackFactory.java (createVirtualStackTrace(Task)):
+	Don't call setIndex(int).
+	(printStackTrace(PrintWriter,DebugInfoFrame,int,boolean,boolean,
+	boolean): Call Frame.printLevel().
+	
 2007-10-19  Teresa Thomas  <tthomas@redhat.com>
 
 	* DebugInfoEvaluator.java (getWordSize): New.

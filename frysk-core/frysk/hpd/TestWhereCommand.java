@@ -54,25 +54,23 @@ public class TestWhereCommand extends TestLib {
 	Proc proc = CoreFileAtSignal
 	    .constructCore("funit-inlined");
         e = new HpdTestbed("core." + proc.getPid(), "Attached to core file.*");
-        e.sendCommandExpectPrompt("where",
-				  ("0.1.*third[^\r\n]*\\[inline\\]"
-				   + ".*0.2.*second[^\r\n]*\\[inline\\]"
-				   + ".*0.3.*first[^\r\n]*\\[inline\\]"
-				   + ".*main.*"));
+        e.send("where\n");
+	e.expect("\\#0 .*third[^\\r\\n]*\\[inline\\]");
+	e.expect("\\#1 .*second[^\\r\\n]*\\[inline\\]");
+	e.expect("\\#2 .*first[^\\r\\n]*\\[inline\\]");
+	e.expect("\\#3 .*main");
+	e.expectPrompt(".*");
     }
     
     public void testFhpdVirtualStackTraceWithScopes () {
-	// This test is very very slow.
-	if (unresolved(4985))
-	    return;
 	Proc proc = CoreFileAtSignal
 	    .constructCore("funit-inlined");
         e = new HpdTestbed("core." + proc.getPid(), "Attached to core file.*");
         e.send("where -scopes\n");
-        e.expect (".*var3" +
-		  ".*var2" +
-		  ".*var1" +
-		  ".*");
+        e.expect(".*var3");
+	e.expect(".*var2");
+	e.expect(".*var1");
+	e.expectPrompt(".*");
         e.close();
     }
 }

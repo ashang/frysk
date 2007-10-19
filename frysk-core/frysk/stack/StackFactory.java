@@ -94,8 +94,7 @@ public class StackFactory
 	    writer.println();
 	    Frame frame = StackFactory.createFrame(task);
 	    for (; frame != null; frame = frame.getOuter()) {
-		writer.print("#");
-		writer.print(frame.level());
+		frame.printLevel(writer);
 		writer.print(" ");
 		frame.toPrint(writer, printSourceLibrary);
 		writer.println();
@@ -106,6 +105,8 @@ public class StackFactory
 
     public static void printStack(PrintWriter writer, Frame frame) {
 	for (; frame != null; frame = frame.getOuter()) {
+	    frame.printLevel(writer);
+	    writer.print(" ");
 	    frame.toPrint(writer);
 	    writer.println();
 	}

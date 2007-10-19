@@ -145,10 +145,10 @@ public class TestFstack
 			    "-a",
 			    "core." + proc.getPid()
 			});
-        e.expect("0.1.*third[^\r\n]*\\[inline\\]"
-		 + ".*0.2.*second[^\r\n]*\\[inline\\]"
-		 + ".*0.3.*first[^\r\n]*\\[inline\\]"
-		 + ".*main");
+        e.expect("#0 .*third[^\r\n]*\\[inline\\]"
+		 + ".*#1 .*second[^\r\n]*\\[inline\\]"
+		 + ".*#2 .*first[^\r\n]*\\[inline\\]"
+		 + ".*#3 .*main");
     }
 
 }

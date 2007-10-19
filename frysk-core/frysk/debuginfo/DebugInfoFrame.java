@@ -68,8 +68,6 @@ public class DebugInfoFrame extends FrameDecorator {
 
     private LinkedList inlinedSubprograms;
 
-    private int index;
-
     private final TypeEntry typeEntry;
     
     protected DebugInfoFrame(FrameDecorator inner, Frame decorated) {
@@ -210,10 +208,6 @@ public class DebugInfoFrame extends FrameDecorator {
       return this.lines;
     }
 
-    public void printIndex(PrintWriter writer){
-	writer.print(this.index);
-    }
-    
     void toPrint(PrintWriter writer, boolean printParameters,
 		 boolean fullpath){
         Subprogram subprogram = this.getSubprogram();
@@ -285,15 +279,7 @@ public class DebugInfoFrame extends FrameDecorator {
 	      // Oops, nothing left.
 	      return null;
 	  DebugInfoFrame outer = new DebugInfoFrame(this, undecorated);
-	  outer.setIndex(getIndex()+1);
 	  return outer;
       }
 	
-      public void setIndex(int index){
-	  this.index = index;
-      }
-      
-      public int getIndex(){
-	return this.index;  
-      }
 }

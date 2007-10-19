@@ -1,5 +1,7 @@
 2007-10-19  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFstack.java (): Check for decimal stack levels.
+	
 	* TestFstack.java (testBackTraceWithDashV()): Check for "inline".
 
 2007-10-19  Petr Machata  <pmachata@redhat.com>

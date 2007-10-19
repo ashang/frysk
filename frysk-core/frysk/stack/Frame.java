@@ -100,6 +100,11 @@ public abstract class Frame {
 	return level;
     }
 
+    public final void printLevel(PrintWriter writer) {
+	writer.print("#");
+	writer.print(level());
+    }
+
     /**
      * Returns this StackFrame's inner frame.
      * 
@@ -138,53 +143,34 @@ public abstract class Frame {
      * @param printWriter
      */
     public void toPrint (PrintWriter writer) {
-	// the frame number ...
-	writer.print("#");
-	writer.print(level());
-	writer.print(" ");
-	// the address (padded to task's word size) ...
-	writer.write("0x");
-	String addr = Long.toHexString(getAddress());
-	int padding = 2 * getTask().getISA().wordSize() - addr.length();
-	for (int i = 0; i < padding; ++i)
-	    writer.write('0');
-	writer.write(addr);
-	// the symbol, if known append (), ...
-	Symbol symbol = getSymbol();
-	writer.write(" in ");
-	writer.write(symbol.getDemangledName());
-	if (symbol != SymbolFactory.UNKNOWN)
-	    writer.write(" ()");
-	// the library if known ...
-	String library = getLibraryName();
-	if (library != null) {
-	    writer.print(" from ");
-	    writer.print(library);
-	}
+	toPrint(writer, true);
     }
 
     /**
      * Write a simple string representation of this stack frame.
      * @param printWriter
      */
-    public void toPrint (PrintWriter printWriter, boolean printSourceLibrary) {
-	// Pad the address based on the task's word size.
-	printWriter.write("0x");
+    public void toPrint (PrintWriter writer, boolean printSourceLibrary) {
+	// the address, padded with 0s based on the task's word size, ...
+	writer.write("0x");
 	String addr = Long.toHexString(getAddress());
 	int padding = 2 * getTask().getISA().wordSize() - addr.length();
 	for (int i = 0; i < padding; ++i)
-	    printWriter.write('0');
-	printWriter.write(addr);
-	
-	// Print the symbol, if known append ().
+	    writer.write('0');
+	writer.write(addr);
+	// the symbol, if known append (), ..
 	Symbol symbol = getSymbol();
-	printWriter.write(" in ");
-	printWriter.write(symbol.getDemangledName());
+	writer.write(" in ");
+	writer.write(symbol.getDemangledName());
 	if (symbol != SymbolFactory.UNKNOWN)
-	    printWriter.write(" ()");
-	
+	    writer.write(" ()");
+	// the library if known ...
 	if (printSourceLibrary) {
-	    printWriter.print(" from " + this.getLibraryName());
+	    String library = getLibraryName();
+	    if (library != null) {
+		writer.print(" from ");
+		writer.print(library);
+	    }
 	}
     }
   

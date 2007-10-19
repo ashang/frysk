@@ -70,21 +70,17 @@ public class DebugInfoStackFactory {
 	DebugInfoFrame currentFrame = null;
 	DebugInfoFrame innermostFrame = null;
 	
-	int count = 0;
-	
 	for (DebugInfoFrame debugFrame = createDebugInfoStackTrace (task);
 	     debugFrame != null;
 	     debugFrame = debugFrame.getOuterDebugInfoFrame()) {
 	    
 	    // For any inlined scopes, create virtual frames.
-	    int inlineCount = 1;
 	    for (Scope scope = debugFrame.getScopes();
 		 scope != null; scope = scope.getOuter()) {
 		if (scope instanceof InlinedSubroutine) {
 		    InlinedSubroutine subroutine = (InlinedSubroutine) scope;
 		    currentFrame = new VirtualDebugInfoFrame(currentFrame,
 							     debugFrame);
-		    currentFrame.setIndex(inlineCount++);
 		    currentFrame.setSubprogram(subroutine);
 		    if (innermostFrame == null)
 			innermostFrame = currentFrame;
@@ -93,7 +89,6 @@ public class DebugInfoStackFactory {
 	    
 	    // Append to that a non-virtual frame.
 	    currentFrame = new DebugInfoFrame(currentFrame, debugFrame);
-	    currentFrame.setIndex(count++);
 	    
 	    if (innermostFrame == null)
 		innermostFrame = currentFrame;
@@ -138,10 +133,8 @@ public class DebugInfoStackFactory {
 		break;
 	    }
 
-	    writer.print("#");
-	    frame.printIndex(writer);
+	    frame.printLevel(writer);
 	    writer.print(" ");
-            
 	    frame.toPrint(writer, printParameters, fullpath);
 	    writer.println();
 	    if (printScopes) {

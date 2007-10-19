@@ -45,25 +45,11 @@ import frysk.stack.FrameDecorator;
 
 public class VirtualDebugInfoFrame extends DebugInfoFrame {
 
-    private int subIndex;
-    
     /**
      * Create a frame, outer to OUTER, and decorating frame.
      */
     protected VirtualDebugInfoFrame(FrameDecorator inner, Frame decorated) {
 	super(inner, decorated);
-    }
-
-    public void setIndex(int subIndex){
-	this.subIndex = subIndex;
-    }
-    
-    public int getSubIndex(){
-	return this.subIndex;
-    }
-    
-    public void printIndex(PrintWriter writer){
-	writer.print(this.getIndex() + "." +this.getSubIndex());
     }
 
     void toPrint(PrintWriter writer, boolean printParameters,
