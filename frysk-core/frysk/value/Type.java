@@ -221,8 +221,8 @@ public abstract class Type {
     public boolean getLogicalValue (Value var) {
         throw new InvalidOperatorException(this, "");
     }
-    public Value addressOf(Value var1, ByteOrder order) {
-	PointerType pType = new PointerType("AddressPtr", order, this.getSize(), this);
+    public Value addressOf(Value var1, ByteOrder order, int wordSize) {
+	PointerType pType = new PointerType("AddressPtr", order, wordSize, this);
 	return pType.createValue(var1.getLocation().getAddress());
     }
     public Value dereference(Value var1, ByteBuffer taskMem) {
@@ -230,7 +230,7 @@ public abstract class Type {
     }
     public Value member(Value var1, String member) {
 	throw new InvalidOperatorException(this, ".");
-    }
+    } 
    /**
      * Assign VALUE to LOCATION; possibly performing type-conversion.
      */

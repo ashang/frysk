@@ -1,3 +1,15 @@
+2007-10-19  Teresa Thomas  <tthomas@redhat.com>
+
+	* ScratchSymTab.java (getWordSize): New.
+	* ExprSymTab.java (getWordSize): New.
+	* TestbedSymTab.java (getWordSize): New.
+	* CExprEvaluator.g (ADDRESS_OF): Updated; Use getWordSize
+	(SIZEOF): New.
+	* CExprAnnotator.g (POINTERTO): Removed.
+	* CExpr.g: Simplified; Operator precedence redefined, 
+	expressions renamed, SIZEOF added, fixed bug with parenthesis.
+	
+
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
 	* TestbedSymTab.java: Add a simple symbol table.

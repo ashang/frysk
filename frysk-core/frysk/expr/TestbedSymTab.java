@@ -93,7 +93,7 @@ class TestbedSymTab implements ExprSymTab {
 	throw new RuntimeException("no byte-order");
     }
     /**
-     * Return the task's memory buffer
+     * Return the task's memory buffer.
      */
     public ByteBuffer taskMemory() {
 	throw new RuntimeException("no memory");
@@ -109,6 +109,12 @@ class TestbedSymTab implements ExprSymTab {
      */
     public Type getType(Variable variable) {
 	throw new RuntimeException("no types");
+    }
+    /**
+     * Return the wordsize.
+     */
+    public int getWordSize() {
+	throw new RuntimeException("no word size");
     }
 
     /**

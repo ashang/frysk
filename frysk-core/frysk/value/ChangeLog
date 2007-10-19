@@ -1,3 +1,9 @@
+2007-10-19  Teresa Thomas  <tthomas@redhat.com>
+
+	* Type.java (addressOf): wordSize added to parameter
+	list.
+	* TypeDecorator.java (addressOf): Updated.
+
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
 	* CompositeType.java: Make public.

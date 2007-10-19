@@ -194,4 +194,9 @@ class DebugInfoEvaluator
     {
 	return task.getMemory();
     }
+    
+    public int getWordSize()
+    {
+	return task.getISA().wordSize();
+    }
 }

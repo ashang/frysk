@@ -72,6 +72,10 @@ public interface ExprSymTab
      * Given a variable, return its type.
      */
     Type getType(Variable variable);
+    /**
+     * Return the wordsize.
+     */    
+    int getWordSize();
 
     /**
      * FIXME: This method implements index, member, slice, and

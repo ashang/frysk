@@ -173,8 +173,8 @@ abstract class TypeDecorator extends Type {
     public Value bitWiseAndEqual(Value var1, Value var2) {
         return decorated.bitWiseAndEqual(var1, var2);
     }
-    public Value addressOf (Value var1, ByteOrder order) {
-	return decorated.addressOf(var1, order);
+    public Value addressOf (Value var1, ByteOrder order, int wordSize) {
+	return decorated.addressOf(var1, order, wordSize);
     }
     public Value dereference (Value var1, ByteBuffer taskMem) {
 	return decorated.dereference(var1, taskMem);
@@ -190,5 +190,5 @@ abstract class TypeDecorator extends Type {
     }
     public Value member(Value var1, String member) {
 	return decorated.member(var1, member);
-    }
+    } 
 }

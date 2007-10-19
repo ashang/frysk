@@ -1,3 +1,7 @@
+2007-10-19  Teresa Thomas  <tthomas@redhat.com>
+
+	* DebugInfoEvaluator.java (getWordSize): New.
+
 2007-10-19  Andrew Cagney  <cagney@redhat.com>
 
 	* VirtualDebugInfoFrame.java

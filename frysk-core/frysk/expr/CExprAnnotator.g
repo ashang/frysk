@@ -225,8 +225,6 @@ expr
         }
     |   #(MEMBER expr identifier) {
         }     
-    |   #(POINTERTO expr identifier) {
-        }          
     |   ident:IDENT  {
             Variable var;
             var = exprSymTab.getVariable(ident.getText());

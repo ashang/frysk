@@ -195,7 +195,7 @@ expr returns [Value returnVar=null]
             returnVar = v1.getType().bitWiseAnd(v1, v2); 
         }
     |   #(ADDRESS_OF v1=expr ) {
-            returnVar = v1.getType().addressOf(v1, exprSymTab.order());
+            returnVar = v1.getType().addressOf(v1, exprSymTab.order(), exprSymTab.getWordSize());
         }
     |   #(BITWISEXOR  v1=expr v2=expr) {
             returnVar = v1.getType().bitWiseXor(v1, v2); 
@@ -337,6 +337,9 @@ expr returns [Value returnVar=null]
     |   #(REFERENCE el=references) {
             returnVar = (Value)exprSymTab.getValueFIXME(el);
         }
+    |   #(SIZEOF v1=expr) {
+           returnVar = longType.createValue((long)(v1.getType().getSize())); 
+        }             
     |   ident:IDENT  {
             returnVar = ((Value)exprSymTab.getValue(ident.getText()));
         }

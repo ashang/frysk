@@ -83,7 +83,12 @@ public class ScratchSymTab implements ExprSymTab {
     public Type getType(Variable variable) {
 	throw new RuntimeException("no types");
     }
-
+    /**
+     * Return the wordsize.
+     */      
+    public int getWordSize() {
+	throw new RuntimeException("no word size");
+    }
     /**
      * FIXME: This method implements index, member, slice, and
      * possibly other selection operations.  This can be better

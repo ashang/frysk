@@ -124,6 +124,7 @@ imaginaryTokenDefinitions
 	FUNC_CALL
 	MEMORY
 	MEMBER
+	SIZEOF
     ;
 
 /** 
@@ -231,18 +232,18 @@ logical_or_expression
     ;
 
 logical_and_expression 
-    :	inclusive_or_expression (AND^ inclusive_or_expression)* 
+    :	bitwise_inclusive_or_expression (AND^ bitwise_inclusive_or_expression)* 
     ;
 
-inclusive_or_expression 
-    :	exclusive_or_expression (BITWISEOR^ exclusive_or_expression)*
+bitwise_inclusive_or_expression 
+    :	bitwise_exclusive_or_expression (BITWISEOR^ bitwise_exclusive_or_expression)*
     ;
 
-exclusive_or_expression 
-    :   and_expression (BITWISEXOR^ and_expression)*
+bitwise_exclusive_or_expression 
+    :   bitwise_and_expression (BITWISEXOR^ bitwise_and_expression)*
     ;
 
-and_expression 
+bitwise_and_expression 
     :   equality_expression (AMPERSAND^  equality_expression)*
     ;
 
@@ -268,64 +269,112 @@ shift_expression
 
 additive_expression 
     :   multiplicative_expression
-        (options	{warnWhenFollowAmbig = false;}:
+        (options {warnWhenFollowAmbig = false;}:
             (PLUS^ | MINUS^) multiplicative_expression
         )*
     ;
 
 multiplicative_expression 
-    :	unary_expression
-        (options{warnWhenFollowAmbig = false;}:
-            (STAR^ | DIVIDE^ | MOD^) unary_expression
+    :	member_selection_expression
+        (options {warnWhenFollowAmbig = false;}:
+            (STAR^ | DIVIDE^ | MOD^) member_selection_expression
         )*
     ;
+    
+member_selection_expression
+    : prefix_expression 
+        ((DOTSTAR^ | POINTERSTAR^) prefix_expression 
+        )*
+    ;      
  
-unary_expression 
-    :   PLUS^ unary_expression
-    |   MINUS^ unary_expression
-    |   PLUSPLUS^ postfix_expression
-    |   MINUSMINUS^ postfix_expression
-    |   TILDE^ unary_expression
-    |   NOT^ unary_expression
-    |   unary_expression_simple
-    ;
-
-unary_expression_simple 
-    :   AMPERSAND prim_expr: postfix_expression
-        {
-            ## = #([ADDRESS_OF, "Address Of"], #prim_expr); 
+prefix_expression 
+    :   "sizeof"! expr:prefix_expression 
+        { ## = #(#[SIZEOF, "Size_Of"], #expr); 
         }
-    |   STAR mem_expr: postfix_expression
-        {
-            ## = #([MEMORY, "Memory"], #mem_expr); 
-        }
+        //sizeof (type)
+    |   PLUSPLUS^ prefix_expression
+    |   MINUSMINUS^ prefix_expression
+    |   TILDE^ prefix_expression 
+    |   NOT^ prefix_expression   
+    |   MINUS^ prefix_expression       
+    |   PLUS^ prefix_expression
+    |   AMPERSAND addr_expr: prefix_expression
+        { ## = #([ADDRESS_OF, "Address_Of"], #addr_expr);    
+        }         
+    |   STAR dref_expr: postfix_expression
+        { ## = #([MEMORY, "Memory"], #dref_expr);    
+        }            
+        // new operators 
+        // delete operators
     |   cast_expression
-//    |   postfix_expression selector* (PLUSPLUS |MINUSMINUS)?
-    | postfix_expression
+    |   postfix_expression 
     ;
-
-primitiveType
-    :   "boolean"
-    |   "char"
-    |   "byte"
-    |   "short"
-    |   "int"
-    |   "long"
-    |   "float"
-    |   "double"
-    ;
-
 cast_expression! 
-    :  LPAREN type:primitiveType RPAREN expr:unary_expression
-//       | LPAREN (expression) RPAREN unary_expression_simple
-//       |  LPAREN (expression | primitiveType) RPAREN unary_expression_simple
-        {
-            ## = #([CAST, "Cast"], #type, #expr);
-        }
-	;
+    :  LPAREN type:primitiveType RPAREN expr:prefix_expression
+       { ## = #([CAST, "Cast"], #type, #expr); }
+    ;
+  
+postfix_expression!
+    { ExprAST astPostExpr = null; 
+    }   
+    :(   sc_expr: scope_expression
+         {  astPostExpr = #sc_expr; 
+         }
+         (      
+               DOT id_expr1:identifier
+               { astPostExpr = #(#[MEMBER, "Member"], #astPostExpr, #id_expr1); 
+               }                            
+           |   POINTERTO id_expr2:identifier
+               {  astPostExpr = #(#[MEMORY, "Memory"], #astPostExpr); 
+                  astPostExpr = #(#[MEMBER, "Member"], #astPostExpr, #id_expr2); 
+               } 
+               // FIX ME               
+           |   LSQUARE arrExpr1:expressionList (COLON arrExpr2:expressionList)? RSQUARE  
+                // a[b][c] => (Array Reference a (Subscript b-lbound)
+                //            (Subscript b-hbound) (Subscript c-lbound)...)
+                {
+                  ExprAST sub = null;
+                   if ( astPostExpr.getFirstChild() != null) {
+                      #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
+                    astPostExpr.addChild(#sub);
+                    // arr[n] is treated as arr[n:n]
+                    if (#arrExpr2 != null)
+                        #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr2);
+                    else
+                      #sub =  #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
+                    astPostExpr.addChild(#sub);
+                  }
+                  else {
+                      #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
+                    #astPostExpr = #(#[REFERENCE,"Array Reference"], #astPostExpr, #sub);
+                    if (#arrExpr2 != null)
+                        #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr2);
+                    else
+                      #sub =  #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
+                    astPostExpr.addChild(#sub);
+                 }
+               }        
+           |   LPAREN! expressionList RPAREN!  
+   	       |   PLUSPLUS  
+   	           { astPostExpr = #(PLUSPLUS, #astPostExpr); 
+   	           }
+   	       |   MINUSMINUS
+   	           { astPostExpr = #(MINUSMINUS, #astPostExpr); 
+   	           }
+   	    )*
+   	 )      
+    { ## = #astPostExpr; }       
+    ;           
+    
+scope_expression 
+    :   identifier (SCOPE identifier)*
+    |   SCOPE identifier
+    |   LPAREN! expressionList RPAREN!
+    |   tab_expression
+    ;
 
-postfix_expression 
-{String sTabText;}
+tab_expression 
+    { String sTabText; }
     //  should subscript, component, call, post inc/dec be moved here?
     :	post_expr1:primary_expression 
         {
@@ -338,10 +387,7 @@ postfix_expression
 		  		sTabText = #post_expr1.getFirstChild().getText();
             else 
               sTabText = #post_expr1.getText();
-
-	        if (#post_expr1.getText().startsWith("Class Reference"))
-		      sTabText += ".";
-
+              
             throw new TabException(#post_expr1, sTabText);
           }
         }
@@ -353,96 +399,26 @@ postfix_expression
   *	to press TAB whenever auto-completion is required
   */
 primary_expression 
-    :   (TAB {bTabPressed = true;}
-	    | primary_identifier)
+    :   TAB
+        { bTabPressed = true; 
+        }
     |   constant
     |   "this"
-    |   LPAREN! expression RPAREN!
     ;
-
-/***
-  *  TabException is raised everytime the TAB is pressed.
-  *  The parser thus bails out immediately and returns the
-  *  parse tree constructed so far.
-  */
-/* ??? add (id_expression | (TAB {bTabPressed = true;})) */
-
-primary_identifier! 
-{
-    ExprAST astPostExpr = null;
-} 
-    :   (   prim_expr: id_expression
-            {
-                astPostExpr = #prim_expr;
-            }
-
-            (   options {warnWhenFollowAmbig = false;}
-
-            : LPAREN (expr2:expressionList)? RPAREN
-                { astPostExpr = #([FUNC_CALL, "FuncCall"], #astPostExpr, #expr2); }
-	        | LSQUARE arrExpr1:expression (COLON arrExpr2:expression)? RSQUARE
-                // a[b][c] => (Array Reference a (Subscript b-lbound)
-                //            (Subscript b-hbound) (Subscript c-lbound)...)
-                {
-                  ExprAST sub = null;
-		 		  if (astPostExpr.getFirstChild() != null) {
-		      	    #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
-                    astPostExpr.addChild(#sub);
-                    // arr[n] is treated as arr[n:n]
-                    if (#arrExpr2 != null)
-		      	      #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr2);
-                    else
-                      #sub =  #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
-                    astPostExpr.addChild(#sub);
-                  }
-                  else {
-		      	    #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
-                    #astPostExpr = #(#[REFERENCE,"Array Reference"], #astPostExpr, #sub);
-                    if (#arrExpr2 != null)
-		      	      #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr2);
-                    else
-                      #sub =  #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
-                    astPostExpr.addChild(#sub);
-                  }
-                }
-
-// causes nondeterminism warnings
-// 	        | AT at_expr:expression
-//                 // a@N => (Array Reference a (Subscript N) (Subscript N))
-//                 {
-// 			      ExprAST sub = null;
-// 		      	  #sub = #(#[SUBSCRIPT,"Subscript"], #[DECIMALINT,"0"]);
-//                   #astPostExpr = #(#[REFERENCE,"Array Reference"], #astPostExpr, #sub);
-//                   // allow for 0 origin lower bound
-//                   #at_expr.setText(new String(Integer.toString(Integer.parseInt(#at_expr.getText()) - 1)));
-// 		      	  #sub = #(#[SUBSCRIPT,"Subscript"], #at_expr);
-//                   astPostExpr.addChild(#sub);
-//                 }
-
-            |   DOT!
-                (   tb:TAB
-                    {
-                        bTabPressed = true;
-           		astPostExpr = #(#[MEMBER, "Member"], #astPostExpr, #tb);
-                    }
-                |   id_expr1:id_expression
-                    {   astPostExpr = #(#[MEMBER, "Member"], #astPostExpr, #id_expr1); }
-                )
-                
-            |   POINTERTO id_expr2:id_expression
-                {
-                  astPostExpr = #([MEMORY, "Memory"], #astPostExpr); 
-                  astPostExpr = #(#[MEMBER, "Member"], #astPostExpr, #id_expr2); 
-                }
-            |   PLUSPLUS
-                { astPostExpr = #(PLUSPLUS, #astPostExpr); }
-            |   MINUSMINUS
-                { astPostExpr = #(MINUSMINUS, #astPostExpr); }
-            )*
-        )
-        { 
-            ## = #astPostExpr; 
-        }
+    
+identifier
+    :   ident:IDENT
+    ;   
+    
+primitiveType
+    :   "boolean"
+    |   "char"
+    |   "byte"
+    |   "short"
+    |   "int"
+    |   "long"
+    |   "float"
+    |   "double"
     ;
 
 constant
@@ -456,10 +432,22 @@ constant
     |   "true"
     |   "false"
     ;
-
-id_expression
-    :   IDENT
-    ;
+    
+/***
+  *  TabException is raised everytime the TAB is pressed.
+  *  The parser thus bails out immediately and returns the
+  *  parse tree constructed so far.
+  */
+/* ??? add (identifier | (TAB {bTabPressed = true;})) */
+/*DOT!
+(   tb:TAB
+    {
+        bTabPressed = true;
+        astPostExpr = #(#[MEMBER, "Member"], #astPostExpr, #tb);
+    }
+    |   id_expr1:identifier
+    {   astPostExpr = #(#[MEMBER, "Member"], #astPostExpr, #id_expr1); }
+)*/
 
 tid_expression
     :   TAB_IDENT 
@@ -495,6 +483,7 @@ COLON           : ':' ;
 COMMA           : ',' ;
 DIVIDE          : '/' ;
 DIVIDEEQUAL     : "/=" ;
+DOTSTAR         : ".*" ;
 EQUAL			: "==" ;
 ETX	            : '\3'  ;
 GREATERTHAN     : ">" ;
@@ -515,6 +504,7 @@ OR		        : "||" ;
 PLUS            : '+' ;
 PLUSEQUAL       : "+=" ;
 PLUSPLUS        : "++" ;
+POINTERSTAR     : "->*" ;
 POINTERTO       : "->";
 QUESTIONMARK    : '?' ;
 RCURLY          : '}' ;
