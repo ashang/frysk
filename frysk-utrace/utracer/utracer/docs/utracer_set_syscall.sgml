@@ -1,0 +1,7 @@
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.2//EN" [
+<!ENTITY setsyscall SYSTEM "utracer_set_syscall_body.sgml">
+]>
+
+<refentry id="utracersetsyscall">
+  &setsyscall;
+</refentry>

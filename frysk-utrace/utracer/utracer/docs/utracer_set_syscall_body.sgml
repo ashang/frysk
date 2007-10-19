@@ -1,0 +1,216 @@
+<refmeta>
+  <refentrytitle>utracer_set_syscall</refentrytitle>
+  <manvolnum>2</manvolnum>
+</refmeta>
+
+<refnamediv>
+  <refname>utracer_set_syscall</refname>
+  <refpurpose>specify which syscalls to report</refpurpose> 
+</refnamediv>
+
+<refsynopsisdiv>
+  <funcsynopsis>
+    <funcsynopsisinfo>
+      #include &lt;utracer.h&gt;
+    </funcsynopsisinfo>
+    <funcprototype>
+      <funcdef>int <function>utracer_set_syscall</function></funcdef>
+      <paramdef>long <parameter>client_pid</parameter></paramdef>
+      <paramdef>short <parameter>which</parameter></paramdef>
+      <paramdef>short <parameter>cmd</parameter></paramdef>
+      <paramdef>long <parameter>traced_pid</parameter></paramdef>
+      <paramdef>long <parameter>syscall</parameter></paramdef>
+    </funcprototype>
+  </funcsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+  <para>
+    <function>utracer_set_syscall</function>() is used to specify which
+    syscalls should be reported to the calling process.  The parameter
+    <parameter>pid</parameter> must be the value returned by a successful
+    <function>utracer_open</function>() call and serves to identify the calling
+    process to the module.  The <parameter>traced_pid</parameter> parameter
+    specifies the attached process to which this operation applies, that
+    process having been previously attached by a
+    <function>utracer_attach</function>() call, q.v. (Utracer supports
+    concurrent tracing of multiple attached processes by multiple clients.)
+    The <parameter>which</parameter> parameter specifies whether the syscall
+    should be reported on entry or exit and should be either of the enum
+    constants <constant>SYSCALL_CMD_ENTRY</constant> or
+    <constant>SYSCALL_CMD_EXIT</constant>.
+  </para>
+  <para>
+    The <parameter>cmd</parameter>
+    parameter specifies whether reporting of the specified syscall should be
+    one of the following enum constants:
+    <variablelist>
+
+      <varlistentry>
+	<term><constant>SYSCALL_CMD_ENABLE</constant></term>
+	<listitem>
+	  <para>
+	    This operation globally enables reporting of either syscall entries
+	    or syscall exits as specified by the <parameter>which</parameter>
+	    parameter.  Unless this operation is issued, no syscall reports
+	    will be generated regardless of any other calls to
+	    <function>utracer_set_syscall</function>().  The
+	    <parameter>syscall</parameter> parameter is ignored.
+	  </para>
+	</listitem>
+      </varlistentry>
+      
+      <varlistentry>
+	<term><constant>SYSCALL_CMD_DISABLE</constant></term>
+	<listitem>
+	  <para>
+	    This operation is the reverse of
+	    <constant>SYSCALL_CMD_ENABLE</constant> and may be used to
+	    permanently or temporarily disable reporting of previously
+	    specified syscalls--this operation may be reversed by a
+	    <constant>SYSCALL_CMD_ENABLE</constant> without affecting the set
+	    of syscalls to be reported (see
+	    <constant>SYSCALL_CMD_ADD</constant> below).  Note that this
+	    operation is specific to either the set of syscall entries or
+	    syscall exits, as specified by the <parameter>which</parameter>.
+	    The <parameter>syscall</parameter> parameter is ignored.
+	  </para>
+	</listitem>
+      </varlistentry>
+      
+      <varlistentry>
+	<term><constant>SYSCALL_CMD_ADD</constant></term>
+	<listitem>
+	  <para>
+	    This operation specifies, with the <parameter>syscall</parameter>
+	    parameter, which syscall is to be reported.  Whether the the report
+	    is generated on entry to or exit from the syscall is specified by
+	    the <parameter>which</parameter> parameter.  This operation is
+	    cumulative--reports for multiple syscall types may be
+	    simultaneously enabled by repeated calls to
+	    <function>utracer_set_syscall</function>() with
+	    <constant>SYSCALL_CMD_ADD</constant> arguments and different values
+	    of the <parameter>syscall</parameter> parameter.  Reporting of any
+	    given syscall may be repeatedly enabled without error, but has no
+	    effect.
+	  </para>
+	</listitem>
+      </varlistentry>
+      
+      <varlistentry>
+	<term><constant>SYSCALL_CMD_REMOVE</constant></term>
+	<listitem>
+	  <para>
+	    This operation disables reporting of syscalls as specified by the
+	    <parameter>syscall</parameter> and <parameter>which</parameter>
+	    parameters.  Reporting of any given syscall may be repeatedly
+	    disabled without error, but has no effect.
+	  </para>
+	</listitem>
+      </varlistentry>
+      
+    </variablelist>
+  </para>
+
+  <para>
+    The effects of <function>utracer_set_syscall</function>() are cumulative,
+    i.e., through a sequence of calls to it reports may be requested for any
+    number of syscall types and on any combination of entry and/or exit.  For
+    example,
+    <example>
+      <title></title>
+      <programlisting>
+	utracer_set_syscall (clientpid, SYSCALL_CMD_ENTRY,
+	    SYSCALL_CMD_ENABLE, traced_pid, SYS_open);
+	utracer_set_syscall (clientpid, SYSCALL_CMD_EXIT,
+	    SYSCALL_CMD_ENABLE, traced_pid, SYS_close);
+      </programlisting>
+    </example>
+    would result in reports on the entry into an <quote>open</quote> syscall
+    and the exit from a <quote>close</quote> syscall.  Initially, no reports
+    are enabled.
+  </para>
+</refsect1>
+
+<refsect1><title>Return Value</title>
+  <para>
+    If successful, <function>utracer_set_syscall</function>() returns a zero;
+    otherwise a -1 is returned and <varname>errno</varname> is set.
+  </para>
+</refsect1>
+
+<refsect1><title>Errors</title>
+  <variablelist>
+      
+    <varlistentry>
+      <term><constant>UTRACER_ETRACING</constant></term>
+      <listitem>
+	<para>
+	  The process specified by the <parameter>client_pid</parameter>
+	  parameter either doesn't t exist or isn't registered as a utracer
+	  client. 
+	</para>
+      </listitem>
+    </varlistentry>
+    
+    <varlistentry>
+      <term><constant>ESRCH</constant></term>
+      <listitem>
+	<para>
+	  The process specified by the <parameter>traced_pid</parameter>
+	  parameter does not exist.
+	</para>
+      </listitem>
+    </varlistentry>
+      
+    <varlistentry>
+      <term><constant>UTRACER_ETRACED</constant></term>
+      <listitem>
+	<para>
+	  The process specified by the <parameter>traced_pid</parameter>
+	  parameter has not been registered (via
+	  <function>utracer_attach</function>()) with utracer.
+	</para>
+      </listitem>
+    </varlistentry>
+      
+    <varlistentry>
+      <term>UTRACER_EENGINE</term>
+      <listitem>
+	<para>
+	  The process specified by the <parameter>traced_pid</parameter>
+	  parameter is not utrace-attached.
+	</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+
+  <para>
+    In addition to the foregoing, errors associated with
+    <function>ioctl</function>() may be reported.
+  </para>
+</refsect1>
+
+<refsect1><title>See Also</title>
+  <para>
+    <function>utracer_get_mmap</function>(), 
+    <function>utracer_get_pids</function>(), 
+    <function>utracer_get_mem</function>(), 
+    <function>utracer_get_env</function>(), 
+    <function>utracer_get_exe</function>(), 
+    <function>utracer_get_regs</function>(), 
+    <function>utracer_resp_file_id</function>(), 
+    <!--<function>utracer_set_syscall</function>(), -->
+    <function>utracer_set_sync</function>(), 
+    <function>utracer_detach</function>(), 
+    <function>utracer_attach</function>(), 
+    <function>utracer_run</function>(), 
+    <function>utracer_quiesce</function>(), 
+    <function>utracer_switch_pid</function>(), 
+    <function>utracer_open</function>(),
+    <function>utracer_unregister</function>(), 
+    <function>utracer_cleanup</function>(), 
+    <function>utracer_close_ctl_file</function>(), 
+    <function>utracer_shutdown</function>(), 
+  </para>
+</refsect1>

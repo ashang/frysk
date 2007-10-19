@@ -1,0 +1,33 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.2//EN" [
+<!ENTITY open       SYSTEM "utracer_open_body.sgml">
+<!ENTITY unregister SYSTEM "utracer_unregister_body.sgml">
+<!ENTITY setsyscall SYSTEM "utracer_set_syscall_body.sgml">
+<!ENTITY attach     SYSTEM "utracer_attach_body.sgml">
+]>
+
+<book>
+  <reference>
+    <title>Utracer</title>
+    
+    <subtitle>
+      Utracer kernel module interface specification.
+    </subtitle>
+    
+    <refentry id="utraceropen">
+      &open;
+    </refentry>
+    
+    <refentry id="utracerunregister">
+      &unregister;
+    </refentry>
+    
+    <refentry id="utracerattach">
+      &attach;
+    </refentry>
+    
+    <refentry id="utracersetsyscall">
+      &setsyscall;
+    </refentry>
+    
+  </reference>
+</book>

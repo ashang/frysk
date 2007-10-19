@@ -1,0 +1,130 @@
+<refmeta>
+  <refentrytitle>utracer_attach</refentrytitle>
+  <manvolnum>2</manvolnum>
+</refmeta>
+
+<refnamediv>
+  <refname>utracer_attach</refname>
+  <refpurpose>attach a specified process to a specified client</refpurpose> 
+</refnamediv>
+
+<refsynopsisdiv>
+  <funcsynopsis>
+    <funcsynopsisinfo>
+      #include &lt;utracer.h&gt;
+    </funcsynopsisinfo>
+    <funcprototype>
+      <funcdef>int <function>utracer_attach</function></funcdef>
+      <paramdef>long <parameter>client_pid</parameter></paramdef>
+      <paramdef>long <parameter>traced_pid</parameter></paramdef>
+      <paramdef>long <parameter>quiesce</parameter></paramdef>
+      <paramdef>long <parameter>exec_quiesce</parameter></paramdef>
+    </funcprototype>
+  </funcsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+  <para>
+    <function>utracer_attach</function>() is used to attach a process specified
+    by the <parameter>traced_pid</parameter> parameter to the utracer client
+    identified by the <parameter>client_pid</parameter> parameter.  If the
+    <parameter>quiesce</parameter> parameter is non-zero, the traced process
+    will be quiesced after being attached; otherwise it will continue running.
+    If the <parameter>exec_quiesce</parameter> parameter is non-zero, the
+    attached process will be quiesced after anything that results in an
+    <function>execve</function>() has succeeded and the new program is about to
+    start.
+  </para>
+  <para>
+    The difference between these two types of quiesce is that the former occurs
+    immediately pursuiant to a fork or clone that creates a new task, while the
+    latter occurs after the newly created task loads a new binary and is about
+    to start running it.  The principal use of the
+    <parameter>exec_quiesce</parameter> capability is to provide the equivalent
+    of the <function>ptrace</function>() <constant>PTRACE_TRACEME</constant>
+    request, permitting a parent (presumably debugger) process to get control
+    of a child process at the start of the execution of a program to be traced.
+  </para>
+</refsect1>
+
+<refsect1><title>Return Value</title>
+  <para>
+    If successful, <function>utracer_set_syscall</function>() returns a zero;
+    otherwise a -1 is returned and <varname>errno</varname> is set.
+  </para>
+</refsect1>
+
+<refsect1><title>Errors</title>
+  <variablelist>
+      
+    <varlistentry>
+      <term><constant>UTRACER_ETRACING</constant></term>
+      <listitem>
+	<para>
+	  The process specified by the <parameter>client_pid</parameter>
+	  parameter either doesn't t exist or isn't registered as a utracer
+	  client. 
+	</para>
+      </listitem>
+    </varlistentry>
+    
+    <varlistentry>
+      <term><constant>ESRCH</constant></term>
+      <listitem>
+	<para>
+	  The process specified by the <parameter>traced_pid</parameter>
+	  parameter does not exist.
+	</para>
+      </listitem>
+    </varlistentry>
+      
+    <varlistentry>
+      <term>UTRACER_EENGINE</term>
+      <listitem>
+	<para>
+	  The utrace-attach of the process specified by
+	  <parameter>traced_pid</parameter> parameter failed.
+	</para>
+      </listitem>
+    </varlistentry>
+      
+    <varlistentry>
+      <term>ENOMEM</term>
+      <listitem>
+	<para>
+	  There was insufficient memory available to create the necessary
+	  control structures in utracer.
+	</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+
+  <para>
+    In addition to the foregoing, errors associated with
+    <function>ioctl</function>() may be reported.
+  </para>
+</refsect1>
+
+<refsect1><title>See Also</title>
+  <para>
+    <function>utracer_get_mmap</function>(), 
+    <function>utracer_get_pids</function>(), 
+    <function>utracer_get_mem</function>(), 
+    <function>utracer_get_env</function>(), 
+    <function>utracer_get_exe</function>(), 
+    <function>utracer_get_regs</function>(), 
+    <function>utracer_resp_file_id</function>(), 
+    <function>utracer_set_syscall</function>(),
+    <function>utracer_set_sync</function>(), 
+    <function>utracer_detach</function>(), 
+    <!--<function>utracer_attach</function>(), -->
+    <function>utracer_run</function>(), 
+    <function>utracer_quiesce</function>(), 
+    <function>utracer_switch_pid</function>(), 
+    <function>utracer_open</function>(),
+    <function>utracer_unregister</function>(), 
+    <function>utracer_cleanup</function>(), 
+    <function>utracer_close_ctl_file</function>(), 
+    <function>utracer_shutdown</function>(), 
+  </para>
+</refsect1>

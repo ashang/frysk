@@ -1,0 +1,7 @@
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.2//EN" [
+<!ENTITY attach SYSTEM "utracer_attach_body.sgml">
+]>
+
+<refentry id="utracerattach">
+  &attach;
+</refentry>
