@@ -1,3 +1,11 @@
+2007-10-19  Andrew Cagney  <cagney@redhat.com>
+
+	* Frame.java (level): New.
+	(level()): New.
+	(Frame(Frame,Task)): Set level.
+	(toPrint(PrintWriter,boolean)): New.
+	(toPrint(PrintWriter,boolean,boolean)): Call.
+
 2007-10-18  Andrew Cagney  <cagney@redhat.com>
 
 	* FrameLevel.java: New.

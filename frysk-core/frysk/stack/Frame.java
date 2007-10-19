@@ -56,6 +56,7 @@ public abstract class Frame {
     private final Task task;
     private final Frame inner;
     private Frame outer;
+    private final int level;
 
     /**
      * Construct a frame.  For the inner most frame "inner" is NULL.
@@ -66,6 +67,7 @@ public abstract class Frame {
     Frame(Frame inner, Task task) {
 	this.inner = inner;
 	this.task = task;
+	this.level = (inner == null) ? 0 : inner.level() + 1;
 	if (inner != null) {
 	    inner.outer = this;
 	}
@@ -92,6 +94,10 @@ public abstract class Frame {
      */
     public final Task getTask() {
 	return task;
+    }
+
+    public final int level() {
+	return level;
     }
 
     /**
@@ -128,13 +134,10 @@ public abstract class Frame {
     protected abstract Frame unwind();
 
     /**
-     * Return a simple string representation of this stack frame.
-     * The returned string is suitable for display to the user.
+     * Write a simple string representation of this stack frame.
      * @param printWriter
      */
-    public void toPrint (PrintWriter printWriter, boolean name,
-			 boolean printSourceLibrary)
-    {
+    public void toPrint (PrintWriter printWriter, boolean printSourceLibrary) {
 	// Pad the address based on the task's word size.
 	printWriter.write("0x");
 	String addr = Long.toHexString(getAddress());
@@ -153,6 +156,11 @@ public abstract class Frame {
 	if (printSourceLibrary) {
 	    printWriter.print(" from " + this.getLibraryName());
 	}
+    }
+
+    public void toPrint (PrintWriter printWriter, boolean name,
+			 boolean printSourceLibrary) {
+	toPrint(printWriter, printSourceLibrary);
     }
   
     public String getLibraryName() {
