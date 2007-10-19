@@ -122,28 +122,34 @@ public class DebugInfoStackFactory {
       printWriter.flush();
     }
 
-    public static void printStackTrace(PrintWriter writer, DebugInfoFrame topFrame, int numberOfFrames, boolean printParameters, boolean printScopes, boolean fullpath){
+    public static void printStackTrace(PrintWriter writer,
+				       DebugInfoFrame topFrame,
+				       int numberOfFrames,
+				       boolean printParameters,
+				       boolean printScopes,
+				       boolean fullpath) {
         
         int count = 0;
-        for (DebugInfoFrame frame = topFrame;
-        frame != null; frame = frame.getOuterDebugInfoFrame()) {
+        for (DebugInfoFrame frame = topFrame; frame != null;
+	     frame = frame.getOuterDebugInfoFrame()) {
             
-          writer.print("#");
+	    if (numberOfFrames > 0 && count++ >= numberOfFrames) {
+		writer.println("...");
+		break;
+	    }
 
-          frame.printIndex(writer);
-          writer.print(" ");
+	    writer.print("#");
+	    frame.printIndex(writer);
+	    writer.print(" ");
             
-          frame.toPrint(writer, printParameters, printScopes, fullpath);
-          writer.println();
-          writer.flush();
-          count++;
-          if(count == numberOfFrames){
-              writer.println("...");
-              break;
-          }
-          
+	    frame.toPrint(writer, printParameters, fullpath);
+	    writer.println();
+	    if (printScopes) {
+		frame.printScopes(writer);
+	    }
+	    writer.flush();
         }
-    
-      }
+
+    }
 
 }

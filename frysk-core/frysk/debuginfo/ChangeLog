@@ -1,5 +1,12 @@
 2007-10-19  Andrew Cagney  <cagney@redhat.com>
 
+	* DebugInfoFrame.java (toPrint(PrintWriter,boolean,boolean)):
+	Replace toPrint(PrintWriter,boolean,boolean,boolean), remove
+	printScopes parameter.
+	(printScopes(PrintWriter)): New.
+	* DebugInfoStackFactory.java (printStackTrace(PrintWriter,
+	DebugInfoFrame,int,boolean,boolean,boolean)): Print scopes here.
+
 	* TestFrameDebugInfo.java (testFrameAdjustedAddress()): Use
 	StackFactory.printStack.
 	* TestDebugInfoStackTrace.java: Delete commented out calls to

@@ -214,46 +214,46 @@ public class DebugInfoFrame extends FrameDecorator {
 	writer.print(this.index);
     }
     
-    public void toPrint(PrintWriter writer, boolean printParameters, boolean printScopes, boolean fullpath){
+    void toPrint(PrintWriter writer, boolean printParameters,
+		 boolean fullpath){
         Subprogram subprogram = this.getSubprogram();
 
-        if(subprogram != null){
-          writer.print("0x");
-          String addr = Long.toHexString(this.getAddress());
-          int padding = 2 * this.getTask().getISA().wordSize() - addr.length();
+        if (subprogram != null) {
+	    writer.print("0x");
+	    String addr = Long.toHexString(this.getAddress());
+	    int padding = 2 * this.getTask().getISA().wordSize() - addr.length();
           
-          for (int i = 0; i < padding; ++i)
-            writer.print('0');
+	    for (int i = 0; i < padding; ++i)
+		writer.print('0');
           
-          writer.print(addr);
-          writer.print(" in " + subprogram.getName() + "(");
-          if(printParameters){
-  	    subprogram.printParameters(writer, this);
-          }
-          writer.print(") ");
+	    writer.print(addr);
+	    writer.print(" in " + subprogram.getName() + "(");
+	    if (printParameters) {
+		subprogram.printParameters(writer, this);
+	    }
+	    writer.print(") ");
           
-          if(fullpath){
-            Line line = this.getLines()[0];
-            writer.print(line.getFile().getPath());
-            writer.print("#");
-            writer.print(line.getLine());
-          }else{
-            Line line = this.getLines()[0];
-            writer.print(line.getFile().getName());
-            writer.print("#");
-            writer.print(line.getLine());
-          }
-          
-          if(printScopes){
-              writer.println();
-              this.printScope(writer, this.getSubprogram(), " ");
-          }
+	    if (fullpath) {
+		Line line = this.getLines()[0];
+		writer.print(line.getFile().getPath());
+		writer.print("#");
+		writer.print(line.getLine());
+	    } else {
+		Line line = this.getLines()[0];
+		writer.print(line.getFile().getName());
+		writer.print("#");
+		writer.print(line.getLine());
+	    }
           
         } else {
             super.toPrint(writer, true);
         }
     }
     
+    void printScopes(PrintWriter writer) {
+	printScope(writer, getSubprogram(), " ");
+    }
+
     private void printScope(PrintWriter writer, Scope scope, String indentString) {
 	
 	if (scope != null) {
