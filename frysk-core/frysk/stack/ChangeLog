@@ -1,5 +1,8 @@
 2007-10-19  Andrew Cagney  <cagney@redhat.com>
 
+	* StackFactory.java (printStack(PrintWriter,Frame)): New.
+	* Frame.java (toPrint(PrintWriter)): New.
+	
 	* Frame.java (level): New.
 	(level()): New.
 	(Frame(Frame,Task)): Set level.

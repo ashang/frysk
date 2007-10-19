@@ -106,4 +106,11 @@ public class StackFactory
     }
   }
 
+    public static void printStack(PrintWriter writer, Frame frame) {
+	for (; frame != null; frame = frame.getOuter()) {
+	    frame.toPrint(writer);
+	    writer.println();
+	}
+    }
+
 }

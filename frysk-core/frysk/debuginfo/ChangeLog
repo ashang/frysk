@@ -1,3 +1,10 @@
+2007-10-19  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFrameDebugInfo.java (testFrameAdjustedAddress()): Use
+	StackFactory.printStack.
+	* TestDebugInfoStackTrace.java: Delete commented out calls to
+	StackFactory.printStackTrace.
+
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfo.java (printNoSymbolTable(String,boolean)): Delete

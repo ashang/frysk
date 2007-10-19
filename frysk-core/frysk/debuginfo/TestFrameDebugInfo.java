@@ -105,7 +105,7 @@ public class TestFrameDebugInfo
     
     Frame frame = StackFactory.createFrame(task);
     StringWriter stringWriter = new StringWriter();
-    StackFactory.printStackTrace(new PrintWriter(stringWriter),frame, true);
+    StackFactory.printStack(new PrintWriter(stringWriter),frame);
       
     String string = stringWriter.getBuffer().toString();
     

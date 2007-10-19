@@ -146,7 +146,6 @@ public class TestDebugInfoStackTrace
   private void firstTestBacktraceAssertions ()
   {
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
-//    System.err.println(StackFactory.printStackTrace(frame));
     Line line;
     Symbol symbol;
 
@@ -630,7 +629,6 @@ public class TestDebugInfoStackTrace
     if (task != null)
       {
         frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
-//        System.err.println(StackFactory.printStackTrace(frame));
         
         assertNotNull(frame);
         
