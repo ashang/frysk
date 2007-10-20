@@ -1,0 +1,31 @@
+Sat Oct 20 17:22:44 2007  Chris Moller  <cmoller@redhat.com>
+
+	* utracer_intro.sgml:
+	* utracer_intro_body.sgml: Added introduction.
+	* utracer.sgml:
+	* utracer_attach_body.sgml:
+	* utracer_open_body.sgml:
+	* utracer_set_syscall_body.sgml:
+	* utracer_unregister_body.sgml: Bits of editing.
+
+Fri Oct 19 13:07:57 2007  Chris Moller  <cmoller@redhat.com>
+
+	* utracer.sgml: New file: a DocBook SGML book wrapper for the
+	various refentry SGML files used to create man pages.
+	* utracer_attach_body.sgml:
+	* utracer_open_body.sgml:
+	* utracer_set_syscall_body.sgml:
+	* utracer_unregister_body.sgml: New files containing the refentry
+	SGML for the various functions.  (Well, the ones I've written so
+	far--there are maybe a dozen left to go.)
+	* utracer_attach.sgml:
+	* utracer_open.sgml:
+	* utracer_set_syscall.sgml:
+	* utracer_unregister.sgml: New files containing individual
+	wrappers for the refentries.
+	* Makeflle: New file to build the individual manpages (*.2), a
+	pretty utracer.pdf, and a not so pretty utracer.txt.  The latter
+	two are, at the moment, basically a compendium of the man pages,
+	but I'll som more useful narrative as time permits.
+	
+
