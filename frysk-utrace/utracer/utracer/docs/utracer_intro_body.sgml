@@ -1,0 +1,96 @@
+<refmeta>
+  <refentrytitle>utracer</refentrytitle>
+  <manvolnum>7</manvolnum>
+</refmeta>
+
+<refnamediv>
+  <refname>utracer</refname>
+  <refpurpose>Introduction</refpurpose> 
+</refnamediv>
+
+<refsect1>
+  <title>Description</title>
+ <para>
+    utracer consists of a "loadable kernel module" (LKM) that uses utrace and
+    other mechanisms to allow a parent process (presumably a debugger or
+    analysis utility) to control and monitor one or more child
+    processes, and a userspace interface to that module. Briefly:
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Utracer provides a range of services using both utrace capabilities
+	  and those implicit in the kernel.  The former include running and
+	  quiescing attached processes, reading and setting processor
+	  registers, and asynchronously reporting various events that occur
+	  during the execution of the processes.  The latter provides services
+	  such as reading and writing process memory (similar to reading and
+	  writin /proc/&lt;pid&gt;/mem) and reading process memory maps
+	  (analogous to reading /proc/&lt;pid&gt;/maps).
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Utracer supports multiple concurrent clients, i.e., once loaded,
+	  utracer can provide services to any number of debuggers or other
+	  utilities.  For each client, utracer supports any number of
+	  concurrently attached processes, permitting it to, among other
+	  things, concurrently trace both the original attached process and any
+	  child tasks that process creates.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Utrace itself is entirely an artifact of the kernel and has no direct
+	  mechanism through which to communicate with userspace processes.
+	  Among other things, utracer provides that mechanism using entries
+	  under the /proc psuedo file system that appear to clients as ordinary
+	  files.  For each attached process, clients are provided a unique
+	  "command" entry, writing to which controls the behaviour of utracer
+	  for that process, and a "response" entry through which utracer
+	  returns information to the client concerning that process.  The
+	  response entry blocks on file-read, allowing it to asynchronously
+	  relay utrace report_* information (such as changes in
+	  attached-process status and attached-process signals) to the client
+	  without the necessity of polling.
+	</para>
+      </listitem>
+    </itemizedlist>
+  </para>
+
+  <para>
+    While the mechanism through which the utracer module communicates to
+    userspace--/proc entries--may be used directly by clients, the
+    communications protocol is binary, is based on C/C++ unions, and would be
+    difficult for languages like Java to use.  To accomdate such languages,
+    utracer includes a callable interface that manages the file I/O to the
+    /proc entities and the protocol encoding, and, to some extent, data
+    interpretation.  The following section details this API; subsequent
+    sections will document the communications protocol and the module
+    internals. 
+  </para>
+</refsect1>
+
+<refsect1><title>See Also</title>
+  <para>
+    <function>utracer_get_mmap</function>(), 
+    <function>utracer_get_pids</function>(), 
+    <function>utracer_get_mem</function>(), 
+    <function>utracer_get_env</function>(), 
+    <function>utracer_get_exe</function>(), 
+    <function>utracer_get_regs</function>(), 
+    <function>utracer_resp_file_id</function>(), 
+    <function>utracer_set_syscall</function>(),
+    <function>utracer_set_sync</function>(), 
+    <function>utracer_detach</function>(), 
+    <function>utracer_attach</function>(),
+    <function>utracer_run</function>(), 
+    <function>utracer_quiesce</function>(), 
+    <function>utracer_switch_pid</function>(), 
+    <function>utracer_open</function>(),
+    <function>utracer_unregister</function>(), 
+    <function>utracer_cleanup</function>(), 
+    <function>utracer_close_ctl_file</function>(), 
+    <function>utracer_shutdown</function>()
+  </para>
+</refsect1>

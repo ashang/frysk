@@ -23,7 +23,8 @@
   </funcsynopsis>
 </refsynopsisdiv>
 
-<refsect1><title>Description</title>
+<refsect1>
+  <title>Description</title>
   <para>
     <function>utracer_attach</function>() is used to attach a process specified
     by the <parameter>traced_pid</parameter> parameter to the utracer client
@@ -47,14 +48,16 @@
   </para>
 </refsect1>
 
-<refsect1><title>Return Value</title>
+<refsect1>
+  <title>Return Value</title>
   <para>
     If successful, <function>utracer_set_syscall</function>() returns a zero;
     otherwise a -1 is returned and <varname>errno</varname> is set.
   </para>
 </refsect1>
 
-<refsect1><title>Errors</title>
+<refsect1>
+  <title>Errors</title>
   <variablelist>
       
     <varlistentry>
@@ -105,7 +108,8 @@
   </para>
 </refsect1>
 
-<refsect1><title>See Also</title>
+<refsect1>
+  <title>See Also</title>
   <para>
     <function>utracer_get_mmap</function>(), 
     <function>utracer_get_pids</function>(), 

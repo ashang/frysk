@@ -24,7 +24,8 @@
   </funcsynopsis>
 </refsynopsisdiv>
 
-<refsect1><title>Description</title>
+<refsect1>
+  <title>Description</title>
   <para>
     <function>utracer_set_syscall</function>() is used to specify which
     syscalls should be reported to the calling process.  The parameter
@@ -92,7 +93,9 @@
 	    <constant>SYSCALL_CMD_ADD</constant> arguments and different values
 	    of the <parameter>syscall</parameter> parameter.  Reporting of any
 	    given syscall may be repeatedly enabled without error, but has no
-	    effect.
+	    effect.  If the value of the <parameter>syscall</parameter>
+	    parameter equals <constant>SYSCALL_ALL</constant>, reports will be
+	    generated for all architecturally valid syscalls.
 	  </para>
 	</listitem>
       </varlistentry>
@@ -104,7 +107,10 @@
 	    This operation disables reporting of syscalls as specified by the
 	    <parameter>syscall</parameter> and <parameter>which</parameter>
 	    parameters.  Reporting of any given syscall may be repeatedly
-	    disabled without error, but has no effect.
+	    disabled without error, but has no effect.  If the value of the
+	    <parameter>syscall</parameter> parameter equals
+	    <constant>SYSCALL_ALL</constant>, reports will be supressed for all
+	    architecturally valid syscalls.
 	  </para>
 	</listitem>
       </varlistentry>
@@ -132,14 +138,16 @@
   </para>
 </refsect1>
 
-<refsect1><title>Return Value</title>
+<refsect1>
+  <title>Return Value</title>
   <para>
     If successful, <function>utracer_set_syscall</function>() returns a zero;
     otherwise a -1 is returned and <varname>errno</varname> is set.
   </para>
 </refsect1>
 
-<refsect1><title>Errors</title>
+<refsect1>
+  <title>Errors</title>
   <variablelist>
       
     <varlistentry>
@@ -183,6 +191,17 @@
 	</para>
       </listitem>
     </varlistentry>
+      
+    <varlistentry>
+      <term>UTRACER_ESYSRANGE</term>
+      <listitem>
+	<para>
+	  The syscall number specified by the <parameter>syscall</parameter>
+	  parameter is not equal to <constant>SYSCALL_ALL</constant> and is out
+	  of the range of valid syscall range of the current architecture.
+	</para>
+      </listitem>
+    </varlistentry>
   </variablelist>
 
   <para>
@@ -191,7 +210,8 @@
   </para>
 </refsect1>
 
-<refsect1><title>See Also</title>
+<refsect1>
+  <title>See Also</title>
   <para>
     <function>utracer_get_mmap</function>(), 
     <function>utracer_get_pids</function>(), 

@@ -1,4 +1,5 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.2//EN" [
+<!ENTITY intro      SYSTEM "utracer_intro_body.sgml">
 <!ENTITY open       SYSTEM "utracer_open_body.sgml">
 <!ENTITY unregister SYSTEM "utracer_unregister_body.sgml">
 <!ENTITY setsyscall SYSTEM "utracer_set_syscall_body.sgml">
@@ -12,6 +13,10 @@
     <subtitle>
       Utracer kernel module interface specification.
     </subtitle>
+    
+    <refentry id="utracerintro">
+      &intro;
+    </refentry>
     
     <refentry id="utraceropen">
       &open;

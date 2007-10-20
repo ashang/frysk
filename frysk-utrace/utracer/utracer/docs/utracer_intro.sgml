@@ -1,0 +1,7 @@
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.2//EN" [
+<!ENTITY intro SYSTEM "utracer_intro_body.sgml">
+]>
+
+<refentry id="intro">
+  &intro;
+</refentry>
