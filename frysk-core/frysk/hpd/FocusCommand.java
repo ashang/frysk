@@ -67,21 +67,19 @@ class FocusCommand extends CLIHandler {
 	    return;
 	}
 	if (params.size() <= 1) {
-	    if (params.size() == 1)
-	    {
+	    if (params.size() == 1) {
 		cli.targetset = cli.createSet((String) params.get(0));
 	    	Iterator i = cli.targetset.getTasks();
 	    	while (i.hasNext()) {
 	    	    Task task = (Task) i.next();
 	    	    DebugInfoFrame frame = DebugInfoStackFactory
-	    	    .createVirtualStackTrace(task);
+			.createVirtualStackTrace(task);
 	    	    cli.setTaskFrame(task, frame);
 	    	    cli.setTaskDebugInfo(task, new DebugInfo(frame));
 	    	}
+	    } else {
+		cli.execCommand("viewset");
 	    }
-	    else
-		((CommandHandler) cli.handlers.get("viewset"))
-			.handle(new Command("viewset"));
 	} else {
 	    cli.printUsage(cmd);
 	}

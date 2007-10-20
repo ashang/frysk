@@ -42,6 +42,8 @@ package frysk.hpd;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.text.ParseException;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -196,7 +198,7 @@ public class CLI {
     final PrintWriter outWriter;
     private Preprocessor prepro;
     private String prompt; // string to represent prompt, will be moved
-    final HashMap handlers;
+    private final SortedMap handlers = new TreeMap();
     final UserHelp userhelp;
     private DbgVariables dbgvars;
 
@@ -254,7 +256,6 @@ public class CLI {
         idManager = ProcTaskIDManager.getSingleton();
 
         prepro = new Preprocessor();
-        handlers = new HashMap();
         userhelp = new UserHelp();
         dbgvars = new DbgVariables();
    

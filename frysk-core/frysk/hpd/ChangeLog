@@ -1,5 +1,8 @@
 2007-10-20  Andrew Cagney  <cagney@redhat.com>
 
+	* CLI.java (handlers): Change to a SortedMap; make private.
+	* FocusCommand.java: Update.
+	
 	* CLI.java (TaskInfo): Delete stackLevel.
 	(getTaskStackLevel(Task)): Delete.
 	(setTaskStackLevel(Task,int)): Delete.
