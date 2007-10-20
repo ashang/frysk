@@ -93,8 +93,8 @@ class WhereCommand extends CLIHandler {
             if (!moreThanOneTask && taskIter.hasNext())
                 moreThanOneTask = true;
             Task task = (Task)td.getTask();
-	    DebugInfoFrame tmpFrame = null;
-	    int l = cli.getTaskStackLevel(task);
+	    DebugInfoFrame tmpFrame = cli.getTaskFrame(task);
+	    int l = tmpFrame.level();
 	    int stopLevel;
 
 	    if (level > 0)
@@ -102,7 +102,6 @@ class WhereCommand extends CLIHandler {
 	    else
 		stopLevel = 0;
 
-	    tmpFrame = cli.getTaskFrame(task);
             if (moreThanOneTask) {
                 td.toPrint(cli.outWriter, true);
                 cli.outWriter.println();

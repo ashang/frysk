@@ -75,7 +75,6 @@ public class CLI {
     private class TaskInfo {
         DebugInfoFrame frame;
         DebugInfo debugInfo;
-        int stackLevel;
     }
 
     WeakHashMap taskInfoMap = new WeakHashMap();
@@ -114,23 +113,6 @@ public class CLI {
         taskInfo.debugInfo = debugInfo;
     }
 
-    int getTaskStackLevel(Task task) {
-        TaskInfo taskInfo = (TaskInfo)taskInfoMap.get(task);
-        if (taskInfo == null)
-            return 0;
-        else
-            return taskInfo.stackLevel;
-    }
-
-    void setTaskStackLevel(Task task, int stackLevel) {
-        TaskInfo taskInfo = (TaskInfo)taskInfoMap.get(task);
-        if (taskInfo == null) {
-            taskInfo = new TaskInfo();
-            taskInfoMap.put(task, taskInfo);
-        }
-        taskInfo.stackLevel = stackLevel;
-    }
-   
     /**
      * Handle ConsoleReader Completor
      * @param buffer Input buffer.

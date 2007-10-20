@@ -1,3 +1,11 @@
+2007-10-20  Andrew Cagney  <cagney@redhat.com>
+
+	* CLI.java (TaskInfo): Delete stackLevel.
+	(getTaskStackLevel(Task)): Delete.
+	(setTaskStackLevel(Task,int)): Delete.
+	* FrameCommands.java: Update.
+	* WhereCommand.java: Update.
+
 2007-10-19  Andrew Cagney  <cagney@redhat.com>
 
 	* TestWhereCommand.java (testFhpdVirtualStackTrace()): Check for

@@ -101,14 +101,11 @@ class FrameCommands extends CLIHandler {
 
 	    if (tmpFrame != null && tmpFrame != currentFrame) {
 		cli.setTaskFrame(task, tmpFrame);
-		cli
-			.setTaskStackLevel(task,
-				(cli.getTaskStackLevel(task) + (down ? level
-					: -level)));
 	    }
 	    if (tmpFrame == null)
 		tmpFrame = currentFrame;
-	    cli.outWriter.print("#" + cli.getTaskStackLevel(task) + " ");
+	    tmpFrame.printLevel(cli.outWriter);
+	    cli.outWriter.print(" ");
 	    tmpFrame.toPrint(cli.outWriter, false);
 	    cli.outWriter.println();
 	}
