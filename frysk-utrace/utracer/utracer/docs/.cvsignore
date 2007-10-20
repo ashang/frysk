@@ -1,0 +1,10 @@
+manpage.links
+manpage.refs
+utracer.7
+utracer.pdf
+utracer.txt
+utracer_attach.2
+utracer_open.2
+utracer_set_syscall.2
+utracer_unregister.2
+
