@@ -128,14 +128,37 @@ class LogicalMemoryBuffer extends AddressSpaceByteBuffer
       }
   }
 
+  /**
+   * Pokes the value at the given index. Unless a breakpoint is set at
+   * that location (FIXME: this limitation should be lifted).
+   */
   protected void poke (long index, int value)
   {
-    throw new UnsupportedOperationException("read only memory buffer");
+    Breakpoint breakpoint = breakpoints.getBreakpoint(index);
+    if (breakpoint != null)
+      throw new UnsupportedOperationException("breakpoint set at: " + index);
+
+    super.poke(index, value);
   }
   
+  /**
+   * Pokes the given bytes from offset at the index plus the given
+   * lenght. Unless a breakpoint is set in that range (FIXME: this
+   * limitation should be lifted).
+   */
   protected int poke(long index, byte[] bytes, int offset, int length)
   {
-    throw new UnsupportedOperationException("read only memory buffer");
+    synchronized (breakpoints)
+      {
+	Iterator it;
+	it = breakpoints.getBreakpoints(index, index + length);
+	if (it.hasNext())
+	  throw new UnsupportedOperationException("breakpoint set between "
+						  + index + " and "
+						  + index + length);
+      }
+
+    return super.poke(index, bytes, offset, length);
   }
 
   protected ByteBuffer subBuffer(ByteBuffer parent,

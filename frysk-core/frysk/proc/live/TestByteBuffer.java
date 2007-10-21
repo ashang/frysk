@@ -83,8 +83,6 @@ public class TestByteBuffer
       // Cheat with the proc, it is not actually used if no
       // breakpoints are set (testing with breakpoints set is done through
       // TestTaskObserverCode in the various BreakpointMemoryView tests).
-      // LogicalMemory isn't writable atm, so we exclude it from those
-      // tests (the raw variant is of course).
       frysk.proc.Proc proc = new frysk.proc.dummy.Proc();
       BreakpointAddresses breakpoints = new BreakpointAddresses(proc);
       memorySpaceByteBuffer = new LogicalMemoryBuffer(pid,
@@ -179,8 +177,7 @@ public class TestByteBuffer
     public void testModifyAddressBuffers()
     {
       for (int i = 0; i < addressBuffers.length; i++)
-	if (! (addressBuffers[i] instanceof LogicalMemoryBuffer))
-	  verifyModify(addressBuffers[i], LocalMemory.getCodeAddr());
+	verifyModify(addressBuffers[i], LocalMemory.getCodeAddr());
     }
 
     private void verifyAsyncModify(ByteBuffer buffer, long addr) {
@@ -236,9 +233,8 @@ public class TestByteBuffer
 
     public void testAsyncAddressBuffers() {
       for (int i = 0; i < addressBuffers.length; i++)
-	if (! (addressBuffers[i] instanceof LogicalMemoryBuffer))
-	  verifyAsyncModify(addressBuffers[i],
-			    LocalMemory.getCodeAddr());
+	verifyAsyncModify(addressBuffers[i],
+			  LocalMemory.getCodeAddr());
     }
 
     public void verifyPeeks(ByteBuffer buffer, long addr, byte[] origBytes)
@@ -357,9 +353,8 @@ public class TestByteBuffer
   public void testBulkPutAddressBuffers()
   {
     for (int i = 0; i < addressBuffers.length; i++)
-      if (! (addressBuffers[i] instanceof LogicalMemoryBuffer))
-	verifyBulkPut(addressBuffers[i], LocalMemory.getCodeAddr(),
-		      LocalMemory.getCodeBytes().length);
+      verifyBulkPut(addressBuffers[i], LocalMemory.getCodeAddr(),
+		    LocalMemory.getCodeBytes().length);
   }
 
 }

@@ -1,3 +1,10 @@
+2007-10-20  Mark Wielaard  <mwielaard@redhat.com>
+
+	Fixes bug #5201
+	* LogicalMemoryBuffer.java (poke): Allow poke when no breakpoints
+	in the way.
+	* TestByteBuffer.java: Enable LogicalMemoryBuffer write tests.
+
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
 	* LiveHost.java: New.
