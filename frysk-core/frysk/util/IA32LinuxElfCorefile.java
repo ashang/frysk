@@ -42,6 +42,7 @@ package frysk.util;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import inua.eio.ByteBuffer;
+import inua.eio.ByteOrder;
 
 import lib.dwfl.ElfNhdr;
 import lib.dwfl.ElfNhdrType;
@@ -56,6 +57,9 @@ import frysk.sys.proc.AuxvBuilder;
 import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.Stat;
 import frysk.sys.proc.Status;
+import frysk.isa.IA32Registers;
+import frysk.isa.Register;
+import java.math.BigInteger;
 
 /**
  * LinuxElfCorefilex86. Extends LinuxCorefile. Fill in
@@ -177,18 +181,37 @@ public class IA32LinuxElfCorefile extends LinuxElfCorefile {
 	// are the names are the same. Create a string[] map to bridge
 	// gap between frysk and core file register order.
 
-	String regMap[] = { "ebx", "ecx", "edx", "esi", "edi", "ebp", "eax",
-		"ds", "es", "fs", "gs", "orig_eax", "eip", "cs", "eflags",
-		"esp", "ss" };
+	Register[] ptraceRegisterMap = {IA32Registers.EBX,
+				      IA32Registers.ECX,
+				      IA32Registers.EDX,
+				      IA32Registers.ESI,
+				      IA32Registers.EDI,
+				      IA32Registers.EBP,
+				      IA32Registers.EAX,
+     				      IA32Registers.DS,
+				      IA32Registers.ES,
+				      IA32Registers.FS,
+				      IA32Registers.GS,
+				      IA32Registers.ORIG_EAX,				      
+				      IA32Registers.EIP,
+				      IA32Registers.CS,
+				      IA32Registers.EFLAGS,
+      				      IA32Registers.ESP,
+				      IA32Registers.SS};
 
 	// Set GP register info
-	for (int i = 0; i < regMap.length; i++) {
-	    prStatus.setPrGPReg(i, task.getBigIntegerRegisterFIXME(regMap[i]));
+	for (int i = 0; i < ptraceRegisterMap.length; i++) {
+	    int registerSize = ptraceRegisterMap[i].getType().getSize();
+	    byte[] byteOrderedRegister = new byte[registerSize];
+	    task.access(ptraceRegisterMap[i], 0, registerSize,	byteOrderedRegister, 0, false);
+	    prStatus.setPrGPReg(i,bytesToBigInteger(byteOrderedRegister));
 	}
 
+	
 	// Write it
 	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_PRSTATUS, prStatus);
     }
+
 
     /* (non-Javadoc)
      * @see frysk.util.LinuxElfCorefile#writeNoteFPRegset(lib.dwfl.ElfNhdr, frysk.proc.Task)
@@ -267,5 +290,22 @@ public class IA32LinuxElfCorefile extends LinuxElfCorefile {
      */
     protected byte getElfMachineClass() {
 	return ElfEHeader.PHEADER_ELFCLASS32;
+    }
+
+    // XXX: Function to convert bytes[] to BigInteger. 
+    // Will disappear when all BankRegisters are present on all
+    // all architectures, and  we can call task.access() on all 
+    // registers, and not convert to BigInteger.
+    private BigInteger bytesToBigInteger(byte[] bytes)
+    {
+    	if (this.process.getMainTask().getISA().order() == ByteOrder.LITTLE_ENDIAN) {
+	    for (int left = 0; left < bytes.length / 2; left++) {
+		int right = bytes.length - 1 - left;
+		byte temp = bytes[left];
+		bytes[left] = bytes[right];
+		bytes[right] = temp;
+	    }
+	}
+	return new BigInteger(bytes);
     }
 }

@@ -1,3 +1,10 @@
+2007-10-22  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* IA32LinuxElfCorefile.java (writeNotePrstatus): Convert
+	to use getRegister() and BankRegisters.
+	(byteToBigInteger): New. Temporary function to build
+	a BigInteget from a byte stream.
+
 2007-10-19  Andrew Cagney  <cagney@redhat.com>
 
 	* FCatch.java (generateStackTrace(Task)): Use
