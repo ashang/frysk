@@ -1,3 +1,8 @@
+2007-10-23  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* CoreCommand.java (CoreCommand): Generate
+	stack info for all threads up front.
+
 2007-10-20  Andrew Cagney  <cagney@redhat.com>
 
 	* CLI.java (handlers): Change to a SortedMap; make private.

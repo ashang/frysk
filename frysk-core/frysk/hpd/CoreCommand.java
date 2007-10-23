@@ -87,15 +87,13 @@ public class CoreCommand extends CLIHandler {
 	Iterator foo = cli.targetset.getTasks();
 	while (foo.hasNext()) {
 	    Task task = (Task) foo.next();
-	    if (task.getTid() == coreProc.getMainTask().getTid()) {
-
-		DebugInfoFrame frame = DebugInfoStackFactory
-			.createVirtualStackTrace(task);
-		cli.setTaskFrame(task, frame);
-		cli.setTaskDebugInfo(task, new DebugInfo(
-			frame));
-	    }
+	    DebugInfoFrame frame = DebugInfoStackFactory
+		.createVirtualStackTrace(task);
+	    cli.setTaskFrame(task, frame);
+	    cli.setTaskDebugInfo(task, new DebugInfo(
+						     frame));
 	}
+
 	cli.addMessage("Attached to core file: " + params.get(0),
 		Message.TYPE_NORMAL);
 
