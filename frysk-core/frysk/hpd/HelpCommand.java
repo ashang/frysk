@@ -49,7 +49,7 @@ class HelpCommand extends CLIHandler {
 		"Display help (possibly for a command.)");
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	String output = "";
 	String temp = "";

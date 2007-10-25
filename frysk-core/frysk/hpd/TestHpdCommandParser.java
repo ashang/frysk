@@ -63,7 +63,7 @@ public class TestHpdCommandParser extends TestLib {
 	    this.parser.outStream = new PrintStream(new ByteArrayOutputStream());
 	}
 
-	public void handle(Command cmd) throws ParseException {
+	public void handle(Input cmd) throws ParseException {
 	    params = cmd.getParameters();
 	    parser.parse(params);
 	}

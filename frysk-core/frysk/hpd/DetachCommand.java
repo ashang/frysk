@@ -63,7 +63,7 @@ class DetachCommand extends CLIHandler {
 	super(cli, "detach", "Detach from a running process.", "detach", full);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {

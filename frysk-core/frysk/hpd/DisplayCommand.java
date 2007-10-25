@@ -72,7 +72,7 @@ public class DisplayCommand extends CLIHandler {
     }
 
 
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
 	final PrintWriter output = cli.getPrintWriter();
 
 	PTSet ptset = cli.getCommandPTSet(cmd);

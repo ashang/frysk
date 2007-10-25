@@ -91,7 +91,7 @@ class BreakpointCommand extends CLIHandler {
                                        long address);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() != 1) {

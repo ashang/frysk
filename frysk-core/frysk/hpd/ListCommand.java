@@ -69,7 +69,7 @@ class ListCommand
     private File file = null;
     private int line;
     private int exec_line = 0;
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
         PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	int windowSize = 20;

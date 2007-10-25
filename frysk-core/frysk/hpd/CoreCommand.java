@@ -58,7 +58,7 @@ public class CoreCommand extends CLIHandler {
 	super(cli, "core", desc, "core core.file", desc);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 
 	parser.parse(params);

@@ -60,7 +60,7 @@ class WhereCommand extends CLIHandler {
 		"where [ {num-levels | -all} ] [-scopes]", full);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
 	boolean printScopes = false;
 	
 	PTSet ptset = cli.getCommandPTSet(cmd);

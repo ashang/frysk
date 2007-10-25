@@ -84,7 +84,7 @@ class AttachCommand
 		"attach [executable] pid [-task tid]", full);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	int pid = 0;
 	int tid = 0;

@@ -118,7 +118,7 @@ class RunCommand extends CLIHandler implements TaskObserver.Attached {
 	return sa;
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 
 	if (params.size() < 1) {

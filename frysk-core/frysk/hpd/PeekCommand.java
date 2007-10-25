@@ -63,7 +63,7 @@ public class PeekCommand extends CLIHandler {
 	super(cli, "peek", desc, "peek memory-location", desc);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
 	final PrintWriter output = cli.getPrintWriter();
 	ArrayList params = cmd.getParameters();
 

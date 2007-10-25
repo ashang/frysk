@@ -67,7 +67,7 @@ public class LoadCommand extends CLIHandler {
 	super(cli, "load", desc, "load path-to-executable", desc);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 
 	parser.parse(params);

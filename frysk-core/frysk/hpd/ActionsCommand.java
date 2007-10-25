@@ -88,7 +88,7 @@ class ActionsCommand extends CLIHandler {
          * 
          * @see frysk.hpd.CLIHandler#handle(frysk.hpd.Command)
          */
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
 	String actionpoints = "";
 	boolean showEnabled = false, showDisabled = false, showBreak = false, showDisplay = false, showWatch = false, showBarrier = false;
 	ArrayList args = cmd.getParameters();

@@ -57,7 +57,7 @@ class AliasCommand extends CLIHandler {
 		"alias command-name command body\nalias [command-name]", full);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);

@@ -96,7 +96,7 @@ class QuitCommand extends CLIHandler {
         killRequest = new KillRequest();
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
         quitLatch = new CountDownLatch(1);
         killRequest.request();
         try {
@@ -106,7 +106,7 @@ class QuitCommand extends CLIHandler {
         }
 	cli.addMessage("Quitting...", Message.TYPE_NORMAL);
 	DetachCommand detachCommand = new DetachCommand(cli);
-	Command command = new Command("detach");
+	Input command = new Input("detach");
 	detachCommand.handle(command);
     }
 }

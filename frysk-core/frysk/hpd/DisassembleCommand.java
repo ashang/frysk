@@ -122,7 +122,7 @@ public class DisassembleCommand extends CLIHandler {
 	symbol = true;
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
 	reset();
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	Iterator taskDataIter = ptset.getTaskData();

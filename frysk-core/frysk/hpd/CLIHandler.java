@@ -83,5 +83,5 @@ public abstract class CLIHandler
       this(name, cli, new CommandHelp(name, description, syntax, full));
   }
   
-  public abstract void handle(Command cmd) throws ParseException;
+    public abstract void handle(Input cmd) throws ParseException;
 }

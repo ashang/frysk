@@ -51,7 +51,7 @@ public class ExamineCommand extends CLIHandler {
 		"Examine a value in more detail.");
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	parser.parse(params);

@@ -58,7 +58,7 @@ class DeleteCommand extends CLIHandler {
 	super(cli, "delete", descr, "delete actionpointID", descr);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	String actionpoints = "";
 	boolean delEnabled = false, delDisabled = false, delBreak = false;

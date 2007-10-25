@@ -61,7 +61,7 @@ class EnableCommand extends CLIHandler {
 
 
 
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	String actionpoints = "";
 	boolean /* enEnabled = false, */enDisabled = false, enBreak = false;

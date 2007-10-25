@@ -55,7 +55,7 @@ class DebuginfoCommand extends CLIHandler {
 			+ "for a process and its shared modules.");
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 

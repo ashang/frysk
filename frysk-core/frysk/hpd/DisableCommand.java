@@ -58,7 +58,7 @@ class DisableCommand extends CLIHandler {
 	super(cli, "disable", descr, "disable actionpointID", descr);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	String actionpoints = "";
 	boolean disEnabled = false/* , disDisabled = false */, disBreak = false;

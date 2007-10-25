@@ -344,7 +344,7 @@ public class CLI {
 
     public String execCommand(String cmd) {
         String pcmd = ""; // preprocessed command
-        Command command;
+        Input command;
         CommandHandler handler = null;
 
         if (cmd != null) {
@@ -352,7 +352,7 @@ public class CLI {
                 // preprocess and iterate
                 for (Iterator iter = prepro.preprocess(cmd); iter.hasNext();) {
                     pcmd = (String)iter.next();
-                    command = new Command(pcmd);
+                    command = new Input(pcmd);
 
                     if (command.getAction() != null) {
                         handler = (CommandHandler)handlers.get(command.getAction());
@@ -524,7 +524,7 @@ public class CLI {
      *
      * @param cmd the command
      */
-    public void printUsage(Command cmd) {
+    public void printUsage(Input cmd) {
         addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()),
                    Message.TYPE_NORMAL);
     }
@@ -549,7 +549,7 @@ public class CLI {
         return this.steppingEngine;
     }
 
-    public PTSet getCommandPTSet(Command cmd) throws ParseException {
+    public PTSet getCommandPTSet(Input cmd) throws ParseException {
         String setString = cmd.getSet();
         PTSet ptset = null;
         if (setString == null) {

@@ -55,7 +55,7 @@ public class StepInstructionCommand extends CLIHandler {
 	super(cli, "stepi", "Instruction step a process.", "stepi", full);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void handle(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {

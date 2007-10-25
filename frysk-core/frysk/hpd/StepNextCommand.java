@@ -60,7 +60,7 @@ public class StepNextCommand extends CLIHandler {
      		+ "otherwise just perform a line step.");
     }
     
-    public void handle(Command cmd) throws ParseException
+    public void handle(Input cmd) throws ParseException
     {
       PTSet ptset = cli.getCommandPTSet(cmd);
       ArrayList params = cmd.getParameters();
