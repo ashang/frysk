@@ -224,7 +224,7 @@ public class CLI {
      * Add a CLIHandler, along with its help messages.
      * @param handler the handler
      */
-    public void addHandler(CLIHandler handler) {
+    public void addHandler(Command handler) {
         String name = handler.getName();
         handlers.put(name, handler);
         userhelp.addHelp(name, handler.getHelp());
@@ -345,7 +345,7 @@ public class CLI {
     public String execCommand(String cmd) {
         String pcmd = ""; // preprocessed command
         Input command;
-        CommandHandler handler = null;
+        Command handler = null;
 
         if (cmd != null) {
             try {
@@ -355,9 +355,9 @@ public class CLI {
                     command = new Input(pcmd);
 
                     if (command.getAction() != null) {
-                        handler = (CommandHandler)handlers.get(command.getAction());
+                        handler = (Command)handlers.get(command.getAction());
                         if (handler != null)
-                            handler.handle(command);
+                            handler.parse(command);
                         else
                             addMessage("Unrecognized command: "
                                        + command.getAction() + ".",

@@ -49,7 +49,7 @@ import frysk.isa.RegisterGroup;
 import frysk.isa.Registers;
 import frysk.isa.RegistersFactory;
 
-public class RegsCommand extends CLIHandler {
+public class RegsCommand extends Command {
 
     public RegsCommand(CLI cli) {
 	super(cli, "regs", "print registers", "regs group", "print out "
@@ -57,7 +57,7 @@ public class RegsCommand extends CLIHandler {
 		+ "printed by default.");
     }
 
-    public void handle(Input cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	Iterator taskDataIter = ptset.getTaskData();
 	while (taskDataIter.hasNext()) {

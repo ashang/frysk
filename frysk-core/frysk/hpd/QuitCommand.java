@@ -49,7 +49,7 @@ import frysk.sys.Signal;
 import frysk.sys.Sig;
 import frysk.util.CountDownLatch;
 
-class QuitCommand extends CLIHandler {
+class QuitCommand extends Command {
     private CountDownLatch quitLatch;
 
     // Do the killing in the event loop in order to not invalidate
@@ -96,7 +96,7 @@ class QuitCommand extends CLIHandler {
         killRequest = new KillRequest();
     }
 
-    public void handle(Input cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
         quitLatch = new CountDownLatch(1);
         killRequest.request();
         try {
@@ -107,6 +107,6 @@ class QuitCommand extends CLIHandler {
 	cli.addMessage("Quitting...", Message.TYPE_NORMAL);
 	DetachCommand detachCommand = new DetachCommand(cli);
 	Input command = new Input("detach");
-	detachCommand.handle(command);
+	detachCommand.parse(command);
     }
 }

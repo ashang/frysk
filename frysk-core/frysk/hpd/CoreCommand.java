@@ -50,7 +50,7 @@ import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 
-public class CoreCommand extends CLIHandler {
+public class CoreCommand extends Command {
 
     private static String desc = "open a core file";
 
@@ -58,7 +58,7 @@ public class CoreCommand extends CLIHandler {
 	super(cli, "core", desc, "core core.file", desc);
     }
 
-    public void handle(Input cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 
 	parser.parse(params);

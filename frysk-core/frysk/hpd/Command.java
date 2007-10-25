@@ -44,44 +44,40 @@ import java.text.ParseException;
 /**
  * A handler class for the CLI that supplies its own help messages.
  */
-public abstract class CLIHandler
-  implements CommandHandler
-{
-  protected final CLI cli;
-  private final CommandHelp help;
-  private final String name;  
 
-  protected HpdCommandParser parser;
-  
-  public CLI getCLI()
-  {
-    return cli;
-  }
+public abstract class Command {
+    protected final CLI cli;
+    private final CommandHelp help;
+    private final String name;  
 
-  public CommandHelp getHelp()
-  {
-    return help;
-  }
+    protected HpdCommandParser parser;
+  
+    public CLI getCLI() {
+	return cli;
+    }
 
-  public String getName()
-  {
-    return name;
-  }
+    public CommandHelp getHelp() {
+	return help;
+    }
+
+    public String getName() {
+	return name;
+    }
   
-  private CLIHandler(String name, CLI cli, CommandHelp help)
-  {
-    this.name = name;
-    this.cli = cli;
-    this.help = help;
-    parser = new HpdCommandParser(name, System.out);
-    parser.setHeader(help.syntax);
-    parser.setFooter(help.full +"\n");
-    cli.addHandler(this);
-  }
+    private Command(String name, CLI cli, CommandHelp help) {
+	this.name = name;
+	this.cli = cli;
+	this.help = help;
+	parser = new HpdCommandParser(name, System.out);
+	parser.setHeader(help.syntax);
+	parser.setFooter(help.full +"\n");
+	cli.addHandler(this);
+    }
   
-  CLIHandler (CLI cli, String name, String description, String syntax, String full) {
-      this(name, cli, new CommandHelp(name, description, syntax, full));
-  }
+    Command (CLI cli, String name, String description, String syntax,
+	     String full) {
+	this(name, cli, new CommandHelp(name, description, syntax, full));
+    }
   
-    public abstract void handle(Input cmd) throws ParseException;
+    public abstract void parse(Input cmd) throws ParseException;
 }

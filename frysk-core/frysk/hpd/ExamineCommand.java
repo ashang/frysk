@@ -44,14 +44,14 @@ import java.util.Iterator;
 import frysk.value.Value;
 import java.util.ArrayList;
 
-public class ExamineCommand extends CLIHandler {
+public class ExamineCommand extends Command {
 
     public ExamineCommand(CLI cli) {
 	super(cli, "examine", "examine a value", "examine VALUE\n",
 		"Examine a value in more detail.");
     }
 
-    public void handle(Input cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	parser.parse(params);

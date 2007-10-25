@@ -48,7 +48,7 @@ import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.proc.Task;
 
-class FocusCommand extends CLIHandler {
+class FocusCommand extends Command {
     private static String full = "Changes the current p/t set. As a "
 	    + "consequence, subsequent commands will\n"
 	    + "apply to just the threads specified in the argument of this\n"
@@ -60,7 +60,7 @@ class FocusCommand extends CLIHandler {
 		"focus [p/t-set]", full);
     }
 
-    public void handle(Input cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);

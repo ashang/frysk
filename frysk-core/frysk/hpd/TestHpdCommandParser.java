@@ -49,7 +49,7 @@ import java.util.ArrayList;
 
 public class TestHpdCommandParser extends TestLib {
 
-    class DummyParseCommand extends CLIHandler {
+    class DummyParseCommand extends Command {
 	boolean parsedOption = false;
 
 	String argument = null;
@@ -63,7 +63,7 @@ public class TestHpdCommandParser extends TestLib {
 	    this.parser.outStream = new PrintStream(new ByteArrayOutputStream());
 	}
 
-	public void handle(Input cmd) throws ParseException {
+	public void parse(Input cmd) throws ParseException {
 	    params = cmd.getParameters();
 	    parser.parse(params);
 	}

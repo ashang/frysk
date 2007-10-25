@@ -47,7 +47,7 @@ import frysk.proc.Task;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 
-class WhereCommand extends CLIHandler {
+class WhereCommand extends Command {
 
     private static final String full = "The where command displays the current "
 	    + "execution location(s) and the\n"
@@ -60,7 +60,7 @@ class WhereCommand extends CLIHandler {
 		"where [ {num-levels | -all} ] [-scopes]", full);
     }
 
-    public void handle(Input cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	boolean printScopes = false;
 	
 	PTSet ptset = cli.getCommandPTSet(cmd);

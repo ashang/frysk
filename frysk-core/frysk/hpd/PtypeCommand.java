@@ -46,7 +46,7 @@ import frysk.proc.Task;
 import frysk.value.Value;
 
 class PtypeCommand
-    extends CLIHandler
+    extends Command
 {
     PtypeCommand(CLI cli)
     {
@@ -63,7 +63,7 @@ class PtypeCommand
 	super (cli, name, description, syntax, full);
     }
 
-    public void handle(Input cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
         PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {

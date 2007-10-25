@@ -56,7 +56,7 @@ import frysk.proc.Task;
  */
 
 class ListCommand
-   extends CLIHandler
+   extends Command
 {
     ListCommand (CLI cli)
     {
@@ -69,7 +69,7 @@ class ListCommand
     private File file = null;
     private int line;
     private int exec_line = 0;
-    public void handle(Input cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
         PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	int windowSize = 20;

@@ -49,7 +49,7 @@ import frysk.proc.Manager;
 import frysk.proc.FindProc;
 
 class AttachCommand
-    extends CLIHandler {
+    extends Command {
     private class ProcFinder implements FindProc {
 	Proc proc = null;
 
@@ -84,7 +84,7 @@ class AttachCommand
 		"attach [executable] pid [-task tid]", full);
     }
 
-    public void handle(Input cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	int pid = 0;
 	int tid = 0;

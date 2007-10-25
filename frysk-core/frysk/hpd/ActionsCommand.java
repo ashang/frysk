@@ -54,7 +54,7 @@ import frysk.rt.DisplayManager;
 import frysk.rt.SourceBreakpoint;
 import frysk.rt.UpdatingDisplayValue;
 
-class ActionsCommand extends CLIHandler {
+class ActionsCommand extends Command {
     private static final String descr = "List action points";
 
     ActionsCommand(CLI cli) {
@@ -88,7 +88,7 @@ class ActionsCommand extends CLIHandler {
          * 
          * @see frysk.hpd.CLIHandler#handle(frysk.hpd.Command)
          */
-    public void handle(Input cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	String actionpoints = "";
 	boolean showEnabled = false, showDisabled = false, showBreak = false, showDisplay = false, showWatch = false, showBarrier = false;
 	ArrayList args = cmd.getParameters();

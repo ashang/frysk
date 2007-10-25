@@ -42,7 +42,7 @@ package frysk.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-class UndefsetCommand extends CLIHandler {
+class UndefsetCommand extends Command {
     private static final String full = "The undefset command reverses the "
 	    + "action of defset, so that the set is\n"
 	    + "deleted. This command is applicable only to user-defined sets.";
@@ -53,7 +53,7 @@ class UndefsetCommand extends CLIHandler {
 		"undefset {set-name | -all}", full);
     }
 
-    public void handle(Input cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);

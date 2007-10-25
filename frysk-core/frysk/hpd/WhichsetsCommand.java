@@ -47,7 +47,7 @@ import java.util.ArrayList;
  * Set commands
  */
 
-class WhichsetsCommand extends CLIHandler {
+class WhichsetsCommand extends Command {
 
     private static final String full = "The whichsets command displays sets to "
 	    + "which a particular thread(s)\n"
@@ -63,7 +63,7 @@ class WhichsetsCommand extends CLIHandler {
 		"whichsets [p/t-set]", full);
     }
 
-    public void handle(Input cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);

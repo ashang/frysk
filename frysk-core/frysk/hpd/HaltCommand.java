@@ -46,7 +46,7 @@ import java.text.ParseException;
 import frysk.proc.Task;
 import frysk.stepping.SteppingEngine;
 
-class HaltCommand extends CLIHandler {
+class HaltCommand extends Command {
 
     private static String full = "Stop a process which is already attached. "
 	    + "The halt command temporarily\n"
@@ -56,7 +56,7 @@ class HaltCommand extends CLIHandler {
 	super(cli, "halt", "Stop a process.", "halt", full);
     }
 
-    public void handle(Input cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {

@@ -47,7 +47,7 @@ import java.util.LinkedList;
 import frysk.proc.Task;
 import frysk.debuginfo.DebugInfoFrame;
 
-public class StepCommand extends CLIHandler {
+public class StepCommand extends Command {
     private static final String full = "Line step a process which has been "
 	    + "attached to, and is currently blocked.";
 
@@ -55,7 +55,7 @@ public class StepCommand extends CLIHandler {
 	super(cli, "step", "Step a process.", "step", full);
     }
 
-    public void handle(Input cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {

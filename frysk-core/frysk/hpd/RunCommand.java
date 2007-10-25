@@ -52,7 +52,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-class RunCommand extends CLIHandler implements TaskObserver.Attached {
+class RunCommand extends Command implements TaskObserver.Attached {
     private static final String descr = "run program and immediately attach";
     // Used to synchronize with updateAttached method
     private CountDownLatch latch = null;
@@ -118,7 +118,7 @@ class RunCommand extends CLIHandler implements TaskObserver.Attached {
 	return sa;
     }
 
-    public void handle(Input cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 
 	if (params.size() < 1) {

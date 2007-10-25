@@ -51,14 +51,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
-class DeleteCommand extends CLIHandler {
+class DeleteCommand extends Command {
     private static final String descr = "delete a source breakpoint";
 
     DeleteCommand(CLI cli) {
 	super(cli, "delete", descr, "delete actionpointID", descr);
     }
 
-    public void handle(Input cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	String actionpoints = "";
 	boolean delEnabled = false, delDisabled = false, delBreak = false;
