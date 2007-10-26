@@ -83,7 +83,7 @@ public class TestAddress
 	
 	/* Evaluate the location of the variable.
 	 */ 
-	Variable var = debugInfoEvaluator.getVariable(variable);
+	Variable var = (Variable) debugInfoEvaluator.getVariable(variable);
 	DwarfDie varDie = var.getVariableDie();
 	List ops = varDie.getFormData(frame.getAdjustedAddress());
 	LocationExpression locExpr = new LocationExpression(frame, varDie, ops);
@@ -92,7 +92,7 @@ public class TestAddress
 
 	 /* Get the value of the address.
 	 */
-	Variable addr = debugInfoEvaluator.getVariable(address);
+	Variable addr = (Variable) debugInfoEvaluator.getVariable(address);
 	DwarfDie addrDie = addr.getVariableDie();
 	List opsAddr = addrDie.getFormData(frame.getAdjustedAddress());
 	LocationExpression locExprAddr = new LocationExpression(frame, addrDie, opsAddr);

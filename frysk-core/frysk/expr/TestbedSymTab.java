@@ -42,6 +42,8 @@ package frysk.expr;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.util.ArrayList;
+
+import frysk.value.ObjectDeclaration;
 import frysk.value.Type;
 import frysk.value.Value;
 import frysk.value.Variable;
@@ -83,7 +85,7 @@ class TestbedSymTab implements ExprSymTab {
     /**
      * Lookup S, assuming S is a variable.
      */
-    public Variable getVariable(String s) {
+    public ObjectDeclaration getVariable(String s) {
 	throw new RuntimeException("no variables");
     }
     /**

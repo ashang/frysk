@@ -58,6 +58,7 @@ import frysk.proc.Task;
 import frysk.scopes.Subprogram;
 import frysk.value.ArrayType;
 import frysk.value.GccStructOrClassType;
+import frysk.value.ObjectDeclaration;
 import frysk.value.Type;
 import frysk.value.UnknownType;
 import frysk.value.Value;
@@ -86,7 +87,7 @@ class DebugInfoEvaluator
      * @param s Symbol s
      * @return The die for symbol s
      */
-    public Variable getVariable (String s) {
+    public ObjectDeclaration getVariable (String s) {
 	Dwfl dwfl;
 	DwarfDie[] allDies;
 	Variable variable;
@@ -141,7 +142,7 @@ class DebugInfoEvaluator
 	    return new Value(reg.getType(), new PieceLocation(pieces));
 	}
 
-	Variable var = getVariable(s);
+	ObjectDeclaration var = getVariable(s);
 	return var.getValue(frame);
     }
   
@@ -172,7 +173,7 @@ class DebugInfoEvaluator
      */
     public Value getValueFIXME (ArrayList components) {
 	String s = (String)components.get(0);
-	Variable variable = getVariable(s);
+	ObjectDeclaration variable = getVariable(s);
 	if (variable == null)
 	    return (null);
 

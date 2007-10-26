@@ -42,6 +42,8 @@ package frysk.expr;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.util.ArrayList;
+
+import frysk.value.ObjectDeclaration;
 import frysk.value.Type;
 import frysk.value.Value;
 import frysk.value.Variable;
@@ -55,7 +57,7 @@ public interface ExprSymTab
     /**
      * Lookup S, assuming S is a variable.
      */
-    Variable getVariable(String s);
+    ObjectDeclaration getVariable(String s);
     /**
      * The byte order to use when creating new values.
      */
