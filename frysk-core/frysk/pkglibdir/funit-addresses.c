@@ -56,9 +56,10 @@ struct cars {
 
 struct cars* my_cars_ptr = &my_cars;
 
-int num[2][2] = { {99, 88},
- 	          {11, 12}
-                };  
+int twoD[2][3] = { {99, 88, 77},
+ 	           {11, 12, 13},
+                 };  
+int oneD[] = { 4, 3, 2, 1};                
 char* string = "hello world\n";
 
 int main(int argc, char* argv[])

@@ -339,7 +339,10 @@ expr returns [Value returnVar=null]
         }
     |   #(SIZEOF v1=expr) {
            returnVar = longType.createValue((long)(v1.getType().getSize())); 
-        }             
+        }    
+    |   #(INDEX v1=expr v2=expr) {
+           returnVar = v1.getType().index(v1, v2);
+        }                    
     |   ident:IDENT  {
             returnVar = ((Value)exprSymTab.getValue(ident.getText()));
         }

@@ -108,4 +108,39 @@ public class TestArray extends TestCase {
 	// Now print it
 	assertEquals("char[]", "\"Hello\"", v.toPrint());
     }
+    
+    /**
+     * Test for index-of operation.
+     */
+    public void testIndexOneD() {
+	ArrayList dims = new ArrayList();
+	dims.add(new Integer(4 - 1));
+	ArrayType arrayType = new ArrayType(int4_t, buf.length , dims);
+	Value arr = new Value(arrayType, new ScratchLocation(buf));
+	Location l = new ScratchLocation(new byte[] { 2 });
+	IntegerType t = new UnsignedType("type", ByteOrder.BIG_ENDIAN, 1);
+	Value index = new Value(t, l);
+	assertEquals("IndexOneD", 151653132, arrayType.index(arr, index).asLong());
+    }
+    
+   public void testIndexTwoD() {
+        // Create array
+	ArrayList dims = new ArrayList();
+	dims.add(new Integer(2-1));
+	dims.add(new Integer(4-1));
+	ArrayType arrayType = new ArrayType(int2_t, 16, dims);
+	Value arr = new Value(arrayType, new ScratchLocation(buf));
+	// Create indices 1 and 3
+	Location l_idx1 = new ScratchLocation(new byte[] { 1 });
+	IntegerType t = new UnsignedType("type", ByteOrder.BIG_ENDIAN, 1);
+	Value idx_1 = new Value(t, l_idx1);
+	Location l_idx3 = new ScratchLocation(new byte[] { 3 });
+	Value idx_3 = new Value(t, l_idx3);
+	// Evaluate arr[1]
+	Value arr_1 = arrayType.index(arr, idx_1);
+	assertEquals ("IndexTwoD[]", "{2314,2828,3342,3856}", arr_1.toPrint()); 
+	// Evaluate arr[1][3]
+	Value arr_1_3 = arr_1.getType().index(arr_1, idx_3);
+	assertEquals ("IndexTwoD", "3856", arr_1_3.toPrint());
+   } 
 }

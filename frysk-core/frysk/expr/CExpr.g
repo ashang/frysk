@@ -125,6 +125,7 @@ imaginaryTokenDefinitions
 	MEMORY
 	MEMBER
 	SIZEOF
+	INDEX
     ;
 
 /** 
@@ -329,38 +330,16 @@ postfix_expression!
                   astPostExpr = #(#[MEMBER, "Member"], #astPostExpr, #id_expr2); 
                } 
                // FIX ME               
-           |   LSQUARE arrExpr1:expressionList (COLON arrExpr2:expressionList)? RSQUARE  
-                // a[b][c] => (Array Reference a (Subscript b-lbound)
-                //            (Subscript b-hbound) (Subscript c-lbound)...)
-                {
-                  ExprAST sub = null;
-                   if ( astPostExpr.getFirstChild() != null) {
-                      #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
-                    astPostExpr.addChild(#sub);
-                    // arr[n] is treated as arr[n:n]
-                    if (#arrExpr2 != null)
-                        #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr2);
-                    else
-                      #sub =  #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
-                    astPostExpr.addChild(#sub);
-                  }
-                  else {
-                      #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
-                    #astPostExpr = #(#[REFERENCE,"Array Reference"], #astPostExpr, #sub);
-                    if (#arrExpr2 != null)
-                        #sub = #(#[SUBSCRIPT,"Subscript"], #arrExpr2);
-                    else
-                      #sub =  #(#[SUBSCRIPT,"Subscript"], #arrExpr1);
-                    astPostExpr.addChild(#sub);
-                 }
-               }        
+           |   LSQUARE arrExpr1:expressionList RSQUARE  
+	       { astPostExpr = #(#[INDEX, "Index"], #astPostExpr, #arrExpr1); 
+	       }	      
            |   LPAREN! expressionList RPAREN!  
-   	       |   PLUSPLUS  
-   	           { astPostExpr = #(PLUSPLUS, #astPostExpr); 
-   	           }
-   	       |   MINUSMINUS
-   	           { astPostExpr = #(MINUSMINUS, #astPostExpr); 
-   	           }
+   	   |   PLUSPLUS  
+   	       { astPostExpr = #(PLUSPLUS, #astPostExpr); 
+   	       }
+   	   |   MINUSMINUS
+   	       { astPostExpr = #(MINUSMINUS, #astPostExpr); 
+   	       }
    	    )*
    	 )      
     { ## = #astPostExpr; }       
