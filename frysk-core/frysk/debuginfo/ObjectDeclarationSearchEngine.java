@@ -39,8 +39,19 @@
 
 package frysk.debuginfo;
 
+import inua.eio.ByteBuffer;
+import inua.eio.ByteOrder;
+
+import java.util.ArrayList;
+
+import frysk.expr.ExprSymTab;
+import frysk.isa.ISA;
+import frysk.proc.Task;
 import frysk.scopes.Scope;
 import frysk.value.ObjectDeclaration;
+import frysk.value.Type;
+import frysk.value.Value;
+import frysk.value.Variable;
 
 /**
  * This engine implements the c++ scoping rules and uses when searching for
@@ -49,9 +60,19 @@ import frysk.value.ObjectDeclaration;
  * given frame, and return the first encounter. 
  *
  */
-public class ObjectDeclarationSearchEngine {
+public class ObjectDeclarationSearchEngine implements ExprSymTab{
 
-    public ObjectDeclaration get(DebugInfoFrame frame, String name){
+    private final DebugInfoFrame frame;
+    private final ISA isa;
+    private final Task task;
+
+    public ObjectDeclarationSearchEngine(DebugInfoFrame frame) {
+	this.frame = frame;
+	this.isa = frame.getTask().getISA();
+	this.task = frame.getTask();
+    }
+    
+    public ObjectDeclaration getVariable(String name){
 	ObjectDeclaration declaredObject = null;
 	
 	Scope scope = frame.getScopes();
@@ -66,5 +87,36 @@ public class ObjectDeclarationSearchEngine {
 	
 	return null;
     }
+
+    public Type getType(Variable variable) {
+	return variable.getType(isa);
+    }
+
+    public Value getValue(String s) {
+	ObjectDeclaration objectDeclaration = this.getVariable(s);
+	return objectDeclaration.getValue(frame);
+    }
+
+    public Value getValue(Variable v) {
+	return v.getValue(frame);
+    }
+
+    public Value getValueFIXME(ArrayList v) {
+	return null;
+    }
+
+    public ByteOrder order()
+    {
+	return task.getISA().order();
+    }
     
+    public ByteBuffer taskMemory()
+    {
+	return task.getMemory();
+    }
+    
+    public int getWordSize()
+    {
+	return task.getISA().wordSize();
+    }
 }
