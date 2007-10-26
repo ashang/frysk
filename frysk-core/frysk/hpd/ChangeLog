@@ -1,5 +1,7 @@
 2007-10-26  Andrew Cagney  <cagney@redhat.com>
 
+	* UserHelp.java (addHelp(String,String,String,String)): Delete.
+	
 	* UserHelp.java (isValidCommand(String)): Delete.
 	(commandHelp): Make private.
 

@@ -45,12 +45,6 @@ import java.util.ArrayList;
 class UserHelp {
     private final TreeMap commandHelp = new TreeMap();
 
-    void addHelp(String commandName, String description, String syntax,
-	    String full) {
-	addHelp(commandName, new CommandHelp(commandName, description, syntax,
-		full));
-    }
-
     public void addHelp(String commandName, CommandHelp help) {
 	commandHelp.put(commandName, help);
     }
