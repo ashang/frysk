@@ -1,3 +1,8 @@
+2007-10-26  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestDebugInfoStackTrace.java (frameAssertions): Find and use
+	correct thread_parent task frame index.
+
 2007-10-19  Andrew Cagney  <cagney@redhat.com>
 
 	* VirtualDebugInfoFrame.java (printIndex(PrintWriter)): Delete.
