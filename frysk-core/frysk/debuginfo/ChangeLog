@@ -1,3 +1,9 @@
+2007-10-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Changed ExprSymTab.getVariable return type to ObjectDeclaration
+	* TestAddress.java: Updated.
+	* DebugInfoEvaluator.java: Updated.
+
 2007-10-19  Andrew Cagney  <cagney@redhat.com>
 
 	* VirtualDebugInfoFrame.java (printIndex(PrintWriter)): Delete.
