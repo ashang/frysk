@@ -1,3 +1,7 @@
+2007-10-26  Zhao Shujing <pearly.zhao@oracle.com>
+	
+	* disassembler/DisassemblyWindow.java: remove the GtkWindow Warning.
+
 2007-10-16  Tim Moore  <timoore@redhat.com>
 
 	* MemoryWindow.java (setTask, resetTask): Restore
