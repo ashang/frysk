@@ -39,7 +39,6 @@
 
 package frysk.hpd;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -55,7 +54,7 @@ class DebuginfoCommand extends Command {
 	      + "for a process and its shared modules.");
     }
 
-    public void parse(CLI cli, Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 

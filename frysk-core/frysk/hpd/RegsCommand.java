@@ -39,7 +39,6 @@
 
 package frysk.hpd;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import frysk.value.Value;
@@ -57,7 +56,7 @@ public class RegsCommand extends Command {
 	      + "printed by default.");
     }
 
-    public void parse(CLI cli, Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	Iterator taskDataIter = ptset.getTaskData();
 	while (taskDataIter.hasNext()) {

@@ -40,7 +40,6 @@
 package frysk.hpd;
 
 import java.io.PrintWriter;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -72,15 +71,15 @@ public class DisplayCommand extends Command {
     }
 
 
-    public void parse(CLI cli, Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) {
 	final PrintWriter output = cli.getPrintWriter();
 
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList args = cmd.getParameters();
 	if (args.size() > 1)
-	    throw new ParseException("Too many arguments to display", 0);
+	    throw new InvalidCommandException("Too many arguments to display");
 	if (args.size() == 0)
-	    throw new ParseException("Too few arguments to display", 0);
+	    throw new InvalidCommandException("Too few arguments to display");
 	Iterator taskIter = ptset.getTasks();
 	SteppingEngine engine = cli.getSteppingEngine();
 	while (taskIter.hasNext()) {

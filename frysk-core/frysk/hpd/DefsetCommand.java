@@ -39,7 +39,6 @@
 
 package frysk.hpd;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 
 class DefsetCommand extends Command {
@@ -60,7 +59,7 @@ class DefsetCommand extends Command {
 	      "defset set-name p/t-set", full);
     }
 
-    public void parse(CLI cli, Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
@@ -73,7 +72,8 @@ class DefsetCommand extends Command {
 	if (params.size() == 2) {
 	    setname = (String) params.get(0);
 	    if (!setname.matches("\\w+"))
-		throw new ParseException("Set name must be alphanumeric.", 0);
+		throw new InvalidCommandException
+		    ("Set name must be alphanumeric.");
 	    setnot = (String) params.get(1);
 	    if (!cli.builtinPTSets.containsKey(setnot)) {
 		set = cli.createSet(setnot);

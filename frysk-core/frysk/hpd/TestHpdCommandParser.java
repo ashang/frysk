@@ -43,7 +43,6 @@ import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.text.ParseException;
 import java.util.ArrayList;
 
 public class TestHpdCommandParser extends TestLib {
@@ -62,7 +61,7 @@ public class TestHpdCommandParser extends TestLib {
 	    this.parser.outStream = new PrintStream(new ByteArrayOutputStream());
 	}
 
-	public void parse(CLI cli, Input cmd) throws ParseException {
+	public void parse(CLI cli, Input cmd) {
 	    params = cmd.getParameters();
 	    parser.parse(params);
 	}

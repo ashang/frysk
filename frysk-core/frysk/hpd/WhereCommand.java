@@ -39,7 +39,6 @@
 
 package frysk.hpd;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import frysk.proc.Task;
@@ -60,7 +59,7 @@ class WhereCommand extends Command {
 	      "where [ {num-levels | -all} ] [-scopes]", full);
     }
 
-    public void parse(CLI cli, Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) {
 	boolean printScopes = false;
 	
 	PTSet ptset = cli.getCommandPTSet(cmd);

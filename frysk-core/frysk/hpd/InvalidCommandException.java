@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -10,11 +10,11 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-// 
+//
 // In addition, as a special exception, Red Hat, Inc. gives You the
 // additional right to link the code of FRYSK with code not covered
 // under the GNU General Public License ("Non-GPL Code") and to
@@ -40,30 +40,11 @@
 package frysk.hpd;
 
 /**
- * A handler class for the CLI that supplies its own help messages.
+ * The command was invalid.
  */
-
-public abstract class Command {
-    private final CommandHelp help;
-    private final String name;  
-
-    protected HpdCommandParser parser;
-  
-    public CommandHelp getHelp() {
-	return help;
+public class InvalidCommandException extends RuntimeException {
+    static final long serialVersionUID = 1;
+    InvalidCommandException(String message) {
+	super(message);
     }
-
-    public String getName() {
-	return name;
-    }
-  
-    Command (String name, String description, String syntax, String full) {
-	this.name = name;
-	this.help = new CommandHelp(name, description, syntax, full);
-	parser = new HpdCommandParser(name, System.out);
-	parser.setHeader(help.syntax);
-	parser.setFooter(help.full +"\n");
-    }
-  
-    public abstract void parse(CLI cli, Input cmd);
 }

@@ -40,7 +40,6 @@
 package frysk.hpd;
 
 import java.io.File;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -58,7 +57,7 @@ public class CoreCommand extends Command {
 	super("core", desc, "core core.file", desc);
     }
 
-    public void parse(CLI cli, Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) {
 	ArrayList params = cmd.getParameters();
 
 	parser.parse(params);

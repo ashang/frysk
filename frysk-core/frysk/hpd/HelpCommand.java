@@ -41,7 +41,6 @@ package frysk.hpd;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.text.ParseException;
 
 class HelpCommand extends Command {
     HelpCommand() {
@@ -49,7 +48,7 @@ class HelpCommand extends Command {
 	      "Display help (possibly for a command.)");
     }
 
-    public void parse(CLI cli, Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) {
 	ArrayList params = cmd.getParameters();
 	String output = "";
 	String temp = "";

@@ -41,7 +41,6 @@ package frysk.hpd;
 
 import java.io.PrintWriter;
 import inua.eio.ByteBuffer;
-import java.text.ParseException;
 import java.util.ArrayList;
 
 import frysk.proc.Proc;
@@ -63,7 +62,7 @@ public class PeekCommand extends Command {
 	super("peek", desc, "peek memory-location", desc);
     }
 
-    public void parse(CLI cli, Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) {
 	final PrintWriter output = cli.getPrintWriter();
 	ArrayList params = cmd.getParameters();
 

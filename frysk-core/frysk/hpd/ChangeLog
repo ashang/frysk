@@ -1,5 +1,55 @@
 2007-10-26  Andrew Cagney  <cagney@redhat.com>
 
+	* Command.java (parse(CLI,Input)): Do not throw ParseException.
+	* InvalidCommandException.java: New.
+	* TestPeekCommand.java: Update.
+	* WhichsetsCommand.java: Update.
+	* WhereCommand.java: Update.
+	* WhatCommand.java: Update.
+	* ViewsetCommand.java: Update.
+	* UnsetCommand.java: Update.
+	* UndefsetCommand.java: Update.
+	* UnaliasCommand.java: Update.
+	* TestSetParser.java: Update.
+	* TestHpdCommandParser.java: Update.
+	* StepNextiCommand.java: Update.
+	* StepNextCommand.java: Update.
+	* StepInstructionCommand.java: Update.
+	* StepFinishCommand.java: Update.
+	* StepCommand.java: Update.
+	* SetNotationParser.java: Update.
+	* SetCommand.java: Update.
+	* RunCommand.java: Update.
+	* RegsCommand.java: Update.
+	* QuitCommand.java: Update.
+	* PtypeCommand.java: Update.
+	* PrintCommand.java: Update.
+	* PlocationCommand.java: Update.
+	* PeekCommand.java: Update.
+	* LoadCommand.java: Update.
+	* ListCommand.java: Update.
+	* Input.java: Update.
+	* HelpCommand.java: Update.
+	* HaltCommand.java: Update.
+	* GoCommand.java: Update.
+	* FrameCommands.java: Update.
+	* FocusCommand.java: Update.
+	* ExamineCommand.java: Update.
+	* EnableCommand.java: Update.
+	* DisplayCommand.java: Update.
+	* DisassembleCommand.java: Update.
+	* DisableCommand.java: Update.
+	* DetachCommand.java: Update.
+	* DeleteCommand.java: Update.
+	* DefsetCommand.java: Update.
+	* DebuginfoCommand.java: Update.
+	* CoreCommand.java: Update.
+	* CLI.java: Update.
+	* BreakpointCommand.java: Update.
+	* AttachCommand.java: Update.
+	* AliasCommand.java: Update.
+	* ActionsCommand.java: Update.
+
 	* Command.java (cli): Delete.
 	(Command(String,CLI,CommandHelp)): Delete.
 	(Command(String,String,String,String,String)): Replace

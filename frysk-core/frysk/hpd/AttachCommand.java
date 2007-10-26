@@ -39,7 +39,6 @@
 
 package frysk.hpd;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import frysk.proc.Proc;
@@ -84,7 +83,7 @@ class AttachCommand
 	      "attach [executable] pid [-task tid]", full);
     }
 
-    public void parse(CLI cli, Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) {
 	ArrayList params = cmd.getParameters();
 	int pid = 0;
 	int tid = 0;

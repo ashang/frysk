@@ -40,7 +40,6 @@
 package frysk.hpd;
 
 import java.io.PrintWriter;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -60,7 +59,7 @@ class EnableCommand extends Command {
 
 
 
-    public void parse(CLI cli, Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	String actionpoints = "";
 	boolean /* enEnabled = false, */enDisabled = false, enBreak = false;
@@ -77,9 +76,9 @@ class EnableCommand extends Command {
          * option to disable only displays
          */
 	if (args.size() == 0)
-	    throw new ParseException("Too few arguments to enable", 0);
+	    throw new InvalidCommandException("Too few arguments to enable");
 	if (args.size() > 1)
-	    throw new ParseException("Too many arguments to enable", 0);
+	    throw new InvalidCommandException("Too many arguments to enable");
 
 	String param = (String) args.get(0);
 	// doesn't start with a dash, must be the list of actionpoints
@@ -103,8 +102,8 @@ class EnableCommand extends Command {
 	    cli.printUsage(cmd);
 	    return;
 	} else
-	    throw new ParseException(
-		    "Unknown argument " + param + " to enable", 0);
+	    throw new InvalidCommandException
+		("Unknown argument " + param + " to enable");
 
 	// generate a list of actionpoints to enable
 	if (!actionpoints.equals("")) {
@@ -114,8 +113,8 @@ class EnableCommand extends Command {
 		try {
 		    ids[i] = Integer.parseInt(points[i]);
 		} catch (NumberFormatException e) {
-		    throw new ParseException("Invalid actionpoint id "
-			    + points[i], 0);
+		    throw new InvalidCommandException
+			("Invalid actionpoint id " + points[i]);
 		}
 	    Arrays.sort(ids);
 	}

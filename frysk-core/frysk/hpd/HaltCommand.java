@@ -42,7 +42,6 @@ package frysk.hpd;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.text.ParseException;
 import frysk.proc.Task;
 import frysk.stepping.SteppingEngine;
 
@@ -56,7 +55,7 @@ class HaltCommand extends Command {
 	super("halt", "Stop a process.", "halt", full);
     }
 
-    public void parse(CLI cli, Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {

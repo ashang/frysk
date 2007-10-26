@@ -41,7 +41,6 @@ package frysk.hpd;
 import java.lang.Character;
 import java.lang.Integer;
 import java.util.ArrayList;
-import java.text.ParseException;
 
 class SetNotationParser
 {
@@ -58,8 +57,7 @@ class SetNotationParser
 	 * @param set The string notation of the set to parse, should include brackets.
 	 * @return An array of ParseTreeNode objects, that look like cli/hpd/doc-files/parsetree.png
 	 */
-	public ParsedSet parse(String set) throws ParseException
-	{
+	public ParsedSet parse(String set) {
 		ParsedSet result;
 		set = set.replaceAll(" +", "");
 		String setnobr = set.substring(1,set.length()-1); // the set with brackets removed
@@ -174,12 +172,12 @@ class SetNotationParser
 	 * The first rule of the grammar, creates a tree that grows from "root"
 	 * and with process id and range on depth 1, and the same for task on depth 2.
 	 */
-	private void S_1(ArrayList root) throws ParseException
-	{
+	private void S_1(ArrayList root) {
 		if (tokens[curToken].equals("["))
 			curToken++;
 		else
-			throw new ParseException("Missing opening bracket of p/t set notation", curToken);
+			throw new InvalidCommandException
+			    ("Missing opening bracket of p/t set notation");
 
 		if (tokens[curToken].equals("!"))
 			curToken++;
@@ -189,15 +187,15 @@ class SetNotationParser
 		if (tokens[curToken].equals("]"))
 			curToken++;
 		else
-			throw new ParseException("Missing closing bracket of p/t set notation", curToken);
+			throw new InvalidCommandException
+			    ("Missing closing bracket of p/t set notation");
 	}
 
 	/*
 	 * S_2 -> S_3.S_3S_6 | S_4:S_4S_6 // takes nasty looking-ahead
 	 * Also checks validity of range notation
 	 */
-	private void S_2(ArrayList root) throws ParseException
-	{
+	private void S_2(ArrayList root) {
 		ParseTreeNode node = null;
 		int[] tempIDs = new int[4];
 
@@ -213,7 +211,8 @@ class SetNotationParser
 			if (tokens[curToken].equals(":"))
 				curToken++;
 			else
-				throw new ParseException("Erroneous p/t set notation, '.' expected", curToken);
+				throw new InvalidCommandException
+				    ("Erroneous p/t set notation, '.' expected");
 
 			node.setRight(S_4());
 
@@ -228,12 +227,13 @@ class SetNotationParser
 				((tempIDs[1] == -1 || tempIDs[3] == -1) && tempIDs[1] != tempIDs[3]) || //no a.*:b.c or a.b:c.*
 				(tempIDs[0] == -1 && tempIDs[0] == tempIDs[1]) || // no	*.*:a.b
 				(tempIDs[2] == -1 && tempIDs[2] == tempIDs[3])) // no	a.b:*.*
-				throw new ParseException("Erroneous p/t set notation, erroneous use of wildcard", curToken);
+				throw new InvalidCommandException
+				    ("Erroneous p/t set notation, erroneous use of wildcard");
 
 			// check ranges
 			if ((tempIDs[2] < tempIDs[0]) ||
 				((tempIDs[0] == tempIDs[2]) && (tempIDs[3] < tempIDs[1])))
-				throw new ParseException("Erroneous p/t set notation, illegal range", curToken);
+				throw new InvalidCommandException("Erroneous p/t set notation, illegal range");
 		}
 		else 
 		{
@@ -244,7 +244,8 @@ class SetNotationParser
 			if (tokens[curToken].equals("."))
 				curToken++;
 			else
-				throw new ParseException("Erroneous p/t set notation, '.' expected", curToken);
+			    throw new InvalidCommandException
+				("Erroneous p/t set notation, '.' expected");
 
 			node.setRight(S_3());
 
@@ -255,7 +256,8 @@ class SetNotationParser
 			tempIDs[3] = node.getRight().getRight().getID();
 
 			if ((tempIDs[1] < tempIDs[0]) || (tempIDs[3] < tempIDs[2]))
-				throw new ParseException("Erroneous p/t set notation, illegal range", curToken);
+				throw new InvalidCommandException
+				    ("Erroneous p/t set notation, illegal range");
 		}
 
 		root.add(node);
@@ -266,8 +268,7 @@ class SetNotationParser
 	 * S_3 -> num:num | num | *
 	 * Also checks validity of the notation
 	 */
-	private ParseTreeNode S_3() throws ParseException 
-	{
+	private ParseTreeNode S_3() {
 		ParseTreeNode node = new ParseTreeNode(ParseTreeNode.TYPE_RANGE);
 
 		if (tokens[curToken].matches("\\d+"))
@@ -286,10 +287,11 @@ class SetNotationParser
 					curToken++;
 					
 					if (node.getRight().getID() < node.getLeft().getID())
-						throw new ParseException("Erroneous p/t set notation, illegal range", curToken);
+						throw new InvalidCommandException
+						    ("Erroneous p/t set notation, illegal range");
 				}
 				else
-					throw new ParseException("Erroneous p/t set notation, non-negative integer expected", curToken);
+					throw new InvalidCommandException("Erroneous p/t set notation, non-negative integer expected");
 			}
 		}
 		else if (tokens[curToken].equals("*"))
@@ -300,7 +302,8 @@ class SetNotationParser
 		}
 		else
 		{
-			throw new ParseException("Erroneous p/t set notation, non-negative integer or '*' expected", curToken);
+			throw new InvalidCommandException
+			    ("Erroneous p/t set notation, non-negative integer or '*' expected");
 		}
 
 
@@ -310,8 +313,7 @@ class SetNotationParser
 	/*
 	 * S_4 -> S_5.S_5
 	 */
-	private ParseTreeNode S_4() throws ParseException
-	{
+	private ParseTreeNode S_4() {
 		ParseTreeNode node = new ParseTreeNode(ParseTreeNode.TYPE_REG);
 
 		node.setLeft(S_5()); //add a process node as a child
@@ -319,7 +321,8 @@ class SetNotationParser
 		if (tokens[curToken].equals("."))
 			curToken++;
 		else
-			throw new ParseException("Erroneous p/t set notation, '.' expected", curToken);
+			throw new InvalidCommandException
+			    ("Erroneous p/t set notation, '.' expected");
 
 		node.setRight(S_5());
 		return node;
@@ -328,8 +331,7 @@ class SetNotationParser
 	/*
 	 * S_5 -> num | *
 	 */
-	private ParseTreeNode S_5() throws ParseException
-	{
+	private ParseTreeNode S_5() {
 		ParseTreeNode node = null;
 
 		if (tokens[curToken].matches("\\d+"))
@@ -343,7 +345,8 @@ class SetNotationParser
 			curToken++;
 		}
 		else
-			throw new ParseException("Erroneous p/t set notation, non-negative integer or '*' expected", curToken);
+			throw new InvalidCommandException
+			    ("Erroneous p/t set notation, non-negative integer or '*' expected");
 
 		return node;
 	}
@@ -351,14 +354,15 @@ class SetNotationParser
 	/*
 	 * S_6 -> ,S_2 | empty_string
 	 */
-	private void S_6(ArrayList root) throws ParseException
+	private void S_6(ArrayList root)
 	{
 		if (curToken != tokens.length-1)
 		{
 			if (tokens[curToken].matches(","))
 				curToken++;
 			else
-				throw new ParseException("Erroneous p/t set notation, ',' expected", curToken);
+				throw new InvalidCommandException
+				    ("Erroneous p/t set notation, ',' expected");
 
 			S_2(root);
 		}

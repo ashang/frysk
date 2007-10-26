@@ -44,7 +44,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.Iterator;
-import java.text.ParseException;
 import java.util.ArrayList;
 import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfoFrame;
@@ -68,7 +67,7 @@ class ListCommand
     private File file = null;
     private int line;
     private int exec_line = 0;
-    public void parse(CLI cli, Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) {
         PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	int windowSize = 20;

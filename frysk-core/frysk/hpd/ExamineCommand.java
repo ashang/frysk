@@ -39,7 +39,6 @@
 
 package frysk.hpd;
 
-import java.text.ParseException;
 import java.util.Iterator;
 import frysk.value.Value;
 import java.util.ArrayList;
@@ -51,7 +50,7 @@ public class ExamineCommand extends Command {
 	      "Examine a value in more detail.");
     }
 
-    public void parse(CLI cli, Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	parser.parse(params);

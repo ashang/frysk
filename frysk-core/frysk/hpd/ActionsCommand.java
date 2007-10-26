@@ -40,7 +40,6 @@
 package frysk.hpd;
 
 import java.io.PrintWriter;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -88,7 +87,7 @@ class ActionsCommand extends Command {
          * 
          * @see frysk.hpd.CLIHandler#handle(frysk.hpd.Command)
          */
-    public void parse(CLI cli, Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) {
 	String actionpoints = "";
 	boolean showEnabled = false, showDisabled = false, showBreak = false, showDisplay = false, showWatch = false, showBarrier = false;
 	ArrayList args = cmd.getParameters();
@@ -104,8 +103,8 @@ class ActionsCommand extends Command {
          */
 	if (args.size() > 0) {
 	    if (args.size() > 1)
-		throw new ParseException("Too many arguments to actionpoints",
-			0);
+		throw new InvalidCommandException
+		    ("Too many arguments to actionpoints");
 
 	    String param = (String) args.get(0);
 	    // doesn't start with a dash, must be the list of actionpoints
@@ -125,8 +124,8 @@ class ActionsCommand extends Command {
 	    else if (param.equals("-barrier"))
 		showBarrier = true;
 	    else
-		throw new ParseException("Unknown argument " + param
-			+ " to actionpoints", 0);
+		throw new InvalidCommandException
+		    ("Unknown argument " + param + " to actionpoints");
 	}
 
 	// generate a list of actionpoints to display
@@ -143,8 +142,8 @@ class ActionsCommand extends Command {
 		try {
 		    ids[i] = Integer.parseInt(points[i]);
 		} catch (NumberFormatException e) {
-		    throw new ParseException("Invalid actionpoint id "
-			    + points[i], 0);
+		    throw new InvalidCommandException
+			("Invalid actionpoint id " + points[i]);
 		}
 	    Arrays.sort(ids);
 	}

@@ -39,7 +39,6 @@
      
 package frysk.hpd;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import frysk.value.Format;
 import java.util.Iterator;
@@ -63,7 +62,7 @@ class PrintCommand
 	super (name, description, syntax, full);
     }
 
-    public void parse(CLI cli, Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) {
         PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	boolean dumpTree = false;
@@ -97,8 +96,8 @@ class PrintCommand
 		else if (arg.compareTo("t") == 0)
 		    format = Format.BINARY;
 		else
-		    throw new ParseException("unrecognized format: " + arg,
-					     0);
+		    throw new InvalidCommandException
+			("unrecognized format: " + arg);
 	    }
 	    else if (((String)params.get(i)).equals("-dump-tree")) 
 		dumpTree = true;

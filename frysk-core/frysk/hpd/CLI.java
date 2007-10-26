@@ -41,7 +41,6 @@ package frysk.hpd;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.text.ParseException;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.HashMap;
@@ -230,11 +229,11 @@ public class CLI {
         userhelp.addHelp(name, handler.getHelp());
     }
  
-    Value parseValue(Task task, String value) throws ParseException {
+    Value parseValue(Task task, String value) {
 	return parseValue(task, value, false);
     }
 
-    Value parseValue(Task task, String value, boolean dumpTree) throws ParseException {
+    Value parseValue(Task task, String value, boolean dumpTree) {
         DebugInfoFrame frame = getTaskFrame(task);
         DebugInfo debugInfo = getTaskDebugInfo(task);
         if (debugInfo != null)
@@ -368,19 +367,19 @@ public class CLI {
                     }
                 }
             }
-            catch (ParseException e) {
-                String msg = "";
-                if (e.getMessage() != null)
-                    msg = e.getMessage();
-                addMessage(msg, Message.TYPE_ERROR);
-            }
-            catch (RuntimeException e) {
+            catch (NullPointerException e) {
                 e.printStackTrace();
                 String msg = "";
                 if (e.getMessage() != null)
                     msg = e.getMessage();
 
                 addMessage(msg, Message.TYPE_DBG_ERROR);
+            }
+            catch (RuntimeException e) {
+                String msg = "";
+                if (e.getMessage() != null)
+                    msg = e.getMessage();
+                addMessage(msg, Message.TYPE_ERROR);
             }
             flushMessages();
         }
@@ -412,7 +411,7 @@ public class CLI {
         }
     }
 
-    PTSet createSet(String set) throws ParseException {
+    PTSet createSet(String set) {
         ParsedSet parsed = setparser.parse(set);
         PTSet result = null;
 
@@ -547,7 +546,7 @@ public class CLI {
         return this.steppingEngine;
     }
 
-    public PTSet getCommandPTSet(Input cmd) throws ParseException {
+    public PTSet getCommandPTSet(Input cmd) {
         String setString = cmd.getSet();
         PTSet ptset = null;
         if (setString == null) {

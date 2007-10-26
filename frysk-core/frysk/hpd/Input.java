@@ -40,7 +40,6 @@
 package frysk.hpd;
 
 import java.util.ArrayList;
-import java.text.ParseException;
 import java.util.Arrays;
 
 // TODO: This is not a very good class, the lexing is primitive (and
@@ -65,7 +64,7 @@ class Input {
      * @exception ParseException thrown if error are encountered
      * during parsing
      */
-    public Input(String cmd) throws ParseException {
+    public Input(String cmd) {
 	myFullCommand = cmd;
 	mySet = null;
 	myAction = null;
@@ -120,7 +119,7 @@ class Input {
      */
     // might be a little odd that it takes a parameter, but it used to
     // be a static function and might be later
-    private ArrayList tokenize(String str) throws ParseException {
+    private ArrayList tokenize(String str) {
 	ArrayList result = new ArrayList();
 	str = str.trim();
 	str = str.replaceAll(" +", " ");
@@ -161,9 +160,9 @@ class Input {
 		}
 	    } else if (i == str.length()-1) {
 		if (needQuote)
-		    throw new ParseException("Unmatched quote.", i);
+		    throw new InvalidCommandException("Unmatched quote.");
 		else if (needBracket)
-		    throw new ParseException("Unmatched bracket.", i);
+		    throw new InvalidCommandException("Unmatched bracket.");
 		else
 		    result.addAll(Arrays.asList(str.substring(tokBegin, i+1).split(" ")));
 	    }

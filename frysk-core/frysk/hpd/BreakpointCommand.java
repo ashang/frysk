@@ -49,7 +49,6 @@ import frysk.rt.LineBreakpoint;
 import frysk.rt.SourceBreakpoint;
 import frysk.rt.SourceBreakpointObserver;
 import java.io.PrintWriter;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -91,7 +90,7 @@ class BreakpointCommand extends Command {
                                        long address);
     }
 
-    public void parse(CLI cli, Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() != 1) {
@@ -112,8 +111,8 @@ class BreakpointCommand extends Command {
 	    String[] bptParams = breakpt.split("#");
 	    if (bptParams.length != 3) {
 		// XXX should use notion of "current" source file
-		throw new ParseException(
-			"bad syntax for breakpoint:" + breakpt, 0);
+		throw new InvalidCommandException
+		    ("bad syntax for breakpoint:" + breakpt);
 	    }
 	    fileName = bptParams[1];
 	    lineNumber = Integer.parseInt((String) bptParams[2]);

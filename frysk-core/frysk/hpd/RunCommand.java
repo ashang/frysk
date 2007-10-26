@@ -48,7 +48,6 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.util.CountDownLatch;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -124,7 +123,7 @@ class RunCommand extends Command {
 	return sa;
     }
 
-    public void parse(CLI cli, Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) {
 	ArrayList params = cmd.getParameters();
 
 	if (params.size() < 1) {

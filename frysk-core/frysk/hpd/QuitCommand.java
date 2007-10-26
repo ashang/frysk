@@ -40,7 +40,6 @@
 package frysk.hpd;
 
 import java.util.Iterator;
-import java.text.ParseException;
 import frysk.event.Event;
 import frysk.event.Request;
 import frysk.proc.Manager;
@@ -95,7 +94,7 @@ class QuitCommand extends Command {
 	      "Terminate the debugging session.");
     }
 
-    public void parse(CLI cli, Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) {
         CountDownLatch quitLatch = new CountDownLatch(1);
         new KillRequest(cli, quitLatch).request();
         try {

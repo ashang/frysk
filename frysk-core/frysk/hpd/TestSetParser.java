@@ -38,7 +38,6 @@
 // exception.
 package frysk.hpd;
 
-import java.text.ParseException;
 import frysk.junit.TestCase;
 
 public class TestSetParser extends TestCase
@@ -54,8 +53,7 @@ public class TestSetParser extends TestCase
 		pr = new SetNotationParser();
 	}
 
-	public void testReg()
-	{
+	public void testReg() {
 		result = "";
 		String temp = "";
 
@@ -70,13 +68,14 @@ public class TestSetParser extends TestCase
 				temp += (result + " ");
 				result = "";
 			}
+			result = temp.trim();
 		}
-		catch (ParseException e)
+		catch (InvalidCommandException e)
 		{
 			result = "Error";
 		}
 
-		assertEquals("3:3.2:4 2:2.3:3 3:4.5:5", temp.trim());
+		assertEquals("3:3.2:4 2:2.3:3 3:4.5:5", result);
 	}
 
 	public void testRange()
@@ -89,7 +88,7 @@ public class TestSetParser extends TestCase
 			root = parsed.getParseTreeNodes();
 			walkTree(root[0]);
 		}
-		catch (ParseException e)
+		catch (InvalidCommandException e)
 		{
 			result = "Error";
 		}
@@ -102,7 +101,7 @@ public class TestSetParser extends TestCase
 			root = parsed.getParseTreeNodes();
 			walkTree(root[0]);
 		}
-		catch (ParseException e)
+		catch (InvalidCommandException e)
 		{
 			result = "Error";
 		}
@@ -115,7 +114,7 @@ public class TestSetParser extends TestCase
 			root = parsed.getParseTreeNodes();
 			walkTree(root[0]);
 		}
-		catch (ParseException e)
+		catch (InvalidCommandException e)
 		{
 			result = "Error";
 		}
@@ -130,7 +129,7 @@ public class TestSetParser extends TestCase
 			parsed = pr.parse("[runnable]");
 			result = parsed.getName();
 		}
-		catch (ParseException e)
+		catch (InvalidCommandException e)
 		{
 			result = "Error";
 		}
@@ -146,7 +145,7 @@ public class TestSetParser extends TestCase
 			parsed = pr.parse("[exec(bash)]");
 			result = parsed.getName();
 		}
-		catch (ParseException e)
+		catch (InvalidCommandException e)
 		{
 			result = "Error";
 		}
