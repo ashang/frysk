@@ -39,7 +39,6 @@
 
 package frysk.rt;
 
-import java.text.ParseException;
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
@@ -120,9 +119,6 @@ class DisplayValue
     try {
         myVar = info.print(varLabel, current);
     } catch (RuntimeException e) {
-	// e.printStackTrace();
-        myVar = null;
-    } catch (ParseException e) {
 	// e.printStackTrace();
         myVar = null;
     }
