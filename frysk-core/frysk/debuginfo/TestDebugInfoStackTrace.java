@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -400,17 +400,28 @@ public class TestDebugInfoStackTrace
     assertNotNull(this.frameTracker[lowest][8][3]);
     assertEquals(0, Integer.parseInt(this.frameTracker[lowest][8][4]));
     
-    int index = 1;
+    int index = 0;
     for (int i = 0; i < 3; i++)
       {
-        if (this.frameTracker[i][1][2].equals("signal_parent"))
-          next = i;
-        else if (this.frameTracker[i][1][2].equals("kill"))
-          {
-            index = 2;
-            next = i;
-            break;
-          }
+	index = 0;
+	// We are looking for the thread that has signal_parent,
+	// but could still be in the kernel/syscall/kill.
+	String frameName =  this.frameTracker[i][index][2];
+	
+	while (frameName == null
+	       || frameName.indexOf("kill") > 0
+	       || frameName.indexOf("syscall") > 0)
+	  {
+	    index++;
+	    frameName = this.frameTracker[i][index][2];
+	  }
+
+        if (frameName.equals("signal_parent"))
+	  {
+	    next = i;
+	    break;
+	  }
+
       }
     
     /* Second thread assertions */
@@ -470,19 +481,22 @@ public class TestDebugInfoStackTrace
     assertNotNull(this.frameTracker[last][4][3]);
     assertEquals(130, Integer.parseInt(this.frameTracker[last][4][4]));
     
-    assertEquals("", this.frameTracker[next][2][1]);
-    assertEquals("start_thread", this.frameTracker[next][2][2]);
-    assertNotNull(this.frameTracker[next][2][3]);
-    assertEquals(0, Integer.parseInt(this.frameTracker[next][2][4]));
+    assertEquals("", this.frameTracker[next][index][1]);
+
+    index--;
+    assertEquals("start_thread", this.frameTracker[next][index][2]);
+    assertNotNull(this.frameTracker[next][index][3]);
+    assertEquals(0, Integer.parseInt(this.frameTracker[next][index][4]));
     
-    assertEquals("", this.frameTracker[next][3][1]);
+    index++;
+    assertEquals("", this.frameTracker[next][index][1]);
 //    if (MachineType.getMachineType() == MachineType.IA32)
 //      assertEquals("__clone", this.frameTracker[next][3][2]);
 //    if (MachineType.getMachineType() == MachineType.X8664)
 //      assertEquals("(__)?clone", this.frameTracker[next][3][2]);
-    assertTrue(this.frameTracker[next][3][2].matches("(__)?clone"));
-    assertNotNull(this.frameTracker[next][3][3]);
-    assertEquals(0, Integer.parseInt(this.frameTracker[next][3][4]));
+    assertTrue(this.frameTracker[next][index][2].matches("(__)?clone"));
+    assertNotNull(this.frameTracker[next][index][3]);
+    assertEquals(0, Integer.parseInt(this.frameTracker[next][index][4]));
     
     Manager.eventLoop.requestStop();
   }
