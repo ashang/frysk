@@ -46,16 +46,11 @@ import java.text.ParseException;
  */
 
 public abstract class Command {
-    protected final CLI cli;
     private final CommandHelp help;
     private final String name;  
 
     protected HpdCommandParser parser;
   
-    public CLI getCLI() {
-	return cli;
-    }
-
     public CommandHelp getHelp() {
 	return help;
     }
@@ -64,20 +59,13 @@ public abstract class Command {
 	return name;
     }
   
-    private Command(String name, CLI cli, CommandHelp help) {
+    Command (String name, String description, String syntax, String full) {
 	this.name = name;
-	this.cli = cli;
-	this.help = help;
+	this.help = new CommandHelp(name, description, syntax, full);
 	parser = new HpdCommandParser(name, System.out);
 	parser.setHeader(help.syntax);
 	parser.setFooter(help.full +"\n");
-	cli.addHandler(this);
     }
   
-    Command (CLI cli, String name, String description, String syntax,
-	     String full) {
-	this(name, cli, new CommandHelp(name, description, syntax, full));
-    }
-  
-    public abstract void parse(Input cmd) throws ParseException;
+    public abstract void parse(CLI cli, Input cmd) throws ParseException;
 }

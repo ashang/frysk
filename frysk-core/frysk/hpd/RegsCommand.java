@@ -51,13 +51,13 @@ import frysk.isa.RegistersFactory;
 
 public class RegsCommand extends Command {
 
-    public RegsCommand(CLI cli) {
-	super(cli, "regs", "print registers", "regs group", "print out "
-		+ "registers in the given group, general registers "
-		+ "printed by default.");
+    public RegsCommand() {
+	super("regs", "print registers", "regs group", "print out "
+	      + "registers in the given group, general registers "
+	      + "printed by default.");
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	Iterator taskDataIter = ptset.getTaskData();
 	while (taskDataIter.hasNext()) {

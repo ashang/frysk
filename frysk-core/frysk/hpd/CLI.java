@@ -259,53 +259,53 @@ public class CLI {
         userhelp = new UserHelp();
         dbgvars = new DbgVariables();
    
-        //XXX: Must make a reference to every command that is used otherwise build
-        //system will discard those classes. Therefore CLI cannot be made to be a
-        //singleton.
-        new ActionsCommand(this);
-        new AliasCommand(this);
-        new AssignCommand(this);
-        new AttachCommand(this);
-        new BreakpointCommand(this);
-        new DebuginfoCommand(this);
-        new DefsetCommand(this);
-        new DeleteCommand(this);
-        new DetachCommand(this);
-        new DisableCommand(this);
-        new FrameCommands(this, "down");
-        new EnableCommand(this);
-        new StepFinishCommand(this);
-        new FocusCommand(this);
-        new GoCommand(this);
-        new HaltCommand(this);
-        new HelpCommand(this);
-        new ListCommand(this);
-        new StepNextCommand(this);
-        new StepNextiCommand(this);
-        new PrintCommand(this);
-        new PlocationCommand(this);
-        new PtypeCommand(this);
-        new QuitCommand(this, "quit");
-        new QuitCommand(this, "exit");
-        new SetCommand(this, dbgvars);
-        new StepCommand(this);
-        new StepInstructionCommand(this);
-        new UnaliasCommand(this);
-        new UndefsetCommand(this);
-        new UnsetCommand(this, dbgvars);
-        new FrameCommands(this, "up");
-        new ViewsetCommand(this);
-        new WhatCommand(this);
-        new WhereCommand(this);
-        new WhichsetsCommand(this);
-        new DisplayCommand(this);
-        new RunCommand(this);
-        new CoreCommand(this);
-        new DisassembleCommand(this);
-        new RegsCommand(this);
-        new ExamineCommand(this);
-        new LoadCommand(this);
-        new PeekCommand(this);
+        //XXX: Must make a reference to every command that is used
+        //otherwise build system will discard those classes. Therefore
+        //CLI cannot be made to be a singleton.
+        addHandler(new ActionsCommand());
+        addHandler(new AliasCommand());
+        addHandler(new AssignCommand());
+        addHandler(new AttachCommand());
+        addHandler(new BreakpointCommand());
+        addHandler(new DebuginfoCommand());
+        addHandler(new DefsetCommand());
+        addHandler(new DeleteCommand());
+        addHandler(new DetachCommand());
+        addHandler(new DisableCommand());
+        addHandler(new FrameCommands("down"));
+        addHandler(new EnableCommand());
+        addHandler(new StepFinishCommand());
+        addHandler(new FocusCommand());
+        addHandler(new GoCommand());
+        addHandler(new HaltCommand());
+        addHandler(new HelpCommand());
+        addHandler(new ListCommand());
+        addHandler(new StepNextCommand());
+        addHandler(new StepNextiCommand());
+        addHandler(new PrintCommand());
+        addHandler(new PlocationCommand());
+        addHandler(new PtypeCommand());
+        addHandler(new QuitCommand("quit"));
+        addHandler(new QuitCommand("exit"));
+        addHandler(new SetCommand(dbgvars));
+        addHandler(new StepCommand());
+        addHandler(new StepInstructionCommand());
+        addHandler(new UnaliasCommand());
+        addHandler(new UndefsetCommand());
+        addHandler(new UnsetCommand(dbgvars));
+        addHandler(new FrameCommands("up"));
+        addHandler(new ViewsetCommand());
+        addHandler(new WhatCommand());
+        addHandler(new WhereCommand());
+        addHandler(new WhichsetsCommand());
+        addHandler(new DisplayCommand());
+        addHandler(new RunCommand());
+        addHandler(new CoreCommand());
+        addHandler(new DisassembleCommand());
+        addHandler(new RegsCommand());
+        addHandler(new ExamineCommand());
+        addHandler(new LoadCommand());
+        addHandler(new PeekCommand());
 
         // initialize PT set stuff
         setparser = new SetNotationParser();
@@ -357,7 +357,7 @@ public class CLI {
                     if (command.getAction() != null) {
                         handler = (Command)handlers.get(command.getAction());
                         if (handler != null)
-                            handler.parse(command);
+                            handler.parse(this, command);
                         else
                             addMessage("Unrecognized command: "
                                        + command.getAction() + ".",
@@ -396,11 +396,9 @@ public class CLI {
     }
 
     private void flushMessages() {
-        String prefix = null;
-        Message tempmsg;
-
         for (Iterator iter = messages.iterator(); iter.hasNext();) {
-            tempmsg = (Message) iter.next();
+            Message tempmsg = (Message) iter.next();
+	    String prefix = null;
             if (tempmsg.getType() == Message.TYPE_DBG_ERROR)
                 prefix = "Internal debugger error:  ";
             else if (tempmsg.getType() == Message.TYPE_ERROR)

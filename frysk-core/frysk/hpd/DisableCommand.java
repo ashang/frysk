@@ -54,11 +54,11 @@ import java.util.Iterator;
 class DisableCommand extends Command {
     private static final String descr = "disable a source breakpoint";
 
-    DisableCommand(CLI cli) {
-	super(cli, "disable", descr, "disable actionpointID", descr);
+    DisableCommand() {
+	super("disable", descr, "disable actionpointID", descr);
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	String actionpoints = "";
 	boolean disEnabled = false/* , disDisabled = false */, disBreak = false;

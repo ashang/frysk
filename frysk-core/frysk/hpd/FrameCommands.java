@@ -57,13 +57,13 @@ class FrameCommands extends Command {
 	    + "has existed longer, while down \"moves down\" in the call "
 	    + "stack,\n" + "following the progress of program execution.";
 
-    FrameCommands(CLI cli, String name) {
-	super(cli, name, "Move " + name
-		+ " one or more levels in the call stack", name
-		+ " [num-levels]", full);
+    FrameCommands(String name) {
+	super(name, "Move " + name
+	      + " one or more levels in the call stack", name
+	      + " [num-levels]", full);
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {

@@ -54,13 +54,13 @@ class WhereCommand extends Command {
 	    + "call stack(s) - or sequence of procedure calls - which led to "
 	    + "that\n" + "point.";
 
-    WhereCommand(CLI cli) {
-	super(cli, "where",
-		"Display the current execution location and call stack",
-		"where [ {num-levels | -all} ] [-scopes]", full);
+    WhereCommand() {
+	super("where",
+	      "Display the current execution location and call stack",
+	      "where [ {num-levels | -all} ] [-scopes]", full);
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	boolean printScopes = false;
 	
 	PTSet ptset = cli.getCommandPTSet(cmd);

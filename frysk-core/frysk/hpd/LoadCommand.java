@@ -63,11 +63,11 @@ public class LoadCommand extends Command {
 
     private static String desc = "load an executable file";
 
-    LoadCommand(CLI cli) {
-	super(cli, "load", desc, "load path-to-executable", desc);
+    LoadCommand() {
+	super("load", desc, "load path-to-executable", desc);
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 
 	parser.parse(params);

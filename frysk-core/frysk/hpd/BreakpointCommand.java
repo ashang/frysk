@@ -70,9 +70,9 @@ class BreakpointCommand extends Command {
 
     private static final String descr = "Define a breakpoint";
 
-    BreakpointCommand(CLI cli) {
-	super(cli, "break", descr,
-		"break {proc | line | #file#line} [-stop stop-set]", full);
+    BreakpointCommand() {
+	super("break", descr,
+	      "break {proc | line | #file#line} [-stop stop-set]", full);
     }
 
     static private abstract class CLIBreakpointObserver implements
@@ -91,7 +91,7 @@ class BreakpointCommand extends Command {
                                        long address);
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() != 1) {

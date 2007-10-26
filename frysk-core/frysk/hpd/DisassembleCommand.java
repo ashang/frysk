@@ -56,16 +56,15 @@ import lib.opcodes.Instruction;
 
 public class DisassembleCommand extends Command {
 
-    public DisassembleCommand(CLI cli) {
-	super(cli, "disassemble", "disassemble a section of memory",
-		"disassemble  [startAddress] [--] [OPTIONS]||\n"
-			+ "disassemble  "
-			+ "<startAddress> <endAddress> [--] [-OPTIONS]",
-		"disassemble the function surrounding the current pc, "
-			+ "the function surrounding a given address, "
-			+ "or a range of functions.");
+    public DisassembleCommand() {
+	super("disassemble", "disassemble a section of memory",
+	      "disassemble  [startAddress] [--] [OPTIONS]||\n"
+	      + "disassemble  "
+	      + "<startAddress> <endAddress> [--] [-OPTIONS]",
+	      "disassemble the function surrounding the current pc, "
+	      + "the function surrounding a given address, "
+	      + "or a range of functions.");
 	addOptions(parser);
-
     }
 
     void addOptions(HpdCommandParser parser) {
@@ -122,7 +121,7 @@ public class DisassembleCommand extends Command {
 	symbol = true;
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	reset();
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	Iterator taskDataIter = ptset.getTaskData();
@@ -174,7 +173,7 @@ public class DisassembleCommand extends Command {
 		List instructions = disassembler
 			.disassembleInstructionsStartEnd(startInstruction,
 				endInstruction);
-		printInstructions(task, -1, instructions, true);
+		printInstructions(cli, task, -1, instructions, true);
 		continue;
 	    }
 	    cli.outWriter.println("Dump of assembler code for function: "
@@ -190,7 +189,7 @@ public class DisassembleCommand extends Command {
 			symbol.getAddress(), (symbol.getAddress() + symbol
 				.getSize()));
 	    }
-	    printInstructions(task, currentInstruction, instructions, full);
+	    printInstructions(cli, task, currentInstruction, instructions, full);
 	}
     }
 
@@ -200,8 +199,8 @@ public class DisassembleCommand extends Command {
          * @param currentAddress
          * @param instructions
          */
-    private void printInstructions(Task task, long currentAddress,
-	    List instructions, boolean full) {
+    private void printInstructions(CLI cli, Task task, long currentAddress,
+				   List instructions, boolean full) {
 
 	InstructionPrinter printer;
 	printer = new AddressPrinter();
@@ -226,7 +225,7 @@ public class DisassembleCommand extends Command {
 	    if (cache != null)
 		cache.add(instruction);
 	    else
-		printInstruction(currentAddress, instruction, printer);
+		printInstruction(cli, currentAddress, instruction, printer);
 
 	    if (instruction.address == currentAddress && !full) {
 		break;
@@ -251,14 +250,15 @@ public class DisassembleCommand extends Command {
 
 	while (iter.hasNext()) {
 	    Instruction instruction = (Instruction) iter.next();
-	    printInstruction(currentAddress, instruction, printer);
+	    printInstruction(cli, currentAddress, instruction, printer);
 	}
 
 	cli.outWriter.println("End of assembly dump");
     }
 
-    private void printInstruction(long currentAddress, Instruction instruction,
-	    InstructionPrinter printer) {
+    private void printInstruction(CLI cli, long currentAddress,
+				  Instruction instruction,
+				  InstructionPrinter printer) {
 	if (instruction.address == currentAddress)
 	    cli.outWriter.print("*");
 	else

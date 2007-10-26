@@ -47,13 +47,13 @@ class UndefsetCommand extends Command {
 	    + "action of defset, so that the set is\n"
 	    + "deleted. This command is applicable only to user-defined sets.";
 
-    UndefsetCommand(CLI cli) {
-	super(cli, "undefset",
-		"Undefine a previously defined process/thread set.",
-		"undefset {set-name | -all}", full);
+    UndefsetCommand() {
+	super("undefset",
+	      "Undefine a previously defined process/thread set.",
+	      "undefset {set-name | -all}", full);
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);

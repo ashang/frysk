@@ -59,11 +59,11 @@ public class PeekCommand extends Command {
 
     private static String desc = "peek at an executable file's memory";
 
-    PeekCommand(CLI cli) {
-	super(cli, "peek", desc, "peek memory-location", desc);
+    PeekCommand() {
+	super("peek", desc, "peek memory-location", desc);
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	final PrintWriter output = cli.getPrintWriter();
 	ArrayList params = cmd.getParameters();
 

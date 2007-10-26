@@ -48,9 +48,9 @@ public class AssignCommand extends PrintCommand {
 	    + "may be a scalar variable, an element of an array or "
 	    + "structure/record, or\n" + "a de-referenced pointer variable.";
 
-    AssignCommand(CLI cli) {
-	super(cli, "assign", "Change the value of a scalar program variable.",
-		"assign scalar-target scalar-value [-force]", full);
+    AssignCommand() {
+	super("assign", "Change the value of a scalar program variable.",
+	      "assign scalar-target scalar-value [-force]", full);
     }
 
 }

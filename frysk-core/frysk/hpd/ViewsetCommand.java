@@ -52,12 +52,12 @@ class ViewsetCommand extends Command {
 	    + "sets. When no argument is used, the members of all currently "
 	    + "defined\n" + "sets are displayed. ";
 
-    ViewsetCommand(CLI cli) {
-	super(cli, "viewset", "List members of a proc/task set.",
-		"viewset [set-name]", full);
+    ViewsetCommand() {
+	super("viewset", "List members of a proc/task set.",
+	      "viewset [set-name]", full);
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);

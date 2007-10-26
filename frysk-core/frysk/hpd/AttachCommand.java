@@ -79,12 +79,12 @@ class AttachCommand
 	    + "the user's responsibility to ensure that the process(es) "
 	    + "actually is\n" + "executing the specified executable.";
 
-    AttachCommand(CLI cli) {
-	super(cli, "attach", "Attach to a running process.",
-		"attach [executable] pid [-task tid]", full);
+    AttachCommand() {
+	super("attach", "Attach to a running process.",
+	      "attach [executable] pid [-task tid]", full);
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	int pid = 0;
 	int tid = 0;

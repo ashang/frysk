@@ -53,11 +53,11 @@ class GoCommand extends Command {
 	    + "returned so that the user can issue further commands; "
 	    + "execution\n" + "continues behind the scene.";
 
-    GoCommand(CLI cli) {
-	super(cli, "go", "Continue a process.", "go", full);
+    GoCommand() {
+	super("go", "Continue a process.", "go", full);
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {

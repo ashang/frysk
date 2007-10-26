@@ -52,11 +52,11 @@ class HaltCommand extends Command {
 	    + "The halt command temporarily\n"
 	    + "suspends the execution of a collection of processes.";
 
-    HaltCommand(CLI cli) {
-	super(cli, "halt", "Stop a process.", "halt", full);
+    HaltCommand() {
+	super("halt", "Stop a process.", "halt", full);
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {

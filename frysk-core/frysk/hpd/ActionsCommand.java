@@ -57,8 +57,8 @@ import frysk.rt.UpdatingDisplayValue;
 class ActionsCommand extends Command {
     private static final String descr = "List action points";
 
-    ActionsCommand(CLI cli) {
-	super(cli, "actionpoints", descr, "actionpoints", descr);
+    ActionsCommand() {
+	super("actionpoints", descr, "actionpoints", descr);
     }
 
 
@@ -88,7 +88,7 @@ class ActionsCommand extends Command {
          * 
          * @see frysk.hpd.CLIHandler#handle(frysk.hpd.Command)
          */
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	String actionpoints = "";
 	boolean showEnabled = false, showDisabled = false, showBreak = false, showDisplay = false, showWatch = false, showBarrier = false;
 	ArrayList args = cmd.getParameters();

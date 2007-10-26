@@ -52,63 +52,69 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-class RunCommand extends Command implements TaskObserver.Attached {
+class RunCommand extends Command {
     private static final String descr = "run program and immediately attach";
     // Used to synchronize with updateAttached method
-    private CountDownLatch latch = null;
-    private Task launchedTask = null;
-
-    RunCommand(CLI cli) {
-	super(cli, "run", descr, "run executable arguments*", descr);
+    RunCommand() {
+	super("run", descr, "run executable arguments*", descr);
     }
 
-    public Action updateAttached(final Task task) {
-	final Proc proc = task.getProc();
-	synchronized (this) {
-            launchedTask = task;
+    private static class Runner implements TaskObserver.Attached {
+	private final CLI cli;
+	final CountDownLatch latch = new CountDownLatch(1);
+	Task launchedTask;
+	Runner(CLI cli) {
+	    this.cli = cli;
 	}
-	synchronized (cli) {
-	    cli.getRunningProcs().add(proc);
-	}
-	new ProcTasksObserver(proc, new ProcTasks() {
-	    public void existingTask(Task task) {
+	public Action updateAttached(final Task task) {
+	    final Proc proc = task.getProc();
+	    synchronized (this) {
+		launchedTask = task;
 	    }
-
-	    public void addedTo(Object observable) {
+	    synchronized (cli) {
+		cli.getRunningProcs().add(proc);
 	    }
-
-	    public void addFailed(Object observable, Throwable w) {
-	    }
-
-	    public void deletedFrom(Object observable) {
-	    }
-
-	    public void taskAdded(Task task) {
-	    }
-
-	    public void taskRemoved(Task task) {
-		if (proc.getChildren().size() == 0) {
-		    synchronized (cli) {
-			HashSet procs = cli.getRunningProcs();
-			procs.remove(proc);
+	    new ProcTasksObserver(proc, new ProcTasks() {
+		    public void existingTask(Task task) {
 		    }
-		}
-	    }
-	});
-        latch.countDown();
-	// Keep task blocked until the SteppingEngine notifies us that its
-	// instruction observers, etc. have been inserted.
-	return Action.BLOCK;
-    }
+		    
+		    public void addedTo(Object observable) {
+		    }
+		    
+		    public void addFailed(Object observable, Throwable w) {
+		    }
+		    
+		    public void deletedFrom(Object observable) {
+		    }
+		    
+		    public void taskAdded(Task task) {
+		    }
+		    
+		    public void taskRemoved(Task task) {
+			if (proc.getChildren().size() == 0) {
+			    synchronized (cli) {
+				HashSet procs = cli.getRunningProcs();
+				procs.remove(proc);
+			    }
+			}
+		    }
+		});
+	    latch.countDown();
+	    // Keep task blocked until the SteppingEngine notifies us that its
+	    // instruction observers, etc. have been inserted.
+	    return Action.BLOCK;
+	}
 
-    public void addedTo(Object observable) {
-    }
+	public void addedTo(Object observable) {
+	}
 
-    public void addFailed(Object observable, Throwable w) {
-	System.out.println("couldn't get it done:" + w);
-    }
+	public void addFailed(Object observable, Throwable w) {
+	    System.out.println("couldn't get it done:" + w);
+	}
 
-    public void deletedFrom(Object observable) {
+	public void deletedFrom(Object observable) {
+	}
+
     }
 
     private static String[] toStringArray(Object[] oa) {
@@ -118,32 +124,27 @@ class RunCommand extends Command implements TaskObserver.Attached {
 	return sa;
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 
 	if (params.size() < 1) {
 	    cli.printUsage(cmd);
 	    return;
 	}
-        latch = new CountDownLatch(1);
+	Runner runner = new Runner(cli);
 	Manager.host.requestCreateAttachedProc(toStringArray(params.toArray()),
-		this);
+					       runner);
         try {
-            latch.await();
-        }
-        catch (InterruptedException e) {
+            runner.latch.await();
+        } catch (InterruptedException e) {
             return;
         }
-        finally {
-            latch = null;
-        }
         // register with SteppingEngine
-	cli.doAttach(launchedTask);
+	cli.doAttach(runner.launchedTask);
         cli.getSteppingEngine().getBreakpointManager()
-            .manageProcess(launchedTask.getProc());
-        cli.idManager.manageProc(launchedTask.getProc(), cli.idManager
-                                 .reserveProcID());
-        launchedTask.requestUnblock(this);
-        launchedTask = null;
+            .manageProcess(runner.launchedTask.getProc());
+        cli.idManager.manageProc(runner.launchedTask.getProc(),
+				 cli.idManager.reserveProcID());
+        runner.launchedTask.requestUnblock(runner);
     }
 }

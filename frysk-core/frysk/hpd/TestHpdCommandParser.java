@@ -41,7 +41,6 @@ package frysk.hpd;
 
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.text.ParseException;
@@ -49,30 +48,40 @@ import java.util.ArrayList;
 
 public class TestHpdCommandParser extends TestLib {
 
-    class DummyParseCommand extends Command {
+    private static class DummyParseCommand extends Command {
 	boolean parsedOption = false;
 
 	String argument = null;
 
 	ArrayList params;
 
-	public DummyParseCommand(CLI cli) {
-	    super(cli, "parser", "parse some stuff",
-		    "parse ARGUMENTS [OPTIONS]", "test the parser");
+	public DummyParseCommand() {
+	    super("parser", "parse some stuff",
+		  "parse ARGUMENTS [OPTIONS]", "test the parser");
 	    //Don't print help to the screen.
 	    this.parser.outStream = new PrintStream(new ByteArrayOutputStream());
 	}
 
-	public void parse(Input cmd) throws ParseException {
+	public void parse(CLI cli, Input cmd) throws ParseException {
 	    params = cmd.getParameters();
 	    parser.parse(params);
 	}
 
     }
 
-    CLI cli = new CLI("(fhpd) ", null);
-
-    DummyParseCommand parser = new DummyParseCommand(cli);
+    private CLI cli;
+    private DummyParseCommand parser;
+    public void setUp() {
+	super.setUp();
+	cli = new CLI("(fhpd) ", new PrintStream(new ByteArrayOutputStream()));
+	parser = new DummyParseCommand();
+	cli.addHandler(parser);
+    }
+    public void tearDown() {
+	cli = null;
+	parser = null;
+	super.tearDown();
+    }
 
     public void testDashDash() {
 	cli.execCommand("parser --");

@@ -55,12 +55,12 @@ class FocusCommand extends Command {
 	    + "command. When no argument is specified, the command lists the "
 	    + "threads in\n" + "the current p/t set. ";
 
-    FocusCommand(CLI cli) {
-	super(cli, "focus", "Change the current process/thread set.",
-		"focus [p/t-set]", full);
+    FocusCommand() {
+	super("focus", "Change the current process/thread set.",
+	      "focus [p/t-set]", full);
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);

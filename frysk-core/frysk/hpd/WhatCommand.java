@@ -52,12 +52,12 @@ class WhatCommand extends Command {
 	    + "what program symbol(s) would be displayed (modified) if the "
 	    + "symbol name\n" + "were used as the argument of a print command.";
 
-    WhatCommand(CLI cli) {
-	super(cli, "what", "Determine what a target program name refers to",
+    WhatCommand() {
+	super("what", "Determine what a target program name refers to",
 		"what symbol-name [-all]", full);
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
