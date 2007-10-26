@@ -288,7 +288,7 @@ public abstract class RegsCase extends TestLib {
         .put(IA32Registers.EBP, // 0xcbfed73c
              new byte[] { 0x3c, (byte)0xd7, (byte)0xfe, (byte)0xcb })
         .put(IA32Registers.EFLAGS, 0x10246,
-	     1 << (21 - 1) // Mask CPUID
+	     1 << 21 // Mask CPUID
 	     )
         .put(IA32Registers.ESP, // 0x93d4a6ed
              new byte[] { (byte)0xed, (byte)0xa6, (byte)0xd4, (byte)0x93 })

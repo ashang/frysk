@@ -1,3 +1,7 @@
+2007-10-26  Mark Wielaard  <mwielaard@redhat.com>
+
+	* RegsCase.java (IA32): Don't subtract one from EFLAGS bit mask.
+
 2007-10-18  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* RegsCase.java (testAccessRegisterRead): Marked 
