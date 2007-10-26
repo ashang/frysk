@@ -1,3 +1,11 @@
+2007-10-26  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestArray.java (testIndexOneD): New.
+	(testIndexTwoD): New.
+	* ArrayType.java (index): New.
+	* Type.java (index): New.
+	* TypeDecorator.java (index): New.	
+
 2007-10-19  Teresa Thomas  <tthomas@redhat.com>
 
 	* Type.java (addressOf): wordSize added to parameter

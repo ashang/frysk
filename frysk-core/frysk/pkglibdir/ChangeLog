@@ -1,3 +1,9 @@
+2007-10-26 Teresa Thomas <tthomas@redhat.com>
+
+	* funit-addresses.c (num): Delete.
+	(oneD): New.
+	(twoD): New. 
+	
 2007-10-17 Kris Van Hees <kris.van.hees@oracle.com>
 
 	* funit-addresses.c: Add include of stdlib.h - required for malloc().
