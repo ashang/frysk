@@ -65,7 +65,7 @@ import frysk.value.Variable;
  */
 public class TestObjectDeclarationSearchEngine extends TestLib{
     
-    ObjectDeclarationSearchEngine objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine();
+    ObjectDeclarationSearchEngine objectDeclarationSearchEngine;
     
     public void testFindVar1Scopes(){
 	String variableName = "var1"; 
@@ -113,17 +113,16 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
     }
     
     public void testFindTwoScopesEnum(){
-//	if(unresolved(5166)){
-//	    return;
-//	}
+	
 	
 	String variableName = "two"; 
 	String fileName = "funit-c-scopes-enum";
 	
 	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
     	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
+    	objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
     	
-    	ObjectDeclaration declaredObject = objectDeclarationSearchEngine.get(frame, variableName);
+    	ObjectDeclaration declaredObject = objectDeclarationSearchEngine.getVariable(variableName);
  
     	assertEquals("Object has the correct name", declaredObject.getName(), variableName);
 
@@ -160,14 +159,14 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
 	int variableLine = scanner.findTokenLine(variableToken);
 	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
 	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
-	
-	Variable variable = (Variable) objectDeclarationSearchEngine.get(frame, variableName);
+	objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
+	Variable variable = (Variable) objectDeclarationSearchEngine.getVariable(variableName);
 
 	assertNotNull("Variable found", variable);
 	assertTrue("Found the correct variable", variable.getLineNumber() == variableLine);
 	
 	//Negative test:
-	variable = (Variable) objectDeclarationSearchEngine.get(frame, "NOT"+variableName);
+	variable = (Variable) objectDeclarationSearchEngine.getVariable("NOT"+variableName);
 	assertNull("Bogus object was not found", variable);
     }
 

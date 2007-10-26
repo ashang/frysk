@@ -1,5 +1,13 @@
 2007-10-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* ObjectDeclarationSearchEngine.java 
+	(ObjectDeclarationSearchEngine): new.
+	Now implements ExprSymTab.
+	Added frame, task and isa variables.
+	* TestObjectDeclarationSearchEngine.java: Updated.
+	
+2007-10-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	Changed ExprSymTab.getVariable return type to ObjectDeclaration
 	* TestAddress.java: Updated.
 	* DebugInfoEvaluator.java: Updated.

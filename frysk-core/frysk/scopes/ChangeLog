@@ -1,3 +1,9 @@
+2007-10-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Added constructor to ObjectDeclarationSearchEngine which
+	takes a frame.
+	* TestDie.java: Updated.
+
 2007-10-17  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Enumeration.java: Renamed from Enumiration to
