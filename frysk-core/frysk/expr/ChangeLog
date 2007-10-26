@@ -1,5 +1,10 @@
 2007-10-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	Changed return type	from Variable to ObjectDeclaration
+	* CExprAnnotator.g: Updated.
+
+2007-10-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* ExprSymTab.java (getVariable): Changed return type
 	from Variable to ObjectDeclaration
 	* TestbedSymTab.java: Updated.

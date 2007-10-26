@@ -227,12 +227,12 @@ expr
         }     
     |   ident:IDENT  {
             Variable var;
-            var = exprSymTab.getVariable(ident.getText());
+            var = (Variable)exprSymTab.getVariable(ident.getText());
             ident.exprType = exprSymTab.getType(var);
         }
     |   tident:TAB_IDENT  {
             Variable var;
-            var = exprSymTab.getVariable(tident.getText());
+            var = (Variable)exprSymTab.getVariable(tident.getText());
             tident.exprType = exprSymTab.getType(var);
         }
     ;
