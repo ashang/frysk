@@ -46,7 +46,7 @@ import java.util.Iterator;
 import frysk.proc.Task;
 import frysk.util.DebuginfoPaths;
 
-class DebuginfoCommand extends CLIHandler {
+class DebuginfoCommand extends Command {
 
     DebuginfoCommand(CLI cli) {
 	super(cli, "debuginfo",
@@ -55,7 +55,7 @@ class DebuginfoCommand extends CLIHandler {
 			+ "for a process and its shared modules.");
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 

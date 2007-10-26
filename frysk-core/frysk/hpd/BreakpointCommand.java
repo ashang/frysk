@@ -56,7 +56,7 @@ import java.util.Iterator;
 import java.util.Map;
 import lib.dwfl.DwarfDie;
 
-class BreakpointCommand extends CLIHandler {
+class BreakpointCommand extends Command {
 
     private static final String full = "The break command defines a breakpoint "
 	    + "that will be triggered when some\n"
@@ -91,7 +91,7 @@ class BreakpointCommand extends CLIHandler {
                                        long address);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() != 1) {

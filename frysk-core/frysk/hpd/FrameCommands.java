@@ -46,7 +46,7 @@ import java.util.Iterator;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.proc.Task;
 
-class FrameCommands extends CLIHandler {
+class FrameCommands extends Command {
 
     private static final String full = "The up (down) command modifies the "
 	    + "current frame location(s) by adding\n"
@@ -63,7 +63,7 @@ class FrameCommands extends CLIHandler {
 		+ " [num-levels]", full);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {

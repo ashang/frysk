@@ -42,7 +42,7 @@ package frysk.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-class UnaliasCommand extends CLIHandler {
+class UnaliasCommand extends Command {
     private static final String full = "The unalias command removes the alias "
 	    + "that was previously established\n"
 	    + "for the specified user-defined command name. Use of the "
@@ -53,7 +53,7 @@ class UnaliasCommand extends CLIHandler {
 		"unalias { command-name | -all }", full);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1) {
 	    if (((String) params.get(0)).equals("-all")) {

@@ -59,7 +59,7 @@ import frysk.proc.Task;
  *
  */
 
-public class LoadCommand extends CLIHandler {
+public class LoadCommand extends Command {
 
     private static String desc = "load an executable file";
 
@@ -67,7 +67,7 @@ public class LoadCommand extends CLIHandler {
 	super(cli, "load", desc, "load path-to-executable", desc);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 
 	parser.parse(params);

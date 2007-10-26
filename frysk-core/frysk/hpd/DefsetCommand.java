@@ -42,7 +42,7 @@ package frysk.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-class DefsetCommand extends CLIHandler {
+class DefsetCommand extends Command {
 
     private static final String full = "Associates a logical name with a "
 	    + "group of threads and/or processes,\n"
@@ -60,7 +60,7 @@ class DefsetCommand extends CLIHandler {
 		"defset set-name p/t-set", full);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);

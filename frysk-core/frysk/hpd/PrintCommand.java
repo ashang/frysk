@@ -47,7 +47,7 @@ import frysk.proc.Task;
 import frysk.value.Value;
 
 class PrintCommand
-    extends CLIHandler
+    extends Command
 {
     PrintCommand(CLI cli)
     {
@@ -65,7 +65,7 @@ class PrintCommand
 	super (cli, name, description, syntax, full);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
         PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	boolean dumpTree = false;

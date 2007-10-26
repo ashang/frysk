@@ -51,7 +51,7 @@ import frysk.rt.DisplayManager;
 import frysk.rt.SourceBreakpoint;
 import frysk.rt.UpdatingDisplayValue;
 
-class EnableCommand extends CLIHandler {
+class EnableCommand extends Command {
     private static final String descr = "enable a source breakpoint";
 
     EnableCommand(CLI cli) {
@@ -61,7 +61,7 @@ class EnableCommand extends CLIHandler {
 
 
 
-    public void handle(Command cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	String actionpoints = "";
 	boolean /* enEnabled = false, */enDisabled = false, enBreak = false;

@@ -45,7 +45,7 @@ import java.util.Iterator;
 import frysk.proc.Task;
 import frysk.stepping.SteppingEngine;
 
-class GoCommand extends CLIHandler {
+class GoCommand extends Command {
     private static String full = "Continue running a process, returning "
 	    + "without blocking.  The go command\n"
 	    + "resumes execution of a collection of processes. The prompt will "
@@ -57,7 +57,7 @@ class GoCommand extends CLIHandler {
 	super(cli, "go", "Continue a process.", "go", full);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {

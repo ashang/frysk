@@ -60,7 +60,7 @@ import frysk.value.Value;
  * expression changes, the user will be notified.
  * 
  */
-public class DisplayCommand extends CLIHandler {
+public class DisplayCommand extends Command {
 
     private List displays;
 
@@ -72,7 +72,7 @@ public class DisplayCommand extends CLIHandler {
     }
 
 
-    public void handle(Command cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	final PrintWriter output = cli.getPrintWriter();
 
 	PTSet ptset = cli.getCommandPTSet(cmd);

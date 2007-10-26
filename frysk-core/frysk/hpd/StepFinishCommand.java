@@ -47,7 +47,7 @@ import java.util.LinkedList;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.proc.Task;
 
-public class StepFinishCommand extends CLIHandler {
+public class StepFinishCommand extends Command {
 
     private static final String full = "The finish command defines a "
 	    + "'step-out' command, which \n"
@@ -59,7 +59,7 @@ public class StepFinishCommand extends CLIHandler {
 	super(cli, "finish", "Step out of function", "finish", full);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {

@@ -47,7 +47,7 @@ import java.util.LinkedList;
 import frysk.proc.Task;
 import frysk.debuginfo.DebugInfoFrame;
 
-public class StepInstructionCommand extends CLIHandler {
+public class StepInstructionCommand extends Command {
     private static final String full = "Step a process by an instruction. "
 	    + "The process must be attached to and blocked.";
 
@@ -55,7 +55,7 @@ public class StepInstructionCommand extends CLIHandler {
 	super(cli, "stepi", "Instruction step a process.", "stepi", full);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {

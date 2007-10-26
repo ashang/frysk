@@ -42,7 +42,7 @@ package frysk.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-class UnsetCommand extends CLIHandler {
+class UnsetCommand extends Command {
     private static final String full = "The unset command reverses the effects "
 	    + "of any previous set operations,\n"
 	    + "restoring the debugger state variable(s) to their default "
@@ -62,7 +62,7 @@ class UnsetCommand extends CLIHandler {
 	this.dbgvars = dbgvars;
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);

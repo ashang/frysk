@@ -47,7 +47,7 @@ import java.util.LinkedList;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.proc.Task;
 
-public class StepNextCommand extends CLIHandler {
+public class StepNextCommand extends Command {
 
     StepNextCommand (CLI cli)
     {
@@ -60,7 +60,7 @@ public class StepNextCommand extends CLIHandler {
      		+ "otherwise just perform a line step.");
     }
     
-    public void handle(Command cmd) throws ParseException
+    public void parse(Input cmd) throws ParseException
     {
       PTSet ptset = cli.getCommandPTSet(cmd);
       ArrayList params = cmd.getParameters();

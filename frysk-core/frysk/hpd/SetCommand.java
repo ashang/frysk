@@ -42,7 +42,7 @@ package frysk.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-class SetCommand extends CLIHandler {
+class SetCommand extends Command {
     private static final String full = "The set command supports the viewing of "
 	    + "debugger state variables and the\n"
 	    + "assignment of new values to them.  When no arguments are "
@@ -65,7 +65,7 @@ class SetCommand extends CLIHandler {
 	this.dbgvars = dbgvars;
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);

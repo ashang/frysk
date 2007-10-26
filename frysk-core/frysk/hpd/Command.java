@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,160 +39,45 @@
 
 package frysk.hpd;
 
-import java.util.ArrayList;
 import java.text.ParseException;
-import java.util.Arrays;
-
-// TODO: This is not a very good class, the lexing is primitive (and doesn't work well in
-// some instances). Add more commandline parsing features to it.
 
 /**
- * Command class separates and contains different parts of a command: set, action, parameters.
- * It is immutable.
+ * A handler class for the CLI that supplies its own help messages.
  */
-class Command
-{
-	private String myFullCommand;
-	private String mySet;
-	private String myAction;
-	private ArrayList myParameters;
 
-	/**
-	 * The constructor.
-	 * @param cmd the full preprocessed command in the form defined in HPDF: 
-	 * 		[p/t-set/prefix] verb object [option ...] [-option [value] ...]
-	 * @exception ParseException thrown if error are encountered during parsing
-	 */
-	public Command(String cmd) throws ParseException
-	{
-		myFullCommand = cmd;
-		mySet = null;
-		myAction = null;
-		myParameters = new ArrayList();
+public abstract class Command {
+    protected final CLI cli;
+    private final CommandHelp help;
+    private final String name;  
 
-		ArrayList tokens = tokenize(myFullCommand);
-		String tempToken;
+    protected HpdCommandParser parser;
+  
+    public CLI getCLI() {
+	return cli;
+    }
 
-		for (int i = 0; i < tokens.size(); i++)
-		{
-			tempToken = (String) tokens.get(i);
+    public CommandHelp getHelp() {
+	return help;
+    }
 
-			// first token is either p/t-set or an action
-			if (i == 0)
-			{
-				if (tempToken.startsWith("[") && tempToken.endsWith("]")) // if p/t-set
-					mySet = tempToken;
-				else
-					myAction = tempToken;
-			}
-			// if this is second token and myAction is null this must be an action
-			else if ( i == 1 && myAction == null) 
-			{
-				myAction = tempToken;
-			}
-			else
-			{
-				myParameters.add(tempToken);
-			}
-		}
-	}
-
-	public String getFullCommand()
-	{
-		return myFullCommand;
-	}
-
-	public String getSet()
-	{
-		return mySet;
-	}
-
-	public String getAction()
-	{
-		return myAction;
-	}
-
-	public ArrayList getParameters()
-	{
-		return myParameters;
-	}
-
-	public String toString()
-	{
-		return myFullCommand;
-	}
-
-	/**
-	 * Tokenize a string (probably command) minding quoted statements
-	 * @return ArrayList of string tokens
-	 */
-	// might be a little odd that it takes a parameter,
-	// but it used to be a static function and might be later
-	private ArrayList tokenize(String str) throws ParseException
-	{
-		ArrayList result = new ArrayList();
-		str = str.trim();
-		str = str.replaceAll(" +", " ");
-		str = str.replaceAll(" *\" *", "\"");
-		str = str.replaceAll(" *\\[ *", "[");
-		str = str.replaceAll(" *\\] *", "]");
-
-		// a kinda lexing state machine, sort of
-		int tokBegin = 0;
-
-		boolean needQuote = false;
-		boolean needBracket = false;
-
-		for (int i = 0; i < str.length(); i++)
-		{
-			if (str.charAt(i) == '\"')
-			{
-				if (needQuote)
-				{
-					result.add(str.substring(tokBegin, i));
-					tokBegin = i+1;
-					needQuote = false;
-				}
-				else
-				{
-					result.add(str.substring(tokBegin, i));
-					tokBegin = i+1;
-					needQuote = true;
-				}
-			}
-			else if (str.charAt(i) == '[')
-			{
-				if (i != 0)
-					result.add(str.substring(tokBegin, i));
-				tokBegin = i;
-				needBracket = true;
-			}
-			else if (str.charAt(i) == ']')
-			{
-				result.add(str.substring(tokBegin, i+1));
-				tokBegin = i+1;
-				needBracket = false;
-			}
-			else if (str.charAt(i) == ' ')
-			{
-				if (!needQuote && !needBracket)
-				{
-					result.add(str.substring(tokBegin, i));
-					tokBegin = i+1;
-				}
-			}
-			else if (i == str.length()-1)
-			{
-				if (needQuote)
-					throw new ParseException("Unmatched quote.", i);
-				else if (needBracket)
-					throw new ParseException("Unmatched bracket.", i);
-				else
-					result.addAll(Arrays.asList(str.substring(tokBegin, i+1).split(" ")));
-			}
-		}
-
-		return result;
-	}
-
+    public String getName() {
+	return name;
+    }
+  
+    private Command(String name, CLI cli, CommandHelp help) {
+	this.name = name;
+	this.cli = cli;
+	this.help = help;
+	parser = new HpdCommandParser(name, System.out);
+	parser.setHeader(help.syntax);
+	parser.setFooter(help.full +"\n");
+	cli.addHandler(this);
+    }
+  
+    Command (CLI cli, String name, String description, String syntax,
+	     String full) {
+	this(name, cli, new CommandHelp(name, description, syntax, full));
+    }
+  
+    public abstract void parse(Input cmd) throws ParseException;
 }

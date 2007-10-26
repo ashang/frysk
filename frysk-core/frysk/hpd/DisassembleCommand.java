@@ -54,7 +54,7 @@ import gnu.classpath.tools.getopt.OptionException;
 import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
 
-public class DisassembleCommand extends CLIHandler {
+public class DisassembleCommand extends Command {
 
     public DisassembleCommand(CLI cli) {
 	super(cli, "disassemble", "disassemble a section of memory",
@@ -122,7 +122,7 @@ public class DisassembleCommand extends CLIHandler {
 	symbol = true;
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	reset();
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	Iterator taskDataIter = ptset.getTaskData();

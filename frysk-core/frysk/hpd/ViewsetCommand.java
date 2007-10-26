@@ -45,7 +45,7 @@ import java.util.Iterator;
 
 import frysk.proc.Task;
 
-class ViewsetCommand extends CLIHandler {
+class ViewsetCommand extends Command {
 
     private static final String full = "The viewset command displays the "
 	    + "members of debugger- or user-defined\n"
@@ -57,7 +57,7 @@ class ViewsetCommand extends CLIHandler {
 		"viewset [set-name]", full);
     }
 
-    public void handle(Command cmd) throws ParseException {
+    public void parse(Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);
