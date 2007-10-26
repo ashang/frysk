@@ -1,5 +1,8 @@
 2007-10-26  Andrew Cagney  <cagney@redhat.com>
 
+	* UserHelp.java (isValidCommand(String)): Delete.
+	(commandHelp): Make private.
+
 	* Command.java (parse(CLI,Input)): Do not throw ParseException.
 	* InvalidCommandException.java: New.
 	* TestPeekCommand.java: Update.
