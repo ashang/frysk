@@ -59,11 +59,11 @@ class DetachCommand extends Command {
 	    + "and allows it to continue execution in the normal run-time\n"
 	    + "environment. ";
 
-    DetachCommand(CLI cli) {
-	super(cli, "detach", "Detach from a running process.", "detach", full);
+    DetachCommand() {
+	super("detach", "Detach from a running process.", "detach", full);
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {

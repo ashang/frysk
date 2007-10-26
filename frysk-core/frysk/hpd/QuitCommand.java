@@ -50,20 +50,22 @@ import frysk.sys.Sig;
 import frysk.util.CountDownLatch;
 
 class QuitCommand extends Command {
-    private CountDownLatch quitLatch;
-
     // Do the killing in the event loop in order to not invalidate
     // operations that are already in flight in the event loop. This
     // avoids a race seen in testing where a "quit" command is sent as
     // soon as the message from a breakpoint hit is output.
-    private class KillRequest extends Request {
-        KillRequest() {
+    private static class KillRequest extends Request {
+	private final CLI cli;
+	private final CountDownLatch quitLatch;
+        KillRequest(CLI cli, CountDownLatch quitLatch) {
             super(Manager.eventLoop);
+	    this.cli = cli;
+	    this.quitLatch = quitLatch;
         }
 
         public final void execute() {
-            for (Iterator iterator = cli.runningProcs.iterator(); iterator
-                     .hasNext();) {
+            for (Iterator iterator = cli.runningProcs.iterator();
+		 iterator.hasNext();) {
                 Proc p = (Proc) iterator.next();
                 Signal.kill(p.getPid(), Sig.KILL);
             }
@@ -88,25 +90,22 @@ class QuitCommand extends Command {
 	}
     }
 
-    private final KillRequest killRequest;
-
-    QuitCommand(CLI cli, String name) {
-	super(cli, name, "Terminate the debugging session.", name,
-		"Terminate the debugging session.");
-        killRequest = new KillRequest();
+    QuitCommand(String name) {
+	super(name, "Terminate the debugging session.", name,
+	      "Terminate the debugging session.");
     }
 
-    public void parse(Input cmd) throws ParseException {
-        quitLatch = new CountDownLatch(1);
-        killRequest.request();
+    public void parse(CLI cli, Input cmd) throws ParseException {
+        CountDownLatch quitLatch = new CountDownLatch(1);
+        new KillRequest(cli, quitLatch).request();
         try {
             quitLatch.await();
         }
         catch (InterruptedException e) {
         }
 	cli.addMessage("Quitting...", Message.TYPE_NORMAL);
-	DetachCommand detachCommand = new DetachCommand(cli);
+	DetachCommand detachCommand = new DetachCommand();
 	Input command = new Input("detach");
-	detachCommand.parse(command);
+	detachCommand.parse(cli, command);
     }
 }

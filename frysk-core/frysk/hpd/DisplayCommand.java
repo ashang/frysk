@@ -66,13 +66,13 @@ public class DisplayCommand extends Command {
 
     private static final String desc = "creates a display on an expression";
 
-    DisplayCommand(CLI cli) {
-	super(cli, "display", desc, "display expr", desc);
+    DisplayCommand() {
+	super("display", desc, "display expr", desc);
 	displays = new LinkedList();
     }
 
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	final PrintWriter output = cli.getPrintWriter();
 
 	PTSet ptset = cli.getCommandPTSet(cmd);

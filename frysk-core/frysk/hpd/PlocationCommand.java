@@ -48,23 +48,16 @@ import frysk.value.Value;
 class PlocationCommand
     extends Command
 {
-    PlocationCommand(CLI cli)
-    {
-	this(cli, "plocation", "Display the location of a program variable or expression.",
-		"plocation expression [-name] [-index]", "The plocation command " +
-		"evaluates and displays the type of an expression. The debugger\n" +
-		"interprets the expression by looking up the value(s) associated with\n" +
-		"each symbol and applying the operators." +
-		"Output is \"LocationType LocationName - Size byte(s)\"");
-    }
-    
-    PlocationCommand (CLI cli, String name, String description, String syntax, 
-	    String full)
-    {
-	super (cli, name, description, syntax, full);
+    PlocationCommand() {
+	super("plocation", "Display the location of a program variable or expression.",
+	      "plocation expression [-name] [-index]", "The plocation command " +
+	      "evaluates and displays the type of an expression. The debugger\n" +
+	      "interprets the expression by looking up the value(s) associated with\n" +
+	      "each symbol and applying the operators." +
+	      "Output is \"LocationType LocationName - Size byte(s)\"");
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
         PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {

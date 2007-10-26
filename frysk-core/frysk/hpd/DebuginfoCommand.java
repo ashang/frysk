@@ -48,14 +48,14 @@ import frysk.util.DebuginfoPaths;
 
 class DebuginfoCommand extends Command {
 
-    DebuginfoCommand(CLI cli) {
-	super(cli, "debuginfo",
-		"Displays debuginfo install paths of a process.", "debuginfo",
-		"The debuginfo command lists the debuginfo paths "
-			+ "for a process and its shared modules.");
+    DebuginfoCommand() {
+	super("debuginfo",
+	      "Displays debuginfo install paths of a process.", "debuginfo",
+	      "The debuginfo command lists the debuginfo paths "
+	      + "for a process and its shared modules.");
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 

@@ -48,12 +48,12 @@ class UnaliasCommand extends Command {
 	    + "for the specified user-defined command name. Use of the "
 	    + "argument -all\n" + "deletes all user-defined commands at once.";
 
-    UnaliasCommand(CLI cli) {
-	super(cli, "unalias", "Create or view user-define commands.",
-		"unalias { command-name | -all }", full);
+    UnaliasCommand() {
+	super("unalias", "Create or view user-define commands.",
+	      "unalias { command-name | -all }", full);
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1) {
 	    if (((String) params.get(0)).equals("-all")) {

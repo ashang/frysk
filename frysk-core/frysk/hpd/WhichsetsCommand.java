@@ -57,13 +57,13 @@ class WhichsetsCommand extends Command {
 	    + "the\n"
 	    + "argument, only its membership information will be displayed. ";
 
-    WhichsetsCommand(CLI cli) {
-	super(cli, "whichsets",
-		"List all user-defined set to which a proc/task belongs.",
-		"whichsets [p/t-set]", full);
+    WhichsetsCommand() {
+	super("whichsets",
+	      "List all user-defined set to which a proc/task belongs.",
+	      "whichsets [p/t-set]", full);
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);

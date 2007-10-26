@@ -44,12 +44,12 @@ import java.util.Iterator;
 import java.text.ParseException;
 
 class HelpCommand extends Command {
-    HelpCommand(CLI cli) {
-	super(cli, "help", "Display this help message.", "help [command]",
-		"Display help (possibly for a command.)");
+    HelpCommand() {
+	super("help", "Display this help message.", "help [command]",
+	      "Display help (possibly for a command.)");
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	String output = "";
 	String temp = "";

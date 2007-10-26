@@ -55,15 +55,15 @@ public class StepFinishCommand extends Command {
 	    + "through a function, and would like to quickly return to\n"
 	    + "the calling function to continue debugging there.";
 
-    StepFinishCommand(CLI cli) {
-	super(cli, "finish", "Step out of function", "finish", full);
+    StepFinishCommand() {
+	super("finish", "Step out of function", "finish", full);
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
-	    this.cli.printUsage(cmd);
+	    cli.printUsage(cmd);
 	    return;
 	}
 	LinkedList taskList = new LinkedList();
@@ -71,32 +71,32 @@ public class StepFinishCommand extends Command {
 	while (taskIter.hasNext()) {
 	    taskList.add(taskIter.next());
 	}
-	if (this.cli.steppingObserver != null) {
-	    this.cli.getSteppingEngine().stepOut(taskList);
+	if (cli.steppingObserver != null) {
+	    cli.getSteppingEngine().stepOut(taskList);
 
-	    synchronized (this.cli.steppingObserver.getMonitor()) {
+	    synchronized (cli.steppingObserver.getMonitor()) {
 		try {
 		    // XXX This looks racy.
-		    this.cli.steppingObserver.getMonitor().wait();
+		    cli.steppingObserver.getMonitor().wait();
 		} catch (InterruptedException ie) {
 		}
 	    }
 	    taskIter = ptset.getTasks();
 	    while (taskIter.hasNext()) {
 		Task task = (Task) taskIter.next();
-		DebugInfoFrame rf = this.cli.getTaskFrame(task);
+		DebugInfoFrame rf = cli.getTaskFrame(task);
 
 		if (rf.getLines().length == 0)
-		    this.cli.addMessage("Task stopped at address 0x"
+		    cli.addMessage("Task stopped at address 0x"
 			    + Long.toHexString(rf.getAdjustedAddress()),
 			    Message.TYPE_NORMAL);
 		else
-		    this.cli.addMessage("Task stopped at line "
+		    cli.addMessage("Task stopped at line "
 			    + rf.getLines()[0].getLine() + " in file "
 			    + rf.getLines()[0].getFile(), Message.TYPE_NORMAL);
 	    }
 	} else
-	    this.cli.addMessage("Not attached to any process",
+	    cli.addMessage("Not attached to any process",
 		    Message.TYPE_ERROR);
     }
 

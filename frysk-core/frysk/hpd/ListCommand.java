@@ -58,9 +58,8 @@ import frysk.proc.Task;
 class ListCommand
    extends Command
 {
-    ListCommand (CLI cli)
-    {
-	super(cli, "list", "Display source code lines.",
+    ListCommand () {
+	super("list", "Display source code lines.",
 		"list source-loc [-length [-]num-lines]", "The list command displays lines of source code. The user can control\n" +
 "both the location in the source code and the number of lines\n" +
 "displayed. Successive list commands without location arguments result in\n" +
@@ -69,7 +68,7 @@ class ListCommand
     private File file = null;
     private int line;
     private int exec_line = 0;
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
         PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	int windowSize = 20;

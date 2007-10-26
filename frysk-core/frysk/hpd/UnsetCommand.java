@@ -56,13 +56,13 @@ class UnsetCommand extends Command {
 
     private final DbgVariables dbgvars;
 
-    UnsetCommand(CLI cli, DbgVariables dbgvars) {
-	super(cli, "unset", "Revert variable value to default.",
-		"unset { debugger-var | -all }", full);
+    UnsetCommand(DbgVariables dbgvars) {
+	super("unset", "Revert variable value to default.",
+	      "unset { debugger-var | -all }", full);
 	this.dbgvars = dbgvars;
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);

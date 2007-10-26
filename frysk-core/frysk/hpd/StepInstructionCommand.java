@@ -51,29 +51,29 @@ public class StepInstructionCommand extends Command {
     private static final String full = "Step a process by an instruction. "
 	    + "The process must be attached to and blocked.";
 
-    StepInstructionCommand(CLI cli) {
-	super(cli, "stepi", "Instruction step a process.", "stepi", full);
+    StepInstructionCommand() {
+	super("stepi", "Instruction step a process.", "stepi", full);
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
-	    this.cli.printUsage(cmd);
+	    cli.printUsage(cmd);
 	    return;
 	}
 
-	if (this.cli.steppingObserver != null) {
+	if (cli.steppingObserver != null) {
 	    LinkedList taskList = new LinkedList();
 	    Iterator taskIter = ptset.getTasks();
 	    while (taskIter.hasNext()) {
 		taskList.add(taskIter.next());
 	    }
-	    this.cli.getSteppingEngine().stepInstruction(taskList);
+	    cli.getSteppingEngine().stepInstruction(taskList);
 
-	    synchronized (this.cli.steppingObserver.getMonitor()) {
+	    synchronized (cli.steppingObserver.getMonitor()) {
 		try {
-		    this.cli.steppingObserver.getMonitor().wait();
+		    cli.steppingObserver.getMonitor().wait();
 		} catch (InterruptedException ie) {
 		}
 	    }
@@ -83,16 +83,16 @@ public class StepInstructionCommand extends Command {
 		DebugInfoFrame rf = cli.getTaskFrame(task);
 
 		if (rf.getLines().length == 0)
-		    this.cli.addMessage("Task stopped at address 0x"
+		    cli.addMessage("Task stopped at address 0x"
 			    + Long.toHexString(rf.getAdjustedAddress()),
 			    Message.TYPE_NORMAL);
 		else
-		    this.cli.addMessage("Task stopped at line "
+		    cli.addMessage("Task stopped at line "
 			    + rf.getLines()[0].getLine() + " in file "
 			    + rf.getLines()[0].getFile(), Message.TYPE_NORMAL);
 	    }
 	} else
-	    this.cli.addMessage("Not attached to any process",
+	    cli.addMessage("Not attached to any process",
 		    Message.TYPE_ERROR);
     }
 }

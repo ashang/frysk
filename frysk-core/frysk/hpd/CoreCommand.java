@@ -54,11 +54,11 @@ public class CoreCommand extends Command {
 
     private static String desc = "open a core file";
 
-    CoreCommand(CLI cli) {
-	super(cli, "core", desc, "core core.file", desc);
+    CoreCommand() {
+	super("core", desc, "core core.file", desc);
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 
 	parser.parse(params);

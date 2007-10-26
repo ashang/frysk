@@ -59,13 +59,13 @@ class SetCommand extends Command {
 
     private final DbgVariables dbgvars;
 
-    SetCommand(CLI cli, DbgVariables dbgvars) {
-	super(cli, "set", "Change or view a debugger variable.",
-		"set debugger-var = value\nset [debugger-var]", full);
+    SetCommand(DbgVariables dbgvars) {
+	super("set", "Change or view a debugger variable.",
+	      "set debugger-var = value\nset [debugger-var]", full);
 	this.dbgvars = dbgvars;
     }
 
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {
 	    cli.printUsage(cmd);

@@ -48,22 +48,15 @@ import frysk.value.Value;
 class PtypeCommand
     extends Command
 {
-    PtypeCommand(CLI cli)
-    {
-	this(cli, "ptype", "Display the type of a program variable or expression.",
-		"ptype expression [-name] [-index]", "The ptype command " +
-		"evaluates and displays the type of an expression. The debugger\n" +
-		"interprets the expression by looking up the value(s) associated with\n" +
-		"each symbol and applying the operators.");
+    PtypeCommand() {
+	super("ptype", "Display the type of a program variable or expression.",
+	      "ptype expression [-name] [-index]", "The ptype command " +
+	      "evaluates and displays the type of an expression. The debugger\n" +
+	      "interprets the expression by looking up the value(s) associated with\n" +
+	      "each symbol and applying the operators.");
     }
     
-    PtypeCommand (CLI cli, String name, String description, String syntax, 
-	    String full)
-    {
-	super (cli, name, description, syntax, full);
-    }
-
-    public void parse(Input cmd) throws ParseException {
+    public void parse(CLI cli, Input cmd) throws ParseException {
         PTSet ptset = cli.getCommandPTSet(cmd);
 	ArrayList params = cmd.getParameters();
 	if (params.size() == 1 && params.get(0).equals("-help")) {

@@ -49,7 +49,6 @@ import frysk.proc.Proc;
 import frysk.value.Type;
 import frysk.value.Value;
 import java.io.StringReader;
-import java.text.ParseException;
 import java.util.Iterator;
 import java.util.List;
 import lib.dwfl.Dwarf;
@@ -148,9 +147,8 @@ public class DebugInfo {
      * 
      * @param sInput
      * @return String
-     * @throws ParseException
      */
-    public String what(DebugInfoFrame frame, String sInput) throws ParseException {
+    public String what(DebugInfoFrame frame, String sInput) {
 	long pc = frame.getAdjustedAddress();
 	Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
 	DwflDieBias bias = dwfl.getDie(pc);
@@ -207,13 +205,12 @@ public class DebugInfo {
      * 
      * @param sInput
      * @return Variable
-     * @throws ParseException
      */
-      public Value print (String sInput, DebugInfoFrame frame) throws ParseException {
+      public Value print (String sInput, DebugInfoFrame frame) {
 	  return print (sInput, frame, false);
       }
     
-      public Value print (String sInput, DebugInfoFrame frame, boolean dumpTree) throws ParseException {
+      public Value print (String sInput, DebugInfoFrame frame, boolean dumpTree) {
 	Value result = null;
 	sInput += (char) 3;
     
@@ -259,7 +256,7 @@ public class DebugInfo {
 	return result;
     }
    
-    static public Value printNoSymbolTable (String sInput, boolean dump_tree) throws ParseException {
+    static public Value printNoSymbolTable (String sInput, boolean dump_tree) {
 	Value result = null;
 	sInput += (char) 3;
     
