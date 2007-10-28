@@ -39,7 +39,6 @@
 
 package frysk.gui.srcwin;
 
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -878,24 +877,15 @@ public class SourceView extends TextView implements View, ExposeListener {
 
 	    if (varText != null) {
 		MenuItem valueItem;
-		Value var = null;
-		DebugInfo debugInfo = new DebugInfo(buf.scope);
+		String value;
 		try {
-		    var = debugInfo.print(varText, buf.scope);
-		    
-		    if (var == null)
-		    {
-			// XXX: This shouldn't happen, since we were
-			// able to get the variable a second ago in
-			// SourceBuffer.getVariable(iter). What to do?
-		    }
-		     
-		} catch (ParseException e) {
-		    System.out.println(e.getMessage());
+		    DebugInfo debugInfo = new DebugInfo(buf.scope);
+		    Value var = debugInfo.print(varText, buf.scope);
+		    value = "Value of " + varText + ": " + var.toPrint();
+		} catch (RuntimeException e) {
+		    value = "Error from " + varText + ": " + e.getMessage();
 		}
-		
-		valueItem = new MenuItem("Value of " + varText + ": "
-			+ var.toPrint(), true);
+		valueItem = new MenuItem(value, true);
 		valueItem.setSensitive(false);
 		m.append(valueItem);
 		/*

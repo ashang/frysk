@@ -37,16 +37,12 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.gui.srcwin;
 
-import java.text.ParseException;
 import java.util.Iterator;
-
 import org.gnu.gtk.TextChildAnchor;
 import org.gnu.gtk.TextIter;
 import org.jdom.Element;
-
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.dom.DOMFunction;
@@ -210,19 +206,16 @@ public class InlineBuffer
 
     stab.toString();
     Value var = null;
-    try
-      {
+    try {
         var = stab.print(line.getText().substring(
-                                                    tag.getStart(),
-                                                    tag.getStart()
-                                                        + tag.getLength()), scope);
+						  tag.getStart(),
+						  tag.getStart()
+						  + tag.getLength()), scope);
         if(var == null)
             return null;
-      }
-    catch (ParseException e)
-      {
+    } catch (RuntimeException e) {
         return null;
-      }
+    }
     
     return getWordAtIter(iter);
   }

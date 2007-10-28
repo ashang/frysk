@@ -43,7 +43,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -642,12 +641,9 @@ public class SourceBuffer extends TextBuffer {
 	try {
 	    var = debugInfo.print(line.getText().substring(tag.getStart(),
 		    tag.getStart() + tag.getLength()), scope);
-	    
 	    if (var == null)
 		return null;
-	     
-	} catch (ParseException e) {
-	    System.out.println(e.getMessage());
+	} catch (RuntimeException e) {
 	    return null;
 	}
 	
@@ -674,7 +670,7 @@ public class SourceBuffer extends TextBuffer {
 	try {
 	    var = debugInfo.print(line.getText().substring(tag.getStart(),
 		    tag.getStart() + tag.getLength()), scope);
-	} catch (ParseException e) {
+	} catch (RuntimeException e) {
 	    System.out.println(e.getMessage());
 	    return null;
 	}

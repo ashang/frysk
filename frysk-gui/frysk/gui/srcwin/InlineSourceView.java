@@ -38,8 +38,6 @@
 // exception.
 package frysk.gui.srcwin;
 
-import java.text.ParseException;
-
 import org.gnu.gdk.GC;
 import org.gnu.gdk.Point;
 import org.gnu.gdk.Window;
@@ -243,22 +241,15 @@ public class InlineSourceView extends SourceView{
             if (varText != null)
               {
                 MenuItem valueItem;
-                Value var = null;
-		DebugInfo debugInfo = new DebugInfo(buf.scope);
+		String value;
 		try {
-		    var = debugInfo.print(varText, buf.scope);
-		    
-		    if (var == null)
-		    {
-			// XXX: This shouldn't happen, since we were
-			// able to get the variable a second ago in
-			// SourceBuffer.getVariable(iter). What to do?
-		    }
-		     
-		} catch (ParseException e) {
-		    System.out.println(e.getMessage());
+		    DebugInfo debugInfo = new DebugInfo(buf.scope);
+		    Value var = debugInfo.print(varText, buf.scope);
+		    value = "Value: " + var.toPrint();
+		} catch (RuntimeException e) {
+		    value = "Error: " + e.getMessage();
 		}
-		valueItem = new MenuItem("Value: " + var.toPrint(), true);
+		valueItem = new MenuItem(value, true);
 		valueItem.setSensitive(false);
 		m.append(valueItem);
                 
