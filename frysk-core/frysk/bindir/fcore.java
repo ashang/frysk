@@ -93,11 +93,14 @@ public class fcore
   public static void dumpPid(ProcId procId)
   {
     Proc coreProc = Util.getProcFromPid(procId);
-    stacker = new CoredumpAction(coreProc, filename, 
-                                 new AbandonCoreEvent(coreProc), writeAllMaps);
-
-    new ProcBlockAction(coreProc, stacker);
-    Manager.eventLoop.run();
+    if (coreProc != null) {
+	stacker = new CoredumpAction(coreProc, filename, 
+				     new AbandonCoreEvent(coreProc),
+				     writeAllMaps);
+	
+	new ProcBlockAction(coreProc, stacker);
+	Manager.eventLoop.run();
+    }
   }
   
   /**
