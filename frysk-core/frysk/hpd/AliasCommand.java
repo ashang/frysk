@@ -39,8 +39,6 @@
 
 package frysk.hpd;
 
-import java.util.ArrayList;
-
 class AliasCommand extends Command {
 
     private static final String full = "The alias command associates a "
@@ -57,16 +55,16 @@ class AliasCommand extends Command {
     }
 
     public void parse(CLI cli, Input cmd) {
-	ArrayList params = cmd.getParameters();
-	if (params.size() == 1 && params.get(0).equals("-help")) {
+	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
 	}
-	if (params.size() <= 2) {
-	    if (params.size() == 2) {
-		cli.aliases.put((String) params.get(0), (String) params.get(1));
-	    } else if (params.size() == 1) {
-		String temp = (String) params.get(0);
+	if (cmd.size() <= 2) {
+	    if (cmd.size() == 2) {
+		cli.aliases.put((String) cmd.parameter(0),
+				(String) cmd.parameter(1));
+	    } else if (cmd.size() == 1) {
+		String temp = (String) cmd.parameter(0);
 		if (cli.aliases.containsKey(temp)) {
 		    cli.addMessage(temp + " = "
 			    + (String) (cli.aliases).get(temp),

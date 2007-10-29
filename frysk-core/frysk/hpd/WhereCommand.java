@@ -39,7 +39,6 @@
 
 package frysk.hpd;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import frysk.proc.Task;
 
@@ -63,24 +62,23 @@ class WhereCommand extends Command {
 	boolean printScopes = false;
 	
 	PTSet ptset = cli.getCommandPTSet(cmd);
-	ArrayList params = cmd.getParameters();
 	
-	if (params.size() == 1 && params.get(0).equals("-help")) {
+	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
 	}
 
 	int level = 0;
 
-	for (int i = 0; i < params.size(); i++) {
+	for (int i = 0; i < cmd.size(); i++) {
 	    try {
-		level = Integer.parseInt((String) params.get(i));
+		level = Integer.parseInt(cmd.parameter(i));
 		continue;
 	    } catch (NumberFormatException e) {
 		// continue parsing
 	    }
 	    
-	    if (((String) params.get(i)).equals("-scopes")) {
+	    if ((cmd.parameter(i)).equals("-scopes")) {
 		printScopes = true;
 	    }
 	} 

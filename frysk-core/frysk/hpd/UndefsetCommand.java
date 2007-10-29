@@ -39,8 +39,6 @@
 
 package frysk.hpd;
 
-import java.util.ArrayList;
-
 class UndefsetCommand extends Command {
     private static final String full = "The undefset command reverses the "
 	    + "action of defset, so that the set is\n"
@@ -53,13 +51,12 @@ class UndefsetCommand extends Command {
     }
 
     public void parse(CLI cli, Input cmd) {
-	ArrayList params = cmd.getParameters();
-	if (params.size() == 1 && params.get(0).equals("-help")) {
+	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
 	}
-	if (params.size() == 1) {
-	    String setname = (String) params.get(0);
+	if (cmd.size() == 1) {
+	    String setname = cmd.parameter(0);
 
 	    if (cli.builtinPTSets.containsKey(setname)) {
 		cli.addMessage(new Message("The set \"" + setname

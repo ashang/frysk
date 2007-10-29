@@ -39,7 +39,6 @@
 
 package frysk.hpd;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -60,8 +59,7 @@ public class StepNextCommand extends Command {
     
     public void parse(CLI cli, Input cmd) {
       PTSet ptset = cli.getCommandPTSet(cmd);
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
+      if (cmd.size() == 1 && cmd.parameter(0).equals("-help"))
         {
           cli.printUsage(cmd);
           return;

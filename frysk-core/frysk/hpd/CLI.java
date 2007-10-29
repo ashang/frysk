@@ -351,7 +351,7 @@ public class CLI {
                 // preprocess and iterate
                 for (Iterator iter = prepro.preprocess(cmd); iter.hasNext();) {
                     pcmd = (String)iter.next();
-                    command = new Input(pcmd);
+                    command = new Input(pcmd).accept();
 
                     if (command.getAction() != null) {
                         handler = (Command)handlers.get(command.getAction());

@@ -39,17 +39,14 @@
 
 package frysk.hpd;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.proc.Task;
 import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
-
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
-
 import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
 
@@ -124,8 +121,7 @@ public class DisassembleCommand extends Command {
 	    parser.printHelp(cli.outWriter);
 	    return;
 	}
-	ArrayList params = cmd.getParameters();
-	if (params.size() > 2)
+	if (cmd.size() > 2)
 	    throw new InvalidCommandException
 		("too many arguments to disassemble");
 
@@ -142,23 +138,23 @@ public class DisassembleCommand extends Command {
 	    Disassembler disassembler = new Disassembler(task.getMemory());
 	    cli.outWriter.println("[" + data.getParentID() + "." + data.getID()
 		    + "]");
-	    if (params.size() == 1) {
+	    if (cmd.size() == 1) {
 		try {
-		    currentInstruction = cli.parseValue(task,
-			    (String) params.get(0)).asLong();
+		    currentInstruction
+			= cli.parseValue(task, cmd.parameter(0)).asLong();
 		    symbol = SymbolFactory.getSymbol(task, currentInstruction);
 		} catch (RuntimeException nnfe) {
 		    cli.addMessage(new Message(nnfe.getMessage(),
 					       Message.TYPE_ERROR));
 		    continue;
 		}
-	    } else if (params.size() == 2) {
+	    } else if (cmd.size() == 2) {
 		long startInstruction, endInstruction;
 		try {
-		    startInstruction = cli.parseValue(task,
-			    (String) params.get(0)).asLong();
-		    endInstruction = cli.parseValue(task,
-			    (String) params.get(1)).asLong();
+		    startInstruction
+			= cli.parseValue(task, cmd.parameter(0)).asLong();
+		    endInstruction
+			= cli.parseValue(task, cmd.parameter(1)).asLong();
 		} catch (RuntimeException nnfe) {
 		    cli.addMessage(new Message(nnfe.getMessage(),
 					       Message.TYPE_ERROR));

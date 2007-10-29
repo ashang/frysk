@@ -39,7 +39,6 @@
 
 package frysk.hpd;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 class HelpCommand extends Command {
@@ -49,10 +48,9 @@ class HelpCommand extends Command {
     }
 
     public void parse(CLI cli, Input cmd) {
-	ArrayList params = cmd.getParameters();
 	String output = "";
 	String temp = "";
-	if (params.size() == 0) {
+	if (cmd.size() == 0) {
 	    for (Iterator iter = cli.userhelp.getCmdList().iterator(); iter
 		    .hasNext();) {
 		temp = (String) iter.next();
@@ -63,7 +61,7 @@ class HelpCommand extends Command {
 	    for (Iterator iter = cli.userhelp.getCmdList().iterator(); iter
 		    .hasNext();) {
 		temp = (String) iter.next();
-		if (temp.compareTo(params.get(0)) == 0) {
+		if (temp.compareTo(cmd.parameter(0)) == 0) {
 		    output += cli.userhelp.getCmdSyntax(temp) + "\n";
 		    output += cli.userhelp.getCmdFullDescr(temp);
 		}

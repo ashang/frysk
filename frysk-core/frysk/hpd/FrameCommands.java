@@ -39,7 +39,6 @@
 
 package frysk.hpd;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import frysk.debuginfo.DebugInfoFrame;
@@ -64,16 +63,15 @@ class FrameCommands extends Command {
 
     public void parse(CLI cli, Input cmd) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
-	ArrayList params = cmd.getParameters();
-	if (params.size() == 1 && params.get(0).equals("-help")) {
+	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
 	}
 	int level = 1;
 	boolean down = true;
 
-	if (params.size() != 0)
-	    level = Integer.parseInt((String) params.get(0));
+	if (cmd.size() != 0)
+	    level = Integer.parseInt(cmd.parameter(0));
 
 	// For user command 'down', move a level towards the bottom of the
 	// call-stack

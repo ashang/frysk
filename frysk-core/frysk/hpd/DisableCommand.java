@@ -46,7 +46,6 @@ import frysk.rt.SourceBreakpoint;
 import frysk.rt.UpdatingDisplayValue;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -62,7 +61,6 @@ class DisableCommand extends Command {
 	String actionpoints = "";
 	boolean disEnabled = false/* , disDisabled = false */, disBreak = false;
 	boolean disDisplay = false, disWatch = false, disBarrier = false;
-	ArrayList args = cmd.getParameters();
 	int[] ids = null;
 
 	PrintWriter outWriter = cli.getPrintWriter();
@@ -73,12 +71,12 @@ class DisableCommand extends Command {
          * the "-" options specified in the hpd. We also allow a "-display"
          * option to disable only displays
          */
-	if (args.size() == 0)
+	if (cmd.size() == 0)
 	    throw new InvalidCommandException("Too few arguments to disable");
-	if (args.size() > 1)
+	if (cmd.size() > 1)
 	    throw new InvalidCommandException("Too many arguments to disable");
 
-	String param = (String) args.get(0);
+	String param = cmd.parameter(0);
 	// doesn't start with a dash, must be the list of actionpoints
 	if (param.indexOf("-") != 0)
 	    actionpoints = param;

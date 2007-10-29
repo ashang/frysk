@@ -49,7 +49,6 @@ import frysk.rt.LineBreakpoint;
 import frysk.rt.SourceBreakpoint;
 import frysk.rt.SourceBreakpointObserver;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -92,12 +91,11 @@ class BreakpointCommand extends Command {
 
     public void parse(CLI cli, Input cmd) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
-	ArrayList params = cmd.getParameters();
-	if (params.size() != 1) {
+	if (cmd.size() != 1) {
 	    cli.printUsage(cmd);
 	    return;
 	}
-	String breakpt = (String) params.get(0);
+	String breakpt = cmd.parameter(0);
 	String fileName;
 	int lineNumber;
 	SourceBreakpoint actionpoint;

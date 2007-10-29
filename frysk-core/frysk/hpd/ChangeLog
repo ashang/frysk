@@ -1,5 +1,55 @@
 2007-10-29  Andrew Cagney  <cagney@redhat.com>
 
+	* Input.java (accept()): New.
+	(Input(String)): Do not accept first token.
+	(getParameters()): Return a List.
+	(parameter(int)): New.
+	(size()): New.
+	* TestInput.java: New file.
+	* CLI.java: Call Input.accept().
+	* QuitCommand.java: Ditto.
+	* StepInstructionCommand.java: Update.
+	* PrintCommand.java: Update.
+	* UndefsetCommand.java: Update.
+	* WhatCommand.java: Update.
+	* WhereCommand.java: Update.
+	* WhichsetsCommand.java: Update.
+	* ViewsetCommand.java: Update.
+	* StepFinishCommand.java: Update.
+	* UnaliasCommand.java: Update.
+	* UnsetCommand.java: Update.
+	* StepNextiCommand.java: Update.
+	* TestOptionParser.java: Update.
+	* PlocationCommand.java: Update.
+	* AliasCommand.java: Update.
+	* StepNextCommand.java: Update.
+	* RunCommand.java: Update.
+	* RegsCommand.java: Update.
+	* StepCommand.java: Update.
+	* PeekCommand.java: Update.
+	* ActionsCommand.java: Update.
+	* SetCommand.java: Update.
+	* PtypeCommand.java: Update.
+	* AttachCommand.java: Update.
+	* BreakpointCommand.java: Update.
+	* CoreCommand.java: Update.
+	* DefsetCommand.java: Update.
+	* DebuginfoCommand.java: Update.
+	* DeleteCommand.java: Update.
+	* DetachCommand.java: Update.
+	* DisableCommand.java: Update.
+	* DisassembleCommand.java: Update.
+	* EnableCommand.java: Update.
+	* DisplayCommand.java: Update.
+	* FocusCommand.java: Update.
+	* ExamineCommand.java: Update.
+	* GoCommand.java: Update.
+	* FrameCommands.java: Update.
+	* HaltCommand.java: Update.
+	* HelpCommand.java: Update.
+	* ListCommand.java: Update.
+	* LoadCommand.java: Update.
+
 	* OptionParser.java: Rename HpdCommandParser.java; make members
 	private; use Iterator, List and LinkedList.
 	(setHeader(String)): Delete.

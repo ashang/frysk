@@ -44,7 +44,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.Iterator;
-import java.util.ArrayList;
 import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfo;
@@ -69,14 +68,13 @@ class ListCommand
     private int exec_line = 0;
     public void parse(CLI cli, Input cmd) {
         PTSet ptset = cli.getCommandPTSet(cmd);
-	ArrayList params = cmd.getParameters();
 	int windowSize = 20;
         Iterator taskIter = ptset.getTaskData();
         while (taskIter.hasNext()) {
             TaskData taskData = (TaskData)taskIter.next();
             Task task = taskData.getTask();
             DebugInfoFrame frame = cli.getTaskFrame(task);
-            if (params.size() == 1 && params.get(0).equals("-help")) {
+            if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
                 cli.printUsage(cmd);
                 return;
             }
@@ -87,30 +85,30 @@ class ListCommand
             }
             cli.outWriter.println("[" + taskData.getParentID() + "."
                                   + taskData.getID() + "]");
-            if (params.size() == 1) {
+            if (cmd.size() == 1) {
                 // list N
                 try {
-                    line = Integer.parseInt((String)params.get(0));
+                    line = Integer.parseInt(cmd.parameter(0));
                 }
                 catch (NumberFormatException ignore) {
-                    if (((String)params.get(0)).compareTo("$EXEC") == 0)
+                    if ((cmd.parameter(0)).compareTo("$EXEC") == 0)
                         line = frame.getLines()[0].getLine() - 10;
                     else {
                         DwarfDie funcDie = null;
 			DebugInfo debugInfo = cli.getTaskDebugInfo(task);
 			if (debugInfo != null) {
 			    funcDie = debugInfo
-				.getSymbolDie((String)params.get(0));
+				.getSymbolDie(cmd.parameter(0));
                         }
                         line = (int)funcDie.getDeclLine();
                     }
                 }
             }
-            else if (params.size() == 2) {
+            else if (cmd.size() == 2) {
                 // list -length {-}N
-                if (((String)params.get(0)).equals("-length"))		    {
+                if ((cmd.parameter(0)).equals("-length"))		    {
                     try 			    {
-                        windowSize = Integer.parseInt((String)params.get(1));
+                        windowSize = Integer.parseInt(cmd.parameter(1));
                         if (windowSize < 0)				    {
                             line += windowSize;
                         }

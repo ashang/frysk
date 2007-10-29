@@ -39,7 +39,6 @@
      
 package frysk.hpd;
 
-import java.util.ArrayList;
 import frysk.value.Format;
 import java.util.Iterator;
 import frysk.proc.Task;
@@ -64,14 +63,13 @@ class PrintCommand
 
     public void parse(CLI cli, Input cmd) {
         PTSet ptset = cli.getCommandPTSet(cmd);
-	ArrayList params = cmd.getParameters();
 	boolean dumpTree = false;
-	if (params.size() == 1 && params.get(0).equals("-help")) {
+	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
         }
 	if (cmd.getParameters().size() == 0
-	    || (((String)params.get(0)).equals("-help"))) {
+	    || ((cmd.parameter(0)).equals("-help"))) {
 	    cli.printUsage(cmd);
 	    return;
         }
@@ -83,10 +81,10 @@ class PrintCommand
 
 
 	Format format = null;
-	for (int i = 0; i < params.size(); i++) {
-	    if (((String)params.get(i)).equals("-format")) {
+	for (int i = 0; i < cmd.size(); i++) {
+	    if ((cmd.parameter(i)).equals("-format")) {
 		i += 1;
-		String arg = ((String)params.get(i));
+		String arg = cmd.parameter(i);
 		if (arg.compareTo("d") == 0) 
 		    format = Format.DECIMAL;
 		else if (arg.compareTo("o") == 0)
@@ -99,7 +97,7 @@ class PrintCommand
 		    throw new InvalidCommandException
 			("unrecognized format: " + arg);
 	    }
-	    else if (((String)params.get(i)).equals("-dump-tree")) 
+	    else if ((cmd.parameter(i)).equals("-dump-tree")) 
 		dumpTree = true;
 	}
 	if (format != null)

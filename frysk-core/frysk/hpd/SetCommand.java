@@ -39,8 +39,6 @@
 
 package frysk.hpd;
 
-import java.util.ArrayList;
-
 class SetCommand extends Command {
     private static final String full = "The set command supports the viewing of "
 	    + "debugger state variables and the\n"
@@ -65,33 +63,32 @@ class SetCommand extends Command {
     }
 
     public void parse(CLI cli, Input cmd) {
-	ArrayList params = cmd.getParameters();
-	if (params.size() == 1 && params.get(0).equals("-help")) {
+	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
 	}
 	String temp;
-	if (params.size() == 3 && ((String) params.get(1)).equals("=")) {
-	    temp = (String) params.get(0);
+	if (cmd.size() == 3 && (cmd.parameter(1)).equals("=")) {
+	    temp = cmd.parameter(0);
 	    if (dbgvars.variableIsValid(temp)) {
-		if (dbgvars.valueIsValid(temp, (String) params.get(2))) {
-		    dbgvars.setVariable(temp, (String) params.get(2));
+		if (dbgvars.valueIsValid(temp, cmd.parameter(2))) {
+		    dbgvars.setVariable(temp, cmd.parameter(2));
 		} else
 		    cli.addMessage("Illegal variable value.",
 			    Message.TYPE_ERROR);
 	    } else
 		cli.addMessage(new Message("Illegal debugger variable \""
-			+ (String) params.get(0) + "\"", Message.TYPE_ERROR));
-	} else if (params.size() == 1) {
-	    temp = (String) params.get(0);
+			+ cmd.parameter(0) + "\"", Message.TYPE_ERROR));
+	} else if (cmd.size() == 1) {
+	    temp = cmd.parameter(0);
 	    if (dbgvars.variableIsValid(temp)) {
 		cli.addMessage(
 			temp + " = " + dbgvars.getValue(temp).toString(),
 			Message.TYPE_NORMAL);
 	    } else
 		cli.addMessage(new Message("Illegal debugger variable \""
-			+ (String) params.get(0) + "\"", Message.TYPE_ERROR));
-	} else if (params.size() == 0) {
+			+ cmd.parameter(0) + "\"", Message.TYPE_ERROR));
+	} else if (cmd.size() == 0) {
 	    cli.addMessage(dbgvars.toString(), Message.TYPE_NORMAL);
 	} else {
 	    cli.printUsage(cmd);

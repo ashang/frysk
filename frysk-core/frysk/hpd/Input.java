@@ -41,6 +41,7 @@ package frysk.hpd;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 // TODO: This is not a very good class, the lexing is primitive (and
 // doesn't work well in some instances). Add more commandline parsing
@@ -51,10 +52,18 @@ import java.util.Arrays;
  * set, action, parameters.  It is immutable.
  */
 class Input {
-    private String myFullCommand;
-    private String mySet;
-    private String myAction;
-    private ArrayList myParameters;
+    private final String fullCommand;
+    private final String set;
+    private final String action;
+    private final List parameters;
+
+    private Input(String fullCommand, String set, String action,
+		  List parameters) {
+	this.fullCommand = fullCommand;
+	this.set = set;
+	this.action = action;
+	this.parameters = parameters;
+    }
 
     /**
      * The constructor.
@@ -65,52 +74,79 @@ class Input {
      * during parsing
      */
     public Input(String cmd) {
-	myFullCommand = cmd;
-	mySet = null;
-	myAction = null;
-	myParameters = new ArrayList();
-
-	ArrayList tokens = tokenize(myFullCommand);
-	String tempToken;
-
-	for (int i = 0; i < tokens.size(); i++) {
-	    tempToken = (String) tokens.get(i);
-	    
-	    if (i == 0) {
-		// first token is either p/t-set or an action
-		if (tempToken.startsWith("[") && tempToken.endsWith("]"))
-		    // if p/t-set
-		    mySet = tempToken;
-		else
-		    myAction = tempToken;
-	    } else if ( i == 1 && myAction == null) {
-		// if this is second token and myAction is null this
-		// must be an action
-		myAction = tempToken;
+	fullCommand = cmd;
+	List tokens = tokenize(fullCommand);
+	action = null;
+	if (tokens.size() <= 0) {
+	    set = null;
+	    parameters = tokens;
+	} else {
+	    String tempToken = (String)(tokens.get(0));
+	    // first token is either p/t-set or an action
+	    if (tempToken.startsWith("[") && tempToken.endsWith("]")) {
+		// if p/t-set
+		set = tempToken;
 	    } else {
-		myParameters.add(tempToken);
+		set = null;
 	    }
+	    parameters = tokens.subList((set != null) ? 1 : 0,
+					tokens.size());
+		
 	}
     }
     
     public String getFullCommand() {
-	return myFullCommand;
+	return fullCommand;
     }
 
     public String getSet() {
-	return mySet;
+	return set;
     }
 
     public String getAction() {
-	return myAction;
+	return action;
     }
 
-    public ArrayList getParameters() {
-	return myParameters;
+    public List getParameters() {
+	return parameters;
+    }
+
+    /**
+     * Return the n't parameter, or NULL.
+     */
+    String parameter(int i) {
+	if (parameters.size() > i) {
+	    return (String)parameters.get(i);
+	} else {
+	    return null;
+	}
+    }
+
+    /**
+     * Return the number or size of the parameter list.
+     */
+    int size() {
+	return parameters.size();
     }
 
     public String toString() {
-	return myFullCommand;
+	return fullCommand;
+    }
+
+    /**
+     * Accept the current action; advance to the next one.
+     */
+    Input accept() {
+	List newParameters;
+	String newAction;
+	if (parameters.size() > 0) {
+	    newAction = (String)(parameters.get(0));
+	    newParameters = parameters.subList(1, parameters.size());
+	} else {
+	    newAction = null;
+	    newParameters = parameters;
+	}
+	return new Input(fullCommand, set, newAction, newParameters);
     }
 
     /**

@@ -40,7 +40,6 @@
 package frysk.hpd;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -90,23 +89,23 @@ class ActionsCommand extends Command {
     public void parse(CLI cli, Input cmd) {
 	String actionpoints = "";
 	boolean showEnabled = false, showDisabled = false, showBreak = false, showDisplay = false, showWatch = false, showBarrier = false;
-	ArrayList args = cmd.getParameters();
 	int[] ids = null;
 
 	PrintWriter outWriter = cli.getPrintWriter();
 
 	/*
-         * Parse the command line arguments. There should be at most one, and it
-         * should either be a comma-delimited list of actionpoint ids or one of
-         * the "-" options specified in the hpd. We also allow a "-display"
-         * option to show only displays
+         * Parse the command line arguments.  There should be at most
+         * one, and it should either be a comma-delimited list of
+         * actionpoint ids or one of the "-" options specified in the
+         * hpd. We also allow a "-display" option to show only
+         * displays
          */
-	if (args.size() > 0) {
-	    if (args.size() > 1)
+	if (cmd.size() > 0) {
+	    if (cmd.size() > 1)
 		throw new InvalidCommandException
 		    ("Too many arguments to actionpoints");
 
-	    String param = (String) args.get(0);
+	    String param = cmd.parameter(0);
 	    // doesn't start with a dash, must be the list of actionpoints
 	    if (param.indexOf("-") != 0)
 		actionpoints = param;

@@ -41,7 +41,6 @@ package frysk.hpd;
 
 import java.util.Iterator;
 import frysk.value.Value;
-import java.util.ArrayList;
 
 public class ExamineCommand extends Command {
 
@@ -56,8 +55,7 @@ public class ExamineCommand extends Command {
 	    parser.printHelp(cli.outWriter);
 	    return;
 	}
-	ArrayList params = cmd.getParameters();
-	if (params.size() == 0) {
+	if (cmd.size() == 0) {
 	    throw new InvalidCommandException("No value to examine");
 	}
 	Value value;
@@ -66,7 +64,7 @@ public class ExamineCommand extends Command {
 	    TaskData tdata = (TaskData) taskDataIter.next();
 	    try {
 		// XXX: Is this right, is this the entire expresson?
-		value = cli.parseValue(tdata.getTask(), (String) params.get(0));
+		value = cli.parseValue(tdata.getTask(), cmd.parameter(0));
 	    } catch (RuntimeException nnfe) {
 		cli.addMessage(new Message(nnfe.getMessage(),
 					   Message.TYPE_ERROR));

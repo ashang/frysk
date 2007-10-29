@@ -104,7 +104,7 @@ class QuitCommand extends Command {
         }
 	cli.addMessage("Quitting...", Message.TYPE_NORMAL);
 	DetachCommand detachCommand = new DetachCommand();
-	Input command = new Input("detach");
+	Input command = new Input("detach").accept();
 	detachCommand.parse(cli, command);
     }
 }

@@ -40,7 +40,6 @@
 package frysk.hpd;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -75,10 +74,9 @@ public class DisplayCommand extends Command {
 	final PrintWriter output = cli.getPrintWriter();
 
 	PTSet ptset = cli.getCommandPTSet(cmd);
-	ArrayList args = cmd.getParameters();
-	if (args.size() > 1)
+	if (cmd.size() > 1)
 	    throw new InvalidCommandException("Too many arguments to display");
-	if (args.size() == 0)
+	if (cmd.size() == 0)
 	    throw new InvalidCommandException("Too few arguments to display");
 	Iterator taskIter = ptset.getTasks();
 	SteppingEngine engine = cli.getSteppingEngine();
@@ -97,8 +95,10 @@ public class DisplayCommand extends Command {
 	    FrameIdentifier fIdent = cli.getTaskFrame(myTask)
 		    .getFrameIdentifier();
 
-	    UpdatingDisplayValue uDisp = DisplayManager.createDisplay(myTask,
-		    fIdent, engine, (String) args.get(0));
+	    UpdatingDisplayValue uDisp
+		= DisplayManager.createDisplay(myTask,
+					       fIdent, engine,
+					       cmd.parameter(0));
 
 	    /*
              * We need to keep a local record of what displays have been
@@ -136,7 +136,7 @@ public class DisplayCommand extends Command {
 	    
 	    Value v = uDisp.getValue();
 	    if (v == null)
-		output.println(uDisp.getId() + ": " + args.get(0)
+		output.println(uDisp.getId() + ": " + cmd.parameter(0)
 			+ " = <unavailable>");
 	    else
 		output.println(uDisp.getId() + ": " + uDisp.getName() + " = "

@@ -39,68 +39,36 @@
 
 package frysk.hpd;
 
-import java.io.File;
-import java.util.Iterator;
-import frysk.debuginfo.DebugInfo;
-import frysk.debuginfo.DebugInfoFrame;
-import frysk.debuginfo.DebugInfoStackFactory;
-import frysk.proc.Host;
-import frysk.proc.dead.LinuxExeHost;
-import frysk.proc.Manager;
-import frysk.proc.Proc;
-import frysk.proc.Task;
-
 /**
- * LoadCommand handles the "load path-to-executable" command on the fhpd
- * commandline.
- *
+ * Check that the Input tokenizer breaks up and advances commands
+ * correctly.
  */
-
-public class LoadCommand extends Command {
-
-    private static String desc = "load an executable file";
-
-    LoadCommand() {
-	super("load", desc, "load path-to-executable", desc);
+public class TestInput extends TestLib {
+    public void testSet() {
+	Input input = new Input("[0.1] action p0 p1");
+	assertNull("action", input.getAction());
+	assertEquals("set", "[0.1]", input.getSet());
+	assertEquals("p0", "action", input.parameter(0));
     }
 
-    public void parse(CLI cli, Input cmd) {
-	if (!parser.parse(cmd)) {
-	    parser.printHelp(cli.outWriter);
-	    return;
-	}
-	if (cmd.size() > 2) {
-	    throw new InvalidCommandException("Too many parameters");
-	}
-
-	File executableFile = new File(cmd.parameter(0));
-
-	if (!executableFile.exists() || !executableFile.canRead()) {
-	    throw new InvalidCommandException
-		("File does not exist or is not readable.");
-	}
-
-	Host exeHost = new LinuxExeHost(Manager.eventLoop, executableFile);
-	Proc exeProc = frysk.util.Util.getProcFromExeFile(exeHost);
-	cli.setExeHost(exeHost);
-	cli.setExeProc(exeProc);
-	int procID = cli.idManager.reserveProcID();
-
-	cli.idManager.manageProc(exeProc, procID);
-	
-	cli.addMessage("Loaded executable file: " + cmd.parameter(0),
-		Message.TYPE_NORMAL);
-	
-	Iterator foo = cli.targetset.getTasks();
-	while (foo.hasNext()) {
-	    Task task = (Task) foo.next();
-	    if (task.getTid() == exeProc.getMainTask().getTid()) {
-		DebugInfoFrame frame = DebugInfoStackFactory
-			.createDebugInfoStackTrace(task);
-		cli.setTaskFrame(task, frame);
-		cli.setTaskDebugInfo(task, new DebugInfo(
-			frame));
-	    }
-	}
+    public void testAccept() {
+	Input input = new Input("action p0 p1");
+	assertNull("getAction", input.getAction());
+	assertEquals("parameter(0)", "action", input.parameter(0));
+	assertEquals("parameter(1)", "p0", input.parameter(1));
+	assertEquals("parameter(2)", "p1", input.parameter(2));
+	assertNull("parameter(3)", input.parameter(3));
+	input = input.accept();
+	assertEquals("getAction at action", "action", input.getAction());
+	assertEquals("parameter(0) at action", "p0", input.parameter(0));
+	assertEquals("parameter(1) at action", "p1", input.parameter(1));
+	assertNull("parameter(2) at action", input.parameter(2));
+	input = input.accept();
+	assertEquals("getAction at p0", "p0", input.getAction());
+	assertEquals("parameter(0) at p0", "p1", input.parameter(0));
+	assertNull("parameter(1) at action", input.parameter(1));
+	input = input.accept();
+	assertEquals("getAction at p1", "p1", input.getAction());
+	assertNull("parameter(0) at action", input.parameter(0));
     }
 }

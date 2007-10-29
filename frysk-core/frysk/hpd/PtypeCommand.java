@@ -39,7 +39,6 @@
      
 package frysk.hpd;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import frysk.proc.Task;
 import frysk.value.Value;
@@ -57,13 +56,12 @@ class PtypeCommand
     
     public void parse(CLI cli, Input cmd) {
         PTSet ptset = cli.getCommandPTSet(cmd);
-	ArrayList params = cmd.getParameters();
-	if (params.size() == 1 && params.get(0).equals("-help")) {
+	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
         }
 	if (cmd.getParameters().size() == 0
-	    || (((String)params.get(0)).equals("-help"))) {
+	    || ((cmd.parameter(0)).equals("-help"))) {
 	    cli.printUsage(cmd);
 	    return;
         }

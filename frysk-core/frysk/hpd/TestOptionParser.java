@@ -43,7 +43,7 @@ import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
+import java.util.List;
 
 public class TestOptionParser extends TestLib {
 
@@ -51,8 +51,7 @@ public class TestOptionParser extends TestLib {
 	boolean parsedOption = false;
 	boolean ok;
 	String argument = null;
-
-	ArrayList params;
+	List params;
 
 	public DummyParseCommand() {
 	    super("parser", "parse some stuff",

@@ -41,8 +41,6 @@ package frysk.hpd;
 
 import java.io.PrintWriter;
 import inua.eio.ByteBuffer;
-import java.util.ArrayList;
-
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
@@ -68,9 +66,7 @@ public class PeekCommand extends Command {
 	    parser.printHelp(cli.outWriter);
 	    return;
 	}
-	ArrayList params = cmd.getParameters();
-
-	if (params.size() > 1 ) {
+	if (cmd.size() > 1 ) {
 	    throw new InvalidCommandException("Too many parameters");
 	}
 	if (cli.exeHost == null) {
@@ -82,7 +78,7 @@ public class PeekCommand extends Command {
 	
 	ByteBuffer buffer = task.getMemory();
 
-	String memposition = (String) params.get(0);
+	String memposition = cmd.parameter(0);
 	int radix = 10;
 	if (memposition.lastIndexOf("x") != -1) {
 	    radix = 16;

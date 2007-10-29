@@ -39,9 +39,7 @@
 
 package frysk.hpd;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
@@ -60,14 +58,13 @@ class FocusCommand extends Command {
     }
 
     public void parse(CLI cli, Input cmd) {
-	ArrayList params = cmd.getParameters();
-	if (params.size() == 1 && params.get(0).equals("-help")) {
+	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
 	}
-	if (params.size() <= 1) {
-	    if (params.size() == 1) {
-		cli.targetset = cli.createSet((String) params.get(0));
+	if (cmd.size() <= 1) {
+	    if (cmd.size() == 1) {
+		cli.targetset = cli.createSet(cmd.parameter(0));
 	    	Iterator i = cli.targetset.getTasks();
 	    	while (i.hasNext()) {
 	    	    Task task = (Task) i.next();

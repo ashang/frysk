@@ -39,7 +39,6 @@
 
 package frysk.hpd;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import frysk.proc.Task;
@@ -57,8 +56,7 @@ class ViewsetCommand extends Command {
     }
 
     public void parse(CLI cli, Input cmd) {
-	ArrayList params = cmd.getParameters();
-	if (params.size() == 1 && params.get(0).equals("-help")) {
+	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
 	}
@@ -68,12 +66,12 @@ class ViewsetCommand extends Command {
         String displayedName = "";
 	String output = "";
 
-	if (params.size() <= 1) {
-	    if (params.size() == 0) {
+	if (cmd.size() <= 1) {
+	    if (cmd.size() == 0) {
 		tempset = cli.targetset;
                 displayedName = "Target set";
-            } else if (params.size() == 1) {
-		setname = (String) params.get(0);
+            } else if (cmd.size() == 1) {
+		setname = cmd.parameter(0);
                 displayedName = "Set " + setname;
                 tempset = cli.createSet(setname);
 		if (tempset == null) {

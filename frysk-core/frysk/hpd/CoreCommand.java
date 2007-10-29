@@ -40,9 +40,7 @@
 package frysk.hpd;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Iterator;
-
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
@@ -63,18 +61,17 @@ public class CoreCommand extends Command {
 	    return;
 	}
 
-	ArrayList params = cmd.getParameters();
-	if (params.size() > 2) {
+	if (cmd.size() > 2) {
 	    throw new InvalidCommandException("Too many parameters");
 	}
 
-	File coreFile = new File((String) params.get(0));
+	File coreFile = new File(cmd.parameter(0));
 
 	Proc coreProc;
-	if (params.size() == 1)
+	if (cmd.size() == 1)
 	    coreProc = frysk.util.Util.getProcFromCoreFile(coreFile);
 	else {
-	    File exeFile = new File((String) params.get(1));
+	    File exeFile = new File(cmd.parameter(1));
 	    coreProc = frysk.util.Util.getProcFromCoreFile(coreFile, exeFile);
 	}
 
@@ -91,7 +88,7 @@ public class CoreCommand extends Command {
 						     frame));
 	}
 
-	cli.addMessage("Attached to core file: " + params.get(0),
+	cli.addMessage("Attached to core file: " + cmd.parameter(0),
 		Message.TYPE_NORMAL);
 
 	

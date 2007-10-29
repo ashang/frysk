@@ -39,7 +39,6 @@
 
 package frysk.hpd;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import frysk.value.Value;
 import frysk.value.Format;
@@ -64,11 +63,8 @@ public class RegsCommand extends Command {
 	    ISA isa = td.getTask().getISA();
 	    Registers regs = RegistersFactory.getRegisters(isa);
 	    RegisterGroup selectedGroup = regs.getDefaultRegisterGroup();
-
-	    ArrayList params = cmd.getParameters();
-
-	    if (params.size() > 0) {
-		String groupName = (String) params.get(0);
+	    if (cmd.size() > 0) {
+		String groupName = cmd.parameter(0);
 		selectedGroup = regs.getGroup(groupName);
 		if (selectedGroup == null) {
 		    StringBuffer b = new StringBuffer();

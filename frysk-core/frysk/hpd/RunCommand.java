@@ -47,8 +47,6 @@ import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.util.CountDownLatch;
-
-import java.util.ArrayList;
 import java.util.HashSet;
 
 class RunCommand extends Command {
@@ -116,23 +114,15 @@ class RunCommand extends Command {
 
     }
 
-    private static String[] toStringArray(Object[] oa) {
-	String[] sa = new String[oa.length];
-	for (int i = 0; i < oa.length; i++)
-	    sa[i] = (String) oa[i];
-	return sa;
-    }
-
     public void parse(CLI cli, Input cmd) {
-	ArrayList params = cmd.getParameters();
-
-	if (params.size() < 1) {
+	if (cmd.size() < 1) {
 	    cli.printUsage(cmd);
 	    return;
 	}
 	Runner runner = new Runner(cli);
-	Manager.host.requestCreateAttachedProc(toStringArray(params.toArray()),
-					       runner);
+	Manager.host.requestCreateAttachedProc
+	    ((String[])(cmd.getParameters().toArray(new String[0])),
+	     runner);
         try {
             runner.latch.await();
         } catch (InterruptedException e) {

@@ -39,7 +39,6 @@
 
 package frysk.hpd;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
@@ -84,28 +83,27 @@ class AttachCommand
     }
 
     public void parse(CLI cli, Input cmd) {
-	ArrayList params = cmd.getParameters();
 	int pid = 0;
 	int tid = 0;
-	if (params.size() == 1 && params.get(0).equals("-help")) {
+	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
 	}
 
-	if (params.size() < 1) {
+	if (cmd.size() < 1) {
 	    cli.printUsage(cmd);
 	    return;
 	}
 
-	for (int idx = 0; idx < params.size(); idx++) {
-	    if (((String) params.get(idx)).equals("-task")) {
+	for (int idx = 0; idx < cmd.size(); idx++) {
+	    if (cmd.parameter(idx).equals("-task")) {
 		idx += 1;
-		tid = Integer.parseInt(((String) params.get(idx)));
-	    } else if (((String) params.get(idx)).indexOf('-') == 0) {
+		tid = Integer.parseInt(cmd.parameter(idx));
+	    } else if (cmd.parameter(idx).indexOf('-') == 0) {
 		cli.printUsage(cmd);
 		return;
-	    } else if (((String) params.get(idx)).matches("[0-9]+"))
-		pid = Integer.parseInt((String) params.get(idx));
+	    } else if (cmd.parameter(idx).matches("[0-9]+"))
+		pid = Integer.parseInt(cmd.parameter(idx));
 	}
 
 	ProcFinder findProc = new ProcFinder();

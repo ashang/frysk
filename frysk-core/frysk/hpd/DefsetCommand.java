@@ -39,8 +39,6 @@
 
 package frysk.hpd;
 
-import java.util.ArrayList;
-
 class DefsetCommand extends Command {
 
     private static final String full = "Associates a logical name with a "
@@ -60,8 +58,7 @@ class DefsetCommand extends Command {
     }
 
     public void parse(CLI cli, Input cmd) {
-	ArrayList params = cmd.getParameters();
-	if (params.size() == 1 && params.get(0).equals("-help")) {
+	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
 	}
@@ -69,12 +66,12 @@ class DefsetCommand extends Command {
 	String setnot = null;
 	PTSet set = null;
 
-	if (params.size() == 2) {
-	    setname = (String) params.get(0);
+	if (cmd.size() == 2) {
+	    setname = cmd.parameter(0);
 	    if (!setname.matches("\\w+"))
 		throw new InvalidCommandException
 		    ("Set name must be alphanumeric.");
-	    setnot = (String) params.get(1);
+	    setnot = cmd.parameter(1);
 	    if (!cli.builtinPTSets.containsKey(setnot)) {
 		set = cli.createSet(setnot);
 		cli.namedPTSets.put(setname, set);

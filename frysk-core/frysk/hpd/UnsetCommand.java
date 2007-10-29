@@ -39,8 +39,6 @@
 
 package frysk.hpd;
 
-import java.util.ArrayList;
-
 class UnsetCommand extends Command {
     private static final String full = "The unset command reverses the effects "
 	    + "of any previous set operations,\n"
@@ -62,21 +60,20 @@ class UnsetCommand extends Command {
     }
 
     public void parse(CLI cli, Input cmd) {
-	ArrayList params = cmd.getParameters();
-	if (params.size() == 1 && params.get(0).equals("-help")) {
+	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
 	}
 	String temp;
-	if (params.size() == 1) {
-	    temp = (String) params.get(0);
+	if (cmd.size() == 1) {
+	    temp = cmd.parameter(0);
 	    if (temp.equals("-all"))
 		dbgvars.unsetAll();
 	    else {
 		if (dbgvars.variableIsValid(temp))
 		    dbgvars.unsetVariable(temp);
 		else
-		    cli.addMessage(new Message("\"" + (String) params.get(0)
+		    cli.addMessage(new Message("\"" + cmd.parameter(0)
 			    + "\" is not a valid debugger variable",
 			    Message.TYPE_ERROR));
 	    }

@@ -39,8 +39,6 @@
 
 package frysk.hpd;
 
-import java.util.ArrayList;
-
 class UnaliasCommand extends Command {
     private static final String full = "The unalias command removes the alias "
 	    + "that was previously established\n"
@@ -53,13 +51,12 @@ class UnaliasCommand extends Command {
     }
 
     public void parse(CLI cli, Input cmd) {
-	ArrayList params = cmd.getParameters();
-	if (params.size() == 1) {
-	    if (((String) params.get(0)).equals("-all")) {
+	if (cmd.size() == 1) {
+	    if ((cmd.parameter(0)).equals("-all")) {
 		cli.aliases.clear();
 		cli.addMessage("Removing all aliases.", Message.TYPE_VERBOSE);
 	    } else {
-		String temp = (String) params.get(0);
+		String temp = cmd.parameter(0);
 		if (cli.aliases.containsKey(temp)) {
 		    cli.aliases.remove(temp);
 		    cli.addMessage("Removed alias \"" + temp + "\"",

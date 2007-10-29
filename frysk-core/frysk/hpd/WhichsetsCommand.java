@@ -40,7 +40,6 @@
 package frysk.hpd;
 
 import java.util.Iterator;
-import java.util.ArrayList;
 
 /*
  * Set commands
@@ -63,8 +62,7 @@ class WhichsetsCommand extends Command {
     }
 
     public void parse(CLI cli, Input cmd) {
-	ArrayList params = cmd.getParameters();
-	if (params.size() == 1 && params.get(0).equals("-help")) {
+	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;
 	}
@@ -74,11 +72,11 @@ class WhichsetsCommand extends Command {
 	String setname = null;
 
 	// ??? check builtin sets
-	if (params.size() <= 1) {
-	    if (params.size() == 0)
+	if (cmd.size() <= 1) {
+	    if (cmd.size() == 0)
 		searchset = cli.targetset;
-	    else if (params.size() == 1)
-		searchset = cli.createSet((String) params.get(0));
+	    else if (cmd.size() == 1)
+		searchset = cli.createSet(cmd.parameter(0));
 
 	    // start iterating through available sets
 	    for (Iterator it = searchset.getTaskData(); it.hasNext();) {
