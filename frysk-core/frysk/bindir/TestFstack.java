@@ -138,6 +138,9 @@ public class TestFstack
   }
 
     public void testBackTraceWithDashV () {
+	if(unresolved(5156)){
+	    return;
+	}
 	Proc proc = CoreFileAtSignal.constructCore("funit-inlined");
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),

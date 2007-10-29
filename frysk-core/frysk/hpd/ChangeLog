@@ -1,3 +1,9 @@
+2007-10-29  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestWhereCommand.java (testFhpdVirtualStackTrace): Marked as
+	unresolved(5156).
+	(testFhpdVirtualStackTraceWithScopes): Ditto.
+
 2007-10-26  Andrew Cagney  <cagney@redhat.com>
 
 	* UserHelp.java (addHelp(String,String,String,String)): Delete.

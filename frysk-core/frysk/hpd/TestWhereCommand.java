@@ -51,6 +51,9 @@ public class TestWhereCommand extends TestLib {
     }
 
     public void testFhpdVirtualStackTrace () {
+	if(unresolved(5156)){
+	    return;
+	}
 	Proc proc = CoreFileAtSignal
 	    .constructCore("funit-inlined");
         e = new HpdTestbed("core." + proc.getPid(), "Attached to core file.*");
@@ -63,6 +66,9 @@ public class TestWhereCommand extends TestLib {
     }
     
     public void testFhpdVirtualStackTraceWithScopes () {
+	if(unresolved(5156)){
+	    return;
+	}
 	Proc proc = CoreFileAtSignal
 	    .constructCore("funit-inlined");
         e = new HpdTestbed("core." + proc.getPid(), "Attached to core file.*");
