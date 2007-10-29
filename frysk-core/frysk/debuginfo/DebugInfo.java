@@ -238,8 +238,8 @@ public class DebugInfo {
 	 * all of the threads have to be checked. If there's only one thread;
 	 * than this loop will run only once anyways.
 	 */
-	DebugInfoEvaluator debugInfoEvaluator = new DebugInfoEvaluator(frame);
-	cExprEvaluator = new CExprEvaluator(debugInfoEvaluator);
+	ObjectDeclarationSearchEngine declarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
+	cExprEvaluator = new CExprEvaluator(declarationSearchEngine);
 	try {
 	    result = cExprEvaluator.expr(exprAST);
 	} catch (ArithmeticException ae) {
