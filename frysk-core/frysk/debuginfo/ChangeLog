@@ -1,3 +1,7 @@
+2007-10-29  Teresa Thomas  <tthomas@redhat.com>
+
+	* DebugInfoEvaluator.java (getValueFIXME): Delete.
+
 2007-10-26  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfo.java: Remove throws ParseException.

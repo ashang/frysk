@@ -134,17 +134,8 @@ primitiveType
 identifier returns [String idSpelling=null]
     :   ident:IDENT  {idSpelling=ident.getText();} ;
 
-references returns [ArrayList el = null;]
-    {   refList = new ArrayList();}
-    :   (subscript_or_member)* {el=refList;};
-
-subscript_or_member
-    {   Value s; String id;}
-    :   #(SUBSCRIPT s=expr) {refList.add(new Integer((int)s.asLong()).toString());}
-    |    id=identifier {refList.add(id);};
-
 expr returns [Value returnVar=null] 
-{ Value v1, v2, log_expr; String s1; ArrayList el;}
+{ Value v1, v2, log_expr; String s1; }
     :   #(PLUS  v1=expr v2=expr)  {	
 		    returnVar = v1.getType().add(v1, v2);  
         }
@@ -334,9 +325,6 @@ expr returns [Value returnVar=null]
     |   #(MEMBER v1=expr s1=identifier) {
            returnVar = v1.getType().member(v1, s1);
         }  
-    |   #(REFERENCE el=references) {
-            returnVar = (Value)exprSymTab.getValueFIXME(el);
-        }
     |   #(SIZEOF v1=expr) {
            returnVar = longType.createValue((long)(v1.getType().getSize())); 
         }    

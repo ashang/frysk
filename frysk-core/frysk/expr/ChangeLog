@@ -1,3 +1,11 @@
+2007-10-29  Teresa Thomas  <tthomas@redhat.com>
+
+    * CExprEvaluator.g (REFERENCE): Delete.
+    * CExpr.g (REFERENCE): Delete.
+    (SUBSCRIPT): Delete.
+	* ScratchSymTab.java (getValueFIXME): Delete.
+	* ExprSymTab.java (getValueFIXME): Delete.
+
 2007-10-26  Teresa Thomas  <tthomas@redhat.com>
 
 	* CExprEvaluator.g (INDEX): New.

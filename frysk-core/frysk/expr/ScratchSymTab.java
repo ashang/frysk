@@ -41,7 +41,6 @@ package frysk.expr;
 
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
-import java.util.ArrayList;
 
 import frysk.value.ObjectDeclaration;
 import frysk.value.Type;
@@ -90,15 +89,5 @@ public class ScratchSymTab implements ExprSymTab {
      */      
     public int getWordSize() {
 	throw new RuntimeException("no word size");
-    }
-    /**
-     * FIXME: This method implements index, member, slice, and
-     * possibly other selection operations.  This can be better
-     * implemented by first generating INDEX (a[i]), SLICE (a[i:j]),
-     * SELECT (a[i;j], and MEMBER (a.j) nodes in the AST and then
-     * directly requesting that the type/value perform the operation.
-     */
-    public Value getValueFIXME(ArrayList v) {
-	throw new RuntimeException("no values");
     }
 }

@@ -42,7 +42,6 @@ package frysk.debuginfo;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,11 +55,8 @@ import frysk.isa.Registers;
 import frysk.isa.RegistersFactory;
 import frysk.proc.Task;
 import frysk.scopes.Subprogram;
-import frysk.value.ArrayType;
-import frysk.value.GccStructOrClassType;
 import frysk.value.ObjectDeclaration;
 import frysk.value.Type;
-import frysk.value.UnknownType;
 import frysk.value.Value;
 import frysk.value.Variable;
 
@@ -162,28 +158,6 @@ class DebugInfoEvaluator
 	if (var == null)
 	    return (null);
 	return var.getType(frame.getTask().getISA());
-    }
-
-    /**
-     * Returns the value of symbol which is defined by components.
-     * @param f The frame containing the symbol
-     * @param components Token list of members and indices, e.g. given a.b.c[1][2]
-     * {a,b,c,1,1,2,2}
-     * @return Value of the symbol
-     */
-    public Value getValueFIXME (ArrayList components) {
-	String s = (String)components.get(0);
-	ObjectDeclaration variable = getVariable(s);
-	if (variable == null)
-	    return (null);
-
-	Value v = getValue(s);
-	if (v.getType() instanceof ArrayType)
-	    return ((ArrayType)v.getType()).get(v, 1, components);
-	else if (v.getType() instanceof GccStructOrClassType)
-	    return ((GccStructOrClassType)v.getType()).get(v, 0, components);
-	else
-	    return new Value(new UnknownType(variable.getName()));
     }
     
     public ByteOrder order()
