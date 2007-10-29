@@ -1,3 +1,7 @@
+2007-10-29  Teresa Thomas  <tthomas@redhat.com>
+
+	* PointerType.java (add): New.
+
 2007-10-26  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestArray.java (testIndexOneD): New.
