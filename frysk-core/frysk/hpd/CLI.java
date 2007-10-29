@@ -198,6 +198,7 @@ public class CLI {
     private Preprocessor prepro;
     private String prompt; // string to represent prompt, will be moved
     private final SortedMap handlers = new TreeMap();
+    private final Command topLevelCommand;
     final UserHelp userhelp;
     private DbgVariables dbgvars;
 
@@ -305,6 +306,7 @@ public class CLI {
         addHandler(new ExamineCommand());
         addHandler(new LoadCommand());
         addHandler(new PeekCommand());
+	topLevelCommand = new TopLevelCommand(dbgvars);
 
         // initialize PT set stuff
         setparser = new SetNotationParser();
@@ -344,27 +346,14 @@ public class CLI {
     public String execCommand(String cmd) {
         String pcmd = ""; // preprocessed command
         Input command;
-        Command handler = null;
 
         if (cmd != null) {
             try {
                 // preprocess and iterate
                 for (Iterator iter = prepro.preprocess(cmd); iter.hasNext();) {
                     pcmd = (String)iter.next();
-                    command = new Input(pcmd).accept();
-
-                    if (command.getAction() != null) {
-                        handler = (Command)handlers.get(command.getAction());
-                        if (handler != null)
-                            handler.parse(this, command);
-                        else
-                            addMessage("Unrecognized command: "
-                                       + command.getAction() + ".",
-                                       Message.TYPE_ERROR);
-                    }
-                    else {
-                        addMessage("No action specified.", Message.TYPE_ERROR);
-                    }
+                    command = new Input(pcmd);
+		    topLevelCommand.parse(this, command);
                 }
             }
             catch (NullPointerException e) {

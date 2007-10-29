@@ -1,5 +1,11 @@
 2007-10-29  Andrew Cagney  <cagney@redhat.com>
 
+	* CLI.java (execCommand(String)): Use TopLevelCommand.
+	(topLevelCommand): New.
+	* TopLevelCommand.java: New.
+	* MultiLevelCommand.java: New.
+	* TestOptionParser.java: Simplify.
+	
 	* Input.java (accept()): New.
 	(Input(String)): Do not accept first token.
 	(getParameters()): Return a List.
