@@ -679,6 +679,129 @@ public class TestTaskObserverCode extends TestLib
 
   }
 
+  // Tests whether two Tasks registered on different addresses
+  // get separate update events. bug #4895
+  public void testMultiTaskUpdate() throws Exception
+  {
+    // Create a child.
+    LegacyOffspring child = LegacyOffspring.createDaemon();
+
+    // Add a Task; wait for acknowledgement.
+    child.assertSendAddCloneWaitForAcks();
+
+    task = child.findTaskUsingRefresh (true);
+    proc = task.getProc();
+
+    Collection tasks = proc.getTasks();
+    Iterator it = tasks.iterator();
+    assertTrue("task one", it.hasNext());
+    Task task1 = (Task) it.next();
+    assertTrue("task two", it.hasNext());
+    Task task2 = (Task) it.next();
+    long address1 = getFunctionEntryAddress("bp1_func");
+    long address2 = getFunctionEntryAddress("bp2_func");
+    CodeObserver code1 = new CodeObserver(task1, address1);
+    CodeObserver code2 = new CodeObserver(task2, address2);
+    task1.requestAddCodeObserver(code1, address1);
+    assertRunUntilStop("add breakpoint observer at address1");
+    task2.requestAddCodeObserver(code2, address2);
+    assertRunUntilStop("add breakpoint observer at address2");
+
+    assertFalse(code1.hit);
+    assertFalse(code2.hit);
+
+    // Request a run and watch the breakpoints get hit.
+    requestDummyRun(task1);
+    assertRunUntilStop("wait for hit 1");
+    assertTrue("hit 1", code1.hit);
+    assertFalse("not hit 2", code2.hit);
+
+    code1.hit = false;
+
+    requestDummyRun(task2);
+    assertRunUntilStop("wait for hit 2");
+    assertFalse("not hit 1", code1.hit);
+    assertTrue("hit 2", code2.hit);
+
+    code2.hit = false;
+
+    task1.requestDeleteCodeObserver(code1, address1);
+    assertRunUntilStop("remove code observer 1");
+
+    task2.requestDeleteCodeObserver(code2, address2);
+    assertRunUntilStop("remove code observer 2");
+
+    assertFalse("unblocked unhit 1", code1.hit);
+    assertFalse("unblocked unhit 2", code2.hit);
+  }
+
+  // Same as the above, but resets the code observers by unblocking
+  // before deleting, which triggers bug #5229
+  public void testMultiTaskUpdateUnblockDelete() throws Exception
+  {
+    // XXX We cannot run this test at all since on FC6/x86_64 it
+    // completely hangs the frysk-core and TestRunner.
+    if (unresolved(5229))
+      return;
+
+    // Create a child.
+    LegacyOffspring child = LegacyOffspring.createDaemon();
+
+    // Add a Task; wait for acknowledgement.
+    child.assertSendAddCloneWaitForAcks();
+
+    task = child.findTaskUsingRefresh (true);
+    proc = task.getProc();
+
+    Collection tasks = proc.getTasks();
+    Iterator it = tasks.iterator();
+    assertTrue("task one", it.hasNext());
+    Task task1 = (Task) it.next();
+    assertTrue("task two", it.hasNext());
+    Task task2 = (Task) it.next();
+    long address1 = getFunctionEntryAddress("bp1_func");
+    long address2 = getFunctionEntryAddress("bp2_func");
+    CodeObserver code1 = new CodeObserver(task1, address1);
+    CodeObserver code2 = new CodeObserver(task2, address2);
+    task1.requestAddCodeObserver(code1, address1);
+    assertRunUntilStop("add breakpoint observer at address1");
+    task2.requestAddCodeObserver(code2, address2);
+    assertRunUntilStop("add breakpoint observer at address2");
+
+    assertFalse(code1.hit);
+    assertFalse(code2.hit);
+
+    // Request a run and watch the breakpoints get hit.
+    requestDummyRun(task1);
+    assertRunUntilStop("wait for hit 1");
+    assertTrue("hit 1", code1.hit);
+    assertFalse("not hit 2", code2.hit);
+
+    // Reset 1
+    code1.hit = false;
+    task1.requestUnblock(code1);
+
+    requestDummyRun(task2);
+    assertRunUntilStop("wait for hit 2");
+    assertFalse("not hit 1", code1.hit);
+    assertTrue("hit 2", code2.hit);
+
+    // Reset 2
+    code2.hit = false;
+    // XXX - FIXME - See bug #5229 why unblocking here doesn't work.
+    if (! unresolved(5229))
+      task2.requestUnblock(code2);
+
+    task1.requestDeleteCodeObserver(code1, address1);
+    assertRunUntilStop("remove code observer 1");
+
+    task2.requestDeleteCodeObserver(code2, address2);
+    assertRunUntilStop("remove code observer 2");
+
+    assertFalse("unblocked unhit 1", code1.hit);
+    assertFalse("unblocked unhit 2", code2.hit);
+  }
+
   // Tells the child to run the dummy () function
   // which calls bp1_func () and bp2_func ().
   static final Sig dummySig = Sig.PROF;
@@ -694,6 +817,11 @@ public class TestTaskObserverCode extends TestLib
     child.signal(dummySig);
   }
   
+  void requestDummyRun(Task t)
+  {
+    Signal.tkill(t.getTid(), dummySig);
+  }
+
   /**
    * Request that that given thread of the child runs its dummy
    * function which will call the pb1 and pb1 functions. Done by

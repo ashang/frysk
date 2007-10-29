@@ -1,3 +1,7 @@
+2007-10-29  Mark Wielaard  <mwielaard@redhat.com>
+
+	* LinuxTaskState.java (sendContinue): Add logging.
+	
 2007-10-20  Mark Wielaard  <mwielaard@redhat.com>
 
 	Fixes bug #5201

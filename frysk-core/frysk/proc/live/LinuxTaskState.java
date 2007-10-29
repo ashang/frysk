@@ -736,6 +736,8 @@ class LinuxTaskState
         Running sendContinue(Task task, int sig)
         {
 	  Breakpoint bp = task.steppingBreakpoint;
+	  logger.log (Level.FINE, "{0} sendContinue, {1}\n",
+		      new Object[] { task, bp });
 	  if (bp != null)
 	    if (! bp.isInstalled())
 	      {

@@ -1,3 +1,17 @@
+2007-10-29  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Observable.java (observers): Now a HashMap.
+	(add): Keep count.
+	(delete): Likewise.
+	(contains): New method.
+	(iterator): Use HashMap.keySet().
+	(removeAllObservers): Likewise.
+	* Task.java (notifyCodeBreakpoint): Check whether observer is
+	contained in the codeObservers of this Task.
+	* TestTaskObserverCode.java (testMultiTaskUpdate): New test.
+	(testMultiTaskUpdateUnblockDelete): Likewise.
+	(requestDummyRun): New variant that takes a Task.
+	
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
 	* X86BankRegisters.java: Use X87Registers.ST*

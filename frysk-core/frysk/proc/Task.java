@@ -955,8 +955,9 @@ public abstract class Task
     while (i.hasNext())
       {
 	TaskObserver.Code observer = (TaskObserver.Code) i.next();
-	if (observer.updateHit(this, address) == Action.BLOCK)
-	  blockers.add(observer);
+	if (codeObservers.contains(observer))
+	  if (observer.updateHit(this, address) == Action.BLOCK)
+	    blockers.add(observer);
       }
     return blockers.size();
   }

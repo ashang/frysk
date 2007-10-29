@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,8 +39,7 @@
 
 package frysk.proc;
 
-import java.util.Set;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 
 /**
@@ -58,25 +57,49 @@ public class Observable
 	this.observable = observable;
     }
     /**
-     * Set of Observer's for this Observable.
+     * Set of Observer's for this Observable.  Since an observable can
+     * contain an observer multiple times we keep a count.
      */
-    private Set observers = new HashSet ();
+    private HashMap observers = new HashMap();
     /**
      * Add Observer to this Observable.
      */
     public void add (Observer observer)
     {
-	observers.add (observer);
+      Integer count = (Integer) observers.get(observer);
+	if (count == null)
+	  count = Integer.valueOf(1);
+	else
+	  count = Integer.valueOf(count.intValue() + 1);
+	observers.put(observer, count);
 	observer.addedTo (observable); // Success
     }
     /**
      * Delete Observer from this Observable.
+     * Does nothing when observer isn't part of this observable.
      */
     public void delete (Observer observer)
     {
-	observers.remove (observer);
-	observer.deletedFrom (observable); // Success.
+        Integer count = (Integer) observers.get(observer);
+        if (count == null)
+	  return;
+        int c = count.intValue();
+        if (c == 1)
+	  observers.remove(observer);
+        else
+	  observers.put(observer, Integer.valueOf(c--));
+        observer.deletedFrom (observable); // Success.
     }
+
+    /**
+     * Whether or not the given Observer is contained in this
+     * set of Observables.
+     */
+    public boolean contains(Observer observer)
+    {
+      return observers.get(observer) != null;
+    }
+
     /**
      * Fail to add the observer.
      */
@@ -89,7 +112,7 @@ public class Observable
      */
     public Iterator iterator ()
     {
-	return observers.iterator ();
+      return observers.keySet().iterator ();
     }
     /**
      * Return the current number of observers
@@ -103,7 +126,7 @@ public class Observable
      */
     public void removeAllObservers()
     {
-      Iterator iter = observers.iterator();
+      Iterator iter = observers.keySet().iterator();
       while (iter.hasNext())
         {
           Observer observer = (Observer) iter.next();
