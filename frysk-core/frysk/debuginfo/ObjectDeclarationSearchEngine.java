@@ -42,10 +42,14 @@ package frysk.debuginfo;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import frysk.expr.ExprSymTab;
 import frysk.isa.ISA;
+import frysk.isa.Register;
+import frysk.isa.Registers;
+import frysk.isa.RegistersFactory;
 import frysk.proc.Task;
 import frysk.scopes.Scope;
 import frysk.value.ObjectDeclaration;
@@ -93,16 +97,25 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
     }
 
     public Value getValue(String s) {
+	if (s.charAt(0) == '$') {
+	    Registers regs = RegistersFactory.getRegisters(frame.getTask()
+							   .getISA());
+	    String regName = s.substring(1).trim();
+	    Register reg = regs.getRegister(regName);
+	    if (reg == null) {
+		throw new RuntimeException("unknown register: " + regName);
+	    }
+	    List pieces = new LinkedList();
+	    pieces.add(new RegisterPiece(reg, reg.getType().getSize(), frame));
+	    return new Value(reg.getType(), new PieceLocation(pieces));
+	}
+	
 	ObjectDeclaration objectDeclaration = this.getVariable(s);
 	return objectDeclaration.getValue(frame);
     }
 
     public Value getValue(Variable v) {
 	return v.getValue(frame);
-    }
-
-    public Value getValueFIXME(ArrayList v) {
-	return null;
     }
 
     public ByteOrder order()

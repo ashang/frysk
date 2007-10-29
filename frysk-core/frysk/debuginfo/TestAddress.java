@@ -79,11 +79,11 @@ public class TestAddress
     {
 	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace
 	                       (getStoppedTask());
-	DebugInfoEvaluator debugInfoEvaluator = new DebugInfoEvaluator (frame);
+	ObjectDeclarationSearchEngine declarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
 	
 	/* Evaluate the location of the variable.
 	 */ 
-	Variable var = (Variable) debugInfoEvaluator.getVariable(variable);
+	Variable var = (Variable) declarationSearchEngine.getVariable(variable);
 	DwarfDie varDie = var.getVariableDie();
 	List ops = varDie.getFormData(frame.getAdjustedAddress());
 	LocationExpression locExpr = new LocationExpression(frame, varDie, ops);
@@ -92,7 +92,7 @@ public class TestAddress
 
 	 /* Get the value of the address.
 	 */
-	Variable addr = (Variable) debugInfoEvaluator.getVariable(address);
+	Variable addr = (Variable) declarationSearchEngine.getVariable(address);
 	DwarfDie addrDie = addr.getVariableDie();
 	List opsAddr = addrDie.getFormData(frame.getAdjustedAddress());
 	LocationExpression locExprAddr = new LocationExpression(frame, addrDie, opsAddr);
