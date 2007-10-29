@@ -45,11 +45,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
-public class TestHpdCommandParser extends TestLib {
+public class TestOptionParser extends TestLib {
 
     private static class DummyParseCommand extends Command {
 	boolean parsedOption = false;
-
+	boolean ok;
 	String argument = null;
 
 	ArrayList params;
@@ -57,13 +57,11 @@ public class TestHpdCommandParser extends TestLib {
 	public DummyParseCommand() {
 	    super("parser", "parse some stuff",
 		  "parse ARGUMENTS [OPTIONS]", "test the parser");
-	    //Don't print help to the screen.
-	    this.parser.outStream = new PrintStream(new ByteArrayOutputStream());
 	}
 
 	public void parse(CLI cli, Input cmd) {
 	    params = cmd.getParameters();
-	    parser.parse(params);
+	    ok = parser.parse(cmd);
 	}
 
     }
@@ -174,7 +172,6 @@ public class TestHpdCommandParser extends TestLib {
 
     public void testOptionWithArgsBeforeDashDash() {
 	parser.parser.add(new Option("short", "short option", "ARG") {
-
 	    public void parsed(String argument) throws OptionException {
 		parser.parsedOption = true;
 		parser.argument = argument;
@@ -193,8 +190,6 @@ public class TestHpdCommandParser extends TestLib {
 
     public void testHelp() {
 	cli.execCommand("parser -help");
-	assertTrue("Help only should be activated", parser.parser.helpOnly);
-	cli.execCommand("parser nohelp");
-	assertFalse("Help only should not be activated", parser.parser.helpOnly);
+	assertTrue("Help only should be activated", !parser.ok);
     }
 }

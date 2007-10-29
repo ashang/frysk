@@ -52,14 +52,13 @@ public class ExamineCommand extends Command {
 
     public void parse(CLI cli, Input cmd) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
+	if (!parser.parse(cmd)) {
+	    parser.printHelp(cli.outWriter);
+	    return;
+	}
 	ArrayList params = cmd.getParameters();
-	parser.parse(params);
-	if (parser.helpOnly)
-	    return;
-
 	if (params.size() == 0) {
-	    cli.outWriter.println("No value to examine");
-	    return;
+	    throw new InvalidCommandException("No value to examine");
 	}
 	Value value;
 	Iterator taskDataIter = ptset.getTaskData();

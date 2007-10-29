@@ -47,7 +47,7 @@ public abstract class Command {
     private final CommandHelp help;
     private final String name;  
 
-    protected HpdCommandParser parser;
+    protected OptionParser parser;
   
     public CommandHelp getHelp() {
 	return help;
@@ -60,9 +60,7 @@ public abstract class Command {
     Command (String name, String description, String syntax, String full) {
 	this.name = name;
 	this.help = new CommandHelp(name, description, syntax, full);
-	parser = new HpdCommandParser(name, System.out);
-	parser.setHeader(help.syntax);
-	parser.setFooter(help.full +"\n");
+	parser = new OptionParser(name, syntax, full + "\n");
     }
   
     public abstract void parse(CLI cli, Input cmd);

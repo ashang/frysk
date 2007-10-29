@@ -1,3 +1,18 @@
+2007-10-29  Andrew Cagney  <cagney@redhat.com>
+
+	* OptionParser.java: Rename HpdCommandParser.java; make members
+	private; use Iterator, List and LinkedList.
+	(setHeader(String)): Delete.
+	(setFooter(String)): Delete.
+	* TestOptionParser.java: Rename TestHpdCommandParser.java.
+	* DisassembleCommand.java: Update.
+	(addOptions): Delete.
+	* Command.java: Update.
+	* CoreCommand.java: Update.
+	* ExamineCommand.java: Update.
+	* PeekCommand.java: Update.
+	* LoadCommand.java: Update.
+
 2007-10-29  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestWhereCommand.java (testFhpdVirtualStackTrace): Marked as

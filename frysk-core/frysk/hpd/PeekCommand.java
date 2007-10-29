@@ -64,33 +64,24 @@ public class PeekCommand extends Command {
 
     public void parse(CLI cli, Input cmd) {
 	final PrintWriter output = cli.getPrintWriter();
-	ArrayList params = cmd.getParameters();
-
-	parser.parse(params);
-	if (parser.helpOnly)
-	    return;
-
-	if (params.size() > 1 ) {
-	    cli.addMessage("Too many parameters", Message.TYPE_ERROR);
-	    parser.printHelp(System.out);
+	if (!parser.parse(cmd)) {
+	    parser.printHelp(cli.outWriter);
 	    return;
 	}
+	ArrayList params = cmd.getParameters();
+
+	if (params.size() > 1 ) {
+	    throw new InvalidCommandException("Too many parameters");
+	}
 	if (cli.exeHost == null) {
-	    cli.addMessage("No executable loaded", Message.TYPE_ERROR);
-	    parser.printHelp(System.out);
-	    return;
+	    throw new InvalidCommandException("No executable loaded");
 	}
 	
 	Proc proc = cli.exeHost.getProc(new ProcId(0));
 	Task task = proc.getMainTask();
 	
 	ByteBuffer buffer = task.getMemory();
-	if (buffer == null) {
-	    cli.addMessage("Unable to allocate a ByteBuffer",
-		    Message.TYPE_ERROR);
-	    parser.printHelp(System.out);
-	    return;
-	}
+
 	String memposition = (String) params.get(0);
 	int radix = 10;
 	if (memposition.lastIndexOf("x") != -1) {

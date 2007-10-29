@@ -63,10 +63,6 @@ public class DisassembleCommand extends Command {
 	      "disassemble the function surrounding the current pc, "
 	      + "the function surrounding a given address, "
 	      + "or a range of functions.");
-	addOptions(parser);
-    }
-
-    void addOptions(HpdCommandParser parser) {
 	parser.add(new Option("all-instructions", 'a',
 		"only print the instruction portion not the parameters",
 		"<Yes|no>") {
@@ -124,12 +120,14 @@ public class DisassembleCommand extends Command {
 	reset();
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	Iterator taskDataIter = ptset.getTaskData();
-	ArrayList params = cmd.getParameters();
-	parser.parse(params);
-	if (params.size() > 2)
-	    throw new RuntimeException("too many arguments to disassemble");
-	if (parser.helpOnly)
+	if (!parser.parse(cmd)) {
+	    parser.printHelp(cli.outWriter);
 	    return;
+	}
+	ArrayList params = cmd.getParameters();
+	if (params.size() > 2)
+	    throw new InvalidCommandException
+		("too many arguments to disassemble");
 
 	while (taskDataIter.hasNext()) {
 	    TaskData data = (TaskData) taskDataIter.next();

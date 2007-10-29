@@ -67,25 +67,21 @@ public class LoadCommand extends Command {
     }
 
     public void parse(CLI cli, Input cmd) {
+	if (!parser.parse(cmd)) {
+	    parser.printHelp(cli.outWriter);
+	    return;
+	}
 	ArrayList params = cmd.getParameters();
 
-	parser.parse(params);
-	if (parser.helpOnly)
-	    return;
-
 	if (params.size() > 2) {
-	    cli.addMessage("Too many parameters", Message.TYPE_ERROR);
-	    parser.printHelp(System.out);
-	    return;
+	    throw new InvalidCommandException("Too many parameters");
 	}
 
 	File executableFile = new File((String) params.get(0));
 
 	if (!executableFile.exists() || !executableFile.canRead()) {
-	    cli.addMessage("File does not exist or is not readable.",
-		    Message.TYPE_ERROR);
-	    parser.printHelp(System.out);
-	    return;
+	    throw new InvalidCommandException
+		("File does not exist or is not readable.");
 	}
 
 	Host exeHost = new LinuxExeHost(Manager.eventLoop, executableFile);

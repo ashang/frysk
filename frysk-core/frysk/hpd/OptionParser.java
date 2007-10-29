@@ -42,107 +42,104 @@ package frysk.hpd;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.OptionGroup;
-
+import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.LinkedList;
+import java.util.Iterator;
+import java.util.List;
+import java.io.PrintWriter;
 
-import java.util.ArrayList;
+class OptionParser {
 
-class HpdCommandParser {
+    private final List options = new LinkedList();
+    private final OptionGroup defaultGroup;
+    private final OptionGroup finalGroup;
+    private final String header;
+    private final String footer;
+    private final String programName;
 
-    boolean helpOnly = false;
-    ArrayList options = new ArrayList();
-
-    OptionGroup defaultGroup, finalGroup;
-
-    String header = null, footer = null;
-    
-    PrintStream outStream;
-
-    HpdCommandParser(String programName, PrintStream out) {
+    OptionParser(String programName, String header, String footer) {
 	this.programName = programName;
-	this.outStream = out;
+	this.header = header;
+	this.footer = footer;
 	defaultGroup = new OptionGroup(programName + " Options");
 	finalGroup = new OptionGroup("Standard Options");
-	Option help = new Option("help", "print this help") {
-
-	    public void parsed(String argument) throws OptionException {
-		printHelp(outStream);
-		helpOnly = true;
-	    }
-	};
-	
+	Option help = new Help();
 	finalGroup.add(help);
 	options.add(help);
-	
     }
 
-    synchronized void add(Option option) {	
+    void add(Option option) {	
 	defaultGroup.add(option);
 	options.add(option);
     }
 
-    synchronized void setHeader(String header) {
-	this.header = header;
+    private static class HelpException extends RuntimeException {
+	static final long serialVersionUID = 1;
     }
 
-    synchronized void setFooter(String footer) {
-	this.footer = footer;
+    private class Help extends Option {
+	Help() {
+	    super("help", "print this help");
+	}
+	public void parsed(String argument) throws OptionException {
+	    throw new HelpException();
+	}
     }
 
-    void printHelp(PrintStream out) {
+    void printHelp(PrintWriter out) {
+	ByteArrayOutputStream scratchStream = new ByteArrayOutputStream();
+	PrintStream writer = new PrintStream(scratchStream);
 	if (header != null) {
-	    formatText(out, header);
-	    out.println();
+	    writer.println(header);
 	}
-
 	if (defaultGroup != null) {
-	    defaultGroup.printHelp(out, true);
-	    out.println();
+	    defaultGroup.printHelp(writer, true);
+	    writer.println();
 	}
-
-	finalGroup.printHelp(out, true);
-
-	if (footer != null)
-	    formatText(out, footer);
+	finalGroup.printHelp(writer, true);
+	if (footer != null) {
+	    writer.println(footer);
+	}
+	out.print(scratchStream.toString());
     }
 
-    void formatText(PrintStream out, String text) {
-	out.print(text);
-    }
-
-    ArrayList args;
-    int currentIndex;
-
-    private String programName;
-
-    //Given a list of arguments, parse and remove options as they are found.
-    public synchronized void parse(ArrayList args) {
-	this.helpOnly = false;
-	this.args = args;
+    /**
+     * Given a list of arguments, parse and remove options as they are
+     * found.
+     */
+    boolean parse(Input input) {
+	List args = input.getParameters();
 	try {
-	    for (currentIndex = args.size() - 1; currentIndex > -1; --currentIndex) {
+	    for (int currentIndex = args.size() - 1;
+		 currentIndex > -1;
+		 --currentIndex) {
 		String string = (String) args.get(currentIndex);
 		if (string.equals("--")) {
 		    args.remove(currentIndex);
-		    return;
+		    break;
 		}
 		    
 		if (string.charAt(0) != '-')
 		    continue;
-		handleLongOption(string, currentIndex + 1);
+		handleLongOption(args, string, currentIndex + 1);
 		args.remove(currentIndex);
 	    }
 	    // See if something went wrong.
 	    validate();
+	} catch (HelpException h) {
+	    return false;
 	} catch (OptionException err) {
-	    System.err.println(programName + ": " + err.getMessage());
-	    System.err.println(programName + ": Try '" + programName
-		    + " -help for more information");
+	    throw new InvalidCommandException
+		(programName + ": " + err.getMessage() + "\n"
+		 + programName + ": Try '" + programName
+		 + " -help for more information");
 	}
+	return true;
     }
 
-    private void handleLongOption(String real, int index)
-	    throws OptionException {
+    private void handleLongOption(List args, String real, int index)
+	throws OptionException {
 	String option = real.substring(real.lastIndexOf('-') + 1);
 	String justName = option;
 	int eq = option.indexOf('=');
@@ -151,14 +148,14 @@ class HpdCommandParser {
 	boolean isPlainShort = justName.length() == 1;
 	char shortName = justName.charAt(0);
 	Option found = null;
-	for (int i = options.size() - 1; i >= 0; --i) {
-	    Option opt = (Option) options.get(i);
+	for (Iterator i = options.iterator(); i.hasNext(); ) {
+	    Option opt = (Option)(i.next());
 	    if (justName.equals(opt.getLongName())) {
 		found = opt;
 		break;
 	    }
 	    if ((isPlainShort || opt.isJoined())
-		    && opt.getShortName() == shortName) {
+		&& opt.getShortName() == shortName) {
 		if (!isPlainShort) {
 		    // The rest of the option string is the argument.
 		    eq = 0;
@@ -182,7 +179,7 @@ class HpdCommandParser {
 		argument = option.substring(eq + 1);
 	} else if (eq != -1) {
 	    String msg = "option " + found.getLongName()
-		    + " doesn't allow an argument";
+		+ " doesn't allow an argument";
 	    throw new OptionException(msg);
 	}
 	found.parsed(argument);
