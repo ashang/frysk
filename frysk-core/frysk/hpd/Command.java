@@ -39,6 +39,8 @@
 
 package frysk.hpd;
 
+import java.util.List;
+
 /**
  * A handler class for the CLI that supplies its own help messages.
  */
@@ -64,4 +66,15 @@ public abstract class Command {
     }
   
     public abstract void interpret(CLI cli, Input cmd);
+
+    /**
+     * (from jline but worth repeating) Fill CANDIDATES with the
+     * possible completion strings and return the start position of
+     * those strings.  E.g., given buffer=foo and completion={foobar},
+     * 0 would be returned to indicate where "foobar" can be inserted.
+     * Return -1 when completion isn't supported.
+     */
+    int complete(CLI cli, Input buffer, int cursor, List candidates) {
+	return -1;
+    }
 }
