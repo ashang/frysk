@@ -1,5 +1,8 @@
 2007-10-30  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (has_main): Handle .c-in, .cxx-in, .c-sh, and
+	.cxx-sh files.
+
 	* TestRunner.java-in: Rename TestRunner.javain.
 	* Makefile.rules (.java-sh, .c-sh, .cxx-sh, .java-in, .cxx-in,
 	.c-in): New rules.

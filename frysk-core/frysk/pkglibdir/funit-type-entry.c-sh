@@ -1,4 +1,4 @@
 #!/bin/sh
 
+# main() # marker so this is know to have a main.
 python $(dirname $0)/gen-type-funit-tests.py
-

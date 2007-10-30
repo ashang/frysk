@@ -298,7 +298,7 @@ has_main ()
 	*.java )
 	    has_java_main $1
 	    ;;
-        *.c | *.cxx )
+        *.c | *.cxx | *.c-in | *.cxx-in | *.c-sh | *.cxx-sh )
 	    grep -e '^main[( ]' -e ' main[( ]' $1 > /dev/null 2>&1
 	    ;;
         *.S | *.s )
@@ -505,7 +505,7 @@ for suffix in .cxx-in .c-in .java-in .c-sh .cxx-sh .java-sh .mkenum .shenum ; do
     done
 done
 
-for suffix in .cxx .c .hxx .s .S ; do
+for suffix in .cxx .c .hxx .s .S .c-sh .c-in .cxx-sh .cxx-in; do
     print_header "... ${suffix}"
     grep -e "\\${suffix}\$" files.list | while read file ; do
 	d=`dirname ${file}`
@@ -514,7 +514,9 @@ for suffix in .cxx .c .hxx .s .S ; do
 	name_=`echo ${name} | sed -e 'y,/-,__,'`
 	if has_main ${file} ; then
 	    echo "${name_}_SOURCES = ${file}"
-	    test ${suffix} = .cxx && echo "${name_}_LINK = \$(CXXLINK)"
+	    case "${suffix}" in
+		*.cxx* ) echo "${name_}_LINK = \$(CXXLINK)" ;;
+	    esac
 	    echo_PROGRAMS ${name}
 	    check_MANS ${name}
 	    if grep 'pthread\.h' ${file} > /dev/null 2>&1 ; then
