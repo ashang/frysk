@@ -1,0 +1,3 @@
+#!/bin/sh
+
+python $(dirname $0)/gen-type-expect-tests.py -value frysk/pkglibdir/funit-type-entry.c
