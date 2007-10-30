@@ -72,7 +72,7 @@
 	      <!-- start text -->
 
 <p>This page provides guidelines for building <em>frysk</em>, checked
-out from <tt>CVS</tt>, on a number of systems.</p>
+out from Git, on a number of systems.</p>
 
 <h3>Set up your system's build environment</h3>
 
@@ -94,7 +94,7 @@ sudo yum install -y \
     antlr jdom junit gcc-java gcc-c++ \
     libglade-java-devel libvte-java-devel \
     automake xmlto transfig eclipse-ecj dogtail \
-    sharutils cvs audit-libs-devel binutils-devel \
+    sharutils git audit-libs-devel binutils-devel \
     yelp libtool make
 </pre>
 
@@ -226,26 +226,18 @@ tree</a>.
 
 </dl>
 
-<h3>Check out <em>frysk</em> from <tt>CVS</tt></h3>
+<h3>Check out <em>frysk</em> from Git</h3>
 
 <p>Normally you would use:</p>
 
 <pre>
-$ cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/frysk co frysk
+$ git-clone git://sourceware.org/git/frysk.git
 </pre>
 
-<p>If you have <tt>CVS</tt> write access using account USER then:</p>
+<p>If you have Git write access to the Frysk repository then:</p>
 
 <pre>
-$ export CVS_RSH=ssh
-$ cvs -d :ext:USER@sources.redhat.com:/cvs/frysk co frysk
-</pre>
-
-<p>To update an existing <em>frysk</em> <tt>CVS</tt> check-out
-use:</p>
-
-<pre>
-$ ( cd frysk && cvs update -d )
+$ git-clone ssh://sourceware.org/git/frysk.git
 </pre>
 
 <h3>Configure and Build</h3>
@@ -317,7 +309,7 @@ $ frysk
 
 <a name="git"><h2>Frysk and Git</h2></a>
 <p>
-  <em>frysk</em> is switching to Git from CVS. See <a href="./git-fu.html">this page</a> for an introduction to <em>frysk</em> and Git.</p>
+  <em>frysk</em> has switched to Git from CVS. See <a href="./git-fu.html">this page</a> for an introduction to <em>frysk</em> and Git.</p>
 
 <a name="faq"><h2>Developer Questions, such as building and testing
 frysk, and using <tt><a href="#faq-cvs">CVS</a></tt>; with
@@ -436,11 +428,13 @@ suppression will take place.</dd>
 
 <dl>
 
+<p>This needs to be rewritten for Git.</p>
+
 <a name="How do I cut a branch?"><dt>How do I cut a branch?</dt></a>
 <dd>First choose a name for your branch, it should include both your
 user name, a terse hint as to the branches purpose, and todays date.
 For instance <tt>pmuldoon-fcore-20061101</tt>, or
-<tt>cagney-triage12345-20061122</tt>.  Two tages will be created,
+<tt>cagney-triage12345-20061122</tt>.  Two tags will be created,
 first one for the branch point, and second one for the branch:
 
 <pre>
