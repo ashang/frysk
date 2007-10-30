@@ -183,7 +183,7 @@ public class ObjectFile
       ArrayList tracePoints = (ArrayList)this.tracePointMap.get(origin);
       if (tracePoints != null)
 	{
-	  logger.log(Level.FINE, "Tracepoints for origin " + origin + " retrieved from cache.");
+	  logger.log(Level.FINE, "" + tracePoints.size() + " tracepoints for origin " + origin + " retrieved from cache.");
 	  return tracePoints;
 	}
 
@@ -221,7 +221,7 @@ public class ObjectFile
 	      logger.log(Level.FINER, "Loading " + pltCount + " PLT entries.");
 
 	      ArrayList tracePointsPlt = new ArrayList();
-	      this.tracePointMap.put(TracePointOrigin.PLT, new ArrayList());
+	      this.tracePointMap.put(TracePointOrigin.PLT, tracePointsPlt);
 
 	      ArrayList tracePointsDynamic
 		= (ArrayList)this.tracePointMap.get(TracePointOrigin.DYNAMIC);

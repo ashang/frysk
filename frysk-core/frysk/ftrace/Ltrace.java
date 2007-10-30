@@ -159,8 +159,6 @@ public class Ltrace
       {
 	Task task = (Task)it.next();
 	processedTasks.add(task);
-	if (task.getTid() == mainTask.getTid())
-	  perProcInit(task.getProc());
 	addTask(task);
       }
 
@@ -190,14 +188,6 @@ public class Ltrace
       mainTask.requestUnblock(blocker);
   }
 
-  /**
-   * Do a per-process init.  Called only when process task(s) exist(s)
-   * and are attached to.
-   */
-  private void perProcInit(Proc proc)
-  {
-  }
-
   private Map taskArchHandlers = new HashMap();
 
   /**
@@ -222,11 +212,12 @@ public class Ltrace
     task.requestAddTerminatedObserver(ltraceTaskObserver);
     task.requestAddTerminatingObserver(ltraceTaskObserver);
     task.requestAddSyscallObserver(ltraceTaskObserver);
-    // Code observers are added in perProcInit
+    // There are no code observers right now.  We add them as files
+    // get mapped to process.
   }
 
   /**
-   * Notify that the task ended.
+   * Notify that the task has ended.
    */
   synchronized private void removeTask (Task task)
   {
@@ -272,7 +263,7 @@ public class Ltrace
 	       }
 	   }
 	   );
-    
+
     Manager.eventLoop.run();
   }
 
@@ -344,23 +335,20 @@ public class Ltrace
 	// lever.  Each tracepoint should point to a list
 	// of symbols that alias it, and should be present
 	// only once in an ObjectFile.
-	synchronized (LtraceTaskObserver.this)
-	  {
+	synchronized (LtraceTaskObserver.this) {
 	    HashMap breakpoints = (HashMap)breakpointsForTask.get(task);
-	    if (breakpoints.containsKey(laddr))
-	      {
+	    if (breakpoints.containsKey(laddr)) {
 		// We got an alias.  Put the symbol with the
 		// shorter name into the map.
 		TracePoint original = (TracePoint)breakpoints.get(laddr);
 		if (tp.symbol.name.length() < original.symbol.name.length())
 		  breakpoints.put(laddr, tp);
-	      }
-	    else
-	      {
+	    }
+	    else {
 		task.requestAddCodeObserver(ltraceTaskObserver, laddr.longValue());
 		breakpoints.put(laddr, tp);
-	      }
-	  }
+	    }
+	}
       }
     }
 
@@ -442,13 +430,6 @@ public class Ltrace
     {
       frysk.proc.Syscall syscall = (frysk.proc.Syscall) syscallCache.remove(task);
 
-      // Unfortunately, I know of no reasonable, (as in platform
-      // independent) way to find whether a syscall is mmap,
-      // munmap, or anything else.  Hence this hack, which is
-      // probably still much better than rescanning the map on
-      // each syscall.
-      String name = syscall.getName();
-
       Object ret = null;
       char fmt = syscall.argList.charAt(0);
       switch (fmt)
@@ -480,6 +461,13 @@ public class Ltrace
 	      o.syscallLeave(task, syscall, ret);
 	    }
 	}
+
+      // Unfortunately, I know of no reasonable, (as in platform
+      // independent) way to find whether a syscall is mmap,
+      // munmap, or anything else.  Hence this hack, which is
+      // probably still much better than rescanning the map on
+      // each syscall.
+      String name = syscall.getName();
 
       if (name.indexOf("mmap") != -1
 	  || name.indexOf("munmap") != -1)
@@ -548,8 +536,7 @@ public class Ltrace
       TracePoint tp = (TracePoint)breakpoints.get(laddress);
       if (tp != null)
 	{
-	  if (address != tp.symbol.getParent().getEntryPoint())
-	    {
+	  if (address != tp.symbol.getParent().getEntryPoint()) {
 	      // Install breakpoint to return address.
 	      long retAddr = arch.getReturnAddress(task, tp.symbol);
 	      logger.log(Level.FINER,
@@ -564,7 +551,7 @@ public class Ltrace
 		  breakpointsRet.put(retAddrL, tpList);
 		}
 	      tpList.add(tp);
-	    }
+	  }
 	  else
 	    logger.log(Level.FINEST,
 		       "It's _start, no return breakpoint established..", this);
@@ -574,8 +561,7 @@ public class Ltrace
 
       // See if we returned from somewhere.
       List tpList = (List)breakpointsRet.get(laddress);
-      if (tpList != null)
-	{
+      if (tpList != null) {
 	  logger.log(Level.FINER, "It's leave tracepoint.", this);
 	  leave = (TracePoint)tpList.remove(tpList.size() - 1);
 	  if (tpList.isEmpty())
@@ -706,30 +692,23 @@ public class Ltrace
       // Assume that files get EITHER mapped, OR unmapped.  Because
       // under normal conditions, each map/unmap will get spotted,
       // this is a reasonable assumption.
-      if (newMappedFiles.size() != mappedFiles.size())
-	{
-	  if (newMappedFiles.size() > mappedFiles.size())
-	    {
-	      Set diff = new HashSet(newMappedFiles);
-	      diff.removeAll(mappedFiles);
-	      for (Iterator it = diff.iterator(); it.hasNext(); )
-		{
-		  MemoryMapping info = (MemoryMapping)it.next();
-		  this.updateMappedFile(task, info);
-		}
-	    }
-	  else
-	    {
-	      // We can avoid artificial `diff' set here, to gain a
-	      // little performance.
-	      mappedFiles.removeAll(newMappedFiles);
-	      for (Iterator it = mappedFiles.iterator(); it.hasNext(); )
-		{
-		  MemoryMapping info = (MemoryMapping)it.next();
-		  this.updateUnmappedFile(task, info);
-		}
-	    }
-	}
+      if (newMappedFiles.size() > mappedFiles.size()) {
+	  Set diff = new HashSet(newMappedFiles);
+	  diff.removeAll(mappedFiles);
+	  for (Iterator it = diff.iterator(); it.hasNext(); ) {
+	      MemoryMapping info = (MemoryMapping)it.next();
+	      this.updateMappedFile(task, info);
+	  }
+      }
+      else if (newMappedFiles.size() < mappedFiles.size()) {
+	  // We can avoid artificial `diff' set here, to gain a
+	  // little performance.
+	  mappedFiles.removeAll(newMappedFiles);
+	  for (Iterator it = mappedFiles.iterator(); it.hasNext(); ) {
+	      MemoryMapping info = (MemoryMapping)it.next();
+	      this.updateUnmappedFile(task, info);
+	  }
+      }
 
       this.mapsForTask.put(task, newMappedFiles);
     }

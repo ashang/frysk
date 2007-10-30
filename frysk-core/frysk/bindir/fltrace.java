@@ -410,24 +410,12 @@ public class fltrace
 	    else
 		sonameRe = null;
 
-	    if (str.length() > 0) {
-		if (str.charAt(0) == '+') {
-		    addition = true;
-		    str = str.substring(1);
-		}
-		else if (str.charAt(0) == '-') {
-		    addition = false;
-		    str = str.substring(1);
-		}
-		else if (i == 0)
-		    addition = true;
-		else
-		    throw new RuntimeException("Syntax error in rule, first letter has to be + or -.");
+	    if (str.length() > 0 && str.charAt(0) == '-') {
+		addition = false;
+		str = str.substring(1);
 	    }
-	    else if (i == 0)
-		addition = true;
 	    else
-		throw new RuntimeException("Syntax error in rule, missing + or -.");
+		addition = true;
 
 	    if (!str.equals(""))
 		symbolRe = str;
