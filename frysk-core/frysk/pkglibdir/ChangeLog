@@ -1,5 +1,7 @@
 2007-10-30  Andrew Cagney  <cagney@redhat.com>
 
+	* funit-hello.c: New file.
+
 	* funit-type-entry.c-sh: Add main() marker for Makefile.gen.sh.
 	
 	* funit-type-entry.c-sh: Rename funit-type-entry.sh.
