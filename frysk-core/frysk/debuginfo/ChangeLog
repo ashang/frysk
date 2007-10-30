@@ -1,3 +1,9 @@
+2007-10-29  Stan Cox  <scox@redhat.com>
+
+	* TestTypeEntryType.shjava: New file.
+	* TestTypeEntryValue.shjava: New file.
+	* gen-type-expect-tests.py: New file.
+
 2007-10-29  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestAddress.java: Replaced DebugInfoEvaluator with

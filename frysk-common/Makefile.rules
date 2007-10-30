@@ -297,7 +297,7 @@ SUFFIXES += .javain
 	$(SUBST)
 TestRunner.java: common/TestRunner.javain
 	$(SUBST)
-$(GEN_SOURCENAME)/JUnitTests.java: files.list
+$(GEN_SOURCENAME)/JUnitTests.java: files-java.list
 	mkdir -p $(GEN_SOURCENAME)
 	rm -f $@.tmp
 	touch $@.tmp
@@ -312,7 +312,8 @@ $(GEN_SOURCENAME)/JUnitTests.java: files.list
 	grep \
 		-e '\/Test[A-Z].*\.java$$' \
 		-e '\/Stress[A-Z].*\.java$$' \
-		$(srcdir)/files.list \
+		files-java.list \
+	| sed "s|^.*/src/[a-z-]*/||" \
 	| grep -v \
 		-e 'TestLib' \
 		-e 'TestCase' \

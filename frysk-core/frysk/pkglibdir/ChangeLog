@@ -1,3 +1,8 @@
+2007-10-29  Stan Cox  <scox@redhat.com>
+
+	* funit-type-entry.sh: New file.
+	* gen-type-funit-tests.py: New file.
+
 2007-10-26 Teresa Thomas <tthomas@redhat.com>
 
 	* funit-addresses.c (num): Delete.

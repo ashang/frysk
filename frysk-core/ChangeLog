@@ -1,3 +1,7 @@
+2007-10-29  Stan Cox  <scox@redhat.com>
+
+	* Makefile.am (pkglib_PROGRAMS): Add funit-type-entry.
+
 2007-10-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* frysk/scopes/Scope.java (getDeclaredObjectByName): re-enabled

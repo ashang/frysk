@@ -96,6 +96,18 @@ installcheck-local: installcheck-funit
 installcheck-funit:
 	$(DESTDIR)$(pkglibdir)/funit
 
+# Create executables for type tests for TestTypeEntryType.java.
+
+frysk/debuginfo/TestTypeEntryType.java: frysk/pkglibdir/funit-type-entry
+frysk/debuginfo/TestTypeEntryValue.java: frysk/pkglibdir/funit-type-entry
+pkglib_PROGRAMS += frysk/pkglibdir/funit-type-entry
+frysk_pkglibdir_funit_type_entry_SOURCES = 
+frysk/pkglibdir/funit-type-entry: frysk/pkglibdir/funit-type-entry
+	sh $(srcdir)/frysk/pkglibdir/funit-type-entry.sh > /tmp/$(notdir $@).c
+	chmod a-w /tmp/$(notdir $@).c
+	mv -f /tmp/$(notdir $@).c $@.c
+	$(COMPILE) $@.c -o $@
+
 # Create executables for symbol tests for TestSymbol.java.
 
 pkglib_PROGRAMS += frysk/pkglibdir/funit-symbols-nodebug
