@@ -1,5 +1,9 @@
 2007-10-29 Stan Cox <scox@redhat.com>
 
+	* Makefile.rules (JUnitTests.java): Trim by using srcdir.
+
+2007-10-29 Stan Cox <scox@redhat.com>
+
 	* Makefile.rules (JUnitTests.java): Use files-java.list.
 
 2007-10-12  Mark Wielaard  <mwielaard@redhat.com>

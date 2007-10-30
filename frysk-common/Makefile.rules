@@ -313,7 +313,7 @@ $(GEN_SOURCENAME)/JUnitTests.java: files-java.list
 		-e '\/Test[A-Z].*\.java$$' \
 		-e '\/Stress[A-Z].*\.java$$' \
 		files-java.list \
-	| sed "s|^.*/src/[a-z-]*/||" \
+	| sed "s|$(srcdir)/||" \
 	| grep -v \
 		-e 'TestLib' \
 		-e 'TestCase' \
