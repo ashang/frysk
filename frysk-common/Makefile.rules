@@ -324,7 +324,7 @@ $(GEN_SOURCENAME)/JUnitTests.java: files-java.list
 		-e '\/Test[A-Z].*\.java$$' \
 		-e '\/Stress[A-Z].*\.java$$' \
 		files-java.list \
-	| sed "s|$(srcdir)/||" \
+	| sed -e "s|$(srcdir)/||" -e "s|^./||" \
 	| grep -v \
 		-e 'TestLib' \
 		-e 'TestCase' \

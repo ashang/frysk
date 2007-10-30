@@ -1,3 +1,7 @@
+2007-10-30 Stan Cox <scox@redhat.com>
+
+	* Makefile.rules (JUnitTests.java): Also trim blddir.
+
 2007-10-30  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (.cxx-in, .cxx-sh, .c-in, .c-sh): Do not add to
@@ -13,7 +17,7 @@
 	* Makefile.gen.sh: Replace .shjava, .javain, and .cxxin with -sh
 	and -in rules.  Delete .mkjava rules.
 	
-2007-10-29 Stan Cox <scox@redhat.com>
+2007-10-30 Stan Cox <scox@redhat.com>
 
 	* Makefile.rules (JUnitTests.java): Trim by using srcdir.
 
