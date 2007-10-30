@@ -1,5 +1,8 @@
 2007-10-30  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (.cxx-in, .cxx-sh, .c-in, .c-sh): Do not add to
+	sources line.
+	
 	* Makefile.gen.sh (has_main): Handle .c-in, .cxx-in, .c-sh, and
 	.cxx-sh files.
 

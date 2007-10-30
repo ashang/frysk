@@ -485,7 +485,7 @@ for suffix in .java .java-sh .mkenum .shenum .java-in ; do
     done || exit 1
 done
 
-for suffix in .cxx-in .c-in .java-in .c-sh .cxx-sh .java-sh .mkenum .shenum ; do
+for suffix in .java-in .java-sh .mkenum .shenum ; do
     print_header "... ${suffix}"
     s=`echo ${suffix} | sed \
 	-e 's/-sh$//' \
@@ -512,6 +512,7 @@ for suffix in .cxx .c .hxx .s .S .c-sh .c-in .cxx-sh .cxx-in; do
 	b=`basename ${file} ${suffix}`
 	name=${d}/${b}
 	name_=`echo ${name} | sed -e 'y,/-,__,'`
+	s=`echo ${suffix} | sed -e 's/-sh$//' -e 's/-in$//'`
 	if has_main ${file} ; then
 	    echo "${name_}_SOURCES = ${file}"
 	    case "${suffix}" in
@@ -526,7 +527,15 @@ for suffix in .cxx .c .hxx .s .S .c-sh .c-in .cxx-sh .cxx-in; do
             # Generate the rules for arch32 test
 	    echo_arch32_PROGRAMS ${name} ${file}
 	else
-	    echo "${sources} += ${file}"
+	    case "${suffix}" in
+		*-in | *-sh)
+		    echo "${nodist_lib_sources} += ${name}${s}"
+		    echo "BUILT_SOURCES += ${name}${s}"
+		    ;;
+		* )
+		    echo "${sources} += ${file}"
+		    ;;
+	    esac
 	fi
 	case "${suffix}" in
 	    # Hardwire assembler dependency on include/frysk-asm.h;
