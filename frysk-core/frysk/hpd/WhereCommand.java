@@ -58,7 +58,7 @@ class WhereCommand extends Command {
 	      "where [ {num-levels | -all} ] [-scopes]", full);
     }
 
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
 	boolean printScopes = false;
 	
 	PTSet ptset = cli.getCommandPTSet(cmd);

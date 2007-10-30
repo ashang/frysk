@@ -47,7 +47,7 @@ class HelpCommand extends Command {
 	      "Display help (possibly for a command.)");
     }
 
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
 	String output = "";
 	String temp = "";
 	if (cmd.size() == 0) {

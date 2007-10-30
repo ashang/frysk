@@ -56,7 +56,7 @@ class DeleteCommand extends Command {
 	super("delete", descr, "delete actionpointID", descr);
     }
 
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	String actionpoints = "";
 	boolean delEnabled = false, delDisabled = false, delBreak = false;

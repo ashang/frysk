@@ -62,7 +62,7 @@ class SetCommand extends Command {
 	this.dbgvars = dbgvars;
     }
 
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
 	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
 	    cli.printUsage(cmd);
 	    return;

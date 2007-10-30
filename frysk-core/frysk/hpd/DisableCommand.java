@@ -56,7 +56,7 @@ class DisableCommand extends Command {
 	super("disable", descr, "disable actionpointID", descr);
     }
 
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	String actionpoints = "";
 	boolean disEnabled = false/* , disDisabled = false */, disBreak = false;

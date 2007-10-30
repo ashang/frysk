@@ -55,7 +55,7 @@ public class RegsCommand extends Command {
 	      + "printed by default.");
     }
 
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	Iterator taskDataIter = ptset.getTaskData();
 	while (taskDataIter.hasNext()) {

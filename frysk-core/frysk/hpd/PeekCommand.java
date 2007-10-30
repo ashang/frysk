@@ -60,7 +60,7 @@ public class PeekCommand extends Command {
 	super("peek", desc, "peek memory-location", desc);
     }
 
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
 	final PrintWriter output = cli.getPrintWriter();
 	if (!parser.parse(cmd)) {
 	    parser.printHelp(cli.outWriter);

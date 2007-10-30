@@ -353,7 +353,7 @@ public class CLI {
                 for (Iterator iter = prepro.preprocess(cmd); iter.hasNext();) {
                     pcmd = (String)iter.next();
                     command = new Input(pcmd);
-		    topLevelCommand.parse(this, command);
+		    topLevelCommand.interpret(this, command);
                 }
             }
             catch (NullPointerException e) {

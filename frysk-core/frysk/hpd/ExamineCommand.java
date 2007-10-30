@@ -49,7 +49,7 @@ public class ExamineCommand extends Command {
 	      "Examine a value in more detail.");
     }
 
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	if (!parser.parse(cmd)) {
 	    parser.printHelp(cli.outWriter);

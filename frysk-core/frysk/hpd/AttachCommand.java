@@ -82,7 +82,7 @@ class AttachCommand
 	      "attach [executable] pid [-task tid]", full);
     }
 
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
 	int pid = 0;
 	int tid = 0;
 	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {

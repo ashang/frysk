@@ -113,7 +113,7 @@ public class DisassembleCommand extends Command {
 	symbol = true;
     }
 
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
 	reset();
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	Iterator taskDataIter = ptset.getTaskData();

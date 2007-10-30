@@ -66,7 +66,7 @@ class ListCommand
     private File file = null;
     private int line;
     private int exec_line = 0;
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
         PTSet ptset = cli.getCommandPTSet(cmd);
 	int windowSize = 20;
         Iterator taskIter = ptset.getTaskData();

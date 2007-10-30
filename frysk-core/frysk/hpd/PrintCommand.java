@@ -61,7 +61,7 @@ class PrintCommand
 	super (name, description, syntax, full);
     }
 
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
         PTSet ptset = cli.getCommandPTSet(cmd);
 	boolean dumpTree = false;
 	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {

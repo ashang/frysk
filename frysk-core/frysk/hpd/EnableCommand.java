@@ -57,7 +57,7 @@ class EnableCommand extends Command {
 
 
 
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	String actionpoints = "";
 	boolean /* enEnabled = false, */enDisabled = false, enBreak = false;

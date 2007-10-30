@@ -50,7 +50,7 @@ class UnaliasCommand extends Command {
 	      "unalias { command-name | -all }", full);
     }
 
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
 	if (cmd.size() == 1) {
 	    if ((cmd.parameter(0)).equals("-all")) {
 		cli.aliases.clear();

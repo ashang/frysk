@@ -55,7 +55,7 @@ class WhatCommand extends Command {
 		"what symbol-name [-all]", full);
     }
 
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
 	    cli.printUsage(cmd);

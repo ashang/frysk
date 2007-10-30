@@ -114,7 +114,7 @@ class RunCommand extends Command {
 
     }
 
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
 	if (cmd.size() < 1) {
 	    cli.printUsage(cmd);
 	    return;

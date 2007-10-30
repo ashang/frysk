@@ -70,7 +70,7 @@ public class DisplayCommand extends Command {
     }
 
 
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
 	final PrintWriter output = cli.getPrintWriter();
 
 	PTSet ptset = cli.getCommandPTSet(cmd);

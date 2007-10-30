@@ -63,5 +63,5 @@ public abstract class Command {
 	parser = new OptionParser(name, syntax, full + "\n");
     }
   
-    public abstract void parse(CLI cli, Input cmd);
+    public abstract void interpret(CLI cli, Input cmd);
 }

@@ -1,5 +1,50 @@
 2007-10-29  Andrew Cagney  <cagney@redhat.com>
 
+	* Command.java (interpret(CLI,Input)): Rename parse(CLI,Input).
+	* CLI.java: Update.
+	* UnaliasCommand.java: Update.
+	* WhichsetsCommand.java: Update.
+	* WhereCommand.java: Update.
+	* WhatCommand.java: Update.
+	* ViewsetCommand.java: Update.
+	* UnsetCommand.java: Update.
+	* UndefsetCommand.java: Update.
+	* StepNextiCommand.java: Update.
+	* StepNextCommand.java: Update.
+	* StepInstructionCommand.java: Update.
+	* StepFinishCommand.java: Update.
+	* StepCommand.java: Update.
+	* SetCommand.java: Update.
+	* RunCommand.java: Update.
+	* RegsCommand.java: Update.
+	* QuitCommand.java: Update.
+	* PtypeCommand.java: Update.
+	* PrintCommand.java: Update.
+	* PlocationCommand.java: Update.
+	* PeekCommand.java: Update.
+	* MultiLevelCommand.java: Update.
+	* LoadCommand.java: Update.
+	* ListCommand.java: Update.
+	* HelpCommand.java: Update.
+	* HaltCommand.java: Update.
+	* GoCommand.java: Update.
+	* FrameCommands.java: Update.
+	* FocusCommand.java: Update.
+	* ExamineCommand.java: Update.
+	* EnableCommand.java: Update.
+	* DisplayCommand.java: Update.
+	* DisassembleCommand.java: Update.
+	* DisableCommand.java: Update.
+	* DetachCommand.java: Update.
+	* DeleteCommand.java: Update.
+	* DefsetCommand.java: Update.
+	* DebuginfoCommand.java: Update.
+	* CoreCommand.java: Update.
+	* BreakpointCommand.java: Update.
+	* AttachCommand.java: Update.
+	* AliasCommand.java: Update.
+	* ActionsCommand.java: Update.
+	
 	* CLI.java (execCommand(String)): Use TopLevelCommand.
 	(topLevelCommand): New.
 	* TopLevelCommand.java: New.

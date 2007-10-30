@@ -64,7 +64,7 @@ public class LoadCommand extends Command {
 	super("load", desc, "load path-to-executable", desc);
     }
 
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
 	if (!parser.parse(cmd)) {
 	    parser.printHelp(cli.outWriter);
 	    return;

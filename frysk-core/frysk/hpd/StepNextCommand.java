@@ -57,7 +57,7 @@ public class StepNextCommand extends Command {
      		+ "otherwise just perform a line step.");
     }
     
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
       PTSet ptset = cli.getCommandPTSet(cmd);
       if (cmd.size() == 1 && cmd.parameter(0).equals("-help"))
         {

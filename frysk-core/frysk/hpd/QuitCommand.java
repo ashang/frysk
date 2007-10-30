@@ -94,7 +94,7 @@ class QuitCommand extends Command {
 	      "Terminate the debugging session.");
     }
 
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
         CountDownLatch quitLatch = new CountDownLatch(1);
         new KillRequest(cli, quitLatch).request();
         try {
@@ -105,6 +105,6 @@ class QuitCommand extends Command {
 	cli.addMessage("Quitting...", Message.TYPE_NORMAL);
 	DetachCommand detachCommand = new DetachCommand();
 	Input command = new Input("detach").accept();
-	detachCommand.parse(cli, command);
+	detachCommand.interpret(cli, command);
     }
 }

@@ -55,7 +55,7 @@ public class CoreCommand extends Command {
 	super("core", desc, "core core.file", desc);
     }
 
-    public void parse(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd) {
 	if (!parser.parse(cmd)) {
 	    parser.printHelp(cli.outWriter);
 	    return;
