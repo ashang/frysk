@@ -1,3 +1,7 @@
+2007-10-30  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-type-entry.c-sh: Rename funit-type-entry.sh.
+
 2007-10-29  Stan Cox  <scox@redhat.com>
 
 	* funit-type-entry.sh: New file.

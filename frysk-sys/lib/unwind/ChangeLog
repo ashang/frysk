@@ -1,3 +1,9 @@
+2007-10-30  Andrew Cagney  <cagney@redhat.com>
+
+	* UnwindPPC64.java-sh: Rename UnwindPPC64.shjava.
+	* UnwindX86.java-sh: Rename UnwindX86.shjava.
+	* UnwindX8664.java-sh: Rename UnwindX8664.shjava.
+
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Unwind.java (getSP(RawDataManaged)): Relace

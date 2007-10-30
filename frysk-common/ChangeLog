@@ -1,3 +1,12 @@
+2007-10-30  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRunner.java-in: Rename TestRunner.javain.
+	* Makefile.rules (.java-sh, .c-sh, .cxx-sh, .java-in, .cxx-in,
+	.c-in): New rules.
+	(.mkjava, MKJAVA): Delete.
+	* Makefile.gen.sh: Replace .shjava, .javain, and .cxxin with -sh
+	and -in rules.  Delete .mkjava rules.
+	
 2007-10-29 Stan Cox <scox@redhat.com>
 
 	* Makefile.rules (JUnitTests.java): Use files-java.list.

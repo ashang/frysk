@@ -1,7 +1,7 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2007 Oracle Corporation.
 # Copyright 2005, 2006, 2007, Red Hat Inc.
+# Copyright 2007 Oracle Corporation.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -195,25 +195,8 @@ AM_CCASFLAGS = \
 
 
 # Rules for building a .java file from any of a .mkclass file, a
-# .shjava script, a .mkenum file, or a .shenum script.  This lets us
-# specify CLASS.java directly in the BUILT_SOURCES list.
-
-MKJAVA = $(srcdir)/common/mkjava.sh
-
-SUFFIXES += .mkjava
-.mkjava.java:
-	rm -f $*.tmp
-	$(SHELL) $(MKJAVA) < $(srcdir)/$*.mkjava > $*.tmp $@
-	chmod a-w $*.tmp
-	mv -f $*.tmp $@
-
-SUFFIXES += .shjava
-.shjava.java:
-	rm -f $*.tmp
-	CC='$(CC)'; export CC ; \
-	$(SHELL) $< > $*.tmp $@
-	chmod a-w $*.tmp
-	mv -f $*.tmp $@
+# .mkenum file, or a .shenum script.  This lets us specify CLASS.java
+# directly in the BUILT_SOURCES list.
 
 MKENUM = $(srcdir)/common/mkenum.sh
 
@@ -229,6 +212,31 @@ SUFFIXES += .shenum
 	rm -f $*.tmp
 	CC='$(CC)'; export CC ; \
 	$(SHELL) $< | $(SHELL) $(MKENUM) > $*.tmp $@
+	chmod a-w $*.tmp
+	mv -f $*.tmp $@
+
+
+# Rules for generating a file by running a shell script.
+
+SUFFIXES += .java-sh
+.java-sh.java:
+	rm -f $*.tmp
+	CC='$(CC)'; export CC ; \
+	$(SHELL) $< > $*.tmp $@
+	chmod a-w $*.tmp
+	mv -f $*.tmp $@
+SUFFIXES += cxx-sh
+.cxx-sh.cxx:
+	rm -f $*.tmp
+	CC='$(CC)'; export CC ; \
+	$(SHELL) $< > $*.tmp $@
+	chmod a-w $*.tmp
+	mv -f $*.tmp $@
+SUFFIXES += ..c-sh
+.c-sh.c:
+	rm -f $*.tmp
+	CC='$(CC)'; export CC ; \
+	$(SHELL) $< > $*.tmp $@
 	chmod a-w $*.tmp
 	mv -f $*.tmp $@
 
@@ -289,13 +297,16 @@ SUBST = \
 	chmod a-w $@.tmp ; \
 	mv -f $@.tmp $@
 
-SUFFIXES += .cxxin
-.cxxin.cxx:
+SUFFIXES += ..java-in
+.java-in.java:
 	$(SUBST)
-SUFFIXES += .javain
-.javain.java:
+SUFFIXES += .cxx-in
+.cxx-in.cxx:
 	$(SUBST)
-TestRunner.java: common/TestRunner.javain
+SUFFIXES += ..c-in
+.c-in.c:
+	$(SUBST)
+TestRunner.java: common/TestRunner.java-in
 	$(SUBST)
 $(GEN_SOURCENAME)/JUnitTests.java: files-java.list
 	mkdir -p $(GEN_SOURCENAME)

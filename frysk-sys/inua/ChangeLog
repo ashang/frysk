@@ -1,3 +1,7 @@
+2007-10-30  Andrew Cagney  <cagney@redhat.com>
+
+	* elf/AT.java-sh: Rename elf/AT.shjava.
+
 2007-09-26  Andrew Cagney  <cagney@redhat.com>
 
 	* elf/AT.shjava: Pass through mkjava.sh.
