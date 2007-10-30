@@ -1,3 +1,10 @@
+2007-10-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk/debuginfo/TestTypeEntryType.java)
+	(frysk/debuginfo/TestTypeEntryValue.java): Depend on
+	funit-type-entry.c, not funit-type-entry.
+	(frysk/pkglibdir/funit-type-entry): Delete rule.
+
 2007-10-29  Stan Cox  <scox@redhat.com>
 
 	* Makefile.am (pkglib_PROGRAMS): Add funit-type-entry.

@@ -1,3 +1,7 @@
+2007-10-30  Andrew Cagney  <cagney@redhat.com>
+
+	* SyscallNum.java-sh: Rename SyscallNum.shjava.
+
 2007-09-26  Andrew Cagney  <cagney@redhat.com>
 
 	* SyscallNum.shjava: Pass through mkjava.sh.

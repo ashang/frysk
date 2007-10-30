@@ -1,3 +1,7 @@
+2007-10-30  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Config.cxx-in: Rename cni/Config.cxxin.
+
 2007-09-12  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Config.java (getPkgLibSrcDir): New function.

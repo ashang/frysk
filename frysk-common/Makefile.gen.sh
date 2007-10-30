@@ -48,13 +48,13 @@ Include CNI directories in build.
 
 <source-dir>:
 
-Search source directory for .java, .mkjava, .shjava, shenum, mkenum,
-.javain, cxxin, .c and .cxx files.  For each, generate a corresponding
-automake entry.  If the file contains a main program, also generate
-automake to build the corresponding program.  Any program located
-under a bindir/, sbindir/, pkgdatadir, or pkglibdir/ sub-directory,
-will be installed in the corresponding bin/, sbin/, share/, or
-lib{,64}/frysk/ destination directory.
+Search source directory for .java, .shenum, .mkenum, -in,
+-sh, .c and .cxx files.  For each, generate a corresponding automake
+entry.  If the file contains a main program, also generate automake to
+build the corresponding program.  Any program located under a bindir/,
+sbindir/, pkgdatadir, or pkglibdir/ sub-directory, will be installed
+in the corresponding bin/, sbin/, share/, or lib{,64}/frysk/
+destination directory.
 
 <.jar-file> or <_JAR-macro>:
 
@@ -97,9 +97,6 @@ JARS=`echo ${JARS}`
     -o -name "[A-Za-z]*\.h" -print \
     -o -name "[A-Za-z]*\.c" -print \
     -o -name "[A-Za-z]*\.java" -print \
-    -o -name "[A-Za-z]*\.shjava" -print \
-    -o -name "[A-Za-z]*\.javain" -print \
-    -o -name "[A-Za-z]*\.mkjava" -print \
     -o -name "[A-Za-z]*\.mkenum" -print \
     -o -name "[A-Za-z]*\.shenum" -print \
     -o -name "[A-Za-z]*\.desktop" -print \
@@ -116,7 +113,12 @@ JARS=`echo ${JARS}`
     -o -path "*dir/[A-Za-z]*\.sh" -print \
     -o -path "*dir/[A-Za-z]*\.py" -print \
     -o -path '[A-Za-z]*\.hxx' -print \
-    -o -path '[A-Za-z]*\.cxxin' -print \
+    -o -path '[A-Za-z]*\.java-sh' -print \
+    -o -path '[A-Za-z]*\.c-sh' -print \
+    -o -path '[A-Za-z]*\.cxx-sh' -print \
+    -o -path '[A-Za-z]*\.java-in' -print \
+    -o -path '[A-Za-z]*\.cxx-in' -print \
+    -o -path '[A-Za-z]*\.c-in' -print \
     -o -path '[A-Za-z]*\.cxx' -print \
     -o -path '*/cni/[A-Za-z]*\.[sS]' -print \
     -o -type f -name 'test*' -print
@@ -175,8 +177,8 @@ check_MANS ()
 echo_PROGRAMS ()
 {
     case "$1" in
-	*.javain )
-	    # .javain programs are never installed.
+	*.java-in )
+	    # .java-in programs are never installed.
 	    echo "noinst_PROGRAMS += $1"
             ;;
 	*dir/* )
@@ -283,8 +285,8 @@ has_java_main ()
 has_main ()
 {
     case "$1" in
-	*.javain )
-            # .javain files must always have main
+	*.java-in )
+            # .java-in files must always have main
             if has_java_main $1 ; then
 		:
 	    else
@@ -296,7 +298,7 @@ has_main ()
 	*.java )
 	    has_java_main $1
 	    ;;
-        *.c | *.cxx )
+        *.c | *.cxx | *.c-in | *.cxx-in | *.c-sh | *.cxx-sh )
 	    grep -e '^main[( ]' -e ' main[( ]' $1 > /dev/null 2>&1
 	    ;;
         *.S | *.s )
@@ -449,7 +451,7 @@ echo_LDFLAGS TestRunner
 
 # Generate SOURCES list for all files.
 
-for suffix in .java .mkjava .shjava .mkenum .shenum .javain ; do
+for suffix in .java .java-sh .mkenum .shenum .java-in ; do
     print_header "... ${suffix}"
     grep -e  "\\${suffix}\$" files.list | while read file ; do
 	d=`dirname ${file}`
@@ -459,24 +461,15 @@ for suffix in .java .mkjava .shjava .mkenum .shenum .javain ; do
 	# source tree - handled earlier.
 	case ${suffix} in
 	    .java)
-	        test -r "${d}/${b}.mkjava" && continue
-		test -r "${d}/${b}.shjava" && continue
+		test -r "${d}/${b}.java-sh" && continue
 		test -r "${d}/${b}.mkenum" && continue
 		test -r "${d}/${b}.shenum" && continue
-		test -r "${d}/${b}.javain" && continue
-		test -r "common/${b}.javain" && continue # too strong?
+		test -r "${d}/${b}.java-in" && continue
+		test -r "common/${b}.java-in" && continue # too strong?
 		test "${b}" = JUnitTests && continue # hack
 		test -r "${d}/${b}.g" && continue
 		test -r "${d}/${b}.sed" && continue
 		echo "${sources} += ${file}"
-		;;
-	    *)
-		echo "BUILT_SOURCES += ${name}.java"
-		case "${suffix}" in
-		    *java ) echo "${name}.java: \$(MKJAVA)" ;;
-		    *enum ) echo "${name}.java: \$(MKENUM)" ;;
-		esac
-		echo "${nodist_lib_sources} += ${d}/${b}.java"
 		;;
 	esac
 	echo "${GEN_DIRNAME}.jar: ${name}.java"
@@ -492,17 +485,27 @@ for suffix in .java .mkjava .shjava .mkenum .shenum .javain ; do
     done || exit 1
 done
 
-for suffix in .cxxin ; do
+for suffix in .cxx-in .c-in .java-in .c-sh .cxx-sh .java-sh .mkenum .shenum ; do
     print_header "... ${suffix}"
+    s=`echo ${suffix} | sed \
+	-e 's/-sh$//' \
+	-e 's/-in$//' \
+	-e 's/.mkenum$/.java/' \
+	-e 's/.shenum$/.java/' \
+	`
     grep -e "\\${suffix}\$" files.list | while read file ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
-	echo "${nodist_lib_sources} += ${d}/${b}.cxx"
-	echo "BUILT_SOURCES += ${d}/${b}.cxx"
+	name="${d}/${b}${s}"
+	echo "${nodist_lib_sources} += ${file}"
+	echo "BUILT_SOURCES += ${name}"
+        case "${suffix}" in
+	    .mkenum ) echo "${name}: \$(MKENUM)" ;;
+	esac
     done
 done
 
-for suffix in .cxx .c .hxx .s .S ; do
+for suffix in .cxx .c .hxx .s .S .c-sh .c-in .cxx-sh .cxx-in; do
     print_header "... ${suffix}"
     grep -e "\\${suffix}\$" files.list | while read file ; do
 	d=`dirname ${file}`
@@ -511,7 +514,9 @@ for suffix in .cxx .c .hxx .s .S ; do
 	name_=`echo ${name} | sed -e 'y,/-,__,'`
 	if has_main ${file} ; then
 	    echo "${name_}_SOURCES = ${file}"
-	    test ${suffix} = .cxx && echo "${name_}_LINK = \$(CXXLINK)"
+	    case "${suffix}" in
+		*.cxx* ) echo "${name_}_LINK = \$(CXXLINK)" ;;
+	    esac
 	    echo_PROGRAMS ${name}
 	    check_MANS ${name}
 	    if grep 'pthread\.h' ${file} > /dev/null 2>&1 ; then
@@ -561,9 +566,8 @@ do
       -r ${h}.java -o \
       -r ${h}.shenum -o \
       -r ${h}.mkenum -o \
-      -r ${h}.shjava -o \
-      -r ${h}.mkjava -o \
-      -r ${h}.javain \
+      -r ${h}.java-sh -o \
+      -r ${h}.java-in \
       ; then
       case "$c" in
 	  # Do not know what includes the header; just build early
