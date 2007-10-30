@@ -243,13 +243,19 @@ $ edit frysk-core/frysk/hpd/BreakpointCommand.java
 $ git-commit -a <b>(1)</b>
 $ git-fetch origin <b>(2)</b>
 $ git-rebase origin <b>(3)</b>
+$ git-add frysk-core/frysk/hpd/BreakpointCommand.java <b>(4)</b>
+$ git-rebase --continue
 $ git-push origin
 </pre></p>
 <ol>
   <li><p>commit changes to <tt>master</tt> branch</p>
   <li><p>fetch updates from the remote repository without updating local branches</p>
   <li><p>Rewind this branch to the branch point, merge in updates from the
-  remote repository, and then replay the new commits on top of that</p>
+  remote repository, and then replay the new commits on top of
+  that</p>
+  <li><p>If any conflicts are encountered during rebasing, edit
+  them, indicate that they are resolved with <tt>git-add</tt>, and
+  continue the rebase operation with <tt>git-rebase --continue</tt>.</p>
 </ol>
 
 <p>Here is the same work, done on a branch:
@@ -362,12 +368,17 @@ a specific file.</p>
 the index, as well as between arbitrary branches and commits. For example:<pre>
 $ git-diff ChangeLog <b>1</b>
 $ git-diff HEAD^..HEAD ChangeLog <b>2</b>
+$ git-diff HEAD^ ChangeLog <b>3</b>
+$ git-diff master...topic/newbreakpt <b>4</b>
 </pre></p>
 <ol>
   <li><p>difference between <tt>ChangeLog</tt> in the working directory and the
   index</p>
   <li><p>differences in <tt>ChangeLog</tt> betwen the most recent revision and
       its predecessor.</p>
+  <li><p>shorter way of writing the same thing</p>
+  <li><p>changes in the <tt>topic/newbreakpt</tt> branch since it was
+  forked from the <tt>master</tt> branch
     </ol>
 
 <a name="others"><h2>Other Git Commands</h2></a>
