@@ -735,6 +735,62 @@ public class TestTaskObserverCode extends TestLib
     assertFalse("unblocked unhit 2", code2.hit);
   }
 
+  // Tests whether two Tasks registered on same address
+  // get separate update events. bug #5234
+  public void testMultiTaskUpdateCalledSeveralTimes() throws Exception
+  {
+    // Create a child.
+    LegacyOffspring child = LegacyOffspring.createDaemon();
+
+    // Add a Task; wait for acknowledgement.
+    child.assertSendAddCloneWaitForAcks();
+
+    task = child.findTaskUsingRefresh (true);
+    proc = task.getProc();
+
+    Collection tasks = proc.getTasks();
+    Iterator it = tasks.iterator();
+
+    assertTrue("task one", it.hasNext());
+    Task task1 = (Task) it.next();
+
+    assertTrue("task two", it.hasNext());
+    Task task2 = (Task) it.next();
+
+    long address1 = getFunctionEntryAddress("bp1_func");
+    long address2 = getFunctionEntryAddress("bp2_func");
+    CountingCodeObserver observer = new CountingCodeObserver(new Task[]{task1, task2});
+    task1.requestAddCodeObserver(observer, address1);
+    assertRunUntilStop("add breakpoint observer at task1, address1");
+    task1.requestAddCodeObserver(observer, address2);
+    assertRunUntilStop("add breakpoint observer at task1, address2");
+    task2.requestAddCodeObserver(observer, address1);
+    assertRunUntilStop("add breakpoint observer at task2, address1");
+    task2.requestAddCodeObserver(observer, address2);
+    assertRunUntilStop("add breakpoint observer at task2, address2");
+
+    // Request a run and watch the breakpoints get hit.  The essence
+    // of the bug is that update gets called several times for a
+    // single breakpoint; twice in this case.
+    requestDummyRun(task1);
+    assertRunUntilStop("wait for hit 1");
+    assertEquals("number of hits for task1", 1, observer.hitsFor(task1));
+    assertEquals("number of hits for task2", 0, observer.hitsFor(task2));
+
+    requestDummyRun(task2);
+    assertRunUntilStop("wait for hit 2");
+    assertEquals("number of hits for task1", 1, observer.hitsFor(task1));
+    assertEquals("number of hits for task2", 1, observer.hitsFor(task2));
+
+    task1.requestDeleteCodeObserver(observer, address1);
+    task1.requestDeleteCodeObserver(observer, address2);
+    assertRunUntilStop("remove code observer from task1");
+
+    task2.requestDeleteCodeObserver(observer, address1);
+    task2.requestDeleteCodeObserver(observer, address2);
+    assertRunUntilStop("remove code observer from task2");
+  }
+
   // Same as the above, but resets the code observers by unblocking
   // before deleting, which triggers bug #5229
   public void testMultiTaskUpdateUnblockDelete() throws Exception
@@ -938,6 +994,46 @@ public class TestTaskObserverCode extends TestLib
     {
       fail("add to " + o + " failed, because " + w);
     }
+  }
+
+  static class CountingCodeObserver
+    implements TaskObserver.Code
+  {
+      // Map<Task, Integer>
+      Map hitmap = new HashMap();
+
+      CountingCodeObserver(Task[] tasks)
+      {
+	  for (int i = 0; i < tasks.length; ++i)
+	      hitmap.put(tasks[i], new Integer(0));
+      }
+
+      public Action updateHit (Task task, long addr)
+      {
+	  hitmap.put(task, new Integer(hitsFor(task) + 1));
+	  Manager.eventLoop.requestStop();
+	  return Action.BLOCK;
+      }
+
+      public int hitsFor (Task task)
+      {
+	  return ((Integer)hitmap.get(task)).intValue();
+      }
+
+      public void addedTo(Object o)
+      {
+	  Manager.eventLoop.requestStop();
+      }
+
+      public void deletedFrom(Object o)
+      {
+	  Manager.eventLoop.requestStop();
+      }
+
+      public void addFailed (Object o, Throwable w)
+      {
+	  fail("add to " + o + " failed, because " + w);
+      }
   }
 
   static class AttachedObserver
