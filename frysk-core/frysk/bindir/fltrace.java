@@ -50,6 +50,7 @@ import gnu.classpath.tools.getopt.*;
 import frysk.proc.*;
 import frysk.sys.Sig;
 import frysk.util.CommandlineParser;
+import frysk.stack.*;
 import lib.dwfl.ElfSymbolVersion;
 
 import frysk.ftrace.*;
@@ -75,6 +76,7 @@ public class fltrace
 
     class WorkingSetRule {
 	final public boolean addition;
+	final public boolean stackTrace;
 
 	/**
 	 * Object that performs a pattern matching of symbol
@@ -85,8 +87,9 @@ public class fltrace
 	/** See namePattern */
 	final public Pattern sonamePattern, versionPattern;
 
-	public WorkingSetRule(boolean addition, String nameRe, String sonameRe, String versionRe) {
+	public WorkingSetRule(boolean addition, boolean stackTrace, String nameRe, String sonameRe, String versionRe) {
 	    this.addition = addition;
+	    this.stackTrace = stackTrace;
 	    this.namePattern = Pattern.compile((nameRe != null) ? nameRe : ".*");
 	    this.sonamePattern = Pattern.compile((sonameRe != null) ? sonameRe : ".*");
 	    this.versionPattern = Pattern.compile((versionRe != null) ? versionRe : ".*");
@@ -94,11 +97,17 @@ public class fltrace
 
 	public String toString() {
 	    return ""
-		+ (this.addition ? '+' : '-')
+		+ (this.addition ? "" : "-")
+		+ (this.stackTrace ? "#" : "")
 		+ this.namePattern.pattern()
 		+ "@" + this.sonamePattern.pattern()
 		+ "@@" + this.versionPattern.pattern();
 	}
+    }
+
+    interface LtraceControllerObserver
+    {
+	void shouldStackTraceOn(Set symbols);
     }
 
     class MyController
@@ -108,6 +117,12 @@ public class fltrace
 	private final List pltRules = new ArrayList();
 	private final List dynRules = new ArrayList();
 	private final List symRules = new ArrayList();
+	private final LtraceControllerObserver observer;
+
+	public MyController(LtraceControllerObserver observer)
+	{
+	    this.observer = observer;
+	}
 
 	public void gotPltRules(List rules) {
 	    logger.log(Level.FINER, "Got " + rules.size() + " PLT rules.", this);
@@ -125,7 +140,7 @@ public class fltrace
 	}
 
 	public void applyTracingRules(final Task task, final ObjectFile objf, final Ltrace.Driver driver,
-				      List rules, TracePointOrigin origin)
+				      final List rules, final TracePointOrigin origin)
 	    throws lib.dwfl.ElfException
 	{
 	    logger.log(Level.FINER, "Building working set for origin " + origin + ".", this);
@@ -134,8 +149,17 @@ public class fltrace
 	    if (rules.isEmpty())
 		return;
 
+	    class WorkingSetElement {
+		final public TracePoint tracepoint;
+		final public boolean stackTrace;
+		public WorkingSetElement(TracePoint tracepoint, boolean stackTrace) {
+		    this.tracepoint = tracepoint;
+		    this.stackTrace = stackTrace;
+		}
+	    }
+
 	    final Set candidates = new HashSet(); // Set<TracePoint>, all tracepoints in objfile
-	    final Set workingSet = new HashSet(); // Set<TracePoint>, incrementally built working set
+	    final Set workingSet = new HashSet(); // Set<WorkingSetElement>, incrementally built working set
 	    boolean candidatesInited = false;
 
 	    // Loop through all the rules, and use them to build
@@ -149,7 +173,7 @@ public class fltrace
 		if ((rule.sonamePattern.pattern().equals("MAIN")
 		     && task.getProc().getExe().equals(objf.getFilename().getPath()))
 		    || rule.sonamePattern.matcher(objf.getSoname()).matches())
-		    {
+		{
 			if (!candidatesInited) {
 			    candidatesInited = true;
 			    objf.eachTracePoint(new ObjectFile.TracePointIterator() {
@@ -162,9 +186,15 @@ public class fltrace
 
 			// For '+' rules add subset of matching elements candidates to workingSet.
 			// For '-' rules remove matching elements from workingSet.
+
+			// Here we iterate over one of two sets, each of them
+			// holding objects of different class. Fun!
 			Set iterateOver = rule.addition ? candidates : workingSet;
+
 			for (Iterator jt = iterateOver.iterator(); jt.hasNext(); ) {
-			    TracePoint tp = (TracePoint)jt.next();
+			    Object o = jt.next();
+			    TracePoint tp = rule.addition ? (TracePoint)o : ((WorkingSetElement)o).tracepoint;
+
 			    if (rule.namePattern.matcher(tp.symbol.name).matches()) {
 				// Decide which set of versions should be taken into account.
 				boolean versionMatch = false;
@@ -193,7 +223,7 @@ public class fltrace
 
 				if (versionMatch) {
 				    if (rule.addition) {
-					if (workingSet.add(tp))
+					if (workingSet.add(new WorkingSetElement(tp, rule.stackTrace)))
 					    logger.log(Level.CONFIG, rule + ": add `" + tp.symbol.name + "'.", this);
 				    }
 				    else {
@@ -203,13 +233,22 @@ public class fltrace
 				}
 			    }
 			}
-		    }
+		}
 	    }
 
 	    // Finally, apply constructed working set.
 	    logger.log(Level.FINER, "Applying working set for origin " + origin + ".", this);
-	    for (Iterator it = workingSet.iterator(); it.hasNext(); )
-		driver.tracePoint(task, (TracePoint)it.next());
+	    Set stackTraceSet = new HashSet();
+	    for (Iterator it = workingSet.iterator(); it.hasNext(); ) {
+		WorkingSetElement e = (WorkingSetElement)it.next();
+		driver.tracePoint(task, e.tracepoint);
+		if (e.stackTrace)
+		    stackTraceSet.add(e.tracepoint.symbol);
+	    }
+
+	    // And warn our console front end that it should stack
+	    // trace if it sees one of these...
+	    observer.shouldStackTraceOn(stackTraceSet);
 	}
 
 	public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver) {
@@ -224,11 +263,23 @@ public class fltrace
 	}
     }
 
-    final MyController controller = new MyController();
-    final Ltrace tracer = new Ltrace(controller);
-
-  LtraceObserver ltraceObserver = new LtraceObserver() {
+    class MyLtraceObserver
+	implements LtraceObserver,
+		   LtraceControllerObserver
+    {
       private Map levelMap = new HashMap();
+
+      // Which system calls should yield a stack trace.
+      private HashSet syscallStackTraceSet = null;
+
+      // Which symbols should yield a stack trace.
+      private HashSet symbolsStackTraceSet = new HashSet();
+
+      public synchronized void shouldStackTraceOn(Set symbols)
+      {
+	  System.out.println("{{{Should stack trace on " + symbols.size() + " symbols}}}");
+	  symbolsStackTraceSet.addAll(symbols);
+      }
 
       private Object lastItem = null;
       private Task lastTask = null;
@@ -323,27 +374,54 @@ public class fltrace
         updateOpenLine(null, null);
       }
 
+      private void generateStackTrace(Task task)
+      {
+	  eventSingle(task, "dumping stack trace:");
+
+	  Frame frame = StackFactory.createFrame(task);
+	  StackFactory.printStack(writer, frame);
+	  writer.flush();
+	  updateOpenLine(null, null);
+      }
+
+      public void setSyscallStackTracing(HashSet syscallSet)
+      {
+	  syscallStackTraceSet = syscallSet;
+      }
+
       public synchronized void funcallEnter(Task task, Symbol symbol, Object[] args)
       {
-	String symbolName = symbol.name;
-	String callerLibrary = symbol.getParent().getSoname();
-	String eventName = callerLibrary + "->" + /*libraryName + ":" +*/ symbolName;
-	eventEntry(task, symbol, "call", eventName, args);
+	  String symbolName = symbol.name;
+	  String callerLibrary = symbol.getParent().getSoname();
+	  String eventName = callerLibrary + "->" + /*libraryName + ":" +*/ symbolName;
+	  eventEntry(task, symbol, "call", eventName, args);
+
+	  // If this systsysem call is in the stack tracing HashSet,
+	  // get a stack trace before continuing on.
+	  if (symbolsStackTraceSet != null
+	      && symbolsStackTraceSet.contains(symbol))
+	      generateStackTrace(task);
       }
 
       public synchronized void funcallLeave(Task task, Symbol symbol, Object retVal)
       {
-	eventLeave(task, symbol, "leave", symbol.name, retVal);
+	  eventLeave(task, symbol, "leave", symbol.name, retVal);
       }
 
       public synchronized void syscallEnter(Task task, Syscall syscall, Object[] args)
       {
-	eventEntry(task, syscall, "syscall", syscall.getName(), args);
+	  eventEntry(task, syscall, "syscall", syscall.getName(), args);
+
+	  // If this systsysem call is in the stack tracing HashSet,
+	  // get a stack trace before continuing on.
+	  if (syscallStackTraceSet != null
+	      && syscallStackTraceSet.contains(syscall.getName()))
+	      generateStackTrace(task);
       }
 
       public synchronized void syscallLeave(Task task, Syscall syscall, Object retVal)
       {
-	eventLeave(task, syscall, "syscall leave", syscall.getName(), retVal);
+	  eventLeave(task, syscall, "syscall leave", syscall.getName(), retVal);
       }
 
       public synchronized void fileMapped(Task task, File file)
@@ -372,15 +450,19 @@ public class fltrace
 	else
 	  System.err.println("+++ exited (status " + value + ") +++");
       }
-    };
+    }
 
-  public static void main(String[] args)
-  {
-    (new fltrace()).run(args);
-  }
+    final MyLtraceObserver ltraceObserver = new MyLtraceObserver();
+    final MyController controller = new MyController(ltraceObserver);
+    final Ltrace tracer = new Ltrace(controller);
+
+    public static void main(String[] args)
+    {
+	(new fltrace()).run(args);
+    }
 
     public List parseRules(String arg) {
-	String[] strs = arg.split(":", -1);
+	String[] strs = arg.split(",", -1);
 	List rules = new ArrayList();
 	for (int i = 0; i < strs.length; ++i) {
 	    // 111 single fully qualified symbol:           'symbol@soname@@version'
@@ -394,6 +476,7 @@ public class fltrace
 	    String str = strs[i];
 	    final String symbolRe, sonameRe, versionRe;
 	    final boolean addition;
+	    final boolean stackTrace;
 	    int pos;
 
 	    if ((pos = str.indexOf("@@")) != -1) {
@@ -410,6 +493,13 @@ public class fltrace
 	    else
 		sonameRe = null;
 
+	    if (str.length() > 0 && str.charAt(0) == '#') {
+		stackTrace = true;
+		str = str.substring(1);
+	    }
+	    else
+		stackTrace = false;
+
 	    if (str.length() > 0 && str.charAt(0) == '-') {
 		addition = false;
 		str = str.substring(1);
@@ -423,7 +513,7 @@ public class fltrace
 		symbolRe = null;
 
 	    logger.log(Level.FINE, i + ": " + str + ": symbol=" + symbolRe + ", soname=" + sonameRe + ", version=" + versionRe);
-	    WorkingSetRule rule = new WorkingSetRule(addition, symbolRe, sonameRe, versionRe);
+	    WorkingSetRule rule = new WorkingSetRule(addition, stackTrace, symbolRe, sonameRe, versionRe);
 	    rules.add(rule);
 	}
 	return rules;
@@ -482,22 +572,38 @@ public class fltrace
 	    }
     });
 
+    parser.add(new Option('s', "trace system calls", "CALL[,CALL]...") {
+	    public void parsed(String arg) {
+		tracer.setTraceSyscalls();
+		StringTokenizer st = new StringTokenizer(arg, ",");
+		HashSet set = new HashSet(2);
+		while (st.hasMoreTokens())
+		    {
+			String name = st.nextToken();
+			// FIXME: there's no good way to error out if the
+			// syscall is unknown.
+			set.add(name);
+		    }
+		ltraceObserver.setSyscallStackTracing(set);
+	    }
+    });
+
     final List pltRules = new ArrayList();
-    parser.add(new Option("plt", "trace library calls done via PLT", "RULE[:RULE]...") {
+    parser.add(new Option("plt", "trace library calls done via PLT", "RULE[,RULE]...") {
 	    public void parsed(String arg) {
 		pltRules.add(arg);
 	    }
     });
 
     final List dynRules = new ArrayList();
-    parser.add(new Option("dyn", "trace entry points from DYNAMIC symtab", "RULE[:RULE]...") {
+    parser.add(new Option("dyn", "trace entry points from DYNAMIC symtab", "RULE[,RULE]...") {
 	    public void parsed(String arg) {
 		dynRules.add(arg);
 	    }
     });
 
     final List symRules = new ArrayList();
-    parser.add(new Option("sym", "trace entry points from symbol table", "RULE[:RULE]...") {
+    parser.add(new Option("sym", "trace entry points from symbol table", "RULE[,RULE]...") {
 	    public void parsed(String arg) {
 		symRules.add(arg);
 	    }

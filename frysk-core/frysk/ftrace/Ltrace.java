@@ -73,6 +73,11 @@ public class Ltrace
   // True if we're tracing signals as well.
   boolean traceSignals = false;
 
+  // True if we're tracing syscalls.  Currently true by default,
+  // because we need to trace syscalls for correct mmap/munmap
+  // handling.
+  boolean traceSyscalls = true;
+
   // Task counter.
   int numTasks = 0;
 
@@ -135,6 +140,14 @@ public class Ltrace
   public void setTraceSignals ()
   {
     traceSignals = true;
+  }
+
+  /**
+   * Request that syscalls should be traced as well.
+   */
+  public void setTraceSyscalls ()
+  {
+    traceSyscalls = true;
   }
 
   /**
@@ -208,10 +221,13 @@ public class Ltrace
 
     task.requestAddAttachedObserver(ltraceTaskObserver);
     if (traceChildren)
-      task.requestAddForkedObserver(ltraceTaskObserver);
+	task.requestAddForkedObserver(ltraceTaskObserver);
     task.requestAddTerminatedObserver(ltraceTaskObserver);
     task.requestAddTerminatingObserver(ltraceTaskObserver);
-    task.requestAddSyscallObserver(ltraceTaskObserver);
+    if (traceSyscalls)
+	task.requestAddSyscallObserver(ltraceTaskObserver);
+    if (traceSignals)
+	task.requestAddSignaledObserver(ltraceTaskObserver);
     // There are no code observers right now.  We add them as files
     // get mapped to process.
   }
@@ -295,6 +311,7 @@ public class Ltrace
 	       TaskObserver.Code,
 	       TaskObserver.Forked,
 	       TaskObserver.Syscall,
+	       TaskObserver.Signaled,
 	       TaskObserver.Terminated,
 	       TaskObserver.Terminating
   {
@@ -675,6 +692,17 @@ public class Ltrace
     public Action updateForkedParent (Task parent, Task offspring)
     {
       return Action.CONTINUE;
+    }
+
+
+
+    // -----------------------
+    // --- signal observer ---
+    // -----------------------
+
+    public Action updateSignaled (Task task, int signal)
+    {
+	return Action.CONTINUE;
     }
 
 
