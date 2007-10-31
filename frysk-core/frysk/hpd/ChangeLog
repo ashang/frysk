@@ -1,10 +1,11 @@
 2007-10-31  Andrew Cagney  <cagney@redhat.com>
 
-	* TestInput.java (getParameters()): Delete.
+	* Input.java (getParameters()): Delete.
 	(parameters()): New.
 	(remove(int)): New.
 	(tokenize(String)): Rewrite.
-	(testEmpty()): New.
+	(token(int)): New.
+	* TestInput.java (testEmpty()): New.
 	(testOneToken()): New.
 	(testOneSpacedToken()): New.
 	(testSeveralTokens()): New.
