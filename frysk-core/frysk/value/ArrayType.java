@@ -222,14 +222,17 @@ public class ArrayType
 	}
     }
 
-    public void toPrint(PrintWriter writer) {
+    public void toPrint(String s, PrintWriter writer) {
 	type.toPrint(writer);
-	writer.print(" [");
+	writer.print(" " + s);
 	for(int i = 0; i < this.dimension.length; i++) {
-	    if (i > 0)
-		writer.print(",");
+	    writer.print("[");
 	    writer.print(dimension[i]);
+	    writer.print("]");
 	}
-	writer.print("]");
+    }
+    
+    public void toPrint(PrintWriter writer) {
+	this.toPrint("", writer);
     }
 }

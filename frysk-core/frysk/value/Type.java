@@ -71,7 +71,7 @@ public abstract class Type {
 	return size;
     }
 
-    String getName() {
+    public String getName() {
 	return name;
     }
 

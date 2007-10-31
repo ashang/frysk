@@ -1,3 +1,8 @@
+2007-10-31  Stan Cox  <scox@redhat.com>
+
+	* TypeEntry.java (getUnionType): New.
+	(getType): Add UNION_TYPE_, VOLATILE_TYPE_, CONST_TYPE_.
+
 2007-10-30  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTypeEntryType.java-sh: Rename TestTypeEntryType.shjava.
