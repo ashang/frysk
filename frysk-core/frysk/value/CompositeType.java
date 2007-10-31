@@ -210,23 +210,6 @@ public abstract class CompositeType
 	return new ClassIterator(v);
     }
 
-    public Value get (Value v, int componentsIdx, ArrayList components) {
-	while (componentsIdx < components.size()) {
-	    String component = (String)components.get(componentsIdx);
-	    Member member = (Member)nameToMember.get(component);
-	    if (member != null) {
-		// XXX: What about the null case?  Just iterates :-/
-		v = getValue (v, member.index);
-		if (v.getType() instanceof CompositeType)
-		    return ((CompositeType)v.getType()).get(v, componentsIdx, components);
-		else if (v.getType() instanceof ArrayType)
-		    v = ((ArrayType)v.getType()).get(v, ++componentsIdx, components);
-	    }
-	    componentsIdx += 1;
-	}
-	return v;
-    }
-    
     void toPrint(PrintWriter writer, Location location, ByteBuffer memory,
 		 Format format) {
 	writer.print("{");
