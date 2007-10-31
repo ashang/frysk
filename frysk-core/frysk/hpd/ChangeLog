@@ -20,6 +20,9 @@
 
 2007-10-31  Andrew Cagney  <cagney@redhat.com>
 
+	* Input.java (Input(String,String,String,List,List)): Replace
+	Input(String,String,String,List).
+	(position(int)): New.	
 	* Command.java (complete(CLI,Input,int,List)): New.
 	* MultiLevelCommand.java (complete(CLI,Input,int,List)): New.
 	* CLI.java (complete(CLI,Input,int,List)): Call
