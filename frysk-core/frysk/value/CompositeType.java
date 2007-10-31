@@ -89,6 +89,11 @@ public abstract class CompositeType
 		    + ",bitSize=" + bitSize
 		    + "}");
 	}
+	
+	private Value getValue (Value v) {
+	    int off = (int)offset;
+	    return new Value(type, v.getLocation().slice(off, type.getSize()));
+	}   
     }
     /**
      * A mapping from NAME to Member; only useful for named members.
@@ -192,20 +197,13 @@ public abstract class CompositeType
 	}
 
 	public Object next () {
-	    return getValue(v, idx);
+	    return ((Member)members.get(idx)).getValue(v);
 	}
 
 	public void remove () {
 	}
     }
-
-    private Value getValue (Value v, int idx) {
-	Member member = (Member)(members.get(idx));
-	Type type = member.type;
-	int off = (int)member.offset;
-	return new Value(type, v.getLocation().slice(off, type.getSize()));
-    }
-    
+ 
     public ClassIterator iterator (Value v) {
 	return new ClassIterator(v);
     }
@@ -312,6 +310,6 @@ public abstract class CompositeType
 	Member mem = (Member)nameToMember.get(member);
 	if (mem == null)
 	    throw new RuntimeException("Invalid data member: " + member);
-	return getValue (var1, mem.index);
+	return mem.getValue (var1);
     }
 }

@@ -1,5 +1,9 @@
 2007-10-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* CompositeType.java: Moved getValue inside the Memeber class.
+
+2007-10-31  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* CompositeType.java (get): Deleted.
 
 2007-10-29  Teresa Thomas  <tthomas@redhat.com>
