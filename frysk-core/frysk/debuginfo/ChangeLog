@@ -5,6 +5,8 @@
 
 2007-10-30  Andrew Cagney  <cagney@redhat.com>
 
+	* gen-type-expect-tests.py: Mark all tests as unresolved, 5235.
+
 	* TestTypeEntryType.java-sh: Rename TestTypeEntryType.shjava.
 	* TestTypeEntryValue.java-sh: Rename TestTypeEntryValue.shjava.
 

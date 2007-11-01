@@ -1,3 +1,7 @@
+2007-10-31  Petr Machata  <pmachata@redhat.com>
+
+	* TestTaskObserverCode.java (testMultiTaskUpdateCalledSeveralTimes): New test.
+
 2007-10-29  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Observable.java (observers): Now a HashMap.

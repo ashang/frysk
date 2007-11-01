@@ -514,29 +514,25 @@ for suffix in .cxx .c .hxx .s .S .c-sh .c-in .cxx-sh .cxx-in; do
 	name_=`echo ${name} | sed -e 'y,/-,__,'`
 	s=`echo ${suffix} | sed -e 's/-sh$//' -e 's/-in$//'`
 	if has_main ${file} ; then
-	    echo "${name_}_SOURCES = ${file}"
-	    case "${suffix}" in
-		*.cxx* ) echo "${name_}_LINK = \$(CXXLINK)" ;;
+	    echo "${name_}_SOURCES = ${name}${s}"
+	    case "${s}" in
+		.cxx ) echo "${name_}_LINK = \$(CXXLINK)" ;;
 	    esac
 	    echo_PROGRAMS ${name}
 	    check_MANS ${name}
 	    if grep 'pthread\.h' ${file} > /dev/null 2>&1 ; then
 		echo "${name_}_LDADD = -lpthread"
 	    fi
-
             # Generate the rules for arch32 test
-	    echo_arch32_PROGRAMS ${name} ${file}
+	    echo_arch32_PROGRAMS ${name} ${name}${s}
 	else
-	    case "${suffix}" in
-		*-in | *-sh)
-		    echo "${nodist_lib_sources} += ${name}${s}"
-		    echo "BUILT_SOURCES += ${name}${s}"
-		    ;;
-		* )
-		    echo "${sources} += ${file}"
-		    ;;
-	    esac
+	    echo "${sources} += ${file}"
 	fi
+        case "${suffix}" in
+	    *-in | *-sh)
+		echo "BUILT_SOURCES += ${name}${s}"
+		;;
+	esac
 	case "${suffix}" in
 	    # Hardwire assembler dependency on include/frysk-asm.h;
 	    # automake doesn't generate this :-( FIXME: ARCH-32 case?

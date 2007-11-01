@@ -1,3 +1,9 @@
+2007-10-31  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (.c-in, .cxx-in, .c-sh, .cxx-sh): Add base .c or
+	.cxx file to ...SOURCES and not the original source.  Drop use of
+	automake's nodist_
+
 2007-10-30 Stan Cox <scox@redhat.com>
 
 	* Makefile.rules (JUnitTests.java): Also trim blddir.

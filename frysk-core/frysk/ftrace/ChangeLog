@@ -1,3 +1,7 @@
+2007-10-31  Petr Machata  <pmachata@redhat.com>
+
+	* ObjectFile.java: Fix symbol table caching.
+
 2007-10-18  Petr Machata  <pmachata@redhat.com>
 
 	* ObjectFile.java: Fix assignment of symbols to origins.

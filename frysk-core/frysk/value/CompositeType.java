@@ -65,9 +65,8 @@ public abstract class CompositeType
 	final int bitOffset;
 	final int bitSize;
 	final boolean inheritance;
-
 	Member(int index, String name, Type type, long offset,
-	       Access access, int bitOffset, int bitSize, 
+	       Access access, int bitOffset, int bitSize,
 	       boolean inheritance) {
 	    this.index = index;
 	    this.type = type;
@@ -78,7 +77,6 @@ public abstract class CompositeType
 	    this.bitSize = bitSize;
 	    this.inheritance = inheritance;
 	}
-
 	public String toString() {
 	    return ("{"
 		    + "index=" + index
@@ -91,13 +89,16 @@ public abstract class CompositeType
 		    + ",bitSize=" + bitSize
 		    + "}");
 	}
+	
+	private Value getValue (Value v) {
+	    int off = (int)offset;
+	    return new Value(type, v.getLocation().slice(off, type.getSize()));
+	}   
     }
-
     /**
      * A mapping from NAME to Member; only useful for named members.
      */
     private final Map nameToMember = new HashMap();
-
     /**
      * A list of all members, in insertion order.
      */
@@ -159,15 +160,13 @@ public abstract class CompositeType
 				   Access access) {
 	return add(name, type, offset, access, -1, -1, false);
     }
-
     public CompositeType addMember(String name, Type type, long offset,
 				   Access access, int bitOffset,
 				   int bitLength) {
 	return add(name, type, offset, access, bitOffset, bitLength, false);
     }
-
     public CompositeType addInheritance(String name, Type type, long offset,
-				        Access access) {
+					Access access) {
 	return add(name, type, offset, access, -1, -1, true);
     }
 
@@ -175,7 +174,7 @@ public abstract class CompositeType
      * Iterate through the class types.
      */
     class ClassIterator
-       implements java.util.Iterator
+	implements java.util.Iterator
     {
 	private int idx;
 
@@ -198,41 +197,15 @@ public abstract class CompositeType
 	}
 
 	public Object next () {
-	    return getValue(v, idx);
+	    return ((Member)members.get(idx)).getValue(v);
 	}
 
 	public void remove () {
 	}
     }
-
-    private Value getValue (Value v, int idx) {
-	Member member = (Member)(members.get(idx));
-	Type type = member.type;
-	int off = (int)member.offset;
-	return new Value(type, v.getLocation().slice(off, type.getSize()));
-    }
-
+ 
     public ClassIterator iterator (Value v) {
 	return new ClassIterator(v);
-    }
-
-    public Value get (Value v, int componentsIdx, ArrayList components) {
-	while (componentsIdx < components.size()) {
-	    String component = (String)components.get(componentsIdx);
-	    Member member = (Member)nameToMember.get(component);
-	    if (member != null) {
-		// XXX: What about the null case?  Just iterates :-/
-		v = getValue (v, member.index);
-		if (v.getType() instanceof CompositeType)
-		    return ((CompositeType)v.getType()).get(v, componentsIdx,
-			    components);
-		else if (v.getType() instanceof ArrayType)
-		    v = ((ArrayType)v.getType()).get(v, ++componentsIdx,
-			    components);
-	    }
-	    componentsIdx += 1;
-	}
-	return v;
     }
 
     void toPrint(PrintWriter writer, Location location, ByteBuffer memory,
@@ -252,7 +225,7 @@ public abstract class CompositeType
 		    writer.print(member.name);
 		    writer.print("=");
 		}
-		Location loc = location.slice(member.offset, 
+		Location loc = location.slice(member.offset,
 					      member.type.getSize());
 		Value val = new Value(member.type, loc);
 		val.toPrint(writer, memory, format);
@@ -316,8 +289,7 @@ public abstract class CompositeType
 		}
 	    }
 	    writer.print(indentPrefix);
-	    
-	    if (member.type instanceof TypeDef)
+	    if (member.type.isTypedef())
 		writer.print(member.type.getName());
 	    else if (member.type instanceof CompositeType)
 		((CompositeType) member.type).toPrint(indentation + 2, writer);
@@ -331,9 +303,7 @@ public abstract class CompositeType
 	    }
 	    else
 		member.type.toPrint(writer);
-	    if (member.type instanceof frysk.value.FunctionType)
-		printName = false;
-	    if (printName) {
+	    if (!(member.type instanceof frysk.value.FunctionType)) {
 		writer.print(" ");
 		writer.print(member.name);
 	    }
@@ -356,11 +326,12 @@ public abstract class CompositeType
     public void toPrint( PrintWriter writer) {
 	this.toPrint(2, writer);
     }
+
     public Value member(Value var1, String member)
     {
 	Member mem = (Member)nameToMember.get(member);
 	if (mem == null)
 	    throw new RuntimeException("Invalid data member: " + member);
-	return getValue (var1, mem.index);
+	return mem.getValue (var1);
     }
 }

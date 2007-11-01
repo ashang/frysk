@@ -1,10 +1,18 @@
 2007-10-31  Stan Cox  <scox@redhat.com>
 
 	* TypeDecorator.java (toPrint): Handle PointerType.
-	* PointerType.java toPrint(String s, PrintWriter writer): New.
-	* ArrayType.java toPrint(String s, PrintWriter writer): New.
-	* CompositeType.java toPrint(int indentation, PrintWriter writer): New.
+	* PointerType.java toPrint(String, PrintWriter): New.
+	* ArrayType.java toPrint(String, PrintWriter): New.
+	* CompositeType.java toPrint(int, PrintWriter): New.
 	* Type.java getName: Make public.
+
+2007-10-31  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CompositeType.java: Moved getValue inside the Member class.
+
+2007-10-31  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CompositeType.java (get): Deleted.
 
 2007-10-29  Teresa Thomas  <tthomas@redhat.com>
 
