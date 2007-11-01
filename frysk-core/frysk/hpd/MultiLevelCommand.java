@@ -104,8 +104,6 @@ public abstract class MultiLevelCommand extends Command {
 
     int complete(CLI cli, Input input, int cursor, List candidates) {
 	Input.Token incomplete = input.token(0);
-	System.out.println("token=" + incomplete);
-	System.out.println("cursor=" + cursor);
 	// The cursor is past this token.  Find this level's
 	// sub-command and pass the completion problem on to it.
 	if (incomplete.value != null && cursor > incomplete.end) {

@@ -1,5 +1,7 @@
 2007-11-01  Andrew Cagney  <cagney@redhat.com>
 
+	* MultiLevelCommand.java: Delete stray println calls.
+	
 	* CompletionFactory.java: New.
 	* PrintCommand.java (complete(CLI,Input,int,List)): New.
 	* Command.java (complete(CLI,Input,int,List)): New.
