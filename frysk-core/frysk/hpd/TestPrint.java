@@ -91,7 +91,7 @@ public class TestPrint
     }
     public void testAddressOf() {
 	e = HpdTestbed.attachXXX("hpd-c");
-	e.sendCommandExpectPrompt("print &static_int", "\r\n0x[0-9a-f]+\r\n");
+	e.sendCommandExpectPrompt("print &static_int", "\r\n.+0x[0-9a-f]+\r\n");
     }
     public void testDereference() {
 	e = HpdTestbed.attachXXX("hpd-c");
