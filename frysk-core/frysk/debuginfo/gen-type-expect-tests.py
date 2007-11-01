@@ -143,7 +143,7 @@ public class %s extends TestLib {
                 value.toPrint(pw, task.getMemory(), Format.NATURAL);
                 pw.flush();
                 String valueString = baos.toString();
-                System.out.println("Expect: " + expect[i].symbol + "\\n'" + expect[i].output + "'\\nGot:\\n'" + valueString + "'");
+//                System.out.println("Expect: " + expect[i].symbol + "\\n'" + expect[i].output + "'\\nGot:\\n'" + valueString + "'");
                 assertEquals(myName + expect[i].symbol, expect[i].output, valueString);
                 baos.reset();
             }
@@ -167,36 +167,35 @@ public class %s extends TestLib {
 
 ''')
 
-    def start_test(self,name):
-        print('''
-    public void test%s () {
+    def start_test(self, tool, name):
+        print("    public void test%s () {" % (name))
+        if (tool == "value"):
+            print('''
         if (unresolved(5235))
             return;
-        Expect [] expect  = {
-''' % (name))
+''')
+        print("        Expect [] expect  = {")
 
-    def add_test(self,tool,name,type,etype,decl,value):
+    def add_test(self, tool, name, type, etype, decl, value):
         name = name.rstrip()
         type = type.rstrip().replace("\n","\\n")
         etype = etype.rstrip()
         value = value.rstrip()
 
-        print('\t    new Expect("%s",' % name)
         if (tool == "type"):
-            print('"%s"' % type)
+            print('\t    new Expect("%s","%s"),' % (name, type))
         elif (tool == "value"):
-            print('"%s"' % value)
-        print("),")
+            print('\t    new Expect("%s","%s"),' % (name, value))
         
-    def end_test(self, executable):
+    def end_test(self, executable, name):
         tokens = executable.split(".")
         print('''
               };
 
       ExpectTest expectTest = new ExpectTest("%s");
-      expectTest.compareEqual(expect, "testScalar ");
+      expectTest.compareEqual(expect, "test%s ");
     }
-''' % os.path.basename(tokens[0]))
+''' % (os.path.basename(tokens[0]), name))
 
     def epilogue(self,debug):
         print('''
@@ -276,7 +275,7 @@ while (True):
     if (line[0:2] != "//"):
         if (name != ""):
             if (test == "Types"):
-                j_file.start_test(test)
+                j_file.start_test(tool, test)
             j_file.add_test(tool, name, type, type, type, value)
             name = type = etype = value = ""
         continue
@@ -285,9 +284,9 @@ while (True):
         # Collect test info
         if (tokens[1] == "Test:"):
             if (test != "Types"):
-                j_file.end_test(sys.argv[current_file])
+                j_file.end_test(sys.argv[current_file], test)
             test = line[line.find(tokens[1]) + len(tokens[1]) + 1:].rstrip()
-            j_file.start_test(test)
+            j_file.start_test(tool, test)
         elif (tokens[1] == "Name:"):
             name = name + line[line.find(tokens[1]) + len(tokens[1]) + 1:]
         elif (tokens[1] == "Type:"):
@@ -299,5 +298,5 @@ while (True):
     except IndexError:
         True
 
-j_file.end_test(sys.argv[current_file-1])
+j_file.end_test(sys.argv[current_file-1], test)
 j_file.epilogue(debug)

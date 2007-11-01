@@ -1,3 +1,7 @@
+2007-10-31  Stan Cox  <scox@redhat.com>
+
+	* cni/DwarfDie.cxx (skip_storage_attr): Remove.
+
 2007-10-11  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ChangeLog.elf: New. Recreate pre-refactor ChangeLog

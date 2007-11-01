@@ -120,9 +120,7 @@ class RunCommand extends Command {
 	    return;
 	}
 	Runner runner = new Runner(cli);
-	Manager.host.requestCreateAttachedProc
-	    ((String[])(cmd.getParameters().toArray(new String[0])),
-	     runner);
+	Manager.host.requestCreateAttachedProc(cmd.stringArrayValue(), runner);
         try {
             runner.latch.await();
         } catch (InterruptedException e) {

@@ -109,21 +109,19 @@ class OptionParser {
      * found.
      */
     boolean parse(Input input) {
-	List args = input.getParameters();
 	try {
-	    for (int currentIndex = args.size() - 1;
+	    for (int currentIndex = input.size() - 1;
 		 currentIndex > -1;
 		 --currentIndex) {
-		String string = (String) args.get(currentIndex);
+		String string = input.parameter(currentIndex);
 		if (string.equals("--")) {
-		    args.remove(currentIndex);
+		    input.remove(currentIndex);
 		    break;
 		}
-		    
 		if (string.charAt(0) != '-')
 		    continue;
-		handleLongOption(args, string, currentIndex + 1);
-		args.remove(currentIndex);
+		handleLongOption(input, string, currentIndex + 1);
+		input.remove(currentIndex);
 	    }
 	    // See if something went wrong.
 	    validate();
@@ -138,7 +136,7 @@ class OptionParser {
 	return true;
     }
 
-    private void handleLongOption(List args, String real, int index)
+    private void handleLongOption(Input input, String real, int index)
 	throws OptionException {
 	String option = real.substring(real.lastIndexOf('-') + 1);
 	String justName = option;
@@ -172,8 +170,8 @@ class OptionParser {
 	String argument = null;
 	if (found.getTakesArgument()) {
 	    if (eq == -1) {
-		argument = (String) args.get(index);
-		args.remove(index);
+		argument = input.parameter(index);
+		input.remove(index);
 	    }
 	    else
 		argument = option.substring(eq + 1);

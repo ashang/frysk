@@ -41,52 +41,51 @@ package frysk.hpd;
 
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
-import java.util.List;
 
 public class TestOptionParser extends TestLib {
 
     private OptionParser parser;
     private boolean ok;
     private String argument;
-    private List params;
+    private Input input;
     private boolean parsedOption;
+
     public void setUp() {
 	super.setUp();
 	parser = new OptionParser("parser", "<<header>>", "<<footer>>");
-	params = null;
 	ok = false;
 	argument = null;
 	parsedOption = false;
     }
     public void tearDown() {
 	parser = null;
+	input = null;
+	argument = null;
 	super.tearDown();
     }
 
     private void parse(String string) {
-	Input input = new Input(string).accept();
-	params = input.getParameters();
+	input = new Input(string).accept();
 	ok = parser.parse(input);
     }
 
     public void testDashDash() {
 	parse("parser --");
-	assertTrue("Params list should be empty", params.isEmpty());
+	assertEquals("Params list should be empty", 0, input.size());
     }
 
     public void testRegular() {
 	parse("parser argument");
-	assertEquals("Param list should have one item", params.size(), 1);
-	assertEquals("Argument should be 'argument'", params.get(0),
-		     "argument");
-
+	assertEquals("Param list should have one item", 1, input.size());
+	assertEquals("Argument should be 'argument'", "argument",
+		     input.parameter(0));
     }
 
     public void testRegularDashDash() {
 	parse("parser argument --");
-	assertEquals("Param list should have one item", params.size(), 1);
-	assertEquals("Argument should be 'argument'", params.get(0),
-		     "argument");
+	assertEquals("Param list should have one item", 1, input.size());
+	assertEquals("Argument should be 'argument'", "argument",
+		     input.parameter(0));
     }
 
     public void testOption() {
@@ -96,7 +95,7 @@ public class TestOptionParser extends TestLib {
 		}
 	    });
 	parse("parser -short");
-	assertTrue("Params list should be empty", params.isEmpty());
+	assertEquals("Params list should be empty", 0, input.size());
 	assertTrue("Option should have been handled", parsedOption);
     }
 
@@ -107,21 +106,20 @@ public class TestOptionParser extends TestLib {
 		}
 	    });
 	parse("parser -- -short");
-	assertTrue("Params list should be empty", params.isEmpty());
+	assertEquals("Params list should be empty", 0, input.size());
 	assertTrue("Option should have been handled", parsedOption);
     }
 
     public void testOptionBeforeDashDash() {
 	parser.add(new Option("short", "short option") {
-
 		public void parsed(String argument) throws OptionException {
 		    fail("Should not have parsed option");
 		}
 	    });
 	parse("parser -short --");
-	assertEquals("Param list should have one item", params.size(), 1);
-	assertEquals("Argument should be '-short'", params.get(0),
-		     "-short");
+	assertEquals("Param list should have one item", 1, input.size());
+	assertEquals("Argument should be '-short'", "-short",
+		     input.parameter(0));
 	assertFalse("Argument should not have been parsed", parsedOption);
     }
 
@@ -131,13 +129,12 @@ public class TestOptionParser extends TestLib {
 		    parsedOption = true;
 		    argument = arg;
 		}
-
 	    });
 	parse("parser -short argument");
-	assertTrue("Params list should be empty", params.isEmpty());
+	assertEquals("Params list should be empty", 0, input.size());
 	assertTrue("Option should have been handled", parsedOption);
-	assertEquals("Option should have argument 'argument'", argument,
-		     "argument");
+	assertEquals("Option should have argument 'argument'",
+		     "argument", argument);
     }
 
     public void testOptionWithArgsAfterDashDash() {
@@ -146,13 +143,12 @@ public class TestOptionParser extends TestLib {
 		    parsedOption = true;
 		    argument = arg;
 		}
-
 	    });
 	parse("parser -- -short argument");
-	assertTrue("Params list should be empty", params.isEmpty());
+	assertEquals("Params list should be empty", 0, input.size());
 	assertTrue("Option should have been handled", parsedOption);
-	assertEquals("Option should have argument 'argument'", argument,
-		     "argument");
+	assertEquals("Option should have argument 'argument'",
+		     "argument", argument);
     }
 
     public void testOptionWithArgsBeforeDashDash() {
@@ -163,13 +159,11 @@ public class TestOptionParser extends TestLib {
 		}
 	    });
 	parse("parser -short argument --");
-	assertEquals("Params list should have 2 elements",
-		     params.size(), 2);
-	assertEquals("First argument: '-short", params.get(0), "-short");
-	assertEquals("Second argument: 'argument", params.get(1),
-		     "argument");
+	assertEquals("Params list should have 2 elements", 2, input.size());
+	assertEquals("First argument: '-short", "-short", input.parameter(0));
+	assertEquals("Second argument: 'argument", "argument",
+		     input.parameter(1));
 	assertFalse("Option should not have been handled", parsedOption);
-
     }
 
     public void testHelp() {

@@ -394,7 +394,6 @@ test x"${dirs}" = x && exit 0
 
 print_header "... the lib${GEN_DIRNAME}.a skeleton"
 
-nodist_lib_sources=nodist_lib${GEN_MAKENAME}_a_SOURCES
 sources=lib${GEN_MAKENAME}_a_SOURCES
 
 cat <<EOF
@@ -405,7 +404,6 @@ cat <<EOF
 
 noinst_LIBRARIES += lib${GEN_DIRNAME}.a
 ${sources} =
-${nodist_lib_sources} =
 GEN_GCJ_LDADD_LIST += lib${GEN_DIRNAME}.a
 
 # Compile the .a into a .so; Makefile.rules contains the rule and does
@@ -438,9 +436,9 @@ EOF
 # Test runner program.
 
 cat <<EOF
-nodist_TestRunner_SOURCES = TestRunner.java
+TestRunner_SOURCES = TestRunner.java
 CLEANFILES += TestRunner.java
-${nodist_lib_sources} += ${GEN_SOURCENAME}/JUnitTests.java
+${sources} += ${GEN_SOURCENAME}/JUnitTests.java
 BUILT_SOURCES += ${GEN_SOURCENAME}/JUnitTests.java
 TestRunner_LDADD = \${LIBJUNIT} \${GEN_GCJ_LDADD_LIST}
 TESTS += TestRunner
@@ -497,7 +495,7 @@ for suffix in .java-in .java-sh .mkenum .shenum ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
 	name="${d}/${b}${s}"
-	echo "${nodist_lib_sources} += ${file}"
+	echo "${sources} += ${file}"
 	echo "BUILT_SOURCES += ${name}"
         case "${suffix}" in
 	    .mkenum ) echo "${name}: \$(MKENUM)" ;;
@@ -514,29 +512,25 @@ for suffix in .cxx .c .hxx .s .S .c-sh .c-in .cxx-sh .cxx-in; do
 	name_=`echo ${name} | sed -e 'y,/-,__,'`
 	s=`echo ${suffix} | sed -e 's/-sh$//' -e 's/-in$//'`
 	if has_main ${file} ; then
-	    echo "${name_}_SOURCES = ${file}"
-	    case "${suffix}" in
-		*.cxx* ) echo "${name_}_LINK = \$(CXXLINK)" ;;
+	    echo "${name_}_SOURCES = ${name}${s}"
+	    case "${s}" in
+		.cxx ) echo "${name_}_LINK = \$(CXXLINK)" ;;
 	    esac
 	    echo_PROGRAMS ${name}
 	    check_MANS ${name}
 	    if grep 'pthread\.h' ${file} > /dev/null 2>&1 ; then
 		echo "${name_}_LDADD = -lpthread"
 	    fi
-
             # Generate the rules for arch32 test
-	    echo_arch32_PROGRAMS ${name} ${file}
+	    echo_arch32_PROGRAMS ${name} ${name}${s}
 	else
-	    case "${suffix}" in
-		*-in | *-sh)
-		    echo "${nodist_lib_sources} += ${name}${s}"
-		    echo "BUILT_SOURCES += ${name}${s}"
-		    ;;
-		* )
-		    echo "${sources} += ${file}"
-		    ;;
-	    esac
+	    echo "${sources} += ${file}"
 	fi
+        case "${suffix}" in
+	    *-in | *-sh)
+		echo "BUILT_SOURCES += ${name}${s}"
+		;;
+	esac
 	case "${suffix}" in
 	    # Hardwire assembler dependency on include/frysk-asm.h;
 	    # automake doesn't generate this :-( FIXME: ARCH-32 case?
@@ -672,7 +666,7 @@ do
     echo "$d/$c.java: $d/$b.antlered"
     echo "ANTLR_BUILT += $d/$c.java"
     echo "BUILT_SOURCES += $d/$c.java"
-    echo "${nodist_lib_sources} += $d/$c.java"
+    echo "${sources} += $d/$c.java"
   done
 done
 
@@ -711,11 +705,9 @@ sed -n -e '/dir\// {
     # Given a/bdir/c/d/e; read a/bdir/c/d/e bcd e
     # Given a/bdir/c; read a/bdir/c b
     dir="${d1}${d2}"
-    dist_prefix=dist_
     case "$f" in
 	*.bz2.uu )
 	    data=`expr "$f" : '\(.*\).bz2.uu'`
-	    dist_prefix=nodist_
 	    ;;
 	*/bindir/* | */pkglibdir/* )
 	    # skip, not a DATA dir.
@@ -728,8 +720,8 @@ sed -n -e '/dir\// {
     if test -n "${d2}"; then
 	set_variable "${dir}dir" = "\$(${d1}dir)/${d2}"
     fi
-    set_variable "${dist_prefix}${dir}_DATA" =
-    echo "${dist_prefix}${dir}_DATA += $data"
+    set_variable "${dir}_DATA" =
+    echo "${dir}_DATA += $data"
 done
 
 

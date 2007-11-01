@@ -44,31 +44,147 @@ package frysk.hpd;
  * correctly.
  */
 public class TestInput extends TestLib {
-    public void testSet() {
-	Input input = new Input("[0.1] action p0 p1");
-	assertNull("action", input.getAction());
-	assertEquals("set", "[0.1]", input.getSet());
-	assertEquals("p0", "action", input.parameter(0));
+    private void check(Input input,
+		       String set,
+		       String[] results,
+		       int[] starts,
+		       int[] ends) {
+	assertEquals("size", results.length, input.size());
+	assertEquals("set", set, input.getSet());
+	assertEquals("stringArrayValue", results, input.stringArrayValue());
+	for (int i = 0; i < results.length; i++) {
+	    assertEquals("parameter " + i, results[i], input.parameter(i));
+	    assertEquals("start " + i, starts[i], input.token(i).start);
+	    assertEquals("end " + i, ends[i], input.token(i).end);
+	}
+    }
+
+    private void check(Input input, String[] results) {
+	assertEquals("size", input.size(), results.length);
+	for (int i = 0; i < results.length; i++) {
+	    assertEquals("parameter " + i, results[i], input.parameter(i));
+	}
+    }
+
+    private void check(String input, String[] results) {
+	int[] starts = new int[results.length];
+	int[] ends = new int[results.length];
+	for (int i = 0; i < results.length; i++) {
+	    starts[i] = input.indexOf(results[i]);
+	    ends[i] = starts[i] + results[i].length();
+	}
+	check(new Input(input), null, results, starts, ends);
     }
 
     public void testAccept() {
 	Input input = new Input("action p0 p1");
+	assertEquals("stringValue", "action p0 p1", input.stringValue());
 	assertNull("getAction", input.getAction());
-	assertEquals("parameter(0)", "action", input.parameter(0));
-	assertEquals("parameter(1)", "p0", input.parameter(1));
-	assertEquals("parameter(2)", "p1", input.parameter(2));
-	assertNull("parameter(3)", input.parameter(3));
+	check(input, new String[] { "action", "p0", "p1" });
+	//
 	input = input.accept();
+	assertEquals("stringValue at action", "p0 p1", input.stringValue());
 	assertEquals("getAction at action", "action", input.getAction());
-	assertEquals("parameter(0) at action", "p0", input.parameter(0));
-	assertEquals("parameter(1) at action", "p1", input.parameter(1));
-	assertNull("parameter(2) at action", input.parameter(2));
+	check(input, new String[] { "p0", "p1" });
+	//
 	input = input.accept();
+	assertEquals("stringValue at p0", "p1", input.stringValue());
 	assertEquals("getAction at p0", "p0", input.getAction());
-	assertEquals("parameter(0) at p0", "p1", input.parameter(0));
-	assertNull("parameter(1) at action", input.parameter(1));
+	check(input, new String[] { "p1" });
+	//
 	input = input.accept();
+	assertEquals("stringValue at p1", "", input.stringValue());
 	assertEquals("getAction at p1", "p1", input.getAction());
-	assertNull("parameter(0) at action", input.parameter(0));
+	check(input, new String[0]);
+    }
+
+    public void testEmpty() {
+	check("", new String[0]);
+    }
+
+    public void testOneToken() {
+	check("token", new String[] { "token" });
+    }
+
+    public void testOneSpacedToken() {
+	check("  token  ", new String[] { "token" });
+    }
+    
+    public void testSeveralTokens() {
+	check(" 1  2  3   4", new String[] { "1", "2", "3", "4" });
+    }
+
+    public void testDoubleQuote() {
+	// Remember, \" is one character.
+	check(new Input("1 \" 2 \" 3"), null,
+	      new String[] { "1", " 2 ", "3" },
+	      new int[] { 0, 2, 8 },
+	      new int[] { 1, 7, 9 });
+    }
+
+    public void testDoubleQuoteInToken() {
+	// Remember, \" is one character.
+	check(new Input(" a\" \"b "), null,
+	      new String[] { "a b" },
+	      new int[] { 1 },
+	      new int[] { 6 });
+    }
+
+    public void testEmptyQuote() {
+	// Remember, \" is one character.
+	check(new Input("\"\""), null,
+	      new String[] { "" },
+	      new int[] { 0 },
+	      new int[] { 2 });
+    }
+
+    public void testEmptyQuoteBetweenParameters() {
+	// Remember, \" is one character.
+	check(new Input("1 \"\" 3"), null,
+	      new String[] {"1", "", "3"},
+	      new int[] { 0, 2, 5 },
+	      new int[] { 1, 4, 6 });
+    }
+
+    public void testEscapedQuote() {
+	// Remember, \" is one character.
+	check(new Input("\\\""), null,
+	      new String[] { "\"" },
+	      new int[] { 0 },
+	      new int[] { 2 });
+    }
+
+    public void testSet() {
+	check(new Input(" [1.2] "), "[1.2]",
+	      new String[0], new int[0], new int[0]);
+    }
+
+    public void testSetAndParameters() {
+	check(new Input(" [1.2] a b"), "[1.2]",
+	      new String[] { "a", "b" },
+	      new int[] { 7, 9 },
+	      new int[] { 8, 10 });
+    }
+
+    private void checkInvalidCommandException(String input) {
+	boolean caught = false;
+	try {
+	    new Input(input);
+	} catch (InvalidCommandException e) {
+	    caught = true;
+	}
+	assertTrue("caught InvalidCommandException", caught);
+    }
+
+    public void testMissingQuote() {
+	checkInvalidCommandException("  \" ");
+    }
+
+    public void testMissingRightBracket() {
+	checkInvalidCommandException("  [ ");
+    }
+
+    public void testMissingEscapee() {
+	checkInvalidCommandException("\\");
     }
 }

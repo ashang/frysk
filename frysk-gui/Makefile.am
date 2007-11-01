@@ -105,9 +105,9 @@ $(FRYSK_GUI_JARS):
 
 all-local: checked-glade-xml-for-gnome
 CLEANFILES += checked-glade-xml-for-gnome
-checked-glade-xml-for-gnome: $(dist_glade_DATA)
-	test x'$(dist_glade_DATA)' != x
-	for f in $(dist_glade_DATA) ; do \
+checked-glade-xml-for-gnome: $(glade_DATA)
+	test x'$(glade_DATA)' != x
+	for f in $(glade_DATA) ; do \
 		echo de-gnome $(srcdir)/$$f; \
 		if grep 'lib="gnome"' $(srcdir)/$$f; then \
 			echo Gnome library found in $(srcdir)/$$f;\
@@ -123,10 +123,10 @@ checked-glade-xml-for-gnome: $(dist_glade_DATA)
 
 all-local: checked-glade-xml-with-xmllint
 CLEANFILES += checked-glade-xml-with-xmllint
-checked-glade-xml-with-xmllint: $(dist_glade_DATA) glade.catalog
-	test x'$(dist_glade_DATA)' != x
+checked-glade-xml-with-xmllint: $(glade_DATA) glade.catalog
+	test x'$(glade_DATA)' != x
 	export SGML_CATALOG_FILES=glade.catalog ; \
-	for f in $(dist_glade_DATA) ; do \
+	for f in $(glade_DATA) ; do \
 		echo xmllint $(srcdir)/$$f; \
 		if $(XMLLINT) --catalogs --nonet --noout --valid \
 			$(srcdir)/$$f ; then : ; \
@@ -149,11 +149,11 @@ glade.catalog:
 
 # Handle the *.desktop, *.properties, and icon files.
 desktopdir = $(datadir)/applications
-dist_desktop_DATA = frysk/gui/frysk.desktop
+desktop_DATA = frysk/gui/frysk.desktop
 icondir = $(datadir)/pixmaps
 icon_DATA = frysk/gui/imagesdir/48/fryskTrayIcon48.png
 propertydir = $(pkgdatadir)
-dist_property_DATA = frysk/gui/common/messages.properties
+property_DATA = frysk/gui/common/messages.properties
 
 # frysk's core, which doesn't have a UI gets install-tested using
 # dejagnu.  Add those tests to 

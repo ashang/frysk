@@ -1,3 +1,12 @@
+2007-11-01  Petr Machata  <pmachata@redhat.com>
+
+	* fltrace.java
+	(MyController.checkVersionMatches): move version matching here
+	(MyController.applyTracingRules): from here
+	simplify working set handling
+	support -#
+	(fltrace.parseRules): fix parsing -#
+
 2007-10-31  Petr Machata  <pmachata@redhat.com>
 
 	* fltrace.java: Change syntax of -plt, -sym, -dyn: leading '+' is

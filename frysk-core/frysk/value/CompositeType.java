@@ -89,6 +89,11 @@ public abstract class CompositeType
 		    + ",bitSize=" + bitSize
 		    + "}");
 	}
+	
+	private Value getValue (Value v) {
+	    int off = (int)offset;
+	    return new Value(type, v.getLocation().slice(off, type.getSize()));
+	}   
     }
     /**
      * A mapping from NAME to Member; only useful for named members.
@@ -176,7 +181,7 @@ public abstract class CompositeType
 	Value v;
 
 	ClassIterator (Value v) {
-	    idx = - 1;
+	    idx = -1;
 	    this.v = v;
 	}
 
@@ -192,20 +197,13 @@ public abstract class CompositeType
 	}
 
 	public Object next () {
-	    return getValue(v, idx);
+	    return ((Member)members.get(idx)).getValue(v);
 	}
 
 	public void remove () {
 	}
     }
-
-    private Value getValue (Value v, int idx) {
-	Member member = (Member)(members.get(idx));
-	Type type = member.type;
-	int off = (int)member.offset;
-	return new Value(type, v.getLocation().slice(off, type.getSize()));
-    }
-    
+ 
     public ClassIterator iterator (Value v) {
 	return new ClassIterator(v);
     }
@@ -237,16 +235,21 @@ public abstract class CompositeType
 	writer.print("}");
     }
 
-    public void toPrint(PrintWriter writer) {
+    public void toPrint(int indentation, PrintWriter writer) {
 	// FIXME: going away.
 	if (this.isTypedef() && this.getName() != null
 	    && this.getName().length() > 0) {
 	    writer.print(this.getName());
 	    return;
 	}
+
+	String indentPrefix = "";
+	for (int indent = 1; indent <= indentation; indent++)
+	    indentPrefix = indentPrefix + " ";
+
 	// {class,union,struct} NAME
 	writer.print(getPrefix());
-	if (getName() != null) {
+	if (getName() != null && getName().length() > 0) {
 	    writer.print(" ");
 	    writer.print(getName());
 	}
@@ -267,7 +270,6 @@ public abstract class CompositeType
 	    }
 	    if (member.access != null) {
 		writer.print(member.access.toPrint());
-		writer.print(" ");
 	    }
 	    writer.print(member.type.getName());
 	    member = null;
@@ -275,7 +277,9 @@ public abstract class CompositeType
 	// { content ... }
 	Access previousAccess = null;
 	writer.print(" {\n");
+
 	while (member != null) {
+	    boolean printName = true;
 	    if (member.access != previousAccess) {
 		previousAccess = member.access;
 		if (member.access != null) {
@@ -284,12 +288,24 @@ public abstract class CompositeType
 		    writer.print(":\n");
 		}
 	    }
-	    writer.print("  ");
+	    writer.print(indentPrefix);
 	    if (member.type.isTypedef())
 		writer.print(member.type.getName());
+	    else if (member.type instanceof CompositeType)
+		((CompositeType) member.type).toPrint(indentation + 2, writer);
+	    else if (member.type instanceof ArrayType) {
+		printName = false;
+		((ArrayType) member.type).toPrint(member.name, writer);
+	    }
+	    else if (member.type instanceof PointerType) {
+		printName = false;
+		((PointerType) member.type).toPrint(" " + member.name, writer);
+	    }
 	    else
 		member.type.toPrint(writer);
-	    if (!(member.type instanceof frysk.value.FunctionType)) {
+	    if (member.type instanceof frysk.value.FunctionType)
+		printName = false;
+	    if (printName) {
 		writer.print(" ");
 		writer.print(member.name);
 	    }
@@ -304,14 +320,20 @@ public abstract class CompositeType
 	    else
 		member = null;
 	}
+	for (int indent = 1; indent <= indentation - 2; indent++)
+	    writer.print(" ");
 	writer.print("}");
     }
     
+    public void toPrint( PrintWriter writer) {
+	this.toPrint(2, writer);
+    }
+
     public Value member(Value var1, String member)
     {
 	Member mem = (Member)nameToMember.get(member);
 	if (mem == null)
 	    throw new RuntimeException("Invalid data member: " + member);
-	return getValue (var1, mem.index);
+	return mem.getValue (var1);
     }
 }

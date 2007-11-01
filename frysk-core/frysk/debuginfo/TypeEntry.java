@@ -50,6 +50,7 @@ import frysk.isa.ISA;
 import frysk.value.ArrayType;
 import frysk.value.CharType;
 import frysk.value.GccStructOrClassType;
+import frysk.value.ConstType;
 import frysk.value.EnumType;
 import frysk.value.FunctionType;
 import frysk.value.PointerType;
@@ -57,10 +58,12 @@ import frysk.value.SignedType;
 import frysk.value.StandardTypes;
 import frysk.value.Type;
 import frysk.value.TypeDef;
+import frysk.value.UnionType;
 import frysk.value.UnknownType;
 import frysk.value.UnsignedType;
 import frysk.value.Value;
 import frysk.value.VoidType;
+import frysk.value.VolatileType;
 import inua.eio.ByteOrder;
 import frysk.value.Access;
 import lib.dwfl.DwAccess;
@@ -81,10 +84,9 @@ public class TypeEntry
     
     private void dumpDie(String s, DwarfDie die)
     {
-      //??? convert this to use tracing
-//    	System.out.println(s + Long.toHexString(die.getOffset()) + " "
-//		+ DwTag.toName(die.getTag())
-//		+ " " + die.getName());
+// 	System.out.println(s + Long.toHexString(die.getOffset()) + " "
+// 		+ DwTag.toName(die.getTag().hashCode())
+// 		+ " " + die.getName());
     }
     /**
      * @param dieType
@@ -122,9 +124,8 @@ public class TypeEntry
      */
     public GccStructOrClassType getGccStructOrClassType(DwarfDie classDie, String name) {
 	dumpDie("classDie=", classDie);
-	GccStructOrClassType classType = new GccStructOrClassType(name, getByteSize(classDie));
-	
 
+	GccStructOrClassType classType = new GccStructOrClassType(name, getByteSize(classDie));
 	for (DwarfDie member = classDie.getChild(); member != null; member = member
 	.getSibling()) {
 	    dumpDie("member=", member);
@@ -177,6 +178,62 @@ public class TypeEntry
 	return classType;
     }
 
+    // ??? Reduce getGccStructOrClassType/getUnionType duplication
+    public UnionType getUnionType(DwarfDie classDie, String name) {
+	dumpDie("unionDie=", classDie);
+
+	UnionType classType = new UnionType(name, getByteSize(classDie));
+	for (DwarfDie member = classDie.getChild(); member != null; member = member
+	.getSibling()) {
+	    dumpDie("member=", member);
+	    long offset;
+	    try {
+		offset = member.getDataMemberLocation();
+	    } catch (DwException de) {
+		offset = 0; // union
+	    }
+
+	    Access access = null;
+	    switch (member.getAttrConstant(DwAt.ACCESSIBILITY)) {
+	    case DwAccess.PUBLIC_: access = Access.PUBLIC; break;
+	    case DwAccess.PROTECTED_: access = Access.PROTECTED; break;
+	    case DwAccess.PRIVATE_: access = Access.PRIVATE; break;
+	    }
+	    DwarfDie memberDieType = member.getUltimateType();
+
+	    if (member.getTag() == DwTag.SUBPROGRAM) {
+		Value v = getSubprogramValue(member);
+		classType.addMember(member.getName(), v.getType(), offset,
+			access);
+		continue;
+	    }
+	    
+	    if (memberDieType == null)
+		continue;
+
+	    Type memberType = getType (member.getType());
+	    if (memberType instanceof UnknownType == false) {
+		// System V ABI Supplements discuss bit field layout
+		int bitSize = member
+		.getAttrConstant(DwAt.BIT_SIZE);
+		if (bitSize != -1) {
+		    int bitOffset = member
+		    .getAttrConstant(DwAt.BIT_OFFSET);
+		    classType.addMember(member.getName(), memberType, offset, access,
+			    bitOffset, bitSize);
+		}
+		else
+		    classType.addMember(member.getName(), memberType, offset, access);
+		
+		continue;
+	    }
+	    else
+		classType.addMember(member.getName(), new UnknownType(member
+			.getName()), offset, access);
+	}
+
+	return classType;
+    }
     
     /**
      * @param varDie
@@ -235,7 +292,7 @@ public class TypeEntry
 	    return mappedType;
 	else if (dieHash.containsKey(new Integer(type.getOffset()))) {
 	    // ??? will this always be a pointer to ourselves?
-	    // VoidType is obviously no correct need a way to reference ourselves
+	    // Instead of VoidType, we need a way to reference ourselves
 	    return new PointerType("", byteorder, getByteSize(type),  
 		    new VoidType());
 	}
@@ -248,7 +305,7 @@ public class TypeEntry
 	    break;
 	}
 	case DwTag.POINTER_TYPE_: {
-	    Type ptrTarget = getType(type.getUltimateType());
+	    Type ptrTarget = getType(type.getType());
 	    if (ptrTarget == null)
 		ptrTarget = new VoidType();
 	    returnType = new PointerType("*", byteorder, getByteSize(type),
@@ -260,8 +317,11 @@ public class TypeEntry
 	    returnType = getArrayType(type.getType(), subrange);
 	    break;
 	}
-	case DwTag.UNION_TYPE_:
-	    // FIXME: A UNION is not a STRUCT or CLASS.
+	case DwTag.UNION_TYPE_: {
+	    UnionType unionType = getUnionType(type, typeDie.getName());
+	    returnType = unionType;
+	    break;
+	}
 	case DwTag.STRUCTURE_TYPE_: {
 	    boolean noTypeDef = (typeDie.getType() == null);
 	    String name = noTypeDef ? typeDie.getName() : typeDie.getType()
@@ -283,6 +343,14 @@ public class TypeEntry
 		subrange = subrange.getSibling();
 	    }
 	    returnType = enumType;
+	    break;
+	}
+	case DwTag.VOLATILE_TYPE_: {
+	    returnType = new VolatileType(getType(type.getType()));
+	    break;
+	}
+	case DwTag.CONST_TYPE_: {
+	    returnType = new ConstType(getType(type.getType()));
 	    break;
 	}
 	case DwTag.BASE_TYPE_: {
