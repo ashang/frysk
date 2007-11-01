@@ -1,3 +1,7 @@
+2007-11-01  Stan Cox  <scox@redhat.com>
+
+	* CompositeType.java (toPrint): Fix merge snafu.
+
 2007-10-31  Stan Cox  <scox@redhat.com>
 
 	* TypeDecorator.java (toPrint): Handle PointerType.
