@@ -68,11 +68,14 @@ public abstract class Command {
     public abstract void interpret(CLI cli, Input cmd);
 
     /**
-     * (from jline but worth repeating) Fill CANDIDATES with the
-     * possible completion strings and return the start position of
-     * those strings.  E.g., given buffer=foo and completion={foobar},
-     * 0 would be returned to indicate where "foobar" can be inserted.
-     * Return -1 when completion isn't supported.
+     * Fill CANDIDATES with the possible completion strings and return
+     * the start position of those strings.  E.g., given buffer=foo
+     * and completion={foobar}, 0 would be returned to indicate where
+     * "foobar" can be inserted.  Rreturn -1 when completion isn't
+     * supported.
+     *
+     * XXX: It seems that, with the current jline, one more than the
+     * intended position needs to be returned.
      */
     int complete(CLI cli, Input buffer, int cursor, List candidates) {
 	return -1;

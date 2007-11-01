@@ -157,18 +157,6 @@ class Input {
     }
 
     /**
-     * Return the position, in the original buffer, for the N'th
-     * parameter; or -1 if there is no parameter.
-     */
-    int position(int n) {
-	if (positions.size() > n) {
-	    return (Integer)(positions.get(i)).intValue();
-	} else {
-	    return -1;
-	}
-    }
-
-    /**
      * Return the number or size of the parameter list.
      */
     int size() {

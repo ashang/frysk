@@ -42,18 +42,27 @@ package frysk.hpd;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * A handler class for the CLI that supplies its own help messages.
  */
 
 public abstract class MultiLevelCommand extends Command {
+    private final SortedMap subCommands = new TreeMap();
+
     MultiLevelCommand(String name, String description, String syntax,
 		      String full) {
 	super(name, description, syntax, full);
     }
+    /**
+     * Add the specified command.
+     */
+    protected MultiLevelCommand add(Command command) {
+	subCommands.put(command.getName(), command);
+	return this;
+    }
 
-    private final SortedMap subCommands = new TreeMap();
     private void help(CLI cli) {
 	for (Iterator i = subCommands.values().iterator(); i.hasNext(); ) {
 	    Command c = (Command)(i.next());
@@ -92,11 +101,47 @@ public abstract class MultiLevelCommand extends Command {
 	}
 	subCommand.interpret(cli, input.accept());
     }
-    /**
-     * Add the specified command.
-     */
-    protected MultiLevelCommand add(Command command) {
-	subCommands.put(command.getName(), command);
-	return this;
+
+    int complete(CLI cli, Input input, int cursor, List candidates) {
+	// Get the next token.
+	Input.Token token;
+	if (input.size() > 0) {
+	    token = input.token(0);
+	} else {
+	    token = null;
+	}
+	// If the cursor is past this token then a sub-command of this
+	// command is being completed.  Find that sub-command and call
+	// it.
+	if (token != null && cursor > token.end) {
+	    Command subCommand = (Command)subCommands.get(token.value);
+	    if (subCommand == null)
+		throw new InvalidCommandException("unknown command: "
+						  + token.value);
+	    return subCommand.complete(cli, input.accept(), cursor,
+				       candidates);
+	}
+	// Create a completion list for this command.
+	String incomplete;
+	if (token == null) {
+	    incomplete = "";
+	} else {
+	    incomplete = token.value;
+	}
+	for (Iterator i = subCommands.keySet().iterator(); i.hasNext(); ) {
+	    String subCommand = (String)i.next();
+	    if (subCommand.startsWith(incomplete))
+		candidates.add(subCommand);
+	}
+	// If there's only one token, append a trailing blank so that
+	// things are ready for the next token.
+	if (candidates.size() == 1) {
+	    candidates.set(0, ((String)candidates.get(0)) + " ");
+	}
+	// Return the start of the tokens (if there is one)
+	int start = (token == null) ? cursor : token.start;
+	// XXX: I think this is one out; yet the +1 is needed to get
+	// all cases to work.
+	return 1 + start;
     }
 }

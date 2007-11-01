@@ -50,7 +50,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Set;
 import java.util.WeakHashMap;
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
@@ -122,8 +121,12 @@ public class CLI {
      * @return cursor position in buffer
      */
     public int complete (String buffer, int cursor, List candidates) {
-	return topLevelCommand.complete(this, new Input(buffer), cursor,
-					candidates);
+	try {
+	    return topLevelCommand.complete(this, new Input(buffer), cursor,
+					    candidates);
+	} catch (RuntimeException e) {
+	    return -1;
+	}
     }
 
     /*
