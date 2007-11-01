@@ -1,4 +1,9 @@
 2007-11-01  Teresa Thomas  <tthomas@redhat.com>
+
+	* ArrayType.java (get): Delete.
+	* TestArray.java (testArrayOfArrayOfNumber): Delete.
+
+2007-11-01  Teresa Thomas  <tthomas@redhat.com>
 	* IntegerUnit.java: New file.
 	* FloatingPointUnit.java: New file.
 	* AddressUnit.java: New file.

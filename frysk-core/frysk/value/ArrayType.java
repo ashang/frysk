@@ -137,41 +137,6 @@ public class ArrayType
     }
     
     /**
-     * FIXME: What exactly does this do?  Why not pass in the indexes
-     * and then separately the repeat count of that last element.
-     */
-    public Value get (Value v, int componentsIdx, ArrayList components) {
-	if (componentsIdx >= components.size())	// want the entire array?
-	    return v;
-	int offset = 0;
-	int d = 0;
-	while (componentsIdx < components.size()) {
-	    int lbound = Integer.parseInt((String)components.get(componentsIdx));
-	    int hbound = Integer.parseInt((String)components.get(componentsIdx+1));
-	    
-	    offset += stride[d] * lbound;
-	    if (lbound != hbound) {
-		// FIXME: This doesn't handle multi-dimensional
-		// arrays.
-		int count = hbound-lbound;
-		ArrayList dims = new ArrayList();
-		dims.add(new Integer(count));
-		ArrayType arrayType = new ArrayType(type,
-						    (count * type.getSize()),
-						    dims);
-		return new Value(arrayType,
-				 (v.getLocation()
-				  .slice(offset * type.getSize(), 
-					 count * type.getSize())));
-	    }
-	    componentsIdx += 2;
-	    d++;
-	}
-	return new Value(type, v.getLocation().slice(offset * type.getSize(), 
-		type.getSize()));
-    }
-    
-    /**
      * Index Operation on array V and index IDX.
      */
     public Value index (Value v, Value idx)

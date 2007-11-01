@@ -66,33 +66,6 @@ public class TestArray extends TestCase {
     }
 
     /**
-     * int2_t[2][4]
-     */
-    public void testArrayOfArrayOfNumber () {
-	ArrayList dims = new ArrayList();
-	dims.add(new Integer(2-1));
-	dims.add(new Integer(4-1));
-	ArrayType arrayType = new ArrayType(int2_t, 16, dims);
-	Value c1 = new Value(arrayType, new ScratchLocation(buf));
-	String s = c1.toPrint();
-	assertEquals ("array2dim", "{{258,772,1286,1800},{2314,2828,3342,3856}}", s);
-	ArrayList components = new ArrayList();
-	components.add(new String("a2"));
-	components.add(new String("1"));
-	components.add(new String("1"));
-	components.add(new String("2"));
-	components.add(new String("2"));
-	Value c2 = arrayType.get (c1, 1, components);
-	s = c2.toPrint();
-	assertEquals ("1 element slice", "3342", s);
-	components.remove(4);
-	components.add(new String("3"));
-	Value c3 = arrayType.get (c1, 1, components);
-	s = c3.toPrint();
-	assertEquals ("2 element slice", "{3342,3856}", s);
-    }
-
-    /**
      * Check that an array of characters is treated special.
      */
     public void testString() {
@@ -108,9 +81,9 @@ public class TestArray extends TestCase {
 	// Now print it
 	assertEquals("char[]", "\"Hello\"", v.toPrint());
     }
-    
+
     /**
-     * Test for index-of operation.
+     * Test index-of operation for 1-d array.
      */
     public void testIndexOneD() {
 	ArrayList dims = new ArrayList();
@@ -122,9 +95,12 @@ public class TestArray extends TestCase {
 	Value index = new Value(t, l);
 	assertEquals("IndexOneD", 151653132, arrayType.index(arr, index).asLong());
     }
-    
-   public void testIndexTwoD() {
-        // Create array
+
+    /**
+     * Test index-of operation for 2-d array.
+     */    
+    public void testIndexTwoD() {
+	// Create array
 	ArrayList dims = new ArrayList();
 	dims.add(new Integer(2-1));
 	dims.add(new Integer(4-1));
