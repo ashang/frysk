@@ -303,7 +303,9 @@ public abstract class CompositeType
 	    }
 	    else
 		member.type.toPrint(writer);
-	    if (!(member.type instanceof frysk.value.FunctionType)) {
+	    if (member.type instanceof frysk.value.FunctionType)
+		printName = false;
+	    if (printName) {
 		writer.print(" ");
 		writer.print(member.name);
 	    }
