@@ -40,29 +40,35 @@
 package frysk.hpd;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-// TODO: This is not a very good class, the lexing is primitive (and
-// doesn't work well in some instances). Add more commandline parsing
-// features to it.
 
 /**
  * Command class separates and contains different parts of a command:
  * set, action, parameters.  It is immutable.
  */
 class Input {
+
+    static class Token {
+	final String value;
+	final int start;
+	final int end;
+	Token(String value, int start, int end) {
+	    this.value = value;
+	    this.start = start;
+	    this.end = end;
+	}
+    }
+
     private final String fullCommand;
     private final String set;
     private final String action;
-    private final List parameters;
+    private final List tokens;
 
-    private Input(String fullCommand, String set, String action,
-		  List parameters) {
+    private Input(String fullCommand, String set, String action, List tokens) {
 	this.fullCommand = fullCommand;
 	this.set = set;
 	this.action = action;
-	this.parameters = parameters;
+	this.tokens = tokens;
     }
 
     /**
@@ -75,23 +81,20 @@ class Input {
      */
     public Input(String cmd) {
 	fullCommand = cmd;
-	List tokens = tokenize(fullCommand);
+	tokens = tokenize(fullCommand);
 	action = null;
 	if (tokens.size() <= 0) {
 	    set = null;
-	    parameters = tokens;
 	} else {
-	    String tempToken = (String)(tokens.get(0));
+	    String tempToken = ((Token)tokens.get(0)).value;
 	    // first token is either p/t-set or an action
 	    if (tempToken.startsWith("[") && tempToken.endsWith("]")) {
 		// if p/t-set
 		set = tempToken;
+		tokens.remove(0);
 	    } else {
 		set = null;
 	    }
-	    parameters = tokens.subList((set != null) ? 1 : 0,
-					tokens.size());
-		
 	}
     }
     
@@ -107,26 +110,43 @@ class Input {
 	return action;
     }
 
-    public List getParameters() {
-	return parameters;
+    /**
+     * Return the N'th parameter, or NULL.
+     */
+    String parameter(int n) {
+	return token(n).value;
     }
 
     /**
-     * Return the n't parameter, or NULL.
+     * Return the remaining parameters as a String[].
      */
-    String parameter(int i) {
-	if (parameters.size() > i) {
-	    return (String)parameters.get(i);
-	} else {
-	    return null;
+    String[] parameters() {
+	String[] args = new String[tokens.size()];
+	for (int i = 0; i < args.length; i++) {
+	    args[i] = token(i).value;
 	}
+	return args;
+    }
+
+    /**
+     * Return the N'th token, or NULL.
+     */
+    Token token(int n) {
+	return (Token)tokens.get(n);
+    }
+
+    /**
+     * Remove the N'th parameter.
+     */
+    void remove(int n) {
+	tokens.remove(n);
     }
 
     /**
      * Return the number or size of the parameter list.
      */
     int size() {
-	return parameters.size();
+	return tokens.size();
     }
 
     public String toString() {
@@ -137,74 +157,86 @@ class Input {
      * Accept the current action; advance to the next one.
      */
     Input accept() {
-	List newParameters;
+	List newTokens;
 	String newAction;
-	if (parameters.size() > 0) {
-	    newAction = (String)(parameters.get(0));
-	    newParameters = parameters.subList(1, parameters.size());
+	if (tokens.size() > 0) {
+	    newAction = ((Token)tokens.get(0)).value;
+	    newTokens = tokens.subList(1, tokens.size());
 	} else {
 	    newAction = null;
-	    newParameters = parameters;
+	    newTokens = tokens;
 	}
-	return new Input(fullCommand, set, newAction, newParameters);
+	return new Input(fullCommand, set, newAction, newTokens);
     }
 
     /**
      * Tokenize a string (probably command) minding quoted statements
-     * @return ArrayList of string tokens
+     * @return List of string tokens
      */
-    // might be a little odd that it takes a parameter, but it used to
-    // be a static function and might be later
-    private ArrayList tokenize(String str) {
-	ArrayList result = new ArrayList();
-	str = str.trim();
-	str = str.replaceAll(" +", " ");
-	str = str.replaceAll(" *\" *", "\"");
-	str = str.replaceAll(" *\\[ *", "[");
-	str = str.replaceAll(" *\\] *", "]");
-
-	// a kinda lexing state machine, sort of
-	int tokBegin = 0;
-
+    private List tokenize(String str) {
+	List tokens = new ArrayList();
 	boolean needQuote = false;
 	boolean needBracket = false;
+	boolean needEscapee = false;
+	int start = -1;
+	StringBuffer token = new StringBuffer();
 
 	for (int i = 0; i < str.length(); i++) {
-	    if (str.charAt(i) == '\"') {
+	    char ch = str.charAt(i);
+	    if (needEscapee) {
+		token.append(ch);
+		needEscapee = false;
+	    } else if (ch == '\\') {
+		if (start < 0)
+		    start = i;
+		needEscapee = true;
+	    } else if (ch == '\"') {
 		if (needQuote) {
-		    result.add(str.substring(tokBegin, i));
-		    tokBegin = i+1;
+		    // Reached the end of a string.
 		    needQuote = false;
 		} else {
-		    result.add(str.substring(tokBegin, i));
-		    tokBegin = i+1;
+		    // Start a quoted string.
 		    needQuote = true;
+		    if (start < 0)
+			start = i;
 		}
-	    } else if (str.charAt(i) == '[') {
-		if (i != 0)
-		    result.add(str.substring(tokBegin, i));
-		tokBegin = i;
+	    } else if (ch == '[') {
+		if (start < 0)
+		    start = i;
+		token.append(ch);
 		needBracket = true;
 	    } else if (str.charAt(i) == ']') {
-		result.add(str.substring(tokBegin, i+1));
-		tokBegin = i+1;
+		token.append(ch);
 		needBracket = false;
-	    } else if (str.charAt(i) == ' ') {
-		if (!needQuote && !needBracket) {
-		    result.add(str.substring(tokBegin, i));
-		    tokBegin = i+1;
-		}
-	    } else if (i == str.length()-1) {
+	    } else if (Character.isWhitespace(ch)) {
 		if (needQuote)
-		    throw new InvalidCommandException("Unmatched quote.");
+		    // Strings retain white space.
+		    token.append(ch);
 		else if (needBracket)
-		    throw new InvalidCommandException("Unmatched bracket.");
-		else
-		    result.addAll(Arrays.asList(str.substring(tokBegin, i+1).split(" ")));
+		    // Sets discard white space; append nothing
+		    token.append("");
+		else if (start >= 0) {
+		    // reached end of token
+		    tokens.add(new Token(token.toString(), start, i));
+		    token.setLength(0);
+		    start = -1;
+		}
+	    } else {
+		if (start < 0)
+		    // new token
+		    start = i;
+		token.append(ch);
 	    }
 	}
-
-	return result;
+	if (needEscapee)
+	    throw new InvalidCommandException("Trailing escape");
+	if (needQuote)
+	    throw new InvalidCommandException("Unmatched quote.");
+	if (needBracket)
+	    throw new InvalidCommandException("Unmatched bracket.");
+	if (start >= 0) {
+	    tokens.add(new Token(token.toString(), start, str.length()));
+	}
+	return tokens;
     }
-
 }

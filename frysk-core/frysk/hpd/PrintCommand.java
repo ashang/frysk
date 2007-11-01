@@ -68,7 +68,7 @@ class PrintCommand
 	    cli.printUsage(cmd);
 	    return;
         }
-	if (cmd.getParameters().size() == 0
+	if (cmd.size() == 0
 	    || ((cmd.parameter(0)).equals("-help"))) {
 	    cli.printUsage(cmd);
 	    return;

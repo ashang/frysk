@@ -1,3 +1,29 @@
+2007-10-31  Andrew Cagney  <cagney@redhat.com>
+
+	* Input.java (getParameters()): Delete.
+	(parameters()): New.
+	(remove(int)): New.
+	(tokenize(String)): Rewrite.
+	(token(int)): New.
+	* TestInput.java (testEmpty()): New.
+	(testOneToken()): New.
+	(testOneSpacedToken()): New.
+	(testSeveralTokens()): New.
+	(testDoubleQuote()): New.
+	(testDoubleQuoteInToken()): New.
+	(testEmptyQuote()): New.
+	(testEmptyQuoteBetweenParameters()): New.
+	(testEscapedQuote()): New.
+	(testSetAndParameters()): New.
+	(testMissingQuote()): New.
+	(testMissingRightBracket()): New.
+	(testMissingEscapee()): New.
+	* OptionParser.java: Eliminate calls to Input.getParameters().
+	* TestOptionParser.java: Ditto.
+	* PlocationCommand.java: Ditto.
+	* PrintCommand.java: Ditto.
+	* PtypeCommand.java: Ditto.
+
 2007-10-29  Andrew Cagney  <cagney@redhat.com>
 
 	* Command.java (interpret(CLI,Input)): Rename parse(CLI,Input).
