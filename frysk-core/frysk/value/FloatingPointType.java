@@ -92,4 +92,20 @@ public class FloatingPointType
 	    .bigFloatValue(v.getLocation());
 	location.put(order(), f.toByteArray(getSize()), 0);
     }
+    
+    public ArithmeticUnit getALU(Type type) {
+	return type.getALU(this);
+    }
+    
+    public ArithmeticUnit getALU(IntegerType type) {
+	// FIXME: Should this be resolved by a double 
+	// dispatch of IntegerType?
+	if (type instanceof PointerType)
+	    throw new RuntimeException("Invalid Pointer Arithmetic");
+	return new FloatingPointUnit(this, type);
+    }
+    
+    public ArithmeticUnit getALU(FloatingPointType type) {
+	return new FloatingPointUnit(this, type);
+    }        
 }

@@ -1,3 +1,30 @@
+2007-11-01  Teresa Thomas  <tthomas@redhat.com>
+
+	* ArrayType.java (get): Delete.
+	* TestArray.java (testArrayOfArrayOfNumber): Delete.
+
+2007-11-01  Teresa Thomas  <tthomas@redhat.com>
+	* IntegerUnit.java: New file.
+	* FloatingPointUnit.java: New file.
+	* AddressUnit.java: New file.
+	* ArithmeticUnit.java: New file.	
+	* ArithmeticType.java (add): Use getALU.
+	* Type.java (getALU(Type)): New.
+	(getALU(IntegerType)): New. 
+	(getALU(FloatingPointType)): New.
+	* IntegerType.java (getALU(Type)): New.
+	(getALU(IntegerType)): New. 
+	(getALU(FloatingPointType)): New.
+	(getALU(PointerType)): New.    
+	* FloatingPointType.java (getALU(Type)): New.
+	(getALU(IntegerType)): New. 
+	(getALU(FloatingPointType)): New.
+	* PointerType.java: (getALU(Type)): New.
+	(getALU(IntegerType)): New. 
+	(getALU(FloatingPointType)): New.
+	(getALU(PointerType)): New.     
+	(add): Delete.
+
 2007-11-01  Stan Cox  <scox@redhat.com>
 
 	* CompositeType.java (toPrint): Fix merge snafu.

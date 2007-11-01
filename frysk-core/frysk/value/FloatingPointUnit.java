@@ -37,47 +37,31 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.hpd;
-
-import java.util.List;
+package frysk.value;
 
 /**
- * A handler class for the CLI that supplies its own help messages.
+ * Arithmetic Operation handling for floating points.
  */
-
-public abstract class Command {
-    private final CommandHelp help;
-    private final String name;  
-
-    protected OptionParser parser;
-  
-    public CommandHelp getHelp() {
-	return help;
-    }
-
-    public String getName() {
-	return name;
-    }
-  
-    Command (String name, String description, String syntax, String full) {
-	this.name = name;
-	this.help = new CommandHelp(name, description, syntax, full);
-	parser = new OptionParser(name, syntax, full + "\n");
-    }
-  
-    public abstract void interpret(CLI cli, Input cmd);
-
-    /**
-     * Fill CANDIDATES with the possible completion strings and return
-     * the start position of those strings.  E.g., given buffer=foo
-     * and completion={foobar}, 0 would be returned to indicate where
-     * "foobar" can be inserted.  Rreturn -1 when completion isn't
-     * supported.
-     *
-     * XXX: It seems that, with the current jline, one more than the
-     * intended position needs to be returned.
+public class FloatingPointUnit
+     extends ArithmeticUnit
+{   
+    /** 
+     *  Return Type should be a FloatingPoint type with the
+     *  size of the larger type.
+     *  @param fpType Type of the floating point operand
+     *  @param type Type of the other operand (also can be FP Type)
      */
-    int complete(CLI cli, Input buffer, int cursor, List candidates) {
-	return -1;
+    public FloatingPointUnit (Type fpType, Type type) {
+	// Return type should be the larger type.
+	int retSize = (fpType.getSize() > type.getSize()) ?
+		       fpType.getSize() : type.getSize();
+        		       
+	retType = new FloatingPointType
+	          (fpType.getName(), ((FloatingPointType)fpType).order(), retSize);
     }
-}
+	    
+    public Value add(Value v1, Value v2) {
+	return retType.createValue
+	               (v1.doubleValue() + v2.doubleValue());
+    }    
+}    

@@ -43,6 +43,7 @@ import frysk.value.Format;
 import java.util.Iterator;
 import frysk.proc.Task;
 import frysk.value.Value;
+import java.util.List;
 
 class PrintCommand
     extends Command
@@ -73,12 +74,9 @@ class PrintCommand
 	    cli.printUsage(cmd);
 	    return;
         }
-        // Skip set specification, if any
-        String commandString = cmd.getFullCommand()
-            .substring(cmd.getFullCommand().indexOf(cmd.getAction()));
-	String sInput 
-            = commandString.substring(cmd.getAction().length()).trim();
-
+        // Skip set specification, if any.  XXX: Should do this after
+        // parameter parsing.
+	String sInput = cmd.stringValue();
 
 	Format format = null;
 	for (int i = 0; i < cmd.size(); i++) {
@@ -153,5 +151,10 @@ class PrintCommand
             cli.addMessage("Symbol \"" + sInput + "\" is not found in the current context.",
                            Message.TYPE_ERROR);
         }
+    }
+
+    int complete(CLI cli, Input input, int cursor, List candidates) {
+	return CompletionFactory.completeFocusedExpression(cli, input, cursor,
+							   candidates);
     }
 }

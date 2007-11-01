@@ -40,44 +40,48 @@
 package frysk.hpd;
 
 import java.util.List;
+import java.util.Iterator;
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.DebugInfo;
+import frysk.proc.Task;
 
 /**
- * A handler class for the CLI that supplies its own help messages.
+ * A collection of completers.
  */
 
-public abstract class Command {
-    private final CommandHelp help;
-    private final String name;  
-
-    protected OptionParser parser;
-  
-    public CommandHelp getHelp() {
-	return help;
+class CompletionFactory {
+    static void padSingleCandidate(List candidates) {
+	if (candidates.size() == 1) {
+	    candidates.set(0, ((String)candidates.get(0)) + " ");
+	}
     }
 
-    public String getName() {
-	return name;
-    }
-  
-    Command (String name, String description, String syntax, String full) {
-	this.name = name;
-	this.help = new CommandHelp(name, description, syntax, full);
-	parser = new OptionParser(name, syntax, full + "\n");
-    }
-  
-    public abstract void interpret(CLI cli, Input cmd);
-
-    /**
-     * Fill CANDIDATES with the possible completion strings and return
-     * the start position of those strings.  E.g., given buffer=foo
-     * and completion={foobar}, 0 would be returned to indicate where
-     * "foobar" can be inserted.  Rreturn -1 when completion isn't
-     * supported.
-     *
-     * XXX: It seems that, with the current jline, one more than the
-     * intended position needs to be returned.
-     */
-    int complete(CLI cli, Input buffer, int cursor, List candidates) {
-	return -1;
+    static int completeFocusedExpression(CLI cli, Input input, int cursor,
+					 List candidates) {
+        PTSet ptset = cli.getCommandPTSet(input);
+	String incomplete = input.stringValue();
+	int start = input.token(0).start;
+	Iterator i = ptset.getTasks();
+	if (!i.hasNext()) {
+	    // Should still be able to complete $variables.
+	    return -1;
+	} else {
+	    int newCursor = -1;
+	    do {
+		Task task = (Task)i.next();
+		DebugInfoFrame frame = cli.getTaskFrame(task);
+		DebugInfo debugInfo = cli.getTaskDebugInfo(task);
+		int tmp = debugInfo.complete(frame, incomplete,
+					     cursor - start, candidates);
+		if (tmp >= 0)
+		    newCursor = tmp;
+	    } while (i.hasNext());
+	    // If only one candidate, pad out with a space.
+	    padSingleCandidate(candidates);
+	    if (newCursor >= 0)
+		return newCursor + start;
+	    else
+		return -1;
+	}
     }
 }

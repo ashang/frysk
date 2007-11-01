@@ -43,6 +43,8 @@
 #include <string.h>
 
 char global_char = 'a';
+float float_ = 4.0;
+double double_ = 9.0;
 
 int *static_int_address;
 volatile int *volatile_int_address;

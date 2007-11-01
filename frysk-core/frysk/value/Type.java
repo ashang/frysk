@@ -128,6 +128,16 @@ public abstract class Type {
 	return stringWriter.toString();
     }
 
+    public ArithmeticUnit getALU(Type type) {
+	throw new RuntimeException("Invalid Arithmetic Unit");
+    }
+    public ArithmeticUnit getALU(IntegerType type) {
+	throw new RuntimeException("Invalid Arithmetic Unit");
+    }
+    public ArithmeticUnit getALU(FloatingPointType type){
+	throw new RuntimeException("Invalid Arithmetic Unit");
+    }
+    
     public Value add (Value var1, Value var2) {
         throw new InvalidOperatorException(this, "+");
     }

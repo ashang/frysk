@@ -118,18 +118,19 @@ public class PointerType
 	return new Value (this.getType(), loc);  
     }
     
-    public Value add(Value var1, Value var2) {
-	if (var2.getType() instanceof IntegerType) {
-	    if (this.getType() instanceof ArrayType) {
-		// Create pointer to array element type
-		Type eType = ((ArrayType)this.getType()).getType();
-		PointerType pType = new PointerType(eType.getName(), this.order(), eType.getSize(), eType);
-		return (pType.createValue(var1.asLong() + eType.getSize()*var2.asLong()));		
-	    }
-	    else 
-		return this.createValue(var1.asLong() + type.getSize()*var2.asLong());
-	}
-	else
-	    throw new RuntimeException("Invalid Pointer Arithmetic");
+    public ArithmeticUnit getALU(Type type) {
+	return type.getALU(this);
     }
+    
+    public ArithmeticUnit getALU(IntegerType type) {
+	return new AddressUnit(this);
+    }   
+    
+    public ArithmeticUnit getALU(FloatingPointType type) {
+	throw new RuntimeException("Invalid Pointer Arithmetic");
+    }
+    
+    public ArithmeticUnit getALU(PointerType type) {
+	throw new RuntimeException("Invalid Pointer Arithmetic");
+    }     
 }

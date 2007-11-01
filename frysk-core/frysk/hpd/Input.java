@@ -57,11 +57,20 @@ class Input {
 	    this.start = start;
 	    this.end = end;
 	}
+	public String toString() {
+	    return ("{" + super.toString()
+		    + ",value=" + value
+		    + ",start=" + start
+		    + ",end=" + end
+		    + "}");
+	}
     }
 
     private final String fullCommand;
     private final String set;
     private final String action;
+    // The tokens include a SENTINEL pointing at the end of the
+    // buffer.
     private final List tokens;
 
     private Input(String fullCommand, String set, String action, List tokens) {
@@ -83,25 +92,21 @@ class Input {
 	fullCommand = cmd;
 	tokens = tokenize(fullCommand);
 	action = null;
-	if (tokens.size() <= 0) {
+	if (size() <= 0) {
 	    set = null;
 	} else {
-	    String tempToken = ((Token)tokens.get(0)).value;
-	    // first token is either p/t-set or an action
+	    // First the first token is a p/t-set, strip it off.
+	    String tempToken = token(0).value;
 	    if (tempToken.startsWith("[") && tempToken.endsWith("]")) {
 		// if p/t-set
 		set = tempToken;
-		tokens.remove(0);
+		remove(0);
 	    } else {
 		set = null;
 	    }
 	}
     }
     
-    public String getFullCommand() {
-	return fullCommand;
-    }
-
     public String getSet() {
 	return set;
     }
@@ -111,17 +116,18 @@ class Input {
     }
 
     /**
-     * Return the N'th parameter, or NULL.
+     * Return the N'th parameter.
      */
     String parameter(int n) {
 	return token(n).value;
     }
 
     /**
-     * Return the remaining parameters as a String[].
+     * Return the value of the remaining input as a String[] (i.e.,
+     * each token as a separate String).
      */
-    String[] parameters() {
-	String[] args = new String[tokens.size()];
+    String[] stringArrayValue() {
+	String[] args = new String[size()];
 	for (int i = 0; i < args.length; i++) {
 	    args[i] = token(i).value;
 	}
@@ -129,7 +135,18 @@ class Input {
     }
 
     /**
-     * Return the N'th token, or NULL.
+     * Return the value of the remaining input as a simple (raw)
+     * string.
+     */
+    String stringValue() {
+	return fullCommand.substring(token(0).start);
+    }
+
+    /**
+     * Return the N'th token.
+     *
+     * The end-of-tokens is denoted by a sentinel (Token.value ==
+     * NULL) that provides the position of the end-of-buffer.
      */
     Token token(int n) {
 	return (Token)tokens.get(n);
@@ -146,7 +163,8 @@ class Input {
      * Return the number or size of the parameter list.
      */
     int size() {
-	return tokens.size();
+	// Do not count the SENTINEL.
+	return tokens.size() - 1;
     }
 
     public String toString() {
@@ -158,12 +176,10 @@ class Input {
      */
     Input accept() {
 	List newTokens;
-	String newAction;
-	if (tokens.size() > 0) {
-	    newAction = ((Token)tokens.get(0)).value;
+	String newAction = token(0).value;
+	if (size() > 0) {
 	    newTokens = tokens.subList(1, tokens.size());
 	} else {
-	    newAction = null;
 	    newTokens = tokens;
 	}
 	return new Input(fullCommand, set, newAction, newTokens);
@@ -237,6 +253,8 @@ class Input {
 	if (start >= 0) {
 	    tokens.add(new Token(token.toString(), start, str.length()));
 	}
+	// Add a SENTINEL pointing at the end of the input string.
+	tokens.add(new Token(null, str.length(), str.length()));
 	return tokens;
     }
 }
