@@ -44,6 +44,7 @@ import java.util.Iterator;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfo;
 import frysk.proc.Task;
+import jline.FileNameCompletor;
 
 /**
  * A collection of completers.
@@ -83,5 +84,17 @@ class CompletionFactory {
 	    else
 		return -1;
 	}
+    }
+
+    static int completeFileName(CLI cli, Input input, int cursor,
+					 List candidates) {
+	String incomplete = input.stringValue();
+	int start = input.token(0).start;
+	int end = new FileNameCompletor().complete(incomplete, cursor - start,
+						   candidates);
+	if (end >= 0)
+	    return start + end + 1;
+	else
+	    return -1;
     }
 }

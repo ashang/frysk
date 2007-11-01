@@ -49,6 +49,7 @@ import frysk.proc.dead.LinuxExeHost;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import java.util.List;
 
 /**
  * LoadCommand handles the "load path-to-executable" command on the fhpd
@@ -102,5 +103,10 @@ public class LoadCommand extends Command {
 			frame));
 	    }
 	}
+    }
+
+    int complete(CLI cli, Input input, int cursor, List candidates) {
+	return CompletionFactory.completeFileName(cli, input, cursor,
+						  candidates);
     }
 }
