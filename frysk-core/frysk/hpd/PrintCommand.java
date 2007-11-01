@@ -45,6 +45,7 @@ import frysk.proc.Task;
 import frysk.value.Value;
 import frysk.value.PointerType;
 import frysk.value.Type;
+import java.util.List;
 
 class PrintCommand
     extends Command
@@ -159,5 +160,10 @@ class PrintCommand
             cli.addMessage("Symbol \"" + sInput + "\" is not found in the current context.",
                            Message.TYPE_ERROR);
         }
+    }
+
+    int complete(CLI cli, Input input, int cursor, List candidates) {
+	return CompletionFactory.completeFocusedExpression(cli, input, cursor,
+							   candidates);
     }
 }

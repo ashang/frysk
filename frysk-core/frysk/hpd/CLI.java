@@ -50,7 +50,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Set;
 import java.util.WeakHashMap;
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
@@ -122,41 +121,12 @@ public class CLI {
      * @return cursor position in buffer
      */
     public int complete (String buffer, int cursor, List candidates) {
-        int first_ws = buffer.indexOf(' ');
-        int offset = 0;
-        // Complete the request name for help
-        if (buffer.startsWith("help "))
-            offset = 5;
-        // Complete the request name or help request
-        if (first_ws == -1 || offset > 0) {
-            Set commands = handlers.keySet();
-            Iterator it = commands.iterator();
-            while(it.hasNext()) {
-                String command = (String)it.next();
-                if (command.startsWith(buffer.substring(offset)))
-                    candidates.add(command + " ");
-            }
-            java.util.Collections.sort(candidates);
-        }
-        // Otherwise assume a symbol is being completed
-        else {
-            // XXX We should support the p/t set specified in the current
-            // command, if any.
-            Iterator taskIterator = targetset.getTasks();
-            int newCursor = -1;
-
-            while (taskIterator.hasNext()) {
-                Task task = (Task)taskIterator.next();
-                DebugInfoFrame frame = getTaskFrame(task);
-                DebugInfo debugInfo = getTaskDebugInfo(task);
-                if (debugInfo != null)
-                    newCursor = debugInfo.complete(frame, buffer.substring(first_ws),
-                                                   cursor - first_ws, candidates);
-            }
-            if (newCursor >= 0)
-                return newCursor + first_ws;
-        }
-        return 1 + offset;
+	try {
+	    return topLevelCommand.complete(this, new Input(buffer), cursor,
+					    candidates);
+	} catch (RuntimeException e) {
+	    return -1;
+	}
     }
 
     /*
