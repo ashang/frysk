@@ -73,12 +73,9 @@ class PrintCommand
 	    cli.printUsage(cmd);
 	    return;
         }
-        // Skip set specification, if any
-        String commandString = cmd.getFullCommand()
-            .substring(cmd.getFullCommand().indexOf(cmd.getAction()));
-	String sInput 
-            = commandString.substring(cmd.getAction().length()).trim();
-
+        // Skip set specification, if any.  XXX: Should do this after
+        // parameter parsing.
+	String sInput = cmd.stringValue();
 
 	Format format = null;
 	for (int i = 0; i < cmd.size(); i++) {

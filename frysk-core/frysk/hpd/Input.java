@@ -98,10 +98,6 @@ class Input {
 	}
     }
     
-    public String getFullCommand() {
-	return fullCommand;
-    }
-
     public String getSet() {
 	return set;
     }
@@ -111,21 +107,32 @@ class Input {
     }
 
     /**
-     * Return the N'th parameter, or NULL.
+     * Return the N'th parameter.
      */
     String parameter(int n) {
 	return token(n).value;
     }
 
     /**
-     * Return the remaining parameters as a String[].
+     * Return the value of the remaining input as a String[] (i.e.,
+     * each token as a separate String).
      */
-    String[] parameters() {
+    String[] stringArrayValue() {
 	String[] args = new String[tokens.size()];
 	for (int i = 0; i < args.length; i++) {
 	    args[i] = token(i).value;
 	}
 	return args;
+    }
+
+    /**
+     * Return the value of the remaining input as a simple (raw)
+     * string.
+     */
+    String stringValue() {
+	if (size() == 0)
+	    return "";
+	return fullCommand.substring(token(0).start);
     }
 
     /**

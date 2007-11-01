@@ -1,3 +1,13 @@
+2007-11-01  Andrew Cagney  <cagney@redhat.com>
+
+	* Input.java (stringValue()): New.
+	(getFullCommand()): Delete.
+	(stringArrayValue()): Rename parameters.
+	* PlocationCommand.java: Use.
+	* PrintCommand.java: Use.
+	* PtypeCommand.java: Use.
+	* RunCommand.java: Update.
+
 2007-10-31  Andrew Cagney  <cagney@redhat.com>
 
 	* Input.java (getParameters()): Delete.

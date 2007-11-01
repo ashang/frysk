@@ -66,11 +66,8 @@ class PlocationCommand
 	    cli.printUsage(cmd);
 	    return;
         }
-        // Skip set specification, if any
-        String commandString = cmd.getFullCommand()
-            .substring(cmd.getFullCommand().indexOf(cmd.getAction()));
-	String sInput 
-            = commandString.substring(cmd.getAction().length()).trim();
+        // What's left of the command line.
+	String sInput = cmd.stringValue();
 
 	if (sInput.length() == 0) {
 	    cli.printUsage(cmd);
