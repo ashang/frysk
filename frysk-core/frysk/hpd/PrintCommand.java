@@ -43,6 +43,7 @@ import frysk.value.Format;
 import java.util.Iterator;
 import frysk.proc.Task;
 import frysk.value.Value;
+import java.util.List;
 
 class PrintCommand
     extends Command
@@ -153,7 +154,7 @@ class PrintCommand
     }
 
     int complete(CLI cli, Input input, int cursor, List candidates) {
-	return CompleterFactory.completeFocusedExpression(cli, input, cursor,
-							  candidates);
+	return CompletionFactory.completeFocusedExpression(cli, input, cursor,
+							   candidates);
     }
 }

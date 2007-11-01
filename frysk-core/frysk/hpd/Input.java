@@ -143,7 +143,10 @@ class Input {
     }
 
     /**
-     * Return the N'th token, or NULL.
+     * Return the N'th token.
+     *
+     * The end-of-tokens is denoted by a sentinel (Token.value ==
+     * NULL) that provides the position of the end-of-buffer.
      */
     Token token(int n) {
 	return (Token)tokens.get(n);

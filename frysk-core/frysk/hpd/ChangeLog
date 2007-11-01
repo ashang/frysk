@@ -1,6 +1,6 @@
 2007-11-01  Andrew Cagney  <cagney@redhat.com>
 
-	* CompleterFactory.java: New.
+	* CompletionFactory.java: New.
 	* PrintCommand.java (complete(CLI,Input,int,List)): New.
 	* Command.java (complete(CLI,Input,int,List)): New.
 	* MultiLevelCommand.java (complete(CLI,Input,int,List)): New.

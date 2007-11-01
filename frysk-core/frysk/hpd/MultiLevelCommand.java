@@ -103,45 +103,34 @@ public abstract class MultiLevelCommand extends Command {
     }
 
     int complete(CLI cli, Input input, int cursor, List candidates) {
-	// Get the next token.
-	Input.Token token;
-	if (input.size() > 0) {
-	    token = input.token(0);
-	} else {
-	    token = null;
-	}
-	// If the cursor is past this token then a sub-command of this
-	// command is being completed.  Find that sub-command and call
-	// it.
-	if (token != null && cursor > token.end) {
-	    Command subCommand = (Command)subCommands.get(token.value);
+	Input.Token incomplete = input.token(0);
+	System.out.println("token=" + incomplete);
+	System.out.println("cursor=" + cursor);
+	// The cursor is past this token.  Find this level's
+	// sub-command and pass the completion problem on to it.
+	if (incomplete.value != null && cursor > incomplete.end) {
+	    Command subCommand = (Command)subCommands.get(incomplete.value);
 	    if (subCommand == null)
-		throw new InvalidCommandException("unknown command: "
-						  + token.value);
+		return -1; // give up
 	    return subCommand.complete(cli, input.accept(), cursor,
 				       candidates);
 	}
-	// Create a completion list for this command.
-	String incomplete;
-	if (token == null) {
-	    incomplete = "";
-	} else {
-	    incomplete = token.value;
-	}
-	for (Iterator i = subCommands.keySet().iterator(); i.hasNext(); ) {
-	    String subCommand = (String)i.next();
-	    if (subCommand.startsWith(incomplete))
-		candidates.add(subCommand);
+	if (incomplete.value == null)
+	    candidates.addAll(subCommands.keySet());
+	else {
+	    for (Iterator i = subCommands.keySet().iterator(); i.hasNext(); ) {
+		String subCommand = (String)i.next();
+		if (subCommand.startsWith(incomplete.value))
+		    candidates.add(subCommand);
+	    }
 	}
 	// If there's only one token, append a trailing blank so that
 	// things are ready for the next token.
 	if (candidates.size() == 1) {
 	    candidates.set(0, ((String)candidates.get(0)) + " ");
 	}
-	// Return the start of the tokens (if there is one)
-	int start = (token == null) ? cursor : token.start;
 	// XXX: I think this is one out; yet the +1 is needed to get
 	// all cases to work.
-	return 1 + start;
+	return 1 + incomplete.start;
     }
 }

@@ -40,31 +40,48 @@
 package frysk.hpd;
 
 import java.util.List;
+import java.util.Iterator;
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.DebugInfo;
+import frysk.proc.Task;
 
 /**
  * A collection of completers.
  */
 
-class CompleterFactory {
+class CompletionFactory {
+    static void padSingleCandidate(List candidates) {
+	if (candidates.size() == 1) {
+	    candidates.set(0, ((String)candidates.get(0)) + " ");
+	}
+    }
+
     static int completeFocusedExpression(CLI cli, Input input, int cursor,
 					 List candidates) {
-	String incomplete = input.getRawCommand();
-        PTSet ptset = cli.getCommandPTSet(cmd);
-	if (ptset.isEmpty()) {
+        PTSet ptset = cli.getCommandPTSet(input);
+	String incomplete = input.stringValue();
+	int start = input.token(0).start;
+	Iterator i = ptset.getTasks();
+	if (!i.hasNext()) {
 	    // Should still be able to complete $variables.
 	    return -1;
 	} else {
-	    for (Iterator taskDataIter = ptset.getTaskData();
-		 taskDataIter.hasNext(); ) {
-		Task task = (Task)taskIterator.next();
-		DebugInfoFrame frame = getTaskFrame(task);
-		DebugInfo debugInfo = getTaskDebugInfo(task);
-		newCursor = debugInfo.complete(frame, incomplete);
-		// XXX: Should check the other tasks?
-		if (newCursor >= 0)
-		    return newCursor + input.position();
-	    }
+	    int newCursor = -1;
+	    do {
+		Task task = (Task)i.next();
+		DebugInfoFrame frame = cli.getTaskFrame(task);
+		DebugInfo debugInfo = cli.getTaskDebugInfo(task);
+		int tmp = debugInfo.complete(frame, incomplete,
+					     cursor - start, candidates);
+		if (tmp >= 0)
+		    newCursor = tmp;
+	    } while (i.hasNext());
+	    // If only one candidate, pad out with a space.
+	    padSingleCandidate(candidates);
+	    if (newCursor >= 0)
+		return newCursor + start;
+	    else
+		return -1;
 	}
-        return -1; 
     }
 }
