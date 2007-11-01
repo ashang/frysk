@@ -1,5 +1,12 @@
 2007-11-01  Andrew Cagney  <cagney@redhat.com>
 
+	* CompleterFactory.java: New.
+	* PrintCommand.java (complete(CLI,Input,int,List)): New.
+	* Command.java (complete(CLI,Input,int,List)): New.
+	* MultiLevelCommand.java (complete(CLI,Input,int,List)): New.
+	* CLI.java (complete(CLI,Input,int,List)): Call
+	topLevelCommand.complete(CLI,Input,int,List).
+	
 	* Input.java (tokenize(String)): Add a sentinel token.
 	(size()): Adjust.
 	(Input(String)): Update.
@@ -9,7 +16,7 @@
 	* TestInput.java: Update.
 
 	* Input.java (Token.toString()): New.
-	
+
 	* Input.java (stringValue()): New.
 	(getFullCommand()): Delete.
 	(stringArrayValue()): Rename parameters.
@@ -18,13 +25,6 @@
 	* PtypeCommand.java: Use.
 	* RunCommand.java: Update.
 
-2007-10-31  Andrew Cagney  <cagney@redhat.com>
-
-	* Command.java (complete(CLI,Input,int,List)): New.
-	* MultiLevelCommand.java (complete(CLI,Input,int,List)): New.
-	* CLI.java (complete(CLI,Input,int,List)): Call
-	topLevelCommand.complete(CLI,Input,int,List).
-	
 2007-10-31  Andrew Cagney  <cagney@redhat.com>
 
 	* Input.java (getParameters()): Delete.

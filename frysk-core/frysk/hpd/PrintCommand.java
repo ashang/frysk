@@ -151,4 +151,9 @@ class PrintCommand
                            Message.TYPE_ERROR);
         }
     }
+
+    int complete(CLI cli, Input input, int cursor, List candidates) {
+	return CompleterFactory.completeFocusedExpression(cli, input, cursor,
+							  candidates);
+    }
 }
