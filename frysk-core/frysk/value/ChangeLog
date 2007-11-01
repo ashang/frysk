@@ -1,6 +1,18 @@
+2007-11-01  Stan Cox  <scox@redhat.com>
+
+	* CompositeType.java (toPrint): Fix merge snafu.
+
+2007-10-31  Stan Cox  <scox@redhat.com>
+
+	* TypeDecorator.java (toPrint): Handle PointerType.
+	* PointerType.java toPrint(String, PrintWriter): New.
+	* ArrayType.java toPrint(String, PrintWriter): New.
+	* CompositeType.java toPrint(int, PrintWriter): New.
+	* Type.java getName: Make public.
+
 2007-10-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
-	* CompositeType.java: Moved getValue inside the Memeber class.
+	* CompositeType.java: Moved getValue inside the Member class.
 
 2007-10-31  Sami Wagiaalla  <swagiaal@redhat.com>
 

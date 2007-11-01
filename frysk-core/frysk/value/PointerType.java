@@ -94,11 +94,20 @@ public class PointerType
 	}
     }
 
-    public void toPrint(PrintWriter writer) {
-	type.toPrint(writer);
-	writer.print(" *");
+    public void toPrint(String s, PrintWriter writer) {
+	if (type instanceof ArrayType) {
+	    ((ArrayType)type).toPrint("(*" + s + ")", writer);
+	}
+	else {
+	    type.toPrint(writer);
+	    writer.print(" *" + s);
+	}
     }
 
+    public void toPrint(PrintWriter writer) {
+	this.toPrint("", writer);
+    }
+    
     protected Type clone(IntegerType accessor) {
 	return new PointerType(getName(), order(), getSize(), type, accessor);
     }

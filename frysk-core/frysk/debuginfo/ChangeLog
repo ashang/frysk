@@ -1,3 +1,13 @@
+2007-11-01  Stan Cox  <scox@redhat.com>
+
+	* gen-type-expect-tests.py (j.start_test): Only mark value tests
+	as unresolved.
+
+2007-10-31  Stan Cox  <scox@redhat.com>
+
+	* TypeEntry.java (getUnionType): New.
+	(getType): Add UNION_TYPE_, VOLATILE_TYPE_, CONST_TYPE_.
+
 2007-10-30  Andrew Cagney  <cagney@redhat.com>
 
 	* gen-type-expect-tests.py: Mark all tests as unresolved, 5235.

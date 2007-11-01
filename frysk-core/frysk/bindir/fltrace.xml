@@ -62,7 +62,7 @@
 
   <refnamediv>
     <refname>fltrace</refname>
-    <refpurpose>Tracks interesting events in a process, like system
+    <refpurpose>traces interesting events in a process, like system
     calls and runtime library calls, using the Frysk
     framework.</refpurpose>
   </refnamediv>
@@ -86,7 +86,7 @@
          here, I stick with fltrace for the name of the tool. -->
 
     <para><function>fltrace</function> starts given
-    <replaceable>command</replaceable> and tracks its system calls,
+    <replaceable>command</replaceable> and traces its system calls,
     runtime library calls (if it's dynamically linked executable) from
     both the executable and libraries, and symbol entry points in
     general.  It uses the Frysk framework to implement tracing.</para>
@@ -168,11 +168,12 @@
     <para>Optional &quot;-&quot; at the beginning of the rule means
     removal from the working set.  When the sign is omitted, the
     default action is to add to the working set.  Optional
-    &quot;#&quot; means, similarly to a syscall rules, that fltrace
-    should print out stack trace when it hits the call.
-    <replaceable>pattern</replaceable> defines which PLT entries from
-    which libraries should be added or removed from working set.
-    Syntax of pattern is the following:</para>
+    &quot;#&quot; means that fltrace should print out stack trace when
+    it hits the call.  The combination of &quot;-#&quot; then means
+    that the call should still be traced, but stack trace shouldn't be
+    generated.  <replaceable>pattern</replaceable> defines which PLT
+    entries from which libraries should be added or removed from
+    working set.  Syntax of pattern is the following:</para>
 
     <para><optional><replaceable>symbol</replaceable></optional><optional>@<replaceable>soname</replaceable></optional><optional>@@<replaceable>version</replaceable></optional></para>
 
@@ -208,13 +209,16 @@
 
     <informalexample>
       <para>Trace all plt library calls:</para>
-      <cmdsynopsis><command>fltrace -plt ls</command></cmdsynopsis>
+      <cmdsynopsis><command>fltrace -plt= ls</command></cmdsynopsis>
       <para>Trace all library calls to functions that contain
       substring "write" in their names:</para>
       <cmdsynopsis><command>fltrace -plt=&quot;.*write.*&quot; ls</command></cmdsynopsis>
       <para>Trace memory functions done from libraries, i.e. not from
       main executable:</para>
       <cmdsynopsis><command>fltrace -plt=&quot;[cm]alloc|free,-@MAIN" ls</command></cmdsynopsis>
+      <para>Stack trace on everything, except for memory allocation
+      functions (which should still be traced):</para>
+      <cmdsynopsis><command>fltrace -plt=&quot;#,-#[cm]alloc|free" ls</command></cmdsynopsis>
     </informalexample>
 
   </refsect1>
@@ -242,7 +246,7 @@
   <refsect1>
     <title>BUGS</title>
     <para>fltrace should be merged with ftrace.</para>
-    <para>'-sys' doesn't work, syscall tracing is always on.</para>
+    <para>'-s' doesn't work, syscall tracing is always on.</para>
     <para>I think ltrace wouldn't handle tracing one function both through entry point and plt.</para>
     <para>Report bugs to <ulink url="http:/sources.redhat.com/frysk">http://sources.redhat.com/frysk</ulink>.</para>
   </refsect1>
