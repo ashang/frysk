@@ -57,6 +57,13 @@ class Input {
 	    this.start = start;
 	    this.end = end;
 	}
+	public String toString() {
+	    return ("{" + super.toString()
+		    + ",value=" + value
+		    + ",start=" + start
+		    + ",end=" + end
+		    + "}");
+	}
     }
 
     private final String fullCommand;

@@ -1,5 +1,7 @@
 2007-11-01  Andrew Cagney  <cagney@redhat.com>
 
+	* Input.java (Token.toString()): New.
+	
 	* Input.java (stringValue()): New.
 	(getFullCommand()): Delete.
 	(stringArrayValue()): Rename parameters.
