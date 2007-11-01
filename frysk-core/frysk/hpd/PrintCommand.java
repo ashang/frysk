@@ -43,6 +43,8 @@ import frysk.value.Format;
 import java.util.Iterator;
 import frysk.proc.Task;
 import frysk.value.Value;
+import frysk.value.PointerType;
+import frysk.value.Type;
 
 class PrintCommand
     extends Command
@@ -142,8 +144,15 @@ class PrintCommand
 	    // of fake task?
 	    if (task == null)
 		result.toPrint(cli.outWriter, null, format);
-	    else
+	    else {
+		Type t = result.getType();
+		if (t instanceof PointerType) {
+		    cli.outWriter.print("(");
+		    t.toPrint(cli.outWriter);
+		    cli.outWriter.print(") ");
+		}
 		result.toPrint(cli.outWriter, task.getMemory(), format);
+	    }	
 	    cli.outWriter.println();
         }
         if (result == null) {
