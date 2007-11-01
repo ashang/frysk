@@ -119,16 +119,14 @@ public abstract class ArithmeticType
 	}
     }
 
-    public Value add(Value var1, Value var2) {
-	ArithmeticType type = returnType(var1, var2);
-	if (type instanceof IntegerType)
-	    return type.createValue(var1.asLong() + var2.asLong());
-	else if (type instanceof FloatingPointType)
-	    return type.createValue(var1.doubleValue() + var2.doubleValue());
-	else
-	    throw new RuntimeException("add botch");
+    public Value add(Value v1, Value v2) {
+	return v1.getType().getALU(v2.getType()).add(v1, v2);	    
     }
-
+    
+    public Value plusEqual(Value var1, Value var2) {
+	return var1.assign(add(var1, var2));
+    }
+    
     public Value subtract(Value var1, Value var2) {
 	ArithmeticType type = returnType(var1, var2);
 	if (type instanceof IntegerType)
@@ -305,10 +303,6 @@ public abstract class ArithmeticType
 
     public Value assign(Value var1, Value var2) {
 	return var1.assign(var2);
-    }
-
-    public Value plusEqual(Value var1, Value var2) {
-	return var1.assign(add(var1, var2));
     }
 
     public Value minusEqual(Value var1, Value var2) {

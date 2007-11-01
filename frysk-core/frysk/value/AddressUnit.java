@@ -39,73 +39,43 @@
 
 package frysk.value;
 
-import inua.eio.ByteOrder;
-import inua.eio.ByteBuffer;
-import java.io.PrintWriter;
-import java.math.BigInteger;
-
 /**
- * Type for a floating-point value.
+ * Arithmetic Operation handling for pointers and addresses.
  */
-
-public class FloatingPointType
-    extends ArithmeticType
-{    
-    public FloatingPointType(String name, ByteOrder order, int size) {
-	super(name, order, size);
+public class AddressUnit
+extends ArithmeticUnit
+{
+    public AddressUnit (Type t1) {
+	retType = (ArithmeticType)t1;
     }
-
-    public void toPrint(PrintWriter writer, Location location,
-			ByteBuffer memory, Format format) {
-	// double-dispatch.
-	format.print(writer, location, this);
-    }
-
+    
     /**
-     * Return the raw bytes as an unsigned integer.
+     * Pointer Addition
      */
-    BigInteger getBigInteger(Location location) {
-	return new BigInteger(1, location.get(order()));
+    public Value add(Value v1, Value v2) {             
+        PointerType ptrType;
+        Value ptrValue;
+        Value intValue;
+        if (v1.getType() instanceof PointerType) {
+            ptrType = (PointerType)retType;
+            ptrValue = v1;
+            intValue = v2;
+        } else {
+            ptrType = (PointerType)retType;
+            ptrValue = v2;
+            intValue = v1;
+        }
+	
+        if (ptrType.getType() instanceof ArrayType) {
+            // Create pointer to array element type
+            Type eType = ((ArrayType)ptrType.getType()).getType();
+            PointerType pType = new PointerType
+                                (eType.getName(), ptrType.order(), eType.getSize(), eType);
+            return (pType.createValue
+        	          (ptrValue.asLong() + eType.getSize()*intValue.asLong()));		
+        }
+        else 
+           return retType.createValue
+                          (ptrValue.asLong() + ptrType.getType().getSize()*intValue.asLong());
     }
-
-    /**
-     * Return the raw bytes as an unsigned integer.
-     */
-    void putBigInteger(Location location, BigInteger val) {
-	location.put(order(), val.toByteArray(), 0);
-    }
-
-    BigFloat getBigFloat(Location location) {
-	return new BigFloat(location.get(order()));
-    }
-
-    BigFloat bigFloatValue(Location location) {
-	return getBigFloat(location);
-    }
-
-    BigInteger bigIntegerValue (Location location) {
-	return getBigFloat(location).bigIntegerValue();
-    }
-
-    void assign(Location location, Value v) {
-	BigFloat f = ((ArithmeticType)v.getType())
-	    .bigFloatValue(v.getLocation());
-	location.put(order(), f.toByteArray(getSize()), 0);
-    }
-    
-    public ArithmeticUnit getALU(Type type) {
-	return type.getALU(this);
-    }
-    
-    public ArithmeticUnit getALU(IntegerType type) {
-	// FIXME: Should this be resolved by a double 
-	// dispatch of IntegerType?
-	if (type instanceof PointerType)
-	    throw new RuntimeException("Invalid Pointer Arithmetic");
-	return new FloatingPointUnit(this, type);
-    }
-    
-    public ArithmeticUnit getALU(FloatingPointType type) {
-	return new FloatingPointUnit(this, type);
-    }        
 }

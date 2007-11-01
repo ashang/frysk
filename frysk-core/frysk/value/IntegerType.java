@@ -77,4 +77,24 @@ public abstract class IntegerType
 	// Let sub-type sort out sign extension et.al.
 	putBigInteger(location, i);
     }
+
+    public ArithmeticUnit getALU(Type type) {
+	return type.getALU(this);
+    }
+    
+    public ArithmeticUnit getALU(PointerType type) {
+	return new AddressUnit(type);
+    }
+    
+    public ArithmeticUnit getALU(IntegerType type) {
+	// FIXME: Should this be resolved by a double 
+	// dispatch of IntegerType?
+	if (type instanceof PointerType)
+	    return new AddressUnit(type);
+	return new IntegerUnit(this, type);
+    }
+    
+    public ArithmeticUnit getALU(FloatingPointType type) {
+	return new FloatingPointUnit(type, this);
+    }    
 }

@@ -1,3 +1,8 @@
+2007-11-01 Teresa Thomas <tthomas@redhat.com>
+
+	* funit-addresses.c (float_): New.
+	(double_): New.
+	
 2007-10-30  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-hello.c: New file.
