@@ -125,41 +125,64 @@ public class fltrace
 	}
 
 	public void gotPltRules(List rules) {
-	    logger.log(Level.FINER, "Got " + rules.size() + " PLT rules.", this);
+	    logger.log(Level.FINER, "Got " + rules.size() + " PLT rules.");
 	    this.pltRules.addAll(rules);
 	}
 
 	public void gotDynRules(List rules) {
-	    logger.log(Level.FINER, "Got " + rules.size() + " DYNAMIC rules.", this);
+	    logger.log(Level.FINER, "Got " + rules.size() + " DYNAMIC rules.");
 	    this.dynRules.addAll(rules);
 	}
 
 	public void gotSymRules(List rules) {
-	    logger.log(Level.FINER, "Got " + rules.size() + " SYMTAB rules.", this);
+	    logger.log(Level.FINER, "Got " + rules.size() + " SYMTAB rules.");
 	    this.symRules.addAll(rules);
+	}
+
+	private boolean checkVersionMatches(final TracePoint tp, final WorkingSetRule rule)
+	{
+	    ElfSymbolVersion[] vers = (tp.origin == TracePointOrigin.PLT)
+		? (ElfSymbolVersion[])tp.symbol.verneeds
+		: (ElfSymbolVersion[])tp.symbol.verdefs;
+
+	    // When there is no version assigned to symbol, we pretend it has
+	    // a version of ''.  Otherwise we require one of the versions to
+	    // match the version pattern.
+	    if (vers.length == 0) {
+		if (rule.versionPattern.matcher("").matches()) {
+		    logger.log(Level.FINE, rule + ": `" + tp.symbol.name
+			       + "' version match, no version.");
+		    return true;
+		}
+	    }
+	    else
+		for (int i = 0; i < vers.length; ++i)
+		    if (rule.versionPattern.matcher(vers[i].name).matches()) {
+			logger.log(Level.FINE, rule + ": `" + tp.symbol.name
+				   + "' version match `" + vers[i].name+ "'.");
+			return true;
+		    }
+
+	    return false;
 	}
 
 	public void applyTracingRules(final Task task, final ObjectFile objf, final Ltrace.Driver driver,
 				      final List rules, final TracePointOrigin origin)
 	    throws lib.dwfl.ElfException
 	{
-	    logger.log(Level.FINER, "Building working set for origin " + origin + ".", this);
+	    logger.log(Level.FINER, "Building working set for origin " + origin + ".");
 
 	    // Skip the set if it's empty...
 	    if (rules.isEmpty())
 		return;
 
-	    class WorkingSetElement {
-		final public TracePoint tracepoint;
-		final public boolean stackTrace;
-		public WorkingSetElement(TracePoint tracepoint, boolean stackTrace) {
-		    this.tracepoint = tracepoint;
-		    this.stackTrace = stackTrace;
-		}
-	    }
-
-	    final Set candidates = new HashSet(); // Set<TracePoint>, all tracepoints in objfile
-	    final Set workingSet = new HashSet(); // Set<WorkingSetElement>, incrementally built working set
+	    // Set<TracePoint>, all tracepoints in objfile.
+	    final Set candidates = new HashSet();
+	    // Set<TracePoint>, incrementally built working set.
+	    final Set workingSet = new HashSet();
+	    // Set<TracePoint>, incrementally built set of tracepoints
+	    // that should stacktrace.
+	    final Set stackTraceSet = new HashSet();
 	    boolean candidatesInited = false;
 
 	    // Loop through all the rules, and use them to build
@@ -167,9 +190,9 @@ public class fltrace
 	    // lazily inside the loop.
 	    for (Iterator it = rules.iterator(); it.hasNext(); ) {
 		final WorkingSetRule rule = (WorkingSetRule)it.next();
-		logger.log(Level.FINEST, "Considering rule " + rule + ".", this);
+		logger.log(Level.FINEST, "Considering rule " + rule + ".");
 
-		// MAIN is meta-symbol meaning "main executable".
+		// MAIN is meta-soname meaning "main executable".
 		if ((rule.sonamePattern.pattern().equals("MAIN")
 		     && task.getProc().getExe().equals(objf.getFilename().getPath()))
 		    || rule.sonamePattern.matcher(objf.getSoname()).matches())
@@ -179,57 +202,41 @@ public class fltrace
 			    objf.eachTracePoint(new ObjectFile.TracePointIterator() {
 				    public void tracePoint(TracePoint tp) {
 					if (candidates.add(tp))
-					    logger.log(Level.FINE, "candidate `" + tp.symbol.name + "'.", this);
+					    logger.log(Level.FINE, "candidate `" + tp.symbol.name + "'.");
 				    }
 				}, origin);
 			}
 
-			// For '+' rules add subset of matching elements candidates to workingSet.
-			// For '-' rules remove matching elements from workingSet.
-
-			// Here we iterate over one of two sets, each of them
-			// holding objects of different class. Fun!
-			Set iterateOver = rule.addition ? candidates : workingSet;
-
-			for (Iterator jt = iterateOver.iterator(); jt.hasNext(); ) {
-			    Object o = jt.next();
-			    TracePoint tp = rule.addition ? (TracePoint)o : ((WorkingSetElement)o).tracepoint;
-
-			    if (rule.namePattern.matcher(tp.symbol.name).matches()) {
-				// Decide which set of versions should be taken into account.
-				boolean versionMatch = false;
-				ElfSymbolVersion[] vers = (origin == TracePointOrigin.PLT)
-				    ? (ElfSymbolVersion[])tp.symbol.verneeds
-				    : (ElfSymbolVersion[])tp.symbol.verdefs;
-
-				// When there is no version assigned to symbol, we pretend it has
-				// a version of ''.  Otherwise we require one of the versions to
-				// match the version pattern.
-				if (vers.length == 0) {
-				    if (rule.versionPattern.matcher("").matches()) {
-					logger.log(Level.FINE, rule + ": `" + tp.symbol.name
-						   + "' version match, no version.", this);
-					versionMatch = true;
-				    }
+			if (rule.addition)
+			    // For '+' rules iterate over candidates,
+			    // and add what matches to workingSet, and
+			    // maybe to stackTraceSet.
+			    for (Iterator jt = candidates.iterator(); jt.hasNext(); ) {
+				TracePoint tp = (TracePoint)jt.next();
+				if (rule.namePattern.matcher(tp.symbol.name).matches()
+				    && checkVersionMatches(tp, rule))
+				{
+				    if (workingSet.add(tp))
+				        logger.log(Level.CONFIG, rule + ": add `" + tp.symbol.name + "'.");
+				    if (rule.stackTrace
+					&& stackTraceSet.add(tp))
+				        logger.log(Level.CONFIG, rule + ": stack trace on `" + tp.symbol.name + "'.");
 				}
-				else
-				    for (int i = 0; i < vers.length; ++i)
-					if (rule.versionPattern.matcher(vers[i].name).matches()) {
-					    logger.log(Level.FINE, rule + ": `" + tp.symbol.name
-						       + "' version match `" + vers[i].name+ "'.", this);
-					    versionMatch = true;
-					    break;
-					}
-
-				if (versionMatch) {
-				    if (rule.addition) {
-					if (workingSet.add(new WorkingSetElement(tp, rule.stackTrace)))
-					    logger.log(Level.CONFIG, rule + ": add `" + tp.symbol.name + "'.", this);
-				    }
-				    else {
+			    }
+			else {
+			    // For '-' or '-#' rules iterate over
+    			    // workingSet or stackTraceSet, and remove
+    			    // what matches.
+			    Set iterateOver = rule.stackTrace ? stackTraceSet : workingSet;
+			    for (Iterator jt = iterateOver.iterator(); jt.hasNext(); ) {
+				TracePoint tp = (TracePoint)jt.next();
+				if (rule.namePattern.matcher(tp.symbol.name).matches()
+				    && checkVersionMatches(tp, rule)) {
 					jt.remove();
-					logger.log(Level.CONFIG, rule + ": remove `" + tp.symbol.name + "'.", this);
-				    }
+					if (!rule.stackTrace)
+					    if (!stackTraceSet.remove(tp))
+						throw new AssertionError("Element from stackTraceSet not present in workingSet!");
+					logger.log(Level.CONFIG, rule + ": remove `" + tp.symbol.name + "'.");
 				}
 			    }
 			}
@@ -237,18 +244,16 @@ public class fltrace
 	    }
 
 	    // Finally, apply constructed working set.
-	    logger.log(Level.FINER, "Applying working set for origin " + origin + ".", this);
-	    Set stackTraceSet = new HashSet();
-	    for (Iterator it = workingSet.iterator(); it.hasNext(); ) {
-		WorkingSetElement e = (WorkingSetElement)it.next();
-		driver.tracePoint(task, e.tracepoint);
-		if (e.stackTrace)
-		    stackTraceSet.add(e.tracepoint.symbol);
-	    }
+	    logger.log(Level.FINER, "Applying working set for origin " + origin + ".");
+	    for (Iterator it = workingSet.iterator(); it.hasNext(); )
+		driver.tracePoint(task, (TracePoint)it.next());
 
 	    // And warn our console front end that it should stack
 	    // trace if it sees one of these...
-	    observer.shouldStackTraceOn(stackTraceSet);
+	    HashSet stackTraceSymbols = new HashSet();
+	    for (Iterator it = stackTraceSet.iterator(); it.hasNext(); )
+		stackTraceSymbols.add(((TracePoint)it.next()).symbol);
+	    observer.shouldStackTraceOn(stackTraceSymbols);
 	}
 
 	public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver) {
@@ -277,7 +282,6 @@ public class fltrace
 
       public synchronized void shouldStackTraceOn(Set symbols)
       {
-	  System.out.println("{{{Should stack trace on " + symbols.size() + " symbols}}}");
 	  symbolsStackTraceSet.addAll(symbols);
       }
 
@@ -493,19 +497,19 @@ public class fltrace
 	    else
 		sonameRe = null;
 
-	    if (str.length() > 0 && str.charAt(0) == '#') {
-		stackTrace = true;
-		str = str.substring(1);
-	    }
-	    else
-		stackTrace = false;
-
 	    if (str.length() > 0 && str.charAt(0) == '-') {
 		addition = false;
 		str = str.substring(1);
 	    }
 	    else
 		addition = true;
+
+	    if (str.length() > 0 && str.charAt(0) == '#') {
+		stackTrace = true;
+		str = str.substring(1);
+	    }
+	    else
+		stackTrace = false;
 
 	    if (!str.equals(""))
 		symbolRe = str;
