@@ -1,7 +1,7 @@
 2007-11-01  Stan Cox  <scox@redhat.com>
 
-	* gen-type-expect-tests.py (j.start_test): Only mark value tests
-	as unresolved.
+	* gen-type-expect-tests.py (j.start_test): Make unresolved optional.
+	(j.start_test): ...but for now continue to mark all as unresolved.
 
 2007-10-31  Stan Cox  <scox@redhat.com>
 
