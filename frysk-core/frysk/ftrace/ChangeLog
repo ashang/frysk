@@ -1,3 +1,10 @@
+2007-11-02  Petr Machata  <pmachata@redhat.com>
+
+	* IA32Arch.java: Turn off poor man's call formatter.
+	Answer six arguments instead of four.
+	Return Integers instead of Longs.
+	* X8664Arch.java: Implement funcall arglist.
+
 2007-10-31  Petr Machata  <pmachata@redhat.com>
 
 	* ObjectFile.java: Fix symbol table caching.

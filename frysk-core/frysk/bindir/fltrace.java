@@ -234,8 +234,7 @@ public class fltrace
 				    && checkVersionMatches(tp, rule)) {
 					jt.remove();
 					if (!rule.stackTrace)
-					    if (!stackTraceSet.remove(tp))
-						throw new AssertionError("Element from stackTraceSet not present in workingSet!");
+					    stackTraceSet.remove(tp);
 					logger.log(Level.CONFIG, rule + ": remove `" + tp.symbol.name + "'.");
 				}
 			    }
@@ -339,8 +338,17 @@ public class fltrace
     	System.err.print("[" + task.getTaskId().intValue() + "] "
 			 + spaces + eventType + " ");
 	System.err.print(eventName + "(");
-	for (int i = 0; i < args.length; ++i)
-	  System.err.print((i > 0 ? ", " : "") + args[i]);
+	for (int i = 0; i < args.length; ++i) {
+	    System.err.print(i > 0 ? ", " : "");
+	    // Temporary hack to get proper formatting before
+	    // something more sane lands.
+	    if (args[i] instanceof Long)
+		System.err.print("0x" + Long.toHexString(((Long)args[i]).longValue()));
+	    else if (args[i] instanceof Integer)
+		System.err.print("0x" + Integer.toHexString(((Integer)args[i]).intValue()));
+	    else
+		System.err.print(args[i]);
+	}
     	System.err.print(")");
 
         updateOpenLine(task, item);

@@ -1,3 +1,7 @@
+2007-11-02  Petr Machata  <pmachata@redhat.com>
+
+	* fltrace.java: Output values in hex.
+
 2007-11-01  Petr Machata  <pmachata@redhat.com>
 
 	* fltrace.java

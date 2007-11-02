@@ -43,6 +43,7 @@ import inua.eio.ByteBuffer;
 
 import frysk.proc.Task;
 import frysk.isa.X8664Registers;
+import frysk.isa.Register;
 
 /**
  * x86_64 implementation of Arch interface.
@@ -58,9 +59,30 @@ public class X8664Arch implements Arch {
 	long retAddr = memBuf.getLong(rsp);
 	return retAddr;
     }
+
+    private Object getCallArgument(Task task, Symbol symbol, int i) {
+	Register reg;
+	ByteBuffer memBuf = task.getMemory();
+
+	switch (i) {
+	case 0: reg = X8664Registers.RDI; break;
+	case 1: reg = X8664Registers.RSI; break;
+	case 2:	reg = X8664Registers.RDX; break;
+	case 3:	reg = X8664Registers.RCX; break;
+	case 4: reg = X8664Registers.R8;  break;
+	case 5: reg = X8664Registers.R9;  break;
+	default:
+	    long address = task.getRegister(X8664Registers.RSP) + 8 * (i - 5);
+	    return new Long(memBuf.getLong(address));
+	}
+
+	return new Long(task.getRegister(reg));
+    }
   
-    public Object[] getCallArguments(Task task, Symbol symbol) { 
-	Object[] ret = {};
+    public Object[] getCallArguments(Task task, Symbol symbol) {
+	Object[] ret = new Object[6];
+	for (int i = 0; i < ret.length; ++i)
+	    ret[i] = getCallArgument(task, symbol, i);
 	return ret;
     }
   

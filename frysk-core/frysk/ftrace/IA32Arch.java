@@ -67,6 +67,7 @@ public class IA32Arch implements Arch {
 	// Poor man's arg extractor... both traditional ltrace-style
 	// and dwarf-enhanced formatters will be implemented in
 	// future, this is just to test some stuff...
+	/*
 	if (symbol.name.equals("puts")) {
 	    long pointer = memBuf.getUInt(esp);
 	    int length = 0;
@@ -78,14 +79,16 @@ public class IA32Arch implements Arch {
 	    String arg = new String(bytes);
 	    Object[] ret = {arg};
 	    return ret;
-	} else {
-	    Object[] ret = new Object[4];
+	}
+	else {
+	*/
+	    Object[] ret = new Object[6];
 	    for (int i = 0; i < ret.length; ++i) {
-		ret[i] = new Long(memBuf.getUInt(esp));
+		ret[i] = new Integer(memBuf.getInt(esp));
 		esp += 4;
 	    }
 	    return ret;
-	}
+	//}
     }
 
     public Object getReturnValue(Task task, Symbol symbol) {
