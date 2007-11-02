@@ -1,3 +1,7 @@
+2007-11-02  Petr Machata  <pmachata@redhat.com>
+
+	* funit-calls.c: New.
+
 2007-11-01 Teresa Thomas <tthomas@redhat.com>
 
 	* funit-addresses.c (float_): New.
