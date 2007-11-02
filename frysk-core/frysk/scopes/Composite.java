@@ -42,9 +42,14 @@ package frysk.scopes;
 import frysk.debuginfo.TypeEntry;
 import lib.dwfl.DwarfDie;
 
-public class Struct extends Scope {
+/**
+ * A Composite object is a scope to wich a function can belong:
+ * So either a Struct or a class.
+ * This represents all the static information about that object.
+ */
+public class Composite extends Scope {
 
-    public Struct(DwarfDie die, TypeEntry typeEntry) {
+    public Composite(DwarfDie die, TypeEntry typeEntry) {
 	super(die, typeEntry);
     }
     

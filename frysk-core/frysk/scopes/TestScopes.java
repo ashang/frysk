@@ -57,7 +57,7 @@ public class TestScopes extends TestLib{
 	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
 	Subprogram subprogram = frame.getSubprogram();
 	
-	Struct struct = subprogram.getStruct();
+	Composite struct = subprogram.getComposite();
 	
 	assertEquals("Correct struct was found", "A", struct.getDie().getName());
 	

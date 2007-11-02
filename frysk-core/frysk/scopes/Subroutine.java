@@ -51,7 +51,7 @@ import lib.dwfl.DwarfDie;
  */
 public class Subroutine extends Scope {
 
-    Struct struct;
+    Composite struct;
     
     public Subroutine(DwarfDie die, TypeEntry typeEntry) {
 	super(die, typeEntry);
@@ -63,7 +63,7 @@ public class Subroutine extends Scope {
      * 
      * @return Struct containing this Subroutine or null
      */
-    public Struct getStruct() {
+    public Composite getComposite() {
 	if (struct == null) {
 	    DwarfDie die = this.getDie().getOriginalDie();
 	    if (die == null) {
@@ -73,7 +73,7 @@ public class Subroutine extends Scope {
 	    DwarfDie[] scopes = die.getScopesDie();
 	    for (int i = 0; i < scopes.length; i++) {
 		if (scopes[i].getTag().equals(DwTag.STRUCTURE_TYPE)) {
-		    this.struct = new Struct(scopes[i], typeEntry);
+		    this.struct = new Composite(scopes[i], typeEntry);
 		}
 	    }
 	}
