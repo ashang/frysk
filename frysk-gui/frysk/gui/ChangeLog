@@ -1,10 +1,16 @@
+2007-11-02  Zhao Shujing <pearly.zhao@oracle.com>
+
+	* memory/MemoryWindow.java: Change the data visualization as a grid
+	display. Fixes #4623.
+	* gladedir/memorywindow.glade: Remove toBox and toSpin.
+
 2007-10-30  Andrew Cagney  <cagney@redhat.com>
 
 	* FryskGui.java-in: Rename FryskGui.javain.
 
 2007-10-26  Zhao Shujing <pearly.zhao@oracle.com>
 	
-	* disassembler/DisassemblyWindow.java: remove the GtkWindow Warning.
+	* gladedir/disassemblywindow.glade: Remove the GtkWindow Warning.
 
 2007-10-16  Tim Moore  <timoore@redhat.com>
 
