@@ -127,8 +127,6 @@ public abstract class MultiLevelCommand extends Command {
 	if (candidates.size() == 1) {
 	    candidates.set(0, ((String)candidates.get(0)) + " ");
 	}
-	// XXX: I think this is one out; yet the +1 is needed to get
-	// all cases to work.
-	return 1 + incomplete.start;
+	return incomplete.start;
     }
 }

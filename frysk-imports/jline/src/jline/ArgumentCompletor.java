@@ -215,7 +215,7 @@ public class ArgumentCompletor
 		if (ret == -1)
 			return -1;
 
-		int pos = ret + (list.getBufferPosition () - argpos) + 1;
+		int pos = ret + (list.getBufferPosition () - argpos);
 
 		/**
 		 *	Special case: when completing in the middle of a line, and the

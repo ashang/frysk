@@ -1,3 +1,11 @@
+2007-11-01  Andrew Cagney  <cagney@redhat.com>
+
+	Backport fix from upstream.
+	* src/jline/CandidateListCompletionHandler.java
+	(setBuffer(ConsoleReader,String,int)): Fix off-by-one bug.
+	(complete(ConsoleReader,List,int)): Remove +1 work-around.
+	* src/jline/ArgumentCompletor.java: Ditto.
+
 2007-05-29  Stan Cox  <scox@redhat.com>
 
 	* src/jline/ConsoleReader.java (getTermwidth): Use terminal instead of 

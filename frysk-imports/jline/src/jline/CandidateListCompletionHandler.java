@@ -79,11 +79,6 @@ public class CandidateListCompletionHandler
 			String value = getUnambiguousCompletions (candidates);
 			String bufString = buf.toString ();
 			setBuffer (reader, value, pos);
-
-			// if we have changed the buffer, then just return withough
-			// printing out all the subsequent candidates
-			if (bufString.length () - pos + 1 != value.length ())
-				return true;
 		}
 
 		reader.printNewline ();
@@ -100,7 +95,7 @@ public class CandidateListCompletionHandler
 		String value, int offset)
 		throws IOException
 	{
-		while (reader.getCursorBuffer ().cursor >= offset
+		while (reader.getCursorBuffer ().cursor > offset
 			&& reader.backspace ());
 		reader.putString (value);
 		reader.setCursorPosition (offset + value.length ());

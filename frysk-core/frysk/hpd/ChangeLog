@@ -1,5 +1,10 @@
 2007-11-01  Andrew Cagney  <cagney@redhat.com>
 
+	* Command.java (complete(CLI,Input,int,List)): Remove comment
+	about off-by-one jline workaround.
+	* CompletionFactory.java (complete(CLI,Input,int,List)): Update.
+	* MultiLevelCommand.java (complete(CLI,Input,int,List)): Update.
+
 	* LoadCommand.java (complete(CLI,Input,int,List)): New.
 	* CompletionFactory.java (completeFileName(CLI,Input,int,List)): New.
 	

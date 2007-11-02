@@ -128,7 +128,9 @@ public class DebugInfo {
 
 	if (haveStruct)
 	    token = ".";
-	return buffer.indexOf(token) + 1;
+	// XXX: This is a big kludge (but less of a kludge than
+	// .indexOf.
+	return buffer.lastIndexOf(token);
     }
 
     /**

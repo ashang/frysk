@@ -79,6 +79,10 @@ class CompletionFactory {
 	    } while (i.hasNext());
 	    // If only one candidate, pad out with a space.
 	    padSingleCandidate(candidates);
+	    // System.out.println("start=" + start);
+	    // System.out.println("cursor=" + cursor);
+	    // System.out.println("candidates=" + candidates);
+	    // System.out.println("newCursor=" + newCursor);
 	    if (newCursor >= 0)
 		return newCursor + start;
 	    else
@@ -93,7 +97,7 @@ class CompletionFactory {
 	int end = new FileNameCompletor().complete(incomplete, cursor - start,
 						   candidates);
 	if (end >= 0)
-	    return start + end + 1;
+	    return start + end;
 	else
 	    return -1;
     }

@@ -1,3 +1,8 @@
+2007-11-01  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfo.java (complete(DebugInfoFrame,String,int,List)):
+	Remove off-by-one workaround.
+
 2007-11-01  Stan Cox  <scox@redhat.com>
 
 	* gen-type-expect-tests.py (j.start_test): Make unresolved optional.
