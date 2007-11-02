@@ -45,8 +45,8 @@ package frysk.value;
 public class AddressUnit
 extends ArithmeticUnit
 {
-    public AddressUnit (Type t1) {
-	retType = (ArithmeticType)t1;
+    public AddressUnit (PointerType t1) {
+	retType = t1;
     }
     
     /**

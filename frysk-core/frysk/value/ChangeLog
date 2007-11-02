@@ -1,3 +1,12 @@
+2007-11-02  Teresa Thomas  <tthomas@redhat.com>
+
+	* FloatingPointUnit.java: Ctors	redefined.
+	* IntegerUnit.java (IntegerUnit): Parameter types
+	changed.
+	* AddressUnit.java (AddressUnit): Ditto.
+	* IntegerType.java (getALU(IntegerType)): Updated. 
+	* FloatingPointType.java (getALU(IntegerType)): Updated.	
+
 2007-11-01  Teresa Thomas  <tthomas@redhat.com>
 
 	* ArrayType.java (get): Delete.

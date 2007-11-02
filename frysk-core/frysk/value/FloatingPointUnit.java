@@ -45,19 +45,13 @@ package frysk.value;
 public class FloatingPointUnit
      extends ArithmeticUnit
 {   
-    /** 
-     *  Return Type should be a FloatingPoint type with the
-     *  size of the larger type.
-     *  @param fpType Type of the floating point operand
-     *  @param type Type of the other operand (also can be FP Type)
-     */
-    public FloatingPointUnit (Type fpType, Type type) {
+    public FloatingPointUnit (FloatingPointType t1, FloatingPointType t2) {
 	// Return type should be the larger type.
-	int retSize = (fpType.getSize() > type.getSize()) ?
-		       fpType.getSize() : type.getSize();
-        		       
-	retType = new FloatingPointType
-	          (fpType.getName(), ((FloatingPointType)fpType).order(), retSize);
+	retType = (t1.getSize() > t2.getSize()) ?  t1 : t2;
+    }
+
+    public FloatingPointUnit (FloatingPointType t1) {
+	retType = t1;
     }
 	    
     public Value add(Value v1, Value v2) {

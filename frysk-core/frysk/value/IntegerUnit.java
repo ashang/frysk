@@ -45,10 +45,10 @@ package frysk.value;
 public class IntegerUnit
      extends ArithmeticUnit
 {
-    public IntegerUnit (Type t1, Type t2) {
+    public IntegerUnit (IntegerType t1, IntegerType t2) {
 	// Return type should be the larger type.
 	retType = (t1.getSize() > t2.getSize()) ?
-		  (ArithmeticType)t1 : (ArithmeticType)t2;
+		  t1 : t2;
     }
 
     public Value add(Value v1, Value v2) {

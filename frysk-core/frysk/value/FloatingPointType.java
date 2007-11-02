@@ -102,7 +102,7 @@ public class FloatingPointType
 	// dispatch of IntegerType?
 	if (type instanceof PointerType)
 	    throw new RuntimeException("Invalid Pointer Arithmetic");
-	return new FloatingPointUnit(this, type);
+	return new FloatingPointUnit(this);
     }
     
     public ArithmeticUnit getALU(FloatingPointType type) {

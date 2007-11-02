@@ -90,11 +90,11 @@ public abstract class IntegerType
 	// FIXME: Should this be resolved by a double 
 	// dispatch of IntegerType?
 	if (type instanceof PointerType)
-	    return new AddressUnit(type);
+	    return new AddressUnit((PointerType)type);
 	return new IntegerUnit(this, type);
     }
     
     public ArithmeticUnit getALU(FloatingPointType type) {
-	return new FloatingPointUnit(type, this);
+	return new FloatingPointUnit(type);
     }    
 }
