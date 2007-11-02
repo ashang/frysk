@@ -40,6 +40,8 @@
 package frysk.scopes;
 
 import frysk.debuginfo.TypeEntry;
+import lib.dwfl.DwAt;
+import lib.dwfl.DwInl;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 
@@ -78,4 +80,41 @@ public class Subroutine extends Scope {
 	return struct;
     }
 
+    public boolean isInlined(){
+	DwTag dwTag = getDie().getTag();
+	long inlineAttribute = getDie().getAttrConstant(DwAt.INLINE);
+	
+	// Declared inlined and inlined by compiler
+	if(dwTag.equals(DwTag.INLINED_SUBROUTINE) && inlineAttribute == DwInl.DECLARED_INLINED_){
+	    return true;
+	}
+	
+	// Declared inlined and inlined by compiler... but has INLINED attribute instead
+	// of DECLARED_INLINED_
+	if(dwTag.equals(DwTag.INLINED_SUBROUTINE) && inlineAttribute == DwInl.INLINED_){
+	    return true;
+	}
+	
+	// Declared regular and inlined by compiler
+	if(dwTag.equals(DwTag.SUBPROGRAM) && inlineAttribute == DwInl.INLINED_){
+	    return true;
+	}
+	
+	// Declared inlined and not inlined by compiler
+	if(dwTag.equals(DwTag.INLINED_SUBROUTINE) && inlineAttribute == DwInl.DECLARED_NOT_INLINED_){
+	    return false;
+	}
+	
+	// Declared regular and not inlined by compiler
+	if(dwTag.equals(DwTag.SUBPROGRAM) && inlineAttribute == DwInl.NOT_INLINED_){
+	    return false;
+	}
+
+	// Declared regular and does not have an inline attribute
+	if(dwTag.equals(DwTag.SUBPROGRAM) && inlineAttribute == -1){
+	    return false;
+	}
+
+	throw new RuntimeException("Unhandled case DwTag: " + dwTag + " inline attribute " + inlineAttribute);
+    }
 }

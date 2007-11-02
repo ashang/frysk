@@ -42,8 +42,8 @@ package frysk.debuginfo;
 import java.io.PrintWriter;
 
 import frysk.proc.Task;
-import frysk.scopes.InlinedSubroutine;
 import frysk.scopes.Scope;
+import frysk.scopes.Subprogram;
 import frysk.stack.StackFactory;
 
 /**
@@ -77,11 +77,11 @@ public class DebugInfoStackFactory {
 	    // For any inlined scopes, create virtual frames.
 	    for (Scope scope = debugFrame.getScopes();
 		 scope != null; scope = scope.getOuter()) {
-		if (scope instanceof InlinedSubroutine) {
-		    InlinedSubroutine subroutine = (InlinedSubroutine) scope;
+		if (scope instanceof Subprogram && ((Subprogram)scope).isInlined()) {
+		    Subprogram subprogram = (Subprogram) scope;
 		    currentFrame = new VirtualDebugInfoFrame(currentFrame,
 							     debugFrame);
-		    currentFrame.setSubprogram(subroutine);
+		    currentFrame.setSubprogram(subprogram);
 		    if (innermostFrame == null)
 			innermostFrame = currentFrame;
 		}
