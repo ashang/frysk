@@ -1,3 +1,10 @@
+2007-11-02  Stan Cox  <scox@redhat.com>
+
+	* TestTypeEntry.java (testScalar): Properly match volatile.
+	(testArray): Properly match multi dimension array bounds.
+	(testStruct): Likewise.
+	(testClass): Allow for type qualifier.
+
 2007-11-02  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Delete InlinedSubroutine, and added an inlined attribute
