@@ -1,4 +1,8 @@
-2007-11-05  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
+2007-11-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* funit-cpp-scopes-class-static.cxx: Removed print statement.
+
+2007-11-05  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* funit-cpp-scopes-class-static.cxx: New file.
 

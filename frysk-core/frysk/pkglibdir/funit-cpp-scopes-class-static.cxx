@@ -10,7 +10,6 @@ public:
 };
 
 void A::crash(){
-  printf("first: %d\n", first );
   int* a = 0;
   a[0] = 0;  
 }
