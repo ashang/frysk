@@ -1,4 +1,8 @@
 2007-11-05  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestbedSymTab.java (getValueFIXME): Delete.
+
+2007-11-05  Teresa Thomas  <tthomas@redhat.com>
 	* CExprEvaluator.g (PLUS): Use getALU.
 	(PLUSEQUAL): Use getALU.
 	* ScratchSymTab.java (getWordSize): Return bogus 
