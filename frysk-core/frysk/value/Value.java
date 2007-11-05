@@ -99,19 +99,19 @@ public class Value
      * shouldn't add more methods here.
      */
     public long asLong() {
-	return ((ArithmeticType)type).getBigInteger(location).longValue();
+	return ((ArithmeticType)type.getUltimateType()).getBigInteger(location).longValue();
     }
     
     
     public BigInteger asBigInteger() {
-	return ((ArithmeticType)type).getBigInteger(location);
+        return ((ArithmeticType)type.getUltimateType()).getBigInteger(location);
     }
     
     /**
      * Quick and dirty conversion to a floating-point.
      */
     public double doubleValue() {
-	return ((ArithmeticType)type).bigFloatValue(location).doubleValue();
+        return ((ArithmeticType)type.getUltimateType()).bigFloatValue(location).doubleValue();
     }
 
     /**
