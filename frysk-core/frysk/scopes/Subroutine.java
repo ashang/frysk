@@ -40,6 +40,8 @@
 package frysk.scopes;
 
 import frysk.debuginfo.TypeEntry;
+import lib.dwfl.DwAt;
+import lib.dwfl.DwInl;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 
@@ -49,7 +51,7 @@ import lib.dwfl.DwarfDie;
  */
 public class Subroutine extends Scope {
 
-    Struct struct;
+    Composite struct;
     
     public Subroutine(DwarfDie die, TypeEntry typeEntry) {
 	super(die, typeEntry);
@@ -61,7 +63,7 @@ public class Subroutine extends Scope {
      * 
      * @return Struct containing this Subroutine or null
      */
-    public Struct getStruct() {
+    public Composite getComposite() {
 	if (struct == null) {
 	    DwarfDie die = this.getDie().getOriginalDie();
 	    if (die == null) {
@@ -71,11 +73,48 @@ public class Subroutine extends Scope {
 	    DwarfDie[] scopes = die.getScopesDie();
 	    for (int i = 0; i < scopes.length; i++) {
 		if (scopes[i].getTag().equals(DwTag.STRUCTURE_TYPE)) {
-		    this.struct = new Struct(scopes[i], typeEntry);
+		    this.struct = new Composite(scopes[i], typeEntry);
 		}
 	    }
 	}
 	return struct;
     }
 
+    public boolean isInlined(){
+	DwTag dwTag = getDie().getTag();
+	long inlineAttribute = getDie().getAttrConstant(DwAt.INLINE);
+	
+	// Declared inlined and inlined by compiler
+	if(dwTag.equals(DwTag.INLINED_SUBROUTINE) && inlineAttribute == DwInl.DECLARED_INLINED_){
+	    return true;
+	}
+	
+	// Declared inlined and inlined by compiler... but has INLINED attribute instead
+	// of DECLARED_INLINED_
+	if(dwTag.equals(DwTag.INLINED_SUBROUTINE) && inlineAttribute == DwInl.INLINED_){
+	    return true;
+	}
+	
+	// Declared regular and inlined by compiler
+	if(dwTag.equals(DwTag.SUBPROGRAM) && inlineAttribute == DwInl.INLINED_){
+	    return true;
+	}
+	
+	// Declared inlined and not inlined by compiler
+	if(dwTag.equals(DwTag.INLINED_SUBROUTINE) && inlineAttribute == DwInl.DECLARED_NOT_INLINED_){
+	    return false;
+	}
+	
+	// Declared regular and not inlined by compiler
+	if(dwTag.equals(DwTag.SUBPROGRAM) && inlineAttribute == DwInl.NOT_INLINED_){
+	    return false;
+	}
+
+	// Declared regular and does not have an inline attribute
+	if(dwTag.equals(DwTag.SUBPROGRAM) && inlineAttribute == -1){
+	    return false;
+	}
+
+	throw new RuntimeException("Unhandled case DwTag: " + dwTag + " inline attribute " + inlineAttribute);
+    }
 }

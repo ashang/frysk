@@ -270,6 +270,7 @@ public abstract class CompositeType
 	    }
 	    if (member.access != null) {
 		writer.print(member.access.toPrint());
+		writer.print(" ");
 	    }
 	    writer.print(member.type.getName());
 	    member = null;

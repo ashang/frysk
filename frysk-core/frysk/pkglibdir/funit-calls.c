@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,18 +37,21 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.scopes;
+/* A little program that does some function calls.  For testing
+   ltrace.  */
 
-import frysk.debuginfo.TypeEntry;
-import lib.dwfl.DwarfDie;
+#include <stdlib.h>
 
-/**
- * An InlinedSubroutine represents an instance of a function
- * that has been inlined.
- */
-public class InlinedSubroutine extends Subprogram
-{
-    public InlinedSubroutine(DwarfDie die, TypeEntry typeEntry) {
-	super(die, typeEntry);
-    }
+int trace_me_1(int a1, int a2, int a3, int a4, int a5, int a6) {
+  return a1 + a2 + a3 + a4 + a5 + a6;
+}
+
+long trace_me_2(long a1, long a2, long a3, long a4, long a5, long a6) {
+  return a1 + a2 + a3 + a4 + a5 + a6;
+}
+
+int main() {
+  trace_me_1(3, 5, 7, 11, 13, 17);
+  trace_me_2(3, 5, 7, 11, 13, 17);
+  exit(0);
 }

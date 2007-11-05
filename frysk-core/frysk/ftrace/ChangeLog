@@ -1,5 +1,9 @@
 2007-11-02  Petr Machata  <pmachata@redhat.com>
 
+	* TestLtrace.java (testArgumentsCorrect1): New test.
+
+2007-11-02  Petr Machata  <pmachata@redhat.com>
+
 	* IA32Arch.java: Turn off poor man's call formatter.
 	Answer six arguments instead of four.
 	Return Integers instead of Longs.

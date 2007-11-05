@@ -1,3 +1,19 @@
+2007-11-02  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
+
+	* Struct.java: Renamed this...
+	* Composite.java: ...to this.
+	* TestScopes.java (testGetOriginalSubprogram): Updated
+	* Subroutine.java (getComposite): Updated
+	
+2007-11-02  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
+
+	Delete InlinedSubroutine, and added an inlined attribute
+	to subprogram.
+	* InlinedSubroutine.java: Deleted.
+	* ScopeFactory.java: Updated.
+	* Subroutine.java: Added isInlined();
+	* ScopeFactory.java: Updated
+
 2007-10-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Added constructor to ObjectDeclarationSearchEngine which

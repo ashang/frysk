@@ -43,19 +43,16 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 
-import lib.dwfl.DwAt;
-import lib.dwfl.DwInl;
-import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
 import lib.dwfl.DwflLine;
 import frysk.dwfl.DwflCache;
 import frysk.rt.Line;
-import frysk.scopes.InlinedSubroutine;
 import frysk.scopes.Scope;
 import frysk.scopes.ScopeFactory;
 import frysk.scopes.Subprogram;
+import frysk.scopes.Subroutine;
 import frysk.stack.Frame;
 import frysk.stack.FrameDecorator;
 
@@ -106,7 +103,7 @@ public class DebugInfoFrame extends FrameDecorator {
 		scope = ScopeFactory.theFactory.getScope(scopes[0], typeEntry);
 		Scope tempScope = scope;
 		
-		if (tempScope instanceof Subprogram && !(tempScope instanceof InlinedSubroutine) && subprogram == null) {
+		if (tempScope instanceof Subprogram && !(((Subprogram)tempScope).isInlined()) && subprogram == null) {
 		    subprogram = (Subprogram) tempScope;
 		}
 		    
@@ -116,7 +113,7 @@ public class DebugInfoFrame extends FrameDecorator {
 		    tempScope.setOuter(outer);
 		    tempScope = outer;
 		    
-		    if (tempScope instanceof Subprogram && !(tempScope instanceof InlinedSubroutine) && subprogram == null) {
+		    if (tempScope instanceof Subprogram && !(((Subprogram)tempScope).isInlined()) && subprogram == null) {
 			subprogram = (Subprogram) tempScope;
 		    }
 		}
@@ -151,9 +148,9 @@ public class DebugInfoFrame extends FrameDecorator {
             scopes = scopes[0].getScopesDie();
             
             for (int i = 0; i < scopes.length; i++) {
-        	if ((scopes[i].getTag()).equals(DwTag.INLINED_SUBROUTINE) ||
-        		scopes[i].getAttrConstant(DwAt.INLINE) == DwInl.INLINED_) {
-	  	    inlinedSubprograms.add(new InlinedSubroutine(scopes[i], typeEntry));
+        	Scope scope = ScopeFactory.theFactory.getScope(scopes[i], typeEntry);
+        	if(scope instanceof Subprogram && ((Subprogram)scope).isInlined()){
+        	    inlinedSubprograms.add(scope);
         	}
             }
         }
@@ -253,7 +250,7 @@ public class DebugInfoFrame extends FrameDecorator {
 	if (scope != null) {
 	    writer.print(indentString + "{");
 	    scope.toPrint(this, writer, indentString);
-	    if(!(scope.getInner() instanceof InlinedSubroutine)){
+	    if(!(scope.getInner() instanceof Subroutine && ((Subroutine)scope.getInner()).isInlined())){
 		printScope(writer, scope.getInner(), indentString+" ");
 	    }
 	    writer.println(indentString+"}");

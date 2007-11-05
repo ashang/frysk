@@ -71,9 +71,9 @@ public class TestTypeEntry
       Expect [] expect  = {
 	      new Expect("long_21", "long int"),
 	      new Expect("int_21","int"),
-	      new Expect("int_22", "simode"),
+	      new Expect("int_22", "volatile simode"),
 	      new Expect("static_int", "int"),
-	      new Expect("int_p", "int *"),
+	      new Expect("int_p", "volatile int *"),
 	      new Expect("short_21", "short int"),
 	      new Expect("char_21", "char"),
 	      new Expect("float_21", "float"),
@@ -106,8 +106,8 @@ public class TestTypeEntry
   public void testArray () {
       Expect[] expect = {
 	      new Expect("arr_1", "long int [32]"),
-	      new Expect("arr_2","int [5,6]"),
-	      new Expect("arr_3", "float [4,5]"),
+	      new Expect("arr_2","int [5][6]"),
+	      new Expect("arr_3", "float [4][5]"),
 	      new Expect("arr_4", "char [4]"),
       };
   
@@ -175,11 +175,11 @@ public class TestTypeEntry
 	      new Expect("static_class", ".*static_class_t.*"),
 	      new Expect("class_1", ".*static_class_t.*"),
 	      new Expect("class_2", ".*c1;.*c2;.*"),
-	      new Expect("class_3", ".*int.*[2,2].*arr.*"),
+	      new Expect("class_3", ".*int.*arr.*.2..2..*"),
 	      new Expect("class_4", ".*int x;.*float y;.*"),
 	      new Expect("class_5", ".*simode.*x;.*float.*y;.*"),
 	      new Expect("union_1", ".*union_t.*"),
-	      new Expect("class_p", ".*double.*double_1;.*int.*int_1;.*"),
+	      new Expect("class_p", ".*static_class_t.*"),
       };
   
       Task task = (new DaemonBlockedAtSignal("funit-struct")).getMainTask();
@@ -210,8 +210,8 @@ public class TestTypeEntry
 	      new Expect("mb", ".*public:.*char.*\\*.*msg;.*void.*Base1.*"
 		      + "char.*\\*.*void.*~Base1.*char.*\\*.*msg;.*" 
 		      + "void.*Base2.*char.*\\*.*void.*~Base2.*private:.*"
-		      + "char.*\\*.*note;.*void.*Type.*char.*\\*.*,char.*\\*.*"
-		      + ",char.*void.*~Type.*"
+		      + "char.*\\*.*note;.*void.*Type.*char.*\\*.*char.*\\*.*"
+		      + "char.*void.*~Type.*"
 		      )
       };
   

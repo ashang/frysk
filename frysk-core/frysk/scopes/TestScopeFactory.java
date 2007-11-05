@@ -73,7 +73,7 @@ public class TestScopeFactory
       Scope scope6 = ScopeFactory.theFactory.getScope(scopes[2], typeEntry);
       
       assertTrue("lexical block scope" , scope1 instanceof LexicalBlock);
-      assertTrue("InlinedSubroutine scope" , scope2 instanceof InlinedSubroutine);
+      assertTrue("InlinedSubroutine scope" , scope2 instanceof Subroutine && ((Subroutine)scope2).isInlined());
       assertTrue("lexical block scope" , scope3 instanceof Scope);
       
       assertTrue("same object" , scope1 == scope4);

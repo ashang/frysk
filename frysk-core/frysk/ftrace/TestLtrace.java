@@ -160,7 +160,90 @@ public class TestLtrace
     assertEquals("number of recorded events", expectedEvents.length, observer.events.size());
   }
 
-  public void tearDown()
-  {
-  }
+    public void testArgumentsCorrect1()
+    {
+	if(unresolvedOffUtrace(5053))
+	    return;
+
+	final Set registeredSymbols = new HashSet();
+	final LinkedList expectedEvents = new LinkedList();
+	class ExpectedEvent {
+	    String name;
+	    long[] arguments;
+	    long retval;
+
+	    ExpectedEvent(String name, long[] arguments, long retval) {
+		this.name = name;
+		this.retval = retval;
+		this.arguments = arguments;
+		registeredSymbols.add(name);
+		expectedEvents.addLast(this);
+	    }
+	}
+
+	new ExpectedEvent("trace_me_1", new long[]{3, 5, 7, 11, 13, 17}, 56);
+	new ExpectedEvent("trace_me_2", new long[]{3, 5, 7, 11, 13, 17}, 56);
+
+	class MyController3
+	    implements LtraceController
+	{
+	    public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver)
+	    {
+		if (!task.getProc().getExe().equals(objf.getFilename().getPath()))
+		    return;
+
+		try {
+		    objf.eachTracePoint(new ObjectFile.TracePointIterator() {
+			    public void tracePoint(TracePoint tp) {
+				if (registeredSymbols.contains(tp.symbol.name))
+				    driver.tracePoint(task, tp);
+			    }
+			}, TracePointOrigin.SYMTAB);
+		}
+		catch (lib.dwfl.ElfException ee) {
+		    ee.printStackTrace();
+		}
+	    }
+	}
+	Ltrace ltrace = new Ltrace(new MyController3());
+
+	class MyObserver3 extends DummyLtraceObserver {
+	    LinkedList expectedReturns = new LinkedList();
+	    public void funcallEnter(Task task, Symbol symbol, Object[] args) {
+		ExpectedEvent ee = (ExpectedEvent)expectedEvents.removeFirst();
+		assertEquals("enter function name", ee.name, symbol.name);
+		for (int i = 0; i < ee.arguments.length; ++i) {
+		    assertTrue("argument #" + i + " of function " + ee.name + " is a number",
+			       args[i] instanceof Number);
+		    // If ^^ this fails, ltrace probably grew brans to
+		    // answer all kinds of objects, not just sixtuples
+		    // of integers.
+
+		    assertEquals("argument #" + i + " of function " + ee.name,
+				 ee.arguments[i], ((Number)args[i]).longValue());
+		}
+		expectedReturns.add(ee);
+	    }
+	    public void funcallLeave(Task task, Symbol symbol, Object retVal) {
+		ExpectedEvent ee = (ExpectedEvent)expectedReturns.removeLast();
+		assertEquals("leave function name", ee.name, symbol.name);
+		assertTrue("return value of function " + ee.name + " is a number",
+			   retVal instanceof Number);
+		assertEquals("return value of function " + ee.name,
+			     ee.retval, ((Number)retVal).longValue());
+	    }
+	}
+	MyObserver3 observer = new MyObserver3();
+
+	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
+	ltrace.addObserver(observer);
+	ltrace.trace(cmd);
+
+	assertEquals("number of unprocessed expects", 0, expectedEvents.size());
+	assertEquals("number of unprocessed returns", 0, observer.expectedReturns.size());
+    }
+
+    public void tearDown()
+    {
+    }
 }

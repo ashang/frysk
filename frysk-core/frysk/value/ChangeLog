@@ -1,3 +1,7 @@
+2007-11-02  Stan Cox  <scox@redhat.com>
+
+	* CompositeType.java: Fix inheritance whitespace display.
+
 2007-11-02  Teresa Thomas  <tthomas@redhat.com>
 
 	* FloatingPointUnit.java: Ctors	redefined.

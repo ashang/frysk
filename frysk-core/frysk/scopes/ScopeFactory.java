@@ -41,12 +41,9 @@ package frysk.scopes;
 
 import java.util.HashMap;
 
-import frysk.debuginfo.TypeEntry;
-
-import lib.dwfl.DwAt;
-import lib.dwfl.DwInl;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
+import frysk.debuginfo.TypeEntry;
 
 public class ScopeFactory {
 
@@ -77,20 +74,10 @@ public class ScopeFactory {
 
     private Scope createScope(DwarfDie die, TypeEntry typeEntry) {
 
-	long inlineAttribute = die.getAttrConstant(DwAt.INLINE); 
-	    
 	switch (die.getTag().hashCode()) {
 	
 	case DwTag.INLINED_SUBROUTINE_:
-	    if(inlineAttribute == DwInl.DECLARED_NOT_INLINED_){
-		return new Subprogram(die, typeEntry);
-	    }
-	    return new InlinedSubroutine(die, typeEntry);
-	
 	case DwTag.SUBPROGRAM_:
-	    if(inlineAttribute == DwInl.INLINED_){
-		return new InlinedSubroutine(die, typeEntry);
-	    }
 	    return new Subprogram(die, typeEntry);
 
 	case DwTag.LEXICAL_BLOCK_:
