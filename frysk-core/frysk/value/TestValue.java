@@ -102,8 +102,8 @@ public class TestValue
     {
 	Value v1 = intType.createValue(4);
 	Value v2 = shortType.createValue(9);
-	Value v3 = v1.getType().add(v1, v2);
-	assertEquals ("4 + 9", 4 + 9, v3.asLong());
+	Value v3 = v1.getType().getALU(v2.getType(), 0).add(v1, v2);
+	assertEquals ("4 + 9", 4 + 9, v3.asLong());	
 	v3 = v1.getType().subtract(v2, v1);
 	assertEquals ("9 - 4", 9 - 4, v3.asLong());
 	v3 = v1.getType().multiply(v2, v1);
@@ -137,11 +137,11 @@ public class TestValue
 	v3 = v1.getType().logicalAnd(v2, v1);
 	assertEquals ("9 & 4", 1, v3.asLong());
 	v3 = v1.getType().logicalOr(v2, v1);
-	assertEquals ("9 | 4", 1, v3.asLong());
-	v3 = v3.assign(v1);
+	assertEquals ("9 | 4", 1, v3.asLong());	
+	v3 = v3.assign(v1);	
 	assertEquals ("v3 = 4", 4, v3.asLong());
-	v3 = v1.getType().plusEqual(v3, v1);
-	assertEquals ("v3 += 4", 8, v3.asLong());
+	v3 = v1.getType().getALU(v2.getType(), 0).plusEqual(v3, v1);
+	assertEquals ("v3 += 4", 8, v3.asLong());	
 	v3 = v1.getType().minusEqual(v3, v1);
 	assertEquals ("v3 -= 4", 4, v3.asLong());
 	v3 = v1.getType().timesEqual(v3, v1);
@@ -166,7 +166,7 @@ public class TestValue
     {
 	Value v1 = floatType.createValue((float)4.0);
 	Value v2 = doubleType.createValue(9.0);
-	Value v3 = v1.getType().add(v1, v2);
+	Value v3 = v1.getType().getALU(v2.getType(), 0).add(v1, v2);	
 	assertEquals ("4 + 9", 4 + 9, v3.doubleValue(), 0);
 	v3 = v1.getType().subtract(v2, v1);
 	assertEquals ("9 - 4", 9 - 4, v3.doubleValue(), 0);
@@ -188,8 +188,8 @@ public class TestValue
 	assertEquals ("9 != 4", v2 != v1, isTrue(v3.doubleValue()));
 	v3 = v3.assign(v1);
 	assertEquals ("v3 = 4", 4, v3.doubleValue(), 0);
-	v3 = v1.getType().plusEqual(v3, v1);
-	assertEquals ("v3 += 4", 8, v3.doubleValue(), 0);
+	v3 = v1.getType().getALU(v3.getType(), 0).plusEqual(v3, v1);
+	assertEquals ("v3 += 4", 8, v3.doubleValue(), 0);	
 	v3 = v1.getType().minusEqual(v3, v1);
 	assertEquals ("v3 -= 4", 4, v3.doubleValue(), 0);
 	v3 = v1.getType().timesEqual(v3, v1);

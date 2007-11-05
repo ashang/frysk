@@ -88,6 +88,9 @@ public class ScratchSymTab implements ExprSymTab {
      * Return the wordsize.
      */      
     public int getWordSize() {
-	throw new RuntimeException("no word size");
+	// FIXME: ALU's for arithmetic operations require wordsize.
+	// Send bogus word size when no task attached?
+	//throw new RuntimeException("no word size");
+	return -1;
     }
 }

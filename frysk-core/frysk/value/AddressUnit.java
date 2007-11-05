@@ -39,20 +39,30 @@
 
 package frysk.value;
 
+import inua.eio.ByteOrder;
 /**
  * Arithmetic Operation handling for pointers and addresses.
  */
 public class AddressUnit
 extends ArithmeticUnit
 {
-    public AddressUnit (PointerType t1) {
-	retType = t1;
+    public AddressUnit (ArrayType t, int wordSize) {
+	    retType = new PointerType(t.getName(), ByteOrder.BIG_ENDIAN, 
+		                      wordSize, t.getType());
+    }
+    public AddressUnit (PointerType t) {
+	retType = t;
     }
     
     /**
-     * Pointer Addition
+     * Pointer and Address Addition
      */
-    public Value add(Value v1, Value v2) {             
+    public Value add(Value v1, Value v2) {  
+	
+	if (v1.getType() instanceof ArrayType | 
+            v2.getType() instanceof ArrayType )
+	    return addArray(v1, v2);
+	
         PointerType ptrType;
         Value ptrValue;
         Value intValue;
@@ -66,6 +76,7 @@ extends ArithmeticUnit
             intValue = v1;
         }
 	
+        // Handle pointers to array types
         if (ptrType.getType() instanceof ArrayType) {
             // Create pointer to array element type
             Type eType = ((ArrayType)ptrType.getType()).getType();
@@ -77,5 +88,23 @@ extends ArithmeticUnit
         else 
            return retType.createValue
                           (ptrValue.asLong() + ptrType.getType().getSize()*intValue.asLong());
-    }
+    } 
+    
+    private Value addArray (Value v1, Value v2) {
+        ArrayType arrType;
+        Value arrValue;
+        Value intValue;
+        if (v1.getType() instanceof ArrayType) {
+            arrType = (ArrayType)v1.getType();
+            arrValue = v1;
+            intValue = v2;
+        } else {
+            arrType = (ArrayType)v2.getType();
+            arrValue = v2;
+            intValue = v1;
+        }
+        return retType.createValue
+        (arrValue.getLocation().getAddress() + arrType.getType().getSize()*intValue.asLong());        
+
+    }  
 }

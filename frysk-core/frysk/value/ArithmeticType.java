@@ -118,14 +118,6 @@ public abstract class ArithmeticType
 	    }
 	}
     }
-
-    public Value add(Value v1, Value v2) {
-	return v1.getType().getALU(v2.getType()).add(v1, v2);	    
-    }
-    
-    public Value plusEqual(Value var1, Value var2) {
-	return var1.assign(add(var1, var2));
-    }
     
     public Value subtract(Value var1, Value var2) {
 	ArithmeticType type = returnType(var1, var2);

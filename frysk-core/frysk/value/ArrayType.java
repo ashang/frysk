@@ -42,6 +42,8 @@ package frysk.value;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.io.PrintWriter;
+
+import frysk.debuginfo.PieceLocation;
 import inua.eio.ByteBuffer;
 
 /**
@@ -154,6 +156,12 @@ public class ArrayType
 		         type.getSize()));        
     }
     
+    public Value dereference(Value var1, ByteBuffer taskMem) {
+	Location loc = PieceLocation.createSimpleLoc
+		       (var1.getLocation().getAddress(), type.getSize(), taskMem);
+	return new Value (type, loc);  
+    }    
+    
     void toPrint(PrintWriter writer, Location location,
 		 ByteBuffer memory, Format format) {
 	if (type instanceof CharType) {
@@ -200,4 +208,20 @@ public class ArrayType
     public void toPrint(PrintWriter writer) {
 	this.toPrint("", writer);
     }
+    
+    public ArithmeticUnit getALU(Type type, int wordSize) {
+	return type.getALU(this, wordSize);
+    }
+    
+    public ArithmeticUnit getALU(IntegerType type, int wordSize) {
+	return new AddressUnit(this, wordSize);
+    }   
+    
+    public ArithmeticUnit getALU(FloatingPointType type, int wordSize) {
+	throw new RuntimeException("Invalid Pointer Arithmetic");
+    }
+    
+    public ArithmeticUnit getALU(PointerType type) {
+	throw new RuntimeException("Invalid Pointer Arithmetic");
+    }     
 }

@@ -1,3 +1,26 @@
+2007-11-05  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestValue.java: Update.
+	* ArithmeticUnit.java (plusEqual): New.
+	* ArithmeticType.java (add): Delete.
+	(plusEqual): Delete.
+	* Type.java (add): Delete.
+	(plusEqual): Delete.	
+	* TestArray.java (testAdd): New test.
+	* AddressUnit.java (AddressUnit(ArrayType, int wordSize)): New. 
+	(addArray): New.
+	* ArrayType.java (getALU): Give wordSize to ALU.
+	* FloatingPointType.java (getALU): Ditto.
+	* IntegerType.java (getALU): Ditto.
+	* PointerType.java (getALU): Ditto.
+	* Type.java (getALU): Ditto.	
+	* TypeDecorator.java (add): Delete.
+	(plusEqual): Delete.
+
+	* ByteBufferLocation.java (offset): New.
+	(ByteBufferLocation): Updated.
+	(getAddress): Implemented.
+
 2007-11-05  Stan Cox  <scox@redhat.com>
 
 	* Value.java (asLong): Get type via gettUltimateType.

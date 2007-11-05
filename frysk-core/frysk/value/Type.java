@@ -128,18 +128,14 @@ public abstract class Type {
 	return stringWriter.toString();
     }
 
-    public ArithmeticUnit getALU(Type type) {
+    public ArithmeticUnit getALU(Type type, int wordSize) {
 	throw new RuntimeException("Invalid Arithmetic Unit");
     }
-    public ArithmeticUnit getALU(IntegerType type) {
+    public ArithmeticUnit getALU(IntegerType type, int wordSize) {
 	throw new RuntimeException("Invalid Arithmetic Unit");
     }
-    public ArithmeticUnit getALU(FloatingPointType type){
+    public ArithmeticUnit getALU(FloatingPointType type, int wordSize){
 	throw new RuntimeException("Invalid Arithmetic Unit");
-    }
-    
-    public Value add (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "+");
     }
     public Value subtract (Value var1, Value var2) {
         throw new InvalidOperatorException(this, "-");
@@ -206,9 +202,6 @@ public abstract class Type {
     }
     public Value modEqual (Value var1, Value var2) {
         throw new InvalidOperatorException(this, "%=");
-    }
-    public Value plusEqual (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "+=");
     }
     public Value minusEqual (Value var1, Value var2) {
         throw new InvalidOperatorException(this, "-=");

@@ -89,9 +89,6 @@ abstract class TypeDecorator extends Type {
 	      decorated.toPrint(writer);
 	  }
 	}
-	public Value add(Value var1, Value var2) {
-		return decorated.add(var1, var2);
-	}
 	public Value subtract(Value var1, Value var2) {
 		return decorated.subtract(var1, var2);
 	}
@@ -157,9 +154,6 @@ abstract class TypeDecorator extends Type {
 	}
 	public Value modEqual(Value var1, Value var2) {
 		return decorated.modEqual(var1, var2);
-	}
-	public Value plusEqual(Value var1, Value var2) {
-		return decorated.plusEqual(var1, var2);
 	}
 	public Value minusEqual(Value var1, Value var2) {
 		return decorated.minusEqual(var1, var2);

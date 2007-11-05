@@ -118,19 +118,19 @@ public class PointerType
 	return new Value (this.getType(), loc);  
     }
     
-    public ArithmeticUnit getALU(Type type) {
-	return type.getALU(this);
+    public ArithmeticUnit getALU(Type type, int wordSize) {
+	return type.getALU(this, wordSize);
     }
     
-    public ArithmeticUnit getALU(IntegerType type) {
+    public ArithmeticUnit getALU(IntegerType type, int wordSize) {
 	return new AddressUnit(this);
     }   
     
-    public ArithmeticUnit getALU(FloatingPointType type) {
+    public ArithmeticUnit getALU(FloatingPointType type, int wordSize) {
 	throw new RuntimeException("Invalid Pointer Arithmetic");
     }
     
-    public ArithmeticUnit getALU(PointerType type) {
+    public ArithmeticUnit getALU(PointerType type, int wordSize) {
 	throw new RuntimeException("Invalid Pointer Arithmetic");
     }     
 }

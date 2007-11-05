@@ -78,15 +78,15 @@ public abstract class IntegerType
 	putBigInteger(location, i);
     }
 
-    public ArithmeticUnit getALU(Type type) {
-	return type.getALU(this);
+    public ArithmeticUnit getALU(Type type, int wordSize) {
+	return type.getALU(this, wordSize);
     }
     
-    public ArithmeticUnit getALU(PointerType type) {
+    public ArithmeticUnit getALU(PointerType type, int wordSize) {
 	return new AddressUnit(type);
     }
     
-    public ArithmeticUnit getALU(IntegerType type) {
+    public ArithmeticUnit getALU(IntegerType type, int wordSize) {
 	// FIXME: Should this be resolved by a double 
 	// dispatch of IntegerType?
 	if (type instanceof PointerType)
@@ -94,7 +94,7 @@ public abstract class IntegerType
 	return new IntegerUnit(this, type);
     }
     
-    public ArithmeticUnit getALU(FloatingPointType type) {
+    public ArithmeticUnit getALU(FloatingPointType type, int wordSize) {
 	return new FloatingPointUnit(type);
     }    
 }

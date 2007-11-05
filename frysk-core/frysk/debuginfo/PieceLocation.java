@@ -86,7 +86,7 @@ extends Location
     {
 	if (pieces.size()==1 && (pieces.get(0) instanceof MemoryPiece))
 	   return ((MemoryPiece)pieces.get(0)).getMemory();
-	throw new RuntimeException();
+	throw new RuntimeException("Location not in contiguous memory.");
     }
     
     /**

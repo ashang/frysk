@@ -1,3 +1,9 @@
+2007-11-05  Teresa Thomas  <tthomas@redhat.com>
+	* CExprEvaluator.g (PLUS): Use getALU.
+	(PLUSEQUAL): Use getALU.
+	* ScratchSymTab.java (getWordSize): Return bogus 
+	word size when no task attached.
+    
 2007-10-29  Teresa Thomas  <tthomas@redhat.com>
 
     * CExprEvaluator.g (REFERENCE): Delete.

@@ -137,8 +137,13 @@ identifier returns [String idSpelling=null]
 expr returns [Value returnVar=null] 
 { Value v1, v2, log_expr; String s1; }
     :   #(PLUS  v1=expr v2=expr)  {	
-		    returnVar = v1.getType().add(v1, v2);  
+            returnVar = v1.getType().getALU(v2.getType(), exprSymTab.getWordSize())
+                        .add(v1, v2);  
         }
+    |   #(PLUSEQUAL v1=expr v2=expr)  {
+            returnVar = v1.getType().getALU(v2.getType(), exprSymTab.getWordSize())
+                        .plusEqual(v1, v2);
+        }        
     |   ( #(MINUS expr expr) )=> #(MINUS v1=expr v2=expr) {
             returnVar = v1.getType().subtract(v1, v2);  
         }
@@ -263,10 +268,6 @@ expr returns [Value returnVar=null]
         }
     |   #(MINUSEQUAL v1=expr v2=expr)  {
             v1.getType().minusEqual(v1, v2);
-            returnVar = v1;
-        }
-    |   #(PLUSEQUAL v1=expr v2=expr)  {
-            v1.getType().plusEqual(v1, v2);
             returnVar = v1;
         }
     |   #(MODEQUAL v1=expr v2=expr)  {

@@ -1,3 +1,8 @@
+2007-11-05  Teresa Thomas  <tthomas@redhat.com>
+
+	* PieceLocation.java (getAddress): Edit exception
+	message.
+
 2007-11-02  Stan Cox  <scox@redhat.com>
 
 	* TestTypeEntry.java (testScalar): Properly match volatile.
