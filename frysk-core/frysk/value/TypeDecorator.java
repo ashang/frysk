@@ -191,7 +191,7 @@ abstract class TypeDecorator extends Type {
 	public Value member(Value var1, String member) {
 		return decorated.member(var1, member);
 	} 
-	public Value index(Value var1, Value var2) {
-		return decorated.index(var1, var2);
+	public Value index(Value var1, Value var2, ByteBuffer taskMem) {
+		return decorated.index(var1, var2, taskMem);
 	}       
 }

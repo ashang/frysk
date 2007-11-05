@@ -95,7 +95,7 @@ public class TestArray extends TestCase {
 	Location l = new ScratchLocation(new byte[] { 2 });
 	IntegerType t = new UnsignedType("type", ByteOrder.BIG_ENDIAN, 1);
 	Value index = new Value(t, l);
-	assertEquals("IndexOneD", 151653132, arrayType.index(arr, index).asLong());
+	assertEquals("IndexOneD", 151653132, arrayType.index(arr, index, null).asLong());
     }
 
     /**
@@ -134,10 +134,10 @@ public class TestArray extends TestCase {
 	Location l_idx3 = new ScratchLocation(new byte[] { 3 });
 	Value idx_3 = new Value(t, l_idx3);
 	// Evaluate arr[1]
-	Value arr_1 = arrayType.index(arr, idx_1);
+	Value arr_1 = arrayType.index(arr, idx_1, null);
 	assertEquals ("IndexTwoD[]", "{2314,2828,3342,3856}", arr_1.toPrint()); 
 	// Evaluate arr[1][3]
-	Value arr_1_3 = arr_1.getType().index(arr_1, idx_3);
+	Value arr_1_3 = arr_1.getType().index(arr_1, idx_3, null);
 	assertEquals ("IndexTwoD", "3856", arr_1_3.toPrint());
    } 
 }

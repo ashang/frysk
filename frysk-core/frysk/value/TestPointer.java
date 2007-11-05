@@ -61,4 +61,21 @@ public class TestPointer
 	assertEquals("toPrint", "0x4 \"Hello World\"",
 		     t.toPrint(l, memory, Format.NATURAL));
     }
+    
+    public void testCharPointerIndex() {
+	// Construct a buffer with a string in it.
+	ArrayByteBuffer memory
+	    = new ArrayByteBuffer("0123Hello World\0>>>".getBytes());
+	Type t = new PointerType("xxx", ByteOrder.BIG_ENDIAN, 1,
+				 new CharType("char", ByteOrder.BIG_ENDIAN,
+					      1, true));
+	// Construct the pointer to it..
+	Location l = new ScratchLocation(new byte[] { 4 });
+	Value string = new Value (t, l);
+	// Create index
+	Location l_idx = new ScratchLocation(new byte[] { 6 });
+	IntegerType t_idx = new UnsignedType("type", ByteOrder.BIG_ENDIAN, 1);
+	Value idx = new Value(t_idx, l_idx);
+	assertEquals("toPrint", "\'W\'", t.index(string, idx, memory).toPrint());
+    }
 }

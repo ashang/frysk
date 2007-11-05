@@ -140,22 +140,28 @@ public class ArrayType
     
     /**
      * Index Operation on array V and index IDX.
+     * 
+     * @param taskMem - unused here.
      */
-    public Value index (Value v, Value idx)
+    public Value index (Value v, Value idx, ByteBuffer taskMem)
     {       
         if (dimension.length > 1)
         {            
             ArrayList dims = new ArrayList();
             // For an n-dimensional array, create (n-1) dimensional array, where n>1
             dims.add(new Integer(dimension[dimension.length - 1]-1));
-            ArrayType arrayType = new ArrayType(type, dimension[dimension.length - 1] * type.getSize(), dims);
-            return new Value(arrayType, v.getLocation().slice(idx.asLong() * arrayType.getSize(), 
-        	             arrayType.getSize()));
+            ArrayType arrayType = new ArrayType(type, dimension[dimension.length - 1] 
+                                                      * type.getSize(), dims);
+            return new Value(arrayType, v.getLocation().slice(idx.asLong() 
+        	             * arrayType.getSize(), arrayType.getSize()));
         }
 	return new Value(type, v.getLocation().slice(idx.asLong() * type.getSize(), 
 		         type.getSize()));        
     }
-    
+
+    /**
+     * Dereference operation on array type.
+     */
     public Value dereference(Value var1, ByteBuffer taskMem) {
 	Location loc = PieceLocation.createSimpleLoc
 		       (var1.getLocation().getAddress(), type.getSize(), taskMem);

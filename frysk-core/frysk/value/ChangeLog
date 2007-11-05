@@ -4,6 +4,16 @@
 
 2007-11-05  Teresa Thomas  <tthomas@redhat.com>
 
+	* Type.java (index): Task memory added to parameter list.
+	* PointerType.java (index): New.
+	* TypeDecorator.java (index): Updated.
+	* TestArray.java (testIndexOneD): Updated.
+	(testIndexTwoD): Updated.
+	* TestPointer.java (testCharPointerIndex): New test.
+	* ArrayType.java (dereference): Comments added.
+
+2007-11-05  Teresa Thomas  <tthomas@redhat.com>
+
 	* TestValue.java: Update.
 	* ArithmeticUnit.java (plusEqual): New.
 	* ArithmeticType.java (add): Delete.

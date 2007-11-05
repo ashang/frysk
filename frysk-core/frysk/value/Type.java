@@ -234,7 +234,7 @@ public abstract class Type {
     public Value member(Value var1, String member) {
     	throw new InvalidOperatorException(this, ".");
     } 
-    public Value index(Value var1, Value var2) {
+    public Value index(Value var1, Value var2, ByteBuffer taskMem) {
     	throw new InvalidOperatorException(this, "[]");
     }     
    /**
