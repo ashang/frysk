@@ -59,7 +59,7 @@ public class TestScopes extends TestLib{
 	
 	Composite struct = subprogram.getComposite();
 	
-	assertEquals("Correct struct was found", "A", struct.getDie().getName());
+	assertEquals("Correct struct was found", "A", struct.getName());
 	
     }
 
