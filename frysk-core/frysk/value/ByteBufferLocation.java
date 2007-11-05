@@ -54,11 +54,15 @@ public class ByteBufferLocation
     extends Location
 {
     private final ByteBuffer buffer;
+    private final long offset;
+    
     public ByteBufferLocation(ByteBuffer memory, long offset, long length) {
+	this.offset =  offset;
 	this.buffer = memory.slice(offset, length);
     }
     public ByteBufferLocation (ByteBuffer buffer) {
 	this.buffer = buffer;
+	this.offset =  0;
     }
 
     public String toString() {
@@ -70,7 +74,7 @@ public class ByteBufferLocation
     
     public long getAddress()
     {
-	throw new RuntimeException();
+	return offset;
     }
     
     public void toPrint(PrintWriter writer)
