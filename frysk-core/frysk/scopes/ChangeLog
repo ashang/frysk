@@ -1,5 +1,9 @@
 2007-11-05  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* TestScopes.java (testGetOriginalStaticSubprogram): New test.
+
+2007-11-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* Composite.java (getName): New.
 	(Composite): Added initialization for type.
 	* TestScopes.java (testGetOriginalSubprogram): Used 

@@ -63,4 +63,19 @@ public class TestScopes extends TestLib{
 	
     }
 
+    /**
+     * Test that we can retrive the {@link Composite} Object that this /static/
+     * function blongs to.
+     */
+    public void testGetOriginalStaticSubprogram(){
+	Task task = (new DaemonBlockedAtSignal("funit-cpp-scopes-class-static")).getMainTask();
+	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
+	Subprogram subprogram = frame.getSubprogram();
+	
+	Composite struct = subprogram.getComposite();
+	
+	assertEquals("Correct struct was found", "A", struct.getName());
+	
+    }
+
 }
