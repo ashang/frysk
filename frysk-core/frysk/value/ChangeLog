@@ -1,3 +1,9 @@
+2007-11-05  Stan Cox  <scox@redhat.com>
+
+	* Value.java (asLong): Get type via gettUltimateType.
+	(asBigInteger): Likewise.
+	(doubleValue): Likewise.
+
 2007-11-02  Stan Cox  <scox@redhat.com>
 
 	* CompositeType.java: Fix inheritance whitespace display.
