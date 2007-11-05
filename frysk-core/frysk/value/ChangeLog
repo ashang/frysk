@@ -1,3 +1,7 @@
+2007-11-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CompositeType.java (add): Added javadoc.
+
 2007-11-05  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestValue.java: Update.
