@@ -58,6 +58,7 @@ import frysk.proc.FindProc;
 
 public class LinuxHost extends DeadHost {
 
+  CorefileStatus status = new CorefileStatus();
   boolean hasRefreshed = false;
   boolean exeSetToNull = false;
   protected File coreFile = null;
@@ -93,11 +94,28 @@ public class LinuxHost extends DeadHost {
   {
       this(eventLoop, coreFile, false);
       if (exeFile == null)
-	  exeSetToNull = true;
-      this.exeFile = exeFile;
+    	  exeSetToNull = true;
+      
+      if (exeFile.canRead() && exeFile.exists())
+    	  this.exeFile = exeFile;
+      else
+      {
+    	  status.hasExe = false;
+    	  status.hasExeProblem = true;
+    	  status.message = "The user provided executable: " 
+    		  	+ exeFile.getAbsolutePath() + 
+    		  	" could not be accessed";
+      }
       this.sendRefresh(true);
+      
+      
   }
 
+  public CorefileStatus getStatus()
+  {
+	  return status;
+  }
+  
   protected void sendRefresh(boolean refreshAll) 
   {
 
@@ -172,6 +190,7 @@ public class LinuxHost extends DeadHost {
     DeconstructCoreFile(Elf coreFileElf)
     {
       this.coreFileElf =  coreFileElf;
+      status.coreName = coreFile.getAbsolutePath();
       ElfEHeader eHeader = this.coreFileElf.getEHeader();
       
       // Get number of program header entries.
@@ -210,6 +229,13 @@ public class LinuxHost extends DeadHost {
 
       addedProcs.add(proc);
 
+      if  (exeFile == null) 
+    	  status.hasExe = false;
+      else
+      {
+    	  status.hasExe = true;
+    	  status.exeName = exeFile.getAbsolutePath();
+      }
       return proc;
     }
       

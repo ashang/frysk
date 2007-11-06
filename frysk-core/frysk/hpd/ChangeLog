@@ -1,3 +1,8 @@
+2007-11-06  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* CoreCommand.java (interpret): Rewrite corefile model.
+	Give much richer information back on corefile building.
+
 2007-11-01  Andrew Cagney  <cagney@redhat.com>
 
 	* Command.java (complete(CLI,Input,int,List)): Remove comment

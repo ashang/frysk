@@ -44,6 +44,9 @@ import java.util.Iterator;
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
+import frysk.proc.dead.CorefileStatus;
+import frysk.proc.dead.LinuxHost;
+import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 
@@ -68,16 +71,50 @@ public class CoreCommand extends Command {
 	File coreFile = new File(cmd.parameter(0));
 
 	Proc coreProc;
+	File exeFile = null;
+	LinuxHost coreHost = null;
 	if (cmd.size() == 1)
-	    coreProc = frysk.util.Util.getProcFromCoreFile(coreFile);
+		coreHost = new LinuxHost(Manager.eventLoop, coreFile);
 	else {
-	    File exeFile = new File(cmd.parameter(1));
-	    coreProc = frysk.util.Util.getProcFromCoreFile(coreFile, exeFile);
+	    exeFile = new File(cmd.parameter(1));
+		coreHost = new LinuxHost(Manager.eventLoop, coreFile, exeFile);
 	}
-
+	
+	Iterator i = coreHost.getProcIterator(); 
+	
+	if (i.hasNext())
+		coreProc = (Proc) i.next();
+	else {
+		cli.addMessage("Cannot find a process in corefile: '" + coreFile.getAbsolutePath()+"'. This may not be a valid ELF corefile.", Message.TYPE_ERROR);
+		return;
+	}
+	if (i.hasNext()) {
+	    cli.addMessage("There appears to be two or more processes in corefile: '" + coreFile.getAbsolutePath()+"'. This is not valid for an ELF corefile", Message.TYPE_ERROR);
+	    return;
+	}
+	CorefileStatus status = coreHost.getStatus();
+	if (status.hasExe == false)
+	{
+		String message = "The corefile: '"+coreFile.getAbsolutePath()+"' has no executable associated with it. The executable name ";
+		String exeName = "";
+		if (exeFile != null) 
+		{
+			exeName = exeFile.getAbsolutePath();
+			message += "specified by the user on the Core command was: '" + exeName;
+		}
+		else
+		{
+			exeName = coreProc.getExe();
+			message += "automatically read from the corefile was: '" + exeName;
+		}
+		message+="'. This executable could not be read. Please specifiy an executable on the 'core' command (eg core core.1234 exenamedFile) for richer metadata.";
+		
+		cli.addMessage(message,Message.TYPE_WARNING);
+	}
 	int procID = cli.idManager.reserveProcID();
 	cli.idManager.manageProc(coreProc, procID);
 		
+
 	Iterator foo = cli.targetset.getTasks();
 	while (foo.hasNext()) {
 	    Task task = (Task) foo.next();
