@@ -1,3 +1,8 @@
+2007-11-06  Tim Moore  <timoore@redhat.com>
+    
+    	* BreakpointManager.java (refreshBreakpoints): Enable breakpoint
+    	even if it has no state.
+
 2007-10-26  Andrew Cagney  <cagney@redhat.com>
 
 	* DisplayValue.java: No need to catch catch ParseException.
