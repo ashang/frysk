@@ -52,30 +52,47 @@ import java.io.PrintWriter;
 public abstract class CompositeType
     extends Type
 {
+    
+    static class Member{
+	final Access access;
+	final boolean inheritance;
+
+	public Member(Access access, boolean inheritance){
+	    this.access = access;
+	    this.inheritance = inheritance;
+	}
+    }
+    
+    static class StaticMember extends Member{
+
+	public StaticMember(Access access, boolean inheritance) {
+	    super(access, inheritance);
+	}
+
+	
+    }
+    
     /**
      * Class members; package private.
      */
-    static class Member {
+    static class DynamicMember extends Member{
 	// XXX: To keep getValue working.
 	final int index;
 	final String name;
 	final Type type;
 	final long offset;
-	final Access access;
 	final int bitOffset;
 	final int bitSize;
-	final boolean inheritance;
-	Member(int index, String name, Type type, long offset,
+	DynamicMember(int index, String name, Type type, long offset,
 	       Access access, int bitOffset, int bitSize,
 	       boolean inheritance) {
+	    super(access, inheritance);
 	    this.index = index;
 	    this.type = type;
 	    this.name = name;
 	    this.offset = offset;
-	    this.access = access;
 	    this.bitOffset = bitOffset;
 	    this.bitSize = bitSize;
-	    this.inheritance = inheritance;
 	}
 	public String toString() {
 	    return ("{"
@@ -106,8 +123,8 @@ public abstract class CompositeType
     /**
      * Return the composit's members as an array.  PACKAGE PRIVATE.
      */
-    Member[] members() {
-	Member[] m = new Member[members.size()];
+    DynamicMember[] members() {
+	DynamicMember[] m = new DynamicMember[members.size()];
 	members.toArray(m);
 	return m;
     }
@@ -158,7 +175,7 @@ public abstract class CompositeType
 			      boolean inheritance) {
 	if (bitOffset >= 0 && bitLength > 0)
 	    type = type.pack(bitOffset, bitLength);
-	Member member = new Member(members.size(), name, type, offset,
+	DynamicMember member = new DynamicMember(members.size(), name, type, offset,
 				   access, bitOffset, bitLength, inheritance);
 	nameToMember.put(name, member);
 	members.add(member);
@@ -199,7 +216,7 @@ public abstract class CompositeType
 	}
 
 	public String nextName () {
-	    return ((Member)members.get(idx)).name;
+	    return ((DynamicMember)members.get(idx)).name;
 	}
 
 	public Object next () {
@@ -219,7 +236,7 @@ public abstract class CompositeType
 	writer.print("{");
 	boolean first = true;
 	for (Iterator i = members.iterator(); i.hasNext();) {
-	    Member member = (Member)i.next();
+	    DynamicMember member = (DynamicMember)i.next();
 	    if (member.type instanceof frysk.value.FunctionType)
 		continue;
 	    else {
@@ -261,11 +278,11 @@ public abstract class CompositeType
 	}
 	// : public PARENT ...
 	boolean first = true;
-	Member member = null;
+	DynamicMember member = null;
 	Iterator i = members.iterator();
 	// Types this inherits come first; print them out.
 	while (i.hasNext()) {
-	    member = (Member)i.next();
+	    member = (DynamicMember)i.next();
 	    if (!member.inheritance)
 		break;
 	    if (first) {
@@ -323,7 +340,7 @@ public abstract class CompositeType
 	    writer.print(";\n");
 	    // Advance
 	    if (i.hasNext())
-		member = (Member)i.next();
+		member = (DynamicMember)i.next();
 	    else
 		member = null;
 	}
@@ -338,7 +355,7 @@ public abstract class CompositeType
 
     public Value member(Value var1, String member)
     {
-	Member mem = (Member)nameToMember.get(member);
+	DynamicMember mem = (DynamicMember)nameToMember.get(member);
 	if (mem == null)
 	    throw new RuntimeException("Invalid data member: " + member);
 	return mem.getValue (var1);

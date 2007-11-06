@@ -1,3 +1,10 @@
+2007-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CompositeType.java: Renamed Member to DynamicMember.
+	Created StaticMember
+	Created Member.
+	DynamicMember and StaticMember now extends Member.
+
 2007-11-08  Teresa Thomas  <tthomas@redhat.com>
 
 	* Type.java (index): Make operation commutative.
