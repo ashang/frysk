@@ -118,16 +118,6 @@ public abstract class ArithmeticType
 	    }
 	}
     }
-    
-    public Value subtract(Value var1, Value var2) {
-	ArithmeticType type = returnType(var1, var2);
-	if (type instanceof IntegerType)
-	    return type.createValue(var1.asLong() - var2.asLong());
-	else if (type instanceof FloatingPointType)
-	    return type.createValue(var1.doubleValue() - var2.doubleValue());
-	else
-	    throw new RuntimeException("type conversion botch");
-    }
 
     public Value multiply(Value var1, Value var2) {
 	ArithmeticType type = returnType(var1, var2);
@@ -295,10 +285,6 @@ public abstract class ArithmeticType
 
     public Value assign(Value var1, Value var2) {
 	return var1.assign(var2);
-    }
-
-    public Value minusEqual(Value var1, Value var2) {
-	return var1.assign(subtract(var1, var2));
     }
 
     public Value timesEqual(Value var1, Value var2) {

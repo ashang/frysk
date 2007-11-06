@@ -104,7 +104,7 @@ public class TestValue
 	Value v2 = shortType.createValue(9);
 	Value v3 = v1.getType().getALU(v2.getType(), 0).add(v1, v2);
 	assertEquals ("4 + 9", 4 + 9, v3.asLong());	
-	v3 = v1.getType().subtract(v2, v1);
+	v3 = v1.getType().getALU(v2.getType(), 0).subtract(v2, v1);
 	assertEquals ("9 - 4", 9 - 4, v3.asLong());
 	v3 = v1.getType().multiply(v2, v1);
 	assertEquals ("9 * 4", 9 * 4, v3.asLong());
@@ -142,7 +142,7 @@ public class TestValue
 	assertEquals ("v3 = 4", 4, v3.asLong());
 	v3 = v1.getType().getALU(v2.getType(), 0).plusEqual(v3, v1);
 	assertEquals ("v3 += 4", 8, v3.asLong());	
-	v3 = v1.getType().minusEqual(v3, v1);
+	v3 = v1.getType().getALU(v2.getType(), 0).minusEqual(v3, v1);
 	assertEquals ("v3 -= 4", 4, v3.asLong());
 	v3 = v1.getType().timesEqual(v3, v1);
 	assertEquals ("v3 *= 4", 16, v3.asLong());
@@ -168,7 +168,7 @@ public class TestValue
 	Value v2 = doubleType.createValue(9.0);
 	Value v3 = v1.getType().getALU(v2.getType(), 0).add(v1, v2);	
 	assertEquals ("4 + 9", 4 + 9, v3.doubleValue(), 0);
-	v3 = v1.getType().subtract(v2, v1);
+	v3 = v1.getType().getALU(v2.getType(), 0).subtract(v2, v1);
 	assertEquals ("9 - 4", 9 - 4, v3.doubleValue(), 0);
 	v3 = v1.getType().multiply(v2, v1);
 	assertEquals ("9 * 4", 9 * 4, v3.doubleValue(), 0);
@@ -190,7 +190,7 @@ public class TestValue
 	assertEquals ("v3 = 4", 4, v3.doubleValue(), 0);
 	v3 = v1.getType().getALU(v3.getType(), 0).plusEqual(v3, v1);
 	assertEquals ("v3 += 4", 8, v3.doubleValue(), 0);	
-	v3 = v1.getType().minusEqual(v3, v1);
+	v3 = v1.getType().getALU(v2.getType(), 0).minusEqual(v3, v1);
 	assertEquals ("v3 -= 4", 4, v3.doubleValue(), 0);
 	v3 = v1.getType().timesEqual(v3, v1);
 	assertEquals ("v3 *= 4", 16, v3.doubleValue(), 0);

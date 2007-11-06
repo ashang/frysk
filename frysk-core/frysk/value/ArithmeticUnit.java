@@ -48,7 +48,13 @@ public abstract class ArithmeticUnit
     
     public abstract Value add(Value v1, Value v2);
     
+    public abstract Value subtract(Value v1, Value v2);
+    
     public Value plusEqual(Value v1, Value v2) {
 	return v1.assign(add(v1, v2));
+    }
+    
+    public Value minusEqual(Value v1, Value v2) {
+	return v1.assign(subtract(v1, v2));
     }
 }

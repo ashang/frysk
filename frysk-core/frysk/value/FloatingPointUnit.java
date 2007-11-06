@@ -58,4 +58,9 @@ public class FloatingPointUnit
 	return retType.createValue
 	               (v1.doubleValue() + v2.doubleValue());
     }    
+    
+    public Value subtract(Value v1, Value v2) {
+	return retType.createValue
+	               (v1.doubleValue() - v2.doubleValue());
+    }  
 }    

@@ -47,9 +47,10 @@ public class AddressUnit
 extends ArithmeticUnit
 {
     public AddressUnit (ArrayType t, int wordSize) {
-	    retType = new PointerType(t.getName(), ByteOrder.BIG_ENDIAN, 
-		                      wordSize, t.getType());
+	retType = new PointerType(t.getName(), ByteOrder.BIG_ENDIAN, 
+		                  wordSize, t.getType());
     }
+    
     public AddressUnit (PointerType t) {
 	retType = t;
     }
@@ -107,4 +108,11 @@ extends ArithmeticUnit
         (arrValue.getLocation().getAddress() + arrType.getType().getSize()*intValue.asLong());        
 
     }  
+    
+    public Value subtract(Value v1, Value v2) {	
+	// v1-v2 = v1+(-v2)
+	Location l = new ScratchLocation (v2.asBigInteger().negate().toByteArray());
+	Value v2Neg = new Value (v2.getType(), l);
+	return add (v1, v2Neg);
+    }
 }

@@ -145,11 +145,17 @@ expr returns [Value returnVar=null]
                         .plusEqual(v1, v2);
         }        
     |   ( #(MINUS expr expr) )=> #(MINUS v1=expr v2=expr) {
-            returnVar = v1.getType().subtract(v1, v2);  
+            returnVar = v1.getType().getALU(v2.getType(), exprSymTab.getWordSize())
+                        .subtract(v1, v2);  
         }
+    |   #(MINUSEQUAL v1=expr v2=expr)  {
+            returnVar = v1.getType().getALU(v2.getType(), exprSymTab.getWordSize())
+                        .minusEqual(v1, v2);
+        }        
     |   #(MINUS v1=expr ) {
             returnVar = intType.createValue(0);
-            returnVar = returnVar.getType().subtract(returnVar, v1); 
+            returnVar = returnVar.getType().getALU(v1.getType(), exprSymTab.getWordSize())
+                        .subtract(returnVar, v1); 
         }
     |   ( #(STAR expr expr) )=> #(STAR  v1=expr v2=expr) {
             returnVar = v1.getType().multiply(v1, v2); 
@@ -264,10 +270,6 @@ expr returns [Value returnVar=null]
         }
     |   #(DIVIDEEQUAL v1=expr v2=expr)  {
             v1.getType().divideEqual(v1, v2);
-            returnVar = v1;
-        }
-    |   #(MINUSEQUAL v1=expr v2=expr)  {
-            v1.getType().minusEqual(v1, v2);
             returnVar = v1;
         }
     |   #(MODEQUAL v1=expr v2=expr)  {

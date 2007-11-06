@@ -1,5 +1,18 @@
 2007-11-06  Teresa Thomas  <tthomas@redhat.com>
 
+	* ArithmeticUnit.java (subtract): New.
+	(minusEqual): New.	
+	* AddressUnit.java (subtract): New.
+	* IntegerUnit.java (subtract): New.
+	* FloatingPointUnit.java (subtract): New.	
+	* Type.java (subtract): Delete.
+	(minusEqual): Delete.
+	* ArithmeticType.java (subtract): Delete.
+	(minusEqual): Delete.	
+	* TypeDecorator.java (subtract): Delete.
+	(minusEqual): Delete.
+	* TestValue.java: Updated.	
+
 	* IntegerType.java: Double dispatch for ALU simplified.
 	* ArrayType.java: Ditto.
 	* PointerType.java: Ditto.
