@@ -1,5 +1,8 @@
 2007-11-06  Teresa Thomas  <tthomas@redhat.com>
 
+	* InvalidOperatorException.java 
+	(InvalidOperatorException(Type, Type, String)): New.
+	
 	* ArithmeticUnit.java (subtract): New.
 	(minusEqual): New.	
 	* AddressUnit.java (subtract): New.

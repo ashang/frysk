@@ -51,4 +51,14 @@ public class InvalidOperatorException extends RuntimeException {
 	      + type.toPrint()
 	      + "\"");
     }
+    
+    public InvalidOperatorException(Type t1, Type t2, String operator) {
+	super("Invalid operator \""
+	      + operator
+	      + "\" for \""
+	      + t1.toPrint()
+	      + "\", \"" 
+	      + t2.toPrint()
+	      + "\"");
+    }
 }
