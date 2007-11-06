@@ -96,7 +96,7 @@ public class %s extends TestLib {
             frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
 	    long pc = frame.getAdjustedAddress();
 	    Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
-	    DwflDieBias bias = dwfl.getDie(pc);
+	    DwflDieBias bias = dwfl.getCompilationUnit(pc);
 	    die = bias.die;
 	    allDies = die.getScopes(pc - bias.bias);
 	    typeEntry = new TypeEntry(frame.getTask().getISA());

@@ -94,7 +94,7 @@ public class DebugInfo {
     public int complete (DebugInfoFrame frame, String buffer, int cursor, List candidates) {
 	long pc = frame.getAdjustedAddress();
 	Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
-	DwflDieBias bias = dwfl.getDie(pc);
+	DwflDieBias bias = dwfl.getCompilationUnit(pc);
 	DwarfDie die = bias.die;
 	String token = "";
 
@@ -153,7 +153,7 @@ public class DebugInfo {
     public String what(DebugInfoFrame frame, String sInput) {
 	long pc = frame.getAdjustedAddress();
 	Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
-	DwflDieBias bias = dwfl.getDie(pc);
+	DwflDieBias bias = dwfl.getCompilationUnit(pc);
 	TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
 	if (bias == null)
 	    throw new RuntimeException("No symbol table is available.");

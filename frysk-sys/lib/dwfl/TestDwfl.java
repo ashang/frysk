@@ -133,7 +133,7 @@ public class TestDwfl
     Dwfl dwfl = new Dwfl(Pid.get());
     assertNotNull(dwfl);
     
-    DwflDieBias bias = dwfl.getDie(LocalMemory.getCodeAddr());
+    DwflDieBias bias = dwfl.getCompilationUnit(LocalMemory.getCodeAddr());
     assertNotNull(bias);
     
     assertEquals(0, bias.bias);

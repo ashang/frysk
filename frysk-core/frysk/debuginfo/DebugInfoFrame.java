@@ -89,7 +89,7 @@ public class DebugInfoFrame extends FrameDecorator {
 	
 	if (scope == null) {
 	    Dwfl dwfl = DwflCache.getDwfl(this.getTask());
-	    DwflDieBias bias = dwfl.getDie(getAdjustedAddress());
+	    DwflDieBias bias = dwfl.getCompilationUnit(getAdjustedAddress());
 
 	    if (bias != null) {
 
@@ -135,7 +135,7 @@ public class DebugInfoFrame extends FrameDecorator {
 	  this.inlinedSubprograms = new LinkedList();
 	  
         Dwfl dwfl = DwflCache.getDwfl(this.getTask());
-        DwflDieBias bias = dwfl.getDie(getAdjustedAddress());
+        DwflDieBias bias = dwfl.getCompilationUnit(getAdjustedAddress());
 
         if (bias != null) {
 

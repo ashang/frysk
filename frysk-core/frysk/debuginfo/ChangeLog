@@ -2,6 +2,15 @@
 
 	* gen-type-expect-tests.py (j.start_test): Only unresolve value tests.
 
+2007-11-06  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Renamed Dwfl::getDie to Dwfl::getCompilationUnit.
+	* gen-type-expect-tests.py: Updated.
+	* TestTypeEntry.java: Updated.
+	* TestDebugInfoStackTrace.java: Updated.
+	* DebugInfoFrame.java: Updated.
+	* DebugInfo.java: Updated.
+
 2007-11-05  Teresa Thomas  <tthomas@redhat.com>
 
 	* PieceLocation.java (getAddress): Edit exception message.

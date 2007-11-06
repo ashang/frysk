@@ -59,7 +59,7 @@ public class TestScopeFactory
       Frame frame = StackFactory.createFrame(task);
       
       Dwfl dwfl = DwflCache.getDwfl(task);
-      DwflDieBias bias = dwfl.getDie(frame.getAdjustedAddress());
+      DwflDieBias bias = dwfl.getCompilationUnit(frame.getAdjustedAddress());
       DwarfDie[] scopes = bias.die.getScopes(frame.getAdjustedAddress() - bias.bias);
 
       TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());

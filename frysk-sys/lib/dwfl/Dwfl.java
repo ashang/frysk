@@ -103,7 +103,7 @@ public class Dwfl {
 	return new DwflLine(val, this);
     }
 
-    public DwflDieBias getDie (long addr) {
+    public DwflDieBias getCompilationUnit (long addr) {
 	return dwfl_addrdie(addr);
     }
 

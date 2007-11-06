@@ -89,7 +89,7 @@ public class TestTypeEntry
       DwarfDie varDie;
       long pc = frame.getAdjustedAddress();
       dwfl = DwflCache.getDwfl(frame.getTask());
-      DwflDieBias bias = dwfl.getDie(pc);
+      DwflDieBias bias = dwfl.getCompilationUnit(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
       TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
@@ -120,7 +120,7 @@ public class TestTypeEntry
       DwarfDie varDie;
       long pc = frame.getAdjustedAddress();
       dwfl = DwflCache.getDwfl(frame.getTask());
-      DwflDieBias bias = dwfl.getDie(pc);
+      DwflDieBias bias = dwfl.getCompilationUnit(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
       TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
@@ -151,7 +151,7 @@ public class TestTypeEntry
       DwarfDie varDie;
       long pc = frame.getAdjustedAddress();
       dwfl = DwflCache.getDwfl(frame.getTask());
-      DwflDieBias bias = dwfl.getDie(pc);
+      DwflDieBias bias = dwfl.getCompilationUnit(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
       TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
@@ -191,7 +191,7 @@ public class TestTypeEntry
       DwarfDie varDie;
       long pc = frame.getAdjustedAddress();
       dwfl = DwflCache.getDwfl(frame.getTask());
-      DwflDieBias bias = dwfl.getDie(pc);
+      DwflDieBias bias = dwfl.getCompilationUnit(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
       TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
@@ -226,7 +226,7 @@ public class TestTypeEntry
       DwarfDie varDie;
       long pc = frame.getAdjustedAddress();
       dwfl = DwflCache.getDwfl(frame.getTask());
-      DwflDieBias bias = dwfl.getDie(pc);
+      DwflDieBias bias = dwfl.getCompilationUnit(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
       TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
