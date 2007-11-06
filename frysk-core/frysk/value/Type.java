@@ -137,9 +137,13 @@ public abstract class Type {
     public ArithmeticUnit getALU(FloatingPointType type, int wordSize){
 	throw new RuntimeException("Invalid Arithmetic Unit");
     }
-    public Value subtract (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "-");
-    }
+    public ArithmeticUnit getALU(PointerType type, int wordSize) {
+	throw new RuntimeException("Invalid Arithmetic Unit");
+    }    
+    public ArithmeticUnit getALU(ArrayType type, int wordSize) {
+	throw new RuntimeException("Invalid Arithmetic Unit");
+    }  
+    
     public Value multiply (Value var1, Value var2) {
         throw new InvalidOperatorException(this, "*");
     }
@@ -202,9 +206,6 @@ public abstract class Type {
     }
     public Value modEqual (Value var1, Value var2) {
         throw new InvalidOperatorException(this, "%=");
-    }
-    public Value minusEqual (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "-=");
     }
     public Value shiftLeftEqual (Value var1, Value var2) {
         throw new InvalidOperatorException(this, "<<=");

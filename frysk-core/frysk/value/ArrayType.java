@@ -223,11 +223,7 @@ public class ArrayType
 	return new AddressUnit(this, wordSize);
     }   
     
-    public ArithmeticUnit getALU(FloatingPointType type, int wordSize) {
+    public ArithmeticUnit getALU(PointerType type, int wordSize) {
 	throw new RuntimeException("Invalid Pointer Arithmetic");
     }
-    
-    public ArithmeticUnit getALU(PointerType type) {
-	throw new RuntimeException("Invalid Pointer Arithmetic");
-    }     
 }

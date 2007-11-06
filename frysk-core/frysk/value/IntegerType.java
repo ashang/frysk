@@ -82,19 +82,19 @@ public abstract class IntegerType
 	return type.getALU(this, wordSize);
     }
     
-    public ArithmeticUnit getALU(PointerType type, int wordSize) {
-	return new AddressUnit(type);
+    public ArithmeticUnit getALU(IntegerType type, int wordSize) {
+	return new IntegerUnit(this, type);
     }
     
-    public ArithmeticUnit getALU(IntegerType type, int wordSize) {
-	// FIXME: Should this be resolved by a double 
-	// dispatch of IntegerType?
-	if (type instanceof PointerType)
-	    return new AddressUnit((PointerType)type);
-	return new IntegerUnit(this, type);
+    public ArithmeticUnit getALU(PointerType type, int wordSize) {
+	return new AddressUnit((PointerType)type);
     }
     
     public ArithmeticUnit getALU(FloatingPointType type, int wordSize) {
 	return new FloatingPointUnit(type);
-    }    
+    }   
+
+    public ArithmeticUnit getALU(ArrayType type, int wordSize) {
+	return new AddressUnit(type, wordSize);
+    }  
 }

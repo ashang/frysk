@@ -129,7 +129,6 @@ public class PointerType
 	Value offset = createValue (v.asLong() + idx.asLong()*type.getSize());
 	return dereference (offset, taskMem) ;      
     }    
-    
 
     public ArithmeticUnit getALU(Type type, int wordSize) {
 	return type.getALU(this, wordSize);
@@ -139,11 +138,15 @@ public class PointerType
 	return new AddressUnit(this);
     }   
     
-    public ArithmeticUnit getALU(FloatingPointType type, int wordSize) {
-	throw new RuntimeException("Invalid Pointer Arithmetic");
-    }
-    
     public ArithmeticUnit getALU(PointerType type, int wordSize) {
 	throw new RuntimeException("Invalid Pointer Arithmetic");
-    }     
+    } 
+    
+    public ArithmeticUnit getALU(FloatingPointType type, int wordSize) {
+	throw new RuntimeException("Invalid Pointer Arithmetic");
+    } 
+    
+    public ArithmeticUnit getALU(ArrayType type, int wordSize) {
+	throw new RuntimeException("Invalid Pointer Arithmetic");
+    }
 }

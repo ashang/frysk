@@ -1,3 +1,11 @@
+2007-11-06  Teresa Thomas  <tthomas@redhat.com>
+
+	* IntegerType.java: Double dispatch for ALU simplified.
+	* ArrayType.java: Ditto.
+	* PointerType.java: Ditto.
+	* FloatingPointType.java: Ditto.	
+	* Type.java: Updated.
+
 2007-11-05  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* CompositeType.java (add): Added javadoc.

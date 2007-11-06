@@ -98,14 +98,14 @@ public class FloatingPointType
     }
     
     public ArithmeticUnit getALU(IntegerType type, int wordSize) {
-	// FIXME: Should this be resolved by a double 
-	// dispatch of IntegerType?
-	if (type instanceof PointerType)
-	    throw new RuntimeException("Invalid Pointer Arithmetic");
 	return new FloatingPointUnit(this);
     }
     
     public ArithmeticUnit getALU(FloatingPointType type, int wordSize) {
 	return new FloatingPointUnit(this, type);
-    }        
+    }   
+    
+    public ArithmeticUnit getALU(PointerType type, int wordSize) {
+	throw new RuntimeException("Invalid Pointer Arithmetic");
+    }    
 }
