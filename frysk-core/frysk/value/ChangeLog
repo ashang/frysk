@@ -1,3 +1,8 @@
+2007-11-07  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
+
+	* CompositeType.java: Changed iterator() to not require
+	a Value object.
+
 2007-11-07  Teresa Thomas  <tthomas@redhat.com>
 
 	* FloatingPointUnit.java (multiply): New.

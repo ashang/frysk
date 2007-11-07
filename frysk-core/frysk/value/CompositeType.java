@@ -187,11 +187,8 @@ public abstract class CompositeType
     {
 	private int idx;
 
-	Value v;
-
-	ClassIterator (Value v) {
+	ClassIterator () {
 	    idx = -1;
-	    this.v = v;
 	}
 
 	public boolean hasNext () {
@@ -206,7 +203,7 @@ public abstract class CompositeType
 	}
 
 	public Object next () {
-	    return ((Member)members.get(idx)).getValue(v);
+	    return ((Member)members.get(idx));
 	}
 
 	public void remove () {
@@ -214,7 +211,7 @@ public abstract class CompositeType
     }
  
     public ClassIterator iterator (Value v) {
-	return new ClassIterator(v);
+	return new ClassIterator();
     }
 
     void toPrint(PrintWriter writer, Location location, ByteBuffer memory,
