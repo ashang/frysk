@@ -1,3 +1,8 @@
+2007-11-07  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* CoreCommand.java (interpret): Check for runtime exceptions
+	from LinuxHost. Abort on exception, and (nicely) report exception message.
+
 2007-11-06  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* CoreCommand.java (interpret): Rewrite corefile model.
