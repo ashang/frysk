@@ -1,3 +1,8 @@
+2007-11-07  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxHost.java (LinuxHost): Create up front ET_CORE check in
+	constructor.
+
 2007-11-06  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxProc.java (LinuxProc): Do not search for exe beyond pwd.
