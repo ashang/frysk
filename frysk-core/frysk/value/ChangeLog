@@ -1,3 +1,64 @@
+2007-11-06  Teresa Thomas  <tthomas@redhat.com>
+
+	* InvalidOperatorException.java 
+	(InvalidOperatorException(Type, Type, String)): New.
+	
+	* ArithmeticUnit.java (subtract): New.
+	(minusEqual): New.	
+	* AddressUnit.java (subtract): New.
+	* IntegerUnit.java (subtract): New.
+	* FloatingPointUnit.java (subtract): New.	
+	* Type.java (subtract): Delete.
+	(minusEqual): Delete.
+	* ArithmeticType.java (subtract): Delete.
+	(minusEqual): Delete.	
+	* TypeDecorator.java (subtract): Delete.
+	(minusEqual): Delete.
+	* TestValue.java: Updated.	
+
+	* IntegerType.java: Double dispatch for ALU simplified.
+	* ArrayType.java: Ditto.
+	* PointerType.java: Ditto.
+	* FloatingPointType.java: Ditto.	
+	* Type.java: Updated.
+
+2007-11-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CompositeType.java (add): Added javadoc.
+
+2007-11-05  Teresa Thomas  <tthomas@redhat.com>
+
+	* Type.java (index): Task memory added to parameter list.
+	* PointerType.java (index): New.
+	* TypeDecorator.java (index): Updated.
+	* TestArray.java (testIndexOneD): Updated.
+	(testIndexTwoD): Updated.
+	* TestPointer.java (testCharPointerIndex): New test.
+	* ArrayType.java (dereference): Comments added.
+
+2007-11-05  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestValue.java: Update.
+	* ArithmeticUnit.java (plusEqual): New.
+	* ArithmeticType.java (add): Delete.
+	(plusEqual): Delete.
+	* Type.java (add): Delete.
+	(plusEqual): Delete.	
+	* TestArray.java (testAdd): New test.
+	* AddressUnit.java (AddressUnit(ArrayType, int wordSize)): New. 
+	(addArray): New.
+	* ArrayType.java (getALU): Give wordSize to ALU.
+	* FloatingPointType.java (getALU): Ditto.
+	* IntegerType.java (getALU): Ditto.
+	* PointerType.java (getALU): Ditto.
+	* Type.java (getALU): Ditto.	
+	* TypeDecorator.java (add): Delete.
+	(plusEqual): Delete.
+
+	* ByteBufferLocation.java (offset): New.
+	(ByteBufferLocation): Updated.
+	(getAddress): Implemented.
+
 2007-11-05  Stan Cox  <scox@redhat.com>
 
 	* Value.java (asLong): Get type via gettUltimateType.

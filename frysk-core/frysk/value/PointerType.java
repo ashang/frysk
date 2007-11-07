@@ -112,25 +112,41 @@ public class PointerType
 	return new PointerType(getName(), order(), getSize(), type, accessor);
     }
     
+    /**
+     * Dereference operation on pointer type.
+     */
     public Value dereference(Value var1, ByteBuffer taskMem) {
 	Location loc = PieceLocation.createSimpleLoc
-		       (var1.asLong(), this.getType().getSize(), taskMem);
-	return new Value (this.getType(), loc);  
+		       (var1.asLong(), type.getSize(), taskMem);
+	return new Value (type, loc);  
+    }
+
+    /**
+     * Index Operation for pointers to strings.
+     */
+    public Value index (Value v, Value idx, ByteBuffer taskMem)
+    {    
+	Value offset = createValue (v.asLong() + idx.asLong()*type.getSize());
+	return dereference (offset, taskMem) ;      
+    }    
+
+    public ArithmeticUnit getALU(Type type, int wordSize) {
+	return type.getALU(this, wordSize);
     }
     
-    public ArithmeticUnit getALU(Type type) {
-	return type.getALU(this);
-    }
-    
-    public ArithmeticUnit getALU(IntegerType type) {
+    public ArithmeticUnit getALU(IntegerType type, int wordSize) {
 	return new AddressUnit(this);
     }   
     
-    public ArithmeticUnit getALU(FloatingPointType type) {
+    public ArithmeticUnit getALU(PointerType type, int wordSize) {
+	throw new RuntimeException("Invalid Pointer Arithmetic");
+    } 
+    
+    public ArithmeticUnit getALU(FloatingPointType type, int wordSize) {
+	throw new RuntimeException("Invalid Pointer Arithmetic");
+    } 
+    
+    public ArithmeticUnit getALU(ArrayType type, int wordSize) {
 	throw new RuntimeException("Invalid Pointer Arithmetic");
     }
-    
-    public ArithmeticUnit getALU(PointerType type) {
-	throw new RuntimeException("Invalid Pointer Arithmetic");
-    }     
 }

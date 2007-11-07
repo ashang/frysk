@@ -33,64 +33,18 @@
 // this exception. If you modify this file, you may extend this
 // exception to your version of the file, but you are not obligated to
 // do so. If you do not wish to provide this exception without
-// modification, you must delete this exception statement from your
-// version and license this file solely under the GPL without
+// modification, you must delete this exception statement from your// version and license this file solely under the GPL without
 // exception.
 
-package frysk.expr;
 
-import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
+package frysk.proc.dead;
 
-import frysk.value.ObjectDeclaration;
-import frysk.value.Type;
-import frysk.value.Value;
-import frysk.value.Variable;
+public class CorefileStatus {
 
-public class ScratchSymTab implements ExprSymTab {
-    /**
-     * Lookup S, assuming S is variable or constant.
-     */
-    public Value getValue(String s) {
-	throw new RuntimeException("no values");
-    }
-    /**
-     * Lookup S, assuming S is a variable.
-     */
-    public ObjectDeclaration getVariable(String s) {
-	throw new RuntimeException("no variables");
-    }
-    /**
-     * The byte order to use when creating new values.
-     */
-    public ByteOrder order() {
-	throw new RuntimeException("no byte-order");
-    }
-    /**
-     * Return the task's memory buffer
-     */
-    public ByteBuffer taskMemory() {
-	throw new RuntimeException("no memory");
-    }
-    /**
-     * Return the variable's value.
-     */
-    public Value getValue(Variable v) {
-	throw new RuntimeException("no values");
-    }
-    /**
-     * Given a variable, return its type.
-     */
-    public Type getType(Variable variable) {
-	throw new RuntimeException("no types");
-    }
-    /**
-     * Return the wordsize.
-     */      
-    public int getWordSize() {
-	// FIXME: ALU's for arithmetic operations require wordsize.
-	// Send bogus word size when no task attached?
-	//throw new RuntimeException("no word size");
-	return -1;
-    }
+	public boolean hasExe = false;
+	public boolean hasCore = true;
+	public String exeName = "";
+	public String coreName = "";
+	public boolean hasExeProblem = false;
+	public String message = "";
 }

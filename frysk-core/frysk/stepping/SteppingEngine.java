@@ -1166,24 +1166,45 @@ public class SteppingEngine {
 
 	    /* Watch for terminating Tasks. Set the stepping state of the task
 	     * as terminated and notify the observers of the event. */
-
-	    Integer context = (Integer) SteppingEngine.this.contextMap.get(task
-		    .getProc());
-	    SteppingEngine.this.contextMap.put(task.getProc(), new Integer(
+            Proc proc = task.getProc();
+	    Integer context = (Integer)SteppingEngine.this.contextMap.get(proc);
+	    SteppingEngine.this.contextMap.put(proc, new Integer(
 		    context.intValue() - 1));
 
-	    TaskStepEngine tse = (TaskStepEngine) SteppingEngine.this.taskStateMap
-		    .get(task);
-	    tse.setState(new StepTerminatedState(task));
+            TaskStepEngine tse
+                = (TaskStepEngine)SteppingEngine.this.taskStateMap
+                .get(task);
+            // Must have missed the terminating event
+            if (tse.isAlive()) {
+                tse.setState(new StepTerminatedState(task));
 
-	    if (signal)
-		tse.setMessage(tse.getMessage() + "Task " + task.getTid()
-			+ " terminated from signal " + value);
-	    else
-		tse.setMessage(tse.getMessage() + "Task " + task.getTid() + " terminated");
-
-	    steppingObserver.notifyNotBlocked(tse);
-
+                if (signal)
+                    tse.setMessage(tse.getMessage() + "Task "
+                                   + task.getTid()
+                                   + " terminated from signal "
+                                   + value);
+                else
+                    tse.setMessage(tse.getMessage() + "Task "
+                                   + task.getTid() + " terminated");
+                steppingObserver.notifyNotBlocked(tse);
+            }
+            // Clone task list so we can remove tasks (via cleanTask)
+            // without messing up the iterator.
+            Iterator taskIter
+                = ((LinkedList)SteppingEngine.this.threadsList.clone())
+                .iterator();
+            // Only one terminated event might be received by the
+            // process, so process all the tasks now.
+            while (taskIter.hasNext()) {
+                Task sibling = (Task)taskIter.next();
+                if (sibling.getProc() == proc) {
+                    TaskStepEngine siblingTse
+                        = (TaskStepEngine)SteppingEngine.this.taskStateMap
+                        .get(sibling);
+                    if (!siblingTse.isAlive())
+                        cleanTask(sibling);
+                }
+            }
 	    return Action.CONTINUE;
 	}
 

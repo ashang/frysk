@@ -143,6 +143,15 @@ public abstract class CompositeType
 
     /**
      * Add NAME as a member of the class.
+     * @param name name of the class member
+     * @param type type of the class member
+     * @param offset byte offset of the member's location from the location
+     *        of the composite object to which it belongs. 
+     * @param access Visibility of the member (public, private, etc)
+     * @param bitOffset 
+     * @param bitLength
+     * @param inheritance if this member represents a parent from which
+     * this class inheres.
      */
     private CompositeType add(String name, Type type, long offset,
 			      Access access, int bitOffset, int bitLength,

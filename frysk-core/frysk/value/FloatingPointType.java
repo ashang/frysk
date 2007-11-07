@@ -93,19 +93,19 @@ public class FloatingPointType
 	location.put(order(), f.toByteArray(getSize()), 0);
     }
     
-    public ArithmeticUnit getALU(Type type) {
-	return type.getALU(this);
+    public ArithmeticUnit getALU(Type type, int wordSize) {
+	return type.getALU(this, wordSize);
     }
     
-    public ArithmeticUnit getALU(IntegerType type) {
-	// FIXME: Should this be resolved by a double 
-	// dispatch of IntegerType?
-	if (type instanceof PointerType)
-	    throw new RuntimeException("Invalid Pointer Arithmetic");
+    public ArithmeticUnit getALU(IntegerType type, int wordSize) {
 	return new FloatingPointUnit(this);
     }
     
-    public ArithmeticUnit getALU(FloatingPointType type) {
+    public ArithmeticUnit getALU(FloatingPointType type, int wordSize) {
 	return new FloatingPointUnit(this, type);
-    }        
+    }   
+    
+    public ArithmeticUnit getALU(PointerType type, int wordSize) {
+	throw new RuntimeException("Invalid Pointer Arithmetic");
+    }    
 }

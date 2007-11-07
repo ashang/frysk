@@ -90,24 +90,9 @@ public class LinuxProc extends DeadProc {
     // as it is written in the corefile. 
     if ((host.exeFile == null) && (host.exeSetToNull == false))
       {
-	File exeFileName = new File(sendrecExe());
-	// XXX: Hack here, some processes do not have path information
-	// in the name. 
-	if ((exeFileName.exists()) && (exeFileName.canRead()))
-	  host.exeFile = exeFileName;
-	else
-	  {
-	    String commonLocations[] = {"/bin/","/usr/bin/"};
-	    for (int i=0; i<commonLocations.length; i++)
-	      {
-		exeFileName = new File(commonLocations[i]+sendrecExe());
-		if ((exeFileName.exists()) && (exeFileName.canRead()))
-		  {
-		    host.exeFile = new File(commonLocations[i]+sendrecExe());
-		    break;
-		  }
-	      }
-	  }
+    	File exeFileName = new File(sendrecExe());
+    	if ((exeFileName.exists()) && (exeFileName.canRead()))
+    		host.exeFile = exeFileName;
 	
       }
     this.exefileBackEnd = host.exeFile;

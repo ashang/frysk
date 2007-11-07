@@ -33,7 +33,8 @@
 // this exception. If you modify this file, you may extend this
 // exception to your version of the file, but you are not obligated to
 // do so. If you do not wish to provide this exception without
-// modification, you must delete this exception statement from your// version and license this file solely under the GPL without
+// modification, you must delete this exception statement from your
+// version and license this file solely under the GPL without
 // exception.
 
 package frysk.proc.dead;
@@ -58,165 +59,171 @@ import frysk.proc.FindProc;
 
 public class LinuxHost extends DeadHost {
 
-  boolean hasRefreshed = false;
-  boolean exeSetToNull = false;
-  protected File coreFile = null;
-  protected File exeFile = null;
-  Elf corefileElf;
-  EventLoop eventLoop;
+	CorefileStatus status = new CorefileStatus();
 
-  private LinuxHost(EventLoop eventLoop, File coreFile, boolean doRefresh)
-  {
-      this.coreFile = coreFile;
-      this.eventLoop = eventLoop;
-      try
-      {
-        this.corefileElf = new Elf (coreFile.getPath(), ElfCommand.ELF_C_READ);
-      }
-      catch (Exception e)
-      {
-        throw new RuntimeException("Corefile " + this.coreFile + " is "+ 
-				   "not a valid ELF core file.");
-      }
+	boolean hasRefreshed = false;
 
-      if (doRefresh)
-	  this.sendRefresh(true);
-  }
-  
-  public LinuxHost(EventLoop eventLoop, File coreFile)
-  {
-      this(eventLoop, coreFile, true);
-  }
+	boolean exeSetToNull = false;
 
+	protected File coreFile = null;
 
-  public LinuxHost(EventLoop eventLoop, File coreFile, File exeFile)
-  {
-      this(eventLoop, coreFile, false);
-      if (exeFile == null)
-	  exeSetToNull = true;
-      this.exeFile = exeFile;
-      this.sendRefresh(true);
-  }
+	protected File exeFile = null;
 
-  protected void sendRefresh(boolean refreshAll) 
-  {
+	Elf corefileElf;
 
-    if (this.hasRefreshed)
-      return;
-    // Iterate (build) the /proc tree, passing each found PID to
-    // procChanges where it can update the /proc tree.
-    new DeconstructCoreFile(this.corefileElf);
-    // Changes individual process.
-    for (Iterator i = procPool.values().iterator(); i.hasNext();)
-      {
-	LinuxProc proc = (LinuxProc) i.next();
-	proc.sendRefresh();
-      }
-    this.hasRefreshed = true;
-  }
+	EventLoop eventLoop;
 
-  protected void sendRefresh (final ProcId procId, final FindProc finder)
-  {
+	private LinuxHost(EventLoop eventLoop, File coreFile, boolean doRefresh) {
+		this.coreFile = coreFile;
+		this.eventLoop = eventLoop;
+		try {
+			this.corefileElf = new Elf(coreFile.getPath(),
+					ElfCommand.ELF_C_READ);
+		} catch (Exception e) {
+			throw new RuntimeException("Corefile " + this.coreFile + " is "
+					+ "not a valid ELF core file.");
+		}
 
-    // Core files nevers never change 
-    if (!(procPool.containsKey(procId)))
-      {
-        eventLoop.add(new Event()
-        {
-          public void execute ()
-          {
-            finder.procNotFound(procId, new RuntimeException(
-                                                             "Couldn't find the proc"
-                                                                 + procId));
-          }
-        });
-        return;
-      }
+		if (corefileElf.getEHeader().type != ElfEHeader.PHEADER_ET_CORE) {
+			this.corefileElf.close();
+			throw new RuntimeException("'" + this.coreFile.getAbsolutePath()
+					+ "' is not a corefile.");
+		}
 
-    
-    LinuxProc proc = (LinuxProc) getProc(procId);
-    proc.sendRefresh();
-    
-    eventLoop.add(new Event()
-    {
-
-      public void execute ()
-      {
-        finder.procFound(procId);
-      }
-    });
-
-  } 
-
-
-  protected void sendCreateAttachedProc(String stdin, String stdout,
-					String stderr, String[] args,
-					TaskObserver.Attached attached)
-  {
-  }
-
-
-  protected Proc sendrecSelf() 
-  {
-    return null;
-  }
-
-
-  private class DeconstructCoreFile
-  {
-    List addedProcs = new LinkedList();
-    //HashMap removedProcs = (HashMap) ((HashMap) procPool).clone();
-    Elf coreFileElf;
-    ElfData noteData = null;
-
-    DeconstructCoreFile(Elf coreFileElf)
-    {
-      this.coreFileElf =  coreFileElf;
-      ElfEHeader eHeader = this.coreFileElf.getEHeader();
-      
-      // Get number of program header entries.
-      long phSize = eHeader.phnum;
-      for (int i=0; i<phSize; i++)
-	{
-	  // Test if pheader is of types notes..
-	  ElfPHeader pHeader = coreFileElf.getPHeader(i);
-	  if (pHeader.type == ElfPHeader.PTYPE_NOTE)
-	    {
-	      // if so, copy, break an leave.
-	      noteData = coreFileElf.getRawData(pHeader.offset,pHeader.filesz);
-	      break;
-	    }
+		if (doRefresh)
+			this.sendRefresh(true);
 	}
 
-      if (noteData != null)
-	update(noteData);
-    }
-
-    Proc update (ElfData proc_pid) 
-    {
-      final ElfPrpsinfo coreProc = ElfPrpsinfo.decode(proc_pid);
-      final ProcId procId = new ProcId(coreProc.getPrPid());
-      // Currently there can only be one process per core file.
-      // What happens when we have two core files denoting the same
-      // process/pid? Leave the test here for now.
-   
-      Proc proc = (Proc) procPool.get(procId);
-      if (proc == null)
-	{
-	  // core file processes have no parents as thy are captured
-	  // in isolation, and reconstructed.
-	  proc = new LinuxProc(proc_pid,LinuxHost.this,procId);
+	public LinuxHost(EventLoop eventLoop, File coreFile) {
+		this(eventLoop, coreFile, true);
 	}
 
-      addedProcs.add(proc);
+	public LinuxHost(EventLoop eventLoop, File coreFile, File exeFile) {
+		this(eventLoop, coreFile, false);
+		if (exeFile == null)
+			exeSetToNull = true;
 
-      return proc;
-    }
-      
-  }
+		if (exeFile.canRead() && exeFile.exists())
+			this.exeFile = exeFile;
+		else {
+			status.hasExe = false;
+			status.hasExeProblem = true;
+			status.message = "The user provided executable: "
+					+ exeFile.getAbsolutePath() + " could not be accessed";
+		}
+		this.sendRefresh(true);
+	}
 
-  protected void finalize () throws Throwable
-  {
-    corefileElf = null;
-  }
+	public CorefileStatus getStatus() {
+		return status;
+	}
+
+	protected void sendRefresh(boolean refreshAll) {
+
+		if (this.hasRefreshed)
+			return;
+		// Iterate (build) the /proc tree, passing each found PID to
+		// procChanges where it can update the /proc tree.
+		new DeconstructCoreFile(this.corefileElf);
+		// Changes individual process.
+		for (Iterator i = procPool.values().iterator(); i.hasNext();) {
+			LinuxProc proc = (LinuxProc) i.next();
+			proc.sendRefresh();
+		}
+		this.hasRefreshed = true;
+	}
+
+	protected void sendRefresh(final ProcId procId, final FindProc finder) {
+
+		// Core files nevers never change 
+		if (!(procPool.containsKey(procId))) {
+			eventLoop.add(new Event() {
+				public void execute() {
+					finder.procNotFound(procId, new RuntimeException(
+							"Couldn't find the proc" + procId));
+				}
+			});
+			return;
+		}
+
+		LinuxProc proc = (LinuxProc) getProc(procId);
+		proc.sendRefresh();
+
+		eventLoop.add(new Event() {
+
+			public void execute() {
+				finder.procFound(procId);
+			}
+		});
+
+	}
+
+	protected void sendCreateAttachedProc(String stdin, String stdout,
+			String stderr, String[] args, TaskObserver.Attached attached) {
+	}
+
+	protected Proc sendrecSelf() {
+		return null;
+	}
+
+	private class DeconstructCoreFile {
+		List addedProcs = new LinkedList();
+
+		//HashMap removedProcs = (HashMap) ((HashMap) procPool).clone();
+		Elf coreFileElf;
+
+		ElfData noteData = null;
+
+		DeconstructCoreFile(Elf coreFileElf) {
+			this.coreFileElf = coreFileElf;
+			status.coreName = coreFile.getAbsolutePath();
+			ElfEHeader eHeader = this.coreFileElf.getEHeader();
+
+			// Get number of program header entries.
+			long phSize = eHeader.phnum;
+			for (int i = 0; i < phSize; i++) {
+				// Test if pheader is of types notes..
+				ElfPHeader pHeader = coreFileElf.getPHeader(i);
+				if (pHeader.type == ElfPHeader.PTYPE_NOTE) {
+					// if so, copy, break an leave.
+					noteData = coreFileElf.getRawData(pHeader.offset,
+							pHeader.filesz);
+					break;
+				}
+			}
+
+			if (noteData != null)
+				update(noteData);
+		}
+
+		Proc update(ElfData proc_pid) {
+			final ElfPrpsinfo coreProc = ElfPrpsinfo.decode(proc_pid);
+			final ProcId procId = new ProcId(coreProc.getPrPid());
+			// Currently there can only be one process per core file.
+			// What happens when we have two core files denoting the same
+			// process/pid? Leave the test here for now.
+
+			Proc proc = (Proc) procPool.get(procId);
+			if (proc == null) {
+				// core file processes have no parents as thy are captured
+				// in isolation, and reconstructed.
+				proc = new LinuxProc(proc_pid, LinuxHost.this, procId);
+			}
+
+			addedProcs.add(proc);
+
+			if (exeFile == null)
+				status.hasExe = false;
+			else {
+				status.hasExe = true;
+				status.exeName = exeFile.getAbsolutePath();
+			}
+			return proc;
+		}
+
+	}
+
+	protected void finalize() throws Throwable {
+		corefileElf = null;
+	}
 }

@@ -39,7 +39,9 @@
 
 package frysk.value;
 
+import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
+import inua.eio.ByteBuffer;
 import java.util.ArrayList;
 import frysk.junit.TestCase;
 
@@ -93,7 +95,26 @@ public class TestArray extends TestCase {
 	Location l = new ScratchLocation(new byte[] { 2 });
 	IntegerType t = new UnsignedType("type", ByteOrder.BIG_ENDIAN, 1);
 	Value index = new Value(t, l);
-	assertEquals("IndexOneD", 151653132, arrayType.index(arr, index).asLong());
+	assertEquals("IndexOneD", 151653132, arrayType.index(arr, index, null).asLong());
+    }
+
+    /**
+     * Test add operation for 1-d array.
+     */
+    public void testAdd() {
+	// Create array
+	ArrayList dims = new ArrayList();
+	dims.add(new Integer(4 - 1));
+	ArrayType arrayType = new ArrayType(int4_t, buf.length , dims);
+	ByteBuffer arrVal = new ArrayByteBuffer(buf);
+	Value arr = new Value(arrayType, new ByteBufferLocation(arrVal, 0, 4));
+	// Create integer operand 
+	Location l = new ScratchLocation(new byte[] { 2 });
+	IntegerType t = new UnsignedType("type", ByteOrder.BIG_ENDIAN, 1);
+	Value num = new Value(t, l);
+	// Expected Value: Address of array + 2*size of each array element
+	assertEquals("Add", 0+2*4, arrayType.getType().getALU(arr.getType(), 16)
+		                   .add(arr, num).asLong());
     }
 
     /**
@@ -113,10 +134,10 @@ public class TestArray extends TestCase {
 	Location l_idx3 = new ScratchLocation(new byte[] { 3 });
 	Value idx_3 = new Value(t, l_idx3);
 	// Evaluate arr[1]
-	Value arr_1 = arrayType.index(arr, idx_1);
+	Value arr_1 = arrayType.index(arr, idx_1, null);
 	assertEquals ("IndexTwoD[]", "{2314,2828,3342,3856}", arr_1.toPrint()); 
 	// Evaluate arr[1][3]
-	Value arr_1_3 = arr_1.getType().index(arr_1, idx_3);
+	Value arr_1_3 = arr_1.getType().index(arr_1, idx_3, null);
 	assertEquals ("IndexTwoD", "3856", arr_1_3.toPrint());
    } 
 }

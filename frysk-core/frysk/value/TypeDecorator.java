@@ -89,12 +89,6 @@ abstract class TypeDecorator extends Type {
 	      decorated.toPrint(writer);
 	  }
 	}
-	public Value add(Value var1, Value var2) {
-		return decorated.add(var1, var2);
-	}
-	public Value subtract(Value var1, Value var2) {
-		return decorated.subtract(var1, var2);
-	}
 	public Value multiply(Value var1, Value var2) {
 		return decorated.multiply(var1, var2);
 	}
@@ -158,12 +152,6 @@ abstract class TypeDecorator extends Type {
 	public Value modEqual(Value var1, Value var2) {
 		return decorated.modEqual(var1, var2);
 	}
-	public Value plusEqual(Value var1, Value var2) {
-		return decorated.plusEqual(var1, var2);
-	}
-	public Value minusEqual(Value var1, Value var2) {
-		return decorated.minusEqual(var1, var2);
-	}
 	public Value shiftLeftEqual(Value var1, Value var2) {
 		return decorated.shiftLeftEqual(var1, var2);
 	}
@@ -197,7 +185,7 @@ abstract class TypeDecorator extends Type {
 	public Value member(Value var1, String member) {
 		return decorated.member(var1, member);
 	} 
-	public Value index(Value var1, Value var2) {
-		return decorated.index(var1, var2);
+	public Value index(Value var1, Value var2, ByteBuffer taskMem) {
+		return decorated.index(var1, var2, taskMem);
 	}       
 }

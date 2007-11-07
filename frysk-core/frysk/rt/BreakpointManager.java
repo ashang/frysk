@@ -220,7 +220,7 @@ public class BreakpointManager
         while (iter.hasNext()) {
             SourceBreakpoint bpt = (SourceBreakpoint)iter.next();
             SourceBreakpoint.State state = bpt.getState(task);
-            if (state == SourceBreakpoint.DEFERRED) {
+            if (state == SourceBreakpoint.DEFERRED || state == null) {
                 enableBreakpoint(bpt, task);
             }
         }

@@ -55,4 +55,9 @@ public class IntegerUnit
 	return retType.createValue
 	               (v1.asBigInteger().add(v2.asBigInteger()));
     }
+    
+    public Value subtract(Value v1, Value v2) {
+	return retType.createValue
+	               (v1.asBigInteger().subtract(v2.asBigInteger()));
+    }
 }
