@@ -39,11 +39,36 @@
 
 package frysk.hpd;
 
+import java.util.List;
+
 /**
  * A handler class for the CLI that supplies its own help messages.
  */
 
 public class TopLevelCommand extends MultiLevelCommand {
+    /**
+     * Implement top-level help.
+     */
+    private class Help extends Command {
+	Help() {
+	    super("help", "Display this help message.", "help [command]",
+		  "Display help (possibly for a command.)");
+	}
+	
+	public void interpret(CLI cli, Input cmd) {
+	    TopLevelCommand.this.help(cli, cmd);
+	}
+	
+	/**
+	 * Complete the line, throw problem back at the top level
+	 * command.
+	 */
+	int complete(CLI cli, Input buffer, int cursor, List candidates) {
+	    return TopLevelCommand.this.complete(cli, buffer, cursor,
+						 candidates);
+	}
+    }
+
     TopLevelCommand(DbgVariables dbgvars) {
 	super("<top-level", "top level command",
 	      "<command> <parameter> ...",
@@ -64,7 +89,7 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(new FocusCommand());
         add(new GoCommand());
         add(new HaltCommand());
-        add(new HelpCommand());
+        add(new Help());
         add(new ListCommand());
         add(new StepNextCommand());
         add(new StepNextiCommand());

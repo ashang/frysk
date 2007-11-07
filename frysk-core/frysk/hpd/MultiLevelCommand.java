@@ -39,6 +39,7 @@
 
 package frysk.hpd;
 
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Iterator;
@@ -55,6 +56,7 @@ public abstract class MultiLevelCommand extends Command {
 		      String full) {
 	super(name, description, syntax, full);
     }
+
     /**
      * Add the specified command.
      */
@@ -63,43 +65,58 @@ public abstract class MultiLevelCommand extends Command {
 	return this;
     }
 
-    private void help(CLI cli) {
-	for (Iterator i = subCommands.values().iterator(); i.hasNext(); ) {
-	    Command c = (Command)(i.next());
-	    cli.outWriter.print(c.getName());
-	    cli.outWriter.print(": ");
-	    cli.outWriter.print(c.getHelp().getDescription());
+    private Command lookup(String subAction) {
+	// If there's an exact match return; even when the command is
+	// ambiguous (e.x. "step" vs "step" "stepi").
+	Command command = (Command)subCommands.get(subAction);
+	if (command != null)
+	    return command;
+	// Look for something starting, but if multiple matches bail.
+	Map.Entry subEntry = null;
+	for (Iterator i = subCommands.entrySet().iterator(); i.hasNext(); ) {
+	    Map.Entry entry = (Map.Entry)(i.next());
+	    String key = (String)entry.getKey();
+	    if (key.startsWith(subAction)) {
+		if (subEntry == null) {
+		    subEntry = entry;
+		} else {
+		    throw new InvalidCommandException("Ambigious command: "
+						      + subAction);
+		}
+	    }
+	}
+	if (subEntry == null)
+	    throw new InvalidCommandException("Unknown command: " + subAction);
+	return (Command)subEntry.getValue();
+    }
+
+    /**
+     * Pass the help request down to the next level (if there is one)
+     * or just print the list of commands at this level.
+     */
+    void help(CLI cli, Input input) {
+	if (input.size() == 0) {
+	    for (Iterator i = subCommands.entrySet().iterator();
+		 i.hasNext(); ) {
+		Map.Entry entry = (Map.Entry)(i.next());
+		String name = (String)entry.getKey();
+		Command command = (Command)entry.getValue();
+		cli.outWriter.print(name);
+		cli.outWriter.print(" - ");
+		cli.outWriter.println(command.description());
+	    }
+	} else {
+	    lookup(input.parameter(0)).help(cli, input.accept());
 	}
     }
 
     public void interpret(CLI cli, Input input) {
 	String subAction = input.parameter(0);
 	if (subAction == null) {
-	    help(cli);
+	    help(cli, input);
 	    return;
 	}
-	Command subCommand = (Command)(subCommands.get(subAction));
-	if (subCommand == null) {
-	    String subName = null;
-	    for (Iterator i = subCommands.keySet().iterator(); i.hasNext(); ) {
-		String key = (String)(i.next());
-		if (key.startsWith(subAction)) {
-		    if (subName == null) {
-			subName = key;
-		    } else {
-			throw new InvalidCommandException("Ambigious command: "
-							  + subAction);
-		    }
-		}
-	    }
-	    if (subCommand == null) {
-		throw new InvalidCommandException("Unknown command: "
-						  + subAction);
-	    }
-	    // This must work!
-	    subCommand = (Command)(subCommands.get(subName));
-	}
-	subCommand.interpret(cli, input.accept());
+	lookup(subAction).interpret(cli, input.accept());
     }
 
     int complete(CLI cli, Input input, int cursor, List candidates) {

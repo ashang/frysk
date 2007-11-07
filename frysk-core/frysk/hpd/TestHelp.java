@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007 Red Hat Inc.
+// Copyright 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,34 +39,37 @@
 
 package frysk.hpd;
 
-import java.util.Iterator;
+/**
+ * Test the help command, and -help option.
+ */
 
-class HelpCommand extends Command {
-    HelpCommand() {
-	super("help", "Display this help message.", "help [command]",
-	      "Display help (possibly for a command.)");
+public class TestHelp
+    extends TestLib
+{
+    public void testHelp() {
+	e = new HpdTestbed();
+	e.send("help\n");
+	e.expect("actionpoints - ");
+	e.expect("core - ");
+	e.expect("finish - ");
+	e.expect("list - ");
+	e.expect("peek - ");
+	e.expect("regs - ");
+	e.expect("step - ");
+	e.expect("up - ");
+	e.expectPrompt("whichsets.*");
     }
 
-    public void interpret(CLI cli, Input cmd) {
-	String output = "";
-	String temp = "";
-	if (cmd.size() == 0) {
-	    for (Iterator iter = cli.userhelp.getCmdList().iterator(); iter
-		    .hasNext();) {
-		temp = (String) iter.next();
-		output += temp + " - " + cli.userhelp.getCmdDescription(temp)
-			+ "\n";
-	    }
-	} else {
-	    for (Iterator iter = cli.userhelp.getCmdList().iterator(); iter
-		    .hasNext();) {
-		temp = (String) iter.next();
-		if (temp.compareTo(cmd.parameter(0)) == 0) {
-		    output += cli.userhelp.getCmdSyntax(temp) + "\n";
-		    output += cli.userhelp.getCmdFullDescr(temp);
-		}
-	    }
-	}
-	cli.addMessage(output, Message.TYPE_NORMAL);
+    public void testHelpCompletion() {
+	e = new HpdTestbed();
+	e.send("help u\t");
+	e.expect("unalias\r\nundefset\r\nunset\r\nup\r\n"
+		 + prompt + "help u");
+    }
+
+    public void testHelpHelp() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("help help",
+				  "Display help.*");
     }
 }

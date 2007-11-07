@@ -1,3 +1,15 @@
+2007-11-07  Andrew Cagney  <cagney@redhat.com>
+
+	* CLI.java (CLI): Do not add HelpCommand using addHandler.
+	* MultiLevelCommand.java (lookup(String)): New.
+	(help(CLI,Input)): New.
+	(interpret(CLI,Input)): Use lookup(String).
+	* TopLevelCommand.java (Help): New.
+	(TopLevelCommand(DbgVariables)): Use Help to implement "help".
+	* Command.java (help(CLI,Input)): New.
+	* TestHelp.java: New file.
+	* HelpCommand.java: Delete.
+
 2007-11-07  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* CoreCommand.java (interpret): Check for runtime exceptions

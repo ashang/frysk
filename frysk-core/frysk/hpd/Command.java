@@ -77,4 +77,23 @@ public abstract class Command {
     int complete(CLI cli, Input buffer, int cursor, List candidates) {
 	return -1;
     }
+
+    /**
+     * Print a full "help" message (syntax and then details) for this
+     * command.
+     */
+    void help(CLI cli, Input buffer) {
+	cli.outWriter.print("Usage: ");
+	cli.outWriter.print(help.getSyntax());
+	cli.outWriter.println();
+	cli.outWriter.print(help.getFull());
+	cli.outWriter.println();
+    }
+
+    /**
+     * Return a brief (one line) description of the command.
+     */
+    String description() {
+	return help.getDescription();
+    }
 }

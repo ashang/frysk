@@ -248,7 +248,6 @@ public class CLI {
         addHandler(new FocusCommand());
         addHandler(new GoCommand());
         addHandler(new HaltCommand());
-        addHandler(new HelpCommand());
         addHandler(new ListCommand());
         addHandler(new StepNextCommand());
         addHandler(new StepNextiCommand());
