@@ -1,3 +1,37 @@
+2007-11-07  Teresa Thomas  <tthomas@redhat.com>
+
+	* FloatingPointUnit.java (multiply): New.
+	(divide): New.
+	(mod): New.		
+	* IntegerUnit.java (multiply): New.
+	(divide): New.
+	(mod): New.	
+	* ArithmeticUnit.java (divide): New.
+	(multiply): New.
+	(timesEqual): New.
+	(divideEqual): New.	
+	(mod): New.	
+	(modEqual): New..		
+	* ArithmeticType.java (multiply): Delete.
+	(timesEqual): Delete.
+	(divide): Delete.
+	(divideEqual): Delete.
+	(mod): Delete
+	(modEqual): Delete.
+	* TypeDecorator.java (multiply): Delete.
+	(timesEqual): Delete.
+	(divide): Delete.
+	(divideEqual): Delete.
+	(mod): Delete.
+	(modEqual): Delete.	
+	* Type.java (multiply): Delete.
+	(timesEqual): Delete.
+	(divide): Delete.	
+	(divideEqual): Delete.	
+	(mod): Delete.	
+	(modEqual): Delete.	
+	* TestValue.java: Updated.
+
 2007-11-06  Teresa Thomas  <tthomas@redhat.com>
 
 	* InvalidOperatorException.java 

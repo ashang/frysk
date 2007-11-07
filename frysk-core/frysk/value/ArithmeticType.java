@@ -119,36 +119,6 @@ public abstract class ArithmeticType
 	}
     }
 
-    public Value multiply(Value var1, Value var2) {
-	ArithmeticType type = returnType(var1, var2);
-	if (type instanceof IntegerType)
-	    return type.createValue(var1.asLong() * var2.asLong());
-	else if (type instanceof FloatingPointType)
-	    return type.createValue(var1.doubleValue() * var2.doubleValue());
-	else
-	    throw new RuntimeException("type conversion botch");
-    }
-
-    public Value divide(Value var1, Value var2) {
-	ArithmeticType type = returnType(var1, var2);
-	if (type instanceof IntegerType)
-	    return type.createValue(var1.asLong() / var2.asLong());
-	else if (type instanceof FloatingPointType)
-	    return type.createValue(var1.doubleValue() / var2.doubleValue());
-	else
-	    throw new RuntimeException("type conversion botch");
-    }
-
-    public Value mod(Value var1, Value var2) {
-	ArithmeticType type = returnType(var1, var2);
-	if (type instanceof IntegerType)
-	    return type.createValue(var1.asLong() % var2.asLong());
-	else if (type instanceof FloatingPointType)
-	    return type.createValue(var1.doubleValue() % var2.doubleValue());
-	else
-	    throw new RuntimeException("type conversion botch");
-    }
-
     public Value shiftLeft(Value var1, Value var2) {
 	ArithmeticType type = returnType(var1, var2);
 	if (type instanceof IntegerType)
@@ -285,18 +255,6 @@ public abstract class ArithmeticType
 
     public Value assign(Value var1, Value var2) {
 	return var1.assign(var2);
-    }
-
-    public Value timesEqual(Value var1, Value var2) {
-	return var1.assign(multiply(var1, var2));
-    }
-
-    public Value divideEqual(Value var1, Value var2) {
-	return var1.assign(divide(var1, var2));
-    }
-
-    public Value modEqual(Value var1, Value var2) {
-	return var1.assign(mod(var1, var2));
     }
 
     public Value shiftLeftEqual(Value var1, Value var2) {

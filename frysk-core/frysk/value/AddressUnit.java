@@ -41,7 +41,7 @@ package frysk.value;
 
 import inua.eio.ByteOrder;
 /**
- * Arithmetic Operation handling for pointers and addresses.
+ * Operation handling for pointers and addresses.
  */
 public class AddressUnit
 extends ArithmeticUnit
@@ -64,6 +64,8 @@ extends ArithmeticUnit
             v2.getType() instanceof ArrayType )
 	    return addArray(v1, v2);
 	
+	// Commutative operation, so identify pointer 
+	// and integer value.
         PointerType ptrType;
         Value ptrValue;
         Value intValue;

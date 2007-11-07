@@ -40,7 +40,8 @@
 package frysk.value;
 
 /**
- * Arithmetic Operation handling for floating points.
+ * Arithmetic and logical operation handling
+ * for floating points.
  */
 public class FloatingPointUnit
      extends ArithmeticUnit
@@ -63,4 +64,19 @@ public class FloatingPointUnit
 	return retType.createValue
 	               (v1.doubleValue() - v2.doubleValue());
     }  
+    
+    public Value multiply (Value v1, Value v2) {
+	return retType.createValue
+	               (v1.doubleValue() * v2.doubleValue());
+    }
+
+    public Value divide (Value v1, Value v2) {
+	return retType.createValue
+	               (v1.doubleValue() / v2.doubleValue());
+    }	    
+    
+    public Value mod (Value v1, Value v2) {
+	return retType.createValue
+	               (v1.doubleValue() % v2.doubleValue());
+    }	      
 }    

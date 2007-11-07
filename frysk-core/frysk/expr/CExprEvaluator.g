@@ -137,38 +137,64 @@ identifier returns [String idSpelling=null]
 expr returns [Value returnVar=null] 
 { Value v1, v2, log_expr; String s1; }
     :   #(PLUS  v1=expr v2=expr)  {	
-            returnVar = v1.getType().getALU(v2.getType(), exprSymTab.getWordSize())
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
                         .add(v1, v2);  
         }
     |   #(PLUSEQUAL v1=expr v2=expr)  {
-            returnVar = v1.getType().getALU(v2.getType(), exprSymTab.getWordSize())
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
                         .plusEqual(v1, v2);
         }        
     |   ( #(MINUS expr expr) )=> #(MINUS v1=expr v2=expr) {
-            returnVar = v1.getType().getALU(v2.getType(), exprSymTab.getWordSize())
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
                         .subtract(v1, v2);  
         }
     |   #(MINUSEQUAL v1=expr v2=expr)  {
-            returnVar = v1.getType().getALU(v2.getType(), exprSymTab.getWordSize())
+            returnVar = v1.getType().getALU(v2.getType(),
+                        exprSymTab.getWordSize())
                         .minusEqual(v1, v2);
         }        
     |   #(MINUS v1=expr ) {
             returnVar = intType.createValue(0);
-            returnVar = returnVar.getType().getALU(v1.getType(), exprSymTab.getWordSize())
+            returnVar = returnVar.getType().getALU(v1.getType(), 
+                        exprSymTab.getWordSize())
                         .subtract(returnVar, v1); 
         }
     |   ( #(STAR expr expr) )=> #(STAR  v1=expr v2=expr) {
-            returnVar = v1.getType().multiply(v1, v2); 
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .multiply(v1, v2); 
         }
+    |   #(TIMESEQUAL v1=expr v2=expr)  {
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .timesEqual(v1, v2);
+        }    
+    |   #(DIVIDE  v1=expr v2=expr) {
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .divide(v1, v2); 
+        } 
+    |   #(DIVIDEEQUAL v1=expr v2=expr)  {
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .divideEqual(v1, v2);
+        } 
+    |   #(MOD  v1=expr v2=expr) {
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .mod(v1, v2);  
+        }   
+    |   #(MODEQUAL v1=expr v2=expr)  {
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .modEqual(v1, v2);
+        }                               
     |   #(MEMORY v1=expr ) {
             returnVar = v1.getType().dereference(v1, exprSymTab.taskMemory());
         } 
-    |   #(DIVIDE  v1=expr v2=expr) {
-            returnVar = v1.getType().divide(v1, v2); 
-        }
-    |   #(MOD  v1=expr v2=expr) {
-            returnVar = v1.getType().mod(v1, v2);  
-        }
     |   #(SHIFTLEFT  v1=expr v2=expr) {
             returnVar = v1.getType().shiftLeft(v1, v2);  
         }
@@ -262,18 +288,6 @@ expr returns [Value returnVar=null]
         }
     |   #(ASSIGNEQUAL v1=expr v2=expr)  {
             v1.assign(v2);
-            returnVar = v1;
-        }
-    |   #(TIMESEQUAL v1=expr v2=expr)  {
-            v1.getType().timesEqual(v1, v2);
-            returnVar = v1;
-        }
-    |   #(DIVIDEEQUAL v1=expr v2=expr)  {
-            v1.getType().divideEqual(v1, v2);
-            returnVar = v1;
-        }
-    |   #(MODEQUAL v1=expr v2=expr)  {
-            v1.getType().modEqual(v1, v2);
             returnVar = v1;
         }
     |   #(SHIFTLEFTEQUAL v1=expr v2=expr)  {

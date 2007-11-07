@@ -143,16 +143,7 @@ public abstract class Type {
     public ArithmeticUnit getALU(ArrayType type, int wordSize) {
 	throw new RuntimeException("Invalid Arithmetic Unit");
     }  
-    
-    public Value multiply (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "*");
-    }
-    public Value divide (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "/");
-    }
-    public Value mod (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "%");
-    }
+   
     public Value shiftLeft (Value var1, Value var2) {
         throw new InvalidOperatorException(this, "<<");
     }
@@ -198,15 +189,6 @@ public abstract class Type {
     public Value logicalNegation(Value var1) {
         throw new InvalidOperatorException(this, "!");
     } 
-    public Value timesEqual (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "*=");
-    }
-    public Value divideEqual (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "/=");
-    }
-    public Value modEqual (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "%=");
-    }
     public Value shiftLeftEqual (Value var1, Value var2) {
         throw new InvalidOperatorException(this, "<<=");
     }

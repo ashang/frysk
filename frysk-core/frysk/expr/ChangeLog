@@ -1,5 +1,14 @@
 2007-11-06  Teresa Thomas  <tthomas@redhat.com>
 	
+	* CExprEvaluator.g (STAR): Use Arithmetic Unit.
+	(TIMESEQUAL): Ditto.
+	(DIVIDE): Ditto.
+	(DIVIDEEQUAL): Ditto.
+	(MOD): Ditto.
+	(MODEQUAL): Ditto.
+	
+2007-11-06  Teresa Thomas  <tthomas@redhat.com>
+	
 	* CExprEvaluator.g (MINUS): Use Arithmetic Unit.
 	(MINUSEQUAL): Ditto.
 	

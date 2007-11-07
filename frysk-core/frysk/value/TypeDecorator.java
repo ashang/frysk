@@ -89,15 +89,7 @@ abstract class TypeDecorator extends Type {
 	      decorated.toPrint(writer);
 	  }
 	}
-	public Value multiply(Value var1, Value var2) {
-		return decorated.multiply(var1, var2);
-	}
-	public Value divide(Value var1, Value var2) {
-		return decorated.divide(var1, var2);
-	}
-	public Value mod (Value var1, Value var2) {
-		return decorated.mod(var1, var2);
-	}
+	
 	public Value shiftLeft(Value var1, Value var2) {
 		return decorated.shiftLeft(var1, var2);
 	}
@@ -143,15 +135,6 @@ abstract class TypeDecorator extends Type {
 	public Value logicalNegation(Value var1) {
 		return decorated.logicalNegation(var1);
 	} 
-	public Value timesEqual(Value var1, Value var2) {
-		return decorated.timesEqual(var1, var2);
-	}
-	public Value divideEqual(Value var1, Value var2) {
-		return decorated.divideEqual(var1, var2);
-	}
-	public Value modEqual(Value var1, Value var2) {
-		return decorated.modEqual(var1, var2);
-	}
 	public Value shiftLeftEqual(Value var1, Value var2) {
 		return decorated.shiftLeftEqual(var1, var2);
 	}

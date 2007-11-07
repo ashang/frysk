@@ -40,15 +40,37 @@
 package frysk.value;
 
 /**
- * Arithmetic Operation handling for different types.
+ * Arithmetic and Logical Operation handling
+ * for different types.
  */
 public abstract class ArithmeticUnit 
 {
     protected ArithmeticType retType;
     
-    public abstract Value add(Value v1, Value v2);
+    public Value add(Value v1, Value v2) {
+	throw new InvalidOperatorException
+	          (v1.getType(), v2.getType(), "+");
+    }
     
-    public abstract Value subtract(Value v1, Value v2);
+    public Value subtract(Value v1, Value v2) {
+	throw new InvalidOperatorException
+	          (v1.getType(), v2.getType(), "-");
+    }
+    
+    public Value multiply (Value v1, Value v2) {
+        throw new InvalidOperatorException
+                  (v1.getType(), v2.getType(), "*");
+    }
+    
+    public Value divide(Value v1, Value v2) {
+	throw new InvalidOperatorException
+	          (v1.getType(), v2.getType(), "/");
+    }
+    
+    public Value mod(Value v1, Value v2) {
+	throw new InvalidOperatorException
+	          (v1.getType(), v2.getType(), "%");
+    }    
     
     public Value plusEqual(Value v1, Value v2) {
 	return v1.assign(add(v1, v2));
@@ -56,5 +78,17 @@ public abstract class ArithmeticUnit
     
     public Value minusEqual(Value v1, Value v2) {
 	return v1.assign(subtract(v1, v2));
+    }
+    
+    public Value timesEqual(Value v1, Value v2) {
+	return v1.assign(multiply(v1, v2));
+    }
+    
+    public Value divideEqual (Value v1, Value v2) {
+	return v1.assign(divide(v1, v2));
+    }
+    
+    public Value modEqual(Value v1, Value v2) {
+	return v1.assign(mod(v1, v2));
     }
 }

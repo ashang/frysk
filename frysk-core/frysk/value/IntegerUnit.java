@@ -40,7 +40,8 @@
 package frysk.value;
 
 /**
- * Arithmetic Operation handling for integers.
+ * Arithmetic and logical Operation handling 
+ * for integers.
  */
 public class IntegerUnit
      extends ArithmeticUnit
@@ -59,5 +60,20 @@ public class IntegerUnit
     public Value subtract(Value v1, Value v2) {
 	return retType.createValue
 	               (v1.asBigInteger().subtract(v2.asBigInteger()));
+    }
+    
+    public Value multiply (Value v1, Value v2) {
+	return retType.createValue
+	               (v1.asBigInteger().multiply(v2.asBigInteger()));
+    }
+    
+    public Value divide (Value v1, Value v2) {
+	return retType.createValue
+	               (v1.asBigInteger().divide(v2.asBigInteger()));
+    }
+    
+    public Value mod(Value v1, Value v2) {
+	return retType.createValue
+                       (v1.asBigInteger().mod(v2.asBigInteger()));
     }
 }
