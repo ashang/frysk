@@ -74,7 +74,8 @@ public class TopLevelCommand extends MultiLevelCommand {
 	      "<command> <parameter> ...",
 	      "a top level command");
         add(new ActionsCommand());
-        add(new AliasCommand());
+        add(new AliasCommands.Alias());
+        add(new AliasCommands.Unalias());
         add(new AssignCommand());
         add(new AttachCommand());
         add(new BreakpointCommand());
@@ -101,7 +102,6 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(new SetCommand(dbgvars));
         add(new StepCommand());
         add(new StepInstructionCommand());
-        add(new UnaliasCommand());
         add(new UndefsetCommand());
         add(new UnsetCommand(dbgvars));
         add(new FrameCommands("up"));

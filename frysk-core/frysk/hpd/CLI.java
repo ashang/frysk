@@ -233,7 +233,8 @@ public class CLI {
         //otherwise build system will discard those classes. Therefore
         //CLI cannot be made to be a singleton.
         addHandler(new ActionsCommand());
-        addHandler(new AliasCommand());
+        addHandler(new AliasCommands.Alias());
+        addHandler(new AliasCommands.Unalias());
         addHandler(new AssignCommand());
         addHandler(new AttachCommand());
         addHandler(new BreakpointCommand());
@@ -259,7 +260,6 @@ public class CLI {
         addHandler(new SetCommand(dbgvars));
         addHandler(new StepCommand());
         addHandler(new StepInstructionCommand());
-        addHandler(new UnaliasCommand());
         addHandler(new UndefsetCommand());
         addHandler(new UnsetCommand(dbgvars));
         addHandler(new FrameCommands("up"));

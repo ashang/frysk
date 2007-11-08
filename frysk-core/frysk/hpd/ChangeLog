@@ -1,3 +1,13 @@
+2007-11-08  Andrew Cagney  <cagney@redhat.com>
+
+	* AliasCommands.java: New.
+	* AliasCommand.java: Delete.
+	* UnaliasCommand.java: Delete.
+	* ParameterizedCommand.java: Fix off-by-one error.
+	* AliasCommand.java: Extend ParameterizedCommand.
+	* CLI.java: Update.
+	* TopLevelCommand.java: Update.
+
 2007-11-08  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* CoreCommand.java (interpret): Remove try{} for host building.
