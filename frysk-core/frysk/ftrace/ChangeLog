@@ -1,3 +1,13 @@
+2007-11-08  Petr Machata  <pmachata@redhat.com>
+
+	* MappingController.java: New file.
+	* MappingGuard.java: New file.
+	* Ltrace.java: No longer trace syscalls by default.
+	(LtraceTaskObserver.updateSyscallLeave): Move to MappingGuard.
+	* ObjectFile.java: Now loads program interpreter.
+	(setInterp, getInterp): New methods.
+	(lookupTracePoint): New method.
+
 2007-11-02  Petr Machata  <pmachata@redhat.com>
 
 	* TestLtrace.java (testArgumentsCorrect1): New test.

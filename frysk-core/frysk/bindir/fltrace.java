@@ -325,6 +325,11 @@ public class fltrace
 	return new String(fill);
       }
 
+      private String pidInfo(Task task)
+      {
+	  return "[" + task.getProc().getPid() + "." + task.getTid() + "]";
+      }
+
       private void eventEntry(Task task, Object item, String eventType,
 			      String eventName, Object[] args)
       {
@@ -335,7 +340,7 @@ public class fltrace
         if (lineOpened())
 	  System.err.println('\\');
 
-    	System.err.print("[" + task.getTaskId().intValue() + "] "
+    	System.err.print(pidInfo(task) + " "
 			 + spaces + eventType + " ");
 	System.err.print(eventName + "(");
 	for (int i = 0; i < args.length; ++i) {
@@ -365,8 +370,7 @@ public class fltrace
             if (lineOpened())
 	      System.err.println();
 	    String spaces = repeat(' ', level);
-	    System.err.print("[" + task.getTaskId().intValue() + "] "
-			     + spaces + eventType + " " + eventName);
+	    System.err.print(pidInfo(task) + " " + spaces + eventType + " " + eventName);
 	  }
 
 	System.err.println(" = " + retVal);
@@ -376,12 +380,11 @@ public class fltrace
 
       private void eventSingle(Task task, String eventName)
       {
-	int pid = task.getTid();
 	int level = this.getLevel(task);
 
         if (lineOpened())
 	  System.err.println("\\");
-	System.err.println("[" + pid + "] " + repeat(' ', level) + eventName);
+	System.err.println(pidInfo(task) + " " + repeat(' ', level) + eventName);
 
         updateOpenLine(null, null);
       }
@@ -455,8 +458,7 @@ public class fltrace
       {
 	if (lineOpened())
 	  System.err.println('\\');
-	int pid = task.getTid();
-	System.err.print("[" + pid + "] ");
+	System.err.print(pidInfo(task) + " ");
 	if (signal)
 	  System.err.println("killed by " + Sig.toPrintString(value));
 	else

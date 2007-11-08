@@ -1,3 +1,7 @@
+2007-11-08  Petr Machata  <pmachata@redhat.com>
+
+	* fltrace.java (MyLtraceObserver.pidInfo): new method
+
 2007-11-08  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestFhd.java (testHpdCore): Add unresolved(5295).

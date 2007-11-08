@@ -73,10 +73,11 @@ public class Ltrace
   // True if we're tracing signals as well.
   boolean traceSignals = false;
 
-  // True if we're tracing syscalls.  Currently true by default,
-  // because we need to trace syscalls for correct mmap/munmap
-  // handling.
-  boolean traceSyscalls = true;
+  // True if we're tracing syscalls.
+  // TODO: this shouldn't be part of Ltrace class at all.  Make it so
+  // that Ltrace observes Tasks, and plug Ltrace into Ftrace's
+  // framework.
+  boolean traceSyscalls = false;
 
   // Task counter.
   int numTasks = 0;
@@ -313,7 +314,8 @@ public class Ltrace
 	       TaskObserver.Syscall,
 	       TaskObserver.Signaled,
 	       TaskObserver.Terminated,
-	       TaskObserver.Terminating
+	       TaskObserver.Terminating,
+	       MappingController
   {
     /** Remembers which files are currently mapped in which task. */
     private HashMap mapsForTask = new HashMap();
@@ -326,6 +328,9 @@ public class Ltrace
 	which breakpoint.
         Map&lt;task, Map&lt;address, List&lt;TracePoint&gt;&gt;&gt; */
     private HashMap retBreakpointsForTask = new HashMap();
+
+    /** Keeps track of map/unmap events. */
+    private MappingGuard mappingGuard = new MappingGuard(this);
 
     // ---------------------
     // --- ltrace driver ---
@@ -479,21 +484,6 @@ public class Ltrace
 	    }
 	}
 
-      // Unfortunately, I know of no reasonable, (as in platform
-      // independent) way to find whether a syscall is mmap,
-      // munmap, or anything else.  Hence this hack, which is
-      // probably still much better than rescanning the map on
-      // each syscall.
-      String name = syscall.getName();
-
-      if (name.indexOf("mmap") != -1
-	  || name.indexOf("munmap") != -1)
-	{
-	  this.checkMapUnmapUpdates(task, false);
-	  task.requestUnblock(this);
-	  return Action.BLOCK;
-	}
-
       return Action.CONTINUE;
     }
 
@@ -637,15 +627,14 @@ public class Ltrace
       long pc = task.getIsa().pc(task);
       logger.log(Level.FINE,
 		 "new task attached at 0x" + Long.toHexString(pc)
-		 + ", pid=" + task.getTaskId().intValue(), this);
+		 + ", pid=" + task.getTaskId().intValue());
 
       this.mapsForTask.put(task, java.util.Collections.EMPTY_SET);
-
-      // Can't use the EMPTY_MAPs here, cause these get modified directly.
       this.breakpointsForTask.put(task, new HashMap());
       this.retBreakpointsForTask.put(task, new HashMap());
 
       this.checkMapUnmapUpdates(task, false);
+      mappingGuard.attachTo(task);
 
       task.requestUnblock(this);
       return Action.BLOCK;
@@ -710,6 +699,12 @@ public class Ltrace
     // ----------------------------
     // --- mmap/munmap handling ---
     // ----------------------------
+
+    /** Implementation of MappingController interface... */
+    public void checkMapUnmapUpdates(Task task)
+    {
+	checkMapUnmapUpdates(task, false);
+    }
 
     private void checkMapUnmapUpdates(Task task, boolean terminating)
     {

@@ -71,6 +71,7 @@ public class ObjectFile
 {
   private File filename;
   private String soname = null;
+  private String interp = null;
   private long baseAddress = 0;
   private long entryPoint = 0;
   private static HashMap cachedFiles = new HashMap();
@@ -181,20 +182,18 @@ public class ObjectFile
       throws lib.dwfl.ElfException
     {
       ArrayList tracePoints = (ArrayList)this.tracePointMap.get(origin);
-      if (tracePoints != null)
-	{
+      if (tracePoints != null) {
 	  logger.log(Level.FINE, "" + tracePoints.size() + " tracepoints for origin " + origin + " retrieved from cache.");
 	  return tracePoints;
-	}
+      }
 
       logger.log(Level.FINE, "Loading tracepoints for origin " + origin + ".");
       if ((origin == TracePointOrigin.PLT
 	   || origin == TracePointOrigin.DYNAMIC)
 	  && this.haveDynamic)
-	{
+      {
 	  // Initialize dynamic symbol list for PLT if necessary...
-	  if (this.dynamicSymbolList == null)
-	    {
+	  if (this.dynamicSymbolList == null) {
 	      long count = ElfSymbol.symbolsCount(ObjectFile.this.dynamicSymtab);
 	      assertFitsToInt(count, "Symbol count");
 	      this.dynamicSymbolList = new Symbol[(int)count];
@@ -202,10 +201,9 @@ public class ObjectFile
 		= new ElfSymbol.Loader(ObjectFile.this.dynamicSymtab, ObjectFile.this.dynamicVersym,
 				       ObjectFile.this.dynamicVerdef, ObjectFile.this.dynamicVerdefCount,
 				       ObjectFile.this.dynamicVerneed, ObjectFile.this.dynamicVerneedCount);
-	    }
+	  }
 
-	  if (origin == TracePointOrigin.DYNAMIC)
-	    {
+	  if (origin == TracePointOrigin.DYNAMIC) {
 	      // Load dynamic symtab and PLT entries.
 	      logger.log(Level.FINER, "Loading dynamic symtab.");
 	      this.origin = TracePointOrigin.DYNAMIC;
@@ -213,10 +211,9 @@ public class ObjectFile
 	      this.tracePointMap.put(this.origin, this.tracePoints);
 
 	      this.dynamicLoader.loadAll(this);
-	    }
+	  }
 
-	  if (origin == TracePointOrigin.PLT)
-	    {
+	  if (origin == TracePointOrigin.PLT) {
 	      int pltCount = ObjectFile.this.pltRelocs.length;
 	      logger.log(Level.FINER, "Loading " + pltCount + " PLT entries.");
 
@@ -234,22 +231,20 @@ public class ObjectFile
 		/* XXX HACK: 386/x64 specific.  In general we want
 		 * platform-independent way of asking whether it's
 		 * JMP_SLOT relocation. */
-		if (ObjectFile.this.pltRelocs[i].type == 7)
-		  {
+		if (ObjectFile.this.pltRelocs[i].type == 7) {
 		    long pltEntryAddr = ObjectFile.this.pltAddr + pltEntrySize * (i + 1);
 		    long symbolIndex = ObjectFile.this.pltRelocs[i].symbolIndex;
 
 		    assertFitsToInt(symbolIndex, "Symbol associated with PLT entry");
 		    Symbol symbol = this.dynamicSymbolList[(int)symbolIndex];
-		    if (symbol == null)
-		      {
+		    if (symbol == null) {
 			logger.log(Level.FINEST,
 				   "Lazy loading symbol #" + symbolIndex);
 			this.origin = TracePointOrigin.DYNAMIC;
 			this.tracePoints = tracePointsDynamic;
 			this.dynamicLoader.load(symbolIndex, this);
 			symbol = this.dynamicSymbolList[(int)symbolIndex];
-		      }
+		    }
 		    if (symbol == null)
 		      throw new AssertionError("Dynamic symbol still not initialized.");
 
@@ -259,12 +254,11 @@ public class ObjectFile
 		    this.origin = TracePointOrigin.PLT;
 		    this.tracePoints = tracePointsPlt;
 		    this.addNewTracepoint(pltEntryAddr, symbol);
-		  }
-	    }
-	}
+		}
+	  }
+      }
       else if (origin == TracePointOrigin.SYMTAB
-	       && ObjectFile.this.staticSymtab != null)
-	{
+	       && ObjectFile.this.staticSymtab != null)	{
 	  // Load static symtab.
 	  logger.log(Level.FINER, "Loading static symtab.");
 	  this.origin = TracePointOrigin.SYMTAB;
@@ -274,7 +268,9 @@ public class ObjectFile
 	  ElfSymbol.Loader loader;
 	  loader = new ElfSymbol.Loader(ObjectFile.this.staticSymtab);
 	  loader.loadAll(this);
-	}
+      }
+      else
+	  this.tracePoints = new ArrayList(); //java.util.Collections.EMPTY_LIST;
 
       return this.tracePoints;
     }
@@ -292,41 +288,42 @@ public class ObjectFile
     boolean havePlt = false;
     boolean haveRelPlt = false;
     long offDynamic = 0;
-    for (int i = 0; i < eh.phnum; ++i)
-      {
+    for (int i = 0; i < eh.phnum; ++i) {
 	ElfPHeader ph = elfFile.getPHeader(i);
-	if (ph.type == ElfPHeader.PTYPE_DYNAMIC)
-	  {
+	if (ph.type == ElfPHeader.PTYPE_DYNAMIC) {
 	    builder.haveDynamic = true;
 	    offDynamic = ph.offset;
 	    logger.log(Level.FINER, "Found DYNAMIC segment.");
-	  }
+	}
 	else if (ph.type == ElfPHeader.PTYPE_LOAD
-		 && ph.offset == 0)
-	  {
+		 && ph.offset == 0) {
 	    haveLoadable = true;
 	    this.baseAddress = ph.vaddr;
 	    logger.log(Level.FINER,
 		       "Found LOADABLE segment, base address = 0x"
 		       + Long.toHexString(this.baseAddress));
-	  }
-      }
+	}
+	else if (ph.type == ElfPHeader.PTYPE_INTERP) {
+	    ElfData interpData = elfFile.getRawData(ph.offset, ph.filesz - 1); // -1 for trailing zero
+	    String interp = new String(interpData.getBytes());
+	    this.setInterp(interp);
+	    logger.log(Level.FINEST, "Found INTERP `" + interp + "'.");
+	}
+    }
 
-    if (!haveLoadable)
-      {
+    if (!haveLoadable) {
 	logger.log(Level.FINE, "Failed, didn't find any loadable segments.");
 	throw new lib.dwfl.ElfFileException("Failed, didn't find any loadable segments.");
-      }
+    }
 
     if (eh.type == ElfEHeader.PHEADER_ET_EXEC)
       logger.log(Level.FINER, "This file is EXECUTABLE.");
     else if (eh.type == ElfEHeader.PHEADER_ET_DYN)
       logger.log(Level.FINER, "This file is DSO or PIE EXECUTABLE.");
-    else
-      {
+    else {
 	logger.log(Level.FINE, "Failed, unsupported ELF file type.");
 	throw new lib.dwfl.ElfFileException("Failed, unsupported ELF file type.");
-      }
+    }
 
     boolean foundDynamic = false;
 
@@ -338,11 +335,9 @@ public class ObjectFile
     // Find & interpret DYNAMIC section.
     for (ElfSection section = elfFile.getSection(0);
 	 section != null;
-	 section = elfFile.getNextSection(section))
-      {
+	 section = elfFile.getNextSection(section)) {
 	ElfSectionHeader sheader = section.getSectionHeader();
-	if (builder.haveDynamic && sheader.offset == offDynamic)
-	  {
+	if (builder.haveDynamic && sheader.offset == offDynamic) {
 	    logger.log(Level.FINER, "Processing DYNAMIC section.");
 	    foundDynamic = true;
 	    ElfDynamic.loadFrom(section, new ElfDynamic.Builder() {
@@ -393,33 +388,30 @@ public class ObjectFile
 		    }
 		}
 	      });
-	  }
+	}
 	else if ((sheader.type == ElfSectionHeader.ELF_SHT_PROGBITS
 		  || sheader.type == ElfSectionHeader.ELF_SHT_NOBITS)
-		 && sheader.name.equals(".plt"))
-	  {
+		 && sheader.name.equals(".plt")) {
 	    logger.log(Level.FINER, "Found PLT section.");
 	    havePlt = true;
 	    this.pltAddr = sheader.addr;
 	    this.pltSize = sheader.size;
-	  }
+	}
 	else if ((sheader.type == ElfSectionHeader.ELF_SHT_REL
 		  && sheader.name.equals(".rel.plt"))
 		 || (sheader.type == ElfSectionHeader.ELF_SHT_RELA
-		     && sheader.name.equals(".rela.plt")))
-	  {
+		     && sheader.name.equals(".rela.plt"))) {
 	    logger.log(Level.FINER, "Found PLT relocation section.");
 	    haveRelPlt = true;
 	    this.pltRelocs = ElfRel.loadFrom(section);
-	  }
-	else if (sheader.type == ElfSectionHeader.ELF_SHT_SYMTAB)
-	  {
+	}
+	else if (sheader.type == ElfSectionHeader.ELF_SHT_SYMTAB) {
 	    if (this.staticSymtab != null)
 	      throw new lib.dwfl.ElfFileException("Strange: More than one static symbol tables.");
 	    logger.log(Level.FINER, "Found static symtab section `" + sheader.name + "'.");
 	    this.staticSymtab = section;
-	  }
-      }
+	}
+    }
 
     if (builder.haveDynamic)
       {
@@ -516,6 +508,19 @@ public class ObjectFile
     logger.log(Level.FINE, "Done processing tracepoints for origin " + origin + ".");
   }
 
+    public TracePoint lookupTracePoint(String name, TracePointOrigin origin)
+	throws lib.dwfl.ElfException
+    {
+	logger.log(Level.FINE, "Looking up tracepoint for `" + name + "' in " + origin + ".");
+	List tracePoints = builder.getTracePoints(origin);
+	for (Iterator it = tracePoints.iterator(); it.hasNext();) {
+	    TracePoint tp = (TracePoint)it.next();
+	    if (tp.symbol.name.equals(name))
+		return tp;
+	}
+	return null;
+    }
+
   public void eachTracePoint(TracePointIterator client)
     throws lib.dwfl.ElfException
   {
@@ -541,6 +546,16 @@ public class ObjectFile
       return this.soname;
     else
       return this.filename.getName();
+  }
+
+  protected void setInterp(String interp)
+  {
+    this.interp = interp;
+  }
+
+  public String getInterp()
+  {
+      return this.interp;
   }
 
   /**
