@@ -43,7 +43,6 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
 import frysk.proc.Task;
 import frysk.rt.DisplayManager;
 import frysk.rt.DisplayValueObserver;
@@ -58,7 +57,7 @@ import frysk.value.Value;
  * expression changes, the user will be notified.
  * 
  */
-public class DisplayCommand extends Command {
+public class DisplayCommand extends ParameterizedCommand {
 
     private List displays;
 
@@ -70,7 +69,7 @@ public class DisplayCommand extends Command {
     }
 
 
-    public void interpret(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd, Object options) {
 	final PrintWriter output = cli.getPrintWriter();
 
 	PTSet ptset = cli.getCommandPTSet(cmd);
@@ -143,5 +142,11 @@ public class DisplayCommand extends Command {
 			+ v.toPrint());
 	    output.flush();
 	}
+    }
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return CompletionFactory.completeExpression(cli, ptset, incomplete,
+						    base, completions);
     }
 }

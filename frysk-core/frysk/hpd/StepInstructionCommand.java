@@ -41,11 +41,11 @@ package frysk.hpd;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-
+import java.util.List;
 import frysk.proc.Task;
 import frysk.debuginfo.DebugInfoFrame;
 
-public class StepInstructionCommand extends Command {
+public class StepInstructionCommand extends ParameterizedCommand {
     private static final String full = "Step a process by an instruction. "
 	    + "The process must be attached to and blocked.";
 
@@ -53,13 +53,8 @@ public class StepInstructionCommand extends Command {
 	super("stepi", "Instruction step a process.", "stepi", full);
     }
 
-    public void interpret(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd, Object options) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
-	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
-	    cli.printUsage(cmd);
-	    return;
-	}
-
 	if (cli.steppingObserver != null) {
 	    LinkedList taskList = new LinkedList();
 	    Iterator taskIter = ptset.getTasks();
@@ -91,5 +86,10 @@ public class StepInstructionCommand extends Command {
 	} else
 	    cli.addMessage("Not attached to any process",
 		    Message.TYPE_ERROR);
+    }
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return -1;
     }
 }

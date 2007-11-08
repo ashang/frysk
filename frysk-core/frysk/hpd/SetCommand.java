@@ -39,7 +39,9 @@
 
 package frysk.hpd;
 
-class SetCommand extends Command {
+import java.util.List;
+
+class SetCommand extends ParameterizedCommand {
     private static final String full = "The set command supports the viewing of "
 	    + "debugger state variables and the\n"
 	    + "assignment of new values to them.  When no arguments are "
@@ -62,11 +64,7 @@ class SetCommand extends Command {
 	this.dbgvars = dbgvars;
     }
 
-    public void interpret(CLI cli, Input cmd) {
-	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
-	    cli.printUsage(cmd);
-	    return;
-	}
+    public void interpret(CLI cli, Input cmd, Object options) {
 	String temp;
 	if (cmd.size() == 3 && (cmd.parameter(1)).equals("=")) {
 	    temp = cmd.parameter(0);
@@ -93,5 +91,10 @@ class SetCommand extends Command {
 	} else {
 	    cli.printUsage(cmd);
 	}
+    }
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return -1;
     }
 }

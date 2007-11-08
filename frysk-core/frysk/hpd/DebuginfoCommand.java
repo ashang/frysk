@@ -42,8 +42,9 @@ package frysk.hpd;
 import java.util.Iterator;
 import frysk.proc.Task;
 import frysk.util.DebuginfoPaths;
+import java.util.List;
 
-class DebuginfoCommand extends Command {
+class DebuginfoCommand extends ParameterizedCommand {
 
     DebuginfoCommand() {
 	super("debuginfo",
@@ -52,12 +53,13 @@ class DebuginfoCommand extends Command {
 	      + "for a process and its shared modules.");
     }
 
-    public void interpret(CLI cli, Input cmd) {
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return -1;
+    }
+
+    public void interpret(CLI cli, Input cmd, Object options) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
-	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
-	    cli.printUsage(cmd);
-	    return;
-	}
 	Iterator taskIter = ptset.getTasks();
 	while (taskIter.hasNext()) {
 	    Task task = (Task) taskIter.next();

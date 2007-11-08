@@ -43,8 +43,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import frysk.proc.Task;
 import frysk.stepping.SteppingEngine;
+import java.util.List;
 
-class HaltCommand extends Command {
+class HaltCommand extends ParameterizedCommand {
 
     private static String full = "Stop a process which is already attached. "
 	    + "The halt command temporarily\n"
@@ -54,12 +55,8 @@ class HaltCommand extends Command {
 	super("halt", "Stop a process.", "halt", full);
     }
 
-    public void interpret(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd, Object options) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
-	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
-	    cli.printUsage(cmd);
-	    return;
-	}
 	SteppingEngine steppingEngine = cli.getSteppingEngine();
 	if (cli.steppingObserver != null) {
 	    Iterator taskIter = ptset.getTasks();
@@ -72,5 +69,10 @@ class HaltCommand extends Command {
 	    steppingEngine.stop(null, stopList);
 	} else
 	    cli.addMessage("Not attached to any process", Message.TYPE_ERROR);
+    }
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return -1;
     }
 }

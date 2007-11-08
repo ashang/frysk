@@ -41,11 +41,11 @@ package frysk.hpd;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-
+import java.util.List;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.proc.Task;
 
-public class StepFinishCommand extends Command {
+public class StepFinishCommand extends ParameterizedCommand {
 
     private static final String full = "The finish command defines a "
 	    + "'step-out' command, which \n"
@@ -57,12 +57,8 @@ public class StepFinishCommand extends Command {
 	super("finish", "Step out of function", "finish", full);
     }
 
-    public void interpret(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd, Object parameters) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
-	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
-	    cli.printUsage(cmd);
-	    return;
-	}
 	LinkedList taskList = new LinkedList();
 	Iterator taskIter = ptset.getTasks();
 	while (taskIter.hasNext()) {
@@ -97,4 +93,8 @@ public class StepFinishCommand extends Command {
 		    Message.TYPE_ERROR);
     }
 
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return -1;
+    }
 }

@@ -47,8 +47,9 @@ import frysk.proc.Proc;
 import frysk.sys.Signal;
 import frysk.sys.Sig;
 import frysk.util.CountDownLatch;
+import java.util.List;
 
-class QuitCommand extends Command {
+class QuitCommand extends ParameterizedCommand {
     // Do the killing in the event loop in order to not invalidate
     // operations that are already in flight in the event loop. This
     // avoids a race seen in testing where a "quit" command is sent as
@@ -94,7 +95,7 @@ class QuitCommand extends Command {
 	      "Terminate the debugging session.");
     }
 
-    public void interpret(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd, Object options) {
         CountDownLatch quitLatch = new CountDownLatch(1);
         new KillRequest(cli, quitLatch).request();
         try {
@@ -106,5 +107,10 @@ class QuitCommand extends Command {
 	DetachCommand detachCommand = new DetachCommand();
 	Input command = new Input("detach").accept();
 	detachCommand.interpret(cli, command);
+    }
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return -1;
     }
 }

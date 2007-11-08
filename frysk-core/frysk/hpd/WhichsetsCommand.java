@@ -41,11 +41,13 @@ package frysk.hpd;
 
 import java.util.Iterator;
 
+import java.util.List;
+
 /*
  * Set commands
  */
 
-class WhichsetsCommand extends Command {
+class WhichsetsCommand extends ParameterizedCommand {
 
     private static final String full = "The whichsets command displays sets to "
 	    + "which a particular thread(s)\n"
@@ -61,11 +63,7 @@ class WhichsetsCommand extends Command {
 	      "whichsets [p/t-set]", full);
     }
 
-    public void interpret(CLI cli, Input cmd) {
-	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
-	    cli.printUsage(cmd);
-	    return;
-	}
+    public void interpret(CLI cli, Input cmd, Object options) {
 	PTSet searchset = null;
 	PTSet tempset = null;
 	TaskData temptd = null;
@@ -99,5 +97,10 @@ class WhichsetsCommand extends Command {
 	} else {
 	    cli.printUsage(cmd);
 	}
+    }
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return -1;
     }
 }

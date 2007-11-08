@@ -42,8 +42,9 @@ package frysk.hpd;
 import java.util.Iterator;
 import frysk.proc.Task;
 import frysk.stepping.SteppingEngine;
+import java.util.List;
 
-class GoCommand extends Command {
+class GoCommand extends ParameterizedCommand {
     private static String full = "Continue running a process, returning "
 	    + "without blocking.  The go command\n"
 	    + "resumes execution of a collection of processes. The prompt will "
@@ -55,13 +56,8 @@ class GoCommand extends Command {
 	super("go", "Continue a process.", "go", full);
     }
 
-    public void interpret(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd, Object options) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
-	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
-	    cli.printUsage(cmd);
-	    return;
-	}
-
 	if (cli.steppingObserver != null) {
 	    Iterator taskIter = ptset.getTasks();
 	    SteppingEngine steppingEngine = cli.getSteppingEngine();
@@ -72,5 +68,10 @@ class GoCommand extends Command {
 	    }
 	} else
 	    cli.addMessage("Not attached to any process", Message.TYPE_ERROR);
+    }
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return -1;
     }
 }

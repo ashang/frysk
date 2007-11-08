@@ -41,8 +41,9 @@ package frysk.hpd;
 
 import java.util.Iterator;
 import frysk.proc.Task;
+import java.util.List;
 
-class WhatCommand extends Command {
+class WhatCommand extends ParameterizedCommand {
     private static final String full = "The what command queries the debugger "
 	    + "about its current interpretation\n"
 	    + "of a symbol name from the target program. Intuitively, the "
@@ -55,15 +56,10 @@ class WhatCommand extends Command {
 		"what symbol-name [-all]", full);
     }
 
-    public void interpret(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd, Object options) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
-	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
-	    cli.printUsage(cmd);
-	    return;
-	}
-	if (cmd.size() == 0 || ((cmd.parameter(0)).equals("-help"))) {
-	    cli.printUsage(cmd);
-	    return;
+	if (cmd.size() == 0) {
+	    throw new InvalidCommandException("missing value");
 	}
 	String sInput = (cmd.parameter(0));
 	Iterator taskIter = ptset.getTasks();
@@ -78,5 +74,11 @@ class WhatCommand extends Command {
 	    }
 
 	}
+    }
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return CompletionFactory.completeExpression(cli, ptset, incomplete,
+						    base, completions);
     }
 }

@@ -43,8 +43,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import java.util.List;
 
-class DetachCommand extends Command {
+class DetachCommand extends ParameterizedCommand {
 
     private static final String full = "The detach command detaches the debugger "
 	    + "from all processes in the\n"
@@ -61,12 +62,8 @@ class DetachCommand extends Command {
 	super("detach", "Detach from a running process.", "detach", full);
     }
 
-    public void interpret(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd, Object options) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
-	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
-	    cli.printUsage(cmd);
-	    return;
-	}
 	HashSet procSet = new HashSet();
 	Iterator taskIter = ptset.getTasks();
 	while (taskIter.hasNext()) {
@@ -86,5 +83,10 @@ class DetachCommand extends Command {
 		cli.getSteppingEngine().removeObserver(cli.steppingObserver,
 			proc, true);
 	}
+    }
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return -1;
     }
 }

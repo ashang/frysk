@@ -44,8 +44,9 @@ import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.proc.Task;
+import java.util.List;
 
-class FocusCommand extends Command {
+class FocusCommand extends ParameterizedCommand {
     private static String full = "Changes the current p/t set. As a "
 	    + "consequence, subsequent commands will\n"
 	    + "apply to just the threads specified in the argument of this\n"
@@ -57,11 +58,7 @@ class FocusCommand extends Command {
 	      "focus [p/t-set]", full);
     }
 
-    public void interpret(CLI cli, Input cmd) {
-	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
-	    cli.printUsage(cmd);
-	    return;
-	}
+    public void interpret(CLI cli, Input cmd, Object options) {
 	if (cmd.size() <= 1) {
 	    if (cmd.size() == 1) {
 		cli.targetset = cli.createSet(cmd.parameter(0));
@@ -79,5 +76,10 @@ class FocusCommand extends Command {
 	} else {
 	    cli.printUsage(cmd);
 	}
+    }
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return -1;
     }
 }

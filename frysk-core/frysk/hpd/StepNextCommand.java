@@ -41,11 +41,11 @@ package frysk.hpd;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-
+import java.util.List;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.proc.Task;
 
-public class StepNextCommand extends Command {
+public class StepNextCommand extends ParameterizedCommand {
 
     StepNextCommand() {
      	super("next", "Step over next function", "next", 
@@ -57,13 +57,8 @@ public class StepNextCommand extends Command {
      		+ "otherwise just perform a line step.");
     }
     
-    public void interpret(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd, Object options) {
       PTSet ptset = cli.getCommandPTSet(cmd);
-      if (cmd.size() == 1 && cmd.parameter(0).equals("-help"))
-        {
-          cli.printUsage(cmd);
-          return;
-        }
       LinkedList taskList = new LinkedList();
       Iterator taskIter = ptset.getTasks();
       while (taskIter.hasNext()) {
@@ -96,5 +91,10 @@ public class StepNextCommand extends Command {
         }
       else
         cli.addMessage("Not attached to any process", Message.TYPE_ERROR);
+    }
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return -1;
     }
 }

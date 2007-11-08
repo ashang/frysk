@@ -5,6 +5,25 @@
 
 2007-11-08  Andrew Cagney  <cagney@redhat.com>
 
+	* DebuginfoCommand.java: Extend ParameterizedCommand.
+	* WhichsetsCommand.java: Ditto.
+	* WhatCommand.java: Ditto.
+	* StepNextiCommand.java: Ditto.
+	* StepNextCommand.java: Ditto.
+	* StepInstructionCommand.java: Ditto.
+	* StepFinishCommand.java: Ditto.
+	* BreakpointCommand.java: Ditto.
+	* DefsetCommand.java: Ditto.
+	* DetachCommand.java: Ditto.
+	* DisplayCommand.java: Ditto.
+	* FocusCommand.java: Ditto.
+	* GoCommand.java: Ditto.
+	* HaltCommand.java: Ditto.
+	* QuitCommand.java: Ditto.
+	* RegsCommand.java: Ditto.
+	* SetCommand.java: Ditto.
+	* StepCommand.java: Ditto.
+
 	* ParameterizedCommand.java
 	(handleOption(Input,String,int,Object)): Fix off-by-one error.
 	(HelpException): Delete.

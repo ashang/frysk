@@ -46,8 +46,9 @@ import frysk.isa.ISA;
 import frysk.isa.RegisterGroup;
 import frysk.isa.Registers;
 import frysk.isa.RegistersFactory;
+import java.util.List;
 
-public class RegsCommand extends Command {
+public class RegsCommand extends ParameterizedCommand {
 
     public RegsCommand() {
 	super("regs", "print registers", "regs group", "print out "
@@ -55,7 +56,7 @@ public class RegsCommand extends Command {
 	      + "printed by default.");
     }
 
-    public void interpret(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd, Object options) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	Iterator taskDataIter = ptset.getTaskData();
 	while (taskDataIter.hasNext()) {
@@ -97,5 +98,10 @@ public class RegsCommand extends Command {
 		cli.outWriter.println();
 	    }
 	}
+    }
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return -1;
     }
 }

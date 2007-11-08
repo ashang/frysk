@@ -53,8 +53,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import lib.dwfl.DwarfDie;
+import java.util.List;
 
-class BreakpointCommand extends Command {
+class BreakpointCommand extends ParameterizedCommand {
 
     private static final String full = "The break command defines a breakpoint "
 	    + "that will be triggered when some\n"
@@ -70,7 +71,7 @@ class BreakpointCommand extends Command {
 
     BreakpointCommand() {
 	super("break", descr,
-	      "break {proc | line | #file#line} [-stop stop-set]", full);
+	      "break {proc | line | #file#line}", full);
     }
 
     static private abstract class CLIBreakpointObserver implements
@@ -89,12 +90,8 @@ class BreakpointCommand extends Command {
                                        long address);
     }
 
-    public void interpret(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd, Object arguments) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
-	if (cmd.size() != 1) {
-	    cli.printUsage(cmd);
-	    return;
-	}
 	String breakpt = cmd.parameter(0);
 	String fileName;
 	int lineNumber;
@@ -187,5 +184,11 @@ class BreakpointCommand extends Command {
 	    }
 	}
 	outWriter.println();
+    }
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base, 
+		 List completions) {
+	return CompletionFactory.completeExpression(cli, ptset, incomplete,
+						    base, completions);
     }
 }

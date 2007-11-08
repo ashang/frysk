@@ -39,7 +39,9 @@
 
 package frysk.hpd;
 
-class DefsetCommand extends Command {
+import java.util.List;
+
+class DefsetCommand extends ParameterizedCommand {
 
     private static final String full = "Associates a logical name with a "
 	    + "group of threads and/or processes,\n"
@@ -57,11 +59,7 @@ class DefsetCommand extends Command {
 	      "defset set-name p/t-set", full);
     }
 
-    public void interpret(CLI cli, Input cmd) {
-	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
-	    cli.printUsage(cmd);
-	    return;
-	}
+    public void interpret(CLI cli, Input cmd, Object options) {
 	String setname = null;
 	String setnot = null;
 	PTSet set = null;
@@ -83,5 +81,10 @@ class DefsetCommand extends Command {
 	} else {
 	    cli.printUsage(cmd);
 	}
+    }
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return -1;
     }
 }
