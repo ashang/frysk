@@ -53,122 +53,125 @@ import frysk.proc.dead.LinuxHost;
 public class CoreCommand extends ParameterizedCommand {
 
 	File coreFile = null;
+
 	File exeFile = null;
+
 	boolean noExeOption = false;
-	
-    CoreCommand() {
-    	super("core", "core <core-file> [ <executable> ] [ -noexe ]",
-    	"open a core file");
-    	
 
-    	add(new CommandOption("noexe", 
-    			"Do not attempt to load executable ") {
-    			void parse(String argument, Object options) {
-    				System.out.println("Trigger noexe");
-    				noExeOption = true;
-    			}
-    		    });
+	CoreCommand() {
+		super("core", "core <core-file> [ <executable> ] [ -noexe ]",
+				"open a core file");
 
-    }
+		add(new CommandOption("noexe", "Do not attempt to load executable ") {
+			void parse(String argument, Object options) {
+				noExeOption = true;
+			}
+		});
 
-    void interpret(CLI cli, Input cmd, Object options) {
-    	
-	Proc coreProc;
-	LinuxHost coreHost = null;
-    
-	// If > 2 parameter, then too many parameters.
-	if (cmd.size() > 2) {
-	    throw new InvalidCommandException("Too many parameters, a maximum of two should be specified.");
-	}
-	
-	// If < 1 parameter, then not enough parameters.
-	if (cmd.size() < 1) {
-	    throw new InvalidCommandException("Please specify a corefile with the core command");		
 	}
 
-	// Command line seems, sane parse.
-	parseCommandLine(cmd);
+	void interpret(CLI cli, Input cmd, Object options) {
 
-	// Does the corefile exist?
-	if ((!coreFile.exists()) || (!coreFile.canRead()))
-		throw new InvalidCommandException("No core file found, or cannot read corefile");
-		
-	// Build Core. Move any exceptions up to cli and print to user.
-	try {
-		coreHost = getHost(coreFile, exeFile, noExeOption);
-	} catch (Exception e) {
-		cli.addMessage("An error has occured while loading corefile: '" + coreFile.getAbsolutePath() 
-			+ "'. Error message is: " + e.getMessage(), Message.TYPE_ERROR);
-		return;		
+		Proc coreProc;
+		LinuxHost coreHost = null;
+
+		// If > 2 parameter, then too many parameters.
+		if (cmd.size() > 2) {
+			throw new InvalidCommandException(
+					"Too many parameters, a maximum of two should be specified.");
+		}
+
+		// If < 1 parameter, then not enough parameters.
+		if (cmd.size() < 1) {
+			throw new InvalidCommandException(
+					"Please specify a corefile with the core command");
+		}
+
+		// Command line seems, sane parse.
+		parseCommandLine(cmd);
+
+		// Does the corefile exist?
+		if ((!coreFile.exists()) || (!coreFile.canRead()))
+			throw new InvalidCommandException(
+					"No core file found, or cannot read corefile");
+
+		// Build Core. Move any exceptions up to cli and print to user.
+		try {
+			coreHost = getHost(coreFile, exeFile, noExeOption);
+		} catch (Exception e) {
+			cli.addMessage("An error has occured while loading corefile: '"
+					+ coreFile.getAbsolutePath() + "'. Error message is: "
+					+ e.getMessage(), Message.TYPE_ERROR);
+			return;
+		}
+
+		// Get the core proc.
+		coreProc = getProc(coreHost);
+
+		// Error out if no exe found, and -noexe option specified
+		if ((noExeOption == false) && (coreHost.getStatus().hasExe == false)) {
+			cli.addMessage(
+					"Could not find executable: '"
+					+ coreProc.getExe()+  "' specified for corefile. "
+					+ "You can specify one with the core command. E.g: core core.file yourexefile. Alternatively "
+					+ "you can tell fhpd to ignore the executable with -noexe. E.g core core.file -noexe. No "
+					+ "corefile has been loaded at this time.",
+					Message.TYPE_ERROR);
+			return;
+		}
+
+		// All checks are done. Host is built. Now start reserving space in the sets
+		int procID = cli.idManager.reserveProcID();
+		cli.idManager.manageProc(coreProc, procID);
+
+		// Build debug info for each task and frame.
+		Iterator foo = cli.targetset.getTasks();
+		while (foo.hasNext()) {
+			Task task = (Task) foo.next();
+			DebugInfoFrame frame = DebugInfoStackFactory
+					.createVirtualStackTrace(task);
+			cli.setTaskFrame(task, frame);
+			cli.setTaskDebugInfo(task, new DebugInfo(frame));
+		}
+
+		// Finally, done.
+		cli.addMessage("Attached to core file: " + cmd.parameter(0),
+				Message.TYPE_NORMAL);
+
 	}
-	
-	// Get the core proc.
-	coreProc = getProc(coreHost);
-	
-	// Error out if no exe found, and -noexe option specified
-	if ((noExeOption == false) && (coreHost.getStatus().hasExe == false))
-	{     
-		cli.addMessage("Could not find executable: '"+coreProc.getExe()+"' specified for corefile. "+
-				"You can specify one with the core command. E.g: core core.file yourexefile. Alternatively " +
-				"you can tell fhpd to ignore the executable with -noexe. E.g core core.file -noexe. No " +
-				"corefile has been loaded at this time.", Message.TYPE_ERROR);
-		return;
+
+	// Build Correct Host on options.
+	private LinuxHost getHost(File coreFile, File executable, boolean loadExe) {
+		LinuxHost coreHost = null;
+		if (executable == null)
+			if (!loadExe)
+				coreHost = new LinuxHost(Manager.eventLoop, coreFile);
+			else
+				coreHost = new LinuxHost(Manager.eventLoop, coreFile, null);
+		else
+			coreHost = new LinuxHost(Manager.eventLoop, coreFile, executable);
+
+		return coreHost;
 	}
 
-	// All checks are done. Host is built. Now start reserving space in the sets
-	int procID = cli.idManager.reserveProcID();
-	cli.idManager.manageProc(coreProc, procID);
-		
-	// Build debug info for each task and frame.
-	Iterator foo = cli.targetset.getTasks();
-	while (foo.hasNext()) {
-	    Task task = (Task) foo.next();
-	    DebugInfoFrame frame = DebugInfoStackFactory
-		.createVirtualStackTrace(task);
-	    cli.setTaskFrame(task, frame);
-	    cli.setTaskDebugInfo(task, new DebugInfo(
-						     frame));
+	// From a Host, get a Proc
+	private Proc getProc(LinuxHost coreHost) {
+		// Get an iterator to the one process
+		Iterator i = coreHost.getProcIterator();
+
+		// Find process, if not error out and return.
+		if (i.hasNext())
+			return (Proc) i.next();
+		else
+			return null;
 	}
 
-	// Finally, done.
-	cli.addMessage("Attached to core file: " + cmd.parameter(0),
-		Message.TYPE_NORMAL);
-
-	
-    }
-
-    // Build Correct Host on options.
-    private LinuxHost getHost(File coreFile, File executable, boolean loadExe) {
-    	LinuxHost coreHost = null;
-    	if (executable == null)
-    		if (!loadExe)
-    			coreHost = new LinuxHost(Manager.eventLoop, coreFile);
-    		else
-    			coreHost = new LinuxHost(Manager.eventLoop, coreFile, null);
-    	else
-    		coreHost = new LinuxHost(Manager.eventLoop, coreFile, executable);
-    						
-    	return coreHost;
-    }
-    
-    // From a Host, get a Proc
-    private Proc getProc(LinuxHost coreHost) {
-    	// Get an iterator to the one process
-    	Iterator i = coreHost.getProcIterator(); 
-    	
-    	// Find process, if not error out and return.
-    	if (i.hasNext())
-    		return  (Proc) i.next();
-    	else
-    		return null;
-    }
-
-    // Parse the option commandline
-    private void parseCommandLine(Input cli) {
-    	coreFile = new File(cli.parameter(0));
-    	if (cli.size() == 1)
-    		return;
-    	else
-    		exeFile = new File(cli.parameter(1));
-    }
+	// Parse the option commandline
+	private void parseCommandLine(Input cli) {
+		coreFile = new File(cli.parameter(0));
+		if (cli.size() == 1)
+			return;
+		else
+			exeFile = new File(cli.parameter(1));
+	}
 }
