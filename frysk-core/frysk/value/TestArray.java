@@ -95,7 +95,8 @@ public class TestArray extends TestCase {
 	Location l = new ScratchLocation(new byte[] { 2 });
 	IntegerType t = new UnsignedType("type", ByteOrder.BIG_ENDIAN, 1);
 	Value index = new Value(t, l);
-	assertEquals("IndexOneD", 151653132, arrayType.index(arr, index, null).asLong());
+	assertEquals("Array[index]", 151653132, arrayType.index(arr, index, null).asLong());
+	assertEquals("Index[array]", 151653132, t.index(index, arr, null).asLong());	
     }
 
     /**

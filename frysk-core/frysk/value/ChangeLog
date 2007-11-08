@@ -1,4 +1,9 @@
 2007-11-08  Teresa Thomas  <tthomas@redhat.com>
+
+	* Type.java (index): Make operation commutative.
+	* TestArray.java (testIndexOneD): Add test for above.	
+
+2007-11-08  Teresa Thomas  <tthomas@redhat.com>
 	
 	* AddressUnit.java (wordSize): New.
 	(add): Use wordSize for pointer creation.
