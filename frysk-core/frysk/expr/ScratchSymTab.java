@@ -42,6 +42,7 @@ package frysk.expr;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
+import frysk.Config;
 import frysk.value.ObjectDeclaration;
 import frysk.value.Type;
 import frysk.value.Value;
@@ -88,9 +89,8 @@ public class ScratchSymTab implements ExprSymTab {
      * Return the wordsize.
      */      
     public int getWordSize() {
-	// FIXME: ALU's for arithmetic operations require wordsize.
-	// Send bogus word size when no task attached?
-	//throw new RuntimeException("no word size");
-	return -1;
+        // Since no debugee word size available, return word size of 
+	// debugger. Required for some expression evaluation.
+	return Config.getWordSize ();
     }
 }

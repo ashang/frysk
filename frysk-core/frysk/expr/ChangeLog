@@ -1,3 +1,8 @@
+2007-11-08  Teresa Thomas  <tthomas@redhat.com>
+
+	* ScratchSymTab.java (getWordSize): Return word size 
+	of frysk proc's architecture.
+
 2007-11-06  Teresa Thomas  <tthomas@redhat.com>
 	
 	* CExprEvaluator.g (STAR): Use Arithmetic Unit.
