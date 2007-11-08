@@ -39,56 +39,48 @@
 
 package frysk.hpd;
 
-import java.io.PrintWriter;
-import inua.eio.ByteBuffer;
-import frysk.proc.Proc;
-import frysk.proc.ProcId;
-import frysk.proc.Task;
-
 /**
- * PeekCommand handles the "peek memory-location" command on the fhpd
- * commandline.  This command is only used after a "load" command has
- * been issued.
- *
+ * A command option; optionally parameterized.
  */
 
-public class PeekCommand extends ParameterizedCommand {
-
-    PeekCommand() {
-	super("peek", "peek <memory-location>",
-	      "peek at an executable file's memory");
+abstract class CommandOption {
+    final String longName;
+    final char shortName;
+    final String description;
+    final String parameter;
+    CommandOption(String longName, char shortName, String description,
+		  String parameter) {
+	this.longName = longName;
+	this.shortName = shortName;
+	this.description = description;
+	this.parameter = parameter;
+    }
+    CommandOption(String name, String description, String parameter) {
+	this(name, '\0', description, parameter);
+    }
+    /**
+     * An option that doesn't have an argument.
+     */
+    CommandOption(String name, String description) {
+	this(name, '\0', description, null);
     }
 
-    void interpret(CLI cli, Input cmd, Object options) {
-	final PrintWriter output = cli.getPrintWriter();
-	if (cmd.size() > 1 ) {
-	    throw new InvalidCommandException("Too many parameters");
-	}
-	if (cli.exeHost == null) {
-	    throw new InvalidCommandException("No executable loaded");
-	}
+    /**
+     * Utility, parse a boolean parameter.
+     */
+    boolean parseBoolean(String argument) {
+	argument = argument.toLowerCase();
+	if (argument.equals("yes")
+	    || argument.equals("y"))
+	    return true;
+	else if (argument.equals("no")
+		 || argument.equals("n"))
+	    return false;
 	
-	Proc proc = cli.exeHost.getProc(new ProcId(0));
-	Task task = proc.getMainTask();
-	
-	ByteBuffer buffer = task.getMemory();
-
-	String memposition = cmd.parameter(0);
-	int radix = 10;
-	if (memposition.lastIndexOf("x") != -1) {
-	    radix = 16;
-	    memposition = memposition.substring(memposition.lastIndexOf("x") + 1);
-	    if (memposition.lastIndexOf("L") != -1)
-		memposition = memposition.substring(0, memposition.lastIndexOf("L"));
-	}
-	
-	try {
-	    long value = Long.parseLong(memposition.trim(), radix);
-	    buffer.position(value);
-	    output.println("The value at " + memposition + " = " + buffer.getUByte());
-	} catch (NumberFormatException nfe) {
-	    System.out.println("NumberFormatException: " + nfe.getMessage());
-	}
-	
+	else
+	    throw new InvalidCommandException
+		("option -" + longName + " requires yes or no parameter");
     }
+
+    abstract void parse(String argument, Object options);
 }

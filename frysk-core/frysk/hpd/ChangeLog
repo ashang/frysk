@@ -1,5 +1,17 @@
 2007-11-07  Andrew Cagney  <cagney@redhat.com>
 
+	* TestParameterizedCommand.java: New.
+	* CommandOption.java: New.
+	* ParameterizedCommand.java: New.
+	* ExamineCommand.java: Extend ParameterizedCommand.
+	* PeekCommand.java: Ditto.
+	* CoreCommand.java: Ditto.
+	* LoadCommand.java: Ditto.
+	* DisassembleCommand.java: Ditto.
+	* OptionParser.java: Delete.
+	* Command.java (parser): Delete.
+	* TestOptionParser.java: Delete.
+
 	* CLI.java (CLI): Do not add HelpCommand using addHandler.
 	* MultiLevelCommand.java (lookup(String)): New.
 	(help(CLI,Input)): New.

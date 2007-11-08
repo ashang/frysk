@@ -42,19 +42,15 @@ package frysk.hpd;
 import java.util.Iterator;
 import frysk.value.Value;
 
-public class ExamineCommand extends Command {
+public class ExamineCommand extends ParameterizedCommand {
 
     public ExamineCommand() {
-	super("examine", "examine a value", "examine VALUE\n",
+	super("examine", "examine <value>",
 	      "Examine a value in more detail.");
     }
 
-    public void interpret(CLI cli, Input cmd) {
+    void interpret(CLI cli, Input cmd, Object options) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
-	if (!parser.parse(cmd)) {
-	    parser.printHelp(cli.outWriter);
-	    return;
-	}
 	if (cmd.size() == 0) {
 	    throw new InvalidCommandException("No value to examine");
 	}

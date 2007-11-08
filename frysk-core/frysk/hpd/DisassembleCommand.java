@@ -45,12 +45,10 @@ import frysk.debuginfo.DebugInfoFrame;
 import frysk.proc.Task;
 import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
-import gnu.classpath.tools.getopt.Option;
-import gnu.classpath.tools.getopt.OptionException;
 import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
 
-public class DisassembleCommand extends Command {
+public class DisassembleCommand extends ParameterizedCommand {
 
     public DisassembleCommand() {
 	super("disassemble", "disassemble a section of memory",
@@ -60,45 +58,26 @@ public class DisassembleCommand extends Command {
 	      "disassemble the function surrounding the current pc, "
 	      + "the function surrounding a given address, "
 	      + "or a range of functions.");
-	parser.add(new Option("all-instructions", 'a',
+	add(new CommandOption("all-instructions", 'a',
 		"only print the instruction portion not the parameters",
 		"<Yes|no>") {
-
-	    public void parsed(String argument) throws OptionException {
-		allInstructions = parseBoolean(argument);
-	    }
-
-	});
-
-	parser.add(new Option("full-function", 'f',
-		"disassemble the entire function", "<yes/No>") {
-
-	    public void parsed(String argument) throws OptionException {
-		full = parseBoolean(argument);
-	    }
-
-	});
-
-	parser.add(new Option("symbol", 's', "print the symbol name",
-		"<Yes|no>") {
-
-	    public void parsed(String argument) throws OptionException {
-
-		symbol = parseBoolean(argument);
-	    }
-	});
-    }
-
-    private boolean parseBoolean(String argument) throws OptionException {
-	if (argument.toLowerCase().equals("yes")
-		|| argument.toLowerCase().equals("y"))
-	    return true;
-	else if (argument.toLowerCase().equals("no")
-		|| argument.toLowerCase().equals("n"))
-	    return false;
-
-	else
-	    throw new OptionException("argument should be one of yes or no");
+		void parse(String argument, Object options) {
+		    allInstructions = parseBoolean(argument);
+		}
+	    });
+	add(new CommandOption("full-function", 'f',
+			      "disassemble the entire function",
+			      "<yes/No>") {
+		void parse(String argument, Object options) {
+		    full = parseBoolean(argument);
+		}
+	    });
+	add(new CommandOption("symbol", 's', "print the symbol name",
+			      "<Yes|no>") {
+		void parse(String argument, Object options) {
+		    symbol = parseBoolean(argument);
+		}
+	    });
     }
 
     private boolean allInstructions = true;
@@ -113,14 +92,10 @@ public class DisassembleCommand extends Command {
 	symbol = true;
     }
 
-    public void interpret(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd, Object options) {
 	reset();
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	Iterator taskDataIter = ptset.getTaskData();
-	if (!parser.parse(cmd)) {
-	    parser.printHelp(cli.outWriter);
-	    return;
-	}
 	if (cmd.size() > 2)
 	    throw new InvalidCommandException
 		("too many arguments to disassemble");

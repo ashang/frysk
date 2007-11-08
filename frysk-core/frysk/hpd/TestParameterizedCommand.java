@@ -39,26 +39,33 @@
 
 package frysk.hpd;
 
-import gnu.classpath.tools.getopt.Option;
-import gnu.classpath.tools.getopt.OptionException;
+public class TestParameterizedCommand extends TestLib {
 
-public class TestOptionParser extends TestLib {
-
-    private OptionParser parser;
-    private boolean ok;
+    private ParameterizedCommand command;
     private String argument;
     private Input input;
     private boolean parsedOption;
+    private boolean interpreted;
+    private boolean helped;
 
     public void setUp() {
 	super.setUp();
-	parser = new OptionParser("parser", "<<header>>", "<<footer>>");
-	ok = false;
 	argument = null;
 	parsedOption = false;
+	interpreted = false;
+	helped = false;
+	command = new ParameterizedCommand("parser", "<<description>>",
+					   "<<syntax>>", "<<full>>") {
+		void interpret(CLI cli, Input input, Object options) {
+		    interpreted = true;
+		}
+		void help(CLI cli, Input input) {
+		    helped = true;
+		}
+	    };
     }
     public void tearDown() {
-	parser = null;
+	command = null;
 	input = null;
 	argument = null;
 	super.tearDown();
@@ -66,7 +73,7 @@ public class TestOptionParser extends TestLib {
 
     private void parse(String string) {
 	input = new Input(string).accept();
-	ok = parser.parse(input);
+	command.interpret(null, input);
     }
 
     public void testDashDash() {
@@ -89,19 +96,21 @@ public class TestOptionParser extends TestLib {
     }
 
     public void testOption() {
-	parser.add(new Option("short", "short option") {
-		public void parsed(String argument) throws OptionException {
+	command.add(new CommandOption("short", "short option") {
+		void parse(String argument, Object options) {
 		    parsedOption = true;
 		}
 	    });
 	parse("parser -short");
 	assertEquals("Params list should be empty", 0, input.size());
 	assertTrue("Option should have been handled", parsedOption);
+	assertTrue("interpreted", interpreted);
+	assertFalse("helped", helped);
     }
 
     public void testOptionAfterDashDash() {
-	parser.add(new Option("short", "short option") {
-		public void parsed(String argument) throws OptionException {
+	command.add(new CommandOption("short", "short option") {
+		void parse(String argument, Object options) {
 		    parsedOption = true;
 		}
 	    });
@@ -111,8 +120,8 @@ public class TestOptionParser extends TestLib {
     }
 
     public void testOptionBeforeDashDash() {
-	parser.add(new Option("short", "short option") {
-		public void parsed(String argument) throws OptionException {
+	command.add(new CommandOption("short", "short option") {
+		void parse(String argument, Object options) {
 		    fail("Should not have parsed option");
 		}
 	    });
@@ -124,8 +133,8 @@ public class TestOptionParser extends TestLib {
     }
 
     public void testOptionWithArgs() {
-	parser.add(new Option("short", "short option", "ARG") {
-		public void parsed(String arg) throws OptionException {
+	command.add(new CommandOption("short", "short option", "ARG") {
+		void parse(String arg, Object options) {
 		    parsedOption = true;
 		    argument = arg;
 		}
@@ -138,8 +147,8 @@ public class TestOptionParser extends TestLib {
     }
 
     public void testOptionWithArgsAfterDashDash() {
-	parser.add(new Option("short", "short option", "ARG") {
-		public void parsed(String arg) throws OptionException {
+	command.add(new CommandOption("short", "short option", "ARG") {
+		void parse(String arg, Object options) {
 		    parsedOption = true;
 		    argument = arg;
 		}
@@ -152,8 +161,8 @@ public class TestOptionParser extends TestLib {
     }
 
     public void testOptionWithArgsBeforeDashDash() {
-	parser.add(new Option("short", "short option", "ARG") {
-		public void parsed(String arg) throws OptionException {
+	command.add(new CommandOption("short", "short option", "ARG") {
+		void parse(String arg, Object options) {
 		    parsedOption = true;
 		    argument = arg;
 		}
@@ -168,6 +177,7 @@ public class TestOptionParser extends TestLib {
 
     public void testHelp() {
 	parse("parser -help");
-	assertTrue("Help only should be activated", !ok);
+	assertFalse("interpreted", interpreted);
+	assertTrue("helped", helped);
     }
 }

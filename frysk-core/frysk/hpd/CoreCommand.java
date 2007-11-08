@@ -50,26 +50,19 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 
-public class CoreCommand extends Command {
-
-    private static String desc = "open a core file";
+public class CoreCommand extends ParameterizedCommand {
 
     CoreCommand() {
-	super("core", desc, "core core.file [executable]", desc);
+	super("core", "core <core-file> [ <executable> ]",
+	      "open a core file");
     }
 
-    public void interpret(CLI cli, Input cmd) {
+    void interpret(CLI cli, Input cmd, Object options) {
     	
-    Proc coreProc;
-    File exeFile = null;
-    LinuxHost coreHost = null;
+	Proc coreProc;
+	File exeFile = null;
+	LinuxHost coreHost = null;
     
-    // If parse fails, print help
-	if (!parser.parse(cmd)) {
-	    parser.printHelp(cli.outWriter);
-	    return;
-	}
-
 	// If > 2 parameter, then too many parameters.
 	if (cmd.size() > 2) {
 	    throw new InvalidCommandException("Too many parameters");

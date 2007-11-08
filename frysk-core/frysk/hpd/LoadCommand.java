@@ -57,19 +57,13 @@ import java.util.List;
  *
  */
 
-public class LoadCommand extends Command {
-
-    private static String desc = "load an executable file";
+public class LoadCommand extends ParameterizedCommand {
 
     LoadCommand() {
-	super("load", desc, "load path-to-executable", desc);
+	super("load", "load path-to-executable", "load an executable file");
     }
 
-    public void interpret(CLI cli, Input cmd) {
-	if (!parser.parse(cmd)) {
-	    parser.printHelp(cli.outWriter);
-	    return;
-	}
+    public void interpret(CLI cli, Input cmd, Object options) {
 	if (cmd.size() > 2) {
 	    throw new InvalidCommandException("Too many parameters");
 	}
