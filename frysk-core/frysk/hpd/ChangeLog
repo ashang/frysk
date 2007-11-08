@@ -1,5 +1,7 @@
 2007-11-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TestAliasCommands.java: New file.
+
 	* AliasCommands.java: New.
 	* AliasCommand.java: Delete.
 	* UnaliasCommand.java: Delete.
