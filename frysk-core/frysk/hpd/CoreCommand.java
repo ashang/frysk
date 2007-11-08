@@ -41,31 +41,44 @@ package frysk.hpd;
 
 import java.io.File;
 import java.util.Iterator;
+
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
-import frysk.proc.dead.CorefileStatus;
-import frysk.proc.dead.LinuxHost;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.proc.dead.LinuxHost;
 
 public class CoreCommand extends ParameterizedCommand {
 
+	File coreFile = null;
+	File exeFile = null;
+	boolean noExeOption = false;
+	
     CoreCommand() {
-	super("core", "core <core-file> [ <executable> ]",
-	      "open a core file");
+    	super("core", "core <core-file> [ <executable> ] [ -noexe ]",
+    	"open a core file");
+    	
+
+    	add(new CommandOption("noexe", 
+    			"Do not attempt to load executable ") {
+    			void parse(String argument, Object options) {
+    				System.out.println("Trigger noexe");
+    				noExeOption = true;
+    			}
+    		    });
+
     }
 
     void interpret(CLI cli, Input cmd, Object options) {
     	
 	Proc coreProc;
-	File exeFile = null;
 	LinuxHost coreHost = null;
     
 	// If > 2 parameter, then too many parameters.
 	if (cmd.size() > 2) {
-	    throw new InvalidCommandException("Too many parameters");
+	    throw new InvalidCommandException("Too many parameters, a maximum of two should be specified.");
 	}
 	
 	// If < 1 parameter, then not enough parameters.
@@ -73,68 +86,35 @@ public class CoreCommand extends ParameterizedCommand {
 	    throw new InvalidCommandException("Please specify a corefile with the core command");		
 	}
 
-	File coreFile = new File(cmd.parameter(0));
+	// Command line seems, sane parse.
+	parseCommandLine(cmd);
 
-	// Build corefile host, report errors and quit if any.
-	if (cmd.size() == 1)
-		try {
-			coreHost = new LinuxHost(Manager.eventLoop, coreFile);
-		} catch (Exception e) {
-			cli.addMessage("An error has occured while loading corefile: '" + coreFile.getAbsolutePath() 
-					+ "'. Error message is: " + e.getMessage(), Message.TYPE_ERROR);
-			return;
-		}
-	else {
-	    exeFile = new File(cmd.parameter(1));
-	    try {
-	    	coreHost = new LinuxHost(Manager.eventLoop, coreFile, exeFile);
-	    } catch (Exception e) {
-			cli.addMessage("An error has occured while loading corefile: '" + coreFile.getAbsolutePath() 
-					+ "'. Error message is: " + e.getMessage(), Message.TYPE_ERROR);
-			return;
-	    	
-	    }
+	// Does the corefile exist?
+	if ((!coreFile.exists()) || (!coreFile.canRead()))
+		throw new InvalidCommandException("No core file found, or cannot read corefile");
+		
+	// Build Core. Move any exceptions up to cli and print to user.
+	try {
+		coreHost = getHost(coreFile, exeFile, noExeOption);
+	} catch (Exception e) {
+		cli.addMessage("An error has occured while loading corefile: '" + coreFile.getAbsolutePath() 
+			+ "'. Error message is: " + e.getMessage(), Message.TYPE_ERROR);
+		return;		
 	}
 	
-	// Get an iterator to the one process
-	Iterator i = coreHost.getProcIterator(); 
+	// Get the core proc.
+	coreProc = getProc(coreHost);
 	
-	// Find process, if not error out and return.
-	if (i.hasNext())
-		coreProc = (Proc) i.next(); 
-	else {
-		cli.addMessage("Cannot find a process in corefile: '" + coreFile.getAbsolutePath()+"'. This may not be a valid ELF corefile.", Message.TYPE_ERROR);
+	// Error out if no exe found, and -noexe option specified
+	if ((noExeOption == false) && (coreHost.getStatus().hasExe == false))
+	{     
+		cli.addMessage("Could not find executable: '"+coreProc.getExe()+"' specified for corefile. "+
+				"You can specify one with the core command. E.g: core core.file yourexefile. Alternatively " +
+				"you can tell fhpd to ignore the executable with -noexe. E.g core core.file -noexe. No " +
+				"corefile has been loaded at this time.", Message.TYPE_ERROR);
 		return;
 	}
-	
-	// If > 1 process, this is a very odd corefile. Abort, can't handle multiple process corefiles.
-	if (i.hasNext()) {
-	    cli.addMessage("There appears to be two or more processes in corefile: '" + coreFile.getAbsolutePath()+"'. This is not valid for an ELF corefile", Message.TYPE_ERROR);
-	    return;
-	}
-	
-	// Check status, and report whether we managed to load an executable. If not build a message
-	// to the effect of why we have not.
-	CorefileStatus status = coreHost.getStatus();
-	if (status.hasExe == false)
-	{
-		String message = "The corefile: '"+coreFile.getAbsolutePath()+"' has no executable associated with it. The executable name ";
-		String exeName = "";
-		if (exeFile != null) 
-		{
-			exeName = exeFile.getAbsolutePath();
-			message += "specified by the user on the Core command was: '" + exeName;
-		}
-		else
-		{
-			exeName = coreProc.getExe();
-			message += "automatically read from the corefile was: '" + exeName;
-		}
-		message+="'. This executable could not be read. Please specifiy an executable on the 'core' command (eg core core.1234 exenamedFile) for richer metadata.";
-		
-		cli.addMessage(message,Message.TYPE_WARNING);
-	}
-	
+
 	// All checks are done. Host is built. Now start reserving space in the sets
 	int procID = cli.idManager.reserveProcID();
 	cli.idManager.manageProc(coreProc, procID);
@@ -151,10 +131,44 @@ public class CoreCommand extends ParameterizedCommand {
 	}
 
 	// Finally, done.
-	cli.addMessage("\n* Attached to core file: " + cmd.parameter(0),
+	cli.addMessage("Attached to core file: " + cmd.parameter(0),
 		Message.TYPE_NORMAL);
 
 	
     }
 
+    // Build Correct Host on options.
+    private LinuxHost getHost(File coreFile, File executable, boolean loadExe) {
+    	LinuxHost coreHost = null;
+    	if (executable == null)
+    		if (!loadExe)
+    			coreHost = new LinuxHost(Manager.eventLoop, coreFile);
+    		else
+    			coreHost = new LinuxHost(Manager.eventLoop, coreFile, null);
+    	else
+    		coreHost = new LinuxHost(Manager.eventLoop, coreFile, executable);
+    						
+    	return coreHost;
+    }
+    
+    // From a Host, get a Proc
+    private Proc getProc(LinuxHost coreHost) {
+    	// Get an iterator to the one process
+    	Iterator i = coreHost.getProcIterator(); 
+    	
+    	// Find process, if not error out and return.
+    	if (i.hasNext())
+    		return  (Proc) i.next();
+    	else
+    		return null;
+    }
+
+    // Parse the option commandline
+    private void parseCommandLine(Input cli) {
+    	coreFile = new File(cli.parameter(0));
+    	if (cli.size() == 1)
+    		return;
+    	else
+    		exeFile = new File(cli.parameter(1));
+    }
 }

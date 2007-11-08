@@ -50,7 +50,7 @@ public class TestCoreCommand extends TestLib {
     public void testCoreCommand() {
 	e = new HpdTestbed();
 	e.send("core " + Config.getPkgDataFile("test-core-x86").getPath()
-		+ "\n");
+		+ " -noexe\n");
 	e.expect(5, "Attached to core file.*");
 	e.close();
     }

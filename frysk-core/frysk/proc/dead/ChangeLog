@@ -1,3 +1,8 @@
+2007-11-08  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxHost.java (LinuxHost): Check in exe is set to
+	null.
+
 2007-11-07  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxHost.java (LinuxHost): Create up front ET_CORE check in

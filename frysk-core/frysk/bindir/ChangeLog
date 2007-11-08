@@ -1,3 +1,7 @@
+2007-11-08  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestFhd.java (testHpdCore): Add unresolved(5295).
+
 2007-11-02  Petr Machata  <pmachata@redhat.com>
 
 	* fltrace.java: Output values in hex.

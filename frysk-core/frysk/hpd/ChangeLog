@@ -1,3 +1,13 @@
+2007-11-08  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestCoreCommand.java (testCoreCommand): Append -noexe to
+	test.
+	* CoreCommand.java (CoreCommand): Use CommandOption.
+	Look for -noexe.
+	(interpret): Rewrite using workflow.
+	(getProc): New.
+	(getHost): New.
+
 2007-11-07  Andrew Cagney  <cagney@redhat.com>
 
 	* TestParameterizedCommand.java: New.

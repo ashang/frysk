@@ -86,6 +86,8 @@ public class TestFhd
     }
   
     public void testHpdCore ()  {
+    if (unresolved(5295))
+    	return;
 	e = new Expect(new String[] {
 			   Config.getBinFile("fhpd").getPath(),
 			   Config.getPkgDataFile("test-core-x86").getPath()

@@ -103,14 +103,18 @@ public class LinuxHost extends DeadHost {
 		if (exeFile == null)
 			exeSetToNull = true;
 
-		if (exeFile.canRead() && exeFile.exists())
-			this.exeFile = exeFile;
-		else {
-			status.hasExe = false;
-			status.hasExeProblem = true;
-			status.message = "The user provided executable: "
+		if (exeSetToNull == false)
+			if (exeFile.canRead() && exeFile.exists()) {
+				this.exeFile = exeFile;
+				status.hasExe = true;
+				status.hasExeProblem = false;
+			}
+			else {
+				status.hasExe = false;
+				status.hasExeProblem = true;
+				status.message = "The user provided executable: "
 					+ exeFile.getAbsolutePath() + " could not be accessed";
-		}
+			}
 		this.sendRefresh(true);
 	}
 
