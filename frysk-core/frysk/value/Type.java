@@ -218,6 +218,10 @@ public abstract class Type {
     	throw new InvalidOperatorException(this, ".");
     } 
     public Value index(Value var1, Value var2, ByteBuffer taskMem) {
+	// In C, var1[var2] = var2[var1]
+	if (var2.getType() instanceof ArrayType || 
+	    var2.getType() instanceof PointerType)
+	    return var2.getType().index (var2, var1, taskMem);
     	throw new InvalidOperatorException(this, "[]");
     }     
    /**
