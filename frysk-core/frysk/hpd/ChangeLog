@@ -1,3 +1,17 @@
+2007-11-08  Andrew Cagney  <cagney@redhat.com>
+
+	* CompletionFactory.java (completeFileName(CLI,String,int,List)): New.
+	(completeExpression(CLI,PTSet,String,int,List)): New.	
+	(completeFileName(CLI,Input,int,List)): Delete.
+	* ParameterizedCommand.java (complete(CLI,Input,int,List)): New.
+	(complete(CLI,PTSet,String,int,List)): New; abstract.
+	* CoreCommand.java (complete(CLI,PTSet,String,int,List)): New.
+	* ExamineCommand.java: Ditto.
+	* DisassembleCommand.java: Ditto.
+	* LoadCommand.java: Ditto.
+	* PeekCommand.java: Ditto.
+	* TestParameterizedCommand.java: Ditto.
+
 2007-11-08  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestCoreCommand.java (testCoreCommand): Append -noexe to

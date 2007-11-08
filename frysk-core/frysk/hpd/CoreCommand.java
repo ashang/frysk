@@ -42,6 +42,7 @@ package frysk.hpd;
 import java.io.File;
 import java.util.Iterator;
 
+import java.util.List;
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
@@ -174,4 +175,10 @@ public class CoreCommand extends ParameterizedCommand {
 		else
 			exeFile = new File(cli.parameter(1));
 	}
+
+    int complete(CLI cli, PTSet set, String incomplete, int base,
+		 List completions) {
+	return CompletionFactory.completeFileName(cli, incomplete, base,
+						  completions);
+    }
 }

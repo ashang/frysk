@@ -44,6 +44,7 @@ import inua.eio.ByteBuffer;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
+import java.util.List;
 
 /**
  * PeekCommand handles the "peek memory-location" command on the fhpd
@@ -90,5 +91,11 @@ public class PeekCommand extends ParameterizedCommand {
 	    System.out.println("NumberFormatException: " + nfe.getMessage());
 	}
 	
+    }
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return CompletionFactory.completeExpression(cli, ptset, incomplete,
+						    base, completions);
     }
 }

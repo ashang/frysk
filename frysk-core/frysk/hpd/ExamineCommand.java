@@ -41,6 +41,7 @@ package frysk.hpd;
 
 import java.util.Iterator;
 import frysk.value.Value;
+import java.util.List;
 
 public class ExamineCommand extends ParameterizedCommand {
 
@@ -75,5 +76,11 @@ public class ExamineCommand extends ParameterizedCommand {
 		cli.outWriter.println(i + ": " + bytes[i]);
 	    }
 	}
+    }
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return CompletionFactory.completeExpression(cli, ptset, incomplete,
+						    base, completions);
     }
 }

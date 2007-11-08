@@ -99,8 +99,10 @@ public class LoadCommand extends ParameterizedCommand {
 	}
     }
 
-    int complete(CLI cli, Input input, int cursor, List candidates) {
-	return CompletionFactory.completeFileName(cli, input, cursor,
-						  candidates);
+
+    int complete(CLI cli, PTSet set, String incomplete, int base,
+		 List completions) {
+	return CompletionFactory.completeFileName(cli, incomplete, base,
+						  completions);
     }
 }

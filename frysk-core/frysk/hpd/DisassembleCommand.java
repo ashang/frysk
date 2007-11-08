@@ -292,4 +292,12 @@ public class DisassembleCommand extends ParameterizedCommand {
     interface InstructionPrinter {
 	String toPrint(Instruction instruction);
     }
+
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return CompletionFactory.completeExpression(cli, ptset, incomplete,
+						    base, completions);
+    }
+
 }

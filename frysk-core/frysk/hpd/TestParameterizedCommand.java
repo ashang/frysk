@@ -39,6 +39,8 @@
 
 package frysk.hpd;
 
+import java.util.List;
+
 public class TestParameterizedCommand extends TestLib {
 
     private ParameterizedCommand command;
@@ -61,6 +63,10 @@ public class TestParameterizedCommand extends TestLib {
 		}
 		void help(CLI cli, Input input) {
 		    helped = true;
+		}
+		int complete(CLI cli, PTSet ptset, String incomplete,
+			     int base, List candidates) {
+		    return -1;
 		}
 	    };
     }
