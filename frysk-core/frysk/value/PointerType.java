@@ -135,7 +135,7 @@ public class PointerType
     }
     
     public ArithmeticUnit getALU(IntegerType type, int wordSize) {
-	return new AddressUnit(this);
+	return new AddressUnit(this, wordSize);
     }   
     
     public ArithmeticUnit getALU(PointerType type, int wordSize) {

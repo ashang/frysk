@@ -87,7 +87,7 @@ public abstract class IntegerType
     }
     
     public ArithmeticUnit getALU(PointerType type, int wordSize) {
-	return new AddressUnit((PointerType)type);
+	return new AddressUnit(type, wordSize);
     }
     
     public ArithmeticUnit getALU(FloatingPointType type, int wordSize) {

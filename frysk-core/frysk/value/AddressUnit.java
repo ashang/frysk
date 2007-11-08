@@ -46,13 +46,17 @@ import inua.eio.ByteOrder;
 public class AddressUnit
 extends ArithmeticUnit
 {
+    private final int wordSize; 
+    
     public AddressUnit (ArrayType t, int wordSize) {
 	retType = new PointerType(t.getName(), ByteOrder.BIG_ENDIAN, 
 		                  wordSize, t.getType());
+	this.wordSize = wordSize; 
     }
     
-    public AddressUnit (PointerType t) {
+    public AddressUnit (PointerType t, int wordSize) {
 	retType = t;
+	this.wordSize = wordSize; 
     }
     
     /**
@@ -79,12 +83,12 @@ extends ArithmeticUnit
             intValue = v1;
         }
 	
-        // Handle pointers to array types
+        // Handle address of array types
         if (ptrType.getType() instanceof ArrayType) {
             // Create pointer to array element type
-            Type eType = ((ArrayType)ptrType.getType()).getType();
+            Type eType = ((ArrayType)ptrType.getType()).getType();           
             PointerType pType = new PointerType
-                                (eType.getName(), ptrType.order(), eType.getSize(), eType);
+                                (eType.getName(), ptrType.order(), wordSize, eType);
             return (pType.createValue
         	          (ptrValue.asLong() + eType.getSize()*intValue.asLong()));		
         }
