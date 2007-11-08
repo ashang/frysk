@@ -41,6 +41,7 @@ package frysk.testbed;
 
 import java.io.File;
 
+import frysk.Config;
 import frysk.event.Event;
 import frysk.proc.Host;
 import frysk.proc.Manager;
@@ -76,9 +77,8 @@ public class CoreFileAtSignal extends TestLib {
 	String coreFileName = coreDump.getConstructedFileName();
 
 	File xtestCore = new File(coreFileName);
-	xtestCore.deleteOnExit();
-	
-	Host lcoreHost = new LinuxHost(Manager.eventLoop, xtestCore);
+
+	Host lcoreHost = new LinuxHost(Manager.eventLoop, xtestCore, Config.getPkgLibFile(process));
 
 	Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid()));
 

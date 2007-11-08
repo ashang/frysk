@@ -138,15 +138,14 @@ public class TestFstack
   }
 
     public void testBackTraceWithDashV () {
-	if(unresolved(5156)){
-	    return;
-	}
+
 	Proc proc = CoreFileAtSignal.constructCore("funit-inlined");
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
+			    "core." + proc.getPid(),
+			    Config.getPkgLibFile("funit-inlined").getAbsolutePath(),
 			    "-v",
-			    "-a",
-			    "core." + proc.getPid()
+			    "-a"
 			});
         e.expect("#0 .*third[^\r\n]*\\[inline\\]"
 		 + ".*#1 .*second[^\r\n]*\\[inline\\]"

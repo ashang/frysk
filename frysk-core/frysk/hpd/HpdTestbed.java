@@ -63,7 +63,7 @@ public class HpdTestbed
      */
     private final String prompt = "\\(fhpd\\) ";
 
-    private HpdTestbed(String[] command) {
+    protected HpdTestbed(String[] command) {
 	super(command);
 	TearDownExpect.add(this);
 	TearDownProcess.add(getPid());

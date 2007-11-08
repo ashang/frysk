@@ -1,3 +1,8 @@
+2007-11-08  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CoreFileAtSignal.java: Now passes executable path to core file
+	constructor.
+
 2007-10-26  Mark Wielaard  <mwielaard@redhat.com>
 
 	* RegsCase.java (IA32): Don't subtract one from EFLAGS bit mask.

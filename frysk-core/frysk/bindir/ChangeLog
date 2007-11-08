@@ -1,3 +1,8 @@
+2007-11-08  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFstack.java (testBackTraceWithDashV): Reenabled test.
+	Now passes executable as an argument to fstack.
+
 2007-11-08  Petr Machata  <pmachata@redhat.com>
 
 	* fltrace.java (MyLtraceObserver.pidInfo): new method

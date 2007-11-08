@@ -42,44 +42,19 @@ package frysk.hpd;
 import java.io.File;
 
 import frysk.Config;
-import frysk.proc.Proc;
-import frysk.testbed.CoreFileAtSignal;
 
-public class TestWhereCommand extends TestLib {
-    public void testHpdTraceStack () {
-	e = HpdTestbed.attachXXX("hpd-c");
-	// Where
-	e.send ("where\n");
-	e.expect ("where.*#0.*" + prompt);
-    }
-
-    public void testFhpdVirtualStackTrace () {
-
-	Proc proc = CoreFileAtSignal
-	    .constructCore("funit-inlined");
-        e = new HpdCoreFileTestbed(new File("core." + proc.getPid()),
-		Config.getPkgLibFile("funit-inlined"),
-		"Attached to core file.*");
-        e.send("where\n");
-	e.expect("\\#0 .*third[^\\r\\n]*\\[inline\\]");
-	e.expect("\\#1 .*second[^\\r\\n]*\\[inline\\]");
-	e.expect("\\#2 .*first[^\\r\\n]*\\[inline\\]");
-	e.expect("\\#3 .*main");
-	e.expectPrompt(".*");
-    }
-    
-    public void testFhpdVirtualStackTraceWithScopes () {
-	
-	Proc proc = CoreFileAtSignal
-	    .constructCore("funit-inlined");
-        e = new HpdCoreFileTestbed(new File("core." + proc.getPid()),
-		Config.getPkgLibFile("funit-inlined"),
-	"Attached to core file.*");
-        e.send("where -scopes\n");
-        e.expect(".*var3");
-	e.expect(".*var2");
-	e.expect(".*var1");
-	e.expectPrompt(".*");
-        e.close();
+/**
+ * For fhpd tests that are based on core files.
+ */
+public class HpdCoreFileTestbed
+    extends HpdTestbed
+{
+    public HpdCoreFileTestbed(File coreFile, File exeFile, String startup) {
+	super(new String[] {
+		Config.getBinFile("fhpd").getPath (),
+		coreFile.toString(),
+		exeFile.toString()
+	      });
+	expectPrompt(startup);
     }
 }
