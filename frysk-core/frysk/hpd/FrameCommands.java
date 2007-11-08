@@ -40,28 +40,31 @@
 package frysk.hpd;
 
 import java.util.Iterator;
-
+import java.util.List;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.proc.Task;
 
-class FrameCommands extends Command {
-
-    private static final String full = "The up (down) command modifies the "
-	    + "current frame location(s) by adding\n"
-	    + "(subtracting) num-levels. Call stack movements are all "
-	    + "relative, so up\n"
-	    + "effectively \"moves up\" (or back) in the call stack, to a "
-	    + "frame that\n"
-	    + "has existed longer, while down \"moves down\" in the call "
-	    + "stack,\n" + "following the progress of program execution.";
+class FrameCommands extends ParameterizedCommand {
 
     FrameCommands(String name) {
-	super(name, "Move " + name
-	      + " one or more levels in the call stack", name
-	      + " [num-levels]", full);
+	super(name,
+	      ("Move " + name + " one or more levels in the call stack"),
+	      (name + " [num-levels]"),
+	      ("The up (down) command modifies the current frame"
+	       + " location(s) by adding (subtracting) num-levels.  Call"
+	       + " stack movements are all relative, so up effectively"
+	       + " \"moves up\" (or back) in the call stack, to a frame"
+	       + " that has existed longer, while down \"moves down\" in"
+	       + " the call stack, following the progress of program"
+	       + " execution."));
     }
 
-    public void interpret(CLI cli, Input cmd) {
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List candidates) {
+	return -1;
+    }
+
+    public void interpret(CLI cli, Input cmd, Object options) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
 	    cli.printUsage(cmd);

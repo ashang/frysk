@@ -1,5 +1,8 @@
 2007-11-08  Andrew Cagney  <cagney@redhat.com>
 
+	* WhereCommand.java: Extend ParameterizedCommand.
+	* FrameCommands.java: Ditto.
+	
 	* CLI.java (doAttach(Task)): Delete.
 	(doAttach(Proc)): Replace doAttach(int,Proc,Task).
 	* RunCommand.java: Update.

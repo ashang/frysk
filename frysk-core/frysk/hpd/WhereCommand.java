@@ -41,48 +41,47 @@ package frysk.hpd;
 
 import java.util.Iterator;
 import frysk.proc.Task;
-
+import java.util.List;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 
-class WhereCommand extends Command {
+class WhereCommand extends ParameterizedCommand {
 
-    private static final String full = "The where command displays the current "
-	    + "execution location(s) and the\n"
-	    + "call stack(s) - or sequence of procedure calls - which led to "
-	    + "that\n" + "point.";
+    private static class Options {
+	boolean printScopes;
+    }
+    Object options() {
+	return new Options();
+    }
 
     WhereCommand() {
 	super("where",
 	      "Display the current execution location and call stack",
-	      "where [ {num-levels | -all} ] [-scopes]", full);
+	      "where [ {num-levels | -all} ] [-scopes]",
+	      ("The where command displays the current execution"
+	       + " location(s) and the call stack(s) - or sequence"
+	       + " of procedure calls - which led to that point."));
+	add(new CommandOption("scopes", "include scopes") {
+		void parse(String arg, Object options) {
+		    ((Options)options).printScopes = true;
+		}
+	    });
     }
 
-    public void interpret(CLI cli, Input cmd) {
-	boolean printScopes = false;
-	
-	PTSet ptset = cli.getCommandPTSet(cmd);
-	
-	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
-	    cli.printUsage(cmd);
-	    return;
-	}
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List candidates) {
+	return -1;
+    }
 
+    public void interpret(CLI cli, Input input, Object o) {
+	if (input.size() > 1)
+	    throw new InvalidCommandException("Too many arguments");
+	Options options = (Options)o;
 	int level = 0;
-
-	for (int i = 0; i < cmd.size(); i++) {
-	    try {
-		level = Integer.parseInt(cmd.parameter(i));
-		continue;
-	    } catch (NumberFormatException e) {
-		// continue parsing
-	    }
-	    
-	    if ((cmd.parameter(i)).equals("-scopes")) {
-		printScopes = true;
-	    }
-	} 
+	if (input.size() == 1)
+	    level = Integer.parseInt(input.parameter(0));
 	
+	PTSet ptset = cli.getCommandPTSet(input);
 	Iterator taskIter = ptset.getTaskData();
         boolean moreThanOneTask = false;
 	while (taskIter.hasNext()) {
@@ -106,7 +105,8 @@ class WhereCommand extends Command {
             if (cli.getSteppingEngine() == null
                 || !cli.getSteppingEngine().isTaskRunning(task)) {
                 DebugInfoStackFactory.printStackTrace(cli.outWriter, tmpFrame,
-                                                      stopLevel, true, printScopes,
+                                                      stopLevel, true,
+						      options.printScopes,
                                                       true);
             }
 	}
