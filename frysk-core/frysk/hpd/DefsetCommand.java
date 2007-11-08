@@ -43,20 +43,17 @@ import java.util.List;
 
 class DefsetCommand extends ParameterizedCommand {
 
-    private static final String full = "Associates a logical name with a "
-	    + "group of threads and/or processes,\n"
-	    + "creating a user-defined set. Once a user-defined set has been\n"
-	    + "established, it can be used (enclosed in brackets) as a p/t set "
-	    + "prefix\n"
-	    + "or as the argument to a focus command, providing a shorthand "
-	    + "way of\n"
-	    + "referring to potentially complex groupings of processes and "
-	    + "threads. ";
-
     DefsetCommand() {
 	super("defset",
 	      "Assign a set name to a group of processes/threads",
-	      "defset set-name p/t-set", full);
+	      "defset set-name p/t-set",
+	      ("Associates a logical name with a group of threads and/or"
+	       + " processes, creating a user-defined set.  Once a"
+	       + " user-defined set has been established, it can be used"
+	       + " (enclosed in brackets) as a p/t set prefix or as the"
+	       + " argument to a focus command, providing a shorthand"
+	       + " way of referring to potentially complex groupings"
+	       + " of processes and threads."));
     }
 
     public void interpret(CLI cli, Input cmd, Object options) {
@@ -64,23 +61,21 @@ class DefsetCommand extends ParameterizedCommand {
 	String setnot = null;
 	PTSet set = null;
 
-	if (cmd.size() == 2) {
-	    setname = cmd.parameter(0);
-	    if (!setname.matches("\\w+"))
-		throw new InvalidCommandException
-		    ("Set name must be alphanumeric.");
-	    setnot = cmd.parameter(1);
-	    if (!cli.builtinPTSets.containsKey(setnot)) {
-		set = cli.createSet(setnot);
-		cli.namedPTSets.put(setname, set);
-	    } else {
-		cli.addMessage(
-			"The set name is reserved for a predefined set.",
-			Message.TYPE_ERROR);
-	    }
+	if (cmd.size() != 2)
+	    throw new InvalidCommandException("Wrong number of parameters");
+	setname = cmd.parameter(0);
+	if (!setname.matches("\\w+"))
+	    throw new InvalidCommandException
+		("Set name must be alphanumeric.");
+	setnot = cmd.parameter(1);
+	if (!cli.builtinPTSets.containsKey(setnot)) {
+	    set = cli.createSet(setnot);
+	    cli.namedPTSets.put(setname, set);
 	} else {
-	    cli.printUsage(cmd);
-	}
+	    cli.addMessage(
+			   "The set name is reserved for a predefined set.",
+			   Message.TYPE_ERROR);
+	    }
     }
 
     int complete(CLI cli, PTSet ptset, String incomplete, int base,

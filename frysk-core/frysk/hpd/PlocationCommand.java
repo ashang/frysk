@@ -42,46 +42,24 @@ package frysk.hpd;
 import java.util.Iterator;
 import frysk.proc.Task;
 import frysk.value.Value;
+import java.util.List;
 
-class PlocationCommand
-    extends Command
-{
+class PlocationCommand extends ParameterizedCommand {
     PlocationCommand() {
-	super("plocation", "Display the location of a program variable or expression.",
-	      "plocation expression [-name] [-index]", "The plocation command " +
-	      "evaluates and displays the type of an expression. The debugger\n" +
-	      "interprets the expression by looking up the value(s) associated with\n" +
-	      "each symbol and applying the operators." +
-	      "Output is \"LocationType LocationName - Size byte(s)\"");
+	super("plocation",
+	      "Display the location of a program variable or expression.",
+	      "plocation <expression>",
+	      ("The plocation command evaluates and displays the type of an"
+	       + " expression. The debugger interprets the expression"
+	       + " by looking up the value(s) associated with each symbol"
+	       + " and applying the operators.  Output is"
+	       + " \"LocationType LocationName - Size byte(s)\""));
     }
 
-    public void interpret(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd, Object options) {
         PTSet ptset = cli.getCommandPTSet(cmd);
-	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
-	    cli.printUsage(cmd);
-	    return;
-        }
-	if (cmd.size() == 0
-	    || ((cmd.parameter(0)).equals("-help"))) {
-	    cli.printUsage(cmd);
-	    return;
-        }
         // What's left of the command line.
 	String sInput = cmd.stringValue();
-
-	if (sInput.length() == 0) {
-	    cli.printUsage(cmd);
-	    return;
-	}
-
-	if (cmd.getAction().compareTo("assign") == 0) {
-	    int i = sInput.indexOf(' ');
-	    if (i == -1) {
-		cli.printUsage(cmd);          
-		return;
-	    }
-	    sInput = sInput.substring(0, i) + "=" + sInput.substring(i);
-	}        
 
 	Value result = null;
         Iterator taskDataIter = ptset.getTaskData();
@@ -109,5 +87,11 @@ class PlocationCommand
             cli.addMessage("Symbol \"" + sInput + "\" is not found in the current context.",
                            Message.TYPE_ERROR);
         }
+    }
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return CompletionFactory.completeExpression(cli, ptset, incomplete,
+						    base, completions);
     }
 }

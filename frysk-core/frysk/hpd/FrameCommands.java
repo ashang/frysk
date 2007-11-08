@@ -66,10 +66,6 @@ class FrameCommands extends ParameterizedCommand {
 
     public void interpret(CLI cli, Input cmd, Object options) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
-	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
-	    cli.printUsage(cmd);
-	    return;
-	}
 	int level = 1;
 	boolean down = true;
 

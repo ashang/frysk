@@ -1,5 +1,11 @@
 2007-11-08  Andrew Cagney  <cagney@redhat.com>
 
+	* PlocationCommand.java: Extend ParameterizedCommand.
+	* PtypeCommand.java: Ditto.
+	* DefsetCommand.java: Eliminate call to CLI.printUsage.
+	* FrameCommands.java: Ditto.
+	* SetCommand.java: Ditto.
+
 	* WhereCommand.java: Extend ParameterizedCommand.
 	* FrameCommands.java: Ditto.
 	

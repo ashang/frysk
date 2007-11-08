@@ -42,54 +42,57 @@ package frysk.hpd;
 import java.util.List;
 
 class SetCommand extends ParameterizedCommand {
-    private static final String full = "The set command supports the viewing of "
-	    + "debugger state variables and the\n"
-	    + "assignment of new values to them.  When no arguments are "
-	    + "specified, the\n"
-	    + "names and current values for all debugger state variables are\n"
-	    + "displayed. When just a single argument is included, the "
-	    + "debugger echoes\n"
-	    + "the variable name and displays its current value.  The second "
-	    + "argument\n"
-	    + "defines the value that should replace any previous value for "
-	    + "that\n"
-	    + "variable.  It must be enclosed in quotes if it contains "
-	    + "multiple\n" + "words. ";
 
     private final DbgVariables dbgvars;
 
     SetCommand(DbgVariables dbgvars) {
 	super("set", "Change or view a debugger variable.",
-	      "set debugger-var = value\nset [debugger-var]", full);
+	      "set debugger-var = value\nset [debugger-var]",
+	      ("The set command supports the viewing of debugger state"
+	       + " variables and the assignment of new values to them.  When"
+	       + " no arguments are specified, the names and current values"
+	       + " for all debugger state variables are displayed.  When"
+	       + " just a single argument is included, the debugger echoes"
+	       + " the variable name and displays its current value.  The"
+	       + " second argument defines the value that should replace"
+	       + " any previous value for that variable.  It must be"
+	       + " enclosed in quotes if it contains multiple words."));
 	this.dbgvars = dbgvars;
     }
 
-    public void interpret(CLI cli, Input cmd, Object options) {
-	String temp;
-	if (cmd.size() == 3 && (cmd.parameter(1)).equals("=")) {
-	    temp = cmd.parameter(0);
-	    if (dbgvars.variableIsValid(temp)) {
-		if (dbgvars.valueIsValid(temp, cmd.parameter(2))) {
-		    dbgvars.setVariable(temp, cmd.parameter(2));
-		} else
-		    cli.addMessage("Illegal variable value.",
-			    Message.TYPE_ERROR);
-	    } else
-		cli.addMessage(new Message("Illegal debugger variable \""
-			+ cmd.parameter(0) + "\"", Message.TYPE_ERROR));
-	} else if (cmd.size() == 1) {
-	    temp = cmd.parameter(0);
-	    if (dbgvars.variableIsValid(temp)) {
-		cli.addMessage(
-			temp + " = " + dbgvars.getValue(temp).toString(),
-			Message.TYPE_NORMAL);
-	    } else
-		cli.addMessage(new Message("Illegal debugger variable \""
-			+ cmd.parameter(0) + "\"", Message.TYPE_ERROR));
-	} else if (cmd.size() == 0) {
-	    cli.addMessage(dbgvars.toString(), Message.TYPE_NORMAL);
-	} else {
-	    cli.printUsage(cmd);
+    public void interpret(CLI cli, Input input, Object options) {
+	switch (input.size()) {
+	default:
+	    throw new InvalidCommandException("wrong number of parameters");
+	case 3:
+	    if (!input.parameter(1).equals("="))
+		throw new InvalidCommandException("missing \"=\"");
+	    String variable = input.parameter(0);
+	    if (!dbgvars.variableIsValid(variable))
+		throw new InvalidCommandException("Debugger variable \""
+						  + variable
+						  + "\" is invalid");
+	    String value = input.parameter(2);
+	    if (!dbgvars.valueIsValid(variable, value))
+		throw new InvalidCommandException("Variable value \""
+						  + value
+						  + "\" is invalid");
+	    dbgvars.setVariable(variable, value);
+	    break;
+	case 1:
+	    String var = input.parameter(0);
+	    if (!dbgvars.variableIsValid(var))
+		throw new InvalidCommandException("Variable \""
+						  + var
+						  + "\" is invalid");
+	    cli.outWriter.print(var);
+	    cli.outWriter.print(" = ");
+	    cli.outWriter.print(dbgvars.getValue(var));
+	    cli.outWriter.println();
+	    break;
+	case 0:
+	    cli.outWriter.println(dbgvars.toString());
+	    break;
 	}
     }
 
