@@ -84,7 +84,8 @@ public class LinuxHost extends DeadHost {
 					+ "not a valid ELF core file.");
 		}
 
-		if (corefileElf.getEHeader().type != ElfEHeader.PHEADER_ET_CORE) {
+		if ((corefileElf.getEHeader() == null) || 
+				(corefileElf.getEHeader().type != ElfEHeader.PHEADER_ET_CORE)) {
 			this.corefileElf.close();
 			throw new RuntimeException("'" + this.coreFile.getAbsolutePath()
 					+ "' is not a corefile.");

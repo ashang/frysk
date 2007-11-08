@@ -1,7 +1,10 @@
 2007-11-08  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* LinuxHost.java (LinuxHost): Check for null Elf Header
+
 	* LinuxHost.java (LinuxHost): Check in exe is set to
 	null.
+	
 
 2007-11-07  Phil Muldoon  <pmuldoon@redhat.com>
 

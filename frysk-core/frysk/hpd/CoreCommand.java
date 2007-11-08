@@ -97,14 +97,7 @@ public class CoreCommand extends ParameterizedCommand {
 					"No core file found, or cannot read corefile");
 
 		// Build Core. Move any exceptions up to cli and print to user.
-		try {
-			coreHost = getHost(coreFile, exeFile, noExeOption);
-		} catch (Exception e) {
-			cli.addMessage("An error has occured while loading corefile: '"
-					+ coreFile.getAbsolutePath() + "'. Error message is: "
-					+ e.getMessage(), Message.TYPE_ERROR);
-			return;
-		}
+		coreHost = getHost(coreFile, exeFile, noExeOption);
 
 		// Get the core proc.
 		coreProc = getProc(coreHost);

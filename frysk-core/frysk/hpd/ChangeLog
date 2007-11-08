@@ -1,3 +1,8 @@
+2007-11-08  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* CoreCommand.java (interpret): Remove try{} for host building.
+	Let fhpd error handling print message.
+
 2007-11-08  Andrew Cagney  <cagney@redhat.com>
 
 	* ParameterizedCommand.java
