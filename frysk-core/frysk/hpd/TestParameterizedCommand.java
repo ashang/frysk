@@ -69,6 +69,21 @@ public class TestParameterizedCommand extends TestLib {
 		    return -1;
 		}
 	    };
+	command.add(new CommandOption("arg", "long parameterized option",
+				      "ARG") {
+		void parse(String arg, Object options) {
+		    parsedOption = true;
+		    argument = arg;
+		    assertNotNull("-arg's argument", argument);
+		}
+	    });
+	command.add(new CommandOption("opt", "long option") {
+		void parse(String arg, Object options) {
+		    parsedOption = true;
+		    argument = arg;
+		    assertNull("-opt's argument", argument);
+		}
+	    });
     }
     public void tearDown() {
 	command = null;
@@ -82,103 +97,80 @@ public class TestParameterizedCommand extends TestLib {
 	command.interpret(null, input);
     }
 
-    public void testDashDash() {
-	parse("parser --");
-	assertEquals("Params list should be empty", 0, input.size());
-    }
-
-    public void testRegular() {
-	parse("parser argument");
-	assertEquals("Param list should have one item", 1, input.size());
-	assertEquals("Argument should be 'argument'", "argument",
-		     input.parameter(0));
-    }
-
-    public void testRegularDashDash() {
-	parse("parser argument --");
-	assertEquals("Param list should have one item", 1, input.size());
-	assertEquals("Argument should be 'argument'", "argument",
-		     input.parameter(0));
-    }
-
-    public void testOption() {
-	command.add(new CommandOption("short", "short option") {
-		void parse(String argument, Object options) {
-		    parsedOption = true;
-		}
-	    });
-	parse("parser -short");
-	assertEquals("Params list should be empty", 0, input.size());
-	assertTrue("Option should have been handled", parsedOption);
+    private void check(String string, String[] parameters,
+		       boolean parsedOption, String argument) {
+	parse(string);
+	assertEquals("input size", parameters.length, input.size());
+	assertEquals("parsedOption", this.parsedOption, parsedOption);
+	assertEquals("argument", this.argument, argument);
+	for (int i = 0; i < parameters.length; i++) {
+	    assertEquals("parameter " + i, parameters[i], input.parameter(i));
+	}
 	assertTrue("interpreted", interpreted);
 	assertFalse("helped", helped);
     }
 
+    public void testDashDash() {
+	check("parser --", new String[0], false, null);
+    }
+
+    public void testRegular() {
+	check("parser argument", new String[] { "argument" }, false, null);
+    }
+
+    public void testRegularDashDash() {
+	check("parser argument --", new String[] { "argument" }, false, null);
+    }
+
+    public void testOption() {
+	check("parser -opt", new String[0], true, null);
+    }
+
     public void testOptionAfterDashDash() {
-	command.add(new CommandOption("short", "short option") {
-		void parse(String argument, Object options) {
-		    parsedOption = true;
-		}
-	    });
-	parse("parser -- -short");
-	assertEquals("Params list should be empty", 0, input.size());
-	assertTrue("Option should have been handled", parsedOption);
+	check("parser -- -opt", new String[0], true, null);
     }
 
     public void testOptionBeforeDashDash() {
-	command.add(new CommandOption("short", "short option") {
-		void parse(String argument, Object options) {
-		    fail("Should not have parsed option");
-		}
-	    });
-	parse("parser -short --");
-	assertEquals("Param list should have one item", 1, input.size());
-	assertEquals("Argument should be '-short'", "-short",
-		     input.parameter(0));
-	assertFalse("Argument should not have been parsed", parsedOption);
+	check("parser -opt --", new String[] { "-opt" }, false, null);
     }
 
-    public void testOptionWithArgs() {
-	command.add(new CommandOption("short", "short option", "ARG") {
-		void parse(String arg, Object options) {
-		    parsedOption = true;
-		    argument = arg;
-		}
-	    });
-	parse("parser -short argument");
-	assertEquals("Params list should be empty", 0, input.size());
-	assertTrue("Option should have been handled", parsedOption);
-	assertEquals("Option should have argument 'argument'",
-		     "argument", argument);
+    public void testOptionWithArg() {
+	check("parser -arg argument", new String[0], true, "argument");
     }
 
-    public void testOptionWithArgsAfterDashDash() {
-	command.add(new CommandOption("short", "short option", "ARG") {
-		void parse(String arg, Object options) {
-		    parsedOption = true;
-		    argument = arg;
-		}
-	    });
-	parse("parser -- -short argument");
-	assertEquals("Params list should be empty", 0, input.size());
-	assertTrue("Option should have been handled", parsedOption);
-	assertEquals("Option should have argument 'argument'",
-		     "argument", argument);
+    public void testOptionWithArgAfterDashDash() {
+	check("parser -- -arg argument", new String[0], true, "argument");
     }
 
-    public void testOptionWithArgsBeforeDashDash() {
-	command.add(new CommandOption("short", "short option", "ARG") {
-		void parse(String arg, Object options) {
-		    parsedOption = true;
-		    argument = arg;
-		}
-	    });
-	parse("parser -short argument --");
-	assertEquals("Params list should have 2 elements", 2, input.size());
-	assertEquals("First argument: '-short", "-short", input.parameter(0));
-	assertEquals("Second argument: 'argument", "argument",
-		     input.parameter(1));
-	assertFalse("Option should not have been handled", parsedOption);
+    public void testOptionWithArgBeforeDashDash() {
+	check("parser -arg argument --", new String[] { "-arg", "argument" },
+	      false, null);
+    }
+
+    private void checkInvalid(String string) {
+	RuntimeException thrown = null;
+	try {
+	    parse(string);
+	} catch (InvalidCommandException e) {
+	    thrown = e;
+	}
+	assertNotNull("exception thrown", thrown);
+    }
+
+    public void testMissingArg() {
+	checkInvalid("parser -arg");
+    }
+
+    public void testTooManyArgs() {
+	checkInvalid("parser -arg arg1 arg2");
+    }
+
+    public void testExtraArg() {
+	checkInvalid("parser -opt arg");
+    }
+
+    public void testMissingOption() {
+	checkInvalid("parser -- arg");
     }
 
     public void testHelp() {

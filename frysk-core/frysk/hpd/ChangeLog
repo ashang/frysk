@@ -1,5 +1,16 @@
 2007-11-08  Andrew Cagney  <cagney@redhat.com>
 
+	* ParameterizedCommand.java
+	(handleOption(Input,String,int,Object)): Fix off-by-one error.
+	(HelpException): Delete.
+	* TestParameterizedCommand.java (setUp()): Add options.
+	(check(String,String[],boolean,String)):  New.
+	(checkInvalid(String)): New.
+	(testTooManyArgs()): New.
+	(testMissingArg()): New.
+	(testExtraArg()): New.
+	(testMissingOption()): New.
+
 	* CompletionFactory.java (completeFileName(CLI,String,int,List)): New.
 	(completeExpression(CLI,PTSet,String,int,List)): New.	
 	(completeFileName(CLI,Input,int,List)): Delete.

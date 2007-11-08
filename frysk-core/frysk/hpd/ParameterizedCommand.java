@@ -55,11 +55,6 @@ abstract class ParameterizedCommand extends Command {
 	super(name, description, syntax, full);
 	this.syntax = syntax;
 	this.full = full;
-	add(new CommandOption("help", "print help") {
-		void parse(String argument, Object options) {
-		    throw new HelpException();
-		}
-	    });
     }
     ParameterizedCommand(String name, String syntax, String description) {
 	this(name, description, syntax, description);
@@ -72,13 +67,13 @@ abstract class ParameterizedCommand extends Command {
 	    shortOptions.put("" + option.shortName, option);
     }
 
-    private static class HelpException extends RuntimeException {
-	static final long serialVersionUID = 1;
-    }
-
     private void handleOption(Input input, String option, int index,
 			      Object options) {
+	// Strip any leading "-"'s
 	String name = option.substring(1);
+	while (name.length() > 0 && name.charAt(0) == '-')
+	    name = name.substring(1);
+	// Strip off =... in -option=...
 	int eq = name.indexOf('=');
 	if (eq != -1)
 	    name = option.substring(0, eq);
@@ -91,21 +86,25 @@ abstract class ParameterizedCommand extends Command {
 	}
 	String argument = null;
 	if (commandOption.parameter != null) {
+	    // Require a single parameter.
+	    if ((eq >= 0 && index != input.size())
+		|| (eq == -1 && index != input.size() - 1))
+		throw new InvalidCommandException
+		    ("option -" + commandOption.longName
+		     + " expects a single parameter "
+		     + commandOption.parameter);
 	    if (eq == -1) {
-		if (input.size() < index)
-		    throw new InvalidCommandException
-			("option -" + commandOption.longName
-			 + " expects parameter "
-			 + commandOption.parameter);
 		argument = input.parameter(index);
 		input.remove(index);
 	    } else {
 		argument = option.substring(eq + 1);
 	    }
-	} else if (eq != -1) {
-	    throw new InvalidCommandException("option -"
-					      + commandOption.longName
-					      + " doesn't allow an argument");
+	} else {
+	    // Reject a parameter.
+	    if (eq != -1 || index != input.size())
+		throw new InvalidCommandException
+		    ("option -" + commandOption.longName
+		     + " doesn't allow an argument");
 	}
 	commandOption.parse(argument, options);
     }
@@ -116,23 +115,25 @@ abstract class ParameterizedCommand extends Command {
      */
     public final void interpret(CLI cli, Input input) {
 	Object options = options();
-	try {
-	    for (int currentIndex = input.size() - 1;
-		 currentIndex > -1;
-		 --currentIndex) {
-		String string = input.parameter(currentIndex);
-		if (string.equals("--")) {
-		    input.remove(currentIndex);
-		    break;
-		}
-		if (string.charAt(0) != '-')
-		    continue;
-		handleOption(input, string, currentIndex + 1, options);
+	for (int currentIndex = input.size() - 1; currentIndex > -1;
+	     --currentIndex) {
+	    String string = input.parameter(currentIndex);
+	    if (string.equals("--")) {
+		if (currentIndex != input.size() - 1)
+		    throw new InvalidCommandException
+			("Invalid option "
+			 + input.parameter(currentIndex + 1));
 		input.remove(currentIndex);
+		break;
 	    }
-	} catch (HelpException h) {
-	    help(cli, input);
-	    return;
+	    if (string.equals("-help")) {
+		help(cli, input);
+		return;
+	    }
+	    if (string.charAt(0) != '-')
+		continue;
+	    handleOption(input, string, currentIndex + 1, options);
+	    input.remove(currentIndex);
 	}
 	interpret(cli, input, options);
     }
