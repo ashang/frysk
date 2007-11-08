@@ -116,8 +116,8 @@ class RunCommand extends Command {
 
     public void interpret(CLI cli, Input cmd) {
 	if (cmd.size() < 1) {
-	    cli.printUsage(cmd);
-	    return;
+	    // XXX: should default to previous values.
+	    throw new InvalidCommandException("missing program");
 	}
 	Runner runner = new Runner(cli);
 	Manager.host.requestCreateAttachedProc(cmd.stringArrayValue(), runner);
@@ -126,12 +126,8 @@ class RunCommand extends Command {
         } catch (InterruptedException e) {
             return;
         }
-        // register with SteppingEngine
-	cli.doAttach(runner.launchedTask);
-        cli.getSteppingEngine().getBreakpointManager()
-            .manageProcess(runner.launchedTask.getProc());
-        cli.idManager.manageProc(runner.launchedTask.getProc(),
-				 cli.idManager.reserveProcID());
-        runner.launchedTask.requestUnblock(runner);
+        // register with SteppingEngine et.al.
+	cli.doAttach(runner.launchedTask.getProc());
+	runner.launchedTask.requestUnblock(runner);
     }
 }

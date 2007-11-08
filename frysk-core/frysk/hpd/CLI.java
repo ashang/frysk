@@ -132,37 +132,30 @@ public class CLI {
     /*
      * Command handlers
      */
-
-    public void doAttach(int pid, Proc proc, Task task) {
-        Proc[] temp = new Proc[1];
-        temp[0] = proc;
+    public void doAttach(Proc proc) {
         synchronized (this) {
             attached = -1;
             attachedLatch = new CountDownLatch(1);
         }
         steppingEngine.addProc(proc);
-                // Wait till we are attached.
+	// Wait till we are attached.
         try {
             attachedLatch.await();
-            addMessage("Attached to process " + attached, Message.TYPE_NORMAL);
-        }
-        catch (InterruptedException ie) {
+	    outWriter.print("Attached to process ");
+	    outWriter.println(attached);
+        } catch (InterruptedException ie) {
             addMessage("Attach interrupted.", Message.TYPE_ERROR);
             return;
-        }
-        finally {
+        } finally {
             synchronized (this) {
                 attached = -1;
                 attachedLatch = null;
             }
         }
+        steppingEngine.getBreakpointManager().manageProcess(proc);
+        idManager.manageProc(proc, idManager.reserveProcID());
     }
 
-    public void doAttach(Task task) {
-        Proc proc = task.getProc();
-        doAttach(proc.getPid(), proc, task);
-    }
-    
     //private static PrintStream out = null;// = System.out;
     final PrintWriter outWriter;
     private Preprocessor prepro;

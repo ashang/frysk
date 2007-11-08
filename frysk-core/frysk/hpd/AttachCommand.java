@@ -39,15 +39,14 @@
 
 package frysk.hpd;
 
-import java.util.Iterator;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
-import frysk.proc.Task;
 import frysk.proc.Manager;
 import frysk.proc.FindProc;
+import java.util.List;
 
-class AttachCommand
-    extends Command {
+class AttachCommand extends ParameterizedCommand {
+
     private class ProcFinder implements FindProc {
 	Proc proc = null;
 
@@ -66,75 +65,47 @@ class AttachCommand
 	}
     }
 
-    private static final String full = "The attach command causes the debugger "
-	    + "to attach to an existing\n"
-	    + "process(es), making it possible to continue the process' "
-	    + "execution under\n"
-	    + "debugger control. The command applies at the process level; all "
-	    + "threads\n"
-	    + "corresponding to the process will be attached by the operation. "
-	    + "It is\n"
-	    + "the user's responsibility to ensure that the process(es) "
-	    + "actually is\n" + "executing the specified executable.";
-
     AttachCommand() {
 	super("attach", "Attach to a running process.",
-	      "attach [executable] pid [-task tid]", full);
+	      "attach <pid> ...",
+	      ("The attach command causes the debugger to attach to an"
+	       + " existing process(es), making it possible to continue"
+	       + " the process' execution under debugger control.  The"
+	       + " command applies at the process level; all threads"
+	       + " corresponding to the process will be attached by the"
+	       + " operation.  It is the user's responsibility to ensure"
+	       + " that the process(es) actually is executing the specified"
+	       + " executable."));
     }
 
-    public void interpret(CLI cli, Input cmd) {
-	int pid = 0;
-	int tid = 0;
-	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
-	    cli.printUsage(cmd);
-	    return;
+    public void interpret(CLI cli, Input cmd, Object options) {
+	if (cmd.size() == 0) {
+	    throw new InvalidCommandException("Missing process ID");
 	}
-
-	if (cmd.size() < 1) {
-	    cli.printUsage(cmd);
-	    return;
-	}
-
-	for (int idx = 0; idx < cmd.size(); idx++) {
-	    if (cmd.parameter(idx).equals("-task")) {
-		idx += 1;
-		tid = Integer.parseInt(cmd.parameter(idx));
-	    } else if (cmd.parameter(idx).indexOf('-') == 0) {
-		cli.printUsage(cmd);
-		return;
-	    } else if (cmd.parameter(idx).matches("[0-9]+"))
-		pid = Integer.parseInt(cmd.parameter(idx));
-	}
-
-	ProcFinder findProc = new ProcFinder();
-	Manager.host.requestFindProc(new ProcId(pid), findProc);
-	synchronized (findProc) {
-	    while (!findProc.procSearchFinished) {
-		try {
-		    findProc.wait();
-		} catch (InterruptedException ie) {
-		    findProc.proc = null;
+	for (int i = 0; i < cmd.size(); i++) {
+	    int pid = Integer.parseInt(cmd.parameter(i));
+	    ProcFinder findProc = new ProcFinder();
+	    Manager.host.requestFindProc(new ProcId(pid), findProc);
+	    synchronized (findProc) {
+		while (!findProc.procSearchFinished) {
+		    try {
+			findProc.wait();
+		    } catch (InterruptedException ie) {
+			findProc.proc = null;
+		    }
 		}
 	    }
-	}
-	if (findProc.proc == null) {
-	    cli.addMessage("Couldn't find process " + pid, Message.TYPE_ERROR);
-	    return;
-	}
-	int procID = cli.idManager.reserveProcID();
-	Task task = null;
-	if (pid == tid || tid == 0)
-	    task = findProc.proc.getMainTask();
-	else
-	    for (Iterator i = findProc.proc.getTasks().iterator(); i.hasNext();) {
-		task = (Task) i.next();
-		if (task.getTid() == tid)
-		    break;
+	    if (findProc.proc == null) {
+		cli.outWriter.print("Couldn't find process ");
+		cli.outWriter.println(pid);
+		continue;
 	    }
-	cli.doAttach(pid, findProc.proc, task);
-        cli.getSteppingEngine().getBreakpointManager()
-            .manageProcess(findProc.proc);
-	cli.idManager.manageProc(findProc.proc, procID);
+	    cli.doAttach(findProc.proc);
+	}
+    }
 
+    int complete(CLI cli, PTSet ptset, String input, int base,
+		 List completions) {
+	return -1;
     }
 }

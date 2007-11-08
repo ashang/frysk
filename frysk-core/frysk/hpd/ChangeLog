@@ -1,5 +1,11 @@
 2007-11-08  Andrew Cagney  <cagney@redhat.com>
 
+	* CLI.java (doAttach(Task)): Delete.
+	(doAttach(Proc)): Replace doAttach(int,Proc,Task).
+	* RunCommand.java: Update.
+	* AttachCommand.java: Update; extend ParameterizedCommand; delete
+	-task option.
+	
 	* TestAliasCommands.java: New file.
 
 	* AliasCommands.java: New.
