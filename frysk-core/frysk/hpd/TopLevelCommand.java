@@ -69,7 +69,7 @@ public class TopLevelCommand extends MultiLevelCommand {
 	}
     }
 
-    TopLevelCommand(DbgVariables dbgvars) {
+    TopLevelCommand() {
 	super("<top-level", "top level command",
 	      "<command> <parameter> ...",
 	      "a top level command");
@@ -99,11 +99,11 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(new PtypeCommand());
         add(new QuitCommand("quit"));
         add(new QuitCommand("exit"));
-        add(new SetCommand(dbgvars));
+        add(new DbgVariableCommands.Set());
         add(new StepCommand());
         add(new StepInstructionCommand());
         add(new UndefsetCommand());
-        add(new UnsetCommand(dbgvars));
+        add(new DbgVariableCommands.Unset());
         add(new FrameCommands("up"));
         add(new ViewsetCommand());
         add(new WhatCommand());

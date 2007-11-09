@@ -163,7 +163,7 @@ public class CLI {
     private final SortedMap handlers = new TreeMap();
     private final Command topLevelCommand;
     final UserHelp userhelp;
-    private DbgVariables dbgvars;
+    final DbgVariables dbgvars = new DbgVariables();
 
     // PT set related stuff
     private SetNotationParser setparser;
@@ -220,7 +220,6 @@ public class CLI {
 
         prepro = new Preprocessor();
         userhelp = new UserHelp();
-        dbgvars = new DbgVariables();
    
         //XXX: Must make a reference to every command that is used
         //otherwise build system will discard those classes. Therefore
@@ -250,11 +249,11 @@ public class CLI {
         addHandler(new PtypeCommand());
         addHandler(new QuitCommand("quit"));
         addHandler(new QuitCommand("exit"));
-        addHandler(new SetCommand(dbgvars));
+        addHandler(new DbgVariableCommands.Set());
         addHandler(new StepCommand());
         addHandler(new StepInstructionCommand());
         addHandler(new UndefsetCommand());
-        addHandler(new UnsetCommand(dbgvars));
+        addHandler(new DbgVariableCommands.Unset());
         addHandler(new FrameCommands("up"));
         addHandler(new ViewsetCommand());
         addHandler(new WhatCommand());
@@ -268,7 +267,7 @@ public class CLI {
         addHandler(new ExamineCommand());
         addHandler(new LoadCommand());
         addHandler(new PeekCommand());
-	topLevelCommand = new TopLevelCommand(dbgvars);
+	topLevelCommand = new TopLevelCommand();
 
         // initialize PT set stuff
         setparser = new SetNotationParser();

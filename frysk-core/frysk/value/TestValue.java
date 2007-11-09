@@ -102,6 +102,7 @@ public class TestValue
     {
 	Value v1 = intType.createValue(4);
 	Value v2 = shortType.createValue(9);
+	boolean bool = false;
 	// Give bogus word size values.
 	Value v3 = v1.getType().getALU(v2.getType(), 0).add(v1, v2);
 	assertEquals ("4 + 9", 4 + 9, v3.asLong());	
@@ -139,6 +140,10 @@ public class TestValue
 	assertEquals ("9 & 4", 1, v3.asLong());
 	v3 = v1.getType().getALU(v2.getType(), 0).logicalOr(v2, v1);
 	assertEquals ("9 | 4", 1, v3.asLong());	
+	v3 = v1.getType().getALU(v1.getType(), 0).logicalNegation(v1);
+	assertEquals ("!4", 0, v3.asLong());		
+	bool = v2.getType().getALU(v2.getType(), 0).getLogicalValue(v2);
+	assertEquals ("bool(9)", true, bool);		
 	v3 = v3.assign(v1);	
 	assertEquals ("v3 = 4", 4, v3.asLong());
 	v3 = v3.getType().getALU(v1.getType(), 0).plusEqual(v3, v1);
