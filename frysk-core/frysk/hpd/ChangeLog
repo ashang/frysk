@@ -1,5 +1,7 @@
 2007-11-08  Andrew Cagney  <cagney@redhat.com>
 
+	* FocusCommand.java: Eliminate call to CLI.printUsage.
+
 	* ViewsetCommand.java: Extend ParameterizedCommand.
 	* WhichsetsCommand.java: Eliminate call to CLI.printUsage.
 

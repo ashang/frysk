@@ -47,34 +47,33 @@ import frysk.proc.Task;
 import java.util.List;
 
 class FocusCommand extends ParameterizedCommand {
-    private static String full = "Changes the current p/t set. As a "
-	    + "consequence, subsequent commands will\n"
-	    + "apply to just the threads specified in the argument of this\n"
-	    + "command. When no argument is specified, the command lists the "
-	    + "threads in\n" + "the current p/t set. ";
 
     FocusCommand() {
 	super("focus", "Change the current process/thread set.",
-	      "focus [p/t-set]", full);
+	      "focus [p/t-set]",
+	      ("Changes the current p/t set. As a consequence, subsequent"
+	       + " commands will apply to just the threads specified in"
+	       + " the argument of this command.  When no argument is"
+	       + " specified, the command lists the threads in the"
+	       + " current p/t set."));
     }
 
-    public void interpret(CLI cli, Input cmd, Object options) {
-	if (cmd.size() <= 1) {
-	    if (cmd.size() == 1) {
-		cli.targetset = cli.createSet(cmd.parameter(0));
-	    	Iterator i = cli.targetset.getTasks();
-	    	while (i.hasNext()) {
-	    	    Task task = (Task) i.next();
-	    	    DebugInfoFrame frame = DebugInfoStackFactory
-			.createVirtualStackTrace(task);
-	    	    cli.setTaskFrame(task, frame);
-	    	    cli.setTaskDebugInfo(task, new DebugInfo(frame));
-	    	}
-	    } else {
-		cli.execCommand("viewset");
+    public void interpret(CLI cli, Input input, Object options) {
+	switch (input.size()) {
+	default:
+	    throw new InvalidCommandException("wrong number of arguments");
+	case 0:
+	    cli.execCommand("viewset");
+	    break;
+	case 1:
+	    cli.targetset = cli.createSet(input.parameter(0));
+	    for (Iterator i = cli.targetset.getTasks(); i.hasNext(); ) {
+		Task task = (Task) i.next();
+		DebugInfoFrame frame = DebugInfoStackFactory
+		    .createVirtualStackTrace(task);
+		cli.setTaskFrame(task, frame);
+		cli.setTaskDebugInfo(task, new DebugInfo(frame));
 	    }
-	} else {
-	    cli.printUsage(cmd);
 	}
     }
 
