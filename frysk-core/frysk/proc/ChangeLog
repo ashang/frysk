@@ -1,3 +1,8 @@
+2007-11-09  Andrew Cagney  <cagney@redhat.com>
+
+	* PPCBankRegisters.java (PPC32BE_ON_PPC64BE): Don't add "nip",
+	"ctr", "lnk", "xer", "ccr".
+
 2007-11-09  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
 
         * IsaPowerPC.java: Updated it to also support Power32.

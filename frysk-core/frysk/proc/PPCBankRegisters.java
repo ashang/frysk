@@ -239,13 +239,15 @@ public class PPCBankRegisters {
 	.add("gpr29")
 	.add("gpr30")
 	.add("gpr31")
-	.add("nip")
+    // XXX: No such register on PPC32
+    //.add("nip")
 	.add("msr")
 	.add("orig_r3")
-	.add("ctr")
-	.add("lnk")
-	.add("xer")
-	.add("ccr")
+    // XXX: No such register on PPC32
+    //.add("ctr")
+    //.add("lnk")
+    //.add("xer")
+    //.add("ccr")
     // No such register on ppc64.
     // .add("mq"))
 	.add("trap")
