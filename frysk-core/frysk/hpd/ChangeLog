@@ -1,5 +1,10 @@
 2007-11-09  Andrew Cagney  <cagney@redhat.com>
 
+	* TestParameterizedCommand.java (check(...)): Add check for
+	input.stringValue().
+	* PrintCommand.java: Extend ParameterizedCommand.
+	* CommandOption.java (parseFormat(String)): New.
+
 	* MultiLevelCommand.java: Handle null tokens.
 	* ParameterizedCommand.java: Ditto.
 	

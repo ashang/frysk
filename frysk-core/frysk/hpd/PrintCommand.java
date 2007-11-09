@@ -47,16 +47,35 @@ import frysk.value.PointerType;
 import frysk.value.Type;
 import java.util.List;
 
-class PrintCommand
-    extends Command
-{
+class PrintCommand extends ParameterizedCommand {
+    private class Options {
+	Format format = Format.NATURAL;
+	boolean dumpTree = false;
+    }
+    Object options() {
+	return new Options();
+    }
+
     PrintCommand() {
-	this("print", "Evaluate and display the value of a program variable or expression.",
-	     "print expression [-name] [-index] [-format d|o|x|t]", "The print command evaluates and displays an expression. The debugger\n" +
-	     "interprets the expression by looking up the value(s) associated with\n" +
-	     "each symbol and applying the operators.  The result of an expression may\n" +
-	     "be a scalar value or an aggregate (array, array slice, record, or\n" +
-	     "structure.");
+	this("print",
+	     "Evaluate and display the value of an expression.",
+	     "print expression [-format d|o|x|t]",
+	     ("The print command evaluates and displays an expression. The"
+	     + " debugger interprets the expression by looking up the"
+	      + " value(s) associated with each symbol and applying the"
+	      + " operators.  The result of an expression may be a scalar"
+	      + " value or an aggregate (array, array slice, record, or"
+	      + " structure."));
+	add(new CommandOption.FormatOption() {
+		void set(Object options, Format format) {
+		    ((Options)options).format = format;
+		}
+	    });
+	add(new CommandOption("dump-tree", "dump the expression AST") {
+		void parse(String arg, Object options) {
+		    ((Options)options).dumpTree = true;
+		}
+	    });
     }
     
     PrintCommand (String name, String description, String syntax, 
@@ -64,106 +83,57 @@ class PrintCommand
 	super (name, description, syntax, full);
     }
 
-    public void interpret(CLI cli, Input cmd) {
-        PTSet ptset = cli.getCommandPTSet(cmd);
-	boolean dumpTree = false;
-	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
-	    cli.printUsage(cmd);
-	    return;
-        }
-	if (cmd.size() == 0
-	    || ((cmd.parameter(0)).equals("-help"))) {
-	    cli.printUsage(cmd);
-	    return;
-        }
-        // Skip set specification, if any.  XXX: Should do this after
-        // parameter parsing.
-	String sInput = cmd.stringValue();
+    public void interpret(CLI cli, Input input, Object o) {
+	if (input.size() == 0)
+	    throw new InvalidCommandException("missing expression");
+	Options options = (Options)o;
+        PTSet ptset = cli.getCommandPTSet(input);
 
-	Format format = null;
-	for (int i = 0; i < cmd.size(); i++) {
-	    if ((cmd.parameter(i)).equals("-format")) {
-		i += 1;
-		String arg = cmd.parameter(i);
-		if (arg.compareTo("d") == 0) 
-		    format = Format.DECIMAL;
-		else if (arg.compareTo("o") == 0)
-		    format = Format.OCTAL;
-		else if (arg.compareTo("x") == 0) 
-		    format = Format.HEXADECIMAL;
-		else if (arg.compareTo("t") == 0)
-		    format = Format.BINARY;
-		else
-		    throw new InvalidCommandException
-			("unrecognized format: " + arg);
-	    }
-	    else if ((cmd.parameter(i)).equals("-dump-tree")) 
-		dumpTree = true;
-	}
-	if (format != null)
-	    sInput = sInput.substring(0,sInput.indexOf("-format"));
-	else
-	    format = Format.NATURAL;
-	if (dumpTree == true)
-	    sInput = sInput.substring(0,sInput.indexOf("-dump-tree"));
-
-	if (sInput.length() == 0) {
-	    cli.printUsage(cmd);
-	    return;
-	}
-
-	if (cmd.getAction().compareTo("assign") == 0) {
+	String sInput = input.stringValue();
+	if (input.getAction().compareTo("assign") == 0) {
 	    int i = sInput.indexOf(' ');
 	    if (i == -1) {
-		cli.printUsage(cmd);          
-		return;
+		throw new InvalidCommandException("bad expression XXX");
 	    }
 	    sInput = sInput.substring(0, i) + "=" + sInput.substring(i);
 	}        
 
 	Value result = null;
         Iterator taskDataIter = ptset.getTaskData();
-        boolean doWithoutTask = !taskDataIter.hasNext();
-        while (doWithoutTask || taskDataIter.hasNext()) {
-            TaskData td = null;
+	do {
             Task task = null;
-            if (!doWithoutTask) {
-                td = (TaskData)taskDataIter.next();
+            if (taskDataIter.hasNext()) {
+		TaskData td = (TaskData)taskDataIter.next();
                 task = td.getTask();
-                cli.outWriter.println("[" + td.getParentID() + "." + td.getID()
-                                      + "]\n");
+                cli.outWriter.print("[");
+		cli.outWriter.print(td.getParentID());
+		cli.outWriter.print(".");
+		cli.outWriter.print(td.getID());
+		cli.outWriter.println("]");
             }
-            doWithoutTask = false;
             try {
-                result = cli.parseValue(task, sInput, dumpTree);	  
+                result = cli.parseValue(task, sInput, options.dumpTree);
             } catch (RuntimeException nnfe) {
 		cli.addMessage(nnfe.getMessage(), Message.TYPE_ERROR);
                 continue;
             }
 
-	    // XXX: Would it be better to just always have some sort
-	    // of fake task?
-	    if (task == null)
-		result.toPrint(cli.outWriter, null, format);
-	    else {
-		Type t = result.getType();
-		if (t instanceof PointerType) {
-		    cli.outWriter.print("(");
-		    t.toPrint(cli.outWriter);
-		    cli.outWriter.print(") ");
-		}
-		result.toPrint(cli.outWriter, task.getMemory(), format);
+	    Type t = result.getType();
+	    if (t instanceof PointerType) {
+		cli.outWriter.print("(");
+		t.toPrint(cli.outWriter);
+		cli.outWriter.print(") ");
 	    }	
+	    result.toPrint(cli.outWriter,
+			   task == null ? null : task.getMemory(),
+			   options.format);
 	    cli.outWriter.println();
-        }
-        if (result == null) {
-            cli.addMessage("Symbol \"" + sInput + "\" is not found in the current context.",
-                           Message.TYPE_ERROR);
-        }
+        } while (taskDataIter.hasNext());
     }
 
-    int complete(CLI cli, Input input, int cursor, List candidates) {
-	return CompletionFactory.completeFocusedExpression(cli, input, cursor,
-							   candidates);
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List candidates) {
+	return CompletionFactory.completeExpression(cli, ptset, incomplete,
+						    base, candidates);
     }
 }

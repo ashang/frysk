@@ -39,6 +39,8 @@
 
 package frysk.hpd;
 
+import frysk.value.Format;
+
 /**
  * A command option; optionally parameterized.
  */
@@ -80,6 +82,31 @@ abstract class CommandOption {
 	else
 	    throw new InvalidCommandException
 		("option -" + longName + " requires yes or no parameter");
+    }
+
+    /**
+     * Template option; parse a format.
+     */
+    static abstract class FormatOption extends CommandOption {
+	FormatOption() {
+	    super("format", "print format", "d|o|x|t");
+	}
+	void parse(String argument, Object options) {
+	    Format format;
+	    if (argument.compareTo("d") == 0) 
+		format = Format.DECIMAL;
+	    else if (argument.compareTo("o") == 0)
+		format = Format.OCTAL;
+	    else if (argument.compareTo("x") == 0) 
+		format = Format.HEXADECIMAL;
+	    else if (argument.compareTo("t") == 0)
+		format = Format.BINARY;
+	    else
+		throw new InvalidCommandException("unrecognized format: "
+						  + argument);
+	    set(options, format);
+	}
+	abstract void set(Object options, Format format);
     }
 
     abstract void parse(String argument, Object options);

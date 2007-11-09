@@ -97,10 +97,12 @@ public class TestParameterizedCommand extends TestLib {
 	command.interpret(null, input);
     }
 
-    private void check(String string, String[] parameters,
+    private void check(String string, String stringValue,
+		       String[] parameters,
 		       boolean parsedOption, String argument) {
 	parse(string);
 	assertEquals("input size", parameters.length, input.size());
+	assertEquals("stringValue", stringValue, input.stringValue());
 	assertEquals("parsedOption", this.parsedOption, parsedOption);
 	assertEquals("argument", this.argument, argument);
 	for (int i = 0; i < parameters.length; i++) {
@@ -111,39 +113,42 @@ public class TestParameterizedCommand extends TestLib {
     }
 
     public void testDashDash() {
-	check("parser --", new String[0], false, null);
+	check("parser --", "", new String[0], false, null);
     }
 
     public void testRegular() {
-	check("parser argument", new String[] { "argument" }, false, null);
+	check("parser argument", "argument",
+	      new String[] { "argument" }, false, null);
     }
 
     public void testRegularDashDash() {
-	check("parser argument --", new String[] { "argument" }, false, null);
+	check("parser argument --", "argument",
+	      new String[] { "argument" }, false, null);
     }
 
     public void testOption() {
-	check("parser -opt", new String[0], true, null);
+	check("parser -opt", "", new String[0], true, null);
     }
 
     public void testOptionAfterDashDash() {
-	check("parser -- -opt", new String[0], true, null);
+	check("parser -- -opt", "", new String[0], true, null);
     }
 
     public void testOptionBeforeDashDash() {
-	check("parser -opt --", new String[] { "-opt" }, false, null);
+	check("parser -opt --", "-opt", new String[] { "-opt" }, false, null);
     }
 
     public void testOptionWithArg() {
-	check("parser -arg argument", new String[0], true, "argument");
+	check("parser -arg argument", "", new String[0], true, "argument");
     }
 
     public void testOptionWithArgAfterDashDash() {
-	check("parser -- -arg argument", new String[0], true, "argument");
+	check("parser -- -arg argument", "", new String[0], true, "argument");
     }
 
     public void testOptionWithArgBeforeDashDash() {
-	check("parser -arg argument --", new String[] { "-arg", "argument" },
+	check("parser -arg argument --", "-arg argument",
+	      new String[] { "-arg", "argument" },
 	      false, null);
     }
 
