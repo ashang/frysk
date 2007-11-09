@@ -1,5 +1,13 @@
 2007-11-09  Andrew Cagney  <cagney@redhat.com>
 
+	* DbgVariables.java (complete(String,int,List)): New.
+	* TestDbgVariables.java: New.
+	* DbgVariableCommands: New.
+	* SetCommand.java: Delete.
+	* UnsetCommand.java: Delete.
+	* TopLevelCommand.java: Update.
+	* CLI.java (dbgvars): Make final; update.
+
 	* TestParameterizedCommand.java (check(...)): Add check for
 	input.stringValue().
 	* PrintCommand.java: Extend ParameterizedCommand.
