@@ -42,5 +42,5 @@
 # exception.
 
 cat $(dirname $0)/Unwind.java | sed \
-    -e "s/abstract class Unwind/class $(basename $0 .shjava) extends Unwind/" \
+    -e "s/abstract class Unwind/class $(basename $0 .java-sh) extends Unwind/" \
     -e "s/ abstract / native /"
