@@ -123,14 +123,14 @@ public abstract class MultiLevelCommand extends Command {
 	Input.Token incomplete = input.token(0);
 	// The cursor is past this token.  Find this level's
 	// sub-command and pass the completion problem on to it.
-	if (incomplete.value != null && cursor > incomplete.end) {
+	if (incomplete != null && cursor > incomplete.end) {
 	    Command subCommand = (Command)subCommands.get(incomplete.value);
 	    if (subCommand == null)
 		return -1; // give up
 	    return subCommand.complete(cli, input.accept(), cursor,
 				       candidates);
 	}
-	if (incomplete.value == null)
+	if (incomplete == null)
 	    candidates.addAll(subCommands.keySet());
 	else {
 	    for (Iterator i = subCommands.keySet().iterator(); i.hasNext(); ) {
@@ -141,9 +141,10 @@ public abstract class MultiLevelCommand extends Command {
 	}
 	// If there's only one token, append a trailing blank so that
 	// things are ready for the next token.
-	if (candidates.size() == 1) {
-	    candidates.set(0, ((String)candidates.get(0)) + " ");
-	}
-	return incomplete.start;
+	CompletionFactory.padSingleCandidate(candidates);
+	if (incomplete == null)
+	    return cursor;
+	else
+	    return incomplete.start;
     }
 }

@@ -174,7 +174,11 @@ abstract class ParameterizedCommand extends Command {
      * Complete the input.
      */
     final int complete(CLI cli, Input input, int cursor, List candidates) {
-	int start = input.token(0).start;
+	int start;
+	if (input.size() == 0)
+	    start = cursor;
+	else
+	    start = input.token(0).start;
 	int pos = complete(cli, cli.getCommandPTSet(input),
 			   input.stringValue(), cursor - start, candidates);
 	if (pos >= 0) {

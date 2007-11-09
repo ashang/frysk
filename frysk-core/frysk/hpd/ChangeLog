@@ -1,5 +1,8 @@
 2007-11-09  Andrew Cagney  <cagney@redhat.com>
 
+	* MultiLevelCommand.java: Handle null tokens.
+	* ParameterizedCommand.java: Ditto.
+	
 	* Input.java: Eliminate the sentinel.
 	(remove(int)): Delete.
 	(removeFirst()): New.
