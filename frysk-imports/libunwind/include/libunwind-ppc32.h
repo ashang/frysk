@@ -52,7 +52,7 @@ extern "C" {
  * to err on making it rather too big than too small.
  *
  * To simplify this whole process, we are at least initially taking the
- * tack that UNW_PPC32_* map straight across to the .eh_frame column register
+ * tack that ppc32 regs map straight across to the .eh_frame column register
  * numbers.  These register numbers come from gcc's source in
  * gcc/config/rs6000/rs6000.h
  *
