@@ -224,7 +224,6 @@ public class CLI {
         //XXX: Must make a reference to every command that is used
         //otherwise build system will discard those classes. Therefore
         //CLI cannot be made to be a singleton.
-        addHandler(new ActionsCommand());
         addHandler(new AliasCommands.Alias());
         addHandler(new AliasCommands.Unalias());
         addHandler(new AssignCommand());
@@ -232,11 +231,12 @@ public class CLI {
         addHandler(new BreakpointCommand());
         addHandler(new DebuginfoCommand());
         addHandler(new DefsetCommand());
-        addHandler(new DeleteCommand());
+        addHandler(new ActionPointCommands.Actions());
+        addHandler(new ActionPointCommands.Delete());
+        addHandler(new ActionPointCommands.Disable());
+        addHandler(new ActionPointCommands.Enable());
         addHandler(new DetachCommand());
-        addHandler(new DisableCommand());
         addHandler(new FrameCommands("down"));
-        addHandler(new EnableCommand());
         addHandler(new StepFinishCommand());
         addHandler(new FocusCommand());
         addHandler(new GoCommand());

@@ -73,7 +73,6 @@ public class TopLevelCommand extends MultiLevelCommand {
 	super("<top-level", "top level command",
 	      "<command> <parameter> ...",
 	      "a top level command");
-        add(new ActionsCommand());
         add(new AliasCommands.Alias());
         add(new AliasCommands.Unalias());
         add(new AssignCommand());
@@ -81,11 +80,12 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(new BreakpointCommand());
         add(new DebuginfoCommand());
         add(new DefsetCommand());
-        add(new DeleteCommand());
         add(new DetachCommand());
-        add(new DisableCommand());
+        add(new ActionPointCommands.Actions());
+        add(new ActionPointCommands.Delete());
+        add(new ActionPointCommands.Disable());
+        add(new ActionPointCommands.Enable());
         add(new FrameCommands("down"));
-        add(new EnableCommand());
         add(new StepFinishCommand());
         add(new FocusCommand());
         add(new GoCommand());
