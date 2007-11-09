@@ -53,7 +53,7 @@ public class TestInput extends TestLib {
 	assertEquals("size", results.length, input.size());
 	assertEquals("set", set, input.getSet());
 	assertEquals("stringArrayValue", results, input.stringArrayValue());
-	for (int i = 0; i < results.length + 1; i++) {
+	for (int i = 0; i < results.length; i++) {
 	    assertEquals("parameter " + i,
 			 i == results.length ? null : results[i],
 			 input.parameter(i));
@@ -73,14 +73,12 @@ public class TestInput extends TestLib {
     }
 
     private void check(String input, String[] results) {
-	int[] starts = new int[results.length + 1];
-	int[] ends = new int[results.length + 1];
+	int[] starts = new int[results.length];
+	int[] ends = new int[results.length];
 	for (int i = 0; i < results.length; i++) {
 	    starts[i] = input.indexOf(results[i]);
 	    ends[i] = starts[i] + results[i].length();
 	}
-	starts[results.length] = input.length();
-	ends[results.length] = input.length();
 	check(new Input(input), null, results, starts, ends);
     }
 
@@ -106,6 +104,13 @@ public class TestInput extends TestLib {
 	check(input, new String[0]);
     }
 
+    public void testRemoveLast() {
+	Input input = new Input("p0 p1 p2 p3");
+	input.removeLast();
+	assertEquals("stringValue", "p0 p1 p2", input.stringValue());
+	assertEquals("size", 3, input.size());
+    }
+
     public void testEmpty() {
 	check("", new String[0]);
     }
@@ -126,54 +131,54 @@ public class TestInput extends TestLib {
 	// Remember, \" is one character.
 	check(new Input("1 \" 2 \" 3"), null,
 	      new String[] { "1", " 2 ", "3" },
-	      new int[] { 0, 2, 8, 9 },
-	      new int[] { 1, 7, 9, 9 });
+	      new int[] { 0, 2, 8 },
+	      new int[] { 1, 7, 9 });
     }
 
     public void testDoubleQuoteInToken() {
 	// Remember, \" is one character.
 	check(new Input(" a\" \"b "), null,
 	      new String[] { "a b" },
-	      new int[] { 1, 7 },
-	      new int[] { 6, 7 });
+	      new int[] { 1 },
+	      new int[] { 6 });
     }
 
     public void testEmptyQuote() {
 	// Remember, \" is one character.
 	check(new Input("\"\""), null,
 	      new String[] { "" },
-	      new int[] { 0, 2 },
-	      new int[] { 2, 2 });
+	      new int[] { 0 },
+	      new int[] { 2 });
     }
 
     public void testEmptyQuoteBetweenParameters() {
 	// Remember, \" is one character.
 	check(new Input("1 \"\" 3"), null,
 	      new String[] {"1", "", "3"},
-	      new int[] { 0, 2, 5, 6 },
-	      new int[] { 1, 4, 6, 6 });
+	      new int[] { 0, 2, 5 },
+	      new int[] { 1, 4, 6 });
     }
 
     public void testEscapedQuote() {
 	// Remember, \" is one character.
 	check(new Input("\\\""), null,
 	      new String[] { "\"" },
-	      new int[] { 0, 2 },
-	      new int[] { 2, 2 });
+	      new int[] { 0 },
+	      new int[] { 2 });
     }
 
     public void testSet() {
 	check(new Input(" [1.2] "), "[1.2]",
 	      new String[0],
-	      new int[] { 7 },
-	      new int[] { 7 });
+	      new int[0],
+	      new int[0]);
     }
 
     public void testSetAndParameters() {
 	check(new Input(" [1.2] a b"), "[1.2]",
 	      new String[] { "a", "b" },
-	      new int[] { 7, 9, 10 },
-	      new int[] { 8, 10, 10 });
+	      new int[] { 7, 9 },
+	      new int[] { 8, 10 });
     }
 
     private void checkInvalidCommandException(String input) {

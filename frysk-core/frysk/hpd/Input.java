@@ -69,8 +69,6 @@ class Input {
     private final String fullCommand;
     private final String set;
     private final String action;
-    // The tokens include a SENTINEL pointing at the end of the
-    // buffer.
     private final List tokens;
 
     private Input(String fullCommand, String set, String action, List tokens) {
@@ -100,7 +98,7 @@ class Input {
 	    if (tempToken.startsWith("[") && tempToken.endsWith("]")) {
 		// if p/t-set
 		set = tempToken;
-		remove(0);
+		removeFirst();
 	    } else {
 		set = null;
 	    }
@@ -119,7 +117,10 @@ class Input {
      * Return the N'th parameter.
      */
     String parameter(int n) {
-	return token(n).value;
+	if (n < 0 || n > size())
+	    return null;
+	else
+	    return token(n).value;
     }
 
     /**
@@ -139,32 +140,42 @@ class Input {
      * string.
      */
     String stringValue() {
-	return fullCommand.substring(token(0).start);
+	if (size() > 0)
+	    return fullCommand.substring(token(0).start,
+					 token(size()-1).end);
+	else
+	    return "";
     }
 
     /**
-     * Return the N'th token.
-     *
-     * The end-of-tokens is denoted by a sentinel (Token.value ==
-     * NULL) that provides the position of the end-of-buffer.
+     * Return the N'th token; or null.
      */
     Token token(int n) {
-	return (Token)tokens.get(n);
+	if (n < 0 || n >= size())
+	    return null;
+	else
+	    return (Token)tokens.get(n);
     }
 
     /**
-     * Remove the N'th parameter.
+     * Remove the first token.
      */
-    void remove(int n) {
-	tokens.remove(n);
+    void removeFirst() {
+	tokens.remove(0);
+    }
+
+    /**
+     * Remove the last token.
+     */
+    void removeLast() {
+	tokens.remove(size() - 1);
     }
 
     /**
      * Return the number or size of the parameter list.
      */
     int size() {
-	// Do not count the SENTINEL.
-	return tokens.size() - 1;
+	return tokens.size();
     }
 
     public String toString() {
@@ -253,8 +264,6 @@ class Input {
 	if (start >= 0) {
 	    tokens.add(new Token(token.toString(), start, str.length()));
 	}
-	// Add a SENTINEL pointing at the end of the input string.
-	tokens.add(new Token(null, str.length(), str.length()));
 	return tokens;
     }
 }

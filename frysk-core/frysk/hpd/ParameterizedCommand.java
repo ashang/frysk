@@ -95,7 +95,7 @@ abstract class ParameterizedCommand extends Command {
 		     + commandOption.parameter);
 	    if (eq == -1) {
 		argument = input.parameter(index);
-		input.remove(index);
+		input.removeLast();
 	    } else {
 		argument = option.substring(eq + 1);
 	    }
@@ -123,7 +123,7 @@ abstract class ParameterizedCommand extends Command {
 		    throw new InvalidCommandException
 			("Invalid option "
 			 + input.parameter(currentIndex + 1));
-		input.remove(currentIndex);
+		input.removeLast();
 		break;
 	    }
 	    if (string.equals("-help")) {
@@ -133,7 +133,7 @@ abstract class ParameterizedCommand extends Command {
 	    if (string.charAt(0) != '-')
 		continue;
 	    handleOption(input, string, currentIndex + 1, options);
-	    input.remove(currentIndex);
+	    input.removeLast();
 	}
 	interpret(cli, input, options);
     }

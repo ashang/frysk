@@ -1,3 +1,13 @@
+2007-11-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Input.java: Eliminate the sentinel.
+	(remove(int)): Delete.
+	(removeFirst()): New.
+	(removeLast()): New.
+	(stringValue()): Handle truncated input.
+	* ParameterizedCommand.java: Update.
+	* TestInput.java (testRemoveLast()): new.
+
 2007-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Changed CoreFileAtSignal to return core File instead of core Proc.
