@@ -1,3 +1,7 @@
+2007-11-09  Stan Cox  <scox@redhat.com>
+
+	* gen-type-expect-tests.py (j.prologue): Throttle ptr tests for now.
+
 2007-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestTypeEntry.java (testClassWithStaticMembers): New test.

@@ -1,3 +1,9 @@
+2007-11-09  Stan Cox  <scox@redhat.com>
+
+	* ArrayType.java (toPrint): Do multiple dimension here.  Move
+	vector handling...
+	(toPrintVector): ...here.
+
 2007-11-09  Teresa Thomas  <tthomas@redhat.com>
 
 	* FloatingPointUnit.java (lessThan): New.
