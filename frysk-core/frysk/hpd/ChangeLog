@@ -1,5 +1,7 @@
 2007-11-09  Andrew Cagney  <cagney@redhat.com>
 
+	* UndefsetCommand.java: Extend ParameterizedCommand.
+
 	* DbgVariables.java (complete(String,int,List)): New.
 	* TestDbgVariables.java: New.
 	* DbgVariableCommands: New.
