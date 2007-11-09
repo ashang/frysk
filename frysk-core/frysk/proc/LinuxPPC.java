@@ -48,7 +48,8 @@ import frysk.isa.PPC32Registers;
 class LinuxPPC extends IsaPowerPC implements SyscallEventDecoder {
 
     LinuxPPC() {
-	super(PPC32Registers.NIP);
+	//In Power32 the PC will be in Link Register
+	super(PPC32Registers.LR);
     }
 
   private static Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);

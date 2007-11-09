@@ -1,3 +1,10 @@
+2007-11-09  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
+
+        * IsaPowerPC.java: Updated it to also support Power32.
+	* LinuxPPC.java: Patched to suppport Power32.
+	* PPCBankRegisters.java: Corrected Power32 and Power 64 register
+	banks, need to be reviewed later.
+
 2007-10-31  Petr Machata  <pmachata@redhat.com>
 
 	* TestTaskObserverCode.java (testMultiTaskUpdateCalledSeveralTimes): New test.
