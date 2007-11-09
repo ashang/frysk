@@ -40,62 +40,62 @@
 package frysk.hpd;
 
 import java.util.Iterator;
-
+import java.util.List;
 import frysk.proc.Task;
 
-class ViewsetCommand extends Command {
-
-    private static final String full = "The viewset command displays the "
-	    + "members of debugger- or user-defined\n"
-	    + "sets. When no argument is used, the members of all currently "
-	    + "defined\n" + "sets are displayed. ";
+class ViewsetCommand extends ParameterizedCommand {
 
     ViewsetCommand() {
 	super("viewset", "List members of a proc/task set.",
-	      "viewset [set-name]", full);
+	      "viewset [set-name]",
+	      ("The viewset command displays the members of debugger-"
+	       + " or user-defined sets.  When no argument is used, the"
+	       + " members of all currently defined sets are displayed."));
     }
 
-    public void interpret(CLI cli, Input cmd) {
-	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
-	    cli.printUsage(cmd);
-	    return;
-	}
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List candidates) {
+	return -1;
+    }
+
+    public void interpret(CLI cli, Input input, Object options) {
 	PTSet tempset = null;
 	TaskData temptd = null;
 	String setname = "";
-        String displayedName = "";
-	String output = "";
+	String displayedName;
 
-	if (cmd.size() <= 1) {
-	    if (cmd.size() == 0) {
-		tempset = cli.targetset;
-                displayedName = "Target set";
-            } else if (cmd.size() == 1) {
-		setname = cmd.parameter(0);
-                displayedName = "Set " + setname;
-                tempset = cli.createSet(setname);
-		if (tempset == null) {
-		    cli.addMessage(new Message("Set \"" + setname
-			    + "\" does not exist.", Message.TYPE_NORMAL));
-		    return;
-		}
+	switch (input.size()) {
+	case 0:
+	    tempset = cli.targetset;
+	    displayedName = "Target set";
+	    break;
+	case 1:
+	    setname = input.parameter(0);
+	    displayedName = "Set " + setname;
+	    tempset = cli.createSet(setname);
+	    if (tempset == null) {
+		throw new InvalidCommandException("Set \"" + setname
+						  + "\" does not exist.");
 	    }
-            boolean hasOneTask = false;
-            output = displayedName + "\tpid\tid";
-	    for (Iterator iter = tempset.getTaskData(); iter.hasNext();) {
-		// ??? this way of outputting is simple, but it's okay for now
-		temptd = (TaskData) iter.next();
-                hasOneTask = true;
-		output += "\n[" + temptd.getParentID() + "." + temptd.getID()
-			+ "]";
-                Task task = temptd.getTask();
-                output += "\t" + task.getProc().getPid() + "\t" + task.getTid();
-	    }
-            if (!hasOneTask)
-                output += "\n";
-            cli.addMessage(output, Message.TYPE_NORMAL);
-	} else {
-	    cli.printUsage(cmd);
+	    break;
+	default:
+	    throw new InvalidCommandException("too many arguments");
+	}
+
+	cli.outWriter.print(displayedName);
+	cli.outWriter.println("\tpid\tid");
+	for (Iterator iter = tempset.getTaskData(); iter.hasNext();) {
+	    temptd = (TaskData) iter.next();
+	    cli.outWriter.print("[");
+	    cli.outWriter.print(temptd.getParentID());
+	    cli.outWriter.print(".");
+	    cli.outWriter.print(temptd.getID());
+	    cli.outWriter.print("]");
+	    Task task = temptd.getTask();
+	    cli.outWriter.print("\t");
+	    cli.outWriter.print(task.getProc().getPid());
+	    cli.outWriter.print("\t");
+	    cli.outWriter.println(task.getTid());
 	}
     }
 }

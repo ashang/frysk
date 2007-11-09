@@ -49,53 +49,52 @@ import java.util.List;
 
 class WhichsetsCommand extends ParameterizedCommand {
 
-    private static final String full = "The whichsets command displays sets to "
-	    + "which a particular thread(s)\n"
-	    + "belongs. When no argument is used, the membership of each "
-	    + "thread in the\n"
-	    + "target p/t set is displayed. If a thread(s) is specified as "
-	    + "the\n"
-	    + "argument, only its membership information will be displayed. ";
-
     WhichsetsCommand() {
 	super("whichsets",
 	      "List all user-defined set to which a proc/task belongs.",
-	      "whichsets [p/t-set]", full);
+	      "whichsets [p/t-set]",
+	      ("The whichsets command displays sets to which a particular"
+	       + " thread(s) belongs.  When no argument is used, the"
+	       + " membership of each thread in the target p/t set is"
+	       + " displayed.  If a thread(s) is specified as the argument,"
+	       + " only its membership information will be displayed."));
     }
 
-    public void interpret(CLI cli, Input cmd, Object options) {
+    public void interpret(CLI cli, Input input, Object options) {
 	PTSet searchset = null;
 	PTSet tempset = null;
 	TaskData temptd = null;
 	String setname = null;
 
-	// ??? check builtin sets
-	if (cmd.size() <= 1) {
-	    if (cmd.size() == 0)
-		searchset = cli.targetset;
-	    else if (cmd.size() == 1)
-		searchset = cli.createSet(cmd.parameter(0));
+	switch (input.size()) {
+	case 0:
+	    searchset = cli.targetset;
+	    break;
+	case 1:
+	    searchset = cli.createSet(input.parameter(0));
+	    break;
+	default:
+	    throw new InvalidCommandException("too many parameters");
+	}
 
-	    // start iterating through available sets
-	    for (Iterator it = searchset.getTaskData(); it.hasNext();) {
-		temptd = (TaskData) it.next();
-		cli.addMessage("Task " + temptd.getParentID() + "."
-			+ temptd.getID() + " is in sets: \n",
-			Message.TYPE_NORMAL);
-		for (Iterator iter = cli.namedPTSets.keySet().iterator(); iter
-			.hasNext();) {
-		    setname = (String) iter.next();
-		    tempset = (PTSet) (cli.namedPTSets).get(setname);
-
-		    if (tempset.containsTask(temptd.getParentID(), temptd
-			    .getID()))
-			cli.addMessage("\t" + setname + "\n",
-				Message.TYPE_NORMAL);
+	// start iterating through available sets
+	for (Iterator it = searchset.getTaskData(); it.hasNext();) {
+	    temptd = (TaskData) it.next();
+	    cli.outWriter.print("Task ");
+	    cli.outWriter.print(temptd.getParentID());
+	    cli.outWriter.print(".");
+	    cli.outWriter.print(temptd.getID());
+	    cli.outWriter.println(" is in sets: ");
+	    for (Iterator iter = cli.namedPTSets.keySet().iterator();
+		 iter.hasNext();) {
+		setname = (String) iter.next();
+		tempset = (PTSet) (cli.namedPTSets).get(setname);
+		if (tempset.containsTask(temptd.getParentID(),
+					 temptd.getID())) {
+		    cli.outWriter.print("\t");
+		    cli.outWriter.println(setname);
 		}
-		cli.addMessage("\n", Message.TYPE_NORMAL);
 	    }
-	} else {
-	    cli.printUsage(cmd);
 	}
     }
 

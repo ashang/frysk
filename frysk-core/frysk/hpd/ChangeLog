@@ -1,5 +1,8 @@
 2007-11-08  Andrew Cagney  <cagney@redhat.com>
 
+	* ViewsetCommand.java: Extend ParameterizedCommand.
+	* WhichsetsCommand.java: Eliminate call to CLI.printUsage.
+
 	* PlocationCommand.java: Extend ParameterizedCommand.
 	* PtypeCommand.java: Ditto.
 	* DefsetCommand.java: Eliminate call to CLI.printUsage.
