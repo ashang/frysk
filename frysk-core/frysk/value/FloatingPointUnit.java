@@ -53,30 +53,51 @@ public class FloatingPointUnit
 
     public FloatingPointUnit (FloatingPointType t1) {
 	retType = t1;
-    }
-	    
+    }	
+    
     public Value add(Value v1, Value v2) {
 	return retType.createValue
-	               (v1.doubleValue() + v2.doubleValue());
-    }    
-    
+	       (v1.doubleValue() + v2.doubleValue());
+    }        
     public Value subtract(Value v1, Value v2) {
 	return retType.createValue
-	               (v1.doubleValue() - v2.doubleValue());
-    }  
-    
+	       (v1.doubleValue() - v2.doubleValue());
+    }      
     public Value multiply (Value v1, Value v2) {
 	return retType.createValue
-	               (v1.doubleValue() * v2.doubleValue());
+	       (v1.doubleValue() * v2.doubleValue());
     }
-
     public Value divide (Value v1, Value v2) {
 	return retType.createValue
-	               (v1.doubleValue() / v2.doubleValue());
-    }	    
-    
+	       (v1.doubleValue() / v2.doubleValue());
+    }	        
     public Value mod (Value v1, Value v2) {
 	return retType.createValue
-	               (v1.doubleValue() % v2.doubleValue());
-    }	      
+	       (v1.doubleValue() % v2.doubleValue());
+    }	    
+
+    public Value lessThan (Value v1, Value v2) {
+	return retType.createValue
+	       (v1.doubleValue() < v2.doubleValue() ? 1:0);
+    }
+    public Value greaterThan (Value v1, Value v2) {
+	return retType.createValue
+	       (v1.doubleValue() > v2.doubleValue() ? 1:0);
+    }    
+    public Value greaterThanOrEqualTo (Value v1, Value v2) {
+	return retType.createValue
+	       (v1.doubleValue() >= v2.doubleValue() ? 1:0);
+    }     
+    public Value lessThanOrEqualTo (Value v1, Value v2) {
+	return retType.createValue
+	       (v1.doubleValue() <= v2.doubleValue() ? 1:0);
+    }     
+    public Value equal (Value v1, Value v2) {
+	return retType.createValue
+	       (v1.doubleValue() == v2.doubleValue() ? 1:0);
+    }     
+    public Value notEqual (Value v1, Value v2) {
+	return retType.createValue
+	       (v1.doubleValue() != v2.doubleValue() ? 1:0);
+    }      
 }    

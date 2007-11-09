@@ -1,3 +1,53 @@
+2007-11-09  Teresa Thomas  <tthomas@redhat.com>
+
+	* FloatingPointUnit.java (lessThan): New.
+	(greaterThan): New.
+	(greaterThanOrEqualTo): New.
+	(lessThanOrEqualTo): New.
+	(equal): New.
+	(notEqual): New.	
+	* IntegerUnit.java (shiftLeft): New.
+	(lessThan): New.	
+	(greaterThan): New.
+	(greaterThanOrEqualTo): New.
+	(lessThanOrEqualTo): New.	
+	(equal): New.
+	(notEqual): New.
+	(bitWiseAnd): New.
+	(bitWiseXor): New.
+	(bitWiseOr): New.
+	(bitWiseComplement): New.
+	(logicalAnd): New.
+	(logicalOr): New.
+	(logicalNegation): New.
+	(getLogicalValue): New.
+	* Type.java (shiftLeft): Delete.
+	(shiftRight): Delete.
+	(lessThan): Delete.
+	(greaterThan): Delete.
+	(lessThanOrEqualTo): Delete.
+	(greaterThanOrEqualTo): Delete.
+	(equal): Delete.
+	(notEqual): Delete.
+	(bitWiseAnd): Delete.
+	(bitWiseXor): Delete.
+	(bitWiseOr): Delete.
+	(bitWiseComplement): Delete.
+	(logicalAnd): Delete.
+	(logicalOr): Delete.
+	(logicalNegation): Delete.
+	(shiftLeftEqual): Delete.
+	(shiftRightEqual): Delete.
+	(bitWiseOrEqual): Delete.
+	(bitWiseXorEqual): Delete.
+	(bitWiseAndEqual): Delete.
+	(getLogicalValue): Delete.
+	* TypeDecorator.java: Delete above functions.
+	* ArithmeticType.java: Ditto.
+	(returnType): Delete function.
+	* ArithmeticUnit.java: Add above functions.	
+	* TestValue.java: Updated.	
+		
 2007-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* CompositeType.java (addStaticMember): New function.

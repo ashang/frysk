@@ -1,3 +1,8 @@
+2007-11-09  Teresa Thomas  <tthomas@redhat.com>
+	
+	* CExprEvaluator.g: Update evaluator to
+	use Arithmetic Unit.
+	
 2007-11-08  Teresa Thomas  <tthomas@redhat.com>
 
 	* ScratchSymTab.java (getWordSize): Return word size 

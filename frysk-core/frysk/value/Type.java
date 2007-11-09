@@ -143,70 +143,7 @@ public abstract class Type {
     public ArithmeticUnit getALU(ArrayType type, int wordSize) {
 	throw new RuntimeException("Invalid Arithmetic Unit");
     }  
-   
-    public Value shiftLeft (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "<<");
-    }
-    public Value shiftRight (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, ">>");
-    }
-    public Value lessThan (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "<");
-    }
-    public Value greaterThan (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, ">");
-    }
-    public Value lessThanOrEqualTo (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "<=");
-    }
-    public Value greaterThanOrEqualTo (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, ">=");
-    }
-    public Value equal (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "==");
-    }
-    public Value notEqual (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "!=");
-    }
-    public Value bitWiseAnd (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "&");
-    }
-    public Value bitWiseXor (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "^");
-    }
-    public Value bitWiseOr (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "|");
-    }
-    public Value bitWiseComplement (Value var1) {
-        throw new InvalidOperatorException(this, "~");
-    }
-    public Value logicalAnd (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "&&");
-    }
-    public Value logicalOr (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "||");
-    }
-    public Value logicalNegation(Value var1) {
-        throw new InvalidOperatorException(this, "!");
-    } 
-    public Value shiftLeftEqual (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "<<=");
-    }
-    public Value shiftRightEqual (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, ">>=");
-    }
-    public Value bitWiseOrEqual (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "|=");
-    }
-    public Value bitWiseXorEqual (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "^=");
-    }
-    public Value bitWiseAndEqual (Value var1, Value var2) {
-        throw new InvalidOperatorException(this, "&=");
-    }
-    public boolean getLogicalValue (Value var) {
-    	throw new InvalidOperatorException(this, "");
-    }
+
     public Value addressOf(Value var1, ByteOrder order, int wordSize) {
     	PointerType pType = new PointerType("AddressPtr", order, wordSize, this);
     	return pType.createValue(var1.getLocation().getAddress());
@@ -223,7 +160,8 @@ public abstract class Type {
 	    var2.getType() instanceof PointerType)
 	    return var2.getType().index (var2, var1, taskMem);
     	throw new InvalidOperatorException(this, "[]");
-    }     
+    }  
+    
    /**
      * Assign VALUE to LOCATION; possibly performing type-conversion.
      */

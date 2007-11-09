@@ -47,48 +47,129 @@ public abstract class ArithmeticUnit
 {
     protected ArithmeticType retType;
     
+    // Multiplicative and Additive expressions
     public Value add(Value v1, Value v2) {
 	throw new InvalidOperatorException
 	          (v1.getType(), v2.getType(), "+");
     }
-    
     public Value subtract(Value v1, Value v2) {
 	throw new InvalidOperatorException
 	          (v1.getType(), v2.getType(), "-");
     }
-    
     public Value multiply (Value v1, Value v2) {
         throw new InvalidOperatorException
                   (v1.getType(), v2.getType(), "*");
     }
-    
     public Value divide(Value v1, Value v2) {
 	throw new InvalidOperatorException
 	          (v1.getType(), v2.getType(), "/");
     }
-    
     public Value mod(Value v1, Value v2) {
 	throw new InvalidOperatorException
 	          (v1.getType(), v2.getType(), "%");
     }    
     
+    // Shift expressions
+    public Value shiftLeft (Value v1, Value v2) {
+	throw new InvalidOperatorException
+	          (v1.getType(), v2.getType(), "<<");
+    }
+    public Value shiftRight (Value v1, Value v2) {
+	throw new InvalidOperatorException
+                  (v1.getType(), v2.getType(), ">>");
+    }
+    
+    // Relational expressions
+    public Value lessThan (Value v1, Value v2) {
+        throw new InvalidOperatorException
+                  (v1.getType(), v2.getType(), "<");
+    }
+    public Value greaterThan (Value v1, Value v2) {
+        throw new InvalidOperatorException
+                  (v1.getType(), v2.getType(), ">");
+    }
+    public Value lessThanOrEqualTo (Value v1, Value v2) {
+        throw new InvalidOperatorException
+                  (v1.getType(), v2.getType(), "<=");
+    }
+    public Value greaterThanOrEqualTo (Value v1, Value v2) {
+        throw new InvalidOperatorException
+                  (v1.getType(), v2.getType(), ">=");
+    }    
+    public Value equal (Value v1, Value v2) {
+        throw new InvalidOperatorException
+                  (v1.getType(), v2.getType(), "==");
+    }
+    public Value notEqual (Value v1, Value v2) {
+        throw new InvalidOperatorException
+                  (v1.getType(), v2.getType(), "!=");
+    }
+    
+    // Bit wise expressions.
+    public Value bitWiseAnd (Value v1, Value v2) {
+        throw new InvalidOperatorException
+                  (v1.getType(), v2.getType(), "&");
+    }
+    public Value bitWiseXor (Value v1, Value v2) {
+        throw new InvalidOperatorException
+                  (v1.getType(), v2.getType(), "^");
+    }
+    public Value bitWiseOr (Value v1, Value v2) {
+        throw new InvalidOperatorException
+                  (v1.getType(), v2.getType(), "|");
+    }
+    public Value bitWiseComplement (Value v1) {
+        throw new InvalidOperatorException
+                  (v1.getType(), "~");
+    }
+    
+    // Logical expressions - valid for scalar types.
+    public Value logicalAnd (Value v1, Value v2) {
+        throw new InvalidOperatorException
+                  (v1.getType(), v2.getType(), "&&");
+    }
+    public Value logicalOr (Value v1, Value v2) {
+        throw new InvalidOperatorException
+                  (v1.getType(), v2.getType(), "||");
+    }
+    public Value logicalNegation(Value v1) {
+        throw new InvalidOperatorException
+                  (v1.getType(), "!");
+    }     
+    public boolean getLogicalValue (Value v1) {
+        throw new InvalidOperatorException
+                  (v1.getType(), "bool");
+    }  
+    
+    // Assigment expressions.
     public Value plusEqual(Value v1, Value v2) {
 	return v1.assign(add(v1, v2));
-    }
-    
+    }    
     public Value minusEqual(Value v1, Value v2) {
 	return v1.assign(subtract(v1, v2));
-    }
-    
+    }    
     public Value timesEqual(Value v1, Value v2) {
 	return v1.assign(multiply(v1, v2));
-    }
-    
+    }    
     public Value divideEqual (Value v1, Value v2) {
 	return v1.assign(divide(v1, v2));
-    }
-    
+    }    
     public Value modEqual(Value v1, Value v2) {
 	return v1.assign(mod(v1, v2));
+    }        
+    public Value shiftLeftEqual (Value v1, Value v2) {
+	return v1.assign(shiftLeft(v1, v2));
+    }
+    public Value shiftRightEqual (Value v1, Value v2) {
+	return v1.assign(shiftRight(v1, v2));
+    }
+    public Value bitWiseOrEqual (Value v1, Value v2) {
+	return v1.assign(bitWiseOr(v1, v2));
+    }
+    public Value bitWiseXorEqual (Value v1, Value v2) {
+	return v1.assign(bitWiseXor(v1, v2));
+    }
+    public Value bitWiseAndEqual (Value v1, Value v2) {
+	return v1.assign(bitWiseAnd(v1, v2));
     }
 }
