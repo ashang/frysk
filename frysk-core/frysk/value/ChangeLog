@@ -50,6 +50,11 @@
 		
 2007-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* CompositeType.java (iterator): removed value argument
+	from bad merge.
+
+2007-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* CompositeType.java (addStaticMember): New function.
 	(Member.Member): Moved Access and inheretence arguments
 	from DynamicMember to this constructor.

@@ -244,7 +244,7 @@ public abstract class CompositeType
 	}
     }
  
-    public ClassIterator iterator (Value v) {
+    public ClassIterator iterator () {
 	return new ClassIterator();
     }
 
