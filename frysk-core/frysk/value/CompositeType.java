@@ -53,23 +53,34 @@ public abstract class CompositeType
     extends Type
 {
     
-    static class Member{
+    public static class Member{
+	final int index;
+	final String name;
+	final Type type;
 	final Access access;
 	final boolean inheritance;
 
-	public Member(Access access, boolean inheritance){
+	public Member(int index, String name, Type type, Access access,
+		boolean inheritance) {
+	    this.index = index;
+	    this.type = type;
+	    this.name = name;
 	    this.access = access;
 	    this.inheritance = inheritance;
+	}
+	
+	public String getName(){
+	    return this.name;
 	}
     }
     
     static class StaticMember extends Member{
 
-	public StaticMember(Access access, boolean inheritance) {
-	    super(access, inheritance);
+	public StaticMember(int index, String name, Type type, Access access,
+		boolean inheritance) {
+	    super(index, name, type, access, inheritance);
 	}
 
-	
     }
     
     /**
@@ -77,19 +88,13 @@ public abstract class CompositeType
      */
     static class DynamicMember extends Member{
 	// XXX: To keep getValue working.
-	final int index;
-	final String name;
-	final Type type;
 	final long offset;
 	final int bitOffset;
 	final int bitSize;
 	DynamicMember(int index, String name, Type type, long offset,
 	       Access access, int bitOffset, int bitSize,
 	       boolean inheritance) {
-	    super(access, inheritance);
-	    this.index = index;
-	    this.type = type;
-	    this.name = name;
+	    super(index, name, type, access, inheritance);
 	    this.offset = offset;
 	    this.bitOffset = bitOffset;
 	    this.bitSize = bitSize;
@@ -172,11 +177,20 @@ public abstract class CompositeType
      */
     private CompositeType add(String name, Type type, long offset,
 			      Access access, int bitOffset, int bitLength,
+			      boolean staticMember,
 			      boolean inheritance) {
 	if (bitOffset >= 0 && bitLength > 0)
 	    type = type.pack(bitOffset, bitLength);
-	DynamicMember member = new DynamicMember(members.size(), name, type, offset,
+	
+	Member member;
+	
+	if(staticMember){
+	    member = new StaticMember(members.size(), name, type,
+			   access, inheritance);
+	}else{
+	    member = new DynamicMember(members.size(), name, type, offset,
 				   access, bitOffset, bitLength, inheritance);
+	}
 	nameToMember.put(name, member);
 	members.add(member);
 	return this;
@@ -184,18 +198,22 @@ public abstract class CompositeType
 
     public CompositeType addMember(String name, Type type, long offset,
 				   Access access) {
-	return add(name, type, offset, access, -1, -1, false);
+	return add(name, type, offset, access, -1, -1,false, false);
     }
     public CompositeType addMember(String name, Type type, long offset,
 				   Access access, int bitOffset,
 				   int bitLength) {
-	return add(name, type, offset, access, bitOffset, bitLength, false);
+	return add(name, type, offset, access, bitOffset, bitLength, false, false);
     }
     public CompositeType addInheritance(String name, Type type, long offset,
 					Access access) {
-	return add(name, type, offset, access, -1, -1, true);
+	return add(name, type, offset, access, -1, -1,false, true);
     }
-
+    
+    public CompositeType addStaticMember(String name, Type type, long offset,
+		   Access access){
+	return add(name, type, offset, access, -1, -1,false, false);
+    }
     /**
      * Iterate through the class types.
      */
@@ -203,7 +221,6 @@ public abstract class CompositeType
 	implements java.util.Iterator
     {
 	private int idx;
-
 	ClassIterator () {
 	    idx = -1;
 	}

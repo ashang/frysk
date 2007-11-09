@@ -41,6 +41,7 @@ package frysk.scopes;
 
 import frysk.debuginfo.TypeEntry;
 import frysk.value.CompositeType;
+import frysk.value.Type;
 import lib.dwfl.DwarfDie;
 
 /**
@@ -59,5 +60,9 @@ public class Composite extends Scope {
     
     public String getName(){
 	return this.getDie().getName();
+    }
+    
+    public Type getType(){
+	return this.compositeType;
     }
 }

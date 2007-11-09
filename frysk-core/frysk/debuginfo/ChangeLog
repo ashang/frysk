@@ -1,3 +1,7 @@
+2007-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestTypeEntry.java (testClassWithStaticMembers): New test.
+
 2007-11-07  Stan Cox  <scox@redhat.com>
 
 	* gen-type-expect-tests.py (j.start_test): Only unresolve value tests.

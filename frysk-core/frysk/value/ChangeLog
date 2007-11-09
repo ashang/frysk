@@ -1,5 +1,11 @@
 2007-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* CompositeType.java (addStaticMember): New function.
+	(Member.Member): Moved Access and inheretence arguments
+	from DynamicMember to this constructor.
+
+2007-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* CompositeType.java: Renamed Member to DynamicMember.
 	Created StaticMember
 	Created Member.
