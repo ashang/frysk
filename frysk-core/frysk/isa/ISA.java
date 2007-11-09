@@ -1,6 +1,7 @@
 // This file is part of the program FRYSK.
 //
 // Copyright 2007, Red Hat Inc.
+// Copyright (C) 2006-2007 IBM
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -71,15 +72,15 @@ public final class ISA {
 		);
     }
 
+    /*
+     * PowerPC is a Bi-Endian archtecture, it supports little and big
+     * endianness. But, usually (99.9%) it is used as a big endian,
+     * in truth in memory the data is stored always in big-endian format
+     */
     public static final ISA PPC32BE
 	= new ISA(ByteOrder.BIG_ENDIAN, 4, "PowerPC");
     public static final ISA PPC64BE
 	= new ISA(ByteOrder.BIG_ENDIAN, 8, "PowerPC");
-
-    public static final ISA PPC32LE
-	= new ISA(ByteOrder.LITTLE_ENDIAN, 4, "PowerPC");
-    public static final ISA PPC64LE
-	= new ISA(ByteOrder.LITTLE_ENDIAN, 8, "PowerPC");
 
     public static final ISA IA32
 	= new ISA(ByteOrder.LITTLE_ENDIAN, 4, "IA32");

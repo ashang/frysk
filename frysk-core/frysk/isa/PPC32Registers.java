@@ -1,6 +1,10 @@
 // This file is part of the program FRYSK.
 //
 // Copyright 2007, Red Hat Inc.
+// Copyright (C) 2006-2007 IBM
+//
+// Contributed by
+// Jose Flavio Aguilar Paulino <jflavio@br.ibm.com> <joseflavio@gmail.com>
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -108,76 +112,128 @@ public class PPC32Registers extends Registers {
     public static final Register GPR31
 	= new Register("gpr31", StandardTypes.INT32B_T);
 
-    public static final Register FPR0
-	= new Register("fpr0", StandardTypes.FLOAT64B_T);
-    public static final Register FPR1
-	= new Register("fpr1", StandardTypes.FLOAT64B_T);
-    public static final Register FPR2
-	= new Register("fpr2", StandardTypes.FLOAT64B_T);
-    public static final Register FPR3
-	= new Register("fpr3", StandardTypes.FLOAT64B_T);
-    public static final Register FPR4
-	= new Register("fpr4", StandardTypes.FLOAT64B_T);
-    public static final Register FPR5
-	= new Register("fpr5", StandardTypes.FLOAT64B_T);
-    public static final Register FPR6
-	= new Register("fpr6", StandardTypes.FLOAT64B_T);
-    public static final Register FPR7
-	= new Register("fpr7", StandardTypes.FLOAT64B_T);
-    public static final Register FPR8
-	= new Register("fpr8", StandardTypes.FLOAT64B_T);
-    public static final Register FPR9
-	= new Register("fpr9", StandardTypes.FLOAT64B_T);
-    public static final Register FPR10
-	= new Register("fpr10", StandardTypes.FLOAT64B_T);
-    public static final Register FPR11
-	= new Register("fpr11", StandardTypes.FLOAT64B_T);
-    public static final Register FPR12
-	= new Register("fpr12", StandardTypes.FLOAT64B_T);
-    public static final Register FPR13
-	= new Register("fpr13", StandardTypes.FLOAT64B_T);
-    public static final Register FPR14
-	= new Register("fpr14", StandardTypes.FLOAT64B_T);
-    public static final Register FPR15
-	= new Register("fpr15", StandardTypes.FLOAT64B_T);
-    public static final Register FPR16
-	= new Register("fpr16", StandardTypes.FLOAT64B_T);
-    public static final Register FPR17
-	= new Register("fpr17", StandardTypes.FLOAT64B_T);
-    public static final Register FPR18
-	= new Register("fpr18", StandardTypes.FLOAT64B_T);
-    public static final Register FPR19
-	= new Register("fpr19", StandardTypes.FLOAT64B_T);
-    public static final Register FPR20
-	= new Register("fpr20", StandardTypes.FLOAT64B_T);
-    public static final Register FPR21
-	= new Register("fpr21", StandardTypes.FLOAT64B_T);
-    public static final Register FPR22
-	= new Register("fpr22", StandardTypes.FLOAT64B_T);
-    public static final Register FPR23
-	= new Register("fpr23", StandardTypes.FLOAT64B_T);
-    public static final Register FPR24
-	= new Register("fpr24", StandardTypes.FLOAT64B_T);
-    public static final Register FPR25
-	= new Register("fpr25", StandardTypes.FLOAT64B_T);
-    public static final Register FPR26
-	= new Register("fpr26", StandardTypes.FLOAT64B_T);
-    public static final Register FPR27
-	= new Register("fpr27", StandardTypes.FLOAT64B_T);
-    public static final Register FPR28
-	= new Register("fpr28", StandardTypes.FLOAT64B_T);
-    public static final Register FPR29
-	= new Register("fpr29", StandardTypes.FLOAT64B_T);
-    public static final Register FPR30
-	= new Register("fpr30", StandardTypes.FLOAT64B_T);
-    public static final Register FPR31
-	= new Register("fpr31", StandardTypes.FLOAT64B_T);
+    /* Special registers */
 
-    public static final Register NIP
-	= new Register("nip", StandardTypes.VOIDPTR32B_T);
+    public static final Register CTR
+            = new Register("counterreg", StandardTypes.INT32B_T);
+    public static final Register XER
+            = new Register("fixedstatuscontrolreg", StandardTypes.INT32B_T);
+    public static final Register CCR
+            = new Register("conditionreg", StandardTypes.INT32B_T);
+    public static final Register LR
+            = new Register("linkreg", StandardTypes.VOIDPTR32B_T);
+    public static final Register FPSCR
+            = new Register("floatingstatuscontrolreg", StandardTypes.INT32B_T);
+
+    public static final Register FPR0
+        = new Register("fpr0", StandardTypes.FLOAT64B_T);
+    public static final Register FPR1
+        = new Register("fpr1", StandardTypes.FLOAT64B_T);
+    public static final Register FPR2
+        = new Register("fpr2", StandardTypes.FLOAT64B_T);
+    public static final Register FPR3
+        = new Register("fpr3", StandardTypes.FLOAT64B_T);
+    public static final Register FPR4
+        = new Register("fpr4", StandardTypes.FLOAT64B_T);
+    public static final Register FPR5
+        = new Register("fpr5", StandardTypes.FLOAT64B_T);
+    public static final Register FPR6
+        = new Register("fpr6", StandardTypes.FLOAT64B_T);
+    public static final Register FPR7
+        = new Register("fpr7", StandardTypes.FLOAT64B_T);
+    public static final Register FPR8
+        = new Register("fpr8", StandardTypes.FLOAT64B_T);
+    public static final Register FPR9
+        = new Register("fpr9", StandardTypes.FLOAT64B_T);
+    public static final Register FPR10
+        = new Register("fpr10", StandardTypes.FLOAT64B_T);
+    public static final Register FPR11
+        = new Register("fpr11", StandardTypes.FLOAT64B_T);
+    public static final Register FPR12
+        = new Register("fpr12", StandardTypes.FLOAT64B_T);
+    public static final Register FPR13
+        = new Register("fpr13", StandardTypes.FLOAT64B_T);
+    public static final Register FPR14
+        = new Register("fpr14", StandardTypes.FLOAT64B_T);
+    public static final Register FPR15
+        = new Register("fpr15", StandardTypes.FLOAT64B_T);
+    public static final Register FPR16
+        = new Register("fpr16", StandardTypes.FLOAT64B_T);
+    public static final Register FPR17
+        = new Register("fpr17", StandardTypes.FLOAT64B_T);
+    public static final Register FPR18
+        = new Register("fpr18", StandardTypes.FLOAT64B_T);
+    public static final Register FPR19
+        = new Register("fpr19", StandardTypes.FLOAT64B_T);
+    public static final Register FPR20
+        = new Register("fpr20", StandardTypes.FLOAT64B_T);
+    public static final Register FPR21
+        = new Register("fpr21", StandardTypes.FLOAT64B_T);
+    public static final Register FPR22
+        = new Register("fpr22", StandardTypes.FLOAT64B_T);
+    public static final Register FPR23
+        = new Register("fpr23", StandardTypes.FLOAT64B_T);
+    public static final Register FPR24
+        = new Register("fpr24", StandardTypes.FLOAT64B_T);
+    public static final Register FPR25
+        = new Register("fpr25", StandardTypes.FLOAT64B_T);
+    public static final Register FPR26
+        = new Register("fpr26", StandardTypes.FLOAT64B_T);
+    public static final Register FPR27
+        = new Register("fpr27", StandardTypes.FLOAT64B_T);
+    public static final Register FPR28
+        = new Register("fpr28", StandardTypes.FLOAT64B_T);
+    public static final Register FPR29
+        = new Register("fpr29", StandardTypes.FLOAT64B_T);
+    public static final Register FPR30
+        = new Register("fpr30", StandardTypes.FLOAT64B_T);
+    public static final Register FPR31
+        = new Register("fpr31", StandardTypes.FLOAT64B_T);
+
+    public static final RegisterGroup GENERAL
+	= new RegisterGroup("general",
+                  new Register[] { 
+			  GPR0 , GPR1 , GPR2 , GPR3 , GPR4 , GPR5 , GPR6 , GPR7 , GPR8 , GPR9 ,
+			  GPR10, GPR11, GPR12, GPR13, GPR14, GPR15, GPR16, GPR17, GPR18, GPR19, 
+			  GPR20, GPR21, GPR22, GPR23, GPR24, GPR25, GPR26, GPR27, GPR28, GPR29,
+			  GPR30, GPR31 });
+
+    public static final RegisterGroup SPECIAL
+	= new RegisterGroup("special",
+                  new Register[] { CTR, XER, CCR, LR, FPSCR });
+	
+    public static final RegisterGroup FLOATING_POINTER
+	= new RegisterGroup("floatingpointer",
+                  new Register[] { 
+			  FPR0 , FPR1 , FPR2 , FPR3 , FPR4 , FPR5 , FPR6 , FPR7 , FPR8 , FPR9 ,
+			  FPR10, FPR11, FPR12, FPR13, FPR14, FPR15, FPR16, FPR17, FPR18, FPR19, 
+			  FPR20, FPR21, FPR22, FPR23, FPR24, FPR25, FPR26, FPR27, FPR28, FPR29,
+			  FPR30, FPR31 });
+
+    public static final RegisterGroup ALL;
+    static {
+        Register[] allRegs = new Register[
+		GENERAL.getRegisters().length + 
+		SPECIAL.getRegisters().length + 
+		FLOATING_POINTER.getRegisters().length];
+
+        System.arraycopy(GENERAL.getRegisters(), 0,
+			 allRegs, 0,
+                         GENERAL.getRegisters().length);
+
+        System.arraycopy(SPECIAL.getRegisters(), 0,
+                         allRegs, GENERAL.getRegisters().length,
+                         SPECIAL.getRegisters().length);
+
+        System.arraycopy(FLOATING_POINTER.getRegisters(), 0,
+                         allRegs, GENERAL.getRegisters().length + SPECIAL.getRegisters().length,
+                         FLOATING_POINTER.getRegisters().length);
+
+        ALL = new RegisterGroup("all", allRegs);
+    }
 
     public Register getProgramCounter() {
-	return NIP;
+	return LR;
     }
 
     public Register getStackPointer() {
@@ -185,17 +241,14 @@ public class PPC32Registers extends Registers {
     }
 
     public RegisterGroup getDefaultRegisterGroup() {
-	// FIXME!
-	return null;
+	return GENERAL;
     }
 
     public RegisterGroup getAllRegistersGroup() {
-	// FIXME!
-	return null;
+	return ALL;
     }
 
     PPC32Registers() {
-	// FIXME!
-	super(null);
+	super(new RegisterGroup[] { GENERAL, SPECIAL, FLOATING_POINTER, ALL });
     }
 }
