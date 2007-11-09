@@ -49,24 +49,24 @@ import frysk.isa.Register;
 import inua.eio.ByteOrder;
 
 abstract class IsaPowerPC implements Isa {
-    private final Register NIP;
+    private final Register PC;
 
-    protected IsaPowerPC(Register NIP) {
-	this.NIP = NIP;
+    protected IsaPowerPC(Register PC) {
+	this.PC = PC;
     }
 
-  // the illegal instruction for powerpc: 0x7d821008.
-  // the default order is BIG_ENDIAN
-  protected static final Instruction ppcBreakpoint
-    = new Instruction(new byte[] { (byte)0x7d, (byte)0x82, 
-				   (byte)0x10, (byte)0x08 }, false);
+   // the illegal instruction for powerpc: 0x7d821008.
+   // the default order is BIG_ENDIAN
+   protected static final Instruction ppcBreakpoint = 
+   	new Instruction(new byte[] { (byte)0x7d, (byte)0x82, 
+				     (byte)0x10, (byte)0x08 }, false);
 
     public long pc (Task task) {
-	return task.getRegister(NIP);
+	return task.getRegister(PC);
     }
 
     public void setPC (Task task, long address) {
-	task.setRegister(NIP, address);
+	task.setRegister(PC, address);
     }
 
   /**
@@ -110,7 +110,6 @@ abstract class IsaPowerPC implements Isa {
    * Get the true breakpoint address according to PC register after hitting 
    * one breakpoint set in task. In PowerPC, the PC register's value will 
    * remain unchanged. 
-   * 
    */
   public final long getBreakpointAddress(Task task)
   {

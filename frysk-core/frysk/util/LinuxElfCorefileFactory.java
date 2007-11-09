@@ -1,6 +1,7 @@
 // This file is part of the program FRYSK.
 // 
 // Copyright 2007, Red Hat Inc.
+// Copyright 2006 IBM Corp.
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -58,9 +59,9 @@ public class LinuxElfCorefileFactory
 		    return new IA32LinuxElfCorefile(process, blockedTasks);
 		if (isa.equals(ISA.X8664))
 		    return new X8664LinuxElfCorefile(process, blockedTasks);
-		if (isa.equals(ISA.PPC32BE) || isa.equals(ISA.PPC32LE)) 
+		if (isa.equals(ISA.PPC32BE)) 
 		    return new PPC32LinuxElfCorefile(process, blockedTasks);
-		if (isa.equals(ISA.PPC64BE) || isa.equals(ISA.PPC64LE)) 
+		if (isa.equals(ISA.PPC64BE)) 
 		    return new PPC64LinuxElfCorefile(process, blockedTasks);
 		
 		throw new RuntimeException("Cannot find arch for process PID " + process.getPid());

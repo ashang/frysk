@@ -1,3 +1,6 @@
+2007-11-09  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
+        * LinuxElfCorefileFactory.java: Removed Power little endian.
+
 2007-10-22  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* IA32LinuxElfCorefile.java (writeNotePrstatus): Convert
