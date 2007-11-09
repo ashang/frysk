@@ -3,7 +3,7 @@
 	* TestParameterizedCommand.java (check(...)): Add check for
 	input.stringValue().
 	* PrintCommand.java: Extend ParameterizedCommand.
-	* CommandOption.java (parseFormat(String)): New.
+	* CommandOption.java (FormatOption): New.
 
 	* MultiLevelCommand.java: Handle null tokens.
 	* ParameterizedCommand.java: Ditto.
