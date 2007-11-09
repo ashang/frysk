@@ -1,3 +1,8 @@
+2007-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Changed CoreFileAtSignal to return core File instead of core Proc.
+	* TestFstack.java: Updated.
+
 2007-11-08  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFstack.java (testBackTraceWithDashV): Reenabled test.

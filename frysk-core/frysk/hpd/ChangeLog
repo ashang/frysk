@@ -1,3 +1,8 @@
+2007-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Changed CoreFileAtSignal to return core File instead of core Proc.
+	* TestWhereCommand.java: Updated.
+
 2007-11-08  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestWhereCommand.java: Reenabled tests.

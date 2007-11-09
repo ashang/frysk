@@ -1,3 +1,10 @@
+2007-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CoreFileAtSignal.java	(constructCore): Now return core file
+	instead of proc.
+	* TestCoreFileAtSignal.java (testCoreFileAtSignal): Updated.
+	Corrected path to executable.
+
 2007-11-08  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* CoreFileAtSignal.java: Now passes executable path to core file

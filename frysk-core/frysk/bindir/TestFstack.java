@@ -39,9 +39,10 @@
 
 package frysk.bindir;
 
+import java.io.File;
+
 import frysk.Config;
 import frysk.expunit.Expect;
-import frysk.proc.Proc;
 import frysk.testbed.CoreFileAtSignal;
 import frysk.testbed.TestLib;
 
@@ -65,84 +66,84 @@ public class TestFstack
 
     public void testBackTrace () {
 	
-	Proc proc = CoreFileAtSignal.constructCore("funit-stacks");
+	File coreFile = CoreFileAtSignal.constructCore("funit-stacks");
 	e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
-			    "core." + proc.getPid()
+			    coreFile.getAbsolutePath()
 			});
 	// Just look for main.
 	e.expect ("main");
     }
     
     public void testBackTraceWithParams () {
-	Proc proc = CoreFileAtSignal.constructCore("funit-stacks");
+	File coreFile = CoreFileAtSignal.constructCore("funit-stacks");
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
-			    "core." + proc.getPid(),
+			    coreFile.getAbsolutePath(),
 			    "--print","params"
 			});
         e.expect ("int param1");
     }
 
     public void testBackTraceWithScopes () {
-	Proc proc = CoreFileAtSignal.constructCore("funit-stacks");
+	File coreFile = CoreFileAtSignal.constructCore("funit-stacks");
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
-			    "core." + proc.getPid(),
+			    coreFile.getAbsolutePath(),
 			    "--print", "scopes"
 			});
         e.expect ("int one.*int two");
     }
 
     public void testBackTraceWithFullpath () {
-	Proc proc = CoreFileAtSignal.constructCore("funit-stacks");
+	File coreFile = CoreFileAtSignal.constructCore("funit-stacks");
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
-			    "core." + proc.getPid(),
+			    coreFile.getAbsolutePath(),
 			    "--print", "fullpath"
 			});
         e.expect (Config.getRootSrcDir()
 		  + ".*"
-		  + proc.getCommand()
+		  + "funit-stacks"
 		  + ".c#");
     }
 
     public void testBackTraceWithDashA () {
-	Proc proc = CoreFileAtSignal.constructCore("funit-stacks");
+	File coreFile = CoreFileAtSignal.constructCore("funit-stacks");
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
-			    "core." + proc.getPid(),
+			    coreFile.getAbsolutePath(),
 			    "-a"
 			});
         e.expect ("fourth.*int param1.*int param2.*int param3.*"
 		  + Config.getRootSrcDir()
 		  + ".*"
-		  + proc.getCommand() + "\\.c#" 
+		  + "funit-stacks" + "\\.c#" 
 		  + ".*char var1.*"
 		  + "");
     }
 
     public void testBackTraceWithDashC () {
-	Proc proc = CoreFileAtSignal.constructCore("funit-stacks");
+	File coreFile = CoreFileAtSignal.constructCore("funit-stacks");
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
-			    "core." + proc.getPid(),
+			    coreFile.getAbsolutePath(),
 			    "-c"
 			});
         
         e.expect ("fourth.*int param1.*int param2.*int param3.*"
 		  + Config.getRootSrcDir()
 		  + ".*"
-		  + proc.getCommand() + "\\.c#" 
+		  + "funit-stacks" + "\\.c#" 
 		  + "");
   }
 
     public void testBackTraceWithDashV () {
 
-	Proc proc = CoreFileAtSignal.constructCore("funit-inlined");
+	File coreFile = CoreFileAtSignal.constructCore("funit-inlined");
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
-			    "core." + proc.getPid(),
+			    coreFile.getAbsolutePath(),
 			    Config.getPkgLibFile("funit-inlined").getAbsolutePath(),
 			    "-v",
 			    "-a"

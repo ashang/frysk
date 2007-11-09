@@ -39,11 +39,14 @@
 
 package frysk.testbed;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import frysk.Config;
 import frysk.proc.Proc;
 import frysk.stack.StackFactory;
+import frysk.util.Util;
 
 public class TestCoreFileAtSignal extends TestLib
 
@@ -54,7 +57,9 @@ public class TestCoreFileAtSignal extends TestLib
 	    return;
 
 	StringWriter stringWriter = new StringWriter();
-	Proc coreProc = CoreFileAtSignal.constructCore(getExecPath("funit-stacks"));
+	File coreFile = CoreFileAtSignal.constructCore("funit-stacks");
+	
+	Proc coreProc = Util.getProcFromCoreFile(coreFile, Config.getPkgLibFile("funit-stacks"));
 	StackFactory.printTaskStackTrace(new PrintWriter(stringWriter), coreProc
 		.getMainTask(), false);
 

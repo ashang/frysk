@@ -41,14 +41,10 @@ package frysk.testbed;
 
 import java.io.File;
 
-import frysk.Config;
 import frysk.event.Event;
-import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
-import frysk.proc.ProcId;
-import frysk.proc.dead.LinuxHost;
 import frysk.util.CoredumpAction;
 
 public class CoreFileAtSignal extends TestLib {
@@ -59,7 +55,7 @@ public class CoreFileAtSignal extends TestLib {
      * extracts a corefile at that point, and return a Proc representing
      * that core file.
      */
-    public static Proc constructCore(String process) {
+    public static File constructCore(String process) {
 	
 	final Proc ackProc = (new DaemonBlockedAtSignal(process)).getMainTask().getProc();
 
@@ -77,12 +73,9 @@ public class CoreFileAtSignal extends TestLib {
 	String coreFileName = coreDump.getConstructedFileName();
 
 	File xtestCore = new File(coreFileName);
-
-	Host lcoreHost = new LinuxHost(Manager.eventLoop, xtestCore, Config.getPkgLibFile(process));
-
-	Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid()));
-
-	return coreProc;
+	xtestCore.deleteOnExit();
+	
+	return xtestCore;
     }
 
 }

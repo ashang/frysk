@@ -42,7 +42,6 @@ package frysk.hpd;
 import java.io.File;
 
 import frysk.Config;
-import frysk.proc.Proc;
 import frysk.testbed.CoreFileAtSignal;
 
 public class TestWhereCommand extends TestLib {
@@ -55,9 +54,9 @@ public class TestWhereCommand extends TestLib {
 
     public void testFhpdVirtualStackTrace () {
 
-	Proc proc = CoreFileAtSignal
+	File coreFile = CoreFileAtSignal
 	    .constructCore("funit-inlined");
-        e = new HpdCoreFileTestbed(new File("core." + proc.getPid()),
+        e = new HpdCoreFileTestbed(coreFile,
 		Config.getPkgLibFile("funit-inlined"),
 		"Attached to core file.*");
         e.send("where\n");
@@ -70,9 +69,9 @@ public class TestWhereCommand extends TestLib {
     
     public void testFhpdVirtualStackTraceWithScopes () {
 	
-	Proc proc = CoreFileAtSignal
+	File coreFile = CoreFileAtSignal
 	    .constructCore("funit-inlined");
-        e = new HpdCoreFileTestbed(new File("core." + proc.getPid()),
+        e = new HpdCoreFileTestbed(coreFile,
 		Config.getPkgLibFile("funit-inlined"),
 	"Attached to core file.*");
         e.send("where -scopes\n");
