@@ -136,7 +136,7 @@ public class IntegerUnit
     }  
     public Value logicalNegation(Value v1) {
 	return retType.createValue
-                       ((v1.asBigInteger().longValue() == 0 ? true : false) ? 1 : 0);
+                       (v1.asBigInteger().longValue() == 0 ? 1 : 0);
     }    
     public boolean getLogicalValue (Value v1) {
 	return ((v1.asBigInteger().longValue() == 0) ? false : true);

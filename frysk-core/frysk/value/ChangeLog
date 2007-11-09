@@ -1,5 +1,11 @@
 2007-11-09  Teresa Thomas  <tthomas@redhat.com>
 
+	* TestValue.java (testIntOps): Test for logicalNegation,
+	getLogicalValue added.
+	* IntegerUnit.java (logicalNegation): Simplify.
+
+2007-11-09  Teresa Thomas  <tthomas@redhat.com>
+
 	* FloatingPointUnit.java (lessThan): New.
 	(greaterThan): New.
 	(greaterThanOrEqualTo): New.
