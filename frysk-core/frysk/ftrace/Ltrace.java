@@ -158,10 +158,8 @@ public class Ltrace
    * @param blocker An observer that blocks current process until
    * the tasks are processed.  Unblock is requested here.
    */
-  private void addProc(Proc proc, TaskObserver blocker)
+  private void addProc(Proc proc)
   {
-    Task mainTask = proc.getMainTask();
-
     // If a task appears after the getTasks() list is generated, but
     // before ProcTasks iteration below, it will be reported as
     // existing at ProcTasks iteration.  This set exists to
@@ -197,9 +195,6 @@ public class Ltrace
 	public void addedTo(Object arg0) {}
 	public void deletedFrom(Object arg0) {}
       });
-
-    if (blocker != null)
-      mainTask.requestUnblock(blocker);
   }
 
   private Map taskArchHandlers = new HashMap();
@@ -259,7 +254,7 @@ public class Ltrace
 	ProcId id = proc.getId();
 	if (pidsToTrace.contains(id))
 	  {
-	    addProc(proc, null);
+	    addProc(proc);
 	    pidsToTrace.remove(id);
 	    if (pidsToTrace.isEmpty())
 	      Manager.host.observableProcAddedXXX.deleteObserver(this);
@@ -295,8 +290,9 @@ public class Ltrace
     Manager.host.requestCreateAttachedProc(command, new TaskObserver.Attached() {
 	public Action updateAttached (Task task)
 	{
-	  addProc(task.getProc(), this);
-	  ltraceTaskObserver.updateAttached(task);
+	  addProc(task.getProc());
+	  ltraceTaskObserver.updateAttached(task, null);
+	  task.requestUnblock(this);
 	  return Action.BLOCK;
 	}
 	public void addFailed (Object arg0, Throwable w) {}
@@ -315,7 +311,7 @@ public class Ltrace
 	       TaskObserver.Signaled,
 	       TaskObserver.Terminated,
 	       TaskObserver.Terminating,
-	       MappingController
+	       MappingObserver
   {
     /** Remembers which files are currently mapped in which task. */
     private HashMap mapsForTask = new HashMap();
@@ -328,9 +324,6 @@ public class Ltrace
 	which breakpoint.
         Map&lt;task, Map&lt;address, List&lt;TracePoint&gt;&gt;&gt; */
     private HashMap retBreakpointsForTask = new HashMap();
-
-    /** Keeps track of map/unmap events. */
-    private MappingGuard mappingGuard = new MappingGuard(this);
 
     // ---------------------
     // --- ltrace driver ---
@@ -621,7 +614,7 @@ public class Ltrace
     // --- attached/terminated/terminating observers ---
     // -------------------------------------------------
 
-    public Action updateAttached (Task task)
+    public void updateAttached(Task task, TaskObserver blocker)
     {
       // Per-task initialization.
       long pc = task.getIsa().pc(task);
@@ -634,9 +627,12 @@ public class Ltrace
       this.retBreakpointsForTask.put(task, new HashMap());
 
       this.checkMapUnmapUpdates(task, false);
-      mappingGuard.attachTo(task);
+      MappingGuard.requestAddMappingObserver(task, this);
+    }
 
-      task.requestUnblock(this);
+    public Action updateAttached (Task task)
+    {
+      updateAttached(task, this);
       return Action.BLOCK;
     }
 
@@ -671,7 +667,7 @@ public class Ltrace
     {
       if(traceChildren)
 	{
-	  addProc(offspring.getProc(), null);
+	  addProc(offspring.getProc());
 	  offspring.requestUnblock(this);
 	  return Action.BLOCK;
 	}
@@ -700,10 +696,11 @@ public class Ltrace
     // --- mmap/munmap handling ---
     // ----------------------------
 
-    /** Implementation of MappingController interface... */
-    public void checkMapUnmapUpdates(Task task)
-    {
+    /** Implementation of MappingObserver interface... */
+    public Action updateMapping(Task task) {
 	checkMapUnmapUpdates(task, false);
+	task.requestUnblock(this);
+	return Action.BLOCK;
     }
 
     private void checkMapUnmapUpdates(Task task, boolean terminating)
@@ -783,6 +780,7 @@ public class Ltrace
 
     public void addedTo (Object observable)
     {
+      ((Task)observable).requestUnblock(this);
     }
 
     public void deletedFrom (Object observable)

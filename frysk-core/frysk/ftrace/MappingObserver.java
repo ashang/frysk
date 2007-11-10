@@ -44,11 +44,15 @@ package frysk.ftrace;
  * interface.  The interface is package-private, because noone from
  * outside should have to use it.
  */
-interface MappingController
+interface MappingObserver
+    extends frysk.proc.TaskObserver
 {
     /**
-     * New library FILE was mapped in task TASK.  Use DRIVER to tell
-     * ltrace what to do.
+     * Called when /proc/pid/maps of given task might have changed.
+     * Will be called for all DSO mappings, i.e. not all changes in
+     * maps will be reflected by this call.  On the other hand, it may
+     * happen that it's called even though no mapping change actually
+     * occured.
      */
-    void checkMapUnmapUpdates(frysk.proc.Task task);
+    frysk.proc.Action updateMapping(frysk.proc.Task task);
 }

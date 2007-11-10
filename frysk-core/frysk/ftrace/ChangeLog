@@ -5,6 +5,17 @@
 	(testCallRecorded): Ditto.
 	(testArgumentsCorrect1): Ditto.
 
+2007-11-10  Petr Machata  <pmachata@redhat.com>
+
+	* MappingController.java: Renamed to MappingObserver.java.
+	* MappingGuard.java: Turned into more frysk task observer like pattern.
+	(MappingGuard.MappingGuardB) new abstract base class
+	(MappingGuard.SyscallMappingGuard) concrete guard implementation
+	(MappingGuard.DebugStateMappingGuard) another concrete guard impl.
+	(MappingGuard.requestAddMappingObserver,
+	 MappingGuard.requestDeleteMappingObserver) new static methods
+	* Ltrace.java: accomodate for the changes above
+
 2007-11-08  Petr Machata  <pmachata@redhat.com>
 
 	* MappingController.java: New file.
