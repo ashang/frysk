@@ -49,7 +49,7 @@ public class TestHelp
     public void testHelp() {
 	e = new HpdTestbed();
 	e.send("help\n");
-	e.expect("actionpoints - ");
+	e.expect("actions - ");
 	e.expect("core - ");
 	e.expect("finish - ");
 	e.expect("list - ");

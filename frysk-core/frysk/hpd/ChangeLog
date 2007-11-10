@@ -1,5 +1,16 @@
 2007-11-09  Andrew Cagney  <cagney@redhat.com>
 
+	* ActionPointCommands.java: New.
+	* DeleteCommand.java: Delete.
+	* EnableCommand.java: Delete.
+	* DisableCommand.java: Delete.
+	* ActionsCommand.java: Delete.
+	* CLI.java: Update.
+	* TopLevelCommands.java: Update.
+	* TestHelp.java: Update.
+
+	* UndefsetCommand.java: Extend ParameterizedCommand.
+
 	* DbgVariables.java (complete(String,int,List)): New.
 	* TestDbgVariables.java: New.
 	* DbgVariableCommands: New.
