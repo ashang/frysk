@@ -152,6 +152,12 @@ public class TestParameterizedCommand extends TestLib {
 	      false, null);
     }
 
+    public void testOptionWithDashArg() {
+	check("parser -arg -1", "",
+	      new String[0],
+	      true, "-1");
+    }
+
     private void checkInvalid(String string) {
 	RuntimeException thrown = null;
 	try {
@@ -166,16 +172,8 @@ public class TestParameterizedCommand extends TestLib {
 	checkInvalid("parser -arg");
     }
 
-    public void testTooManyArgs() {
-	checkInvalid("parser -arg arg1 arg2");
-    }
-
-    public void testExtraArg() {
-	checkInvalid("parser -opt arg");
-    }
-
-    public void testMissingOption() {
-	checkInvalid("parser -- arg");
+    public void testUnknownOpt() {
+	checkInvalid("parser -unknown");
     }
 
     public void testHelp() {

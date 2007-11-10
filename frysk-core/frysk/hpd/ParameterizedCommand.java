@@ -67,46 +67,20 @@ abstract class ParameterizedCommand extends Command {
 	    shortOptions.put("" + option.shortName, option);
     }
 
-    private void handleOption(Input input, String option, int index,
-			      Object options) {
-	// Strip any leading "-"'s
-	String name = option.substring(1);
-	while (name.length() > 0 && name.charAt(0) == '-')
-	    name = name.substring(1);
-	// Strip off =... in -option=...
-	int eq = name.indexOf('=');
-	if (eq != -1)
-	    name = option.substring(0, eq);
+    private CommandOption lookupOption(String name) {
 	CommandOption commandOption = (CommandOption)longOptions.get(name);
 	if (commandOption == null)
 	    commandOption = (CommandOption)shortOptions.get(name);
-	if (commandOption == null) {
-	    throw new InvalidCommandException("unrecognized option '-"
-					      + name + "'");
-	}
-	String argument = null;
-	if (commandOption.parameter != null) {
-	    // Require a single parameter.
-	    if ((eq >= 0 && index != input.size())
-		|| (eq == -1 && index != input.size() - 1))
-		throw new InvalidCommandException
-		    ("option -" + commandOption.longName
-		     + " expects a single parameter "
-		     + commandOption.parameter);
-	    if (eq == -1) {
-		argument = input.parameter(index);
-		input.removeLast();
-	    } else {
-		argument = option.substring(eq + 1);
-	    }
-	} else {
-	    // Reject a parameter.
-	    if (eq != -1 || index != input.size())
-		throw new InvalidCommandException
-		    ("option -" + commandOption.longName
-		     + " doesn't allow an argument");
-	}
-	commandOption.parse(argument, options);
+	return commandOption;
+    }
+
+    private String optionName(String name) {
+	if (name.charAt(0) != '-')
+	    return null;
+	do {
+	    name = name.substring(1);
+	} while (name.length() > 0 && name.charAt(0) == '-');
+	return name;
     }
 
     /**
@@ -115,24 +89,47 @@ abstract class ParameterizedCommand extends Command {
      */
     public final void interpret(CLI cli, Input input) {
 	Object options = options();
-	for (int currentIndex = input.size() - 1; currentIndex > -1;
-	     --currentIndex) {
-	    String string = input.parameter(currentIndex);
+	while (input.size() > 0) {
+	    int index = input.size() - 1;
+	    String string = input.parameter(index);
 	    if (string.equals("--")) {
-		if (currentIndex != input.size() - 1)
-		    throw new InvalidCommandException
-			("Invalid option "
-			 + input.parameter(currentIndex + 1));
 		input.removeLast();
 		break;
+	    }
+	    // Check for <<-option ARG>>; so that <<-option -1>> is
+	    // prefered over <<-1>> (which isn't valid).
+	    if (input.size() > 1) {
+		String name = optionName(input.parameter(index - 1));
+		if (name != null) {
+		    CommandOption option = lookupOption(name);
+		    if (option != null && option.parameter != null) {
+			option.parse(string, options);
+			input.removeLast(); // arg
+			input.removeLast(); // -opt
+			continue;
+		    }
+		}
 	    }
 	    if (string.equals("-help")) {
 		help(cli, input);
 		return;
 	    }
-	    if (string.charAt(0) != '-')
-		continue;
-	    handleOption(input, string, currentIndex + 1, options);
+	    // Check for <<-option>>; if nothing going give up.
+	    String name = optionName(string);
+	    if (name == null)
+		break;
+	    CommandOption commandOption = lookupOption(name);
+	    if (commandOption == null) {
+		throw new InvalidCommandException("unrecognized option '-"
+						  + name + "'");
+	    }
+	    if (commandOption.parameter != null) {
+		throw new InvalidCommandException
+		    ("option -" + commandOption.longName
+		     + " expects a single parameter "
+		     + commandOption.parameter);
+	    }
+	    commandOption.parse(null, options);
 	    input.removeLast();
 	}
 	interpret(cli, input, options);

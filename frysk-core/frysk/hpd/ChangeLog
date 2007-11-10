@@ -1,5 +1,11 @@
 2007-11-09  Andrew Cagney  <cagney@redhat.com>
 
+	* TestParameterizedCommand.java (testOptionWithDashArg()): New.
+	(testUnknownOpt()): New.
+	(testTooManyArgs(), testExtraArg(), testMissingOption()): Delete.
+	* CommandOption.java (Magnitude): New.
+	* ListCommand.java: Extend ParameterizedCommand.
+
 	* ActionPointCommands.java: New.
 	* DeleteCommand.java: Delete.
 	* EnableCommand.java: Delete.
@@ -12,7 +18,6 @@
 	* UndefsetCommand.java: Extend ParameterizedCommand.
 
 	* DbgVariables.java (complete(String,int,List)): New.
-	* TestDbgVariables.java: New.
 	* DbgVariableCommands: New.
 	* SetCommand.java: Delete.
 	* UnsetCommand.java: Delete.
