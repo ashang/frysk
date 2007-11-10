@@ -39,40 +39,59 @@
 
 package frysk.hpd;
 
-class UndefsetCommand extends Command {
-    private static final String full = "The undefset command reverses the "
-	    + "action of defset, so that the set is\n"
-	    + "deleted. This command is applicable only to user-defined sets.";
+import java.util.List;
 
+class UndefsetCommand extends ParameterizedCommand {
+    private class Options {
+	boolean all = false;
+    }
+    Object options() {
+	return new Options();
+    }
     UndefsetCommand() {
 	super("undefset",
 	      "Undefine a previously defined process/thread set.",
-	      "undefset {set-name | -all}", full);
+	      "undefset [ <set-name> | -all ]",
+	      ("The undefset command reverses the action of defset, so"
+	       + " that the set is deleted.  This command is applicable"
+	       + " only to user-defined sets."));
+	add(new CommandOption("all", "remove all user sets") {
+		void parse(String arg, Object options) {
+		    ((Options)options).all = true;
+		}
+	    });
     }
 
-    public void interpret(CLI cli, Input cmd) {
-	if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
-	    cli.printUsage(cmd);
+    public void interpret(CLI cli, Input input, Object o) {
+	Options options = (Options)o;
+	if (options.all) {
+	    if (input.size() != 0)
+		throw new InvalidCommandException
+		    ("Too many arguments for -all");
+	    cli.namedPTSets.clear();
+	    cli.outWriter.println("All sets cleared");
 	    return;
 	}
-	if (cmd.size() == 1) {
-	    String setname = cmd.parameter(0);
-
-	    if (cli.builtinPTSets.containsKey(setname)) {
-		cli.addMessage(new Message("The set \"" + setname
-			+ "\" cannot be undefined.", Message.TYPE_ERROR));
-	    } else if (cli.namedPTSets.containsKey(setname)) {
-		cli.namedPTSets.remove(setname);
-		cli.addMessage(
-			"Set \"" + setname + "\" successfuly undefined.",
-			Message.TYPE_VERBOSE);
-	    } else {
-		cli.addMessage("Set \"" + setname
-			+ "\" does not exist, no action taken.",
-			Message.TYPE_NORMAL);
-	    }
-	} else {
-	    cli.printUsage(cmd);
+	switch (input.size()) {
+	case 0:
+	    throw new InvalidCommandException("missing argument");
+	case 1:
+	    String setname = input.parameter(0);
+	    if (cli.builtinPTSets.containsKey(setname))
+		throw new InvalidCommandException
+		    ("The set \"" + setname + "\" cannot be undefined.");
+	    if (!cli.namedPTSets.containsKey(setname))
+		throw new InvalidCommandException
+		    ("Set \"" + setname + "\" does not exist");
+	    cli.namedPTSets.remove(setname);
+	    break;
+	default:
+	    throw new InvalidCommandException("too many arguments");
 	}
+    }
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List completions) {
+	return -1;
     }
 }

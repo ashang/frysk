@@ -40,6 +40,7 @@
 package frysk.hpd;
 
 import java.io.File;
+import java.util.List;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
@@ -53,38 +54,50 @@ import frysk.proc.Task;
  * Implement the "list" source command.
  */
 
-class ListCommand
-   extends Command
-{
+class ListCommand extends ParameterizedCommand {
     ListCommand () {
 	super("list", "Display source code lines.",
-		"list source-loc [-length [-]num-lines]", "The list command displays lines of source code. The user can control\n" +
-"both the location in the source code and the number of lines\n" +
-"displayed. Successive list commands without location arguments result in\n" +
-"the display of consecutive sequences of source lines.");
+	      "list source-loc [-length [-]num-lines]",
+	      ("The list command displays lines of source code.  The"
+	       + " user can control both the location in the source"
+	       + " code and the number of lines displayed.  Successive"
+	       + " list commands without location arguments result in"
+	       + " the display of consecutive sequences of source lines."));
+	add(new CommandOption("length", "number of lines to display",
+			      "[+-]num-lines") {
+		void parse(String args, Object options) {
+		    ((Options)options).length = new Magnitude(args);
+		}
+	    });
     }
+    private static class Options {
+	CommandOption.Magnitude length;
+    }
+    Object options() {
+	return new Options();
+    }
+
     private File file = null;
     private int line;
     private int exec_line = 0;
-    public void interpret(CLI cli, Input cmd) {
+    void interpret(CLI cli, Input cmd, Object o) {
+	Options options = (Options)o;
         PTSet ptset = cli.getCommandPTSet(cmd);
 	int windowSize = 20;
         Iterator taskIter = ptset.getTaskData();
         while (taskIter.hasNext()) {
             TaskData taskData = (TaskData)taskIter.next();
             Task task = taskData.getTask();
+            cli.outWriter.print("[");
+	    cli.outWriter.print(taskData.getParentID());
+	    cli.outWriter.print(".");
+	    cli.outWriter.print(taskData.getID());
+	    cli.outWriter.println("]");
             DebugInfoFrame frame = cli.getTaskFrame(task);
-            if (cmd.size() == 1 && cmd.parameter(0).equals("-help")) {
-                cli.printUsage(cmd);
-                return;
-            }
             if (frame.getLines().length == 0) {
-                cli.addMessage("No symbol table is available.",
-                               Message.TYPE_NORMAL);
-                return;
+		cli.outWriter.println("No symbol table is available.");
+		continue;
             }
-            cli.outWriter.println("[" + taskData.getParentID() + "."
-                                  + taskData.getID() + "]");
             if (cmd.size() == 1) {
                 // list N
                 try {
@@ -104,20 +117,15 @@ class ListCommand
                     }
                 }
             }
-            else if (cmd.size() == 2) {
-                // list -length {-}N
-                if ((cmd.parameter(0)).equals("-length"))		    {
-                    try 			    {
-                        windowSize = Integer.parseInt(cmd.parameter(1));
-                        if (windowSize < 0)				    {
-                            line += windowSize;
-                        }
-                    }
-                    catch (NumberFormatException ignore)			    {
-                        // XXX: Ignored?
-                    }
-                }
-            }
+	    else if (options.length != null) {
+		windowSize = options.length.magnitude;
+		if (options.length.sign < 0)
+		    line -= windowSize;
+		else if (options.length.sign > 0)
+		    line += windowSize;
+		else
+		    line -= windowSize / 2;
+	    }
             else if (frame.getLines()[0].getLine() != exec_line) {
                 // list around pc.
                 exec_line = frame.getLines()[0].getLine();
@@ -173,5 +181,10 @@ class ListCommand
             }
         }
 
+    }
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List candidates) {
+	return -1;
     }
 }

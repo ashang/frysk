@@ -1,5 +1,35 @@
 2007-11-09  Andrew Cagney  <cagney@redhat.com>
 
+	* UserHelp.java: Delete.
+	* CLI.java (printUsage(String)): Delete.
+	(userhelp): Delete.
+	(handlers): Delete.
+	(addHandler): Delete.
+	
+	* TestParameterizedCommand.java (testOptionWithDashArg()): New.
+	(testUnknownOpt()): New.
+	(testTooManyArgs(), testExtraArg(), testMissingOption()): Delete.
+	* CommandOption.java (Magnitude): New.
+	* ListCommand.java: Extend ParameterizedCommand.
+
+	* ActionPointCommands.java: New.
+	* DeleteCommand.java: Delete.
+	* EnableCommand.java: Delete.
+	* DisableCommand.java: Delete.
+	* ActionsCommand.java: Delete.
+	* CLI.java: Update.
+	* TopLevelCommands.java: Update.
+	* TestHelp.java: Update.
+
+	* UndefsetCommand.java: Extend ParameterizedCommand.
+
+	* DbgVariables.java (complete(String,int,List)): New.
+	* DbgVariableCommands: New.
+	* SetCommand.java: Delete.
+	* UnsetCommand.java: Delete.
+	* TopLevelCommand.java: Update.
+	* CLI.java (dbgvars): Make final; update.
+
 	* TestParameterizedCommand.java (check(...)): Add check for
 	input.stringValue().
 	* PrintCommand.java: Extend ParameterizedCommand.

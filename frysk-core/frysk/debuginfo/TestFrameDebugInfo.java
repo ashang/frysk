@@ -124,7 +124,7 @@ public class TestFrameDebugInfo
     Frame frame = StackFactory.createFrame(task);
     
     Dwfl dwfl = DwflCache.getDwfl(task);
-    DwflDieBias bias = dwfl.getDie(frame.getAdjustedAddress());
+    DwflDieBias bias = dwfl.getCompilationUnit(frame.getAdjustedAddress());
     DwarfDie[] scopes = bias.die.getScopes(frame.getAdjustedAddress() - bias.bias);
     
     assertEquals("number of scopes", 3, scopes.length);
@@ -158,7 +158,7 @@ public class TestFrameDebugInfo
     Frame frame = StackFactory.createFrame(task);
     
     Dwfl dwfl = DwflCache.getDwfl(task);
-    DwflDieBias bias = dwfl.getDie(frame.getAdjustedAddress());
+    DwflDieBias bias = dwfl.getCompilationUnit(frame.getAdjustedAddress());
     DwarfDie[] scopes = bias.die.getScopes(frame.getAdjustedAddress() - bias.bias);
     scopes = scopes[0].getScopesDie();
     

@@ -166,39 +166,76 @@ public class ArrayType
 	Location loc = PieceLocation.createSimpleLoc
 		       (var1.getLocation().getAddress(), type.getSize(), taskMem);
 	return new Value (type, loc);  
-    }    
-    
+    }
+
     void toPrint(PrintWriter writer, Location location,
 		 ByteBuffer memory, Format format) {
-	if (type instanceof CharType) {
-	    // Treat it as a character string
+	// XXX: Add dimension start/end instead of assuming {}
+	for (int i = 0; i < dimension.length - 1; i++)
+	    writer.print("{");
+	for (ArrayIterator e = new ArrayIterator(location); e.hasNext(); ) {
+	    if (e.idx > 0) {
+		for (int i = 0; i < stride.length - 2; i++)
+		    if ((e.idx % stride[i]) == 0)
+			writer.print("}");
+		if ((e.idx % stride[stride.length - 2]) == 0)
+		    writer.print(",");
+		for (int i = 0; i < stride.length - 2; i++)
+		    if ((e.idx % stride[i]) == 0)
+			writer.print("{");
+	    }
+	    if (! toPrintVector(writer, type, e, memory, format))
+	      break;
+	}
+	for (int i = 0; i < dimension.length - 1; i++)
+	    writer.print("}");
+    }
+
+    private boolean toPrintVector(PrintWriter writer, Type type, ArrayIterator e,
+	    ByteBuffer memory, Format format)
+    {
+	boolean isVector = dimension.length == 1;
+	int vectorLength = dimension[dimension.length - 1];
+	boolean haveCharType;
+	boolean noNullByte = true;
+	if (type instanceof CharType)
+	    haveCharType = true;
+	else
+	    haveCharType = false;
+	
+	if (haveCharType) {
+	    if (! isVector)
+		writer.print("{");
 	    writer.print("\"");
-	    for (ArrayIterator e = new ArrayIterator(location);
-		 e.hasNext(); ) {
-		Location l = (Location)e.next();
+	}
+	else
+	    writer.print("{");
+
+	for (int i = 0; i < vectorLength; i++) {
+	    Location l = (Location)e.next();
+	    if (haveCharType) {
 		BigInteger c = ((CharType)type).getBigInteger(l);
-		if (c.equals(BigInteger.ZERO))
+		if (c.equals(BigInteger.ZERO)) {
+		    noNullByte = false;
 		    break; // NUL
+		}
 		writer.print((char)c.longValue());
 	    }
-	    writer.print("\"");
-	} else {
-	    for (int i = 0; i < dimension.length; i++)
-		writer.print("{");
-	    for (ArrayIterator e = new ArrayIterator(location);
-		 e.hasNext(); ) {
-		if (e.idx > 0) {
-		    if ((e.idx % dimension[dimension.length - 1]) == 0)
-			writer.print("},{");
-		    else
-			writer.print(",");
-		}
-		Location l = (Location)e.next();
+	    else {
 		type.toPrint(writer, l, memory, format);
+		if (i < vectorLength - 1)
+		    writer.print(",");
 	    }
-	    for (int i = 0; i < dimension.length; i++)
+	}
+
+	if (haveCharType) {
+	    writer.print("\"");
+	    if (! isVector)
 		writer.print("}");
 	}
+	else
+	    writer.print("}");
+	return noNullByte;
     }
 
     public void toPrint(String s, PrintWriter writer) {

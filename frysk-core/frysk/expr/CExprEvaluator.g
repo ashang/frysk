@@ -193,58 +193,92 @@ expr returns [Value returnVar=null]
                         .modEqual(v1, v2);
         }                               
     |   #(MEMORY v1=expr ) {
-            returnVar = v1.getType().dereference(v1, exprSymTab.taskMemory());
+            returnVar = v1.getType()
+                        .dereference(v1, exprSymTab.taskMemory());
         } 
     |   #(SHIFTLEFT  v1=expr v2=expr) {
-            returnVar = v1.getType().shiftLeft(v1, v2);  
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .shiftLeft(v1, v2);  
         }
     |   #(SHIFTRIGHT  v1=expr v2=expr) {
-            returnVar = v1.getType().shiftRight(v1, v2); 
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .shiftRight(v1, v2); 
         }
     |   #(LESSTHAN  v1=expr v2=expr) {
-            returnVar = v1.getType().lessThan(v1, v2); 
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .lessThan(v1, v2); 
         }
     |   #(GREATERTHAN  v1=expr v2=expr) {
-            returnVar = v1.getType().greaterThan(v1, v2); 
+            returnVar =  v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .greaterThan(v1, v2); 
         }
     |   #(LESSTHANOREQUALTO  v1=expr v2=expr) {
-            returnVar = v1.getType().lessThanOrEqualTo(v1, v2); 
+            returnVar =  v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .lessThanOrEqualTo(v1, v2); 
         }
     |   #(GREATERTHANOREQUALTO  v1=expr v2=expr) {
-            returnVar = v1.getType().greaterThanOrEqualTo(v1, v2); 
+            returnVar =  v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .greaterThanOrEqualTo(v1, v2); 
         }
     |   #(NOTEQUAL  v1=expr v2=expr) {
-            returnVar = v1.getType().notEqual(v1, v2); 
+            returnVar =  v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .notEqual(v1, v2); 
         }
     |   #(EQUAL  v1=expr v2=expr) {
-            returnVar = v1.getType().equal(v1, v2); 
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .equal(v1, v2); 
         }
     |   ( #(AMPERSAND expr expr) )=>#(AMPERSAND  v1=expr v2=expr) {
-            returnVar = v1.getType().bitWiseAnd(v1, v2); 
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .bitWiseAnd(v1, v2); 
         }
     |   #(ADDRESS_OF v1=expr ) {
-            returnVar = v1.getType().addressOf(v1, exprSymTab.order(), exprSymTab.getWordSize());
+            returnVar = v1.getType().addressOf(v1, 
+                        exprSymTab.order(), exprSymTab.getWordSize());
         }
     |   #(BITWISEXOR  v1=expr v2=expr) {
-            returnVar = v1.getType().bitWiseXor(v1, v2); 
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .bitWiseXor(v1, v2); 
         }
     |   #(BITWISEOR  v1=expr v2=expr) {
-            returnVar = v1.getType().bitWiseOr(v1, v2); 
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .bitWiseOr(v1, v2); 
         }
     |   #(AND  v1=expr v2=expr) {
-            returnVar = v1.getType().logicalAnd(v1, v2); 
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .logicalAnd(v1, v2); 
         }
     |   #(OR  v1=expr v2=expr) {
-            returnVar = v1.getType().logicalOr(v1, v2); 
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .logicalOr(v1, v2); 
         }
     |   #(NOT  v1=expr) {
-            returnVar = v1.getType().logicalNegation(v1); 
+            returnVar = v1.getType().getALU(v1.getType(), 
+                        exprSymTab.getWordSize())
+                        .logicalNegation(v1); 
         }
     |   #(TILDE v1=expr) {
-            returnVar = v1.getType().bitWiseComplement(v1); 
+            returnVar = v1.getType().getALU(v1.getType(), 
+                        exprSymTab.getWordSize())
+                        .bitWiseComplement(v1); 
         }
     |   #(COND_EXPR  log_expr=expr v1=expr v2=expr) {
-            returnVar = ((log_expr.getType().getLogicalValue(log_expr)) ? v1 : v2);
+            returnVar = ((log_expr.getType().getALU(log_expr.getType(), 
+                        exprSymTab.getWordSize())
+                        .getLogicalValue(log_expr)) ? v1 : v2);
         }
     |   o:OCTALINT  {
     	    char c = o.getText().charAt(o.getText().length() - 1);
@@ -291,24 +325,30 @@ expr returns [Value returnVar=null]
             returnVar = v1;
         }
     |   #(SHIFTLEFTEQUAL v1=expr v2=expr)  {
-            v1.getType().shiftLeftEqual(v1, v2);
-            returnVar = v1;
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .shiftLeftEqual(v1, v2);
         }
     |   #(SHIFTRIGHTEQUAL v1=expr v2=expr)  {
-            v1.getType().shiftRightEqual(v1, v2);
-            returnVar = v1;
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .shiftRightEqual(v1, v2);
         }
     |   #(BITWISEANDEQUAL v1=expr v2=expr)  {
-            v1.getType().bitWiseAndEqual(v1, v2);
-            returnVar = v1;
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .bitWiseAndEqual(v1, v2);
+  
         }
     |   #(BITWISEXOREQUAL v1=expr v2=expr)  {
-            v1.getType().bitWiseXorEqual(v1, v2);
-            returnVar = v1;
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .bitWiseXorEqual(v1, v2);
         }
     |   #(BITWISEOREQUAL v1=expr v2=expr)  {
-            v1.getType().bitWiseOrEqual(v1, v2);
-            returnVar = v1;
+            returnVar = v1.getType().getALU(v2.getType(), 
+                        exprSymTab.getWordSize())
+                        .bitWiseOrEqual(v1, v2);
         }
     |   #(CAST pt:primitiveType v2=expr) { 
 	    if(pt.getText().compareTo("long") == 0) {

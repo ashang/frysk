@@ -1,3 +1,12 @@
+2007-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Composite.java (getType): New function.
+
+2007-11-06  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Renamed Dwfl::getDie to Dwfl::getCompilationUnit.
+	* TestScopeFactory.java: Updated.
+
 2007-11-05  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestScopes.java (testGetOriginalStaticSubprogram): New test.

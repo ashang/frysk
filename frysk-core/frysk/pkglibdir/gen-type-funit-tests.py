@@ -21,7 +21,8 @@ class c:
             self.write(" = " + initial)
         self.c_file.write(";\n")
         self.c_file.write("// Name: " + var + var_suffix + "\n")
-        self.c_file.write("// Value: " + initial + "\n")
+        # Escape quotes and new lines, remove struct member "."
+        self.c_file.write("// Value: " + initial.replace('"','\\"').replace('\n',"\\n").replace('{.','{').replace(' .',' ') + "\n")
         self.c_file.write("// Type: ")
         type += type_arr
         self.c_file.write(type.replace("\n", "\n// Type: "))
@@ -79,14 +80,14 @@ for t in sys.argv:
 # base types we generate variables for.  used to index into limits map
 base_types=('char','short int','int','long int','long long int','float','double')
 # Used for variable initialization
-limits={'char' : {'min' : '41', 'max' : '176'},
+limits={'char' : {'min' : "'!'", 'max' : "'~'"},
         'short int' : {'min' : '-32767', 'max' : '32767'},
-        'int' : {'min' : '-2147483647', 'max' : '2147483647'},
-        'long int' : {'min' : '-2147483647L', 'max' : '2147483647L'},
-        'long long int' : {'min' : '-9223372036854775807LL', 
-                           'max' :  '9223372036854775807LL'},
-        'float' : {'min' : '1.175494E-38', 'max' : '3.402823E+38'},
-        'double' : {'min' : '2.225074E-308', 'max' : '1.797693E+308'}
+        'int' : {'min' : '-65536', 'max' : '65536'},
+        'long int' : {'min' : '-65536', 'max' : '65536'},
+        'long long int' : {'min' : '-65536', 
+                           'max' :  '65536'},
+        'float' : {'min' : '1.1754939E-38', 'max' : '3.402823E38'},
+        'double' : {'min' : '2.225074E-308', 'max' : '1.797693E308'}
 }
 type_modifiers=('const','volatile')
 
@@ -136,26 +137,37 @@ for t in base_types:
     ts = t.replace(" ","_")
     min = limits[t]['min']
     max = limits[t]['max']
-    c_file.add(t, "arr_%s" % ts, "{%s,%s}" % (min,max), " [2]")
-    c_file.add(t, "arr_arr_%s" % ts, "{{%s,%s},{%s,%s}}" % (min,max,min,max), " [2][2]")
-    c_file.add(t, "arr_arr_arr_%s" % ts, "{{{%s,%s},{%s,%s}},{{%s,%s},{%s,%s}}}" % (min,max,min,max,min,max,min,max), " [2][2][2]")
-    c_file.add("%s *" % t, "arr_ptr_arr_arr_%s" % ts, "{arr_arr_%s[0],arr_arr_%s[1]}" % (ts,ts), " [2]")
-    c_file.add("%s (*" % t, "ptr_arr_%s" % ts, "&arr_%s" % ts, ")[2]")
+    if (t == "char"):
+        char1 = min.strip("'")
+        char2 = max.strip("'")
+        c_file.add(t, "arr_%s" % ts, '"%s%s"' % (char1,char2), " [2]")
+        c_file.add(t, "arr_arr_%s" % ts, '{{"%s%s"},{"%s%s"}}' % (char1,char2,char1,char2), " [2][2]")
+        c_file.add(t, "arr_arr_arr_%s" % ts, '{{{"%s%s"},{"%s%s"}},{{"%s%s"},{"%s%s"}}}' % (char1,char2,char1,char2,char1,char2,char1,char2), " [2][2][2]")
+        c_file.add("%s *" % t, "arr_ptr_arr_arr_%s" % ts, "{arr_arr_%s[0],arr_arr_%s[1]}" % (ts,ts), " [2]")
+        c_file.add("%s (*" % t, "ptr_arr_%s" % ts, "&arr_%s" % ts, ")[2]")
+    else:
+        c_file.add(t, "arr_%s" % ts, "{%s,%s}" % (min,max), " [2]")
+        c_file.add(t, "arr_arr_%s" % ts, "{{%s,%s},{%s,%s}}" % (min,max,min,max), " [2][2]")
+        c_file.add(t, "arr_arr_arr_%s" % ts, "{{{%s,%s},{%s,%s}},{{%s,%s},{%s,%s}}}" % (min,max,min,max,min,max,min,max), " [2][2][2]")
+        c_file.add(t, "arr_arr_arr_arr_%s" % ts, 
+                   "{{{{%s,%s},{%s,%s},{%s,%s}},{{%s,%s},{%s,%s},{%s,%s}}},{{{%s,%s},{%s,%s},{%s,%s}},{{%s,%s},{%s,%s},{%s,%s}}},{{{%s,%s},{%s,%s},{%s,%s}},{{%s,%s},{%s,%s},{%s,%s}}}}" % (min,max,min,max,min,max,min,max,min,max,min,max,min,max,min,max,min,max,min,max,min,max,min,max,min,max,min,max,min,max,min,max,min,max,min,max), " [3][2][3][2]")
+        c_file.add("%s *" % t, "arr_ptr_arr_arr_%s" % ts, "{arr_arr_%s[0],arr_arr_%s[1]}" % (ts,ts), " [2]")
+        c_file.add("%s (*" % t, "ptr_arr_%s" % ts, "&arr_%s" % ts, ")[2]")
 
 c_file.write("\nstatic int one = 1, two = 2, three = 3, four = 4;\n")
 
-c_file.add("struct {\n  int int_var;\n}", "arr_struct", "{{1},{2}}", " [2]")
-c_file.add("union {\n  int int_var;\n  float fl;\n}", "arr_union", "{{1},{2}}", " [2]")
-c_file.add("struct {\n  int int_var;\n}", "arr_arr_struct", "{{{1},{2}},{{3},{4}}}", " [2][2]")
-c_file.add("union {\n  int int_var;\n  float float_var;\n}", "arr_arr_union", "{{{1},{2}},{{3},{4}}}", " [2][2]")
+c_file.add("struct {\n  int int_var;\n}", "arr_struct", "{{.int_var=1,\n},{.int_var=2,\n}}", " [2]")
+c_file.add("union {\n  int int_var;\n  float fl;\n}", "arr_union", "{{.int_var=1,\n .fl=1.4012985E-45,\n},{.int_var=1073741824,\n .fl=2.0,\n}}", " [2]")
+c_file.add("struct {\n  int int_var;\n}", "arr_arr_struct", "{{{.int_var=1,\n},{.int_var=2,\n}},{{.int_var=3,\n},{.int_var=4,\n}}}", " [2][2]")
+c_file.add("union {\n  int int_var;\n  float float_var;\n}", "arr_arr_union", "{{{.int_var=1,\n .float_var=1.4012985E-45,\n},{.int_var=2,\n .float_var=2.802597E-45,\n}},{{.int_var=3,\n .float_var=4.2038954E-45,\n},{.int_var=4,\n .float_var=5.605194E-45,\n}}}", " [2][2]")
 c_file.add("int *", "arr_arr_ptr", "{{&one,&two},{&three,&four}}", " [2][2]")
-c_file.add("struct {\n  int arr_int[2];\n}", "arr_struct_arr_int", "{{{1, 2}}, {{3, 4}}}", " [2]")
-c_file.add("struct {\n  struct {\n    int int_var;\n  } struct_a;\n}", "arr_struct_struct", "{{{1}},{{2}}}", " [2]")
-c_file.add("struct {\n  union {\n    int int_var;\n    float float_var;\n  } struct_a;\n}", "arr_struct_union", "{{{1}},{{2}}}", " [2]")
+c_file.add("struct {\n  int arr_int[2];\n}", "arr_struct_arr_int", "{{.arr_int={1,2},\n},{.arr_int={3,4},\n}}", " [2]")
+c_file.add("struct {\n  struct {\n    int int_var;\n  } struct_a;\n}", "arr_struct_struct", "{{.struct_a={.int_var=1,\n},\n},{.struct_a={.int_var=2,\n},\n}}", " [2]")
+c_file.add("struct {\n  union {\n    int int_var;\n    float float_var;\n  } struct_a;\n}", "arr_struct_union", "{{.struct_a={.int_var=1,\n .float_var=1.4012985E-45,\n},\n},{.struct_a={.int_var=2,\n .float_var=2.802597E-45,\n},\n}}", " [2]")
 c_file.add("struct {\n  int * ptr;\n}", "arr_struct_ptr", "{{&one},{&two}}", " [2]")
-c_file.add("union {\n  int arr_int[2];\n  float arr_float[2];\n}", "arr_union_arr_int", "{{{1, 2}}, {{3, 4}}}", " [2]")
-c_file.add("union {\n  struct {\n    int int_var;\n  } struct_a;\n}", "arr_union_struct", "{{{1}}, {{2}}}", " [2]")
-c_file.add("union {\n  union {\n    int int_var;\n  } union_a;\n}", "arr_union_union", "{{{1}}, {{2}}}", " [2]")
+c_file.add("union {\n  int arr_int[2];\n  float arr_float[2];\n}", "arr_union_arr_int", "{{.arr_int={1,2},\n .arr_float={1.4012985E-45,2.802597E-45},\n},{.arr_int={3,4},\n .arr_float={4.2038954E-45,5.605194E-45},\n}}", " [2]")
+c_file.add("union {\n  struct {\n    int int_var;\n  } struct_a;\n}", "arr_union_struct", "{{.struct_a={.int_var=1,\n},\n},{.struct_a={.int_var=2,\n},\n}}", " [2]")
+c_file.add("union {\n  union {\n    int int_var;\n  } union_a;\n}", "arr_union_union", "{{.union_a={.int_var=1,\n},\n},{.union_a={.int_var=2,\n},\n}}", " [2]")
 c_file.add("union {\n  int * ptr;\n}", "arr_union_ptr", "{{&one}, {&two}}", " [2]", )
 # ??? fails
 # c_file.add("int (*", "arr_ptr_arr", "{&arr_int, &arr_int}", " [2])[2]")

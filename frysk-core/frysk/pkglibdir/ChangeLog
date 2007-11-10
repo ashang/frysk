@@ -1,3 +1,9 @@
+2007-11-09  Stan Cox  <scox@redhat.com>
+
+	* gen-type-funit-tests.py (c.add): Filter quotes, new lines, member "."
+	(main): Handle char specially.  Match result formatting to fhpd
+	expectations. 
+
 2007-11-05  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* funit-cpp-scopes-class-static.cxx: Removed print statement.

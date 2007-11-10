@@ -51,7 +51,7 @@ public class TestDwarfDie extends TestCase {
 	assertNotNull(dwfl);
 
 	// get CUDIE
-	DwflDieBias bias = dwfl.getDie(LocalMemory.getCodeAddr());
+	DwflDieBias bias = dwfl.getCompilationUnit(LocalMemory.getCodeAddr());
 	assertNotNull(bias);
 	DwarfDie die = bias.die;
 	assertEquals("Die has the correct tag", DwTag.COMPILE_UNIT, die

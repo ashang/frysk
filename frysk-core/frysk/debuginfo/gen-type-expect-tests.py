@@ -96,7 +96,7 @@ public class %s extends TestLib {
             frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
 	    long pc = frame.getAdjustedAddress();
 	    Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
-	    DwflDieBias bias = dwfl.getDie(pc);
+	    DwflDieBias bias = dwfl.getCompilationUnit(pc);
 	    die = bias.die;
 	    allDies = die.getScopes(pc - bias.bias);
 	    typeEntry = new TypeEntry(frame.getTask().getISA());
@@ -114,7 +114,6 @@ public class %s extends TestLib {
                      System.out.println("Error: Cannot find " + expect[i].symbol);
 		 assertNotNull(varDie);
 		 varType = typeEntry.getType(varDie.getType());
-                    // System.out.println("Expect: " + expect[i].symbol + "\\n'" + expect[i].output + "'\\nGot:\\n'" + valueString + "'");
 		 assertNotNull(varType);
 		 assertEquals(myName + expect[i].symbol, expect[i].output, varType.toPrint());
 	     }
@@ -128,11 +127,9 @@ public class %s extends TestLib {
 	    ByteArrayOutputStream baos = new ByteArrayOutputStream(32);
 	    PrintWriter pw = new PrintWriter(baos, true);
 	    for (int i = 0; i < expect.length; i++) {
-                // ??? cache address of x so &x can be checked
-	        if (expect[i].output.indexOf("&") >= 0)
-		    continue;
-                // ??? ignore char for now
-	        if (expect[i].symbol.indexOf("char_") >= 0)
+                // ??? cache address of x so &x can be checked?
+	        if (expect[i].output.indexOf("&") >= 0
+                    || expect[i].symbol.indexOf("ptr") >= 0)
 		    continue;
                 DwarfDie varDie = die.getScopeVar(allDies, expect[i].symbol);
                 if (varDie == null)
@@ -143,7 +140,9 @@ public class %s extends TestLib {
                 value.toPrint(pw, task.getMemory(), Format.NATURAL);
                 pw.flush();
                 String valueString = baos.toString();
-//                System.out.println("Expect: " + expect[i].symbol + "\\n'" + expect[i].output + "'\\nGot:\\n'" + valueString + "'");
+                // System.out.println("Expect: " + expect[i].symbol +
+                //     "\\n'" + expect[i].output + "'\\nGot:\\n'" +
+                //     valueString + "'" + " " + value.getType());
                 assertEquals(myName + expect[i].symbol, expect[i].output, valueString);
                 baos.reset();
             }
@@ -169,6 +168,7 @@ public class %s extends TestLib {
 
     def start_test(self, tool, name):
         print("    public void test%s () {" % (name))
+#        if (tool == "value" and (name == "Enum" or name == "Struct")):
         if (tool == "value"):
             print('''
         if (unresolved(5235))

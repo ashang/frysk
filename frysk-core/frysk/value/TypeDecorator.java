@@ -42,7 +42,6 @@ package frysk.value;
 import java.io.PrintWriter;
 
 import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
 
 /**
  * Type decorator class, so that a base or composite type can be
@@ -89,76 +88,7 @@ abstract class TypeDecorator extends Type {
 	      decorated.toPrint(writer);
 	  }
 	}
-	
-	public Value shiftLeft(Value var1, Value var2) {
-		return decorated.shiftLeft(var1, var2);
-	}
-	public Value shiftRight (Value var1, Value var2) {
-		return decorated.shiftRight(var1, var2);
-	}
-	public Value lessThan(Value var1, Value var2) {
-		return decorated.lessThan(var1, var2);
-	}
-	public Value greaterThan(Value var1, Value var2) {
-		return decorated.greaterThan(var1, var2);
-	}
-	public Value lessThanOrEqualTo(Value var1, Value var2) {
-		return decorated.lessThanOrEqualTo(var1, var2);
-	}
-	public Value greaterThanOrEqualTo(Value var1, Value var2) {
-		return decorated.greaterThanOrEqualTo(var1, var2);
-	}
-	public Value equal(Value var1, Value var2) {
-		return decorated.equal(var1, var2);
-	}
-	public Value notEqual(Value var1, Value var2) {
-		return decorated.notEqual(var1, var2);
-	}
-	public Value bitWiseAnd(Value var1, Value var2) {
-		return decorated.bitWiseAnd(var1, var2);
-	}
-	public Value bitWiseXor(Value var1, Value var2) {
-		return decorated.bitWiseXor(var1, var2);
-	}
-	public Value bitWiseOr(Value var1, Value var2) {
-		return decorated.bitWiseOr(var1, var2);
-	}
-	public Value bitWiseComplement(Value var1) {
-		return decorated.bitWiseComplement(var1);
-	}
-	public Value logicalAnd(Value var1, Value var2) {
-		return decorated.logicalAnd(var1, var2);
-	}
-	public Value logicalOr(Value var1, Value var2) {
-		return decorated.logicalOr(var1, var2);
-	}
-	public Value logicalNegation(Value var1) {
-		return decorated.logicalNegation(var1);
-	} 
-	public Value shiftLeftEqual(Value var1, Value var2) {
-		return decorated.shiftLeftEqual(var1, var2);
-	}
-	public Value shiftRightEqual(Value var1, Value var2) {
-		return decorated.shiftRightEqual(var1, var2);
-	}
-	public Value bitWiseOrEqual(Value var1, Value var2) {
-		return decorated.bitWiseOrEqual(var1, var2);
-	}
-	public Value bitWiseXorEqual(Value var1, Value var2) {
-		return decorated.bitWiseXorEqual(var1, var2);
-	}
-	public Value bitWiseAndEqual(Value var1, Value var2) {
-		return decorated.bitWiseAndEqual(var1, var2);
-	}
-	public Value addressOf (Value var1, ByteOrder order, int wordSize) {
-		return decorated.addressOf(var1, order, wordSize);
-	}
-	public Value dereference (Value var1, ByteBuffer taskMem) {
-		return decorated.dereference(var1, taskMem);
-	}
-	public boolean getLogicalValue(Value var1) {
-		return decorated.getLogicalValue(var1);
-	}
+
 	void assign(Location location, Value value) {
 		decorated.assign(location, value);
 	}

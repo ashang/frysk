@@ -39,6 +39,7 @@
 
 package frysk.debuginfo;
 
+import java.util.Iterator;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,7 +51,9 @@ import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
+import frysk.value.CompositeType;
 import frysk.value.Type;
+import frysk.value.CompositeType.Member;
 
 public class TestTypeEntry
     extends TestLib
@@ -89,7 +92,7 @@ public class TestTypeEntry
       DwarfDie varDie;
       long pc = frame.getAdjustedAddress();
       dwfl = DwflCache.getDwfl(frame.getTask());
-      DwflDieBias bias = dwfl.getDie(pc);
+      DwflDieBias bias = dwfl.getCompilationUnit(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
       TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
@@ -120,7 +123,7 @@ public class TestTypeEntry
       DwarfDie varDie;
       long pc = frame.getAdjustedAddress();
       dwfl = DwflCache.getDwfl(frame.getTask());
-      DwflDieBias bias = dwfl.getDie(pc);
+      DwflDieBias bias = dwfl.getCompilationUnit(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
       TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
@@ -151,7 +154,7 @@ public class TestTypeEntry
       DwarfDie varDie;
       long pc = frame.getAdjustedAddress();
       dwfl = DwflCache.getDwfl(frame.getTask());
-      DwflDieBias bias = dwfl.getDie(pc);
+      DwflDieBias bias = dwfl.getCompilationUnit(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
       TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
@@ -191,7 +194,7 @@ public class TestTypeEntry
       DwarfDie varDie;
       long pc = frame.getAdjustedAddress();
       dwfl = DwflCache.getDwfl(frame.getTask());
-      DwflDieBias bias = dwfl.getDie(pc);
+      DwflDieBias bias = dwfl.getCompilationUnit(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
       TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
@@ -226,7 +229,7 @@ public class TestTypeEntry
       DwarfDie varDie;
       long pc = frame.getAdjustedAddress();
       dwfl = DwflCache.getDwfl(frame.getTask());
-      DwflDieBias bias = dwfl.getDie(pc);
+      DwflDieBias bias = dwfl.getCompilationUnit(pc);
       DwarfDie die = bias.die;
       allDies = die.getScopes(pc - bias.bias);
       TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
@@ -239,4 +242,47 @@ public class TestTypeEntry
 	  assertTrue("testClass " + expect[i].symbol, m.matches());
       }
   }
+  
+  public void testClassWithStaticMembers () {
+
+      if(unresolved(5301)){
+	  return;
+      }
+      
+      Task task = (new DaemonBlockedAtSignal("funit-class-static")).getMainTask();
+
+      DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
+      
+      CompositeType compositeType = (CompositeType) frame.getSubprogram().getComposite().getType();
+      
+      assertNotNull("Retrieved type successfully", compositeType);
+      
+      Iterator iterator = compositeType.iterator();
+      
+      while(iterator.hasNext()){
+	  System.out.println("TestTypeEntry.testClassWithStaticMembers() " + ((Member)iterator.next()).getName() + "\n");
+      }
+      
+      assertTrue(false);
+      
+//      Dwfl dwfl;
+//      DwarfDie[] allDies;
+//      Type varType;
+//      DwarfDie varDie;
+//      long pc = frame.getAdjustedAddress();
+//      dwfl = DwflCache.getDwfl(frame.getTask());
+//      DwflDieBias bias = dwfl.getCompilationUnit(pc);
+//      DwarfDie die = bias.die;
+//      allDies = die.getScopes(pc - bias.bias);
+//      TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
+//    
+//      for (int i = 0; i < expect.length; i++) {
+//	  varDie = die.getScopeVar(allDies, expect[i].symbol);
+//	  varType = typeEntry.getType(varDie.getType());
+//	  Pattern p = Pattern.compile(expect[i].output, Pattern.DOTALL);
+//	  Matcher m = p.matcher(varType.toPrint());
+//	  assertTrue("testClass " + expect[i].symbol, m.matches());
+//      }
+  }
+
 }  

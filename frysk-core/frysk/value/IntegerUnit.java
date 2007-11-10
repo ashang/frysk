@@ -54,26 +54,91 @@ public class IntegerUnit
 
     public Value add(Value v1, Value v2) {
 	return retType.createValue
-	               (v1.asBigInteger().add(v2.asBigInteger()));
+	       (v1.asBigInteger().add(v2.asBigInteger()));
     }
-    
     public Value subtract(Value v1, Value v2) {
 	return retType.createValue
-	               (v1.asBigInteger().subtract(v2.asBigInteger()));
-    }
-    
+               (v1.asBigInteger().subtract(v2.asBigInteger()));
+    }    
     public Value multiply (Value v1, Value v2) {
 	return retType.createValue
-	               (v1.asBigInteger().multiply(v2.asBigInteger()));
-    }
-    
+	       (v1.asBigInteger().multiply(v2.asBigInteger()));
+    }    
     public Value divide (Value v1, Value v2) {
 	return retType.createValue
-	               (v1.asBigInteger().divide(v2.asBigInteger()));
-    }
-    
+	       (v1.asBigInteger().divide(v2.asBigInteger()));
+    }    
     public Value mod(Value v1, Value v2) {
 	return retType.createValue
-                       (v1.asBigInteger().mod(v2.asBigInteger()));
+	       (v1.asBigInteger().mod(v2.asBigInteger()));
     }
+
+    public Value shiftLeft(Value v1, Value v2) {
+	return retType.createValue
+	(v1.asBigInteger().shiftLeft(v2.asBigInteger().intValue()));
+    } 
+    public Value shiftRight(Value v1, Value v2) {
+	return retType.createValue
+	(v1.asBigInteger().shiftRight(v2.asBigInteger().intValue()));
+    } 
+    
+    public Value lessThan(Value v1, Value v2) {
+	return retType.createValue
+	(v1.asBigInteger().compareTo(v2.asBigInteger()) < 0 ? 1 : 0);
+    }   
+    public Value greaterThan(Value v1, Value v2) {
+	return retType.createValue
+	(v1.asBigInteger().compareTo(v2.asBigInteger()) > 0 ? 1 : 0);
+    }     
+    public Value lessThanOrEqualTo(Value v1, Value v2) {
+	return retType.createValue
+	(v1.asBigInteger().compareTo(v2.asBigInteger()) <= 0 ? 1 : 0);
+    }     
+    public Value greaterThanOrEqualTo(Value v1, Value v2) {
+	return retType.createValue
+	(v1.asBigInteger().compareTo(v2.asBigInteger()) >= 0 ? 1 : 0);
+    }   
+    public Value equal(Value v1, Value v2) {
+	return retType.createValue
+	(v1.asBigInteger().compareTo(v2.asBigInteger()) == 0 ? 1 : 0);
+    }     
+    public Value notEqual(Value v1, Value v2) {
+	return retType.createValue
+	(v1.asBigInteger().compareTo(v2.asBigInteger()) != 0 ? 1 : 0);
+    }    
+    
+    public Value bitWiseAnd(Value v1, Value v2) {
+	return retType.createValue
+	       (v1.asBigInteger().and(v2.asBigInteger()));
+    }   
+    public Value bitWiseXor(Value v1, Value v2) {
+	return retType.createValue
+	       (v1.asBigInteger().xor(v2.asBigInteger()));
+    }    
+    public Value bitWiseOr(Value v1, Value v2) {
+	return retType.createValue
+	       (v1.asBigInteger().or(v2.asBigInteger()));
+    }    
+    public Value bitWiseComplement(Value v1) {
+	return retType.createValue
+	       (v1.asBigInteger().not());
+    } 
+
+    public Value logicalAnd(Value v1, Value v2) {
+	return retType.createValue
+	               ((v1.asBigInteger().longValue() == 0 ? false : true)
+		     && (v2.asBigInteger().longValue() == 0 ? false : true) ? 1 : 0);
+    }    
+    public Value logicalOr(Value v1, Value v2) {
+	return retType.createValue
+	               ((v1.asBigInteger().longValue() == 0 ? false : true)
+		     || (v2.asBigInteger().longValue() == 0 ? false : true) ? 1 : 0);
+    }  
+    public Value logicalNegation(Value v1) {
+	return retType.createValue
+                       (v1.asBigInteger().longValue() == 0 ? 1 : 0);
+    }    
+    public boolean getLogicalValue (Value v1) {
+	return ((v1.asBigInteger().longValue() == 0) ? false : true);
+    }    
 }
