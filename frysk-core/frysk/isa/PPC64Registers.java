@@ -173,8 +173,87 @@ public class PPC64Registers extends Registers {
     public static final Register FPR31
 	= new Register("fpr31", StandardTypes.FLOAT64B_T);
 
+    /* Special Registers */
+    public static final Register LR
+	= new Register("lr", StandardTypes.VOIDPTR64B_T);
+    public static final Register CTR
+	= new Register("ctr", StandardTypes.INT64B_T);
+    public static final Register ARG
+	= new Register("arg", StandardTypes.INT64B_T);
+    public static final Register CR
+	= new Register("cr", StandardTypes.INT64B_T);
+    public static final Register XER
+	= new Register("xer", StandardTypes.INT64B_T);
+
+    /* Alti-vec special register */
+    public static final Register VRSAVE
+	= new Register("vrsave", StandardTypes.INT64B_T);
+    public static final Register VSCR
+	= new Register("vscr", StandardTypes.INT64B_T);
+
+    /* SPUs special registers (for CELL processors) */
+    public static final Register SPEACC
+	= new Register("speacc", StandardTypes.INT64B_T);
+    public static final Register SPEFSCR
+	= new Register("spefscr", StandardTypes.INT64B_T);
+
+    /* Frame-Pointer */
+    public static final Register FRP
+	= new Register("frp", StandardTypes.VOIDPTR64B_T);
+
+    /* Next-Instruction Pointer (Program Pointer) */
     public static final Register NIP
 	= new Register("nip", StandardTypes.VOIDPTR64B_T);
+
+    /* 
+     * Defining Register Groups
+     */
+    public static final RegisterGroup GENERAL
+        = new RegisterGroup("general",
+                  new Register[] {
+                          GPR0 , GPR1 , GPR2 , GPR3 , GPR4 , GPR5 , GPR6 , GPR7 , GPR8 , GPR9 ,
+                          GPR10, GPR11, GPR12, GPR13, GPR14, GPR15, GPR16, GPR17, GPR18, GPR19,
+                          GPR20, GPR21, GPR22, GPR23, GPR24, GPR25, GPR26, GPR27, GPR28, GPR29,
+                          GPR30, GPR31 });
+
+    public static final RegisterGroup SPECIAL
+        = new RegisterGroup("special",
+                  new Register[] { LR, CTR, ARG, CR, XER, 
+                                   VRSAVE, VSCR, SPEACC, SPEFSCR, 
+                                   FRP, NIP });
+
+    public static final RegisterGroup FLOATING_POINTER
+        = new RegisterGroup("floatingpointer",
+                  new Register[] {
+                          FPR0 , FPR1 , FPR2 , FPR3 , FPR4 , FPR5 , FPR6 , FPR7 , FPR8 , FPR9 ,
+                          FPR10, FPR11, FPR12, FPR13, FPR14, FPR15, FPR16, FPR17, FPR18, FPR19,
+                          FPR20, FPR21, FPR22, FPR23, FPR24, FPR25, FPR26, FPR27, FPR28, FPR29,
+                          FPR30, FPR31 });
+
+    /*
+     * Creating the special ALL group
+     */
+    public static final RegisterGroup ALL;
+    static {
+        Register[] allRegs = new Register[
+                GENERAL.getRegisters().length +
+                SPECIAL.getRegisters().length +
+                FLOATING_POINTER.getRegisters().length];
+
+        System.arraycopy(GENERAL.getRegisters(), 0,
+                         allRegs, 0,
+                         GENERAL.getRegisters().length);
+
+        System.arraycopy(SPECIAL.getRegisters(), 0,
+                         allRegs, GENERAL.getRegisters().length,
+                         SPECIAL.getRegisters().length);
+
+        System.arraycopy(FLOATING_POINTER.getRegisters(), 0,
+                         allRegs, GENERAL.getRegisters().length + SPECIAL.getRegisters().length,
+                         FLOATING_POINTER.getRegisters().length);
+
+        ALL = new RegisterGroup("all", allRegs);
+    }
 
     public Register getProgramCounter() {
 	return NIP;
@@ -185,17 +264,17 @@ public class PPC64Registers extends Registers {
     }
 
     public RegisterGroup getDefaultRegisterGroup() {
-	// FIXME!
-	return null;
+	return GENERAL;
     }
 
     public RegisterGroup getAllRegistersGroup() {
-	// FIXME!
-	return null;
+	return ALL;
     }
 
+    /* 
+     * Default Constructor
+     */
     PPC64Registers() {
-	// FIXME!
-	super(null);
+	super(new RegisterGroup[] { GENERAL, SPECIAL, FLOATING_POINTER, ALL });
     }
 }

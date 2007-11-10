@@ -1,3 +1,6 @@
+2007-11-10  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
+        * PPC64Registers.java: Fixing Power64 registers and groups.
+
 2007-11-09  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
         * Fixing Power32 ISA. Patching the registers and creating 
 	register group
