@@ -1,5 +1,11 @@
 2007-11-09  Andrew Cagney  <cagney@redhat.com>
 
+	* UserHelp.java: Delete.
+	* CLI.java (printUsage(String)): Delete.
+	(userhelp): Delete.
+	(handlers): Delete.
+	(addHandler): Delete.
+	
 	* TestParameterizedCommand.java (testOptionWithDashArg()): New.
 	(testUnknownOpt()): New.
 	(testTooManyArgs(), testExtraArg(), testMissingOption()): Delete.

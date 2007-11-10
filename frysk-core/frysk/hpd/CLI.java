@@ -41,8 +41,6 @@ package frysk.hpd;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -156,13 +154,10 @@ public class CLI {
         idManager.manageProc(proc, idManager.reserveProcID());
     }
 
-    //private static PrintStream out = null;// = System.out;
     final PrintWriter outWriter;
     private Preprocessor prepro;
     private String prompt; // string to represent prompt, will be moved
-    private final SortedMap handlers = new TreeMap();
-    private final Command topLevelCommand;
-    final UserHelp userhelp;
+    private final Command topLevelCommand = new TopLevelCommand();
     final DbgVariables dbgvars = new DbgVariables();
 
     // PT set related stuff
@@ -183,16 +178,6 @@ public class CLI {
      * Public methods
      */
 
-    /**
-     * Add a CLIHandler, along with its help messages.
-     * @param handler the handler
-     */
-    public void addHandler(Command handler) {
-        String name = handler.getName();
-        handlers.put(name, handler);
-        userhelp.addHelp(name, handler.getHelp());
-    }
- 
     Value parseValue(Task task, String value) {
 	return parseValue(task, value, false);
     }
@@ -219,55 +204,6 @@ public class CLI {
         idManager = ProcTaskIDManager.getSingleton();
 
         prepro = new Preprocessor();
-        userhelp = new UserHelp();
-   
-        //XXX: Must make a reference to every command that is used
-        //otherwise build system will discard those classes. Therefore
-        //CLI cannot be made to be a singleton.
-        addHandler(new AliasCommands.Alias());
-        addHandler(new AliasCommands.Unalias());
-        addHandler(new AssignCommand());
-        addHandler(new AttachCommand());
-        addHandler(new BreakpointCommand());
-        addHandler(new DebuginfoCommand());
-        addHandler(new DefsetCommand());
-        addHandler(new ActionPointCommands.Actions());
-        addHandler(new ActionPointCommands.Delete());
-        addHandler(new ActionPointCommands.Disable());
-        addHandler(new ActionPointCommands.Enable());
-        addHandler(new DetachCommand());
-        addHandler(new FrameCommands("down"));
-        addHandler(new StepFinishCommand());
-        addHandler(new FocusCommand());
-        addHandler(new GoCommand());
-        addHandler(new HaltCommand());
-        addHandler(new ListCommand());
-        addHandler(new StepNextCommand());
-        addHandler(new StepNextiCommand());
-        addHandler(new PrintCommand());
-        addHandler(new PlocationCommand());
-        addHandler(new PtypeCommand());
-        addHandler(new QuitCommand("quit"));
-        addHandler(new QuitCommand("exit"));
-        addHandler(new DbgVariableCommands.Set());
-        addHandler(new StepCommand());
-        addHandler(new StepInstructionCommand());
-        addHandler(new UndefsetCommand());
-        addHandler(new DbgVariableCommands.Unset());
-        addHandler(new FrameCommands("up"));
-        addHandler(new ViewsetCommand());
-        addHandler(new WhatCommand());
-        addHandler(new WhereCommand());
-        addHandler(new WhichsetsCommand());
-        addHandler(new DisplayCommand());
-        addHandler(new RunCommand());
-        addHandler(new CoreCommand());
-        addHandler(new DisassembleCommand());
-        addHandler(new RegsCommand());
-        addHandler(new ExamineCommand());
-        addHandler(new LoadCommand());
-        addHandler(new PeekCommand());
-	topLevelCommand = new TopLevelCommand();
 
         // initialize PT set stuff
         setparser = new SetNotationParser();
@@ -466,16 +402,6 @@ public class CLI {
         }
     }
 
-    /**
-     * Prints a usage message for a command.
-     *
-     * @param cmd the command
-     */
-    public void printUsage(Input cmd) {
-        addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()),
-                   Message.TYPE_NORMAL);
-    }
- 
     /**
      * Return output writer.
      */
