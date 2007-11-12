@@ -41,6 +41,7 @@ package frysk.hpd;
 
 import frysk.junit.TestCase;
 import frysk.Config;
+import frysk.testbed.CoreFileAtSignal;
 import frysk.expunit.Expect;
 import frysk.expunit.Match;
 import frysk.expunit.Regex;
@@ -63,7 +64,7 @@ public class HpdTestbed
      */
     private final String prompt = "\\(fhpd\\) ";
 
-    protected HpdTestbed(String[] command) {
+    private HpdTestbed(String[] command) {
 	super(command);
 	TearDownExpect.add(this);
 	TearDownProcess.add(getPid());
@@ -206,5 +207,27 @@ public class HpdTestbed
 
     static HpdTestbed run(String program) {
 	return run(program, null);
+    }
+
+    /**
+     * Start HPD attatched to PROGRAM that is crashing (due to a
+     * signal).
+     *
+     * XXX: The current implementation runs the program until it
+     * crashes and then pulls a core file from it; the code then loads
+     * the core-file into the HPD.  A future implementation may just
+     * run the program to the terminating event.
+     */
+    static HpdTestbed hpdTerminatingProgram(String program) {
+	File exeFile = Config.getPkgLibFile(program);
+	File coreFile = CoreFileAtSignal.constructCore(exeFile);
+	HpdTestbed hpd
+	    = new HpdTestbed(new String[] {
+				 Config.getBinFile("fhpd").getPath (),
+				 coreFile.toString(),
+				 exeFile.toString()
+			     });
+	hpd.expectPrompt("Attached to core file.*");
+	return hpd;
     }
 }

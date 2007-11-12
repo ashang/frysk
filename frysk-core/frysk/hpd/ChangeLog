@@ -1,5 +1,11 @@
 2007-11-12  Andrew Cagney  <cagney@redhat.com>
 
+	* HpdTestbed.java (HpdTestbed(String[])): Make private.
+	(hpdTerminatingProgram(String)): New.
+	* HpdCoreFileTestbed.java: Delete.
+	* TestWhereCommand.java (testFhpdVirtualStackTrace()): Use.
+	(testFhpdVirtualStackTraceWithScopes()): Ditto.
+	
 	* TestWhereCommand.java: Update; funit-inlined renamed to
 	funit-stack-inlined.
 

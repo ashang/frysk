@@ -40,12 +40,12 @@
 package frysk.testbed;
 
 import java.io.File;
-
 import frysk.event.Event;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.util.CoredumpAction;
+import frysk.Config;
 
 public class CoreFileAtSignal extends TestLib {
     
@@ -55,27 +55,31 @@ public class CoreFileAtSignal extends TestLib {
      * extracts a corefile at that point, and return a Proc representing
      * that core file.
      */
-    public static File constructCore(String process) {
-	
-	final Proc ackProc = (new DaemonBlockedAtSignal(process)).getMainTask().getProc();
-
-	final CoredumpAction coreDump = new CoredumpAction(ackProc,
-		new Event() {
-	    
-	    public void execute() {
-		Manager.eventLoop.requestStop();
-	    }
-	}, false);
-
+    public static File constructCore(File exeFile) {
+	final Proc ackProc
+	    = new DaemonBlockedAtSignal(exeFile).getMainTask().getProc();
+	final CoredumpAction coreDump
+	    = new CoredumpAction(ackProc, new Event() {
+		    public void execute() {
+			Manager.eventLoop.requestStop();
+		    }
+		}, false);
 	new ProcBlockAction(ackProc, coreDump);
 	assertRunUntilStop("Running event loop for core file");
-
 	String coreFileName = coreDump.getConstructedFileName();
+	// XXX: File.deleteOnExit() isn't reliable - for instance it
+	// isn't run between test-cases.
+	TearDownFile core = new TearDownFile(coreFileName);
+	return core;
+    }
 
-	File xtestCore = new File(coreFileName);
-	xtestCore.deleteOnExit();
-	
-	return xtestCore;
+    /**
+     * Given a path to an executable it will run it until it sigfaults then
+     * extracts a corefile at that point, and return a Proc representing
+     * that core file.
+     */
+    public static File constructCore(String process) {
+	return constructCore(Config.getPkgLibFile(process));
     }
 
 }

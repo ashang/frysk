@@ -39,11 +39,6 @@
 
 package frysk.hpd;
 
-import java.io.File;
-
-import frysk.Config;
-import frysk.testbed.CoreFileAtSignal;
-
 public class TestWhereCommand extends TestLib {
     public void testHpdTraceStack () {
 	e = HpdTestbed.attachXXX("hpd-c");
@@ -53,12 +48,7 @@ public class TestWhereCommand extends TestLib {
     }
 
     public void testFhpdVirtualStackTrace () {
-
-	File coreFile = CoreFileAtSignal
-	    .constructCore("funit-stack-inlined");
-        e = new HpdCoreFileTestbed(coreFile,
-		Config.getPkgLibFile("funit-stack-inlined"),
-		"Attached to core file.*");
+        e = HpdTestbed.hpdTerminatingProgram("funit-stack-inlined");
         e.send("where\n");
 	e.expect("\\#0 .*third[^\\r\\n]*\\[inline\\]");
 	e.expect("\\#1 .*second[^\\r\\n]*\\[inline\\]");
@@ -68,12 +58,7 @@ public class TestWhereCommand extends TestLib {
     }
     
     public void testFhpdVirtualStackTraceWithScopes () {
-	
-	File coreFile = CoreFileAtSignal
-	    .constructCore("funit-stack-inlined");
-        e = new HpdCoreFileTestbed(coreFile,
-		Config.getPkgLibFile("funit-stack-inlined"),
-	"Attached to core file.*");
+	e = HpdTestbed.hpdTerminatingProgram("funit-stack-inlined");
         e.send("where -scopes\n");
         e.expect(".*var3");
 	e.expect(".*var2");

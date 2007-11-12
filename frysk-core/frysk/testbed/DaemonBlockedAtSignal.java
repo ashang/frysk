@@ -43,6 +43,7 @@ import frysk.proc.Action;
 import frysk.proc.TaskObserver;
 import frysk.proc.Task;
 import frysk.proc.Manager;
+import java.io.File;
 
 /**
  * Creates an attached process that is blocked at a signal. 
@@ -81,6 +82,10 @@ public class DaemonBlockedAtSignal {
         
     public DaemonBlockedAtSignal(String program) {
 	this(new DaemonBlockedAtEntry(program));
+    }
+
+    public DaemonBlockedAtSignal(File exe) {
+	this(new DaemonBlockedAtEntry(exe));
     }
 
     public Task getMainTask () {
