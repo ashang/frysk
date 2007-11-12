@@ -85,7 +85,7 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(new ActionPointCommands.Delete());
         add(new ActionPointCommands.Disable());
         add(new ActionPointCommands.Enable());
-        add(new FrameCommands("down"));
+        add(new StackCommands("down"));
         add(new StepFinishCommand());
         add(new FocusCommand());
         add(new GoCommand());
@@ -104,7 +104,7 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(new StepInstructionCommand());
         add(new UndefsetCommand());
         add(new DbgVariableCommands.Unset());
-        add(new FrameCommands("up"));
+        add(new StackCommands("up"));
         add(new ViewsetCommand());
         add(new WhatCommand());
         add(new WhereCommand());

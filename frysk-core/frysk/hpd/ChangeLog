@@ -1,5 +1,11 @@
 2007-11-12  Andrew Cagney  <cagney@redhat.com>
 
+	* StackCommands.java: Rename FrameCommands.java.
+	* TopLevelCommand.java: Update.
+	* TestStackCommands.java: New.
+	* TestFrameCommands.java: Delete.
+	* TestWhereCommand.java: Delete.
+
 	* HpdTestbed.java (HpdTestbed(String[])): Make private.
 	(hpdTerminatingProgram(String)): New.
 	* HpdCoreFileTestbed.java: Delete.

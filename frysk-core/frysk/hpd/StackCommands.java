@@ -44,9 +44,9 @@ import java.util.List;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.proc.Task;
 
-class FrameCommands extends ParameterizedCommand {
+class StackCommands extends ParameterizedCommand {
 
-    FrameCommands(String name) {
+    StackCommands(String name) {
 	super(name,
 	      ("Move " + name + " one or more levels in the call stack"),
 	      (name + " [num-levels]"),

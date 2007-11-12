@@ -39,25 +39,57 @@
 
 package frysk.hpd;
 
-public class TestFrameCommands extends TestLib {
-    public void testHpdTraceStack () {
-	e = HpdTestbed.attachXXX("hpd-c");
-	// Where
-	e.send ("where\n");
-	e.expect ("where.*#0.*" + prompt);
-	// int_21
-	e.send ("print int_21\n");
-	e.expect ("print.*2.*\r\n" + prompt);
-	// Down
+public class TestStackCommands extends TestLib {
+
+    private void checkWhere(String program, String inline) {
+        e = HpdTestbed.hpdTerminatingProgram(program);
+	e.send("where\n");
+	e.expect("\\#0 .*third" + inline);
+	e.expect("\\#1 .*second" + inline);
+	e.expect("\\#2 .*first" + inline);
+	e.expect("\\#3 .*main");
+	e.expectPrompt(".*");
+    }
+    public void testWhereVirtual () {
+	checkWhere("funit-stack-inlined", "[^\\r\\n]*\\[inline\\]");
+    }
+    public void testWherePhysical() {
+	checkWhere("funit-stack-outlined", "");
+    }
+    
+    private void checkWhereWithScopes(String program) {
+	e = HpdTestbed.hpdTerminatingProgram(program);
+        e.send("where -scopes\n");
+        e.expect(".*var3");
+	e.expect(".*var2");
+	e.expect(".*var1");
+	e.expectPrompt(".*");
+        e.close();
+    }
+    public void testWhereWithVirtualScopes() {
+	checkWhereWithScopes("funit-stack-inlined");
+    }
+    public void testWhereWithPhysicalScopes() {
+	checkWhereWithScopes("funit-stack-outlined");
+    }
+
+    public void testWhereOne() {
+        e = HpdTestbed.hpdTerminatingProgram("funit-stack-outlined");
+	e.sendCommandExpectPrompt
+	    ("where 1", "\\#0 .*third[^\\r\\n]*\\r\\n\\.\\.\\.\\r\\n");
+    }
+
+    public void testDownCompletion () {
+	e = HpdTestbed.hpdTerminatingProgram("funit-stack-outlined");
 	e.send ("d\t");
 	e.expect (".*defset.*delete.*detach.*disable.*down.*" + prompt + ".*");
-	e.send ("own\n");
-	e.expect ("own.*#1.*" + prompt);
-	// int_21
-	e.send ("print int_21\n");
-	e.expect ("print.*int_21.*(fhpd)");
-	e.send ("up\n");
-	e.expect ("up.*#0.*" + prompt);
-	e.close();
+	e.sendCommandExpectPrompt("own", "\\#1.*");
+    }
+
+    public void testUpDown () {
+	e = HpdTestbed.hpdTerminatingProgram("funit-stack-outlined");
+	e.sendCommandExpectPrompt("down", "\\#1.*second.*");
+	e.sendCommandExpectPrompt("down", "\\#2.*first.*");
+	e.sendCommandExpectPrompt("up", "\\#1.*second.*");
     }
 }
