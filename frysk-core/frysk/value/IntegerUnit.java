@@ -126,19 +126,19 @@ public class IntegerUnit
 
     public Value logicalAnd(Value v1, Value v2) {
 	return retType.createValue
-	               ((v1.asBigInteger().longValue() == 0 ? false : true)
-		     && (v2.asBigInteger().longValue() == 0 ? false : true) ? 1 : 0);
+	               ((v1.asLong() == 0 ? false : true)
+		     && (v2.asLong() == 0 ? false : true) ? 1 : 0);
     }    
     public Value logicalOr(Value v1, Value v2) {
 	return retType.createValue
-	               ((v1.asBigInteger().longValue() == 0 ? false : true)
-		     || (v2.asBigInteger().longValue() == 0 ? false : true) ? 1 : 0);
+	               ((v1.asLong() == 0 ? false : true)
+		     || (v2.asLong() == 0 ? false : true) ? 1 : 0);
     }  
     public Value logicalNegation(Value v1) {
 	return retType.createValue
-                       (v1.asBigInteger().longValue() == 0 ? 1 : 0);
+                       (v1.asLong() == 0 ? 1 : 0);
     }    
     public boolean getLogicalValue (Value v1) {
-	return ((v1.asBigInteger().longValue() == 0) ? false : true);
+	return ((v1.asLong() == 0) ? false : true);
     }    
 }
