@@ -1,7 +1,10 @@
 2007-11-12  Teresa Thomas  <tthomas@redhat.com>
 
+	* IntegerUnit.java: Use BigInteger for logical
+	operations.
+
 	* IntegerUnit.java: Use asLong() instead of 
-	asBigInteger().longValue().
+	asBigInteger().longValue(). 
 
 2007-11-11  Stan Cox  <scox@redhat.com>
 
