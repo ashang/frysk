@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,64 +39,26 @@
 
 package frysk.hpd;
 
-public class TestStackCommands extends TestLib {
-
-    private void checkWhere(String program, String inline) {
-        e = HpdTestbed.hpdTerminatingProgram(program);
-	e.send("where\n");
-	e.expect("\\#0 .*third" + inline);
-	e.expect("\\#1 .*second" + inline);
-	e.expect("\\#2 .*first" + inline);
-	e.expect("\\#3 .*main");
-	e.expectPrompt(".*");
+/**
+ * Parse sign/magnitude integer; for instance: -1, 1, or +1.
+ */
+class Magnitude {
+    final int sign;
+    final int magnitude;
+    Magnitude(int sign, int magnitude) {
+	this.sign = sign;
+	this.magnitude = magnitude;
     }
-    public void testWhereVirtual () {
-	checkWhere("funit-stack-inlined", "[^\\r\\n]*\\[inline\\]");
-    }
-    public void testWherePhysical() {
-	checkWhere("funit-stack-outlined", "");
-    }
-    
-    private void checkWhereWithScopes(String program) {
-	e = HpdTestbed.hpdTerminatingProgram(program);
-        e.send("where -scopes\n");
-        e.expect(".*var3");
-	e.expect(".*var2");
-	e.expect(".*var1");
-	e.expectPrompt(".*");
-        e.close();
-    }
-    public void testWhereWithVirtualScopes() {
-	checkWhereWithScopes("funit-stack-inlined");
-    }
-    public void testWhereWithPhysicalScopes() {
-	checkWhereWithScopes("funit-stack-outlined");
-    }
-
-    public void testWhereOne() {
-        e = HpdTestbed.hpdTerminatingProgram("funit-stack-outlined");
-	e.sendCommandExpectPrompt
-	    ("where 1", "\\#0 .*third[^\\r\\n]*\\r\\n\\.\\.\\.\\r\\n");
-    }
-
-    public void testDownCompletion () {
-	e = HpdTestbed.hpdTerminatingProgram("funit-stack-outlined");
-	e.send ("d\t");
-	e.expect (".*defset.*delete.*detach.*disable.*down.*" + prompt + ".*");
-	e.sendCommandExpectPrompt("own", "\\#1.*");
-    }
-
-    public void testUpDown () {
-	e = HpdTestbed.hpdTerminatingProgram("funit-stack-outlined");
-	e.sendCommandExpectPrompt("where 1", "\\#0.*third.*");
-	e.sendCommandExpectPrompt("down", "\\#1.*second.*");
-	e.sendCommandExpectPrompt("down", "\\#2.*first.*");
-	e.sendCommandExpectPrompt("up", "\\#1.*second.*");
-    }
-
-    public void testFrame() {
-	e = HpdTestbed.hpdTerminatingProgram("funit-stack-outlined");
-	e.sendCommandExpectPrompt("frame 3", "\\#3.*main.*");
-	e.sendCommandExpectPrompt("frame 1", "\\#1.*second.*");
+    Magnitude(String argument) {
+	if (argument.charAt(0) == '+') {
+	    sign = 1;
+	    magnitude = Integer.parseInt(argument.substring(1));
+	} else if (argument.charAt(0) == '-') {
+	    sign = -1;
+	    magnitude = Integer.parseInt(argument.substring(1));
+	} else {
+	    sign = 0;
+	    magnitude = Integer.parseInt(argument);
+	}
     }
 }

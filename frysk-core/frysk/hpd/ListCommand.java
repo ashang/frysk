@@ -71,7 +71,7 @@ class ListCommand extends ParameterizedCommand {
 	    });
     }
     private static class Options {
-	CommandOption.Magnitude length;
+	Magnitude length;
     }
     Object options() {
 	return new Options();

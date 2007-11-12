@@ -42,21 +42,34 @@ package frysk.hpd;
 import java.util.Iterator;
 import java.util.List;
 import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.proc.Task;
 
-class StackCommands extends ParameterizedCommand {
+abstract class StackCommands extends ParameterizedCommand {
+
+    private static class Options {
+	boolean printScopes;
+    }
+    Object options() {
+	return new Options();
+    }
+
+    StackCommands(String name, String description, String syntax,
+		  String full) {
+	super(name, description, syntax, full);
+	add(new CommandOption("scopes", "include scopes") {
+		void parse(String arg, Object options) {
+		    ((Options)options).printScopes = true;
+		}
+	    });
+    }
 
     StackCommands(String name) {
-	super(name,
-	      ("Move " + name + " one or more levels in the call stack"),
-	      (name + " [num-levels]"),
-	      ("The up (down) command modifies the current frame"
-	       + " location(s) by adding (subtracting) num-levels.  Call"
-	       + " stack movements are all relative, so up effectively"
-	       + " \"moves up\" (or back) in the call stack, to a frame"
-	       + " that has existed longer, while down \"moves down\" in"
-	       + " the call stack, following the progress of program"
-	       + " execution."));
+	this(name,
+	     ("Move " + name + " one or more levels in the call stack"),
+	     (name + " [num-levels]"),
+	     ("Move up (towards the stack top or inner most frame) or"
+	      + " or down (towards the stack bottom or outer most frame)"));
     }
 
     int complete(CLI cli, PTSet ptset, String incomplete, int base,
@@ -64,46 +77,169 @@ class StackCommands extends ParameterizedCommand {
 	return -1;
     }
 
-    public void interpret(CLI cli, Input cmd, Object options) {
-	PTSet ptset = cli.getCommandPTSet(cmd);
-	int level = 1;
-	boolean down = true;
+    static private void printStack(CLI cli, DebugInfoFrame frame,
+				   int stopLevel, Options options) {
+	DebugInfoStackFactory.printStackTrace(cli.outWriter, frame,
+					      stopLevel, true,
+					      options.printScopes, true);
+    }
+    static private void printFrame(CLI cli, DebugInfoFrame frame,
+				   Options options) {
+	printStack(cli, frame, -1, options);
+    }
 
-	if (cmd.size() != 0)
-	    level = Integer.parseInt(cmd.parameter(0));
-
-	// For user command 'down', move a level towards the bottom of the
-	// call-stack
-	if (cmd.getAction().compareTo("down") == 0)
-	    down = true;
-	// For user command 'up', move a level towards the top of the call-stack
-	else if (cmd.getAction().compareTo("up") == 0)
-	    down = false;
-
-	Iterator taskIter = ptset.getTasks();
-	while (taskIter.hasNext()) {
-	    Task task = (Task) taskIter.next();
-	    DebugInfoFrame currentFrame = cli.getTaskFrame(task);
-	    DebugInfoFrame tmpFrame = currentFrame;
-
-	    int l = level;
-	    while (tmpFrame != null && l != 0) {
-		if (down)
-		    tmpFrame = tmpFrame.getOuterDebugInfoFrame();
-		else
-		    tmpFrame = tmpFrame.getInnerDebugInfoFrame();
-		l = l - 1;
-	    }
-
-	    if (tmpFrame != null && tmpFrame != currentFrame) {
-		cli.setTaskFrame(task, tmpFrame);
-	    }
-	    if (tmpFrame == null)
-		tmpFrame = currentFrame;
-	    tmpFrame.printLevel(cli.outWriter);
-	    cli.outWriter.print(" ");
-	    tmpFrame.toPrint(cli.outWriter, false);
+    static private void select(CLI cli, PTSet ptset, Magnitude whereTo,
+			       Options options) {
+	for (Iterator i = ptset.getTaskData(); i.hasNext(); ) {
+	    TaskData td = (TaskData)i.next();
+	    Task task = td.getTask();
+	    td.toPrint(cli.outWriter, true);
 	    cli.outWriter.println();
+	    DebugInfoFrame currentFrame = cli.getTaskFrame(task);
+	    // Where to?
+	    int newLevel;
+	    if (whereTo.sign > 0) {
+		newLevel = currentFrame.level() + whereTo.magnitude;
+	    } else if (whereTo.sign < 0) {
+		newLevel = currentFrame.level() - whereTo.magnitude;
+	    } else {
+		newLevel = whereTo.magnitude;
+	    }
+	    // Get there.
+	    DebugInfoFrame newFrame = currentFrame;
+	    while (newFrame != null && newFrame.level() != newLevel) {
+		if (newFrame.level() < newLevel) {
+		    newFrame = newFrame.getOuterDebugInfoFrame();
+		} else {
+		    newFrame = newFrame.getInnerDebugInfoFrame();
+		}
+	    }
+	    // Success?
+	    if (newFrame == null) {
+		// Reached end-of-stack
+		if (currentFrame.level() > newLevel) {
+		    cli.outWriter.println("Top of stack");
+		} else {
+		    cli.outWriter.println("Bottom of stack");
+		}
+	    } else if (newFrame == currentFrame) {
+		// Same frame; just print it.
+		printFrame(cli, newFrame, options);
+	    } else {
+		// New frame, change it.
+		cli.setTaskFrame(task, newFrame);
+		printFrame(cli, newFrame, options);
+	    }
+	}
+    }
+
+    static class Down extends StackCommands {
+	Down() {
+	    super("down");
+	}
+	void interpret(CLI cli, Input input, Object options) {
+	    int count;
+	    switch (input.size()) {
+	    case 0:
+		count = 1;
+		break;
+	    case 1:
+		count = Integer.parseInt(input.parameter(0));
+		break;
+	    default:
+		throw new InvalidCommandException("too many arguments");
+	    }
+	    select(cli, cli.getCommandPTSet(input), new Magnitude(+1, count),
+		   (Options)options);
+	}
+    }
+
+    static class Up extends StackCommands {
+	Up() {
+	    super("up");
+	}
+	void interpret(CLI cli, Input input, Object options) {
+	    int count;
+	    switch (input.size()) {
+	    case 0:
+		count = 1;
+		break;
+	    case 1:
+		count = Integer.parseInt(input.parameter(0));
+		break;
+	    default:
+		throw new InvalidCommandException("too many arguments");
+	    }
+	    select(cli, cli.getCommandPTSet(input), new Magnitude(-1, count),
+		   (Options)options);
+	}
+    }
+
+    static class Frame extends StackCommands {
+	Frame() {
+	    super("frame");
+	}
+	void interpret(CLI cli, Input input, Object options) {
+	    Magnitude count;
+	    switch (input.size()) {
+	    case 0:
+		count = new Magnitude(+1, 0); // go no where
+		break;
+	    case 1:
+		count = new Magnitude(input.parameter(0));
+		break;
+	    default:
+		throw new InvalidCommandException("too many arguments");
+	    }
+	    select(cli, cli.getCommandPTSet(input), count, (Options)options);
+	}
+    }
+
+    static class Where extends StackCommands {
+	Where() {
+	    super("where",
+		  "Display the current execution location and call stack",
+		  "where [ {num-levels ] [ -scopes ]",
+		  ("The where command displays the current execution"
+		   + " location(s) and the call stack(s) - or sequence"
+		   + " of procedure calls - which led to that point."));
+	}
+
+	int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		     List candidates) {
+	    return -1;
+	}
+
+	public void interpret(CLI cli, Input input, Object o) {
+	    int levels;
+	    switch (input.size()) {
+	    case 0:
+		levels = 0;
+		break;
+	    case 1:
+		levels = Integer.parseInt(input.parameter(0));
+		break;
+	    default:
+		throw new InvalidCommandException("Too many arguments");
+	    }
+	    Options options = (Options)o;	
+	    PTSet ptset = cli.getCommandPTSet(input);
+	    for (Iterator i = ptset.getTaskData(); i.hasNext(); ) {
+		TaskData td = (TaskData)i.next();
+		Task task = td.getTask();
+		DebugInfoFrame currentFrame = cli.getTaskFrame(task);
+		td.toPrint(cli.outWriter, true);
+		cli.outWriter.println();
+		// XXX: How come the pt set code didn't sort this out;
+		// filtering out running tasks???
+		if (cli.getSteppingEngine() == null
+		    || !cli.getSteppingEngine().isTaskRunning(task)) {
+		    printStack(cli, currentFrame, levels, options);
+		} else {
+		    cli.outWriter.println("Running task?");
+		}
+	    }
+	    cli.outWriter.flush();
 	}
     }
 }

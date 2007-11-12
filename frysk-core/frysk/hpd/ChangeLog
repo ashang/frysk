@@ -1,5 +1,14 @@
 2007-11-12  Andrew Cagney  <cagney@redhat.com>
 
+	* TestStackCommands.java (testFrame()): New.
+	* StackCommands.java (Up): New.
+	(Down): New.
+	(Frame): New.
+	* TopLevelCommand.java: Update.
+	* CommandOption.java (Mangitude): Copy to ...
+	* Magnitude.java: ... here.  New.
+	* ListCommand.java: Update.
+
 	* StackCommands.java: Rename FrameCommands.java.
 	* TopLevelCommand.java: Update.
 	* TestStackCommands.java: New.

@@ -85,26 +85,6 @@ abstract class CommandOption {
     }
 
     /**
-     * Parse sign/magnitude integer.
-     */
-    static class Magnitude {
-	final int sign;
-	final int magnitude;
-	Magnitude(String argument) {
-	    if (argument.charAt(0) == '+') {
-		sign = 1;
-		magnitude = Integer.parseInt(argument.substring(1));
-	    } else if (argument.charAt(0) == '-') {
-		sign = -1;
-		magnitude = Integer.parseInt(argument.substring(1));
-	    } else {
-		sign = 0;
-		magnitude = Integer.parseInt(argument);
-	    }
-	}
-    }
-
-    /**
      * Template option; parse a format.
      */
     static abstract class FormatOption extends CommandOption {
