@@ -128,6 +128,10 @@ public abstract class Type {
 	return stringWriter.toString();
     }
 
+    /* getALUs are double dispatch functions to determine the 
+     * ArithmeticUnit for an arithmetic or logical operation
+     * between two types.
+     */  
     public ArithmeticUnit getALU(Type type, int wordSize) {
 	throw new RuntimeException("Invalid Arithmetic Unit");
     }

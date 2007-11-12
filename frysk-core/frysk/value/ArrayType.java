@@ -252,14 +252,15 @@ public class ArrayType
 	this.toPrint("", writer);
     }
     
+    /* getALUs are double dispatch functions to determine 
+     * the ArithmeticUnit for an operation between two types.
+     */    
     public ArithmeticUnit getALU(Type type, int wordSize) {
 	return type.getALU(this, wordSize);
-    }
-    
+    }    
     public ArithmeticUnit getALU(IntegerType type, int wordSize) {
 	return new AddressUnit(this, wordSize);
-    }   
-    
+    }       
     public ArithmeticUnit getALU(PointerType type, int wordSize) {
 	throw new RuntimeException("Invalid Pointer Arithmetic");
     }

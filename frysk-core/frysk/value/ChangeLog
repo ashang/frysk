@@ -1,4 +1,10 @@
 2007-11-12  Teresa Thomas  <tthomas@redhat.com>
+		
+	* ArrayType.java (getALU): Comments added.
+	* PointerType.java (getALU): Comments added.
+	* Type.java (getALU): Comments added.		
+	
+2007-11-12  Teresa Thomas  <tthomas@redhat.com>
 
 	* IntegerUnit.java: Use BigInteger for logical
 	operations.
