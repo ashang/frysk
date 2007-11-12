@@ -168,7 +168,7 @@ public class %s extends TestLib {
 
     def start_test(self, tool, name):
         print("    public void test%s () {" % (name))
-        if (tool == "value"):
+        if (False):
             print('''
         if (unresolved(5235))
             return;

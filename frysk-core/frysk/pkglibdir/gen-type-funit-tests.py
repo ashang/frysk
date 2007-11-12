@@ -15,7 +15,7 @@ class c:
             var_suffix = "_var"
         else:
             var_suffix = ""
-        self.c_file.write("static " + type + " " + var + var_suffix + type_arr)
+        self.c_file.write(type + " " + var + var_suffix + type_arr)
         self.c_file.write(" unused")
         if initial != "":
             self.write(" = " + initial)

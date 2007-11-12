@@ -1,3 +1,7 @@
+2007-11-12  Stan Cox  <scox@redhat.com>
+
+	* gen-type-funit-tests.py (c.add_decl): Make variables external.
+
 2007-11-11  Stan Cox  <scox@redhat.com>
 
 	* gen-type-funit-tests.py (c.add): Escape \n for value.

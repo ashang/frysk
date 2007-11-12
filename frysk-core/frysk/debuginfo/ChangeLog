@@ -1,3 +1,7 @@
+2007-11-12  Stan Cox  <scox@redhat.com>
+
+	* gen-type-expect-tests.py (j.start_test): Turn on TestTypeEntryValue.
+
 2007-11-11  Stan Cox  <scox@redhat.com>
 
 	* gen-type-expect-tests.py (j.add_test): Escape \n for value.
