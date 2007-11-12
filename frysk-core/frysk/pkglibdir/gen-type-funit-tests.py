@@ -22,7 +22,7 @@ class c:
         self.c_file.write(";\n")
         self.c_file.write("// Name: " + var + var_suffix + "\n")
         # Escape quotes and new lines, remove struct member "."
-        self.c_file.write("// Value: " + initial.replace('"','\\"').replace('\n',"\\n").replace('{.','{').replace(' .',' ') + "\n")
+        self.c_file.write("// Value: " + initial.replace('"','\\"').replace('\n',"\n// Value: ").replace('{.','{').replace(' .',' ') + "\n")
         self.c_file.write("// Type: ")
         type += type_arr
         self.c_file.write(type.replace("\n", "\n// Type: "))
@@ -156,18 +156,127 @@ for t in base_types:
 
 c_file.write("\nstatic int one = 1, two = 2, three = 3, four = 4;\n")
 
-c_file.add("struct {\n  int int_var;\n}", "arr_struct", "{{.int_var=1,\n},{.int_var=2,\n}}", " [2]")
-c_file.add("union {\n  int int_var;\n  float fl;\n}", "arr_union", "{{.int_var=1,\n .fl=1.4012985E-45,\n},{.int_var=1073741824,\n .fl=2.0,\n}}", " [2]")
-c_file.add("struct {\n  int int_var;\n}", "arr_arr_struct", "{{{.int_var=1,\n},{.int_var=2,\n}},{{.int_var=3,\n},{.int_var=4,\n}}}", " [2][2]")
-c_file.add("union {\n  int int_var;\n  float float_var;\n}", "arr_arr_union", "{{{.int_var=1,\n .float_var=1.4012985E-45,\n},{.int_var=2,\n .float_var=2.802597E-45,\n}},{{.int_var=3,\n .float_var=4.2038954E-45,\n},{.int_var=4,\n .float_var=5.605194E-45,\n}}}", " [2][2]")
+c_file.add('''struct {
+  int int_var;
+}''', "arr_struct", 
+'''{{
+  .int_var=1,
+},{
+  .int_var=2,
+}}''', " [2]")
+c_file.add(
+'''union {
+  int int_var;
+  float fl;
+}''', "arr_union", 
+'''{{
+  .int_var=1,
+  .fl=1.4012985E-45,
+},{
+  .int_var=1073741824,
+  .fl=2.0,
+}}''', " [2]")
+c_file.add('''struct {
+  int int_var;
+}''', "arr_arr_struct", '''{{{
+  .int_var=1,
+},{
+  .int_var=2,
+}},{{
+  .int_var=3,
+},{
+  .int_var=4,
+}}}''', " [2][2]")
+c_file.add('''union {
+  int int_var;
+  float float_var;
+}''', "arr_arr_union", '''{{{
+  .int_var=1,
+  .float_var=1.4012985E-45,
+},{
+  .int_var=2,
+  .float_var=2.802597E-45,
+}},{{
+  .int_var=3,
+  .float_var=4.2038954E-45,
+},{
+  .int_var=4,
+  .float_var=5.605194E-45,
+}}}''', " [2][2]")
 c_file.add("int *", "arr_arr_ptr", "{{&one,&two},{&three,&four}}", " [2][2]")
-c_file.add("struct {\n  int arr_int[2];\n}", "arr_struct_arr_int", "{{.arr_int={1,2},\n},{.arr_int={3,4},\n}}", " [2]")
-c_file.add("struct {\n  struct {\n    int int_var;\n  } struct_a;\n}", "arr_struct_struct", "{{.struct_a={.int_var=1,\n},\n},{.struct_a={.int_var=2,\n},\n}}", " [2]")
-c_file.add("struct {\n  union {\n    int int_var;\n    float float_var;\n  } struct_a;\n}", "arr_struct_union", "{{.struct_a={.int_var=1,\n .float_var=1.4012985E-45,\n},\n},{.struct_a={.int_var=2,\n .float_var=2.802597E-45,\n},\n}}", " [2]")
+c_file.add('''struct {
+  int arr_int[2];
+}''', "arr_struct_arr_int", '''{{
+  .arr_int={1,2},
+},{
+  .arr_int={3,4},
+}}''', " [2]")
+c_file.add('''struct {
+  struct {
+    int int_var;
+  } struct_a;
+}''', "arr_struct_struct", '''{{
+  .struct_a={
+    .int_var=1,
+  },
+},{
+  .struct_a={
+    .int_var=2,
+  },
+}}''', " [2]")
+c_file.add('''struct {
+  union {
+    int int_var;
+    float float_var;
+  } struct_a;
+}''', "arr_struct_union", '''{{
+  .struct_a={
+    .int_var=1,
+    .float_var=1.4012985E-45,
+  },
+},{
+  .struct_a={
+    .int_var=2,
+    .float_var=2.802597E-45,
+  },
+}}''', " [2]")
 c_file.add("struct {\n  int * ptr;\n}", "arr_struct_ptr", "{{&one},{&two}}", " [2]")
-c_file.add("union {\n  int arr_int[2];\n  float arr_float[2];\n}", "arr_union_arr_int", "{{.arr_int={1,2},\n .arr_float={1.4012985E-45,2.802597E-45},\n},{.arr_int={3,4},\n .arr_float={4.2038954E-45,5.605194E-45},\n}}", " [2]")
-c_file.add("union {\n  struct {\n    int int_var;\n  } struct_a;\n}", "arr_union_struct", "{{.struct_a={.int_var=1,\n},\n},{.struct_a={.int_var=2,\n},\n}}", " [2]")
-c_file.add("union {\n  union {\n    int int_var;\n  } union_a;\n}", "arr_union_union", "{{.union_a={.int_var=1,\n},\n},{.union_a={.int_var=2,\n},\n}}", " [2]")
+c_file.add('''union {
+  int arr_int[2];
+  float arr_float[2];
+}''', "arr_union_arr_int", '''{{
+  .arr_int={1,2},
+  .arr_float={1.4012985E-45,2.802597E-45},
+},{
+  .arr_int={3,4},
+  .arr_float={4.2038954E-45,5.605194E-45},
+}}''', " [2]")
+c_file.add('''union {
+  struct {
+    int int_var;
+  } struct_a;
+}''', "arr_union_struct", '''{{
+  .struct_a={
+    .int_var=1,
+  },
+},{
+  .struct_a={
+    .int_var=2,
+  },
+}}''', " [2]")
+c_file.add('''union {
+  union {
+    int int_var;
+  } union_a;
+}''', "arr_union_union", '''{{
+  .union_a={
+    .int_var=1,
+  },
+},{
+  .union_a={
+    .int_var=2,
+  },
+}}''', " [2]")
 c_file.add("union {\n  int * ptr;\n}", "arr_union_ptr", "{{&one}, {&two}}", " [2]", )
 # ??? fails
 # c_file.add("int (*", "arr_ptr_arr", "{&arr_int, &arr_int}", " [2])[2]")
@@ -197,69 +306,426 @@ type_type_struct type_minmax_struct =
   {{%s, %s, %s, %s, %s, %s, %s},
    {%s, %s, %s, %s, %s, %s, %s}
 };\n''' % (limits['char']['min'],limits['short int']['min'],limits['int']['min'],limits['long int']['min'],limits['float']['min'],limits['double']['min'],'"ABC"',limits['char']['max'],limits['short int']['max'],limits['int']['max'],limits['long int']['max'],limits['float']['max'],limits['double']['max'],'"XYZ"'))
-c_file.add('''struct {\n  unsigned int bit1_0:1;\n  unsigned int bit1_1:1;\n  char char_2;\n  unsigned int bit1_6:1;\n  unsigned int bit1_7:1;\n  char char_8;\n  unsigned int bit1_9:1;\n  unsigned int bit1_10:1;\n}''', "bitfields_small", "{1, 0, 0x7f, 1, 0, 0x7f, 1, 0}")
-c_file.add('''struct {\n  unsigned char char_0;\n  int bit1_4:1;\n  unsigned int bit1_5:1;\n  int bit2_6:2;\n  unsigned int bit2_8:2;\n  int bit3_10:3;\n  unsigned int bit3_13:3;\n  int bit9_16:9;\n  unsigned int bit9_25:9;\n  char char_34;\n}''', "bitfields_bit", "{0x7f, 1, 1, 1, 3, 3, 7, UINT8_MAX, 511, 0x7f}")
-c_file.add('''struct {\n  short int arr_short[2];\n}''', "struct_arr_short", "{{1, 2}}")
-c_file.add('''struct {\n  struct {\n    int int_var;\n  } struct_a;\n}''', "struct_struct", "{{1}}")
-c_file.add("struct {\n  union {\n    int int_var;\n  } union_a;\n}", "struct_union", "{{1}}")
-c_file.add('''struct {\n  int * ptr_int;\n}''', "struct_ptr", "{&one}")
-c_file.add('''union {\n  int arr_int[4];\n  float arr_float[4];\n}''', "union_arr", "{{1, 2, 3, 4}}")
-c_file.add('''union {\n  struct {\n    int int_var;\n  } struct_a;\n}''', "union_struct", "{{1}}")
-c_file.add('''union {\n  union {\n    int int_var;\n    float float_var;\n  } union_a;\n}''', "union_union", "{{1}}")
-c_file.add('''union {\n  int * ptr_int;\n}''', "union_ptr", "{&one}")
-c_file.add('''struct {\n  int int_var;\n} *''', "ptr_struct", "")
-c_file.add('''union {\n  int int_var;\n} *''', "ptr_union", "")
-c_file.add('''struct {\n  int arr_arr_int[2][2];\n}''', "struct_arr_arr_int", "{{{1, 2}, {3, 4}}}")
-# ??? improve indentation
-c_file.add('''struct {\n  struct {\n  int int_var;\n} arr_struct[2];\n}''', "struct_arr_struct", "{{{1}, {2}}}")
-c_file.add('''struct {\n  union {\n  int int_var;\n} arr_union[4];\n}''', "struct_arr_union", "{{{1}, {2}}}")
-c_file.add('''struct {\n  int * arr_ptr[2];\n}''', "struct_arr_ptr", "{{&one, &two}}")
-c_file.add('''struct {\n  struct {\n    int arr_int[2];\n  } struct_arr;\n}''', "struct_struct_arr_int", "{{{1, 2}}}")
-c_file.add('''struct {\n  struct {\n    struct {\n      int int_var;\n    } struct_a;\n  } struct_struct;\n}''', "struct_struct_struct", "{{{1}}}")
-c_file.add('''struct {\n  struct {\n    union {\n      char int_var;\n    } union_a;\n  } struct_union;\n}''', "struct_struct_union", "{{{1}}}")
-c_file.add('''struct {\n  struct {\n    int * ptr_int;\n  } sp;\n}''', "struct_struct_ptr", "{{&three}}")
-c_file.add('''struct {\n  union {\n    int arr_int[4];\n  } union_arr_int;\n}''', "struct_union_arr",  "{{{1, 2, 3, 4}}}")
-c_file.add('''struct {\n  union {\n    struct {\n      int int_var;\n    } struct_a;\n  } union_struct;\n}''', "struct_union_struct", "{{{1}}}")
-c_file.add('''struct {\n  union {\n    union {\n      long int int_var;\n      float float_var;\n    } union_a;\n  } union_union;\n}''', "struct_union_union", "{{{1.0}}}")
-c_file.add('''struct {\n  union {\n    int * ptr_int;\n  } union_ptr;\n}''', "struct_union_ptr", "{{&four}}")
-c_file.add('''struct {\n  int (* ptr_arr)[4];\n}''', "struct_ptr_arr", "")
-# ??? improve indentation
-c_file.add('''struct {\n  struct {\n  int int_var;\n} * ptr_struct;\n}''', "struct_ptr_struct", "")
-c_file.add('''struct {\n  union {\n  int int_var;\n} * ptr_union;\n}''', "struct_ptr_union", "")
-c_file.add('''struct {\n  int * * ptr_ptr;\n}''', "struct_ptr_ptr", "")
-c_file.add('''union {\n  int arr_int[2][2];\n  float arr_float[2][2];\n}''', "union_arr_int", "{{{1, 2}, {3, 4}}}")
-# ??? improve indentation
-c_file.add('''union {\n  struct {\n  int int_var;\n} arr_struct[2];\n}''', "union_arr_struct", "{{{1}}}")
-c_file.add('''union {\n  union {\n  int int_var;\n  float float_var;\n} arr_union[2];\n}''', "union_arr_union", "{{{1.1}}}")
-c_file.add('''union {\n  int * arr_ptr[4];\n}''', "union_arr_ptr", "{{&one}}")
-c_file.add('''union {\n  struct {\n    int arr_int[4];\n  } struct_arr;\n}''', "union_struct_arr_int", "{{{1, 2, 3, 4}}}")
-c_file.add('''union {\n  struct {\n    struct {\n      int int_var;\n    } struct_a;\n  } struct_b;\n}''', "union_struct_struct", "{{{1}}}")
-c_file.add('''union {\n  struct {\n    union {\n      int int_var;\n      float float_var;\n    } union_a;\n  } struct_a;\n}''', "union_struct_union", "{{{1.1}}}")
-c_file.add('''union {\n  struct {\n    int * ptr_int;\n  } struct_ptr;\n}''', "union_struct_ptr", "{{&one}}")
-c_file.add('''union {\n  union {\n    long long int arr_int[4];\n  } union_arr;\n}''', "union_union_arr_int", "{{{1, 2, 3, 4}}}")
-c_file.add('''union {\n  union {\n    struct {\n      long long int int_var;\n    } struct_a;\n  } union_a;\n}''', "union_union_struct", "{{{1}}}")
-c_file.add('''union {\n  union {\n    union {\n      int int_var;\n      float float_var;\n    } union_a;\n  } union_b;\n}''', "union_union_union", "{{{1.1}}}")
-c_file.add('''union {\n  union {\n    int * ptr_int;\n    float * ptr_float;\n  } union_ptr;\n}''', "union_union_ptr", "{{&one}}")
-c_file.add('''union {\n  int (* ptr_arr)[4];\n}''', "union_ptr_arr", "")
-c_file.add('''union {\n  struct {\n  int int_var;\n} * ptr_struct;\n}''', "union_ptr_struct", "")
-c_file.add('''union {\n  union {\n  int int_var;\n} * ptr_union;\n}''', "union_ptr_union", "")
-c_file.add('''union {\n  int * * ptr_ptr;\n}''', "union_ptr_ptr", "")
-c_file.add('''struct {\n  int arr_int[4];\n} *''', "ptr_struct_arr_int", "")
-c_file.add('''struct {\n  struct {\n    int int_var;\n  } struct_a;\n} *''', "Ptr_struct_struct", "")
-c_file.add('''struct {\n  union {\n    int int_var;\n  } union_a;\n} *''', "ptr_struct_union", "")
-c_file.add('''struct {\n  int * ptr_int;\n} *''', "ptr_struct_ptr", "")
-c_file.add('''union {\n  int arr_int[4];\n} *''',"ptr_union_arr_int", "")
-c_file.add('''union {\n  struct {\n    int int_var;\n  } struct_a;\n} *''',"ptr_union_struct", "")
-c_file.add('''union {\n  union {\n    int int_var;\n  } union_a;\n} *''', "ptr_union_union", "")
-c_file.add('''union {\n  int * ptr_int;\n} *''', "ptr_union_ptr", "")
-c_file.add('''struct {\n  int int_var;\n} * *''', "ptr_ptr_struct", "")
-c_file.add('''union {\n  int int_var;\n} * *''', "ptr_ptr_union", "")
+c_file.add(
+'''struct {
+  unsigned int bit1_0:1;
+  unsigned int bit1_1:1;
+  char char_2;
+  unsigned int bit1_6:1;
+  unsigned int bit1_7:1;
+  char char_8;
+  unsigned int bit1_9:1;
+  unsigned int bit1_10:1;
+}''', "bitfields_small", '''{
+  .bit1_0=1,
+  .bit1_1=0,
+  .char_2='a',
+  .bit1_6=1,
+  .bit1_7=0,
+  .char_8='z',
+  .bit1_9=1,
+  .bit1_10=0,
+}''')
+c_file.add('''struct {
+  unsigned char char_0;
+  int bit1_4:1;
+  unsigned int bit1_5:1;
+  int bit2_6:2;
+  unsigned int bit2_8:2;
+  int bit3_10:3;
+  unsigned int bit3_13:3;
+  int bit9_16:9;
+  unsigned int bit9_25:9;
+  char char_34;
+}''', "bitfields_bit", '''{
+  .char_0='A',
+  .bit1_4=-1,
+  .bit1_5=1,
+  .bit2_6=1,
+  .bit2_8=3,
+  .bit3_10=3,
+  .bit3_13=7,
+  .bit9_16=255,
+  .bit9_25=511,
+  .char_34='Z',
+}''')
+c_file.add('''struct {
+  short int arr_short[2];
+}''', "struct_arr_short", '''{
+  .arr_short={1,2},
+}''')
+c_file.add('''struct {
+  struct {
+    int int_var;
+  } struct_a;
+}''', "struct_struct", '''{
+  .struct_a={
+    .int_var=1,
+  },
+}''')
+# HERE HERE -------------------------------------------------------
+c_file.add('''struct {
+  union {
+    int int_var;
+  } union_a;
+}''', "struct_union", '''{
+  .union_a={
+    .int_var=1,
+  },
+}''')
+c_file.add('''struct {
+  int * ptr_int;
+}''', "struct_ptr", "{&one}")
+c_file.add('''union {
+  int arr_int[4];
+  float arr_float[4];
+}''', "union_arr", '''{
+  .arr_int={1,2,3,4},
+  .arr_float={1.4012985E-45,2.802597E-45,4.2038954E-45,5.605194E-45},
+}''')
+c_file.add('''union {
+  struct {
+    int int_var;
+  } struct_a;
+}''', "union_struct", '''{
+  .struct_a={
+    .int_var=1,
+  },
+}''')
+c_file.add('''union {
+  union {
+    int int_var;
+    float float_var;
+  } union_a;
+}''', "union_union", '''{
+  .union_a={
+    .int_var=1,
+    .float_var=1.4012985E-45,
+  },
+}''')
+c_file.add('''union {
+  int * ptr_int;
+}''', "union_ptr", "{&one}")
+c_file.add('''struct {
+  int int_var;
+} *''', "ptr_struct", "")
+c_file.add('''union {
+  int int_var;
+} *''', "ptr_union", "")
+c_file.add('''struct {
+  int arr_arr_int[2][2];
+}''', "struct_arr_arr_int", '''{
+  .arr_arr_int={{1,2},{3,4}},
+}''')
+# ??? array doesn't know the current indentation level
+c_file.add('''struct {
+  struct {
+  int int_var;
+} arr_struct[2];
+}''', "struct_arr_struct", '''{
+  .arr_struct={{
+  .int_var=1,
+},{
+  .int_var=2,
+}},
+}''')
+c_file.add('''struct {
+  union {
+  int int_var;
+} arr_union[4];
+}''', "struct_arr_union", '''{
+  .arr_union={{
+  .int_var=1,
+},{
+  .int_var=2,
+},{
+  .int_var=0,
+},{
+  .int_var=0,
+}},
+}''')
+c_file.add('''struct {
+  int * arr_ptr[2];
+}''', "struct_arr_ptr", "{{&one, &two}}")
+c_file.add('''struct {
+  struct {
+    int arr_int[2];
+  } struct_arr;
+}''', "struct_struct_arr_int", '''{
+  .struct_arr={
+    .arr_int={1,2},
+  },
+}''')
+c_file.add('''struct {
+  struct {
+    struct {
+      int int_var;
+    } struct_a;
+  } struct_struct;
+}''', "struct_struct_struct", '''{
+  .struct_struct={
+    .struct_a={
+      .int_var=1,
+    },
+  },
+}''')
+c_file.add('''struct {
+  struct {
+    union {
+      char int_var;
+    } union_a;
+  } struct_union;
+}''', "struct_struct_union", '''{
+  .struct_union={
+    .union_a={
+      .int_var='~',
+    },
+  },
+}''')
+c_file.add('''struct {
+  struct {
+    int * ptr_int;
+  } sp;
+}''', "struct_struct_ptr", "{{&three}}")
+c_file.add('''struct {
+  union {
+    int arr_int[4];
+  } union_arr_int;
+}''', "struct_union_arr",  '''{
+  .union_arr_int={
+    .arr_int={1,2,3,4},
+  },
+}''')
+c_file.add('''struct {
+  union {
+    struct {
+      int int_var;
+    } struct_a;
+  } union_struct;
+}''', "struct_union_struct", '''{
+  .union_struct={
+    .struct_a={
+      .int_var=1,
+    },
+  },
+}''')
+c_file.add('''struct {
+  union {
+    union {
+      long int int_var;
+      float float_var;
+    } union_a;
+  } union_union;
+}''', "struct_union_union", '''{
+  .union_union={
+    .union_a={
+      .int_var=1,
+      .float_var=1.4012985E-45,
+    },
+  },
+}''')
+c_file.add('''struct {
+  union {
+    int * ptr_int;
+  } union_ptr;
+}''', "struct_union_ptr", "{{&four}}")
+c_file.add('''struct {
+  int (* ptr_arr)[4];
+}''', "struct_ptr_arr", "")
+# ??? ptr  doesn't know the current indentation level
+c_file.add('''struct {
+  struct {
+  int int_var;
+} * ptr_struct;
+}''', "struct_ptr_struct", "")
+c_file.add('''struct {
+  union {
+  int int_var;
+} * ptr_union;
+}''', "struct_ptr_union", "")
+c_file.add('''struct {
+  int * * ptr_ptr;
+}''', "struct_ptr_ptr", "")
+c_file.add('''union {
+  int arr_int[2][2];
+  float arr_float[2][2];
+}''', "union_arr_int", '''{
+  .arr_int={{1,2},{3,4}},
+  .arr_float={{1.4012985E-45,2.802597E-45},{4.2038954E-45,5.605194E-45}},
+}''')
+c_file.add('''union {
+  struct {
+  int int_var;
+} arr_struct[2];
+}''', "union_arr_struct", '''{
+  .arr_struct={{
+  .int_var=1,
+},{
+  .int_var=0,
+}},
+}''')
+c_file.add('''union {
+  union {
+  int int_var;
+  float float_var;
+} arr_union[2];
+}''', "union_arr_union", '''{
+  .arr_union={{
+  .int_var=1,
+  .float_var=1.4012985E-45,
+},{
+  .int_var=0,
+  .float_var=0.0,
+}},
+}''')
+c_file.add('''union {
+  int * arr_ptr[4];
+}''', "union_arr_ptr", "{{&one}}")
+c_file.add('''union {
+  struct {
+    int arr_int[4];
+  } struct_arr;
+}''', "union_struct_arr_int", '''{
+  .struct_arr={
+    .arr_int={1,2,3,4},
+  },
+}''')
+c_file.add('''union {
+  struct {
+    struct {
+      int int_var;
+    } struct_a;
+  } struct_b;
+}''', "union_struct_struct", '''{
+  .struct_b={
+    .struct_a={
+      .int_var=1,
+    },
+  },
+}''')
+c_file.add('''union {
+  struct {
+    union {
+      int int_var;
+      float float_var;
+    } union_a;
+  } struct_a;
+}''', "union_struct_union", '''{
+  .struct_a={
+    .union_a={
+      .int_var=1,
+      .float_var=1.4012985E-45,
+    },
+  },
+}''')
+c_file.add('''union {
+  struct {
+    int * ptr_int;
+  } struct_ptr;
+}''', "union_struct_ptr", "{{&one}}")
+c_file.add('''union {
+  union {
+    long long int arr_int[4];
+  } union_arr;
+}''', "union_union_arr_int", '''{
+  .union_arr={
+    .arr_int={1,2,3,4},
+  },
+}''')
+c_file.add('''union {
+  union {
+    struct {
+      long long int int_var;
+    } struct_a;
+  } union_a;
+}''', "union_union_struct", '''{
+  .union_a={
+    .struct_a={
+      .int_var=1,
+    },
+  },
+}''')
+c_file.add('''union {
+  union {
+    union {
+      int int_var;
+      float float_var;
+    } union_a;
+  } union_b;
+}''', "union_union_union", '''{
+  .union_b={
+    .union_a={
+      .int_var=1,
+      .float_var=1.4012985E-45,
+    },
+  },
+}''')
+c_file.add('''union {
+  union {
+    int * ptr_int;
+    float * ptr_float;
+  } union_ptr;
+}''', "union_union_ptr", "{{&one}}")
+c_file.add('''union {
+  int (* ptr_arr)[4];
+}''', "union_ptr_arr", "")
+c_file.add('''union {
+  struct {
+  int int_var;
+} * ptr_struct;
+}''', "union_ptr_struct", "")
+c_file.add('''union {
+  union {
+  int int_var;
+} * ptr_union;
+}''', "union_ptr_union", "")
+c_file.add('''union {
+  int * * ptr_ptr;
+}''', "union_ptr_ptr", "")
+c_file.add('''struct {
+  int arr_int[4];
+} *''', "ptr_struct_arr_int", "")
+c_file.add('''struct {
+  struct {
+    int int_var;
+  } struct_a;
+} *''', "ptr_struct_struct", "")
+c_file.add('''struct {
+  union {
+    int int_var;
+  } union_a;
+} *''', "ptr_struct_union", "")
+c_file.add('''struct {
+  int * ptr_int;
+} *''', "ptr_struct_ptr", "")
+c_file.add('''union {
+  int arr_int[4];
+} *''',"ptr_union_arr_int", "")
+c_file.add('''union {
+  struct {
+    int int_var;
+  } struct_a;
+} *''',"ptr_union_struct", "")
+c_file.add('''union {
+  union {
+    int int_var;
+  } union_a;
+} *''', "ptr_union_union", "")
+c_file.add('''union {
+  int * ptr_int;
+} *''', "ptr_union_ptr", "")
+c_file.add('''struct {
+  int int_var;
+} * *''', "ptr_ptr_struct", "")
+c_file.add('''union {
+  int int_var;
+} * *''', "ptr_ptr_union", "")
 
 c_file.write("// Enum ########################################\n")
 c_file.write("// Test: Enum\n")
-c_file.add('''enum  {\n  red = 0,\n  green = 1,\n  blue = 2\n}''', "primary_colors", "")
-c_file.add('''enum colors {\n  orange = 0,\n  yellow = 1,\n  violet = 2,\n  indigo = 3\n}''', "rainbow_colors", "")
-c_file.add('''enum  {\n  chevy = 33,\n  dodge = 44,\n  ford = 55\n}''', "usa_cars", "")
-c_file.add('''enum cars {\n  bmw = 0,\n  mercedes = 1,\n  porsche = 2\n}''', "sports_cars", "")
+c_file.add('''enum  {\n  red = 0,\n  green = 1,\n  blue = 2\n}''', "primary_colors", "red")
+c_file.add('''enum colors {\n  orange = 0,\n  yellow = 1,\n  violet = 2,\n  indigo = 3\n}''', "rainbow_colors", "orange")
+c_file.add('''enum  {\n  chevy = 0,\n  dodge = 44,\n  ford = 55\n}''', "usa_cars", "chevy")
+c_file.add('''enum cars {\n  bmw = 0,\n  mercedes = 1,\n  porsche = 2\n}''', "sports_cars", "bmw")
 
 c_file.epilogue(debug)

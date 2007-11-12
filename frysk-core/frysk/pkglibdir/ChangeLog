@@ -1,3 +1,8 @@
+2007-11-11  Stan Cox  <scox@redhat.com>
+
+	* gen-type-funit-tests.py (c.add): Escape \n for value.
+	(main): Use newline instead of \n for expected results.
+
 2007-11-09  Stan Cox  <scox@redhat.com>
 
 	* gen-type-funit-tests.py (c.add): Filter quotes, new lines, member "."

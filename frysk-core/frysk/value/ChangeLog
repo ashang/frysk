@@ -1,3 +1,10 @@
+2007-11-11  Stan Cox  <scox@redhat.com>
+
+	* CompositeType.java (toPrint (int, PrintWriter, Location,
+	ByteBuffer, Format): New.
+	* TestComposite.java (testBigStructure, testLittleStructure):
+	Allow for new formatting.
+
 2007-11-09  Stan Cox  <scox@redhat.com>
 
 	* ArrayType.java (toPrint): Do multiple dimension here.  Move
