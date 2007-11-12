@@ -1,5 +1,13 @@
 2007-11-12  Teresa Thomas  <tthomas@redhat.com>
-		
+
+	* ArithmeticUnit.java (intType): New.
+	(ArithmeticUnit): New.
+	* IntegerUnit.java (IntegerUnit): Call super.
+	* FloatingPointUnit.java (FloatingPointUnit): Ditto.	
+	* AddressUnit.java (AddressUnit): Ditto.
+	* IntegerType.java (getALU): Give wordSize to all ALUs.	
+	* FloatingPointType.java (getALU): Ditto.	
+			
 	* ArrayType.java (getALU): Comments added.
 	* PointerType.java (getALU): Comments added.
 	* Type.java (getALU): Comments added.		

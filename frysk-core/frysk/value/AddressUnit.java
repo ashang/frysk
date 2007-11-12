@@ -49,12 +49,14 @@ extends ArithmeticUnit
     private final int wordSize; 
     
     public AddressUnit (ArrayType t, int wordSize) {
+	super (wordSize);
 	retType = new PointerType(t.getName(), ByteOrder.BIG_ENDIAN, 
 		                  wordSize, t.getType());
 	this.wordSize = wordSize; 
     }
     
     public AddressUnit (PointerType t, int wordSize) {
+	super (wordSize);
 	retType = t;
 	this.wordSize = wordSize; 
     }

@@ -40,14 +40,17 @@
 package frysk.value;
 
 import java.math.BigInteger;
+
 /**
- * Arithmetic and logical Operation handling 
- * for integers.
+ *  Arithmetic and logical Operation handling 
+ *  for integers. All arithmetic done using 
+ *  BigInteger.
  */
 public class IntegerUnit
      extends ArithmeticUnit
 {
-    public IntegerUnit (IntegerType t1, IntegerType t2) {
+    public IntegerUnit (IntegerType t1, IntegerType t2, int wordSize) {
+	super (wordSize);
 	// Return type should be the larger type.
 	retType = (t1.getSize() > t2.getSize()) ?
 		  t1 : t2;
