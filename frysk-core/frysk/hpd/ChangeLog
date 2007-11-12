@@ -1,3 +1,8 @@
+2007-11-12  Andrew Cagney  <cagney@redhat.com>
+
+	* TestWhereCommand.java: Update; funit-inlined renamed to
+	funit-stack-inlined.
+
 2007-11-09  Andrew Cagney  <cagney@redhat.com>
 
 	* UserHelp.java: Delete.

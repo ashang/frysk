@@ -1,3 +1,8 @@
+2007-11-12  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFstack.java: Update; funit-inlined renamed to
+	funit-stack-inlined.
+
 2007-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Changed CoreFileAtSignal to return core File instead of core Proc.

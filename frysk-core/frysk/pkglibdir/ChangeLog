@@ -1,3 +1,8 @@
+2007-11-12  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-stack-inlined.c: Rename funit-inlined.c
+	* funit-stack-outlined.c: New; Non-inline funit-stack-inlined.c.
+	
 2007-11-12  Stan Cox  <scox@redhat.com>
 
 	* gen-type-funit-tests.py (c.add_decl): Make variables external.

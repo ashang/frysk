@@ -140,11 +140,11 @@ public class TestFstack
 
     public void testBackTraceWithDashV () {
 
-	File coreFile = CoreFileAtSignal.constructCore("funit-inlined");
+	File coreFile = CoreFileAtSignal.constructCore("funit-stack-inlined");
         e = new Expect (new String[] {
 			    Config.getBinFile("fstack").getAbsolutePath (),
 			    coreFile.getAbsolutePath(),
-			    Config.getPkgLibFile("funit-inlined").getAbsolutePath(),
+			    Config.getPkgLibFile("funit-stack-inlined").getAbsolutePath(),
 			    "-v",
 			    "-a"
 			});

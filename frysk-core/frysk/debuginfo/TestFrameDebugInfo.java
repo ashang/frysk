@@ -173,7 +173,7 @@ public class TestFrameDebugInfo
   public void testGetInlinedSubroutines ()
   {
     
-      Task task = (new DaemonBlockedAtSignal("funit-inlined")).getMainTask();
+      Task task = (new DaemonBlockedAtSignal("funit-stack-inlined")).getMainTask();
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
     
     LinkedList inlinedSubprograms =  frame.getInlinedSubprograms();
@@ -185,7 +185,7 @@ public class TestFrameDebugInfo
   public void testVirtualStackTrace ()
   {
     
-      Task task = (new DaemonBlockedAtSignal("funit-inlined")).getMainTask();
+      Task task = (new DaemonBlockedAtSignal("funit-stack-inlined")).getMainTask();
     StringWriter stringWriter = new StringWriter();
     
     DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(stringWriter), task, true, true, true);
@@ -203,7 +203,7 @@ public class TestFrameDebugInfo
   public void testInlinedFunctionDerailment ()
   {
   
-      Task task = (new DaemonBlockedAtSignal("funit-inlined")).getMainTask();
+      Task task = (new DaemonBlockedAtSignal("funit-stack-inlined")).getMainTask();
     
     DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
     Subprogram subprogram = null;
