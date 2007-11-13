@@ -85,9 +85,9 @@ public class TestFstack
     public void testBackTraceWithParams () {
 	Expect e = fstack("funit-stack-outlined",
 			  new String[] { "-print", "params" });
-        e.expect("\\#0 .* third\\(int arg3 = 3\\)");
-        e.expect("\\#1 .* second\\(int arg2 = 2\\)");
-        e.expect("\\#2 .* first\\(int arg1 = 1\\)");
+        e.expect("\\#0 .* third\\(int arg3.*\\)");
+        e.expect("\\#1 .* second\\(int arg2.*\\)");
+        e.expect("\\#2 .* first\\(int arg1.*\\)");
         e.expect("\\#3 .* main\\(\\)");
     }
 
