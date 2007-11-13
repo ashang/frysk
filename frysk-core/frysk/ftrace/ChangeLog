@@ -1,3 +1,10 @@
+2007-11-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestLtrace.java (testAllLibrariesGetDetected): Marked
+	as unresolvedx8664.
+	(testCallRecorded): Ditto.
+	(testArgumentsCorrect1): Ditto.
+
 2007-11-08  Petr Machata  <pmachata@redhat.com>
 
 	* MappingController.java: New file.
