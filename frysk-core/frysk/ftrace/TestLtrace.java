@@ -69,6 +69,9 @@ public class TestLtrace
 
   public void testAllLibrariesGetDetected()
   {
+      if(unresolvedOnx8664(5321)){
+	  return;
+      }
     class MyController1
       implements LtraceController
     {
@@ -106,6 +109,10 @@ public class TestLtrace
     if(unresolvedOffUtrace(5053))
       return;
 
+    if(unresolvedOnx8664(5321)){
+	  return;
+    }
+    
     class MyController2
       implements LtraceController
     {
@@ -165,6 +172,10 @@ public class TestLtrace
 	if(unresolvedOffUtrace(5053))
 	    return;
 
+	if(unresolvedOnx8664(5321)){
+	    return;
+	}
+	
 	final Set registeredSymbols = new HashSet();
 	final LinkedList expectedEvents = new LinkedList();
 	class ExpectedEvent {
