@@ -266,13 +266,12 @@ expr returns [Value returnVar=null]
                         .logicalOr(v1, v2); 
         }
     |   #(NOT  v1=expr) {
-            returnVar = v1.getType().getALU(v1.getType(), 
-                        exprSymTab.getWordSize())
-                        .logicalNegation(v1); 
+            // byte buffer needed for Pointer/Address types
+            returnVar = v1.getType().getALU(exprSymTab.getWordSize())
+                        .logicalNegation(v1, exprSymTab.taskMemory()); 
         }
     |   #(TILDE v1=expr) {
-            returnVar = v1.getType().getALU(v1.getType(), 
-                        exprSymTab.getWordSize())
+            returnVar = v1.getType().getALU(exprSymTab.getWordSize())
                         .bitWiseComplement(v1); 
         }
     |   #(COND_EXPR  log_expr=expr v1=expr v2=expr) {

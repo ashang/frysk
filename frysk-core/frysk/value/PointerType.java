@@ -148,4 +148,8 @@ public class PointerType
     public ArithmeticUnit getALU(ArrayType type, int wordSize) {
 	throw new RuntimeException("Invalid Pointer Arithmetic");
     }
+    // Use for unary operations.
+    public ArithmeticUnit getALU(int wordSize) {
+	return new AddressUnit(this, wordSize);
+    }
 }

@@ -142,11 +142,15 @@ public abstract class Type {
 	throw new RuntimeException("Invalid Arithmetic Unit");
     }
     public ArithmeticUnit getALU(PointerType type, int wordSize) {
+	System.out.println ("Type:PType");
 	throw new RuntimeException("Invalid Arithmetic Unit");
     }    
     public ArithmeticUnit getALU(ArrayType type, int wordSize) {
 	throw new RuntimeException("Invalid Arithmetic Unit");
     }  
+    public ArithmeticUnit getALU(int wordSize) {
+	throw new RuntimeException("Invalid Arithmetic Unit");
+    }      
 
     public Value addressOf(Value var1, ByteOrder order, int wordSize) {
     	PointerType pType = new PointerType("AddressPtr", order, wordSize, this);

@@ -108,4 +108,8 @@ public class FloatingPointType
     public ArithmeticUnit getALU(PointerType type, int wordSize) {
 	throw new RuntimeException("Invalid Pointer Arithmetic");
     }    
+    // Use for unary operations.
+    public ArithmeticUnit getALU(int wordSize) {
+	return new FloatingPointUnit(this, wordSize);
+    }    
 }

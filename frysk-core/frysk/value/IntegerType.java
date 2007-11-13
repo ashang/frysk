@@ -96,4 +96,8 @@ public abstract class IntegerType
     public ArithmeticUnit getALU(ArrayType type, int wordSize) {
 	return new AddressUnit(type, wordSize);
     }  
+    // Use for unary operations.
+    public ArithmeticUnit getALU(int wordSize) {
+	return new IntegerUnit(this, wordSize);
+    }    
 }

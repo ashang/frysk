@@ -1,3 +1,12 @@
+2007-11-13  Teresa Thomas  <tthomas@redhat.com>
+		
+	* ArrayType.java (getALU): New.
+	* PointerType.java (getALU): New.
+	* Type.java (getALU): New.
+	* FloatingPointType.java (getALU): New.
+	* IntegerType.java (getALU): New.
+	* IntegerUnit.java (IntegerUnit): New.
+
 2007-11-12  Teresa Thomas  <tthomas@redhat.com>
 
 	* ArithmeticUnit.java (intType): New.
