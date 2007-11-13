@@ -1,3 +1,8 @@
+2007-11-12  Stan Cox  <scox@redhat.com>
+
+	* ListCommand.java (interpret): Initialize from function PC.
+	Right adjust line numbers.   
+
 2007-11-12  Andrew Cagney  <cagney@redhat.com>
 
 	* TestStackCommands.java (testFrame()): New.
