@@ -1,3 +1,7 @@
+2007-11-13 Teresa Thomas <tthomas@redhat.com>
+
+	* funit-addresses.c (ptr): New.
+
 2007-11-12  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-stack-inlined.c: Rename funit-inlined.c

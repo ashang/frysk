@@ -40,6 +40,7 @@
 package frysk.value;
 
 import inua.eio.ByteOrder;
+import inua.eio.ByteBuffer;
 
 /**
  * Arithmetic and Logical Operation handling
@@ -148,7 +149,7 @@ public abstract class ArithmeticUnit
         throw new InvalidOperatorException
                   (v1.getType(), v2.getType(), "||");
     }
-    public Value logicalNegation(Value v1) {
+    public Value logicalNegation(Value v1, ByteBuffer mem) {
         throw new InvalidOperatorException
                   (v1.getType(), "!");
     }     

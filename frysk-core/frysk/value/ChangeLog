@@ -1,5 +1,13 @@
 2007-11-13  Teresa Thomas  <tthomas@redhat.com>
-		
+	
+	* ArithmeticUnit.java (logicalNegation): Add task mem to
+	parmeter list.
+	* IntegerUnit.java (logicalNegation): Update.	
+	* AddressUnit.java (logicalNegation): New.	
+	* FloatingPointUnit.java (logicalNegation): New.
+	* TestValue.java (testFloatOps): Test for above.
+	(testAddressOps): New.
+			
 	* ArrayType.java (getALU): New.
 	* PointerType.java (getALU): New.
 	* Type.java (getALU): New.

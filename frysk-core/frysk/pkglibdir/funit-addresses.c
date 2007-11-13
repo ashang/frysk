@@ -62,7 +62,8 @@ int twoD[2][3] = { {99, 88, 77},
  	           {11, 12, 13},
                  };  
 int oneD[] = { 4, 3, 2, 1};                
-char* string = "hello world\n";
+char* string = "hello world";
+int* ptr = NULL;
 
 int main(int argc, char* argv[])
 {
