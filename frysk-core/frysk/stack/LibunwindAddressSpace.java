@@ -43,6 +43,8 @@ import frysk.isa.Register;
 import lib.unwind.Unwind;
 import lib.unwind.UnwindX8664;
 import lib.unwind.UnwindX86;
+import lib.unwind.UnwindPPC32;
+import lib.unwind.UnwindPPC64;
 import frysk.dwfl.DwflCache;
 import frysk.dwfl.DwflFactory;
 import frysk.event.Event;
@@ -82,6 +84,10 @@ class LibunwindAddressSpace extends AddressSpace {
 	    return new UnwindX86();
 	else if (isa == ISA.X8664)
 	    return new UnwindX8664();
+	else if (isa == ISA.PPC32BE) 
+	    return new UnwindPPC32();
+	else if (isa == ISA.PPC64BE)
+	    return new UnwindPPC64();
 	else
 	    throw new RuntimeException("unhandled ISA: " + isa);
     }

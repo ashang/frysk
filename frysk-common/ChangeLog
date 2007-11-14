@@ -1,3 +1,8 @@
+2007-11-13  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
+
+	* Makefile.rules: Add to CXX includes the directory
+	frysk-imports/libunwind-ppc32/include
+
 2007-10-31  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (nodist_lib_sources): Delete.
