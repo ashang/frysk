@@ -67,9 +67,17 @@ abstract class ParameterizedCommand extends Command {
     }
 
     private CommandOption lookupOption(String name) {
-	CommandOption commandOption = (CommandOption)longOptions.get(name);
-	if (commandOption == null)
-	    commandOption = (CommandOption)shortOptions.get(name);
+	CommandOption commandOption = (CommandOption)shortOptions.get(name);
+	if (commandOption != null)
+	    return commandOption;
+	for (Iterator i = longOptions.values().iterator(); i.hasNext(); ) {
+	    CommandOption option = (CommandOption)i.next();
+	    if (option.longName.startsWith(name)) {
+		if (commandOption != null)
+		    return null; // ambigious
+		commandOption = option;
+	    }
+	}
 	return commandOption;
     }
 

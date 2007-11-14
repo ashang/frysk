@@ -1,5 +1,9 @@
 2007-11-14  Andrew Cagney  <cagney@redhat.com>
 
+	* TestParameterizedCommand.java (testShortAmbigiousOption()): New.
+	(testShortUnambigiousOption()): New.
+	* ParameterizedCommand.java: Allow shortened form of options.
+	
 	* TestCompletionFactory.java: New.
 	* Input.java (base(int)): New.
 	(cursor(int,int)): New.

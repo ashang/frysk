@@ -77,6 +77,13 @@ public class TestParameterizedCommand extends TestLib {
 		    assertNotNull("-arg's argument", argument);
 		}
 	    });
+	// make -a ambigious
+	command.add(new CommandOption("aRG", "long parameterized option",
+				      "ARG") {
+		void parse(String arg, Object options) {
+		    fail("should never specify -aRG");
+		}
+	    });
 	command.add(new CommandOption("opt", "long option") {
 		void parse(String arg, Object options) {
 		    parsedOption = true;
@@ -174,6 +181,15 @@ public class TestParameterizedCommand extends TestLib {
 
     public void testUnknownOpt() {
 	checkInvalid("parser -unknown");
+    }
+
+    public void testShortAmbigiousOption() {
+	checkInvalid("parser -a");
+    }
+    public void testShortUnambigiousOption() {
+	check("parser arg -o", "arg",
+	      new String[] { "arg" },
+	      true, null);
     }
 
     public void testHelp() {
