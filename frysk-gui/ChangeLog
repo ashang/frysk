@@ -1,3 +1,7 @@
+2007-11-13  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
+
+        * Makefile.am: Add libunwind-ppc32 to gcj linker dependencies.
+
 2007-10-31  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am: Replace dist_glade_DATA with glade_DATA; ditto for
