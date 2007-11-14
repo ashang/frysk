@@ -78,23 +78,26 @@ public abstract class IntegerType
 	putBigInteger(location, i);
     }
 
+    /* getALUs are double dispatch functions to determine 
+     * the ArithmeticUnit for an operation between two types.
+     */
     public ArithmeticUnit getALU(Type type, int wordSize) {
 	return type.getALU(this, wordSize);
-    }
-    
+    }    
     public ArithmeticUnit getALU(IntegerType type, int wordSize) {
-	return new IntegerUnit(this, type);
-    }
-    
+	return new IntegerUnit(this, type, wordSize);
+    }    
     public ArithmeticUnit getALU(PointerType type, int wordSize) {
 	return new AddressUnit(type, wordSize);
-    }
-    
+    }    
     public ArithmeticUnit getALU(FloatingPointType type, int wordSize) {
-	return new FloatingPointUnit(type);
+	return new FloatingPointUnit(type, wordSize);
     }   
-
     public ArithmeticUnit getALU(ArrayType type, int wordSize) {
 	return new AddressUnit(type, wordSize);
     }  
+    // Use for unary operations.
+    public ArithmeticUnit getALU(int wordSize) {
+	return new IntegerUnit(this, wordSize);
+    }    
 }

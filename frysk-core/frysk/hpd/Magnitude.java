@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,25 +39,26 @@
 
 package frysk.hpd;
 
-public class TestFrameCommands extends TestLib {
-    public void testHpdTraceStack () {
-	e = HpdTestbed.attachXXX("hpd-c");
-	// Where
-	e.send ("where\n");
-	e.expect ("where.*#0.*" + prompt);
-	// int_21
-	e.send ("print int_21\n");
-	e.expect ("print.*2.*\r\n" + prompt);
-	// Down
-	e.send ("d\t");
-	e.expect (".*defset.*delete.*detach.*disable.*down.*" + prompt + ".*");
-	e.send ("own\n");
-	e.expect ("own.*#1.*" + prompt);
-	// int_21
-	e.send ("print int_21\n");
-	e.expect ("print.*int_21.*(fhpd)");
-	e.send ("up\n");
-	e.expect ("up.*#0.*" + prompt);
-	e.close();
+/**
+ * Parse sign/magnitude integer; for instance: -1, 1, or +1.
+ */
+class Magnitude {
+    final int sign;
+    final int magnitude;
+    Magnitude(int sign, int magnitude) {
+	this.sign = sign;
+	this.magnitude = magnitude;
+    }
+    Magnitude(String argument) {
+	if (argument.charAt(0) == '+') {
+	    sign = 1;
+	    magnitude = Integer.parseInt(argument.substring(1));
+	} else if (argument.charAt(0) == '-') {
+	    sign = -1;
+	    magnitude = Integer.parseInt(argument.substring(1));
+	} else {
+	    sign = 0;
+	    magnitude = Integer.parseInt(argument);
+	}
     }
 }

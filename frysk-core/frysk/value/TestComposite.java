@@ -67,7 +67,7 @@ public class TestComposite
 	};
 	Value c1 = new Value(classType, new ScratchLocation(buf));
 	String s = c1.toPrint();
-	assertEquals ("class", "{alpha=16909060,\n beta=84281096,\n gamma=2320,\n iota=17,\n epsilon=18,\n}", s);
+	assertEquals ("class", "{\n  alpha=16909060,\n  beta=84281096,\n  gamma=2320,\n  iota=17,\n  epsilon=18,\n}", s);
     }
     /**
      * struct {int; int; short; int:8; int:8;}
@@ -86,7 +86,7 @@ public class TestComposite
 	};
 	Value c1 = new Value(classType, new ScratchLocation(buf));
 	String s = c1.toPrint();
-	assertEquals ("class", "{alpha=67305985,\n beta=134678021,\n gamma=4105,\n iota=17,\n epsilon=18,\n}", s);
+	assertEquals ("class", "{\n  alpha=67305985,\n  beta=134678021,\n  gamma=4105,\n  iota=17,\n  epsilon=18,\n}", s);
     }
     /**
      * struct { struct { int, int } struct { short, int:8, int:8 }}
@@ -109,7 +109,7 @@ public class TestComposite
 	};
 	Value c1 = new Value(classType, new ScratchLocation(buf));
 	String s = c1.toPrint();
-	assertEquals ("class", "{a={alpha=67305985,\n beta=134678021,\n},\n b={gamma=4105,\n iota=17,\n epsilon=18,\n},\n}", s);
+	assertEquals ("class", "{\n  a={\n    alpha=67305985,\n    beta=134678021,\n  },\n  b={\n    gamma=4105,\n    iota=17,\n    epsilon=18,\n  },\n}", s);
     }
     /**
      * struct { struct { int, int } struct { short, int:8, int:8 }}
@@ -132,7 +132,7 @@ public class TestComposite
 	};
 	Value c1 = new Value(classType, new ScratchLocation(buf));
 	String s = c1.toPrint();
-	assertEquals ("class", "{{67305985,\n 134678021,\n},\n {4105,\n 17,\n 18,\n},\n}", s);
+	assertEquals ("class", "{\n  {\n    67305985,\n    134678021,\n  },\n  {\n    4105,\n    17,\n    18,\n  },\n}", s);
     }
 
     public void testUnionType() {

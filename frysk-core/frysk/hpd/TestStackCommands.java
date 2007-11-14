@@ -39,71 +39,64 @@
 
 package frysk.hpd;
 
-import frysk.Config;
-import frysk.testbed.FryskAsm;
-import frysk.isa.ISA;
-import frysk.isa.Register;
-import frysk.isa.ElfMap;
-import java.io.File;
+public class TestStackCommands extends TestLib {
 
-/**
- * Test the functionality of the print command; for instance that the
- * formatting options work.
- *
- * The intent here is not to test underlying code such as the type
- * parser or the formatter; that is the responsibility of underlying
- * tests.
- */
-
-public class TestPrint
-    extends TestLib
-{
-    public void testUnattached() {
-	e = new HpdTestbed();
-	// Add with no process; shouldn't crash.
-	e.sendCommandExpectPrompt("print 2+2", "4\r\n");
+    private void checkWhere(String program, String inline) {
+        e = HpdTestbed.hpdTerminatingProgram(program);
+	e.send("where\n");
+	e.expect("\\#0 .*third" + inline);
+	e.expect("\\#1 .*second" + inline);
+	e.expect("\\#2 .*first" + inline);
+	e.expect("\\#3 .*main");
+	e.expectPrompt(".*");
+    }
+    public void testWhereVirtual () {
+	checkWhere("funit-stack-inlined", "[^\\r\\n]*\\[inline\\]");
+    }
+    public void testWherePhysical() {
+	checkWhere("funit-stack-outlined", "");
+    }
+    
+    private void checkWhereWithScopes(String program) {
+	e = HpdTestbed.hpdTerminatingProgram(program);
+        e.send("where -scopes\n");
+        e.expect(".*var3");
+	e.expect(".*var2");
+	e.expect(".*var1");
+	e.expectPrompt(".*");
+        e.close();
+    }
+    public void testWhereWithVirtualScopes() {
+	checkWhereWithScopes("funit-stack-inlined");
+    }
+    public void testWhereWithPhysicalScopes() {
+	checkWhereWithScopes("funit-stack-outlined");
     }
 
-    public void testFormatInteger() {
-	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("print 17 -format d", "\r\n17\r\n");
+    public void testWhereOne() {
+        e = HpdTestbed.hpdTerminatingProgram("funit-stack-outlined");
+	e.sendCommandExpectPrompt
+	    ("where 1", "\\#0 .*third[^\\r\\n]*\\r\\n\\.\\.\\.\\r\\n");
     }
-    public void testFormatInteger_d() {
-	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("print 17 -format d", "\r\n17\r\n");
+
+    public void testDownCompletion () {
+	e = HpdTestbed.hpdTerminatingProgram("funit-stack-outlined");
+	e.send ("d\t");
+	e.expect (".*defset.*delete.*detach.*disable.*down.*" + prompt + ".*");
+	e.sendCommandExpectPrompt("own", "\\#1.*");
     }
-    public void testFormatInteger_t() {
-	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("print 17 -format t", "\r\n10001\r\n");
+
+    public void testUpDown () {
+	e = HpdTestbed.hpdTerminatingProgram("funit-stack-outlined");
+	e.sendCommandExpectPrompt("where 1", "\\#0.*third.*");
+	e.sendCommandExpectPrompt("down", "\\#1.*second.*");
+	e.sendCommandExpectPrompt("down", "\\#2.*first.*");
+	e.sendCommandExpectPrompt("up", "\\#1.*second.*");
     }
-    public void testFormatInteger_o() {
-	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("print 17 -format o", "\r\n021\r\n");
-    }
-    public void testFormatInteger_x() {
-	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("print 17 -format x", "\r\n0x11\r\n");
-    }
-    public void testFormatUnknown() {
-	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("print 17 -format unknown",
-				  "unrecognized format: unknown\r\n");
-    }
-    public void testAddressOf() {
-	e = HpdTestbed.attachXXX("hpd-c");
-	e.sendCommandExpectPrompt("print &static_int", "\r\n.+0x[0-9a-f]+\r\n");
-    }
-    public void testDereference() {
-	e = HpdTestbed.attachXXX("hpd-c");
-	e.sendCommandExpectPrompt("print *static_int_ptr", "\r\n4\r\n");
-    }
-    public void testRegister() {
-	// FIXME: Should use funit-regs.
-	e = HpdTestbed.attachXXX("hpd-c");
-	File exe = Config.getPkgLibFile("hpd-c");
-	ISA isa = ElfMap.getISA(exe);
-	Register r = FryskAsm.createFryskAsm(isa).REG0;
-	e.sendCommandExpectPrompt("print $" + r.getName() + " -format d",
-				  "\r\n[0-9]+\r\n");
+
+    public void testFrame() {
+	e = HpdTestbed.hpdTerminatingProgram("funit-stack-outlined");
+	e.sendCommandExpectPrompt("frame 3", "\\#3.*main.*");
+	e.sendCommandExpectPrompt("frame 1", "\\#1.*second.*");
     }
 }

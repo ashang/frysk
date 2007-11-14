@@ -128,10 +128,17 @@ public class DebugInfoStackFactory {
         for (DebugInfoFrame frame = topFrame; frame != null;
 	     frame = frame.getOuterDebugInfoFrame()) {
             
-	    if (numberOfFrames > 0 && count++ >= numberOfFrames) {
-		writer.println("...");
-		break;
+	    // Terminate early?
+	    if (numberOfFrames > 0) {
+		if (count >= numberOfFrames) {
+		    writer.println("...");
+		    break;
+		}
+	    } else if (numberOfFrames < 0) {
+		if (count >= -numberOfFrames)
+		    break;
 	    }
+	    count++;
 
 	    frame.printLevel(writer);
 	    writer.print(" ");

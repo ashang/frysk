@@ -1,3 +1,16 @@
+2007-11-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFstack.java (testBackTraceWithParams): Removed value
+	asserstion. 
+
+2007-11-12  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFstack.java (fstack(String,String[])): New; use throughout.
+	(tearDown()): Delete.
+	
+	* TestFstack.java: Update; funit-inlined renamed to
+	funit-stack-inlined.
+
 2007-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Changed CoreFileAtSignal to return core File instead of core Proc.

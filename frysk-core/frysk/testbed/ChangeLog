@@ -1,3 +1,11 @@
+2007-11-12  Andrew Cagney  <cagney@redhat.com>
+
+	* DaemonBlockedAtSignal.java (DaemonBlockedAtSignal(File)): New.
+	* TestCoreFileAtSignal.java (testCoreFileAtSignal()): Enable;
+	simplify.
+	* CoreFileAtSignal.java (constructCore(File)): New.
+	(constructCore(String)): Use.
+	
 2007-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* CoreFileAtSignal.java	(constructCore): Now return core file

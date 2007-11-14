@@ -28,7 +28,7 @@
 // resulting work to be covered by the GNU General Public
 // License. Only Red Hat, Inc. may make changes or additions to the
 // list of Approved Interfaces. You must obey the GNU General Public
-// License in all respects for all of the FRYSK code and other code
+// License in all respects for all o;f the FRYSK code and other code
 // used in conjunction with FRYSK except the Non-GPL Code covered by
 // this exception. If you modify this file, you may extend this
 // exception to your version of the file, but you are not obligated to
@@ -37,24 +37,29 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.hpd;
+#include <stdlib.h>
 
-import java.io.File;
+// See also funit-stack-inlined.c
 
-import frysk.Config;
-
-/**
- * For fhpd tests that are based on core files.
- */
-public class HpdCoreFileTestbed
-    extends HpdTestbed
-{
-    public HpdCoreFileTestbed(File coreFile, File exeFile, String startup) {
-	super(new String[] {
-		Config.getBinFile("fhpd").getPath (),
-		coreFile.toString(),
-		exeFile.toString()
-	      });
-	expectPrompt(startup);
-    }
+inline void third(int arg3){
+  int var3 = arg3;
+  int* a = 0;
+  a[0] = var3;
 }
+
+inline void second(int arg2){
+  int var2 = arg2;
+  third(var2+1);
+}
+
+inline void first(int arg1){
+  int var1 = arg1;
+  second(var1+1);
+}
+
+int main(){
+  int some_int = 1;
+  first(some_int);
+  return 0;
+}
+

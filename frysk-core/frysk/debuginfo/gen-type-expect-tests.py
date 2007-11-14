@@ -168,8 +168,7 @@ public class %s extends TestLib {
 
     def start_test(self, tool, name):
         print("    public void test%s () {" % (name))
-#        if (tool == "value" and (name == "Enum" or name == "Struct")):
-        if (tool == "value"):
+        if (False):
             print('''
         if (unresolved(5235))
             return;
@@ -180,7 +179,7 @@ public class %s extends TestLib {
         name = name.rstrip()
         type = type.rstrip().replace("\n","\\n")
         etype = etype.rstrip()
-        value = value.rstrip()
+        value = value.rstrip().replace("\n","\\n")
 
         if (tool == "type"):
             print('\t    new Expect("%s","%s"),' % (name, type))

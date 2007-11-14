@@ -40,6 +40,7 @@
 package frysk.value;
 
 import inua.eio.ByteOrder;
+import inua.eio.ByteBuffer;
 /**
  * Operation handling for pointers and addresses.
  */
@@ -49,12 +50,14 @@ extends ArithmeticUnit
     private final int wordSize; 
     
     public AddressUnit (ArrayType t, int wordSize) {
+	super (wordSize);
 	retType = new PointerType(t.getName(), ByteOrder.BIG_ENDIAN, 
 		                  wordSize, t.getType());
 	this.wordSize = wordSize; 
     }
     
     public AddressUnit (PointerType t, int wordSize) {
+	super (wordSize);
 	retType = t;
 	this.wordSize = wordSize; 
     }
@@ -121,4 +124,9 @@ extends ArithmeticUnit
 	Value v2Neg = new Value (v2.getType(), l);
 	return add (v1, v2Neg);
     }
+    
+    public Value logicalNegation(Value v1, ByteBuffer mem) {
+	return intType.createValue
+	               (v1.toPrint(Format.NATURAL, mem).equals("0x0")? 1:0);
+    }      
 }

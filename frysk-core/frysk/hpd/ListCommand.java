@@ -71,7 +71,7 @@ class ListCommand extends ParameterizedCommand {
 	    });
     }
     private static class Options {
-	CommandOption.Magnitude length;
+	Magnitude length;
     }
     Object options() {
 	return new Options();
@@ -132,7 +132,7 @@ class ListCommand extends ParameterizedCommand {
                 line = exec_line - 10;
             }
  
-            if (file== null) {
+            if (file == null) {
                 if (frame.getLines().length > 0) {
                     file = (frame.getLines()[0]).getFile();
                     if (file == null) {
@@ -141,7 +141,8 @@ class ListCommand extends ParameterizedCommand {
                         return;
                     }
                     line = (frame.getLines()[0]).getLine() - 10;
-                    exec_line = line;
+		    if (exec_line == 0)
+			exec_line = line;
                 }
                 else { 
                     cli.outWriter.println("No source for current frame");
@@ -158,16 +159,28 @@ class ListCommand extends ParameterizedCommand {
                 boolean display = false;
                 int endLine = line + StrictMath.abs(windowSize);
                 String flag = "";
-                while ((str = lr.readLine()) != null) 		    {
+                while ((str = lr.readLine()) != null) {
                     if (lr.getLineNumber() == line)
                         display = true;
                     else if (lr.getLineNumber() == endLine)
                         break;
                     if (display && lr.getLineNumber() == exec_line)
                         flag = "*";
-                
-                    if (display)			    {
-                        cli.outWriter.println(lr.getLineNumber() + flag + "\t "+ str);
+		    else
+			flag = " ";
+
+                    if (display) {
+			int lineNumber = lr.getLineNumber();
+			String rightAdjust;
+			if (lineNumber < 10)
+			    rightAdjust = "   ";
+			else if (lineNumber < 100)
+			    rightAdjust = "  ";
+			else if (lineNumber < 1000)
+			    rightAdjust = " ";
+			else
+			    rightAdjust = "";
+                        cli.outWriter.println(flag + rightAdjust + lineNumber + "\t "+ str);
                         flag = "";
                     }
                 }

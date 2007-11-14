@@ -39,13 +39,30 @@
 
 package frysk.value;
 
+import inua.eio.ByteOrder;
+import inua.eio.ByteBuffer;
+
 /**
  * Arithmetic and Logical Operation handling
  * for different types.
  */
 public abstract class ArithmeticUnit 
 {
+    // Return type based on the type of operands - used for 
+    // most operations.
     protected ArithmeticType retType;
+    
+    // Integer return type for relational, equality
+    // and logical operations.
+    protected IntegerType intType;
+    
+    protected ArithmeticUnit(int wordSize) {
+	// XXX: Is endianness okay?
+	// Create an int type with size equal to word
+	// size of machine.
+	intType = new UnsignedType ("int", ByteOrder.LITTLE_ENDIAN, 
+		                    wordSize);
+    }
     
     // Multiplicative and Additive expressions
     public Value add(Value v1, Value v2) {
@@ -132,7 +149,7 @@ public abstract class ArithmeticUnit
         throw new InvalidOperatorException
                   (v1.getType(), v2.getType(), "||");
     }
-    public Value logicalNegation(Value v1) {
+    public Value logicalNegation(Value v1, ByteBuffer mem) {
         throw new InvalidOperatorException
                   (v1.getType(), "!");
     }     

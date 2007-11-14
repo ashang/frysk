@@ -1,3 +1,21 @@
+2007-11-13 Teresa Thomas <tthomas@redhat.com>
+
+	* funit-addresses.c (ptr): New.
+
+2007-11-12  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-stack-inlined.c: Rename funit-inlined.c
+	* funit-stack-outlined.c: New; Non-inline funit-stack-inlined.c.
+	
+2007-11-12  Stan Cox  <scox@redhat.com>
+
+	* gen-type-funit-tests.py (c.add_decl): Make variables external.
+
+2007-11-11  Stan Cox  <scox@redhat.com>
+
+	* gen-type-funit-tests.py (c.add): Escape \n for value.
+	(main): Use newline instead of \n for expected results.
+
 2007-11-09  Stan Cox  <scox@redhat.com>
 
 	* gen-type-funit-tests.py (c.add): Filter quotes, new lines, member "."

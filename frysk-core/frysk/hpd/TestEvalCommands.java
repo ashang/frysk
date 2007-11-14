@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,75 +39,69 @@
 
 package frysk.hpd;
 
-import frysk.value.Format;
+import frysk.Config;
+import frysk.testbed.FryskAsm;
+import frysk.isa.ISA;
+import frysk.isa.Register;
+import frysk.isa.ElfMap;
+import java.io.File;
 
 /**
- * A command option; optionally parameterized.
+ * Test the functionality of the print command; for instance that the
+ * formatting options work.
+ *
+ * The intent here is not to test underlying code such as the type
+ * parser or the formatter; that is the responsibility of underlying
+ * tests.
  */
 
-abstract class CommandOption {
-    final String longName;
-    final char shortName;
-    final String description;
-    final String parameter;
-    CommandOption(String longName, char shortName, String description,
-		  String parameter) {
-	this.longName = longName;
-	this.shortName = shortName;
-	this.description = description;
-	this.parameter = parameter;
-    }
-    CommandOption(String name, String description, String parameter) {
-	this(name, '\0', description, parameter);
-    }
-    /**
-     * An option that doesn't have an argument.
-     */
-    CommandOption(String name, String description) {
-	this(name, '\0', description, null);
+public class TestEvalCommands extends TestLib {
+    public void testUnattached() {
+	e = new HpdTestbed();
+	// Add with no process; shouldn't crash.
+	e.sendCommandExpectPrompt("print 2+2", "4\r\n");
     }
 
-    /**
-     * Utility, parse a boolean parameter.
-     */
-    boolean parseBoolean(String argument) {
-	argument = argument.toLowerCase();
-	if (argument.equals("yes")
-	    || argument.equals("y"))
-	    return true;
-	else if (argument.equals("no")
-		 || argument.equals("n"))
-	    return false;
-	
-	else
-	    throw new InvalidCommandException
-		("option -" + longName + " requires yes or no parameter");
+    public void testFormatInteger() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("print 17 -format d", "\r\n17\r\n");
     }
-
-    /**
-     * Template option; parse a format.
-     */
-    static abstract class FormatOption extends CommandOption {
-	FormatOption() {
-	    super("format", "print format", "d|o|x|t");
-	}
-	void parse(String argument, Object options) {
-	    Format format;
-	    if (argument.compareTo("d") == 0) 
-		format = Format.DECIMAL;
-	    else if (argument.compareTo("o") == 0)
-		format = Format.OCTAL;
-	    else if (argument.compareTo("x") == 0) 
-		format = Format.HEXADECIMAL;
-	    else if (argument.compareTo("t") == 0)
-		format = Format.BINARY;
-	    else
-		throw new InvalidCommandException("unrecognized format: "
-						  + argument);
-	    set(options, format);
-	}
-	abstract void set(Object options, Format format);
+    public void testFormatInteger_d() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("print 17 -format d", "\r\n17\r\n");
     }
-
-    abstract void parse(String argument, Object options);
+    public void testFormatInteger_t() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("print 17 -format t", "\r\n10001\r\n");
+    }
+    public void testFormatInteger_o() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("print 17 -format o", "\r\n021\r\n");
+    }
+    public void testFormatInteger_x() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("print 17 -format x", "\r\n0x11\r\n");
+    }
+    public void testFormatUnknown() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("print 17 -format unknown",
+				  "unrecognized format: unknown\r\n");
+    }
+    public void testAddressOf() {
+	e = HpdTestbed.attachXXX("hpd-c");
+	e.sendCommandExpectPrompt("print &static_int", "\r\n.+0x[0-9a-f]+\r\n");
+    }
+    public void testDereference() {
+	e = HpdTestbed.attachXXX("hpd-c");
+	e.sendCommandExpectPrompt("print *static_int_ptr", "\r\n4\r\n");
+    }
+    public void testRegister() {
+	// FIXME: Should use funit-regs.
+	e = HpdTestbed.attachXXX("hpd-c");
+	File exe = Config.getPkgLibFile("hpd-c");
+	ISA isa = ElfMap.getISA(exe);
+	Register r = FryskAsm.createFryskAsm(isa).REG0;
+	e.sendCommandExpectPrompt("print $" + r.getName() + " -format d",
+				  "\r\n[0-9]+\r\n");
+    }
 }

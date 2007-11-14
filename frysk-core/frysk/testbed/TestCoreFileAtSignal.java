@@ -40,35 +40,19 @@
 package frysk.testbed;
 
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 import frysk.Config;
 import frysk.proc.Proc;
-import frysk.stack.StackFactory;
 import frysk.util.Util;
+import frysk.proc.Task;
 
-public class TestCoreFileAtSignal extends TestLib
-
-{
-
+public class TestCoreFileAtSignal extends TestLib {
     public void testCoreFileAtSignal() {
-	if (unresolved (4953))
-	    return;
-
-	StringWriter stringWriter = new StringWriter();
-	File coreFile = CoreFileAtSignal.constructCore("funit-stacks");
-	
-	Proc coreProc = Util.getProcFromCoreFile(coreFile, Config.getPkgLibFile("funit-stacks"));
-	StackFactory.printTaskStackTrace(new PrintWriter(stringWriter), coreProc
-		.getMainTask(), false);
-
-	String stackString = stringWriter.getBuffer().toString();
-	
-	assertTrue("Correct stack trace extracted from core file", stackString.contains("fourth"));
-	assertTrue("Correct stack trace extracted from core file", stackString.contains("third"));
-	assertTrue("Correct stack trace extracted from core file", stackString.contains("second"));
-	assertTrue("Correct stack trace extracted from core file", stackString.contains("first"));	
+	File coreExe = Config.getPkgLibFile("funit-asm");
+	File coreFile = CoreFileAtSignal.constructCore(coreExe);
+	Proc coreProc = Util.getProcFromCoreFile(coreFile, coreExe);
+	Task coreTask = coreProc.getMainTask();
+	FryskAsm regs = FryskAsm.createFryskAsm(coreTask.getISA());
+	assertEquals("REG0", 1, coreTask.getRegister(regs.REG0));
     }
 
 }

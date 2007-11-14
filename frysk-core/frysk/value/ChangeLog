@@ -1,3 +1,49 @@
+2007-11-13  Teresa Thomas  <tthomas@redhat.com>
+	
+	* ArithmeticUnit.java (logicalNegation): Add task mem to
+	parmeter list.
+	* IntegerUnit.java (logicalNegation): Update.	
+	* AddressUnit.java (logicalNegation): New.	
+	* FloatingPointUnit.java (logicalNegation): New.
+	* TestValue.java (testFloatOps): Test for above.
+	(testAddressOps): New.
+			
+	* ArrayType.java (getALU): New.
+	* PointerType.java (getALU): New.
+	* Type.java (getALU): New.
+	* FloatingPointType.java (getALU): New.
+	* IntegerType.java (getALU): New.
+	* IntegerUnit.java (IntegerUnit): New.
+
+2007-11-12  Teresa Thomas  <tthomas@redhat.com>
+
+	* ArithmeticUnit.java (intType): New.
+	(ArithmeticUnit): New.
+	* IntegerUnit.java (IntegerUnit): Call super.
+	* FloatingPointUnit.java (FloatingPointUnit): Ditto.	
+	* AddressUnit.java (AddressUnit): Ditto.
+	* IntegerType.java (getALU): Give wordSize to all ALUs.	
+	* FloatingPointType.java (getALU): Ditto.	
+			
+	* ArrayType.java (getALU): Comments added.
+	* PointerType.java (getALU): Comments added.
+	* Type.java (getALU): Comments added.		
+	
+2007-11-12  Teresa Thomas  <tthomas@redhat.com>
+
+	* IntegerUnit.java: Use BigInteger for logical
+	operations.
+
+	* IntegerUnit.java: Use asLong() instead of 
+	asBigInteger().longValue(). 
+
+2007-11-11  Stan Cox  <scox@redhat.com>
+
+	* CompositeType.java (toPrint (int, PrintWriter, Location,
+	ByteBuffer, Format): New.
+	* TestComposite.java (testBigStructure, testLittleStructure):
+	Allow for new formatting.
+
 2007-11-09  Stan Cox  <scox@redhat.com>
 
 	* ArrayType.java (toPrint): Do multiple dimension here.  Move

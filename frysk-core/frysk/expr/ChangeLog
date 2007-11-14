@@ -1,3 +1,7 @@
+2007-11-13  Teresa Thomas  <tthomas@redhat.com>
+		
+	* CExprEvaluator.g: Update.
+	
 2007-11-09  Teresa Thomas  <tthomas@redhat.com>
 	
 	* CExprEvaluator.g: Update evaluator to

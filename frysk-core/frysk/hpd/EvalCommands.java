@@ -47,7 +47,10 @@ import frysk.value.PointerType;
 import frysk.value.Type;
 import java.util.List;
 
-class PrintCommand extends ParameterizedCommand {
+/**
+ * Evaluate an expression; in various forms.
+ */
+abstract class EvalCommands extends ParameterizedCommand {
     private class Options {
 	Format format = Format.NATURAL;
 	boolean dumpTree = false;
@@ -56,16 +59,8 @@ class PrintCommand extends ParameterizedCommand {
 	return new Options();
     }
 
-    PrintCommand() {
-	this("print",
-	     "Evaluate and display the value of an expression.",
-	     "print expression [-format d|o|x|t]",
-	     ("The print command evaluates and displays an expression. The"
-	     + " debugger interprets the expression by looking up the"
-	      + " value(s) associated with each symbol and applying the"
-	      + " operators.  The result of an expression may be a scalar"
-	      + " value or an aggregate (array, array slice, record, or"
-	      + " structure."));
+    EvalCommands(String name, String description, String syntax, String full) {
+	super(name, description, syntax, full);
 	add(new CommandOption.FormatOption() {
 		void set(Object options, Format format) {
 		    ((Options)options).format = format;
@@ -77,46 +72,33 @@ class PrintCommand extends ParameterizedCommand {
 		}
 	    });
     }
-    
-    PrintCommand (String name, String description, String syntax, 
-		  String full) {
-	super (name, description, syntax, full);
+
+    int complete(CLI cli, PTSet ptset, String incomplete, int base,
+		 List candidates) {
+	return CompletionFactory.completeExpression(cli, ptset, incomplete,
+						    base, candidates);
     }
 
-    public void interpret(CLI cli, Input input, Object o) {
-	if (input.size() == 0)
+    static private void eval(CLI cli, PTSet ptset, String expression,
+			     Options options) {
+	if (expression.equals(""))
 	    throw new InvalidCommandException("missing expression");
-	Options options = (Options)o;
-        PTSet ptset = cli.getCommandPTSet(input);
-
-	String sInput = input.stringValue();
-	if (input.getAction().compareTo("assign") == 0) {
-	    int i = sInput.indexOf(' ');
-	    if (i == -1) {
-		throw new InvalidCommandException("bad expression XXX");
-	    }
-	    sInput = sInput.substring(0, i) + "=" + sInput.substring(i);
-	}        
-
 	Value result = null;
-        Iterator taskDataIter = ptset.getTaskData();
+	Iterator taskDataIter = ptset.getTaskData();
 	do {
-            Task task = null;
-            if (taskDataIter.hasNext()) {
+	    Task task = null;
+	    if (taskDataIter.hasNext()) {
 		TaskData td = (TaskData)taskDataIter.next();
-                task = td.getTask();
-                cli.outWriter.print("[");
-		cli.outWriter.print(td.getParentID());
-		cli.outWriter.print(".");
-		cli.outWriter.print(td.getID());
-		cli.outWriter.println("]");
-            }
-            try {
-                result = cli.parseValue(task, sInput, options.dumpTree);
-            } catch (RuntimeException nnfe) {
+		task = td.getTask();
+		td.toPrint(cli.outWriter, true);
+		cli.outWriter.println();
+	    }
+	    try {
+		result = cli.parseValue(task, expression, options.dumpTree);
+	    } catch (RuntimeException nnfe) {
 		cli.addMessage(nnfe.getMessage(), Message.TYPE_ERROR);
-                continue;
-            }
+		continue;
+	    }
 
 	    Type t = result.getType();
 	    if (t instanceof PointerType) {
@@ -128,12 +110,46 @@ class PrintCommand extends ParameterizedCommand {
 			   task == null ? null : task.getMemory(),
 			   options.format);
 	    cli.outWriter.println();
-        } while (taskDataIter.hasNext());
+	} while (taskDataIter.hasNext());
     }
 
-    int complete(CLI cli, PTSet ptset, String incomplete, int base,
-		 List candidates) {
-	return CompletionFactory.completeExpression(cli, ptset, incomplete,
-						    base, candidates);
+    static class Print extends EvalCommands {
+	Print() {
+	    super("print",
+		 "Evaluate and display the value of an expression.",
+		 "print expression [-format d|o|x|t]",
+		 ("The print command evaluates and displays an expression. The"
+		  + " debugger interprets the expression by looking up the"
+		  + " value(s) associated with each symbol and applying the"
+		  + " operators.  The result of an expression may be a scalar"
+		  + " value or an aggregate (array, array slice, record, or"
+		  + " structure."));
+	}
+	void interpret(CLI cli, Input input, Object options) {
+	    eval(cli, cli.getCommandPTSet(input), input.stringValue(),
+		 (Options)options);
+	}
+    }
+
+    static class Assign extends EvalCommands {
+	Assign() {
+	    super("assign", "Change the value of a scalar program variable.",
+		  "assign scalar-target scalar-value [-force]",
+		  ("The assign command evaluates a scalar expression and"
+		   + " uses the result to replace the previous contents"
+		   + " of a program variable. The target location may be a"
+		   + " scalar variable, an element of an array or"
+		   + " structure/record, or a de-referenced pointer"
+		   + " variable."));
+	}
+	void interpret(CLI cli, Input input, Object options) {
+	    if (input.size() < 2)
+		throw new InvalidCommandException("missing expression");
+	    String lhs = input.parameter(0);
+	    input.accept();
+	    eval(cli, cli.getCommandPTSet(input),
+		 "(" + lhs + ") = (" + input.stringValue() + ")",
+		 (Options)options);
+	}
     }
 }

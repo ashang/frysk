@@ -39,18 +39,29 @@
 
 package frysk.value;
 
+import java.math.BigInteger;
+import inua.eio.ByteBuffer;
+
 /**
- * Arithmetic and logical Operation handling 
- * for integers.
+ *  Arithmetic and logical Operation handling 
+ *  for integers. All arithmetic done using 
+ *  BigInteger.
  */
 public class IntegerUnit
      extends ArithmeticUnit
 {
-    public IntegerUnit (IntegerType t1, IntegerType t2) {
+    public IntegerUnit (IntegerType t1, IntegerType t2, int wordSize) {
+	super (wordSize);
 	// Return type should be the larger type.
 	retType = (t1.getSize() > t2.getSize()) ?
 		  t1 : t2;
     }
+    
+    public IntegerUnit (IntegerType t1, int wordSize) {
+	super (wordSize);
+	// Return type should be the larger type.
+	retType =  t1 ;
+    }    
 
     public Value add(Value v1, Value v2) {
 	return retType.createValue
@@ -126,19 +137,22 @@ public class IntegerUnit
 
     public Value logicalAnd(Value v1, Value v2) {
 	return retType.createValue
-	               ((v1.asBigInteger().longValue() == 0 ? false : true)
-		     && (v2.asBigInteger().longValue() == 0 ? false : true) ? 1 : 0);
+	       ((v1.asBigInteger().compareTo(BigInteger.ZERO) == 0 ? false : true)
+             && (v2.asBigInteger().compareTo(BigInteger.ZERO) == 0 ? false : true) ? 1 : 0);
     }    
     public Value logicalOr(Value v1, Value v2) {
 	return retType.createValue
-	               ((v1.asBigInteger().longValue() == 0 ? false : true)
-		     || (v2.asBigInteger().longValue() == 0 ? false : true) ? 1 : 0);
+	       ((v1.asBigInteger().compareTo(BigInteger.ZERO) == 0 ? false : true)
+	     || (v1.asBigInteger().compareTo(BigInteger.ZERO) == 0 ? false : true) ? 1 : 0);
     }  
-    public Value logicalNegation(Value v1) {
+    /**
+     * @ param mem - unused here.
+     */
+    public Value logicalNegation(Value v1, ByteBuffer mem) {
 	return retType.createValue
-                       (v1.asBigInteger().longValue() == 0 ? 1 : 0);
+               (v1.asBigInteger().compareTo(BigInteger.ZERO) == 0 ? 1 : 0);
     }    
     public boolean getLogicalValue (Value v1) {
-	return ((v1.asBigInteger().longValue() == 0) ? false : true);
+	return ((v1.asBigInteger().compareTo(BigInteger.ZERO) == 0) ? false : true);
     }    
 }

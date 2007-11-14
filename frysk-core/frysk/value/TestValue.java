@@ -39,6 +39,7 @@
 
 package frysk.value;
 
+import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
 import frysk.junit.TestCase;
 
@@ -140,7 +141,7 @@ public class TestValue
 	assertEquals ("9 & 4", 1, v3.asLong());
 	v3 = v1.getType().getALU(v2.getType(), 0).logicalOr(v2, v1);
 	assertEquals ("9 | 4", 1, v3.asLong());	
-	v3 = v1.getType().getALU(v1.getType(), 0).logicalNegation(v1);
+	v3 = v1.getType().getALU(v1.getType(), 0).logicalNegation(v1, null);
 	assertEquals ("!4", 0, v3.asLong());		
 	bool = v2.getType().getALU(v2.getType(), 0).getLogicalValue(v2);
 	assertEquals ("bool(9)", true, bool);		
@@ -205,5 +206,23 @@ public class TestValue
 	assertEquals ("v3 /= 4", 4, v3.doubleValue(), 0);
 	v3 = v3.getType().getALU(v1.getType(), 0).modEqual(v3, v1);
 	assertEquals ("v3 %= 4", 0, v3.doubleValue(), 0);
+	// Note: Return type of logical expression is int.
+	v3 = v1.getType().getALU(v1.getType(), 0).logicalNegation(v1, null);
+	assertEquals ("!4", 0, v3.asLong());		
     }
+    
+    public void testAddressOps() {
+	// Construct a buffer with a string in it.
+	ArrayByteBuffer memory
+	= new ArrayByteBuffer("0123Hello World\0>>>".getBytes());
+	Type t = new PointerType("xxx", ByteOrder.BIG_ENDIAN, 1,
+	 	 new CharType("char", ByteOrder.BIG_ENDIAN,
+			       1, true));
+	// Construct the pointer to it.
+	Location l = new ScratchLocation(new byte[] { 4 });
+	Value string = new Value (t, l);
+        
+	Value v =  t.getALU(8).logicalNegation(string, memory);
+	assertEquals("!string", 0, v.asLong());
+    }  
 }

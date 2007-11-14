@@ -28,7 +28,7 @@
 // resulting work to be covered by the GNU General Public
 // License. Only Red Hat, Inc. may make changes or additions to the
 // list of Approved Interfaces. You must obey the GNU General Public
-// License in all respects for all of the FRYSK code and other code
+// License in all respects for all o;f the FRYSK code and other code
 // used in conjunction with FRYSK except the Non-GPL Code covered by
 // this exception. If you modify this file, you may extend this
 // exception to your version of the file, but you are not obligated to
@@ -37,48 +37,28 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.hpd;
+#include <stdlib.h>
 
-import java.io.File;
+// See also funit-stack-inlined.c
 
-import frysk.Config;
-import frysk.testbed.CoreFileAtSignal;
+void third(int arg3){
+  int var3 = arg3;
+  int* a = 0;
+  a[0] = var3;
+}
 
-public class TestWhereCommand extends TestLib {
-    public void testHpdTraceStack () {
-	e = HpdTestbed.attachXXX("hpd-c");
-	// Where
-	e.send ("where\n");
-	e.expect ("where.*#0.*" + prompt);
-    }
+void second(int arg2){
+  int var2 = arg2;
+  third(var2+1);
+}
 
-    public void testFhpdVirtualStackTrace () {
+void first(int arg1){
+  int var1 = arg1;
+  second(var1+1);
+}
 
-	File coreFile = CoreFileAtSignal
-	    .constructCore("funit-inlined");
-        e = new HpdCoreFileTestbed(coreFile,
-		Config.getPkgLibFile("funit-inlined"),
-		"Attached to core file.*");
-        e.send("where\n");
-	e.expect("\\#0 .*third[^\\r\\n]*\\[inline\\]");
-	e.expect("\\#1 .*second[^\\r\\n]*\\[inline\\]");
-	e.expect("\\#2 .*first[^\\r\\n]*\\[inline\\]");
-	e.expect("\\#3 .*main");
-	e.expectPrompt(".*");
-    }
-    
-    public void testFhpdVirtualStackTraceWithScopes () {
-	
-	File coreFile = CoreFileAtSignal
-	    .constructCore("funit-inlined");
-        e = new HpdCoreFileTestbed(coreFile,
-		Config.getPkgLibFile("funit-inlined"),
-	"Attached to core file.*");
-        e.send("where -scopes\n");
-        e.expect(".*var3");
-	e.expect(".*var2");
-	e.expect(".*var1");
-	e.expectPrompt(".*");
-        e.close();
-    }
+int main(){
+  int some_int = 1;
+  first(some_int);
+  return 0;
 }

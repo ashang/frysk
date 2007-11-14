@@ -38,6 +38,7 @@
 // exception.
 
 package frysk.value;
+import inua.eio.ByteBuffer;
 
 /**
  * Arithmetic and logical operation handling
@@ -46,12 +47,14 @@ package frysk.value;
 public class FloatingPointUnit
      extends ArithmeticUnit
 {   
-    public FloatingPointUnit (FloatingPointType t1, FloatingPointType t2) {
+    public FloatingPointUnit (FloatingPointType t1, FloatingPointType t2, int wSize) {
+	super (wSize);
 	// Return type should be the larger type.
 	retType = (t1.getSize() > t2.getSize()) ?  t1 : t2;
     }
 
-    public FloatingPointUnit (FloatingPointType t1) {
+    public FloatingPointUnit (FloatingPointType t1, int wSize) {
+	super (wSize);
 	retType = t1;
     }	
     
@@ -99,5 +102,13 @@ public class FloatingPointUnit
     public Value notEqual (Value v1, Value v2) {
 	return retType.createValue
 	       (v1.doubleValue() != v2.doubleValue() ? 1:0);
-    }      
+    }   
+    
+    /**
+     * @param mem - unused here.
+     */
+    public Value logicalNegation(Value v1, ByteBuffer mem) {
+	return intType.createValue
+               (v1.doubleValue() == 0.0? 1 : 0);
+    }     
 }    

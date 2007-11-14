@@ -248,19 +248,19 @@ public abstract class CompositeType
 	return new ClassIterator();
     }
 
-    void toPrint(PrintWriter writer, Location location, ByteBuffer memory,
-		 Format format) {
-	writer.print("{");
-	boolean first = true;
+    void toPrint(int indentation, PrintWriter writer, Location location,
+		 ByteBuffer memory, Format format) {
+	String indentPrefix = "";
+	for (int indent = 1; indent <= indentation; indent++)
+	    indentPrefix = indentPrefix + " ";
+
+	writer.print("{\n");
 	for (Iterator i = members.iterator(); i.hasNext();) {
 	    DynamicMember member = (DynamicMember)i.next();
 	    if (member.type instanceof frysk.value.FunctionType)
 		continue;
 	    else {
-		if (first)
-		    first = false;
-		else
-		    writer.print(" ");
+		writer.print(indentPrefix);
 		if (member.name != null) {
 		    writer.print(member.name);
 		    writer.print("=");
@@ -268,13 +268,24 @@ public abstract class CompositeType
 		Location loc = location.slice(member.offset,
 					      member.type.getSize());
 		Value val = new Value(member.type, loc);
-		val.toPrint(writer, memory, format);
+		if (member.type instanceof CompositeType)
+		    ((CompositeType) member.type).toPrint(indentation + 2,
+							  writer, loc, memory, format);
+		else
+		    val.toPrint(writer, memory, format);
 		writer.print(",\n");
 	    }
 	}
+	for (int indent = 1; indent <= indentation - 2; indent++)
+	    writer.print(" ");
 	writer.print("}");
     }
 
+    void toPrint(PrintWriter writer, Location location, ByteBuffer memory,
+		 Format format) {
+	this.toPrint(2, writer, location, memory, format);
+    }
+  
     public void toPrint(int indentation, PrintWriter writer) {
 	// FIXME: going away.
 	if (this.isTypedef() && this.getName() != null

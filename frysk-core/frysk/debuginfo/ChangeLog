@@ -1,3 +1,19 @@
+2007-11-12  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfoStackFactory.java (printStackTrace): Handle -ve
+	numberOfFrames.
+
+	* TestFrameDebugInfo.java: Update; funit-inlined renamed to
+	funit-stack-inlined.
+
+2007-11-12  Stan Cox  <scox@redhat.com>
+
+	* gen-type-expect-tests.py (j.start_test): Turn on TestTypeEntryValue.
+	
+2007-11-11  Stan Cox  <scox@redhat.com>
+
+	* gen-type-expect-tests.py (j.add_test): Escape \n for value.
+
 2007-11-09  Stan Cox  <scox@redhat.com>
 
 	* gen-type-expect-tests.py (j.prologue): Throttle ptr tests for now.

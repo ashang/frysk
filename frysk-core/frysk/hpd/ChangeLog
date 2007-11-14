@@ -1,3 +1,49 @@
+2007-11-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Input.java (getAction): Delete.
+	* TestInput.java: Update.
+	* TestEvalCommands.java: Rename TestPrint.java.
+	* AssignCommand.java: Delete.
+	* PrintCommand.java: Rename to ...
+	* EvalCommands.java: ... this.  Implement "assign" as a class.
+	* TopLevelCommand.java: Update.
+
+2007-11-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestBreakpoints.java (testHpdBreakMultiThreadedContinue): Marked
+	test as unresolved.
+
+2007-11-12  Stan Cox  <scox@redhat.com>
+
+	* ListCommand.java (interpret): Initialize from function PC.
+	Right adjust line numbers.   
+
+2007-11-12  Andrew Cagney  <cagney@redhat.com>
+
+	* TestStackCommands.java (testFrame()): New.
+	* StackCommands.java (Up): New.
+	(Down): New.
+	(Frame): New.
+	* TopLevelCommand.java: Update.
+	* CommandOption.java (Mangitude): Copy to ...
+	* Magnitude.java: ... here.  New.
+	* ListCommand.java: Update.
+
+	* StackCommands.java: Rename FrameCommands.java.
+	* TopLevelCommand.java: Update.
+	* TestStackCommands.java: New.
+	* TestFrameCommands.java: Delete.
+	* TestWhereCommand.java: Delete.
+
+	* HpdTestbed.java (HpdTestbed(String[])): Make private.
+	(hpdTerminatingProgram(String)): New.
+	* HpdCoreFileTestbed.java: Delete.
+	* TestWhereCommand.java (testFhpdVirtualStackTrace()): Use.
+	(testFhpdVirtualStackTraceWithScopes()): Ditto.
+	
+	* TestWhereCommand.java: Update; funit-inlined renamed to
+	funit-stack-inlined.
+
 2007-11-09  Andrew Cagney  <cagney@redhat.com>
 
 	* UserHelp.java: Delete.

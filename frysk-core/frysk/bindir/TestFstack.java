@@ -44,6 +44,7 @@ import java.io.File;
 import frysk.Config;
 import frysk.expunit.Expect;
 import frysk.testbed.CoreFileAtSignal;
+import frysk.testbed.TearDownExpect;
 import frysk.testbed.TestLib;
 
 /**
@@ -54,104 +55,87 @@ import frysk.testbed.TestLib;
 public class TestFstack
     extends TestLib
 {
-    Expect e;
-    
-    public void tearDown ()
-    {
-	if (e != null)
-	    e.close ();
-	e = null;
-	super.tearDown();
+    /**
+     * Start FSTACK with both a core file and an executable; avoids
+     * problems with Linux's bone-head COREFILE format storing only
+     * the first 50 characters of the executable.
+     */
+    private Expect fstack(String program, String[] args) {
+	File coreExe = Config.getPkgLibFile(program);
+	File coreFile = CoreFileAtSignal.constructCore(coreExe);
+	String[] argv = new String[args.length + 3];
+	int argc = 0;
+	argv[argc++] = Config.getBinFile("fstack").getAbsolutePath();
+	argv[argc++] = coreFile.getAbsolutePath();
+	argv[argc++] = coreExe.getAbsolutePath();
+	for (int i = 0; i < args.length; i++) {
+	    argv[argc + i] = args[i];
+	}
+	Expect e = new Expect(argv);
+	TearDownExpect.add(e);
+	return e;
     }
 
     public void testBackTrace () {
-	
-	File coreFile = CoreFileAtSignal.constructCore("funit-stacks");
-	e = new Expect (new String[] {
-			    Config.getBinFile("fstack").getAbsolutePath (),
-			    coreFile.getAbsolutePath()
-			});
+	Expect e = fstack("funit-stack-outlined", new String[0]);
 	// Just look for main.
 	e.expect ("main");
     }
     
     public void testBackTraceWithParams () {
-	File coreFile = CoreFileAtSignal.constructCore("funit-stacks");
-        e = new Expect (new String[] {
-			    Config.getBinFile("fstack").getAbsolutePath (),
-			    coreFile.getAbsolutePath(),
-			    "--print","params"
-			});
-        e.expect ("int param1");
+	Expect e = fstack("funit-stack-outlined",
+			  new String[] { "-print", "params" });
+        e.expect("\\#0 .* third\\(int arg3.*\\)");
+        e.expect("\\#1 .* second\\(int arg2.*\\)");
+        e.expect("\\#2 .* first\\(int arg1.*\\)");
+        e.expect("\\#3 .* main\\(\\)");
     }
 
     public void testBackTraceWithScopes () {
-	File coreFile = CoreFileAtSignal.constructCore("funit-stacks");
-        e = new Expect (new String[] {
-			    Config.getBinFile("fstack").getAbsolutePath (),
-			    coreFile.getAbsolutePath(),
-			    "--print", "scopes"
-			});
-        e.expect ("int one.*int two");
+	Expect e = fstack("funit-stack-outlined",
+			  new String[] { "--print", "scopes" });
+	e.expect("\\#0 .* third\\(\\)");
+        e.expect("int var3");
+	e.expect("\\#1 .* second\\(\\)");
+        e.expect("int var2");
+	e.expect("\\#2 .* first\\(\\)");
+        e.expect("int var1");
+	e.expect("\\#3 .* main\\(\\)");
+        e.expect("int some_int");
     }
 
     public void testBackTraceWithFullpath () {
-	File coreFile = CoreFileAtSignal.constructCore("funit-stacks");
-        e = new Expect (new String[] {
-			    Config.getBinFile("fstack").getAbsolutePath (),
-			    coreFile.getAbsolutePath(),
-			    "--print", "fullpath"
-			});
+	Expect e = fstack("funit-stack-outlined",
+			  new String[] { "--print", "fullpath" });
         e.expect (Config.getRootSrcDir()
 		  + ".*"
-		  + "funit-stacks"
+		  + "funit-stack-outlined"
 		  + ".c#");
     }
 
     public void testBackTraceWithDashA () {
-	File coreFile = CoreFileAtSignal.constructCore("funit-stacks");
-        e = new Expect (new String[] {
-			    Config.getBinFile("fstack").getAbsolutePath (),
-			    coreFile.getAbsolutePath(),
-			    "-a"
-			});
-        e.expect ("fourth.*int param1.*int param2.*int param3.*"
-		  + Config.getRootSrcDir()
-		  + ".*"
-		  + "funit-stacks" + "\\.c#" 
-		  + ".*char var1.*"
-		  + "");
+	Expect e = fstack("funit-stack-outlined", new String[] { "-a" });
+	e.expect("\\#0 .* in third\\(int arg3 = 3\\)"
+		 + ".*" + Config.getRootSrcDir()
+		 + ".*" + "funit-stack-outlined" + "\\.c#" 
+		 + ".*int var3.*");
+	e.expect("\\#1");
     }
 
     public void testBackTraceWithDashC () {
-	File coreFile = CoreFileAtSignal.constructCore("funit-stacks");
-        e = new Expect (new String[] {
-			    Config.getBinFile("fstack").getAbsolutePath (),
-			    coreFile.getAbsolutePath(),
-			    "-c"
-			});
-        
-        e.expect ("fourth.*int param1.*int param2.*int param3.*"
-		  + Config.getRootSrcDir()
-		  + ".*"
-		  + "funit-stacks" + "\\.c#" 
-		  + "");
+	Expect e = fstack("funit-stack-outlined", new String[] { "-c" });
+	e.expect("\\#0 .* in third\\(int arg3 = 3\\)"
+		 + ".*" + Config.getRootSrcDir()
+		 + ".*" + "funit-stack-outlined" + "\\.c#");
+	e.expect("\\#1");
   }
 
     public void testBackTraceWithDashV () {
-
-	File coreFile = CoreFileAtSignal.constructCore("funit-inlined");
-        e = new Expect (new String[] {
-			    Config.getBinFile("fstack").getAbsolutePath (),
-			    coreFile.getAbsolutePath(),
-			    Config.getPkgLibFile("funit-inlined").getAbsolutePath(),
-			    "-v",
-			    "-a"
-			});
-        e.expect("#0 .*third[^\r\n]*\\[inline\\]"
-		 + ".*#1 .*second[^\r\n]*\\[inline\\]"
-		 + ".*#2 .*first[^\r\n]*\\[inline\\]"
-		 + ".*#3 .*main");
+	Expect e = fstack("funit-stack-inlined", new String[] { "-v", "-a" });
+        e.expect("\\#0 .*third[^\\r\\n]*\\[inline\\]");
+	e.expect("\\#1 .*second[^\\r\\n]*\\[inline\\]");
+	e.expect("\\#2 .*first[^\\r\\n]*\\[inline\\]");
+	e.expect("\\#3 .*main");
     }
 
 }
