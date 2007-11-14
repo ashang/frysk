@@ -1,5 +1,12 @@
 2007-11-14  Teresa Thomas  <tthomas@redhat.com>
 
+	* FloatingPointUnit.java: Use intType for relational
+	operations.
+	* IntegerUnit.java: Ditto.
+	* TestValue.java (testFloatOps): Update.
+	(testIntOps): Update.
+	(isTrue (double)): Delete. 
+
 	* ArithmeticUnit.java (logicalAnd(Value,Value)): Delete.	
 	* ArithmeticUnit.java (logicalOr(Value,Value)): Delete.
 	
@@ -17,7 +24,7 @@
 	(getLogicalValue): New.
 	* FloatingPointUnit.java: Update. 
 	(getLogicalValue): New.
-	* TestValue.java: Add tests for above.
+	* TestValue.java: Add tests for above. 
 
 2007-11-13  Teresa Thomas  <tthomas@redhat.com>
 	

@@ -94,14 +94,6 @@ public class TestValue
 	else
 	    return false;
     }
-
-    private boolean isTrue (double d)
-    {
-	if (d != 0)
-	    return true;
-	else
-	    return false;
-    }
   
     public void testIntOps ()
     {
@@ -121,18 +113,6 @@ public class TestValue
 	assertEquals ("9 << 4", 9 << 4, v3.asLong());
 	v3 = v1.getType().getALU(v2.getType(), 0).shiftRight(v2, v1);
 	assertEquals ("9 >> 4", 9 >> 4, v3.asLong());
-	v3 = v1.getType().getALU(v2.getType(), 0).lessThan(v2, v1);
-	assertEquals ("9 < 4", 9 < 4, isTrue(v3.asLong()));
-	v3 = v1.getType().getALU(v2.getType(), 0).greaterThan(v2, v1);
-	assertEquals ("9 > 4", 9 > 4, isTrue(v3.asLong()));
-	v3 = v1.getType().getALU(v2.getType(), 0).lessThanOrEqualTo(v2, v1);
-	assertEquals ("9 <= 4", 9 <= 4, isTrue(v3.asLong()));
-	v3 = v1.getType().getALU(v2.getType(), 0).greaterThanOrEqualTo(v2, v1);
-	assertEquals ("9 >= 4", 9 >= 4, isTrue(v3.asLong()));
-	v3 = v1.getType().getALU(v2.getType(), 0).equal(v2, v1);
-	assertEquals ("9 == 4", 9 == 4, isTrue(v3.asLong()));
-	v3 =v1.getType().getALU(v2.getType(), 0).notEqual(v2, v1);
-	assertEquals ("9 != 4", 9 != 4, isTrue(v3.asLong()));
 	v3 = v1.getType().getALU(v2.getType(), 0).bitWiseAnd(v2, v1);
 	assertEquals ("9 && 4", 9 & 4, v3.asLong());
 	v3 = v1.getType().getALU(v2.getType(), 0).bitWiseOr(v2, v1);
@@ -140,7 +120,20 @@ public class TestValue
 	v3 = v1.getType().getALU(v2.getType(), 0).bitWiseXor(v2, v1);
 	assertEquals ("9 ^ 4", 9 ^ 4, v3.asLong());
 	v3 = v1.getType().getALU(v2.getType(), 0).bitWiseComplement(v1);
-	assertEquals ("~4", ~4, v3.asLong());
+	assertEquals ("~4", ~4, v3.asLong());	
+	// wordSize required for constructing integer return type.	
+	v3 = v1.getType().getALU(v2.getType(), wordSize).lessThan(v2, v1);
+	assertEquals ("9 < 4", 9 < 4, isTrue(v3.asLong()));
+	v3 = v1.getType().getALU(v2.getType(), wordSize).greaterThan(v2, v1);
+	assertEquals ("9 > 4", 9 > 4, isTrue(v3.asLong()));
+	v3 = v1.getType().getALU(v2.getType(), wordSize).lessThanOrEqualTo(v2, v1);
+	assertEquals ("9 <= 4", 9 <= 4, isTrue(v3.asLong()));
+	v3 = v1.getType().getALU(v2.getType(), wordSize).greaterThanOrEqualTo(v2, v1);
+	assertEquals ("9 >= 4", 9 >= 4, isTrue(v3.asLong()));
+	v3 = v1.getType().getALU(v2.getType(), wordSize).equal(v2, v1);
+	assertEquals ("9 == 4", 9 == 4, isTrue(v3.asLong()));
+	v3 =v1.getType().getALU(v2.getType(), wordSize).notEqual(v2, v1);
+	assertEquals ("9 != 4", 9 != 4, isTrue(v3.asLong()));
 	v3 = v1.getType().getALU(wordSize).logicalAnd(v2, v1, null);
 	assertEquals ("9 && 4", 1, v3.asLong());
 	v3 = v1.getType().getALU(wordSize).logicalOr(v2, v1, null);
@@ -164,7 +157,7 @@ public class TestValue
 	v3 = v1.getType().getALU(v2.getType(), 0).shiftLeftEqual(v3, v1);
 	assertEquals ("v3 <<= 4", 0, v3.asLong());
 	v3 = v1.getType().getALU(v2.getType(), 0).shiftRightEqual(v3, v1);
-	assertEquals ("v3 >>= 4", 0, v3.asLong());
+	assertEquals ("v3 >>= 4", 0, v3.asLong());	
 	v3 = v1.getType().getALU(v2.getType(), 0).bitWiseOrEqual(v3, v1);
 	assertEquals ("v3 |= 4", 4, v3.asLong());
 	v3 = v1.getType().getALU(v2.getType(), 0).bitWiseXorEqual(v3, v1);
@@ -186,18 +179,6 @@ public class TestValue
 	assertEquals ("9 * 4", 9 * 4, v3.doubleValue(), 0);
 	v3 = v1.getType().getALU(v2.getType(), 0).mod(v2, v1);
 	assertEquals ("9 % 4", 9 % 4, v3.doubleValue(), 0);
-	v3 = v1.getType().getALU(v2.getType(), 0).lessThan(v2, v1);
-	assertEquals ("9 < 4", 9 < 4, isTrue(v3.doubleValue()));
-	v3 = v1.getType().getALU(v2.getType(), 0).greaterThan(v2, v1);
-	assertEquals ("9 > 4", 9 > 4, isTrue(v3.doubleValue()));
-	v3 = v1.getType().getALU(v2.getType(), 0).lessThanOrEqualTo(v2, v1);
-	assertEquals ("9 <= 4", 9 <= 4, isTrue(v3.doubleValue()));
-	v3 = v1.getType().getALU(v2.getType(), 0).greaterThanOrEqualTo(v2, v1);
-	assertEquals ("9 >= 4", 9 >= 4, isTrue(v3.doubleValue()));
-	v3 = v1.getType().getALU(v2.getType(), 0).equal(v2, v1);
-	assertEquals ("9 == 4", 9 == 4, isTrue(v3.doubleValue()));
-	v3 = v1.getType().getALU(v2.getType(), 0).notEqual(v2, v1);
-	assertEquals ("9 != 4", v2 != v1, isTrue(v3.doubleValue()));
 	v3 = v3.assign(v1);
 	assertEquals ("v3 = 4", 4, v3.doubleValue(), 0);
 	v3 = v3.getType().getALU(v1.getType(), 0).plusEqual(v3, v1);
@@ -210,7 +191,20 @@ public class TestValue
 	assertEquals ("v3 /= 4", 4, v3.doubleValue(), 0);
 	v3 = v3.getType().getALU(v1.getType(), 0).modEqual(v3, v1);
 	assertEquals ("v3 %= 4", 0, v3.doubleValue(), 0);
-	// Note: Return type of logical expression is int.
+	// Note: Return type of relational, logical expression is int.
+	// wordSize required for constructing integer return type.
+	v3 = v1.getType().getALU(v2.getType(), wordSize).lessThan(v2, v1);
+	assertEquals ("9 < 4", 9 < 4, isTrue(v3.asLong()));
+	v3 = v1.getType().getALU(v2.getType(), wordSize).greaterThan(v2, v1);
+	assertEquals ("9 > 4", 9 > 4, isTrue(v3.asLong()));
+	v3 = v1.getType().getALU(v2.getType(), wordSize).lessThanOrEqualTo(v2, v1);
+	assertEquals ("9 <= 4", 9 <= 4, isTrue(v3.asLong()));
+	v3 = v1.getType().getALU(v2.getType(), wordSize).greaterThanOrEqualTo(v2, v1);
+	assertEquals ("9 >= 4", 9 >= 4, isTrue(v3.asLong()));
+	v3 = v1.getType().getALU(v2.getType(), wordSize).equal(v2, v1);
+	assertEquals ("9 == 4", 9 == 4, isTrue(v3.asLong()));
+	v3 = v1.getType().getALU(v2.getType(), wordSize).notEqual(v2, v1);
+	assertEquals ("9 != 4", v2 != v1, isTrue(v3.asLong()));	
 	v3 = v1.getType().getALU(wordSize).logicalAnd(v2, v1, null);
 	assertEquals ("9 && 4", 1, v3.asLong());
 	v3 = v1.getType().getALU(wordSize).logicalOr(v2, v1, null);

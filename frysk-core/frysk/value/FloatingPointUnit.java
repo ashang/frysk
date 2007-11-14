@@ -81,27 +81,27 @@ public class FloatingPointUnit
     }	    
 
     public Value lessThan (Value v1, Value v2) {
-	return retType.createValue
+	return intType.createValue
 	       (v1.doubleValue() < v2.doubleValue() ? 1:0);
     }
     public Value greaterThan (Value v1, Value v2) {
-	return retType.createValue
+	return intType.createValue
 	       (v1.doubleValue() > v2.doubleValue() ? 1:0);
     }    
     public Value greaterThanOrEqualTo (Value v1, Value v2) {
-	return retType.createValue
+	return intType.createValue
 	       (v1.doubleValue() >= v2.doubleValue() ? 1:0);
     }     
     public Value lessThanOrEqualTo (Value v1, Value v2) {
-	return retType.createValue
+	return intType.createValue
 	       (v1.doubleValue() <= v2.doubleValue() ? 1:0);
     }     
     public Value equal (Value v1, Value v2) {
-	return retType.createValue
+	return intType.createValue
 	       (v1.doubleValue() == v2.doubleValue() ? 1:0);
     }     
     public Value notEqual (Value v1, Value v2) {
-	return retType.createValue
+	return intType.createValue
 	       (v1.doubleValue() != v2.doubleValue() ? 1:0);
     }
     
