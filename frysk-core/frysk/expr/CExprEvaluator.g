@@ -256,14 +256,12 @@ expr returns [Value returnVar=null]
                         .bitWiseOr(v1, v2); 
         }
     |   #(AND  v1=expr v2=expr) {
-            returnVar = v1.getType().getALU(v2.getType(), 
-                        exprSymTab.getWordSize())
-                        .logicalAnd(v1, v2); 
+            returnVar = v1.getType().getALU(exprSymTab.getWordSize())
+                        .logicalAnd(v1, v2, exprSymTab.taskMemory()); 
         }
     |   #(OR  v1=expr v2=expr) {
-            returnVar = v1.getType().getALU(v2.getType(), 
-                        exprSymTab.getWordSize())
-                        .logicalOr(v1, v2); 
+            returnVar = v1.getType().getALU(exprSymTab.getWordSize())
+                        .logicalOr(v1, v2,exprSymTab.taskMemory()); 
         }
     |   #(NOT  v1=expr) {
             // byte buffer needed for Pointer/Address types
@@ -277,7 +275,8 @@ expr returns [Value returnVar=null]
     |   #(COND_EXPR  log_expr=expr v1=expr v2=expr) {
             returnVar = ((log_expr.getType().getALU(log_expr.getType(), 
                         exprSymTab.getWordSize())
-                        .getLogicalValue(log_expr)) ? v1 : v2);
+                        .getLogicalValue(log_expr, exprSymTab.taskMemory())) 
+                        ? v1 : v2);
         }
     |   o:OCTALINT  {
     	    char c = o.getText().charAt(o.getText().length() - 1);

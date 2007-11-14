@@ -1,3 +1,19 @@
+2007-11-14  Teresa Thomas  <tthomas@redhat.com>
+	
+	* ArithmeticUnit.java (logicalAnd): Implement here, 
+	use getLogicalValue.
+	(logicalOr): Ditto.
+	(logicalNegation): Ditto.
+	(wordSize): New.
+	* AddressUnit.java: Update.
+	(getLogicalValue): New.	
+	(wordSize): Delete.
+	* IntegerUnit.java: Update. 
+	(getLogicalValue): New.
+	* FloatingPointUnit.java: Update. 
+	(getLogicalValue): New.
+	* TestValue.java: Add tests for above.
+
 2007-11-13  Teresa Thomas  <tthomas@redhat.com>
 	
 	* ArithmeticUnit.java (logicalNegation): Add task mem to

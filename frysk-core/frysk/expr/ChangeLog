@@ -1,5 +1,10 @@
+2007-11-14  Teresa Thomas  <tthomas@redhat.com>
+	
+	* CExprEvaluator.g: Give task memory to 
+	all logical operators.
+
 2007-11-13  Teresa Thomas  <tthomas@redhat.com>
-		
+
 	* CExprEvaluator.g: Update.
 	
 2007-11-09  Teresa Thomas  <tthomas@redhat.com>

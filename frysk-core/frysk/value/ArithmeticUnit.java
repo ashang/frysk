@@ -55,6 +55,8 @@ public abstract class ArithmeticUnit
     // Integer return type for relational, equality
     // and logical operations.
     protected IntegerType intType;
+
+    protected int wordSize;
     
     protected ArithmeticUnit(int wordSize) {
 	// XXX: Is endianness okay?
@@ -62,6 +64,7 @@ public abstract class ArithmeticUnit
 	// size of machine.
 	intType = new UnsignedType ("int", ByteOrder.LITTLE_ENDIAN, 
 		                    wordSize);
+	this.wordSize = wordSize;
     }
     
     // Multiplicative and Additive expressions
@@ -145,17 +148,28 @@ public abstract class ArithmeticUnit
         throw new InvalidOperatorException
                   (v1.getType(), v2.getType(), "&&");
     }
+    // Logical expressions - valid for any scalar types.
+    public Value logicalAnd (Value v1, Value v2, ByteBuffer mem) {
+	boolean op1 = v1.getType().getALU(wordSize).getLogicalValue(v1, mem);
+	boolean op2 = v2.getType().getALU(wordSize).getLogicalValue(v2, mem);
+	return intType.createValue( (op1 && op2) ? 1:0);
+    }
     public Value logicalOr (Value v1, Value v2) {
         throw new InvalidOperatorException
                   (v1.getType(), v2.getType(), "||");
     }
+    public Value logicalOr (Value v1, Value v2, ByteBuffer mem) {
+	boolean op1 = v1.getType().getALU(wordSize).getLogicalValue(v1, mem);
+	boolean op2 = v2.getType().getALU(wordSize).getLogicalValue(v2, mem);
+	return intType.createValue( op1 || op2 ? 1:0);
+    }
     public Value logicalNegation(Value v1, ByteBuffer mem) {
-        throw new InvalidOperatorException
-                  (v1.getType(), "!");
+	boolean op1 = v1.getType().getALU(wordSize).getLogicalValue(v1, mem);
+	return intType.createValue( op1 ? 0:1);
     }     
-    public boolean getLogicalValue (Value v1) {
+    public boolean getLogicalValue (Value v1, ByteBuffer mem) {
         throw new InvalidOperatorException
-                  (v1.getType(), "bool");
+                  (v1.getType(), "getLogicalValue");
     }  
     
     // Assigment expressions.
