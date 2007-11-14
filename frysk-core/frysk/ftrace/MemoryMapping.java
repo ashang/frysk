@@ -40,29 +40,84 @@
 package frysk.ftrace;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import frysk.sys.proc.MapsBuilder;
 
 class MemoryMapping
 {
-  public File path;
-  public long addressLow;
-  public long addressHigh;
-  public boolean permRead;
-  public boolean permWrite;
-  public boolean permExecute;
+    public File path;
+    public List parts; //List<Part>
 
-  public MemoryMapping(File path, long addressLow, long addressHigh,
-		       boolean permRead, boolean permWrite, boolean permExecute)
-  {
-    this.path = path;
-    this.addressLow = addressLow;
-    this.addressHigh = addressHigh;
-    this.permRead = permRead;
-    this.permWrite = permWrite;
-    this.permExecute = permExecute;
-  }
+    static class Part
+    {
+	public long addressLow;
+	public long addressHigh;
+	public long offset;
+	public boolean permRead;
+	public boolean permWrite;
+	public boolean permExecute;
+
+	public Part(long addressLow, long addressHigh, long offset,
+		    boolean permRead, boolean permWrite, boolean permExecute)
+	{
+	    this.addressLow = addressLow;
+	    this.addressHigh = addressHigh;
+	    this.offset = offset;
+	    this.permRead = permRead;
+	    this.permWrite = permWrite;
+	    this.permExecute = permExecute;
+	}
+
+	public boolean equals(Object other)
+	{
+	    if (!(other instanceof Part))
+		return false;
+	    Part p = (Part)other;
+	    return addressLow == p.addressLow
+		&& addressHigh == p.addressHigh
+		&& permRead == p.permRead
+		&& permWrite == p.permWrite
+		&& permExecute == p.permExecute;
+	}
+
+	public String toString()
+	{
+	    return "<" + addressLow + ".." + addressHigh
+		+ ": offset=" + offset + "; perm="
+		+ (permRead ? 'r' : '-')
+		+ (permWrite ? 'w' : '-')
+		+ (permExecute ? 'x' : '-')
+		+ '>';
+	}
+    }
+
+    public MemoryMapping(File path)
+    {
+	this.path = path;
+	this.parts = new ArrayList();
+    }
+
+    public void addPart(Part part)
+    {
+	this.parts.add(part);
+    }
+
+    public List lookupParts(long offset)
+    {
+	List ret = new ArrayList();
+	for (Iterator it = this.parts.iterator(); it.hasNext(); ) {
+	    Part part = (Part)it.next();
+	    if (offset >= part.offset
+		&& offset < (part.offset + part.addressHigh - part.addressLow))
+		    ret.add(part);
+	}
+	return ret;
+    }
 
   public boolean equals(Object other)
   {
@@ -70,11 +125,7 @@ class MemoryMapping
       return false;
     MemoryMapping m = (MemoryMapping)other;
     return path.equals(m.path)
-      && addressLow == m.addressLow
-      && addressHigh == m.addressHigh
-      && permRead == m.permRead
-      && permWrite == m.permWrite
-      && permExecute == m.permExecute;
+	&& parts.equals(m.parts);
   }
 
   public int hashCode()
@@ -84,31 +135,19 @@ class MemoryMapping
 
   /**
    * Return a map of address space of process with given `pid'.  The
-   * map is constructed in such a way that consecutive mappings of the
-   * same file are merged, with their flags or-ed.
+   * returned map is Map&lt;Path, MemoryMapping&gt;.
    */
-  public static Set buildForPid (int pid)
+  public static Map buildForPid (int pid)
   {
     class MyMapsBuilder
       extends MapsBuilder
     {
       private byte[] buf;
-      private Set mappedFiles = new HashSet();
-      private String lastFile = null;
-      private MemoryMapping lastMapping = null;
+      public Map mappings = new HashMap();
 
       public void buildBuffer(byte[] buf)
       {
 	this.buf = buf;
-      }
-
-      public MemoryMapping newMemoryMapping(String path, long addressLow, long addressHigh,
-					    boolean permRead, boolean permWrite, boolean permExecute)
-      {
-	MemoryMapping ret = new MemoryMapping(new File(path), addressLow, addressHigh,
-					      permRead, permWrite, permExecute);
-	mappedFiles.add(ret);
-	return ret;
       }
 
       public void buildMap(long addressLow, long addressHigh,
@@ -119,45 +158,29 @@ class MemoryMapping
 			   int inode,
 			   int pathnameOffset, int pathnameLength)
       {
-	/// Note: This assumes that buildMap is called in the same order
-	/// mappings are found in /proc/pid/maps.  This is reasonable
-	/// assumption, given that whole scheme is built around
-	/// buildBuffer and buildMap calls, with the latter giving
-	/// indices into the buffer established by the former.
+	  // Ignore empty mappings.  Probably a VDSO or something.
+	  if (pathnameLength == 0
+	      || this.buf[pathnameOffset] == '[')
+	      return;
 
-	String path = new String(this.buf, pathnameOffset, pathnameLength);
-	if (path.length() > 0 && path.charAt(0) != '[')
-	  {
-	    if (path.charAt(0) != '/')
+	  String path = new String(this.buf, pathnameOffset, pathnameLength);
+	  if (path.charAt(0) != '/')
 	      throw new AssertionError("Unexpected: first character of path in map is neither '[', nor '/'.");
 
-	    MemoryMapping info = lastMapping;
-	    if (lastFile != null && lastFile.equals(path))
-	      {
-		if (info.addressLow != addressHigh
-		    && info.addressHigh != addressLow)
-		  info = newMemoryMapping(path, addressLow, addressHigh,
-					  permRead, permWrite, permExecute);
-	      }
-	    else
-	      info = newMemoryMapping(path, addressLow, addressHigh,
-				      permRead, permWrite, permExecute);
-	    lastFile = path;
-	    lastMapping = info;
-
-	    if (addressHigh > info.addressHigh)
-	      info.addressHigh = addressHigh;
-	    if (addressLow < info.addressLow)
-	      info.addressLow = addressLow;
-	    if (permRead) info.permRead = true;
-	    if (permWrite) info.permWrite = true;
-	    if (permExecute) info.permExecute = true;
+	  File file = new File(path);
+	  MemoryMapping mapping = (MemoryMapping)mappings.get(file);
+	  if (mapping == null) {
+	      mapping = new MemoryMapping(file);
+	      mappings.put(file, mapping);
 	  }
+	  Part part = new Part(addressLow, addressHigh, offset,
+			       permRead, permWrite, permExecute);
+	  mapping.addPart(part);
       }
     }
 
-    MyMapsBuilder mappings = new MyMapsBuilder();
-    mappings.construct(pid);
-    return mappings.mappedFiles;
+    MyMapsBuilder builder = new MyMapsBuilder();
+    builder.construct(pid);
+    return builder.mappings;
   }
 }

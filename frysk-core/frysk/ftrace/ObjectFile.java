@@ -92,14 +92,6 @@ public class ObjectFile
   public ElfRel[] pltRelocs = null;
 
   /**
-   * Implement this interface to create an iterator over symbols
-   * defined in this file.
-   */
-  public interface SymbolIterator {
-    void symbol(Symbol symbol);
-  }
-
-  /**
    * Implement this interface to create an iterator over tracepoints
    * defined in this file.
    */
@@ -152,9 +144,18 @@ public class ObjectFile
       /// end up being the same symbol actually.  This seems to
       /// indicate we want a mapping of (name x verdefs) -> symbol.
 
+	long offset = 0;
+	// Offset isn't stored in ELF file, value is; but value can be
+	// prelinked, so we have to compute the offset from symbol
+	// value and the address of first loadable segment. Don't
+	// deduce offset of undefined and special symbols.
+	if (shndx != ElfSectionHeader.ELF_SHN_UNDEF
+	    && shndx < ElfSectionHeader.ELF_SHN_LORESERVE)
+		offset = value - ObjectFile.this.baseAddress;
+
       String dName = Demangler.demangle(name);
       logger.log(Level.FINEST, "Got new symbol `" + dName + "' with origin " + this.origin + ".");
-      Symbol sym = new Symbol(dName, type, value, size, shndx, versions);
+      Symbol sym = new Symbol(dName, type, value, offset, size, shndx, versions);
       sym.addedTo(ObjectFile.this);
 
       // Keep track of loaded dynamic symbols.  We will need this when
@@ -168,15 +169,18 @@ public class ObjectFile
 
       if (type == ElfSymbolType.ELF_STT_FUNC
 	  && value != 0)
-	this.addNewTracepoint(value, sym);
+	  this.addNewTracepoint(value, sym.offset, sym);
     }
 
-    public void addNewTracepoint(long address, Symbol symbol)
-    {
-      logger.log(Level.FINE, "New tracepoint for `" + symbol + "', origin " + this.origin + ".");
-      TracePoint tp = new TracePoint(address, symbol, this.origin);
-      tracePoints.add(tp);
-    }
+      public void addNewTracepoint(long address, long offset, Symbol symbol)
+      {
+	  logger.log(Level.FINE,
+		     "New tracepoint for `" + symbol + "', origin " + this.origin
+		     + ", address=0x" + Long.toHexString(address)
+		     + ", offset=0x" + Long.toHexString(offset) + ".");
+	  TracePoint tp = new TracePoint(address, offset, symbol, this.origin);
+	  tracePoints.add(tp);
+      }
 
     public synchronized ArrayList getTracePoints(TracePointOrigin origin)
       throws lib.dwfl.ElfException
@@ -253,7 +257,8 @@ public class ObjectFile
 			       + "' at 0x" + Long.toHexString(pltEntryAddr) + ".");
 		    this.origin = TracePointOrigin.PLT;
 		    this.tracePoints = tracePointsPlt;
-		    this.addNewTracepoint(pltEntryAddr, symbol);
+		    long pltEntryOffset = pltEntryAddr - ObjectFile.this.baseAddress;
+		    this.addNewTracepoint(pltEntryAddr, pltEntryOffset, symbol);
 		}
 	  }
       }
@@ -453,43 +458,6 @@ public class ObjectFile
 
     logger.log(Level.FINE, "Loading finished successfully.");
   }
-
-  /*
-  public Symbol symbolAt(final long address)
-  {
-    // XXX: Huh, this is ugly.  Eventually either invent some observer
-    // mechanism where ObjectFile can cache observed symbol addresses,
-    // or, if it turns out that address almost never changes, make it
-    // final or something.
-    final LinkedList list = new LinkedList();
-    this.eachSymbol(new SymbolIterator(){
-	public void symbol(Symbol symbol) {
-	  if (symbol.entryAddress == address)
-	    list.add(symbol);
-	}
-      });
-
-    if (list.isEmpty())
-      return null;
-    if (list.size() > 1)
-      System.err.println("Strange: symbolAt(0x" + Long.toHexString(address) + ") has more than one symbol...");
-    return (Symbol)list.getFirst();
-  }
-  */
-
-  /* XXX
-  public void eachSymbol(SymbolIterator client)
-  {
-    int mapsize = symbolMap.size();
-    Iterator it = symbolMap.entrySet().iterator();
-    for (int i = 0; i < mapsize; i++)
-      {
-	Map.Entry entry = (Map.Entry)it.next();
-	Symbol sym = (Symbol)entry.getValue();
-	client.symbol(sym);
-      }
-  }
-  */
 
   public void eachTracePoint(TracePointIterator client, TracePointOrigin origin)
     throws lib.dwfl.ElfException

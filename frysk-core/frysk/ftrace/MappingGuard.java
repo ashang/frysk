@@ -41,9 +41,10 @@ package frysk.ftrace;
 
 import java.util.Iterator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.*;
+import java.io.File;
 
 import frysk.proc.Action;
 import frysk.proc.Task;
@@ -203,7 +204,7 @@ class MappingGuard
     {
 	logger.log(Level.FINE, "Entering....");
 
-	java.io.File f = new java.io.File(task.getProc().getExe());
+	File f = new File(task.getProc().getExe());
 	ObjectFile objf = ObjectFile.buildFromFile(f);
 	String interp = objf.getInterp();
 	if (interp == null) {
@@ -212,13 +213,13 @@ class MappingGuard
 	    return null;
 	}
 
-	java.io.File interppath = new java.io.File(interp);
+	File interppath = new File(interp);
 	try {
 	    interppath = interppath.getCanonicalFile();
 	}
 	catch (java.io.IOException e) {
 	    logger.log(Level.WARNING,
-		       "Couldn't get canonical path of ELF interpreter `{1}'.",
+		       "Couldn't get canonical path of ELF interpreter `{0}'.",
 		       interppath);
 	    return null;
 	}
@@ -230,7 +231,16 @@ class MappingGuard
 					  TracePointOrigin.DYNAMIC);
 	    if (tp == null) {
 		logger.log(Level.FINE,
-			   "Symbol _dl_debug_state not found in `{1}'.",
+			   "Symbol _dl_debug_state not found in `{0}'.",
+			   interppath);
+		return null;
+	    }
+
+	    // Make sure we know the offset of the symbol data.
+	    // Necessary for lookup between mappings.
+	    if (tp.symbol.offset == 0) {
+		logger.log(Level.FINE,
+			   "Symbol _dl_debug_state has offset 0.",
 			   interppath);
 		return null;
 	    }
@@ -238,25 +248,26 @@ class MappingGuard
 	catch (lib.dwfl.ElfException e) {
 	    e.printStackTrace();
 	    logger.log(Level.WARNING,
-		       "Problem reading DYNAMIC entry points from `{1}'",
+		       "Problem reading DYNAMIC entry points from `{0}'",
 		       interppath);
 	    return null;
 	}
 
 	// Load initial set of mapped files.
-	Set currentMappings = MemoryMapping.buildForPid(task.getTid());
-	long relocation = -1;
-	for (Iterator it = currentMappings.iterator(); it.hasNext(); ) {
-	    MemoryMapping mm = (MemoryMapping)it.next();
-	    if (mm.path.equals(interppath)) {
-		relocation = mm.addressLow - interpf.getBaseAddress();
-		break;
-	    }
-	}
-	if (relocation == -1) {
-	    logger.log(Level.FINE, "Couldn't obtain relocation of interpreter.");
+	Map currentMappings = MemoryMapping.buildForPid(task.getTid());
+	MemoryMapping mm = (MemoryMapping)currentMappings.get(interppath);
+	if (mm == null) {
+	    logger.log(Level.FINE, "Couldn't obtain mappings of interpreter.");
 	    return null;
 	}
+
+	List parts = mm.lookupParts(tp.symbol.offset);
+	if (parts.size() != 1) {
+	    logger.log(Level.FINE, "Ambiguous mapping of interpreter, or the mapping couldn't be determined.");
+	    return null;
+	}
+	MemoryMapping.Part p = (MemoryMapping.Part)parts.get(0);
+	long relocation = p.addressLow - interpf.getBaseAddress();
 
 	// There we go!
 	long fin = tp.address + relocation;

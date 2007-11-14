@@ -325,47 +325,9 @@ public class Ltrace
         Map&lt;task, Map&lt;address, List&lt;TracePoint&gt;&gt;&gt; */
     private HashMap retBreakpointsForTask = new HashMap();
 
-    // ---------------------
-    // --- ltrace driver ---
-    // ---------------------
-
-    private class DriverImpl
-      implements Ltrace.Driver
-    {
-      final long relocation;
-
-      public DriverImpl(long relocation)
-      {
-	this.relocation = relocation;
-      }
-
-      public void tracePoint(Task task, TracePoint tp)
-      {
-	long addr = tp.address + this.relocation;
-	Long laddr = new Long(addr);
-	logger.log(Level.CONFIG, "Will trace `" + tp.symbol.name
-		   + "' at 0x" + Long.toHexString(addr), this);
-
-	// FIXME: probably handle aliases at a lower
-	// lever.  Each tracepoint should point to a list
-	// of symbols that alias it, and should be present
-	// only once in an ObjectFile.
-	synchronized (LtraceTaskObserver.this) {
-	    HashMap breakpoints = (HashMap)breakpointsForTask.get(task);
-	    if (breakpoints.containsKey(laddr)) {
-		// We got an alias.  Put the symbol with the
-		// shorter name into the map.
-		TracePoint original = (TracePoint)breakpoints.get(laddr);
-		if (tp.symbol.name.length() < original.symbol.name.length())
-		  breakpoints.put(laddr, tp);
-	    }
-	    else {
-		task.requestAddCodeObserver(ltraceTaskObserver, laddr.longValue());
-		breakpoints.put(laddr, tp);
-	    }
-	}
-      }
-    }
+	/** Remembers working set preferences for each task.
+	    Map&lt;Task, Map&lt;File, TracePointWorkingSet&gt;&gt; */
+	private HashMap driversForTask = new HashMap();
 
     // ------------------------
     // --- syscall observer ---
@@ -622,7 +584,7 @@ public class Ltrace
 		 "new task attached at 0x" + Long.toHexString(pc)
 		 + ", pid=" + task.getTaskId().intValue());
 
-      this.mapsForTask.put(task, java.util.Collections.EMPTY_SET);
+      this.mapsForTask.put(task, java.util.Collections.EMPTY_MAP);
       this.breakpointsForTask.put(task, new HashMap());
       this.retBreakpointsForTask.put(task, new HashMap());
 
@@ -692,85 +654,250 @@ public class Ltrace
 
 
 
-    // ----------------------------
-    // --- mmap/munmap handling ---
-    // ----------------------------
+      // ----------------------------
+      // --- mmap/munmap handling ---
+      // ----------------------------
 
-    /** Implementation of MappingObserver interface... */
-    public Action updateMapping(Task task) {
-	checkMapUnmapUpdates(task, false);
-	task.requestUnblock(this);
-	return Action.BLOCK;
-    }
+      private class TracePointWorkingSet
+	  implements Ltrace.Driver
+      {
+	  private Set tracePoints = new HashSet();
 
-    private void checkMapUnmapUpdates(Task task, boolean terminating)
-    {
-      Set mappedFiles = (Set)this.mapsForTask.get(task);
-      Set newMappedFiles = terminating ?
-	java.util.Collections.EMPTY_SET : MemoryMapping.buildForPid(task.getTid());
+	  public void tracePoint(Task task, TracePoint tp)
+	  {
+	      logger.log(Level.CONFIG, "Request for tracing `{0}'", tp.symbol.name);
+	      tracePoints.add(tp);
+	  }
 
-      // Assume that files get EITHER mapped, OR unmapped.  Because
-      // under normal conditions, each map/unmap will get spotted,
-      // this is a reasonable assumption.
-      if (newMappedFiles.size() > mappedFiles.size()) {
-	  Set diff = new HashSet(newMappedFiles);
-	  diff.removeAll(mappedFiles);
-	  for (Iterator it = diff.iterator(); it.hasNext(); ) {
-	      MemoryMapping info = (MemoryMapping)it.next();
-	      this.updateMappedFile(task, info);
+	  public void populateBreakpoints(Task task, MemoryMapping.Part part)
+	  {
+	      for (Iterator it = tracePoints.iterator(); it.hasNext(); ) {
+		  TracePoint tp = (TracePoint)it.next();
+		  if (tp.offset >= part.offset
+		      && tp.offset < part.offset + part.addressHigh - part.addressLow) {
+		      logger.log(Level.FINER,
+				 "Will trace `" + tp.symbol.name + "', "
+				 + "address=0x" + Long.toHexString(tp.address) + "; "
+				 + "offset=0x" + Long.toHexString(tp.offset) + "; "
+				 + "part at=0x" + Long.toHexString(part.addressLow)
+				 + ".." + Long.toHexString(part.addressHigh) + "; "
+				 + "part off=0x" + Long.toHexString(part.offset) + ";");
+
+		      long actualAddress = tp.offset - part.offset + part.addressLow;
+		      Long laddr = new Long(actualAddress);
+		      logger.log(Level.CONFIG,
+				 "Will trace `" + tp.symbol.name
+				 + "' at 0x" + Long.toHexString(actualAddress));
+
+		      // FIXME: probably handle aliases at a lower
+		      // lever.  Each tracepoint should point to a list
+		      // of symbols that alias it, and should be present
+		      // only once in an ObjectFile.
+		      synchronized (LtraceTaskObserver.this) {
+			  HashMap breakpoints = (HashMap)breakpointsForTask.get(task);
+			  if (breakpoints.containsKey(laddr)) {
+			      // We got an alias.  Put the symbol with the
+			      // shorter name into the map.
+			      TracePoint original = (TracePoint)breakpoints.get(laddr);
+			      if (tp.symbol.name.length() < original.symbol.name.length())
+				  breakpoints.put(laddr, tp);
+			  }
+			  else {
+			      task.requestAddCodeObserver(ltraceTaskObserver, laddr.longValue());
+			      breakpoints.put(laddr, tp);
+			  }
+		      }
+		  }
+	      }
+	  }
+
+	  public void evacuateBreakpoints(Task task, MemoryMapping.Part part)
+	  {
+	      for (Iterator it = tracePoints.iterator(); it.hasNext(); ) {
+		  TracePoint tp = (TracePoint)it.next();
+		  if (tp.offset >= part.offset
+		      && tp.offset < part.offset + part.addressHigh - part.addressLow) {
+
+		      long actualAddress = tp.offset - part.offset + part.addressLow;
+		      Long laddr = new Long(actualAddress);
+		      logger.log(Level.CONFIG,
+				 "Stopping tracing of `" + tp.symbol.name
+				 + "' at 0x" + Long.toHexString(actualAddress));
+
+		      // FIXME: Handle aliases.
+		      synchronized (LtraceTaskObserver.this) {
+			  HashMap breakpoints = (HashMap)breakpointsForTask.get(task);
+			  TracePoint original = (TracePoint)breakpoints.remove(laddr);
+			  if (original == null)
+			      throw new AssertionError("Couldn't find breakpoint to remove!");
+			  task.requestDeleteCodeObserver(ltraceTaskObserver, laddr.longValue());
+		      }
+		  }
+	      }
 	  }
       }
-      else if (newMappedFiles.size() < mappedFiles.size()) {
-	  // We can avoid artificial `diff' set here, to gain a
-	  // little performance.
-	  mappedFiles.removeAll(newMappedFiles);
-	  for (Iterator it = mappedFiles.iterator(); it.hasNext(); ) {
-	      MemoryMapping info = (MemoryMapping)it.next();
-	      this.updateUnmappedFile(task, info);
+
+      /** Implementation of MappingObserver interface... */
+      public Action updateMapping(Task task) {
+	  checkMapUnmapUpdates(task, false);
+	  task.requestUnblock(this);
+	  return Action.BLOCK;
+      }
+
+      private void checkMapUnmapUpdates(Task task, boolean terminating)
+      {
+	  Map oldMappings = (Map)this.mapsForTask.get(task);
+	  final Map newMappings;
+	  if (terminating)
+	      newMappings = java.util.Collections.EMPTY_MAP;
+	  else
+	      newMappings = MemoryMapping.buildForPid(task.getTid());
+
+	  // Resolve full mmaps, and partial mmaps and unmaps.
+	  for (Iterator it = newMappings.entrySet().iterator(); it.hasNext(); ) {
+	      Map.Entry entry = (Map.Entry)it.next();
+	      Object oKey = entry.getKey(); // actually File
+	      MemoryMapping newMapping = (MemoryMapping)entry.getValue();
+	      if (!oldMappings.containsKey(oKey)) {
+		  this.updateMappedFile(task, newMapping);
+	      }
+	      else {
+		  // Remove the key from old set, so that at the end, only
+		  // unmapped values are left.
+		  MemoryMapping oldMapping = (MemoryMapping)oldMappings.remove(oKey);
+		  int oldSize = oldMapping.parts.size();
+		  int newSize = newMapping.parts.size();
+		  if (oldSize < newSize) {
+		      // newMapping.parts[oldSize:] is VERY likely the new stuff
+		      for (int i = oldMapping.parts.size(); i < newMapping.parts.size(); ++i) {
+			  MemoryMapping.Part part = (MemoryMapping.Part)newMapping.parts.get(i);
+			  this.updateMappedPart(task, newMapping, part);
+		      }
+		  }
+		  else if (oldSize > newSize) {
+		      // Find first non-matching Part.
+		      int i = 0;
+		      int j = 0;
+		      while (i < oldSize && j < newSize
+			     && oldMapping.parts.get(i).equals(newMapping.parts.get(j))) {
+			  ++i;
+			  ++j;
+		      }
+
+		      // If `j' is at the end, the remaining old parts
+		      // are unmapped.  Otherwise only the portion
+		      // until the first matching part is unmapped.
+		      while (i < oldSize
+			     && (j >= newSize
+				 || !oldMapping.parts.get(i).equals(newMapping.parts.get(j)))) {
+			  MemoryMapping.Part part = (MemoryMapping.Part)oldMapping.parts.get(i);
+			  this.updateUnmappedPart(task, oldMapping, part);
+			  ++i;
+		      }
+		  }
+	      }
+	  }
+
+	  // Resolve full unmaps.
+	  for (Iterator it = oldMappings.entrySet().iterator(); it.hasNext(); ) {
+	      Map.Entry entry = (Map.Entry)it.next();
+	      MemoryMapping removedMapping = (MemoryMapping)entry.getValue();
+	      this.updateUnmappedFile(task, removedMapping);
+	  }
+
+	  this.mapsForTask.put(task, newMappings);
+      }
+
+      private void updateMappedPart(Task task, MemoryMapping mapping,
+				    MemoryMapping.Part part,
+				    TracePointWorkingSet driver)
+      {
+	  driver.populateBreakpoints(task, part);
+      }
+
+      private void updateUnmappedPart(Task task, MemoryMapping mapping,
+				    MemoryMapping.Part part,
+				    TracePointWorkingSet driver)
+      {
+	  driver.evacuateBreakpoints(task, part);
+      }
+
+      private void updateMappedPart(Task task, MemoryMapping mapping, MemoryMapping.Part part)
+      {
+	  // At this point we already know client preferences
+	  // regarding which tracepoints should be in working set.
+	  // Just apply this knowledge on new mapped part: all working
+	  // set elements that fall into this part should be observed.
+
+	  // This has to be non-null, we already called
+	  // updateMappedFile when the file was mapped:
+	  Map drivers = (Map)driversForTask.get(task);
+	  TracePointWorkingSet driver = (TracePointWorkingSet)drivers.get(mapping.path);
+	  updateMappedPart(task, mapping, part, driver);
+      }
+
+      private void updateUnmappedPart(Task task, MemoryMapping mapping, MemoryMapping.Part part)
+      {
+	  // This has to be non-null.
+	  Map drivers = (Map)driversForTask.get(task);
+	  TracePointWorkingSet driver = (TracePointWorkingSet)drivers.get(mapping.path);
+	  updateUnmappedPart(task, mapping, part, driver);
+      }
+
+      private void updateMappedFile(Task task, MemoryMapping mapping)
+      {
+	  // New file has been mapped.  Notify all observers (TODO: this
+	  // should go away once ltrace becomes true observer), and let
+	  // client define working set of this file.  Then implement the
+	  // working set via updateMappedPart of each part in mapping.
+	  synchronized(observers) {
+	      for (Iterator it = observers.iterator(); it.hasNext(); ) {
+		  LtraceObserver o = (LtraceObserver)it.next();
+		  o.fileMapped(task, mapping.path);
+	      }
+	  }
+
+	  ObjectFile objf = ObjectFile.buildFromFile(mapping.path);
+	  if (objf == null)
+	      return;
+
+	  TracePointWorkingSet driver = new TracePointWorkingSet();
+	  Map drivers = (Map)driversForTask.get(task);
+	  if (drivers == null) {
+	      drivers = new HashMap();
+	      driversForTask.put(task, drivers);
+	  }
+	  drivers.put(mapping.path, driver);
+	  ltraceController.fileMapped(task, objf, driver);
+
+	  for (Iterator it = mapping.parts.iterator(); it.hasNext(); ) {
+	      MemoryMapping.Part part = (MemoryMapping.Part)it.next();
+	      if (part.permExecute)
+		  updateMappedPart(task, mapping, part, driver);
 	  }
       }
 
-      this.mapsForTask.put(task, newMappedFiles);
-    }
+      private void updateUnmappedFile (Task task, MemoryMapping mapping)
+      {
+	  // TODO: this should go away once ltrace becomes true
+	  // observer.
+	  synchronized(observers) {
+	      for (Iterator it = observers.iterator(); it.hasNext(); ) {
+		  LtraceObserver o = (LtraceObserver)it.next();
+		  o.fileUnmapped(task, mapping.path);
+	      }
+	  }
 
-    private void updateMappedFile(final Task task, MemoryMapping mapping)
-    {
-      synchronized(observers)
-	{
-	  for (Iterator it = observers.iterator(); it.hasNext(); )
-	    {
-	      LtraceObserver o = (LtraceObserver)it.next();
-	      o.fileMapped(task, mapping.path);
-	    }
-	}
+	  // This has to be non-null.
+	  Map drivers = (Map)driversForTask.get(task);
+	  TracePointWorkingSet driver = (TracePointWorkingSet)drivers.get(mapping.path);
 
-      // Try to load the mappped file as ELF.  Assume all
-      // executable-mmapped ELF files are libraries.
-      if (!mapping.permExecute)
-	return;
-      ObjectFile objf = ObjectFile.buildFromFile(mapping.path);
-      if (objf == null)
-	return;
-
-      // It's actually cheaper to create one driver per task and file
-      // loaded, than to look up relocation for each TracePoint
-      // processed by the driver.
-      long relocation = mapping.addressLow - objf.getBaseAddress();
-      DriverImpl driver = new DriverImpl(relocation);
-      ltraceController.fileMapped(task, objf, driver);
-    }
-
-    private void updateUnmappedFile (Task task, MemoryMapping mapping)
-    {
-      synchronized(observers)
-	{
-	  for (Iterator it = observers.iterator(); it.hasNext(); )
-	    {
-	      LtraceObserver o = (LtraceObserver)it.next();
-	      o.fileUnmapped(task, mapping.path);
-	    }
-	}
-    }
+	  for (Iterator it = mapping.parts.iterator(); it.hasNext(); ) {
+	      MemoryMapping.Part part = (MemoryMapping.Part)it.next();
+	      if (part.permExecute)
+		  updateUnmappedPart(task, mapping, part, driver);
+	  }
+      }
 
 
 
