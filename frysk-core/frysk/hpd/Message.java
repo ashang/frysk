@@ -49,17 +49,39 @@ class Message
 	public static int TYPE_NORMAL = 3;
 	public static int TYPE_VERBOSE = 4;
 
-	String msg = null;
-	int type = 0;
+	private final String msg;
+	private final int type;
+        private final Throwable exc;
 
-	public Message (String msg, int type)
+        /**
+	 * Creates a new Message with the given message and type
+	 * and no exception.
+	 */
+        public Message (String msg, int type)
+        {
+	    this(msg, type, null);
+	}  
+        /**
+	 * Creates a new Message with the given message and type.
+	 * The message cannot be null or empty. The exception is optional
+	 * and may be null.
+	 */
+        public Message (String msg, int type, Throwable exc)
 	{
+	        if (msg == null)
+		    throw new NullPointerException("null msg");
+
+	        if (msg.equals(""))
+		    throw new IllegalArgumentException("empty msg");
+
 		this.msg = msg;
 
 		if (type < TYPE_DBG_ERROR || type > TYPE_VERBOSE)
 			throw new IllegalArgumentException("Debugger message created with illegal type.");
 		else
 			this.type = type;
+
+		this.exc = exc;
 	}
 
 	public String getMessage()
@@ -71,4 +93,9 @@ class Message
 	{
 		return type;
 	}
+
+        public Throwable getException()
+        {
+	        return exc;
+        }
 }

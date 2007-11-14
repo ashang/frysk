@@ -1,3 +1,18 @@
+2007-11-14  Mark Wielaard  <mwielaard@redhat.com>
+
+	* CLI.java (addMessage): New variant that takes a possible
+	exception cause.
+	(doAttach): Use new addMessage().
+	(execCommand): Likewise.
+	(flushMessages): Add possible exception cause if present.
+	Actually flush outWriter.
+	* EvalCommands.java (eval): Add possible RuntimeException cause.
+	* Message.java (Message): Add constructor that takes a possible
+	exception cause.
+	(getException): New method.
+	* PlocationCommand.java (interpret): Add possible RuntimeException
+	cause.
+
 2007-11-13  Stan Cox  <scox@redhat.com>
 
 	* ListCommand.java (interpret): Check that symbol is a subprogram.
