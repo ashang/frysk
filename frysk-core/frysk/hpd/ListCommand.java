@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.Iterator;
 import lib.dwfl.DwarfDie;
+import lib.dwfl.DwTag; 
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfo;
 import frysk.proc.Task;
@@ -80,6 +81,7 @@ class ListCommand extends ParameterizedCommand {
     private File file = null;
     private int line;
     private int exec_line = 0;
+
     void interpret(CLI cli, Input cmd, Object o) {
 	Options options = (Options)o;
         PTSet ptset = cli.getCommandPTSet(cmd);
@@ -113,18 +115,24 @@ class ListCommand extends ParameterizedCommand {
 			    funcDie = debugInfo
 				.getSymbolDie(cmd.parameter(0));
                         }
-                        line = (int)funcDie.getDeclLine();
+			if (funcDie.getTag().hashCode() == DwTag.SUBPROGRAM_) {
+			    line = (int)funcDie.getDeclLine();
+			    file = new File(funcDie.getDeclFile());
+			}
+			else {
+			    cli.addMessage("function " + cmd.parameter(0) + " not found.",
+					   Message.TYPE_ERROR);
+			    return;
+			}
                     }
                 }
             }
 	    else if (options.length != null) {
 		windowSize = options.length.magnitude;
-		if (options.length.sign < 0)
-		    line -= windowSize;
-		else if (options.length.sign > 0)
+		if (options.length.sign < 0) {
+		    windowSize *= -1;
 		    line += windowSize;
-		else
-		    line -= windowSize / 2;
+		}
 	    }
             else if (frame.getLines()[0].getLine() != exec_line) {
                 // list around pc.
@@ -192,7 +200,7 @@ class ListCommand extends ParameterizedCommand {
                 cli.addMessage("file " + file + " not found.",
                                Message.TYPE_ERROR);
             }
-        }
+	}
 
     }
 
