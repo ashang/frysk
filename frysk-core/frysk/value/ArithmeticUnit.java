@@ -143,20 +143,11 @@ public abstract class ArithmeticUnit
                   (v1.getType(), "~");
     }
     
-    // Logical expressions - valid for scalar types.
-    public Value logicalAnd (Value v1, Value v2) {
-        throw new InvalidOperatorException
-                  (v1.getType(), v2.getType(), "&&");
-    }
     // Logical expressions - valid for any scalar types.
     public Value logicalAnd (Value v1, Value v2, ByteBuffer mem) {
 	boolean op1 = v1.getType().getALU(wordSize).getLogicalValue(v1, mem);
 	boolean op2 = v2.getType().getALU(wordSize).getLogicalValue(v2, mem);
 	return intType.createValue( (op1 && op2) ? 1:0);
-    }
-    public Value logicalOr (Value v1, Value v2) {
-        throw new InvalidOperatorException
-                  (v1.getType(), v2.getType(), "||");
     }
     public Value logicalOr (Value v1, Value v2, ByteBuffer mem) {
 	boolean op1 = v1.getType().getALU(wordSize).getLogicalValue(v1, mem);

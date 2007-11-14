@@ -1,4 +1,7 @@
 2007-11-14  Teresa Thomas  <tthomas@redhat.com>
+
+	* ArithmeticUnit.java (logicalAnd(Value,Value)): Delete.	
+	* ArithmeticUnit.java (logicalOr(Value,Value)): Delete.
 	
 	* Type.java (getALU): Remove stray println.
 	
