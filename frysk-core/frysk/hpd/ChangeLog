@@ -1,3 +1,13 @@
+2007-11-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Input.java (getAction): Delete.
+	* TestInput.java: Update.
+	* TestEvalCommands.java: Rename TestPrint.java.
+	* AssignCommand.java: Delete.
+	* PrintCommand.java: Rename to ...
+	* EvalCommands.java: ... this.  Implement "assign" as a class.
+	* TopLevelCommand.java: Update.
+
 2007-11-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestBreakpoints.java (testHpdBreakMultiThreadedContinue): Marked

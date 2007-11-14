@@ -75,7 +75,8 @@ public class TopLevelCommand extends MultiLevelCommand {
 	      "a top level command");
         add(new AliasCommands.Alias());
         add(new AliasCommands.Unalias());
-        add(new AssignCommand());
+        add(new EvalCommands.Assign());
+        add(new EvalCommands.Print());
         add(new AttachCommand());
         add(new BreakpointCommand());
         add(new DebuginfoCommand());
@@ -97,7 +98,6 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(new ListCommand());
         add(new StepNextCommand());
         add(new StepNextiCommand());
-        add(new PrintCommand());
         add(new PlocationCommand());
         add(new PtypeCommand());
         add(new QuitCommand("quit"));

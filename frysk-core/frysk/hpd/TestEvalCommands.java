@@ -55,9 +55,7 @@ import java.io.File;
  * tests.
  */
 
-public class TestPrint
-    extends TestLib
-{
+public class TestEvalCommands extends TestLib {
     public void testUnattached() {
 	e = new HpdTestbed();
 	// Add with no process; shouldn't crash.

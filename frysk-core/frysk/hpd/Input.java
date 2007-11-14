@@ -43,8 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Command class separates and contains different parts of a command:
- * set, action, parameters.  It is immutable.
+ * Command input broken down into a series of parameters.
  */
 class Input {
 
@@ -68,13 +67,11 @@ class Input {
 
     private final String fullCommand;
     private final String set;
-    private final String action;
     private final List tokens;
 
-    private Input(String fullCommand, String set, String action, List tokens) {
+    private Input(String fullCommand, String set, List tokens) {
 	this.fullCommand = fullCommand;
 	this.set = set;
-	this.action = action;
 	this.tokens = tokens;
     }
 
@@ -89,7 +86,6 @@ class Input {
     public Input(String cmd) {
 	fullCommand = cmd;
 	tokens = tokenize(fullCommand);
-	action = null;
 	if (size() <= 0) {
 	    set = null;
 	} else {
@@ -107,10 +103,6 @@ class Input {
     
     public String getSet() {
 	return set;
-    }
-
-    public String getAction() {
-	return action;
     }
 
     /**
@@ -183,17 +175,16 @@ class Input {
     }
 
     /**
-     * Accept the current action; advance to the next one.
+     * Accept the current parameter; advance to the next one.
      */
     Input accept() {
 	List newTokens;
-	String newAction = token(0).value;
 	if (size() > 0) {
 	    newTokens = tokens.subList(1, tokens.size());
 	} else {
 	    newTokens = tokens;
 	}
-	return new Input(fullCommand, set, newAction, newTokens);
+	return new Input(fullCommand, set, newTokens);
     }
 
     /**

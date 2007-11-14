@@ -85,22 +85,18 @@ public class TestInput extends TestLib {
     public void testAccept() {
 	Input input = new Input("action p0 p1");
 	assertEquals("stringValue", "action p0 p1", input.stringValue());
-	assertNull("getAction", input.getAction());
 	check(input, new String[] { "action", "p0", "p1" });
 	//
 	input = input.accept();
 	assertEquals("stringValue at action", "p0 p1", input.stringValue());
-	assertEquals("getAction at action", "action", input.getAction());
 	check(input, new String[] { "p0", "p1" });
 	//
 	input = input.accept();
 	assertEquals("stringValue at p0", "p1", input.stringValue());
-	assertEquals("getAction at p0", "p0", input.getAction());
 	check(input, new String[] { "p1" });
 	//
 	input = input.accept();
 	assertEquals("stringValue at p1", "", input.stringValue());
-	assertEquals("getAction at p1", "p1", input.getAction());
 	check(input, new String[0]);
     }
 
