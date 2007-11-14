@@ -57,39 +57,6 @@ class CompletionFactory {
 	}
     }
 
-    static int completeFocusedExpression(CLI cli, Input input, int cursor,
-					 List candidates) {
-        PTSet ptset = cli.getCommandPTSet(input);
-	String incomplete = input.stringValue();
-	int start = input.token(0).start;
-	Iterator i = ptset.getTasks();
-	if (!i.hasNext()) {
-	    // Should still be able to complete $variables.
-	    return -1;
-	} else {
-	    int newCursor = -1;
-	    do {
-		Task task = (Task)i.next();
-		DebugInfoFrame frame = cli.getTaskFrame(task);
-		DebugInfo debugInfo = cli.getTaskDebugInfo(task);
-		int tmp = debugInfo.complete(frame, incomplete,
-					     cursor - start, candidates);
-		if (tmp >= 0)
-		    newCursor = tmp;
-	    } while (i.hasNext());
-	    // If only one candidate, pad out with a space.
-	    padSingleCandidate(candidates);
-	    // System.out.println("start=" + start);
-	    // System.out.println("cursor=" + cursor);
-	    // System.out.println("candidates=" + candidates);
-	    // System.out.println("newCursor=" + newCursor);
-	    if (newCursor >= 0)
-		return newCursor + start;
-	    else
-		return -1;
-	}
-    }
-
     static int completeExpression(CLI cli, Input input, int cursor,
 				  List candidates) {
 	PTSet ptset = cli.getCommandPTSet(input);
@@ -98,25 +65,32 @@ class CompletionFactory {
 	    // Should still be able to complete $variables.
 	    return -1;
 	} else {
-	    int newCursor = -1;
+	    int newOffset = -1;
 	    String incomplete = input.stringValue();
-	    int base = input.base(cursor);
+	    int start;
+	    if (input.size() == 0)
+		start = cursor;
+	    else
+		start = input.token(0).start;
 	    do {
 		Task task = (Task)i.next();
 		DebugInfoFrame frame = cli.getTaskFrame(task);
 		DebugInfo debugInfo = cli.getTaskDebugInfo(task);
 		int tmp = debugInfo.complete(frame, incomplete,
-					     base, candidates);
+					     cursor - start, candidates);
 		if (tmp >= 0)
-		    newCursor = tmp;
+		    newOffset = tmp;
 	    } while (i.hasNext());
 	    // If only one candidate, pad out with a space.
 	    padSingleCandidate(candidates);
 	    // System.out.println("start=" + start);
-	    // System.out.println("base=" + base);
+	    // System.out.println("offset=" + offset);
 	    // System.out.println("candidates=" + candidates);
 	    // System.out.println("newCursor=" + newCursor);
-	    return input.cursor(newCursor, cursor);
+	    if (newOffset < 0)
+		return -1;
+	    else
+		return newOffset + start;
 	}
     }
 
@@ -126,39 +100,18 @@ class CompletionFactory {
 	// System.out.println("cursor=" + cursor);
 	// System.out.println("input.size()=" + input.size());
 	if (input.size() == 0) {
-	    int newBase
+	    int newOffset
 		= new FileNameCompletor().complete("", 0, candidates);
-	    if (newBase < 0)
+	    if (newOffset < 0)
 		return -1;
 	    else
-		return newBase + cursor;
+		return newOffset + cursor;
 	} else {
-	    // Need to find the parameter that contains the cursor and
-	    // have that completed.
-	    Input.Token token = null;
-	    for (int i = 0; i < input.size(); i++) {
-		Input.Token t = input.token(i);
-		// System.out.println("token " + i + "=" + t);
-		if (cursor >= t.start && cursor <= t.end) {
-		    token = t;
-		    break;
-		}
-	    }
-	    if (token == null)
-		return -1;
-	    Input.Token token0 = input.token(0);
-	    String incomplete
-		= input.stringValue().substring(token.start - token0.start,
-						token.end - token0.start);
-	    // System.out.println("incomplete=" + incomplete);
-	    int newBase
-		= new FileNameCompletor().complete(incomplete,
-						   cursor - token.start,
-						   candidates);
-	    if (newBase < 0)
-		return -1;
-	    else
-		return newBase + token.start;
+	    Input.Token incomplete = input.incompleteToken(cursor);
+	    int newOffset = new FileNameCompletor()
+		.complete(incomplete.value, incomplete.end - incomplete.start,
+			  candidates);
+	    return incomplete.absolute(newOffset);
 	}
     }
 }

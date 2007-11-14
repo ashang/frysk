@@ -204,7 +204,7 @@ class ListCommand extends ParameterizedCommand {
 
     }
 
-    int complete(CLI cli, Input input, int cursor, List candidates) {
+    int completer(CLI cli, Input input, int cursor, List candidates) {
 	return -1;
     }
 }

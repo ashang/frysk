@@ -93,7 +93,7 @@ public class StepFinishCommand extends ParameterizedCommand {
 		    Message.TYPE_ERROR);
     }
 
-    int complete(CLI cli, Input input, int cursor, List completions) {
+    int completer(CLI cli, Input input, int cursor, List completions) {
 	return -1;
     }
 }

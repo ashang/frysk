@@ -92,7 +92,7 @@ class PlocationCommand extends ParameterizedCommand {
         }
     }
 
-    int complete(CLI cli, Input input, int cursor, List completions) {
+    int completer(CLI cli, Input input, int cursor, List completions) {
 	return CompletionFactory.completeExpression(cli, input, cursor,
 						    completions);
     }

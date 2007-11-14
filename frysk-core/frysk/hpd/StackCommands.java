@@ -72,7 +72,7 @@ abstract class StackCommands extends ParameterizedCommand {
 	      + " or down (towards the stack bottom or outer most frame)"));
     }
 
-    int complete(CLI cli, Input input, int cursor, List candidates) {
+    int completer(CLI cli, Input input, int cursor, List candidates) {
 	return -1;
     }
 

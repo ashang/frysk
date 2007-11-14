@@ -45,15 +45,15 @@ import java.util.Iterator;
 
 abstract class AliasCommands extends ParameterizedCommand {
 
-    int complete(CLI cli, Input input, int cursor, List completions) {
-	String incomplete = input.stringValue();
+    int completer(CLI cli, Input input, int cursor, List completions) {
+	Input.Token incomplete = input.incompleteToken(cursor);
 	for (Iterator i = cli.aliases.keySet().iterator(); i.hasNext(); ) {
 	    String key = (String)i.next();
-	    if (key.startsWith(incomplete))
+	    if (key.startsWith(incomplete.value))
 		completions.add(key);
 	}
 	CompletionFactory.padSingleCandidate(completions);
-	return input.cursor(0, cursor);
+	return incomplete.absolute(0);
     }
 
     AliasCommands(String name, String description, String syntax,

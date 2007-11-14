@@ -1,5 +1,47 @@
 2007-11-14  Andrew Cagney  <cagney@redhat.com>
 
+	* ParameterizedCommand.java (complete(CLI,Input,int,List)): New.
+	(completer(CLI,Input,int,List)): New.
+	* Input.java (incompleteToken(int)): New.
+	(base(int)): Delete.
+	(Token.absolute(int)): New.
+	(start(int,int)): Delete.
+	* CompletionFactory.java: Use Input.incompleteToken(int).
+	(completeFocusedExpression): Delete.
+	* WhichsetsCommand.java: Ditto.
+	* AliasCommands.java: Update.
+	* ActionPointCommands.java: Update.
+	* AttachCommand.java: Update.
+	* CoreCommand.java: Update.
+	* DbgVariableCommands.java: Update.
+	* DebuginfoCommand.java: Update.
+	* DefsetCommand.java: Update.
+	* DetachCommand.java: Update.
+	* DisassembleCommand.java: Update.
+	* DisplayCommand.java: Update.
+	* TestParameterizedCommand.java: Ditto.
+	* StepNextiCommand.java: Ditto.
+	* StepNextCommand.java: Ditto.
+	* StepInstructionCommand.java: Ditto.
+	* StepFinishCommand.java: Ditto.
+	* StepCommand.java: Ditto.
+	* RegsCommand.java: Ditto.
+	* StackCommands.java: Ditto.
+	* QuitCommand.java: Ditto.
+	* PtypeCommand.java: Ditto.
+	* PlocationCommand.java: Ditto.
+	* PeekCommand.java: Ditto.
+	* LoadCommand.java: Ditto.
+	* ListCommand.java: Ditto.
+	* HaltCommand.java: Ditto.
+	* GoCommand.java: Update.
+	* FocusCommand.java: Update.
+	* ExamineCommand.java: Update.
+	* EvalCommands.java: Update.
+	* WhatCommand.java: Ditto.
+	* ViewsetCommand.java: Ditto.
+	* UndefsetCommand.java: Ditto.
+
 	* TestParameterizedCommand.java (testShortAmbigiousOption()): New.
 	(testShortUnambigiousOption()): New.
 	* ParameterizedCommand.java: Allow shortened form of options.

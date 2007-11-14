@@ -64,8 +64,8 @@ public class TestParameterizedCommand extends TestLib {
 		void help(CLI cli, Input input) {
 		    helped = true;
 		}
-		int complete(CLI cli, Input input, int cursor,
-			     List candidates) {
+		int completer(CLI cli, Input input, int cursor,
+			      List candidates) {
 		    return -1;
 		}
 	    };

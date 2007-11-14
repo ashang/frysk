@@ -42,6 +42,7 @@ package frysk.hpd;
 import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.SortedMap;
+import java.util.List;
 
 abstract class ParameterizedCommand extends Command {
     private final SortedMap longOptions = new TreeMap();
@@ -173,4 +174,35 @@ abstract class ParameterizedCommand extends Command {
      * Interpret command, using options.
      */
     abstract void interpret(CLI cli, Input input, Object options);
+
+    /**
+     * Complete the options, and then complete the command.
+     */
+    final int complete(CLI cli, Input input, int cursor, List candidates) {
+	// First try a command line option.
+	Input.Token incompleteToken = input.incompleteToken(cursor);
+	if (incompleteToken.value.startsWith("-")) {
+	    // If it looks like an option, try expanding it.
+	    String name = optionName(incompleteToken.value);
+	    for (Iterator i = longOptions.values().iterator(); i.hasNext(); ) {
+		CommandOption commandOption = (CommandOption)i.next();
+		if (commandOption.longName.startsWith(name))
+		    candidates.add("-" + commandOption.longName);
+	    }
+	    CompletionFactory.padSingleCandidate(candidates);
+	    if (candidates.size() > 0)
+		// Should the command also get a chance to do a
+		// completion?  If so things get complicated as the
+		// "offset" for this and that of the command need to
+		// be aligned.
+		return incompleteToken.start;
+	}
+	return completer(cli, input, cursor, candidates);
+    }
+
+    /**
+     * Complete the command's parameters.
+     */
+    abstract int completer(CLI cli, Input input, int cursor,
+			   List candidates);
 }

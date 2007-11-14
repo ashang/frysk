@@ -53,7 +53,7 @@ class DebuginfoCommand extends ParameterizedCommand {
 	      + "for a process and its shared modules.");
     }
 
-    int complete(CLI cli, Input input, int cursor, List completions) {
+    int completer(CLI cli, Input input, int cursor, List completions) {
 	return -1;
     }
 

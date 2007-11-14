@@ -56,6 +56,17 @@ class Input {
 	    this.start = start;
 	    this.end = end;
 	}
+	/**
+	 * Given the OFFSET into this TOKEN, return the absolute
+	 * offset from the start of the command.
+	 */
+	int absolute(int offset) {
+	    if (offset < 0) {
+		return -1;
+	    } else {
+		return offset + start;
+	    }
+	}
 	public String toString() {
 	    return ("{" + super.toString()
 		    + ",value=" + value
@@ -259,27 +270,28 @@ class Input {
     }
 
     /**
-     * Given the input "cursor", return the offset or base into
-     * stringValue() - the remaining parameters.
+     * Return the 'incomplete' token that should be completed; note
+     * that an "incomplete" token has "end" set to the cursor position
+     * and not the end of the string.
      */
-    int base(int cursor) {
-	if (size() == 0)
-	    return 0;
-	else
-	    return cursor - token(0).start;
-    }
-
-    /**
-     * The reverse of base; given a base, return a corresponding
-     * cursor.
-     */
-    int cursor(int base, int cursor) {
-	if (base < 0) {
-	    return -1;
-	} else if (size() == 0) {
-	    return cursor + base;
-	} else {
-	    return base + token(0).start;
+    Token incompleteToken(int cursor) {
+	// Need to find the parameter that contains the cursor and
+	// have that completed.
+	Token token = null;
+	for (int i = 0; i < size(); i++) {
+	    Token t = token(i);
+	    // System.out.println("token " + i + "=" + t);
+	    if (cursor >= t.start && cursor <= t.end) {
+		token = t;
+		break;
+	    }
+	    }
+	// Cursor doesn't fall within any of the arguments, assume it
+	// is in a blank area and complete blank space.
+	if (token == null) {
+	    return new Token("", cursor, cursor);
 	}
+	return new Token(fullCommand.substring(token.start, token.end),
+			 token.start, cursor);
     }
 }

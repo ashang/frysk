@@ -70,7 +70,7 @@ class GoCommand extends ParameterizedCommand {
 	    cli.addMessage("Not attached to any process", Message.TYPE_ERROR);
     }
 
-    int complete(CLI cli, Input input, int cursor, List completions) {
+    int completer(CLI cli, Input input, int cursor, List completions) {
 	return -1;
     }
 }

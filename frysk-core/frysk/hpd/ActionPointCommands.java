@@ -121,7 +121,7 @@ abstract class ActionPointCommands extends ParameterizedCommand {
 	    });
     }
 
-    int complete(CLI cli, Input incomplete, int base, List alternatives) {
+    int completer(CLI cli, Input incomplete, int base, List alternatives) {
 	return -1;
     }
 

@@ -169,7 +169,7 @@ public class CoreCommand extends ParameterizedCommand {
 			exeFile = new File(cli.parameter(1));
 	}
 
-    int complete(CLI cli, Input input, int cursor, List completions) {
+    int completer(CLI cli, Input input, int cursor, List completions) {
 	return CompletionFactory.completeFileName(cli, input, cursor,
 						  completions);
     }
