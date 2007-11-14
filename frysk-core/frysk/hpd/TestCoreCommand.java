@@ -47,6 +47,7 @@ import frysk.testbed.SlaveOffspring;
 import frysk.Config;
 
 public class TestCoreCommand extends TestLib {
+
     public void testCoreCommand() {
 	e = new HpdTestbed();
 	e.send("core " + Config.getPkgDataFile("test-core-x86").getPath()

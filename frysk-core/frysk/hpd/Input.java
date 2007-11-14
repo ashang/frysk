@@ -257,4 +257,29 @@ class Input {
 	}
 	return tokens;
     }
+
+    /**
+     * Given the input "cursor", return the offset or base into
+     * stringValue() - the remaining parameters.
+     */
+    int base(int cursor) {
+	if (size() == 0)
+	    return 0;
+	else
+	    return cursor - token(0).start;
+    }
+
+    /**
+     * The reverse of base; given a base, return a corresponding
+     * cursor.
+     */
+    int cursor(int base, int cursor) {
+	if (base < 0) {
+	    return -1;
+	} else if (size() == 0) {
+	    return cursor + base;
+	} else {
+	    return base + token(0).start;
+	}
+    }
 }

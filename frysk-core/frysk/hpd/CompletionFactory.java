@@ -90,15 +90,17 @@ class CompletionFactory {
 	}
     }
 
-    static int completeExpression(CLI cli, PTSet ptset,
-				  String incomplete, int base,
+    static int completeExpression(CLI cli, Input input, int cursor,
 				  List candidates) {
+	PTSet ptset = cli.getCommandPTSet(input);
 	Iterator i = ptset.getTasks();
 	if (!i.hasNext()) {
 	    // Should still be able to complete $variables.
 	    return -1;
 	} else {
 	    int newCursor = -1;
+	    String incomplete = input.stringValue();
+	    int base = input.base(cursor);
 	    do {
 		Task task = (Task)i.next();
 		DebugInfoFrame frame = cli.getTaskFrame(task);
@@ -114,13 +116,49 @@ class CompletionFactory {
 	    // System.out.println("base=" + base);
 	    // System.out.println("candidates=" + candidates);
 	    // System.out.println("newCursor=" + newCursor);
-	    return newCursor;
+	    return input.cursor(newCursor, cursor);
 	}
     }
 
-    static int completeFileName(CLI cli, String incomplete, int base,
+    static int completeFileName(CLI cli, Input input, int cursor,
 				List candidates) {
-	return new FileNameCompletor().complete(incomplete, base,
-						candidates);
+	// System.out.println("input.stringValue()=" + input.stringValue());
+	// System.out.println("cursor=" + cursor);
+	// System.out.println("input.size()=" + input.size());
+	if (input.size() == 0) {
+	    int newBase
+		= new FileNameCompletor().complete("", 0, candidates);
+	    if (newBase < 0)
+		return -1;
+	    else
+		return newBase + cursor;
+	} else {
+	    // Need to find the parameter that contains the cursor and
+	    // have that completed.
+	    Input.Token token = null;
+	    for (int i = 0; i < input.size(); i++) {
+		Input.Token t = input.token(i);
+		// System.out.println("token " + i + "=" + t);
+		if (cursor >= t.start && cursor <= t.end) {
+		    token = t;
+		    break;
+		}
+	    }
+	    if (token == null)
+		return -1;
+	    Input.Token token0 = input.token(0);
+	    String incomplete
+		= input.stringValue().substring(token.start - token0.start,
+						token.end - token0.start);
+	    // System.out.println("incomplete=" + incomplete);
+	    int newBase
+		= new FileNameCompletor().complete(incomplete,
+						   cursor - token.start,
+						   candidates);
+	    if (newBase < 0)
+		return -1;
+	    else
+		return newBase + token.start;
+	}
     }
 }

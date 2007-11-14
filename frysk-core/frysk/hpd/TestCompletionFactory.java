@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007 Red Hat Inc.
+// Copyright 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,45 +39,35 @@
 
 package frysk.hpd;
 
-import java.util.Iterator;
-import frysk.proc.Task;
-import java.util.List;
+import frysk.Config;
 
-class WhatCommand extends ParameterizedCommand {
-    private static final String full = "The what command queries the debugger "
-	    + "about its current interpretation\n"
-	    + "of a symbol name from the target program. Intuitively, the "
-	    + "command shows\n"
-	    + "what program symbol(s) would be displayed (modified) if the "
-	    + "symbol name\n" + "were used as the argument of a print command.";
+public class TestCompletionFactory extends TestLib {
 
-    WhatCommand() {
-	super("what", "Determine what a target program name refers to",
-		"what symbol-name [-all]", full);
+    public void setUp() {
+	super.setUp();
+	e = new HpdTestbed();
     }
 
-    public void interpret(CLI cli, Input cmd, Object options) {
-	PTSet ptset = cli.getCommandPTSet(cmd);
-	if (cmd.size() == 0) {
-	    throw new InvalidCommandException("missing value");
-	}
-	String sInput = (cmd.parameter(0));
-	Iterator taskIter = ptset.getTasks();
-	while (taskIter.hasNext()) {
-	    Task task = (Task) taskIter.next();
-
-	    try {
-		cli.outWriter.println(cli.getTaskDebugInfo(task).what(
-			cli.getTaskFrame(task), sInput));
-	    } catch (RuntimeException nnfe) {
-		cli.addMessage(nnfe.getMessage(), Message.TYPE_ERROR);
-	    }
-
-	}
+    /**
+     * At least two expansions of "funit-stack-" are
+     * "funit-stack-inlined" and "funit-stack-outlined"; there might
+     * also be .o files, but ignore that.
+     */
+    private void checkFunitStackCompletion() {
+	e.send(Config.getPkgLibFile("funit-stack-").getAbsolutePath());
+	e.send("\t");
+	e.expect("funit-stack-inlined\\r\\n");
+	e.expect("funit-stack-outlined\\r\\n");
+	e.expectPrompt();
     }
 
-    int complete(CLI cli, Input input, int cursor, List completions) {
-	return CompletionFactory.completeExpression(cli, input, cursor,
-						    completions);
+    public void testCompleteFirstFileNameArg() {
+	e.send("run ");
+	checkFunitStackCompletion();
+    }
+
+    public void testCompleteSecondFileNameArg() {
+	e.send("run a ");
+	checkFunitStackCompletion();
     }
 }

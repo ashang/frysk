@@ -73,10 +73,9 @@ abstract class EvalCommands extends ParameterizedCommand {
 	    });
     }
 
-    int complete(CLI cli, PTSet ptset, String incomplete, int base,
-		 List candidates) {
-	return CompletionFactory.completeExpression(cli, ptset, incomplete,
-						    base, candidates);
+    int complete(CLI cli, Input input, int cursor, List candidates) {
+	return CompletionFactory.completeExpression(cli, input, cursor,
+						    candidates);
     }
 
     static private void eval(CLI cli, PTSet ptset, String expression,

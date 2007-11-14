@@ -98,8 +98,7 @@ class WhichsetsCommand extends ParameterizedCommand {
 	}
     }
 
-    int complete(CLI cli, PTSet ptset, String incomplete, int base,
-		 List completions) {
+    int complete(CLI cli, Input input, int cursor, List completions) {
 	return -1;
     }
 }

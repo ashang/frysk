@@ -1,3 +1,50 @@
+2007-11-14  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCompletionFactory.java: New.
+	* Input.java (base(int)): New.
+	(cursor(int,int)): New.
+	* Command.java (complete(CLI,Input,int,List)): Make abstract.
+	* ParameterizedCommand.java (complete(CLI,Input,int,List)): Delete.
+	(complete(CLI,PTSet,String,int,List)): Delete.
+	* CompletionFactory.java (completeExpression(CLI,Input,int,List)):
+	Replace completeExpression(CLI,PTSet,String,int,List).
+	(completeFileName(CLI,Input,int,List)): Replace
+	completeFileName(CLI,String,int,List); handle multiple arguments.
+	* WhichsetsCommand.java: Update.
+	* WhatCommand.java: Update.
+	* ViewsetCommand.java: Update.
+	* UndefsetCommand.java: Update.
+	* TestParameterizedCommand.java: Update.
+	* StepNextiCommand.java: Update.
+	* StepNextCommand.java: Update.
+	* StepInstructionCommand.java: Update.
+	* StepFinishCommand.java: Update.
+	* StepCommand.java: Update.
+	* RunCommand.java: Update.
+	* StackCommands.java: Update.
+	* QuitCommand.java: Update.
+	* RegsCommand.java: Update.
+	* PtypeCommand.java: Update.
+	* PlocationCommand.java: Update.
+	* PeekCommand.java: Update.
+	* LoadCommand.java: Update.
+	* ListCommand.java: Update.
+	* HaltCommand.java: Update.
+	* GoCommand.java: Update.
+	* FocusCommand.java: Update.
+	* EvalCommands.java: Update.
+	* ExamineCommand.java: Update.
+	* DisplayCommand.java: Update.
+	* DisassembleCommand.java: Update.
+	* DetachCommand.java: Update.
+	* CoreCommand.java: Update.
+	* DefsetCommand.java: Update.
+	* DebuginfoCommand.java: Update.
+	* AttachCommand.java: Update.
+	* ActionPointCommands.java: Update.
+	* BreakpointCommand.java: Update.
+	* DbgVariableCommands.java: Update.
+
 2007-11-14  Mark Wielaard  <mwielaard@redhat.com>
 
 	* CLI.java (addMessage): New variant that takes a possible

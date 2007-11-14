@@ -42,7 +42,6 @@ package frysk.hpd;
 import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.SortedMap;
-import java.util.List;
 
 abstract class ParameterizedCommand extends Command {
     private final SortedMap longOptions = new TreeMap();
@@ -166,28 +165,4 @@ abstract class ParameterizedCommand extends Command {
      * Interpret command, using options.
      */
     abstract void interpret(CLI cli, Input input, Object options);
-
-    /**
-     * Complete the input.
-     */
-    final int complete(CLI cli, Input input, int cursor, List candidates) {
-	int start;
-	if (input.size() == 0)
-	    start = cursor;
-	else
-	    start = input.token(0).start;
-	int pos = complete(cli, cli.getCommandPTSet(input),
-			   input.stringValue(), cursor - start, candidates);
-	if (pos >= 0) {
-	    return pos + start;
-	} else {
-	    return -1;
-	}
-    }
-
-    /**
-     * Complete the string.
-     */
-    abstract int complete(CLI cli, PTSet ptset, String incomplete,
-			  int base, List candidates);
 }
