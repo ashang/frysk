@@ -80,6 +80,8 @@ noinst_LIBRARIES =
 man_MANS =
 LDADD = 
 ANTLR_BUILT =
+SCRIPT_BUILT =
+JAVAH_BUILT =
 
 check_SCRIPTS =
 check_PROGRAMS =
@@ -193,6 +195,25 @@ AM_CFLAGS = \
 AM_CCASFLAGS = \
 	-I$(top_srcdir)/../frysk-imports/include \
 	$(ZZZ)
+
+
+# Within the BUILT_SOURCES, need to force some dependencies.  For
+# instance: JAVAH isn't run until all script-generated files it may
+# need to import have been generated.
+
+# Use GMAKE's order-only prerequisite feature.
+
+.PHONY: built-sources
+built-sources: $(BUILT_SOURCES)
+$(ANTLR_BUILT): | $(SCRIPT_BUILT)
+$(JAVAH_BUILT): | $(SCRIPT_BUILT) $(ANTLR_BUILT)
+
+# Ensure all imported .java files have been generated before
+# attempting to run JAVAH/GCJH.
+
+.PHONY: javah-built
+BUILT_SOURCES += javah-built
+javah-built: script-built antlr-built $(JAVAH_BUILT)
 
 
 # Rules for building a .java file from any of a .mkclass file, a
