@@ -1,5 +1,7 @@
 2007-11-14  Teresa Thomas  <tthomas@redhat.com>
 	
+	* Type.java (getALU): Remove stray println.
+	
 	* ArithmeticUnit.java (logicalAnd): Implement here, 
 	use getLogicalValue.
 	(logicalOr): Ditto.
