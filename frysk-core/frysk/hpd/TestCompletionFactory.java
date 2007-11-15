@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,18 +37,37 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.ftrace;
+package frysk.hpd;
 
-/**
- * Mapping guards signal request to rescan mappings through this
- * interface.  The interface is package-private, because noone from
- * outside should have to use it.
- */
-interface MappingController
-{
+import frysk.Config;
+
+public class TestCompletionFactory extends TestLib {
+
+    public void setUp() {
+	super.setUp();
+	e = new HpdTestbed();
+    }
+
     /**
-     * New library FILE was mapped in task TASK.  Use DRIVER to tell
-     * ltrace what to do.
+     * At least two expansions of "funit-stack-" are
+     * "funit-stack-inlined" and "funit-stack-outlined"; there might
+     * also be .o files, but ignore that.
      */
-    void checkMapUnmapUpdates(frysk.proc.Task task);
+    private void checkFunitStackCompletion() {
+	e.send(Config.getPkgLibFile("funit-stack-").getAbsolutePath());
+	e.send("\t");
+	e.expect("funit-stack-inlined\\r\\n");
+	e.expect("funit-stack-outlined\\r\\n");
+	e.expectPrompt();
+    }
+
+    public void testCompleteFirstFileNameArg() {
+	e.send("run ");
+	checkFunitStackCompletion();
+    }
+
+    public void testCompleteSecondFileNameArg() {
+	e.send("run a ");
+	checkFunitStackCompletion();
+    }
 }

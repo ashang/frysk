@@ -39,63 +39,154 @@
 
 package frysk.ftrace;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.*;
+import java.io.File;
 
 import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
+/**
+ * Use this pseudo-class to request that an map/unmap observer be
+ * attached to given Task.
+ */
 class MappingGuard
-    implements TaskObserver.Code,
-	       TaskObserver.Syscall
 {
     protected static final Logger logger = Logger.getLogger(FtraceLogger.LOGGER_ID);
-    private HashMap syscallCache = new HashMap();
-    private MappingController ltraceProper;
 
-    public MappingGuard(MappingController ltraceProper) {
-	this.ltraceProper = ltraceProper;
-    }
+    // HashMap<Task, MappingGuardB>
+    private static final Map guardsForTask = new HashMap();
 
-    public Action updateHit (Task task, long address)
+    private static abstract class MappingGuardB
+	implements TaskObserver
     {
-	ltraceProper.checkMapUnmapUpdates(task);
-	task.requestUnblock(this);
-	return Action.BLOCK;
-    }
+	private final Map observers = new HashMap(); // HashMap<MappingObserver, Integer>
+	protected final Task task;
 
-    public Action updateSyscallEnter (Task task)
-    {
-	frysk.proc.Syscall syscall = task.getSyscallEventInfo().getSyscall(task);
-	syscallCache.put(task, syscall);
-	return Action.CONTINUE;
-    }
+	abstract public void remove();
 
-    public Action updateSyscallExit (Task task)
-    {
-	frysk.proc.Syscall syscall = (frysk.proc.Syscall)syscallCache.remove(task);
-
-	// Unfortunately, I know of no reasonable (as in
-	// platform independent) way to find whether a syscall
-	// is mmap, munmap, or anything else.  Hence this hack,
-	// which is probably still much better than rescanning
-	// the map on each syscall.
-	String name = syscall.getName();
-	if (name.indexOf("mmap") != -1 || name.indexOf("munmap") != -1) {
-	    ltraceProper.checkMapUnmapUpdates(task);
-	    task.requestUnblock(this);
-	    return Action.BLOCK;
+	public synchronized boolean removeObserver(MappingObserver observer) {
+	    Integer i = (Integer)observers.get(observer);
+	    if (i == null)
+		throw new AssertionError("removed observer not found.");
+	    int v = i.intValue();
+	    v--;
+	    if (v == 0)
+		observers.remove(observer);
+	    else
+		observers.put(observer, new Integer(v));
+	    observer.deletedFrom(task);
+	    return v != 0;
 	}
 
-	return Action.CONTINUE;
+	public synchronized void addObserver(MappingObserver observer) {
+	    Integer i = (Integer)observers.get(observer);
+	    if (i == null)
+		i = new Integer(1);
+	    else
+		i = new Integer(i.intValue() + 1);
+	    observers.put(observer, i);
+	    observer.addedTo(task);
+	}
+
+	protected MappingGuardB(Task task) {
+	    this.task = task;
+	}
+
+	public void addFailed(Object o, Throwable t) {
+	    //observer.addFailed(o, t);
+	}
+	public void deletedFrom(Object o) {
+	    /// XXX: How to delete map/unmap observer?
+	    //observer.deletedFrom(o);
+	    synchronized (MappingGuard.class) {
+		guardsForTask.remove(task);
+	    }
+	}
+	public void addedTo(Object o) {
+	    //observer.addedTo(o);
+	}
+
+	protected void notifyObservers(Task task) {
+	    for (Iterator it = observers.keySet().iterator(); it.hasNext();) {
+		MappingObserver ob = (MappingObserver)it.next();
+		boolean block = false;
+		Integer i = (Integer)observers.get(ob);
+		int v = i.intValue();
+		for (int j = 0; j < v; ++j)
+		    if (ob.updateMapping(task) == Action.BLOCK)
+			block = true;
+		if (block)
+		    task.blockers.add(ob);
+	    }
+	}
     }
 
-    public void addFailed(Object o, Throwable t) {}
-    public void deletedFrom(Object o) {}
-    public void addedTo(Object o) {}
+    private static class SyscallMappingGuard
+	extends MappingGuardB
+	implements TaskObserver.Syscall
+    {
+	private frysk.proc.Syscall syscallCache = null;
+
+	public SyscallMappingGuard(Task task) {
+	    super(task);
+	    task.requestAddSyscallObserver(this);
+	}
+
+	public Action updateSyscallEnter (Task task)
+	{
+	    frysk.proc.Syscall syscall = task.getSyscallEventInfo().getSyscall(task);
+	    syscallCache = syscall;
+	    return Action.CONTINUE;
+	}
+
+	public Action updateSyscallExit (Task task)
+	{
+	    frysk.proc.Syscall syscall = syscallCache;
+	    syscallCache = null;
+
+	    // Unfortunately, I know of no reasonable (as in platform
+	    // independent) way to find whether a syscall is mmap,
+	    // munmap, or anything else.  Hence this hack, which is
+	    // probably still much better than rescanning the map on
+	    // each syscall.
+	    String name = syscall.getName();
+	    if (name.indexOf("mmap") != -1 || name.indexOf("munmap") != -1)
+		notifyObservers(task);
+	    return Action.CONTINUE;
+	}
+
+	public void remove() {
+	    task.requestDeleteSyscallObserver(this);
+	}
+    }
+
+    private static class DebugStateMappingGuard
+	extends MappingGuardB
+	implements TaskObserver.Code
+    {
+	private long address;
+	public DebugStateMappingGuard(Task task, long address) {
+	    super(task);
+	    this.address = address;
+	    task.requestAddCodeObserver(this, address);
+	}
+
+	public Action updateHit (Task task, long address)
+	{
+	    logger.log(Level.FINE, "Mapping guard hit.");
+	    notifyObservers(task);
+	    return Action.CONTINUE;
+	}
+
+	public void remove() {
+	    task.requestDeleteCodeObserver(this, address);
+	}
+    }
 
     /**
      * Try to setup guard based on _dl_debug_state.
@@ -109,28 +200,28 @@ class MappingGuard
      *
      * @return true on success, false on failure.
      */
-    private boolean setupDebugStateObserver(Task task)
+    private static MappingGuardB setupDebugStateObserver(Task task)
     {
 	logger.log(Level.FINE, "Entering....");
 
-	java.io.File f = new java.io.File(task.getProc().getExe());
+	File f = new File(task.getProc().getExe());
 	ObjectFile objf = ObjectFile.buildFromFile(f);
 	String interp = objf.getInterp();
 	if (interp == null) {
 	    // We're boned.
 	    logger.log(Level.WARNING, "`{1}' has no interpreter.", f);
-	    return false;
+	    return null;
 	}
 
-	java.io.File interppath = new java.io.File(interp);
+	File interppath = new File(interp);
 	try {
 	    interppath = interppath.getCanonicalFile();
 	}
 	catch (java.io.IOException e) {
 	    logger.log(Level.WARNING,
-		       "Couldn't get canonical path of ELF interpreter `{1}'.",
+		       "Couldn't get canonical path of ELF interpreter `{0}'.",
 		       interppath);
-	    return false;
+	    return null;
 	}
 
 	ObjectFile interpf = ObjectFile.buildFromFile(interppath);
@@ -140,43 +231,75 @@ class MappingGuard
 					  TracePointOrigin.DYNAMIC);
 	    if (tp == null) {
 		logger.log(Level.FINE,
-			   "Symbol _dl_debug_state not found in `{1}'.",
+			   "Symbol _dl_debug_state not found in `{0}'.",
 			   interppath);
-		return false;
+		return null;
+	    }
+
+	    // Make sure we know the offset of the symbol data.
+	    // Necessary for lookup between mappings.
+	    if (tp.symbol.offset == 0) {
+		logger.log(Level.FINE,
+			   "Symbol _dl_debug_state has offset 0.",
+			   interppath);
+		return null;
 	    }
 	}
 	catch (lib.dwfl.ElfException e) {
 	    e.printStackTrace();
 	    logger.log(Level.WARNING,
-		       "Problem reading DYNAMIC entry points from `{1}'",
+		       "Problem reading DYNAMIC entry points from `{0}'",
 		       interppath);
-	    return false;
+	    return null;
 	}
 
 	// Load initial set of mapped files.
-	Set currentMappings = MemoryMapping.buildForPid(task.getTid());
-	long relocation = -1;
-	for (Iterator it = currentMappings.iterator(); it.hasNext(); ) {
-	    MemoryMapping mm = (MemoryMapping)it.next();
-	    if (mm.path.equals(interppath)) {
-		relocation = mm.addressLow - interpf.getBaseAddress();
-		break;
-	    }
+	Map currentMappings = MemoryMapping.buildForPid(task.getTid());
+	MemoryMapping mm = (MemoryMapping)currentMappings.get(interppath);
+	if (mm == null) {
+	    logger.log(Level.FINE, "Couldn't obtain mappings of interpreter.");
+	    return null;
 	}
-	if (relocation == -1) {
-	    logger.log(Level.FINE, "Couldn't obtain relocation of interpreter.");
-	    return false;
+
+	List parts = mm.lookupParts(tp.symbol.offset);
+	if (parts.size() != 1) {
+	    logger.log(Level.FINE, "Ambiguous mapping of interpreter, or the mapping couldn't be determined.");
+	    return null;
 	}
+	MemoryMapping.Part p = (MemoryMapping.Part)parts.get(0);
+	long relocation = p.addressLow - interpf.getBaseAddress();
 
 	// There we go!
 	long fin = tp.address + relocation;
-	task.requestAddCodeObserver(this, fin);
-	return true;
+	logger.log(Level.FINE,
+		   "Success: tp.address=0x" + Long.toHexString(tp.address)
+		   + ", relocation=0x" + Long.toHexString(relocation)
+		   + ", fin=0x" + Long.toHexString(fin));
+	return new DebugStateMappingGuard(task, fin);
     }
 
-    public void attachTo(Task task)
-    {
-	if (!setupDebugStateObserver(task))
-	    task.requestAddSyscallObserver(this);
+    public static void requestAddMappingObserver(Task task, MappingObserver observer) {
+	MappingGuardB guard;
+	synchronized (MappingGuard.class) {
+	    guard = (MappingGuardB)guardsForTask.get(task);
+	    if (guard == null) {
+		guard = setupDebugStateObserver(task);
+		if (guard == null)
+		    guard = new SyscallMappingGuard(task);
+		guardsForTask.put(task, guard);
+	    }
+	}
+	guard.addObserver(observer);
+    }
+
+    public static void requestDeleteMappingObserver(Task task, MappingObserver observer) {
+	MappingGuardB guard;
+	synchronized (MappingGuard.class) {
+	    guard = (MappingGuardB)guardsForTask.get(task);
+	}
+	if (guard == null)
+	    throw new AssertionError("No guard for given task");
+	if (!guard.removeObserver(observer))
+	    guard.remove();
     }
 }

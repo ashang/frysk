@@ -47,6 +47,7 @@ import lib.dwfl.*;
 import java.util.*;
 
 import frysk.testbed.TestLib;
+import frysk.testbed.DaemonBlockedAtEntry;
 
 public class TestTaskObserverCode extends TestLib
 {
@@ -859,6 +860,42 @@ public class TestTaskObserverCode extends TestLib
 
     assertFalse("unblocked unhit 1", code1.hit);
     assertFalse("unblocked unhit 2", code2.hit);
+  }
+
+  // Tests whether a task with breakpoint gets killed by a SIGTRAP
+  // after the fork.
+  public void testCodeOverFork() throws Exception
+  {
+    if (unresolved(5331))
+      return;
+
+    String[] argv = {getExecPath ("funit-fib-fork"), "2"};
+    child = null;
+    DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(argv);
+    task = child.getMainTask();
+    proc = task.getProc();
+    int pid = proc.getPid();
+
+    long address1 = getFunctionEntryAddress("breakpoint_me");
+    CodeObserver code1 = new CodeObserver(task, address1);
+    code1.block = false;
+    TerminatingObserver terminatingObserver = new TerminatingObserver();
+    task.requestAddCodeObserver(code1, address1);
+    assertRunUntilStop("add breakpoint observer");
+    task.requestAddTerminatingObserver(terminatingObserver);
+    assertRunUntilStop("add terminating observer");
+
+    new StopEventLoopWhenProcRemoved(pid);
+    child.requestRemoveBlock();
+    assertRunUntilStop("run \"fork\" until exit");
+    assertTrue("breakpoint hit", code1.hit);
+    assertTrue("termination was noticed", terminatingObserver.task != null);
+
+    // The logic here is that when one of the forked processes dies
+    // due to a signal, parent task notices that and kills itself with
+    // that same signal.
+    assertTrue("task didn't die on signal", !terminatingObserver.signal);
+    assertEquals("task exit status", 0, terminatingObserver.value);
   }
 
   // Tells the child to run the dummy () function

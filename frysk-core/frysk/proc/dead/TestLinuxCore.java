@@ -51,6 +51,7 @@ import frysk.proc.Task;
 import frysk.proc.Proc;
 import frysk.proc.Host;
 import frysk.proc.Auxv;
+import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
 import frysk.proc.ProcId;
 import frysk.proc.Manager;
@@ -136,14 +137,11 @@ public class TestLinuxCore
   public void testLinuxCoreFileStackTrace ()
   {
 
-    Proc ackProc = giveMeAProc();
-    String coreFileName = constructCore(ackProc);
-    File xtestCore = new File(coreFileName);
-
-    Host lcoreHost = new LinuxHost(Manager.eventLoop, 
-				   xtestCore);
-    
-    Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid()));
+   
+	final Proc ackProc; // = giveMeAProc();
+	
+	File exeFile = Config.getPkgLibFile("funit-stacks");
+	ackProc = new DaemonBlockedAtSignal(exeFile).getMainTask().getProc();
 
 
     StacktraceAction stacker;
@@ -161,6 +159,14 @@ public class TestLinuxCore
 
     new ProcBlockAction (ackProc, stacker);
     assertRunUntilStop("perform backtrace");
+
+    String coreFileName = constructCore(ackProc);
+    File xtestCore = new File(coreFileName);
+
+    Host lcoreHost = new LinuxHost(Manager.eventLoop, 
+				   xtestCore);
+    
+    Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid()));
 
     StringWriter stringWriter2 = new StringWriter();
     coreStack = new StacktraceAction(new PrintWriter(stringWriter2),coreProc, new PrintEvent(),true,false,false,false,false, false)

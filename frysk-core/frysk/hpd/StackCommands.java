@@ -72,8 +72,7 @@ abstract class StackCommands extends ParameterizedCommand {
 	      + " or down (towards the stack bottom or outer most frame)"));
     }
 
-    int complete(CLI cli, PTSet ptset, String incomplete, int base,
-		 List candidates) {
+    int completer(CLI cli, Input input, int cursor, List candidates) {
 	return -1;
     }
 
@@ -203,11 +202,6 @@ abstract class StackCommands extends ParameterizedCommand {
 		  ("The where command displays the current execution"
 		   + " location(s) and the call stack(s) - or sequence"
 		   + " of procedure calls - which led to that point."));
-	}
-
-	int complete(CLI cli, PTSet ptset, String incomplete, int base,
-		     List candidates) {
-	    return -1;
 	}
 
 	public void interpret(CLI cli, Input input, Object o) {

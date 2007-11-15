@@ -1,3 +1,7 @@
+2007-11-15  Petr Machata  <pmachata@redhat.com>
+
+	* TestTaskObserverCode.java (testCodeOverFork): New test.
+
 2007-11-09  Andrew Cagney  <cagney@redhat.com>
 
 	* PPCBankRegisters.java (PPC32BE_ON_PPC64BE): Don't add "nip",

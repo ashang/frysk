@@ -1,3 +1,43 @@
+2007-11-15  Teresa Thomas  <tthomas@redhat.com>
+
+	* ArithmeticUnit.java (getLogicalValue): Delete 
+	argument mem, define here.
+	(logicalNegation): Update.
+	(logicalOr): Update.
+	(logicalAnd): Update.
+	* AddressUnit.java (getLogicalValue): Delete.
+	* FloatingPointUnit.java (getLogicalValue): Delete. 
+	* IntegerUnit.java (getLogicalValue): Delete.	
+	* TestValue.java: Update.
+			
+2007-11-14  Teresa Thomas  <tthomas@redhat.com>
+
+	* FloatingPointUnit.java: Use intType for relational
+	operations.
+	* IntegerUnit.java: Ditto.
+	* TestValue.java (testFloatOps): Update.
+	(testIntOps): Update.
+	(isTrue (double)): Delete. 
+
+	* ArithmeticUnit.java (logicalAnd(Value,Value)): Delete.	
+	* ArithmeticUnit.java (logicalOr(Value,Value)): Delete.
+	
+	* Type.java (getALU): Remove stray println.
+	
+	* ArithmeticUnit.java (logicalAnd): Implement here, 
+	use getLogicalValue.
+	(logicalOr): Ditto.
+	(logicalNegation): Ditto.
+	(wordSize): New.
+	* AddressUnit.java: Update.
+	(getLogicalValue): New.	
+	(wordSize): Delete.
+	* IntegerUnit.java: Update. 
+	(getLogicalValue): New.
+	* FloatingPointUnit.java: Update. 
+	(getLogicalValue): New.
+	* TestValue.java: Add tests for above. 
+
 2007-11-13  Teresa Thomas  <tthomas@redhat.com>
 	
 	* ArithmeticUnit.java (logicalNegation): Add task mem to

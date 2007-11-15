@@ -71,9 +71,7 @@ public abstract class Command {
      * "foobar" can be inserted.  Rreturn -1 when completion isn't
      * supported.
      */
-    int complete(CLI cli, Input buffer, int cursor, List candidates) {
-	return -1;
-    }
+    abstract int complete(CLI cli, Input buffer, int cursor, List candidates);
 
     /**
      * Print a full "help" message (syntax and then details) for this

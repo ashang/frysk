@@ -45,6 +45,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+void
+breakpoint_me(void)
+{
+}
+
 int
 main (int argc, char *argv[], char *envp[])
 {
@@ -66,6 +71,7 @@ main (int argc, char *argv[], char *envp[])
   n = want;
  compute_fib_n:
   /* Children jump back here with an updated N.  */
+  breakpoint_me();
   switch (n)
     {
     case 0:
@@ -113,6 +119,12 @@ main (int argc, char *argv[], char *envp[])
 	      {
 		printf ("waitpid (%ld) got non exit staus 0x%x\n",
 			(long) child[i], status);
+		if (WIFSIGNALED(status))
+		  {
+		    printf("waitpid (%ld) got signal %d\n",
+			   (long) child[i], WTERMSIG(status));
+		    kill(getpid(), WTERMSIG(status));
+		  }
 		exit (1);
 	      }
 	    result += WEXITSTATUS (status);

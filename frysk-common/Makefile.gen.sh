@@ -440,6 +440,7 @@ TestRunner_SOURCES = TestRunner.java
 CLEANFILES += TestRunner.java
 ${sources} += ${GEN_SOURCENAME}/JUnitTests.java
 BUILT_SOURCES += ${GEN_SOURCENAME}/JUnitTests.java
+SCRIPT_BUILT += ${GEN_SOURCENAME}/JUnitTests.java
 TestRunner_LDADD = \${LIBJUNIT} \${GEN_GCJ_LDADD_LIST}
 TESTS += TestRunner
 noinst_PROGRAMS += TestRunner
@@ -497,6 +498,7 @@ for suffix in .java-in .java-sh .mkenum .shenum ; do
 	name="${d}/${b}${s}"
 	echo "${sources} += ${file}"
 	echo "BUILT_SOURCES += ${name}"
+	echo "SCRIPT_BUILT += ${name}"
         case "${suffix}" in
 	    .mkenum ) echo "${name}: \$(MKENUM)" ;;
 	esac
@@ -529,6 +531,7 @@ for suffix in .cxx .c .hxx .s .S .c-sh .c-in .cxx-sh .cxx-in; do
         case "${suffix}" in
 	    *-in | *-sh)
 		echo "BUILT_SOURCES += ${name}${s}"
+		echo "SCRIPT_BUILT += ${name}${s}"
 		;;
 	esac
 	case "${suffix}" in
@@ -574,7 +577,10 @@ do
       ; then
       case "$c" in
 	  # Do not know what includes the header; just build early
-	  h) echo "BUILT_SOURCES += ${h}.h" ;;
+	  h)
+	      echo "BUILT_SOURCES += ${h}.h"
+	      echo "JAVAH_BUILT += ${h}.h"
+	      ;;
 	  c) echo "${o}.o: ${h}.h" ;;
 	  esac
       echo "CLEANFILES += ${h}.h"
@@ -653,20 +659,25 @@ grep -e '\.g$' files.list | while read g
 do
   d=`dirname $g`
   b=`basename $g .g`
-  echo "CLEANFILES += $d/$b.antlered"
+  echo "CLEANFILES += $d/$b.antlred"
   echo "CLEANDIRS += $d/$b.tmp"
-  IMPORTVOCAB=$(awk -v DIR=$d -F = '/importVocab/ {gsub("Parser;",".antlered",$2);printf "%s/%s ",DIR,$2}' $g)
-  echo "$d/$b.antlered: $g ${IMPORTVOCAB}"
-  (
-      awk '/class/ { print $2 }' $g
-      awk '/class .* extends .*Parser/ { print $2"TokenTypes" }' $g
-  ) | while read c
+  awk '
+BEGIN { FS = "=" }
+/importVocab/ {
+    gsub(";","",$2)
+    print "'$d/$b'.antlred: '$d'/" $2 "TokenTypes.txt"
+}' $g
+  awk '
+/class/ { print $2 ".java" }
+/class .* extends .*Parser/ { print $2 "TokenTypes.java" }
+/class .* extends .*Parser/ { print $2 "TokenTypes.txt" }
+' $g | while read c
   do
-    echo "# Dummy dependency, see implicit .g.antlered for generation"
-    echo "$d/$c.java: $d/$b.antlered"
-    echo "ANTLR_BUILT += $d/$c.java"
-    echo "BUILT_SOURCES += $d/$c.java"
-    echo "${sources} += $d/$c.java"
+    echo "# Dummy dependency, see implicit .g.antlred for generation"
+    echo "$d/$c: $d/$b.antlred"
+    echo "BUILT_SOURCES += $d/$c"
+    echo "ANTLR_BUILT += $d/$c"
+    echo "${sources} += $d/$c"
   done
 done
 

@@ -50,6 +50,7 @@
 #include "lib/dwfl/BaseTypes.h"
 #include "lib/dwfl/DwarfDieFactory.h"
 #include "lib/dwfl/DwarfException.h"
+#include "lib/dwfl/DwAttributeNotFoundException.h"
 #include "lib/dwfl/DwException.h"
 
 
@@ -547,7 +548,7 @@ lib::dwfl::DwarfDie::get_data_member_location (jlong var_die)
       if (fb_len > 0 && fb_expr[0].atom == DW_OP_plus_uconst)
 	return fb_expr[0].number;
     }
-  lib::dwfl::DwException::throwDwException();
+  lib::dwfl::DwAttributeNotFoundException::throwDwException((jint)DW_AT_data_member_location);
   return 0;
 }
 

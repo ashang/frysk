@@ -53,8 +53,7 @@ class ViewsetCommand extends ParameterizedCommand {
 	       + " members of all currently defined sets are displayed."));
     }
 
-    int complete(CLI cli, PTSet ptset, String incomplete, int base,
-		 List candidates) {
+    int completer(CLI cli, Input input, int cursor, List candidates) {
 	return -1;
     }
 

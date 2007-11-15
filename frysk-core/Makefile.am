@@ -41,8 +41,6 @@
 include common/Makefile.rules
 include Makefile.gen
 
-ANTLR = $(JAVA) -classpath ../frysk-imports/antlr.jar antlr.Tool
-
 GEN_SOURCEPATH += ../frysk-sys/
 GEN_SOURCEPATH += $(top_srcdir)/../frysk-sys/
 GEN_CLASSPATH += ../frysk-imports/jline.jar

@@ -48,6 +48,7 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.util.CountDownLatch;
 import java.util.HashSet;
+import java.util.List;
 
 class RunCommand extends Command {
     private static final String descr = "run program and immediately attach";
@@ -129,5 +130,10 @@ class RunCommand extends Command {
         // register with SteppingEngine et.al.
 	cli.doAttach(runner.launchedTask.getProc());
 	runner.launchedTask.requestUnblock(runner);
+    }
+
+    int complete(CLI cli, Input input, int cursor, List completions) {
+	return CompletionFactory.completeFileName(cli, input, cursor,
+						  completions);
     }
 }

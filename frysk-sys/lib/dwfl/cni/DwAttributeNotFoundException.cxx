@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2005, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,69 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.value;
+#include <libdw.h>
 
-/**
- * Arithmetic and logical operation handling
- * for floating points.
- */
-public class FloatingPointUnit
-     extends ArithmeticUnit
-{   
-    public FloatingPointUnit (FloatingPointType t1, FloatingPointType t2, int wSize) {
-	super (wSize);
-	// Return type should be the larger type.
-	retType = (t1.getSize() > t2.getSize()) ?  t1 : t2;
-    }
+#include <gcj/cni.h>
 
-    public FloatingPointUnit (FloatingPointType t1, int wSize) {
-	super (wSize);
-	retType = t1;
-    }	
-    
-    public Value add(Value v1, Value v2) {
-	return retType.createValue
-	       (v1.doubleValue() + v2.doubleValue());
-    }        
-    public Value subtract(Value v1, Value v2) {
-	return retType.createValue
-	       (v1.doubleValue() - v2.doubleValue());
-    }      
-    public Value multiply (Value v1, Value v2) {
-	return retType.createValue
-	       (v1.doubleValue() * v2.doubleValue());
-    }
-    public Value divide (Value v1, Value v2) {
-	return retType.createValue
-	       (v1.doubleValue() / v2.doubleValue());
-    }	        
-    public Value mod (Value v1, Value v2) {
-	return retType.createValue
-	       (v1.doubleValue() % v2.doubleValue());
-    }	    
-
-    public Value lessThan (Value v1, Value v2) {
-	return intType.createValue
-	       (v1.doubleValue() < v2.doubleValue() ? 1:0);
-    }
-    public Value greaterThan (Value v1, Value v2) {
-	return intType.createValue
-	       (v1.doubleValue() > v2.doubleValue() ? 1:0);
-    }    
-    public Value greaterThanOrEqualTo (Value v1, Value v2) {
-	return intType.createValue
-	       (v1.doubleValue() >= v2.doubleValue() ? 1:0);
-    }     
-    public Value lessThanOrEqualTo (Value v1, Value v2) {
-	return intType.createValue
-	       (v1.doubleValue() <= v2.doubleValue() ? 1:0);
-    }     
-    public Value equal (Value v1, Value v2) {
-	return intType.createValue
-	       (v1.doubleValue() == v2.doubleValue() ? 1:0);
-    }     
-    public Value notEqual (Value v1, Value v2) {
-	return intType.createValue
-	       (v1.doubleValue() != v2.doubleValue() ? 1:0);
-    } 
-}    
+#include "lib/dwfl/DwAttributeNotFoundException.h"

@@ -1,9 +1,122 @@
 2007-11-15  Stan Cox  <scox@redhat.com>
-
 	* TestListCommand.java (testListPC): Change to use funit-quicksort.
 	(testListFunction): Likewise.
 	(testListReverse): Likewise.
 	(testListErrors): Likewise.
+
+2007-11-15  Andrew Cagney  <cagney@redhat.com>
+
+	* TestListCommand.java (testListPC()): Mark as unresolved, 5332.
+	(testListFunction()): Mark as unresolved, 5333.
+
+2007-11-14  Andrew Cagney  <cagney@redhat.com>
+
+	* ParameterizedCommand.java (complete(CLI,Input,int,List)): New.
+	(completer(CLI,Input,int,List)): New.
+	* Input.java (incompleteToken(int)): New.
+	(base(int)): Delete.
+	(Token.absolute(int)): New.
+	(start(int,int)): Delete.
+	* CompletionFactory.java: Use Input.incompleteToken(int).
+	(completeFocusedExpression): Delete.
+	* WhichsetsCommand.java: Ditto.
+	* AliasCommands.java: Update.
+	* ActionPointCommands.java: Update.
+	* AttachCommand.java: Update.
+	* CoreCommand.java: Update.
+	* DbgVariableCommands.java: Update.
+	* DebuginfoCommand.java: Update.
+	* DefsetCommand.java: Update.
+	* DetachCommand.java: Update.
+	* DisassembleCommand.java: Update.
+	* DisplayCommand.java: Update.
+	* TestParameterizedCommand.java: Ditto.
+	* StepNextiCommand.java: Ditto.
+	* StepNextCommand.java: Ditto.
+	* StepInstructionCommand.java: Ditto.
+	* StepFinishCommand.java: Ditto.
+	* StepCommand.java: Ditto.
+	* RegsCommand.java: Ditto.
+	* StackCommands.java: Ditto.
+	* QuitCommand.java: Ditto.
+	* PtypeCommand.java: Ditto.
+	* PlocationCommand.java: Ditto.
+	* PeekCommand.java: Ditto.
+	* LoadCommand.java: Ditto.
+	* ListCommand.java: Ditto.
+	* HaltCommand.java: Ditto.
+	* GoCommand.java: Update.
+	* FocusCommand.java: Update.
+	* ExamineCommand.java: Update.
+	* EvalCommands.java: Update.
+	* WhatCommand.java: Ditto.
+	* ViewsetCommand.java: Ditto.
+	* UndefsetCommand.java: Ditto.
+
+	* TestParameterizedCommand.java (testShortAmbigiousOption()): New.
+	(testShortUnambigiousOption()): New.
+	* ParameterizedCommand.java: Allow shortened form of options.
+	
+	* TestCompletionFactory.java: New.
+	* Input.java (base(int)): New.
+	(cursor(int,int)): New.
+	* Command.java (complete(CLI,Input,int,List)): Make abstract.
+	* ParameterizedCommand.java (complete(CLI,Input,int,List)): Delete.
+	(complete(CLI,PTSet,String,int,List)): Delete.
+	* CompletionFactory.java (completeExpression(CLI,Input,int,List)):
+	Replace completeExpression(CLI,PTSet,String,int,List).
+	(completeFileName(CLI,Input,int,List)): Replace
+	completeFileName(CLI,String,int,List); handle multiple arguments.
+	* WhichsetsCommand.java: Update.
+	* WhatCommand.java: Update.
+	* ViewsetCommand.java: Update.
+	* UndefsetCommand.java: Update.
+	* TestParameterizedCommand.java: Update.
+	* StepNextiCommand.java: Update.
+	* StepNextCommand.java: Update.
+	* StepInstructionCommand.java: Update.
+	* StepFinishCommand.java: Update.
+	* StepCommand.java: Update.
+	* RunCommand.java: Update.
+	* StackCommands.java: Update.
+	* QuitCommand.java: Update.
+	* RegsCommand.java: Update.
+	* PtypeCommand.java: Update.
+	* PlocationCommand.java: Update.
+	* PeekCommand.java: Update.
+	* LoadCommand.java: Update.
+	* ListCommand.java: Update.
+	* HaltCommand.java: Update.
+	* GoCommand.java: Update.
+	* FocusCommand.java: Update.
+	* EvalCommands.java: Update.
+	* ExamineCommand.java: Update.
+	* DisplayCommand.java: Update.
+	* DisassembleCommand.java: Update.
+	* DetachCommand.java: Update.
+	* CoreCommand.java: Update.
+	* DefsetCommand.java: Update.
+	* DebuginfoCommand.java: Update.
+	* AttachCommand.java: Update.
+	* ActionPointCommands.java: Update.
+	* BreakpointCommand.java: Update.
+	* DbgVariableCommands.java: Update.
+
+2007-11-14  Mark Wielaard  <mwielaard@redhat.com>
+
+	* CLI.java (addMessage): New variant that takes a possible
+	exception cause.
+	(doAttach): Use new addMessage().
+	(execCommand): Likewise.
+	(flushMessages): Add possible exception cause if present.
+	Actually flush outWriter.
+	* EvalCommands.java (eval): Add possible RuntimeException cause.
+	* Message.java (Message): Add constructor that takes a possible
+	exception cause.
+	(getException): New method.
+	* PlocationCommand.java (interpret): Add possible RuntimeException
+	cause.
+>>>>>>> b88be9142254b4b1c5d5cd094137f52861ad9432:frysk-core/frysk/hpd/ChangeLog
 
 2007-11-13  Stan Cox  <scox@redhat.com>
 

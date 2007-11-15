@@ -54,6 +54,7 @@ public class Symbol
   public final String name;
   public final long value;
   public final long size;
+    public final long offset; // Relative to ELF file start.
   public final ElfSymbolType type;
   public final long shndx;
 
@@ -76,11 +77,12 @@ public class Symbol
    *   zero-length array.
    */
   public Symbol(final String name, ElfSymbolType type, long value,
-		long size, long shndx, List versions)
+		long offset, long size, long shndx, List versions)
   {
     this.name = name;
     this.type = type;
     this.value = value;
+    this.offset = offset;
     this.size = size;
     this.shndx = shndx;
 

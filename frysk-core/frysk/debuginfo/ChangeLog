@@ -1,3 +1,13 @@
+007-11-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	DwarfDie::getDataMemberLocation now throws DwAttributeNotFoundException
+	instead of DwException.
+	* TypeEntry.java (getUnionType): Updated.
+
+2007-11-15  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfo.java: Use AST not ExprAST.
+
 2007-11-12  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfoStackFactory.java (printStackTrace): Handle -ve

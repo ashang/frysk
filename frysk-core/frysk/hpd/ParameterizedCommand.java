@@ -68,9 +68,17 @@ abstract class ParameterizedCommand extends Command {
     }
 
     private CommandOption lookupOption(String name) {
-	CommandOption commandOption = (CommandOption)longOptions.get(name);
-	if (commandOption == null)
-	    commandOption = (CommandOption)shortOptions.get(name);
+	CommandOption commandOption = (CommandOption)shortOptions.get(name);
+	if (commandOption != null)
+	    return commandOption;
+	for (Iterator i = longOptions.values().iterator(); i.hasNext(); ) {
+	    CommandOption option = (CommandOption)i.next();
+	    if (option.longName.startsWith(name)) {
+		if (commandOption != null)
+		    return null; // ambigious
+		commandOption = option;
+	    }
+	}
 	return commandOption;
     }
 
@@ -168,26 +176,33 @@ abstract class ParameterizedCommand extends Command {
     abstract void interpret(CLI cli, Input input, Object options);
 
     /**
-     * Complete the input.
+     * Complete the options, and then complete the command.
      */
     final int complete(CLI cli, Input input, int cursor, List candidates) {
-	int start;
-	if (input.size() == 0)
-	    start = cursor;
-	else
-	    start = input.token(0).start;
-	int pos = complete(cli, cli.getCommandPTSet(input),
-			   input.stringValue(), cursor - start, candidates);
-	if (pos >= 0) {
-	    return pos + start;
-	} else {
-	    return -1;
+	// First try a command line option.
+	Input.Token incompleteToken = input.incompleteToken(cursor);
+	if (incompleteToken.value.startsWith("-")) {
+	    // If it looks like an option, try expanding it.
+	    String name = optionName(incompleteToken.value);
+	    for (Iterator i = longOptions.values().iterator(); i.hasNext(); ) {
+		CommandOption commandOption = (CommandOption)i.next();
+		if (commandOption.longName.startsWith(name))
+		    candidates.add("-" + commandOption.longName);
+	    }
+	    CompletionFactory.padSingleCandidate(candidates);
+	    if (candidates.size() > 0)
+		// Should the command also get a chance to do a
+		// completion?  If so things get complicated as the
+		// "offset" for this and that of the command need to
+		// be aligned.
+		return incompleteToken.start;
 	}
+	return completer(cli, input, cursor, candidates);
     }
 
     /**
-     * Complete the string.
+     * Complete the command's parameters.
      */
-    abstract int complete(CLI cli, PTSet ptset, String incomplete,
-			  int base, List candidates);
+    abstract int completer(CLI cli, Input input, int cursor,
+			   List candidates);
 }

@@ -48,9 +48,12 @@ abstract class DbgVariableCommands extends ParameterizedCommand {
 	super(name, description, syntax, full);
     }
 
-    int complete(CLI cli, PTSet ptset, String incomplete, int base,
-		 List completions) {
-	return cli.dbgvars.complete(incomplete, base, completions);
+    int completer(CLI cli, Input input, int cursor, List completions) {
+	Input.Token incomplete = input.incompleteToken(cursor);
+	int newOffset = cli.dbgvars.complete(incomplete.value,
+					     incomplete.end - incomplete.start,
+					     completions);
+	return incomplete.absolute(newOffset);
     }
 
     static class Set extends DbgVariableCommands {

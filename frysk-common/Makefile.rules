@@ -80,6 +80,8 @@ noinst_LIBRARIES =
 man_MANS =
 LDADD = 
 ANTLR_BUILT =
+SCRIPT_BUILT =
+JAVAH_BUILT =
 
 check_SCRIPTS =
 check_PROGRAMS =
@@ -193,6 +195,18 @@ AM_CFLAGS = \
 AM_CCASFLAGS = \
 	-I$(top_srcdir)/../frysk-imports/include \
 	$(ZZZ)
+
+
+# Within the BUILT_SOURCES, need to force some dependencies.  For
+# instance: JAVAH isn't run until all script-generated files it may
+# need to import have been generated.
+
+# Use GMAKE's order-only prerequisite feature.
+
+.PHONY: built-sources
+built-sources: $(BUILT_SOURCES)
+$(ANTLR_BUILT): | $(SCRIPT_BUILT)
+$(JAVAH_BUILT): | $(SCRIPT_BUILT) $(ANTLR_BUILT)
 
 
 # Rules for building a .java file from any of a .mkclass file, a
@@ -469,12 +483,19 @@ endif
 # running the generated files through the compiler and then "fix" the
 # warnings.  Reuse the tmp directory for successive runs on related .g files.
 
-SUFFIXES += .antlered .g
-.g.antlered:
-	mkdir -p $(@D)/antlr.tmp
-	$(ANTLR) -o $(@D)/antlr.tmp \$(srcdir)/$*.g
+ANTLR = $(JAVA) \
+	-classpath @abs_builddir@/../frysk-imports/antlr.jar \
+	antlr.Tool
+
+SUFFIXES += .antlred .g
+.g.antlred:
+	mkdir -p $*.tmp
+	b=`basename $*` ; \
+	d=`dirname $*` ; \
+	cd $$d ; \
+	$(ANTLR) -o $$b.tmp @abs_srcdir@/$*.g
 	@echo "Setting up generated files ..." ; \
-	d=$(@D)/antlr.tmp ; for gen in $$d/*.java ; do \
+	d=$*.tmp ; for gen in $$d/*.java ; do \
 	    b=`basename $$gen .java` ; \
 	    ( set -x ; mv $$gen $$d/$$b.gen ) ; \
 	    ( set -x ; rm -f $$d/../$$b.java ) ; \
@@ -485,7 +506,7 @@ SUFFIXES += .antlered .g
 	        fi ; \
 	    done ; \
 	done
-	@edits=true ; d=$(@D)/antlr.tmp ; \
+	@edits=true ; d=$*.tmp ; \
 	while $$edits ; do \
 	    edits=false ; \
 	    echo "Applying fixes ..." ; \
@@ -530,13 +551,12 @@ SUFFIXES += .antlered .g
 		edits=true ; \
 	    done ; \
 	done || true
-	@echo Installing .java files ... ; \
-	d=$(@D)/antlr.tmp ; for java in $$d/*.java ; do \
-	    b=`basename $$java` ; \
-	    ( set -x ; cp $$java $$d/../$$b ) ; \
-	done
-	rm -rf $*.antlered
-	touch $*.antlered
+	@echo Installing generated files files ... ; \
+	( cd $*.tmp ; for f in *.java *.txt ; do \
+	    ( set -x ; cp $$f ../$$f ) ; \
+	done )
+	rm -rf $*.antlred
+	touch $*.antlred
 
 # Get things building on 64-bit-X-32-bit environment.  Mainly need to
 # remove any attempt to force the compile to 64-bit.

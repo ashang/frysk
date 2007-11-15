@@ -104,8 +104,7 @@ class AttachCommand extends ParameterizedCommand {
 	}
     }
 
-    int complete(CLI cli, PTSet ptset, String input, int base,
-		 List completions) {
+    int completer(CLI cli, Input input, int base, List completions) {
 	return -1;
     }
 }

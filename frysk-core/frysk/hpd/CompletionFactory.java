@@ -57,17 +57,21 @@ class CompletionFactory {
 	}
     }
 
-    static int completeFocusedExpression(CLI cli, Input input, int cursor,
-					 List candidates) {
-        PTSet ptset = cli.getCommandPTSet(input);
-	String incomplete = input.stringValue();
-	int start = input.token(0).start;
+    static int completeExpression(CLI cli, Input input, int cursor,
+				  List candidates) {
+	PTSet ptset = cli.getCommandPTSet(input);
 	Iterator i = ptset.getTasks();
 	if (!i.hasNext()) {
 	    // Should still be able to complete $variables.
 	    return -1;
 	} else {
-	    int newCursor = -1;
+	    int newOffset = -1;
+	    String incomplete = input.stringValue();
+	    int start;
+	    if (input.size() == 0)
+		start = cursor;
+	    else
+		start = input.token(0).start;
 	    do {
 		Task task = (Task)i.next();
 		DebugInfoFrame frame = cli.getTaskFrame(task);
@@ -75,52 +79,39 @@ class CompletionFactory {
 		int tmp = debugInfo.complete(frame, incomplete,
 					     cursor - start, candidates);
 		if (tmp >= 0)
-		    newCursor = tmp;
+		    newOffset = tmp;
 	    } while (i.hasNext());
 	    // If only one candidate, pad out with a space.
 	    padSingleCandidate(candidates);
 	    // System.out.println("start=" + start);
-	    // System.out.println("cursor=" + cursor);
+	    // System.out.println("offset=" + offset);
 	    // System.out.println("candidates=" + candidates);
 	    // System.out.println("newCursor=" + newCursor);
-	    if (newCursor >= 0)
-		return newCursor + start;
-	    else
+	    if (newOffset < 0)
 		return -1;
+	    else
+		return newOffset + start;
 	}
     }
 
-    static int completeExpression(CLI cli, PTSet ptset,
-				  String incomplete, int base,
-				  List candidates) {
-	Iterator i = ptset.getTasks();
-	if (!i.hasNext()) {
-	    // Should still be able to complete $variables.
-	    return -1;
-	} else {
-	    int newCursor = -1;
-	    do {
-		Task task = (Task)i.next();
-		DebugInfoFrame frame = cli.getTaskFrame(task);
-		DebugInfo debugInfo = cli.getTaskDebugInfo(task);
-		int tmp = debugInfo.complete(frame, incomplete,
-					     base, candidates);
-		if (tmp >= 0)
-		    newCursor = tmp;
-	    } while (i.hasNext());
-	    // If only one candidate, pad out with a space.
-	    padSingleCandidate(candidates);
-	    // System.out.println("start=" + start);
-	    // System.out.println("base=" + base);
-	    // System.out.println("candidates=" + candidates);
-	    // System.out.println("newCursor=" + newCursor);
-	    return newCursor;
-	}
-    }
-
-    static int completeFileName(CLI cli, String incomplete, int base,
+    static int completeFileName(CLI cli, Input input, int cursor,
 				List candidates) {
-	return new FileNameCompletor().complete(incomplete, base,
-						candidates);
+	// System.out.println("input.stringValue()=" + input.stringValue());
+	// System.out.println("cursor=" + cursor);
+	// System.out.println("input.size()=" + input.size());
+	if (input.size() == 0) {
+	    int newOffset
+		= new FileNameCompletor().complete("", 0, candidates);
+	    if (newOffset < 0)
+		return -1;
+	    else
+		return newOffset + cursor;
+	} else {
+	    Input.Token incomplete = input.incompleteToken(cursor);
+	    int newOffset = new FileNameCompletor()
+		.complete(incomplete.value, incomplete.end - incomplete.start,
+			  candidates);
+	    return incomplete.absolute(newOffset);
+	}
     }
 }

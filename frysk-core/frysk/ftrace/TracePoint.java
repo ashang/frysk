@@ -41,19 +41,25 @@ package frysk.ftrace;
 
 public class TracePoint
 {
-  /** The address of the tracepoint. */
-  public final long address;
+    /** The address of the tracepoint. */
+    public final long address;
 
-  /** The symbol this tracepoint belongs to. */
-  public final Symbol symbol;
+    /** The offset of the tracepoint, relative to the start of its ELF
+     * file (or, rather, the address space part occupied by that
+     * file). */
+    public final long offset;
 
-  /** The origin of this tracepoint. */
-  public final TracePointOrigin origin;
+    /** The symbol this tracepoint belongs to. */
+    public final Symbol symbol;
 
-  TracePoint(long address, Symbol symbol, TracePointOrigin origin)
-  {
-    this.address = address;
-    this.symbol = symbol;
-    this.origin = origin;
-  }
+    /** The origin of this tracepoint. */
+    public final TracePointOrigin origin;
+
+    TracePoint(long address, long offset, Symbol symbol, TracePointOrigin origin)
+    {
+	this.address = address;
+	this.offset = offset;
+	this.symbol = symbol;
+	this.origin = origin;
+    }
 }

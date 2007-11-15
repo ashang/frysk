@@ -39,8 +39,9 @@
 
 package frysk.value;
 
+import java.math.BigInteger;
+
 import inua.eio.ByteOrder;
-import inua.eio.ByteBuffer;
 
 /**
  * Arithmetic and Logical Operation handling
@@ -55,6 +56,8 @@ public abstract class ArithmeticUnit
     // Integer return type for relational, equality
     // and logical operations.
     protected IntegerType intType;
+
+    protected int wordSize;
     
     protected ArithmeticUnit(int wordSize) {
 	// XXX: Is endianness okay?
@@ -62,6 +65,7 @@ public abstract class ArithmeticUnit
 	// size of machine.
 	intType = new UnsignedType ("int", ByteOrder.LITTLE_ENDIAN, 
 		                    wordSize);
+	this.wordSize = wordSize;
     }
     
     // Multiplicative and Additive expressions
@@ -140,23 +144,21 @@ public abstract class ArithmeticUnit
                   (v1.getType(), "~");
     }
     
-    // Logical expressions - valid for scalar types.
+    // Logical expressions - valid for any scalar types.
     public Value logicalAnd (Value v1, Value v2) {
-        throw new InvalidOperatorException
-                  (v1.getType(), v2.getType(), "&&");
+	return intType.createValue( 
+		       (getLogicalValue(v1) && getLogicalValue(v2)) ? 1:0);
     }
     public Value logicalOr (Value v1, Value v2) {
-        throw new InvalidOperatorException
-                  (v1.getType(), v2.getType(), "||");
+	return intType.createValue( 
+		       (getLogicalValue(v1) || getLogicalValue(v2)) ? 1:0);
     }
-    public Value logicalNegation(Value v1, ByteBuffer mem) {
-        throw new InvalidOperatorException
-                  (v1.getType(), "!");
+    public Value logicalNegation(Value v1) {
+	return intType.createValue( getLogicalValue(v1) ? 0:1);
     }     
     public boolean getLogicalValue (Value v1) {
-        throw new InvalidOperatorException
-                  (v1.getType(), "bool");
-    }  
+	return (!(v1.asBigInteger().compareTo(BigInteger.ZERO) == 0)); 
+    }    
     
     // Assigment expressions.
     public Value plusEqual(Value v1, Value v2) {

@@ -77,7 +77,10 @@ class PlocationCommand extends ParameterizedCommand {
             try {
                 result = cli.parseValue(task, sInput);	  
             } catch (RuntimeException nnfe) {
-                cli.addMessage(nnfe.getMessage(), Message.TYPE_ERROR);
+		String msg = nnfe.getMessage();
+		if (msg == null || msg.equals(""))
+		    msg = nnfe.toString();
+                cli.addMessage(msg, Message.TYPE_ERROR, nnfe);
                 continue;
             }
 	    result.getLocation().toPrint(cli.outWriter);
@@ -89,9 +92,8 @@ class PlocationCommand extends ParameterizedCommand {
         }
     }
 
-    int complete(CLI cli, PTSet ptset, String incomplete, int base,
-		 List completions) {
-	return CompletionFactory.completeExpression(cli, ptset, incomplete,
-						    base, completions);
+    int completer(CLI cli, Input input, int cursor, List completions) {
+	return CompletionFactory.completeExpression(cli, input, cursor,
+						    completions);
     }
 }

@@ -86,7 +86,6 @@ class CExprParser extends Parser;
 options {
     defaultErrorHandler=false;
     buildAST=true;
-    ASTLabelType = "ExprAST";
     k=2;
 }
 
@@ -314,7 +313,7 @@ cast_expression!
     ;
   
 postfix_expression!
-    { ExprAST astPostExpr = null; 
+    { AST astPostExpr = null; 
     }   
     :(   sc_expr: scope_expression
          {  astPostExpr = #sc_expr; 
