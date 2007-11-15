@@ -1,3 +1,8 @@
+2007-11-15  Andrew Cagney  <cagney@redhat.com>
+
+	* TestListCommand.java (testListPC()): Mark as unresolved, 5332.
+	(testListFunction()): Mark as unresolved, 5333.
+	
 2007-11-14  Andrew Cagney  <cagney@redhat.com>
 
 	* ParameterizedCommand.java (complete(CLI,Input,int,List)): New.

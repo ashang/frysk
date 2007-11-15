@@ -51,6 +51,8 @@ public class TestListCommand extends TestLib {
     }
 
     public void testListPC() {
+	if (unresolved(5332))
+	    return;
 	e = HpdTestbed.run("hpd-c");
         e.send("break main\n");
         e.expect("breakpoint.*" + prompt);
@@ -66,6 +68,8 @@ public class TestListCommand extends TestLib {
     }
 
     public void testListFunction() {
+	if (unresolved(5333))
+	    return;
 	e = HpdTestbed.run("hpd-c");
         e.send("break main\n");
         e.expect("breakpoint.*" + prompt);
