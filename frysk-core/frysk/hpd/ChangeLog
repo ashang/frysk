@@ -116,7 +116,6 @@
 	(getException): New method.
 	* PlocationCommand.java (interpret): Add possible RuntimeException
 	cause.
->>>>>>> b88be9142254b4b1c5d5cd094137f52861ad9432:frysk-core/frysk/hpd/ChangeLog
 
 2007-11-13  Stan Cox  <scox@redhat.com>
 
