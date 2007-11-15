@@ -1,3 +1,12 @@
+2007-11-15  Andrew Cagney  <cagney@redhat.com>
+
+	* Errno.java (Errno()): Delete.
+	(Eio): New.
+	(toString()): Delete.
+	(message): Delete.
+	(Errno(String)): Pass reason to super-class.
+	* cni/Errno.cxx (throwErrno): Update.
+
 2007-10-30  Andrew Cagney  <cagney@redhat.com>
 
 	* SyscallNum.java-sh: Rename SyscallNum.shjava.

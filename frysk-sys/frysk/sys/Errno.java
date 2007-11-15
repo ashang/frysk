@@ -48,6 +48,10 @@ public class Errno
 {
     private static final long serialVersionUID = 1L;
 
+    protected Errno (String message) {
+	super(message);
+    }
+
     /**
      * Bad file descriptor.
      */
@@ -140,22 +144,13 @@ public class Errno
     }
 
     /**
-     * Returns the error message string for this error.
+     * Input/Output Error.
      */
-    public String toString ()
-    {
-	return message;
-    }
-    private String message;
-
-    protected Errno (String message)
-    {
-	this.message = message;
-    }
-
-    protected Errno ()
-    {
-	this.message = "internal error";
+    static public class Eio extends Errno {
+        private static final long serialVersionUID = 1L;
+	protected Eio (String message) {
+	    super (message);
+	}
     }
 
     static native void throwErrno (int err, String prefix);

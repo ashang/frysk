@@ -127,6 +127,10 @@ throwErrno (int err, jstring jmessage)
   case EPERM:
     throw new frysk::sys::Errno$Eperm (jmessage);
 #endif
+#ifdef EIO
+  case EIO:
+    throw new frysk::sys::Errno$Eio (jmessage);
+#endif
   default:
     throw new frysk::sys::Errno (jmessage);
   }
