@@ -659,20 +659,25 @@ grep -e '\.g$' files.list | while read g
 do
   d=`dirname $g`
   b=`basename $g .g`
-  echo "CLEANFILES += $d/$b.antlered"
+  echo "CLEANFILES += $d/$b.antlred"
   echo "CLEANDIRS += $d/$b.tmp"
-  IMPORTVOCAB=$(awk -v DIR=$d -F = '/importVocab/ {gsub("Parser;",".antlered",$2);printf "%s/%s ",DIR,$2}' $g)
-  echo "$d/$b.antlered: $g ${IMPORTVOCAB}"
-  (
-      awk '/class/ { print $2 }' $g
-      awk '/class .* extends .*Parser/ { print $2"TokenTypes" }' $g
-  ) | while read c
+  awk '
+BEGIN { FS = "=" }
+/importVocab/ {
+    gsub(";","",$2)
+    print "'$d/$b'.antlred: '$d'/" $2 "TokenTypes.txt"
+}' $g
+  awk '
+/class/ { print $2 ".java" }
+/class .* extends .*Parser/ { print $2 "TokenTypes.java" }
+/class .* extends .*Parser/ { print $2 "TokenTypes.txt" }
+' $g | while read c
   do
-    echo "# Dummy dependency, see implicit .g.antlered for generation"
-    echo "$d/$c.java: $d/$b.antlered"
-    echo "BUILT_SOURCES += $d/$c.java"
-    echo "ANTLR_BUILT += $d/$c.java"
-    echo "${sources} += $d/$c.java"
+    echo "# Dummy dependency, see implicit .g.antlred for generation"
+    echo "$d/$c: $d/$b.antlred"
+    echo "BUILT_SOURCES += $d/$c"
+    echo "ANTLR_BUILT += $d/$c"
+    echo "${sources} += $d/$c"
   done
 done
 

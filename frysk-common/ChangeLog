@@ -1,5 +1,12 @@
 2007-11-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (.g.antlred): Rename .g.antlered; use a tmp
+	directory named according to the target.
+	(javah-built): Delete.
+	(ANTLR): Define.
+	* Makefile.gen.sh: Rename .antlered to .antlred.  Include
+	*TokenTypes.txt in list of generated files.
+
 	* Makefile.rules (built-sources): New.
 	($(SCRIPT_BUILT)): New.
 	($(JAVAH_BUILT)): New.
