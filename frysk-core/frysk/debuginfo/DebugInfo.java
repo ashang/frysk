@@ -38,11 +38,10 @@
 // exception.
 package frysk.debuginfo;
 
-import antlr.CommonAST;
+import antlr.collections.AST;
 import frysk.dwfl.DwflCache;
 import frysk.expr.CExprLexer;
 import frysk.expr.CExprParser;
-import frysk.expr.ExprAST;
 import frysk.expr.ExprSymTab;
 import frysk.expr.CExprEvaluator;
 import frysk.proc.Proc;
@@ -104,7 +103,6 @@ public class DebugInfo {
 	sInput += (char)3;
 	CExprLexer lexer = new CExprLexer(new StringReader(sInput));
 	CExprParser parser = new CExprParser(lexer);
-	parser.setASTNodeClass("frysk.expr.ExprAST");
 	try {
 	    parser.start();
 	} catch (antlr.RecognitionException ignore) {
@@ -218,7 +216,6 @@ public class DebugInfo {
     
 	CExprLexer lexer = new CExprLexer(new StringReader(sInput));
 	CExprParser parser = new CExprParser(lexer);
-	parser.setASTNodeClass("frysk.expr.ExprAST");
 	try {
 	    parser.start();
 	} catch (antlr.RecognitionException r) {
@@ -229,7 +226,7 @@ public class DebugInfo {
 	    throw new RuntimeException(t);
 	}
     
-	ExprAST exprAST = (ExprAST) parser.getAST();
+	AST exprAST = parser.getAST();
 	if (dumpTree)
 	    System.out.println("parse tree: " + exprAST.toStringTree());
 	CExprEvaluator cExprEvaluator;
@@ -264,7 +261,6 @@ public class DebugInfo {
     
 	CExprLexer lexer = new CExprLexer(new StringReader(sInput));
 	CExprParser parser = new CExprParser(lexer);
-	parser.setASTNodeClass("frysk.expr.ExprAST");
 	try {
 	    parser.start();
 	} catch (antlr.RecognitionException r) {
@@ -273,7 +269,7 @@ public class DebugInfo {
 	    throw new RuntimeException(t);
 	}
     
-	CommonAST t = (CommonAST) parser.getAST();
+	AST t = parser.getAST();
 	if (dump_tree)
 	    // Print the resulting tree out in LISP notation
 	    System.out.println("parse tree: " + t.toStringTree());

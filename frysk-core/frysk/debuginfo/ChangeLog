@@ -1,3 +1,7 @@
+2007-11-15  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfo.java: Use AST not ExprAST.
+
 2007-11-12  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfoStackFactory.java (printStackTrace): Handle -ve

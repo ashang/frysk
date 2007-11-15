@@ -87,7 +87,6 @@ header
     import frysk.value.FloatingPointType;
     import frysk.value.Value;
     import frysk.expr.ExprSymTab;
-    import frysk.expr.ExprAST;
     import inua.eio.ByteOrder;
     import lib.dwfl.BaseTypes;
 }
@@ -96,7 +95,6 @@ class CExprEvaluator extends TreeParser;
 
 options {
     importVocab=CExprParser;
-    ASTLabelType = "ExprAST";
 }
 
 {
