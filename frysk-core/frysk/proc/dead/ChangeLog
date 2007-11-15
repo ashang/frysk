@@ -1,3 +1,8 @@
+2007-11-15  pmuldoon  <pmuldoon@redhat.com>
+
+	* TestLinuxCore.java (testLinuxCoreFileStackTrace): Use DaemonBlockedAtSignal.
+	Create live map first, then core.
+
 2007-11-08  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxHost.java (LinuxHost): Check for null Elf Header
