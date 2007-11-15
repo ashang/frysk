@@ -1,5 +1,9 @@
 2007-11-14  Petr Machata  <pmachata@redhat.com>
 
+	* ChangeLog: remove paths from my previous entry
+
+2007-11-14  Petr Machata  <pmachata@redhat.com>
+
 	* TestLtrace.java (testAllLibrariesGetDetected): No longer
 	unresolvedx8664.
 	(testCallRecorded): Ditto.
@@ -7,12 +11,12 @@
 
 2007-11-14  Petr Machata  <pmachata@redhat.com>
 
-	* frysk-core/frysk/ftrace/Symbol.java (offset): New field.
-	* frysk-core/frysk/ftrace/TracePoint.java (offset): New field.
-	* frysk-core/frysk/ftrace/ObjectFile.java: Support `offset'.
-	* frysk-core/frysk/ftrace/MemoryMapping.java: Rewritten.
-	* frysk-core/frysk/ftrace/MappingGuard.java: Adapted to above.
-	* frysk-core/frysk/ftrace/Ltrace.java: Adapted to above.
+	* Symbol.java (offset): New field.
+	* TracePoint.java (offset): New field.
+	* ObjectFile.java: Support `offset'.
+	* MemoryMapping.java: Rewritten.
+	* MappingGuard.java: Adapted to above.
+	* Ltrace.java: Adapted to above.
 
 2007-11-13  Sami Wagiaalla  <swagiaal@redhat.com>
 

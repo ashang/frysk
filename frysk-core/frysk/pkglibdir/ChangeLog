@@ -1,3 +1,9 @@
+2007-11-15  Petr Machata  <pmachata@redhat.com>
+
+	* funit-fib-fork.c: When a child dies on signal, kills itself with
+	that same signal.
+	(breakpoint_me) New dummy function.
+
 2007-11-13 Teresa Thomas <tthomas@redhat.com>
 
 	* funit-addresses.c (ptr): New.
