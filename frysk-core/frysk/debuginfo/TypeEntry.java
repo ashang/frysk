@@ -39,20 +39,14 @@
 
 package frysk.debuginfo;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import lib.dwfl.BaseTypes;
-import lib.dwfl.DwException;
-import lib.dwfl.DwarfDie;
-import lib.dwfl.DwTag;
-import lib.dwfl.DwAt;
 import frysk.isa.ISA;
+import frysk.value.Access;
 import frysk.value.ArrayType;
 import frysk.value.CharType;
-import frysk.value.GccStructOrClassType;
 import frysk.value.ConstType;
 import frysk.value.EnumType;
 import frysk.value.FunctionType;
+import frysk.value.GccStructOrClassType;
 import frysk.value.PointerType;
 import frysk.value.SignedType;
 import frysk.value.StandardTypes;
@@ -65,8 +59,16 @@ import frysk.value.Value;
 import frysk.value.VoidType;
 import frysk.value.VolatileType;
 import inua.eio.ByteOrder;
-import frysk.value.Access;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import lib.dwfl.BaseTypes;
 import lib.dwfl.DwAccess;
+import lib.dwfl.DwAt;
+import lib.dwfl.DwAttributeNotFoundException;
+import lib.dwfl.DwTag;
+import lib.dwfl.DwarfDie;
 
 public class TypeEntry
 {
@@ -132,7 +134,7 @@ public class TypeEntry
 	    long offset;
 	    try {
 		offset = member.getDataMemberLocation();
-	    } catch (DwException de) {
+	    } catch (DwAttributeNotFoundException de) {
 		offset = 0; // union
 	    }
 
@@ -189,7 +191,7 @@ public class TypeEntry
 	    long offset;
 	    try {
 		offset = member.getDataMemberLocation();
-	    } catch (DwException de) {
+	    } catch (DwAttributeNotFoundException de) {
 		offset = 0; // union
 	    }
 
