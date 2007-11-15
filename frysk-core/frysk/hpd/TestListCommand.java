@@ -51,47 +51,80 @@ public class TestListCommand extends TestLib {
     }
 
     public void testListPC() {
-	e = HpdTestbed.run("hpd-c");
+	e = HpdTestbed.run("funit-quicksort");
         e.send("break main\n");
         e.expect("breakpoint.*" + prompt);
         e.send("go\n");
         e.expect("go.*\n" + prompt + "Breakpoint");
+	// Matching the list expected output is a trial and error process
+	// as the matching tends to be greedy.
 	e.send("list\n");
-	e.expect(".*208.*int.*209.*int.*210.*int_21.*211.*int_21.*215.*int.*" +
-		 "216.*main.*\\*.*218.*if.*219.*fprintf" +
-		 ".*221.*int.*222.*int.*.*223.*return.*224.*");
+	e.expect("114.*114");
+	e.expect("115.*115.*printf");
+	e.expect("116.*116.*return 1");
+	e.expect("117.*117");
+	e.expect("118.*118.*return 0");
+	e.expect("119.*119");
+	e.expect("120.*120");
+	e.expect("121.*121");
+	e.expect("122.*122.*main");
+	e.expect("123.*123");
+	e.expect("\\* 124.*124");
+	e.expect("125.*125");
         e.send("quit\n");
         e.expect("quit.*\nQuitting...");
         e.close();
     }
 
+
+
     public void testListFunction() {
-	e = HpdTestbed.run("hpd-c");
+	e = HpdTestbed.run("funit-quicksort");
         e.send("break main\n");
         e.expect("breakpoint.*" + prompt);
         e.send("go\n");
         e.expect("go.*\n" + prompt + "Breakpoint");
 	e.send("list\n");
 	e.expect(prompt);
-	e.send("list func_2\n");
-	e.expect(
-		 ".*158.*159.*typedef.*160.*static_class_t.*161.*enum.*" +
-		 "162.*static_class_t.*163.*struct.*164.*asm.*165.*struct.*" +
-		 "166.*asm.*167.*struct.*168.*struct.*169.*typedef.*" +
-		 "170.*volatile.*171.*long.*172.*int.*173.*float.*174.*char.*" +
-		 "175.*static_class_t.*176.*volatile.*177.*sportscar.*" +
-		 prompt);
+	e.send("list quicksort\n");
+	e.expect("81.*81");
+	e.expect("82.*82.*int");
+	e.expect("83.*83");
+	e.expect("84.*84");
+	e.expect("85.*85.*j =");
+	e.expect("86.*86.*x =");
+	e.expect("87.*87.*do");
+	e.expect("88.*88");
+	e.expect("89.*89");
+	e.expect("90.*90.*while");
+	e.expect("91.*91.*if");
+	e.expect("92.*92");
+	e.expect("93.*93.*w =");
+	e.expect("94.*94");
+	e.expect("95.*95.*a.j.");
+	e.expect("96.*96.*i =");
+	e.expect("97.*97.*j =");
+	e.expect("98.*98");
+	e.expect("99.*99.*while");
+	e.expect("100.*100.*if");
 	e.send("list -length 10\n");
-	e.expect(
-		".*178.*char.*179.*short.*180.*int.*181.*long.*182.*float.*" +
-		"183.*double.*184.*assign_long_arr.*185.*assign_int_arr.*");
+	e.expect("101.*101.*quicksort..a,l,j");
+	e.expect("102.*102.*if");
+	e.expect("103.*103.*quicksort..a,i,r");
+	e.expect("104.*104");
+	e.expect("105.*105");
+	e.expect("106.*106");
+	e.expect("107.*107");
+	e.expect("108.*108.*int");
+	e.expect("109.*109");
+	e.expect("110.*110");
         e.send("quit\n");
         e.expect("quit.*\nQuitting...");
         e.close();
     }
 
     public void testListReverse() {
-	e = HpdTestbed.run("hpd-c");
+	e = HpdTestbed.run("funit-quicksort");
         e.send("break main\n");
         e.expect("breakpoint.*" + prompt);
         e.send("go\n");
@@ -99,17 +132,34 @@ public class TestListCommand extends TestLib {
 	e.send("list\n");
 	e.expect(prompt);
 	e.send("list -length -10\n");
-	e.expect(".*198.*while.*202.*return.*205.*static.*206.*func_1.*207");
+	e.expect("104.*104");
+	e.expect("105.*105");
+	e.expect("106.*106");
+	e.expect("107.*107");
+	e.expect("108.*108.*int");
+	e.expect("109.*109.*quick ");
+	e.expect("110.*110");
+	e.expect("111.*111.*init_array");
+	e.expect("112.*112.*quicksort ");
+	e.expect("113.*113.*if");
 	e.send("list -length -10\n");
-	e.expect(".*188.*sportscar.*190.*int_p.*191.*class_p.*192.*class_p.*" +
-		 "193.*class_p.*194.*class_1.*196.*int_21.*197.*");
+	e.expect("94.*94.*a.i. =");
+	e.expect("95.*95.*a.j. =");
+	e.expect("96.*96.*i =");
+	e.expect("97.*97.*j =");
+	e.expect("98.*98");
+	e.expect("99.*99.*while");
+	e.expect("100.*100.*if .l");
+	e.expect("101.*101.*quicksort .a,l,j");
+	e.expect("102.*102.*if .i");
+	e.expect("103.*103.*quicksort .a,i,r");
         e.send("quit\n");
         e.expect("quit.*\nQuitting...");
         e.close();
     }
 
     public void testListErrors() {
-	e = HpdTestbed.run("hpd-c");
+	e = HpdTestbed.run("funit-quicksort");
         e.send("break main\n");
         e.expect("breakpoint.*" + prompt);
         e.send("go\n");
@@ -123,7 +173,3 @@ public class TestListCommand extends TestLib {
         e.close();
     }
 }
-
-
-
-		
