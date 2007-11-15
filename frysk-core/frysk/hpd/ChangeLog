@@ -6,6 +6,24 @@
 
 2007-11-15  Andrew Cagney  <cagney@redhat.com>
 
+	* PlocationCommand.java: Use CLI.printError(Exception).
+	* EvalCommands.java: Ditto.
+	* CLI.java (printError(Exception)): New.
+	(nasty(Exception)): New.
+	(doAttach()): Throw a RuntimeException when there
+	(execCommand(String)): Pass RuntimeExceptions to printError.
+	(commplete(String,int,List)): Print "nasty" exceptions.
+	* Message.java (Message): Remove constructor that takes a possible
+	exception cause.
+	(getException): Delete.
+	* CLI.java (addMessage): Delete variant that takes a possible
+	exception cause.
+	(flushMessages): Do not print exception cause if present.
+	* TestPlocationCommand.java (testPlocationFails()): Mark as
+	unresolved, 5345.
+
+2007-11-15  Andrew Cagney  <cagney@redhat.com>
+
 	* TestListCommand.java (testListPC()): Mark as unresolved, 5332.
 	(testListFunction()): Mark as unresolved, 5333.
 

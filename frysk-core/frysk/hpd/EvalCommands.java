@@ -94,11 +94,9 @@ abstract class EvalCommands extends ParameterizedCommand {
 	    }
 	    try {
 		result = cli.parseValue(task, expression, options.dumpTree);
-	    } catch (RuntimeException nnfe) {
-		String msg = nnfe.getMessage();
-		if (msg == null || msg.equals(""))
-		    msg = nnfe.toString();
-		cli.addMessage(msg, Message.TYPE_ERROR, nnfe);
+	    } catch (RuntimeException e) {
+		cli.outWriter.println();
+		cli.printError(e);
 		continue;
 	    }
 

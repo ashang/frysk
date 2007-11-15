@@ -123,8 +123,9 @@ public class CLI {
 	    return topLevelCommand.complete(this, new Input(buffer), cursor,
 					    candidates);
 	} catch (RuntimeException e) {
-	    // XXX - FIXME - What if this is something fatal?
-	    return -1;
+	    if (nasty(e))
+		e.printStackTrace(outWriter);
+	    return -1;		
 	}
     }
 
@@ -143,8 +144,7 @@ public class CLI {
 	    outWriter.print("Attached to process ");
 	    outWriter.println(attached);
         } catch (InterruptedException ie) {
-            addMessage("Attach interrupted.", Message.TYPE_ERROR, ie);
-            return;
+	    throw new RuntimeException("attachLatch interrupted");
         } finally {
             synchronized (this) {
                 attached = -1;
@@ -254,18 +254,39 @@ public class CLI {
 		    topLevelCommand.interpret(this, command);
                 }
             }
-            catch (InvalidCommandException ice) {
-                addMessage(ice.getMessage(), Message.TYPE_ERROR);
-	    }
             catch (RuntimeException e) {
-                String msg = e.getMessage();
-                if (msg == null || msg.equals(""))
-                    msg = e.toString();
-                addMessage(msg, Message.TYPE_DBG_ERROR, e);
+		printError(e);
             }
             flushMessages();
         }
         return null;
+    }
+
+    /**
+     * Identify "nasty", or internal exceptions; these are the
+     * RuntimeExceptions thrown by the Java system.
+     */
+    private boolean nasty(Exception e) {
+	Throwable cause = e;
+	while (true) {
+	    Throwable c = cause.getCause();
+	    if (c == null)
+		break;
+	    cause = c;
+	}
+	return (cause instanceof NullPointerException
+		|| e.getMessage() == null);
+    }
+
+    void printError(Exception e) {
+	if (nasty(e)) {
+	    outWriter.print("Internal Error: ");
+	    e.printStackTrace(outWriter);
+	    outWriter.println();
+	} else {
+	    outWriter.print("Error: ");
+	    outWriter.println(e.getMessage());
+	}
     }
 
     void addMessage(Message msg) {
@@ -274,10 +295,6 @@ public class CLI {
 
     void addMessage(String msg, int type) {
         addMessage(new Message(msg, type));
-    }
-
-    void addMessage(String msg, int type, Throwable exc) {
-        addMessage(new Message(msg, type, exc));
     }
 
     private void flushMessages() {
@@ -293,12 +310,8 @@ public class CLI {
             if (prefix != null)
                 outWriter.print(prefix);
             outWriter.println(tempmsg.getMessage());
-	    Throwable exc = tempmsg.getException();
-	    if (exc != null)
-		exc.printStackTrace(outWriter);
             iter.remove();
         }
-	outWriter.flush();
     }
 
     PTSet createSet(String set) {

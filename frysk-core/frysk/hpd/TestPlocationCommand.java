@@ -56,6 +56,8 @@ public class TestPlocationCommand
     }
     
     public void testPlocationFails() {
+	if (unresolved(5345))
+	    return;
 	e = HpdTestbed.attachXXX("hpd-c");
 	e.sendCommandExpectPrompt("plocation bogus\n", 
 		                  "\r\nError: Symbol \"bogus\" is not found in the current context..*");

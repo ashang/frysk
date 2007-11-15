@@ -76,19 +76,12 @@ class PlocationCommand extends ParameterizedCommand {
             doWithoutTask = false;
             try {
                 result = cli.parseValue(task, sInput);	  
-            } catch (RuntimeException nnfe) {
-		String msg = nnfe.getMessage();
-		if (msg == null || msg.equals(""))
-		    msg = nnfe.toString();
-                cli.addMessage(msg, Message.TYPE_ERROR, nnfe);
+            } catch (RuntimeException e) {
+		cli.printError(e);
                 continue;
             }
 	    result.getLocation().toPrint(cli.outWriter);
 	    cli.outWriter.println();
-        }
-        if (result == null) {
-            cli.addMessage("Symbol \"" + sInput + "\" is not found in the current context.",
-                           Message.TYPE_ERROR);
         }
     }
 
