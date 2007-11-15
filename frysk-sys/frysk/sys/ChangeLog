@@ -6,6 +6,7 @@
 	(message): Delete.
 	(Errno(String)): Pass reason to super-class.
 	* cni/Errno.cxx (throwErrno): Update.
+	(vajprintf): Throw a runtime exception when things fail.
 
 2007-10-30  Andrew Cagney  <cagney@redhat.com>
 

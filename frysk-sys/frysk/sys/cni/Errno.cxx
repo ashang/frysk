@@ -1,7 +1,7 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Oracle Corporation.
 // Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2007 Oracle Corporation.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@
 #include "frysk/sys/Errno$Echild.h"
 #include "frysk/sys/Errno$Esrch.h"
 #include "frysk/sys/Errno$Eperm.h"
+#include "frysk/sys/Errno$Eio.h"
 #include "frysk/sys/cni/Errno.hxx"
 
 /**
@@ -83,11 +84,11 @@ vajprintf (const char *fmt, va_list ap)
 {
   char* message = NULL;
   if (::vasprintf (&message, fmt, ap) < 0)
-    throw new frysk::sys::Errno ();      
+    throwRuntimeException("vasprintf failed");      
   jstring jmessage = JvNewStringUTF (message);  
   ::free (message);  
   if (jmessage == NULL)
-  	throwRuntimeException("JvNewStringUTF failed in vajprintf");  
+    throwRuntimeException("JvNewStringUTF failed in vajprintf");  
   return jmessage;
 }
 
