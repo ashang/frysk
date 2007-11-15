@@ -39,8 +39,6 @@
 
 package frysk.value;
 
-import inua.eio.ByteBuffer;
-
 /**
  * Arithmetic and logical operation handling
  * for floating points.
@@ -103,9 +101,5 @@ public class FloatingPointUnit
     public Value notEqual (Value v1, Value v2) {
 	return intType.createValue
 	       (v1.doubleValue() != v2.doubleValue() ? 1:0);
-    }
-    
-    public boolean getLogicalValue (Value v1, ByteBuffer mem) {
-	return ((v1.doubleValue() == 0.0) ? false : true);
-    }   
+    } 
 }    

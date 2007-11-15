@@ -39,7 +39,6 @@
 
 package frysk.value;
 
-import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
 import frysk.Config;
 import frysk.junit.TestCase;
@@ -134,13 +133,13 @@ public class TestValue
 	assertEquals ("9 == 4", 9 == 4, isTrue(v3.asLong()));
 	v3 =v1.getType().getALU(v2.getType(), wordSize).notEqual(v2, v1);
 	assertEquals ("9 != 4", 9 != 4, isTrue(v3.asLong()));
-	v3 = v1.getType().getALU(wordSize).logicalAnd(v2, v1, null);
+	v3 = v1.getType().getALU(wordSize).logicalAnd(v2, v1);
 	assertEquals ("9 && 4", 1, v3.asLong());
-	v3 = v1.getType().getALU(wordSize).logicalOr(v2, v1, null);
+	v3 = v1.getType().getALU(wordSize).logicalOr(v2, v1);
 	assertEquals ("9 || 4", 1, v3.asLong());	
-	v3 = v1.getType().getALU(wordSize).logicalNegation(v1, null);
+	v3 = v1.getType().getALU(wordSize).logicalNegation(v1);
 	assertEquals ("!4", 0, v3.asLong());		
-	bool = v2.getType().getALU(wordSize).getLogicalValue(v2, null);
+	bool = v2.getType().getALU(wordSize).getLogicalValue(v2);
 	assertEquals ("bool(9)", true, bool);		
 	v3 = v3.assign(v1);	
 	assertEquals ("v3 = 4", 4, v3.asLong());
@@ -205,19 +204,16 @@ public class TestValue
 	assertEquals ("9 == 4", 9 == 4, isTrue(v3.asLong()));
 	v3 = v1.getType().getALU(v2.getType(), wordSize).notEqual(v2, v1);
 	assertEquals ("9 != 4", v2 != v1, isTrue(v3.asLong()));	
-	v3 = v1.getType().getALU(wordSize).logicalAnd(v2, v1, null);
+	v3 = v1.getType().getALU(wordSize).logicalAnd(v2, v1);
 	assertEquals ("9 && 4", 1, v3.asLong());
-	v3 = v1.getType().getALU(wordSize).logicalOr(v2, v1, null);
+	v3 = v1.getType().getALU(wordSize).logicalOr(v2, v1);
 	assertEquals ("9 || 4", 1, v3.asLong());			
-	v3 = v1.getType().getALU(wordSize).logicalNegation(v1, null);
+	v3 = v1.getType().getALU(wordSize).logicalNegation(v1);
 	assertEquals ("!4", 0, v3.asLong());		
     }
     
     public void testAddressOps() 
     {
-	// Construct a buffer with a string in it.
-	ArrayByteBuffer memory
-	= new ArrayByteBuffer("0123Hello World\0>>>".getBytes());
 	Type t = new PointerType("xxx", ByteOrder.BIG_ENDIAN, 1,
 	 	 new CharType("char", ByteOrder.BIG_ENDIAN,
 			       1, true));
@@ -226,11 +222,11 @@ public class TestValue
 	Value ptr = new Value (t, l);
 	Value v1 = intType.createValue(4);
 
-	Value v = v1.getType().getALU(wordSize).logicalAnd(v1, ptr, memory);
+	Value v = v1.getType().getALU(wordSize).logicalAnd(v1, ptr);
 	assertEquals ("ptr && 4", 1, v.asLong());
-	v = v1.getType().getALU(wordSize).logicalOr(v1, ptr, memory);
+	v = v1.getType().getALU(wordSize).logicalOr(v1, ptr);
 	assertEquals ("ptr || 4", 1, v.asLong());	
-	v =  t.getALU(8).logicalNegation(ptr, memory);
+	v =  t.getALU(8).logicalNegation(ptr);
 	assertEquals("!ptr", 0, v.asLong());
     }  
 }

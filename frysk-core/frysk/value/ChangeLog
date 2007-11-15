@@ -1,3 +1,15 @@
+2007-11-15  Teresa Thomas  <tthomas@redhat.com>
+
+	* ArithmeticUnit.java (getLogicalValue): Delete 
+	argument mem, define here.
+	(logicalNegation): Update.
+	(logicalOr): Update.
+	(logicalAnd): Update.
+	* AddressUnit.java (getLogicalValue): Delete.
+	* FloatingPointUnit.java (getLogicalValue): Delete. 
+	* IntegerUnit.java (getLogicalValue): Delete.	
+	* TestValue.java: Update.
+			
 2007-11-14  Teresa Thomas  <tthomas@redhat.com>
 
 	* FloatingPointUnit.java: Use intType for relational

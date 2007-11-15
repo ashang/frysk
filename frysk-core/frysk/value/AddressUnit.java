@@ -40,7 +40,6 @@
 package frysk.value;
 
 import inua.eio.ByteOrder;
-import inua.eio.ByteBuffer;
 
 /**
  * Operation handling for pointers and addresses.
@@ -120,9 +119,5 @@ extends ArithmeticUnit
 	Location l = new ScratchLocation (v2.asBigInteger().negate().toByteArray());
 	Value v2Neg = new Value (v2.getType(), l);
 	return add (v1, v2Neg);
-    }
-
-    public boolean getLogicalValue (Value v1, ByteBuffer mem) {
-	return (v1.toPrint(Format.NATURAL, mem).equals("0x0")? false:true);
-    }      
+    }     
 }

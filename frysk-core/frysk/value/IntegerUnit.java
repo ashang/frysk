@@ -39,9 +39,6 @@
 
 package frysk.value;
 
-import java.math.BigInteger;
-import inua.eio.ByteBuffer;
-
 /**
  *  Arithmetic and logical Operation handling 
  *  for integers. All arithmetic done using 
@@ -134,9 +131,4 @@ public class IntegerUnit
 	return retType.createValue
 	       (v1.asBigInteger().not());
     }
-    
-    public boolean getLogicalValue (Value v1, ByteBuffer mem) {
-	return ((v1.asBigInteger().compareTo(BigInteger.ZERO) == 0) 
-		 ? false : true);
-    }    
 }

@@ -39,8 +39,9 @@
 
 package frysk.value;
 
+import java.math.BigInteger;
+
 import inua.eio.ByteOrder;
-import inua.eio.ByteBuffer;
 
 /**
  * Arithmetic and Logical Operation handling
@@ -144,24 +145,20 @@ public abstract class ArithmeticUnit
     }
     
     // Logical expressions - valid for any scalar types.
-    public Value logicalAnd (Value v1, Value v2, ByteBuffer mem) {
-	boolean op1 = v1.getType().getALU(wordSize).getLogicalValue(v1, mem);
-	boolean op2 = v2.getType().getALU(wordSize).getLogicalValue(v2, mem);
-	return intType.createValue( (op1 && op2) ? 1:0);
+    public Value logicalAnd (Value v1, Value v2) {
+	return intType.createValue( 
+		       (getLogicalValue(v1) && getLogicalValue(v2)) ? 1:0);
     }
-    public Value logicalOr (Value v1, Value v2, ByteBuffer mem) {
-	boolean op1 = v1.getType().getALU(wordSize).getLogicalValue(v1, mem);
-	boolean op2 = v2.getType().getALU(wordSize).getLogicalValue(v2, mem);
-	return intType.createValue( op1 || op2 ? 1:0);
+    public Value logicalOr (Value v1, Value v2) {
+	return intType.createValue( 
+		       (getLogicalValue(v1) || getLogicalValue(v2)) ? 1:0);
     }
-    public Value logicalNegation(Value v1, ByteBuffer mem) {
-	boolean op1 = v1.getType().getALU(wordSize).getLogicalValue(v1, mem);
-	return intType.createValue( op1 ? 0:1);
+    public Value logicalNegation(Value v1) {
+	return intType.createValue( getLogicalValue(v1) ? 0:1);
     }     
-    public boolean getLogicalValue (Value v1, ByteBuffer mem) {
-        throw new InvalidOperatorException
-                  (v1.getType(), "getLogicalValue");
-    }  
+    public boolean getLogicalValue (Value v1) {
+	return (!(v1.asBigInteger().compareTo(BigInteger.ZERO) == 0)); 
+    }    
     
     // Assigment expressions.
     public Value plusEqual(Value v1, Value v2) {
