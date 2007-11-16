@@ -110,19 +110,18 @@ public class fhpd
       
     };
     
-    parser.add(new Option("noexe", 
-				" Do not attempt to read an executable for a corefile") {
-			public void parsed(String exeValue) throws OptionException {
-				try {
-					noExe = true;
-
-				} catch (IllegalArgumentException e) {
-					throw new OptionException("Invalid noexe parameter "
-							+ exeValue);
-				}
-
-			}
-		});
+    parser.add(new Option("noexe", "Do not attempt to read an"+
+	" executable for a corefile ") {
+	public void parsed(String exeValue) throws OptionException {
+	  try {
+	    noExe = true;
+	    
+	  } catch (IllegalArgumentException e) {
+	    throw new OptionException("Invalid noexe parameter "
+				      + exeValue);
+	  }
+	}
+      });
     parser.setHeader("Usage: fhpd <PID> || fhpd <COREFILE> [<EXEFILE>]");
     parser.parse(args);
     
@@ -138,9 +137,9 @@ public class fhpd
       else if (core != null) {
 	  line = "core " + core.getCanonicalPath();      
 	  if (exeFile != null)
-	      line += " " + exeFile.getCanonicalPath();
+	    line += " " + exeFile.getCanonicalPath();
 	  else if (noExe)
-		  line +=" -noexe";
+	    line +=" -noexe";
       }
     }
     catch (IOException ignore) {}
