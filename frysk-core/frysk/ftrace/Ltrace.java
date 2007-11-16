@@ -224,8 +224,9 @@ public class Ltrace
 	task.requestAddSyscallObserver(ltraceTaskObserver);
     if (traceSignals)
 	task.requestAddSignaledObserver(ltraceTaskObserver);
+    MappingGuard.requestAddMappingObserver(task, ltraceTaskObserver);
     // There are no code observers right now.  We add them as files
-    // get mapped to process.
+    // get mapped to the process.
   }
 
   /**
@@ -291,7 +292,7 @@ public class Ltrace
 	public Action updateAttached (Task task)
 	{
 	  addProc(task.getProc());
-	  ltraceTaskObserver.updateAttached(task, null);
+	  ltraceTaskObserver.updateAttached(task);
 	  task.requestUnblock(this);
 	  return Action.BLOCK;
 	}
@@ -576,7 +577,7 @@ public class Ltrace
     // --- attached/terminated/terminating observers ---
     // -------------------------------------------------
 
-    public void updateAttached(Task task, TaskObserver blocker)
+    public Action updateAttached(Task task)
     {
       // Per-task initialization.
       long pc = task.getIsa().pc(task);
@@ -590,11 +591,6 @@ public class Ltrace
 
       this.checkMapUnmapUpdates(task, false);
       MappingGuard.requestAddMappingObserver(task, this);
-    }
-
-    public Action updateAttached (Task task)
-    {
-      updateAttached(task, this);
       return Action.BLOCK;
     }
 
