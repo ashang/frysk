@@ -1,3 +1,13 @@
+2007-11-16  Petr Machata  <pmachata@redhat.com>
+
+	* Ltrace.java: Cleanups
+	* MappingGuard.java (enableSyscallObserver): New static field.
+	(enableDebugstateObserver): dtto
+	(MappingGuardB.notifyObservers): add to blockers once for each
+	time the observer was registered.
+	* MemoryMapping.java (Part.toString): Improved.
+	* TestLtrace.java: use new fields to test both mapping guards.
+
 2007-11-14  Petr Machata  <pmachata@redhat.com>
 
 	* ChangeLog: remove paths from my previous entry

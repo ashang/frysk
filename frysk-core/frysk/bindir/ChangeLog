@@ -1,3 +1,8 @@
+2007-11-16  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* fhpd.java(main): Add option -noexe. Append
+	-noexe on no executable and option specified. 
+
 2007-11-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFstack.java (testBackTraceWithParams): Removed value

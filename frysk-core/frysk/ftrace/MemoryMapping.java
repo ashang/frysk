@@ -87,12 +87,13 @@ class MemoryMapping
 
 	public String toString()
 	{
-	    return "<" + addressLow + ".." + addressHigh
-		+ ": offset=" + offset + "; perm="
+	    return "<0x" + Long.toHexString(addressLow)
+		+ "..0x" + Long.toHexString(addressHigh)
+		+ ": offset=0x" + Long.toHexString(offset) + "; perm=`"
 		+ (permRead ? 'r' : '-')
 		+ (permWrite ? 'w' : '-')
 		+ (permExecute ? 'x' : '-')
-		+ '>';
+		+ "'>";
 	}
     }
 
