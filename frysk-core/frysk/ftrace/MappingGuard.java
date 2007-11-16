@@ -56,6 +56,8 @@ import frysk.proc.TaskObserver;
  */
 class MappingGuard
 {
+    /*package-private*/ static boolean enableSyscallObserver = true;
+    /*package-private*/ static boolean enableDebugstateObserver = true;
     protected static final Logger logger = Logger.getLogger(FtraceLogger.LOGGER_ID);
 
     // HashMap<Task, MappingGuardB>
@@ -114,14 +116,11 @@ class MappingGuard
 	protected void notifyObservers(Task task) {
 	    for (Iterator it = observers.keySet().iterator(); it.hasNext();) {
 		MappingObserver ob = (MappingObserver)it.next();
-		boolean block = false;
 		Integer i = (Integer)observers.get(ob);
 		int v = i.intValue();
 		for (int j = 0; j < v; ++j)
 		    if (ob.updateMapping(task) == Action.BLOCK)
-			block = true;
-		if (block)
-		    task.blockers.add(ob);
+			task.blockers.add(ob);
 	    }
 	}
     }
@@ -283,10 +282,15 @@ class MappingGuard
 	synchronized (MappingGuard.class) {
 	    guard = (MappingGuardB)guardsForTask.get(task);
 	    if (guard == null) {
-		guard = setupDebugStateObserver(task);
-		if (guard == null)
+		if (enableDebugstateObserver)
+		    guard = setupDebugStateObserver(task);
+		if (guard == null && enableSyscallObserver)
 		    guard = new SyscallMappingGuard(task);
-		guardsForTask.put(task, guard);
+
+		if (guard != null)
+		    guardsForTask.put(task, guard);
+		else
+		    observer.addFailed(task, new UnsupportedOperationException("Couldn't initialize mapping guard."));
 	    }
 	}
 	guard.addObserver(observer);

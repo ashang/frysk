@@ -67,7 +67,7 @@ public class TestLtrace
     public void taskTerminated(Task task, boolean signal, int value) { }
   }
 
-  public void testAllLibrariesGetDetected()
+  public void performTestAllLibrariesGetDetected()
   {
     class MyController1
       implements LtraceController
@@ -100,6 +100,24 @@ public class TestLtrace
       }
     assertEquals("number of recorded libraries", expectedSonames.length, controller.allLibraries.size());
   }
+
+    public void testDebugStateMappingGuard()
+    {
+	boolean save = MappingGuard.enableSyscallObserver;
+	MappingGuard.enableSyscallObserver = false;
+	assertTrue("debugstate observer enabled", MappingGuard.enableDebugstateObserver);
+	performTestAllLibrariesGetDetected();
+	MappingGuard.enableSyscallObserver = save;
+    }
+
+    public void testSyscallMappingGuard()
+    {
+	boolean save = MappingGuard.enableDebugstateObserver;
+	MappingGuard.enableDebugstateObserver = false;
+	assertTrue("syscall observer enabled", MappingGuard.enableSyscallObserver);
+	performTestAllLibrariesGetDetected();
+	MappingGuard.enableDebugstateObserver = save;
+    }
 
   public void testCallRecorded()
   {
