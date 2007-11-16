@@ -1,3 +1,7 @@
+2007-11-15  Andrew Cagney  <cagney@redhat.com>
+
+	* antlr-warnings.awk: Delete references to ExprAST.
+
 2007-11-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (.g.antlred): Rename .g.antlered; use a tmp

@@ -1,3 +1,8 @@
+2007-11-15  Andrew Cagney  <cagney@redhat.com>
+
+	* TestArithmetics.java (eval(String)): Do not set setASTNodeClass.
+	* TestVariables.java (eval(String)): Ditto.
+
 2007-11-15  Teresa Thomas  <tthomas@redhat.com>
 	
 	* CExprEvaluator.g: Update.

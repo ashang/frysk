@@ -54,7 +54,6 @@ public class TestVariables extends TestCase {
 	    input += (char) 3;
 	    CExprLexer lexer = new CExprLexer(new StringReader(input));
 	    CExprParser parser = new CExprParser(lexer);
-	    parser.setASTNodeClass("frysk.expr.ExprAST");
 	    parser.start();
 	    ExprSymTab symTab = new TestbedSymTab();
 	    CExprEvaluator exprEvaluator = new CExprEvaluator(symTab);
