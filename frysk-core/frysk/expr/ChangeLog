@@ -1,5 +1,8 @@
 2007-11-16  Andrew Cagney  <cagney@redhat.com>
 
+	* TestCompletion.java: New.
+	* ExpressionFactory.java: New.
+
 	* TabException.java: Delete.
 	* CExpr.g (bTabPressed): Delete.
 	(tab_expression): Delete.
