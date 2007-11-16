@@ -52,6 +52,8 @@ import frysk.proc.Manager;
 import frysk.proc.ProcId;
 import frysk.util.CommandlineParser;
 import frysk.util.PtyTerminal;
+import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionException;
 
 public class fhpd 
 {
@@ -59,6 +61,7 @@ public class fhpd
   static File execFile;
   static File core;
   static File exeFile;
+  static boolean noExe = false;
 
   final static class FhpdCompletor implements Completor
   {
@@ -101,12 +104,28 @@ public class fhpd
 	core = corePairs[0].coreFile;
 	exeFile = corePairs[0].exeFile;
     }
+    
+  
       
       
-      
-    };    
+    };
+    
+    parser.add(new Option("noexe", 
+				" Do not attempt to read an executable for a corefile") {
+			public void parsed(String exeValue) throws OptionException {
+				try {
+					noExe = true;
+
+				} catch (IllegalArgumentException e) {
+					throw new OptionException("Invalid noexe parameter "
+							+ exeValue);
+				}
+
+			}
+		});
     parser.setHeader("Usage: fhpd <PID> || fhpd <COREFILE> [<EXEFILE>]");
     parser.parse(args);
+    
     Manager.eventLoop.start();
     String line = "";
     
@@ -120,6 +139,8 @@ public class fhpd
 	  line = "core " + core.getCanonicalPath();      
 	  if (exeFile != null)
 	      line += " " + exeFile.getCanonicalPath();
+	  else if (noExe)
+		  line +=" -noexe";
       }
     }
     catch (IOException ignore) {}
