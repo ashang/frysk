@@ -425,13 +425,9 @@ constant
     {   astPostExpr = #(#[MEMBER, "Member"], #astPostExpr, #id_expr1); }
 )*/
 
-tid_expression
-    :   TAB_IDENT 
-    ;
-
-/*----------------------------------------------------------------------------
-   * The Lexer
-   *----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------
+ * The Lexer
+ *---------------------------------------------------------------------------*/
 
 class CExprLexer extends Lexer;
 
@@ -506,18 +502,13 @@ options {testLiterals = true;}
 ;
 
 /**
-  *  A <TAB> token is returned not only on regular tabs
-  *  but also when a TAB is hit after an incomplete variable
-  */
-protected
-TAB
-    :   (IDENT)?'\t'
-    ;
+ *  A <TAB> token is returned not only on regular tabs
+ *  but also when a TAB is hit after an incomplete identifier.
+ */
 
-TAB_IDENT 
-    :   ((IDENT)'\t')=>TAB {$setType(TAB);}
-    |   ('\t')=>TAB {$setType(TAB);}
-    |   IDENT {$setType(IDENT);}
+TAB 
+    :   '\t'
+    |   IDENT {$setType(IDENT);} ('\t' {$setType(TAB);})? 
     ;
 
 protected

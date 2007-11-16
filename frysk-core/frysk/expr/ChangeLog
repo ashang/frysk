@@ -4,6 +4,9 @@
 
 2007-11-15  Andrew Cagney  <cagney@redhat.com>
 
+	* CExpr.g (tid_expression): Delete.
+	(TAB_IDENT): Fold into TAB.
+	
 	* CExpr.g (options): Delete ASTLabelType.
 	* CExprEvaluator.g (options): Ditto.
 	* ExprAST.java: Delete.
