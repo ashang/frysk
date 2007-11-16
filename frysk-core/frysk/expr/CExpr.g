@@ -90,20 +90,12 @@ options {
 }
 
 {
-/** 
-  *	A member variable to keep track of TAB completions requests.
-  *	If this is true the normal course of action is to simply
-  *	bail out by throwing an exception
-  */
-    private boolean bTabPressed;
     private int assign_stmt_RHS_found;
     //private String sInputExpression;
 
     protected CExprParser(TokenStream lexer, String sInput)
     {
         this(lexer);
-        bTabPressed = false;
-        //sInputExpression = sInput;
     }
 }
 
@@ -342,42 +334,17 @@ postfix_expression!
     { ## = #astPostExpr; }       
     ;           
     
+/**
+ * The TAB over here is not part of the C++ grammar.
+ * This enables auto-completion by allowing the user
+ * to press TAB whenever auto-completion is required
+ */
+
 scope_expression 
     :   identifier (SCOPE identifier)*
+    |   IDENT_TAB { throw new IncompleteIdentifierException(#IDENT_TAB); }
     |   SCOPE identifier
     |   LPAREN! expressionList RPAREN!
-    |   tab_expression
-    ;
-
-tab_expression 
-    { String sTabText; }
-    //  should subscript, component, call, post inc/dec be moved here?
-    :	post_expr1:primary_expression 
-        {
-          if (bTabPressed) {
-	      // ??? Use antlr expressions instead of tree surgery.
-            if (#post_expr1.getFirstChild() != null)
-              if (#post_expr1.getFirstChild().getNextSibling() != null)
-                sTabText = #post_expr1.getFirstChild().getNextSibling().getText();
-		      else
-		  		sTabText = #post_expr1.getFirstChild().getText();
-            else 
-              sTabText = #post_expr1.getText();
-              
-            throw new TabException(#post_expr1, sTabText);
-          }
-        }
-    ;
-
-/**
-  *	The TAB over here is not part of the C++ grammar.
-  *	This enables auto-completion by allowing the user
-  *	to press TAB whenever auto-completion is required
-  */
-primary_expression 
-    :   TAB
-        { bTabPressed = true; 
-        }
     |   constant
     |   "this"
     ;
@@ -409,22 +376,6 @@ constant
     |   "false"
     ;
     
-/***
-  *  TabException is raised everytime the TAB is pressed.
-  *  The parser thus bails out immediately and returns the
-  *  parse tree constructed so far.
-  */
-/* ??? add (identifier | (TAB {bTabPressed = true;})) */
-/*DOT!
-(   tb:TAB
-    {
-        bTabPressed = true;
-        astPostExpr = #(#[MEMBER, "Member"], #astPostExpr, #tb);
-    }
-    |   id_expr1:identifier
-    {   astPostExpr = #(#[MEMBER, "Member"], #astPostExpr, #id_expr1); }
-)*/
-
 /*---------------------------------------------------------------------------
  * The Lexer
  *---------------------------------------------------------------------------*/
@@ -506,9 +457,9 @@ options {testLiterals = true;}
  *  but also when a TAB is hit after an incomplete identifier.
  */
 
-TAB 
+IDENT_TAB 
     :   '\t'
-    |   IDENT {$setType(IDENT);} ('\t' {$setType(TAB);})? 
+    |   IDENT {$setType(IDENT);} ('\t' {$setType(IDENT_TAB);})? 
     ;
 
 protected

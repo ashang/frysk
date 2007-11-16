@@ -1,7 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
-// Copyright 2006 IBM Corp.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,51 +42,11 @@ package frysk.expr;
 import antlr.collections.AST;
 
 /** 
- * An that should be thrown when a <TAB> key is pressed.
- *
- * The constructor takes an AST (abstract syntax tree) as
- * argument. This is the the partial AST generated thus far by the
- * parser.
+ * An incomplete identifier; e.g.: foo<tab>
  */
-
-public class TabException extends RuntimeException
-{
+class IncompleteIdentifierException extends CompletionException {
     static final long serialVersionUID = 1;
-
-    private AST astExpression;
-    private String sTabExpression;
-
-    /**
-     * The constructor takes an AST (abstract syntax tree) as
-     * argument. This is the the partial AST generated thus far by the
-     * parser. The second argument is the incomplete identifier that
-     * the user may have typed in. It may or may not be null
-     */
-    public TabException(AST astPartial, String sTabExpression) {
-	astExpression = astPartial;
-	this.sTabExpression = sTabExpression;
-    }
-
-    /**
-     * As the name suggests, this function returns the partial AST
-     * associated with this Exception
-     */
-    public AST getAst() {
-	return astExpression;
-    }
-
-    /**
-     * Return the partial identifier that the user may have keyed in
-     */
-    public String getTabExpression() {
-	return sTabExpression;
-    }
-
-
-    /**
-     * Returns a lisp style representation of the AST
-     */
-    public String toString() {
-	return astExpression.toStringList();
+    IncompleteIdentifierException(AST identifier) {
+	super(identifier);
     }
 }

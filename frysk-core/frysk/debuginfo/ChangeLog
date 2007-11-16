@@ -1,3 +1,9 @@
+2007-11-16  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfo.java (complete(DebugInfoFrame,String,int,List)): Catch
+	CompletionException instead of TabException.  Do not attempt to
+	handle structures.
+
 007-11-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	DwarfDie::getDataMemberLocation now throws DwAttributeNotFoundException
