@@ -49,8 +49,13 @@ public class CompletionException extends RuntimeException {
     static final long serialVersionUID = 1;
     private final AST ast;
     CompletionException(AST ast) {
-	super("completing " + ast);
 	this.ast = ast;
+    }
+    public String getMessage() {
+	return ("complete <<"
+		+ getText()
+		+ ">> at "
+		+ getColumn());
     }
     /**
      * Return the incomplete string (minus the tab).
@@ -67,6 +72,7 @@ public class CompletionException extends RuntimeException {
 	return ast.getLine();
     }
     public int getColumn() {
-	return ast.getColumn();
+	// Antlr counts columns starting at 1.
+	return ast.getColumn() - 1;
     }
 }

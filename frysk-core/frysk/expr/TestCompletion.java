@@ -54,11 +54,31 @@ public class TestCompletion extends TestCase {
 	List testCandidates = new LinkedList();
 	int testOffset = ExpressionFactory.complete(symTab, incomplete, offset,
 						    testCandidates);
-	assertEquals("offset", expectedOffset, testOffset);
 	assertEquals("candidates", expectedCandidates,
 		     (String[]) testCandidates.toArray(new String[0]));
+	assertEquals("offset", expectedOffset, testOffset);
     }
-    public void testNothingToDo() {
-	complete("", 0, new String[0], -1);
+    private void complete(String incomplete, String[] expectedCandidates,
+			  int expectedOffset) {
+	complete(incomplete, incomplete.length(), expectedCandidates,
+		 expectedOffset);
+    }
+    public void testNoCompletions() {
+	complete("bogus", new String[0], -1);
+    }
+    public void testOneCompletion() {
+	complete("a", new String[] { "a " }, 0);
+    }
+    public void testOneLongerCompletion() {
+	complete("c1", new String[] { "c123 "}, 0);
+    }
+    public void testTwoCompletions() {
+	complete("b", new String[] { "b1", "b2" }, 0);
+    }
+    public void testCompletionAfterOp() {
+	complete("a + b", new String[] { "b1", "b2" }, 4);
+    }
+    public void testCompletionBeforeOp() {
+	complete("b + a", 1, new String[] { "b1", "b2" }, 0);
     }
 }

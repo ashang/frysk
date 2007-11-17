@@ -41,7 +41,7 @@ package frysk.expr;
 
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
-
+import java.util.List;
 import frysk.value.ObjectDeclaration;
 import frysk.value.Type;
 import frysk.value.Value;
@@ -77,4 +77,22 @@ public interface ExprSymTab
      * Return the wordsize.
      */    
     int getWordSize();
+    /**
+     * Complete the INCOMPLETE named object adding the completed names
+     * to CANDIDATES.
+     *
+     * Assuming a simple symtab containing: "argv", "argc", "main":
+     * complete "a" returns "argv" + "argc"; complete "main" returns
+     * "main"; and complete "bogus" returns <empty>.
+     *
+     * NB: The caller will append a space when there's only one
+     * completion so that "1+arg\t" expands to "1+argv ".
+     *
+     * NB: The caller will sort the list.
+     *
+     * XXX: This is subject to change without notice; for instance:
+     * s/List/Set/ (why jline used List I don't know); addition of a
+     * scope parameter; ...
+     */
+    void complete(String incomplete, List candidates);
 }

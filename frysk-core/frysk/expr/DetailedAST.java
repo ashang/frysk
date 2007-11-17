@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,62 +39,31 @@
 
 package frysk.expr;
 
-import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
-import java.util.List;
-import frysk.Config;
-import frysk.value.ObjectDeclaration;
-import frysk.value.Type;
-import frysk.value.Value;
-import frysk.value.Variable;
+import antlr.CommonAST;
+import antlr.Token;
 
-public class ScratchSymTab implements ExprSymTab {
-    /**
-     * Lookup S, assuming S is variable or constant.
-     */
-    public Value getValue(String s) {
-	throw new RuntimeException("no values");
-    }
-    /**
-     * Lookup S, assuming S is a variable.
-     */
-    public ObjectDeclaration getVariable(String s) {
-	throw new RuntimeException("no variables");
-    }
-    /**
-     * The byte order to use when creating new values.
-     */
-    public ByteOrder order() {
-	throw new RuntimeException("no byte-order");
-    }
-    /**
-     * Return the task's memory buffer
-     */
-    public ByteBuffer taskMemory() {
-	throw new RuntimeException("no memory");
-    }
-    /**
-     * Return the variable's value.
-     */
-    public Value getValue(Variable v) {
-	throw new RuntimeException("no values");
-    }
-    /**
-     * Given a variable, return its type.
-     */
-    public Type getType(Variable variable) {
-	throw new RuntimeException("no types");
-    }
-    /**
-     * Return the wordsize.
-     */      
-    public int getWordSize() {
-        // Since no debugee word size available, return word size of 
-	// debugger. Required for some expression evaluation.
-	return Config.getWordSize ();
-    }
+/** 
+ * An AST that also retains the location of its token.
+ *
+ * For what ever reason the default ast doesn't remember the location
+ * (line/col) of a token.
+ */
 
-    public void complete(String incomplete, List candidates) {
-	return;
+public class DetailedAST extends CommonAST {
+    static final long serialVersionUID = 1;
+    public DetailedAST() {
+    }
+    private int column;
+    private int line;
+    public void initialize(Token t) {
+	super.initialize(t);
+	this.column = t.getColumn();
+	this.line = t.getLine();
+    }
+    public int getColumn() {
+	return column;
+    }
+    public int getLine() {
+	return line;
     }
 }

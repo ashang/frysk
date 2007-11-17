@@ -41,6 +41,7 @@ package frysk.expr;
 
 import java.io.StringReader;
 import java.util.List;
+import java.util.Collections;
 
 /** 
  * Create expressions and related stuff.
@@ -59,11 +60,25 @@ public class ExpressionFactory {
 			    +(char) 3);
 	    CExprLexer lexer = new CExprLexer(new StringReader(input));
 	    CExprParser parser = new CExprParser(lexer);
+	    parser.setASTNodeClass(DetailedAST.class.getName());
 	    parser.start();
 	} catch (antlr.RecognitionException e) {
 	    throw new RuntimeException(e);
 	} catch (antlr.TokenStreamException e) {
 	    throw new RuntimeException(e);
+	} catch (IncompleteIdentifierException ident) {
+	    symTab.complete(ident.getText(), candidates);
+	    switch (candidates.size()) {
+	    case 0:
+		return -1;
+	    case 1: 
+		// Append a space.
+		candidates.add(0, candidates.remove(0) + " ");
+		return ident.getColumn();
+	    default:
+		Collections.sort(candidates);
+		return ident.getColumn();
+	    }
 	}
 	return -1; // nothing completed.
     }

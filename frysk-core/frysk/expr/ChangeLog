@@ -1,7 +1,18 @@
-2007-11-16  Andrew Cagney  <cagney@redhat.com>
+2007-11-17  Andrew Cagney  <cagney@redhat.com>
+
+	* CompletionException.java (getMessage()): New.
+	* TestCompletion.java (testOneCompletion()): New.
+	(testTwoCompletions()): New.
+	(testNoCompletions()): Replace testNothingToDo().
+	(complete(String,String[],int)): New.
+	* DetailedAST.java: New.
+	* ExprSymTab.java (complete(String,List)): New.
+	* ScratchSymTab.java (complete(String,List)): New.
 
 	* TestCompletion.java: New.
 	* ExpressionFactory.java: New.
+
+2007-11-16  Andrew Cagney  <cagney@redhat.com>
 
 	* TabException.java: Delete.
 	* CExpr.g (bTabPressed): Delete.

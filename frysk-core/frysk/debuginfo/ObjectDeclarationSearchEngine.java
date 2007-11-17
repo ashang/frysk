@@ -39,12 +39,15 @@
 
 package frysk.debuginfo;
 
+import frysk.dwfl.DwflCache;
+import java.util.Iterator;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
-
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflDieBias;
+import lib.dwfl.DwarfDie;
 import java.util.LinkedList;
 import java.util.List;
-
 import frysk.expr.ExprSymTab;
 import frysk.isa.ISA;
 import frysk.isa.Register;
@@ -131,5 +134,22 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
     public int getWordSize()
     {
 	return task.getISA().wordSize();
+    }
+
+    /**
+     * XXX: Who knows if this works; it is certainly not implemented
+     * correctly as it should use the ObjectDeclaration.
+     */
+    public void complete(String incomplete, List candidates) {
+	long pc = frame.getAdjustedAddress();
+	Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
+	DwflDieBias bias = dwfl.getCompilationUnit(pc);
+	DwarfDie die = bias.die;
+	DwarfDie[] allDies = die.getScopes(pc - bias.bias);
+	List candidates_p = die.getScopeVarNames(allDies, incomplete);
+	for (Iterator i = candidates_p.iterator(); i.hasNext();) {
+            String sNext = (String) i.next();
+            candidates.add(sNext);
+        }
     }
 }

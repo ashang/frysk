@@ -1,3 +1,7 @@
+2007-11-17  Andrew Cagney  <cagney@redhat.com>
+
+	* ObjectDeclarationSearchEngine.java (complete(String,List)): New.
+
 2007-11-16  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfo.java (complete(DebugInfoFrame,String,int,List)): Catch

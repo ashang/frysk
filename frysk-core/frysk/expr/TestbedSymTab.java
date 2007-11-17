@@ -39,9 +39,10 @@
 
 package frysk.expr;
 
+import java.util.Iterator;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
-
+import java.util.List;
 import frysk.value.ObjectDeclaration;
 import frysk.value.Type;
 import frysk.value.Value;
@@ -70,6 +71,9 @@ class TestbedSymTab implements ExprSymTab {
     TestbedSymTab () {
 	symtab = new HashMap();
 	symtab.put("a", c1);
+	symtab.put("b1", c1);
+	symtab.put("b2", c1);
+	symtab.put("c123", c1);
     }
 
     /**
@@ -116,5 +120,13 @@ class TestbedSymTab implements ExprSymTab {
      */
     public int getWordSize() {
 	throw new RuntimeException("no word size");
+    }
+
+    public void complete(String incomplete, List candidates) {
+	for (Iterator i = symtab.keySet().iterator(); i.hasNext(); ) {
+	    String sym = (String)i.next();
+	    if (sym.startsWith(incomplete))
+		candidates.add(sym);
+	}
     }
 }
