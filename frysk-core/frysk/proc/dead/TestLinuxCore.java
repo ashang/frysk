@@ -134,8 +134,9 @@ public class TestLinuxCore
     return -1;
   }
 
-  public void testLinuxCoreFileStackTrace ()
-  {
+  public void testLinuxCoreFileStackTrace () {
+      if (unresolved(5353))
+	  return;
 
    
 	final Proc ackProc; // = giveMeAProc();

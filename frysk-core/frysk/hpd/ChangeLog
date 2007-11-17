@@ -1,3 +1,8 @@
+2007-11-17  Andrew Cagney  <cagney@redhat.com>
+
+	* TestBreakpoints.java (testHpdBreakMultiThreaded()): Mark as
+	unresolved, bug 5351.
+
 2007-11-16  Rick Moseley  <rmoseley@redhat.com>
 
 	* AttachCommand.java: Implement load/run capability.

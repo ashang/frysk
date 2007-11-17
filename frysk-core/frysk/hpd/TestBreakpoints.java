@@ -113,6 +113,8 @@ public class TestBreakpoints
     }
 
     public void testHpdBreakMultiThreaded() {
+	if (unresolved(5351))
+	    return;
 	e = HpdTestbed.run("funit-fib-clone", "3");
 	// Break
 	e.send("break fib\n");	
