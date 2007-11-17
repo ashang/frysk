@@ -39,6 +39,7 @@
 
 package frysk.hpd;
 
+import frysk.debuginfo.ObjectDeclarationSearchEngine;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -59,7 +60,10 @@ import frysk.rt.ProcTaskIDManager;
 import frysk.stepping.SteppingEngine;
 import frysk.stepping.TaskStepEngine;
 import frysk.util.CountDownLatch;
-import frysk.value.Value;
+import frysk.expr.Expression;
+import frysk.expr.ScratchSymTab;
+import frysk.expr.ExprSymTab;
+import frysk.expr.ExpressionFactory;
 
 public class CLI {
     ProcTaskIDManager idManager;
@@ -185,18 +189,15 @@ public class CLI {
     /*
      * Public methods
      */
-
-    Value parseValue(Task task, String value) {
-	return parseValue(task, value, false);
-    }
-
-    Value parseValue(Task task, String value, boolean dumpTree) {
-        DebugInfoFrame frame = getTaskFrame(task);
-        DebugInfo debugInfo = getTaskDebugInfo(task);
-        if (debugInfo != null)
-            return debugInfo.print(value, frame, dumpTree);
-        else
-            return DebugInfo.printNoSymbolTable(value, dumpTree);       
+    Expression parseExpression(Task task, String expression) {
+	ExprSymTab symTab;
+	if (task == null) {
+	    symTab = new ScratchSymTab();
+	} else {
+	    DebugInfoFrame frame = getTaskFrame(task);
+	    symTab = new ObjectDeclarationSearchEngine(frame);
+	}
+	return ExpressionFactory.parse(symTab, expression);
     }
  
     /**

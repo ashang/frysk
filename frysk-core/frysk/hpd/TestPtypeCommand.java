@@ -56,7 +56,7 @@ public class TestPtypeCommand
 
     public void testPtypeFails() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("ptype bogus", "Error: Symbol \"bogus\" is not found " +
-				  "in the current context.\r\n");
+	e.sendCommandExpectPrompt("ptype bogus",
+				  "Error: no values\r\n");
     }
 }

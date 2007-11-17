@@ -42,7 +42,6 @@ package frysk.hpd;
 import java.util.List;
 import java.util.Iterator;
 import frysk.proc.Task;
-import frysk.value.Value;
 
 class PtypeCommand extends ParameterizedCommand {
     PtypeCommand() {
@@ -60,7 +59,6 @@ class PtypeCommand extends ParameterizedCommand {
         // Skip set specification, if any
 	String sInput = cmd.stringValue();
 
-	Value result = null;
         Iterator taskDataIter = ptset.getTaskData();
         boolean doWithoutTask = !taskDataIter.hasNext();
         while (doWithoutTask || taskDataIter.hasNext()) {
@@ -68,23 +66,20 @@ class PtypeCommand extends ParameterizedCommand {
             Task task = null;
             if (!doWithoutTask) {
                 td = (TaskData)taskDataIter.next();
+		td.toPrint(cli.outWriter, true);
+		cli.outWriter.println();
                 task = td.getTask();
-                cli.outWriter.println("[" + td.getParentID() + "." + td.getID()
-                                      + "]\n");
             }
             doWithoutTask = false;
             try {
-                result = cli.parseValue(task, sInput);	  
+		cli.parseExpression(task, sInput)
+		    .getType()
+		    .toPrint(cli.outWriter);
+		cli.outWriter.println();
             } catch (RuntimeException nnfe) {
 		cli.addMessage(nnfe.getMessage(), Message.TYPE_ERROR);
                 continue;
             }
-	    result.getType().toPrint(cli.outWriter);
-	    cli.outWriter.println();
-        }
-        if (result == null) {
-            cli.addMessage("Symbol \"" + sInput + "\" is not found in the current context.",
-                           Message.TYPE_ERROR);
         }
     }
 

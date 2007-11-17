@@ -41,7 +41,6 @@ package frysk.hpd;
 
 import java.util.Iterator;
 import frysk.proc.Task;
-import frysk.value.Value;
 import java.util.List;
 
 class PlocationCommand extends ParameterizedCommand {
@@ -61,7 +60,6 @@ class PlocationCommand extends ParameterizedCommand {
         // What's left of the command line.
 	String sInput = cmd.stringValue();
 
-	Value result = null;
         Iterator taskDataIter = ptset.getTaskData();
         boolean doWithoutTask = !taskDataIter.hasNext();
         while (doWithoutTask || taskDataIter.hasNext()) {
@@ -69,19 +67,20 @@ class PlocationCommand extends ParameterizedCommand {
             Task task = null;
             if (!doWithoutTask) {
                 td = (TaskData)taskDataIter.next();
+		td.toPrint(cli.outWriter, true);
+		cli.outWriter.println();
                 task = td.getTask();
-                cli.outWriter.println("[" + td.getParentID() + "." + td.getID()
-                                      + "]\n");
             }
             doWithoutTask = false;
             try {
-                result = cli.parseValue(task, sInput);	  
+                cli.parseExpression(task, sInput)
+		    .getLocation()
+		    .toPrint(cli.outWriter);
+		cli.outWriter.println();
             } catch (RuntimeException e) {
 		cli.printError(e);
                 continue;
             }
-	    result.getLocation().toPrint(cli.outWriter);
-	    cli.outWriter.println();
         }
     }
 

@@ -1,5 +1,15 @@
 2007-11-17  Andrew Cagney  <cagney@redhat.com>
 
+	* CLI.java (parseValue(Task,String,boolean)): Delete.
+	(parseValue(Task,String)): Delete.
+	(parseExpression(Task,String)): New.
+	* DisassembleCommand.java: Update.
+	* EvalCommands.java: Update.
+	* ExamineCommand.java: Update.
+	* PlocationCommand.java: Update.
+	* PtypeCommand.java: Update.
+	* TestPtypeCommand.java: Update.
+
 	* CompletionFactory.java (completeExpression(CLI,Input,int,List)):
 	Re-implement using
 	ExpressionFactory.complete(ExprSymTab,String,List) and

@@ -42,10 +42,10 @@ package frysk.hpd;
 import frysk.value.Format;
 import java.util.Iterator;
 import frysk.proc.Task;
-import frysk.value.Value;
 import frysk.value.PointerType;
 import frysk.value.Type;
 import java.util.List;
+import frysk.expr.Expression;
 
 /**
  * Evaluate an expression; in various forms.
@@ -82,7 +82,6 @@ abstract class EvalCommands extends ParameterizedCommand {
 			     Options options) {
 	if (expression.equals(""))
 	    throw new InvalidCommandException("missing expression");
-	Value result = null;
 	Iterator taskDataIter = ptset.getTaskData();
 	do {
 	    Task task = null;
@@ -92,23 +91,28 @@ abstract class EvalCommands extends ParameterizedCommand {
 		td.toPrint(cli.outWriter, true);
 		cli.outWriter.println();
 	    }
+	    Expression result;
 	    try {
-		result = cli.parseValue(task, expression, options.dumpTree);
+		result = cli.parseExpression(task, expression);
 	    } catch (RuntimeException e) {
 		cli.outWriter.println();
 		cli.printError(e);
 		continue;
 	    }
-
-	    Type t = result.getType();
-	    if (t instanceof PointerType) {
-		cli.outWriter.print("(");
-		t.toPrint(cli.outWriter);
-		cli.outWriter.print(") ");
-	    }	
-	    result.toPrint(cli.outWriter,
-			   task == null ? null : task.getMemory(),
-			   options.format);
+	    if (options.dumpTree) {
+		result.toPrint(cli.outWriter);
+	    } else {
+		Type t = result.getType();
+		if (t instanceof PointerType) {
+		    cli.outWriter.print("(");
+		    t.toPrint(cli.outWriter);
+		    cli.outWriter.print(") ");
+		}	
+		result.getValue()
+		    .toPrint(cli.outWriter,
+			     task == null ? null : task.getMemory(),
+			     options.format);
+	    }
 	    cli.outWriter.println();
 	} while (taskDataIter.hasNext());
     }

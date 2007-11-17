@@ -116,7 +116,8 @@ public class DisassembleCommand extends ParameterizedCommand {
 	    if (cmd.size() == 1) {
 		try {
 		    currentInstruction
-			= cli.parseValue(task, cmd.parameter(0)).asLong();
+			= cli.parseExpression(task, cmd.parameter(0))
+			.getValue().asLong();
 		    symbol = SymbolFactory.getSymbol(task, currentInstruction);
 		} catch (RuntimeException nnfe) {
 		    cli.addMessage(new Message(nnfe.getMessage(),
@@ -127,9 +128,11 @@ public class DisassembleCommand extends ParameterizedCommand {
 		long startInstruction, endInstruction;
 		try {
 		    startInstruction
-			= cli.parseValue(task, cmd.parameter(0)).asLong();
+			= cli.parseExpression(task, cmd.parameter(0))
+			.getValue().asLong();
 		    endInstruction
-			= cli.parseValue(task, cmd.parameter(1)).asLong();
+			= cli.parseExpression(task, cmd.parameter(1))
+			.getValue().asLong();
 		} catch (RuntimeException nnfe) {
 		    cli.addMessage(new Message(nnfe.getMessage(),
 					       Message.TYPE_ERROR));

@@ -55,22 +55,22 @@ public class ExamineCommand extends ParameterizedCommand {
 	if (cmd.size() == 0) {
 	    throw new InvalidCommandException("No value to examine");
 	}
-	Value value;
 	Iterator taskDataIter = ptset.getTaskData();
 	while (taskDataIter.hasNext()) {
 	    TaskData tdata = (TaskData) taskDataIter.next();
+	    tdata.toPrint(cli.outWriter, true);
+	    cli.outWriter.println();
+	    Value value;
 	    try {
 		// XXX: Is this right, is this the entire expresson?
-		value = cli.parseValue(tdata.getTask(), cmd.parameter(0));
+		value = cli.parseExpression(tdata.getTask(), cmd.parameter(0))
+		    .getValue();
 	    } catch (RuntimeException nnfe) {
 		cli.addMessage(new Message(nnfe.getMessage(),
 					   Message.TYPE_ERROR));
 		return;
 	    }
-
 	    // For moment, just print the bytes.
-	    cli.outWriter.println("[" + tdata.getParentID() + "."
-		    + tdata.getID() + "]");
 	    byte[] bytes = value.getLocation().toByteArray();
 	    for (int i = 0; i < bytes.length; i++) {
 		cli.outWriter.println(i + ": " + bytes[i]);
