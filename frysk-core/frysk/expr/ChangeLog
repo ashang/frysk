@@ -1,5 +1,9 @@
 2007-11-17  Andrew Cagney  <cagney@redhat.com>
 
+	* TestArithmetics.java (eval(String)): Use Expression.
+	* ExpressionFactory.java (parse(ExprSymTab,String)): New.
+	* Expression.java: New.
+
 	* CompletionException.java (getMessage()): New.
 	* TestCompletion.java (testOneCompletion()): New.
 	(testTwoCompletions()): New.

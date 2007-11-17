@@ -39,65 +39,58 @@
 
 package frysk.expr;
 
-import java.io.StringReader;
-import java.util.List;
-import java.util.Collections;
+import antlr.collections.AST;
+import java.io.PrintWriter;
+import frysk.value.Type;
+import frysk.value.Value;
+import frysk.value.Location;
 
 /** 
- * Create expressions and related stuff.
+ * An expression (well actually the expression tree).
  */
 
-public class ExpressionFactory {
-    /**
-     * Perform TAB completion on the expression.
-     */
-    public static int complete(ExprSymTab symTab, String incomplete,
-			       int offset, List candidates) {
-	try {
-	    String input = (incomplete.substring(0, offset)
-			    + '\t'
-			    + incomplete.substring(offset)
-			    +(char) 3);
-	    CExprLexer lexer = new CExprLexer(new StringReader(input));
-	    CExprParser parser = new CExprParser(lexer);
-	    parser.setASTNodeClass(DetailedAST.class.getName());
-	    parser.start();
-	} catch (antlr.RecognitionException e) {
-	    throw new RuntimeException(e);
-	} catch (antlr.TokenStreamException e) {
-	    throw new RuntimeException(e);
-	} catch (IncompleteIdentifierException ident) {
-	    symTab.complete(ident.getText(), candidates);
-	    switch (candidates.size()) {
-	    case 0:
-		return -1;
-	    case 1: 
-		// Append a space.
-		candidates.add(0, candidates.remove(0) + " ");
-		return ident.getColumn();
-	    default:
-		Collections.sort(candidates);
-		return ident.getColumn();
-	    }
-	}
-	return -1; // nothing completed.
+public class Expression {
+    private final ExprSymTab symTab;
+    private final AST ast;
+    Expression(ExprSymTab symTab, AST ast) {
+	this.symTab = symTab;
+	this.ast = ast;
     }
 
+    /**
+     * Print the expression tree.
+     */
+    public void toPrint(PrintWriter writer) {
+	writer.print(ast.toStringTree());
+    }
 
     /**
-     * Parse the string, returning an expression.
+     * Evaluate the expression returning the result's Value.  This may
+     * have side effects - modifying the inferior.
      */
-    public static Expression parse(ExprSymTab symTab, String expression) {
+    public Value getValue() {
 	try {
-	    String input = expression + (char)3;
-	    CExprParser parser
-		= new CExprParser(new CExprLexer(new StringReader(input)));
-	    parser.start();
-	    return new Expression(symTab, parser.getAST());
+	    return new CExprEvaluator(symTab).expr(ast);
 	} catch (antlr.RecognitionException r) {
 	    throw new RuntimeException(r);
-	} catch (antlr.TokenStreamException t) {
-	    throw new RuntimeException(t);
-	}
+	}        
+    }
+   
+    /**
+     * Determine the expressions result type.
+     */
+    public Type getType() {
+	// XXX: Fixme; should be walking the tree, not evaluating the
+	// expresision.
+	return getValue().getType();
+    }
+
+    /**
+     * Return the expression's location.
+     */
+    public Location getLocation() {
+	// XXX: should this walk the tree recording each required
+	// location?
+	return getValue().getLocation();
     }
 }

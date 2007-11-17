@@ -41,7 +41,6 @@ package frysk.expr;
 
 import frysk.junit.TestCase;
 import frysk.value.Value;
-import java.io.StringReader;
 import frysk.expr.ScratchSymTab;
 
 /**
@@ -51,19 +50,8 @@ import frysk.expr.ScratchSymTab;
 
 public class TestArithmetics extends TestCase {
     private Value eval(String input) {
-	try {
-	    input += (char) 3;
-	    CExprLexer lexer = new CExprLexer(new StringReader(input));
-	    CExprParser parser = new CExprParser(lexer);
-	    parser.start();
-	    ExprSymTab symTab = new ScratchSymTab();
-	    CExprEvaluator exprEvaluator = new CExprEvaluator(symTab);
-	    return exprEvaluator.expr(parser.getAST());
-	} catch (antlr.RecognitionException e) {
-	    throw new RuntimeException(e);
-	} catch (antlr.TokenStreamException e) {
-	    throw new RuntimeException(e);
-	}
+	ExprSymTab symTab = new ScratchSymTab();
+	return ExpressionFactory.parse(symTab, input).getValue();
     }
 
     private void checkExpr(long value, String expr) {
