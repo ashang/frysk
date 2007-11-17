@@ -42,9 +42,10 @@ package frysk.hpd;
 import java.util.List;
 import java.util.Iterator;
 import frysk.debuginfo.DebugInfoFrame;
-import frysk.debuginfo.DebugInfo;
 import frysk.proc.Task;
 import jline.FileNameCompletor;
+import frysk.expr.ExpressionFactory;
+import frysk.debuginfo.ObjectDeclarationSearchEngine;
 
 /**
  * A collection of completers.
@@ -75,14 +76,12 @@ class CompletionFactory {
 	    do {
 		Task task = (Task)i.next();
 		DebugInfoFrame frame = cli.getTaskFrame(task);
-		DebugInfo debugInfo = cli.getTaskDebugInfo(task);
-		int tmp = debugInfo.complete(frame, incomplete,
-					     cursor - start, candidates);
+		int tmp = ExpressionFactory.complete
+		    (new ObjectDeclarationSearchEngine(frame),
+		     incomplete, cursor - start, candidates);
 		if (tmp >= 0)
 		    newOffset = tmp;
 	    } while (i.hasNext());
-	    // If only one candidate, pad out with a space.
-	    padSingleCandidate(candidates);
 	    // System.out.println("start=" + start);
 	    // System.out.println("offset=" + offset);
 	    // System.out.println("candidates=" + candidates);

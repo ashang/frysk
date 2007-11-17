@@ -48,8 +48,6 @@ import frysk.proc.Proc;
 import frysk.value.Type;
 import frysk.value.Value;
 import java.io.StringReader;
-import java.util.Iterator;
-import java.util.List;
 import lib.dwfl.Dwarf;
 import lib.dwfl.DwarfCommand;
 import lib.dwfl.DwarfDie;
@@ -79,50 +77,6 @@ public class DebugInfo {
 	catch (lib.dwfl.ElfException ignore) {
 	    // FIXME: Why is this ignored?
 	}
-    }
-
-
-    /**
-     * Handle ConsoleReader Completor
-     * 
-     * @param buffer Input buffer.
-     * @param cursor Position of TAB in buffer.
-     * @param candidates List that may complete token.
-     * @return cursor position in buffer
-     */
-    public int complete (DebugInfoFrame frame, String buffer, int cursor, List candidates) {
-	long pc = frame.getAdjustedAddress();
-	Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
-	DwflDieBias bias = dwfl.getCompilationUnit(pc);
-	DwarfDie die = bias.die;
-	String token = "";
-
-	String sInput = buffer.substring(0, cursor) + '\t' + (cursor < buffer.length() 
-							      ? buffer.substring(cursor) : "");
-
-	sInput += (char)3;
-	CExprLexer lexer = new CExprLexer(new StringReader(sInput));
-	CExprParser parser = new CExprParser(lexer);
-	try {
-	    parser.start();
-	} catch (antlr.RecognitionException ignore) {
-	    // FIXME: Why is this ignored?
-	} catch (antlr.TokenStreamException ignore) {
-	    // FIXME: Why is this ignored?
-	} catch (frysk.expr.CompletionException t) {
-	    token = t.getText();
-	}
-
-	DwarfDie[] allDies = die.getScopes(pc - bias.bias);
-	List candidates_p = die.getScopeVarNames(allDies, token);
-	
-	for (Iterator i = candidates_p.iterator(); i.hasNext();) {
-            String sNext = (String) i.next();
-            candidates.add(sNext);
-        }
-	// XXX: This is a big kludge (but less of a kludge than
-	// .indexOf.
-	return buffer.lastIndexOf(token);
     }
 
     /**
