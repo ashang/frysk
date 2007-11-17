@@ -1,3 +1,8 @@
+2007-11-16  Rick Moseley  <rmoseley@redhat.com>
+
+	* fhpd.java: Fix bz #5256.
+	* TestFhd.java(testHpdCommand): Ditto.
+
 2007-11-16  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* fhpd.java(main): Add option -noexe. Append

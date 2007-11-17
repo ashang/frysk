@@ -104,12 +104,7 @@ public class fhpd
 	core = corePairs[0].coreFile;
 	exeFile = corePairs[0].exeFile;
     }
-    
-  
-      
-      
     };
-    
     parser.add(new Option("noexe", "Do not attempt to read an"+
 	" executable for a corefile ") {
 	public void parsed(String exeValue) throws OptionException {
@@ -121,10 +116,10 @@ public class fhpd
 				      + exeValue);
 	  }
 	}
-      });
-    parser.setHeader("Usage: fhpd <PID> || fhpd <COREFILE> [<EXEFILE>]");
-    parser.parse(args);
+    });
     
+    parser.setHeader("Usage: fhpd <PID> || fhpd <EXEFILE> || fhpd <COREFILE> [<EXEFILE>]");
+    parser.parse(args);
     Manager.eventLoop.start();
     String line = "";
     
@@ -133,7 +128,7 @@ public class fhpd
       if (pid > 0)
         line = "attach " + pid;
       else if (execFile != null)
-        line = "run " + execFile.getCanonicalPath();
+        line = "load " + execFile.getCanonicalPath();
       else if (core != null) {
 	  line = "core " + core.getCanonicalPath();      
 	  if (exeFile != null)

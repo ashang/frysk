@@ -48,6 +48,7 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.util.CountDownLatch;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 class RunCommand extends Command {
@@ -116,10 +117,44 @@ class RunCommand extends Command {
     }
 
     public void interpret(CLI cli, Input cmd) {
+	/* If the run command is given no args, check to see if 
+	   any procs were loaded with the load command or loaded
+	   when fhpd was started */
 	if (cmd.size() < 1) {
-	    // XXX: should default to previous values.
-	    throw new InvalidCommandException("missing program");
+	    if (cli.runningProcs.isEmpty() && cli.loadedProcs.isEmpty())
+		throw new InvalidCommandException("missing program");
 	}
+	
+	// If a parameter was given the run command, go ahead and run it
+	if (cmd.size() >= 1) {
+	    run(cli, cmd);
+	    return;
+	}
+	
+	/* If we made it here, a run command was given with no parameters
+	 * and there are either running procs or loaded procs
+	 */
+	
+	/* This is the case where there are loaded procs */
+	if (!cli.loadedProcs.isEmpty()) {
+	    Iterator foo = cli.targetset.getTasks();
+	    while (foo.hasNext()) {
+		Task task = (Task) foo.next();
+		int taskID = cli.idManager.getProcID(task.getProc());
+		cli.execCommand("run " + task.getProc().getExe() + " " +
+			Integer.toString(taskID));
+	    }
+	    // Clear all of the loaded procs now that they have been run
+	    synchronized(cli) {
+		cli.loadedProcs.clear();
+	    }
+	}
+	// Found no loaded procs, print usage message
+	// XXX Need to fix, add core files and running proc handling
+	else throw new InvalidCommandException("missing program");  
+    }
+	
+    private void run(CLI cli, Input cmd) {
 	Runner runner = new Runner(cli);
 	Manager.host.requestCreateAttachedProc(cmd.stringArrayValue(), runner);
         try {
@@ -128,10 +163,16 @@ class RunCommand extends Command {
             return;
         }
         // register with SteppingEngine et.al.
-	cli.doAttach(runner.launchedTask.getProc());
+        // If a second parameter was passed, it was a specific ProcTaskID to use
+        if (cmd.size() > 1)
+            cli.doAttach(runner.launchedTask.getProc(), 
+        	    Integer.parseInt(cmd.parameter(1)));
+        // If not, pass a -1 so a new ProcTaskID will be assigned
+        else
+            cli.doAttach(runner.launchedTask.getProc(), -1);
 	runner.launchedTask.requestUnblock(runner);
     }
-
+    
     int complete(CLI cli, Input input, int cursor, List completions) {
 	return CompletionFactory.completeFileName(cli, input, cursor,
 						  completions);

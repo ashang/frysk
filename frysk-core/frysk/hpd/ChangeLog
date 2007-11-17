@@ -1,3 +1,11 @@
+2007-11-16  Rick Moseley  <rmoseley@redhat.com>
+
+	* AttachCommand.java: Implement load/run capability.
+	* CLI.java: Ditto.
+	* LoadCommand.java: Ditto.
+	* RunCommand.java: Ditto.
+	* TestLoadCommand: Test new load/run capability.
+
 2007-11-15  Stan Cox  <scox@redhat.com>
 	* TestListCommand.java (testListPC): Change to use funit-quicksort.
 	(testListFunction): Likewise.

@@ -81,7 +81,7 @@ public class TestFhd
 			   Config.getBinFile("fhpd").getPath(), 
 			   Config.getPkgLibFile("hpd-c").getPath() 
 		       });
-	e.expect(5, "Attached to process.*\n" + prompt);
+	e.expect(5, "Loaded executable file.*" + prompt);
 	e.close();
     }
   

@@ -87,6 +87,15 @@ public class ProcTaskIDManager
         procList.add(null);
         return result;
     }
+    
+    public void manageProcSelect(Proc proc, int usedID) {
+	ProcEntry entry;
+	synchronized (this) {
+	    entry = new ProcEntry(proc, usedID);
+	    procList.set(usedID, entry);
+	    procMap.put(proc, new Integer(usedID));
+	}
+    }
 
     public void manageProc(Proc proc, int reservedID) {
         ProcEntry entry;
@@ -102,6 +111,13 @@ public class ProcTaskIDManager
             return ((ProcEntry)procList.get(id)).proc;
         else
             return null;
+    }
+    
+    public synchronized boolean removeProcID(int id) {
+	if (id > procList.size() || id < 0)
+	    return false;
+	procList.remove(id);
+	return true;
     }
 
     public synchronized int getProcID(Proc proc) {

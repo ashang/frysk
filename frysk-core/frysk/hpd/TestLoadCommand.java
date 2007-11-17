@@ -59,7 +59,32 @@ public class TestLoadCommand extends TestLib {
 	e = new HpdTestbed();
 	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath()
 		+ "foo\n");
-	e.expect(5, "File does not exist or is not readable.*");
+	e.expect(5, "File does not exist or is not readable*");
+	e.close();
+    }
+    
+    public void testLoadRun() {
+	e = new HpdTestbed();
+	e.send("load " + Config.getPkgLibFile("funit-hello").getPath()
+		+ "\n");
+	e.expect(5, "Loaded executable file.*" + prompt);
+	e.send("focus\n");
+	e.expect(5, "Target set*");
+	e.expect(5, "[0.0]*0*0*");
+	e.send("load " + Config.getPkgLibFile("funit-hello").getPath()
+		+ "\n");
+	e.expect(5, "Loaded executable file.*" + prompt);
+	e.send("focus\n");
+	e.expect(5, "Target set*");
+	e.expect(5, "[0.0]*0*0*");
+	e.expect(5, "[1.0]*0*0*" + prompt);
+	e.send("run\n");
+	e.expect(5, "Attached to process*");
+	e.expect(5, "Attached to process*");
+	e.send("focus\n");
+	e.expect(5, "Target set*");
+	e.expect(5, "[0.0]*");
+	e.expect(5, "[1.0]*" + prompt);
 	e.close();
     }
 }

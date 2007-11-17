@@ -69,6 +69,8 @@ public class CLI {
     CountDownLatch attachedLatch;
     //Processes started with run command
     final HashSet runningProcs = new HashSet();
+    //Processes loaded with load command
+    final HashSet loadedProcs = new HashSet();
 
     private class TaskInfo {
         DebugInfoFrame frame;
@@ -125,14 +127,14 @@ public class CLI {
 	} catch (RuntimeException e) {
 	    if (nasty(e))
 		e.printStackTrace(outWriter);
-	    return -1;		
+	    return -1;
 	}
     }
 
     /*
      * Command handlers
      */
-    public void doAttach(Proc proc) {
+    public void doAttach(Proc proc, int procID) {
         synchronized (this) {
             attached = -1;
             attachedLatch = new CountDownLatch(1);
@@ -144,7 +146,7 @@ public class CLI {
 	    outWriter.print("Attached to process ");
 	    outWriter.println(attached);
         } catch (InterruptedException ie) {
-	    throw new RuntimeException("attachLatch interrupted");
+            throw new RuntimeException("attachLatch interrupted");
         } finally {
             synchronized (this) {
                 attached = -1;
@@ -152,7 +154,12 @@ public class CLI {
             }
         }
         steppingEngine.getBreakpointManager().manageProcess(proc);
-        idManager.manageProc(proc, idManager.reserveProcID());
+        // If passed a taskID < 0, request a reserved ProcID
+        if (procID < 0)
+            idManager.manageProc(proc, idManager.reserveProcID());
+        // Assign this proc to the passed in procID 
+        else
+            idManager.manageProcSelect(proc, procID);
     }
 
     final PrintWriter outWriter;
@@ -255,13 +262,13 @@ public class CLI {
                 }
             }
             catch (RuntimeException e) {
-		printError(e);
+                printError(e);
             }
             flushMessages();
         }
         return null;
     }
-
+    
     /**
      * Identify "nasty", or internal exceptions; these are the
      * RuntimeExceptions thrown by the Java system.
@@ -435,6 +442,15 @@ public class CLI {
         return runningProcs;
     }
  
+    /**
+     * Get the set of processes (Proc) started by the load command. Access to the
+     * CLI object should be synchronized when using the set.
+     * @return the set
+     */
+    public HashSet getLoadedProcs() {
+        return loadedProcs;
+    }
+    
     SteppingEngine getSteppingEngine () {
         return this.steppingEngine;
     }

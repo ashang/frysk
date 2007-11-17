@@ -70,9 +70,10 @@ public class LoadCommand extends ParameterizedCommand {
 
 	File executableFile = new File(cmd.parameter(0));
 
-	if (!executableFile.exists() || !executableFile.canRead()) {
+	if (!executableFile.exists() || !executableFile.canRead()
+		|| !executableFile.isFile()) {
 	    throw new InvalidCommandException
-		("File does not exist or is not readable.");
+		("File does not exist or is not readable or is not a file.");
 	}
 
 	Host exeHost = new LinuxExeHost(Manager.eventLoop, executableFile);
@@ -96,6 +97,9 @@ public class LoadCommand extends ParameterizedCommand {
 		cli.setTaskDebugInfo(task, new DebugInfo(
 			frame));
 	    }
+	}
+	synchronized (cli) {
+	    cli.getLoadedProcs().add(exeProc);
 	}
     }
 
