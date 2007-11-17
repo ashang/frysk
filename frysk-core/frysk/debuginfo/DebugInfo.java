@@ -109,23 +109,17 @@ public class DebugInfo {
 	    // FIXME: Why is this ignored?
 	} catch (antlr.TokenStreamException ignore) {
 	    // FIXME: Why is this ignored?
-	} catch (frysk.expr.TabException t) {
-	    token = t.getTabExpression().trim();
+	} catch (frysk.expr.CompletionException t) {
+	    token = t.getText();
 	}
 
 	DwarfDie[] allDies = die.getScopes(pc - bias.bias);
 	List candidates_p = die.getScopeVarNames(allDies, token);
-	boolean haveStruct = false;
-	if (token.endsWith("."))
-	    haveStruct = true;
 	
 	for (Iterator i = candidates_p.iterator(); i.hasNext();) {
-            String sNext = (haveStruct ? "." : "") + (String) i.next();
+            String sNext = (String) i.next();
             candidates.add(sNext);
         }
-
-	if (haveStruct)
-	    token = ".";
 	// XXX: This is a big kludge (but less of a kludge than
 	// .indexOf.
 	return buffer.lastIndexOf(token);
@@ -221,8 +215,6 @@ public class DebugInfo {
 	} catch (antlr.RecognitionException r) {
 	    throw new RuntimeException(r);
 	} catch (antlr.TokenStreamException t) {
-	    throw new RuntimeException(t);
-	} catch (frysk.expr.TabException t) {
 	    throw new RuntimeException(t);
 	}
     

@@ -1,3 +1,16 @@
+2007-11-16  Andrew Cagney  <cagney@redhat.com>
+
+	* TabException.java: Delete.
+	* CExpr.g (bTabPressed): Delete.
+	(tab_expression): Delete.
+	(primary_expression): Fold into scope_expression; when IDENT_TAB
+	throw IncompleteIdentifierException.
+	(IDENT_TAB): Rename TAB.
+	* CompletionException.java: New.
+	* IncompleteTokenException.java: New.
+	* IncompleteIdentifierException.java: New.
+	* IncompleteMemberException.java: New.
+
 2007-11-15  Andrew Cagney  <cagney@redhat.com>
 
 	* TestArithmetics.java (eval(String)): Do not set setASTNodeClass.

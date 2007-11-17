@@ -5,6 +5,13 @@
 	* LoadCommand.java: Ditto.
 	* RunCommand.java: Ditto.
 	* TestLoadCommand: Test new load/run capability.
+	
+2007-11-16  Stan Cox  <scox@redhat.com>
+
+	* TestListCommand.java (testListPC): Use sendCommandExpectPrompt.
+	(testListFunction): Likewise.
+	(testListReverse): Likewise.
+	(testListErrors): Likewise.
 
 2007-11-15  Stan Cox  <scox@redhat.com>
 	* TestListCommand.java (testListPC): Change to use funit-quicksort.

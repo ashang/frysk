@@ -52,8 +52,7 @@ public class TestListCommand extends TestLib {
 
     public void testListPC() {
 	e = HpdTestbed.run("funit-quicksort");
-        e.send("break main\n");
-        e.expect("breakpoint.*" + prompt);
+	e.sendCommandExpectPrompt("break main", "breakpoint.*");
         e.send("go\n");
         e.expect("go.*\n" + prompt + "Breakpoint");
 	// Matching the list expected output is a trial and error process
@@ -80,8 +79,7 @@ public class TestListCommand extends TestLib {
 
     public void testListFunction() {
 	e = HpdTestbed.run("funit-quicksort");
-        e.send("break main\n");
-        e.expect("breakpoint.*" + prompt);
+	e.sendCommandExpectPrompt("break main", "breakpoint.*");
         e.send("go\n");
         e.expect("go.*\n" + prompt + "Breakpoint");
 	e.send("list\n");
@@ -125,8 +123,7 @@ public class TestListCommand extends TestLib {
 
     public void testListReverse() {
 	e = HpdTestbed.run("funit-quicksort");
-        e.send("break main\n");
-        e.expect("breakpoint.*" + prompt);
+	e.sendCommandExpectPrompt("break main", "breakpoint.*");
         e.send("go\n");
         e.expect("go.*\n" + prompt + "Breakpoint");
 	e.send("list\n");
@@ -160,16 +157,13 @@ public class TestListCommand extends TestLib {
 
     public void testListErrors() {
 	e = HpdTestbed.run("funit-quicksort");
-        e.send("break main\n");
-        e.expect("breakpoint.*" + prompt);
+	e.sendCommandExpectPrompt("break main", "breakpoint.*");
         e.send("go\n");
         e.expect("go.*\n" + prompt + "Breakpoint");
-	e.send("list x\n");
-	e.expect(".*function x not found.*" + prompt);
-	e.send("list xyz\n");
-	e.expect(".*symbol xyz not found.*" + prompt);
-        e.send("quit\n");
-        e.expect("quit.*\nQuitting...");
+	e.sendCommandExpectPrompt("list x", ".*function x not found.*"); 
+	e.sendCommandExpectPrompt("list xyz", ".*symbol xyz not found.*");
+	e.send("quit\n");
+	e.expect("quit.*\nQuitting...");
         e.close();
     }
 }
