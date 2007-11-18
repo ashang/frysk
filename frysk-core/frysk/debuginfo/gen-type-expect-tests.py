@@ -136,7 +136,7 @@ public class %s extends TestLib {
                     System.out.println("Error: Cannot find " + expect[i].symbol);
                 assertNotNull(varDie);
 		DebugInfo debugInfo = new DebugInfo(frame);
-                Value value =  debugInfo.print(expect[i].symbol, frame, false);
+                Value value =  debugInfo.print(expect[i].symbol, frame);
                 value.toPrint(pw, task.getMemory(), Format.NATURAL);
                 pw.flush();
                 String valueString = baos.toString();

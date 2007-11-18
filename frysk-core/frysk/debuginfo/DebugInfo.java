@@ -36,18 +36,14 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package frysk.debuginfo;
 
-import antlr.collections.AST;
+import frysk.expr.ExpressionFactory;
 import frysk.dwfl.DwflCache;
-import frysk.expr.CExprLexer;
-import frysk.expr.CExprParser;
-import frysk.expr.ExprSymTab;
-import frysk.expr.CExprEvaluator;
 import frysk.proc.Proc;
 import frysk.value.Type;
 import frysk.value.Value;
-import java.io.StringReader;
 import lib.dwfl.Dwarf;
 import lib.dwfl.DwarfCommand;
 import lib.dwfl.DwarfDie;
@@ -58,7 +54,6 @@ import lib.dwfl.DwAt;
 import lib.dwfl.DwflDieBias;
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
-import frysk.expr.ScratchSymTab;
 
 public class DebugInfo {
     private Elf elf;
@@ -150,92 +145,11 @@ public class DebugInfo {
     
     /**
      * Implement the cli print request.
-     * 
-     * @param sInput
-     * @return Variable
      */
-      public Value print (String sInput, DebugInfoFrame frame) {
-	  return print (sInput, frame, false);
-      }
-    
-      public Value print (String sInput, DebugInfoFrame frame, boolean dumpTree) {
-	Value result = null;
-	sInput += (char) 3;
-    
-	CExprLexer lexer = new CExprLexer(new StringReader(sInput));
-	CExprParser parser = new CExprParser(lexer);
-	try {
-	    parser.start();
-	} catch (antlr.RecognitionException r) {
-	    throw new RuntimeException(r);
-	} catch (antlr.TokenStreamException t) {
-	    throw new RuntimeException(t);
-	}
-    
-	AST exprAST = parser.getAST();
-	if (dumpTree)
-	    System.out.println("parse tree: " + exprAST.toStringTree());
-	CExprEvaluator cExprEvaluator;
-	/*
-	 * If this request has come from the SourceWindow, there's no way to
-	 * know which thread the mouse request came from; if there are multiple
-	 * innermost frames of multiple threads in the same source file, than
-	 * all of the threads have to be checked. If there's only one thread;
-	 * than this loop will run only once anyways.
-	 */
-	ObjectDeclarationSearchEngine declarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
-	cExprEvaluator = new CExprEvaluator(declarationSearchEngine);
-	try {
-	    result = cExprEvaluator.expr(exprAST);
-	} catch (ArithmeticException ae) {
-	    ae.printStackTrace();
-	    throw ae;
-	} catch (antlr.RecognitionException r) {
-	    throw new RuntimeException(r);
-	} catch (frysk.value.InvalidOperatorException i) {
-	    throw new RuntimeException(i);
-	} catch (frysk.value.OperationNotDefinedException o) {
-	    throw new RuntimeException(o);
-	}
-        
-	return result;
+    public Value print(String expression, DebugInfoFrame frame) {
+	ObjectDeclarationSearchEngine symTab
+	    = new ObjectDeclarationSearchEngine(frame);
+	return ExpressionFactory.parse(symTab, expression).getValue();
     }
    
-    static public Value printNoSymbolTable (String sInput, boolean dump_tree) {
-	Value result = null;
-	sInput += (char) 3;
-    
-	CExprLexer lexer = new CExprLexer(new StringReader(sInput));
-	CExprParser parser = new CExprParser(lexer);
-	try {
-	    parser.start();
-	} catch (antlr.RecognitionException r) {
-	    throw new RuntimeException(r);
-	} catch (antlr.TokenStreamException t) {
-	    throw new RuntimeException(t);
-	}
-    
-	AST t = parser.getAST();
-	if (dump_tree)
-	    // Print the resulting tree out in LISP notation
-	    System.out.println("parse tree: " + t.toStringTree());
-	CExprEvaluator cExprEvaluator;
-	ExprSymTab tmpSymTab = new ScratchSymTab();
-	cExprEvaluator = new CExprEvaluator(tmpSymTab);
-        
-	try {
-	    result = cExprEvaluator.expr(t);
-	} catch (ArithmeticException ae) {
-	    ae.printStackTrace();
-	    throw ae;
-	} catch (antlr.RecognitionException r) {
-	    throw new RuntimeException(r);
-	} catch (frysk.value.InvalidOperatorException i) {
-	    throw new RuntimeException(i);
-	} catch (frysk.value.OperationNotDefinedException o) {
-	    throw new RuntimeException(o);
-	}
-      
-	return result;
-    }
 }

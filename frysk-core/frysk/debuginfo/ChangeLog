@@ -1,5 +1,10 @@
 2007-11-17  Andrew Cagney  <cagney@redhat.com>
 
+	* DebugInfo.java (printNoSymbolTable(String,boolean)): Delete.
+	(print(String,DebugInfoFrame,boolean)): Delete.
+	(print(String,DebugInfoFrame)): Re-implement using Expression.
+	* gen-type-expect-tests.py (j.prologue): Update.
+
 	* DebugInfo.java (complete(DebugInfoFrame,String,int,List)): Delete.
 
 	* ObjectDeclarationSearchEngine.java (complete(String,List)): New.
