@@ -46,12 +46,10 @@ import java.util.List;
  */
 
 public abstract class Command {
-    private final CommandHelp help;
     private final String name;  
-
-    public CommandHelp getHelp() {
-	return help;
-    }
+    private final String description;
+    private final String syntax;
+    private final String full;
 
     public String getName() {
 	return name;
@@ -59,7 +57,9 @@ public abstract class Command {
   
     Command (String name, String description, String syntax, String full) {
 	this.name = name;
-	this.help = new CommandHelp(name, description, syntax, full);
+	this.description = description;
+	this.syntax = syntax;
+	this.full = full;
     }
   
     public abstract void interpret(CLI cli, Input cmd);
@@ -79,9 +79,9 @@ public abstract class Command {
      */
     void help(CLI cli, Input buffer) {
 	cli.outWriter.print("Usage: ");
-	cli.outWriter.print(help.getSyntax());
+	cli.outWriter.print(syntax);
 	cli.outWriter.println();
-	cli.outWriter.print(help.getFull());
+	cli.outWriter.print(full);
 	cli.outWriter.println();
     }
 
@@ -89,6 +89,6 @@ public abstract class Command {
      * Return a brief (one line) description of the command.
      */
     String description() {
-	return help.getDescription();
+	return description;
     }
 }

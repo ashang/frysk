@@ -1,5 +1,9 @@
 2007-11-17  Andrew Cagney  <cagney@redhat.com>
 
+	* CommandHelp.java: Delete.
+	* Command.java (getHelp()): Delete.
+	(help): Delete.
+	
 	* TestHelp.java (topLevel): New.
 	(testHelp()): Use.
 	(testBlankCompletion()): New.
