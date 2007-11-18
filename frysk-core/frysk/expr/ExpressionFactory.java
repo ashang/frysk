@@ -66,19 +66,14 @@ public class ExpressionFactory {
 	    throw new RuntimeException(e);
 	} catch (antlr.TokenStreamException e) {
 	    throw new RuntimeException(e);
-	} catch (IncompleteIdentifierException ident) {
-	    symTab.complete(ident.getText(), candidates);
-	    switch (candidates.size()) {
-	    case 0:
-		return -1;
-	    case 1: 
+	} catch (CompletionException e) {
+	    int newOffset = e.complete(symTab, candidates);
+	    Collections.sort(candidates);
+	    if (candidates.size() == 1) {
 		// Append a space.
 		candidates.add(0, candidates.remove(0) + " ");
-		return ident.getColumn();
-	    default:
-		Collections.sort(candidates);
-		return ident.getColumn();
 	    }
+	    return newOffset;
 	}
 	return -1; // nothing completed.
     }

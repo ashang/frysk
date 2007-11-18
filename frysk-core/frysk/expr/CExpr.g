@@ -305,28 +305,30 @@ cast_expression!
     ;
   
 postfix_expression!
-    { AST astPostExpr = null; 
-    }   
-    :(   sc_expr: scope_expression
-         {  astPostExpr = #sc_expr; 
-         }
-         (      
-               DOT id_expr1:identifier
-               { astPostExpr = #(#[MEMBER, "Member"], #astPostExpr, #id_expr1); 
-               }                            
-           |   POINTERTO id_expr2:identifier
-               {  astPostExpr = #(#[MEMORY, "Memory"], #astPostExpr); 
-                  astPostExpr = #(#[MEMBER, "Member"], #astPostExpr, #id_expr2); 
-               } 
-               // FIX ME               
-           |   LSQUARE arrExpr1:expressionList RSQUARE  
+    { AST astPostExpr = null; }   
+    : (   sc_expr: scope_expression {  astPostExpr = #sc_expr; }
+         ( DOT
+             ( IDENT_TAB { throw new IncompleteMemberException(#astPostExpr,
+                                                               #IDENT_TAB); }
+             | id_expr1:IDENT { astPostExpr = #(#[MEMBER, "Member"],
+                                                #astPostExpr, #id_expr1); }
+             )
+         | POINTERTO
+            ( IDENT_TAB { throw new IncompleteMemberException(#astPostExpr,
+                                                              #IDENT_TAB); }
+            | id_expr2:IDENT { astPostExpr = #(#[MEMORY, "Memory"],
+                                               #astPostExpr); 
+                               astPostExpr = #(#[MEMBER, "Member"],
+                                               #astPostExpr, #id_expr2); }
+            )
+         | LSQUARE arrExpr1:expressionList RSQUARE  
 	       { astPostExpr = #(#[INDEX, "Index"], #astPostExpr, #arrExpr1); 
 	       }	      
-           |   LPAREN! expressionList RPAREN!  
-   	   |   PLUSPLUS  
+         | LPAREN! expressionList RPAREN!  
+   	 | PLUSPLUS  
    	       { astPostExpr = #(PLUSPLUS, #astPostExpr); 
    	       }
-   	   |   MINUSMINUS
+   	 | MINUSMINUS
    	       { astPostExpr = #(MINUSMINUS, #astPostExpr); 
    	       }
    	    )*
@@ -339,19 +341,22 @@ postfix_expression!
  * This enables auto-completion by allowing the user
  * to press TAB whenever auto-completion is required
  */
-
 scope_expression 
-    :   identifier (SCOPE identifier)*
-    |   IDENT_TAB { throw new IncompleteIdentifierException(#IDENT_TAB); }
-    |   SCOPE identifier
-    |   LPAREN! expressionList RPAREN!
-    |   constant
-    |   "this"
+    : IDENT
+        ( SCOPE
+            ( IDENT
+            | IDENT_TAB { throw new IncompleteScopeException(#IDENT_TAB); }
+            )
+        )*
+    | IDENT_TAB { throw new IncompleteIdentifierException(#IDENT_TAB); }
+    | SCOPE
+        ( IDENT
+        | IDENT_TAB { throw new IncompleteScopeException(#IDENT_TAB); }
+        )
+    | LPAREN! expressionList RPAREN!
+    | constant
+    | "this"
     ;
-    
-identifier
-    :   ident:IDENT
-    ;   
     
 primitiveType
     :   "boolean"

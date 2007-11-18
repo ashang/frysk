@@ -40,6 +40,7 @@
 package frysk.expr;
 
 import antlr.collections.AST;
+import java.util.List;
 
 /** 
  * An incomplete identifier; e.g.: foo<tab>
@@ -48,5 +49,19 @@ class IncompleteIdentifierException extends CompletionException {
     static final long serialVersionUID = 1;
     IncompleteIdentifierException(AST identifier) {
 	super(identifier);
+    }
+    public String getMessage() {
+	return ("complete identifier <<"
+		+ getText()
+		+ ">> at "
+		+ getColumn()
+		);
+    }
+    int complete(ExprSymTab symTab, List candidates) {
+	symTab.complete(getText(), candidates);
+	if (candidates.size() == 0)
+	    return -1;
+	else
+	    return getColumn();
     }
 }

@@ -1,5 +1,20 @@
 2007-11-17  Andrew Cagney  <cagney@redhat.com>
 
+	* IncompleteTokenException.java (complete(ExprSymTab,List)): New.
+	* CompletionException.java (complete(ExprSymTab,List)): Abstract.
+	(getMessage()): Delete.
+	* IncompleteIdentifierException.java (getMessage()): New.
+	(complete(ExprSymTab,List)): New.
+	* IncompleteMemberException.java
+	(IncompleteMemberException(AST,AST)): Replace
+	IncompleteMemberException(AST).
+	(complete(ExprSymTab,List)): New.
+	* IncompleteScopeException.java: New.
+	* CExpr.g (postfix_expression): Recognize "foo.<TAB>", "foo-><TAB>".
+	(scope_expression): Recognize "::<tab>", and "::foo::<tab>".
+	(identifier): Delete.
+	* TestCompletion.java (testCompleteStructMember()): New.
+
 	* TestArithmetics.java (eval(String)): Use Expression.
 	* ExpressionFactory.java (parse(ExprSymTab,String)): New.
 	* Expression.java: New.

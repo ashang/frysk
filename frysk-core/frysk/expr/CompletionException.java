@@ -40,27 +40,26 @@
 package frysk.expr;
 
 import antlr.collections.AST;
+import java.util.List;
 
 /** 
  * An incomplete blah.
  */
 
-public class CompletionException extends RuntimeException {
+abstract class CompletionException extends RuntimeException {
     static final long serialVersionUID = 1;
     private final AST ast;
     CompletionException(AST ast) {
 	this.ast = ast;
     }
-    public String getMessage() {
-	return ("complete <<"
-		+ getText()
-		+ ">> at "
-		+ getColumn());
-    }
+    /**
+     * Complete the value using the symbol table.
+     */
+    abstract int complete(ExprSymTab symTab, List candidates);
     /**
      * Return the incomplete string (minus the tab).
      */
-    public String getText() {
+    String getText() {
 	String text = ast.getText();
 	int tab = text.indexOf("\t");
 	if (tab < 0)
@@ -68,10 +67,10 @@ public class CompletionException extends RuntimeException {
 	return text.substring(0, tab);
     }
     // Useful?
-    public int getLine() {
+    int getLine() {
 	return ast.getLine();
     }
-    public int getColumn() {
+    int getColumn() {
 	// Antlr counts columns starting at 1.
 	return ast.getColumn() - 1;
     }

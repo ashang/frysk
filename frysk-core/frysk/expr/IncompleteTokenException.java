@@ -40,6 +40,7 @@
 package frysk.expr;
 
 import antlr.collections.AST;
+import java.util.List;
 
 /** 
  * An incomplete token; e.g.: :<tab>
@@ -48,5 +49,8 @@ class IncompleteTokenException extends CompletionException {
     static final long serialVersionUID = 1;
     IncompleteTokenException(AST token) {
 	super(token);
+    }
+    int complete(ExprSymTab symTab, List candidates) {
+	return -1;
     }
 }

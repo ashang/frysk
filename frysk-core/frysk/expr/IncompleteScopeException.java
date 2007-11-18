@@ -39,49 +39,19 @@
 
 package frysk.expr;
 
-import frysk.junit.TestCase;
+import antlr.collections.AST;
 import java.util.List;
-import java.util.LinkedList;
 
 /** 
- * Create expressions and related stuff.
+ * An incomplete blah.
  */
 
-public class TestCompletion extends TestCase {
-    private void complete(String incomplete, int offset,
-			  String[] expectedCandidates, int expectedOffset) {
-	ExprSymTab symTab = new TestbedSymTab();
-	List testCandidates = new LinkedList();
-	int testOffset = ExpressionFactory.complete(symTab, incomplete, offset,
-						    testCandidates);
-	assertEquals("candidates", expectedCandidates,
-		     (String[]) testCandidates.toArray(new String[0]));
-	assertEquals("offset", expectedOffset, testOffset);
+class IncompleteScopeException extends CompletionException {
+    static final long serialVersionUID = 1;
+    IncompleteScopeException(AST ast) {
+	super(ast);
     }
-    private void complete(String incomplete, String[] expectedCandidates,
-			  int expectedOffset) {
-	complete(incomplete, incomplete.length(), expectedCandidates,
-		 expectedOffset);
-    }
-    public void testNoCompletions() {
-	complete("bogus", new String[0], -1);
-    }
-    public void testOneCompletion() {
-	complete("a", new String[] { "a " }, 0);
-    }
-    public void testOneLongerCompletion() {
-	complete("c1", new String[] { "c123 "}, 0);
-    }
-    public void testTwoCompletions() {
-	complete("b", new String[] { "b1", "b2" }, 0);
-    }
-    public void testCompletionAfterOp() {
-	complete("a + b", new String[] { "b1", "b2" }, 4);
-    }
-    public void testCompletionBeforeOp() {
-	complete("b + a", 1, new String[] { "b1", "b2" }, 0);
-    }
-    public void testCompleteStructMember() {
-	complete("a.", new String[] { "alpha", "beta", "gama", "iota" }, 2);
+    int complete(ExprSymTab symTab, List list) {
+	return -1;
     }
 }

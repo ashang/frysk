@@ -40,13 +40,26 @@
 package frysk.expr;
 
 import antlr.collections.AST;
+import java.util.List;
 
 /** 
  * An incomplete field member; e.g.: structure.field<tab>
  */
 class IncompleteMemberException extends CompletionException {
     static final long serialVersionUID = 1;
-    IncompleteMemberException(AST member) {
+    private final AST expression;
+    IncompleteMemberException(AST expression, AST member) {
 	super(member);
+	this.expression = expression;
+    }
+    public String getMessage() {
+	return ("complete <<"
+		+ expression.toStringTree()
+		+ ">> . <<"
+		+ getText()
+		+ ">>");
+    }
+    int complete(ExprSymTab symTab, List candidates) {
+	return -1;
     }
 }
