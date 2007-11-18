@@ -44,6 +44,7 @@ import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.util.List;
 
 /**
  * Type for a pointer (or address) of another type.
@@ -151,5 +152,9 @@ public class PointerType
     // Use for unary operations.
     public ArithmeticUnit getALU(int wordSize) {
 	return new AddressUnit(this, wordSize);
+    }
+
+    public boolean completeMember(String incomplete, List candidates) {
+	return type.completeMember(incomplete, candidates);
     }
 }

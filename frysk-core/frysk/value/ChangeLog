@@ -1,3 +1,12 @@
+2007-11-18  Andrew Cagney  <cagney@redhat.com>
+
+	* ArrayType.java (completeMember(String,List)): New.
+	* PointerType.java (completeMember(String,List)): New.
+	* Type.java (completeMember(String,List)): Rename
+	complete(String,List).
+	(completeFollowSym(String,List)): New.
+	* CompositeType.java: Update.
+
 2007-11-17  Andrew Cagney  <cagney@redhat.com>
 
 	* CompositeType.java (complete(String,List)): New.

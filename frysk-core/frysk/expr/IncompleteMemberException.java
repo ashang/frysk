@@ -61,7 +61,7 @@ class IncompleteMemberException extends CompletionException {
     }
     int complete(ExprSymTab symTab, List candidates) {
 	if (new Expression(symTab, expression)
-	    .getType().complete(getText(),candidates))
+	    .getType().completeMember(getText(),candidates))
 	    return getColumn();
 	else
 	    return -1;

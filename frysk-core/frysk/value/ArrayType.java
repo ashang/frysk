@@ -42,7 +42,7 @@ package frysk.value;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.io.PrintWriter;
-
+import java.util.List;
 import frysk.debuginfo.PieceLocation;
 import inua.eio.ByteBuffer;
 
@@ -268,4 +268,8 @@ public class ArrayType
     public ArithmeticUnit getALU(int wordSize) {
 	return new AddressUnit(this, wordSize);
     }      
+
+    public boolean completeMember(String incomplete, List candidates) {
+	return type.completeMember(incomplete, candidates);
+    }
 }

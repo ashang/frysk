@@ -390,7 +390,7 @@ public abstract class CompositeType
 	return mem.getValue (var1);
     }
 
-    public boolean complete(String incomplete, List candidates) {
+    public boolean completeMember(String incomplete, List candidates) {
 	int completions = 0;
 	for (Iterator i = nameToMember.keySet().iterator(); i.hasNext(); ) {
 	    String member = (String)i.next();

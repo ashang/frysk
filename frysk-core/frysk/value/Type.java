@@ -198,10 +198,17 @@ public abstract class Type {
     }
 
     /**
-     * Complete the specified string; return false if nothing
+     * Complete the type's member; return false if nothing completed.
+     */
+    public boolean completeMember(String incomplete, List candidates) {
+	return false;
+    }
+
+    /**
+     * Complete the type's next token; return false if nothing
      * completed.
      */
-    public boolean complete(String incomplete, List candidates) {
+    public boolean completeFollowSym(String incomplete, List candidates) {
 	return false;
     }
 }
