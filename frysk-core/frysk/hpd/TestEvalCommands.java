@@ -104,4 +104,30 @@ public class TestEvalCommands extends TestLib {
 	e.sendCommandExpectPrompt("print $" + r.getName() + " -format d",
 				  "\r\n[0-9]+\r\n");
     }
+
+    public void testPrintLocation() {
+	e = HpdTestbed.attachXXX("hpd-c");
+	e.sendCommandExpectPrompt
+	    ("print static_char -location", 
+	     "\r\nAddress 0x[0-9a-f]+ - [0-9]+ byte\\(s\\).*");
+    }
+    
+    public void testPrintLocationFails() {
+	if (unresolved(5345))
+	    return;
+	e = HpdTestbed.attachXXX("hpd-c");
+	e.sendCommandExpectPrompt
+	    ("print bogus -location\n", 
+	     "\r\nError: Symbol \"bogus\" is not found in the current context..*");
+    }
+
+    public void testPrintType() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("print 2+2 -type", "long\r\n");
+    }
+    public void testPrintTypeFails() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("print bogus -type",
+				  "Error: no values\r\n");
+    }
 }

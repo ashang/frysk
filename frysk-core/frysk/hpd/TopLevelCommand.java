@@ -90,7 +90,6 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(new DisplayCommand(), "display");
         add(new EvalCommands.Assign(), "assign");
         add(new EvalCommands.Print(), "p|rint");
-        add(new ExamineCommand(), "examine");
         add(new FocusCommand(), "focus");
         add(new GoCommand(), "g|o");
         add(new HaltCommand(), "h|alt");
@@ -98,8 +97,6 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(new ListCommand(), "l|ist");
         add(new LoadCommand(), "load");
         add(new PeekCommand(), "peek");
-        add(new PlocationCommand(), "plocation");
-        add(new PtypeCommand(), "ptype");
 	Command quit = new QuitCommand();
         add(quit, "exit");
         add(quit, "quit");

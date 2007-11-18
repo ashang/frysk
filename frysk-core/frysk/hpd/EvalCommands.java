@@ -39,6 +39,7 @@
      
 package frysk.hpd;
 
+import inua.eio.ByteBuffer;
 import frysk.value.Format;
 import java.util.Iterator;
 import frysk.proc.Task;
@@ -46,14 +47,67 @@ import frysk.value.PointerType;
 import frysk.value.Type;
 import java.util.List;
 import frysk.expr.Expression;
+import java.io.PrintWriter;
 
 /**
  * Evaluate an expression; in various forms.
  */
 abstract class EvalCommands extends ParameterizedCommand {
+    private static abstract class Printer {
+	abstract void print(Expression e, PrintWriter writer, Format format,
+			    ByteBuffer memory);
+	static final Printer VALUE = new Printer() {
+		void print(Expression e, PrintWriter writer, Format format,
+			   ByteBuffer memory) {
+		    // XXX: Should be in type?
+		    Type t = e.getType();
+		    if (t instanceof PointerType) {
+			writer.print("(");
+			t.toPrint(writer);
+			writer.print(") ");
+		    }	
+		    e.getValue().toPrint(writer, memory, format);
+		    writer.println();
+		}
+	    };
+	static final Printer LOCATION = new Printer() {
+		void print(Expression e, PrintWriter writer, Format format,
+			   ByteBuffer memory) {
+		    e.getLocation().toPrint(writer);
+		    writer.println();
+		}
+	    };
+	static final Printer TYPE = new Printer() {
+		void print(Expression e, PrintWriter writer, Format format,
+			   ByteBuffer memory) {
+		    e.getType().toPrint(writer);
+		    writer.println();
+		}
+	    };
+	static final Printer TREE = new Printer() {
+		void print(Expression e, PrintWriter writer, Format format,
+			   ByteBuffer memory) {
+		    e.toPrint(writer);
+		    writer.println();
+		}
+	    };
+	static final Printer RAW = new Printer() {
+		void print(Expression e, PrintWriter writer, Format format,
+			   ByteBuffer memory) {
+		    byte[] bytes = e.getLocation().toByteArray();
+		    for (int i = 0; i < bytes.length; i++) {
+			writer.print(i);
+			writer.print(": ");
+			writer.print(bytes[i]);
+			writer.println();
+		    }
+		}
+	    };
+    }
+
     private class Options {
 	Format format = Format.NATURAL;
-	boolean dumpTree = false;
+	Printer printer = Printer.VALUE;
     }
     Object options() {
 	return new Options();
@@ -66,9 +120,31 @@ abstract class EvalCommands extends ParameterizedCommand {
 		    ((Options)options).format = format;
 		}
 	    });
-	add(new CommandOption("dump-tree", "dump the expression AST") {
+	add(new CommandOption("tree", "print the expression's AST") {
 		void parse(String arg, Object options) {
-		    ((Options)options).dumpTree = true;
+		    ((Options)options).printer = Printer.TREE;
+		}
+	    });
+	add(new CommandOption("location", "print the expression's location") {
+		void parse(String arg, Object options) {
+		    ((Options)options).printer = Printer.LOCATION;
+		}
+	    });
+	add(new CommandOption("type", "print the expression's type") {
+		void parse(String arg, Object options) {
+		    ((Options)options).printer = Printer.TYPE;
+		}
+	    });
+	add(new CommandOption("value",
+			      "print the expression's value (default)") {
+		void parse(String arg, Object options) {
+		    ((Options)options).printer = Printer.VALUE;
+		}
+	    });
+	add(new CommandOption("raw",
+			      "print the expression's raw value") {
+		void parse(String arg, Object options) {
+		    ((Options)options).printer = Printer.RAW;
 		}
 	    });
     }
@@ -99,21 +175,8 @@ abstract class EvalCommands extends ParameterizedCommand {
 		cli.printError(e);
 		continue;
 	    }
-	    if (options.dumpTree) {
-		result.toPrint(cli.outWriter);
-	    } else {
-		Type t = result.getType();
-		if (t instanceof PointerType) {
-		    cli.outWriter.print("(");
-		    t.toPrint(cli.outWriter);
-		    cli.outWriter.print(") ");
-		}	
-		result.getValue()
-		    .toPrint(cli.outWriter,
-			     task == null ? null : task.getMemory(),
-			     options.format);
-	    }
-	    cli.outWriter.println();
+	    options.printer.print(result, cli.outWriter, options.format,
+				  task == null ? null : task.getMemory());
 	} while (taskDataIter.hasNext());
     }
 

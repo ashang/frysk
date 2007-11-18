@@ -1,5 +1,22 @@
 2007-11-17  Andrew Cagney  <cagney@redhat.com>
 
+	* EvalCommands.java (Printer): New.
+	(Options): Replace dumpTree with printer;
+	(EvalCommands(String,String,String)): Add options -location,
+	-type, -value, -tree, and -raw.
+	* TestEvalCommands.java (testPrintLocation()): New.
+	(testPrintLocationFails()): New.
+	(testPrintType()): New.
+	(testPrintTypeFails()): New.
+	* TestPtypeCommand.java: Delete.
+	* TestPlocationCommand.java: Delete.
+	* PtypeCommand.java: Delete.
+	* PlocationCommand.java: Delete.
+	* TestExamineCommand.java: Delete.
+	* ExamineCommand.java: Delete.
+	* TopLevelCommand.java: Update.
+	* TestHelp.java: Update.
+
 	* Command.java (Command(String,String,String)): Replace
 	Command(String,String,String,String); name dropped.
 	(interpret(CLI,Input)): Make package private.
