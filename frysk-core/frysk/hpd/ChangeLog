@@ -1,5 +1,15 @@
 2007-11-17  Andrew Cagney  <cagney@redhat.com>
 
+	* Command.java (name): Delete.
+	(getName()): Delete.
+	* MultiLevelCommand.java (add(Command)): Delete.
+	(add(Command,String)): New.
+	(abbrevs): New.
+	(addAbbrev): New.
+	(lookup(String)): Use abbrevs.
+	(complete(CLI,Input,int,List)): Use lookup(String).
+	* TopLevelCommand.java: Update.
+
 	* CommandHelp.java: Delete.
 	* Command.java (getHelp()): Delete.
 	(help): Delete.

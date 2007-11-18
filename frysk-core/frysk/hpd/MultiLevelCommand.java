@@ -41,6 +41,7 @@ package frysk.hpd;
 
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.List;
@@ -57,21 +58,18 @@ public abstract class MultiLevelCommand extends Command {
 	super(name, description, syntax, full);
     }
 
-    /**
-     * Add the specified command.
-     */
-    protected MultiLevelCommand add(Command command) {
-	subCommands.put(command.getName(), command);
-	return this;
+    private final Map abbrevs = new HashMap();
+    private void addAbbrev(String name, Command command) {
+	if (abbrevs.containsKey(name))
+	    throw new RuntimeException("duplicate command: " + name);
+	abbrevs.put(name, command);
     }
-
     private Command lookup(String subAction) {
-	// If there's an exact match return; even when the command is
-	// ambiguous (e.x. "step" vs "step" "stepi").
-	Command command = (Command)subCommands.get(subAction);
+	Command command = (Command)abbrevs.get(subAction);
 	if (command != null)
 	    return command;
-	// Look for something starting, but if multiple matches bail.
+	// Look for something starting with subAction, but if multiple
+	// matches bail.
 	Map.Entry subEntry = null;
 	for (Iterator i = subCommands.entrySet().iterator(); i.hasNext(); ) {
 	    Map.Entry entry = (Map.Entry)(i.next());
@@ -88,6 +86,28 @@ public abstract class MultiLevelCommand extends Command {
 	if (subEntry == null)
 	    throw new InvalidCommandException("Unknown command: " + subAction);
 	return (Command)subEntry.getValue();
+    }
+
+    /**
+     * Add the specified command; within the command "|" denotes the
+     * shortest non-ambigious version of the command; e.g., "b|reak"
+     */
+    protected MultiLevelCommand add(Command command, String s) {
+	int bar = s.indexOf('|');
+	String name;
+	if (bar < 0) {
+	    name = s;
+	    addAbbrev(name, command);
+	} else {
+	    name = s.substring(0, bar);
+	    addAbbrev(name, command);
+	    for (int i = bar + 1; i < s.length(); i++) {
+		name += s.charAt(i);
+		addAbbrev(name, command);
+	    }
+	}
+	subCommands.put(name, command);
+	return this;
     }
 
     /**
@@ -124,7 +144,7 @@ public abstract class MultiLevelCommand extends Command {
 	// The cursor is past this token.  Find this level's
 	// sub-command and pass the completion problem on to it.
 	if (incomplete != null && cursor > incomplete.end) {
-	    Command subCommand = (Command)subCommands.get(incomplete.value);
+	    Command subCommand = lookup(incomplete.value);
 	    if (subCommand == null)
 		return -1; // give up
 	    return subCommand.complete(cli, input.accept(), cursor,

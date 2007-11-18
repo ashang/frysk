@@ -46,17 +46,11 @@ import java.util.List;
  */
 
 public abstract class Command {
-    private final String name;  
     private final String description;
     private final String syntax;
     private final String full;
-
-    public String getName() {
-	return name;
-    }
   
     Command (String name, String description, String syntax, String full) {
-	this.name = name;
 	this.description = description;
 	this.syntax = syntax;
 	this.full = full;
