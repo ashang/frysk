@@ -1,5 +1,10 @@
 2007-11-17  Andrew Cagney  <cagney@redhat.com>
 
+	* TestHelp.java (topLevel): New.
+	(testHelp()): Use.
+	(testBlankCompletion()): New.
+	(setUp()): New.
+
 	* CLI.java (parseValue(Task,String,boolean)): Delete.
 	(parseValue(Task,String)): Delete.
 	(parseExpression(Task,String)): New.

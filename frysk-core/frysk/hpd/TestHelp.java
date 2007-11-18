@@ -46,29 +46,88 @@ package frysk.hpd;
 public class TestHelp
     extends TestLib
 {
-    public void testHelp() {
+    // A list of the top-level commands; this needs updating when ever
+    // a new top-level command is added or (more importantly not
+    // accidently) removed.
+    private final String[] topLevel = {
+	"actions",
+	"alias",
+	"assign",
+	"attach",
+	"break",
+	"core",
+	"debuginfo",
+	"defset",
+	"delete",
+	"detach",
+	"disable",
+	"disassemble",
+	"display",
+	"down",
+	"enable",
+	"examine",
+	"exit",
+	"finish",
+	"focus",
+	"frame",
+	"go",
+	"halt",
+	"help",
+	"list",
+	"load",
+	"next",
+	"nexti",
+	"peek",
+	"plocation",
+	"print",
+	"ptype",
+	"quit",
+	"regs",
+	"run",
+	"set",
+	"step",
+	"stepi",
+	"unalias",
+	"undefset",
+	"unset",
+	"up",
+	"viewset",
+	"what",
+	"where",
+	"whichsets",
+    };
+
+    public void setUp() {
+	super.setUp();
 	e = new HpdTestbed();
+    }
+
+    public void testBlankCompletion() {
+	e.send("\t");
+	for (int i = 0; i < topLevel.length; i++) {
+	    e.expect(topLevel[i] + "\\r\\n");
+	}
+	e.expect(prompt);
+    }
+
+    public void testHelp() {
 	e.send("help\n");
-	e.expect("actions - ");
-	e.expect("core - ");
-	e.expect("finish - ");
-	e.expect("list - ");
-	e.expect("peek - ");
-	e.expect("regs - ");
-	e.expect("step - ");
-	e.expect("up - ");
-	e.expectPrompt("whichsets.*");
+	for (int i = 0; i < topLevel.length; i++) {
+	    e.expect(topLevel[i] + " - [^\\r\\n]*\\r\\n");
+	}
+	e.expectPrompt("");
     }
 
     public void testHelpCompletion() {
-	e = new HpdTestbed();
 	e.send("help u\t");
-	e.expect("unalias\r\nundefset\r\nunset\r\nup\r\n"
-		 + prompt + "help u");
+	e.expect("unalias\\r\\n");
+	e.expect("undefset\\r\\n");
+	e.expect("unset\\r\\n");
+	e.expect("up\\r\\n");
+	e.expect(prompt + "help u");
     }
 
     public void testHelpHelp() {
-	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("help help",
 				  "Display help.*");
     }
