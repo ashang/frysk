@@ -82,6 +82,6 @@ public class TestCompletion extends TestCase {
 	complete("b + a", 1, new String[] { "b1", "b2" }, 0);
     }
     public void testCompleteStructMember() {
-	complete("a.", new String[] { "alpha", "beta", "gama", "iota" }, 2);
+	complete("a.", new String[] { "alpha", "beta", "epsilon", "gamma", "iota" }, 2);
     }
 }

@@ -1,5 +1,8 @@
 2007-11-17  Andrew Cagney  <cagney@redhat.com>
 
+	* IncompleteMemberException.java (complete(ExprSymTab,List)):
+	Implement.
+	
 	* IncompleteTokenException.java (complete(ExprSymTab,List)): New.
 	* CompletionException.java (complete(ExprSymTab,List)): Abstract.
 	(getMessage()): Delete.

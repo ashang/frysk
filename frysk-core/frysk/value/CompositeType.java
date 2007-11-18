@@ -41,6 +41,7 @@ package frysk.value;
 
 import inua.eio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -387,5 +388,17 @@ public abstract class CompositeType
 	if (mem == null)
 	    throw new RuntimeException("Invalid data member: " + member);
 	return mem.getValue (var1);
+    }
+
+    public boolean complete(String incomplete, List candidates) {
+	int completions = 0;
+	for (Iterator i = nameToMember.keySet().iterator(); i.hasNext(); ) {
+	    String member = (String)i.next();
+	    if (member.startsWith(incomplete)) {
+		completions++;
+		candidates.add(member);
+	    }
+	}
+	return completions > 0;
     }
 }

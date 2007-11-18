@@ -60,6 +60,10 @@ class IncompleteMemberException extends CompletionException {
 		+ ">>");
     }
     int complete(ExprSymTab symTab, List candidates) {
-	return -1;
+	if (new Expression(symTab, expression)
+	    .getType().complete(getText(),candidates))
+	    return getColumn();
+	else
+	    return -1;
     }
 }

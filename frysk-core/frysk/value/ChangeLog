@@ -1,3 +1,8 @@
+2007-11-17  Andrew Cagney  <cagney@redhat.com>
+
+	* CompositeType.java (complete(String,List)): New.
+	* Type.java (complete(String,List)): New.
+
 2007-11-15  Teresa Thomas  <tthomas@redhat.com>
 
 	* ArithmeticUnit.java (getLogicalValue): Delete 

@@ -41,7 +41,7 @@ package frysk.value;
 
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
-
+import java.util.List;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -195,5 +195,13 @@ public abstract class Type {
      */
     public Type pack(int bitSize, int bitOffset) {
 	throw new InvalidOperatorException(this, "pack");
+    }
+
+    /**
+     * Complete the specified string; return false if nothing
+     * completed.
+     */
+    public boolean complete(String incomplete, List candidates) {
+	return false;
     }
 }
