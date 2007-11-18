@@ -50,13 +50,13 @@ public abstract class Command {
     private final String syntax;
     private final String full;
   
-    Command (String name, String description, String syntax, String full) {
+    Command (String description, String syntax, String full) {
 	this.description = description;
 	this.syntax = syntax;
 	this.full = full;
     }
   
-    public abstract void interpret(CLI cli, Input cmd);
+    abstract void interpret(CLI cli, Input cmd);
 
     /**
      * Fill CANDIDATES with the possible completion strings and return

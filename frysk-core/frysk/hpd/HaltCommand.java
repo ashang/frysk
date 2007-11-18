@@ -52,10 +52,10 @@ class HaltCommand extends ParameterizedCommand {
 	    + "suspends the execution of a collection of processes.";
 
     HaltCommand() {
-	super("halt", "Stop a process.", "halt", full);
+	super("Stop a process.", "halt", full);
     }
 
-    public void interpret(CLI cli, Input cmd, Object options) {
+    void interpret(CLI cli, Input cmd, Object options) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	SteppingEngine steppingEngine = cli.getSteppingEngine();
 	if (cli.steppingObserver != null) {

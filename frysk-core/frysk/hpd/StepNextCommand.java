@@ -48,13 +48,13 @@ import frysk.proc.Task;
 public class StepNextCommand extends ParameterizedCommand {
 
     StepNextCommand() {
-     	super("next", "Step over next function", "next", 
-     		"The next command defines a 'step-over' operation, \n" 
-     		+ "which is used during stepping, when the user wishes\n"
-     		+ "to line step through the current function of interest \n"
-     		+ "and avoid descending into any further function calls. \n"
-     		+ "This operation will skip over any function call, and will\n"
-     		+ "otherwise just perform a line step.");
+     	super("Step over next function", "next", 
+     	      ("The next command defines a 'step-over' operation, " +
+	       "which is used during stepping, when the user wishes " +
+	       "to line step through the current function of interest " +
+	       "and avoid descending into any further function calls.  " +
+	       "This operation will skip over any function call, and will " +
+	       "otherwise just perform a line step."));
     }
     
     public void interpret(CLI cli, Input cmd, Object options) {

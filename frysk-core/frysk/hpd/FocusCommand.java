@@ -49,7 +49,7 @@ import java.util.List;
 class FocusCommand extends ParameterizedCommand {
 
     FocusCommand() {
-	super("focus", "Change the current process/thread set.",
+	super("Change the current process/thread set.",
 	      "focus [p/t-set]",
 	      ("Changes the current p/t set. As a consequence, subsequent"
 	       + " commands will apply to just the threads specified in"
@@ -58,7 +58,7 @@ class FocusCommand extends ParameterizedCommand {
 	       + " current p/t set."));
     }
 
-    public void interpret(CLI cli, Input input, Object options) {
+    void interpret(CLI cli, Input input, Object options) {
 	switch (input.size()) {
 	default:
 	    throw new InvalidCommandException("wrong number of arguments");

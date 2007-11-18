@@ -45,8 +45,7 @@ import frysk.proc.Task;
 
 class PtypeCommand extends ParameterizedCommand {
     PtypeCommand() {
-	super("ptype",
-	      "Display the type of a program variable or expression.",
+	super("Display the type of a program variable or expression.",
 	      "ptype <expression>",
 	      ("The ptype command evaluates and displays the type of an"
 	       + " expression. The debugger interprets the expression"
@@ -54,7 +53,7 @@ class PtypeCommand extends ParameterizedCommand {
 	       + " each symbol and applying the operators."));
     }
     
-    public void interpret(CLI cli, Input cmd, Object options) {
+    void interpret(CLI cli, Input cmd, Object options) {
         PTSet ptset = cli.getCommandPTSet(cmd);
         // Skip set specification, if any
 	String sInput = cmd.stringValue();

@@ -46,7 +46,7 @@ import frysk.proc.Task;
 class ViewsetCommand extends ParameterizedCommand {
 
     ViewsetCommand() {
-	super("viewset", "List members of a proc/task set.",
+	super("List members of a proc/task set.",
 	      "viewset [set-name]",
 	      ("The viewset command displays the members of debugger-"
 	       + " or user-defined sets.  When no argument is used, the"

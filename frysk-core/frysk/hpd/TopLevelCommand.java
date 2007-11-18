@@ -51,7 +51,7 @@ public class TopLevelCommand extends MultiLevelCommand {
      */
     private class Help extends Command {
 	Help() {
-	    super("help", "Display this help message.", "help [command]",
+	    super("Display this help message.", "help [command]",
 		  "Display help (possibly for a command.)");
 	}
 	
@@ -70,7 +70,7 @@ public class TopLevelCommand extends MultiLevelCommand {
     }
 
     TopLevelCommand() {
-	super("<top-level", "top level command",
+	super("top level command",
 	      "<command> <parameter> ...",
 	      "a top level command");
         add(new ActionPointCommands.Actions(), "actions");
@@ -100,8 +100,9 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(new PeekCommand(), "peek");
         add(new PlocationCommand(), "plocation");
         add(new PtypeCommand(), "ptype");
-        add(new QuitCommand("exit"), "exit");
-        add(new QuitCommand("quit"), "quit");
+	Command quit = new QuitCommand();
+        add(quit, "exit");
+        add(quit, "quit");
         add(new RegsCommand(), "regs");
         add(new RunCommand(), "r|un");
         add(new StackCommands.Down(), "d|own");

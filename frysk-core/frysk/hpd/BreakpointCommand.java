@@ -57,21 +57,16 @@ import java.util.List;
 
 class BreakpointCommand extends ParameterizedCommand {
 
-    private static final String full = "The break command defines a breakpoint "
-	    + "that will be triggered when some\n"
-	    + "thread(s) in the trigger set arrives at the specified location "
-	    + "during\n"
-	    + "program execution. When that occurs, the process(es) containing "
-	    + "the\n"
-	    + "triggering thread(s) plus all processes in the stop set will be "
-	    + "forcibly\n"
-	    + "stopped so the user can examine program state information.";
-
-    private static final String descr = "Define a breakpoint";
-
     BreakpointCommand() {
-	super("break", descr,
-	      "break {proc | line | #file#line}", full);
+	super("Define a breakpoint",
+	      "break {proc | line | #file#line}",
+	      ("The break command defines a breakpoint that will be"
+	       + " triggered when some thread(s) in the trigger set"
+	       + " arrives at the specified location during program"
+	       + " execution.  When that occurs, the process(es) containing"
+	       + " the triggering thread(s) plus all processes in the"
+	       + " stop set will be forcibly stopped so the user can"
+	       + " examine program state information."));
     }
 
     static private abstract class CLIBreakpointObserver implements
@@ -90,7 +85,7 @@ class BreakpointCommand extends ParameterizedCommand {
                                        long address);
     }
 
-    public void interpret(CLI cli, Input cmd, Object arguments) {
+    void interpret(CLI cli, Input cmd, Object arguments) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	String breakpt = cmd.parameter(0);
 	String fileName;

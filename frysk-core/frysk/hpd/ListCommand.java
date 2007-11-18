@@ -57,7 +57,7 @@ import frysk.proc.Task;
 
 class ListCommand extends ParameterizedCommand {
     ListCommand () {
-	super("list", "Display source code lines.",
+	super("Display source code lines.",
 	      "list source-loc [-length [-]num-lines]",
 	      ("The list command displays lines of source code.  The"
 	       + " user can control both the location in the source"

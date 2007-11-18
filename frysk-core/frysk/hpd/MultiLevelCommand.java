@@ -53,9 +53,8 @@ import java.util.List;
 public abstract class MultiLevelCommand extends Command {
     private final SortedMap subCommands = new TreeMap();
 
-    MultiLevelCommand(String name, String description, String syntax,
-		      String full) {
-	super(name, description, syntax, full);
+    MultiLevelCommand(String description, String syntax, String full) {
+	super(description, syntax, full);
     }
 
     private final Map abbrevs = new HashMap();
@@ -130,7 +129,7 @@ public abstract class MultiLevelCommand extends Command {
 	}
     }
 
-    public void interpret(CLI cli, Input input) {
+    void interpret(CLI cli, Input input) {
 	String subAction = input.parameter(0);
 	if (subAction == null) {
 	    help(cli, input);

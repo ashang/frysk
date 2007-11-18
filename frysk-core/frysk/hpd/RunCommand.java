@@ -52,10 +52,11 @@ import java.util.Iterator;
 import java.util.List;
 
 class RunCommand extends Command {
-    private static final String descr = "run program and immediately attach";
     // Used to synchronize with updateAttached method
     RunCommand() {
-	super("run", descr, "run executable arguments*", descr);
+	super("run program and immediately attach",
+	      "run executable arguments*",
+	      "run program and immediately attach");
     }
 
     private static class Runner implements TaskObserver.Attached {

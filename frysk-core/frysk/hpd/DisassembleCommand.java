@@ -51,7 +51,7 @@ import lib.opcodes.Instruction;
 public class DisassembleCommand extends ParameterizedCommand {
 
     public DisassembleCommand() {
-	super("disassemble", "disassemble a section of memory",
+	super("disassemble a section of memory",
 	      "disassemble  [startAddress] [--] [OPTIONS]||\n"
 	      + "disassemble  "
 	      + "<startAddress> <endAddress> [--] [-OPTIONS]",
@@ -92,7 +92,7 @@ public class DisassembleCommand extends ParameterizedCommand {
 	symbol = true;
     }
 
-    public void interpret(CLI cli, Input cmd, Object options) {
+    void interpret(CLI cli, Input cmd, Object options) {
 	reset();
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	Iterator taskDataIter = ptset.getTaskData();

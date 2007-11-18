@@ -57,19 +57,17 @@ import frysk.value.Value;
  * expression changes, the user will be notified.
  * 
  */
-public class DisplayCommand extends ParameterizedCommand {
+class DisplayCommand extends ParameterizedCommand {
 
     private List displays;
 
-    private static final String desc = "creates a display on an expression";
-
     DisplayCommand() {
-	super("display", desc, "display expr", desc);
+	super("creates a display on an expression", "display expr");
 	displays = new LinkedList();
     }
 
 
-    public void interpret(CLI cli, Input cmd, Object options) {
+    void interpret(CLI cli, Input cmd, Object options) {
 	final PrintWriter output = cli.getPrintWriter();
 
 	PTSet ptset = cli.getCommandPTSet(cmd);

@@ -50,7 +50,7 @@ public class StepInstructionCommand extends ParameterizedCommand {
 	    + "The process must be attached to and blocked.";
 
     StepInstructionCommand() {
-	super("stepi", "Instruction step a process.", "stepi", full);
+	super("Instruction step a process.", "stepi", full);
     }
 
     public void interpret(CLI cli, Input cmd, Object options) {

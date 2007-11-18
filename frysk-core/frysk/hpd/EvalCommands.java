@@ -59,8 +59,8 @@ abstract class EvalCommands extends ParameterizedCommand {
 	return new Options();
     }
 
-    EvalCommands(String name, String description, String syntax, String full) {
-	super(name, description, syntax, full);
+    EvalCommands(String description, String syntax, String full) {
+	super(description, syntax, full);
 	add(new CommandOption.FormatOption() {
 		void set(Object options, Format format) {
 		    ((Options)options).format = format;
@@ -119,15 +119,15 @@ abstract class EvalCommands extends ParameterizedCommand {
 
     static class Print extends EvalCommands {
 	Print() {
-	    super("print",
-		 "Evaluate and display the value of an expression.",
-		 "print expression [-format d|o|x|t]",
-		 ("The print command evaluates and displays an expression. The"
-		  + " debugger interprets the expression by looking up the"
-		  + " value(s) associated with each symbol and applying the"
-		  + " operators.  The result of an expression may be a scalar"
-		  + " value or an aggregate (array, array slice, record, or"
-		  + " structure."));
+	    super("Evaluate and display the value of an expression.",
+		  "print expression [-format d|o|x|t]",
+		  ("The print command evaluates and displays an"
+		   + " expression.  The debugger interprets the"
+		   + " expression by looking up the"
+		   + " value(s) associated with each symbol and applying the"
+		   + " operators.  The result of an expression may be a scalar"
+		   + " value or an aggregate (array, array slice, record, or"
+		   + " structure."));
 	}
 	void interpret(CLI cli, Input input, Object options) {
 	    eval(cli, cli.getCommandPTSet(input), input.stringValue(),
@@ -137,7 +137,7 @@ abstract class EvalCommands extends ParameterizedCommand {
 
     static class Assign extends EvalCommands {
 	Assign() {
-	    super("assign", "Change the value of a scalar program variable.",
+	    super("Change the value of a scalar program variable.",
 		  "assign scalar-target scalar-value [-force]",
 		  ("The assign command evaluates a scalar expression and"
 		   + " uses the result to replace the previous contents"

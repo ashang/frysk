@@ -43,9 +43,8 @@ import java.util.List;
 
 abstract class DbgVariableCommands extends ParameterizedCommand {
 
-    DbgVariableCommands(String name, String description,
-			String syntax, String full) {
-	super(name, description, syntax, full);
+    DbgVariableCommands(String description, String syntax, String full) {
+	super(description, syntax, full);
     }
 
     int completer(CLI cli, Input input, int cursor, List completions) {
@@ -58,7 +57,7 @@ abstract class DbgVariableCommands extends ParameterizedCommand {
 
     static class Set extends DbgVariableCommands {
 	Set() {
-	    super("set", "Change or view a debugger variable.",
+	    super("Change or view a debugger variable.",
 		  "set debugger-var = value\nset [debugger-var]",
 		  ("The set command supports the viewing of debugger state"
 		   + " variables and the assignment of new values to them.  When"
@@ -111,7 +110,7 @@ abstract class DbgVariableCommands extends ParameterizedCommand {
 
     static class Unset extends DbgVariableCommands {
 	Unset() {
-	    super("unset", "Revert variable value to default.",
+	    super("Revert variable value to default.",
 		  "unset [ <debugger-var> | -all ]",
 		  ("The unset command reverses the effects of any previous"
 		   + " set operations, restoring the debugger state"

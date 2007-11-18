@@ -51,12 +51,12 @@ import java.util.List;
 public class RegsCommand extends ParameterizedCommand {
 
     public RegsCommand() {
-	super("regs", "print registers", "regs group", "print out "
+	super("print registers", "regs group", "print out "
 	      + "registers in the given group, general registers "
 	      + "printed by default.");
     }
 
-    public void interpret(CLI cli, Input cmd, Object options) {
+    void interpret(CLI cli, Input cmd, Object options) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	Iterator taskDataIter = ptset.getTaskData();
 	while (taskDataIter.hasNext()) {

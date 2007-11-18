@@ -53,10 +53,10 @@ class GoCommand extends ParameterizedCommand {
 	    + "execution\n" + "continues behind the scene.";
 
     GoCommand() {
-	super("go", "Continue a process.", "go", full);
+	super("Continue a process.", "go", full);
     }
 
-    public void interpret(CLI cli, Input cmd, Object options) {
+    void interpret(CLI cli, Input cmd, Object options) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	if (cli.steppingObserver != null) {
 	    Iterator taskIter = ptset.getTasks();

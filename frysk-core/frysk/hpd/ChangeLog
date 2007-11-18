@@ -1,5 +1,42 @@
 2007-11-17  Andrew Cagney  <cagney@redhat.com>
 
+	* Command.java (Command(String,String,String)): Replace
+	Command(String,String,String,String); name dropped.
+	(interpret(CLI,Input)): Make package private.
+	* WhichsetsCommand.java: Update.
+	* WhatCommand.java: Update.
+	* ViewsetCommand.java: Update.
+	* UndefsetCommand.java: Update.
+	* StepNextCommand.java: Update.
+	* TopLevelCommand.java: Update.
+	* TestParameterizedCommand.java: Update.
+	* StepNextiCommand.java: Update.
+	* StepFinishCommand.java: Update.
+	* StepInstructionCommand.java: Update.
+	* StepCommand.java: Update.
+	* StackCommands.java: Update.
+	* RunCommand.java: Update.
+	* RegsCommand.java: Update.
+	* QuitCommand.java: Update.
+	* PtypeCommand.java: Update.
+	* PlocationCommand.java: Update.
+	* ListCommand.java: Update.
+	* HaltCommand.java: Update.
+	* GoCommand.java: Update.
+	* FocusCommand.java: Update.
+	* MultiLevelCommand.java: Update.
+	* ParameterizedCommand.java: Update.
+	* AliasCommands.java: Update.
+	* AttachCommand.java: Update.
+	* BreakpointCommand.java: Update.
+	* DbgVariableCommands.java: Update.
+	* DebuginfoCommand.java: Update.
+	* DefsetCommand.java: Update.
+	* DetachCommand.java: Update.
+	* DisassembleCommand.java: Update.
+	* DisplayCommand.java: Update.
+	* EvalCommands.java: Update.
+
 	* Command.java (name): Delete.
 	(getName()): Delete.
 	* MultiLevelCommand.java (add(Command)): Delete.

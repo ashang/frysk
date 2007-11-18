@@ -56,14 +56,13 @@ abstract class AliasCommands extends ParameterizedCommand {
 	return incomplete.absolute(0);
     }
 
-    AliasCommands(String name, String description, String syntax,
-		  String full) {
-	super(name, description, syntax, full);
+    AliasCommands(String description, String syntax, String full) {
+	super(description, syntax, full);
     }
 
     static class Alias extends AliasCommands {
 	Alias() {
-	    super("alias", "create or view user-defined commands",
+	    super("create or view user-defined commands",
 		  ("alias <command-name> <command-body> -- define an alias\n"
 		   + "alias [ <command-name> ] -- view an alias"),
 		  ("The alias command associates a "
@@ -117,7 +116,7 @@ abstract class AliasCommands extends ParameterizedCommand {
 	    return new Options();
 	}
 	Unalias() {
-	    super("unalias", "Create or view user-define commands.",
+	    super("Create or view user-define commands.",
 		  "unalias [ command-name | -all -",
 		  ("The unalias command removes the alias that was"
 		   + " previously established for the specified"
@@ -129,7 +128,7 @@ abstract class AliasCommands extends ParameterizedCommand {
 		});
 	}
 
-	public void interpret(CLI cli, Input input, Object o) {
+	void interpret(CLI cli, Input input, Object o) {
 	    Options options = (Options)o;
 	    if (options.deleteAll) {
 		if (input.size() != 0)

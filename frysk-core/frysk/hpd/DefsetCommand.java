@@ -44,8 +44,7 @@ import java.util.List;
 class DefsetCommand extends ParameterizedCommand {
 
     DefsetCommand() {
-	super("defset",
-	      "Assign a set name to a group of processes/threads",
+	super("Assign a set name to a group of processes/threads",
 	      "defset set-name p/t-set",
 	      ("Associates a logical name with a group of threads and/or"
 	       + " processes, creating a user-defined set.  Once a"
@@ -56,7 +55,7 @@ class DefsetCommand extends ParameterizedCommand {
 	       + " of processes and threads."));
     }
 
-    public void interpret(CLI cli, Input cmd, Object options) {
+    void interpret(CLI cli, Input cmd, Object options) {
 	String setname = null;
 	String setnot = null;
 	PTSet set = null;

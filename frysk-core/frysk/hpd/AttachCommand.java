@@ -66,7 +66,7 @@ class AttachCommand extends ParameterizedCommand {
     }
 
     AttachCommand() {
-	super("attach", "Attach to a running process.",
+	super("Attach to a running process.",
 	      "attach <pid> ...",
 	      ("The attach command causes the debugger to attach to an"
 	       + " existing process(es), making it possible to continue"

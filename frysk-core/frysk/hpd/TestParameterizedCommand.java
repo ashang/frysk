@@ -56,7 +56,7 @@ public class TestParameterizedCommand extends TestLib {
 	parsedOption = false;
 	interpreted = false;
 	helped = false;
-	command = new ParameterizedCommand("parser", "<<description>>",
+	command = new ParameterizedCommand("<<description>>",
 					   "<<syntax>>", "<<full>>") {
 		void interpret(CLI cli, Input input, Object options) {
 		    interpreted = true;

@@ -49,8 +49,7 @@ class UndefsetCommand extends ParameterizedCommand {
 	return new Options();
     }
     UndefsetCommand() {
-	super("undefset",
-	      "Undefine a previously defined process/thread set.",
+	super("Undefine a previously defined process/thread set.",
 	      "undefset [ <set-name> | -all ]",
 	      ("The undefset command reverses the action of defset, so"
 	       + " that the set is deleted.  This command is applicable"

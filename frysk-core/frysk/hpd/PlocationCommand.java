@@ -45,8 +45,7 @@ import java.util.List;
 
 class PlocationCommand extends ParameterizedCommand {
     PlocationCommand() {
-	super("plocation",
-	      "Display the location of a program variable or expression.",
+	super("Display the location of a program variable or expression.",
 	      "plocation <expression>",
 	      ("The plocation command evaluates and displays the type of an"
 	       + " expression. The debugger interprets the expression"
@@ -55,7 +54,7 @@ class PlocationCommand extends ParameterizedCommand {
 	       + " \"LocationType LocationName - Size byte(s)\""));
     }
 
-    public void interpret(CLI cli, Input cmd, Object options) {
+    void interpret(CLI cli, Input cmd, Object options) {
         PTSet ptset = cli.getCommandPTSet(cmd);
         // What's left of the command line.
 	String sInput = cmd.stringValue();

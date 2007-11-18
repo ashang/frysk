@@ -54,7 +54,7 @@ public class StepFinishCommand extends ParameterizedCommand {
 	    + "the calling function to continue debugging there.";
 
     StepFinishCommand() {
-	super("finish", "Step out of function", "finish", full);
+	super("Step out of function", "finish", full);
     }
 
     public void interpret(CLI cli, Input cmd, Object parameters) {

@@ -46,14 +46,13 @@ import frysk.proc.Task;
 import frysk.debuginfo.DebugInfoFrame;
 
 public class StepCommand extends ParameterizedCommand {
-    private static final String full = "Line step a process which has been "
-	    + "attached to, and is currently blocked.";
-
     StepCommand() {
-	super("step", "Step a process.", "step", full);
+	super("Step a process.", "step",
+	      ("Line step a process which has been attached to, and is"
+	       + " currently blocked."));
     }
 
-    public void interpret(CLI cli, Input cmd, Object options) {
+    void interpret(CLI cli, Input cmd, Object options) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	LinkedList taskList = new LinkedList();
 	Iterator taskIter = ptset.getTasks();

@@ -54,22 +54,13 @@ abstract class StackCommands extends ParameterizedCommand {
 	return new Options();
     }
 
-    StackCommands(String name, String description, String syntax,
-		  String full) {
-	super(name, description, syntax, full);
+    StackCommands(String description, String syntax, String full) {
+	super(description, syntax, full);
 	add(new CommandOption("scopes", "include scopes") {
 		void parse(String arg, Object options) {
 		    ((Options)options).printScopes = true;
 		}
 	    });
-    }
-
-    StackCommands(String name) {
-	this(name,
-	     ("Move " + name + " one or more levels in the call stack"),
-	     (name + " [num-levels]"),
-	     ("Move up (towards the stack top or inner most frame) or"
-	      + " or down (towards the stack bottom or outer most frame)"));
     }
 
     int completer(CLI cli, Input input, int cursor, List candidates) {
@@ -134,7 +125,9 @@ abstract class StackCommands extends ParameterizedCommand {
 
     static class Down extends StackCommands {
 	Down() {
-	    super("down");
+	    super("Move down one or more levels in the call stack",
+		  "down [num-levels]",
+		  "Move down towards the stack bottom or outer most frame");
 	}
 	void interpret(CLI cli, Input input, Object options) {
 	    int count;
@@ -155,7 +148,9 @@ abstract class StackCommands extends ParameterizedCommand {
 
     static class Up extends StackCommands {
 	Up() {
-	    super("up");
+	    super("Move up one or more levels in the call stack",
+		  "up [num-levels]",
+		  "Move up towards the stack top or inner most frame");
 	}
 	void interpret(CLI cli, Input input, Object options) {
 	    int count;
@@ -176,7 +171,9 @@ abstract class StackCommands extends ParameterizedCommand {
 
     static class Frame extends StackCommands {
 	Frame() {
-	    super("frame");
+	    super("Move to the specified frame",
+		  "frame [level]",
+		  "Move to the specifed stack frame");
 	}
 	void interpret(CLI cli, Input input, Object options) {
 	    Magnitude count;
@@ -196,8 +193,7 @@ abstract class StackCommands extends ParameterizedCommand {
 
     static class Where extends StackCommands {
 	Where() {
-	    super("where",
-		  "Display the current execution location and call stack",
+	    super("Display the current execution location and call stack",
 		  "where [ {num-levels ] [ -scopes ]",
 		  ("The where command displays the current execution"
 		   + " location(s) and the call stack(s) - or sequence"

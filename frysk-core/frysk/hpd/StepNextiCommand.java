@@ -48,16 +48,16 @@ import frysk.proc.Task;
 public class StepNextiCommand extends ParameterizedCommand {
 
     StepNextiCommand() {
-     	super("nexti", "Step over next function", "nexti", 
-	      "The next command defines an 'instruction step-over', \n" 
-	      + "which is used during stepping, when the user wishes\n"
-	      + "to line step through the current function of interest \n"
-	      + "and avoid descending into any further function calls. \n"
-	      + "This operation will skip over any function call, and will\n"
-	      + "otherwise just perform an instruction step.");
+     	super("Step over next function", "nexti", 
+	      "The next command defines an 'instruction step-over'," 
+	      + " which is used during stepping, when the user wishes"
+	      + " to line step through the current function of interestn"
+	      + " and avoid descending into any further function calls.  This"
+	      + " operation will skip over any function call, and will"
+	      + " otherwise just perform an instruction step.");
     }
     
-    public void interpret(CLI cli, Input cmd, Object options) {
+    void interpret(CLI cli, Input cmd, Object options) {
       PTSet ptset = cli.getCommandPTSet(cmd);
       LinkedList taskList = new LinkedList();
       Iterator taskIter = ptset.getTasks();

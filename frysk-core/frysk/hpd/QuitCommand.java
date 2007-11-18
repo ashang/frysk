@@ -90,12 +90,11 @@ class QuitCommand extends ParameterizedCommand {
 	}
     }
 
-    QuitCommand(String name) {
-	super(name, "Terminate the debugging session.", name,
-	      "Terminate the debugging session.");
+    QuitCommand() {
+	super("Terminate the debugging session.", "quit");
     }
 
-    public void interpret(CLI cli, Input cmd, Object options) {
+    void interpret(CLI cli, Input cmd, Object options) {
         CountDownLatch quitLatch = new CountDownLatch(1);
         new KillRequest(cli, quitLatch).request();
         try {

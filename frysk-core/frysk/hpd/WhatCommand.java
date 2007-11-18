@@ -44,19 +44,18 @@ import frysk.proc.Task;
 import java.util.List;
 
 class WhatCommand extends ParameterizedCommand {
-    private static final String full = "The what command queries the debugger "
-	    + "about its current interpretation\n"
-	    + "of a symbol name from the target program. Intuitively, the "
-	    + "command shows\n"
-	    + "what program symbol(s) would be displayed (modified) if the "
-	    + "symbol name\n" + "were used as the argument of a print command.";
-
     WhatCommand() {
-	super("what", "Determine what a target program name refers to",
-		"what symbol-name [-all]", full);
+	super("Determine what a target program name refers to",
+	      "what symbol-name [-all]",
+	      ("The what command queries the debugger about its"
+	       + " current interpretation of a symbol name from the"
+	       + " target program. Intuitively, the command shows"
+	       + " what program symbol(s) would be displayed (modified)"
+	       + " if the symbol name were used as the argument of a"
+	       + " print command."));
     }
 
-    public void interpret(CLI cli, Input cmd, Object options) {
+    void interpret(CLI cli, Input cmd, Object options) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	if (cmd.size() == 0) {
 	    throw new InvalidCommandException("missing value");

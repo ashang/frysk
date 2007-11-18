@@ -50,8 +50,7 @@ import java.util.List;
 class WhichsetsCommand extends ParameterizedCommand {
 
     WhichsetsCommand() {
-	super("whichsets",
-	      "List all user-defined set to which a proc/task belongs.",
+	super("List all user-defined set to which a proc/task belongs.",
 	      "whichsets [p/t-set]",
 	      ("The whichsets command displays sets to which a particular"
 	       + " thread(s) belongs.  When no argument is used, the"

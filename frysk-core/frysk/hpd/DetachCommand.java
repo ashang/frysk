@@ -47,22 +47,18 @@ import java.util.List;
 
 class DetachCommand extends ParameterizedCommand {
 
-    private static final String full = "The detach command detaches the debugger "
-	    + "from all processes in the\n"
-	    + "affected set. This serves to undo the effects of attaching the "
-	    + "debugger\n"
-	    + "to a running process; that is, the debugger releases all "
-	    + "control over\n"
-	    + "the process, eliminates all debugger state information related "
-	    + "to it,\n"
-	    + "and allows it to continue execution in the normal run-time\n"
-	    + "environment. ";
-
     DetachCommand() {
-	super("detach", "Detach from a running process.", "detach", full);
+	super("Detach from a running process.", "detach",
+	      ("The detach command detaches the debugger from all"
+	       + " processes in the affected set.  This serves to undo"
+	       + " the effects of attaching the debugger to a running"
+	       + " process; that is, the debugger releases all control"
+	       + " over the process, eliminates all debugger state"
+	       + " information related to it, and allows it to continue"
+	       + " execution in the normal run-time environment."));
     }
 
-    public void interpret(CLI cli, Input cmd, Object options) {
+    void interpret(CLI cli, Input cmd, Object options) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	HashSet procSet = new HashSet();
 	Iterator taskIter = ptset.getTasks();

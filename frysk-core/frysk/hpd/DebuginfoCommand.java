@@ -47,8 +47,7 @@ import java.util.List;
 class DebuginfoCommand extends ParameterizedCommand {
 
     DebuginfoCommand() {
-	super("debuginfo",
-	      "Displays debuginfo install paths of a process.", "debuginfo",
+	super("Displays debuginfo install paths of a process.", "debuginfo",
 	      "The debuginfo command lists the debuginfo paths "
 	      + "for a process and its shared modules.");
     }
@@ -57,7 +56,7 @@ class DebuginfoCommand extends ParameterizedCommand {
 	return -1;
     }
 
-    public void interpret(CLI cli, Input cmd, Object options) {
+    void interpret(CLI cli, Input cmd, Object options) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	Iterator taskIter = ptset.getTasks();
 	while (taskIter.hasNext()) {

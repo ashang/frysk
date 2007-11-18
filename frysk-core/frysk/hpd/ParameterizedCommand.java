@@ -50,14 +50,13 @@ abstract class ParameterizedCommand extends Command {
     private final String syntax;
     private final String full;
 
-    ParameterizedCommand(String name, String description,
-			 String syntax, String full) {
-	super(name, description, syntax, full);
+    ParameterizedCommand(String description, String syntax, String full) {
+	super(description, syntax, full);
 	this.syntax = syntax;
 	this.full = full;
     }
-    ParameterizedCommand(String name, String syntax, String description) {
-	this(name, description, syntax, description);
+    ParameterizedCommand(String syntax, String description) {
+	this(description, syntax, description);
     }
 
     void add(CommandOption option) {	
@@ -95,7 +94,7 @@ abstract class ParameterizedCommand extends Command {
      * Given a list of arguments, parse and remove options as they are
      * found.
      */
-    public final void interpret(CLI cli, Input input) {
+    final void interpret(CLI cli, Input input) {
 	Object options = options();
 	while (input.size() > 0) {
 	    int index = input.size() - 1;
