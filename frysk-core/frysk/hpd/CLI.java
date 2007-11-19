@@ -74,7 +74,9 @@ public class CLI {
     //Processes started with run command
     final HashSet runningProcs = new HashSet();
     //Processes loaded with load command
-    final HashSet loadedProcs = new HashSet();
+    final HashMap loadedProcs = new HashMap();
+    //Task ID to use
+    int taskID = -1;
 
     private class TaskInfo {
         DebugInfoFrame frame;
@@ -138,7 +140,7 @@ public class CLI {
     /*
      * Command handlers
      */
-    public void doAttach(Proc proc, int procID) {
+    public void doAttach(Proc proc) {
         synchronized (this) {
             attached = -1;
             attachedLatch = new CountDownLatch(1);
@@ -159,11 +161,11 @@ public class CLI {
         }
         steppingEngine.getBreakpointManager().manageProcess(proc);
         // If passed a taskID < 0, request a reserved ProcID
-        if (procID < 0)
+        if (this.taskID < 0)
             idManager.manageProc(proc, idManager.reserveProcID());
         // Assign this proc to the passed in procID 
         else
-            idManager.manageProcSelect(proc, procID);
+            idManager.manageProcSelect(proc, this.taskID);
     }
 
     final PrintWriter outWriter;
@@ -448,7 +450,7 @@ public class CLI {
      * CLI object should be synchronized when using the set.
      * @return the set
      */
-    public HashSet getLoadedProcs() {
+    public HashMap getLoadedProcs() {
         return loadedProcs;
     }
     

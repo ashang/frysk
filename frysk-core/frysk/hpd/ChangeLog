@@ -1,3 +1,10 @@
+2007-11-19  Rick Moseley  <rmoseley@redhat.com>
+
+	* CLI.java: Fix bz #5351.
+	* RunCommand.java: Ditto.
+	* LoadCommand.java: Ditto.
+	* AttachCommand.java: Ditto.
+
 2007-11-17  Andrew Cagney  <cagney@redhat.com>
 
 	* EvalCommands.java (Printer): New.

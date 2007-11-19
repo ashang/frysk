@@ -99,7 +99,7 @@ public class LoadCommand extends ParameterizedCommand {
 	    }
 	}
 	synchronized (cli) {
-	    cli.getLoadedProcs().add(exeProc);
+	    cli.getLoadedProcs().put(exeProc, new Integer(procID));
 	}
     }
 

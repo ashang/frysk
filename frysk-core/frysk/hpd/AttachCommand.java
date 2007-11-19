@@ -100,7 +100,7 @@ class AttachCommand extends ParameterizedCommand {
 		cli.outWriter.println(pid);
 		continue;
 	    }
-	    cli.doAttach(findProc.proc, -1);
+	    cli.doAttach(findProc.proc);
 	}
     }
 

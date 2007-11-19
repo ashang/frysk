@@ -50,6 +50,8 @@ import frysk.util.CountDownLatch;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 class RunCommand extends Command {
     // Used to synchronize with updateAttached method
@@ -133,21 +135,25 @@ class RunCommand extends Command {
 	}
 	
 	/* If we made it here, a run command was given with no parameters
-	 * and there are either running procs or loaded procs
+	 * and there should be either running procs or loaded procs
 	 */
 	
 	/* This is the case where there are loaded procs */
 	if (!cli.loadedProcs.isEmpty()) {
-	    Iterator foo = cli.targetset.getTasks();
+	    Set procSet = cli.loadedProcs.entrySet();
+	    Iterator foo = procSet.iterator();
 	    while (foo.hasNext()) {
-		Task task = (Task) foo.next();
-		int taskID = cli.idManager.getProcID(task.getProc());
-		cli.execCommand("run " + task.getProc().getExe() + " " +
-			Integer.toString(taskID));
-	    }
-	    // Clear all of the loaded procs now that they have been run
-	    synchronized(cli) {
-		cli.loadedProcs.clear();
+		Map.Entry me = (Map.Entry)foo.next();
+		Proc proc = (Proc) me.getKey();
+		Integer taskid = (Integer)me.getValue();
+		synchronized(cli) {
+		    cli.taskID = taskid.intValue();
+		}
+		cli.execCommand("run " + proc.getExe());
+		procSet.remove(proc);
+		synchronized(cli) {
+		    cli.taskID = -1;
+		}
 	    }
 	}
 	// Found no loaded procs, print usage message
@@ -164,13 +170,7 @@ class RunCommand extends Command {
             return;
         }
         // register with SteppingEngine et.al.
-        // If a second parameter was passed, it was a specific ProcTaskID to use
-        if (cmd.size() > 1)
-            cli.doAttach(runner.launchedTask.getProc(), 
-        	    Integer.parseInt(cmd.parameter(1)));
-        // If not, pass a -1 so a new ProcTaskID will be assigned
-        else
-            cli.doAttach(runner.launchedTask.getProc(), -1);
+        cli.doAttach(runner.launchedTask.getProc());
 	runner.launchedTask.requestUnblock(runner);
     }
     
