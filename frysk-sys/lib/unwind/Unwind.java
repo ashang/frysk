@@ -70,6 +70,7 @@ public abstract class Unwind
     abstract void setRegister(RawDataManaged cursor, int regNum,
 			      long offset, int length, byte[] word, int start);
   
+    public abstract long getIP(RawDataManaged cursor);
     public abstract long getSP(RawDataManaged cursor);
   
   abstract RawDataManaged copyCursor(RawDataManaged cursor);  

@@ -402,6 +402,17 @@ lib::unwind::TARGET::getSP(gnu::gcj::RawDataManaged* cursor)
     return sp;
 }
 
+jlong
+lib::unwind::TARGET::getIP(gnu::gcj::RawDataManaged* cursor)
+{
+  unw_word_t ip;
+  int status = unw_get_reg((::unw_cursor_t *) cursor, UNW_REG_IP, &ip);
+  if (status < 0)
+    return 0; // bottom of stack.
+  else
+    return ip;
+}
+
 
 jint
 lib::unwind::TARGET::getContext(gnu::gcj::RawDataManaged* context)
@@ -445,6 +456,9 @@ lib::unwind::TARGET::createProcInfoFromElfImage(lib::unwind::AddressSpace* addre
 						jboolean needUnwindInfo,
 						lib::unwind::ElfImage* elfImage)
 {
+  if (elfImage == NULL)
+    return new lib::unwind::ProcInfo(UNW_ENOINFO);
+
   unw_proc_info_t *procInfo
     = (::unw_proc_info_t *) JvAllocBytes(sizeof (::unw_proc_info_t));
 

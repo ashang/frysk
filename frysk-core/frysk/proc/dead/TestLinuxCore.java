@@ -134,43 +134,62 @@ public class TestLinuxCore
     return -1;
   }
 
+  /**
+   * Test that a corefile backtrace and a live process backtrace
+   * match on a blocked process
+   *
+   **/
   public void testLinuxCoreFileStackTrace () {
-      if (unresolved(5353))
-	  return;
-
    
-	final Proc ackProc; // = giveMeAProc();
-	
-	File exeFile = Config.getPkgLibFile("funit-stacks");
-	ackProc = new DaemonBlockedAtSignal(exeFile).getMainTask().getProc();
-
-
-    StacktraceAction stacker;
-    StacktraceAction coreStack;
-
-    StringWriter stringWriter1 = new StringWriter();
-    stacker = new StacktraceAction(new PrintWriter(stringWriter1),ackProc, new RequestStopEvent(Manager.eventLoop), true, false,false, false, false, false)
-    {
-
-      public void addFailed (Object observable, Throwable w)
-      {
-        fail("Proc add failed: " + w.getMessage());
-      }
-    };
-
-    new ProcBlockAction (ackProc, stacker);
-    assertRunUntilStop("perform backtrace");
-
-    String coreFileName = constructCore(ackProc);
-    File xtestCore = new File(coreFileName);
-
-    Host lcoreHost = new LinuxHost(Manager.eventLoop, 
-				   xtestCore);
+    Proc testProc;
     
-    Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid()));
+    // Create a blocked process, blocked at a signal
+    File exeFile = Config.getPkgLibFile("funit-stacks");
+    testProc = new DaemonBlockedAtSignal(exeFile).getMainTask().getProc();
 
-    StringWriter stringWriter2 = new StringWriter();
-    coreStack = new StacktraceAction(new PrintWriter(stringWriter2),coreProc, new PrintEvent(),true,false,false,false,false, false)
+
+    StacktraceAction liveStacktrace;
+    StacktraceAction coreStacktrace;
+    StringWriter liveStackOutput = new StringWriter();
+    StringWriter coreStackOutput = new StringWriter();
+
+    // Create a Stacktrace of the blocked live process
+    liveStacktrace = new StacktraceAction(new PrintWriter(liveStackOutput),
+					  testProc, 
+					  new RequestStopEvent(Manager.eventLoop), 
+					  true, false, false, false, false, false)
+
+      {
+	
+	public void addFailed (Object observable, Throwable w)
+	{
+	  fail("Proc add failed: " + w.getMessage());
+	}
+      };
+
+    // And run ....
+    new ProcBlockAction (testProc, liveStacktrace);
+    assertRunUntilStop("Perform live process Backtrace");
+
+    // Check that the live process stacktrace acually produces
+    // something. If not there is a problem beyond this tests
+    // scope.
+    assertTrue("Live stack trace is not  empty", 
+	       liveStackOutput.getBuffer().length() > 0);
+
+    // Create a  corefile from blocked process, and model.
+    String coreFileName = constructCore(testProc);
+    File testCore = new File(coreFileName);
+    Host coreHost = new LinuxHost(Manager.eventLoop, 
+				  testCore, exeFile);
+    Proc coreProc = coreHost.getProc(new ProcId(testProc.getPid()));
+
+    // Create a stackktrace of a the corefile process
+    coreStacktrace = new StacktraceAction(new PrintWriter(coreStackOutput),
+					  coreProc, 
+					  new PrintEvent(),
+					  true, false, false, false , 
+					  false, false)
     {
 
       public void addFailed (Object observable, Throwable w)
@@ -178,11 +197,22 @@ public class TestLinuxCore
         fail("Proc add failed: " + w.getMessage());
       }
     };
-    new ProcCoreAction(coreProc, coreStack);
-    assertRunUntilStop("perform corebacktrace");
 
-    assertEquals("Compare stack traces",stringWriter1.getBuffer().toString(),stringWriter2.getBuffer().toString());
-    xtestCore.delete();
+    // And run ....
+    new ProcCoreAction(coreProc, coreStacktrace);
+    assertRunUntilStop("Perform corefile Backtrace");
+
+    // Check that the dead process stacktrace produces something. If
+    // not there isa problem beyond this tests scope.
+    assertTrue("Core stack trace is not empty", 
+	       coreStackOutput.getBuffer().length() > 0);
+
+    // Finally, compare live and core stack traces.
+    assertEquals("Compare stack traces",
+		 liveStackOutput.getBuffer().toString(),
+		 coreStackOutput.getBuffer().toString());
+
+    testCore.delete();
   }
 
   private static class PrintEvent implements Event
@@ -379,7 +409,7 @@ public class TestLinuxCore
     String coreFileName = constructCore(ackProc);
     File xtestCore = new File(coreFileName);
     Host lcoreHost = new LinuxHost(Manager.eventLoop,
-				   xtestCore);
+				   xtestCore, new File(ackProc.getExe()));
     Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid()));
     Task coreTask = coreProc.getMainTask();
 

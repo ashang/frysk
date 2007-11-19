@@ -1,4 +1,13 @@
+2007-11-19  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Cursor.java (getIP): New method.
+	(unwind): Check current ip.
+	* Unwind.java (getIP): New method.
+	* cni/UnwindH.hxx (getIP): Likewise.
+	(getContext): Check for null elfImage.
+	
 2007-11-13  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
+	
 	* UnwindPPC32.cxx: New. To support powerpc32.
 
 2007-11-09  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>

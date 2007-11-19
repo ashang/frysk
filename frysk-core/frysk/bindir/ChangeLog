@@ -1,3 +1,8 @@
+2007-11-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestFhd.java (testHpdCore): Remove unresolved.
+	Add -noexe to Expect test.
+
 2007-11-16  Rick Moseley  <rmoseley@redhat.com>
 
 	* fhpd.java: Fix bz #5256.

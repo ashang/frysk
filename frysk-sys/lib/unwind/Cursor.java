@@ -81,6 +81,10 @@ public class Cursor
 			     bytes, start);
     }
 
+    public long getIP() {
+	return unwinder.getIP(cursor);
+    }
+  
     public long getSP() {
 	return unwinder.getSP(cursor);
     }
@@ -110,8 +114,8 @@ public class Cursor
     public Cursor unwind() {
 	logger.log(Level.FINE, "{0}, unwind\n", this);
 
-	//XXX: Don't unwind if no more frames.
-	if (step == 0)
+	//XXX: Don't unwind if no more, or unknown frames.
+	if (step == 0 || getIP() == 0)
 	    return null;
     
 	Cursor newCursor = new Cursor(addressSpace,
