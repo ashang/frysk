@@ -58,13 +58,9 @@ public abstract class Type {
     // XXX: Is NAME a more target dependant attribute?
     private final String name;
   
-    // XXX: Not needed; made redundant by TypeDef.
-    private boolean isTypedef;
-
     Type (String name, int size) {
 	this.name = name;
 	this.size = size;
-	this.isTypedef = false;
     }
 
     public int getSize() {
@@ -174,20 +170,6 @@ public abstract class Type {
      */
     void assign(Location location, Value value) {
 	throw new InvalidOperatorException(this, "");
-    }
-
-    public boolean isTypedef()
-    {
-	return isTypedef;
-    }
-
-    /**
-     * FIXME: Instead of setting the typedef, a TypeDef type can be
-     * created.
-     */
-    public void setTypedefFIXME(boolean isTypedef)
-    {
-	this.isTypedef = isTypedef;
     }
 
     /**

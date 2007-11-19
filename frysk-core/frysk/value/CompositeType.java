@@ -283,13 +283,6 @@ public abstract class CompositeType
     }
 
     public void toPrint(PrintWriter writer, int indentation) {
-	// FIXME: going away.
-	if (this.isTypedef() && this.getName() != null
-	    && this.getName().length() > 0) {
-	    writer.print(this.getName());
-	    return;
-	}
-
 	if (indentation == 0)
 	    indentation = 2;
 	String indentPrefix = "";
@@ -339,9 +332,7 @@ public abstract class CompositeType
 		}
 	    }
 	    writer.print(indentPrefix);
-	    if (member.type.isTypedef())
-		writer.print(member.type.getName());
-	    else if (member.type instanceof ArrayType) {
+	    if (member.type instanceof ArrayType) {
 		// For handling int x[2]
 		printName = false;
 		((ArrayType) member.type).toPrint(writer, member.name, indentation + 2);

@@ -325,12 +325,8 @@ public class TypeEntry
 	    break;
 	}
 	case DwTag.STRUCTURE_TYPE_: {
-	    boolean noTypeDef = (typeDie.getType() == null);
-	    String name = noTypeDef ? typeDie.getName() : typeDie.getType()
-		    .getName();
-	    GccStructOrClassType classType = getGccStructOrClassType(type, name);
-	    if (type != typeDie.getType() && noTypeDef == false)
-		classType.setTypedefFIXME(true);
+	    GccStructOrClassType classType = 
+		getGccStructOrClassType(type, typeDie.getName());
 	    returnType = classType;
 	    break;
 	}

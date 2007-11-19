@@ -1,5 +1,11 @@
 2007-11-19  Stan Cox  <scox@redhat.com>
 
+	* Type.java (isTypedef): Delete.
+	(setTypedefFIXME): Delete.
+	* CompositeType.java (toPrint): Remove isTypedef reference.
+
+2007-11-19  Stan Cox  <scox@redhat.com>
+
 	* Type.java (toPrint(PrintWriter, Location, ByteBuffer, Format, int)):
 	Add indent parameter.  Change all implementers.
 	(toPrint(PrintWriter writer, int indent)): Likewise.
