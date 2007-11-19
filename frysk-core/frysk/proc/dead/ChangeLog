@@ -1,8 +1,11 @@
 2007-11-19  Phil Muldoon  <pmuldoon@redhat.com>
 
-	* TestLinuxCore.java (testLinuxCoreFileStackTrace): Rename
-	variables, document test case, check for empty stacktraces.
+	* TestLinuxCore.java (testInsertedBreakpoint): Pass executable
+	name to corefile LinuxHost .
 	
+	* TestLinuxCore.java (testLinuxCoreFileStackTrace): Rename
+	variables, document test case, check for empty stacktraces.	
+
 	* TestLinuxCore.java (testLinuxCoreFileStackTrace): Pass
 	executable location to LinuxHost. Fix 5352. Remove unresolved.
 	Fix 11-15 indention oops.

@@ -409,7 +409,7 @@ public class TestLinuxCore
     String coreFileName = constructCore(ackProc);
     File xtestCore = new File(coreFileName);
     Host lcoreHost = new LinuxHost(Manager.eventLoop,
-				   xtestCore);
+				   xtestCore, new File(ackProc.getExe()));
     Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid()));
     Task coreTask = coreProc.getMainTask();
 
