@@ -1,4 +1,10 @@
+2007-11-19  Mark Wielaard  <mwielaard@redhat.com>
+
+	* LibunwindFrame.java (getAddress): Don't do a proc name lookup,
+	use new Cursor.getIP().
+	
 2007-11-13  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
+	
 	* LibunwindAddressSpace.java: Add PowerPC32/64 unwinder 
 	classes to the constructors.
 

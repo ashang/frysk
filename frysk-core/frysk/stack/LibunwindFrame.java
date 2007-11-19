@@ -44,7 +44,6 @@ import frysk.isa.Register;
 import java.util.logging.Logger;
 import lib.unwind.Cursor;
 import lib.unwind.ProcInfo;
-import lib.unwind.ProcName;
 import frysk.isa.ISA;
 import frysk.proc.Task;
 import frysk.symtab.Symbol;
@@ -92,13 +91,7 @@ class LibunwindFrame extends Frame
      * Returns the current program counter of this Frame.
      */
     public long getAddress() {
-	ProcInfo myInfo = cursor.getProcInfo();
-	ProcName myName = cursor.getProcName(0);
-    
-	if (myInfo.getError() != 0 || myName.getError() != 0)
-	    return 0;
-    
-	return myInfo.getStartIP() + myName.getOffset();
+      return cursor.getIP();
     }
   
     /**

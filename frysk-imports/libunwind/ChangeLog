@@ -1,3 +1,8 @@
+2007-11-19  Mark Wielaard  <mwielaard@redhat.com>
+
+	* src/mi/Gget_reg.c (unw_get_reg): Use cached value from cursor
+	when looking for UNW_REG_IP.
+	
 2007-10-13  Mark Wielaard  <mwielaard@redhat.com>
 
 	* config/.cvsignore: New. Ignore generated files.
