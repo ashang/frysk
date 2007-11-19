@@ -39,67 +39,81 @@
 
 package frysk.ftrace;
 
+import frysk.Config;
+import frysk.proc.Action;
+import frysk.proc.Manager;
+import frysk.proc.Proc;
+import frysk.proc.Task;
+import frysk.testbed.*;
+
 import java.io.File;
 import java.util.*;
 import java.util.regex.*;
-
-import frysk.Config;
-import frysk.junit.TestCase;
-import frysk.proc.Syscall;
-import frysk.proc.Task;
 
 /**
  * This is a test for basic ltrace capabilities.
  */
 public class TestLtrace
-    extends TestCase
+    extends TestLib
 {
-  class DummyLtraceObserver
-    implements LtraceObserver
-  {
-    public void funcallEnter(Task task, Symbol symbol, Object[] args) { }
-    public void funcallLeave(Task task, Symbol symbol, Object retVal) { }
-    public void syscallEnter(Task task, Syscall syscall, Object[] args) { }
-    public void syscallLeave(Task task, Syscall syscall, Object retVal) { }
-    public void fileMapped(Task task, File file) { }
-    public void fileUnmapped(Task task, File file) { }
-    public void taskAttached(Task task) { }
-    public void taskTerminated(Task task, boolean signal, int value) { }
-  }
-
-  public void performTestAllLibrariesGetDetected()
-  {
-    class MyController1
-      implements LtraceController
-    {
-      public ArrayList allLibraries = new ArrayList();
-      public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver)
-      {
-	allLibraries.add(objf.getSoname());
-      }
+    class DummyLtraceObserver implements LtraceObserver {
+	public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
+	    return Action.CONTINUE;
+	}
+	public Action funcallLeave(Task task, Symbol symbol, Object retVal) {
+	    return Action.CONTINUE;
+	}
+	public Action fileMapped(Task task, File file) {
+	    return Action.CONTINUE;
+	}
+	public Action fileUnmapped(Task task, File file) {
+	    return Action.CONTINUE;
+	}
+	public void addedTo (Object observable) {
+	    Manager.eventLoop.requestStop();
+	}
+	public void deletedFrom (Object observable) { }
+	public void addFailed (Object observable, Throwable w) { }
     }
 
-    String[] cmd = {Config.getPkgLibFile("funit-empty").getPath()};
-    MyController1 controller = new MyController1();
-    new Ltrace(controller).trace(cmd);
+    public void performTestAllLibrariesGetDetected()
+    {
+	class MyController1 implements LtraceController {
+	    public ArrayList allLibraries = new ArrayList();
+	    public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver) {
+		allLibraries.add(objf.getSoname());
+	    }
+	}
 
-    String[] expectedSonames = {"libc\\.so\\.6", "ld-linux.*\\.so\\.2", "funit-empty"};
-    for (int i = 0; i < expectedSonames.length; ++i)
-      {
-	boolean found = false;
-	for (Iterator it = controller.allLibraries.iterator(); it.hasNext(); )
-	  {
-	    String soname = (String)it.next();
-	    if (Pattern.matches(expectedSonames[i], soname))
-	      {
-		found = true;
-		break;
-	      }
-	  }
-	assertTrue("library with pattern `" + expectedSonames[i] + "' found", found);
-      }
-    assertEquals("number of recorded libraries", expectedSonames.length, controller.allLibraries.size());
-  }
+	// XXX: This test should rather directly use the mapping guard.
+	String[] cmd = {Config.getPkgLibFile("funit-empty").getPath()};
+	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
+	Task task = child.getMainTask();
+	Proc proc = task.getProc();
+	int pid = proc.getPid();
+
+	MyController1 controller = new MyController1();
+	Ltrace.requestAddFunctionObserver(task, new DummyLtraceObserver(), controller);
+	assertRunUntilStop("add function observer");
+
+	new StopEventLoopWhenProcRemoved(pid);
+	child.requestRemoveBlock();
+	assertRunUntilStop("run child until exit");
+
+	String[] expectedSonames = {"libc\\.so\\.6", "ld-linux.*\\.so\\.2", "funit-empty"};
+	for (int i = 0; i < expectedSonames.length; ++i) {
+	    boolean found = false;
+	    for (Iterator it = controller.allLibraries.iterator(); it.hasNext(); ) {
+		String soname = (String)it.next();
+		if (Pattern.matches(expectedSonames[i], soname)) {
+		    found = true;
+		    break;
+		}
+	    }
+	    assertTrue("library with pattern `" + expectedSonames[i] + "' found", found);
+	}
+	assertEquals("number of recorded libraries", expectedSonames.length, controller.allLibraries.size());
+    }
 
     public void testDebugStateMappingGuard()
     {
@@ -119,8 +133,8 @@ public class TestLtrace
 	MappingGuard.enableDebugstateObserver = save;
     }
 
-  public void testCallRecorded()
-  {
+    public void testCallRecorded()
+    {
     if(unresolvedOffUtrace(5053))
       return;
 
@@ -145,22 +159,32 @@ public class TestLtrace
       }
     }
 
-    Ltrace ltrace = new Ltrace(new MyController2());
-
     class MyObserver extends DummyLtraceObserver {
       public ArrayList events = new ArrayList();
-      public void funcallEnter(Task task, Symbol symbol, Object[] args) {
+      public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
 	events.add("enter " + symbol.name);
+	return Action.CONTINUE;
       }
-      public void funcallLeave(Task task, Symbol symbol, Object retVal) {
+      public Action funcallLeave(Task task, Symbol symbol, Object retVal) {
 	events.add("leave " + symbol.name);
+	return Action.CONTINUE;
       }
     }
-    MyObserver observer = new MyObserver();
 
     String[] cmd = {Config.getPkgLibFile("funit-syscalls").getPath()};
-    ltrace.addObserver(observer);
-    ltrace.trace(cmd);
+    DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
+    Task task = child.getMainTask();
+    Proc proc = task.getProc();
+    int pid = proc.getPid();
+
+    LtraceController controller = new MyController2();
+    MyObserver observer = new MyObserver();
+    Ltrace.requestAddFunctionObserver(task, observer, controller);
+    assertRunUntilStop("add function observer");
+
+    new StopEventLoopWhenProcRemoved(pid);
+    child.requestRemoveBlock();
+    assertRunUntilStop("run child until exit");
 
     String[] expectedEvents = {
       "enter __libc_start_main",
@@ -223,11 +247,10 @@ public class TestLtrace
 		}
 	    }
 	}
-	Ltrace ltrace = new Ltrace(new MyController3());
 
 	class MyObserver3 extends DummyLtraceObserver {
 	    LinkedList expectedReturns = new LinkedList();
-	    public void funcallEnter(Task task, Symbol symbol, Object[] args) {
+	    public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
 		ExpectedEvent ee = (ExpectedEvent)expectedEvents.removeFirst();
 		assertEquals("enter function name", ee.name, symbol.name);
 		for (int i = 0; i < ee.arguments.length; ++i) {
@@ -241,21 +264,33 @@ public class TestLtrace
 				 ee.arguments[i], ((Number)args[i]).longValue());
 		}
 		expectedReturns.add(ee);
+		return Action.CONTINUE;
 	    }
-	    public void funcallLeave(Task task, Symbol symbol, Object retVal) {
+	    public Action funcallLeave(Task task, Symbol symbol, Object retVal) {
 		ExpectedEvent ee = (ExpectedEvent)expectedReturns.removeLast();
 		assertEquals("leave function name", ee.name, symbol.name);
 		assertTrue("return value of function " + ee.name + " is a number",
 			   retVal instanceof Number);
 		assertEquals("return value of function " + ee.name,
 			     ee.retval, ((Number)retVal).longValue());
+		return Action.CONTINUE;
 	    }
 	}
-	MyObserver3 observer = new MyObserver3();
 
 	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
-	ltrace.addObserver(observer);
-	ltrace.trace(cmd);
+	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
+	Task task = child.getMainTask();
+	Proc proc = task.getProc();
+	int pid = proc.getPid();
+
+	LtraceController controller = new MyController3();
+	MyObserver3 observer = new MyObserver3();
+	Ltrace.requestAddFunctionObserver(task, observer, controller);
+	assertRunUntilStop("add function observer");
+
+	new StopEventLoopWhenProcRemoved(pid);
+	child.requestRemoveBlock();
+	assertRunUntilStop("run child until exit");
 
 	assertEquals("number of unprocessed expects", 0, expectedEvents.size());
 	assertEquals("number of unprocessed returns", 0, observer.expectedReturns.size());

@@ -68,6 +68,9 @@ class MappingGuard
     {
 	private final Map observers = new HashMap(); // HashMap<MappingObserver, Integer>
 	protected final Task task;
+	private boolean lowlevelObserversAdded = false;
+	private boolean lowlevelObserversFailed = false;
+	private Throwable lowlevelObserverThrowable = null;
 
 	abstract public void remove();
 
@@ -81,6 +84,9 @@ class MappingGuard
 		observers.remove(observer);
 	    else
 		observers.put(observer, new Integer(v));
+
+	    // XXX: again, probably too early for the last observer
+	    // which was requestDeleted.
 	    observer.deletedFrom(task);
 	    return v != 0;
 	}
@@ -92,16 +98,45 @@ class MappingGuard
 	    else
 		i = new Integer(i.intValue() + 1);
 	    observers.put(observer, i);
-	    observer.addedTo(task);
+
+
+	    if (lowlevelObserversAdded)
+		observer.addedTo(task);
+	    else if (lowlevelObserversFailed)
+		observer.addFailed(task, lowlevelObserverThrowable);
 	}
 
 	protected MappingGuardB(Task task) {
 	    this.task = task;
 	}
 
-	public void addFailed(Object o, Throwable t) {
-	    //observer.addFailed(o, t);
+    	public synchronized void addedTo (final Object observable)
+	{
+	    if (!lowlevelObserversAdded) {
+		eachObserver(new ObserverIterator() {
+			public Action action(MappingObserver observer) {
+			    observer.addedTo(observable);
+			    return Action.CONTINUE;
+			}
+		    });
+		lowlevelObserversAdded = true;
+	    }
 	}
+
+	public synchronized void addFailed(final Object observable, final Throwable w) {
+	    logger.log(Level.FINE, "lowlevel addFailed!");
+	    if (!lowlevelObserversFailed) {
+		eachObserver(new ObserverIterator() {
+			public Action action(MappingObserver observer) {
+			    observer.addFailed(observable, w);
+			    return Action.CONTINUE;
+			}
+		    });
+		lowlevelObserversFailed = true;
+		lowlevelObserverThrowable = w;
+	    }
+	}
+
 	public void deletedFrom(Object o) {
 	    /// XXX: How to delete map/unmap observer?
 	    //observer.deletedFrom(o);
@@ -109,19 +144,28 @@ class MappingGuard
 		guardsForTask.remove(task);
 	    }
 	}
-	public void addedTo(Object o) {
-	    //observer.addedTo(o);
+
+    	private interface ObserverIterator {
+	    Action action(MappingObserver observer);
 	}
 
-	protected void notifyObservers(Task task) {
-	    for (Iterator it = observers.keySet().iterator(); it.hasNext();) {
-		MappingObserver ob = (MappingObserver)it.next();
-		Integer i = (Integer)observers.get(ob);
-		int v = i.intValue();
+	protected void eachObserver(ObserverIterator oit) {
+	    for (Iterator it = observers.entrySet().iterator(); it.hasNext();) {
+		HashMap.Entry entry = (HashMap.Entry)it.next();
+		int v = ((Integer)entry.getValue()).intValue();
+		MappingObserver ob = (MappingObserver)entry.getKey();
 		for (int j = 0; j < v; ++j)
-		    if (ob.updateMapping(task) == Action.BLOCK)
+		    if (oit.action(ob) == Action.BLOCK)
 			task.blockers.add(ob);
 	    }
+	}
+
+	protected void notifyObservers(final Task task) {
+	    eachObserver(new ObserverIterator() {
+		    public Action action(MappingObserver observer) {
+			return observer.updateMapping(task);
+		    }
+		});
 	}
     }
 
@@ -148,14 +192,16 @@ class MappingGuard
 	    frysk.proc.Syscall syscall = syscallCache;
 	    syscallCache = null;
 
-	    // Unfortunately, I know of no reasonable (as in platform
-	    // independent) way to find whether a syscall is mmap,
-	    // munmap, or anything else.  Hence this hack, which is
-	    // probably still much better than rescanning the map on
-	    // each syscall.
-	    String name = syscall.getName();
-	    if (name.indexOf("mmap") != -1 || name.indexOf("munmap") != -1)
-		notifyObservers(task);
+	    if (syscall != null) {
+		// Unfortunately, I know of no reasonable (as in platform
+		// independent) way to find whether a syscall is mmap,
+		// munmap, or anything else.  Hence this hack, which is
+		// probably still much better than rescanning the map on
+		// each syscall.
+		String name = syscall.getName();
+		if (name.indexOf("mmap") != -1 || name.indexOf("munmap") != -1)
+		    notifyObservers(task);
+	    }
 	    return Action.CONTINUE;
 	}
 

@@ -1,3 +1,40 @@
+2007-11-19  Petr Machata  <pmachata@redhat.com>
+
+	* Ltrace.java:
+	(Ltrace): Killed most of the stuff here.  This class is now
+	internally-instantiated by static methods and serves as the
+	observer class underlaying Function Observer exposed by
+	request*FunctionObserver interfaces.
+	(Ltrace.request*FunctionObserver): New static methods.
+	(Ltrace.LtraceTaskObserver): Deleted.
+	(Ltrace.lowlevelObserversAdded, Ltrace.lowlevelObserversFailed,
+	Ltrace.lowlevelObserverThrowable): New fields.
+	(Ltrace.ObserverIterator): New interface.
+	(Ltrace.eachObserver): New method.
+	(Ltrace.addObserver, Ltrace.removeObserver): Made private.
+	(Ltrace.updateHit): Rewritten.
+	(Ltrace.addedTo, Ltrace.addFailed): Implemented, made synchronized.
+	* LtraceObserver.java: Now extends frysk.proc.TaskObserver.
+	All interfaces now return Action.
+	(syscallEnter, syscallLeave, taskAttached, taskTerminated):
+	Interfaces deleted.
+	* MappingGuard.java: Similar changes as in Ltrace.java.
+	(MappingGuardB.lowlevelObserversAdded,
+	 MappingGuardB.lowlevelObserversFailed,
+	 MappingGuardB.lowlevelObserverThrowable): New fields.
+	(MappingGuardB.addObserver, MappingGuardB.removeObserver):
+	Implemented proper add/remove notification semantics.
+	(MappingGuardB.addedTo, MappingGuardB.addFailed): Implemented.
+	(MappingGuard.ObserverIterator): New interface.
+	(MappingGuard.eachObserver): New method.
+	(MappingGuard.notifyObservers): Rewritten.
+	(SyscallMappingGuard.updateSyscallLeave): Fixed the cache==null case.
+	* TestLtrace.java: Fixed, passes.
+	* Ftrace.java: Moved here from `util' package.
+	(Ftrace.ltraceController): New field
+	(Ftrace.setTraceFunctions): New method.
+	(Ftrace.handleTask): requestAddFunctionObserver if requested.
+
 2007-11-16  Petr Machata  <pmachata@redhat.com>
 
 	* Ltrace.java: Cleanups

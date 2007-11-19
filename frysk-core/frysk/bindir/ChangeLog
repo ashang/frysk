@@ -36,10 +36,23 @@
 	and handling.
 
 2007-11-20  Sami Wagiaalla  <swagiaal@redhat.com>
-
+	
 	* TestFstack.java (testBackTraceWithDashC): Removed check for
 	param values.
 	(testBackTraceWithDashA): Ditto.
+
+2007-11-19  Petr Machata  <pmachata@redhat.com>
+	
+	* fltrace.java: Deleted.
+	* fltrace.xml: Deleted.
+	* ftrace.java
+	(WorkingSetRule): Moved from fltrace.java
+	(MyController): Dtto.
+	(ftrace.*Rules): Dtto.
+	(ftrace.parseRules): Dtto.
+	(ftrace.addOptions): Recognize -plt, -dyn, -sym.
+	(ftrace.main): Apply -plt, -dyn, -sym.
+	* ftrace.xml: Parts moved over from fltrace.xml here.
 
 2007-11-19  Phil Muldoon  <pmuldoon@redhat.com>
 

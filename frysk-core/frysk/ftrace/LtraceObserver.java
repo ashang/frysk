@@ -39,9 +39,10 @@
 
 package frysk.ftrace;
 
+import frysk.proc.Action;
 import frysk.proc.Task;
+
 import java.io.File;
-import frysk.proc.Syscall;
 
 /**
  * Ltrace observers implement this interface to get notified about
@@ -50,33 +51,18 @@ import frysk.proc.Syscall;
  * XXX: Convert all Object[] arguments to Value[] or something.
  */
 public interface LtraceObserver
+    extends frysk.proc.TaskObserver
 {
   /** The task has entered a function.  ARGS holds a vector of
       arguments passed to that function. */
-  void funcallEnter(Task task, Symbol symbol, Object[] args);
+  Action funcallEnter(Task task, Symbol symbol, Object[] args);
 
   /** The task has returned from the function. */
-  void funcallLeave(Task task, Symbol symbol, Object retVal);
-
-  /** The task has entered a syscall. */
-  void syscallEnter(Task task, Syscall syscall, Object[] args);
-
-  /** The task has returned from a syscall. */
-  void syscallLeave(Task task, Syscall syscall, Object retVal);
+  Action funcallLeave(Task task, Symbol symbol, Object retVal);
 
   /** New file was mapped. */
-  void fileMapped(Task task, File file);
+  Action fileMapped(Task task, File file);
 
   /** Mapped file was unmapped. */
-  void fileUnmapped(Task task, File file);
-
-  /** New task was attached. */
-  void taskAttached(Task task);
-
-  /**
-   * Task has (been) terminated.
-   * @param signal True if the task died due to a signal, otherwise false.
-   * @param value Either the signal that caused the task to be ended,
-   * or exit code of the task. */
-  void taskTerminated(Task task, boolean signal, int value);
+  Action fileUnmapped(Task task, File file);
 }
