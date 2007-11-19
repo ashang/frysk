@@ -71,21 +71,21 @@ abstract class TypeDecorator extends Type {
 	}
 
 	void toPrint(PrintWriter writer, Location location,
-			ByteBuffer memory, Format format) {
-		decorated.toPrint(writer, location, memory, format);
+			ByteBuffer memory, Format format, int indent) {
+		decorated.toPrint(writer, location, memory, format, 0);
 	}
 	/**
 	 * A guess; sub classes should override.
 	 */
-	public void toPrint(PrintWriter writer) {
+	public void toPrint(PrintWriter writer, int indent) {
 	  if (getUltimateType() instanceof PointerType) {
- 	      decorated.toPrint(writer);
+ 	      decorated.toPrint(writer, 0);
  	      writer.print(" " + getName());
  	  }
  	  else {
 	      writer.print(getName());
 	      writer.print(" ");
-	      decorated.toPrint(writer);
+	      decorated.toPrint(writer, 0);
 	  }
 	}
 

@@ -49,11 +49,11 @@ public class UnknownType
     extends Type
 {
     void toPrint(PrintWriter writer, Location location, ByteBuffer memory,
-		 Format format) {
-      toPrint(writer);
+		 Format format, int indent) {
+      toPrint(writer, 0);
     }
 
-    public void toPrint (PrintWriter writer) {
+    public void toPrint (PrintWriter writer, int indent) {
 	writer.print("Symbol \"" + getName() + "\" has an unknown type.");
     }
    

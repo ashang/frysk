@@ -86,7 +86,7 @@ public class EnumType extends IntegerTypeDecorator
     // Should Format be made responsible?  So that HEX would override
     // printing the enum's name and print raw hex instead?
     void toPrint (PrintWriter writer, Location location,
-		  ByteBuffer memory, Format format) {
+		  ByteBuffer memory, Format format, int indent) {
 	BigInteger value = getBigInteger(location);
 	Member map = (Member)valueToMember.get(value);
 	if (map != null)
@@ -96,7 +96,7 @@ public class EnumType extends IntegerTypeDecorator
 	    format.print(writer, location, this);
     }
 
-    public void toPrint(PrintWriter writer) {
+    public void toPrint(PrintWriter writer, int indent) {
 	writer.print("enum");
 	if (getName() != null) {
 	    writer.print(" ");

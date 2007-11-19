@@ -169,8 +169,8 @@ public class ArrayType
     }
 
     void toPrint(PrintWriter writer, Location location,
-		 ByteBuffer memory, Format format) {
-	// XXX: Add dimension start/end instead of assuming {}
+		 ByteBuffer memory, Format format, int indent) {
+	// XXX: Add dimension start/end string instead of assuming {}
 	for (int i = 0; i < dimension.length - 1; i++)
 	    writer.print("{");
 	for (ArrayIterator e = new ArrayIterator(location); e.hasNext(); ) {
@@ -184,7 +184,7 @@ public class ArrayType
 		    if ((e.idx % stride[i]) == 0)
 			writer.print("{");
 	    }
-	    if (! toPrintVector(writer, type, e, memory, format))
+	    if (! toPrintVector(writer, type, e, memory, format, indent))
 	      break;
 	}
 	for (int i = 0; i < dimension.length - 1; i++)
@@ -192,7 +192,7 @@ public class ArrayType
     }
 
     private boolean toPrintVector(PrintWriter writer, Type type, ArrayIterator e,
-	    ByteBuffer memory, Format format)
+	    ByteBuffer memory, Format format, int indent)
     {
 	boolean isVector = dimension.length == 1;
 	int vectorLength = dimension[dimension.length - 1];
@@ -222,7 +222,7 @@ public class ArrayType
 		writer.print((char)c.longValue());
 	    }
 	    else {
-		type.toPrint(writer, l, memory, format);
+		type.toPrint(writer, l, memory, format, indent);
 		if (i < vectorLength - 1)
 		    writer.print(",");
 	    }
@@ -238,8 +238,8 @@ public class ArrayType
 	return noNullByte;
     }
 
-    public void toPrint(String s, PrintWriter writer) {
-	type.toPrint(writer);
+    public void toPrint(PrintWriter writer, String s, int indent) {
+	type.toPrint(writer, indent);
 	writer.print(" " + s);
 	for(int i = 0; i < this.dimension.length; i++) {
 	    writer.print("[");
@@ -248,8 +248,8 @@ public class ArrayType
 	}
     }
     
-    public void toPrint(PrintWriter writer) {
-	this.toPrint("", writer);
+    public void toPrint(PrintWriter writer, int indent) {
+	this.toPrint(writer, "", indent);
     }
     
     /* getALUs are double dispatch functions to determine 

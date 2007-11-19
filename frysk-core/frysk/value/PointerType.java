@@ -76,7 +76,7 @@ public class PointerType
     }
     
     void toPrint(PrintWriter writer, Location location, ByteBuffer memory,
-		 Format format) {
+		 Format format, int indent) {
 	format.print(writer, location, this);
 	if (type instanceof CharType) {
 	    // XXX: ByteBuffer.slice wants longs.
@@ -95,18 +95,19 @@ public class PointerType
 	}
     }
 
-    public void toPrint(String s, PrintWriter writer) {
+  public void toPrint(PrintWriter writer, String s, int indent) {
+	// For handling int (*x)[2]
 	if (type instanceof ArrayType) {
-	    ((ArrayType)type).toPrint("(*" + s + ")", writer);
+	    ((ArrayType)type).toPrint(writer, "(*" + s + ")", indent);
 	}
 	else {
-	    type.toPrint(writer);
+	    type.toPrint(writer, indent);
 	    writer.print(" *" + s);
 	}
     }
 
-    public void toPrint(PrintWriter writer) {
-	this.toPrint("", writer);
+    public void toPrint(PrintWriter writer, int indent) {
+      this.toPrint(writer, "", indent);
     }
     
     protected Type clone(IntegerType accessor) {

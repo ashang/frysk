@@ -63,10 +63,10 @@ abstract class EvalCommands extends ParameterizedCommand {
 		    Type t = e.getType();
 		    if (t instanceof PointerType) {
 			writer.print("(");
-			t.toPrint(writer);
+			t.toPrint(writer, 0);
 			writer.print(") ");
 		    }	
-		    e.getValue().toPrint(writer, memory, format);
+		    e.getValue().toPrint(writer, memory, format, 0);
 		    writer.println();
 		}
 	    };
@@ -80,7 +80,7 @@ abstract class EvalCommands extends ParameterizedCommand {
 	static final Printer TYPE = new Printer() {
 		void print(Expression e, PrintWriter writer, Format format,
 			   ByteBuffer memory) {
-		    e.getType().toPrint(writer);
+		    e.getType().toPrint(writer, 0);
 		    writer.println();
 		}
 	    };

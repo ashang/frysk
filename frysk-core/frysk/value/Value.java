@@ -136,7 +136,7 @@ public class Value
     public String toPrint(Format format, ByteBuffer memory) {
 	StringWriter stringWriter = new StringWriter();
 	PrintWriter writer = new PrintWriter(stringWriter);
-	toPrint(writer, memory, format);
+	toPrint(writer, memory, format, 0);
 	return stringWriter.toString();
     }
     /**
@@ -153,16 +153,17 @@ public class Value
     }
 
     /**
-     * Write THIS value to WRITER, formatted according to FORMAT.
+     * Write THIS value to WRITER, formatted according to FORMAT
+     * after indenting INDENT spaces.
      */
     public void toPrint(PrintWriter writer, ByteBuffer memory,
-			Format format) {
-	type.toPrint(writer, location, memory, format);
+			Format format, int indent) {
+	type.toPrint(writer, location, memory, format, indent);
     }
     /**
      * Write THIS value to WRITER; using the specified format.
      */
     public void toPrint(PrintWriter writer, Format format) {
-	toPrint(writer, null/*memory*/, format);
+	toPrint(writer, null/*memory*/, format, 0);
     }
 }

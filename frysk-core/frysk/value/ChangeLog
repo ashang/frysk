@@ -1,3 +1,13 @@
+2007-11-19  Stan Cox  <scox@redhat.com>
+
+	* Type.java (toPrint(PrintWriter, Location, ByteBuffer, Format, int)):
+	Add indent parameter.  Change all implementers.
+	(toPrint(PrintWriter writer, int indent)): Likewise.
+	* Value.java (toPrint(PrintWriter, ByteBuffer, Format, int): Likewise.
+	* CompositeType.java (toPrint (PrintWriter, Location, ByteBuffer,
+	Format, int)): Remove CompositeType special case.
+	(toPrint (PrintWriter, int)): Likewise.
+
 2007-11-18  Andrew Cagney  <cagney@redhat.com>
 
 	* ArrayType.java (completeMember(String,List)): New.

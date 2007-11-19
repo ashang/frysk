@@ -70,7 +70,7 @@ public abstract class ArithmeticType
 	return var1.assign(var2);
     }
 
-    public void toPrint(PrintWriter writer) {
+    public void toPrint(PrintWriter writer, int indent) {
 	writer.print(getName());
     }
 

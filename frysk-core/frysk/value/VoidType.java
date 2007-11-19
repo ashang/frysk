@@ -55,12 +55,12 @@ public class VoidType
 	super("void", 1);
     }
 
-    public void toPrint(PrintWriter writer) {
+    public void toPrint(PrintWriter writer, int indent) {
 	writer.print("void");
     }
     
     public void toPrint(PrintWriter writer, Location location,
-			ByteBuffer memory, Format format) {
+			ByteBuffer memory, Format format, int indent) {
 	writer.print("<<void>>");
     }
 

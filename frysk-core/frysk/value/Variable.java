@@ -106,14 +106,14 @@ public class Variable extends ObjectDeclaration{
 	    printWriter.print("<<unhandled type>>");
 	    return;
 	}
-	type.toPrint(printWriter);
+	type.toPrint(printWriter, 0);
 	printWriter.print(" ");
 	printWriter.print(this.getName());
 	printWriter.print(" = ");
 	try {
 	    Value value = getValue(frame);
 	    value.toPrint(printWriter, frame.getTask().getMemory(),
-			  Format.NATURAL);
+			  Format.NATURAL, 0);
 	} catch (ValueUavailableException e) {
 	    printWriter.print("< value unavailable at pc=0x"+ Long.toHexString(frame.getAdjustedAddress())+">");
 	} catch (VariableOptimizedOutException e) {

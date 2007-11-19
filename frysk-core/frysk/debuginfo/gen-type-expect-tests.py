@@ -115,6 +115,8 @@ public class %s extends TestLib {
 		 assertNotNull(varDie);
 		 varType = typeEntry.getType(varDie.getType());
 		 assertNotNull(varType);
+                 // System.out.println("Expect: " + expect[i].symbol + "\\n'" +
+                 //    expect[i].output + "'\\nGot:\\n'" + varType.toPrint());
 		 assertEquals(myName + expect[i].symbol, expect[i].output, varType.toPrint());
 	     }
 	}
@@ -137,7 +139,7 @@ public class %s extends TestLib {
                 assertNotNull(varDie);
 		DebugInfo debugInfo = new DebugInfo(frame);
                 Value value =  debugInfo.print(expect[i].symbol, frame);
-                value.toPrint(pw, task.getMemory(), Format.NATURAL);
+                value.toPrint(pw, task.getMemory(), Format.NATURAL, 0);
                 pw.flush();
                 String valueString = baos.toString();
                 // System.out.println("Expect: " + expect[i].symbol +

@@ -55,7 +55,7 @@ public abstract class IntegerType
     }
 
     void toPrint(PrintWriter writer, Location location,
-		 ByteBuffer memory, Format format) {
+		 ByteBuffer memory, Format format, int indent) {
 	// double-dispatch.
 	format.print(writer, location, this);
     }

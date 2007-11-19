@@ -1,3 +1,8 @@
+2007-11-19  Stan Cox  <scox@redhat.com>
+
+	* gen-type-funit-tests.py (main): Allow for improved formatting of
+	array of struct and ptr to struct.
+
 2007-11-15  Stan Cox  <scox@redhat.com>
 
 	* funit-quicksort.c: New.

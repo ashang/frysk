@@ -71,7 +71,7 @@ public class BooleanType
 	    super.putBigInteger(location, BigInteger.ONE);
     }
     public void toPrint(PrintWriter writer, Location location,
-			ByteBuffer memory, Format format) {
+			ByteBuffer memory, Format format, int indent) {
 	if (getBigInteger(location).equals(BigInteger.ZERO))
 	    writer.print("true");
 	else

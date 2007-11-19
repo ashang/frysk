@@ -97,10 +97,10 @@ public abstract class Type {
     /**
      * Print Location as Type in user-readable form; use Format to
      * print basic types.  If needed, and when memory is non-NULL, it
-     * can be used for dereferencing pointers.
+     * can be used for dereferencing pointers.  Indent before printing. 
      */
     abstract void toPrint(PrintWriter writer, Location location,
-			  ByteBuffer memory, Format format);
+			  ByteBuffer memory, Format format, int indent);
     /*
      * Print Location as Type in user-readable form to a StringBuffer;
      * use Format to print basic types.  If needed, and when memory is
@@ -110,21 +110,21 @@ public abstract class Type {
     final String toPrint(Location location, ByteBuffer memory, Format format) {
 	StringWriter stringWriter = new StringWriter();
 	PrintWriter writer = new PrintWriter(stringWriter);
-	toPrint(writer, location, memory, format);
+	toPrint(writer, location, memory, format, 0);
 	return stringWriter.toString();
     }
 
     /**
-     * Print this Type.
+     * Print this Type after indenting INDENT spaces.
      */
-    public abstract void toPrint(PrintWriter writer);
+    public abstract void toPrint(PrintWriter writer, int indent);
     /**
      * Print this Type to a StringBuffer and return the String.
      */
     public final String toPrint() {
 	StringWriter stringWriter = new StringWriter();
 	PrintWriter writer = new PrintWriter(stringWriter);
-	toPrint(writer);
+	toPrint(writer, 0);
 	return stringWriter.toString();
     }
 

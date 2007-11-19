@@ -50,7 +50,7 @@ public class TypeDef extends TypeDecorator {
     public TypeDef(String name, Type decorated) {
 	super(name, decorated);
     }
-    public void toPrint(PrintWriter writer) {
+    public void toPrint(PrintWriter writer, int indent) {
 	// Do not recurse; as a typedef.
 	writer.print(getName());
     }

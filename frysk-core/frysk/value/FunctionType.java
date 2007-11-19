@@ -58,23 +58,23 @@ public class FunctionType
   
    
     void toPrint(PrintWriter writer, Location location,
-		 ByteBuffer memory, Format format) {
+		 ByteBuffer memory, Format format, int indent) {
 	// XXX: Print the function's name?
 	writer.print("0x");
 	BigInteger v = new BigInteger(1, location.get(memory.order()));
 	writer.print(Long.toHexString(v.longValue()));
     }
   
-    public void toPrint(PrintWriter writer) {
+    public void toPrint(PrintWriter writer, int indent) {
 	if (returnType == null)
 	    writer.print("void");
 	else
-	    returnType.toPrint(writer);
+	    returnType.toPrint(writer, 0);
 	writer.print(" ");
 	writer.print(this.getName());
 	writer.print(" (");
 	for (int i = 0; i < this.parmTypes.size(); i++) {
-	    ((Type)this.parmTypes.get(i)).toPrint(writer);
+	    ((Type)this.parmTypes.get(i)).toPrint(writer, 0);
 	    writer.print(" ");
 	    writer.print((String)this.parmNames.get(i));
 	    if (i < this.parmTypes.size() - 1)

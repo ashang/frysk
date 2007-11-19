@@ -417,32 +417,31 @@ c_file.add('''struct {
 }''', "struct_arr_arr_int", '''{
   .arr_arr_int={{1,2},{3,4}},
 }''')
-# ??? array doesn't know the current indentation level
 c_file.add('''struct {
   struct {
-  int int_var;
-} arr_struct[2];
+    int int_var;
+  } arr_struct[2];
 }''', "struct_arr_struct", '''{
   .arr_struct={{
-  .int_var=1,
-},{
-  .int_var=2,
-}},
+    .int_var=1,
+  },{
+    .int_var=2,
+  }},
 }''')
 c_file.add('''struct {
   union {
-  int int_var;
-} arr_union[4];
+    int int_var;
+  } arr_union[4];
 }''', "struct_arr_union", '''{
   .arr_union={{
-  .int_var=1,
-},{
-  .int_var=2,
-},{
-  .int_var=0,
-},{
-  .int_var=0,
-}},
+    .int_var=1,
+  },{
+    .int_var=2,
+  },{
+    .int_var=0,
+  },{
+    .int_var=0,
+  }},
 }''')
 c_file.add('''struct {
   int * arr_ptr[2];
@@ -532,16 +531,15 @@ c_file.add('''struct {
 c_file.add('''struct {
   int (* ptr_arr)[4];
 }''', "struct_ptr_arr", "")
-# ??? ptr  doesn't know the current indentation level
 c_file.add('''struct {
   struct {
-  int int_var;
-} * ptr_struct;
+    int int_var;
+  } * ptr_struct;
 }''', "struct_ptr_struct", "")
 c_file.add('''struct {
   union {
-  int int_var;
-} * ptr_union;
+    int int_var;
+  } * ptr_union;
 }''', "struct_ptr_union", "")
 c_file.add('''struct {
   int * * ptr_ptr;
@@ -555,28 +553,28 @@ c_file.add('''union {
 }''')
 c_file.add('''union {
   struct {
-  int int_var;
-} arr_struct[2];
+    int int_var;
+  } arr_struct[2];
 }''', "union_arr_struct", '''{
   .arr_struct={{
-  .int_var=1,
-},{
-  .int_var=0,
-}},
+    .int_var=1,
+  },{
+    .int_var=0,
+  }},
 }''')
 c_file.add('''union {
   union {
-  int int_var;
-  float float_var;
-} arr_union[2];
+    int int_var;
+    float float_var;
+  } arr_union[2];
 }''', "union_arr_union", '''{
   .arr_union={{
-  .int_var=1,
-  .float_var=1.4012985E-45,
-},{
-  .int_var=0,
-  .float_var=0.0,
-}},
+    .int_var=1,
+    .float_var=1.4012985E-45,
+  },{
+    .int_var=0,
+    .float_var=0.0,
+  }},
 }''')
 c_file.add('''union {
   int * arr_ptr[4];
@@ -671,13 +669,13 @@ c_file.add('''union {
 }''', "union_ptr_arr", "")
 c_file.add('''union {
   struct {
-  int int_var;
-} * ptr_struct;
+    int int_var;
+  } * ptr_struct;
 }''', "union_ptr_struct", "")
 c_file.add('''union {
   union {
-  int int_var;
-} * ptr_union;
+    int int_var;
+  } * ptr_union;
 }''', "union_ptr_union", "")
 c_file.add('''union {
   int * * ptr_ptr;
