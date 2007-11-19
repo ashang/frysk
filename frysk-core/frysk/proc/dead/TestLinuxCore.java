@@ -135,14 +135,11 @@ public class TestLinuxCore
   }
 
   public void testLinuxCoreFileStackTrace () {
-      if (unresolved(5353))
-	  return;
-
    
-	final Proc ackProc; // = giveMeAProc();
-	
-	File exeFile = Config.getPkgLibFile("funit-stacks");
-	ackProc = new DaemonBlockedAtSignal(exeFile).getMainTask().getProc();
+    final Proc ackProc; // = giveMeAProc();
+    
+    File exeFile = Config.getPkgLibFile("funit-stacks");
+    ackProc = new DaemonBlockedAtSignal(exeFile).getMainTask().getProc();
 
 
     StacktraceAction stacker;
@@ -165,7 +162,7 @@ public class TestLinuxCore
     File xtestCore = new File(coreFileName);
 
     Host lcoreHost = new LinuxHost(Manager.eventLoop, 
-				   xtestCore);
+				   xtestCore, exeFile);
     
     Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid()));
 
