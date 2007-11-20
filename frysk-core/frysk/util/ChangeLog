@@ -1,3 +1,7 @@
+2007-11-20  Andrew Cagney  <cagney@redhat.com>
+
+	* X8664LinuxElfCorefile.java: Fix typo; "eflags" -> "rflags".
+
 2007-11-09  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
         * LinuxElfCorefileFactory.java: Removed Power little endian.
 

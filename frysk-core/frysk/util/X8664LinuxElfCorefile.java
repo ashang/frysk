@@ -178,7 +178,7 @@ public class X8664LinuxElfCorefile extends LinuxElfCorefile {
 	// gap between frysk and core file register order.
 	String regMap[] = { "r15", "r14", "r13", "r12", "rbp", "rbx", "r11",
 		"r10", "r9", "r8", "rax", "rcx", "rdx", "rsi",
-		"rdi", "orig_rax", "rip", "cs", "eflags", "rsp",
+		"rdi", "orig_rax", "rip", "cs", "rflags", "rsp",
 		"ss", "fs_base", "gs_base", "ds", "es", "fs", "gs" };
 
 
