@@ -47,15 +47,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.*;
 
 public class Ltrace
     implements TaskObserver.Attached,
-	       TaskObserver.Code,
-	       TaskObserver.Terminated,
 	       TaskObserver.Terminating,
 	       MappingObserver
 {
@@ -98,15 +95,6 @@ public class Ltrace
     /** Remembers which files are currently mapped in which task. */
     private Map maps = java.util.Collections.EMPTY_MAP;
 
-    /** Remembers which tracepoint is associated with which breakpoint..
-	Map&lt;address, TracePoint&gt; */
-    private final HashMap breakpoints = new HashMap();
-
-    /** Remembers return from which tracepoint is associated with
-	which breakpoint.
-	Map&lt;address, List&lt;TracePoint&gt;&gt; */
-    private final HashMap retBreakpoints = new HashMap();
-
     /** Remembers working set preferences for each task.
 	Map&lt;Task, Map&lt;File, TracePointWorkingSet&gt;&gt; */
     private final HashMap driversForTask = new HashMap();
@@ -128,7 +116,6 @@ public class Ltrace
 	this.controller = controller;
 
 	task.requestAddAttachedObserver(this);
-	task.requestAddTerminatedObserver(this);
 	task.requestAddTerminatingObserver(this);
 	MappingGuard.requestAddMappingObserver(task, this);
 	// There are no code observers right now.  We add them as files
@@ -201,115 +188,97 @@ public class Ltrace
     // --- code observer, breakpoint handling ---
     // ------------------------------------------
 
-    /*
-    public Action libcallEnter(Task task, Symbol symbol, long address)
+    // Map<Long address, FunctionReturnObserver>
+    private Map functionReturnObservers = new HashMap();
+
+    private class FunctionEnterObserver
+	implements TaskObserver.Code
     {
-	// XXX: this makes no sense for PLT tracing.
-	Frame frame = StackFactory.createFrame(task);
-	if (frame != null)
-	    {
-		try { frame = frame.getOuter(); }
-		catch (java.lang.NullPointerException ex) {}
-	    }
-	String symbolName = symbol.name;
-	String libraryName = symbol.getParent().getSoname();
+	protected TracePoint tp;
 
-	String callerLibrary = "(toplevel)";
-	if (frame != null)
-	    {
-		try {
-		    callerLibrary = frame.getLibraryName();
-		    if (!callerLibrary.equals("Unknown"))
-			callerLibrary = ObjectFile.buildFromFile(callerLibrary).getSoname();
-		}
-		catch (java.lang.Exception ex) {
-		    callerLibrary = "(Exception)";
-		}
-	    }
-    }
-    */
-
-    public Action updateHit (final Task task, long address)
-    {
-	logger.log(Level.FINE, "Breakpoint at 0x" + Long.toHexString(address));
-	Long laddress = new Long(address);
-
-	TracePoint enter = null;
-	TracePoint leave = null;
-
-	// See if we enter somewhere.
-	TracePoint tp = (TracePoint)breakpoints.get(laddress);
-	if (tp != null)
-	    {
-		if (address != tp.symbol.getParent().getEntryPoint()) {
-		    // Install breakpoint to return address.
-		    long retAddr = arch.getReturnAddress(task, tp.symbol);
-		    logger.log(Level.FINER,
-			       "It's enter tracepoint, return address 0x"
-			       + Long.toHexString(retAddr) + ".");
-		    Long retAddrL = new Long(retAddr);
-		    List tpList = (List)retBreakpoints.get(retAddrL);
-		    if (tpList == null)
-			{
-			    task.requestAddCodeObserver(this, retAddr);
-			    tpList = new LinkedList();
-			    retBreakpoints.put(retAddrL, tpList);
-			}
-		    tpList.add(tp);
-		}
-		else
-		    logger.log(Level.FINEST,
-			       "It's _start, no return breakpoint established...");
-
-		enter = tp;
-	    }
-
-	// See if we returned from somewhere.
-	List tpList = (List)retBreakpoints.get(laddress);
-	if (tpList != null) {
-	    logger.log(Level.FINER, "It's leave tracepoint.");
-	    leave = (TracePoint)tpList.remove(tpList.size() - 1);
-	    if (tpList.isEmpty())
-		{
-		    logger.log(Level.FINEST, "Removing leave breakpoint.");
-		    retBreakpoints.remove(new Long(address));
-		    task.requestDeleteCodeObserver(this, address);
-		}
+	FunctionEnterObserver(TracePoint tp) {
+	    this.tp = tp;
 	}
 
-	if (enter != null || leave != null) {
-	    if (enter != null) {
-		logger.log(Level.FINEST, "Building arglist.");
-		final Object[] args = arch.getCallArguments(task, enter.symbol);
-		final Symbol symbol = enter.symbol;
-		eachObserver(new ObserverIterator() {
-			public Action action(FunctionObserver o) {
-			    return o.funcallEnter(task, symbol, args);
-			}
-		    });
-	    }
+	public Action updateHit (final Task task, long address)
+	{
+	    logger.log(Level.FINE, "Enter breakpoint at 0x" + Long.toHexString(address));
 
-	    if (leave != null) {
-		logger.log(Level.FINEST, "Fetching retval.");
-		final Object ret = arch.getReturnValue(task, leave.symbol);
-		final Symbol symbol = leave.symbol;
-		eachObserver(new ObserverIterator() {
-			public Action action(FunctionObserver o) {
-			    return o.funcallLeave(task, symbol, ret);
-			}
-		    });
+	    if (address != tp.symbol.getParent().getEntryPoint()) {
+		// Install breakpoint to return address.
+		long retAddr = arch.getReturnAddress(task, tp.symbol);
+		logger.log(Level.FINER,
+			   "It's enter tracepoint, return address 0x"
+			   + Long.toHexString(retAddr) + ".");
+		Long retAddrL = new Long(retAddr);
+		FunctionReturnObserver retObserver
+		    = (FunctionReturnObserver)functionReturnObservers.get(retAddrL);
+		if (retObserver == null) {
+		    retObserver = new FunctionReturnObserver();
+		    task.requestAddCodeObserver(retObserver, retAddr);
+		}
+		retObserver.add(tp);
 	    }
+	    else
+		logger.log(Level.FINEST,
+			   "It's _start, no return breakpoint established...");
+
+	    logger.log(Level.FINEST, "Building arglist.");
+	    final Symbol symbol = tp.symbol;
+	    final Object[] args = arch.getCallArguments(task, symbol);
+	    eachObserver(new ObserverIterator() {
+		    public Action action(FunctionObserver o) {
+			return o.funcallEnter(task, symbol, args);
+		    }
+		});
+
+	    task.requestUnblock(this);
+	    return Action.BLOCK;
 	}
-	else
-	    System.err.println("[" + task.getTaskId().intValue() + "] "
-			       + "UNKNOWN BREAKPOINT 0x" + Long.toHexString(address));
 
-	logger.log(Level.FINE, "Breakpoint handled.");
-	task.requestUnblock(this);
-	return Action.BLOCK;
+	public void addedTo (final Object observable) {}
+	public void deletedFrom (Object observable) {}
+	public void addFailed (final Object observable, final Throwable w) {}
     }
 
+    private class FunctionReturnObserver
+	implements TaskObserver.Code
+    {
+	private LinkedList tpList = new LinkedList();
 
+	public void add(TracePoint tp) {
+	    tpList.addLast(tp);
+	}
+
+	public Action updateHit (final Task task, long address)
+	{
+	    logger.log(Level.FINE, "Return breakpoint at 0x" + Long.toHexString(address));
+
+	    TracePoint leave = (TracePoint)tpList.removeLast();
+	    if (tpList.isEmpty()) {
+		logger.log(Level.FINEST, "Removing leave breakpoint.");
+		functionReturnObservers.remove(new Long(address));
+		task.requestDeleteCodeObserver(this, address);
+	    }
+
+	    logger.log(Level.FINEST, "Fetching retval.");
+	    final Object ret = arch.getReturnValue(task, leave.symbol);
+	    final Symbol symbol = leave.symbol;
+	    eachObserver(new ObserverIterator() {
+		    public Action action(FunctionObserver o) {
+			return o.funcallLeave(task, symbol, ret);
+		    }
+		});
+
+	    logger.log(Level.FINE, "Breakpoint handled.");
+	    task.requestUnblock(this);
+	    return Action.BLOCK;
+	}
+
+	public void addedTo (final Object observable) {}
+	public void deletedFrom (Object observable) {}
+	public void addFailed (final Object observable, final Throwable w) {}
+    }
 
     // -------------------------------------------------
     // --- attached/terminated/terminating observers ---
@@ -335,12 +304,6 @@ public class Ltrace
 	return Action.BLOCK;
     }
 
-    public Action updateTerminated(Task task, boolean signal, int value)
-    {
-	// XXX: `delete this;'???
-	return Action.CONTINUE;
-    }
-
 
 
     // ----------------------------
@@ -351,6 +314,7 @@ public class Ltrace
 	implements Ltrace.Driver
     {
 	private Set tracePoints = new HashSet();
+	private Map functionObserversForAddr = new HashMap();
 
 	public void tracePoint(Task task, TracePoint tp)
 	{
@@ -378,22 +342,13 @@ public class Ltrace
 			       "Will trace `" + tp.symbol.name
 			       + "' at 0x" + Long.toHexString(actualAddress));
 
-		    // FIXME: probably handle aliases at a lower
-		    // lever.  Each tracepoint should point to a list
-		    // of symbols that alias it, and should be present
-		    // only once in an ObjectFile.
-		    synchronized (Ltrace.this) {
-			if (breakpoints.containsKey(laddr)) {
-			    // We got an alias.  Put the symbol with the
-			    // shorter name into the map.
-			    TracePoint original = (TracePoint)breakpoints.get(laddr);
-			    if (tp.symbol.name.length() < original.symbol.name.length())
-				breakpoints.put(laddr, tp);
-			}
-			else {
-			    task.requestAddCodeObserver(Ltrace.this, laddr.longValue());
-			    breakpoints.put(laddr, tp);
-			}
+		    // FIXME: handle aliases.  Each tracepoint should
+		    // point to a list of symbols that alias it, and
+		    // should be present only once in an ObjectFile.
+		    if (!functionObserversForAddr.containsKey(laddr)) {
+			FunctionEnterObserver o = new FunctionEnterObserver(tp);
+			task.requestAddCodeObserver(o, laddr.longValue());
+			functionObserversForAddr.put(laddr, o);
 		    }
 		}
 	    }
@@ -413,12 +368,11 @@ public class Ltrace
 			       + "' at 0x" + Long.toHexString(actualAddress));
 
 		    // FIXME: Handle aliases.
-		    synchronized (Ltrace.this) {
-			TracePoint original = (TracePoint)breakpoints.remove(laddr);
-			if (original == null)
-			    throw new AssertionError("Couldn't find breakpoint to remove!");
-			task.requestDeleteCodeObserver(Ltrace.this, laddr.longValue());
-		    }
+		    Object observer = functionObserversForAddr.remove(laddr);
+		    if (observer == null)
+			throw new AssertionError("Couldn't find observer to remove!");
+		    task.requestDeleteCodeObserver((TaskObserver.Code)observer,
+						   laddr.longValue());
 		}
 	    }
 	}
@@ -593,6 +547,7 @@ public class Ltrace
     // XXX: the synchronization will be ugly overkill with all the
     // code observers being added and removed all the time.  Have to
     // invent something a bit better.
+    // XXX: probably not necessary anymore.
     public synchronized void addedTo (final Object observable)
     {
 	if (!lowlevelObserversAdded) {

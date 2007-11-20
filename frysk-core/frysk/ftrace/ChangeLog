@@ -1,5 +1,18 @@
 2007-11-20  Petr Machata  <pmachata@redhat.com>
 
+	* Ltrace.java
+	(Ltrace): Doesn't implement code and terminating observers
+	anymore.
+	(Ltrace.breakpoints): Field deleted.
+	(Ltrace.retBreakpoints): Renamed to functionReturnObservers.
+	(Ltrace.FunctionEnterObserver): New internal class.
+	(Ltrace.FunctionReturnObserver): New internal class.
+	(Ltrace.updateTerminated): Deleted.
+	(Ltrace.updateHit): Deleted.
+	(TracePointWorkingSet.functionObserversForAddr): New field.
+
+2007-11-20  Petr Machata  <pmachata@redhat.com>
+
 	* LtraceObserver.java: renamed to FunctionObserver.java.
 	* Ftrace.java (MyFunctionObserver): create one per observed task.
 
