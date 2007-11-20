@@ -2,7 +2,7 @@
 
 <html>
   <head>
-    <title>Frysk System Monitor / Debugger: Build</title>
+    <title>Frysk System Monitor / Debugger: Build: RHEL</title>
     <link rel="stylesheet" href="../../frysk.css" type="text/css">
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <meta http-equiv="Content-Style-Type" content="text/css">
@@ -52,40 +52,16 @@
           <tr>
 	    <td valign="top">
 	      <!-- start logo -->
-<p>
-<a href="#faq">Build or Test Question?</a><br>
-<a href="#git">Frysk and Git</a><br>
-<br>
-<a href="#f8">Fedora 8</a><br>
-<a href="#f7">Fedora 7</a><br>
-<a href="#fc6">Fedora Core 6</a><br>
-<a href="#ubuntu-gutsy">Ubuntu - Gutsy</a><br>
-<a href="#ubuntu-edgy">Ubuntu - Edgy</a><br>
-<a href="#ubuntu-breezy">Ubuntu - Breezy</a><br>
-<a href="#rhel5">RHEL 5</a><br>
-<a href="#rhel4">RHEL 4</a><br>
-<a href="#debian">Debian</a><br>
-</p>
 	      <!-- end logo -->
 	    </td>
             <td valign="top">
 	      <!-- start text -->
 
-<p>This page provides guidelines for building <em>frysk</em>, checked
-out from Git, on a number of systems.</p>
+<p>This page provides guidelines for building <em>frysk</em> on older
+RHEL systems.</p>
 
-<h3>Set up your system's build environment</h3>
 
-<p>First you will need to set up your system's build environment so
-that all its prerequisites are met.</p>
-
-<dl>
-
-<dt><a name="f8">Fedora 8</a><br><a name="f7">Fedora
-7</a><br><a name="fc6">Fedora Core 6</a><br><a name="rhel5">RHEL
-5</a></dt>
-
-<dd>
+<h3>RHEL 5</dt>
 
 You will need to install the following:
 
@@ -98,18 +74,11 @@ sudo yum install -y \
     yelp libtool make
 </pre>
 
-For additional updates, check
-the <a href="/bugzilla/showdependencytree.cgi?id=4743">Fedora
-8</a>, <a href="/bugzilla/showdependencytree.cgi?id=3620">Fedora
-7</a>, <a href="/bugzilla/showdependencytree.cgi?id=2654">Fedora Core
-6</a>, or <a href="/bugzilla/showdependencytree.cgi?id=3385">RHEL
-5</a> tracker bug.
+For additional updates, check the <a
+href="/bugzilla/showdependencytree.cgi?id=3385">RHEL 5</a> tracker
+bug.
 
-</dd>
-
-<dt><a name="rhel4"></a>Red Hat Enterprise Linux 4</dt>
-
-<dd>
+<h3>Red Hat Enterprise Linux 4</h3>
 
 Red Hat Enterprise Linux 4 Update 3 and later include <tt>gcc4</tt>
 and <tt><em>frysk</em></tt> RPMs that contain everything needed to
@@ -127,104 +96,6 @@ explicitly specified.)
 bug's <a
 href="/bugzilla/showdependencytree.cgi?id=2004">dependency
 tree</a>.
-
-</dd>
-
-<dt><a name="ubuntu-gutsy">Ubuntu (Gutsy Gibbon)</a><br>
-<a name="debian">Debian</a></dt>
-
-<dd>
-
-You will need to install the following packages:
-
-<pre>
-g++ binutils-dev make gcj java-gcj-compat-dev \
-libglade-java-dev libvte-java-dev antlr libjdom1-java \
-automake libtool pkg-config autotools-dev libaudit-dev \
-sharutils transfig libxml2-utils xmlto gs-gpl yelp
-</pre>
-
-<p>
-
-For additional updates, check the
-<a href="/bugzilla/showdependencytree.cgi?id=4290">Debian</a> or
-<a href="/bugzilla/showdependencytree.cgi?id=1976">Ubuntu</a> tracker bug.
-
-</dd>
-
-<dt><a name="ubuntu-edgy">Ubuntu (Edgy Eft)</a></dt>
-
-<dd>
-
-Building <em>frysk</em> on this release is a big unknown, check the <a
-href="#ubuntu-breezy">Breeze Badger</a> notes for hints.
-
-<p>
-
-For additional updates, check Ubuntu' tracker bug's <a
-href="/bugzilla/showdependencytree.cgi?id=1976">dependency
-tree</a>.
-
-</dd>
-
-<dt><a name="ubuntu-breezy">Ubuntu (Breezy Badger)</a></dt>
-
-<dd>
-
-While it's a bit of a struggle, it is possible to build <em>frysk</em>
-on Ubuntu:
-
-<ul>
-
-<li><tt>gcc 4.0.1-4ubuntu9</tt> has a number of serious bugs. <br>
-Download, build, and install a snapshot of the RHEL-4 gcc4 compiler
-(found <a
-href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>).</li>
-
-<li>Make certain that <tt>automake-1.9</tt> is installed and selected
-as the default:
-<pre>
-$ sudo aptitude install automake1.9
-$ sudo update-alternatives --display automake
-$ sudo update-alternatives --set automake /usr/bin/automake-1.9
-</pre>
-</li>
-
-<li>Per <a
-href="http://java-gnome.sourceforge.net/cgi-bin/bin/view/Main/GetJavaGnome">Get
-Java Gnome</a>, append the line:
-<pre>
-http://www.natemccallum.com/uploads/debs/ ./
-</pre>
-to the file:
-<pre>
-/etc/apt/sources.list
-</pre>
-and then install the java-gnome stuff vis:
-<pre>
-$ sudo aptitude install libglade-java \
-libgtk-java libglade2-dev libvte-dev
-$ pkg-config --modversion gtk2-java
-2.8.1
-</pre>
-</li>
-
-<li><tt>jdom</tt> had problems building; there appears to be some
-missing .jar dependencies. <br> Grabbing the jdom out of the RHEL-4
-mega-rpm and building that worked.</li>
-
-<li>The libvte-java bindings are missing. <br> You can hack around
-this by disabling the code using vte (there isn't much)</li>
-
-</ul>
-
-For additional updates, check Ubuntu' tracker bug's <a
-href="/bugzilla/showdependencytree.cgi?id=1976">dependency
-tree</a>.
-
-</dd>
-
-</dl>
 
               <!-- end text -->
               <p>&nbsp;</p>

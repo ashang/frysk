@@ -2,7 +2,7 @@
 
 <html>
   <head>
-    <title>Frysk System Monitor / Debugger: Build</title>
+    <title>Frysk System Monitor / Debugger: Build: Ubuntu</title>
     <link rel="stylesheet" href="../../frysk.css" type="text/css">
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <meta http-equiv="Content-Style-Type" content="text/css">
@@ -52,88 +52,16 @@
           <tr>
 	    <td valign="top">
 	      <!-- start logo -->
-<p>
-<a href="#faq">Build or Test Question?</a><br>
-<a href="#git">Frysk and Git</a><br>
-<br>
-<a href="#f8">Fedora 8</a><br>
-<a href="#f7">Fedora 7</a><br>
-<a href="#fc6">Fedora Core 6</a><br>
-<a href="#ubuntu-gutsy">Ubuntu - Gutsy</a><br>
-<a href="#ubuntu-edgy">Ubuntu - Edgy</a><br>
-<a href="#ubuntu-breezy">Ubuntu - Breezy</a><br>
-<a href="#rhel5">RHEL 5</a><br>
-<a href="#rhel4">RHEL 4</a><br>
-<a href="#debian">Debian</a><br>
-</p>
 	      <!-- end logo -->
 	    </td>
             <td valign="top">
 	      <!-- start text -->
 
-<p>This page provides guidelines for building <em>frysk</em>, checked
-out from Git, on a number of systems.</p>
+<p>This page provides guidelines for building <em>frysk</em> on older
+Ubuntu systems..</p>
 
-<h3>Set up your system's build environment</h3>
-
-<p>First you will need to set up your system's build environment so
-that all its prerequisites are met.</p>
-
-<dl>
-
-<dt><a name="f8">Fedora 8</a><br><a name="f7">Fedora
-7</a><br><a name="fc6">Fedora Core 6</a><br><a name="rhel5">RHEL
-5</a></dt>
-
-<dd>
-
-You will need to install the following:
-
-<pre>
-sudo yum install -y \
-    antlr jdom junit gcc-java gcc-c++ \
-    libglade-java-devel libvte-java-devel \
-    automake xmlto transfig eclipse-ecj dogtail \
-    sharutils git audit-libs-devel binutils-devel \
-    yelp libtool make
-</pre>
-
-For additional updates, check
-the <a href="/bugzilla/showdependencytree.cgi?id=4743">Fedora
-8</a>, <a href="/bugzilla/showdependencytree.cgi?id=3620">Fedora
-7</a>, <a href="/bugzilla/showdependencytree.cgi?id=2654">Fedora Core
-6</a>, or <a href="/bugzilla/showdependencytree.cgi?id=3385">RHEL
-5</a> tracker bug.
-
-</dd>
-
-<dt><a name="rhel4"></a>Red Hat Enterprise Linux 4</dt>
-
-<dd>
-
-Red Hat Enterprise Linux 4 Update 3 and later include <tt>gcc4</tt>
-and <tt><em>frysk</em></tt> RPMs that contain everything needed to
-build <em>frysk</em> from <tt>CVS</tt>; just install RPMs for the following:
-
-<pre>
-transfig xmlto passivetex xmltex \
-gcc4 gcc4-c++ gcc4-java libgcj4-devel \
-sharutils frysk automake ghostscript yelp
-</pre>
-
-(A broken dependency in transfig means that ghostscript must also be
-explicitly specified.)
-<p>For additional updates, check Red Hat Enterprise Linux 4's tracker
-bug's <a
-href="/bugzilla/showdependencytree.cgi?id=2004">dependency
-tree</a>.
-
-</dd>
-
-<dt><a name="ubuntu-gutsy">Ubuntu (Gutsy Gibbon)</a><br>
-<a name="debian">Debian</a></dt>
-
-<dd>
+<h3><a name="ubuntu-gutsy">Ubuntu (Gutsy Gibbon)</a><br>
+<a name="debian">Debian</a></h3>
 
 You will need to install the following packages:
 
@@ -150,11 +78,7 @@ For additional updates, check the
 <a href="/bugzilla/showdependencytree.cgi?id=4290">Debian</a> or
 <a href="/bugzilla/showdependencytree.cgi?id=1976">Ubuntu</a> tracker bug.
 
-</dd>
-
-<dt><a name="ubuntu-edgy">Ubuntu (Edgy Eft)</a></dt>
-
-<dd>
+<h3><a name="ubuntu-edgy">Ubuntu (Edgy Eft)</a></h3>
 
 Building <em>frysk</em> on this release is a big unknown, check the <a
 href="#ubuntu-breezy">Breeze Badger</a> notes for hints.
@@ -165,11 +89,7 @@ For additional updates, check Ubuntu' tracker bug's <a
 href="/bugzilla/showdependencytree.cgi?id=1976">dependency
 tree</a>.
 
-</dd>
-
-<dt><a name="ubuntu-breezy">Ubuntu (Breezy Badger)</a></dt>
-
-<dd>
+<h3><a name="ubuntu-breezy">Ubuntu (Breezy Badger)</a></h3>
 
 While it's a bit of a struggle, it is possible to build <em>frysk</em>
 on Ubuntu:
@@ -221,10 +141,6 @@ this by disabling the code using vte (there isn't much)</li>
 For additional updates, check Ubuntu' tracker bug's <a
 href="/bugzilla/showdependencytree.cgi?id=1976">dependency
 tree</a>.
-
-</dd>
-
-</dl>
 
               <!-- end text -->
               <p>&nbsp;</p>
