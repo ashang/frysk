@@ -1,3 +1,8 @@
+2007-11-20  Rick Moseley  <rmoseley@redhat.com>
+
+	* RunCommand.java: Clear loadedProcs HashMap when done.
+	* TestLoadCommand.java: Add test for the above change.
+
 2007-11-19  Rick Moseley  <rmoseley@redhat.com>
 
 	* RunCommand.java: Fix bz# 5369; jazz up the help message.

@@ -87,4 +87,20 @@ public class TestLoadCommand extends TestLib {
 	e.expect(5, "[1.0]*" + prompt);
 	e.close();
     }
+    
+    public void testLoadRunRun() {
+	e = new HpdTestbed();
+	e.send("load " + Config.getPkgLibFile("funit-hello").getPath()
+		+ "\n");
+	e.expect(5, "Loaded executable file.*" + prompt);
+	e.send("load " + Config.getPkgLibFile("funit-hello").getPath()
+		+ "\n");
+	e.expect(5, "Loaded executable file.*" + prompt);
+	e.send("run\n");
+	e.expect(5, "Attached to process*");
+	e.expect(5, "Attached to process*");
+	e.send("run\n");
+	e.expect(5, "Error: missing program");
+	e.close();
+    }
 }
