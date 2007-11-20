@@ -51,14 +51,8 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.proc.TaskObserver.Forked;
 
-import frysk.stack.Frame;
-import frysk.stack.StackFactory;
-
-import frysk.util.SyscallHandler;
-
 import inua.util.PrintWriter;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Observable;
@@ -69,8 +63,8 @@ import java.io.File;
 
 public class Ftrace
 {
-  // Where to send output.
-  PrintWriter writer;
+    // Where to send output.
+    Reporter reporter;
 
   // True if we're tracing children as well.
   boolean traceChildren = false;
@@ -136,10 +130,10 @@ public class Ftrace
     syscallStackTraceSet = syscallSet;
   }
 
-  public void setWriter (PrintWriter writer)
-  {
-    this.writer = writer;
-  }
+    public void setWriter (PrintWriter writer)
+    {
+	this.reporter = new Reporter(writer);
+    }
 
   public void setEnterHandler (SyscallHandler handler)
   {
@@ -153,8 +147,8 @@ public class Ftrace
 
   private void init ()
   {
-    if (writer == null)
-      writer = new PrintWriter(System.out);
+    if (reporter == null)
+	reporter = new Reporter(new PrintWriter(System.out));
 
     // this observer should only be used to pick up a proc if we
     // are tracing a process given a pid
@@ -206,16 +200,6 @@ public class Ftrace
     }
   }
 
-    synchronized void generateStackTrace (Task task,
-					  String syscallStackTraceName) {
-	Frame frame = StackFactory.createFrame(task);
-	writer.println("Task: " + task.getTid() 
-		       + " dumping stack trace for syscall \"" + syscallStackTraceName + "\":" );
-
-	StackFactory.printStack(writer, frame);
-	writer.flush();
-    }
-
     private HashMap observationCounters = new HashMap();
 
     synchronized private void observationRequested(Task task) {
@@ -243,7 +227,7 @@ public class Ftrace
     synchronized void handleTask (Task task)
     {
 	if (traceSyscalls) {
-	    task.requestAddSyscallObserver(syscallObserver);
+	    task.requestAddSyscallObserver(new MySyscallObserver(reporter));
 	    observationRequested(task);
 	}
 
@@ -251,7 +235,9 @@ public class Ftrace
 	observationRequested(task);
 
 	if (ltraceController != null) {
-	    Ltrace.requestAddFunctionObserver(task, new MyFunctionObserver(), ltraceController);
+	    Ltrace.requestAddFunctionObserver(task,
+					      new MyFunctionObserver(reporter),
+					      ltraceController);
 	    observationRequested(task);
 	}
 
@@ -261,9 +247,7 @@ public class Ftrace
 	//    tracedParents.add(proc.getId());
 
 	Manager.host.observableProcRemovedXXX.addObserver(new ProcRemovedObserver(proc));
-	writer.println("Ftrace.main() Proc.getPid() " + proc.getPid());
-	writer.println("Ftrace.main() Proc.getExe() " + proc.getExe());
-	writer.flush();
+	reporter.eventSingle(task, "attached " + proc.getExe());
 	++numProcesses;
     }
 
@@ -359,56 +343,69 @@ public class Ftrace
   /**
    * The syscallObserver added to the traced proc.
    */
-  TaskObserver.Syscall syscallObserver = new TaskObserver.Syscall()
-  {
-
-    public Action updateSyscallEnter (Task task)
+    class MySyscallObserver
+	implements TaskObserver.Syscall
     {
-      frysk.proc.Syscall syscall = task.getSyscallEventInfo().getSyscall(task);
-      syscallCache.put(task, syscall);
+	Reporter reporter;
+	frysk.proc.Syscall syscallCache = null;
 
-      /*
-         * if this systsysem call is in the stack tracing HashSet, get a stack
-         * trace before continuing on.
-         */
-      if (syscallStackTraceSet != null
-	  && syscallStackTraceSet.contains(syscall.getName()))
-	generateStackTrace(task, syscall.getName());
+	MySyscallObserver(Reporter reporter)
+	{
+	    this.reporter = reporter;
+	}
 
-      if (enterHandler != null)
-	enterHandler.handleEnter(task, syscall);
-      return Action.CONTINUE;
+	public Action updateSyscallEnter(Task task)
+	{
+	    frysk.proc.Syscall syscall
+		= task.getSyscallEventInfo().getSyscall(task);
+	    String name = syscall.getName();
+	    // XXX: pass args
+	    reporter.eventEntry(task, syscall, "syscall", name, new Object[]{});
+
+	    // If this system call is in the stack tracing HashSet,
+	    // get a stack trace before continuing on.
+	    if (syscallStackTraceSet != null
+		&& syscallStackTraceSet.contains(name))
+		reporter.generateStackTrace(task);
+
+	    /* XXX:
+	    if (enterHandler != null)
+		enterHandler.handleEnter(task, syscall);
+	    */
+	    syscallCache = syscall;
+	    return Action.CONTINUE;
+	}
+
+	public Action updateSyscallExit (Task task)
+	{
+	    frysk.proc.Syscall syscall = syscallCache;
+	    String name = syscall.getName();
+	    // XXX: pass retVal
+	    reporter.eventLeave(task, syscall,
+				"syscall leave", name,
+				new Integer(0));
+	    /* XXX:
+	    if (exitHandler != null)
+		exitHandler.handleExit(task, syscall);
+	    */
+
+	    syscallCache = null;
+	    return Action.CONTINUE;
+	}
+
+	public void addedTo (Object observable)
+	{
+	    Task task = (Task) observable;
+	    observationRealized(task);
+	}
+
+	public void addFailed (Object observable, Throwable w)
+	{
+	    throw new RuntimeException("Failed to add a Systemcall observer to the process", w);
+	}
+
+	public void deletedFrom (Object observable) { }
     }
-
-    public Action updateSyscallExit (Task task)
-    {
-      frysk.proc.Syscall syscall = (frysk.proc.Syscall) syscallCache.remove(task);
-
-      if (exitHandler != null)
-	exitHandler.handleExit(task, syscall);
-
-      return Action.CONTINUE;
-    }
-
-    public void addedTo (Object observable)
-    {
-	Task task = (Task) observable;
-	observationRealized(task);
-    }
-
-    public void addFailed (Object observable, Throwable w)
-    {
-      throw new RuntimeException(
-				 "Failed to add a Systemcall observer to the process",
-				 w);
-    }
-
-    public void deletedFrom (Object observable)
-    {
-      throw new RuntimeException("This has not yet been implemented");
-    }
-
-  };
 
   TaskObserver.Forked forkedObserver = new Forked(){
 
@@ -452,9 +449,12 @@ public class Ftrace
     private class MyFunctionObserver
 	implements FunctionObserver//, LtraceControllerObserver
     {
-	//Where to send the output.
-	private PrintWriter writer = new PrintWriter(System.out);
-	private int level = 0;
+	// Reporting tool.
+	private Reporter reporter;
+
+	MyFunctionObserver(Reporter reporter) {
+	    this.reporter = reporter;
+	}
 
 	// Which symbols should yield a stack trace.
 	private HashSet symbolsStackTraceSet = new HashSet();
@@ -465,135 +465,40 @@ public class Ftrace
 	}
 	*/
 
-	private Object lastItem = null;
-	private Task lastTask = null;
-
-	private boolean lineOpened()
-	{
-	    return lastItem != null;
-	}
-
-	private boolean myLineOpened(Task task, Object item)
-	{
-	    return lastItem == item && lastTask == task;
-	}
-
-	private void updateOpenLine(Task task, Object item)
-	{
-	    lastItem = item;
-	    lastTask = task;
-	}
-
-	private String repeat(char c, int count)
-	{
-	    // by Stephen Friedrich
-	    char[] fill = new char[count];
-	    Arrays.fill(fill, c);
-	    return new String(fill);
-	}
-
-	private String pidInfo(Task task)
-	{
-	    return "" + task.getProc().getPid() + "." + task.getTid();
-	}
-
-	private void eventEntry(Task task, Object item, String eventType,
-				String eventName, Object[] args)
-	{
-	    String spaces = repeat(' ', level);
-	    ++level;
-
-	    if (lineOpened())
-		System.err.println('\\');
-
-	    System.err.print(pidInfo(task) + " "
-			     + spaces + eventType + " ");
-	    System.err.print(eventName + "(");
-	    for (int i = 0; i < args.length; ++i) {
-		System.err.print(i > 0 ? ", " : "");
-		// Temporary hack to get proper formatting before
-		// something more sane lands.
-		if (args[i] instanceof Long)
-		    System.err.print("0x" + Long.toHexString(((Long)args[i]).longValue()));
-		else if (args[i] instanceof Integer)
-		    System.err.print("0x" + Integer.toHexString(((Integer)args[i]).intValue()));
-		else
-		    System.err.print(args[i]);
-	    }
-	    System.err.print(")");
-
-	    updateOpenLine(task, item);
-	}
-
-	private void eventLeave(Task task, Object item, String eventType,
-				String eventName, Object retVal)
-	{
-	    --level;
-
-	    if (!myLineOpened(task, item)) {
-		if (lineOpened())
-		    System.err.println();
-		String spaces = repeat(' ', level);
-		System.err.print(pidInfo(task) + " " + spaces + eventType + " " + eventName);
-	    }
-
-	    System.err.println(" = " + retVal);
-
-	    updateOpenLine(null, null);
-	}
-
-	private void eventSingle(Task task, String eventName)
-	{
-	    if (lineOpened())
-		System.err.println("\\");
-	    System.err.println(pidInfo(task) + " " + repeat(' ', level) + eventName);
-
-	    updateOpenLine(null, null);
-	}
-
-	private void generateStackTrace(Task task)
-	{
-	    eventSingle(task, "dumping stack trace:");
-
-	    Frame frame = StackFactory.createFrame(task);
-	    StackFactory.printStack(writer, frame);
-	    writer.flush();
-	    updateOpenLine(null, null);
-	}
 
 	public synchronized Action funcallEnter(Task task, Symbol symbol, Object[] args)
 	{
 	    String symbolName = symbol.name;
 	    String callerLibrary = symbol.getParent().getSoname();
 	    String eventName = callerLibrary + "->" + /*libraryName + ":" +*/ symbolName;
-	    eventEntry(task, symbol, "<CALL>", eventName, args);
+	    reporter.eventEntry(task, symbol, "call", eventName, args);
 
 	    // If this systsysem call is in the stack tracing HashSet,
 	    // get a stack trace before continuing on.
 	    if (symbolsStackTraceSet != null
 		&& symbolsStackTraceSet.contains(symbol))
-		generateStackTrace(task);
+		reporter.generateStackTrace(task);
 
 	    return Action.CONTINUE;
 	}
 
 	public synchronized Action funcallLeave(Task task, Symbol symbol, Object retVal)
 	{
-	    eventLeave(task, symbol, "<LEAVE>", symbol.name, retVal);
+	    reporter.eventLeave(task, symbol, "leave", symbol.name, retVal);
 	    return Action.CONTINUE;
 	}
 
 	public synchronized Action fileMapped(Task task, File file)
 	{
 	    if (traceMmapUnmap)
-		eventSingle(task, "<MAP> " + file);
+		reporter.eventSingle(task, "map " + file);
 	    return Action.CONTINUE;
 	}
 
 	public synchronized Action fileUnmapped(Task task, File file)
 	{
 	    if (traceMmapUnmap)
-		eventSingle(task, "<UNMAP> " + file);
+		reporter.eventSingle(task, "unmap " + file);
 	    return Action.CONTINUE;
 	}
 

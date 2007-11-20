@@ -1,5 +1,24 @@
 2007-11-20  Petr Machata  <pmachata@redhat.com>
 
+	* Reporter.java: New file.  Code moved over from internals of
+	Ftrace.MyFunctionObserver in Ftrace.java.
+	* Ftrace.java:
+	(Ftrace.reporter): New field.
+	(Ftrace.writer): Deleted.
+	(Ftrace.setWriter): Changed to update reporter instead of writer.
+	(Ftrace.init): dtto
+	(Ftrace.generateStackTrace): Deleted.
+	(Ftrace.handleTask): Create one syscall observer per task.
+	(Ftrace.MySyscallObserver): New class, code taken from
+	syscallObserver.  Changed to use reporter, syscallHandler
+	mechanism dumped for now.
+	(Ftrace.MyFunctionObserver): Most of the code moved over to new
+	Reporter class.  Uses reporter now.
+	* StracePrinter.java: Moved here from frysk.util package.
+	* SyscallHandler.java: The same.
+
+2007-11-20  Petr Machata  <pmachata@redhat.com>
+
 	* Ltrace.java
 	(Ltrace): Doesn't implement code and terminating observers
 	anymore.

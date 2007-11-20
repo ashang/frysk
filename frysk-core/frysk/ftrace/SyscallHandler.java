@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.util;
+package frysk.ftrace;
 import frysk.proc.Syscall;
 import frysk.proc.Task;
 

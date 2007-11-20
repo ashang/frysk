@@ -84,6 +84,11 @@
 	
 	* X8664LinuxElfCorefile.java: Fix typo; "eflags" -> "rflags".
 
+2007-11-20  Petr Machata  <pmachata@redhat.com>
+
+	* StracePrinter.java: Moved over to `ftrace' package.
+	* SyscallHandler.java: The same.
+
 2007-11-19  Petr Machata  <pmachata@redhat.com>
 	
 	* Ftrace.java: Moved over to `ftrace' package.

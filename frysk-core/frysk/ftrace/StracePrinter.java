@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.util;
+package frysk.ftrace;
 
 import inua.util.PrintWriter;
 
@@ -71,27 +71,25 @@ public class StracePrinter implements SyscallHandler
 		this.tracedCalls = tracedCalls;
 	}
 
-	/**
-	 * Called on system call enter and exit.
-	 */
-	public void handleEnter(Task task, Syscall syscall)
-	{	  
-	  if (tracedCalls == null || tracedCalls.contains(syscall.getName()))
-	    {
-	      writer.print(task.getProc().getPid() + "." + task.getTid() + " ");
-	      syscall.printCall(writer, task);
-	      writer.flush();
-	    }
+    /** Called on system call enter. */
+    public void handleEnter(Task task, Syscall syscall)
+    {
+	if (tracedCalls == null || tracedCalls.contains(syscall.getName())) {
+	    writer.print(task.getProc().getPid() + "." + task.getTid() + " ");
+	    syscall.printCall(writer, task);
+	    writer.flush();
 	}
-	
-	public void handleExit(Task task,Syscall syscall){
-	  if (tracedCalls == null || tracedCalls.contains(syscall.getName()))
-	    {
-	      writer.print(" " + task.getProc().getPid() + "." + task.getTid());
-	      syscall.printReturn(writer, task);
-	      writer.flush();
-	    }
+    }
+
+    /** Called on system call exit. */
+    public void handleExit(Task task, Syscall syscall)
+    {
+	if (tracedCalls == null || tracedCalls.contains(syscall.getName())) {
+	    writer.print(" " + task.getProc().getPid() + "." + task.getTid());
+	    syscall.printReturn(writer, task);
+	    writer.flush();
 	}
+    }
 }
 
 

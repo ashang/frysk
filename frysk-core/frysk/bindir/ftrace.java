@@ -57,14 +57,14 @@ import frysk.proc.ProcId;
 import frysk.proc.Task;
 
 import frysk.util.CommandlineParser;
-import frysk.util.StracePrinter;
 
+import frysk.ftrace.Ftrace;
 import frysk.ftrace.Ltrace;
 import frysk.ftrace.LtraceController;
 import frysk.ftrace.ObjectFile;
+import frysk.ftrace.StracePrinter;
 import frysk.ftrace.TracePoint;
 import frysk.ftrace.TracePointOrigin;
-import frysk.ftrace.Ftrace;
 
 import lib.dwfl.ElfSymbolVersion;
 
