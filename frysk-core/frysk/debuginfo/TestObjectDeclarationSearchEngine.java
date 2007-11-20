@@ -166,8 +166,14 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
 	assertTrue("Found the correct variable", variable.getLineNumber() == variableLine);
 	
 	//Negative test:
-	variable = (Variable) objectDeclarationSearchEngine.getVariable("NOT"+variableName);
-	assertNull("Bogus object was not found", variable);
+	try {
+	    variable = (Variable) objectDeclarationSearchEngine.getVariable("NOT"+variableName);
+	    assertTrue("Exception was thrown", false);
+	} catch (ObjectDeclaratioinNotFoundException e) {
+	    // exception was thrown
+	}
+	
+	
     }
 
 }

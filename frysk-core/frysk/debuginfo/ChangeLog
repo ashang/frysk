@@ -1,3 +1,10 @@
+2007-11-20  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ObjectDeclarationSearchEngine.java (getVariable): Now throws
+	ObjectDeclaratioinNotFoundException instead of returning null.
+	* TestObjectDeclarationSearchEngine.java (verifyVariable): Updated.
+	* ObjectDeclaratioinNotFoundException.java: New file.
+
 2007-11-19  Stan Cox  <scox@redhat.com>
 
 	* TypeEntry.java (getType): Remove setTypedefFIXME from STRUCTURE_TYPE_.
