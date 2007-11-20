@@ -1,0 +1,575 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+  <head>
+    <title>Frysk System Monitor / Debugger: Build</title>
+    <link rel="stylesheet" href="../frysk.css" type="text/css">
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+  </head>
+
+  <body>
+    <table cellspacing="2" cellpadding="2" border="0" width="100%">
+      <tr>
+        <td valign="bottom" height="80">
+          <img src="../frysklogo.png" alt="Frysk logo">
+        </td>
+        <td valign="bottom" class="topnavright" align="right">
+          <a href="../">Home</a>
+          &nbsp;|&nbsp;
+          <a href="../usecases/">Use Cases</a>
+          &nbsp;|&nbsp;
+          <a href="../workflow/">Work Flows</a>
+          &nbsp;|&nbsp;
+          <a href="../questions/">FAQ</a>
+          &nbsp;|&nbsp;
+          <a href="../getinvolved/">Get Involved</a>
+          &nbsp;|&nbsp;
+          <a href="../bugzilla/">Bugzilla</a>
+          &nbsp;|&nbsp;
+          Build
+          &nbsp;|&nbsp;
+          <a href="../blog/">Blog</a>
+          &nbsp;|&nbsp;
+          <a href="../documentation/">Documentation</a>
+        </td>
+      </tr>
+    </table>
+    <div class="mainbackground">
+      <div class="maintextregion">
+        <img src="../fryskcorner.gif" alt="triangle">
+        <table cellspacing="2" cellpadding="4" border="0" width="99%" style="margin-top:17px;">
+          <tr>
+            <td width="200" valign="top" align="left">
+	      &nbsp;
+	    </td>
+            <td valign="bottom">
+<!-- start title -->
+        <h1>Build and Test <em>frysk</em> From Source</h1>
+	      <!-- end title -->
+            </td>
+          </tr>
+          <tr>
+	    <td valign="top">
+	      <!-- start logo -->
+<p>
+<a href="#faq">Build or Test Question?</a><br>
+<a href="#git">Frysk and Git</a><br>
+<br>
+<a href="#f8">Fedora 8</a><br>
+<a href="#f7">Fedora 7</a><br>
+<a href="#fc6">Fedora Core 6</a><br>
+<a href="#ubuntu-gutsy">Ubuntu - Gutsy</a><br>
+<a href="#ubuntu-edgy">Ubuntu - Edgy</a><br>
+<a href="#ubuntu-breezy">Ubuntu - Breezy</a><br>
+<a href="#rhel5">RHEL 5</a><br>
+<a href="#rhel4">RHEL 4</a><br>
+<a href="#debian">Debian</a><br>
+</p>
+	      <!-- end logo -->
+	    </td>
+            <td valign="top">
+	      <!-- start text -->
+
+<p>This page provides guidelines for building <em>frysk</em>, checked
+out from Git, on a number of systems.</p>
+
+<h3>Set up your system's build environment</h3>
+
+<p>First you will need to set up your system's build environment so
+that all its prerequisites are met.</p>
+
+<dl>
+
+<dt><a name="f8">Fedora 8</a><br><a name="f7">Fedora
+7</a><br><a name="fc6">Fedora Core 6</a><br><a name="rhel5">RHEL
+5</a></dt>
+
+<dd>
+
+You will need to install the following:
+
+<pre>
+sudo yum install -y \
+    antlr jdom junit gcc-java gcc-c++ \
+    libglade-java-devel libvte-java-devel \
+    automake xmlto transfig eclipse-ecj dogtail \
+    sharutils git audit-libs-devel binutils-devel \
+    yelp libtool make
+</pre>
+
+For additional updates, check
+the <a href="/bugzilla/showdependencytree.cgi?id=4743">Fedora
+8</a>, <a href="/bugzilla/showdependencytree.cgi?id=3620">Fedora
+7</a>, <a href="/bugzilla/showdependencytree.cgi?id=2654">Fedora Core
+6</a>, or <a href="/bugzilla/showdependencytree.cgi?id=3385">RHEL
+5</a> tracker bug.
+
+</dd>
+
+<dt><a name="rhel4"></a>Red Hat Enterprise Linux 4</dt>
+
+<dd>
+
+Red Hat Enterprise Linux 4 Update 3 and later include <tt>gcc4</tt>
+and <tt><em>frysk</em></tt> RPMs that contain everything needed to
+build <em>frysk</em> from <tt>CVS</tt>; just install RPMs for the following:
+
+<pre>
+transfig xmlto passivetex xmltex \
+gcc4 gcc4-c++ gcc4-java libgcj4-devel \
+sharutils frysk automake ghostscript yelp
+</pre>
+
+(A broken dependency in transfig means that ghostscript must also be
+explicitly specified.)
+<p>For additional updates, check Red Hat Enterprise Linux 4's tracker
+bug's <a
+href="/bugzilla/showdependencytree.cgi?id=2004">dependency
+tree</a>.
+
+</dd>
+
+<dt><a name="ubuntu-gutsy">Ubuntu (Gutsy Gibbon)</a><br>
+<a name="debian">Debian</a></dt>
+
+<dd>
+
+You will need to install the following packages:
+
+<pre>
+g++ binutils-dev make gcj java-gcj-compat-dev \
+libglade-java-dev libvte-java-dev antlr libjdom1-java \
+automake libtool pkg-config autotools-dev libaudit-dev \
+sharutils transfig libxml2-utils xmlto gs-gpl yelp
+</pre>
+
+<p>
+
+For additional updates, check the
+<a href="/bugzilla/showdependencytree.cgi?id=4290">Debian</a> or
+<a href="/bugzilla/showdependencytree.cgi?id=1976">Ubuntu</a> tracker bug.
+
+</dd>
+
+<dt><a name="ubuntu-edgy">Ubuntu (Edgy Eft)</a></dt>
+
+<dd>
+
+Building <em>frysk</em> on this release is a big unknown, check the <a
+href="#ubuntu-breezy">Breeze Badger</a> notes for hints.
+
+<p>
+
+For additional updates, check Ubuntu' tracker bug's <a
+href="/bugzilla/showdependencytree.cgi?id=1976">dependency
+tree</a>.
+
+</dd>
+
+<dt><a name="ubuntu-breezy">Ubuntu (Breezy Badger)</a></dt>
+
+<dd>
+
+While it's a bit of a struggle, it is possible to build <em>frysk</em>
+on Ubuntu:
+
+<ul>
+
+<li><tt>gcc 4.0.1-4ubuntu9</tt> has a number of serious bugs. <br>
+Download, build, and install a snapshot of the RHEL-4 gcc4 compiler
+(found <a
+href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>).</li>
+
+<li>Make certain that <tt>automake-1.9</tt> is installed and selected
+as the default:
+<pre>
+$ sudo aptitude install automake1.9
+$ sudo update-alternatives --display automake
+$ sudo update-alternatives --set automake /usr/bin/automake-1.9
+</pre>
+</li>
+
+<li>Per <a
+href="http://java-gnome.sourceforge.net/cgi-bin/bin/view/Main/GetJavaGnome">Get
+Java Gnome</a>, append the line:
+<pre>
+http://www.natemccallum.com/uploads/debs/ ./
+</pre>
+to the file:
+<pre>
+/etc/apt/sources.list
+</pre>
+and then install the java-gnome stuff vis:
+<pre>
+$ sudo aptitude install libglade-java \
+libgtk-java libglade2-dev libvte-dev
+$ pkg-config --modversion gtk2-java
+2.8.1
+</pre>
+</li>
+
+<li><tt>jdom</tt> had problems building; there appears to be some
+missing .jar dependencies. <br> Grabbing the jdom out of the RHEL-4
+mega-rpm and building that worked.</li>
+
+<li>The libvte-java bindings are missing. <br> You can hack around
+this by disabling the code using vte (there isn't much)</li>
+
+</ul>
+
+For additional updates, check Ubuntu' tracker bug's <a
+href="/bugzilla/showdependencytree.cgi?id=1976">dependency
+tree</a>.
+
+</dd>
+
+</dl>
+
+<h3>Check out <em>frysk</em> from Git</h3>
+
+<p>Normally you would use:</p>
+
+<pre>
+$ git-clone git://sourceware.org/git/frysk.git
+</pre>
+
+<p>If you have Git write access to the Frysk repository then:</p>
+
+<pre>
+$ git-clone ssh://sourceware.org/git/frysk.git
+</pre>
+
+<h3>Configure and Build</h3>
+<dd>
+<li> On X86 or X86_64.
+<pre>
+$ ( mkdir build && cd build && ../frysk/autogen.sh && make -j2 )
+</pre>
+</li>
+
+<li> On a 32-bit-default 64-bit system, such as the PPC64, a 64-bit
+build environment needs to be passed to <tt>autoconf</tt>'s
+<tt>configure</tt> as command line arguments, letting
+<tt>configure</tt> save them as part of the configuration process.
+This is done by specifying them on <tt>autogen.sh</tt>'s command line,
+vis:
+
+<pre>
+$ ( mkdir build && cd build && ../frysk/autogen.sh \
+  PKG_CONFIG_PATH=/usr/lib64/pkgconfig \
+  CC='gcc -m64 -mminimal-toc' \
+  GCJ='gcj -m64 -mminimal-toc' \
+  GCJLINK='gcj -m64 -mminimal-toc' \
+  CXX='g++ -m64 -mminimal-toc' \
+  && make -j2 )
+</pre>
+<tt>configure</tt> then saves them as part of the configuration
+</li>
+</dd>
+
+<h3>Verify the build environment (optional)</h3>
+
+<p>Both the <tt>frysk-imports</tt> and <tt>frysk-gtk</tt> directories
+include tests to ensure that the build system (compiler, kernel, and
+libraries) are working correctly.  Any FAILing tests should be
+investigated (XFAIL and XPASS tests are OK).</p>
+
+<pre>
+$ ( cd build/frysk-imports/tests && make check )
+$ ( cd build/frysk-gtk/tests && make check )
+</pre>
+
+<h3>Build</h3>
+
+<dd><tt>$ ( cd build && make -j2 )</tt></dd>
+
+<h3>Test</h3>
+
+<p>On Fedora Core 5, there should be no failures.</p>
+
+<pre>
+$ ( cd build && make check )
+</pre>
+
+<h3>Run</h3>
+
+<p><em>frysk</em> can then either be run from the build tree ...</p>
+
+<pre>
+$ ./build/frysk-gui/frysk/gui/FryskGui
+</pre>
+
+<p>... or installed and run from there</p>
+
+<pre>
+$ ( cd build && sudo make install )
+$ frysk
+</pre>
+
+<a name="git"><h2>Frysk and Git</h2></a>
+<p>
+  <em>frysk</em> has switched to Git from CVS. See <a href="./git-fu.html">this page</a> for an introduction to <em>frysk</em> and Git.</p>
+
+<a name="faq"><h2>Developer Questions, such as building and testing
+frysk, and using <tt><a href="#faq-cvs">CVS</a></tt>; with
+answers</h2></a>
+
+<h3>Building and Testing Questions</h3>
+
+<dl>
+
+<dt>How do I add, rename, or delete a Java file?</dt> <dd> <ul>
+<li>Add, rename, or delete the file. <li>Run <tt>./bootstrap.sh</tt>
+</ul></dd>
+
+<dt>How do I build under eclipse?</dt> <dd> <ul>
+<li> Go to Window->Preferences...->General->Workspace->Linked Resources.
+<li> Create a new linked resource called "build" and link it to a directory
+where you want to build frysk.
+<li> Select Project->Build Project or Project->Clean to rebuild the project.
+<li> If you already have a build in that directory you can refresh your
+project and the jars will be found.
+</ul></dd>
+
+<dt>How do I add a Java program that should be installed into
+<tt>bin/</tt>?</dt> <dd> <ul> <li>in the <tt>frysk/pkgbindir/</tt>
+directory, create <tt>.java</tt> and <tt>.xml</tt> files named to
+match the installed binary</li> <li>run <tt>./bootstrap.sh</tt></li>
+</ul> For instance, the files <tt>frysk/pkgbindir/ftrace.java</tt> and
+<tt>frysk/pkgbindir/ftrace.xml</tt> are installed into <tt>bin/</tt>
+and <tt>share/man/</tt> respectively.</dd>
+
+<dt>How do I add a JUnit test-case?</dt> <dd>Following the JUnit
+convention: <ul> <li>create the test file named
+<tt>Test<em>BLAH</em>.java</tt></li> <li>add a test method with
+signature <tt>public void test<em>BLAH</em> ()</tt> for each test</li>
+<li>run <tt>./bootstrap.sh</tt></li> </ul></dd>
+
+<dt>Why do JUnit test-cases live in the same directory as the
+code?</dt> <dd>The JUnit documentation may discuss this, but anyway:
+<ul> <li>so that the test is in the same package as the code being
+tested giving fuller access to the packages methods and classes</li>
+<li>so that the tests are not missed or burried in a completly
+separate source tree</li> </ul> </dd>
+
+<dt>How do I do blah blah blah with <tt>TestRunner</tt> or
+<tt>funit</tt>?<dt> <dd>The command line options accepted by installed
+program <tt>funit</tt>, and described in <tt>funit</tt>'s man page,
+are also accepted by the build-tree program <tt>TestRunner</tt>.  For
+instance: <pre> TestRunner -console frysk=FINEST frysk.proc.TestClass </pre> runs just
+the tests from <tt>frysk.proc.TestClass</tt> with trace logging
+written to the screen.</dd> <dd> Also <pre> TestRunner frysk.proc.TestClass.testName 
+</pre> and <pre> TestRunner testName(frysk.proc.TestClass) </pre> will both 
+run specific tests.</dd>
+
+<dt>How do I refer to an external executable or data file in a
+test?<dt> <dd>Use:<dl>
+<dt><tt>frysk.junit.Paths.getExecPrefix()</tt></dt> <dd>Which will
+refer to either the installed <tt>lib{,64}/frysk/</tt> or build tree
+<tt>frysk/pkglibdir</tt></dd>
+<dt><tt>frysk.junit.Paths.getDataPrefix()</tt></dt> <dd>Which will
+refer to either the installed <tt>share/frysk/</tt> or build tree
+<tt>frysk/pkgdatadir</tt></dd> </dl> </dd>
+
+<dt>The tesets in the <tt>frysk-imports/tests/</tt> and
+<tt>frysk-gtk/tests/</tt> directories exercise bugs in components such
+as the kernel, GCJ and CLASSPATH, and Java-GNOME, and not
+<em>frysk</em>.  Why?</tt> <dd>Risk Management.</br>To ensure onging
+stability in the complex and emerging technologies on which
+<em>frysk</em> depends, the <em>frysk</em> build tree retains locally
+regression tests for bugs reported against those components.</dd>
+
+<dt>Are both <tt>gcj</tt> and <tt>ecj</tt> required when building
+<em>frysk</em>?  If so, why, or why not?</dt> <dd>A <em>frysk</em>
+build only requires and always uses <tt>gcj</tt> when compiling Java
+code.<br>In addition, to maintaining a high level of code quality, and
+ensure that the <tt>gcj</tt> is only presented with correct Java
+source, <em>frysk</em>'s build system lints its Java code base using
+<tt>ecj</tt> when that compiler is also available.<br>Note that
+<em>frysk</em>'s build system does not use <tt>ecj</tt> as the build
+compiler as that would result in a non-deterministic build - one that
+changes dependant on the presence or absence of <tt>ecj</tt>.</dd>
+
+<dt>How do I write accessible code that can be seen by dogtail?</dt>
+<dd>See this link: <a
+href=http://bugzilla.gnome.org/show_bug.cgi?id=356003>accessible
+tutorial</a></dd>
+
+<dt>Why are @libdir@ and @pkglibdir@ not permitted in man-pages?</dt>
+<dd>Because the path is not identical across 32-bit (e.g.,
+/usr/lib/frysk) and 64-bit (e.g., /usr/lib64/frysk) systems.  Instead
+manual pages explicitly refer to @pkglib32dir@ and/or
+@pkglib64dir@.</dd>
+
+<dt>Using valgrind to debug <em>frysk</em><dt> <dd>Rick writes.<br> As
+mentioned in our meeting today, valgrind can be used to help debug
+gcj-compiled code, but it helps if a "suppression file" is pointed to
+when activated to help filter out errors that are expected due to some
+garbage collection tricks.  Tom Tromey wrote an article on using
+valgrind and is located <a
+href="http://www.redhat.com/magazine/015jan06/features/valgrind/">here</a>.
+In this article, Tom points out <a
+href="http://gcc.gnu.org/wiki/Debugging%20tips%20for%20libgcj">this
+website</a> which has some useful information.  And <a
+href="http://vektor.ca/eclipse/gcj.supp ">this website</a> in turn
+points top a website that has the "suppression file" that should be
+used with valgrind.  If the suppression file is not used, the output
+from valgrind when used on gcj-generated code is several times larger
+and contains useless information.***NOTE*** The suppression file in
+the last link assumes libgcj.so.6.0.0 is being used.  If that file
+is to be used with the current version of libgcj all occurrences of
+"libgcj.so.6.0.0" must be changed to "libgcj.so.7.0.0" or else no
+suppression will take place.</dd>
+
+</dl>
+
+<a name="faq-cvs"><h3>CVS Questions, with Answers</h3></a>
+
+<dl>
+
+<p>This needs to be rewritten for Git.</p>
+
+<a name="How do I cut a branch?"><dt>How do I cut a branch?</dt></a>
+<dd>First choose a name for your branch, it should include both your
+user name, a terse hint as to the branches purpose, and todays date.
+For instance <tt>pmuldoon-fcore-20061101</tt>, or
+<tt>cagney-triage12345-20061122</tt>.  Two tags will be created,
+first one for the branch point, and second one for the branch:
+
+<pre>
+$ cvs -d:.. rtag BRANCH-branchpoint frysk
+$ cvs -d... rtag -r BRANCH-branchpoint -b BRANCH-branch frysk
+</pre>
+</dd>
+
+<dt>How do I do import a third-party (vendor) package into
+frysk-imports?</dt><dd>Lets say you want to import the thirds party
+sources for <tt>elfutils</tt> into <tt>frysk-imports/elfutils</tt>:
+
+<ul>
+
+<li>Obtain a pristine copy of the sources from the vendor
+(a.k.a. upstream).<br>Typically the official sources come as a tar
+ball, download and unpack them in a new directory.  For
+<tt>elfutils</tt>, since upstream is the source rpm, <tt>rpmbuild
+-bp</tt> on the source rpm is used.</li>
+
+<li>Change <b>into</b> the top-level directory of the pristine source
+tree.<br>For instance, for <tt>elfutils</tt> 0.125, that means
+changing into the directory <tt>elfutils-0.125</tt>, for instance:
+
+<pre>
+$ pwd
+.../elfutils-0.125
+</pre>
+</li>
+
+<li>Pick a vendor branch (VENDOR_TAG) and release tags
+(RELEASE_TAG).<br>Make certain that they are meaningful, for instance:
+
+<pre>
+$ VENDOR=elfutils
+$ VERSION=0.125
+$ VENDOR_TAG=ELFUTILS
+$ RELEASE_TAG=elfutils_0_125
+</pre>
+
+Note that the vendor and release tags can not contain periods.</li>
+
+<li>Perform the import using a command like:<br>
+<pre>
+$ cvs -d :ext:${USER}@sourceware.org:/cvs/frysk \
+    import -m "Import of ${VENDOR} version ${VERSION}" \
+    frysk-imports/${VENDOR} \
+    ${VENDOR_TAG} \
+    ${RELEASE_TAG}
+</pre>
+For instance:
+<pre>
+$ pwd
+..../elfutils-0.125
+$ cvs -d :ext:MYNAME@sourceware.org:/cvs/frysk \
+    import -m "Importing elfutils version 0.125" \
+    frysk-imports/elfutils \
+    ELFUTILS \
+    elfutils_0_125
+</pre>
+</ul>
+</dd>
+
+<dt>How do I update a third party package in frysk-imports?</dt>
+<dd>The steps are similar to the initial import above but with a few
+key differences.  Again <tt>elfutils</tt> is used as an example.
+
+<ul>
+
+<li>Checkout a copy of the current sources.</li>
+
+<li>Tag the current sources.<br>This is is so that, should things go
+wrong, it is possible to quickly get back to the pre-merge version.
+Use a tag like: <tt>pre-${RELEASE_TAG}-merge</tt>, for instance
+<tt>pre-elfutils_0_125-merge</tt>.</li>
+
+<li>Force a commit to the current sources.<br>Please note that this
+critical step is missing from the <tt>CVS</tt> documentation.  Without
+it, unmodified files will switch to the new import before you are
+ready.<br>Do this using a command like:
+
+<pre>
+$ cvs -f commit -f -R -m "Touching all ${VENDOR} files" frysk-imports/elfutils
+</pre>
+</li>
+
+<li>Obtain and unpack a pristine copy of the sources.<br>See
+above.</li>
+
+<li>Import the pristine copy of the sources onto the vendor
+branch.<br>See above.  Be sure to use the same VENDOR_TAG.</li>
+
+<li> Note that cvs will automatically add any new files to HEAD, immediately after a cvs import remove those new files until you are ready to merge. </li>
+
+<li>Check out a merged copy of the imported directory.<br>In a new
+directory, enter something like:
+<pre>
+$ cvs -d ... \
+    checkout -j ${OLD_RELEASE_TAG} -j ${NEW_RELEASE_TAG} \
+    frysk-imports/${VENDOR}
+</pre>
+For instance:
+<pre>
+$ cvs -d ... \
+    checkout -j elfutils_0_120 -j elfutils_0_125 \
+    frysk-imports/elfutils
+<pre>
+This will apply all changes between the old and new releases to the
+mainline.  Fix all clashes.
+</li>
+
+<li>Move the updated tree into a full cvs checkout and re-merge, and
+commit</li>
+
+<li>Re-tag with something like <tt>post-${RELEASE_TAG}-merge</tt>,
+e.g. <tt>post-elfutils_0_125-merge</tt>.
+
+</ul>
+</dd>
+
+
+</dl>
+              <!-- end text -->
+              <p>&nbsp;</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <table cellspacing="2" cellpadding="2" border="0" width="100%">
+      <tr>
+        <td align="center" class="footer">
+          <a href="http://sources.redhat.com">sources.redhat.com</a>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
