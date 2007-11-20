@@ -1,3 +1,7 @@
+2007-11-20  Stan Cox  <scox@redhat.com>
+
+	* CExprEvaluator.g:  Remove lib.dwfl.BaseTypes;
+
 2007-11-20  Teresa Thomas  <tthomas@redhat.com>
 	
 	* CExprEvaluator.g: Use word size of machine to

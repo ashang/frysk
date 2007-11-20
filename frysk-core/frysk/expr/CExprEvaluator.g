@@ -88,7 +88,6 @@ header
     import frysk.value.Value;
     import frysk.expr.ExprSymTab;
     import inua.eio.ByteOrder;
-    import lib.dwfl.BaseTypes;
 }
 
 class CExprEvaluator extends TreeParser;
