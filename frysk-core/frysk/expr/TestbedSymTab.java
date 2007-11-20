@@ -43,6 +43,8 @@ import java.util.Iterator;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.util.List;
+
+import frysk.Config;
 import frysk.value.ObjectDeclaration;
 import frysk.value.Type;
 import frysk.value.Value;
@@ -119,7 +121,9 @@ class TestbedSymTab implements ExprSymTab {
      * Return the wordsize.
      */
     public int getWordSize() {
-	throw new RuntimeException("no word size");
+        // Since no debugee word size available, return word size of 
+	// debugger. Required for some expression evaluation, test cases.
+	return Config.getWordSize ();
     }
 
     public void complete(String incomplete, List candidates) {

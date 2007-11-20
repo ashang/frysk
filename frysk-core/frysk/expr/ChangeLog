@@ -1,3 +1,10 @@
+2007-11-20  Teresa Thomas  <tthomas@redhat.com>
+	
+	* CExprEvaluator.g: Use word size of machine to
+	create long type.
+	* TestbedSymTab.java (getWordSize): Return machine
+	word size.	
+	
 2007-11-18  Andrew Cagney  <cagney@redhat.com>
 
 	* IncompleteMemberException.java: Update Type.complete renamed to

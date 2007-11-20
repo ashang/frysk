@@ -111,7 +111,7 @@ options {
         // FIXME: The ExprSymTab can provide types such as this.
         shortType = new SignedType("short", ByteOrder.LITTLE_ENDIAN, 2);
         intType = new SignedType("int", ByteOrder.LITTLE_ENDIAN, 4);
-        longType = new SignedType("long", ByteOrder.LITTLE_ENDIAN, 8);
+        longType = new SignedType("long", ByteOrder.LITTLE_ENDIAN, exprSymTab.getWordSize());
         floatType = new FloatingPointType("false", ByteOrder.LITTLE_ENDIAN, 4);
         doubleType = new FloatingPointType("double", ByteOrder.LITTLE_ENDIAN, 8);
     }
