@@ -155,10 +155,12 @@ class RunCommand extends ParameterizedCommand {
 		    cli.taskID = taskid.intValue();
 		}
 		cli.execCommand("run " + proc.getExe());
-		procSet.remove(proc);
 		synchronized(cli) {
 		    cli.taskID = -1;
 		}
+	    }
+	    synchronized (cli) {
+		cli.loadedProcs.clear();
 	    }
 	}
 	// Found no loaded procs, print usage message
