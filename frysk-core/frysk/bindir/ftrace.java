@@ -161,6 +161,15 @@ class MyController
 	return false;
     }
 
+    private boolean isInterpOf(ObjectFile objf, String exe)
+    {
+	java.io.File exefn = new java.io.File(exe);
+	ObjectFile exef = ObjectFile.buildFromFile(exefn);
+	java.io.File interpfn = exef.resolveInterp();
+	java.io.File objffn = objf.getFilename();
+	return objffn.equals(interpfn);
+    }
+
     public void applyTracingRules(final Task task, final ObjectFile objf, final Ltrace.Driver driver,
 				  final List rules, final TracePointOrigin origin)
 	throws lib.dwfl.ElfException
@@ -190,6 +199,8 @@ class MyController
 	    // MAIN is meta-soname meaning "main executable".
 	    if ((rule.sonamePattern.pattern().equals("MAIN")
 		 && task.getProc().getExe().equals(objf.getFilename().getPath()))
+		|| (rule.sonamePattern.pattern().equals("INTERP")
+		    && isInterpOf(objf, task.getProc().getExe()))
 		|| rule.sonamePattern.matcher(objf.getSoname()).matches())
 	    {
 		if (!candidatesInited) {

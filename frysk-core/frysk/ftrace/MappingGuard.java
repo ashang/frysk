@@ -258,17 +258,7 @@ class MappingGuard
 	    return null;
 	}
 
-	File interppath = new File(interp);
-	try {
-	    interppath = interppath.getCanonicalFile();
-	}
-	catch (java.io.IOException e) {
-	    logger.log(Level.WARNING,
-		       "Couldn't get canonical path of ELF interpreter `{0}'.",
-		       interppath);
-	    return null;
-	}
-
+	File interppath = objf.resolveInterp();
 	ObjectFile interpf = ObjectFile.buildFromFile(interppath);
 	TracePoint tp = null;
 	try {

@@ -72,6 +72,7 @@ public class ObjectFile
   private File filename;
   private String soname = null;
   private String interp = null;
+    private File resolvedInterp = null;
   private long baseAddress = 0;
   private long entryPoint = 0;
   private static HashMap cachedFiles = new HashMap();
@@ -525,6 +526,23 @@ public class ObjectFile
   {
       return this.interp;
   }
+
+    /** Find a canonical path to interpreter and answer that. */
+    public File resolveInterp()
+    {
+	if (this.resolvedInterp == null) {
+	    File interppath = new File(this.interp);
+	    try {
+		this.resolvedInterp = interppath.getCanonicalFile();
+	    }
+	    catch (java.io.IOException e) {
+		logger.log(Level.WARNING,
+			   "Couldn't get canonical path of ELF interpreter `{0}'.",
+			   interppath);
+	    }
+	}
+	return this.resolvedInterp;
+    }
 
   /**
    * Answer filename.

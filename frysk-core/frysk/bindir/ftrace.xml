@@ -186,8 +186,9 @@
     against a soname of a library in which we wish to track the call.
     If the library has no associated soname or it is a main
     executable, the match is done against the file name (without a
-    path).  Special soname is distinguished, "MAIN", which always
-    matches main executable.</para>
+    path).  Two special sonames are distinguished: "MAIN", which
+    always matches main executable; and "INTERP", which always matches
+    ELF interpreter of the main executable.</para>
 
     <para><replaceable>version</replaceable> component is matched
     against version associated with symbol.  If the symbol has no

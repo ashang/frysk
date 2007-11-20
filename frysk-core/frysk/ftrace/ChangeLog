@@ -1,5 +1,12 @@
 2007-11-20  Petr Machata  <pmachata@redhat.com>
 
+	* ObjectFile.java:
+	(resolvedInterp): New field.
+	(resolveInterp): New method, copied over from MappingGuard.java.
+	* MappingGuard.java (setupDebugStateObserver): Call resolveInterp.
+
+2007-11-20  Petr Machata  <pmachata@redhat.com>
+
 	* Reporter.java: New file.  Code moved over from internals of
 	Ftrace.MyFunctionObserver in Ftrace.java.
 	* Ftrace.java:

@@ -43,6 +43,12 @@
 
 2007-11-20  Petr Machata  <pmachata@redhat.com>
 
+	* ftrace.java: Patterns now recognize "INTERP" meta-soname.
+	(MyController.isInterpOf): New method.
+	* ftrace.xml: Documented the same.
+
+2007-11-20  Petr Machata  <pmachata@redhat.com>
+
 	* ftrace.java (fltrace.addOptions): Recognize -m and -S.
 
 	* Ftrace.java
