@@ -56,7 +56,7 @@ import java.util.regex.*;
 public class TestLtrace
     extends TestLib
 {
-    class DummyLtraceObserver implements LtraceObserver {
+    class DummyFunctionObserver implements FunctionObserver {
 	public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
 	    return Action.CONTINUE;
 	}
@@ -93,7 +93,7 @@ public class TestLtrace
 	int pid = proc.getPid();
 
 	MyController1 controller = new MyController1();
-	Ltrace.requestAddFunctionObserver(task, new DummyLtraceObserver(), controller);
+	Ltrace.requestAddFunctionObserver(task, new DummyFunctionObserver(), controller);
 	assertRunUntilStop("add function observer");
 
 	new StopEventLoopWhenProcRemoved(pid);
@@ -159,7 +159,7 @@ public class TestLtrace
       }
     }
 
-    class MyObserver extends DummyLtraceObserver {
+    class MyObserver extends DummyFunctionObserver {
       public ArrayList events = new ArrayList();
       public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
 	events.add("enter " + symbol.name);
@@ -248,7 +248,7 @@ public class TestLtrace
 	    }
 	}
 
-	class MyObserver3 extends DummyLtraceObserver {
+	class MyObserver3 extends DummyFunctionObserver {
 	    LinkedList expectedReturns = new LinkedList();
 	    public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
 		ExpectedEvent ee = (ExpectedEvent)expectedEvents.removeFirst();

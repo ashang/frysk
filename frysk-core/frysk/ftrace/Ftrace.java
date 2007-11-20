@@ -61,7 +61,6 @@ import inua.util.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Iterator;
@@ -206,7 +205,7 @@ public class Ftrace
     task.requestAddSyscallObserver(syscallObserver);
     task.requestAddForkedObserver(forkedObserver);
     if (ltraceController != null)
-	Ltrace.requestAddFunctionObserver(task, functionObserver, ltraceController);
+	Ltrace.requestAddFunctionObserver(task, new MyFunctionObserver(), ltraceController);
     Proc proc = task.getProc();
     // XXX: use forkObserver instead
 //    if (traceChildren)
@@ -392,13 +391,12 @@ public class Ftrace
     }
     */
 
-    class MyLtraceObserver
-	implements LtraceObserver//, LtraceControllerObserver
+    private class MyFunctionObserver
+	implements FunctionObserver//, LtraceControllerObserver
     {
 	//Where to send the output.
-	PrintWriter writer = new PrintWriter(System.out);
-
-	private Map levelMap = new HashMap();
+	private PrintWriter writer = new PrintWriter(System.out);
+	private int level = 0;
 
 	// Which symbols should yield a stack trace.
 	private HashSet symbolsStackTraceSet = new HashSet();
@@ -411,20 +409,6 @@ public class Ftrace
 
 	private Object lastItem = null;
 	private Task lastTask = null;
-
-	private int getLevel(Task task)
-	{
-	    int level = 0;
-	    Integer l = (Integer)levelMap.get(task);
-	    if (l != null)
-		level = l.intValue();
-	    return level;
-	}
-
-	private void setLevel(Task task, int level)
-	{
-	    levelMap.put(task, new Integer(level));
-	}
 
 	private boolean lineOpened()
 	{
@@ -458,9 +442,8 @@ public class Ftrace
 	private void eventEntry(Task task, Object item, String eventType,
 				String eventName, Object[] args)
 	{
-	    int level = this.getLevel(task);
 	    String spaces = repeat(' ', level);
-	    this.setLevel(task, ++level);
+	    ++level;
 
 	    if (lineOpened())
 		System.err.println('\\');
@@ -487,8 +470,7 @@ public class Ftrace
 	private void eventLeave(Task task, Object item, String eventType,
 				String eventName, Object retVal)
 	{
-	    int level = this.getLevel(task);
-	    this.setLevel(task, --level);
+	    --level;
 
 	    if (!myLineOpened(task, item)) {
 		if (lineOpened())
@@ -504,8 +486,6 @@ public class Ftrace
 
 	private void eventSingle(Task task, String eventName)
 	{
-	    int level = this.getLevel(task);
-
 	    if (lineOpened())
 		System.err.println("\\");
 	    System.err.println(pidInfo(task) + " " + repeat(' ', level) + eventName);
@@ -561,6 +541,4 @@ public class Ftrace
 	public void deletedFrom (Object observable) { }
 	public void addFailed (Object observable, Throwable w) { }
     }
-
-    MyLtraceObserver functionObserver = new MyLtraceObserver();
 }

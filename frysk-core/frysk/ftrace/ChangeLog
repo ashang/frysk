@@ -1,5 +1,10 @@
 2007-11-20  Petr Machata  <pmachata@redhat.com>
 
+	* LtraceObserver.java: renamed to FunctionObserver.java.
+	* Ftrace.java (MyFunctionObserver): create one per observed task.
+
+2007-11-20  Petr Machata  <pmachata@redhat.com>
+
 	* Ltrace.java(Ltrace.checkMapUnmapUpdates): Fix problem with
 	unmapping non-elf files.
 

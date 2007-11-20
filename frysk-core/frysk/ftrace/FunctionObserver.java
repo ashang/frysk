@@ -50,7 +50,7 @@ import java.io.File;
  *
  * XXX: Convert all Object[] arguments to Value[] or something.
  */
-public interface LtraceObserver
+public interface FunctionObserver
     extends frysk.proc.TaskObserver
 {
   /** The task has entered a function.  ARGS holds a vector of

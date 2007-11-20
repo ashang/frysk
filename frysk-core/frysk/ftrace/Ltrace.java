@@ -69,7 +69,7 @@ public class Ltrace
     private static final Map ltraceForTask = new HashMap();
 
     public static void requestAddFunctionObserver(Task task,
-						  LtraceObserver observer,
+						  FunctionObserver observer,
 						  LtraceController controller)
     {
 	Ltrace ltrace = (Ltrace)ltraceForTask.get(task);
@@ -81,7 +81,7 @@ public class Ltrace
 	ltrace.addObserver(observer);
     }
 
-    public static void requestDeleteFunctionObserver(Task task, LtraceObserver observer) {
+    public static void requestDeleteFunctionObserver(Task task, FunctionObserver observer) {
 	Ltrace ltrace = (Ltrace)ltraceForTask.get(task);
 	if (ltrace == null)
 	    observer.addFailed(task, new RuntimeException("This observer doesn't observe given task."));
@@ -112,8 +112,8 @@ public class Ltrace
     private final HashMap driversForTask = new HashMap();
 
     /** Function observers.
-	Map&lt;LtraceObserver, Integer&gt; */
-    private final HashMap ltraceObservers = new HashMap();
+	Map&lt;FunctionObserver, Integer&gt; */
+    private final HashMap observers = new HashMap();
 
     private boolean lowlevelObserversAdded = false;
     private boolean lowlevelObserversFailed = false;
@@ -144,14 +144,14 @@ public class Ltrace
     // ---------------------------
 
     private interface ObserverIterator {
-	Action action(LtraceObserver observer);
+	Action action(FunctionObserver observer);
     }
 
     private void eachObserver(ObserverIterator oit) {
-	for (Iterator it = ltraceObservers.entrySet().iterator(); it.hasNext();) {
+	for (Iterator it = observers.entrySet().iterator(); it.hasNext();) {
 	    HashMap.Entry entry = (HashMap.Entry)it.next();
 	    int v = ((Integer)entry.getValue()).intValue();
-	    LtraceObserver ob = (LtraceObserver)entry.getKey();
+	    FunctionObserver ob = (FunctionObserver)entry.getKey();
 	    for (int j = 0; j < v; ++j)
 		if (oit.action(ob) == Action.BLOCK)
 		    task.blockers.add(ob);
@@ -161,14 +161,14 @@ public class Ltrace
     /**
      * Add new observer.
      */
-    private synchronized void addObserver(LtraceObserver observer)
+    private synchronized void addObserver(FunctionObserver observer)
     {
-	Integer i = (Integer)ltraceObservers.get(observer);
+	Integer i = (Integer)observers.get(observer);
 	if (i == null)
 	    i = new Integer(1);
 	else
 	    i = new Integer(i.intValue() + 1);
-	ltraceObservers.put(observer, i);
+	observers.put(observer, i);
 
 	if (lowlevelObserversAdded)
 	    observer.addedTo(task);
@@ -179,16 +179,16 @@ public class Ltrace
     /**
      * Remove given observer.
      */
-    private synchronized boolean removeObserver(LtraceObserver observer) {
-	Integer i = (Integer)ltraceObservers.get(observer);
+    private synchronized boolean removeObserver(FunctionObserver observer) {
+	Integer i = (Integer)observers.get(observer);
 	if (i == null)
 	    throw new AssertionError("removed observer not found.");
 	int v = i.intValue();
 	v--;
 	if (v == 0)
-	    ltraceObservers.remove(observer);
+	    observers.remove(observer);
 	else
-	    ltraceObservers.put(observer, new Integer(v));
+	    observers.put(observer, new Integer(v));
 
 	// XXX: Probably too early for the last observer which was
 	// requestDeleted.
@@ -283,7 +283,7 @@ public class Ltrace
 		final Object[] args = arch.getCallArguments(task, enter.symbol);
 		final Symbol symbol = enter.symbol;
 		eachObserver(new ObserverIterator() {
-			public Action action(LtraceObserver o) {
+			public Action action(FunctionObserver o) {
 			    return o.funcallEnter(task, symbol, args);
 			}
 		    });
@@ -294,7 +294,7 @@ public class Ltrace
 		final Object ret = arch.getReturnValue(task, leave.symbol);
 		final Symbol symbol = leave.symbol;
 		eachObserver(new ObserverIterator() {
-			public Action action(LtraceObserver o) {
+			public Action action(FunctionObserver o) {
 			    return o.funcallLeave(task, symbol, ret);
 			}
 		    });
@@ -537,8 +537,8 @@ public class Ltrace
 	// should go away once ltrace becomes true observer), and let
 	// client define working set of this file.  Then implement the
 	// working set via updateMappedPart of each part in mapping.
-	for (Iterator it = ltraceObservers.keySet().iterator(); it.hasNext(); ) {
-	    LtraceObserver o = (LtraceObserver)it.next();
+	for (Iterator it = observers.keySet().iterator(); it.hasNext(); ) {
+	    FunctionObserver o = (FunctionObserver)it.next();
 	    o.fileMapped(task, mapping.path);
 	}
 
@@ -564,8 +564,8 @@ public class Ltrace
 
     private void updateUnmappedFile (Task task, MemoryMapping mapping)
     {
-	for (Iterator it = ltraceObservers.keySet().iterator(); it.hasNext(); ) {
-	    LtraceObserver o = (LtraceObserver)it.next();
+	for (Iterator it = observers.keySet().iterator(); it.hasNext(); ) {
+	    FunctionObserver o = (FunctionObserver)it.next();
 	    o.fileUnmapped(task, mapping.path);
 	}
 
@@ -597,7 +597,7 @@ public class Ltrace
     {
 	if (!lowlevelObserversAdded) {
 	    eachObserver(new ObserverIterator() {
-		    public Action action(LtraceObserver observer) {
+		    public Action action(FunctionObserver observer) {
 			observer.addedTo(observable);
 			return Action.CONTINUE;
 		    }
@@ -617,7 +617,7 @@ public class Ltrace
 	logger.log(Level.FINE, "lowlevel addFailed!");
 	if (!lowlevelObserversFailed) {
 	    eachObserver(new ObserverIterator() {
-		    public Action action(LtraceObserver observer) {
+		    public Action action(FunctionObserver observer) {
 			observer.addFailed(observable, w);
 			return Action.CONTINUE;
 		    }
