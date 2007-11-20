@@ -571,7 +571,11 @@ public class Ltrace
 
 	// This has to be non-null.
 	Map drivers = (Map)driversForTask.get(task);
+	// This can be null for non-elf files.  We don't care about
+	// these.
 	TracePointWorkingSet driver = (TracePointWorkingSet)drivers.get(mapping.path);
+	if (driver == null)
+	    return;
 
 	for (Iterator it = mapping.parts.iterator(); it.hasNext(); ) {
 	    MemoryMapping.Part part = (MemoryMapping.Part)it.next();

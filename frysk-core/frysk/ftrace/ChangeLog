@@ -1,3 +1,8 @@
+2007-11-20  Petr Machata  <pmachata@redhat.com>
+
+	* Ltrace.java(Ltrace.checkMapUnmapUpdates): Fix problem with
+	unmapping non-elf files.
+
 2007-11-19  Petr Machata  <pmachata@redhat.com>
 
 	* Ltrace.java:
