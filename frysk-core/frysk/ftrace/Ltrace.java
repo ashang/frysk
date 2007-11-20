@@ -544,10 +544,8 @@ public class Ltrace
     // --- Higher level observer interfaces ---
     // ----------------------------------------
 
-    // XXX: the synchronization will be ugly overkill with all the
-    // code observers being added and removed all the time.  Have to
-    // invent something a bit better.
-    // XXX: probably not necessary anymore.
+    // Synchronized in case frysk calls addedTo concurrently for
+    // several observers.
     public synchronized void addedTo (final Object observable)
     {
 	if (!lowlevelObserversAdded) {
@@ -567,7 +565,7 @@ public class Ltrace
 	// XXX: write this
     }
 
-    public synchronized void addFailed (final Object observable, final Throwable w)
+    public void addFailed (final Object observable, final Throwable w)
     {
 	logger.log(Level.FINE, "lowlevel addFailed!");
 	if (!lowlevelObserversFailed) {

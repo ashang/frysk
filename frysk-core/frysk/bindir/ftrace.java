@@ -360,13 +360,15 @@ class ftrace
                 }
             }
         });
+
         parser.add(new Option('c', "trace children as well") {
             public void parsed(String arg0) throws OptionException
             {
                 tracer.setTraceChildren();
             }
         });
-        parser.add(new Option("trace", 't', "syscalls to trace", "CALL[,CALL]...") {
+
+	parser.add(new Option("trace", 't', "syscalls to trace", "CALL[,CALL]...") {
             public void parsed(String arg) throws OptionException
             {
                 StringTokenizer st = new StringTokenizer(arg, ",");
@@ -381,7 +383,8 @@ class ftrace
                 }
             }
         });
-        parser.add(new Option('p', "pid to trace", "PID") {
+
+	parser.add(new Option('p', "pid to trace", "PID") {
             public void parsed(String arg) throws OptionException
             {
                 try {
@@ -395,6 +398,7 @@ class ftrace
                 }
             }
         });
+
         parser.add(new Option('s', "stack trace system calls", "CALL[,CALL]...") {
           public void parsed(String arg) throws OptionException
           {
@@ -410,16 +414,33 @@ class ftrace
             tracer.setSyscallStackTracing(set);
           }
         });
+
+        parser.add(new Option('S', "don't trace system calls") {
+          public void parsed(String arg) throws OptionException
+          {
+	      tracer.setDontTraceSyscalls();
+          }
+        });
+
+        parser.add(new Option('m', "print out when library is mapped or unmapped") {
+          public void parsed(String arg) throws OptionException
+          {
+	      tracer.setTraceMmaps();
+          }
+        });
+
 	parser.add(new Option("plt", "trace library calls done via PLT", "RULE[,RULE]...") {
 		public void parsed(String arg) {
 		    pltRules.add(arg);
 		}
 	});
+
 	parser.add(new Option("dyn", "trace entry points from DYNAMIC symtab", "RULE[,RULE]...") {
 		public void parsed(String arg) {
 		    dynRules.add(arg);
 		}
 	});
+
 	parser.add(new Option("sym", "trace entry points from symbol table", "RULE[,RULE]...") {
 		public void parsed(String arg) {
 		    symRules.add(arg);

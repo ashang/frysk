@@ -75,6 +75,12 @@ public class Ftrace
   // True if we're tracing children as well.
   boolean traceChildren = false;
 
+    // True if we're tracing syscalls.
+    boolean traceSyscalls = true;
+
+    // True if we're tracing mmaps/unmaps.
+    boolean traceMmapUnmap = false;
+
     // Non-null if we're using ltrace.
     LtraceController ltraceController = null;
 
@@ -94,21 +100,31 @@ public class Ftrace
 
   SyscallHandler exitHandler;
 
-  public void setTraceChildren ()
-  {
-    traceChildren = true;
-  }
+    public void setTraceChildren ()
+    {
+	traceChildren = true;
+    }
 
-  public void setTraceFunctions (LtraceController functionController)
-  {
-      if (functionController == null)
-	  throw new AssertionError("functonController != null");
+    public void setDontTraceSyscalls ()
+    {
+	traceSyscalls = false;
+    }
 
-      if (this.ltraceController == null)
-	  this.ltraceController = functionController;
-      else
-	  throw new AssertionError("LtraceController already assigned.");
-  }
+    public void setTraceMmaps ()
+    {
+	traceMmapUnmap = true;
+    }
+
+    public void setTraceFunctions (LtraceController functionController)
+    {
+	if (functionController == null)
+	    throw new AssertionError("functonController != null");
+
+	if (this.ltraceController == null)
+	    this.ltraceController = functionController;
+	else
+	    throw new AssertionError("LtraceController already assigned.");
+    }
 
   public void addTracePid (ProcId id)
   {
@@ -200,22 +216,56 @@ public class Ftrace
 	writer.flush();
     }
 
-  synchronized void handleTask (Task task)
-  {
-    task.requestAddSyscallObserver(syscallObserver);
-    task.requestAddForkedObserver(forkedObserver);
-    if (ltraceController != null)
-	Ltrace.requestAddFunctionObserver(task, new MyFunctionObserver(), ltraceController);
-    Proc proc = task.getProc();
-    // XXX: use forkObserver instead
-//    if (traceChildren)
-//      tracedParents.add(proc.getId());
-    Manager.host.observableProcRemovedXXX.addObserver(new ProcRemovedObserver(proc));
-    writer.println("Ftrace.main() Proc.getPid() " + proc.getPid());
-    writer.println("Ftrace.main() Proc.getExe() " + proc.getExe());
-    writer.flush();
-    ++numProcesses;
-  }
+    private HashMap observationCounters = new HashMap();
+
+    synchronized private void observationRequested(Task task) {
+	Integer i = (Integer)observationCounters.get(task);
+	if (i == null)
+	    i = new Integer(1);
+	else
+	    i = new Integer(i.intValue() + 1);
+	observationCounters.put(task, i);
+    }
+
+    synchronized private void observationRealized(Task task) {
+	Integer i = (Integer)observationCounters.get(task);
+	// must be non-null
+	int j = i.intValue();
+	if (j == 1) {
+	    // Store a dummy into the map to detect errors.
+	    observationCounters.put(task, new Object());
+	    task.requestUnblock(attachedObserver);
+	}
+	else
+	    observationCounters.put(task, new Integer(--j));
+    }
+
+    synchronized void handleTask (Task task)
+    {
+	if (traceSyscalls) {
+	    task.requestAddSyscallObserver(syscallObserver);
+	    observationRequested(task);
+	}
+
+	task.requestAddForkedObserver(forkedObserver);
+	observationRequested(task);
+
+	if (ltraceController != null) {
+	    Ltrace.requestAddFunctionObserver(task, new MyFunctionObserver(), ltraceController);
+	    observationRequested(task);
+	}
+
+	Proc proc = task.getProc();
+	// XXX: use forkObserver instead
+	//if (traceChildren)
+	//    tracedParents.add(proc.getId());
+
+	Manager.host.observableProcRemovedXXX.addObserver(new ProcRemovedObserver(proc));
+	writer.println("Ftrace.main() Proc.getPid() " + proc.getPid());
+	writer.println("Ftrace.main() Proc.getExe() " + proc.getExe());
+	writer.flush();
+	++numProcesses;
+    }
 
   ProcObserver.ProcTasks tasksObserver = new ProcObserver.ProcTasks()
   {
@@ -283,6 +333,12 @@ public class Ftrace
     public Action updateAttached (Task task)
     {
       addProc(task.getProc());
+
+      // To make sure all the observers are attached before the task
+      // continues, the attachedObserver blocks the task.  As each of
+      // the observers is addedTo, they call observationRealized.
+      // Task is unblocked when all requested observations are
+      // realized.
       return Action.BLOCK;
     }
 
@@ -337,7 +393,7 @@ public class Ftrace
     public void addedTo (Object observable)
     {
 	Task task = (Task) observable;
-	task.requestUnblock(attachedObserver);
+	observationRealized(task);
     }
 
     public void addFailed (Object observable, Throwable w)
@@ -378,6 +434,8 @@ public class Ftrace
 
     public void addedTo (Object observable)
     {
+	Task task = (Task) observable;
+	observationRealized(task);
     }
 
     public void deletedFrom (Object observable)
@@ -527,17 +585,22 @@ public class Ftrace
 
 	public synchronized Action fileMapped(Task task, File file)
 	{
-	    eventSingle(task, "<MAP> " + file);
+	    if (traceMmapUnmap)
+		eventSingle(task, "<MAP> " + file);
 	    return Action.CONTINUE;
 	}
 
 	public synchronized Action fileUnmapped(Task task, File file)
 	{
-	    eventSingle(task, "<UNMAP> " + file);
+	    if (traceMmapUnmap)
+		eventSingle(task, "<UNMAP> " + file);
 	    return Action.CONTINUE;
 	}
 
-	public void addedTo (Object observable) { }
+	public void addedTo (Object observable) {
+	    Task task = (Task) observable;
+	    observationRealized(task);
+	}
 	public void deletedFrom (Object observable) { }
 	public void addFailed (Object observable, Throwable w) { }
     }

@@ -41,6 +41,21 @@
 	param values.
 	(testBackTraceWithDashA): Ditto.
 
+2007-11-20  Petr Machata  <pmachata@redhat.com>
+
+	* ftrace.java (fltrace.addOptions): Recognize -m and -S.
+
+	* Ftrace.java
+	(traceSyscalls, traceMmapUnmap): New fields.
+	(setDontTraceSyscalls): New method.
+	(setTraceMmaps): New method.
+	(observationCounters): New field.
+	(observationRequested, observationRealized): New methods.
+	(handleTask): Rewritten to support new options.
+	(FunctionObserver.addedTo): call observationRealized.
+	(SyscallObserver.addedTo): call observationRealized.
+	(ForkedObserver.addedTo): call observationRealized.
+
 2007-11-19  Petr Machata  <pmachata@redhat.com>
 	
 	* fltrace.java: Deleted.
