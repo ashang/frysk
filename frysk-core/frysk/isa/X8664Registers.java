@@ -100,6 +100,46 @@ public class X8664Registers extends Registers {
     public static final Register SS
 	= new Register("ss", StandardTypes.INT16L_T);
 
+    public static final Register FS_BASE
+	= new Register("fs_base", StandardTypes.INT64L_T);
+    public static final Register GS_BASE
+	= new Register("gs_base", StandardTypes.INT64L_T);
+
+    // Multi-media registers.
+
+    public static final Register XMM0
+	= new Register("xmm0", StandardTypes.INT64L_T);
+    public static final Register XMM1
+	= new Register("xmm1", StandardTypes.INT64L_T);
+    public static final Register XMM2
+	= new Register("xmm2", StandardTypes.INT64L_T);
+    public static final Register XMM3
+	= new Register("xmm3", StandardTypes.INT64L_T);
+    public static final Register XMM4
+	= new Register("xmm4", StandardTypes.INT64L_T);
+    public static final Register XMM5
+	= new Register("xmm5", StandardTypes.INT64L_T);
+    public static final Register XMM6
+	= new Register("xmm6", StandardTypes.INT64L_T);
+    public static final Register XMM7
+	= new Register("xmm7", StandardTypes.INT64L_T);
+    public static final Register XMM8
+	= new Register("xmm8", StandardTypes.INT64L_T);
+    public static final Register XMM9
+	= new Register("xmm9", StandardTypes.INT64L_T);
+    public static final Register XMM10
+	= new Register("xmm10", StandardTypes.INT64L_T);
+    public static final Register XMM11
+	= new Register("xmm11", StandardTypes.INT64L_T);
+    public static final Register XMM12
+	= new Register("xmm12", StandardTypes.INT64L_T);
+    public static final Register XMM13
+	= new Register("xmm13", StandardTypes.INT64L_T);
+    public static final Register XMM14
+	= new Register("xmm14", StandardTypes.INT64L_T);
+    public static final Register XMM15
+	= new Register("xmm15", StandardTypes.INT64L_T);
+
     public static final Register DR0
 	= new Register("dr0", StandardTypes.INT32L_T);
     public static final Register DR1

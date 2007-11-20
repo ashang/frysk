@@ -1,7 +1,15 @@
+2007-11-20  Andrew Cagney  <cagney@redhat.com>
+
+	* X8664Registers.java (XMM0, XMM1, XMM2, XMM3, XMM4, XMM5)
+	(XMM6, XMM7, XMM8, XMM9, XMM10, XMM11, XMM12, XMM13, XMM14)
+	(XMM15, FS_BASE, GS_BASE): Define.
+
 2007-11-10  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
+	
         * PPC64Registers.java: Fixing Power64 registers and groups.
 
 2007-11-09  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
+	
         * Fixing Power32 ISA. Patching the registers and creating 
 	register group
 

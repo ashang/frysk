@@ -1,3 +1,8 @@
+2007-11-20  Andrew Cagney  <cagney@redhat.com>
+
+	* X86BankRegisters.java: Use X8664Registers.XMM0 et.al., ORIG_RAX,
+	RFLAGS, GS_BASE, FS_BASE.
+
 2007-11-15  Petr Machata  <pmachata@redhat.com>
 
 	* TestTaskObserverCode.java (testCodeOverFork): New test.
