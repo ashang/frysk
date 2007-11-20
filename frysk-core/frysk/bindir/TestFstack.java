@@ -115,7 +115,7 @@ public class TestFstack
 
     public void testBackTraceWithDashA () {
 	Expect e = fstack("funit-stack-outlined", new String[] { "-a" });
-	e.expect("\\#0 .* in third\\(int arg3 = 3\\)"
+	e.expect("\\#0 .* in third\\(int arg3\\)"
 		 + ".*" + Config.getRootSrcDir()
 		 + ".*" + "funit-stack-outlined" + "\\.c#" 
 		 + ".*int var3.*");
@@ -124,7 +124,7 @@ public class TestFstack
 
     public void testBackTraceWithDashC () {
 	Expect e = fstack("funit-stack-outlined", new String[] { "-c" });
-	e.expect("\\#0 .* in third\\(int arg3 = 3\\)"
+	e.expect("\\#0 .* in third\\(int arg3\\)"
 		 + ".*" + Config.getRootSrcDir()
 		 + ".*" + "funit-stack-outlined" + "\\.c#");
 	e.expect("\\#1");

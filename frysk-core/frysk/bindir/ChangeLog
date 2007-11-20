@@ -1,3 +1,9 @@
+2007-11-20  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFstack.java (testBackTraceWithDashC): Removed check for
+	param values.
+	(testBackTraceWithDashA): Ditto.
+
 2007-11-19  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestFhd.java (testHpdCore): Remove unresolved.

@@ -197,6 +197,8 @@ public class Scope
 	writer.println();
 	writer.print(indentString + " ");
 	variable.toPrint(writer, frame);
+	writer.print(" = ");
+	variable.printValue(writer, frame);
 	writer.print(" ");
 	variable.printLineCol(writer);
 	writer.flush();

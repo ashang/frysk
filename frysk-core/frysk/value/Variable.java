@@ -51,10 +51,6 @@ import frysk.debuginfo.TypeEntry;
 import frysk.debuginfo.ValueUavailableException;
 import frysk.debuginfo.VariableOptimizedOutException;
 import frysk.isa.ISA;
-import frysk.value.ObjectDeclaration;
-import frysk.value.Format;
-import frysk.value.Type;
-import frysk.value.Value;
 
 /**
  * This class contains the static information corresponding to a
@@ -109,7 +105,10 @@ public class Variable extends ObjectDeclaration{
 	type.toPrint(printWriter, 0);
 	printWriter.print(" ");
 	printWriter.print(this.getName());
-	printWriter.print(" = ");
+
+    }
+  
+    public void printValue(PrintWriter printWriter, DebugInfoFrame frame){
 	try {
 	    Value value = getValue(frame);
 	    value.toPrint(printWriter, frame.getTask().getMemory(),
@@ -122,7 +121,7 @@ public class Variable extends ObjectDeclaration{
 	    printWriter.print("< ERROR >");
 	}
     }
-  
+    
     public void printLineCol(PrintWriter printWriter) {
 	printWriter.print("line#");
 	try {

@@ -1,3 +1,8 @@
+2007-11-20  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Scope.java (toPrint): Added printing for variable
+	value.
+
 2007-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Composite.java (getType): New function.

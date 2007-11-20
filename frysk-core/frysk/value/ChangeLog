@@ -1,3 +1,9 @@
+2007-11-20  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Variable.java (toPrint): No longer prints variable values;
+	values must now be printed explicitly.
+	(printValue): Prints variable values.
+
 2007-11-19  Stan Cox  <scox@redhat.com>
 
 	* Type.java (isTypedef): Delete.
