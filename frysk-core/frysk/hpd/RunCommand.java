@@ -53,12 +53,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-class RunCommand extends Command {
+class RunCommand extends ParameterizedCommand {
     // Used to synchronize with updateAttached method
     RunCommand() {
 	super("run program and immediately attach",
-	      "run executable arguments*",
-	      "run program and immediately attach");
+	      "run <executable> <arguments*>",
+	      "The run command alllows the debuger to run a(any) program(s)"
+	      + " that has(have) been previously loaded via a load command"
+	      + " if no parameters are given. To run an executable, just"
+	      + " give the run command the path to the executable as a"
+	      + " parameter.  In either case the debugger attaches immediately"
+	      + " to the process.");
     }
 
     private static class Runner implements TaskObserver.Attached {
@@ -119,7 +124,7 @@ class RunCommand extends Command {
 
     }
 
-    public void interpret(CLI cli, Input cmd) {
+    public void interpret(CLI cli, Input cmd, Object options) {
 	/* If the run command is given no args, check to see if 
 	   any procs were loaded with the load command or loaded
 	   when fhpd was started */
@@ -174,7 +179,7 @@ class RunCommand extends Command {
 	runner.launchedTask.requestUnblock(runner);
     }
     
-    int complete(CLI cli, Input input, int cursor, List completions) {
+    int completer(CLI cli, Input input, int cursor, List completions) {
 	return CompletionFactory.completeFileName(cli, input, cursor,
 						  completions);
     }

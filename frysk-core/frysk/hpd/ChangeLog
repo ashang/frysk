@@ -1,5 +1,9 @@
 2007-11-19  Rick Moseley  <rmoseley@redhat.com>
 
+	* RunCommand.java: Fix bz# 5369; jazz up the help message.
+
+2007-11-19  Rick Moseley  <rmoseley@redhat.com>
+
 	* CLI.java: Fix bz #5351.
 	* RunCommand.java: Ditto.
 	* LoadCommand.java: Ditto.
