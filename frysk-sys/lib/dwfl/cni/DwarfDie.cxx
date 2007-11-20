@@ -47,7 +47,6 @@
 #include <java/util/ArrayList.h>
 
 #include "lib/dwfl/DwarfDie.h"
-#include "lib/dwfl/BaseTypes.h"
 #include "lib/dwfl/DwarfDieFactory.h"
 #include "lib/dwfl/DwarfException.h"
 #include "lib/dwfl/DwAttributeNotFoundException.h"
@@ -395,64 +394,6 @@ lib::dwfl::DwarfDie::get_original_die (jlong var_die)
     return (jlong)original_die;
   }
 
-  return 0;
-}
-
-jint
-lib::dwfl::DwarfDie::get_base_type (jlong var_die)
-{
-  Dwarf_Die *type_die = (Dwarf_Die*) var_die;
-  Dwarf_Attribute type_attr;
-  while (type_die && (dwarf_tag (type_die) == DW_TAG_volatile_type
-		      || (dwarf_tag (type_die) == DW_TAG_const_type)))
-    {
-      dwarf_attr_integrate (type_die, DW_AT_type, &type_attr);
-      dwarf_formref_die (&type_attr, type_die);
-    }
-  
-  if (dwarf_tag (type_die) == DW_TAG_base_type)
-    {
-      Dwarf_Word byte_size;
-      Dwarf_Word encoding;
-      Dwarf_Attribute type_attr;
-      if (dwarf_attr_integrate (type_die, DW_AT_byte_size, &type_attr))
-	dwarf_formudata (&type_attr, &byte_size);
-      else return 0;
-      if (dwarf_attr_integrate (type_die, DW_AT_encoding, &type_attr))
-	dwarf_formudata (&type_attr, &encoding);
-      switch (byte_size)
-	{
-	case 1:
-	  switch (encoding)
-	    {
-	    case DW_ATE_signed: return lib::dwfl::BaseTypes::baseTypeByte;
-	    case DW_ATE_unsigned: return lib::dwfl::BaseTypes::baseTypeUnsignedByte;
-	    case DW_ATE_signed_char: return lib::dwfl::BaseTypes::baseTypeChar;
-	    case DW_ATE_unsigned_char: return lib::dwfl::BaseTypes::baseTypeUnsignedChar;
-	    }
-	case 2:
-	  switch (encoding)
-	    {
-	    case DW_ATE_signed: return lib::dwfl::BaseTypes::baseTypeShort;
-	    case DW_ATE_unsigned: return lib::dwfl::BaseTypes::baseTypeUnsignedShort;
-	    case DW_ATE_unsigned_char: return lib::dwfl::BaseTypes::baseTypeUnicode;
-	    }
-	case 4:
-	  switch (encoding)
-	    {
-	    case DW_ATE_signed: return lib::dwfl::BaseTypes::baseTypeInteger;
-	    case DW_ATE_unsigned: return lib::dwfl::BaseTypes::baseTypeUnsignedInteger;
-	    case DW_ATE_float: return lib::dwfl::BaseTypes::baseTypeFloat;
-	    }
-	case 8:
-	  switch (encoding)
-	    {
-	    case DW_ATE_signed: return lib::dwfl::BaseTypes::baseTypeLong;
-	    case DW_ATE_unsigned: return lib::dwfl::BaseTypes::baseTypeUnsignedLong;
-	    case DW_ATE_float: return lib::dwfl::BaseTypes::baseTypeDouble;
-	    }
-	}
-    }
   return 0;
 }
 

@@ -1,3 +1,7 @@
+2007-11-20  Stan Cox  <scox@redhat.com>
+
+	* TypeEntry.java (getType): Remove reference to DwarfDie.getBaseType().
+
 2007-11-20  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ObjectDeclarationSearchEngine.java (getVariable): Now throws

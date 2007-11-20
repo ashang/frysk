@@ -1,3 +1,9 @@
+2007-11-20  Stan Cox  <scox@redhat.com>
+
+	* BaseTypes.java: Remove.
+	* DwarfDie.java (getBaseType): Remove.
+	* cni/DwarfDie.cxx (DwarfDie:::get_base_type): Remove
+
 2007-11-15  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
 
 	* DwAttributeNotFoundException.java: New file.

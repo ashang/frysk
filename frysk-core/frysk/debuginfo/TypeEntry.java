@@ -63,9 +63,9 @@ import inua.eio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import lib.dwfl.BaseTypes;
 import lib.dwfl.DwAccess;
 import lib.dwfl.DwAt;
+import lib.dwfl.DwAte;
 import lib.dwfl.DwAttributeNotFoundException;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
@@ -333,8 +333,8 @@ public class TypeEntry
 	case DwTag.ENUMERATION_TYPE_: {
 	    DwarfDie subrange = type.getChild();
 	    EnumType enumType = new EnumType(typeDie.getName(),
-					     byteorder, 
-					     type.getAttrConstant(DwAt.BYTE_SIZE));
+					     byteorder,
+					     getByteSize(type));
 	    while (subrange != null) {
 		enumType.addMember(subrange.getName(), subrange
 			.getAttrConstant(DwAt.CONST_VALUE));
@@ -351,48 +351,30 @@ public class TypeEntry
 	    returnType = new ConstType(getType(type.getType()));
 	    break;
 	}
-	case DwTag.BASE_TYPE_: {
-	    switch (type.getBaseType()) {
-	    case BaseTypes.baseTypeLong:
-	        returnType = new SignedType(type.getName(), byteorder, 8);
+	case DwTag.BASE_TYPE_:
+	    switch (type.getAttrConstant(DwAt.ENCODING)) {
+	    case DwAte.SIGNED_:
+		returnType = new SignedType(type.getName(), byteorder,
+					    getByteSize(type));
+	    	break;
+	    case DwAte.SIGNED_CHAR_:
+		returnType = new CharType(type.getName(), byteorder,
+					  getByteSize(type), true);
 		break;
-	    case BaseTypes.baseTypeUnsignedLong:
-		returnType = new UnsignedType(type.getName(), byteorder, 8);
+	    case DwAte.UNSIGNED_:
+		returnType = new UnsignedType(type.getName(), byteorder,
+					      getByteSize(type));
+	    	break;
+	    case DwAte.UNSIGNED_CHAR_: 
+		returnType = new CharType(type.getName(), byteorder,
+					  getByteSize(type), false);
 		break;
-	    case BaseTypes.baseTypeInteger:
-		returnType = new SignedType(type.getName(), byteorder, 4);
-		break;
-	    case BaseTypes.baseTypeUnsignedInteger:
-		returnType = new UnsignedType(type.getName(), byteorder, 4);
-		break;
-	    case BaseTypes.baseTypeShort:
-		returnType = new SignedType(type.getName(), byteorder, 2);
-		break;
-	    case BaseTypes.baseTypeUnsignedShort:
-		returnType = new UnsignedType(type.getName(), byteorder, 2);
-		break;
-	    case BaseTypes.baseTypeByte:
-		returnType = new SignedType(type.getName(), byteorder, 1);
-		break;
-	    case BaseTypes.baseTypeUnsignedByte:
-		returnType = new UnsignedType(type.getName(), byteorder, 1);
-		break;
-	    case BaseTypes.baseTypeChar:
-		returnType = new CharType(type.getName(), byteorder, 
-			type.getAttrConstant(DwAt.BYTE_SIZE), false);
-		break;
-	    case BaseTypes.baseTypeUnsignedChar:
-		returnType = new CharType(type.getName(), byteorder, 
-			type.getAttrConstant(DwAt.BYTE_SIZE), true);
-		break;
-	    case BaseTypes.baseTypeFloat:
-		returnType = StandardTypes.getFloatType(byteorder);
-		break;
-	    case BaseTypes.baseTypeDouble:
-		returnType = StandardTypes.getDoubleType(byteorder);
-		break;
+	    case DwAte.FLOAT_:
+		if (getByteSize(type) == 4)
+		    returnType = StandardTypes.getFloatType(byteorder);
+		else if (getByteSize(type) == 8)
+			 returnType = StandardTypes.getDoubleType(byteorder);
 	    }
-	}
 	}
 
 	if (returnType != null) {
@@ -402,5 +384,4 @@ public class TypeEntry
 	else
 	    return new UnknownType(typeDie.getName());
     }
-
 }

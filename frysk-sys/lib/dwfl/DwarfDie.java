@@ -226,13 +226,6 @@ abstract public class DwarfDie {
 	return die;
     }
 
-    /**
-     * @return the scalar type for this type die.
-     */
-    public int getBaseType() {
-	return get_base_type(this.getPointer());
-    }
-  
     public boolean getAttrBoolean(DwAt attr) {
 	return get_attr_boolean(this.getPointer(), attr.hashCode());
     }
@@ -325,25 +318,11 @@ abstract public class DwarfDie {
     }
     
     public String toString() {
-	String typeStr;
+	StringBuilder stringBuilder= new StringBuilder();
 	DwarfDie type = getUltimateType();
-	if (type == null)
-	    typeStr = "void";
-	else if (type.getBaseType() == BaseTypes.baseTypeLong)
-	    typeStr = "long";
-	else if (type.getBaseType() == BaseTypes.baseTypeInteger)
-	    typeStr = "int";
-	else if (type.getBaseType() == BaseTypes.baseTypeShort)
-	    typeStr = "short";
-	else if (type.getBaseType() == BaseTypes.baseTypeByte)
-	    typeStr = "short";
-	else if (type.getBaseType() == BaseTypes.baseTypeFloat)
-	    typeStr = "float";
-	else if (type.getBaseType() == BaseTypes.baseTypeDouble)
-	    typeStr = "double";
-	else
-	    typeStr = "";
-	return typeStr;
+	stringBuilder.append(this.getTag() + " Name: " + this.getName());
+	stringBuilder.append(" Type: " + type.toString());
+	return stringBuilder.toString();
     }
   
     public StringBuilder toPrint(){
@@ -436,8 +415,6 @@ abstract public class DwarfDie {
   
     private native long get_sibling (long addr);
   
-    private native int get_base_type (long addr);
-
     private native boolean get_attr_boolean (long addr, int attr);
   
     private native int get_attr_constant (long addr, int attr);
