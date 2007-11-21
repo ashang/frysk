@@ -78,8 +78,7 @@ public class LoadCommand extends ParameterizedCommand {
 
 	Host exeHost = new LinuxExeHost(Manager.eventLoop, executableFile);
 	Proc exeProc = frysk.util.Util.getProcFromExeFile(exeHost);
-	cli.setExeHost(exeHost);
-	cli.setExeProc(exeProc);
+	
 	int procID = cli.idManager.reserveProcID();
 
 	cli.idManager.manageProc(exeProc, procID);

@@ -1,5 +1,13 @@
 2007-11-20  Rick Moseley  <rmoseley@redhat.com>
 
+	* PeekCommand.java: Fix bz# 5380(make peek command
+	work with all types of Hosts).
+	* LoadCommand.java: Ditto.
+	* CLI.java; Ditto.
+	* TestLoadCommand.java: Ditto.
+
+2007-11-20  Rick Moseley  <rmoseley@redhat.com>
+
 	* RunCommand.java: Clear loadedProcs HashMap when done.
 	* TestLoadCommand.java: Add test for the above change.
 

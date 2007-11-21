@@ -55,7 +55,6 @@ import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.Host;
 import frysk.rt.ProcTaskIDManager;
 import frysk.stepping.SteppingEngine;
 import frysk.stepping.TaskStepEngine;
@@ -467,27 +466,5 @@ public class CLI {
             ptset = createSet(setString);
         }
         return ptset;
-    }
-    
-    /**
-     * Sets the LinuxExeHost for an executable file so we can access its memory
-     * via the "peek" command.
-     * 
-     */
-    Host exeHost;
-    
-    public void setExeHost (Host host) {
-	this.exeHost = host;
-    }
-    
-    /**
-     * Sets the LinuxExeProc for an executable file so we can access its memory
-     * via the "peek" command.
-     * 
-     */
-    Proc exeProc;
-    
-    public void setExeProc (Proc proc) {
-	this.exeProc = proc;
     }
 }

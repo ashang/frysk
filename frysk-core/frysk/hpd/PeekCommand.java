@@ -39,17 +39,14 @@
 
 package frysk.hpd;
 
-import java.io.PrintWriter;
 import inua.eio.ByteBuffer;
-import frysk.proc.Proc;
-import frysk.proc.ProcId;
 import frysk.proc.Task;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * PeekCommand handles the "peek memory-location" command on the fhpd
- * commandline.  This command is only used after a "load" command has
- * been issued.
+ * commandline.
  *
  */
 
@@ -57,40 +54,50 @@ public class PeekCommand extends ParameterizedCommand {
 
     PeekCommand() {
 	super("peek", "peek <memory-location>",
-	      "peek at an executable file's memory");
+	      "peek at a process' memory");
     }
 
     void interpret(CLI cli, Input cmd, Object options) {
-	final PrintWriter output = cli.getPrintWriter();
-	if (cmd.size() > 1 ) {
-	    throw new InvalidCommandException("Too many parameters");
+	if (cmd.size() > 1) {
+	    throw new InvalidCommandException("Too many parameters.");
 	}
-	if (cli.exeHost == null) {
-	    throw new InvalidCommandException("No executable loaded");
-	}
-	
-	Proc proc = cli.exeHost.getProc(new ProcId(0));
-	Task task = proc.getMainTask();
-	
-	ByteBuffer buffer = task.getMemory();
 
-	String memposition = cmd.parameter(0);
-	int radix = 10;
-	if (memposition.lastIndexOf("x") != -1) {
-	    radix = 16;
-	    memposition = memposition.substring(memposition.lastIndexOf("x") + 1);
-	    if (memposition.lastIndexOf("L") != -1)
-		memposition = memposition.substring(0, memposition.lastIndexOf("L"));
+	PTSet ptset = cli.getCommandPTSet(cmd);
+	Iterator taskIter = ptset.getTaskData();
+	while (taskIter.hasNext()) {
+	    TaskData taskData = (TaskData) taskIter.next();
+	    Task task = taskData.getTask();
+
+	    ByteBuffer buffer = task.getMemory();
+	    
+	    cli.outWriter.print("[");
+	    cli.outWriter.print(taskData.getParentID());
+	    cli.outWriter.print(".");
+	    cli.outWriter.print(taskData.getID());
+	    cli.outWriter.println("]");
+
+	    String memposition = cmd.parameter(0);
+	    int radix = 10;
+	    if (memposition.lastIndexOf("x") != -1) {
+		radix = 16;
+		memposition = memposition.substring(memposition
+			.lastIndexOf("x") + 1);
+		if (memposition.lastIndexOf("L") != -1)
+		    memposition = memposition.substring(0, memposition
+			    .lastIndexOf("L"));
+	    }
+
+	    try {
+		long value = Long.parseLong(memposition.trim(), radix);
+		buffer.position(value);
+		cli.outWriter.println("The value at " + memposition + " = "
+			+ buffer.getUByte());
+	    } catch (NumberFormatException nfe) {
+		cli.addMessage("NumberFormatException: " + 
+			nfe.getMessage(), Message.TYPE_ERROR);
+	    }
 	}
-	
-	try {
-	    long value = Long.parseLong(memposition.trim(), radix);
-	    buffer.position(value);
-	    output.println("The value at " + memposition + " = " + buffer.getUByte());
-	} catch (NumberFormatException nfe) {
-	    System.out.println("NumberFormatException: " + nfe.getMessage());
-	}
-	
+
     }
 
     int completer(CLI cli, Input input, int cursor, List completions) {
