@@ -170,11 +170,11 @@ $ git-clone git://sourceware.org/git/frysk.git
 $ git-clone ssh://sourceware.org/git/frysk.git
 </pre>
 
-<h3>Configure and Build</h3>
+<h3>Configure</h3>
 <dd>
 <li> On X86 or X86_64.
 <pre>
-$ ( mkdir build && cd build && ../frysk/autogen.sh && make -j2 )
+$ ( mkdir build && cd build && ../frysk/autogen.sh )
 </pre>
 </li>
 
@@ -191,11 +191,11 @@ $ ( mkdir build && cd build && ../frysk/autogen.sh \
   CC='gcc -m64 -mminimal-toc' \
   GCJ='gcj -m64 -mminimal-toc' \
   GCJLINK='gcj -m64 -mminimal-toc' \
-  CXX='g++ -m64 -mminimal-toc' \
-  && make -j2 )
+  CXX='g++ -m64 -mminimal-toc' )
 </pre>
-<tt>configure</tt> then saves them as part of the configuration
+
 </li>
+
 </dd>
 
 <h3>Verify the build environment (optional)</h3>
