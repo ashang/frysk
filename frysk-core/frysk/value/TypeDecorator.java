@@ -49,56 +49,56 @@ import inua.eio.ByteBuffer;
  */
 
 abstract class TypeDecorator extends Type {
-	private Type decorated;
-	TypeDecorator(String name, Type decorated) {
-		super(name, decorated.getSize());
-		this.decorated = decorated;
-	}
+    private Type decorated;
+    TypeDecorator(String name, Type decorated) {
+	super(name, decorated.getSize());
+	this.decorated = decorated;
+    }
 
-	public String toString() {
-		return ("{"
-				+ super.toString()
-				+ ",decorated=" + decorated.toString()
-				+ "}");
-	}
+    public String toString() {
+	return ("{"
+		+ super.toString()
+		+ ",decorated=" + decorated.toString()
+		+ "}");
+    }
 
-	public Type getUltimateType() {
-		return decorated.getUltimateType();
-	}
+    public Type getUltimateType() {
+	return decorated.getUltimateType();
+    }
 
-	public int getSize() {
-		return decorated.getSize();
-	}
+    public int getSize() {
+	return decorated.getSize();
+    }
 
-	void toPrint(PrintWriter writer, Location location,
-			ByteBuffer memory, Format format, int indent) {
-		decorated.toPrint(writer, location, memory, format, 0);
+    void toPrint(PrintWriter writer, Location location,
+	    ByteBuffer memory, Format format, int indent) {
+	decorated.toPrint(writer, location, memory, format, 0);
+    }
+    /**
+     * A guess; sub classes should override.
+     */
+    public void toPrint(PrintWriter writer, int indent) {
+	if (getUltimateType() instanceof PointerType) {
+	    decorated.toPrint(writer, 0);
+	    writer.print(" " + getName());
 	}
-	/**
-	 * A guess; sub classes should override.
-	 */
-	public void toPrint(PrintWriter writer, int indent) {
-	  if (getUltimateType() instanceof PointerType) {
- 	      decorated.toPrint(writer, 0);
- 	      writer.print(" " + getName());
- 	  }
- 	  else {
-	      writer.print(getName());
-	      writer.print(" ");
-	      decorated.toPrint(writer, 0);
-	  }
+	else {
+	    writer.print(getName());
+	    writer.print(" ");
+	    decorated.toPrint(writer, 0);
 	}
+    }
 
-	void assign(Location location, Value value) {
-		decorated.assign(location, value);
-	}
-	public Type pack(int bitSize, int bitOffset) {
-		return decorated.pack(bitSize, bitOffset);
-	}
-	public Value member(Value var1, String member) {
-		return decorated.member(var1, member);
-	} 
-	public Value index(Value var1, Value var2, ByteBuffer taskMem) {
-		return decorated.index(var1, var2, taskMem);
-	}       
+    void assign(Location location, Value value) {
+	decorated.assign(location, value);
+    }
+    public Type pack(int bitSize, int bitOffset) {
+	return decorated.pack(bitSize, bitOffset);
+    }
+    public Value member(Value var1, String member) {
+	return decorated.member(var1, member);
+    } 
+    public Value index(Value var1, Value var2, ByteBuffer taskMem) {
+	return decorated.index(var1, var2, taskMem);
+    }       
 }

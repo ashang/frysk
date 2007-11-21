@@ -146,17 +146,29 @@ public abstract class Type {
     public ArithmeticUnit getALU(int wordSize) {
 	throw new RuntimeException("Invalid Arithmetic Unit");
     }      
-
+    
+    /**
+     * Evaluates the address of a variable.
+     */
     public Value addressOf(Value var1, ByteOrder order, int wordSize) {
     	PointerType pType = new PointerType("AddressPtr", order, wordSize, this);
     	return pType.createValue(var1.getLocation().getAddress());
     }
+    /**
+     * Implements dereference operation for a pointer type.
+     */    
     public Value dereference(Value var1, ByteBuffer taskMem) {
     	throw new InvalidOperatorException(this, "*");
     }
+    /**
+     * Implements dot operation on a composite type.
+     */
     public Value member(Value var1, String member) {
     	throw new InvalidOperatorException(this, ".");
     } 
+    /**
+     * Implements subscript operation for a pointer or array type.
+     */
     public Value index(Value var1, Value var2, ByteBuffer taskMem) {
 	// In C, var1[var2] = var2[var1]
 	if (var2.getType() instanceof ArrayType || 
