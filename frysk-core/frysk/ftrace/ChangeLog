@@ -1,3 +1,8 @@
+2007-11-21  Petr Machata  <pmachata@redhat.com>
+
+	* Ftrace.java: Block on updateForkedOffspring to give
+	tasksObserver chance to pick the process up.
+
 2007-11-20  Petr Machata  <pmachata@redhat.com>
 
 	* ObjectFile.java:

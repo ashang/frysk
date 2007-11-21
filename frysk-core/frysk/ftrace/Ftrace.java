@@ -226,6 +226,8 @@ public class Ftrace
 
     synchronized void handleTask (Task task)
     {
+	Proc proc = task.getProc();
+
 	if (traceSyscalls) {
 	    task.requestAddSyscallObserver(new MySyscallObserver(reporter));
 	    observationRequested(task);
@@ -241,44 +243,36 @@ public class Ftrace
 	    observationRequested(task);
 	}
 
-	Proc proc = task.getProc();
-	// XXX: use forkObserver instead
-	//if (traceChildren)
-	//    tracedParents.add(proc.getId());
-
 	Manager.host.observableProcRemovedXXX.addObserver(new ProcRemovedObserver(proc));
 	reporter.eventSingle(task, "attached " + proc.getExe());
 	++numProcesses;
     }
 
-  ProcObserver.ProcTasks tasksObserver = new ProcObserver.ProcTasks()
-  {
-    public void existingTask (Task task)
+    ProcObserver.ProcTasks tasksObserver = new ProcObserver.ProcTasks()
     {
-      handleTask(task);
-    }
+	public void existingTask (Task task)
+	{
+	    handleTask(task);
 
-    public void taskAdded (Task task)
-    {
-      handleTask(task);
-    }
+	    if (task == task.getProc().getMainTask())
+		// Unblock forked observer, which blocks main task
+		// after the fork, to give us a chance to pick it up.
+		task.requestUnblock(forkedObserver);
+	}
 
-    public void taskRemoved (Task arg0)
-    {
-    }
+	public void taskAdded (Task task)
+	{
+	    handleTask(task);
+	}
 
-    public void addedTo (Object arg0)
-    {
-    }
+	public void taskRemoved (Task task)
+	{
+	}
 
-    public void addFailed (Object arg0, Throwable arg1)
-    {
-    }
-
-    public void deletedFrom (Object arg0)
-    {
-    }
-  };
+	public void addedTo (Object observable)	{}
+	public void addFailed (Object observable, Throwable arg1) {}
+	public void deletedFrom (Object observable) {}
+    };
 
   /**
    * An observer to stop the eventloop when the traced process exits.
@@ -407,38 +401,45 @@ public class Ftrace
 	public void deletedFrom (Object observable) { }
     }
 
-  TaskObserver.Forked forkedObserver = new Forked(){
-
-    public Action updateForkedOffspring (Task parent, Task offspring)
+    TaskObserver.Forked forkedObserver = new Forked()
     {
-      if(traceChildren){
-        addProc(offspring.getProc());
-        offspring.requestUnblock(this);
-        return Action.BLOCK;
-      }
+	public Action updateForkedOffspring (Task parent, Task offspring)
+	{
+	    if(traceChildren){
+		addProc(offspring.getProc());
 
-      return Action.CONTINUE;
-    }
+		if (offspring != offspring.getProc().getMainTask())
+		    // If this assertion doesn't hold, probably no
+		    // biggie, but you have to unblock the right tasks
+		    // in existingTask.
+		    throw new AssertionError("assert offspring == offspring.getProc().getMainTask()");
 
-    public Action updateForkedParent (Task parent, Task offspring)
-    {
-      return Action.CONTINUE;
-    }
+		// Will be unblocked when existingTask picks it up,
+		// otherwise we'd miss on events.
+		return Action.BLOCK;
+	    }
+	    return Action.CONTINUE;
+	}
 
-    public void addFailed (Object observable, Throwable w)
-    {
-    }
+	public Action updateForkedParent (Task parent, Task offspring)
+	{
+	    return Action.CONTINUE;
+	}
 
-    public void addedTo (Object observable)
-    {
-	Task task = (Task) observable;
-	observationRealized(task);
-    }
+	public void addFailed (Object observable, Throwable w)
+	{
+	}
 
-    public void deletedFrom (Object observable)
-    {
-    }
-  };
+	public void addedTo (Object observable)
+	{
+	    Task task = (Task) observable;
+	    observationRealized(task);
+	}
+
+	public void deletedFrom (Object observable)
+	{
+	}
+    };
 
     /*
     public static interface LtraceControllerObserver {

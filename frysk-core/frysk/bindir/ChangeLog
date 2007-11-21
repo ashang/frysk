@@ -35,6 +35,10 @@
 	* fstack.java (Stacker.Stacker): Added number-of-frames option
 	and handling.
 
+2007-11-21  Petr Machata  <pmachata@redhat.com>
+
+	* TestFtrace.java: Change pattern in fork test.
+
 2007-11-20  Sami Wagiaalla  <swagiaal@redhat.com>
 	
 	* TestFstack.java (testBackTraceWithDashC): Removed check for

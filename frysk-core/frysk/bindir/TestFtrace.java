@@ -103,12 +103,12 @@ public class TestFtrace
 				"-c",
 				""+task.getProc().getPid()
 			    });
-	expect.expect(""+task.getProc().getPid()+"."+ task.getTid() + " <SYSCALL> rt_sigsuspend ()");
+	expect.expect(""+task.getProc().getPid()+"."+ task.getTid() + " * syscall * rt_sigsuspend");
 	child.assertSendAddForkWaitForAcks();
 	expect.expect("rt_sigsuspend");
-	expect.expect("rt_sigsuspend");    
+	expect.expect("rt_sigsuspend");
     }
-    
+
     public void testFtraceHandlesPrcoessNotFound() {
 	expect = new Expect(new String[] {
 				Config.getBinFile("ftrace").getAbsolutePath(),
