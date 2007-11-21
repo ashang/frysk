@@ -100,6 +100,22 @@ public class TestArray extends TestCase {
     }
 
     /**
+     * Test slice operation for 1-d array.
+     */
+    public void testSlice() {
+	ArrayList dims = new ArrayList();
+	dims.add(new Integer(4 - 1));
+	ArrayType arrayType = new ArrayType(int4_t, buf.length , dims);
+	Value arr = new Value(arrayType, new ScratchLocation(buf));
+	Location l1 = new ScratchLocation(new byte[] { 1 });
+	Location l2 = new ScratchLocation(new byte[] { 3 });	
+	IntegerType t = new UnsignedType("type", ByteOrder.BIG_ENDIAN, 1);
+	Value idx1 = new Value(t, l1);
+	Value idx2 = new Value(t, l2);	
+	assertEquals("Array[idx1:idx2]", "{84281096,151653132,219025168}", arrayType.slice(arr, idx1, idx2, null).toPrint());	
+    }
+
+    /**
      * Test add operation for 1-d array.
      */
     public void testAdd() {

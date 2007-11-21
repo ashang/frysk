@@ -160,6 +160,45 @@ public class ArrayType
     }
 
     /**
+     * Slice returns a slice of an array. For example:
+     * SLICE[1:2] on {9, 8, 7, 6} returns {8, 7}
+     * SLICE[1:2] on { {11, 11}, {0, 0}, {9, 9} } returns { {0, 0}, {9, 9} }
+     * 
+     * Note: j should be greater than i.
+     */
+    public Value slice (Value v, Value i, Value j, ByteBuffer taskMem)
+    {     
+	int len = (int)(j.asLong() - i.asLong() + 1);
+	
+	// FIXME: Allow this case instead of throwing error?
+	if (len < 0) {
+	    throw new RuntimeException("Error: Index 1 should be less than Index 2");
+	}
+	
+	// Create a new dimensions list
+        ArrayList dims = new ArrayList();  
+        // Length of elements at 0th dimension changes.
+        // Rest remain same.
+        dims.add(new Integer(len-1));
+        for (int k=1; k<dimension.length; k++)
+            dims.add(new Integer(dimension[k]-1));        
+        
+        // Case of one dimensional array.
+        if (dimension.length == 1) {
+            ArrayType arrayType = new ArrayType(type, len * type.getSize(), dims);
+            return new Value(arrayType, v.getLocation().slice(i.asLong() * type.getSize(), 
+        	                                              arrayType.getSize())); 
+        }    
+        
+        // Case of multi dimensional array.
+        ArrayType arrayType = new ArrayType(type, dimension[dimension.length - 1] * len 
+        	                                  * type.getSize(), dims);
+        return new Value(arrayType, v.getLocation().slice(i.asLong() * arrayType.getSize(), 
+    	                                                  arrayType.getSize()));         
+        
+    }
+    
+    /**
      * Dereference operation on array type.
      */
     public Value dereference(Value var1, ByteBuffer taskMem) {

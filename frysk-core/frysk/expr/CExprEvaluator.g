@@ -132,7 +132,7 @@ identifier returns [String idSpelling=null]
     :   ident:IDENT  {idSpelling=ident.getText();} ;
 
 expr returns [Value returnVar=null] 
-{ Value v1, v2, log_expr; String s1; }
+{ Value v1, v2, v3, log_expr; String s1; }
     :   #(PLUS  v1=expr v2=expr)  {	
             returnVar = v1.getType().getALU(v2.getType(), 
                         exprSymTab.getWordSize())
@@ -382,7 +382,10 @@ expr returns [Value returnVar=null]
         }    
     |   #(INDEX v1=expr v2=expr) {
            returnVar = v1.getType().index(v1, v2, exprSymTab.taskMemory());
-        }                    
+        }      
+    |   #(SLICE v1=expr v2=expr v3=expr) {
+           returnVar = v1.getType().slice(v1, v2, v3, exprSymTab.taskMemory());
+        }                
     |   ident:IDENT  {
             returnVar = ((Value)exprSymTab.getValue(ident.getText()));
         }

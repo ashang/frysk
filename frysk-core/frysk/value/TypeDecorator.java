@@ -101,4 +101,7 @@ abstract class TypeDecorator extends Type {
     public Value index(Value var1, Value var2, ByteBuffer taskMem) {
 	return decorated.index(var1, var2, taskMem);
     }       
+    public Value slice(Value var1, Value var2, Value var3, ByteBuffer taskMem) {
+	return decorated.slice(var1, var2, var3, taskMem);
+    }       
 }

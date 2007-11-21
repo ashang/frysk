@@ -1,7 +1,13 @@
 2007-11-21  Teresa Thomas  <tthomas@redhat.com>
 
+	* ArrayType.java (slice): New.
+	* Type.java (slice): New.
+	* TypeDecorator.java (slice): New.		
+	* TestArray.java (testSlice): New test.
+
 	* Type.java: Comments added.
 	* TypeDecorator.java: Re-indent.
+	(slice): New.
 
 2007-11-20  Sami Wagiaalla  <swagiaal@redhat.com>
 

@@ -115,6 +115,7 @@ imaginaryTokenDefinitions
 	MEMBER
 	SIZEOF
 	INDEX
+	SLICE
     ;
 
 /** 
@@ -321,9 +322,12 @@ postfix_expression!
                                astPostExpr = #(#[MEMBER, "Member"],
                                                #astPostExpr, #id_expr2); }
             )
-         | LSQUARE arrExpr1:expressionList RSQUARE  
-	       { astPostExpr = #(#[INDEX, "Index"], #astPostExpr, #arrExpr1); 
-	       }	      
+         | LSQUARE arrExpr1:expressionList 
+           ( RSQUARE  { astPostExpr = #(#[INDEX, "Index"], 
+                                        #astPostExpr, #arrExpr1); }
+	   | COLON arrExpr2:expressionList RSQUARE { astPostExpr = #(#[SLICE, "Slice"], 
+	                                                             #astPostExpr, #arrExpr1, #arrExpr2); }
+	   )    
          | LPAREN! expressionList RPAREN!  
    	 | PLUSPLUS  
    	       { astPostExpr = #(PLUSPLUS, #astPostExpr); 

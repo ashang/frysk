@@ -1,3 +1,8 @@
+2007-11-21  Teresa Thomas  <tthomas@redhat.com>
+	
+	* CExprEvaluator.g (SLICE): New.
+	* CExpr.g: Add grammar for slice operation.	
+	
 2007-11-20  Stan Cox  <scox@redhat.com>
 
 	* CExprEvaluator.g:  Remove lib.dwfl.BaseTypes;

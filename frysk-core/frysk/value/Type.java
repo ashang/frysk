@@ -177,6 +177,14 @@ public abstract class Type {
     	throw new InvalidOperatorException(this, "[]");
     }  
     
+    /**
+     * Implements slice operation for a pointer or array type - slice
+     * the array from index I to index J.
+     */
+    public Value slice(Value var, Value i, Value j, ByteBuffer taskMem) {
+    	throw new InvalidOperatorException(this, "slice");	
+    }
+    
    /**
      * Assign VALUE to LOCATION; possibly performing type-conversion.
      */
