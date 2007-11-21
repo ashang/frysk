@@ -1,3 +1,10 @@
+2007-11-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFstack.java (testBackTraceWithDashN): New test.
+	(testBackTraceWithDashNDashA): New test.
+	* fstack.java (Stacker.Stacker): Added number-of-frames option
+	and handling.
+
 2007-11-20  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFstack.java (testBackTraceWithDashC): Removed check for

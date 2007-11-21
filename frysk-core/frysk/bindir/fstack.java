@@ -51,11 +51,11 @@ import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcCoreAction;
 import frysk.proc.ProcId;
 import frysk.util.CommandlineParser;
+import frysk.util.CoreExePair;
 import frysk.util.StacktraceAction;
 import frysk.util.Util;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
-import frysk.util.CoreExePair;
 
 public final class fstack
 {
@@ -67,6 +67,7 @@ public final class fstack
   
   private static PrintWriter printWriter = new PrintWriter(System.out);
   
+  static int numberOfFrames;
   static boolean virtualFrames = false;
   static boolean elfOnly = true;
   static boolean printParameters = false;
@@ -78,11 +79,11 @@ public final class fstack
   {
 
     Proc proc;
-    public Stacker (PrintWriter printWriter, Proc theProc, Event theEvent,boolean elfOnly, boolean virtualFrames,
+    public Stacker (PrintWriter printWriter, Proc theProc, Event theEvent,int numberOfFrames, boolean elfOnly, boolean virtualFrames,
                     boolean printParameters, boolean printScopes, 
                     boolean fullpath, boolean printSourceLibrary)
     {
-      super(printWriter, theProc, theEvent, elfOnly,virtualFrames, printParameters, printScopes, fullpath,printSourceLibrary);
+      super(printWriter, theProc, theEvent, numberOfFrames, elfOnly,virtualFrames, printParameters, printScopes, fullpath,printSourceLibrary);
       this.proc = theProc;
     }
 
@@ -141,7 +142,7 @@ public final class fstack
   {
       
     Proc proc = Util.getProcFromCoreExePair(coreExePair);
-    stacker = new Stacker(printWriter, proc, new PrintEvent(),elfOnly,virtualFrames,printParameters,printScopes, fullpath,printSourceLibrary);
+    stacker = new Stacker(printWriter, proc, new PrintEvent(), numberOfFrames, elfOnly,virtualFrames,printParameters,printScopes, fullpath,printSourceLibrary);
     new ProcCoreAction(proc, stacker);
     Manager.eventLoop.run();
   }
@@ -149,13 +150,14 @@ public final class fstack
   private static void stackPid (ProcId procId)
   {
     Proc proc = Util.getProcFromPid(procId);
-    stacker = new Stacker(printWriter, proc, new AbandonPrintEvent(proc),elfOnly,virtualFrames,printParameters,printScopes, fullpath,printSourceLibrary);
+    stacker = new Stacker(printWriter, proc, new AbandonPrintEvent(proc), numberOfFrames, elfOnly,virtualFrames,printParameters,printScopes, fullpath,printSourceLibrary);
     new ProcBlockAction(proc, stacker);
     Manager.eventLoop.run();
   }
   
   public static void main (String[] args)
   {
+
     parser = new CommandlineParser("fstack")
     {
       //@Override
@@ -168,12 +170,26 @@ public final class fstack
       //@Override
       public void parsePids (ProcId[] pids)
       {
+
         for (int i = 0; i < pids.length; i++)
           stackPid(pids[i]);
       }
       
-    };
-    
+      };
+
+      parser.add(new Option("number-of-frames", 'n', "number of frames to print. Use -n 0 or" +
+      		" -n all to print all frames.", "<number of frames>") {
+	  public void parsed(String arg) throws OptionException {
+	      if(arg.equals("all")){
+		  numberOfFrames = 0;
+	      }else{
+		  numberOfFrames = Integer.parseInt(arg);
+		  return;
+	      }
+	  }
+      });
+ 
+
     parser.add(new Option("all", 'a', "print all information that can currently be retrieved" +
                           "about the stack\n" +
                           "this is equivalent to -p functions,params,scopes,fullpath"){

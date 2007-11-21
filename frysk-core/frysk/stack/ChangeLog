@@ -1,3 +1,8 @@
+2007-11-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* StackFactory.java (printTaskStackTrace): Added number of
+	frames check.
+
 2007-11-19  Mark Wielaard  <mwielaard@redhat.com>
 
 	* LibunwindFrame.java (getAddress): Don't do a proc name lookup,

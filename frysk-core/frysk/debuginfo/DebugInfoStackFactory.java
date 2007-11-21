@@ -97,22 +97,22 @@ public class DebugInfoStackFactory {
 	return innermostFrame;
     }
 
-    public static final void printTaskStackTrace (PrintWriter printWriter, Task task, boolean printParameters, boolean printScopes, boolean fullpath)
+    public static final void printTaskStackTrace (PrintWriter printWriter, Task task, int numberOfFrames, boolean printParameters, boolean printScopes, boolean fullpath)
     {
       if (task != null){
         printWriter.println("Task #" + task.getTid());
         DebugInfoFrame frame = createDebugInfoStackTrace(task);
-        printStackTrace(printWriter, frame, 20, printParameters,printScopes,fullpath);
+        printStackTrace(printWriter, frame, numberOfFrames, printParameters,printScopes,fullpath);
       }
       printWriter.flush();
     }
 
-    public static final void printVirtualTaskStackTrace (PrintWriter printWriter, Task task, boolean printParameters, boolean printScopes, boolean fullpath)
+    public static final void printVirtualTaskStackTrace (PrintWriter printWriter, Task task, int numberOfFrames, boolean printParameters, boolean printScopes, boolean fullpath)
     {
       if (task != null){
         printWriter.println("Task #" + task.getTid());
         DebugInfoFrame frame = createVirtualStackTrace(task);
-        printStackTrace(printWriter,frame, 20, printParameters,printScopes,fullpath);
+        printStackTrace(printWriter,frame, numberOfFrames, printParameters,printScopes,fullpath);
       }
       printWriter.flush();
     }
@@ -124,6 +124,8 @@ public class DebugInfoStackFactory {
 				       boolean printScopes,
 				       boolean fullpath) {
         
+	System.out.println("DebugInfoStackFactory.printStackTrace() numberOfFrames " + numberOfFrames);
+	
         int count = 0;
         for (DebugInfoFrame frame = topFrame; frame != null;
 	     frame = frame.getOuterDebugInfoFrame()) {

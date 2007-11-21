@@ -1,3 +1,7 @@
+2007-11-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* StacktraceAction.java: Now passes numberOfFrames argument.
+
 2007-11-20  Andrew Cagney  <cagney@redhat.com>
 
 	* X8664LinuxElfCorefile.java: Fix typo; "eflags" -> "rflags".

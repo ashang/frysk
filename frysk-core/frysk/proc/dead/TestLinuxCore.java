@@ -39,34 +39,36 @@
 
 package frysk.proc.dead;
 
-import frysk.Config;
 import inua.eio.ByteBuffer;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import frysk.isa.IA32Registers;
-import frysk.proc.Action;
-import frysk.proc.Task;
-import frysk.proc.Proc;
-import frysk.proc.Host;
-import frysk.proc.Auxv;
-import frysk.testbed.DaemonBlockedAtSignal;
-import frysk.testbed.TestLib;
-import frysk.proc.ProcId;
-import frysk.proc.Manager;
-import frysk.proc.MemoryMap;
-import frysk.proc.TaskObserver;
-import frysk.util.CoredumpAction;
-import frysk.util.StacktraceAction;
+
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflModule;
+import lib.dwfl.SymbolBuilder;
+import frysk.Config;
+import frysk.dwfl.DwflCache;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
+import frysk.isa.IA32Registers;
+import frysk.proc.Action;
+import frysk.proc.Auxv;
+import frysk.proc.Host;
+import frysk.proc.Manager;
+import frysk.proc.MemoryMap;
+import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcCoreAction;
+import frysk.proc.ProcId;
+import frysk.proc.Task;
+import frysk.proc.TaskObserver;
+import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.LegacyOffspring;
-
-import lib.dwfl.*;
-import frysk.dwfl.*;
+import frysk.testbed.TestLib;
+import frysk.util.CoredumpAction;
+import frysk.util.StacktraceAction;
 
 public class TestLinuxCore
     extends TestLib
@@ -156,7 +158,7 @@ public class TestLinuxCore
     // Create a Stacktrace of the blocked live process
     liveStacktrace = new StacktraceAction(new PrintWriter(liveStackOutput),
 					  testProc, 
-					  new RequestStopEvent(Manager.eventLoop), 
+					  new RequestStopEvent(Manager.eventLoop),0, 
 					  true, false, false, false, false, false)
 
       {
@@ -187,7 +189,7 @@ public class TestLinuxCore
     // Create a stackktrace of a the corefile process
     coreStacktrace = new StacktraceAction(new PrintWriter(coreStackOutput),
 					  coreProc, 
-					  new PrintEvent(),
+					  new PrintEvent(),0,
 					  true, false, false, false , 
 					  false, false)
     {

@@ -1,3 +1,9 @@
+2007-11-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DebugInfoStackFactory.java (printTaskStackTrace): Added
+	numberOfFrames argument.
+	(printVirtualTaskStackTrace): Ditto.
+
 2007-11-20  Stan Cox  <scox@redhat.com>
 
 	* TypeEntry.java (getType): Remove reference to DwarfDie.getBaseType().

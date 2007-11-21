@@ -93,18 +93,18 @@ public class TestFStack
                         + "#[\\d]+ 0x[\\da-f]+ in server \\(\\).*\n"
                         + "#[\\d]+ 0x[\\da-f]+ in main \\(\\).*\n"
                         + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\).*\n"
-                        + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\).*\n";
+                        + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\).*\n\n";
 
     String thread = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
                     + "#[\\d]+ 0x[\\da-f]+ in server \\(\\).*\n"
                     + "#[\\d]+ 0x[\\da-f]+ in start_thread \\(\\).*\n"
-                    + "#[\\d]+ 0x[\\da-f]+ in (__)?clone \\(\\).*\n";
+                    + "#[\\d]+ 0x[\\da-f]+ in (__)?clone \\(\\).*\n\n";
 
     final Proc proc = ackProc.assertFindProcAndTasks();
 
     StacktraceAction stacker;
 
-    stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop), true, false,false, false, false,true)
+    stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop),20, true, false,false, false, false,true)
     {
 
       public void addFailed (Object observable, Throwable w)
@@ -145,7 +145,7 @@ public class TestFStack
         Proc proc = (Proc) iter.next();
         StacktraceAction stacker;
 
-        stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop), true, false,false, false, false,true)
+        stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop),20, true, false,false, false, false,true)
         {
 
           public void addFailed (Object observable, Throwable w)
