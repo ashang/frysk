@@ -77,6 +77,7 @@ public class Ftrace
 
     // Non-null if we're using ltrace.
     LtraceController ltraceController = null;
+    StackTracedSymbolsProvider stackTraceSetProvider = null;
 
   HashSet syscallStackTraceSet = null;
 
@@ -109,13 +110,18 @@ public class Ftrace
 	traceMmapUnmap = true;
     }
 
-    public void setTraceFunctions (LtraceController functionController)
+    public void setTraceFunctions (LtraceController functionController,
+				   StackTracedSymbolsProvider stackTraceSetProvider)
     {
-	if (functionController == null)
-	    throw new AssertionError("functonController != null");
+	if (functionController == null
+	    || stackTraceSetProvider == null)
+	    throw new AssertionError("functonController != null && stackTraceSetProvider != null");
 
-	if (this.ltraceController == null)
+	if (this.ltraceController == null
+	    && this.stackTraceSetProvider == null) {
 	    this.ltraceController = functionController;
+	    this.stackTraceSetProvider = stackTraceSetProvider;
+	}
 	else
 	    throw new AssertionError("LtraceController already assigned.");
     }
@@ -237,9 +243,9 @@ public class Ftrace
 	observationRequested(task);
 
 	if (ltraceController != null) {
-	    Ltrace.requestAddFunctionObserver(task,
-					      new MyFunctionObserver(reporter),
-					      ltraceController);
+	    MyFunctionObserver functionObserver
+		= new MyFunctionObserver(reporter, stackTraceSetProvider);
+	    Ltrace.requestAddFunctionObserver(task, functionObserver, ltraceController);
 	    observationRequested(task);
 	}
 
@@ -441,31 +447,21 @@ public class Ftrace
 	}
     };
 
-    /*
-    public static interface LtraceControllerObserver {
-	void shouldStackTraceOn(Set symbols);
+    public static interface StackTracedSymbolsProvider {
+	boolean shouldStackTraceOn(Symbol symbol);
     }
-    */
 
     private class MyFunctionObserver
-	implements FunctionObserver//, LtraceControllerObserver
+	implements FunctionObserver
     {
 	// Reporting tool.
 	private Reporter reporter;
+	private StackTracedSymbolsProvider stackTraceSetProvider;
 
-	MyFunctionObserver(Reporter reporter) {
+	MyFunctionObserver(Reporter reporter, StackTracedSymbolsProvider stackTraceSetProvider) {
 	    this.reporter = reporter;
+	    this.stackTraceSetProvider = stackTraceSetProvider;
 	}
-
-	// Which symbols should yield a stack trace.
-	private HashSet symbolsStackTraceSet = new HashSet();
-
-	/*
-	public synchronized void shouldStackTraceOn(Set symbols) {
-	    symbolsStackTraceSet.addAll(symbols);
-	}
-	*/
-
 
 	public synchronized Action funcallEnter(Task task, Symbol symbol, Object[] args)
 	{
@@ -476,8 +472,7 @@ public class Ftrace
 
 	    // If this systsysem call is in the stack tracing HashSet,
 	    // get a stack trace before continuing on.
-	    if (symbolsStackTraceSet != null
-		&& symbolsStackTraceSet.contains(symbol))
+	    if (stackTraceSetProvider.shouldStackTraceOn(symbol))
 		reporter.generateStackTrace(task);
 
 	    return Action.CONTINUE;

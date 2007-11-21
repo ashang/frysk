@@ -37,6 +37,14 @@
 
 2007-11-21  Petr Machata  <pmachata@redhat.com>
 
+	* ftrace.java
+	(MyController): renamed to MyLtraceController.  Now implements
+	Ftrace.StackTracedSymbolsProvider.
+	(MyLtraceController.symbolsStackTraceSet): New field.
+	(MyLtraceController.shouldStackTraceOn): New method.
+
+2007-11-21  Petr Machata  <pmachata@redhat.com>
+
 	* TestFtrace.java: Change pattern in fork test.
 
 2007-11-20  Sami Wagiaalla  <swagiaal@redhat.com>

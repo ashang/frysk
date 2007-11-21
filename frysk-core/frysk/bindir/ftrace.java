@@ -65,6 +65,7 @@ import frysk.ftrace.ObjectFile;
 import frysk.ftrace.StracePrinter;
 import frysk.ftrace.TracePoint;
 import frysk.ftrace.TracePointOrigin;
+import frysk.ftrace.Symbol;
 
 import lib.dwfl.ElfSymbolVersion;
 
@@ -103,8 +104,9 @@ class WorkingSetRule
     }
 }
 
-class MyController
-    implements LtraceController
+class MyLtraceController
+    implements LtraceController,
+	       Ftrace.StackTracedSymbolsProvider
 {
     protected static final Logger logger = Logger.getLogger("frysk");
 
@@ -112,12 +114,15 @@ class MyController
     private final List pltRules = new ArrayList();
     private final List dynRules = new ArrayList();
     private final List symRules = new ArrayList();
-    //private final Ftrace.LtraceControllerObserver observer;
 
-    public MyController(/*Ftrace.LtraceControllerObserver observer*/)
-    {
-	//this.observer = observer;
+    // Which symbols should yield a stack trace.
+    private HashSet symbolsStackTraceSet = new HashSet();
+
+    public boolean shouldStackTraceOn(Symbol symbol) {
+	return symbolsStackTraceSet.contains(symbol);
     }
+
+    public MyLtraceController() { }
 
     public void gotPltRules(List rules) {
 	logger.log(Level.FINER, "Got " + rules.size() + " PLT rules.");
@@ -253,14 +258,8 @@ class MyController
 	for (Iterator it = workingSet.iterator(); it.hasNext(); )
 	    driver.tracePoint(task, (TracePoint)it.next());
 
-	/*
-	// And warn our console front end that it should stack
-	// trace if it sees one of these...
-	HashSet stackTraceSymbols = new HashSet();
 	for (Iterator it = stackTraceSet.iterator(); it.hasNext(); )
-	    stackTraceSymbols.add(((TracePoint)it.next()).symbol);
-	observer.shouldStackTraceOn(stackTraceSymbols);
-	*/
+	    symbolsStackTraceSet.add(((TracePoint)it.next()).symbol);
     }
 
     public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver) {
@@ -294,7 +293,7 @@ class ftrace
     final List pltRules = new ArrayList();
     final List dynRules = new ArrayList();
     final List symRules = new ArrayList();
-    final MyController controller = new MyController();
+    final MyLtraceController controller = new MyLtraceController();
 
     Ftrace tracer = new Ftrace();
 
@@ -504,7 +503,7 @@ class ftrace
         tracer.setWriter(writer);
         tracer.setEnterHandler(printer);
         tracer.setExitHandler(printer);
-	tracer.setTraceFunctions(controller);
+	tracer.setTraceFunctions(controller, controller);
 
         if (commandAndArguments != null) {
             String[] cmd = (String[]) commandAndArguments.toArray(new String[0]);
