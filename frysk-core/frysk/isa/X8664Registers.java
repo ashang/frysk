@@ -141,21 +141,21 @@ public class X8664Registers extends Registers {
 	= new Register("xmm15", StandardTypes.INT64L_T);
 
     public static final Register DR0
-	= new Register("dr0", StandardTypes.INT32L_T);
+	= new Register("dr0", StandardTypes.INT64L_T);
     public static final Register DR1
-	= new Register("dr1", StandardTypes.INT32L_T);
+	= new Register("dr1", StandardTypes.INT64L_T);
     public static final Register DR2
-	= new Register("dr2", StandardTypes.INT32L_T);
+	= new Register("dr2", StandardTypes.INT64L_T);
     public static final Register DR3
-	= new Register("dr3", StandardTypes.INT32L_T);
+	= new Register("dr3", StandardTypes.INT64L_T);
     public static final Register DR4
-	= new Register("dr4", StandardTypes.INT32L_T);
+	= new Register("dr4", StandardTypes.INT64L_T);
     public static final Register DR5
-	= new Register("dr5", StandardTypes.INT32L_T);
+	= new Register("dr5", StandardTypes.INT64L_T);
     public static final Register DR6
-	= new Register("dr6", StandardTypes.INT32L_T);
+	= new Register("dr6", StandardTypes.INT64L_T);
     public static final Register DR7
-	= new Register("dr7", StandardTypes.INT32L_T);
+	= new Register("dr7", StandardTypes.INT64L_T);
 
     // Magic; on Linux contains EAX (or syscall number) at the start
     // of a system call.

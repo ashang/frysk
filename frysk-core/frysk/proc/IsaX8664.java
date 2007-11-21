@@ -124,11 +124,9 @@ public class IsaX8664 implements Isa
      * This resets the stepping flag.
      */
     public boolean isTaskStepped(Task task) {
-	// FIXME: There's a name screwup - d6 vs dr6.
-	BankRegister d6 = task.getRegisterBanks().getBankRegister("d6");
-	long value = d6.getFIXME(task);
+	long value = task.getRegister(X8664Registers.DR6);
 	boolean stepped = (value & 0x4000) != 0;
-	d6.putFIXME(task, value & ~0x4000);
+	task.setRegister(X8664Registers.DR6, value & ~0x4000);
 	return stepped;
     }
 

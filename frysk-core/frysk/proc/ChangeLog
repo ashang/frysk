@@ -1,3 +1,8 @@
+2007-11-21  Andrew Cagney  <cagney@redhat.com>
+
+	* IsaX8664.java: Use X8664Registers.DR6 instead of "d6".
+	* X86BankRegisters.java: Use X8664Registers.DR0 .. DR7.
+
 2007-11-20  Andrew Cagney  <cagney@redhat.com>
 
 	* X86BankRegisters.java: Use X8664Registers.XMM0 et.al., ORIG_RAX,
