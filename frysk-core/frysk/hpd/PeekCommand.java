@@ -58,6 +58,9 @@ public class PeekCommand extends ParameterizedCommand {
     }
 
     void interpret(CLI cli, Input cmd, Object options) {
+        if (cmd.size() < 1)
+	    throw new InvalidCommandException("Not enough "
+                + "parameters. Please specify an addess to peek at.");
 	if (cmd.size() > 1) {
 	    throw new InvalidCommandException("Too many parameters.");
 	}

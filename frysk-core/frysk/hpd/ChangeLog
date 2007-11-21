@@ -1,3 +1,7 @@
+2007-11-21  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* PeekCommand.java (interpret): Check that arguments are > 0.
+	
 2007-11-20  Rick Moseley  <rmoseley@redhat.com>
 
 	* PeekCommand.java: Fix bz# 5380(make peek command
