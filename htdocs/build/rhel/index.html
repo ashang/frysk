@@ -111,8 +111,9 @@ git-core
 To configure <em>frysk</em> use:
 
 <pre>
-( mkdir build && cd build && ../frysk/configure \
-     PKG_CONFIG_PATH=/usr/lib/frysk/pkgconfig:/usr/lib/pkgconfig )
+$ ( mkdir build && cd build && ../frysk/configure \
+     PKG_CONFIG_PATH=/usr/lib/frysk/pkgconfig:/usr/lib/pkgconfig \
+     GLADE_DTD_FILE=/usr/share/frysk/xml/libglade/glade-2.0.dtd )
 </pre>
 
 For additional updates, check Red Hat Enterprise Linux 4's tracker

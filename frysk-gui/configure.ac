@@ -64,7 +64,12 @@ AC_SUBST([CONFIG_STATUS_DEPENDENCIES], [$FRYSK_GUI_JARS])
 
 # Grab the libglade prefix at config time, used to find the .xml
 # definitions for glade.
+
 FRYSK_PKG_MODULE_VARIABLE(LIBGLADE_PREFIX, prefix, [libglade-2.0])
+AC_MSG_CHECKING([GLADE_DTD_FILE])
+GLADE_DTD_FILE="file://${LIBGLADE_PREFIX}/share/xml/libglade/glade-2.0.dtd"
+AC_MSG_RESULT(${GLADE_DTD_FILE})
+AC_SUBST(GLADE_DTD_FILE)
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

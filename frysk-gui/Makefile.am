@@ -138,7 +138,7 @@ checked-glade-xml-with-xmllint: $(glade_DATA) glade.catalog
 	done
 	touch $@
 CLEANFILES += glade.catalog
-GLADE_DTD_FILE = file://$(LIBGLADE_PREFIX)/share/xml/libglade/glade-2.0.dtd 
+GLADE_DTD_FILE = @GLADE_DTD_FILE@
 glade.catalog:
 	rm -f $@.tmp
 	$(XMLCATALOG) --noout -v --create $@.tmp
