@@ -133,6 +133,7 @@ class Reporter
 			 + spaces + eventType
 			 + " " + eventName);
 	printArgs(args);
+	writer.flush();
 
 	updateOpenLine(task, item);
     }
@@ -151,6 +152,7 @@ class Reporter
 	}
 
 	writer.println(" = " + retVal);
+	writer.flush();
 
 	updateOpenLine(null, null);
     }
@@ -169,6 +171,7 @@ class Reporter
 
 	if (args != null)
 	    printArgs(args);
+	writer.flush();
 
 	updateOpenLine(null, null);
     }
