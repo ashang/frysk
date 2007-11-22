@@ -90,17 +90,30 @@ and <tt><em>frysk</em></tt> RPMs that contain everything needed to
 build <em>frysk</em> from <tt>CVS</tt>; just install RPMs for the following:
 
 <pre>
-transfig xmlto passivetex xmltex \
-gcc4 gcc4-c++ gcc4-java libgcj4-devel \
-sharutils frysk automake ghostscript yelp
+up2date make transfig \
+    gcc4 gcc4-c++ gcc4-java libgcj4-devel \
+    autoconf automake \
+    xmlto prelink sharutils audit-libs-devel gawk \
+    frysk pkgconfig ghostscript yelp
 </pre>
 
 <p>
 
-(A broken dependency in transfig means that ghostscript must also be
-explicitly specified.)
+in addition, the following rpms can be obtained from the <a
+href="http://fedoraproject.org/wiki/EPEL">EPEL</a> repository:
+
+<pre>
+git-core
+</pre>
 
 <p>
+
+To configure <em>frysk</em> use:
+
+<pre>
+( mkdir build && cd build && ../frysk/configure \
+     PKG_CONFIG_PATH=/usr/lib/frysk/pkgconfig:/usr/lib/pkgconfig )
+</pre>
 
 For additional updates, check Red Hat Enterprise Linux 4's tracker
 bug's <a href="/bugzilla/showdependencytree.cgi?id=2004">dependency
