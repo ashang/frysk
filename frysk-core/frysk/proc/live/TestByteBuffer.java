@@ -58,12 +58,13 @@ public class TestByteBuffer
     private ByteBuffer[] addressBuffers;
     private ByteBuffer[] registerBuffers;
 
+    private ByteBuffer memorySpaceByteBuffer;
+
     public void setUp () throws Exception
     {
       int pid;
       ByteBuffer addressSpaceByteBufferText;
       ByteBuffer addressSpaceByteBufferData;
-      ByteBuffer memorySpaceByteBuffer;
       ByteBuffer usrByteBuffer;
       ByteBuffer registerByteBuffer;
       ByteBuffer fpregisterByteBuffer;
@@ -264,6 +265,11 @@ public class TestByteBuffer
 	    origBytes[j] = registerBuffers[i].get(addr + j);
 	  verifyPeeks(registerBuffers[i], addr, origBytes);
 	}
+    }
+
+    public void testMemoryBufferCapacity()
+    {
+	assertEquals("Memory Buffer Capacity: ", -1L, memorySpaceByteBuffer.capacity());
     }
     private class AsyncPeeks
 	implements Runnable
