@@ -180,8 +180,8 @@ public class PPC64Registers extends Registers {
 	= new Register("ctr", StandardTypes.INT64B_T);
     public static final Register ARG
 	= new Register("arg", StandardTypes.INT64B_T);
-    public static final Register CR
-	= new Register("cr", StandardTypes.INT64B_T);
+    public static final Register CCR
+	= new Register("ccr", StandardTypes.INT64B_T);
     public static final Register XER
 	= new Register("xer", StandardTypes.INT64B_T);
 
@@ -218,7 +218,7 @@ public class PPC64Registers extends Registers {
 
     public static final RegisterGroup SPECIAL
         = new RegisterGroup("special",
-                  new Register[] { LR, CTR, ARG, CR, XER, 
+                  new Register[] { LR, CTR, ARG, CCR, XER, 
                                    VRSAVE, VSCR, SPEACC, SPEFSCR, 
                                    FRP, NIP });
 

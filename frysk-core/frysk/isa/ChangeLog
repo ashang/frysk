@@ -1,3 +1,10 @@
+2007-11-20  Jose Flavio Aguilar Paulino <jflavio@br.ibm>
+	
+	* PPC64Registers.java: Renaming CR register to CCR, 
+	to be compliant with PPC32.
+
+	* PPC32Registers.java: Add ARG register as in PTRACE (orig_r3).
+
 2007-11-20  Andrew Cagney  <cagney@redhat.com>
 
 	* X8664Registers.java (XMM0, XMM1, XMM2, XMM3, XMM4, XMM5)
