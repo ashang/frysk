@@ -139,8 +139,7 @@ public class TestFstack
     }
 
     public void testBackTraceWithDashN () {
-	if (unresolved(5395))
-	    return;
+	
 	Expect e = fstack("funit-long-stack", new String[]{"-n","5"});
 	e.expect("\\#0 .*crash[^\\r\\n]*");
 	e.expect("\\#1 .*first[^\\r\\n]*");
@@ -165,8 +164,7 @@ public class TestFstack
     }
     
     public void testBackTraceWithDashNDashA () {
-	if (unresolved(5394))
-	    return;
+	
 	Expect e = fstack("funit-long-stack", new String[]{"-n","5", "-a"});
 	e.expect("\\#0 .*crash[^\\r\\n]*");
 	e.expect("\\#1 .*first[^\\r\\n]*");
