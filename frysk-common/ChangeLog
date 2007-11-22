@@ -1,5 +1,7 @@
 2007-11-22  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (.g.antlred): Fix typo disabling ECJ.
+	
 	* Makefile.rules (.g.antlred): Compile each file separatly.
 	* antlr-warnings.awk: Recognize the error "An empty declaration".
 

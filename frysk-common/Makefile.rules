@@ -531,7 +531,7 @@ SUFFIXES += .antlred .g
 		echo "Parsing compiler warnings from $$b..." ; \
 		rm -f $$t/*.antlr-fixes ; \
 	        rm -rf $$t/classes ; mkdir -p $$t/classes ; \
-		if test "x@HAVE_ECJ_TRUE@" = y ; then \
+		if test "x@HAVE_ECJ_TRUE@" = x ; then \
 		    $(GIJ) 2>&1 \
 			--classpath $(ECJ_JAR):$(CLASSPATH) \
 			org.eclipse.jdt.internal.compiler.batch.Main \
