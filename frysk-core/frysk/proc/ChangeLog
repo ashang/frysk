@@ -1,3 +1,7 @@
+2007-11-22  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
+	
+	* PPCBankRegisters.java: Correcting the bank registers PPC32on64.
+
 2007-11-21  Andrew Cagney  <cagney@redhat.com>
 
 	* IsaX8664.java: Use X8664Registers.DR6 instead of "d6".
