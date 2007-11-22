@@ -1,3 +1,9 @@
+2007-11-22  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestTypeEntry.java (testClassWithStaticMembers): Added test for static
+	and dynamic data members and member functions.
+	(getGccStructOrClassType): Added Check for static data members.
+
 2007-11-22  Andrew Cagney  <cagney@redhat.com>
 
 	* gen-type-expect-tests.py: Do not import "subprocess".

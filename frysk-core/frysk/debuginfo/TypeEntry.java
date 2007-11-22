@@ -125,17 +125,24 @@ public class TypeEntry
      * @return GccStructOrClassType for the struct
      */
     public GccStructOrClassType getGccStructOrClassType(DwarfDie classDie, String name) {
+	
 	dumpDie("classDie=", classDie);
 
 	GccStructOrClassType classType = new GccStructOrClassType(name, getByteSize(classDie));
-	for (DwarfDie member = classDie.getChild(); member != null; member = member
-	.getSibling()) {
+	
+	for (DwarfDie member = classDie.getChild();
+		member != null;
+		member = member.getSibling()) {
+	    
 	    dumpDie("member=", member);
+	
+	    boolean staticMember = false;
 	    long offset;
 	    try {
 		offset = member.getDataMemberLocation();
 	    } catch (DwAttributeNotFoundException de) {
 		offset = 0; // union
+		staticMember = true;
 	    }
 
 	    Access access = null;
@@ -144,8 +151,7 @@ public class TypeEntry
 	    case DwAccess.PROTECTED_: access = Access.PROTECTED; break;
 	    case DwAccess.PRIVATE_: access = Access.PRIVATE; break;
 	    }
-	    DwarfDie memberDieType = member.getUltimateType();
-
+	    
 	    if (member.getTag() == DwTag.SUBPROGRAM) {
 		Value v = getSubprogramValue(member);
 		classType.addMember(member.getName(), v.getType(), offset,
@@ -153,8 +159,9 @@ public class TypeEntry
 		continue;
 	    }
 	    
-	    if (memberDieType == null)
-		continue;
+//	    DwarfDie memberDieType = member.getUltimateType();
+//	    if (memberDieType == null)
+//		continue;
 
 	    Type memberType = getType (member.getType());
 	    if (memberType instanceof UnknownType == false) {
@@ -164,17 +171,33 @@ public class TypeEntry
 		if (bitSize != -1) {
 		    int bitOffset = member
 		    .getAttrConstant(DwAt.BIT_OFFSET);
-		    classType.addMember(member.getName(), memberType, offset, access,
-			    bitOffset, bitSize);
+		    if(staticMember){
+			classType.addStaticMember(member.getName(), memberType, offset, access,
+				    bitOffset, bitSize);
+		    }else{
+			classType.addMember(member.getName(), memberType, offset, access,
+				    bitOffset, bitSize);
+		    }
 		}
-		else
-		    classType.addMember(member.getName(), memberType, offset, access);
-		
+		else{
+		    if(staticMember){
+			classType.addStaticMember(member.getName(), memberType, offset, access);
+		    }else{
+			classType.addMember(member.getName(), memberType, offset, access);
+		    }
+		    
+		}
 		continue;
 	    }
-	    else
-		classType.addMember(member.getName(), new UnknownType(member
+	    else{
+		if(staticMember){
+		    classType.addStaticMember(member.getName(), new UnknownType(member
 			.getName()), offset, access);
+		}else{
+		    classType.addMember(member.getName(), new UnknownType(member
+				.getName()), offset, access);
+		}
+	    }
 	}
 
 	return classType;

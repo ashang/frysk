@@ -53,7 +53,9 @@ import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
 import frysk.value.CompositeType;
 import frysk.value.Type;
+import frysk.value.CompositeType.DynamicMember;
 import frysk.value.CompositeType.Member;
+import frysk.value.CompositeType.StaticMember;
 
 public class TestTypeEntry
     extends TestLib
@@ -260,29 +262,24 @@ public class TestTypeEntry
       Iterator iterator = compositeType.iterator();
       
       while(iterator.hasNext()){
-	  System.out.println("TestTypeEntry.testClassWithStaticMembers() " + ((Member)iterator.next()).getName() + "\n");
+	  Member member = (Member) iterator.next();
+	  
+	  if(member.getName().equals("i")){
+	      assertTrue("Member " + member.getName() + " has the correct class", member instanceof DynamicMember);
+	  }
+	
+	  if(member.getName().equals("static_i")){
+	      assertTrue("Member " + member.getName() + " has the correct class", member instanceof StaticMember);
+	  }
+	
+	  if(member.getName().equals("crash")){
+	      assertTrue("Member " + member.getName() + " has the correct class", member instanceof DynamicMember);
+	  }
+	
+	  if(member.getName().equals("static_crash")){
+	      assertTrue("Member " + member.getName() + " has the correct class", member instanceof StaticMember);
+	  }
       }
-      
-      assertTrue(false);
-      
-//      Dwfl dwfl;
-//      DwarfDie[] allDies;
-//      Type varType;
-//      DwarfDie varDie;
-//      long pc = frame.getAdjustedAddress();
-//      dwfl = DwflCache.getDwfl(frame.getTask());
-//      DwflDieBias bias = dwfl.getCompilationUnit(pc);
-//      DwarfDie die = bias.die;
-//      allDies = die.getScopes(pc - bias.bias);
-//      TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
-//    
-//      for (int i = 0; i < expect.length; i++) {
-//	  varDie = die.getScopeVar(allDies, expect[i].symbol);
-//	  varType = typeEntry.getType(varDie.getType());
-//	  Pattern p = Pattern.compile(expect[i].output, Pattern.DOTALL);
-//	  Matcher m = p.matcher(varType.toPrint());
-//	  assertTrue("testClass " + expect[i].symbol, m.matches());
-//      }
   }
 
 }  
