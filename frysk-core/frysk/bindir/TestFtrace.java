@@ -65,7 +65,7 @@ public class TestFtrace
 				Config.getBinFile("ftrace").getAbsolutePath(),
 				""+task.getProc().getPid()
 			    });
-	expect.expect(""+task.getProc().getPid()+"."+ task.getTid());
+	expect.expect(""+task.getProc().getPid()+"."+ task.getTid() + " attached");
     }
 
     public void testFtraceTracesExecutables () {

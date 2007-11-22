@@ -218,7 +218,7 @@ public abstract class Syscall
 
 	case 'i':
 	    if ((int)retVal < 0)
-		return "-1 ERRNO=" + (-retVal);
+		return "-1 ERRNO=" + (-(int)retVal);
 
 	    // fall-through
 	default:

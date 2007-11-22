@@ -366,10 +366,9 @@ public class Ftrace
 	    frysk.proc.Syscall syscall = syscallCache;
 	    String name = syscall.getName();
 
-	    // XXX: pass retVal
 	    reporter.eventLeave(task, syscall,
 				"syscall leave", name,
-				new Integer(0));
+				syscall.extractReturnValue(task));
 
 	    syscallCache = null;
 	    return Action.CONTINUE;
