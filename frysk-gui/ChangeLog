@@ -1,7 +1,9 @@
 2007-11-22  Andrew Cagney  <cagney@redhat.com>
 
-	* configure.ac: Set.
+	* configure.ac (GLADE_DTD_FILE): Conditionally set.
+	
 	* Makefile.am (GLADE_DTD_FILE): Set to @GLADE_DTD_FILE@.
+	* configure.ac (GLADE_DTD_FILE): Set.
 
 2007-11-13  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
 
