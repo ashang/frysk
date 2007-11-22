@@ -1,3 +1,8 @@
+2007-11-22  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (.g.antlred): Compile each file separatly.
+	* antlr-warnings.awk: Recognize the error "An empty declaration".
+
 2007-11-15  Andrew Cagney  <cagney@redhat.com>
 
 	* antlr-warnings.awk: Delete references to ExprAST.
