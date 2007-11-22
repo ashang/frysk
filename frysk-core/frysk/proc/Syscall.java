@@ -53,9 +53,9 @@ public abstract class Syscall
     public final int numArgs;
     String name;
     public final String argList;
-    boolean noreturn;
+    public final boolean noreturn;
 
-    Syscall (String name, int number, int numArgs, 
+    Syscall (String name, int number, int numArgs,
 	     String argList, boolean noreturn)
     {
 	this.name = name;
@@ -71,13 +71,14 @@ public abstract class Syscall
 	this.number = number;
 	this.numArgs = numArgs;
 	this.argList = argList;
-    }        
+	this.noreturn = false;
+    }
 
     Syscall (String name, int number, int numArgs)
     {
 	this (name, number, numArgs, "i:iiiiiiii");
     }
-    
+
     Syscall (String name, int number)
     {
 	this (name, number, 0, "i:");
@@ -109,60 +110,74 @@ public abstract class Syscall
   abstract public long getArguments (Task task, int n);
   abstract public long getReturnCode (Task task);
 
-  private void printStringArg (PrintWriter writer,
-			       frysk.proc.Task task,
-			       long addr)
-  {
-    if (addr == 0)
-      writer.print ("0x0");
-    else {
-      writer.print ("\"");
-      StringBuffer x = new StringBuffer ();
-      task.getMemory().get (addr, 20, x);
-      if (x.length () == 20)
-	x.append ("...");
-      x.append ("\"");
-      writer.print (x);
+    private String extractStringArg (frysk.proc.Task task,
+				     long addr)
+    {
+	if (addr == 0)
+	    return "0x0";
+	else {
+	    StringBuffer x = new StringBuffer();
+	    task.getMemory().get (addr, 20, x);
+	    if (x.length () == 20)
+		x.append ("...");
+	    return "\"" + x.toString() + '\"';
+	}
     }
-  }
+
+    /**
+     * Get call arguments as a vector of Objects.  Currently returns
+     * simpy a vector of formatted strings.
+     *
+     * @param task the task which supplies information about the
+     * arguments
+     */
+    public String[] extractCallArguments (frysk.proc.Task task)
+    {
+	String[] ret = new String[numArgs];
+
+	for (int i = 0; i < numArgs; ++i) {
+	    char fmt = argList.charAt (i + 2);
+	    long arg = getArguments (task, i + 1);
+
+	    switch (fmt) {
+	    case 'a':
+	    case 'b':
+	    case 'p':
+		if (arg == 0)
+		    ret[i] = "NULL";
+		else
+		    ret[i] = "0x" + Long.toHexString (arg);
+		break;
+
+	    case 's':
+	    case 'S':
+		ret[i] = extractStringArg(task, arg);
+		break;
+
+	    case 'i':
+	    default:
+		ret[i] = "" + arg;
+		break;
+	    }
+	}
+
+	return ret;
+    }
 
     /**
      * Print a textual representation of a system call.
      * @param writer where to print the representation
      * @param task the task which supplies information about the
      * arguments
-     * @param syscall the system call event info
      * @return writer
      */
     public PrintWriter printCall (PrintWriter writer,
-			   frysk.proc.Task task)
+				  frysk.proc.Task task)
     {
-	long addr = 0;
-	long arg = 0;
+	String[] args = extractCallArguments(task);
 	writer.print ("<SYSCALL> " + name + " (");
-	for (int i = 1; i <= numArgs; ++i) {
-	    char fmt = argList.charAt (i + 1);
-	    switch (fmt) {
-	    case 'a':
-	    case 'b':
-	    case 'p':
-		arg = getArguments (task, i);
-		if (arg == 0)
-		    writer.print ("NULL");
-		else
-		    writer.print ("0x" + Long.toHexString (arg));
-		break;
-	    case 's':
-	    case 'S':
-		addr = getArguments (task, i);
-		printStringArg (writer, task, addr);
-		break;
-	    case 'i':
-	    default:
-		arg = (int)getArguments (task, i);
-		writer.print (arg);
-		break;
-	    }
+	for (int i = 0; i < args.length; ++i) {
+	    writer.print (args[i]);
 	    if (i < numArgs)
 		writer.print (",");
 	}
@@ -172,7 +187,7 @@ public abstract class Syscall
 	    writer.print (")");
 	return writer;
     }
-    
+
   public String toString()
   {
     return (this.getClass()
@@ -181,51 +196,48 @@ public abstract class Syscall
   }
 
     /**
+     * Extract system call return value.  Currently returns formatted
+     * string.
+     */
+    public String extractReturnValue(frysk.proc.Task task)
+    {
+	long retVal = getReturnCode(task);
+
+	switch (argList.charAt (0)) {
+	case 'a':
+	case 'b':
+	case 'p':
+	    if (retVal == 0)
+		return "NULL";
+	    else
+		return "0x" + Long.toHexString (retVal);
+
+	case 's':
+	case 'S':
+	    return extractStringArg (task, retVal);
+
+	case 'i':
+	    if ((int)retVal < 0)
+		return "-1 ERRNO=" + (-retVal);
+
+	    // fall-through
+	default:
+	    return "" + retVal;
+	}
+    }
+
+    /**
      * Print a textual representation of the return result of a system
      * call.
      * @param writer where to print the representation
      * @param task the task which supplies information about the
      * return value
-     * @param syscall the system call event info
      * @return writer
      */
     public PrintWriter printReturn (PrintWriter writer,
-			     frysk.proc.Task task)
+				    frysk.proc.Task task)
     {
-	long addr = 0;
-	long arg = 0;
-	
-	writer.print (" = ");
-	
-	switch (argList.charAt (0)) {
-	case 'a':
-	case 'b':
-	case 'p':
-	    arg = getReturnCode(task);
-	    if (arg == 0)
-		writer.println ("NULL");
-	    else
-		writer.println ("0x" + Long.toHexString (arg));
-	    break;
-	case 's':
-	case 'S':
-	    addr = getReturnCode(task);
-	    printStringArg (writer, task, addr);
-	    writer.println ("");
-	    break;
-	case 'i':
-	    arg = (int)getReturnCode(task);
-	    if (arg < 0) {
-		writer.print ("-1");
-		writer.println (" ERRNO=" + (-arg));
-	    }
-	    else
-		writer.println (getReturnCode(task));
-	    break;
-	default:
-	    writer.println (getReturnCode(task));
-	    break;
-	}
+	writer.print (" = " + extractReturnValue(task));
 	return writer;
     }
 

@@ -102,6 +102,23 @@ class Reporter
 	return "" + task.getProc().getPid() + "." + task.getTid();
     }
 
+    private void printArgs(Object[] args)
+    {
+	writer.print("(");
+	for (int i = 0; i < args.length; ++i) {
+	    writer.print(i > 0 ? ", " : "");
+	    // Temporary hack to get proper formatting before
+	    // something more sane lands.
+	    if (args[i] instanceof Long)
+		writer.print("0x" + Long.toHexString(((Long)args[i]).longValue()));
+	    else if (args[i] instanceof Integer)
+		writer.print("0x" + Integer.toHexString(((Integer)args[i]).intValue()));
+	    else
+		writer.print(args[i]);
+	}
+	writer.print(")");
+    }
+
     public void eventEntry(Task task, Object item, String eventType,
 			    String eventName, Object[] args)
     {
@@ -110,23 +127,12 @@ class Reporter
 	this.setLevel(task, ++level);
 
 	if (lineOpened())
-	    System.err.println('\\');
+	    writer.println('\\');
 
-	System.err.print(pidInfo(task) + " "
-			 + spaces + eventType + " ");
-	System.err.print(eventName + "(");
-	for (int i = 0; i < args.length; ++i) {
-	    System.err.print(i > 0 ? ", " : "");
-	    // Temporary hack to get proper formatting before
-	    // something more sane lands.
-	    if (args[i] instanceof Long)
-		System.err.print("0x" + Long.toHexString(((Long)args[i]).longValue()));
-	    else if (args[i] instanceof Integer)
-		System.err.print("0x" + Integer.toHexString(((Integer)args[i]).intValue()));
-	    else
-		System.err.print(args[i]);
-	}
-	System.err.print(")");
+	writer.print(pidInfo(task) + " "
+			 + spaces + eventType
+			 + " " + eventName);
+	printArgs(args);
 
 	updateOpenLine(task, item);
     }
@@ -139,22 +145,30 @@ class Reporter
 
 	if (!myLineOpened(task, item)) {
 	    if (lineOpened())
-		System.err.println();
+		writer.println();
 	    String spaces = repeat(' ', level);
-	    System.err.print(pidInfo(task) + " " + spaces + eventType + " " + eventName);
+	    writer.print(pidInfo(task) + " " + spaces + eventType + " " + eventName);
 	}
 
-	System.err.println(" = " + retVal);
+	writer.println(" = " + retVal);
 
 	updateOpenLine(null, null);
     }
 
     public void eventSingle(Task task, String eventName)
     {
+	eventSingle(task, eventName, null);
+    }
+
+    public void eventSingle(Task task, String eventName, Object[] args)
+    {
 	int level = this.getLevel(task);
 	if (lineOpened())
-	    System.err.println("\\");
-	System.err.println(pidInfo(task) + " " + repeat(' ', level) + eventName);
+	    writer.println("\\");
+	writer.println(pidInfo(task) + " " + repeat(' ', level) + eventName);
+
+	if (args != null)
+	    printArgs(args);
 
 	updateOpenLine(null, null);
     }

@@ -36,6 +36,17 @@
 	
 	* PPCBankRegisters.java: Correcting the bank registers PPC32on64.
 
+2007-11-22  Petr Machata  <pmachata@redhat.com>
+
+	* Syscall.java:
+	(noreturn): Now public final.
+	(extractStringArg): New method.
+	(extractCallArguments): New method.
+	(extractReturnValue): New method.
+	(printStringArg): Use extractStringArg.
+	(printCall): Use extractCallArguments.
+	(printReturn): Use extractReturnValue.
+
 2007-11-21  Andrew Cagney  <cagney@redhat.com>
 
 	* IsaX8664.java: Use X8664Registers.DR6 instead of "d6".

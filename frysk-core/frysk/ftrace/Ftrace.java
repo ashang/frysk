@@ -359,8 +359,12 @@ public class Ftrace
 	    frysk.proc.Syscall syscall
 		= task.getSyscallEventInfo().getSyscall(task);
 	    String name = syscall.getName();
-	    // XXX: pass args
-	    reporter.eventEntry(task, syscall, "syscall", name, new Object[]{});
+	    if (syscall.noreturn)
+		reporter.eventSingle(task, "syscall " + name,
+				     syscall.extractCallArguments(task));
+	    else
+		reporter.eventEntry(task, syscall, "syscall", name,
+				    syscall.extractCallArguments(task));
 
 	    // If this system call is in the stack tracing HashSet,
 	    // get a stack trace before continuing on.

@@ -1,3 +1,12 @@
+2007-11-22  Petr Machata  <pmachata@redhat.com>
+
+	* Ftrace.java (updateSyscallEnter): Pass arguments and support
+	noreturn system calls.
+	* Reporter.java: Use writer instead of writing to System.err.
+	(printArgs): New internal method.
+	(eventEntry): Use printArgs.
+	(eventSingle): New function.
+
 2007-11-21  Petr Machata  <pmachata@redhat.com>
 
 	* Ftrace.java:
