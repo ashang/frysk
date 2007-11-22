@@ -267,10 +267,13 @@ public class TestByteBuffer
 	}
     }
 
-    public void testMemoryBufferCapacity()
-    {
-	assertEquals("Memory Buffer Capacity: ", -1L, memorySpaceByteBuffer.capacity());
+    public void testMemoryBufferCapacity() {
+	if (unresolved(5394))
+	    return;
+	assertEquals("Memory Buffer Capacity: ", -1L,
+		     memorySpaceByteBuffer.capacity());
     }
+
     private class AsyncPeeks
 	implements Runnable
     {
