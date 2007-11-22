@@ -113,17 +113,21 @@ public class PPC32Registers extends Registers {
 	= new Register("gpr31", StandardTypes.INT32B_T);
 
     /* Special registers */
+    public static final Register ARG
+        = new Register("arg", StandardTypes.INT32B_T);
 
+    /* Counter reg */
     public static final Register CTR
-            = new Register("counterreg", StandardTypes.INT32B_T);
+            = new Register("ctr", StandardTypes.INT32B_T);
+    /* Fixed-point status and control register */
     public static final Register XER
-            = new Register("fixedstatuscontrolreg", StandardTypes.INT32B_T);
+            = new Register("xer", StandardTypes.INT32B_T);
     public static final Register CCR
-            = new Register("conditionreg", StandardTypes.INT32B_T);
+            = new Register("ccr", StandardTypes.INT32B_T);
     public static final Register LR
-            = new Register("linkreg", StandardTypes.VOIDPTR32B_T);
+            = new Register("lr", StandardTypes.VOIDPTR32B_T);
     public static final Register FPSCR
-            = new Register("floatingstatuscontrolreg", StandardTypes.INT32B_T);
+            = new Register("fpscr", StandardTypes.INT32B_T);
 
     public static final Register FPR0
         = new Register("fpr0", StandardTypes.FLOAT64B_T);
