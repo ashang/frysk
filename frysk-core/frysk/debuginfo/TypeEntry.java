@@ -154,8 +154,11 @@ public class TypeEntry
 	    
 	    if (member.getTag() == DwTag.SUBPROGRAM) {
 		Value v = getSubprogramValue(member);
-		classType.addMember(member.getName(), v.getType(), offset,
-			access);
+		if(hasArtifitialParameter(member)){
+		    classType.addMember(member.getName(), v.getType(), offset, access);
+		}else{
+		    classType.addStaticMember(member.getName(), v.getType(), offset, access);
+		}
 		continue;
 	    }
 	    
@@ -203,6 +206,31 @@ public class TypeEntry
 	return classType;
     }
 
+    /**
+     * Return true of the given die represents a 
+     * subprogram or inlined subroutine
+     * @param die
+     * @return 
+     */
+    private boolean hasArtifitialParameter(DwarfDie die){
+	if (die == null
+		|| !(die.getTag().equals(DwTag.SUBPROGRAM) ||
+		die.getTag().equals(DwTag.INLINED_SUBROUTINE))) {
+	    throw new IllegalArgumentException("Die [" + die + "] is not" +
+	    		" a subprogram or inlined subroutine die");
+	}
+
+	DwarfDie param = die.getChild();
+	while (param != null
+		&& param.getTag().equals(DwTag.FORMAL_PARAMETER)) {
+	    if (param.getAttrBoolean((DwAt.ARTIFICIAL)) == true) {
+		return true;
+	    }       
+	    param = param.getSibling();
+	}
+	return false;
+    }
+    
     // ??? Reduce getGccStructOrClassType/getUnionType duplication
     public UnionType getUnionType(DwarfDie classDie, String name) {
 	dumpDie("unionDie=", classDie);
