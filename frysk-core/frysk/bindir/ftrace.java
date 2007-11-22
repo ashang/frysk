@@ -62,7 +62,6 @@ import frysk.ftrace.Ftrace;
 import frysk.ftrace.Ltrace;
 import frysk.ftrace.LtraceController;
 import frysk.ftrace.ObjectFile;
-import frysk.ftrace.StracePrinter;
 import frysk.ftrace.TracePoint;
 import frysk.ftrace.TracePointOrigin;
 import frysk.ftrace.Symbol;
@@ -489,7 +488,6 @@ class ftrace
         parser.parse(args);
         if (writer == null)
             writer = new PrintWriter(System.out);
-        StracePrinter printer = new StracePrinter(writer, tracedCalls);
 
 	// We need to load and apply rules separately, to get all log
 	// messages.
@@ -501,8 +499,6 @@ class ftrace
 	    controller.gotSymRules(parseRules((String)it.next()));
 
         tracer.setWriter(writer);
-        tracer.setEnterHandler(printer);
-        tracer.setExitHandler(printer);
 	tracer.setTraceFunctions(controller, controller);
 
         if (commandAndArguments != null) {

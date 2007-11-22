@@ -1,5 +1,13 @@
 2007-11-22  Petr Machata  <pmachata@redhat.com>
 
+	* SyscallHandler.java: deleted
+	* StracePrinter.java: deleted
+	* Ftrace.java:
+	(setEnterHandler, setExitHandler): deleted
+	(enterHandler, exitHandler): deleted
+
+2007-11-22  Petr Machata  <pmachata@redhat.com>
+
 	* Ftrace.java (updateSyscallEnter): Pass arguments and support
 	noreturn system calls.
 	* Reporter.java: Use writer instead of writing to System.err.

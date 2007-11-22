@@ -90,11 +90,6 @@ public class Ftrace
   // The number of processes we're tracing.
   int numProcesses;
 
-  // Enter and exit handlers.
-  SyscallHandler enterHandler;
-
-  SyscallHandler exitHandler;
-
     public void setTraceChildren ()
     {
 	traceChildren = true;
@@ -140,16 +135,6 @@ public class Ftrace
     {
 	this.reporter = new Reporter(writer);
     }
-
-  public void setEnterHandler (SyscallHandler handler)
-  {
-    this.enterHandler = handler;
-  }
-
-  public void setExitHandler (SyscallHandler handler)
-  {
-    this.exitHandler = handler;
-  }
 
   private void init ()
   {
@@ -372,10 +357,6 @@ public class Ftrace
 		&& syscallStackTraceSet.contains(name))
 		reporter.generateStackTrace(task);
 
-	    /* XXX:
-	    if (enterHandler != null)
-		enterHandler.handleEnter(task, syscall);
-	    */
 	    syscallCache = syscall;
 	    return Action.CONTINUE;
 	}
@@ -384,14 +365,11 @@ public class Ftrace
 	{
 	    frysk.proc.Syscall syscall = syscallCache;
 	    String name = syscall.getName();
+
 	    // XXX: pass retVal
 	    reporter.eventLeave(task, syscall,
 				"syscall leave", name,
 				new Integer(0));
-	    /* XXX:
-	    if (exitHandler != null)
-		exitHandler.handleExit(task, syscall);
-	    */
 
 	    syscallCache = null;
 	    return Action.CONTINUE;

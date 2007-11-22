@@ -28,6 +28,10 @@
 	* TestFstack.java (testBackTraceWithDashN())
 	(testBackTraceWithDashNDashA()): Mark as unresolved, bug 5394.
 	
+2007-11-22  Petr Machata  <pmachata@redhat.com>
+
+	* ftrace.java: Don't set up enter/exit handlers of Ftrace.
+
 2007-11-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFstack.java (testBackTraceWithDashN): New test.
