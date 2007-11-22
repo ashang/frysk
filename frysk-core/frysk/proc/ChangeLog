@@ -1,3 +1,8 @@
+2007-11-22  Andrew Cagney  <cagney@redhat.com>
+
+	* IndirectBankRegisterMap.java (add(Register)): New.
+	(add(Register,Register)): New.
+
 2007-11-22  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
 	
 	* PPCBankRegisters.java: Correcting the bank registers PPC32on64.
