@@ -1,3 +1,7 @@
+2007-11-22  Andrew Cagney  <cagney@redhat.com>
+
+	* gen-type-expect-tests.py: Do not import "subprocess".
+
 2007-11-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DebugInfoStackFactory.java (printTaskStackTrace): Added
