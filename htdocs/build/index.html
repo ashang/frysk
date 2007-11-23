@@ -428,6 +428,40 @@ $ cvs -d :ext:MYNAME@sourceware.org:/cvs/frysk \
 </ul>
 </dd>
 
+<dt>How do I import a third party package into frysk-imports?</dt>
+<dd>Checkout a branch for the imported package only. Future updates to
+  the package will be made on this branch. You do this by checking out
+  the first revision of Frysk, which was empty, 
+  then add and commit the <code>frysk-imports</code> directory and the
+package. After that you checkout the Frysk <code>master</code> branch
+and merge in the branch with the packge.
+
+<p>Example:
+<pre>
+$ git-checkout -b vendor/LIBFOO genesis<b>(1)</b>
+$ mkdir frysk-imports
+$ tar xf libfoo.tar -C frysk-imports
+$ git-add frysk-imports<b>(2)</b>
+$ git-commit -m"Initial import of libfoo"
+$ git-checkout master<b>(3)</b>
+$ git-merge vendor/LIBFOO<b>(4)</b>
+$ git-push origin master vendor/LIBFOO:vendor/LIBFOO<b>(5)</b>
+</pre></p>
+<ol>
+  <li><p>Checkout the first revision of Frysk, which we've tagged with
+  the tag <tt>genesis</tt>. with the <tt>-b</tt> flag we create a new
+  branch for the checkout. All our 3rd party import branches have a
+  prefix of <tt>vendor/</tt> and then the name of the package in
+  uppercase.</p>
+  <li><p>Adding a directory recursively adds its contents.</p>
+  <li><p>Switch back to the master branch</p>
+  <li><p>The merge creates <tt>libfoo</tt> and its contents on the
+  master branch.</p>
+  <li><p>Push the imported changes to the master branch in the remote
+  repository,and also create a new remote branch for the import in the
+  remote repo.</p>
+</ol>
+
 <dt>How do I update a third party package in frysk-imports?</dt>
 <dd>This assumes that there is already a vendor branch in git for
 the package under <code>frysk-imports</code>.
