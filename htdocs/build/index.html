@@ -53,8 +53,8 @@
 	    <td valign="top">
 	      <!-- start logo -->
 <p>
-<a href="#faq">Build or Test Question?</a><br>
-<a href="#git">Frysk and Git</a><br>
+<a href="#faq-build">Build or Test Question?</a><br>
+<a href="#faq-git">Git questions</a><br>
 <br>
 <a href="#f">Fedora</a><br>
 <a href="#ubuntu">Ubuntu</a><br>
@@ -237,15 +237,11 @@ $ ( cd build && sudo make install )
 $ frysk
 </pre>
 
-<a name="git"><h2>Frysk and Git</h2></a>
-<p>
-  <em>frysk</em> has switched to Git from CVS. See <a href="./git-fu.html">this page</a> for an introduction to <em>frysk</em> and Git.</p>
-
 <a name="faq"><h2>Developer Questions, such as building and testing
-frysk, and using <tt><a href="#faq-cvs">CVS</a></tt>; with
+frysk, and using <tt><a href="#faq-git">GIT</a></tt>; with
 answers</h2></a>
 
-<h3>Building and Testing Questions</h3>
+<h3><a name="faq-build">Building and Testing Questions</h3>
 
 <dl>
 
@@ -354,78 +350,23 @@ suppression will take place.</dd>
 
 </dl>
 
-<a name="faq-cvs"><h3>CVS Questions, with Answers</h3></a>
+<h3><a name="faq-git">GIT Questions, with Answers</h3></a>
 
 <dl>
 
-<p>This needs to be rewritten for Git.</p>
-
-<a name="How do I cut a branch?"><dt>How do I cut a branch?</dt></a>
-<dd>First choose a name for your branch, it should include both your
-user name, a terse hint as to the branches purpose, and todays date.
-For instance <tt>pmuldoon-fcore-20061101</tt>, or
-<tt>cagney-triage12345-20061122</tt>.  Two tags will be created,
-first one for the branch point, and second one for the branch:
+<dt>
+<a name="How do I cut a branch?">
+How do I cut a branch?</dt></a> <dd><br>This needs to be rewritten for
+Git.<br>First choose a name for your branch, it should include both
+your user name, a terse hint as to the branches purpose, and todays
+date.  For instance <tt>pmuldoon-fcore-20061101</tt>, or
+<tt>cagney-triage12345-20061122</tt>.  Two tags will be created, first
+one for the branch point, and second one for the branch:
 
 <pre>
 $ cvs -d:.. rtag BRANCH-branchpoint frysk
 $ cvs -d... rtag -r BRANCH-branchpoint -b BRANCH-branch frysk
 </pre>
-</dd>
-
-<dt>How do I do import a third-party (vendor) package into
-frysk-imports?</dt><dd>Lets say you want to import the thirds party
-sources for <tt>elfutils</tt> into <tt>frysk-imports/elfutils</tt>:
-
-<ul>
-
-<li>Obtain a pristine copy of the sources from the vendor
-(a.k.a. upstream).<br>Typically the official sources come as a tar
-ball, download and unpack them in a new directory.  For
-<tt>elfutils</tt>, since upstream is the source rpm, <tt>rpmbuild
--bp</tt> on the source rpm is used.</li>
-
-<li>Change <b>into</b> the top-level directory of the pristine source
-tree.<br>For instance, for <tt>elfutils</tt> 0.125, that means
-changing into the directory <tt>elfutils-0.125</tt>, for instance:
-
-<pre>
-$ pwd
-.../elfutils-0.125
-</pre>
-</li>
-
-<li>Pick a vendor branch (VENDOR_TAG) and release tags
-(RELEASE_TAG).<br>Make certain that they are meaningful, for instance:
-
-<pre>
-$ VENDOR=elfutils
-$ VERSION=0.125
-$ VENDOR_TAG=ELFUTILS
-$ RELEASE_TAG=elfutils_0_125
-</pre>
-
-Note that the vendor and release tags can not contain periods.</li>
-
-<li>Perform the import using a command like:<br>
-<pre>
-$ cvs -d :ext:${USER}@sourceware.org:/cvs/frysk \
-    import -m "Import of ${VENDOR} version ${VERSION}" \
-    frysk-imports/${VENDOR} \
-    ${VENDOR_TAG} \
-    ${RELEASE_TAG}
-</pre>
-For instance:
-<pre>
-$ pwd
-..../elfutils-0.125
-$ cvs -d :ext:MYNAME@sourceware.org:/cvs/frysk \
-    import -m "Importing elfutils version 0.125" \
-    frysk-imports/elfutils \
-    ELFUTILS \
-    elfutils_0_125
-</pre>
-</ul>
 </dd>
 
 <dt>How do I import a third party package into frysk-imports?</dt>
