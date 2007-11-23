@@ -122,7 +122,36 @@ and on a 64-bit system:
 <pre>
 $ ( mkdir build && cd build && ../frysk/autogen.sh \
      PKG_CONFIG_PATH=/usr/lib64/frysk/pkgconfig:/usr/lib64/pkgconfig \
-     GLADE_DTD_FILE=/usr/share/frysk/xml/libglade/glade-2.0.dtd )
+     GLADE_DTD_FILE=/usr/share/frysk/xml/libglade/glade-2.0.dtd \
+     "JAVAC=gcj4 -C" \
+     GCJ=gcj4 \
+     GIJ=gij4 \
+     JAR=fastjar4 \
+     GCJH=gcjh4 \
+     GCJ_DBTOOL=gcj-dbtool4 \
+     GCC=gcc4 \
+     CC=gcc4 \
+     CXX=g++4 \
+     JAVA=gij4 \
+     JV_SCAN=jv-scan4 \
+)
+</pre>
+
+<p>
+In addition, you may need to apply this patch:
+
+<pre>
+--- frysk-imports/libunwind/include/libunwind_i.h-orig  2007-02-12 18:04:10.000000000 -0500
++++ frysk-imports/libunwind/include/libunwind_i.h       2007-02-12 18:05:07.000000000 -0500
+@@ -69,7 +69,7 @@
+ # define UNUSED                __attribute__((unused))
+ # define NORETURN      __attribute__((noreturn))
+ # define ALIAS(name)   __attribute__((alias (#name)))
+-# if (__GNUC__ > 3) || (__GNUC__ == 3 && __GNUC_MINOR__ > 2)
++# if 0 /* gcc4-4.1.0-18.EL4 workaround.  */
+ #  define ALWAYS_INLINE        inline __attribute__((always_inline))
+ #  define HIDDEN       __attribute__((visibility ("hidden")))
+ #  define PROTECTED    __attribute__((visibility ("protected")))
 </pre>
 
 <p>
