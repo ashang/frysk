@@ -429,60 +429,54 @@ $ cvs -d :ext:MYNAME@sourceware.org:/cvs/frysk \
 </dd>
 
 <dt>How do I update a third party package in frysk-imports?</dt>
-<dd>The steps are similar to the initial import above but with a few
-key differences.  Again <tt>elfutils</tt> is used as an example.
+<dd>This assumes that there is already a vendor branch in git for
+the package under <code>frysk-imports</code>.
+<code>libunwind</tt> is used as an example.
+
+<p>This is an example of importing a new libunwind version from upstream
+by putting it on the frysk vendor branch in git and then merging it
+to trunk.</p>
 
 <ul>
-
-<li>Checkout a copy of the current sources.</li>
-
-<li>Tag the current sources.<br>This is is so that, should things go
-wrong, it is possible to quickly get back to the pre-merge version.
-Use a tag like: <tt>pre-${RELEASE_TAG}-merge</tt>, for instance
-<tt>pre-elfutils_0_125-merge</tt>.</li>
-
-<li>Force a commit to the current sources.<br>Please note that this
-critical step is missing from the <tt>CVS</tt> documentation.  Without
-it, unmodified files will switch to the new import before you are
-ready.<br>Do this using a command like:
-
-<pre>
-$ cvs -f commit -f -R -m "Touching all ${VENDOR} files" frysk-imports/elfutils
-</pre>
-</li>
-
-<li>Obtain and unpack a pristine copy of the sources.<br>See
-above.</li>
-
-<li>Import the pristine copy of the sources onto the vendor
-branch.<br>See above.  Be sure to use the same VENDOR_TAG.</li>
-
-<li> Note that cvs will automatically add any new files to HEAD, immediately after a cvs import remove those new files until you are ready to merge. </li>
-
-<li>Check out a merged copy of the imported directory.<br>In a new
-directory, enter something like:
-<pre>
-$ cvs -d ... \
-    checkout -j ${OLD_RELEASE_TAG} -j ${NEW_RELEASE_TAG} \
-    frysk-imports/${VENDOR}
-</pre>
-For instance:
-<pre>
-$ cvs -d ... \
-    checkout -j elfutils_0_120 -j elfutils_0_125 \
-    frysk-imports/elfutils
-<pre>
-This will apply all changes between the old and new releases to the
-mainline.  Fix all clashes.
-</li>
-
-<li>Move the updated tree into a full cvs checkout and re-merge, and
-commit</li>
-
-<li>Re-tag with something like <tt>post-${RELEASE_TAG}-merge</tt>,
-e.g. <tt>post-elfutils_0_125-merge</tt>.
-
+<li> Get the libunwind vendor branch
+     <code>$ git-checkout vendor/LIBUNWIND</code>
+<li> Remove old stuff that needs to be replaced.
+     <code>$ rm -rf frysk-import/libunwind</code>
+<li> Get upstream stuff and put it in
+     (make sure you don't accidentially copy over the upstream .git dir)
+     <code>$ cp -r ~/upstream/libunwind frysk-import/
+<li> Commit (use a commit messsage like "Import of libunwind version
+     libunwind-20071122") and push
+     <code>$ git-commit -a && git-push</code>
 </ul>
+
+<p>The vendor branch is now updated, now we merge the result to the trunk.</p>
+
+<ul>
+<li> Switch to trunk
+  <code>$ git-checkout master</code>
+<li> Merge new vendor branch to the trunk
+     <code>$ git-merge vendor/LIBUNWIND</code>
+<li> Resolve the conflicts using <code>git-rm</code> for files not needed,
+     editing files with conflict markers and <code>git-add</code> each one
+     after resolving the issues.
+<li> Do a full clean build and double check the test results.
+     [.. lots of time passes...]
+<li> Double check your patches (all should now be staged in the git index)
+     with <code>git-diff --cached</a>
+<li> Commit and push the result (git will have generated a merge message
+     for you already that you can use in the commit).
+     <code>$ got commit &&; git push</code>
+</ul>
+
+<p>If too much time has passed since the start the push will fail because
+someone else will have pushed something already. Trying to do
+a <code>git fetch origin; git rebase origin</code> seem to fail, so
+you have to just do a <code>git pull &&; git push</code> then (which
+creates an extra merge message, but that seems just fine).</p>
+<p>
+Comments on how to improve this process appreciated.
+
 </dd>
 
 
