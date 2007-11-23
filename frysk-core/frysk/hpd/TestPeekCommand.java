@@ -71,10 +71,19 @@ public class TestPeekCommand extends TestLib {
 	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
 	e.expect(5, "Loaded executable file.*");
 	e.send("peek 0x08048000L\n");
-	e.expect(5, "[0.0]");
+	e.expect(5, "\\[0\\.0\\]");
 	e.expect(5, "The value at 08048000 = 127.*");
-	e.expect(5, "[0.1]");
+	e.expect(5, "\\[1\\.0\\]");
 	e.expect(5, "The value at 08048000 = 127.*");
+	e.close();
+    }
+    
+    public void testPeekCommandNoParameter() {
+	e = new HpdTestbed();
+	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
+	e.expect(5, "Loaded executable file.*");
+	e.send("peek\n");
+	e.expect(5, "Error: Not enough parameters. Please specify an addess to peek at.*");
 	e.close();
     }
 }
