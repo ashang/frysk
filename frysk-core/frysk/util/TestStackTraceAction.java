@@ -56,7 +56,7 @@ import frysk.proc.dead.LinuxHost;
 import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
 
-public class TestFStack
+public class TestStackTraceAction
     extends TestLib
 {
 

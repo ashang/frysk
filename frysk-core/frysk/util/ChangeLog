@@ -1,3 +1,11 @@
+2007-11-23  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
+
+	* TestFStack.java: Renamed this...
+	* TestStackTraceAction.java: ...to This.
+	
+	* StressTestFStack.java: Renamed this...
+	* StressTestStackTraceAction.java: ...to This.
+
 2007-11-23  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Removed printlibrary boolean argument from Frame.toPrint()

@@ -53,7 +53,7 @@ import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
 import frysk.testbed.FunitThreadsOffspring;
 
-public class StressTestFStack
+public class StressTestStackTraceAction
     extends TestLib
 {
 
@@ -70,7 +70,7 @@ public class StressTestFStack
     int clones = 20;
     SlaveOffspring ackProc = SlaveOffspring.createChild()
 	.assertSendAddClonesWaitForAcks(clones);
-    TestFStack.multiThreaded(ackProc, clones);
+    TestStackTraceAction.multiThreaded(ackProc, clones);
   }
 
   public void testClone ()
