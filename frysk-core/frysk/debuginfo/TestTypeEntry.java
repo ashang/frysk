@@ -247,10 +247,6 @@ public class TestTypeEntry
   
   public void testClassWithStaticMembers () {
 
-      if(unresolved(5301)){
-	  return;
-      }
-      
       Task task = (new DaemonBlockedAtSignal("funit-class-static")).getMainTask();
 
       DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
