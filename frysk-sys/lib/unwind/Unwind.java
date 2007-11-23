@@ -61,8 +61,6 @@ public abstract class Unwind
   
   abstract int step (RawDataManaged cursor);
   
-  abstract ProcName getProcName(RawDataManaged cursor, int maxNameSize);
-  
   abstract ProcInfo getProcInfo (RawDataManaged cursor);
   
     abstract void getRegister(RawDataManaged cursor, int regNum,

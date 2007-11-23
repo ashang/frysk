@@ -1,3 +1,8 @@
+2007-11-23  Mark Wielaard  <mwielaard@redhat.com>
+
+	* LibunwindAddressSpace.java (getModuleFromAddress): Removed.
+	(getProcName): Removed.
+
 2007-11-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* StackFactory.java (printTaskStackTrace): Added number of

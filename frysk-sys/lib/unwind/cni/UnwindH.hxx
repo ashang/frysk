@@ -67,7 +67,6 @@
 #include "lib/unwind/ByteOrder.h"
 #include "lib/unwind/CachingPolicy.h"
 #include "lib/unwind/ProcInfo.h"
-#include "lib/unwind/ProcName.h"
 #include "lib/unwind/ElfImage.h"
 
 #include "frysk/sys/cni/Errno.hxx"
@@ -188,12 +187,6 @@ resume(::unw_addr_space_t as, ::unw_cursor_t *cp, void *arg)
   return (int) addressSpace(arg)->resume ((lib::unwind::Cursor *) cp);
 }
 
-static size_t
-min (size_t a, size_t b)
-{
-  return a < b ? a : b;
-}
-
 /*
  * Returns the name of the procedure that the provided address is in as well as
  * the offset from the start of the procedure.
@@ -203,26 +196,7 @@ get_proc_name(::unw_addr_space_t as,
 	      ::unw_word_t addr, char *bufp,
 	      size_t buf_len, ::unw_word_t *offp, void *arg)
 {
-  lib::unwind::ProcName *procName
-    = addressSpace(arg)->getProcName ((jlong) addr, (jint) buf_len);
-  if (procName->error < 0 && procName->error != -UNW_ENOMEM)
-    return procName->error;
-  *offp = (unw_word_t) procName->offset;
-  //In case get_proc_name is used only to find addr;
-  if (bufp == NULL || buf_len == 0) 
-    return 0;
-  if (procName->name == NULL)
-      return 0;
-  //The maximum number of characters that can be copied are buf_len -1.
-  //with bufp[buf_len - 1] = '\0'.
-  //Otherwise copy name.length characters, and bufp[name.length] = '\0'
-  size_t upper_limit = min(buf_len - 1 , JvGetStringUTFLength(procName->name));
-  //JvGetStringUTFRegion(jstring STR, jsize START, jsize LEN, char* BUF);
-  JvGetStringUTFRegion(procName->name, 0, upper_limit, bufp);
-  bufp[upper_limit] = '\0';
-  if (upper_limit < buf_len)
-    return 0;
-  else
+    // This should never be called, always return an error.
     return -UNW_ENOMEM;
 }
 
@@ -288,31 +262,6 @@ lib::unwind::TARGET::step(gnu::gcj::RawDataManaged* cursor)
 {
   logFine (this, logger, "step cursor: %p", cursor);
   return unw_step((unw_cursor_t *) cursor);
-}
-
-lib::unwind::ProcName*
-lib::unwind::TARGET::getProcName(gnu::gcj::RawDataManaged* cursor, jint maxNameSize)
-{
-  logFine (this, logger, "getProcName cursor: %p, maxNameSize: %d", cursor, (int) maxNameSize);
-
-  char bufp[maxNameSize];
-  bufp[0] = '\0';
-  unw_word_t offset;
-  int err = unw_get_proc_name((unw_cursor_t *) cursor, bufp, maxNameSize, &offset);
-
-  logFinest(this, logger, "getProcName bufp: %s, offset: %lx, error: %d", bufp,(long) offset, err);
-
-  if (err < 0)
-    return new lib::unwind::ProcName((jint) err);
-
-  jstring jName;
-  
-  if (bufp[0] == '\0')
-    jName = NULL;
-  else
-    jName = JvNewStringUTF(bufp);
-  
-  return new lib::unwind::ProcName((jlong) offset, jName);
 }
 
 static void
