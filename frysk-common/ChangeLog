@@ -1,3 +1,11 @@
+2007-11-23  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (.java-sh.java): Add mkdir -p.
+	(.cxx-sh.cxx): Ditto.
+	(.c-sh.c): Ditto.
+	(.shenum.java): Ditto.
+	(.mkenum.java): Ditto.
+
 2007-11-22  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (.g.antlred): Fix typo disabling ECJ.

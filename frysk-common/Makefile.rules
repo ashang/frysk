@@ -218,6 +218,7 @@ MKENUM = $(srcdir)/common/mkenum.sh
 SUFFIXES += .mkenum
 .mkenum.java:
 	rm -f $*.tmp
+	mkdir -p `dirname $*`
 	$(SHELL) $(MKENUM) < $(srcdir)/$*.mkenum > $*.tmp $@
 	chmod a-w $*.tmp
 	mv -f $*.tmp $@
@@ -225,6 +226,7 @@ SUFFIXES += .mkenum
 SUFFIXES += .shenum
 .shenum.java:
 	rm -f $*.tmp
+	mkdir -p `dirname $*`
 	CC='$(CC)'; export CC ; \
 	$(SHELL) $< | $(SHELL) $(MKENUM) > $*.tmp $@
 	chmod a-w $*.tmp
@@ -236,6 +238,7 @@ SUFFIXES += .shenum
 SUFFIXES += .java-sh
 .java-sh.java:
 	rm -f $*.tmp
+	mkdir -p `dirname $*`
 	CC='$(CC)'; export CC ; \
 	$(SHELL) $< > $*.tmp $@
 	chmod a-w $*.tmp
@@ -243,6 +246,7 @@ SUFFIXES += .java-sh
 SUFFIXES += cxx-sh
 .cxx-sh.cxx:
 	rm -f $*.tmp
+	mkdir -p `dirname $*`
 	CC='$(CC)'; export CC ; \
 	$(SHELL) $< > $*.tmp $@
 	chmod a-w $*.tmp
@@ -250,6 +254,7 @@ SUFFIXES += cxx-sh
 SUFFIXES += ..c-sh
 .c-sh.c:
 	rm -f $*.tmp
+	mkdir -p `dirname $*`
 	CC='$(CC)'; export CC ; \
 	$(SHELL) $< > $*.tmp $@
 	chmod a-w $*.tmp
