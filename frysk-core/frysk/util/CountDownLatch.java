@@ -53,7 +53,7 @@ public class CountDownLatch {
         this.count = count;
     }
 
-    public void await()
+    public synchronized void await()
         throws InterruptedException {
         while (count != 0) {
             try {

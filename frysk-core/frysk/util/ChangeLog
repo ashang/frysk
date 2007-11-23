@@ -1,3 +1,7 @@
+2007-11-23  Mark Wielaard  <mwielaard@redhat.com>
+
+	* CountDownLatch.java (await): Mark as synchronized.
+
 2007-11-22  Tim Moore  <timoore@redhat.com>
 
 	* CountDownLatch.java (await): Loop to avoid spurious wakeup.
@@ -11,7 +15,8 @@
 	* X8664LinuxElfCorefile.java: Fix typo; "eflags" -> "rflags".
 
 2007-11-09  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
-        * LinuxElfCorefileFactory.java: Removed Power little endian.
+
+	* LinuxElfCorefileFactory.java: Removed Power little endian.
 
 2007-10-22  Phil Muldoon  <pmuldoon@redhat.com>
 
