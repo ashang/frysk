@@ -47,17 +47,44 @@ import frysk.proc.TaskId;
 import frysk.proc.TaskState;
 import frysk.isa.ISA;
 
+import lib.dwfl.*;
 
 public class LinuxExeTask extends DeadTask
 {
 
   LinuxExeProc proc = null;
   TaskId id = null;
+
+  // Holds all the register values, setup once in the constructor.
+  private final ByteBuffer[] bankBuffers;
   
   protected LinuxExeTask(LinuxExeProc proc, TaskId id, TaskState state) {
       super(proc, id, state);
       this.proc = proc;
       this.id = id;
+      this.bankBuffers = sendrecRegisterBuffersFIXME();
+
+      // Fake PC.  XXX should be done in Proc instead of creating Elf
+      // object in the Task itself.
+      long pc;
+      Elf e = null;
+      try
+	{
+	  e = new Elf(getProc().getExe(), ElfCommand.ELF_C_READ);
+	  ElfEHeader h = e.getEHeader();
+	  pc = h.entry;
+	}
+      catch (ElfException ee)
+	{
+	  // Nice try, just give up.
+	  pc = 0;
+	}
+      finally
+	{
+	  if (e != null)
+	    e.close();
+	}
+      getIsa().setPC(this, pc);
   }
   
   protected ISA sendrecISA() {
@@ -93,6 +120,6 @@ public class LinuxExeTask extends DeadTask
 
   protected RegisterBanks sendrecRegisterBanks() {
       return CorefileRegisterBanksFactory.create
-      	  (getISA(), sendrecRegisterBuffersFIXME());
+      	  (getISA(), bankBuffers);
   }
 }

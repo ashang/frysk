@@ -1,3 +1,9 @@
+2007-11-23  Mark Wielaard  <mwielaard@redhat.com>
+
+	* LinuxExeTask.java (bankBuffers): New final field.
+	(LinuxExeTask): Setup bankBuffers and explicitly set pc.
+	(sendrecRegisterBanks): Use cached bankBuffers.
+
 2007-11-19  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestLinuxCore.java (testInsertedBreakpoint): Pass executable
