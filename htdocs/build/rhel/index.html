@@ -108,13 +108,24 @@ git-core
 
 <p>
 
-To configure <em>frysk</em> use:
+To configure <em>frysk</em> on a 32-bit system use:
 
 <pre>
-$ ( mkdir build && cd build && ../frysk/configure \
+$ ( mkdir build && cd build && ../frysk/autogen.sh \
      PKG_CONFIG_PATH=/usr/lib/frysk/pkgconfig:/usr/lib/pkgconfig \
      GLADE_DTD_FILE=/usr/share/frysk/xml/libglade/glade-2.0.dtd )
 </pre>
+
+<p>
+and on a 64-bit system:
+
+<pre>
+$ ( mkdir build && cd build && ../frysk/autogen.sh \
+     PKG_CONFIG_PATH=/usr/lib64/frysk/pkgconfig:/usr/lib64/pkgconfig \
+     GLADE_DTD_FILE=/usr/share/frysk/xml/libglade/glade-2.0.dtd )
+</pre>
+
+<p>
 
 For additional updates, check Red Hat Enterprise Linux 4's tracker
 bug's <a href="/bugzilla/showdependencytree.cgi?id=2004">dependency
