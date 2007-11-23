@@ -1,3 +1,9 @@
+2007-11-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFstack.java (testBackTraceWithDashN): Updated regex to not
+	match newline.
+	* fstack.java: Added -fullpath option
+
 2007-11-22  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFstack.java (testBackTraceWithDashN): enabled test.

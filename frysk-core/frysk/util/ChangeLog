@@ -1,3 +1,11 @@
+2007-11-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Removed printlibrary boolean argument from Frame.toPrint()
+	added fullpath boolean argument.
+	* StacktraceAction.java: Updated.
+	* StressTestFStack.java: Updated.
+	* TestFStack.java: Updated.
+
 2007-11-23  Mark Wielaard  <mwielaard@redhat.com>
 
 	* CountDownLatch.java (await): Mark as synchronized.

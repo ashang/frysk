@@ -1,3 +1,7 @@
+2007-11-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestLinuxCore.java: Updated.
+
 2007-11-23  Mark Wielaard  <mwielaard@redhat.com>
 
 	* LinuxExeTask.java (bankBuffers): New final field.

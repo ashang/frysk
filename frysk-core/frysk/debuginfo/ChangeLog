@@ -1,5 +1,10 @@
 2007-11-23  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* DebugInfoFrame.java: Added ".../" befor abbrivated file path.
+	* DebugInfoStackFactory.java: Removed misc print statement.
+
+2007-11-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* TestTypeEntry.java (testClassWithStaticMembers): enabled
 	test.
 

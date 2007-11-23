@@ -39,6 +39,7 @@
 
 package frysk.stack;
 
+import java.io.File;
 import java.io.PrintWriter;
 
 import frysk.isa.Register;
@@ -150,7 +151,7 @@ public abstract class Frame {
      * Write a simple string representation of this stack frame.
      * @param printWriter
      */
-    public void toPrint (PrintWriter writer, boolean printSourceLibrary) {
+    public void toPrint (PrintWriter writer, boolean fullpath) {
 	// the address, padded with 0s based on the task's word size, ...
 	writer.write("0x");
 	String addr = Long.toHexString(getAddress());
@@ -165,11 +166,13 @@ public abstract class Frame {
 	if (symbol != SymbolFactory.UNKNOWN)
 	    writer.write(" ()");
 	// the library if known ...
-	if (printSourceLibrary) {
-	    String library = getLibraryName();
-	    if (library != null) {
-		writer.print(" from ");
-		writer.print(library);
+	File library = new File(getLibraryName());
+	if (library != null) {
+	    writer.print(" from ");
+	    if (fullpath) {
+		writer.print(library.getAbsolutePath());
+	    }else{
+		writer.print(".../"+library.getName());
 	    }
 	}
     }
