@@ -408,7 +408,11 @@ cat <<EOF
 # the relevant files.
 
 noinst_LIBRARIES += lib${GEN_DIRNAME}.a
+if JAR_COMPILE
+${sources} = ${GEN_DIRNAME}.jar
+else
 ${sources} =
+endif
 GEN_GCJ_LDADD_LIST += lib${GEN_DIRNAME}.a
 
 # Compile the .a into a .so; Makefile.rules contains the rule and does
@@ -443,7 +447,9 @@ EOF
 cat <<EOF
 TestRunner_SOURCES = TestRunner.java
 CLEANFILES += TestRunner.java
+if !JAR_COMPILE
 ${sources} += ${GEN_SOURCENAME}/JUnitTests.java
+endif
 BUILT_SOURCES += ${GEN_SOURCENAME}/JUnitTests.java
 SCRIPT_BUILT += ${GEN_SOURCENAME}/JUnitTests.java
 TestRunner_LDADD = \${LIBJUNIT} \${GEN_GCJ_LDADD_LIST}
@@ -473,7 +479,9 @@ for suffix in .java .java-sh .mkenum .shenum .java-in ; do
 		test "${b}" = JUnitTests && continue # hack
 		test -r "${d}/${b}.g" && continue
 		test -r "${d}/${b}.sed" && continue
+		echo "if !JAR_COMPILE"
 		echo "${sources} += ${file}"
+		echo "endif"
 		;;
 	esac
 	echo "${GEN_DIRNAME}.jar: ${name}.java"
@@ -501,7 +509,9 @@ for suffix in .java-in .java-sh .mkenum .shenum ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
 	name="${d}/${b}${s}"
+	echo "if !JAR_COMPILE"
 	echo "${sources} += ${file}"
+	echo "endif"
 	echo "BUILT_SOURCES += ${name}"
 	echo "SCRIPT_BUILT += ${name}"
         case "${suffix}" in
@@ -531,7 +541,9 @@ for suffix in .cxx .c .hxx .s .S .c-sh .c-in .cxx-sh .cxx-in; do
             # Generate the rules for arch32 test
 	    echo_arch32_PROGRAMS ${name} ${name}${s}
 	else
+	    echo "if !JAR_COMPILE"
 	    echo "${sources} += ${file}"
+	    echo "endif"
 	fi
         case "${suffix}" in
 	    *-in | *-sh)
@@ -691,7 +703,9 @@ BEGIN { FS = "=" }
     echo "$d/$c: $d/$b.antlred"
     echo "BUILT_SOURCES += $d/$c"
     echo "ANTLR_BUILT += $d/$c"
+    echo "if !JAR_COMPILE"
     echo "${sources} += $d/$c"
+    echo "endif"
   done
 done
 
