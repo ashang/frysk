@@ -1,3 +1,7 @@
+2007-11-26  Stan Cox  <scox@redhat.com>
+
+	* gen-type-expect-tests.py: Cleanup imports.
+
 2007-11-23  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DebugInfoFrame.java: Added ".../" befor abbrivated file path.
