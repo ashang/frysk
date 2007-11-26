@@ -44,6 +44,7 @@ import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -124,13 +125,51 @@ public class PointerType
     }
 
     /**
-     * Index Operation for pointers to strings.
+     * Index Operation for pointers.
      */
     public Value index (Value v, Value idx, ByteBuffer taskMem)
     {    
-	Value offset = createValue (v.asLong() + idx.asLong()*type.getSize());
+	Value offset = createValue (v.asLong() + idx.asLong()*type.getSize());	
 	return dereference (offset, taskMem) ;      
     }    
+    
+    /**
+     * Slice operation for pointers. 
+     * 
+     * Supports upto 2-dimensional results.
+     */
+    public Value slice (Value v, Value i, Value j, ByteBuffer taskMem)
+    {
+	// Evaluate length and offset of slice.
+	long offset = v.asLong() + i.asLong()*type.getSize();	
+	int len = (int)(j.asLong() - i.asLong() + 1)*type.getSize();	
+	// Create a simple memory location with it.
+	Location loc = PieceLocation.createSimpleLoc
+	               (offset, len, taskMem);
+	
+	/* Determine return type.
+	 * Note: Slicing can give one D or multi-D results 
+	 * depending on the type of value being pointed to.
+         */
+	
+	ArrayList dims = new ArrayList();
+	// Set default return type as type of value being
+	// pointed to.
+	Type resultType = type;
+	
+	// When length of slice calculated is greater than type's 
+	// size, result will be an array.
+	if (len > type.getSize())
+	{
+	    dims.add(new Integer(len/type.getSize()-1));
+	    // Create 2-d arrays in case of ptrs to ptrs or arrays.
+	    if (type instanceof PointerType || type instanceof ArrayType)
+		dims.add(new Integer(len-1));
+	    resultType =  new ArrayType(type, len, dims);
+	}	
+	
+	return new Value (resultType, loc);
+    }
 
     /* getALUs are double dispatch functions to determine 
      * the ArithmeticUnit for an operation between two types.

@@ -1,3 +1,7 @@
+2007-11-26 Teresa Thomas <tthomas@redhat.com>
+
+	* funit-addresses.c (ptrStrings): New.
+	
 2007-11-26  Stan Cox  <scox@redhat.com>
 
 	* gen-type-funit-tests.py: Cleanup imports.

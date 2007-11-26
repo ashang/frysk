@@ -64,6 +64,7 @@ int twoD[2][3] = { {99, 88, 77},
 int oneD[] = { 4, 3, 2, 1};                
 char* string = "hello world";
 int* ptr = NULL;
+char* ptrStrings[] = {"zero", "one", "two", "three"};
 
 int main(int argc, char* argv[])
 {
