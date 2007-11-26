@@ -1,5 +1,9 @@
 2007-11-26  Andrew Cagney  <cagney@redhat.com>
 
+	* X86BankRegisters.java: Use X87Registers.XMM0, et.al.
+	* IndirectBankRegisterMap.java (add(int,int,int,Register)): New.
+	(add(BankRegister,BankRegister)): Use.
+
 	* IndirectBankRegisterMap.java (add(String)): Delete.
 	
 	* PPCBankRegisters.java (PPC32BE_ON_PPC64BE): Use

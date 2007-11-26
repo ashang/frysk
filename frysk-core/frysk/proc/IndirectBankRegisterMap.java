@@ -70,11 +70,16 @@ class IndirectBankRegisterMap extends BankRegisterMap {
 	}
     }
 
+    IndirectBankRegisterMap add(Register reg32, int bank, int offset,
+				int size) {
+	add(new BankRegister(bank, offset, size, reg32.getName()));
+	return this;
+    }
+
     private IndirectBankRegisterMap add(BankRegister reg32,
 					BankRegister reg64) {
-	add(new BankRegister(reg64.getBank(), offset(reg32, reg64),
-			     reg32.getLength(), reg32.getName()));
-	return this;
+	return add(reg32.getRegister(),
+		   reg64.getBank(), offset(reg32, reg64), reg32.getLength());
     }
 
     IndirectBankRegisterMap add(Register reg32, Register reg64) {
