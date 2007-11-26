@@ -1,3 +1,8 @@
+2007-11-26  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
+
+	* LibunwindRegisterMapFactory.java: Adding the correct map to
+	PPC32 and PPC64 from libunwind. Still missing special registers.
+
 2007-11-23  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Frame.java (toPrint): Removed printlibrary boolean argument.
