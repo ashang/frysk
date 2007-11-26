@@ -2,6 +2,9 @@
 //
 // Copyright 2006 IBM Corp.
 // Copyright 2007 Red Hat Inc.
+// 
+// Contributed by
+// Jose Flavio Aguilar Paulino (joseflavio@gmail.com)
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -79,19 +82,19 @@ public class PPCBankRegisters {
 	.add(new BankRegister(0, 116, 4, PPC32Registers.GPR29))
 	.add(new BankRegister(0, 120, 4, PPC32Registers.GPR30))
 	.add(new BankRegister(0, 124, 4, PPC32Registers.GPR31))
-	.add(new BankRegister(0, 128, 4, "result"))
-	.add(new BankRegister(0, 132, 4, "msr"))
-	.add(new BankRegister(0, 136, 4, PPC32Registers.ARG)) //orig_r3
+	.add(new BankRegister(0, 128, 4, PPC32Registers.NIP)) //Fixme: PC I belive
+	.add(new BankRegister(0, 132, 4, PPC32Registers.MSR))
+	.add(new BankRegister(0, 136, 4, PPC32Registers.ORIGR3))
 	.add(new BankRegister(0, 140, 4, PPC32Registers.CTR))
 	.add(new BankRegister(0, 144, 4, PPC32Registers.LR))
 	.add(new BankRegister(0, 148, 4, PPC32Registers.XER))
 	.add(new BankRegister(0, 152, 4, PPC32Registers.CCR))
-	.add(new BankRegister(0, 156, 4, PPC32Registers.FPSCR))
-	.add(new BankRegister(0, 160, 4, "trap"))
-	.add(new BankRegister(0, 164, 4, "dar"))
-	.add(new BankRegister(0, 168, 4, "dsisr"))
-	.add(new BankRegister(0, 172, 4, "mq"))
-	.add(new BankRegister(0, 192, 8, PPC32Registers.FPR0))
+	.add(new BankRegister(0, 156, 4, PPC32Registers.MQ))
+	.add(new BankRegister(0, 160, 4, PPC32Registers.TRAP))
+	.add(new BankRegister(0, 164, 4, PPC32Registers.DAR))
+	.add(new BankRegister(0, 168, 4, PPC32Registers.DSISR))
+	.add(new BankRegister(0, 172, 4, PPC32Registers.RESULT))
+	.add(new BankRegister(0, 192, 8, PPC32Registers.FPR0)) // 48*4
 	.add(new BankRegister(0, 200, 8, PPC32Registers.FPR1))
 	.add(new BankRegister(0, 208, 8, PPC32Registers.FPR2))
 	.add(new BankRegister(0, 216, 8, PPC32Registers.FPR3))
@@ -123,6 +126,8 @@ public class PPCBankRegisters {
 	.add(new BankRegister(0, 424, 8, PPC32Registers.FPR29))
 	.add(new BankRegister(0, 432, 8, PPC32Registers.FPR30))
 	.add(new BankRegister(0, 440, 8, PPC32Registers.FPR31))
+	//There is a pad of 4 bytes before the FPSCR reg
+	.add(new BankRegister(0, 452, 4, PPC32Registers.FPSCR)) //(PT_FPR0 + 2*32 + 1)
 	;
 
     public static final BankRegisterMap PPC64BE = new BankRegisterMap()
@@ -159,18 +164,18 @@ public class PPCBankRegisters {
 	.add(new BankRegister(0, 240, 8, PPC64Registers.GPR30))
 	.add(new BankRegister(0, 248, 8, PPC64Registers.GPR31))
 	.add(new BankRegister(0, 256, 8, PPC64Registers.NIP))
-	.add(new BankRegister(0, 264, 8, "msr"))
-	.add(new BankRegister(0, 272, 8, PPC64Registers.ARG)) //old orig_r3
+	.add(new BankRegister(0, 264, 8, PPC64Registers.MSR)) //in gdb: .ps_offset = 264
+	.add(new BankRegister(0, 272, 8, PPC64Registers.ORIGR3))
 	.add(new BankRegister(0, 280, 8, PPC64Registers.CTR))
 	.add(new BankRegister(0, 288, 8, PPC64Registers.LR))
 	.add(new BankRegister(0, 296, 8, PPC64Registers.XER))
 	.add(new BankRegister(0, 304, 8, PPC64Registers.CCR))
-	.add(new BankRegister(0, 312, 8, "softe"))
-	.add(new BankRegister(0, 320, 8, "trap"))
-	.add(new BankRegister(0, 328, 8, "dar"))
-	.add(new BankRegister(0, 336, 8, "dsisr"))
-	.add(new BankRegister(0, 344, 8, "result"))
-	.add(new BankRegister(0, 384, 8, PPC64Registers.FPR0))
+	.add(new BankRegister(0, 312, 8, PPC64Registers.SOFTE))
+	.add(new BankRegister(0, 320, 8, PPC64Registers.TRAP))
+	.add(new BankRegister(0, 328, 8, PPC64Registers.DAR))
+	.add(new BankRegister(0, 336, 8, PPC64Registers.DSISR))
+	.add(new BankRegister(0, 344, 8, PPC64Registers.RESULT))
+	.add(new BankRegister(0, 384, 8, PPC64Registers.FPR0)) //PT_FPR0 48 
 	.add(new BankRegister(0, 392, 8, PPC64Registers.FPR1))
 	.add(new BankRegister(0, 400, 8, PPC64Registers.FPR2))
 	.add(new BankRegister(0, 408, 8, PPC64Registers.FPR3))
@@ -202,7 +207,15 @@ public class PPCBankRegisters {
 	.add(new BankRegister(0, 616, 8, PPC64Registers.FPR29))
 	.add(new BankRegister(0, 624, 8, PPC64Registers.FPR30))
 	.add(new BankRegister(0, 632, 8, PPC64Registers.FPR31))
-	;
+	.add(new BankRegister(0, 640, 4, PPC64Registers.FPSCR))
+	// Fixme: need to implement altivec registers
+	// Vector Registers are 128 bit wide
+	//.add(new BankRegister(0, 656, 16, PPC64Registers.VR0)) PT_VR0 82
+	//...
+	//.add(new BankRegister(0, 1152, 16, PPC64Registers.V31)) PT_VR0 + 31*2), index 148
+	//Need to put a 8 bytes pad here, because VSCR is 8 byte wide only 
+	.add(new BankRegister(0, 1176, 8, PPC64Registers.VSCR)) // PT_VSCR (PT_VR0 + 32*2 + 1), index 147
+	.add(new BankRegister(0, 1184, 8, PPC64Registers.VRSAVE)); // PT_VRSAVE (PT_VR0 + 33*2), index 148
 
     public static final BankRegisterMap PPC32BE_ON_PPC64BE
 	= new IndirectBankRegisterMap(ByteOrder.BIG_ENDIAN,
@@ -239,10 +252,10 @@ public class PPCBankRegisters {
 	.add("gpr29")
 	.add("gpr30")
 	.add("gpr31")
-        .add("result")
+	.add("nip")
         .add("msr")
-        .add("arg")
-        .add("ctr")
+        .add("orig_r3")
+	.add("ctr")
         .add("lr")
         .add("xer")
         .add("ccr")
@@ -281,5 +294,6 @@ public class PPCBankRegisters {
 	.add("fpr29")
 	.add("fpr30")
 	.add("fpr31")
+	.add("fpscr")
 	;
 }
