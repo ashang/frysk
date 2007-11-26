@@ -1,3 +1,8 @@
+2007-11-26  Andrew Cagney  <cagney@redhat.com>
+
+	* PPCBankRegisters.java (PPC32BE_ON_PPC64BE): Use
+	IndirectBankRegisterMap.add(Register).
+
 2007-11-26  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
 
 	* PPCBankRegisters.java: Removing "string" names for registers,
