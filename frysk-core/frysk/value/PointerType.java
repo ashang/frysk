@@ -82,6 +82,9 @@ public class PointerType
 	if (type instanceof CharType) {
 	    // XXX: ByteBuffer.slice wants longs.
 	    long addr = getBigInteger(location).longValue();
+	    // Null pointer
+	    if (addr == 0)
+		return;
 	    writer.print(" \"");
 	    while (true) {
 		Location l = new ByteBufferLocation(memory, addr,
@@ -143,12 +146,13 @@ public class PointerType
 	// Evaluate length and offset of slice.
 	long offset = v.asLong() + i.asLong()*type.getSize();	
 	int len = (int)(j.asLong() - i.asLong() + 1)*type.getSize();	
+	
 	// Create a simple memory location with it.
 	Location loc = PieceLocation.createSimpleLoc
 	               (offset, len, taskMem);
 	
 	/* Determine return type.
-	 * Note: Slicing can give one D or multi-D results 
+	 * Note: Slicing can give one-D or multi-D results 
 	 * depending on the type of value being pointed to.
          */
 	

@@ -1,5 +1,7 @@
 2007-11-26  Teresa Thomas  <tthomas@redhat.com>
 
+	* PointerType.java (toPrint): Return on null ptr.
+
 	* PointerType.java (slice): New.
 	* TestPointer.java (testCharPointerSlice): New test.
 	
