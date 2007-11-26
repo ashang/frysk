@@ -1,3 +1,11 @@
+2007-11-26  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
+
+	* PPC64Registers.java: Adding some ptrace registers, ordering the
+	registers like they are found in mcontext structure and adding
+	some comments to explain some special regs.
+
+	* PPC32Registers.java: Same as above.
+
 2007-11-20  Jose Flavio Aguilar Paulino <jflavio@br.ibm>
 	
 	* PPC64Registers.java: Renaming CR register to CCR, 
