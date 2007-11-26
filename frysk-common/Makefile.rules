@@ -434,7 +434,7 @@ autogen: clean
 
 SUFFIXES += .jar
 .jar.o:
-	$(GCJCOMPILE) -fjni -c $<
+	$(GCJCOMPILE) -c $<
 
 # Since automake only adds GCJCOMPILE to Makefile.in when its seen
 # .java source, provide our own definition.

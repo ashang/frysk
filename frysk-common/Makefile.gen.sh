@@ -408,10 +408,9 @@ cat <<EOF
 # the relevant files.
 
 noinst_LIBRARIES += lib${GEN_DIRNAME}.a
-if JAR_COMPILE
-${sources} = ${GEN_DIRNAME}.jar
-else
 ${sources} =
+if JAR_COMPILE
+${sources} += ${GEN_DIRNAME}.jar
 endif
 GEN_GCJ_LDADD_LIST += lib${GEN_DIRNAME}.a
 
@@ -541,9 +540,7 @@ for suffix in .cxx .c .hxx .s .S .c-sh .c-in .cxx-sh .cxx-in; do
             # Generate the rules for arch32 test
 	    echo_arch32_PROGRAMS ${name} ${name}${s}
 	else
-	    echo "if !JAR_COMPILE"
 	    echo "${sources} += ${file}"
-	    echo "endif"
 	fi
         case "${suffix}" in
 	    *-in | *-sh)
