@@ -1,3 +1,7 @@
+2007-11-26  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (--jni): New option.
+
 2007-11-23  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (.java-sh.java): Add mkdir -p.

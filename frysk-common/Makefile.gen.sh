@@ -40,11 +40,10 @@
 
 if test $# -eq 0 ; then
     cat <<EOF 1>&2
-Usage: $0 [ --cni ] <source-dir>... <.jar-file>... <_JAR-macro>...
+Usage: $0 [ --cni | --jni ] <source-dir>... <.jar-file>... <_JAR-macro>...
 
---cni:
-
-Include CNI directories in build.
+--cni: Include CNI directories in build.
+--jni: Include JNI directories in build and build with JNI abi.
 
 <source-dir>:
 
@@ -68,6 +67,7 @@ EOF
 fi
 
 cni=false
+jni=false
 dirs=
 jars=
 JARS=
@@ -75,7 +75,8 @@ GEN_ARGS="$@"
 while test $# -gt 0
 do
   case "$1" in
-      --cni ) cni=true ;;
+      --cni ) cni=true ; jni=false ;;
+      --jni ) jni=true ; cni=false ;;
       *.jar ) jars="${jars} $1" ;;
       *_JAR ) JARS="${JARS} $1" ;;
       * ) dirs="${dirs} $1" ;;
@@ -121,8 +122,12 @@ JARS=`echo ${JARS}`
     -o -path '[A-Za-z]*\.c-in' -print \
     -o -path '[A-Za-z]*\.cxx' -print \
     -o -path '*/cni/[A-Za-z]*\.[sS]' -print \
+    -o -path '*/jni/[A-Za-z]*\.[sS]' -print \
     -o -type f -name 'test*' -print
-    ) | if $cni ; then cat ; else grep -v '/cni/' ; fi | sort -f > files.tmp
+    ) \
+| if $cni ; then cat ; else grep -v '/cni/' ; fi \
+| if $jni ; then cat ; else grep -v '/jni/' ; fi \
+| sort -f > files.tmp
 
 if cmp files.tmp files.list > /dev/null 2>&1
 then
@@ -546,6 +551,15 @@ for suffix in .cxx .c .hxx .s .S .c-sh .c-in .cxx-sh .cxx-in; do
     done
 done
 
+# What type of build?
+if $cni ; then
+    : default
+elif $jni ; then
+    echo "AM_GCJFLAGS += -fjni"
+else
+    : default
+fi
+
 # Grep the cni/*.cxx files forming a list of included files.  Assume
 # these are all generated from .class files.  The list can be pruned a
 # little since, given Class$Nested and Class, generating Class.h will
@@ -557,7 +571,7 @@ done
 # #define A_FILE "a/file/dot.h"
 
 print_header "... *.{hxx,cxx}=.h"
-grep -e '/cni/' files.list \
+grep -e '/cni/' -e '/jni/' files.list \
     | xargs -r grep -H \
     	-e '#include ".*.h"' \
         -e '#define [A-Z_]* ".*.h"' \
