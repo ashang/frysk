@@ -105,30 +105,17 @@ GEN_GCJ_LDADD_LIST =
 # RPATH to wire into in-build-tree program that need to access those
 # shared libraries.
 
-# Convert LDADD's .a into -L<dir> -llib
-GEN_GCJ_SO_FLAGS = \
-	$(foreach lib, $(GEN_GCJ_LDADD_LIST), \
-		$(if $(filter -L%,$(lib)), $(lib)) \
-		$(if $(filter -l%,$(lib)), $(lib)) \
-		$(if $(filter %.a,$(lib)), \
-			$(patsubst %,-L%,$(dir $(lib))) \
-			$(patsubst lib%.a,-l%,$(notdir $(lib))) \
-			) \
-		)
 # Just the directories.
 GEN_GCJ_SO_DIRS = \
-	$(patsubst -L%,%,$(filter -L%, $(GEN_GCJ_SO_FLAGS)))
+	$(sort $(absdir $(foreach lib, $(GEN_GCJ_LDADD_LIST), \
+	       $(if $(filter -L%,$(lib)), \
+	       	    $(patsubst -L,%,$(lib))) \
+	       $(if $(filter %.so,$(lib)), \
+	       	    $(patsubst %,-L%,$(dir $(lib)))) \
+	)))
 # Add absolute versions of each directory.
 GEN_GCJ_BUILDTREE_RPATHS = \
-	$(patsubst %/./,%, $(patsubst %/.,%, \
-		$(foreach lib, $(GEN_GCJ_SO_DIRS), \
-			$(if $(filter /%,$(lib)), $(lib)) \
-			$(if $(filter .%,$(lib)), \
-				$(patsubst %,@abs_top_builddir@/%, $(lib)) \
-				$(lib) \
-				) \
-			) \
-		))
+	$(patsubst %/./,%, $(patsubst %/.,%, $(GEN_GCJ_SO_DIRS)))
 GEN_GCJ_BUILDTREE_RPATH = \
 	$(subst $(space),:,$(sort $(GEN_GCJ_BUILDTREE_RPATHS)))
 GEN_GCC_BUILDTREE_RPATHS = $(top_builddir)/elfutils/libdw

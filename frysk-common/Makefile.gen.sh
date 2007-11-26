@@ -270,11 +270,7 @@ echo_LDFLAGS ()
     local name_=`echo_name_ $1`
     local class=`echo $1 | tr '[/]' '[.]'`
     echo "${name_}_LDFLAGS = --main=${class}"
-    echo "if JAR_COMPILE"
-    echo "${name_}_LDFLAGS += \${GEN_GCJ_SO_FLAGS}"
-    echo "else"
     echo "${name_}_LDADD = \${GEN_GCJ_LDADD_LIST}"
-    echo "endif"
     case "${name}" in
 	*dir/* )
             # set during non-standard builds such as RHEL 4.
