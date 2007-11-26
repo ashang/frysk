@@ -1,3 +1,11 @@
+2007-11-26  Andrew Cagney  <cagney@redhat.com>
+
+	* X87Registers.java (XMM0, ..., XMM15): New.
+	(FCW, FSW, RIP, EIP, CS, RDP, DP, DS, MXCSR, MXCSR_MASK)
+	(FLOAT32, FLOAT64, XMM32, XMM64): New.
+	(FLOAT): Delete.
+	(FCTRL, FSTAT, FTAG, FLIP, FLDP): Delete.
+	
 2007-11-26  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
 
 	* PPC64Registers.java: Adding some ptrace registers, ordering the

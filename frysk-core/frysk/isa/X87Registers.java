@@ -71,7 +71,8 @@ public class X87Registers {
 	= new Register("fpr7", StandardTypes.FLOAT80L_T);
 
     // The virtual floating-point register stack - the user sees the
-    // above registers as a stack.
+    // above registers as a stack.  The F*SAVE instructions also dump
+    // the registers into memory in this order.
 
     public final static Register ST0
 	= new Register("st0", StandardTypes.FLOAT80L_T);
@@ -90,8 +91,8 @@ public class X87Registers {
     public final static Register ST7
 	= new Register("st7", StandardTypes.FLOAT80L_T);
 
-    // The "abstract" multi-media registers - again the user sees part
-    // of the raw registers.
+    // 64-bit media registers (overlayed on the floating-point
+    // registers).
 
     public final static Register MMX0
 	= new Register("mmx0", StandardTypes.FLOAT80L_T);
@@ -110,35 +111,110 @@ public class X87Registers {
     public final static Register MMX7
 	= new Register("mmx7", StandardTypes.FLOAT80L_T);
     
-    // The floating-point control registers.
+    // 128-bit media registers; the IA-32 has 8; x86-64 has 16.
 
-    public final static Register FCTRL // control word/register
-	= new Register("fctrl", StandardTypes.INT16L_T);
-    public final static Register FSTAT // status word/register
-	= new Register("fstat", StandardTypes.INT16L_T);
-    public final static Register FTAG // tag word/register
-	= new Register("ftag", StandardTypes.INT16L_T);
+    public static final Register XMM0
+	= new Register("xmm0", StandardTypes.INT128L_T);
+    public static final Register XMM1
+	= new Register("xmm1", StandardTypes.INT128L_T);
+    public static final Register XMM2
+	= new Register("xmm2", StandardTypes.INT128L_T);
+    public static final Register XMM3
+	= new Register("xmm3", StandardTypes.INT128L_T);
+    public static final Register XMM4
+	= new Register("xmm4", StandardTypes.INT128L_T);
+    public static final Register XMM5
+	= new Register("xmm5", StandardTypes.INT128L_T);
+    public static final Register XMM6
+	= new Register("xmm6", StandardTypes.INT128L_T);
+    public static final Register XMM7
+	= new Register("xmm7", StandardTypes.INT128L_T);
+    public static final Register XMM8
+	= new Register("xmm8", StandardTypes.INT128L_T);
+    public static final Register XMM9
+	= new Register("xmm9", StandardTypes.INT128L_T);
+    public static final Register XMM10
+	= new Register("xmm10", StandardTypes.INT128L_T);
+    public static final Register XMM11
+	= new Register("xmm11", StandardTypes.INT128L_T);
+    public static final Register XMM12
+	= new Register("xmm12", StandardTypes.INT128L_T);
+    public static final Register XMM13
+	= new Register("xmm13", StandardTypes.INT128L_T);
+    public static final Register XMM14
+	= new Register("xmm14", StandardTypes.INT128L_T);
+    public static final Register XMM15
+	= new Register("xmm15", StandardTypes.INT128L_T);
 
-    public final static Register FLIP // [last] instruction pointer
-	= new Register("flip", StandardTypes.INT64L_T);
-    public final static Register FLDP // [last] data (operand) pointer
-	= new Register("fldp", StandardTypes.INT64L_T);
+    // The floating-point control registers
 
-    public final static Register FOP // opcode
-	= new Register("fop", StandardTypes.INT32L_T);
+    // control word
+    public static final Register FCW
+	= new Register("fcw", StandardTypes.INT16L_T);
+    // status word
+    public static final Register FSW
+	= new Register("fcw", StandardTypes.INT16L_T);
+    // tag word
+    public static final Register FTW
+	= new Register("ftw", StandardTypes.INT8L_T);
+    // opcode
+    public static final Register FOP
+	= new Register("fop", StandardTypes.INT16L_T);
+    // last instruction pointer; 32- and 64- are different.
+    public static final Register RIP // 64-bit
+	= new Register("fip", StandardTypes.INT64L_T);
+    public static final Register EIP // 32-bit
+	= new Register("fip", StandardTypes.INT32L_T);
+    public static final Register CS // 32-bit
+	= new Register("fcs", StandardTypes.INT16L_T);
+    // last data pointer; 32- and 64- are different.
+    public static final Register RDP // 64-bit
+	= new Register("frdp", StandardTypes.INT64L_T);
+    public static final Register DP // 32-bit
+	= new Register("fdp", StandardTypes.INT32L_T);
+    public static final Register DS // 32-bit
+	= new Register("fds", StandardTypes.INT16L_T);
+    // media instruction control/status register
+    public static final Register MXCSR
+	= new Register("mxcsr", StandardTypes.INT32L_T);
+    public static final Register MXCSR_MASK
+	= new Register("mxcsr_mask", StandardTypes.INT32L_T);
 
-
-    public final static RegisterGroup FLOAT
+    public final static RegisterGroup FLOAT32
 	= new RegisterGroup("float",
 			    new Register[] {
 				ST0, ST1, ST2, ST3, ST4, ST5, ST6, ST7,
-				FCTRL, FSTAT, FTAG, FLIP, FLDP, FOP
+				FCW, FSW, FTW, FOP,
+				EIP, CS, DP, DS,
+				
+			    });
+    public final static RegisterGroup FLOAT64
+	= new RegisterGroup("float",
+			    new Register[] {
+				ST0, ST1, ST2, ST3, ST4, ST5, ST6, ST7,
+				FCW, FSW, FTW, FOP,
+				RIP, RDP
 			    });
 
     public final static RegisterGroup MMX
 	= new RegisterGroup("mmx",
 			    new Register[] {
-				MMX0, MMX1, MMX2, MMX3, MMX4, MMX5, MMX6, MMX7
+				MMX0, MMX1, MMX2, MMX3, MMX4, MMX5, MMX6, MMX7,
+				MXCSR, MXCSR_MASK
 			    });
 
+    public final static RegisterGroup XMM32
+	= new RegisterGroup("xmm",
+			    new Register[] {
+				XMM0, XMM1, XMM2, XMM3,
+				XMM4, XMM5, XMM6, XMM7,
+			    });
+    public final static RegisterGroup XMM64
+	= new RegisterGroup("xmm",
+			    new Register[] {
+				XMM0, XMM1, XMM2, XMM3,
+				XMM4, XMM5, XMM6, XMM7,
+				XMM8, XMM9, XMM10, XMM11,
+				XMM12, XMM13, XMM15, XMM15,
+			    });
 }
