@@ -218,6 +218,7 @@ MKENUM = $(srcdir)/common/mkenum.sh
 SUFFIXES += .mkenum
 .mkenum.java:
 	rm -f $*.tmp
+	mkdir -p `dirname $*`
 	$(SHELL) $(MKENUM) < $(srcdir)/$*.mkenum > $*.tmp $@
 	chmod a-w $*.tmp
 	mv -f $*.tmp $@
@@ -225,6 +226,7 @@ SUFFIXES += .mkenum
 SUFFIXES += .shenum
 .shenum.java:
 	rm -f $*.tmp
+	mkdir -p `dirname $*`
 	CC='$(CC)'; export CC ; \
 	$(SHELL) $< | $(SHELL) $(MKENUM) > $*.tmp $@
 	chmod a-w $*.tmp
@@ -236,6 +238,7 @@ SUFFIXES += .shenum
 SUFFIXES += .java-sh
 .java-sh.java:
 	rm -f $*.tmp
+	mkdir -p `dirname $*`
 	CC='$(CC)'; export CC ; \
 	$(SHELL) $< > $*.tmp $@
 	chmod a-w $*.tmp
@@ -243,6 +246,7 @@ SUFFIXES += .java-sh
 SUFFIXES += cxx-sh
 .cxx-sh.cxx:
 	rm -f $*.tmp
+	mkdir -p `dirname $*`
 	CC='$(CC)'; export CC ; \
 	$(SHELL) $< > $*.tmp $@
 	chmod a-w $*.tmp
@@ -250,6 +254,7 @@ SUFFIXES += cxx-sh
 SUFFIXES += ..c-sh
 .c-sh.c:
 	rm -f $*.tmp
+	mkdir -p `dirname $*`
 	CC='$(CC)'; export CC ; \
 	$(SHELL) $< > $*.tmp $@
 	chmod a-w $*.tmp
@@ -489,72 +494,93 @@ ANTLR = $(JAVA) \
 
 SUFFIXES += .antlred .g
 .g.antlred:
-	mkdir -p $*.tmp
-	b=`basename $*` ; \
-	d=`dirname $*` ; \
-	cd $$d ; \
-	$(ANTLR) -o $$b.tmp @abs_srcdir@/$*.g
-	@echo "Setting up generated files ..." ; \
-	d=$*.tmp ; for gen in $$d/*.java ; do \
+	@echo ""
+	@echo Creating working directory ...
+	@echo ""
+	@d=`dirname $*` ; t=$*.tmp ; set -xe ; \
+	mkdir -p $$t/$$d
+	@echo ""
+	@echo Running antlr in output directory to pick up previously generated files ...
+	@echo ""
+	@d=`dirname $*` ; t=$*.tmp ; set -xe ; \
+	cd $$d ; $(ANTLR) -o `basename $$t`/$$d @abs_srcdir@/$*.g
+	@echo ""
+	@echo Setting up generated files ...
+	@echo ""
+	@b=`basename $*` ; d=`dirname $*` ; t=$*.tmp ; set -xe ; \
+	for gen in $$t/$$d/*.java ; do \
 	    b=`basename $$gen .java` ; \
-	    ( set -x ; mv $$gen $$d/$$b.gen ) ; \
-	    ( set -x ; rm -f $$d/../$$b.java ) ; \
-	    for f in @abs_srcdir@/`dirname $$d`/$$b.sed /dev/null ; do \
-		if test -r $$f ; then \
-		    ( set -x ; cp $$f $$d/$$b.sed ) ; \
-		    break ; \
-	        fi ; \
-	    done ; \
+	    mv $$gen $$t/$$b.gen ; \
+	    i=@abs_srcdir@/$$d/$$b.sed ; \
+	    o=$$t/$$b.sed ; \
+   	    if test -r $$i ; then \
+		cp $$i $$o.sed ; \
+	    else \
+		cp /dev/null $$o ; \
+	    fi ; \
 	done
-	@edits=true ; d=$*.tmp ; \
+	@echo ""
+	@echo Running repeated builds ...
+	@echo ""
+	@d=`dirname $*` ; t=$*.tmp ; set -xe ; \
+	edits=true ; \
 	while $$edits ; do \
 	    edits=false ; \
-	    echo "Applying fixes ..." ; \
-	    for gen in $$d/*.gen ; do \
+	    for gen in $$t/*.gen ; do \
 		b=`basename $$gen .gen` ; \
-		( set -x ; sed -f $$d/$$b.sed $$gen > $$d/$$b.java ) \
-		     || exit 1 ; \
-	    done ; \
-	    echo "Parsing compiler warnings ..." ; \
-	    rm -f $$d/*.antlr-fixes ; \
-	    ( set -x ; rm -rf $$d/classes ; mkdir -p $$d/classes ) ; \
-	    if test "x@HAVE_ECJ_TRUE@" = x ; then \
-		( set -x ; $(GIJ) 2>&1 \
-		    --classpath $(ECJ_JAR):$(CLASSPATH) \
-		    org.eclipse.jdt.internal.compiler.batch.Main \
-		    \
-		    -d $$d/classes \
-		    -warn:+semicolon \
-		    -sourcepath $(SOURCEPATH) \
-		    -classpath $(CLASSPATH) \
-		    $$d/*.java ) ; \
-	    else \
-		( set -x ; $(GCJCOMPILE) 2>&1 \
-		    -C \
-		    -d $$d/classes \
-		    $$d/*.java ) ; \
-	    fi | ( set -x ; cd $$d ; $(AWK) \
-		-f @abs_srcdir@/common/antlr-warnings.awk ) ; \
-	    echo "Merging `sort -n $$d/*.antlr-fixes 2>/dev/null | uniq | wc -l` fixes" ; \
-	    for fix in $$d/*.antlr-fixes ; do \
-		b=`basename $$fix .antlr-fixes` ; \
-		test -r "$$d/$$b.sed" || continue ; \
-		( set -x ; sort -n $$d/$$b.sed $$fix | uniq > $$d/$$b.tmp ) ; \
-		if ( set -x ; cmp -s $$d/$$b.tmp $$d/$$b.sed ) ; then \
-		    echo "***" ; \
-		    echo "*** $$d/$$b.sed already contains all fixes!" ; \
-		    echo "*** Assuming errors are real." ; \
-		    echo "***" ; \
-		    continue ; \
-		fi ; \
-		mv -f $$d/$$b.tmp $$d/$$b.sed ; \
-		edits=true ; \
+	        echo "Applying fixes for $$b ..." ; \
+		for fix in $$t/*.sed ; do \
+		    f=`basename $$fix .sed` ; \
+		    sed -f $$fix $$t/$$f.gen > $$t/$$d/$$f.java ; \
+		done ; \
+		echo "Parsing compiler warnings from $$b..." ; \
+		rm -f $$t/*.antlr-fixes ; \
+	        rm -rf $$t/classes ; mkdir -p $$t/classes ; \
+		if test "x@HAVE_ECJ_TRUE@" = x ; then \
+		    $(GIJ) 2>&1 \
+			--classpath $(ECJ_JAR):$(CLASSPATH) \
+			org.eclipse.jdt.internal.compiler.batch.Main \
+			\
+			-d $$t/classes \
+			-warn:+semicolon \
+			-sourcepath  $$t:$(SOURCEPATH) \
+			-classpath $(CLASSPATH) \
+			$$t/$$d/$$b.java || true ; \
+		else \
+		    $(GCJCOMPILE) 2>&1 \
+			-C \
+			-I $$t \
+			-d $$t/classes \
+			$$t/$$d/$$b.java || true ; \
+		fi | ( \
+		    cd $$t ; \
+		    $(AWK) -f @abs_srcdir@/common/antlr-warnings.awk \
+		) ; \
+		echo "Merging `sort -n $$t/*.antlr-fixes 2>/dev/null | uniq | wc -l` fixes" ; \
+		for fix in $$t/*.antlr-fixes ; do \
+		    b=`basename $$fix .antlr-fixes` ; \
+		    test -r "$$t/$$b.sed" || continue ; \
+ 		    sort -n $$t/$$b.sed $$fix | uniq > $$t/$$b.tmp ; \
+		    if ( set -x ; cmp -s $$t/$$b.tmp $$t/$$b.sed ) ; then \
+			echo "***" ; \
+			echo "*** $$t/$$b.sed already contains all fixes!" ; \
+			echo "*** Assuming errors are real." ; \
+			echo "***" ; \
+			continue ; \
+		    fi ; \
+		    mv -f $$t/$$b.tmp $$t/$$b.sed ; \
+ 		    edits=true ; \
+	        done ; \
 	    done ; \
 	done || true
-	@echo Installing generated files files ... ; \
-	( cd $*.tmp ; for f in *.java *.txt ; do \
-	    ( set -x ; cp $$f ../$$f ) ; \
-	done )
+	@echo ""
+	@echo Installing generated files files ...
+	@echo ""
+	@d=`dirname $*` ; t=$*.tmp ; set -xe ; \
+	for f in $$t/$$d/*.java $$t/$$d/*.txt ; do \
+	    b=`basename $$f` ; \
+	    cp $$f $$d/$$b ; \
+	done
 	rm -rf $*.antlred
 	touch $*.antlred
 

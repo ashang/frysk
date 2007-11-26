@@ -1,3 +1,8 @@
+2007-11-22  Rick Moseley  <rmoseley@redhat.com>
+
+	* TestPeekCommand.java: Fix bz #5396; added test for when
+	no params are entered for command(testPeekCommandNoParameter).
+
 2007-11-21  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* PeekCommand.java (interpret): Check that arguments are > 0.

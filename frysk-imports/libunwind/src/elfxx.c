@@ -158,14 +158,14 @@ elf_w (lookup_symbol) (unw_addr_space_t as,
 		  Debug (16, "0x%016lx info=0x%02x %s\n",
 			 (long) val, sym->st_info, strtab + sym->st_name);
 
-		  min_dist = (Elf_W (Addr)) (ip - val);
-		  if (buf)
+		  if ((Elf_W (Addr)) (ip - val) < min_dist)
 		    {
+		      min_dist = (Elf_W (Addr)) (ip - val);
 		      strncpy (buf, strtab + sym->st_name, buf_len);
-		      buf[buf_len] = '\0';
+		      buf[buf_len - 1] = '\0';
+		      if (strlen (strtab + sym->st_name) >= buf_len)
+			ret = -UNW_ENOMEM;
 		    }
-		  if (strlen (strtab + sym->st_name) > buf_len)
-		    ret = -UNW_ENOMEM;
 		}
 	    }
 	  break;

@@ -75,7 +75,7 @@ public abstract class CompositeType
 	}
     }
     
-    static class StaticMember extends Member{
+    public static class StaticMember extends Member{
 
 	public StaticMember(int index, String name, Type type, Access access,
 		boolean inheritance) {
@@ -87,7 +87,7 @@ public abstract class CompositeType
     /**
      * Class members; package private.
      */
-    static class DynamicMember extends Member{
+    public static class DynamicMember extends Member{
 	// XXX: To keep getValue working.
 	final long offset;
 	final int bitOffset;
@@ -213,8 +213,15 @@ public abstract class CompositeType
     
     public CompositeType addStaticMember(String name, Type type, long offset,
 		   Access access){
-	return add(name, type, offset, access, -1, -1,false, false);
+	return add(name, type, offset, access, -1, -1,true, false);
     }
+    
+    public CompositeType addStaticMember(String name, Type type, long offset,
+		   Access access, int bitOffset,
+		   int bitLength) {
+	return add(name, type, offset, access, bitOffset, bitLength, true, false);
+    }
+
     /**
      * Iterate through the class types.
      */

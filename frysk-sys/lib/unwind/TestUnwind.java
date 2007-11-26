@@ -73,9 +73,6 @@ public class TestUnwind
 	public int getDynInfoListAddr (byte[] dilap) {
 	    return 0;
 	}
-	public ProcName getProcName (long addr, int maxNameSize) {
-	    return null;
-	}
 	public void putUnwindInfo (ProcInfo procInfo) {
 	}
 	public int resume (Cursor cursor) {

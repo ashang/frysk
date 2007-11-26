@@ -104,6 +104,4 @@ public abstract class AddressSpace
     public abstract int accessFPReg (int regnum, byte[] fpvalp, boolean write);
 
     public abstract int resume (Cursor cursor);
-
-    public abstract ProcName getProcName (long addr, int maxSize);
 }

@@ -107,7 +107,7 @@ function sed_comment(code) {
     return "s," code ",// " code ","
 }
 
-prob ~ /Unnecessary semicolon/ {
+prob ~ /Unnecessary semicolon/ || prob ~ /An empty declaration is a deprecated feature/ {
     if (code ~ /};/) {
 	sed = "s,};,} // ;,"
     } else if (code ~ /;;$/) {

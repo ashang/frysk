@@ -4,6 +4,15 @@
 	revised offsets of all registers (mainly floating pointer), for
 	PPC32 and PPC64.
 
+2007-11-22  Andrew Cagney  <cagney@redhat.com>
+
+	* X86BankRegisters.java (IA32_ON_X8664): Use
+	IndirectBankRegisterMap .add(Register) and
+	.add(Register,Register).
+
+	* IndirectBankRegisterMap.java (add(Register)): New.
+	(add(Register,Register)): New.
+
 2007-11-22  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
 	
 	* PPCBankRegisters.java: Correcting the bank registers PPC32on64.

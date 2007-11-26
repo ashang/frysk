@@ -401,6 +401,53 @@ cloned.</p>
   <tt>git-bisect</tt></a> will do a binary search through the revision history
   to zero in on the first "bad" commit. At each stage you tell it whether its
   current choice is "good" or "bad" before it chooses the next.
+
+<a name="diff"><h2>Importing on vendor branches and merging upstream sources</h2></a>
+
+<p>This is an example of importing a new libunwind version from upstream
+by putting it on the frysk vendor branch in git and then merging it
+to trunk.</p>
+
+<ul>
+<li> Get the libunwind vendor branch
+     <code>$ git-checkout vendor/LIBUNWIND</code>
+<li> Remove old stuff that needs to be replaced.
+     <code>$ rm -rf frysk-import/libunwind</code>
+<li> Get upstream stuff and put it in
+     (make sure you don't accidentially copy over the upstream .git dir)
+     <code>$ cp -r ~/upstream/libunwind frysk-import/
+<li> Commit (use a commit messsage like "Import of libunwind version   
+     libunwind-20071122") and push
+     <code>$ git-commit -a && git-push</code>
+</ul>
+
+<p>The vendor branch is now updated, now we merge the result to the trunk.</p>
+
+<ul>
+<li> Switch to trunk
+  <code>$ git-checkout master</code>
+<li> Merge new vendor branch to the trunk
+     <code>$ git-merge vendor/LIBUNWIND</code>
+<li> Resolve the conflicts using <code>git-rm</code> for files not needed,
+     editing files with conflict markers and <code>git-add</code> each one
+     after resolving the issues.
+<li> Do a full clean build and double check the test results.
+     [.. lots of time passes...]
+<li> Double check your patches (all should now be staged in the git index)
+     with <code>git-diff --cached</a>
+<li> Commit and push the result (git will have generated a merge message
+     for you already that you can use in the commit).
+     <code>$ got commit && git push</code>
+</ul>
+
+<p>If too much time has passed since the start the push will fail because
+someone else will have pushed something already. Trying to do
+a <code>git fetch origin; git rebase origin</code> seem to fail, so
+you have to just do a <code>git pull && git push</code> then (which
+creates an extra merge message, but that seems just fine).</p>
+<p>
+Comments on how to improve this process appreciated.
+
 </td>
 </tr>
 </table>

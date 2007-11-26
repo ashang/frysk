@@ -231,7 +231,7 @@ public class DebugInfoFrame extends FrameDecorator {
 		writer.print(line.getLine());
 	    } else {
 		Line line = this.getLines()[0];
-		writer.print(line.getFile().getName());
+		writer.print(".../"+line.getFile().getName());
 		writer.print("#");
 		writer.print(line.getLine());
 	    }

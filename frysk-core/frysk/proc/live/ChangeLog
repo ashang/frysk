@@ -1,3 +1,8 @@
+2007-11-22  Andrew Cagney  <cagney@redhat.com>
+
+	* TestByteBuffer.java (testMemoryBufferCapacity()): Mark as
+	unresolved, bug 5394.:
+
 2007-11-22  Zhao Shujing  <pearly.zhao@oracle.com>
 	
 	* TestByteBuffer.java(testMemoryBufferCapacity()): New test.

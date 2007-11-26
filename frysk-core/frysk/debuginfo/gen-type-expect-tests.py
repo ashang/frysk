@@ -41,7 +41,6 @@
 
 import os,posix,sys
 import re
-from subprocess import *
 from os.path import *
 
 ########################################################################

@@ -53,20 +53,35 @@ public class CountDownLatch {
         this.count = count;
     }
 
-    public void await()
+    public synchronized void await()
         throws InterruptedException {
-        await(0);
+        while (count != 0) {
+            try {
+                wait();
+            }
+            catch (InterruptedException e) {
+                throw e;
+            }
+        }
     }
 
     public synchronized boolean await(long timeout)
         throws InterruptedException {
         if (count == 0)
             return true;
-        try {
-            wait(timeout);
-        }
-        catch (InterruptedException e) {
-            throw e;
+        long now = System.currentTimeMillis();
+        while (count != 0) {
+            long later = now + timeout;
+            try {
+                wait(timeout);
+            }
+            catch (InterruptedException e) {
+                throw e;
+            }
+            now = System.currentTimeMillis();
+            if (now >= later)
+                break;
+            timeout = later - now;
         }
         // Either the count is 0 or we timed out
         return count == 0;

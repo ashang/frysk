@@ -1,3 +1,35 @@
+2007-11-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DebugInfoFrame.java: Added ".../" befor abbrivated file path.
+	* DebugInfoStackFactory.java: Removed misc print statement.
+
+2007-11-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestTypeEntry.java (testClassWithStaticMembers): enabled
+	test.
+
+2007-11-22  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TypeEntry.java (getGccStructOrClassType): Now checks for static
+	member functions.
+	(hasArtifitialParameter): New.
+
+2007-11-22  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestTypeEntry.java (testClassWithStaticMembers): Added test for static
+	and dynamic data members and member functions.
+	(getGccStructOrClassType): Added Check for static data members.
+
+2007-11-22  Andrew Cagney  <cagney@redhat.com>
+
+	* gen-type-expect-tests.py: Do not import "subprocess".
+
+2007-11-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DebugInfoStackFactory.java (printTaskStackTrace): Added
+	numberOfFrames argument.
+	(printVirtualTaskStackTrace): Ditto.
+
 2007-11-20  Stan Cox  <scox@redhat.com>
 
 	* TypeEntry.java (getType): Remove reference to DwarfDie.getBaseType().

@@ -1,3 +1,7 @@
+2007-11-22  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CompositeType.java (addStaticMember): New overloaded functions.
+
 2007-11-21  Teresa Thomas  <tthomas@redhat.com>
 
 	* ArrayType.java (slice): New.

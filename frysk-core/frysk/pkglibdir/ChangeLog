@@ -1,3 +1,11 @@
+2007-11-22  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
+
+	* funit-long-stack.c: New.
+
+2007-11-22  Andrew Cagney  <cagney@redhat.com>
+
+	* gen-type-funit-tests.py: Do not import "subprocess".
+
 2007-11-19  Stan Cox  <scox@redhat.com>
 
 	* gen-type-funit-tests.py (main): Allow for improved formatting of

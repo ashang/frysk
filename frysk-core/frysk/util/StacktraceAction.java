@@ -79,10 +79,10 @@ public abstract class StacktraceAction
   private Event event;
 
   boolean elfOnly;
+  private final int numberOfFrames;
   boolean printParameters;
   boolean printScopes;
   boolean fullpath;
-  boolean printSourceLibrary;
   private boolean virtualFrames;
   
   protected static Logger logger = Logger.getLogger("frysk"); 
@@ -93,6 +93,7 @@ public abstract class StacktraceAction
    * @param theProc the process to run the stack trace on.
    * @param theEvent an event to run on completion of the stack trace. For
    *          example: Stop the eventLoop and exit the program.
+   * @param numberOfFrames number of frames to print pass value <=0 to print all frames.
    * @param elfOnly if true print an elf only stack back trace not referring to any
    *            stack debug information. Otherwise, print a rich stack trace using
    *            debug information.
@@ -104,19 +105,19 @@ public abstract class StacktraceAction
    *            file path is printed other wise only the name of the file is printed.
    * @throws ProcException
    */
-  public StacktraceAction (PrintWriter printWriter, Proc theProc, Event theEvent,boolean elfOnly, boolean virtualFrames, boolean printParameters, boolean printScopes, boolean fullpath, boolean printSourceLibrary)
+  public StacktraceAction (PrintWriter printWriter, Proc theProc, Event theEvent, int numberOfFrames, boolean elfOnly, boolean virtualFrames, boolean printParameters, boolean printScopes, boolean fullpath)
   {
      event = theEvent;
-
+     
+     this.numberOfFrames = numberOfFrames;
      this.virtualFrames = virtualFrames;
      this.elfOnly = elfOnly;
      this.printParameters = printParameters;
      this.printScopes = printScopes;
      this.fullpath = fullpath;
-     this.printSourceLibrary = printSourceLibrary;
      
      this.printWriter = printWriter;
-    Manager.eventLoop.add(new InterruptEvent(theProc));
+     Manager.eventLoop.add(new InterruptEvent(theProc));
   }  
 
   public final void existingTask (Task task)
@@ -150,14 +151,15 @@ public abstract class StacktraceAction
 	Task task =  (Task) iter.next();
 	
 	if(elfOnly){
-	    StackFactory.printTaskStackTrace(printWriter,task,printSourceLibrary);
+	    StackFactory.printTaskStackTrace(printWriter,task,fullpath, numberOfFrames);
 	}else{
 	    if(virtualFrames){
-		DebugInfoStackFactory.printVirtualTaskStackTrace(printWriter,task,printParameters,printScopes,fullpath);
+		DebugInfoStackFactory.printVirtualTaskStackTrace(printWriter,task,numberOfFrames, printParameters,printScopes,fullpath);
 	    }else{
-		DebugInfoStackFactory.printTaskStackTrace(printWriter,task,printParameters,printScopes,fullpath);
+		DebugInfoStackFactory.printTaskStackTrace(printWriter,task,numberOfFrames, printParameters,printScopes,fullpath);
 	    }
 	}
+	printWriter.println();
       }
     logger.log(Level.FINE, "{0} exiting printTasks\n", this);
   }

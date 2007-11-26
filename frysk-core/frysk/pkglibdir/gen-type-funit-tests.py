@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import os,posix,sys
-from subprocess import *
 from os.path import *
 
 ########################################################################

@@ -188,7 +188,7 @@ public class TestFrameDebugInfo
       Task task = (new DaemonBlockedAtSignal("funit-stack-inlined")).getMainTask();
     StringWriter stringWriter = new StringWriter();
     
-    DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(stringWriter), task, true, true, true);
+    DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(stringWriter), task,0, true, true, true);
     
     assertTrue("contains inline", stringWriter.getBuffer().toString().contains("inline"));
     assertTrue("contains first", stringWriter.getBuffer().toString().contains("first"));

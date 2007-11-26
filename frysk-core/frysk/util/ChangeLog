@@ -1,9 +1,38 @@
+2007-11-23  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
+
+	* TestFStack.java: Renamed this...
+	* TestStackTraceAction.java: ...to This.
+	
+	* StressTestFStack.java: Renamed this...
+	* StressTestStackTraceAction.java: ...to This.
+
+2007-11-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Removed printlibrary boolean argument from Frame.toPrint()
+	added fullpath boolean argument.
+	* StacktraceAction.java: Updated.
+	* StressTestFStack.java: Updated.
+	* TestFStack.java: Updated.
+
+2007-11-23  Mark Wielaard  <mwielaard@redhat.com>
+
+	* CountDownLatch.java (await): Mark as synchronized.
+
+2007-11-22  Tim Moore  <timoore@redhat.com>
+
+	* CountDownLatch.java (await): Loop to avoid spurious wakeup.
+
+2007-11-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* StacktraceAction.java: Now passes numberOfFrames argument.
+
 2007-11-20  Andrew Cagney  <cagney@redhat.com>
 
 	* X8664LinuxElfCorefile.java: Fix typo; "eflags" -> "rflags".
 
 2007-11-09  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
-        * LinuxElfCorefileFactory.java: Removed Power little endian.
+
+	* LinuxElfCorefileFactory.java: Removed Power little endian.
 
 2007-10-22  Phil Muldoon  <pmuldoon@redhat.com>
 

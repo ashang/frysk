@@ -1,3 +1,7 @@
+2007-11-23  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (GEN_GCJ_LDADD_LIST): Add libunwind-ppc32.a
+
 2007-08-24  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Makefile.am: Change GEN_GCJ_LDADD to GEN_GCJ_LDADD_LIST.
