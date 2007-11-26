@@ -42,15 +42,15 @@ package frysk.stack;
 import java.io.File;
 import java.io.PrintWriter;
 
-import frysk.isa.Register;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
 import frysk.dwfl.DwflCache;
+import frysk.isa.Register;
 import frysk.proc.Task;
 import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
-import frysk.value.Value;
 import frysk.value.ScratchLocation;
+import frysk.value.Value;
 
 public abstract class Frame {
 
@@ -144,14 +144,14 @@ public abstract class Frame {
      * @param printWriter
      */
     public void toPrint (PrintWriter writer) {
-	toPrint(writer, true);
+	toPrint(writer, true, true);
     }
 
     /**
      * Write a simple string representation of this stack frame.
      * @param printWriter
      */
-    public void toPrint (PrintWriter writer, boolean fullpath) {
+    public void toPrint (PrintWriter writer, boolean printSource, boolean fullpath) {
 	// the address, padded with 0s based on the task's word size, ...
 	writer.write("0x");
 	String addr = Long.toHexString(getAddress());
@@ -165,14 +165,16 @@ public abstract class Frame {
 	writer.write(symbol.getDemangledName());
 	if (symbol != SymbolFactory.UNKNOWN)
 	    writer.write(" ()");
-	// the library if known ...
-	File library = new File(getLibraryName());
-	if (library != null) {
-	    writer.print(" from ");
-	    if (fullpath) {
-		writer.print(library.getAbsolutePath());
-	    }else{
-		writer.print(".../"+library.getName());
+	if(printSource){
+	    // the library if known ...
+	    File library = new File(getLibraryName());
+	    if (library != null) {
+		writer.print(" from ");
+		if (fullpath) {
+		    writer.print(library.getAbsolutePath());
+		}else{
+		    writer.print(".../"+library.getName());
+		}
 	    }
 	}
     }

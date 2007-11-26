@@ -82,7 +82,7 @@ public final class fstack
                     boolean printParameters, boolean printScopes, 
                     boolean fullpath)
     {
-      super(printWriter, theProc, theEvent, numberOfFrames, elfOnly,virtualFrames, printParameters, printScopes, fullpath);
+      super(printWriter, theProc, theEvent, numberOfFrames, elfOnly,virtualFrames, printParameters, printScopes, false, fullpath);
       this.proc = theProc;
     }
 

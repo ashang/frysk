@@ -88,7 +88,7 @@ public class StressTestStackTraceAction
       {
         proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
       }
-    },0, true,false, false, false, true)
+    },0, true,false, false, false,true, true)
     {
 
       public void addFailed (Object observable, Throwable w)

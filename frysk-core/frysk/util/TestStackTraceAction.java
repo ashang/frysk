@@ -104,7 +104,7 @@ public class TestStackTraceAction
 
     StacktraceAction stacker;
 
-    stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop),20, true, false,false, false, true)
+    stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop),20, true, false,false, false, true, true)
     {
 
       public void addFailed (Object observable, Throwable w)
@@ -145,7 +145,7 @@ public class TestStackTraceAction
         Proc proc = (Proc) iter.next();
         StacktraceAction stacker;
 
-        stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop),20, true, false,false, false,true)
+        stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop),20, true, false,false, false,true,true)
         {
 
           public void addFailed (Object observable, Throwable w)

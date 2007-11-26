@@ -205,7 +205,7 @@ public class DebugInfoFrame extends FrameDecorator {
       return this.lines;
     }
 
-    void toPrint(PrintWriter writer, boolean printParameters,
+    public void toPrint(PrintWriter writer, boolean printParameters,
 		 boolean fullpath){
         Subprogram subprogram = this.getSubprogram();
 
@@ -237,7 +237,7 @@ public class DebugInfoFrame extends FrameDecorator {
 	    }
           
         } else {
-            super.toPrint(writer, true);
+            super.toPrint(writer, true, fullpath);
         }
     }
     

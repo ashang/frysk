@@ -1,3 +1,10 @@
+2007-11-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Added a boolean for printing source	libraries to Frame.toPrint().
+	* TestStackTraceAction.java: updated.
+	* StacktraceAction.java: Updated.
+	* StressTestStackTraceAction.java: Updated.
+
 2007-11-26  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
 
 	* PPC32LinuxElfCorefile.java: Using direct reference to registers,

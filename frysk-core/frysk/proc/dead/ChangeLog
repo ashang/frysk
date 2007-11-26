@@ -1,3 +1,8 @@
+2007-11-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Added a boolean for printing source	libraries to Frame.toPrint().
+	* TestLinuxCore.java: Updated, and disabled printing of libraries.
+
 2007-11-23  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestLinuxCore.java: Updated.

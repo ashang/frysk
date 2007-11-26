@@ -86,7 +86,7 @@ public class StackFactory
     }
 
     public static final void printTaskStackTrace(PrintWriter writer,
-						 Task task,
+						 Task task,boolean printSource,
 						 boolean fullpath, int numberOfFrames) {
 	if (task != null) {
 	    writer.print("Task #");
@@ -102,7 +102,7 @@ public class StackFactory
 		
 		frame.printLevel(writer);
 		writer.print(" ");
-		frame.toPrint(writer, fullpath);
+		frame.toPrint(writer, printSource, fullpath);
 		writer.println();
 	    }
 	}

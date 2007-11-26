@@ -82,6 +82,7 @@ public abstract class StacktraceAction
   private final int numberOfFrames;
   boolean printParameters;
   boolean printScopes;
+  private final boolean printSource;
   boolean fullpath;
   private boolean virtualFrames;
   
@@ -105,7 +106,7 @@ public abstract class StacktraceAction
    *            file path is printed other wise only the name of the file is printed.
    * @throws ProcException
    */
-  public StacktraceAction (PrintWriter printWriter, Proc theProc, Event theEvent, int numberOfFrames, boolean elfOnly, boolean virtualFrames, boolean printParameters, boolean printScopes, boolean fullpath)
+  public StacktraceAction (PrintWriter printWriter, Proc theProc, Event theEvent, int numberOfFrames, boolean elfOnly, boolean virtualFrames, boolean printParameters, boolean printScopes, boolean printSource, boolean fullpath)
   {
      event = theEvent;
      
@@ -114,6 +115,7 @@ public abstract class StacktraceAction
      this.elfOnly = elfOnly;
      this.printParameters = printParameters;
      this.printScopes = printScopes;
+     this.printSource = printSource;
      this.fullpath = fullpath;
      
      this.printWriter = printWriter;
@@ -151,7 +153,7 @@ public abstract class StacktraceAction
 	Task task =  (Task) iter.next();
 	
 	if(elfOnly){
-	    StackFactory.printTaskStackTrace(printWriter,task,fullpath, numberOfFrames);
+	    StackFactory.printTaskStackTrace(printWriter,task,printSource, fullpath, numberOfFrames);
 	}else{
 	    if(virtualFrames){
 		DebugInfoStackFactory.printVirtualTaskStackTrace(printWriter,task,numberOfFrames, printParameters,printScopes,fullpath);

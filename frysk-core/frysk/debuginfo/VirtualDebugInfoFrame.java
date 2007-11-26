@@ -52,7 +52,7 @@ public class VirtualDebugInfoFrame extends DebugInfoFrame {
 	super(inner, decorated);
     }
 
-    void toPrint(PrintWriter writer, boolean printParameters,
+    public void toPrint(PrintWriter writer, boolean printParameters,
 		 boolean fullpath) {
 	super.toPrint(writer, printParameters, fullpath);
 	writer.print(" [inline]");
