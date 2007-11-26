@@ -1,5 +1,7 @@
 2007-11-26  Andrew Cagney  <cagney@redhat.com>
 
+	* IndirectBankRegisterMap.java (add(String)): Delete.
+	
 	* PPCBankRegisters.java (PPC32BE_ON_PPC64BE): Use
 	IndirectBankRegisterMap.add(Register).
 
