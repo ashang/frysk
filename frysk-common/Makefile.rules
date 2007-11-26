@@ -92,7 +92,7 @@ GEN_CLASSPATH =
 GEN_SOURCEPATH = $(srcdir) $(top_builddir)
 empty=
 space=$(empty) $(empty)
-GEN_CLASSDIR = classes
+JAVAROOT = classes
 
 GEN_GCC_BUILDTREE_RPATHS = $(top_builddir)/elfutils/libdw
 
@@ -155,7 +155,7 @@ SOURCEPATH = $(subst $(space),:,$(strip $(GEN_SOURCEPATH)))
 CLASSPATH = $(subst $(space),:,$(strip $(GEN_CLASSPATH)))
 DBPATH = $(subst $(space),:,$(strip \
 	$(patsubst %.jar,%.db,$(filter %.jar,$(GEN_CLASSPATH))) \
-	$(foreach dir,$(patsubst %/$(GEN_CLASSDIR),%,$(filter-out %.jar,$(GEN_CLASSPATH))),$(dir)/$(notdir $(dir)).db) \
+	$(foreach dir,$(patsubst %/$(JAVAROOT),%,$(filter-out %.jar,$(GEN_CLASSPATH))),$(dir)/$(notdir $(dir)).db) \
 	))
 
 # XXX: GCJ: I think there should be a -Wextraneous-throws; I think
@@ -652,7 +652,7 @@ distclean-cvsignored:
 # explicit clean rule is needed as CLEANFILES can't handle directories.
 
 CLEANFILES += files-java.list
-CLEANDIRS += $(GEN_CLASSDIR)
+CLEANDIRS += $(JAVAROOT)
 files-java.list: files.list
 	if test -s $(top_srcdir)/files.list ; then \
 	    sed -n < $(top_srcdir)/files.list > $@.tmp \
@@ -665,9 +665,9 @@ files-java.list: files.list
 	    cp /dev/null $@ ; \
 	fi
 ${GEN_DIRNAME}.jar: files-java.list
-	rm -rf $(GEN_CLASSDIR)
-	mkdir -p $(GEN_CLASSDIR)
-	$(JAVAC) -d $(GEN_CLASSDIR) $(JAVACFLAGS) \
+	rm -rf $(JAVAROOT)
+	mkdir -p $(JAVAROOT)
+	$(JAVAC) -d $(JAVAROOT) $(JAVACFLAGS) \
 		@$(top_builddir)/files-java.list \
 		2>&1 | tee $*.log
 	if test -s $*.log \
@@ -675,10 +675,10 @@ ${GEN_DIRNAME}.jar: files-java.list
 	then rm $*.log ; false ; \
 	fi
 	rm -f $*.log
-	cd $(GEN_CLASSDIR) ; \
+	cd $(JAVAROOT) ; \
 		find * -name '*.class' -print \
 		| $(JAR) -@ -cf $@
-	mv $(GEN_CLASSDIR)/$@ $@
+	mv $(JAVAROOT)/$@ $@
 
 # When ECJ is available, use it as an extra lint pass.  GCJ has the
 # habit of silently compiling invalid Java code (garbage in, garbage

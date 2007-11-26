@@ -1,5 +1,7 @@
 2007-11-26  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (JAVAROOT): Rename GEN_CLASSDIR.
+
 	* Makefile.gen.sh (--jni): New option.
 
 2007-11-23  Andrew Cagney  <cagney@redhat.com>
