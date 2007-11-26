@@ -1,5 +1,10 @@
 2007-11-26  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (sources): When JAR_COMPILE, add .jar, instead
+	of .java files, to ${sources}.
+	* frysk-common.ac (--enable-jar-compile): New option.
+	(JAR_COMPILE): New AM_CONDITIONAL variable.
+
 	* Makefile.rules (JAVAROOT): Rename GEN_CLASSDIR.
 
 	* Makefile.gen.sh (--jni): New option.
