@@ -94,8 +94,6 @@ empty=
 space=$(empty) $(empty)
 JAVAROOT = classes
 
-GEN_GCC_BUILDTREE_RPATHS = $(top_builddir)/elfutils/libdw
-
 # The list of libraries for the GCJ programs is different to that of
 # the standalone .c programs.  Accumulate the GCJ list in
 # GEN_GCJ_LDADD_LIST.
@@ -133,6 +131,7 @@ GEN_GCJ_BUILDTREE_RPATHS = \
 		))
 GEN_GCJ_BUILDTREE_RPATH = \
 	$(subst $(space),:,$(sort $(GEN_GCJ_BUILDTREE_RPATHS)))
+GEN_GCC_BUILDTREE_RPATHS = $(top_builddir)/elfutils/libdw
 GEN_GCJ_BUILDTREE_RPATH_FLAGS = \
 	-Djava.library.path=$(GEN_GCJ_BUILDTREE_RPATH) \
 	-Wl,-rpath,$(GEN_GCJ_BUILDTREE_RPATH):$(GEN_GCC_BUILDTREE_RPATHS)

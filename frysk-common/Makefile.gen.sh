@@ -270,14 +270,19 @@ echo_LDFLAGS ()
     local name_=`echo_name_ $1`
     local class=`echo $1 | tr '[/]' '[.]'`
     echo "${name_}_LDFLAGS = --main=${class}"
+    echo "if JAR_COMPILE"
+    echo "${name_}_LDFLAGS += \${GEN_GCJ_SO_FLAGS}"
+    echo "else"
+    echo "${name_}_LDADD = \${GEN_GCJ_LDADD_LIST}"
+    echo "endif"
     case "${name}" in
 	*dir/* )
-                # set during non-standard builds such as RHEL 4.
-                echo "${name_}_LDFLAGS += \${GEN_${GEN_UBASENAME}_RPATH_FLAGS}"
-		;;
+            # set during non-standard builds such as RHEL 4.
+            echo "${name_}_LDFLAGS += \${GEN_${GEN_UBASENAME}_RPATH_FLAGS}"
+	    ;;
 	* )
-                echo "${name_}_LDFLAGS += \$(GEN_GCJ_BUILDTREE_RPATH_FLAGS)"
-		;;
+            echo "${name_}_LDFLAGS += \$(GEN_GCJ_BUILDTREE_RPATH_FLAGS)"
+	    ;;
     esac
     echo "${name_}_LDFLAGS += \${GEN_GCJ_NO_SIGCHLD_FLAGS}"
 }
@@ -451,7 +456,6 @@ ${sources} += ${GEN_SOURCENAME}/JUnitTests.java
 endif
 BUILT_SOURCES += ${GEN_SOURCENAME}/JUnitTests.java
 SCRIPT_BUILT += ${GEN_SOURCENAME}/JUnitTests.java
-TestRunner_LDADD = \${LIBJUNIT} \${GEN_GCJ_LDADD_LIST}
 TESTS += TestRunner
 noinst_PROGRAMS += TestRunner
 EOF
@@ -491,7 +495,6 @@ for suffix in .java .java-sh .mkenum .shenum .java-in ; do
 	    echo "${name_}_SOURCES ="
 	    echo "${name_}_LINK = \$(GCJLINK) \$(${name_}_LDFLAGS)"
 	    echo_LDFLAGS ${name}
-	    echo "${name_}_LDADD = \$(GEN_GCJ_LDADD_LIST)"
 	fi
     done || exit 1
 done

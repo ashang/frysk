@@ -1,5 +1,9 @@
 2007-11-26  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (GEN_GCC_BUILDTREE_RPATHS): Move to near use.
+	* Makefile.gen.sh (echo_LDFLAGS): Dependant on JAR_COMPILE, set
+	LDFLAGS or LDADD to list of libraries to link against.
+
 	* Makefile.gen.sh (.cxx): Fix typo, do not conditionally add .cxx
 	files to sources.
 	* Makefile.rules (.jar.o): Remove  -fjni option.
