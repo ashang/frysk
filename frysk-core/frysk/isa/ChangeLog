@@ -1,5 +1,12 @@
 2007-11-26  Andrew Cagney  <cagney@redhat.com>
 
+	* X8664Registers.java (XMM0, ..., XMM15): Delete.
+	* IA32Registers.java: Use X87Registers.
+	(XMM0, ..., XMM7, MXCSR): Delete.
+	(FCW, FSW, FTW, FOP, FCS, FIP, FEA, FDS): Delete.
+	(MMX, SSE): Delete.
+	* TestRegisters.java: Update.
+	
 	* X87Registers.java (XMM0, ..., XMM15): New.
 	(FCW, FSW, RIP, EIP, CS, RDP, DP, DS, MXCSR, MXCSR_MASK)
 	(FLOAT32, FLOAT64, XMM32, XMM64): New.

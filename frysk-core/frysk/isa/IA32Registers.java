@@ -87,47 +87,6 @@ public class IA32Registers extends Registers {
     public final static Register EIP
 	= new Register("eip", StandardTypes.VOIDPTR32L_T);
 
-    // Floating-point registers
-
-    public final static Register FCW
-	= new Register("fcw", StandardTypes.INT32L_T);
-    public final static Register FSW
-	= new Register("fsw", StandardTypes.INT32L_T);
-    public final static Register FTW
-	= new Register("ftw", StandardTypes.INT32L_T);
-    public final static Register FOP
-	= new Register("fop", StandardTypes.INT32L_T);
-    public final static Register FCS
-	= new Register("fcs", StandardTypes.INT32L_T);
-    public final static Register FIP
-	= new Register("fip", StandardTypes.INT32L_T);
-    public final static Register FEA
-	= new Register("fea", StandardTypes.INT32L_T);
-    public final static Register FDS
-	= new Register("fds", StandardTypes.INT32L_T);
-
-    // Streaming SIMD registers
-
-    public final static Register XMM0
-	= new Register("xmm0", StandardTypes.INT128L_T);
-    public final static Register XMM1
-	= new Register("xmm1", StandardTypes.INT128L_T);
-    public final static Register XMM2
-	= new Register("xmm2", StandardTypes.INT128L_T);
-    public final static Register XMM3
-	= new Register("xmm3", StandardTypes.INT128L_T);
-    public final static Register XMM4
-	= new Register("xmm4", StandardTypes.INT128L_T);
-    public final static Register XMM5
-	= new Register("xmm5", StandardTypes.INT128L_T);
-    public final static Register XMM6
-	= new Register("xmm6", StandardTypes.INT128L_T);
-    public final static Register XMM7
-	= new Register("xmm7", StandardTypes.INT128L_T);
-
-    public final static Register MXCSR
-	= new Register("mxcsr", StandardTypes.INT32L_T);
-
     public final static Register TSS
 	= new Register("tss", StandardTypes.INT32L_T);
     public final static Register LDT
@@ -164,23 +123,6 @@ public class IA32Registers extends Registers {
 				EFLAGS, ESP
 			    });
 
-    public final static RegisterGroup MMX
-	= new RegisterGroup("mmx",
-			    new Register[] {
-				X87Registers.ST0, X87Registers.ST1,
-				X87Registers.ST2, X87Registers.ST3,
-				X87Registers.ST4, X87Registers.ST5,
-				X87Registers.ST6, X87Registers.ST7,
-				FCW, FSW, FTW, FOP, FCS, FIP, FEA, FDS
-			    });
-
-    public final static RegisterGroup SSE
-	= new RegisterGroup("sse",
-			    new Register[] {
-				XMM0, XMM1, XMM2, XMM3, XMM4, XMM5, XMM6, XMM7,
-				MXCSR
-			    });
-
     public final static RegisterGroup SEGMENT
 	= new RegisterGroup("segment",
 			    new Register[] {
@@ -191,19 +133,21 @@ public class IA32Registers extends Registers {
     static {
 	Register[] allRegs
 	    = new Register[GENERAL.getRegisters().length
-			   + MMX.getRegisters().length
-			   + SSE.getRegisters().length
+			   + X87Registers.FLOAT32.getRegisters().length
+			   + X87Registers.XMM32.getRegisters().length
 			   + SEGMENT.getRegisters().length];
 	int count = 0;
 	System.arraycopy(GENERAL.getRegisters(), 0, allRegs, count,
 			 GENERAL.getRegisters().length);
 	count += GENERAL.getRegisters().length;
-	System.arraycopy(MMX.getRegisters(), 0, allRegs, count,
-			 MMX.getRegisters().length);
-	count += MMX.getRegisters().length;
-	System.arraycopy(SSE.getRegisters(), 0, allRegs, count,
-			 SSE.getRegisters().length);
-	count += SSE.getRegisters().length;
+	System.arraycopy(X87Registers.FLOAT32.getRegisters(),
+			 0, allRegs, count,
+			 X87Registers.FLOAT32.getRegisters().length);
+	count += X87Registers.FLOAT32.getRegisters().length;
+	System.arraycopy(X87Registers.XMM32.getRegisters(),
+			 0, allRegs, count,
+			 X87Registers.XMM32.getRegisters().length);
+	count += X87Registers.XMM32.getRegisters().length;
 	System.arraycopy(SEGMENT.getRegisters(), 0, allRegs, count,
 			 SEGMENT.getRegisters().length);
 
@@ -212,7 +156,9 @@ public class IA32Registers extends Registers {
 
     IA32Registers() {
 	super (new RegisterGroup[] {
-		   GENERAL, MMX, SSE, SEGMENT, ALL
+		   GENERAL,
+		   X87Registers.FLOAT32, X87Registers.XMM32,
+		   SEGMENT, ALL
 	       });
     }
 

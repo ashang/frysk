@@ -1,3 +1,8 @@
+2007-11-26  Andrew Cagney  <cagney@redhat.com>
+
+	* LibunwindRegisterMapFactory.java: Replace IA32Registers.FOP
+	et.al. with X87Registers.FOP.
+
 2007-11-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Frame.java (toPrint): Added a boolean for printing source
