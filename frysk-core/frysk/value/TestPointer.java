@@ -58,7 +58,7 @@ public class TestPointer
 					      1, true));
 	// Construct the pointer and try it.
 	Location l = new ScratchLocation(new byte[] { 4 });
-	assertEquals("toPrint", "0x4 \"Hello World\"",
+	assertEquals("toPrint", "(char *) 0x4 \"Hello World\"",
 		     t.toPrint(l, memory, Format.NATURAL));
     }
     

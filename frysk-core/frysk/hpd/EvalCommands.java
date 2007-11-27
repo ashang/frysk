@@ -43,8 +43,6 @@ import inua.eio.ByteBuffer;
 import frysk.value.Format;
 import java.util.Iterator;
 import frysk.proc.Task;
-import frysk.value.PointerType;
-import frysk.value.Type;
 import java.util.List;
 import frysk.expr.Expression;
 import java.io.PrintWriter;
@@ -59,13 +57,6 @@ abstract class EvalCommands extends ParameterizedCommand {
 	static final Printer VALUE = new Printer() {
 		void print(Expression e, PrintWriter writer, Format format,
 			   ByteBuffer memory) {
-		    // XXX: Should be in type?
-		    Type t = e.getType();
-		    if (t instanceof PointerType) {
-			writer.print("(");
-			t.toPrint(writer, 0);
-			writer.print(") ");
-		    }	
 		    e.getValue().toPrint(writer, memory, format, 0);
 		    writer.println();
 		}
