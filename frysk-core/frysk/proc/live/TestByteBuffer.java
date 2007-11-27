@@ -271,8 +271,6 @@ public class TestByteBuffer
 	}
     }
     public void testMemoryBufferCapacity() {
-	if (unresolved(5394))
-	    return;
 	TearDownFile tmpFile = TearDownFile.create();
 	ExecOffspring child
 		= new ExecOffspring(new ExecCommand (new String[] {

@@ -1,6 +1,7 @@
 2007-11-22  Zhao shujing  <pearly.zhao@oracle.com>
 
 	* TestByteBuffer.java (testMemoryBufferCapacity()): Fix bug 5394.
+	Renabled test.
 
 2007-11-22  Andrew Cagney  <cagney@redhat.com>
 
