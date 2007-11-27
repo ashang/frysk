@@ -42,8 +42,12 @@ package frysk.stack;
 import frysk.isa.RegisterMap;
 import lib.unwind.UnwindRegistersX86;
 import lib.unwind.UnwindRegistersX8664;
+import lib.unwind.UnwindRegistersPPC32;
+import lib.unwind.UnwindRegistersPPC64;
 import frysk.isa.ISA;
 import frysk.isa.IA32Registers;
+import frysk.isa.PPC32Registers;
+import frysk.isa.PPC64Registers;
 import frysk.isa.X8664Registers;
 import frysk.isa.X87Registers;
 import frysk.isa.ISAMap;
@@ -71,14 +75,14 @@ public class LibunwindRegisterMapFactory {
 	.add(X87Registers.ST5, UnwindRegistersX86.ST5)
 	.add(X87Registers.ST6, UnwindRegistersX86.ST6)
 	.add(X87Registers.ST7, UnwindRegistersX86.ST7)
-	.add(IA32Registers.FCW, UnwindRegistersX86.FCW)
-	.add(IA32Registers.FSW, UnwindRegistersX86.FSW)
-	.add(IA32Registers.FTW, UnwindRegistersX86.FTW)
-	.add(IA32Registers.FOP, UnwindRegistersX86.FOP)
-	.add(IA32Registers.FCS, UnwindRegistersX86.FCS)
-	.add(IA32Registers.FIP, UnwindRegistersX86.FIP)
-	.add(IA32Registers.FEA, UnwindRegistersX86.FEA)
-	.add(IA32Registers.FDS, UnwindRegistersX86.FDS)
+	.add(X87Registers.FCW, UnwindRegistersX86.FCW)
+	.add(X87Registers.FSW, UnwindRegistersX86.FSW)
+	.add(X87Registers.FTW, UnwindRegistersX86.FTW)
+	.add(X87Registers.FOP, UnwindRegistersX86.FOP)
+	.add(X87Registers.CS, UnwindRegistersX86.FCS)
+	.add(X87Registers.EIP, UnwindRegistersX86.FIP)
+	.add(X87Registers.DP, UnwindRegistersX86.FEA)
+	.add(X87Registers.DS, UnwindRegistersX86.FDS)
     // SSE Registers
     //TODO: XMMx registers.
     //.add(IA32Registers.MXCSR, UnwindRegistersX86.MXCSR)
@@ -113,11 +117,82 @@ public class LibunwindRegisterMapFactory {
 	.add(X8664Registers.RIP, UnwindRegistersX8664.RIP)
 	;
 
+    private static final RegisterMap PPC64 = new RegisterMap()
+        .add(PPC64Registers.GPR0, UnwindRegistersPPC64.R0)
+	.add(PPC64Registers.GPR1, UnwindRegistersPPC64.R1)
+        .add(PPC64Registers.GPR2, UnwindRegistersPPC64.R2)
+	.add(PPC64Registers.GPR3, UnwindRegistersPPC64.R3)
+        .add(PPC64Registers.GPR4, UnwindRegistersPPC64.R4)
+	.add(PPC64Registers.GPR5, UnwindRegistersPPC64.R5)
+        .add(PPC64Registers.GPR6, UnwindRegistersPPC64.R6)
+	.add(PPC64Registers.GPR7, UnwindRegistersPPC64.R7)
+        .add(PPC64Registers.GPR8, UnwindRegistersPPC64.R8)
+	.add(PPC64Registers.GPR9, UnwindRegistersPPC64.R9)
+        .add(PPC64Registers.GPR10, UnwindRegistersPPC64.R10)
+	.add(PPC64Registers.GPR11, UnwindRegistersPPC64.R11)
+        .add(PPC64Registers.GPR12, UnwindRegistersPPC64.R12)
+	.add(PPC64Registers.GPR13, UnwindRegistersPPC64.R13)
+        .add(PPC64Registers.GPR14, UnwindRegistersPPC64.R14)
+	.add(PPC64Registers.GPR15, UnwindRegistersPPC64.R15)
+        .add(PPC64Registers.GPR16, UnwindRegistersPPC64.R16)
+	.add(PPC64Registers.GPR17, UnwindRegistersPPC64.R17)
+        .add(PPC64Registers.GPR18, UnwindRegistersPPC64.R18)
+	.add(PPC64Registers.GPR19, UnwindRegistersPPC64.R19)
+        .add(PPC64Registers.GPR20, UnwindRegistersPPC64.R20)
+	.add(PPC64Registers.GPR21, UnwindRegistersPPC64.R21)
+        .add(PPC64Registers.GPR22, UnwindRegistersPPC64.R22)
+	.add(PPC64Registers.GPR23, UnwindRegistersPPC64.R23)
+        .add(PPC64Registers.GPR24, UnwindRegistersPPC64.R24)
+	.add(PPC64Registers.GPR25, UnwindRegistersPPC64.R25)
+        .add(PPC64Registers.GPR26, UnwindRegistersPPC64.R26)
+	.add(PPC64Registers.GPR27, UnwindRegistersPPC64.R27)
+        .add(PPC64Registers.GPR28, UnwindRegistersPPC64.R28)
+	.add(PPC64Registers.GPR29, UnwindRegistersPPC64.R29)
+	.add(PPC64Registers.GPR30, UnwindRegistersPPC64.R30)
+	.add(PPC64Registers.GPR29, UnwindRegistersPPC64.R31)
+	;
+
+    private static final RegisterMap PPC32 = new RegisterMap()
+        .add(PPC32Registers.GPR0, UnwindRegistersPPC32.R0)
+	.add(PPC32Registers.GPR1, UnwindRegistersPPC32.R1)
+        .add(PPC32Registers.GPR2, UnwindRegistersPPC32.R2)
+	.add(PPC32Registers.GPR3, UnwindRegistersPPC32.R3)
+        .add(PPC32Registers.GPR4, UnwindRegistersPPC32.R4)
+	.add(PPC32Registers.GPR5, UnwindRegistersPPC32.R5)
+        .add(PPC32Registers.GPR6, UnwindRegistersPPC32.R6)
+	.add(PPC32Registers.GPR7, UnwindRegistersPPC32.R7)
+        .add(PPC32Registers.GPR8, UnwindRegistersPPC32.R8)
+	.add(PPC32Registers.GPR9, UnwindRegistersPPC32.R9)
+        .add(PPC32Registers.GPR10, UnwindRegistersPPC32.R10)
+	.add(PPC32Registers.GPR11, UnwindRegistersPPC32.R11)
+        .add(PPC32Registers.GPR12, UnwindRegistersPPC32.R12)
+	.add(PPC32Registers.GPR13, UnwindRegistersPPC32.R13)
+        .add(PPC32Registers.GPR14, UnwindRegistersPPC32.R14)
+	.add(PPC32Registers.GPR15, UnwindRegistersPPC32.R15)
+        .add(PPC32Registers.GPR16, UnwindRegistersPPC32.R16)
+	.add(PPC32Registers.GPR17, UnwindRegistersPPC32.R17)
+        .add(PPC32Registers.GPR18, UnwindRegistersPPC32.R18)
+	.add(PPC32Registers.GPR19, UnwindRegistersPPC32.R19)
+        .add(PPC32Registers.GPR20, UnwindRegistersPPC32.R20)
+	.add(PPC32Registers.GPR21, UnwindRegistersPPC32.R21)
+        .add(PPC32Registers.GPR22, UnwindRegistersPPC32.R22)
+	.add(PPC32Registers.GPR23, UnwindRegistersPPC32.R23)
+        .add(PPC32Registers.GPR24, UnwindRegistersPPC32.R24)
+	.add(PPC32Registers.GPR25, UnwindRegistersPPC32.R25)
+        .add(PPC32Registers.GPR26, UnwindRegistersPPC32.R26)
+	.add(PPC32Registers.GPR27, UnwindRegistersPPC32.R27)
+        .add(PPC32Registers.GPR28, UnwindRegistersPPC32.R28)
+	.add(PPC32Registers.GPR29, UnwindRegistersPPC32.R29)
+	.add(PPC32Registers.GPR30, UnwindRegistersPPC32.R30)
+	.add(PPC32Registers.GPR29, UnwindRegistersPPC32.R31)
+	;
 
     private static final ISAMap isaToMap
 	= new ISAMap("LibunwindRegisterMapFactory")
 	.put(ISA.IA32, IA32)
 	.put(ISA.X8664, X8664)
+	.put(ISA.PPC64BE, PPC64)
+	.put(ISA.PPC32BE, PPC32)
 	;
     public static RegisterMap getRegisterMap(ISA isa) {
 	return (RegisterMap)isaToMap.get(isa);

@@ -2,6 +2,9 @@
 // 
 // Copyright 2006, 2007, IBM Corp.
 // Copyright 2007, Red Hat Inc.
+//
+// Contributed by
+// Jose Flavio Aguilar Paulino (joseflavio@gmail.com)
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -45,6 +48,7 @@ import java.math.BigInteger;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import inua.eio.ByteBuffer;
+import inua.eio.ByteOrder;
 
 import lib.dwfl.ElfNhdr;
 import lib.dwfl.ElfNhdrType;
@@ -54,8 +58,11 @@ import lib.dwfl.ElfPrAuxv;
 import lib.dwfl.ElfPrpsinfo;
 import lib.dwfl.ElfPrstatus;
 import lib.dwfl.ElfPrFPRegSet;
+
 import frysk.sys.proc.AuxvBuilder;
 import frysk.sys.proc.CmdLineBuilder;
+import frysk.isa.PPC64Registers;
+import frysk.isa.Register;
 import frysk.sys.proc.Stat;
 import frysk.sys.proc.Status;
 
@@ -192,21 +199,33 @@ public class PPC64LinuxElfCorefile extends LinuxElfCorefile {
 
         // XXX: if one register's offset is not defined in asm-ppc/ptrace.h or
         // asm-ppc64/ptrace.h,we did not dump it out and fill give the null Name.
-        String ppc64RegMap[] = { "nip", "msr", "orig_r3", "ctr", "lnk", "xer",
-        	"ccr", "softe", "trap", "dar", "dsisr", "result" };
+        Register[] ptracePpc64RegMap = {
+                PPC64Registers.NIP,
+                PPC64Registers.MSR,
+                PPC64Registers.ORIGR3,
+                PPC64Registers.CTR,
+                PPC64Registers.LR,
+                PPC64Registers.XER,
+                PPC64Registers.CCR,
+                PPC64Registers.SOFTE,
+                PPC64Registers.TRAP,
+                PPC64Registers.DAR,
+                PPC64Registers.DSISR,
+                PPC64Registers.RESULT };
+
+        for (int i = 0; i < ptracePpc64RegMap.length; i++) {
+            int registerSize = ptracePpc64RegMap[i].getType().getSize();
+            byte[] byteOrderedRegister = new byte[registerSize];
+            task.access(ptracePpc64RegMap[i], 0, registerSize,  byteOrderedRegister, 0, false);
+            prStatus.setPrGPReg(i, bytesToBigInteger(byteOrderedRegister));
+        }
 
         // Set the general purpose registers.
 	for (int index = 0; index < gprSize; index++)
 	    prStatus.setPrGPReg
 		(index, task.getBigIntegerRegisterFIXME("gpr" + index));
 
-	// Set the PPC64 specific registers
-	for (int index = 0; index < ppc64RegMap.length; index++)
-	    prStatus.setPrGPReg
-		(index + gprSize,
-		 task.getBigIntegerRegisterFIXME(ppc64RegMap[index]));
-
-        blankRegisterIndex = gprSize + ppc64RegMap.length;
+        blankRegisterIndex = gprSize + ptracePpc64RegMap.length;
 
         BigInteger bigInt = new BigInteger(zeroVal);
 
@@ -282,5 +301,22 @@ public class PPC64LinuxElfCorefile extends LinuxElfCorefile {
      */
     protected byte getElfMachineClass() {
 	return ElfEHeader.PHEADER_ELFCLASS64;
+    }
+
+    // XXX: Function to convert bytes[] to BigInteger.
+    // Will disappear when all BankRegisters are present on all
+    // all architectures, and  we can call task.access() on all
+    // registers, and not convert to BigInteger.
+    private BigInteger bytesToBigInteger(byte[] bytes)
+    {
+        if (this.process.getMainTask().getISA().order() == ByteOrder.LITTLE_ENDIAN) {
+            for (int left = 0; left < bytes.length / 2; left++) {
+                int right = bytes.length - 1 - left;
+                byte temp = bytes[left];
+                bytes[left] = bytes[right];
+                bytes[right] = temp;
+            }
+        }
+        return new BigInteger(bytes);
     }
 }

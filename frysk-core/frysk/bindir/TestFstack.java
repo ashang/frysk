@@ -142,18 +142,18 @@ public class TestFstack
 	
 	Expect e = fstack("funit-long-stack", new String[]{"-n","5"});
 	e.expect("\\#0 .*crash[^\\r\\n]*");
-	e.expect("\\#1 .*first[^\\r\\n]*");
-	e.expect("\\#2 .*first[^\\r\\n]*");
-	e.expect("\\#3 .*first[^\\r\\n]*");
-	e.expect("\\#4 .*first[^\\r\\n]*");
+	e.expect("\\#1 [^\r\n]*first[^\\r\\n]*");
+	e.expect("\\#2 [^\r\n]*first[^\\r\\n]*");
+	e.expect("\\#3 [^\r\n]*first[^\\r\\n]*");
+	e.expect("\\#4 [^\r\n]*first[^\\r\\n]*");
 	e.expect("...");
 	e.close();
 	
 	e = fstack("funit-long-stack", new String[]{"-n","4"});
 	e.expect("\\#0 .*crash[^\\r\\n]*");
-	e.expect("\\#1 .*first[^\\r\\n]*");
-	e.expect("\\#2 .*first[^\\r\\n]*");
-	e.expect("\\#3 .*first[^\\r\\n]*");
+	e.expect("\\#1 [^\r\n]*first[^\\r\\n]*");
+	e.expect("\\#2 [^\r\n]*first[^\\r\\n]*");
+	e.expect("\\#3 [^\r\n]*first[^\\r\\n]*");
 	e.expect("...");
 	e.close();
 	

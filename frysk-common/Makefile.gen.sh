@@ -40,11 +40,10 @@
 
 if test $# -eq 0 ; then
     cat <<EOF 1>&2
-Usage: $0 [ --cni ] <source-dir>... <.jar-file>... <_JAR-macro>...
+Usage: $0 [ --cni | --jni ] <source-dir>... <.jar-file>... <_JAR-macro>...
 
---cni:
-
-Include CNI directories in build.
+--cni: Include CNI directories in build.
+--jni: Include JNI directories in build and build with JNI abi.
 
 <source-dir>:
 
@@ -68,6 +67,7 @@ EOF
 fi
 
 cni=false
+jni=false
 dirs=
 jars=
 JARS=
@@ -75,7 +75,8 @@ GEN_ARGS="$@"
 while test $# -gt 0
 do
   case "$1" in
-      --cni ) cni=true ;;
+      --cni ) cni=true ; jni=false ;;
+      --jni ) jni=true ; cni=false ;;
       *.jar ) jars="${jars} $1" ;;
       *_JAR ) JARS="${JARS} $1" ;;
       * ) dirs="${dirs} $1" ;;
@@ -121,8 +122,12 @@ JARS=`echo ${JARS}`
     -o -path '[A-Za-z]*\.c-in' -print \
     -o -path '[A-Za-z]*\.cxx' -print \
     -o -path '*/cni/[A-Za-z]*\.[sS]' -print \
+    -o -path '*/jni/[A-Za-z]*\.[sS]' -print \
     -o -type f -name 'test*' -print
-    ) | if $cni ; then cat ; else grep -v '/cni/' ; fi | sort -f > files.tmp
+    ) \
+| if $cni ; then cat ; else grep -v '/cni/' ; fi \
+| if $jni ; then cat ; else grep -v '/jni/' ; fi \
+| sort -f > files.tmp
 
 if cmp files.tmp files.list > /dev/null 2>&1
 then
@@ -265,14 +270,15 @@ echo_LDFLAGS ()
     local name_=`echo_name_ $1`
     local class=`echo $1 | tr '[/]' '[.]'`
     echo "${name_}_LDFLAGS = --main=${class}"
+    echo "${name_}_LDADD = \${GEN_GCJ_LDADD_LIST}"
     case "${name}" in
 	*dir/* )
-                # set during non-standard builds such as RHEL 4.
-                echo "${name_}_LDFLAGS += \${GEN_${GEN_UBASENAME}_RPATH_FLAGS}"
-		;;
+            # set during non-standard builds such as RHEL 4.
+            echo "${name_}_LDFLAGS += \${GEN_${GEN_UBASENAME}_RPATH_FLAGS}"
+	    ;;
 	* )
-                echo "${name_}_LDFLAGS += \$(GEN_GCJ_BUILDTREE_RPATH_FLAGS)"
-		;;
+            echo "${name_}_LDFLAGS += \$(GEN_GCJ_BUILDTREE_RPATH_FLAGS)"
+	    ;;
     esac
     echo "${name_}_LDFLAGS += \${GEN_GCJ_NO_SIGCHLD_FLAGS}"
 }
@@ -404,6 +410,9 @@ cat <<EOF
 
 noinst_LIBRARIES += lib${GEN_DIRNAME}.a
 ${sources} =
+if JAR_COMPILE
+${sources} += ${GEN_DIRNAME}.jar
+endif
 GEN_GCJ_LDADD_LIST += lib${GEN_DIRNAME}.a
 
 # Compile the .a into a .so; Makefile.rules contains the rule and does
@@ -438,10 +447,11 @@ EOF
 cat <<EOF
 TestRunner_SOURCES = TestRunner.java
 CLEANFILES += TestRunner.java
+if !JAR_COMPILE
 ${sources} += ${GEN_SOURCENAME}/JUnitTests.java
+endif
 BUILT_SOURCES += ${GEN_SOURCENAME}/JUnitTests.java
 SCRIPT_BUILT += ${GEN_SOURCENAME}/JUnitTests.java
-TestRunner_LDADD = \${LIBJUNIT} \${GEN_GCJ_LDADD_LIST}
 TESTS += TestRunner
 noinst_PROGRAMS += TestRunner
 EOF
@@ -468,7 +478,9 @@ for suffix in .java .java-sh .mkenum .shenum .java-in ; do
 		test "${b}" = JUnitTests && continue # hack
 		test -r "${d}/${b}.g" && continue
 		test -r "${d}/${b}.sed" && continue
+		echo "if !JAR_COMPILE"
 		echo "${sources} += ${file}"
+		echo "endif"
 		;;
 	esac
 	echo "${GEN_DIRNAME}.jar: ${name}.java"
@@ -479,7 +491,6 @@ for suffix in .java .java-sh .mkenum .shenum .java-in ; do
 	    echo "${name_}_SOURCES ="
 	    echo "${name_}_LINK = \$(GCJLINK) \$(${name_}_LDFLAGS)"
 	    echo_LDFLAGS ${name}
-	    echo "${name_}_LDADD = \$(GEN_GCJ_LDADD_LIST)"
 	fi
     done || exit 1
 done
@@ -496,7 +507,9 @@ for suffix in .java-in .java-sh .mkenum .shenum ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
 	name="${d}/${b}${s}"
+	echo "if !JAR_COMPILE"
 	echo "${sources} += ${file}"
+	echo "endif"
 	echo "BUILT_SOURCES += ${name}"
 	echo "SCRIPT_BUILT += ${name}"
         case "${suffix}" in
@@ -546,6 +559,15 @@ for suffix in .cxx .c .hxx .s .S .c-sh .c-in .cxx-sh .cxx-in; do
     done
 done
 
+# What type of build?
+if $cni ; then
+    : default
+elif $jni ; then
+    echo "AM_GCJFLAGS += -fjni"
+else
+    : default
+fi
+
 # Grep the cni/*.cxx files forming a list of included files.  Assume
 # these are all generated from .class files.  The list can be pruned a
 # little since, given Class$Nested and Class, generating Class.h will
@@ -557,7 +579,7 @@ done
 # #define A_FILE "a/file/dot.h"
 
 print_header "... *.{hxx,cxx}=.h"
-grep -e '/cni/' files.list \
+grep -e '/cni/' -e '/jni/' files.list \
     | xargs -r grep -H \
     	-e '#include ".*.h"' \
         -e '#define [A-Z_]* ".*.h"' \
@@ -677,7 +699,9 @@ BEGIN { FS = "=" }
     echo "$d/$c: $d/$b.antlred"
     echo "BUILT_SOURCES += $d/$c"
     echo "ANTLR_BUILT += $d/$c"
+    echo "if !JAR_COMPILE"
     echo "${sources} += $d/$c"
+    echo "endif"
   done
 done
 

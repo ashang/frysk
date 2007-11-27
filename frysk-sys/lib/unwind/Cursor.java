@@ -93,20 +93,6 @@ public class Cursor
 	return unwinder.step(cursor);
     }
   
-    public ProcName getProcName(int maxNameSize) {
-	return unwinder.getProcName(cursor, maxNameSize);
-    }
-  
-    public ProcName getProcName() {
-	int initialSize = 256;
-	ProcName myName;
-	do {
-	    myName = unwinder.getProcName(cursor, initialSize);
-	    initialSize *= 2;
-	} while (myName.getError() == - lib.unwind.Error.UNW_ENOMEM_);
-	return myName;
-    }
-  
     public ProcInfo getProcInfo () {
 	return unwinder.getProcInfo(cursor);
     }

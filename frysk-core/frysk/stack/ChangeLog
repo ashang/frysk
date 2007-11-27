@@ -1,3 +1,30 @@
+2007-11-26  Andrew Cagney  <cagney@redhat.com>
+
+	* LibunwindRegisterMapFactory.java: Replace IA32Registers.FOP
+	et.al. with X87Registers.FOP.
+
+2007-11-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Frame.java (toPrint): Added a boolean for printing source
+	libraries.
+	* StackFactory.java: Updated.
+
+2007-11-26  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
+
+	* LibunwindRegisterMapFactory.java: Adding the correct map to
+	PPC32 and PPC64 from libunwind. Still missing special registers.
+
+2007-11-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Frame.java (toPrint): Removed printlibrary boolean argument.
+	added fullpath boolean argument.
+	* StackFactory.java: Updated
+
+2007-11-23  Mark Wielaard  <mwielaard@redhat.com>
+
+	* LibunwindAddressSpace.java (getModuleFromAddress): Removed.
+	(getProcName): Removed.
+
 2007-11-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* StackFactory.java (printTaskStackTrace): Added number of

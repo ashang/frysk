@@ -39,9 +39,7 @@
 # version and license this file solely under the GPL without
 # exception.
 
-import os,posix,sys
-import re
-from os.path import *
+import os,sys
 
 ########################################################################
 # Manage creation of the java file

@@ -45,25 +45,18 @@ import lib.unwind.UnwindX8664;
 import lib.unwind.UnwindX86;
 import lib.unwind.UnwindPPC32;
 import lib.unwind.UnwindPPC64;
-import frysk.dwfl.DwflCache;
 import frysk.dwfl.DwflFactory;
-import frysk.event.Event;
 import frysk.isa.ISA;
-import frysk.proc.Manager;
 import frysk.proc.MemoryMap;
 import frysk.proc.Task;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import lib.dwfl.Dwfl;
-import lib.dwfl.DwflModule;
-import lib.dwfl.SymbolBuilder;
 import lib.unwind.AddressSpace;
 import lib.unwind.ByteOrder;
 import lib.unwind.Cursor;
 import lib.unwind.ElfImage;
 import lib.unwind.ProcInfo;
-import lib.unwind.ProcName;
 import frysk.isa.RegisterMap;
 
 class LibunwindAddressSpace extends AddressSpace {
@@ -166,60 +159,6 @@ class LibunwindAddressSpace extends AddressSpace {
 	//XXX: Todo.
 	Arrays.fill(dilap, (byte) 0);
 	return - lib.unwind.Error.UNW_ENOINFO_;
-    }
-
-    private DwflModule getModuleFromAddress (long addr) {
-	logger.log(Level.FINE, "Looking for addr: 0x{0}\n",
-		   Long.toHexString(addr));
-	Dwfl dwfl = null;
-	dwfl = DwflCache.getDwfl(task);
-	logger.log(Level.FINEST, "got dwfl: {0}\n", dwfl);
-	if (dwfl == null) {
-	    logger.log(Level.FINE, "Dwfl was null\n");
-	    return null;
-	}
-	return dwfl.getModule(addr);
-    }
-
-    public ProcName getProcName (long addr, int maxNameSize) {
-	logger.log(Level.FINE,
-		   "entering getProcName addr: {0}, maxNameSize: {1}\n",
-		   new Object[] {
-		       Long.toHexString(addr),
-		       new Integer(maxNameSize)
-		   });
-	// Need to tell ptrace thread to perform the getProcName operation.
-	class ExecuteGetProcName 
-	    implements Event, SymbolBuilder
-	{
-	    ProcName procName;
-	    long addr;
-      
-	    ExecuteGetProcName (long addr) {
-		this.addr = addr;
-	    }
-      
-	    public void symbol (String name, long value, long size, int type,
-				int bind, int visibility) {
-		procName = new ProcName(addr-value, name);
-	    }
-      
-	    public void execute () {
-		DwflModule dwflModule = getModuleFromAddress(addr);
-		logger.log(Level.FINEST, "got dwflModule: {0}\n", dwflModule);
-		if (dwflModule != null) {
-		    dwflModule.getSymbol(addr, this);
-		    logger.log(Level.FINE, "ProcName is: {0}\n", procName);
-		}
-		if (procName == null)
-		    procName = new ProcName(- lib.unwind.Error.UNW_EUNSPEC_);
-	    }
-	}
-	ExecuteGetProcName executer = new ExecuteGetProcName(addr);
-	Manager.eventLoop.execute(executer);
-	logger.log(Level.FINE, "exiting getProcName, returning: {0}\n",
-		   executer.procName);
-	return executer.procName;
     }
 
     public void putUnwindInfo (final ProcInfo procInfo) {

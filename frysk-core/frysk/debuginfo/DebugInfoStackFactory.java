@@ -124,9 +124,7 @@ public class DebugInfoStackFactory {
 				       boolean printScopes,
 				       boolean fullpath) {
         
-	System.out.println("DebugInfoStackFactory.printStackTrace() numberOfFrames " + numberOfFrames);
-	
-        int count = 0;
+	int count = 0;
         for (DebugInfoFrame frame = topFrame; frame != null;
 	     frame = frame.getOuterDebugInfoFrame()) {
             

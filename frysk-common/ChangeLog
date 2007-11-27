@@ -1,3 +1,35 @@
+2007-11-26  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (GEN_GCJ_SO_FLAGS): Delete.
+	(GEN_GCJ_SO_DIRS): Generate from GEN_GCJ_LDADD_LIST.
+	(GEN_GCJ_BUILDTREE_RPATHS): Simplify.
+	* Makefile.gen.sh (echo_LDFLAGS): Only set LDADD.
+	
+	* Makefile.rules (GEN_GCC_BUILDTREE_RPATHS): Move to near use.
+	* Makefile.gen.sh (echo_LDFLAGS): Dependant on JAR_COMPILE, set
+	LDFLAGS or LDADD to list of libraries to link against.
+
+	* Makefile.gen.sh (.cxx): Fix typo, do not conditionally add .cxx
+	files to sources.
+	* Makefile.rules (.jar.o): Remove  -fjni option.
+
+	* Makefile.gen.sh (sources): When JAR_COMPILE, add .jar, instead
+	of .java files, to ${sources}.
+	* frysk-common.ac (--enable-jar-compile): New option.
+	(JAR_COMPILE): New AM_CONDITIONAL variable.
+
+	* Makefile.rules (JAVAROOT): Rename GEN_CLASSDIR.
+
+	* Makefile.gen.sh (--jni): New option.
+
+2007-11-23  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (.java-sh.java): Add mkdir -p.
+	(.cxx-sh.cxx): Ditto.
+	(.c-sh.c): Ditto.
+	(.shenum.java): Ditto.
+	(.mkenum.java): Ditto.
+
 2007-11-22  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (.g.antlred): Fix typo disabling ECJ.

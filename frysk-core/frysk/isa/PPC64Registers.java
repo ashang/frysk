@@ -1,6 +1,10 @@
 // This file is part of the program FRYSK.
 //
+// Copyright (C) 2006-2007 IBM
 // Copyright 2007, Red Hat Inc.
+//
+// Contributed by
+// Jose Flavio Aguilar Paulino <jflavio@br.ibm.com> <joseflavio@gmail.com>
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,6 +46,10 @@ package frysk.isa;
 import frysk.value.StandardTypes;
 
 public class PPC64Registers extends Registers {
+
+    /*
+     * General Purpose Registers
+     */
 
     public static final Register GPR0
 	= new Register("gpr0", StandardTypes.INT64B_T);
@@ -108,6 +116,67 @@ public class PPC64Registers extends Registers {
     public static final Register GPR31
 	= new Register("gpr31", StandardTypes.INT64B_T);
 
+    /*
+     * Special registers
+     */
+
+    /* Next Instruction Pointer register */
+    public static final Register NIP
+        = new Register("nip", StandardTypes.INT64B_T);
+
+    /* Machine State Register */
+    public static final Register MSR
+        = new Register("msr", StandardTypes.INT64B_T);
+
+    /* Orig_R3, this is the content of the R3 which
+     * is lost when there is a system call (used to restart a syscall) */
+     public static final Register ORIGR3
+        = new Register("orig_r3", StandardTypes.INT64B_T);
+
+    /* Counter reg */
+    public static final Register CTR
+            = new Register("ctr", StandardTypes.INT64B_T);
+
+    /* Link Register
+     * (after a branch-and-link addr is saved here,
+     * to return from function calls) */
+    public static final Register LR
+            = new Register("lr", StandardTypes.VOIDPTR64B_T);
+
+    /* Fixed-point status and control register */
+    public static final Register XER
+            = new Register("xer", StandardTypes.INT64B_T);
+
+    /* Condition Code Register */
+    /* (In truth it is a 32 bit wide reg, 
+       but usually it comes with padding for 64) */
+    public static final Register CCR
+            = new Register("ccr", StandardTypes.INT64B_T);
+
+    /* If software interrupts were enabled 
+       (its a read only register used only by kernel) */
+    public static final Register SOFTE
+            = new Register("softe", StandardTypes.INT64B_T);
+
+    /* Trap (when ocourred) */
+    public static final Register TRAP
+            = new Register("trap", StandardTypes.INT64B_T);
+
+    /* DAR, Data Address Register */
+    public static final Register DAR
+            = new Register("dar", StandardTypes.VOIDPTR64B_T);
+
+    /* DSISR, Data Storage Interrupt Status Register */
+    public static final Register DSISR
+            = new Register("dsisr", StandardTypes.INT64B_T);
+
+    /* Result of a System call is stored by ptrace here */
+    public static final Register RESULT
+            = new Register("result", StandardTypes.INT64B_T);
+
+    /* 
+     * Floating Pointer Registers
+     */
     public static final Register FPR0
 	= new Register("fpr0", StandardTypes.FLOAT64B_T);
     public static final Register FPR1
@@ -173,37 +242,28 @@ public class PPC64Registers extends Registers {
     public static final Register FPR31
 	= new Register("fpr31", StandardTypes.FLOAT64B_T);
 
-    /* Special Registers */
-    public static final Register LR
-	= new Register("lr", StandardTypes.VOIDPTR64B_T);
-    public static final Register CTR
-	= new Register("ctr", StandardTypes.INT64B_T);
-    public static final Register ARG
-	= new Register("arg", StandardTypes.INT64B_T);
-    public static final Register CCR
-	= new Register("ccr", StandardTypes.INT64B_T);
-    public static final Register XER
-	= new Register("xer", StandardTypes.INT64B_T);
+    /* Floating Point Status and Control Register
+       (In truth it is a 32 bit wide reg,
+        but usually it comes with padding for 64) */
+    public static final Register FPSCR
+        = new Register("fpscr", StandardTypes.INT32B_T);
 
-    /* Alti-vec special register */
-    public static final Register VRSAVE
-	= new Register("vrsave", StandardTypes.INT64B_T);
+    /* 
+     * Alti-vec special registers 
+     */
     public static final Register VSCR
 	= new Register("vscr", StandardTypes.INT64B_T);
+    public static final Register VRSAVE
+	= new Register("vrsave", StandardTypes.INT64B_T);
 
-    /* SPUs special registers (for CELL processors) */
+    /* 
+     * SPUs special registers 
+     * (Cell-like processors)
+     */
     public static final Register SPEACC
 	= new Register("speacc", StandardTypes.INT64B_T);
     public static final Register SPEFSCR
 	= new Register("spefscr", StandardTypes.INT64B_T);
-
-    /* Frame-Pointer */
-    public static final Register FRP
-	= new Register("frp", StandardTypes.VOIDPTR64B_T);
-
-    /* Next-Instruction Pointer (Program Pointer) */
-    public static final Register NIP
-	= new Register("nip", StandardTypes.VOIDPTR64B_T);
 
     /* 
      * Defining Register Groups
@@ -218,9 +278,10 @@ public class PPC64Registers extends Registers {
 
     public static final RegisterGroup SPECIAL
         = new RegisterGroup("special",
-                  new Register[] { LR, CTR, ARG, CCR, XER, 
-                                   VRSAVE, VSCR, SPEACC, SPEFSCR, 
-                                   FRP, NIP });
+                  new Register[] {
+			NIP, MSR, ORIGR3, CTR, LR, XER, CCR,
+			SOFTE, TRAP, FPSCR, DAR, DSISR, RESULT,
+                        FPSCR, VRSAVE, VSCR, SPEACC, SPEFSCR });
 
     public static final RegisterGroup FLOATING_POINTER
         = new RegisterGroup("floatingpointer",

@@ -92,9 +92,7 @@ GEN_CLASSPATH =
 GEN_SOURCEPATH = $(srcdir) $(top_builddir)
 empty=
 space=$(empty) $(empty)
-GEN_CLASSDIR = classes
-
-GEN_GCC_BUILDTREE_RPATHS = $(top_builddir)/elfutils/libdw
+JAVAROOT = classes
 
 # The list of libraries for the GCJ programs is different to that of
 # the standalone .c programs.  Accumulate the GCJ list in
@@ -107,32 +105,20 @@ GEN_GCJ_LDADD_LIST =
 # RPATH to wire into in-build-tree program that need to access those
 # shared libraries.
 
-# Convert LDADD's .a into -L<dir> -llib
-GEN_GCJ_SO_FLAGS = \
-	$(foreach lib, $(GEN_GCJ_LDADD_LIST), \
-		$(if $(filter -L%,$(lib)), $(lib)) \
-		$(if $(filter -l%,$(lib)), $(lib)) \
-		$(if $(filter %.a,$(lib)), \
-			$(patsubst %,-L%,$(dir $(lib))) \
-			$(patsubst lib%.a,-l%,$(notdir $(lib))) \
-			) \
-		)
 # Just the directories.
 GEN_GCJ_SO_DIRS = \
-	$(patsubst -L%,%,$(filter -L%, $(GEN_GCJ_SO_FLAGS)))
+	$(sort $(absdir $(foreach lib, $(GEN_GCJ_LDADD_LIST), \
+	       $(if $(filter -L%,$(lib)), \
+	       	    $(patsubst -L,%,$(lib))) \
+	       $(if $(filter %.so,$(lib)), \
+	       	    $(patsubst %,-L%,$(dir $(lib)))) \
+	)))
 # Add absolute versions of each directory.
 GEN_GCJ_BUILDTREE_RPATHS = \
-	$(patsubst %/./,%, $(patsubst %/.,%, \
-		$(foreach lib, $(GEN_GCJ_SO_DIRS), \
-			$(if $(filter /%,$(lib)), $(lib)) \
-			$(if $(filter .%,$(lib)), \
-				$(patsubst %,@abs_top_builddir@/%, $(lib)) \
-				$(lib) \
-				) \
-			) \
-		))
+	$(patsubst %/./,%, $(patsubst %/.,%, $(GEN_GCJ_SO_DIRS)))
 GEN_GCJ_BUILDTREE_RPATH = \
 	$(subst $(space),:,$(sort $(GEN_GCJ_BUILDTREE_RPATHS)))
+GEN_GCC_BUILDTREE_RPATHS = $(top_builddir)/elfutils/libdw
 GEN_GCJ_BUILDTREE_RPATH_FLAGS = \
 	-Djava.library.path=$(GEN_GCJ_BUILDTREE_RPATH) \
 	-Wl,-rpath,$(GEN_GCJ_BUILDTREE_RPATH):$(GEN_GCC_BUILDTREE_RPATHS)
@@ -155,7 +141,7 @@ SOURCEPATH = $(subst $(space),:,$(strip $(GEN_SOURCEPATH)))
 CLASSPATH = $(subst $(space),:,$(strip $(GEN_CLASSPATH)))
 DBPATH = $(subst $(space),:,$(strip \
 	$(patsubst %.jar,%.db,$(filter %.jar,$(GEN_CLASSPATH))) \
-	$(foreach dir,$(patsubst %/$(GEN_CLASSDIR),%,$(filter-out %.jar,$(GEN_CLASSPATH))),$(dir)/$(notdir $(dir)).db) \
+	$(foreach dir,$(patsubst %/$(JAVAROOT),%,$(filter-out %.jar,$(GEN_CLASSPATH))),$(dir)/$(notdir $(dir)).db) \
 	))
 
 # XXX: GCJ: I think there should be a -Wextraneous-throws; I think
@@ -218,6 +204,7 @@ MKENUM = $(srcdir)/common/mkenum.sh
 SUFFIXES += .mkenum
 .mkenum.java:
 	rm -f $*.tmp
+	mkdir -p `dirname $*`
 	$(SHELL) $(MKENUM) < $(srcdir)/$*.mkenum > $*.tmp $@
 	chmod a-w $*.tmp
 	mv -f $*.tmp $@
@@ -225,6 +212,7 @@ SUFFIXES += .mkenum
 SUFFIXES += .shenum
 .shenum.java:
 	rm -f $*.tmp
+	mkdir -p `dirname $*`
 	CC='$(CC)'; export CC ; \
 	$(SHELL) $< | $(SHELL) $(MKENUM) > $*.tmp $@
 	chmod a-w $*.tmp
@@ -236,6 +224,7 @@ SUFFIXES += .shenum
 SUFFIXES += .java-sh
 .java-sh.java:
 	rm -f $*.tmp
+	mkdir -p `dirname $*`
 	CC='$(CC)'; export CC ; \
 	$(SHELL) $< > $*.tmp $@
 	chmod a-w $*.tmp
@@ -243,6 +232,7 @@ SUFFIXES += .java-sh
 SUFFIXES += cxx-sh
 .cxx-sh.cxx:
 	rm -f $*.tmp
+	mkdir -p `dirname $*`
 	CC='$(CC)'; export CC ; \
 	$(SHELL) $< > $*.tmp $@
 	chmod a-w $*.tmp
@@ -250,6 +240,7 @@ SUFFIXES += cxx-sh
 SUFFIXES += ..c-sh
 .c-sh.c:
 	rm -f $*.tmp
+	mkdir -p `dirname $*`
 	CC='$(CC)'; export CC ; \
 	$(SHELL) $< > $*.tmp $@
 	chmod a-w $*.tmp
@@ -429,7 +420,7 @@ autogen: clean
 
 SUFFIXES += .jar
 .jar.o:
-	$(GCJCOMPILE) -fjni -c $<
+	$(GCJCOMPILE) -c $<
 
 # Since automake only adds GCJCOMPILE to Makefile.in when its seen
 # .java source, provide our own definition.
@@ -647,7 +638,7 @@ distclean-cvsignored:
 # explicit clean rule is needed as CLEANFILES can't handle directories.
 
 CLEANFILES += files-java.list
-CLEANDIRS += $(GEN_CLASSDIR)
+CLEANDIRS += $(JAVAROOT)
 files-java.list: files.list
 	if test -s $(top_srcdir)/files.list ; then \
 	    sed -n < $(top_srcdir)/files.list > $@.tmp \
@@ -660,9 +651,9 @@ files-java.list: files.list
 	    cp /dev/null $@ ; \
 	fi
 ${GEN_DIRNAME}.jar: files-java.list
-	rm -rf $(GEN_CLASSDIR)
-	mkdir -p $(GEN_CLASSDIR)
-	$(JAVAC) -d $(GEN_CLASSDIR) $(JAVACFLAGS) \
+	rm -rf $(JAVAROOT)
+	mkdir -p $(JAVAROOT)
+	$(JAVAC) -d $(JAVAROOT) $(JAVACFLAGS) \
 		@$(top_builddir)/files-java.list \
 		2>&1 | tee $*.log
 	if test -s $*.log \
@@ -670,10 +661,10 @@ ${GEN_DIRNAME}.jar: files-java.list
 	then rm $*.log ; false ; \
 	fi
 	rm -f $*.log
-	cd $(GEN_CLASSDIR) ; \
+	cd $(JAVAROOT) ; \
 		find * -name '*.class' -print \
 		| $(JAR) -@ -cf $@
-	mv $(GEN_CLASSDIR)/$@ $@
+	mv $(JAVAROOT)/$@ $@
 
 # When ECJ is available, use it as an extra lint pass.  GCJ has the
 # habit of silently compiling invalid Java code (garbage in, garbage

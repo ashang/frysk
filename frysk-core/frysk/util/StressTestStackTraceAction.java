@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,52 +37,75 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package lib.unwind;
 
-public class ProcName
+package frysk.util;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.logging.Level;
+
+import frysk.event.Event;
+import frysk.event.RequestStopEvent;
+import frysk.proc.Manager;
+import frysk.proc.Proc;
+import frysk.proc.ProcBlockAction;
+import frysk.testbed.TestLib;
+import frysk.testbed.SlaveOffspring;
+import frysk.testbed.FunitThreadsOffspring;
+
+public class StressTestStackTraceAction
+    extends TestLib
 {
-  int error = 0;
-  final long offset;
-  final String name;
-  
-  public long getOffset()
+
+  static String mainClone
+      = "Task #\\d+\n"
+      + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
+      + "#[\\d]+ 0x[\\da-f]+ in main \\(\\) from .*\n"
+      + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*";
+
+  static String clone = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*";
+
+  public void testStressMultiThreadedDetach ()
   {
-    return offset;
+    int clones = 20;
+    SlaveOffspring ackProc = SlaveOffspring.createChild()
+	.assertSendAddClonesWaitForAcks(clones);
+    TestStackTraceAction.multiThreaded(ackProc, clones);
   }
-  
-  public String getName()
+
+  public void testClone ()
   {
-    return name;
-  }
-  
-  public int getError()
-  {
-    return error;
-  }
-  
-  private ProcName(int error, long offset, String name)
-  {
-    this.error = error;
-    this.offset = offset;
-    this.name = name;
-  }
-  
-  public ProcName(long address, String name)
-  {
-	  this(0, address, name);
-  }
-  
-  public ProcName(int error)
-  {
-	  this(error, 0, null);
-  }
-  
-  public String toString()
-  {
-    if (error != 0)
-    return "ProcName error: " + error;
+      StringWriter stringWriter = new StringWriter();
+      
+    int threads = 2;
+    FunitThreadsOffspring ackProc = new FunitThreadsOffspring(threads);
+    final Proc proc = ackProc.assertFindProcAndTasks();
+
+    StacktraceAction stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new Event()
+    {
+
+      public void execute ()
+      {
+        proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+      }
+    },0, true,false, false, false,true, true)
+    {
+
+      public void addFailed (Object observable, Throwable w)
+      {
+        fail("Proc add failed" + w.getMessage());
+      }
+    };
     
-    return "ProcName name: " + name + " offset: " + Long.toHexString(offset);
+    new ProcBlockAction(proc, stacker);
+    assertRunUntilStop("perform backtrace");
+
+    String regex = "(" + mainClone + ")(" + clone + ")*";
+
+    String result = stringWriter.getBuffer().toString();
+    logger.log(Level.FINE, result);
+    assertTrue(result + "should match: " + regex, result.matches(regex));
+
   }
-  
+
 }

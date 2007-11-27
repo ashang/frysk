@@ -41,7 +41,7 @@
 set -e
 
 ./common/Makefile.gen.sh \
-    --cni \
+    --jni \
     tlwidgets/ftk.jar \
     org
 

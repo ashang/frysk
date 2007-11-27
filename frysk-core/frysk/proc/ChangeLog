@@ -1,3 +1,24 @@
+2007-11-26  Andrew Cagney  <cagney@redhat.com>
+
+	* X86BankRegisters.java: Replace X8664Registers.XMM8 et.al. with
+	X87Registers.XMM8.
+
+	* X86BankRegisters.java: Use X87Registers.XMM0, et.al.
+
+	* IndirectBankRegisterMap.java (add(int,int,int,Register)): New.
+	(add(BankRegister,BankRegister)): Use.
+
+	* IndirectBankRegisterMap.java (add(String)): Delete.
+	
+	* PPCBankRegisters.java (PPC32BE_ON_PPC64BE): Use
+	IndirectBankRegisterMap.add(Register).
+
+2007-11-26  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
+
+	* PPCBankRegisters.java: Removing "string" names for registers,
+	revised offsets of all registers (mainly floating pointer), for
+	PPC32 and PPC64.
+
 2007-11-22  Andrew Cagney  <cagney@redhat.com>
 
 	* X86BankRegisters.java (IA32_ON_X8664): Use

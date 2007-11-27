@@ -66,7 +66,7 @@ public class TestPointer
 	// Construct a buffer with a string in it.
 	ArrayByteBuffer memory
 	    = new ArrayByteBuffer("0123Hello World\0>>>".getBytes());
-	Type t = new PointerType("xxx", ByteOrder.BIG_ENDIAN, 1,
+	Type t = new PointerType("Char ptr", ByteOrder.BIG_ENDIAN, 1,
 				 new CharType("char", ByteOrder.BIG_ENDIAN,
 					      1, true));
 	// Construct the pointer to it..
@@ -78,4 +78,24 @@ public class TestPointer
 	Value idx = new Value(t_idx, l_idx);
 	assertEquals("toPrint", "\'W\'", t.index(string, idx, memory).toPrint());
     }
+    
+    public void testCharPointerSlice() {
+	// Construct a buffer with a string in it.
+	ArrayByteBuffer memory
+	    = new ArrayByteBuffer("0123Hello World\0>>>".getBytes());
+	Type t = new PointerType("Char ptr", ByteOrder.BIG_ENDIAN, 1,
+				 new CharType("char", ByteOrder.BIG_ENDIAN,
+					      1, true));
+	// Construct the pointer to it..
+	Location l = new ScratchLocation(new byte[] { 4 });
+	Value string = new Value (t, l);
+	// Create indices
+	Location l_idx = new ScratchLocation(new byte[] { 6 });
+	IntegerType t_idx = new UnsignedType("type", ByteOrder.BIG_ENDIAN, 1);
+	Location l_idx2 = new ScratchLocation(new byte[] { 8 });
+	IntegerType t_idx2 = new UnsignedType("type", ByteOrder.BIG_ENDIAN, 1);	
+	Value idx = new Value(t_idx, l_idx);
+	Value idx2 = new Value(t_idx2, l_idx2);	
+	assertEquals("toPrint", "\"Wor\"", t.slice(string, idx, idx2, memory).toPrint());
+    }    
 }

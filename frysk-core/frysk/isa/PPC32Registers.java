@@ -47,6 +47,9 @@ import frysk.value.StandardTypes;
 
 public class PPC32Registers extends Registers {
 
+    /* 
+     * General Purpose Registers
+     */
     public static final Register GPR0
 	= new Register("gpr0", StandardTypes.INT32B_T);
     public static final Register GPR1
@@ -112,23 +115,67 @@ public class PPC32Registers extends Registers {
     public static final Register GPR31
 	= new Register("gpr31", StandardTypes.INT32B_T);
 
-    /* Special registers */
-    public static final Register ARG
-        = new Register("arg", StandardTypes.INT32B_T);
+    /* 
+     * Special registers 
+     */
+
+    /* Next instruction pointer register, this should
+     * not be used like in PPC64, instead, should use
+     * the link register (lr), but nip exists in ptrace */
+    public static final Register NIP
+        = new Register("nip", StandardTypes.INT32B_T);
+
+    /* Machine State Register */
+    public static final Register MSR
+        = new Register("msr", StandardTypes.INT32B_T);
+
+    /* Orig_R3, this is the content of the R3 which
+     * is lost when there is a system call (used to restart a syscall) */
+     public static final Register ORIGR3
+        = new Register("orig_r3", StandardTypes.INT32B_T);
 
     /* Counter reg */
     public static final Register CTR
             = new Register("ctr", StandardTypes.INT32B_T);
+
+    /* Link Register 
+     * (after a branch-and-link addr is saved here,
+     * to return from function calls) */
+    public static final Register LR
+            = new Register("lr", StandardTypes.VOIDPTR32B_T);
+ 
     /* Fixed-point status and control register */
     public static final Register XER
             = new Register("xer", StandardTypes.INT32B_T);
+
+    /* Condition Code Register */
     public static final Register CCR
             = new Register("ccr", StandardTypes.INT32B_T);
-    public static final Register LR
-            = new Register("lr", StandardTypes.VOIDPTR32B_T);
-    public static final Register FPSCR
-            = new Register("fpscr", StandardTypes.INT32B_T);
 
+    /* Multiply-Quotient Register 
+       (601 only (not used usually) */
+    public static final Register MQ
+            = new Register("mq", StandardTypes.VOIDPTR32B_T);
+ 
+    /* Trap (when ocourred) */
+    public static final Register TRAP
+            = new Register("trap", StandardTypes.INT32B_T);
+
+    /* DAR, Data Address Register */
+    public static final Register DAR
+            = new Register("dar", StandardTypes.VOIDPTR32B_T);
+
+    /* DSISR, Data Storage Interrupt Status Register */
+    public static final Register DSISR
+            = new Register("dsisr", StandardTypes.INT32B_T);
+ 
+    /* Result of a System call is stored by ptrace here */
+    public static final Register RESULT
+            = new Register("result", StandardTypes.INT32B_T);
+
+    /*
+     * Floating pointer registers
+     */    
     public static final Register FPR0
         = new Register("fpr0", StandardTypes.FLOAT64B_T);
     public static final Register FPR1
@@ -194,6 +241,13 @@ public class PPC32Registers extends Registers {
     public static final Register FPR31
         = new Register("fpr31", StandardTypes.FLOAT64B_T);
 
+    /* Floating Point Status and Control Register */
+    public static final Register FPSCR
+            = new Register("fpscr", StandardTypes.INT32B_T);
+
+    /*
+     * Defining Register Groups
+     */
     public static final RegisterGroup GENERAL
 	= new RegisterGroup("general",
                   new Register[] { 
@@ -204,7 +258,9 @@ public class PPC32Registers extends Registers {
 
     public static final RegisterGroup SPECIAL
 	= new RegisterGroup("special",
-                  new Register[] { CTR, XER, CCR, LR, FPSCR });
+                  new Register[] {
+			  NIP, MSR, ORIGR3, CTR, LR, XER, CCR, 
+			  MQ, TRAP, DAR, DSISR, RESULT, FPSCR });
 	
     public static final RegisterGroup FLOATING_POINTER
 	= new RegisterGroup("floatingpointer",

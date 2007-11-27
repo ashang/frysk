@@ -1,3 +1,10 @@
+2007-11-26  Teresa Thomas  <tthomas@redhat.com>
+
+	* PointerType.java (toPrint): Return on null ptr.
+
+	* PointerType.java (slice): New.
+	* TestPointer.java (testCharPointerSlice): New test.
+	
 2007-11-22  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* CompositeType.java (addStaticMember): New overloaded functions.

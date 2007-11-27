@@ -55,8 +55,8 @@ public class TestRegisters extends TestCase {
     }
 
     public void testGetGroup() {
-	assertEquals("getGroup", IA32Registers.MMX,
-		     regs.getGroup("mmx"));
+	assertEquals("getGroup", IA32Registers.GENERAL,
+		     regs.getGroup("general"));
     }
 
     public void testGetRegister() {
@@ -66,8 +66,10 @@ public class TestRegisters extends TestCase {
 
     public void testGetGroupNames() {
 	assertEquals("getGroupNames",
-		     new String[] { "general", "mmx", "sse", "segment", "all" },
-		     regs.getGroupNames());
+		     new String[] {
+			 "general", "float", "xmm",
+			 "segment", "all"
+		     }, regs.getGroupNames());
     }
 
     public void testDefaultRegisterGroup() {

@@ -1,3 +1,14 @@
+2007-11-23  Mark Wielaard  <mwielaard@redhat.com>
+
+	* AddressSpace.java (getProcName): Removed.
+	* Cursor.java (getProcName): Removed.
+	* ProcName.java: Removed.
+	* TestUnwind.java (getProcName): Removed.
+	* Unwind.java (getProcName): Removed.
+	* cnu/UnwindH.hxx (min): Removed.
+	(get_proc_name): Return UNW_ENOMEM.
+	(getProcName): Removed.
+
 2007-11-19  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Cursor.java (getIP): New method.
@@ -11,8 +22,9 @@
 	* UnwindPPC32.cxx: New. To support powerpc32.
 
 2007-11-09  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
-        * UnwindPPC32.java-sh: New
-        * UnwindRegistersPPC32.shenum: New
+
+	* UnwindPPC32.java-sh: New
+	* UnwindRegistersPPC32.shenum: New
 	* UnwindRegistersPPC64.shenum: New	
 
 2007-10-30  Andrew Cagney  <cagney@redhat.com>

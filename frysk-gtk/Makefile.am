@@ -56,11 +56,11 @@ GEN_GCJ_LDADD_LIST += ../frysk-imports/elfutils/libdwfl/libdwfl.a
 GEN_GCJ_LDADD_LIST += ../frysk-imports/elfutils/libdw/libdw.a
 GEN_GCJ_LDADD_LIST += ../frysk-imports/elfutils/libebl/libebl.a
 GEN_GCJ_LDADD_LIST += ../frysk-imports/elfutils/libelf/libelf.a
-if USE_LIBUNWIND
-GEN_GCJ_LDADD_LIST += ../frysk-imports/libunwind-i386/src/.libs/libunwind-x86.a \
-                 ../frysk-imports/libunwind-x86_64/src/.libs/libunwind-x86_64.a \
-                 ../frysk-imports/libunwind-ppc64/src/.libs/libunwind-ppc64.a
-endif
+GEN_GCJ_LDADD_LIST += \
+	../frysk-imports/libunwind-i386/src/.libs/libunwind-x86.a \
+	../frysk-imports/libunwind-x86_64/src/.libs/libunwind-x86_64.a \
+	../frysk-imports/libunwind-ppc32/src/.libs/libunwind-ppc32.a \
+	../frysk-imports/libunwind-ppc64/src/.libs/libunwind-ppc64.a
 GEN_GCJ_LDADD_LIST += -lstdc++
 # For auditing
 GEN_GCJ_LDADD_LIST += -laudit

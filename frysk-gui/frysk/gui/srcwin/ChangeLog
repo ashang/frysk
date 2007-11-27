@@ -1,3 +1,8 @@
+2007-11-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Added a boolean for printing source	libraries to Frame.toPrint().
+	* CurrentStackView.java (appendRows): Updated.
+
 2007-10-28  Andrew Cagney  <cagney@redhat.com>
 
 	* SourceView.java: Catch RuntimeException instead of

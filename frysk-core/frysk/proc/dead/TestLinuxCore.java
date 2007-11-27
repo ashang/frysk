@@ -159,7 +159,7 @@ public class TestLinuxCore
     liveStacktrace = new StacktraceAction(new PrintWriter(liveStackOutput),
 					  testProc, 
 					  new RequestStopEvent(Manager.eventLoop),0, 
-					  true, false, false, false, false, false)
+					  true, false, false, false, false,false)
 
       {
 	
@@ -190,8 +190,8 @@ public class TestLinuxCore
     coreStacktrace = new StacktraceAction(new PrintWriter(coreStackOutput),
 					  coreProc, 
 					  new PrintEvent(),0,
-					  true, false, false, false , 
-					  false, false)
+					  true, false, false, false ,false, 
+					  false)
     {
 
       public void addFailed (Object observable, Throwable w)

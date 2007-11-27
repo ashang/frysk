@@ -73,7 +73,6 @@ public final class fstack
   static boolean printParameters = false;
   static boolean printScopes = false;
   static boolean fullpath = false;
-  static boolean printSourceLibrary = true;
   
   private static class Stacker extends StacktraceAction
   {
@@ -81,9 +80,9 @@ public final class fstack
     Proc proc;
     public Stacker (PrintWriter printWriter, Proc theProc, Event theEvent,int numberOfFrames, boolean elfOnly, boolean virtualFrames,
                     boolean printParameters, boolean printScopes, 
-                    boolean fullpath, boolean printSourceLibrary)
+                    boolean fullpath)
     {
-      super(printWriter, theProc, theEvent, numberOfFrames, elfOnly,virtualFrames, printParameters, printScopes, fullpath,printSourceLibrary);
+      super(printWriter, theProc, theEvent, numberOfFrames, elfOnly,virtualFrames, printParameters, printScopes, false, fullpath);
       this.proc = theProc;
     }
 
@@ -142,7 +141,7 @@ public final class fstack
   {
       
     Proc proc = Util.getProcFromCoreExePair(coreExePair);
-    stacker = new Stacker(printWriter, proc, new PrintEvent(), numberOfFrames, elfOnly,virtualFrames,printParameters,printScopes, fullpath,printSourceLibrary);
+    stacker = new Stacker(printWriter, proc, new PrintEvent(), numberOfFrames, elfOnly,virtualFrames,printParameters,printScopes, fullpath);
     new ProcCoreAction(proc, stacker);
     Manager.eventLoop.run();
   }
@@ -150,7 +149,7 @@ public final class fstack
   private static void stackPid (ProcId procId)
   {
     Proc proc = Util.getProcFromPid(procId);
-    stacker = new Stacker(printWriter, proc, new AbandonPrintEvent(proc), numberOfFrames, elfOnly,virtualFrames,printParameters,printScopes, fullpath,printSourceLibrary);
+    stacker = new Stacker(printWriter, proc, new AbandonPrintEvent(proc), numberOfFrames, elfOnly,virtualFrames,printParameters,printScopes, fullpath);
     new ProcBlockAction(proc, stacker);
     Manager.eventLoop.run();
   }
@@ -189,6 +188,13 @@ public final class fstack
 	  }
       });
  
+      parser.add(new Option("fullpath", 'f', "print full path." +
+  		"-f prints full path") {
+	  public void parsed(String arg) throws OptionException {
+	        fullpath = true;
+	  }
+      });
+
 
     parser.add(new Option("all", 'a', "print all information that can currently be retrieved" +
                           "about the stack\n" +
