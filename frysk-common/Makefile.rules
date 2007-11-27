@@ -105,23 +105,25 @@ GEN_GCJ_LDADD_LIST =
 # RPATH to wire into in-build-tree program that need to access those
 # shared libraries.
 
-# Just the directories.
+# From the LDADD list extract a list of directories that contain (or
+# likely contain) shared libraries, i.e.: -L<paths> and <path-to>.so.
+
 GEN_GCJ_SO_DIRS = \
-	$(sort $(absdir $(foreach lib, $(GEN_GCJ_LDADD_LIST), \
+	$(sort $(foreach lib, $(GEN_GCJ_LDADD_LIST), \
 	       $(if $(filter -L%,$(lib)), \
-	       	    $(patsubst -L,%,$(lib))) \
+	       	    $(patsubst -L%,%,$(lib))) \
 	       $(if $(filter %.so,$(lib)), \
 	       	    $(patsubst %,-L%,$(dir $(lib)))) \
-	)))
+	))
+
 # Add absolute versions of each directory.
 GEN_GCJ_BUILDTREE_RPATHS = \
 	$(patsubst %/./,%, $(patsubst %/.,%, $(GEN_GCJ_SO_DIRS)))
 GEN_GCJ_BUILDTREE_RPATH = \
 	$(subst $(space),:,$(sort $(GEN_GCJ_BUILDTREE_RPATHS)))
-GEN_GCC_BUILDTREE_RPATHS = $(top_builddir)/elfutils/libdw
 GEN_GCJ_BUILDTREE_RPATH_FLAGS = \
 	-Djava.library.path=$(GEN_GCJ_BUILDTREE_RPATH) \
-	-Wl,-rpath,$(GEN_GCJ_BUILDTREE_RPATH):$(GEN_GCC_BUILDTREE_RPATHS)
+	-Wl,-rpath,$(GEN_GCC_BUILDTREE_RPATHS)
 
 # Prevent GCJ from creating child processes (or at least a feeble
 # attempt) -- children are created for both demangling and for

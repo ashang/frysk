@@ -1,3 +1,8 @@
+2007-11-27  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (GEN_GCJ_SO_DIRS): Fix typo, match -L%.
+	(GEN_GCC_BUILDTREE_RPATHS): Delete.
+
 2007-11-26  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (GEN_GCJ_SO_FLAGS): Delete.
