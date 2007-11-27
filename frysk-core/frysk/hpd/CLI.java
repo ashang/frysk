@@ -146,18 +146,20 @@ public class CLI {
         }
         steppingEngine.addProc(proc);
 	// Wait till we are attached.
-        try {
-            attachedLatch.await();
-	    outWriter.print("Attached to process ");
-	    outWriter.println(attached);
-        } catch (InterruptedException ie) {
-            throw new RuntimeException("attachLatch interrupted");
-        } finally {
-            synchronized (this) {
-                attached = -1;
-                attachedLatch = null;
-            }
+        while (true) {
+            try {
+                attachedLatch.await();
+                outWriter.print("Attached to process ");
+                outWriter.println(attached);
+                synchronized (this) {
+                    attached = -1;
+                    attachedLatch = null;
+                }
+                break;
+            } catch (InterruptedException ie) {
+            }            
         }
+
         steppingEngine.getBreakpointManager().manageProcess(proc);
         // If passed a taskID < 0, request a reserved ProcID
         if (this.taskID < 0)

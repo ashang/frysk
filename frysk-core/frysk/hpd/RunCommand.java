@@ -171,10 +171,12 @@ class RunCommand extends ParameterizedCommand {
     private void run(CLI cli, Input cmd) {
 	Runner runner = new Runner(cli);
 	Manager.host.requestCreateAttachedProc(cmd.stringArrayValue(), runner);
-        try {
-            runner.latch.await();
-        } catch (InterruptedException e) {
-            return;
+        while (true) {
+            try {
+                runner.latch.await();
+                break;
+            } catch (InterruptedException e) {
+            }
         }
         // register with SteppingEngine et.al.
         cli.doAttach(runner.launchedTask.getProc());

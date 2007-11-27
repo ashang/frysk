@@ -262,10 +262,13 @@ public class BreakpointManager
                 }
             },
             sharedLibBptAddr);
-        try {
-            codeObserverLatch.await();
-        }
-        catch (InterruptedException e) {
+        while (true) {
+            try {
+                codeObserverLatch.await();
+                break;
+            }
+            catch (InterruptedException e) {
+            }
         }
     }
 }

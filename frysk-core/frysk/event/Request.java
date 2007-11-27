@@ -62,6 +62,7 @@ public abstract class Request
 	implements Event
     {
 	private RuntimeException runtimeException;
+        private boolean executed = false;
 	public synchronized void execute ()
 	{
 	    try {
@@ -70,18 +71,23 @@ public abstract class Request
 	    catch (RuntimeException r) {
 		runtimeException = r;
 	    }
+            executed = true;
 	    notify();
 	}
 	private synchronized void request ()
 	{
 	    runtimeException = null;
 	    eventLoop.add(this);
-	    try {
-		wait();
-	    }
-	    catch (InterruptedException r) {
-		throw new RuntimeException (r);
-	    }
+            while (!executed) {
+                try {
+                    wait();
+                    if (executed)
+                        break;
+                }
+                catch (InterruptedException r) {
+                }   
+            }
+            executed = false;   // Can requests ever be recycled?
 	    if (runtimeException != null)
 		throw runtimeException;
 	}

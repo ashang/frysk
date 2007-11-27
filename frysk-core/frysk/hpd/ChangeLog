@@ -1,3 +1,10 @@
+2007-11-27  Tim Moore  <timoore@redhat.com>
+
+	* CLI.java (doAttach): Wrap await call inside loop in order to
+	disregard InterruptedException.
+	* QuitCommand.java (interpret): ditto
+	* RunCommand.java (run): ditto
+
 2007-11-22  Rick Moseley  <rmoseley@redhat.com>
 
 	* TestPeekCommand.java: Fix bz #5396; added test for when
