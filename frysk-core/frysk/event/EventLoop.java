@@ -473,6 +473,10 @@ public abstract class EventLoop
      * existing pending events are always processed before performing
      * the first poll.
      */
+    private class Running {
+        boolean isRunning = false;
+    }
+    
     public final void run ()
     {
 	logger.log (Level.FINE, "{0} run\n", this); 
@@ -480,6 +484,7 @@ public abstract class EventLoop
 	// running.
 	synchronized (running) {
 	    updateTid();
+            running.isRunning = true;
 	    running.notify();
 	}
 	runEventLoop (false);
@@ -495,15 +500,16 @@ public abstract class EventLoop
 	    setDaemon(true);
 	    super.start();
 	    // Make certain that the server really is running.
-	    try {
-		running.wait();
-	    }
-	    catch (InterruptedException ie) {
-		throw new RuntimeException (ie);
-	    }
+            while (!running.isRunning) {
+                try {
+                    running.wait();
+                }
+                catch (InterruptedException ie) {
+                }
+            }
 	}
     }
-    private Object running = new Object();
+    private Running running = new Running();
 
 
     /**

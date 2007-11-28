@@ -39,48 +39,43 @@
 
 package frysk.debuginfo;
 
-import java.lang.Math;
-
-import java.util.LinkedList;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-import frysk.isa.ISA;
-import frysk.isa.Register;
-import frysk.stack.Frame;
+import lib.dwfl.DwAt;
+import lib.dwfl.DwOp;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.DwarfOp;
-import lib.dwfl.DwOp;
-import lib.dwfl.DwAt;
+import frysk.isa.Register;
+import frysk.isa.RegisterMap;
+import frysk.stack.Frame;
 
 public class LocationExpression {
     public final static int locationTypeRegDisp = 1,
     locationTypeAddress = 2,
     locationTypeReg = 3;
-    private final Frame frame;
     DwarfDie die;
     List ops;
     int locationType;
     LinkedList stack;
-    private final ISA isa;
 
-    public LocationExpression(Frame frame, DwarfDie die, List ops) {
+    public LocationExpression(DwarfDie die, List ops) {
 	locationType = 0;
-	this.frame = frame;
 	this.die = die;
 	this.ops = ops;
 	this.stack = null;
-	this.isa = frame.getTask().getISA();
     }
 
     /**
      *  Decode a location list and return the value.
      *
      */
-    public long decode () {
+    public long decode (Frame frame) {
 	stack = new LinkedList();
 	int nops = ops.size();
-
+	RegisterMap registerMap = DwarfRegisterMapFactory.getRegisterMap(frame.getTask().getISA());
+	
 	if (nops == 0)
 	    if (die.getAttrBoolean(DwAt.LOCATION)) 
 		throw new VariableOptimizedOutException();  
@@ -162,8 +157,7 @@ public class LocationExpression {
 	    case DwOp.REG31_:
 		if (locationType == 0) 
 		    locationType = locationTypeReg;
-		Register register = DwarfRegisterMapFactory.getRegisterMap(isa)
-		.getRegister(operator - DwOp.REG0_);
+		Register register = registerMap.getRegister(operator - DwOp.REG0_);
 		long regval = frame.getRegister(register);
 		stack.addFirst(new Long(regval));
 		break;
@@ -201,16 +195,14 @@ public class LocationExpression {
 	    case DwOp.BREG30_:
 	    case DwOp.BREG31_:
 		locationType = locationTypeRegDisp;
-		register = DwarfRegisterMapFactory.getRegisterMap(isa)
-		.getRegister(operator - DwOp.BREG0_);
+		register = registerMap.getRegister(operator - DwOp.BREG0_);
 		regval = frame.getRegister(register);
 		stack.addFirst(new Long(operand1 + regval));
 		break;
 
 
 	    case DwOp.REGX_:
-		register = DwarfRegisterMapFactory.getRegisterMap(isa)
-		.getRegister((int)operand1);
+		register = registerMap.getRegister((int)operand1);
 		regval = frame.getRegister(register);
 		stack.addFirst(new Long(regval));
 		break;
@@ -224,8 +216,8 @@ public class LocationExpression {
 	    case DwOp.FBREG_:
 		locationType = locationTypeRegDisp;
 		long pc = frame.getAdjustedAddress();
-		LocationExpression frameBaseOps = new LocationExpression (frame, die, die.getFrameBase(pc));
-		stack.addFirst(new Long(operand1 + frameBaseOps.decode()));
+		LocationExpression frameBaseOps = new LocationExpression (die, die.getFrameBase(pc));
+		stack.addFirst(new Long(operand1 + frameBaseOps.decode(frame)));
 		break;
 
 		// ??? unsigned not properly handled (use bignum?) See DwarfDie.java
@@ -408,11 +400,11 @@ public class LocationExpression {
      * @param size - Size of variable 
      * @return List of memory or register pieces
      */
-    public List decode (int size)
+    public List decode (Frame frame, int size)
     {
 	stack = new LinkedList();
 	int nops = ops.size();
-
+	RegisterMap registerMap = DwarfRegisterMapFactory.getRegisterMap(frame.getTask().getISA());
 	//pieces will contain a list of MemoryPiece, RegisterPiece or UnavaiablePiece
 	ArrayList pieces = new ArrayList(); 
 
@@ -501,8 +493,7 @@ public class LocationExpression {
 	    case DwOp.REG31_:
 		if (locationType == 0) 
 		    locationType = locationTypeReg;
-		Register register = DwarfRegisterMapFactory.getRegisterMap(isa)
-		.getRegister(operator - DwOp.REG0_);
+		Register register = registerMap.getRegister(operator - DwOp.REG0_);
 		// Push the register onto the dwfl stack
 		stack.addFirst(register);
 		break;
@@ -540,8 +531,7 @@ public class LocationExpression {
 	    case DwOp.BREG30_:
 	    case DwOp.BREG31_:
 		locationType = locationTypeRegDisp;
-		register = DwarfRegisterMapFactory.getRegisterMap(isa)
-		.getRegister(operator - DwOp.BREG0_);
+		register = registerMap.getRegister(operator - DwOp.BREG0_);
 		long regval = frame.getRegister(register);
 		stack.addFirst(new Long(operand1 + regval));
 		break;
@@ -549,15 +539,13 @@ public class LocationExpression {
 	    case DwOp.REGX_:
 		if (locationType == 0) 
 		    locationType = locationTypeReg;
-		register = DwarfRegisterMapFactory.getRegisterMap(isa)
-		.getRegister((int)operand1);
+		register = registerMap.getRegister((int)operand1);
 		stack.addFirst(register);
 		break;
 
 	    case DwOp.BREGX_:
 		locationType = locationTypeRegDisp;
-		register = DwarfRegisterMapFactory.getRegisterMap(isa)
-		.getRegister((int)operand1);
+		register = registerMap.getRegister((int)operand1);
 		regval = frame.getRegister(register);
 		stack.addFirst(new Long(operand2 + regval));
 		break;
@@ -571,8 +559,8 @@ public class LocationExpression {
 	    case DwOp.FBREG_:
 		locationType = locationTypeRegDisp;
 		long pc = frame.getAdjustedAddress();
-		LocationExpression frameBaseOps = new LocationExpression (frame, die, die.getFrameBase(pc));
-		stack.addFirst(new Long(operand1 + frameBaseOps.decode()));
+		LocationExpression frameBaseOps = new LocationExpression (die, die.getFrameBase(pc));
+		stack.addFirst(new Long(operand1 + frameBaseOps.decode(frame)));
 		break;
 
 		// ??? unsigned not properly handled (use bignum?) See DwarfDie.java
@@ -760,7 +748,7 @@ public class LocationExpression {
 		    break;
 		}	
 		// Otherwise, check the type of element on stack top and add to list
-		addToList (pieces, operand1);	
+		addToList (frame, pieces, operand1);	
 		break;
 
 	    default:
@@ -774,7 +762,7 @@ public class LocationExpression {
 	 */
 	if (pieces.isEmpty())
 	{    
-	    addToList (pieces, size);
+	    addToList (frame, pieces, size);
 	}    
 
 	return pieces;
@@ -784,7 +772,7 @@ public class LocationExpression {
      * Function that checks the type of element on the stack top and adds it to the
      * list of location
      */
-    private void addToList (List pieces, long size)
+    private void addToList (Frame frame, List pieces, long size)
     {
 	/*
 	 * If stackTop is a Register, add it as a RegisterPiece to list pieces 
@@ -803,13 +791,13 @@ public class LocationExpression {
      *  Return register number for a one entry DW_OP_regX location list 
      *
      */
-    public Register getRegisterNumber () {
+    public Register getRegisterNumber (Frame frame) {
 	if (ops.size() == 1) {
 	    int operator = ((DwarfOp) ops.get(0)).operator;
 	    if (operator >= DwOp.REG0_
 		    || operator <=  DwOp.REG31_) {
 		locationType = locationTypeReg;
-		return DwarfRegisterMapFactory.getRegisterMap(isa)
+		return DwarfRegisterMapFactory.getRegisterMap(frame.getTask().getISA())
 		.getRegister(operator - DwOp.REG0_);
 	    }
 	}

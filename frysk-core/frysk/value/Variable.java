@@ -141,9 +141,9 @@ public class Variable extends ObjectDeclaration{
     public Value getValue(DebugInfoFrame frame) {
 	List ops = variableDie.getFormData(frame.getAdjustedAddress());
 	ISA isa = frame.getTask().getISA();
-	LocationExpression locationExpression = new LocationExpression(frame, variableDie, ops);
+	LocationExpression locationExpression = new LocationExpression(variableDie, ops);
 	PieceLocation pieceLocation
-	    = new PieceLocation(locationExpression.decode(this.getType(isa)
+	    = new PieceLocation(locationExpression.decode(frame, this.getType(isa)
 							  .getSize()));
 	Value value = new Value(this.getType(isa), pieceLocation);
 	return value;

@@ -1,3 +1,8 @@
+2007-11-28  Tim Moore  <timoore@redhat.com>
+
+	* EventLoop.java (run, start, running) Loop around the wait,
+	testing the state of the running object.
+
 2007-11-27  Tim Moore  <timoore@redhat.com>
 
 	* Request.java (Handler.execute, Handler.request): Wait inside a
