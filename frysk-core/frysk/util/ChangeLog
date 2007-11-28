@@ -1,3 +1,8 @@
+2007-11-28  Tim Moore  <timoore@redhat.com>
+
+	* TestCountDownLatch.java (testTimeout): wrap time out await in
+	while loop.
+
 2007-11-28  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
 	
 	* PPC64LinuxElfCorefile.java: Fixed the floating pointer

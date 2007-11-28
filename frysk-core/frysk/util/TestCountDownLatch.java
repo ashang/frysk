@@ -77,6 +77,14 @@ public class TestCountDownLatch
         Thread thread2 = new CountDownThread();
         thread1.start();
         thread2.start();
-        assertEquals("timeout", latch.await(1000), false);
+        boolean timedOut = false;
+        while (true) {
+            try {
+                timedOut = latch.await(1000);
+                break;
+            } catch (InterruptedException e) {
+            }
+        }
+        assertEquals("timeout", timedOut, false);
     }
 }
