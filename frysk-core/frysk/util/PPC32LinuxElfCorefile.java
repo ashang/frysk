@@ -186,9 +186,6 @@ public class PPC32LinuxElfCorefile extends LinuxElfCorefile {
 	// are the names are the same. Create a string[] map to bridge
 	// gap between frysk and core file register order.
 
-        // The number of general purpose regiser.
-        int gprSize = 32;
-
         // The number of total common registers in PPC/PPC64 including nip, msr,
         // etc. Defined in the asm-ppc/elf.h.
         int elfNGREG = 48;
@@ -197,42 +194,40 @@ public class PPC32LinuxElfCorefile extends LinuxElfCorefile {
         byte[] zeroVal = new byte[] { 0 };
 
         Register[] ptracePpcRegMap = { 
-		PPC32Registers.NIP, 
-		PPC32Registers.MSR,	
-		PPC32Registers.ORIGR3,
-		PPC32Registers.CTR,
-		PPC32Registers.LR,
-		PPC32Registers.XER,
-		PPC32Registers.CCR,
-		PPC32Registers.MQ,
-		PPC32Registers.TRAP,
-		PPC32Registers.DAR,
-		PPC32Registers.DSISR,
-		PPC32Registers.RESULT };
-
+	  PPC32Registers.NIP, PPC32Registers.MSR, PPC32Registers.ORIGR3,
+	  PPC32Registers.CTR, PPC32Registers.LR, PPC32Registers.XER,
+	  PPC32Registers.CCR, PPC32Registers.MQ, PPC32Registers.TRAP,
+	  PPC32Registers.DAR, PPC32Registers.DSISR, PPC32Registers.RESULT,
+	  PPC32Registers.GPR0, PPC32Registers.GPR1, PPC32Registers.GPR2,
+	  PPC32Registers.GPR3, PPC32Registers.GPR4, PPC32Registers.GPR5,
+	  PPC32Registers.GPR6, PPC32Registers.GPR7, PPC32Registers.GPR8,
+	  PPC32Registers.GPR9, PPC32Registers.GPR10, PPC32Registers.GPR11,
+	  PPC32Registers.GPR12, PPC32Registers.GPR13, PPC32Registers.GPR14,
+	  PPC32Registers.GPR15, PPC32Registers.GPR16, PPC32Registers.GPR17,
+	  PPC32Registers.GPR18, PPC32Registers.GPR19, PPC32Registers.GPR20,
+	  PPC32Registers.GPR21, PPC32Registers.GPR22, PPC32Registers.GPR23,
+	  PPC32Registers.GPR24, PPC32Registers.GPR25, PPC32Registers.GPR26,
+	  PPC32Registers.GPR27, PPC32Registers.GPR28, PPC32Registers.GPR29,
+	  PPC32Registers.GPR30, PPC32Registers.GPR31};
+	
         for (int i = 0; i < ptracePpcRegMap.length; i++) {
-            int registerSize = ptracePpcRegMap[i].getType().getSize();
-            byte[] byteOrderedRegister = new byte[registerSize];
-            task.access(ptracePpcRegMap[i], 0, registerSize,  byteOrderedRegister, 0, false);
-            prStatus.setPrGPReg(i,bytesToBigInteger(byteOrderedRegister));
+	  int registerSize = ptracePpcRegMap[i].getType().getSize();
+	  byte[] byteOrderedRegister = new byte[registerSize];
+	  task.access(ptracePpcRegMap[i], 0, registerSize,  byteOrderedRegister, 0, false);
+	  prStatus.setPrGPReg(i,bytesToBigInteger(byteOrderedRegister));
         }
-	 
-        // Set the general purpose registers.
-	for (int index = 0; index < gprSize; index++)
-	    prStatus.setPrGPReg
-		(index,
-		 task.getBigIntegerRegisterFIXME("gpr" + index));
-
-        blankRegisterIndex = gprSize + ptracePpcRegMap.length;
-
+	
+	
+        blankRegisterIndex = ptracePpcRegMap.length;
+	
         BigInteger bigInt = new BigInteger(zeroVal);
-
-        // On ppc, some register indexes are not defined in
+	
+	// On ppc, some register indexes are not defined in
 	// asm-<ISA>/ptrace.h.        
         for (int index = blankRegisterIndex; index < elfNGREG; index++)
           prStatus.setPrGPReg(index, bigInt);
         
-        // Write it
+	// Write it
 	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_PRSTATUS, prStatus);
     }
 

@@ -1,5 +1,9 @@
 2007-11-28  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* PPC64LinuxElfCorefile.java (writeNotePrstatus): Add GPR
+	registers to map. Do not use getRegisterByName() anymore.
+	* PPC32LinuxElfCorefile.java(writeNotePrstatus): Ditto.
+	
 	* X8664LinuxElfCorefile.java (writeNotePrstatus): Do not use
 	getRegisterByName(). Use static X8864 register constants, and
 	task.access()

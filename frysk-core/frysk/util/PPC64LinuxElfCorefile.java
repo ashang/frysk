@@ -187,9 +187,6 @@ public class PPC64LinuxElfCorefile extends LinuxElfCorefile {
 	// are the names are the same. Create a string[] map to bridge
 	// gap between frysk and core file register order.
 
-        // The number of general purpose regiser.
-        int gprSize = 32;
-
         // The number of total common registers in PPC/PPC64 including nip, msr,
         // etc. Defined in the asm-ppc64/elf.h.
         int elfNGREG = 48;
@@ -200,37 +197,36 @@ public class PPC64LinuxElfCorefile extends LinuxElfCorefile {
         // XXX: if one register's offset is not defined in asm-ppc/ptrace.h or
         // asm-ppc64/ptrace.h,we did not dump it out and fill give the null Name.
         Register[] ptracePpc64RegMap = {
-                PPC64Registers.NIP,
-                PPC64Registers.MSR,
-                PPC64Registers.ORIGR3,
-                PPC64Registers.CTR,
-                PPC64Registers.LR,
-                PPC64Registers.XER,
-                PPC64Registers.CCR,
-                PPC64Registers.SOFTE,
-                PPC64Registers.TRAP,
-                PPC64Registers.DAR,
-                PPC64Registers.DSISR,
-                PPC64Registers.RESULT };
+	  PPC64Registers.NIP, PPC64Registers.MSR, PPC64Registers.ORIGR3,
+	  PPC64Registers.CTR, PPC64Registers.LR,  PPC64Registers.XER,
+	  PPC64Registers.CCR, PPC64Registers.SOFTE, PPC64Registers.TRAP,
+	  PPC64Registers.DAR, PPC64Registers.DSISR, PPC64Registers.RESULT,
+	  PPC64Registers.GPR0,  PPC64Registers.GPR1, PPC64Registers.GPR2,
+	  PPC64Registers.GPR3,  PPC64Registers.GPR4, PPC64Registers.GPR5,
+	  PPC64Registers.GPR6,  PPC64Registers.GPR7, PPC64Registers.GPR8,
+	  PPC64Registers.GPR9,  PPC64Registers.GPR10, PPC64Registers.GPR11,
+	  PPC64Registers.GPR12,  PPC64Registers.GPR13, PPC64Registers.GPR14,
+	  PPC64Registers.GPR15,  PPC64Registers.GPR16, PPC64Registers.GPR17,
+	  PPC64Registers.GPR18,  PPC64Registers.GPR19, PPC64Registers.GPR20,
+	  PPC64Registers.GPR21,  PPC64Registers.GPR22, PPC64Registers.GPR23,
+	  PPC64Registers.GPR24,  PPC64Registers.GPR25, PPC64Registers.GPR26,
+	  PPC64Registers.GPR27,  PPC64Registers.GPR28, PPC64Registers.GPR29,
+	  PPC64Registers.GPR30,  PPC64Registers.GPR31};
 
         for (int i = 0; i < ptracePpc64RegMap.length; i++) {
-            int registerSize = ptracePpc64RegMap[i].getType().getSize();
-            byte[] byteOrderedRegister = new byte[registerSize];
-            task.access(ptracePpc64RegMap[i], 0, registerSize,  byteOrderedRegister, 0, false);
-            prStatus.setPrGPReg(i, bytesToBigInteger(byteOrderedRegister));
+	  int registerSize = ptracePpc64RegMap[i].getType().getSize();
+	  byte[] byteOrderedRegister = new byte[registerSize];
+	  task.access(ptracePpc64RegMap[i], 0, registerSize,  byteOrderedRegister, 0, false);
+	  prStatus.setPrGPReg(i, bytesToBigInteger(byteOrderedRegister));
         }
 
-        // Set the general purpose registers.
-	for (int index = 0; index < gprSize; index++)
-	    prStatus.setPrGPReg
-		(index, task.getBigIntegerRegisterFIXME("gpr" + index));
 
-        blankRegisterIndex = gprSize + ptracePpc64RegMap.length;
+        blankRegisterIndex = ptracePpc64RegMap.length;
 
         BigInteger bigInt = new BigInteger(zeroVal);
 
         // On ppc, some register indexes are not defined in
-	// asm-<ISA>/ptrace.h.        
+        // asm-<ISA>/ptrace.h.        
         for (int index = blankRegisterIndex; index < elfNGREG; index++)
           prStatus.setPrGPReg(index, bigInt);
         
