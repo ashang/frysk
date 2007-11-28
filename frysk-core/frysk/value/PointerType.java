@@ -142,40 +142,24 @@ public class PointerType
     
     /**
      * Slice operation for pointers. 
-     * 
-     * Supports upto 2-dimensional results.
      */
     public Value slice (Value v, Value i, Value j, ByteBuffer taskMem)
     {
 	// Evaluate length and offset of slice.
 	long offset = v.asLong() + i.asLong()*type.getSize();	
-	int len = (int)(j.asLong() - i.asLong() + 1)*type.getSize();	
+	int len = (int)(j.asLong() - i.asLong() + 1);
+	if (len < 0) {
+	    throw new RuntimeException("Error: Index 1 should be <= than Index 2");
+	}
 	
 	// Create a simple memory location with it.
 	Location loc = PieceLocation.createSimpleLoc
-	               (offset, len, taskMem);
-	
-	/* Determine return type.
-	 * Note: Slicing can give one-D or multi-D results 
-	 * depending on the type of value being pointed to.
-         */
+	               (offset, len*type.getSize(), taskMem);
 	
 	ArrayList dims = new ArrayList();
-	// Set default return type as type of value being
-	// pointed to.
-	Type resultType = type;
-	
-	// When length of slice calculated is greater than type's 
-	// size, result will be an array.
-	if (len > type.getSize())
-	{
-	    dims.add(new Integer(len/type.getSize()-1));
-	    // Create 2-d arrays in case of ptrs to ptrs or arrays.
-	    if (type instanceof PointerType || type instanceof ArrayType)
-		dims.add(new Integer(len-1));
-	    resultType =  new ArrayType(type, len, dims);
-	}	
-	
+	dims.add(new Integer(len-1));
+	Type resultType =  new ArrayType(type, len*type.getSize(), dims);	
+
 	return new Value (resultType, loc);
     }
 

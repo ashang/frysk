@@ -168,11 +168,9 @@ public class ArrayType
      */
     public Value slice (Value v, Value i, Value j, ByteBuffer taskMem)
     {     
-	int len = (int)(j.asLong() - i.asLong() + 1);
-	
-	// FIXME: Allow this case instead of throwing error?
+	int len = (int)(j.asLong() - i.asLong() + 1);	
 	if (len < 0) {
-	    throw new RuntimeException("Error: Index 1 should be less than Index 2");
+	    throw new RuntimeException("Error: Index 1 should be <= than Index 2");
 	}
 	
 	// Create a new dimensions list
