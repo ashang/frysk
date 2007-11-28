@@ -60,14 +60,18 @@ public abstract class CompositeType
 	final Type type;
 	final Access access;
 	final boolean inheritance;
-
-	public Member(int index, String name, Type type, Access access,
+	final int bitOffset;
+	final int bitSize;
+	
+	public Member(int index, String name, Type type, Access access,int bitOffset, int bitSize,
 		boolean inheritance) {
 	    this.index = index;
 	    this.type = type;
 	    this.name = name;
 	    this.access = access;
 	    this.inheritance = inheritance;
+	    this.bitOffset = bitOffset;
+	    this.bitSize = bitSize;
 	}
 	
 	public String getName(){
@@ -78,8 +82,9 @@ public abstract class CompositeType
     public static class StaticMember extends Member{
 	
 	public StaticMember(int index, String name, Type type, Access access,
+		int bitOffset, int bitSize,
 		boolean inheritance) {
-	    super(index, name, type, access, inheritance);
+	    super(index, name, type, access, bitOffset, bitSize, inheritance);
 	}
 
     }
@@ -90,16 +95,13 @@ public abstract class CompositeType
     public static class DynamicMember extends Member{
 	// XXX: To keep getValue working.
 	final long offset;
-	final int bitOffset;
-	final int bitSize;
-	DynamicMember(int index, String name, Type type, long offset,
-	       Access access, int bitOffset, int bitSize,
+	DynamicMember(int index, String name, Type type, long offset, Access access, 
+		int bitOffset, int bitSize,
 	       boolean inheritance) {
-	    super(index, name, type, access, inheritance);
+	    super(index, name, type, access, bitOffset, bitSize, inheritance);
 	    this.offset = offset;
-	    this.bitOffset = bitOffset;
-	    this.bitSize = bitSize;
 	}
+	
 	public String toString() {
 	    return ("{"
 		    + "index=" + index
@@ -164,68 +166,46 @@ public abstract class CompositeType
 	return buf.toString();
     }
 
-    /**
-     * Add NAME as a member of the class.
-     * @param name name of the class member
-     * @param type type of the class member
-     * @param offset byte offset of the member's location from the location
-     *        of the composite object to which it belongs. 
-     * @param access Visibility of the member (public, private, etc)
-     * @param bitOffset 
-     * @param bitLength
-     * @param inheritance if this member represents a parent from which
-     * this class inheres.
-     */
-    private CompositeType add(String name, Type type, long offset,
-			      Access access, int bitOffset, int bitLength,
-			      boolean staticMember,
-			      boolean inheritance) {
-	
-	Member member;
-	
-	if(staticMember){
-	    member = new StaticMember(members.size(), name, type,
-			   access, inheritance);
-	}else{
-	    member = new DynamicMember(members.size(), name, type, offset,
-				   access, bitOffset, bitLength, inheritance);
-	}
-	addMemberToMap(member);
-	return this;
-    }
-
-    private void addMemberToMap(Member member){
+    private CompositeType addMemberToMap(Member member){
 	nameToMember.put(member.getName(), member);
 	members.add(member);
+	return this;
     }
     
     public CompositeType addMember(String name, Type type, long offset,
 				   Access access) {
-	return add(name, type, offset, access, -1, -1,false, false);
+	DynamicMember member = new DynamicMember(members.size(),name, type, offset, access, -1, -1,false);
+	return addMemberToMap(member);
     }
     
     public CompositeType addBitFieldMember(String name, Type type, long offset,
 				   Access access, int bitOffset,
 				   int bitLength) {
 	type = type.pack(bitOffset, bitLength);
-	return add(name, type, offset, access, bitOffset, bitLength, false, false);
+	DynamicMember member = new DynamicMember(members.size(),name, type, offset, access, bitOffset, bitLength,false);
+	return addMemberToMap(member);
     }
     
     public CompositeType addInheritance(String name, Type type, long offset,
 					Access access) {
-	return add(name, type, offset, access, -1, -1,false, true);
+	DynamicMember member = new DynamicMember(members.size(),name, type, offset, access, -1,-1,true);
+	return addMemberToMap(member);
     }
     
     public CompositeType addStaticMember(String name, Type type, long offset,
 		   Access access){
-	return add(name, type, offset, access, -1, -1,true, false);
+	StaticMember member = new StaticMember(members.size(), name, type,
+		   access, -1, -1, false);
+	return addMemberToMap(member);
     }
     
     public CompositeType addStaticBitFieldMember(String name, Type type, long offset,
 		   Access access, int bitOffset,
 		   int bitLength) {
-	    type = type.pack(bitOffset, bitLength);
-	return add(name, type, offset, access, bitOffset, bitLength, true, false);
+	type = type.pack(bitOffset, bitLength);
+	StaticMember member = new StaticMember(members.size(), name, type,
+		   access, -1, -1, false);
+	return addMemberToMap(member);
     }
 
     /**
