@@ -117,7 +117,7 @@ public class IA32Registers extends Registers {
 	= new Register("orig_eax", StandardTypes.INT32L_T);
 
     public final static RegisterGroup REGS_GROUP
-	= new RegisterGroup("general",
+	= new RegisterGroup("regs",
 			    new Register[] {
 				EAX, EBX, ECX, EDX, ESI, EDI, EBP, EIP,
 				EFLAGS, ESP

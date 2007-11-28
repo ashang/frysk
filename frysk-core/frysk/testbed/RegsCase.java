@@ -45,6 +45,7 @@ import frysk.isa.IA32Registers;
 import frysk.isa.X8664Registers;
 import frysk.isa.PPC32Registers;
 import frysk.isa.PPC64Registers;
+import frysk.isa.X87Registers;
 import frysk.isa.ISA;
 import frysk.isa.ISAMap;
 import frysk.proc.Task;
@@ -274,6 +275,7 @@ public abstract class RegsCase extends TestLib {
      */
 
     private Values IA32 = new Values()
+    // general registers
         .put(IA32Registers.EAX, // 0x7eb03efc
              new byte[] { (byte)0xfc, 0x3e, (byte)0xb0, 0x7e })
         .put(IA32Registers.EBX, // 0x35a322a0
@@ -289,11 +291,100 @@ public abstract class RegsCase extends TestLib {
         .put(IA32Registers.EBP, // 0xcbfed73c
              new byte[] { 0x3c, (byte)0xd7, (byte)0xfe, (byte)0xcb })
         .put(IA32Registers.EFLAGS, 0x10246,
-	     1 << 21 // Mask CPUID
-	     )
+	     1 << 21) // Mask CPUID
         .put(IA32Registers.ESP, // 0x93d4a6ed
              new byte[] { (byte)0xed, (byte)0xa6, (byte)0xd4, (byte)0x93 })
  	.put(IA32Registers.EIP, "crash")
+    // floating-point registers
+	.put(X87Registers.ST0, // 0xa7367289dc779dba0bd9
+             new byte[] { (byte)0xd9,0xb,(byte)0xba,(byte)0x9d,
+                          0x77,(byte)0xdc,(byte)0x89,0x72,
+                          0x36,(byte)0xa7 })
+        .put(X87Registers.ST1, // 0x64abfe452c2a5b8d0eb1
+             new byte[] { (byte)0xb1,0xe,(byte)0x8d,0x5b,
+                          0x2a,0x2c,0x45,(byte)0xfe,
+                          (byte)0xab,0x64 })
+        .put(X87Registers.ST2, // 0xb829e094740ce9d53a04
+             new byte[] { 0x4,0x3a,(byte)0xd5,(byte)0xe9,
+                          0xc,0x74,(byte)0x94,(byte)0xe0,
+                          0x29,(byte)0xb8 })
+        .put(X87Registers.ST3, // 0x4bd27ebf86294a4a48f8
+             new byte[] { (byte)0xf8,0x48,0x4a,0x4a,
+                          0x29,(byte)0x86,(byte)0xbf,0x7e,
+                          (byte)0xd2,0x4b })
+        .put(X87Registers.ST4, // 0xb96a6b1dabba9af1fa66
+             new byte[] { 0x66,(byte)0xfa,(byte)0xf1,(byte)0x9a,
+                          (byte)0xba,(byte)0xab,0x1d,0x6b,
+                          0x6a,(byte)0xb9 })
+        .put(X87Registers.ST5, // 0x87d05c0a1e9c9bb98ebc
+             new byte[] { (byte)0xbc,(byte)0x8e,(byte)0xb9,(byte)0x9b,
+                          (byte)0x9c,0x1e,0xa,0x5c,
+                          (byte)0xd0,(byte)0x87 })
+        .put(X87Registers.ST6, // 0x5a0f14dcf87c56690b5f
+             new byte[] { 0x5f,0xb,0x69,0x56,
+                          0x7c,(byte)0xf8,(byte)0xdc,0x14,
+                          0xf,0x5a })
+        .put(X87Registers.ST7, // 0x1f12ae5ec49479a8cb19
+             new byte[] { 0x19,(byte)0xcb,(byte)0xa8,0x79,
+                          (byte)0x94,(byte)0xc4,0x5e,(byte)0xae,
+                          0x12,0x1f })
+        .put(X87Registers.FCW, // 0xc0f1
+             new byte[] { (byte)0xf1,(byte)0xc0 })
+        .put(X87Registers.FSW, // 0x47e4
+             new byte[] { (byte)0xe4,0x47 })
+        .put(X87Registers.FTW, // 0xc9
+             new byte[] { (byte)0xc9 })
+        .put(X87Registers.FOP, // 0x1e8f
+             new byte[] { (byte)0x8f,0x1e })
+        .put(X87Registers.EIP, // 0x2fc38c68
+             new byte[] { 0x68,(byte)0x8c,(byte)0xc3,0x2f })
+        .put(X87Registers.CS, // 0x7ac9
+             new byte[] { (byte)0xc9,0x7a })
+        .put(X87Registers.DP, // 0x6d77e6d5
+             new byte[] { (byte)0xd5,(byte)0xe6,0x77,0x6d })
+        .put(X87Registers.DS, // 0x2a9f
+             new byte[] { (byte)0x9f,0x2a })
+    // vector registers
+        .put(X87Registers.XMM0, // 0x47beb912e3bfa457d6af5267b3fec23b
+             new byte[] { 0x3b,(byte)0xc2,(byte)0xfe,(byte)0xb3,
+                          0x67,0x52,(byte)0xaf,(byte)0xd6,
+                          0x57,(byte)0xa4,(byte)0xbf,(byte)0xe3,
+                          0x12,(byte)0xb9,(byte)0xbe,0x47 })
+        .put(X87Registers.XMM1, // 0x7ce95f1c2fe254e2cac9b22bf43f73c5
+             new byte[] { (byte)0xc5,0x73,0x3f,(byte)0xf4,
+                          0x2b,(byte)0xb2,(byte)0xc9,(byte)0xca,
+                          (byte)0xe2,0x54,(byte)0xe2,0x2f,
+                          0x1c,0x5f,(byte)0xe9,0x7c })
+        .put(X87Registers.XMM2, // 0x566b1b326d658a3365678d130362a6b5
+             new byte[] { (byte)0xb5,(byte)0xa6,0x62,0x3,
+                          0x13,(byte)0x8d,0x67,0x65,
+                          0x33,(byte)0x8a,0x65,0x6d,
+                          0x32,0x1b,0x6b,0x56 })
+        .put(X87Registers.XMM3, // 0x20801ada9126df05d6927e0847fa8f07
+             new byte[] { 0x7,(byte)0x8f,(byte)0xfa,0x47,
+                          0x8,0x7e,(byte)0x92,(byte)0xd6,
+                          0x5,(byte)0xdf,0x26,(byte)0x91,
+                          (byte)0xda,0x1a,(byte)0x80,0x20 })
+        .put(X87Registers.XMM4, // 0x2304fff624579bbddc74a7df4d34cfd9
+             new byte[] { (byte)0xd9,(byte)0xcf,0x34,0x4d,
+                          (byte)0xdf,(byte)0xa7,0x74,(byte)0xdc,
+                          (byte)0xbd,(byte)0x9b,0x57,0x24,
+                          (byte)0xf6,(byte)0xff,0x4,0x23 })
+        .put(X87Registers.XMM5, // 0x58afb31bf2d2b4a33512eefc0d1f5fc4
+             new byte[] { (byte)0xc4,0x5f,0x1f,0xd,
+                          (byte)0xfc,(byte)0xee,0x12,0x35,
+                          (byte)0xa3,(byte)0xb4,(byte)0xd2,(byte)0xf2,
+                          0x1b,(byte)0xb3,(byte)0xaf,0x58 })
+        .put(X87Registers.XMM6, // 0x5caa454b2a0c2975df1df97f8d180e93
+             new byte[] { (byte)0x93,0xe,0x18,(byte)0x8d,
+                          0x7f,(byte)0xf9,0x1d,(byte)0xdf,
+                          0x75,0x29,0xc,0x2a,
+                          0x4b,0x45,(byte)0xaa,0x5c })
+        .put(X87Registers.XMM7, // 0x2147b54a26ac605b98ef6a2f2da97f57
+             new byte[] { 0x57,0x7f,(byte)0xa9,0x2d,
+                          0x2f,0x6a,(byte)0xef,(byte)0x98,
+                          0x5b,0x60,(byte)0xac,0x26,
+                          0x4a,(byte)0xb5,0x47,0x21 })
 	;
 
     private Values X8664 = new Values()

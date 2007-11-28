@@ -153,7 +153,7 @@ public class X87Registers {
 	= new Register("fcw", StandardTypes.INT16L_T);
     // status word
     public static final Register FSW
-	= new Register("fcw", StandardTypes.INT16L_T);
+	= new Register("fsw", StandardTypes.INT16L_T);
     // tag word
     public static final Register FTW
 	= new Register("ftw", StandardTypes.INT8L_T);
@@ -204,13 +204,13 @@ public class X87Registers {
 			    });
 
     public final static RegisterGroup VECTOR32_GROUP
-	= new RegisterGroup("xmm",
+	= new RegisterGroup("vector",
 			    new Register[] {
 				XMM0, XMM1, XMM2, XMM3,
 				XMM4, XMM5, XMM6, XMM7,
 			    });
     public final static RegisterGroup VECTOR64_GROUP
-	= new RegisterGroup("xmm",
+	= new RegisterGroup("vector",
 			    new Register[] {
 				XMM0, XMM1, XMM2, XMM3,
 				XMM4, XMM5, XMM6, XMM7,

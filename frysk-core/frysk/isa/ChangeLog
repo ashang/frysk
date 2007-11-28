@@ -1,5 +1,10 @@
 2007-11-28  Andrew Cagney  <cagney@redhat.com>
 
+	* X87Registers.java (FSW): Fix typo in name.
+	* TestRegisters.java (testGetGroupNames()): Fix group order.
+	(testAllRegistersGroup()): Delete.
+	* IA32Registers.java (REGS_GROUP): Fix name.
+	
 	* Registers.java (getVectorRegisterGroup()): New.
 	(getFloatRegisterGroup()): New.
 	(getDefaultRegisterGroup()): Make concrete.

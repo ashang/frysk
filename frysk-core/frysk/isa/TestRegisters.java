@@ -67,16 +67,12 @@ public class TestRegisters extends TestCase {
     public void testGetGroupNames() {
 	assertEquals("getGroupNames",
 		     new String[] {
-			 "regs", "float", "segment", "vector"
+			 "regs", "float", "vector", "segment"
 		     }, regs.getGroupNames());
     }
 
     public void testDefaultRegisterGroup() {
 	assertEquals("getDefaultRegisterGroup", IA32Registers.REGS_GROUP,
 		     regs.getDefaultRegisterGroup());
-    }
-
-    public void testAllRegistersGroup() {
-	fail("not implemented");
     }
 }
