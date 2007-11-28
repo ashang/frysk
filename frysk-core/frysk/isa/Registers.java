@@ -80,7 +80,7 @@ public abstract class Registers {
     /**
      * Return the "default" or "regs" register group.
      */
-    public RegisterGroup getDefaultRegisterGroup() {
+    public RegisterGroup getGeneralRegisterGroup() {
 	return getGroup("regs");
     }
     /**

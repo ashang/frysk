@@ -71,8 +71,8 @@ public class TestRegisters extends TestCase {
 		     }, regs.getGroupNames());
     }
 
-    public void testDefaultRegisterGroup() {
-	assertEquals("getDefaultRegisterGroup", IA32Registers.REGS_GROUP,
-		     regs.getDefaultRegisterGroup());
+    public void testGeneralRegisterGroup() {
+	assertEquals("getGeneralRegisterGroup", IA32Registers.REGS_GROUP,
+		     regs.getGeneralRegisterGroup());
     }
 }

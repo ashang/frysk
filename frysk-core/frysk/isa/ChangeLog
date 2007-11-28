@@ -1,5 +1,10 @@
 2007-11-28  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRegisters.java (testGeneralRegisterGroup()): Rename
+	testDefaultRegisterGroup.
+	* Registers.java (getGeneralRegisterGroup()): Rename
+	getDefaultRegisterGroup.
+
 	* X87Registers.java (FSW): Fix typo in name.
 	* TestRegisters.java (testGetGroupNames()): Fix group order.
 	(testAllRegistersGroup()): Delete.

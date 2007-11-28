@@ -1,3 +1,8 @@
+2007-11-28  Andrew Cagney  <cagney@redhat.com>
+
+	* RegsCommand.java: Update; Registers .getDefaultRegisterGroup
+	renamed to getGeneralRegisterGroup.
+
 2007-11-27  Teresa Thomas  <tthomas@redhat.com>
 	
 	* EvalCommands.java (Printer..print): Remove type printing

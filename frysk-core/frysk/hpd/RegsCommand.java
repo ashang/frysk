@@ -63,7 +63,7 @@ public class RegsCommand extends ParameterizedCommand {
 	    TaskData td = (TaskData) taskDataIter.next();
 	    ISA isa = td.getTask().getISA();
 	    Registers regs = RegistersFactory.getRegisters(isa);
-	    RegisterGroup selectedGroup = regs.getDefaultRegisterGroup();
+	    RegisterGroup selectedGroup = regs.getGeneralRegisterGroup();
 	    if (cmd.size() > 0) {
 		String groupName = cmd.parameter(0);
 		selectedGroup = regs.getGroup(groupName);

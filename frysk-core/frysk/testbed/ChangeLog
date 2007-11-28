@@ -1,5 +1,8 @@
 2007-11-28  Andrew Cagney  <cagney@redhat.com>
 
+	* RegsCase.java (testGeneralRegisters()): Rename
+	testDefaultRegisters.
+	
 	* RegsCase.java (testDefaultRegisters()): New.
 	(testFloatRegisters()): New; unresolved on IA32 and X86-64.
 	(testVectorRegisters()): New; ditto.

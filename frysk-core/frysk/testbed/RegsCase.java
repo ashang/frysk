@@ -115,10 +115,10 @@ public abstract class RegsCase extends TestLib {
 	}
     }
    
-    public void testDefaultRegisters() {
+    public void testGeneralRegisters() {
 	if(unresolvedOnx8664(5195))
 	    return;
-	checkRegisterGroup(registers.getDefaultRegisterGroup());
+	checkRegisterGroup(registers.getGeneralRegisterGroup());
     }
 
     public void testFloatRegisters() {
@@ -302,7 +302,7 @@ public abstract class RegsCase extends TestLib {
      */
 
     private Values IA32 = new Values()
-    // default or general registers
+    // general registers
         .put(IA32Registers.EAX, // 0x7eb03efc
              new byte[] { (byte)0xfc, 0x3e, (byte)0xb0, 0x7e })
         .put(IA32Registers.EBX, // 0x35a322a0
