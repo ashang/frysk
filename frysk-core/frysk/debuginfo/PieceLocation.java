@@ -103,7 +103,7 @@ extends Location
      * @param offset - overall byte offset of value
      * @return - piece index
      */
-    protected long indexOf(long offset)
+    private long indexOf(long offset)
     {
 	// indexCount will be set to contain the overall byte index of
 	// first byte of every piece.
@@ -125,7 +125,7 @@ extends Location
 	    else
 		indexCount += len;
 	}
-	return -1;	
+	throw new RuntimeException("Index out of range for offset " + offset);	
     }
 
     /**
@@ -134,7 +134,7 @@ extends Location
      * @param offset - overall byte offset of value
      * @return - piece that contains the byte at OFFSET
      */
-    protected Piece pieceOf(long offset)
+    private Piece pieceOf(long offset)
     {
 	// indexCount will be set to contain the overall byte 
 	// index of first byte of every piece.
@@ -148,14 +148,14 @@ extends Location
 	    if ( offset >= indexCount && offset < indexCount+len )
 	    {   
 		// If condition will satisfy if (overall) offset 
-		//is within current piece.
+		// is within current piece.
 		return (Piece)o;	
 	    }
 
 	    else
 		indexCount += len;
 	}
-	return null;	
+	throw new RuntimeException("Piece out of range for offset " + offset);	
     }
 
     /**

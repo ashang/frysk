@@ -88,16 +88,6 @@ extends TestLib
 	l = null;
     }
 
-    public void testMapping() 
-    {
-	// Test for length
-	assertEquals ("total bytes", l.length(), 15); 
-
-	// Test for index and piece mapping
-	assertEquals("piece index", 1, l.indexOf(6));
-	assertEquals("piece", l.getPieces().get(1), l.pieceOf(6));
-    }
-
     public void testGetPutByte()
     {
 	// Test for putByte & getByte of MemoryPiece

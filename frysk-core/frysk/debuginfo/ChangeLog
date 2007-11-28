@@ -1,5 +1,13 @@
-2007-11-28  Sami Wagiaalla  <swagiaal@redhat.com>
+2007-11-28  Teresa Thomas  <tthomas@redhat.com>
 
+	* TestPieceLocation.java (testMapping): Delete - redundant
+	test.
+	* PieceLocation.java (indexOf): Make private, Throw 
+	exception on failure.
+	(pieceOf): Ditto.
+	
+2007-11-28  Sami Wagiaalla  <swagiaal@redhat.com>
+	
 	* LocationExpression.java: Removed frame requirement from constructor
 	to be passed as an argument to decoding functions.
 	* TestAddress.java: Updated.
