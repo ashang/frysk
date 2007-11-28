@@ -1,3 +1,8 @@
+2007-11-28  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
+
+	* cni/Ptrace.cxx: Add PowerPC single register bank access
+	(its size and parammeter to access register).
+
 2007-11-15  Andrew Cagney  <cagney@redhat.com>
 
 	* Errno.java (Errno()): Delete.

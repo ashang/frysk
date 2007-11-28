@@ -1,12 +1,8 @@
-2007-11-28  Zhao Shujing  <pearly.zhao@oracle.com>
+2007-11-27  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
 
-	* TestByteBuffer.java (testMemoryBufferCapacity()): Update; Add PPC
-	support and make it simpler.
-
-2007-11-22  Zhao shujing  <pearly.zhao@oracle.com>
-
-	* TestByteBuffer.java (testMemoryBufferCapacity()): Fix bug 5394.
-	Renabled test.
+	* PtraceRegisterBanksFactory.java: Putting single PowerPC ptrace
+	register bank (holds all registers with different sizes, even
+	floating pointer ones and vector register.
 
 2007-11-22  Andrew Cagney  <cagney@redhat.com>
 

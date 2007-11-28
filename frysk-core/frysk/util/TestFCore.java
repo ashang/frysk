@@ -236,7 +236,8 @@ public class TestFCore
       
       // Get the live process register banks and store them
       ByteBuffer liveRegisterMaps[] = mainLiveTask.getRegisterBuffersFIXME();
-      byte[] liveRegBuffer = new byte[(int) liveRegisterMaps[0].capacity()];
+      long bankSize = liveRegisterMaps[0].capacity();
+      byte[] liveRegBuffer = new byte[(int)bankSize];
       liveRegisterMaps[0].get(0,liveRegBuffer,0,(int) liveRegisterMaps[0].capacity());
       
       // Create a corefile from process
@@ -274,6 +275,11 @@ public class TestFCore
   public void testFloatingPointRegisters ()
   {
       
+      // PowerPc doesnt have a bank for Floating Point registers
+      // this registers are with all others in the main bank
+      if (unresolvedOnPPC(4890))
+         return;	
+
       // Construct a process
       Proc ackProc = giveMeABlockedProc();
       assertNotNull("Found Process",ackProc);

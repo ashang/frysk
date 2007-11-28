@@ -47,7 +47,6 @@ import java.math.BigInteger;
 
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
 import lib.dwfl.ElfNhdr;
@@ -241,20 +240,52 @@ public class PPC64LinuxElfCorefile extends LinuxElfCorefile {
          *      frysk.proc.Task)
          */
     protected void writeNoteFPRegset(ElfNhdr nhdrEntry, Task task) {
-	ElfPrFPRegSet fpRegSet = new ElfPrFPRegSet();
 
-	// Write FP Register info over wholesae. Do not interpret.
-	ByteBuffer registerMaps[] = task.getRegisterBuffersFIXME();
-	byte[] regBuffer = new byte[(int) registerMaps[1].capacity()];
-	registerMaps[1].get(regBuffer);
+        ElfPrFPRegSet fpRegSet = new ElfPrFPRegSet();
 
-	fpRegSet.setFPRegisterBuffer(regBuffer);
+        Register[] ppc64FloatingPointerRegMap = {
+                PPC64Registers.FPR0, PPC64Registers.FPR1, PPC64Registers.FPR2,
+                PPC64Registers.FPR3, PPC64Registers.FPR4, PPC64Registers.FPR5,
+		PPC64Registers.FPR6, PPC64Registers.FPR7, PPC64Registers.FPR8,
+		PPC64Registers.FPR9, PPC64Registers.FPR10, PPC64Registers.FPR11,
+		PPC64Registers.FPR12, PPC64Registers.FPR13, PPC64Registers.FPR14,
+		PPC64Registers.FPR15, PPC64Registers.FPR16, PPC64Registers.FPR17,
+		PPC64Registers.FPR18, PPC64Registers.FPR19, PPC64Registers.FPR20,
+		PPC64Registers.FPR21, PPC64Registers.FPR22, PPC64Registers.FPR23,
+		PPC64Registers.FPR24, PPC64Registers.FPR25, PPC64Registers.FPR26,
+		PPC64Registers.FPR27, PPC64Registers.FPR28, PPC64Registers.FPR29,
+		PPC64Registers.FPR30, PPC64Registers.FPR31 };
 
-	// Write it
-	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_FPREGSET, fpRegSet);
-    }
+        int totalBufferSize = 0;
+        for (int i = 0; i < ppc64FloatingPointerRegMap.length; i++) {
+            int registerSize = ppc64FloatingPointerRegMap[i].getType().getSize();
+            totalBufferSize += registerSize;
+        }
 
-    /* (non-Javadoc)
+	// Creating a raw byte buffer to fill with fp regs value
+        byte[] regBuffer = new byte[totalBufferSize];
+
+        // Filling the buffer
+        int regBufferIndex = 0;
+        for (int i = 0; i < ppc64FloatingPointerRegMap.length; i++) {
+            int registerSize = ppc64FloatingPointerRegMap[i].getType().getSize();
+            byte[] currentRegBuffer = new byte[registerSize];
+            task.access(ppc64FloatingPointerRegMap[i], 0,
+                        registerSize, currentRegBuffer, 0, false);
+            for(int j=0; j < registerSize; j++) {
+                regBuffer[regBufferIndex] = currentRegBuffer[j];
+                regBufferIndex++;
+            }
+        }
+
+        // Write FP Register info over wholesae. Do not interpret.
+        fpRegSet.setFPRegisterBuffer(regBuffer);
+
+        // Write it
+        nhdrEntry.setNhdrDesc(ElfNhdrType.NT_FPREGSET, fpRegSet);
+   }
+
+    /*F(non-Javadoc)
      * @see frysk.util.LinuxElfCorefile#writeNotePRXFPRegset(lib.dwfl.ElfNhdr, frysk.proc.Task)
      */
     protected boolean writeNotePRXFPRegset(ElfNhdr nhdrEntry, Task task) {

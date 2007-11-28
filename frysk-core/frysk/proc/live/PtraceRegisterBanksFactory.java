@@ -83,10 +83,16 @@ class PtraceRegisterBanksFactory {
     }
 
     private static ByteBuffer[] ppcBanksBE(int pid) {
-	ByteBuffer registers
-	    = new AddressSpaceByteBuffer(pid, AddressSpace.USR);
-	registers.order(ByteOrder.BIG_ENDIAN); // set explicitly
-	return new ByteBuffer[] { registers };
+	ByteBuffer[] bankBuffers = new ByteBuffer[] {
+            new RegisterSetByteBuffer(pid, RegisterSet.REGS),
+            new AddressSpaceByteBuffer(pid, AddressSpace.USR)
+        };
+
+	for (int i = 0; i < bankBuffers.length; i++) {
+            bankBuffers[i].order(ByteOrder.BIG_ENDIAN);
+        }	
+
+	return bankBuffers;
     }
 
     static RegisterBanks create(ISA isa, int pid) {

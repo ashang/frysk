@@ -1,3 +1,12 @@
+2007-11-28  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
+	
+	* PPC64LinuxElfCorefile.java: Fixed the floating pointer
+	notes writer.
+
+	* TestFCore.java: Marked testFloatingPointRegisters as an Unresolved
+	test since doesnt make sense to test for fp regs in the second bank,
+	they are together with all other regs in the first bank.
+
 2007-11-28  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* PPC64LinuxElfCorefile.java (writeNotePrstatus): Add GPR
