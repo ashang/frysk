@@ -1,3 +1,7 @@
+2007-11-28 Teresa Thomas <tthomas@redhat.com>
+
+   * fdebugrpm.sh: Enable all debuginfo repos.
+   
 2007-11-27 Teresa Thomas <tthomas@redhat.com>
 
    * fdebugrpm.sh: Update enabled repos list for fc7 
