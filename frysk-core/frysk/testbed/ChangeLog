@@ -1,5 +1,8 @@
 2007-11-28  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRegs.java (testGeneralRegistersPresent()): Rename
+	testDefaultRegistersPresent.
+	
 	* RegsCase.java (testGeneralRegisters()): Rename
 	testDefaultRegisters.
 	

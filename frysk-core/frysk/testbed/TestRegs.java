@@ -108,9 +108,9 @@ public class TestRegs extends TestLib {
      * present; if some are missing it dumps out suggested test
      * values.
      */
-    public void testDefaultRegistersPresent() {
+    public void testGeneralRegistersPresent() {
 	checkRegisterGroupPresent(RegistersFactory.getRegisters(regsCase.isa())
-				  .getDefaultRegisterGroup());
+				  .getGeneralRegisterGroup());
     }
     public void testFloatRegistersPresent() {
 	checkRegisterGroupPresent(RegistersFactory.getRegisters(regsCase.isa())

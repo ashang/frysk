@@ -1,3 +1,7 @@
+2007-11-28  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCase.java (unresolvedOnIA32(int)): New.
+
 2007-10-05  Mark Wielaard  <mwielaard@redhat.com>
 
 	* KernelVersion.java (fedoraMajor, fedoraMinor): Removed.

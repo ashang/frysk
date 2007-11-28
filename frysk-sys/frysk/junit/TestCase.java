@@ -98,8 +98,16 @@ public class TestCase
 				 .indexOf ("powerpc") != - 1);
     }
 
-    // XXX: Are 32-bit and/or 64-bit needed?  Are I386 and X8664
-    // needed?
+    /**
+     * The test has problems that have not been resolved on a X8664
+     * system; see BUG for more details.  Return true and report
+     * UNRESOLVED when running on a X8664.
+     */
+    protected static boolean unresolvedOnIA32 (int bug) {
+	String cpu = Config.getTargetCpuXXX ();
+        return Runner.unresolved(bug, (cpu.indexOf ("i386") >= 0
+				       || cpu.indexOf ("i686") >= 0));
+    }
 
     /**
      * The test has problems that have not been resolved on a X8664
@@ -110,7 +118,6 @@ public class TestCase
         return Runner.unresolved(bug, Config.getTargetCpuXXX ()
                                  .indexOf ("x86_64") != - 1);
     }
-
 
     /**
      * Results from uname(2) call.
