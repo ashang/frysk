@@ -1,3 +1,7 @@
+2007-11-28  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
+
+	* RegsCase.java: Add the PowerPC32 general purpose register values. 
+
 2007-11-12  Andrew Cagney  <cagney@redhat.com>
 
 	* DaemonBlockedAtSignal.java (DaemonBlockedAtSignal(File)): New.

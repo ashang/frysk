@@ -48,6 +48,8 @@ public class RegistersFactory {
 	= new ISAMap("RegistersFactory")
 	.put(ISA.IA32, new IA32Registers())
 	.put(ISA.X8664, new X8664Registers())
+	.put(ISA.PPC32BE, new PPC32Registers())
+	.put(ISA.PPC64BE, new PPC64Registers())
 	;
     static public Registers getRegisters(ISA isa) {
 	return (Registers)isaToRegisters.get(isa);

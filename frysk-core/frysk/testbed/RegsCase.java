@@ -43,6 +43,8 @@ import java.util.Map.Entry;
 import frysk.isa.Register;
 import frysk.isa.IA32Registers;
 import frysk.isa.X8664Registers;
+import frysk.isa.PPC32Registers;
+import frysk.isa.PPC64Registers;
 import frysk.isa.ISA;
 import frysk.isa.ISAMap;
 import frysk.proc.Task;
@@ -347,7 +349,87 @@ public abstract class RegsCase extends TestLib {
         .put(X8664Registers.RIP, "crash")
 	;
 
+    private Values PPC32 = new Values()
+        .put(PPC32Registers.GPR0, 
+             new byte[] { (byte)0xa3,(byte)0x9c,0x20,(byte)0x08 })
+	.put(PPC32Registers.GPR1, 
+             new byte[] { (byte)0x3a,(byte)0x82,0x27,(byte)0xf1 })
+	.put(PPC32Registers.GPR2,
+             new byte[] { (byte)0x1b,(byte)0x12,(byte)0xa0,(byte)0xa2 })
+	.put(PPC32Registers.GPR3,
+             new byte[] { (byte)0xe2,(byte)0xab,(byte)0xff,(byte)0xcc })
+        .put(PPC32Registers.GPR4,
+             new byte[] { (byte)0xc4,(byte)0x46,(byte)0xeb,(byte)0xf1 })
+        .put(PPC32Registers.GPR5,
+             new byte[] { (byte)0xa9,(byte)0x94,0x2a,(byte)0x4e })
+        .put(PPC32Registers.GPR6,
+             new byte[] { (byte)0x55,(byte)0xa2,(byte)0x92,(byte)0x51 })
+        .put(PPC32Registers.GPR7,
+             new byte[] { (byte)0x4f,(byte)0x61,0x6e,(byte)0xf2 })
+        .put(PPC32Registers.GPR8,
+             new byte[] { (byte)0xf1,(byte)0x76,(byte)0xef,(byte)0x4d })
+        .put(PPC32Registers.GPR9,
+             new byte[] { (byte)0xdf,(byte)0xac,0x22,(byte)0x56 })
+	.put(PPC32Registers.GPR10,
+             new byte[] { (byte)0xad,(byte)0x1a,(byte)0x8a,(byte)0x99 })
+        .put(PPC32Registers.GPR11,
+             new byte[] { (byte)0x11,(byte)0x2e,(byte)0x88,(byte)0xab })
+        .put(PPC32Registers.GPR12,
+             new byte[] { (byte)0xf7,(byte)0xfc,(byte)0xd1,(byte)0xf2 })
+        .put(PPC32Registers.GPR13,
+             new byte[] { (byte)0x88,(byte)0x3e,(byte)0xf1,(byte)0x01 })
+        .put(PPC32Registers.GPR14,
+             new byte[] { (byte)0xef,(byte)0x2e,0x26,(byte)0x91 })
+        .put(PPC32Registers.GPR15,
+             new byte[] { (byte)0x9c,(byte)0x1a,(byte)0x6e,(byte)0xe1 })
+        .put(PPC32Registers.GPR16,
+             new byte[] { (byte)0x20,(byte)0x0d,0x11,(byte)0x34 })
+        .put(PPC32Registers.GPR17,
+             new byte[] { (byte)0x63,(byte)0x4b,(byte)0x99,(byte)0x11 })
+        .put(PPC32Registers.GPR18,
+             new byte[] { (byte)0xd8,(byte)0x9b,(byte)0xde,(byte)0x81 })
+        .put(PPC32Registers.GPR19,
+             new byte[] { (byte)0x6e,(byte)0x6e,(byte)0xf9,(byte)0xba })
+	.put(PPC32Registers.GPR20,
+             new byte[] { (byte)0x55,(byte)0x51,(byte)0xaa,(byte)0xc3 })
+        .put(PPC32Registers.GPR21,
+             new byte[] { (byte)0x12,(byte)0x9c,(byte)0x72,(byte)0x3e })
+        .put(PPC32Registers.GPR22,
+             new byte[] { (byte)0x29,(byte)0x9c,(byte)0x77,(byte)0x33 })
+        .put(PPC32Registers.GPR23,
+             new byte[] { (byte)0x31,(byte)0x9c,0x20,(byte)0x44 })
+        .put(PPC32Registers.GPR24,
+             new byte[] { (byte)0xf3,(byte)0x9c,0x45,(byte)0xbb })
+        .put(PPC32Registers.GPR25,
+             new byte[] { (byte)0x10,(byte)0x9c,(byte)0x92,(byte)0xfa })
+        .put(PPC32Registers.GPR26,
+             new byte[] { (byte)0xe4,(byte)0x9c,(byte)0xbc,(byte)0xd8 })
+        .put(PPC32Registers.GPR27,
+             new byte[] { (byte)0x39,(byte)0x9c,(byte)0xe5,(byte)0xc6 })
+        .put(PPC32Registers.GPR28,
+             new byte[] { (byte)0x43,(byte)0x9c,(byte)0x4a,(byte)0x99 })
+        .put(PPC32Registers.GPR29,
+             new byte[] { (byte)0xd7,(byte)0x9c,0x44,(byte)0x01 })
+	.put(PPC32Registers.GPR30,
+             new byte[] { (byte)0x62,(byte)0x9c,0x09,(byte)0xeb })
+        .put(PPC32Registers.GPR31,
+             new byte[] { (byte)0x42,(byte)0x9c,0x78,(byte)0xa1 })
+
+        .put(PPC32Registers.FPR0,
+             new byte[] { (byte)0xa3,(byte)0x9c,0x20,(byte)0xd8,
+                          (byte)0xe2,(byte)0xb4,0x7b,(byte)0x83 })
+	;
+
+    private Values PPC64 = new Values()
+        .put(PPC64Registers.GPR0, // 0x837bb4e2d8209ca3
+             new byte[] { (byte)0xa3,(byte)0x9c,0x20,(byte)0xd8,
+                          (byte)0xe2,(byte)0xb4,0x7b,(byte)0x83 })
+	;
+
     private final ISAMap isaValues = new ISAMap("RegsCase")
-	.put(ISA.IA32, IA32).put(ISA.X8664, X8664)
+	.put(ISA.IA32, IA32)
+	.put(ISA.X8664, X8664)
+	.put(ISA.PPC32BE, PPC32)
+	.put(ISA.PPC64BE, PPC64)
 	;
 }

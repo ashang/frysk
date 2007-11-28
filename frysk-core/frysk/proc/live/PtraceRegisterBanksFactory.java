@@ -84,14 +84,13 @@ class PtraceRegisterBanksFactory {
 
     private static ByteBuffer[] ppcBanksBE(int pid) {
 	ByteBuffer[] bankBuffers = new ByteBuffer[] {
-            new RegisterSetByteBuffer(pid, RegisterSet.REGS),
             new AddressSpaceByteBuffer(pid, AddressSpace.USR)
         };
 
 	for (int i = 0; i < bankBuffers.length; i++) {
             bankBuffers[i].order(ByteOrder.BIG_ENDIAN);
         }	
-
+	System.out.println("Usr Addr Space Size: " + bankBuffers[0].capacity());
 	return bankBuffers;
     }
 

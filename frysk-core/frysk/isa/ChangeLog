@@ -1,3 +1,7 @@
+2007-11-28  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
+
+	* RegistersFactory.java: Adding Power32/64 registers to factory.
+
 2007-11-26  Andrew Cagney  <cagney@redhat.com>
 
 	* X8664Registers.java (XMM0, ..., XMM15): Delete.
