@@ -1,3 +1,8 @@
+2007-11-28 Teresa Thomas <tthomas@redhat.com>
+
+	* funit-addresses.c (dynamicOneD): New
+	(dynamicTwoD): New.
+	
 2007-11-26 Teresa Thomas <tthomas@redhat.com>
 
 	* funit-addresses.c (ptrStrings): New.

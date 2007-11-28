@@ -65,12 +65,28 @@ int oneD[] = { 4, 3, 2, 1};
 char* string = "hello world";
 int* ptr = NULL;
 char* ptrStrings[] = {"zero", "one", "two", "three"};
+int** dynamicTwoD = NULL;
+int*  dynamicOneD = NULL;
 
 int main(int argc, char* argv[])
 {
   static int static_int = 22;
   volatile int volatile_int = 33;
-  register int reg = 5;	
+  register int reg = 5;	  				 
+  int i, k;				  
+  
+  // Dynamically allocated two d array [5][3]
+  dynamicTwoD =  malloc (sizeof (int*) * 5);
+  for (i=0; i<5; i++)
+     dynamicTwoD[i] = malloc (sizeof(int) * 3);
+  // Fill with value 9
+  for (i=0; i<5; i++)
+     for (k=0; k<3; k++)
+        dynamicTwoD[i][k] = 9;
+        
+  dynamicOneD = malloc (sizeof(int) * 3);
+  for (i =0 ; i<3; i++)
+     dynamicOneD[i] = 5;      
   
   static_int_address = &static_int;
   volatile_int_address = &volatile_int;
@@ -81,6 +97,11 @@ int main(int argc, char* argv[])
   my_cars.audi = malloc (sizeof(int));
   *(my_cars.audi) = 3;
   my_cars.lexus = reg;
+
+   // Free Dynamic memory
+   /*for (i = 0; i < 5; i ++) 
+      free(twoDArray[i]);
+   free(twoDArray);*/
 
   if (strcmp(argv[1], "loop") == 0) 
     while (1) {}
