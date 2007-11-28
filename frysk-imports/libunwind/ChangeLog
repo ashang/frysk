@@ -1,3 +1,8 @@
+2007-11-28  Mark Wielaard  <mwielaard@redhat.com>
+
+	* .cvsignore, config/.cvsignore, doc/.cvsignore,
+	include/.cvsignore, src/.cvsignore, tests/.cvsignore: Removed.
+
 2007-11-23  Mark Wielaard  <mwielaard@redhat.com>
 
 	Revert:
