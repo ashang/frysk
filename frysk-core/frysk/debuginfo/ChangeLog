@@ -1,3 +1,10 @@
+2007-11-28  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* LocationExpression.java: Removed frame requirement from constructor
+	to be passed as an argument to decoding functions.
+	* TestAddress.java: Updated.
+	* TestLocationExpression.java: Updated.
+
 2007-11-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Added a boolean for printing source	libraries to Frame.toPrint().

@@ -396,8 +396,8 @@ public class TestLocationExpression
 	Task task = getStoppedTask();
 	Frame frame = StackFactory.createFrame(task);
 	
-	LocationExpression locExp = new LocationExpression(frame, die, ops);
-	List loc = locExp.decode(12);  
+	LocationExpression locExp = new LocationExpression(die, ops);
+	List loc = locExp.decode(frame,12);  
 	
 	assertEquals ("Stack size", stackSize, locExp.getStackSize());
 	compareLocations (loc, expectedLoc);

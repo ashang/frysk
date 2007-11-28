@@ -1,3 +1,9 @@
+007-11-28  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	LocationExpression.java: Removed frame requirement from constructor
+	to be passed as an argument to decoding functions.
+	* Variable.java: Updated.
+
 2007-11-27  Teresa Thomas  <tthomas@redhat.com>
 
 	* PointerType.java (toPrint): Add type printing.
