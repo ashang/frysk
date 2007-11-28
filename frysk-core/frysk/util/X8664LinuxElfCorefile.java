@@ -39,9 +39,14 @@
 
 package frysk.util;
 
+import java.math.BigInteger;
+
+import frysk.isa.Register;
+import frysk.isa.X8664Registers;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import inua.eio.ByteBuffer;
+import inua.eio.ByteOrder;
 
 import lib.dwfl.ElfNhdr;
 import lib.dwfl.ElfNhdrType;
@@ -175,16 +180,43 @@ public class X8664LinuxElfCorefile extends LinuxElfCorefile {
 	// Order for these registers is found in /usr/include/asm/user.h
 	// This is not the same order that frysk iterators print out, nor
 	// are the names are the same. Create a string[] map to bridge
-	// gap between frysk and core file register order.
-	String regMap[] = { "r15", "r14", "r13", "r12", "rbp", "rbx", "r11",
-		"r10", "r9", "r8", "rax", "rcx", "rdx", "rsi",
-		"rdi", "orig_rax", "rip", "cs", "rflags", "rsp",
-		"ss", "fs_base", "gs_base", "ds", "es", "fs", "gs" };
-
+	// gap between frysk and core file register order.        
+	
+	Register[] ptraceRegisterMap = {
+	  X8664Registers.R15,
+	  X8664Registers.R14,
+	  X8664Registers.R13,
+	  X8664Registers.R12,
+	  X8664Registers.RBP,
+	  X8664Registers.RBX,
+	  X8664Registers.R11,
+	  X8664Registers.R10,
+	  X8664Registers.R9,
+	  X8664Registers.R8,
+	  X8664Registers.RAX,
+	  X8664Registers.RCX,
+	  X8664Registers.RDX,				      
+	  X8664Registers.RSI,
+	  X8664Registers.RDI,
+	  X8664Registers.ORIG_RAX,
+	  X8664Registers.RIP,
+	  X8664Registers.CS,
+	  X8664Registers.RFLAGS,
+	  X8664Registers.RSP,
+	  X8664Registers.SS,
+	  X8664Registers.FS_BASE,
+	  X8664Registers.GS_BASE,
+	  X8664Registers.DS,
+	  X8664Registers.ES,
+	  X8664Registers.FS,
+	  X8664Registers.GS};
 
 	// Set GP register info
-	for (int i = 0; i < regMap.length; i++) {
-	    prStatus.setPrGPReg(i, task.getBigIntegerRegisterFIXME(regMap[i]));
+	for (int i = 0; i < ptraceRegisterMap.length; i++) {
+	  int registerSize = ptraceRegisterMap[i].getType().getSize();
+	  byte[] byteOrderedRegister = new byte[registerSize];
+	  task.access(ptraceRegisterMap[i], 0, registerSize,	byteOrderedRegister, 0, false);
+	  prStatus.setPrGPReg(i,bytesToBigInteger(byteOrderedRegister));
 	}
 
 	// Write it
@@ -252,4 +284,22 @@ public class X8664LinuxElfCorefile extends LinuxElfCorefile {
     protected byte getElfMachineClass() {
 	return ElfEHeader.PHEADER_ELFCLASS64;
     }
+    
+    // XXX: Function to convert bytes[] to BigInteger. 
+    // Will disappear when all BankRegisters are present on all
+    // all architectures, and  we can call task.access() on all 
+    // registers, and not convert to BigInteger.
+    private BigInteger bytesToBigInteger(byte[] bytes)
+    {
+    	if (this.process.getMainTask().getISA().order() == ByteOrder.LITTLE_ENDIAN) {
+	    for (int left = 0; left < bytes.length / 2; left++) {
+		int right = bytes.length - 1 - left;
+		byte temp = bytes[left];
+		bytes[left] = bytes[right];
+		bytes[right] = temp;
+	    }
+	}
+	return new BigInteger(bytes);
+    }
+
 }
