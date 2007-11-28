@@ -39,7 +39,9 @@
 
 package frysk.testbed;
 
-import java.util.Map.Entry;
+import frysk.isa.RegistersFactory;
+import frysk.isa.Registers;
+import frysk.isa.RegisterGroup;
 import frysk.isa.Register;
 import frysk.isa.IA32Registers;
 import frysk.isa.X8664Registers;
@@ -69,17 +71,21 @@ public abstract class RegsCase extends TestLib {
     private Values values;
     private ByteOrder order;
     private ISA isa;
+    private Registers registers;
     public void setUp() {
 	super.setUp();
 	task = new DaemonBlockedAtSignal("funit-regs").getMainTask();
 	isa = task.getISA();
 	order = isa.order();
+	registers = RegistersFactory.getRegisters(isa);
 	if (isaValues.containsKey(isa))
 	    values = (Values)isaValues.get(isa);
     }
     public void tearDown() {
 	task = null;
 	values = null;
+	registers = null;
+	isa = null;
 	super.tearDown();
     }
 
@@ -100,17 +106,35 @@ public abstract class RegsCase extends TestLib {
 				   int start, boolean write);
     protected abstract long getRegister(Object task, Register reg);
 
-    public void testAccessRegisterRead() {
-	if (values == null && unresolved(0))
-	    // If there are no values, skip the test, other code will
-	    // complain.
-	    return;
-	for (Iterator i = values.iterator(); i.hasNext(); ) {
-	    Entry entry = (Entry)i.next();
-	    Register register = (Register)entry.getKey();
-	    Value value = (Value)entry.getValue();
+    private void checkRegisterGroup(RegisterGroup registerGroup) {
+	Register[] registers = registerGroup.getRegisters();
+	for (int i = 0; i < registers.length; i++) {
+	    Register register = registers[i];
+	    Value value = (Value)values.get(register);
 	    value.checkRegister(this, register);
 	}
+    }
+   
+    public void testDefaultRegisters() {
+	if(unresolvedOnx8664(5195))
+	    return;
+	checkRegisterGroup(registers.getDefaultRegisterGroup());
+    }
+
+    public void testFloatRegisters() {
+	if (unresolvedOnIA32(4911))
+	    return;
+	if(unresolvedOnx8664(5195))
+	    return;
+	checkRegisterGroup(registers.getFloatRegisterGroup());
+    }
+
+    public void testVectorRegisters() {
+	if (unresolvedOnIA32(4911))
+	    return;
+	if(unresolvedOnx8664(5195))
+	    return;
+	checkRegisterGroup(registers.getVectorRegisterGroup());
     }
 
     /**
@@ -244,6 +268,9 @@ public abstract class RegsCase extends TestLib {
 	boolean containsKey(Register key) {
 	    return map.containsKey(key);
 	}
+	Value get(Register register) {
+	    return (Value)map.get(register);
+	}
 	Values put(Register register, byte[] bytes) {
 	    map.put(register, new ByteValue(register, bytes));
 	    return this;
@@ -275,7 +302,7 @@ public abstract class RegsCase extends TestLib {
      */
 
     private Values IA32 = new Values()
-    // general registers
+    // default or general registers
         .put(IA32Registers.EAX, // 0x7eb03efc
              new byte[] { (byte)0xfc, 0x3e, (byte)0xb0, 0x7e })
         .put(IA32Registers.EBX, // 0x35a322a0

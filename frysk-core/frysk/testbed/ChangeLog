@@ -1,5 +1,13 @@
 2007-11-28  Andrew Cagney  <cagney@redhat.com>
 
+	* RegsCase.java (testDefaultRegisters()): New.
+	(testFloatRegisters()): New; unresolved on IA32 and X86-64.
+	(testVectorRegisters()): New; ditto.
+	(checkRegisterGroup()): New.
+	(Values.get(Register)): New.
+
+	* RegsCase.java (IA32): Add floating-point and vector registers.
+
 	* RegsCase.java (testAccessRegisterRead()): Remove unresolved on
 	X86-64, bug 5195.
 	* TestRegs.java (testFloatRegistersPresent()): New.
