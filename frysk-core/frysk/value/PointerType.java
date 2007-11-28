@@ -78,6 +78,10 @@ public class PointerType
     
     void toPrint(PrintWriter writer, Location location, ByteBuffer memory,
 		 Format format, int indent) {
+	// Print type of pointer
+	writer.print("(");
+	this.toPrint(writer, 0);
+	writer.print(") ");	
 	format.print(writer, location, this);
 	if (type instanceof CharType) {
 	    // XXX: ByteBuffer.slice wants longs.

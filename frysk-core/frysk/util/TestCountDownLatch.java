@@ -60,7 +60,13 @@ public class TestCountDownLatch
         thread1.start();
         thread2.start();
         thread3.start();
-        latch.await();
+        while (true) {
+            try {
+                latch.await();
+                break;
+            } catch (InterruptedException e) {
+            }
+        }
         assertEquals("count", latch.getCount(), 0);
     }
 

@@ -1,3 +1,7 @@
+2007-11-27  Tim Moore  <timoore@redhat.com>
+
+	* TestCountDownLatch.java (testCounters): Wrap await in while loop.
+
 2007-11-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Added a boolean for printing source	libraries to Frame.toPrint().

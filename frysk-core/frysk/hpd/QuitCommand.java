@@ -97,10 +97,13 @@ class QuitCommand extends ParameterizedCommand {
     void interpret(CLI cli, Input cmd, Object options) {
         CountDownLatch quitLatch = new CountDownLatch(1);
         new KillRequest(cli, quitLatch).request();
-        try {
-            quitLatch.await();
-        }
-        catch (InterruptedException e) {
+        while (true) {
+            try {
+                quitLatch.await();
+                break;
+            }
+            catch (InterruptedException e) {
+            }
         }
 	cli.addMessage("Quitting...", Message.TYPE_NORMAL);
 	DetachCommand detachCommand = new DetachCommand();

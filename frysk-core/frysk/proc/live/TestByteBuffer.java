@@ -40,14 +40,11 @@
 package frysk.proc.live;
 
 import inua.eio.ByteBuffer;
-import frysk.isa.ISA;
 import frysk.junit.TestCase;
 import frysk.proc.Task;
 import frysk.testbed.AttachedSelf;
-import frysk.testbed.ExecCommand;
-import frysk.testbed.ExecOffspring;
+import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.LocalMemory;
-import frysk.testbed.TearDownFile;
 import frysk.sys.Ptrace.RegisterSet;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.proc.Manager;
@@ -270,22 +267,6 @@ public class TestByteBuffer
 	  verifyPeeks(registerBuffers[i], addr, origBytes);
 	}
     }
-    public void testMemoryBufferCapacity() {
-	TearDownFile tmpFile = TearDownFile.create();
-	ExecOffspring child
-		= new ExecOffspring(new ExecCommand (new String[] {
-						 "/bin/rm",
-						 tmpFile.toString()
-					     }));
-	Task task = child.findTaskUsingRefresh(true);
-	if (task.getISA() == ISA.IA32)
-		assertEquals("Memory Buffer Capacity: ", 0xffffffffL,
-		     task.getMemory().capacity());
-	if (task.getISA() == ISA.X8664)
-		assertEquals("Memory Buffer Capacity: ", 0xffffffffffffffffL,
-                     task.getMemory().capacity());
-    }
-
     private class AsyncPeeks
 	implements Runnable
     {
@@ -377,5 +358,23 @@ public class TestByteBuffer
       verifyBulkPut(addressBuffers[i], LocalMemory.getCodeAddr(),
 		    LocalMemory.getCodeBytes().length);
   }
+
+  public void testMemoryBufferCapacity() 
+  {
+    Task task = new DaemonBlockedAtEntry("funit-slave").getMainTask();
+    switch(task.getISA().wordSize()){
+	case 4:
+		assertEquals("Memory Buffer Capacity: ", 0xffffffffL,
+		     task.getMemory().capacity());
+		break;
+	case 8:
+		assertEquals("Memory Buffer Capacity: ", 0xffffffffffffffffL,
+                     task.getMemory().capacity());
+		break;
+	default:
+		fail("unknown word size");
+	}
+    }
+
 
 }

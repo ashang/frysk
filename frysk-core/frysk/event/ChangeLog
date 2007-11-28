@@ -1,3 +1,8 @@
+2007-11-27  Tim Moore  <timoore@redhat.com>
+
+	* Request.java (Handler.execute, Handler.request): Wait inside a
+	loop, testing for an execute flag.
+
 2007-05-07  Tim Moore  <timoore@redhat.com>
 
 	* WaitEventLoop.java (signalBuilder.signal): Print signal name

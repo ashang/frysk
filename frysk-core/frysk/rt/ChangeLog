@@ -1,3 +1,8 @@
+2007-11-27  Tim Moore  <timoore@redhat.com>
+
+	* BreakpointManager.java (manageProcess): Wrap await call inside
+	loop in order to disregard InterruptedException.
+
 2007-11-16  Rick Moseley  <rmoseley@redhat.com>
 
 	* ProcTaskIDManager.java(removeProcID,manageProcSelect): New.
