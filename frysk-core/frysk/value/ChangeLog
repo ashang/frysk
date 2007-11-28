@@ -1,5 +1,9 @@
 2007-11-28  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* CompositeType.java (addMemberToMap): New function.
+	
+2007-11-28  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* CompositeType.java (addStaticBitFieldMember): Renamed.
 	(addBitFieldMember): Renamed.
 	* TestComposite.java: Updated

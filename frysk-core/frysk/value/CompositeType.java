@@ -76,7 +76,7 @@ public abstract class CompositeType
     }
     
     public static class StaticMember extends Member{
-
+	
 	public StaticMember(int index, String name, Type type, Access access,
 		boolean inheritance) {
 	    super(index, name, type, access, inheritance);
@@ -190,11 +190,15 @@ public abstract class CompositeType
 	    member = new DynamicMember(members.size(), name, type, offset,
 				   access, bitOffset, bitLength, inheritance);
 	}
-	nameToMember.put(name, member);
-	members.add(member);
+	addMemberToMap(member);
 	return this;
     }
 
+    private void addMemberToMap(Member member){
+	nameToMember.put(member.getName(), member);
+	members.add(member);
+    }
+    
     public CompositeType addMember(String name, Type type, long offset,
 				   Access access) {
 	return add(name, type, offset, access, -1, -1,false, false);
