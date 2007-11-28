@@ -1,3 +1,22 @@
+2007-11-28  Mark Wielaard  <mwielaard@redhat.com>
+
+	Revert:
+	2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* src/elfxx.c (lookup_symbol): Avoid returning irrelevant symbols
+	defined as the last ones before the address in different
+	section.
+
+	2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* src/elfxx.c (lookup_symbol): Fixed excessive buffer
+	size requirement.
+
+2007-11-28  Mark Wielaard  <mwielaard@redhat.com>
+
+	* .cvsignore, config/.cvsignore, doc/.cvsignore,
+	include/.cvsignore, src/.cvsignore, tests/.cvsignore: Removed.
+
 2007-11-23  Mark Wielaard  <mwielaard@redhat.com>
 
 	Revert:
