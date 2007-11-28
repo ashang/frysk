@@ -65,10 +65,7 @@ then
     read -p "Do you wish to install the above packages? [y/n]: " ch
     if [ "$ch" = "y" ]  
     then
-       sudo yum install --enablerepo=fedora-debuginfo \
-                        --enablerepo=updates-debuginfo \
-                        --enablerepo=updates-testing-debuginfo \
-                        --enablerepo=development-debuginfo $packages
+       sudo yum install --enablerepo=*-debuginfo $packages
     fi
 
 else
