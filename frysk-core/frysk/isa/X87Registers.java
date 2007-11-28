@@ -180,7 +180,7 @@ public class X87Registers {
     public static final Register MXCSR_MASK
 	= new Register("mxcsr_mask", StandardTypes.INT32L_T);
 
-    public final static RegisterGroup FLOAT32
+    public final static RegisterGroup FLOAT32_GROUP
 	= new RegisterGroup("float",
 			    new Register[] {
 				ST0, ST1, ST2, ST3, ST4, ST5, ST6, ST7,
@@ -188,7 +188,7 @@ public class X87Registers {
 				EIP, CS, DP, DS,
 				
 			    });
-    public final static RegisterGroup FLOAT64
+    public final static RegisterGroup FLOAT64_GROUP
 	= new RegisterGroup("float",
 			    new Register[] {
 				ST0, ST1, ST2, ST3, ST4, ST5, ST6, ST7,
@@ -203,13 +203,13 @@ public class X87Registers {
 				MXCSR, MXCSR_MASK
 			    });
 
-    public final static RegisterGroup XMM32
+    public final static RegisterGroup VECTOR32_GROUP
 	= new RegisterGroup("xmm",
 			    new Register[] {
 				XMM0, XMM1, XMM2, XMM3,
 				XMM4, XMM5, XMM6, XMM7,
 			    });
-    public final static RegisterGroup XMM64
+    public final static RegisterGroup VECTOR64_GROUP
 	= new RegisterGroup("xmm",
 			    new Register[] {
 				XMM0, XMM1, XMM2, XMM3,

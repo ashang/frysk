@@ -1,3 +1,10 @@
+2007-11-28  Andrew Cagney  <cagney@redhat.com>
+
+	* RegsCase.java (testAccessRegisterRead()): Remove unresolved on
+	X86-64, bug 5195.
+	* TestRegs.java (testFloatRegistersPresent()): New.
+	(testVectorRegistersPresent()): New.
+
 2007-11-28  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
 
 	* RegsCase.java: Add the PowerPC32 general purpose register values. 

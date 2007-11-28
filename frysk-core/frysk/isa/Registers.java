@@ -78,14 +78,29 @@ public abstract class Registers {
      */
     public abstract Register getStackPointer();
     /**
-     * Return the "default" register group.
+     * Return the "default" or "regs" register group.
      */
-    public abstract RegisterGroup getDefaultRegisterGroup();
+    public RegisterGroup getDefaultRegisterGroup() {
+	return getGroup("regs");
+    }
+    /**
+     * Return the "float" register group.
+     */
+    public RegisterGroup getFloatRegisterGroup() {
+	return getGroup("float");
+    }
+    /**
+     * Return the "multi-media" or vector register group.
+     */
+    public RegisterGroup getVectorRegisterGroup() {
+	return getGroup("vector");
+    }
     /**
      * Return the "all" register group.
      */
-    public abstract RegisterGroup getAllRegistersGroup();
-
+    public RegisterGroup getAllRegistersGroup() {
+	return null;
+    }
     /**
      * Return the register group; searched by NAME.
      */

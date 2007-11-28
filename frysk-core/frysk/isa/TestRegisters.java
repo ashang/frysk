@@ -55,8 +55,8 @@ public class TestRegisters extends TestCase {
     }
 
     public void testGetGroup() {
-	assertEquals("getGroup", IA32Registers.GENERAL,
-		     regs.getGroup("general"));
+	assertEquals("getGroup", IA32Registers.REGS_GROUP,
+		     regs.getGroup("regs"));
     }
 
     public void testGetRegister() {
@@ -67,18 +67,16 @@ public class TestRegisters extends TestCase {
     public void testGetGroupNames() {
 	assertEquals("getGroupNames",
 		     new String[] {
-			 "general", "float", "xmm",
-			 "segment", "all"
+			 "regs", "float", "segment", "vector"
 		     }, regs.getGroupNames());
     }
 
     public void testDefaultRegisterGroup() {
-	assertEquals("getDefaultRegisterGroup", IA32Registers.GENERAL,
+	assertEquals("getDefaultRegisterGroup", IA32Registers.REGS_GROUP,
 		     regs.getDefaultRegisterGroup());
     }
 
     public void testAllRegistersGroup() {
-	assertEquals("getAllRegistersGroup", IA32Registers.ALL,
-		     regs.getAllRegistersGroup());
+	fail("not implemented");
     }
 }

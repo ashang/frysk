@@ -116,49 +116,26 @@ public class IA32Registers extends Registers {
     public static final Register ORIG_EAX
 	= new Register("orig_eax", StandardTypes.INT32L_T);
 
-    public final static RegisterGroup GENERAL
+    public final static RegisterGroup REGS_GROUP
 	= new RegisterGroup("general",
 			    new Register[] {
 				EAX, EBX, ECX, EDX, ESI, EDI, EBP, EIP,
 				EFLAGS, ESP
 			    });
 
-    public final static RegisterGroup SEGMENT
+    public final static RegisterGroup SEGMENT_GROUP
 	= new RegisterGroup("segment",
 			    new Register[] {
 				GS, FS, ES, DS, SS, CS
 			    });
 
-    public final static RegisterGroup ALL;
-    static {
-	Register[] allRegs
-	    = new Register[GENERAL.getRegisters().length
-			   + X87Registers.FLOAT32.getRegisters().length
-			   + X87Registers.XMM32.getRegisters().length
-			   + SEGMENT.getRegisters().length];
-	int count = 0;
-	System.arraycopy(GENERAL.getRegisters(), 0, allRegs, count,
-			 GENERAL.getRegisters().length);
-	count += GENERAL.getRegisters().length;
-	System.arraycopy(X87Registers.FLOAT32.getRegisters(),
-			 0, allRegs, count,
-			 X87Registers.FLOAT32.getRegisters().length);
-	count += X87Registers.FLOAT32.getRegisters().length;
-	System.arraycopy(X87Registers.XMM32.getRegisters(),
-			 0, allRegs, count,
-			 X87Registers.XMM32.getRegisters().length);
-	count += X87Registers.XMM32.getRegisters().length;
-	System.arraycopy(SEGMENT.getRegisters(), 0, allRegs, count,
-			 SEGMENT.getRegisters().length);
-
-	ALL = new RegisterGroup("all", allRegs);
-    }
 
     IA32Registers() {
 	super (new RegisterGroup[] {
-		   GENERAL,
-		   X87Registers.FLOAT32, X87Registers.XMM32,
-		   SEGMENT, ALL
+		   REGS_GROUP,
+		   X87Registers.FLOAT32_GROUP,
+		   X87Registers.VECTOR32_GROUP,
+		   SEGMENT_GROUP,
 	       });
     }
 
@@ -171,10 +148,14 @@ public class IA32Registers extends Registers {
     }
 
     public RegisterGroup getDefaultRegisterGroup() {
-	return GENERAL;
+	return REGS_GROUP;
     }
 
-    public RegisterGroup getAllRegistersGroup() {
-	return ALL;
+    public RegisterGroup getFloatRegisterGroup() {
+	return X87Registers.FLOAT32_GROUP;
+    }
+
+    public RegisterGroup getVectorRegisterGroup() {
+	return X87Registers.VECTOR32_GROUP;
     }
 }

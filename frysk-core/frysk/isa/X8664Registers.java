@@ -127,20 +127,19 @@ public class X8664Registers extends Registers {
     public static final Register ORIG_RAX
 	= new Register("orig_rax", StandardTypes.INT64L_T);
 
-    public static final RegisterGroup GENERAL = new RegisterGroup("general",
-								  new Register[] { RAX, RDX, RCX, RBX, RSI, RDI, RBP, RSP, R8, R9,
-										   R10, R11, R12, R13, R14, R15, RIP });
-
-    public static final RegisterGroup ALL;
-    static {
-	Register[] allRegs = new Register[GENERAL.getRegisters().length];
-	System.arraycopy(GENERAL.getRegisters(), 0, allRegs, 0,
-			 GENERAL.getRegisters().length);
-	ALL = new RegisterGroup("all", allRegs);
-    }
-
+    public static final RegisterGroup REGS_GROUP
+	= new RegisterGroup("regs",
+			    new Register[] {
+				RAX, RDX, RCX, RBX, RSI, RDI, RBP, RSP, R8, R9,
+				R10, R11, R12, R13, R14, R15, RIP
+			    });
+    
     protected X8664Registers() {
-	super(new RegisterGroup[] { GENERAL, ALL });
+	super(new RegisterGroup[] {
+		  REGS_GROUP,
+		  X87Registers.FLOAT64_GROUP,
+		  X87Registers.VECTOR64_GROUP,
+	      });
     }
 
     public Register getProgramCounter() {
@@ -149,13 +148,5 @@ public class X8664Registers extends Registers {
 
     public Register getStackPointer() {
 	return RSP;
-    }
-
-    public RegisterGroup getDefaultRegisterGroup() {
-	return GENERAL;
-    }
-
-    public RegisterGroup getAllRegistersGroup() {
-	return ALL;
     }
 }

@@ -100,10 +100,9 @@ public abstract class RegsCase extends TestLib {
     protected abstract long getRegister(Object task, Register reg);
 
     public void testAccessRegisterRead() {
-	if(unresolvedOnx8664(5195)){
-	    return;
-	}
 	if (values == null && unresolved(0))
+	    // If there are no values, skip the test, other code will
+	    // complain.
 	    return;
 	for (Iterator i = values.iterator(); i.hasNext(); ) {
 	    Entry entry = (Entry)i.next();

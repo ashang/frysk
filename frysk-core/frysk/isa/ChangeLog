@@ -1,3 +1,25 @@
+2007-11-28  Andrew Cagney  <cagney@redhat.com>
+
+	* Registers.java (getVectorRegisterGroup()): New.
+	(getFloatRegisterGroup()): New.
+	(getDefaultRegisterGroup()): Make concrete.
+	(getAllRegistersGroup()): Make concrete.
+	* IA32Registers.java (REGS_GROUP): Rename GENERAL.
+	(ALL_GROUP): Delete.
+	(getDefaultRegisterGroup()): Delete.
+	(getAllRegistersGroup()): Delete.
+	(SEGMENT_GROUP): Rename SEGMENT.
+	* X8664Registers.java (REGS_GROUP): Rename GENERAL.
+	(ALL_GROUP): Delete.
+	(getDefaultRegisterGroup()): Delete.
+	(getAllRegistersGroup()): Delete.
+	* X87Registers.java (FLOAT32_GROUP): Rename FLOAT32.
+	(FLOAT64_GROUP): Rename FLOAT64.
+	(VECTOR32_GROUP): Rename VECTOR32.
+	(VECTOR64_GROUP): Rename VECTOR64.
+	* TestRegisters.java: Update.
+	(testAllRegisterGroup()): Change to fail.
+	
 2007-11-28  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
 
 	* RegistersFactory.java: Adding Power32/64 registers to factory.

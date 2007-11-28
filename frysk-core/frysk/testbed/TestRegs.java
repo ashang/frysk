@@ -112,6 +112,14 @@ public class TestRegs extends TestLib {
 	checkRegisterGroupPresent(RegistersFactory.getRegisters(regsCase.isa())
 				  .getDefaultRegisterGroup());
     }
+    public void testFloatRegistersPresent() {
+	checkRegisterGroupPresent(RegistersFactory.getRegisters(regsCase.isa())
+				  .getFloatRegisterGroup());
+    }
+    public void testVectorRegistersPresent() {
+	checkRegisterGroupPresent(RegistersFactory.getRegisters(regsCase.isa())
+				  .getVectorRegisterGroup());
+    }
 
     private void checkRegisterGroupPresent(RegisterGroup group) {
 	Register[] registers = group.getRegisters();
