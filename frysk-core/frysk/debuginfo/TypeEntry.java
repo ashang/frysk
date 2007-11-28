@@ -175,10 +175,10 @@ public class TypeEntry
 		    int bitOffset = member
 		    .getAttrConstant(DwAt.BIT_OFFSET);
 		    if(staticMember){
-			classType.addStaticMember(member.getName(), memberType, offset, access,
+			classType.addStaticBitFieldMember(member.getName(), memberType, offset, access,
 				    bitOffset, bitSize);
 		    }else{
-			classType.addMember(member.getName(), memberType, offset, access,
+			classType.addBitFieldMember(member.getName(), memberType, offset, access,
 				    bitOffset, bitSize);
 		    }
 		}
@@ -272,7 +272,7 @@ public class TypeEntry
 		if (bitSize != -1) {
 		    int bitOffset = member
 		    .getAttrConstant(DwAt.BIT_OFFSET);
-		    classType.addMember(member.getName(), memberType, offset, access,
+		    classType.addBitFieldMember(member.getName(), memberType, offset, access,
 			    bitOffset, bitSize);
 		}
 		else

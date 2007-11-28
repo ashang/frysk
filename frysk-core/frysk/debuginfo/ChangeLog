@@ -1,3 +1,9 @@
+007-11-28  Sami Wagiaalla  <swagiaal@redhat.com>
+	
+	CompositeType.java: Renamed addStaticBitFieldMember and 
+	addBitFieldMember.
+	* TypeEntry.java: Updated.
+
 2007-11-28  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestPieceLocation.java (testMapping): Delete - redundant
@@ -12,6 +18,8 @@
 	to be passed as an argument to decoding functions.
 	* TestAddress.java: Updated.
 	* TestLocationExpression.java: Updated.
+	* TypeEntry.java: Updated.
+	
 
 2007-11-26  Sami Wagiaalla  <swagiaal@redhat.com>
 

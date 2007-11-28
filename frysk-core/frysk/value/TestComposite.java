@@ -58,8 +58,8 @@ public class TestComposite
 	    .addMember("alpha", bigInt32, 0, null)
 	    .addMember("beta", bigInt32, 4, null)
 	    .addMember("gamma", bigInt16, 8, null)
-	    .addMember("iota", bigInt32, 8, null, 16, 8) // 0x0000ff00
-	    .addMember("epsilon", bigInt32, 8, null, 24, 8); // 0x000000ff
+	    .addBitFieldMember("iota", bigInt32, 8, null, 16, 8) // 0x0000ff00
+	    .addBitFieldMember("epsilon", bigInt32, 8, null, 24, 8); // 0x000000ff
 	byte[] buf = {
 	    0x01, 0x02, 0x03, 0x04, // alpha
 	    0x05, 0x06, 0x07, 0x08, // beta
@@ -77,8 +77,8 @@ public class TestComposite
 	    .addMember("alpha", littleInt32, 0, null)
 	    .addMember("beta", littleInt32, 4, null)
 	    .addMember("gamma", littleInt16, 8, null)
-	    .addMember("iota", littleInt32, 8, null, 8, 8) // 0x00ff0000
-	    .addMember("epsilon", littleInt32, 8, null, 0, 8); // 0xff000000
+	    .addBitFieldMember("iota", littleInt32, 8, null, 8, 8) // 0x00ff0000
+	    .addBitFieldMember("epsilon", littleInt32, 8, null, 0, 8); // 0xff000000
 	byte[] buf = {
 	    0x01, 0x02, 0x03, 0x04, // alpha
 	    0x05, 0x06, 0x07, 0x08, // beta
@@ -99,8 +99,8 @@ public class TestComposite
 		       0, null)
 	    .addMember("b", new ClassType(null, 4)
 		       .addMember("gamma", littleInt16, 0, null)
-		       .addMember("iota", littleInt32, 0, null, 8, 8) // 0x00ff0000
-		       .addMember("epsilon", littleInt32, 0, null, 0, 8), // 0xff000000
+		       .addBitFieldMember("iota", littleInt32, 0, null, 8, 8) // 0x00ff0000
+		       .addBitFieldMember("epsilon", littleInt32, 0, null, 0, 8), // 0xff000000
 		       8, null);
 	byte[] buf = {
 	    0x01, 0x02, 0x03, 0x04, // alpha
@@ -122,8 +122,8 @@ public class TestComposite
 		       0, null)
 	    .addMember(null, new ClassType(null, 4)
 		       .addMember(null, littleInt16, 0, null)
-		       .addMember(null, littleInt32, 0, null, 8, 8) // 0x00ff0000
-		       .addMember(null, littleInt32, 0, null, 0, 8), // 0xff000000
+		       .addBitFieldMember(null, littleInt32, 0, null, 8, 8) // 0x00ff0000
+		       .addBitFieldMember(null, littleInt32, 0, null, 0, 8), // 0xff000000
 		       8, null);
 	byte[] buf = {
 	    0x01, 0x02, 0x03, 0x04, // alpha

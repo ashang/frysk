@@ -180,8 +180,6 @@ public abstract class CompositeType
 			      Access access, int bitOffset, int bitLength,
 			      boolean staticMember,
 			      boolean inheritance) {
-	if (bitOffset >= 0 && bitLength > 0)
-	    type = type.pack(bitOffset, bitLength);
 	
 	Member member;
 	
@@ -201,11 +199,14 @@ public abstract class CompositeType
 				   Access access) {
 	return add(name, type, offset, access, -1, -1,false, false);
     }
-    public CompositeType addMember(String name, Type type, long offset,
+    
+    public CompositeType addBitFieldMember(String name, Type type, long offset,
 				   Access access, int bitOffset,
 				   int bitLength) {
+	type = type.pack(bitOffset, bitLength);
 	return add(name, type, offset, access, bitOffset, bitLength, false, false);
     }
+    
     public CompositeType addInheritance(String name, Type type, long offset,
 					Access access) {
 	return add(name, type, offset, access, -1, -1,false, true);
@@ -216,9 +217,10 @@ public abstract class CompositeType
 	return add(name, type, offset, access, -1, -1,true, false);
     }
     
-    public CompositeType addStaticMember(String name, Type type, long offset,
+    public CompositeType addStaticBitFieldMember(String name, Type type, long offset,
 		   Access access, int bitOffset,
 		   int bitLength) {
+	    type = type.pack(bitOffset, bitLength);
 	return add(name, type, offset, access, bitOffset, bitLength, true, false);
     }
 

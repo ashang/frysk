@@ -60,8 +60,8 @@ class TestbedSymTab implements ExprSymTab {
 	.addMember("alpha", StandardTypes.INT32B_T, 0, null)
 	.addMember("beta", StandardTypes.INT32B_T, 4, null)
 	.addMember("gamma", StandardTypes.INT16B_T, 8, null)
-	.addMember("iota", StandardTypes.INT32B_T, 8, null, 16, 8) // 0x0000ff00
-	.addMember("epsilon", StandardTypes.INT32B_T, 8, null, 24, 8); // 0x000000ff
+	.addBitFieldMember("iota", StandardTypes.INT32B_T, 8, null, 16, 8) // 0x0000ff00
+	.addBitFieldMember("epsilon", StandardTypes.INT32B_T, 8, null, 24, 8); // 0x000000ff
     private byte[] buf = {
 	0x01, 0x02, 0x03, 0x04, // alpha
 	0x05, 0x06, 0x07, 0x08, // beta
