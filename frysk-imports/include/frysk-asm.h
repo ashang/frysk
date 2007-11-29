@@ -234,9 +234,9 @@
 #  define LOAD_IMMED_BYTE(DEST_REG,CONST) mov $CONST, DEST_REG
 #elif defined __x86_64__
 #  define LOAD_IMMED_BYTE(DEST_REG,CONST) mov $CONST, DEST_REG
-#elif defined __powerpc__
-#  define LOAD_IMMED_BYTE(DEST_REG,CONST) li DEST_REG, CONST
 #elif defined __powerpc64__
+#  define LOAD_IMMED_BYTE(DEST_REG,CONST) li DEST_REG, CONST
+#elif defined __powerpc__
 #  define LOAD_IMMED_BYTE(DEST_REG,CONST) li DEST_REG, CONST
 #else
 #  warning "No load immediate instruction sequence defined"
@@ -246,9 +246,17 @@
 #  define LOAD_IMMED_WORD(DEST_REG,CONST) mov $CONST, DEST_REG
 #elif defined __x86_64__
 #  define LOAD_IMMED_WORD(DEST_REG,CONST) mov $CONST, DEST_REG
-#elif defined __powerpc__
-#  define LOAD_IMMED_WORD(DEST_REG,CONST) li DEST_REG, CONST
 #elif defined __powerpc64__
+//  PowerPC instructions have a fixed length
+//  So in Power64
+//  64-bit immediate must be loaded in 16-bit pieces
+#  define LOAD_IMMED_WORD(DEST_REG,CONST) \
+        lis    DEST_REG, CONST@highest          ; \
+        ori    DEST_REG, DEST_REG, CONST@higher ; \
+        rldicr DEST_REG, DEST_REG, 32, 31       ; \
+        oris   DEST_REG, DEST_REG, CONST@h      ; \
+        ori    DEST_REG, DEST_REG, CONST@l ;
+#elif defined __powerpc__
 #  define LOAD_IMMED_WORD(DEST_REG,CONST) li DEST_REG, CONST
 #else
 #  warning "No load immediate instruction sequence defined"
@@ -286,10 +294,10 @@
 #  define ADD(DEST_REG, SOURCE_REG) addl DEST_REG, SOURCE_REG
 #elif defined __x86_64__
 #  define ADD(DEST_REG, SOURCE_REG) addq DEST_REG, SOURCE_REG
+#elif defined __powerpc64__
+#  define ADD(DEST_REG, SOURCE_REG) add DEST_REG, DEST_REG, SOURCE_REG
 #elif defined __powerpc__
-#  define ADD(DEST_REG, SOURCE_REG) add DEST_REG, SOURCE_REG, DEST_REG
-//#elif defined __powerpc64__
-//#  define ADD(DEST_REG, SOURCE_REG)
+#  define ADD(DEST_REG, SOURCE_REG) add DEST_REG, DEST_REG, SOURCE_REG
 #else
 #  warning "No register-add instruction defined"
 #endif
@@ -298,10 +306,10 @@
 #  define SUB(DEST_REG, SOURCE_REG) subl DEST_REG, SOURCE_REG
 #elif defined __x86_64__
 #  define SUB(DEST_REG, SOURCE_REG) subq DEST_REG, SOURCE_REG
+#elif defined __powerpc64__
+#  define SUB(DEST_REG, SOURCE_REG) subf DEST_REG, SOURCE_REG, DEST_REG
 #elif defined __powerpc__
 #  define SUB(DEST_REG, SOURCE_REG) subf DEST_REG, SOURCE_REG, DEST_REG
-//#elif defined __powerpc64__
-//#  define SUB(DEST_REG, SOURCE_REG)
 #else
 #  warning "No register-subtract instruction defined"
 #endif
@@ -310,10 +318,10 @@
 #  define MOV(SOURCE_REG, DEST_REG) movl SOURCE_REG, DEST_REG
 #elif defined __x86_64__
 #  define MOV(SOURCE_REG, DEST_REG) movq SOURCE_REG, DEST_REG
+#elif defined __powerpc64__
+#  define MOV(SOURCE_REG, DEST_REG) mr DEST_REG, SOURCE_REG
 #elif defined __powerpc__
 #  define MOV(SOURCE_REG, DEST_REG) mr DEST_REG, SOURCE_REG
-//#elif defined __powerpc64__
-//#  define MOV(SOURCE_REG, DEST_REG)
 #else
 #  warning "No register-move instruction defined"
 #endif
@@ -481,17 +489,18 @@
 #  define FUNCTION_BEGIN(FUNC,SLOTS) SANE_FUNCTION_BEGIN(FUNC)
 #elif defined __x86_64__
 #  define FUNCTION_BEGIN(FUNC,SLOTS) SANE_FUNCTION_BEGIN(FUNC)
+#elif defined __powerpc64__
+#  define FUNCTION_BEGIN(FUNC,SLOTS) \
+	.section ".opd","aw" ; \
+	.align 3 ; \
+	.global FUNC ; \
+    FUNC: ; \
+	.quad ._##FUNC, .TOC.@tocbase, 0 ; \
+	.text ; \
+    	._##FUNC: \
+	.cfi_startproc;
 #elif defined __powerpc__
 #  define FUNCTION_BEGIN(FUNC,SLOTS) SANE_FUNCTION_BEGIN(FUNC)
-#elif defined __powerpc64__
-#  define FUNCTION_BEGIN(FUNC) \
-	.section ".opd","aw" ; \
-	.global FUNC ; \
-	.align 3 ; \
-    FUNC: ; \
-	.quad _##FUNC, .TOC.@tocbase, 0 ; \
-	.text ; \
-    _##FUNC:
 #else
 #  warning "no function-begin defined"
 #endif
@@ -508,17 +517,15 @@
 	.cfi_adjust_cfa_offset 8; \
 	 movq %rsp, %rbp; \
 	.cfi_offset %rbp, -8
-#elif defined __powerpc__
+#elif defined __powerpc64__
 #  define FUNCTION_PROLOGUE(FUNC,SLOTS) \
-	stwu    1, -32(1)  ; \
-	mflr    0          ; \
-	stw     0,  36(1)  ; \
-	stw    31,  28(1)  ; \
-        mr     31,   1	   ; \
-        stw  REG0,  12(31) ; \
-	stw  REG1,  16(31) ; \
-	stw  REG2,  20(31) ; \
-	stw  REG3,  24(31)
+	mflr 0                     ; \
+	std    31,  -8(1)          ; \
+	.cfi_offset 31, -8         ; \
+	std     0,  16(1)          ; \
+	.cfi_offset lr, 16         ; \
+	stdu    1, -128(1)         ; \
+	.cfi_adjust_cfa_offset 128 ; 
 #else
 #  warning "No function-prologue compound instruction defined"
 #endif
@@ -533,17 +540,12 @@
 	leave; \
 	.cfi_restore %rbp; \
 	.cfi_adjust_cfa_offset -8
-#elif defined __powerpc__
+#elif defined __powerpc64__
 #  define FUNCTION_EPILOGUE(FUNC,SLOTS) \
-	lwz  REG3, 24(31) ; \
-        lwz  REG2, 20(31) ; \
-	lwz  REG1, 16(31) ; \
-	lwz  REG0, 12(31) ; \
-	lwz    11,  0(1)  ; \
-	lwz     0,  4(11) ; \
-	mtlr    0         ; \
-	lwz    31, -4(11) ; \
-	mr      1, 11
+	ld 1, 0(1)    ; \
+	ld 0, 16(1)   ; \
+	mtlr 0        ; \
+	ld 31,  -8(1) ;
 #else
 #  warning "No function-epilogue instruction sequence defined"
 #endif
@@ -552,9 +554,9 @@
 #  define FUNCTION_RETURN(FUNC,SLOTS) ret
 #elif defined __x86_64__
 #  define FUNCTION_RETURN(FUNC,SLOTS) ret
-#elif defined __powerpc__
-#  define FUNCTION_RETURN(FUNC,SLOTS) blr
 #elif defined __powerpc64__
+#  define FUNCTION_RETURN(FUNC,SLOTS) blr
+#elif defined __powerpc__
 #  define FUNCTION_RETURN(FUNC,SLOTS) blr
 #else
 #  warning "No function-epilogue instruction sequence defined"
@@ -567,10 +569,10 @@
 #  define FUNCTION_END(FUNC,SLOTS) SANE_FUNCTION_END(FUNC)
 #elif defined __x86_64__
 #  define FUNCTION_END(FUNC,SLOTS) SANE_FUNCTION_END(FUNC)
+#elif defined __powerpc64__
+#  define FUNCTION_END(FUNC,SLOTS) SANE_FUNCTION_END(FUNC)
 #elif defined __powerpc__
 #  define FUNCTION_END(FUNC,SLOTS) SANE_FUNCTION_END(FUNC)
-#elif defined __powerpc64__
-#  define FUNCTION_END(FUNC,SLOTS) .size FUNC, .-_##FUNC
 #else
 #  warning "No function-epilogue instruction sequence defined"
 #endif
@@ -584,21 +586,29 @@
 #elif defined __x86_64__
 #  define MAIN_PROLOGUE(SLOTS) \
 	FUNCTION_PROLOGUE (main, SLOTS); // ARGC, ARGV, and ENVP already in correct registers.
-#elif defined __powerpc__
-//In PowerPC ABI argc comes by default in reg 3 (Frysk REG1) and argv in reg 4 (Frysk REG2) 
-#define MAIN_PROLOGUE(SLOTS) FUNCTION_PROLOGUE(main,SLOTS)
 #elif defined __powerpc64__
-#define MAIN_PROLOGUE(SLOTS) FUNCTION_PROLOGUE(main,SLOTS)
+//In PowerPC ABI argc comes
+//by default in reg 3 (Frysk REG1)
+//and argv in reg 4 (Frysk REG2)
+#define MAIN_PROLOGUE(SLOTS) \
+	FUNCTION_PROLOGUE(main,SLOTS)
+#elif defined __powerpc__
+#define MAIN_PROLOGUE(SLOTS) \
+	FUNCTION_PROLOGUE(main,SLOTS)
 #endif
 
 #if defined __i386__
 #  define MAIN_EPILOGUE(SLOTS) FUNCTION_EPILOGUE(main,SLOTS)
 #elif defined __x86_64__
 #  define MAIN_EPILOGUE(SLOTS) FUNCTION_EPILOGUE(main,SLOTS)
-#elif defined __powerpc__
-#  define MAIN_EPILOGUE(SLOTS) FUNCTION_EPILOGUE(main,SLOTS)
 #elif defined __powerpc64__
-#  define MAIN_EPILOGUE(SLOTS) FUNCTION_EPILOGUE(main,SLOTS)
+#  define MAIN_EPILOGUE(SLOTS) \
+	mr 3, REG0; \
+	FUNCTION_EPILOGUE(main,SLOTS)
+#elif defined __powerpc__
+#  define MAIN_EPILOGUE(SLOTS) \
+	mr 3, REG0; \
+	FUNCTION_EPILOGUE(main,SLOTS)
 #endif
 
 //#if defined __i386__
@@ -642,9 +652,10 @@
 #  define SYSCALL int $0x80
 #elif defined __x86_64__
 #  define SYSCALL syscall
+#elif defined __powerpc64__
+#  define SYSCALL sc
 #elif defined __powerpc__
 #  define SYSCALL sc
-//#elif defined __powerpc64__
 #else
 #  warning "No sys-call instruction sequence defined"
 #endif
@@ -697,7 +708,7 @@
 #elif defined __powerpc__
 #define FRAMELESS_FUNCTION_BEGIN(FUNC) \
 	FUNC: \
-
+	.cfi_startproc;
 #else
 #  warning "No frameless function beginning instructions defined"
 #endif
@@ -720,9 +731,9 @@
 #elif defined __x86_64__
 #define FRAMELESS_FUNCTION_END(FUNC) \
 	.cfi_endproc
-#elif defined __powerpc__
+#elif defined __powerpc64__
 #define FRAMELESS_FUNCTION_END(FUNC) \
-	blr
+	.cfi_endproc;
 #else
 #  warning "No frameless function ending instructions defined"
 #endif
