@@ -1,3 +1,9 @@
+2007-11-29  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Removed List ops from LocationExpression constructor.
+	* Variable.java: Updated.
+	Moved LocationExpression construction to constructor.
+
 2007-11-28  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* CompositeType.java: Eliminated generic add function and moved

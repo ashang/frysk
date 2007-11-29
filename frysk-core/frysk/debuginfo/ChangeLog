@@ -1,4 +1,11 @@
-007-11-28  Sami Wagiaalla  <swagiaal@redhat.com>
+2007-11-29  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* LocationExpression.java (LocationExpression): Removed ops	from
+	constructor.
+	* TestLocationExpression.java: Updated.
+	* TestAddress.java: Updated.
+
+2007-11-28  Sami Wagiaalla  <swagiaal@redhat.com>
 	
 	CompositeType.java: Renamed addStaticBitFieldMember and 
 	addBitFieldMember.

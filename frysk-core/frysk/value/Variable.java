@@ -40,7 +40,6 @@
 package frysk.value;
 
 import java.io.PrintWriter;
-import java.util.List;
 
 import lib.dwfl.DwException;
 import lib.dwfl.DwarfDie;
@@ -62,11 +61,13 @@ public class Variable extends ObjectDeclaration{
     private Type type;
     private final DwarfDie variableDie;
     private final String name;
-  
+    private final LocationExpression locationExpression;
+    
     public Variable(DwarfDie variableDie) {
         this.type = null;
 	this.variableDie = variableDie;
 	this.name = variableDie.getName();
+	locationExpression = new LocationExpression(variableDie);
     }
     public DwarfDie getVariableDie() {
 	return variableDie;
@@ -139,9 +140,7 @@ public class Variable extends ObjectDeclaration{
     }
 
     public Value getValue(DebugInfoFrame frame) {
-	List ops = variableDie.getFormData(frame.getAdjustedAddress());
 	ISA isa = frame.getTask().getISA();
-	LocationExpression locationExpression = new LocationExpression(variableDie, ops);
 	PieceLocation pieceLocation
 	    = new PieceLocation(locationExpression.decode(frame, this.getType(isa)
 							  .getSize()));

@@ -56,14 +56,12 @@ public class LocationExpression {
     locationTypeAddress = 2,
     locationTypeReg = 3;
     DwarfDie die;
-    List ops;
     int locationType;
     LinkedList stack;
 
-    public LocationExpression(DwarfDie die, List ops) {
+    public LocationExpression(DwarfDie die) {
 	locationType = 0;
 	this.die = die;
-	this.ops = ops;
 	this.stack = null;
     }
 
@@ -71,7 +69,8 @@ public class LocationExpression {
      *  Decode a location list and return the value.
      *
      */
-    public long decode (Frame frame) {
+    public long decode (Frame frame, List ops) {
+	
 	stack = new LinkedList();
 	int nops = ops.size();
 	RegisterMap registerMap = DwarfRegisterMapFactory.getRegisterMap(frame.getTask().getISA());
@@ -216,8 +215,8 @@ public class LocationExpression {
 	    case DwOp.FBREG_:
 		locationType = locationTypeRegDisp;
 		long pc = frame.getAdjustedAddress();
-		LocationExpression frameBaseOps = new LocationExpression (die, die.getFrameBase(pc));
-		stack.addFirst(new Long(operand1 + frameBaseOps.decode(frame)));
+		LocationExpression frameBaseOps = new LocationExpression (die);
+		stack.addFirst(new Long(operand1 + frameBaseOps.decode(frame, die.getFrameBase(pc))));
 		break;
 
 		// ??? unsigned not properly handled (use bignum?) See DwarfDie.java
@@ -395,13 +394,19 @@ public class LocationExpression {
 	return ((Long)stack.removeFirst()).longValue();
     }
 
+    public List decode(DebugInfoFrame frame, int size) {
+	List ops = die.getFormData(frame.getAdjustedAddress());
+	return decode(frame, ops, size);
+    }
+    
     /**
      * Decode a location list and return the value
      * @param size - Size of variable 
      * @return List of memory or register pieces
      */
-    public List decode (Frame frame, int size)
+    public List decode (Frame frame, List ops, int size)
     {
+	
 	stack = new LinkedList();
 	int nops = ops.size();
 	RegisterMap registerMap = DwarfRegisterMapFactory.getRegisterMap(frame.getTask().getISA());
@@ -559,8 +564,8 @@ public class LocationExpression {
 	    case DwOp.FBREG_:
 		locationType = locationTypeRegDisp;
 		long pc = frame.getAdjustedAddress();
-		LocationExpression frameBaseOps = new LocationExpression (die, die.getFrameBase(pc));
-		stack.addFirst(new Long(operand1 + frameBaseOps.decode(frame)));
+		LocationExpression frameBaseOps = new LocationExpression (die);
+		stack.addFirst(new Long(operand1 + frameBaseOps.decode(frame, die.getFrameBase(pc))));
 		break;
 
 		// ??? unsigned not properly handled (use bignum?) See DwarfDie.java
@@ -791,7 +796,8 @@ public class LocationExpression {
      *  Return register number for a one entry DW_OP_regX location list 
      *
      */
-    public Register getRegisterNumber (Frame frame) {
+    public Register getRegisterNumber (Frame frame, List ops) {
+	
 	if (ops.size() == 1) {
 	    int operator = ((DwarfOp) ops.get(0)).operator;
 	    if (operator >= DwOp.REG0_
@@ -811,4 +817,5 @@ public class LocationExpression {
     public int getStackSize() {
 	return ((stack != null) ? stack.size() : 0);
     }
+
 }

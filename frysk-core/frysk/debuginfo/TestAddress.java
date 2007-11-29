@@ -86,8 +86,8 @@ public class TestAddress
 	Variable var = (Variable) declarationSearchEngine.getVariable(variable);
 	DwarfDie varDie = var.getVariableDie();
 	List ops = varDie.getFormData(frame.getAdjustedAddress());
-	LocationExpression locExpr = new LocationExpression(varDie, ops);
-	PieceLocation loc = new PieceLocation(locExpr.decode(frame,var.getType
+	LocationExpression locExpr = new LocationExpression(varDie);
+	PieceLocation loc = new PieceLocation(locExpr.decode(frame, ops,var.getType
 		                              (frame.getTask().getISA()).getSize()));
 
 	 /* Get the value of the address.
@@ -96,8 +96,8 @@ public class TestAddress
 	DwarfDie addrDie = addr.getVariableDie();
 	List opsAddr = addrDie.getFormData(frame.getAdjustedAddress());
 	LocationExpression locExprAddr = new LocationExpression(
-		addrDie, opsAddr);
-	PieceLocation p = new PieceLocation(locExprAddr.decode(frame, addr.getType
+		addrDie);
+	PieceLocation p = new PieceLocation(locExprAddr.decode(frame, opsAddr, addr.getType
 		                            (frame.getTask().getISA()).getSize()));
 	Value addrVal = new Value(addr.getType(frame.getTask().getISA()), p);
 	
