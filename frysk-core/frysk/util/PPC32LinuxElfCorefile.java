@@ -43,23 +43,19 @@
 
 package frysk.util;
 
-import java.math.BigInteger;
-
-import frysk.proc.Proc;
-import frysk.proc.Task;
 import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
-
+import lib.dwfl.ElfEHeader;
+import lib.dwfl.ElfEMachine;
 import lib.dwfl.ElfNhdr;
 import lib.dwfl.ElfNhdrType;
-import lib.dwfl.ElfEMachine;
-import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfPrAuxv;
+import lib.dwfl.ElfPrFPRegSet;
 import lib.dwfl.ElfPrpsinfo;
 import lib.dwfl.ElfPrstatus;
-import lib.dwfl.ElfPrFPRegSet;
 import frysk.isa.PPC32Registers;
 import frysk.isa.Register;
+import frysk.proc.Proc;
+import frysk.proc.Task;
 import frysk.sys.proc.AuxvBuilder;
 import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.Stat;
@@ -188,11 +184,6 @@ public class PPC32LinuxElfCorefile extends LinuxElfCorefile {
 
         // The number of total common registers in PPC/PPC64 including nip, msr,
         // etc. Defined in the asm-ppc/elf.h.
-        int elfNGREG = 48;
-        int blankRegisterIndex = elfNGREG;
-
-        byte[] zeroVal = new byte[] { 0 };
-
         Register[] ptracePpcRegMap = { 
 	  PPC32Registers.NIP, PPC32Registers.MSR, PPC32Registers.ORIGR3,
 	  PPC32Registers.CTR, PPC32Registers.LR, PPC32Registers.XER,
@@ -210,23 +201,37 @@ public class PPC32LinuxElfCorefile extends LinuxElfCorefile {
 	  PPC32Registers.GPR27, PPC32Registers.GPR28, PPC32Registers.GPR29,
 	  PPC32Registers.GPR30, PPC32Registers.GPR31};
 	
-        for (int i = 0; i < ptracePpcRegMap.length; i++) {
-	  int registerSize = ptracePpcRegMap[i].getType().getSize();
-	  byte[] byteOrderedRegister = new byte[registerSize];
-	  task.access(ptracePpcRegMap[i], 0, registerSize,  byteOrderedRegister, 0, false);
-	  prStatus.setPrGPReg(i,bytesToBigInteger(byteOrderedRegister));
-        }
-	
-	
-        blankRegisterIndex = ptracePpcRegMap.length;
-	
-        BigInteger bigInt = new BigInteger(zeroVal);
-	
-	// On ppc, some register indexes are not defined in
-	// asm-<ISA>/ptrace.h.        
-        for (int index = blankRegisterIndex; index < elfNGREG; index++)
-          prStatus.setPrGPReg(index, bigInt);
         
+    	// Set GP register info
+    	int index = 0;
+    	int arraySize = 0;
+    	int regSize;
+    	int wordSize = task.getISA().wordSize();
+        int elfNGREG = 48;
+	
+    	// Allocate space in array. Even though there are some registers < wordSize, they still have
+    	// to sit in a wordSize area
+    	for (int l = 0; l < ptracePpcRegMap.length; l++)
+	  if (ptracePpcRegMap[l].getType().getSize() < wordSize)
+	    arraySize +=wordSize;
+	  else
+	    arraySize +=ptracePpcRegMap[l].getType().getSize();
+	
+    	int blankRegisterIndex = (elfNGREG - ptracePpcRegMap.length) * wordSize;
+	
+    	byte[] byteOrderedRegister= new byte[arraySize+blankRegisterIndex];
+	
+    	// Populate array, using wordSize as minimum size
+    	for (int i = 0; i < ptracePpcRegMap.length; i++) {
+	  regSize = ptracePpcRegMap[i].getType().getSize();
+	  if (regSize < wordSize)
+	    regSize = wordSize;
+	  task.access(ptracePpcRegMap[i], 0, regSize, byteOrderedRegister, index, false);
+	  index += regSize;
+    	}
+	
+    	prStatus.setPrGPRegisterBuffer(byteOrderedRegister);
+	
 	// Write it
 	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_PRSTATUS, prStatus);
     }
@@ -295,22 +300,4 @@ public class PPC32LinuxElfCorefile extends LinuxElfCorefile {
     protected byte getElfMachineClass() {
 	return ElfEHeader.PHEADER_ELFCLASS32;
     }
-
-    // XXX: Function to convert bytes[] to BigInteger.
-    // Will disappear when all BankRegisters are present on all
-    // all architectures, and  we can call task.access() on all
-    // registers, and not convert to BigInteger.
-    private BigInteger bytesToBigInteger(byte[] bytes)
-    {
-        if (this.process.getMainTask().getISA().order() == ByteOrder.LITTLE_ENDIAN) {
-            for (int left = 0; left < bytes.length / 2; left++) {
-                int right = bytes.length - 1 - left;
-                byte temp = bytes[left];
-                bytes[left] = bytes[right];
-                bytes[right] = temp;
-            }
-        }
-        return new BigInteger(bytes);
-    }
-
 }

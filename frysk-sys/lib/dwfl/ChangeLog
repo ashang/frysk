@@ -1,3 +1,12 @@
+2007-11-29  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* cni/ElfPrstatus.cxx (ElfPrstatus::fillMemRegion): Copy
+	buffer to structure, do not build buffer.
+	* ElfPrstatus.java (setPrGPRegisterBuffer): New.
+	(setPrGPReg): Delete.
+	(convertToLong): Delete.
+	(getPrGPRegIterator): Delete.
+	
 2007-11-20  Stan Cox  <scox@redhat.com>
 
 	* BaseTypes.java: Remove.

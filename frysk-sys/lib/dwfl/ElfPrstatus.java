@@ -41,7 +41,6 @@ package lib.dwfl;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.math.BigInteger;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
@@ -77,10 +76,7 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
 
   private int pr_fpvalid;
 
-  private ArrayList pr_reg = new ArrayList();
-  private long raw_registers[];
   private byte raw_core_registers[];
-  private int reg_length = 0;
   private int size = 32;
 
   static ArrayList internalThreads = new ArrayList();
@@ -363,22 +359,10 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
     return this.pr_cursig;
   }
 
-  /**
-   * Sets the GP register at index index to value
-   * of BigInteger
-   * 
-   * @param int index
-   * @param BigInteger value
-   * 
-   */
-  public void setPrGPReg(int index, BigInteger value) 
+  public void setPrGPRegisterBuffer(byte[] buffer)
   {
-    pr_reg.add(index,value);
-  }
-
-  public Iterator getPrGPRegIterator()
-  {
-    return pr_reg.iterator();
+    raw_core_registers = new byte[buffer.length];
+    System.arraycopy(buffer, 0 , raw_core_registers, 0, buffer.length);
   }
 
   public void setPrInfoSiSigno(long pr_info_si_signo)
@@ -589,20 +573,6 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
     return this.size;
   }
 
-
-  /** 
-   * Convert the array of BigIntegers to longs 
-   *
-   */
-  protected void convertToLong()
-  {
-    raw_registers = new long[pr_reg.size()];
-    reg_length = raw_registers.length; 
-    for (int i=0; i<reg_length; i++)
-      {
-    	raw_registers[i]=((BigInteger)pr_reg.get(i)).longValue();
-      }
-  }
 
   public native static long getNoteData(ElfData data);
   public native long getEntrySize();

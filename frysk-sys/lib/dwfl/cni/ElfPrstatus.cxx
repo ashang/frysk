@@ -225,13 +225,7 @@ lib::dwfl::ElfPrstatus::fillMemRegion(jbyteArray buffer, jlong startAddress)
 	    prstatus->pr_pgrp = this->pr_pgrp;
 	    prstatus->pr_sid = this->pr_sid;
 	    
-	    this->convertToLong ();
-	    jlong *registers = elements(raw_registers);
-	    for(int i=0; i<this->reg_length; i++)
-	      {
-		prstatus->pr_reg[i] = registers[i];
-	      }
-	    
+	    memcpy(((unsigned char *)prstatus->pr_reg), elements(this->raw_core_registers), this->raw_core_registers->length);
 	    prstatus->pr_fpvalid = 1;		/* True if math co-processor being used.  */
 	    
 	    memcpy(bs + startAddress, prstatus, sizeof(struct elf_prstatus32));
@@ -261,13 +255,7 @@ lib::dwfl::ElfPrstatus::fillMemRegion(jbyteArray buffer, jlong startAddress)
 	    prstatus->pr_pgrp = this->pr_pgrp;
 	    prstatus->pr_sid = this->pr_sid;
 	    
-	    this->convertToLong ();
-	    jlong *registers = elements(raw_registers);
-	    for(int i=0; i<this->reg_length; i++)
-	      {
-		prstatus->pr_reg[i] = registers[i];
-	      }
-	    
+	    memcpy(((unsigned char *)prstatus->pr_reg), elements(this->raw_core_registers), this->raw_core_registers->length);
 	    prstatus->pr_fpvalid = 1;		/* True if math co-processor being used.  */
 	    
 	    memcpy(bs + startAddress, prstatus, sizeof(struct elf_prstatus64));

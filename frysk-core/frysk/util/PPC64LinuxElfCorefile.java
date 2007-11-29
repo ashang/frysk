@@ -43,25 +43,20 @@
 
 package frysk.util;
 
-import java.math.BigInteger;
-
-import frysk.proc.Proc;
-import frysk.proc.Task;
-import inua.eio.ByteOrder;
-
+import lib.dwfl.ElfEHeader;
+import lib.dwfl.ElfEMachine;
 import lib.dwfl.ElfNhdr;
 import lib.dwfl.ElfNhdrType;
-import lib.dwfl.ElfEMachine;
-import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfPrAuxv;
+import lib.dwfl.ElfPrFPRegSet;
 import lib.dwfl.ElfPrpsinfo;
 import lib.dwfl.ElfPrstatus;
-import lib.dwfl.ElfPrFPRegSet;
-
-import frysk.sys.proc.AuxvBuilder;
-import frysk.sys.proc.CmdLineBuilder;
 import frysk.isa.PPC64Registers;
 import frysk.isa.Register;
+import frysk.proc.Proc;
+import frysk.proc.Task;
+import frysk.sys.proc.AuxvBuilder;
+import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.Stat;
 import frysk.sys.proc.Status;
 
@@ -188,11 +183,6 @@ public class PPC64LinuxElfCorefile extends LinuxElfCorefile {
 
         // The number of total common registers in PPC/PPC64 including nip, msr,
         // etc. Defined in the asm-ppc64/elf.h.
-        int elfNGREG = 48;
-        int blankRegisterIndex = elfNGREG;
-
-        byte[] zeroVal = new byte[] { 0 };
-
         // XXX: if one register's offset is not defined in asm-ppc/ptrace.h or
         // asm-ppc64/ptrace.h,we did not dump it out and fill give the null Name.
         Register[] ptracePpc64RegMap = {
@@ -212,23 +202,36 @@ public class PPC64LinuxElfCorefile extends LinuxElfCorefile {
 	  PPC64Registers.GPR27,  PPC64Registers.GPR28, PPC64Registers.GPR29,
 	  PPC64Registers.GPR30,  PPC64Registers.GPR31};
 
-        for (int i = 0; i < ptracePpc64RegMap.length; i++) {
-	  int registerSize = ptracePpc64RegMap[i].getType().getSize();
-	  byte[] byteOrderedRegister = new byte[registerSize];
-	  task.access(ptracePpc64RegMap[i], 0, registerSize,  byteOrderedRegister, 0, false);
-	  prStatus.setPrGPReg(i, bytesToBigInteger(byteOrderedRegister));
-        }
+    	// Set GP register info
+    	int index = 0;
+    	int arraySize = 0;
+    	int regSize;
+    	int wordSize = task.getISA().wordSize();
+        int elfNGREG = 48;
+	
+    	// Allocate space in array. Even though there are some registers < wordSize, they still have
+    	// to sit in a wordSize area
+    	for (int l = 0; l < ptracePpc64RegMap.length; l++)
+	  if (ptracePpc64RegMap[l].getType().getSize() < wordSize)
+	    arraySize +=wordSize;
+	  else
+	    arraySize +=ptracePpc64RegMap[l].getType().getSize();
+	
+    	int blankRegisterIndex = (elfNGREG - ptracePpc64RegMap.length) * wordSize;
+	
+    	byte[] byteOrderedRegister= new byte[arraySize+blankRegisterIndex];
+	
+    	// Populate array, using wordSize as minimum size
+    	for (int i = 0; i < ptracePpc64RegMap.length; i++) {
+	  regSize = ptracePpc64RegMap[i].getType().getSize();
+	  if (regSize < wordSize)
+	    regSize = wordSize;
+	  task.access(ptracePpc64RegMap[i], 0, regSize, byteOrderedRegister, index, false);
+	  index += regSize;
+    	}
+	
+    	prStatus.setPrGPRegisterBuffer(byteOrderedRegister);
 
-
-        blankRegisterIndex = ptracePpc64RegMap.length;
-
-        BigInteger bigInt = new BigInteger(zeroVal);
-
-        // On ppc, some register indexes are not defined in
-        // asm-<ISA>/ptrace.h.        
-        for (int index = blankRegisterIndex; index < elfNGREG; index++)
-          prStatus.setPrGPReg(index, bigInt);
-        
         // Write it
 	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_PRSTATUS, prStatus);
     }
@@ -330,20 +333,4 @@ public class PPC64LinuxElfCorefile extends LinuxElfCorefile {
 	return ElfEHeader.PHEADER_ELFCLASS64;
     }
 
-    // XXX: Function to convert bytes[] to BigInteger.
-    // Will disappear when all BankRegisters are present on all
-    // all architectures, and  we can call task.access() on all
-    // registers, and not convert to BigInteger.
-    private BigInteger bytesToBigInteger(byte[] bytes)
-    {
-        if (this.process.getMainTask().getISA().order() == ByteOrder.LITTLE_ENDIAN) {
-            for (int left = 0; left < bytes.length / 2; left++) {
-                int right = bytes.length - 1 - left;
-                byte temp = bytes[left];
-                bytes[left] = bytes[right];
-                bytes[right] = temp;
-            }
-        }
-        return new BigInteger(bytes);
-    }
 }

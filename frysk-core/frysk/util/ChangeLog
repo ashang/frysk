@@ -1,3 +1,13 @@
+2007-11-29  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* IA32LinuxElfCorefile.java(writeNotePrstatus): Construct
+	byte-ordered buffer for GP Registers. Do not use BigIntegers.
+	Account for wordSize with Registers < wordSize.
+	(bytesToBigInteger) Delete.
+	* X8664LinuxElfCorefile.java: Ditto.
+	* PPC32LinuxElfCorefile.java: Ditto.
+	* PPC64LinuxElfCorefile.java: Ditto.
+
 2007-11-28  Tim Moore  <timoore@redhat.com>
 
 	* TestCountDownLatch.java (testTimeout): wrap time out await in

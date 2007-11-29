@@ -39,23 +39,19 @@
 
 package frysk.util;
 
-import java.math.BigInteger;
-
+import inua.eio.ByteBuffer;
+import lib.dwfl.ElfEHeader;
+import lib.dwfl.ElfEMachine;
+import lib.dwfl.ElfNhdr;
+import lib.dwfl.ElfNhdrType;
+import lib.dwfl.ElfPrAuxv;
+import lib.dwfl.ElfPrFPRegSet;
+import lib.dwfl.ElfPrpsinfo;
+import lib.dwfl.ElfPrstatus;
 import frysk.isa.Register;
 import frysk.isa.X8664Registers;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
-
-import lib.dwfl.ElfNhdr;
-import lib.dwfl.ElfNhdrType;
-import lib.dwfl.ElfEMachine;
-import lib.dwfl.ElfEHeader;
-import lib.dwfl.ElfPrAuxv;
-import lib.dwfl.ElfPrpsinfo;
-import lib.dwfl.ElfPrstatus;
-import lib.dwfl.ElfPrFPRegSet;
 import frysk.sys.proc.AuxvBuilder;
 import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.Stat;
@@ -212,12 +208,31 @@ public class X8664LinuxElfCorefile extends LinuxElfCorefile {
 	  X8664Registers.GS};
 
 	// Set GP register info
+	int index = 0;
+	int arraySize = 0;
+	int regSize;
+	int wordSize = task.getISA().wordSize();
+	
+	// Allocate space in array. Even though there are some registers < wordSize, they still have
+	// to sit in a wordSize area
+	for (int l = 0; l < ptraceRegisterMap.length; l++)
+	  if (ptraceRegisterMap[l].getType().getSize() < wordSize)
+	    arraySize +=wordSize;
+	  else
+	    arraySize +=ptraceRegisterMap[l].getType().getSize();
+	
+	byte[] byteOrderedRegister= new byte[arraySize];
+	
+	// Populate array, using wordSize as minimum size
 	for (int i = 0; i < ptraceRegisterMap.length; i++) {
-	  int registerSize = ptraceRegisterMap[i].getType().getSize();
-	  byte[] byteOrderedRegister = new byte[registerSize];
-	  task.access(ptraceRegisterMap[i], 0, registerSize,	byteOrderedRegister, 0, false);
-	  prStatus.setPrGPReg(i,bytesToBigInteger(byteOrderedRegister));
+	  regSize = ptraceRegisterMap[i].getType().getSize();
+	  if (regSize < wordSize)
+	    regSize = wordSize;
+	  task.access(ptraceRegisterMap[i], 0, regSize, byteOrderedRegister, index, false);
+	  index += regSize;
 	}
+	
+	prStatus.setPrGPRegisterBuffer(byteOrderedRegister);
 
 	// Write it
 	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_PRSTATUS, prStatus);
@@ -285,21 +300,4 @@ public class X8664LinuxElfCorefile extends LinuxElfCorefile {
 	return ElfEHeader.PHEADER_ELFCLASS64;
     }
     
-    // XXX: Function to convert bytes[] to BigInteger. 
-    // Will disappear when all BankRegisters are present on all
-    // all architectures, and  we can call task.access() on all 
-    // registers, and not convert to BigInteger.
-    private BigInteger bytesToBigInteger(byte[] bytes)
-    {
-    	if (this.process.getMainTask().getISA().order() == ByteOrder.LITTLE_ENDIAN) {
-	    for (int left = 0; left < bytes.length / 2; left++) {
-		int right = bytes.length - 1 - left;
-		byte temp = bytes[left];
-		bytes[left] = bytes[right];
-		bytes[right] = temp;
-	    }
-	}
-	return new BigInteger(bytes);
-    }
-
 }

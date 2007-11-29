@@ -42,7 +42,6 @@ package frysk.util;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
 
 import lib.dwfl.ElfNhdr;
 import lib.dwfl.ElfNhdrType;
@@ -59,7 +58,7 @@ import frysk.sys.proc.Stat;
 import frysk.sys.proc.Status;
 import frysk.isa.IA32Registers;
 import frysk.isa.Register;
-import java.math.BigInteger;
+
 
 /**
  * LinuxElfCorefilex86. Extends LinuxCorefile. Fill in
@@ -181,32 +180,52 @@ public class IA32LinuxElfCorefile extends LinuxElfCorefile {
 	// are the names are the same. Create a string[] map to bridge
 	// gap between frysk and core file register order.
 
-	Register[] ptraceRegisterMap = {IA32Registers.EBX,
-				      IA32Registers.ECX,
-				      IA32Registers.EDX,
-				      IA32Registers.ESI,
-				      IA32Registers.EDI,
-				      IA32Registers.EBP,
-				      IA32Registers.EAX,
-     				      IA32Registers.DS,
-				      IA32Registers.ES,
-				      IA32Registers.FS,
-				      IA32Registers.GS,
-				      IA32Registers.ORIG_EAX,				      
-				      IA32Registers.EIP,
-				      IA32Registers.CS,
-				      IA32Registers.EFLAGS,
-      				      IA32Registers.ESP,
-				      IA32Registers.SS};
+	Register[] ptraceRegisterMap = {
+	  IA32Registers.EBX,
+	  IA32Registers.ECX,
+	  IA32Registers.EDX,
+	  IA32Registers.ESI,
+	  IA32Registers.EDI,
+	  IA32Registers.EBP,
+	  IA32Registers.EAX,
+	  IA32Registers.DS,
+	  IA32Registers.ES,
+	  IA32Registers.FS,
+	  IA32Registers.GS,
+	  IA32Registers.ORIG_EAX,				      
+	  IA32Registers.EIP,
+	  IA32Registers.CS,
+	  IA32Registers.EFLAGS,
+	  IA32Registers.ESP,
+	  IA32Registers.SS
+	};
 
 	// Set GP register info
+	int index = 0;
+	int arraySize = 0;
+	int regSize;
+	int wordSize = task.getISA().wordSize();
+	
+	// Allocate space in array. Even though there are some registers < wordSize, they still have
+	// to sit in a wordSize area
+	for (int l = 0; l < ptraceRegisterMap.length; l++)
+	  if (ptraceRegisterMap[l].getType().getSize() < wordSize)
+	    arraySize +=wordSize;
+	  else
+	    arraySize +=ptraceRegisterMap[l].getType().getSize();
+	
+	byte[] byteOrderedRegister= new byte[arraySize];
+	
+	// Populate array, using wordSize as minimum size
 	for (int i = 0; i < ptraceRegisterMap.length; i++) {
-	    int registerSize = ptraceRegisterMap[i].getType().getSize();
-	    byte[] byteOrderedRegister = new byte[registerSize];
-	    task.access(ptraceRegisterMap[i], 0, registerSize,	byteOrderedRegister, 0, false);
-	    prStatus.setPrGPReg(i,bytesToBigInteger(byteOrderedRegister));
+	  regSize = ptraceRegisterMap[i].getType().getSize();
+	  if (regSize < wordSize)
+	    regSize = wordSize;
+	  task.access(ptraceRegisterMap[i], 0, regSize, byteOrderedRegister, index, false);
+	  index += regSize;
 	}
-
+	
+	prStatus.setPrGPRegisterBuffer(byteOrderedRegister);
 	
 	// Write it
 	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_PRSTATUS, prStatus);
@@ -292,20 +311,4 @@ public class IA32LinuxElfCorefile extends LinuxElfCorefile {
 	return ElfEHeader.PHEADER_ELFCLASS32;
     }
 
-    // XXX: Function to convert bytes[] to BigInteger. 
-    // Will disappear when all BankRegisters are present on all
-    // all architectures, and  we can call task.access() on all 
-    // registers, and not convert to BigInteger.
-    private BigInteger bytesToBigInteger(byte[] bytes)
-    {
-    	if (this.process.getMainTask().getISA().order() == ByteOrder.LITTLE_ENDIAN) {
-	    for (int left = 0; left < bytes.length / 2; left++) {
-		int right = bytes.length - 1 - left;
-		byte temp = bytes[left];
-		bytes[left] = bytes[right];
-		bytes[right] = temp;
-	    }
-	}
-	return new BigInteger(bytes);
-    }
 }
