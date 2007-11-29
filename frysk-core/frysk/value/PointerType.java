@@ -82,18 +82,25 @@ public class PointerType
 	writer.print("(");
 	this.toPrint(writer, 0);
 	writer.print(") ");	
-	format.print(writer, location, this);
+	try {
+	   format.print(writer, location, this);
+	} catch (RuntimeException e) {
+	    throw new RuntimeException("Peek Memory");
+	}
 	if (type instanceof CharType) {
 	    // XXX: ByteBuffer.slice wants longs.
 	    long addr = getBigInteger(location).longValue();
-	    // Null pointer
-	    if (addr == 0)
-		return;
 	    writer.print(" \"");
 	    while (true) {
 		Location l = new ByteBufferLocation(memory, addr,
 						    type.getSize());
-		BigInteger c = ((CharType)type).getBigInteger(l);
+		BigInteger c = BigInteger.ZERO;
+		try {
+		   c = ((CharType)type).getBigInteger(l);
+		} catch (RuntimeException e) {
+		    writer.print(" < Memory Error > ");
+		    break;
+		}
 		if (c.equals(BigInteger.ZERO))
 		    break; // NUL
 		writer.print((char)c.longValue());

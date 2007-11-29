@@ -125,7 +125,7 @@ extends Location
 	    else
 		indexCount += len;
 	}
-	throw new RuntimeException("Index out of range for offset " + offset);	
+	throw new RuntimeException("Out of range.");	
     }
 
     /**
@@ -155,7 +155,7 @@ extends Location
 	    else
 		indexCount += len;
 	}
-	throw new RuntimeException("Piece out of range for offset " + offset);	
+	throw new RuntimeException("Out of range.");	
     }
 
     /**
