@@ -1,5 +1,9 @@
 2007-11-29  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRegs.java (testFloatRegisters())
+	(testVectorRegisters()): New; mark as unresolved, bugs 4911 and
+	5195.
+
 	* LibunwindRegisterMapFactory.java: Update; RegisterMap
 	constructor takes a String.
 	* LibunwindAddressSpace.java (accessReg(Number,byte[],boolean)):

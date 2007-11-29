@@ -1,5 +1,9 @@
 2007-11-29  Andrew Cagney  <cagney@redhat.com>
 
+	* RegsCase.java (testVectorRegisters()): Remove unresolved.
+	(testFloatRegisters()): Ditto.
+	(isa()): Make protected.
+
 	* RegsCase.java (testGeneralRegisters): Remove unresolved on
 	x86-64, bug 5195.
 

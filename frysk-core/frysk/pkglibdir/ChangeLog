@@ -4,6 +4,9 @@
 
 2007-11-29  Andrew Cagney  <cagney@redhat.com>
 
+	* funit-regs.S (x87fxregs): Data section.
+	(main) [__i386__]: Restore fxregs.
+
 	* funit-regs.S (main): Jump to the known symbol "crash".
 
 2007-11-28 Teresa Thomas <tthomas@redhat.com>

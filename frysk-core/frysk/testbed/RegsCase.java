@@ -110,7 +110,7 @@ public abstract class RegsCase extends TestLib {
     Values values() {
 	return values;
     }
-    ISA isa() {
+    protected ISA isa() {
 	return isa;
     }
 
@@ -133,18 +133,10 @@ public abstract class RegsCase extends TestLib {
     }
 
     public void testFloatRegisters() {
-	if (unresolvedOnIA32(4911))
-	    return;
-	if(unresolvedOnx8664(5195))
-	    return;
 	checkRegisterGroup(registers.getFloatRegisterGroup());
     }
 
     public void testVectorRegisters() {
-	if (unresolvedOnIA32(4911))
-	    return;
-	if(unresolvedOnx8664(5195))
-	    return;
 	checkRegisterGroup(registers.getVectorRegisterGroup());
     }
 
@@ -334,6 +326,22 @@ public abstract class RegsCase extends TestLib {
              new byte[] { (byte)0xed, (byte)0xa6, (byte)0xd4, (byte)0x93 })
  	.put(IA32Registers.EIP, "crash")
     // floating-point registers
+        .put(X87Registers.FCW, // 0x1e71
+             new byte[] { 0x71,0x1e })
+        .put(X87Registers.FSW, // 0x47e4
+             new byte[] { (byte)0xe4,0x47 })
+        .put(X87Registers.FTW, // 0xc9
+             new byte[] { (byte)0xc9 })
+        .put(X87Registers.FOP, // 0x1e8f
+             new byte[] { (byte)0x8f,0x1e })
+        .put(X87Registers.EIP, // 0x2fc38c68
+             new byte[] { 0x68,(byte)0x8c,(byte)0xc3,0x2f })
+        .put(X87Registers.CS, // 0x7ac9
+             new byte[] { (byte)0xc9,0x7a })
+        .put(X87Registers.DP, // 0x6d77e6d5
+             new byte[] { (byte)0xd5,(byte)0xe6,0x77,0x6d })
+        .put(X87Registers.DS, // 0x2a9f
+             new byte[] { (byte)0x9f,0x2a })
 	.put(X87Registers.ST0, // 0xa7367289dc779dba0bd9
              new byte[] { (byte)0xd9,0xb,(byte)0xba,(byte)0x9d,
                           0x77,(byte)0xdc,(byte)0x89,0x72,
@@ -366,22 +374,6 @@ public abstract class RegsCase extends TestLib {
              new byte[] { 0x19,(byte)0xcb,(byte)0xa8,0x79,
                           (byte)0x94,(byte)0xc4,0x5e,(byte)0xae,
                           0x12,0x1f })
-        .put(X87Registers.FCW, // 0xc0f1
-             new byte[] { (byte)0xf1,(byte)0xc0 })
-        .put(X87Registers.FSW, // 0x47e4
-             new byte[] { (byte)0xe4,0x47 })
-        .put(X87Registers.FTW, // 0xc9
-             new byte[] { (byte)0xc9 })
-        .put(X87Registers.FOP, // 0x1e8f
-             new byte[] { (byte)0x8f,0x1e })
-        .put(X87Registers.EIP, // 0x2fc38c68
-             new byte[] { 0x68,(byte)0x8c,(byte)0xc3,0x2f })
-        .put(X87Registers.CS, // 0x7ac9
-             new byte[] { (byte)0xc9,0x7a })
-        .put(X87Registers.DP, // 0x6d77e6d5
-             new byte[] { (byte)0xd5,(byte)0xe6,0x77,0x6d })
-        .put(X87Registers.DS, // 0x2a9f
-             new byte[] { (byte)0x9f,0x2a })
     // vector registers
         .put(X87Registers.XMM0, // 0x47beb912e3bfa457d6af5267b3fec23b
              new byte[] { 0x3b,(byte)0xc2,(byte)0xfe,(byte)0xb3,
@@ -476,6 +468,20 @@ public abstract class RegsCase extends TestLib {
                           0x5d,(byte)0xf6,0x6b,0x4 })
         .put(X8664Registers.RIP, "crash")
     // floating-point registers
+        .put(X87Registers.FCW, // 0x1e71
+             new byte[] { 0x71,0x1e })
+        .put(X87Registers.FSW, // 0x47e4
+             new byte[] { (byte)0xe4,0x47 })
+        .put(X87Registers.FTW, // 0xc9
+             new byte[] { (byte)0xc9 })
+        .put(X87Registers.FOP, // 0x1e8f
+             new byte[] { (byte)0x8f,0x1e })
+        .put(X87Registers.RIP, // 0x99af236679d5eeff
+             new byte[] { (byte)0xff,(byte)0xee,(byte)0xd5,0x79,
+                          0x66,0x23,(byte)0xaf,(byte)0x99 })
+        .put(X87Registers.RDP, // 0x6988a565d0acd7b0
+             new byte[] { (byte)0xb0,(byte)0xd7,(byte)0xac,(byte)0xd0,
+                          0x65,(byte)0xa5,(byte)0x88,0x69 })
 	.put(X87Registers.ST0, // 0xa7367289dc779dba0bd9
              new byte[] { (byte)0xd9,0xb,(byte)0xba,(byte)0x9d,
                           0x77,(byte)0xdc,(byte)0x89,0x72,
@@ -508,20 +514,6 @@ public abstract class RegsCase extends TestLib {
              new byte[] { 0x19,(byte)0xcb,(byte)0xa8,0x79,
                           (byte)0x94,(byte)0xc4,0x5e,(byte)0xae,
                           0x12,0x1f })
-        .put(X87Registers.FCW, // 0xc0f1
-             new byte[] { (byte)0xf1,(byte)0xc0 })
-        .put(X87Registers.FSW, // 0x47e4
-             new byte[] { (byte)0xe4,0x47 })
-        .put(X87Registers.FTW, // 0xc9
-             new byte[] { (byte)0xc9 })
-        .put(X87Registers.FOP, // 0x1e8f
-             new byte[] { (byte)0x8f,0x1e })
-        .put(X87Registers.RIP, // 0x99af236679d5eeff
-             new byte[] { (byte)0xff,(byte)0xee,(byte)0xd5,0x79,
-                          0x66,0x23,(byte)0xaf,(byte)0x99 })
-        .put(X87Registers.RDP, // 0x6988a565d0acd7b0
-             new byte[] { (byte)0xb0,(byte)0xd7,(byte)0xac,(byte)0xd0,
-                          0x65,(byte)0xa5,(byte)0x88,0x69 })
     // vector registers
         .put(X87Registers.XMM0, // 0x47beb912e3bfa457d6af5267b3fec23b
              new byte[] { 0x3b,(byte)0xc2,(byte)0xfe,(byte)0xb3,

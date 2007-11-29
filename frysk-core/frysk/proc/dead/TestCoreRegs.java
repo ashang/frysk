@@ -45,6 +45,7 @@ import frysk.proc.Proc;
 import frysk.testbed.CoreFileAtSignal;
 import frysk.util.Util;
 import java.io.File;
+import frysk.isa.ISA;
 
 /**
  * Check all register values.
@@ -71,4 +72,21 @@ public class TestCoreRegs extends RegsCase {
 	return task().getRegister(register);
     }
 
+    // XXX: Delete this once the unresolved cases are fixed.
+    public void testFloatRegisters() {
+	if (isa() == ISA.IA32 && unresolved(4911))
+	    return;
+        if (isa() == ISA.X8664 && unresolved(5195))
+            return;
+	super.testFloatRegisters();
+    }
+
+    // XXX: Delete this once the unresolved cases are fixed.
+    public void testVectorRegisters() {
+	if (isa() == ISA.IA32 && unresolved(4911))
+	    return;
+        if (isa() == ISA.X8664 && unresolved(5195))
+            return;
+	super.testVectorRegisters();
+    }
 }

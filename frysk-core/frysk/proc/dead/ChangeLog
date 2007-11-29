@@ -1,5 +1,8 @@
 2007-11-29  Andrew Cagney  <cagney@redhat.com>
 
+	* TestCoreRegs.java (testFloatRegisters())
+	(testVectorRegisters()): New; mark as unresolved.
+	
 	* TestCoreRegs.java: New.
 
 2007-11-29  Phil Muldoon  <pmuldoon@redhat.com>
