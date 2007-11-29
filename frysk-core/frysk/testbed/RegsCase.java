@@ -129,8 +129,6 @@ public abstract class RegsCase extends TestLib {
     }
    
     public void testGeneralRegisters() {
-	if(unresolvedOnx8664(5195))
-	    return;
 	checkRegisterGroup(registers.getGeneralRegisterGroup());
     }
 

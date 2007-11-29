@@ -1,7 +1,10 @@
 2007-11-29  Andrew Cagney  <cagney@redhat.com>
 
-	* RegsCase.java (X866r): Add floating-point and vector values.
-	
+	* RegsCase.java (testGeneralRegisters): Remove unresolved on
+	x86-64, bug 5195.
+
+	* RegsCase.java (X8664): Add floating-point and vector values.
+
 	* CoreFileAtSignal.java (constructCore(Proc)): New.
 	* RegsCase.java (setTask(Task)): New.
 

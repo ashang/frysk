@@ -58,7 +58,6 @@
 	// eip
 	// %eflags
 	mov $0x93d4a6ed, %esp
-	jmp crash
 	
 #elif defined __x86_64__
 
@@ -78,13 +77,10 @@
         mov $0xe0fb8a51946f37a0, %r13
         mov $0x3f22bc816a35f02d, %r14
         mov $0x46bf65d4d966290, %r15
-        // mov $0x9a602112ce465ffa, %rip
 
-#else
-	
-	LOAD_IMMED_WORD(REG0, 0)
-	STORE(REG0, REG0)
 #endif
+
+	JUMP(crash)
 
 	MAIN_EPILOGUE(0)
 	FUNCTION_RETURN(main,0)
@@ -94,6 +90,9 @@
 
 .global crash
 crash:
-#if defined __i386__
+#if defined __i386__ || defined __x86_64__
 	mov 0, %eax
+#else
+	LOAD_IMMED_WORD(REG0, 0)
+	STORE(REG0, REG0)
 #endif
