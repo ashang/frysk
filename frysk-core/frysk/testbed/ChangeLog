@@ -1,5 +1,7 @@
 2007-11-29  Andrew Cagney  <cagney@redhat.com>
 
+	* RegsCase.java (X866r): Add floating-point and vector values.
+	
 	* CoreFileAtSignal.java (constructCore(Proc)): New.
 	* RegsCase.java (setTask(Task)): New.
 
