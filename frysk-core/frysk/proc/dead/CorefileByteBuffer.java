@@ -124,9 +124,12 @@ public class CorefileByteBuffer
 	}
 	
     else
-      throw new RuntimeException("peek() at address " +
-				 Long.toHexString(address)+" cannot be "+
-				 "found in metadata table.");
+      throw new RuntimeException("CorefileByteBuffer: Cannot peek() " +
+      				 "at address 0x" +
+				 Long.toHexString(address)+"." +
+				 " Address location is unknown " +
+				 " (not in corefile, executable or "+
+				 " mapped solibs).");
 
     return buffer[0];
   }
