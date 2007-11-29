@@ -1,5 +1,9 @@
 2007-11-29  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* LocationExpression.java (decode): Delete decode(Frame frame).
+
+2007-11-29  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* LocationExpression.java (LocationExpression): Removed ops	from
 	constructor.
 	* TestLocationExpression.java: Updated.
