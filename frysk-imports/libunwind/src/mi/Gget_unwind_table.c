@@ -32,7 +32,8 @@ unw_get_unwind_table(unw_addr_space_t as, unw_word_t ip, unw_proc_info_t *pi,
 {
 	Debug(99, "Entering get_unwind_table\n");
 	Elf_W(Phdr) *phdr, *ptxt = NULL, *peh_hdr = NULL, *pdyn = NULL;
-	unw_word_t addr, eh_frame_start, fde_count, load_base;
+	unw_word_t eh_frame_start, fde_count, load_base;
+	char *addr;
 	struct dwarf_eh_frame_hdr *hdr;	
 	Elf_W(Ehdr) *ehdr;
 	int i, ret;
@@ -110,7 +111,7 @@ unw_get_unwind_table(unw_addr_space_t as, unw_word_t ip, unw_proc_info_t *pi,
 
 	Debug(99, "EH_VERSION is correct\n");
 
-  addr = (unw_word_t) (hdr + 1);
+  addr = hdr + 1;
   Debug (99, "Got addr\n");
   /* Fill in a dummy proc_info structure.  We just need to fill in
      enough to ensure that dwarf_read_encoded_pointer() can do it's
@@ -122,45 +123,48 @@ unw_get_unwind_table(unw_addr_space_t as, unw_word_t ip, unw_proc_info_t *pi,
 
   Debug(99, "set pi gp\n");
 
-
-//The following is a dummy local address space used by dwarf_read_encoded_pointer.
+// The following is a local address space memory accessor used by
+// dwarf_read_encoded_pointer.  The arg pointer is the base address,
+// addr is the offset from the base address.
   int 
   local_access_mem (unw_addr_space_t as, unw_word_t addr,
-		unw_word_t *val, int write, void *arg) 
+		    unw_word_t *val, int write, void *arg) 
   {
-  	Debug(99, "entering local_access_mem, reading addr: 0x%lx into: %p\n", 
-  	(long) addr, val);
-	if (write)
-    	{
-     	  Debug (16, "mem[%x] <- %x\n", addr, *val);
-          *(unw_word_t *) addr = *val;
-    	}
-  	else
-    	{
-          *val = *(unw_word_t *) addr;
-          Debug (16, "mem[%x] -> %x\n", addr, *val);
-    	}
-    	Debug(99, "leaving local_access_mem\n");
-  	return 0;
+    Debug(99, "entering local_access_mem, reading addr: 0x%lx into: %p\n", 
+	  (long) addr, val);
+    if (write)
+      {
+	// Writing is not supported
+	return -UNW_EINVAL;
+      }
+    else
+      {
+	*val = *(unw_word_t *) (addr + (char *) arg);
+	Debug (16, "mem[%x] -> %x\n", (addr + (char *) arg), *val);
+      }
+    Debug(99, "leaving local_access_mem\n");
+    return 0;
   }
   
-  unw_accessors_t temp_local_accessors = {NULL, NULL, NULL, local_access_mem, 
-  					  NULL, NULL,	NULL, NULL, NULL};
-  unw_addr_space_t temp_local_addr_space 
-  	= unw_create_addr_space(&temp_local_accessors, 0);
+  unw_accessors_t local_accessors = {NULL, NULL, NULL, local_access_mem, 
+				     NULL, NULL, NULL, NULL, NULL};
+  unw_addr_space_t local_addr_space
+    = unw_create_addr_space(&local_accessors, 0);
+
+  unw_word_t start = 0;
   	
    /* (Optionally) read eh_frame_ptr: */
-  if ((ret = dwarf_read_encoded_pointer (temp_local_addr_space, &temp_local_accessors,
-					 &addr, hdr->eh_frame_ptr_enc, pi,
-					 &eh_frame_start, NULL)) < 0)
+  if ((ret = dwarf_read_encoded_pointer (local_addr_space, &local_accessors,
+					 &start, hdr->eh_frame_ptr_enc, pi,
+					 &eh_frame_start, addr)) < 0)
     return -1;
     
   Debug(99, "read eh_frame_start: 0x%lx\n", (long) eh_frame_start);
 
   /* (Optionally) read fde_count: */
-  if ((ret = dwarf_read_encoded_pointer (temp_local_addr_space, &temp_local_accessors,
-					 &addr, hdr->fde_count_enc, pi,
-					 &fde_count, NULL)) < 0)
+  if ((ret = dwarf_read_encoded_pointer (local_addr_space, &local_accessors,
+					 &start, hdr->fde_count_enc, pi,
+					 &fde_count, addr)) < 0)
     return -1;
 
   Debug(99, "read fde_count: 0x%lx\n", (long) fde_count);
@@ -169,7 +173,9 @@ unw_get_unwind_table(unw_addr_space_t as, unw_word_t ip, unw_proc_info_t *pi,
       return -1;
     }
     
-    load_base = segbase - ptxt->p_vaddr;
+  addr += start;
+
+  load_base = segbase - ptxt->p_vaddr;
 
   di_cache.start_ip = segbase;
   di_cache.end_ip = di_cache.start_ip + ptxt->p_memsz;

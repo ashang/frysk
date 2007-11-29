@@ -1,5 +1,11 @@
 2007-11-28  Mark Wielaard  <mwielaard@redhat.com>
 
+	* src/mi/Gget_unwind_table.c (unw_get_unwind_table): Make addr a
+	char *, pass addr as arg to dwarf_read functions, make
+	local_access_mem use arg as base address for start indexed reads.
+	
+2007-11-28  Mark Wielaard  <mwielaard@redhat.com>
+
 	Revert:
 	2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
 

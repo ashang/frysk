@@ -48,10 +48,6 @@
 
 #include "lib/unwind/ElfImage.h"
 
-#ifndef MAP_32BIT
-#define MAP_32BIT 0
-#endif
-
 lib::unwind::ElfImage*
 lib::unwind::ElfImage::mapElfImage(jstring elfImageName, jlong segbase, jlong hi,
                                    jlong mapoff)
@@ -77,8 +73,7 @@ lib::unwind::ElfImage::mapElfImage(jstring elfImageName, jlong segbase, jlong hi
     }
 
   size = stat.st_size;
-  image = mmap (NULL, size, PROT_READ, MAP_PRIVATE | MAP_32BIT, fd, 0);
-
+  image = mmap (NULL, size, PROT_READ, MAP_PRIVATE, fd, 0);
 
   close (fd);
   if (image == MAP_FAILED)

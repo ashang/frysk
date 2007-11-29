@@ -77,10 +77,6 @@
 # define MAX_VDSO_SIZE ((size_t) sysconf (_SC_PAGESIZE))
 #endif
 
-#ifndef MAP_32BIT
-# define MAP_32BIT 0
-#endif
-
 static lib::unwind::AddressSpace*
 addressSpace(void* arg)
 {
@@ -477,7 +473,7 @@ lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSp
   logFine(this, logger, "checked magic size");
 
   image = mmap (0, size, PROT_READ | PROT_WRITE,
-                MAP_PRIVATE | MAP_ANONYMOUS | MAP_32BIT, -1, 0);
+                MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   if (image == MAP_FAILED)
     return new lib::unwind::ElfImage((jint) -1);
 
