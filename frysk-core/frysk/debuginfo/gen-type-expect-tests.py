@@ -128,7 +128,8 @@ public class %s extends TestLib {
 	    for (int i = 0; i < expect.length; i++) {
                 // ??? cache address of x so &x can be checked?
 	        if (expect[i].output.indexOf("&") >= 0
-                    || expect[i].symbol.indexOf("ptr") >= 0)
+                    || expect[i].symbol.indexOf("ptr") >= 0
+		    || expect[i].output.length() == 0)
 		    continue;
                 DwarfDie varDie = die.getScopeVar(allDies, expect[i].symbol);
                 if (varDie == null)

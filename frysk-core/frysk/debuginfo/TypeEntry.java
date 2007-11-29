@@ -87,9 +87,9 @@ public class TypeEntry
     
     private void dumpDie(String s, DwarfDie die)
     {
-	System.out.println(s + Long.toHexString(die.getOffset()) + " "
-		+ DwTag.toName(die.getTag().hashCode())
-		+ " " + die.getName());
+// 	System.out.println(s + Long.toHexString(die.getOffset()) + " "
+// 		+ DwTag.toName(die.getTag().hashCode())
+// 		+ " " + die.getName());
     }
     /**
      * @param dieType
@@ -358,13 +358,14 @@ public class TypeEntry
 	case DwTag.TYPEDEF_:
 	    returnType = new TypeDef(type.getName(), getType (type.getType()));
 	    break;
-	case DwTag.POINTER_TYPE_:
+	case DwTag.POINTER_TYPE_: {
 	    Type ptrTarget = getType(type.getType());
 	    if (ptrTarget == null)
 		ptrTarget = new VoidType();
 	    returnType = new PointerType("*", byteorder, getByteSize(type),
 		    ptrTarget);
 	    break;
+	}
 	case DwTag.REFERENCE_TYPE_:
 	    returnType = new ReferenceType(getType(type.getType()));
 	    break;
@@ -373,15 +374,17 @@ public class TypeEntry
 	    returnType = getArrayType(type.getType(), subrange);
 	    break;
 	}
-	case DwTag.UNION_TYPE_:
+	case DwTag.UNION_TYPE_: {
 	    UnionType unionType = getUnionType(type, typeDie.getName());
 	    returnType = unionType;
 	    break;
-	case DwTag.STRUCTURE_TYPE_:
+	}
+	case DwTag.STRUCTURE_TYPE_: {
 	    GccStructOrClassType classType = 
 		getGccStructOrClassType(type, typeDie.getName());
 	    returnType = classType;
 	    break;
+	}
 	case DwTag.ENUMERATION_TYPE_: {
 	    DwarfDie subrange = type.getChild();
 	    EnumType enumType = new EnumType(typeDie.getName(),

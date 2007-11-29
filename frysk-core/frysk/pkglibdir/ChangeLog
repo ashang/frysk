@@ -1,3 +1,7 @@
+2007-11-29  Stan Cox  <scox@redhat.com>
+
+	* funit-class.cxx: Add comments for gen-type-expect-test.py.
+
 2007-11-29  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-regs.S (main): Jump to the known symbol "crash".

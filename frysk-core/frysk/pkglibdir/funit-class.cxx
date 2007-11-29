@@ -71,7 +71,6 @@ private:
 
 // Test: class
 // Name: mb
-// Value:
 // Type: class Type {
 // Type:  public:
 // Type:   struct Base1 {
@@ -93,7 +92,6 @@ private:
 Type mb("static", "main", "mb");
 
 // Name: new_base
-// Value:
 // Type: class Type {
 // Type:  public:
 // Type:   struct Base1 {
@@ -115,12 +113,11 @@ Type mb("static", "main", "mb");
 Type new_base = Type ("new base", "main", "new_base");
 
 // Name: xyz
-// Value:
 // Type: class Derived {
 // Type:  public:
 // Type:   struct Base3 {
-// Type:     Symbol has an unknown type. * * _vptr.Base3;
-// Type:     void Base3 (Symbol has an unknown type. );
+// Type:     int  () * * _vptr.Base3;
+// Type:     void Base3 (void * const & );
 // Type:     void Base3 ();
 // Type:     char do_this (char );
 // Type:     short int do_this (short int );
@@ -128,7 +125,7 @@ Type new_base = Type ("new base", "main", "new_base");
 // Type:     float do_this (float );
 // Type:     void ~Base3 ();
 // Type:   } ;
-// Type:   void Derived (Symbol has an unknown type. );
+// Type:   void Derived (void * const & );
 // Type:   void Derived ();
 // Type:   char do_this (char );
 // Type:   short int do_this (short int );
