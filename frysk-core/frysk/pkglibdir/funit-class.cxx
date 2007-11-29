@@ -6,23 +6,14 @@ static void crash (){
   a[0] = 0;
 }
 
-static int assign_ (int) __attribute__ ((noinline));
-int
-assign_ (int a)
-{
-  return 2;
-}
-
 class Base1
 {
 public:
   Base1 (const char *m):msg (m)
   {
-    // std::cout << "Base1::Base1(" << msg << ")" << std::endl;
   }
   ~Base1 ()
   {
-    // std::cout << "Base1::~Base1(" << msg << ")" << std::endl;
   }
   const char *msg;
 };
@@ -32,11 +23,9 @@ class Base2
 public:
   Base2 (const char *m):msg (m)
   {
-    // std::cout << "Base2::Base2(" << msg << ")" << std::endl;
   }
   ~Base2 ()
   {
-    // std::cout << "Base2::~Base2(" << msg << ")" << std::endl;
   }
   const char *msg;
 };
@@ -46,11 +35,9 @@ class Type : public Base1, public Base2
 public:
   Type(const char *m, const char *n, const char *o) : Base1(m), Base2(n), note(o)
   {
-    // std::cout << "Type::Type(" << note << ")" << std::endl;
   }
   ~Type()
   {
-    // std::cout << "Type::~Type(" << note << ")" << std::endl;
   }
   private:
   const char *note;
@@ -78,26 +65,94 @@ public:
 private:
   template<class TYPE> TYPE do_this_impl(TYPE t)
   {
-    // std::cout << t << std::endl;
     return t;
   }
 };
 
-static Type mb("static", "main", "mb");
-static Type new_base = Type ("new base", "main", "new_base");
-static Derived xyz;
+// Test: class
+// Name: mb
+// Value:
+// Type: class Type {
+// Type:  public:
+// Type:   struct Base1 {
+// Type:     const char * msg;
+// Type:     void Base1 (const char * );
+// Type:     void ~Base1 ();
+// Type:   } ;
+// Type:   struct Base2 {
+// Type:     const char * msg;
+// Type:     void Base2 (const char * );
+// Type:     void ~Base2 ();
+// Type:   } ;
+// Type:  private:
+// Type:   const char * note;
+// Type:   void Type (const char * ,const char * ,const char * );
+// Type:   void ~Type ();
+// Type: }
+
+Type mb("static", "main", "mb");
+
+// Name: new_base
+// Value:
+// Type: class Type {
+// Type:  public:
+// Type:   struct Base1 {
+// Type:     const char * msg;
+// Type:     void Base1 (const char * );
+// Type:     void ~Base1 ();
+// Type:   } ;
+// Type:   struct Base2 {
+// Type:     const char * msg;
+// Type:     void Base2 (const char * );
+// Type:     void ~Base2 ();
+// Type:   } ;
+// Type:  private:
+// Type:   const char * note;
+// Type:   void Type (const char * ,const char * ,const char * );
+// Type:   void ~Type ();
+// Type: }
+
+Type new_base = Type ("new base", "main", "new_base");
+
+// Name: xyz
+// Value:
+// Type: class Derived {
+// Type:  public:
+// Type:   struct Base3 {
+// Type:     Symbol has an unknown type. * * _vptr.Base3;
+// Type:     void Base3 (Symbol has an unknown type. );
+// Type:     void Base3 ();
+// Type:     char do_this (char );
+// Type:     short int do_this (short int );
+// Type:     int do_this (int );
+// Type:     float do_this (float );
+// Type:     void ~Base3 ();
+// Type:   } ;
+// Type:   void Derived (Symbol has an unknown type. );
+// Type:   void Derived ();
+// Type:   char do_this (char );
+// Type:   short int do_this (short int );
+// Type:   int do_this (int );
+// Type:   float do_this (float );
+// Type:   void ~Derived ();
+// Type:  private:
+// Type:   char do_this_impl<char> (char );
+// Type:   short int do_this_impl<short int> (short int );
+// Type:   int do_this_impl<int> (int );
+// Type:   float do_this_impl<float> (float );
+// Type: }
+
+Derived xyz;
 
 static void func () __attribute__ ((noinline));
 void
 func ()
 {
-  // std::cout << "main" << std::endl;
   xyz.do_this ((char)'1');
   xyz.do_this ((short)2);
   xyz.do_this ((int)3);
   xyz.do_this ((float) 4.1);
-  int x = xyz.do_this ((int)1);
-  x = assign_(x);
+  xyz.do_this ((int)1);
   crash();
 }
 

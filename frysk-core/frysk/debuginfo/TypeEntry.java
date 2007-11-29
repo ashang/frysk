@@ -48,6 +48,7 @@ import frysk.value.EnumType;
 import frysk.value.FunctionType;
 import frysk.value.GccStructOrClassType;
 import frysk.value.PointerType;
+import frysk.value.ReferenceType;
 import frysk.value.SignedType;
 import frysk.value.StandardTypes;
 import frysk.value.Type;
@@ -86,9 +87,9 @@ public class TypeEntry
     
     private void dumpDie(String s, DwarfDie die)
     {
-// 	System.out.println(s + Long.toHexString(die.getOffset()) + " "
-// 		+ DwTag.toName(die.getTag().hashCode())
-// 		+ " " + die.getName());
+	System.out.println(s + Long.toHexString(die.getOffset()) + " "
+		+ DwTag.toName(die.getTag().hashCode())
+		+ " " + die.getName());
     }
     /**
      * @param dieType
@@ -298,6 +299,7 @@ public class TypeEntry
 	    return (null);
 
 	switch (varDie.getTag().hashCode()) {
+	case DwTag.SUBROUTINE_TYPE_:
 	case DwTag.SUBPROGRAM_: {
 	    Type type = null;
 	    if (varDie.getUltimateType() != null) {
@@ -353,34 +355,33 @@ public class TypeEntry
 	Type returnType = null;
 	
 	switch (type.getTag().hashCode()) {
-	case DwTag.TYPEDEF_: {
+	case DwTag.TYPEDEF_:
 	    returnType = new TypeDef(type.getName(), getType (type.getType()));
 	    break;
-	}
-	case DwTag.POINTER_TYPE_: {
+	case DwTag.POINTER_TYPE_:
 	    Type ptrTarget = getType(type.getType());
 	    if (ptrTarget == null)
 		ptrTarget = new VoidType();
 	    returnType = new PointerType("*", byteorder, getByteSize(type),
 		    ptrTarget);
 	    break;
-	}
+	case DwTag.REFERENCE_TYPE_:
+	    returnType = new ReferenceType(getType(type.getType()));
+	    break;
 	case DwTag.ARRAY_TYPE_: {
 	    DwarfDie subrange = type.getChild();
 	    returnType = getArrayType(type.getType(), subrange);
 	    break;
 	}
-	case DwTag.UNION_TYPE_: {
+	case DwTag.UNION_TYPE_:
 	    UnionType unionType = getUnionType(type, typeDie.getName());
 	    returnType = unionType;
 	    break;
-	}
-	case DwTag.STRUCTURE_TYPE_: {
+	case DwTag.STRUCTURE_TYPE_:
 	    GccStructOrClassType classType = 
 		getGccStructOrClassType(type, typeDie.getName());
 	    returnType = classType;
 	    break;
-	}
 	case DwTag.ENUMERATION_TYPE_: {
 	    DwarfDie subrange = type.getChild();
 	    EnumType enumType = new EnumType(typeDie.getName(),
@@ -394,14 +395,15 @@ public class TypeEntry
 	    returnType = enumType;
 	    break;
 	}
-	case DwTag.VOLATILE_TYPE_: {
+	case DwTag.VOLATILE_TYPE_:
 	    returnType = new VolatileType(getType(type.getType()));
 	    break;
-	}
-	case DwTag.CONST_TYPE_: {
+	case DwTag.CONST_TYPE_:
 	    returnType = new ConstType(getType(type.getType()));
 	    break;
-	}
+	case DwTag.SUBROUTINE_TYPE_:
+	    returnType = getSubprogramValue(type).getType();
+	    break;
 	case DwTag.BASE_TYPE_:
 	    switch (type.getAttrConstant(DwAt.ENCODING)) {
 	    case DwAte.SIGNED_:
