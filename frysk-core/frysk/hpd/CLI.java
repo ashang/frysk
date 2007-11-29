@@ -74,6 +74,8 @@ public class CLI {
     final HashSet runningProcs = new HashSet();
     //Processes loaded with load command
     final HashMap loadedProcs = new HashMap();
+    //Processes loaded with core command
+    final HashMap coreProcs = new HashMap(); 
     //Task ID to use
     int taskID = -1;
 
@@ -453,6 +455,15 @@ public class CLI {
      */
     public HashMap getLoadedProcs() {
         return loadedProcs;
+    }
+    
+    /**
+     * Get the set of processes (Proc) started by the core command. Access to the
+     * CLI object should be synchronized when using the set.
+     * @return the set
+     */
+    public HashMap getCoreProcs() {
+        return coreProcs;
     }
     
     SteppingEngine getSteppingEngine () {

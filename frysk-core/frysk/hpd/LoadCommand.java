@@ -80,11 +80,7 @@ public class LoadCommand extends ParameterizedCommand {
 	Proc exeProc = frysk.util.Util.getProcFromExeFile(exeHost);
 	
 	int procID = cli.idManager.reserveProcID();
-
 	cli.idManager.manageProc(exeProc, procID);
-	
-	cli.addMessage("Loaded executable file: " + cmd.parameter(0),
-		Message.TYPE_NORMAL);
 	
 	Iterator foo = cli.targetset.getTasks();
 	while (foo.hasNext()) {
@@ -100,8 +96,10 @@ public class LoadCommand extends ParameterizedCommand {
 	synchronized (cli) {
 	    cli.getLoadedProcs().put(exeProc, new Integer(procID));
 	}
+    
+    cli.addMessage("Loaded executable file: " + cmd.parameter(0),
+		Message.TYPE_NORMAL);
     }
-
 
     int completer(CLI cli, Input input, int cursor, List completions) {
 	return CompletionFactory.completeFileName(cli, input, cursor,

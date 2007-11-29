@@ -1,3 +1,14 @@
+2007-11-29  Rick Moseley  <rmoseley@redhat.com>
+
+	* RunCommand.java: Added code to implement the ability to run
+	core files loaded with the core command with a path-to-
+	executable parameter.
+	* CLI.java: Ditto.
+	* CoreCommand.java: Ditto.
+	* TestCoreCommand.java: Test above changes.
+	* LoadCommand.java: Move output of "Loaded*" message until
+	after debuginfo has been retrieved.
+
 2007-11-28  Andrew Cagney  <cagney@redhat.com>
 
 	* RegsCommand.java: Update; Registers .getDefaultRegisterGroup

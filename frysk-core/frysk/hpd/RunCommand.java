@@ -127,9 +127,9 @@ class RunCommand extends ParameterizedCommand {
     public void interpret(CLI cli, Input cmd, Object options) {
 	/* If the run command is given no args, check to see if 
 	   any procs were loaded with the load command or loaded
-	   when fhpd was started */
+	   when fhpd was started or loaded with the core command*/
 	if (cmd.size() < 1) {
-	    if (cli.runningProcs.isEmpty() && cli.loadedProcs.isEmpty())
+	    if (cli.coreProcs.isEmpty() && cli.loadedProcs.isEmpty())
 		throw new InvalidCommandException("missing program");
 	}
 	
@@ -140,32 +140,27 @@ class RunCommand extends ParameterizedCommand {
 	}
 	
 	/* If we made it here, a run command was given with no parameters
-	 * and there should be either running procs or loaded procs
+	 * and there should be either running procs or loaded procs or
+	 * core procs
 	 */
-	
+
 	/* This is the case where there are loaded procs */
 	if (!cli.loadedProcs.isEmpty()) {
 	    Set procSet = cli.loadedProcs.entrySet();
-	    Iterator foo = procSet.iterator();
-	    while (foo.hasNext()) {
-		Map.Entry me = (Map.Entry)foo.next();
-		Proc proc = (Proc) me.getKey();
-		Integer taskid = (Integer)me.getValue();
-		synchronized(cli) {
-		    cli.taskID = taskid.intValue();
-		}
-		cli.execCommand("run " + proc.getExe());
-		synchronized(cli) {
-		    cli.taskID = -1;
-		}
-	    }
+	    runProcs(cli, procSet);
 	    synchronized (cli) {
 		cli.loadedProcs.clear();
 	    }
 	}
-	// Found no loaded procs, print usage message
-	// XXX Need to fix, add core files and running proc handling
-	else throw new InvalidCommandException("missing program");  
+	
+	/* Check to see if there were procs loaded from a core command */
+	if (!cli.coreProcs.isEmpty()) {
+	    Set coreSet = cli.coreProcs.entrySet();
+	    runProcs(cli, coreSet);
+	    synchronized (cli) {
+		cli.coreProcs.clear();
+	    }
+	} 
     }
 	
     private void run(CLI cli, Input cmd) {
@@ -181,6 +176,28 @@ class RunCommand extends ParameterizedCommand {
         // register with SteppingEngine et.al.
         cli.doAttach(runner.launchedTask.getProc());
 	runner.launchedTask.requestUnblock(runner);
+    }
+    
+    /*
+     * runProcs does as the name implies, it runs procs found to be loaded by a
+     * load or a core command.
+     */
+    private void runProcs(CLI cli, Set procs) {
+	Iterator foo = procs.iterator();
+	while (foo.hasNext()) {
+	    Map.Entry me = (Map.Entry) foo.next();
+	    Proc proc = (Proc) me.getKey();
+	    Integer taskid = (Integer) me.getValue();
+	    // Set the TaskID to be used to what was used when the
+	    // proc was loaded with the core or load commands
+	    synchronized (cli) {
+		cli.taskID = taskid.intValue();
+	    }
+	    cli.execCommand("run " + proc.getExe());
+	    synchronized (cli) {
+		cli.taskID = -1;
+	    }
+	}
     }
     
     int completer(CLI cli, Input input, int cursor, List completions) {

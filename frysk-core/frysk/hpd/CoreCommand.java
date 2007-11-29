@@ -92,7 +92,8 @@ public class CoreCommand extends ParameterizedCommand {
 		parseCommandLine(cmd);
 
 		// Does the corefile exist?
-		if ((!coreFile.exists()) || (!coreFile.canRead()))
+		if ((!coreFile.exists()) || (!coreFile.canRead()
+			|| coreFile.isDirectory()))
 			throw new InvalidCommandException(
 					"No core file found, or cannot read corefile");
 
@@ -117,6 +118,7 @@ public class CoreCommand extends ParameterizedCommand {
 		// All checks are done. Host is built. Now start reserving space in the sets
 		int procID = cli.idManager.reserveProcID();
 		cli.idManager.manageProc(coreProc, procID);
+		
 
 		// Build debug info for each task and frame.
 		Iterator foo = cli.targetset.getTasks();
@@ -131,6 +133,12 @@ public class CoreCommand extends ParameterizedCommand {
 		// Finally, done.
 		cli.addMessage("Attached to core file: " + cmd.parameter(0),
 				Message.TYPE_NORMAL);
+		// See if there was an executable specified
+		if (coreHost.getStatus().hasExe == false)
+		    return;
+		synchronized (cli) {
+		    cli.getCoreProcs().put(coreProc, new Integer(procID));
+		}
 
 	}
 

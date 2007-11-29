@@ -55,6 +55,22 @@ public class TestCoreCommand extends TestLib {
 	e.expect(5, "Attached to core file.*");
 	e.close();
     }
+    
+    public void testCoreCommandError() {
+	e = new HpdTestbed();
+	e.send("core " + Config.getPkgDataFile("test-core-x86").getPath()
+		+ "\n");
+	e.expect(5, "Error:*");
+	e.close();
+    }
+    
+    public void testCoreCommandErrorTwo() {
+	e = new HpdTestbed();
+	e.send("core " + Config.getPkgDataFile("test-core-x86").getPath()
+		+ "foo\n");
+	e.expect(5, "Error:*");
+	e.close();
+    }
 
     public void testCoreExeCommand() {
 	TestLinuxCore tester = new TestLinuxCore();
@@ -65,6 +81,21 @@ public class TestCoreCommand extends TestLib {
 	e.send("core " + core.getPath() + " "
 	       + SlaveOffspring.getExecutable().getPath() + "\n");
 	e.expect(5, "Attached to core file.*");
+	e.close();
+	core.delete();
+    }
+    
+    public void testCoreThenRunCommand() {
+	TestLinuxCore tester = new TestLinuxCore();
+	SlaveOffspring funit = SlaveOffspring.createDaemon();
+	Proc funitProc = funit.assertFindProcAndTasks();
+	File core = new File(tester.constructCore(funitProc));
+	e = new HpdTestbed();
+	e.send("core " + core.getPath() + " "
+	       + SlaveOffspring.getExecutable().getPath() + "\n");
+	e.expect(5, "Attached to core file.*");
+	e.send("run\n");
+	e.expect(5, "Attached to process*");
 	e.close();
 	core.delete();
     }
