@@ -72,15 +72,28 @@ public abstract class RegsCase extends TestLib {
     private ByteOrder order;
     private ISA isa;
     private Registers registers;
-    public void setUp() {
-	super.setUp();
-	task = new DaemonBlockedAtSignal("funit-regs").getMainTask();
+    /**
+     * Set things up for testing against the specified task.
+     *
+     * Initially things are set up for testing against the live
+     * "funit-regs" process; this can be overwritten by re-calling
+     * with a new task (for instance from a core file created from the
+     * live funit-regs.
+     */
+    protected void setTask(Task task) {
+	this.task = task;
 	isa = task.getISA();
 	order = isa.order();
 	registers = RegistersFactory.getRegisters(isa);
 	if (isaValues.containsKey(isa))
 	    values = (Values)isaValues.get(isa);
     }
+
+    public void setUp() {
+	super.setUp();
+	setTask(new DaemonBlockedAtSignal("funit-regs").getMainTask());
+    }
+
     public void tearDown() {
 	task = null;
 	values = null;

@@ -1,3 +1,7 @@
+2007-11-29  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRegs.java: Moved from frysk.proc.TestRegs.
+
 2007-11-27  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
 
 	* PtraceRegisterBanksFactory.java: Putting single PowerPC ptrace

@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.live;
 
 import frysk.isa.Register;
 import frysk.testbed.RegsCase;
