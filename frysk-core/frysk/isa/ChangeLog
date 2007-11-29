@@ -1,3 +1,10 @@
+2007-11-29  Andrew Cagney  <cagney@redhat.com>
+
+	* RegisterMap.java (RegisterMap(String)): New.
+	(getRegister(Number)): New.
+	(getRegisterNumber(Register)): Check for missing key.
+	(getRegister(int)): Ditto.
+
 2007-11-28  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRegisters.java (testGeneralRegisterGroup()): Rename

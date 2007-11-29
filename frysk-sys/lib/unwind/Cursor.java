@@ -71,14 +71,12 @@ public class Cursor
   
     public void getRegister(Number regNum, long offset, int length,
 			    byte[] bytes, int start) {
-	unwinder.getRegister(cursor, regNum.intValue(), offset, length,
-			     bytes, start);
+	unwinder.getRegister(cursor, regNum, offset, length, bytes, start);
     }
 
     public void setRegister(Number regNum, long offset, int length,
 			    byte[] bytes, int start) {
-	unwinder.setRegister(cursor, regNum.intValue(), offset, length,
-			     bytes, start);
+	unwinder.setRegister(cursor, regNum, offset, length, bytes, start);
     }
 
     public long getIP() {

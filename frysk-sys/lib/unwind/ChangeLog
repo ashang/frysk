@@ -1,3 +1,26 @@
+2007-11-29  Andrew Cagney  <cagney@redhat.com>
+
+	* AddressSpace.java (getReg(Number)): Replace getReg(int).
+	(setReg(Number,long)): Replace setReg(int,long).
+	(accessReg(Number,byte[],boolean)): Replace
+	accessFPReg(int,byte[],boolean).
+	* TestUnwind.java: Update.
+	* cni/UnwindX8664.cxx (LIB_UNWIND_REGISTERS_H): Define.
+	(TARGET_REGISTERS): Define.
+	* cni/UnwindPPC64.cxx: Ditto.
+	* cni/UnwindPPC32.cxx: Ditto.
+	* cni/UnwindX86.cxx: Ditto.
+	* Unwind.java
+	(getRegister(RawDataManaged,Number,long,int,byte[],int)): Replace
+	getRegister(RawDataManaged,int,long,int,byte[],int).
+	(setRegister(RawDataManaged,Number,long,int,byte[],int)): Replace
+	setRegister(RawDataManaged,int,long,int,byte[],int).
+	* Cursor.java: Update.
+	* cni/UnwindH.hxx (access_fpreg): Update.
+	(access_reg): Update.
+	(getRegister): Update.
+	(setRegister): Update.
+
 2007-11-29  Mark Wielaard  <mwielaard@redhat.com>
 
 	* cni/ElfImage.cxx: Don't define MAP_32BIT.

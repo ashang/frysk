@@ -63,9 +63,9 @@ public abstract class Unwind
   
   abstract ProcInfo getProcInfo (RawDataManaged cursor);
   
-    abstract void getRegister(RawDataManaged cursor, int regNum,
+    abstract void getRegister(RawDataManaged cursor, Number regNum,
 			      long offset, int length, byte[] word, int start);
-    abstract void setRegister(RawDataManaged cursor, int regNum,
+    abstract void setRegister(RawDataManaged cursor, Number regNum,
 			      long offset, int length, byte[] word, int start);
   
     public abstract long getIP(RawDataManaged cursor);

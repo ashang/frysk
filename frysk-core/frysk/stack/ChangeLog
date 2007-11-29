@@ -1,3 +1,13 @@
+2007-11-29  Andrew Cagney  <cagney@redhat.com>
+
+	* LibunwindRegisterMapFactory.java: Update; RegisterMap
+	constructor takes a String.
+	* LibunwindAddressSpace.java (accessReg(Number,byte[],boolean)):
+	Replace accessFPReg(int,byte[],boolean).
+	(getReg(Number)): Replace getReg(int).
+	(setReg(Number,long)): Replace setReg(int,long).
+	(findRegister(int)): Delete.
+
 2007-11-26  Andrew Cagney  <cagney@redhat.com>
 
 	* LibunwindRegisterMapFactory.java: Replace IA32Registers.FOP

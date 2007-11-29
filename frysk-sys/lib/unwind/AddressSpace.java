@@ -93,15 +93,20 @@ public abstract class AddressSpace
     public abstract int accessMem (long addr, byte[] valp, boolean write);
 
     /**
-     * See access_reg(write=false).
+     * See UnwindH.hxx:access_reg(write=false); only used for small
+     * integer registers.
      */
-    public abstract long getReg(int regnum);
+    public abstract long getReg(Number regnum);
     /**
-     * See access_reg(write=true).
+     * See UnwindH.hxx:access_reg(write=true); only used for small
+     * integer registers.
      */
-    public abstract void setReg(int regnum, long regval);
+    public abstract void setReg(Number regnum, long regval);
 
-    public abstract int accessFPReg (int regnum, byte[] fpvalp, boolean write);
+    /**
+     * Access LIBUNWIND Register REGNUM.
+     */
+    public abstract int accessReg(Number regnum, byte[] val, boolean write);
 
     public abstract int resume (Cursor cursor);
 }

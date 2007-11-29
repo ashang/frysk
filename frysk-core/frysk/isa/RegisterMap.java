@@ -42,23 +42,53 @@ package frysk.isa;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Provides a map between an internal and external register format.
+ */
 public class RegisterMap {
     
     private final Map integerToRegister = new HashMap();
     private final Map registerToNumber = new HashMap();
+    private final Map numberToRegister = new HashMap();
+    private final String what;
+
+    public RegisterMap(String what) {
+	this.what = what;
+    }
     
     public final RegisterMap add(Register register,
 				 Number number) {
 	registerToNumber.put(register, number);
 	integerToRegister.put(new Integer(number.intValue()), register);
+	numberToRegister.put(number, register);
 	return this;
     }
     
     public Number getRegisterNumber(Register register) {
-	return (Number) registerToNumber.get(register);
+	Number number = (Number) registerToNumber.get(register);
+	if (number == null)
+	    throw new NullPointerException("register <" + register
+					   + "> not found in " + what
+					   + " register map");
+	return number;
     }
     
     public Register getRegister(int regNum) {
-	return (Register) integerToRegister.get(new Integer(regNum));
+	Register register
+	    = (Register) integerToRegister.get(new Integer(regNum));
+	if (register == null)
+	    throw new NullPointerException("register number <" + regNum
+					   + "> not found in " + what
+					   + " register map");
+	return register;
+    }
+
+    public Register getRegister(Number number) {
+	Register register = (Register) numberToRegister.get(number);
+	if (register == null)
+	    throw new NullPointerException("register number <" + number
+					   + "> not found in " + what
+					   + " register map");
+	return register;
     }
 }

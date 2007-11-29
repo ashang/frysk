@@ -49,7 +49,8 @@ import frysk.isa.X8664Registers;
 
 public class DwarfRegisterMapFactory {
 
-    private static final RegisterMap IA32 = new RegisterMap()
+    private static final RegisterMap IA32
+	= new RegisterMap("IA-32 DWARF")
 	.add(IA32Registers.EAX, DwarfRegistersX86.EAX)
 	.add(IA32Registers.ECX, DwarfRegistersX86.ECX)
 	.add(IA32Registers.EDX, DwarfRegistersX86.EDX)
@@ -60,7 +61,8 @@ public class DwarfRegisterMapFactory {
 	.add(IA32Registers.EDI, DwarfRegistersX86.EDI)
 	;
 
-    private static final RegisterMap X8664 = new RegisterMap()
+    private static final RegisterMap X8664
+	= new RegisterMap("X86-64 DWARF")
 	.add(X8664Registers.RAX, DwarfRegistersX8664.RAX)
 	.add(X8664Registers.RDX, DwarfRegistersX8664.RDX)
 	.add(X8664Registers.RCX, DwarfRegistersX8664.RCX)

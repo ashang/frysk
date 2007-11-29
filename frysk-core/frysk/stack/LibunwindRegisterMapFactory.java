@@ -54,7 +54,8 @@ import frysk.isa.ISAMap;
 
 public class LibunwindRegisterMapFactory {
 
-    private static final RegisterMap IA32 = new RegisterMap() 
+    private static final RegisterMap IA32
+	= new RegisterMap("IA-32 libunwind") 
 	.add(IA32Registers.EAX, UnwindRegistersX86.EAX)
 	.add(IA32Registers.EDX, UnwindRegistersX86.EDX)
 	.add(IA32Registers.ECX, UnwindRegistersX86.ECX)
@@ -97,7 +98,8 @@ public class LibunwindRegisterMapFactory {
 	.add(IA32Registers.LDT, UnwindRegistersX86.LDT)
 	;
 
-    private static final RegisterMap X8664 = new RegisterMap() 
+    private static final RegisterMap X8664
+	= new RegisterMap("X86-64 libunwind") 
 	.add(X8664Registers.RAX, UnwindRegistersX8664.RAX)
 	.add(X8664Registers.RDX, UnwindRegistersX8664.RDX)
 	.add(X8664Registers.RCX, UnwindRegistersX8664.RCX)
@@ -117,7 +119,8 @@ public class LibunwindRegisterMapFactory {
 	.add(X8664Registers.RIP, UnwindRegistersX8664.RIP)
 	;
 
-    private static final RegisterMap PPC64 = new RegisterMap()
+    private static final RegisterMap PPC64
+	= new RegisterMap("PPC64 libunwind")
         .add(PPC64Registers.GPR0, UnwindRegistersPPC64.R0)
 	.add(PPC64Registers.GPR1, UnwindRegistersPPC64.R1)
         .add(PPC64Registers.GPR2, UnwindRegistersPPC64.R2)
@@ -152,7 +155,8 @@ public class LibunwindRegisterMapFactory {
 	.add(PPC64Registers.GPR29, UnwindRegistersPPC64.R31)
 	;
 
-    private static final RegisterMap PPC32 = new RegisterMap()
+    private static final RegisterMap PPC32
+	= new RegisterMap("PPC32 libunwind")
         .add(PPC32Registers.GPR0, UnwindRegistersPPC32.R0)
 	.add(PPC32Registers.GPR1, UnwindRegistersPPC32.R1)
         .add(PPC32Registers.GPR2, UnwindRegistersPPC32.R2)

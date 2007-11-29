@@ -40,5 +40,7 @@
 #define TARGET UnwindPPC64
 #define LIBUNWIND_TARGET_H <libunwind-ppc64.h>
 #define LIB_UNWIND_UNWIND_TARGET_H "lib/unwind/UnwindPPC64.h"
+#define LIB_UNWIND_REGISTERS_H "lib/unwind/UnwindRegistersPPC64.h"
+#define TARGET_REGISTERS UnwindRegistersPPC64
 
 #include "lib/unwind/cni/UnwindH.hxx"

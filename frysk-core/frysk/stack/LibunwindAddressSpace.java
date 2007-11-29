@@ -104,43 +104,26 @@ class LibunwindAddressSpace extends AddressSpace {
 	return 0;
     }
 
-    /**
-     * Why not map from libunwind's regnum straight through to
-     * frysk.proc.BankRegister?  "banks" are an underlying
-     * implementation detail that may not apply to all tasks; and for
-     * a 32-bit tasks different maps are used dependant on it being a
-     * 32-bit or 64-bit system - something that isn't relevant here..
-     */
-    private Register findRegister(int regnum) {
-	Register reg = registerMap.getRegister(regnum);
-	if (reg == null)
-	    throw new RuntimeException("unknown libunwind register: "
-				       + regnum);
-	return reg;
-    }
-
-    public int accessFPReg (int regnum, byte[] fpvalp, boolean write) {
-	Register reg = registerMap.getRegister(regnum);
-	task.access(reg, 0, fpvalp.length, fpvalp, 0, write);
+    public int accessReg (Number regnum, byte[] fpvalp, boolean write) {
+	Register register = registerMap.getRegister(regnum);
+	task.access(register, 0, fpvalp.length, fpvalp, 0, write);
 	return 0;
     }
 
-    public long getReg(int regnum) {
-	Register register = findRegister(regnum);
+    public long getReg(Number regnum) {
+	Register register = registerMap.getRegister(regnum);
 	logger.log(Level.FINE, "{0}: getReg {1} ({2})",
-		   new Object[] { this, new Integer(regnum), register });
-	long val = task.getRegister(findRegister(regnum));
+		   new Object[] { this, regnum, register });
+	long val = task.getRegister(register);
 	logger.log(Level.FINE, "read value: 0x{0}\n",
 		   Long.toHexString(val));
 	return val;
     }
 
-    public void setReg(int regnum, long regval) {
-	Register register = findRegister(regnum);
+    public void setReg(Number regnum, long regval) {
+	Register register = registerMap.getRegister(regnum);
 	logger.log(Level.FINE, "{0}: setReg {1} ({2}), val {3}",
-		   new Object[] {
-		       this, new Integer(regnum), register, new Long(regval)
-		   });
+		   new Object[] { this, regnum, register, new Long(regval) });
 	task.setRegister(register, regval);
     }
 

@@ -68,6 +68,7 @@
 #include "lib/unwind/CachingPolicy.h"
 #include "lib/unwind/ProcInfo.h"
 #include "lib/unwind/ElfImage.h"
+#include LIB_UNWIND_REGISTERS_H
 
 #include "frysk/sys/cni/Errno.hxx"
 
@@ -152,11 +153,13 @@ access_reg(::unw_addr_space_t as, ::unw_regnum_t regnum,
 	   ::unw_word_t *valp, int write, void *arg)
 {
   jbyteArray tmp = JvNewByteArray(sizeof (unw_word_t));
+  // Map the REGNUM back to the published ENUM.
+  java::lang::Number* num = lib::unwind::TARGET_REGISTERS::valueOf(regnum);
   memcpy (elements (tmp), valp, JvGetArrayLength(tmp));
   if (write)
-    addressSpace(arg)->setReg(regnum, *valp);
+    addressSpace(arg)->setReg(num, *valp);
   else
-    *valp = addressSpace(arg)->getReg(regnum);
+    *valp = addressSpace(arg)->getReg(num);
   return 0;
 }
 
@@ -168,8 +171,11 @@ access_fpreg(::unw_addr_space_t as, ::unw_regnum_t regnum,
 	     ::unw_fpreg_t *fpvalp, int write, void *arg)
 {
   jbyteArray tmp = JvNewByteArray(sizeof (unw_word_t));
+  // Map the REGNUM back to the published ENUM.
+  java::lang::Number* num = lib::unwind::TARGET_REGISTERS::valueOf(regnum);
+  // Implement read/modify/write style op.
   memcpy (elements (tmp), fpvalp, JvGetArrayLength(tmp));
-  int ret = addressSpace(arg)->accessFPReg((jint) regnum, tmp, (jboolean) write);
+  int ret = addressSpace(arg)->accessReg(num, tmp, (jboolean) write);
   memcpy(fpvalp, elements (tmp), JvGetArrayLength(tmp));
   return ret;
 }
@@ -272,9 +278,11 @@ verifyBounds(jlong offset, jint length, jbyteArray bytes, jint start, int size)
 
 void
 lib::unwind::TARGET::getRegister(gnu::gcj::RawDataManaged* cursor,
-                                 jint regNum, jlong offset, jint length,
+                                 java::lang::Number* num,
+				 jlong offset, jint length,
 				 jbyteArray bytes, jint start)
 {
+  int regNum = num->intValue();
   int status;
   union {
     unw_word_t w;
@@ -301,9 +309,11 @@ lib::unwind::TARGET::getRegister(gnu::gcj::RawDataManaged* cursor,
 
 void
 lib::unwind::TARGET::setRegister(gnu::gcj::RawDataManaged* cursor,
-                                 jint regNum, jlong offset, jint length,
+                                 java::lang::Number *num,
+				 jlong offset, jint length,
 				 jbyteArray bytes, jint start)
 {
+  int regNum = num->intValue();
   int status;
   union {
     unw_word_t w;

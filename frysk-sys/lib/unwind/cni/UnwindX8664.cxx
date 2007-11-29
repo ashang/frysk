@@ -40,5 +40,7 @@
 #define TARGET UnwindX8664
 #define LIBUNWIND_TARGET_H <libunwind-x86_64.h>
 #define LIB_UNWIND_UNWIND_TARGET_H "lib/unwind/UnwindX8664.h"
+#define LIB_UNWIND_REGISTERS_H "lib/unwind/UnwindRegistersX8664.h"
+#define TARGET_REGISTERS UnwindRegistersX8664
 
 #include "lib/unwind/cni/UnwindH.hxx"

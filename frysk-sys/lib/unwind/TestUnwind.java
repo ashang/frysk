@@ -56,16 +56,16 @@ public class TestUnwind
 	TestAddressSpace(Unwind unwind, ByteOrder byteOrder) {
 	    super(unwind, byteOrder);
 	}
-	public int accessFPReg (int regnum, byte[] fpvalp, boolean write) {
+	public int accessReg(Number regnum, byte[] fpvalp, boolean write) {
 	    return 0;
 	}
 	public int accessMem (long addr, byte[] valp, boolean write) {
 	    return 0;
 	}
-	public long getReg (int regnum) {
+	public long getReg(Number regnum) {
 	    return 0;
 	}
-	public void setReg (int regnum, long regval) {
+	public void setReg(Number regnum, long regval) {
 	}
 	public ProcInfo findProcInfo (long ip, boolean needUnwindInfo) {
 	    return null;
