@@ -1,3 +1,7 @@
+2007-11-30  Petr Machata  <pmachata@redhat.com>
+
+	* ftrace.xml: Updated.
+
 2007-11-28 Teresa Thomas <tthomas@redhat.com>
 
    * fdebugrpm.sh: Enable all debuginfo repos.

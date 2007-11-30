@@ -68,7 +68,13 @@
   <refsynopsisdiv>
     <cmdsynopsis>
       <command>ftrace</command>
+      <arg choice="opt">-c</arg>
+      <arg choice="opt">-m</arg>
+      <arg choice="opt">-o=<replaceable>FILE</replaceable></arg>
+      <arg choice="opt" rep="repeat">-p=<replaceable>PID</replaceable></arg>
       <arg choice="opt">-s=<replaceable>SYSCALL</replaceable>[,<replaceable>SYSCALL</replaceable>...]</arg>
+      <arg choice="opt">-S</arg>
+      <arg choice="opt">-t=<replaceable>SYSCALL</replaceable>[,<replaceable>SYSCALL</replaceable>...]</arg>
       <arg choice="opt">-plt=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</arg>
       <arg choice="opt">-dyn=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</arg>
       <arg choice="opt">-sym=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</arg>
@@ -82,69 +88,132 @@
 
     <para><function>ftrace</function> starts given
     <replaceable>command</replaceable> and according to tracing script
-    given via command line argument, it traces its system calls,
-    runtime library calls, and symbol entry points in general.  It
-    uses the Frysk framework to implement tracing.</para>
+    given via command-line arguments, it traces its system calls,
+    symbol entry points in general, and possibly other events as well.
+    It uses the Frysk framework to implement tracing.</para>
 
-    <para>Which functions and/or syscalls <function>ftrace</function>
-    traces, and whether it traces given group at all, is configurable
-    through command-line options <option>-s</option>,
-    <option>-plt</option>, <option>-dyn</option> and
-    <option>-sym</option>.  Neither option is turned on by
-    default.</para>
+    <para>The working set of events <function>ftrace</function> should
+    trace is defined by the following arguments.</para>
 
-    <variablelist>
-      <varlistentry>
-	<term>-s=<replaceable>SYSCALL</replaceable>[,<replaceable>SYSCALL</replaceable>...]</term>
-	<listitem>
-          <para>Stack trace on this set of system calls.  Each
-          <replaceable>SYSCALL</replaceable> entry is name of one
-          system call.</para>
-        </listitem>
-      </varlistentry>
+    <refsect2>
+	<title>Process Selection Options</title>
 
-      <varlistentry>
-	<term>-plt=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</term>
-	<listitem>
-	  <para>Trace library calls done via PLT entries matching each
-	  given <replaceable>RULE</replaceable>.  By tracing PLT
-	  entry, you effectively trace calls done FROM given library
-	  or executable, and generally can't say which library the
-	  call leads TO.  (At least for now.  Ftrace may grow brains
-	  for this in future.)  See below for description of
-	  <replaceable>RULE</replaceable> syntax.</para>
-        </listitem>
-      </varlistentry>
+	<variablelist>
+	    <varlistentry>
+		<term>-p=<replaceable>PID</replaceable></term>
+		<listitem>
+		    <para>Attach to a process with given
+		    <replaceable>PID</replaceable>.</para>
+		</listitem>
+	    </varlistentry>
 
-      <varlistentry>
-	<term>-dyn=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</term>
-	<listitem>
-	  <para>Trace calls through the symbol entry points.  By
-	  tracing entry points, you catch all calls that end up at
-	  this symbol, including the calls that don't go through PLT
-	  and as such are not intended as inter-library calls, but
-	  rather intra-library calls.  This is probably not what you
-	  usually want, because you get lots of output when various
-	  functions call each other in the library internals.  On the
-	  other hand, it may be useful to cherry pick few entry points
-	  to see when or if they are called, and with which arguments.
-	  See below for description of <replaceable>RULE</replaceable>
-	  syntax.</para>
-	</listitem>
-      </varlistentry>
+	    <varlistentry>
+		<term>-c</term>
+		<listitem>
+		    <para>Trace children: automatically attach to forks of
+		    traced process.</para>
+		</listitem>
+	    </varlistentry>
+    	</variablelist>
+    </refsect2>
 
-      <varlistentry>
-	<term>-sym=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</term>
-	<listitem>
-	  <para>Just like <option>-dyn</option>, but doesn't look for
-	  symbols in dynamic symbol table, but normal symbol table.
-	  (Which doesn't have to be present, e.g. when a binary is
-	  stripped.)  See below for description of
-	  <replaceable>RULE</replaceable> syntax.</para>
-	</listitem>
-      </varlistentry>
+    <refsect2>
+	<title>System Call Tracing</title>
 
-    </variablelist>
+	<para>System calls are traced by default.</para>
+
+	<variablelist>
+	    <varlistentry>
+		<term>-S</term>
+		<listitem>
+		    <para>Suppress system call tracing.</para>
+		</listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+		<term>-s=<replaceable>SYSCALL</replaceable>[,<replaceable>SYSCALL</replaceable>...]</term>
+		<listitem>
+		    <para>Stack trace on this set of system calls.
+    		    When stack-traced syscall is encountered, a stack
+    		    trace of the calling task is printed out.  Each
+    		    <replaceable>SYSCALL</replaceable> entry is name
+    		    of one system call.</para>
+		</listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+		<term>-t=<replaceable>SYSCALL</replaceable>[,<replaceable>SYSCALL</replaceable>...]</term>
+		<listitem>
+		    <para>Explicitly define syscalls that should be
+    		    traced.  Each <replaceable>SYSCALL</replaceable>
+    		    entry is name of one system call.</para>
+		</listitem>
+    	    </varlistentry>
+	</variablelist>
+    </refsect2>
+
+
+    <refsect2>
+	<title>Entry Point Tracing</title>
+
+	<variablelist>
+	  <varlistentry>
+	    <term>-plt=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</term>
+	    <listitem>
+	      <para>Trace library calls done via PLT entries matching each
+	      given <replaceable>RULE</replaceable>.  By tracing PLT
+	      entry, you effectively trace calls done FROM given library
+	      or executable, and generally can't say which library the
+	      call leads TO.  (At least for now.  Ftrace may grow brains
+	      for this in future.)  See below for description of
+	      <replaceable>RULE</replaceable> syntax.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>-dyn=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</term>
+	    <listitem>
+	      <para>Trace calls through the symbol entry points.  By
+	      tracing entry points, you catch all calls that end up at
+	      this symbol, including the calls that don't go through PLT
+	      and as such are not intended as inter-library calls, but
+	      rather intra-library calls.  This is probably not what you
+	      usually want, because you get lots of output when various
+	      functions call each other in the library internals.  On the
+	      other hand, it may be useful to cherry pick few entry points
+	      to see when or if they are called, and with which arguments.
+	      See below for description of <replaceable>RULE</replaceable>
+	      syntax.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>-sym=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</term>
+	    <listitem>
+	      <para>Just like <option>-dyn</option>, but doesn't look for
+	      symbols in dynamic symbol table, but normal symbol table.
+	      (Which doesn't have to be present, e.g. when a binary is
+	      stripped.)  See below for description of
+	      <replaceable>RULE</replaceable> syntax.</para>
+	    </listitem>
+	  </varlistentry>
+
+	</variablelist>
+    </refsect2>
+
+    <refsect2>
+	<title>Other Traceable Events</title>
+
+	<variablelist>
+	  <varlistentry>
+	    <term>-m</term>
+	    <listitem>
+	      <para>Print each file mapped to or unmapped from address
+    	      space of the traced process.</para>
+	    </listitem>
+	  </varlistentry>
+	</variablelist>
+    </refsect2>
   </refsect1>
 
   <refsect1>
@@ -161,7 +230,7 @@
     <para>Optional &quot;-&quot; at the beginning of the rule means
     removal from the working set.  When the sign is omitted, the
     default action is to add to the working set.  Optional
-    &quot;#&quot; means that fltrace should print out stack trace when
+    &quot;#&quot; means that ftrace should print out stack trace when
     it hits the call.  The combination of &quot;-#&quot; then means
     that the call should still be traced, but stack trace shouldn't be
     generated.  <replaceable>pattern</replaceable> defines which PLT
@@ -196,23 +265,26 @@
     is possible to request symbol without a version with the pattern
     "foo@@".)</para>
 
-    <para>Empty rule is considered to miss all components, not contain
-    symbol component with empty contents, which makes little sense.
-    If you need to match empty symbol, use regular expression
-    "^$".</para>
+    <para>Empty rule is considered to miss all components.  If you
+    need to match empty symbol, use regular expression "^$".</para>
+
+  </refsect1>
+
+  <refsect1>
+    <title>EXAMPLES</title>
 
     <informalexample>
       <para>Trace all plt library calls:</para>
-      <cmdsynopsis><command>fltrace -plt= ls</command></cmdsynopsis>
+      <cmdsynopsis><command>ftrace -plt= ls</command></cmdsynopsis>
       <para>Trace all library calls to functions that contain
       substring "write" in their names:</para>
-      <cmdsynopsis><command>fltrace -plt=&quot;.*write.*&quot; ls</command></cmdsynopsis>
+      <cmdsynopsis><command>ftrace -plt=&quot;.*write.*&quot; ls</command></cmdsynopsis>
       <para>Trace memory functions done from libraries, i.e. not from
       main executable:</para>
-      <cmdsynopsis><command>fltrace -plt=&quot;[cm]alloc|free,-@MAIN" ls</command></cmdsynopsis>
+      <cmdsynopsis><command>ftrace -plt=&quot;[cm]alloc|free,-@MAIN" ls</command></cmdsynopsis>
       <para>Stack trace on everything, except for memory allocation
       functions (which should still be traced):</para>
-      <cmdsynopsis><command>fltrace -plt=&quot;#,-#[cm]alloc|free" ls</command></cmdsynopsis>
+      <cmdsynopsis><command>ftrace -plt=&quot;#,-#[cm]alloc|free" ls</command></cmdsynopsis>
     </informalexample>
 
   </refsect1>
@@ -283,7 +355,7 @@
 
   <refsect1>
     <title>BUGS</title>
-    <para>I think ltrace wouldn't handle tracing one function both through entry point and plt.</para>
+    <para>I think ftrace doesn't handle tracing one function through both entry point and plt.</para>
     <para>Report bugs to <ulink url="http:/sources.redhat.com/frysk">http://sources.redhat.com/frysk</ulink>.</para>
   </refsect1>
 
