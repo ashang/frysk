@@ -53,24 +53,17 @@ import frysk.isa.RegisterMap;
 import frysk.stack.Frame;
 
 public class LocationExpression {
-    public final static int locationTypeRegDisp = 1,
-    locationTypeAddress = 2,
-    locationTypeReg = 3;
     DwarfDie die;
-    int locationType;
     LinkedList stack;
 
     public LocationExpression(DwarfDie die) {
-	locationType = 0;
 	this.die = die;
 	this.stack = null;
     }
 
     /**
-     *  Decode a location list and return the value.
-     *
-     */
-   
+     * Decode a location list and return the value.
+     */   
     public List decode(DebugInfoFrame frame, int size) {
 	List ops = die.getFormData(frame.getAdjustedAddress());
 	return decode(frame, ops, size);
@@ -81,13 +74,14 @@ public class LocationExpression {
      * @param size - Size of variable 
      * @return List of memory or register pieces
      */
-    public List decode (Frame frame, List ops, int size)
-    {
-	
+    public List decode (Frame frame, List ops, int size) {	
+	// stack to be used for location expression evaluation.
 	stack = new LinkedList();
 	int nops = ops.size();
-	RegisterMap registerMap = DwarfRegisterMapFactory.getRegisterMap(frame.getTask().getISA());
-	//pieces will contain a list of MemoryPiece, RegisterPiece or UnavaiablePiece
+	RegisterMap registerMap = DwarfRegisterMapFactory.getRegisterMap
+	                          (frame.getTask().getISA());
+	// pieces will contain the resulting location as a list of 
+	// MemoryPiece, RegisterPiece or UnavaiablePiece
 	ArrayList pieces = new ArrayList(); 
 
 	if (nops == 0)
@@ -173,8 +167,6 @@ public class LocationExpression {
 	    case DwOp.REG29_:
 	    case DwOp.REG30_:
 	    case DwOp.REG31_:
-		if (locationType == 0) 
-		    locationType = locationTypeReg;
 		Register register = registerMap.getRegister(operator - DwOp.REG0_);
 		// Push the register onto the dwfl stack
 		stack.addFirst(register);
@@ -212,34 +204,28 @@ public class LocationExpression {
 	    case DwOp.BREG29_:
 	    case DwOp.BREG30_:
 	    case DwOp.BREG31_:
-		locationType = locationTypeRegDisp;
 		register = registerMap.getRegister(operator - DwOp.BREG0_);
 		long regval = frame.getRegister(register);
 		stack.addFirst(new Long(operand1 + regval));
 		break;
 
 	    case DwOp.REGX_:
-		if (locationType == 0) 
-		    locationType = locationTypeReg;
 		register = registerMap.getRegister((int)operand1);
 		stack.addFirst(register);
 		break;
 
 	    case DwOp.BREGX_:
-		locationType = locationTypeRegDisp;
 		register = registerMap.getRegister((int)operand1);
 		regval = frame.getRegister(register);
 		stack.addFirst(new Long(operand2 + regval));
 		break;
 
 	    case DwOp.ADDR_:
-		locationType = locationTypeAddress;
 		stack.addFirst(new Long(operand1));
 		break;
 
 		// DW_OP_fbreg calls recursively and pushes that value on the stack
 	    case DwOp.FBREG_:
-		locationType = locationTypeRegDisp;
 		long pc = frame.getAdjustedAddress();
 		LocationExpression frameBaseOps = new LocationExpression (die);
 		
@@ -430,12 +416,11 @@ public class LocationExpression {
 		// Composition Operators
 	    case DwOp.PIECE_:
 		// Case where some bytes of value is unavailable 
-		if (i==0 || ((DwarfOp)(ops.get(i-1))).operator==DwOp.PIECE_)
-		{
+		if (i==0 || ((DwarfOp)(ops.get(i-1))).operator==DwOp.PIECE_) {
 		    pieces.add(new UnavailablePiece(operand1));
 		    break;
 		}	
-		// Otherwise, check the type of element on stack top and add to list
+		// Check the type of element on stack top and add to list
 		addToList (frame, pieces, operand1);	
 		break;
 
@@ -445,11 +430,11 @@ public class LocationExpression {
 	}
 
 	/* 
-	 * If pieces is empty, its the case where there is no memory split between registers and memory
-	 * Then add element on stack top to the empty list
+	 * Pieces being empty implies no memory split between 
+	 * registers and memory; then add element on the stack's
+	 * top to the empty list
 	 */
-	if (pieces.isEmpty())
-	{    
+	if (pieces.isEmpty()) {    
 	    addToList (frame, pieces, size);
 	}    
 
@@ -460,8 +445,7 @@ public class LocationExpression {
      * Function that checks the type of element on the stack top and adds it to the
      * list of location
      */
-    private void addToList (Frame frame, List pieces, long size)
-    {
+    private void addToList (Frame frame, List pieces, long size) {
 	/*
 	 * If stackTop is a Register, add it as a RegisterPiece to list pieces 
 	 * If it is a long value, add it as a MemoryPiece 
@@ -471,33 +455,14 @@ public class LocationExpression {
 	if (stackTop instanceof Register)
 	    pieces.add(new RegisterPiece((Register)stackTop, size, frame));
 	else if (stackTop instanceof Long)
-	    pieces.add(new MemoryPiece(((Long)stackTop).longValue(), size, frame.getTask().getMemory()));
+	    pieces.add(new MemoryPiece(((Long)stackTop).longValue(), size, 
+		                         frame.getTask().getMemory()));
     }
-
 
     /**
-     *  Return register number for a one entry DW_OP_regX location list 
-     *
+     * Get size of dwarf expression evaluation stack.
      */
-    public Register getRegisterNumber (Frame frame, List ops) {
-	
-	if (ops.size() == 1) {
-	    int operator = ((DwarfOp) ops.get(0)).operator;
-	    if (operator >= DwOp.REG0_
-		    || operator <=  DwOp.REG31_) {
-		locationType = locationTypeReg;
-		return DwarfRegisterMapFactory.getRegisterMap(frame.getTask().getISA())
-		.getRegister(operator - DwOp.REG0_);
-	    }
-	}
-	return null;
-    }
-
-    public int getLocationType () {
-	return locationType;
-    }
-
-    public int getStackSize() {
+    protected int getStackSize() {
 	return ((stack != null) ? stack.size() : 0);
     }
 

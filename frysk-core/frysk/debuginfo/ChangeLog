@@ -1,3 +1,13 @@
+2007-11-30  Teresa Thomas  <tthomas@redhat.com>
+
+	* LocationExpression.java: Update, Comments added. 
+	(getRegisterNumber): Delete method.	
+	(getLocationType): Delete method.	
+	(locationTypeRegDisp): Delete.
+	(locationTypeAddress): Delete.
+	(locationTypeReg): Delete.
+	(locationType): Delete.	
+	
 2007-11-29  Stan Cox  <scox@redhat.com>
 
 	* TypeEntry.java (getType): Add REFERENCE_TYPE_ and SUBROUTINE_TYPE_.
