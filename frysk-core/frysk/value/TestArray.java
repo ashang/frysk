@@ -112,7 +112,8 @@ public class TestArray extends TestCase {
 	IntegerType t = new UnsignedType("type", ByteOrder.BIG_ENDIAN, 1);
 	Value idx1 = new Value(t, l1);
 	Value idx2 = new Value(t, l2);	
-	assertEquals("Array[idx1:idx2]", "{84281096,151653132,219025168}", arrayType.slice(arr, idx1, idx2, null).toPrint());	
+	assertEquals("Array[idx1:idx2]", "{84281096,151653132,219025168}", 
+	             arrayType.slice(arr, idx1, idx2, null).toPrint());	
     }
 
     /**

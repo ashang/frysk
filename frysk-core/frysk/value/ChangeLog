@@ -1,3 +1,7 @@
+2007-11-30  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestArray.java (testSlice): Reindent.
+
 2007-11-29  Teresa Thomas  <tthomas@redhat.com>
 
 	* PointerType.java (toPrint): Catch exception
