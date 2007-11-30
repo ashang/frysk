@@ -37,52 +37,56 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.testbed;
+package frysk.proc.dead;
 
-import java.io.File;
-import frysk.event.Event;
-import frysk.proc.Manager;
+import frysk.isa.Register;
+import frysk.testbed.RegsCase;
 import frysk.proc.Proc;
-import frysk.proc.ProcBlockAction;
-import frysk.util.CoredumpAction;
-import frysk.Config;
+import frysk.testbed.CoreFileAtSignal;
+import frysk.util.Util;
+import java.io.File;
+import frysk.isa.ISA;
 
-public class CoreFileAtSignal extends TestLib {
-    
-    public static File constructCore(Proc ackProc) {
-	CoredumpAction coreDump
-	    = new CoredumpAction(ackProc, new Event() {
-		    public void execute() {
-			Manager.eventLoop.requestStop();
-		    }
-		}, false);
-	new ProcBlockAction(ackProc, coreDump);
-	assertRunUntilStop("Running event loop for core file");
-	String coreFileName = coreDump.getConstructedFileName();
-	// XXX: File.deleteOnExit() isn't reliable - for instance it
-	// isn't run between test-cases.
-	TearDownFile core = new TearDownFile(coreFileName);
-	return core;
-    }
-    
-    /**
-     * Given a path to an executable it will run it until it sigfaults then
-     * extracts a corefile at that point, and return a Proc representing
-     * that core file.
-     */
-    public static File constructCore(File exeFile) {
-	final Proc ackProc
-	    = new DaemonBlockedAtSignal(exeFile).getMainTask().getProc();
-	return constructCore(ackProc);
+/**
+ * Check all register values.
+ */
+
+public class TestCoreRegs extends RegsCase {
+
+    public void setUp() {
+	super.setUp();
+	// Replace the live task with a dead one.
+	Proc proc = task().getProc();
+	File exe = new File(proc.getExe());
+	File core = CoreFileAtSignal.constructCore(proc);
+	Proc coreProc = Util.getProcFromCoreFile(core, exe);
+	setTask(coreProc.getMainTask());
     }
 
-    /**
-     * Given a path to an executable it will run it until it sigfaults then
-     * extracts a corefile at that point, and return a Proc representing
-     * that core file.
-     */
-    public static File constructCore(String process) {
-	return constructCore(Config.getPkgLibFile(process));
+    public void access(Register register, int offset, int length,
+		       byte[] bytes, int start, boolean write) {
+	task().access(register, offset, length, bytes, start, write);
     }
 
+    public long getRegister(Object task, Register register) {
+	return task().getRegister(register);
+    }
+
+    // XXX: Delete this once the unresolved cases are fixed.
+    public void testFloatRegisters() {
+	if (isa() == ISA.IA32 && unresolved(4911))
+	    return;
+        if (isa() == ISA.X8664 && unresolved(5195))
+            return;
+	super.testFloatRegisters();
+    }
+
+    // XXX: Delete this once the unresolved cases are fixed.
+    public void testVectorRegisters() {
+	if (isa() == ISA.IA32 && unresolved(4911))
+	    return;
+        if (isa() == ISA.X8664 && unresolved(5195))
+            return;
+	super.testVectorRegisters();
+    }
 }

@@ -128,7 +128,8 @@ public class %s extends TestLib {
 	    for (int i = 0; i < expect.length; i++) {
                 // ??? cache address of x so &x can be checked?
 	        if (expect[i].output.indexOf("&") >= 0
-                    || expect[i].symbol.indexOf("ptr") >= 0)
+                    || expect[i].symbol.indexOf("ptr") >= 0
+		    || expect[i].output.length() == 0)
 		    continue;
                 DwarfDie varDie = die.getScopeVar(allDies, expect[i].symbol);
                 if (varDie == null)
@@ -186,7 +187,7 @@ public class %s extends TestLib {
             print('\t    new Expect("%s","%s"),' % (name, value))
         
     def end_test(self, executable, name):
-        tokens = executable.split(".")
+        tokens = os.path.abspath(executable).split(".")
         print('''
               };
 
@@ -255,6 +256,7 @@ if (tool == ""):
     current_file += 1
 
 d_file = open_file(current_file)
+filename = sys.argv[current_file]
 j_file = j()
 j_file.open(tool)
 j_file.prologue()
@@ -282,7 +284,8 @@ while (True):
         # Collect test info
         if (tokens[1] == "Test:"):
             if (test != "Types"):
-                j_file.end_test(sys.argv[current_file], test)
+                j_file.end_test(filename, test)
+                filename = sys.argv[current_file]
             test = line[line.find(tokens[1]) + len(tokens[1]) + 1:].rstrip()
             j_file.start_test(tool, test)
         elif (tokens[1] == "Name:"):
@@ -296,5 +299,5 @@ while (True):
     except IndexError:
         True
 
-j_file.end_test(sys.argv[current_file-1], test)
+j_file.end_test(filename, test)
 j_file.epilogue(debug)

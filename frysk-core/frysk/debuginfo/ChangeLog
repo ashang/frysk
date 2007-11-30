@@ -1,3 +1,10 @@
+2007-11-29  Stan Cox  <scox@redhat.com>
+
+	* TypeEntry.java (getType): Add REFERENCE_TYPE_ and SUBROUTINE_TYPE_.
+	* gen-type-expect-tests.py (main): Improve multiple input file handling.
+	* TestTypeEntryType.java-sh: Add funit-class.cxx.
+	* TestTypeEntryValue.java-sh: Likewise.
+
 2007-11-29  Teresa Thomas  <tthomas@redhat.com>
 
 	* PieceLocation.java (pieceOf): Modify exception messages.
@@ -14,7 +21,7 @@
 
 2007-11-29  Sami Wagiaalla  <swagiaal@redhat.com>
 
-	* LocationExpression.java (LocationExpression): Removed ops	from
+	* LocationExpression.java (LocationExpression): Removed ops from
 	constructor.
 	* TestLocationExpression.java: Updated.
 	* TestAddress.java: Updated.

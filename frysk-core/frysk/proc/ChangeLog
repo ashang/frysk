@@ -1,3 +1,7 @@
+2007-11-29  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRegs.java: Move to frysk.proc.live.TestRegs.
+
 2007-11-26  Andrew Cagney  <cagney@redhat.com>
 
 	* X86BankRegisters.java: Replace X8664Registers.XMM8 et.al. with

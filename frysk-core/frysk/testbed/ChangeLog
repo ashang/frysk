@@ -1,3 +1,17 @@
+2007-11-29  Andrew Cagney  <cagney@redhat.com>
+
+	* RegsCase.java (testVectorRegisters()): Remove unresolved.
+	(testFloatRegisters()): Ditto.
+	(isa()): Make protected.
+
+	* RegsCase.java (testGeneralRegisters): Remove unresolved on
+	x86-64, bug 5195.
+
+	* RegsCase.java (X8664): Add floating-point and vector values.
+
+	* CoreFileAtSignal.java (constructCore(Proc)): New.
+	* RegsCase.java (setTask(Task)): New.
+
 2007-11-28  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRegs.java (testGeneralRegistersPresent()): Rename
