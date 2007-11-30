@@ -249,7 +249,7 @@
 #elif defined __powerpc64__
 //  PowerPC instructions have a fixed length
 //  So in Power64
-//  64-bit immediate must be loaded in 16-bit pieces
+//  64-bit immediate must be loaded in four 16-bit pieces
 #  define LOAD_IMMED_WORD(DEST_REG,CONST) \
         lis    DEST_REG, CONST@highest          ; \
         ori    DEST_REG, DEST_REG, CONST@higher ; \
@@ -257,7 +257,11 @@
         oris   DEST_REG, DEST_REG, CONST@h      ; \
         ori    DEST_REG, DEST_REG, CONST@l ;
 #elif defined __powerpc__
-#  define LOAD_IMMED_WORD(DEST_REG,CONST) li DEST_REG, CONST
+// In Power32
+// 32-bit immediate must be loaded in two 16-bit pieces
+#  define LOAD_IMMED_WORD(DEST_REG,CONST) \
+	lis   DEST_REG, CONST@ha        ; \
+	addi  DEST_REG, DEST_REG, CONST@l
 #else
 #  warning "No load immediate instruction sequence defined"
 #endif
@@ -526,6 +530,17 @@
 	.cfi_offset lr, 16         ; \
 	stdu    1, -128(1)         ; \
 	.cfi_adjust_cfa_offset 128 ; 
+#elif defined __powerpc__
+#  define FUNCTION_PROLOGUE(FUNC,SLOTS) \
+	stwu    1,  -48(1)         ; \
+	.cfi_adjust_cfa_offset 48  ; \
+	mflr    0                  ; \
+	.cfi_register lr, 0        ; \
+	stw    30,   8(1)          ; \
+	.cfi_offset 30, 8          ; \
+	stw    31,  12(1)          ; \
+	.cfi_offset 31, 12         ;
+#elif
 #else
 #  warning "No function-prologue compound instruction defined"
 #endif
@@ -542,10 +557,20 @@
 	.cfi_adjust_cfa_offset -8
 #elif defined __powerpc64__
 #  define FUNCTION_EPILOGUE(FUNC,SLOTS) \
-	ld 1, 0(1)    ; \
-	ld 0, 16(1)   ; \
-	mtlr 0        ; \
-	ld 31,  -8(1) ;
+	ld 1, 0(1)         ; \
+	ld 0, 16(1)        ; \
+	mtlr 0             ; \
+	.cfi_same_value lr ; \
+	ld 31,  -8(1)
+#elif defined __powerpc__
+#  define FUNCTION_EPILOGUE(FUNC,SLOTS) \
+	lwz  11,0(1)       ; \
+	lwz   0,4(11)      ; \
+	mtlr  0            ; \
+	.cfi_same_value lr ; \
+	lwz  31,-4(11)     ; \
+	mr   1,11          ; \
+	blr
 #else
 #  warning "No function-epilogue instruction sequence defined"
 #endif
@@ -720,7 +745,8 @@
 #define FRAMELESS_ADJ_RETURN(REG) \
 	.cfi_register rax, REG
 #elif defined __powerpc__
-#define FRAMELESS_ADJ_RETURN(REG)
+#define FRAMELESS_ADJ_RETURN(REG) \
+	.cfi_register 0, REG
 #else
 #  warning "No frameless function return adjustment defined"
 #endif
@@ -733,7 +759,10 @@
 	.cfi_endproc
 #elif defined __powerpc64__
 #define FRAMELESS_FUNCTION_END(FUNC) \
-	.cfi_endproc;
+	.cfi_endproc
+#elif defined __powerpc__
+#define FRAMELESS_FUNCTION_END(FUNC) \
+	.cfi_endproc
 #else
 #  warning "No frameless function ending instructions defined"
 #endif

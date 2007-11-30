@@ -1,3 +1,8 @@
+2007-11-30  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
+
+	* frysk-asm.h: Fixed load immediate for PowerPC32 and corrected
+	frameless function for PPC32.
+
 2007-11-29  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
 
 	* frysk-asm.h: Fixed loading immediate 64 bit word for Power64,
