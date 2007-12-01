@@ -1,3 +1,10 @@
+2007-11-30  Mark Wielaard  <mwielaard@redhat.com>
+
+	* AddressSpace.java (getDynInfoListAddr): Removed.
+	(resume): Likewise.
+	* cni/UnwindH.hxx (get_dyn_info_list_addr): Return -UNW_ENOINFO.
+	(resume): return -UNW_EINVAL.
+
 2007-11-29  Andrew Cagney  <cagney@redhat.com>
 
 	* AddressSpace.java (getReg(Number)): Replace getReg(int).

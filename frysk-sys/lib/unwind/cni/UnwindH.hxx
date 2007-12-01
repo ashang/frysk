@@ -119,16 +119,13 @@ put_unwind_info (::unw_addr_space_t as, ::unw_proc_info_t *proc_info,
 
 /*
  * Get the head of the dynamic unwind registration list.
+ * There is never any dynamic info in our case.
  */
 static int
 get_dyn_info_list_addr (::unw_addr_space_t as, ::unw_word_t *dilap,
 			void *arg)
 {
-  jbyteArray tmp = JvNewByteArray(sizeof (unw_word_t));
-  memcpy (elements(tmp), dilap, sizeof (unw_word_t));
-  int ret = addressSpace(arg)->getDynInfoListAddr (tmp);
-  memcpy(dilap, elements(tmp), sizeof (unw_word_t));
-  return ret;
+  return -UNW_ENOINFO;
 }
 
 /*
@@ -181,12 +178,13 @@ access_fpreg(::unw_addr_space_t as, ::unw_regnum_t regnum,
 }
 
 /*
- * Resumes the process at the provided stack level
+ * Resumes the process at the provided stack level.
+ * We never resume a process through libunwind.
  */
 static int
 resume(::unw_addr_space_t as, ::unw_cursor_t *cp, void *arg)
 {
-  return (int) addressSpace(arg)->resume ((lib::unwind::Cursor *) cp);
+  return -UNW_EINVAL;
 }
 
 /*
