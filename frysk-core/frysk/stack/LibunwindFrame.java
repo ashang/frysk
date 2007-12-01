@@ -43,7 +43,6 @@ import java.util.logging.Level;
 import frysk.isa.Register;
 import java.util.logging.Logger;
 import lib.unwind.Cursor;
-import lib.unwind.ProcInfo;
 import frysk.isa.ISA;
 import frysk.proc.Task;
 import frysk.symtab.Symbol;
@@ -80,13 +79,6 @@ class LibunwindFrame extends Frame
 	return new LibunwindFrame(newCursor, this, getTask());
     }
 
-    /**
-     * Returns the ProcInfo object for this Frame.
-     */
-    public ProcInfo getProcInfo () {
-	return cursor.getProcInfo();
-    }
-  
     /**
      * Returns the current program counter of this Frame.
      */
@@ -143,7 +135,6 @@ class LibunwindFrame extends Frame
      */
     public FrameIdentifier getFrameIdentifier () {
 	if (frameIdentifier == null) {
-	    ProcInfo myInfo = getProcInfo();
 	    long cfa = 0;
 	    Frame outer = getOuter();
 	    if (outer != null)
@@ -152,7 +143,8 @@ class LibunwindFrame extends Frame
 		// through out the life-time of this frame, and hence
 		// this frame's SP (which changes) is no good.
 		cfa = ((LibunwindFrame)outer).cursor.getSP();
-	    frameIdentifier = new FrameIdentifier(myInfo.getStartIP(), cfa);
+	    frameIdentifier = new FrameIdentifier(getSymbol().getAddress(),
+						  cfa);
 	}
 	return this.frameIdentifier;
     }
