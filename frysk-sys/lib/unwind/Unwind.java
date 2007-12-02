@@ -70,6 +70,7 @@ public abstract class Unwind
   
     public abstract long getIP(RawDataManaged cursor);
     public abstract long getSP(RawDataManaged cursor);
+    public abstract long getCFA(RawDataManaged cursor);
   
   abstract RawDataManaged copyCursor(RawDataManaged cursor);  
  abstract int getContext(RawDataManaged context);

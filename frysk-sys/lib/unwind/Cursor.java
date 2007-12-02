@@ -87,6 +87,10 @@ public class Cursor
 	return unwinder.getSP(cursor);
     }
   
+    public long getCFA() {
+	return unwinder.getCFA(cursor);
+    }
+  
     public int step() {
 	return unwinder.step(cursor);
     }

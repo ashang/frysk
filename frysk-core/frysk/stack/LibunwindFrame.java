@@ -132,19 +132,15 @@ class LibunwindFrame extends Frame
   
     /**
      * Return this frame's FrameIdentifier.
+     * The frame identifier is the combination of the current
+     * symbols (function) start address and the call frame address
+     * of the cursor (frame).
      */
     public FrameIdentifier getFrameIdentifier () {
 	if (frameIdentifier == null) {
-	    long cfa = 0;
-	    Frame outer = getOuter();
-	    if (outer != null)
-		// The previous frame's SP makes for a good CFA for
-		// this frame.  It's a value that needs to be constant
-		// through out the life-time of this frame, and hence
-		// this frame's SP (which changes) is no good.
-		cfa = ((LibunwindFrame)outer).cursor.getSP();
-	    frameIdentifier = new FrameIdentifier(getSymbol().getAddress(),
-						  cfa);
+	  long functionAddress = getSymbol().getAddress();
+	  long cfa = cursor.getCFA();
+	  frameIdentifier = new FrameIdentifier(functionAddress, cfa);
 	}
 	return this.frameIdentifier;
     }

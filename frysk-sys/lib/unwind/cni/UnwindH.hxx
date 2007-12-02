@@ -366,6 +366,32 @@ lib::unwind::TARGET::getIP(gnu::gcj::RawDataManaged* cursor)
     return ip;
 }
 
+jlong
+lib::unwind::TARGET::getCFA(gnu::gcj::RawDataManaged* cursor)
+{
+#ifdef UNW_TARGET_X86
+#define FRYSK_UNW_REG_CFA UNW_X86_CFA
+#else
+#ifdef UNW_TARGET_X86_64
+#define FRYSK_UNW_REG_CFA UNW_X86_64_CFA
+#else
+// This is wasteful, but there is no generic UNW_REG_CFA.
+// So just unwind and return the stack pointer.
+#define FRYSK_UNW_REG_CFA UNW_REG_SP
+cursor = copyCursor (cursor);
+if (unw_step((unw_cursor_t *) cursor) < 0)
+  return 0;
+#endif
+#endif
+
+  unw_word_t cfa;
+  int status = unw_get_reg((::unw_cursor_t *) cursor, FRYSK_UNW_REG_CFA, &cfa);
+  if (status < 0)
+    return 0; // bottom of stack.
+  else
+    return cfa;
+}
+
 
 jint
 lib::unwind::TARGET::getContext(gnu::gcj::RawDataManaged* context)
