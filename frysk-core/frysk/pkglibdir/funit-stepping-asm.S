@@ -40,10 +40,18 @@
 
 #include "frysk-asm.h"
 
+	FUNCTION_BEGIN(fifth,1)
+	FUNCTION_PROLOGUE(fifth,1) ; NO_OP	// _stepOverPrologue_
+	FUNCTION_EPILOGUE(fifth,1)
+	FUNCTION_RETURN(fifth,1)
+	FUNCTION_END(fifth,1)
+	
+	
 	FUNCTION_BEGIN(fourth,0)
 	FUNCTION_PROLOGUE(fourth,0)
 	NO_OP					// _stepAdvanceStart_
 	NO_OP
+	FUNCTION_CALL(fifth)
 	FUNCTION_EPILOGUE(fourth,0)
 	FUNCTION_RETURN(fourth,0)
 	FUNCTION_END(fourth,0)

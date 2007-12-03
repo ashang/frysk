@@ -1,7 +1,11 @@
+2007-12-03  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestStepping.java (testASMFunctionStepOverPrologue): New test.
+
 2007-11-06  Tim Moore  <timoore@redhat.com>
-    
-    	* SteppingEngine.java (ThreadLifeObservable.updateTerminated):
-    	Clean out the dead task and its siblings if necessary.
+
+	* SteppingEngine.java (ThreadLifeObservable.updateTerminated):
+	Clean out the dead task and its siblings if necessary.
 
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 

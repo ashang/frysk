@@ -952,6 +952,52 @@ public class TestStepping extends TestLib {
 	cleanup();
     }
 
+  /**
+   * Tests that the line stepper steps OK even when stack pointer
+   * changes.
+   */                                                                          
+    public void testASMFunctionStepOverPrologue() {
+
+	/** Variable setup */
+	String source = Config.getRootSrcDir()
+	    + "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
+
+	this.scanner = new TestfileTokenScanner(new File(source));
+
+	/* The line number where the test begins, prologue of fifth
+	   function. */
+	int startLine = this.scanner.findTokenLine("_stepOverPrologue_");
+
+	/* The line number the test should end up at, still the same
+	   line (only prologue is stepped over, not the NO_OP) */
+	int endLine = this.scanner.findTokenLine("_stepOverPrologue_");
+
+	/* The test process */
+	dbae = new DaemonBlockedAtEntry(Config
+					.getPkgLibFile("funit-stepping-asm"));
+
+	Task theTask = dbae.getMainTask();
+
+	this.testStarted = false;
+
+	initTaskWithTask(theTask, source, startLine, endLine);
+
+	this.currentTest = new AssertLine(endLine, theTask);
+
+	DebugInfoFrame frame = DebugInfoStackFactory
+	    .createDebugInfoStackTrace(theTask);
+	assertTrue("Line information present", frame.getLines().length > 0);
+
+	/** The stepping operation */
+	this.se.stepOver(theTask, frame);
+
+	this.testStarted = true;
+	/** Run to completion */
+	assertRunUntilStop("Running test");
+	cleanup();
+    }
+
+
     boolean genericUpdate = false;
 
     public Task initTask(Offspring process, String source, int startLine,
