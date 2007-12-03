@@ -125,8 +125,6 @@ class IndirectBankRegisterMap extends BankRegisterMap {
 		public long getFIXME(Task task) {
 		    return longVal;
 		}
-		public void putFIXME(Task task, long val) {
-		}
 	    });
 	return this;
     }

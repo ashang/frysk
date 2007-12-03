@@ -1,3 +1,8 @@
+2007-12-03  Andrew Cagney  <cagney@redhat.com>
+
+	* BankRegister.java (putFIXME(Task,long)): Delete.
+	* IndirectBankRegisterMap.java: Update.
+
 2007-11-29  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRegs.java: Move to frysk.proc.live.TestRegs.

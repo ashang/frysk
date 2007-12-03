@@ -116,32 +116,6 @@ public class BankRegister {
     }
 
     /**
-     * Write a register value.
-     *
-     * @param task task in which to write the register
-     * @param val the value
-     */
-    void putFIXME(frysk.proc.Task task, long val) {
-	ByteBuffer b = task.getRegisterBuffersFIXME()[bank];
-
-	if (length == 4) {
-	    b.putUInt(offset, val);
-	} else if (length == 8) {
-	    b.putULong(offset, val);
-	} else if (b.order() == ByteOrder.LITTLE_ENDIAN) {
-	    for (int i = offset; i < offset + length; i++) {
-		b.putByte(i, (byte)(val & 0xff));
-		val = val >> 8;
-	    }
-	} else {
-	    for (int i = offset + length - 1; i >= offset; i--) {
-		b.putByte(i, (byte)(val & 0xff));
-		val = val >> 8;
-	    }
-	}
-    }
-
-    /**
      * Get the name of the register.
      *
      * @return the name
