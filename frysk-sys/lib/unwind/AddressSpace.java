@@ -88,8 +88,6 @@ public abstract class AddressSpace
      */
     public abstract void putUnwindInfo (ProcInfo procInfo);
 
-    public abstract int getDynInfoListAddr (byte[] dilap);
-
     public abstract int accessMem (long addr, byte[] valp, boolean write);
 
     /**
@@ -107,6 +105,4 @@ public abstract class AddressSpace
      * Access LIBUNWIND Register REGNUM.
      */
     public abstract int accessReg(Number regnum, byte[] val, boolean write);
-
-    public abstract int resume (Cursor cursor);
 }

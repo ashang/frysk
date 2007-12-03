@@ -49,12 +49,10 @@ import frysk.dwfl.DwflFactory;
 import frysk.isa.ISA;
 import frysk.proc.MemoryMap;
 import frysk.proc.Task;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lib.unwind.AddressSpace;
 import lib.unwind.ByteOrder;
-import lib.unwind.Cursor;
 import lib.unwind.ElfImage;
 import lib.unwind.ProcInfo;
 import frysk.isa.RegisterMap;
@@ -138,20 +136,9 @@ class LibunwindAddressSpace extends AddressSpace {
 	return procInfo;
     }
 
-    public int getDynInfoListAddr (byte[] dilap) {
-	//XXX: Todo.
-	Arrays.fill(dilap, (byte) 0);
-	return - lib.unwind.Error.UNW_ENOINFO_;
-    }
-
     public void putUnwindInfo (final ProcInfo procInfo) {
 	// No longer need to hold procInfo.
 	this.procInfo = null;
-    }
-
-    public int resume (final Cursor cursor) {
-	//XXX: Todo.
-	return - lib.unwind.Error.UNW_EUNSPEC_;   
     }
 
     private ElfImage getElfImage (long addr) {

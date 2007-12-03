@@ -119,16 +119,13 @@ put_unwind_info (::unw_addr_space_t as, ::unw_proc_info_t *proc_info,
 
 /*
  * Get the head of the dynamic unwind registration list.
+ * There is never any dynamic info in our case.
  */
 static int
 get_dyn_info_list_addr (::unw_addr_space_t as, ::unw_word_t *dilap,
 			void *arg)
 {
-  jbyteArray tmp = JvNewByteArray(sizeof (unw_word_t));
-  memcpy (elements(tmp), dilap, sizeof (unw_word_t));
-  int ret = addressSpace(arg)->getDynInfoListAddr (tmp);
-  memcpy(dilap, elements(tmp), sizeof (unw_word_t));
-  return ret;
+  return -UNW_ENOINFO;
 }
 
 /*
@@ -181,12 +178,13 @@ access_fpreg(::unw_addr_space_t as, ::unw_regnum_t regnum,
 }
 
 /*
- * Resumes the process at the provided stack level
+ * Resumes the process at the provided stack level.
+ * We never resume a process through libunwind.
  */
 static int
 resume(::unw_addr_space_t as, ::unw_cursor_t *cp, void *arg)
 {
-  return (int) addressSpace(arg)->resume ((lib::unwind::Cursor *) cp);
+  return -UNW_EINVAL;
 }
 
 /*
@@ -366,6 +364,32 @@ lib::unwind::TARGET::getIP(gnu::gcj::RawDataManaged* cursor)
     return 0; // bottom of stack.
   else
     return ip;
+}
+
+jlong
+lib::unwind::TARGET::getCFA(gnu::gcj::RawDataManaged* cursor)
+{
+#ifdef UNW_TARGET_X86
+#define FRYSK_UNW_REG_CFA UNW_X86_CFA
+#else
+#ifdef UNW_TARGET_X86_64
+#define FRYSK_UNW_REG_CFA UNW_X86_64_CFA
+#else
+// This is wasteful, but there is no generic UNW_REG_CFA.
+// So just unwind and return the stack pointer.
+#define FRYSK_UNW_REG_CFA UNW_REG_SP
+cursor = copyCursor (cursor);
+if (unw_step((unw_cursor_t *) cursor) < 0)
+  return 0;
+#endif
+#endif
+
+  unw_word_t cfa;
+  int status = unw_get_reg((::unw_cursor_t *) cursor, FRYSK_UNW_REG_CFA, &cfa);
+  if (status < 0)
+    return 0; // bottom of stack.
+  else
+    return cfa;
 }
 
 
