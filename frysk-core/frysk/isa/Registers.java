@@ -84,18 +84,6 @@ public abstract class Registers {
 	return getGroup("regs");
     }
     /**
-     * Return the "float" register group.
-     */
-    public RegisterGroup getFloatRegisterGroup() {
-	return getGroup("float");
-    }
-    /**
-     * Return the "multi-media" or vector register group.
-     */
-    public RegisterGroup getVectorRegisterGroup() {
-	return getGroup("vector");
-    }
-    /**
      * Return the "all" register group.
      */
     public RegisterGroup getAllRegistersGroup() {

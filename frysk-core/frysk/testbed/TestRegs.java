@@ -113,12 +113,19 @@ public class TestRegs extends TestLib {
 				  .getGeneralRegisterGroup());
     }
     public void testFloatRegistersPresent() {
-	checkRegisterGroupPresent(RegistersFactory.getRegisters(regsCase.isa())
-				  .getFloatRegisterGroup());
+	checkRegisterGroupPresent("float");
     }
     public void testVectorRegistersPresent() {
-	checkRegisterGroupPresent(RegistersFactory.getRegisters(regsCase.isa())
-				  .getVectorRegisterGroup());
+	checkRegisterGroupPresent("vector");
+    }
+
+    private void checkRegisterGroupPresent(String what) {
+	RegisterGroup registerGroup = RegistersFactory
+	    .getRegisters(regsCase.isa())
+	    .getGroup(what);
+	if (unsupported("no " + what + " registers", registerGroup == null))
+	    return;
+	checkRegisterGroupPresent(registerGroup);
     }
 
     private void checkRegisterGroupPresent(RegisterGroup group) {

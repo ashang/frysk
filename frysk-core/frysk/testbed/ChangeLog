@@ -1,3 +1,12 @@
+2007-12-03  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRegs.java (checkRegisterGroupPresent(String)): New.
+	(testVectorRegistersPresent()): Use.
+	(testFloatRegistersPresent()): Use.
+	* RegsCase.java (checkRegisterGroup(String)): New.
+	(testVectorRegisterGroup()): Use.
+	(testFloatRegisterGroup()): Use.
+
 2007-11-29  Andrew Cagney  <cagney@redhat.com>
 
 	* RegsCase.java (testVectorRegisters()): Remove unresolved.

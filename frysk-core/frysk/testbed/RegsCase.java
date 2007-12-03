@@ -127,17 +127,24 @@ public abstract class RegsCase extends TestLib {
 	    value.checkRegister(this, register);
 	}
     }
+
+    private void checkRegisterGroup(String what) {
+	RegisterGroup registerGroup = registers.getGroup(what);
+	if (unsupported("no " + what + " registers", registerGroup == null))
+	    return;
+	checkRegisterGroup(registerGroup);
+    }
    
     public void testGeneralRegisters() {
 	checkRegisterGroup(registers.getGeneralRegisterGroup());
     }
 
     public void testFloatRegisters() {
-	checkRegisterGroup(registers.getFloatRegisterGroup());
+	checkRegisterGroup("float");
     }
 
     public void testVectorRegisters() {
-	checkRegisterGroup(registers.getVectorRegisterGroup());
+	checkRegisterGroup("vector");
     }
 
     /**
