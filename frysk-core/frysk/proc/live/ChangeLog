@@ -1,5 +1,7 @@
 2007-12-03  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRegs.java (testFloatRegisters()): Delete.
+	
 	* TestRegs.java (testVectorRegisters()): Delete.
 
 2007-11-29  Andrew Cagney  <cagney@redhat.com>

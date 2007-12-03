@@ -51,6 +51,7 @@
 	// floating-point and vector registers
 	mov $fxregs, %eax
 	fxrstor (%eax)
+	fxsave (%eax)
 
 	mov $0x7eb03efc, %eax
 	mov $0x35a322a0, %ebx
@@ -66,7 +67,7 @@
 
 	// floating-point and vector registers
 	mov $fxregs, %rax
-	fxrstor (%rax)
+	rex64/fxrstor (%rax)
 
         mov $0x837bb4e2d8209ca3, %rax
         mov $0x16d196be91fb2b92, %rdx
@@ -114,21 +115,32 @@ crash:
 .data
 	.align 16
 fxregs:
-	// FCW
+	// FCW 0x1e71
 	.byte 0x71, 0x1e
-        // FSW 0x47e4
-        .byte 0, 0 // .byte 0xe4, 0x47
+        // FSW 0xc7e4
+        .byte 0xe4, 0xc7
         // FTW 0xc9
-        .byte 0 // .byte 0xc9
+        .byte 0xc9
 	.fill 1, 1, 0
-        // FOP 0x1e8f
-        .byte 0, 0 // .byte 0x8f, 0x1e
-        // RIP 0x99af236679d5eeff
-        .byte 0, 0, 0, 0 // .byte 0xff, 0xee, 0xd5, 0x79
-        .byte 0, 0, 0, 0 // .byte 0x66, 0x23, 0xaf, 0x99
-        // RDP 0x6988a565d0acd7b0
-        .byte 0, 0, 0, 0 // .byte 0xb0, 0xd7, 0xac, 0xd0
-        .byte 0, 0, 0, 0 // .byte 0x65, 0xa5, 0x88, 0x69
+        // FOP 0x068f
+        .byte 0x8f, 0x06
+#if defined __i386__
+	// EIP
+        .byte 0xff, 0xee, 0xd5, 0x79
+	// can't reliably set CS on i386
+        .byte 0, 0, 0, 0
+	// DP
+        .byte 0xb0, 0xd7, 0xac, 0xd0
+	// can't reliably set DS on i386
+        .byte 0, 0, 0, 0
+#else
+        // RIP 0x0000236679d5eeff
+        .byte 0xff, 0xee, 0xd5, 0x79
+        .byte 0x66, 0x23, 0x00, 0x00
+        // RDP 0x00007565d0acd7b0
+        .byte 0xb0, 0xd7, 0xac, 0xd0
+        .byte 0x65, 0x75, 0x00, 0x00
+#endif
 	// MXCSR
 	.fill 4, 1, 0
 	// MXCSR_MASK

@@ -41,7 +41,6 @@ package frysk.proc.live;
 
 import frysk.isa.Register;
 import frysk.testbed.RegsCase;
-import frysk.isa.ISA;
 
 /**
  * Check all register values.
@@ -56,14 +55,5 @@ public class TestRegs extends RegsCase {
 
     public long getRegister(Object task, Register register) {
 	return task().getRegister(register);
-    }
-
-    // XXX: Delete this once the unresolved cases are fixed.
-    public void testFloatRegisters() {
-	if (isa() == ISA.IA32 && unresolved(4911))
-	    return;
-        if (isa() == ISA.X8664 && unresolved(5195))
-            return;
-	super.testFloatRegisters();
     }
 }

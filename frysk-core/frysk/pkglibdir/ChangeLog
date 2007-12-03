@@ -1,3 +1,8 @@
+2007-12-03  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-regs.S (fxregs) [__i386__ || __x86_64__]: Provide initial
+	values for FSW, FTW, FOP, RIP, RDP, CS, DS, EIP, and DP.
+	
 2007-12-03  Mark Wielaard  <mwielaard@redhat.com>
 
 	* funit-stepping-asm.S: Add fifth function and _stepOverPrologue_

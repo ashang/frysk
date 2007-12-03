@@ -1,5 +1,8 @@
 2007-12-03  Andrew Cagney  <cagney@redhat.com>
 
+	* RegsCase.java (IA32, X8664): Update X87's FSW, FOP, EIP, CS, DS,
+	DP, RIP, and RDP.
+	
 	* TestRegs.java (checkRegisterGroupPresent(String)): New.
 	(testVectorRegistersPresent()): Use.
 	(testFloatRegistersPresent()): Use.
