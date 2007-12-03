@@ -65,8 +65,8 @@
 #elif defined __x86_64__
 
 	// floating-point and vector registers
-	//mov $fxregs, %rax
-	//fxrstor (%rax)
+	mov $fxregs, %rax
+	fxrstor (%rax)
 
         mov $0x837bb4e2d8209ca3, %rax
         mov $0x16d196be91fb2b92, %rdx

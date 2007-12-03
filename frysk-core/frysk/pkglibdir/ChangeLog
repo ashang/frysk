@@ -4,6 +4,8 @@
 
 2007-12-03  Andrew Cagney  <cagney@redhat.com>
 
+	* funit-regs.S (main) [__x86_64__]: Enable fxrstor instruction.
+
 	* funit-regs.S (fxregs): Align to 16-byte boundary.
 
 2007-12-02  Stan Cox  <scox@redhat.com>
