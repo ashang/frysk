@@ -106,9 +106,13 @@ crash:
 	LOAD_IMMED_WORD(REG0, 0)
 	STORE(REG0, REG0)
 #endif
-
+
+	// Buffer containing values for all the X86 (fpu and sse)
+	// registers that can be loaded using a single fxrstor
+	// instruction.  Buffer must be 16-byte aligned.
 #if defined __i386__ || defined __x86_64__
 .data
+	.align 16
 fxregs:
 	// FCW
 	.byte 0x71, 0x1e
