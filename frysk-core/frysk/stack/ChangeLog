@@ -1,3 +1,8 @@
+2007-12-03  Andrew Cagney  <cagney@redhat.com>
+
+	* LibunwindFrame.java: Revert <<Get CFA from cursor>>; add more
+	comments.
+
 2007-12-03  Mark Wielaard  <mwielaard@redhat.com>
 
 	* LibunwindFrame.java (getFrameIdentifier): Get CFA from cursor.

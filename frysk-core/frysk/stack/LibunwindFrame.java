@@ -132,19 +132,32 @@ class LibunwindFrame extends Frame
   
     /**
      * Return this frame's FrameIdentifier.
-     * The frame identifier is the combination of the current
-     * symbols (function) start address and the call frame address
-     * of the cursor (frame).
+     *
+     * The frame identifier is the combination of the current symbols
+     * (function) start address and the more outer frame's inner most
+     * address.
      */
     public FrameIdentifier getFrameIdentifier () {
 	if (frameIdentifier == null) {
 	  long functionAddress = getSymbol().getAddress();
-	  long cfa = cursor.getCFA();
+	  // Note, cursor.getCFA is wrong here; libunwind returns the
+	  // CFA used as part of computing the location of registers
+	  // in the current cursor and not the "CFA" of this frame;
+	  // effectively this frame's stack-pointer (in fact often
+	  // getCFA() == getSP()).
+	  long cfa = 0;
+	  Frame outer = getOuter();
+	  if (outer != null)
+	      // Need an address that is constant through out the
+	      // lifetime of the frame (in particular when the stack
+	      // grows).  Use the outer-to-this frame's inner most
+	      // stack address a.k.a. the stack-pointer..
+	      cfa = ((LibunwindFrame)outer).cursor.getSP();
 	  frameIdentifier = new FrameIdentifier(functionAddress, cfa);
 	}
 	return this.frameIdentifier;
     }
-  
+
     /**
      * Returns whether or not this frame's execution was interrupted by
      * a signal.
