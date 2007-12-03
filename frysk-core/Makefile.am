@@ -95,9 +95,8 @@ installcheck-local: installcheck-funit
 installcheck-funit:
 	$(DESTDIR)$(pkglibdir)/funit
 
-# Create executables for type tests for TestTypeEntryType.java.
-frysk/debuginfo/TestTypeEntryType.java: frysk/pkglibdir/funit-type-entry.c
-frysk/debuginfo/TestTypeEntryValue.java: frysk/pkglibdir/funit-type-entry.c
+# Create executables for type tests for TestTypeEntry.java.
+frysk/debuginfo/TestTypeEntry.java: frysk/pkglibdir/funit-type-entry.c
 
 # Create executables for symbol tests for TestSymbol.java.
 
