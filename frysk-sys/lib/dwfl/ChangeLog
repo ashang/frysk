@@ -1,5 +1,9 @@
 2007-12-03  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* DwarfDie.java (getDwfl): renamed getParent to getDwfl.
+
+2007-12-03  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* DwflModule.java (getPubNames): New function.
 	* cni/DwflModule.cxx: Implemented get_pubnames
 	* Dwfl.java: Changed factory from private to protected
