@@ -9,6 +9,8 @@ public:
   void crash();
 };
 
+int A::static_i = 5;
+
 void A::crash(){
   int* a = 0;
   a[0] = 0;  

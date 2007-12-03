@@ -39,17 +39,21 @@
 
 package lib.dwfl;
 
+import java.util.LinkedList;
+
 /**
  * A wrapper object around the libdwfl Dwfl_Module structure.
  */
 public class DwflModule
 {
 
+    protected LinkedList pubNames;
+    
     protected long bias;
   
     private long pointer;
 
-    private Dwfl parent;
+    protected final Dwfl parent;
 
     protected String name;
   
@@ -80,6 +84,16 @@ public class DwflModule
 	return module_getelf();
     }
 
+    public LinkedList getPubNames(){
+	if(this.pubNames == null){
+	    this.pubNames = new LinkedList();
+	    get_pubnames();
+	}
+	return pubNames;
+    }
+    
+    private native void get_pubnames();
+    
     /**
      * Get the name of the module.
      *

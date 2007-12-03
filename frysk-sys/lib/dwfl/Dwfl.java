@@ -48,7 +48,7 @@ public class Dwfl {
 
     private DwflModule[] modules;
 
-    private final DwarfDieFactory factory = DwarfDieFactory.getFactory();
+    protected final DwarfDieFactory factory = DwarfDieFactory.getFactory();
   
     public Dwfl() {
 	pointer = dwflBegin();

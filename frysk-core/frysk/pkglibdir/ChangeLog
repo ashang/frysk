@@ -1,3 +1,7 @@
+2007-12-03  Sami Wagiaalla  <swagiaal@toner.toronto.redhat.com>
+
+	* funit-class-static.cxx: Added a def of static_i.
+
 2007-12-03  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-regs.S (fxregs): Align to 16-byte boundary.

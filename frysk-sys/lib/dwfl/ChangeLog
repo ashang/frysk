@@ -1,3 +1,10 @@
+2007-12-03  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DwflModule.java (getPubNames): New function.
+	* cni/DwflModule.cxx: Implemented get_pubnames
+	* Dwfl.java: Changed factory from private to protected
+	final.
+
 2007-11-29  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* cni/ElfPrstatus.cxx (ElfPrstatus::fillMemRegion): Copy

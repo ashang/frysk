@@ -40,14 +40,20 @@
 package frysk.scopes;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import lib.dwfl.DwAt;
 import lib.dwfl.DwarfDie;
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflModule;
 import frysk.Config;
-import frysk.debuginfo.ObjectDeclarationSearchEngine;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
+import frysk.debuginfo.ObjectDeclarationSearchEngine;
+import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
+import frysk.stack.StackFactory;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
 import frysk.testbed.TestfileTokenScanner;
@@ -92,6 +98,28 @@ public class TestDie
 	assertNotNull("Found original die", die);
 	assertEquals("Die has correct name", "crash" ,die.getName());
 	
+    }
+    
+    public void testGetPubnames(){
+	String fileName = "funit-class-static";
+	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
+	long pc = StackFactory.createFrame(task).getAdjustedAddress();
+	
+	Dwfl dwfl = DwflCache.getDwfl(task);
+	DwflModule dwflModule = dwfl.getModule(pc);
+	LinkedList pubnames = dwflModule.getPubNames();
+	Iterator iterator = pubnames.iterator();
+	
+	assertEquals("Size of pubnames ", 3, pubnames.size());
+	
+	DwarfDie die = (DwarfDie) iterator.next();
+	assertEquals("Die name", "crash", die.getName());
+	
+	die = (DwarfDie) iterator.next();
+	assertEquals("Die name", "main", die.getName());
+	
+	die = (DwarfDie) iterator.next();
+	assertEquals("Die name", "static_i", die.getName());
 	
     }
 

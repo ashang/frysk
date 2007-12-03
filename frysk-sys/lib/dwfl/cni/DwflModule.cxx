@@ -46,10 +46,16 @@
 #include <gnu/gcj/RawData.h>
 
 #include "lib/dwfl/DwflModule.h"
+#include "lib/dwfl/DwarfDie.h"
 #include "lib/dwfl/DwflLine.h"
 #include "lib/dwfl/ModuleElfBias.h"
 #include "lib/dwfl/SymbolBuilder.h"
 #include "lib/dwfl/Elf.h"
+#include "lib/dwfl/DwarfDieFactory.h"
+#include "lib/dwfl/Dwfl.h"
+#include "lib/dwfl/DwException.h"
+
+#include "java/util/LinkedList.h"
 
 #define DWFL_MODULE_POINTER (Dwfl_Module *) this->pointer
 
@@ -197,3 +203,33 @@ lib::dwfl::DwflModule::getDebuginfo()
 
   return getName();                 	               		      
 }    
+
+static int
+callback (Dwarf *dwarf, Dwarf_Global *gl, void* thisObject)
+{
+
+  lib::dwfl::DwflModule* dwflModule = (lib::dwfl::DwflModule*)thisObject;
+  lib::dwfl::Dwfl* dwfl = dwflModule->parent;
+  
+  Dwarf_Die *die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
+  
+  if (dwarf_offdie (dwarf, gl->die_offset, die) == NULL){
+      throw new lib::dwfl::DwarfException(JvNewStringUTF("failed to get object die"));
+  }else{        
+    lib::dwfl::DwarfDie* dwarfDie = dwfl->factory->makeDie((jlong)die, dwfl);  
+    dwflModule->pubNames->add(dwarfDie);
+    
+  }
+  
+  return DWARF_CB_OK;
+}
+
+void
+lib::dwfl::DwflModule::get_pubnames()
+{
+  Dwarf_Addr bias;
+  ::Dwarf* dwarf = dwfl_module_getdwarf ((Dwfl_Module*)this->pointer, &bias);
+
+  dwarf_getpubnames(dwarf, callback, this,0);
+}
+
