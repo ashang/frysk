@@ -41,8 +41,8 @@ package frysk.ftrace;
 
 import java.util.Iterator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.List;
 import java.util.logging.*;
 import java.io.File;
 
@@ -151,7 +151,7 @@ class MappingGuard
 
 	protected void eachObserver(ObserverIterator oit) {
 	    for (Iterator it = observers.entrySet().iterator(); it.hasNext();) {
-		HashMap.Entry entry = (HashMap.Entry)it.next();
+		Map.Entry entry = (Map.Entry)it.next();
 		int v = ((Integer)entry.getValue()).intValue();
 		MappingObserver ob = (MappingObserver)entry.getKey();
 		for (int j = 0; j < v; ++j)

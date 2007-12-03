@@ -1,3 +1,10 @@
+2007-12-03  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
+
+	* Ltrace.java: Changed HashMap.Entry to Map.Entry. This was
+	necessary in order to compile for PowerPC.
+
+	* MappingGuard.java: The same as above.
+
 2007-11-22  Petr Machata  <pmachata@redhat.com>
 
 	* Reporter.java: Flush buffer after writing.

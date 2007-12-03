@@ -43,11 +43,11 @@ import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
+import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.*;
 
@@ -136,7 +136,7 @@ public class Ltrace
 
     private void eachObserver(ObserverIterator oit) {
 	for (Iterator it = observers.entrySet().iterator(); it.hasNext();) {
-	    HashMap.Entry entry = (HashMap.Entry)it.next();
+	    Map.Entry entry = (Map.Entry)it.next();
 	    int v = ((Integer)entry.getValue()).intValue();
 	    FunctionObserver ob = (FunctionObserver)entry.getKey();
 	    for (int j = 0; j < v; ++j)
