@@ -40,10 +40,9 @@
 include common/Makefile.rules
 include Makefile.gen
 
-GEN_SOURCEPATH += ../frysk-gtk/ $(top_srcdir)/../frysk-gtk/
-GEN_SOURCEPATH += ../frysk-core/ $(top_srcdir)/../frysk-core/
-GEN_SOURCEPATH += ../frysk-sys/ $(top_srcdir)/../frysk-sys/
-
+GEN_CLASSPATH += ../frysk-gtk/frysk-gtk.jar
+GEN_CLASSPATH += ../frysk-core/frysk-core.jar
+GEN_CLASSPATH += ../frysk-sys/frysk-sys.jar
 GEN_CLASSPATH += ../frysk-imports/antlr.jar
 GEN_CLASSPATH += ../frysk-imports/jdom.jar
 GEN_CLASSPATH += ../frysk-imports/cdtparser.jar

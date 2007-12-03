@@ -1,3 +1,8 @@
+2007-12-03  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (GEN_CLASSPATH): Add frysk-sys.jar.
+	(GEN_SOURCEPATH): Remove frysk-sys/.
+
 2007-11-26  Andrew Cagney  <cagney@redhat.com>
 
 	* bootstrap.sh: Pass --jni to Makefile.gen.sh.

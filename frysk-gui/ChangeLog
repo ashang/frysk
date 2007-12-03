@@ -1,3 +1,9 @@
+2007-12-03  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (GEN_CLASSPATH): Add frysk-sys.jar, frysk-core.jar,
+	and frysk-gtk.jar.
+	(GEN_SOURCEPATH): Remove frysk-sys/, frysk-core/, and frysk-gtk/.
+
 2007-11-22  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac (GLADE_DTD_FILE): Conditionally set.

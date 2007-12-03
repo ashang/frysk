@@ -1,3 +1,8 @@
+2007-12-03  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (GEN_CLASSPATH): Add frysk-sys.jar.
+	(GEN_SOURCEPATH): Delete frysk-sys/.
+
 2007-12-03  Stan Cox  <scox@redhat.com>
 
 	* Makefile.am (TestTypeEntry.java): Fix dependency.
