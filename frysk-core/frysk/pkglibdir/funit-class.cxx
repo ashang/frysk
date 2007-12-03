@@ -69,7 +69,7 @@ private:
   }
 };
 
-// Test: class
+// Test: Class
 // Name: mb
 // Type: class Type {
 // Type:  public:

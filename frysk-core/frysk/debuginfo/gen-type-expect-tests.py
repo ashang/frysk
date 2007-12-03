@@ -46,10 +46,8 @@ import os,sys
 ########################################################################
 
 class j:
-    def open(self,name):
-#       self.j_file = open("/tmp/TestTypeEntry" + name.capitalize() + ".java", 'w')
-        self.tool = name
-        self.name = "TestTypeEntry" + name.capitalize()
+    def open(self):
+        self.name = "TestTypeEntry"
     def write(self,str):
         print str
     def prologue(self,):
@@ -57,8 +55,8 @@ class j:
 
 package frysk.debuginfo;
 
+import java.io.*;
 import java.util.logging.Logger;
-
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
@@ -66,29 +64,23 @@ import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
-''')
-        if (self.tool == "value"):
-            print('''
-import java.io.*;
+import frysk.value.Type;
 import frysk.value.Value;
 import frysk.value.Format;
 import frysk.debuginfo.DebugInfo;
 ''')
-        elif (self.tool == "type"):
-            print('''
-import frysk.value.Type;
-''')
             
         print('''
 public class %s extends TestLib {
-    private class ExpectTest {
+    private class TypeTestbed {
 	DebugInfoFrame frame;
         Task task;
 	DwarfDie die;
 	DwarfDie[] allDies;
 	TypeEntry typeEntry;
+	String testName;
 
-	ExpectTest(String executable) {
+	TypeTestbed(String executable, String testName) {
 	    task = new DaemonBlockedAtSignal(executable).getMainTask();
             frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
 	    long pc = frame.getAdjustedAddress();
@@ -97,116 +89,85 @@ public class %s extends TestLib {
 	    die = bias.die;
 	    allDies = die.getScopes(pc - bias.bias);
 	    typeEntry = new TypeEntry(frame.getTask().getISA());
+	    this.testName = testName;
 	}
 ''' % (self.name))
 	
-        if (self.tool == "type"):
-            print('''
-	void compareEqual(Expect[] expect, String myName) {
-	     Type varType;
-	    
-	     for (int i = 0; i < expect.length; i++) {
-		 DwarfDie varDie = die.getScopeVar(allDies, expect[i].symbol);
-                 if (varDie == null)
-                     System.out.println("Error: Cannot find " + expect[i].symbol);
-		 assertNotNull(varDie);
-		 varType = typeEntry.getType(varDie.getType());
-		 assertNotNull(varType);
-                 // System.out.println("Expect: " + expect[i].symbol + "\\n'" +
-                 //    expect[i].output + "'\\nGot:\\n'" + varType.toPrint());
-		 assertEquals(myName + expect[i].symbol, expect[i].output, varType.toPrint());
-	     }
+        print('''
+	void checkType(String symbol, String expected) {
+	    Type varType;
+
+	    DwarfDie varDie = die.getScopeVar(allDies, symbol);
+	    if (varDie == null)
+		System.out.println("Error: Cannot find " + symbol);
+	    assertNotNull(varDie);
+	    varType = typeEntry.getType(varDie.getType());
+	    assertNotNull(varType);
+	    // System.out.println("Expect: " + symbol + "\\n'" +
+	    //    expected + "'\\nGot:\\n'" + varType.toPrint());
+	    assertEquals(testName + symbol, expected, varType.toPrint());
 	}
-    }
-''')
-        elif (self.tool == "value"):
-            print('''
-        void compareEqual(Expect[] expect, String myName) {
+
+        void checkValue(String symbol, String expected) {
             // "Print" to a byte array
 	    ByteArrayOutputStream baos = new ByteArrayOutputStream(32);
 	    PrintWriter pw = new PrintWriter(baos, true);
-	    for (int i = 0; i < expect.length; i++) {
-                // ??? cache address of x so &x can be checked?
-	        if (expect[i].output.indexOf("&") >= 0
-                    || expect[i].symbol.indexOf("ptr") >= 0
-		    || expect[i].output.length() == 0)
-		    continue;
-                DwarfDie varDie = die.getScopeVar(allDies, expect[i].symbol);
-                if (varDie == null)
-                    System.out.println("Error: Cannot find " + expect[i].symbol);
-                assertNotNull(varDie);
-		DebugInfo debugInfo = new DebugInfo(frame);
-                Value value =  debugInfo.print(expect[i].symbol, frame);
-                value.toPrint(pw, task.getMemory(), Format.NATURAL, 0);
-                pw.flush();
-                String valueString = baos.toString();
-                // System.out.println("Expect: " + expect[i].symbol +
-                //     "\\n'" + expect[i].output + "'\\nGot:\\n'" +
-                //     valueString + "'" + " " + value.getType());
-                assertEquals(myName + expect[i].symbol, expect[i].output, valueString);
-                baos.reset();
-            }
+	    // ??? cache address of x so &x can be checked?
+	    if (expected.indexOf("&") >= 0 || symbol.indexOf("ptr") >= 0
+		|| expected.length() == 0)
+		return;
+	    DwarfDie varDie = die.getScopeVar(allDies, symbol);
+	    if (varDie == null)
+		System.out.println("Error: Cannot find " + symbol);
+	    assertNotNull(varDie);
+	    DebugInfo debugInfo = new DebugInfo(frame);
+	    Value value =  debugInfo.print(symbol, frame);
+	    value.toPrint(pw, task.getMemory(), Format.NATURAL, 0);
+	    pw.flush();
+	    String valueString = baos.toString();
+	    // System.out.println("Expect: " + symbol +
+	    //     "\\n'" + expected + "'\\nGot:\\n'" +
+	    //     valueString + "'" + " " + value.getType());
+	    assertEquals(testName + symbol, expected, valueString);
+	    baos.reset();
 	}
     }
 ''')
 
         print('''
-    private class Expect
-    {
-	String symbol;
-	String output;
-	Expect (String symbol, String expect)
-	{
-	    this.symbol = symbol;
-	    this.output = expect;
-	}
-    }
 
     Logger logger = Logger.getLogger("frysk");
 
 ''')
 
-    def start_test(self, tool, name):
+    def start_test(self, executable, name):
         print("    public void test%s () {" % (name))
-        if (False):
-            print('''
-        if (unresolved(5235))
-            return;
-''')
-        print("        Expect [] expect  = {")
+        tokens = os.path.abspath(executable).split(".")
+        print('''
+	TypeTestbed typeTestbed = new TypeTestbed("%s", "test%s");
+''' % (os.path.basename(tokens[0]), name))
 
-    def add_test(self, tool, name, type, etype, decl, value):
+    def add_test(self, name, type, etype, decl, value):
         name = name.rstrip()
         type = type.rstrip().replace("\n","\\n")
         etype = etype.rstrip()
         value = value.rstrip().replace("\n","\\n")
 
-        if (tool == "type"):
-            print('\t    new Expect("%s","%s"),' % (name, type))
-        elif (tool == "value"):
-            print('\t    new Expect("%s","%s"),' % (name, value))
+        print('	typeTestbed.checkType("%s","%s");' % (name, type))
+        print('	typeTestbed.checkValue("%s","%s");' % (name, value))
         
-    def end_test(self, executable, name):
-        tokens = os.path.abspath(executable).split(".")
-        print('''
-              };
+    def end_test(self):
+        print("    }")
 
-      ExpectTest expectTest = new ExpectTest("%s");
-      expectTest.compareEqual(expect, "test%s ");
-    }
-''' % (os.path.basename(tokens[0]), name))
-
-    def epilogue(self,debug):
-        print('''
-    }
-''')    
+    def epilogue(self):
+        print("}")    
 
 ########################################################################
 # main
 ########################################################################
 
 def usage ():
-    print "Usage " + sys.argv[0] + " -value OR -type <-help> OutputFile File <File>..."
+    print "Usage " + sys.argv[0] + " <-help> OutputFile File <File>..."
     sys.exit(1)
 
 def open_file (arg):
@@ -221,16 +182,8 @@ def open_file (arg):
 
 if (len (sys.argv) == 1):
     usage()
-debug=0
-tool = ""
 for t in sys.argv:
-    if (t == "-value" or t == "-Value"):
-        tool="value"
-    elif (t == "-type" or t == "-Type"):
-        tool="type"
-    elif (t == "-debug"):
-        debug=1
-    elif (t == "-help"):
+    if (t == "-help"):
         print "Builds TestTypeEntry*.java from input files, using annotations"
         print "in the input files to describe the data type to be tested."
         print "e.g. Given:"
@@ -247,18 +200,11 @@ for t in sys.argv:
     elif (t.startswith("-")):
         usage()
 
-current_file = 2
-if (tool == ""):
-    if (sys.argv[1].find("Type") >= 0):
-        tool = "type"
-    elif (sys.argv[1].find("Value") >= 0):
-        tool = "value"
-    current_file += 1
-
+current_file = 1
 d_file = open_file(current_file)
 filename = sys.argv[current_file]
 j_file = j()
-j_file.open(tool)
+j_file.open()
 j_file.prologue()
 
 
@@ -275,8 +221,8 @@ while (True):
     if (line[0:2] != "//"):
         if (name != ""):
             if (test == "Types"):
-                j_file.start_test(tool, test)
-            j_file.add_test(tool, name, type, type, type, value)
+                j_file.start_test(filename, test)
+            j_file.add_test(name, type, type, type, value)
             name = type = etype = value = ""
         continue
     tokens = line.split()
@@ -284,10 +230,10 @@ while (True):
         # Collect test info
         if (tokens[1] == "Test:"):
             if (test != "Types"):
-                j_file.end_test(filename, test)
+                j_file.end_test()
                 filename = sys.argv[current_file]
             test = line[line.find(tokens[1]) + len(tokens[1]) + 1:].rstrip()
-            j_file.start_test(tool, test)
+            j_file.start_test(filename, test)
         elif (tokens[1] == "Name:"):
             name = name + line[line.find(tokens[1]) + len(tokens[1]) + 1:]
         elif (tokens[1] == "Type:"):
@@ -299,5 +245,5 @@ while (True):
     except IndexError:
         True
 
-j_file.end_test(filename, test)
-j_file.epilogue(debug)
+j_file.end_test()
+j_file.epilogue()

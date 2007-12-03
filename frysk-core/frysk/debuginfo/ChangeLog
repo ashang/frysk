@@ -1,3 +1,14 @@
+2007-12-02  Stan Cox  <scox@redhat.com>
+
+	* TestTypeEntryType.java-sh: Delete.
+	* TestTypeEntryValue.java-sh: Delete.
+	* TestTypeEntry.java: Delete
+	* TestTypeEntry.java-sh: New.
+	* gen-type-expect-tests.py (j.open):  Remove reference to tool.
+	(j.prologue): Rename TypeTestbed.  Add checkType and checkValue.
+	Remove compareEqual and class Expect.
+	(j.add_test) Remove reference to tool.
+
 2007-11-30  Teresa Thomas  <tthomas@redhat.com>
 
 	* LocationExpression.java: Update, Comments added. 
