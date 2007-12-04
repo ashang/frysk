@@ -85,7 +85,7 @@ public class IsaFactory
     else
       {
 	isaHash.put(Integer.valueOf(ElfEMachine.EM_PPC),
-		    LinuxPPC.isaSingleton());
+		    LinuxPPC32.isaSingleton());
       }
   }
   
@@ -152,17 +152,16 @@ public class IsaFactory
       // tries to be a bit clever. Clobber it here for two cases.
       // XXX: This needs to be made for elegant.
       Isa isa = null;
-      switch (machineType)
-	  {
-	  case ElfEMachine.EM_386:
-	      isa = LinuxIa32.isaSingleton();
-	      break;
-	  case ElfEMachine.EM_PPC:
-	      isa = LinuxPPC.isaSingleton();
-	      break;
-	  default:
-	      isa =  (Isa)isaHash.get(Integer.valueOf(machineType));
-	  }
+      switch (machineType) {
+      case ElfEMachine.EM_386:
+	  isa = LinuxIa32.isaSingleton();
+	  break;
+      case ElfEMachine.EM_PPC:
+	  isa = LinuxPPC32.isaSingleton();
+	  break;
+      default:
+	  isa =  (Isa)isaHash.get(Integer.valueOf(machineType));
+      }
       return isa;
   }
 

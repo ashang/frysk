@@ -1,3 +1,25 @@
+2007-12-04  Andrew Cagney  <cagney@redhat.com>
+
+	* BankRegister.java (reverseArray(byte[])): Delete.	
+
+	* BankRegister.java (getFIXME(Task)): Delete.
+
+	* LinuxPowerPCSyscall.java: Delete.
+	* LinuxPPC32Syscall.java: New; based on LinuxPowerPCSyscall.java.
+	* LinuxPPC64Syscall.java: New; based on LinuxPowerPCSyscall.java.
+	* LinuxPPC64.java: Update.
+	* LinuxPPC32On64.java: Update.
+	* TestSyscallsWithAudit.java: Update.
+	* TestIsa.java: Update.
+	* IsaFactory.java: Update.
+	* IsaPowerPC.java (getSyscallList()): Delete; move to sub classes.
+	(getUnknownSyscalls()): Ditto.
+	(sysCallByName(String)): Ditto.
+	* LinuxPPC32.java: Rename LinuxPPC.java; update.
+	* LinuxPPC64.java: Update.
+
+	* IndirectBankRegisterMap.java (add(String,long)): Delete.
+
 2007-12-03  Andrew Cagney  <cagney@redhat.com>
 
 	* BankRegister.java (putFIXME(Task,long)): Delete.

@@ -74,9 +74,36 @@ class LinuxPPC64 extends IsaPowerPC implements SyscallEventDecoder
 		    }
 		    public Syscall getSyscall(Task task) {
 			int number = this.number(task);
-			return LinuxPowerPCSyscall.syscallByNum (task, number);
+			return LinuxPPC64Syscall.syscallByNum (task, number);
 		    }
 		};
 	return info;
     }
+
+    public Syscall[] getSyscallList () {
+	return LinuxPPC64Syscall.syscallList;
+    }
+
+    public HashMap getUnknownSyscalls () {
+	return LinuxPPC64Syscall.unknownSyscalls;
+    }
+
+    public Syscall syscallByName (String name) {
+	Syscall syscall;
+
+	syscall = Syscall.iterateSyscallByName (name, LinuxPPC64Syscall.syscallList);
+	if (syscall != null)
+	    return syscall;
+    
+	syscall = Syscall.iterateSyscallByName (name, LinuxPPC64Syscall.socketSubcallList);
+	if (syscall != null)
+	    return syscall;
+    
+	syscall = Syscall.iterateSyscallByName (name, LinuxPPC64Syscall.ipcSubcallList);
+	if (syscall != null)
+	    return syscall;
+
+	return null;
+    }
+
 }

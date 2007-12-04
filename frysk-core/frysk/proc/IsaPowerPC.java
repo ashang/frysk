@@ -39,7 +39,6 @@
 // exception.
 package frysk.proc;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import inua.eio.ByteBuffer;
@@ -147,35 +146,6 @@ abstract class IsaPowerPC implements Isa {
   public boolean isAtSyscallSigReturn(Task task)
   {
     return false;
-  }
-
-  public Syscall[] getSyscallList ()
-  {
-    return LinuxPowerPCSyscall.syscallList;
-  }
-
-  public HashMap getUnknownSyscalls ()
-  {
-    return LinuxPowerPCSyscall.unknownSyscalls;
-  }
-
-  public Syscall syscallByName (String name)
-  {
-    Syscall syscall;
-
-    syscall = Syscall.iterateSyscallByName (name, LinuxPowerPCSyscall.syscallList);
-    if (syscall != null)
-      return syscall;
-    
-    syscall = Syscall.iterateSyscallByName (name, LinuxPowerPCSyscall.socketSubcallList);
-    if (syscall != null)
-      return syscall;
-    
-    syscall = Syscall.iterateSyscallByName (name, LinuxPowerPCSyscall.ipcSubcallList);
-    if (syscall != null)
-      return syscall;
-
-    return null;
   }
 
   public ByteBuffer[] getRegisterBankBuffers(int pid) 

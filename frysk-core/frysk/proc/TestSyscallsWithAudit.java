@@ -53,11 +53,10 @@ public class TestSyscallsWithAudit
     syscallTest(machine, isa);
   }
 
-  public void testLinuxPPC()
-  {
-    int machine = AuditLibs.MACH_PPC;
-    Isa isa = LinuxPPC.isaSingleton();
-    syscallTest(machine, isa);
+  public void testLinuxPPC32() {
+      int machine = AuditLibs.MACH_PPC;
+      Isa isa = LinuxPPC32.isaSingleton();
+      syscallTest(machine, isa);
   }
 
   public void testLinuxPPC64()
