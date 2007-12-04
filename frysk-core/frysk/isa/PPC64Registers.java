@@ -269,7 +269,7 @@ public class PPC64Registers extends Registers {
      * Defining Register Groups
      */
     public static final RegisterGroup GENERAL
-        = new RegisterGroup("general",
+        = new RegisterGroup("regs",
                   new Register[] {
                           GPR0 , GPR1 , GPR2 , GPR3 , GPR4 , GPR5 , GPR6 , GPR7 , GPR8 , GPR9 ,
                           GPR10, GPR11, GPR12, GPR13, GPR14, GPR15, GPR16, GPR17, GPR18, GPR19,
@@ -284,7 +284,7 @@ public class PPC64Registers extends Registers {
                         FPSCR, VRSAVE, VSCR, SPEACC, SPEFSCR });
 
     public static final RegisterGroup FLOATING_POINTER
-        = new RegisterGroup("floatingpointer",
+        = new RegisterGroup("float",
                   new Register[] {
                           FPR0 , FPR1 , FPR2 , FPR3 , FPR4 , FPR5 , FPR6 , FPR7 , FPR8 , FPR9 ,
                           FPR10, FPR11, FPR12, FPR13, FPR14, FPR15, FPR16, FPR17, FPR18, FPR19,

@@ -74,13 +74,13 @@ public final class ISA {
 
     /*
      * PowerPC is a Bi-Endian archtecture, it supports little and big
-     * endianness. But, usually (99.9%) it is used as a big endian,
-     * in truth in memory the data is stored always in big-endian format
+     * endianness. But, usually (99.9%) it is used as a big endian.
+     * (in truth in memory the data is always stored as big-endian)
      */
     public static final ISA PPC32BE
-	= new ISA(ByteOrder.BIG_ENDIAN, 4, "PowerPC");
+	= new ISA(ByteOrder.BIG_ENDIAN, 4, "PowerPC32BE");
     public static final ISA PPC64BE
-	= new ISA(ByteOrder.BIG_ENDIAN, 8, "PowerPC");
+	= new ISA(ByteOrder.BIG_ENDIAN, 8, "PowerPC64BE");
 
     public static final ISA IA32
 	= new ISA(ByteOrder.LITTLE_ENDIAN, 4, "IA32");

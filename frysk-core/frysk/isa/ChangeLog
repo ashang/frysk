@@ -1,3 +1,12 @@
+2007-12-04  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
+
+	* ISA.java: Updating a comment.
+
+	* PPC32Registers.java: Updating register group names to be the same
+	as the IA and x86xx
+
+	* PPC64Registers.java: The same as above.
+
 2007-12-03  Andrew Cagney  <cagney@redhat.com>
 
 	* Registers.java (getFloatRegisterGroup()): Delete.
