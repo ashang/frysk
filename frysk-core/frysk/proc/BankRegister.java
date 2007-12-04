@@ -39,8 +39,6 @@
 
 package frysk.proc;
 
-import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
 import frysk.isa.Register;
 
 /**
@@ -52,16 +50,6 @@ public class BankRegister {
     private final int length;
     private final String name;
     private final Register register;
-  
-    // Does this really not exist somewhere else?
-    private static void reverseArray(byte[] array) {
-	for (int left = 0, right = array.length - 1;
-	     left < right; left++, right--) {
-	    byte temp = array[right];
-	    array[right] = array[left];
-	    array[left] = temp;
-	}
-    }
   
     private BankRegister(int bank, int offset, int length,
 			 Register register, String name) {
