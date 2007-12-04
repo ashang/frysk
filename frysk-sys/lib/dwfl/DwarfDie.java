@@ -56,6 +56,19 @@ abstract public class DwarfDie {
 	this.dwfl = parent;
     }
 
+    protected DwarfDie getCompilationUnit(){
+	
+	if(this.getTag().equals(DwTag.COMPILE_UNIT)){
+	    return this;
+	}
+	
+	DwarfDie[] scopes = this.getScopesDie();
+	if(!scopes[scopes.length -1].getTag().equals(DwTag.COMPILE_UNIT)){
+	    throw new RuntimeException("Could not retrieve CU of this die ["+this.getTag()+"]");
+	}
+	return scopes[scopes.length -1];
+    }
+    
     protected Dwfl getDwfl () {
 	return this.dwfl;
     }

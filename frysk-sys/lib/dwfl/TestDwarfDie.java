@@ -61,4 +61,28 @@ public class TestDwarfDie extends TestCase {
 	assertFalse("Does not have location attribute", die
 		.hasAttribute(DwAt.LOCATION));
     }
+    
+    
+    public void testGetCompilationUnit(){
+	long pc = LocalMemory.getCodeAddr();
+	Dwfl dwfl = new Dwfl(Pid.get());
+	assertNotNull(dwfl);
+
+	// get CUDIE
+	DwflDieBias bias = dwfl.getCompilationUnit(pc);
+	assertNotNull(bias);
+	
+	DwarfDie cuDie = bias.die;
+	assertNotNull(cuDie);
+	
+	DwarfDie die = cuDie;
+	
+	assertTrue("cudie returned", die.getCompilationUnit().getName().equals(cuDie.getName()));
+	
+	die = cuDie.getScopes(pc)[0];
+	assertNotNull(die);
+	
+	assertTrue("cudie returned", die.getCompilationUnit().getName().equals(cuDie.getName()));
+    }
+
 }
