@@ -40,16 +40,15 @@
 package frysk.proc;
 
 class LinuxPPC32On64
-  extends LinuxPPC
+  extends LinuxPPC32
 {
   private static LinuxPPC32On64 isa;
 
-  static LinuxPPC isaSingleton ()
-  {
-    if (isa == null)
-      isa = new LinuxPPC32On64 ();
-    return isa;
-  }
+    static LinuxPPC32 isaSingleton () {
+	if (isa == null)
+	    isa = new LinuxPPC32On64 ();
+	return isa;
+    }
 
     public BankRegister getRegisterByName(String name) {
 	return PPCBankRegisters.PPC32BE_ON_PPC64BE.get(name);

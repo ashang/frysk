@@ -45,22 +45,20 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import frysk.isa.PPC32Registers;
 
-class LinuxPPC extends IsaPowerPC implements SyscallEventDecoder {
+class LinuxPPC32 extends IsaPowerPC implements SyscallEventDecoder {
 
-    LinuxPPC() {
+    LinuxPPC32() {
 	//In Power32 the PC will be in Link Register
 	super(PPC32Registers.LR);
     }
 
-  private static Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
-  private static LinuxPPC isa;
-
-  static LinuxPPC isaSingleton ()
-  {
-    if (isa == null)
-      isa = new LinuxPPC ();
-    return isa;
-  }
+    private static Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
+    private static LinuxPPC32 isa;
+    static LinuxPPC32 isaSingleton () {
+	if (isa == null)
+	    isa = new LinuxPPC32 ();
+	return isa;
+    }
 
   // This is used to keep track of syscalls whose number we do not
   // know.
@@ -76,10 +74,36 @@ class LinuxPPC extends IsaPowerPC implements SyscallEventDecoder {
 		    }
 		    public Syscall getSyscall(Task task) {
 			int number = this.number(task);
-			return LinuxPowerPCSyscall.syscallByNum (task, number);
+			return LinuxPPC32Syscall.syscallByNum (task, number);
 		    }
 		};
 	return info;
+    }
+
+    public Syscall[] getSyscallList () {
+	return LinuxPPC32Syscall.syscallList;
+    }
+
+    public HashMap getUnknownSyscalls () {
+	return LinuxPPC32Syscall.unknownSyscalls;
+    }
+
+    public Syscall syscallByName (String name) {
+	Syscall syscall;
+
+	syscall = Syscall.iterateSyscallByName (name, LinuxPPC32Syscall.syscallList);
+	if (syscall != null)
+	    return syscall;
+    
+	syscall = Syscall.iterateSyscallByName (name, LinuxPPC32Syscall.socketSubcallList);
+	if (syscall != null)
+	    return syscall;
+    
+	syscall = Syscall.iterateSyscallByName (name, LinuxPPC32Syscall.ipcSubcallList);
+	if (syscall != null)
+	    return syscall;
+
+	return null;
     }
 
 }

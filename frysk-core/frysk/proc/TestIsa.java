@@ -300,7 +300,7 @@ public class TestIsa
     assertSame("Arbitrary x86_64  ISA",factory.getIsaForCoreFile(ElfEMachine.EM_X86_64),LinuxX8664.isaSingleton());
     assertSame("Arbitrary i386  ISA",factory.getIsaForCoreFile(ElfEMachine.EM_386),LinuxIa32.isaSingleton());
     assertSame("Arbitrary PPC64 ISA",factory.getIsaForCoreFile(ElfEMachine.EM_PPC64),LinuxPPC64.isaSingleton());
-    assertSame("Arbitrary PPC32 ISA",factory.getIsaForCoreFile(ElfEMachine.EM_PPC),LinuxPPC.isaSingleton());
+    assertSame("Arbitrary PPC32 ISA",factory.getIsaForCoreFile(ElfEMachine.EM_PPC),LinuxPPC32.isaSingleton());
 
   }
 }
