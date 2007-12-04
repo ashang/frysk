@@ -225,7 +225,8 @@ public abstract class RegsCase extends TestLib {
 	    RegsCase.assertEquals(register.getName() + " size",
 				  bytes.length, register.getType().getSize());
 	    for (int i = 0; i < bytes.length; i++) {
-		RegsCase.assertTrue(register.getName() + "[" + i + "] != 0",
+		RegsCase.assertTrue(register.getName() + "[" + 
+				    i + "] != 0 (found " + bytes[i] + " there)",
 				    bytes[i] != 0);
 	    }
 	}
@@ -605,8 +606,8 @@ public abstract class RegsCase extends TestLib {
 	;
 
     private Values PPC32 = new Values()
-        .put(PPC32Registers.GPR0, 
-             new byte[] { (byte)0xa3,(byte)0x9c,0x20,(byte)0x08 })
+	//in PowerPC gpr0 is always Zero
+        .put(PPC32Registers.GPR0, 0, 0)
 	.put(PPC32Registers.GPR1, 
              new byte[] { (byte)0x3a,(byte)0x82,0x27,(byte)0xf1 })
 	.put(PPC32Registers.GPR2,
@@ -677,9 +678,7 @@ public abstract class RegsCase extends TestLib {
 
     private Values PPC64 = new Values()
         //in PowerPC the GPR0 is always Zero
-        .put(PPC64Registers.GPR0, // 0x0000000000000000
-             new byte[] { (byte)0x00, (byte)0x00,0x00, (byte)0x00,
-                          (byte)0x00, 0x00,(byte)0x00,(byte)0x00 })
+        .put(PPC64Registers.GPR0, 0, 0)
         .put(PPC64Registers.GPR1, // 0x514c159c25c27735
              new byte[] { 0x51,0x4c,0x15,(byte)0x9c,
                           0x25,(byte)0xc2,0x77,0x35 })

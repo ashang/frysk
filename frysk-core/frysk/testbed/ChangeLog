@@ -2,7 +2,8 @@
 
 	* FryskAsm.java: Add PowerPC32/64.
 	
-	* RegsCase.java: Put values to PowerPC64 registers. 
+	* RegsCase.java: Put values to PowerPC64 registers. Set r0 from
+	PowerPC32 and 64 as Zero registers.
 
 2007-12-03  Andrew Cagney  <cagney@redhat.com>
 
