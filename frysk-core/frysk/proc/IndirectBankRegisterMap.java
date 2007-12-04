@@ -115,17 +115,4 @@ class IndirectBankRegisterMap extends BankRegisterMap {
     IndirectBankRegisterMap add(String name) {
 	return add(name, name);
     }
-
-    IndirectBankRegisterMap add(String name, final long value) {
-	BankRegister reg32 = map32.get(name);
-	if (reg32 == null)
-	    throw new RuntimeException("unknown register: " + name);
-	add(new BankRegister(0, 0, reg32.getLength(), name) {
-		private final long longVal = value;
-		public long getFIXME(Task task) {
-		    return longVal;
-		}
-	    });
-	return this;
-    }
 }
