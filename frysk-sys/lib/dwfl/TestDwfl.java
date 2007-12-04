@@ -42,8 +42,9 @@ package lib.dwfl;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
-import frysk.junit.TestCase;
+
 import frysk.junit.Runner;
+import frysk.junit.TestCase;
 import frysk.sys.Pid;
 import frysk.testbed.LocalMemory;
 
@@ -216,4 +217,19 @@ public class TestDwfl
       }
     assertTrue(foundAddress);
   }
+  
+  public void testGetCompliationUnitModule() 
+  {
+    Dwfl dwfl = new Dwfl(Pid.get());
+    assertNotNull(dwfl);
+    long addr = LocalMemory.getCodeAddr();
+
+    DwarfDie cuDie = dwfl.getCompilationUnit(addr).die;
+    assertNotNull(cuDie);
+    
+    DwflModule dwflModule = dwfl.getCompliationUnitModule(cuDie);
+
+    assertTrue("Found correct module", dwflModule.getName().contains("TestRunner"));
+  }
+
 }

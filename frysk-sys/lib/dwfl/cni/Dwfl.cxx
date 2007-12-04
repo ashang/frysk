@@ -260,3 +260,11 @@ lib::dwfl::Dwfl::getModule(jlong addr)
     return 0;
   return new lib::dwfl::DwflModule((jlong)module, this);
 }
+
+jlong
+lib::dwfl::Dwfl::dwfl_cumodule(jlong cudie)
+{
+  Dwfl_Module* module = ::dwfl_cumodule((Dwarf_Die*)cudie);
+  return (jlong)module;
+}
+

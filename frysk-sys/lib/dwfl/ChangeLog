@@ -1,5 +1,11 @@
 2007-12-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* TestDwfl.java (testGetCompliationUnitModule): New test.
+	(getCompliationUnitModule): New function.
+	* cni/Dwfl.cxx: implemented dwfl_cumodule().
+
+2007-12-04  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* DwarfDie.java (getCompilationUnit): New.
 	* TestDwarfDie.java (testGetCompilationUnit): New test.
 

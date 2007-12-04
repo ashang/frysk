@@ -89,7 +89,13 @@ public class Dwfl {
      * @return The module
      */
     public native DwflModule getModule(long addr);
-
+    
+    public DwflModule getCompliationUnitModule(DwarfDie cuDie){
+	return new DwflModule(dwfl_cumodule(cuDie.getPointer()), this);
+    }
+    
+    private native long dwfl_cumodule(long cuDie);
+    
     public DwflLine getSourceLine (long addr) {
 	long val = 0;
 	try {
