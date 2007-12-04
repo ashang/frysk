@@ -1,3 +1,7 @@
+2007-12-04  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
+
+	* funit-regs.S: add support to PowerPC32/64 to this test.
+ 
 2007-12-03  Stan Cox  <scox@redhat.com>
 
 	* gen-type-expect-tests.py (main): Emit one test per variable.

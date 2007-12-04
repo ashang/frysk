@@ -1,6 +1,7 @@
 // This file is part of the program FRYSK.
 //
 // Copyright 2007, Red Hat Inc.
+// Copyright 2007, (C) IBM
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -72,6 +73,7 @@ public abstract class RegsCase extends TestLib {
     private ByteOrder order;
     private ISA isa;
     private Registers registers;
+
     /**
      * Set things up for testing against the specified task.
      *
@@ -674,11 +676,200 @@ public abstract class RegsCase extends TestLib {
 	;
 
     private Values PPC64 = new Values()
-        .put(PPC64Registers.GPR0, // 0x837bb4e2d8209ca3
-             new byte[] { (byte)0xa3,(byte)0x9c,0x20,(byte)0xd8,
-                          (byte)0xe2,(byte)0xb4,0x7b,(byte)0x83 })
+        //in PowerPC the GPR0 is always Zero
+        .put(PPC64Registers.GPR0, // 0x0000000000000000
+             new byte[] { (byte)0x00, (byte)0x00,0x00, (byte)0x00,
+                          (byte)0x00, 0x00,(byte)0x00,(byte)0x00 })
+        .put(PPC64Registers.GPR1, // 0x514c159c25c27735
+             new byte[] { 0x51,0x4c,0x15,(byte)0x9c,
+                          0x25,(byte)0xc2,0x77,0x35 })
+        .put(PPC64Registers.GPR2, // 0x674b6064cdf97685
+             new byte[] { 0x67,0x4b,0x60,0x64,
+                          (byte)0xcd,(byte)0xf9,0x76,(byte)0x85 })
+        .put(PPC64Registers.GPR3, // 0x808ac01e8911f56c
+             new byte[] { (byte)0x80,(byte)0x8a,(byte)0xc0,0x1e,
+                          (byte)0x89,0x11,(byte)0xf5,0x6c })
+        .put(PPC64Registers.GPR4, // 0xcf4362db3356a25a
+             new byte[] { (byte)0xcf,0x43,0x62,(byte)0xdb,
+                          0x33,0x56,(byte)0xa2,0x5a })
+        .put(PPC64Registers.GPR5, // 0xe356818815d30ae3
+             new byte[] { (byte)0xe3,0x56,(byte)0x81,(byte)0x88,
+                          0x15,(byte)0xd3,0xa,(byte)0xe3 })
+        .put(PPC64Registers.GPR6, // 0x34a847d84ac039eb
+             new byte[] { 0x34,(byte)0xa8,0x47,(byte)0xd8,
+                          0x4a,(byte)0xc0,0x39,(byte)0xeb })
+        .put(PPC64Registers.GPR7, // 0xa6c244ccfc672fd1
+             new byte[] { (byte)0xa6,(byte)0xc2,0x44,(byte)0xcc,
+                          (byte)0xfc,0x67,0x2f,(byte)0xd1 })
+        .put(PPC64Registers.GPR8, // 0x4e857fa76fae4610
+             new byte[] { 0x4e,(byte)0x85,0x7f,(byte)0xa7,
+                          0x6f,(byte)0xae,0x46,0x10 })
+        .put(PPC64Registers.GPR9, // 0xfa6ecb942e56bdb1
+             new byte[] { (byte)0xfa,0x6e,(byte)0xcb,(byte)0x94,
+                          0x2e,0x56,(byte)0xbd,(byte)0xb1 })
+        .put(PPC64Registers.GPR10, // 0xce40dcae99e51340
+             new byte[] { (byte)0xce,0x40,(byte)0xdc,(byte)0xae,
+                          (byte)0x99,(byte)0xe5,0x13,0x40 })
+        .put(PPC64Registers.GPR11, // 0xd5e20897737372fa
+             new byte[] { (byte)0xd5,(byte)0xe2,0x8,(byte)0x97,
+                          0x73,0x73,0x72,(byte)0xfa })
+	.put(PPC64Registers.GPR12, // 0x44da7341c8169fcb
+             new byte[] { 0x44,(byte)0xda,0x73,0x41,
+                          (byte)0xc8,0x16,(byte)0x9f,(byte)0xcb })
+        .put(PPC64Registers.GPR13, // 0xef908c0f5ceb230f
+             new byte[] { (byte)0xef,(byte)0x90,(byte)0x8c,0xf,
+                          0x5c,(byte)0xeb,0x23,0xf })
+        .put(PPC64Registers.GPR14, // 0xd6f64efaf644ba20
+             new byte[] { (byte)0xd6,(byte)0xf6,0x4e,(byte)0xfa,
+                          (byte)0xf6,0x44,(byte)0xba,0x20 })
+        .put(PPC64Registers.GPR15, // 0xd5b5dd6910287bb3
+             new byte[] { (byte)0xd5,(byte)0xb5,(byte)0xdd,0x69,
+                          0x10,0x28,0x7b,(byte)0xb3 })
+        .put(PPC64Registers.GPR16, // 0xce9381ebf6d51d50
+             new byte[] { (byte)0xce,(byte)0x93,(byte)0x81,(byte)0xeb,
+                          (byte)0xf6,(byte)0xd5,0x1d,0x50 })
+        .put(PPC64Registers.GPR17, // 0xb3d21c30af96757c
+             new byte[] { (byte)0xb3,(byte)0xd2,0x1c,0x30,
+                          (byte)0xaf,(byte)0x96,0x75,0x7c })
+        .put(PPC64Registers.GPR18, // 0x48ce58b2c1242f3
+             new byte[] { 0x4,(byte)0x8c,(byte)0xe5,(byte)0x8b,
+                          0x2c,0x12,0x42,(byte)0xf3 })
+        .put(PPC64Registers.GPR19, // 0x5031020316f4a712
+             new byte[] { 0x50,0x31,0x2,0x3,
+                          0x16,(byte)0xf4,(byte)0xa7,0x12 })
+        .put(PPC64Registers.GPR20, // 0xe5a6446b480c1bcb
+             new byte[] { (byte)0xe5,(byte)0xa6,0x44,0x6b,
+                          0x48,0xc,0x1b,(byte)0xcb })
+        .put(PPC64Registers.GPR21, // 0x39d366cce0933e0c
+             new byte[] { 0x39,(byte)0xd3,0x66,(byte)0xcc,
+                          (byte)0xe0,(byte)0x93,0x3e,0xc })
+        .put(PPC64Registers.GPR22, // 0xf86103d6cd223af7
+             new byte[] { (byte)0xf8,0x61,0x3,(byte)0xd6,
+                          (byte)0xcd,0x22,0x3a,(byte)0xf7 })
+        .put(PPC64Registers.GPR23, // 0xcab98ee45bb9a68f
+             new byte[] { (byte)0xca,(byte)0xb9,(byte)0x8e,(byte)0xe4,
+                          0x5b,(byte)0xb9,(byte)0xa6,(byte)0x8f })
+        .put(PPC64Registers.GPR24, // 0x34195aae274630f9
+             new byte[] { 0x34,0x19,0x5a,(byte)0xae,
+                          0x27,0x46,0x30,(byte)0xf9 })
+	.put(PPC64Registers.GPR25, // 0xd1df3bfceb05da1a
+             new byte[] { (byte)0xd1,(byte)0xdf,0x3b,(byte)0xfc,
+                          (byte)0xeb,0x5,(byte)0xda,0x1a })
+        .put(PPC64Registers.GPR26, // 0xe408d863626b040a
+             new byte[] { (byte)0xe4,0x8,(byte)0xd8,0x63,
+                          0x62,0x6b,0x4,0xa })
+        .put(PPC64Registers.GPR27, // 0xb847f6c562a62676
+             new byte[] { (byte)0xb8,0x47,(byte)0xf6,(byte)0xc5,
+                          0x62,(byte)0xa6,0x26,0x76 })
+        .put(PPC64Registers.GPR28, // 0x44508793aa174c36
+             new byte[] { 0x44,0x50,(byte)0x87,(byte)0x93,
+                          (byte)0xaa,0x17,0x4c,0x36 })
+        .put(PPC64Registers.GPR29, // 0x3c21d5f786149c80
+             new byte[] { 0x3c,0x21,(byte)0xd5,(byte)0xf7,
+                          (byte)0x86,0x14,(byte)0x9c,(byte)0x80 })
+        .put(PPC64Registers.GPR30, // 0x9871b47e31368590
+             new byte[] { (byte)0x98,0x71,(byte)0xb4,0x7e,
+                          0x31,0x36,(byte)0x85,(byte)0x90 })
+        .put(PPC64Registers.GPR31, // 0xd5a767e17d453bef
+             new byte[] { (byte)0xd5,(byte)0xa7,0x67,(byte)0xe1,
+                          0x7d,0x45,0x3b,(byte)0xef })
+        .put(PPC64Registers.FPR0, // 0x75f98ca5ea9d4622
+             new byte[] { 0x75,(byte)0xf9,(byte)0x8c,(byte)0xa5,
+                          (byte)0xea,(byte)0x9d,0x46,0x22 })
+        .put(PPC64Registers.FPR1, // 0x2053c189e7aa9ade
+             new byte[] { 0x20,0x53,(byte)0xc1,(byte)0x89,
+                          (byte)0xe7,(byte)0xaa,(byte)0x9a,(byte)0xde })
+        .put(PPC64Registers.FPR2, // 0x3df09c8307b6fc56
+             new byte[] { 0x3d,(byte)0xf0,(byte)0x9c,(byte)0x83,
+                          0x7,(byte)0xb6,(byte)0xfc,0x56 })
+        .put(PPC64Registers.FPR3, // 0xb3b95a2e6fbe9bf0
+             new byte[] { (byte)0xb3,(byte)0xb9,0x5a,0x2e,
+                          0x6f,(byte)0xbe,(byte)0x9b,(byte)0xf0 })
+        .put(PPC64Registers.FPR4, // 0x29c916902e8c7c07
+             new byte[] { 0x29,(byte)0xc9,0x16,(byte)0x90,
+                          0x2e,(byte)0x8c,0x7c,0x7 })
+	.put(PPC64Registers.FPR5, // 0xe74ecdc530dc7b77
+             new byte[] { (byte)0xe7,0x4e,(byte)0xcd,(byte)0xc5,
+                          0x30,(byte)0xdc,0x7b,0x77 })
+        .put(PPC64Registers.FPR6, // 0x90505e84187b206b
+             new byte[] { (byte)0x90,0x50,0x5e,(byte)0x84,
+                          0x18,0x7b,0x20,0x6b })
+        .put(PPC64Registers.FPR7, // 0x6e5ac9b69dad5852
+             new byte[] { 0x6e,0x5a,(byte)0xc9,(byte)0xb6,
+                          (byte)0x9d,(byte)0xad,0x58,0x52 })
+        .put(PPC64Registers.FPR8, // 0x20ed2a356201d3d1
+             new byte[] { 0x20,(byte)0xed,0x2a,0x35,
+                          0x62,0x1,(byte)0xd3,(byte)0xd1 })
+        .put(PPC64Registers.FPR9, // 0xec7ba6b6d82d2859
+             new byte[] { (byte)0xec,0x7b,(byte)0xa6,(byte)0xb6,
+                          (byte)0xd8,0x2d,0x28,0x59 })
+        .put(PPC64Registers.FPR10, // 0x1908e830b54da771
+             new byte[] { 0x19,0x8,(byte)0xe8,0x30,
+                          (byte)0xb5,0x4d,(byte)0xa7,0x71 })
+        .put(PPC64Registers.FPR11, // 0xba399d517cee2bb3
+             new byte[] { (byte)0xba,0x39,(byte)0x9d,0x51,
+                          0x7c,(byte)0xee,0x2b,(byte)0xb3 })
+        .put(PPC64Registers.FPR12, // 0x601c9bf3dac1541
+             new byte[] { 0x6,0x1,(byte)0xc9,(byte)0xbf,
+                          0x3d,(byte)0xac,0x15,0x41 })
+        .put(PPC64Registers.FPR13, // 0x42ef875526d26ac7
+             new byte[] { 0x42,(byte)0xef,(byte)0x87,0x55,
+                          0x26,(byte)0xd2,0x6a,(byte)0xc7 })
+        .put(PPC64Registers.FPR14, // 0x1dd06c1c9132b4cb
+             new byte[] { 0x1d,(byte)0xd0,0x6c,0x1c,
+                          (byte)0x91,0x32,(byte)0xb4,(byte)0xcb })
+        .put(PPC64Registers.FPR15, // 0xc9b957b3ef59adf5
+             new byte[] { (byte)0xc9,(byte)0xb9,0x57,(byte)0xb3,
+                          (byte)0xef,0x59,(byte)0xad,(byte)0xf5 })
+        .put(PPC64Registers.FPR16, // 0xf3c555504f10ef96
+             new byte[] { (byte)0xf3,(byte)0xc5,0x55,0x50,
+                          0x4f,0x10,(byte)0xef,(byte)0x96 })
+        .put(PPC64Registers.FPR17, // 0x48480daa25666424
+             new byte[] { 0x48,0x48,0xd,(byte)0xaa,
+                          0x25,0x66,0x64,0x24 })
+	.put(PPC64Registers.FPR18, // 0x6008875d4a373061
+             new byte[] { 0x60,0x8,(byte)0x87,0x5d,
+                          0x4a,0x37,0x30,0x61 })
+        .put(PPC64Registers.FPR19, // 0xd11d698728ceab86
+             new byte[] { (byte)0xd1,0x1d,0x69,(byte)0x87,
+                          0x28,(byte)0xce,(byte)0xab,(byte)0x86 })
+        .put(PPC64Registers.FPR20, // 0x84d123c349f2468e
+             new byte[] { (byte)0x84,(byte)0xd1,0x23,(byte)0xc3,
+                          0x49,(byte)0xf2,0x46,(byte)0x8e })
+        .put(PPC64Registers.FPR21, // 0xa45fc9517343163
+             new byte[] { 0xa,0x45,(byte)0xfc,(byte)0x95,
+                          0x17,0x34,0x31,0x63 })
+        .put(PPC64Registers.FPR22, // 0x19a621d6f7d8e7b9
+             new byte[] { 0x19,(byte)0xa6,0x21,(byte)0xd6,
+                          (byte)0xf7,(byte)0xd8,(byte)0xe7,(byte)0xb9 })
+        .put(PPC64Registers.FPR23, // 0xd45b91ceda65de9e
+             new byte[] { (byte)0xd4,0x5b,(byte)0x91,(byte)0xce,
+                          (byte)0xda,0x65,(byte)0xde,(byte)0x9e })
+        .put(PPC64Registers.FPR24, // 0xb02e4044d6802506
+             new byte[] { (byte)0xb0,0x2e,0x40,0x44,
+                          (byte)0xd6,(byte)0x80,0x25,0x6 })
+        .put(PPC64Registers.FPR25, // 0x427411aff7c4766
+             new byte[] { 0x4,0x27,0x41,0x1a,
+                          (byte)0xff,0x7c,0x47,0x66 })
+        .put(PPC64Registers.FPR26, // 0x4f5b955b70217bf5
+             new byte[] { 0x4f,0x5b,(byte)0x95,0x5b,
+                          0x70,0x21,0x7b,(byte)0xf5 })
+        .put(PPC64Registers.FPR27, // 0xeddc0c73bb1e8699
+             new byte[] { (byte)0xed,(byte)0xdc,0xc,0x73,
+                          (byte)0xbb,0x1e,(byte)0x86,(byte)0x99 })
+        .put(PPC64Registers.FPR28, // 0x472c0c5969c0af0a
+             new byte[] { 0x47,0x2c,0xc,0x59,
+                          0x69,(byte)0xc0,(byte)0xaf,0xa })
+        .put(PPC64Registers.FPR29, // 0x19c66012a715212
+             new byte[] { 0x1,(byte)0x9c,0x66,0x1,
+                          0x2a,0x71,0x52,0x12 })
+        .put(PPC64Registers.FPR30, // 0xfaf368738bd3cec4
+             new byte[] { (byte)0xfa,(byte)0xf3,0x68,0x73,
+                          (byte)0x8b,(byte)0xd3,(byte)0xce,(byte)0xc4 })
+	.put(PPC64Registers.FPR31, // 0x5ee6e7418fe61e98
+             new byte[] { 0x5e,(byte)0xe6,(byte)0xe7,0x41,
+                          (byte)0x8f,(byte)0xe6,0x1e,(byte)0x98 })
 	;
-
     private final ISAMap isaValues = new ISAMap("RegsCase")
 	.put(ISA.IA32, IA32)
 	.put(ISA.X8664, X8664)

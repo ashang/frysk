@@ -1,6 +1,7 @@
 // This file is part of the program FRYSK.
 //
 // Copyright 2007 Red Hat Inc.
+// Copyright 2007 (C) IBM
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -86,6 +87,78 @@
         mov $0x3f22bc816a35f02d, %r14
         mov $0x46bf65d4d966290, %r15
 
+#elif defined __powerpc64__
+
+        LOAD_IMMED_WORD( 0, 0x0000000000000000) //This Reg is always Zero
+        LOAD_IMMED_WORD( 1, 0x514c159c25c27735)
+        LOAD_IMMED_WORD( 2, 0x674b6064cdf97685)
+        LOAD_IMMED_WORD( 3, 0x808ac01e8911f56c)
+        LOAD_IMMED_WORD( 4, 0xcf4362db3356a25a)
+        LOAD_IMMED_WORD( 5, 0xe356818815d30ae3)
+        LOAD_IMMED_WORD( 6, 0x34a847d84ac039eb)
+        LOAD_IMMED_WORD( 7, 0xa6c244ccfc672fd1)
+        LOAD_IMMED_WORD( 8, 0x4e857fa76fae4610)
+        LOAD_IMMED_WORD( 9, 0xfa6ecb942e56bdb1)
+        LOAD_IMMED_WORD(10, 0xce40dcae99e51340)
+        LOAD_IMMED_WORD(11, 0xd5e20897737372fa)
+        LOAD_IMMED_WORD(12, 0x44da7341c8169fcb)
+        LOAD_IMMED_WORD(13, 0xef908c0f5ceb230f)
+        LOAD_IMMED_WORD(14, 0xd6f64efaf644ba20)
+        LOAD_IMMED_WORD(15, 0xd5b5dd6910287bb3)
+        LOAD_IMMED_WORD(16, 0xce9381ebf6d51d50)
+        LOAD_IMMED_WORD(17, 0xb3d21c30af96757c)
+        LOAD_IMMED_WORD(18, 0x48ce58b2c1242f3)
+        LOAD_IMMED_WORD(19, 0x5031020316f4a712)
+        LOAD_IMMED_WORD(20, 0xe5a6446b480c1bcb)
+        LOAD_IMMED_WORD(21, 0x39d366cce0933e0c)
+        LOAD_IMMED_WORD(22, 0xf86103d6cd223af7)
+        LOAD_IMMED_WORD(23, 0xcab98ee45bb9a68f)
+        LOAD_IMMED_WORD(24, 0x34195aae274630f9)
+        LOAD_IMMED_WORD(25, 0xd1df3bfceb05da1a)
+        LOAD_IMMED_WORD(26, 0xe408d863626b040a)
+        LOAD_IMMED_WORD(27, 0xb847f6c562a62676)
+        LOAD_IMMED_WORD(28, 0x44508793aa174c36)
+        LOAD_IMMED_WORD(29, 0x3c21d5f786149c80)
+        LOAD_IMMED_WORD(30, 0x9871b47e31368590)
+        LOAD_IMMED_WORD(31, 0xd5a767e17d453bef)
+
+#elif defined __powerpc__
+
+	LOAD_IMMED_WORD( 0, 0x00000000)
+	LOAD_IMMED_WORD( 1, 0x25c27735)
+	LOAD_IMMED_WORD( 2, 0xcdf97685)
+        LOAD_IMMED_WORD( 3, 0x8911f56c)
+        LOAD_IMMED_WORD( 4, 0x3356a25a)
+        LOAD_IMMED_WORD( 5, 0x15d30ae3)
+        LOAD_IMMED_WORD( 6, 0x4ac039eb)
+        LOAD_IMMED_WORD( 7, 0xfc672fd1)
+        LOAD_IMMED_WORD( 8, 0x6fae4610)
+        LOAD_IMMED_WORD( 9, 0x2e56bdb1)
+        LOAD_IMMED_WORD(10, 0x99e51340)
+        LOAD_IMMED_WORD(11, 0x737372fa)
+        LOAD_IMMED_WORD(12, 0xc8169fcb)
+        LOAD_IMMED_WORD(13, 0x5ceb230f)
+        LOAD_IMMED_WORD(14, 0xf644ba20)
+        LOAD_IMMED_WORD(15, 0x10287bb3)
+        LOAD_IMMED_WORD(16, 0xf6d51d50)
+        LOAD_IMMED_WORD(17, 0xaf96757c)
+        LOAD_IMMED_WORD(18, 0x2c1242f3)
+        LOAD_IMMED_WORD(19, 0x16f4a712)
+        LOAD_IMMED_WORD(20, 0x480c1bcb)
+        LOAD_IMMED_WORD(21, 0xe0933e0c)
+        LOAD_IMMED_WORD(22, 0xcd223af7)
+        LOAD_IMMED_WORD(23, 0x5bb9a68f)
+        LOAD_IMMED_WORD(24, 0x274630f9)
+        LOAD_IMMED_WORD(25, 0xeb05da1a)
+        LOAD_IMMED_WORD(26, 0x626b040a)
+        LOAD_IMMED_WORD(27, 0x62a62676)
+        LOAD_IMMED_WORD(28, 0xaa174c36)
+        LOAD_IMMED_WORD(29, 0x86149c80)
+        LOAD_IMMED_WORD(30, 0x31368590)
+        LOAD_IMMED_WORD(31, 0x7d453bef)
+
+#else
+#error Need to set values for the Register of this Arch
 #endif
 
 	// Jumping to crash sets the instruction-pointer
@@ -103,6 +176,10 @@ crash:
 	mov 0, %eax
 #elif defined __x86_64__
 	mov 0, %rax
+#elif defined __powerpc64__
+        lis 0, 0@highest
+#elif defined __powerpc__
+        lis 0, 0@ha
 #else
 	LOAD_IMMED_WORD(REG0, 0)
 	STORE(REG0, REG0)

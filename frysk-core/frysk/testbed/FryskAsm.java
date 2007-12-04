@@ -1,6 +1,7 @@
 // This file is part of the program FRYSK.
 //
 // Copyright 2007, Red Hat Inc.
+// Copyright 2007, (C) IBM
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,6 +42,8 @@ package frysk.testbed;
 
 import frysk.isa.Register;
 import frysk.isa.IA32Registers;
+import frysk.isa.PPC32Registers;
+import frysk.isa.PPC64Registers;
 import frysk.isa.X8664Registers;
 import frysk.isa.ISA;
 import frysk.isa.ISAMap;
@@ -79,16 +82,34 @@ public class FryskAsm {
 						     IA32Registers.EBX,
 						     IA32Registers.ECX,
 						     IA32Registers.EDX);
+
     public static final FryskAsm X8664 = new FryskAsm(X8664Registers.RIP,
 						      X8664Registers.RSP,
 						      X8664Registers.RAX,
 						      X8664Registers.RDI,
 						      X8664Registers.RSI,
 						      X8664Registers.RDX);
+
+    public static final FryskAsm PPC32 = new FryskAsm(PPC32Registers.LR,
+    						      PPC32Registers.GPR1,
+						      PPC32Registers.GPR0,
+						      PPC32Registers.GPR3,
+						      PPC32Registers.GPR4,
+						      PPC32Registers.GPR5);
+
+    public static final FryskAsm PPC64 = new FryskAsm(PPC64Registers.NIP,
+                                                      PPC64Registers.GPR1,
+                                                      PPC64Registers.GPR0,
+                                                      PPC64Registers.GPR3,
+                                                      PPC64Registers.GPR4,
+                                                      PPC64Registers.GPR5);
+
     private static final ISAMap isaToFryskAsm
 	= new ISAMap("FryskAsm")
 	.put(ISA.IA32, IA32)
 	.put(ISA.X8664, X8664)
+	.put(ISA.PPC32BE, PPC32)
+	.put(ISA.PPC64BE, PPC64) 
 	;
     public static FryskAsm createFryskAsm(ISA isa) {
 	return (FryskAsm) isaToFryskAsm.get(isa);
