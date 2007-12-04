@@ -97,25 +97,6 @@ public class BankRegister {
     }
 
     /**
-     * Get the value of the register as a long.
-     *
-     * @param task the task object supplying the ByteBuffer for reading
-     * the register
-     * @return value of register
-     */
-    long getFIXME(frysk.proc.Task task) {
-	ByteBuffer b = task.getRegisterBuffersFIXME()[bank];
-	long val = 0;
-	byte[] bytes = new byte[length];
-	b.get(offset, bytes, 0, length);
-	if (b.order() == ByteOrder.LITTLE_ENDIAN)
-	    reverseArray(bytes);
-	for (int i = 0; i < length; i++) 
-	    val = val << 8 | (bytes[i] & 0xff);
-	return val;
-    }
-
-    /**
      * Get the name of the register.
      *
      * @return the name

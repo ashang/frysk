@@ -1,5 +1,7 @@
 2007-12-04  Andrew Cagney  <cagney@redhat.com>
 
+	* BankRegister.java (getFIXME(Task)): Delete.
+
 	* LinuxPowerPCSyscall.java: Delete.
 	* LinuxPPC32Syscall.java: New; based on LinuxPowerPCSyscall.java.
 	* LinuxPPC64Syscall.java: New; based on LinuxPowerPCSyscall.java.
