@@ -86,11 +86,8 @@ for m in type_modifiers:
 tm = tm.rstrip()
 te = te.lstrip()
 tms = tm.rstrip().replace(" ","_")
-c_file.write("// Scalar ########################################\n")
-c_file.write("// Test: Scalar\n")
 for t in base_types:
     try:
-        c_file.write("// %s\n" % t);
         ts = t.replace(" ","_")
         min = limits[t]['min']
         max = limits[t]['max']
@@ -113,10 +110,7 @@ for t in base_types:
     except KeyError:
         continue
 
-c_file.write("// Array ########################################\n")
-c_file.write("// Test: Array\n")
 for t in base_types:
-    c_file.write("// array of %s\n" % (t))
     ts = t.replace(" ","_")
     min = limits[t]['min']
     max = limits[t]['max']
@@ -270,8 +264,6 @@ c_file.add("struct {\n  int int_var;\n} (*", "ptr_arr_struct", "", ")[2]")
 c_file.add("union {\n  int int_var;\n} (*", "ptr_arr_union", "", ")[2]")
 c_file.add("int * (*", "ptr_arr_ptr", "", ")[2]")
 
-c_file.write("// Struct ########################################\n")
-c_file.write("// Test: Struct\n")
 c_file.write('''typedef struct {
     char char_var;
     short short_var;
@@ -702,8 +694,6 @@ c_file.add('''union {
   int int_var;
 } * *''', "ptr_ptr_union", "")
 
-c_file.write("// Enum ########################################\n")
-c_file.write("// Test: Enum\n")
 c_file.add('''enum  {\n  red = 0,\n  green = 1,\n  blue = 2\n}''', "primary_colors", "red")
 c_file.add('''enum colors {\n  orange = 0,\n  yellow = 1,\n  violet = 2,\n  indigo = 3\n}''', "rainbow_colors", "orange")
 c_file.add('''enum  {\n  chevy = 0,\n  dodge = 44,\n  ford = 55\n}''', "usa_cars", "chevy")

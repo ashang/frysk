@@ -141,11 +141,9 @@ public class %s extends TestLib {
 ''')
 
     def start_test(self, executable, name):
-        print("    public void test%s () {" % (name))
+        print("    public void test_%s () {" % (name))
         tokens = os.path.abspath(executable).split(".")
-        print('''
-	TypeTestbed typeTestbed = new TypeTestbed("%s", "test%s");
-''' % (os.path.basename(tokens[0]), name))
+        print('	TypeTestbed typeTestbed = new TypeTestbed("%s", "test%s");' % (os.path.basename(tokens[0]), name))
 
     def add_test(self, name, type, etype, decl, value):
         name = name.rstrip()
@@ -208,7 +206,6 @@ j_file.open()
 j_file.prologue()
 
 
-test = "Types"
 name = type = etype = value = ""
 while (True):
     line = d_file.readline()
@@ -220,22 +217,17 @@ while (True):
     # Output collected test info
     if (line[0:2] != "//"):
         if (name != ""):
-            if (test == "Types"):
-                j_file.start_test(filename, test)
+            filename = sys.argv[current_file]
+            j_file.start_test(filename, name)
             j_file.add_test(name, type, type, type, value)
+            j_file.end_test()
             name = type = etype = value = ""
         continue
     tokens = line.split()
     try:
         # Collect test info
-        if (tokens[1] == "Test:"):
-            if (test != "Types"):
-                j_file.end_test()
-                filename = sys.argv[current_file]
-            test = line[line.find(tokens[1]) + len(tokens[1]) + 1:].rstrip()
-            j_file.start_test(filename, test)
-        elif (tokens[1] == "Name:"):
-            name = name + line[line.find(tokens[1]) + len(tokens[1]) + 1:]
+        if (tokens[1] == "Name:"):
+            name = line[line.find(tokens[1]) + len(tokens[1]) + 1:].rstrip()
         elif (tokens[1] == "Type:"):
             type = type + line[line.find(tokens[1]) + len(tokens[1]) + 1:]
         elif (tokens[1] == "EType:"):
@@ -245,5 +237,4 @@ while (True):
     except IndexError:
         True
 
-j_file.end_test()
 j_file.epilogue()
