@@ -90,7 +90,6 @@ class PtraceRegisterBanksFactory {
 	for (int i = 0; i < bankBuffers.length; i++) {
             bankBuffers[i].order(ByteOrder.BIG_ENDIAN);
         }	
-	System.out.println("Usr Addr Space Size: " + bankBuffers[0].capacity());
 	return bankBuffers;
     }
 

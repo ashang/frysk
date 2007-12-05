@@ -54,7 +54,9 @@ FUNCTION_RETURN(main,0)
 FUNCTION_END(main,0)
 
 memory:						// Set up memory locations
-#if defined __powerpc__
+#if defined __powerpc64__
+	.8byte 0x12341234
+#elif defined __powerpc__
 	.4byte 0x1234
 #else
 	.word 0x1234

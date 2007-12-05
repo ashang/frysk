@@ -1,5 +1,19 @@
 2007-12-04  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
 
+	* funit-regs.S: Add floating support for PowerPC64.
+
+	* funit-raise.S: Adding division by zero instructions for
+	PowerPC32. Put data section for usage text.
+
+	* funit-location.S: Fixed the test for PowerPC, it is using
+	the new LOAD_IMMED_WORD. Add a 8byte word for PowerPC64.
+
+	* funit-frameless.S: Same as above.
+
+	* funit-symbols.S: Same as above. Add data section for usage text.
+
+2007-12-04  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
+
 	* funit-regs.S: add support to PowerPC32/64 to this test.
  
 2007-12-03  Stan Cox  <scox@redhat.com>
