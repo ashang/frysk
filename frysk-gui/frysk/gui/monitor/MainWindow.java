@@ -58,7 +58,6 @@ import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.sys.PseudoTerminal;
-import frysk.sys.Sig;
 import frysk.sys.Signal;
 
 public class MainWindow extends Window implements Saveable{
@@ -163,14 +162,14 @@ public class MainWindow extends Window implements Saveable{
 		terminalWidget.showAll();  	
 	}
 
-	public void killTerminalShell()
-	{
-		if (shellTask != null)
-			try {
-				Signal.kill(shellTask.getTid(), Sig.HUP);
-			} catch (Exception e) {
-				errorLog.log(Level.WARNING, "Could not kill process" +  shellTask.getTid(),e);
-			}
-	}
+    public void killTerminalShell() {
+	if (shellTask != null)
+	    try {
+		Signal.HUP.kill(shellTask.getTid());
+	    } catch (Exception e) {
+		errorLog.log(Level.WARNING, "Could not kill process"
+			     +  shellTask.getTid(),e);
+	    }
+    }
 }
 

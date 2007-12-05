@@ -67,20 +67,18 @@ public final class SignalSet
     /**
      * Create a SigSet containing the signals in the array.
      */
-    public SignalSet (Sig[] sigs)
-    {
-	this ();
+    public SignalSet (Signal[] sigs) {
+	this();
 	for (int i = 0; i < sigs.length; i++) {
-	    add (sigs[i]);
+	    add(sigs[i]);
 	}
     }
     /**
      * Create a SigSet containing the single signal.
      */
-    public SignalSet (Sig sig)
-    {
-	this ();
-	add (sig);
+    public SignalSet (Signal sig) {
+	this();
+	add(sig);
     }
 
     /**
@@ -88,7 +86,7 @@ public final class SignalSet
      */
     public String toString()
     {
-	Sig[] sigs = toArray ();
+	Signal[] sigs = toArray();
 	StringBuffer s = new StringBuffer("{");
 	for (int i = 0; i < sigs.length; i++) {
 	    if (i > 0)
@@ -102,7 +100,7 @@ public final class SignalSet
     /**
      * As an array.
      */
-    public native Sig[] toArray ();
+    public native Signal[] toArray ();
 
     /**
      * Empty the signal set; return this.
@@ -115,12 +113,11 @@ public final class SignalSet
     /**
      * Add sigNum to the SignalSet; return this.
      */
-    public native SignalSet add (Sig sig);
+    public native SignalSet add(Signal sig);
     /**
      * Add the array of signals to the SignalSet; return this.
      */
-    public SignalSet add (Sig[] sigs)
-    {
+    public SignalSet add(Signal[] sigs) {
 	for (int i = 0; i < sigs.length; i++) {
 	    add(sigs[i]);
 	}
@@ -131,17 +128,17 @@ public final class SignalSet
      */
     public native int size();
     /**
-     * Remove Sig from the SignalSet (the underlying code uses
+     * Remove Signal from the SignalSet (the underlying code uses
      * <tt>sigdelset</tt>, the name remove is more consistent with
      * java); return this.
      */
-    public native SignalSet remove (Sig sig);
+    public native SignalSet remove (Signal sig);
     /** 
      * Does this SignalSet contain sigNum (the underlying code uses
      * <tt>sigismember</tt>, the name contains is more consistent with
      * java.
      */
-    public native boolean contains (Sig sig);
+    public native boolean contains (Signal sig);
 
     /**
      * Get the pending set of signals; return this

@@ -39,7 +39,7 @@
 
 package frysk.testbed;
 
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 import frysk.proc.Manager;
 import java.util.logging.Level;
 
@@ -55,7 +55,7 @@ public class SynchronizedOffspring
     // NOTE: Use a different signal to thread add/del. Within this
     // process the signal is masked and Linux appears to propogate the
     // mask all the way down to the exec'ed child.
-    public static final Sig START_ACK = Sig.HUP;
+    public static final Signal START_ACK = Signal.HUP;
 
     private final int pid;
     /**
@@ -70,7 +70,7 @@ public class SynchronizedOffspring
      * process is running. Wait for acknowledge SIG.
      */
     protected SynchronizedOffspring (OffspringType type,
-				     Sig sig, String[] argv) {
+				     Signal sig, String[] argv) {
 	logger.log(Level.FINE, "{0} new ...\n", this);
 	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, sig,
 					    "startOffspring");
@@ -84,7 +84,7 @@ public class SynchronizedOffspring
 		   new Object[] {this, new Integer(pid) });
     }
 
-    public SynchronizedOffspring(Sig sig, String[] argv) {
+    public SynchronizedOffspring(Signal sig, String[] argv) {
 	this(OffspringType.DAEMON, sig, argv);
     }
 }

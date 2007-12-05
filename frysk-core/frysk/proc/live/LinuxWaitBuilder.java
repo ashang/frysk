@@ -40,7 +40,7 @@
 package frysk.proc.live;
 
 import frysk.event.Event;
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 import frysk.sys.WaitBuilder;
 import java.util.LinkedList;
 import java.util.List;
@@ -214,17 +214,12 @@ class LinuxWaitBuilder
 	    saveFsckedOrderedKernelStoppedEvent (pid, sig);
 	    return;
 	}
-        switch (sig) {
-	case Sig.STOP_:
+	if (Signal.STOP.equals(sig))
 	    task.processStoppedEvent();
-            break;
-	case Sig.TRAP_:
+	else if (Signal.TRAP.equals(sig))
             task.processTrappedEvent();
-            break;
-	default:
+	else
             task.processSignaledEvent(sig);
-            break;
-	}
     }
     
     public void terminated (int pid, boolean signal, int value,

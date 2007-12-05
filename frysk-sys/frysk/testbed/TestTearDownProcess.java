@@ -44,7 +44,6 @@ import frysk.sys.Errno;
 import frysk.sys.Fork;
 import frysk.sys.Wait;
 import frysk.sys.Signal;
-import frysk.sys.Sig;
 import frysk.sys.UnhandledWaitBuilder;
 import frysk.sys.SignalBuilder;
 
@@ -55,7 +54,7 @@ public class TestTearDownProcess
     {
 	boolean gone = false;
 	try {
-	    Signal.kill (pid, Sig.NONE);
+	    Signal.NONE.kill(pid);
 	}
 	catch (Errno.Esrch e) {
 	    gone = true;
@@ -87,10 +86,8 @@ public class TestTearDownProcess
 			   // Toss.
 		       }
 		   },
-		   new SignalBuilder ()
-		   {
-		       public void signal (Sig sig)
-		       {
+		   new SignalBuilder () {
+		       public void signal(Signal sig) {
 			   fail ("signal " + sig + " received");
 		       }
 		   },

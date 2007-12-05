@@ -40,7 +40,6 @@
 package frysk.testbed;
 
 import frysk.junit.TestCase;
-import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.event.EventLoop;
 import frysk.sys.Pid;
@@ -54,18 +53,18 @@ public final class TestSignalWaiter
 {
     public void testSingleSignalWaiter()
     {
-	SignalWaiter s = new SignalWaiter(EventLoop.factory(), Sig.USR1,
-					  "testing Sig.USR1");
-	Signal.tkill(Pid.get(), Sig.USR1);
+	SignalWaiter s = new SignalWaiter(EventLoop.factory(), Signal.USR1,
+					  "testing Signal.USR1");
+	Signal.USR1.tkill(Pid.get());
 	s.assertRunUntilSignaled();
     }
     public void testMultiSignalWaiter()
     {
 	SignalWaiter s = new SignalWaiter(EventLoop.factory(),
-					  new Sig[] {Sig.USR1, Sig.USR2},
-					  "testing Sig.USR1 and Sig.USR2");
-	Signal.tkill(Pid.get(), Sig.USR1);
-	Signal.tkill(Pid.get(), Sig.USR2);
+					  new Signal[] {Signal.USR1, Signal.USR2},
+					  "testing Signal.USR1 and Signal.USR2");
+	Signal.USR1.tkill(Pid.get());
+	Signal.USR2.tkill(Pid.get());
 	s.assertRunUntilSignaled();
     }
 }

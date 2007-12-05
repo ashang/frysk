@@ -55,14 +55,13 @@ public final class Poll
      * Set of signals checked during poll.
      */
     static protected SignalSet signalSet = new SignalSet ();
-    private static native void addSignalHandler (Sig sig);
+    private static native void addSignalHandler (Signal sig);
     /**
      * Add Sig to the set of signals checked during poll.
      */
-    public static void add (Sig sig)
-    {
-	signalSet.add (sig);
-	addSignalHandler (sig);
+    public static void add (Signal sig) {
+	signalSet.add(sig);
+	addSignalHandler(sig);
     }
     /**
      * Empty the set of signals, and file descriptors, checked during

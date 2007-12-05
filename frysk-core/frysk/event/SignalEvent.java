@@ -39,29 +39,25 @@
 
 package frysk.event;
 
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 
 /**
  * An event due to a signal.
  */
 
-public abstract class SignalEvent
-    implements Event
-{
-    private final Sig sig;
+public abstract class SignalEvent implements Event {
+    private final Signal sig;
     /**
      * Return the corresponding signal; the sig can be used as a
      * search key.
      */
-    public Sig getSig ()
-    {
+    public Signal getSignal() {
 	return sig;
     }
     /**
      * Create a Signal based event.
      */
-    public SignalEvent (Sig sig)
-    {
+    public SignalEvent(Signal sig) {
 	this.sig = sig;
     }
     /**

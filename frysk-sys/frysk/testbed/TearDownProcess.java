@@ -46,7 +46,6 @@ import java.util.logging.Level;
 import java.util.Set;
 import java.util.HashSet;
 import frysk.sys.Errno;
-import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.sys.Wait;
 import frysk.sys.proc.ProcBuilder;
@@ -158,7 +157,7 @@ public class TearDownProcess
      * KILL on early utrace kernels has proven problematic - nothing
      * happened (now fixed) - avoid any such issues by doing a simple
      * detach followed by a KILL. There is a problem with both stopped
-     * and attached tasks. The Sig.KILL won't be delivered, and
+     * and attached tasks. The Signal.KILL won't be delivered, and
      * consequently the task won't exit, until that task has been
      * continued. Work around this by first sending all tasks a
      * continue ...
@@ -176,7 +175,7 @@ public class TearDownProcess
 	}
 	// Unblock the thread
 	try {
-	    pid.tkill(Sig.CONT);
+	    pid.tkill(Signal.CONT);
 	    log("tkill -CONT", pid);
 	}
 	catch (Errno.Esrch e) {
@@ -305,7 +304,7 @@ public class TearDownProcess
 			 }
 		     },
 		     new SignalBuilder() {
-			 public void signal(Sig sig) {
+			 public void signal(Signal sig) {
 			     // ignore
 			 }
 		     },
@@ -318,14 +317,14 @@ public class TearDownProcess
 	    // No more events.
 	}
 
-	// Drain all the pending signals. Note that the process of killing
-	// off the processes used in the test can generate extra signals -
-	// for instance a SIGUSR1 from a detached child that notices that
-	// it's parent just exited.
-	Signal.drain (Sig.CHLD);
-	Signal.drain (Sig.HUP);
-	Signal.drain (Sig.USR1);
-	Signal.drain (Sig.USR2);
+	// Drain all the pending signals. Note that the process of
+	// killing off the processes used in the test can generate
+	// extra signals - for instance a SIGUSR1 from a detached
+	// child that notices that it's parent just exited.
+	Signal.CHLD.drain();
+	Signal.HUP.drain();
+	Signal.USR1.drain();
+	Signal.USR2.drain();
 
 	pidsToKillDuringTearDown.clear ();
 

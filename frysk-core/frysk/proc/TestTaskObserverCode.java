@@ -187,7 +187,7 @@ public class TestTaskObserverCode extends TestLib
     task.requestUnblock(code);
     assertRunUntilStop("signal and wait for signaled observer to hit");
     assertFalse("not hit again (after second prof)", code.hit);
-    assertEquals("Prof signaled", Sig.PROF_, signaled.sig);
+    assertTrue("Prof signaled", Signal.PROF.equals(signaled.sig));
 
     signaled.sig = -1;
     task.requestUnblock(signaled);
@@ -200,10 +200,10 @@ public class TestTaskObserverCode extends TestLib
     // step over the currently pending breakpoint. And will then kill
     // the process when delivered.
     code.hit = false;
-    Signal.tkill(task.getTid(), Sig.TERM);
+    Signal.TERM.tkill(task.getTid());
     task.requestUnblock(code);
     assertRunUntilStop("wait for TERM signal"); 
-    assertEquals("term signaled", Sig.TERM_, signaled.sig);
+    assertTrue("term signaled", Signal.TERM.equals(signaled.sig));
     assertFalse("no hit after term", code.hit);
 
     TerminatingObserver terminatingObserver = new TerminatingObserver();
@@ -347,89 +347,88 @@ public class TestTaskObserverCode extends TestLib
     return sym.getAddress();
   }
 
-  private void breakTest(final int argc)
-  {
-    // Translate testname to argc (used by test to select where to jump),
-    // label name to put breakpoint on, expected signal and whether or
-    // not the exit will be clean.
-    String testName;
-    int signal;
-    boolean cleanExit;
-    switch (argc)
-      {
-      case 1:
-	testName = "div_zero";
-	signal = Sig.FPE_;
-	cleanExit = false;
-	break;
-      case 2:
-	testName = "bad_addr_segv";
-	signal = Sig.SEGV_;
-	cleanExit = false;
-	break;
-      case 3:
-	testName = "bad_inst_ill";
-	signal = Sig.ILL_;
-	cleanExit = false;
-	break;
-      case 4:
-	testName = "term_sig_hup";
-	signal = Sig.HUP_;
-	cleanExit = false;
-	break;
-      case 5:
-	testName = "ign_sig_urg";
-	signal = Sig.URG_;
-	cleanExit = true;
-	break;
-      default:
-	throw new RuntimeException("No such test: " + argc);
-      }
-    String label = testName + "_label";
+    private void breakTest(final int argc) {
+	// Translate testname to argc (used by test to select where to
+	// jump), label name to put breakpoint on, expected signal and
+	// whether or not the exit will be clean.
+	String testName;
+	Signal signal;
+	boolean cleanExit;
+	switch (argc) {
+	case 1:
+	    testName = "div_zero";
+	    signal = Signal.FPE;
+	    cleanExit = false;
+	    break;
+	case 2:
+	    testName = "bad_addr_segv";
+	    signal = Signal.SEGV;
+	    cleanExit = false;
+	    break;
+	case 3:
+	    testName = "bad_inst_ill";
+	    signal = Signal.ILL;
+	    cleanExit = false;
+	    break;
+	case 4:
+	    testName = "term_sig_hup";
+	    signal = Signal.HUP;
+	    cleanExit = false;
+	    break;
+	case 5:
+	    testName = "ign_sig_urg";
+	    signal = Signal.URG;
+	    cleanExit = true;
+	    break;
+	default:
+	    throw new RuntimeException("No such test: " + argc);
+	}
+	String label = testName + "_label";
 
-    String[] command = new String[argc + 1];
-    command[0] =  getExecPath("funit-raise");
-    for (int i = 1; i < argc + 1; i++)
-      command[i] = Integer.toString(i);
+	String[] command = new String[argc + 1];
+	command[0] =  getExecPath("funit-raise");
+	for (int i = 1; i < argc + 1; i++)
+	    command[i] = Integer.toString(i);
 
-    AttachedObserver ao = new AttachedObserver();
-    Manager.host.requestCreateAttachedProc("/dev/null",
-                                           "/dev/null",
-                                           "/dev/null", command, ao);
-    assertRunUntilStop("attach then block");
-    assertTrue("AttachedObserver got Task", ao.task != null);
-
-    task = ao.task;
-
-    long address = getGlobalLabelAddress(label);
-    CodeObserver code = new CodeObserver(task, address);
-    task.requestAddCodeObserver(code, address);
-    assertRunUntilStop("add breakpoint observer");
-
-    // Delete and unblock
-    task.requestDeleteAttachedObserver(ao);
-    assertRunUntilStop("wait for breakpoint hit");
-
-    SignaledObserver so = new SignaledObserver();
-    task.requestAddSignaledObserver(so);
-    assertRunUntilStop("add signal observer");
-
-    task.requestUnblock(code);
-    assertRunUntilStop("wait for signal observer hit");
-    assertEquals(signal, so.sig);
-
-    TerminatingObserver to = new TerminatingObserver();
-    task.requestAddTerminatingObserver(to);
-    assertRunUntilStop("add terminating observer");
-
-    task.requestUnblock(so);
-    assertRunUntilStop("wait for terminating observer hit");
-    assertEquals("killed by signal", ! cleanExit, to.signal);
-    assertEquals("exit/signal value", cleanExit ? 0 : signal, to.value);
-
-    // And let it go...
-    task.requestDeleteTerminatingObserver(to);
-  }
+	AttachedObserver ao = new AttachedObserver();
+	Manager.host.requestCreateAttachedProc("/dev/null",
+					       "/dev/null",
+					       "/dev/null", command, ao);
+	assertRunUntilStop("attach then block");
+	assertTrue("AttachedObserver got Task", ao.task != null);
+	
+	task = ao.task;
+	
+	long address = getGlobalLabelAddress(label);
+	CodeObserver code = new CodeObserver(task, address);
+	task.requestAddCodeObserver(code, address);
+	assertRunUntilStop("add breakpoint observer");
+	
+	// Delete and unblock
+	task.requestDeleteAttachedObserver(ao);
+	assertRunUntilStop("wait for breakpoint hit");
+	
+	SignaledObserver so = new SignaledObserver();
+	task.requestAddSignaledObserver(so);
+	assertRunUntilStop("add signal observer");
+	
+	task.requestUnblock(code);
+	assertRunUntilStop("wait for signal observer hit");
+	assertTrue("signal", signal.equals(so.sig));
+	
+	TerminatingObserver to = new TerminatingObserver();
+	task.requestAddTerminatingObserver(to);
+	assertRunUntilStop("add terminating observer");
+	
+	task.requestUnblock(so);
+	assertRunUntilStop("wait for terminating observer hit");
+	assertEquals("killed by signal", ! cleanExit, to.signal);
+	assertEquals("exit/signal value", cleanExit ? 0 : signal.intValue(),
+		     to.value);
+	
+	// And let it go...
+	task.requestDeleteTerminatingObserver(to);
+    }
 
   public void testBreakDivZero()
   {
@@ -900,7 +899,7 @@ public class TestTaskObserverCode extends TestLib
 
   // Tells the child to run the dummy () function
   // which calls bp1_func () and bp2_func ().
-  static final Sig dummySig = Sig.PROF;
+  static final Signal dummySig = Signal.PROF;
 
   /**
    * Request that that the child runs its dummy function which will
@@ -913,22 +912,20 @@ public class TestTaskObserverCode extends TestLib
     child.signal(dummySig);
   }
   
-  void requestDummyRun(Task t)
-  {
-    Signal.tkill(t.getTid(), dummySig);
-  }
+    void requestDummyRun(Task t) {
+	dummySig.tkill(t.getTid());
+    }
 
-  /**
-   * Request that that given thread of the child runs its dummy
-   * function which will call the pb1 and pb1 functions. Done by
-   * sending it the dummySig. To observe this event one needs to put
-   * a code observer on the dummy (), pb1_func () and/or pb2_func ()
-   * functions.
-   */
-  void requestDummyRun(int tid) throws Errno
-  {
-    Signal.tkill(tid, dummySig);
-  }
+    /**
+     * Request that that given thread of the child runs its dummy
+     * function which will call the pb1 and pb1 functions. Done by
+     * sending it the dummySig. To observe this event one needs to put
+     * a code observer on the dummy (), pb1_func () and/or pb2_func ()
+     * functions.
+     */
+    void requestDummyRun(int tid) {
+	dummySig.tkill(tid);
+    }
 
   /**
    * Returns the address of the requested function through

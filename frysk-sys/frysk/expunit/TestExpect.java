@@ -39,8 +39,7 @@
 
 package frysk.expunit;
 
-import frysk.sys.Sig;
-
+import frysk.sys.Signal;
 import frysk.junit.TestCase;
 
 /**
@@ -102,7 +101,7 @@ public class TestExpect
     public void testKill ()
     {
 	e = new Expect ("kill -HUP $$");
-	e.expectTermination (-Sig.HUP_);
+	e.expectTermination (-Signal.HUP.intValue());
     }
 
     /**

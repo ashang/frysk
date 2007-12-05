@@ -44,7 +44,6 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.event.SignalEvent;
@@ -52,7 +51,7 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcObserver;
 import frysk.proc.Task;
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 
 /**
  * CoredumpAction  
@@ -219,7 +218,7 @@ public class CoredumpAction implements ProcObserver.ProcAction {
 
 	public InterruptEvent(Proc theProc) {
 
-	    super(Sig.INT);
+	    super(Signal.INT);
 	    proc = theProc;
 	    logger.log(Level.FINE, "{0} InterruptEvent\n", this);
 	}

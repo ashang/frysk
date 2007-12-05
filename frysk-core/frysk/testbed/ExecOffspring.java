@@ -39,7 +39,7 @@
 
 package frysk.testbed;
 
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 import frysk.proc.Manager;
 import java.util.logging.Level;
 
@@ -77,13 +77,13 @@ public class ExecOffspring extends SynchronizedOffspring {
      * starts a new program, this operation is not acknowledged.
      */
     public void requestExec() {
-	signal(Sig.INT);
+	signal(Signal.INT);
     }
     /**
      * Request that a random thread does an exec.
      */
     public void requestThreadExec() {
-	signal(Sig.USR1);
+	signal(Signal.USR1);
     }
     /**
      * Request an exec and then wait for the new program to signal

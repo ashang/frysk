@@ -1,3 +1,13 @@
+2007-12-04  Andrew Cagney  <cagney@redhat.com>
+
+	Merge frysk.sys.Sig into frysk.sys.Signal.
+	* PollEventLoop.java: Update.
+	* EventLoop.java: Update.
+	* SignalEvent.java: Update.
+	* EventLoopTestBed.java: Update.
+	* TestSigChild.java: Update.
+	* WaitEventLoop.java: Update.
+
 2007-11-28  Tim Moore  <timoore@redhat.com>
 
 	* EventLoop.java (run, start, running) Loop around the wait,

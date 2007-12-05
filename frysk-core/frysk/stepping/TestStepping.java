@@ -56,7 +56,7 @@ import frysk.rt.LineBreakpoint;
 import frysk.rt.SourceBreakpoint;
 import frysk.rt.SourceBreakpointObserver;
 import frysk.sys.Pid;
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.TestLib;
 import frysk.testbed.TestfileTokenScanner;
@@ -317,9 +317,13 @@ public class TestStepping extends TestLib {
 	int end = this.scanner.findTokenLine("_SigSetJmpReturn_");
 
 	/* The test process */
-	SynchronizedOffspring process = new SynchronizedOffspring(Sig.USR1,
-								  new String[] { getExecPath("funit-rt-siglongjmp"),
-										 "" + Pid.get(), "" + Sig.USR1_ });
+	SynchronizedOffspring process
+	    = new SynchronizedOffspring(Signal.USR1,
+					new String[] {
+					    getExecPath("funit-rt-siglongjmp"),
+					    "" + Pid.get(),
+					    Signal.USR1.toString()
+					});
 	this.testStarted = false;
 
 	/** Test initialization */
@@ -360,9 +364,13 @@ public class TestStepping extends TestLib {
 	int end = this.scanner.findTokenLine("_lineStepGotoExit_");
 
 	/* The test process */
-	SynchronizedOffspring process = new SynchronizedOffspring(Sig.USR1,
-								  new String[] { getExecPath("funit-rt-goto"), "" + Pid.get(),
-										 "" + Sig.USR1_ });
+	SynchronizedOffspring process
+	    = new SynchronizedOffspring(Signal.USR1,
+					new String[] {
+					    getExecPath("funit-rt-goto"),
+					    "" + Pid.get(),
+					    Signal.USR1.toString()
+					});
 	this.testStarted = false;
 
 	/** Test initialization */
@@ -406,9 +414,13 @@ public class TestStepping extends TestLib {
 	int end = this.scanner.findTokenLine("_lineStepSigHandlerEntry_");
 
 	/* The test process */
-	SynchronizedOffspring process = new SynchronizedOffspring(Sig.USR1,
-								  new String[] { getExecPath("funit-rt-sigraise"),
-										 "" + Pid.get(), "" + Sig.USR1_ });
+	SynchronizedOffspring process
+	    = new SynchronizedOffspring(Signal.USR1,
+					new String[] {
+					    getExecPath("funit-rt-sigraise"),
+					    "" + Pid.get(),
+					    Signal.USR1.toString()
+					});
 	this.testStarted = false;
 
 	/** Test initialization */

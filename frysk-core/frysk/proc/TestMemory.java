@@ -41,7 +41,7 @@ package frysk.proc;
 
 import frysk.Config;
 import java.util.Observer;
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 import java.util.Observable;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
@@ -89,7 +89,7 @@ public class TestMemory
 	{
 	    public Action updateSignaled (Task task, int sig)
 	    {
-		if (sig == Sig.SEGV_) {
+		if (Signal.SEGV.equals(sig)) {
 		    ByteBuffer b;
 		    long memAddr;
 		    long addr;

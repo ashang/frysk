@@ -41,7 +41,7 @@ package frysk.event;
 
 import frysk.sys.Poll;
 import frysk.sys.PollBuilder;
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 import frysk.sys.Wait;
 import frysk.sys.WaitBuilder;
 import java.util.logging.Level;
@@ -57,8 +57,7 @@ class PollEventLoop
     {
 	Poll.empty ();
     }
-    protected void signalAdd(Sig sig)
-    {
+    protected void signalAdd(Signal sig) {
 	Poll.add(sig);
     }
 
@@ -89,7 +88,7 @@ class PollEventLoop
 	    final WaitBuilder waitBuilder;
 	    PollWaitOnSigChild (WaitBuilder waitBuilder)
 	    {
-		super(Sig.CHLD);
+		super(Signal.CHLD);
 		this.waitBuilder = waitBuilder;
 		logger.log(Level.FINE, "{0} PollWaitOnSigChld\n", this);
 	    }
@@ -108,7 +107,7 @@ class PollEventLoop
 	    {
 		return ("{" + super.toString () + "}");
 	    }
-	    public void signal (Sig sig) {
+	    public void signal(Signal sig) {
 		logger.log (Level.FINEST, "{0} PollBuilder.signal Sig\n", this); 
 		processSignal (sig);
 	    }

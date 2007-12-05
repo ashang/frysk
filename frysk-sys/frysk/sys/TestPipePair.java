@@ -70,7 +70,7 @@ public class TestPipePair
 		// discard - tearDown
 	    }
 	    pipe.pid.blockingDrain ();
-	    Signal.drain (Sig.CHLD);
+	    Signal.CHLD.drain();
 	    pipe = null;
 	}
     }
@@ -132,7 +132,7 @@ public class TestPipePair
     private String[] funitProcMask = new String[] {
 	Config.getPkgLibFile("funit-procmask").getPath(),
 	"-n",
-	Integer.toString(Sig.HUP.hashCode())
+	Integer.toString(Signal.HUP.hashCode())
     };
 
     /**
@@ -140,10 +140,10 @@ public class TestPipePair
      */
     public void testDaemonMask() {
 	logger.log(Level.FINE, "Masking SIGHUP\n");
-	SignalSet set = new SignalSet(Sig.HUP);
+	SignalSet set = new SignalSet(Signal.HUP);
 	set.blockProcMask();
 	assertTrue("SIGHUP masked",
-		   new SignalSet().getProcMask().contains(Sig.HUP));
+		   new SignalSet().getProcMask().contains(Signal.HUP));
 	logger.log(Level.FINE, "Creating funit-procmask to check the mask\n");
 	pipe = new DaemonPipePair(funitProcMask);
 	// For a daemon, it isn't possible to capture the processes
@@ -159,10 +159,10 @@ public class TestPipePair
      */
     public void testChildMask() {
 	logger.log(Level.FINE, "Masking SIGHUP\n");
-	SignalSet set = new SignalSet(Sig.HUP);
+	SignalSet set = new SignalSet(Signal.HUP);
 	set.blockProcMask();
 	assertTrue("SIGHUP masked",
-		   new SignalSet().getProcMask().contains(Sig.HUP));
+		   new SignalSet().getProcMask().contains(Signal.HUP));
 	logger.log(Level.FINE, "Creating funit-procmask to check the mask\n");
 	pipe = new ChildPipePair(funitProcMask);
 	// Capture the child's output (look for 
@@ -187,7 +187,7 @@ public class TestPipePair
 	logger.log(Level.FINE, "Capturing funit-procmask's exit status\n");
 	Wait.wait(pipe.pid, exitStatus,
 		  new SignalBuilder() {
-		      public void signal(Sig sig) {
+		      public void signal(Signal sig) {
 			  fail("unexpected signal " + sig);
 		      }
 		  },

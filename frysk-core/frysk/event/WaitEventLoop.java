@@ -42,7 +42,7 @@ package frysk.event;
 import frysk.sys.Wait;
 import frysk.sys.WaitBuilder;
 import frysk.sys.SignalBuilder;
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 import java.util.logging.Level;
 
 /**
@@ -56,7 +56,7 @@ class WaitEventLoop
     {
 	Wait.signalEmpty ();
     }
-    protected void signalAdd(Sig sig)
+    protected void signalAdd(Signal sig)
     {
 	Wait.signalAdd(sig);
     }
@@ -70,7 +70,7 @@ class WaitEventLoop
 
     private SignalBuilder signalBuilder = new SignalBuilder ()
 	{
-	    public void signal (Sig sig)
+	    public void signal (Signal sig)
 	    {
 	      if (logger.isLoggable(Level.FINEST))
 		{

@@ -42,7 +42,6 @@ package frysk.expunit;
 import frysk.sys.Errno;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.PseudoTerminal;
-import frysk.sys.Sig;
 import frysk.sys.Signal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -122,7 +121,7 @@ public class Expect
 	    pid.blockingDrain ();
 	}
 	pid = null;
-	Signal.drain (Sig.CHLD);
+	Signal.CHLD.drain();
     }
 
     /**

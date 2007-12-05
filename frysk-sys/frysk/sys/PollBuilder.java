@@ -42,8 +42,7 @@ package frysk.sys;
 /**
  * Notify client of Poll events.
  */
-public interface PollBuilder
-{
-    void signal (Sig sig);
+public interface PollBuilder {
+    void signal(Signal sig);
     void pollIn (int fd);
 }

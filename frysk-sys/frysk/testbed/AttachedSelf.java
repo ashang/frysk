@@ -41,7 +41,7 @@ package frysk.testbed;
 
 import frysk.junit.TestCase;
 import frysk.sys.Ptrace;
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 import frysk.sys.SignalBuilder;
 import frysk.sys.UnhandledWaitBuilder;
 import frysk.sys.Wait;
@@ -70,10 +70,8 @@ public class AttachedSelf
 			   // cool!
 		       }
 		   },
-		   new SignalBuilder ()
-		   {
-		       public void signal (Sig sig)
-		       {
+		   new SignalBuilder () {
+		       public void signal(Signal sig) {
 			   TestCase.fail ("unexpected signal " + sig);
 		       }
 		   },

@@ -55,7 +55,7 @@ import frysk.proc.Proc;
 import frysk.proc.ProcObserver;
 import frysk.proc.Task;
 import frysk.stack.StackFactory;
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 
 public abstract class StacktraceAction
     implements ProcObserver.ProcAction
@@ -180,7 +180,7 @@ public abstract class StacktraceAction
     public InterruptEvent (Proc theProc)
     {
 
-      super(Sig.INT);
+      super(Signal.INT);
       proc = theProc;
       logger.log(Level.FINE, "{0} InterruptEvent\n", this);
     }

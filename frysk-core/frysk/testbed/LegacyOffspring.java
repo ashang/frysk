@@ -42,7 +42,6 @@ package frysk.testbed;
 import frysk.proc.Manager;
 import frysk.junit.TestCase;
 import frysk.sys.Pid;
-import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.testbed.SignalWaiter;
 import java.util.LinkedList;
@@ -85,20 +84,20 @@ public class LegacyOffspring
 	return args;
     }
 
-    public static final Sig CHILD_ACK = Sig.USR1;
-    public static final Sig PARENT_ACK = Sig.USR2;
+    public static final Signal CHILD_ACK = Signal.USR1;
+    public static final Signal PARENT_ACK = Signal.USR2;
 
-    private static final Sig[] SPAWN_ACK = new Sig[] { CHILD_ACK, PARENT_ACK };
-    private static final Sig[] EXEC_ACK = new Sig[] { CHILD_ACK };
+    private static final Signal[] SPAWN_ACK = new Signal[] { CHILD_ACK, PARENT_ACK };
+    private static final Signal[] EXEC_ACK = new Signal[] { CHILD_ACK };
 
-    private static final Sig ADD_CLONE_SIG = Sig.USR1;
-    private static final Sig DEL_CLONE_SIG = Sig.USR2;
-    private static final Sig STOP_SIG = Sig.STOP;
-    private static final Sig ADD_FORK_SIG = Sig.HUP;
-    private static final Sig DEL_FORK_SIG = Sig.INT;
-    private static final Sig ZOMBIE_FORK_SIG = Sig.URG;
-    private static final Sig EXEC_SIG = Sig.PWR;
-    private static final Sig EXEC_CLONE_SIG = Sig.FPE;
+    private static final Signal ADD_CLONE_SIG = Signal.USR1;
+    private static final Signal DEL_CLONE_SIG = Signal.USR2;
+    private static final Signal STOP_SIG = Signal.STOP;
+    private static final Signal ADD_FORK_SIG = Signal.HUP;
+    private static final Signal DEL_FORK_SIG = Signal.INT;
+    private static final Signal ZOMBIE_FORK_SIG = Signal.URG;
+    private static final Signal EXEC_SIG = Signal.PWR;
+    private static final Signal EXEC_CLONE_SIG = Signal.FPE;
 
     /** Create an ack process. */
     private LegacyOffspring (OffspringType type) {
@@ -117,10 +116,10 @@ public class LegacyOffspring
     /**
      * Tell TID to create a new offspring. Wait for the acknowledgment.
      */
-    private void spawn (int tid, Sig sig, String why) {
+    private void spawn (int tid, Signal sig, String why) {
 	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, SPAWN_ACK, why);
 	// XXX: Just trust that TID is part of this process.
-	Signal.tkill(tid, sig);
+	sig.tkill(tid);
 	ack.assertRunUntilSignaled();
     }
 
@@ -129,7 +128,7 @@ public class LegacyOffspring
 	spawn(getPid(), ADD_CLONE_SIG, "assertSendAddCloneWaitForAcks");
     }
     /** Request that a task be added.  */
-    public Sig[] requestClone() {
+    public Signal[] requestClone() {
 	signal(ADD_CLONE_SIG);
 	return SPAWN_ACK;
     }
@@ -159,7 +158,7 @@ public class LegacyOffspring
 	spawn(getPid(), ADD_FORK_SIG, "assertSendAddForkWaitForAcks");
     }
     /** Request that a child Proc be added.  */
-    public Sig[] requestFork() {
+    public Signal[] requestFork() {
 	signal(ADD_FORK_SIG);
 	return SPAWN_ACK;
     }
@@ -192,7 +191,7 @@ public class LegacyOffspring
     public void assertSendFryParentWaitForAcks ()	{
 	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, CHILD_ACK,
 					    "assertSendFryParentWaitForAcks");
-	signal(Sig.KILL);
+	signal(Signal.KILL);
 	ack.assertRunUntilSignaled();
     }
 
@@ -209,7 +208,7 @@ public class LegacyOffspring
     /**
      * Request that the main task perform an exec.
      */
-    public Sig[] requestExec() {
+    public Signal[] requestExec() {
 	signal(EXEC_SIG);
 	return EXEC_ACK;
     }
@@ -221,7 +220,7 @@ public class LegacyOffspring
 	// First the main thread acks with .PARENT_ACK, and then the
 	// execed process acks with .CHILD_ACK.
 	SignalWaiter ack = new SignalWaiter(Manager.eventLoop,
-					    new Sig[] { PARENT_ACK, CHILD_ACK },
+					    new Signal[] { PARENT_ACK, CHILD_ACK },
 					    "assertSendExecCloneWaitForAcks");
 	signal(EXEC_CLONE_SIG);
 	ack.assertRunUntilSignaled();

@@ -57,7 +57,7 @@ _syscall2(int, tkill, pid_t, tid, int, sig);
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/Tid.h"
 #include "frysk/sys/Poll.h"
-#include "frysk/sys/Sig.h"
+#include "frysk/sys/Signal.h"
 #include "frysk/sys/SignalSet.h"
 #include "frysk/sys/cni/SignalSet.hxx"
 #include "frysk/sys/Poll$Fds.h"
@@ -95,7 +95,7 @@ handler (int signum, siginfo_t *siginfo, void *context)
 }
 
 void
-frysk::sys::Poll::addSignalHandler (frysk::sys::Sig* sig)
+frysk::sys::Poll::addSignalHandler (frysk::sys::Signal* sig)
 {
   int signum = sig->hashCode ();
   // Make certain that the signal is masked (this is ment to be
@@ -217,7 +217,7 @@ frysk::sys::Poll::poll (frysk::sys::PollBuilder* pollObserver,
   for (int i = 1; i < 32; i++) {
     if (sigismember (&signals, i)) {
       // Find the signal object.
-      frysk::sys::Sig* sig = frysk::sys::Sig::valueOf (i);
+      frysk::sys::Signal* sig = frysk::sys::Signal::valueOf (i);
       // Notify the client of the signal.
       pollObserver->signal (sig);
     }

@@ -40,7 +40,7 @@
 package frysk.proc;
 
 import frysk.event.RequestStopEvent;
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -78,7 +78,7 @@ public class TestTaskObserverDetach
 	}
 	/** Request that the target trigger the required event; return
 	 * the expected acknowledge signals.  */
-	abstract Sig[] requestEvent ();
+	abstract Signal[] requestEvent ();
 	/** Ask the derived task to add an observer for the event that
 	 * requestSignal triggers.  */
 	abstract void addEventObserver (Task task);
@@ -109,7 +109,7 @@ public class TestTaskObserverDetach
 	void assertDetach ()
 	{
 	    // Request that the event occure.
-	    Sig[] eventAcks = requestEvent();
+	    Signal[] eventAcks = requestEvent();
 	    // When the event is the signal the event-loop doesn't
 	    // need to be run, just need to wait for the signal to
 	    // reach the thread.  However for other cases, the
@@ -157,7 +157,7 @@ public class TestTaskObserverDetach
 	    extends Detach
 	    implements TaskObserver.Forked
 	{
-	    Sig[] requestEvent () { return child.requestFork(); }
+	    Signal[] requestEvent () { return child.requestFork(); }
 	    boolean eventIsSignal () { return false; }
 	    DetachFork ()
 	    {
@@ -194,7 +194,7 @@ public class TestTaskObserverDetach
 	    extends Detach
 	    implements TaskObserver.Cloned
 	{
-	    Sig[] requestEvent () { return child.requestClone(); }
+	    Signal[] requestEvent () { return child.requestClone(); }
 	    boolean eventIsSignal () { return false; }
 	    DetachClone ()
 	    {
@@ -232,7 +232,7 @@ public class TestTaskObserverDetach
 	    extends Detach
 	    implements TaskObserver.Execed
 	{
-	    Sig[] requestEvent () { return child.requestExec(); }
+	    Signal[] requestEvent () { return child.requestExec(); }
 	    boolean eventIsSignal () { return false; }
 	    DetachExec ()
 	    {
@@ -263,7 +263,7 @@ public class TestTaskObserverDetach
 	class DetachSignal
 	    extends Detach
 	{
-	    Sig[] requestEvent () { child.signal(Sig.TERM); return new Sig[0]; }
+	    Signal[] requestEvent () { child.signal(Signal.TERM); return new Signal[0]; }
 	    boolean eventIsSignal () { return true; }
 	    void addEventObserver (Task task)
 	    {

@@ -1,3 +1,15 @@
+2007-12-04  Andrew Cagney  <cagney@redhat.com>
+
+	Merge frysk.sys.Sig into frysk.sys.Signal.
+	* TestSignalWaiter.java: Update.
+	* SignalWaiter.java: Update.
+	* SlaveOffspring.java: Update.
+	* SynchronizedOffspring.java: Update.
+	* Offspring.java: Update.
+	* TestLib.java: Update.
+	* ExecOffspring.java: Update.
+	* LegacyOffspring.java: Update.
+
 2007-12-04  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
 
 	* FryskAsm.java: Add PowerPC32/64.

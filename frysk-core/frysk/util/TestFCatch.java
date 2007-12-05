@@ -47,7 +47,6 @@ import java.util.logging.Level;
 import frysk.proc.FindProc;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
-import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.proc.Action;
 import frysk.proc.Manager;
@@ -81,7 +80,7 @@ public class TestFCatch
 
     assertRunUntilStop("Adding all observers");
 
-    Signal.kill(proc.getPid(), Sig.SEGV);
+    Signal.SEGV.kill(proc.getPid());
 
     assertRunUntilStop("Building stacktrace");
 

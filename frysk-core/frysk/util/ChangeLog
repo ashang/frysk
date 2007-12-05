@@ -1,3 +1,10 @@
+2007-12-04  Andrew Cagney  <cagney@redhat.com>
+
+	Merge frysk.sys.Sig into frysk.sys.Signal.
+	* TestFCatch.java: Update.
+	* CoredumpAction.java: Update.
+	* StacktraceAction.java: Update.
+
 2007-11-29  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* IA32LinuxElfCorefile.java(writeNotePrstatus): Construct

@@ -54,7 +54,6 @@ import frysk.proc.Isa;
 import frysk.sys.Errno;
 import frysk.sys.Ptrace;
 import frysk.sys.Ptrace.AddressSpace;
-import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.isa.ISA;
 import frysk.isa.ElfMap;
@@ -294,7 +293,7 @@ public class LinuxTask extends LiveTask {
     public void sendStop ()
     {
 	logger.log(Level.FINE, "{0} sendStop\n", this);
-	Signal.tkill(getTid(), Sig.STOP);
+	Signal.STOP.tkill(getTid());
     }
 
     private int ptraceOptions;
@@ -333,12 +332,13 @@ public class LinuxTask extends LiveTask {
 		 */
 
 		/*
-		 * XXX: This line sends another signal to frysk notifying about the
-		 * attach's pending waitpid regardless of whether the task is running or
-		 * stopped. This avoids hangs on attaching to a stopped process. Bug
-		 * 3316.
+		 * XXX: This line sends another signal to frysk
+		 * notifying about the attach's pending waitpid
+		 * regardless of whether the task is running or
+		 * stopped. This avoids hangs on attaching to a
+		 * stopped process. Bug 3316.
 		 */
-		frysk.sys.Signal.tkill(frysk.sys.Tid.get(), Sig.CHLD);
+		Signal.CHLD.tkill(frysk.sys.Tid.get());
 	    }
 	catch (Errno.Eperm e)
 	    {

@@ -66,8 +66,7 @@ public class TestWait
     private final SignalBuilder unhandledSignalBuilder =
 	new SignalBuilder ()
 	{
-	    public void signal (Sig sig)
-	    {
+	    public void signal (Signal sig) {
 		fail ("signal " + sig + " received");
 	    }
 	};
@@ -132,18 +131,17 @@ public class TestWait
 
     public void testSignals ()
     {
-	Wait.signalAdd (Sig.USR1);
+	Wait.signalAdd (Signal.USR1);
 	class Signals
 	    implements SignalBuilder
 	{
 	    boolean received = false;
-	    public void signal (Sig sig)
-	    {
-		received = (sig == Sig.USR1);
+	    public void signal (Signal sig) {
+		received = (sig == Signal.USR1);
 	    }
 	}
 	Signals signals = new Signals ();
-	Signal.tkill (Tid.get (), Sig.USR1);
+	Signal.USR1.tkill(Tid.get ());
 	Wait.waitAll (getTimeoutMilliseconds (),
 		      unhandledWaitBuilder, signals);
 	assertTrue ("signals.received", signals.received);

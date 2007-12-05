@@ -1,3 +1,8 @@
+2007-12-04  Andrew Cagney  <cagney@redhat.com>
+
+	Merged frysk.sys.Sig into frysk.sys.Signal.
+	* Expect.java: Use Signal.CHLD.drain().
+
 2007-09-04  Andrew Cagney  <cagney@redhat.com>
 
 	* Match.java: Make public.

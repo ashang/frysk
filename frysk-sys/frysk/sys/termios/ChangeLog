@@ -1,3 +1,8 @@
+2007-12-04  Andrew Cagney  <cagney@redhat.com>
+
+	Merged frysk.sys.Sig into frysk.sys.Signal.
+	* TestLib.java: Use Signal.CHLD.drain().
+
 2007-04-17  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Flow.cxx (flow): Update calls to printf style throwErrno.

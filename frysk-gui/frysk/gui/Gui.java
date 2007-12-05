@@ -94,10 +94,8 @@ import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference;
 import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
-
 import frysk.proc.Manager;
 import frysk.sys.Signal;
-import frysk.sys.Sig;
 import frysk.sys.Pid;
 import frysk.util.CommandlineParser;
 
@@ -301,22 +299,23 @@ public class Gui implements LifeCycleListener, Saveable {
 		File dir = Config.getFryskDir();
 
 		if (dir.exists()) {
-			File[] contents = dir.listFiles();
-			for (int i = 0; i < contents.length; i++) {
-				if (contents[i].getName().startsWith("lock")) {
-					currentlyRunningPID = Integer.parseInt(contents[i].getName()
-							.substring(4));
-					try {
-						Signal.kill(currentlyRunningPID, Sig.USR1);
-					} catch (Exception e) {
-						/* The lock file shouldn't be there */
-						contents[i].delete();
-						break;
-					}
-					return true;
-				}
+		    File[] contents = dir.listFiles();
+		    for (int i = 0; i < contents.length; i++) {
+			if (contents[i].getName().startsWith("lock")) {
+			    currentlyRunningPID
+				= Integer.parseInt(contents[i].getName()
+						   .substring(4));
+			    try {
+				Signal.USR1.kill(currentlyRunningPID);
+			    } catch (Exception e) {
+				/* The lock file shouldn't be there */
+				contents[i].delete();
+				break;
+			    }
+			    return true;
 			}
-		} 
+		    }
+		}
 		
 		return false;
 	}
@@ -563,7 +562,7 @@ public class Gui implements LifeCycleListener, Saveable {
 	static class MultipleInvocationEvent extends SignalEvent {
 
 		public MultipleInvocationEvent() {
-			super(Sig.USR1);
+			super(Signal.USR1);
 			logger.log(Level.FINE, "{0} MultipleInvocationEvent\n", this);
 		}
 
@@ -586,8 +585,8 @@ public class Gui implements LifeCycleListener, Saveable {
 	static class InterruptEvent extends SignalEvent {
 
 		public InterruptEvent() {
-			super(Sig.INT);
-			logger.log(Level.FINE, "{0} InterruptEvent\n", this);
+		    super(Signal.INT);
+		    logger.log(Level.FINE, "{0} InterruptEvent\n", this);
 		}
 
 		public final void execute() {

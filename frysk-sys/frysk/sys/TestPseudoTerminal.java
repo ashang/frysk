@@ -89,7 +89,7 @@ public class TestPseudoTerminal extends TestCase
 		// toss it; don't care
 	    }
 	}
-	Signal.drain (Sig.CHLD);
+	Signal.CHLD.drain();
     }
 
     /**

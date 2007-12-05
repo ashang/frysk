@@ -1,3 +1,10 @@
+2007-12-04  Andrew Cagney  <cagney@redhat.com>
+
+	Merge frysk.sys.Sig into frysk.sys.Signal.
+	* TestStepping.java: Update.
+	* SteppingEngine.java: Update.
+	* TestSteppingEngine.java: Update.
+
 2007-12-03  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestStepping.java (testASMFunctionStepOverPrologue): New test.

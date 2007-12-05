@@ -45,7 +45,6 @@ import frysk.event.Request;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.sys.Signal;
-import frysk.sys.Sig;
 import frysk.util.CountDownLatch;
 import java.util.List;
 
@@ -67,7 +66,7 @@ class QuitCommand extends ParameterizedCommand {
             for (Iterator iterator = cli.runningProcs.iterator();
 		 iterator.hasNext();) {
                 Proc p = (Proc) iterator.next();
-                Signal.kill(p.getPid(), Sig.KILL);
+                Signal.KILL.kill(p.getPid());
             }
             // Throw the countDown on the queue so that the command
             // thread will wait until events provoked by Signal.kill()

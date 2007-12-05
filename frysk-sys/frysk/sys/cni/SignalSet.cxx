@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@
 #include <gnu/gcj/RawDataManaged.h>
 
 #include "frysk/sys/SignalSet.h"
-#include "frysk/sys/Sig.h"
+#include "frysk/sys/Signal.h"
 #include "frysk/sys/cni/SignalSet.hxx"
 #include "frysk/sys/cni/Errno.hxx"
 
@@ -64,7 +64,7 @@ frysk::sys::SignalSet::fill ()
 }
 
 frysk::sys::SignalSet*
-frysk::sys::SignalSet::remove (frysk::sys::Sig* sig)
+frysk::sys::SignalSet::remove (frysk::sys::Signal* sig)
 {
   sigset_t *sigset = (sigset_t*) rawSet;
   ::sigdelset (sigset, sig->hashCode ());
@@ -72,7 +72,7 @@ frysk::sys::SignalSet::remove (frysk::sys::Sig* sig)
 }
 
 frysk::sys::SignalSet*
-frysk::sys::SignalSet::add (frysk::sys::Sig* sig)
+frysk::sys::SignalSet::add (frysk::sys::Signal* sig)
 {
   sigset_t *sigset = (sigset_t*) rawSet;
   ::sigaddset (sigset, sig->hashCode ());
@@ -80,7 +80,7 @@ frysk::sys::SignalSet::add (frysk::sys::Sig* sig)
 }
 
 jboolean
-frysk::sys::SignalSet::contains (frysk::sys::Sig* sig)
+frysk::sys::SignalSet::contains (frysk::sys::Signal* sig)
 {
   sigset_t *sigset = (sigset_t*) rawSet;
   return ::sigismember (sigset, sig->hashCode ());
@@ -181,18 +181,18 @@ frysk::sys::SignalSet::size()
   return numSigs;
 }
 
-JArray<frysk::sys::Sig*>*
+JArray<frysk::sys::Signal*>*
 frysk::sys::SignalSet::toArray()
 {
   sigset_t *set = (sigset_t*) rawSet;
   // Create an array for those signals
-  JArray<frysk::sys::Sig*>* sigs = (JArray<frysk::sys::Sig*>*)
-    JvNewObjectArray (size(), &frysk::sys::Sig::class$, NULL);
+  JArray<frysk::sys::Signal*>* sigs = (JArray<frysk::sys::Signal*>*)
+    JvNewObjectArray (size(), &frysk::sys::Signal::class$, NULL);
   // Fill in the array.
   for (int setI = 1, sigI = 0; setI < NSIG; setI++) {
     if (sigismember (set, setI)) {
       // printf ("%d setI %d\n", sigI, setI);
-      elements(sigs)[sigI++] = frysk::sys::Sig::valueOf(setI);
+      elements(sigs)[sigI++] = frysk::sys::Signal::valueOf(setI);
     }
   }
   return sigs;

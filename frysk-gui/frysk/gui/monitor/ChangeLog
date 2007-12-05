@@ -1,3 +1,10 @@
+2007-12-05  Andrew Cagney  <cagney@redhat.com>
+
+	Merge frysk.sys.Sig into frysk.sys.Signal.
+	* observers/TaskSignaledObserver.java: Update.
+	* MainWindow.java: Update.
+	* observers/TaskTerminatingObserver.java: Update.
+
 2007-10-14  Andrew Cagney  <cagney@redhat.com>
 
 	* actions/ShowMemWin.java: Delete instanceof checks for

@@ -58,7 +58,7 @@ import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 
 public class TaskTerminatingObserver
     extends TaskObserverRoot
@@ -142,22 +142,23 @@ public class TaskTerminatingObserver
       }
   }
 
-  private void runActions (Task task, boolean signal, int value)
-  {
-    // TODO implement action points to take care of signal and value
-    String name = "terminating";
-    String tooltip = "task terminating";
-    Event event = new Event(name, tooltip, GuiTask.GuiTaskFactory.getGuiTask(task), this);
-    
-    super.runActions();
-    this.taskActionPoint.runActions(task, this, event);
-    
-    if(signal){
-      name += " sig " + Sig.toPrintString(value);
-      tooltip += " with signal " + Sig.toPrintString(value);
+    private void runActions (Task task, boolean signal, int value) {
+	// TODO implement action points to take care of signal and
+	// value
+	String name = "terminating";
+	String tooltip = "task terminating";
+	Event event = new Event(name, tooltip, GuiTask.GuiTaskFactory.getGuiTask(task), this);
+	
+	super.runActions();
+	this.taskActionPoint.runActions(task, this, event);
+	
+	if (signal) {
+	    // XXX: This is the host, and not the target signal :-(
+	    name += " sig " + Signal.valueOf(value).toPrint();
+	    tooltip += " with signal " + Signal.valueOf(value).toPrint();
+	}
+	EventManager.theManager.addEvent(event);
     }
-    EventManager.theManager.addEvent(event);
-  }
 
   private boolean runFilters (Task task, boolean signal, int value)
   {

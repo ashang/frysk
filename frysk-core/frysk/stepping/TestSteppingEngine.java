@@ -44,7 +44,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
-
 import frysk.sys.Signal;
 import frysk.testbed.Offspring;
 import frysk.Config;
@@ -64,8 +63,6 @@ import frysk.rt.SourceBreakpointObserver;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.TestLib;
 import frysk.testbed.TestfileTokenScanner;
-
-import frysk.sys.Sig;
 
 /**
  * Testsuite for testing SteppingEngine operations. See TestStepping for
@@ -650,7 +647,7 @@ public class TestSteppingEngine extends TestLib {
 	    }
 
 	    public void addedTo(Object observable) {
-		    Signal.kill(((Task) observable).getProc().getPid(), Sig.KILL);
+		Signal.KILL.kill(((Task) observable).getProc().getPid());
 	    }
 
 	    public void addFailed(Object observable, Throwable w) {

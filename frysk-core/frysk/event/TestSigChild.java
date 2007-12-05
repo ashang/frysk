@@ -39,7 +39,7 @@
 
 package frysk.event;
 
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 import frysk.junit.TestCase;
 
 /**
@@ -53,10 +53,8 @@ public class TestSigChild
     public void stackDump ()
     {
 	EventLoop eventLoop = new PollEventLoop ();
-	eventLoop.add (new SignalEvent (Sig.CHLD)
-	    {
-		public final void execute ()
-		{
+	eventLoop.add (new SignalEvent (Signal.CHLD) {
+		public final void execute () {
 		}
 	    });
 	new RuntimeException ().getStackTrace ();

@@ -1,5 +1,16 @@
 2007-12-04  Andrew Cagney  <cagney@redhat.com>
 
+	Merge frysk.sys.Sig into frysk.sys.Signal.
+	* TestTaskTerminateObserver.java: Update.
+	* TestTaskSyscallObserver.java: Update.
+	* TestTaskObserver.java: Update.
+	* TestTaskObserverInstructionSigReturn.java: Update.
+	* TestSyscallSignal.java: Update.
+	* TestProcTasksObserver.java: Update.
+	* TestMemory.java: Update.
+	* TestTaskObserverCode.java: Update.
+	* TestTaskObserverDetach.java: Update.
+
 	* BankRegister.java (reverseArray(byte[])): Delete.	
 
 	* BankRegister.java (getFIXME(Task)): Delete.

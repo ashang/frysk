@@ -58,7 +58,7 @@
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/Ptrace.h"
 #include "frysk/sys/Wait.h"
-#include "frysk/sys/Sig.h"
+#include "frysk/sys/Signal.h"
 #include "frysk/sys/cni/SignalSet.hxx"
 #include "frysk/sys/SignalSet.h"
 #include "frysk/sys/WaitBuilder.h"
@@ -388,7 +388,7 @@ frysk::sys::Wait::signalEmpty ()
 
 
 void
-frysk::sys::Wait::signalAdd (frysk::sys::Sig* sig)
+frysk::sys::Wait::signalAdd (frysk::sys::Signal* sig)
 {
   java::util::logging::Logger *logger = frysk::sys::Wait::getLogger ();
   // Get the hash code.
@@ -568,7 +568,7 @@ frysk::sys::Wait::wait (jint waitPid,
 	  else
 	    {
 	      // Find the signal object.
-	      frysk::sys::Sig* sig = frysk::sys::Sig::valueOf (i);
+	      frysk::sys::Signal* sig = frysk::sys::Signal::valueOf (i);
 	      // Notify the client of the signal.
 	      signalBuilder->signal (sig);
 	    }

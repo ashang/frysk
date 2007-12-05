@@ -47,7 +47,6 @@ import frysk.sys.FileDescriptor;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.Signal;
 import frysk.sys.Errno;
-import frysk.sys.Sig;
 
 /**
  * Manipulates a terminal bound to FileDescriptor.
@@ -89,7 +88,7 @@ public class TestLib
 	    }
 	    pid.blockingDrain ();
 	}
-	Signal.drain (Sig.CHLD);
+	Signal.CHLD.drain();
     }
 
     /**

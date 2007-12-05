@@ -63,7 +63,6 @@ import frysk.rt.Breakpoint;
 import frysk.rt.BreakpointManager;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
-import frysk.sys.Sig;
 import frysk.sys.Signal;
 
 /**
@@ -1226,7 +1225,7 @@ public class SteppingEngine {
 		    contextMap.put(task.getProc(), new Integer(i));
 		} else {
 		    contextMap.remove(task.getProc());
-		    Signal.kill(task.getProc().getPid(), Sig.KILL);
+		    Signal.KILL.kill(task.getProc().getPid());
 		}
 	    }
 	}

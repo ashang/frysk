@@ -42,7 +42,6 @@ package frysk.sys;
 /**
  * Notify client of Signal events.
  */
-public interface SignalBuilder
-{
-    void signal (Sig sig);
+public interface SignalBuilder {
+    void signal(Signal sig);
 }

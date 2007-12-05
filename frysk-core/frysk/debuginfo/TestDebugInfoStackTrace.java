@@ -56,7 +56,7 @@ import frysk.stepping.SteppingEngine;
 import frysk.stepping.TaskStepEngine;
 import frysk.symtab.Symbol;
 import frysk.sys.Pid;
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 import frysk.testbed.SynchronizedOffspring;
 import frysk.testbed.TestLib;
 
@@ -96,10 +96,10 @@ public class TestDebugInfoStackTrace
     lock = new LockObserver();
     
     SynchronizedOffspring process
-	= new SynchronizedOffspring (Sig.USR1, new String[] {
+	= new SynchronizedOffspring (Signal.USR1, new String[] {
 					 getExecPath ("funit-rt-looper"),
 					 "" + Pid.get (),
-					 "" + Sig.USR1_
+					 Signal.USR1.toString()
 				     });
     myTask = process.findTaskUsingRefresh(true);
     assertNotNull(myTask);
@@ -215,10 +215,10 @@ public class TestDebugInfoStackTrace
       lock = new LockObserver();
 
     SynchronizedOffspring process
-	= new SynchronizedOffspring (Sig.USR1, new String[] {
+	= new SynchronizedOffspring (Signal.USR1, new String[] {
 					 getExecPath ("funit-rt-threader"),
 					 "" + Pid.get (),
-					 "" + Sig.USR1_
+					 Signal.USR1.toString()
 				     });
     myTask = process.findTaskUsingRefresh(true);
     
@@ -265,10 +265,10 @@ public class TestDebugInfoStackTrace
   testState = PUSH;
   
   SynchronizedOffspring process
-      = new SynchronizedOffspring (Sig.USR1, new String[] {
+      = new SynchronizedOffspring (Signal.USR1, new String[] {
 				       getExecPath ("funit-rt-stepper"),
 				       "" + Pid.get (),
-				       "" + Sig.USR1_
+				       Signal.USR1.toString()
 				   });
   myTask = process.findTaskUsingRefresh(true);
   myProc = myTask.getProc();
@@ -303,10 +303,10 @@ public class TestDebugInfoStackTrace
   testState = POP;
   
   SynchronizedOffspring process
-      = new SynchronizedOffspring (Sig.USR1, new String[] {
+      = new SynchronizedOffspring (Signal.USR1, new String[] {
 				       getExecPath ("funit-rt-stepper"),
 				       "" + Pid.get (),
-				       "" + Sig.USR1_
+				       Signal.USR1.toString()
 				   });
   myTask = process.findTaskUsingRefresh(true);
   myProc = myTask.getProc();

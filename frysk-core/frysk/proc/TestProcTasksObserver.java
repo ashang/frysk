@@ -41,7 +41,6 @@ package frysk.proc;
 
 import java.util.logging.Level;
 import frysk.sys.Signal;
-import frysk.sys.Sig;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskSet;
 import frysk.testbed.SlaveOffspring;
@@ -188,7 +187,7 @@ public class TestProcTasksObserver extends TestLib {
 		
 	//Delete a clone.
 	Task task = ackProcess.findTaskUsingRefresh(false);
-	Signal.tkill(task.getTid(), Sig.BUS);
+	Signal.BUS.tkill(task.getTid());
 		
 	assertRunUntilStop("delete 2");
 		
@@ -227,7 +226,7 @@ public class TestProcTasksObserver extends TestLib {
 	ackProcess.assertSendAddCloneWaitForAcks();
 		
 	Task task = ackProcess.findTaskUsingRefresh(false);
-	Signal.tkill(task.getTid(), Sig.BUS);
+	Signal.BUS.tkill(task.getTid());
 		
 	assertRunUntilStop("clone then kill 2");
 

@@ -45,75 +45,68 @@ import frysk.junit.TestCase;
  * Test manipulation of a signal set.
  */
 
-public class TestSignalSet
-    extends TestCase
-{
+public class TestSignalSet extends TestCase {
     /**
      * Check that fill, and empty, add remove signals from the set.
      */
-    public void testFillEmpty ()
-    {
+    public void testFillEmpty () {
 	SignalSet set = new SignalSet ();
-	assertFalse ("set contains Sig.HUP", set.contains (Sig.HUP));
+	assertFalse("set contains Signal.HUP", set.contains (Signal.HUP));
 	set.fill ();
-	assertTrue ("set contains Sig.HUP", set.contains (Sig.HUP));
+	assertTrue("set contains Signal.HUP", set.contains (Signal.HUP));
 	set.empty ();
-	assertFalse ("set contains Sig.HUP", set.contains (Sig.HUP));
+	assertFalse("set contains Signal.HUP", set.contains (Signal.HUP));
     }
 
     /**
      * Check that adding, and removing a signal works.
      */
-    public void testAddRemove ()
-    {
+    public void testAddRemove () {
 	SignalSet set = new SignalSet ();
-	assertFalse ("Sig.HUP is member", set.contains (Sig.HUP));
-	assertFalse ("Sig.USR1 is member", set.contains (Sig.USR1));
+	assertFalse("Signal.HUP is member", set.contains (Signal.HUP));
+	assertFalse("Signal.USR1 is member", set.contains (Signal.USR1));
 
-	set.add (Sig.HUP);
-	assertTrue ("Sig.HUP is member", set.contains (Sig.HUP));
-	assertFalse ("Sig.USR1 is member", set.contains (Sig.USR1));
+	set.add(Signal.HUP);
+	assertTrue("Signal.HUP is member", set.contains (Signal.HUP));
+	assertFalse("Signal.USR1 is member", set.contains (Signal.USR1));
 
-	set.add (Sig.USR1);
-	assertTrue ("Sig.HUP is member", set.contains (Sig.HUP));
-	assertTrue ("Sig.USR1 is member", set.contains (Sig.USR1));
+	set.add(Signal.USR1);
+	assertTrue("Signal.HUP is member", set.contains (Signal.HUP));
+	assertTrue("Signal.USR1 is member", set.contains (Signal.USR1));
 
-	set.remove (Sig.USR1);
-	assertTrue ("Sig.HUP is member", set.contains (Sig.HUP));
-	assertFalse ("Sig.USR1 is member", set.contains (Sig.USR1));
+	set.remove(Signal.USR1);
+	assertTrue("Signal.HUP is member", set.contains (Signal.HUP));
+	assertFalse("Signal.USR1 is member", set.contains (Signal.USR1));
 
-	set.add (new Sig[] {Sig.USR1, Sig.USR2});
-	assertTrue ("Sig.USR1 is member", set.contains(Sig.USR1));
-	assertTrue ("Sig.USR2 is member", set.contains(Sig.USR2));
+	set.add(new Signal[] {Signal.USR1, Signal.USR2});
+	assertTrue("Signal.USR1 is member", set.contains(Signal.USR1));
+	assertTrue("Signal.USR2 is member", set.contains(Signal.USR2));
     }
 
     /**
      * Check creating a SignalSet from an array.
      */
-    public void testNewFromArray ()
-    {
-	SignalSet set = new SignalSet (new Sig[] { Sig.HUP, Sig.USR1 });
-	assertTrue ("set contains Sig.HUP", set.contains (Sig.HUP));
-	assertTrue ("set contains Sig.USR1", set.contains (Sig.USR1));
-	assertFalse ("set contains Sig.USR2", set.contains (Sig.USR2));
+    public void testNewFromArray () {
+	SignalSet set = new SignalSet(new Signal[] { Signal.HUP, Signal.USR1 });
+	assertTrue("set contains Signal.HUP", set.contains (Signal.HUP));
+	assertTrue("set contains Signal.USR1", set.contains (Signal.USR1));
+	assertFalse("set contains Signal.USR2", set.contains (Signal.USR2));
     }
 
     /**
      * Check creating a SignalSet from a single signal.
      */
-    public void testNewFromSig ()
-    {
-	SignalSet set = new SignalSet (Sig.HUP);
-	assertTrue ("set contains Sig.HUP", set.contains (Sig.HUP));
-	assertFalse ("set contains Sig.USR1", set.contains (Sig.USR1));
+    public void testNewFromSig () {
+	SignalSet set = new SignalSet(Signal.HUP);
+	assertTrue("set contains Signal.HUP", set.contains (Signal.HUP));
+	assertFalse("set contains Signal.USR1", set.contains (Signal.USR1));
     }
 
     /**
      * Check toArray does just that.
      */
-    public void testToArray()
-    {
-	Sig[] sigs = new Sig[] { Sig.HUP, Sig.USR1 };
+    public void testToArray() {
+	Signal[] sigs = new Signal[] { Signal.HUP, Signal.USR1 };
 	SignalSet set = new SignalSet (sigs);
 	// Check right length
 	assertEquals ("number of sigs", sigs.length, set.toArray().length);
@@ -132,43 +125,39 @@ public class TestSignalSet
     /**
      * Check a signal set.
      */
-    public void testEmptyToString()
-    {
+    public void testEmptyToString() {
 	assertEquals ("empty set", "{}", new SignalSet().toString());
     }
-    public void testSingleToString()
-    {
-	assertEquals ("SIGHUP set", "{SIGHUP}",
-		      new SignalSet (Sig.HUP).toString());
+    public void testSingleToString() {
+	assertEquals("SIGHUP set", "{SIGHUP}",
+		     new SignalSet(Signal.HUP).toString());
     }
-    public void testMultiToString()
-    {
+    public void testMultiToString() {
 	// assumes a specific ordering
-	if (Sig.HUP.compareTo(Sig.USR1) < 0)
+	if (Signal.HUP.compareTo(Signal.USR1) < 0)
 	    assertEquals("SIGHUP+SIGUSR1 set", "{SIGUSR1,SIGHUP}",
-			 new SignalSet(new Sig[] {Sig.HUP, Sig.USR1})
+			 new SignalSet(new Signal[] {Signal.HUP, Signal.USR1})
 			 .toString());
 	else
 	    assertEquals("SIGHUP+SIGUSR1 set", "{SIGHUP,SIGUSR1}",
-			 new SignalSet(new Sig[] {Sig.HUP, Sig.USR1})
+			 new SignalSet(new Signal[] {Signal.HUP, Signal.USR1})
 			 .toString());
     }
 
-    public void testProcMask ()
-    {
-	SignalSet set = new SignalSet (new Sig[] { Sig.WINCH });
+    public void testProcMask () {
+	SignalSet set = new SignalSet(new Signal[] { Signal.WINCH });
 	SignalSet old = new SignalSet ();
 	SignalSet pending = new SignalSet ();
 	set.setProcMask (old);
 
 	// Check that a masked signal becomes pending
 	pending.getPending ();
-	assertFalse ("pending contains Sig.WINCH",
-		     pending.contains (Sig.WINCH));
-	Signal.tkill (Tid.get (), Sig.WINCH);
+	assertFalse("pending contains Signal.WINCH",
+		    pending.contains(Signal.WINCH));
+	Signal.WINCH.tkill(Tid.get());
 	pending.getPending ();
-	assertTrue ("pending contains Sig.WINCH",
-		    pending.contains (Sig.WINCH));
+	assertTrue("pending contains Signal.WINCH",
+		   pending.contains (Signal.WINCH));
 
 	// Calling sigsuspend, unblocking the SigWINCH signal, hangs.
 	// This is because the signal is ignored.

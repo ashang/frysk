@@ -45,7 +45,7 @@
 #include <gcj/cni.h>
 
 #include "frysk/sys/Itimer.h"
-#include "frysk/sys/Sig.h"
+#include "frysk/sys/Signal.h"
 #include "frysk/sys/cni/Errno.hxx"
 
 struct timeval
@@ -69,11 +69,11 @@ setItimer (int which, jlong interval, jlong value)
     throwErrno (errno, "setitimer");
 }
 
-frysk::sys::Sig *
+frysk::sys::Signal*
 frysk::sys::Itimer::real (jlong interval, jlong value)
 {
   setItimer (ITIMER_REAL, interval, value);
-  return frysk::sys::Sig::ALRM;
+  return frysk::sys::Signal::ALRM;
 }
 
 jint

@@ -40,7 +40,7 @@
 package frysk.proc;
 
 import frysk.Config;
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 import frysk.testbed.TestLib;
 
 public class TestTaskObserverInstructionSigReturn
@@ -131,19 +131,15 @@ public class TestTaskObserverInstructionSigReturn
     return Action.CONTINUE;
   }
 
-  // TaskObserver.Signaled interface
-  public Action updateSignaled (Task task, int signal)
-  {
-    if (signal != Sig.PROF_)
-      fail("Wrong signal received: " + signal);
-    
-    signaled++;
-    if (signaled == 1)
-      {
-	Manager.eventLoop.requestStop();
-	return Action.BLOCK;
-      }
-
-    return Action.CONTINUE;
-  }
+    // TaskObserver.Signaled interface
+    public Action updateSignaled (Task task, int signal) {
+	if (!Signal.PROF.equals(signal))
+	    fail("Wrong signal received: " + signal);
+	signaled++;
+	if (signaled == 1) {
+	    Manager.eventLoop.requestStop();
+	    return Action.BLOCK;
+	}
+	return Action.CONTINUE;
+    }
 }

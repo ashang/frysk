@@ -1,3 +1,52 @@
+2007-12-04  Andrew Cagney  <cagney@redhat.com>
+
+	* Sig.shenum: Delete; merge into ...
+	* Signal.java (Signal(int)): New; private.
+	(toPrint(), toString()): New.
+	(kill(int)): Replace kill(int,Sig).
+	(tkill(int)): Replace tkill(int,Sig).
+	(drain()): Replace drain(Sig).
+	(HUP, hup()): New.
+	(CHLD, chld()): New.
+	(KILL, kill()): New.
+	(USR1, usr2()): New.
+	(USR2, usr1()): New.
+	(WINCH, winch()): New.
+	(CONT, cont()): New.
+	(ALRM, alrm()): New.
+	(TERM, term()): New.
+	(TRAP, trap()): New.
+	(STOP, stop()): New.
+	(NONE, none()): New.
+	(INT, int_()): New.
+	(SEGV, segv()): New.
+	(BUS, bus()): New.
+	(FPE, fpe()): New.
+	(ILL, ill()): New.
+	(URG, urg()): New.
+	(PWR, pwr()): New.
+	(PROF, prof()): New.
+	(IO, io()): New.
+	* TestPtrace.java: Update.
+	* Ptrace.java: Update.
+	* Itimer.java: Update.
+	* SignalBuilder.java: Update.
+	* Wait.java: Update.
+	* TestFork.java: Update.
+	* ProcessIdentifier.java: Update.
+	* SignalSet.java: Update.
+	* Poll.java: Update.
+	* TestPipePair.java: Update.
+	* TestPseudoTerminal.java: Update.
+	* TestSignalSet.java: Update.
+	* TestWait.java: Update.
+	* cni/Poll.cxx: Update.
+	* PollBuilder.java: Update.
+	* cni/Signal.cxx: Update.
+	* cni/SignalSet.cxx: Update.
+	* cni/Wait.cxx: Update.
+	* cni/Itimer.cxx: Update.
+
 2007-11-28  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
 
 	* cni/Ptrace.cxx: Add PowerPC single register bank access

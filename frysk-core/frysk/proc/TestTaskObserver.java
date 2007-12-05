@@ -42,7 +42,6 @@ package frysk.proc;
 import java.util.Observer;
 import java.util.Observable;
 import frysk.sys.Signal;
-import frysk.sys.Sig;
 import frysk.sys.Errno;
 import frysk.event.TimerEvent;
 import frysk.testbed.TestLib;
@@ -95,17 +94,17 @@ public class TestTaskObserver
      * Send .theSig to .thePid, and then keep probeing .thePid until
      * it no longer exists.
      */
-    private void assertTaskGone (final int thePid, final Sig theSig)
+    private void assertTaskGone (final int thePid, final Signal theSig)
     {
 	Manager.eventLoop.add (new TimerEvent (0, 50)
 	    {
 		int pid = thePid;
-		Sig sig = theSig;
+		Signal sig = theSig;
 		public void execute ()
 		{
 		    try {
-			Signal.tkill (pid, sig);
-			sig = Sig.NONE;
+			sig.tkill(pid);
+			sig = Signal.NONE;
 		    }
 		    catch (Errno.Esrch e) {
 			Manager.eventLoop.requestStop ();
@@ -179,7 +178,7 @@ public class TestTaskObserver
 	// Finally, prove that the process really is detached - send
 	// it a kill and then probe (using kill) the process until
 	// that fails.
-	assertTaskGone (tasks[0].getProc().getPid (), Sig.KILL);
+	assertTaskGone (tasks[0].getProc().getPid (), Signal.KILL);
 
 	// Check that while the process has gone, <em>frysk</em>
 	// hasn't noticed.
@@ -248,7 +247,7 @@ public class TestTaskObserver
 	// detaching the task.  This results in the task in the
 	// detaching state getting the terminating event instead of
 	// the more typical stopped.
-	Signal.kill (task.getTid (), Sig.KILL);
+	Signal.KILL.kill(task.getTid());
 
 	detach (new Task[] { task }, attachedObserver, false);
     }
@@ -279,7 +278,7 @@ public class TestTaskObserver
 	
 	// Blow away the task; make certain that the Proc's task list
 	// is refreshed so that the task is no longer present.
-	assertTaskGone (task.getTid (), Sig.KILL);
+	assertTaskGone (task.getTid (), Signal.KILL);
 	task.getProc().sendRefresh ();
 	assertEquals ("task count", 0, task.getProc().getTasks ().size ());
 
@@ -312,10 +311,10 @@ public class TestTaskObserver
 	
 	// Blow away the task.
 	if (main)
-	    assertTaskGone (task.getTid (), Sig.KILL);
+	    assertTaskGone (task.getTid (), Signal.KILL);
 	else {
 	    child.assertSendDelCloneWaitForAcks ();
-	    assertTaskGone (task.getTid (), Sig.NONE);
+	    assertTaskGone (task.getTid (), Signal.NONE);
 	}	    
 
 	// Try to add the observer to the now defunct task.  Should
@@ -353,13 +352,12 @@ public class TestTaskObserver
 	    Offspring c = child;
 	    public void addedTo (Object o)
 	    {
-		c.signal (Sig.TERM);
+		c.signal (Signal.TERM);
 	    }
 	    public Action updateTerminating (Task task, boolean signal,
-					     int val)
-	    {
+					     int val) {
 		assertTrue ("signal", signal);
-		assertEquals ("val", Sig.TERM_, val);
+		assertTrue("val", Signal.TERM.equals(val));
 		Manager.eventLoop.requestStop ();
 		return Action.CONTINUE;
 	    }

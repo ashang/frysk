@@ -47,7 +47,6 @@ import java.util.List;
 import java.util.logging.Level;
 import frysk.testbed.SynchronizedOffspring;
 import frysk.sys.Pid;
-import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
@@ -555,11 +554,10 @@ public class TestTaskSyscallObserver
         return Action.CONTINUE;
       }
 
-      public Action updateSignaled (Task task, int sig)
-      {
-        if (sig == Sig.USR1_)
-          sigusr1Count++;
-        return Action.CONTINUE;
+      public Action updateSignaled (Task task, int sig) {
+	  if (Signal.USR1.equals(sig))
+	      sigusr1Count++;
+	  return Action.CONTINUE;
       }
     }
 
@@ -583,9 +581,9 @@ public class TestTaskSyscallObserver
         // as we are expecting to interrupt a blocked read.
         if (readExit > 0)
           throw new RuntimeException("read exited without signal");
-        // We want to signal the process so it will interrupt
-        // the read.
-        Signal.tkill(task.getTid(), Sig.USR1);
+        // We want to signal the process so it will interrupt the
+        // read.
+        Signal.USR1.tkill(task.getTid());
       }
     }
 

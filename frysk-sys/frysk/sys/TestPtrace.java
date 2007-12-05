@@ -76,10 +76,10 @@ public class TestPtrace
 		{
 		    fail (why);
 		}
-		public void stopped (int pid, int signal)
-		{
+		public void stopped (int pid, int signal) {
 		    assertEquals ("stopped pid", id, pid);
-		    assertEquals ("stopped sig", Sig.TRAP_, signal);
+		    assertEquals ("stopped sig", Signal.TRAP,
+				  Signal.valueOf(signal));
 		}
 	    });
 
@@ -91,14 +91,14 @@ public class TestPtrace
 		{
 		    fail (why);
 		}
-		public void stopped (int pid, int signal)
-		{
+		public void stopped (int pid, int signal) {
 		    assertEquals ("stopped pid", id, pid);
-		    assertEquals ("stopped sig", Sig.TRAP_, signal);
+		    assertEquals ("stopped sig", Signal.TRAP,
+				  Signal.valueOf(signal));
 		}
 	    });
 
-	Ptrace.cont (pid, Sig.TERM_);
+	Ptrace.cont(pid, Signal.TERM.intValue());
 	Wait.waitAll (pid, new UnhandledWaitBuilder ()
 	    {
 		private final int id = pid;
@@ -111,7 +111,8 @@ public class TestPtrace
 		{
 		    assertEquals ("terminated pid", id, pid);
 		    assertEquals ("terminated signal", true, signal);
-		    assertEquals ("terminated value", Sig.TERM_, value);
+		    assertEquals ("terminated value", Signal.TERM,
+				  Signal.valueOf(value));
 		}
 	    });
     }
@@ -139,10 +140,10 @@ public class TestPtrace
 		{
 		    fail (why);
 		}
-		public void stopped (int pid, int signal)
-		{
+		public void stopped (int pid, int signal) {
 		    assertEquals ("stopped pid", id, pid);
-		    assertEquals ("stopped sig", Sig.STOP_, signal);
+		    assertEquals("stopped sig", Signal.STOP,
+				 Signal.valueOf(signal));
 		}
 	    });
 

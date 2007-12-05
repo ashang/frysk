@@ -77,17 +77,15 @@ public class ProcessIdentifier
     /**
      * Send a fatal signal (SIGKILL) to this process.
      */
-    public void kill ()
-    {
-	Signal.kill (pid, Sig.KILL);
+    public void kill() {
+	Signal.KILL.kill(pid);
     }
 
     /**
      * Send a signal to THIS pid.
      */
-    public void tkill (Sig sig)
-    {
-	Signal.tkill (pid, sig);
+    public void tkill(Signal signal) {
+	signal.tkill(pid);
     }
 
     /**

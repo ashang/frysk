@@ -1,3 +1,11 @@
+2007-12-04  Andrew Cagney  <cagney@redhat.com>
+
+	Merge frysk.sys.Sig into frysk.sys.Signal.
+	* TearDownProcess.java: Update.
+	* TestTearDownExpect.java: Update.
+	* AttachedSelf.java: Update.
+	* TestTearDownProcess.java: Update.
+
 2007-09-26  Andrew Cagney  <cagney@redhat.com>
 
 	* TearDownExpect.java (add): Do not add pid to TearDownProcess.

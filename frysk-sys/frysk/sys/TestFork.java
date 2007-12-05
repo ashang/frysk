@@ -70,10 +70,10 @@ public class TestFork
      */
     public void testProcMask () {
 	logger.log(Level.FINE, "Masking SIGHUP\n");
-	SignalSet set = new SignalSet(Sig.HUP);
+	SignalSet set = new SignalSet(Signal.HUP);
 	set.blockProcMask();
 	assertTrue("SIGHUP masked",
-		   new SignalSet().getProcMask().contains(Sig.HUP));
+		   new SignalSet().getProcMask().contains(Signal.HUP));
 	logger.log(Level.FINE, "Creating funit-procmask to check the mask\n");
 	int pid = Fork.exec(null, "/dev/null", null,
 			    new String[] {
@@ -105,7 +105,7 @@ public class TestFork
 	logger.log(Level.FINE, "Capturing funit-procmask's exit status\n");
 	Wait.wait(pid, exitStatus,
 		  new SignalBuilder() {
-		      public void signal(Sig sig) {
+		      public void signal(Signal sig) {
 			  fail("unexpected signal " + sig);
 		      }
 		  },

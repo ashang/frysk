@@ -1,3 +1,10 @@
+2007-12-04  Andrew Cagney  <cagney@redhat.com>
+
+	Merge frysk.sys.Sig into frysk.sys.Signal.
+	* LinuxWaitBuilder.java: Update.
+	* LinuxTask.java: Update.
+	* LinuxTaskState.java: Update.
+
 2007-12-03  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRegs.java (testFloatRegisters()): Delete.

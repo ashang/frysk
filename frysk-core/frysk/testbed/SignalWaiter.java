@@ -44,8 +44,8 @@ import java.util.logging.Logger;
 import frysk.event.EventLoop;
 import frysk.event.SignalEvent;
 import frysk.sys.SignalSet;
-import frysk.sys.Sig;
 import frysk.junit.TestCase;
+import frysk.sys.Signal;
 
 /**
  * Installs signal-handlers for, and then runs the event loop until
@@ -58,7 +58,7 @@ public final class SignalWaiter
     private final Logger logger = Logger.getLogger ("frysk");
 
     private final String reason;
-    private final Sig[] sigs;
+    private final Signal[] sigs;
     private final EventLoop eventLoop;
     private final SignalSet outstanding;
     
@@ -67,8 +67,7 @@ public final class SignalWaiter
     {
 	private final SignalSet outstanding;
 	private final EventLoop eventLoop;
-	AckSignal (Sig sig, SignalSet outstanding, EventLoop eventLoop)
-	{
+	AckSignal(Signal sig, SignalSet outstanding, EventLoop eventLoop) {
 	    super(sig);
 	    this.outstanding = outstanding;
 	    this.eventLoop = eventLoop;
@@ -80,15 +79,14 @@ public final class SignalWaiter
 		       new Object[] { this, reason });
 	    eventLoop.requestStop();
 	    eventLoop.remove(this);
-	    outstanding.remove (this.getSig());
+	    outstanding.remove(this.getSignal());
 	}
     }
     
     /**
      * Install signal-handlers for the specified set of events.
      */
-    public SignalWaiter (EventLoop eventLoop, Sig[] sigs, String why)
-    {
+    public SignalWaiter (EventLoop eventLoop, Signal[] sigs, String why) {
 	this.eventLoop = eventLoop;
 	this.sigs = sigs;
 	this.reason = why + "(signals " + new SignalSet(this.sigs) + ")";
@@ -99,9 +97,8 @@ public final class SignalWaiter
 	}
     }
 
-    public SignalWaiter (EventLoop eventLoop, Sig sig, String why)
-    {
-	this(eventLoop, new Sig[] {sig}, why);
+    public SignalWaiter (EventLoop eventLoop, Signal sig, String why) {
+	this(eventLoop, new Signal[] {sig}, why);
     }
 
     public String toString ()

@@ -43,7 +43,6 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.sys.DaemonPipePair;
 import frysk.testbed.TestLib;
@@ -112,7 +111,7 @@ public class TestSyscallSignal
 
     final Task task = proc.getMainTask();
 
-    final SignalObserver sigo = new SignalObserver(Sig.HUP_);
+    final SignalObserver sigo = new SignalObserver(Signal.HUP);
     task.requestAddSignaledObserver(sigo);
     final SyscallObserver syso = new SyscallObserver(42, task);
     task.requestAddSyscallObserver(syso);
@@ -122,7 +121,7 @@ public class TestSyscallSignal
 	assertRunUntilStop("sigo and syso added");
 
     // Kill 1...
-    pid.tkill(Sig.HUP);
+    pid.tkill(Signal.HUP);
 
     // Tell the process to go some rounds!
     out.writeByte(42);
@@ -134,7 +133,7 @@ public class TestSyscallSignal
 	assertRunUntilStop ("syso entered is 42");
     
     // Now send a signal to the process while blocked. Then unblock.
-    Signal.tkill(task.getTid(), Sig.HUP);
+    Signal.HUP.tkill(task.getTid());
     task.requestUnblock(syso);
 
     // Sanity check that the functions have actually been run.
@@ -176,7 +175,7 @@ public class TestSyscallSignal
     assertEquals(2 * 42, syso.getExited());
 
     // Kill 3...
-    pid.tkill(Sig.HUP);
+    pid.tkill(Signal.HUP);
 
     // Run some more
     out.writeByte(100);
@@ -190,61 +189,51 @@ public class TestSyscallSignal
     assertEquals(2 * 142, syso.getExited());
   }
 
-  class SignalObserver implements TaskObserver.Signaled
-  {
-    private final int sig;
+    class SignalObserver implements TaskObserver.Signaled {
+	private final Signal sig;
+	private int triggered;
+	private boolean added;
+	private boolean removed;
 
-    private int triggered;
-    private boolean added;
-    private boolean removed;
+	SignalObserver(Signal sig) {
+	    this.sig = sig;
+	}
 
-    SignalObserver(int sig)
-    {
-      this.sig = sig;
-    }
+	public Action updateSignaled(Task task, int signal) {
+	    if (sig.equals(signal))
+		triggered++;
+	    return Action.CONTINUE;
+	}
 
-    public Action updateSignaled(Task task, int signal)
-    {
-      if (signal == sig)
-	triggered++;
-      return Action.CONTINUE;
-    }
+	int getTriggered() {
+	    return triggered;
+	}
 
-    int getTriggered()
-    {
-      return triggered;
-    }
-
-    public void addFailed(Object observable, Throwable w)
-    {
-      w.printStackTrace();
-      fail(w.getMessage());
-    }
+	public void addFailed(Object observable, Throwable w) {
+	    w.printStackTrace();
+	    fail(w.getMessage());
+	}
     
-    public void addedTo(Object observable)
-    {
-	added = true;
-	removed = false;
-	Manager.eventLoop.requestStop();
-    }
+	public void addedTo(Object observable) {
+	    added = true;
+	    removed = false;
+	    Manager.eventLoop.requestStop();
+	}
 
-    public boolean isAdded()
-    {
-      return added;
-    }
+	public boolean isAdded() {
+	    return added;
+	}
     
-    public void deletedFrom(Object observable)
-    {
-	removed = true;
-	added = true;
-	Manager.eventLoop.requestStop();
-    }
+	public void deletedFrom(Object observable) {
+	    removed = true;
+	    added = true;
+	    Manager.eventLoop.requestStop();
+	}
 
-    public boolean isRemoved()
-    {
-      return removed;
+	public boolean isRemoved() {
+	    return removed;
+	}
     }
-  }
 
   /**
    * Observer that looks for open and close syscalls.

@@ -70,8 +70,7 @@ public class Ptrace
     /**
      * Detach from the process specified by PID.
      */
-    public static void detach (int pid, Sig sig)
-    {
+    public static void detach(int pid, Signal sig) {
 	detach (pid, sig.hashCode ());
     }
     /**

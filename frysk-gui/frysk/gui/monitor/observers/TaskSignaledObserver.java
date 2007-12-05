@@ -48,7 +48,7 @@ import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 
 public class TaskSignaledObserver extends TaskObserverRoot implements
 		TaskObserver.Signaled {
@@ -120,26 +120,31 @@ public class TaskSignaledObserver extends TaskObserverRoot implements
 		return Action.BLOCK;
 	}
 
-	private void bottomHalf(final Task task, final int signal) {
-		setInfo(getName() + ": " + "PID: " + task.getProc().getPid()
-				+ " TID: " + task.getTid() + " Event: has pending signal: "
-				+ Sig.toPrintString(signal) + " Host: " + Manager.host.getName());
-		if (runFilters(task, signal)) {
-			this.runActions(task, signal);
-		}
-
-		final Action action = whatActionShouldBeReturned();
-		if (action == Action.CONTINUE) {
-			task.requestUnblock(this);
-		}
+    private void bottomHalf(final Task task, final int signal) {
+	setInfo(getName() + ": " + "PID: " + task.getProc().getPid()
+		+ " TID: " + task.getTid() + " Event: has pending signal: "
+		+ Signal.valueOf(signal).toPrint()
+		+ " Host: " + Manager.host.getName());
+	if (runFilters(task, signal)) {
+	    this.runActions(task, signal);
 	}
 
-	private void runActions(final Task task, int signal) {
-        Event event = new Event("signaled " + Sig.toString(signal), "task recieved signal " + Sig.toString(signal), GuiTask.GuiTaskFactory.getGuiTask(task), this);
-		super.runActions();
-		taskActionPoint.runActions(task, this, event);
+	final Action action = whatActionShouldBeReturned();
+	if (action == Action.CONTINUE) {
+	    task.requestUnblock(this);
+	}
+    }
+
+    private void runActions(final Task task, int signal) {
+	// XXX: This is the host and not target signal
+        Event event = new Event("signaled " + Signal.valueOf(signal).toPrint(),
+				"task recieved signal "
+				+ Signal.valueOf(signal).toPrint(),
+				GuiTask.GuiTaskFactory.getGuiTask(task), this);
+	super.runActions();
+	taskActionPoint.runActions(task, this, event);
         EventManager.theManager.addEvent(event);
-	}
+    }
 
 	private boolean runFilters(final Task task, int signal) {
 		return filter(task);

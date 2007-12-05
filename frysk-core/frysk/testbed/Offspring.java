@@ -40,7 +40,6 @@
 package frysk.testbed;
 
 import frysk.proc.FindProc;
-import frysk.sys.Sig;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.sys.Errno;
@@ -69,8 +68,8 @@ public abstract class Offspring {
     /**
      * Send the child the sig.
      */
-    public void signal (Sig sig) {
-	Signal.tkill(getPid(), sig);
+    public void signal (Signal sig) {
+	sig.tkill(getPid());
     }
     /**
      * Attempt to kill the child. Return false if the child doesn't
@@ -78,7 +77,7 @@ public abstract class Offspring {
      */
     public boolean kill () {
 	try {
-	    signal(Sig.KILL);
+	    signal(Signal.KILL);
 	    return true;
 	} catch (Errno.Esrch e) {
 	    return false;

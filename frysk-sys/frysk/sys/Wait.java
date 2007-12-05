@@ -69,7 +69,7 @@ public final class Wait
     /**
      * Add Sig to the set of signals checked during poll.
      */
-    public static native void signalAdd (Sig sig);
+    public static native void signalAdd (Signal sig);
     /**
      * Empty the set of signals, and file descriptors, checked during
      * poll.

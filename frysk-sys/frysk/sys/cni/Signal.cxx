@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -46,33 +46,53 @@
 #include <gcj/cni.h>
 
 #include "frysk/sys/Signal.h"
-#include "frysk/sys/Sig.h"
 #include "frysk/sys/cni/Errno.hxx"
 #include <linux.syscall.h>
 #include <unistd.h>
 
+#define SIGVAL(sig, SIG)				\
+  jint							\
+  frysk::sys::Signal::sig() {				\
+    return (jint)(SIG);					\
+  }
+SIGVAL(alrm,SIGALRM)
+SIGVAL(bus,SIGBUS)
+SIGVAL(chld,SIGCHLD)
+SIGVAL(cont,SIGCONT)
+SIGVAL(fpe,SIGFPE)
+SIGVAL(hup,SIGHUP)
+SIGVAL(ill,SIGILL)
+SIGVAL(int_,SIGINT)
+SIGVAL(io,SIGIO)
+SIGVAL(kill,SIGKILL)
+SIGVAL(none,0)
+SIGVAL(prof,SIGPROF)
+SIGVAL(pwr,SIGPWR)
+SIGVAL(segv,SIGSEGV)
+SIGVAL(stop,SIGSTOP)
+SIGVAL(term,SIGTERM)
+SIGVAL(trap,SIGTRAP)
+SIGVAL(usr1,SIGUSR1)
+SIGVAL(usr2,SIGUSR2)
+SIGVAL(urg,SIGURG)
+SIGVAL(winch,SIGWINCH)
+
 void
-frysk::sys::Signal::tkill (jint tid, frysk::sys::Sig* sig)
-{
-  int signum = sig->hashCode ();
+frysk::sys::Signal::tkill(jint tid, jint signum) {
   errno = 0;
   if (::syscall (__NR_tkill, tid, signum) < 0)
     throwErrno (errno, "tkill", "task %d", (int)tid);
 }
 
 void
-frysk::sys::Signal::kill (jint pid, frysk::sys::Sig* sig)
-{
-  int signum = sig->hashCode ();
+frysk::sys::Signal::kill(jint pid, jint signum) {
   errno = 0;
   if (::kill (pid, signum) < 0)
     throwErrno (errno, "kill", "process %d", (int)pid);
 }
 
 void
-frysk::sys::Signal::drain (frysk::sys::Sig* sig)
-{
-  int signum = sig->hashCode ();
+frysk::sys::Signal::drain (jint signum) {
 //   sigset_t set;
 //   sigpending (&set);
 //   printf ("Before: %d (%s) pending? %s\n", signum, strsignal (signum),
@@ -81,9 +101,11 @@ frysk::sys::Signal::drain (frysk::sys::Sig* sig)
   struct sigaction newAct = { };
   newAct.sa_handler = SIG_IGN;
   if (::sigaction (signum, &newAct, &oldAct))
-    throwErrno (errno, "sigaction", "signal %d - %s", signum, strsignal(signum));
+    throwErrno (errno, "sigaction", "signal %d - %s", (int)signum,
+		strsignal(signum));
   if (::sigaction (signum, &oldAct, NULL))
-    throwErrno (errno, "sigaction", "signal %d - %s", signum, strsignal(signum));
+    throwErrno (errno, "sigaction", "signal %d - %s", (int)signum,
+		strsignal(signum));
 //   sigpending (&set);
 //   printf ("After: %d (%s) pending? %s\n", signum, strsignal (signum),
 // 	  sigismember (&set, signum) ? "YES" : "NO");

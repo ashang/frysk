@@ -42,26 +42,23 @@ package frysk.sys;
 /**
  * Schedule an interval timer.
  */
-
-public final class Itimer
-{
+public final class Itimer {
     /**
      * Schedule a real-time interval timer VALUE milli-seconds into
      * the future with repeats, after that, every INTERVAL
-     * mulli-seconds.  Delivers {@link Sig.ALRM} upon expiration.
+     * mulli-seconds.  Delivers {@link Signal.ALRM} upon expiration.
      */
-    public static native Sig real (long interval, long value);
+    public static native Signal real(long interval, long value);
     /**
      * Schedule a real-time interval timer VALUE milli-seconds into
-     * the future.  Delivers {@link Sig.ALRM} upon expiration.
+     * the future.  Delivers {@link Signal.ALRM} upon expiration.
      */
-    public static Sig real (long value)
-    {
+    public static Signal real(long value) {
 	return real (0, value);
     } 
 
     /**
      * Wait for the specified time; this is a blocking call.
      */
-    public native static int sleep (int seconds);
+    public native static int sleep(int seconds);
 }

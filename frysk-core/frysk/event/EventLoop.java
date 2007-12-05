@@ -39,7 +39,7 @@
 
 package frysk.event;
 
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 import frysk.sys.Tid;
 import frysk.sys.WaitBuilder;
 import java.util.HashMap;
@@ -61,15 +61,15 @@ public abstract class EventLoop
     protected static Logger logger = Logger.getLogger("frysk");
 
     /**
-     * The EventLoop uses Sig.IO to wake up, or unblock, the
+     * The EventLoop uses Signal.IO to wake up, or unblock, the
      * event-loop thread when a request comes in.
      */
     protected EventLoop()
     {
 	signalEmpty ();
-	// Sig.IO is used to wake up a blocked event loop when an
+	// Signal.IO is used to wake up a blocked event loop when an
 	// asynchronous event arrives.
-	signalAdd (Sig.IO);
+	signalAdd(Signal.IO);
 	logger.log (Level.FINE, "{0} new\n", this); 
     }
 
@@ -79,9 +79,9 @@ public abstract class EventLoop
      */
     protected abstract void signalEmpty();
     /**
-     * Add Sig to the signals that can be received.
+     * Add Signal to the signals that can be received.
      */
-    protected abstract void signalAdd(Sig sig);
+    protected abstract void signalAdd(Signal sig);
 
 
     /**
@@ -98,7 +98,7 @@ public abstract class EventLoop
     /**
      * The EventLoop's thread ID.  If a thread, other than the
      * EventLoop thread modifies any of the event queues, the event
-     * thread will need to be woken up using a Sig.IO.
+     * thread will need to be woken up using a Signal.IO.
      */
     private int tid = -1; // can change once
     final boolean isCurrentThread()
@@ -116,7 +116,7 @@ public abstract class EventLoop
 	// wasn't set.
 	if (tid <= 0)
 	    throw new RuntimeException ("EventLoop.tid botch");
-	frysk.sys.Signal.tkill (tid, Sig.IO);
+	Signal.IO.tkill(tid);
     }
     private Exception firstSet;
     private void updateTid()
@@ -240,10 +240,10 @@ public abstract class EventLoop
     {
 	logger.log (Level.FINEST, "{0} add SignalEvent {1}\n",
 		    new Object[] { this, signalEvent });
-	Object old = signalHandlers.put (signalEvent.getSig (), signalEvent);
+	Object old = signalHandlers.put (signalEvent.getSignal(), signalEvent);
 	if (old == null)
 	    // New signal, tell Poll.
-	    signalAdd (signalEvent.getSig ());
+	    signalAdd (signalEvent.getSignal());
 	wakeupIfBlocked ();
     }
     /**
@@ -253,7 +253,7 @@ public abstract class EventLoop
     public synchronized void remove (SignalEvent signalEvent)
     {
 	logger.log (Level.FINE, "{0} remove SignalEvent\n", this); 
-	signalHandlers.remove (signalEvent.getSig ());
+	signalHandlers.remove (signalEvent.getSignal());
 	// XXX: Poll.SignalSet.remove (sig.signal);
     }
     /**
@@ -262,8 +262,7 @@ public abstract class EventLoop
      * signal delivery un-blocks the poll, the event thread is no
      * longer going to block.
      */
-    protected synchronized void processSignal (Sig sig)
-    {
+    protected synchronized void processSignal(Signal sig) {
 	logger.log (Level.FINEST, "{0} processSignal Sig\n", this); 
 	SignalEvent handler = (SignalEvent) signalHandlers.get (sig);
 	if (handler != null)

@@ -41,7 +41,7 @@ package frysk.testbed;
 
 import frysk.junit.TestCase;
 import frysk.sys.Errno;
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 import frysk.sys.ProcessIdentifier;
 import frysk.expunit.Expect;
 
@@ -51,7 +51,7 @@ public class TestTearDownExpect
     private void assertGone (ProcessIdentifier pid) {
 	boolean gone = false;
 	try {
-	    pid.tkill(Sig.NONE);
+	    pid.tkill(Signal.NONE);
 	} catch (Errno.Esrch e) {
 	    gone = true;
 	}

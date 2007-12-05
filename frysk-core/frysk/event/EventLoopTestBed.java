@@ -40,7 +40,6 @@
 package frysk.event;
 
 import frysk.sys.Signal;
-import frysk.sys.Sig;
 import frysk.sys.Tid;
 import frysk.junit.TestCase;
 
@@ -66,10 +65,8 @@ abstract class EventLoopTestBed
     public void setUp ()
     {
 	eventLoop = newEventLoop ();
-	eventLoop.add (new SignalEvent (Sig.INT)
-	    {
-		public void execute ()
-		{
+	eventLoop.add(new SignalEvent(Signal.INT) {
+		public void execute () {
 		    fail ("Got CNTRL-C");
 		}
 	    });
@@ -83,8 +80,8 @@ abstract class EventLoopTestBed
     {
 	// Make certain that the event loop died.
 	eventLoop.requestStop();
-	Signal.drain (Sig.USR1);
-	Signal.drain (Sig.CHLD);
+	Signal.USR1.drain();
+	Signal.CHLD.drain();
     }
 
     /**
@@ -108,10 +105,10 @@ abstract class EventLoopTestBed
 				  0, count.numberOfSignalEvents);
 		    assertEquals ("count.numberOfTimerEvents",
 				  1, count.numberOfTimerEvents);
-		    Signal.tkill (eventTid, Sig.USR1);
+		    Signal.USR1.tkill(eventTid);
 		}
 	    });
-	eventLoop.add (new SignalEvent (Sig.USR1)
+	eventLoop.add (new SignalEvent (Signal.USR1)
 	    {
 		Counters count = counters;
 		public void execute ()
@@ -306,7 +303,7 @@ abstract class EventLoopTestBed
 	class SignalFired 
 	    extends SignalEvent
 	{
-	    SignalFired (Sig sig)
+	    SignalFired (Signal sig)
 	    {
 		super (sig);
 	    }
@@ -317,22 +314,22 @@ abstract class EventLoopTestBed
 		eventLoop.requestStop ();		
 	    }
 	}
-	SignalFired handler = new SignalFired (Sig.CHLD);
+	SignalFired handler = new SignalFired (Signal.CHLD);
 
 	// Add a handler for SIGCHILD, shoot the signal (which makes
 	// it pending since there is a handler), and then run the loop
 	// checking that it did, indeed fire.
 	eventLoop.add (handler);
-	Signal.tkill (eventTid, Sig.CHLD);
+	Signal.CHLD.tkill(eventTid);
 	eventLoop.runPolling (0);
-	assertEquals ("One Sig.CHLD was received.", 1, handler.count);
+	assertEquals ("One Signal.CHLD was received.", 1, handler.count);
 
 	// Remove the handler, send a further signal, check that it
 	// wasn't received.
 	eventLoop.remove (handler);
-	Signal.tkill (eventTid, Sig.CHLD);
+	Signal.CHLD.tkill(eventTid);
 	eventLoop.runPolling (0);
-	assertEquals ("Still only one Sig.CHLD (no additions).",
+	assertEquals ("Still only one Signal.CHLD (no additions).",
 		      1, handler.count);
 	
 	// Re-add the CHLD handler, but this time twice - the
@@ -340,15 +337,15 @@ abstract class EventLoopTestBed
 	// receiving signal events.
 	eventLoop.add (handler);
 	eventLoop.add (handler);
-	Signal.tkill (eventTid, Sig.CHLD);
+	Signal.CHLD.tkill(eventTid);
 	eventLoop.runPolling (0);
-	assertEquals ("Second Sig.CHLD received.", 2, handler.count);
+	assertEquals ("Second Signal.CHLD received.", 2, handler.count);
 
 	// Finally remove the handler and again check no signal was
 	// received (if the handler was duplicated in the signal pool
 	// then it might still see the signal).
 	eventLoop.remove (handler);
-	Signal.tkill (eventTid, Sig.CHLD);
+	Signal.CHLD.tkill(eventTid);
 	eventLoop.runPolling (0);
 	assertEquals ("No further SIGCHLDs.", 2, handler.count);
     }
@@ -363,10 +360,10 @@ abstract class EventLoopTestBed
      */
     public void testAsync ()
     {
-	// Set up a dummy Sig.CHLD handler, this should never occur
+	// Set up a dummy Signal.CHLD handler, this should never occur
 	// as it is overridden by an asynchronous thread before the
 	// signal is delivered.
-	eventLoop.add (new SignalEvent (Sig.CHLD)
+	eventLoop.add (new SignalEvent (Signal.CHLD)
 	    {
 		public void execute ()
 		{
@@ -428,14 +425,14 @@ abstract class EventLoopTestBed
     {
 	public void run ()
 	{
-	    eventLoop.add (new SignalEvent (Sig.CHLD)
+	    eventLoop.add (new SignalEvent (Signal.CHLD)
 		{
 		    public void execute ()
 		    {
 			new SleepThread ().start ();
 		    }
 		});
-	    Signal.tkill (eventTid, Sig.CHLD);
+	    Signal.CHLD.tkill(eventTid);
 	}
     }
     /**
@@ -454,7 +451,7 @@ abstract class EventLoopTestBed
 		fail ("sleep interrupted");
 	    }
 	    eventLoop.add (new RequestStopEvent(eventLoop));
-	    Signal.tkill (eventTid, Sig.CHLD);
+	    Signal.CHLD.tkill(eventTid);
 	}
     }
 

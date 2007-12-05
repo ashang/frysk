@@ -40,7 +40,7 @@
 package frysk.proc;
 
 import frysk.sys.Pid;
-import frysk.sys.Sig;
+import frysk.sys.Signal;
 import frysk.testbed.TestLib;
 import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.TaskObserverBase;
@@ -145,11 +145,11 @@ public class TestTaskTerminateObserver
     }
 
     public void testTerminateKillINT () {
-	terminate(- Sig.INT_);
+	terminate(- Signal.INT.intValue());
     }
 
     public void testTerminateKillHUP () {
-	terminate(- Sig.HUP_);
+	terminate(- Signal.HUP.intValue());
     }
 
     public void testTerminatingExit0 () {
@@ -161,11 +161,11 @@ public class TestTaskTerminateObserver
     }
 
     public void testTerminatingKillINT () {
-	terminating(- Sig.INT_);
+	terminating(- Signal.INT.intValue());
     }
 
     public void testTerminatingKillHUP () {
-	terminating(- Sig.HUP_);
+	terminating(- Signal.HUP.intValue());
     }
 
     public void testTerminatedExit0 () {
@@ -177,7 +177,7 @@ public class TestTaskTerminateObserver
     }
 
     public void testTerminatedKillINT () {
-	terminated(- Sig.INT_);
+	terminated(- Signal.INT.intValue());
     }
 
     public void testTerminatedKillKILL () {
@@ -185,11 +185,11 @@ public class TestTaskTerminateObserver
 	// is that a TERMINATED event will be received.  Dependant on
 	// various races, there may or may not also be a terminating
 	// event.  See bug 3639.
-	terminated(- Sig.KILL_);
+	terminated(- Signal.KILL.intValue());
     }
 
     public void testTerminatedKillHUP () {
-	terminated(- Sig.HUP_);
+	terminated(- Signal.HUP.intValue());
     }
 
     class TerminatingCounter
@@ -237,7 +237,7 @@ public class TestTaskTerminateObserver
 	// Now terminate the main thread. Trace the processes exit all
 	// the way through to being removed so that both terminating
 	// and terminated events are seen by this test.
-	daemon.signal(Sig.TERM);
+	daemon.signal(Signal.TERM);
 	new StopEventLoopWhenProcRemoved(task.getTid());
 	assertRunUntilStop("terminate process");
 
