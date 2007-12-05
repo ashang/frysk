@@ -1,5 +1,7 @@
 2007-12-05  Andrew Cagney  <cagney@redhat.com>
 
+	* SyscallNum.java-sh: Delete.
+
 	* cni/Ptrace.cxx (regs) [__powerpc64__]: Delete code; do not
 	return USR section for REGS section.
 	(fpregs): Similar.
