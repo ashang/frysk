@@ -56,8 +56,12 @@ public class TestISA extends TestCase {
 	assertFalse("!equals", ISA.IA32.equals(ISA.X8664));
     }
     public void testToString() {
-	assertEquals("toString", "32-bit big-endian PowerPC",
+	assertEquals("toString", 
+		     "32-bit big-endian PowerPC32BE",
 		     ISA.PPC32BE.toString());
+	assertEquals("toString",
+		     "64-bit big-endian PowerPC64BE",
+		     ISA.PPC64BE.toString());
     }
     public void testElfGet() {
 	assertSame("IA32 core", ISA.IA32,

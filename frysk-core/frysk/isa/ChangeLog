@@ -1,3 +1,7 @@
+2007-12-05  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
+
+	* TestISA.java: Correcting PowerPC32/64 isa expected strings.
+
 2007-12-04  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
 
 	* ISA.java: Updating a comment.
