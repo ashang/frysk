@@ -240,7 +240,9 @@ lib::dwfl::Dwfl::dwfl_addrdie(jlong addr){
 		return NULL;
 	
 	lib::dwfl::DwflDieBias *retval = new lib::dwfl::DwflDieBias();
-	retval->die = factory->makeDie((jlong) die, this);
+        
+        lib::dwfl::DwflModule* module = lib::dwfl::Dwfl::getModule(addr);
+	retval->die = factory->makeDie((jlong) die, module);
 	retval->bias = (jlong) bias;
 	
 	return retval;

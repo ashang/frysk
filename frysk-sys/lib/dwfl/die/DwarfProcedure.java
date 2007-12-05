@@ -39,9 +39,9 @@
 
 package lib.dwfl.die;
 
-import lib.dwfl.DwarfDie;
-import lib.dwfl.Dwfl;
 import lib.dwfl.DieVisitor;
+import lib.dwfl.DwarfDie;
+import lib.dwfl.DwflModule;
 
 /**
  * Wrapper around Dwarf DW_TAG_dwarf_procedure DIE
@@ -49,7 +49,7 @@ import lib.dwfl.DieVisitor;
 public class DwarfProcedure
   extends DwarfDie
 {
-  public DwarfProcedure(long pointer, Dwfl parent)
+  public DwarfProcedure(long pointer, DwflModule parent)
   {
     super(pointer, parent);
   }

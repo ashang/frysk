@@ -1,3 +1,74 @@
+2007-12-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestDwarfDie.java (testGetModule): New Test.
+	* DwarfDie.java (DwarfDie):  Changed constructor to take
+	DwflModule instead of Dwfl.
+	* DwarfDieFactory.java: Updated.
+	* die/Variant.java: Updated.
+	* die/VariantPart.java: Updated.
+	* die/VolatileType.java: Updated.
+	* die/WithStmt.java: Updated.
+	* die/Label.java: Updated.
+	* die/LexicalBlock.java: Updated.
+	* die/LoUser.java: Updated.
+	* die/Member.java: Updated.
+	* die/MIPSLoop.java: Updated.
+	* die/Module.java: Updated.
+	* die/MutableType.java: Updated.
+	* die/Namelist.java: Updated.
+	* die/NamelistItem.java: Updated.
+	* die/Namespace.java: Updated.
+	* die/PackedType.java: Updated.
+	* die/PartialUnit.java: Updated.
+	* die/PointerType.java: Updated.
+	* die/PtrToMemberType.java: Updated.
+	* die/ReferenceType.java: Updated.
+	* die/RestrictType.java: Updated.
+	* die/SetType.java: Updated.
+	* die/SharedType.java: Updated.
+	* die/StringType.java: Updated.
+	* die/StructureType.java: Updated.
+	* die/Subprogram.java: Updated.
+	* die/SubrangeType.java: Updated.
+	* die/SubroutineType.java: Updated.
+	* die/TemplateTypeParameter.java: Updated.
+	* die/TemplateValueParameter.java: Updated.
+	* die/ThrownType.java: Updated.
+	* die/TryBlock.java: Updated.
+	* die/Typedef.java: Updated.
+	* die/UnionType.java: Updated.
+	* die/UnspecifiedParameters.java: Updated.
+	* die/UnspecifiedType.java: Updated.
+	* die/Variable.java: Updated.
+	* die/AccessDeclaration.java: Updated.
+	* die/ArrayType.java: Updated.
+	* die/BaseType.java: Updated.
+	* die/CatchBlock.java: Updated.
+	* die/ClassTemplate.java: Updated.
+	* die/ClassType.java: Updated.
+	* die/CommonBlock.java: Updated.
+	* die/CommonInclusion.java: Updated.
+	* die/CompileUnit.java: Updated.
+	* die/Condition.java: Updated.
+	* die/Constant.java: Updated.
+	* die/ConstType.java: Updated.
+	* die/DwarfProcedure.java: Updated.
+	* die/EntryPoint.java: Updated.
+	* die/EnumerationType.java: Updated.
+	* die/Enumerator.java: Updated.
+	* die/FileType.java: Updated.
+	* die/FormalParameter.java: Updated.
+	* die/FormatLabel.java: Updated.
+	* die/Friend.java: Updated.
+	* die/FunctionTemplate.java: Updated.
+	* die/HiUser.java: Updated.
+	* die/ImportedDeclaration.java: Updated.
+	* die/ImportedModule.java: Updated.
+	* die/ImportedUnit.java: Updated.
+	* die/Inheritance.java: 
+	* die/InlinedSubroutine.java: Updated.
+	* die/InterfaceType.java: Updated.
+
 2007-12-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestDwfl.java (testGetCompliationUnitModule): New test.

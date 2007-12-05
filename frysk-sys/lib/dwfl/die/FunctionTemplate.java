@@ -39,9 +39,9 @@
 
 package lib.dwfl.die;
 
-import lib.dwfl.DwarfDie;
-import lib.dwfl.Dwfl;
 import lib.dwfl.DieVisitor;
+import lib.dwfl.DwarfDie;
+import lib.dwfl.DwflModule;
 
 /**
  * Wrapper around Dwarf DW_TAG_function_template DIE
@@ -49,7 +49,7 @@ import lib.dwfl.DieVisitor;
 public class FunctionTemplate
   extends DwarfDie
 {
-  public FunctionTemplate(long pointer, Dwfl parent)
+  public FunctionTemplate(long pointer, DwflModule parent)
   {
     super(pointer, parent);
   }

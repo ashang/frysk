@@ -39,9 +39,9 @@
 
 package lib.dwfl.die;
 
-import lib.dwfl.DwarfDie;
-import lib.dwfl.Dwfl;
 import lib.dwfl.DieVisitor;
+import lib.dwfl.DwarfDie;
+import lib.dwfl.DwflModule;
 
 /**
  * Wrapper around Dwarf DW_TAG_template_value_parameter DIE
@@ -49,7 +49,7 @@ import lib.dwfl.DieVisitor;
 public class TemplateValueParameter
   extends DwarfDie
 {
-  public TemplateValueParameter(long pointer, Dwfl parent)
+  public TemplateValueParameter(long pointer, DwflModule parent)
   {
     super(pointer, parent);
   }

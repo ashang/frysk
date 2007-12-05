@@ -39,9 +39,9 @@
 
 package lib.dwfl.die;
 
-import lib.dwfl.DwarfDie;
-import lib.dwfl.Dwfl;
 import lib.dwfl.DieVisitor;
+import lib.dwfl.DwarfDie;
+import lib.dwfl.DwflModule;
 
 /**
  * Wrapper around Dwarf DW_TAG_imported_declaration DIE
@@ -49,7 +49,7 @@ import lib.dwfl.DieVisitor;
 public class ImportedDeclaration
   extends DwarfDie
 {
-  public ImportedDeclaration(long pointer, Dwfl parent)
+  public ImportedDeclaration(long pointer, DwflModule parent)
   {
     super(pointer, parent);
   }

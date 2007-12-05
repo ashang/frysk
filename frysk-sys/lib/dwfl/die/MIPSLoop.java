@@ -39,9 +39,9 @@
 
 package lib.dwfl.die;
 
-import lib.dwfl.DwarfDie;
-import lib.dwfl.Dwfl;
 import lib.dwfl.DieVisitor;
+import lib.dwfl.DwarfDie;
+import lib.dwfl.DwflModule;
 
 /**
  * Wrapper around Dwarf DW_TAG_MIPS_loop DIE
@@ -49,7 +49,7 @@ import lib.dwfl.DieVisitor;
 public class MIPSLoop
   extends DwarfDie
 {
-  public MIPSLoop(long pointer, Dwfl parent)
+  public MIPSLoop(long pointer, DwflModule parent)
   {
     super(pointer, parent);
   }

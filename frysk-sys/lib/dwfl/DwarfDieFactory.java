@@ -77,7 +77,7 @@ public class DwarfDieFactory {
 	Pattern pattern = Pattern.compile("_.");
 	HashMap dieClasses = loadDies();
 	Class[] constructorArgTypes = new Class[] {Long.TYPE,
-						   lib.dwfl.Dwfl.class};
+						   lib.dwfl.DwflModule.class};
 	for (int i = 0; i < tagEncodings.length; i++) {
 	    DwTag tag = tagEncodings[i];
 	    int tagValue = tag.hashCode();
@@ -123,10 +123,10 @@ public class DwarfDieFactory {
      * Create a subclass of DwarfDie based on the tag in the Dwarf_Die object
      * pointed to by pointer.
      * @param pointer raw Dwarf_Die from libdw
-     * @param parent Dwfl object associated with the DIE, if any
+     * @param module Dwfl object associated with the DIE, if any
      * @return subclass of DwarfDie
      */
-    public DwarfDie makeDie(long pointer, Dwfl parent) {
+    public DwarfDie makeDie(long pointer, DwflModule module) {
 	int tag = DwarfDie.get_tag(pointer);
 	Constructor constructor
 	    = (Constructor)constructorMap.get(new Integer(tag));
@@ -135,7 +135,7 @@ public class DwarfDieFactory {
 	}
 	try {
 	    return (DwarfDie)constructor.newInstance(new Object[]
-		{new Long(pointer), parent});
+		{new Long(pointer), module});
 	}
 	catch (InstantiationException e) {
 	    throw new DwarfException("creating tag " + tag, e);

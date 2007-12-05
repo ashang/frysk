@@ -39,9 +39,9 @@
 
 package lib.dwfl.die;
 
-import lib.dwfl.DwarfDie;
-import lib.dwfl.Dwfl;
 import lib.dwfl.DieVisitor;
+import lib.dwfl.DwarfDie;
+import lib.dwfl.DwflModule;
 
 /**
  * Wrapper around Dwarf DW_TAG_try_block DIE
@@ -49,7 +49,7 @@ import lib.dwfl.DieVisitor;
 public class TryBlock
   extends DwarfDie
 {
-  public TryBlock(long pointer, Dwfl parent)
+  public TryBlock(long pointer, DwflModule parent)
   {
     super(pointer, parent);
   }

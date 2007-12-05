@@ -39,9 +39,9 @@
 
 package lib.dwfl.die;
 
-import lib.dwfl.DwarfDie;
-import lib.dwfl.Dwfl;
 import lib.dwfl.DieVisitor;
+import lib.dwfl.DwarfDie;
+import lib.dwfl.DwflModule;
 
 /**
  * Wrapper around Dwarf DW_TAG_common_inclusion DIE
@@ -49,7 +49,7 @@ import lib.dwfl.DieVisitor;
 public class CommonInclusion
   extends DwarfDie
 {
-  public CommonInclusion(long pointer, Dwfl parent)
+  public CommonInclusion(long pointer, DwflModule parent)
   {
     super(pointer, parent);
   }

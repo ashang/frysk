@@ -39,9 +39,9 @@
 
 package lib.dwfl.die;
 
-import lib.dwfl.DwarfDie;
-import lib.dwfl.Dwfl;
 import lib.dwfl.DieVisitor;
+import lib.dwfl.DwarfDie;
+import lib.dwfl.DwflModule;
 
 /**
  * Wrapper around Dwarf DW_TAG_string_type DIE
@@ -49,7 +49,7 @@ import lib.dwfl.DieVisitor;
 public class StringType
   extends DwarfDie
 {
-  public StringType(long pointer, Dwfl parent)
+  public StringType(long pointer, DwflModule parent)
   {
     super(pointer, parent);
   }

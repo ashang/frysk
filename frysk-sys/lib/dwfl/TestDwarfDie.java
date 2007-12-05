@@ -85,4 +85,20 @@ public class TestDwarfDie extends TestCase {
 	assertTrue("cudie returned", die.getCompilationUnit().getName().equals(cuDie.getName()));
     }
 
+    public void testGetModule(){
+	
+	Dwfl dwfl = new Dwfl(Pid.get());
+	assertNotNull(dwfl);
+	long addr = LocalMemory.getCodeAddr();
+
+	DwarfDie cuDie = dwfl.getCompilationUnit(addr).die;
+	assertNotNull(cuDie);
+	    
+	DwarfDie die = cuDie.getScopes(addr)[0];
+	DwflModule dwflModule = die.getModule();
+	assertNotNull(dwflModule);
+	
+	assertTrue("Found correct module", dwflModule.getName().contains("TestRunner"));
+    }
+
 }

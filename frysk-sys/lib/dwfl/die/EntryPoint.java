@@ -39,9 +39,9 @@
 
 package lib.dwfl.die;
 
-import lib.dwfl.DwarfDie;
-import lib.dwfl.Dwfl;
 import lib.dwfl.DieVisitor;
+import lib.dwfl.DwarfDie;
+import lib.dwfl.DwflModule;
 
 /**
  * Wrapper around Dwarf DW_TAG_entry_point DIE
@@ -49,7 +49,7 @@ import lib.dwfl.DieVisitor;
 public class EntryPoint
   extends DwarfDie
 {
-  public EntryPoint(long pointer, Dwfl parent)
+  public EntryPoint(long pointer, DwflModule parent)
   {
     super(pointer, parent);
   }

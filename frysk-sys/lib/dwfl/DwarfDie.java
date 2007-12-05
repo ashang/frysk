@@ -47,15 +47,19 @@ abstract public class DwarfDie {
     private long pointer;
     private DwarfDie[] scopes;
     private int scopeIndex;
-    private Dwfl dwfl;
+    private DwflModule module;
 
     protected boolean manageDie = false;
   
-    protected DwarfDie(long pointer, Dwfl parent) {
+    protected DwarfDie(long pointer, DwflModule module) {
 	this.pointer = pointer;
-	this.dwfl = parent;
+	this.module = module;
     }
 
+    protected DwflModule getModule(){
+	return module;
+    }
+    
     protected DwarfDie getCompilationUnit(){
 	
 	if(this.getTag().equals(DwTag.COMPILE_UNIT)){
@@ -70,7 +74,7 @@ abstract public class DwarfDie {
     }
     
     protected Dwfl getDwfl () {
-	return this.dwfl;
+	return this.module.getParent();
     }
 
     public long getHighPC () {
@@ -119,7 +123,7 @@ abstract public class DwarfDie {
 	DwarfDieFactory factory = DwarfDieFactory.getFactory();
 	for(int i = 0; i < vals.length; i++)
 	    if(vals[i] != 0)
-		dies[i] = factory.makeDie(vals[i], this.dwfl);
+		dies[i] = factory.makeDie(vals[i], this.module);
 	    else
 		dies[i] = null;
 
@@ -136,7 +140,7 @@ abstract public class DwarfDie {
 	DwarfDieFactory factory = DwarfDieFactory.getFactory();
 	for(int i = 0; i < vals.length; i++) {
 	    if(vals[i] != 0)
-		dies[i] = factory.makeDie(vals[i], this.dwfl);
+		dies[i] = factory.makeDie(vals[i], this.module);
 	    else
 		dies[i] = null;
 	}
@@ -158,7 +162,7 @@ abstract public class DwarfDie {
 	long val = get_scopevar(die_and_scope, vals, variable);
 	if (val >= 0) {
 	    die = DwarfDieFactory.getFactory().makeDie(die_and_scope[0],
-						       this.dwfl);
+						       this.module);
 	    die.scopes = scopes;
 	    die.scopeIndex = (int)die_and_scope[1];
 	}
@@ -235,7 +239,7 @@ abstract public class DwarfDie {
 	DwarfDie die = null;
 	long type = get_type(this.getPointer(), followTypeDef);
 	if (type != 0)
-	    die = DwarfDieFactory.getFactory().makeDie(type, this.dwfl);
+	    die = DwarfDieFactory.getFactory().makeDie(type, this.module);
 	return die;
     }
 
@@ -268,7 +272,7 @@ abstract public class DwarfDie {
 	long child = get_child(this.getPointer());
 	DwarfDie die = null;
 	if (child != 0)
-	    die = DwarfDieFactory.getFactory().makeDie(child, this.dwfl);
+	    die = DwarfDieFactory.getFactory().makeDie(child, this.module);
 	return die;
     }
 
@@ -279,7 +283,7 @@ abstract public class DwarfDie {
 	long sibling = get_sibling(this.getPointer());
 	DwarfDie die = null;
 	if (sibling != 0)
-	    die = DwarfDieFactory.getFactory().makeDie(sibling, this.dwfl);
+	    die = DwarfDieFactory.getFactory().makeDie(sibling, this.module);
 	return die;
     }
   

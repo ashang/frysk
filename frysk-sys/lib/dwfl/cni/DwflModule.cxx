@@ -216,7 +216,7 @@ callback (Dwarf *dwarf, Dwarf_Global *gl, void* thisObject)
   if (dwarf_offdie (dwarf, gl->die_offset, die) == NULL){
       throw new lib::dwfl::DwarfException(JvNewStringUTF("failed to get object die"));
   }else{        
-    lib::dwfl::DwarfDie* dwarfDie = dwfl->factory->makeDie((jlong)die, dwfl);  
+    lib::dwfl::DwarfDie* dwarfDie = dwfl->factory->makeDie((jlong)die, dwflModule);  
     dwflModule->pubNames->add(dwarfDie);
     
   }
