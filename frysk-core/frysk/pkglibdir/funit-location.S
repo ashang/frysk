@@ -45,11 +45,7 @@ MAIN_PROLOGUE(0)
 LOAD_IMMED_WORD (REG0, 0)
 LOAD_IMMED_WORD (REG1, 987)
 
-#if defined __powerpc__
-#warning PowerPC do not support load a LABEL into a Register as a immediate
-#else
-	LOAD_IMMED_WORD (REG2, memory)
-#endif
+LOAD_IMMED_WORD (REG2, memory)
 
 STORE (REG0, REG0)   				// To crash program
 
