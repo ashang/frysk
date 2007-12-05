@@ -207,10 +207,6 @@ frysk::sys::Ptrace$RegisterSet::regs ()
 #if defined(__i386__)|| defined(__x86_64__)
   return new frysk::sys::Ptrace$RegisterSet (sizeof (user_regs_struct),
 					     PTRACE_GETREGS, PTRACE_SETREGS);
-#elif defined(__powerpc64__)
-  /* PowerPc single register bank which holds ALL registers (of all kinds) */
-  return new frysk::sys::Ptrace$RegisterSet (sizeof(mcontext_t),
-                                             PTRACE_PEEKUSR , PTRACE_POKEUSR);
 #else
   return NULL;
 #endif
@@ -223,10 +219,6 @@ frysk::sys::Ptrace$RegisterSet::fpregs ()
   return new frysk::sys::Ptrace$RegisterSet (sizeof(user_fpregs_struct),
 					     PTRACE_GETFPREGS,
 					     PTRACE_SETFPREGS);
-#elif defined(__powerpc64__)
-  /* PowerPC has a single register bank (by ptrace) and it hold all
-     registers, even the floating pointer ones, special and vector regs */
-  return NULL;
 #else
   return NULL;
 #endif

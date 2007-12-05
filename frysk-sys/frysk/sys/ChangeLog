@@ -1,3 +1,9 @@
+2007-12-05  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Ptrace.cxx (regs) [__powerpc64__]: Delete code; do not
+	return USR section for REGS section.
+	(fpregs): Similar.
+	
 2007-12-04  Andrew Cagney  <cagney@redhat.com>
 
 	* Sig.shenum: Delete; merge into ...
