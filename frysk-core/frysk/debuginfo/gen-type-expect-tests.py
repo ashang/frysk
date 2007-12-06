@@ -142,7 +142,7 @@ public class %s extends TestLib {
 
     def start_test(self, executable, name):
         print("    public void test_%s () {" % (name))
-        tokens = os.path.abspath(executable).split(".")
+        tokens = os.path.splitext(os.path.abspath(executable))
         print('	TypeTestbed typeTestbed = new TypeTestbed("%s", "test%s");' % (os.path.basename(tokens[0]), name))
 
     def add_test(self, name, type, etype, decl, value):
