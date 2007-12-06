@@ -80,6 +80,7 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(new AliasCommands.Alias(), "alias");
         add(new AliasCommands.Unalias(), "unalias");
         add(new AttachCommand(), "attach");
+        add(new AuxvCommand(), "auxv");
         add(new BreakpointCommand(), "b|reak");
         add(new CoreCommand(), "core");
         add(new DbgVariableCommands.Set(), "set");

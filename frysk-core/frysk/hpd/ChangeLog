@@ -1,3 +1,9 @@
+2007-12-06  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TopLevelCommand.java(TopLevelCommand): add auxv command.
+	* TestAuxvCommand.java: New.
+	* AuxvCommand.java: New.
+
 2007-12-04  Andrew Cagney  <cagney@redhat.com>
 
 	Merge frysk.sys.Sig into frysk.sys.Signal.
