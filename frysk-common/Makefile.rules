@@ -524,23 +524,20 @@ SUFFIXES += .antlred .g
 		echo "Parsing compiler warnings from $$b..." ; \
 		rm -f $$t/*.antlr-fixes ; \
 	        rm -rf $$t/classes ; mkdir -p $$t/classes ; \
-		if test "x@HAVE_ECJ_TRUE@" = x ; then \
-		    $(GIJ) 2>&1 \
-			--classpath $(ECJ_JAR):$(CLASSPATH) \
-			org.eclipse.jdt.internal.compiler.batch.Main \
-			\
+		case "$(JAVAC_IS)" in \
+		    gcj) $(JAVAC) $(JAVACFLAGS) \
 			-d $$t/classes \
+			-I $$t \
+			$$t/$$d/$$b.java \
+			2>&1 || true ;; \
+		    ecj) $(JAVAC) \
+                        -d $$t/classes \
 			-warn:+semicolon \
 			-sourcepath  $$t:$(SOURCEPATH) \
 			-classpath $(CLASSPATH) \
-			$$t/$$d/$$b.java || true ; \
-		else \
-		    $(GCJCOMPILE) 2>&1 \
-			-C \
-			-I $$t \
-			-d $$t/classes \
-			$$t/$$d/$$b.java || true ; \
-		fi | ( \
+			$$t/$$d/$$b.java \
+			2>&1 || true ;; \
+		esac | ( \
 		    cd $$t ; \
 		    $(AWK) -f @abs_srcdir@/common/antlr-warnings.awk \
 		) ; \
@@ -667,37 +664,6 @@ ${GEN_DIRNAME}.jar: files-java.list
 		find * -name '*.class' -print \
 		| $(JAR) -@ -cf $@
 	mv $(JAVAROOT)/$@ $@
-
-# When ECJ is available, use it as an extra lint pass.  GCJ has the
-# habit of silently compiling invalid Java code (garbage in, garbage
-# out), fortunately ECJ rejects it.
-
-# This is part of all-local, since, if this fails the build won't fly.
-
-all-local: checked-ecj-compile
-CLEANFILES += checked-ecj-compile files-java-gen.list
-CLEANDIRS += ecj
-checked-ecj-compile: files-java.list $(if $(GEN_DIRS),$(GEN_DIRNAME).jar)
-	rm -rf ecj
-	mkdir -p ecj
-if HAVE_ECJ
-	echo Compiling all the generated files.
-	( test -s files-java.list && $(GIJ) \
-		--classpath $(ECJ_JAR):$(CLASSPATH) \
-		org.eclipse.jdt.internal.compiler.batch.Main \
-		\
-		-d ecj \
-		-warn:+semicolon \
-		-sourcepath $(SOURCEPATH) \
-		-classpath $(CLASSPATH) \
-		@files-java.list \
-		2>&1 ) | tee $@.log
-	if test -s $@.log ; \
-	then rm $@.log ; false ; \
-	fi
-	rm -f $@.log $(top_builddir)/files-{java,genjava}.list.ecj
-endif
-	touch $@
 
 # Check that everything, well except for a few exceptions, is using
 # frysk.junit and not the junit stuff directly.  Depend on the

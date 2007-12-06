@@ -99,55 +99,77 @@ AC_CHECK_PROGS([JV_SCAN], [jv-scan4 jv-scan], [no])
 AM_CONDITIONAL([HAVE_JV_SCAN], test x"${JV_SCAN}" != xno)
 
 
-# Always use GCJ as the Java compiler.  While other, possibly better,
-# alternatives might be available, using those alternatives can (and
-# did) lead to problems such as: developers missing problems in the
-# base-line build compiler; and developers testing code different to
-# what will be shipped.  Having said that, do allow people to override
-# this.
+# autoconf doesn't yet know about GCJ, so define it ourselves.
 
-JAVAC="${JAVAC:-$GCJ -C}"
-AC_SUBST([JAVAC])
-
-# autoconf doesn't yet know about JAVA, so define it ourselves.
-m4_define([AC_LANG(JAVA)],
+m4_define([AC_LANG(GCJ)],
 [ac_ext=java
 ac_objext=class
-ac_compile='$JAVAC $JAVACFLAGS conftest.$ac_ext >&AS_MESSAGE_LOG_FD'
+ac_compile='$GCJ $GCJFLAGS conftest.$ac_ext >&AS_MESSAGE_LOG_FD'
 ac_java_werror_flag=no
 ])
-m4_defun([AC_LANG_COMPILER(JAVA)], [])
-m4_define([_AC_LANG_ABBREV(JAVA)], [java])
+m4_defun([AC_LANG_COMPILER(GCJ)], [])
+m4_define([_AC_LANG_ABBREV(GCJ)], [java])
+AC_LANG(GCJ)
 
-AC_LANG(JAVA)
 
-# Only add -warn flags when the compiler is known to be ECJ.
-AC_MSG_CHECKING([java flags])
-case "${JAVAC}" in
-gcj* | */gcj* ) JAVACFLAGS='-g -classpath $(SOURCEPATH):$(CLASSPATH)' ;;
-ecj | */ecj ) JAVACFLAGS='-warn:+semicolon -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)' ;;
-* ) JAVACFLAGS='-g -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)' ;;
-esac
-AC_SUBST([JAVACFLAGS])
-AC_MSG_RESULT(${JAVACFLAGS})
+# See gcj accepts -fsource=1.4, if not only use the warning flags.  If
+# it is available also use it for the GCJFLAGS.
 
-# See if -fsource=1.4 can be added, if not only use the warning flags.
-# If it is available also use it for the GCJFLAGS.
-
-AC_MSG_CHECKING([whether ${JAVAC} accepts -fsource=1.4])
+AC_MSG_CHECKING([whether ${GCJ} accepts -fsource=1.4])
 if test "x$ac_env_GCJFLAGS_set" == xset ; then
 	GCJ_FSOURCE="no"
 	AC_MSG_RESULT([not needed])
 else
-	JAVACFLAGS_WARN=$JAVACFLAGS
-	JAVACFLAGS="$JAVACFLAGS -fsource=1.4"
+	GCJFLAGS_WARN=$GCJFLAGS
+	GCJFLAGS="$GCJFLAGS -fsource=1.4"
 	AC_COMPILE_IFELSE([public class conftest{}],
 		[GCJ_FSOURCE="yes"
 		 GCJFLAGS="$GCJFLAGS -fsource=1.4"],
 		[GCJ_FSOURCE="no"
-		JAVACFLAGS=$JAVACFLAGS_WARN])
+		GCJFLAGS=$GCJFLAGS_WARN])
 	AC_MSG_RESULT([${GCJ_FSOURCE}])
 fi
+
+
+# Check for the ECJ compiler.
+
+AC_MSG_CHECKING([ecj.jar])
+ECJ_JAR=${ECJ_JAR:-/usr/share/java/eclipse-ecj.jar}
+AC_SUBST([ECJ_JAR])
+AC_MSG_RESULT(${ECJ_JAR})
+
+
+# Two possible compilers: either GCJ (wrapper round ECJ); or ECJ.  In
+# the latter case, need to explicitly run compiler from within the GIJ
+# runtime so that ECJ sees the classpath environment, in particular
+# things like gnu.gcj.RawDataManaged.
+
+AC_MSG_CHECKING([JAVAC])
+if test x"${JAVAC}" = x ; then
+   if test "x${GCJ_FSOURCE}" = xyes ; then
+      JAVAC_IS=gcj
+      JAVAC="\$(GCJ) -C"
+   elif test "x${ECJ_JAR}" != xno ; then
+      JAVAC_IS=ecj
+      JAVAC="\$(GIJ) --classpath \$(ECJ_JAR):\$(CLASSPATH) org.eclipse.jdt.internal.compiler.batch.Main"
+   else
+      AC_MSG_ERROR([no java compiler])
+   fi
+fi
+AC_SUBST([JAVAC])
+AC_SUBST([JAVAC_IS])
+AC_MSG_RESULT(${JAVAC})
+
+
+# Only add -warn flags when the compiler is known to be ECJ.
+AC_MSG_CHECKING([java flags])
+case "${JAVAC_IS}" in
+     gcj) JAVACFLAGS='-g -classpath $(SOURCEPATH):$(CLASSPATH)' ;;
+     ecj) JAVACFLAGS='-warn:+semicolon -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)' ;;
+esac
+AC_SUBST([JAVACFLAGS])
+AC_MSG_RESULT(${JAVACFLAGS})
+
 
 # Some versions of gcj don't support -Wall.  Some versions generate
 # good warnings without it.  So explictily test for it.
@@ -156,7 +178,7 @@ AC_MSG_CHECKING([whether ${JAVAC} accepts -Wall])
 if test "x$ac_env_GCJFLAGS_set" == xset ; then
 	GCJ_WALL=no
 	AC_MSG_RESULT([not needed])
-elif test "x${GCJ_FSOURCE}" == xyes ; then
+elif test x"${JAVAC_IS}" = xgcj ; then
 	# Newer compilers have a good default set of warnings so do
 	# not need -Wall.  However, older GCJs barf on stray
 	# semicolons so always check for them to help with
@@ -164,36 +186,20 @@ elif test "x${GCJ_FSOURCE}" == xyes ; then
 	GCJ_WALL=-Wextraneous-semicolon
 	JAVACFLAGS="$JAVACFLAGS ${GCJ_WALL}"
 	GCJFLAGS="$GCJFLAGS ${GCJ_WALL}"
-	AC_MSG_RESULT([${GCJ_WALL}])
-else
-	JAVACFLAGS_WARN=$JAVACFLAGS
-	JAVACFLAGS="$JAVACFLAGS -Wall"
-	AC_COMPILE_IFELSE([public class conftest{}],
-		[GCJ_WALL=yes
-		 GCJFLAGS="$GCJFLAGS -Wall"],
-		[GCJ_WALL=no
-		 JAVACFLAGS=$JAVACFLAGS_WARN])
-	AC_MSG_RESULT([${GCJ_WALL}])
+else	
+	GCJ_WALL=no
 fi
+AC_MSG_RESULT([${GCJ_WALL}])
+
 
 # Always use GIJ as the byte code interpreter.  java programs, run
 # during the build, need to see the GNU Java environment.  That
-# environment classes such as gnu.gcj.RawData which can be found using
-# reflection.
+# environment contains classes such as gnu.gcj.RawData which can be
+# found using reflection.
 
 JAVA="${JAVA:-$GIJ}"
 AC_SUBST([JAVA])
 
-# Check for the ECJ compiler.  If available, enable rules that push
-# all the java code through that compiler.  Doing this adds an
-# additional (but optional) code check -- ECJ tends to find more
-# errors than GCJ. Ignore when gcj support -fsource since then it
-# already uses a source -> byte code compiler that is sane.
-
-ECJ_JAR=${ECJ_JAR:-/usr/share/java/eclipse-ecj.jar}
-AC_SUBST([ECJ_JAR])
-AC_CHECK_PROGS([ECJ], [ecj], [no])
-AM_CONDITIONAL(HAVE_ECJ, test x"${ECJ}" != xno -a x"${GCJ_FSOURCE}" != xyes)
 
 # Check for the availablity of fig2dev
 
@@ -270,8 +276,8 @@ AC_ARG_WITH(libopcodes,
 AC_ARG_ENABLE([jar-compile],
 	[  --enable-jar-compile	Enable compilation of jars],
 	[case "${enableval}" in
-	      yes) jar_compile=true ;;
-	      no) jar_compile=false;;
+	      yes) jar_compile=yes ;;
+	      no) jar_compile=no;;
 	      *) AC_MSG_ERROR([bad value ${enableval} for --enable-jar-compile]) ;;
-	esac],[jar_compile=false])
-AM_CONDITIONAL([JAR_COMPILE], [test x$jar_compile = xtrue])
+	esac],[jar_compile=no])
+AM_CONDITIONAL([JAR_COMPILE], [test x$jar_compile = xyes])

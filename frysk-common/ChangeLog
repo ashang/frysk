@@ -1,3 +1,13 @@
+2007-12-06  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk-common.ac (JAVAC): Set to either GCJ or $ECJ_JAR.
+	(ECJ): Delete variable.
+	(--enable-jar-compile): Use "yes" and "no", not "true" and "false.
+	(JAVAC_IS): New variable; either gcj or ecj.
+	(HAVE_ECJ): Delete.
+	* Makefile.rules (checked-ecj-compile): Delete.
+	(.g.antlred): Use $(JAVAC) and $(JAVAC_IS)
+
 2007-11-27  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (GEN_GCJ_SO_DIRS): Fix typo, match -L%.
