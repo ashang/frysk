@@ -1,0 +1,13 @@
+2007-12-06  Andrew Cagney  <cagney@redhat.com>
+
+	New directory.
+	* Log.java: New file.
+	* TestLog.java: New file.
+	* Level.mkenum: New file.
+	
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

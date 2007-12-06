@@ -1,0 +1,24 @@
+<html>
+<body>
+
+This package provides a really simple logger mechanism.
+
+<h2>Overview</h2>
+
+The {@link frysk.rsl} package provides the client with a really simple
+logging mechanism.
+
+<p>
+
+Create a logger using:
+<pre>
+private final Log log = Log.get(MyClass.class);
+</pre>
+and use it with:
+<pre>
+log.fine("a message"); // static
+log.finest(this, "a message"); // dynamic
+</pre>
+
+</body>
+</html>
