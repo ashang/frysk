@@ -151,7 +151,7 @@ if test x"${JAVAC}" = x ; then
       JAVAC="\$(GCJ) -C"
    elif test "x${ECJ_JAR}" != xno ; then
       JAVAC_IS=ecj
-      JAVAC="\$(GIJ) --classpath \$(ECJ_JAR):\$(CLASSPATH) org.eclipse.jdt.internal.compiler.batch.Main"
+      JAVAC="\$(GIJ) --classpath \$(ECJ_JAR):\$(CLASSPATH) org.eclipse.jdt.internal.compiler.batch.Main -1.4"
    else
       AC_MSG_ERROR([no java compiler])
    fi
