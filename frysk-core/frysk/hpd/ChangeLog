@@ -1,5 +1,11 @@
 2007-12-07  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* AuxvCommand.java (interpret): Return nothing when
+	main task cannot be found.
+	* MapsCommand.java: New.
+	* TestMapsCommand: New.
+	* TopLevelCommand.java (TopLevelCommand): Add maps command.
+
 	* AuxvCommand.java: Move AuxvStringBuilder from here
 	to frysk.util.
 	* TestAuxvCommand.java (testAuxVCoreCommand): Rewrite.

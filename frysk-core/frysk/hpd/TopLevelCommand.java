@@ -97,6 +97,7 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(new Help(), "help");
         add(new ListCommand(), "l|ist");
         add(new LoadCommand(), "load");
+	add(new MapsCommand(), "maps");
         add(new PeekCommand(), "peek");
 	Command quit = new QuitCommand();
         add(quit, "exit");

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,58 +39,22 @@
 
 package frysk.hpd;
 
-import java.util.Iterator;
-import java.util.List;
-import frysk.proc.Auxv;
+import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
-import frysk.util.AuxvStringBuilder;
+import frysk.testbed.DaemonBlockedAtSignal;
 
-public class AuxvCommand extends ParameterizedCommand {
+public class TestMapsCommand extends TestLib {
   
-  boolean verbose = false;
-  
-  public AuxvCommand() {
-    super("Print process auxiliary", "auxv [-verbose]", 
-	  "Print out the process auxiliary data for this "
-	  + "process.");
-    
-    add(new CommandOption("verbose", "Print out known auxv descriptions ") {
-	void parse(String argument, Object options) {
-	  verbose = true;
-	}
-      });
-    
+  public void testMapsCommand() {
+	  
+    Proc proc = (new DaemonBlockedAtSignal("funit-stacks")).getMainTask().getProc();
+    MemoryMap[] liveMaps = proc.getMaps();
+        
+    e = new HpdTestbed();
+    e.send("attach " + proc.getPid() +"\n");
+    e.send("maps\n");
+    for (int i=0; i< liveMaps.length; i++)
+      e.equals(liveMaps[i].toString());
+    e.close();
   }
-  
-  void interpret(CLI cli, Input cmd, Object options) {
-    PTSet ptset = cli.getCommandPTSet(cmd);
-    Iterator taskDataIterator = ptset.getTaskData();
-    if (taskDataIterator.hasNext() == false)
-    {
-      cli.addMessage("Cannot find main task. Cannot print out auxv", Message.TYPE_ERROR);
-      return;
-    }
-    Proc mainProc = ((TaskData) taskDataIterator.next()).getTask().getProc();
-    Auxv[] liveAux = mainProc.getAuxv();
-    
-    class BuildAuxv extends AuxvStringBuilder {
-      
-      public StringBuffer auxvData = new StringBuffer();
-      public void buildLine(String type, String desc, String value) {
-	if (verbose)
-	  auxvData.append(type+" (" + desc+") : " + value+"\n");
-	else
-	  auxvData.append(type+" : " + value+"\n");	
-      }
-    }
-    
-    BuildAuxv buildAuxv = new BuildAuxv();
-    buildAuxv.construct(liveAux);
-    
-    cli.outWriter.println(buildAuxv.auxvData.toString());
-  }
-  
-  int completer(CLI cli, Input input, int cursor, List completions) {
-    return -1;
-  }  
 }

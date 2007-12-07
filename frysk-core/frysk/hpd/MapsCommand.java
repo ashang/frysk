@@ -41,24 +41,16 @@ package frysk.hpd;
 
 import java.util.Iterator;
 import java.util.List;
-import frysk.proc.Auxv;
+import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
-import frysk.util.AuxvStringBuilder;
 
-public class AuxvCommand extends ParameterizedCommand {
+public class MapsCommand extends ParameterizedCommand {
   
   boolean verbose = false;
   
-  public AuxvCommand() {
-    super("Print process auxiliary", "auxv [-verbose]", 
-	  "Print out the process auxiliary data for this "
-	  + "process.");
-    
-    add(new CommandOption("verbose", "Print out known auxv descriptions ") {
-	void parse(String argument, Object options) {
-	  verbose = true;
-	}
-      });
+  public MapsCommand() {
+    super("Print process maps", "maps", 
+	  "Print out the process maps table.");
     
   }
   
@@ -67,30 +59,18 @@ public class AuxvCommand extends ParameterizedCommand {
     Iterator taskDataIterator = ptset.getTaskData();
     if (taskDataIterator.hasNext() == false)
     {
-      cli.addMessage("Cannot find main task. Cannot print out auxv", Message.TYPE_ERROR);
+      cli.addMessage("Cannot find main task. Cannot print out process maps.", Message.TYPE_ERROR);
       return;
     }
     Proc mainProc = ((TaskData) taskDataIterator.next()).getTask().getProc();
-    Auxv[] liveAux = mainProc.getAuxv();
+    MemoryMap[] maps = mainProc.getMaps();
     
-    class BuildAuxv extends AuxvStringBuilder {
-      
-      public StringBuffer auxvData = new StringBuffer();
-      public void buildLine(String type, String desc, String value) {
-	if (verbose)
-	  auxvData.append(type+" (" + desc+") : " + value+"\n");
-	else
-	  auxvData.append(type+" : " + value+"\n");	
-      }
-    }
-    
-    BuildAuxv buildAuxv = new BuildAuxv();
-    buildAuxv.construct(liveAux);
-    
-    cli.outWriter.println(buildAuxv.auxvData.toString());
+    for (int i=0; i<maps.length; i++)
+    	cli.outWriter.println(maps[i].toString());
   }
   
   int completer(CLI cli, Input input, int cursor, List completions) {
     return -1;
-  }  
+  }
+  
 }
