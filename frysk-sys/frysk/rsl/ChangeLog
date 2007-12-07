@@ -1,5 +1,25 @@
 2007-12-07  Andrew Cagney  <cagney@redhat.com>
 
+	* LogOption.java: New file.
+	* Branch.java: New.
+	* Level.mkenum: Add MAX.
+	* Log.java (print(int)): New.
+	(print(long)): New.
+	(print(String)): New.
+	(print(Object)): New.
+	(print(int[])): New.
+	(print(long[])): New.
+	(print(String[])): New.
+	(print(Object[])): New.
+	(fine(...), finest(...)): New.
+	(Log()): Moved to Branch.
+	(children): Moved to Branch.
+	(fine(...), finest(...)): Delete.
+	(get(String,int)): Move to Branch.
+	(complete(String,int,List)): Move to Branch.
+	* package.html: Update.
+	* TestLog.java: Update.
+	
 	* TestLog.java (testCompletion()): New.
 	(checkComplete(String,int,String[])): New.
 	(testName()): New.

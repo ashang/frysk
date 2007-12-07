@@ -40,8 +40,6 @@
 package frysk.rsl;
 
 import java.io.PrintStream;
-import java.util.TreeMap;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -49,23 +47,15 @@ import java.util.List;
  */
 public final class Log {
 
-    private int level;
     private final String path;
     private final String name;
-    private Log(String path, String name, Log parent) {
+    private final Level level;
+    private boolean logging;
+    Log(String path, String name, Level level, boolean logging) {
 	this.path = path;
-	this.level = parent.level;
 	this.name = name;
-    }
-
-    /**
-     * Create a root logger; package private so that test code can
-     * create their own root logger.
-     */
-    Log() {
-	this.level = 0;
-	this.path = "";
-	this.name = "";
+	this.level = level;
+	this.logging = logging;
     }
 
     public String toString() {
@@ -78,137 +68,61 @@ public final class Log {
     /**
      * Return the "basename" of the logger.
      */
-    public final String name() {
+    public String name() {
 	return name;
     }
     /**
      * Return the full path of the logger.
      */
-    public final String path() {
+    public String path() {
 	return path;
     }
-
-    private final TreeMap children = new TreeMap();
     /**
-     * Set this logger's logging level.
+     * The level at which this logger starts logging.
      */
-    public synchronized final Log set(Level level) {
-	this.level = level.intValue();
-	for (Iterator i = children.values().iterator(); i.hasNext(); ) {
-	    Log child = (Log)i.next();
-	    child.set(level);
-	}
-	return this;
+    public Level level() {
+	return level;
     }
     /**
-     * Return this loggers current logging level.
+     * Enable logging; package private.
      */
-    public final Level level() {
-	return Level.valueOf(level);
+    void set(boolean logging) {
+	this.logging = logging;
     }
 
     /**
-     * POS starts at -1, then points at "." or the end of the name.
-     * Package private so it can be called from test code.
+     * Return if this logger is currently enabled for logging.
      */
-    synchronized final Log get(String path, int pos) {
-	if (pos >= path.length())
-	    // Reached end if the string.
-	    return this;
-	// Split
-	int dot = path.indexOf(".", pos + 1);
-	if (dot < 0)
-	    dot = path.length();
-	String name = path.substring(pos + 1, dot);
-	Log child = (Log)children.get(name);
-	if (child == null) {
-	    child = new Log(path.substring(0, dot), name, this);
-	    children.put(name, child);
-	}
-	return child.get(path, dot);
+    public boolean logging() {
+	return logging;
     }
 
-    private static final Log root = new Log();
-    /**
-     * Find the logger by the name KLASS.
-     */
-    public static Log get(String klass) {
-	return root.get(klass, -1);
-    }
-    /**
-     * Find the logger by with KLASS's name.
-     */
-    public static Log get(Class klass) {
-	return root.get(klass.getName(), -1);
-    }
-
-    /**
-     * Complete the logger.  On entry, POS is either -1 or the
-     * location of the last DOT indicating further name completion is
-     * needed; or the length indicating that either a "." or " "
-     * completion is needed.
-     *
-     * Returns the offset into INCOMPLETE that the completions apply
-     * to, or -1.
-     *
-     * Package private to allow testing.
-     */
-    synchronized final int complete(String incomplete, int pos,
-				    List candidates) {
-	int dot = incomplete.indexOf('.', pos + 1);
-	if (dot >= 0) {
-	    // More tokens to follow; recursively resolve.
-	    String name = incomplete.substring(pos + 1, dot);
-	    Log child = (Log)children.get(name);
-	    if (child == null)
-		return -1;
-	    else
-		return child.complete(incomplete, dot, candidates);
-	} else {
-	    // Final token, scan children for all partial matches.
-	    String name = incomplete.substring(pos + 1);
-	    for (Iterator i = children.keySet().iterator(); i.hasNext(); ) {
-		String child = (String)i.next();
-		if (child.startsWith(name))
-		    candidates.add(child);
-	    }
-	    switch (candidates.size()) {
-	    case 0:
-		return -1;
-	    case 1:
-		Log child = (Log)children.get(name);
-		if (child != null) {
-		    // The final NAME was an exact match for a child;
-		    // and there are no other possible completions
-		    // (size == 1); change the expansion to either "."
-		    // (have children) or " " (childless).
-		    candidates.remove(0);
-		    synchronized (child) {
-			if (child.children.size() > 0) {
-			    candidates.add(".");
-			} else {
-			    candidates.add(" ");
-			}
-			return incomplete.length();
-		    }
-		} else {
-		    // A single partial completion e.g., <<foo<TAB>>>
-		    // -> <<foobar>>.
-		    return pos + 1;
-		}
-	    default:
-		return pos + 1;
-	    }
+    public static Branch get(String klass) {
+	synchronized (Branch.root) {
+	    return Branch.root.get(klass, -1);
 	}
     }
+    public static Log fine(String klass) {
+	return get(klass).get(Level.FINE);
+    }
+    public static Log finest(String klass) {
+	return get(klass).get(Level.FINEST);
+    }
 
-    /**
-     * Complete the logger path using constructed loggers.  Return the
-     * offset into incomplete where the completions apply, or -1 when
-     * no completions.
-     */
+    public static Branch get(Class klass) {
+	return get(klass.getName());
+    }
+    public static Log fine(Class klass) {
+	return fine(klass.getName());
+    }
+    public static Log finest(Class klass) {
+	return finest(klass.getName());
+    }
+
     public static int complete(String incomplete, List candidates) {
-	return root.complete(incomplete, -1, candidates);
+	synchronized (Branch.root) {
+	    return Branch.root.complete(incomplete, -1, candidates);
+	}
     }
 
     // Static?
@@ -217,49 +131,190 @@ public final class Log {
 	Log.out = out;
     }
 
-    private void prefix() {
-	out.print(path);
+    private static final long startTime = System.currentTimeMillis();
+
+    private void prePrefix() {
+	long time = System.currentTimeMillis() - startTime;
+	out.print(time / 1000);
+	out.print(".");
+	out.print(time % 1000);
 	out.print(": ");
+	out.print(path);
+	out.print(".");
+	out.print(level.toPrint());
+    }
+
+    private void prefix() {
+	prePrefix();
+	out.print(":");
     }
 
     private void prefix(Object o) {
-	out.print(path);
-	out.print("[");
+	prePrefix();
+	out.print(" [");
 	out.print(o.toString());
-	out.print("]: ");
+	out.print("]:");
     }
 
     private void postfix() {
 	out.println();
     }
 
-    // Add at will and on demand.
-    private void log(String s1) {
-	prefix();
-	out.print(s1);
-	postfix();
+    /**
+     * Integers are printed in decimal.
+     */
+    private void print(int i) {
+	out.print(" ");
+	out.print(i);
     }
-    public final void fine(String s1) {
-	log(s1);
+    private void print(int[] a) {
+	out.print(" [");
+	for (int i = 0; i < a.length; i++) {
+	    if (i > 0)
+		out.print(",");
+	    out.print(a[i]);
+	}
+	out.print("]");
     }
-    public final void finest(String s1) {
-	log(s1);
+    /**
+     * Longs are always printed in hex.
+     */
+    private void print(long l) {
+	out.print(" 0x");
+	out.print(Long.toHexString(l));
+    }
+    private void print(long[] a) {
+	out.print(" [");
+	for (int i = 0; i < a.length; i++) {
+	    if (i > 0)
+		out.print(",");
+	    out.print("0x");
+	    out.print(Long.toHexString(a[i]));
+	}
+	out.print("]");
+    }
+    /**
+     * Strings are just copied.
+     */
+    private void print(String s) {
+	out.print(" ");
+	out.print(s);
+    }
+    private void print(String[] a) {
+	out.print(" [");
+	for (int i = 0; i < a.length; i++) {
+	    if (i > 0)
+		out.print(",");
+	    out.print(a[i]);
+	}
+	out.print("]");
+    }
+    /**
+     * Objects are wrapped in "[" and "]".
+     */
+    private void print(Object o) {
+	out.print(" <<");
+	out.print(o.toString());
+	out.print(">>");
+    }
+    private void print(Object[] a) {
+	out.print(" [");
+	for (int i = 0; i < a.length; i++) {
+	    if (i > 0)
+		out.print(",");
+	    out.print("<<");
+	    out.print(a[i].toString());
+	    out.print(">>");
+	}
+	out.print("]");
     }
 
     // Add at will and on demand.
-    private void log(Object self, String s1) {
-	prefix(self);
-	out.print(s1);
+    public void log(String p1) {
+	if (!logging)
+	    return;
+	prefix();
+	print(p1);
 	postfix();
     }
-    public final void fine(Object self, String s1) {
-	if (level < Level.FINE_)
+
+    // Add at will and on demand.
+    public void log(Object self, String p1, int p2) {
+	if (!logging)
 	    return;
-	log(self, s1);
+	prefix(self);
+	print(p1);
+	print(p2);
+	postfix();
     }
-    public final void finest(Object self, String s1) {
-	if (level < Level.FINEST_)
+
+    // Add at will and on demand.
+    public void log(Object self, String p1, long p2) {
+	if (!logging)
 	    return;
-	log(self, s1);
+	prefix(self);
+	print(p1);
+	print(p2);
+	postfix();
+    }
+
+    // Add at will and on demand.
+    public void log(Object self, String p1, String p2) {
+	if (!logging)
+	    return;
+	prefix(self);
+	print(p1);
+	print(p2);
+	postfix();
+    }
+
+    // Add at will and on demand.
+    public void log(Object self, String p1, Object p2) {
+	if (!logging)
+	    return;
+	prefix(self);
+	print(p1);
+	print(p2);
+	postfix();
+    }
+
+    // Add at will and on demand.
+    public void log(Object self, String p1, int[] p2) {
+	if (!logging)
+	    return;
+	prefix(self);
+	print(p1);
+	print(p2);
+	postfix();
+    }
+
+    // Add at will and on demand.
+    public void log(Object self, String p1, long[] p2) {
+	if (!logging)
+	    return;
+	prefix(self);
+	print(p1);
+	print(p2);
+	postfix();
+    }
+
+    // Add at will and on demand.
+    public void log(Object self, String p1, String[] p2) {
+	if (!logging)
+	    return;
+	prefix(self);
+	print(p1);
+	print(p2);
+	postfix();
+    }
+
+    // Add at will and on demand.
+    public void log(Object self, String p1, Object[] p2) {
+	if (!logging)
+	    return;
+	prefix(self);
+	print(p1);
+	print(p2);
+	postfix();
     }
 }

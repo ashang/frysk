@@ -47,16 +47,18 @@ import java.util.LinkedList;
  */
 
 public class TestLog extends TestCase {
-    //private static final Log log = Log.get(TestCase.class).set(Level.FINE);
+    private static final Log fine = Log.fine(TestCase.class);
 
-    private Log root;
+    private Branch root;
     public void setUp() {
-	root = new Log();
+	fine.log("setUp");
+	root = new Branch();
     }
     public void tearDown() {
+	fine.log("tearDown");
 	root = null;
     }
-    private Log get(String path) {
+    private Branch get(String path) {
 	return root.get(path, -1);
     }
 
@@ -66,31 +68,40 @@ public class TestLog extends TestCase {
     }
 
     public void testGetSelf() {
-	Log self = get("self");
+	Log self = get("self").get(Level.FINE);
 	assertNotNull("self", self);
     }
 
     public void testPath() {
 	String path = "a.long.path";
-	assertEquals("path", path, get(path).path());
+	assertEquals("path", path, get(path).get(Level.FINE).path());
     }
 
     public void testName() {
-	assertEquals("name", "path", get("a.long.path").name());
+	assertEquals("name", "path",
+		     get("a.long.path").get(Level.FINE).name());
+    }
+
+    public void testLevel() {
+	assertEquals("level", Level.FINE,
+		     get("a.long.path").get(Level.FINE).level());
     }
 
     public void testPeers() {
-	Log lhs = get("the.lhs");
-	Log rhs = get("the.rhs");
+	Log lhs = get("the.lhs").get(Level.FINE);
+	Log rhs = get("the.rhs").get(Level.FINE);
 	assertNotNull("the.lhs", lhs);
 	assertNotNull("the.rhs", rhs);
 	assertTrue("lhs != rhs", lhs != rhs);
-	assertEquals("the.lhs", lhs, get("the.lhs"));
-	assertEquals("the.rhs", rhs, get("the.rhs"));
+	assertEquals("the.lhs", lhs, get("the.lhs").get(Level.FINE));
+	assertEquals("the.rhs", rhs, get("the.rhs").get(Level.FINE));
     }
 
     private void checkLevel(String path, Level level) {
-	assertEquals("level " + path, level, get(path).level());
+	for (int i = 0; i < Level.MAX.intValue(); i++) {
+	    assertEquals("level " + path, i >= level.intValue(),
+			 get(path).get(Level.valueOf(i)).logging());
+	}
     }
     private void set(String path, Level level) {
 	get(path).set(level);
