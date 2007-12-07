@@ -133,7 +133,10 @@ AC_MSG_CHECKING([for working java compiler])
 JAVAC=${JAVAC:-${GCJ} -C -fsource=1.4}
 JAVACFLAGS=${JAVACFLAGS:-${GCJFLAGS} -g -classpath \$(SOURCEPATH):\$(CLASSPATH)}
 AC_COMPILE_IFELSE([public class conftest{}],
-	[JAVAC_IS=gcj],
+	[JAVAC_IS=gcj
+	if test "x$ac_env_GCJFLAGS_set" != xset; then
+	   GCJFLAGS="$GCJFLAGS -fsource=1.4"
+	fi],
 	[JAVAC_IS=ecj
          JAVAC='$(GIJ) --classpath $(ECJ_JAR):$(CLASSPATH) org.eclipse.jdt.internal.compiler.batch.Main -1.4'
 	 JAVACFLAGS='-warn:+semicolon -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)'])
