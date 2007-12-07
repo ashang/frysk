@@ -569,9 +569,7 @@ else
 fi
 
 # Grep the cni/*.cxx files forming a list of included files.  Assume
-# these are all generated from .class files.  The list can be pruned a
-# little since, given Class$Nested and Class, generating Class.h will
-# automatically generate the inner Class$Nested class.
+# these are all generated from .class files found in the master .jar.
 
 # This matches both:
 # #include "a/file/dot.h"

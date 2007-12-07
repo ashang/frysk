@@ -40,6 +40,7 @@
 package frysk.rsl;
 
 import frysk.junit.TestCase;
+import java.util.LinkedList;
 
 /**
  * Testlogging that is a sub-class of this directory.
@@ -67,6 +68,15 @@ public class TestLog extends TestCase {
     public void testGetSelf() {
 	Log self = get("self");
 	assertNotNull("self", self);
+    }
+
+    public void testPath() {
+	String path = "a.long.path";
+	assertEquals("path", path, get(path).path());
+    }
+
+    public void testName() {
+	assertEquals("name", "path", get("a.long.path").name());
     }
 
     public void testPeers() {
@@ -98,5 +108,49 @@ public class TestLog extends TestCase {
 	checkLevel("the.lower.left.hand.side", Level.FINE);
 	checkLevel("the.lower.right", Level.NONE);
     }
-
+    
+    private void checkComplete(String incomplete, int expectedCursor,
+			       String[] expectedCandidates) {
+	// create a tree.
+	get("the.lower.left.hand.side");
+	get("the.lower.left.half");
+	get("the.lower.right.hand.side");
+	// Perfomr a completion
+	LinkedList candidates = new LinkedList();
+	int cursor = root.complete(incomplete, -1, candidates);
+	assertEquals("candidate.size", expectedCandidates.length,
+		     candidates.size());
+	for (int i = 0; i < expectedCandidates.length; i++) {
+	    assertEquals("candidate[" + i + "]", expectedCandidates[i],
+			 candidates.get(i));
+	}
+	assertEquals("cursor", expectedCursor, cursor);
+    }
+    public void testCompleteChildPresent() {
+	// children present, expand the dot
+	checkComplete("the", 3, new String[] {"." });
+    }
+    public void testCompleteChildMissing() {
+	// no children present, expand the space
+	checkComplete("the.lower.left.half", 19, new String[] {" "});
+    }
+    public void testCompleteSingle() {
+	// single completion
+	checkComplete("the.", 4, new String[] {"lower" });
+    }
+    public void testCompleteMultiple() {
+	// multiple completion
+	checkComplete("the.lower.",10,  new String[] { "left", "right" });
+    }
+    public void testCompleteMidway() {
+	// mid completion
+	checkComplete("the.lower.left.h", 15, new String[] { "half", "hand" });
+    }
+    public void testCompleteNothing() {
+	checkComplete("", 0, new String[] { "the" });
+    }
+    public void testCompleteBogus() {
+	// bogus completion
+	checkComplete("the.upper", -1, new String[0]);
+    }
 }
