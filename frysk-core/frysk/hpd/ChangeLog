@@ -1,3 +1,12 @@
+2007-12-07  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* AuxvCommand.java: Move AuxvStringBuilder from here
+	to frysk.util.
+	* TestAuxvCommand.java (testAuxVCoreCommand): Rewrite.
+	Extract auxv from live process, generate core, test
+	against fhpd represention of core auxv data.
+	 
+
 2007-12-06  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TopLevelCommand.java(TopLevelCommand): add auxv command.

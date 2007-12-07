@@ -39,34 +39,46 @@
 
 package frysk.hpd;
 
-import frysk.Config;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import frysk.proc.Auxv;
+import frysk.proc.Proc;
+import frysk.proc.dead.TestLinuxCore;
+import frysk.testbed.DaemonBlockedAtSignal;
+import frysk.util.AuxvStringBuilder;
 
 public class TestAuxvCommand extends TestLib {
   
   public void testAuxVCoreCommand() {
+	  
+    Proc proc = (new DaemonBlockedAtSignal("funit-stacks")).getMainTask().getProc();
+    Auxv[] liveAuxv = proc.getAuxv();
+    
+    TestLinuxCore tester = new TestLinuxCore();
+    File core = new File(tester.constructCore(proc));
+    core.deleteOnExit();
+    class BuildAuxv extends AuxvStringBuilder {
+      
+      public ArrayList auxvData = new ArrayList();
+      public void buildLine(String type, String desc, String value) {
+	auxvData.add(type+" : " + value+"\n");	
+        }
+    }
+    
+    BuildAuxv buildAuxv = new BuildAuxv();
+    buildAuxv.construct(liveAuxv);
+    
+    
     e = new HpdTestbed();
-    e.send("core " + Config.getPkgDataFile("test-core-x86").getPath()
+    e.send("core " + core.getPath()
 	   + " -noexe\n");
     e.expect(5, "Attached to core file.*");
     e.send("auxv\n");
-    e.expect("AT_SYSINFO : 6464512");
-    e.expect("AT_SYSINFO_EHDR : 0x62a000");
-    e.expect("AT_HWCAP : 0xafe9f1bf");
-    e.expect("AT_PAGESZ : 4096");
-    e.expect("AT_CLKTCK : 100");
-    e.expect("AT_PHDR : 0x8048034");
-    e.expect("AT_PHENT : 32");
-    e.expect("AT_PHNUM : 8");
-    e.expect("AT_BASE : 0");
-    e.expect("AT_FLAGS : 0");
-    e.expect("AT_ENTRY : 0x80483e0");
-    e.expect("AT_UID : 500");
-    e.expect("AT_EUID : 500");
-    e.expect("AT_GID : 500");
-    e.expect("AT_EGID : 500");
-    e.expect("AT_0x17 : 0");
-    e.expect("AT_PLATFORM : 0xbfcfee4b");
-    e.expect("AT_NULL : 0");
+    Iterator i = buildAuxv.auxvData.iterator();
+    while (i.hasNext())
+      e.equals((String)i.next());
     e.close();
   }
 }

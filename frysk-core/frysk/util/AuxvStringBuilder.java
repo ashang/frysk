@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,58 +36,35 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+package frysk.util;
 
-package frysk.hpd;
-
-import java.util.Iterator;
-import java.util.List;
+import inua.elf.AT;
 import frysk.proc.Auxv;
-import frysk.proc.Proc;
-import frysk.util.AuxvStringBuilder;
 
-public class AuxvCommand extends ParameterizedCommand {
-  
-  boolean verbose = false;
-  
-  public AuxvCommand() {
-    super("Print process auxiliary", "auxv [-verbose]", 
-	  "Print out the process auxiliary data for this "
-	  + "process.");
-    
-    add(new CommandOption("verbose", "Print out known auxv descriptions ") {
-	void parse(String argument, Object options) {
-	  verbose = true;
-	}
-      });
-    
+
+public abstract class AuxvStringBuilder
+{
+  protected AuxvStringBuilder() {
   }
   
-  void interpret(CLI cli, Input cmd, Object options) {
-    PTSet ptset = cli.getCommandPTSet(cmd);
-    Iterator taskDataIterator = ptset.getTaskData();
-    if (taskDataIterator.hasNext() == false)
-      cli.addMessage("Cannot find main task. Cannot print out auxv", Message.TYPE_ERROR);
-    Proc mainProc = ((TaskData) taskDataIterator.next()).getTask().getProc();
-    Auxv[] liveAux = mainProc.getAuxv();
-    
-    class BuildAuxv extends AuxvStringBuilder {
-      
-      public StringBuffer auxvData = new StringBuffer();
-      public void buildLine(String type, String desc, String value) {
-	if (verbose)
-	  auxvData.append(type+" (" + desc+") : " + value+"\n");
-	else
-	  auxvData.append(type+" : " + value+"\n");	
-      }
+  public final void construct (Auxv[] rawAuxv) {
+    String  value;
+    for (int i=0; i < rawAuxv.length; i++) {
+      switch (rawAuxv[i].type) {
+      case 33:
+      case 16:
+      case 3:
+      case 9:
+	case 15: 
+	  value = "0x"+Long.toHexString(rawAuxv[i].val);
+	  break;
+      default: 
+	value = ""+rawAuxv[i].val;
+      }    		  
+      buildLine(AT.toString(rawAuxv[i].type), AT.toPrintString(rawAuxv[i].type), value);
     }
-    
-    BuildAuxv buildAuxv = new BuildAuxv();
-    buildAuxv.construct(liveAux);
-    
-    cli.outWriter.println(buildAuxv.auxvData.toString());
   }
   
-  int completer(CLI cli, Input input, int cursor, List completions) {
-    return -1;
-  }  
+  abstract public void buildLine(String type, String desc, String value);
 }
+
