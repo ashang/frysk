@@ -131,7 +131,7 @@ AC_LANG(JAVAC)
 
 AC_MSG_CHECKING([for working java compiler])
 JAVAC=${JAVAC:-${GCJ} -C -fsource=1.4}
-JAVACFLAGS=${JAVACFLAGS:-${GCJFLAGS}}
+JAVACFLAGS=${JAVACFLAGS:-${GCJFLAGS} -g -classpath \$(SOURCEPATH):\$(CLASSPATH)}
 AC_COMPILE_IFELSE([public class conftest{}],
 	[JAVAC_IS=gcj],
 	[JAVAC_IS=ecj

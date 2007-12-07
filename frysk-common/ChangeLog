@@ -1,5 +1,8 @@
 2007-12-06  Andrew Cagney  <cagney@redhat.com>
 
+	* frysk-common.ac (JAVACFLAGS): For GCJ, re-add -g -classpath lost
+	in previous commit.
+	
 	* frysk-common.ac (GCJ_FSOURCE): Delete.
 	(AC_LANG(JAVA)): Replace AC_LANG(GCJ).
 	(JAVA_IS): Re-implement using AC_COMPILE_IFELSE.
