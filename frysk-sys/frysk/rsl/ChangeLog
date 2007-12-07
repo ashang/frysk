@@ -1,3 +1,25 @@
+2007-12-07  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLog.java (testCompletion()): New.
+	(checkComplete(String,int,String[])): New.
+	(testName()): New.
+	(testPath()): New.
+	(testCompleteChildPresent()): New.
+	(testCompleteChildMissing()): New.
+	(testCompleteSingle()): New.
+	(testCompleteSingle()): New.
+	(testCompleteMultiple()): New.
+	(testCompleteMidway()): New.
+	(testCompleteNothing()): New.
+	(testCompleteBogus()): New.
+	* Log.java (Log(String,String,Log)): Add Second string name
+	parameter.
+	(name()): New.
+	(path()): New.
+	(complete(String,List)): New.
+	(complete(String,int,List)): New.
+	(children): Change type to TreeMap.
+
 2007-12-06  Andrew Cagney  <cagney@redhat.com>
 
 	New directory.

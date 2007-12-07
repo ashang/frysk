@@ -40,8 +40,9 @@
 package frysk.rsl;
 
 import java.io.PrintStream;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Generate log information when enabled.
@@ -50,10 +51,13 @@ public final class Log {
 
     private int level;
     private final String path;
-    private Log(String path, Log parent) {
+    private final String name;
+    private Log(String path, String name, Log parent) {
 	this.path = path;
 	this.level = parent.level;
+	this.name = name;
     }
+
     /**
      * Create a root logger; package private so that test code can
      * create their own root logger.
@@ -61,6 +65,7 @@ public final class Log {
     Log() {
 	this.level = 0;
 	this.path = "";
+	this.name = "";
     }
 
     public String toString() {
@@ -70,7 +75,23 @@ public final class Log {
 		+ "}");
     }
 
-    private final HashMap children = new HashMap();
+    /**
+     * Return the "basename" of the logger.
+     */
+    public final String name() {
+	return name;
+    }
+    /**
+     * Return the full path of the logger.
+     */
+    public final String path() {
+	return path;
+    }
+
+    private final TreeMap children = new TreeMap();
+    /**
+     * Set this logger's logging level.
+     */
     public synchronized final Log set(Level level) {
 	this.level = level.intValue();
 	for (Iterator i = children.values().iterator(); i.hasNext(); ) {
@@ -79,12 +100,16 @@ public final class Log {
 	}
 	return this;
     }
-    public Level level() {
+    /**
+     * Return this loggers current logging level.
+     */
+    public final Level level() {
 	return Level.valueOf(level);
     }
 
     /**
      * POS starts at -1, then points at "." or the end of the name.
+     * Package private so it can be called from test code.
      */
     synchronized final Log get(String path, int pos) {
 	if (pos >= path.length())
@@ -97,18 +122,93 @@ public final class Log {
 	String name = path.substring(pos + 1, dot);
 	Log child = (Log)children.get(name);
 	if (child == null) {
-	    child = new Log(path.substring(0, dot), this);
+	    child = new Log(path.substring(0, dot), name, this);
 	    children.put(name, child);
 	}
 	return child.get(path, dot);
     }
 
     private static final Log root = new Log();
+    /**
+     * Find the logger by the name KLASS.
+     */
     public static Log get(String klass) {
 	return root.get(klass, -1);
     }
+    /**
+     * Find the logger by with KLASS's name.
+     */
     public static Log get(Class klass) {
 	return root.get(klass.getName(), -1);
+    }
+
+    /**
+     * Complete the logger.  On entry, POS is either -1 or the
+     * location of the last DOT indicating further name completion is
+     * needed; or the length indicating that either a "." or " "
+     * completion is needed.
+     *
+     * Returns the offset into INCOMPLETE that the completions apply
+     * to, or -1.
+     *
+     * Package private to allow testing.
+     */
+    synchronized final int complete(String incomplete, int pos,
+				    List candidates) {
+	int dot = incomplete.indexOf('.', pos + 1);
+	if (dot >= 0) {
+	    // More tokens to follow; recursively resolve.
+	    String name = incomplete.substring(pos + 1, dot);
+	    Log child = (Log)children.get(name);
+	    if (child == null)
+		return -1;
+	    else
+		return child.complete(incomplete, dot, candidates);
+	} else {
+	    // Final token, scan children for all partial matches.
+	    String name = incomplete.substring(pos + 1);
+	    for (Iterator i = children.keySet().iterator(); i.hasNext(); ) {
+		String child = (String)i.next();
+		if (child.startsWith(name))
+		    candidates.add(child);
+	    }
+	    switch (candidates.size()) {
+	    case 0:
+		return -1;
+	    case 1:
+		Log child = (Log)children.get(name);
+		if (child != null) {
+		    // The final NAME was an exact match for a child;
+		    // and there are no other possible completions
+		    // (size == 1); change the expansion to either "."
+		    // (have children) or " " (childless).
+		    candidates.remove(0);
+		    synchronized (child) {
+			if (child.children.size() > 0) {
+			    candidates.add(".");
+			} else {
+			    candidates.add(" ");
+			}
+			return incomplete.length();
+		    }
+		} else {
+		    // A single partial completion e.g., <<foo<TAB>>>
+		    // -> <<foobar>>.
+		    return pos + 1;
+		}
+	    default:
+		return pos + 1;
+	    }
+	}
+    }
+
+    /**
+     * Complete the logger path using constructed loggers.  Return the
+     * offset into incomplete where the completions apply, or -1 when
+     * no completions.
+     */
+    public static int complete(String incomplete, List candidates) {
+	return root.complete(incomplete, -1, candidates);
     }
 
     // Static?
