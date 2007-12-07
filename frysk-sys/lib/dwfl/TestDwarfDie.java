@@ -101,4 +101,28 @@ public class TestDwarfDie extends TestCase {
 	assertTrue("Found correct module", dwflModule.getName().contains("TestRunner"));
     }
 
+    public void testGetOffset(){
+
+	Dwfl dwfl = new Dwfl(Pid.get());
+	assertNotNull(dwfl);
+	long addr = LocalMemory.getCodeAddr();
+
+	DwarfDie cuDie = dwfl.getCompilationUnit(addr).die;
+	assertNotNull(cuDie);
+	    
+	DwarfDie die = cuDie.getScopes(addr)[0];
+	
+	long offset = die.getOffset();
+	
+	DwarfDie retrievedDie = die.getModule().getDieByOffset(offset);
+	assertNotNull(retrievedDie);
+	
+	assertEquals("dies have the same name", die.getName(), retrievedDie.getName());
+	assertEquals("dies have the same tag", die.getTag(), retrievedDie.getTag());
+	
+	die = retrievedDie;
+	
+    }
+
+    
 }

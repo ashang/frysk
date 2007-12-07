@@ -1,5 +1,11 @@
 2007-12-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* DwflModule.java (getDieByOffset): New function
+	* cni/DwflModule.cxx (DwflModule::offdie): New function.
+	* TestDwarfDie.java (testGetOffset): New test.
+
+2007-12-07  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* DwarfDie.java (getOffset): Now returns long.
 	* cni/DwarfDie.cxx: Updated.
 	

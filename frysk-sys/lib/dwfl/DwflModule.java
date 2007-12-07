@@ -91,8 +91,14 @@ public class DwflModule
 	}
 	return pubNames;
     }
-    
     private native void get_pubnames();
+    
+    
+    protected DwarfDie getDieByOffset(long offset){
+	return offdie(this.getPointer(), offset);
+    }    
+    private native DwarfDie offdie(long die, long offset);
+
     
     /**
      * Get the name of the module.

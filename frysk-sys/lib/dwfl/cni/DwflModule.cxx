@@ -233,3 +233,19 @@ lib::dwfl::DwflModule::get_pubnames()
   dwarf_getpubnames(dwarf, callback, this,0);
 }
 
+
+lib::dwfl::DwarfDie*
+lib::dwfl::DwflModule::offdie(jlong die, jlong offset){
+  
+  Dwarf_Addr bias;
+  Dwarf_Off dwarf_offset = (Dwarf_Off)offset;
+  Dwarf_Die* dwarf_die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
+  
+  ::Dwarf* dbg = dwfl_module_getdwarf ((Dwfl_Module*)this->getPointer(), &bias);
+  
+  dwarf_offdie (dbg, dwarf_offset, dwarf_die);
+  
+  lib::dwfl::DwarfDie* dwarfDie = this->parent->factory->makeDie((jlong)dwarf_die, this);  
+   
+  return dwarfDie;
+}
