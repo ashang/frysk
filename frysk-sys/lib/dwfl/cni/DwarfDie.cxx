@@ -429,11 +429,11 @@ lib::dwfl::DwarfDie::get_attr_constant (jlong die_p, jint attr)
   return -1;
 }
   
-jint
+jlong
 lib::dwfl::DwarfDie::get_offset (jlong var_die)
 {
   Dwarf_Die *die = (Dwarf_Die*) var_die;
-  return (jint)dwarf_dieoffset(die);
+  return (jlong)dwarf_dieoffset(die);
 }
 
 void

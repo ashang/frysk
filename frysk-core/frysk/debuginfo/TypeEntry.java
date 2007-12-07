@@ -342,16 +342,16 @@ public class TypeEntry
 	else
 	    type = typeDie;
 
-	Type mappedType = (Type)dieHash.get(new Integer(type.getOffset()));
+	Type mappedType = (Type)dieHash.get(new Long(type.getOffset()));
 	if (mappedType != null)
 	    return mappedType;
-	else if (dieHash.containsKey(new Integer(type.getOffset()))) {
+	else if (dieHash.containsKey(new Long(type.getOffset()))) {
 	    // ??? will this always be a pointer to ourselves?
 	    // Instead of VoidType, we need a way to reference ourselves
 	    return new PointerType("", byteorder, getByteSize(type),  
 		    new VoidType());
 	}
-	dieHash.put(new Integer(type.getOffset()), null);
+	dieHash.put(new Long(type.getOffset()), null);
 	Type returnType = null;
 	
 	switch (type.getTag().hashCode()) {
@@ -434,7 +434,7 @@ public class TypeEntry
 	}
 
 	if (returnType != null) {
-	    dieHash.put(new Integer(type.getOffset()), returnType);
+	    dieHash.put(new Long(type.getOffset()), returnType);
 	    return returnType;
 	}
 	else
