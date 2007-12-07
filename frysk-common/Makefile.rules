@@ -360,7 +360,7 @@ $(GEN_SOURCENAME)/JUnitTests.java: files-java.list
 	tmpdir=$$b.tmp ; \
 	rm -rf $$tmpdir ; \
 	mkdir -p $$tmpdir ; \
-	$(GCJCOMPILE) -C -d $$tmpdir '$<' || exit 1 ; \
+	$(JAVAC) $(JAVACFLAGS) -d $$tmpdir '$<' || exit 1 ; \
 	classes=`cd $$tmpdir; find $$d/$$b*.class \
 		    -name '*\$$[0-9]*' -prune \
 		    -o -name $$b.class -print \

@@ -99,38 +99,6 @@ AC_CHECK_PROGS([JV_SCAN], [jv-scan4 jv-scan], [no])
 AM_CONDITIONAL([HAVE_JV_SCAN], test x"${JV_SCAN}" != xno)
 
 
-# autoconf doesn't yet know about GCJ, so define it ourselves.
-
-m4_define([AC_LANG(GCJ)],
-[ac_ext=java
-ac_objext=class
-ac_compile='$GCJ $GCJFLAGS conftest.$ac_ext >&AS_MESSAGE_LOG_FD'
-ac_java_werror_flag=no
-])
-m4_defun([AC_LANG_COMPILER(GCJ)], [])
-m4_define([_AC_LANG_ABBREV(GCJ)], [java])
-AC_LANG(GCJ)
-
-
-# See gcj accepts -fsource=1.4, if not only use the warning flags.  If
-# it is available also use it for the GCJFLAGS.
-
-AC_MSG_CHECKING([whether ${GCJ} accepts -fsource=1.4])
-if test "x$ac_env_GCJFLAGS_set" == xset ; then
-	GCJ_FSOURCE="no"
-	AC_MSG_RESULT([not needed])
-else
-	GCJFLAGS_WARN=$GCJFLAGS
-	GCJFLAGS="$GCJFLAGS -fsource=1.4"
-	AC_COMPILE_IFELSE([public class conftest{}],
-		[GCJ_FSOURCE="yes"
-		 GCJFLAGS="$GCJFLAGS -fsource=1.4"],
-		[GCJ_FSOURCE="no"
-		GCJFLAGS=$GCJFLAGS_WARN])
-	AC_MSG_RESULT([${GCJ_FSOURCE}])
-fi
-
-
 # Check for the ECJ compiler.
 
 AC_MSG_CHECKING([ecj.jar])
@@ -139,55 +107,59 @@ AC_SUBST([ECJ_JAR])
 AC_MSG_RESULT(${ECJ_JAR})
 
 
+# autoconf doesn't yet know about JAVAC, so define it ourselves.
+
+m4_define([AC_LANG(JAVAC)],
+[ac_ext=java
+ac_objext=class
+ac_compile='$JAVAC $JAVACFLAGS conftest.$ac_ext >&AS_MESSAGE_LOG_FD'
+ac_java_werror_flag=no
+])
+m4_defun([AC_LANG_COMPILER(JAVAC)], [])
+m4_define([_AC_LANG_ABBREV(JAVAC)], [java])
+AC_LANG(JAVAC)
+
+
 # Two possible compilers: either GCJ (wrapper round ECJ); or ECJ.  In
 # the latter case, need to explicitly run compiler from within the GIJ
 # runtime so that ECJ sees the classpath environment, in particular
-# things like gnu.gcj.RawDataManaged.
+# things like gnu.gcj.RawDataManaged.  Start out assuming GCJ (with
+# the -fsource=1.4 flag), if that fails, fall back to ECJ.
 
-AC_MSG_CHECKING([JAVAC])
-if test x"${JAVAC}" = x ; then
-   if test "x${GCJ_FSOURCE}" = xyes ; then
-      JAVAC_IS=gcj
-      JAVAC="\$(GCJ) -C"
-   elif test "x${ECJ_JAR}" != xno ; then
-      JAVAC_IS=ecj
-      JAVAC="\$(GIJ) --classpath \$(ECJ_JAR):\$(CLASSPATH) org.eclipse.jdt.internal.compiler.batch.Main -1.4"
-   else
-      AC_MSG_ERROR([no java compiler])
-   fi
-fi
+# See gcj accepts -fsource=1.4, if not only use the warning flags.  If
+# it is available also use it for the GCJFLAGS.
+
+AC_MSG_CHECKING([for working java compiler])
+JAVAC=${JAVAC:-${GCJ} -C -fsource=1.4}
+JAVACFLAGS=${JAVACFLAGS:-${GCJFLAGS}}
+AC_COMPILE_IFELSE([public class conftest{}],
+	[JAVAC_IS=gcj],
+	[JAVAC_IS=ecj
+         JAVAC='$(GIJ) --classpath $(ECJ_JAR):$(CLASSPATH) org.eclipse.jdt.internal.compiler.batch.Main -1.4'
+	 JAVACFLAGS='-warn:+semicolon -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)'])
 AC_SUBST([JAVAC])
-AC_SUBST([JAVAC_IS])
-AC_MSG_RESULT(${JAVAC})
-
-
-# Only add -warn flags when the compiler is known to be ECJ.
-AC_MSG_CHECKING([java flags])
-case "${JAVAC_IS}" in
-     gcj) JAVACFLAGS='-g -classpath $(SOURCEPATH):$(CLASSPATH)' ;;
-     ecj) JAVACFLAGS='-warn:+semicolon -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)' ;;
-esac
 AC_SUBST([JAVACFLAGS])
-AC_MSG_RESULT(${JAVACFLAGS})
-
+AC_SUBST([JAVAC_IS])
+AC_MSG_RESULT([${JAVAC_IS} ($JAVAC)])
 
 # Some versions of gcj don't support -Wall.  Some versions generate
 # good warnings without it.  So explictily test for it.
 
-AC_MSG_CHECKING([whether ${JAVAC} accepts -Wall])
+AC_MSG_CHECKING([whether GCJ needs -Wall])
 if test "x$ac_env_GCJFLAGS_set" == xset ; then
-	GCJ_WALL=no
-	AC_MSG_RESULT([not needed])
+	GCJ_WALL="not needed"
 elif test x"${JAVAC_IS}" = xgcj ; then
-	# Newer compilers have a good default set of warnings so do
-	# not need -Wall.  However, older GCJs barf on stray
-	# semicolons so always check for them to help with
-	# compatibility.
+	# A newer GCJ (using it for JAVAC) which has a good
+	# default set of warnings so do not need -Wall.  However,
+	# older GCJs barf on stray semicolons so always check for them
+	# to help with compatibility.
 	GCJ_WALL=-Wextraneous-semicolon
 	JAVACFLAGS="$JAVACFLAGS ${GCJ_WALL}"
 	GCJFLAGS="$GCJFLAGS ${GCJ_WALL}"
 else	
-	GCJ_WALL=no
+	# Older GCJ (not using it for JAVAC) need the full gamit.
+	GCJ_WALL="-Wextraneous-semicolon -Wall"
+	GCJFLAGS="$GCJFLAGS ${GCJ_WALL}"
 fi
 AC_MSG_RESULT([${GCJ_WALL}])
 

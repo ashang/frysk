@@ -1,3 +1,11 @@
+2007-12-06  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk-common.ac (GCJ_FSOURCE): Delete.
+	(AC_LANG(JAVA)): Replace AC_LANG(GCJ).
+	(JAVA_IS): Re-implement using AC_COMPILE_IFELSE.
+	(GCJ_WALL): Default to adding -Wall.
+	* Makefile.rules (.java.h): Use JAVAC.
+
 2007-12-06  Andrew Cagney  <cagney@frysk32.hsv.redhat.com>
 
 	* frysk-common.ac (JAVAC): Pass -1.4 to ECJ compiler.
