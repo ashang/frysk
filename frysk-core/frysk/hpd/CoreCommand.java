@@ -60,8 +60,8 @@ public class CoreCommand extends ParameterizedCommand {
 	boolean noExeOption = false;
 
 	CoreCommand() {
-		super("core", "core <core-file> [ <executable> ] [ -noexe ]",
-				"open a core file");
+		super("Load a Corefile.", "core <core-file> [ <executable> ] [ -noexe ]",
+				"Opens, loads and models corefile.");
 
 		add(new CommandOption("noexe", "Do not attempt to load executable ") {
 			void parse(String argument, Object options) {

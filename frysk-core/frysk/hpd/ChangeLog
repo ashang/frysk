@@ -1,5 +1,7 @@
 2007-12-07  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* CoreCommand.java: Tweak help text. 
+
 	* AuxvCommand.java (interpret): Return nothing when
 	main task cannot be found.
 	* MapsCommand.java: New.
