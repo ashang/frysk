@@ -1,5 +1,8 @@
 2007-12-06  Andrew Cagney  <cagney@redhat.com>
 
+	* frysk-common.ac (--enable-jar-compile): When JAVAC is GCJ,
+	default to on.
+
 	* frysk-common.ac (GCJFLAGS): Add -fsource=1.4 when applicable.
 	
 	* frysk-common.ac (JAVACFLAGS): For GCJ, re-add -g -classpath lost
