@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -73,10 +73,10 @@ public class Util
     else
       {
         proc = null;
-        throw new RuntimeException("No proc in this corefile");
+        throw new RuntimeException("Cannot find a process in this corefile.");
       }
     if (iterator.hasNext())
-      throw new RuntimeException("Too many procs on this corefile");
+      throw new RuntimeException("Too many processes in this corefile.");
     
     return proc;
   }
@@ -93,10 +93,10 @@ public class Util
     else
       {
         proc = null;
-        throw new RuntimeException("No proc in this corefile");
+        throw new RuntimeException("Cannot find a process in this corefile.");
       }
     if (iterator.hasNext())
-      throw new RuntimeException("Too many procs on this corefile");
+      throw new RuntimeException("Too many processes in this corefile.");
     
     return proc;
   }
@@ -125,8 +125,8 @@ public class Util
 	  
 	  public void procNotFound (ProcId procId, Exception e)
 	  { 
-	      System.err.println("Couldn't find the process: "
-				 + procId.toString());
+	      System.err.println("Could not find the process: "
+				 + procId.intValue());
 	      Manager.eventLoop.requestStop();  
 	  } 
       }
@@ -151,10 +151,10 @@ public class Util
       else
         {
           proc = null;
-          throw new RuntimeException("No proc in this exefile");
+          throw new RuntimeException("Cannot find a process in this executable.");
         }
       if (iterator.hasNext())
-        throw new RuntimeException("Too many procs in this exefile");
+        throw new RuntimeException("Too many processes in this executable.");
       
       return proc;
     }

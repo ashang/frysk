@@ -1,5 +1,10 @@
 2007-12-07  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* Util.java (getProcFromCoreFile): Tweak Error text.
+	(getProcFromCoreExePair): Ditto.
+	(getProcFromPid): Ditto.
+	(getProcFromExeFile)L Ditto. 
+	
 	* AuxvStringBuilder.java: New.
 
 2007-12-04  Andrew Cagney  <cagney@redhat.com>
