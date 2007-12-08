@@ -100,7 +100,7 @@ print_member ()
     if test -z "${op}" ; then
 	if test x"$print" != x- ; then
 	    map="${map}
-${sp}    map.put (${_name}.enumString, ${_name});"
+${sp}    map.put (${_name}.enumName, ${_name});"
 	    valueOf="${valueOf}
 ${sp}    case ${_name}_: return ${_name};"
 	fi

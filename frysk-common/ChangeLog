@@ -1,3 +1,8 @@
+2007-12-07  Andrew Cagney  <cagney@redhat.com>
+
+	* mkenum.sh (map): Construct the String to Enum table using the
+	enum's name, not string.
+
 2007-12-06  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk-common.ac (--enable-jar-compile): When JAVAC is GCJ,
