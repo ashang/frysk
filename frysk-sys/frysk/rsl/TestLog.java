@@ -49,16 +49,16 @@ import java.util.LinkedList;
 public class TestLog extends TestCase {
     private static final Log log = Log.fine(TestCase.class);
 
-    private Branch root;
+    private Tree root;
     public void setUp() {
 	log.message("setUp");
-	root = new Branch();
+	root = new Tree();
     }
     public void tearDown() {
 	log.message("tearDown");
 	root = null;
     }
-    private Branch get(String path) {
+    private Tree get(String path) {
 	return root.get(path);
     }
     private Log get(String path, Level level) {

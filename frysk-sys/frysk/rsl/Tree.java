@@ -46,7 +46,7 @@ import java.util.List;
 /**
  * Generate log information when enabled.
  */
-public final class Branch {
+public final class Tree {
 
     private final TreeMap children = new TreeMap();
     private final Log[] loggers = new Log[Level.MAX.intValue()];
@@ -54,7 +54,7 @@ public final class Branch {
     private final String path;
     private final String name;
 
-    private Branch(String path, String name) {
+    private Tree(String path, String name) {
 	this.path = path;
 	this.name = name;
     }
@@ -69,13 +69,13 @@ public final class Branch {
     /**
      * Package private for testing.
      */
-    Branch() {
+    Tree() {
 	this("<root>", "<root>");
     }
     /**
      * The root note; also serves as a single global lock.
      */
-    static final Branch root = new Branch();
+    static final Tree root = new Tree();
 
     /**
      * Set this logger's logging level.
@@ -89,7 +89,7 @@ public final class Branch {
 		}
 	    }
 	    for (Iterator i = children.values().iterator(); i.hasNext(); ) {
-		Branch child = (Branch)i.next();
+		Tree child = (Tree)i.next();
 		child.set(level);
 	    }
 	}
@@ -98,7 +98,7 @@ public final class Branch {
     /**
      * POS starts at -1, then points at "." or the end of the name.
      */
-    private Branch get(String path, int pos) {
+    private Tree get(String path, int pos) {
 	if (pos >= path.length()) {
 	    // Reached end if the string; find the logger.
 	    return this;
@@ -111,15 +111,15 @@ public final class Branch {
 	    if (dot < 0)
 		dot = path.length();
 	    String name = path.substring(pos + 1, dot);
-	    Branch child = (Branch)children.get(name);
+	    Tree child = (Tree)children.get(name);
 	    if (child == null) {
-		child = new Branch(path.substring(0, dot), name);
+		child = new Tree(path.substring(0, dot), name);
 		children.put(name, child);
 	    }
 	    return child.get(path, dot);
 	}
     }
-    Branch get(String path) {
+    Tree get(String path) {
 	synchronized (root) {
 	    return get(path, -1);
 	}
@@ -160,7 +160,7 @@ public final class Branch {
 	if (dot >= 0) {
 	    // More tokens to follow; recursively resolve.
 	    String name = incomplete.substring(pos + 1, dot);
-	    Branch child = (Branch)children.get(name);
+	    Tree child = (Tree)children.get(name);
 	    if (child == null)
 		return -1;
 	    else
@@ -177,7 +177,7 @@ public final class Branch {
 	    case 0:
 		return -1;
 	    case 1:
-		Branch child = (Branch)children.get(name);
+		Tree child = (Tree)children.get(name);
 		if (child != null) {
 		    // The final NAME was an exact match for a child;
 		    // and there are no other possible completions

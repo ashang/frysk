@@ -1,5 +1,10 @@
 2007-12-10  Andrew Cagney  <cagney@redhat.com>
 
+	* Tree.java: Rename Branch.java.
+	* LogOption.java: Update.
+	* TestLog.java: Update.
+	* Log.java: Update.
+
 	* Logger.java: New.
 	* Log.java (message(...)): Rename log(...).
 	(print(Throwable)): New.

@@ -99,17 +99,17 @@ public final class Log {
 	return logging;
     }
 
-    public static Branch get(String klass) {
-	return Branch.root.get(klass);
+    public static Tree get(String klass) {
+	return Tree.root.get(klass);
     }
     public static Log get(String klass, Level level) {
-	return Branch.root.get(klass, level);
+	return Tree.root.get(klass, level);
     }
     public static Log fine(String klass) {
 	return get(klass, Level.FINE);
     }
 
-    public static Branch get(Class klass) {
+    public static Tree get(Class klass) {
 	return get(klass.getName());
     }
     public static Log get(Class klass, Level level) {
@@ -120,7 +120,7 @@ public final class Log {
     }
 
     public static int complete(String incomplete, List candidates) {
-	return Branch.root.complete(incomplete, candidates);
+	return Tree.root.complete(incomplete, candidates);
     }
 
     // Static?

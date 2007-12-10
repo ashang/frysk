@@ -55,13 +55,13 @@ public class LogOption extends Option {
 	parse(arg0);
     }
     public static void parse(String arg0) throws OptionException {
-	parsed(Branch.root, arg0);
+	parsed(Tree.root, arg0);
     }
-    static void parsed (Branch root, String arg0) throws OptionException {
+    static void parsed (Tree root, String arg0) throws OptionException {
 	String[] logs = arg0.split(",");
 	for (int i = 0; i < logs.length; i++) {
 	    String[] logLevel = logs[i].split("=");
-	    Branch logger;
+	    Tree logger;
 	    Level level;
 	    switch (logLevel.length) {
 	    case 1:
