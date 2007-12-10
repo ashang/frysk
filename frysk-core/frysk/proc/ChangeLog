@@ -1,5 +1,9 @@
 2007-12-10  Petr Machata  <pmachata@redhat.com>
 
+	* TestTaskForkedObserver.java (testTaskVforkObserver): unresolved 5466.
+
+2007-12-10  Petr Machata  <pmachata@redhat.com>
+
 	* TestTaskForkedObserver.java:
 	(ForkObserver): Class moved from testTaskForkedObserver.
 	(setupForkTest): New method, contains what's common for the two tests.

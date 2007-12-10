@@ -87,6 +87,9 @@ public class TestTaskForkedObserver
 
     public void testTaskVforkObserver ()
     {
+	if (unresolved(5466))
+	    return;
+
 	ForkObserver forkObserver = new ForkObserver();
 	ProcCounter procCounter
 	    = setupForkTest(forkObserver,
