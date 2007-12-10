@@ -41,6 +41,7 @@ package frysk.rsl;
 
 import java.io.PrintStream;
 import java.util.List;
+import java.text.MessageFormat;
 
 /**
  * Generate log information when enabled.
@@ -225,9 +226,54 @@ public final class Log {
 	}
 	out.print("]");
     }
+    /**
+     * Throwables get their message printed; along with any root
+     * causes.
+     */
+    private void print(Throwable t) {
+	out.print(" exception");
+	Throwable cause = t;
+	do {
+	    out.print(":");
+	    out.print(t.getMessage());
+	    cause = cause.getCause();
+	} while (cause != null);
+    }
+    private void print(Throwable[] t) {
+	out.print(" exception");
+	for (int i = 0; i < t.length; i++) {
+	    Throwable cause = t[i];
+	    do {
+		out.print(":");
+		out.print(cause.getMessage());
+		cause = cause.getCause();
+	    } while (cause != null);
+	}
+    }
+    
+    /**
+     * For compatibility with existing loggers.
+     */
+    public void format(String msg, Object[] o) {
+	if (!logging)
+	    return;
+	prefix();
+	print(MessageFormat.format(msg, o));
+	postfix();
+    }
+    /**
+     * For compatibility with existing loggers.
+     */
+    public void format(String msg, Object o) {
+	if (!logging)
+	    return;
+	prefix();
+	print(MessageFormat.format(msg, new Object[] { o }));
+	postfix();
+    }
 
     // Add at will and on demand.
-    public void log(String p1) {
+    public void message(String p1) {
 	if (!logging)
 	    return;
 	prefix();
@@ -236,7 +282,7 @@ public final class Log {
     }
 
     // Add at will and on demand.
-    public void log(Object self, String p1, int p2) {
+    public void message(Object self, String p1, int p2) {
 	if (!logging)
 	    return;
 	prefix(self);
@@ -246,7 +292,7 @@ public final class Log {
     }
 
     // Add at will and on demand.
-    public void log(Object self, String p1, long p2) {
+    public void message(Object self, String p1, long p2) {
 	if (!logging)
 	    return;
 	prefix(self);
@@ -256,7 +302,7 @@ public final class Log {
     }
 
     // Add at will and on demand.
-    public void log(Object self, String p1, String p2) {
+    public void message(Object self, String p1, String p2) {
 	if (!logging)
 	    return;
 	prefix(self);
@@ -266,7 +312,7 @@ public final class Log {
     }
 
     // Add at will and on demand.
-    public void log(Object self, String p1, Object p2) {
+    public void message(Object self, String p1, Object p2) {
 	if (!logging)
 	    return;
 	prefix(self);
@@ -276,7 +322,7 @@ public final class Log {
     }
 
     // Add at will and on demand.
-    public void log(Object self, String p1, int[] p2) {
+    public void message(Object self, String p1, int[] p2) {
 	if (!logging)
 	    return;
 	prefix(self);
@@ -286,7 +332,7 @@ public final class Log {
     }
 
     // Add at will and on demand.
-    public void log(Object self, String p1, long[] p2) {
+    public void message(Object self, String p1, long[] p2) {
 	if (!logging)
 	    return;
 	prefix(self);
@@ -296,7 +342,7 @@ public final class Log {
     }
 
     // Add at will and on demand.
-    public void log(Object self, String p1, String[] p2) {
+    public void message(Object self, String p1, String[] p2) {
 	if (!logging)
 	    return;
 	prefix(self);
@@ -306,7 +352,7 @@ public final class Log {
     }
 
     // Add at will and on demand.
-    public void log(Object self, String p1, Object[] p2) {
+    public void message(Object self, String p1, Object[] p2) {
 	if (!logging)
 	    return;
 	prefix(self);
@@ -314,4 +360,26 @@ public final class Log {
 	print(p2);
 	postfix();
     }
+
+    // Add at will and on demand.
+    public void message(Object self, String p1, Throwable p2) {
+	if (!logging)
+	    return;
+	prefix(self);
+	print(p1);
+	print(p2);
+	postfix();
+    }
+
+    // Add at will and on demand.
+    public void message(Object self, String p1, Throwable[] p2) {
+	if (!logging)
+	    return;
+	prefix(self);
+	print(p1);
+	print(p2);
+	postfix();
+    }
+
+
 }

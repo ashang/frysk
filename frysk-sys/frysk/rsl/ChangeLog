@@ -1,3 +1,15 @@
+2007-12-10  Andrew Cagney  <cagney@redhat.com>
+
+	* Logger.java: New.
+	* Log.java (message(...)): Rename log(...).
+	(print(Throwable)): New.
+	(print(Throwable[])): New.
+	(message(Object,Throwable)): New.
+	(message(Object,Throwable[])): New.
+	(format(String,Object[])): New.
+	(format(String,Object)): New.
+	* LogOption.java (parse(String)): New.
+
 2007-12-09  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLog.java: Update.

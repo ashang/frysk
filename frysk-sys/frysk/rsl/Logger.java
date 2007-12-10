@@ -1,11 +1,11 @@
 // This file is part of the program FRYSK.
-//
-// Copyright 2005, 2007 Red Hat Inc.
-//
+// 
+// Copyright 2007, Red Hat Inc.
+// 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
 // the Free Software Foundation; version 2 of the License.
-//
+// 
 // FRYSK is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -39,51 +39,26 @@
 
 package frysk.rsl;
 
-import gnu.classpath.tools.getopt.Option;
-import gnu.classpath.tools.getopt.OptionException;
-
-public class LogOption extends Option {
-
-    public LogOption(String name) {
-	super(name,
-	      ("Set the logger LOG to level LEVEL.\n"
-	       + "The LEVEL can be [ NONE | FINE | FINEST ].\n"
-	       + "Example -" + name + " frysk=FINE"),
-	      "<LOG=LEVEL,...>");
+/**
+ * Java logger compatibility class; to aid easy conversion.
+ */
+public final class Logger {
+    public static Logger getLogger(String path) {
+	return new Logger(path);
     }
-    public void parsed (String arg0) throws OptionException {
-	parse(arg0);
-    }
-    public static void parse(String arg0) throws OptionException {
-	parsed(Branch.root, arg0);
-    }
-    static void parsed (Branch root, String arg0) throws OptionException {
-	String[] logs = arg0.split(",");
-	for (int i = 0; i < logs.length; i++) {
-	    String[] logLevel = logs[i].split("=");
-	    Branch logger;
-	    Level level;
-	    switch (logLevel.length) {
-	    case 1:
-		// LEVEL
-		logger = root.get("");
-		level = Level.valueOf(logLevel[0]);
-		break;
-	    case 2:
-		// LOGGER=LEVEL
-		logger = root.get(logLevel[0]);
-		level = Level.valueOf(logLevel[1]);
-		break;
-	    default:
-		throw new OptionException("Could not parse: " + logs[i]);
-	    }
-	    if (logger == null)
-		throw new OptionException("Couldn't find logger for: "
-					  + logs[i]);
-	    if (level == null)
-		throw new OptionException("Invalid log level for: "
-					  + logs[i]);
-	    logger.set(level);
+    private final Log[] logger = new Log[Level.MAX.intValue()];
+    private Logger(String path) {
+	for (int i = 0; i < Level.MAX.intValue(); i++) {
+	    this.logger[i] = Log.get(path, Level.valueOf(i));
 	}
+    }
+    public boolean isLoggable(Level level) {
+	return logger[level.intValue()].logging();
+    }
+    public void log(Level level, String message, Object[] param) {
+	logger[level.intValue()].format(message, param);
+    }
+    public void log(Level level, String message, Object param) {
+	logger[level.intValue()].format(message, param);
     }
 }

@@ -47,15 +47,15 @@ import java.util.LinkedList;
  */
 
 public class TestLog extends TestCase {
-    private static final Log fine = Log.fine(TestCase.class);
+    private static final Log log = Log.fine(TestCase.class);
 
     private Branch root;
     public void setUp() {
-	fine.log("setUp");
+	log.message("setUp");
 	root = new Branch();
     }
     public void tearDown() {
-	fine.log("tearDown");
+	log.message("tearDown");
 	root = null;
     }
     private Branch get(String path) {
