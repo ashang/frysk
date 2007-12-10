@@ -1,3 +1,7 @@
+2007-12-10  Petr Machata  <pmachata@redhat.com>
+
+	* funit-vfork.c: New file.
+
 2007-12-04  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
 
 	* funit-regs.S: Add floating support for PowerPC64.

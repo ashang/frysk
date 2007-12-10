@@ -54,47 +54,58 @@ import frysk.testbed.DaemonBlockedAtEntry;
 public class TestTaskForkedObserver
     extends TestLib
 {
-  static int n = 10;
+    static int n = 10;
 
-  /**
-   * Test that the fork count from a sub-program that, in turn, creates lots and
-   * lots of sub-processes matches the expected.
-   */
-  public void testTaskForkedObserver ()
-  {
-    // Watch for any Task fork events, accumulating them as they
-    // arrive.
-    class ForkObserver
-        extends TaskObserverBase
-        implements TaskObserver.Forked
+    /**
+     * Test that the fork count from a sub-program that, in turn, creates lots and
+     * lots of sub-processes matches the expected.
+     */
+    public void testTaskForkedObserver ()
     {
-      int count;
+	ForkObserver forkObserver = new ForkObserver();
+	ProcCounter procCounter
+	    = setupForkTest(forkObserver, new String[]
+		{
+		    getExecPath ("funit-fib-fork"),
+		    Integer.toString(n)
+		});
 
-      public Action updateForkedParent (Task parent, Task offspring)
-      {
-        count++;
-        parent.requestUnblock(this);
-        return Action.BLOCK;
-      }
+	Fibonacci fib = new Fibonacci(n);
 
-      public Action updateForkedOffspring (Task parent, Task offspring)
-      {
-        // XXX: Is this legit? Like knowing that the request
-        // won't be processed until the event loop is run
-        // again so that there's no race condition.
-        offspring.requestAddForkedObserver(this);
-        offspring.requestUnblock(this);
-        return Action.BLOCK;
-      }
+	assertEquals("number of child processes created (not counting first)",
+		     fib.getCallCount() - 1,
+		     procCounter.added.size());
+	assertEquals("number of child processes destroyed (not counting first)",
+		     fib.getCallCount() - 1,
+		     procCounter.removed.size());
+	assertEquals("number of times fork observer added",
+		     fib.getCallCount(),
+		     forkObserver.addedCount());
+	assertEquals("number of forks (one less than number of processes)",
+		     fib.getCallCount() - 1, forkObserver.count);
     }
-    ForkObserver forkObserver = new ForkObserver();
 
+    public void testTaskVforkObserver ()
+    {
+	ForkObserver forkObserver = new ForkObserver();
+	ProcCounter procCounter
+	    = setupForkTest(forkObserver,
+			    new String[] { getExecPath ("funit-vfork") });
+
+	assertEquals("number of child processes created",
+		     1, procCounter.added.size());
+	assertEquals("number of child processes destroyed",
+		     1, procCounter.removed.size());
+	assertEquals("number of times fork observer added",
+		     2, forkObserver.addedCount());
+	assertEquals("number of forks (one less than number of processes)",
+		     1, forkObserver.count);
+    }
+
+  public ProcCounter setupForkTest (ForkObserver forkObserver, String[] argv)
+  {
     // Run a program that forks wildly.
-    DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(new String[]
-	{
-	    getExecPath ("funit-fib-fork"),
-	    Integer.toString(n)
-	});
+    DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(argv);
     int pid = child.getMainTask().getProc().getPid();
     ProcCounter procCounter = new ProcCounter(pid);
 
@@ -103,18 +114,33 @@ public class TestTaskForkedObserver
     child.requestRemoveBlock();
     assertRunUntilStop("run \"fork\" until exit");
 
-    Fibonacci fib = new Fibonacci(n);
+    return procCounter;
 
-    assertEquals("number of child processes created (not counting first)",
-		 fib.getCallCount() - 1,
-                 procCounter.added.size());
-    assertEquals("number of child processes destroyed (not counting first)",
-		 fib.getCallCount() - 1,
-                 procCounter.removed.size());
-    assertEquals("number of times fork observer added",
-		 fib.getCallCount(),
-                 forkObserver.addedCount());
-    assertEquals("number of forks (one less than number of processes)",
-                 fib.getCallCount() - 1, forkObserver.count);
   }
+
+    // Watch for any Task fork events, accumulating them as they
+    // arrive.
+    class ForkObserver
+	extends TaskObserverBase
+	implements TaskObserver.Forked
+    {
+	int count;
+
+	public Action updateForkedParent (Task parent, Task offspring)
+	{
+	    count++;
+	    parent.requestUnblock(this);
+	    return Action.BLOCK;
+	}
+
+	public Action updateForkedOffspring (Task parent, Task offspring)
+	{
+	    // XXX: Is this legit? Like knowing that the request
+	    // won't be processed until the event loop is run
+	    // again so that there's no race condition.
+	    offspring.requestAddForkedObserver(this);
+	    offspring.requestUnblock(this);
+	    return Action.BLOCK;
+	}
+    }
 }
