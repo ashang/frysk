@@ -1,5 +1,9 @@
 2007-12-10  Andrew Cagney  <cagney@redhat.com>
 
+	* TestInput.java (check): Check out-of-range requests.
+	* Input.java (parameter(int)): Fix off-by-one check of
+	upper-bound.
+
 	* TestEvalCommands.java (testFormatInteger_b()): Replace
 	testFormatInteger_t().
 	* CommandOption.java (FormatOption.parse(String,Object)): Change

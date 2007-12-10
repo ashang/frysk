@@ -54,15 +54,20 @@ public class TestInput extends TestLib {
 	assertEquals("set", set, input.getSet());
 	assertEquals("stringArrayValue", results, input.stringArrayValue());
 	for (int i = 0; i < results.length; i++) {
-	    assertEquals("parameter " + i,
-			 i == results.length ? null : results[i],
+	    assertEquals("parameter " + i, results[i],
 			 input.parameter(i));
-	    assertEquals("value " + i,
-			 i == results.length ? null : results[i],
+	    assertEquals("value " + i, results[i],
 			 input.token(i).value);
 	    assertEquals("start " + i, starts[i], input.token(i).start);
 	    assertEquals("end " + i, ends[i], input.token(i).end);
 	}
+	// When out-of-bounds, NULL is returned.
+	assertEquals("parameter -1", null, input.parameter(-1));
+	assertEquals("value -1", null, input.token(-1));
+	assertEquals("parameter " + results.length, null,
+		     input.parameter(results.length));
+	assertEquals("value " + results.length, null,
+		     input.token(results.length));
     }
 
     private void check(Input input, String[] results) {

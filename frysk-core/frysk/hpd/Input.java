@@ -120,7 +120,7 @@ class Input {
      * Return the N'th parameter.
      */
     String parameter(int n) {
-	if (n < 0 || n > size())
+	if (n < 0 || n >= size())
 	    return null;
 	else
 	    return token(n).value;
