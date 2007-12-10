@@ -1,3 +1,9 @@
+2007-12-10  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* fmaps.java: New.
+	* fmaps.xml: New.
+	* TestFmaps.java: New.
+
 2007-11-30  Petr Machata  <pmachata@redhat.com>
 
 	* ftrace.xml: Updated.
