@@ -63,6 +63,7 @@ public final class Log {
 	return ("{" + super.toString()
 		+ ",path=" + path
 		+ ",level=" + level
+		+ ",logging=" + logging
 		+ "}");
     }
 
@@ -156,6 +157,7 @@ public final class Log {
 
     private void postfix() {
 	out.println();
+	out.flush();
     }
 
     /**

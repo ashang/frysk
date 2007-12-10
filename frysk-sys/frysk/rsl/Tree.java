@@ -50,13 +50,14 @@ public final class Tree {
 
     private final TreeMap children = new TreeMap();
     private final Log[] loggers = new Log[Level.MAX.intValue()];
-    private Level level = Level.NONE;
+    private Level level;
     private final String path;
     private final String name;
 
-    private Tree(String path, String name) {
+    private Tree(String path, String name, Level level) {
 	this.path = path;
 	this.name = name;
+	this.level = level;
     }
 
     public String toString() {
@@ -70,7 +71,7 @@ public final class Tree {
      * Package private for testing.
      */
     Tree() {
-	this("<root>", "<root>");
+	this("<root>", "<root>", Level.NONE);
     }
     /**
      * The root note; also serves as a single global lock.
@@ -113,7 +114,7 @@ public final class Tree {
 	    String name = path.substring(pos + 1, dot);
 	    Tree child = (Tree)children.get(name);
 	    if (child == null) {
-		child = new Tree(path.substring(0, dot), name);
+		child = new Tree(path.substring(0, dot), name, level);
 		children.put(name, child);
 	    }
 	    return child.get(path, dot);

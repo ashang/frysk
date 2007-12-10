@@ -1,5 +1,15 @@
 2007-12-10  Andrew Cagney  <cagney@redhat.com>
 
+	* Tree.java (Tree(String,String,Level)): Added Level parameter.
+	(get(String,int)): Propogate this.level to new children.
+	* Log.java (postfix()): Call flush.
+	* LogOption.java (level(String)): Rename parse(String).
+	(level(Tree,String)): Rename parsed(Tree,String).
+	(file(String,String)): New.
+	* TestLog.java: Update.
+	(testRootLevelFINE()): New.
+	(testSubLevelFINE()): New.
+	
 	* Tree.java: Rename Branch.java.
 	* LogOption.java: Update.
 	* TestLog.java: Update.

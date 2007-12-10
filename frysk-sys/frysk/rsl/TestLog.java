@@ -47,7 +47,7 @@ import java.util.LinkedList;
  */
 
 public class TestLog extends TestCase {
-    private static final Log log = Log.fine(TestCase.class);
+    private static final Log log = Log.fine(TestLog.class);
 
     private Tree root;
     public void setUp() {
@@ -127,6 +127,19 @@ public class TestLog extends TestCase {
 	checkLevel("the.lower.right.hand", Level.NONE);
 	checkLevel("the.lower.right.hand.side", Level.NONE);
     }
+    public void testRootLevelFINE() {
+	// Set the root level before any children are created; should
+	// propogate down.
+	set("", Level.FINE);
+	checkLevel("the", Level.FINE);
+    }
+    public void testSubLevelFINE() {
+	// Set the sub-level before any children.
+	set("this", Level.FINE);
+	checkLevel("this.level", Level.FINE);
+	checkLevel("this", Level.FINE);
+	checkLevel("", Level.NONE);
+    }
     
     private void checkComplete(String incomplete, int expectedCursor,
 			       String[] expectedCandidates) {
@@ -177,14 +190,14 @@ public class TestLog extends TestCase {
 	throws gnu.classpath.tools.getopt.OptionException
     {
 	checkLevel("", Level.NONE);
-	LogOption.parsed(root, "FINE");
+	LogOption.level(root, "FINE");
 	checkLevel("", Level.FINE);
     }
     public void testOptionSubFINE()
 	throws gnu.classpath.tools.getopt.OptionException
     {
 	checkLevel("the", Level.NONE);
-	LogOption.parsed(root, "the=FINE");
+	LogOption.level(root, "the=FINE");
 	checkLevel("the", Level.FINE);
     }
     public void testOptionCommaOption()
@@ -192,7 +205,7 @@ public class TestLog extends TestCase {
     {
 	checkLevel("lhs", Level.NONE);
 	checkLevel("rhs", Level.NONE);
-	LogOption.parsed(root, "lhs=FINE,rhs=FINEST");
+	LogOption.level(root, "lhs=FINE,rhs=FINEST");
 	checkLevel("lhs", Level.FINE);
 	checkLevel("rhs", Level.FINEST);
 

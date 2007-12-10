@@ -41,6 +41,9 @@ package frysk.rsl;
 
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
+import java.io.File;
+import java.io.PrintStream;
+import java.io.FileOutputStream;
 
 public class LogOption extends Option {
 
@@ -52,12 +55,18 @@ public class LogOption extends Option {
 	      "<LOG=LEVEL,...>");
     }
     public void parsed (String arg0) throws OptionException {
-	parse(arg0);
+	level(arg0);
     }
-    public static void parse(String arg0) throws OptionException {
-	parsed(Tree.root, arg0);
+    /**
+     * Parse ARG0 setting log levels.
+     */
+    public static void level(String arg0) throws OptionException {
+	level(Tree.root, arg0);
     }
-    static void parsed (Tree root, String arg0) throws OptionException {
+    /**
+     * Parse ARG0 setting log levels.
+     */
+    static void level(Tree root, String arg0) throws OptionException {
 	String[] logs = arg0.split(",");
 	for (int i = 0; i < logs.length; i++) {
 	    String[] logLevel = logs[i].split("=");
@@ -84,6 +93,27 @@ public class LogOption extends Option {
 		throw new OptionException("Invalid log level for: "
 					  + logs[i]);
 	    logger.set(level);
+	}
+    }
+
+    /**
+     * Parse ARG0 setting log levels, and switching to the specified
+     * log file.
+     */
+    public static void file(File file) {
+	// try creating the directory for the log file
+	File dir = file.getParentFile();
+	if (!dir.exists() && !dir.mkdirs()) {
+	    System.out.println("logger warning: can not create log directory: "
+			       + dir);
+	    return;
+	}
+	try {
+	    Log.set(new PrintStream(new FileOutputStream(file)));
+	} catch (java.io.FileNotFoundException e) {
+	    System.out.println("logger warning: can not create log file: "
+			       + file);
+	    return;
 	}
     }
 }
