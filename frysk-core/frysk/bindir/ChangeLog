@@ -1,8 +1,13 @@
 2007-12-10  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* fmaps.java: Indent.
+	* TestFmaps.java: Indent
+	(testExeOfPid): Look only for executable name.
+	
 	* fmaps.java: New.
 	* fmaps.xml: New.
 	* TestFmaps.java: New.
+	
 
 2007-11-30  Petr Machata  <pmachata@redhat.com>
 

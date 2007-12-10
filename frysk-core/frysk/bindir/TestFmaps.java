@@ -55,28 +55,27 @@ public class TestFmaps
    * problems with Linux's bone-head COREFILE format storing only
    * the first 50 characters of the executable.
    */
-  private Expect fmaps(String program, String[] args) {
-    File coreExe = Config.getPkgLibFile(program);
-    File coreFile = CoreFileAtSignal.constructCore(coreExe);
-    String[] argv = new String[args.length + 3];
-    int argc = 0;
-    argv[argc++] = Config.getBinFile("fmaps").getAbsolutePath();
-    argv[argc++] = coreFile.getAbsolutePath();
-    argv[argc++] = coreExe.getAbsolutePath();
-    for (int i = 0; i < args.length; i++) {
-      argv[argc + i] = args[i];
+    private Expect fmaps(String program, String[] args) {
+	File coreExe = Config.getPkgLibFile(program);
+	File coreFile = CoreFileAtSignal.constructCore(coreExe);
+	String[] argv = new String[args.length + 3];
+	int argc = 0;
+	argv[argc++] = Config.getBinFile("fmaps").getAbsolutePath();
+	argv[argc++] = coreFile.getAbsolutePath();
+	argv[argc++] = coreExe.getAbsolutePath();
+	for (int i = 0; i < args.length; i++) {
+	    argv[argc + i] = args[i];
+	}
+	Expect e = new Expect(argv);
+	TearDownExpect.add(e);
+	return e;
     }
-    Expect e = new Expect(argv);
-    TearDownExpect.add(e);
-    return e;
-  }
-  
-  // Basic sniff test, are we getting output that looks like a map?
-  // getMaps is tested in the frysk-core/proc namespalce
-  public void testExeOfPid() {
-    Expect e  = fmaps("funit-stack-outlined", new String[0]);
-    e.expect("frysk/pkglibdir/funit-stack-outlined");
-    e.expect("ld-");
-    e.expect("libc");
-  }
+    
+    // Basic sniff test, are we getting output that looks like a map?
+    // getMaps is tested in the frysk-core/proc namespalce
+    public void testExeOfPid() {
+	Expect e  = fmaps("funit-stack-outlined", new String[0]);
+	e.expect("funit-stack-outlined");
+	
+    }
 }

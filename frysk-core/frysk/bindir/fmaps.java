@@ -48,51 +48,51 @@ import java.io.File;
 import frysk.util.CoreExePair;
 
 public class fmaps {
-  
-  public static void main (String[] args) {
-    // Parse command line. Check pid provided.
     
-    CommandlineParser parser = new CommandlineParser("fexe") {
+    public static void main (String[] args) {
+	// Parse command line. Check pid provided.
 	
-	public void parseCores (CoreExePair[] corePairs) {
-	  for (int i = 0; i < corePairs.length; i++) {
-	    File coreFile = corePairs[i].coreFile;
-	    File exeFile = corePairs[i].exeFile;
-	    Proc proc;
-	    
-	    if (exeFile == null)
-	      proc = Util.getProcFromCoreFile(coreFile);
-	    else
-	      proc = Util.getProcFromCoreFile(coreFile, exeFile);
-	    printMaps(proc.getMaps());
-	  }
-	  
-	  System.exit(0);
-	}
+	CommandlineParser parser = new CommandlineParser("fexe") {
+		
+		public void parseCores (CoreExePair[] corePairs) {
+		    for (int i = 0; i < corePairs.length; i++) {
+			File coreFile = corePairs[i].coreFile;
+			File exeFile = corePairs[i].exeFile;
+			Proc proc;
+			
+			if (exeFile == null)
+			    proc = Util.getProcFromCoreFile(coreFile);
+			else
+			    proc = Util.getProcFromCoreFile(coreFile, exeFile);
+			printMaps(proc.getMaps());
+		    }
+		    
+		    System.exit(0);
+		}
+		
+		public void parsePids (ProcId[] pids) {
+		    for (int i= 0; i< pids.length; i++) {
+			ProcId id = pids[i];
+			Proc proc = Util.getProcFromPid(id);
+			printMaps(proc.getMaps());
+		    }
+		    System.exit(0);
+		}
+		
+		private void printMaps(MemoryMap[] maps)
+		{
+		    for(int i=0; i<maps.length; i++)
+			System.out.println(maps[i].toString());
+		}
+		
+	    };
 	
-	public void parsePids (ProcId[] pids) {
-	  for (int i= 0; i< pids.length; i++) {
-	    ProcId id = pids[i];
-	    Proc proc = Util.getProcFromPid(id);
-	    printMaps(proc.getMaps());
-	  }
-	  System.exit(0);
-	}
+	parser.setHeader("Usage: fmaps <PID>  || fmaps <COREFILE> [<EXEFILE>]");
+	parser.parse(args);
 	
-	private void printMaps(MemoryMap[] maps)
-	{
-	  for(int i=0; i<maps.length; i++)
-	    System.out.println(maps[i].toString());
-	}
-	
-      };
-    
-    parser.setHeader("Usage: fmaps <PID>  || fmaps <COREFILE> [<EXEFILE>]");
-    parser.parse(args);
-   
-    //If we got here, we didn't find a pid.
-    System.err.println("Error: No PID or COREFILE.");
-    parser.printHelp();
-    System.exit(1);
-  }
+	//If we got here, we didn't find a pid.
+	System.err.println("Error: No PID or COREFILE.");
+	parser.printHelp();
+	System.exit(1);
+    }
 }
