@@ -1,3 +1,7 @@
+2007-12-10  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestFCore.java: Rename to TestCoredumpAction.java
+
 2007-12-07  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Util.java (getProcFromCoreFile): Tweak Error text.

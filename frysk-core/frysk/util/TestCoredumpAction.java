@@ -67,7 +67,7 @@ import frysk.testbed.SlaveOffspring;
 import frysk.testbed.TestLib;
 import frysk.Config;
 
-public class TestFCore
+public class TestCoredumpAction
     extends TestLib
 {
 
