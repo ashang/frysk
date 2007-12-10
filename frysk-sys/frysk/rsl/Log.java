@@ -51,11 +51,11 @@ public final class Log {
     private final String name;
     private final Level level;
     private boolean logging;
-    Log(String path, String name, Level level, boolean logging) {
+    Log(String path, String name, Level level) {
 	this.path = path;
 	this.name = name;
 	this.level = level;
-	this.logging = logging;
+	this.logging = false;
     }
 
     public String toString() {
@@ -86,8 +86,9 @@ public final class Log {
     /**
      * Enable logging; package private.
      */
-    void set(boolean logging) {
-	this.logging = logging;
+    Log set(Level level) {
+	this.logging = this.level.compareTo(level) >= 0;
+	return this;
     }
 
     /**
@@ -98,31 +99,27 @@ public final class Log {
     }
 
     public static Branch get(String klass) {
-	synchronized (Branch.root) {
-	    return Branch.root.get(klass, -1);
-	}
+	return Branch.root.get(klass);
+    }
+    public static Log get(String klass, Level level) {
+	return Branch.root.get(klass, level);
     }
     public static Log fine(String klass) {
-	return get(klass).get(Level.FINE);
-    }
-    public static Log finest(String klass) {
-	return get(klass).get(Level.FINEST);
+	return get(klass, Level.FINE);
     }
 
     public static Branch get(Class klass) {
 	return get(klass.getName());
     }
+    public static Log get(Class klass, Level level) {
+	return get(klass.getName(), level);
+    }
     public static Log fine(Class klass) {
 	return fine(klass.getName());
     }
-    public static Log finest(Class klass) {
-	return finest(klass.getName());
-    }
 
     public static int complete(String incomplete, List candidates) {
-	synchronized (Branch.root) {
-	    return Branch.root.complete(incomplete, -1, candidates);
-	}
+	return Branch.root.complete(incomplete, candidates);
     }
 
     // Static?

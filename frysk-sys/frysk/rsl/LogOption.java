@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -52,17 +52,34 @@ public class LogOption extends Option {
 	      "<LOG=LEVEL,...>");
     }
     public void parsed (String arg0) throws OptionException {
+	parsed(Branch.root, arg0);
+    }
+    static void parsed (Branch root, String arg0) throws OptionException {
 	String[] logs = arg0.split(",");
 	for (int i = 0; i < logs.length; i++) {
 	    String[] logLevel = logs[i].split("=");
-	    Branch logger = Log.get(logLevel[0]);
+	    Branch logger;
+	    Level level;
+	    switch (logLevel.length) {
+	    case 1:
+		// LEVEL
+		logger = root.get("");
+		level = Level.valueOf(logLevel[0]);
+		break;
+	    case 2:
+		// LOGGER=LEVEL
+		logger = root.get(logLevel[0]);
+		level = Level.valueOf(logLevel[1]);
+		break;
+	    default:
+		throw new OptionException("Could not parse: " + logs[i]);
+	    }
 	    if (logger == null)
-		throw new OptionException("Couldn't find logger: "
-					  + logLevel[0]);
-	    Level level = Level.valueOf(logLevel[1]);
+		throw new OptionException("Couldn't find logger for: "
+					  + logs[i]);
 	    if (level == null)
-		throw new OptionException("Invalid log level: "
-					  + logLevel[1]);
+		throw new OptionException("Invalid log level for: "
+					  + logs[i]);
 	    logger.set(level);
 	}
     }

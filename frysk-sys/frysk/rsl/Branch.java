@@ -59,6 +59,13 @@ public final class Branch {
 	this.name = name;
     }
 
+    public String toString() {
+	return ("{" + super.toString()
+		+ ",path=" + path
+		+ ",level=" + level
+		+ "}");
+    }
+
     /**
      * Package private for testing.
      */
@@ -78,7 +85,7 @@ public final class Branch {
 	    this.level = level;
 	    for (int i = 0; i < Level.MAX.intValue(); i++) {
 		if (loggers[i] != null) {
-		    loggers[i].set(i >= level.intValue());
+		    loggers[i].set(level);
 		}
 	    }
 	    for (Iterator i = children.values().iterator(); i.hasNext(); ) {
@@ -90,11 +97,13 @@ public final class Branch {
 
     /**
      * POS starts at -1, then points at "." or the end of the name.
-     * Package private so it can be called from test code.
      */
-    final Branch get(String path, int pos) {
+    private Branch get(String path, int pos) {
 	if (pos >= path.length()) {
 	    // Reached end if the string; find the logger.
+	    return this;
+	} else if (path.length() == 0) {
+	    // Got <<a.b.c.>> or even just <<>>.
 	    return this;
 	} else {
 	    // Split
@@ -110,18 +119,31 @@ public final class Branch {
 	    return child.get(path, dot);
 	}
     }
+    Branch get(String path) {
+	synchronized (root) {
+	    return get(path, -1);
+	}
+    }
 
     /**
      * Return the requested level.
      */
-    final Log get(Level level) {
+    private Log get(Level level) {
 	int l = level.intValue();
 	if (loggers[l] == null) {
-	    loggers[l] = new Log(path, name, level,
-				 this.level.compareTo(level) >= 0);
+	    loggers[l] = new Log(path, name, level).set(this.level);
 	}
 	return loggers[l];
     }
+    /**
+     * Return the requested logger.
+     */
+    Log get(String path, Level level) {
+	synchronized (root) {
+	    return get(path, -1).get(level);
+	}
+    }
+
 
     /**
      * Complete the logger.  On entry, POS is either -1 or the
@@ -131,11 +153,9 @@ public final class Branch {
      *
      * Returns the offset into INCOMPLETE that the completions apply
      * to, or -1.
-     *
-     * Package private to allow testing.
      */
-    final int complete(String incomplete, int pos,
-		       List candidates) {
+    private int complete(String incomplete, int pos,
+			 List candidates) {
 	int dot = incomplete.indexOf('.', pos + 1);
 	if (dot >= 0) {
 	    // More tokens to follow; recursively resolve.
@@ -180,6 +200,14 @@ public final class Branch {
 	    default:
 		return pos + 1;
 	    }
+	}
+    }
+    /**
+     * Complete the logger.
+     */
+    int complete(String incomplete, List candidates) {
+	synchronized(root) {
+	    return complete(incomplete, -1, candidates);
 	}
     }
 }

@@ -59,48 +59,54 @@ public class TestLog extends TestCase {
 	root = null;
     }
     private Branch get(String path) {
-	return root.get(path, -1);
+	return root.get(path);
+    }
+    private Log get(String path, Level level) {
+	return root.get(path, level);
     }
 
     public void testRoot() {
-	//log.fine(this, "hello");
 	assertNotNull("root", root);
     }
 
     public void testGetSelf() {
-	Log self = get("self").get(Level.FINE);
+	Log self = get("self", Level.FINE);
 	assertNotNull("self", self);
+    }
+
+    public void testGetRoot() {
+	assertEquals("root", root, root.get(""));
     }
 
     public void testPath() {
 	String path = "a.long.path";
-	assertEquals("path", path, get(path).get(Level.FINE).path());
+	assertEquals("path", path, get(path, Level.FINE).path());
     }
 
     public void testName() {
 	assertEquals("name", "path",
-		     get("a.long.path").get(Level.FINE).name());
+		     get("a.long.path", Level.FINE).name());
     }
 
     public void testLevel() {
 	assertEquals("level", Level.FINE,
-		     get("a.long.path").get(Level.FINE).level());
+		     get("a.long.path", Level.FINE).level());
     }
 
-    public void testPeers() {
-	Log lhs = get("the.lhs").get(Level.FINE);
-	Log rhs = get("the.rhs").get(Level.FINE);
+    public void testSingleton() {
+	Log lhs = get("the.lhs", Level.FINE);
+	Log rhs = get("the.rhs", Level.FINE);
 	assertNotNull("the.lhs", lhs);
 	assertNotNull("the.rhs", rhs);
 	assertTrue("lhs != rhs", lhs != rhs);
-	assertEquals("the.lhs", lhs, get("the.lhs").get(Level.FINE));
-	assertEquals("the.rhs", rhs, get("the.rhs").get(Level.FINE));
+	assertSame("the.lhs", lhs, get("the.lhs", Level.FINE));
+	assertSame("the.rhs", rhs, get("the.rhs", Level.FINE));
     }
 
     private void checkLevel(String path, Level level) {
 	for (int i = 0; i < Level.MAX.intValue(); i++) {
-	    assertEquals("level " + path, i >= level.intValue(),
-			 get(path).get(Level.valueOf(i)).logging());
+	    Log log = get(path, Level.valueOf(i));
+	    assertEquals("level " + log, i <= level.intValue(), log.logging());
 	}
     }
     private void set(String path, Level level) {
@@ -118,6 +124,8 @@ public class TestLog extends TestCase {
 	checkLevel("the.lower.left.hand", Level.FINE);
 	checkLevel("the.lower.left.hand.side", Level.FINE);
 	checkLevel("the.lower.right", Level.NONE);
+	checkLevel("the.lower.right.hand", Level.NONE);
+	checkLevel("the.lower.right.hand.side", Level.NONE);
     }
     
     private void checkComplete(String incomplete, int expectedCursor,
@@ -128,7 +136,7 @@ public class TestLog extends TestCase {
 	get("the.lower.right.hand.side");
 	// Perfomr a completion
 	LinkedList candidates = new LinkedList();
-	int cursor = root.complete(incomplete, -1, candidates);
+	int cursor = root.complete(incomplete, candidates);
 	assertEquals("candidate.size", expectedCandidates.length,
 		     candidates.size());
 	for (int i = 0; i < expectedCandidates.length; i++) {
@@ -163,5 +171,30 @@ public class TestLog extends TestCase {
     public void testCompleteBogus() {
 	// bogus completion
 	checkComplete("the.upper", -1, new String[0]);
+    }
+
+    public void testOptionFINE()
+	throws gnu.classpath.tools.getopt.OptionException
+    {
+	checkLevel("", Level.NONE);
+	LogOption.parsed(root, "FINE");
+	checkLevel("", Level.FINE);
+    }
+    public void testOptionSubFINE()
+	throws gnu.classpath.tools.getopt.OptionException
+    {
+	checkLevel("the", Level.NONE);
+	LogOption.parsed(root, "the=FINE");
+	checkLevel("the", Level.FINE);
+    }
+    public void testOptionCommaOption()
+	throws gnu.classpath.tools.getopt.OptionException
+    {
+	checkLevel("lhs", Level.NONE);
+	checkLevel("rhs", Level.NONE);
+	LogOption.parsed(root, "lhs=FINE,rhs=FINEST");
+	checkLevel("lhs", Level.FINE);
+	checkLevel("rhs", Level.FINEST);
+
     }
 }

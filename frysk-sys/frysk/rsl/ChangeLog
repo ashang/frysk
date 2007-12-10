@@ -1,3 +1,26 @@
+2007-12-09  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLog.java: Update.
+	(checkLevel(String,Level)): Fix comparison.
+	(testOptionFINE()): New.
+	(testOptionSubFINE()): New.	
+	(testOptionCommaOption()): New.
+	(testSingleton()): Replace testPeers.
+	* LogOption.java (parsed(Branch,String)): New.
+	(parsed(String)): Use.
+	* Branch.java (get(String,int)): Make private.
+	(get(String)): New.
+	(get(Level)): Make private; use Log.set.
+	(get(String,Level)): New.
+	(complete(String,int,List)): Make private.
+	(complete(String,List)): New.
+	* Log.java (get(String)): Update.
+	(complete(String,List)): Update.
+	(get(String,Level)): New.
+	(finest(...)): Delete.
+	(set(Level)): Replace set(boolean).
+	(Log(String,String,Level)): boolean param removed.
+
 2007-12-07  Andrew Cagney  <cagney@redhat.com>
 
 	* LogOption.java: New file.
