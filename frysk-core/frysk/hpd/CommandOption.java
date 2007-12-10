@@ -99,7 +99,7 @@ abstract class CommandOption {
 		format = Format.OCTAL;
 	    else if (argument.compareTo("x") == 0) 
 		format = Format.HEXADECIMAL;
-	    else if (argument.compareTo("t") == 0)
+	    else if (argument.compareTo("b") == 0)
 		format = Format.BINARY;
 	    else
 		throw new InvalidCommandException("unrecognized format: "

@@ -1,3 +1,10 @@
+2007-12-10  Andrew Cagney  <cagney@redhat.com>
+
+	* TestEvalCommands.java (testFormatInteger_b()): Replace
+	testFormatInteger_t().
+	* CommandOption.java (FormatOption.parse(String,Object)): Change
+	binary option to "b".
+
 2007-12-07  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* CoreCommand.java: Tweak help text. 

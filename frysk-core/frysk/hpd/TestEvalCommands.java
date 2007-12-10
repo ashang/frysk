@@ -70,9 +70,9 @@ public class TestEvalCommands extends TestLib {
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("print 17 -format d", "\r\n17\r\n");
     }
-    public void testFormatInteger_t() {
+    public void testFormatInteger_b() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("print 17 -format t", "\r\n10001\r\n");
+	e.sendCommandExpectPrompt("print 17 -format b", "\r\n10001\r\n");
     }
     public void testFormatInteger_o() {
 	e = new HpdTestbed();
