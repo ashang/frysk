@@ -1,3 +1,8 @@
+2007-12-10 Teresa Thomas  <tthomas@redhat.com>
+
+	* TestBigFloatingPoint.java: New.
+	* BigFloatingPoint.java: New.
+
 2007-11-30  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestArray.java (testSlice): Reindent.
