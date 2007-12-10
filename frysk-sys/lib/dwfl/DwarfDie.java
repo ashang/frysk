@@ -40,6 +40,8 @@
 package lib.dwfl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 abstract public class DwarfDie {
@@ -337,8 +339,9 @@ abstract public class DwarfDie {
     public String toString() {
 	StringBuilder stringBuilder= new StringBuilder();
 	DwarfDie type = getUltimateType();
-	stringBuilder.append(this.getTag() + " Name: " + this.getName());
-	stringBuilder.append(" Type: " + type.toString());
+	stringBuilder.append("offset 0x"+Long.toHexString(this.getOffset()) +" "+ this.getTag() + " Name: " + this.getName());
+	if(type != null)
+	    stringBuilder.append(" Type: " + type.toString());
 	return stringBuilder.toString();
     }
   
@@ -387,13 +390,38 @@ abstract public class DwarfDie {
      * this function returns the die pointed to by those attributes.
      */
     public DwarfDie getOriginalDie() {
-	long original_die = get_original_die(this.getPointer());
-	DwarfDie die = null;
-	if (original_die != 0)
-	    die = DwarfDieFactory.getFactory().makeDie(original_die, null);
-	return die;
+	if(this.hasAttribute(DwAt.ABSTRACT_ORIGIN) ||
+		this.hasAttribute(DwAt.SPECIFICATION)){
+	    long original_die = get_original_die(this.getPointer());
+	    DwarfDie die = null;
+	    if (original_die != 0)
+		die = DwarfDieFactory.getFactory().makeDie(original_die, this.module);
+	    return die;
+	}
+	return null;
     }
-    
+        
+    public boolean isDeclaration() {
+	return this.hasAttribute(DwAt.DECLARATION);
+    }
+
+    public DwarfDie getDefinition() {
+	// try to find the definition 
+	// try using pubnames
+	LinkedList pubnames = this.getModule().getPubNames();
+	Iterator iterator = pubnames.iterator();
+	while (iterator.hasNext()) {
+	    DwarfDie die = (DwarfDie) iterator.next();
+	    DwarfDie originalDie = die.getOriginalDie();
+	    if(originalDie != null && originalDie.getModule().getName().equals(this.getModule().getName()) &&
+		    originalDie.getOffset() == this.getOffset()){
+		return die;
+	    }
+	}
+	
+	return null;
+    }
+
     abstract public void accept(DieVisitor visitor);
 
     public native ArrayList getEntryBreakpoints();

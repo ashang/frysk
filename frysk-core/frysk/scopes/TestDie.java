@@ -44,6 +44,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import lib.dwfl.DwAt;
+import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
@@ -53,6 +54,7 @@ import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.debuginfo.ObjectDeclarationSearchEngine;
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
+import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
@@ -120,7 +122,41 @@ public class TestDie
 	
 	die = (DwarfDie) iterator.next();
 	assertEquals("Die name", "static_i", die.getName());
+    }
+
+    public void testGetDefinition(){
 	
+	String fileName = "funit-class-static";
+	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
+	Frame frame = StackFactory.createFrame(task);
+	long pc = frame.getAdjustedAddress();
+	
+	Dwfl dwfl = DwflCache.getDwfl(task);
+	DwarfDie cu = dwfl.getCompilationUnit(pc).die;
+	DwarfDie[] scopes = cu.getScopes(pc);
+	DwarfDie die = null;
+	
+	for (int i = 0; i < scopes.length; i++) {
+	    if(scopes[i].getTag().equals(DwTag.SUBPROGRAM)){
+		die = scopes[i];
+		break;
+	    }
+	}
+	
+	assertTrue("Die is a definition",
+		die.hasAttribute(DwAt.SPECIFICATION) ||
+		die.hasAttribute(DwAt.ABSTRACT_ORIGIN));
+	
+	DwarfDie originalDie = die.getOriginalDie();
+	
+	assertTrue("Found declaration die", originalDie.isDeclaration());
+	
+	DwarfDie definitionDie = originalDie.getDefinition();
+	
+	assertNotNull(definitionDie);
+	
+	assertEquals("dies have the same name ", die.getName(), definitionDie.getName());
+	assertEquals("dies have the same modules ", die.getOffset(), definitionDie.getOffset());
     }
 
 }
