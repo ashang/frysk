@@ -104,7 +104,16 @@ class LibunwindAddressSpace extends AddressSpace {
 
     public int accessReg (Number regnum, byte[] fpvalp, boolean write) {
 	Register register = registerMap.getRegister(regnum);
-	task.access(register, 0, fpvalp.length, fpvalp, 0, write);
+	int length;
+	// Truncate transfer to size-of-register.
+	if (fpvalp.length > register.getType().getSize())
+	    length = register.getType().getSize();
+	else
+	    length = fpvalp.length;
+	logger.log(Level.FINE, "{0}: accessReg {1} ({2}), {3} bytes\n",
+		   new Object[] { this, regnum, register,
+				  new Integer(length) });
+	task.access(register, 0, length, fpvalp, 0, write);
 	return 0;
     }
 

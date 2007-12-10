@@ -1,3 +1,9 @@
+2007-12-10  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRegs.java (testFloatRegisters()): Enable on IA-32.
+	* LibunwindAddressSpace.java (accessReg(Number,byte[],boolean)):
+	Limit the transfer size to the register's size.
+
 2007-12-03  Andrew Cagney  <cagney@redhat.com>
 
 	* LibunwindFrame.java: Revert <<Get CFA from cursor>>; add more

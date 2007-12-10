@@ -167,7 +167,7 @@ static int
 access_fpreg(::unw_addr_space_t as, ::unw_regnum_t regnum,
 	     ::unw_fpreg_t *fpvalp, int write, void *arg)
 {
-  jbyteArray tmp = JvNewByteArray(sizeof (unw_word_t));
+  jbyteArray tmp = JvNewByteArray(sizeof (unw_fpreg_t));
   // Map the REGNUM back to the published ENUM.
   java::lang::Number* num = lib::unwind::TARGET_REGISTERS::valueOf(regnum);
   // Implement read/modify/write style op.

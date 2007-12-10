@@ -1,3 +1,8 @@
+2007-12-10  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/UnwindH.hxx (access_fpreg): Allocate a buffer big enough for
+	unw_fpreg_t.
+
 2007-12-03  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Cursor.java (getCFA): New method.
