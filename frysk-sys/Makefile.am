@@ -66,3 +66,7 @@ GEN_GCJ_LDADD_LIST += ../frysk-imports/libunwind-i386/src/.libs/libunwind-x86.a 
                  ../frysk-imports/libunwind-ppc64/src/.libs/libunwind-ppc64.a
 endif
 GEN_GCJ_LDADD_LIST += -lstdc++ -laudit
+
+# Force a few dependencies
+lib/unwind/cni/Unwind%.cxx: lib/unwind/Unwind%.java lib/unwind/cni/UnwindH.hxx
+lib/unwind/Unwind%.java: lib/unwind/Unwind.java
