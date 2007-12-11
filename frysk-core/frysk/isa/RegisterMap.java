@@ -45,6 +45,7 @@ import java.util.Map;
 /**
  * Provides a map between an internal and external register format.
  */
+
 public class RegisterMap {
     
     private final Map integerToRegister = new HashMap();
@@ -52,10 +53,17 @@ public class RegisterMap {
     private final Map numberToRegister = new HashMap();
     private final String what;
 
+    /**
+     * Create a register-to-number map.  WHAT defines what the map is
+     * about and is used when throwing exceptions.
+     */
     public RegisterMap(String what) {
 	this.what = what;
     }
     
+    /**
+     * Add the REGISTER-NUMBER mapping.
+     */
     public final RegisterMap add(Register register,
 				 Number number) {
 	registerToNumber.put(register, number);
@@ -64,6 +72,10 @@ public class RegisterMap {
 	return this;
     }
     
+    /**
+     * Find the NUMBER corresponding to REGISTER.  Use
+     * containsKey(Register) to verify that the mapping is present.
+     */
     public Number getRegisterNumber(Register register) {
 	Number number = (Number) registerToNumber.get(register);
 	if (number == null)
@@ -73,6 +85,10 @@ public class RegisterMap {
 	return number;
     }
     
+    /**
+     * Find the REGISTER corresponding to REG_NUM (as a Number).  Use
+     * containsKey(int) to verify that the mapping is present.
+     */
     public Register getRegister(int regNum) {
 	Register register
 	    = (Register) integerToRegister.get(new Integer(regNum));
@@ -83,6 +99,10 @@ public class RegisterMap {
 	return register;
     }
 
+    /**
+     * Find the REGISTER corresponding to NUMBER.  Use
+     * containsKey(Number) to verify that the mapping is present.
+     */
     public Register getRegister(Number number) {
 	Register register = (Register) numberToRegister.get(number);
 	if (register == null)
@@ -90,5 +110,24 @@ public class RegisterMap {
 					   + "> not found in " + what
 					   + " register map");
 	return register;
+    }
+
+    /**
+     * Return true if REGISTER is known.
+     */
+    public boolean containsKey(Register register) {
+	return registerToNumber.containsKey(register);
+    }
+    /**
+     * Return true if NUMBER is known.
+     */
+    public boolean containsKey(Number number) {
+	return numberToRegister.containsKey(number);
+    }
+    /**
+     * Return true if REG_NUM (as a Number) is known.
+     */
+    public boolean containsKey(int regNum) {
+	return integerToRegister.containsKey(new Integer(regNum));
     }
 }
