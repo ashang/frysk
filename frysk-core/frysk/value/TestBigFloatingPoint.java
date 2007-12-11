@@ -119,6 +119,11 @@ public class TestBigFloatingPoint
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
     
+    static final byte[] FP_80_SEVENPOINT5 = new byte[] {
+        0x40, 0x01, (byte)0xf0, 0x00, 0x00, 
+        0x00, 0x00, 0x00, 0x00, 0x00
+    };
+    
     static final byte[] FP_96_ONE = new byte[] {
         0x00, 0x00, 0x3f, (byte)0xff, (byte)0x80, 
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  
@@ -177,6 +182,9 @@ public class TestBigFloatingPoint
         checkEquals("double -5.769", -5.769,
                      new BigFloatingPoint(DOUBLE_FIVEPOINT769).doubleValue());
 
+        checkEquals("FP_80 7.5", 7.5,
+        	     new BigFloatingPoint(FP_80_SEVENPOINT5).doubleValue());
+                
         checkEquals("FP_128 1", 1.0,
                      new BigFloatingPoint(FP_128_ONE).doubleValue());
         checkEquals("FP_128 0.5", 0.5,
