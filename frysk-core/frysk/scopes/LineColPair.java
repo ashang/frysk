@@ -37,18 +37,23 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.value;
+package frysk.scopes;
 
-import frysk.debuginfo.DebugInfoFrame;
-import frysk.isa.ISA;
-import frysk.scopes.LineColPair;
+public class LineColPair {
 
-public abstract class ObjectDeclaration {
+    private final long line;
+    private final int col;
     
-    public abstract String getName();
-    public abstract Value getValue(DebugInfoFrame frame);
-    public abstract Type getType(ISA isa);
+    public LineColPair(long line, int col){
+	this.line = line;
+	this.col = col;
+    }
     
-    public abstract LineColPair getLineCol();
+    public long getLine(){
+	return line;
+    }
     
+    public int getCol(){
+	return this.col;
+    }
 }

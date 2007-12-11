@@ -50,6 +50,7 @@ import frysk.debuginfo.TypeEntry;
 import frysk.debuginfo.ValueUavailableException;
 import frysk.debuginfo.VariableOptimizedOutException;
 import frysk.isa.ISA;
+import frysk.scopes.LineColPair;
 
 /**
  * This class contains the static information corresponding to a
@@ -62,13 +63,16 @@ public class Variable extends ObjectDeclaration{
     private final DwarfDie variableDie;
     private final String name;
     private final LocationExpression locationExpression;
+    private final LineColPair lineColPair;
     
     public Variable(DwarfDie variableDie) {
         this.type = null;
 	this.variableDie = variableDie;
 	this.name = variableDie.getName();
 	locationExpression = new LocationExpression(variableDie);
+	this.lineColPair = new LineColPair(variableDie.getDeclLine(), variableDie.getDeclColumn());
     }
+    
     public DwarfDie getVariableDie() {
 	return variableDie;
     }
@@ -88,7 +92,7 @@ public class Variable extends ObjectDeclaration{
     }
      
     public long getLineNumber() {
-	return this.variableDie.getDeclLine();
+	return this.lineColPair.getLine();
     }
   
     public int getColumnNumber() {
@@ -146,5 +150,9 @@ public class Variable extends ObjectDeclaration{
 							  .getSize()));
 	Value value = new Value(this.getType(isa), pieceLocation);
 	return value;
+    }
+    
+    public LineColPair getLineCol() {
+	return lineColPair;
     }
 }

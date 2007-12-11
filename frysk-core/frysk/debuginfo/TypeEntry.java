@@ -40,6 +40,7 @@
 package frysk.debuginfo;
 
 import frysk.isa.ISA;
+import frysk.scopes.LineColPair;
 import frysk.value.Access;
 import frysk.value.ArrayType;
 import frysk.value.CharType;
@@ -145,7 +146,14 @@ public class TypeEntry
 		offset = 0; // union
 		staticMember = true;
 	    }
-
+	    
+	    LineColPair lineColPair;
+	    try{
+		lineColPair = new LineColPair(member.getDeclLine(), member.getDeclColumn());
+	    }catch(DwAttributeNotFoundException e){
+		lineColPair = new LineColPair(-1,-1);
+	    }
+	    
 	    Access access = null;
 	    switch (member.getAttrConstant(DwAt.ACCESSIBILITY)) {
 	    case DwAccess.PUBLIC_: access = Access.PUBLIC; break;
@@ -156,9 +164,9 @@ public class TypeEntry
 	    if (member.getTag() == DwTag.SUBPROGRAM) {
 		Value v = getSubprogramValue(member);
 		if(hasArtifitialParameter(member)){
-		    classType.addMember(member.getName(), v.getType(), offset, access);
+		    classType.addMember(member.getName(), lineColPair, v.getType(), offset, access);
 		}else{
-		    classType.addStaticMember(member.getName(), v.getType(), offset, access);
+		    classType.addStaticMember(member.getName(), lineColPair, v.getType(), offset, access);
 		}
 		continue;
 	    }
@@ -176,18 +184,18 @@ public class TypeEntry
 		    int bitOffset = member
 		    .getAttrConstant(DwAt.BIT_OFFSET);
 		    if(staticMember){
-			classType.addStaticBitFieldMember(member.getName(), memberType, offset, access,
+			classType.addStaticBitFieldMember(member.getName(), lineColPair, memberType, offset, access,
 				    bitOffset, bitSize);
 		    }else{
-			classType.addBitFieldMember(member.getName(), memberType, offset, access,
+			classType.addBitFieldMember(member.getName(), lineColPair, memberType, offset, access,
 				    bitOffset, bitSize);
 		    }
 		}
 		else{
 		    if(staticMember){
-			classType.addStaticMember(member.getName(), memberType, offset, access);
+			classType.addStaticMember(member.getName(), lineColPair, memberType, offset, access);
 		    }else{
-			classType.addMember(member.getName(), memberType, offset, access);
+			classType.addMember(member.getName(), lineColPair, memberType, offset, access);
 		    }
 		    
 		}
@@ -195,10 +203,10 @@ public class TypeEntry
 	    }
 	    else{
 		if(staticMember){
-		    classType.addStaticMember(member.getName(), new UnknownType(member
+		    classType.addStaticMember(member.getName(), lineColPair, new UnknownType(member
 			.getName()), offset, access);
 		}else{
-		    classType.addMember(member.getName(), new UnknownType(member
+		    classType.addMember(member.getName(), lineColPair, new UnknownType(member
 				.getName()), offset, access);
 		}
 	    }
@@ -247,6 +255,13 @@ public class TypeEntry
 		offset = 0; // union
 	    }
 
+	    LineColPair lineColPair;
+	    try{
+		lineColPair = new LineColPair(member.getDeclLine(), member.getDeclColumn());
+	    }catch(DwAttributeNotFoundException e){
+		lineColPair = new LineColPair(-1,-1);
+	    }
+	    
 	    Access access = null;
 	    switch (member.getAttrConstant(DwAt.ACCESSIBILITY)) {
 	    case DwAccess.PUBLIC_: access = Access.PUBLIC; break;
@@ -257,7 +272,7 @@ public class TypeEntry
 
 	    if (member.getTag() == DwTag.SUBPROGRAM) {
 		Value v = getSubprogramValue(member);
-		classType.addMember(member.getName(), v.getType(), offset,
+		classType.addMember(member.getName(), lineColPair, v.getType(), offset,
 			access);
 		continue;
 	    }
@@ -273,16 +288,16 @@ public class TypeEntry
 		if (bitSize != -1) {
 		    int bitOffset = member
 		    .getAttrConstant(DwAt.BIT_OFFSET);
-		    classType.addBitFieldMember(member.getName(), memberType, offset, access,
+		    classType.addBitFieldMember(member.getName(), lineColPair, memberType, offset, access,
 			    bitOffset, bitSize);
 		}
 		else
-		    classType.addMember(member.getName(), memberType, offset, access);
+		    classType.addMember(member.getName(), lineColPair, memberType, offset, access);
 		
 		continue;
 	    }
 	    else
-		classType.addMember(member.getName(), new UnknownType(member
+		classType.addMember(member.getName(), lineColPair, new UnknownType(member
 			.getName()), offset, access);
 	}
 

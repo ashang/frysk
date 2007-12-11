@@ -1,3 +1,8 @@
+2007-12-11  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	CompositeType constructors and add functions now take LineColPair argument.
+	* TypeEntry.java: Updated.
+
 2007-12-11  Teresa Thomas  <tthomas@redhat.com>
 
 	* TypeEntry.java (getType): Create FloatingPoint type

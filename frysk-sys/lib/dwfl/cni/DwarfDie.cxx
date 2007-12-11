@@ -113,7 +113,7 @@ lib::dwfl::DwarfDie::get_decl_line(jlong var_die)
       dwarf_formudata (&type_attr, &constant);
       return constant;
     }else{
-      lib::dwfl::DwException::throwDwException();
+      lib::dwfl::DwAttributeNotFoundException::throwDwException((jint)DW_AT_decl_line);
     }
   }
 

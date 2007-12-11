@@ -1,3 +1,12 @@
+007-12-11  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CompositeType.java: Member now has a LineColPair element.
+	Constructors and add functions now take LineColPair argument.
+	* ObjectDeclaration.java (getLineCol): New.
+	* Variable.java: Now uses LineColPair.
+	* EnumType.java: Updated.
+	* TestComposite.java: Updated.
+
 2007-12-11 Teresa Thomas  <tthomas@redhat.com>
 
 	* TestBigFloatingPoint.java: Add test for 80

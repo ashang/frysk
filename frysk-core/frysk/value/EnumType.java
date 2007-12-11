@@ -50,6 +50,7 @@ import java.util.TreeMap;
 
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.isa.ISA;
+import frysk.scopes.LineColPair;
 
 /**
  * Type for an enum.
@@ -76,6 +77,13 @@ public class EnumType extends IntegerTypeDecorator
 
 	public Value getValue(DebugInfoFrame frame) {
 	    return value;
+	}
+
+	public LineColPair getLineCol() {
+	    //XXX enumber members do not have LineCol information
+	    // should they inheret the LineCol information of the containing
+	    // enumber type ?
+	    return null;
 	}
     }
     

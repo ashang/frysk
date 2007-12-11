@@ -40,12 +40,15 @@
 package frysk.value;
 
 import inua.eio.ByteBuffer;
+
+import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.io.PrintWriter;
+import java.util.List;
+import java.util.Map;
+
+import frysk.scopes.LineColPair;
 
 /**
  * Type for a composite object.
@@ -55,6 +58,7 @@ public abstract class CompositeType
 {
     
     public static class Member{
+	private final LineColPair lineColPair;
 	final int index;
 	final String name;
 	final Type type;
@@ -63,7 +67,7 @@ public abstract class CompositeType
 	final int bitOffset;
 	final int bitSize;
 	
-	public Member(int index, String name, Type type, Access access,int bitOffset, int bitSize,
+	public Member(int index, String name, LineColPair lineColPair, Type type, Access access,int bitOffset, int bitSize,
 		boolean inheritance) {
 	    this.index = index;
 	    this.type = type;
@@ -72,19 +76,24 @@ public abstract class CompositeType
 	    this.inheritance = inheritance;
 	    this.bitOffset = bitOffset;
 	    this.bitSize = bitSize;
+	    this.lineColPair = lineColPair;
 	}
 	
 	public String getName(){
 	    return this.name;
 	}
+	
+	public LineColPair getLinCol(){
+	    return this.lineColPair;
+	}
     }
     
     public static class StaticMember extends Member{
 	
-	public StaticMember(int index, String name, Type type, Access access,
+	public StaticMember(int index, String name, LineColPair lineColPair, Type type, Access access,
 		int bitOffset, int bitSize,
 		boolean inheritance) {
-	    super(index, name, type, access, bitOffset, bitSize, inheritance);
+	    super(index, name, lineColPair, type, access, bitOffset, bitSize, inheritance);
 	}
 
     }
@@ -95,10 +104,10 @@ public abstract class CompositeType
     public static class DynamicMember extends Member{
 	// XXX: To keep getValue working.
 	final long offset;
-	DynamicMember(int index, String name, Type type, long offset, Access access, 
+	DynamicMember(int index, String name, LineColPair lineColPair, Type type, long offset, Access access, 
 		int bitOffset, int bitSize,
 	       boolean inheritance) {
-	    super(index, name, type, access, bitOffset, bitSize, inheritance);
+	    super(index, name, lineColPair, type, access, bitOffset, bitSize, inheritance);
 	    this.offset = offset;
 	}
 	
@@ -172,38 +181,38 @@ public abstract class CompositeType
 	return this;
     }
     
-    public CompositeType addMember(String name, Type type, long offset,
+    public CompositeType addMember(String name, LineColPair lineColPair, Type type, long offset,
 				   Access access) {
-	DynamicMember member = new DynamicMember(members.size(),name, type, offset, access, -1, -1,false);
+	DynamicMember member = new DynamicMember(members.size(),name, lineColPair, type, offset, access, -1, -1,false);
 	return addMemberToMap(member);
     }
     
-    public CompositeType addBitFieldMember(String name, Type type, long offset,
+    public CompositeType addBitFieldMember(String name, LineColPair lineColPair, Type type, long offset,
 				   Access access, int bitOffset,
 				   int bitLength) {
 	type = type.pack(bitOffset, bitLength);
-	DynamicMember member = new DynamicMember(members.size(),name, type, offset, access, bitOffset, bitLength,false);
+	DynamicMember member = new DynamicMember(members.size(),name, lineColPair, type, offset, access, bitOffset, bitLength,false);
 	return addMemberToMap(member);
     }
     
-    public CompositeType addInheritance(String name, Type type, long offset,
+    public CompositeType addInheritance(String name, LineColPair lineColPair, Type type, long offset,
 					Access access) {
-	DynamicMember member = new DynamicMember(members.size(),name, type, offset, access, -1,-1,true);
+	DynamicMember member = new DynamicMember(members.size(),name, lineColPair, type, offset, access, -1,-1,true);
 	return addMemberToMap(member);
     }
     
-    public CompositeType addStaticMember(String name, Type type, long offset,
+    public CompositeType addStaticMember(String name, LineColPair lineColPair, Type type, long offset,
 		   Access access){
-	StaticMember member = new StaticMember(members.size(), name, type,
+	StaticMember member = new StaticMember(members.size(), name, lineColPair, type,
 		   access, -1, -1, false);
 	return addMemberToMap(member);
     }
     
-    public CompositeType addStaticBitFieldMember(String name, Type type, long offset,
+    public CompositeType addStaticBitFieldMember(String name, LineColPair lineColPair, Type type, long offset,
 		   Access access, int bitOffset,
 		   int bitLength) {
 	type = type.pack(bitOffset, bitLength);
-	StaticMember member = new StaticMember(members.size(), name, type,
+	StaticMember member = new StaticMember(members.size(), name, lineColPair, type,
 		   access, -1, -1, false);
 	return addMemberToMap(member);
     }
