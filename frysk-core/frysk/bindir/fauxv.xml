@@ -48,7 +48,7 @@
 
 <!-- http://docbook.sourceforge.net/snapshots/xsl/manpages/README -->
 
-<refentry id="fmaps">
+<refentry id="fauxv">
 
   <refentryinfo>
     <title>fauxv</title>
@@ -61,13 +61,13 @@
   </refmeta>
 
   <refnamediv>
-    <refname>fmaps</refname>
+    <refname>fauxv</refname>
     <refpurpose>Prints out a process or a corefile's auxv data.</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
     <cmdsynopsis>
-      <command>fmaps</command>
+      <command>fauxv</command>
       <arg choice="opt">
         <option>--console <replaceable>LOG=LEVEL,...</replaceable></option>
       </arg>
@@ -83,9 +83,9 @@
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para><function>fmaps</function> Executes the frysk axuv dump utility.</para>
+    <para><function>fauxv</function> Executes the frysk axuv dump utility.</para>
 
-    <para>fmaps is a utility that prints out a process or a corefile's auxv data. </para>
+    <para>fauxv is a utility that prints out a process or a corefile's auxv data. </para>
 
     <variablelist>
       <varlistentry>

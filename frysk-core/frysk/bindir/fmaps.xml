@@ -126,7 +126,7 @@
   
   <refsect1>
     <title>EXAMPLE</title>
-    <screen>fcore pid [...]</screen>
+    <screen>fmaps pid [...]</screen>
   </refsect1>
    
   <!-- refsect1>

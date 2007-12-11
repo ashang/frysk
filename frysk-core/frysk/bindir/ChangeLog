@@ -1,5 +1,7 @@
 2007-12-11  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* faux.xml: Fix fmap references.
+	* fmaps.xml: Fix fcore references.
 
 	* faux.java: New.
 	* TestFauxv.java: New.
