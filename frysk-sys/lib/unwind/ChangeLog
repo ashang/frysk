@@ -1,3 +1,7 @@
+2007-12-11  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/UnwindH.hxx (getRegister): Delete stray printf.
+
 2007-12-11  Mark Wielaard  <mwielaard@redhat.com>
 
 	* ElfImage.java (name): New field.

@@ -313,7 +313,6 @@ lib::unwind::TARGET::getRegister(gnu::gcj::RawDataManaged* cursor,
     status = unw_get_reg((::unw_cursor_t *) cursor,
 			 (::unw_regnum_t) regNum,
 			 &word.w);
-  printf("status=%d\n", status);
   if (status != 0)
     throwRuntimeException("get register failed");
   memcpy(elements(bytes) + start, (uint8_t*)&word + offset, length);
