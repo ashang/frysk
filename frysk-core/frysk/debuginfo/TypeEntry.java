@@ -45,12 +45,12 @@ import frysk.value.ArrayType;
 import frysk.value.CharType;
 import frysk.value.ConstType;
 import frysk.value.EnumType;
+import frysk.value.FloatingPointType;
 import frysk.value.FunctionType;
 import frysk.value.GccStructOrClassType;
 import frysk.value.PointerType;
 import frysk.value.ReferenceType;
 import frysk.value.SignedType;
-import frysk.value.StandardTypes;
 import frysk.value.Type;
 import frysk.value.TypeDef;
 import frysk.value.UnionType;
@@ -426,10 +426,8 @@ public class TypeEntry
 					  getByteSize(type), false);
 		break;
 	    case DwAte.FLOAT_:
-		if (getByteSize(type) == 4)
-		    returnType = StandardTypes.getFloatType(byteorder);
-		else if (getByteSize(type) == 8)
-			 returnType = StandardTypes.getDoubleType(byteorder);
+		returnType = new FloatingPointType(type.getName(), byteorder, 
+			                           getByteSize(type));
 	    }
 	}
 

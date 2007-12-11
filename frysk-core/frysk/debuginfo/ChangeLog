@@ -1,3 +1,8 @@
+2007-12-11  Teresa Thomas  <tthomas@redhat.com>
+
+	* TypeEntry.java (getType): Create FloatingPoint type
+	directly from die. 
+
 2007-12-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	DwarfDie.getOffset() now returns long.
