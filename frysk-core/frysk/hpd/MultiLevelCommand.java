@@ -132,6 +132,8 @@ public abstract class MultiLevelCommand extends Command {
     void interpret(CLI cli, Input input) {
 	String subAction = input.parameter(0);
 	if (subAction == null) {
+	    // So that typing a partial command prints the list of
+	    // possible completions.
 	    help(cli, input);
 	    return;
 	}

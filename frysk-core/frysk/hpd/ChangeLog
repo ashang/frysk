@@ -1,5 +1,10 @@
 2007-12-11  Andrew Cagney  <cagney@redhat.com>
 
+	* MultiLevelCommand.java (interpret(CLI,Input)): Add comment on
+	why help(CLI,Input) is called.
+	* TestPreprocessor.java: New.
+	* CLI.java (execCommand(String)): Ignore empty lines.
+
 	* ListCommand.java: Update; DebugInfoFrame's .getLines() replaced
 	by getLine().
 	* StepCommand.java: Ditto.

@@ -255,24 +255,23 @@ public class CLI {
     }
 
     public String execCommand(String cmd) {
-        String pcmd = ""; // preprocessed command
-        Input command;
-
-        if (cmd != null) {
-            try {
-                // preprocess and iterate
-                for (Iterator iter = prepro.preprocess(cmd); iter.hasNext();) {
-                    pcmd = (String)iter.next();
-                    command = new Input(pcmd);
-		    topLevelCommand.interpret(this, command);
-                }
-            }
-            catch (RuntimeException e) {
-                printError(e);
-            }
-            flushMessages();
-        }
-        return null;
+	if (cmd != null) {
+	    // NULL when EOF.
+	    try {
+		// preprocess and iterate
+		for (Iterator iter = prepro.preprocess(cmd); iter.hasNext();) {
+		    String pcmd = (String)iter.next();
+		    Input command = new Input(pcmd);
+		    // Ignore empty commands
+		    if (command.size() > 0)
+			topLevelCommand.interpret(this, command);
+		}
+	    } catch (RuntimeException e) {
+		printError(e);
+	    }
+	}
+	flushMessages();
+	return null;
     }
     
     /**
