@@ -1,3 +1,7 @@
+2007-12-11 Teresa Thomas <tthomas@redhat.com>
+
+	* funit-addresses.c: Add long double types.
+	
 2007-12-10  Petr Machata  <pmachata@redhat.com>
 
 	* funit-vfork.c: New file.

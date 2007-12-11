@@ -45,6 +45,8 @@
 char global_char = 'a';
 float float_ = 4.0;
 double double_ = 9.0;
+long double long_double_neg_9 = -9.0;
+long double long_double_7point5 = 7.5;
 
 int *static_int_address;
 volatile int *volatile_int_address;
