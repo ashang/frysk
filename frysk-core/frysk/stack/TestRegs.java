@@ -39,7 +39,6 @@
 
 package frysk.stack;
 
-import frysk.isa.ISA;
 import frysk.isa.Register;
 import frysk.testbed.RegsCase;
 
@@ -65,19 +64,5 @@ public class TestRegs extends RegsCase {
 
     public long getRegister(Object task, Register register) {
 	return frame.getRegister(register);
-    }
-
-    // XXX: Delete this once the unresolved cases are fixed.
-    public void testFloatRegisters() {
-	if (isa() == ISA.X8664 && unresolved(5195))
-	    return;
-	super.testFloatRegisters();
-    }
-
-    // XXX: Delete this once the unresolved cases are fixed.
-    public void testVectorRegisters() {
-        if (isa() == ISA.X8664 && unresolved(5195))
-            return;
-	super.testVectorRegisters();
     }
 }

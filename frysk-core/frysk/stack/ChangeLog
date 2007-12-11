@@ -1,3 +1,12 @@
+2007-12-11  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRegs.java (testFloatRegisters()): Delete.
+	(testVectorRegisters()): Delete.
+	* LibunwindFrame.java (getRegister(Register,long,int,byte[],int)):
+	When libunwind doesn't know a register, pass the request directly
+	to the task.
+	(setRegister(Register,long,int,byte[],int)): Ditto.
+
 2007-12-10  Andrew Cagney  <cagney@redhat.com>
 
 	* LibunwindRegisterMapFactory.java (IA32): Add XMM registers.

@@ -102,19 +102,29 @@ class LibunwindFrame extends Frame
   
     public void getRegister(Register register, long offset, int length,
 			    byte[] bytes, int start) {
-	Number number = registerMap.getRegisterNumber(register);
-	logger.log(Level.FINE, "{0}: getRegister register: {1} ({2})\n",
-		   new Object[] { this, register, number });
-	cursor.getRegister(number, offset, length, bytes, start);
+	if (registerMap.containsKey(register)) {
+	    Number number = registerMap.getRegisterNumber(register);
+	    logger.log(Level.FINE, "{0}: getRegister register: {1} ({2})\n",
+		       new Object[] { this, register, number });
+	    cursor.getRegister(number, offset, length, bytes, start);
+	} else {
+	    getTask().access(register, (int)offset, length, bytes, start,
+			     false);
+	}
     }
   
     public void setRegister(Register register, long offset, int length,
 			    byte[] bytes, int start) {
-	Number number = registerMap.getRegisterNumber(register);
-	logger.log(Level.FINE, "{0}: getRegister register: {1} ({2})\n",
-		   new Object[] { this, register, number });
-	cursor.setRegister(registerMap.getRegisterNumber(register),
-			   offset, length, bytes, start);
+	if (registerMap.containsKey(register)) {
+	    Number number = registerMap.getRegisterNumber(register);
+	    logger.log(Level.FINE, "{0}: getRegister register: {1} ({2})\n",
+		       new Object[] { this, register, number });
+	    cursor.setRegister(registerMap.getRegisterNumber(register),
+			       offset, length, bytes, start);
+	} else {
+	    getTask().access(register, (int)offset, length, bytes, start,
+			     true);
+	}
     }
   
     /**
