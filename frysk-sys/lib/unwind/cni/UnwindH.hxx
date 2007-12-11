@@ -47,7 +47,9 @@
 
 #include <libdwfl.h>
 #include LIBUNWIND_TARGET_H
-#include <dwarf.h>
+
+#include <libelf.h>
+#include <gelf.h>
 
 #include <gcj/cni.h>
 
@@ -135,11 +137,22 @@ static int
 access_mem (::unw_addr_space_t as, ::unw_word_t addr,
 	    ::unw_word_t *valp, int write, void *arg)
 {
-  jbyteArray tmp = JvNewByteArray (sizeof (unw_word_t));
-  memcpy (elements(tmp), valp, JvGetArrayLength(tmp));
-  int ret = addressSpace(arg)->accessMem((jlong) addr, tmp, (jboolean) write);
-  memcpy(valp, elements(tmp), JvGetArrayLength(tmp));
-  return ret;
+  try
+    {
+      jbyteArray tmp = JvNewByteArray (sizeof (unw_word_t));
+      memcpy (elements(tmp), valp, JvGetArrayLength(tmp));
+      int ret = addressSpace(arg)->accessMem((jlong) addr,
+					     tmp, (jboolean) write);
+      memcpy(valp, elements(tmp), JvGetArrayLength(tmp));
+      return ret;
+    }
+  catch (java::lang::RuntimeException *t)
+    {
+      // We have to catch all RuntimeExceptions here since there
+      // is no indicator for just "invalid memory location".
+      // Core files might have "holes" in their memory.
+      return -UNW_EINVAL;
+    }
 }
 
 /*
@@ -429,26 +442,177 @@ lib::unwind::TARGET::getProcInfo(gnu::gcj::RawDataManaged* cursor)
   return myInfo;
 }
 
+// Return NULL when eh_frame_hdr cannot be found.
+// Also fills in ip->start_ip, ip->end_ip and ip->gp.
+// peh_vaddr will point to the address of the eh_frame_hdr in the main
+// address space of the inferior.
+static void *
+get_eh_frame_hdr_addr(unw_proc_info_t *pi, char *image, size_t size,
+		      unsigned long segbase, unw_word_t *peh_vaddr)
+{
+  if (elf_version(EV_CURRENT) == EV_NONE)
+    return NULL;
+
+  Elf *elf = elf_memory(image, size);
+  if (elf == NULL)
+    return NULL;
+
+  GElf_Ehdr ehdr;
+  if (gelf_getehdr(elf, &ehdr) == NULL)
+    return NULL;
+  
+  GElf_Phdr phdr;
+  int ptxt_ndx = -1, peh_hdr_ndx = -1, pdyn_ndx = -1;
+  for (int i = 0; i < ehdr.e_phnum; i++)
+    {
+      if (gelf_getphdr (elf, i, &phdr) == NULL)
+	return NULL;
+      
+      switch (phdr.p_type)
+        {
+        case PT_LOAD:
+          if (phdr.p_vaddr == segbase)
+            ptxt_ndx = i;
+          break;
+	  
+        case PT_GNU_EH_FRAME:
+          peh_hdr_ndx = i;
+          break;
+	  
+        case PT_DYNAMIC:
+          pdyn_ndx = i;
+          break;
+
+        default:
+          break;
+        }
+    }
+
+  if (ptxt_ndx == -1 || peh_hdr_ndx == -1)
+    return NULL;
+
+  GElf_Phdr ptxt, peh_hdr;
+  if (gelf_getphdr (elf, ptxt_ndx, &ptxt) == NULL)
+    return NULL;
+
+  if (gelf_getphdr (elf, peh_hdr_ndx, &peh_hdr) == NULL)
+    return NULL;
+
+  if (pdyn_ndx != -1)
+    {
+      /* For dynamicly linked executables and shared libraries,
+	 DT_PLTGOT is the value that data-relative addresses are
+	 relative to for that object.  We call this the "gp". */
+      GElf_Phdr pdyn;
+      if (gelf_getphdr (elf, pdyn_ndx, &pdyn) == NULL)
+	return NULL;
+
+      Elf_Scn *pdyn_scn = gelf_offscn(elf, pdyn.p_offset);
+      if (pdyn_scn == NULL)
+	return NULL;
+
+      Elf_Data *pdyn_data;
+      pdyn_data = elf_getdata (pdyn_scn, NULL);
+      if (pdyn_data == NULL)
+	return NULL;
+
+      GElf_Shdr pdyn_shdr;
+      if (gelf_getshdr (pdyn_scn, &pdyn_shdr) == NULL)
+	return NULL;
+
+      for (unsigned int i = 0;
+	   i < pdyn_shdr.sh_size / pdyn_shdr.sh_entsize; i++)
+	{
+	  GElf_Dyn dyn;
+	  if (gelf_getdyn (pdyn_data, i, &dyn) == NULL)
+	    return NULL;
+
+	  if (dyn.d_tag == DT_PLTGOT)
+	    {
+	      /* Assume that _DYNAMIC is writable and GLIBC has
+		 relocated it (true for x86 at least). */
+	      pi->gp = dyn.d_un.d_ptr;
+	      break;
+	    }
+	}
+    }
+  else
+    /* Otherwise this is a static executable with no _DYNAMIC.  Assume
+       that data-relative addresses are relative to 0, i.e.,
+       absolute. */
+    pi->gp = 0;
+
+  pi->start_ip = segbase;
+  pi->end_ip = segbase + ptxt.p_memsz;
+
+  *peh_vaddr = peh_hdr.p_vaddr;
+
+  char *hdr = image + peh_hdr.p_offset;
+  return hdr;
+}
+
+// The following is a local address space memory accessor used by
+// unw_get_unwind_table to access the eh_frame_hdr.  The arg pointer
+// is the base address, addr is the offset from the base address.
+static int 
+local_access_mem (unw_addr_space_t as, unw_word_t addr,
+		  unw_word_t *val, int write, void *arg) 
+{
+  // Writing is not supported
+  if (write)
+    return -UNW_EINVAL;
+  else
+    *val = *(unw_word_t *) (addr + (char *) arg);
+
+  return UNW_ESUCCESS;
+}
+  
+static unw_accessors_t local_accessors
+  = {NULL, NULL, NULL, local_access_mem, NULL, NULL, NULL, NULL};
+
 lib::unwind::ProcInfo*
 lib::unwind::TARGET::createProcInfoFromElfImage(lib::unwind::AddressSpace* addressSpace,
 						jlong ip,
 						jboolean needUnwindInfo,
 						lib::unwind::ElfImage* elfImage)
 {
-  if (elfImage == NULL)
-    return new lib::unwind::ProcInfo(UNW_ENOINFO);
+  if (elfImage == NULL || elfImage->ret != 0)
+    return new lib::unwind::ProcInfo(-UNW_ENOINFO);
 
   unw_proc_info_t *procInfo
     = (::unw_proc_info_t *) JvAllocBytes(sizeof (::unw_proc_info_t));
 
-  logFine(this, logger, "Pre unw_get_unwind_table");
-  int ret = unw_get_unwind_table((unw_addr_space_t) addressSpace->addressSpace,
-				 (unw_word_t) ip, procInfo,
-				 (int) needUnwindInfo,
-				 (void *) elfImage->elfImage,
-				 elfImage->size, elfImage->segbase,
-				 elfImage->mapoff, (void *) addressSpace);
+  unw_addr_space_t as = (unw_addr_space_t) addressSpace->addressSpace;
 
+  logFine(this, logger, "Pre unw_get_unwind_table");
+  
+  unw_word_t peh_vaddr = 0;
+  void *eh_table_hdr = get_eh_frame_hdr_addr(procInfo,
+					     (char *) elfImage->elfImage,
+					     elfImage->size,
+					     elfImage->segbase,
+					     &peh_vaddr);
+
+  //jsize length = JvGetStringUTFLength (elfImage->name);
+  //char buffer[length + 1];
+  //JvGetStringUTFRegion (elfImage->name, 0, elfImage->name->length(), buffer);
+  //buffer[length] = '\0';
+  //fprintf(stderr, "%s: %p\n", buffer, eh_table_hdr);
+
+  if (eh_table_hdr == NULL)
+    return new lib::unwind::ProcInfo(-UNW_ENOINFO);
+
+  int ret = unw_get_unwind_table(as,
+				 (unw_word_t) ip,
+				 procInfo,
+				 (int) needUnwindInfo,
+				 (void *) addressSpace,
+				 &local_accessors,
+				 0,
+				 eh_table_hdr,
+				 peh_vaddr);
+    
+  
   logFine(this, logger, "Post unw_get_unwind_table");
   lib::unwind::ProcInfo *myInfo;
   if (ret < 0)
@@ -541,7 +705,7 @@ lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSp
     mapoff = 0;
 
   lib::unwind::ElfImage* elfImage
-    = new lib::unwind::ElfImage((jlong) image, (jlong) size,
+    = new lib::unwind::ElfImage(JvNewStringLatin1("[vdso]"), (jlong) image, (jlong) size,
 				(jlong) segbase, (jlong) mapoff);
 
   jLogFine(this, logger, "elfImage returned: {1}", elfImage);

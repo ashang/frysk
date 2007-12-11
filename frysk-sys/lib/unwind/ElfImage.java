@@ -43,6 +43,8 @@ package lib.unwind;
 public class ElfImage
 {
 
+  final String name;
+
   long elfImage;
 
   long size;
@@ -53,8 +55,9 @@ public class ElfImage
 
   int ret = 0;
   
-  public ElfImage (long elfImage, long size, long segbase, long mapoff)
+  public ElfImage (String name, long elfImage, long size, long segbase, long mapoff)
   {
+    this.name = name;
     this.elfImage = elfImage;
     this.size = size;
     this.segbase = segbase;
@@ -63,6 +66,7 @@ public class ElfImage
 
   public ElfImage (int ret)
   {
+    this.name = "ERROR: " + Integer.toString(ret);
     this.ret = ret;
   }
 
@@ -71,7 +75,7 @@ public class ElfImage
     if (ret != 0)
       return "Bad Elf Image, ret: " + ret;
 
-    return "Elf Image: 0x" + Long.toHexString(elfImage) + " size: " + size
+    return "Elf Image (" + name + "): 0x" + Long.toHexString(elfImage) + " size: " + size
 	   + " segbase: 0x" + Long.toHexString(segbase) + " mapoff: 0x"
 	   + Long.toHexString(mapoff);
   }

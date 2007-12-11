@@ -252,8 +252,10 @@ extern int unw_get_proc_name (unw_cursor_t *, char *, size_t, unw_word_t *);
 extern const char *unw_strerror (int);
 extern int unw_get_unwind_table(unw_addr_space_t as, unw_word_t ip, 
 				unw_proc_info_t *pi, int need_unwind_info,
-				void *image, size_t size, 
-				unsigned long segbase, unsigned long mapoff,
-				void *arg);
+				void *arg,
+				unw_accessors_t *eh_frame_accessors,
+				unw_word_t eh_frame_hdr_address,
+				void *eh_frame_arg,
+				unw_word_t peh_vaddr);
 
 extern unw_addr_space_t unw_local_addr_space;

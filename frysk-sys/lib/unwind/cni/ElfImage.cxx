@@ -80,7 +80,7 @@ lib::unwind::ElfImage::mapElfImage(jstring elfImageName, jlong segbase, jlong hi
     return new lib::unwind::ElfImage((jint) -1);
 
   lib::unwind::ElfImage* elfImage
-  = new lib::unwind::ElfImage((jlong) image, (jlong) size,
+    = new lib::unwind::ElfImage(elfImageName, (jlong) image, (jlong) size,
                               (jlong) segbase, (jlong) mapoff);
 
   return elfImage;

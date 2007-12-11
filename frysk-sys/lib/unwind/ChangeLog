@@ -1,3 +1,16 @@
+2007-12-11  Mark Wielaard  <mwielaard@redhat.com>
+
+	* ElfImage.java (name): New field.
+	(ElfImage): Set name.
+	(toString): Add name.
+	* cni/ElfImage.cxx (mapElfImage): Pass in name.
+	* cni/UnwindH.hxx (access_mem): Handle memory holes.
+	(get_eh_frame_hdr_addr): New static function.
+	(local_access_mem): Likewise.
+	(createProcInfoFromElfImage): Use get_eh_frame_hdr_addr and
+	local_access_mem.
+	(createElfImageFromVDSO): Set name to [vdso].
+	
 2007-12-10  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/UnwindH.hxx (access_fpreg): Allocate a buffer big enough for

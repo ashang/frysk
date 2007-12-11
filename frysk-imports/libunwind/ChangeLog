@@ -1,3 +1,10 @@
+2007-12-11  Mark Wielaard  <mwielaard@redhat.com>
+
+	* include/libunwind-common.h.in (unw_get_unwind_table): Add
+	unw_accessor_t, remove elf image arguments.
+	* src/mi/Gget_unwind_table.c (unw_get_unwind_table): Likewise.
+	Rewrite to use unw_accessor_t for reading all data.
+	
 2007-11-28  Mark Wielaard  <mwielaard@redhat.com>
 
 	* src/mi/Gget_unwind_table.c (unw_get_unwind_table): Make addr a
