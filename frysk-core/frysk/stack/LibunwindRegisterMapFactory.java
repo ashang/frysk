@@ -67,7 +67,7 @@ public class LibunwindRegisterMapFactory {
 	.add(IA32Registers.EIP, UnwindRegistersX86.EIP)
 	.add(IA32Registers.EFLAGS, UnwindRegistersX86.EFLAGS)
 	.add(IA32Registers.TRAPS, UnwindRegistersX86.TRAPNO)
-    // MMX registers
+    // Floating-point registers
 	.add(X87Registers.ST0, UnwindRegistersX86.ST0)
 	.add(X87Registers.ST1, UnwindRegistersX86.ST1)
 	.add(X87Registers.ST2, UnwindRegistersX86.ST2)
@@ -84,8 +84,15 @@ public class LibunwindRegisterMapFactory {
 	.add(X87Registers.EIP, UnwindRegistersX86.FIP)
 	.add(X87Registers.DP, UnwindRegistersX86.FEA)
 	.add(X87Registers.DS, UnwindRegistersX86.FDS)
-    // SSE Registers
-    //TODO: XMMx registers.
+    // XMMx registers.
+	.add(X87Registers.XMM0, UnwindRegistersX86.XMM0)
+	.add(X87Registers.XMM1, UnwindRegistersX86.XMM1)
+	.add(X87Registers.XMM2, UnwindRegistersX86.XMM2)
+	.add(X87Registers.XMM3, UnwindRegistersX86.XMM3)
+	.add(X87Registers.XMM4, UnwindRegistersX86.XMM4)
+	.add(X87Registers.XMM5, UnwindRegistersX86.XMM5)
+	.add(X87Registers.XMM6, UnwindRegistersX86.XMM6)
+	.add(X87Registers.XMM7, UnwindRegistersX86.XMM7)
     //.add(IA32Registers.MXCSR, UnwindRegistersX86.MXCSR)
     // Segment registers
 	.add(IA32Registers.GS, UnwindRegistersX86.GS)

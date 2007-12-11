@@ -299,20 +299,21 @@ lib::unwind::TARGET::getRegister(gnu::gcj::RawDataManaged* cursor,
     unw_word_t w;
     unw_fpreg_t fp;
   } word;
+  int size;
   if (unw_is_fpreg(regNum))
-    {
-      verifyBounds(offset, length, bytes, start, sizeof(word.fp));
-      status = unw_get_fpreg((::unw_cursor_t *) cursor,
-			     (::unw_regnum_t) regNum,
-			     &word.fp);
-    }
+    size = sizeof(word.fp);
   else
-    {
-      verifyBounds(offset, length, bytes, start, sizeof(word.w));
-      status = unw_get_reg((::unw_cursor_t *) cursor,
+    size = sizeof(word.w);
+  verifyBounds(offset, length, bytes, start, size);
+  if (unw_is_fpreg(regNum))
+    status = unw_get_fpreg((::unw_cursor_t *) cursor,
 			   (::unw_regnum_t) regNum,
-			   &word.w);
-    }
+			   &word.fp);
+  else
+    status = unw_get_reg((::unw_cursor_t *) cursor,
+			 (::unw_regnum_t) regNum,
+			 &word.w);
+  printf("status=%d\n", status);
   if (status != 0)
     throwRuntimeException("get register failed");
   memcpy(elements(bytes) + start, (uint8_t*)&word + offset, length);
@@ -330,20 +331,20 @@ lib::unwind::TARGET::setRegister(gnu::gcj::RawDataManaged* cursor,
     unw_word_t w;
     unw_fpreg_t fp;
   } word;
+  int size;
   if (unw_is_fpreg(regNum))
-    {
-      verifyBounds(offset, length, bytes, start, sizeof(word.fp));
-      status = unw_get_fpreg((::unw_cursor_t *) cursor,
-			     (::unw_regnum_t) regNum,
-			     &word.fp);
-    }
+    size = sizeof(word.fp);
   else
-    {
-      verifyBounds(offset, length, bytes, start, sizeof(word.w));
-      status = unw_get_reg((::unw_cursor_t *) cursor,
+    size = sizeof(word.w);
+  verifyBounds(offset, length, bytes, start, size);
+  if (unw_is_fpreg(regNum))
+    status = unw_get_fpreg((::unw_cursor_t *) cursor,
 			   (::unw_regnum_t) regNum,
-			   &word.w);
-    }
+			   &word.fp);
+  else
+    status = unw_get_reg((::unw_cursor_t *) cursor,
+			 (::unw_regnum_t) regNum,
+			 &word.w);
   if (status != 0)
     throwRuntimeException("set register failed");
   memcpy((uint8_t*)&word + offset, elements(bytes) + start, length);

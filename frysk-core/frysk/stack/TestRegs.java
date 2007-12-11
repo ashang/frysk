@@ -69,8 +69,6 @@ public class TestRegs extends RegsCase {
 
     // XXX: Delete this once the unresolved cases are fixed.
     public void testFloatRegisters() {
-// 	if (isa() == ISA.IA32 && unresolved(4911))
-// 	    return;
 	if (isa() == ISA.X8664 && unresolved(5195))
 	    return;
 	super.testFloatRegisters();
@@ -78,8 +76,6 @@ public class TestRegs extends RegsCase {
 
     // XXX: Delete this once the unresolved cases are fixed.
     public void testVectorRegisters() {
-	if (isa() == ISA.IA32 && unresolved(4911))
-	    return;
         if (isa() == ISA.X8664 && unresolved(5195))
             return;
 	super.testVectorRegisters();

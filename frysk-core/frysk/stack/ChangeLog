@@ -1,5 +1,8 @@
 2007-12-10  Andrew Cagney  <cagney@redhat.com>
 
+	* LibunwindRegisterMapFactory.java (IA32): Add XMM registers.
+	* TestRegs.java (testVectorRegisters()): Enable on IA-32.
+	
 	* TestRegs.java (testFloatRegisters()): Enable on IA-32.
 	* LibunwindAddressSpace.java (accessReg(Number,byte[],boolean)):
 	Limit the transfer size to the register's size.
