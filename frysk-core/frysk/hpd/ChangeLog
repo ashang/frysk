@@ -1,3 +1,13 @@
+2007-12-11  Andrew Cagney  <cagney@redhat.com>
+
+	* ListCommand.java: Update; DebugInfoFrame's .getLines() replaced
+	by getLine().
+	* StepCommand.java: Ditto.
+	* StepNextiCommand.java: Ditto.
+	* StepNextCommand.java: Ditto.
+	* StepInstructionCommand.java: Ditto.
+	* StepFinishCommand.java: Ditto.
+
 2007-12-10  Andrew Cagney  <cagney@redhat.com>
 
 	* TestInput.java (check): Check out-of-range requests.

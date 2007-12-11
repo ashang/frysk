@@ -1,3 +1,12 @@
+2007-12-11  Andrew Cagney  <cagney@redhat.com>
+
+	* CurrentStackView.java: Update DebugInfoFrame's .getLines()
+	replaced by .getLine().
+	* InlineBuffer.java: Ditto.
+	* SourceBuffer.java: Ditto.
+	* SourceView.java: Ditto.
+	* SourceWindow.java: Ditto.
+
 2007-11-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Added a boolean for printing source	libraries to Frame.toPrint().

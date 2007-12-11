@@ -1,3 +1,8 @@
+2007-12-11  Andrew Cagney  <cagney@redhat.com>
+	
+	* DebugInfoFrame.java (getLine()): Replace getLines().
+	* TestDebugInfoStackTrace.java: Update.
+	
 2007-12-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	CompositeType constructors and add functions now take LineColPair argument.

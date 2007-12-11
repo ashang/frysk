@@ -151,7 +151,7 @@ public class TestDebugInfoStackTrace
 
     assertNotNull(frame);
     assertNull(frame.getInner());
-    line = frame.getLines()[0];
+    line = frame.getLine();
     symbol = frame.getSymbol();
     assertEquals ("file name", "funit-rt-looper.c", line.getFile().getName());
     //XXX: See #3259
@@ -161,7 +161,7 @@ public class TestDebugInfoStackTrace
     frame = frame.getOuterDebugInfoFrame();
     assertNotNull (frame);
     assertNotNull(frame.getInner());
-    line = frame.getLines()[0];
+    line = frame.getLine();
     symbol = frame.getSymbol();
     assertEquals("file name", "funit-rt-looper.c", line.getFile().getName());
     assertEquals(71, line.getLine ());
@@ -170,7 +170,7 @@ public class TestDebugInfoStackTrace
     frame = frame.getOuterDebugInfoFrame();
     assertNotNull(frame);
     assertNotNull(frame.getInner());
-    line = frame.getLines()[0];
+    line = frame.getLine();
     symbol = frame.getSymbol();
     assertEquals("file name", "funit-rt-looper.c", line.getFile().getName());
     assertEquals("line number", 81, line.getLine());
@@ -179,7 +179,7 @@ public class TestDebugInfoStackTrace
     frame = frame.getOuterDebugInfoFrame();
     assertNotNull(frame);
     assertNotNull(frame.getInner());
-    line = frame.getLines()[0];
+    line = frame.getLine();
     symbol = frame.getSymbol();
     assertEquals("file name", "funit-rt-looper.c", line.getFile().getName());
     assertEquals("line number", 117, line.getLine());
@@ -328,14 +328,13 @@ public class TestDebugInfoStackTrace
 
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
     
-    if (frame.getLines().length == 0)
-      {
+    if (frame.getLine() == Line.UNKNOWN) {
         this.lineMap.put(myTask, new Integer(0));
         steppingEngine.stepLine(myTask.getProc().getTasks());
         return;
       }
       
-    Line line = frame.getLines()[0];
+    Line line = frame.getLine();
     this.lineMap.put(myTask, new Integer(line.getLine()));
     steppingEngine.stepLine(myTask.getProc().getTasks());
   }
@@ -510,13 +509,13 @@ public class TestDebugInfoStackTrace
       {
 
         int lineNum;
-            if (sFrame.getLines().length == 0)
+            if (sFrame.getLine() == Line.UNKNOWN)
               {
                 lineNum = 0;
               }
             else
               {
-                line = sFrame.getLines()[0];
+                line = sFrame.getLine();
                 lineNum = line.getLine();
               }
             this.lineMap.put(myTask, new Integer(lineNum));
@@ -578,7 +577,7 @@ public class TestDebugInfoStackTrace
                 DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
 
                 /* Make sure we're not missing any frames */
-                if (frame.getLines()[0].getLine() > 95)
+                if (frame.getLine().getLine() > 95)
                   {
                     assertEquals ("demangled name", "jump",
 				  frame.getSymbol().getDemangledName());
@@ -653,8 +652,8 @@ public class TestDebugInfoStackTrace
           {
             frameTracker[task_count][i][0] = "" + frame.toString();
             
-            if (frame.getLines().length > 0)
-              frameTracker[task_count][i][1] = frame.getLines()[0].getFile().getAbsolutePath();
+            if (frame.getLine() != Line.UNKNOWN)
+              frameTracker[task_count][i][1] = frame.getLine().getFile().getAbsolutePath();
             else
               frameTracker[task_count][i][1] = "";
             
@@ -665,8 +664,8 @@ public class TestDebugInfoStackTrace
             else
               frameTracker[task_count][i][3] = "" + frame.getInner().toString();
             
-            if (frame.getLines().length > 0)
-              frameTracker[task_count][i][4] = "" + frame.getLines()[0].getLine();
+            if (frame.getLine() != Line.UNKNOWN)
+              frameTracker[task_count][i][4] = "" + frame.getLine().getLine();
             else
               frameTracker[task_count][i][4] = "" + 0;
             

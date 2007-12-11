@@ -48,6 +48,7 @@ import frysk.debuginfo.DebugInfoFrame;
 import frysk.dom.DOMFunction;
 import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMLine;
+import frysk.rt.Line;
 import frysk.dom.DOMTag;
 import frysk.dom.DOMTagTypes;
 import frysk.value.Value;
@@ -189,10 +190,10 @@ public class InlineBuffer
    */
   public String getVariable (TextIter iter)
   {
-    if (this.scope == null || this.scope.getLines().length == 0)
+    if (this.scope == null || this.scope.getLine() == Line.UNKNOWN)
       return null;
     
-    DOMLine line = this.scope.getLines()[0].getDOMSource().getLine(
+    DOMLine line = this.scope.getLine().getDOMSource().getLine(
                                                 iter.getLineNumber()
                                                     + this.declaration.getStartingLine());
 
@@ -248,10 +249,10 @@ public class InlineBuffer
    */
   protected void createTags ()
   {
-    if (this.scope == null || this.scope.getLines().length == 0)
+    if (this.scope == null || this.scope.getLine() == Line.UNKNOWN)
       return;
     
-    Iterator lines = this.scope.getLines()[0].getDOMSource().getLines();
+    Iterator lines = this.scope.getLine().getDOMSource().getLines();
 
     // Iterate through all the lines
     while (lines.hasNext())
@@ -289,7 +290,7 @@ public class InlineBuffer
 
           } // end tags.hasNext()
 
-        Iterator inlines = this.scope.getLines()[0].getDOMSource().getInlines(line.getLineNum());
+        Iterator inlines = this.scope.getLine().getDOMSource().getInlines(line.getLineNum());
 
         while (inlines.hasNext())
           {
@@ -305,7 +306,7 @@ public class InlineBuffer
       }// end lines.hasNext()
 
     // Now iterate through the comments
-    CommentList list = (CommentList) comments.get(this.scope.getLines()[0].getDOMSource().getFileName());
+    CommentList list = (CommentList) comments.get(this.scope.getLine().getDOMSource().getFileName());
 
     while (list != null)
       {

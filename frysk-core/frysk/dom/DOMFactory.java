@@ -42,7 +42,7 @@ package frysk.dom;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-
+import frysk.rt.Line;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.proc.Proc;
 
@@ -57,10 +57,10 @@ public class DOMFactory
   {
     DOMFrysk dom = null;
 
-    if (frame.getLines().length == 0)
+    if (frame.getLine() == Line.UNKNOWN)
       return null;
     
-    File file = frame.getLines()[0].getFile();
+    File file = frame.getLine().getFile();
     String sourcefile = file.getPath();
 
     String filename = file.getName ();
@@ -88,7 +88,7 @@ public class DOMFactory
     if (source == null)
       {
         DOMImage image = dom.getImage(proc.getMainTask().getName());
-        image.addSource(proc, frame.getLines()[0], dom);
+        image.addSource(proc, frame.getLine(), dom);
       }
     hashmap.put(proc, dom);
     // if we are debugging the DOM, print it out now

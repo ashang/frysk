@@ -1,7 +1,7 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Oracle Corporation.
 // Copyright 2005, 2007 Red Hat Inc.
+// Copyright 2007 Oracle Corporation.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -614,7 +614,7 @@ public class SourceWindow extends Window {
 	    DebugInfoFrame curr = temp;
 	    this.currentFrame = temp;
 
-	    while (curr != null && curr.getLines().length == 0)
+	    while (curr != null && curr.getLine() == Line.UNKNOWN)
 		curr = curr.getOuterDebugInfoFrame();
 
 	    if (curr != null) {
@@ -651,11 +651,11 @@ public class SourceWindow extends Window {
 		// stackView.expandAll();
 	    }
 
-	    if (this.currentFrame.getLines().length != 0) { 
-		    if (this.currentFrame.getLines()[0].getDOMFunction() != null)
-			this.view.scrollToFunction(this.currentFrame.getLines()[0].getDOMFunction().getFunctionCall());
+	    if (this.currentFrame.getLine() != Line.UNKNOWN) { 
+		    if (this.currentFrame.getLine().getDOMFunction() != null)
+			this.view.scrollToFunction(this.currentFrame.getLine().getDOMFunction().getFunctionCall());
 		    else
-			this.view.scrollToLine(this.currentFrame.getLines()[0].getLine());
+			this.view.scrollToLine(this.currentFrame.getLine().getLine());
 	    } else {
 		/* Only the case during a monitor stack trace */
 		if (!this.steppingEngine
@@ -802,7 +802,7 @@ public class SourceWindow extends Window {
 	StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
 	sbar.push(0, "Stopped");
 
-	if (this.currentFrame.getLines().length == 0) {
+	if (this.currentFrame.getLine() == Line.UNKNOWN) {
 	    ((SourceBuffer) ((SourceView) this.view).getBuffer())
 		    .disassembleFrame(this.currentFrame);
 	}
@@ -2085,7 +2085,7 @@ public class SourceWindow extends Window {
 	    ((SourceView) this.view).setLineNums(true);
 	    ((SourceView) this.view).setMode(SourceBuffer.SOURCE_MODE);
 
-	    if (this.currentFrame.getLines().length > 0) {
+	    if (this.currentFrame.getLine() != Line.UNKNOWN) {
 		((SourceView) this.view).scrollToFunction(this.currentFrame
 			.getSymbol().getDemangledName());
 	    }
@@ -2172,7 +2172,7 @@ public class SourceWindow extends Window {
          * code, the other displaying assembly information.
          */
     private void switchToSourceAsmMode() {
-	if (this.currentFrame.getLines().length == 0)
+	if (this.currentFrame.getLine() == Line.UNKNOWN)
 	    return;
 
 	if (!(this.view instanceof MixedView)) {
@@ -2250,25 +2250,25 @@ public class SourceWindow extends Window {
 	int task_id = sf.getTask().getTid();
 
 	DOMSource source = null;
-	Line[] lines = sf.getLines();
+	Line line = sf.getLine();
 
-	if (lines.length > 0) {
-	    if (lines[0].getDOMFunction() == null)
+	if (line != Line.UNKNOWN) {
+	    if (line.getDOMFunction() == null)
 	        noDOMFunction = true;
-	    source = lines[0].getDOMSource();
+	    source = line.getDOMSource();
 	    if (source == null)
 		try {
 		    DOMFactory.createDOM(sf, sf.getTask().getProc());
-		    source = lines[0].getDOMSource();
+		    source = line.getDOMSource();
 		} catch (Exception e) {
 		    e.printStackTrace();
 		}
 	}
 
-	if (lines.length == 0)
+	if (line == Line.UNKNOWN)
 	    setSourceLabel("Unknown File for: ", task_name, proc_id, task_id, noDOMFunction, source);
-	else if (source == null && lines.length > 0)
-	    setSourceLabel(sf.getLines()[0].getFile().getPath() + " for: ",
+	else if (source == null && line != Line.UNKNOWN)
+	    setSourceLabel(sf.getLine().getFile().getPath() + " for: ",
 		    task_name, proc_id, task_id, noDOMFunction, source);
 	else
 	    setSourceLabel(source.getFileName() + " for: ", task_name, proc_id,
@@ -2300,23 +2300,23 @@ public class SourceWindow extends Window {
 	int mode = this.viewPicker.getActive();
 
 	DOMSource source = null;
-	Line[] lines = selected.getLines();
+	Line line = selected.getLine();
 
 	updateSourceLabel(selected);
 
-	if (lines.length > 0) {
-	    source = lines[0].getDOMSource();
+	if (line != Line.UNKNOWN) {
+	    source = line.getDOMSource();
 	    if (source == null)
 		try {
 		    DOMFactory
 			    .createDOM(selected, selected.getTask().getProc());
-		    source = lines[0].getDOMSource();
+		    source = line.getDOMSource();
 		} catch (Exception e) {
 		    e.printStackTrace();
 		}
 	}
 
-	if (lines.length == 0) {
+	if (line == Line.UNKNOWN) {
 	    SourceBuffer b = null;
 
 	    if (mode == 2)
@@ -2341,10 +2341,10 @@ public class SourceWindow extends Window {
 		b.deleteText(b.getStartIter(), b.getEndIter());
 	    }
 	} else if (source != null) {
-	    if (this.currentFrame.getLines().length == 0
-		    || !source.getFileName()
+	    if (this.currentFrame.getLine() == Line.UNKNOWN
+		|| !source.getFileName()
 			    .equals(
-				    this.currentFrame.getLines()[0].getFile()
+				    this.currentFrame.getLine().getFile()
 					    .getName()) || mode != 0
 		    || current != this.current) {
 
@@ -2371,33 +2371,33 @@ public class SourceWindow extends Window {
 
 		createTags();
 
-		if (this.currentFrame.getLines().length == 0) {
+		if (this.currentFrame.getLine() == Line.UNKNOWN) {
 		    if (mode == 2) {
 			this.currentFrame = selected;
 			switchToSourceAsmMode();
-			if (lines[0].getDOMFunction() != null)
+			if (line.getDOMFunction() != null)
 			    ((MixedView) this.view).getSourceWidget()
 				.scrollToFunction(
-					lines[0].getDOMFunction()
-						.getFunctionCall());
-		    } else if (mode == 0 && lines[0].getDOMFunction() != null)
-			this.view.scrollToFunction(lines[0].getDOMFunction()
+					line.getDOMFunction()
+					.getFunctionCall());
+		    } else if (mode == 0 && line.getDOMFunction() != null)
+			this.view.scrollToFunction(line.getDOMFunction()
 				.getFunctionCall());
 		} else {
-		    if (mode == 0 && lines[0].getDOMFunction() != null) {
-			this.view.scrollToFunction(lines[0].getDOMFunction()
+		    if (mode == 0 && line.getDOMFunction() != null) {
+			this.view.scrollToFunction(line.getDOMFunction()
 				.getFunctionCall());
 		    }
 		    else if (mode == 2)
 			((MixedView) this.view).getSourceWidget().scrollToLine(
-				lines[0].getLine());
+				line.getLine());
 		}
 	    } else {
 		if (mode == 0)
-		    this.view.scrollToLine(lines[0].getLine());
+		    this.view.scrollToLine(line.getLine());
 		else if (mode == 2)
 		    ((MixedView) this.view).getSourceWidget().scrollToLine(
-			    lines[0].getLine());
+			    line.getLine());
 	    }
 	}
 

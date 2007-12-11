@@ -47,7 +47,6 @@ import frysk.dom.DOMFrysk;
 import frysk.dom.DOMFunction;
 import frysk.dom.DOMImage;
 import frysk.dom.DOMSource;
-
 import frysk.proc.Proc;
 
 /**
@@ -55,6 +54,13 @@ import frysk.proc.Proc;
  */
 
 public class Line {
+
+    /**
+     * The LINE is unknown; this is used instead of "null" to denote
+     * missing line information.
+     */
+    public static final Line UNKNOWN = new Line(null, 0, 0, null);
+
     private final File file;
 
     private final int line;
@@ -67,7 +73,7 @@ public class Line {
   
     private DOMFunction function;
 
-    public Line (File file, int line, int column, Proc proc) {
+    public Line(File file, int line, int column, Proc proc) {
 	this.file = file;
 	this.line = line;
 	this.column = column;

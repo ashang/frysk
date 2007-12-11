@@ -61,8 +61,6 @@ public class DebugInfoFrame extends FrameDecorator {
     private Subprogram subprogram;
     private Scope scope;
 
-    private Line[] lines;
-
     private LinkedList inlinedSubprograms;
 
     private final TypeEntry typeEntry;
@@ -161,49 +159,40 @@ public class DebugInfoFrame extends FrameDecorator {
     }
 
     /**
-     * Return this frame's list of lines as an array; returns an empty array if
-     * there is no line number information available. The lack of line-number
-     * information can be determined with the test: <<tt>>.getLines().length == 0</tt>.
-     * XXX: When there are multiple lines, it isn't clear if there is a well
-     * defined ordering of the information; for instance: outer-to-inner or
-     * inner-to-outer.
+     * Return this frame's list of lines as an array; returns an empty
+     * array if there is no line number information available. The
+     * lack of line-number information can be determined with the
+     * test: <<tt>>.getLine() == Line.NULL</tt>.
      */
-    public Line[] getLines ()
-    {
-      if (this.lines == null)
-        {
-	  Dwfl dwfl = DwflCache.getDwfl(this.getTask());
+    public Line getLine() {
+	if (this.line == null) {
+	    Dwfl dwfl = DwflCache.getDwfl(this.getTask());
   	    // The innermost frame and frames which were
   	    // interrupted during execution use their PC to get
   	    // the line in source. All other frames have their PC
   	    // set to the line after the inner frame call and must
   	    // be decremented by one.
   	    DwflLine dwflLine = dwfl.getSourceLine(getAdjustedAddress());
-  	    if (dwflLine != null)
-  	      {
+  	    if (dwflLine != null) {
   		File f = new File(dwflLine.getSourceFile());
-  		if (! f.isAbsolute())
-  		  {
-  		    /* The file refers to a path relative to the compilation
-  		     * directory; so prepend the path to that directory in
-  		     * front of it. */
+  		if (! f.isAbsolute()) {
+  		    // The file refers to a path relative to the
+  		    // compilation directory; so prepend the path to
+  		    // that directory in front of it.
   		    File parent = new File(dwflLine.getCompilationDir());
   		    f = new File(parent, dwflLine.getSourceFile());
-  		  }
-
-  		this.lines = new Line[] { new Line(f, dwflLine.getLineNum(),
-  						   dwflLine.getColumn(),
-  						   this.getTask().getProc()) };
-  	      }
-
-  	  
-  	// If the fetch failed, mark it as unknown.
-  	if (this.lines == null)
-  	  this.lines = new Line[0];
+		}
+  		this.line = new Line(f, dwflLine.getLineNum(),
+				     dwflLine.getColumn(),
+				     this.getTask().getProc());
+	    }
+	    // If the fetch failed, mark it as unknown.
+	    if (this.line == null)
+		this.line = Line.UNKNOWN;
         }
-
-      return this.lines;
+	return this.line;
     }
+    private Line line;
 
     public void toPrint(PrintWriter writer, boolean printParameters,
 		 boolean fullpath){
@@ -225,12 +214,12 @@ public class DebugInfoFrame extends FrameDecorator {
 	    writer.print(") ");
           
 	    if (fullpath) {
-		Line line = this.getLines()[0];
+		Line line = this.getLine();
 		writer.print(line.getFile().getPath());
 		writer.print("#");
 		writer.print(line.getLine());
 	    } else {
-		Line line = this.getLines()[0];
+		Line line = this.getLine();
 		writer.print(".../"+line.getFile().getName());
 		writer.print("#");
 		writer.print(line.getLine());

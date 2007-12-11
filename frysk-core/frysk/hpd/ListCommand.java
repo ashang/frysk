@@ -44,6 +44,7 @@ import java.util.List;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
+import frysk.rt.Line;
 import java.util.Iterator;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.DwTag; 
@@ -96,7 +97,7 @@ class ListCommand extends ParameterizedCommand {
 	    cli.outWriter.print(taskData.getID());
 	    cli.outWriter.println("]");
             DebugInfoFrame frame = cli.getTaskFrame(task);
-            if (frame.getLines().length == 0) {
+            if (frame.getLine() == Line.UNKNOWN) {
 		cli.outWriter.println("No symbol table is available.");
 		continue;
             }
@@ -107,7 +108,7 @@ class ListCommand extends ParameterizedCommand {
                 }
                 catch (NumberFormatException ignore) {
                     if ((cmd.parameter(0)).compareTo("$EXEC") == 0)
-                        line = frame.getLines()[0].getLine() - 10;
+                        line = frame.getLine().getLine() - 10;
                     else {
                         DwarfDie funcDie = null;
 			DebugInfo debugInfo = cli.getTaskDebugInfo(task);
@@ -134,21 +135,21 @@ class ListCommand extends ParameterizedCommand {
 		    line += windowSize;
 		}
 	    }
-            else if (frame.getLines()[0].getLine() != exec_line) {
+            else if (frame.getLine().getLine() != exec_line) {
                 // list around pc.
-                exec_line = frame.getLines()[0].getLine();
+                exec_line = frame.getLine().getLine();
                 line = exec_line - 10;
             }
  
             if (file == null) {
-                if (frame.getLines().length > 0) {
-                    file = (frame.getLines()[0]).getFile();
+                if (frame.getLine() != Line.UNKNOWN) {
+                    file = (frame.getLine()).getFile();
                     if (file == null) {
                         cli.addMessage("No symbol table is available.",
                                        Message.TYPE_NORMAL);
                         return;
                     }
-                    line = (frame.getLines()[0]).getLine() - 10;
+                    line = (frame.getLine()).getLine() - 10;
 		    if (exec_line == 0)
 			exec_line = line;
                 }

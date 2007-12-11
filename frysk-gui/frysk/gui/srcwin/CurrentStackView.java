@@ -44,7 +44,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
-
+import frysk.rt.Line;
 import org.gnu.gtk.CellRenderer;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.DataColumn;
@@ -183,11 +183,11 @@ public class CurrentStackView
 	      iter = treeModel.appendRow(taskIter);
 
 	    // Check for inlined code
-	    if (frame.getLines().length > 0
-		&& frame.getLines()[0].getDOMSource() != null)
+	    if (frame.getLine() != Line.UNKNOWN
+		&& frame.getLine().getDOMSource() != null)
 	      {
-		DOMLine line = frame.getLines()[0].getDOMSource().getLine(
-									  frame.getLines()[0].getLine());
+		DOMLine line = frame.getLine().getDOMSource().getLine(
+									  frame.getLine().getLine());
 		if (line != null && line.hasInlinedCode())
 		  {
 		    hasInlinedCode = true;
@@ -300,11 +300,10 @@ public class CurrentStackView
 		hasInlinedCode = false;
 
 		// Check for inlined code
-		if (frame.getLines().length > 0
-			&& frame.getLines()[0].getDOMSource() != null)
+		if (frame.getLine() != Line.UNKNOWN
+		    && frame.getLine().getDOMSource() != null)
 		  {
-			DOMLine line = frame.getLines()[0].getDOMSource().getLine(
-																	  frame.getLines()[0].getLine());
+			DOMLine line = frame.getLine().getDOMSource().getLine(frame.getLine().getLine());
 			if (line != null && line.hasInlinedCode())
 			  {
 				hasInlinedCode = true;

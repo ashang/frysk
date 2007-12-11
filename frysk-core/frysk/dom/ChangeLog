@@ -1,3 +1,8 @@
+2007-12-11  Andrew Cagney  <cagney@redhat.com>
+
+	* DOMFactory.java: Update, DebugInfoFrame.getLines() replaced by
+	getLine().
+
 2007-08-14  Rick Moseley  <rmoseley@redhat.com>
 
 	* DOMFactory.java: Move printDOM() to DOMCommon.

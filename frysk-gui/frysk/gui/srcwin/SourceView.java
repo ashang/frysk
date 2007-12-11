@@ -87,13 +87,7 @@ import frysk.gui.prefs.IntPreference.IntPreferenceListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.rt.UpdatingDisplayValue;
 import frysk.value.Value;
-
-//import frysk.rt.BreakpointManager;
-//import frysk.rt.SteppingEngine;
-//import frysk.rt.Line;
-
-//import lib.dw.Dwfl;
-//import lib.dw.DwflLine;
+import frysk.rt.Line;
 
 /**
  * This class is used to add some functionality to TextView that may be needed
@@ -778,7 +772,7 @@ public class SourceView extends TextView implements View, ExposeListener {
 	// System.err.println("menu info " + expanded);
 	// only popup a window if the line is executable
 	if (event.getButtonPressed() == MouseEvent.BUTTON3
-		&& this.buf.getScope().getLines()[0].getDOMSource()
+	    && this.buf.getScope().getLine().getDOMSource()
 			.findFunction(breakLine) != null
 		&& (!expanded || overNested)) {
 	    // Menu m = new Menu();
@@ -819,7 +813,7 @@ public class SourceView extends TextView implements View, ExposeListener {
 	    // if (frame.getLines().length == 0)
 	    // return;
 	    //        	
-	    // DOMSource ds = frame.getLines()[0].getDOMSource();
+	    // DOMSource ds = frame.getLine().getDOMSource();
 	    // BreakpointManager bpm =
 	    // SteppingEngine.getBreakpointManager();
 	    // if (lb == null)
@@ -962,10 +956,10 @@ public class SourceView extends TextView implements View, ExposeListener {
 
 	DebugInfoFrame frame = this.buf.getScope();
 
-	if (frame == null || frame.getLines().length == 0)
+	if (frame == null || frame.getLine() == Line.UNKNOWN)
 	    return false;
 
-	DOMSource source = frame.getLines()[0].getDOMSource();
+	DOMSource source = frame.getLine().getDOMSource();
 
 	if (source == null)
 	    return false;

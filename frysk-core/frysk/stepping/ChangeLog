@@ -1,3 +1,9 @@
+2007-12-11  Andrew Cagney  <cagney@redhat.com>
+
+	* TestStepping.java: Update; DebugInfoFrame's .getLines() replaced
+	by getLine().
+	* TestSteppingEngine.java: Ditto.
+
 2007-12-04  Andrew Cagney  <cagney@redhat.com>
 
 	Merge frysk.sys.Sig into frysk.sys.Signal.

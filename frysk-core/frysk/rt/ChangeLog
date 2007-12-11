@@ -1,5 +1,7 @@
 2007-12-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Line.java (UNKNOWN): New.
+
 	* Line.java: Re-indent.
 
 2007-11-27  Tim Moore  <timoore@redhat.com>
