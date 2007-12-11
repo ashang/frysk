@@ -50,11 +50,13 @@ public class UnknownType
 {
     void toPrint(PrintWriter writer, Location location, ByteBuffer memory,
 		 Format format, int indent) {
-      toPrint(writer, 0);
+	StringBuilder stringBuilder = new StringBuilder();
+	toPrint(stringBuilder, 0);
+	writer.print(stringBuilder);
     }
 
-    public void toPrint (PrintWriter writer, int indent) {
-	writer.print("Symbol \"" + getName() + "\" has an unknown type.");
+    public void toPrint (StringBuilder stringBuilder, int indent) {
+	stringBuilder.append("Symbol \"" + getName() + "\" has an unknown type.");
     }
    
     /**

@@ -71,8 +71,7 @@ abstract class EvalCommands extends ParameterizedCommand {
 	static final Printer TYPE = new Printer() {
 		void print(Expression e, PrintWriter writer, Format format,
 			   ByteBuffer memory) {
-		    e.getType().toPrint(writer, 0);
-		    writer.println();
+		    writer.println(e.getType().toPrint());
 		}
 	    };
 	static final Printer TREE = new Printer() {

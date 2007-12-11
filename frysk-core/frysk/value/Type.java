@@ -112,16 +112,17 @@ public abstract class Type {
 
     /**
      * Print this Type after indenting INDENT spaces.
+     * @param stringBuilder TODO
      */
-    public abstract void toPrint(PrintWriter writer, int indent);
+    public abstract void toPrint(StringBuilder stringBuilder, int indent);
+
     /**
      * Print this Type to a StringBuffer and return the String.
      */
     public final String toPrint() {
-	StringWriter stringWriter = new StringWriter();
-	PrintWriter writer = new PrintWriter(stringWriter);
-	toPrint(writer, 0);
-	return stringWriter.toString();
+	StringBuilder stringBuilder = new StringBuilder();
+	toPrint(stringBuilder, 0);
+	return stringBuilder.toString();
     }
 
     /* getALUs are double dispatch functions to determine the 

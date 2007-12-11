@@ -275,18 +275,17 @@ public class ArrayType
 	return noNullByte;
     }
 
-    public void toPrint(PrintWriter writer, String s, int indent) {
-	type.toPrint(writer, indent);
-	writer.print(" " + s);
+    public void toPrint(StringBuilder stringBuilder, int indent) {
+	StringBuilder typeStringBuilder = new StringBuilder();
+	type.toPrint(typeStringBuilder, indent);
+	if (indent == 0)
+	    typeStringBuilder.append(" ");
+	stringBuilder.insert(0, typeStringBuilder);
 	for(int i = 0; i < this.dimension.length; i++) {
-	    writer.print("[");
-	    writer.print(dimension[i]);
-	    writer.print("]");
+	    stringBuilder.append("[");
+	    stringBuilder.append(dimension[i]);
+	    stringBuilder.append("]");
 	}
-    }
-    
-    public void toPrint(PrintWriter writer, int indent) {
-	this.toPrint(writer, "", indent);
     }
     
     /* getALUs are double dispatch functions to determine 

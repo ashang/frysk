@@ -107,7 +107,9 @@ public class Variable extends ObjectDeclaration{
 	    printWriter.print("<<unhandled type>>");
 	    return;
 	}
-	type.toPrint(printWriter, 0);
+	StringBuilder stringBuilder = new StringBuilder();
+	type.toPrint(stringBuilder, 0);
+	printWriter.print(stringBuilder);
 	printWriter.print(" ");
 	printWriter.print(this.getName());
 

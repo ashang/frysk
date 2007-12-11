@@ -13,7 +13,10 @@ class c:
             var_suffix = "_var"
         else:
             var_suffix = ""
-        self.c_file.write(type + " " + var + var_suffix + type_arr)
+        if (type.endswith("*")):
+            self.c_file.write(type + var + var_suffix + type_arr)
+        else:
+            self.c_file.write(type + " " + var + var_suffix + type_arr)
         self.c_file.write(" unused")
         if initial != "":
             self.write(" = " + initial)
@@ -217,7 +220,7 @@ c_file.add('''struct {
     .float_var=2.802597E-45,
   },
 }}''', " [2]")
-c_file.add("struct {\n  int * ptr;\n}", "arr_struct_ptr", "{{&one},{&two}}", " [2]")
+c_file.add("struct {\n  int *ptr;\n}", "arr_struct_ptr", "{{&one},{&two}}", " [2]")
 c_file.add('''union {
   int arr_int[2];
   float arr_float[2];
@@ -254,12 +257,12 @@ c_file.add('''union {
     .int_var=2,
   },
 }}''', " [2]")
-c_file.add("union {\n  int * ptr;\n}", "arr_union_ptr", "{{&one}, {&two}}", " [2]", )
+c_file.add("union {\n  int *ptr;\n}", "arr_union_ptr", "{{&one}, {&two}}", " [2]", )
 # ??? fails
 # c_file.add("int (*", "arr_ptr_arr", "{&arr_int, &arr_int}", " [2])[2]")
 c_file.add("struct {\n  int int_var;\n} *", "arr_ptr_struct", "", " [2]")
 c_file.add("union {\n  int int_var;\n  float float_var;\n} *", "arr_ptr_union", "", " [2]")
-c_file.add("int * *", "arr_ptr_ptr", "", " [2]")
+c_file.add("int **", "arr_ptr_ptr", "", " [2]")
 c_file.add("struct {\n  int int_var;\n} (*", "ptr_arr_struct", "", ")[2]")
 c_file.add("union {\n  int int_var;\n} (*", "ptr_arr_union", "", ")[2]")
 c_file.add("int * (*", "ptr_arr_ptr", "", ")[2]")
@@ -349,7 +352,7 @@ c_file.add('''struct {
   },
 }''')
 c_file.add('''struct {
-  int * ptr_int;
+  int *ptr_int;
 }''', "struct_ptr", "{&one}")
 c_file.add('''union {
   int arr_int[4];
@@ -379,7 +382,7 @@ c_file.add('''union {
   },
 }''')
 c_file.add('''union {
-  int * ptr_int;
+  int *ptr_int;
 }''', "union_ptr", "{&one}")
 c_file.add('''struct {
   int int_var;
@@ -458,7 +461,7 @@ c_file.add('''struct {
 }''')
 c_file.add('''struct {
   struct {
-    int * ptr_int;
+    int *ptr_int;
   } sp;
 }''', "struct_struct_ptr", "{{&three}}")
 c_file.add('''struct {
@@ -500,24 +503,24 @@ c_file.add('''struct {
 }''')
 c_file.add('''struct {
   union {
-    int * ptr_int;
+    int *ptr_int;
   } union_ptr;
 }''', "struct_union_ptr", "{{&four}}")
 c_file.add('''struct {
-  int (* ptr_arr)[4];
+  int (*ptr_arr)[4];
 }''', "struct_ptr_arr", "")
 c_file.add('''struct {
   struct {
     int int_var;
-  } * ptr_struct;
+  } *ptr_struct;
 }''', "struct_ptr_struct", "")
 c_file.add('''struct {
   union {
     int int_var;
-  } * ptr_union;
+  } *ptr_union;
 }''', "struct_ptr_union", "")
 c_file.add('''struct {
-  int * * ptr_ptr;
+  int **ptr_ptr;
 }''', "struct_ptr_ptr", "")
 c_file.add('''union {
   int arr_int[2][2];
@@ -593,7 +596,7 @@ c_file.add('''union {
 }''')
 c_file.add('''union {
   struct {
-    int * ptr_int;
+    int *ptr_int;
   } struct_ptr;
 }''', "union_struct_ptr", "{{&one}}")
 c_file.add('''union {
@@ -635,25 +638,25 @@ c_file.add('''union {
 }''')
 c_file.add('''union {
   union {
-    int * ptr_int;
-    float * ptr_float;
+    int *ptr_int;
+    float *ptr_float;
   } union_ptr;
 }''', "union_union_ptr", "{{&one}}")
 c_file.add('''union {
-  int (* ptr_arr)[4];
+  int (*ptr_arr)[4];
 }''', "union_ptr_arr", "")
 c_file.add('''union {
   struct {
     int int_var;
-  } * ptr_struct;
+  } *ptr_struct;
 }''', "union_ptr_struct", "")
 c_file.add('''union {
   union {
     int int_var;
-  } * ptr_union;
+  } *ptr_union;
 }''', "union_ptr_union", "")
 c_file.add('''union {
-  int * * ptr_ptr;
+  int **ptr_ptr;
 }''', "union_ptr_ptr", "")
 c_file.add('''struct {
   int arr_int[4];
@@ -669,7 +672,7 @@ c_file.add('''struct {
   } union_a;
 } *''', "ptr_struct_union", "")
 c_file.add('''struct {
-  int * ptr_int;
+  int *ptr_int;
 } *''', "ptr_struct_ptr", "")
 c_file.add('''union {
   int arr_int[4];
@@ -685,14 +688,14 @@ c_file.add('''union {
   } union_a;
 } *''', "ptr_union_union", "")
 c_file.add('''union {
-  int * ptr_int;
+  int *ptr_int;
 } *''', "ptr_union_ptr", "")
 c_file.add('''struct {
   int int_var;
-} * *''', "ptr_ptr_struct", "")
+} **''', "ptr_ptr_struct", "")
 c_file.add('''union {
   int int_var;
-} * *''', "ptr_ptr_union", "")
+} **''', "ptr_ptr_union", "")
 
 c_file.add('''enum  {\n  red = 0,\n  green = 1,\n  blue = 2\n}''', "primary_colors", "red")
 c_file.add('''enum colors {\n  orange = 0,\n  yellow = 1,\n  violet = 2,\n  indigo = 3\n}''', "rainbow_colors", "orange")

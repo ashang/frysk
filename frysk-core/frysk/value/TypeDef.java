@@ -39,7 +39,6 @@
 
 package frysk.value;
 
-import java.io.PrintWriter;
 
 /**
  * Type decorator class, so that a base or composite type can be
@@ -50,8 +49,8 @@ public class TypeDef extends TypeDecorator {
     public TypeDef(String name, Type decorated) {
 	super(name, decorated);
     }
-    public void toPrint(PrintWriter writer, int indent) {
+    public void toPrint(StringBuilder stringBuilder, int indent) {
 	// Do not recurse; as a typedef.
-	writer.print(getName());
+	stringBuilder.insert(0, getName());
     }
 }

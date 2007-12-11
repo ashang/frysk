@@ -284,7 +284,7 @@ public abstract class CompositeType
 	writer.print("}");
     }
 
-    public void toPrint(PrintWriter writer, int indentation) {
+    public void toPrint(StringBuilder stringBuilderParm, int indentation) {
 	if (indentation == 0)
 	    indentation = 2;
 	String indentPrefix = "";
@@ -292,10 +292,11 @@ public abstract class CompositeType
 	    indentPrefix = indentPrefix + " ";
 
 	// {class,union,struct} NAME
-	writer.print(getPrefix());
+	StringBuilder stringBuilder = new StringBuilder();
+	stringBuilder.append(getPrefix());
 	if (getName() != null && getName().length() > 0) {
-	    writer.print(" ");
-	    writer.print(getName());
+	    stringBuilder.append(" ");
+	    stringBuilder.append(getName());
 	}
 	// : public PARENT ...
 	boolean first = true;
@@ -307,57 +308,42 @@ public abstract class CompositeType
 	    if (!member.inheritance)
 		break;
 	    if (first) {
-		writer.print(" : ");
+		stringBuilder.append(" : ");
 		first = false;
 	    } else {
-		writer.print(", ");
+		stringBuilder.append(", ");
 	    }
 	    if (member.access != null) {
-		writer.print(member.access.toPrint());
-		writer.print(" ");
+		stringBuilder.append(member.access.toPrint());
+		stringBuilder.append(" ");
 	    }
-	    writer.print(member.type.getName());
+	    stringBuilder.append(member.type.getName());
 	    member = null;
 	}
 	// { content ... }
 	Access previousAccess = null;
-	writer.print(" {\n");
+	stringBuilder.append(" {\n");
 
+	StringBuilder memberStringBuilder = new StringBuilder();
 	while (member != null) {
-	    boolean printName = true;
 	    if (member.access != previousAccess) {
 		previousAccess = member.access;
 		if (member.access != null) {
-		    writer.print(" ");
-		    writer.print(member.access.toPrint());
-		    writer.print(":\n");
+		    stringBuilder.append(" ");
+		    stringBuilder.append(member.access.toPrint());
+		    stringBuilder.append(":\n");
 		}
 	    }
-	    writer.print(indentPrefix);
-	    if (member.type instanceof ArrayType) {
-		// For handling int x[2]
-		printName = false;
-		((ArrayType) member.type).toPrint(writer, member.name, indentation + 2);
-	    }
-	    else if (member.type instanceof PointerType) {
-		// For handling int (*x)[2]
-		printName = false;
-		((PointerType) member.type).toPrint(writer, " " + member.name,
-						    indentation + 2);
-	    }
-	    else
-		member.type.toPrint (writer, indentation + 2);
-	    if (member.type instanceof frysk.value.FunctionType)
-		printName = false;
-	    if (printName) {
-		writer.print(" ");
-		writer.print(member.name);
-	    }
+	    memberStringBuilder.delete(0, memberStringBuilder.length());
+	    memberStringBuilder.append(" " + member.name);
+	    member.type.toPrint(memberStringBuilder, indentation + 2);
+	    memberStringBuilder.insert(0, indentPrefix);
+	    stringBuilder.append(memberStringBuilder);
 	    if (member.bitSize > 0) {
-		writer.print(":");
-		writer.print(member.bitSize);
+		stringBuilder.append(":");
+		stringBuilder.append(member.bitSize);
 	    }
-	    writer.print(";\n");
+	    stringBuilder.append(";\n");
 	    // Advance
 	    if (i.hasNext())
 		member = (DynamicMember)i.next();
@@ -365,8 +351,9 @@ public abstract class CompositeType
 		member = null;
 	}
 	for (int indent = 1; indent <= indentation - 2; indent++)
-	    writer.print(" ");
-	writer.print("}");
+	    stringBuilder.append(" ");
+	stringBuilder.append("}");
+	stringBuilderParm.insert(0, stringBuilder);
     }
     
     public Value member(Value var1, String member)

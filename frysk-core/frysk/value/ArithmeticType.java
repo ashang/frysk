@@ -40,7 +40,6 @@
 package frysk.value;
 
 import inua.eio.ByteOrder;
-import java.io.PrintWriter;
 import java.math.BigInteger;
 
 /**
@@ -70,8 +69,8 @@ public abstract class ArithmeticType
 	return var1.assign(var2);
     }
 
-    public void toPrint(PrintWriter writer, int indent) {
-	writer.print(getName());
+    public void toPrint(StringBuilder stringBuilder, int indent) {
+	stringBuilder.insert(0, getName());
     }
 
     /**

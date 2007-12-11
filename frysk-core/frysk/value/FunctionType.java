@@ -65,23 +65,27 @@ public class FunctionType
 	writer.print(Long.toHexString(v.longValue()));
     }
   
-    public void toPrint(PrintWriter writer, int indent) {
-	if (returnType == null)
-	    writer.print("void");
+    public void toPrint(StringBuilder stringBuilder, int indent) {
+	StringBuilder parmStringBuilder = new StringBuilder();
+	if (stringBuilder.charAt(0) == ' ')
+	    stringBuilder.deleteCharAt(0);
+	if (returnType == null) 
+	    parmStringBuilder.insert(0, "void");
 	else
-	    returnType.toPrint(writer, 0);
-	writer.print(" ");
-	writer.print(this.getName());
-	writer.print(" (");
+	    returnType.toPrint(parmStringBuilder, 0);
+	parmStringBuilder.append(" ");
+	stringBuilder.insert(0, parmStringBuilder);
+	stringBuilder.append(" (");
 	for (int i = 0; i < this.parmTypes.size(); i++) {
-	    ((Type)this.parmTypes.get(i)).toPrint(writer, 0);
-	    writer.print(" ");
-	    writer.print((String)this.parmNames.get(i));
+	    parmStringBuilder.delete(0, parmStringBuilder.length());
+	    ((Type)this.parmTypes.get(i)).toPrint(parmStringBuilder, 0);
+	    parmStringBuilder.append((String)this.parmNames.get(i));
+	    stringBuilder.append(parmStringBuilder);
 	    if (i < this.parmTypes.size() - 1)
 		// Not last arg
-		writer.print(",");
+		stringBuilder.append(",");
 	}
-	writer.print(")");
+	stringBuilder.append(")");
     }
     
     /**

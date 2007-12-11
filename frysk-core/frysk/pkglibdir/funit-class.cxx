@@ -74,18 +74,18 @@ private:
 // Type: class Type {
 // Type:  public:
 // Type:   struct Base1 {
-// Type:     const char * msg;
-// Type:     void Base1 (const char * );
+// Type:     const char *msg;
+// Type:     void Base1 (const char *);
 // Type:     void ~Base1 ();
 // Type:   } ;
 // Type:   struct Base2 {
-// Type:     const char * msg;
-// Type:     void Base2 (const char * );
+// Type:     const char *msg;
+// Type:     void Base2 (const char *);
 // Type:     void ~Base2 ();
 // Type:   } ;
 // Type:  private:
-// Type:   const char * note;
-// Type:   void Type (const char * ,const char * ,const char * );
+// Type:   const char *note;
+// Type:   void Type (const char *,const char *,const char *);
 // Type:   void ~Type ();
 // Type: }
 
@@ -95,18 +95,18 @@ Type mb("static", "main", "mb");
 // Type: class Type {
 // Type:  public:
 // Type:   struct Base1 {
-// Type:     const char * msg;
-// Type:     void Base1 (const char * );
+// Type:     const char *msg;
+// Type:     void Base1 (const char *);
 // Type:     void ~Base1 ();
 // Type:   } ;
 // Type:   struct Base2 {
-// Type:     const char * msg;
-// Type:     void Base2 (const char * );
+// Type:     const char *msg;
+// Type:     void Base2 (const char *);
 // Type:     void ~Base2 ();
 // Type:   } ;
 // Type:  private:
-// Type:   const char * note;
-// Type:   void Type (const char * ,const char * ,const char * );
+// Type:   const char *note;
+// Type:   void Type (const char *,const char *,const char *);
 // Type:   void ~Type ();
 // Type: }
 
@@ -116,27 +116,27 @@ Type new_base = Type ("new base", "main", "new_base");
 // Type: class Derived {
 // Type:  public:
 // Type:   struct Base3 {
-// Type:     int  () * * _vptr.Base3;
-// Type:     void Base3 (void * const & );
+// Type:     int (**_vptr.Base3) ();
+// Type:     void Base3 (void * const &);
 // Type:     void Base3 ();
-// Type:     char do_this (char );
-// Type:     short int do_this (short int );
-// Type:     int do_this (int );
-// Type:     float do_this (float );
+// Type:     char do_this (char);
+// Type:     short int do_this (short int);
+// Type:     int do_this (int);
+// Type:     float do_this (float);
 // Type:     void ~Base3 ();
 // Type:   } ;
-// Type:   void Derived (void * const & );
+// Type:   void Derived (void * const &);
 // Type:   void Derived ();
-// Type:   char do_this (char );
-// Type:   short int do_this (short int );
-// Type:   int do_this (int );
-// Type:   float do_this (float );
+// Type:   char do_this (char);
+// Type:   short int do_this (short int);
+// Type:   int do_this (int);
+// Type:   float do_this (float);
 // Type:   void ~Derived ();
 // Type:  private:
-// Type:   char do_this_impl<char> (char );
-// Type:   short int do_this_impl<short int> (short int );
-// Type:   int do_this_impl<int> (int );
-// Type:   float do_this_impl<float> (float );
+// Type:   char do_this_impl<char> (char);
+// Type:   short int do_this_impl<short int> (short int);
+// Type:   int do_this_impl<int> (int);
+// Type:   float do_this_impl<float> (float);
 // Type: }
 
 Derived xyz;

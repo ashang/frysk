@@ -77,15 +77,16 @@ abstract class TypeDecorator extends Type {
     /**
      * A guess; sub classes should override.
      */
-    public void toPrint(PrintWriter writer, int indent) {
+    public void toPrint(StringBuilder stringBuilder, int indent) {
 	if (getUltimateType() instanceof PointerType) {
-	    decorated.toPrint(writer, 0);
-	    writer.print(" " + getName());
+	    decorated.toPrint(stringBuilder, 0);
+	    stringBuilder.append(" ");
+	    stringBuilder.append(getName());
 	}
 	else {
-	    writer.print(getName());
-	    writer.print(" ");
-	    decorated.toPrint(writer, 0);
+	    decorated.toPrint(stringBuilder, 0);
+	    stringBuilder.insert(0, " ");
+	    stringBuilder.insert(0, getName());
 	}
     }
 

@@ -50,40 +50,43 @@ import java.util.List;
 /**
  * Type for a pointer (or address) of another type.
  */
-public class PointerType
-    extends IntegerTypeDecorator
-{
+public class PointerType extends IntegerTypeDecorator {
     private final Type type;
+
     private PointerType(String name, ByteOrder order, int size, Type type,
-			IntegerType accessor) {
+	    IntegerType accessor) {
 	super(name, order, size, accessor);
 	this.type = type;
     }
+
     /**
-     * Create a PointerType.
-     * 
-     * @param typep - Type of pointed to value
-     *
-     * FIXME: Name is redundant here.
-     */
+         * Create a PointerType.
+         * 
+         * @param typep -
+         *                Type of pointed to value
+         * 
+         * FIXME: Name is redundant here.
+         */
     public PointerType(String name, ByteOrder order, int size, Type type) {
 	// For moment assume that all pointers are unsigned (which
 	// isn't true for MIPS ;-).
 	this(name, order, size, type, new UnsignedType("name", order, size));
     }
 
-    public Type getType () {
+    public Type getType() {
 	return type;
     }
-    
+
     void toPrint(PrintWriter writer, Location location, ByteBuffer memory,
-		 Format format, int indent) {
+	    Format format, int indent) {
 	// Print type of pointer
-	writer.print("(");
-	this.toPrint(writer, 0);
-	writer.print(") ");	
+	StringBuilder stringBuilder = new StringBuilder();
+	stringBuilder.append("(");
+	this.toPrint(stringBuilder, indent);
+	stringBuilder.append(") ");
+	writer.print(stringBuilder);
 	try {
-	   format.print(writer, location, this);
+	    format.print(writer, location, this);
 	} catch (RuntimeException e) {
 	    throw new RuntimeException("Peek Memory");
 	}
@@ -92,102 +95,116 @@ public class PointerType
 	    long addr = getBigInteger(location).longValue();
 	    writer.print(" \"");
 	    while (true) {
-		Location l = new ByteBufferLocation(memory, addr,
-						    type.getSize());
+		Location l = new ByteBufferLocation(memory, addr, type
+			.getSize());
 		BigInteger c = BigInteger.ZERO;
 		try {
-		   c = ((CharType)type).getBigInteger(l);
+		    c = ((CharType) type).getBigInteger(l);
 		} catch (RuntimeException e) {
 		    writer.print(" < Memory Error > ");
 		    break;
 		}
 		if (c.equals(BigInteger.ZERO))
 		    break; // NUL
-		writer.print((char)c.longValue());
+		writer.print((char) c.longValue());
 		addr += type.getSize();
 	    }
 	    writer.print("\"");
 	}
     }
 
-  public void toPrint(PrintWriter writer, String s, int indent) {
+    public void toPrint(StringBuilder stringBuilder, int indent) {
 	// For handling int (*x)[2]
-	if (type instanceof ArrayType) {
-	    ((ArrayType)type).toPrint(writer, "(*" + s + ")", indent);
+	if (type instanceof ArrayType || type instanceof FunctionType) {
+	    if (indent > 0 && stringBuilder.length() > 0
+		    && stringBuilder.charAt(0) == ' ') {
+		stringBuilder.deleteCharAt(0);
+		stringBuilder.insert(0, " (*");
+	    }
+	    else
+		stringBuilder.insert(0, "(*");
+	    stringBuilder.append(")");
+	    type.toPrint(stringBuilder, indent);
 	}
 	else {
-	    type.toPrint(writer, indent);
-	    writer.print(" *" + s);
+	    if (indent > 0 && stringBuilder.length() > 0
+		    && stringBuilder.charAt(0) == ' ')
+		stringBuilder.deleteCharAt(0);
+	    stringBuilder.insert(0, "*");
+	    if (! (type instanceof PointerType))
+		stringBuilder.insert(0, " ");
+	    type.toPrint(stringBuilder, indent);
 	}
     }
 
-    public void toPrint(PrintWriter writer, int indent) {
-      this.toPrint(writer, "", indent);
-    }
-    
     protected Type clone(IntegerType accessor) {
 	return new PointerType(getName(), order(), getSize(), type, accessor);
     }
-    
+
     /**
-     * Dereference operation on pointer type.
-     */
+         * Dereference operation on pointer type.
+         */
     public Value dereference(Value var1, ByteBuffer taskMem) {
-	Location loc = PieceLocation.createSimpleLoc
-		       (var1.asLong(), type.getSize(), taskMem);
-	return new Value (type, loc);  
+	Location loc = PieceLocation.createSimpleLoc(var1.asLong(), type
+		.getSize(), taskMem);
+	return new Value(type, loc);
     }
 
     /**
-     * Index Operation for pointers.
-     */
-    public Value index (Value v, Value idx, ByteBuffer taskMem)
-    {    
-	Value offset = createValue (v.asLong() + idx.asLong()*type.getSize());	
-	return dereference (offset, taskMem) ;      
-    }    
-    
+         * Index Operation for pointers.
+         */
+    public Value index(Value v, Value idx, ByteBuffer taskMem) {
+	Value offset = createValue(v.asLong() + idx.asLong() * type.getSize());
+	return dereference(offset, taskMem);
+    }
+
     /**
-     * Slice operation for pointers. 
-     */
-    public Value slice (Value v, Value i, Value j, ByteBuffer taskMem)
-    {
+         * Slice operation for pointers.
+         */
+    public Value slice(Value v, Value i, Value j, ByteBuffer taskMem) {
 	// Evaluate length and offset of slice.
-	long offset = v.asLong() + i.asLong()*type.getSize();	
-	int len = (int)(j.asLong() - i.asLong() + 1);
+	long offset = v.asLong() + i.asLong() * type.getSize();
+	int len = (int) (j.asLong() - i.asLong() + 1);
 	if (len < 0) {
-	    throw new RuntimeException("Error: Index 1 should be <= than Index 2");
+	    throw new RuntimeException(
+		    "Error: Index 1 should be <= than Index 2");
 	}
-	
-	// Create a simple memory location with it.
-	Location loc = PieceLocation.createSimpleLoc
-	               (offset, len*type.getSize(), taskMem);
-	
-	ArrayList dims = new ArrayList();
-	dims.add(new Integer(len-1));
-	Type resultType =  new ArrayType(type, len*type.getSize(), dims);	
 
-	return new Value (resultType, loc);
+	// Create a simple memory location with it.
+	Location loc = PieceLocation.createSimpleLoc(offset, len
+		* type.getSize(), taskMem);
+
+	ArrayList dims = new ArrayList();
+	dims.add(new Integer(len - 1));
+	Type resultType = new ArrayType(type, len * type.getSize(), dims);
+
+	return new Value(resultType, loc);
     }
 
-    /* getALUs are double dispatch functions to determine 
-     * the ArithmeticUnit for an operation between two types.
-     */  
+    /*
+         * getALUs are double dispatch functions to determine the ArithmeticUnit
+         * for an operation between two types.
+         */
     public ArithmeticUnit getALU(Type type, int wordSize) {
 	return type.getALU(this, wordSize);
-    }    
+    }
+
     public ArithmeticUnit getALU(IntegerType type, int wordSize) {
 	return new AddressUnit(this, wordSize);
-    }       
+    }
+
     public ArithmeticUnit getALU(PointerType type, int wordSize) {
 	throw new RuntimeException("Invalid Pointer Arithmetic");
-    }     
+    }
+
     public ArithmeticUnit getALU(FloatingPointType type, int wordSize) {
 	throw new RuntimeException("Invalid Pointer Arithmetic");
-    }     
+    }
+
     public ArithmeticUnit getALU(ArrayType type, int wordSize) {
 	throw new RuntimeException("Invalid Pointer Arithmetic");
     }
+
     // Use for unary operations.
     public ArithmeticUnit getALU(int wordSize) {
 	return new AddressUnit(this, wordSize);

@@ -1,3 +1,13 @@
+2007-12-11  Stan Cox  <scox@redhat.com>
+
+	* Type.java (toPrint(StringBuilder, int)): Change signature from
+	Writer to StringBuilder. Change all callers.
+	(String toPrint()): Change to use StringBuilder.
+	* ArrayType.java (toPrint): Use typeStringBuilder for return type.
+	* CompositeType.java (toPrint): Use memberStringBuilder for members.
+	* FunctionType.java (toPrint): Use parmStringBuilder for parameters.
+	* PointerType.java (toPrint): Detect ptr to array and ptr to function.
+
 007-12-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* CompositeType.java: Member now has a LineColPair element.

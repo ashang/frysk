@@ -55,8 +55,8 @@ public class VoidType
 	super("void", 1);
     }
 
-    public void toPrint(PrintWriter writer, int indent) {
-	writer.print("void");
+    public void toPrint(StringBuilder stringBuilder, int indent) {
+	stringBuilder.insert(0, "void");
     }
     
     public void toPrint(PrintWriter writer, Location location,

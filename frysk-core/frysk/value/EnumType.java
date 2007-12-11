@@ -104,26 +104,26 @@ public class EnumType extends IntegerTypeDecorator
 	    format.print(writer, location, this);
     }
 
-    public void toPrint(PrintWriter writer, int indent) {
-	writer.print("enum");
+    public void toPrint(StringBuilder stringBuilder, int indent) {
+	stringBuilder.append("enum");
 	if (getName() != null) {
-	    writer.print(" ");
-	    writer.print(getName());
+	    stringBuilder.append(" ");
+	    stringBuilder.append(getName());
 	}
-	writer.print(" {");
+	stringBuilder.append(" {");
 	boolean first = true;
 	for (Iterator i = valueToMember.values().iterator(); i.hasNext();) {
 	    Member m = (Member)i.next();
 	    if (first)
 		first = false;
 	    else
-		writer.print(",");
-	    writer.print("\n  ");
-	    writer.print(m.name);
-	    writer.print(" = ");
-	    writer.print(m.value.asBigInteger().toString());
+		stringBuilder.append(",");
+	    stringBuilder.append("\n  ");
+	    stringBuilder.append(m.name);
+	    stringBuilder.append(" = ");
+	    stringBuilder.append(m.value.asBigInteger().toString());
 	}
-	writer.print("\n}");
+	stringBuilder.append("\n}");
     }
   
     private EnumType(String name, ByteOrder order, int size,

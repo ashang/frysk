@@ -1,3 +1,7 @@
+2007-12-11  Stan Cox  <scox@redhat.com>
+
+	* EvalCommands.java (Printer.TYPE): Change to use "String toPrint()"
+
 2007-12-11  Andrew Cagney  <cagney@redhat.com>
 
 	* MultiLevelCommand.java (interpret(CLI,Input)): Add comment on

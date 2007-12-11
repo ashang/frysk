@@ -1,3 +1,8 @@
+2007-12-11  Stan Cox  <scox@redhat.com>
+
+	* funit-class.cxx: Tweak whitespace.
+	* gen-type-funit-tests.py: Tweak whitespace.
+
 2007-12-11 Teresa Thomas <tthomas@redhat.com>
 
 	* funit-addresses.c: Add long double types.
