@@ -54,86 +54,70 @@ import frysk.proc.Proc;
  * The source-code line information.
  */
 
-public class Line
-{
-  private final File file;
+public class Line {
+    private final File file;
 
-  private final int line;
+    private final int line;
 
-  private final int column;
+    private final int column;
   
-  private Proc proc;
+    private Proc proc;
   
-  private DOMSource source;
+    private DOMSource source;
   
-  private DOMFunction function;
+    private DOMFunction function;
 
-  public Line (File file, int line, int column, Proc proc)
-  {
-    this.file = file;
-    this.line = line;
-    this.column = column;
-    this.proc = proc;
-  }
+    public Line (File file, int line, int column, Proc proc) {
+	this.file = file;
+	this.line = line;
+	this.column = column;
+	this.proc = proc;
+    }
 
-  public File getFile ()
-  {
-    return file;
-  }
-
-  public int getLine ()
-  {
-    return line;
-  }
-
-  public int getColumn ()
-  {
-    return column;
-  }
-  
-  public DOMFunction getDOMFunction ()
-  {
-    if (this.function == null)
-      {
-        if (this.source == null)
-          {
-            if (getDOMSource() == null)
-              return null;
-          }
-        
-        this.function = this.source.findFunction(this.line);
-      }
+    public File getFile () {
+	return file;
+    }
     
-    return this.function;
-  }
-  
-  public DOMSource getDOMSource ()
-  {
-    if (this.source == null)
-      {
-        DOMFrysk dom = DOMFactory.getDOM(proc);
-        
-        if (dom == null)
-          return null;
-        
-        DOMImage image = dom.getImage(this.proc.getMainTask().getName());
-        this.source = image.getSource(this.file.getName());
-        if (this.source == null || ! this.source.isParsed())
-          {
-            // source has not been parsed, go put it in the DOM and
-            // parse it
-            try
-              {
-                this.source = image.addSource(this.proc, this,
-                                              DOMFactory.getDOM(this.proc));
-              }
-            catch (IOException ioe)
-              {
-                System.err.println(ioe.getMessage());
-              }
-          }
-      }
+    public int getLine () {
+	return line;
+    }
 
-    return this.source;
-  }
+    public int getColumn () {
+	return column;
+    }
+  
+    public DOMFunction getDOMFunction () {
+	if (this.function == null) {
+	    if (this.source == null) {
+		if (getDOMSource() == null)
+		    return null;
+	    }
+	    
+	    this.function = this.source.findFunction(this.line);
+	}
+	return this.function;
+    }
+  
+    public DOMSource getDOMSource () {
+	if (this.source == null) {
+	    DOMFrysk dom = DOMFactory.getDOM(proc);
+	    
+	    if (dom == null)
+		return null;
+	    
+	    DOMImage image = dom.getImage(this.proc.getMainTask().getName());
+	    this.source = image.getSource(this.file.getName());
+	    if (this.source == null || ! this.source.isParsed()) {
+		// source has not been parsed, go put it in the DOM and
+		// parse it
+		try {
+		    this.source = image.addSource(this.proc, this,
+						  DOMFactory.getDOM(this.proc));
+		} catch (IOException ioe) {
+		    System.err.println(ioe.getMessage());
+		}
+	    }
+	}
+	return this.source;
+    }
 }
