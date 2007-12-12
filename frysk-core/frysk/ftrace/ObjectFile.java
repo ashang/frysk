@@ -110,11 +110,14 @@ public class ObjectFile
   /**
    * All-purpose builder for ftrace Symbols and TracePoints.
    */
-  private class ObjFBuilder
-    implements ElfSymbol.Builder
-  {
+    private class ObjFBuilder
+	implements ElfSymbol.Builder
+    {
     /** Used for tracking of what is currently being loaded. */
     private TracePointOrigin origin = null;
+
+	/** For alias detection. */
+	private Map symbolWithValue = new HashMap();
 
     /** This is the array where newly created tracepoints go to. */
     private ArrayList tracePoints = null;
@@ -135,53 +138,77 @@ public class ObjectFile
     /** Whether this file takes part in dynamic linking. */
     private boolean haveDynamic = false;
 
-    public void symbol (long index, String name,
-			long value, long size,
-			ElfSymbolType type, ElfSymbolBinding bind, ElfSymbolVisibility visibility,
-			long shndx, List versions)
-    {
-      /// XXX FIXME: We probably want to share symbols to some extent,
-      /// so that entries from SYMTAB that are also present in DYNSYM
-      /// end up being the same symbol actually.  This seems to
-      /// indicate we want a mapping of (name x verdefs) -> symbol.
-
-	long offset = 0;
-	// Offset isn't stored in ELF file, value is; but value can be
-	// prelinked, so we have to compute the offset from symbol
-	// value and the address of first loadable segment. Don't
-	// deduce offset of undefined and special symbols.
-	if (shndx != ElfSectionHeader.ELF_SHN_UNDEF
-	    && shndx < ElfSectionHeader.ELF_SHN_LORESERVE)
-		offset = value - ObjectFile.this.baseAddress;
-
-      String dName = Demangler.demangle(name);
-      logger.log(Level.FINEST, "Got new symbol `" + dName + "' with origin " + this.origin + ".");
-      Symbol sym = new Symbol(dName, type, value, offset, size, shndx, versions);
-      sym.addedTo(ObjectFile.this);
-
-      // Keep track of loaded dynamic symbols.  We will need this when
-      // building PLT entries.
-      if (this.origin == TracePointOrigin.DYNAMIC
-	  || this.origin == TracePointOrigin.PLT)
+	/** Keep track of loaded dynamic symbols.  We will need this
+	 *  when building PLT entries. */
+	private void recordDynamicSymbol (long index, Symbol sym)
 	{
-	  assertFitsToInt(index, "Symbol index");
-	  this.dynamicSymbolList[(int)index] = sym;
+	    if (this.origin == TracePointOrigin.DYNAMIC
+		|| this.origin == TracePointOrigin.PLT) {
+		assertFitsToInt(index, "Symbol index");
+		this.dynamicSymbolList[(int)index] = sym;
+	    }
 	}
 
-      if (type == ElfSymbolType.ELF_STT_FUNC
-	  && value != 0)
-	  this.addNewTracepoint(value, sym.offset, sym);
-    }
+	public void symbol (long index, String name,
+			    long value, long size,
+			    ElfSymbolType type, ElfSymbolBinding bind, ElfSymbolVisibility visibility,
+			    long shndx, List versions)
+	{
+	    /// XXX FIXME: We probably want to share symbols to some extent,
+	    /// so that entries from SYMTAB that are also present in DYNSYM
+	    /// end up being the same symbol actually.  This seems to
+	    /// indicate we want a mapping of (name x verdefs) -> symbol.
 
-      public void addNewTracepoint(long address, long offset, Symbol symbol)
-      {
-	  logger.log(Level.FINE,
-		     "New tracepoint for `" + symbol + "', origin " + this.origin
-		     + ", address=0x" + Long.toHexString(address)
-		     + ", offset=0x" + Long.toHexString(offset) + ".");
-	  TracePoint tp = new TracePoint(address, offset, symbol, this.origin);
-	  tracePoints.add(tp);
-      }
+	    String dName = Demangler.demangle(name);
+	    logger.log(Level.FINEST, "Got new symbol `" + dName + "' with origin " + this.origin + ".");
+
+	    Long valueL = null;
+	    Symbol sym = null;
+
+	    if (value != 0) {
+		valueL = new Long(value);
+		sym = (Symbol)symbolWithValue.get(valueL);
+	    }
+
+	    if (sym != null) {
+		logger.log(Level.FINEST, "... aliasing `" + sym.name + "'.");
+		sym.addAlias(dName);
+		recordDynamicSymbol(index, sym);
+	    }
+	    else {
+		// Offset isn't stored in ELF file, value is; but value can be
+		// prelinked, so we have to compute the offset from symbol
+		// value and the address of first loadable segment.
+		long offset = 0;
+
+		// Don't deduce offset of undefined and special symbols.
+		if (shndx != ElfSectionHeader.ELF_SHN_UNDEF
+		    && shndx < ElfSectionHeader.ELF_SHN_LORESERVE)
+		    offset = value - ObjectFile.this.baseAddress;
+
+		sym = new Symbol(dName, type, value, offset, size, shndx, versions);
+		sym.addedTo(ObjectFile.this);
+
+		recordDynamicSymbol(index, sym);
+
+		if (type == ElfSymbolType.ELF_STT_FUNC
+		    && value != 0)
+		    this.addNewTracepoint(value, sym.offset, sym);
+
+		if (valueL != null)
+		    symbolWithValue.put(valueL, sym);
+	    }
+	}
+
+	public void addNewTracepoint(long address, long offset, Symbol symbol)
+	{
+	    logger.log(Level.FINE,
+		       "New tracepoint for `" + symbol + "', origin " + this.origin
+		       + ", address=0x" + Long.toHexString(address)
+		       + ", offset=0x" + Long.toHexString(offset) + ".");
+	    TracePoint tp = new TracePoint(address, offset, symbol, this.origin);
+	    tracePoints.add(tp);
+	}
 
     public synchronized ArrayList getTracePoints(TracePointOrigin origin)
       throws lib.dwfl.ElfException
@@ -280,8 +307,8 @@ public class ObjectFile
 
       return this.tracePoints;
     }
-  }
-  private ObjFBuilder builder;
+    }
+    private ObjFBuilder builder;
 
   protected ObjectFile(File file, final Elf elfFile, ElfEHeader eh)
     throws lib.dwfl.ElfException

@@ -73,7 +73,7 @@ public class TestLtrace
 	    Manager.eventLoop.requestStop();
 	}
 	public void deletedFrom (Object observable) { }
-	public void addFailed (Object observable, Throwable w) { }
+	public void addFailed (Object observable, Throwable w) {}
     }
 
     public void performTestAllLibrariesGetDetected()
@@ -193,14 +193,13 @@ public class TestLtrace
       "enter close",
       "leave close"
     };
-    for (int i = 0; i < expectedEvents.length; ++i)
-      {
-	String event = (String)observer.events.get(i);
-	assertTrue("event `" + event + "' detected",
-		   Pattern.matches(expectedEvents[i], event));
-      }
-    assertEquals("number of recorded events", expectedEvents.length, observer.events.size());
-  }
+	for (int i = 0; i < expectedEvents.length; ++i) {
+	    String event = (String)observer.events.get(i);
+	    assertTrue("event `" + event + "' detected",
+		       Pattern.matches(expectedEvents[i], event));
+	}
+	assertEquals("number of recorded events", expectedEvents.length, observer.events.size());
+    }
 
     public void testArgumentsCorrect1()
     {
@@ -294,6 +293,98 @@ public class TestLtrace
 
 	assertEquals("number of unprocessed expects", 0, expectedEvents.size());
 	assertEquals("number of unprocessed returns", 0, observer.expectedReturns.size());
+    }
+
+    public void testTracingAlias()
+    {
+	if(unresolvedOffUtrace(5053))
+	    return;
+
+	class MyController4
+	    implements LtraceController
+	{
+	    final String name;
+	    int found = 0;
+
+	    MyController4(String name) {
+		this.name = name;
+	    }
+
+	    public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver)
+	    {
+		if (!task.getProc().getExe().equals(objf.getFilename().getPath()))
+		    return;
+
+		try {
+		    objf.eachTracePoint(new ObjectFile.TracePointIterator() {
+			    public void tracePoint(TracePoint tp) {
+				if (tp.symbol.hasName(MyController4.this.name)) {
+				    ++MyController4.this.found;
+				    driver.tracePoint(task, tp);
+				}
+			    }
+			}, TracePointOrigin.SYMTAB);
+		}
+		catch (lib.dwfl.ElfException ee) {
+		    ee.printStackTrace();
+		}
+	    }
+	}
+
+	class MyObserver4 extends DummyFunctionObserver {
+	    String name;
+	    HashSet enterAliases = new HashSet();
+	    HashSet leaveAliases = new HashSet();
+
+	    MyObserver4(String name) {
+		this.name = name;
+	    }
+
+	    private void addAliases(Symbol symbol, HashSet aliases) {
+		aliases.add(symbol.name);
+		if (symbol.aliases != null)
+		    for (int i = 0; i < symbol.aliases.size(); ++i)
+			aliases.add(symbol.aliases.get(i));
+	    }
+
+	    public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
+		assertTrue("enter symbol matches name `" + this.name + "'",
+			   symbol.hasName(this.name));
+		addAliases(symbol, enterAliases);
+		return Action.CONTINUE;
+	    }
+	    public Action funcallLeave(Task task, Symbol symbol, Object retVal) {
+		assertTrue("leave symbol matches name `" + this.name + "'",
+			   symbol.hasName(this.name));
+		addAliases(symbol, leaveAliases);
+		return Action.CONTINUE;
+	    }
+	}
+
+	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
+	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
+	Task task = child.getMainTask();
+	Proc proc = task.getProc();
+	int pid = proc.getPid();
+
+	MyController4 controller = new MyController4("alias2");
+	String symbols[] = {"fun1", "alias1", "alias2"};
+	MyObserver4 observer = new MyObserver4("fun1");
+
+	Ltrace.requestAddFunctionObserver(task, observer, controller);
+	assertRunUntilStop("add function observer");
+
+	new StopEventLoopWhenProcRemoved(pid);
+	child.requestRemoveBlock();
+	assertRunUntilStop("run child until exit");
+
+	assertEquals("number of tracepoints requested by controller", 1, controller.found);
+	for (int i = 0; i < symbols.length; ++i) {
+	    assertTrue("saw enter of symbol " + symbols[i], observer.enterAliases.contains(symbols[i]));
+	    assertTrue("saw leave of symbol " + symbols[i], observer.leaveAliases.contains(symbols[i]));
+	}
+	assertEquals("number of enter aliases seen", symbols.length, observer.enterAliases.size());
+	assertEquals("number of leave aliases seen", symbols.length, observer.leaveAliases.size());
     }
 
     public void tearDown()

@@ -165,6 +165,21 @@ class MyLtraceController
 	return false;
     }
 
+    private boolean checkNameMatches(final WorkingSetRule rule, Symbol symbol)
+    {
+	if (rule.namePattern.matcher(symbol.name).matches())
+	    return true;
+
+	if (symbol.aliases != null)
+	    for (int i = 0; i < symbol.aliases.size(); ++i) {
+		String alias = (String)symbol.aliases.get(i);
+		if (rule.namePattern.matcher(alias).matches())
+		    return true;
+	    }
+
+	return false;
+    }
+
     private boolean isInterpOf(ObjectFile objf, String exe)
     {
 	java.io.File exefn = new java.io.File(exe);
@@ -223,7 +238,7 @@ class MyLtraceController
 		    // maybe to stackTraceSet.
 		    for (Iterator jt = candidates.iterator(); jt.hasNext(); ) {
 			TracePoint tp = (TracePoint)jt.next();
-			if (rule.namePattern.matcher(tp.symbol.name).matches()
+			if (checkNameMatches(rule, tp.symbol)
 			    && checkVersionMatches(tp, rule))
 			{
 			    if (workingSet.add(tp))
@@ -240,7 +255,7 @@ class MyLtraceController
 		    Set iterateOver = rule.stackTrace ? stackTraceSet : workingSet;
 		    for (Iterator jt = iterateOver.iterator(); jt.hasNext(); ) {
 			TracePoint tp = (TracePoint)jt.next();
-			if (rule.namePattern.matcher(tp.symbol.name).matches()
+			if (checkNameMatches(rule, tp.symbol)
 			    && checkVersionMatches(tp, rule)) {
 			    jt.remove();
 			    if (!rule.stackTrace)

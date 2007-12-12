@@ -1,3 +1,8 @@
+2007-12-12  Petr Machata  <pmachata@redhat.com>
+
+	* ftrace.java: Use aliasing capabilities of Symbol.
+	(checkNameMatches): New method.
+
 2007-12-11  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* faux.xml: Fix fmap references.

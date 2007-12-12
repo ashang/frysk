@@ -49,7 +49,6 @@ import frysk.proc.ProcObserver;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.proc.TaskObserver.Forked;
 
 import inua.util.PrintWriter;
 
@@ -227,6 +226,9 @@ public class Ftrace
 	task.requestAddForkedObserver(forkedObserver);
 	observationRequested(task);
 
+	task.requestAddClonedObserver(clonedObserver);
+	observationRequested(task);
+
 	if (ltraceController != null) {
 	    MyFunctionObserver functionObserver
 		= new MyFunctionObserver(reporter, stackTraceSetProvider);
@@ -245,10 +247,13 @@ public class Ftrace
 	{
 	    handleTask(task);
 
-	    if (task == task.getProc().getMainTask())
-		// Unblock forked observer, which blocks main task
-		// after the fork, to give us a chance to pick it up.
+	    if (task == task.getProc().getMainTask()) {
+		// Unblock forked and cloned observer, which blocks
+		// main task after the fork or clone, to give us a
+		// chance to pick it up.
 		task.requestUnblock(forkedObserver);
+		task.requestUnblock(clonedObserver);
+	    }
 	}
 
 	public void taskAdded (Task task)
@@ -388,9 +393,10 @@ public class Ftrace
 	public void deletedFrom (Object observable) { }
     }
 
-    TaskObserver.Forked forkedObserver = new Forked()
+    class ForkCloneObserverBase
+	implements TaskObserver
     {
-	public Action updateForkedOffspring (Task parent, Task offspring)
+	protected Action updateOffspring (Task parent, Task offspring)
 	{
 	    if(traceChildren){
 		addProc(offspring.getProc());
@@ -408,7 +414,7 @@ public class Ftrace
 	    return Action.CONTINUE;
 	}
 
-	public Action updateForkedParent (Task parent, Task offspring)
+	protected Action updateParent (Task parent, Task offspring)
 	{
 	    return Action.CONTINUE;
 	}
@@ -426,7 +432,39 @@ public class Ftrace
 	public void deletedFrom (Object observable)
 	{
 	}
-    };
+    }
+
+    class MyForkedObserver
+	extends ForkCloneObserverBase
+	implements TaskObserver.Forked
+    {
+	public Action updateForkedOffspring (Task parent, Task offspring)
+	{
+	    return updateOffspring (parent, offspring);
+	}
+
+	public Action updateForkedParent (Task parent, Task offspring)
+	{
+	    return updateParent (parent, offspring);
+	}
+    }
+    TaskObserver.Forked forkedObserver = new MyForkedObserver();
+
+    class MyClonedObserver
+	extends ForkCloneObserverBase
+	implements TaskObserver.Cloned
+    {
+	public Action updateClonedOffspring (Task parent, Task offspring)
+	{
+	    return updateOffspring (parent, offspring);
+	}
+
+	public Action updateClonedParent (Task parent, Task offspring)
+	{
+	    return updateParent (parent, offspring);
+	}
+    }
+    TaskObserver.Cloned clonedObserver = new MyClonedObserver();
 
     public static interface StackTracedSymbolsProvider {
 	boolean shouldStackTraceOn(Symbol symbol);

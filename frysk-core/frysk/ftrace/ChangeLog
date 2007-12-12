@@ -1,3 +1,17 @@
+2007-12-12  Petr Machata  <pmachata@redhat.com>
+
+	* Ftrace.java (handleTask): Add cloned observer to task.
+	(tasksObserver.existingTask): Unblock cloned observer.
+	(ForkCloneObserverBase): Refactored from forkedObserver code.
+	(MyForkedObserver): New class deriving off ForkCloneObserverBase.
+	(MyClonedObserver): New class deriving off ForkCloneObserverBase.
+	* ObjectFile.java (symbol): Implemented symbol aliases.
+	(symbolWithValue): New field.
+	* Symbol.java (aliases): New field, holds alias names of symbol.
+	(addAlias): New method.
+	(hasName): New method.
+	* TestLtrace.java (testTracingAlias): New test.
+
 2007-12-03  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
 
 	* Ltrace.java: Changed HashMap.Entry to Map.Entry. This was

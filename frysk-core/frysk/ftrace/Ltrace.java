@@ -367,7 +367,6 @@ public class Ltrace
 			       "Stopping tracing of `" + tp.symbol.name
 			       + "' at 0x" + Long.toHexString(actualAddress));
 
-		    // FIXME: Handle aliases.
 		    Object observer = functionObserversForAddr.remove(laddr);
 		    if (observer == null)
 			throw new AssertionError("Couldn't find observer to remove!");

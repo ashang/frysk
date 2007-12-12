@@ -51,7 +51,14 @@ import lib.dwfl.ElfSymbolVersion;
  */
 public class Symbol
 {
-  public final String name;
+    /** Canonical name. Initially the one this symbol was created
+     * with, later can change as "more canonical" name appears. */
+    public String name;
+
+    /** Additional names.  Initially null, only created if there are
+     * alternative names. */
+    public ArrayList aliases = null;
+
   public final long value;
   public final long size;
     public final long offset; // Relative to ELF file start.
@@ -80,6 +87,7 @@ public class Symbol
 		long offset, long size, long shndx, List versions)
   {
     this.name = name;
+    this.aliases = null;
     this.type = type;
     this.value = value;
     this.offset = offset;
@@ -117,12 +125,42 @@ public class Symbol
     }
   }
 
+    public void addAlias(String alias)
+    {
+	if (this.aliases == null)
+	    this.aliases = new ArrayList();
+
+	// If this alias has a shorter name, make it a canonical one.
+	if (alias.length() < this.name.length()) {
+	    String tmp = alias;
+	    alias = this.name;
+	    this.name = tmp;
+	}
+
+	this.aliases.add(alias);
+    }
+
   public String toString()
   {
     StringBuffer buf = new StringBuffer();
     buf.append(this.name);
     return buf.toString();
   }
+
+    /** Answer true, if name of the symbol, or one of the aliases,
+     *  match given NAME. */
+    public boolean hasName(String name)
+    {
+	if (this.name.equals(name))
+	    return true;
+
+	if (this.aliases != null)
+	    for (int i = 0; i < this.aliases.size(); ++i)
+		if (this.aliases.get(i).equals(name))
+		    return true;
+
+	return false;
+    }
 
   public void addedTo(ObjectFile of) {
     this.parent = of;
