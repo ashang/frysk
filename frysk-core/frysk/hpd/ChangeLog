@@ -1,3 +1,7 @@
+2007-12-12  Rick Moseley  <rmoseley@redhat.com>
+
+	* TestHpdTestHarness.java: New for testing bz #5480.
+
 2007-12-11  Rick Moseley  <rmoseley@redhat.com>
 
 	* KillCommand.java: New.
