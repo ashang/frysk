@@ -6,6 +6,7 @@
 	* GoCommand.java: Added message that process is now running.
 	* TestKillCommand.java: New to test "kill" command.
 	* TestPeekCommand.java: Fix failing test.
+	* ViewsetCommand.java: Add "\t" to align columns.
 
 2007-12-11  Stan Cox  <scox@redhat.com>
 

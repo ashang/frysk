@@ -91,7 +91,7 @@ class ViewsetCommand extends ParameterizedCommand {
 	    cli.outWriter.print(temptd.getID());
 	    cli.outWriter.print("]");
 	    Task task = temptd.getTask();
-	    cli.outWriter.print("\t");
+	    cli.outWriter.print("\t\t");
 	    cli.outWriter.print(task.getProc().getPid());
 	    cli.outWriter.print("\t");
 	    cli.outWriter.println(task.getTid());
