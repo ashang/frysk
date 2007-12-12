@@ -48,6 +48,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.LocationExpression;
+import frysk.debuginfo.PieceLocation;
+import frysk.isa.ISA;
 import frysk.scopes.LineColPair;
 
 /**
@@ -57,7 +61,8 @@ public abstract class CompositeType
     extends Type
 {
     
-    public static class Member{
+    public static abstract class Member extends ObjectDeclaration {
+	
 	private final LineColPair lineColPair;
 	final int index;
 	final String name;
@@ -83,19 +88,35 @@ public abstract class CompositeType
 	    return this.name;
 	}
 	
-	public LineColPair getLinCol(){
+	public LineColPair getLineCol() {
 	    return this.lineColPair;
 	}
+
+	public Type getType(ISA isa) {
+	    return this.type;
+	}
+
+	public abstract Value getValue(DebugInfoFrame frame);
+	
     }
     
     public static class StaticMember extends Member{
-	
-	public StaticMember(int index, String name, LineColPair lineColPair, Type type, Access access,
+	private final LocationExpression locationExpression;
+	public StaticMember(LocationExpression locationExpression, int index, String name, LineColPair lineColPair, Type type, Access access,
 		int bitOffset, int bitSize,
 		boolean inheritance) {
-	    super(index, name, lineColPair, type, access, bitOffset, bitSize, inheritance);
+           super(index, name, lineColPair, type, access, bitOffset, bitSize, inheritance);
+           this.locationExpression = locationExpression;
+       }
+	     
+	public Value getValue(DebugInfoFrame frame) {
+	    ISA isa = frame.getTask().getISA();
+	    PieceLocation pieceLocation
+	    = new PieceLocation(locationExpression.decode(frame, this.getType(isa)
+	                                                                     .getSize()));
+	    Value value = new Value(this.getType(isa), pieceLocation);
+	    return value;
 	}
-
     }
     
     /**
@@ -127,7 +148,17 @@ public abstract class CompositeType
 	private Value getValue (Value v) {
 	    int off = (int)offset;
 	    return new Value(type, v.getLocation().slice(off, type.getSize()));
-	}   
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public Value getValue(DebugInfoFrame frame) {
+	    //this should not be used. without an instance non static members
+	    // do not have a value.
+	    throw new NullPointerException("trying to get a value of a non static member");
+	}
+
     }
     /**
      * A mapping from NAME to Member; only useful for named members.
@@ -201,18 +232,18 @@ public abstract class CompositeType
 	return addMemberToMap(member);
     }
     
-    public CompositeType addStaticMember(String name, LineColPair lineColPair, Type type, long offset,
+    public CompositeType addStaticMember(LocationExpression locationExpression, String name, LineColPair lineColPair, Type type, long offset,
 		   Access access){
-	StaticMember member = new StaticMember(members.size(), name, lineColPair, type,
+	StaticMember member = new StaticMember(locationExpression, members.size(), name, lineColPair, type,
 		   access, -1, -1, false);
 	return addMemberToMap(member);
     }
     
-    public CompositeType addStaticBitFieldMember(String name, LineColPair lineColPair, Type type, long offset,
+    public CompositeType addStaticBitFieldMember(LocationExpression locationExpression, String name, LineColPair lineColPair, Type type, long offset,
 		   Access access, int bitOffset,
 		   int bitLength) {
 	type = type.pack(bitOffset, bitLength);
-	StaticMember member = new StaticMember(members.size(), name, lineColPair, type,
+	StaticMember member = new StaticMember(locationExpression, members.size(), name, lineColPair, type,
 		   access, -1, -1, false);
 	return addMemberToMap(member);
     }
@@ -375,4 +406,9 @@ public abstract class CompositeType
 	}
 	return completions > 0;
     }
+    
+    public ObjectDeclaration getDeclaredObjectByName(String name){
+	return (ObjectDeclaration) nameToMember.get(name);
+    }
+	 
 }

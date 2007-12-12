@@ -1,3 +1,10 @@
+2007-12-11  Sami Wagiaalla  <swagiaal@redhat.com>
+ 
+        * CompositeType.java (StaticMember.StaticMember): Constructor now
+        takes a LocationExpression object.
+        Updated add methods.
+        (Member): now extends object declaration.
+ 
 2007-12-11  Stan Cox  <scox@redhat.com>
 
 	* Type.java (toPrint(StringBuilder, int)): Change signature from

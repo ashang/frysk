@@ -114,7 +114,6 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
     
     public void testFindTwoScopesEnum(){
 	
-	
 	String variableName = "two"; 
 	String fileName = "funit-c-scopes-enum";
 	
@@ -128,7 +127,14 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
 
     }
     
-    
+    public void testFindFirstScopesClass(){
+	String variableName = "first"; 
+	String variableToken = "*this*"; 
+	String fileName = "funit-cpp-scopes-class";
+	String srcPath = Config.getPkgLibSrcDir() + fileName + ".cxx";
+	
+	verifyVariable(variableName, variableToken, fileName, srcPath);
+    }
     
     
     /**
@@ -160,15 +166,16 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
 	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
 	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
 	objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
-	Variable variable = (Variable) objectDeclarationSearchEngine.getVariable(variableName);
+	ObjectDeclaration objectDeclaration = (ObjectDeclaration) objectDeclarationSearchEngine.getVariable(variableName);
 
-	assertNotNull("Variable found", variable);
-	assertTrue("Found the correct variable", variable.getLineNumber() == variableLine);
+	assertNotNull("Variable found", objectDeclaration);
+	assertEquals("Correct name", variableName, objectDeclaration.getName() );
+	assertEquals("Found the correct variable on the correct line ", variableLine, objectDeclaration.getLineCol().getLine());
 	
 	//Negative test:
 	try {
-	    variable = (Variable) objectDeclarationSearchEngine.getVariable("NOT"+variableName);
-	    assertTrue("Exception was thrown", false);
+	    objectDeclaration = (Variable) objectDeclarationSearchEngine.getVariable("NOT"+variableName);
+	    assertTrue("Exception was not thrown", false);
 	} catch (ObjectDeclaratioinNotFoundException e) {
 	    // exception was thrown
 	}

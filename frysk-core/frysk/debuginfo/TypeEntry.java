@@ -128,6 +128,8 @@ public class TypeEntry
      */
     public GccStructOrClassType getGccStructOrClassType(DwarfDie classDie, String name) {
 	
+	LocationExpression locationExpression = null;
+
 	dumpDie("classDie=", classDie);
 
 	GccStructOrClassType classType = new GccStructOrClassType(name, getByteSize(classDie));
@@ -145,6 +147,12 @@ public class TypeEntry
 	    } catch (DwAttributeNotFoundException de) {
 		offset = 0; // union
 		staticMember = true;
+		if(member.isDeclaration()){
+		    locationExpression = new LocationExpression(member.getDefinition());
+		}else{
+		    locationExpression = new LocationExpression(member);
+		}
+
 	    }
 	    
 	    LineColPair lineColPair;
@@ -166,7 +174,7 @@ public class TypeEntry
 		if(hasArtifitialParameter(member)){
 		    classType.addMember(member.getName(), lineColPair, v.getType(), offset, access);
 		}else{
-		    classType.addStaticMember(member.getName(), lineColPair, v.getType(), offset, access);
+		    classType.addStaticMember(locationExpression, member.getName(), lineColPair, v.getType(), offset, access);
 		}
 		continue;
 	    }
@@ -184,7 +192,7 @@ public class TypeEntry
 		    int bitOffset = member
 		    .getAttrConstant(DwAt.BIT_OFFSET);
 		    if(staticMember){
-			classType.addStaticBitFieldMember(member.getName(), lineColPair, memberType, offset, access,
+			classType.addStaticBitFieldMember(locationExpression, member.getName(), lineColPair, memberType, offset, access,
 				    bitOffset, bitSize);
 		    }else{
 			classType.addBitFieldMember(member.getName(), lineColPair, memberType, offset, access,
@@ -193,7 +201,7 @@ public class TypeEntry
 		}
 		else{
 		    if(staticMember){
-			classType.addStaticMember(member.getName(), lineColPair, memberType, offset, access);
+			classType.addStaticMember(locationExpression, member.getName(), lineColPair, memberType, offset, access);
 		    }else{
 			classType.addMember(member.getName(), lineColPair, memberType, offset, access);
 		    }
@@ -203,7 +211,7 @@ public class TypeEntry
 	    }
 	    else{
 		if(staticMember){
-		    classType.addStaticMember(member.getName(), lineColPair, new UnknownType(member
+		    classType.addStaticMember(locationExpression, member.getName(), lineColPair, new UnknownType(member
 			.getName()), offset, access);
 		}else{
 		    classType.addMember(member.getName(), lineColPair, new UnknownType(member

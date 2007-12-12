@@ -1,5 +1,11 @@
 2007-12-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* Subprogram.java (getDeclaredObjectByName): Now searches
+	owning class/structure.
+	* Composite.java (getDeclaredObjectByName): New.
+
+2007-12-11  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* LineColPair.java: New.
 
 2007-12-10  Sami Wagiaalla  <swagiaal@redhat.com>

@@ -5,6 +5,15 @@
 	
 2007-12-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* TestObjectDeclarationSearchEngine.java (testFindFirstScopesClass): New test.
+	
+	CompositeType.java (StaticMember.StaticMember): Constructor now
+	takes a LocationExpression object.
+	Updated add methods.
+	* TypeEntry.java: Updated.
+	
+2007-12-11  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	CompositeType constructors and add functions now take LineColPair argument.
 	* TypeEntry.java: Updated.
 

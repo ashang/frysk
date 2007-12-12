@@ -39,10 +39,11 @@
 
 package frysk.scopes;
 
+import lib.dwfl.DwarfDie;
 import frysk.debuginfo.TypeEntry;
 import frysk.value.CompositeType;
+import frysk.value.ObjectDeclaration;
 import frysk.value.Type;
-import lib.dwfl.DwarfDie;
 
 /**
  * A Composite object is a scope to wich a function can belong:
@@ -65,4 +66,14 @@ public class Composite extends Scope {
     public Type getType(){
 	return this.compositeType;
     }
+    
+    public ObjectDeclaration getDeclaredObjectByName(String name) {
+	ObjectDeclaration objectDeclaration;
+	
+	objectDeclaration = this.compositeType.getDeclaredObjectByName(name);
+	
+	return objectDeclaration;
+    }
+	 
+    
 }

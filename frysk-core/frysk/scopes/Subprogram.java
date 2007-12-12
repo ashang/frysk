@@ -130,17 +130,27 @@ public class Subprogram extends Subroutine
     }
     
     public ObjectDeclaration getDeclaredObjectByName(String name) {
-	Variable variable = null;
+	ObjectDeclaration objectDeclaration = null;
 
 	Iterator iterator = this.parameters.iterator();
 	while (iterator.hasNext()) {
-	    variable = (Variable) iterator.next();
-	    if (variable.getName().equals(name)) {
-		return variable;
+	    ObjectDeclaration tempObjectDeclaration = (Variable) iterator.next();
+	    if (tempObjectDeclaration.getName().equals(name)) {
+		objectDeclaration = tempObjectDeclaration;
+		continue;
 	    }
 	}
 	
-	return super.getDeclaredObjectByName(name);
+	Composite composite = this.getComposite();
+	if(composite != null){
+	    objectDeclaration = composite.getDeclaredObjectByName(name);
+	}
+	
+	if(objectDeclaration == null){
+	    objectDeclaration =  super.getDeclaredObjectByName(name);
+	}
+	
+	return objectDeclaration;
     }
 
 }
