@@ -308,6 +308,7 @@ class ftrace
     final List dynRules = new ArrayList();
     final List symRules = new ArrayList();
     final MyLtraceController controller = new MyLtraceController();
+    boolean allowInterpTracing = false;
 
     Ftrace tracer = new Ftrace();
 
@@ -453,6 +454,13 @@ class ftrace
           }
         });
 
+        parser.add(new Option('i', "don't trace dynamic linker symbols") {
+          public void parsed(String arg) throws OptionException
+          {
+	      allowInterpTracing = true;
+          }
+        });
+
 	parser.add(new Option("plt", "trace library calls done via PLT", "RULE[,RULE]...") {
 		public void parsed(String arg) {
 		    pltRules.add(arg);
@@ -503,6 +511,17 @@ class ftrace
         parser.parse(args);
         if (writer == null)
             writer = new PrintWriter(System.out);
+
+	// If tracing dynamic linker disabled, generate implicit
+	// -@INTERP rule at the end of the chain.
+	if (!allowInterpTracing) {
+	    if (pltRules.size() > 0)
+		pltRules.add("-@INTERP");
+	    if (dynRules.size() > 0)
+		dynRules.add("-@INTERP");
+	    if (symRules.size() > 0)
+		symRules.add("-@INTERP");
+	}
 
 	// We need to load and apply rules separately, to get all log
 	// messages.

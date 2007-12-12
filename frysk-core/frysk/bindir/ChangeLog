@@ -1,5 +1,10 @@
 2007-12-12  Petr Machata  <pmachata@redhat.com>
 
+	* ftrace.java: Support -i for tracing inside dynamic linker.
+	* ftrace.xml: Describe it.
+
+2007-12-12  Petr Machata  <pmachata@redhat.com>
+
 	* ftrace.java: Use aliasing capabilities of Symbol.
 	(checkNameMatches): New method.
 

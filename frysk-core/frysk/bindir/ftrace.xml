@@ -69,6 +69,7 @@
     <cmdsynopsis>
       <command>ftrace</command>
       <arg choice="opt">-c</arg>
+      <arg choice="opt">-i</arg>
       <arg choice="opt">-m</arg>
       <arg choice="opt">-o=<replaceable>FILE</replaceable></arg>
       <arg choice="opt" rep="repeat">-p=<replaceable>PID</replaceable></arg>
@@ -157,6 +158,16 @@
 	<title>Entry Point Tracing</title>
 
 	<variablelist>
+	  <varlistentry>
+	    <term>-i</term>
+	    <listitem>
+	      <para>Trace inside dynamic linker.  When this option is
+	      not present, <function>ftrace</function> will function
+	      as if -@INTERP rule was present at the end of each
+	      tracing script.</para>
+	    </listitem>
+	  </varlistentry>
+
 	  <varlistentry>
 	    <term>-plt=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</term>
 	    <listitem>
