@@ -65,6 +65,8 @@ class GoCommand extends ParameterizedCommand {
 		Task task = (Task) taskIter.next();
 		if (!steppingEngine.isTaskRunning(task))
 		    steppingEngine.continueExecution(task);
+		cli.addMessage("Running process " + task.getProc().getPid(),
+			Message.TYPE_NORMAL);
 	    }
 	} else
 	    cli.addMessage("Not attached to any process", Message.TYPE_ERROR);

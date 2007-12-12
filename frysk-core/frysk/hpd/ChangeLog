@@ -1,3 +1,10 @@
+2007-12-11  Rick Moseley  <rmoseley@redhat.com>
+
+	* KillCommand.java: New.
+	* TopLevelCommand.java: Changes for "kill" command.
+	* RunCommand.java: Ditto.
+	* GoCommand.java: Added message that process is now running.
+
 2007-12-11  Stan Cox  <scox@redhat.com>
 
 	* EvalCommands.java (Printer.TYPE): Change to use "String toPrint()"

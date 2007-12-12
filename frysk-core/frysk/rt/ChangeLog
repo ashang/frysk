@@ -1,3 +1,8 @@
+2007-12-11  Rick Moseley  <rmoseley@redhat.com>
+
+	* ProcTaskIDManager.java (clearProcIDs): New for "kill" command;
+	check for empty procList.
+
 2007-12-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Line.java (UNKNOWN): New.

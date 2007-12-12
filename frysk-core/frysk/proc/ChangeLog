@@ -1,3 +1,7 @@
+2007-12-11  Rick Moseley  <rmoseley@redhat.com>
+
+	* Proc.java (killRequest): New for "kill" command.
+
 2007-12-10  Petr Machata  <pmachata@redhat.com>
 
 	* TestTaskForkedObserver.java (testTaskVforkObserver): unresolved 5466.

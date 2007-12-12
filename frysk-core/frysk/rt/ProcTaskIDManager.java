@@ -127,6 +127,10 @@ public class ProcTaskIDManager
         }
         return -1;
     }
+    
+    public synchronized void clearProcIDs() {
+	procList.clear();
+    }
 
     public synchronized int getNumberOfProcs() {
         return procList.size();
@@ -198,7 +202,7 @@ public class ProcTaskIDManager
     public Action updateTerminated(Task task, boolean signal, int value) {
         Proc proc = task.getProc();
         int id = getProcID(proc);
-        if (id < 0)
+        if (id < 0 || procList.isEmpty())
             return Action.CONTINUE;
         synchronized (this) {
             ProcEntry entry = (ProcEntry)procList.get(id);

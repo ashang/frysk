@@ -68,7 +68,7 @@ class RunCommand extends ParameterizedCommand {
 
     private static class Runner implements TaskObserver.Attached {
 	private final CLI cli;
-	final CountDownLatch latch = new CountDownLatch(1);
+	private CountDownLatch latch;
 	Task launchedTask;
 	Runner(CLI cli) {
 	    this.cli = cli;
@@ -168,6 +168,7 @@ class RunCommand extends ParameterizedCommand {
 	Manager.host.requestCreateAttachedProc(cmd.stringArrayValue(), runner);
         while (true) {
             try {
+        	runner.latch = new CountDownLatch(1);
                 runner.latch.await();
                 break;
             } catch (InterruptedException e) {

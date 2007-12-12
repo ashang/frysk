@@ -53,7 +53,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import frysk.util.CountDownLatch;
 import frysk.event.Event;
+import frysk.sys.Signal;
 
 /**
  * A UNIX Process, containing tasks, memory, ...
@@ -64,7 +66,9 @@ public abstract class Proc
   protected static final Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
 
   final ProcId id;
-
+  
+  private CountDownLatch quitLatch;
+  
   public ProcId getId ()
   {
     return id;
@@ -159,7 +163,7 @@ public abstract class Proc
   {
     return this.host.get(new TaskId(this.getPid()));
   }
-
+  
   /**
    * Return the Proc's command line argument list
    */
@@ -287,7 +291,7 @@ public abstract class Proc
 
   /**
    * Create a new, attached, running, process forked by Task. For the moment
-   * assume that the process will be immediatly detached; if this isn't the case
+   * assume that the process will be immediately detached; if this isn't the case
    * the task, once it has been created, will ram through an attached observer.
    * Note the chicken-egg problem here: to add the initial observation the Proc
    * needs the Task (which has the Observable). Conversely, for a Task, while it
@@ -336,6 +340,27 @@ public abstract class Proc
     newState = null;
     return oldState;
   }
+  
+  /**
+   * killRequest handles killing off processes that either the commandline
+   * or GUI have designated need to be removed from the CPU queue.
+   */
+  
+  public void requestKill()
+  {
+      Signal.KILL.kill(this.getPid());
+      // Throw the countDown on the queue so that the command
+      // thread will wait until events provoked by Signal.kill()
+      // are handled.
+      this.quitLatch = new CountDownLatch(1);
+      Manager.eventLoop.add(new Event() {
+              public void execute() {
+                  quitLatch.countDown();
+              }
+          });
+      this.performDetach();
+      this.requestAbandon();
+  }
 
   /**
    * Request that the Proc be forcefully detached. Quickly.
@@ -351,7 +376,7 @@ public abstract class Proc
    * Request that the Proc be forcefully detached. Upon detach run the given
    * event.
    * 
-   * @param e The event to run upon successfull detach.
+   * @param e The event to run upon successful detach.
    */
   public void requestAbandonAndRunEvent (final Event e)
   {
