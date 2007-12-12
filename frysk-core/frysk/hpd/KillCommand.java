@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,51 +39,65 @@
 
 package frysk.hpd;
 
-import frysk.Config;
+import java.util.ArrayList;
+import java.util.Iterator;
+import frysk.proc.Proc;
+import frysk.proc.Task;
+import java.util.List;
 
 /**
- * This class tests the "peek" command.
+ * KillCommand kills the processes in the current target set.
  */
 
-public class TestPeekCommand extends TestLib {
-    public void testPeekCommand() {
-	e = new HpdTestbed();
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
-	e.expect(5,"Loaded executable file.*");
-	e.send("peek 0x08048000L\n");
-	e.expect(5, "The value at 08048000 = 127.*");
-	e.close();
+public class KillCommand extends ParameterizedCommand {
+    private static String full = "kill the processes that are currently in " +
+    	"the current target set.  The processes are then reloaded and then " +
+    	"ready to be run again.";
+
+    KillCommand() {
+	super("kill the current targetset", "kill", full);
     }
 
-    public void testPeekCommandError() {
-	e = new HpdTestbed();
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
-	e.expect(5, "Loaded executable file.*");
-	e.send("peek 08048000\n");
-	e.expect(5, "Cannot find memory in exe file.*");
-	e.close();
+    public void interpret(CLI cli, Input cmd, Object options) {
+	
+	ArrayList saveProcs = new ArrayList();
+	int procPID = 0;
+	Iterator foo = cli.targetset.getTasks();
+	while (foo.hasNext()) {
+	    Task task = (Task) foo.next();
+	    Proc proc = task.getProc();
+	    if (proc.getPid() != procPID) {
+		cli.addMessage("Killing process " + proc.getPid(),
+		//	" that was created from " + proc.getExe(),
+			Message.TYPE_NORMAL);
+		// Save the procs we are killing so we can re-load them later
+		saveProcs.add(proc.getExe());
+		procPID = proc.getPid();
+		// Now, call the Proc object to kill off the executable(s)
+		proc.requestKill();
+	    }
+	}
+	
+	synchronized (cli) {
+	    // Clear the running procs set
+	    cli.runningProcs.clear();
+	    // Clear the current targetset
+	    cli.idManager.clearProcIDs();
+	    // Clear the stepping engine structures
+	    cli.steppingEngine.clear();
+	    // Add back in the stepping observer for cli
+	    cli.steppingEngine.addObserver(cli.steppingObserver);
+	}
+	// Now loop through and re-load all of the killed procs
+	Iterator bar = saveProcs.iterator();
+	while (bar.hasNext()) {
+	    String cmdline = (String) bar.next();
+	    cli.execCommand("load " + cmdline + "\n");
+	}
     }
-    
-    public void testTwoLoadedPeekCommand() {
-	e = new HpdTestbed();
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
-	e.expect(5, "Loaded executable file*");
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
-	e.expect(5, "Loaded executable file*");
-	e.send("peek 0x08048000L\n");
-	e.expect(5, "\\[0\\.0\\]");
-	e.expect(5, "The value at 08048000 = 127*");
-	e.expect(5, "\\[1\\.0\\]");
-	e.expect(5, "The value at 08048000 = 127*");
-	e.close();
-    }
-    
-    public void testPeekCommandNoParameter() {
-	e = new HpdTestbed();
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
-	e.expect(5, "Loaded executable file*");
-	e.send("peek\n");
-	e.expect(5, "Error: Not enough parameters. Please specify an addess to peek at*");
-	e.close();
+
+    int completer(CLI cli, Input input, int cursor, List completions) {
+	return CompletionFactory.completeFileName(cli, input, cursor,
+						  completions);
     }
 }

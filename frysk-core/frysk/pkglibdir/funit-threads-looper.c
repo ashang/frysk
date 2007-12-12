@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,53 +37,124 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.hpd;
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/syscall.h>
 
-import frysk.Config;
+#ifdef __NR_gettid
+static pid_t gettid (void)
+{
+    return syscall(__NR_gettid);
+}
+#else
+static pid_t gettid (void)
+{
+    return -ENOSYS;
+}
+#endif
 
-/**
- * This class tests the "peek" command.
- */
+pthread_t tester_thread;
 
-public class TestPeekCommand extends TestLib {
-    public void testPeekCommand() {
-	e = new HpdTestbed();
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
-	e.expect(5,"Loaded executable file.*");
-	e.send("peek 0x08048000L\n");
-	e.expect(5, "The value at 08048000 = 127.*");
-	e.close();
-    }
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
-    public void testPeekCommandError() {
-	e = new HpdTestbed();
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
-	e.expect(5, "Loaded executable file.*");
-	e.send("peek 08048000\n");
-	e.expect(5, "Cannot find memory in exe file.*");
-	e.close();
+static char * myname;
+
+void
+*do_it ()
+{
+  int t = 34543;
+  while (t > 0)
+    t--;
+
+  //fprintf (stderr,"attach %s pid=%d -task tid=%d -cli\n", myname, getpid(), gettid());
+
+  int d = 1;
+  int e = 0;
+  pid_t f = gettid();
+  f++;
+
+  while (1)
+    {
+      d++;
+      e++;
+      if (d == 3)
+        {
+          if (e == 3)
+            e = 0;
+          d = 0;
+        }
     }
     
-    public void testTwoLoadedPeekCommand() {
-	e = new HpdTestbed();
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
-	e.expect(5, "Loaded executable file*");
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
-	e.expect(5, "Loaded executable file*");
-	e.send("peek 0x08048000L\n");
-	e.expect(5, "\\[0\\.0\\]");
-	e.expect(5, "The value at 08048000 = 127*");
-	e.expect(5, "\\[1\\.0\\]");
-	e.expect(5, "The value at 08048000 = 127*");
-	e.close();
-    }
-    
-    public void testPeekCommandNoParameter() {
-	e = new HpdTestbed();
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
-	e.expect(5, "Loaded executable file*");
-	e.send("peek\n");
-	e.expect(5, "Error: Not enough parameters. Please specify an addess to peek at*");
-	e.close();
+  return NULL;
+}
+
+void
+bak ()
+{
+  while (1)
+    {
+      //fprintf (stderr,"attach %s pid=%d -task tid=%d -cli\n", myname, getpid(), gettid());
+      int a = 0;
+      int b = 0;
+      int c = 0;
+      while (1)
+        {
+          a++;
+          b++;
+          c++;
+          if (a + b > 4)
+            {
+              a = a - c;
+              b = b - c;
+              c = 0;
+            }
+        }
     }
 }
+
+void 
+baz ()
+{
+  int a = 1;
+  int b = 0;
+  a++;
+  b++;
+  bak ();
+}
+
+void 
+bar ()
+{
+  close (-1);
+  close (-1);
+  baz ();
+  /*Comment */
+}
+
+void
+foo ()
+{
+  bar ();
+}
+
+
+int 
+main (int argc, char **argv)
+{
+  myname = argv[0];
+  pthread_attr_t attr;
+  pthread_attr_init (&attr);
+  pthread_create (&tester_thread, &attr, do_it, NULL);
+
+  /* This is a comment */
+  foo ();
+  int t = 30;
+  t++;
+  exit (0);
+}
+

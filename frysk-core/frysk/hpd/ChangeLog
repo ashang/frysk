@@ -4,6 +4,8 @@
 	* TopLevelCommand.java: Changes for "kill" command.
 	* RunCommand.java: Ditto.
 	* GoCommand.java: Added message that process is now running.
+	* TestKillCommand.java: New to test "kill" command.
+	* TestPeekCommand.java: Fix failing test.
 
 2007-12-11  Stan Cox  <scox@redhat.com>
 

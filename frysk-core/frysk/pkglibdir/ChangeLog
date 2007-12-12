@@ -1,3 +1,7 @@
+2007-12-11  Rick Moseley  <rmoseley@redhat.com>
+
+	* funit-threads-looper.c: New for "kill" command testing.
+
 2007-12-11  Stan Cox  <scox@redhat.com>
 
 	* funit-class.cxx: Tweak whitespace.

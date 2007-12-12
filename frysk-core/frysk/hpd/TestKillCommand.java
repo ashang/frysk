@@ -40,50 +40,57 @@
 package frysk.hpd;
 
 import frysk.Config;
+//import frysk.testbed.FunitThreadsOffspring;
 
 /**
- * This class tests the "peek" command.
+ * This class tests the "load" command basics of both loading a correct
+ * executable and trying to load a non-existent executable.
  */
 
-public class TestPeekCommand extends TestLib {
-    public void testPeekCommand() {
+public class TestKillCommand extends TestLib {
+    public void testKillCommand() {
+	/* In the future when fhpd can accept parameters to pass to 
+	 * programs, we should probably use the testing stuff below.
+	 * until then, we'll have to use a parameterless program.
+	String[] args = FunitThreadsOffspring.funitThreadsCommand(2, 
+		FunitThreadsOffspring.Type.LOOP);
+	String cmdLine = "";
+	for (int i = 0; i < args.length; i++) {
+	    cmdLine = cmdLine + args[i] + " ";
+	} 
+	 */
 	e = new HpdTestbed();
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
-	e.expect(5,"Loaded executable file.*");
-	e.send("peek 0x08048000L\n");
-	e.expect(5, "The value at 08048000 = 127.*");
-	e.close();
-    }
-
-    public void testPeekCommandError() {
-	e = new HpdTestbed();
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
-	e.expect(5, "Loaded executable file.*");
-	e.send("peek 08048000\n");
-	e.expect(5, "Cannot find memory in exe file.*");
-	e.close();
-    }
-    
-    public void testTwoLoadedPeekCommand() {
-	e = new HpdTestbed();
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
+	e.send("load " + Config.getPkgLibFile("funit-threads-looper").getPath()
+		+ "\n");
 	e.expect(5, "Loaded executable file*");
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
+	e.send("run\n");
+	e.expect(5, "Attached to process*");
+	e.send("go\n");
+	e.expect(5, "Running process*");
+	e.send("kill\n");
+	e.expect(5, "Killing process*");
 	e.expect(5, "Loaded executable file*");
-	e.send("peek 0x08048000L\n");
-	e.expect(5, "\\[0\\.0\\]");
-	e.expect(5, "The value at 08048000 = 127*");
-	e.expect(5, "\\[1\\.0\\]");
-	e.expect(5, "The value at 08048000 = 127*");
-	e.close();
-    }
-    
-    public void testPeekCommandNoParameter() {
-	e = new HpdTestbed();
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
+	/* Make sure you run again to make sure all has been cleaned up properly
+	 * from the last run.
+	 */
+	/*****************************************************
+	 * 
+         *  There seems to be a problem with the test harness that will not allow
+         *  more than the set of commands you see here in one sequence.  Just 
+         *  uncommenting the next 2 statements after this comment causes this 
+         *  test to fail for no good reason.  A bug will be filed on this and the
+         *  lines can be uncommented when fixed.
+	e.send("run\n");
+	e.expect(5, "Attached to process*");
+	e.send("go\n");
+	e.expect(5, "Running process*");
+	e.send("kill\n");
+	e.expect(5, "Killing process*");
 	e.expect(5, "Loaded executable file*");
-	e.send("peek\n");
-	e.expect(5, "Error: Not enough parameters. Please specify an addess to peek at*");
+	/* Make sure we can quit gracefully  */
+	/*
+	e.send("quit\n");
+	e.expect(5, "Quitting*"); */
 	e.close();
     }
 }
