@@ -39,37 +39,31 @@
 
 package frysk.expr;
 
-import frysk.junit.TestCase;
-import frysk.value.Value;
-import java.io.StringReader;
+import antlr.RecognitionException;
+import antlr.TokenStreamException;
 
 /**
- * Anything more complex than 1+1.
+ * Some sort of syntax error.
  */
 
-public class TestVariables extends TestCase {
+public class SyntaxException extends RuntimeException {
+    static final long serialVersionUID = 1;
 
-    private Value eval(String input) {
-	try {
-	    input += (char) 3;
-	    CExprLexer lexer = new CExprLexer(new StringReader(input));
-	    CExprParser parser = new CExprParser(lexer);
-	    parser.start();
-	    ExprSymTab symTab = new TestbedSymTab();
-	    CExprEvaluator exprEvaluator = new CExprEvaluator(symTab);
-	    return exprEvaluator.expr(parser.getAST());
-	} catch (antlr.RecognitionException e) {
-	    throw new RuntimeException(e);
-	} catch (antlr.TokenStreamException e) {
-	    throw new RuntimeException(e);
-	}
+    private static String message(String input, RecognitionException e) {
+	int cursor = e.getColumn() - 1; // antlr counts from 1.
+	if (input.length() == cursor)
+	    return "incomplete expression";
+	else
+	    return "invalid expression at: " + input.substring(cursor);
+    }
+    SyntaxException(String input, RecognitionException e) {
+	super(message(input, e), e);
     }
 
-    private void checkExpr(long value, String expr) {
-	assertEquals(expr, value, eval(expr).asLong());
+    private static String message(String input, TokenStreamException e) {
+	return "unexpected input: " + e.getMessage();
     }
-
-    public void testMember() {
-	checkExpr(0x01020304, "a.alpha");
+    SyntaxException(String input, TokenStreamException e) {
+	super(message(input, e), e);
     }
 }

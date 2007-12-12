@@ -119,14 +119,11 @@ imaginaryTokenDefinitions
     ;
 
 /** 
-  * The start rule simply expects an expression list following by
-  * the end of text symbol (ETX \3).
-  *
   * The TabException propagates all the way up, to the start rule,
   * which then propagates it up to the calling program.
   */
 start
-    :   expressionList ETX
+    :   expressionList EOF
     ;
 
 /** 

@@ -54,18 +54,17 @@ public class ExpressionFactory {
     public static int complete(ExprSymTab symTab, String incomplete,
 			       int offset, List candidates) {
 	try {
-	    String input = (incomplete.substring(0, offset)
-			    + '\t'
-			    + incomplete.substring(offset)
-			    +(char) 3);
+	    String input = incomplete.substring(0, offset) + '\t';
 	    CExprLexer lexer = new CExprLexer(new StringReader(input));
 	    CExprParser parser = new CExprParser(lexer);
 	    parser.setASTNodeClass(DetailedAST.class.getName());
 	    parser.start();
 	} catch (antlr.RecognitionException e) {
-	    throw new RuntimeException(e);
+	    // Unexpected input, don't complete.
+	    return -1;
 	} catch (antlr.TokenStreamException e) {
-	    throw new RuntimeException(e);
+	    // Unexpected token, don't complete.
+	    return -1;
 	} catch (CompletionException e) {
 	    int newOffset = e.complete(symTab, candidates);
 	    Collections.sort(candidates);
@@ -78,21 +77,20 @@ public class ExpressionFactory {
 	return -1; // nothing completed.
     }
 
-
     /**
-     * Parse the string, returning an expression.
+     * Parse the string, returning an expression; or throwing
+     * SyntaxException.
      */
     public static Expression parse(ExprSymTab symTab, String expression) {
 	try {
-	    String input = expression + (char)3;
-	    CExprParser parser
-		= new CExprParser(new CExprLexer(new StringReader(input)));
+	    StringReader input = new StringReader(expression);
+	    CExprParser parser = new CExprParser(new CExprLexer(input));
 	    parser.start();
 	    return new Expression(symTab, parser.getAST());
-	} catch (antlr.RecognitionException r) {
-	    throw new RuntimeException(r);
-	} catch (antlr.TokenStreamException t) {
-	    throw new RuntimeException(t);
+	} catch (antlr.RecognitionException e) {
+	    throw new SyntaxException(expression, e);
+	} catch (antlr.TokenStreamException e) {
+	    throw new SyntaxException(expression, e);
 	}
     }
 }

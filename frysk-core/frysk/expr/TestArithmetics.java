@@ -40,8 +40,6 @@
 package frysk.expr;
 
 import frysk.junit.TestCase;
-import frysk.value.Value;
-import frysk.expr.ScratchSymTab;
 
 /**
  * Scratch is for the case where there isn't any symbols, basic ops
@@ -49,16 +47,42 @@ import frysk.expr.ScratchSymTab;
  */
 
 public class TestArithmetics extends TestCase {
-    private Value eval(String input) {
+    private void checkScratchExpr(String expr, long value) {
 	ExprSymTab symTab = new ScratchSymTab();
-	return ExpressionFactory.parse(symTab, input).getValue();
+	Expression e = ExpressionFactory.parse(symTab, expr);
+	assertEquals(expr, value, e.getValue().asLong());
     }
-
-    private void checkExpr(long value, String expr) {
-	assertEquals(expr, value, eval(expr).asLong());
-    }
-
     public void testAdd() {
-	checkExpr(3, "1 + 2");
+	checkScratchExpr("1 + 2", 3);
+    }
+
+    private void checkVariableExpr(String expr, long value) {
+	ExprSymTab symTab = new TestbedSymTab();
+	Expression e = ExpressionFactory.parse(symTab, expr);
+	assertEquals(expr, value, e.getValue().asLong());
+    }
+    public void testMember() {
+	checkVariableExpr("a.alpha", 0x01020304);
+    }
+
+    private void checkErrorExpr(String input, String error) {
+	Throwable t = null;
+	try {
+	    ExprSymTab symTab = new ScratchSymTab();
+	    ExpressionFactory.parse(symTab, input);
+	} catch (SyntaxException e) {
+	    t = e;
+	}
+	assertNotNull("error", t);
+	assertEquals("error", error, t.getMessage());
+    }
+    public void testEndOfFileError() {
+	checkErrorExpr("&", "incomplete expression");
+    }
+    public void testExpressionError() {
+	checkErrorExpr("1 . 2", "invalid expression at: 2");
+    }
+    public void testTokenError() {
+	checkErrorExpr("1...2", "unexpected input: expecting '.', found '2'");
     }
 }
