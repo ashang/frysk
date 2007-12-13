@@ -57,14 +57,18 @@ public class MapsCommand extends ParameterizedCommand {
   void interpret(CLI cli, Input cmd, Object options) {
     PTSet ptset = cli.getCommandPTSet(cmd);
     Iterator taskDataIterator = ptset.getTaskData();
-    if (taskDataIterator.hasNext() == false)
-    {
+    if (taskDataIterator.hasNext() == false)  {
       cli.addMessage("Cannot find main task. Cannot print out process maps.", Message.TYPE_ERROR);
       return;
     }
     Proc mainProc = ((TaskData) taskDataIterator.next()).getTask().getProc();
     MemoryMap[] maps = mainProc.getMaps();
-    
+
+    if (maps == null) {
+	cli.addMessage("No maps data to print for this process", 
+		       Message.TYPE_WARNING);
+	return;
+    }
     for (int i=0; i<maps.length; i++)
     	cli.outWriter.println(maps[i].toString());
   }

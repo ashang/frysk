@@ -65,14 +65,19 @@ public class AuxvCommand extends ParameterizedCommand {
   void interpret(CLI cli, Input cmd, Object options) {
     PTSet ptset = cli.getCommandPTSet(cmd);
     Iterator taskDataIterator = ptset.getTaskData();
-    if (taskDataIterator.hasNext() == false)
-    {
+    if (taskDataIterator.hasNext() == false) {
       cli.addMessage("Cannot find main task. Cannot print out auxv", Message.TYPE_ERROR);
       return;
     }
     Proc mainProc = ((TaskData) taskDataIterator.next()).getTask().getProc();
     Auxv[] liveAux = mainProc.getAuxv();
-    
+
+    if (liveAux == null) {
+	cli.addMessage("No Auxv data to print for this process",
+		       Message.TYPE_WARNING);
+	
+	return;
+    }
     class BuildAuxv extends AuxvStringBuilder {
       
       public StringBuffer auxvData = new StringBuffer();
