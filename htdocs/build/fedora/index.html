@@ -62,10 +62,11 @@
 This page provides guidelines for building <em>frysk</em> on older
 Fedora systems.
 
-<h3><a name="f8">Fedora 8</a><br><a name="f7">Fedora
-7</a><br><a name="fc6">Fedora Core 6</a></h3>
+<dl>
 
-<p>
+<dt>Fedora 8</dt>
+
+<dd>
 
 You will need to install the following:
 
@@ -78,13 +79,50 @@ sudo yum install -y \
     yelp libtool make
 </pre>
 
-<p>
+<br>
 
-For additional updates, check the <a
-href="/bugzilla/showdependencytree.cgi?id=4743">Fedora 8</a>, <a
-href="/bugzilla/showdependencytree.cgi?id=3620">Fedora 7</a>, <a
-href="/bugzilla/showdependencytree.cgi?id=2654">Fedora Core 6</a>
+In addition, you may need to force a re-install of java-1.5.0-gcj.
+See <a href="https://bugzilla.redhat.com/show_bug.cgi?id=377341#c4">Fedora
+Bug 377341</a> for details.
+
+<br>
+
+For additional updates, check
+the <a href="/bugzilla/showdependencytree.cgi?id=4743">Fedora 8</a>,
 tracker bug.
+
+<br>
+
+For earlier Fedora releases check the <a href="fedora/">Fedora
+Page</a.
+
+</dd>
+
+<dt><a name="f7">Fedora 7</a><br><a name="fc6">Fedora Core 6</a></dt>
+
+<dd>
+
+You will need to install the following:
+
+<pre>
+sudo yum install -y \
+    antlr jdom junit gcc-java gcc-c++ \
+    libglade-java-devel libvte-java-devel \
+    automake xmlto transfig eclipse-ecj dogtail \
+    sharutils git audit-libs-devel binutils-devel \
+    yelp libtool make
+</pre>
+
+<br>
+
+For additional updates, check
+the <a href="/bugzilla/showdependencytree.cgi?id=3620">Fedora
+7</a>, <a href="/bugzilla/showdependencytree.cgi?id=2654">Fedora Core
+6</a> tracker bug.
+
+</dd>
+
+</dl>
 
               <!-- end text -->
               <p>&nbsp;</p>
