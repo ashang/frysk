@@ -79,8 +79,9 @@ public class TestKillCommand extends TestLib {
          *  more than the set of commands you see here in one sequence.  Just 
          *  uncommenting the next 2 statements after this comment causes this 
          *  test to fail for no good reason.  A bug will be filed on this and the
-         *  lines can be uncommented when fixed.
-	e.send("run\n");
+         *  lines can be uncommented when fixed. */
+	/*
+	e.send(5, "run", "Attached to process*");
 	e.expect(5, "Attached to process*");
 	e.send("go\n");
 	e.expect(5, "Running process*");
@@ -93,4 +94,23 @@ public class TestKillCommand extends TestLib {
 	e.expect(5, "Quitting*"); */
 	e.close();
     }
+    
+    /**
+     * Test when all you have done is loaded/run the process and not
+     * have done a "go" on it.
+     */
+    public void testLoadKill() {
+	e = new HpdTestbed();
+	e.send("load " + Config.getPkgLibFile("funit-threads-looper").getPath()
+		+ "\n");
+	e.expect(5, "Loaded executable file*");
+	e.send("run\n");
+	e.expect(5, "Attached to process*");
+	e.send("kill\n");
+	e.expect(5, "Killing process*");
+	//e.send("quit\n");
+	//e.expect("Quitting*");
+	e.close();
+    }
+    
 }

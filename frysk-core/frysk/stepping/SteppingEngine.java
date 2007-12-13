@@ -1167,14 +1167,15 @@ public class SteppingEngine {
 	     * as terminated and notify the observers of the event. */
             Proc proc = task.getProc();
 	    Integer context = (Integer)SteppingEngine.this.contextMap.get(proc);
-	    SteppingEngine.this.contextMap.put(proc, new Integer(
+	    if (!SteppingEngine.this.contextMap.isEmpty())
+		SteppingEngine.this.contextMap.put(proc, new Integer(
 		    context.intValue() - 1));
 
             TaskStepEngine tse
                 = (TaskStepEngine)SteppingEngine.this.taskStateMap
                 .get(task);
             // Must have missed the terminating event
-            if (tse.isAlive()) {
+            if (tse != null && tse.isAlive()) {
                 tse.setState(new StepTerminatedState(task));
 
                 if (signal)

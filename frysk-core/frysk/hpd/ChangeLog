@@ -1,6 +1,7 @@
 2007-12-12  Rick Moseley  <rmoseley@redhat.com>
 
 	* TestHpdTestHarness.java: New for testing bz #5480.
+	* TestKillCommand.java (testLoadKill): New for bz #5482.
 
 2007-12-11  Rick Moseley  <rmoseley@redhat.com>
 

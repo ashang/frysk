@@ -1,3 +1,7 @@
+2007-12-12 Rick Moseley  <rmoseley@redhat.com>
+
+	* SteppingEngine.java (updateTerminated): Fix bz# 5482.
+
 2007-12-11  Andrew Cagney  <cagney@redhat.com>
 
 	* TestStepping.java: Update; DebugInfoFrame's .getLines() replaced
