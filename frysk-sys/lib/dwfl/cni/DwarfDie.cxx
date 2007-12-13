@@ -101,7 +101,7 @@ lib::dwfl::DwarfDie::get_decl_file(jlong var_die)
   return JvNewStringLatin1 (name);
 }
 
-jlong
+jint
 lib::dwfl::DwarfDie::get_decl_line(jlong var_die)
 {
   Dwarf_Die *die = (Dwarf_Die*) var_die;

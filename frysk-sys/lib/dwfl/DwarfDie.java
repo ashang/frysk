@@ -95,7 +95,7 @@ abstract public class DwarfDie {
 	return get_decl_file(this.getPointer());
     }
   
-    public long getDeclLine() {
+    public int getDeclLine() {
 	return get_decl_line(this.getPointer());
     }
 
@@ -440,7 +440,7 @@ abstract public class DwarfDie {
   
     private native String get_decl_file (long var_die);
   
-    private native long get_decl_line (long var_die);
+    private native int get_decl_line (long var_die);
   
     private native int get_decl_column (long var_die);
   
