@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.rt;
+package frysk.scopes;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,13 +53,13 @@ import frysk.proc.Proc;
  * The source-code line information.
  */
 
-public class Line {
+public class SourceLocation {
 
     /**
      * The LINE is unknown; this is used instead of "null" to denote
      * missing line information.
      */
-    public static final Line UNKNOWN = new Line(null, 0, 0, null);
+    public static final SourceLocation UNKNOWN = new SourceLocation(null, 0, 0, null);
 
     private final File file;
 
@@ -73,7 +73,7 @@ public class Line {
   
     private DOMFunction function;
 
-    public Line(File file, int line, int column, Proc proc) {
+    public SourceLocation(File file, int line, int column, Proc proc) {
 	this.file = file;
 	this.line = line;
 	this.column = column;

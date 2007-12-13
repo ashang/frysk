@@ -49,7 +49,7 @@ import java.util.Iterator;
 
 import frysk.dom.cparser.CDTParser;
 import frysk.proc.Proc;
-import frysk.rt.Line;
+import frysk.scopes.SourceLocation;
 
 import org.jdom.Element;
 
@@ -121,7 +121,7 @@ public class DOMImage
      * 
      */
 	
-    public DOMSource addSource (Proc proc, Line line, DOMFrysk dom) throws IOException
+    public DOMSource addSource (Proc proc, SourceLocation line, DOMFrysk dom) throws IOException
     {
 //    Get the list of include file paths associated with this image
       ArrayList arrayincpaths = DOMCommon.getIncludePaths(proc.getExe());

@@ -1,3 +1,7 @@
+2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* SourceLocation.java: Moved frysk.rt.Line to here.
+
 2007-12-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Subprogram.java (getDeclaredObjectByName): Now searches

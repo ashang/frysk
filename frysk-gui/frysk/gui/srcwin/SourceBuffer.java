@@ -47,8 +47,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
 import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
+
 import org.gnu.gdk.Color;
 import org.gnu.glib.JGException;
 import org.gnu.gtk.TextBuffer;
@@ -75,7 +77,7 @@ import frysk.gui.srcwin.prefs.SyntaxPreference;
 import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference.SyntaxPreferenceListener;
 import frysk.proc.Task;
-import frysk.rt.Line;
+import frysk.scopes.SourceLocation;
 import frysk.value.Value;
 
 /**
@@ -213,7 +215,7 @@ public class SourceBuffer extends TextBuffer {
 	if (mode != SOURCE_MODE)
 	    return lineNo <= this.getLineCount();
 
-	if (this.scope == null || this.scope.getLine() == Line.UNKNOWN)
+	if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN)
 	    return false;
 
 	DOMLine line = this.scope.getLine().getDOMSource().getLine(
@@ -236,7 +238,7 @@ public class SourceBuffer extends TextBuffer {
 	if (mode != SOURCE_MODE)
 	    return false;
 
-	if (this.scope == null || this.scope.getLine() == Line.UNKNOWN)
+	if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN)
 	    return false;
 
 	DOMLine line = this.scope.getLine().getDOMSource().getLine(
@@ -251,7 +253,7 @@ public class SourceBuffer extends TextBuffer {
 	if (mode != SOURCE_MODE)
 	    return;
 
-	if (this.scope == null || this.scope.getLine() == Line.UNKNOWN)
+	if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN)
 	    return;
 
 	DOMLine line = this.scope.getLine().getDOMSource().getLine(
@@ -321,13 +323,13 @@ public class SourceBuffer extends TextBuffer {
 
 	// Find the first frame with source-line information.
 	while (frame.getOuterDebugInfoFrame() != null
-	       && frame.getLine() == Line.UNKNOWN) {
+	       && frame.getLine() == SourceLocation.UNKNOWN) {
 	    frame = frame.getOuterDebugInfoFrame();
-	    if (frame.getLine() == Line.UNKNOWN)
+	    if (frame.getLine() == SourceLocation.UNKNOWN)
 		return;
 	}
 
-	if (frame.getLine() == Line.UNKNOWN)
+	if (frame.getLine() == SourceLocation.UNKNOWN)
 	    return;
 
 	int line = frame.getLine().getLine();
@@ -361,12 +363,12 @@ public class SourceBuffer extends TextBuffer {
          * SourceBuffer.
          */
 	while (curr != null) {
-	    if (curr.getLine() == Line.UNKNOWN) {
+	    if (curr.getLine() == SourceLocation.UNKNOWN) {
 		curr = curr.getOuterDebugInfoFrame();
 		continue;
 	    }
 
-	    Line stackLine = curr.getLine();
+	    SourceLocation stackLine = curr.getLine();
 	    if (stackLine.getDOMSource() != null) {
 		if (newFrame == true
 			&& !stackLine.getDOMSource().getFileName().equals(
@@ -616,7 +618,7 @@ public class SourceBuffer extends TextBuffer {
          */
     public String getVariable(TextIter iter) {
 	
-	if (this.scope == null || this.scope.getLine() == Line.UNKNOWN 
+	if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN 
 	    || debugInfo == null)
 	    return null;
 
@@ -699,7 +701,7 @@ public class SourceBuffer extends TextBuffer {
          *                ends on
          */
     public void addComment(int lineStart, int colStart, int lineEnd, int colEnd) {
-	if (this.scope.getLine() == Line.UNKNOWN)
+	if (this.scope.getLine() == SourceLocation.UNKNOWN)
 	    return;
 
 	CommentList comment = new CommentList(lineStart, colStart, lineEnd,
@@ -728,7 +730,7 @@ public class SourceBuffer extends TextBuffer {
          * @return The number of lines in the file
          */
     public int getLineCount() {
-	if (this.scope == null || this.scope.getLine() == Line.UNKNOWN)
+	if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN)
 	    return 0;
 
 	DOMSource source = this.scope.getLine().getDOMSource();
@@ -754,7 +756,7 @@ public class SourceBuffer extends TextBuffer {
          * @return true iff the given line has inlined code
          */
     public boolean hasInlineCode(int lineNumber) {
-	if (this.scope == null || this.scope.getLine() == Line.UNKNOWN)
+	if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN)
 	    return false;
 
 	DOMSource source = this.scope.getLine().getDOMSource();
@@ -776,7 +778,7 @@ public class SourceBuffer extends TextBuffer {
          *         information, or null if no information exists
          */
     public DOMInlineInstance getInlineInstance(int lineNumber) {
-	if (this.scope == null || this.scope.getLine() == Line.UNKNOWN)
+	if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN)
 	    return null;
 
 	Iterator iter = this.scope.getLine().getDOMSource().getInlines(
@@ -810,7 +812,7 @@ public class SourceBuffer extends TextBuffer {
 	this.scope = scope;
 	DOMSource data = null;
 
-	if (scope.getLine() != Line.UNKNOWN)
+	if (scope.getLine() != SourceLocation.UNKNOWN)
 	    data = scope.getLine().getDOMSource();
 
 	String file = "";
@@ -1066,7 +1068,7 @@ public class SourceBuffer extends TextBuffer {
          */
     protected void loadFile() throws FileNotFoundException, JGException {
 
-	if (this.scope == null || this.scope.getLine() == Line.UNKNOWN)
+	if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN)
 	    return;
 
 	DOMSource source = this.scope.getLine().getDOMSource();
@@ -1084,12 +1086,12 @@ public class SourceBuffer extends TextBuffer {
 
 	    DebugInfoFrame curr = this.scope;
 	    while (curr != null) {
-		if (curr.getLine() != Line.UNKNOWN
+		if (curr.getLine() != SourceLocation.UNKNOWN
 		    && curr.getLine().getDOMSource() != null) {
 		    source = curr.getLine().getDOMSource();
 		    break;
 		}
-		if (curr.getLine() != Line.UNKNOWN) {
+		if (curr.getLine() != SourceLocation.UNKNOWN) {
 		    this.scope = curr;
 		    this.deleteText(this.getStartIter(), this.getEndIter());
 		    this.insertText(loadUnmarkedText(this.scope));
@@ -1144,7 +1146,7 @@ public class SourceBuffer extends TextBuffer {
          */
     private String loadUnmarkedText(DebugInfoFrame frame) throws FileNotFoundException {
 	BufferedReader br = null;
-	if (frame.getLine() == Line.UNKNOWN)
+	if (frame.getLine() == SourceLocation.UNKNOWN)
 	    return "Cannot find source!";
 
 	try {

@@ -48,7 +48,7 @@ import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
 import lib.dwfl.DwflLine;
 import frysk.dwfl.DwflCache;
-import frysk.rt.Line;
+import frysk.scopes.SourceLocation;
 import frysk.scopes.Scope;
 import frysk.scopes.ScopeFactory;
 import frysk.scopes.Subprogram;
@@ -164,7 +164,7 @@ public class DebugInfoFrame extends FrameDecorator {
      * lack of line-number information can be determined with the
      * test: <<tt>>.getLine() == Line.NULL</tt>.
      */
-    public Line getLine() {
+    public SourceLocation getLine() {
 	if (this.line == null) {
 	    Dwfl dwfl = DwflCache.getDwfl(this.getTask());
   	    // The innermost frame and frames which were
@@ -182,17 +182,17 @@ public class DebugInfoFrame extends FrameDecorator {
   		    File parent = new File(dwflLine.getCompilationDir());
   		    f = new File(parent, dwflLine.getSourceFile());
 		}
-  		this.line = new Line(f, dwflLine.getLineNum(),
+  		this.line = new SourceLocation(f, dwflLine.getLineNum(),
 				     dwflLine.getColumn(),
 				     this.getTask().getProc());
 	    }
 	    // If the fetch failed, mark it as unknown.
 	    if (this.line == null)
-		this.line = Line.UNKNOWN;
+		this.line = SourceLocation.UNKNOWN;
         }
 	return this.line;
     }
-    private Line line;
+    private SourceLocation line;
 
     public void toPrint(PrintWriter writer, boolean printParameters,
 		 boolean fullpath){
@@ -214,12 +214,12 @@ public class DebugInfoFrame extends FrameDecorator {
 	    writer.print(") ");
           
 	    if (fullpath) {
-		Line line = this.getLine();
+		SourceLocation line = this.getLine();
 		writer.print(line.getFile().getPath());
 		writer.print("#");
 		writer.print(line.getLine());
 	    } else {
-		Line line = this.getLine();
+		SourceLocation line = this.getLine();
 		writer.print(".../"+line.getFile().getName());
 		writer.print("#");
 		writer.print(line.getLine());

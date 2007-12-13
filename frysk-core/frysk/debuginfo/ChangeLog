@@ -1,3 +1,9 @@
+2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Moved frysk.rt.Line to frysk.scopes.SourceLocation.
+	* TestDebugInfoStackTrace.java: Updated.
+	* DebugInfoFrame.java: Updated.
+
 2007-12-11  Andrew Cagney  <cagney@redhat.com>
 	
 	* DebugInfoFrame.java (getLine()): Replace getLines().

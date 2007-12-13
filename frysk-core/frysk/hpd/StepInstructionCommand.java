@@ -44,7 +44,7 @@ import java.util.LinkedList;
 import java.util.List;
 import frysk.proc.Task;
 import frysk.debuginfo.DebugInfoFrame;
-import frysk.rt.Line;
+import frysk.scopes.SourceLocation;
 
 public class StepInstructionCommand extends ParameterizedCommand {
     private static final String full = "Step a process by an instruction. "
@@ -75,7 +75,7 @@ public class StepInstructionCommand extends ParameterizedCommand {
 		Task task = (Task) stepped.next();
 		DebugInfoFrame rf = cli.getTaskFrame(task);
 
-		if (rf.getLine() == Line.UNKNOWN)
+		if (rf.getLine() == SourceLocation.UNKNOWN)
 		    cli.addMessage("Task stopped at address 0x"
 			    + Long.toHexString(rf.getAdjustedAddress()),
 			    Message.TYPE_NORMAL);

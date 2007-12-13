@@ -1,3 +1,8 @@
+2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Moved frysk.rt.Line to frysk.scopes.SourceLocation.
+	* DOMFactory.java: Updated.
+
 2007-12-11  Andrew Cagney  <cagney@redhat.com>
 
 	* DOMFactory.java: Update, DebugInfoFrame.getLines() replaced by

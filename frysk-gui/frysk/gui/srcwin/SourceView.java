@@ -86,8 +86,8 @@ import frysk.gui.prefs.ColorPreference.ColorPreferenceListener;
 import frysk.gui.prefs.IntPreference.IntPreferenceListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.rt.UpdatingDisplayValue;
+import frysk.scopes.SourceLocation;
 import frysk.value.Value;
-import frysk.rt.Line;
 
 /**
  * This class is used to add some functionality to TextView that may be needed
@@ -956,7 +956,7 @@ public class SourceView extends TextView implements View, ExposeListener {
 
 	DebugInfoFrame frame = this.buf.getScope();
 
-	if (frame == null || frame.getLine() == Line.UNKNOWN)
+	if (frame == null || frame.getLine() == SourceLocation.UNKNOWN)
 	    return false;
 
 	DOMSource source = frame.getLine().getDOMSource();

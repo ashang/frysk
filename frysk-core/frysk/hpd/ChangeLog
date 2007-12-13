@@ -1,4 +1,14 @@
 2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Moved frysk.rt.Line to frysk.scopes.SourceLocation.
+	* StepNextiCommand.java: 
+	* StepNextCommand.java: Updated.
+	* StepInstructionCommand.java: Updated.
+	* StepFinishCommand.java: Updated.
+	* StepCommand.java: Updated.
+	* ListCommand.java: Updated.
+
+2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
 	
 	DwarfDie.getDeclFile() now returns File.
 	* ListCommand.java (interpret): Updated

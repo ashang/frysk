@@ -1,3 +1,9 @@
+2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Moved frysk.rt.Line to frysk.scopes.SourceLocation.
+	* TestSteppingEngine.java: Updated.
+	* TestStepping.java: Updated.
+
 2007-12-12 Rick Moseley  <rmoseley@redhat.com>
 
 	* SteppingEngine.java (updateTerminated): Fix bz# 5482.

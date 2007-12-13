@@ -49,7 +49,7 @@ import frysk.event.Event;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.rt.Line;
+import frysk.scopes.SourceLocation;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 import frysk.stepping.SteppingEngine;
@@ -146,7 +146,7 @@ public class TestDebugInfoStackTrace
   private void firstTestBacktraceAssertions ()
   {
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
-    Line line;
+    SourceLocation line;
     Symbol symbol;
 
     assertNotNull(frame);
@@ -328,13 +328,13 @@ public class TestDebugInfoStackTrace
 
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
     
-    if (frame.getLine() == Line.UNKNOWN) {
+    if (frame.getLine() == SourceLocation.UNKNOWN) {
         this.lineMap.put(myTask, new Integer(0));
         steppingEngine.stepLine(myTask.getProc().getTasks());
         return;
       }
       
-    Line line = frame.getLine();
+    SourceLocation line = frame.getLine();
     this.lineMap.put(myTask, new Integer(line.getLine()));
     steppingEngine.stepLine(myTask.getProc().getTasks());
   }
@@ -503,13 +503,13 @@ public class TestDebugInfoStackTrace
   public void pushPopAssertions ()
   {
     DebugInfoFrame sFrame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
-    Line line = null; 
+    SourceLocation line = null; 
     
     if (this.testState == PUSH || this.testState == POP)
       {
 
         int lineNum;
-            if (sFrame.getLine() == Line.UNKNOWN)
+            if (sFrame.getLine() == SourceLocation.UNKNOWN)
               {
                 lineNum = 0;
               }
@@ -652,7 +652,7 @@ public class TestDebugInfoStackTrace
           {
             frameTracker[task_count][i][0] = "" + frame.toString();
             
-            if (frame.getLine() != Line.UNKNOWN)
+            if (frame.getLine() != SourceLocation.UNKNOWN)
               frameTracker[task_count][i][1] = frame.getLine().getFile().getAbsolutePath();
             else
               frameTracker[task_count][i][1] = "";
@@ -664,7 +664,7 @@ public class TestDebugInfoStackTrace
             else
               frameTracker[task_count][i][3] = "" + frame.getInner().toString();
             
-            if (frame.getLine() != Line.UNKNOWN)
+            if (frame.getLine() != SourceLocation.UNKNOWN)
               frameTracker[task_count][i][4] = "" + frame.getLine().getLine();
             else
               frameTracker[task_count][i][4] = "" + 0;

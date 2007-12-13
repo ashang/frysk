@@ -48,9 +48,9 @@ import frysk.debuginfo.DebugInfoFrame;
 import frysk.dom.DOMFunction;
 import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMLine;
-import frysk.rt.Line;
 import frysk.dom.DOMTag;
 import frysk.dom.DOMTagTypes;
+import frysk.scopes.SourceLocation;
 import frysk.value.Value;
 
 /**
@@ -190,7 +190,7 @@ public class InlineBuffer
    */
   public String getVariable (TextIter iter)
   {
-    if (this.scope == null || this.scope.getLine() == Line.UNKNOWN)
+    if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN)
       return null;
     
     DOMLine line = this.scope.getLine().getDOMSource().getLine(
@@ -249,7 +249,7 @@ public class InlineBuffer
    */
   protected void createTags ()
   {
-    if (this.scope == null || this.scope.getLine() == Line.UNKNOWN)
+    if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN)
       return;
     
     Iterator lines = this.scope.getLine().getDOMSource().getLines();

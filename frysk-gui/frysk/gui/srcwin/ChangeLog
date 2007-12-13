@@ -1,3 +1,12 @@
+2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Moved frysk.rt.Line to frysk.scopes.SourceLocation.
+	* SourceView.java: Updated.
+	* SourceWindow.java: Updated.
+	* SourceBuffer.java: Updated.
+	* InlineBuffer.java: Updated.
+	* CurrentStackView.java: Updated.
+
 2007-12-11  Andrew Cagney  <cagney@redhat.com>
 
 	* CurrentStackView.java: Update DebugInfoFrame's .getLines()

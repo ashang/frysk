@@ -42,7 +42,8 @@ package frysk.dom;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import frysk.rt.Line;
+
+import frysk.scopes.SourceLocation;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.proc.Proc;
 
@@ -57,7 +58,7 @@ public class DOMFactory
   {
     DOMFrysk dom = null;
 
-    if (frame.getLine() == Line.UNKNOWN)
+    if (frame.getLine() == SourceLocation.UNKNOWN)
       return null;
     
     File file = frame.getLine().getFile();

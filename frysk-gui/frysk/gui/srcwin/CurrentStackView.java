@@ -44,7 +44,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
-import frysk.rt.Line;
+
 import org.gnu.gtk.CellRenderer;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.DataColumn;
@@ -65,6 +65,7 @@ import frysk.debuginfo.DebugInfoFrame;
 import frysk.dom.DOMLine;
 import frysk.proc.Isa;
 import frysk.proc.Task;
+import frysk.scopes.SourceLocation;
 
 public class CurrentStackView
 	extends TreeView
@@ -183,7 +184,7 @@ public class CurrentStackView
 	      iter = treeModel.appendRow(taskIter);
 
 	    // Check for inlined code
-	    if (frame.getLine() != Line.UNKNOWN
+	    if (frame.getLine() != SourceLocation.UNKNOWN
 		&& frame.getLine().getDOMSource() != null)
 	      {
 		DOMLine line = frame.getLine().getDOMSource().getLine(
@@ -300,7 +301,7 @@ public class CurrentStackView
 		hasInlinedCode = false;
 
 		// Check for inlined code
-		if (frame.getLine() != Line.UNKNOWN
+		if (frame.getLine() != SourceLocation.UNKNOWN
 		    && frame.getLine().getDOMSource() != null)
 		  {
 			DOMLine line = frame.getLine().getDOMSource().getLine(frame.getLine().getLine());

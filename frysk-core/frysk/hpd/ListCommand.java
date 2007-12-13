@@ -44,7 +44,9 @@ import java.util.List;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
-import frysk.rt.Line;
+
+import frysk.scopes.SourceLocation;
+
 import java.util.Iterator;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.DwTag; 
@@ -97,7 +99,7 @@ class ListCommand extends ParameterizedCommand {
 	    cli.outWriter.print(taskData.getID());
 	    cli.outWriter.println("]");
             DebugInfoFrame frame = cli.getTaskFrame(task);
-            if (frame.getLine() == Line.UNKNOWN) {
+            if (frame.getLine() == SourceLocation.UNKNOWN) {
 		cli.outWriter.println("No symbol table is available.");
 		continue;
             }
@@ -142,7 +144,7 @@ class ListCommand extends ParameterizedCommand {
             }
  
             if (file == null) {
-                if (frame.getLine() != Line.UNKNOWN) {
+                if (frame.getLine() != SourceLocation.UNKNOWN) {
                     file = (frame.getLine()).getFile();
                     if (file == null) {
                         cli.addMessage("No symbol table is available.",

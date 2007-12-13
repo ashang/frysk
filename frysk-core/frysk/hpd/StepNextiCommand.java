@@ -44,7 +44,7 @@ import java.util.LinkedList;
 import java.util.List;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.proc.Task;
-import frysk.rt.Line;
+import frysk.scopes.SourceLocation;
 
 public class StepNextiCommand extends ParameterizedCommand {
 
@@ -84,7 +84,7 @@ public class StepNextiCommand extends ParameterizedCommand {
               Task task = (Task)taskIter.next();
               DebugInfoFrame rf =  cli.getTaskFrame(task);
               
-              if (rf.getLine() == Line.UNKNOWN)
+              if (rf.getLine() == SourceLocation.UNKNOWN)
                 cli.addMessage("Task stopped at address 0x" + Long.toHexString(rf.getAdjustedAddress()), Message.TYPE_NORMAL);
               else
                 cli.addMessage("Task stopped at line " + rf.getLine().getLine() + " in file " + rf.getLine().getFile(), Message.TYPE_NORMAL);

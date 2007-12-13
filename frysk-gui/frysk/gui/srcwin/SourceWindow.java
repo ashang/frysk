@@ -136,11 +136,12 @@ import frysk.gui.terminal.TermWindow;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.rt.DisplayManager;
-import frysk.rt.Line;
 import frysk.rt.UpdatingDisplayValue;
 import frysk.stack.FrameIdentifier;
 import frysk.stepping.SteppingEngine;
 import frysk.stepping.TaskStepEngine;
+
+import frysk.scopes.SourceLocation;
 
 /**
  * The SourceWindow displays the source or assembly level view of a Task's
@@ -614,7 +615,7 @@ public class SourceWindow extends Window {
 	    DebugInfoFrame curr = temp;
 	    this.currentFrame = temp;
 
-	    while (curr != null && curr.getLine() == Line.UNKNOWN)
+	    while (curr != null && curr.getLine() == SourceLocation.UNKNOWN)
 		curr = curr.getOuterDebugInfoFrame();
 
 	    if (curr != null) {
@@ -651,7 +652,7 @@ public class SourceWindow extends Window {
 		// stackView.expandAll();
 	    }
 
-	    if (this.currentFrame.getLine() != Line.UNKNOWN) { 
+	    if (this.currentFrame.getLine() != SourceLocation.UNKNOWN) { 
 		    if (this.currentFrame.getLine().getDOMFunction() != null)
 			this.view.scrollToFunction(this.currentFrame.getLine().getDOMFunction().getFunctionCall());
 		    else
@@ -802,7 +803,7 @@ public class SourceWindow extends Window {
 	StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
 	sbar.push(0, "Stopped");
 
-	if (this.currentFrame.getLine() == Line.UNKNOWN) {
+	if (this.currentFrame.getLine() == SourceLocation.UNKNOWN) {
 	    ((SourceBuffer) ((SourceView) this.view).getBuffer())
 		    .disassembleFrame(this.currentFrame);
 	}
@@ -2085,7 +2086,7 @@ public class SourceWindow extends Window {
 	    ((SourceView) this.view).setLineNums(true);
 	    ((SourceView) this.view).setMode(SourceBuffer.SOURCE_MODE);
 
-	    if (this.currentFrame.getLine() != Line.UNKNOWN) {
+	    if (this.currentFrame.getLine() != SourceLocation.UNKNOWN) {
 		((SourceView) this.view).scrollToFunction(this.currentFrame
 			.getSymbol().getDemangledName());
 	    }
@@ -2172,7 +2173,7 @@ public class SourceWindow extends Window {
          * code, the other displaying assembly information.
          */
     private void switchToSourceAsmMode() {
-	if (this.currentFrame.getLine() == Line.UNKNOWN)
+	if (this.currentFrame.getLine() == SourceLocation.UNKNOWN)
 	    return;
 
 	if (!(this.view instanceof MixedView)) {
@@ -2250,9 +2251,9 @@ public class SourceWindow extends Window {
 	int task_id = sf.getTask().getTid();
 
 	DOMSource source = null;
-	Line line = sf.getLine();
+	SourceLocation line = sf.getLine();
 
-	if (line != Line.UNKNOWN) {
+	if (line != SourceLocation.UNKNOWN) {
 	    if (line.getDOMFunction() == null)
 	        noDOMFunction = true;
 	    source = line.getDOMSource();
@@ -2265,9 +2266,9 @@ public class SourceWindow extends Window {
 		}
 	}
 
-	if (line == Line.UNKNOWN)
+	if (line == SourceLocation.UNKNOWN)
 	    setSourceLabel("Unknown File for: ", task_name, proc_id, task_id, noDOMFunction, source);
-	else if (source == null && line != Line.UNKNOWN)
+	else if (source == null && line != SourceLocation.UNKNOWN)
 	    setSourceLabel(sf.getLine().getFile().getPath() + " for: ",
 		    task_name, proc_id, task_id, noDOMFunction, source);
 	else
@@ -2300,11 +2301,11 @@ public class SourceWindow extends Window {
 	int mode = this.viewPicker.getActive();
 
 	DOMSource source = null;
-	Line line = selected.getLine();
+	SourceLocation line = selected.getLine();
 
 	updateSourceLabel(selected);
 
-	if (line != Line.UNKNOWN) {
+	if (line != SourceLocation.UNKNOWN) {
 	    source = line.getDOMSource();
 	    if (source == null)
 		try {
@@ -2316,7 +2317,7 @@ public class SourceWindow extends Window {
 		}
 	}
 
-	if (line == Line.UNKNOWN) {
+	if (line == SourceLocation.UNKNOWN) {
 	    SourceBuffer b = null;
 
 	    if (mode == 2)
@@ -2341,7 +2342,7 @@ public class SourceWindow extends Window {
 		b.deleteText(b.getStartIter(), b.getEndIter());
 	    }
 	} else if (source != null) {
-	    if (this.currentFrame.getLine() == Line.UNKNOWN
+	    if (this.currentFrame.getLine() == SourceLocation.UNKNOWN
 		|| !source.getFileName()
 			    .equals(
 				    this.currentFrame.getLine().getFile()
@@ -2371,7 +2372,7 @@ public class SourceWindow extends Window {
 
 		createTags();
 
-		if (this.currentFrame.getLine() == Line.UNKNOWN) {
+		if (this.currentFrame.getLine() == SourceLocation.UNKNOWN) {
 		    if (mode == 2) {
 			this.currentFrame = selected;
 			switchToSourceAsmMode();
