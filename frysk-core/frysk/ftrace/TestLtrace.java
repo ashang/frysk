@@ -135,64 +135,63 @@ public class TestLtrace
 
     public void testCallRecorded()
     {
-    if(unresolvedOffUtrace(5053))
-      return;
+	if(unresolvedOffUtrace(5053))
+	    return;
 
-    class MyController2
-      implements LtraceController
-    {
-      public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver)
-      {
-	if (!task.getProc().getExe().equals(objf.getFilename().getPath()))
-	  return;
+	class MyController2
+	    implements LtraceController
+	{
+	    public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver) {
+		if (!task.getProc().getExe().equals(objf.getFilename().getPath()))
+		    return;
 
-	try {
-	  objf.eachTracePoint(new ObjectFile.TracePointIterator() {
-	      public void tracePoint(TracePoint tp) {
-		driver.tracePoint(task, tp);
-	      }
-	    }, TracePointOrigin.PLT);
+		try {
+		    objf.eachTracePoint(new ObjectFile.TracePointIterator() {
+			    public void tracePoint(TracePoint tp) {
+				driver.tracePoint(task, tp);
+			    }
+			}, TracePointOrigin.PLT);
+		}
+		catch (lib.dwfl.ElfException ee) {
+		    ee.printStackTrace();
+		}
+	    }
 	}
-	catch (lib.dwfl.ElfException ee) {
-	  ee.printStackTrace();
+
+	class MyObserver extends DummyFunctionObserver {
+	    public ArrayList events = new ArrayList();
+	    public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
+		events.add("enter " + symbol.name);
+		return Action.CONTINUE;
+	    }
+	    public Action funcallLeave(Task task, Symbol symbol, Object retVal) {
+		events.add("leave " + symbol.name);
+		return Action.CONTINUE;
+	    }
 	}
-      }
-    }
 
-    class MyObserver extends DummyFunctionObserver {
-      public ArrayList events = new ArrayList();
-      public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
-	events.add("enter " + symbol.name);
-	return Action.CONTINUE;
-      }
-      public Action funcallLeave(Task task, Symbol symbol, Object retVal) {
-	events.add("leave " + symbol.name);
-	return Action.CONTINUE;
-      }
-    }
+	String[] cmd = {Config.getPkgLibFile("funit-syscalls").getPath()};
+	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
+	Task task = child.getMainTask();
+	Proc proc = task.getProc();
+	int pid = proc.getPid();
 
-    String[] cmd = {Config.getPkgLibFile("funit-syscalls").getPath()};
-    DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
-    Task task = child.getMainTask();
-    Proc proc = task.getProc();
-    int pid = proc.getPid();
+	LtraceController controller = new MyController2();
+	MyObserver observer = new MyObserver();
+	Ltrace.requestAddFunctionObserver(task, observer, controller);
+	assertRunUntilStop("add function observer");
 
-    LtraceController controller = new MyController2();
-    MyObserver observer = new MyObserver();
-    Ltrace.requestAddFunctionObserver(task, observer, controller);
-    assertRunUntilStop("add function observer");
+	new StopEventLoopWhenProcRemoved(pid);
+	child.requestRemoveBlock();
+	assertRunUntilStop("run child until exit");
 
-    new StopEventLoopWhenProcRemoved(pid);
-    child.requestRemoveBlock();
-    assertRunUntilStop("run child until exit");
-
-    String[] expectedEvents = {
-      "enter __libc_start_main",
-      "enter open(64)?",
-      "leave open(64)?",
-      "enter close",
-      "leave close"
-    };
+	String[] expectedEvents = {
+	    "enter __libc_start_main",
+	    "enter open(64)?",
+	    "leave open(64)?",
+	    "enter close",
+	    "leave close"
+	};
 	for (int i = 0; i < expectedEvents.length; ++i) {
 	    String event = (String)observer.events.get(i);
 	    assertTrue("event `" + event + "' detected",
@@ -300,37 +299,6 @@ public class TestLtrace
 	if(unresolvedOffUtrace(5053))
 	    return;
 
-	class MyController4
-	    implements LtraceController
-	{
-	    final String name;
-	    int found = 0;
-
-	    MyController4(String name) {
-		this.name = name;
-	    }
-
-	    public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver)
-	    {
-		if (!task.getProc().getExe().equals(objf.getFilename().getPath()))
-		    return;
-
-		try {
-		    objf.eachTracePoint(new ObjectFile.TracePointIterator() {
-			    public void tracePoint(TracePoint tp) {
-				if (tp.symbol.hasName(MyController4.this.name)) {
-				    ++MyController4.this.found;
-				    driver.tracePoint(task, tp);
-				}
-			    }
-			}, TracePointOrigin.SYMTAB);
-		}
-		catch (lib.dwfl.ElfException ee) {
-		    ee.printStackTrace();
-		}
-	    }
-	}
-
 	class MyObserver4 extends DummyFunctionObserver {
 	    String name;
 	    HashSet enterAliases = new HashSet();
@@ -387,7 +355,88 @@ public class TestLtrace
 	assertEquals("number of leave aliases seen", symbols.length, observer.leaveAliases.size());
     }
 
+    public void testMultipleObservers()
+    {
+	if(unresolvedOffUtrace(5053))
+	    return;
+
+	class MyObserver5 extends DummyFunctionObserver {
+	    boolean added = false;
+	    int enter = 0;
+	    int leave = 0;
+	    public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
+		enter++;
+		return Action.CONTINUE;
+	    }
+	    public Action funcallLeave(Task task, Symbol symbol, Object retVal) {
+		leave++;
+		return Action.CONTINUE;
+	    }
+	    public void addedTo (Object observable) {
+		super.addedTo (observable);
+		added = true;
+	    }
+	}
+
+	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
+	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
+	Task task = child.getMainTask();
+	Proc proc = task.getProc();
+	int pid = proc.getPid();
+
+	int N = 10;
+	LtraceController controller = new MyController4("trace_me_1");
+	MyObserver5[] observers = new MyObserver5[N];
+	for (int i = 0; i < N; i++) {
+	    observers[i] = new MyObserver5();
+	    Ltrace.requestAddFunctionObserver(task, observers[i], controller);
+	}
+	assertRunUntilStop("add function observers");
+	for (int i = 0; i < N; i++)
+	    assertTrue("observer #" + i + " added", observers[i].added);
+
+	new StopEventLoopWhenProcRemoved(pid);
+	child.requestRemoveBlock();
+	assertRunUntilStop("run child until exit");
+
+	for (int i = 0; i < N; i++) {
+	    assertEquals("observer #" + i + " number of enter hits", 1, observers[i].enter);
+	    assertEquals("observer #" + i + " number of leave hits", 1, observers[i].leave);
+	}
+    }
+
     public void tearDown()
     {
+    }
+
+    class MyController4
+	implements LtraceController
+    {
+	final String name;
+	int found = 0;
+
+	MyController4(String name) {
+	    this.name = name;
+	}
+
+	public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver)
+	{
+	    if (!task.getProc().getExe().equals(objf.getFilename().getPath()))
+		return;
+
+	    try {
+		objf.eachTracePoint(new ObjectFile.TracePointIterator() {
+			public void tracePoint(TracePoint tp) {
+			    if (tp.symbol.hasName(MyController4.this.name)) {
+				++MyController4.this.found;
+				driver.tracePoint(task, tp);
+			    }
+			}
+		    }, TracePointOrigin.SYMTAB);
+	    }
+	    catch (lib.dwfl.ElfException ee) {
+		ee.printStackTrace();
+	    }
+	}
     }
 }
