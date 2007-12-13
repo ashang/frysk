@@ -53,8 +53,9 @@
 	    <td valign="top">
 	      <!-- start logo -->
 <p>
-<a href="#faq-build">Build or Test Question?</a><br>
-<a href="#faq-git">Git questions</a><br>
+<a href="#faq-build">Build and Test FAQ</a><br>
+<a href="#faq-eclipse">Eclipse FAQ</a><br>
+<a href="#faq-git">GIT FAQ</a><br>
 <br>
 <a href="#f">Fedora</a><br>
 <a href="#ubuntu">Ubuntu</a><br>
@@ -257,15 +258,6 @@ answers</h2></a>
 <li>Add, rename, or delete the file. <li>Run <tt>./bootstrap.sh</tt>
 </ul></dd>
 
-<dt>How do I build under eclipse?</dt> <dd> <ul>
-<li> Go to Window->Preferences...->General->Workspace->Linked Resources.
-<li> Create a new linked resource called "build" and link it to a directory
-where you want to build frysk.
-<li> Select Project->Build Project or Project->Clean to rebuild the project.
-<li> If you already have a build in that directory you can refresh your
-project and the jars will be found.
-</ul></dd>
-
 <dt>How do I add a Java program that should be installed into
 <tt>bin/</tt>?</dt> <dd> <ul> <li>in the <tt>frysk/pkgbindir/</tt>
 directory, create <tt>.java</tt> and <tt>.xml</tt> files named to
@@ -357,6 +349,23 @@ is to be used with the current version of libgcj all occurrences of
 suppression will take place.</dd>
 
 </dl>
+
+<h3><a name="faq-eclipse">Eclipse Questions, with Answers</h3></a>
+
+<dt>How to I edit files using eclipse?</dt>
+
+<dd>
+<ul>
+<li>Check eclipse-jdt is installed
+<li>Select: File -> New -> Project; to bring up the New Project window
+<li>Select: Java + Java Project
+<li>Edit: Create project from existing source; entering the root of a fresh GIT tree
+<li>Click finish
+</ul>
+</dd>
+
+<dt>What should my eclipse format options be set to?</dt>
+<dd>Good question</dd>
 
 <h3><a name="faq-git">GIT Questions, with Answers</h3></a>
 
