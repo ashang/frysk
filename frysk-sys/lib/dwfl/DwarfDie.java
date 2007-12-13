@@ -39,6 +39,7 @@
 
 package lib.dwfl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -91,8 +92,8 @@ abstract public class DwarfDie {
 	return get_diename();
     }
   
-    public String getDeclFile() {
-	return get_decl_file(this.getPointer());
+    public File getDeclFile() {
+	return new File(get_decl_file(this.getPointer()));
     }
   
     public int getDeclLine() {

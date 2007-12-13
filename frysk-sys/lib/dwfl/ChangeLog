@@ -1,5 +1,9 @@
 2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* DwarfDie.java (getDeclFile): Now returns File.
+
+2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* DwarfDie.java (getDeclLine): Now returns int instead of long.
 	* cni/DwarfDie.cxx (DwarfDie::get_decl_line): returns int
 	instead of long.

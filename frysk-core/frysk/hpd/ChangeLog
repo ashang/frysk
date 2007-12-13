@@ -1,3 +1,8 @@
+2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
+	
+	DwarfDie.getDeclFile() now returns File.
+	* ListCommand.java (interpret): Updated
+
 2007-12-13  Rick Moseley  <rmoseley@redhat.com>
 
 	* TestLoadCommand.java: Remove part of test no longer valid.

@@ -118,7 +118,7 @@ class ListCommand extends ParameterizedCommand {
                         }
 			if (funcDie.getTag().hashCode() == DwTag.SUBPROGRAM_) {
 			    line = (int)funcDie.getDeclLine();
-			    file = new File(funcDie.getDeclFile());
+			    file = funcDie.getDeclFile();
 			}
 			else {
 			    cli.addMessage("function " + cmd.parameter(0) + " not found.",
