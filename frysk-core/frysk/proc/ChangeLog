@@ -1,3 +1,7 @@
+2007-12-13  Rick Moseley  <rmoseley@redhat.com>
+
+	* Proc.java: Remove redundant call to performDetach().
+
 2007-12-11  Rick Moseley  <rmoseley@redhat.com>
 
 	* Proc.java (killRequest): New for "kill" command.

@@ -358,7 +358,6 @@ public abstract class Proc
                   quitLatch.countDown();
               }
           });
-      this.performDetach();
       this.requestAbandon();
   }
 
