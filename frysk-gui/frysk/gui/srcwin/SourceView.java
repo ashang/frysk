@@ -772,7 +772,7 @@ public class SourceView extends TextView implements View, ExposeListener {
 	// System.err.println("menu info " + expanded);
 	// only popup a window if the line is executable
 	if (event.getButtonPressed() == MouseEvent.BUTTON3
-	    && this.buf.getScope().getLine().getDOMSource()
+	    && this.buf.getScope().getLineXXX().getDOMSource()
 			.findFunction(breakLine) != null
 		&& (!expanded || overNested)) {
 	    // Menu m = new Menu();
@@ -959,7 +959,7 @@ public class SourceView extends TextView implements View, ExposeListener {
 	if (frame == null || frame.getLine() == SourceLocation.UNKNOWN)
 	    return false;
 
-	DOMSource source = frame.getLine().getDOMSource();
+	DOMSource source = frame.getLineXXX().getDOMSource();
 
 	if (source == null)
 	    return false;

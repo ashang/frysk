@@ -40,9 +40,11 @@
 package frysk.gui.srcwin;
 
 import java.util.Iterator;
+
 import org.gnu.gtk.TextChildAnchor;
 import org.gnu.gtk.TextIter;
 import org.jdom.Element;
+
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.dom.DOMFunction;
@@ -193,7 +195,7 @@ public class InlineBuffer
     if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN)
       return null;
     
-    DOMLine line = this.scope.getLine().getDOMSource().getLine(
+    DOMLine line = this.scope.getLineXXX().getDOMSource().getLine(
                                                 iter.getLineNumber()
                                                     + this.declaration.getStartingLine());
 
@@ -252,7 +254,7 @@ public class InlineBuffer
     if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN)
       return;
     
-    Iterator lines = this.scope.getLine().getDOMSource().getLines();
+    Iterator lines = this.scope.getLineXXX().getDOMSource().getLines();
 
     // Iterate through all the lines
     while (lines.hasNext())
@@ -290,7 +292,7 @@ public class InlineBuffer
 
           } // end tags.hasNext()
 
-        Iterator inlines = this.scope.getLine().getDOMSource().getInlines(line.getLineNum());
+        Iterator inlines = this.scope.getLineXXX().getDOMSource().getInlines(line.getLineNum());
 
         while (inlines.hasNext())
           {
@@ -306,7 +308,7 @@ public class InlineBuffer
       }// end lines.hasNext()
 
     // Now iterate through the comments
-    CommentList list = (CommentList) comments.get(this.scope.getLine().getDOMSource().getFileName());
+    CommentList list = (CommentList) comments.get(this.scope.getLineXXX().getDOMSource().getFileName());
 
     while (list != null)
       {

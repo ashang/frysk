@@ -1,5 +1,13 @@
 2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	Created LineXXX to contain dom related information instead of
+	SourceLocation.
+	* InlineBuffer.java: Updated.
+	* CurrentStackView.java: Updated.
+	* SourceView.java: Updated.
+
+2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	Moved frysk.rt.Line to frysk.scopes.SourceLocation.
 	* SourceView.java: Updated.
 	* SourceWindow.java: Updated.

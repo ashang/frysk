@@ -77,6 +77,7 @@ import frysk.gui.srcwin.prefs.SyntaxPreference;
 import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference.SyntaxPreferenceListener;
 import frysk.proc.Task;
+import frysk.rt.LineXXX;
 import frysk.scopes.SourceLocation;
 import frysk.value.Value;
 
@@ -218,7 +219,7 @@ public class SourceBuffer extends TextBuffer {
 	if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN)
 	    return false;
 
-	DOMLine line = this.scope.getLine().getDOMSource().getLine(
+	DOMLine line = this.scope.getLineXXX().getDOMSource().getLine(
 		lineNo + 1);
 
 	if (line == null)
@@ -241,7 +242,7 @@ public class SourceBuffer extends TextBuffer {
 	if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN)
 	    return false;
 
-	DOMLine line = this.scope.getLine().getDOMSource().getLine(
+	DOMLine line = this.scope.getLineXXX().getDOMSource().getLine(
 		lineNo + 1);
 	if (line == null)
 	    return false;
@@ -256,7 +257,7 @@ public class SourceBuffer extends TextBuffer {
 	if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN)
 	    return;
 
-	DOMLine line = this.scope.getLine().getDOMSource().getLine(
+	DOMLine line = this.scope.getLineXXX().getDOMSource().getLine(
 		lineNo + 1);
 	if (line == null)
 	    return;
@@ -285,7 +286,7 @@ public class SourceBuffer extends TextBuffer {
 	// if (! this.isLineExecutable(lineNum))
 	// return false;
 
-	DOMLine line = this.scope.getLine().getDOMSource().getLine(
+	DOMLine line = this.scope.getLineXXX().getDOMSource().getLine(
 		lineNum + 1);
 	if (line == null)
 	    return false;
@@ -341,7 +342,7 @@ public class SourceBuffer extends TextBuffer {
 		.getOffset()
 		+ lineStart.getCharsInLine()), true);
 
-	DOMSource s = frame.getLine().getDOMSource();
+	DOMSource s = frame.getLineXXX().getDOMSource();
 	if (s != null && s.getFileName().equals(this.fileName)) {
 	    // System.out.println("file is null or match - finishing " +
 	    // frame.getMethodName() + " " + frame.getLineNumber() + " " +
@@ -368,7 +369,7 @@ public class SourceBuffer extends TextBuffer {
 		continue;
 	    }
 
-	    SourceLocation stackLine = curr.getLine();
+	    LineXXX stackLine = curr.getLineXXX();
 	    if (stackLine.getDOMSource() != null) {
 		if (newFrame == true
 			&& !stackLine.getDOMSource().getFileName().equals(
@@ -622,7 +623,7 @@ public class SourceBuffer extends TextBuffer {
 	    || debugInfo == null)
 	    return null;
 
-	DOMSource source = this.scope.getLine().getDOMSource();
+	DOMSource source = this.scope.getLineXXX().getDOMSource();
 
 	if (mode != SOURCE_MODE || source == null)
 	    return null;
@@ -707,11 +708,11 @@ public class SourceBuffer extends TextBuffer {
 	CommentList comment = new CommentList(lineStart, colStart, lineEnd,
 		colEnd);
 
-	CommentList list = (CommentList) comments.get(this.scope.getLine()
+	CommentList list = (CommentList) comments.get(this.scope.getLineXXX()
 		.getDOMSource().getFileName());
 
 	if (list == null)
-	    comments.put(this.scope.getLine().getDOMSource().getFileName(),
+	    comments.put(this.scope.getLineXXX().getDOMSource().getFileName(),
 		    comment);
 	else {
 	    while (list.getNextComment() != null)
@@ -733,10 +734,10 @@ public class SourceBuffer extends TextBuffer {
 	if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN)
 	    return 0;
 
-	DOMSource source = this.scope.getLine().getDOMSource();
+	DOMSource source = this.scope.getLineXXX().getDOMSource();
 
 	if (mode == SOURCE_MODE && source != null)
-	    return this.scope.getLine().getDOMSource().getLineCount();
+	    return this.scope.getLineXXX().getDOMSource().getLineCount();
 	else
 	    return this.getEndIter().getLineNumber();
     }
@@ -759,7 +760,7 @@ public class SourceBuffer extends TextBuffer {
 	if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN)
 	    return false;
 
-	DOMSource source = this.scope.getLine().getDOMSource();
+	DOMSource source = this.scope.getLineXXX().getDOMSource();
 	// TODO: Inline code with assembly?
 	if (mode != SOURCE_MODE || source == null)
 	    return false;
@@ -781,7 +782,7 @@ public class SourceBuffer extends TextBuffer {
 	if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN)
 	    return null;
 
-	Iterator iter = this.scope.getLine().getDOMSource().getInlines(
+	Iterator iter = this.scope.getLineXXX().getDOMSource().getInlines(
 		lineNumber + 1);
 	if (!iter.hasNext())
 	    return null;
@@ -813,7 +814,7 @@ public class SourceBuffer extends TextBuffer {
 	DOMSource data = null;
 
 	if (scope.getLine() != SourceLocation.UNKNOWN)
-	    data = scope.getLine().getDOMSource();
+	    data = scope.getLineXXX().getDOMSource();
 
 	String file = "";
 
@@ -1071,7 +1072,7 @@ public class SourceBuffer extends TextBuffer {
 	if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN)
 	    return;
 
-	DOMSource source = this.scope.getLine().getDOMSource();
+	DOMSource source = this.scope.getLineXXX().getDOMSource();
 
 	if (source == null) {
 	    if (!this.firstLoad)
@@ -1087,8 +1088,8 @@ public class SourceBuffer extends TextBuffer {
 	    DebugInfoFrame curr = this.scope;
 	    while (curr != null) {
 		if (curr.getLine() != SourceLocation.UNKNOWN
-		    && curr.getLine().getDOMSource() != null) {
-		    source = curr.getLine().getDOMSource();
+		    && curr.getLineXXX().getDOMSource() != null) {
+		    source = curr.getLineXXX().getDOMSource();
 		    break;
 		}
 		if (curr.getLine() != SourceLocation.UNKNOWN) {
@@ -1202,7 +1203,7 @@ public class SourceBuffer extends TextBuffer {
          * Reads through the DOM and creates all the tags necessary
          */
     protected void createTags() {
-	DOMSource source = this.scope.getLine().getDOMSource();
+	DOMSource source = this.scope.getLineXXX().getDOMSource();
 
 	// System.out.println("Creating tags for " +
         // this.scope.getMethodName());

@@ -185,9 +185,9 @@ public class CurrentStackView
 
 	    // Check for inlined code
 	    if (frame.getLine() != SourceLocation.UNKNOWN
-		&& frame.getLine().getDOMSource() != null)
+		&& frame.getLineXXX().getDOMSource() != null)
 	      {
-		DOMLine line = frame.getLine().getDOMSource().getLine(
+		DOMLine line = frame.getLineXXX().getDOMSource().getLine(
 									  frame.getLine().getLine());
 		if (line != null && line.hasInlinedCode())
 		  {
@@ -302,9 +302,9 @@ public class CurrentStackView
 
 		// Check for inlined code
 		if (frame.getLine() != SourceLocation.UNKNOWN
-		    && frame.getLine().getDOMSource() != null)
+		    && frame.getLineXXX().getDOMSource() != null)
 		  {
-			DOMLine line = frame.getLine().getDOMSource().getLine(frame.getLine().getLine());
+			DOMLine line = frame.getLineXXX().getDOMSource().getLine(frame.getLine().getLine());
 			if (line != null && line.hasInlinedCode())
 			  {
 				hasInlinedCode = true;

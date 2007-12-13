@@ -48,6 +48,7 @@ import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
 import lib.dwfl.DwflLine;
 import frysk.dwfl.DwflCache;
+import frysk.rt.LineXXX;
 import frysk.scopes.SourceLocation;
 import frysk.scopes.Scope;
 import frysk.scopes.ScopeFactory;
@@ -183,8 +184,7 @@ public class DebugInfoFrame extends FrameDecorator {
   		    f = new File(parent, dwflLine.getSourceFile());
 		}
   		this.line = new SourceLocation(f, dwflLine.getLineNum(),
-				     dwflLine.getColumn(),
-				     this.getTask().getProc());
+				     dwflLine.getColumn());
 	    }
 	    // If the fetch failed, mark it as unknown.
 	    if (this.line == null)
@@ -194,6 +194,19 @@ public class DebugInfoFrame extends FrameDecorator {
     }
     private SourceLocation line;
 
+    /**
+     * XXX: This function should not be used DOM information (LineXXX)
+     * should be moved out of DebugInfoFrame.
+     * @return
+     */
+    public LineXXX getLineXXX(){
+	if(this.lineXXX == null){
+	    this.lineXXX = new LineXXX(this.getLine(), this.getTask().getProc());
+	}
+	return lineXXX;
+    }
+    LineXXX lineXXX;
+    
     public void toPrint(PrintWriter writer, boolean printParameters,
 		 boolean fullpath){
         Subprogram subprogram = this.getSubprogram();

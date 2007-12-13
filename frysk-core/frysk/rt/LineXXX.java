@@ -37,44 +37,65 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.scopes;
+package frysk.rt;
 
-import java.io.File;
+import java.io.IOException;
 
-/**
- * The source-code line information.
- */
+import frysk.dom.DOMFactory;
+import frysk.dom.DOMFrysk;
+import frysk.dom.DOMFunction;
+import frysk.dom.DOMImage;
+import frysk.dom.DOMSource;
+import frysk.proc.Proc;
+import frysk.scopes.SourceLocation;
 
-public class SourceLocation {
+public class LineXXX extends SourceLocation{
 
-    /**
-     * The LINE is unknown; this is used instead of "null" to denote
-     * missing line information.
-     */
-    public static final SourceLocation UNKNOWN = new SourceLocation(null, 0, 0);
-
-    private final File file;
-
-    private final int line;
-
-    private final int column;
   
-    public SourceLocation(File file, int line, int column) {
-	this.file = file;
-	this.line = line;
-	this.column = column;
+    private final Proc proc;
+
+    private DOMSource source;
+    
+    private DOMFunction function;
+
+    public LineXXX(SourceLocation sourceLocation, Proc proc) {
+	super(sourceLocation.getFile(), sourceLocation.getLine(), sourceLocation.getColumn());
+	this.proc = proc;
     }
 
-    public File getFile () {
-	return file;
+    public DOMFunction getDOMFunction () {
+	if (this.function == null) {
+	    if (this.source == null) {
+		if (getDOMSource() == null)
+		    return null;
+	    }
+	    
+	    this.function = this.source.findFunction(this.getLine());
+	}
+	return this.function;
+    }
+  
+    public DOMSource getDOMSource () {
+	if (this.source == null) {
+	    DOMFrysk dom = DOMFactory.getDOM(proc);
+	    
+	    if (dom == null)
+		return null;
+	    
+	    DOMImage image = dom.getImage(this.proc.getMainTask().getName());
+	    this.source = image.getSource(this.getFile().getName());
+	    if (this.source == null || ! this.source.isParsed()) {
+		// source has not been parsed, go put it in the DOM and
+		// parse it
+		try {
+		    this.source = image.addSource(this.proc, this,
+						  DOMFactory.getDOM(this.proc));
+		} catch (IOException ioe) {
+		    System.err.println(ioe.getMessage());
+		}
+	    }
+	}
+	return this.source;
     }
     
-    public int getLine () {
-	return line;
-    }
-
-    public int getColumn () {
-	return column;
-    }
-  
 }

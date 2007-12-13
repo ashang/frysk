@@ -1,3 +1,7 @@
+2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com> 
+
+	* DebugInfoFrame.java (getLineXXX): New function.
+	
 2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Moved frysk.rt.Line to frysk.scopes.SourceLocation.

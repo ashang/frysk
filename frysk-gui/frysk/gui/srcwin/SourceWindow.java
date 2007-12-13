@@ -136,12 +136,12 @@ import frysk.gui.terminal.TermWindow;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.rt.DisplayManager;
+import frysk.rt.LineXXX;
 import frysk.rt.UpdatingDisplayValue;
+import frysk.scopes.SourceLocation;
 import frysk.stack.FrameIdentifier;
 import frysk.stepping.SteppingEngine;
 import frysk.stepping.TaskStepEngine;
-
-import frysk.scopes.SourceLocation;
 
 /**
  * The SourceWindow displays the source or assembly level view of a Task's
@@ -653,8 +653,8 @@ public class SourceWindow extends Window {
 	    }
 
 	    if (this.currentFrame.getLine() != SourceLocation.UNKNOWN) { 
-		    if (this.currentFrame.getLine().getDOMFunction() != null)
-			this.view.scrollToFunction(this.currentFrame.getLine().getDOMFunction().getFunctionCall());
+		    if (this.currentFrame.getLineXXX().getDOMFunction() != null)
+			this.view.scrollToFunction(this.currentFrame.getLineXXX().getDOMFunction().getFunctionCall());
 		    else
 			this.view.scrollToLine(this.currentFrame.getLine().getLine());
 	    } else {
@@ -2251,7 +2251,7 @@ public class SourceWindow extends Window {
 	int task_id = sf.getTask().getTid();
 
 	DOMSource source = null;
-	SourceLocation line = sf.getLine();
+	LineXXX line = sf.getLineXXX();
 
 	if (line != SourceLocation.UNKNOWN) {
 	    if (line.getDOMFunction() == null)
@@ -2301,7 +2301,7 @@ public class SourceWindow extends Window {
 	int mode = this.viewPicker.getActive();
 
 	DOMSource source = null;
-	SourceLocation line = selected.getLine();
+	LineXXX line = selected.getLineXXX();
 
 	updateSourceLabel(selected);
 
