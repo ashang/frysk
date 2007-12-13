@@ -99,8 +99,6 @@ public class TestLoadCommand extends TestLib {
 	e.send("run\n");
 	e.expect(5, "Attached to process*");
 	e.expect(5, "Attached to process*");
-	e.send("run\n");
-	e.expect(5, "Error: missing program");
 	e.close();
     }
 }

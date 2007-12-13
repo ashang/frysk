@@ -1,3 +1,7 @@
+2007-12-13  Rick Moseley  <rmoseley@redhat.com>
+
+	* TestLoadCommand.java: Remove part of test no longer valid.
+
 2007-12-13  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* AuxvCommand.java (interpret): Check for null auxv data.
