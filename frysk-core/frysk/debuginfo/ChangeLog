@@ -1,3 +1,8 @@
+2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TypeEntry.java: Use SourceLocation instead of LineColPair.
+	* TestObjectDeclarationSearchEngine.java: Ditto.
+
 2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com> 
 
 	* DebugInfoFrame.java (getLineXXX): New function.

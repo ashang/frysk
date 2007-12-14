@@ -39,31 +39,32 @@
 
 package frysk.expr;
 
-import java.util.Iterator;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
+
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import frysk.Config;
-import frysk.scopes.LineColPair;
+import frysk.scopes.SourceLocation;
+import frysk.value.ClassType;
 import frysk.value.ObjectDeclaration;
+import frysk.value.ScratchLocation;
+import frysk.value.StandardTypes;
 import frysk.value.Type;
 import frysk.value.Value;
 import frysk.value.Variable;
-import java.util.HashMap;
-import frysk.value.StandardTypes;
-import frysk.value.ClassType;
-import frysk.value.ScratchLocation;
 
 class TestbedSymTab implements ExprSymTab {
-    private final LineColPair scratchLineColPair = new LineColPair(0,0);
+    private final SourceLocation scratchSourceLocation = SourceLocation.UNKNOWN;
     
     private Type classType = new ClassType(null, 12)
-	.addMember("alpha", scratchLineColPair, StandardTypes.INT32B_T, 0, null)
-	.addMember("beta", scratchLineColPair, StandardTypes.INT32B_T, 4, null)
-	.addMember("gamma", scratchLineColPair, StandardTypes.INT16B_T, 8, null)
-	.addBitFieldMember("iota", scratchLineColPair, StandardTypes.INT32B_T, 8, null, 16, 8) // 0x0000ff00
-	.addBitFieldMember("epsilon", scratchLineColPair, StandardTypes.INT32B_T, 8, null, 24, 8); // 0x000000ff
+	.addMember("alpha", scratchSourceLocation, StandardTypes.INT32B_T, 0, null)
+	.addMember("beta", scratchSourceLocation, StandardTypes.INT32B_T, 4, null)
+	.addMember("gamma", scratchSourceLocation, StandardTypes.INT16B_T, 8, null)
+	.addBitFieldMember("iota", scratchSourceLocation, StandardTypes.INT32B_T, 8, null, 16, 8) // 0x0000ff00
+	.addBitFieldMember("epsilon", scratchSourceLocation, StandardTypes.INT32B_T, 8, null, 24, 8); // 0x000000ff
     private byte[] buf = {
 	0x01, 0x02, 0x03, 0x04, // alpha
 	0x05, 0x06, 0x07, 0x08, // beta

@@ -170,7 +170,7 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
 
 	assertNotNull("Variable found", objectDeclaration);
 	assertEquals("Correct name", variableName, objectDeclaration.getName() );
-	assertEquals("Found the correct variable on the correct line ", variableLine, objectDeclaration.getLineCol().getLine());
+	assertEquals("Found the correct variable on the correct line ", variableLine, objectDeclaration.getSourceLocation().getLine());
 	
 	//Negative test:
 	try {

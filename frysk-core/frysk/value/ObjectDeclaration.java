@@ -41,7 +41,7 @@ package frysk.value;
 
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.isa.ISA;
-import frysk.scopes.LineColPair;
+import frysk.scopes.SourceLocation;
 
 public abstract class ObjectDeclaration {
     
@@ -49,6 +49,6 @@ public abstract class ObjectDeclaration {
     public abstract Value getValue(DebugInfoFrame frame);
     public abstract Type getType(ISA isa);
     
-    public abstract LineColPair getLineCol();
+    public abstract SourceLocation getSourceLocation();
     
 }

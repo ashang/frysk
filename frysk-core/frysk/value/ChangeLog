@@ -1,3 +1,11 @@
+2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ObjectDeclaration.java: Use SourceLocation instead of LineColPair
+	* EnumType.java (Member.getSourceLocation): Ditto.
+	* CompositeType.java: Ditto.
+	* Variable.java: Ditto.
+	* TestComposite.java: Ditto..
+
 2007-12-11  Sami Wagiaalla  <swagiaal@redhat.com>
  
         * CompositeType.java (StaticMember.StaticMember): Constructor now

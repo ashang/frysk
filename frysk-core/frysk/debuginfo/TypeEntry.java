@@ -40,7 +40,7 @@
 package frysk.debuginfo;
 
 import frysk.isa.ISA;
-import frysk.scopes.LineColPair;
+import frysk.scopes.SourceLocation;
 import frysk.value.Access;
 import frysk.value.ArrayType;
 import frysk.value.CharType;
@@ -155,11 +155,11 @@ public class TypeEntry
 
 	    }
 	    
-	    LineColPair lineColPair;
+	    SourceLocation sourceLocation;
 	    try{
-		lineColPair = new LineColPair(member.getDeclLine(), member.getDeclColumn());
+		sourceLocation = new SourceLocation(member.getDeclFile(), member.getDeclLine(), member.getDeclColumn());
 	    }catch(DwAttributeNotFoundException e){
-		lineColPair = new LineColPair(-1,-1);
+		sourceLocation = SourceLocation.UNKNOWN;
 	    }
 	    
 	    Access access = null;
@@ -172,9 +172,9 @@ public class TypeEntry
 	    if (member.getTag() == DwTag.SUBPROGRAM) {
 		Value v = getSubprogramValue(member);
 		if(hasArtifitialParameter(member)){
-		    classType.addMember(member.getName(), lineColPair, v.getType(), offset, access);
+		    classType.addMember(member.getName(), sourceLocation, v.getType(), offset, access);
 		}else{
-		    classType.addStaticMember(locationExpression, member.getName(), lineColPair, v.getType(), offset, access);
+		    classType.addStaticMember(locationExpression, member.getName(), sourceLocation, v.getType(), offset, access);
 		}
 		continue;
 	    }
@@ -192,18 +192,18 @@ public class TypeEntry
 		    int bitOffset = member
 		    .getAttrConstant(DwAt.BIT_OFFSET);
 		    if(staticMember){
-			classType.addStaticBitFieldMember(locationExpression, member.getName(), lineColPair, memberType, offset, access,
+			classType.addStaticBitFieldMember(locationExpression, member.getName(), sourceLocation, memberType, offset, access,
 				    bitOffset, bitSize);
 		    }else{
-			classType.addBitFieldMember(member.getName(), lineColPair, memberType, offset, access,
+			classType.addBitFieldMember(member.getName(), sourceLocation, memberType, offset, access,
 				    bitOffset, bitSize);
 		    }
 		}
 		else{
 		    if(staticMember){
-			classType.addStaticMember(locationExpression, member.getName(), lineColPair, memberType, offset, access);
+			classType.addStaticMember(locationExpression, member.getName(), sourceLocation, memberType, offset, access);
 		    }else{
-			classType.addMember(member.getName(), lineColPair, memberType, offset, access);
+			classType.addMember(member.getName(), sourceLocation, memberType, offset, access);
 		    }
 		    
 		}
@@ -211,10 +211,10 @@ public class TypeEntry
 	    }
 	    else{
 		if(staticMember){
-		    classType.addStaticMember(locationExpression, member.getName(), lineColPair, new UnknownType(member
+		    classType.addStaticMember(locationExpression, member.getName(), sourceLocation, new UnknownType(member
 			.getName()), offset, access);
 		}else{
-		    classType.addMember(member.getName(), lineColPair, new UnknownType(member
+		    classType.addMember(member.getName(), sourceLocation, new UnknownType(member
 				.getName()), offset, access);
 		}
 	    }
@@ -263,11 +263,11 @@ public class TypeEntry
 		offset = 0; // union
 	    }
 
-	    LineColPair lineColPair;
+	    SourceLocation lineColPair;
 	    try{
-		lineColPair = new LineColPair(member.getDeclLine(), member.getDeclColumn());
+		lineColPair = new SourceLocation(member.getDeclFile(),member.getDeclLine(), member.getDeclColumn());
 	    }catch(DwAttributeNotFoundException e){
-		lineColPair = new LineColPair(-1,-1);
+		lineColPair = SourceLocation.UNKNOWN;
 	    }
 	    
 	    Access access = null;

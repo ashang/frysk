@@ -1,3 +1,7 @@
+2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestbedSymTab.java (scratchSourceLocation): use SourceLocation.
+
 2007-12-11  Andrew Cagney  <cagney@redhat.com>
 
 	* TestArithmetics.java (checkErrorExpr(String,String)): New.

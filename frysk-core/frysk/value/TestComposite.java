@@ -41,7 +41,7 @@ package frysk.value;
 
 import inua.eio.ByteOrder;
 import frysk.junit.TestCase;
-import frysk.scopes.LineColPair;
+import frysk.scopes.SourceLocation;
 
 public class TestComposite
     extends TestCase
@@ -51,17 +51,17 @@ public class TestComposite
     private Type bigInt16 = new SignedType("int16_t", ByteOrder.BIG_ENDIAN, 2);
     private Type littleInt16 = new SignedType("int16_t", ByteOrder.LITTLE_ENDIAN, 2);
     
-    private final LineColPair scratchLineColPair = new LineColPair(0,0);
+    private final SourceLocation scratchSourceLocation = SourceLocation.UNKNOWN;
     /**
      * struct {int; int; short; int:8; int:8;}
      */
     public void testBigStructure () {
 	CompositeType classType = new ClassType(null, 12)
-	    .addMember("alpha", scratchLineColPair, bigInt32, 0, null)
-	    .addMember("beta", scratchLineColPair, bigInt32, 4, null)
-	    .addMember("gamma", scratchLineColPair, bigInt16, 8, null)
-	    .addBitFieldMember("iota", scratchLineColPair, bigInt32, 8, null, 16, 8) // 0x0000ff00
-	    .addBitFieldMember("epsilon", scratchLineColPair, bigInt32, 8, null, 24, 8); // 0x000000ff
+	    .addMember("alpha", scratchSourceLocation, bigInt32, 0, null)
+	    .addMember("beta", scratchSourceLocation, bigInt32, 4, null)
+	    .addMember("gamma", scratchSourceLocation, bigInt16, 8, null)
+	    .addBitFieldMember("iota", scratchSourceLocation, bigInt32, 8, null, 16, 8) // 0x0000ff00
+	    .addBitFieldMember("epsilon", scratchSourceLocation, bigInt32, 8, null, 24, 8); // 0x000000ff
 	byte[] buf = {
 	    0x01, 0x02, 0x03, 0x04, // alpha
 	    0x05, 0x06, 0x07, 0x08, // beta
@@ -76,11 +76,11 @@ public class TestComposite
      */
     public void testLittleStructure () {
 	CompositeType classType = new ClassType(null, 12)
-	    .addMember("alpha", scratchLineColPair, littleInt32, 0, null)
-	    .addMember("beta", scratchLineColPair, littleInt32, 4, null)
-	    .addMember("gamma", scratchLineColPair, littleInt16, 8, null)
-	    .addBitFieldMember("iota", scratchLineColPair, littleInt32, 8, null, 8, 8) // 0x00ff0000
-	    .addBitFieldMember("epsilon", scratchLineColPair, littleInt32, 8, null, 0, 8); // 0xff000000
+	    .addMember("alpha", scratchSourceLocation, littleInt32, 0, null)
+	    .addMember("beta", scratchSourceLocation, littleInt32, 4, null)
+	    .addMember("gamma", scratchSourceLocation, littleInt16, 8, null)
+	    .addBitFieldMember("iota", scratchSourceLocation, littleInt32, 8, null, 8, 8) // 0x00ff0000
+	    .addBitFieldMember("epsilon", scratchSourceLocation, littleInt32, 8, null, 0, 8); // 0xff000000
 	byte[] buf = {
 	    0x01, 0x02, 0x03, 0x04, // alpha
 	    0x05, 0x06, 0x07, 0x08, // beta
@@ -95,14 +95,14 @@ public class TestComposite
      */
     public void testNextedStructure () {
 	CompositeType classType = new ClassType(null, 12)
-	    .addMember("a", scratchLineColPair, new ClassType(null, 8)
-		       .addMember("alpha", scratchLineColPair, littleInt32, 0, null)
-		       .addMember("beta", scratchLineColPair, littleInt32, 4, null),
+	    .addMember("a", scratchSourceLocation, new ClassType(null, 8)
+		       .addMember("alpha", scratchSourceLocation, littleInt32, 0, null)
+		       .addMember("beta", scratchSourceLocation, littleInt32, 4, null),
 		       0, null)
-	    .addMember("b", scratchLineColPair, new ClassType(null, 4)
-		       .addMember("gamma", scratchLineColPair, littleInt16, 0, null)
-		       .addBitFieldMember("iota", scratchLineColPair, littleInt32, 0, null, 8, 8) // 0x00ff0000
-		       .addBitFieldMember("epsilon", scratchLineColPair, littleInt32, 0, null, 0, 8), // 0xff000000
+	    .addMember("b", scratchSourceLocation, new ClassType(null, 4)
+		       .addMember("gamma", scratchSourceLocation, littleInt16, 0, null)
+		       .addBitFieldMember("iota", scratchSourceLocation, littleInt32, 0, null, 8, 8) // 0x00ff0000
+		       .addBitFieldMember("epsilon", scratchSourceLocation, littleInt32, 0, null, 0, 8), // 0xff000000
 		       8, null);
 	byte[] buf = {
 	    0x01, 0x02, 0x03, 0x04, // alpha
@@ -118,14 +118,14 @@ public class TestComposite
      */
     public void testNamelessFields () {
 	CompositeType classType = new ClassType(null, 12)
-	    .addMember(null, scratchLineColPair, new ClassType(null, 8)
-		       .addMember(null, scratchLineColPair, littleInt32, 0, null)
-		       .addMember(null, scratchLineColPair, littleInt32, 4, null),
+	    .addMember(null, scratchSourceLocation, new ClassType(null, 8)
+		       .addMember(null, scratchSourceLocation, littleInt32, 0, null)
+		       .addMember(null, scratchSourceLocation, littleInt32, 4, null),
 		       0, null)
-	    .addMember(null, scratchLineColPair, new ClassType(null, 4)
-		       .addMember(null, scratchLineColPair, littleInt16, 0, null)
-		       .addBitFieldMember(null, scratchLineColPair, littleInt32, 0, null, 8, 8) // 0x00ff0000
-		       .addBitFieldMember(null, scratchLineColPair, littleInt32, 0, null, 0, 8), // 0xff000000
+	    .addMember(null, scratchSourceLocation, new ClassType(null, 4)
+		       .addMember(null, scratchSourceLocation, littleInt16, 0, null)
+		       .addBitFieldMember(null, scratchSourceLocation, littleInt32, 0, null, 8, 8) // 0x00ff0000
+		       .addBitFieldMember(null, scratchSourceLocation, littleInt32, 0, null, 0, 8), // 0xff000000
 		       8, null);
 	byte[] buf = {
 	    0x01, 0x02, 0x03, 0x04, // alpha
@@ -139,30 +139,30 @@ public class TestComposite
 
     public void testUnionType() {
 	CompositeType t = new UnionType("UNION", 4)
-	    .addMember("a", scratchLineColPair, bigInt32, 0, null);
+	    .addMember("a", scratchSourceLocation, bigInt32, 0, null);
 	assertEquals("toPrint",
 		     "union UNION {\n  int32_t a;\n}",
 		     t.toPrint());
     }
     public void testClassType() {
 	CompositeType t = new ClassType("CLASS", 4)
-	    .addMember("a", scratchLineColPair, bigInt32, 0, null);
+	    .addMember("a", scratchSourceLocation, bigInt32, 0, null);
 	assertEquals("toPrint",
 		     "class CLASS {\n  int32_t a;\n}",
 		     t.toPrint());
     }
     public void testStructType() {
 	CompositeType t = new StructType("STRUCT", 4)
-	    .addMember("a", scratchLineColPair, bigInt32, 0, null);
+	    .addMember("a", scratchSourceLocation, bigInt32, 0, null);
 	assertEquals("toPrint",
 		     "struct STRUCT {\n  int32_t a;\n}",
 		     t.toPrint());
     }
     public void testConfoundedClassType() {
 	CompositeType t = new GccStructOrClassType("CLASS", 4)
-	    .addInheritance("XXXX", scratchLineColPair, new ClassType("P1", 0),
+	    .addInheritance("XXXX", scratchSourceLocation, new ClassType("P1", 0),
 			    0, Access.PUBLIC)
-	    .addInheritance("XXXX", scratchLineColPair, new ClassType("P2", 0),
+	    .addInheritance("XXXX", scratchSourceLocation, new ClassType("P2", 0),
 			    0, Access.PRIVATE);
 	assertEquals("toPrint",
 		     "class CLASS : public P1, private P2 {\n}",
@@ -170,17 +170,17 @@ public class TestComposite
     }
     public void testConfoundedStructType() {
 	CompositeType t = new GccStructOrClassType("STRUCT", 4)
-	    .addMember("a", scratchLineColPair, bigInt32, 0, null);
+	    .addMember("a", scratchSourceLocation, bigInt32, 0, null);
 	assertEquals("toPrint",
 		     "struct STRUCT {\n  int32_t a;\n}",
 		     t.toPrint());
     }
     public void testPublicPrivateType() {
 	CompositeType t = new StructType("STRUCT", 4)
-	    .addMember("pub1", scratchLineColPair, bigInt32, 0, Access.PUBLIC)
-	    .addMember("pub2", scratchLineColPair, bigInt32, 0, Access.PUBLIC)
-	    .addMember("priv1", scratchLineColPair, bigInt32, 0, Access.PRIVATE)
-	    .addMember("prot1", scratchLineColPair, bigInt32, 0, Access.PROTECTED);
+	    .addMember("pub1", scratchSourceLocation, bigInt32, 0, Access.PUBLIC)
+	    .addMember("pub2", scratchSourceLocation, bigInt32, 0, Access.PUBLIC)
+	    .addMember("priv1", scratchSourceLocation, bigInt32, 0, Access.PRIVATE)
+	    .addMember("prot1", scratchSourceLocation, bigInt32, 0, Access.PROTECTED);
 	assertEquals("toPrint",
 		     "struct STRUCT {\n"
 		     + " public:\n"
@@ -201,9 +201,9 @@ public class TestComposite
     public void testMember()
     {
 	Type t = new StructType("STRUCT", 4)
-	    .addMember("pub1", scratchLineColPair, littleInt32, 0, null)
-	    .addMember("priv1", scratchLineColPair, littleInt32, 4, null)
-	    .addMember("prot1", scratchLineColPair, littleInt16, 8, null);
+	    .addMember("pub1", scratchSourceLocation, littleInt32, 0, null)
+	    .addMember("priv1", scratchSourceLocation, littleInt32, 4, null)
+	    .addMember("prot1", scratchSourceLocation, littleInt16, 8, null);
 	
 	byte[] buf = {
 		      0x01, 0x02, 0x03, 0x04, // pub1

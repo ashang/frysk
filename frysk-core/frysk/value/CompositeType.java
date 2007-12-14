@@ -52,7 +52,7 @@ import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.LocationExpression;
 import frysk.debuginfo.PieceLocation;
 import frysk.isa.ISA;
-import frysk.scopes.LineColPair;
+import frysk.scopes.SourceLocation;
 
 /**
  * Type for a composite object.
@@ -63,7 +63,7 @@ public abstract class CompositeType
     
     public static abstract class Member extends ObjectDeclaration {
 	
-	private final LineColPair lineColPair;
+	private final SourceLocation sourceLocation;
 	final int index;
 	final String name;
 	final Type type;
@@ -72,7 +72,7 @@ public abstract class CompositeType
 	final int bitOffset;
 	final int bitSize;
 	
-	public Member(int index, String name, LineColPair lineColPair, Type type, Access access,int bitOffset, int bitSize,
+	public Member(int index, String name, SourceLocation sourceLocation, Type type, Access access,int bitOffset, int bitSize,
 		boolean inheritance) {
 	    this.index = index;
 	    this.type = type;
@@ -81,16 +81,13 @@ public abstract class CompositeType
 	    this.inheritance = inheritance;
 	    this.bitOffset = bitOffset;
 	    this.bitSize = bitSize;
-	    this.lineColPair = lineColPair;
+	    this.sourceLocation = sourceLocation;
 	}
 	
 	public String getName(){
 	    return this.name;
 	}
 	
-	public LineColPair getLineCol() {
-	    return this.lineColPair;
-	}
 
 	public Type getType(ISA isa) {
 	    return this.type;
@@ -98,14 +95,17 @@ public abstract class CompositeType
 
 	public abstract Value getValue(DebugInfoFrame frame);
 	
+	public SourceLocation getSourceLocation(){
+	    return sourceLocation;
+	}
     }
     
     public static class StaticMember extends Member{
 	private final LocationExpression locationExpression;
-	public StaticMember(LocationExpression locationExpression, int index, String name, LineColPair lineColPair, Type type, Access access,
+	public StaticMember(LocationExpression locationExpression, int index, String name, SourceLocation sourceLocation, Type type, Access access,
 		int bitOffset, int bitSize,
 		boolean inheritance) {
-           super(index, name, lineColPair, type, access, bitOffset, bitSize, inheritance);
+           super(index, name, sourceLocation, type, access, bitOffset, bitSize, inheritance);
            this.locationExpression = locationExpression;
        }
 	     
@@ -117,6 +117,7 @@ public abstract class CompositeType
 	    Value value = new Value(this.getType(isa), pieceLocation);
 	    return value;
 	}
+
     }
     
     /**
@@ -125,10 +126,10 @@ public abstract class CompositeType
     public static class DynamicMember extends Member{
 	// XXX: To keep getValue working.
 	final long offset;
-	DynamicMember(int index, String name, LineColPair lineColPair, Type type, long offset, Access access, 
+	DynamicMember(int index, String name, SourceLocation sourceLocation, Type type, long offset, Access access, 
 		int bitOffset, int bitSize,
 	       boolean inheritance) {
-	    super(index, name, lineColPair, type, access, bitOffset, bitSize, inheritance);
+	    super(index, name, sourceLocation, type, access, bitOffset, bitSize, inheritance);
 	    this.offset = offset;
 	}
 	
@@ -212,38 +213,38 @@ public abstract class CompositeType
 	return this;
     }
     
-    public CompositeType addMember(String name, LineColPair lineColPair, Type type, long offset,
+    public CompositeType addMember(String name, SourceLocation sourceLocation, Type type, long offset,
 				   Access access) {
-	DynamicMember member = new DynamicMember(members.size(),name, lineColPair, type, offset, access, -1, -1,false);
+	DynamicMember member = new DynamicMember(members.size(),name, sourceLocation, type, offset, access, -1, -1,false);
 	return addMemberToMap(member);
     }
     
-    public CompositeType addBitFieldMember(String name, LineColPair lineColPair, Type type, long offset,
+    public CompositeType addBitFieldMember(String name, SourceLocation sourceLocation, Type type, long offset,
 				   Access access, int bitOffset,
 				   int bitLength) {
 	type = type.pack(bitOffset, bitLength);
-	DynamicMember member = new DynamicMember(members.size(),name, lineColPair, type, offset, access, bitOffset, bitLength,false);
+	DynamicMember member = new DynamicMember(members.size(),name, sourceLocation, type, offset, access, bitOffset, bitLength,false);
 	return addMemberToMap(member);
     }
     
-    public CompositeType addInheritance(String name, LineColPair lineColPair, Type type, long offset,
+    public CompositeType addInheritance(String name, SourceLocation sourceLocation, Type type, long offset,
 					Access access) {
-	DynamicMember member = new DynamicMember(members.size(),name, lineColPair, type, offset, access, -1,-1,true);
+	DynamicMember member = new DynamicMember(members.size(),name, sourceLocation, type, offset, access, -1,-1,true);
 	return addMemberToMap(member);
     }
     
-    public CompositeType addStaticMember(LocationExpression locationExpression, String name, LineColPair lineColPair, Type type, long offset,
+    public CompositeType addStaticMember(LocationExpression locationExpression, String name, SourceLocation sourceLocation, Type type, long offset,
 		   Access access){
-	StaticMember member = new StaticMember(locationExpression, members.size(), name, lineColPair, type,
+	StaticMember member = new StaticMember(locationExpression, members.size(), name, sourceLocation, type,
 		   access, -1, -1, false);
 	return addMemberToMap(member);
     }
     
-    public CompositeType addStaticBitFieldMember(LocationExpression locationExpression, String name, LineColPair lineColPair, Type type, long offset,
+    public CompositeType addStaticBitFieldMember(LocationExpression locationExpression, String name, SourceLocation sourceLocation, Type type, long offset,
 		   Access access, int bitOffset,
 		   int bitLength) {
 	type = type.pack(bitOffset, bitLength);
-	StaticMember member = new StaticMember(locationExpression, members.size(), name, lineColPair, type,
+	StaticMember member = new StaticMember(locationExpression, members.size(), name, sourceLocation, type,
 		   access, -1, -1, false);
 	return addMemberToMap(member);
     }
