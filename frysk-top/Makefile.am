@@ -37,7 +37,9 @@
 # version and license this file solely under the GPL without
 # exception.
 
-CLEANFILES =
+
+include common/Makefile.rules
+
 
 SUBDIRS = \
 	frysk-imports \
@@ -45,12 +47,6 @@ SUBDIRS = \
 	frysk-core \
 	frysk-gtk \
 	frysk-gui
-
-empty=
-space=$(empty) $(empty)
-
-# Find local macros.
-ACLOCAL_AMFLAGS = -I common/m4
 
 # Note the dir/. is needed, causes the file copy to put the contents
 # into the top level directory.

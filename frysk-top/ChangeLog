@@ -1,3 +1,12 @@
+2007-12-14  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac: m4_include common/frysk-common.ac.
+	(AM_PROG_GCJ): Delete call.
+	* Makefile.am: Include common/Makefile.rules.
+	(empty): Delete.
+	(space): Delete.
+	(ACLOCAL_AMFLAGS): Delete.
+
 2007-07-17  Andrew Cagney  <cagney@redhat.com>
 
 	Move CNI code from frysk-imports/ to frysk-sys/

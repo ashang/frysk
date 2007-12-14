@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, Red Hat Inc.
+# Copyright 2005, 2007, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -41,11 +41,11 @@ AC_PREREQ(2.59)
 
 sinclude(common/version.ac)
 AC_INIT(frysk,defn([FRYSK_VERSION]))
+m4_include([common/frysk-common.ac])
 
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext no-dist])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_SUBDIRS([frysk-imports frysk-sys frysk-core frysk-gtk frysk-gui])
-AM_PROG_GCJ
 
 # Need to call PKG_CHECK_MODULES to get PKG_CONFIG set; used by javadoc.
 PKG_CHECK_MODULES(FRYSK_GNOME, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 
