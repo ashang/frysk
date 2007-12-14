@@ -1,5 +1,8 @@
 2007-12-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (BUILT_SOURCES): Fix typo; eclipse/.project and
+	eclipse/.classpath, instead of .project and .classpath.
+
 	* .classpath.in: Add frysk-import's junit.jar, jline.jar,
 	getopt.jar, jdom.jar, antlr.jar and cdtparser.jar.
 
