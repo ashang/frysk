@@ -1,5 +1,8 @@
 2007-12-14  Andrew Cagney  <cagney@redhat.com>
 
+	* .classpath.in: Add frysk-import's junit.jar, jline.jar,
+	getopt.jar, jdom.jar, antlr.jar and cdtparser.jar.
+
 	* Makefile.am (eclipse/.project): New.
 	* Makefile.am (eclipse/.classpath): New.
 	* .classpath.in: New.
