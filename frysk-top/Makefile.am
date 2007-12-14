@@ -168,3 +168,14 @@ $(DOXYFILE): Doxyfile.in
 		< $< > $@.tmp
 	mv $@.tmp $@
 CLEANFILES += doxygen
+
+BUILT_SOURCES += .project
+eclipse/.project: .project.in
+	mkdir -p `dirname $@`
+	$(SUBST)
+	chmod u+w $@
+BUILT_SOURCES += .classpath
+eclipse/.classpath: .classpath.in
+	mkdir -p `dirname $@`
+	$(SUBST)
+	chmod u+w $@

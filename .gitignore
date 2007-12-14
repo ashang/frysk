@@ -6,4 +6,6 @@ install-sh
 missing
 compile
 depcomp
+config.guess
+config.sub
 *~

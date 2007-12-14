@@ -354,26 +354,31 @@ suppression will take place.</dd>
 
 <dl>
 
-<dt>How to I edit files using eclipse?</dt>
+<dt>How do I "import" frysk into eclipse?</dt>
 
 <dd>
+First you will need to check out and build frysk from the command
+line.  This will create a build/eclipse directory containing the
+project file.  With the finished build.
 <ul>
 <li>Check eclipse-jdt is installed
-<li>Select: File -> New -> Project; to bring up the New Project window
-<li>Select: Java + Java Project
-<li>Edit: Create project from existing source; entering the root of a fresh GIT tree
-<li>Click finish
+<li>Start eclipse
+<li>Select: File -> Import ...; to bring up the Import window
+<li>Select: General + Existing Project Into Workspace; and click next
+<li>Fill in: Select root directory; with the path to the <tt><em>build</em>/eclipse</tt> directory.
+<li>Click: Finish
 </ul>
 </dd>
 
 <dt>What should my eclipse format options be set to?</dt>
 <dd>
+To set the format options globally to "Java" use:
 <ul>
 <li>Select: Window -> Preferences ...
 <li>Select: Java + Code Style + Formater
 <li>Change: Active Profile; to Java Conventions
 <li>Apply
-<li>
+</ul>
 
 </dd>
 

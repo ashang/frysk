@@ -1,5 +1,10 @@
 2007-12-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (eclipse/.project): New.
+	* Makefile.am (eclipse/.classpath): New.
+	* .classpath.in: New.
+	* .project.in: New.
+
 	* configure.ac: m4_include common/frysk-common.ac.
 	(AM_PROG_GCJ): Delete call.
 	* Makefile.am: Include common/Makefile.rules.

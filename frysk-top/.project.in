@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>my project</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.python.pydev.PyDevBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>org.python.pydev.pythonNature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>frysk-sys</name>
+			<type>2</type>
+			<location>@abs_srcdir@/frysk-sys</location>
+		</link>
+		<link>
+			<name>frysk-core</name>
+			<type>2</type>
+			<location>@abs_srcdir@/frysk-core</location>
+		</link>
+		<link>
+			<name>frysk-gtk</name>
+			<type>2</type>
+			<location>@abs_srcdir@/frysk-gtk</location>
+		</link>
+		<link>
+			<name>frysk-gui</name>
+			<type>2</type>
+			<location>@abs_srcdir@/frysk-gui</location>
+		</link>
+	</linkedResources>
+</projectDescription>

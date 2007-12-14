@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+        <classpathentry kind="src" path="frysk-gui"
+			exclude="configure.in"/>
+        <classpathentry kind="src" path="frysk-gtk"
+			exclude="configure.in"/>
+        <classpathentry kind="src" path="frysk-core"
+			exclude="configure.in"/>
+        <classpathentry kind="src" path="frysk-sys"
+			exclude="configure.in"/>
+        <classpathentry kind="lib" path="@abs_builddir@/frysk-gui/frysk-gui.jar"
+			sourcepath="@abs_builddir@/frysk-gui"/>
+        <classpathentry kind="lib" path="@abs_builddir@/frysk-gtk/frysk-gtk.jar"
+			sourcepath="@abs_builddir@/frysk-gtk"/>
+        <classpathentry kind="lib" path="@abs_builddir@/frysk-core/frysk-core.jar"
+			sourcepath="@abs_builddir@/frysk-core"/>
+        <classpathentry kind="lib" path="@abs_builddir@/frysk-sys/frysk-sys.jar"
+			sourcepath="@abs_builddir@/frysk-sys"/>
+	<classpathentry kind="lib" path="/usr/share/java/glade2.12.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/glib0.2.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/gtk2.8.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/cairo1.0.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/vte0.12.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/junit.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/jdom.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
+ 
