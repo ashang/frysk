@@ -1,3 +1,7 @@
+2007-12-14  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Variable.java (Variable): Handles DwAttributeNotFoundException.
+
 2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ObjectDeclaration.java: Use SourceLocation instead of LineColPair

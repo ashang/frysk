@@ -41,6 +41,7 @@ package frysk.value;
 
 import java.io.PrintWriter;
 
+import lib.dwfl.DwAttributeNotFoundException;
 import lib.dwfl.DwException;
 import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfoFrame;
@@ -63,14 +64,19 @@ public class Variable extends ObjectDeclaration{
     private final DwarfDie variableDie;
     private final String name;
     private final LocationExpression locationExpression;
-    private final SourceLocation sourceLocation;
+    private SourceLocation sourceLocation;
     
     public Variable(DwarfDie variableDie) {
         this.type = null;
 	this.variableDie = variableDie;
 	this.name = variableDie.getName();
 	locationExpression = new LocationExpression(variableDie);
-	this.sourceLocation = new SourceLocation(variableDie.getDeclFile(),variableDie.getDeclLine(), variableDie.getDeclColumn());
+	try{
+	    this.sourceLocation = new SourceLocation(variableDie.getDeclFile(),variableDie.getDeclLine(), variableDie.getDeclColumn());
+	}catch(DwAttributeNotFoundException e){
+	    this.sourceLocation = SourceLocation.UNKNOWN;
+	}
+	
     }
     
     public DwarfDie getVariableDie() {

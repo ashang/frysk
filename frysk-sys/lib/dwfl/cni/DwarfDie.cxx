@@ -97,7 +97,7 @@ lib::dwfl::DwarfDie::get_decl_file(jlong var_die)
   Dwarf_Die *die = (Dwarf_Die*) var_die;
   const char *name = dwarf_decl_file (die);
   if (name == NULL)
-    lib::dwfl::DwException::throwDwException();
+    lib::dwfl::DwAttributeNotFoundException::throwDwException((jint)DW_AT_decl_file);
   return JvNewStringLatin1 (name);
 }
 

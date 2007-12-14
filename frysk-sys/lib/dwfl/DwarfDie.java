@@ -93,11 +93,28 @@ abstract public class DwarfDie {
     }
   
     public File getDeclFile() {
-	return new File(get_decl_file(this.getPointer()));
+	File file = null;
+	try{
+	    file = new File(get_decl_file(this.getPointer()));
+	}catch (DwAttributeNotFoundException e) {
+	    if(isDefinitionOnly()){
+		file = getOriginalDie().getDeclFile();
+	    }
+	}
+	return file;
     }
   
     public int getDeclLine() {
-	return get_decl_line(this.getPointer());
+	int line = -1;
+	
+	try{
+	    line = get_decl_line(this.getPointer());
+	}catch (DwAttributeNotFoundException e) {
+	    if(isDefinitionOnly()){
+		line = getOriginalDie().getDeclLine();
+	    }
+	}
+	return line;
     }
 
     public int getDeclColumn() {
@@ -402,6 +419,14 @@ abstract public class DwarfDie {
 	return null;
     }
         
+    /**
+     * returns true of this die represents a definition of an object, and the declaration
+     * is somewhere else.
+     * @return
+     */
+    public boolean isDefinitionOnly(){
+	return (this.hasAttribute(DwAt.ABSTRACT_ORIGIN) || this.hasAttribute(DwAt.SPECIFICATION));
+    }
     public boolean isDeclaration() {
 	return this.hasAttribute(DwAt.DECLARATION);
     }

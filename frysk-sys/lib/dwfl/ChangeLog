@@ -1,3 +1,10 @@
+2007-12-14  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DwarfDie.java (isDefinitionOnly): New function.
+	(getDeclFile): handles DwAttributeNotFoundException.
+	(getDeclLine): Ditto.
+	* cni/DwarfDie.cxx (DwarfDie::get_decl_file): Ditto.
+
 2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DwarfDie.java (getDeclFile): Now returns File.
