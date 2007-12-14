@@ -42,10 +42,4 @@
 # exception.
 
 # Generate a mkenum.sh table for the UNW_PPC64 encodings we are interested in.
-cat $(dirname $0)/../../../frysk-imports/libunwind/include/libunwind-ppc64.h | awk ' 
-    /UNW_PPC64/ {
-   	gsub(",","",$1) 
-   	gsub("UNW_PPC64_", "", $1)
-	printf "%s\n", $1
-    }' | awk '{printf "%s %s\n", $1, NR -1 }
-' 2>&1
+cat $(dirname $0)/../../../frysk-imports/libunwind/include/libunwind-ppc64.h | awk -f $(dirname $0)/../../../frysk-sys/lib/unwind/GenRegEnum.awk PPC64 UNW 2>&1

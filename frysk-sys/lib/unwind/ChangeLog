@@ -1,3 +1,12 @@
+2007-12-14  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
+
+	* GenRegEnum.awk: Add new Awk script to generate the registers
+	enum to be used for all archs. 
+
+	* UnwindRegistersPPC32.shenum: Using the GenRegEnum.awk script.
+
+	* UnwindRegistersPPC64.shenum: Same as above.
+
 2007-12-11  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/UnwindH.hxx (getRegister): Delete stray printf.
