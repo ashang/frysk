@@ -1,5 +1,16 @@
 2007-12-14  Andrew Cagney  <cagney@redhat.com>
 
+	* org.eclipse.jdt.ui.prefs.in: New.
+	* org.eclipse.jdt.core.prefs.in: New.
+	* make-all.launch.in: New.
+	* project.in: Rename .project.in.
+	* classpath.in: Rename .classpath.in.
+	* Makefile.am (eclipse): New phony target.
+	(ECLIPSE_CONFIG): Define.
+	(BUILT_SOURCES): Add $(ECLIPSE_CONFIG).
+	(eclipse/.%, eclipse/.externalToolBuilders/%.launch)
+	(eclipse/.settings/%.prefs): New targets.
+
 	* Makefile.am (BUILT_SOURCES): Fix typo; eclipse/.project and
 	eclipse/.classpath, instead of .project and .classpath.
 

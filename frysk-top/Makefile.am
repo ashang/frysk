@@ -169,13 +169,26 @@ $(DOXYFILE): Doxyfile.in
 	mv $@.tmp $@
 CLEANFILES += doxygen
 
-BUILT_SOURCES += eclipse/.project
-eclipse/.project: .project.in
+# Create an eclipse directory that matches the build tree.
+
+.PHONY: eclipse
+eclipse: $(ECLIPSE_CONFIG)
+BUILT_SOURCES += $(ECLIPSE_CONFIG)
+ECLIPSE_CONFIG =
+ECLIPSE_CONFIG += eclipse/.project
+ECLIPSE_CONFIG += eclipse/.classpath
+eclipse/.%: frysk-top/%.in
 	mkdir -p `dirname $@`
 	$(SUBST)
 	chmod u+w $@
-BUILT_SOURCES += eclipse/.classpath
-eclipse/.classpath: .classpath.in
+ECLIPSE_CONFIG += eclipse/.externalToolBuilders/make-all.launch
+eclipse/.externalToolBuilders/%.launch: frysk-top/%.launch.in
+	mkdir -p `dirname $@`
+	$(SUBST)
+	chmod u+w $@
+ECLIPSE_CONFIG += eclipse/.settings/org.eclipse.jdt.core.prefs
+ECLIPSE_CONFIG += eclipse/.settings/org.eclipse.jdt.ui.prefs
+eclipse/.settings/%.prefs: frysk-top/%.prefs.in
 	mkdir -p `dirname $@`
 	$(SUBST)
 	chmod u+w $@
