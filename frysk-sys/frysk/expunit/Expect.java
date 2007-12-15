@@ -232,12 +232,13 @@ public class Expect
 	    }
 	    if (eof) {
 		logger.log (Level.FINE, "{0} match EOF\n", this);
-		throw new EofException ();
+		throw new EndOfFileException(matches, output);
 	    }
 	    long timeRemaining = endTime - System.currentTimeMillis ();
 	    if (timeRemaining <= 0) {
 		logger.log (Level.FINE, "{0} match TIMEOUT\n", this);
-		throw new TimeoutException (timeoutMilliseconds / 1000);
+		throw new TimeoutException(timeoutMilliseconds / 1000,
+			matches, output);
 	    }
 
 	    logger.log (Level.FINE,
@@ -351,7 +352,7 @@ public class Expect
 	try {
 	    expect ();
 	}
-	catch (EofException e) {
+	catch (EndOfFileException e) {
 	    // Just what the doctor ordered.
 	}
     }
@@ -366,7 +367,7 @@ public class Expect
 	try {
 	    expect ();
 	}
-	catch (EofException e) {
+	catch (EndOfFileException e) {
 	    // This is blocking; which probably isn't good.
 	    pid.blockingWait (new WaitObserver (status));
 	}

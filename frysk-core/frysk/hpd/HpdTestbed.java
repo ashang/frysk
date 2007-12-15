@@ -45,7 +45,7 @@ import frysk.testbed.CoreFileAtSignal;
 import frysk.expunit.Expect;
 import frysk.expunit.Match;
 import frysk.expunit.Regex;
-import frysk.expunit.EofException;
+import frysk.expunit.EndOfFileException;
 import frysk.expunit.TimeoutException;
 import java.io.File;
 import frysk.testbed.TearDownExpect;
@@ -105,7 +105,7 @@ public class HpdTestbed
 			   }
 		       }
 		   });
-	} catch (EofException e) {
+	} catch (EndOfFileException e) {
 	    TestCase.fail(why + " got: <EOF>");
 	} catch (TimeoutException t) {
 	    TestCase.fail(why + " got: <TIMEOUT>");
@@ -119,7 +119,7 @@ public class HpdTestbed
     public HpdTestbed expectPrompt() {
 	try {
 	    expect(prompt);
-	} catch (EofException e) {
+	} catch (EndOfFileException e) {
 	    TestCase.fail("expecting: <" + prompt + "> got: EOF");
 	} catch (TimeoutException t) {
 	    TestCase.fail("expecting: <" + prompt + "> got: TIMEOUT");
@@ -197,7 +197,7 @@ public class HpdTestbed
 			     }
 			 }
 		     });
-	} catch (EofException e) {
+	} catch (EndOfFileException e) {
 	    TestCase.fail("Expecting <run " + program + "> got: <EOF>");
 	} catch (TimeoutException t) {
 	    TestCase.fail("Expecting <run " + program + "> got: <TIMEOUT>");

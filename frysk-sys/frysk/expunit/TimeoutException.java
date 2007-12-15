@@ -48,8 +48,26 @@ public class TimeoutException
     extends RuntimeException
 {
     static final long serialVersionUID = 1;
-    TimeoutException (long millisecondTimeout)
+    private static String message(long millisecondTimeout, Match[] matches, String output) {
+	StringBuffer msg = new StringBuffer();
+	msg.append("Timeout of " + millisecondTimeout + " expired");
+	if (matches != null) {
+	    msg.append("; expecting: ");
+	    for (int i = 0; i < matches.length; i++) {
+		msg.append(" <<");
+		msg.append(matches.toString());
+		msg.append(">>");
+	    }
+	}
+	msg.append("; buffer <<");
+	msg.append(output);
+	msg.append(">>");
+	return msg.toString();
+    }
+
+    TimeoutException (long millisecondTimeout, Match[] matches, String output)
     {
-	super ("Timeout of " + millisecondTimeout + " expired");
+	super (message(millisecondTimeout, matches, output));
+	
     }
 }

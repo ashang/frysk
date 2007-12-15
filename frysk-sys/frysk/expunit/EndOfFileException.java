@@ -43,12 +43,26 @@ package frysk.expunit;
  * Thrown an an end-of-file is encountered and nothing else matches.
  */
 
-public class EofException
-    extends RuntimeException
-{
+public class EndOfFileException extends RuntimeException {
     static final long serialVersionUID = 1;
-    EofException ()
-    {
-	super ("End-of-file encountered");
+
+    private static String message(Match[] matches, String output) {
+	StringBuffer msg = new StringBuffer();
+	msg.append("End-of-file");
+	if (matches != null) {
+	    msg.append("; expecting: ");
+	    for (int i = 0; i < matches.length; i++) {
+		msg.append(" <<");
+		msg.append(matches.toString());
+		msg.append(">>");
+	    }
+	}
+	msg.append("; buffer <<");
+	msg.append(output);
+	msg.append(">>");
+	return msg.toString();
+    }
+    EndOfFileException(Match[] matches, String output) {
+	super(message(matches, output));
     }
 }

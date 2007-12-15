@@ -40,7 +40,7 @@
 package frysk.hpd;
 
 import frysk.expunit.Regex;
-import frysk.expunit.EofException;
+import frysk.expunit.EndOfFileException;
 
 /**
  * Test the pre-processor which unpacks stuff like
@@ -68,7 +68,7 @@ public class TestPreprocessor extends TestLib {
 			fail("Unexpected input: <<" + group() + ">>");
 		    }
 		});
-	} catch (EofException e) {
+	} catch (EndOfFileException e) {
 	    eof = true;
 	}
 	assertTrue("eof", eof);

@@ -1,3 +1,8 @@
+2007-12-14  cagney  <cagney@redhat.com>
+
+	* HpdTestbed.java: Update; EofException renamed to EndOfFileException.
+	* TestPreprocessor.java: Ditto.
+
 2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Moved frysk.rt.Line to frysk.scopes.SourceLocation.
