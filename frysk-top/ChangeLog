@@ -1,5 +1,8 @@
 2007-12-14  Andrew Cagney  <cagney@redhat.com>
 
+	* make-all.launch.in: Add "full" to
+	org.eclipse.ui.externaltools.ATTR_RUN_BUILD_KINDS.
+	
 	* org.eclipse.jdt.ui.prefs.in: New.
 	* org.eclipse.jdt.core.prefs.in: New.
 	* make-all.launch.in: New.
