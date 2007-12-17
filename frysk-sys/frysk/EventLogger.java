@@ -56,6 +56,7 @@ import java.io.FileInputStream;
 import java.util.logging.Formatter;
 import java.util.logging.FileHandler;
 import java.util.logging.SimpleFormatter;
+import frysk.rsl.LogOption;
 
 /**
  * The event logger for internal state.
@@ -231,5 +232,6 @@ public class EventLogger
 	    verbose = true;
 	  }
 	});
+      parser.add(new LogOption("trace"));
     }
 }

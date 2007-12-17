@@ -1,3 +1,7 @@
+2007-12-17  cagney  <cagney@redhat.com>
+
+	* EventLogger.java (addConsoleOptions(Parser)): Add LogOption. 
+
 2007-10-30  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Config.cxx-in: Rename cni/Config.cxxin.

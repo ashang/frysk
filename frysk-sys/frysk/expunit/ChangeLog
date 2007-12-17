@@ -1,5 +1,7 @@
 2007-12-17  cagney  <cagney@redhat.com>
 
+	* Expect.java: Use frysk.rsl.Log.
+
 	* MatchException.java (getMessage()): Fix typo; print match element.
 
 	* MatchException.java: New.

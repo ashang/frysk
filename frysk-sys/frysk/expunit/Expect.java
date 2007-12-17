@@ -43,10 +43,9 @@ import frysk.sys.Errno;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.PseudoTerminal;
 import frysk.sys.Signal;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import frysk.rsl.Log;
+import frysk.rsl.Level;
 import java.io.File;
-import java.util.Arrays;
 
 /**
  * Simple expect like framework, that works within JUnit.
@@ -59,7 +58,8 @@ import java.util.Arrays;
 
 public class Expect
 {
-    static protected Logger logger = Logger.getLogger("frysk");
+    static protected Log fine = Log.get(Expect.class, Level.FINE);
+    static private Log finest = Log.get(Expect.class, Level.FINEST);
 
     private final PseudoTerminal child = new PseudoTerminal ();
     private ProcessIdentifier pid = null;
@@ -68,23 +68,16 @@ public class Expect
      * Create an expect instance running the specified program args[0]
      * and args.
      */
-    public Expect (String[] args)
-    {
-	pid = child.addChild (args);
-	logger.log (Level.FINE, "{0} new {1} pid {2} args {3}\n",
-		    new Object[] {
-			this,
-			child,
-			pid,
-			Arrays.asList(args)
-		    });
+    public Expect(String[] args) {
+	pid = child.addChild(args);
+	fine.log(this, "new", child, "pid", pid, "args", args);
     }
 
     /**
      * Create an expect instance running PROGRAM with no arguments.
-     *
-     * Turns out that doing this is common and it saves the hassle of
-     * creating an argument list.
+     * 
+     * Turns out that doing this is common and it saves the hassle of creating
+     * an argument list.
      */
     public Expect(File program) {
 	this(new String[] { program.getAbsolutePath() });
@@ -107,18 +100,16 @@ public class Expect
      * XXX: This drains all outstanding WAITPID events, and SIGCHLD
      * events.
      */
-    public void close ()
-    {
+    public void close() {
 	if (pid != null) {
-	    logger.log (Level.FINE, "{0} close\n", this);
-	    child.close ();
+	    fine.log(this, "close");
+	    child.close();
 	    try {
-		pid.kill ();
-	    }
-	    catch (Errno e) {
+		pid.kill();
+	    } catch (Errno e) {
 		// Toss it, as cleanup.
 	    }
-	    pid.blockingDrain ();
+	    pid.blockingDrain();
 	}
 	pid = null;
 	Signal.CHLD.drain();
@@ -187,80 +178,68 @@ public class Expect
     /**
      * Send "string" to the child process.
      */
-    public void send (String string)
-    {
-	logger.log (Level.FINE,
-		    "{0} send <<{1}>>\n",
-		    new Object[] { this, string });
-	byte[] bytes = string.getBytes ();
-	child.write (bytes, 0, bytes.length);
+    public void send(String string) {
+	fine.log(this, "send", (Object)string);
+	byte[] bytes = string.getBytes();
+	child.write(bytes, 0, bytes.length);
     }
 
     /**
      * Expect one of the specified patterns; throw TimeoutException if
-     * timeoutSecond expires; throw EofException if end-of-file is
-     * encountered.
-     *
-     * This is package visible so that TestExpect can use it, but no
-     * one else.
+     * timeoutSecond expires; throw EofException if end-of-file is encountered.
+     * 
+     * This is package visible so that TestExpect can use it, but no one else.
      */
-    void expectMilliseconds (long timeoutMilliseconds, Match[] matches)
-    {
-	final long endTime = (System.currentTimeMillis ()
-			      + timeoutMilliseconds);
+    void expectMilliseconds(long timeoutMilliseconds, Match[] matches) {
+	final long endTime = (System.currentTimeMillis() + timeoutMilliseconds);
+	fine.log(this, "expect timeout", timeoutMilliseconds, "match", matches);
 	while (true) {
 	    if (matches != null) {
 		for (int i = 0; i < matches.length; i++) {
 		    Match p = matches[i];
 		    if (p != null) {
-			logger.log (Level.FINE,
-				    "{0} find <<{1}>> in <<{2}>>?\n",
-				    new Object[] { this, p, output });
-			if (p.find (output)) {
-			    logger.log (Level.FINE,
-					"{0} match <<{1}>>\n",
-					new Object[] { this, p.group () });
-			    p.execute ();
+			finest.log(this, "find", (Object) p, "in",
+				(Object) output);
+			if (p.find(output)) {
+			    fine.log(this, "match", (Object) p.group());
+			    p.execute();
 			    // Remove everying up to and including what
 			    // matched.
-			    if (p.end () >= 0)
-				output = output.substring (p.end ());
+			    if (p.end() >= 0)
+				output = output.substring(p.end());
 			    return;
 			}
 		    }
 		}
 	    }
 	    if (eof) {
-		logger.log (Level.FINE, "{0} match EOF\n", this);
+		fine.log(this, "match EOF");
 		throw new EndOfFileException(matches, output);
 	    }
-	    long timeRemaining = endTime - System.currentTimeMillis ();
+	    long timeRemaining = endTime - System.currentTimeMillis();
 	    if (timeRemaining <= 0) {
-		logger.log (Level.FINE, "{0} match TIMEOUT\n", this);
-		throw new TimeoutException(timeoutMilliseconds / 1000,
-			matches, output);
+		fine.log(this, "match TIMEOUT");
+		throw new TimeoutException(timeoutMilliseconds / 1000, matches,
+			output);
 	    }
 
-	    logger.log (Level.FINE,
-		    "{0} poll for {1,number,integer} milliseconds\n",
-			new Object[] { this, new Long (timeRemaining) });
-	    if (child.ready (timeRemaining)) {
+	    finest.log(this, "poll for [milliseconds]", timeRemaining);
+	    if (child.ready(timeRemaining)) {
 		byte[] bytes = new byte[100];
-		int nr = child.read (bytes, 0, bytes.length);
+		int nr = child.read(bytes, 0, bytes.length);
 		switch (nr) {
 		case -1:
-		    logger.log (Level.FINE, "{0} poll -> EOF\n", this);
+		    finest.log(this, "poll -> EOF");
 		    eof = true;
 		    break;
 		case 0:
-		    logger.log (Level.FINE, "{0} poll -> no data!\n", this);
+		    finest.log(this, "poll -> no data!");
 		    break;
 		default:
-		    String read = new String (bytes, 0, nr);
+		    String read = new String(bytes, 0, nr);
 		    output = output + read;
-		    logger.log (Level.FINE,
-				"{0} poll -> <<{1}>> giving <<{2}>>\n",
-				new Object[] { this, read, output });
+		    finest.log(this, "poll -> ", (Object) read, "giving",
+			    (Object) output);
 		    break;
 		}
 	    }
@@ -269,8 +248,7 @@ public class Expect
 
     /**
      * Expect one of the specified patterns; throw TimeoutException if
-     * timeoutSecond expires; throw EofException if end-of-file is
-     * encountered.
+     * timeoutSecond expires; throw EofException if end-of-file is encountered.
      */
     public void expect (long timeoutSeconds, Match[] matches)
     {

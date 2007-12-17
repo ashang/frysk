@@ -51,11 +51,11 @@ public class TestLog extends TestCase {
 
     private Tree root;
     public void setUp() {
-	log.message("setUp");
+	log.log("setUp");
 	root = new Tree();
     }
     public void tearDown() {
-	log.message("tearDown");
+	log.log("tearDown");
 	root = null;
     }
     private Tree get(String path) {

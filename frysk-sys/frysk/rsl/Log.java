@@ -275,16 +275,23 @@ public final class Log {
     }
 
     // Add at will and on demand.
-    public void message(String p1) {
+    public void log(String p1) {
 	if (!logging)
 	    return;
 	prefix();
 	print(p1);
 	postfix();
     }
+    
+    public void log(Object self, String p1) {
+	if (!logging)
+	    return;
+	print(p1);
+	postfix();
+    }
 
     // Add at will and on demand.
-    public void message(Object self, String p1, int p2) {
+    public void log(Object self, String p1, int p2) {
 	if (!logging)
 	    return;
 	prefix(self);
@@ -294,7 +301,7 @@ public final class Log {
     }
 
     // Add at will and on demand.
-    public void message(Object self, String p1, long p2) {
+    public void log(Object self, String p1, long p2) {
 	if (!logging)
 	    return;
 	prefix(self);
@@ -304,7 +311,7 @@ public final class Log {
     }
 
     // Add at will and on demand.
-    public void message(Object self, String p1, String p2) {
+    public void log(Object self, String p1, String p2) {
 	if (!logging)
 	    return;
 	prefix(self);
@@ -314,7 +321,7 @@ public final class Log {
     }
 
     // Add at will and on demand.
-    public void message(Object self, String p1, Object p2) {
+    public void log(Object self, String p1, Object p2) {
 	if (!logging)
 	    return;
 	prefix(self);
@@ -324,7 +331,7 @@ public final class Log {
     }
 
     // Add at will and on demand.
-    public void message(Object self, String p1, int[] p2) {
+    public void log(Object self, String p1, int[] p2) {
 	if (!logging)
 	    return;
 	prefix(self);
@@ -334,7 +341,7 @@ public final class Log {
     }
 
     // Add at will and on demand.
-    public void message(Object self, String p1, long[] p2) {
+    public void log(Object self, String p1, long[] p2) {
 	if (!logging)
 	    return;
 	prefix(self);
@@ -344,7 +351,7 @@ public final class Log {
     }
 
     // Add at will and on demand.
-    public void message(Object self, String p1, String[] p2) {
+    public void log(Object self, String p1, String[] p2) {
 	if (!logging)
 	    return;
 	prefix(self);
@@ -354,7 +361,7 @@ public final class Log {
     }
 
     // Add at will and on demand.
-    public void message(Object self, String p1, Object[] p2) {
+    public void log(Object self, String p1, Object[] p2) {
 	if (!logging)
 	    return;
 	prefix(self);
@@ -364,7 +371,7 @@ public final class Log {
     }
 
     // Add at will and on demand.
-    public void message(Object self, String p1, Throwable p2) {
+    public void log(Object self, String p1, Throwable p2) {
 	if (!logging)
 	    return;
 	prefix(self);
@@ -374,7 +381,7 @@ public final class Log {
     }
 
     // Add at will and on demand.
-    public void message(Object self, String p1, Throwable[] p2) {
+    public void log(Object self, String p1, Throwable[] p2) {
 	if (!logging)
 	    return;
 	prefix(self);
@@ -383,5 +390,38 @@ public final class Log {
 	postfix();
     }
 
-
+    public void log(Object self, String p1, long p2, String p3, Object[] p4) {
+	if (!logging)
+	    return;
+	prefix(self);
+	print(p1);
+	print(p2);
+	print(p3);
+	print(p4);
+	postfix();
+    }
+    public void log(Object self, String p1, Object p2, String p3, Object p4) {
+	if (!logging)
+	    return;
+	prefix(self);
+	print(p1);
+	print(p2);
+	print(p3);
+	print(p4);
+	postfix();
+    }
+    
+    public void log(Object self, String p1, Object p2, String p3, Object p4,
+	    String p5, String[] p6) {
+	if (!logging)
+	    return;
+	prefix(self);
+	print(p1);
+	print(p2);
+	print(p3);
+	print(p4);
+	print(p5);
+	print(p6);
+	postfix();
+    }
 }
