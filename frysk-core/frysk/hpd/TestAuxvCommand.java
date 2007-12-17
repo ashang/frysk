@@ -74,7 +74,7 @@ public class TestAuxvCommand extends TestLib {
     e = new HpdTestbed();
     e.send("core " + core.getPath()
 	   + " -noexe\n");
-    e.expect(5, "Attached to core file.*");
+    e.expect("Attached to core file.*");
     e.send("auxv\n");
     Iterator i = buildAuxv.auxvData.iterator();
     while (i.hasNext())

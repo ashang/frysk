@@ -52,7 +52,7 @@ public class TestCoreCommand extends TestLib {
 	e = new HpdTestbed();
 	e.send("core " + Config.getPkgDataFile("test-core-x86").getPath()
 		+ " -noexe\n");
-	e.expect(5, "Attached to core file.*");
+	e.expect("Attached to core file.*");
 	e.close();
     }
     
@@ -60,7 +60,7 @@ public class TestCoreCommand extends TestLib {
 	e = new HpdTestbed();
 	e.send("core " + Config.getPkgDataFile("test-core-x86").getPath()
 		+ "\n");
-	e.expect(5, "Error:*");
+	e.expect("Error:*");
 	e.close();
     }
     
@@ -68,7 +68,7 @@ public class TestCoreCommand extends TestLib {
 	e = new HpdTestbed();
 	e.send("core " + Config.getPkgDataFile("test-core-x86").getPath()
 		+ "foo\n");
-	e.expect(5, "Error:*");
+	e.expect("Error:*");
 	e.close();
     }
 
@@ -80,7 +80,7 @@ public class TestCoreCommand extends TestLib {
 	e = new HpdTestbed();
 	e.send("core " + core.getPath() + " "
 	       + SlaveOffspring.getExecutable().getPath() + "\n");
-	e.expect(5, "Attached to core file.*");
+	e.expect("Attached to core file.*");
 	e.close();
 	core.delete();
     }
@@ -93,9 +93,9 @@ public class TestCoreCommand extends TestLib {
 	e = new HpdTestbed();
 	e.send("core " + core.getPath() + " "
 	       + SlaveOffspring.getExecutable().getPath() + "\n");
-	e.expect(5, "Attached to core file.*");
+	e.expect("Attached to core file.*");
 	e.send("run\n");
-	e.expect(5, "Attached to process*");
+	e.expect("Attached to process*");
 	e.close();
 	core.delete();
     }

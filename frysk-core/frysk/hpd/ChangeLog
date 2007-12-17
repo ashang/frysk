@@ -1,4 +1,10 @@
-2007-12-14  cagney  <cagney@redhat.com>
+2007-12-17  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestAuxvCommand.java (testAuxVCoreCommand): Remove expect
+	timeout override.
+	* TestCoreCommand.java: Ditto.
+
+2007-12-14  Andrew Cagney  <cagney@redhat.com>
 
 	* HpdTestbed.java: Update; EofException renamed to EndOfFileException.
 	* TestPreprocessor.java: Ditto.
