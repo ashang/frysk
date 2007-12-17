@@ -82,7 +82,7 @@ public class HpdTestbed
 
     /**
      * Create an FHPD process, with PARAM, managed by expect; wait for
-     * the STARTUP message followed immediatly by the prompt.
+     * the STARTUP message followed immediately by the prompt.
      */
     public HpdTestbed(String param, String startup) {
 	this(new String[] {
@@ -128,7 +128,7 @@ public class HpdTestbed
     }
 
     /**
-     * Expect OUTPUT immediatly followed by the prompt.
+     * Expect OUTPUT immediately followed by the prompt.
      */
     public HpdTestbed expectPrompt(String output) {
 	return expectPrompt("expecting: <" + output + ">", output);
@@ -137,7 +137,7 @@ public class HpdTestbed
     /**
      * Send COMMAND ("\n" will be appended); expect OUTPUT along with
      * the prompt (OUTPUT must match everything up to the prompt
-     * including newlines); if other ooutput, or a timeout, fail.
+     * including newlines); if other output, or a timeout, fail.
      */
     public HpdTestbed sendCommandExpectPrompt(final String command,
 					      final String output) {
@@ -210,7 +210,47 @@ public class HpdTestbed
     }
 
     /**
-     * Start HPD attatched to PROGRAM that is crashing (due to a
+     * Start the specified program from under HPD.
+     */
+    static HpdTestbed start(String program, String args) {
+	HpdTestbed h = new HpdTestbed();
+	File exe = Config.getPkgLibFile(program);
+	h.send("start ");
+	h.send(exe.getAbsolutePath());
+	if (args != null) {
+	    h.send(" ");
+	    h.send(args);
+	}
+	h.send("\n");
+	try {
+	    h.expect(new Match[] {
+			 new Regex("Attached to process ([0-9]+)\r\n"
+				   + h.prompt) {
+			     public void execute() {
+				 int pid = Integer.parseInt(group(1));
+				 TearDownProcess.add(pid);
+			     }
+			 },
+			 new Regex(".*\r\n" + h.prompt) {
+			     public void execute() {
+				 TestCase.fail("Expecting <start> got: <"
+					       + group() + ">");
+			     }
+			 }
+		     });
+	} catch (EndOfFileException e) {
+	    TestCase.fail("Expecting <start " + program + "> got: <EOF>");
+	} catch (TimeoutException t) {
+	    TestCase.fail("Expecting <start " + program + "> got: <TIMEOUT>");
+	}
+	return h;
+    }
+
+    static HpdTestbed start(String program) {
+	return start(program, null);
+    }
+    /**
+     * Start HPD attached to PROGRAM that is crashing (due to a
      * signal).
      *
      * XXX: The current implementation runs the program until it

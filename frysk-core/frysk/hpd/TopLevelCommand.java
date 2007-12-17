@@ -109,6 +109,7 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(new StackCommands.Frame(), "frame");
         add(new StackCommands.Up(), "u|p");
         add(new StackCommands.Where(), "w|here");
+        add(new StartCommand(), "start");
         add(new StepCommand(), "s|tep");
         add(new StepFinishCommand(), "finish");
         add(new StepInstructionCommand(), "stepi");

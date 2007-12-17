@@ -1,3 +1,11 @@
+2007-12-17  Rick Moseley  <rmoseley@redhat.com>
+
+	* StartCommand.java: New.
+	* TestStartCommand.java: New.
+	* HpdTestbed.java (start): New method to support start
+	command.
+	* TopLevel.Command.java: Added start command.
+
 2007-12-17  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestAuxvCommand.java (testAuxVCoreCommand): Remove expect
