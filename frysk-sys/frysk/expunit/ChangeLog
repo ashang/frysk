@@ -1,3 +1,10 @@
+2007-12-17  cagney  <cagney@redhat.com>
+
+	* MatchException.java: New.
+	* EndOfFileException.java: Extend MatchException.
+	(message()): Delete.
+	* TimeoutException.java: Ditto.
+
 2007-12-14  cagney  <cagney@redhat.com>
 
 	* EndOfFileException.java: Rename EofException.java.
