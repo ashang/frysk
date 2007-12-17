@@ -1,5 +1,7 @@
 2007-12-17  cagney  <cagney@redhat.com>
 
+	* MatchException.java (getMessage()): Fix typo; print match element.
+
 	* MatchException.java: New.
 	* EndOfFileException.java: Extend MatchException.
 	(message()): Delete.

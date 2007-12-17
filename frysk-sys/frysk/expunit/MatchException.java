@@ -18,7 +18,7 @@ class MatchException extends RuntimeException {
 	    msg.append("; expecting: ");
 	    for (int i = 0; i < matches.length; i++) {
 		msg.append(" <<");
-		msg.append(matches.toString());
+		msg.append(matches[i].toString());
 		msg.append(">>");
 	    }
 	}
