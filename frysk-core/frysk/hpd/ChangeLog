@@ -5,6 +5,7 @@
 	* HpdTestbed.java (start): New method to support start
 	command.
 	* TopLevel.Command.java: Added start command.
+	* TestLoadCommand.java: Change e.send() > e.sendCommandExpectPrompt().
 
 2007-12-17  Phil Muldoon  <pmuldoon@redhat.com>
 

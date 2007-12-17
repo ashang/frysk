@@ -65,40 +65,25 @@ public class TestLoadCommand extends TestLib {
     
     public void testLoadRun() {
 	e = new HpdTestbed();
-	e.send("load " + Config.getPkgLibFile("funit-hello").getPath()
-		+ "\n");
-	e.expect(5, "Loaded executable file.*" + prompt);
-	e.send("focus\n");
-	e.expect(5, "Target set*");
-	e.expect(5, "[0.0]*0*0*");
-	e.send("load " + Config.getPkgLibFile("funit-hello").getPath()
-		+ "\n");
-	e.expect(5, "Loaded executable file.*" + prompt);
-	e.send("focus\n");
-	e.expect(5, "Target set*");
-	e.expect(5, "[0.0]*0*0*");
-	e.expect(5, "[1.0]*0*0*" + prompt);
-	e.send("run\n");
-	e.expect(5, "Attached to process*");
-	e.expect(5, "Attached to process*");
-	e.send("focus\n");
-	e.expect(5, "Target set*");
-	e.expect(5, "[0.0]*");
-	e.expect(5, "[1.0]*" + prompt);
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("focus", "Target set.*[0.0]*0*0*");
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("focus", "Target set.*[0.0]*0*0.*[1.0]*0*0.*");
+	e.sendCommandExpectPrompt("run", "Attached to process.*Attached to process.*");
+	e.sendCommandExpectPrompt("focus", "Target set.*[0.0].*[1.0].*");
+	//e.sendCommandExpectPrompt("quit", "Quitting.*");
 	e.close();
     }
     
     public void testLoadRunRun() {
 	e = new HpdTestbed();
-	e.send("load " + Config.getPkgLibFile("funit-hello").getPath()
-		+ "\n");
-	e.expect(5, "Loaded executable file.*" + prompt);
-	e.send("load " + Config.getPkgLibFile("funit-hello").getPath()
-		+ "\n");
-	e.expect(5, "Loaded executable file.*" + prompt);
-	e.send("run\n");
-	e.expect(5, "Attached to process*");
-	e.expect(5, "Attached to process*");
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("run", "Attached to process.*Attached to process.*");
 	e.close();
     }
 }
