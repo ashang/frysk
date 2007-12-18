@@ -48,42 +48,40 @@ import frysk.Config;
 public class TestPeekCommand extends TestLib {
     public void testPeekCommand() {
 	e = new HpdTestbed();
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
-	e.expect(5,"Loaded executable file.*");
-	e.send("peek 0x08048000L\n");
-	e.expect(5, "The value at 08048000 = 127.*");
+	e.sendCommandExpectPrompt("load " + Config.getPkgDataFile("test-exe-x86").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("peek 0x08048000L", 
+		"The value at 08048000 = 127.*");
 	e.close();
     }
 
     public void testPeekCommandError() {
 	e = new HpdTestbed();
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
-	e.expect(5, "Loaded executable file.*");
-	e.send("peek 08048000\n");
-	e.expect(5, "Cannot find memory in exe file.*");
+	e.sendCommandExpectPrompt("load " + Config.getPkgDataFile("test-exe-x86").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("peek 08048000", 
+		"Cannot find memory in exe file.*");
 	e.close();
     }
     
     public void testTwoLoadedPeekCommand() {
 	e = new HpdTestbed();
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
-	e.expect(5, "Loaded executable file*");
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
-	e.expect(5, "Loaded executable file*");
-	e.send("peek 0x08048000L\n");
-	e.expect(5, "\\[0\\.0\\]");
-	e.expect(5, "The value at 08048000 = 127*");
-	e.expect(5, "\\[1\\.0\\]");
-	e.expect(5, "The value at 08048000 = 127*");
+	e.sendCommandExpectPrompt("load " + Config.getPkgDataFile("test-exe-x86").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("load " + Config.getPkgDataFile("test-exe-x86").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("peek 0x08048000L", "\\[0\\.0\\].*" +
+		"The value at 08048000 = 127.*\\[1\\.0\\].*" +
+		"The value at 08048000 = 127.*");
 	e.close();
     }
     
     public void testPeekCommandNoParameter() {
 	e = new HpdTestbed();
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath() + "\n");
-	e.expect(5, "Loaded executable file*");
-	e.send("peek\n");
-	e.expect(5, "Error: Not enough parameters. Please specify an addess to peek at*");
+	e.sendCommandExpectPrompt("load " + Config.getPkgDataFile("test-exe-x86").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("peek", "Error: Not enough parameters.*" + 
+		"Please specify an addess to peek at.*");
 	e.close();
     }
 }

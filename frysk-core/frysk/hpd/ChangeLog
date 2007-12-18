@@ -6,6 +6,7 @@
 	command.
 	* TopLevel.Command.java: Added start command.
 	* TestLoadCommand.java: Change e.send() > e.sendCommandExpectPrompt().
+	* TestPeekCommand.java: Ditto.
 
 2007-12-17  Phil Muldoon  <pmuldoon@redhat.com>
 
