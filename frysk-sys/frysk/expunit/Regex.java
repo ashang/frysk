@@ -57,13 +57,11 @@ public class Regex
     /**
      * String representing this object - the patter it matches.
      */
-    public String toString ()
-    {
-	return pattern.pattern ();
+    public String toString() {
+	return escape(pattern.pattern());
     }
     /**
-     * Find the pattern in the output, normally this is an unanchored
-     * match.
+     * Find the pattern in the output, normally this is an unanchored match.
      */
     private Matcher matcher;
     boolean find (String output)

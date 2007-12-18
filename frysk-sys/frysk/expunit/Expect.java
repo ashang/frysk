@@ -192,18 +192,17 @@ public class Expect
      */
     void expectMilliseconds(long timeoutMilliseconds, Match[] matches) {
 	final long endTime = (System.currentTimeMillis() + timeoutMilliseconds);
-	fine.log(this, "expect timeout", timeoutMilliseconds, "match", matches);
+	fine.log(this, "expect", matches, "timeout [milliseconds]", (int)timeoutMilliseconds);
 	while (true) {
 	    if (matches != null) {
 		for (int i = 0; i < matches.length; i++) {
 		    Match p = matches[i];
 		    if (p != null) {
-			finest.log(this, "find", (Object) p, "in",
-				(Object) output);
+			finest.log(this, "find", p, "in", (Object) output);
 			if (p.find(output)) {
-			    fine.log(this, "match", (Object) p.group());
+			    fine.log(this, "match", (Object) p.group(), "with", p);
 			    p.execute();
-			    // Remove everying up to and including what
+			    // Remove everything up to and including what
 			    // matched.
 			    if (p.end() >= 0)
 				output = output.substring(p.end());

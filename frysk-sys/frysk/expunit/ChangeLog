@@ -1,3 +1,12 @@
+2007-12-18  cagney  <cagney@redhat.com>
+
+	* TestEquals.java (testToString()): New.
+	* Equals.java (toString()): Return an escaped string.
+	* TestRegex.java (testToString()): New.
+	* Regex.java (toString()): Return an escaped string. 
+	* Match.java (escape(String)): New.
+	* Expect.java (expectMilliseconds(long,Match[]): Use Log.log(Object,String,Object,String,int).
+
 2007-12-17  cagney  <cagney@redhat.com>
 
 	* Expect.java: Use frysk.rsl.Log.

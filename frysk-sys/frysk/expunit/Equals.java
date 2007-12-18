@@ -56,7 +56,7 @@ public class Equals
      */
     public String toString ()
     {
-	return s;
+	return escape(s);
     }
     protected int groupCount ()
     {

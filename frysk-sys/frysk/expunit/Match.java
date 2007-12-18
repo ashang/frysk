@@ -46,6 +46,17 @@ package frysk.expunit;
 public abstract class Match
 {
     /**
+     * Escape any characters in S so it looks something like a quoted-string seen in java.
+     * @param s the unescaped string
+     * @return the escaped string
+     */
+    public static String escape(String s) {
+	return s.replaceAll("\r", "\\\\r")
+		.replaceAll("\n", "\\\\n")
+		.replaceAll("\t", "\\\\t")
+		.replaceAll("\f", "\\\\f");
+    }
+    /**
      * Find the pattern in the output, normally this is an unanchored
      * match.
      */

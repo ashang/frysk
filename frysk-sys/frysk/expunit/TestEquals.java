@@ -98,4 +98,9 @@ public class TestEquals
 		}
 	    });
     }
+    
+    public void testToString() {
+	Match m = new Equals("\r\n\t\f\"\'");
+	assertEquals("toString", "\\r\\n\\t\\f\"\'", m.toString());
+    }
 }

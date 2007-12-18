@@ -42,6 +42,7 @@ package frysk.rsl;
 import java.io.PrintStream;
 import java.util.List;
 import java.text.MessageFormat;
+import java.lang.reflect.Array;
 
 /**
  * Generate log information when enabled.
@@ -155,11 +156,69 @@ public final class Log {
 	out.print("]:");
     }
 
-    private void postfix() {
+    private void suffix() {
 	out.println();
 	out.flush();
     }
-
+  
+    /**
+     * Throwables get their message printed; along with any root
+     * causes.
+     */
+    private void dump(Throwable t) {
+	out.print("<<exception");
+	Throwable cause = t;
+	do {
+	    out.print(":");
+	    out.print(t.getMessage());
+	    cause = cause.getCause();
+	} while (cause != null);
+	out.print(">>");
+    }
+    private void dump(String s) {
+	out.print("\"");
+	out.print(s
+		.replaceAll("\"", "\\\\\"")
+		.replaceAll("\'", "\\\\\'")
+		.replaceAll("\r", "\\\\r")
+		.replaceAll("\n", "\\\\n")
+		.replaceAll("\t", "\\\\t")
+		.replaceAll("\f", "\\\\f"));
+	out.print("\"");
+    }
+    /**
+     * Dump the array object's i'th element
+     * @param o the array object
+     * @param i the array index
+     */
+    private void dump(Object o, int i) {
+	// for moment assume the array contains Objects; dump recursively.
+	dump(Array.get(o, i));
+    }
+    /**
+     * Dump an arbitrary object.
+     * @param o the object to dump
+     */
+    private void dump(Object o) {
+	if (o.getClass().isArray()) {
+	    out.print("[");
+	    for (int i = 0; i < Array.getLength(o); i++) {
+		if (i > 0)
+		    out.print(",");
+		dump(o, i);
+	    }
+	    out.print("]");
+	} else if (o instanceof Throwable)
+	    dump((Throwable) o);
+	else if (o instanceof String)
+	    dump((String)o);
+	else {
+	    out.print("<<");
+	    out.print(o.toString());
+	    out.print(">>");
+	}
+    }
+    
     /**
      * Integers are printed in decimal.
      */
@@ -200,57 +259,12 @@ public final class Log {
 	out.print(" ");
 	out.print(s);
     }
-    private void print(String[] a) {
-	out.print(" [");
-	for (int i = 0; i < a.length; i++) {
-	    if (i > 0)
-		out.print(",");
-	    out.print(a[i]);
-	}
-	out.print("]");
-    }
     /**
-     * Objects are wrapped in "[" and "]".
+     * Use poorly implemented reflection to dump Objectss.
      */
     private void print(Object o) {
-	out.print(" <<");
-	out.print(o.toString());
-	out.print(">>");
-    }
-    private void print(Object[] a) {
-	out.print(" [");
-	for (int i = 0; i < a.length; i++) {
-	    if (i > 0)
-		out.print(",");
-	    out.print("<<");
-	    out.print(a[i].toString());
-	    out.print(">>");
-	}
-	out.print("]");
-    }
-    /**
-     * Throwables get their message printed; along with any root
-     * causes.
-     */
-    private void print(Throwable t) {
-	out.print(" exception");
-	Throwable cause = t;
-	do {
-	    out.print(":");
-	    out.print(t.getMessage());
-	    cause = cause.getCause();
-	} while (cause != null);
-    }
-    private void print(Throwable[] t) {
-	out.print(" exception");
-	for (int i = 0; i < t.length; i++) {
-	    Throwable cause = t[i];
-	    do {
-		out.print(":");
-		out.print(cause.getMessage());
-		cause = cause.getCause();
-	    } while (cause != null);
-	}
+	out.print(" ");
+	dump(o);
     }
     
     /**
@@ -261,7 +275,7 @@ public final class Log {
 	    return;
 	prefix();
 	print(MessageFormat.format(msg, o));
-	postfix();
+	suffix();
     }
     /**
      * For compatibility with existing loggers.
@@ -271,7 +285,7 @@ public final class Log {
 	    return;
 	prefix();
 	print(MessageFormat.format(msg, new Object[] { o }));
-	postfix();
+	suffix();
     }
 
     // Add at will and on demand.
@@ -280,14 +294,14 @@ public final class Log {
 	    return;
 	prefix();
 	print(p1);
-	postfix();
+	suffix();
     }
     
     public void log(Object self, String p1) {
 	if (!logging)
 	    return;
 	print(p1);
-	postfix();
+	suffix();
     }
 
     // Add at will and on demand.
@@ -297,7 +311,7 @@ public final class Log {
 	prefix(self);
 	print(p1);
 	print(p2);
-	postfix();
+	suffix();
     }
 
     // Add at will and on demand.
@@ -307,7 +321,7 @@ public final class Log {
 	prefix(self);
 	print(p1);
 	print(p2);
-	postfix();
+	suffix();
     }
 
     // Add at will and on demand.
@@ -317,7 +331,7 @@ public final class Log {
 	prefix(self);
 	print(p1);
 	print(p2);
-	postfix();
+	suffix();
     }
 
     // Add at will and on demand.
@@ -327,7 +341,7 @@ public final class Log {
 	prefix(self);
 	print(p1);
 	print(p2);
-	postfix();
+	suffix();
     }
 
     // Add at will and on demand.
@@ -337,7 +351,7 @@ public final class Log {
 	prefix(self);
 	print(p1);
 	print(p2);
-	postfix();
+	suffix();
     }
 
     // Add at will and on demand.
@@ -347,59 +361,9 @@ public final class Log {
 	prefix(self);
 	print(p1);
 	print(p2);
-	postfix();
+	suffix();
     }
 
-    // Add at will and on demand.
-    public void log(Object self, String p1, String[] p2) {
-	if (!logging)
-	    return;
-	prefix(self);
-	print(p1);
-	print(p2);
-	postfix();
-    }
-
-    // Add at will and on demand.
-    public void log(Object self, String p1, Object[] p2) {
-	if (!logging)
-	    return;
-	prefix(self);
-	print(p1);
-	print(p2);
-	postfix();
-    }
-
-    // Add at will and on demand.
-    public void log(Object self, String p1, Throwable p2) {
-	if (!logging)
-	    return;
-	prefix(self);
-	print(p1);
-	print(p2);
-	postfix();
-    }
-
-    // Add at will and on demand.
-    public void log(Object self, String p1, Throwable[] p2) {
-	if (!logging)
-	    return;
-	prefix(self);
-	print(p1);
-	print(p2);
-	postfix();
-    }
-
-    public void log(Object self, String p1, long p2, String p3, Object[] p4) {
-	if (!logging)
-	    return;
-	prefix(self);
-	print(p1);
-	print(p2);
-	print(p3);
-	print(p4);
-	postfix();
-    }
     public void log(Object self, String p1, Object p2, String p3, Object p4) {
 	if (!logging)
 	    return;
@@ -408,11 +372,21 @@ public final class Log {
 	print(p2);
 	print(p3);
 	print(p4);
-	postfix();
+	suffix();
     }
     
-    public void log(Object self, String p1, Object p2, String p3, Object p4,
-	    String p5, String[] p6) {
+    public void log(Object self, String p1, Object p2, String p3, int p4) {
+	if (!logging)
+	    return;
+	prefix(self);
+	print(p1);
+	print(p2);
+	print(p3);
+	print(p4);
+	suffix();
+    }
+    
+    public void log(Object self, String p1, Object p2, String p3, Object p4, String p5, Object p6) {
 	if (!logging)
 	    return;
 	prefix(self);
@@ -422,6 +396,6 @@ public final class Log {
 	print(p4);
 	print(p5);
 	print(p6);
-	postfix();
+	suffix();
     }
 }

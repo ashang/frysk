@@ -1,3 +1,23 @@
+2007-12-18  cagney  <cagney@redhat.com>
+
+	* Log.java (suffix()): Rename prefix. 
+	(print(Object)): Inspect the object's type.
+	(print(Throwable[])): Delete.
+	(print(Throwable)): Delete.
+	(dump(Throwable)): New.
+	(dump(Object)): New.
+	(dump(Object,int)): New.
+	(print(Object[])): Delete.
+	(print(String[])): Delete.
+	(log(Object,String,Throwable)): Delete.
+	(log(Object,String,Throwable[])): Delete.
+	(log(Object,String,Object[])): Delete.
+	(log(Object,String,long,String,Object[])): Delete.
+	(log(Object,String,Object,String,int)): New.
+	(log(Object,String,Object,String,Object,String,Object[])): Delete.
+	(log(Object,String,Object,String,Object,String,Object)): New.
+	(log(Object,String,String[])): Delete.
+
 2007-12-17  cagney  <cagney@redhat.com>
 
 	* Log.java (log(...)): Rename message(...).

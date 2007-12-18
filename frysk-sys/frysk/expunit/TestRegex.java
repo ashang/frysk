@@ -111,4 +111,9 @@ public class TestRegex
 		}
 	    });
     }
+    
+    public void testToString() {
+	Match m = new Regex("\r\n\t\f\"\'");
+	assertEquals("toString", "\\r\\n\\t\\f\"\'", m.toString());
+    }
 }
