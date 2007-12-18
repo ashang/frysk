@@ -50,6 +50,8 @@ import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
+import frysk.sys.Signal;
+
 import inua.util.PrintWriter;
 
 import java.util.HashMap;
@@ -227,6 +229,9 @@ public class Ftrace
 	observationRequested(task);
 
 	task.requestAddClonedObserver(clonedObserver);
+	observationRequested(task);
+
+	task.requestAddTerminatingObserver(terminatingObserver);
 	observationRequested(task);
 
 	if (ltraceController != null) {
@@ -465,6 +470,30 @@ public class Ftrace
 	}
     }
     TaskObserver.Cloned clonedObserver = new MyClonedObserver();
+
+    class MyTerminatingObserver
+	implements TaskObserver.Terminating
+    {
+	public Action updateTerminating (Task task, boolean signal,
+					 int value)
+	{
+	    if (signal)
+		reporter.eventSingle(task, "killed by " + Signal.valueOf(value).toPrint());
+	    else
+		reporter.eventSingle(task, "exited with status " + value);
+
+	    return Action.CONTINUE;
+	}
+
+	public void addedTo (Object observable) {
+	    Task task = (Task) observable;
+	    observationRealized(task);
+	}
+	public void deletedFrom (Object observable) { }
+	public void addFailed (Object observable, Throwable w) { }
+    }
+    TaskObserver.Terminating terminatingObserver = new MyTerminatingObserver();
+
 
     public static interface StackTracedSymbolsProvider {
 	boolean shouldStackTraceOn(Symbol symbol);

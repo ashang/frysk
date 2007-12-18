@@ -1,3 +1,9 @@
+2007-12-18  Petr Machata  <pmachata@redhat.com>
+
+	* Ftrace.java: Use terminating observer to inform about the task
+	termination events.
+	(MyTerminatingObserver): New class.
+
 2007-12-13  Petr Machata  <pmachata@redhat.com>
 
 	* TestLtrace.java: Reindented.
