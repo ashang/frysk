@@ -60,6 +60,8 @@ public class TestLoadCommand extends TestLib {
 	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath()
 		+ "foo\n");
 	e.expect(5, "File does not exist or is not readable*");
+	e.send("quit\n");
+	e.expect("Quitting...");
 	e.close();
     }
     
@@ -67,13 +69,16 @@ public class TestLoadCommand extends TestLib {
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
 		"Loaded executable file.*");
-	e.sendCommandExpectPrompt("focus", "Target set.*[0.0]*0*0*");
+	//e.sendCommandExpectPrompt("focus", "Target set*pid*id*\r\n\\[0\\.0\\]*0*0.*");
+	e.sendCommandExpectPrompt("focus", "Target set.*\\[0\\.0\\]\t\t0\t0.*");
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
 		"Loaded executable file.*");
-	e.sendCommandExpectPrompt("focus", "Target set.*[0.0]*0*0.*[1.0]*0*0.*");
+	e.sendCommandExpectPrompt("focus", "Target set.*\\[0\\.0\\]\t\t0\t0.*"+
+		"\\[1\\.0\\]\t\t0*\\t0.*");
 	e.sendCommandExpectPrompt("run", "Attached to process.*Attached to process.*");
-	e.sendCommandExpectPrompt("focus", "Target set.*[0.0].*[1.0].*");
-	//e.sendCommandExpectPrompt("quit", "Quitting.*");
+	e.sendCommandExpectPrompt("focus", "Target set.*\\[0\\.0\\].*\\[1\\.0].*");
+	e.send("quit\n");
+	e.expect("Quitting...");
 	e.close();
     }
     
@@ -84,6 +89,8 @@ public class TestLoadCommand extends TestLib {
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("run", "Attached to process.*Attached to process.*");
+	e.send("quit\n");
+	e.expect("Quitting...");
 	e.close();
     }
 }

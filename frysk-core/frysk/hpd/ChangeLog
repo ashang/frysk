@@ -1,3 +1,7 @@
+2007-12-18  Rick Moseley  <rmoseley@redhat.com>
+
+	* TestLoadCommand.java: Fix regex symbols.
+
 2007-12-17  Rick Moseley  <rmoseley@redhat.com>
 
 	* StartCommand.java: New.
