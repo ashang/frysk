@@ -42,10 +42,10 @@ package frysk.proc.dead;
 import inua.eio.ByteBuffer;
 import frysk.isa.ISA;
 import frysk.isa.ISAMap;
-import frysk.proc.RegisterBanks;
-import frysk.proc.X86BankRegisters;
-import frysk.proc.PPCBankRegisters;
-import frysk.proc.BankRegisterMap;
+import frysk.bank.RegisterBanks;
+import frysk.bank.X86BankRegisters;
+import frysk.bank.PPCBankRegisters;
+import frysk.bank.BankRegisterMap;
 
 /**
  * The target has registers scattered across one or more register

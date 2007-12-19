@@ -43,7 +43,7 @@ import inua.eio.ByteBuffer;
 import frysk.proc.TaskObserver;
 import frysk.proc.Isa;
 import frysk.isa.ISA;
-import frysk.proc.RegisterBanks;
+import frysk.bank.RegisterBanks;
 
 public class Task
     extends frysk.proc.Task

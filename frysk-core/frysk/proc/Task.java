@@ -53,6 +53,8 @@ import frysk.isa.Register;
 import frysk.isa.ISA;
 import java.math.BigInteger;
 import inua.eio.ByteOrder;
+import frysk.bank.RegisterBanks;
+import frysk.bank.BankRegister;
 
 public abstract class Task
 {

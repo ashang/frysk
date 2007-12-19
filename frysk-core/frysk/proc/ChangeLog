@@ -1,3 +1,14 @@
+2007-12-19  Andrew Cagney  <cagney@redhat.com>
+
+	* BankRegister.java: Move to frysk.bank.
+	* BankRegisterMap.java: Ditto.
+	* IndirectBankRegisterMap.java: Ditto.
+	* PPCBankRegisters.java: Ditto.
+	* RegisterBanks.java: Ditto.
+	* X86BankRegisters.java: Ditto.
+	* LinuxPPC32On64.java: Update.
+	* Task.java: Update.
+
 2007-12-13  Rick Moseley  <rmoseley@redhat.com>
 
 	* Proc.java: Remove redundant call to performDetach().

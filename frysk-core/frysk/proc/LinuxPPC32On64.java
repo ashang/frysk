@@ -39,6 +39,9 @@
 
 package frysk.proc;
 
+import frysk.bank.PPCBankRegisters;
+import frysk.bank.BankRegister;
+
 class LinuxPPC32On64
   extends LinuxPPC32
 {

@@ -41,7 +41,7 @@ package frysk.proc.dead;
 
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
-import frysk.proc.RegisterBanks;
+import frysk.bank.RegisterBanks;
 import frysk.proc.Isa;
 import frysk.proc.TaskId;
 import frysk.proc.TaskState;

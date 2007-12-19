@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.bank;
 
 import inua.eio.ByteBuffer;
 import frysk.isa.Register;
@@ -56,7 +56,7 @@ public class RegisterBanks {
 	this.bankRegisters = bankRegisters;
     }
 
-    BankRegister getBankRegister(String name) {
+    public BankRegister getBankRegister(String name) {
 	BankRegister bankRegister = bankRegisters.get(name);
 	if (bankRegister != null)
 	    return bankRegister;
@@ -71,7 +71,7 @@ public class RegisterBanks {
 	return getBankRegister(register.getName());
     }
 
-    long get(Register register) {
+    public long get(Register register) {
 	BankRegister bankRegister = findBankRegister(register);
 	ByteBuffer bank = banks[bankRegister.getBank()];
 	switch (bankRegister.getLength()) {
@@ -85,7 +85,7 @@ public class RegisterBanks {
 	}
     }
 
-    void set(Register register, long value) {
+    public void set(Register register, long value) {
 	BankRegister bankRegister = findBankRegister(register);
 	ByteBuffer bank = banks[bankRegister.getBank()];
 	switch (bankRegister.getLength()) {
@@ -99,7 +99,7 @@ public class RegisterBanks {
 	}
     }
 
-    void access(Register register, long offset, long size,
+    public void access(Register register, long offset, long size,
 		byte[] bytes, int start, boolean write) {
 	BankRegister bankRegister = findBankRegister(register);
 	ByteBuffer bank = banks[bankRegister.getBank()];

@@ -1,0 +1,15 @@
+2007-12-19  Andrew Cagney  <cagney@redhat.com>
+
+	* BankRegister.java: Move to here from frysk.proc.
+	* BankRegisterMap.java: Ditto.
+	* IndirectBankRegisterMap.java: Ditto.
+	* PPCBankRegisters.java: Ditto.
+	* RegisterBanks.java: Ditto.
+	* X86BankRegisters.java: Ditto.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:
