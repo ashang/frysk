@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-        <classpathentry kind="src" path="frysk-gui"
-			exclude="configure.in"/>
-        <classpathentry kind="src" path="frysk-gtk"
-			exclude="configure.in"/>
-        <classpathentry kind="src" path="frysk-core"
-			exclude="configure.in"/>
-        <classpathentry kind="src" path="frysk-sys"
-			exclude="configure.in"/>
+        <classpathentry excluding="**/ChangeLog" including="frysk/"
+			kind="src" path="frysk-gui"/>
+        <classpathentry excluding="**/ChangeLog" including="frysk/|org/"
+			kind="src" path="frysk-gtk"/>
+        <classpathentry excluding="**/ChangeLog" including="frysk/"
+			kind="src" path="frysk-core"/>
+        <classpathentry excluding="**/ChangeLog" including="frysk/|lib/|inua/"
+			kind="src" path="frysk-sys"/>
 
         <classpathentry kind="lib" path="@abs_builddir@/frysk-gui/frysk-gui.jar"
 			sourcepath="@abs_builddir@/frysk-gui"/>
         <classpathentry kind="lib" path="@abs_builddir@/frysk-gtk/frysk-gtk.jar"
 			sourcepath="@abs_builddir@/frysk-gtk"/>
+        <classpathentry kind="lib" path="@abs_builddir@/frysk-gtk/ftk.jar"/>
         <classpathentry kind="lib" path="@abs_builddir@/frysk-core/frysk-core.jar"
 			sourcepath="@abs_builddir@/frysk-core"/>
         <classpathentry kind="lib" path="@abs_builddir@/frysk-sys/frysk-sys.jar"

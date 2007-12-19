@@ -1,5 +1,8 @@
 2007-12-19  Andrew Cagney  <cagney@redhat.com>
 
+	* classpath.in: Exclude duplicated ChangeLog only include .java
+	sub-directories.  Add ftk.jar.
+
 	* project.in: Add "javabuilder" to <buildSpec>.
 
 2007-12-14  Andrew Cagney  <cagney@redhat.com>

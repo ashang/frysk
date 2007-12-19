@@ -1,3 +1,7 @@
+2007-12-19  cagney  <cagney@redhat.com>
+
+	* fhpd.java: Explicitly import frysk.sys.FileDescriptor.
+
 2007-12-12  Petr Machata  <pmachata@redhat.com>
 
 	* ftrace.java: Support -i for tracing inside dynamic linker.

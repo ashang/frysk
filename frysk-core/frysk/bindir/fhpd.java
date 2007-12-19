@@ -54,6 +54,7 @@ import frysk.util.CommandlineParser;
 import frysk.util.PtyTerminal;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
+import frysk.sys.FileDescriptor;
 
 public class fhpd 
 {
@@ -146,7 +147,7 @@ public class fhpd
       reader = new ConsoleReader(new FileInputStream(java.io.FileDescriptor.in),
 				 new PrintWriter(System.out),
 				 null,
-				 new PtyTerminal(frysk.sys.FileDescriptor.in));
+				 new PtyTerminal(FileDescriptor.in));
     }
     catch (IOException ioe) {
       System.out.println("ERROR: Could not create a command line");
