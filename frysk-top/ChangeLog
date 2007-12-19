@@ -1,3 +1,7 @@
+2007-12-19  Andrew Cagney  <cagney@redhat.com>
+
+	* project.in: Add "javabuilder" to <buildSpec>.
+
 2007-12-14  Andrew Cagney  <cagney@redhat.com>
 
 	* make-all.launch.in: Add "full" to
