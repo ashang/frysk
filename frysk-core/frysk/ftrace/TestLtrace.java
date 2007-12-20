@@ -157,6 +157,34 @@ public class TestLtrace
 	}
     }
 
+    class Multicontroller
+	extends GenericController
+    {
+	private final int N;
+	public final GenericFunctionObserver[] observers;
+
+	public Multicontroller(int N, String name) {
+	    super(name);
+	    this.N = N;
+	    observers = new GenericFunctionObserver[N];
+	}
+
+	public FunctionObserver createObserver() {
+	    return new GenericFunctionObserver();
+	}
+
+	public FunctionObserver implementRequest(Task task, Set tracePoints) {
+	    FunctionObserver fo = null;
+	    for (int i = 0; i < N; ++i) {
+		fo = super.implementRequest(task, tracePoints);
+		// Fingers crossed nobody overrided createObserver
+		// in an incompatible manner...
+		observers[i] = (GenericFunctionObserver)fo;
+	    }
+	    return fo;
+	}
+    }
+
     class GenericFunctionObserver
 	extends DummyFunctionObserver
     {
@@ -401,28 +429,6 @@ public class TestLtrace
 	    return;
 
 	final int N = 10;
-	final GenericFunctionObserver[] observers = new GenericFunctionObserver[N];
-
-	class MyObserverCreator4
-	    extends GenericController
-	{
-	    public MyObserverCreator4(String name) { super(name); }
-
-	    public FunctionObserver createObserver() {
-		return new GenericFunctionObserver();
-	    }
-
-	    public FunctionObserver implementRequest(Task task, Set tracePoints) {
-		FunctionObserver fo = null;
-		for (int i = 0; i < N; ++i) {
-		    fo = super.implementRequest(task, tracePoints);
-		    // Fingers crossed nobody overrided createObserver
-		    // in an incompatible manner...
-		    observers[i] = (GenericFunctionObserver)fo;
-		}
-		return fo;
-	    }
-	}
 
 	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
 	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
@@ -430,7 +436,7 @@ public class TestLtrace
 	Proc proc = task.getProc();
 	int pid = proc.getPid();
 
-	MyObserverCreator4 observerCreator = new MyObserverCreator4("trace_me_1");
+	Multicontroller observerCreator = new Multicontroller(N, "trace_me_1");
 	MappingGuard.requestAddMappingObserver(task, new GenericMappingObserver(observerCreator));
 	assertRunUntilStop("add mapping observer");
 
@@ -439,14 +445,17 @@ public class TestLtrace
 	assertRunUntilStop("run child until exit");
 
 	for (int i = 0; i < N; i++) {
-	    assertTrue("observer #" + i + " initialized", observers[i] != null);
-	    assertTrue("observer #" + i + " added", observers[i].added);
-	    assertEquals("observer #" + i + " number of enter hits", 1, observers[i].enter);
-	    assertEquals("observer #" + i + " number of leave hits", 1, observers[i].leave);
+	    assertTrue("observer #" + i + " initialized",
+		       observerCreator.observers[i] != null);
+	    assertTrue("observer #" + i + " added",
+		       observerCreator.observers[i].added);
+	    assertEquals("observer #" + i + " number of enter hits",
+			 1, observerCreator.observers[i].enter);
+	    assertEquals("observer #" + i + " number of leave hits",
+			 1, observerCreator.observers[i].leave);
 	}
     }
 
-    /*
     public void testMultipleControlers()
     {
 	if(unresolvedOffUtrace(5053))
@@ -460,36 +469,32 @@ public class TestLtrace
 
 	int N = 10;
 	String[] symbols = {"trace_me_1", "trace_me_2"};
-	MyController4[] controllers = new MyController4[symbols.length];
-	MyObserver5[][] observers = new MyObserver5[symbols.length][N];
+	Multicontroller[] controllers = new Multicontroller[symbols.length];
 	for (int j = 0; j < symbols.length; j++) {
-	    controllers[j] = new MyController4(symbols[j]);
-	    for (int i = 0; i < N; i++) {
-		observers[j][i] = new MyObserver5();
-		Ltrace.requestAddFunctionObserver(task, observers[j][i], controllers[j]);
-	    }
+	    Multicontroller observerCreator = new Multicontroller(N, symbols[j]);
+	    controllers[j] = observerCreator;
+	    MappingGuard.requestAddMappingObserver(task, new GenericMappingObserver(observerCreator));
 	}
-	assertRunUntilStop("add function observers");
-	for (int j = 0; j < symbols.length; j++)
-	    for (int i = 0; i < N; i++)
-		assertTrue("observer #" + i + " added", observers[j][i].added);
+	assertRunUntilStop("add mapping guards");
 
 	new StopEventLoopWhenProcRemoved(pid);
 	child.requestRemoveBlock();
 	assertRunUntilStop("run child until exit");
 
-	for (int j = 0; j < symbols.length; j++)
-	    assertEquals("controller #" + j + " entry points", 1, controllers[j].found);
-
-	for (int j = 0; j < symbols.length; j++)
+	for (int j = 0; j < symbols.length; j++) {
+	    Multicontroller controller = controllers[j];
+	    assertEquals("controller #" + j + " entry points", 1, controller.found);
 	    for (int i = 0; i < N; i++) {
-		assertEquals("observer #" + i + " number of enter hits", 1, observers[j][i].enter);
-		assertEquals("observer #" + i + " number of leave hits", 1, observers[j][i].leave);
+		GenericFunctionObserver observer = controller.observers[i];
+		assertTrue("observer #" + i + " initialized", observer != null);
+		assertTrue("observer #" + i + " added", observer.added);
+		assertEquals("observer #" + i + " number of enter hits", 1, observer.enter);
+		assertEquals("observer #" + i + " number of leave hits", 1, observer.leave);
 	    }
+	}
     }
 
     public void tearDown()
     {
     }
-    */
 }

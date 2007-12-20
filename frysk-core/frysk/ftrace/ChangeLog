@@ -4,6 +4,7 @@
 	(testArgumentsCorrect1): Turned the test on.
 	(testTracingAlias): Dtto.
 	(testMultipleObservers): Dtto.
+	(testMultipleControlers): New test.
 
 2007-12-20  Petr Machata  <pmachata@redhat.com>
 
