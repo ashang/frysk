@@ -68,10 +68,6 @@ public class Task
     {
 	return null;
     }
-    protected ByteBuffer[] sendrecRegisterBuffersFIXME ()
-    {
-	return null;
-    }
 
     protected RegisterBanks sendrecRegisterBanks() {
 	return null;

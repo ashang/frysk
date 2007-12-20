@@ -125,13 +125,6 @@ public class LinuxTask extends DeadTask {
     }
 
     
-    protected ByteBuffer[] sendrecRegisterBuffersFIXME() {
-    	// XXX: Have to return this here as this method is still used in
-    	// tests. Cannot convert tests until Task,getRegisterBanks() is
-    	// made public.
-    	return simulateRegisterBanks();
-    }
-
   /**
    * Create a new unattached Task.
    */

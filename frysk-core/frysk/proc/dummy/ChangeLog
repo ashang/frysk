@@ -1,3 +1,7 @@
+2007-12-20  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java (sendrecRegisterBuffersFIXME()): Delete.
+
 2007-10-17  Andrew Cagney  <cagney@redhat.com>
 
 	* Host.java: Update; import frysk.proc.FindProc.

@@ -55,14 +55,10 @@ public class LinuxExeTask extends DeadTask
   LinuxExeProc proc = null;
   TaskId id = null;
 
-  // Holds all the register values, setup once in the constructor.
-  private final ByteBuffer[] bankBuffers;
-  
   protected LinuxExeTask(LinuxExeProc proc, TaskId id, TaskState state) {
       super(proc, id, state);
       this.proc = proc;
       this.id = id;
-      this.bankBuffers = sendrecRegisterBuffersFIXME();
 
       // Fake PC.  XXX should be done in Proc instead of creating Elf
       // object in the Task itself.
@@ -99,26 +95,16 @@ public class LinuxExeTask extends DeadTask
     return this.proc.sendrecMemory();
   }
   
-  /**
-   * sendrecRegisterBuffers fakes out what the register values are at this point
-   * as there is no info to be had at this moment in time.
-   */
-  protected ByteBuffer[] sendrecRegisterBuffersFIXME() {
+  protected RegisterBanks sendrecRegisterBanks() {
       ByteBuffer[] bankBuffers = new ByteBuffer[4];
-
-	// Create an empty page
+      // Create an empty page
       byte[] emptyBuffer = new byte[4096];
       for (int i = 0; i < emptyBuffer.length; i++)
 	  emptyBuffer[i] = 0;
-
       bankBuffers[0] = new ArrayByteBuffer(emptyBuffer);
       bankBuffers[1] = new ArrayByteBuffer(emptyBuffer);
       bankBuffers[2] = new ArrayByteBuffer(emptyBuffer);
       bankBuffers[3] = new ArrayByteBuffer(emptyBuffer);
-      return bankBuffers;
-    }
-
-  protected RegisterBanks sendrecRegisterBanks() {
       return CorefileRegisterBanksFactory.create
       	  (getISA(), bankBuffers);
   }

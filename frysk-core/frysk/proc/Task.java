@@ -51,10 +51,7 @@ import java.util.Observer;
 import java.util.Observable;
 import frysk.isa.Register;
 import frysk.isa.ISA;
-import java.math.BigInteger;
-import inua.eio.ByteOrder;
 import frysk.bank.RegisterBanks;
-import frysk.bank.BankArrayRegister;
 
 public abstract class Task
 {
@@ -1053,21 +1050,15 @@ public abstract class Task
 	return registerBanks;
     }
 
-  private ByteBuffer[] registerBuffers;
-  protected abstract ByteBuffer[] sendrecRegisterBuffersFIXME();
-  /**
-   * Return the machine's register banks as an array.
-   *
-   * XXX: This is being replaced by "getRegisterBanks()" that returns
-   * a class that abstracts the ByteArray[] + BankArrayRegister
-   * combination.
-   */
-  public ByteBuffer[] getRegisterBuffersFIXME ()
-  {
-    if (registerBuffers == null)
-      registerBuffers = sendrecRegisterBuffersFIXME();
-    return registerBuffers;
-  }
+    /**
+     * Return the machine's register banks as an array of ByteBuffers.
+     *
+     * XXX: This is wrong.  Clients cannot assume internal register
+     * layout.
+     */
+    public ByteBuffer[] getRegisterBuffersFIXME () {
+	return getRegisterBanks().getBanksFIXME();
+    }
   
   /**
    * The process has transitioned to the detached.
@@ -1111,7 +1102,6 @@ public abstract class Task
     public void clearIsa() {
 	isa = null;
 	memory = null;
-	registerBuffers = null;
 	registerBanks = null;
 	currentISA = null;
     }

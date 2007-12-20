@@ -112,4 +112,8 @@ public class RegisterBanks {
 	    bank.get(offset + bankRegister.getOffset(), bytes,
 		     start, (int)size);
     }
+
+    public ByteBuffer[] getBanksFIXME() {
+	return banks;
+    }
 }

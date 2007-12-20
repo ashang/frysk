@@ -115,14 +115,6 @@ public class LinuxTask extends LiveTask {
       return memory;
     }
 
-    /**
-     * Return the ISA's register-bank byte-buffers.
-     */
-    protected ByteBuffer[] sendrecRegisterBuffersFIXME () 
-    {
-	return getIsa().getRegisterBankBuffers(getTid());
-    }
-
     protected RegisterBanks sendrecRegisterBanks() {
 	return PtraceRegisterBanksFactory.create(getISA(), getTid());
     }

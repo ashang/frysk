@@ -1,5 +1,7 @@
 2007-12-20  Andrew Cagney  <cagney@redhat.com>
 
+	* RegisterBanks.java (getBanksFIXME()): New.
+
 	* RegisterMap.java: New file.
 	* BankRegisterMap.java: Extend RegisterMap.java.
 	* BankArrayRegisterMap.java: Ditto.

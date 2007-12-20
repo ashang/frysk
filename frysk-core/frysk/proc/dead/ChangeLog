@@ -1,5 +1,9 @@
 2007-12-20  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxTask.java (sendrecRegisterBuffersFIXME()): Delete.
+	* LinuxExeTask.java (sendrecRegisterBuffersFIXME()): Delete.
+	(sendrecRegisterBanks()): Update.
+
 	* CorefileRegisterBanksFactory.java: Update; RegisterBankArrayMap
 	renamed to BankArrayRegisterMap.
 	
