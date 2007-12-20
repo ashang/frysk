@@ -75,7 +75,7 @@ public class TestAuxvCommand extends TestLib {
     e.send("core " + core.getPath()
 	   + " -noexe\n");
     e.expect("Attached to core file.*");
-    e.send("auxv\n");
+    e.send("info auxv\n");
     Iterator i = buildAuxv.auxvData.iterator();
     while (i.hasNext())
       e.equals((String)i.next());

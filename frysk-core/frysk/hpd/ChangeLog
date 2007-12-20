@@ -1,3 +1,17 @@
+2007-12-20  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* InfoCommand.java: New. Add auxv, maps, debuginfo.
+	* TopLevelCommand.java(TopLevelCommand): Add InfoCommand.
+	Remove auxv, maps, debuginfo.
+	* TestRegs.java (testRegsCommand): Add 'info regs'
+	to test.	
+	* TestMapsCommand.java (testMapsCommand): Send 'info maps'
+	to expect instead of 'maps'.
+	* TestAuxvCommand.java (testAuxVCoreCommand): Send 'info auxv'
+	to expect instead of 'auxv'.
+	* TestHelp.java (TestHelp): Remove debuginfo, add
+	info to array.
+
 2007-12-18  Rick Moseley  <rmoseley@redhat.com>
 
 	* TestLoadCommand.java: Fix regex symbols.

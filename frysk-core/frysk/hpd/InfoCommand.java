@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,25 +36,41 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-
 package frysk.hpd;
 
-import frysk.proc.MemoryMap;
-import frysk.proc.Proc;
-import frysk.testbed.DaemonBlockedAtSignal;
+import java.util.List;
 
-public class TestMapsCommand extends TestLib {
-  
-  public void testMapsCommand() {
-	  
-    Proc proc = (new DaemonBlockedAtSignal("funit-stacks")).getMainTask().getProc();
-    MemoryMap[] liveMaps = proc.getMaps();
-        
-    e = new HpdTestbed();
-    e.send("attach " + proc.getPid() +"\n");
-    e.send("info maps\n");
-    for (int i=0; i< liveMaps.length; i++)
-      e.equals(liveMaps[i].toString());
-    e.close();
-  }
+public class InfoCommand extends MultiLevelCommand {
+    
+    private class Help extends Command {
+    	Help() {
+    	    super("Display this help message.", "help [command]",
+    		  "Display help (possibly for a command.)");
+    	}
+    	
+    	public void interpret(CLI cli, Input cmd) {
+    	    InfoCommand.this.help(cli, cmd);
+    	}
+    	
+    	/**
+    	 * Complete the line, throw problem back at the top level
+    	 * command.
+    	 */
+    	int complete(CLI cli, Input buffer, int cursor, List candidates) {
+    	    return InfoCommand.this.complete(cli, buffer, cursor,
+					     candidates);
+    	}
+    }
+    
+    
+    InfoCommand() {
+	super("info command", "info <subcommand>", 
+	      "The info command displays useful information about " +
+	      "various system and process level systems.");
+        add(new Help(), "help");
+    	add(new RegsCommand(),"regs");
+    	add(new DebuginfoCommand(),"debuginfo");
+    	add(new MapsCommand(),"maps");
+    	add(new AuxvCommand(),"auxv");
+    }
 }

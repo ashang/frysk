@@ -51,20 +51,23 @@ public class TestRegs extends TestLib {
 	File exe = Config.getPkgLibFile("hpd-c");
 	ISA isa = ElfMap.getISA(exe);
 
+	String[] commandSet = {"regs\n", "info regs\n"};
 	// Regs
-	e.send("regs\n");
-
-	// Match the first register (with two values) and the last
-	// register.
-	if (isa == ISA.IA32)
-	    e.expectPrompt("eax:\t[0-9][^\t]*\t0x.*esp:.*");
-	else if (isa == ISA.X8664)
-	    e.expectPrompt("rax:\t[0-9][^\t]*\t0x.*rip:.*");
-	else
-	    fail("Architecture " + isa + " unhandled");
+	for (int i=0; i < commandSet.length; i++) {
+	    e.send(commandSet[i]);
+	    
+	    // Match the first register (with two values) and the last
+	    // register.
+	    if (isa == ISA.IA32)
+		e.expectPrompt("eax:\t[0-9][^\t]*\t0x.*esp:.*");
+	    else if (isa == ISA.X8664)
+		e.expectPrompt("rax:\t[0-9][^\t]*\t0x.*rip:.*");
+	    else
+		fail("Architecture " + isa + " unhandled");
+	}
 	e.close();
     }
-
+    
     public void testRegsBlah() {
 	e = HpdTestbed.attachXXX("hpd-c");
 	e.sendCommandExpectPrompt("regs blah",

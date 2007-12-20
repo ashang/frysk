@@ -80,12 +80,10 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(new AliasCommands.Alias(), "alias");
         add(new AliasCommands.Unalias(), "unalias");
         add(new AttachCommand(), "attach");
-        add(new AuxvCommand(), "auxv");
         add(new BreakpointCommand(), "b|reak");
         add(new CoreCommand(), "core");
         add(new DbgVariableCommands.Set(), "set");
         add(new DbgVariableCommands.Unset(), "unset");
-        add(new DebuginfoCommand(), "debuginfo");
         add(new DetachCommand(), "detach");
         add(new DisassembleCommand(), "disassemble");
         add(new DisplayCommand(), "display");
@@ -95,10 +93,10 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(new GoCommand(), "g|o");
         add(new HaltCommand(), "h|alt");
         add(new Help(), "help");
+        add(new InfoCommand(), "info");
         add(new KillCommand(), "k|ill");
         add(new ListCommand(), "l|ist");
         add(new LoadCommand(), "load");
-        add(new MapsCommand(), "maps");
         add(new PeekCommand(), "peek");
 	Command quit = new QuitCommand();
         add(quit, "exit");
