@@ -1,3 +1,17 @@
+2007-12-20  Mark Wielaard  <mwielaard@redhat.com>
+
+	* .gitignore: Remove libunwind-*.
+	* Makefile.am (LIBUNWIND_DIR): Set to either empty or canonical
+	libunwind dir.
+	(LIBUNWIND_ARCH_DIRS): Define.
+	(LIBUNWIND_OTHER_DIRS): Removed.
+	(CHECK_SUBDIRS): Include LIBUNWIND_DIR (if defined).
+	(SUBDIRS): Include LIBUNWIND_ARCH_DIRS.
+	* bootstrap.sh: Don't create libunwind-* dirs.
+	* configure.ac: Don't create and configure libunwind-* dirs
+	explicitly.
+	(AC_CONFIG_SUBDIRS): Add libunwind-* dirs.
+
 2007-10-13  Mark Wielaard  <mwielaard@redhat.com>
 
 	* .cvsignore: Add libunwind-ppc32.

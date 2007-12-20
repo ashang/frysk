@@ -44,26 +44,11 @@ include Makefile.gen
 # See the comment above CHECK_SUBDIRS, only add libunwind to the tests
 # if explicitly configured to do so.
 if CHECK_LIBUNWIND
-if ARCH_X86
-    LIBUNWIND_ARCH_DIR = libunwind-i386
-    LIBUNWIND_OTHER_DIRS = libunwind-x86_64 libunwind-ppc32 libunwind-ppc64
-endif # ARCH_X86
-if ARCH_X86_64
-    LIBUNWIND_ARCH_DIR = libunwind-x86_64
-    LIBUNWIND_OTHER_DIRS = libunwind-i386 libunwind-ppc32 libunwind-ppc64
-endif # ARCH_X86_64
-if ARCH_PPC32
-    LIBUNWIND_ARCH_DIR = libunwind-ppc32
-    LIBUNWIND_OTHER_DIRS = libunwind-i386 libunwind-x86_64 libunwind-ppc64
-endif # ARCH_PPC32
-if ARCH_PPC64
-    LIBUNWIND_ARCH_DIR = libunwind-ppc64
-    LIBUNWIND_OTHER_DIRS = libunwind-i386 libunwind-x86_64 libunwind-ppc32
-endif # ARCH_PPC64
+  LIBUNWIND_DIR = libunwind
 else
-  LIBUNWIND_ARCH_DIR = 
-  LIBUNWIND_OTHER_DIRS = libunwind-i386 libunwind-x86_64 libunwind-ppc32 libunwind-ppc64
+  LIBUNWIND_DIR = 
 endif # CHECK_LIBUNWIND
+LIBUNWIND_ARCH_DIRS = libunwind-i386 libunwind-x86_64 libunwind-ppc32 libunwind-ppc64
 
 # List of directories that should both be included in the distro and
 # included in a recursive "make check".  Only the native architecture
@@ -77,13 +62,13 @@ CHECK_SUBDIRS = \
 	elfutils \
 	getopt \
 	tests \
-	$(LIBUNWIND_ARCH_DIR)
+	$(LIBUNWIND_DIR)
 
 check-recursive: SUBDIRS = $(CHECK_SUBDIRS)
 
 # List of directories to build.  This does not include "libunwind" but
 # does include the unwind cross libraries.
-SUBDIRS = $(CHECK_SUBDIRS) $(LIBUNWIND_OTHER_DIRS)
+SUBDIRS = $(CHECK_SUBDIRS) $(LIBUNWIND_ARCH_DIRS)
 
 # List of directories to install, put simply, only install frysk
 # stuff.  Will eventually need to change this so that it installs

@@ -1,3 +1,10 @@
+2007-12-20  Mark Wielaard  <mwielaard@redhat.com>
+
+	* configure.in (is_local_frysk_build): New function.
+	(frysk_local_target_cpu): New function.
+	Define target_cpu, target_alias and UNW_REMOTE_ONLY based on new
+	functions.
+
 2007-12-11  Andrew Cagney  <cagney@redhat.com>
 
 	* src/x86/Gregs.c (linux_scratch_loc): Add XMM registers.

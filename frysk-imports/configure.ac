@@ -58,24 +58,10 @@ AC_CONFIG_FILES([
 	cdtparser/Makefile
 	junit/Makefile])
 
-for isa in i386 x86_64 ppc32 ppc64
-do
-  AC_MSG_NOTICE([configuring libunwind-$isa])
-  mkdir -p libunwind-$isa
-  confdir=`cd "$srcdir";pwd`
-  # FIXME - This is wrong since it discards any configure flags given
-  # except those explicitly passed on...
-  ( cd libunwind-$isa ; $confdir/libunwind/configure \
-	--target=$isa-unknown-linux-gnu \
-	--build=${build} \
-	--host=${host} \
-	--prefix=${prefix} ) || exit $?
-done
-
 # Even though "libunwind" is not built, it is still included in the
 # list of configured subdirectories so that it can be included in
 # "make dist" (or the recursive "make distdir").
 
-AC_CONFIG_SUBDIRS([elfutils libunwind])
+AC_CONFIG_SUBDIRS([elfutils libunwind libunwind-i386 libunwind-x86_64 libunwind-ppc32 libunwind-ppc64])
 
 AC_OUTPUT
