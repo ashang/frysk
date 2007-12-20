@@ -1,5 +1,10 @@
 2007-12-20  Petr Machata  <pmachata@redhat.com>
 
+	* Ftrace.java: Refactoring.
+	(testArgumentsCorrect1): Turned the test on.
+
+2007-12-20  Petr Machata  <pmachata@redhat.com>
+
 	* Ftrace.java: Commentary changes & reorganizations.
 	* TestMappingGuard: Dtto.
 	* TestLtrace.java (testCallRecorded): Turned on the test.

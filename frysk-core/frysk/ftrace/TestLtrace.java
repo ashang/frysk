@@ -41,7 +41,6 @@ package frysk.ftrace;
 
 import frysk.Config;
 import frysk.proc.Action;
-import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.testbed.*;
@@ -64,11 +63,74 @@ public class TestLtrace
 	public Action funcallLeave(Task task, Symbol symbol, Object retVal) {
 	    return Action.CONTINUE;
 	}
-	public void addedTo (Object observable) {
-	    Manager.eventLoop.requestStop();
-	}
+	public void addedTo (Object observable) { }
 	public void deletedFrom (Object observable) { }
 	public void addFailed (Object observable, Throwable w) {}
+    }
+
+    abstract class ObserverCreator {
+	abstract FunctionObserver createObserver();
+	public boolean shouldAcceptMapping(Task task, String name) {
+	    return task.getProc().getExe().equals(name);
+	}
+	public boolean acceptTracepoint(Task task, TracePoint tp) {
+	    return tp.origin == TracePointOrigin.PLT;
+	}
+    }
+
+    class GenericMappingObserver
+	extends TestMappingGuard.DummyMappingObserver
+    {
+	final ObserverCreator creator;
+
+	public GenericMappingObserver(ObserverCreator creator) {
+	    this.creator = creator;
+	}
+
+	public Action updateMappedFile(final Task task, MemoryMapping mapping) {
+	    block: {
+		if (!creator.shouldAcceptMapping(task, mapping.path.getPath()))
+		    break block;
+
+		try {
+		    ObjectFile objf = ObjectFile.buildFromFile(mapping.path);
+		    if (objf == null)
+			throw new AssertionError("NULL objf for a file whose name matches main binary?");
+
+		    final HashSet tps = new HashSet();
+		    objf.eachTracePoint(new ObjectFile.TracePointIterator() {
+			    public void tracePoint(TracePoint tp) {
+				if (creator.acceptTracepoint(task, tp))
+				    tps.add(tp);
+			    }
+			}, TracePointOrigin.PLT);
+		    objf.eachTracePoint(new ObjectFile.TracePointIterator() {
+			    public void tracePoint(TracePoint tp) {
+				if (creator.acceptTracepoint(task, tp))
+				    tps.add(tp);
+			    }
+			}, TracePointOrigin.SYMTAB);
+		    objf.eachTracePoint(new ObjectFile.TracePointIterator() {
+			    public void tracePoint(TracePoint tp) {
+				if (creator.acceptTracepoint(task, tp))
+				    tps.add(tp);
+			    }
+			}, TracePointOrigin.DYNAMIC);
+
+		    if (!tps.isEmpty()) {
+			FunctionObserver fo = creator.createObserver();
+			Ltrace.requestAddFunctionObserver(task, fo, tps);
+			task.requestUnblock(this);
+			return Action.BLOCK;
+		    }
+		}
+		catch (lib.dwfl.ElfException ee) {
+		    ee.printStackTrace();
+		}
+	    }
+
+	    return super.updateMappedFile(task, mapping);
+	}
     }
 
     public void testCallRecorded()
@@ -89,48 +151,14 @@ public class TestLtrace
 		events.add("leave " + symbol.name);
 		return Action.CONTINUE;
 	    }
-	    public void addedTo (Object observable) {
-		// Don't requestStop, this observer is added inside
-		// other observer's handler.
-	    }
 	}
 
-	class MyMappingObserver1
-	    extends TestMappingGuard.DummyMappingObserver
-	{
-	    public Action updateMappedFile(final Task task, MemoryMapping mapping) {
-		block: {
-		    if (!task.getProc().getExe().equals(mapping.path.getPath()))
-			break block;
-
-		    try {
-			ObjectFile objf = ObjectFile.buildFromFile(mapping.path);
-			if (objf == null)
-			    throw new AssertionError("NULL objf for a file whose name matches main binary?");
-
-			final HashSet tps = new HashSet();
-			objf.eachTracePoint(new ObjectFile.TracePointIterator() {
-				public void tracePoint(TracePoint tp) {
-				    tps.add(tp);
-				}
-			    }, TracePointOrigin.PLT);
-
-			if (!tps.isEmpty()) {
-			    MyFunctionObserver1 fo = new MyFunctionObserver1();
-			    Ltrace.requestAddFunctionObserver(task, fo, tps);
-			    task.requestUnblock(this);
-			    return Action.BLOCK;
-			}
+	GenericMappingObserver mappingObserver
+	    = new GenericMappingObserver(new ObserverCreator() {
+		    public FunctionObserver createObserver() {
+			return new MyFunctionObserver1();
 		    }
-		    catch (lib.dwfl.ElfException ee) {
-			ee.printStackTrace();
-		    }
-		}
-
-		return super.updateMappedFile(task, mapping);
-	    }
-	}
-	MyMappingObserver1 mappingObserver = new MyMappingObserver1();
+	    });
 
 	String[] cmd = {Config.getPkgLibFile("funit-syscalls").getPath()};
 	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
@@ -162,8 +190,6 @@ public class TestLtrace
 	assertEquals("number of recorded events", expectedEvents.length, events.size());
     }
 
-
-    /*
     public void testArgumentsCorrect1()
     {
 	if(unresolvedOffUtrace(5053))
@@ -171,6 +197,8 @@ public class TestLtrace
 
 	final Set registeredSymbols = new HashSet();
 	final LinkedList expectedEvents = new LinkedList();
+	final LinkedList expectedReturns = new LinkedList();
+
 	class ExpectedEvent {
 	    String name;
 	    long[] arguments;
@@ -188,30 +216,9 @@ public class TestLtrace
 	new ExpectedEvent("trace_me_1", new long[]{3, 5, 7, 11, 13, 17}, 56);
 	new ExpectedEvent("trace_me_2", new long[]{3, 5, 7, 11, 13, 17}, 56);
 
-	class MyController3
-	    implements LtraceController
+	class MyFunctionObserver2
+	    extends DummyFunctionObserver
 	{
-	    public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver)
-	    {
-		if (!task.getProc().getExe().equals(objf.getFilename().getPath()))
-		    return;
-
-		try {
-		    objf.eachTracePoint(new ObjectFile.TracePointIterator() {
-			    public void tracePoint(TracePoint tp) {
-				if (registeredSymbols.contains(tp.symbol.name))
-				    driver.tracePoint(task, tp);
-			    }
-			}, TracePointOrigin.SYMTAB);
-		}
-		catch (lib.dwfl.ElfException ee) {
-		    ee.printStackTrace();
-		}
-	    }
-	}
-
-	class MyObserver3 extends DummyFunctionObserver {
-	    LinkedList expectedReturns = new LinkedList();
 	    public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
 		ExpectedEvent ee = (ExpectedEvent)expectedEvents.removeFirst();
 		assertEquals("enter function name", ee.name, symbol.name);
@@ -228,6 +235,7 @@ public class TestLtrace
 		expectedReturns.add(ee);
 		return Action.CONTINUE;
 	    }
+
 	    public Action funcallLeave(Task task, Symbol symbol, Object retVal) {
 		ExpectedEvent ee = (ExpectedEvent)expectedReturns.removeLast();
 		assertEquals("leave function name", ee.name, symbol.name);
@@ -245,19 +253,28 @@ public class TestLtrace
 	Proc proc = task.getProc();
 	int pid = proc.getPid();
 
-	LtraceController controller = new MyController3();
-	MyObserver3 observer = new MyObserver3();
-	Ltrace.requestAddFunctionObserver(task, observer, controller);
-	assertRunUntilStop("add function observer");
+	GenericMappingObserver mappingObserver
+	    = new GenericMappingObserver(new ObserverCreator() {
+		    public FunctionObserver createObserver() {
+			return new MyFunctionObserver2();
+		    }
+		    public boolean acceptTracepoint(Task task, TracePoint tp) {
+			return registeredSymbols.contains(tp.symbol.name);
+		    }
+	    });
+
+	MappingGuard.requestAddMappingObserver(task, mappingObserver);
+	assertRunUntilStop("add mapping observer");
 
 	new StopEventLoopWhenProcRemoved(pid);
 	child.requestRemoveBlock();
 	assertRunUntilStop("run child until exit");
 
 	assertEquals("number of unprocessed expects", 0, expectedEvents.size());
-	assertEquals("number of unprocessed returns", 0, observer.expectedReturns.size());
+	assertEquals("number of unprocessed returns", 0, expectedReturns.size());
     }
 
+    /*
     public void testTracingAlias()
     {
 	if(unresolvedOffUtrace(5053))
