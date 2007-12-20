@@ -274,18 +274,20 @@ public class TestLtrace
 	assertEquals("number of unprocessed returns", 0, expectedReturns.size());
     }
 
-    /*
     public void testTracingAlias()
     {
 	if(unresolvedOffUtrace(5053))
 	    return;
 
-	class MyObserver4 extends DummyFunctionObserver {
-	    String name;
-	    HashSet enterAliases = new HashSet();
-	    HashSet leaveAliases = new HashSet();
+	final HashSet enterAliases = new HashSet();
+	final HashSet leaveAliases = new HashSet();
 
-	    MyObserver4(String name) {
+	class MyFunctionObserver3
+	    extends DummyFunctionObserver
+	{
+	    String name;
+
+	    public MyFunctionObserver3 (String name) {
 		this.name = name;
 	    }
 
@@ -310,32 +312,57 @@ public class TestLtrace
 	    }
 	}
 
+	class MyObserverCreator3
+	    extends ObserverCreator
+	{
+	    int found = 0;
+	    final String ownName;
+	    final String aliasName;
+
+	    public MyObserverCreator3(String aliasName, String ownName) {
+		this.ownName = ownName;
+		this.aliasName = aliasName;
+	    }
+
+	    public FunctionObserver createObserver() {
+		return new MyFunctionObserver3(ownName);
+	    }
+
+	    public boolean acceptTracepoint(Task task, TracePoint tp) {
+		if (tp.symbol.hasName(aliasName)) {
+		    found++;
+		    return true;
+		}
+		else
+		    return false;
+	    }
+	}
+
 	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
 	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
 	Task task = child.getMainTask();
 	Proc proc = task.getProc();
 	int pid = proc.getPid();
 
-	MyController4 controller = new MyController4("alias2");
 	String symbols[] = {"fun1", "alias1", "alias2"};
-	MyObserver4 observer = new MyObserver4("fun1");
-
-	Ltrace.requestAddFunctionObserver(task, observer, controller);
-	assertRunUntilStop("add function observer");
+	MyObserverCreator3 observerCreator = new MyObserverCreator3("alias2", "fun1");
+	MappingGuard.requestAddMappingObserver(task, new GenericMappingObserver(observerCreator));
+	assertRunUntilStop("add mapping observer");
 
 	new StopEventLoopWhenProcRemoved(pid);
 	child.requestRemoveBlock();
 	assertRunUntilStop("run child until exit");
 
-	assertEquals("number of tracepoints requested by controller", 1, controller.found);
+	assertEquals("number of tracepoints requested for tracing", 1, observerCreator.found);
 	for (int i = 0; i < symbols.length; ++i) {
-	    assertTrue("saw enter of symbol " + symbols[i], observer.enterAliases.contains(symbols[i]));
-	    assertTrue("saw leave of symbol " + symbols[i], observer.leaveAliases.contains(symbols[i]));
+	    assertTrue("saw enter of symbol " + symbols[i], enterAliases.contains(symbols[i]));
+	    assertTrue("saw leave of symbol " + symbols[i], leaveAliases.contains(symbols[i]));
 	}
-	assertEquals("number of enter aliases seen", symbols.length, observer.enterAliases.size());
-	assertEquals("number of leave aliases seen", symbols.length, observer.leaveAliases.size());
+	assertEquals("number of enter aliases seen", symbols.length, enterAliases.size());
+	assertEquals("number of leave aliases seen", symbols.length, leaveAliases.size());
     }
 
+    /*
     public void testMultipleObservers()
     {
 	if(unresolvedOffUtrace(5053))

@@ -2,6 +2,7 @@
 
 	* Ftrace.java: Refactoring.
 	(testArgumentsCorrect1): Turned the test on.
+	(testTracingAlias): Dtto.
 
 2007-12-20  Petr Machata  <pmachata@redhat.com>
 
