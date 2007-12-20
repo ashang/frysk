@@ -42,8 +42,6 @@ package frysk.ftrace;
 import frysk.proc.Action;
 import frysk.proc.Task;
 
-import java.io.File;
-
 /**
  * Ltrace observers implement this interface to get notified about
  * interesting events in traced program.
@@ -59,10 +57,4 @@ public interface FunctionObserver
 
   /** The task has returned from the function. */
   Action funcallLeave(Task task, Symbol symbol, Object retVal);
-
-  /** New file was mapped. */
-  Action fileMapped(Task task, File file);
-
-  /** Mapped file was unmapped. */
-  Action fileUnmapped(Task task, File file);
 }

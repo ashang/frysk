@@ -43,6 +43,8 @@ import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,161 +54,169 @@ import java.util.Set;
 import java.util.logging.*;
 
 public class Ltrace
-    implements TaskObserver.Attached,
-	       TaskObserver.Terminating,
-	       MappingObserver
 {
     private static final Logger logger = Logger.getLogger(FtraceLogger.LOGGER_ID);
-
-    public static interface Driver {
-	void tracePoint(Task task, TracePoint tp);
-    }
 
     // HashMap<Task, Ltrace>
     private static final Map ltraceForTask = new HashMap();
 
-    public static void requestAddFunctionObserver(Task task,
-						  FunctionObserver observer,
-						  LtraceController controller)
+    /**
+     * Request that given observer receives enter/leave events of
+     * given set of TracePoints.
+     */
+    public synchronized static
+	void requestAddFunctionObserver(Task task,
+					FunctionObserver observer,
+					Set tracePoints)
     {
 	Ltrace ltrace = (Ltrace)ltraceForTask.get(task);
 	if (ltrace == null) {
-	    ltrace = new Ltrace(task, controller);
+	    ltrace = new Ltrace(task);
 	    ltraceForTask.put(task, ltrace);
 	}
 
-	ltrace.addObserver(observer);
+	ltrace.addObserver(observer, tracePoints);
     }
 
-    public static void requestDeleteFunctionObserver(Task task, FunctionObserver observer) {
+    public synchronized static
+	void requestDeleteFunctionObserver(Task task,
+					   FunctionObserver observer,
+					   Set tracePoints)
+    {
 	Ltrace ltrace = (Ltrace)ltraceForTask.get(task);
 	if (ltrace == null)
-	    observer.addFailed(task, new RuntimeException("This observer doesn't observe given task."));
+	    observer.addFailed(task, new RuntimeException("This observer does not observe given task."));
 	else
-	    ltrace.removeObserver(observer);
+	    ltrace.removeObserver(observer, tracePoints);
     }
 
     // ------------------------ instance part ------------------------
 
     private final Task task;
     private final Arch arch;
-    private final LtraceController controller;
-
-    /** Remembers which files are currently mapped in which task. */
-    private Map maps = java.util.Collections.EMPTY_MAP;
-
-    /** Remembers working set preferences for each task.
-	Map&lt;Task, Map&lt;File, TracePointWorkingSet&gt;&gt; */
-    private final HashMap driversForTask = new HashMap();
-
-    /** Function observers.
-	Map&lt;FunctionObserver, Integer&gt; */
-    private final HashMap observers = new HashMap();
-
-    private boolean lowlevelObserversAdded = false;
-    private boolean lowlevelObserversFailed = false;
-    private Throwable lowlevelObserverThrowable = null;
-
-    // ----------------------
-    // --- setup/teardown ---
-    // ----------------------
-    Ltrace(Task task, LtraceController controller) {
-	this.task = task;
-	this.arch = ArchFactory.instance.getArch(task);
-	this.controller = controller;
-
-	task.requestAddAttachedObserver(this);
-	task.requestAddTerminatingObserver(this);
-	MappingGuard.requestAddMappingObserver(task, this);
-	// There are no code observers right now.  We add them as files
-	// get mapped to the process.
-    }
-
-    public void remove() {
-	// XXX: do the right thing.
-    }
-
-    // ---------------------------
-    // --- observer management ---
-    // ---------------------------
 
     private interface ObserverIterator {
 	Action action(FunctionObserver observer);
     }
 
-    private void eachObserver(ObserverIterator oit) {
-	for (Iterator it = observers.entrySet().iterator(); it.hasNext();) {
-	    Map.Entry entry = (Map.Entry)it.next();
-	    int v = ((Integer)entry.getValue()).intValue();
-	    FunctionObserver ob = (FunctionObserver)entry.getKey();
-	    for (int j = 0; j < v; ++j)
-		if (oit.action(ob) == Action.BLOCK)
-		    task.blockers.add(ob);
+    private void eachObserver(Collection observers, ObserverIterator oit) {
+	for (Iterator it = observers.iterator(); it.hasNext();) {
+	    FunctionObserver fo = (FunctionObserver)it.next();
+	    if (oit.action(fo) == Action.BLOCK)
+		this.task.blockers.add(fo);
 	}
     }
 
-    /**
-     * Add new observer.
-     */
-    private synchronized void addObserver(FunctionObserver observer)
-    {
-	Integer i = (Integer)observers.get(observer);
-	if (i == null)
-	    i = new Integer(1);
-	else
-	    i = new Integer(i.intValue() + 1);
-	observers.put(observer, i);
-
-	if (lowlevelObserversAdded)
-	    observer.addedTo(task);
-	else if (lowlevelObserversFailed)
-	    observer.addFailed(task, lowlevelObserverThrowable);
-    }
-
-    /**
-     * Remove given observer.
-     */
-    private synchronized boolean removeObserver(FunctionObserver observer) {
-	Integer i = (Integer)observers.get(observer);
-	if (i == null)
-	    throw new AssertionError("removed observer not found.");
-	int v = i.intValue();
-	v--;
-	if (v == 0)
-	    observers.remove(observer);
-	else
-	    observers.put(observer, new Integer(v));
-
-	// XXX: Probably too early for the last observer which was
-	// requestDeleted.
-	observer.deletedFrom(task);
-	return v != 0;
-    }
-
-
-    // ------------------------------------------
-    // --- code observer, breakpoint handling ---
-    // ------------------------------------------
-
-    // Map<Long address, FunctionReturnObserver>
+    // Map<Long(address), FunctionReturnObserver>
     private Map functionReturnObservers = new HashMap();
 
-    private class FunctionEnterObserver
+    private class FunctionReturnObserver
 	implements TaskObserver.Code
     {
-	protected TracePoint tp;
+	class Node {
+	    final TracePoint tracePoint;
+	    final Collection observers;
 
-	FunctionEnterObserver(TracePoint tp) {
-	    this.tp = tp;
+	    public Node(TracePoint tp, Collection observers) {
+		this.tracePoint = tp;
+		this.observers = observers;
+	    }
+	}
+	private final LinkedList nodeList = new LinkedList();
+
+	public void add(TracePoint tp, Collection observers) {
+	    nodeList.addLast(new Node(tp, observers));
+	}
+
+	public Action updateHit (final Task task, long address)
+	{
+	    logger.log(Level.FINE, "Return breakpoint at 0x" + Long.toHexString(address));
+
+	    final Node leave = (Node)nodeList.removeLast();
+	    Action action = Action.CONTINUE;
+
+	    // Retract lowlevel breakpoint when the last return has
+	    // been hit.
+	    if (nodeList.isEmpty()) {
+		logger.log(Level.FINEST, "Removing leave breakpoint.");
+		functionReturnObservers.remove(new Long(address));
+		task.requestDeleteCodeObserver(this, address);
+
+		// Take time to retract
+		task.requestUnblock(this);
+		action = Action.BLOCK;
+	    }
+
+	    logger.log(Level.FINEST, "Fetching retval.");
+	    final Symbol symbol = leave.tracePoint.symbol;
+	    final Object ret = arch.getReturnValue(task, symbol);
+	    eachObserver(leave.observers, new ObserverIterator() {
+		    public Action action(FunctionObserver o) {
+			return o.funcallLeave(task, symbol, ret);
+		    }
+		});
+
+	    logger.log(Level.FINE, "Breakpoint handled.");
+
+	    return action;
+	}
+
+	public void addedTo (final Object observable) {}
+	public void deletedFrom (Object observable) {}
+	public void addFailed (final Object observable, final Throwable w) {}
+    }
+
+    /**
+     * Objects of this class are created one per tracepoint (and task)
+     * to keep track of low-level breakpoint and who to notify when
+     * the breakpoint hits.
+     */
+    private class TracePointObserver
+	implements TaskObserver.Code
+    {
+	final TracePoint tracePoint;
+	final ArrayList observers = new ArrayList();
+	final Long address;
+
+	// Lowlever breakpoint management.
+	boolean breakpointAdded = false;
+	boolean breakpointFailed = false;
+        Throwable lowlevelObserverThrowable = null;
+	/** The observer that should get deletedFrom only after the
+	 * breakpoint is removed. */
+	FunctionObserver last = null;
+
+	public TracePointObserver(TracePoint tp) {
+	    this.tracePoint = tp;
+	    this.address = new Long(tp.address);
+	}
+
+	public void add(FunctionObserver observer) {
+	    observers.add(observer);
+	}
+
+	/**
+	 * Return != -1 if the same observer is still present in the
+	 * `observers' after removal, implying that the observation
+	 * was requested multiple times.
+	 */
+	public int remove(FunctionObserver observer) {
+	    // ArrayList is not exactly the optimal container for fast
+	    // removal.  But it's fast with the iteration, which is a
+	    // MUCH more important operation.
+	    last = observer;
+	    if (!observers.remove(observer))
+		throw new AssertionError("FunctionObserver not found in tracePointObserver.");
+	    return observers.indexOf(observer);
 	}
 
 	public Action updateHit (final Task task, long address)
 	{
 	    logger.log(Level.FINE, "Enter breakpoint at 0x" + Long.toHexString(address));
 
-	    if (address != tp.symbol.getParent().getEntryPoint()) {
+	    if (address != tracePoint.symbol.getParent().getEntryPoint()) {
 		// Install breakpoint to return address.
-		long retAddr = arch.getReturnAddress(task, tp.symbol);
+		long retAddr = arch.getReturnAddress(task, tracePoint.symbol);
 		logger.log(Level.FINER,
 			   "It's enter tracepoint, return address 0x"
 			   + Long.toHexString(retAddr) + ".");
@@ -217,365 +227,165 @@ public class Ltrace
 		    retObserver = new FunctionReturnObserver();
 		    task.requestAddCodeObserver(retObserver, retAddr);
 		}
-		retObserver.add(tp);
+		retObserver.add(tracePoint, observers);
 	    }
 	    else
 		logger.log(Level.FINEST,
 			   "It's _start, no return breakpoint established...");
 
 	    logger.log(Level.FINEST, "Building arglist.");
-	    final Symbol symbol = tp.symbol;
-	    final Object[] args = arch.getCallArguments(task, symbol);
-	    eachObserver(new ObserverIterator() {
+	    final Object[] args = arch.getCallArguments(task, tracePoint.symbol);
+	    eachObserver(observers, new ObserverIterator() {
 		    public Action action(FunctionObserver o) {
-			return o.funcallEnter(task, symbol, args);
+			return o.funcallEnter(task, tracePoint.symbol, args);
 		    }
 		});
 
+	    // Frysk needs time to set up return breakpoint.
 	    task.requestUnblock(this);
 	    return Action.BLOCK;
 	}
 
-	public void addedTo (final Object observable) {}
-	public void deletedFrom (Object observable) {}
-	public void addFailed (final Object observable, final Throwable w) {}
-    }
-
-    private class FunctionReturnObserver
-	implements TaskObserver.Code
-    {
-	private LinkedList tpList = new LinkedList();
-
-	public void add(TracePoint tp) {
-	    tpList.addLast(tp);
+	public synchronized void addedTo (final Object observable) {
+            if (!breakpointAdded) {
+		for (Iterator it = observers.iterator(); it.hasNext(); ) {
+		    FunctionObserver fo = (FunctionObserver)it.next();
+		    fo.addedTo(observable);
+		}
+		breakpointAdded = true;
+            }
 	}
 
-	public Action updateHit (final Task task, long address)
-	{
-	    logger.log(Level.FINE, "Return breakpoint at 0x" + Long.toHexString(address));
+        public synchronized void addFailed(final Object observable, final Throwable w) {
+            logger.log(Level.FINE, "lowlevel addFailed!");
+            if (!breakpointFailed) {
+		for (Iterator it = observers.iterator(); it.hasNext(); ) {
+		    FunctionObserver fo = (FunctionObserver)it.next();
+		    fo.addFailed(observable, w);
+		}
 
-	    TracePoint leave = (TracePoint)tpList.removeLast();
-	    if (tpList.isEmpty()) {
-		logger.log(Level.FINEST, "Removing leave breakpoint.");
-		functionReturnObservers.remove(new Long(address));
-		task.requestDeleteCodeObserver(this, address);
-	    }
+		if (observers.isEmpty()) {
+		    // Then it must be the failing requestDelete!
+		    if (last == null)
+			throw new AssertionError("No last observer set in addFailed!");
+		    else
+			last.addFailed(observable, w);
+		}
 
-	    logger.log(Level.FINEST, "Fetching retval.");
-	    final Object ret = arch.getReturnValue(task, leave.symbol);
-	    final Symbol symbol = leave.symbol;
-	    eachObserver(new ObserverIterator() {
-		    public Action action(FunctionObserver o) {
-			return o.funcallLeave(task, symbol, ret);
-		    }
-		});
+		lowlevelObserverThrowable = w;
+		breakpointFailed = true;
+            }
+        }
 
-	    logger.log(Level.FINE, "Breakpoint handled.");
-	    task.requestUnblock(this);
-	    return Action.BLOCK;
+	public void deletedFrom (Object observable) {
+	    if (observers.isEmpty())
+		throw new AssertionError("Observers still present!");
+	    if (last == null)
+		throw new AssertionError("No last observer set!");
+	    last.deletedFrom(observable);
 	}
-
-	public void addedTo (final Object observable) {}
-	public void deletedFrom (Object observable) {}
-	public void addFailed (final Object observable, final Throwable w) {}
     }
 
-    // -------------------------------------------------
-    // --- attached/terminated/terminating observers ---
-    // -------------------------------------------------
+    // WorkingSet ::= Set<TracePointObserver>
+    private final HashSet workingSet = new HashSet();
 
-    public Action updateAttached(Task task)
-    {
-	// Per-task initialization.
-	long pc = task.getIsa().pc(task);
-	logger.log(Level.FINE,
-		   "new task attached at 0x" + Long.toHexString(pc)
-		   + ", pid=" + task.getTaskId().intValue());
+    // Map<FunctionObserver, Set<TracePointObserver>>
+    //private final HashMap workingSetForOne = new HashMap();
 
-	this.checkMapUnmapUpdates(task, false);
-	MappingGuard.requestAddMappingObserver(task, this);
-	return Action.BLOCK;
+    // Map<Long(address), TracePointObserver>
+    private final HashMap tpObserverForAddress = new HashMap();
+
+    // Map<TracePoint, TracePointObserver>
+    private final HashMap tpObserverForTracePoint = new HashMap();
+
+    // ----------------------
+    // --- setup/teardown ---
+    // ----------------------
+    Ltrace(Task task) {
+	this.task = task;
+	this.arch = ArchFactory.instance.getArch(task);
     }
 
-    public Action updateTerminating(Task task, boolean signal, int value)
-    {
-	this.checkMapUnmapUpdates(task, true);
-	task.requestUnblock(this);
-	return Action.BLOCK;
+    public void remove() {
+	// XXX: do the right thing.
     }
 
+    // ---------------------------
+    // --- observer management ---
+    // ---------------------------
 
-
-    // ----------------------------
-    // --- mmap/munmap handling ---
-    // ----------------------------
-
-    private class TracePointWorkingSet
-	implements Ltrace.Driver
+    /**
+     * Have given observer observe given set of tracepoints.
+     */
+    private synchronized void addObserver(FunctionObserver observer, Set tracePoints)
     {
-	private Set tracePoints = new HashSet();
-	private Map functionObserversForAddr = new HashMap();
+	for (Iterator it = tracePoints.iterator(); it.hasNext(); ) {
+	    TracePoint tracePoint = (TracePoint)it.next();
+	    TracePointObserver tpo = (TracePointObserver)tpObserverForTracePoint.get(tracePoint);
+	    if (tpo == null) {
+		tpo = new TracePointObserver(tracePoint);
+		tpObserverForTracePoint.put(tracePoint, tpo);
 
-	public void tracePoint(Task task, TracePoint tp)
-	{
-	    logger.log(Level.CONFIG, "Request for tracing `{0}'", tp.symbol.name);
-	    tracePoints.add(tp);
-	}
+		// When the first observer requests this tracepoint, we
+		// have to setup a breakpoint.
+		if (tpObserverForAddress.put(tpo.address, tpo) != null)
+		    throw new AssertionError("Address already occupied with working set element!");
 
-	public void populateBreakpoints(Task task, MemoryMapping.Part part)
-	{
-	    for (Iterator it = tracePoints.iterator(); it.hasNext(); ) {
-		TracePoint tp = (TracePoint)it.next();
-		if (tp.offset >= part.offset
-		    && tp.offset < part.offset + part.addressHigh - part.addressLow) {
-		    logger.log(Level.FINER,
-			       "Will trace `" + tp.symbol.name + "', "
-			       + "address=0x" + Long.toHexString(tp.address) + "; "
-			       + "offset=0x" + Long.toHexString(tp.offset) + "; "
-			       + "part at=0x" + Long.toHexString(part.addressLow)
-			       + ".." + Long.toHexString(part.addressHigh) + "; "
-			       + "part off=0x" + Long.toHexString(part.offset) + ";");
+    		task.requestAddCodeObserver(tpo, tracePoint.address);
+    	    }
 
-		    long actualAddress = tp.offset - part.offset + part.addressLow;
-		    Long laddr = new Long(actualAddress);
-		    logger.log(Level.CONFIG,
-			       "Will trace `" + tp.symbol.name
-			       + "' at 0x" + Long.toHexString(actualAddress));
+	    tpo.add(observer);
 
-		    // FIXME: handle aliases.  Each tracepoint should
-		    // point to a list of symbols that alias it, and
-		    // should be present only once in an ObjectFile.
-		    if (!functionObserversForAddr.containsKey(laddr)) {
-			FunctionEnterObserver o = new FunctionEnterObserver(tp);
-			task.requestAddCodeObserver(o, laddr.longValue());
-			functionObserversForAddr.put(laddr, o);
-		    }
+	    workingSet.add(tpo);
+	    //workingSetForOne.put(observer, tpo);
+
+	    if (tpo.breakpointAdded)
+		observer.addedTo(this.task);
+	    else if (tpo.breakpointFailed)
+		observer.addFailed(this.task, tpo.lowlevelObserverThrowable);
+    	}
+    }
+
+    /**
+     * Request that given observer stops observing tracepoints in given set.
+     */
+    private synchronized void removeObserver(FunctionObserver observer, Set tracePoints)
+    {
+	for (Iterator it = tracePoints.iterator(); it.hasNext(); ) {
+	    TracePoint tracePoint = (TracePoint)it.next();
+	    TracePointObserver tpo = (TracePointObserver)tpObserverForTracePoint.get(tracePoint);
+	    if (tpo == null)
+		throw new AssertionError("FunctionObserver doesn't observe the trace point " + tracePoint.symbol.name);
+
+	    // If this observer doesn't observe given tracepoint
+	    // anymore, remove it from bookkeeping structures.
+	    if (tpo.remove(observer) == -1) {
+		//if (workingSetForOne.remove(observer) != tpo) // Not .equals!
+		//    throw new AssertionError("Couldn't find tracePointObserver in workingSetForOne.");
+
+		// Retract from more bookkeeping structures if that
+		// was the last observer of this tracepoint.
+		if (tpo.observers.isEmpty()) {
+		    if (!workingSet.remove(tpo))
+			throw new AssertionError("Couldn't find tracePointObserver in workingSet.");
+
+		    if (tpObserverForAddress.remove(tpo.address) == null)
+			throw new AssertionError("Couldn't find tracePointObserver in tpObserverForAddress.");
+
+		    if (tpObserverForTracePoint.remove(tracePoint) != tpo) // Not .equals!
+			throw new AssertionError("Couldn't find tracePointObserver in tpObserverForTracePoint.");
+
+		    // And retract also from the lowlevel breakpoint.
+		    this.task.requestDeleteCodeObserver(tpo, tracePoint.address);
+
+		    // Skip the deletedFrom call for the last
+		    // observer, it will be called from
+		    // TracePointObsever's deletedFrom.
+		    continue;
 		}
 	    }
-	}
 
-	public void evacuateBreakpoints(Task task, MemoryMapping.Part part)
-	{
-	    for (Iterator it = tracePoints.iterator(); it.hasNext(); ) {
-		TracePoint tp = (TracePoint)it.next();
-		if (tp.offset >= part.offset
-		    && tp.offset < part.offset + part.addressHigh - part.addressLow) {
-
-		    long actualAddress = tp.offset - part.offset + part.addressLow;
-		    Long laddr = new Long(actualAddress);
-		    logger.log(Level.CONFIG,
-			       "Stopping tracing of `" + tp.symbol.name
-			       + "' at 0x" + Long.toHexString(actualAddress));
-
-		    Object observer = functionObserversForAddr.remove(laddr);
-		    if (observer == null)
-			throw new AssertionError("Couldn't find observer to remove!");
-		    task.requestDeleteCodeObserver((TaskObserver.Code)observer,
-						   laddr.longValue());
-		}
-	    }
-	}
-    }
-
-    /** Implementation of MappingObserver interface... */
-    public Action updateMapping(Task task) {
-	checkMapUnmapUpdates(task, false);
-	task.requestUnblock(this);
-	return Action.BLOCK;
-    }
-
-    private void checkMapUnmapUpdates(Task task, boolean terminating)
-    {
-	Map oldMappings = this.maps;
-	final Map newMappings;
-	if (terminating)
-	    newMappings = java.util.Collections.EMPTY_MAP;
-	else
-	    newMappings = MemoryMapping.buildForPid(task.getTid());
-
-	// Resolve full mmaps, and partial mmaps and unmaps.
-	for (Iterator it = newMappings.entrySet().iterator(); it.hasNext(); ) {
-	    Map.Entry entry = (Map.Entry)it.next();
-	    Object oKey = entry.getKey(); // actually File
-	    MemoryMapping newMapping = (MemoryMapping)entry.getValue();
-	    if (!oldMappings.containsKey(oKey)) {
-		this.updateMappedFile(task, newMapping);
-	    }
-	    else {
-		// Remove the key from old set, so that at the end, only
-		// unmapped values are left.
-		MemoryMapping oldMapping = (MemoryMapping)oldMappings.remove(oKey);
-		int oldSize = oldMapping.parts.size();
-		int newSize = newMapping.parts.size();
-		if (oldSize < newSize) {
-		    // newMapping.parts[oldSize:] is VERY likely the new stuff
-		    for (int i = oldMapping.parts.size(); i < newMapping.parts.size(); ++i) {
-			MemoryMapping.Part part = (MemoryMapping.Part)newMapping.parts.get(i);
-			this.updateMappedPart(task, newMapping, part);
-		    }
-		}
-		else if (oldSize > newSize) {
-		    // Find first non-matching Part.
-		    int i = 0;
-		    int j = 0;
-		    while (i < oldSize && j < newSize
-			   && oldMapping.parts.get(i).equals(newMapping.parts.get(j))) {
-			++i;
-			++j;
-		    }
-
-		    // If `j' is at the end, the remaining old parts
-		    // are unmapped.  Otherwise only the portion
-		    // until the first matching part is unmapped.
-		    while (i < oldSize
-			   && (j >= newSize
-			       || !oldMapping.parts.get(i).equals(newMapping.parts.get(j)))) {
-			MemoryMapping.Part part = (MemoryMapping.Part)oldMapping.parts.get(i);
-			this.updateUnmappedPart(task, oldMapping, part);
-			++i;
-		    }
-		}
-	    }
-	}
-
-	// Resolve full unmaps.
-	for (Iterator it = oldMappings.entrySet().iterator(); it.hasNext(); ) {
-	    Map.Entry entry = (Map.Entry)it.next();
-	    MemoryMapping removedMapping = (MemoryMapping)entry.getValue();
-	    this.updateUnmappedFile(task, removedMapping);
-	}
-
-	this.maps = newMappings;
-    }
-
-    private void updateMappedPart(Task task, MemoryMapping mapping,
-				  MemoryMapping.Part part,
-				  TracePointWorkingSet driver)
-    {
-	driver.populateBreakpoints(task, part);
-    }
-
-    private void updateUnmappedPart(Task task, MemoryMapping mapping,
-				    MemoryMapping.Part part,
-				    TracePointWorkingSet driver)
-    {
-	driver.evacuateBreakpoints(task, part);
-    }
-
-    private void updateMappedPart(Task task, MemoryMapping mapping, MemoryMapping.Part part)
-    {
-	// At this point we already know client preferences
-	// regarding which tracepoints should be in working set.
-	// Just apply this knowledge on new mapped part: all working
-	// set elements that fall into this part should be observed.
-
-	// This has to be non-null, we already called
-	// updateMappedFile when the file was mapped:
-	Map drivers = (Map)driversForTask.get(task);
-	TracePointWorkingSet driver = (TracePointWorkingSet)drivers.get(mapping.path);
-	updateMappedPart(task, mapping, part, driver);
-    }
-
-    private void updateUnmappedPart(Task task, MemoryMapping mapping, MemoryMapping.Part part)
-    {
-	// This has to be non-null.
-	Map drivers = (Map)driversForTask.get(task);
-	TracePointWorkingSet driver = (TracePointWorkingSet)drivers.get(mapping.path);
-	updateUnmappedPart(task, mapping, part, driver);
-    }
-
-    private void updateMappedFile(Task task, MemoryMapping mapping)
-    {
-	// New file has been mapped.  Notify all observers (TODO: this
-	// should go away once ltrace becomes true observer), and let
-	// client define working set of this file.  Then implement the
-	// working set via updateMappedPart of each part in mapping.
-	for (Iterator it = observers.keySet().iterator(); it.hasNext(); ) {
-	    FunctionObserver o = (FunctionObserver)it.next();
-	    o.fileMapped(task, mapping.path);
-	}
-
-	ObjectFile objf = ObjectFile.buildFromFile(mapping.path);
-	if (objf == null)
-	    return;
-
-	TracePointWorkingSet driver = new TracePointWorkingSet();
-	Map drivers = (Map)driversForTask.get(task);
-	if (drivers == null) {
-	    drivers = new HashMap();
-	    driversForTask.put(task, drivers);
-	}
-	drivers.put(mapping.path, driver);
-	controller.fileMapped(task, objf, driver);
-
-	for (Iterator it = mapping.parts.iterator(); it.hasNext(); ) {
-	    MemoryMapping.Part part = (MemoryMapping.Part)it.next();
-	    if (part.permExecute)
-		updateMappedPart(task, mapping, part, driver);
-	}
-    }
-
-    private void updateUnmappedFile (Task task, MemoryMapping mapping)
-    {
-	for (Iterator it = observers.keySet().iterator(); it.hasNext(); ) {
-	    FunctionObserver o = (FunctionObserver)it.next();
-	    o.fileUnmapped(task, mapping.path);
-	}
-
-	// This has to be non-null.
-	Map drivers = (Map)driversForTask.get(task);
-	// This can be null for non-elf files.  We don't care about
-	// these.
-	TracePointWorkingSet driver = (TracePointWorkingSet)drivers.get(mapping.path);
-	if (driver == null)
-	    return;
-
-	for (Iterator it = mapping.parts.iterator(); it.hasNext(); ) {
-	    MemoryMapping.Part part = (MemoryMapping.Part)it.next();
-	    if (part.permExecute)
-		updateUnmappedPart(task, mapping, part, driver);
-	}
-    }
-
-
-
-    // ----------------------------------------
-    // --- Higher level observer interfaces ---
-    // ----------------------------------------
-
-    // Synchronized in case frysk calls addedTo concurrently for
-    // several observers.
-    public synchronized void addedTo (final Object observable)
-    {
-	if (!lowlevelObserversAdded) {
-	    eachObserver(new ObserverIterator() {
-		    public Action action(FunctionObserver observer) {
-			observer.addedTo(observable);
-			return Action.CONTINUE;
-		    }
-		});
-	    lowlevelObserversAdded = true;
-	}
-	((Task)observable).requestUnblock(this); // XXX: what is this?
-    }
-
-    public void deletedFrom (Object observable)
-    {
-	// XXX: write this
-    }
-
-    public void addFailed (final Object observable, final Throwable w)
-    {
-	logger.log(Level.FINE, "lowlevel addFailed!");
-	if (!lowlevelObserversFailed) {
-	    eachObserver(new ObserverIterator() {
-		    public Action action(FunctionObserver observer) {
-			observer.addFailed(observable, w);
-			return Action.CONTINUE;
-		    }
-		});
-	    lowlevelObserversFailed = true;
-	    lowlevelObserverThrowable = w;
+	    observer.deletedFrom(this.task);
 	}
     }
 }

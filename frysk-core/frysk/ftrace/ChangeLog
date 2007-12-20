@@ -1,3 +1,32 @@
+2007-12-20  Petr Machata  <pmachata@redhat.com>
+
+	* MappingGuard.java: Now provides more fine-grained events.
+	(updateMappedPart): New method, brought over from Ltrace.
+	(updateUnmappedPart): Dtto.
+	(updateMappedFile): Dtto.
+	(updateUnmappedFile): Dtto.
+	(updateMapping): Dtto.
+	(DebugStateMappingGuard): Now implements terminating observer.
+	* MappingObserver.java: Added more fine-grained events.
+	* Ltrace.java: Doesn't use mapping guard at all.  Rewritten to
+	allow adding several observers to single tracepoint, without a
+	need to share one controller.  Ltrace doesn't know about the
+	controller anymore.
+	(Driver): Interface moved to Ftrace.
+	(requestAddFunctionObserver): Now provides observing per tracepoint.
+	(requestDeleteMappingObserver): Dtto.
+	* FunctionObserver.java: Doesn't provide mapping events anymore.
+	* Ftrace.java: Reindent.
+	Using terminated observer instead of terminating, which didn't
+	fire with fatal signals.
+	Uses mapping guard to direct Ltrace tracing.
+	(Driver, Controller): New interfaces, brought over from Ltrace and
+	LtraceController.  Using new interfaces where appropriate.
+	(functionObserver): New member variable.
+	(TracePointWorkingSet): New class, mostly brought over from Ltrace.
+	(MyMappingObserver): Dtto.
+	* TestLtrace.java: Temporarily shut down.
+
 2007-12-18  Petr Machata  <pmachata@redhat.com>
 
 	* Ftrace.java: Use terminating observer to inform about the task

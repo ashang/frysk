@@ -2,6 +2,11 @@
 
 	* TestFauxv.java (fauxv):  Delete System.out.
 
+2007-12-20  Petr Machata  <pmachata@redhat.com>
+
+	* ftrace.java (MyLtraceController): renamed to MyFtraceController.
+	Using Ftrace.Driver instead of Ltrace.Driver consistently.
+
 2007-12-19  cagney  <cagney@redhat.com>
 
 	* fhpd.java: Explicitly import frysk.sys.FileDescriptor.

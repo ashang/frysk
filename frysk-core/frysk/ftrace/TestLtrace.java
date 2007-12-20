@@ -39,16 +39,20 @@
 
 package frysk.ftrace;
 
+/*
 import frysk.Config;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+*/
 import frysk.testbed.*;
 
+/*
 import java.io.File;
 import java.util.*;
 import java.util.regex.*;
+*/
 
 /**
  * This is a test for basic ltrace capabilities.
@@ -56,6 +60,7 @@ import java.util.regex.*;
 public class TestLtrace
     extends TestLib
 {
+    /*
     class DummyFunctionObserver implements FunctionObserver {
 	public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
 	    return Action.CONTINUE;
@@ -360,24 +365,6 @@ public class TestLtrace
 	if(unresolvedOffUtrace(5053))
 	    return;
 
-	class MyObserver5 extends DummyFunctionObserver {
-	    boolean added = false;
-	    int enter = 0;
-	    int leave = 0;
-	    public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
-		enter++;
-		return Action.CONTINUE;
-	    }
-	    public Action funcallLeave(Task task, Symbol symbol, Object retVal) {
-		leave++;
-		return Action.CONTINUE;
-	    }
-	    public void addedTo (Object observable) {
-		super.addedTo (observable);
-		added = true;
-	    }
-	}
-
 	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
 	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
 	Task task = child.getMainTask();
@@ -403,6 +390,47 @@ public class TestLtrace
 	    assertEquals("observer #" + i + " number of enter hits", 1, observers[i].enter);
 	    assertEquals("observer #" + i + " number of leave hits", 1, observers[i].leave);
 	}
+    }
+
+    public void testMultipleControlers()
+    {
+	if(unresolvedOffUtrace(5053))
+	    return;
+
+	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
+	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
+	Task task = child.getMainTask();
+	Proc proc = task.getProc();
+	int pid = proc.getPid();
+
+	int N = 10;
+	String[] symbols = {"trace_me_1", "trace_me_2"};
+	MyController4[] controllers = new MyController4[symbols.length];
+	MyObserver5[][] observers = new MyObserver5[symbols.length][N];
+	for (int j = 0; j < symbols.length; j++) {
+	    controllers[j] = new MyController4(symbols[j]);
+	    for (int i = 0; i < N; i++) {
+		observers[j][i] = new MyObserver5();
+		Ltrace.requestAddFunctionObserver(task, observers[j][i], controllers[j]);
+	    }
+	}
+	assertRunUntilStop("add function observers");
+	for (int j = 0; j < symbols.length; j++)
+	    for (int i = 0; i < N; i++)
+		assertTrue("observer #" + i + " added", observers[j][i].added);
+
+	new StopEventLoopWhenProcRemoved(pid);
+	child.requestRemoveBlock();
+	assertRunUntilStop("run child until exit");
+
+	for (int j = 0; j < symbols.length; j++)
+	    assertEquals("controller #" + j + " entry points", 1, controllers[j].found);
+
+	for (int j = 0; j < symbols.length; j++)
+	    for (int i = 0; i < N; i++) {
+		assertEquals("observer #" + i + " number of enter hits", 1, observers[j][i].enter);
+		assertEquals("observer #" + i + " number of leave hits", 1, observers[j][i].leave);
+	    }
     }
 
     public void tearDown()
@@ -439,4 +467,23 @@ public class TestLtrace
 	    }
 	}
     }
+
+    class MyObserver5 extends DummyFunctionObserver {
+	boolean added = false;
+	int enter = 0;
+	int leave = 0;
+	public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
+	    enter++;
+	    return Action.CONTINUE;
+	}
+	public Action funcallLeave(Task task, Symbol symbol, Object retVal) {
+	    leave++;
+	    return Action.CONTINUE;
+	}
+	public void addedTo (Object observable) {
+	    super.addedTo (observable);
+	    added = true;
+	}
+    }
+    */
 }

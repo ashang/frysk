@@ -53,22 +53,24 @@ import frysk.proc.TaskObserver;
 import frysk.sys.Signal;
 
 import inua.util.PrintWriter;
-
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 import java.util.Iterator;
-
-import java.io.File;
+import java.util.logging.*;
 
 public class Ftrace
 {
+    static final Logger logger = Logger.getLogger(FtraceLogger.LOGGER_ID);
+
     // Where to send output.
     Reporter reporter;
 
-  // True if we're tracing children as well.
-  boolean traceChildren = false;
+    // True if we're tracing children as well.
+    boolean traceChildren = false;
 
     // True if we're tracing syscalls.
     boolean traceSyscalls = true;
@@ -76,20 +78,32 @@ public class Ftrace
     // True if we're tracing mmaps/unmaps.
     boolean traceMmapUnmap = false;
 
+    HashSet syscallStackTraceSet = null;
+
+    // Set of ProcId objects we trace; if traceChildren is set, we also
+    // look for their children.
+    HashSet tracedParents = new HashSet();
+
+    HashMap syscallCache = new HashMap();
+
+    // The number of processes we're tracing.
+    int numProcesses;
+
+    public static interface Driver {
+	void tracePoint(Task task, TracePoint tp);
+    }
+
+    public static interface Controller {
+	/**
+	 * New library FILE was mapped in task TASK.  Use DRIVER to tell
+	 * ltrace what to do.
+	 */
+	void fileMapped(frysk.proc.Task task, ObjectFile file, Driver driver);
+    }
+
     // Non-null if we're using ltrace.
-    LtraceController ltraceController = null;
+    Controller ftraceController = null;
     StackTracedSymbolsProvider stackTraceSetProvider = null;
-
-  HashSet syscallStackTraceSet = null;
-
-  // Set of ProcId objects we trace; if traceChildren is set, we also
-  // look for their children.
-  HashSet tracedParents = new HashSet();
-
-  HashMap syscallCache = new HashMap();
-
-  // The number of processes we're tracing.
-  int numProcesses;
 
     public void setTraceChildren ()
     {
@@ -106,91 +120,88 @@ public class Ftrace
 	traceMmapUnmap = true;
     }
 
-    public void setTraceFunctions (LtraceController functionController,
+    public void setTraceFunctions (Controller ftraceController,
 				   StackTracedSymbolsProvider stackTraceSetProvider)
     {
-	if (functionController == null
+	if (ftraceController == null
 	    || stackTraceSetProvider == null)
-	    throw new AssertionError("functonController != null && stackTraceSetProvider != null");
+	    throw new AssertionError("ftraceController != null && stackTraceSetProvider != null");
 
-	if (this.ltraceController == null
+	if (this.ftraceController == null
 	    && this.stackTraceSetProvider == null) {
-	    this.ltraceController = functionController;
+	    this.ftraceController = ftraceController;
 	    this.stackTraceSetProvider = stackTraceSetProvider;
 	}
 	else
-	    throw new AssertionError("LtraceController already assigned.");
+	    throw new AssertionError("FtraceController already assigned.");
     }
 
-  public void addTracePid (ProcId id)
-  {
-    tracedParents.add(id);
-  }
+    public void addTracePid (ProcId id) {
+	tracedParents.add(id);
+    }
 
-  public void setSyscallStackTracing (HashSet syscallSet)
-  {
-    syscallStackTraceSet = syscallSet;
-  }
+    public void setSyscallStackTracing (HashSet syscallSet) {
+	syscallStackTraceSet = syscallSet;
+    }
 
-    public void setWriter (PrintWriter writer)
-    {
+    public void setWriter (PrintWriter writer) {
 	this.reporter = new Reporter(writer);
     }
 
-  private void init ()
-  {
-    if (reporter == null)
-	reporter = new Reporter(new PrintWriter(System.out));
-
-    // this observer should only be used to pick up a proc if we
-    // are tracing a process given a pid
-    // otherwise use forkobserver.
-    Manager.host.observableProcAddedXXX.addObserver(new Observer()
+    private void init ()
     {
-      public void update (Observable observable, Object arg)
-      {
-	Proc proc = (Proc) arg;
-	ProcId id = proc.getId();
-	if (tracedParents.contains(id)){
-	    // In case we're tracing a new child, add it.
-//	    tracedParents.add(proc.getId()); XXX: why is this needed ?
-	    // Weird API... unfortunately we can't fetch the
-	    // Proc's main task here, as it will be null. Instead
-	    // we have to request it and handle it in a callback.
-	  addProc(proc);
-	}
-      }
-    });
-  }
+	if (reporter == null)
+	    reporter = new Reporter(new PrintWriter(System.out));
 
-  private void addProc(Proc proc){
-    new ProcTasksObserver(proc, tasksObserver);
-  }
+	functionObserver = new MyFunctionObserver(reporter, stackTraceSetProvider);
 
-  public void trace (String[] command)
-  {
-    init();
-    Manager.host.requestCreateAttachedProc(command, attachedObserver);
-    Manager.eventLoop.run();
-  }
-
-  public void trace ()
-  {
-    init();
-    for (Iterator it = tracedParents.iterator(); it.hasNext(); ){
-      Manager.host.requestFindProc
-	  ((ProcId)it.next(),
-	   new FindProc() {
-	       public void procFound (ProcId procId) {}
-	       public void procNotFound (ProcId procId, Exception e) {
-		   System.err.println("No process with ID " + procId.intValue() + " found.");
-		   Manager.eventLoop.requestStop();
-	       }
-	   }
-	   );
-      Manager.eventLoop.run();
+	// this observer should only be used to pick up a proc if we
+	// are tracing a process given a pid
+	// otherwise use forkobserver.
+	Manager.host.observableProcAddedXXX.addObserver(new Observer()
+	    {
+		public void update (Observable observable, Object arg)
+		{
+		    Proc proc = (Proc) arg;
+		    ProcId id = proc.getId();
+		    if (tracedParents.contains(id)){
+			// In case we're tracing a new child, add it.
+			//tracedParents.add(proc.getId()); XXX: why is this needed ?
+			// Weird API... unfortunately we can't fetch the
+			// Proc's main task here, as it will be null. Instead
+			// we have to request it and handle it in a callback.
+			addProc(proc);
+		    }
+		}
+	    });
     }
-  }
+
+    private void addProc (Proc proc) {
+	new ProcTasksObserver(proc, tasksObserver);
+    }
+
+    public void trace (String[] command) {
+	init();
+	Manager.host.requestCreateAttachedProc(command, attachedObserver);
+	Manager.eventLoop.run();
+    }
+
+    public void trace () {
+	init();
+	for (Iterator it = tracedParents.iterator(); it.hasNext(); ){
+	    Manager.host.requestFindProc
+		((ProcId)it.next(),
+		 new FindProc() {
+		     public void procFound (ProcId procId) {}
+		     public void procNotFound (ProcId procId, Exception e) {
+			 System.err.println("No process with ID " + procId.intValue() + " found.");
+			 Manager.eventLoop.requestStop();
+		     }
+		 }
+		 );
+	    Manager.eventLoop.run();
+	}
+    }
 
     private HashMap observationCounters = new HashMap();
 
@@ -231,19 +242,78 @@ public class Ftrace
 	task.requestAddClonedObserver(clonedObserver);
 	observationRequested(task);
 
-	task.requestAddTerminatingObserver(terminatingObserver);
+	task.requestAddTerminatedObserver(new MyTerminatedObserver());
 	observationRequested(task);
 
-	if (ltraceController != null) {
-	    MyFunctionObserver functionObserver
-		= new MyFunctionObserver(reporter, stackTraceSetProvider);
-	    Ltrace.requestAddFunctionObserver(task, functionObserver, ltraceController);
-	    observationRequested(task);
-	}
+	MappingGuard.requestAddMappingObserver(task, new MyMappingObserver(ftraceController));
+	observationRequested(task);
 
 	Manager.host.observableProcRemovedXXX.addObserver(new ProcRemovedObserver(proc));
 	reporter.eventSingle(task, "attached " + proc.getExe());
 	++numProcesses;
+    }
+
+    /** Remembers working set preferences for each task.
+	Map&lt;Task, Map&lt;File, TracePointWorkingSet&gt;&gt; */
+    private final HashMap driversForTask = new HashMap();
+
+    private class TracePointWorkingSet
+	implements Driver
+    {
+	private Set tracePoints = new HashSet();
+
+	public void tracePoint(Task task, TracePoint tp)
+	{
+	    logger.log(Level.CONFIG, "Request for tracing `{0}'", tp.symbol.name);
+	    tracePoints.add(tp);
+	}
+
+	public void populateBreakpoints(Task task, MemoryMapping mapping, MemoryMapping.Part part)
+	{
+	    Set request = new HashSet();
+	    for (Iterator it = tracePoints.iterator(); it.hasNext(); ) {
+		TracePoint tp = (TracePoint)it.next();
+		if (tp.offset >= part.offset
+		    && tp.offset < part.offset + part.addressHigh - part.addressLow) {
+		    logger.log(Level.FINER,
+			       "Will trace `" + tp.symbol.name + "', "
+			       + "address=0x" + Long.toHexString(tp.address) + "; "
+			       + "offset=0x" + Long.toHexString(tp.offset) + "; "
+			       + "part at=0x" + Long.toHexString(part.addressLow)
+			       + ".." + Long.toHexString(part.addressHigh) + "; "
+			       + "part off=0x" + Long.toHexString(part.offset) + ";");
+
+		    long actualAddress = tp.offset - part.offset + part.addressLow;
+		    logger.log(Level.CONFIG,
+			       "Will trace `" + tp.symbol.name
+			       + "' at 0x" + Long.toHexString(actualAddress));
+
+		    request.add(tp);
+		}
+	    }
+	    if (!request.isEmpty())
+		Ltrace.requestAddFunctionObserver(task, functionObserver, request);
+	}
+
+	public void evacuateBreakpoints(Task task, MemoryMapping mapping, MemoryMapping.Part part)
+	{
+	    Set request = new HashSet();
+	    for (Iterator it = tracePoints.iterator(); it.hasNext(); ) {
+		TracePoint tp = (TracePoint)it.next();
+		if (tp.offset >= part.offset
+		    && tp.offset < part.offset + part.addressHigh - part.addressLow) {
+
+		    long actualAddress = tp.offset - part.offset + part.addressLow;
+		    logger.log(Level.CONFIG,
+			       "Stopping tracing of `" + tp.symbol.name
+			       + "' at 0x" + Long.toHexString(actualAddress));
+
+		    request.add(tp);
+		}
+	    }
+	    if (!request.isEmpty())
+		Ltrace.requestDeleteFunctionObserver(task, functionObserver, request);
+	}
     }
 
     ProcObserver.ProcTasks tasksObserver = new ProcObserver.ProcTasks()
@@ -275,69 +345,61 @@ public class Ftrace
 	public void deletedFrom (Object observable) {}
     };
 
-  /**
-   * An observer to stop the eventloop when the traced process exits.
-   */
-  private class ProcRemovedObserver
-      implements Observer
-  {
-    int pid;
 
-    ProcRemovedObserver (Proc proc)
+    /**
+     * An observer to stop the eventloop when the traced process exits.
+     */
+    private class ProcRemovedObserver
+	implements Observer
     {
-      this.pid = proc.getPid();
-    }
+	int pid;
 
-    public void update (Observable o, Object object)
-    {
-      Proc proc = (Proc) object;
-      if (proc.getPid() == this.pid)
-	{
-	  synchronized (Ftrace.this)
-	    {
-	      --numProcesses;
-	      if (numProcesses == 0)
-		Manager.eventLoop.requestStop();
+	ProcRemovedObserver (Proc proc) {
+	    this.pid = proc.getPid();
+	}
+
+	public void update (Observable o, Object object) {
+	    Proc proc = (Proc) object;
+	    if (proc.getPid() == this.pid) {
+		synchronized (Ftrace.this) {
+		    --numProcesses;
+		    if (numProcesses == 0)
+			Manager.eventLoop.requestStop();
+		}
 	    }
 	}
     }
-  }
 
-  /**
-   * An observer that sets up things once frysk has set up the requested
-   * proc and attached to it.
-   */
-  private TaskObserver.Attached attachedObserver = new TaskObserver.Attached()
-  {
-    public Action updateAttached (Task task)
+    /**
+     * An observer that sets up things once frysk has set up the requested
+     * proc and attached to it.
+     */
+    class MyAttachedObserver
+	implements TaskObserver.Attached
     {
-      addProc(task.getProc());
+	public Action updateAttached (Task task)
+	{
+	    addProc(task.getProc());
 
-      // To make sure all the observers are attached before the task
-      // continues, the attachedObserver blocks the task.  As each of
-      // the observers is addedTo, they call observationRealized.
-      // Task is unblocked when all requested observations are
-      // realized.
-      return Action.BLOCK;
+	    // To make sure all the observers are attached before the task
+	    // continues, the attachedObserver blocks the task.  As each of
+	    // the observers is addedTo, they call observationRealized.
+	    // Task is unblocked when all requested observations are
+	    // realized.
+	    return Action.BLOCK;
+	}
+
+	public void addedTo (Object observable) {}
+	public void deletedFrom (Object observable) {}
+	public void addFailed (Object observable, Throwable w) {
+	    throw new RuntimeException("Failed to attach to created proc", w);
+	}
     }
+    MyAttachedObserver attachedObserver = new MyAttachedObserver();
 
-    public void addedTo (Object observable)
-    {
-    }
-
-    public void addFailed (Object observable, Throwable w)
-    {
-      throw new RuntimeException("Failed to attach to created proc", w);
-    }
-
-    public void deletedFrom (Object observable)
-    {
-    }
-  };
-
-  /**
-   * The syscallObserver added to the traced proc.
-   */
+    /**
+     * The syscallObserver added to the traced proc.
+     */
     class MySyscallObserver
 	implements TaskObserver.Syscall
     {
@@ -471,11 +533,11 @@ public class Ftrace
     }
     TaskObserver.Cloned clonedObserver = new MyClonedObserver();
 
-    class MyTerminatingObserver
-	implements TaskObserver.Terminating
+    class MyTerminatedObserver
+	implements TaskObserver.Terminated
     {
-	public Action updateTerminating (Task task, boolean signal,
-					 int value)
+	public Action updateTerminated (Task task, boolean signal,
+					int value)
 	{
 	    if (signal)
 		reporter.eventSingle(task, "killed by " + Signal.valueOf(value).toPrint());
@@ -492,7 +554,96 @@ public class Ftrace
 	public void deletedFrom (Object observable) { }
 	public void addFailed (Object observable, Throwable w) { }
     }
-    TaskObserver.Terminating terminatingObserver = new MyTerminatingObserver();
+
+    class MyMappingObserver
+	implements MappingObserver
+    {
+	private final Controller tracingController;
+
+	MyMappingObserver(Controller controller) {
+	    this.tracingController = controller;
+	}
+
+	public Action updateMappedFile(frysk.proc.Task task, MemoryMapping mapping)
+	{
+	    if (traceMmapUnmap)
+		reporter.eventSingle(task, "map " + mapping.path);
+
+	    ObjectFile objf = ObjectFile.buildFromFile(mapping.path);
+	    if (objf == null)
+		return Action.CONTINUE;
+
+	    TracePointWorkingSet driver = new TracePointWorkingSet();
+	    Map drivers = (Map)driversForTask.get(task);
+	    if (drivers == null) {
+		drivers = new HashMap();
+		driversForTask.put(task, drivers);
+	    }
+	    drivers.put(mapping.path, driver);
+	    this.tracingController.fileMapped(task, objf, driver);
+
+	    task.requestUnblock(this);
+	    return Action.BLOCK;
+	}
+
+	public Action updateUnmappedFile(frysk.proc.Task task, MemoryMapping mapping)
+	{
+	    if (traceMmapUnmap)
+		reporter.eventSingle(task, "unmap " + mapping.path);
+	    return Action.CONTINUE;
+	}
+
+	private TracePointWorkingSet getDriver(Task task, MemoryMapping mapping) {
+	    // This has to be non-null.
+	    Map drivers = (Map)driversForTask.get(task);
+	    // This can be null for non-elf files.  We don't care about
+	    // these.
+	    return (TracePointWorkingSet)drivers.get(mapping.path);
+	}
+
+	public Action updateMappedPart(Task task, MemoryMapping mapping, MemoryMapping.Part part)
+	{
+	    // Ignore non-executable mappings.
+	    if (!part.permExecute)
+		return Action.CONTINUE;
+
+	    TracePointWorkingSet driver = getDriver(task, mapping);
+	    if (driver == null)
+		return Action.CONTINUE;
+
+	    // At this point we already know client preferences
+	    // regarding which tracepoints should be in working set.
+	    // Just apply this knowledge on new mapped part: all working
+	    // set elements that fall into this part should be observed.
+	    driver.populateBreakpoints(task, mapping, part);
+
+	    task.requestUnblock(this);
+	    return Action.BLOCK;
+    	}
+
+	public Action updateUnmappedPart(Task task, MemoryMapping mapping, MemoryMapping.Part part)
+	{
+	    // Ignore non-executable unmappings.
+	    if (!part.permExecute)
+		return Action.CONTINUE;
+
+	    TracePointWorkingSet driver = getDriver(task, mapping);
+	    if (driver == null)
+		return Action.CONTINUE;
+
+	    driver.evacuateBreakpoints(task, mapping, part);
+
+	    task.requestUnblock(this);
+	    return Action.BLOCK;
+    	}
+
+	public void addedTo (Object observable) {
+	    Task task = (Task) observable;
+	    observationRealized(task);
+	}
+	public void deletedFrom (Object observable) { }
+	public void addFailed (Object observable, Throwable w) { }
+    }
 
 
     public static interface StackTracedSymbolsProvider {
@@ -532,25 +683,10 @@ public class Ftrace
 	    return Action.CONTINUE;
 	}
 
-	public synchronized Action fileMapped(Task task, File file)
-	{
-	    if (traceMmapUnmap)
-		reporter.eventSingle(task, "map " + file);
-	    return Action.CONTINUE;
-	}
-
-	public synchronized Action fileUnmapped(Task task, File file)
-	{
-	    if (traceMmapUnmap)
-		reporter.eventSingle(task, "unmap " + file);
-	    return Action.CONTINUE;
-	}
-
-	public void addedTo (Object observable) {
-	    Task task = (Task) observable;
-	    observationRealized(task);
-	}
+	public void addedTo (Object observable) { }
 	public void deletedFrom (Object observable) { }
 	public void addFailed (Object observable, Throwable w) { }
     }
+
+    public MyFunctionObserver functionObserver = null;
 }

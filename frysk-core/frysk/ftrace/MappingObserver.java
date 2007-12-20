@@ -48,11 +48,28 @@ interface MappingObserver
     extends frysk.proc.TaskObserver
 {
     /**
-     * Called when /proc/pid/maps of given task might have changed.
-     * Will be called for all DSO mappings, i.e. not all changes in
-     * maps will be reflected by this call.  On the other hand, it may
-     * happen that it's called even though no mapping change actually
-     * occured.
+     * New file has been mapped into the address space of given task.
+     * All DSO mappings get reflected, but mapping of other types of
+     * files are not guaranteed.
+     *
+     * XXX: Although might be, if it would possible to request syscall
+     * observer, or when utrace lands.
      */
-    frysk.proc.Action updateMapping(frysk.proc.Task task);
+    frysk.proc.Action updateMappedFile(frysk.proc.Task task, MemoryMapping mapping);
+
+    /**
+     * Last part of a mapped file has been unmapped.
+     */
+    frysk.proc.Action updateUnmappedFile(frysk.proc.Task task, MemoryMapping mapping);
+
+    /**
+     * New part of an already mapped file has been mapped.
+     */
+    frysk.proc.Action updateMappedPart(frysk.proc.Task task, MemoryMapping mapping, MemoryMapping.Part part);
+
+    /**
+     * Part of a mapped file has been unmapped.  When all parts of one
+     * file are unmapped, updateUnmappedFile is called after this.
+     */
+    frysk.proc.Action updateUnmappedPart(frysk.proc.Task task, MemoryMapping mapping, MemoryMapping.Part part);
 }

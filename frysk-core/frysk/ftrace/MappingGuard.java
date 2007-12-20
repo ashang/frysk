@@ -68,6 +68,7 @@ class MappingGuard
     {
 	private final Map observers = new HashMap(); // HashMap<MappingObserver, Integer>
 	protected final Task task;
+	private Map maps = java.util.Collections.EMPTY_MAP;
 	private boolean lowlevelObserversAdded = false;
 	private boolean lowlevelObserversFailed = false;
 	private Throwable lowlevelObserverThrowable = null;
@@ -160,12 +161,120 @@ class MappingGuard
 	    }
 	}
 
-	protected void notifyObservers(final Task task) {
+
+    	private void updateMappedPart(final Task task,
+				      final MemoryMapping mapping,
+				      final MemoryMapping.Part part)
+	{
 	    eachObserver(new ObserverIterator() {
 		    public Action action(MappingObserver observer) {
-			return observer.updateMapping(task);
+			return observer.updateMappedPart(task, mapping, part);
 		    }
 		});
+	}
+
+	private void updateUnmappedPart(final Task task,
+					final MemoryMapping mapping,
+					final MemoryMapping.Part part)
+	{
+	    eachObserver(new ObserverIterator() {
+		    public Action action(MappingObserver observer) {
+			return observer.updateUnmappedPart(task, mapping, part);
+		    }
+		});
+	}
+
+	private void updateMappedFile(final Task task,
+				      final MemoryMapping mapping)
+	{
+	    eachObserver(new ObserverIterator() {
+		    public Action action(MappingObserver observer) {
+			return observer.updateMappedFile(task, mapping);
+		    }
+		});
+
+	    for (Iterator it = mapping.parts.iterator(); it.hasNext(); ) {
+		MemoryMapping.Part part = (MemoryMapping.Part)it.next();
+		updateMappedPart(task, mapping, part);
+	    }
+    	}
+
+	private void updateUnmappedFile(final Task task,
+					final MemoryMapping mapping)
+	{
+	    for (Iterator it = mapping.parts.iterator(); it.hasNext(); ) {
+		MemoryMapping.Part part = (MemoryMapping.Part)it.next();
+		updateUnmappedPart(task, mapping, part);
+	    }
+
+	    eachObserver(new ObserverIterator() {
+		    public Action action(MappingObserver observer) {
+			return observer.updateUnmappedFile(task, mapping);
+		    }
+		});
+    	}
+
+	protected void updateMapping(final Task task, boolean terminating) {
+	    Map oldMappings = this.maps;
+	    final Map newMappings;
+	    if (terminating)
+		newMappings = java.util.Collections.EMPTY_MAP;
+	    else
+		newMappings = MemoryMapping.buildForPid(task.getTid());
+
+	    // Resolve full mmaps, and partial mmaps and unmaps.
+	    for (Iterator it = newMappings.entrySet().iterator(); it.hasNext(); ) {
+		Map.Entry entry = (Map.Entry)it.next();
+		Object oKey = entry.getKey(); // actually a File
+		MemoryMapping newMapping = (MemoryMapping)entry.getValue();
+		if (!oldMappings.containsKey(oKey)) {
+		    updateMappedFile(task, newMapping);
+		}
+		else {
+		    // Remove the key from old set, so that at the end, only
+		    // unmapped values are left.
+		    MemoryMapping oldMapping = (MemoryMapping)oldMappings.remove(oKey);
+		    int oldSize = oldMapping.parts.size();
+		    int newSize = newMapping.parts.size();
+		    if (oldSize < newSize) {
+			// newMapping.parts[oldSize:] is VERY likely the new stuff
+			for (int i = oldMapping.parts.size(); i < newMapping.parts.size(); ++i) {
+			    MemoryMapping.Part part = (MemoryMapping.Part)newMapping.parts.get(i);
+			    updateMappedPart(task, newMapping, part);
+			}
+		    }
+		    else if (oldSize > newSize) {
+			// Find first non-matching Part.
+			int i = 0;
+			int j = 0;
+			while (i < oldSize && j < newSize
+			       && oldMapping.parts.get(i).equals(newMapping.parts.get(j))) {
+			    ++i;
+			    ++j;
+			}
+
+			// If `j' is at the end, the remaining old parts
+			// are unmapped.  Otherwise only the portion
+			// until the first matching part is unmapped.
+			while (i < oldSize
+			       && (j >= newSize
+				   || !oldMapping.parts.get(i).equals(newMapping.parts.get(j)))) {
+			    MemoryMapping.Part part = (MemoryMapping.Part)oldMapping.parts.get(i);
+			    updateUnmappedPart(task, oldMapping, part);
+			    ++i;
+			}
+		    }
+		}
+	    }
+
+	    // Resolve full unmaps.
+	    for (Iterator it = oldMappings.entrySet().iterator(); it.hasNext(); ) {
+		Map.Entry entry = (Map.Entry)it.next();
+		MemoryMapping removedMapping = (MemoryMapping)entry.getValue();
+		updateUnmappedFile(task, removedMapping);
+	    }
+
+	    this.maps = newMappings;
 	}
     }
 
@@ -200,7 +309,7 @@ class MappingGuard
 		// each syscall.
 		String name = syscall.getName();
 		if (name.indexOf("mmap") != -1 || name.indexOf("munmap") != -1)
-		    notifyObservers(task);
+		    updateMapping(task, false);
 	    }
 	    return Action.CONTINUE;
 	}
@@ -212,19 +321,28 @@ class MappingGuard
 
     private static class DebugStateMappingGuard
 	extends MappingGuardB
-	implements TaskObserver.Code
+	implements TaskObserver.Code,
+		   TaskObserver.Terminating
     {
 	private long address;
 	public DebugStateMappingGuard(Task task, long address) {
 	    super(task);
 	    this.address = address;
 	    task.requestAddCodeObserver(this, address);
+	    task.requestAddTerminatingObserver(this);
 	}
 
 	public Action updateHit (Task task, long address)
 	{
 	    logger.log(Level.FINE, "Mapping guard hit.");
-	    notifyObservers(task);
+	    updateMapping(task, false);
+	    return Action.CONTINUE;
+	}
+
+	public Action updateTerminating (Task task, boolean signal, int value)
+	{
+	    logger.log(Level.FINE, "The task is terminating.");
+	    updateMapping(task, true);
 	    return Action.CONTINUE;
 	}
 

@@ -59,8 +59,6 @@ import frysk.proc.Task;
 import frysk.util.CommandlineParser;
 
 import frysk.ftrace.Ftrace;
-import frysk.ftrace.Ltrace;
-import frysk.ftrace.LtraceController;
 import frysk.ftrace.ObjectFile;
 import frysk.ftrace.TracePoint;
 import frysk.ftrace.TracePointOrigin;
@@ -103,8 +101,8 @@ class WorkingSetRule
     }
 }
 
-class MyLtraceController
-    implements LtraceController,
+class MyFtraceController
+    implements Ftrace.Controller,
 	       Ftrace.StackTracedSymbolsProvider
 {
     protected static final Logger logger = Logger.getLogger("frysk");
@@ -121,7 +119,7 @@ class MyLtraceController
 	return symbolsStackTraceSet.contains(symbol);
     }
 
-    public MyLtraceController() { }
+    public MyFtraceController() { }
 
     public void gotPltRules(List rules) {
 	logger.log(Level.FINER, "Got " + rules.size() + " PLT rules.");
@@ -189,7 +187,7 @@ class MyLtraceController
 	return objffn.equals(interpfn);
     }
 
-    public void applyTracingRules(final Task task, final ObjectFile objf, final Ltrace.Driver driver,
+    public void applyTracingRules(final Task task, final ObjectFile objf, final Ftrace.Driver driver,
 				  final List rules, final TracePointOrigin origin)
 	throws lib.dwfl.ElfException
     {
@@ -276,7 +274,7 @@ class MyLtraceController
 	    symbolsStackTraceSet.add(((TracePoint)it.next()).symbol);
     }
 
-    public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver) {
+    public void fileMapped(final Task task, final ObjectFile objf, final Ftrace.Driver driver) {
 	try {
 	    applyTracingRules(task, objf, driver, pltRules, TracePointOrigin.PLT);
 	    applyTracingRules(task, objf, driver, dynRules, TracePointOrigin.DYNAMIC);
@@ -307,7 +305,7 @@ class ftrace
     final List pltRules = new ArrayList();
     final List dynRules = new ArrayList();
     final List symRules = new ArrayList();
-    final MyLtraceController controller = new MyLtraceController();
+    final MyFtraceController controller = new MyFtraceController();
     boolean allowInterpTracing = false;
 
     Ftrace tracer = new Ftrace();
