@@ -46,7 +46,6 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.testbed.*;
 
-//import java.io.File;
 import java.util.*;
 import java.util.regex.*;
 
@@ -56,7 +55,8 @@ import java.util.regex.*;
 public class TestMappingGuard
     extends TestLib
 {
-    class DummyMappingObserver implements MappingObserver {
+    /* Note: also used in TestLtrace. */
+    static class DummyMappingObserver implements MappingObserver {
 	public Action updateMappedFile(Task task, MemoryMapping mapping) {
 	    return Action.CONTINUE;
 	}

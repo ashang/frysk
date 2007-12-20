@@ -39,20 +39,15 @@
 
 package frysk.ftrace;
 
-/*
 import frysk.Config;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-*/
 import frysk.testbed.*;
 
-/*
-import java.io.File;
 import java.util.*;
 import java.util.regex.*;
-*/
 
 /**
  * This is a test for basic ltrace capabilities.
@@ -60,8 +55,9 @@ import java.util.regex.*;
 public class TestLtrace
     extends TestLib
 {
-    /*
-    class DummyFunctionObserver implements FunctionObserver {
+    class DummyFunctionObserver
+	implements FunctionObserver
+    {
 	public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
 	    return Action.CONTINUE;
 	}
@@ -80,28 +76,11 @@ public class TestLtrace
 	if(unresolvedOffUtrace(5053))
 	    return;
 
-	class MyController2
-	    implements LtraceController
+	final ArrayList events = new ArrayList();
+
+	class MyFunctionObserver1
+	    extends DummyFunctionObserver
 	{
-	    public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver) {
-		if (!task.getProc().getExe().equals(objf.getFilename().getPath()))
-		    return;
-
-		try {
-		    objf.eachTracePoint(new ObjectFile.TracePointIterator() {
-			    public void tracePoint(TracePoint tp) {
-				driver.tracePoint(task, tp);
-			    }
-			}, TracePointOrigin.PLT);
-		}
-		catch (lib.dwfl.ElfException ee) {
-		    ee.printStackTrace();
-		}
-	    }
-	}
-
-	class MyObserver extends DummyFunctionObserver {
-	    public ArrayList events = new ArrayList();
 	    public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
 		events.add("enter " + symbol.name);
 		return Action.CONTINUE;
@@ -110,7 +89,48 @@ public class TestLtrace
 		events.add("leave " + symbol.name);
 		return Action.CONTINUE;
 	    }
+	    public void addedTo (Object observable) {
+		// Don't requestStop, this observer is added inside
+		// other observer's handler.
+	    }
 	}
+
+	class MyMappingObserver1
+	    extends TestMappingGuard.DummyMappingObserver
+	{
+	    public Action updateMappedFile(final Task task, MemoryMapping mapping) {
+		block: {
+		    if (!task.getProc().getExe().equals(mapping.path.getPath()))
+			break block;
+
+		    try {
+			ObjectFile objf = ObjectFile.buildFromFile(mapping.path);
+			if (objf == null)
+			    throw new AssertionError("NULL objf for a file whose name matches main binary?");
+
+			final HashSet tps = new HashSet();
+			objf.eachTracePoint(new ObjectFile.TracePointIterator() {
+				public void tracePoint(TracePoint tp) {
+				    tps.add(tp);
+				}
+			    }, TracePointOrigin.PLT);
+
+			if (!tps.isEmpty()) {
+			    MyFunctionObserver1 fo = new MyFunctionObserver1();
+			    Ltrace.requestAddFunctionObserver(task, fo, tps);
+			    task.requestUnblock(this);
+			    return Action.BLOCK;
+			}
+		    }
+		    catch (lib.dwfl.ElfException ee) {
+			ee.printStackTrace();
+		    }
+		}
+
+		return super.updateMappedFile(task, mapping);
+	    }
+	}
+	MyMappingObserver1 mappingObserver = new MyMappingObserver1();
 
 	String[] cmd = {Config.getPkgLibFile("funit-syscalls").getPath()};
 	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
@@ -118,10 +138,8 @@ public class TestLtrace
 	Proc proc = task.getProc();
 	int pid = proc.getPid();
 
-	LtraceController controller = new MyController2();
-	MyObserver observer = new MyObserver();
-	Ltrace.requestAddFunctionObserver(task, observer, controller);
-	assertRunUntilStop("add function observer");
+	MappingGuard.requestAddMappingObserver(task, mappingObserver);
+	assertRunUntilStop("add mapping observer");
 
 	new StopEventLoopWhenProcRemoved(pid);
 	child.requestRemoveBlock();
@@ -135,13 +153,17 @@ public class TestLtrace
 	    "leave close"
 	};
 	for (int i = 0; i < expectedEvents.length; ++i) {
-	    String event = (String)observer.events.get(i);
+	    if (i >= events.size())
+		break;
+	    String event = (String)events.get(i);
 	    assertTrue("event `" + event + "' detected",
 		       Pattern.matches(expectedEvents[i], event));
 	}
-	assertEquals("number of recorded events", expectedEvents.length, observer.events.size());
+	assertEquals("number of recorded events", expectedEvents.length, events.size());
     }
 
+
+    /*
     public void testArgumentsCorrect1()
     {
 	if(unresolvedOffUtrace(5053))

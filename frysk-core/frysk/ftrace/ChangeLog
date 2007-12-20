@@ -1,5 +1,11 @@
 2007-12-20  Petr Machata  <pmachata@redhat.com>
 
+	* Ftrace.java: Commentary changes & reorganizations.
+	* TestMappingGuard: Dtto.
+	* TestLtrace.java (testCallRecorded): Turned on the test.
+
+2007-12-20  Petr Machata  <pmachata@redhat.com>
+
 	* TestMappingGuard: New file.
 	(testDebugStateMappingGuard): New test, moved from TestLtrace.
 	(testSyscallMappingGuard): Dtto.

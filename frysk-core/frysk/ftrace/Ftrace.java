@@ -89,16 +89,36 @@ public class Ftrace
     // The number of processes we're tracing.
     int numProcesses;
 
-    public static interface Driver {
-	void tracePoint(Task task, TracePoint tp);
-    }
-
+    /**
+     * Controller has to be implemented externally.  Each time a
+     * mapping changes, it is called for consulation and has a chance
+     * to change working set of Ftrace via provided Driver interface.
+     */
     public static interface Controller {
 	/**
 	 * New library FILE was mapped in task TASK.  Use DRIVER to tell
 	 * ltrace what to do.
 	 */
 	void fileMapped(frysk.proc.Task task, ObjectFile file, Driver driver);
+    }
+
+    /**
+     * External entity implementing this interface is called out each
+     * time an entry point is hit.  It can decide whether the stack
+     * trace should be generated or not.
+     * XXX: Ideally, this would also operate on tracepoints.
+     */
+    public static interface StackTracedSymbolsProvider {
+	boolean shouldStackTraceOn(Symbol symbol);
+    }
+
+    /**
+     * Driver implementation is placed here in Ftrace, and handed over
+     * via this interface to allow external controller to aid which
+     * tracepoints should be traced.
+     */
+    public static interface Driver {
+	void tracePoint(Task task, TracePoint tp);
     }
 
     // Non-null if we're using ltrace.
@@ -645,10 +665,6 @@ public class Ftrace
 	public void addFailed (Object observable, Throwable w) { }
     }
 
-
-    public static interface StackTracedSymbolsProvider {
-	boolean shouldStackTraceOn(Symbol symbol);
-    }
 
     private class MyFunctionObserver
 	implements FunctionObserver
