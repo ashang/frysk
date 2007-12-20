@@ -1,5 +1,7 @@
 2007-12-20  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (getBigIntegerRegisterFIXME(String)): Delete.
+
 	* LinuxPPC32On64.java (getRegisterByName()): Delete.
 	
 	BankRegister renamed to BankArrayRegister.
