@@ -39,6 +39,7 @@
 
 package frysk.bank;
 
+import inua.eio.ByteBuffer;
 import frysk.isa.Register;
 
 /**
@@ -65,7 +66,20 @@ public class BankArrayRegister extends BankRegister {
     /**
      * Return the register bank, as an index.
      */
-    public int getBank() {
+    int getBank() {
 	return bank;
+    }
+
+    long get(ByteBuffer[] banks) {
+	return get(banks[bank]);
+    }
+
+    void set(ByteBuffer[] banks, long value) {
+	set(banks[bank], value);
+    }
+
+    void access(ByteBuffer[] banks, long offset, long size, byte[] bytes,
+		int start, boolean write) {
+	access(banks[bank], offset, size, bytes, start, write);
     }
 }

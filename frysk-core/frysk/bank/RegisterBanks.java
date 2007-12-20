@@ -75,42 +75,17 @@ public class RegisterBanks {
     }
 
     public long get(Register register) {
-	BankArrayRegister bankRegister = findBankArrayRegister(register);
-	ByteBuffer bank = banks[bankRegister.getBank()];
-	switch (bankRegister.getLength()) {
-	case 1: return bank.getUByte(bankRegister.getOffset());
-	case 2: return bank.getUShort(bankRegister.getOffset());
-	case 4: return bank.getUInt(bankRegister.getOffset());
-	case 8: return bank.getULong(bankRegister.getOffset());
-	default:
-	    throw new RuntimeException("unhandled register size: "
-				       + bankRegister.getLength());
-	}
+	return findBankArrayRegister(register).get(banks);
     }
 
     public void set(Register register, long value) {
-	BankArrayRegister bankRegister = findBankArrayRegister(register);
-	ByteBuffer bank = banks[bankRegister.getBank()];
-	switch (bankRegister.getLength()) {
-	case 1: bank.putUByte(bankRegister.getOffset(), (byte)value); break;
-	case 2: bank.putUShort(bankRegister.getOffset(), (short)value); break;
-	case 4: bank.putUInt(bankRegister.getOffset(), (int)value); break;
-	case 8: bank.putULong(bankRegister.getOffset(), value); break;
-	default:
-	    throw new RuntimeException("unhandled register size: "
-				       + bankRegister.getLength());
-	}
+	findBankArrayRegister(register).set(banks, value);
     }
 
     public void access(Register register, long offset, long size,
 		       byte[] bytes, int start, boolean write) {
-	BankArrayRegister bankRegister = findBankArrayRegister(register);
-	ByteBuffer bank = banks[bankRegister.getBank()];
-	if (write)
-	    throw new RuntimeException("Not implemented");
-	else
-	    bank.get(offset + bankRegister.getOffset(), bytes,
-		     start, (int)size);
+	findBankArrayRegister(register)
+	    .access(banks, offset, size, bytes, start, write);
     }
 
     public ByteBuffer[] getBanksFIXME() {

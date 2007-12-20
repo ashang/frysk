@@ -1,5 +1,14 @@
 2007-12-20  Andrew Cagney  <cagney@redhat.com>
 
+	* BankRegister.java (getLength()): Make package private.
+	(getOffset()): Make package private.
+	(access)): Make package private.
+	* BankArrayRegister.java (set(ByteBuffer[],long)): New.
+	(access(ByteBuffer[],long,long,byte[],int,boolean)): New.
+	(get(ByteBuffer[])): New.
+	(getBank()): Make package private.
+	* RegisterBanks.java: Use.
+
 	* RegisterBanks.java (getBanksFIXME()): New.
 
 	* RegisterMap.java: New file.

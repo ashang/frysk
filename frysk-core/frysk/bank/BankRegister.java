@@ -91,18 +91,18 @@ public class BankRegister {
      * 
      * @return the length
      */
-    public int getLength() {
+    int getLength() {
 	return length;
     }
 
     /**
      * Return the offset into the register bank.
      */
-    public int getOffset() {
+    int getOffset() {
 	return offset;
     }
 
-    public void access(ByteBuffer byteBuffer, long offset, long size,
+    void access(ByteBuffer byteBuffer, long offset, long size,
 		       byte[] bytes, int start, boolean write) {
 	if (write)
 	    // XXX: Should be directly supported by ByteBuffer.
