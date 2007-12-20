@@ -369,6 +369,25 @@ files.<br>Once the build has finished, from eclipse:
 </ul>
 </dd>
 
+<dt>How do I use gcj? (aka, I see an error about gnu.gcj.RawData)</dt>
+<dd>
+Since frysk relies on some gcj specific implementation details
+(cni and gnu.gcj.RawData) you want to make sure to have the gcj
+JRE/JDK compat package install (java-1.5.0-gcj-devel). To make sure
+this JRE/JVM is used in the Frysk Eclipse workspace do:
+<ul>
+<li>Expand 'my project' in the package browser.
+<li>Select JRE System Library.
+<li>Right click and select Configure...
+<li>Select Alternate JRE.
+<li>Click Installed JREs...
+<li>Click Add...
+<li>Add JRE home directory: /usr/lib/jvm/java-1.5.0-gcj.
+<li>Make sure this JRE is now selected before clicking finish.
+</ul>
+The project should now auto-re-build without any errors.
+</dd>
+
 <dt>What should my eclipse format options be set to?</dt>
 <dd>
 <em>frysk</em> pretty much follows the standard Java Conventions; to
