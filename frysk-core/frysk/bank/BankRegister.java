@@ -43,28 +43,28 @@ import inua.eio.ByteBuffer;
 import frysk.isa.Register;
 
 /**
- * A register within a ByteBuffer register bank.
+ * A Register within a ByteBuffer register bank.
  */
 
-public class RegisterEntry {
+public class BankRegister {
 
     private final int offset;
     private final int length;
     private final String name;
     private final Register register;
 
-    private RegisterEntry(int offset, int length, String name, Register register) {
+    private BankRegister(int offset, int length, String name, Register register) {
 	this.offset = offset;
 	this.length = length;
 	this.name = name;
 	this.register = register;
     }
 
-    RegisterEntry(int offset, int length, String name) {
+    BankRegister(int offset, int length, String name) {
 	this(offset, length, name, null);
     }
 
-    RegisterEntry(int offset, int length, Register register) {
+    BankRegister(int offset, int length, Register register) {
 	this(offset, length, register.getName(), register);
     }
 
@@ -103,7 +103,7 @@ public class RegisterEntry {
     }
 
     public void access(ByteBuffer byteBuffer, long offset, long size,
-	    byte[] bytes, int start, boolean write) {
+		       byte[] bytes, int start, boolean write) {
 	if (write)
 	    // XXX: Should be directly supported by ByteBuffer.
 	    throw new RuntimeException("write not implemented");

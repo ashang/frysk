@@ -49,9 +49,9 @@ import frysk.isa.Register;
 
 public class RegisterBanks {
     private final ByteBuffer[] banks;
-    private final RegisterBankArrayMap bankRegisters;
+    private final BankArrayRegisterMap bankRegisters;
 
-    public RegisterBanks(RegisterBankArrayMap bankRegisters,
+    public RegisterBanks(BankArrayRegisterMap bankRegisters,
 			 ByteBuffer[] banks) {
 	this.banks = banks;
 	this.bankRegisters = bankRegisters;

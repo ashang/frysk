@@ -49,8 +49,8 @@ import frysk.isa.PPC64Registers;
 
 public class PPCBankRegisters {
 
-    public static final RegisterBankArrayMap PPC32BE
-	= new RegisterBankArrayMap()
+    public static final BankArrayRegisterMap PPC32BE
+	= new BankArrayRegisterMap()
 	.add(new BankArrayRegister(0, 0, 4, PPC32Registers.GPR0))
 	.add(new BankArrayRegister(0, 4, 4, PPC32Registers.GPR1))
 	.add(new BankArrayRegister(0, 8, 4, PPC32Registers.GPR2))
@@ -131,8 +131,8 @@ public class PPCBankRegisters {
 	.add(new BankArrayRegister(0, 452, 4, PPC32Registers.FPSCR)) //(PT_FPR0 + 2*32 + 1)
 	;
 
-    public static final RegisterBankArrayMap PPC64BE
-	= new RegisterBankArrayMap()
+    public static final BankArrayRegisterMap PPC64BE
+	= new BankArrayRegisterMap()
 	.add(new BankArrayRegister(0, 0, 8, PPC64Registers.GPR0))
 	.add(new BankArrayRegister(0, 8, 8, PPC64Registers.GPR1))
 	.add(new BankArrayRegister(0, 16, 8, PPC64Registers.GPR2))
@@ -219,8 +219,8 @@ public class PPCBankRegisters {
 	.add(new BankArrayRegister(0, 1176, 8, PPC64Registers.VSCR)) // PT_VSCR (PT_VR0 + 32*2 + 1), index 147
 	.add(new BankArrayRegister(0, 1184, 8, PPC64Registers.VRSAVE)); // PT_VRSAVE (PT_VR0 + 33*2), index 148
 
-    public static final RegisterBankArrayMap PPC32BE_ON_PPC64BE
-	= new IndirectRegisterBankArrayMap(ByteOrder.BIG_ENDIAN,
+    public static final BankArrayRegisterMap PPC32BE_ON_PPC64BE
+	= new IndirectBankArrayRegisterMap(ByteOrder.BIG_ENDIAN,
 					   PPC32BE, PPC64BE)
 	.add(PPC32Registers.GPR0)
 	.add(PPC32Registers.GPR1)

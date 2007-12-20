@@ -47,24 +47,24 @@ import java.util.LinkedHashMap;
  * For compatibility, also implement a name map.
  */
 
-public class RegisterBankArrayMap {
-    private final LinkedHashMap registerToBankArrayRegister = new LinkedHashMap();
-    private final LinkedHashMap nameToBankArrayRegister = new LinkedHashMap();
+public class BankArrayRegisterMap {
+    private final LinkedHashMap registerToEntry = new LinkedHashMap();
+    private final LinkedHashMap nameToEntry = new LinkedHashMap();
 
-    protected RegisterBankArrayMap add(BankArrayRegister br) {
+    protected BankArrayRegisterMap add(BankArrayRegister br) {
 	if (br.getRegister() != null)
-	    registerToBankArrayRegister.put(br.getRegister(), br);
-	nameToBankArrayRegister.put(br.getName(), br);
+	    registerToEntry.put(br.getRegister(), br);
+	nameToEntry.put(br.getName(), br);
 	return this;
     }
 
-    RegisterBankArrayMap add(int bank, int offset, int length, Register register) {
+    BankArrayRegisterMap add(int bank, int offset, int length, Register register) {
 	return add(new BankArrayRegister(bank, offset, length, register));
     }
-    RegisterBankArrayMap add(int bank, int offset, int length, String name) {
+    BankArrayRegisterMap add(int bank, int offset, int length, String name) {
 	return add(new BankArrayRegister(bank, offset, length, name));
     }
-    RegisterBankArrayMap add(int bank, int offset, int length,
+    BankArrayRegisterMap add(int bank, int offset, int length,
 			     Register[] registers) {
 	for (int i = 0; i < registers.length; i++) {
 	    add(new BankArrayRegister(bank, offset, length, registers[i]));
@@ -74,10 +74,10 @@ public class RegisterBankArrayMap {
     }
 
     BankArrayRegister get(Register r) {
-	return (BankArrayRegister)registerToBankArrayRegister.get(r);
+	return (BankArrayRegister)registerToEntry.get(r);
     }
 
     public BankArrayRegister get(String s) {
-	return (BankArrayRegister)nameToBankArrayRegister.get(s);
+	return (BankArrayRegister)nameToEntry.get(s);
     }
 }

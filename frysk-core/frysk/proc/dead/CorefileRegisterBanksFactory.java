@@ -45,7 +45,7 @@ import frysk.isa.ISAMap;
 import frysk.bank.RegisterBanks;
 import frysk.bank.X86BankRegisters;
 import frysk.bank.PPCBankRegisters;
-import frysk.bank.RegisterBankArrayMap;
+import frysk.bank.BankArrayRegisterMap;
 
 /**
  * The target has registers scattered across one or more register
@@ -66,8 +66,8 @@ class CorefileRegisterBanksFactory {
      * FIXME: Should also handle the creation of banks here.
      */
     static RegisterBanks create(ISA isa, ByteBuffer[] banks) {
-	RegisterBankArrayMap bankRegisterMap
-	    = (RegisterBankArrayMap)isaToBankRegisters.get(isa);
+	BankArrayRegisterMap bankRegisterMap
+	    = (BankArrayRegisterMap)isaToBankRegisters.get(isa);
 	return new RegisterBanks(bankRegisterMap, banks);
     }
     

@@ -40,22 +40,19 @@
 package frysk.bank;
 
 import inua.eio.ByteBuffer;
-
 import java.util.LinkedHashMap;
-
 import frysk.isa.Register;
 
 /**
- * A bank of registers. The register bank is made up of RegisterEntry's.
- * 
- * 
+ * A mapping from Register to BankRegister (a register within a
+ * register bank).
  */
-public class RegisterBank {
+public class BankRegisterMap {
 
     private final LinkedHashMap registerToEntry = new LinkedHashMap();
     private final LinkedHashMap nameToEntry = new LinkedHashMap();
 
-    RegisterBank add(RegisterEntry br) {
+    BankRegisterMap add(BankRegister br) {
 	Register register = br.getRegister();
 	if (register != null)
 	    registerToEntry.put(register, br);
@@ -63,16 +60,16 @@ public class RegisterBank {
 	return this;
     }
 
-    public RegisterEntry get(Register r) {
-	return (RegisterEntry) registerToEntry.get(r);
+    public BankRegister get(Register r) {
+	return (BankRegister) registerToEntry.get(r);
     }
 
-    public RegisterEntry get(String s) {
-	return (RegisterEntry) nameToEntry.get(s);
+    public BankRegister get(String s) {
+	return (BankRegister) nameToEntry.get(s);
     }
 
     public void access(Register register, ByteBuffer bank, long offset,
-	    long size, byte[] bytes, int start, boolean write) {
+		       long size, byte[] bytes, int start, boolean write) {
 	get(register).access(bank, offset, size, bytes, start, write);
     }
 

@@ -50,7 +50,7 @@ import frysk.isa.X87Registers;
 
 public class X86BankRegisters {
 
-    public static final RegisterBankArrayMap IA32 = new RegisterBankArrayMap()
+    public static final BankArrayRegisterMap IA32 = new BankArrayRegisterMap()
 	.add(new BankArrayRegister (0, 24, 4,IA32Registers.EAX))
 	.add(new BankArrayRegister (0, 0, 4, IA32Registers.EBX))
 	.add(new BankArrayRegister (0, 4, 4, IA32Registers.ECX))
@@ -106,7 +106,7 @@ public class X86BankRegisters {
 	.add(new BankArrayRegister (3, 280, 4, IA32Registers.D7))
 	;
 
-    public static final RegisterBankArrayMap X8664 = new RegisterBankArrayMap()
+    public static final BankArrayRegisterMap X8664 = new BankArrayRegisterMap()
 	.add(new BankArrayRegister(0, 80, 8, X8664Registers.RAX))
 	.add(new BankArrayRegister(0, 40, 8, X8664Registers.RBX))
 	.add(new BankArrayRegister(0, 88, 8, X8664Registers.RCX))
@@ -178,8 +178,8 @@ public class X86BankRegisters {
 	.add(new BankArrayRegister(2, 904, 8, X8664Registers.DR7))
 	;
 
-    public static RegisterBankArrayMap IA32_ON_X8664
-	= new IndirectRegisterBankArrayMap(ByteOrder.LITTLE_ENDIAN, IA32, X8664)
+    public static BankArrayRegisterMap IA32_ON_X8664
+	= new IndirectBankArrayRegisterMap(ByteOrder.LITTLE_ENDIAN, IA32, X8664)
 	.add(IA32Registers.EAX, X8664Registers.RAX)
 	.add(IA32Registers.EBX, X8664Registers.RBX)
 	.add(IA32Registers.ECX, X8664Registers.RCX)

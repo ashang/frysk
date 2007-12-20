@@ -1,5 +1,17 @@
 2007-12-20  Andrew Cagney  <cagney@redhat.com>
 
+	* BankRegister.java: Rename RegisterEntry.java.
+	* BankRegisterMap.java: Rename RegisterBank.java.
+	* BankArrayRegisterMap.java: Rename RegisterBankArrayMap.java.
+	* IndirectBankArrayRegisterMap.java: Rename
+	IndirectRegisterBankArrayMap.java.
+	* LinuxX8664RegisterBanks.java: Update.
+	* LinuxPPCRegisterBanks.java: Update.
+	* LinuxIA32RegisterBanks.java: Update.
+	* PPCBankRegisters.java: Update.
+	* RegisterBanks.java: Update.
+	* X86BankRegisters.java: Update.
+
 	* BankArrayRegister.java: Rename BankRegister.java.
 	* IndirectRegisterBankArrayMap.java: Rename
 	IndirectBankregistermap.java.
