@@ -44,76 +44,22 @@ import frysk.isa.Register;
 /**
  * Register that is part of a register bank.
  */
-public class BankArrayRegister {
+public class BankArrayRegister extends BankRegister {
     private final int bank;
-    private final int offset;
-    private final int length;
-    private final String name;
-    private final Register register;
   
-    private BankArrayRegister(int bank, int offset, int length,
-			      Register register, String name) {
-	this.bank = bank;
-	this.offset = offset;
-	this.length = length;
-	this.register = register;
-	this.name = name;
-    }
-
-    /**
-     * Constructor. The register views defaults to an integer view.
-     *
-     * @param bank The number of a bank (ByteBuffer) in the Task
-     * object's registerBank array 
-     * @param offset byte offset in the bank
-     * @param name name of the register
-     */
     BankArrayRegister(int bank, int offset, int length, String name) {
-	this(bank, offset, length, null, name);
+	super(offset, length, name);
+	this.bank = bank;
     }
 
     BankArrayRegister(int bank, int offset, int length, Register register) {
-	this(bank, offset, length, register, register.getName());
+	super(offset, length, register);
+	this.bank = bank;
     }
   
     public String toString() {
 	return (super.toString()
-		+ ",bank=" + bank
-		+ ",offset=" + offset
-		+ ",length=" + length
-		+ ",name=" + name);
-    }
-
-    /**
-     * Get the name of the register.
-     *
-     * @return the name
-     */
-    public String getName() {
-	return name;
-    }
-    
-    /**
-     * Get the length of the register in bytes.
-     *
-     * @return the length
-     */
-    public int getLength() {
-	return length;
-    }
-
-    /**
-     * Get the Register.
-     */
-    public Register getRegister() {
-	return register;
-    }
-
-    /**
-     * Return the offset into the register bank.
-     */
-    public int getOffset() {
-	return offset;
+		+ ",bank=" + bank);
     }
 
     /**

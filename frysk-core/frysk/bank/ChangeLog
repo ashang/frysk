@@ -1,5 +1,11 @@
 2007-12-20  Andrew Cagney  <cagney@redhat.com>
 
+	* RegisterMap.java: New file.
+	* BankRegisterMap.java: Extend RegisterMap.java.
+	* BankArrayRegisterMap.java: Ditto.
+	* BankArrayRegister.java: Extend BankRegister.
+	* IndirectBankArrayRegisterMap.java: Update.
+
 	* LinuxPPCRegisterBanks.java (USR32): Rename PPC32BE.
 	(USR64): Rename PPC64BE.
 	* LinuxX8664RegisterBanks.java (REGS): Rename GENERAL_REGISTERS.

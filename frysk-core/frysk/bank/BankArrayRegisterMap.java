@@ -40,44 +40,34 @@
 package frysk.bank;
 
 import frysk.isa.Register;
-import java.util.LinkedHashMap;
 
 /**
  * Implement a map from frysk.isa.Register to frysk.proc.BankArrayRegister.
  * For compatibility, also implement a name map.
  */
 
-public class BankArrayRegisterMap {
-    private final LinkedHashMap registerToEntry = new LinkedHashMap();
-    private final LinkedHashMap nameToEntry = new LinkedHashMap();
+public class BankArrayRegisterMap extends RegisterMap {
 
-    protected BankArrayRegisterMap add(BankArrayRegister br) {
-	if (br.getRegister() != null)
-	    registerToEntry.put(br.getRegister(), br);
-	nameToEntry.put(br.getName(), br);
+    BankArrayRegisterMap add(BankArrayRegister register) {
+	put(register);
 	return this;
     }
 
-    BankArrayRegisterMap add(int bank, int offset, int length, Register register) {
-	return add(new BankArrayRegister(bank, offset, length, register));
+    BankArrayRegisterMap add(int bank, int offset, int length,
+			     Register register) {
+	put(new BankArrayRegister(bank, offset, length, register));
+	return this;
     }
     BankArrayRegisterMap add(int bank, int offset, int length, String name) {
-	return add(new BankArrayRegister(bank, offset, length, name));
+	put(new BankArrayRegister(bank, offset, length, name));
+	return this;
     }
     BankArrayRegisterMap add(int bank, int offset, int length,
 			     Register[] registers) {
 	for (int i = 0; i < registers.length; i++) {
-	    add(new BankArrayRegister(bank, offset, length, registers[i]));
+	    put(new BankArrayRegister(bank, offset, length, registers[i]));
 	    offset += length;
 	}
 	return this;
-    }
-
-    BankArrayRegister get(Register r) {
-	return (BankArrayRegister)registerToEntry.get(r);
-    }
-
-    public BankArrayRegister get(String s) {
-	return (BankArrayRegister)nameToEntry.get(s);
     }
 }

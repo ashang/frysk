@@ -72,7 +72,7 @@ class IndirectBankArrayRegisterMap extends BankArrayRegisterMap {
 
     IndirectBankArrayRegisterMap add(Register reg32, int bank, int offset,
 				     int size) {
-	add(new BankArrayRegister(bank, offset, size, reg32.getName()));
+	put(new BankArrayRegister(bank, offset, size, reg32.getName()));
 	return this;
     }
 
@@ -83,30 +83,30 @@ class IndirectBankArrayRegisterMap extends BankArrayRegisterMap {
     }
 
     IndirectBankArrayRegisterMap add(Register reg32, Register reg64) {
-	BankArrayRegister map32reg = map32.get(reg32);
+	BankArrayRegister map32reg = (BankArrayRegister)map32.get(reg32);
 	if (reg32 == null)
 	    throw new RuntimeException("unknown 32-bit register: " + reg32);
-	BankArrayRegister map64reg = map64.get(reg64);
+	BankArrayRegister map64reg = (BankArrayRegister)map64.get(reg64);
 	if (map64reg == null)
 	    throw new RuntimeException("unknown 64-bit register: " + reg64);
 	return add(map32reg, map64reg);
     }
 
     IndirectBankArrayRegisterMap add(Register reg32) {
-	BankArrayRegister map32reg = map32.get(reg32);
+	BankArrayRegister map32reg = (BankArrayRegister)map32.get(reg32);
 	if (reg32 == null)
 	    throw new RuntimeException("unknown 32-bit register: " + reg32);
-	BankArrayRegister map64reg = map64.get(reg32.getName());
+	BankArrayRegister map64reg = (BankArrayRegister)map64.get(reg32.getName());
 	if (map64reg == null)
 	    throw new RuntimeException("unknown 64-bit register: " + reg32);
 	return add(map32reg, map64reg);
     }
 
     IndirectBankArrayRegisterMap add(String map32Name, String map64Name) {
-	BankArrayRegister reg32 = map32.get(map32Name);
+	BankArrayRegister reg32 = (BankArrayRegister)map32.get(map32Name);
 	if (reg32 == null)
 	    throw new RuntimeException("unknown register: " + map32Name);
-	BankArrayRegister reg64 = map64.get(map64Name);
+	BankArrayRegister reg64 = (BankArrayRegister)map64.get(map64Name);
 	if (reg64 == null)
 	    throw new RuntimeException("unknown register: " + map64Name);
 	return add(reg32, reg64);

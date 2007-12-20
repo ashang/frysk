@@ -58,14 +58,16 @@ public class RegisterBanks {
     }
 
     public BankArrayRegister getBankArrayRegister(String name) {
-	BankArrayRegister bankRegister = bankRegisters.get(name);
+	BankArrayRegister bankRegister
+	    = (BankArrayRegister) bankRegisters.get(name);
 	if (bankRegister != null)
 	    return bankRegister;
 	throw new RuntimeException("unknown register: " + name);
     }
 
     private BankArrayRegister findBankArrayRegister(Register register) {
-	BankArrayRegister bankRegister = bankRegisters.get(register);
+	BankArrayRegister bankRegister
+	    = (BankArrayRegister) bankRegisters.get(register);
 	if (bankRegister != null)
 	    return bankRegister;
 	// Workaround for code still relying on string names.
