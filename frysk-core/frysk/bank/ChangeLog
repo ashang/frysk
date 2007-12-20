@@ -1,5 +1,11 @@
 2007-12-19  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxIA32RegisterBanks.java: New, from X86BankRegisters.java.
+	* LinuxX8664RegisterBanks.java: New, from X86BankRegisters.java.
+	* LinuxPPCRegisterBanks.java: New, from PPCBankRegisters.java.
+	* RegisterBank.java: New.
+	* RegisterEntry.java: New.
+
 	* BankRegister.java: Move to here from frysk.proc.
 	* BankRegisterMap.java: Ditto.
 	* IndirectBankRegisterMap.java: Ditto.
