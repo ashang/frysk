@@ -55,7 +55,6 @@ public class TestFauxv
 	argv[argc++] = Config.getBinFile("fauxv").getAbsolutePath();
 	argv[argc++] = coreFile.getAbsolutePath();
 	Expect e = new Expect(argv);
-	System.out.println(argv[0]+" " +argv[1]);
 	TearDownExpect.add(e);
 	return e;
     }

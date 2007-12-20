@@ -1,3 +1,7 @@
+2007-12-20  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestFauxv.java (fauxv):  Delete System.out.
+
 2007-12-19  cagney  <cagney@redhat.com>
 
 	* fhpd.java: Explicitly import frysk.sys.FileDescriptor.
