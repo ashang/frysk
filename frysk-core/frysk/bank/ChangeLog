@@ -1,5 +1,14 @@
 2007-12-20  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPPCRegisterBanks.java (USR32): Rename PPC32BE.
+	(USR64): Rename PPC64BE.
+	* LinuxX8664RegisterBanks.java (REGS): Rename GENERAL_REGISTERS.
+	(FPREGS): Rename FLOATING_POINT_REGISTERS.
+	* LinuxIA32RegisterBanks.java (REGS): Rename GENERAL_REGISTERS.
+	(FPREGS): New.
+	(XFPREGS): Rename FLOATING_POINT_REGISTERS.
+	(USR): Rename DEBUG_REGISTERS.
+	
 	* BankRegister.java: Rename RegisterEntry.java.
 	* BankRegisterMap.java: Rename RegisterBank.java.
 	* BankArrayRegisterMap.java: Rename RegisterBankArrayMap.java.

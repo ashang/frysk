@@ -44,7 +44,7 @@ import frysk.isa.X87Registers;
 
 public class LinuxIA32RegisterBanks {
     
-    public static final BankRegisterMap GENERAL_REGISTERS
+    public static final BankRegisterMap REGS
 	= new BankRegisterMap()
 	.add(new BankRegister(24, 4,IA32Registers.EAX))
 	.add(new BankRegister(0, 4, IA32Registers.EBX))
@@ -65,7 +65,27 @@ public class LinuxIA32RegisterBanks {
 	.add(new BankRegister(60, 4, IA32Registers.ESP))
 	;
     
-    public static final BankRegisterMap FLOATING_POINT_REGISTERS
+    public static final BankRegisterMap FPREGS
+	= new BankRegisterMap()
+	.add(new BankRegister(0x00, 2, X87Registers.FCW))
+	.add(new BankRegister(0x04, 2, X87Registers.FSW))
+	.add(new BankRegister(0x08, 2, X87Registers.FTW))
+	.add(new BankRegister(0x0c, 4, X87Registers.EIP))
+	.add(new BankRegister(0x10, 2, X87Registers.CS))
+	.add(new BankRegister(0x12, 2, X87Registers.FOP))
+	.add(new BankRegister(0x18, 4, X87Registers.DP))
+	.add(new BankRegister(0x18, 2, X87Registers.DS))
+	.add(new BankRegister(0x1c, 10, X87Registers.ST0))
+	.add(new BankRegister(0x26, 10, X87Registers.ST1))
+	.add(new BankRegister(0x30, 10, X87Registers.ST2))
+	.add(new BankRegister(0x3a, 10, X87Registers.ST3))
+	.add(new BankRegister(0x44, 10, X87Registers.ST4))
+	.add(new BankRegister(0x4e, 10, X87Registers.ST5))
+	.add(new BankRegister(0x58, 10, X87Registers.ST6))
+	.add(new BankRegister(0x62, 10, X87Registers.ST7))
+	;
+
+    public static final BankRegisterMap XFPREGS
 	= new BankRegisterMap()
     //Get all FP registers from FXSAVE area.
 	.add(new BankRegister(0x00, 2, X87Registers.FCW))
@@ -96,7 +116,7 @@ public class LinuxIA32RegisterBanks {
 	.add(new BankRegister(0x110, 16, X87Registers.XMM7))
 	;
     
-    public static BankRegisterMap DEBUG_REGISTERS = new BankRegisterMap()
+    public static BankRegisterMap USR = new BankRegisterMap()
 	.add(new BankRegister(252, 4, IA32Registers.D0))
 	.add(new BankRegister(256, 4, IA32Registers.D1))
 	.add(new BankRegister(260, 4, IA32Registers.D2))

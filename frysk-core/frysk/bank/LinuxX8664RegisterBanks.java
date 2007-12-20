@@ -44,7 +44,7 @@ import frysk.isa.X87Registers;
 
 public class LinuxX8664RegisterBanks {
 
-    public static final BankRegisterMap GENERAL_REGISTERS
+    public static final BankRegisterMap REGS
 	= new BankRegisterMap()
 	.add(new BankRegister(80, 8, X8664Registers.RAX))
 	.add(new BankRegister(40, 8, X8664Registers.RBX))
@@ -75,7 +75,7 @@ public class LinuxX8664RegisterBanks {
 	.add(new BankRegister(176, 8, X8664Registers.GS_BASE))
 	;
     
-    public static final BankRegisterMap FLOATING_POINT_REGISTERS
+    public static final BankRegisterMap FPREGS
 	= new BankRegisterMap()
     // Format determined by FXSAVE instruction
 	.add(new BankRegister(0x00, 2, X87Registers.FCW))

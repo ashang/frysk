@@ -48,7 +48,7 @@ import frysk.isa.PPC64Registers;
 
 public class LinuxPPCRegisterBanks {
 
-    public static final BankRegisterMap PPC32BE
+    public static final BankRegisterMap USR32
 	= new BankRegisterMap()
 	.add(new BankRegister(0, 4, PPC32Registers.GPR0))
 	.add(new BankRegister(4, 4, PPC32Registers.GPR1))
@@ -130,7 +130,7 @@ public class LinuxPPCRegisterBanks {
 	.add(new BankRegister(452, 4, PPC32Registers.FPSCR)) //(PT_FPR0 + 2*32 + 1)
 	;
 
-    public static final BankRegisterMap PPC64BE
+    public static final BankRegisterMap USR64
 	= new BankRegisterMap()
 	.add(new BankRegister(0, 8, PPC64Registers.GPR0))
 	.add(new BankRegister(8, 8, PPC64Registers.GPR1))
