@@ -76,6 +76,11 @@ public class TestLtrace
 	public boolean acceptTracepoint(Task task, TracePoint tp) {
 	    return tp.origin == TracePointOrigin.PLT;
 	}
+	public FunctionObserver implementRequest(Task task, Set tracePoints) {
+	    FunctionObserver fo = this.createObserver();
+	    Ltrace.requestAddFunctionObserver(task, fo, tracePoints);
+	    return fo;
+	}
     }
 
     class GenericMappingObserver
@@ -118,8 +123,7 @@ public class TestLtrace
 			}, TracePointOrigin.DYNAMIC);
 
 		    if (!tps.isEmpty()) {
-			FunctionObserver fo = creator.createObserver();
-			Ltrace.requestAddFunctionObserver(task, fo, tps);
+			creator.implementRequest(task, tps);
 			task.requestUnblock(this);
 			return Action.BLOCK;
 		    }
@@ -130,6 +134,46 @@ public class TestLtrace
 	    }
 
 	    return super.updateMappedFile(task, mapping);
+	}
+    }
+
+    abstract class GenericController
+	extends ObserverCreator
+    {
+	final String name;
+	int found = 0;
+
+	GenericController(String name) {
+	    this.name = name;
+	}
+
+	public boolean acceptTracepoint(Task task, TracePoint tp) {
+	    if (tp.symbol.hasName(name)) {
+		found++;
+		return true;
+	    }
+	    else
+		return false;
+	}
+    }
+
+    class GenericFunctionObserver
+	extends DummyFunctionObserver
+    {
+	boolean added = false;
+	int enter = 0;
+	int leave = 0;
+	public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
+	    enter++;
+	    return super.funcallEnter(task, symbol, args);
+	}
+	public Action funcallLeave(Task task, Symbol symbol, Object retVal) {
+	    leave++;
+	    return super.funcallLeave(task, symbol, retVal);
+	}
+	public void addedTo (Object observable) {
+	    super.addedTo(observable);
+	    added = true;
 	}
     }
 
@@ -313,28 +357,17 @@ public class TestLtrace
 	}
 
 	class MyObserverCreator3
-	    extends ObserverCreator
+	    extends GenericController
 	{
-	    int found = 0;
 	    final String ownName;
-	    final String aliasName;
 
 	    public MyObserverCreator3(String aliasName, String ownName) {
+		super(aliasName);
 		this.ownName = ownName;
-		this.aliasName = aliasName;
 	    }
 
 	    public FunctionObserver createObserver() {
 		return new MyFunctionObserver3(ownName);
-	    }
-
-	    public boolean acceptTracepoint(Task task, TracePoint tp) {
-		if (tp.symbol.hasName(aliasName)) {
-		    found++;
-		    return true;
-		}
-		else
-		    return false;
 	    }
 	}
 
@@ -362,11 +395,34 @@ public class TestLtrace
 	assertEquals("number of leave aliases seen", symbols.length, leaveAliases.size());
     }
 
-    /*
     public void testMultipleObservers()
     {
 	if(unresolvedOffUtrace(5053))
 	    return;
+
+	final int N = 10;
+	final GenericFunctionObserver[] observers = new GenericFunctionObserver[N];
+
+	class MyObserverCreator4
+	    extends GenericController
+	{
+	    public MyObserverCreator4(String name) { super(name); }
+
+	    public FunctionObserver createObserver() {
+		return new GenericFunctionObserver();
+	    }
+
+	    public FunctionObserver implementRequest(Task task, Set tracePoints) {
+		FunctionObserver fo = null;
+		for (int i = 0; i < N; ++i) {
+		    fo = super.implementRequest(task, tracePoints);
+		    // Fingers crossed nobody overrided createObserver
+		    // in an incompatible manner...
+		    observers[i] = (GenericFunctionObserver)fo;
+		}
+		return fo;
+	    }
+	}
 
 	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
 	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
@@ -374,27 +430,23 @@ public class TestLtrace
 	Proc proc = task.getProc();
 	int pid = proc.getPid();
 
-	int N = 10;
-	LtraceController controller = new MyController4("trace_me_1");
-	MyObserver5[] observers = new MyObserver5[N];
-	for (int i = 0; i < N; i++) {
-	    observers[i] = new MyObserver5();
-	    Ltrace.requestAddFunctionObserver(task, observers[i], controller);
-	}
-	assertRunUntilStop("add function observers");
-	for (int i = 0; i < N; i++)
-	    assertTrue("observer #" + i + " added", observers[i].added);
+	MyObserverCreator4 observerCreator = new MyObserverCreator4("trace_me_1");
+	MappingGuard.requestAddMappingObserver(task, new GenericMappingObserver(observerCreator));
+	assertRunUntilStop("add mapping observer");
 
 	new StopEventLoopWhenProcRemoved(pid);
 	child.requestRemoveBlock();
 	assertRunUntilStop("run child until exit");
 
 	for (int i = 0; i < N; i++) {
+	    assertTrue("observer #" + i + " initialized", observers[i] != null);
+	    assertTrue("observer #" + i + " added", observers[i].added);
 	    assertEquals("observer #" + i + " number of enter hits", 1, observers[i].enter);
 	    assertEquals("observer #" + i + " number of leave hits", 1, observers[i].leave);
 	}
     }
 
+    /*
     public void testMultipleControlers()
     {
 	if(unresolvedOffUtrace(5053))
@@ -438,55 +490,6 @@ public class TestLtrace
 
     public void tearDown()
     {
-    }
-
-    class MyController4
-	implements LtraceController
-    {
-	final String name;
-	int found = 0;
-
-	MyController4(String name) {
-	    this.name = name;
-	}
-
-	public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver)
-	{
-	    if (!task.getProc().getExe().equals(objf.getFilename().getPath()))
-		return;
-
-	    try {
-		objf.eachTracePoint(new ObjectFile.TracePointIterator() {
-			public void tracePoint(TracePoint tp) {
-			    if (tp.symbol.hasName(MyController4.this.name)) {
-				++MyController4.this.found;
-				driver.tracePoint(task, tp);
-			    }
-			}
-		    }, TracePointOrigin.SYMTAB);
-	    }
-	    catch (lib.dwfl.ElfException ee) {
-		ee.printStackTrace();
-	    }
-	}
-    }
-
-    class MyObserver5 extends DummyFunctionObserver {
-	boolean added = false;
-	int enter = 0;
-	int leave = 0;
-	public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
-	    enter++;
-	    return Action.CONTINUE;
-	}
-	public Action funcallLeave(Task task, Symbol symbol, Object retVal) {
-	    leave++;
-	    return Action.CONTINUE;
-	}
-	public void addedTo (Object observable) {
-	    super.addedTo (observable);
-	    added = true;
-	}
     }
     */
 }

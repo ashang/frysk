@@ -1,8 +1,9 @@
 2007-12-20  Petr Machata  <pmachata@redhat.com>
 
-	* Ftrace.java: Refactoring.
+	* TestLtrace.java: Refactoring.
 	(testArgumentsCorrect1): Turned the test on.
 	(testTracingAlias): Dtto.
+	(testMultipleObservers): Dtto.
 
 2007-12-20  Petr Machata  <pmachata@redhat.com>
 
