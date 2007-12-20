@@ -1,5 +1,11 @@
 2007-12-20  Petr Machata  <pmachata@redhat.com>
 
+	* TestMappingGuard: New file.
+	(testDebugStateMappingGuard): New test, moved from TestLtrace.
+	(testSyscallMappingGuard): Dtto.
+
+2007-12-20  Petr Machata  <pmachata@redhat.com>
+
 	* MappingGuard.java: Now provides more fine-grained events.
 	(updateMappedPart): New method, brought over from Ltrace.
 	(updateUnmappedPart): Dtto.

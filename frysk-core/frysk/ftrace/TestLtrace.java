@@ -68,74 +68,11 @@ public class TestLtrace
 	public Action funcallLeave(Task task, Symbol symbol, Object retVal) {
 	    return Action.CONTINUE;
 	}
-	public Action fileMapped(Task task, File file) {
-	    return Action.CONTINUE;
-	}
-	public Action fileUnmapped(Task task, File file) {
-	    return Action.CONTINUE;
-	}
 	public void addedTo (Object observable) {
 	    Manager.eventLoop.requestStop();
 	}
 	public void deletedFrom (Object observable) { }
 	public void addFailed (Object observable, Throwable w) {}
-    }
-
-    public void performTestAllLibrariesGetDetected()
-    {
-	class MyController1 implements LtraceController {
-	    public ArrayList allLibraries = new ArrayList();
-	    public void fileMapped(final Task task, final ObjectFile objf, final Ltrace.Driver driver) {
-		allLibraries.add(objf.getSoname());
-	    }
-	}
-
-	// XXX: This test should rather directly use the mapping guard.
-	String[] cmd = {Config.getPkgLibFile("funit-empty").getPath()};
-	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
-	Task task = child.getMainTask();
-	Proc proc = task.getProc();
-	int pid = proc.getPid();
-
-	MyController1 controller = new MyController1();
-	Ltrace.requestAddFunctionObserver(task, new DummyFunctionObserver(), controller);
-	assertRunUntilStop("add function observer");
-
-	new StopEventLoopWhenProcRemoved(pid);
-	child.requestRemoveBlock();
-	assertRunUntilStop("run child until exit");
-
-	String[] expectedSonames = {"libc\\.so\\.6", "ld-linux.*\\.so\\.2", "funit-empty"};
-	for (int i = 0; i < expectedSonames.length; ++i) {
-	    boolean found = false;
-	    for (Iterator it = controller.allLibraries.iterator(); it.hasNext(); ) {
-		String soname = (String)it.next();
-		if (Pattern.matches(expectedSonames[i], soname)) {
-		    found = true;
-		    break;
-		}
-	    }
-	    assertTrue("library with pattern `" + expectedSonames[i] + "' found", found);
-	}
-	assertEquals("number of recorded libraries", expectedSonames.length, controller.allLibraries.size());
-    }
-
-    public void testDebugStateMappingGuard()
-    {
-	boolean save = MappingGuard.enableSyscallObserver;
-	MappingGuard.enableSyscallObserver = false;
-	assertTrue("debugstate observer enabled", MappingGuard.enableDebugstateObserver);
-	performTestAllLibrariesGetDetected();
-	MappingGuard.enableSyscallObserver = save;
-    }
-
-    public void testSyscallMappingGuard()
-    {
-	boolean save = MappingGuard.enableDebugstateObserver;
-	MappingGuard.enableDebugstateObserver = false;
-	assertTrue("syscall observer enabled", MappingGuard.enableSyscallObserver);
-	performTestAllLibrariesGetDetected();
-	MappingGuard.enableDebugstateObserver = save;
     }
 
     public void testCallRecorded()
