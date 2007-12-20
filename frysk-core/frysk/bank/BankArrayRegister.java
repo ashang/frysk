@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,44 +40,86 @@
 package frysk.bank;
 
 import frysk.isa.Register;
-import java.util.LinkedHashMap;
 
 /**
- * Implement a map from frysk.isa.Register to frysk.proc.BankRegister.
- * For compatibility, also implement a name map.
+ * Register that is part of a register bank.
  */
-
-public class BankRegisterMap {
-    private final LinkedHashMap registerToBankRegister = new LinkedHashMap();
-    private final LinkedHashMap nameToBankRegister = new LinkedHashMap();
-
-    protected BankRegisterMap add(BankRegister br) {
-	if (br.getRegister() != null)
-	    registerToBankRegister.put(br.getRegister(), br);
-	nameToBankRegister.put(br.getName(), br);
-	return this;
+public class BankArrayRegister {
+    private final int bank;
+    private final int offset;
+    private final int length;
+    private final String name;
+    private final Register register;
+  
+    private BankArrayRegister(int bank, int offset, int length,
+			      Register register, String name) {
+	this.bank = bank;
+	this.offset = offset;
+	this.length = length;
+	this.register = register;
+	this.name = name;
     }
 
-    BankRegisterMap add(int bank, int offset, int length, Register register) {
-	return add(new BankRegister(bank, offset, length, register));
-    }
-    BankRegisterMap add(int bank, int offset, int length, String name) {
-	return add(new BankRegister(bank, offset, length, name));
-    }
-    BankRegisterMap add(int bank, int offset, int length,
-			Register[] registers) {
-	for (int i = 0; i < registers.length; i++) {
-	    add(new BankRegister(bank, offset, length, registers[i]));
-	    offset += length;
-	}
-	return this;
+    /**
+     * Constructor. The register views defaults to an integer view.
+     *
+     * @param bank The number of a bank (ByteBuffer) in the Task
+     * object's registerBank array 
+     * @param offset byte offset in the bank
+     * @param name name of the register
+     */
+    BankArrayRegister(int bank, int offset, int length, String name) {
+	this(bank, offset, length, null, name);
     }
 
-    BankRegister get(Register r) {
-	return (BankRegister)registerToBankRegister.get(r);
+    BankArrayRegister(int bank, int offset, int length, Register register) {
+	this(bank, offset, length, register, register.getName());
+    }
+  
+    public String toString() {
+	return (super.toString()
+		+ ",bank=" + bank
+		+ ",offset=" + offset
+		+ ",length=" + length
+		+ ",name=" + name);
     }
 
-    public BankRegister get(String s) {
-	return (BankRegister)nameToBankRegister.get(s);
+    /**
+     * Get the name of the register.
+     *
+     * @return the name
+     */
+    public String getName() {
+	return name;
+    }
+    
+    /**
+     * Get the length of the register in bytes.
+     *
+     * @return the length
+     */
+    public int getLength() {
+	return length;
+    }
+
+    /**
+     * Get the Register.
+     */
+    public Register getRegister() {
+	return register;
+    }
+
+    /**
+     * Return the offset into the register bank.
+     */
+    public int getOffset() {
+	return offset;
+    }
+
+    /**
+     * Return the register bank, as an index.
+     */
+    public int getBank() {
+	return bank;
     }
 }

@@ -1,3 +1,9 @@
+2007-12-20  Andrew Cagney  <cagney@redhat.com>
+
+	BankRegister renamed to BankArrayRegister.
+	* LinuxPPC32On64.java: Update.
+	* Task.java: Update.
+
 2007-12-19  Andrew Cagney  <cagney@redhat.com>
 
 	* BankRegister.java: Move to frysk.bank.

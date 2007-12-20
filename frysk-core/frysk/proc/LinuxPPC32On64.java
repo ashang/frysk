@@ -40,7 +40,7 @@
 package frysk.proc;
 
 import frysk.bank.PPCBankRegisters;
-import frysk.bank.BankRegister;
+import frysk.bank.BankArrayRegister;
 
 class LinuxPPC32On64
   extends LinuxPPC32
@@ -53,7 +53,7 @@ class LinuxPPC32On64
 	return isa;
     }
 
-    public BankRegister getRegisterByName(String name) {
+    public BankArrayRegister getRegisterByName(String name) {
 	return PPCBankRegisters.PPC32BE_ON_PPC64BE.get(name);
     }
 }

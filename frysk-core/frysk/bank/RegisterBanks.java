@@ -49,30 +49,31 @@ import frysk.isa.Register;
 
 public class RegisterBanks {
     private final ByteBuffer[] banks;
-    private final BankRegisterMap bankRegisters;
+    private final RegisterBankArrayMap bankRegisters;
 
-    public RegisterBanks(BankRegisterMap bankRegisters, ByteBuffer[] banks) {
+    public RegisterBanks(RegisterBankArrayMap bankRegisters,
+			 ByteBuffer[] banks) {
 	this.banks = banks;
 	this.bankRegisters = bankRegisters;
     }
 
-    public BankRegister getBankRegister(String name) {
-	BankRegister bankRegister = bankRegisters.get(name);
+    public BankArrayRegister getBankArrayRegister(String name) {
+	BankArrayRegister bankRegister = bankRegisters.get(name);
 	if (bankRegister != null)
 	    return bankRegister;
 	throw new RuntimeException("unknown register: " + name);
     }
 
-    private BankRegister findBankRegister(Register register) {
-	BankRegister bankRegister = bankRegisters.get(register);
+    private BankArrayRegister findBankArrayRegister(Register register) {
+	BankArrayRegister bankRegister = bankRegisters.get(register);
 	if (bankRegister != null)
 	    return bankRegister;
 	// Workaround for code still relying on string names.
-	return getBankRegister(register.getName());
+	return getBankArrayRegister(register.getName());
     }
 
     public long get(Register register) {
-	BankRegister bankRegister = findBankRegister(register);
+	BankArrayRegister bankRegister = findBankArrayRegister(register);
 	ByteBuffer bank = banks[bankRegister.getBank()];
 	switch (bankRegister.getLength()) {
 	case 1: return bank.getUByte(bankRegister.getOffset());
@@ -86,7 +87,7 @@ public class RegisterBanks {
     }
 
     public void set(Register register, long value) {
-	BankRegister bankRegister = findBankRegister(register);
+	BankArrayRegister bankRegister = findBankArrayRegister(register);
 	ByteBuffer bank = banks[bankRegister.getBank()];
 	switch (bankRegister.getLength()) {
 	case 1: bank.putUByte(bankRegister.getOffset(), (byte)value); break;
@@ -100,8 +101,8 @@ public class RegisterBanks {
     }
 
     public void access(Register register, long offset, long size,
-		byte[] bytes, int start, boolean write) {
-	BankRegister bankRegister = findBankRegister(register);
+		       byte[] bytes, int start, boolean write) {
+	BankArrayRegister bankRegister = findBankArrayRegister(register);
 	ByteBuffer bank = banks[bankRegister.getBank()];
 	if (write)
 	    throw new RuntimeException("Not implemented");

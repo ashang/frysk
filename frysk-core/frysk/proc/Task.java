@@ -54,7 +54,7 @@ import frysk.isa.ISA;
 import java.math.BigInteger;
 import inua.eio.ByteOrder;
 import frysk.bank.RegisterBanks;
-import frysk.bank.BankRegister;
+import frysk.bank.BankArrayRegister;
 
 public abstract class Task
 {
@@ -1029,7 +1029,7 @@ public abstract class Task
      * the more efficient access(Register) available for that.
      */
     public BigInteger getBigIntegerRegisterFIXME(String name) {
-	BankRegister bankRegister = getRegisterBanks().getBankRegister(name);
+	BankArrayRegister bankRegister = getRegisterBanks().getBankArrayRegister(name);
 	byte[] bytes = new byte[bankRegister.getLength()];
 	ByteBuffer b = getRegisterBuffersFIXME()[bankRegister.getBank()];
 	b.get(bankRegister.getOffset(), bytes, 0, bankRegister.getLength());
@@ -1080,7 +1080,7 @@ public abstract class Task
    * Return the machine's register banks as an array.
    *
    * XXX: This is being replaced by "getRegisterBanks()" that returns
-   * a class that abstracts the ByteArray[] + BankRegister
+   * a class that abstracts the ByteArray[] + BankArrayRegister
    * combination.
    */
   public ByteBuffer[] getRegisterBuffersFIXME ()

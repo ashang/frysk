@@ -1,3 +1,8 @@
+2007-12-20  Andrew Cagney  <cagney@redhat.com>
+
+	BankRegisterMap renamed to RegisterBankArrayMap.
+	* CorefileRegisterBanksFactory.java: Update.
+
 2007-12-19  cagney  <cagney@redhat.com>
 
 	Bank register code moved to frysk.bank.

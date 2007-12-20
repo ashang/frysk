@@ -1,3 +1,13 @@
+2007-12-20  Andrew Cagney  <cagney@redhat.com>
+
+	* BankArrayRegister.java: Rename BankRegister.java.
+	* IndirectRegisterBankArrayMap.java: Rename
+	IndirectBankregistermap.java.
+	* RegisterBankArrayMap.java: Rename BankRegistermap.java.
+	* RegisterBanks.java: Update.
+	* PPCBankRegisters.java: Update.
+	* X86BankRegisters.java: Update.
+
 2007-12-19  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxIA32RegisterBanks.java: New, from X86BankRegisters.java.

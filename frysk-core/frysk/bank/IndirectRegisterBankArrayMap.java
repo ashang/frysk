@@ -47,19 +47,19 @@ import frysk.isa.Register;
  * projection onto an underlying 64-bit register bank.
  */
 
-class IndirectBankRegisterMap extends BankRegisterMap {
+class IndirectRegisterBankArrayMap extends RegisterBankArrayMap {
     private final ByteOrder order;
-    private final BankRegisterMap map32;
-    private final BankRegisterMap map64;
+    private final RegisterBankArrayMap map32;
+    private final RegisterBankArrayMap map64;
     
-    IndirectBankRegisterMap(ByteOrder order, BankRegisterMap map32,
-			    BankRegisterMap map64) {
+    IndirectRegisterBankArrayMap(ByteOrder order, RegisterBankArrayMap map32,
+				 RegisterBankArrayMap map64) {
 	this.order = order;
 	this.map32 = map32;
 	this.map64 = map64;
     }
 
-    private int offset(BankRegister reg32, BankRegister reg64) {
+    private int offset(BankArrayRegister reg32, BankArrayRegister reg64) {
 	if (order == ByteOrder.BIG_ENDIAN) {
 	    // least significant bytes on RHS
 	    return (reg64.getOffset() + reg64.getLength()
@@ -70,49 +70,49 @@ class IndirectBankRegisterMap extends BankRegisterMap {
 	}
     }
 
-    IndirectBankRegisterMap add(Register reg32, int bank, int offset,
-				int size) {
-	add(new BankRegister(bank, offset, size, reg32.getName()));
+    IndirectRegisterBankArrayMap add(Register reg32, int bank, int offset,
+				     int size) {
+	add(new BankArrayRegister(bank, offset, size, reg32.getName()));
 	return this;
     }
 
-    private IndirectBankRegisterMap add(BankRegister reg32,
-					BankRegister reg64) {
+    private IndirectRegisterBankArrayMap add(BankArrayRegister reg32,
+					     BankArrayRegister reg64) {
 	return add(reg32.getRegister(),
 		   reg64.getBank(), offset(reg32, reg64), reg32.getLength());
     }
 
-    IndirectBankRegisterMap add(Register reg32, Register reg64) {
-	BankRegister map32reg = map32.get(reg32);
+    IndirectRegisterBankArrayMap add(Register reg32, Register reg64) {
+	BankArrayRegister map32reg = map32.get(reg32);
 	if (reg32 == null)
 	    throw new RuntimeException("unknown 32-bit register: " + reg32);
-	BankRegister map64reg = map64.get(reg64);
+	BankArrayRegister map64reg = map64.get(reg64);
 	if (map64reg == null)
 	    throw new RuntimeException("unknown 64-bit register: " + reg64);
 	return add(map32reg, map64reg);
     }
 
-    IndirectBankRegisterMap add(Register reg32) {
-	BankRegister map32reg = map32.get(reg32);
+    IndirectRegisterBankArrayMap add(Register reg32) {
+	BankArrayRegister map32reg = map32.get(reg32);
 	if (reg32 == null)
 	    throw new RuntimeException("unknown 32-bit register: " + reg32);
-	BankRegister map64reg = map64.get(reg32.getName());
+	BankArrayRegister map64reg = map64.get(reg32.getName());
 	if (map64reg == null)
 	    throw new RuntimeException("unknown 64-bit register: " + reg32);
 	return add(map32reg, map64reg);
     }
 
-    IndirectBankRegisterMap add(String map32Name, String map64Name) {
-	BankRegister reg32 = map32.get(map32Name);
+    IndirectRegisterBankArrayMap add(String map32Name, String map64Name) {
+	BankArrayRegister reg32 = map32.get(map32Name);
 	if (reg32 == null)
 	    throw new RuntimeException("unknown register: " + map32Name);
-	BankRegister reg64 = map64.get(map64Name);
+	BankArrayRegister reg64 = map64.get(map64Name);
 	if (reg64 == null)
 	    throw new RuntimeException("unknown register: " + map64Name);
 	return add(reg32, reg64);
     }
 
-    IndirectBankRegisterMap add(String name) {
+    IndirectRegisterBankArrayMap add(String name) {
 	return add(name, name);
     }
 }
