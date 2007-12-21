@@ -185,6 +185,17 @@ public class TestLtrace
 	}
     }
 
+    class SimpleController
+	extends Multicontroller
+    {
+	public SimpleController(String name) {
+	    super(1, name);
+	}
+	public GenericFunctionObserver getObserver() {
+	    return super.observers[0];
+	}
+    }
+
     class GenericFunctionObserver
 	extends DummyFunctionObserver
     {
@@ -471,9 +482,9 @@ public class TestLtrace
 	String[] symbols = {"trace_me_1", "trace_me_2"};
 	Multicontroller[] controllers = new Multicontroller[symbols.length];
 	for (int j = 0; j < symbols.length; j++) {
-	    Multicontroller observerCreator = new Multicontroller(N, symbols[j]);
-	    controllers[j] = observerCreator;
-	    MappingGuard.requestAddMappingObserver(task, new GenericMappingObserver(observerCreator));
+	    Multicontroller controller = new Multicontroller(N, symbols[j]);
+	    controllers[j] = controller;
+	    MappingGuard.requestAddMappingObserver(task, new GenericMappingObserver(controller));
 	}
 	assertRunUntilStop("add mapping guards");
 
@@ -492,6 +503,32 @@ public class TestLtrace
 		assertEquals("observer #" + i + " number of leave hits", 1, observer.leave);
 	    }
 	}
+    }
+
+    public void testRecursive()
+    {
+	if(unresolvedOffUtrace(5053))
+	    return;
+
+	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
+	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
+	Task task = child.getMainTask();
+	Proc proc = task.getProc();
+	int pid = proc.getPid();
+
+	SimpleController controller = new SimpleController("recursive");
+	MappingGuard.requestAddMappingObserver(task, new GenericMappingObserver(controller));
+	assertRunUntilStop("add mapping guards");
+
+	new StopEventLoopWhenProcRemoved(pid);
+	child.requestRemoveBlock();
+	assertRunUntilStop("run child until exit");
+
+	GenericFunctionObserver observer = controller.getObserver();
+	assertEquals("controller entry points", 1, controller.found);
+	assertTrue("observer added", observer.added);
+	assertEquals("observer number of enter hits", 11, observer.enter);
+	assertEquals("observer number of leave hits", 11, observer.leave);
     }
 
     public void tearDown()

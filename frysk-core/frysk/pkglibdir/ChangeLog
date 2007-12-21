@@ -1,3 +1,8 @@
+2007-12-21  Petr Machata  <pmachata@redhat.com>
+
+	* funit-calls.c (recursive): New function.
+	(main): Call recursive.  For ltrace recursive test.
+
 2007-12-12  Petr Machata  <pmachata@redhat.com>
 
 	* funit-calls.c (fun1, alias1, alias2): New functions.

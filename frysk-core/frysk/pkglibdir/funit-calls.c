@@ -41,6 +41,7 @@
    ltrace.  */
 
 #include <stdlib.h>
+#include <sys/time.h>
 
 int trace_me_1(int a1, int a2, int a3, int a4, int a5, int a6) {
   return a1 + a2 + a3 + a4 + a5 + a6;
@@ -54,9 +55,17 @@ void fun1() {}
 void alias1() __attribute__ ((alias ("fun1")));
 void alias2() __attribute__ ((alias ("alias1")));
 
+static struct timeval tv;
+void recursive(int i) {
+  gettimeofday(&tv, NULL);
+  if (i > 0)
+    recursive(i - 1);
+}
+
 int main() {
   trace_me_1(3, 5, 7, 11, 13, 17);
   trace_me_2(3, 5, 7, 11, 13, 17);
   fun1();
+  recursive(10);
   exit(0);
 }
