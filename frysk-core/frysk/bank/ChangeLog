@@ -1,5 +1,8 @@
 2007-12-21  Andrew Cagney  <cagney@redhat.com>
 
+	* X86BankRegisters.java (IA32_ON_X8664): Restore X87 CS and DS
+	registers removed by previous commit.
+	
 	* LinuxX8664RegisterBanks.java: Use constants from X8664Registers
 	for "ss", "ds", "es", "fs", and "cs.
 	* X86BankRegisters.java: Ditto.
