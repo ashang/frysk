@@ -1,5 +1,12 @@
 2007-12-20  Andrew Cagney  <cagney@redhat.com>
 
+	* RegisterMap.java (entryIterator()): New.
+	* BankArrayRegister.java (BankArrayRegister(int,BankRegister)): New.
+	* BankArrayRegisterMap.java (add(int,BankRegisterMap)): New.
+	* X86BankRegisters.java (IA32): Use.
+
+	* RegisterMap.java (registerIterator()): New.
+
 	* BankRegister.java (getLength()): Make package private.
 	(getOffset()): Make package private.
 	(access)): Make package private.

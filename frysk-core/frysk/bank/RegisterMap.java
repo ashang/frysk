@@ -41,6 +41,7 @@ package frysk.bank;
 
 import java.util.LinkedHashMap;
 import frysk.isa.Register;
+import java.util.Iterator;
 
 /**
  * A mapping from a Register to BankRegister (a register within a
@@ -50,6 +51,20 @@ class RegisterMap {
 
     private final LinkedHashMap registerToEntry = new LinkedHashMap();
     private final LinkedHashMap nameToEntry = new LinkedHashMap();
+
+    /**
+     * Return an iterator over all BankRegisters in the map.
+     */
+    Iterator entryIterator() {
+	return registerToEntry.values().iterator();
+    }
+
+    /**
+     * Return an iterator over all Registers in the map.
+     */
+    public Iterator registerIterator() {
+	return registerToEntry.keySet().iterator();
+    }
 
     void put(BankRegister br) {
 	Register register = br.getRegister();

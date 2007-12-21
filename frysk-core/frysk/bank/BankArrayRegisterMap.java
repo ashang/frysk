@@ -40,6 +40,7 @@
 package frysk.bank;
 
 import frysk.isa.Register;
+import java.util.Iterator;
 
 /**
  * Implement a map from frysk.isa.Register to frysk.proc.BankArrayRegister.
@@ -47,6 +48,14 @@ import frysk.isa.Register;
  */
 
 public class BankArrayRegisterMap extends RegisterMap {
+
+    BankArrayRegisterMap add(int bank, BankRegisterMap bankMap) {
+	for (Iterator i = bankMap.entryIterator(); i.hasNext(); ) {
+	    BankRegister bankRegister = (BankRegister) i.next();
+	    put(new BankArrayRegister(bank, bankRegister));
+	}
+	return this;
+    }
 
     BankArrayRegisterMap add(BankArrayRegister register) {
 	put(register);
