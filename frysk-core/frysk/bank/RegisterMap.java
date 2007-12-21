@@ -56,7 +56,9 @@ class RegisterMap {
      * Return an iterator over all BankRegisters in the map.
      */
     Iterator entryIterator() {
-	return registerToEntry.values().iterator();
+	// XXX: Uses nameToEntry as that contains more registers than
+	// registerToEntry.
+	return nameToEntry.values().iterator();
     }
 
     /**

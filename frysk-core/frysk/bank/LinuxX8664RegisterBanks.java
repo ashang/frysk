@@ -112,7 +112,7 @@ public class LinuxX8664RegisterBanks {
 	.add(new BankRegister(0x190, 16, X87Registers.XMM15))
 	;
     
-    public static final BankRegisterMap DEBUG_REGISTERS
+    public static final BankRegisterMap USR
 	= new BankRegisterMap()
 	.add(new BankRegister(848, 8, X8664Registers.DR0))
 	.add(new BankRegister(856, 8, X8664Registers.DR1))

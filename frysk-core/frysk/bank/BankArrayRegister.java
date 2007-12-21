@@ -60,7 +60,7 @@ public class BankArrayRegister extends BankRegister {
   
     BankArrayRegister(int bank, BankRegister bankRegister) {
 	super(bankRegister.getOffset(), bankRegister.getLength(),
-	      bankRegister.getRegister());
+	      bankRegister.getName(), bankRegister.getRegister());
 	this.bank = bank;
     }
 

@@ -53,7 +53,7 @@ public class BankRegister {
     private final String name;
     private final Register register;
 
-    private BankRegister(int offset, int length, String name, Register register) {
+    BankRegister(int offset, int length, String name, Register register) {
 	this.offset = offset;
 	this.length = length;
 	this.name = name;

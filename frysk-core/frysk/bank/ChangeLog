@@ -1,3 +1,13 @@
+2007-12-21  Andrew Cagney  <cagney@redhat.com>
+
+	* BankRegister.java (BankRegister(int,int,String,Register)): Make
+	package-private.
+	* BankArrayRegister.java (BankArrayRegister(int,BankRegister)):
+	Use super(int,int,int,String,Register).
+	* X86BankRegisters.java (X8664): Construct using
+	LinuxX8664RegisterBanks.
+	* LinuxX8664RegisterBanks.java (USR): Rename DEBUG_REGISTERS.
+
 2007-12-20  Andrew Cagney  <cagney@redhat.com>
 
 	* RegisterMap.java (entryIterator()): New.
