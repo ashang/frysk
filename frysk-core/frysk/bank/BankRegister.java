@@ -50,22 +50,12 @@ public class BankRegister {
 
     private final int offset;
     private final int length;
-    private final String name;
     private final Register register;
 
-    BankRegister(int offset, int length, String name, Register register) {
+    BankRegister(int offset, int length, Register register) {
 	this.offset = offset;
 	this.length = length;
-	this.name = name;
 	this.register = register;
-    }
-
-    BankRegister(int offset, int length, String name) {
-	this(offset, length, name, null);
-    }
-
-    BankRegister(int offset, int length, Register register) {
-	this(offset, length, register.getName(), register);
     }
 
     Register getRegister() {
@@ -74,7 +64,7 @@ public class BankRegister {
 
     public String toString() {
 	return (super.toString() + ",offset=" + offset + ",length=" + length
-		+ ",name=" + name);
+		+ ",register=" + register);
     }
 
     /**
@@ -83,7 +73,7 @@ public class BankRegister {
      * @return the name
      */
     public String getName() {
-	return name;
+	return register.getName();
     }
 
     /**

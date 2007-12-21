@@ -70,9 +70,8 @@ class RegisterMap {
 
     void put(BankRegister br) {
 	Register register = br.getRegister();
-	if (register != null)
-	    registerToEntry.put(register, br);
-	nameToEntry.put(br.getName(), br);
+	registerToEntry.put(register, br);
+	nameToEntry.put(register.getName(), br);
     }
 
     Object get(Register r) {

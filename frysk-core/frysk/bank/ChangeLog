@@ -1,5 +1,12 @@
 2007-12-21  Andrew Cagney  <cagney@redhat.com>
 
+	* BankRegister.java (BankRegister(int,int,String)): Delete.
+	(BankRegister(int,int,String,Register)): Delete.
+	(name): Delete.
+	(getName()): Update.
+	* RegisterMap.java: Update.
+	* BankArrayRegister.java: Update.
+
 	* X86BankRegisters.java (IA32_ON_X8664): Restore X87 CS and DS
 	registers removed by previous commit.
 	
