@@ -67,10 +67,6 @@ public class BankArrayRegisterMap extends RegisterMap {
 	put(new BankArrayRegister(bank, offset, length, register));
 	return this;
     }
-    BankArrayRegisterMap add(int bank, int offset, int length, String name) {
-	put(new BankArrayRegister(bank, offset, length, name));
-	return this;
-    }
     BankArrayRegisterMap add(int bank, int offset, int length,
 			     Register[] registers) {
 	for (int i = 0; i < registers.length; i++) {

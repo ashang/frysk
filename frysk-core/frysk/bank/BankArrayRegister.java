@@ -48,11 +48,6 @@ import frysk.isa.Register;
 public class BankArrayRegister extends BankRegister {
     private final int bank;
   
-    BankArrayRegister(int bank, int offset, int length, String name) {
-	super(offset, length, name);
-	this.bank = bank;
-    }
-
     BankArrayRegister(int bank, int offset, int length, Register register) {
 	super(offset, length, register);
 	this.bank = bank;

@@ -72,7 +72,7 @@ class IndirectBankArrayRegisterMap extends BankArrayRegisterMap {
 
     IndirectBankArrayRegisterMap add(Register reg32, int bank, int offset,
 				     int size) {
-	put(new BankArrayRegister(bank, offset, size, reg32.getName()));
+	put(new BankArrayRegister(bank, offset, size, reg32));
 	return this;
     }
 

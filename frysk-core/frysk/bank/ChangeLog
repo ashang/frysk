@@ -1,5 +1,12 @@
 2007-12-21  Andrew Cagney  <cagney@redhat.com>
 
+	* IndirectBankArrayRegisterMap.java
+	(IndirectBankArrayRegisterMap(Register,int,int,int)): Update.
+	* BankArrayRegisterMap.java
+	(BankArrayRegisterMap(int,int,int,String)): Delete.
+	* BankArrayRegister.java (BankArrayRegister(int,int,int,String)):
+	Delete.
+
 	* PPCBankRegisters.java (PPC32BE, PPC64BE): Construct using
 	LinuxPPCRegisterBanks.
 
