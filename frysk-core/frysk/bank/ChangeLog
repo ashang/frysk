@@ -1,5 +1,9 @@
 2007-12-21  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxX8664RegisterBanks.java: Use constants from X8664Registers
+	for "ss", "ds", "es", "fs", and "cs.
+	* X86BankRegisters.java: Ditto.
+
 	* IndirectBankArrayRegisterMap.java
 	(IndirectBankArrayRegisterMap(Register,int,int,int)): Update.
 	* BankArrayRegisterMap.java
