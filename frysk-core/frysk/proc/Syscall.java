@@ -36,10 +36,10 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package frysk.proc;
 
 import inua.util.PrintWriter;
-
 import java.util.HashMap;
 
 /**
@@ -47,8 +47,8 @@ import java.util.HashMap;
  * used in combination with {@link SyscallEventInfo} and the
  * task to get information about a particular system call event.
  */
-public abstract class Syscall
-{
+
+public abstract class Syscall {
     int number;
     public final int numArgs;
     String name;
@@ -56,8 +56,7 @@ public abstract class Syscall
     public final boolean noreturn;
 
     Syscall (String name, int number, int numArgs,
-	     String argList, boolean noreturn)
-    {
+	     String argList, boolean noreturn) {
 	this.name = name;
 	this.number = number;
 	this.numArgs = numArgs;
@@ -65,8 +64,7 @@ public abstract class Syscall
 	this.noreturn = noreturn;
     }
 
-    Syscall (String name, int number, int numArgs, String argList)
-    {
+    Syscall (String name, int number, int numArgs, String argList) {
 	this.name = name;
 	this.number = number;
 	this.numArgs = numArgs;
@@ -74,45 +72,38 @@ public abstract class Syscall
 	this.noreturn = false;
     }
 
-    Syscall (String name, int number, int numArgs)
-    {
+    Syscall (String name, int number, int numArgs) {
 	this (name, number, numArgs, "i:iiiiiiii");
     }
 
-    Syscall (String name, int number)
-    {
+    Syscall (String name, int number) {
 	this (name, number, 0, "i:");
     }
 
-    Syscall (int number)
-    {
+    Syscall (int number) {
 	this ("<" + number + ">", number, 0, "i:");
     }
 
     /** Return the name of the system call.  */
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     /** Return the system call's number.  */
-    public int getNumber()
-    {
+    public int getNumber() {
         return number;
     }
     /** Return true if this object equals the argument.  */
-    public boolean equals(Object other)
-    {
-      // Syscall objects are unique.
-      return this == other;
+    public boolean equals(Object other) {
+	// Syscall objects are unique.
+	return this == other;
     }
 
-  abstract public long getArguments (Task task, int n);
-  abstract public long getReturnCode (Task task);
+    abstract public long getArguments (Task task, int n);
+    abstract public long getReturnCode (Task task);
 
     private String extractStringArg (frysk.proc.Task task,
-				     long addr)
-    {
+				     long addr) {
 	if (addr == 0)
 	    return "0x0";
 	else {
@@ -131,8 +122,7 @@ public abstract class Syscall
      * @param task the task which supplies information about the
      * arguments
      */
-    public String[] extractCallArguments (frysk.proc.Task task)
-    {
+    public String[] extractCallArguments (frysk.proc.Task task) {
 	String[] ret = new String[numArgs];
 
 	for (int i = 0; i < numArgs; ++i) {
@@ -172,8 +162,7 @@ public abstract class Syscall
      * @return writer
      */
     public PrintWriter printCall (PrintWriter writer,
-				  frysk.proc.Task task)
-    {
+				  frysk.proc.Task task) {
 	String[] args = extractCallArguments(task);
 	writer.print ("<SYSCALL> " + name + " (");
 	for (int i = 0; i < args.length; ++i) {
@@ -188,19 +177,17 @@ public abstract class Syscall
 	return writer;
     }
 
-  public String toString()
-  {
-    return (this.getClass()
-	    +"[name=" + getName()
-	    + ",number=" + getNumber() + "]");
-  }
+    public String toString() {
+	return (this.getClass()
+		+"[name=" + getName()
+		+ ",number=" + getNumber() + "]");
+    }
 
     /**
      * Extract system call return value.  Currently returns formatted
      * string.
      */
-    public String extractReturnValue(frysk.proc.Task task)
-    {
+    public String extractReturnValue(frysk.proc.Task task) {
 	long retVal = getReturnCode(task);
 
 	switch (argList.charAt (0)) {
@@ -235,104 +222,89 @@ public abstract class Syscall
      * @return writer
      */
     public PrintWriter printReturn (PrintWriter writer,
-				    frysk.proc.Task task)
-    {
+				    frysk.proc.Task task) {
 	writer.print (" = " + extractReturnValue(task));
 	return writer;
     }
 
-   /**
-   * Given a system call's name, this will return the corresponding
-   * Syscall object.  If no predefined system call with that name
-   * is available, this will return null.
-   * @param name the name of the system call
-   * @param syscallList system calls list
-   * @return the Syscall object, or null
-   */
-  static Syscall iterateSyscallByName (String name, Syscall[] syscallList)
-  {
-    for (int i = 0; i < syscallList.length; ++i)
-      if (name.equals(syscallList[i].name))
-	return syscallList[i];
-    return null;
-  }
+    /**
+     * Given a system call's name, this will return the corresponding
+     * Syscall object.  If no predefined system call with that name
+     * is available, this will return null.
+     * @param name the name of the system call
+     * @param syscallList system calls list
+     * @return the Syscall object, or null
+     */
+    static Syscall iterateSyscallByName (String name, Syscall[] syscallList) {
+	for (int i = 0; i < syscallList.length; ++i)
+	    if (name.equals(syscallList[i].name))
+		return syscallList[i];
+	return null;
+    }
 
-  /**
-   * Given a system call's number, this will return the corresponding
-   * Syscall object.  Note that system call numbers are platform
-   * dependent.  This will return a Syscall object in all cases; if
-   * there is no predefined system call with the given number, a unique
-   * "unknown" system call with the indicated number will be created.
-   *
-   * @param num the number of the system call
-   * @param task the current task
-   * @return the Syscall object
-   */
-  public static Syscall syscallByNum (int num, Task task)
-  {
-    Syscall[] syscallList;
-    HashMap unknownSyscalls;
+    /**
+     * Given a system call's number, this will return the corresponding
+     * Syscall object.  Note that system call numbers are platform
+     * dependent.  This will return a Syscall object in all cases; if
+     * there is no predefined system call with the given number, a unique
+     * "unknown" system call with the indicated number will be created.
+     *
+     * @param num the number of the system call
+     * @param task the current task
+     * @return the Syscall object
+     */
+    public static Syscall syscallByNum (int num, Task task) {
+	Syscall[] syscallList;
+	HashMap unknownSyscalls;
 
-    syscallList = task.getIsa().getSyscallList ();
-    unknownSyscalls = task.getIsa().getUnknownSyscalls ();
+	syscallList = task.getIsa().getSyscallList ();
+	unknownSyscalls = task.getIsa().getUnknownSyscalls ();
 
-    if (num < 0)
-      {
-	throw new RuntimeException ("Negative syscall number: " + num);
-      }
-    else if (num >= syscallList.length)
-      {
-	synchronized (unknownSyscalls)
-	  {
-	    Integer key = new Integer(num);
-	    if (unknownSyscalls.containsKey(key))
-	      return (Syscall) unknownSyscalls.get(key);
+	if (num < 0) {
+	    throw new RuntimeException ("Negative syscall number: " + num);
+	} else if (num >= syscallList.length) {
+	    synchronized (unknownSyscalls) {
+		Integer key = new Integer(num);
+		if (unknownSyscalls.containsKey(key))
+		    return (Syscall) unknownSyscalls.get(key);
 	    
-	    class UnknownSyscall
-	      extends Syscall
-	    {
-	      UnknownSyscall (String name, int number)
-	      {
-		super (name, number);
-	      }
+		class UnknownSyscall extends Syscall {
+		    UnknownSyscall (String name, int number) {
+			super (name, number);
+		    }
 	      
-	      public long getArguments (Task task, int n)
-	      {
-		return 0;
-	      }
-	      public long getReturnCode (Task task)
-	      {
-		return 0;
-	      }
-	    }
-	    Syscall result = new UnknownSyscall("UNKNOWN SYSCALL " + num, num);
+		    public long getArguments (Task task, int n) {
+			return 0;
+		    }
+		    public long getReturnCode (Task task) {
+			return 0;
+		    }
+		}
+		Syscall result = new UnknownSyscall("UNKNOWN SYSCALL " + num, num);
 
-	    unknownSyscalls.put(key, result);
+		unknownSyscalls.put(key, result);
 	    
-	    return result;
-	  }
-      }
-    else
-      {
-	return syscallList[num];
-      }
-  }
+		return result;
+	    }
+	} else {
+	    return syscallList[num];
+	}
+    }
 
-  /**
-   * Given a system call's name, this will return the corresponding
-   * Syscall object.  If no predefined system call with that name
-   * is available, this will return null.
-   * @param name the name of the system call
-   * @param task the cuurent task
-   * @return the Syscall object, or null
-   * @throws NullPointerException if name is null
-   */
-  public static Syscall syscallByName (String name, Task task)
-  {
-    Syscall syscall;
+    /**
+     * Given a system call's name, this will return the corresponding
+     * Syscall object.  If no predefined system call with that name
+     * is available, this will return null.
+     * @param name the name of the system call
+     * @param task the cuurent task
+     * @return the Syscall object, or null
+     * @throws NullPointerException if name is null
+     */
+    public static Syscall syscallByName (String name, Task task) {
+	Syscall syscall;
 
-    syscall = task.getIsa().syscallByName(name);
+	syscall = task.getIsa().syscallByName(name);
 
-    return syscall;
-  }
+	return syscall;
+    }
 }
