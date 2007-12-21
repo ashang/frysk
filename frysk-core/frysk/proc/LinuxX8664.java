@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006 Red Hat Inc.
+// Copyright 2005, 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,22 +40,147 @@
 package frysk.proc;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import inua.eio.ByteBuffer;
 import frysk.isa.X8664Registers;
 
-class LinuxX8664
-  extends IsaX8664 implements SyscallEventDecoder
-{
-  private static LinuxX8664 isa;
-  static LinuxX8664 isaSingleton ()
-  {
-    if (isa == null)
-      isa = new LinuxX8664 ();
-    return isa;
-  }
+class LinuxX8664 implements SyscallEventDecoder, Isa {
+    private static final Instruction X8664Breakpoint
+	= new Instruction(new byte[] { (byte)0xcc }, false);
+  
+    public long pc(Task task) {
+	return task.getRegister(X8664Registers.RIP);
+    }
 
-  // This is used to keep track of syscalls whose number we do not
-  // know.
-  static HashMap unknownSyscalls = new HashMap();
+    public void setPC(Task task, long address) {
+	task.setRegister(X8664Registers.RIP, address);
+    }
+
+    /**
+     * Get the breakpoint instruction for X8664.
+     */
+    public final Instruction getBreakpointInstruction() {
+	return X8664Breakpoint;
+    }
+
+    /**
+     * Returns the instruction at the given location in the memory
+     * buffer, or null if there is no valid instruction at the given
+     * location. FIXME - needs to be plugged into the InstructionParser
+     * and cache the results.
+     */
+    public Instruction getInstruction(ByteBuffer bb, long addr) {
+	bb.position(addr);
+	return X8664InstructionParser.parse(bb);
+    }
+
+    /**
+     * Get the true breakpoint address according to PC register after
+     * hitting one breakpoint set in task. In X86-64, the length of
+     * breakpoint instruction will be added to the PC register's
+     * value. So the true breakpoint address is the PC register's
+     * value minus the length of breakpoint.
+     */
+    public long getBreakpointAddress(Task task) {
+	long pcValue = 0;
+
+	pcValue = this.pc(task);
+	pcValue = pcValue - 1;
+    
+	return pcValue;
+    }
+
+    /**
+     * Returns a non-empty list of addresses that can be used for out of
+     * line stepping. Each address should point to a location at least
+     * big enough for the largest instruction of this ISA.
+     */
+    public List getOutOfLineAddresses(Proc proc) {
+	LinkedList addrs = new LinkedList();
+	Auxv[] auxv = proc.getAuxv ();
+	// Find the Auxv ENTRY data
+	for (int i = 0; i < auxv.length; i++) {
+	    if (auxv[i].type == inua.elf.AT.ENTRY)
+		addrs.add(Long.valueOf(auxv[i].val));
+	}
+	return addrs;
+    }
+
+    /**
+     * Reports whether or not the given Task just did a step of an
+     * instruction.  This can be deduced by examining the single step
+     * flag (BS bit 14) in the debug status register (DR6) on x86_64.
+     * This resets the stepping flag.
+     */
+    public boolean isTaskStepped(Task task) {
+	long value = task.getRegister(X8664Registers.DR6);
+	boolean stepped = (value & 0x4000) != 0;
+	task.setRegister(X8664Registers.DR6, value & ~0x4000);
+	return stepped;
+    }
+
+    /**
+     * Returns true if the last instruction executed by the given Task
+     * was a trapping instruction that will be handled by the
+     * kernel. This method should distinquish instructions that are
+     * handled by the kernel (like syscall enter instructions) and those
+     * that generate a trap signal. True is returned only when the
+     * instruction shouldn't generate a signal. Called from the state
+     * machine when a trap event has been detected that cannot be
+     * attributed to entering a signal handler or a normal step
+     * instruction notification.
+     * 
+     * On some kernels x86_64 doesn't generate spurious trap events (or
+     * rather doesn't set the stepping flag) after returning from a
+     * SYSCALL instruction.
+     */
+    public boolean hasExecutedSpuriousTrap(Task task) {
+	long address = pc(task);
+	return (task.getMemory().getByte(address - 1) == (byte) 0x05
+		&& task.getMemory().getByte(address - 2) == (byte) 0x0f);
+    }
+
+    /**
+     * Returns true if the given Task is at an instruction that will
+     * invoke the sig return system call.
+     *
+     * On x86_64 this is when the pc is at a 'syscall' instruction and
+     * the rax register contains 0x0f.
+     */
+    public boolean isAtSyscallSigReturn(Task task) {
+	long address = pc(task);
+	boolean result = (task.getMemory().getByte(address) == (byte) 0x0f
+			  && task.getMemory().getByte(address + 1) == (byte) 0x05);
+	if (result) {
+	    long syscall_num = task.getRegister(X8664Registers.RAX);
+	    result &= syscall_num == 0x0f;
+	}
+	return result;
+    }
+
+    public Syscall[] getSyscallList () {
+	return LinuxX8664Syscall.syscallList;
+    }
+
+    public HashMap getUnknownSyscalls () {
+	return LinuxX8664Syscall.unknownSyscalls;
+    }
+
+    public Syscall syscallByName (String name) {
+	return Syscall.iterateSyscallByName (name, LinuxX8664Syscall.syscallList);
+    }
+
+    private static LinuxX8664 isa;
+    static LinuxX8664 isaSingleton () {
+	if (isa == null)
+	    isa = new LinuxX8664 ();
+	return isa;
+    }
+
+    // This is used to keep track of syscalls whose number we do not
+    // know.
+    static HashMap unknownSyscalls = new HashMap();
 
     private SyscallEventInfo info;
     public SyscallEventInfo getSyscallEventInfo () {

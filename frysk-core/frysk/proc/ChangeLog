@@ -1,5 +1,10 @@
 2007-12-21  Andrew Cagney  <cagney@redhat.com>
 
+	* IsaX8664.java: Delete.
+	* LinuxX8664.java: Move IsaX8664 code to here.
+	* IsaIA32.java: Delete.
+	* LinuxIa32.java: Move IsaIA32 code to here.
+
 	* Syscall.java (number, name, numArgs, argList, noreturn): Make
 	private.
 	(isNoReturn()): New.
