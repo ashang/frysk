@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -49,39 +49,35 @@ import java.util.HashMap;
  */
 
 public abstract class Syscall {
-    int number;
-    public final int numArgs;
-    String name;
-    public final String argList;
-    public final boolean noreturn;
+    private final int number;
+    private final int numArgs;
+    private final String name;
+    private final String argList;
+    private final boolean noReturn;
 
     Syscall (String name, int number, int numArgs,
-	     String argList, boolean noreturn) {
+	     String argList, boolean noReturn) {
 	this.name = name;
 	this.number = number;
 	this.numArgs = numArgs;
 	this.argList = argList;
-	this.noreturn = noreturn;
+	this.noReturn = noReturn;
     }
 
     Syscall (String name, int number, int numArgs, String argList) {
-	this.name = name;
-	this.number = number;
-	this.numArgs = numArgs;
-	this.argList = argList;
-	this.noreturn = false;
+	this(name, number, numArgs, argList, false);
     }
 
     Syscall (String name, int number, int numArgs) {
-	this (name, number, numArgs, "i:iiiiiiii");
+	this(name, number, numArgs, "i:iiiiiiii");
     }
 
     Syscall (String name, int number) {
-	this (name, number, 0, "i:");
+	this(name, number, 0, "i:");
     }
 
     Syscall (int number) {
-	this ("<" + number + ">", number, 0, "i:");
+	this("<" + number + ">", number, 0, "i:");
     }
 
     /** Return the name of the system call.  */
@@ -93,6 +89,11 @@ public abstract class Syscall {
     public int getNumber() {
         return number;
     }
+    /** Does the system call return a result?  */
+    public boolean isNoReturn() {
+	return noReturn;
+    }
+
     /** Return true if this object equals the argument.  */
     public boolean equals(Object other) {
 	// Syscall objects are unique.
@@ -170,7 +171,7 @@ public abstract class Syscall {
 	    if (i < numArgs)
 		writer.print (",");
 	}
-	if (noreturn)
+	if (noReturn)
 	    writer.println (")");
 	else
 	    writer.print (")");

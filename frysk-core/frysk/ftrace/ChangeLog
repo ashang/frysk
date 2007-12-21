@@ -1,3 +1,7 @@
+2007-12-21  Andrew Cagney  <cagney@redhat.com>
+
+	* Ftrace.java: Use Syscall.isNoReturn().
+
 2007-12-21  Petr Machata  <pmachata@redhat.com>
 
 	* TestLtrace.java (testRecursive): New test.

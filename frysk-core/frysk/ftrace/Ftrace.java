@@ -436,7 +436,7 @@ public class Ftrace
 	    frysk.proc.Syscall syscall
 		= task.getSyscallEventInfo().getSyscall(task);
 	    String name = syscall.getName();
-	    if (syscall.noreturn)
+	    if (syscall.isNoReturn())
 		reporter.eventSingle(task, "syscall " + name,
 				     syscall.extractCallArguments(task));
 	    else

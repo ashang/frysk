@@ -1,5 +1,9 @@
 2007-12-21  Andrew Cagney  <cagney@redhat.com>
 
+	* Syscall.java (number, name, numArgs, argList, noreturn): Make
+	private.
+	(isNoReturn()): New.
+	
 	* Syscall.java: Re-indent.
 
 	* LinuxPPC32On64.java: Delete.
