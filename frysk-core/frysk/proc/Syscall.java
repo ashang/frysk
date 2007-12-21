@@ -89,6 +89,14 @@ public abstract class Syscall {
     public int getNumber() {
         return number;
     }
+    /** Return the number of arguments.  */
+    public int getNumArgs() {
+	return numArgs;
+    }
+    /** Return the argument list.  */
+    public String getArgList() {
+	return argList;
+    }
     /** Does the system call return a result?  */
     public boolean isNoReturn() {
 	return noReturn;

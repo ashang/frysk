@@ -78,12 +78,12 @@ public class SysCallUtilyInfo {
 		}
 
 		enterCall.append(syscall.getName());
-		if (syscall.numArgs > 0) {
+		if (syscall.getNumArgs() > 0) {
 		  enterCall.append(" (");
 		}
 		
-		for (int i = 1; i <= syscall.numArgs; ++i) {
-			final char fmt = syscall.argList.charAt(i + 1);
+		for (int i = 1; i <= syscall.getNumArgs(); ++i) {
+		    final char fmt = syscall.getArgList().charAt(i + 1);
 			switch (fmt) {
 			case 'a':
 			case 'b':
@@ -117,12 +117,12 @@ public class SysCallUtilyInfo {
 				enterCall.append(arg);
 				break;
 			}
-			if (i < syscall.numArgs) {
+			if (i < syscall.getNumArgs()) {
 				enterCall.append(",");
 			}
 		}
 
-		if (syscall.numArgs > 0) {
+		if (syscall.getNumArgs() > 0) {
 			enterCall.append(')');
 		}
 
@@ -147,7 +147,7 @@ public class SysCallUtilyInfo {
 
 		returnCall.append(syscall.getName() + " r= ");
 
-		switch (syscall.argList.charAt(0)) {
+		switch (syscall.getArgList().charAt(0)) {
 		case 'a':
 		case 'b':
 		case 'p':

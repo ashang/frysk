@@ -1,3 +1,7 @@
+2007-12-21  Andrew Cagney  <cagney@redhat.com>
+
+	* CurrentStackView.java: Delete ISA conditional code.
+
 2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Created LineXXX to contain dom related information instead of

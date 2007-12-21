@@ -1,5 +1,8 @@
 2007-12-21  Andrew Cagney  <cagney@redhat.com>
 
+	* Syscall.java (getNumArgs()): New.
+	(getArgList()): New.
+
 	* IsaX8664.java: Delete.
 	* LinuxX8664.java: Move IsaX8664 code to here.
 	* IsaIA32.java: Delete.

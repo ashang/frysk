@@ -63,7 +63,6 @@ import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.dom.DOMLine;
-import frysk.proc.Isa;
 import frysk.proc.Task;
 import frysk.scopes.SourceLocation;
 
@@ -129,18 +128,6 @@ public class CurrentStackView
     TreeIter taskIter = treeModel.getIter(path);
 
     Task task = frames[0].getTask();
-    Isa isa = null;
-
-    isa = task.getIsa();
-    if (isa == null
-	|| ! (isa instanceof frysk.proc.IsaIA32 || isa instanceof frysk.proc.IsaX8664))
-      {
-	iter = treeModel.appendRow(null);
-	treeModel.setValue(iter, (DataColumnString) stackColumns[0],
-			   "Unknown file : Unknown function");
-	treeModel.setValue(iter, (DataColumnObject) stackColumns[1], frames[0]);
-	return;
-      }
 
     for (int j = frames.length - 1; j >= 0; j--)
       {
@@ -224,7 +211,6 @@ public class CurrentStackView
 
   private void buildTree (DebugInfoFrame[][] frames)
   {
-    TreeIter iter = null;
     TreeIter procIter = null;
     TreeIter taskIter = null;
 
@@ -243,25 +229,12 @@ public class CurrentStackView
 			   new Integer(i));
 
 	Task task = frames[i][0].getTask();
-	Isa isa = task.getIsa();
-
-	if (isa == null
-	    || ! (isa instanceof frysk.proc.IsaIA32 || isa instanceof frysk.proc.IsaX8664))
-	  {
-	    iter = treeModel.appendRow(null);
-	    treeModel.setValue(iter, (DataColumnString) stackColumns[0],
-			       "Unknown file : Unknown function");
-	    treeModel.setValue(iter, (DataColumnObject) stackColumns[1],
-			       frames[i][0]);
-	    break;
-	  }
 
 	for (int j = frames[i].length - 1; j >= 0; j--)
 	  {
 	    DebugInfoFrame frame = frames[i][j];
 	    task = frames[i][j].getTask();
 
-	    iter = null;
 	    taskIter = treeModel.appendRow(procIter);
 
 	    treeModel.setValue(taskIter, (DataColumnString) stackColumns[0],
@@ -337,7 +310,6 @@ public class CurrentStackView
 	this.stackArray = tempArray;
 
 	TreeIter procIter = this.treeModel.appendRow(null);
-	TreeIter iter;
 	TreeIter taskIter;
 	Task t = frames[0].getTask();
 
@@ -352,21 +324,10 @@ public class CurrentStackView
 					   new Integer(current));
 
 	Task task = frames[0].getTask();
-	Isa isa = task.getIsa();
-	if (isa == null
-		|| ! (isa instanceof frysk.proc.IsaIA32 || isa instanceof frysk.proc.IsaX8664))
-	  {
-		iter = treeModel.appendRow(null);
-		treeModel.setValue(iter, (DataColumnString) stackColumns[0],
-						   "Unknown file : Unknown function");
-		treeModel.setValue(iter, (DataColumnObject) stackColumns[1], frames[0]);
-		return;
-	  }
 
 	for (int j = frames.length - 1; j >= 0; j--)
 	  {
 		DebugInfoFrame frame = frames[j];
-		iter = null;
 
 		taskIter = treeModel.appendRow(procIter);
 
