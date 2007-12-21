@@ -54,7 +54,6 @@ import lib.dwfl.ElfKind;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Auxv;
-import frysk.proc.Isa;
 import frysk.proc.Manager;
 import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
@@ -92,7 +91,6 @@ public class TestCoredumpAction
     assertTrue("Checking core file " + coreFileName + " exists.",
                testCore.exists());
 
-    Isa arch = getIsa(ackProc);
     ISA isa = getISA(ackProc);
     ByteOrder order = isa.order();
 
@@ -125,45 +123,30 @@ public class TestCoredumpAction
     assertEquals("Checking Header type is ET_CORE", header.type,
                  ElfEHeader.PHEADER_ET_CORE);
 
-    // Get machine architecture
-    String arch_test = getArch(arch);
-
     // Check machine and class
-    if (arch_test.equals("frysk.proc.LinuxIa32"))
-      {
+    if (isa == ISA.IA32) {
         assertEquals("Checking header machine type", header.machine,
                      ElfEMachine.EM_386);
         assertEquals("Checking elf class", header.ident[4],
                      ElfEHeader.PHEADER_ELFCLASS32);
-      }
-    if (arch_test.equals("frysk.proc.LinuxPPC64"))
-      {
+    } else if (isa == ISA.PPC64BE) {
         assertEquals("Checking header machine type", header.machine,
                      ElfEMachine.EM_PPC64);
         assertEquals("Checking elf class", header.ident[4],
                      ElfEHeader.PHEADER_ELFCLASS64);
-      }
-    if (arch_test.equals("frysk.proc.LinuxPPC32On64"))
-      {
+    } else if (isa == ISA.PPC32BE) {
         assertEquals("Checking header machine type", header.machine,
                      ElfEMachine.EM_PPC);
         assertEquals("Checking elf class", header.ident[4],
                      ElfEHeader.PHEADER_ELFCLASS32);
-      }
-    if (arch_test.equals("frysk.proc.LinuxX8664"))
-      {
+    } else if (isa == ISA.X8664) {
         assertEquals("Checking header machine type", header.machine,
                      ElfEMachine.EM_X86_64);
         assertEquals("Checking elf class", header.ident[4],
                      ElfEHeader.PHEADER_ELFCLASS64);
-      }
-    if (arch_test.equals("frysk.proc.LinuxIa32On64"))
-      {
-        assertEquals("Checking header machine type", header.machine,
-                     ElfEMachine.EM_386);
-        assertEquals("Checking elf class", header.ident[4],
-                     ElfEHeader.PHEADER_ELFCLASS32);
-      }
+    } else {
+	fail("unknown isa: " + isa);
+    }
 
     testCore.delete();
   }
@@ -461,23 +444,6 @@ public class TestCoredumpAction
     return ackProc.getMainTask().getProc();
   }
   
-  
-  /**
-   * Return a string representing the architecture of the given ISA. Really need
-   * to make a better ISA arch test.
-   * 
-   * @param isa - Isa to test
-   * @return String - a string corresponding to the arch.
-   */
-  private String getArch (Isa isa)
-  {
-    String arch_test = isa.toString();
-    String type = arch_test.substring(0, arch_test.lastIndexOf("@"));
-
-    return type;
-  }
-
-  
     /**
      * Returns the ISA that corresponds to the given Proc
      * 
@@ -487,12 +453,6 @@ public class TestCoredumpAction
     private ISA getISA (Proc proc) {
 	return proc.getMainTask().getISA();
     }
-  private Isa getIsa (Proc proc)
-  {
-    Isa arch = null;
-    arch = proc.getMainTask().getIsa();
-    return arch;
-  }
   
   private Elf getElf(String coreFileName)
   {

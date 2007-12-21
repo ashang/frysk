@@ -1,3 +1,9 @@
+2007-12-21  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCoredumpAction.java (getArch(String)): Delete.
+	(getIsa(Proc)): Delete.
+	(testElfCoreHeader()): Use getISA.
+
 2007-12-10  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestFCore.java: Rename to TestCoredumpAction.java
