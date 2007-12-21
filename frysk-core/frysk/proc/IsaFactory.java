@@ -43,8 +43,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Hashtable;
 import java.io.File;
-import frysk.Config;
-
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfEHeader;
@@ -58,36 +56,17 @@ public class IsaFactory
   static final Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
   private Hashtable isaHash;
     
-  IsaFactory() 
-  {
-    isaHash = new Hashtable();
-    isaHash.put(Integer.valueOf(ElfEMachine.EM_X86_64),
-		LinuxX8664.isaSingleton());
-    isaHash.put(Integer.valueOf(ElfEMachine.EM_PPC64),
-		LinuxPPC64.isaSingleton());
-    // XXX: This should not be looking at the configuration target
-    // string when selecting the ISA.
-    if (Config.getTargetCpuXXX().equals ("x86_64")) 
-      {
-	isaHash.put(Integer.valueOf(ElfEMachine.EM_386),
-		    LinuxIa32On64.isaSingleton());
-      }
-    else
-      {
+    IsaFactory() {
+	isaHash = new Hashtable();
+	isaHash.put(Integer.valueOf(ElfEMachine.EM_X86_64),
+		    LinuxX8664.isaSingleton());
+	isaHash.put(Integer.valueOf(ElfEMachine.EM_PPC64),
+		    LinuxPPC64.isaSingleton());
 	isaHash.put(Integer.valueOf(ElfEMachine.EM_386),
 		    LinuxIa32.isaSingleton());
-      }
-    if (Config.getTargetCpuXXX().equals("powerpc64"))
-      {
-	isaHash.put(Integer.valueOf(ElfEMachine.EM_PPC),
-		    LinuxPPC32On64.isaSingleton());
-      }
-    else
-      {
 	isaHash.put(Integer.valueOf(ElfEMachine.EM_PPC),
 		    LinuxPPC32.isaSingleton());
-      }
-  }
+    }
   
   public static IsaFactory getSingleton()
   {

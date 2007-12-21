@@ -1,5 +1,9 @@
 2007-12-21  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPPC32On64.java: Delete.
+	* LinuxIa32On64.java: Delete.
+	* IsaFactory.java (IsaFactory()): Simplify.
+	
 	* Isa.java (getRegisterBankBuffers(int)): Delete.
 	* LinuxIa32On64.java (getRegisterBankBuffers(int)): Delete.
 	* IsaX8664.java (getRegisterBankBuffers(int)): Delete.
