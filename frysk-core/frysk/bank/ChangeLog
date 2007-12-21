@@ -1,5 +1,8 @@
 2007-12-21  Andrew Cagney  <cagney@redhat.com>
 
+	* PPCBankRegisters.java (PPC32BE, PPC64BE): Construct using
+	LinuxPPCRegisterBanks.
+
 	* BankRegister.java (BankRegister(int,int,String,Register)): Make
 	package-private.
 	* BankArrayRegister.java (BankArrayRegister(int,BankRegister)):
