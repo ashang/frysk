@@ -42,10 +42,7 @@ package frysk.proc;
 import java.util.LinkedList;
 import java.util.List;
 import inua.eio.ByteBuffer;
-import frysk.proc.live.AddressSpaceByteBuffer;
-import frysk.sys.Ptrace.AddressSpace;
 import frysk.isa.Register;
-import inua.eio.ByteOrder;
 
 abstract class IsaPowerPC implements Isa {
     private final Register PC;
@@ -148,10 +145,4 @@ abstract class IsaPowerPC implements Isa {
     return false;
   }
 
-  public ByteBuffer[] getRegisterBankBuffers(int pid) 
-  {
-      ByteBuffer registers = new AddressSpaceByteBuffer(pid, AddressSpace.USR);
-      registers.order(ByteOrder.BIG_ENDIAN);
-      return new ByteBuffer[] { registers };
-  }
- }
+}

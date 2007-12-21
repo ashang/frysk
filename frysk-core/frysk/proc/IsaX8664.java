@@ -42,12 +42,7 @@ package frysk.proc;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import inua.eio.ByteOrder;
 import inua.eio.ByteBuffer;
-import frysk.sys.Ptrace.RegisterSet;
-import frysk.sys.Ptrace.AddressSpace;
-import frysk.proc.live.RegisterSetByteBuffer;
-import frysk.proc.live.AddressSpaceByteBuffer;
 import frysk.isa.X8664Registers;
 
 public class IsaX8664 implements Isa
@@ -185,16 +180,4 @@ public class IsaX8664 implements Isa
     return Syscall.iterateSyscallByName (name, LinuxX8664Syscall.syscallList);
   }
 
-  public ByteBuffer[] getRegisterBankBuffers(int pid) 
-  {
-      ByteBuffer[] bankBuffers = new ByteBuffer[] {
-	  new RegisterSetByteBuffer(pid, RegisterSet.REGS),
-	  new RegisterSetByteBuffer(pid, RegisterSet.FPREGS),
-	  new AddressSpaceByteBuffer(pid, AddressSpace.USR)
-      };
-      for (int i = 0; i < bankBuffers.length; i++) {
-	  bankBuffers[i].order(ByteOrder.LITTLE_ENDIAN);
-      }
-      return bankBuffers;
-  }
 }

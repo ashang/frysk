@@ -39,8 +39,6 @@
 
 package frysk.proc;
 
-import inua.eio.ByteBuffer;
-
 /**
  * Class for IA32 processes running on 64 bit machines.
  *
@@ -73,21 +71,6 @@ extends LinuxIa32
       isa = new LinuxIa32On64();
     return isa;
   }
-  // The Isa object used to actually access registers in the target.
-  private final IsaX8664 isa64 = new IsaX8664();
-
-  /**
-   * Get the buffers used to access registers in the different
-   * banks. This Isa has just one register bank -- the USR area
-   * of the x8664 -- even though Ia32 has 3.
-   *
-   * @return the <code>ByteBuffer</code>s used to access registers.
-   */
-  public ByteBuffer[] getRegisterBankBuffers(int pid) 
-  {
-    return isa64.getRegisterBankBuffers(pid);
-  }
-  
 }
 
   

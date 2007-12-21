@@ -1,3 +1,11 @@
+2007-12-21  Andrew Cagney  <cagney@redhat.com>
+
+	* Isa.java (getRegisterBankBuffers(int)): Delete.
+	* LinuxIa32On64.java (getRegisterBankBuffers(int)): Delete.
+	* IsaX8664.java (getRegisterBankBuffers(int)): Delete.
+	* IsaPowerPC.java (getRegisterBankBuffers(int)): Delete.
+	* IsaIA32.java (getRegisterBankBuffers(int)): Delete.
+
 2007-12-20  Andrew Cagney  <cagney@redhat.com>
 
 	* Task.java (sendrecRegisterBuffersFIXME()): Delete.

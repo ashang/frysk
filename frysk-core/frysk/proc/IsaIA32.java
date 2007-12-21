@@ -42,32 +42,13 @@ package frysk.proc;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import inua.eio.ByteOrder;
 import inua.eio.ByteBuffer;
-import frysk.sys.Ptrace.RegisterSet;
-import frysk.sys.Ptrace.AddressSpace;
-import frysk.proc.live.RegisterSetByteBuffer;
-import frysk.proc.live.AddressSpaceByteBuffer;
 import frysk.isa.IA32Registers;
 
 public class IsaIA32 implements Isa
 {
   private static final Instruction IA32Breakpoint
     = new Instruction(new byte[] { (byte)0xcc }, false);
-  
-  public ByteBuffer[] getRegisterBankBuffers(int pid) 
-  {
-      ByteBuffer[] bankBuffers = new ByteBuffer[] {
-	  new RegisterSetByteBuffer(pid, RegisterSet.REGS),
-	  new RegisterSetByteBuffer(pid, RegisterSet.FPREGS),
-	  new RegisterSetByteBuffer(pid, RegisterSet.FPXREGS),
-	  new AddressSpaceByteBuffer(pid, AddressSpace.USR)
-    };
-    for (int i = 0; i < bankBuffers.length; i++) {
-	  bankBuffers[i].order(ByteOrder.LITTLE_ENDIAN);
-    }
-    return bankBuffers;
-  }
   
     public long pc(Task task) {
 	return task.getRegister(IA32Registers.EIP);

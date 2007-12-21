@@ -119,15 +119,6 @@ public interface Isa
    */
   boolean isAtSyscallSigReturn(Task task);
 
-  /**
-   * Return an array of ByteBuffers for accessing the register
-   * banks. It's possible for different elements of the array to be
-   * shared.
-   *
-   * @returns array of ByteBuffer objects.
-   */
-  ByteBuffer[] getRegisterBankBuffers(int pid);
-  
   /** @return Syscall[] return system call list for this Linux<ISA>. */
   Syscall[] getSyscallList ();
   /** @return HashMap return a HashMap for unknown system calls. */
