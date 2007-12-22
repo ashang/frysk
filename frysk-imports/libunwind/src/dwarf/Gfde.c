@@ -173,6 +173,15 @@ parse_cie (unw_addr_space_t as, unw_accessors_t *a, unw_word_t addr,
 	/* read the personality-routine pointer-encoding format.  */
 	if ((ret = dwarf_readu8 (as, a, &addr, &handler_encoding, arg)) < 0)
 	  return ret;
+	// FRYSK LOCAL
+	// We never want to actually read the personality routine address
+	// since it can be stored anywhere and currently we are just
+	// feeding it the unwind table data. We still need to read the
+	// encoded pointer to get past it.
+	// Can be restored when frysk feeds the eh_frame through its
+	// main address space.
+	handler_encoding &= ~DW_EH_PE_indirect;
+	// END FRYSK LOCAL
 	if ((ret = dwarf_read_encoded_pointer (as, a, &addr, handler_encoding,
 					       pi, &dci->handler, arg)) < 0)
 	  return ret;

@@ -1,3 +1,14 @@
+2007-12-22  Mark Wielaard  <mwielaard@redhat.com>
+
+	* include/libunwind-common.h.in (unw_get_unwind_table):
+	Remove as, arg and peh_vaddr arguments.
+	* src/mi/Gget_unwind_table.c (unw_get_unwind_table): Likewise.
+	Create address space from eh_frame_accessors. Set rti.table_data
+	and rti.segbase from eh_frame_hdr_address. Pass eh_frame_arg
+	to tdep_search_unwind_table.
+	* src/dwarf/Gfde.c (parse_cie): Add FRYSK LOCAL hack to not
+	read personality routine address.
+
 2007-12-20  Mark Wielaard  <mwielaard@redhat.com>
 
 	* configure.in (is_local_frysk_build): New function.

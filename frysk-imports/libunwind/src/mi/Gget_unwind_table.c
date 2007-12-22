@@ -26,14 +26,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 #include "dwarf-eh.h"
 
 int
-unw_get_unwind_table(unw_addr_space_t as, unw_word_t ip,
-		     unw_proc_info_t *pi, int need_unwind_info, void *arg,
+unw_get_unwind_table(unw_word_t ip, unw_proc_info_t *pi, int need_unwind_info,
 		     unw_accessors_t *eh_frame_accessors,
 		     unw_word_t eh_frame_hdr_address,
-		     void *eh_frame_arg,
-		     unw_word_t peh_vaddr)
+		     void *eh_frame_arg)
 {
   int ret;
+  unw_addr_space_t as = unw_create_addr_space (eh_frame_accessors, 0);
   unw_word_t start = eh_frame_hdr_address;
 
   // Version
@@ -83,11 +82,12 @@ unw_get_unwind_table(unw_addr_space_t as, unw_word_t ip,
   di.u.rti.name_ptr = 0;
   /* two 32-bit values (ip_offset/fde_offset) per table-entry:
      For the binary-search table in the eh_frame_hdr, data-relative
-     means relative to the start of that section...
-     So for now we pass in peh_vaddr and use the main as for access. */
+     means relative to the start of that section... */
   di.u.rti.table_len = (fde_count * 8) / sizeof (unw_word_t);
-  di.u.rti.table_data = peh_vaddr + 12;
-  di.u.rti.segbase = peh_vaddr;
+  di.u.rti.table_data = eh_frame_hdr_address + 12;
+  di.u.rti.segbase = eh_frame_hdr_address;
 
-  return tdep_search_unwind_table (as, ip, &di, pi, need_unwind_info, arg);
+  ret = tdep_search_unwind_table (as, ip, &di, pi, need_unwind_info,
+				  eh_frame_arg);
+  return ret;
 }

@@ -1,3 +1,9 @@
+2007-12-22  Mark Wielaard  <mwielaard@redhat.com>
+
+	* cni/UnwindH.hxx (get_eh_frame_hdr_addr): Return char*.
+	(createProcInfoFromElfImage): Calculate virtual and adjusted
+	addresses from eh_table_hdr and peh_vaddr.
+	
 2007-12-14  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
 
 	* GenRegEnum.awk: Add new Awk script to generate the registers

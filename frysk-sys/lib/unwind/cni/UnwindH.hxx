@@ -446,7 +446,7 @@ lib::unwind::TARGET::getProcInfo(gnu::gcj::RawDataManaged* cursor)
 // Also fills in ip->start_ip, ip->end_ip and ip->gp.
 // peh_vaddr will point to the address of the eh_frame_hdr in the main
 // address space of the inferior.
-static void *
+static char *
 get_eh_frame_hdr_addr(unw_proc_info_t *pi, char *image, size_t size,
 		      unsigned long segbase, unw_word_t *peh_vaddr)
 {
@@ -582,12 +582,10 @@ lib::unwind::TARGET::createProcInfoFromElfImage(lib::unwind::AddressSpace* addre
   unw_proc_info_t *procInfo
     = (::unw_proc_info_t *) JvAllocBytes(sizeof (::unw_proc_info_t));
 
-  unw_addr_space_t as = (unw_addr_space_t) addressSpace->addressSpace;
-
   logFine(this, logger, "Pre unw_get_unwind_table");
   
   unw_word_t peh_vaddr = 0;
-  void *eh_table_hdr = get_eh_frame_hdr_addr(procInfo,
+  char *eh_table_hdr = get_eh_frame_hdr_addr(procInfo,
 					     (char *) elfImage->elfImage,
 					     elfImage->size,
 					     elfImage->segbase,
@@ -602,16 +600,14 @@ lib::unwind::TARGET::createProcInfoFromElfImage(lib::unwind::AddressSpace* addre
   if (eh_table_hdr == NULL)
     return new lib::unwind::ProcInfo(-UNW_ENOINFO);
 
-  int ret = unw_get_unwind_table(as,
-				 (unw_word_t) ip,
+  int ret = unw_get_unwind_table((unw_word_t) ip,
 				 procInfo,
 				 (int) needUnwindInfo,
-				 (void *) addressSpace,
 				 &local_accessors,
-				 0,
-				 eh_table_hdr,
-				 peh_vaddr);
-    
+				 // virtual address
+				 peh_vaddr,
+				 // address adjustment
+				 eh_table_hdr - peh_vaddr);
   
   logFine(this, logger, "Post unw_get_unwind_table");
   lib::unwind::ProcInfo *myInfo;
