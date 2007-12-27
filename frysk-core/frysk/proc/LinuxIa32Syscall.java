@@ -540,15 +540,14 @@ public class LinuxIa32Syscall extends SyscallTable {
 
     public Syscall syscallByName(String name) {
 	Syscall syscall;
-	syscall = Syscall.iterateSyscallByName(name, LinuxIa32Syscall.syscallList);
+	syscall = iterateSyscallByName(name, LinuxIa32Syscall.syscallList);
+	if (syscall != null)
+	    return syscall;
+	syscall = iterateSyscallByName(name, LinuxIa32Syscall.socketSubcallList);
 	if (syscall != null)
 	    return syscall;
     
-	syscall = Syscall.iterateSyscallByName(name, LinuxIa32Syscall.socketSubcallList);
-	if (syscall != null)
-	    return syscall;
-    
-	syscall = Syscall.iterateSyscallByName(name, LinuxIa32Syscall.ipcSubcallList);
+	syscall = iterateSyscallByName(name, LinuxIa32Syscall.ipcSubcallList);
 	if (syscall != null)
 	    return syscall;
 

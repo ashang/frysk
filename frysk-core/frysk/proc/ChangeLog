@@ -1,5 +1,12 @@
 2007-12-27  Andrew Cagney  <cagney@redhat.com>
 
+	* Syscall.java (iterateSyscallByName(String,Syscall[])): Move to ...
+	* SyscallTable.java (iterateSyscallByName(String,Syscall[])): New.
+	* LinuxX8664Syscall.java: Update.
+	* LinuxPPC32Syscall.java: Update.
+	* LinuxIa32Syscall.java: Update.
+	* LinuxPPC64Syscall.java: Update.
+
 	* Syscall.java (syscallByName(String,Task)): Delete.
 	* TestSyscallRunning.java: Use SyscallTableFactory.
 	* TestTaskSyscallObserver.java: Ditto.

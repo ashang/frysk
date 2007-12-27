@@ -62,4 +62,18 @@ public abstract class SyscallTable {
      */
     public abstract Syscall syscallByName (String Name);
 
+    /**
+     * Given a system call's name, this will return the corresponding
+     * Syscall object.  If no predefined system call with that name is
+     * available, this will return null.
+     * @param name the name of the system call
+     * @param syscallList system calls list
+     * @return the Syscall object, or null
+     */
+    Syscall iterateSyscallByName (String name, Syscall[] syscallList) {
+	for (int i = 0; i < syscallList.length; ++i)
+	    if (name.equals(syscallList[i].getName()))
+		return syscallList[i];
+	return null;
+    }
 }
