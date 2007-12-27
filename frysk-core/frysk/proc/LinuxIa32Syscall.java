@@ -39,19 +39,11 @@
 
 package frysk.proc;
 
-import java.util.HashMap;
 import frysk.isa.IA32Registers;
 
 public class LinuxIa32Syscall extends SyscallTable {
     static final int SOCKET_NUM = 102;
     static final int IPC_NUM = 117;
-
-    // This is used to keep track of syscalls whose number we do not
-    // know.
-    static HashMap unknownSyscalls = new HashMap();
-    public HashMap getUnknownSyscalls() {
-	return unknownSyscalls;
-    }
 
     static class Ia32Syscall extends Syscall {
 	Ia32Syscall(String name, int number, int numArgs, 

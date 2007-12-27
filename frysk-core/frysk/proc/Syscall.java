@@ -40,7 +40,6 @@
 package frysk.proc;
 
 import inua.util.PrintWriter;
-import java.util.HashMap;
 
 /**
  * A class that holds static information about a system call.  It is
@@ -258,39 +257,15 @@ public abstract class Syscall {
      */
     public static Syscall syscallByNum(int num, Task task) {
 	Syscall[] syscallList;
-	HashMap unknownSyscalls;
 
 	SyscallTable syscallTable
 	    = SyscallTableFactory.getSyscallTable(task.getISA());
 	syscallList = syscallTable.getSyscallList();
-	unknownSyscalls = syscallTable.getUnknownSyscalls();
 
 	if (num < 0) {
 	    return INVALID;
 	} else if (num >= syscallList.length) {
-	    synchronized (unknownSyscalls) {
-		Integer key = new Integer(num);
-		if (unknownSyscalls.containsKey(key))
-		    return (Syscall) unknownSyscalls.get(key);
-	    
-		class UnknownSyscall extends Syscall {
-		    UnknownSyscall (String name, int number) {
-			super (name, number);
-		    }
-	      
-		    public long getArguments (Task task, int n) {
-			return 0;
-		    }
-		    public long getReturnCode (Task task) {
-			return 0;
-		    }
-		}
-		Syscall result = new UnknownSyscall("UNKNOWN SYSCALL " + num, num);
-
-		unknownSyscalls.put(key, result);
-	    
-		return result;
-	    }
+	    return syscallTable.unknownSyscall(num);
 	} else {
 	    return syscallList[num];
 	}

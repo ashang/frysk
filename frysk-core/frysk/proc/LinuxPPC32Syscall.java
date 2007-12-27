@@ -40,7 +40,6 @@
 
 package frysk.proc;
 
-import java.util.HashMap;
 import frysk.isa.PPC32Registers;
 
 /**
@@ -52,13 +51,6 @@ import frysk.isa.PPC32Registers;
 public class LinuxPPC32Syscall extends SyscallTable {
     private static final int SOCKET_NUM = 102;
     private static final int IPC_NUM = 117;
-
-    // This is used to keep track of syscalls whose number we do not
-    // know.
-    static final HashMap unknownSyscalls = new HashMap();
-    public HashMap getUnknownSyscalls() {
-	return unknownSyscalls;
-    }
 
     static private class PowerPCSyscall extends Syscall {
 	PowerPCSyscall(String name, int number, int numArgs, 

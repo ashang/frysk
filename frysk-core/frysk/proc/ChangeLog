@@ -1,5 +1,12 @@
 2007-12-27  Andrew Cagney  <cagney@redhat.com>
 
+	* SyscallTable.java (getUnknownSyscalls()): Delete.
+	(unknownSyscall(int)): New.
+	* LinuxIa32Syscall.java (getUnknownSyscalls()): Delete.
+	* LinuxPPC32Syscall.java: Ditto.
+	* LinuxX8664Syscall.java: Ditto.
+	* Syscall.java: Update.
+
 	* Syscall.java (INVALID): New.
 	* SyscallEventInfo.java (number(Task)): Delete.
 	(ENTER, EXIT, UNKNOWN): Delete.

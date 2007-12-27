@@ -39,17 +39,9 @@
 
 package frysk.proc;
 
-import java.util.HashMap;
 import frysk.isa.X8664Registers;
 
 public class LinuxX8664Syscall extends SyscallTable {
-
-    // This is used to keep track of syscalls whose number we do not
-    // know.
-    static HashMap unknownSyscalls = new HashMap();
-    public HashMap getUnknownSyscalls() {
-	return unknownSyscalls;
-    }
 
     static class X8664Syscall extends Syscall {
 	X8664Syscall(String name, int number, int numArgs, 
