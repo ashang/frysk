@@ -42,7 +42,7 @@ package frysk.proc;
 import java.util.HashMap;
 import frysk.isa.IA32Registers;
 
-public class LinuxIa32Syscall extends SyscallFactory {
+public class LinuxIa32Syscall extends SyscallTable {
     static final int SOCKET_NUM = 102;
     static final int IPC_NUM = 117;
 

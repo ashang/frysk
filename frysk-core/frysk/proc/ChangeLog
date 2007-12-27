@@ -1,5 +1,11 @@
 2007-12-27  Andrew Cagney  <cagney@redhat.com>
 
+	* SyscallTable.java: Rename SyscallFactory.java.
+	* LinuxPPC64Syscall.java: Update.
+	* LinuxPPC32Syscall.java: Update.
+	* LinuxIa32Syscall.java: Update.
+	* LinuxX8664Syscall.java: Update.
+
 	* SyscallFactory.java (isAtSyscallSigReturn(Task)): Delete.
 	* LinuxPPC64Syscall.java: Extend SyscallFactory.
 	* LinuxPPC32Syscall.java: Ditto.

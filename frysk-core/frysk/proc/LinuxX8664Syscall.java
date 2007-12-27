@@ -42,7 +42,7 @@ package frysk.proc;
 import java.util.HashMap;
 import frysk.isa.X8664Registers;
 
-public class LinuxX8664Syscall extends SyscallFactory {
+public class LinuxX8664Syscall extends SyscallTable {
 
     // This is used to keep track of syscalls whose number we do not
     // know.

@@ -49,7 +49,7 @@ import frysk.isa.PPC64Registers;
  * XXX: There is much duplication between this and LinuxPPC64Syscall.
  */
 
-public class LinuxPPC64Syscall extends SyscallFactory {
+public class LinuxPPC64Syscall extends SyscallTable {
     private static final int SOCKET_NUM = 102;
     private static final int IPC_NUM = 117;
 
