@@ -530,6 +530,28 @@ public class LinuxIa32Syscall extends SyscallTable {
 	}
     }
 
+    public Syscall getSyscall(Task task) {
+	long number = task.getRegister(IA32Registers.ORIG_EAX);
+	if (number != SOCKET_NUM && number != IPC_NUM)
+	    return getSyscall(number);
+	else {
+	    /** sub syscall number is in %ebx.  */
+	    int subSyscallNumber = (int) task.getRegister(IA32Registers.EBX);
+	
+	    if (number == SOCKET_NUM) {
+		if (subSyscallNumber < socketSubcallList.length)
+		    return socketSubcallList[subSyscallNumber];
+		else
+		    return unknownSocketSubSyscall;
+	    } else {
+		if (subSyscallNumber < ipcSubcallList.length)
+		    return ipcSubcallList[subSyscallNumber];
+		else
+		    return unknownIpcSubSyscall;
+	    }
+	}
+    }
+
     public Syscall syscallByName(String name) {
 	Syscall syscall;
 	syscall = iterateSyscallByName(name, LinuxIa32Syscall.syscallList);

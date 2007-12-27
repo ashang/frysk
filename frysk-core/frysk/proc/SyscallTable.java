@@ -55,12 +55,12 @@ public abstract class SyscallTable {
     /**
      * @return HashMap return a HashMap for unknown system calls.
      */
-    public Syscall unknownSyscall(int num) {
+    public Syscall unknownSyscall(long num) {
 	synchronized (unknownSyscalls) {
-	    Integer key = new Integer(num);
+	    Long key = new Long(num);
 	    Syscall syscall = (Syscall)unknownSyscalls.get(key);
 	    if (syscall == null) {
-		syscall = new Syscall("UNKNOWN SYSCALL " + num, num) {
+		syscall = new Syscall("UNKNOWN SYSCALL " + num, (int)num) {
 			public long getArguments (Task task, int n) {
 			    return 0;
 			}
@@ -95,4 +95,25 @@ public abstract class SyscallTable {
 		return syscallList[i];
 	return null;
     }
+
+    /**
+     * Return the system call responding to N.
+     */
+    public Syscall getSyscall(long num) {
+	if (num < 0)
+	    return Syscall.INVALID;
+	Syscall[] syscallList = getSyscallList();
+	if (num >= syscallList.length)
+	    return unknownSyscall(num);
+	return syscallList[(int)num];
+    }
+
+    /** 
+     * Assuming that TASK is at a system-call entry, return the system
+     * call.
+     * @param task the task that system call occurred
+     * @return the Syscall object
+     */
+    public abstract Syscall getSyscall (Task task);
+    
 }

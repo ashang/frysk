@@ -383,4 +383,9 @@ public class LinuxX8664Syscall extends SyscallTable {
     public Syscall syscallByName (String name) {
 	return iterateSyscallByName(name, LinuxX8664Syscall.syscallList);
     }
+
+    public Syscall getSyscall(Task task) {
+	long number = task.getRegister(X8664Registers.ORIG_RAX);
+	return getSyscall(number);
+    }
 }

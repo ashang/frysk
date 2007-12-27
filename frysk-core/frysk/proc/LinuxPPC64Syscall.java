@@ -538,4 +538,20 @@ public class LinuxPPC64Syscall extends SyscallTable {
 	return null;
     }
 
+    public Syscall getSyscall(Task task) {
+	long number = task.getRegister(PPC64Registers.GPR0);
+	if (number != SOCKET_NUM && number != IPC_NUM)
+	    return getSyscall(number);
+	else {
+	    /** sub syscall number is in .  */
+	    int subSyscallNumber = 0;
+	    subSyscallNumber = (int) task.getRegister(PPC64Registers.ORIGR3);
+	    if (number == SOCKET_NUM) {
+		return socketSubcallList[subSyscallNumber];
+	    } else {
+		return ipcSubcallList[subSyscallNumber];
+	    }
+	}
+    }
+
 }

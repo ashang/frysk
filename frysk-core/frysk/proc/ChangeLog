@@ -1,5 +1,13 @@
 2007-12-27  Andrew Cagney  <cagney@redhat.com>
 
+	* SyscallTable.java (getSyscall(Task)): Declare.
+	(getSyscall(long)): New.
+	(unknownSyscall(long)): Replace unknownSyscall(int).
+	* LinuxX8664Syscall.java (getSyscall(Task)): New.
+	* LinuxPPC32Syscall.java (getSyscall(Task)): New.
+	* LinuxIa32Syscall.java (getSyscall(Task)): New.
+	* LinuxPPC64Syscall.java (getSyscall(Task)): New.
+
 	* Isa.java (getSyscallEventInfo()): Declare.
 	* SyscallEventDecoder.java: Delete.
 	* Task.java (getSyscallEventInfo): Update.
