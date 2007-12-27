@@ -80,30 +80,4 @@ class LinuxPPC32 extends IsaPowerPC implements SyscallEventDecoder {
 	return info;
     }
 
-    public Syscall[] getSyscallList () {
-	return LinuxPPC32Syscall.syscallList;
-    }
-
-    public HashMap getUnknownSyscalls () {
-	return LinuxPPC32Syscall.unknownSyscalls;
-    }
-
-    public Syscall syscallByName (String name) {
-	Syscall syscall;
-
-	syscall = Syscall.iterateSyscallByName (name, LinuxPPC32Syscall.syscallList);
-	if (syscall != null)
-	    return syscall;
-    
-	syscall = Syscall.iterateSyscallByName (name, LinuxPPC32Syscall.socketSubcallList);
-	if (syscall != null)
-	    return syscall;
-    
-	syscall = Syscall.iterateSyscallByName (name, LinuxPPC32Syscall.ipcSubcallList);
-	if (syscall != null)
-	    return syscall;
-
-	return null;
-    }
-
 }

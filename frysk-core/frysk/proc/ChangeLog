@@ -1,5 +1,12 @@
 2007-12-27  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxIa32.java (syscallByName(String)): Delete.
+	(getUnknownSyscalls()): Delete.
+	(getSyscallList()): Delete.
+	* LinuxPPC64.java: Ditto.
+	* LinuxX8664.java: Ditto.
+	* LinuxPPC32.java: Ditto.
+
 	* Isa.java (syscallByName(String)): Delete.
 	(getUnknownSyscalls()): Delete.
 	(getSyscallList()): Delete.

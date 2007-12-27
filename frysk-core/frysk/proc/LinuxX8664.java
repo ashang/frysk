@@ -159,18 +159,6 @@ class LinuxX8664 implements SyscallEventDecoder, Isa {
 	return result;
     }
 
-    public Syscall[] getSyscallList () {
-	return LinuxX8664Syscall.syscallList;
-    }
-
-    public HashMap getUnknownSyscalls () {
-	return LinuxX8664Syscall.unknownSyscalls;
-    }
-
-    public Syscall syscallByName (String name) {
-	return Syscall.iterateSyscallByName (name, LinuxX8664Syscall.syscallList);
-    }
-
     private static LinuxX8664 isa;
     static LinuxX8664 isaSingleton () {
 	if (isa == null)

@@ -43,7 +43,6 @@ import frysk.isa.IA32Registers;
 import inua.eio.ByteBuffer;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.HashMap;
 
 class LinuxIa32 implements SyscallEventDecoder, Isa {
 
@@ -158,32 +157,6 @@ class LinuxIa32 implements SyscallEventDecoder, Isa {
 	    result &= syscallNum == 0x77;
 	}
 	return result;
-    }
-
-    public Syscall[] getSyscallList () {
-	return LinuxIa32Syscall.syscallList;
-    }
-
-    public HashMap getUnknownSyscalls () {
-	return LinuxIa32Syscall.unknownSyscalls;
-    }
-
-    public Syscall syscallByName (String name) {
-	Syscall syscall;
-
-	syscall = Syscall.iterateSyscallByName (name, LinuxIa32Syscall.syscallList);
-	if (syscall != null)
-	    return syscall;
-    
-	syscall = Syscall.iterateSyscallByName (name, LinuxIa32Syscall.socketSubcallList);
-	if (syscall != null)
-	    return syscall;
-    
-	syscall = Syscall.iterateSyscallByName (name, LinuxIa32Syscall.ipcSubcallList);
-	if (syscall != null)
-	    return syscall;
-
-	return null;
     }
 
     private static LinuxIa32 isa;
