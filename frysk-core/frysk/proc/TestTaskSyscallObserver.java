@@ -100,10 +100,6 @@ public class TestTaskSyscallObserver
 	    enter++;
 
 	    SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-	    // XXX - workaround for broken syscall detection on exit
-	    if (syscallEventInfo.number(task) == - 1)
-		return Action.CONTINUE;
-
 	    frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
 
 	    if (execvesys.equals(syscall)) {
@@ -420,12 +416,6 @@ public class TestTaskSyscallObserver
     public Action updateSyscallExit (Task task)
     {
       super.updateSyscallExit(task);
-      SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-      
-      // XXX - workaround for broken syscall detection on exit
-      if (syscallEventInfo.number(task) == - 1)
-        return Action.CONTINUE;
-      
       frysk.proc.Syscall syscall = (frysk.proc.Syscall) syscallCache.remove(task);
       
       if (opensys.equals(syscall) && openingTestFile)
@@ -535,9 +525,6 @@ public class TestTaskSyscallObserver
       {
         super.updateSyscallExit(task);
         SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-        // XXX - workaround for broken syscall detection on exit
-        if (syscallEventInfo.number(task) == - 1)
-          return Action.CONTINUE;
         frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
         if (readsys.equals(syscall))
           {

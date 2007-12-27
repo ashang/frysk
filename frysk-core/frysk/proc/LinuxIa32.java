@@ -170,7 +170,7 @@ class LinuxIa32 implements SyscallEventDecoder, Isa {
     public SyscallEventInfo getSyscallEventInfo() {
 	if (info == null)
 	    info = new SyscallEventInfo() {
-		    public int number (Task task) {
+		    private int number(Task task) {
 			return (int)task.getRegister(IA32Registers.ORIG_EAX);
 		    }
 		    public Syscall getSyscall(Task task) {

@@ -46,6 +46,7 @@ import java.util.HashMap;
  */
 
 public abstract class SyscallTable {
+
     /**
      * @return Syscall[] return system call list for this Linux<ISA>.
      */

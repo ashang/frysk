@@ -273,9 +273,6 @@ public class TestSyscallSignal
 
 	public Action updateSyscallExit(Task task) {
 	    SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-	    // XXX - workaround for broken syscall detection on exit
-	    if (syscallEventInfo.number(task) == -1)
-		return Action.CONTINUE;
 	    frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
 	    if (opensys.equals(syscall) || closesys.equals(syscall)) {
 		exited++;

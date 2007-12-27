@@ -42,31 +42,15 @@ package frysk.proc;
  * An object that retrieves syscall info from a task. Used in combination
  * with Syscall and a Task object to retrieve information.
  */
-public abstract class SyscallEventInfo
-{
-  public final static int ENTER = 0;
-  public final static int EXIT = 1;
-  public final static int UNKNOWN = -1;
-  
-  /**
-   * Returns the syscall number of the system call the the
-   * given task just made.
-   * This function assumes that the given task is currently
-   * in the system call. This function should not be called
-   * otherwise.
-   * @param task the task which made the system call
-   * @return the number of the system call that was made
-   */
-  public abstract int number (Task task);
-  
-  /** 
-   * getSyscall does everything on the assumption that there is a 
-   * system, and programmer want to know the information about this
-   * system call.  A meaningless Syscall object is returned when
-   * getSyscall is called at the moment no system call occurs.
-   * @param task the task that system call occurred
-   * @return the Syscall object
-   */
-  public abstract Syscall getSyscall (Task task);
+public abstract class SyscallEventInfo {
+    /** 
+     * getSyscall does everything on the assumption that there is a 
+     * system, and programmer want to know the information about this
+     * system call.  A meaningless Syscall object is returned when
+     * getSyscall is called at the moment no system call occurs.
+     * @param task the task that system call occurred
+     * @return the Syscall object
+     */
+    public abstract Syscall getSyscall (Task task);
   
 }

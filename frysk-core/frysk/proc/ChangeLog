@@ -1,5 +1,17 @@
 2007-12-27  Andrew Cagney  <cagney@redhat.com>
 
+	* Syscall.java (INVALID): New.
+	* SyscallEventInfo.java (number(Task)): Delete.
+	(ENTER, EXIT, UNKNOWN): Delete.
+	* Task.java (notifySyscallExit()): Update.
+	(notifySyscallEnter()): Update.
+	* TestSyscallSignal.java: Update.
+	* TestTaskSyscallObserver.java: Update.
+	* LinuxIa32.java: Update.
+	* LinuxPPC32.java: Update.
+	* LinuxX8664.java: Update.
+	* LinuxPPC64.java: Update.
+
 	* Syscall.java (iterateSyscallByName(String,Syscall[])): Move to ...
 	* SyscallTable.java (iterateSyscallByName(String,Syscall[])): New.
 	* LinuxX8664Syscall.java: Update.

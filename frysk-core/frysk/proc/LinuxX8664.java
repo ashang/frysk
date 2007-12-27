@@ -174,7 +174,7 @@ class LinuxX8664 implements SyscallEventDecoder, Isa {
     public SyscallEventInfo getSyscallEventInfo () {
 	if (info == null)
 	    info = new SyscallEventInfo () {
-		    public int number (Task task) {
+		    private int number(Task task) {
 			return (int)task.getRegister(X8664Registers.ORIG_RAX);
 		    }
 		    public Syscall getSyscall(Task task) {

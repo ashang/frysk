@@ -758,51 +758,39 @@ public abstract class Task
     logger.log(Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
   }
 
-  /**
-   * Notify all Syscall observers of this Task's entry into a system call.
-   * Return the number of blocking observers.
-   *
-   * XXX: Should not be public.
-   */
-  public int notifySyscallEnter ()
-  {
-      logger.log(Level.FINE,
-		 "{0} notifySyscallEnter {1}\n",
-		 new Object[] 
-		 { this,
-		   new Integer(this.getSyscallEventInfo().number(this))
-		 });
-    for (Iterator i = syscallObservers.iterator(); i.hasNext();)
-      {
-        TaskObserver.Syscall observer = (TaskObserver.Syscall) i.next();
-        if (observer.updateSyscallEnter(this) == Action.BLOCK)
-          blockers.add(observer);
-      }
-    return blockers.size();
-  }
+    /**
+     * Notify all Syscall observers of this Task's entry into a system
+     * call.  Return the number of blocking observers.
+     *
+     * XXX: Should not be public.
+     */
+    public int notifySyscallEnter () {
+	logger.log(Level.FINE,
+		   "{0} notifySyscallEnter\n", this);
+	for (Iterator i = syscallObservers.iterator(); i.hasNext();) {
+	    TaskObserver.Syscall observer = (TaskObserver.Syscall) i.next();
+	    if (observer.updateSyscallEnter(this) == Action.BLOCK)
+		blockers.add(observer);
+	}
+	return blockers.size();
+    }
 
-  /**
-   * Notify all Syscall observers of this Task's exit from a system
-   * call. Return the number of blocking observers.
-   *
-   * XXX: Should not be public.
-   */
-  public int notifySyscallExit ()
-  {
-      logger.log(Level.FINE,
-		 "{0} notifySyscallExit {1}\n",
-		 new Object[] 
-		 { this,
-		   new Integer(this.getSyscallEventInfo().number(this))
-		 });
-    for (Iterator i = syscallObservers.iterator(); i.hasNext();)
-      {
-        TaskObserver.Syscall observer = (TaskObserver.Syscall) i.next();
-        if (observer.updateSyscallExit(this) == Action.BLOCK)
-          blockers.add(observer);
-      }
-    return blockers.size();
-  }
+    /**
+     * Notify all Syscall observers of this Task's exit from a system
+     * call. Return the number of blocking observers.
+     *
+     * XXX: Should not be public.
+     */
+    public int notifySyscallExit () {
+	logger.log(Level.FINE,
+		   "{0} notifySyscallExit {1}\n", this);
+	for (Iterator i = syscallObservers.iterator(); i.hasNext();) {
+	    TaskObserver.Syscall observer = (TaskObserver.Syscall) i.next();
+	    if (observer.updateSyscallExit(this) == Action.BLOCK)
+		blockers.add(observer);
+	}
+	return blockers.size();
+    }
 
   /**
    * Set of Signaled observers.

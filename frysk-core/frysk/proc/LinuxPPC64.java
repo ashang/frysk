@@ -68,7 +68,7 @@ class LinuxPPC64 extends IsaPowerPC implements SyscallEventDecoder
     public SyscallEventInfo getSyscallEventInfo () {
 	if (info == null)
 	    info = new SyscallEventInfo () {
-		    public int number (Task task) {
+		    private int number(Task task) {
 			logger.log (Level.FINE, "Get GPR0\n");
 			return (int)task.getRegister(PPC64Registers.GPR0);
 		    }

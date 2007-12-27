@@ -49,6 +49,15 @@ import java.util.HashMap;
  */
 
 public abstract class Syscall {
+    public static final Syscall INVALID = new Syscall("<invalid>", -1) {
+	    public long getArguments(Task task, int n) {
+		return 0;
+	    }
+	    public long getReturnCode(Task task) {
+		return 0;
+	    }
+	};
+
     private final int number;
     private final int numArgs;
     private final String name;
@@ -257,7 +266,7 @@ public abstract class Syscall {
 	unknownSyscalls = syscallTable.getUnknownSyscalls();
 
 	if (num < 0) {
-	    throw new RuntimeException ("Negative syscall number: " + num);
+	    return INVALID;
 	} else if (num >= syscallList.length) {
 	    synchronized (unknownSyscalls) {
 		Integer key = new Integer(num);
