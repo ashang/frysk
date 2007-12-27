@@ -45,7 +45,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import frysk.isa.PPC32Registers;
 
-class LinuxPPC32 extends IsaPowerPC implements SyscallEventDecoder {
+class LinuxPPC32 extends IsaPowerPC {
 
     LinuxPPC32() {
 	//In Power32 the PC will be in Link Register

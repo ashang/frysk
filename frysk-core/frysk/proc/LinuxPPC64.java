@@ -44,8 +44,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import frysk.isa.PPC64Registers;
 
-class LinuxPPC64 extends IsaPowerPC implements SyscallEventDecoder
-{
+class LinuxPPC64 extends IsaPowerPC {
     LinuxPPC64() {
 	super(PPC64Registers.NIP);
     }

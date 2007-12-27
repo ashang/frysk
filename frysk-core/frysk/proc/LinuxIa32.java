@@ -44,7 +44,7 @@ import inua.eio.ByteBuffer;
 import java.util.List;
 import java.util.LinkedList;
 
-class LinuxIa32 implements SyscallEventDecoder, Isa {
+class LinuxIa32 implements Isa {
 
     private static final Instruction IA32Breakpoint
 	= new Instruction(new byte[] { (byte)0xcc }, false);

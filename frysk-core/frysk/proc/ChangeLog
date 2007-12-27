@@ -1,5 +1,13 @@
 2007-12-27  Andrew Cagney  <cagney@redhat.com>
 
+	* Isa.java (getSyscallEventInfo()): Declare.
+	* SyscallEventDecoder.java: Delete.
+	* Task.java (getSyscallEventInfo): Update.
+	* LinuxIa32.java: Do not implement SyscallEventDecoder.
+	* LinuxPPC64.java: Ditto.
+	* LinuxPPC32.java: Ditto.
+	* LinuxX8664.java: Ditto.
+
 	* SyscallTable.java (getUnknownSyscalls()): Delete.
 	(unknownSyscall(int)): New.
 	* LinuxIa32Syscall.java (getUnknownSyscalls()): Delete.

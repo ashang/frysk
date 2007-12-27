@@ -117,4 +117,6 @@ public interface Isa
    * the sig return system call.
    */
   boolean isAtSyscallSigReturn(Task task);
+
+    SyscallEventInfo getSyscallEventInfo ();
 }

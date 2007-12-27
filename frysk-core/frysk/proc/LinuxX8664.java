@@ -45,7 +45,7 @@ import java.util.List;
 import inua.eio.ByteBuffer;
 import frysk.isa.X8664Registers;
 
-class LinuxX8664 implements SyscallEventDecoder, Isa {
+class LinuxX8664 implements Isa {
     private static final Instruction X8664Breakpoint
 	= new Instruction(new byte[] { (byte)0xcc }, false);
   

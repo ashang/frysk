@@ -125,10 +125,9 @@ public abstract class Task
    */
   protected abstract Isa sendrecIsa ();
 
-  public final SyscallEventInfo getSyscallEventInfo ()
-  {
-    return ((SyscallEventDecoder)getIsa()).getSyscallEventInfo();
-  }
+    public final SyscallEventInfo getSyscallEventInfo () {
+	return getIsa().getSyscallEventInfo();
+    }
 
   /**
    * Return the task's entry point address. This is the address of the first
