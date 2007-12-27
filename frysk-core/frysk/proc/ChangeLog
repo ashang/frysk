@@ -1,5 +1,11 @@
 2007-12-27  Andrew Cagney  <cagney@redhat.com>
 
+	* Isa.java (syscallByName(String)): Delete.
+	(getUnknownSyscalls()): Delete.
+	(getSyscallList()): Delete.
+	* Syscall.java: Use SyscallTableFactory.
+	* TestSyscallsWithAudit.java: Ditto.
+
 	* SyscallTableFactory.java: New file.
 
 	* SyscallTable.java: Rename SyscallFactory.java.

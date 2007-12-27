@@ -39,7 +39,6 @@
 
 package frysk.proc;
 
-import java.util.HashMap;
 import java.util.List;
 import inua.eio.ByteBuffer;
 
@@ -118,13 +117,4 @@ public interface Isa
    * the sig return system call.
    */
   boolean isAtSyscallSigReturn(Task task);
-
-  /** @return Syscall[] return system call list for this Linux<ISA>. */
-  Syscall[] getSyscallList ();
-  /** @return HashMap return a HashMap for unknown system calls. */
-  HashMap getUnknownSyscalls ();
-
-  /** @return Syscall return system call object if the name could be 
-   * found in syscallList, otherwise return null. */
-  Syscall syscallByName (String Name);
 }

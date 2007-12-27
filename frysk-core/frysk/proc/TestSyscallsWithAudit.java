@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,41 +41,34 @@ package frysk.proc;
 
 import frysk.sys.AuditLibs;
 import frysk.testbed.TestLib;
+import frysk.isa.ISA;
 
-public class TestSyscallsWithAudit
-  extends TestLib
-{
+public class TestSyscallsWithAudit extends TestLib {
   
-  public void testLinuxIa32()
-  {
-    int machine = AuditLibs.MACH_X86;
-    Isa isa = LinuxIa32.isaSingleton();
-    syscallTest(machine, isa);
+  public void testLinuxIA32() {
+      int machine = AuditLibs.MACH_X86;
+      syscallTest(machine, ISA.IA32);
   }
 
   public void testLinuxPPC32() {
       int machine = AuditLibs.MACH_PPC;
-      Isa isa = LinuxPPC32.isaSingleton();
-      syscallTest(machine, isa);
+      syscallTest(machine, ISA.PPC32BE);
   }
 
-  public void testLinuxPPC64()
-  {
-    int machine = AuditLibs.MACH_PPC64;
-    Isa isa = LinuxPPC64.isaSingleton();
-    syscallTest(machine, isa);
+  public void testLinuxPPC64() {
+      int machine = AuditLibs.MACH_PPC64;
+      syscallTest(machine, ISA.PPC64BE);
   }
 
-  public void testLinuxX86_64()
-  {
-    int machine = AuditLibs.MACH_86_64;
-    Isa isa = LinuxX8664.isaSingleton();
-    syscallTest(machine, isa);
+  public void testLinuxX8664() {
+      int machine = AuditLibs.MACH_86_64;
+      syscallTest(machine, ISA.X8664);
   }
 
-  private void syscallTest(int machine, Isa isa)
-  {
-    Syscall[] syscallList = isa.getSyscallList();
+  private void syscallTest(int machine, ISA isa) {
+      SyscallTable syscallTable
+	  = SyscallTableFactory.getSyscallTable(isa);
+      Syscall[] syscallList = syscallTable.getSyscallList();
     int highestNum = 0;
 
     // We assume there are at most this many syscall numbers
@@ -100,7 +93,7 @@ public class TestSyscallsWithAudit
 	    assertEquals("number", i, fryskNum);
 	    assertEquals("name (" + i + ")", auditName, fryskName);
 
-	    Syscall syscallByName = isa.syscallByName(auditName);
+	    Syscall syscallByName = syscallTable.syscallByName(auditName);
 	    // XXX There are a couple of syscalls with the same name
 	    // Below we test for auditNum, not i.
 	    // assertEquals("byName", syscall, syscallByName);

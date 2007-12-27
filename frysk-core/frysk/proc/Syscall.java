@@ -262,12 +262,14 @@ public abstract class Syscall {
      * @param task the current task
      * @return the Syscall object
      */
-    public static Syscall syscallByNum (int num, Task task) {
+    public static Syscall syscallByNum(int num, Task task) {
 	Syscall[] syscallList;
 	HashMap unknownSyscalls;
 
-	syscallList = task.getIsa().getSyscallList ();
-	unknownSyscalls = task.getIsa().getUnknownSyscalls ();
+	SyscallTable syscallTable
+	    = SyscallTableFactory.getSyscallTable(task.getISA());
+	syscallList = syscallTable.getSyscallList();
+	unknownSyscalls = syscallTable.getUnknownSyscalls();
 
 	if (num < 0) {
 	    throw new RuntimeException ("Negative syscall number: " + num);
@@ -310,10 +312,9 @@ public abstract class Syscall {
      * @throws NullPointerException if name is null
      */
     public static Syscall syscallByName (String name, Task task) {
-	Syscall syscall;
-
-	syscall = task.getIsa().syscallByName(name);
-
+	SyscallTable syscallTable
+	    = SyscallTableFactory.getSyscallTable(task.getISA());
+	Syscall syscall = syscallTable.syscallByName(name);
 	return syscall;
     }
 }
