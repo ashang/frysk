@@ -42,13 +42,16 @@ package frysk.proc;
 import java.util.HashMap;
 import frysk.isa.IA32Registers;
 
-public class LinuxIa32Syscall {
+public class LinuxIa32Syscall extends SyscallFactory {
     static final int SOCKET_NUM = 102;
     static final int IPC_NUM = 117;
 
     // This is used to keep track of syscalls whose number we do not
     // know.
     static HashMap unknownSyscalls = new HashMap();
+    public HashMap getUnknownSyscalls() {
+	return unknownSyscalls;
+    }
 
     static class Ia32Syscall extends Syscall {
 	Ia32Syscall(String name, int number, int numArgs, 
@@ -438,6 +441,9 @@ public class LinuxIa32Syscall {
 	    return task.getMemory().getInt(base + (n-1) * 4);
 	}
     }
+    public Syscall[] getSyscallList() {
+	return syscallList;
+    }
 
     static Syscall[] socketSubcallList = {
 	new SocketSubSyscall("", SOCKET_NUM),
@@ -531,4 +537,22 @@ public class LinuxIa32Syscall {
 	    }
 	}
     }
+
+    public Syscall syscallByName(String name) {
+	Syscall syscall;
+	syscall = Syscall.iterateSyscallByName(name, LinuxIa32Syscall.syscallList);
+	if (syscall != null)
+	    return syscall;
+    
+	syscall = Syscall.iterateSyscallByName(name, LinuxIa32Syscall.socketSubcallList);
+	if (syscall != null)
+	    return syscall;
+    
+	syscall = Syscall.iterateSyscallByName(name, LinuxIa32Syscall.ipcSubcallList);
+	if (syscall != null)
+	    return syscall;
+
+	return null;
+    }
+
 }

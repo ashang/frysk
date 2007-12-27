@@ -49,13 +49,16 @@ import frysk.isa.PPC32Registers;
  * XXX: There is much duplication between this and LinuxPPC64Syscall.
  */
 
-public class LinuxPPC32Syscall {
+public class LinuxPPC32Syscall extends SyscallFactory {
     private static final int SOCKET_NUM = 102;
     private static final int IPC_NUM = 117;
 
     // This is used to keep track of syscalls whose number we do not
     // know.
     static final HashMap unknownSyscalls = new HashMap();
+    public HashMap getUnknownSyscalls() {
+	return unknownSyscalls;
+    }
 
     static private class PowerPCSyscall extends Syscall {
 	PowerPCSyscall(String name, int number, int numArgs, 
@@ -418,6 +421,9 @@ public class LinuxPPC32Syscall {
 	new PowerPCSyscall("sync_file_range2", 308),
 	new PowerPCSyscall("fallocate", 309)
     };
+    public Syscall[] getSyscallList() {
+	return syscallList;
+    }
 
     static class SocketSubSyscall extends PowerPCSyscall {
 	SocketSubSyscall(String name, int number) {
@@ -519,4 +525,19 @@ public class LinuxPPC32Syscall {
 	    }
 	}
     }
+
+    public Syscall syscallByName(String name) {
+	Syscall syscall;
+	syscall = Syscall.iterateSyscallByName(name, LinuxPPC32Syscall.syscallList);
+	if (syscall != null)
+	    return syscall;
+	syscall = Syscall.iterateSyscallByName(name, LinuxPPC32Syscall.socketSubcallList);
+	if (syscall != null)
+	    return syscall;
+	syscall = Syscall.iterateSyscallByName(name, LinuxPPC32Syscall.ipcSubcallList);
+	if (syscall != null)
+	    return syscall;
+	return null;
+    }
+
 }

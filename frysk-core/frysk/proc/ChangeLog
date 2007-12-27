@@ -1,5 +1,11 @@
 2007-12-27  Andrew Cagney  <cagney@redhat.com>
 
+	* SyscallFactory.java (isAtSyscallSigReturn(Task)): Delete.
+	* LinuxPPC64Syscall.java: Extend SyscallFactory.
+	* LinuxPPC32Syscall.java: Ditto.
+	* LinuxIa32Syscall.java: Ditto.
+	* LinuxX8664Syscall.java: Ditto.
+
 	* LinuxX8664Syscall.java: Re-indent.
 	* LinuxIa32Syscall.java: Re-indent.
 

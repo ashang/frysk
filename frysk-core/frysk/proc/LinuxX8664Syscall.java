@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006 Red Hat Inc.
+// Copyright 2005, 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,11 +42,14 @@ package frysk.proc;
 import java.util.HashMap;
 import frysk.isa.X8664Registers;
 
-public class LinuxX8664Syscall {
+public class LinuxX8664Syscall extends SyscallFactory {
 
     // This is used to keep track of syscalls whose number we do not
     // know.
     static HashMap unknownSyscalls = new HashMap();
+    public HashMap getUnknownSyscalls() {
+	return unknownSyscalls;
+    }
 
     static class X8664Syscall extends Syscall {
 	X8664Syscall(String name, int number, int numArgs, 
@@ -377,7 +380,15 @@ public class LinuxX8664Syscall {
 	new X8664Syscall("eventfd", 284),
 	new X8664Syscall("fallocate", 285)
     };
+    public Syscall[] getSyscallList() {
+	return syscallList;
+    }
 
     public static Syscall syscallByNum(Task task, int number) {
 	return Syscall.syscallByNum(number, task);
     }
+
+    public Syscall syscallByName (String name) {
+	return Syscall.iterateSyscallByName(name, LinuxX8664Syscall.syscallList);
+    }
+}
