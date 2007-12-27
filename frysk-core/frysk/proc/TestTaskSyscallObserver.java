@@ -64,68 +64,63 @@ import frysk.testbed.DaemonBlockedAtEntry;
 public class TestTaskSyscallObserver
     extends TestLib
 {
-  class SyscallObserver
-      extends TaskObserverBase
-      implements TaskObserver.Syscall
-  {
-    int enter = 0;
+    class SyscallObserver extends TaskObserverBase
+	implements TaskObserver.Syscall {
+	int enter = 0;
 
-    int exit = 0;
+	int exit = 0;
 
-    // boolean inSyscall = false; //XXX: this assumption cannot be made
-    boolean inSyscall;
+	// boolean inSyscall = false; //XXX: this assumption cannot be made
+	boolean inSyscall;
 
-    boolean caughtExec = false;
+	boolean caughtExec = false;
 
-    final frysk.proc.Syscall execvesys;
+	final frysk.proc.Syscall execvesys;
 
-    final frysk.proc.Syscall opensys;
+	final frysk.proc.Syscall opensys;
 
-    final frysk.proc.Syscall readsys;
+	final frysk.proc.Syscall readsys;
 
-    SyscallObserver (Task task)
-    {
-      execvesys = frysk.proc.Syscall.syscallByName("execve", task);
-      opensys = frysk.proc.Syscall.syscallByName("open", task);
-      readsys = frysk.proc.Syscall.syscallByName("read", task);
+	SyscallObserver (Task task) {
+	    SyscallTable syscallTable
+		= SyscallTableFactory.getSyscallTable(task.getISA());
+	    execvesys = syscallTable.syscallByName("execve");
+	    opensys = syscallTable.syscallByName("open");
+	    readsys = syscallTable.syscallByName("read");
+	}
+
+	public void addedTo (Object o) {
+	    super.addedTo(o);
+	    Manager.eventLoop.requestStop();
+	}
+
+	public Action updateSyscallEnter (Task task) {
+	    assertFalse("inSyscall", inSyscall);
+	    inSyscall = true;
+	    enter++;
+
+	    SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
+	    // XXX - workaround for broken syscall detection on exit
+	    if (syscallEventInfo.number(task) == - 1)
+		return Action.CONTINUE;
+
+	    frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
+
+	    if (execvesys.equals(syscall)) {
+		caughtExec = true;
+	    }
+
+	    return Action.CONTINUE;
+	}
+
+	public Action updateSyscallExit (Task task) {
+	    if (enter != 0)
+		assertTrue("inSyscall", inSyscall);
+	    inSyscall = false;
+	    exit++;
+	    return Action.CONTINUE;
+	}
     }
-
-    public void addedTo (Object o)
-    {
-      super.addedTo(o);
-      Manager.eventLoop.requestStop();
-    }
-
-    public Action updateSyscallEnter (Task task)
-    {
-      assertFalse("inSyscall", inSyscall);
-      inSyscall = true;
-      enter++;
-
-      SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-      // XXX - workaround for broken syscall detection on exit
-      if (syscallEventInfo.number(task) == - 1)
-        return Action.CONTINUE;
-
-      frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
-
-      if (execvesys.equals(syscall))
-        {
-          caughtExec = true;
-        }
-
-      return Action.CONTINUE;
-    }
-
-    public Action updateSyscallExit (Task task)
-    {
-      if (enter != 0)
-        assertTrue("inSyscall", inSyscall);
-      inSyscall = false;
-      exit++;
-      return Action.CONTINUE;
-    }
-  }
 
   /**
    * test that the state machine can handle an exec event during a a syscall.

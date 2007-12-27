@@ -235,101 +235,89 @@ public class TestSyscallSignal
 	}
     }
 
-  /**
-   * Observer that looks for open and close syscalls.
-   * After a given number of calls it will BLOCK from the syscall enter.
-   */
-  class SyscallObserver implements TaskObserver.Syscall
-  {
-    private final int stophits;
+    /**
+     * Observer that looks for open and close syscalls.
+     * After a given number of calls it will BLOCK from the syscall enter.
+     */
+    class SyscallObserver implements TaskObserver.Syscall {
+	private final int stophits;
 
-    private int entered;
-    private int exited;
-    private boolean added;
-    private boolean removed;
+	private int entered;
+	private int exited;
+	private boolean added;
+	private boolean removed;
 
-    private final frysk.proc.Syscall opensys;
-    private final frysk.proc.Syscall closesys;
+	private final frysk.proc.Syscall opensys;
+	private final frysk.proc.Syscall closesys;
 
-    SyscallObserver(int stophits, Task task)
-    {
-      this.stophits = stophits;
-      this.opensys = frysk.proc.Syscall.syscallByName("open", task);
-      this.closesys = frysk.proc.Syscall.syscallByName("close", task);
-    }
-
-    public Action updateSyscallEnter(Task task)
-    {
-      SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-      frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
-      if (opensys.equals(syscall) || closesys.equals(syscall))
-	{
-	  entered++;
-	  if (entered == stophits) {
-	      Manager.eventLoop.requestStop();
-	      return Action.BLOCK;
-	  }
+	SyscallObserver(int stophits, Task task) {
+	    SyscallTable syscallTable
+		= SyscallTableFactory.getSyscallTable(task.getISA());
+	    this.stophits = stophits;
+	    this.opensys = syscallTable.syscallByName("open");
+	    this.closesys = syscallTable.syscallByName("close");
 	}
-      return Action.CONTINUE;
-    }
 
-    public Action updateSyscallExit(Task task)
-    {
-      SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-      // XXX - workaround for broken syscall detection on exit
-      if (syscallEventInfo.number(task) == -1)
-	return Action.CONTINUE;
-      frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
-      if (opensys.equals(syscall) || closesys.equals(syscall))
-	{
-	  exited++;
+	public Action updateSyscallEnter(Task task) {
+	    SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
+	    frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
+	    if (opensys.equals(syscall) || closesys.equals(syscall)) {
+		entered++;
+		if (entered == stophits) {
+		    Manager.eventLoop.requestStop();
+		    return Action.BLOCK;
+		}
+	    }
+	    return Action.CONTINUE;
 	}
-      return Action.CONTINUE;
-    }
 
-    int getEntered()
-    {
-      return entered;
-    }
+	public Action updateSyscallExit(Task task) {
+	    SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
+	    // XXX - workaround for broken syscall detection on exit
+	    if (syscallEventInfo.number(task) == -1)
+		return Action.CONTINUE;
+	    frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
+	    if (opensys.equals(syscall) || closesys.equals(syscall)) {
+		exited++;
+	    }
+	    return Action.CONTINUE;
+	}
 
-    int getExited()
-    {
-      return exited;
-    }
+	int getEntered() {
+	    return entered;
+	}
 
-    public void addFailed(Object observable, Throwable w)
-    {
-      w.printStackTrace();
-      fail(w.getMessage());
-    }
+	int getExited() {
+	    return exited;
+	}
+
+	public void addFailed(Object observable, Throwable w) {
+	    w.printStackTrace();
+	    fail(w.getMessage());
+	}
     
-    public void addedTo(Object observable)
-    {
-	added = true;
-	removed = false;
-	Manager.eventLoop.requestStop();
-    }
+	public void addedTo(Object observable) {
+	    added = true;
+	    removed = false;
+	    Manager.eventLoop.requestStop();
+	}
 
-    public boolean isAdded()
-    {
-      return added;
-    }
+	public boolean isAdded() {
+	    return added;
+	}
     
-    public void deletedFrom(Object observable)
-    {
-	removed = true;
-	added = true;
-	Manager.eventLoop.requestStop();
-    }
+	public void deletedFrom(Object observable) {
+	    removed = true;
+	    added = true;
+	    Manager.eventLoop.requestStop();
+	}
 
-    public boolean isRemoved()
-    {
-      return removed;
-    }
+	public boolean isRemoved() {
+	    return removed;
+	}
 
-    private SyscallEventInfo getSyscallEventInfo(Task task)
-    {
-	return task.getSyscallEventInfo();
+	private SyscallEventInfo getSyscallEventInfo(Task task) {
+	    return task.getSyscallEventInfo();
+	}
     }
-  }
 }

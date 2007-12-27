@@ -301,20 +301,4 @@ public abstract class Syscall {
 	    return syscallList[num];
 	}
     }
-
-    /**
-     * Given a system call's name, this will return the corresponding
-     * Syscall object.  If no predefined system call with that name
-     * is available, this will return null.
-     * @param name the name of the system call
-     * @param task the cuurent task
-     * @return the Syscall object, or null
-     * @throws NullPointerException if name is null
-     */
-    public static Syscall syscallByName (String name, Task task) {
-	SyscallTable syscallTable
-	    = SyscallTableFactory.getSyscallTable(task.getISA());
-	Syscall syscall = syscallTable.syscallByName(name);
-	return syscall;
-    }
 }

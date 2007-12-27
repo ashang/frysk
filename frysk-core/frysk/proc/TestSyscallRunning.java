@@ -159,90 +159,78 @@ public class TestSyscallRunning
 	assertRunUntilStop("syso and syso2 exited");
   }
 
-  /**
-   * Observer that looks for open and close syscalls.
-   * After a given number of calls it will BLOCK from the syscall enter.
-   */
-  class SyscallObserver implements TaskObserver.Syscall
-  {
-    private boolean entered;
-    private boolean exited;
-    private boolean added;
-    private boolean removed;
+    /**
+     * Observer that looks for open and close syscalls.
+     * After a given number of calls it will BLOCK from the syscall enter.
+     */
+    class SyscallObserver implements TaskObserver.Syscall {
+	private boolean entered;
+	private boolean exited;
+	private boolean added;
+	private boolean removed;
 
-    private final frysk.proc.Syscall syscall;
+	private final frysk.proc.Syscall syscall;
 
-    SyscallObserver(String call, Task task, boolean entered)
-    {
-      syscall = frysk.proc.Syscall.syscallByName(call, task);
-      this.entered = entered;
-    }
-
-    public Action updateSyscallEnter(Task task)
-    {
-      SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-      if (syscallEventInfo.getSyscall(task).equals(syscall))
-	{
-	    entered = true;
-	    Manager.eventLoop.requestStop();
-	    return Action.BLOCK;
+	SyscallObserver(String call, Task task, boolean entered) {
+	    SyscallTable syscallTable
+		= SyscallTableFactory.getSyscallTable(task.getISA());
+	    syscall = syscallTable.syscallByName(call);
+	    this.entered = entered;
 	}
-      return Action.CONTINUE;
-    }
 
-    public Action updateSyscallExit(Task task)
-    {
-      if (entered)
-	{
-	    exited = true;
+	public Action updateSyscallEnter(Task task) {
+	    SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
+	    if (syscallEventInfo.getSyscall(task).equals(syscall)) {
+		entered = true;
+		Manager.eventLoop.requestStop();
+		return Action.BLOCK;
+	    }
+	    return Action.CONTINUE;
+	}
+
+	public Action updateSyscallExit(Task task) {
+	    if (entered) {
+		exited = true;
+		Manager.eventLoop.requestStop();
+	    }
+	    return Action.CONTINUE;
+	}
+
+	boolean getEntered() {
+	    return entered;
+	}
+
+	boolean getExited() {
+	    return exited;
+	}
+
+	public void addFailed(Object observable, Throwable w) {
+	    w.printStackTrace();
+	    fail(w.getMessage());
+	}
+    
+	public void addedTo(Object observable) {
+	    added = true;
+	    removed = false;
 	    Manager.eventLoop.requestStop();
 	}
-      return Action.CONTINUE;
-    }
 
-    boolean getEntered()
-    {
-      return entered;
-    }
-
-    boolean getExited()
-    {
-      return exited;
-    }
-
-    public void addFailed(Object observable, Throwable w)
-    {
-      w.printStackTrace();
-      fail(w.getMessage());
-    }
+	public boolean isAdded() {
+	    return added;
+	}
     
-    public void addedTo(Object observable)
-    {
-	added = true;
-	removed = false;
-	Manager.eventLoop.requestStop();
-    }
+	public void deletedFrom(Object observable) {
+	    removed = true;
+	    added = true;
+	    Manager.eventLoop.requestStop();
+	}
 
-    public boolean isAdded()
-    {
-      return added;
-    }
-    
-    public void deletedFrom(Object observable)
-    {
-	removed = true;
-	added = true;
-	Manager.eventLoop.requestStop();
-    }
+	public boolean isRemoved() {
+	    return removed;
+	}
 
-    public boolean isRemoved()
-    {
-      return removed;
+	private SyscallEventInfo getSyscallEventInfo(Task task) {
+	    return task.getSyscallEventInfo();
+	}
     }
-
-    private SyscallEventInfo getSyscallEventInfo(Task task)
-    {
-	return task.getSyscallEventInfo();
-    }
-  }
 }
