@@ -43,7 +43,7 @@ import frysk.isa.X8664Registers;
 
 public class LinuxX8664Syscall extends SyscallTable {
 
-    static class X8664Syscall extends Syscall {
+    private static class X8664Syscall extends Syscall {
 	X8664Syscall(String name, int number, int numArgs, 
 		     String argList, boolean noreturn) {
 	    super(name, number, numArgs, argList, noreturn);
@@ -84,7 +84,7 @@ public class LinuxX8664Syscall extends SyscallTable {
 	    return task.getRegister(X8664Registers.RAX);
 	}
     }
-    static Syscall[] syscallList = {
+    private static Syscall[] syscallList = {
 	new X8664Syscall("read",  0, 3, "i:ibn "),
 	new X8664Syscall("write", 1, 3, "i:isn "),
 	new X8664Syscall("open",  2, 3, "i:siv "),
@@ -372,9 +372,6 @@ public class LinuxX8664Syscall extends SyscallTable {
 	new X8664Syscall("eventfd", 284),
 	new X8664Syscall("fallocate", 285)
     };
-    public Syscall[] getSyscallList() {
-	return syscallList;
-    }
 
     public Syscall getSyscall(String name) {
 	return iterateSyscallByName(name, LinuxX8664Syscall.syscallList);

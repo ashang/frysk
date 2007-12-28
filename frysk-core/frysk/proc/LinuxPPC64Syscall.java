@@ -107,7 +107,7 @@ public class LinuxPPC64Syscall extends SyscallTable {
 	}
     }
 
-    static Syscall[] syscallList = {
+    private static Syscall[] syscallList = {
 	new PowerPCSyscall (0),
 	new PowerPCSyscall ("exit", 1, 1),
 	new PowerPCSyscall ("fork", 2, 0, "i: "),
@@ -419,11 +419,8 @@ public class LinuxPPC64Syscall extends SyscallTable {
 	new PowerPCSyscall ("sync_file_range2", 308),
 	new PowerPCSyscall ("fallocate", 309)
     };
-    public Syscall[] getSyscallList() {
-	return syscallList;
-    }
 
-    static class SocketSubSyscall extends PowerPCSyscall {
+    private static class SocketSubSyscall extends PowerPCSyscall {
 	SocketSubSyscall (String name, int number) {
 	    super (name, number);
 	}
@@ -438,7 +435,7 @@ public class LinuxPPC64Syscall extends SyscallTable {
 	}
     }
 
-    static Syscall[] socketSubcallList = {
+    private static Syscall[] socketSubcallList = {
 	new SocketSubSyscall ("", SOCKET_NUM),
 	new SocketSubSyscall ("socket",     SOCKET_NUM, 3, "i:iii"),
 	new SocketSubSyscall ("bind",       SOCKET_NUM, 3, "i:ipi "),
@@ -459,8 +456,7 @@ public class LinuxPPC64Syscall extends SyscallTable {
 	new SocketSubSyscall ("recvmsg",    SOCKET_NUM, 5, "i:iiipp ")
     };
 
-
-    static class IpcSubSyscall
+    private static class IpcSubSyscall
 	extends PowerPCSyscall
     {
 	IpcSubSyscall (String name, int number)
@@ -482,7 +478,7 @@ public class LinuxPPC64Syscall extends SyscallTable {
 	}
  
     }
-    static Syscall[] ipcSubcallList = {
+    private static Syscall[] ipcSubcallList = {
 	new IpcSubSyscall ("semop",  IPC_NUM),
 	new IpcSubSyscall("semget", IPC_NUM),
 	new IpcSubSyscall("semctl",  IPC_NUM),

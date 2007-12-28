@@ -1,5 +1,11 @@
 2007-12-28  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxIa32Syscall.java: Privatize.
+	(getSyscallList()): Delete
+	* LinuxX8664Syscall.java: Ditto.
+	* LinuxPPC64Syscall.java: Ditto.
+	* LinuxPPC64Syscall.java: Ditto.
+	
 	* SyscallTable.java (getSyscallList()): Delete.	
 	(getSyscall(long)): New.
 	(findSubcall(Syscall[],long)): New.

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006 Red Hat Inc.
+// Copyright 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,10 +42,10 @@ package frysk.proc;
 import frysk.isa.IA32Registers;
 
 public class LinuxIa32Syscall extends SyscallTable {
-    static final int SOCKET_NUM = 102;
-    static final int IPC_NUM = 117;
+    private static final int SOCKET_NUM = 102;
+    private static final int IPC_NUM = 117;
 
-    static class Ia32Syscall extends Syscall {
+    private static class Ia32Syscall extends Syscall {
 	Ia32Syscall(String name, int number, int numArgs, 
 		    String argList, boolean noreturn) {
 	    super(name, number, numArgs, argList, noreturn);
@@ -88,7 +88,7 @@ public class LinuxIa32Syscall extends SyscallTable {
 	}
     }
   
-    static Syscall[] syscallList = {
+    private static Syscall[] syscallList = {
 	new Ia32Syscall("restart_syscall", 0),
 	new Ia32Syscall("exit", 1, 1),
 	new Ia32Syscall("fork", 2, 0, "i: "),
@@ -417,7 +417,7 @@ public class LinuxIa32Syscall extends SyscallTable {
     };
 
 
-    static class SocketSubSyscall extends Ia32Syscall {
+    private static class SocketSubSyscall extends Ia32Syscall {
 	SocketSubSyscall(String name, int number) {
 	    super(name, number);
 	}
@@ -433,11 +433,8 @@ public class LinuxIa32Syscall extends SyscallTable {
 	    return task.getMemory().getInt(base + (n-1) * 4);
 	}
     }
-    public Syscall[] getSyscallList() {
-	return syscallList;
-    }
 
-    static Syscall[] socketSubcallList = {
+    private static Syscall[] socketSubcallList = {
 	new SocketSubSyscall("", SOCKET_NUM),
 	new SocketSubSyscall("socket",     SOCKET_NUM, 3, "i:iii"),
 	new SocketSubSyscall("bind",       SOCKET_NUM, 3, "i:ipi "),
@@ -461,7 +458,7 @@ public class LinuxIa32Syscall extends SyscallTable {
     private static final SocketSubSyscall unknownSocketSubSyscall =
 	new SocketSubSyscall("<unknown>", SOCKET_NUM);
 
-    static class IpcSubSyscall extends Ia32Syscall {
+    private static class IpcSubSyscall extends Ia32Syscall {
 	IpcSubSyscall(String name, int number) {
 	    super(name, number);
 	}
@@ -478,7 +475,7 @@ public class LinuxIa32Syscall extends SyscallTable {
     }
 
     /**FIXME: No argument list here.*/
-    static Syscall[] ipcSubcallList = {
+    private static Syscall[] ipcSubcallList = {
 	new IpcSubSyscall("<unknown0>",  IPC_NUM),
 	new IpcSubSyscall("semop",  IPC_NUM),
 	new IpcSubSyscall("semget", IPC_NUM),
