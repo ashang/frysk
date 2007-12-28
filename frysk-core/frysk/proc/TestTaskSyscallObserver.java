@@ -485,6 +485,7 @@ public class TestTaskSyscallObserver
 	}
 
 	public Action updateSyscallEnter (Task task, Syscall syscall) {
+	    super.updateSyscallEnter(task, syscall);
 	    // verify that read attempted
 	    if (readsys.equals(syscall)) {
 		long numberOfBytes = syscall.getArguments(task, 3);

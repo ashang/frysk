@@ -1,5 +1,8 @@
 2007-12-28  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskSyscallObserver.java (SyscallInterruptObserver): In
+	updateSyscallEnter call super.
+	
 	* TaskObserver.java (Syscalls): Rename Syscall; add Syscall
 	parameter to updateSyscallEnter.
 	* TestTaskSyscallObserver.java: Update.
