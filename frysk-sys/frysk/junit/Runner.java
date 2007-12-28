@@ -71,7 +71,6 @@ public class Runner
     
     // Repeat once by default.
     private int repeatValue = 1;
-    private String archTarget = null;
     private Collection testCases = null;
     private boolean listClassesOnly = false;
     // Put all tests through a filter; by default exclude all Stress.*
@@ -81,9 +80,6 @@ public class Runner
     private ArrayList includeTests = new ArrayList();
     
     private LinkedList otherArgs;
-    
-    public final static String ARCH64 = "64";
-    public final static String ARCH32 = "32";
     
     public static void usage(String message, int exitVal) {
         System.out.println (message);                                       
@@ -219,73 +215,6 @@ public class Runner
     }
     
     /**
-     * Run the testcases carried by testClasses.
-     * 
-     * @param testClasses
-     * @return int the value of exit.
-     */
-    public int runArchCases (Collection testClasses) {
-	// Check whether we should continue.
-	if (this.archTarget != null && !this.archTarget.equals(Runner.ARCH64))
-	    return SUCCESS_EXIT;
-     
-	boolean testArch64 = Config.getWordSize () == 64;
-      
-	if (this.archTarget != null && !testArch64) {
-	    System.out.println ("Arch test is only supported on 64-bit"
-				+ " systems.");
-	    System.out.println ("Please try without --arch option! Exit...");
-	    System.exit (FAILURE_EXIT);
-	}
- 
-	return this.runCases(testClasses);
-    }
-    
-    /**
-     * Run bi-arch test when the "-i" or "-b" option is given.  When
-     * doing bi-arch test, all cases are the same as the common test
-     * except for the execPrefix path. So after the correct execPrefix
-     * is set before calling this function in frysk.junit.Paths, we do
-     * the same procedures as the doRunner().
-     * 
-     * @param testClasses
-     * @return
-     * @see frysk.junit.Paths
-     */
-    public int runArch32Cases(Collection testClasses) {
-	//XXX: if all 32-bit cases pass, we should comment 
-	//the following instruction.
-	if (this.archTarget == null)
-	    return SUCCESS_EXIT;
-      
-	boolean testArch32 = Config.getWordSize () == 64;
-	  
-	if (!testArch32) {
-	    System.out.println("It's unnecessary or unsupported"
-			       + " to do arch test on "
-			       + Config.getWordSize ()
-			       + " system.");
-	    System.exit (FAILURE_EXIT);
-	}
-	if (!this.archTarget.equals(Runner.ARCH32)) {
-	    return SUCCESS_EXIT;
-	}
-      
-	/**
-	 * Output some prompt message when we run both 64-bit and 32-bit cases.
-	 */
-	if (this.archTarget == null) {
-	    System.out.println("+====================================================+");
-	    System.out.println("|                                                    |");
-	    System.out.println("|            The following is Biarch Test            |");
-	    System.out.println("|                                                    |");
-	    System.out.println("+====================================================+");
-	}
-      
-	return this.runCases(testClasses);
-    }
-    
-    /**
      * Create and return the command line parser used by frysk's JUnit
      * tests.
      */
@@ -344,22 +273,24 @@ public class Runner
 	    });
 	
 	parser.add (new Option ("arch",
-				"Set the target arch whose test cases"
-				+ " will be running. <ARCH> can be 64 or 32. "
-				+ " If no any arch is set, the arch-64"
-				+ " cases will be run. All arch-64 and"
-				+ " arch-32 cases will be run when arch-32"
-				+ " is ready.  The --arch option will take"
-				+ " no effect on 32-bit machines.",
+				("On 64-bit systems,"
+				 + " only use test programs with the"
+				 + " specified word-size (32, 64, all)."
+				 + " By default, both 32-bit and 64-bit"
+				 + " test programs are used"),
 				"<arch>") {
 		public void parsed (String arg0) throws OptionException {
-		    if (arg0.equals(Runner.ARCH32)
-			|| arg0.equals(Runner.ARCH64)) {
-			archTarget = arg0;
-		    } else {
+		    if (arg0.equals("32"))
+			Config.set(config32);
+		    else if (arg0.equals("64")) {
+			if (Config.getWordSize() != 64)
+			    throw new OptionException("-arch requires 64-bit");
+			Config.set(config64);
+		    } else if (arg0.equals("all"))
+			Config.set(configAll);
+		    else
 			throw new OptionException( "Invalid arch value: "
 						   + arg0);
-		    }
 		}
 	    });
 	
@@ -448,6 +379,13 @@ public class Runner
     
     private static String programBasename;
     /**
+     * Possible configurations.
+     */
+    private final Config configAll;
+    private final Config config32;
+    private final Config config64;
+
+    /**
      * Return the TestRunner's true basename - it could be "funit" or
      * it could be "TestRunner".
      *
@@ -463,17 +401,23 @@ public class Runner
      * Create a JUnit TestRunner, using command-line arguments args,
      * and the supplied testClasses.
      */
-    public Runner(String programName, String[] args) {
+    public Runner(String programBasename, String[] args,
+		  Config configAll, Config config32, Config config64) {
 	// Override the print methods.
 	super (new Results (System.out));
 	
+	Config.set(configAll); // default
+	this.configAll = configAll;
+	this.config32 = config32;
+	this.config64 = config64;
+
 	// Tell expect the default timeout.
 	Expect.setDefaultTimeoutSeconds (TestCase.getTimeoutSeconds ());
 
 	// Create the command line parser, and use it to parse all
 	// command line options.
-	Parser parser = createCommandLineParser (programName);
-	programBasename = programName;
+	Runner.programBasename = programBasename;
+	Parser parser = createCommandLineParser(programBasename);
 	
 	otherArgs = new LinkedList();
 	
@@ -502,19 +446,15 @@ public class Runner
 	return EXCEPTION_EXIT;
     }
 
-    public int runTestCases (Collection tests, Config config,
-			     Collection tests32, Config config32)
-    {
+    /**
+     * Run the testcases carried by testClasses.
+     * 
+     * @param testClasses
+     * @return int the value of exit.
+     */
+    public int runTestCases (Collection tests) {
 	int result = SUCCESS_EXIT;
-
-	// Set the path prefixes and then do the common test.
-	Config.set (config);
-	result = worstResult (runArchCases (tests), result);
-	
-	// Set the Config to 32-on-64 and then re-run the tests.
-	Config.set (config32);
-	result = worstResult (runArch32Cases (tests32), result);
-
+	result = worstResult(runCases(tests), result);
 	return result;
     }
 

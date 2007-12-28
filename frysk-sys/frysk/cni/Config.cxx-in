@@ -101,9 +101,17 @@ frysk::Config::createInstallConfig ()
   config->theImagesDir = JvNewStringUTF ("@imagesdir@")->intern ();
   config->theBinDir = asFile ("@bindir@");
   config->thePkgDataDir = asFile ("@pkgdatadir@");
-  config->thePkgLib32Dir = NULL;
-  config->thePkgLib64Dir = NULL;
   config->thePkgLibDir = asFile ("@pkglibdir@");
+  switch (sizeof(void*)) {
+  case 4:
+    config->thePkgLib32Dir = NULL;
+    config->thePkgLib64Dir = NULL;
+    break;
+  case 8:
+    config->thePkgLib32Dir = asFile ("@pkglib32dir@");
+    config->thePkgLib64Dir = asFile ("@pkglib64dir@");
+    break;
+  }
   return config;
 }
 
@@ -153,16 +161,6 @@ frysk::Config::createInstallConfig64 ()
 }
 
 frysk::Config*
-frysk::Config::createInstall32On64Config ()
-{
-  frysk::Config* config = createInstallConfig ();
-  config->thePkgLib32Dir = asFile ("@pkglib32dir@");
-  config->thePkgLib64Dir = asFile ("@pkglib64dir@");
-  config->thePkgLibDir = config->thePkgLib32Dir;
-  return config;
-}
-
-frysk::Config*
 frysk::Config::createBuildConfig (jstring absSrcDir,
 				  jstring absBuildDir)
 {
@@ -172,9 +170,17 @@ frysk::Config::createBuildConfig (jstring absSrcDir,
   config->theImagesDir = absSrcDir->concat (JvNewStringUTF ("/frysk/gui/imagesdir"))->intern ();
   config->theBinDir = asFile (absBuildDir, "/frysk/bindir/");
   config->thePkgDataDir = asFile (absBuildDir, "/frysk/pkgdatadir/");
-  config->thePkgLib32Dir = NULL;
-  config->thePkgLib64Dir = NULL;
   config->thePkgLibDir = asFile (absBuildDir, "/frysk/pkglibdir/");
+  switch (sizeof(void*)) {
+  case 4:
+    config->thePkgLib32Dir = NULL;
+    config->thePkgLib64Dir = NULL;
+    break;
+  case 8:
+    config->thePkgLib32Dir = asFile (absBuildDir, "/frysk/pkglibdir/arch32/");
+    config->thePkgLib64Dir = asFile (absBuildDir, "/frysk/pkglibdir/");
+    break;
+  }
   return config;
 }
 
@@ -225,16 +231,5 @@ frysk::Config::createBuildConfig64 (jstring absSrcDir,
   config->thePkgLibDir = pkgLibDir;
   config->thePkgLib32Dir = NULL;
   config->thePkgLib64Dir = NULL;
-  return config;
-}
-
-frysk::Config*
-frysk::Config::createBuild32On64Config (jstring absSrcDir,
-					jstring absBuildDir)
-{
-  frysk::Config* config = createBuildConfig (absSrcDir, absBuildDir);
-  config->thePkgLib32Dir = asFile (absBuildDir, "/frysk/pkglibdir/arch32/");
-  config->thePkgLib64Dir = asFile (absBuildDir, "/frysk/pkglibdir/");
-  config->thePkgLibDir = config->thePkgLib32Dir;
   return config;
 }

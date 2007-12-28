@@ -65,24 +65,23 @@ public class TestConfig
 	Config.set (old);
     }
 
-    private void validate (boolean pure)
-    {
+    private void validate(boolean pure) {
 	// The expected paths are valid.
-	assertNotNull ("getGladeDir", Config.getGladeDir ());
-	assertNotNull ("getHelpDir", Config.getHelpDir ());
-	assertNotNull ("getImagesDir", Config.getImagesDir ());
-	assertNotNull ("getBinFile", Config.getBinFile (null));
-	assertNotNull ("getPkgDataFile", Config.getPkgDataFile (null));
-	assertNotNull ("getPkgLibFile", Config.getPkgLibFile (null));
+	assertNotNull("getGladeDir", Config.getGladeDir ());
+	assertNotNull("getHelpDir", Config.getHelpDir ());
+	assertNotNull("getImagesDir", Config.getImagesDir ());
+	assertNotNull("getBinFile", Config.getBinFile (null));
+	assertNotNull("getPkgDataFile", Config.getPkgDataFile (null));
+	assertNotNull("getPkgLibFile", Config.getPkgLibFile (null));
 	if (pure) {
 	    assertNull("getPkgLib32File", Config.getPkgLib32File(null));
 	    assertNull("getPkgLib64File", Config.getPkgLib64File(null));
 	} else {
 	    assertNotNull("getPkgLib32File", Config.getPkgLib32File(null));
 	    assertNotNull("getPkgLib64File", Config.getPkgLib64File(null));
-	    assertSame("getPkgLibFile is getPkgLib32File",
-			Config.getPkgLibFile(null),
-			Config.getPkgLib32File(null));
+	    assertEquals("getPkgLibFile is getPkgLib64File",
+			 Config.getPkgLibFile(null),
+			 Config.getPkgLib64File(null));
 	}
     }
 
@@ -93,17 +92,16 @@ public class TestConfig
     public void testInstallDirs ()
     {
 	Config.set (Config.createInstallConfig ());
-	validate (true);
-    }
-
-    /**
-     * Perform basic validation on the 32-bit on 64-bit
-     * install-directory configuration.
-     */
-    public void testInstall32On64Dirs ()
-    {
-	Config.set (Config.createInstall32On64Config ());
-	validate (false);
+	switch (Config.getWordSize()) {
+	case 32:
+	    validate(true);
+	    break;
+	case 64:
+	    validate(false);
+	    break;
+	default:
+	    fail("unknown word size");
+	}
     }
 
     /**
@@ -113,17 +111,16 @@ public class TestConfig
     public void testBuildDirs ()
     {
 	Config.set (Config.createBuildConfig ("src-dir", "build-dir"));
-	validate (true);
-    }
-
-    /**
-     * Perform basic validation of the 32-bit on 64-bit build-tree
-     * configuration.
-     */
-    public void testBuild32On64Dirs ()
-    {
-	Config.set (Config.createBuild32On64Config ("src-dir", "build-dir"));
-	validate (false);
+	switch (Config.getWordSize()) {
+	case 32:
+	    validate(true);
+	    break;
+	case 64:
+	    validate(false);
+	    break;
+	default:
+	    fail("unknown word size");
+	}
     }
 
     public void testBuild32() {

@@ -1,3 +1,15 @@
+2007-12-28  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Config.cxx-in (Config::createInstall32On64Config): Delete.
+	(Config::createBuild32On64Config): Delete.
+	(Config::createInstallConfig): When 64-bit, set 32- and 64- bit paths.
+	(Config::createBuildConfig): Ditto.
+	* Config.java (createBuild32On64Config(String,String)): Delete.
+	(createInstall32On64Config()): Delete.
+	* TestConfig.java (testInstall32On64Dirs()): Delete.
+	(testBuild32On64Dirs()): Delete.
+	(testInstallDirs(), testBuildDirs()): Update.
+
 2007-12-17  cagney  <cagney@redhat.com>
 
 	* EventLogger.java (addConsoleOptions(Parser)): Add LogOption. 

@@ -50,22 +50,20 @@ import java.util.LinkedList;
 
 public class funit
 {  
-    public static void main (String[] args)
-    {
-	Runner testRunner = new Runner ("funit", args);
+    public static void main (String[] args) {
+	Config configAll = Config.createInstallConfig();
+	Config config32 = Config.createInstallConfig32();
+	Config config64 = Config.createInstallConfig64();
+	Runner testRunner = new Runner("funit", args, configAll,
+				       config32, config64);
 
 	LinkedList tests = new LinkedList ();
-	tests.addAll (frysk.sys.JUnitTests.get ());
-	tests.addAll (frysk.core.JUnitTests.get ());
-	Config config = Config.createInstallConfig ();
-	
-	// It's unnecessary for other modules(such as frysk-import) to
-	// do arch32 test, so just add the frysk-core's JUnitTests.
-	LinkedList tests32 = new LinkedList();
-	tests32.addAll (frysk.core.JUnitTests.get ());
-	Config config32 = Config.createInstallConfig ();
+	tests.addAll(frysk.sys.JUnitTests.get());
+	tests.addAll(frysk.core.JUnitTests.get());
+	// tests.addAll(frysk.gtk.JunitTests.get());
+	// tests.addAll(frysk.gui.JunitTests.get());
 
-	int status = testRunner.runTestCases (tests, config, tests32, config32);
+	int status = testRunner.runTestCases(tests);
 	System.exit (status);
     }
 }

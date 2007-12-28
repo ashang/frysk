@@ -1,3 +1,7 @@
+2007-12-28  Andrew Cagney  <cagney@redhat.com>
+
+	* funit.java: Pass all possible Config's to Runner.
+
 2007-07-17  Andrew Cagney  <cagney@redhat.com>
 
 	Move CNI code from frysk-imports/ to frysk-sys/

@@ -1,3 +1,13 @@
+2007-12-28  Andrew Cagney  <cagney@redhat.com>
+
+	* Runner.java (Runner(String,String[],Config,Config,Config)):
+	Replace Runner(String,String[]).
+	(ARCH32, ARCH64): Delete.
+	(runArch32Cases(Collection)): Delete.
+	(runTestCases(Collection)): Replace
+	runTestCases(Collection,Config,Collection,Config).
+	(runArchCases(Collection)): Delete.
+
 2007-11-28  Andrew Cagney  <cagney@redhat.com>
 
 	* TestCase.java (unresolvedOnIA32(int)): New.

@@ -79,11 +79,10 @@ public class Config
     }
 
     /**
-     * Create the default install tree configuration.
-     *
-     * The 32-bit and 64-bit specific library paths are set to NULL.
+     * Create the "native" install tree configuration; all possible
+     * paths, including 32-on-64 when applicable, are defined.
      */
-    public static native final Config createInstallConfig ();
+    public static native final Config createInstallConfig();
 
     /**
      * Create a 32-bit specific install configuration; return NULL if
@@ -98,37 +97,24 @@ public class Config
     public static native final Config createInstallConfig64();
 
     /**
-     * Create the 32-bit install tree configuration (used when running
-     * 32-bit tests on a 64-bit install tree).
+     * Create the "native" build-tree configuration; all possible
+     * paths, including 32-on-64 when applicable, are enabled.
      */
-    public static native final Config createInstall32On64Config ();
-
-    /**
-     * Create the standard build-tree configuration.
-     *
-     * The 32-bit and 64-bit specific library paths are set to NULL.
-     */
-    public static native final Config createBuildConfig (String absSrcDir,
-							 String absBuildDir);
+    public static native final Config createBuildConfig(String absSrcDir,
+							String absBuildDir);
 
     /**
      * Create a 32-bit specific build-tree configuration; return NULL
      * if this is not supported by this build.
      */
-    public static native final Config createBuildConfig32 (String absSrcDir,
-							   String absBuildDir);
+    public static native final Config createBuildConfig32(String absSrcDir,
+							  String absBuildDir);
     /**
      * Create a 64-bit specific build-tree configuration; return NULL
      * if this is not supported by this build.
      */
-    public static native final Config createBuildConfig64 (String absSrcDir,
-							   String absBuildDir);
-
-    /**
-     * Create the 32-bit on 64-bit build-tree configuration.
-     */
-    public static native final Config createBuild32On64Config (String absSrcDir,
-							       String absBuildDir);
+    public static native final Config createBuildConfig64(String absSrcDir,
+							  String absBuildDir);
 
     /**
      * Return either the file or directory.
