@@ -47,7 +47,7 @@ import junit.framework.Test;
 import junit.textui.ResultPrinter;
 import junit.framework.TestResult;
 import java.util.Set;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.Iterator;
 
 /**
@@ -61,9 +61,9 @@ class Results
     private static final Logger logger = Logger.getLogger("frysk");
 
     private static Result result;
-    private static final Set unresolved = new HashSet();
-    private static final Set resolved = new HashSet();
-    private static final Set unsupported = new HashSet();
+    private static final Set unresolved = new TreeSet();
+    private static final Set resolved = new TreeSet();
+    private static final Set unsupported = new TreeSet();
 
     public void startTest (Test test)
     {

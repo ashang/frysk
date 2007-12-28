@@ -43,8 +43,7 @@ package frysk.junit;
  * Possible results from running a test; see POSIX and dejagnu for
  * definition of states.
  */
-class Result
-{
+class Result {
     /** POSIX: PASS.  */
     static final Result PASS = new Result("PASS");
     /** POSIX: PASS (RESOLVED).  */
@@ -108,9 +107,7 @@ class Result
     /**
      * A problem result.
      */
-    static class Problem
-	extends Result
-    {
+    static class Problem extends Result implements Comparable {
 	private final String[] reasons;
 	private Problem(String what, String reason)
 	{
@@ -151,6 +148,9 @@ class Result
 	public int hashCode()
 	{
 	    return getReason().hashCode();
+	}
+	public int compareTo(Object o) {
+	    return getReason().compareTo(((Problem)o).getReason());
 	}
     }
 }

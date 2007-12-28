@@ -1,5 +1,8 @@
 2007-12-28  Andrew Cagney  <cagney@redhat.com>
 
+	* Result.java (Problem.compareTo(Object)): New.
+	* Results.java: Replace HashSet with TreeSet.
+	
 	* Result.java (unresolved(String)): Replace unresolved(int).
 	(pass(String)): Replace pass(int).
 	(Problem(String[],String)): Replace Problem(String[],int).
