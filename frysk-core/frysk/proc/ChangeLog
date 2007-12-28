@@ -1,5 +1,7 @@
 2007-12-28  Andrew Cagney  <cagney@redhat.com>
 
+	* SyscallEventInfo.java: Delete.
+
 	* LinuxIa32Syscall.java: Privatize.
 	(getSyscallList()): Delete
 	* LinuxX8664Syscall.java: Ditto.
