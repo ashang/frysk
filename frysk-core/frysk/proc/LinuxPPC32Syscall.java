@@ -517,20 +517,30 @@ public class LinuxPPC32Syscall extends SyscallTable {
 	return null;
     }
 
+    private static final SocketSubSyscall unknownSocketSubSyscall =
+	new SocketSubSyscall("<unknown>", SOCKET_NUM);
+
+    private static final IpcSubSyscall unknownIpcSubSyscall =
+	new IpcSubSyscall("<unknown>", IPC_NUM);
+
+    private long subcall(Task task) {
+	return task.getRegister(PPC32Registers.ORIGR3);
+    }
+
     public Syscall getSyscall(Task task) {
-	long number = task.getRegister(PPC32Registers.GPR0);
-	if (number != SOCKET_NUM && number != IPC_NUM)
-	    return getSyscall(number);
-	else {
-	    /** sub syscall number is in .  */
-	    int subSyscallNumber = 0;
-	    subSyscallNumber = (int) task.getRegister(PPC32Registers.ORIGR3);
-	    if (number == SOCKET_NUM) {
-		return socketSubcallList[subSyscallNumber];
-	    } else {
-		return ipcSubcallList[subSyscallNumber];
-	    }
-	}
+	long syscall = task.getRegister(PPC32Registers.GPR0);
+	if (syscall == SOCKET_NUM)
+	    return findSubcall(socketSubcallList, subcall(task),
+			       unknownSocketSubSyscall);
+	else if (syscall != IPC_NUM)
+	    return findSubcall(ipcSubcallList, subcall(task),
+			       unknownIpcSubSyscall);
+	else
+	    return getSyscall(syscall);
+    }
+
+    Syscall getSyscall(long num) {
+	return findSyscall(syscallList, num);
     }
 
 }

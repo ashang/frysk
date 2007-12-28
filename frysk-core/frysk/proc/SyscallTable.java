@@ -48,11 +48,6 @@ import java.util.WeakHashMap;
 public abstract class SyscallTable {
 
     /**
-     * @return Syscall[] return system call list for this Linux<ISA>.
-     */
-    public abstract Syscall[] getSyscallList ();
-
-    /**
      * @return Syscall return a system-call representing the unknown
      * NUM.
      */
@@ -98,16 +93,29 @@ public abstract class SyscallTable {
     }
 
     /**
-     * Return the system call responding to N.
+     * Return the system call responding to N; or NULL.
      */
-    public Syscall getSyscall(long num) {
+    Syscall findSyscall(Syscall[] syscalls, long num) {
 	if (num < 0)
 	    return Syscall.INVALID;
-	Syscall[] syscallList = getSyscallList();
-	if (num >= syscallList.length)
+	if (num >= syscalls.length)
 	    return unknownSyscall(num);
-	return syscallList[(int)num];
+	return syscalls[(int)num];
     }
+
+    /**
+     * Return the system call responding to N; or UNKNOWN.
+     */
+    Syscall findSubcall(Syscall[] subcalls, long num, Syscall unknown) {
+	if (num < 0 || num >= subcalls.length)
+	    return unknown;
+	return subcalls[(int)num];
+    }
+
+    /**
+     * Return the NUM'th system call; implemented using findSyscall.
+     */
+    abstract Syscall getSyscall(long num);
 
     /** 
      * Assuming that TASK is at a system-call entry, return the system
@@ -115,6 +123,6 @@ public abstract class SyscallTable {
      * @param task the task that system call occurred
      * @return the Syscall object
      */
-    public abstract Syscall getSyscall (Task task);
+    public abstract Syscall getSyscall(Task task);
     
 }

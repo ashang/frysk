@@ -65,64 +65,43 @@ public class TestSyscallsWithAudit extends TestLib {
       syscallTest(machine, ISA.X8664);
   }
 
-  private void syscallTest(int machine, ISA isa) {
-      SyscallTable syscallTable
-	  = SyscallTableFactory.getSyscallTable(isa);
-      Syscall[] syscallList = syscallTable.getSyscallList();
-    int highestNum = 0;
+    private void syscallTest(int machine, ISA isa) {
+	SyscallTable syscallTable
+	    = SyscallTableFactory.getSyscallTable(isa);
+	
+	// Assume there are at most this many syscall numbers; check
+	// it.
+	int MAX_SYSCALL_NUM = 1024;
+	assertNull("MAX_SYSCALL_NUM", AuditLibs.syscallToName(MAX_SYSCALL_NUM,
+							      machine));
 
-    // We assume there are at most this many syscall numbers
-    int MAX_SYSCALL_NUM = 1024;
-    for (int i = 0; i < MAX_SYSCALL_NUM; i++)
-      {
-	String auditName = AuditLibs.syscallToName(i, machine);
-	if (auditName != null)
-	  {
-	    highestNum = i;
-	    int auditNum = AuditLibs.nameToSyscall(auditName, machine);
-	    // XXX There are a couple of syscalls with the same name...
-	    // Below we test for auditNum, which is the lowest number.
-	    // assertEquals("auditlib sanity", i, auditNum);
-
-	    assertTrue("syscall " + auditName + " " + auditNum +" is supported by frysk", i < syscallList.length);
-	    
-	    Syscall syscall = syscallList[i];
-	    String fryskName = syscall.getName();
-	    int fryskNum = syscall.getNumber();
-	    
-	    assertEquals("number", i, fryskNum);
-	    assertEquals("name (" + i + ")", auditName, fryskName);
-
-	    Syscall syscallByName = syscallTable.getSyscall(auditName);
-	    // XXX There are a couple of syscalls with the same name
-	    // Below we test for auditNum, not i.
-	    // assertEquals("byName", syscall, syscallByName);
-	    assertEquals("byName-name (" + i + ")",
-			 auditName, syscallByName.getName());
-	    assertEquals("byName-number",
-			 auditNum, syscallByName.getNumber());
-	  }
-	else
-	  {
-	    if (i < syscallList.length)
-	      {
-		Syscall syscall = syscallList[i];
-		int fryskNum = syscall.getNumber();
-		assertEquals("number", i, fryskNum);
-
-		// Unfortunately auditlib doesn't seem to know all the names.
-		//String fryskName = syscall.getName();
+	for (int i = 0; i < MAX_SYSCALL_NUM; i++) {
+	    String auditName = AuditLibs.syscallToName(i, machine);
+	    if (auditName != null) {
+		// Check that there's a corresponding entry in frysk's
+		// by-number database.
+		Syscall byNum = syscallTable.getSyscall(i);
+		assertEquals("byNum-number", i, byNum.getNumber());
+		assertEquals("byNum-name (" + i + ")", auditName,
+			     byNum.getName());
+		// Check that there's a corresponding entry in frysk's
+		// by-name database.  There are a couple of syscalls
+		// with the same name.  Test for auditNum, which is
+		// the lowest number.
+		int auditNum = AuditLibs.nameToSyscall(auditName, machine);
+		Syscall byName = syscallTable.getSyscall(auditName);
+		assertEquals("byName-number", auditNum, byName.getNumber());
+		assertEquals("byName-name (" + i + ")", auditName,
+			     byName.getName());
+	    } else {
+		// If the syscall is unknown, unknown syscall is
+		// returned.
+		Syscall syscall = syscallTable.getSyscall(i);
+		assertEquals("number", i, syscall.getNumber());
+		// Unfortunately auditlib doesn't seem to know all the
+		//names.  String fryskName = syscall.getName();
 		//assertEquals("no-name", "<" + i + ">", fryskName);
-	      }
-	  }
-      }
-
-    // Extra sanity check of MAX_SYSCALL_NUM assumption.
-    assertNull("MAX_SYSCALL_NUM", AuditLibs.syscallToName(MAX_SYSCALL_NUM,
-							  machine));
-
-    // We should have names up to at least the highest number auditlib
-    // knows about.
-    assertTrue("max-syscall-num", highestNum <= syscallList.length - 1);
-  }
+	    }
+	}
+    }
 }

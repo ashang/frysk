@@ -1,5 +1,19 @@
 2007-12-28  Andrew Cagney  <cagney@redhat.com>
 
+	* SyscallTable.java (getSyscallList()): Delete.	
+	(getSyscall(long)): New.
+	(findSubcall(Syscall[],long)): New.
+	(findSubcall(Syscall[],long,Syscall)): New.
+	* LinuxIa32Syscall.java (getSyscall(Task)): Update.
+	(getSyscall(long)): New.
+	* LinuxPPC32Syscall.java (getSyscall(Task)): Update.
+	(getSyscall(long)): New.
+	* LinuxPPC64Syscall.java (getSyscall(Task)): Update.
+	(getSyscall(long)): New.
+	* LinuxX8664Syscall.java (getSyscall(Task)): Update.
+	(getSyscall(long)): New.
+	* TestSyscallsWithAudit.java (syscallTest(int,ISA)): Update.
+
 	* SyscallTable.java (unknownSyscalls): Change to a static
 	WeakHashMap.
 	(unknownSyscall(long)): Make package private.

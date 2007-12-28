@@ -509,26 +509,20 @@ public class LinuxIa32Syscall extends SyscallTable {
     private static final IpcSubSyscall unknownIpcSubSyscall =
 	new IpcSubSyscall("<unknown>", IPC_NUM);
 
+    private long subcall(Task task) {
+	return task.getRegister(IA32Registers.EBX);
+    }
+
     public Syscall getSyscall(Task task) {
-	long number = task.getRegister(IA32Registers.ORIG_EAX);
-	if (number != SOCKET_NUM && number != IPC_NUM)
-	    return getSyscall(number);
-	else {
-	    /** sub syscall number is in %ebx.  */
-	    int subSyscallNumber = (int) task.getRegister(IA32Registers.EBX);
-	
-	    if (number == SOCKET_NUM) {
-		if (subSyscallNumber < socketSubcallList.length)
-		    return socketSubcallList[subSyscallNumber];
-		else
-		    return unknownSocketSubSyscall;
-	    } else {
-		if (subSyscallNumber < ipcSubcallList.length)
-		    return ipcSubcallList[subSyscallNumber];
-		else
-		    return unknownIpcSubSyscall;
-	    }
-	}
+	long syscall = task.getRegister(IA32Registers.ORIG_EAX);
+	if (syscall == SOCKET_NUM)
+	    return findSubcall(socketSubcallList, subcall(task),
+			       unknownSocketSubSyscall);
+	else if (syscall != IPC_NUM)
+	    return findSubcall(ipcSubcallList, subcall(task),
+			       unknownIpcSubSyscall);
+	else
+	    return getSyscall(syscall);
     }
 
     public Syscall getSyscall(String name) {
@@ -545,6 +539,10 @@ public class LinuxIa32Syscall extends SyscallTable {
 	    return syscall;
 
 	return null;
+    }
+
+    Syscall getSyscall(long num) {
+	return findSyscall(syscallList, num);
     }
 
 }
