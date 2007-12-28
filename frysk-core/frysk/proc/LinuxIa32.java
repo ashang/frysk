@@ -165,19 +165,4 @@ class LinuxIa32 implements Isa {
 	    isa = new LinuxIa32 ();
 	return isa;
     }
-
-    private SyscallEventInfo info;
-    public SyscallEventInfo getSyscallEventInfo() {
-	if (info == null)
-	    info = new SyscallEventInfo() {
-		    private int number(Task task) {
-			return (int)task.getRegister(IA32Registers.ORIG_EAX);
-		    }
-		    public Syscall getSyscall(Task task) {
-			int number = this.number(task);
-			return LinuxIa32Syscall.syscallByNum (task, number);
-		    }
-		};
-	return info;
-    }
 }

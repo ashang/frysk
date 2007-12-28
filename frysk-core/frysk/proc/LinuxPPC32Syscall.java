@@ -503,21 +503,6 @@ public class LinuxPPC32Syscall extends SyscallTable {
 	new IpcSubSyscall("shmctl", IPC_NUM)
     };
 
-    public static Syscall syscallByNum(Task task, int number) {
-	if (number != SOCKET_NUM && number != IPC_NUM)
-	    return Syscall.syscallByNum(number, task);
-	else {
-	    /** sub syscall number is in .  */
-	    int subSyscallNumber = 0;
-	    subSyscallNumber = (int) task.getRegister(PPC32Registers.ORIGR3);
-	    if (number == SOCKET_NUM) {
-		return socketSubcallList[subSyscallNumber];
-	    } else {
-		return ipcSubcallList[subSyscallNumber];
-	    }
-	}
-    }
-
     public Syscall getSyscall(String name) {
 	Syscall syscall;
 	syscall = iterateSyscallByName(name, LinuxPPC32Syscall.syscallList);

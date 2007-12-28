@@ -39,9 +39,6 @@
 
 package frysk.proc;
 
-import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import frysk.isa.PPC64Registers;
 
 class LinuxPPC64 extends IsaPowerPC {
@@ -49,7 +46,6 @@ class LinuxPPC64 extends IsaPowerPC {
 	super(PPC64Registers.NIP);
     }
 
-  private static Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
   private static LinuxPPC64 isa;
 
   static LinuxPPC64 isaSingleton ()
@@ -58,24 +54,4 @@ class LinuxPPC64 extends IsaPowerPC {
       isa = new LinuxPPC64 ();
     return isa;
   }
-
-  // This is used to keep track of syscalls whose number we do not
-  // know.
-  static HashMap unknownSyscalls = new HashMap();
-
-    private SyscallEventInfo info;
-    public SyscallEventInfo getSyscallEventInfo () {
-	if (info == null)
-	    info = new SyscallEventInfo () {
-		    private int number(Task task) {
-			logger.log (Level.FINE, "Get GPR0\n");
-			return (int)task.getRegister(PPC64Registers.GPR0);
-		    }
-		    public Syscall getSyscall(Task task) {
-			int number = this.number(task);
-			return LinuxPPC64Syscall.syscallByNum (task, number);
-		    }
-		};
-	return info;
-    }
 }

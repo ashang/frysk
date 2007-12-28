@@ -243,31 +243,4 @@ public abstract class Syscall {
 	writer.print (" = " + extractReturnValue(task));
 	return writer;
     }
-
-    /**
-     * Given a system call's number, this will return the corresponding
-     * Syscall object.  Note that system call numbers are platform
-     * dependent.  This will return a Syscall object in all cases; if
-     * there is no predefined system call with the given number, a unique
-     * "unknown" system call with the indicated number will be created.
-     *
-     * @param num the number of the system call
-     * @param task the current task
-     * @return the Syscall object
-     */
-    public static Syscall syscallByNum(int num, Task task) {
-	Syscall[] syscallList;
-
-	SyscallTable syscallTable
-	    = SyscallTableFactory.getSyscallTable(task.getISA());
-	syscallList = syscallTable.getSyscallList();
-
-	if (num < 0) {
-	    return INVALID;
-	} else if (num >= syscallList.length) {
-	    return syscallTable.unknownSyscall(num);
-	} else {
-	    return syscallList[num];
-	}
-    }
 }

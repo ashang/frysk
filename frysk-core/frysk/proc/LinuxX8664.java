@@ -39,7 +39,6 @@
 
 package frysk.proc;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import inua.eio.ByteBuffer;
@@ -164,24 +163,5 @@ class LinuxX8664 implements Isa {
 	if (isa == null)
 	    isa = new LinuxX8664 ();
 	return isa;
-    }
-
-    // This is used to keep track of syscalls whose number we do not
-    // know.
-    static HashMap unknownSyscalls = new HashMap();
-
-    private SyscallEventInfo info;
-    public SyscallEventInfo getSyscallEventInfo () {
-	if (info == null)
-	    info = new SyscallEventInfo () {
-		    private int number(Task task) {
-			return (int)task.getRegister(X8664Registers.ORIG_RAX);
-		    }
-		    public Syscall getSyscall(Task task) {
-			int number = this.number(task);
-			return LinuxX8664Syscall.syscallByNum (task, number);
-		    }
-		};
-	return info;
     }
 }
