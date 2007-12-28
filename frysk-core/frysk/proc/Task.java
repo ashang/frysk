@@ -39,6 +39,8 @@
 
 package frysk.proc;
 
+import frysk.syscall.SyscallTable;
+import frysk.syscall.SyscallTableFactory;
 import java.util.LinkedList;
 import inua.eio.ByteBuffer;
 import java.util.Set;
@@ -1093,6 +1095,7 @@ public abstract class Task
 	isa = null;
 	memory = null;
 	registerBanks = null;
+	syscallTable = null;
 	currentISA = null;
     }
   

@@ -40,6 +40,8 @@
 
 package frysk.proc;
 
+import frysk.syscall.SyscallTable;
+import frysk.syscall.SyscallTableFactory;
 import frysk.Config;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -75,11 +77,11 @@ public class TestTaskSyscallObserver
 
 	boolean caughtExec = false;
 
-	final frysk.proc.Syscall execvesys;
+	final frysk.syscall.Syscall execvesys;
 
-	final frysk.proc.Syscall opensys;
+	final frysk.syscall.Syscall opensys;
 
-	final frysk.proc.Syscall readsys;
+	final frysk.syscall.Syscall readsys;
 
 	SyscallObserver (Task task) {
 	    SyscallTable syscallTable
@@ -100,7 +102,7 @@ public class TestTaskSyscallObserver
 	    enter++;
 
 	    SyscallTable syscallTable = getSyscallTable(task);
-	    frysk.proc.Syscall syscall = syscallTable.getSyscall(task);
+	    frysk.syscall.Syscall syscall = syscallTable.getSyscall(task);
 
 	    if (execvesys.equals(syscall)) {
 		caughtExec = true;
@@ -395,7 +397,7 @@ public class TestTaskSyscallObserver
     {
       super.updateSyscallEnter(task);
       SyscallTable syscallTable = getSyscallTable(task);
-      frysk.proc.Syscall syscall = syscallTable.getSyscall(task);
+      frysk.syscall.Syscall syscall = syscallTable.getSyscall(task);
       syscallCache.put(task, syscall);
       
       if ((opensys.equals(syscall)))
@@ -416,7 +418,7 @@ public class TestTaskSyscallObserver
     public Action updateSyscallExit (Task task)
     {
       super.updateSyscallExit(task);
-      frysk.proc.Syscall syscall = (frysk.proc.Syscall) syscallCache.remove(task);
+      frysk.syscall.Syscall syscall = (frysk.syscall.Syscall) syscallCache.remove(task);
       
       if (opensys.equals(syscall) && openingTestFile)
         {
@@ -505,7 +507,7 @@ public class TestTaskSyscallObserver
       {
         super.updateSyscallEnter(task);
         SyscallTable syscallTable = getSyscallTable(task);
-        frysk.proc.Syscall syscall = syscallTable.getSyscall(task);
+        frysk.syscall.Syscall syscall = syscallTable.getSyscall(task);
 
         // verify that read attempted
         if (readsys.equals(syscall))
@@ -525,7 +527,7 @@ public class TestTaskSyscallObserver
       {
         super.updateSyscallExit(task);
         SyscallTable syscallTable = getSyscallTable(task);
-        frysk.proc.Syscall syscall = syscallTable.getSyscall(task);
+        frysk.syscall.Syscall syscall = syscallTable.getSyscall(task);
         if (readsys.equals(syscall))
           {
             logger.log(Level.FINE, "{0} updateSyscallExit READ\n", this);

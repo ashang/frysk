@@ -424,7 +424,7 @@ public class Ftrace
 	implements TaskObserver.Syscall
     {
 	Reporter reporter;
-	frysk.proc.Syscall syscallCache = null;
+	frysk.syscall.Syscall syscallCache = null;
 
 	MySyscallObserver(Reporter reporter)
 	{
@@ -433,7 +433,7 @@ public class Ftrace
 
 	public Action updateSyscallEnter(Task task)
 	{
-	    frysk.proc.Syscall syscall
+	    frysk.syscall.Syscall syscall
 		= task.getSyscallTable().getSyscall(task);
 	    String name = syscall.getName();
 	    if (syscall.isNoReturn())
@@ -455,7 +455,7 @@ public class Ftrace
 
 	public Action updateSyscallExit (Task task)
 	{
-	    frysk.proc.Syscall syscall = syscallCache;
+	    frysk.syscall.Syscall syscall = syscallCache;
 	    String name = syscall.getName();
 
 	    reporter.eventLeave(task, syscall,

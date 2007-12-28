@@ -38,8 +38,8 @@
 
 package frysk.gui.monitor.observers;
 
-import frysk.proc.Syscall;
-import frysk.proc.SyscallTable;
+import frysk.syscall.Syscall;
+import frysk.syscall.SyscallTable;
 import frysk.proc.Task;
 
 public class SysCallUtilyInfo {

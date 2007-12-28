@@ -282,7 +282,7 @@ class MappingGuard
 	extends MappingGuardB
 	implements TaskObserver.Syscall
     {
-	private frysk.proc.Syscall syscallCache = null;
+	private frysk.syscall.Syscall syscallCache = null;
 
 	public SyscallMappingGuard(Task task) {
 	    super(task);
@@ -290,7 +290,7 @@ class MappingGuard
 	}
 
 	public Action updateSyscallEnter(Task task) {
-	    frysk.proc.Syscall syscall
+	    frysk.syscall.Syscall syscall
 		= task.getSyscallTable().getSyscall(task);
 	    syscallCache = syscall;
 	    return Action.CONTINUE;
@@ -298,7 +298,7 @@ class MappingGuard
 
 	public Action updateSyscallExit (Task task)
 	{
-	    frysk.proc.Syscall syscall = syscallCache;
+	    frysk.syscall.Syscall syscall = syscallCache;
 	    syscallCache = null;
 
 	    if (syscall != null) {

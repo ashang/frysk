@@ -37,11 +37,12 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.syscall;
 
 import frysk.isa.IA32Registers;
+import frysk.proc.Task;
 
-public class LinuxIa32Syscall extends SyscallTable {
+class LinuxIA32SyscallTable extends SyscallTable {
     private static final int SOCKET_NUM = 102;
     private static final int IPC_NUM = 117;
 
@@ -524,17 +525,15 @@ public class LinuxIa32Syscall extends SyscallTable {
 
     public Syscall getSyscall(String name) {
 	Syscall syscall;
-	syscall = iterateSyscallByName(name, LinuxIa32Syscall.syscallList);
+	syscall = iterateSyscallByName(name, syscallList);
 	if (syscall != null)
 	    return syscall;
-	syscall = iterateSyscallByName(name, LinuxIa32Syscall.socketSubcallList);
+	syscall = iterateSyscallByName(name, socketSubcallList);
 	if (syscall != null)
 	    return syscall;
-    
-	syscall = iterateSyscallByName(name, LinuxIa32Syscall.ipcSubcallList);
+	syscall = iterateSyscallByName(name, ipcSubcallList);
 	if (syscall != null)
 	    return syscall;
-
 	return null;
     }
 

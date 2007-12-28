@@ -1,7 +1,20 @@
 2007-12-28  Andrew Cagney  <cagney@redhat.com>
 
-	* SyscallEventInfo.java: Delete.
+	* Syscall.java: Move to frysk.syscall.
+	* SyscallTable.java: Move to frysk.syscall.
+	* SyscallTableFactory.java: Move to frysk.syscall.
+	* TestSyscallSithAudit.java: Move to frysk.syscall.
+	* LinuxIa32Syscall.java: Move to frysk.syscall.
+	* LinuxX8664Syscall.java: Move to frysk.syscall.
+	* LinuxPPC32Syscall.java: Move to frysk.syscall.
+	* LinuxPPC64Syscall.java: Move to frysk.syscall.
+	* TestSyscallRunning.java: Update.
+	* Task.java: Update.
+	* TestSyscallSignal.java: Update.
+	* TestTaskSyscallObserver.java: Update.
 
+	* SyscallEventInfo.java: Delete.
+	
 	* LinuxIa32Syscall.java: Privatize.
 	(getSyscallList()): Delete
 	* LinuxX8664Syscall.java: Ditto.

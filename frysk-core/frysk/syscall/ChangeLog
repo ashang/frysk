@@ -1,0 +1,18 @@
+2007-12-28  Andrew Cagney  <cagney@redhat.com>
+
+	* package.html: New.
+	* Syscall.java: Move from frysk.proc.
+	* SyscallTable.java: Move from frysk.proc.
+	* SyscallTableFactory.java: Move from frysk.proc.
+	* TestSyscallSithAudit.java: Move from frysk.proc.
+	* LinuxIA32SyscallTable.java: Move from frysk.proc.
+	* LinuxX8664SyscallTable.java: Move from frysk.proc.
+	* LinuxPPC32SyscallTable.java: Move from frysk.proc.
+	* LinuxPPC64SyscallTable.java: Move from frysk.proc.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

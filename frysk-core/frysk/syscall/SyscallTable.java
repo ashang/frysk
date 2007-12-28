@@ -37,9 +37,10 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.syscall;
 
 import java.util.WeakHashMap;
+import frysk.proc.Task;
 
 /**
  * System call database.

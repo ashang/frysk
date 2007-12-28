@@ -46,6 +46,8 @@ import java.io.InputStreamReader;
 import frysk.sys.Signal;
 import frysk.sys.DaemonPipePair;
 import frysk.testbed.TestLib;
+import frysk.syscall.SyscallTable;
+import frysk.syscall.SyscallTableFactory;
 import frysk.testbed.TearDownProcess;
 import frysk.Config;
 import frysk.sys.ProcessIdentifier;
@@ -247,8 +249,8 @@ public class TestSyscallSignal
 	private boolean added;
 	private boolean removed;
 
-	private final frysk.proc.Syscall opensys;
-	private final frysk.proc.Syscall closesys;
+	private final frysk.syscall.Syscall opensys;
+	private final frysk.syscall.Syscall closesys;
 
 	SyscallObserver(int stophits, Task task) {
 	    SyscallTable syscallTable
@@ -260,7 +262,7 @@ public class TestSyscallSignal
 
 	public Action updateSyscallEnter(Task task) {
 	    SyscallTable syscallTable = getSyscallTable(task);
-	    frysk.proc.Syscall syscall = syscallTable.getSyscall(task);
+	    frysk.syscall.Syscall syscall = syscallTable.getSyscall(task);
 	    if (opensys.equals(syscall) || closesys.equals(syscall)) {
 		entered++;
 		if (entered == stophits) {
@@ -273,7 +275,7 @@ public class TestSyscallSignal
 
 	public Action updateSyscallExit(Task task) {
 	    SyscallTable syscallTable = getSyscallTable(task);
-	    frysk.proc.Syscall syscall = syscallTable.getSyscall(task);
+	    frysk.syscall.Syscall syscall = syscallTable.getSyscall(task);
 	    if (opensys.equals(syscall) || closesys.equals(syscall)) {
 		exited++;
 	    }

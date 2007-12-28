@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.syscall;
 
 import frysk.sys.AuditLibs;
 import frysk.testbed.TestLib;

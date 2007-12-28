@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.syscall;
 
 import frysk.isa.ISA;
 import frysk.isa.ISAMap;
@@ -48,10 +48,10 @@ import frysk.isa.ISAMap;
 
 public class SyscallTableFactory {
     private static final ISAMap syscallTables = new ISAMap("syscall table")
-	.put(ISA.IA32, new LinuxIa32Syscall())
-	.put(ISA.X8664, new LinuxX8664Syscall())
-	.put(ISA.PPC32BE, new LinuxPPC32Syscall())
-	.put(ISA.PPC64BE, new LinuxPPC64Syscall())
+	.put(ISA.IA32, new LinuxIA32SyscallTable())
+	.put(ISA.X8664, new LinuxX8664SyscallTable())
+	.put(ISA.PPC32BE, new LinuxPPC32SyscallTable())
+	.put(ISA.PPC64BE, new LinuxPPC64SyscallTable())
 	;
 
     public static SyscallTable getSyscallTable(ISA isa) {

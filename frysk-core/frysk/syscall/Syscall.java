@@ -37,9 +37,10 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.syscall;
 
 import inua.util.PrintWriter;
+import frysk.proc.Task;
 
 /**
  * A class that holds static information about a system call.  It is

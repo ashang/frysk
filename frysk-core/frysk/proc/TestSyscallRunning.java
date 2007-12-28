@@ -50,6 +50,8 @@ import frysk.testbed.TestLib;
 import frysk.testbed.TearDownProcess;
 import frysk.Config;
 import frysk.sys.DaemonPipePair;
+import frysk.syscall.SyscallTable;
+import frysk.syscall.SyscallTableFactory;
 
 /**
  * XXX: This code should be simplified, eliminating local parallelism
@@ -169,7 +171,7 @@ public class TestSyscallRunning
 	private boolean added;
 	private boolean removed;
 
-	private final frysk.proc.Syscall syscall;
+	private final frysk.syscall.Syscall syscall;
 
 	SyscallObserver(String call, Task task, boolean entered) {
 	    SyscallTable syscallTable

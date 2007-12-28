@@ -37,11 +37,12 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.syscall;
 
 import frysk.isa.X8664Registers;
+import frysk.proc.Task;
 
-public class LinuxX8664Syscall extends SyscallTable {
+class LinuxX8664SyscallTable extends SyscallTable {
 
     private static class X8664Syscall extends Syscall {
 	X8664Syscall(String name, int number, int numArgs, 
@@ -374,7 +375,7 @@ public class LinuxX8664Syscall extends SyscallTable {
     };
 
     public Syscall getSyscall(String name) {
-	return iterateSyscallByName(name, LinuxX8664Syscall.syscallList);
+	return iterateSyscallByName(name, syscallList);
     }
 
     public Syscall getSyscall(Task task) {

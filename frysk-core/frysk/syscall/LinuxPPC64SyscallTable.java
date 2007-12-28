@@ -38,9 +38,10 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.syscall;
 
 import frysk.isa.PPC64Registers;
+import frysk.proc.Task;
 
 /**
  * 32-bit PowerPC system calls.
@@ -48,7 +49,7 @@ import frysk.isa.PPC64Registers;
  * XXX: There is much duplication between this and LinuxPPC64Syscall.
  */
 
-public class LinuxPPC64Syscall extends SyscallTable {
+class LinuxPPC64SyscallTable extends SyscallTable {
     private static final int SOCKET_NUM = 102;
     private static final int IPC_NUM = 117;
 
@@ -507,13 +508,13 @@ public class LinuxPPC64Syscall extends SyscallTable {
 
     public Syscall getSyscall(String name) {
 	Syscall syscall;
-	syscall = iterateSyscallByName(name, LinuxPPC64Syscall.syscallList);
+	syscall = iterateSyscallByName(name, syscallList);
 	if (syscall != null)
 	    return syscall;
-	syscall = iterateSyscallByName(name, LinuxPPC64Syscall.socketSubcallList);
+	syscall = iterateSyscallByName(name, socketSubcallList);
 	if (syscall != null)
 	    return syscall;
-	syscall = iterateSyscallByName(name, LinuxPPC64Syscall.ipcSubcallList);
+	syscall = iterateSyscallByName(name, ipcSubcallList);
 	if (syscall != null)
 	    return syscall;
 	return null;
