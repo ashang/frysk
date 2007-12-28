@@ -84,9 +84,9 @@ public class TestTaskSyscallObserver
 	SyscallObserver (Task task) {
 	    SyscallTable syscallTable
 		= SyscallTableFactory.getSyscallTable(task.getISA());
-	    execvesys = syscallTable.syscallByName("execve");
-	    opensys = syscallTable.syscallByName("open");
-	    readsys = syscallTable.syscallByName("read");
+	    execvesys = syscallTable.getSyscall("execve");
+	    opensys = syscallTable.getSyscall("open");
+	    readsys = syscallTable.getSyscall("read");
 	}
 
 	public void addedTo (Object o) {

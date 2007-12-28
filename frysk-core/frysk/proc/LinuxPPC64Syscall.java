@@ -524,7 +524,7 @@ public class LinuxPPC64Syscall extends SyscallTable {
 	}
     }
 
-    public Syscall syscallByName(String name) {
+    public Syscall getSyscall(String name) {
 	Syscall syscall;
 	syscall = iterateSyscallByName(name, LinuxPPC64Syscall.syscallList);
 	if (syscall != null)

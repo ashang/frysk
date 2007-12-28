@@ -79,7 +79,7 @@ public abstract class SyscallTable {
      * @return Syscall return system call object if the name could be 
      * found in syscallList, otherwise return null.
      */
-    public abstract Syscall syscallByName (String Name);
+    public abstract Syscall getSyscall(String Name);
 
     /**
      * Given a system call's name, this will return the corresponding

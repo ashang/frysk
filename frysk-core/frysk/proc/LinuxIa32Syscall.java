@@ -552,7 +552,7 @@ public class LinuxIa32Syscall extends SyscallTable {
 	}
     }
 
-    public Syscall syscallByName(String name) {
+    public Syscall getSyscall(String name) {
 	Syscall syscall;
 	syscall = iterateSyscallByName(name, LinuxIa32Syscall.syscallList);
 	if (syscall != null)

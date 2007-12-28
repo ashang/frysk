@@ -93,7 +93,7 @@ public class TestSyscallsWithAudit extends TestLib {
 	    assertEquals("number", i, fryskNum);
 	    assertEquals("name (" + i + ")", auditName, fryskName);
 
-	    Syscall syscallByName = syscallTable.syscallByName(auditName);
+	    Syscall syscallByName = syscallTable.getSyscall(auditName);
 	    // XXX There are a couple of syscalls with the same name
 	    // Below we test for auditNum, not i.
 	    // assertEquals("byName", syscall, syscallByName);

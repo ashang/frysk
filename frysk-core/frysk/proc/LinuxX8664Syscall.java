@@ -380,7 +380,7 @@ public class LinuxX8664Syscall extends SyscallTable {
 	return Syscall.syscallByNum(number, task);
     }
 
-    public Syscall syscallByName (String name) {
+    public Syscall getSyscall(String name) {
 	return iterateSyscallByName(name, LinuxX8664Syscall.syscallList);
     }
 

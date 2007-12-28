@@ -1,5 +1,16 @@
 2007-12-27  Andrew Cagney  <cagney@redhat.com>
 
+	* SyscallTable.java (getSyscall(String)): Rename
+	syscallByName(String).
+	* TestTaskSyscallObserver.java: Update.
+	* TestSyscallsWithAudit.java: Update.
+	* TestSyscallSignal.java: Update.
+	* TestSyscallRunning.java: Update.
+	* LinuxPPC32Syscall.java: Update.
+	* LinuxIa32Syscall.java: Update.
+	* LinuxPPC64Syscall.java: Update.
+	* LinuxX8664Syscall.java: Update.
+
 	* SyscallTable.java (getSyscall(Task)): Declare.
 	(getSyscall(long)): New.
 	(unknownSyscall(long)): Replace unknownSyscall(int).

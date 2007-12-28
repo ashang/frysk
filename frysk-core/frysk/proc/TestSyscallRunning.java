@@ -174,7 +174,7 @@ public class TestSyscallRunning
 	SyscallObserver(String call, Task task, boolean entered) {
 	    SyscallTable syscallTable
 		= SyscallTableFactory.getSyscallTable(task.getISA());
-	    syscall = syscallTable.syscallByName(call);
+	    syscall = syscallTable.getSyscall(call);
 	    this.entered = entered;
 	}
 

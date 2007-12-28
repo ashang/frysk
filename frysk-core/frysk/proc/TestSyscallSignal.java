@@ -254,8 +254,8 @@ public class TestSyscallSignal
 	    SyscallTable syscallTable
 		= SyscallTableFactory.getSyscallTable(task.getISA());
 	    this.stophits = stophits;
-	    this.opensys = syscallTable.syscallByName("open");
-	    this.closesys = syscallTable.syscallByName("close");
+	    this.opensys = syscallTable.getSyscall("open");
+	    this.closesys = syscallTable.getSyscall("close");
 	}
 
 	public Action updateSyscallEnter(Task task) {
