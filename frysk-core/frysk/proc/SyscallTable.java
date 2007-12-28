@@ -39,7 +39,7 @@
 
 package frysk.proc;
 
-import java.util.HashMap;
+import java.util.WeakHashMap;
 
 /**
  * System call database.
@@ -53,9 +53,10 @@ public abstract class SyscallTable {
     public abstract Syscall[] getSyscallList ();
 
     /**
-     * @return HashMap return a HashMap for unknown system calls.
+     * @return Syscall return a system-call representing the unknown
+     * NUM.
      */
-    public Syscall unknownSyscall(long num) {
+    Syscall unknownSyscall(long num) {
 	synchronized (unknownSyscalls) {
 	    Long key = new Long(num);
 	    Syscall syscall = (Syscall)unknownSyscalls.get(key);
@@ -73,7 +74,7 @@ public abstract class SyscallTable {
 	    return syscall;
 	}
     }
-    private HashMap unknownSyscalls = new HashMap();
+    private static WeakHashMap unknownSyscalls = new WeakHashMap();
 
     /**
      * @return Syscall return system call object if the name could be 

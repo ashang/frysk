@@ -1,5 +1,9 @@
 2007-12-28  Andrew Cagney  <cagney@redhat.com>
 
+	* SyscallTable.java (unknownSyscalls): Change to a static
+	WeakHashMap.
+	(unknownSyscall(long)): Make package private.
+
 	* LinuxX8664.java (getSyscallEventInfo()): Delete.
 	(unknownSyscalls): Delete.
 	* LinuxX8664Syscall.java (syscallByNum(Task,int)): Delete.
