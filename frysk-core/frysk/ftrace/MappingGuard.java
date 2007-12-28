@@ -289,9 +289,9 @@ class MappingGuard
 	    task.requestAddSyscallObserver(this);
 	}
 
-	public Action updateSyscallEnter (Task task)
-	{
-	    frysk.proc.Syscall syscall = task.getSyscallEventInfo().getSyscall(task);
+	public Action updateSyscallEnter(Task task) {
+	    frysk.proc.Syscall syscall
+		= task.getSyscallTable().getSyscall(task);
 	    syscallCache = syscall;
 	    return Action.CONTINUE;
 	}

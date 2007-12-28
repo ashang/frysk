@@ -1,3 +1,8 @@
+2007-12-27  Andrew Cagney  <cagney@redhat.com>
+
+	* Ftrace.java: Update; use Task.getSyscallTable().
+	* MappingGuard.java: Ditto.
+
 2007-12-21  Andrew Cagney  <cagney@redhat.com>
 
 	* Ftrace.java: Use Syscall.isNoReturn().

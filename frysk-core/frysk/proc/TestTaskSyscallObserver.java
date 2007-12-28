@@ -99,8 +99,8 @@ public class TestTaskSyscallObserver
 	    inSyscall = true;
 	    enter++;
 
-	    SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-	    frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
+	    SyscallTable syscallTable = getSyscallTable(task);
+	    frysk.proc.Syscall syscall = syscallTable.getSyscall(task);
 
 	    if (execvesys.equals(syscall)) {
 		caughtExec = true;
@@ -394,8 +394,8 @@ public class TestTaskSyscallObserver
     public Action updateSyscallEnter (Task task)
     {
       super.updateSyscallEnter(task);
-      SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-      frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
+      SyscallTable syscallTable = getSyscallTable(task);
+      frysk.proc.Syscall syscall = syscallTable.getSyscall(task);
       syscallCache.put(task, syscall);
       
       if ((opensys.equals(syscall)))
@@ -471,9 +471,9 @@ public class TestTaskSyscallObserver
 	}
     }
 
-  private SyscallEventInfo getSyscallEventInfo (Task task)
+  private SyscallTable getSyscallTable (Task task)
   {
-      return task.getSyscallEventInfo();
+      return task.getSyscallTable();
   }
 
   /**
@@ -504,8 +504,8 @@ public class TestTaskSyscallObserver
       public Action updateSyscallEnter (Task task)
       {
         super.updateSyscallEnter(task);
-        SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-        frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
+        SyscallTable syscallTable = getSyscallTable(task);
+        frysk.proc.Syscall syscall = syscallTable.getSyscall(task);
 
         // verify that read attempted
         if (readsys.equals(syscall))
@@ -524,8 +524,8 @@ public class TestTaskSyscallObserver
       public Action updateSyscallExit (Task task)
       {
         super.updateSyscallExit(task);
-        SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-        frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
+        SyscallTable syscallTable = getSyscallTable(task);
+        frysk.proc.Syscall syscall = syscallTable.getSyscall(task);
         if (readsys.equals(syscall))
           {
             logger.log(Level.FINE, "{0} updateSyscallExit READ\n", this);

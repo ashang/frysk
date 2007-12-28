@@ -259,8 +259,8 @@ public class TestSyscallSignal
 	}
 
 	public Action updateSyscallEnter(Task task) {
-	    SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-	    frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
+	    SyscallTable syscallTable = getSyscallTable(task);
+	    frysk.proc.Syscall syscall = syscallTable.getSyscall(task);
 	    if (opensys.equals(syscall) || closesys.equals(syscall)) {
 		entered++;
 		if (entered == stophits) {
@@ -272,8 +272,8 @@ public class TestSyscallSignal
 	}
 
 	public Action updateSyscallExit(Task task) {
-	    SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-	    frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
+	    SyscallTable syscallTable = getSyscallTable(task);
+	    frysk.proc.Syscall syscall = syscallTable.getSyscall(task);
 	    if (opensys.equals(syscall) || closesys.equals(syscall)) {
 		exited++;
 	    }
@@ -313,8 +313,8 @@ public class TestSyscallSignal
 	    return removed;
 	}
 
-	private SyscallEventInfo getSyscallEventInfo(Task task) {
-	    return task.getSyscallEventInfo();
+	private SyscallTable getSyscallTable(Task task) {
+	    return task.getSyscallTable();
 	}
     }
 }

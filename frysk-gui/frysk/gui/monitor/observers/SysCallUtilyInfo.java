@@ -39,7 +39,7 @@
 package frysk.gui.monitor.observers;
 
 import frysk.proc.Syscall;
-import frysk.proc.SyscallEventInfo;
+import frysk.proc.SyscallTable;
 import frysk.proc.Task;
 
 public class SysCallUtilyInfo {
@@ -47,11 +47,11 @@ public class SysCallUtilyInfo {
 	public static String getSysCallName(Task task) {
 		Syscall syscall;
 
-		SyscallEventInfo syscallEventInfo = null;
-		syscallEventInfo = task.getSyscallEventInfo();
+		SyscallTable syscallTable = null;
+		syscallTable = task.getSyscallTable();
 		
 		try {
-			syscall = syscallEventInfo.getSyscall(task);
+			syscall = syscallTable.getSyscall(task);
 		}
 		catch (final RuntimeException e1) {
 			return null;
@@ -67,11 +67,11 @@ public class SysCallUtilyInfo {
 		StringBuffer enterCall = new StringBuffer("");
 		Syscall syscall;
 
-		SyscallEventInfo syscallEventInfo = null;
-		syscallEventInfo = task.getSyscallEventInfo();
+		SyscallTable syscallTable = null;
+		syscallTable = task.getSyscallTable();
 		
 		try {
-			syscall = syscallEventInfo.getSyscall(task);
+			syscall = syscallTable.getSyscall(task);
 		}
 		catch (final RuntimeException e1) {
 			return "**** Error: " + e1.getMessage();
@@ -135,11 +135,11 @@ public class SysCallUtilyInfo {
 		StringBuffer returnCall = new StringBuffer("");
 		Syscall syscall;
 
-		SyscallEventInfo syscallEventInfo = null;
-		syscallEventInfo = task.getSyscallEventInfo();
+		SyscallTable syscallTable = null;
+		syscallTable = task.getSyscallTable();
 
 		try {
-			syscall = syscallEventInfo.getSyscall(task);
+		    syscall = syscallTable.getSyscall(task);
 		}
 		catch (final RuntimeException e1) {
 			return "**** Error: " + e1.getMessage();

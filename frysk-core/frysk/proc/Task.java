@@ -125,8 +125,11 @@ public abstract class Task
    */
   protected abstract Isa sendrecIsa ();
 
-    public final SyscallEventInfo getSyscallEventInfo () {
-	return getIsa().getSyscallEventInfo();
+    private SyscallTable syscallTable;
+    public final SyscallTable getSyscallTable() {
+	if (syscallTable == null)
+	    syscallTable = SyscallTableFactory.getSyscallTable(getISA());
+	return syscallTable;
     }
 
   /**

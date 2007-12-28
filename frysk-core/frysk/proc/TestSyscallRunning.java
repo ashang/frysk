@@ -179,8 +179,8 @@ public class TestSyscallRunning
 	}
 
 	public Action updateSyscallEnter(Task task) {
-	    SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-	    if (syscallEventInfo.getSyscall(task).equals(syscall)) {
+	    SyscallTable syscallTable = getSyscallTable(task);
+	    if (syscallTable.getSyscall(task).equals(syscall)) {
 		entered = true;
 		Manager.eventLoop.requestStop();
 		return Action.BLOCK;
@@ -229,8 +229,8 @@ public class TestSyscallRunning
 	    return removed;
 	}
 
-	private SyscallEventInfo getSyscallEventInfo(Task task) {
-	    return task.getSyscallEventInfo();
+	private SyscallTable getSyscallTable(Task task) {
+	    return task.getSyscallTable();
 	}
     }
 }

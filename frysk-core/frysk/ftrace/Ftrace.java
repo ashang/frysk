@@ -434,7 +434,7 @@ public class Ftrace
 	public Action updateSyscallEnter(Task task)
 	{
 	    frysk.proc.Syscall syscall
-		= task.getSyscallEventInfo().getSyscall(task);
+		= task.getSyscallTable().getSyscall(task);
 	    String name = syscall.getName();
 	    if (syscall.isNoReturn())
 		reporter.eventSingle(task, "syscall " + name,
