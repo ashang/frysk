@@ -44,6 +44,7 @@ import java.util.Observable;
 import java.util.logging.Level;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
+import frysk.syscall.Syscall;
 
 /**
  * Superclass for tests that examine process state at a system call.
@@ -66,31 +67,29 @@ public class SyscallExaminer
     volatile boolean exited;
     volatile int exitedTaskEventStatus;
 	
-    // Need to add task observers to the process the moment it is
-    // created, otherwize the creation of the very first task is
-    // missed (giving a mismatch of task created and deleted
-    // notifications.)
-	
-    class TaskEventObserver
-      extends TaskObserverBase
-      implements TaskObserver.Syscall, TaskObserver.Signaled
-    {
-      public Action updateSyscallEnter (Task task)
+      /**
+       * Need to add task observers to the process the moment it is
+       * created, otherwize the creation of the very first task is
+       * missed (giving a mismatch of task created and deleted
+       * notifications.)
+       */	
+      class TaskEventObserver
+	  extends TaskObserverBase
+	  implements TaskObserver.Syscalls, TaskObserver.Signaled
       {
-	syscallState = 1;
-	return Action.CONTINUE;
+	  public Action updateSyscallEnter (Task task, Syscall syscall) {
+	      syscallState = 1;
+	      return Action.CONTINUE;
+	  }
+	  public Action updateSyscallExit (Task task) {
+	      syscallState = 0;
+	      return Action.CONTINUE;
+	  }
+	  public Action updateSignaled (Task task, int sig) {
+	      stoppedTaskEventCount++;
+	      return Action.CONTINUE;
+	  }
       }
-      public Action updateSyscallExit (Task task)
-      {
-	syscallState = 0;
-	return Action.CONTINUE;
-      }
-      public Action updateSignaled (Task task, int sig)
-      {
-	stoppedTaskEventCount++;
-	return Action.CONTINUE;
-      }
-    }
 	
     class ProcDestroyedObserver
       implements Observer

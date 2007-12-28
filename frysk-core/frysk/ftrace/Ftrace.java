@@ -49,7 +49,7 @@ import frysk.proc.ProcObserver;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-
+import frysk.syscall.Syscall;
 import frysk.sys.Signal;
 
 import inua.util.PrintWriter;
@@ -252,7 +252,7 @@ public class Ftrace
 	Proc proc = task.getProc();
 
 	if (traceSyscalls) {
-	    task.requestAddSyscallObserver(new MySyscallObserver(reporter));
+	    task.requestAddSyscallsObserver(new MySyscallObserver(reporter));
 	    observationRequested(task);
 	}
 
@@ -420,21 +420,15 @@ public class Ftrace
     /**
      * The syscallObserver added to the traced proc.
      */
-    class MySyscallObserver
-	implements TaskObserver.Syscall
-    {
-	Reporter reporter;
-	frysk.syscall.Syscall syscallCache = null;
+    private class MySyscallObserver implements TaskObserver.Syscalls {
+	private final Reporter reporter;
+	private Syscall syscallCache = null;
 
-	MySyscallObserver(Reporter reporter)
-	{
+	MySyscallObserver(Reporter reporter) {
 	    this.reporter = reporter;
 	}
 
-	public Action updateSyscallEnter(Task task)
-	{
-	    frysk.syscall.Syscall syscall
-		= task.getSyscallTable().getSyscall(task);
+	public Action updateSyscallEnter(Task task, Syscall syscall) {
 	    String name = syscall.getName();
 	    if (syscall.isNoReturn())
 		reporter.eventSingle(task, "syscall " + name,
@@ -455,7 +449,7 @@ public class Ftrace
 
 	public Action updateSyscallExit (Task task)
 	{
-	    frysk.syscall.Syscall syscall = syscallCache;
+	    Syscall syscall = syscallCache;
 	    String name = syscall.getName();
 
 	    reporter.eventLeave(task, syscall,

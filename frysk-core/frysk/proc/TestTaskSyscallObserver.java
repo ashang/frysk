@@ -40,6 +40,7 @@
 
 package frysk.proc;
 
+import frysk.syscall.Syscall;
 import frysk.syscall.SyscallTable;
 import frysk.syscall.SyscallTableFactory;
 import frysk.Config;
@@ -66,8 +67,9 @@ import frysk.testbed.DaemonBlockedAtEntry;
 public class TestTaskSyscallObserver
     extends TestLib
 {
-    class SyscallObserver extends TaskObserverBase
-	implements TaskObserver.Syscall {
+    private static class SyscallObserver extends TaskObserverBase
+	implements TaskObserver.Syscalls
+    {
 	int enter = 0;
 
 	int exit = 0;
@@ -77,11 +79,9 @@ public class TestTaskSyscallObserver
 
 	boolean caughtExec = false;
 
-	final frysk.syscall.Syscall execvesys;
-
-	final frysk.syscall.Syscall opensys;
-
-	final frysk.syscall.Syscall readsys;
+	private final Syscall execvesys;
+	final Syscall opensys;
+	final Syscall readsys;
 
 	SyscallObserver (Task task) {
 	    SyscallTable syscallTable
@@ -96,13 +96,10 @@ public class TestTaskSyscallObserver
 	    Manager.eventLoop.requestStop();
 	}
 
-	public Action updateSyscallEnter (Task task) {
+	public Action updateSyscallEnter (Task task, Syscall syscall) {
 	    assertFalse("inSyscall", inSyscall);
 	    inSyscall = true;
 	    enter++;
-
-	    SyscallTable syscallTable = getSyscallTable(task);
-	    frysk.syscall.Syscall syscall = syscallTable.getSyscall(task);
 
 	    if (execvesys.equals(syscall)) {
 		caughtExec = true;
@@ -133,7 +130,7 @@ public class TestTaskSyscallObserver
     // called indicating that the attach succeeded.
     Task task = child.findTaskUsingRefresh(true);
     SyscallObserver syscallObserver = new SyscallObserver(task);
-    task.requestAddSyscallObserver(syscallObserver);
+    task.requestAddSyscallsObserver(syscallObserver);
     assertRunUntilStop("adding exec observer causing attach");
 
     // Do the exec; this call keeps the event loop running until
@@ -158,7 +155,7 @@ public class TestTaskSyscallObserver
     // called indicating that the attach succeeded.
     Task task = child.findTaskUsingRefresh(true);
     SyscallObserver syscallObserver = new SyscallObserver(task);
-    task.requestAddSyscallObserver(syscallObserver);
+    task.requestAddSyscallsObserver(syscallObserver);
     assertRunUntilStop("adding exec observer causing attach");
 
     // Do the exec; this call keeps the event loop running until
@@ -190,7 +187,7 @@ public class TestTaskSyscallObserver
 
     final SyscallObserver syscallObserver2 = new SyscallObserver(task);
 
-    task.requestAddSyscallObserver(syscallObserver1);
+    task.requestAddSyscallsObserver(syscallObserver1);
     task.requestAddClonedObserver(new TaskObserver.Cloned()
     {
 
@@ -214,7 +211,7 @@ public class TestTaskSyscallObserver
 
       public Action updateClonedOffspring (Task parent, Task offspring)
       {
-        offspring.requestAddSyscallObserver(syscallObserver2);
+        offspring.requestAddSyscallsObserver(syscallObserver2);
         offspring.requestUnblock(this);
         return Action.BLOCK;
         // return Action.CONTINUE;
@@ -258,7 +255,7 @@ public class TestTaskSyscallObserver
     // Add a syscall observer. XXX: This doesn't work - system
     // call tracing doesn't get enabled enabled.
     SyscallObserver syscallObserver = new SyscallObserver(child.getMainTask());
-    child.getMainTask().requestAddSyscallObserver(syscallObserver);
+    child.getMainTask().requestAddSyscallsObserver(syscallObserver);
     assertRunUntilStop("add SyscallObserver");
 
     // XXX: This is wrong; the task isn't a child so this will
@@ -297,7 +294,7 @@ public class TestTaskSyscallObserver
 
       logger.log(Level.FINE, "{0} **updateAttached\n", task);
       new StopEventLoopWhenProcRemoved(task.getProc().getPid());
-      task.requestAddSyscallObserver(syscallObserver1);
+      task.requestAddSyscallsObserver(syscallObserver1);
       // task.requestUnblock(this);
       return Action.BLOCK;
     }
@@ -355,7 +352,7 @@ public class TestTaskSyscallObserver
     // Add a syscall observer. XXX: This doesn't work - system
     // call tracing doesn't get enabled enabled.
     SyscallObserver syscallObserver = new SyscallObserver(child.getMainTask());
-    child.getMainTask().requestAddSyscallObserver(syscallObserver);
+    child.getMainTask().requestAddSyscallsObserver(syscallObserver);
     assertRunUntilStop("add SyscallObserver");
 
     // XXX: This is wrong; the task isn't a child so this will
@@ -369,67 +366,53 @@ public class TestTaskSyscallObserver
     assertTrue("syscall events", syscallObserver.inSyscall);
   }
 
-  /**
-   * Need to add task observers to the process the moment it is created,
-   * otherwize the creation of the very first task is missed (giving a mismatch
-   * of task created and deleted notifications.)
-   */
-
-  class SyscallOpenObserver
-      extends SyscallObserver
-  {
-    boolean openingTestFile;
-
-    boolean testFileOpened;
-
-    boolean expectedRcFound;
-
-    String openName = "a.file";
-
-    HashMap syscallCache = new HashMap();
+    /**
+     * Need to add task observers to the process the moment it is
+     * created, otherwize the creation of the very first task is
+     * missed (giving a mismatch of task created and deleted
+     * notifications.)
+     */
+    private class SyscallOpenObserver extends SyscallObserver {
+	boolean openingTestFile;
+	boolean testFileOpened;
+	boolean expectedRcFound;
+	String openName = "a.file";
+	HashMap syscallCache = new HashMap();
     
-    SyscallOpenObserver (Task task)
-    {
-      super(task);
-    }
+	SyscallOpenObserver (Task task) {
+	    super(task);
+	}
 
-    public Action updateSyscallEnter (Task task)
-    {
-      super.updateSyscallEnter(task);
-      SyscallTable syscallTable = getSyscallTable(task);
-      frysk.syscall.Syscall syscall = syscallTable.getSyscall(task);
-      syscallCache.put(task, syscall);
-      
-      if ((opensys.equals(syscall)))
-        {
-          long addr = syscall.getArguments(task, 1);
-          StringBuffer x = new StringBuffer();
-          task.getMemory().get(addr, x);
-          String name = x.toString();
-          if (name.indexOf(openName) >= 0)
-            {
-              testFileOpened = true;
-              openingTestFile = true;
-            }
-        }
-      return Action.CONTINUE;
-    }
+	public Action updateSyscallEnter (Task task, Syscall syscall) {
+	    super.updateSyscallEnter(task, syscall);
+	    syscallCache.put(task, syscall);
+	    
+	    if ((opensys.equals(syscall))) {
+		long addr = syscall.getArguments(task, 1);
+		StringBuffer x = new StringBuffer();
+		task.getMemory().get(addr, x);
+		String name = x.toString();
+		if (name.indexOf(openName) >= 0) {
+		    testFileOpened = true;
+		    openingTestFile = true;
+		}
+	    }
+	    return Action.CONTINUE;
+	}
 
-    public Action updateSyscallExit (Task task)
-    {
-      super.updateSyscallExit(task);
-      frysk.syscall.Syscall syscall = (frysk.syscall.Syscall) syscallCache.remove(task);
-      
-      if (opensys.equals(syscall) && openingTestFile)
-        {
-          openingTestFile = false;
-          int rc = (int) syscall.getReturnCode(task);
-          if (rc == - 2) // ENOENT
-            expectedRcFound = true;
-        }
-      return Action.CONTINUE;
+	public Action updateSyscallExit (Task task) {
+	    super.updateSyscallExit(task);
+	    Syscall syscall = (Syscall) syscallCache.remove(task);
+	    
+	    if (opensys.equals(syscall) && openingTestFile) {
+		openingTestFile = false;
+		int rc = (int) syscall.getReturnCode(task);
+		if (rc == - 2) // ENOENT
+		    expectedRcFound = true;
+	    }
+	    return Action.CONTINUE;
+	}
     }
-  }
 
   /**
    * Check that a specific syscall event can be detected. In this case, an open
@@ -444,7 +427,7 @@ public class TestTaskSyscallObserver
 
     SyscallOpenObserver syscallOpenObserver = new SyscallOpenObserver(
                                                                       child.getMainTask());
-    child.getMainTask().requestAddSyscallObserver(syscallOpenObserver);
+    child.getMainTask().requestAddSyscallsObserver(syscallOpenObserver);
     assertRunUntilStop("add SyscallObserver");
 
     child.requestRemoveBlock();
@@ -493,56 +476,46 @@ public class TestTaskSyscallObserver
     // missed (giving a mismatch of task created and deleted
     // notifications.)
 
-    class SyscallInterruptObserver
-        extends SyscallObserver
+    class SyscallInterruptObserver extends SyscallObserver
         implements TaskObserver.Signaled
     {
 
-      SyscallInterruptObserver (Task task)
-      {
-        super(task);
-      }
+	SyscallInterruptObserver (Task task) {
+	    super(task);
+	}
 
-      public Action updateSyscallEnter (Task task)
-      {
-        super.updateSyscallEnter(task);
-        SyscallTable syscallTable = getSyscallTable(task);
-        frysk.syscall.Syscall syscall = syscallTable.getSyscall(task);
+	public Action updateSyscallEnter (Task task, Syscall syscall) {
+	    // verify that read attempted
+	    if (readsys.equals(syscall)) {
+		long numberOfBytes = syscall.getArguments(task, 3);
+		logger.log(Level.FINE, "{0} updateSyscallEnter READ\n", this);
+		if (numberOfBytes != 1)
+		    throw new RuntimeException("bytes to read not 1");
+		if (readEnter == 0)
+		    Manager.eventLoop.add(new PausedReadTimerEvent(task, 500));
+		++readEnter;
+	    }
+	    return Action.CONTINUE;
+	}
 
-        // verify that read attempted
-        if (readsys.equals(syscall))
-          {
-            long numberOfBytes = syscall.getArguments(task, 3);
-            logger.log(Level.FINE, "{0} updateSyscallEnter READ\n", this);
-            if (numberOfBytes != 1)
-              throw new RuntimeException("bytes to read not 1");
-            if (readEnter == 0)
-              Manager.eventLoop.add(new PausedReadTimerEvent(task, 500));
-            ++readEnter;
-          }
-        return Action.CONTINUE;
-      }
+	public Action updateSyscallExit (Task task) {
+	    super.updateSyscallExit(task);
+	    SyscallTable syscallTable = getSyscallTable(task);
+	    Syscall syscall = syscallTable.getSyscall(task);
+	    if (readsys.equals(syscall)) {
+		logger.log(Level.FINE, "{0} updateSyscallExit READ\n", this);
+		if (readEnter <= readExit)
+		    throw new RuntimeException("Read exit before enter");
+		++readExit;
+	    }
+	    return Action.CONTINUE;
+	}
 
-      public Action updateSyscallExit (Task task)
-      {
-        super.updateSyscallExit(task);
-        SyscallTable syscallTable = getSyscallTable(task);
-        frysk.syscall.Syscall syscall = syscallTable.getSyscall(task);
-        if (readsys.equals(syscall))
-          {
-            logger.log(Level.FINE, "{0} updateSyscallExit READ\n", this);
-            if (readEnter <= readExit)
-              throw new RuntimeException("Read exit before enter");
-            ++readExit;
-          }
-        return Action.CONTINUE;
-      }
-
-      public Action updateSignaled (Task task, int sig) {
-	  if (Signal.USR1.equals(sig))
-	      sigusr1Count++;
-	  return Action.CONTINUE;
-      }
+	public Action updateSignaled (Task task, int sig) {
+	    if (Signal.USR1.equals(sig))
+		sigusr1Count++;
+	    return Action.CONTINUE;
+	}
     }
 
     class PausedReadTimerEvent
@@ -588,7 +561,7 @@ public class TestTaskSyscallObserver
                   if (t.getTaskId().hashCode() == pid)
                     {
                       syscallObserver = new SyscallInterruptObserver(t);
-                      t.requestAddSyscallObserver(syscallObserver);
+                      t.requestAddSyscallsObserver(syscallObserver);
                       assertRunUntilStop("Add syscallObservers");
                       t.requestAddSignaledObserver(syscallObserver);
                       assertRunUntilStop("Add signaledObservers");

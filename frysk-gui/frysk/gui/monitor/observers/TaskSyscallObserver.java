@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -52,12 +52,15 @@ import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.eventviewer.Event;
 import frysk.gui.monitor.eventviewer.EventManager;
 import frysk.gui.monitor.filters.TaskFilterPoint;
+import frysk.syscall.Syscall;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
-public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserver.Syscall {
+public class TaskSyscallObserver extends TaskObserverRoot
+    implements TaskObserver.Syscalls
+{
 	
 
 	public TaskFilterPoint enteringTaskFilterPoint;
@@ -113,31 +116,29 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 		this.addActionPoint(exitingGenericActionPoint);
 	}
 
-	public Action updateSyscallEnter(Task task) {
+    public Action updateSyscallEnter(final Task task, final Syscall syscall) {
+	org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 		final Task myTask = task;
-		org.gnu.glib.CustomEvents.addEvent(new Runnable(){
-			public void run() {
-				enterBottomHalf(myTask);
-			}
-		});
-		return Action.BLOCK;
-	}
-
-	protected void enterBottomHalf(Task task)  {
-		
-
-
-		this.setInfo(this.getName()+": "+"PID: " + task.getProc().getPid() + " TID: " + task.getTid() + " Event: Entering Syscall - " 
-				+ SysCallUtilyInfo.getCallInfoFromSyscall(task) + " Host: " + Manager.host.getName());
-		if(this.runEnterFilters(task)){
-			this.runEnterActions(task);
+		final Syscall mySyscall = syscall;
+		public void run() {
+		    enterBottomHalf(myTask, mySyscall);
 		}
+	    });
+	return Action.BLOCK;
+    }
 
+    protected void enterBottomHalf(Task task, Syscall syscall) {
+	this.setInfo(this.getName()+": "+"PID: " + task.getProc().getPid() + " TID: " + task.getTid() + " Event: Entering Syscall - " 
+		     + SysCallUtilyInfo.getCallInfoFromSyscall(task) + " Host: " + Manager.host.getName());
+	if(this.runEnterFilters(task)){
+	    this.runEnterActions(task);
+	}
+	
         Action action = this.whatActionShouldBeReturned();
         if(action == Action.CONTINUE){
-          task.requestUnblock(this);
+	    task.requestUnblock(this);
         }
-	}
+    }
 
 	private void runEnterActions(Task task) {
         Event event = new Event("" + SysCallUtilyInfo.getCallInfoFromSyscall(task), SysCallUtilyInfo.getCallInfoFromSyscall(task), GuiTask.GuiTaskFactory.getGuiTask(task), this);
@@ -194,7 +195,7 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 	}
 
 	public void apply(Task task){
-		task.requestAddSyscallObserver(this);
+		task.requestAddSyscallsObserver(this);
 	}
 	
     protected GuiObject getCopy(){
@@ -203,7 +204,7 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 
     public void unapply (Task task)
     {
-      task.requestAddSyscallObserver(this);
+      task.requestAddSyscallsObserver(this);
     }
 	
 }

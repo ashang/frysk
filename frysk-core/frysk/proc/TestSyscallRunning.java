@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import frysk.syscall.Syscall;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -113,7 +114,7 @@ public class TestSyscallRunning
     final Task procTask = proc.getMainTask();
 
     final SyscallObserver syso = new SyscallObserver("accept", procTask, false);
-    procTask.requestAddSyscallObserver(syso);
+    procTask.requestAddSyscallsObserver(syso);
 
     // Make sure the observer is properly installed.
     while (! syso.isAdded())
@@ -135,7 +136,7 @@ public class TestSyscallRunning
 		// Continue running (inside syscall), while attaching
 		// another syscall observer
 		procTask.requestUnblock(syso);
-		procTask.requestAddSyscallObserver(syso2);
+		procTask.requestAddSyscallsObserver(syso2);
 	    }
 	});
 
@@ -165,24 +166,23 @@ public class TestSyscallRunning
      * Observer that looks for open and close syscalls.
      * After a given number of calls it will BLOCK from the syscall enter.
      */
-    class SyscallObserver implements TaskObserver.Syscall {
+    private final class SyscallObserver implements TaskObserver.Syscalls {
 	private boolean entered;
 	private boolean exited;
 	private boolean added;
 	private boolean removed;
 
-	private final frysk.syscall.Syscall syscall;
+	private final Syscall expected;
 
 	SyscallObserver(String call, Task task, boolean entered) {
 	    SyscallTable syscallTable
 		= SyscallTableFactory.getSyscallTable(task.getISA());
-	    syscall = syscallTable.getSyscall(call);
+	    this.expected = syscallTable.getSyscall(call);
 	    this.entered = entered;
 	}
 
-	public Action updateSyscallEnter(Task task) {
-	    SyscallTable syscallTable = getSyscallTable(task);
-	    if (syscallTable.getSyscall(task).equals(syscall)) {
+	public Action updateSyscallEnter(Task task, Syscall syscall) {
+	    if (syscall.equals(expected)) {
 		entered = true;
 		Manager.eventLoop.requestStop();
 		return Action.BLOCK;
@@ -229,10 +229,6 @@ public class TestSyscallRunning
 
 	public boolean isRemoved() {
 	    return removed;
-	}
-
-	private SyscallTable getSyscallTable(Task task) {
-	    return task.getSyscallTable();
 	}
     }
 }

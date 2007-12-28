@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import frysk.syscall.Syscall;
 import frysk.syscall.SyscallTable;
 import frysk.syscall.SyscallTableFactory;
 import java.util.LinkedList;
@@ -745,9 +746,9 @@ public abstract class Task
   public TaskObservable syscallObservers = new TaskObservable(this);
 
   /**
-   * Add TaskObserver.Syscall to the TaskObserver pool.
+   * Add TaskObserver.Syscalls to the TaskObserver pool.
    */
-  public void requestAddSyscallObserver (TaskObserver.Syscall o)
+  public void requestAddSyscallsObserver (TaskObserver.Syscalls o)
   {
     logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
     proc.requestAddSyscallObserver(this, syscallObservers, o);
@@ -756,7 +757,7 @@ public abstract class Task
   /**
    * Delete TaskObserver.Syscall.
    */
-  public void requestDeleteSyscallObserver (TaskObserver.Syscall o)
+  public void requestDeleteSyscallsObserver (TaskObserver.Syscalls o)
   {
     proc.requestDeleteSyscallObserver(this, syscallObservers, o);
     logger.log(Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
@@ -771,9 +772,10 @@ public abstract class Task
     public int notifySyscallEnter () {
 	logger.log(Level.FINE,
 		   "{0} notifySyscallEnter\n", this);
+	Syscall syscall = getSyscallTable().getSyscall(this);
 	for (Iterator i = syscallObservers.iterator(); i.hasNext();) {
-	    TaskObserver.Syscall observer = (TaskObserver.Syscall) i.next();
-	    if (observer.updateSyscallEnter(this) == Action.BLOCK)
+	    TaskObserver.Syscalls observer = (TaskObserver.Syscalls) i.next();
+	    if (observer.updateSyscallEnter(this, syscall) == Action.BLOCK)
 		blockers.add(observer);
 	}
 	return blockers.size();
@@ -789,7 +791,7 @@ public abstract class Task
 	logger.log(Level.FINE,
 		   "{0} notifySyscallExit {1}\n", this);
 	for (Iterator i = syscallObservers.iterator(); i.hasNext();) {
-	    TaskObserver.Syscall observer = (TaskObserver.Syscall) i.next();
+	    TaskObserver.Syscalls observer = (TaskObserver.Syscalls) i.next();
 	    if (observer.updateSyscallExit(this) == Action.BLOCK)
 		blockers.add(observer);
 	}

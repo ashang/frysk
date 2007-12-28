@@ -1,5 +1,13 @@
 2007-12-28  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskObserver.java (Syscalls): Rename Syscall; add Syscall
+	parameter to updateSyscallEnter.
+	* TestTaskSyscallObserver.java: Update.
+	* TestSyscallSignal.java: Update.
+	* SyscallExaminer.java: Update.
+	* Task.java: Update.
+	* TestSyscallRunning.java: Update.
+
 	* Syscall.java: Move to frysk.syscall.
 	* SyscallTable.java: Move to frysk.syscall.
 	* SyscallTableFactory.java: Move to frysk.syscall.

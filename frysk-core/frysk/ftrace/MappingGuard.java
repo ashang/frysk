@@ -45,7 +45,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.logging.*;
 import java.io.File;
-
+import frysk.syscall.Syscall;
 import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
@@ -278,27 +278,24 @@ class MappingGuard
 	}
     }
 
-    private static class SyscallMappingGuard
-	extends MappingGuardB
-	implements TaskObserver.Syscall
+    private static class SyscallMappingGuard extends MappingGuardB
+	implements TaskObserver.Syscalls
     {
-	private frysk.syscall.Syscall syscallCache = null;
+	private Syscall syscallCache = null;
 
 	public SyscallMappingGuard(Task task) {
 	    super(task);
-	    task.requestAddSyscallObserver(this);
+	    task.requestAddSyscallsObserver(this);
 	}
 
-	public Action updateSyscallEnter(Task task) {
-	    frysk.syscall.Syscall syscall
-		= task.getSyscallTable().getSyscall(task);
+	public Action updateSyscallEnter(Task task, Syscall syscall) {
 	    syscallCache = syscall;
 	    return Action.CONTINUE;
 	}
 
 	public Action updateSyscallExit (Task task)
 	{
-	    frysk.syscall.Syscall syscall = syscallCache;
+	    Syscall syscall = syscallCache;
 	    syscallCache = null;
 
 	    if (syscall != null) {
@@ -315,7 +312,7 @@ class MappingGuard
 	}
 
 	public void remove() {
-	    task.requestDeleteSyscallObserver(this);
+	    task.requestDeleteSyscallsObserver(this);
 	}
     }
 

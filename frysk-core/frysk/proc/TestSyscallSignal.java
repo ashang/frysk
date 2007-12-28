@@ -46,6 +46,7 @@ import java.io.InputStreamReader;
 import frysk.sys.Signal;
 import frysk.sys.DaemonPipePair;
 import frysk.testbed.TestLib;
+import frysk.syscall.Syscall;
 import frysk.syscall.SyscallTable;
 import frysk.syscall.SyscallTableFactory;
 import frysk.testbed.TearDownProcess;
@@ -116,7 +117,7 @@ public class TestSyscallSignal
     final SignalObserver sigo = new SignalObserver(Signal.HUP);
     task.requestAddSignaledObserver(sigo);
     final SyscallObserver syso = new SyscallObserver(42, task);
-    task.requestAddSyscallObserver(syso);
+    task.requestAddSyscallsObserver(syso);
 
     // Make sure the observers are properly installed.
     while (! sigo.isAdded() || ! syso.isAdded())
@@ -241,7 +242,7 @@ public class TestSyscallSignal
      * Observer that looks for open and close syscalls.
      * After a given number of calls it will BLOCK from the syscall enter.
      */
-    class SyscallObserver implements TaskObserver.Syscall {
+    private class SyscallObserver implements TaskObserver.Syscalls {
 	private final int stophits;
 
 	private int entered;
@@ -249,8 +250,8 @@ public class TestSyscallSignal
 	private boolean added;
 	private boolean removed;
 
-	private final frysk.syscall.Syscall opensys;
-	private final frysk.syscall.Syscall closesys;
+	private final Syscall opensys;
+	private final Syscall closesys;
 
 	SyscallObserver(int stophits, Task task) {
 	    SyscallTable syscallTable
@@ -260,9 +261,7 @@ public class TestSyscallSignal
 	    this.closesys = syscallTable.getSyscall("close");
 	}
 
-	public Action updateSyscallEnter(Task task) {
-	    SyscallTable syscallTable = getSyscallTable(task);
-	    frysk.syscall.Syscall syscall = syscallTable.getSyscall(task);
+	public Action updateSyscallEnter(Task task, Syscall syscall) {
 	    if (opensys.equals(syscall) || closesys.equals(syscall)) {
 		entered++;
 		if (entered == stophits) {
@@ -275,7 +274,7 @@ public class TestSyscallSignal
 
 	public Action updateSyscallExit(Task task) {
 	    SyscallTable syscallTable = getSyscallTable(task);
-	    frysk.syscall.Syscall syscall = syscallTable.getSyscall(task);
+	    Syscall syscall = syscallTable.getSyscall(task);
 	    if (opensys.equals(syscall) || closesys.equals(syscall)) {
 		exited++;
 	    }
