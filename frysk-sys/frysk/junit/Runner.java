@@ -469,8 +469,18 @@ public class Runner
      * while trying to avoid the compiler's optimizer realizing that
      * the rest of the function is dead.
      */
-    static boolean unresolved(int bug, boolean unresolved)
-    {
+    static boolean unresolved(int bug, boolean unresolved) {
+	String msg = "http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug;
+	return unresolved(msg, unresolved);
+    }
+
+    /**
+     * A method that returns true, and reports "UNRESOLVED".  Used by
+     * test cases that want to be skipped (vis: if (broken()) return)
+     * while trying to avoid the compiler's optimizer realizing that
+     * the rest of the function is dead.
+     */
+    static boolean unresolved(String bug, boolean unresolved) {
 	if (skipUnresolvedTests) {
 	    if (unresolved) {
 		Results.addUnresolved(bug);

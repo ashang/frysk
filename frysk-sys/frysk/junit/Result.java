@@ -48,8 +48,7 @@ class Result
     /** POSIX: PASS.  */
     static final Result PASS = new Result("PASS");
     /** POSIX: PASS (RESOLVED).  */
-    static final Problem pass(int bug)
-    {
+    static final Problem pass(String bug) {
 	return new Problem(new String[] { "PASS", "UNRESOLVED" }, bug);
     }
     /** POSIX: FAIL.  */
@@ -63,9 +62,8 @@ class Result
 	return new Problem (what, unresolved, t);
     }
     /** POSIX: UNRESOLVED.  */
-    static Problem unresolved(int bug)
-    {
-	return new Problem (new String[] { "UNRESOLVED" }, bug);
+    static Problem unresolved(String bug) {
+	return new Problem(new String[] { "UNRESOLVED" }, bug);
     }
     /** POSIX: UNSUPPORTED.  */
     static final Problem unsupported (String why)
@@ -119,10 +117,9 @@ class Result
 	    super(what);
 	    reasons = new String[] { reason };
 	}
-	private Problem(String[] whats, int bug)
-	{
+	private Problem(String[] whats, String bug) {
 	    super(whats);
-	    reasons = new String[] { "http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug };
+	    reasons = new String[] { bug };
 	}
 	private Problem(String what, Problem unresolved, Throwable t)
 	{

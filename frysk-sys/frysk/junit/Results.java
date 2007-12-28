@@ -98,13 +98,11 @@ class Results
     {
 	addProblem (test, "addFailure", "FAIL", t);
     }
-    static void addUnresolved (int bug)
-    {
+    static void addUnresolved(String bug) {
 	result = Result.unresolved(bug);
 	unresolved.add (result);
     }
-    static void addResolved (int bug)
-    {
+    static void addResolved(String bug) {
 	result = Result.pass(bug);
 	resolved.add(result);
     }

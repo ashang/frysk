@@ -1,5 +1,7 @@
 2007-12-28  Andrew Cagney  <cagney@redhat.com>
 
+	* TestIsa.java (test64To32To64()): Use skip32on64().
+
 	* TestTaskSyscallObserver.java (SyscallInterruptObserver): In
 	updateSyscallEnter call super.
 	

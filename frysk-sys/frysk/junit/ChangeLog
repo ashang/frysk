@@ -1,5 +1,14 @@
 2007-12-28  Andrew Cagney  <cagney@redhat.com>
 
+	* Result.java (unresolved(String)): Replace unresolved(int).
+	(pass(String)): Replace pass(int).
+	(Problem(String[],String)): Replace Problem(String[],int).
+	* Runner.java (unresolved(String,boolean)): New.
+	(unresolved(int)): Use.
+	* Results.java (addUnresolved(String)): Replace addUnresolved(int).
+	(addResolved(String)): Replace addResolved(int).
+	* TestCase.java (skip32on64()): New.
+
 	* Runner.java (Runner(String,String[],Config,Config,Config)):
 	Replace Runner(String,String[]).
 	(ARCH32, ARCH64): Delete.

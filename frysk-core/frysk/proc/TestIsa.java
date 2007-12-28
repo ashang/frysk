@@ -43,8 +43,6 @@ import java.util.Observable;
 import lib.dwfl.ElfEMachine;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
-import java.io.File;
-import frysk.Config;
 import frysk.testbed.ExecOffspring;
 import frysk.testbed.SlaveOffspring;
 import frysk.testbed.ExecCommand;
@@ -260,11 +258,8 @@ public class TestIsa
 
   }
   
-  public void test64To32To64 ()
-  {
-      File exec32 = Config.getPkgLib32File(null);
-      File exec64 = Config.getPkgLib64File(null);
-      if (unsupported ("32-on-64", exec32 == null && exec64 == null))
+  public void test64To32To64 () {
+      if (skip32on64())
 	  return;
       ExecCommand invoke64
 	  = new ExecCommand(ExecCommand.Executable.BIT64);

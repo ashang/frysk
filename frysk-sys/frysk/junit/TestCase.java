@@ -73,6 +73,24 @@ public class TestCase
     }
 
     /**
+     * A method that returns true, and reports either UNSUPPORTED
+     * (32-bit) or UNRESOLVED (64-bit) when 32-on-64-bit tests are not
+     * possible.
+     */
+    protected static boolean skip32on64() {
+	switch (Config.getWordSize()) {
+	case 32:
+	    return Runner.unsupported("32-on-64", true);
+	case 64:
+	    return Runner.unresolved("32-on-64",
+				     Config.getPkgLib32File(null) == null);
+	default:
+	    throw new RuntimeException("unknown word-size: "
+				       + Config.getWordSize());
+	}
+    }
+
+    /**
      * A method that returns true, and reports UNSUPPORTED.
      */
     protected static boolean unsupported(String reason, boolean notSupported) {
