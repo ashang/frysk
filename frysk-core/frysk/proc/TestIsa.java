@@ -259,7 +259,7 @@ public class TestIsa
   }
   
   public void test64To32To64 () {
-      if (skip32on64())
+      if (missing32or64())
 	  return;
       ExecCommand invoke64
 	  = new ExecCommand(ExecCommand.Executable.BIT64);

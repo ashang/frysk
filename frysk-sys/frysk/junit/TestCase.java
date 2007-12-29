@@ -73,17 +73,21 @@ public class TestCase
     }
 
     /**
-     * A method that returns true, and reports either UNSUPPORTED
-     * (32-bit) or UNRESOLVED (64-bit) when 32-on-64-bit tests are not
-     * possible.
+     * The test requires both 32-bit and 64-bit executables.
+     *
+     * This method returns true, and reports either UNSUPPORTED
+     * (32-bit) or UNRESOLVED (64-bit), when a full 32-bit and 64-bit
+     * testing environment is not available.
      */
-    protected static boolean skip32on64() {
+    protected static boolean missing32or64() {
+	String msg = "requires both 32-bit and 64-bit";
 	switch (Config.getWordSize()) {
 	case 32:
-	    return Runner.unsupported("32-on-64", true);
+	    return Runner.unsupported(msg, true);
 	case 64:
-	    return Runner.unresolved("32-on-64",
-				     Config.getPkgLib32File(null) == null);
+	    return Runner.unresolved(msg,
+				     Config.getPkgLib32File(null) == null
+				     || Config.getPkgLib64File(null) == null);
 	default:
 	    throw new RuntimeException("unknown word-size: "
 				       + Config.getWordSize());

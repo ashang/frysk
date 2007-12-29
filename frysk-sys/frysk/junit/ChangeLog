@@ -1,5 +1,8 @@
 2007-12-28  Andrew Cagney  <cagney@redhat.com>
 
+	* TestCase.java (missing32or64()): Rename skip32on64(); check both
+	32-bit and 64-bit library paths are valid.
+
 	* Result.java (Problem.compareTo(Object)): New.
 	* Results.java: Replace HashSet with TreeSet.
 	
