@@ -104,12 +104,12 @@ frysk::Config::createInstallConfig ()
   config->thePkgLibDir = asFile ("@pkglibdir@");
   switch (sizeof(void*)) {
   case 4:
-    config->thePkgLib32Dir = NULL;
+    config->thePkgLib32Dir = config->thePkgLibDir;
     config->thePkgLib64Dir = NULL;
     break;
   case 8:
     config->thePkgLib32Dir = asFile ("@pkglib32dir@");
-    config->thePkgLib64Dir = asFile ("@pkglib64dir@");
+    config->thePkgLib64Dir = config->thePkgLibDir;
     break;
   }
   return config;
@@ -118,45 +118,40 @@ frysk::Config::createInstallConfig ()
 frysk::Config*
 frysk::Config::createInstallConfig32 ()
 {
-  java::io::File* pkgLibDir;
+  frysk::Config* config = frysk::Config::createInstallConfig();
   switch (sizeof(long))
     {
     case 4:
-      pkgLibDir = asFile("@pkglibdir@");
+      // default
       break;
     case 8:
       // Test against 32-bit binaries.
-      pkgLibDir = asFile ("@pkglib32dir@");
+      config->thePkgLibDir = config->thePkgLib32Dir;
+      // Disable "native" 32-bit.
+      config->thePkgLib32Dir = NULL;
       break;
     default:
       return NULL;
     }
-  frysk::Config* config = frysk::Config::createInstallConfig();
-  config->thePkgLibDir = pkgLibDir;
-  config->thePkgLib32Dir = NULL;
-  config->thePkgLib64Dir = NULL;
   return config;
 }
 
 frysk::Config*
 frysk::Config::createInstallConfig64 ()
 {
-  java::io::File* pkgLibDir;
+  frysk::Config* config = frysk::Config::createInstallConfig();
   switch (sizeof(long))
     {
     case 4:
       // 64-bit target not supported on 32-bit host.
       return NULL;
     case 8:
-      pkgLibDir = asFile ("@pkglibdir@");
+      // disable 32-on-64 testing.
+      config->thePkgLib32Dir = NULL;
       break;
     default:
       return NULL;
     }
-  frysk::Config* config = frysk::Config::createInstallConfig();
-  config->thePkgLibDir = pkgLibDir;
-  config->thePkgLib32Dir = NULL;
-  config->thePkgLib64Dir = NULL;
   return config;
 }
 
@@ -173,12 +168,12 @@ frysk::Config::createBuildConfig (jstring absSrcDir,
   config->thePkgLibDir = asFile (absBuildDir, "/frysk/pkglibdir/");
   switch (sizeof(void*)) {
   case 4:
-    config->thePkgLib32Dir = NULL;
+    config->thePkgLib32Dir = config->thePkgLibDir;
     config->thePkgLib64Dir = NULL;
     break;
   case 8:
     config->thePkgLib32Dir = asFile (absBuildDir, "/frysk/pkglibdir/arch32/");
-    config->thePkgLib64Dir = asFile (absBuildDir, "/frysk/pkglibdir/");
+    config->thePkgLib64Dir = config->thePkgLibDir;
     break;
   }
   return config;
@@ -188,24 +183,22 @@ frysk::Config*
 frysk::Config::createBuildConfig32 (jstring absSrcDir,
 				    jstring absBuildDir)
 {
-  java::io::File* pkgLibDir;
+  frysk::Config* config = frysk::Config::createBuildConfig(absSrcDir,
+							   absBuildDir);
   switch (sizeof(long))
     {
     case 4:
-      pkgLibDir = asFile (absBuildDir, "/frysk/pkglibdir/");
+      // default
       break;
     case 8:
       // Test against 32-bit binaries.
-      pkgLibDir = asFile (absBuildDir, "/frysk/pkglibdir/arch32/");
+      config->thePkgLibDir = config->thePkgLib32Dir;
+      // disable cross testing.
+      config->thePkgLib32Dir = NULL;
       break;
     default:
       return NULL;
     }
-  frysk::Config* config = frysk::Config::createBuildConfig(absSrcDir,
-							   absBuildDir);
-  config->thePkgLibDir = pkgLibDir;
-  config->thePkgLib32Dir = NULL;
-  config->thePkgLib64Dir = NULL;
   return config;
 }
 
@@ -213,7 +206,8 @@ frysk::Config*
 frysk::Config::createBuildConfig64 (jstring absSrcDir,
 				    jstring absBuildDir)
 {
-  java::io::File* pkgLibDir;
+  frysk::Config* config = frysk::Config::createBuildConfig(absSrcDir,
+							   absBuildDir);
   switch (sizeof(long))
     {
     case 4:
@@ -221,15 +215,11 @@ frysk::Config::createBuildConfig64 (jstring absSrcDir,
       return NULL;
       break;
     case 8:
-      pkgLibDir = asFile (absBuildDir, "/frysk/pkglibdir/");
+      // disable cross testing
+      config->thePkgLib32Dir = NULL;
       break;
     default:
       return NULL;
     }
-  frysk::Config* config = frysk::Config::createBuildConfig(absSrcDir,
-							   absBuildDir);
-  config->thePkgLibDir = pkgLibDir;
-  config->thePkgLib32Dir = NULL;
-  config->thePkgLib64Dir = NULL;
   return config;
 }

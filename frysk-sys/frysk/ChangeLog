@@ -1,5 +1,12 @@
 2007-12-28  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/Config.cxx-in (Config::createInstallConfig)
+	(Config::createInstallConfig32, Config::createInstallConfig64)
+	(Config::createBuildConfig, Config::createBuildConfig32)
+	(Config::createBuildConfig64): Set thePkgLib32Dir when 32-bit
+	testing needed.
+	* TestConfig.java (verify(int)): Replace verify(boolean).
+
 	* cni/Config.cxx-in (Config::createInstall32On64Config): Delete.
 	(Config::createBuild32On64Config): Delete.
 	(Config::createInstallConfig): When 64-bit, set 32- and 64- bit paths.

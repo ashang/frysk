@@ -65,23 +65,48 @@ public class TestConfig
 	Config.set (old);
     }
 
-    private void validate(boolean pure) {
+    private void validate(int pure) {
 	// The expected paths are valid.
-	assertNotNull("getGladeDir", Config.getGladeDir ());
-	assertNotNull("getHelpDir", Config.getHelpDir ());
-	assertNotNull("getImagesDir", Config.getImagesDir ());
-	assertNotNull("getBinFile", Config.getBinFile (null));
-	assertNotNull("getPkgDataFile", Config.getPkgDataFile (null));
-	assertNotNull("getPkgLibFile", Config.getPkgLibFile (null));
-	if (pure) {
-	    assertNull("getPkgLib32File", Config.getPkgLib32File(null));
+	assertNotNull("getGladeDir", Config.getGladeDir());
+	assertNotNull("getHelpDir", Config.getHelpDir());
+	assertNotNull("getImagesDir", Config.getImagesDir());
+	assertNotNull("getBinFile", Config.getBinFile(null));
+	assertNotNull("getPkgDataFile", Config.getPkgDataFile(null));
+	assertNotNull("getPkgLibFile", Config.getPkgLibFile(null));
+
+	switch (pure) {
+	case 32:
+	    // Testing a pure 32-bit environment; the corresponding
+	    // 64-bit lib must be NULL.
+	    assertSame("getPkgLib32File", Config.getPkgLibFile(null),
+		       Config.getPkgLib32File(null));
 	    assertNull("getPkgLib64File", Config.getPkgLib64File(null));
-	} else {
+	    break;
+	case 64:
+	    // Testing a pure 64-bit environment; the corresponding
+	    // 32-bit lib must be NULL.
+	    assertNull("getPkgLib32File", Config.getPkgLib32File(null));
+	    assertSame("getPkgLib64File", Config.getPkgLibFile(null),
+		       Config.getPkgLib64File(null));
+	    break;
+	case -32:
+	    // Testing a 32-on-64 environment.
+	    assertNull("getPkgLib32File", Config.getPkgLib32File(null));
+	    assertNotNull("getPkgLib64File", Config.getPkgLib64File(null));
+	    assertTrue("getPkgLibFile != getPkgLib64File",
+		       Config.getPkgLibFile(null)
+		       != Config.getPkgLib64File(null));
+	    break;
+	case -64:
+	    // Testing a 64-on-64 environment
 	    assertNotNull("getPkgLib32File", Config.getPkgLib32File(null));
 	    assertNotNull("getPkgLib64File", Config.getPkgLib64File(null));
-	    assertEquals("getPkgLibFile is getPkgLib64File",
-			 Config.getPkgLibFile(null),
-			 Config.getPkgLib64File(null));
+	    assertSame("getPkgLibFile == getPkgLib64File",
+		       Config.getPkgLibFile(null),
+		       Config.getPkgLib64File(null));
+	    break;
+	default:
+	    fail("bad switch");
 	}
     }
 
@@ -94,10 +119,10 @@ public class TestConfig
 	Config.set (Config.createInstallConfig ());
 	switch (Config.getWordSize()) {
 	case 32:
-	    validate(true);
+	    validate(32);
 	    break;
 	case 64:
-	    validate(false);
+	    validate(-64);
 	    break;
 	default:
 	    fail("unknown word size");
@@ -113,10 +138,10 @@ public class TestConfig
 	Config.set (Config.createBuildConfig ("src-dir", "build-dir"));
 	switch (Config.getWordSize()) {
 	case 32:
-	    validate(true);
+	    validate(32);
 	    break;
 	case 64:
-	    validate(false);
+	    validate(-64);
 	    break;
 	default:
 	    fail("unknown word size");
@@ -127,8 +152,10 @@ public class TestConfig
 	Config.set (Config.createBuildConfig32("src-dir", "build-dir"));
 	switch (Config.getWordSize()) {
 	case 32:
+	    validate(32);
+	    break;
 	case 64: 
-	    validate (true);
+	    validate(-32);
 	    break;
 	default:
 	    fail("unknown word size");
@@ -138,8 +165,10 @@ public class TestConfig
 	Config.set (Config.createInstallConfig32());
 	switch (Config.getWordSize()) {
 	case 32:
+	    validate(32);
+	    break;
 	case 64: 
-	    validate (true);
+	    validate(-32);
 	    break;
 	default:
 	    fail("unknown word size");
@@ -152,7 +181,7 @@ public class TestConfig
 	    assertNull("config", Config.get());
 	    break;
 	case 64: 
-	    validate (true);
+	    validate(64);
 	    break;
 	default:
 	    fail("unknown word size");
@@ -165,7 +194,7 @@ public class TestConfig
 	    assertNull("config", Config.get());
 	    break;
 	case 64: 
-	    validate (true);
+	    validate(64);
 	    break;
 	default:
 	    fail("unknown word size");
