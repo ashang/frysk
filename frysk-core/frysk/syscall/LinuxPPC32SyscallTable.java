@@ -530,7 +530,7 @@ class LinuxPPC32SyscallTable extends SyscallTable {
 	if (syscall == SOCKET_NUM)
 	    return findSubcall(socketSubcallList, subcall(task),
 			       unknownSocketSubSyscall);
-	else if (syscall != IPC_NUM)
+	else if (syscall == IPC_NUM)
 	    return findSubcall(ipcSubcallList, subcall(task),
 			       unknownIpcSubSyscall);
 	else
