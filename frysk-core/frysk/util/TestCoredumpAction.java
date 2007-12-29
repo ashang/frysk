@@ -64,7 +64,6 @@ import frysk.proc.dead.LinuxHost;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.SlaveOffspring;
 import frysk.testbed.TestLib;
-import frysk.Config;
 
 public class TestCoredumpAction
     extends TestLib
@@ -201,13 +200,9 @@ public class TestCoredumpAction
   }
 
   
-  public void testGeneralPurposeRegisters ()
-  {
-   
-      File exec32 = Config.getPkgLib32File(null);
-      File nativeFile = Config.getPkgLibFile(null);
-      if (nativeFile == exec32)
-        return;
+  public void testGeneralPurposeRegisters () {
+      if (unresolvedOn32On64(5525))
+	  return;
 
       // Construct a process
       Proc ackProc = giveMeABlockedProc();

@@ -142,6 +142,20 @@ public class TestCase
     }
 
     /**
+     * The test has problems that have not been resolved on 64-bit
+     * systems trying to control a 32-bit process; see BUG for more
+     * details.  Returns true and reports UNRESOLVED when testing
+     * 32-bit programs on a 64-bit system.
+     */
+    protected static boolean unresolvedOn32On64(int bug) {
+	// 32-on-64 sets lib32 to NULL.
+	return Runner.unresolved(bug,
+				 Config.getPkgLib32File(null) == null
+				 && (Config.getPkgLibFile(null)
+				     != Config.getPkgLib64File(null)));
+    }
+
+    /**
      * Results from uname(2) call.
      */
     private static Uname uname;
