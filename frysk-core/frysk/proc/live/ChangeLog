@@ -1,5 +1,8 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* TestByteBuffer.java: Update; frysk.proc.dummy.Proc renamed to
+	DummyProc.
+
 	* LiveTask.java (requestUnblock(TaskObserver)): New.
 	(requestAddClonedObserver(TaskObserver.Cloned)): New.
 	(requestDeleteClonedObserver(TaskObserver.Cloned)): New.

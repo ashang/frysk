@@ -42,6 +42,8 @@ package frysk.proc.live;
 import inua.eio.ByteBuffer;
 import frysk.junit.TestCase;
 import frysk.proc.Task;
+import frysk.proc.Proc;
+import frysk.proc.dummy.DummyProc;
 import frysk.testbed.AttachedSelf;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.LocalMemory;
@@ -85,7 +87,7 @@ public class TestByteBuffer
       // Cheat with the proc, it is not actually used if no
       // breakpoints are set (testing with breakpoints set is done through
       // TestTaskObserverCode in the various BreakpointMemoryView tests).
-      frysk.proc.Proc proc = new frysk.proc.dummy.Proc();
+      Proc proc = new DummyProc();
       BreakpointAddresses breakpoints = new BreakpointAddresses(proc);
       memorySpaceByteBuffer = new LogicalMemoryBuffer(pid,
 						      AddressSpace.TEXT,

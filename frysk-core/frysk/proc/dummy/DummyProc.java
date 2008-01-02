@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,27 +39,48 @@
 
 package frysk.proc.dummy;
 
-import frysk.proc.TaskObserver;
+import frysk.proc.Auxv;
+import frysk.proc.ProcState;
 import frysk.proc.ProcId;
+import frysk.proc.Isa;
+import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
-import frysk.proc.FindProc;
 
-public class Host
-    extends frysk.proc.Host
-{
-    protected void sendRefresh(boolean refreshAll)
-    {
+public class DummyProc extends Proc {
+    public DummyProc() {
+	super(new DummyHost(), null, new ProcId(42));
     }
-    protected void sendCreateAttachedProc(String stdin, String stdout,
-					  String stderr, String[] args,
-					  TaskObserver.Attached attached)
-    {
+  
+    public String getCommand() {
+	return "Foo";
     }
-    protected Proc sendrecSelf()
-    {
+    protected String sendrecCommand() {
 	return null;
     }
-    protected void sendRefresh (ProcId procId, FindProc finder)
-    {
+    protected String sendrecExe() {
+	return null;
+    }
+    protected int sendrecUID() {
+	return 0;
+    }
+    protected int sendrecGID() {
+	return 0;
+    }
+    protected String[] sendrecCmdLine() {
+	return null;
+    }
+    public void sendRefresh() {
+    }
+    protected ProcState getInitialState (boolean procStarting) {
+	return null;
+    }
+    public MemoryMap[] sendrecMaps () {
+        return null;
+    }
+    protected Auxv[] sendrecAuxv() {
+	return null;
+    }
+    protected Isa sendrecIsa() {
+	return null;
     }
 }

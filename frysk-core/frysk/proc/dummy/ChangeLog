@@ -1,5 +1,9 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* DummyHost.java: Rename Host.java.
+	* DummyProc.java: Rename Proc.java.
+	* DummyTask.java: Rename Task.java.
+
 	* Task.java (requestUnblock(TaskObserver)): New.
 	(requestAddClonedObserver(TaskObserver.Cloned)): New.
 	(requestDeleteClonedObserver(TaskObserver.Cloned)): New.

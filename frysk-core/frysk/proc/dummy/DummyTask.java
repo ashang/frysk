@@ -46,33 +46,28 @@ import frysk.proc.TaskState;
 import frysk.proc.TaskObservation;
 import frysk.isa.ISA;
 import frysk.bank.RegisterBanks;
+import frysk.proc.Task;
+import frysk.proc.Proc;
 
-public class Task extends frysk.proc.Task {
-    public Task (Proc parent)
-    {
+public class DummyTask extends Task {
+    public DummyTask (Proc parent) {
 	super (parent, (TaskObserver.Attached) null, null);
     }
-    public String getStateString()
-    {
+    public String getStateString() {
 	return "Attached";
     }
-    protected Isa sendrecIsa()
-    {
+    protected Isa sendrecIsa() {
 	return null;
     }
-    protected ISA sendrecISA()
-    {
+    protected ISA sendrecISA() {
 	return null;
     }
-    protected ByteBuffer sendrecMemory ()
-    {
+    protected ByteBuffer sendrecMemory () {
 	return null;
     }
-
     protected RegisterBanks sendrecRegisterBanks() {
 	return null;
     }
-
 
     /**
      * The state of this task. During a state transition newState is
