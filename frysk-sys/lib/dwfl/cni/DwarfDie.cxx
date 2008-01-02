@@ -571,16 +571,16 @@ iterate_decl (Dwarf_Die *die_p, char *sym, size_t nfiles)
 
       Dwarf_Word fileidx;
       attr = dwarf_attr (die, DW_AT_decl_file, &attr_mem);
+      int tag = dwarf_tag(die);
       // DW_TAG_enumerator doesn't have a DW_AT_decl_file
       if ((dwarf_formudata (attr, &fileidx) != 0 || (size_t)fileidx >= nfiles)
-	  && dwarf_tag (die) != DW_TAG_enumerator)
+	  && tag != DW_TAG_enumerator)
 	continue;
-
       if (name)
 	if (strcmp(name, sym) == 0)
 	  return die;
-
-      if (dwarf_haschildren (die))
+      if (dwarf_haschildren (die) && tag != DW_TAG_structure_type
+          && tag != DW_TAG_union_type)
 	{
 	  Dwarf_Die *result = iterate_decl (die, sym, nfiles);
 	  if (result != NULL)

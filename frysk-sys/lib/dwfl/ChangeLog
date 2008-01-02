@@ -1,3 +1,8 @@
+2008-01-02  Tim Moore  <timoore@redhat.com>
+
+	* cni/DwarfDie.cxx (iterate_decl): Don't descend into struture and
+	union types.
+
 2007-12-14  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DwarfDie.java (isDefinitionOnly): New function.

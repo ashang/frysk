@@ -1,3 +1,8 @@
+2008-01-02  Tim Moore  <timoore@redhat.com>
+
+	* funit-structmember.c: New test with structure member and function
+	that share a name.
+
 2007-12-21  Petr Machata  <pmachata@redhat.com>
 
 	* funit-calls.c (recursive): New function.

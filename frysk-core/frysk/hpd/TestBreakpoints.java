@@ -173,4 +173,20 @@ public class TestBreakpoints
         e.expect("Quitting...");
         e.close();
     }
+
+  // Test if a breakpoint can be set on a function that has the same
+  // name as a structure member.
+
+  public void testBreakOnStructMemberName() {
+      e = HpdTestbed.run("funit-structmember");
+      e.send("break testfn\n");
+      e.expect("break.*" + prompt);
+      e.send("go\n");
+      e.expect("go.*" + prompt + ".*Breakpoint.*testfn.*");
+      e.send("where\n");
+      e.expect("where.*#0.* testfn *\\(.+\\).*" + prompt);
+      e.send("quit\n");
+      e.expect("Quitting...");
+      e.close();
+  }
 }
