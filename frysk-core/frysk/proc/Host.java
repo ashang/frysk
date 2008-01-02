@@ -56,16 +56,14 @@ import java.util.logging.Logger;
  * process that is running this code - frysk is self aware.
  */
 
-public abstract class Host
-{
+public abstract class Host {
     static protected final Logger logger = Logger.getLogger("frysk");//.proc
     /**
      * The host corresponds to a specific system.
      */
-    protected Host ()
-    {
-        newState = HostState.initial (this);
-	logger.log (Level.FINE, "{0} Host\n", this);
+    protected Host() {
+        newState = HostState.initial(this);
+	logger.log(Level.FINE, "{0} Host\n", this);
     }
   
     // Maintain a collection of all known Tasks.
@@ -75,61 +73,53 @@ public abstract class Host
     // THREAD events.  That way its possible for the client to observe
     // things on a per-PROC basis.
 
-    Map taskPool = new HashMap ();
-    void add (Task task)
-    {
-	logger.log (Level.FINEST, "{0} add Task\n", this);
-	taskPool.put (task.id, task);
+    Map taskPool = new HashMap();
+    void add(Task task) {
+	logger.log(Level.FINEST, "{0} add Task\n", this);
+	taskPool.put(task.id, task);
     }
-    void remove (Task task)
-    {
-	logger.log (Level.FINEST, "{0} remove Task\n", this);
-	taskPool.remove (task.id);
+    void remove(Task task) {
+	logger.log(Level.FINEST, "{0} remove Task\n", this);
+	taskPool.remove(task.id);
     }
-    void removeTasks (Collection c)
-    {
-	logger.log (Level.FINE, "{0} removeTasks Collection\n", this);
-	taskPool.values().removeAll (c);
+    void removeTasks(Collection c) {
+	logger.log(Level.FINE, "{0} removeTasks Collection\n", this);
+	taskPool.values().removeAll(c);
     }
-    public Task get (TaskId id)
-    {
-	logger.log (Level.FINE, "{0} get TaskId\n", this);	
-	return (Task) taskPool.get (id);
+    public Task get(TaskId id) {
+	logger.log(Level.FINE, "{0} get TaskId\n", this);	
+	return (Task) taskPool.get(id);
     }
 
 	
     // Maintain a Collection of all known (live) PROCes.
 
-    protected Map procPool = new HashMap ();
-    void add (Proc proc)
-    {
-	logger.log (Level.FINEST, "{0} add Proc\n", this);
-	observableProcAddedXXX.notify (proc);
-	procPool.put (proc.id, proc);
+    protected Map procPool = new HashMap();
+    void add(Proc proc) {
+	logger.log(Level.FINEST, "{0} add Proc\n", this);
+	observableProcAddedXXX.notify(proc);
+	procPool.put(proc.id, proc);
     }
     /**
      * XXX: Should not be public.
      */
-    public void remove (Proc proc)
-    {
-	logger.log (Level.FINEST, "{0} remove Proc\n", this);
-	procPool.remove (proc.id);
-	observableProcRemovedXXX.notify (proc);
+    public void remove(Proc proc) {
+	logger.log(Level.FINEST, "{0} remove Proc\n", this);
+	procPool.remove(proc.id);
+	observableProcRemovedXXX.notify(proc);
     }
-    public Iterator getProcIterator ()
-    {
-	return procPool.values ().iterator ();
+    public Iterator getProcIterator() {
+	return procPool.values().iterator();
     }
-    public Proc getProc (ProcId id)
-    {
-	logger.log (Level.FINE, "{0} getProc ProcId {1} \n", new Object[] {this, id}); 
-	return (Proc) procPool.get (id);
+    public Proc getProc(ProcId id) {
+	logger.log(Level.FINE, "{0} getProc ProcId {1} \n", new Object[] {this, id}); 
+	return (Proc) procPool.get(id);
     }
 
     // Refresh the list of processes.
-    protected abstract void sendRefresh (boolean refreshAll);
+    protected abstract void sendRefresh(boolean refreshAll);
     
-    protected abstract void sendRefresh (ProcId procId, FindProc finder);
+    protected abstract void sendRefresh(ProcId procId, FindProc finder);
     
     /**
      * Tell the host to create a running child process.
@@ -143,11 +133,11 @@ public abstract class Host
      *
      * XXX: Is this the best thing?
      */
-    protected abstract void sendCreateAttachedProc (String stdin,
-						    String stdout,
-						    String stderr,
-						    String[] args,
-						    TaskObserver.Attached attached);
+    protected abstract void sendCreateAttachedProc(String stdin,
+						   String stdout,
+						   String stderr,
+						   String[] args,
+						   TaskObserver.Attached attached);
 
     /**
      * The current state of this host.
@@ -157,8 +147,7 @@ public abstract class Host
     /**
      * Return the current state.
      */
-    HostState getState ()
-    {
+    HostState getState() {
 	if (newState != null)
 	    return newState;
 	else
@@ -167,14 +156,13 @@ public abstract class Host
     /**
      * Return the current state while at the same time marking that
      * the state is in flux.  If a second attempt to change state
-     * occurs before the current state transition has completed,
-     * barf.  XXX: Bit of a hack, but at least this prevents state
-     * transition code attempting a second recursive state transition.
+     * occurs before the current state transition has completed, barf.
+     * XXX: Bit of a hack, but at least this prevents state transition
+     * code attempting a second recursive state transition.
      */
-    private HostState oldState ()
-    {
+    private HostState oldState() {
 	if (newState == null)
-	    throw new RuntimeException ("double state transition");
+	    throw new RuntimeException("double state transition");
 	oldState = newState;
 	newState = null;
 	return oldState;
@@ -185,13 +173,10 @@ public abstract class Host
      * refreshing the internal structure to match.  Optionally refresh
      * each processes task list.
      */
-    public void requestRefreshXXX ()
-    {
-	logger.log (Level.FINEST, "{0} requestRefreshXXX\n", this); 
-	Manager.eventLoop.add (new HostEvent ("RequestRefresh")
-	    {
-		public void execute ()
-		{
+    public void requestRefreshXXX() {
+	logger.log(Level.FINEST, "{0} requestRefreshXXX\n", this); 
+	Manager.eventLoop.add(new HostEvent("RequestRefresh") {
+		public void execute() {
 		    newState = oldState().handleRefresh(Host.this, false);
 		}
 	    });
@@ -200,57 +185,47 @@ public abstract class Host
     /**
      * Find a specifc process from its Id.
      */
-    public void requestFindProc(final ProcId procId, final FindProc finder)
-    {
-      Manager.eventLoop.add(new HostEvent("FindProc") {
-
-        public void execute ()
-        {
-          newState = oldState().handleRefresh (Host.this, procId, finder);
-        }});
+    public void requestFindProc(final ProcId procId, final FindProc finder) {
+	Manager.eventLoop.add(new HostEvent("FindProc") {
+		public void execute() {
+		    newState = oldState().handleRefresh(Host.this, procId, finder);
+		}});
     }
     
     /**
      * Request that a new attached and running process be created.
      */
-    public final void requestCreateAttachedProc (final String stdin,
-						 final String stdout,
-						 final String stderr,
-						 final String[] args,
-						 final TaskObserver.Attached attachedObserver)
-    {
-	logger.log (Level.FINE, "{0} requestCreateAttachedProc\n", this); 
-	Manager.eventLoop.add (new HostEvent ("requestCreateAttachedProc")
-	    {
-		public void execute ()
-		{
-		    newState= oldState ().handleCreateAttachedProc
+    public final void requestCreateAttachedProc(final String stdin,
+						final String stdout,
+						final String stderr,
+						final String[] args,
+						final TaskObserver.Attached attachedObserver) {
+	logger.log(Level.FINE, "{0} requestCreateAttachedProc\n", this); 
+	Manager.eventLoop.add(new HostEvent("requestCreateAttachedProc") {
+		public void execute() {
+		    newState= oldState().handleCreateAttachedProc
 			(Host.this, stdin, stdout, stderr, args, attachedObserver);
 		}
 	    });
     }
     /**
-     * Request that a new attached and running process (with stdin,
+     * Request that a new attached and running process(with stdin,
      * stdout, and stderr are shared with this process) be created.
      */
-    public final void requestCreateAttachedProc (String[] args,
-						 TaskObserver.Attached attachedObserver)
-    {
-	logger.log (Level.FINE, "{0} requestCreateAttachedProc String[] TaskObserver.Attached\n", this); 
-	requestCreateAttachedProc (null, null, null, args, attachedObserver);
+    public final void requestCreateAttachedProc(String[] args,
+						TaskObserver.Attached attachedObserver) {
+	logger.log(Level.FINE, "{0} requestCreateAttachedProc String[] TaskObserver.Attached\n", this); 
+	requestCreateAttachedProc(null, null, null, args, attachedObserver);
     }
 
     /**
      * XXX: Temporary until .observable's are converted to
      * .requestAddObserver.
      */
-    public class ObservableXXX
-	extends Observable
-    {
-	void notify (Object o)
-	{
-	    setChanged ();
-	    notifyObservers (o);
+    public class ObservableXXX extends Observable {
+	void notify(Object o) {
+	    setChanged();
+	    notifyObservers(o);
 	}
     }
 
@@ -261,7 +236,7 @@ public abstract class Host
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public ObservableXXX observableProcAddedXXX = new ObservableXXX ();
+    public ObservableXXX observableProcAddedXXX = new ObservableXXX();
 
     /*
      * An existing process has been removed.  Possible reasons include
@@ -271,7 +246,7 @@ public abstract class Host
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public ObservableXXX observableProcRemovedXXX = new ObservableXXX ();
+    public ObservableXXX observableProcRemovedXXX = new ObservableXXX();
 
     /**
      * Notify of the addition of a task attached to this process.
@@ -282,23 +257,22 @@ public abstract class Host
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public ObservableXXX observableTaskAddedXXX = new ObservableXXX ();
+    public ObservableXXX observableTaskAddedXXX = new ObservableXXX();
     /**
      * Notify of the removal of a task attached to this process.
      *
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public ObservableXXX observableTaskRemovedXXX = new ObservableXXX ();
+    public ObservableXXX observableTaskRemovedXXX = new ObservableXXX();
 
     /**
      * Return the process corresponding to this running frysk instance
      * found on this host.
      */
-    public Proc getSelf ()
-    {
+    public Proc getSelf() {
 	if (self == null)
-	    self = sendrecSelf ();
+	    self = sendrecSelf();
 	return self;
     }
     /**
@@ -308,34 +282,27 @@ public abstract class Host
     /**
      * Extract a pointer to <em>frysk</em> running on this Host.
      */
-    protected abstract Proc sendrecSelf ();
+    protected abstract Proc sendrecSelf();
 
     /**
      * Print this.
      */
-    public String toString ()
-    {
-	return ("{" + super.toString ()
-		+ ",state=" + getState ()
+    public String toString() {
+	return ("{" + super.toString()
+		+ ",state=" + getState()
 		+ "}");
     }
     
     /**
-     * Returns the name of the host 
+     * Returns the name of the host
      */
-    public String getName ()
-  {
-    try
-      {
-        return java.net.InetAddress.getLocalHost().getHostName();
-      }
-    catch (UnknownHostException e)
-      {
-        return "Unknown Host";
-      }
-    catch (NullPointerException npe)
-      {
-        return "Problem reading network address";
-      }
-  }
+    public String getName() {
+	try {
+	    return java.net.InetAddress.getLocalHost().getHostName();
+	} catch (UnknownHostException e) {
+	    return "Unknown Host";
+	} catch (NullPointerException npe) {
+	    return "Problem reading network address";
+	}
+    }
 }

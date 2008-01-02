@@ -37,7 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.proc;
 
 import java.util.ArrayList;
@@ -61,951 +60,841 @@ import frysk.sys.Signal;
  * A UNIX Process, containing tasks, memory, ...
  */
 
-public abstract class Proc
-{
-  protected static final Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
+public abstract class Proc {
+    protected static final Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
 
-  final ProcId id;
+    final ProcId id;
   
-  private CountDownLatch quitLatch;
+    private CountDownLatch quitLatch;
   
-  public ProcId getId ()
-  {
-    return id;
-  }
+    public ProcId getId() {
+	return id;
+    }
 
-  /**
-   * If known, due to the tracing of a fork, the Task that created this process.
-   */
-  final Task creator;
+    /**
+     * If known, due to the tracing of a fork, the Task that created
+     * this process.
+     */
+    final Task creator;
 
-  /**
-   * XXX: This should not be public.
-   */
-  public Proc parent;
+    /**
+     * XXX: This should not be public.
+     */
+    public Proc parent;
 
-  public Proc getParent ()
-  {
-    // XXX: This needs to be made on-demand.
-    return this.parent;
-  }
+    public Proc getParent() {
+	// XXX: This needs to be made on-demand.
+	return this.parent;
+    }
 
-  /**
-   * Return the Proc's Host.
-   */
-  public Host getHost ()
-  {
-    return host;
-  }
-  private final Host host;
+    /**
+     * Return the Proc's Host.
+     */
+    public Host getHost() {
+	return host;
+    }
+    private final Host host;
 
-  public int getPid ()
-  {
-    return id.hashCode();
-  }
+    public int getPid() {
+	return id.hashCode();
+    }
 
-  /**
-   * Return the basename of the program that this process is running.
-   */
-  public String getCommand ()
-  {
-    command = sendrecCommand();
-    return command;
-  }
+    /**
+     * Return the basename of the program that this process is
+     * running.
+     */
+    public String getCommand() {
+	command = sendrecCommand();
+	return command;
+    }
 
-  private String command;
+    private String command;
 
-  protected abstract String sendrecCommand ();
+    protected abstract String sendrecCommand();
 
-  /**
-   * Return the full path of the program that this process is running.
-   */
-  public String getExe ()
-  {
-    exe = sendrecExe();
-    return exe;
-  }
+    /**
+     * Return the full path of the program that this process is
+     * running.
+     */
+    public String getExe() {
+	exe = sendrecExe();
+	return exe;
+    }
 
-  private String exe;
+    private String exe;
 
-  protected abstract String sendrecExe ();
+    protected abstract String sendrecExe();
 
-  /**
-   * Return the UID of the Proc.
-   */
-  public int getUID ()
-  {
-    uid = sendrecUID();
-    return uid;
-  }
+    /**
+     * Return the UID of the Proc.
+     */
+    public int getUID() {
+	uid = sendrecUID();
+	return uid;
+    }
 
-  protected abstract int sendrecUID ();
+    protected abstract int sendrecUID();
 
-  private int uid;
+    private int uid;
 
-  /**
-   * Return the GID of the Proc.
-   */
-  public int getGID ()
-  {
-    gid = sendrecGID();
-    return gid;
-  }
+    /**
+     * Return the GID of the Proc.
+     */
+    public int getGID() {
+	gid = sendrecGID();
+	return gid;
+    }
 
-  protected abstract int sendrecGID ();
+    protected abstract int sendrecGID();
 
-  private int gid;
+    private int gid;
 
-  /**
-   * @return The main task for this process
-   */
-  public Task getMainTask ()
-  {
-    return this.host.get(new TaskId(this.getPid()));
-  }
+    /**
+     * @return The main task for this process
+     */
+    public Task getMainTask() {
+	return this.host.get(new TaskId(this.getPid()));
+    }
   
-  /**
-   * Return the Proc's command line argument list
-   */
-  public String[] getCmdLine ()
-  {
-    argv = sendrecCmdLine();
-    return argv;
-  }
+    /**
+     * Return the Proc's command line argument list
+     */
+    public String[] getCmdLine() {
+	argv = sendrecCmdLine();
+	return argv;
+    }
 
-  protected abstract String[] sendrecCmdLine ();
+    protected abstract String[] sendrecCmdLine();
 
-  private String[] argv;
+    private String[] argv;
 
-  public MemoryMap[] getMaps()
-  {
-    MemoryMap maps[] = sendrecMaps ();
-    return maps;
-  }
+    public MemoryMap[] getMaps() {
+	MemoryMap maps[] = sendrecMaps();
+	return maps;
+    }
   
-  public MemoryMap getMap(long address)
-    {
-      MemoryMap maps[] = getMaps();
-      for (int i = 0; i < maps.length; i++)
-        if (maps[i].addressLow <= address && maps[i].addressHigh > address)
-  	return maps[i];
+    public MemoryMap getMap(long address) {
+	MemoryMap maps[] = getMaps();
+	for (int i = 0; i < maps.length; i++)
+	    if (maps[i].addressLow <= address && maps[i].addressHigh > address)
+		return maps[i];
       
-      return null;
+	return null;
     }
   
-  protected abstract MemoryMap[] sendrecMaps ();
+    protected abstract MemoryMap[] sendrecMaps();
 
-  /**
-   * XXX: Should not be public.
-   */
-  public final BreakpointAddresses breakpoints;
+    /**
+     * XXX: Should not be public.
+     */
+    public final BreakpointAddresses breakpoints;
 
-  // List of available addresses for out of line stepping.
-  // Used a lock in getOutOfLineAddress() and doneOutOfLine().
-  private final ArrayList outOfLineAddresses = new ArrayList();
+    // List of available addresses for out of line stepping.
+    // Used a lock in getOutOfLineAddress() and doneOutOfLine().
+    private final ArrayList outOfLineAddresses = new ArrayList();
 
-  // Whether the Isa has been asked for addresses yet.
-  // Guarded by outOfLineAddresses in getOutOfLineAddress.
-  private boolean requestedOutOfLineAddresses;
+    // Whether the Isa has been asked for addresses yet.
+    // Guarded by outOfLineAddresses in getOutOfLineAddress.
+    private boolean requestedOutOfLineAddresses;
 
-  /**
-   * Returns an available address for out of line stepping. Blocks
-   * till an address is available. Queries the Isa if not done so
-   * before.  Returned addresses should be returned by calling
-   * doneOutOfLine().
-   */
-  long getOutOfLineAddress()
-  {
-    synchronized (outOfLineAddresses)
-      {
-	while (outOfLineAddresses.isEmpty())
-	  {
-	    if (! requestedOutOfLineAddresses)
-	      {
-		Isa isa = getIsa();
-		outOfLineAddresses.addAll(isa.getOutOfLineAddresses(this));
-		if (outOfLineAddresses.isEmpty())
-		  throw new IllegalStateException("Isa.getOutOfLineAddresses"
-						  + " returned empty List");
-		requestedOutOfLineAddresses = true;
-	      }
-	    else
-	      {
-		try
-		  {
-		    outOfLineAddresses.wait();
-		  }
-		catch (InterruptedException ignored)
-		  {
-		    // Just try again...
-		  }
-	      }
-	  }
-	return ((Long) outOfLineAddresses.remove(0)).longValue();
-      }
-  }
-
-  /**
-   * Called by Breakpoint with an address returned by
-   * getOutOfLineAddress() to put it back in the pool.
-   */
-  void doneOutOfLine(long address)
-  {
-    synchronized (outOfLineAddresses)
-      {
-	outOfLineAddresses.add(Long.valueOf(address));
-	outOfLineAddresses.notifyAll();
-      }
-  }
-
-  protected abstract ProcState getInitialState (boolean procStarting);
-
-  /**
-   * Create a new Proc skeleton. Since PARENT could be NULL, explicitly specify
-   * the HOST.
-   */
-  private Proc (ProcId id, Proc parent, Host host, Task creator)
-  {
-    this.host = host;
-    this.id = id;
-    this.parent = parent;
-    this.creator = creator;
-    this.breakpoints = new BreakpointAddresses(this);
-    // Keep parent informed.
-    if (parent != null)
-      parent.add(this);
-    // Keep host informed.
-    host.add(this);
-  }
-
-  /**
-   * Create a new, unattached, running, Proc. Since PARENT could be NULL,
-   * explicitly specify the HOST.
-   */
-  protected Proc (Host host, Proc parent, ProcId id)
-  {
-    this(id, parent, host, null);
-    newState = getInitialState(false);
-    logger.log(Level.FINEST, "{0} new - create unattached running proc\n", this);
-  }
-
-  /**
-   * Create a new, attached, running, process forked by Task. For the moment
-   * assume that the process will be immediately detached; if this isn't the case
-   * the task, once it has been created, will ram through an attached observer.
-   * Note the chicken-egg problem here: to add the initial observation the Proc
-   * needs the Task (which has the Observable). Conversely, for a Task, while it
-   * has the Observable, it doesn't have the containing proc.
-   */
-  protected Proc (Task task, ProcId forkId)
-  {
-    this(forkId, task.getProc(), task.getProc().getHost(), task);
-    newState = getInitialState(true);
-    logger.log(Level.FINE, "{0} new - create attached running proc\n", this);
-  }
-
-  /** XXX: Should not be public.  */
-  public abstract void sendRefresh ();
-
-  /**
-   * The current state of this Proc, during a state transition newState is null.
-   */
-  private ProcState oldState;
-
-  private ProcState newState;
-
-  /**
-   * Return the current state.
-   */
-  ProcState getState ()
-  {
-    if (newState != null)
-      return newState;
-    else
-      return oldState;
-  }
-
-  /**
-   * Return the current state while at the same time marking that the state is
-   * in flux. If a second attempt to change state occurs before the current
-   * state transition has completed, barf. XXX: Bit of a hack, but at least this
-   * prevents state transition code attempting a second recursive state
-   * transition.
-   */
-  private ProcState oldState ()
-  {
-    if (newState == null)
-      throw new RuntimeException(this + " double state transition");
-    oldState = newState;
-    newState = null;
-    return oldState;
-  }
-  
-  /**
-   * killRequest handles killing off processes that either the commandline
-   * or GUI have designated need to be removed from the CPU queue.
-   */
-  
-  public void requestKill()
-  {
-      Signal.KILL.kill(this.getPid());
-      // Throw the countDown on the queue so that the command
-      // thread will wait until events provoked by Signal.kill()
-      // are handled.
-      this.quitLatch = new CountDownLatch(1);
-      Manager.eventLoop.add(new Event() {
-              public void execute() {
-                  quitLatch.countDown();
-              }
-          });
-      this.requestAbandon();
-  }
-
-  /**
-   * Request that the Proc be forcefully detached. Quickly.
-   */
-  public void requestAbandon ()
-  {
-    logger.log(Level.FINE, "{0} abandon\n", this);
-    performDetach();
-    observations.clear();
-  }
-
-  /**
-   * Request that the Proc be forcefully detached. Upon detach run the given
-   * event.
-   * 
-   * @param e The event to run upon successful detach.
-   */
-  public void requestAbandonAndRunEvent (final Event e)
-  {
-    logger.log(Level.FINE, "{0} abandonAndRunEvent\n", this);
-    requestAbandon();
-    observableDetached.addObserver(new Observer()
-    {
-
-      public void update (Observable o, Object arg)
-      {
-        Manager.eventLoop.add(e);
-      }
-    });
-  }
-
-  /**
-   * Request that the Proc's task list be refreshed using system tables.
-   */
-  public void requestRefresh ()
-  {
-    logger.log(Level.FINE, "{0} requestRefresh\n", this);
-    Manager.eventLoop.add(new ProcEvent()
-    {
-      public void execute ()
-      {
-        newState = oldState().handleRefresh(Proc.this);
-      }
-    });
-  }
-
-  /**
-   * (Internal) Tell the process that is no longer listed in the system table
-   * remove itself.
-   *
-   * XXX: This should not be public.
-   */
-  public void performRemoval ()
-  {
-    logger.log(Level.FINEST, "{0} performRemoval -- no longer in /proc\n", this);
-    Manager.eventLoop.add(new ProcEvent()
-    {
-      public void execute ()
-      {
-        newState = oldState().handleRemoval(Proc.this);
-      }
-    });
-  }
-
-  /**
-   * (Internal) Tell the process that the corresponding task has completed its
-   * attach.
-   *
-   * XXX: Should not be public.
-   */
-  public void performTaskAttachCompleted (final Task theTask)
-  {
-    logger.log(Level.FINE, "{0} performTaskAttachCompleted\n", this);
-    Manager.eventLoop.add(new ProcEvent()
-    {
-      Task task = theTask;
-
-      public void execute ()
-      {
-        newState = oldState().handleTaskAttachCompleted(Proc.this, task);
-      }
-    });
-  }
-
-  /**
-   * (Internal) Tell the process that the corresponding task has completed its
-   * detach.
-   *
-   * XXX: Should not be public.
-   */
-  public void performTaskDetachCompleted (final Task theTask)
-  {
-    logger.log(Level.FINE, "{0} performTaskDetachCompleted\n", this);
-    Manager.eventLoop.add(new ProcEvent()
-    {
-      Task task = theTask;
-
-      public void execute ()
-      {
-        newState = oldState().handleTaskDetachCompleted(Proc.this, task);
-      }
-    });
-  }
-
-  /**
-   * (Internal) Tell the process that the corresponding task has completed its
-   * detach.
-   */
-  void performTaskDetachCompleted (final Task theTask, final Task theClone)
-  {
-    logger.log(Level.FINE, "{0} performTaskDetachCompleted/clone\n", this);
-    Manager.eventLoop.add(new ProcEvent()
-    {
-      Task task = theTask;
-
-      Task clone = theClone;
-
-      public void execute ()
-      {
-        newState = oldState().handleTaskDetachCompleted(Proc.this, task, clone);
-      }
-    });
-  }
-
-  void performDetach ()
-  {
-    logger.log(Level.FINE, "{0} performDetach\n", this);
-    Manager.eventLoop.add(new ProcEvent()
-    {
-      public void execute ()
-      {
-        newState = oldState().handleDetach(Proc.this, true);
-      }
-    });
-  }
-
-  /**
-   * The set of observations that currently apply to this task.  Note
-   * that this is a Collection that may contain the same Observer
-   * object multiple times (for possible different observations).
-   */
-  private Collection observations = new LinkedList();
-
-  public boolean addObservation (Object o)
-  {
-    return observations.add(o);
-  }
-
-  public boolean removeObservation (Object o)
-  {
-    return observations.remove(o);
-  }
-
-  public int observationsSize ()
-  {
-    return observations.size();
-  }
-
-  public Iterator observationsIterator ()
-  {
-    return observations.iterator();
-  }
-
-  public void requestUnblock (TaskObserver observerArg)
-  {
-    Iterator iter = getTasks().iterator();
-    while (iter.hasNext())
-      {
-        Task task = (Task) iter.next();
-        task.requestUnblock(observerArg);
-      }
-  }
-
-  /**
-   * (internal) Tell the process to add the specified Observation, attaching the
-   * process if necessary.
-   */
-  void handleAddObservation (TaskObservation observation)
-  {
-    newState = oldState().handleAddObservation(this, observation);
-  }
-
-  /**
-   * (Internal) Tell the process to add the specified Observation, attaching to
-   * the process if necessary.
-   */
-  void requestAddObserver (Task task, TaskObservable observable,
-                           TaskObserver observer)
-  {
-    logger.log(Level.FINE, "{0} requestAddObservation\n", this);
-    Manager.eventLoop.add(new TaskObservation(task, observable, observer, true)
-    {
-      public void execute ()
-      {
-        handleAddObservation(this);
-      }
-    });
-  }
-
-  /**
-   * Class describing the action to take on the suspended Task before adding or
-   * deleting a Syscall observer.
-   */
-  final class SyscallAction
-      implements Runnable
-  {
-    private final Task task;
-
-    private final boolean addition;
-
-    SyscallAction (Task task, boolean addition)
-    {
-      this.task = task;
-      this.addition = addition;
+    /**
+     * Returns an available address for out of line stepping. Blocks
+     * till an address is available. Queries the Isa if not done so
+     * before.  Returned addresses should be returned by calling
+     * doneOutOfLine().
+     */
+    long getOutOfLineAddress() {
+	synchronized (outOfLineAddresses) {
+	    while (outOfLineAddresses.isEmpty()) {
+		if (! requestedOutOfLineAddresses) {
+		    Isa isa = getIsa();
+		    outOfLineAddresses.addAll(isa.getOutOfLineAddresses(this));
+		    if (outOfLineAddresses.isEmpty())
+			throw new IllegalStateException("Isa.getOutOfLineAddresses"
+							+ " returned empty List");
+		    requestedOutOfLineAddresses = true;
+		} else {
+		    try {
+			outOfLineAddresses.wait();
+		    } catch (InterruptedException ignored) {
+			// Just try again...
+		    }
+		}
+	    }
+	    return ((Long) outOfLineAddresses.remove(0)).longValue();
+	}
     }
 
-    public void run ()
-    {
-      int syscallobs = task.syscallObservers.numberOfObservers();
-      if (addition)
-        {
-          if (syscallobs == 0)
-            task.startTracingSyscalls();
-        }
-      else
-        {
-          if (syscallobs == 0)
-            task.stopTracingSyscalls();
-        }
-    }
-  }
-
-  /**
-   * (Internal) Tell the process to add the specified Observation, attaching to
-   * the process if necessary. Adds a syscallObserver which changes the task to
-   * syscall tracing mode of necessary.
-   */
-  void requestAddSyscallObserver (final Task task, TaskObservable observable,
-                                  TaskObserver observer)
-  {
-    logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
-    SyscallAction sa = new SyscallAction(task, true);
-    TaskObservation to = new TaskObservation(task, observable, observer, sa,
-                                             true)
-    {
-      public void execute ()
-      {
-        handleAddObservation(this);
-      }
-
-      public boolean needsSuspendedAction ()
-      {
-        return task.syscallObservers.numberOfObservers() == 0;
-      }
-    };
-    Manager.eventLoop.add(to);
-  }
-
-  /**
-   * (Internal) Tell the process to delete the specified Observation, detaching
-   * from the process if necessary. Removes a syscallObserver exiting the task
-   * from syscall tracing mode of necessary.
-   *
-   * XXX: Should not be public.
-   */
-  public void requestDeleteObserver (Task task, TaskObservable observable,
-                              TaskObserver observer)
-  {
-    Manager.eventLoop.add(new TaskObservation(task, observable, observer, false)
-    {
-      public void execute ()
-      {
-        newState = oldState().handleDeleteObservation(Proc.this, this);
-      }
-    });
-  }
-
-  /**
-   * (Internal) Tell the process to delete the specified Observation, detaching
-   * from the process if necessary.
-   */
-  void requestDeleteSyscallObserver (final Task task,
-                                     TaskObservable observable,
-                                     TaskObserver observer)
-  {
-    logger.log(Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
-    SyscallAction sa = new SyscallAction(task, false);
-    TaskObservation to = new TaskObservation(task, observable, observer, sa,
-                                             false)
-    {
-      public void execute ()
-      {
-        newState = oldState().handleDeleteObservation(Proc.this, this);
-      }
-
-      public boolean needsSuspendedAction ()
-      {
-        return task.syscallObservers.numberOfObservers() == 1;
-      }
-    };
-    Manager.eventLoop.add(to);
-  }
-
-  /**
-   * Class describing the action to take on the suspended Task before adding or
-   * deleting a Code observer.
-   */
-  final class BreakpointAction
-      implements Runnable
-  {
-    private final TaskObserver.Code code;
-
-    private final Task task;
-
-    private final long address;
-
-    private final boolean addition;
-
-    BreakpointAction (TaskObserver.Code code, Task task, long address,
-                      boolean addition)
-    {
-      this.code = code;
-      this.task = task;
-      this.address = address;
-      this.addition = addition;
+    /**
+     * Called by Breakpoint with an address returned by
+     * getOutOfLineAddress() to put it back in the pool.
+     */
+    void doneOutOfLine(long address) {
+	synchronized (outOfLineAddresses) {
+	    outOfLineAddresses.add(Long.valueOf(address));
+	    outOfLineAddresses.notifyAll();
+	}
     }
 
-    public void run ()
-    {
-      if (addition)
-        {
-          boolean mustInstall = breakpoints.addBreakpoint(code, address);
-          if (mustInstall)
-            {
-              Breakpoint breakpoint;
-              breakpoint = Breakpoint.create(address, Proc.this);
-              breakpoint.install(task);
-            }
-        }
-      else
-        {
-          boolean mustRemove = breakpoints.removeBreakpoint(code, address);
-          if (mustRemove)
-            {
-              Breakpoint breakpoint;
-              breakpoint = Breakpoint.create(address, Proc.this);
-              breakpoint.remove(task);
-            }
-        }
+    protected abstract ProcState getInitialState(boolean procStarting);
+
+    /**
+     * Create a new Proc skeleton. Since PARENT could be NULL,
+     * explicitly specify the HOST.
+     */
+    private Proc(ProcId id, Proc parent, Host host, Task creator) {
+	this.host = host;
+	this.id = id;
+	this.parent = parent;
+	this.creator = creator;
+	this.breakpoints = new BreakpointAddresses(this);
+	// Keep parent informed.
+	if (parent != null)
+	    parent.add(this);
+	// Keep host informed.
+	host.add(this);
     }
-  }
 
-  /**
-   * (Internal) Tell the process to add the specified Code Observation,
-   * attaching to the process if necessary. Adds a TaskCodeObservation to the
-   * eventloop which instructs the task to install the breakpoint if necessary.
-   */
-  void requestAddCodeObserver (Task task, TaskObservable observable,
-                               TaskObserver.Code observer, final long address)
-  {
-    logger.log(Level.FINE, "{0} requestAddCodeObserver\n", this);
-    BreakpointAction bpa = new BreakpointAction(observer, task, address, true);
-    TaskObservation to;
-    to = new TaskObservation(task, observable, observer, bpa, true)
-    {
-      public void execute ()
-      {
-        handleAddObservation(this);
-      }
-
-      public boolean needsSuspendedAction ()
-      {
-        return breakpoints.getCodeObservers(address) == null;
-      }
-    };
-    Manager.eventLoop.add(to);
-  }
-
-  /**
-   * (Internal) Tell the process to delete the specified Code Observation,
-   * detaching from the process if necessary.
-   */
-  void requestDeleteCodeObserver (Task task, TaskObservable observable,
-                                  TaskObserver.Code observer, final long address)
-  {
-    logger.log(Level.FINE, "{0} requestDeleteCodeObserver\n", this);
-    BreakpointAction bpa = new BreakpointAction(observer, task, address, false);
-    TaskObservation to;
-    to = new TaskObservation(task, observable, observer, bpa, false)
-    {
-      public void execute ()
-      {
-        newState = oldState().handleDeleteObservation(Proc.this, this);
-      }
-
-      public boolean needsSuspendedAction ()
-      {
-        return breakpoints.getCodeObservers(address).size() == 1;
-      }
-    };
-
-    Manager.eventLoop.add(to);
-  }
-
-  /**
-   * Class describing the action to take on the suspended Task before adding or
-   * deleting an Instruction observer. No particular actions are needed, but we
-   * must make sure the Task is suspended.
-   */
-  final static class InstructionAction
-      implements Runnable
-  {
-    public void run ()
-    {
-      // There is nothing in particular we need to do. We just want
-      // to make sure the Task is stopped so we can send it a step
-      // instruction or, when deleted, start resuming the process
-      // normally.
-
-      // We do want an explicit updateExecuted() call, after adding
-      // the observer, but while still suspended. This is done by
-      // overriding the add() method in the TaskObservation
-      // below. No such action is required on deletion.
+    /**
+     * Create a new, unattached, running, Proc. Since PARENT could be
+     * NULL, explicitly specify the HOST.
+     */
+    protected Proc(Host host, Proc parent, ProcId id) {
+	this(id, parent, host, null);
+	newState = getInitialState(false);
+	logger.log(Level.FINEST, "{0} new - create unattached running proc\n", this);
     }
-  }
 
-  /**
-   * (Internal) Tell the process to add the specified Instruction Observation,
-   * attaching and/or suspending the process if necessary. As soon as the
-   * observation is added and the task isn't blocked it will inform the
-   * Instruction observer of every step of the task.
-   */
-  void requestAddInstructionObserver (final Task task,
-                                      TaskObservable observable,
-                                      TaskObserver.Instruction observer)
-  {
-    logger.log(Level.FINE, "{0} requestAddInstructionObserver\n", this);
-    TaskObservation to;
-    InstructionAction ia = new InstructionAction();
-    to = new TaskObservation(task, observable, observer, ia, true)
-    {
-      public void execute ()
-      {
-        handleAddObservation(this);
-      }
+    /**
+     * Create a new, attached, running, process forked by Task. For
+     * the moment assume that the process will be immediately
+     * detached; if this isn't the case the task, once it has been
+     * created, will ram through an attached observer.  Note the
+     * chicken-egg problem here: to add the initial observation the
+     * Proc needs the Task (which has the Observable). Conversely, for
+     * a Task, while it has the Observable, it doesn't have the
+     * containing proc.
+     */
+    protected Proc(Task task, ProcId forkId) {
+	this(forkId, task.getProc(), task.getProc().getHost(), task);
+	newState = getInitialState(true);
+	logger.log(Level.FINE, "{0} new - create attached running proc\n", this);
+    }
 
-      public boolean needsSuspendedAction ()
-      {
-        return task.instructionObservers.numberOfObservers() == 0;
-      }
-
-      // Makes sure that the observer is properly added and then,
-      // while the Task is still suspended, updateExecuted() is
-      // called. Giving the observer a chance to inspect and
-      // possibly block the Task.
-      public void add ()
-      {
-        super.add();
-        TaskObserver.Instruction i = (TaskObserver.Instruction) observer;
-        if (i.updateExecuted(task) == Action.BLOCK)
-          task.blockers.add(observer);
-      }
-    };
-    Manager.eventLoop.add(to);
-  }
-
-  /**
-   * (Internal) Tell the process to delete the specified Instruction
-   * Observation, detaching and/or suspending from the process if necessary.
-   */
-  void requestDeleteInstructionObserver (final Task task,
-                                         TaskObservable observable,
-                                         TaskObserver.Instruction observer)
-  {
-    logger.log(Level.FINE, "{0} requestDeleteInstructionObserver\n", this);
-    TaskObservation to;
-    InstructionAction ia = new InstructionAction();
-    to = new TaskObservation(task, observable, observer, ia, false)
-    {
-      public void execute ()
-      {
-        newState = oldState().handleDeleteObservation(Proc.this, this);
-      }
-
-      public boolean needsSuspendedAction ()
-      {
-        return task.instructionObservers.numberOfObservers() == 1;
-      }
-    };
-    Manager.eventLoop.add(to);
-  }
-
-  /**
-   * Table of this processes child processes.
-   */
-  private Set childPool = new HashSet();
-
-  /**
-   * Add Proc as a new child
-   *
-   * XXX: This should not be public.
-   */
-  public void add (Proc child)
-  {
-    logger.log(Level.FINEST, "{0} add(Proc) -- a child process\n", this);
-    childPool.add(child);
-  }
-
-  /**
-   * Remove Proc from this processes children.
-   *
-   * XXX: This should not be public.
-   */
-  public void remove (Proc child)
-  {
-    logger.log(Level.FINEST, "{0} remove(Proc) -- a child process\n", this);
-    childPool.remove(child);
-  }
-
-  /**
-   * Get the children as an array.
-   */
-  public LinkedList getChildren ()
-  {
-    return new LinkedList(childPool);
-  }
-
-  /**
-   * XXX: Temporary until .observable's are converted to .requestAddObserver.
-   */
-  public class ObservableXXX
-      extends Observable
-  {
     /** XXX: Should not be public.  */
-    public void notify (Object o)
-    {
-      logger.log(Level.FINE, "{0} notify -- all observers\n", o);
-      setChanged();
-      notifyObservers(o);
+    public abstract void sendRefresh();
+
+    /**
+     * The current state of this Proc, during a state transition
+     * newState is null.
+     */
+    private ProcState oldState;
+
+    private ProcState newState;
+
+    /**
+     * Return the current state.
+     */
+    ProcState getState() {
+	if (newState != null)
+	    return newState;
+	else
+	    return oldState;
     }
-  }
 
-  /**
-   * Pool of tasks belonging to this Proc.
-   *
-   * XXX: Should not be public.
-   */
-  public Map taskPool = new HashMap();
-
-  /**
-   * Add the Task to this Proc.
-   */
-  void add (Task task)
-  {
-    taskPool.put(task.id, task);
-    host.observableTaskAddedXXX.notify(task);
-  }
-
-  /**
-   * Remove Task from this Proc.
-   *
-   * XXX: Should not be public.
-   */
-  public void remove (Task task)
-  {
-    logger.log(Level.FINEST, "{0} remove(Task) -- within this Proc\n", this);
-    host.observableTaskRemovedXXX.notify(task);
-    taskPool.remove(task.id);
-    host.remove(task);
-  }
-
-  /**
-   * Remove all but Task from this Proc.
-   *
-   * XXX: Should not be public.
-   */
-  public void retain (Task task)
-  {
-    logger.log(Level.FINE, "{0} retain(Task) -- remove all but task\n", this);
-    HashMap new_tasks = new HashMap();
-    new_tasks = (HashMap) ((HashMap) taskPool).clone();
-    new_tasks.values().remove(task);
-    taskPool.values().removeAll(new_tasks.values());
-    host.removeTasks(new_tasks.values());
-  }
-
-  /**
-   * Return this Proc's Task's as a list.
-   */
-  public LinkedList getTasks ()
-  {
-    return new LinkedList(taskPool.values());
-  }
-
-  /**
-   * The Process Auxiliary Vector.
-   */
-  public Auxv[] getAuxv ()
-  {
-    if (auxv == null)
-      {
-        auxv = sendrecAuxv();
-      }
-    return auxv;
-  }
-
-  private Auxv[] auxv;
-
-  /**
-   * Extract the auxv from the inferior.
-   */
-  protected abstract Auxv[] sendrecAuxv ();
-
-  /**
-   * Get the Isa object associated with the process. Only use this
-   * when you don't have a Task object to interrogate.
-   */
-  public Isa getIsa ()
-  {
-    return sendrecIsa();
-  }
+    /**
+     * Return the current state while at the same time marking that
+     * the state is in flux. If a second attempt to change state
+     * occurs before the current state transition has completed,
+     * barf. XXX: Bit of a hack, but at least this prevents state
+     * transition code attempting a second recursive state transition.
+     */
+    private ProcState oldState() {
+	if (newState == null)
+	    throw new RuntimeException(this + " double state transition");
+	oldState = newState;
+	newState = null;
+	return oldState;
+    }
   
-  protected abstract Isa sendrecIsa();
+    /**
+     * killRequest handles killing off processes that either the
+     * commandline or GUI have designated need to be removed from the
+     * CPU queue.
+     */
   
-  /**
-   * The process has transitioned to the attached state. XXX: Should be made
-   * private and instead accessor methods added. Should more formally define the
-   * observable and the event.
-   */
-  public ObservableXXX observableAttached = new ObservableXXX();
+    public void requestKill() {
+	Signal.KILL.kill(this.getPid());
+	// Throw the countDown on the queue so that the command
+	// thread will wait until events provoked by Signal.kill()
+	// are handled.
+	this.quitLatch = new CountDownLatch(1);
+	Manager.eventLoop.add(new Event() {
+		public void execute() {
+		    quitLatch.countDown();
+		}
+	    });
+	this.requestAbandon();
+    }
 
-  /**
-   * The process has transitioned to the detached. XXX: Should be made private
-   * and instead accessor methods added. Should more formally define the
-   * observable and the event.
-   */
-  public ObservableXXX observableDetached = new ObservableXXX();
+    /**
+     * Request that the Proc be forcefully detached. Quickly.
+     */
+    public void requestAbandon() {
+	logger.log(Level.FINE, "{0} abandon\n", this);
+	performDetach();
+	observations.clear();
+    }
 
-  public String toString ()
-  {
-    if (newState != null)
-      {
-        return ("{" + super.toString() + ",pid=" + getPid() + ",state="
-                + getState() + "}");
-      }
-    return ("{" + super.toString() + ",pid=" + getPid() + ",oldState="
-            + getState() + "}");
-  }
+    /**
+     * Request that the Proc be forcefully detached. Upon detach run
+     * the given event.
+     * 
+     * @param e The event to run upon successful detach.
+     */
+    public void requestAbandonAndRunEvent(final Event e) {
+	logger.log(Level.FINE, "{0} abandonAndRunEvent\n", this);
+	requestAbandon();
+	observableDetached.addObserver(new Observer() {
+		public void update(Observable o, Object arg) {
+		    Manager.eventLoop.add(e);
+		}
+	    });
+    }
+
+    /**
+     * Request that the Proc's task list be refreshed using system
+     * tables.
+     */
+    public void requestRefresh() {
+	logger.log(Level.FINE, "{0} requestRefresh\n", this);
+	Manager.eventLoop.add(new ProcEvent() {
+		public void execute() {
+		    newState = oldState().handleRefresh(Proc.this);
+		}
+	    });
+    }
+
+    /**
+     * (Internal) Tell the process that is no longer listed in the
+     * system table remove itself.
+     *
+     * XXX: This should not be public.
+     */
+    public void performRemoval() {
+	logger.log(Level.FINEST, "{0} performRemoval -- no longer in /proc\n", this);
+	Manager.eventLoop.add(new ProcEvent() {
+		public void execute() {
+		    newState = oldState().handleRemoval(Proc.this);
+		}
+	    });
+    }
+
+    /**
+     *(Internal) Tell the process that the corresponding task has
+     * completed its attach.
+     *
+     * XXX: Should not be public.
+     */
+    public void performTaskAttachCompleted (final Task theTask) {
+	logger.log(Level.FINE, "{0} performTaskAttachCompleted\n", this);
+	Manager.eventLoop.add(new ProcEvent() {
+		Task task = theTask;
+
+		public void execute() {
+		    newState = oldState().handleTaskAttachCompleted(Proc.this, task);
+		}
+	    });
+    }
+
+    /**
+     * (Internal) Tell the process that the corresponding task has
+     * completed its detach.
+     *
+     * XXX: Should not be public.
+     */
+    public void performTaskDetachCompleted(final Task theTask) {
+	logger.log(Level.FINE, "{0} performTaskDetachCompleted\n", this);
+	Manager.eventLoop.add(new ProcEvent() {
+		Task task = theTask;
+		public void execute() {
+		    newState = oldState().handleTaskDetachCompleted(Proc.this, task);
+		}
+	    });
+    }
+
+    /**
+     * (Internal) Tell the process that the corresponding task has
+     * completed its detach.
+     */
+    void performTaskDetachCompleted(final Task theTask, final Task theClone) {
+	logger.log(Level.FINE, "{0} performTaskDetachCompleted/clone\n", this);
+	Manager.eventLoop.add(new ProcEvent() {
+		Task task = theTask;
+
+		Task clone = theClone;
+
+		public void execute() {
+		    newState = oldState().handleTaskDetachCompleted(Proc.this, task, clone);
+		}
+	    });
+    }
+
+    void performDetach() {
+	logger.log(Level.FINE, "{0} performDetach\n", this);
+	Manager.eventLoop.add(new ProcEvent() {
+		public void execute() {
+		    newState = oldState().handleDetach(Proc.this, true);
+		}
+	    });
+    }
+
+    /**
+     * The set of observations that currently apply to this task.
+     * Note that this is a Collection that may contain the same
+     * Observer object multiple times (for possible different
+     * observations).
+     */
+    private Collection observations = new LinkedList();
+
+    public boolean addObservation(Object o) {
+	return observations.add(o);
+    }
+
+    public boolean removeObservation(Object o) {
+	return observations.remove(o);
+    }
+
+    public int observationsSize() {
+	return observations.size();
+    }
+
+    public Iterator observationsIterator() {
+	return observations.iterator();
+    }
+
+    public void requestUnblock(TaskObserver observerArg) {
+	Iterator iter = getTasks().iterator();
+	while (iter.hasNext()) {
+	    Task task =(Task) iter.next();
+	    task.requestUnblock(observerArg);
+	}
+    }
+
+    /**
+     * (internal) Tell the process to add the specified Observation,
+     * attaching the process if necessary.
+     */
+    void handleAddObservation(TaskObservation observation) {
+	newState = oldState().handleAddObservation(this, observation);
+    }
+
+    /**
+     * (Internal) Tell the process to add the specified Observation,
+     * attaching to the process if necessary.
+     */
+    void requestAddObserver(Task task, TaskObservable observable,
+			    TaskObserver observer) {
+	logger.log(Level.FINE, "{0} requestAddObservation\n", this);
+	Manager.eventLoop.add(new TaskObservation(task, observable, observer, true) {
+		public void execute() {
+		    handleAddObservation(this);
+		}
+	    });
+    }
+
+    /**
+     * Class describing the action to take on the suspended Task
+     * before adding or deleting a Syscall observer.
+     */
+    final class SyscallAction implements Runnable {
+	private final Task task;
+
+	private final boolean addition;
+
+	SyscallAction(Task task, boolean addition) {
+	    this.task = task;
+	    this.addition = addition;
+	}
+
+	public void run() {
+	    int syscallobs = task.syscallObservers.numberOfObservers();
+	    if (addition) {
+		if (syscallobs == 0)
+		    task.startTracingSyscalls();
+	    } else {
+		if (syscallobs == 0)
+		    task.stopTracingSyscalls();
+	    }
+	}
+    }
+
+    /**
+     * (Internal) Tell the process to add the specified Observation,
+     * attaching to the process if necessary. Adds a syscallObserver
+     * which changes the task to syscall tracing mode of necessary.
+     */
+    void requestAddSyscallObserver(final Task task, TaskObservable observable,
+				   TaskObserver observer) {
+	logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
+	SyscallAction sa = new SyscallAction(task, true);
+	TaskObservation to = new TaskObservation(task, observable, observer, sa,
+						 true) {
+		public void execute() {
+		    handleAddObservation(this);
+		}
+		public boolean needsSuspendedAction() {
+		    return task.syscallObservers.numberOfObservers() == 0;
+		}
+	    };
+	Manager.eventLoop.add(to);
+    }
+
+    /**
+     * (Internal) Tell the process to delete the specified
+     * Observation, detaching from the process if necessary. Removes a
+     * syscallObserver exiting the task from syscall tracing mode of
+     * necessary.
+     *
+     * XXX: Should not be public.
+     */
+    public void requestDeleteObserver(Task task, TaskObservable observable,
+				      TaskObserver observer) {
+	Manager.eventLoop.add(new TaskObservation(task, observable,
+						  observer, false) {
+		public void execute() {
+		    newState = oldState().handleDeleteObservation(Proc.this, this);
+		}
+	    });
+    }
+
+    /**
+     * (Internal) Tell the process to delete the specified
+     * Observation, detaching from the process if necessary.
+     */
+    void requestDeleteSyscallObserver(final Task task,
+				      TaskObservable observable,
+				      TaskObserver observer) {
+	logger.log(Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
+	SyscallAction sa = new SyscallAction(task, false);
+	TaskObservation to = new TaskObservation(task, observable, observer, sa,
+						 false) {
+		public void execute() {
+		    newState = oldState().handleDeleteObservation(Proc.this, this);
+		}
+
+		public boolean needsSuspendedAction() {
+		    return task.syscallObservers.numberOfObservers() == 1;
+		}
+	    };
+	Manager.eventLoop.add(to);
+    }
+
+    /**
+     * Class describing the action to take on the suspended Task
+     * before adding or deleting a Code observer.
+     */
+    final class BreakpointAction implements Runnable {
+	private final TaskObserver.Code code;
+
+	private final Task task;
+
+	private final long address;
+
+	private final boolean addition;
+
+	BreakpointAction(TaskObserver.Code code, Task task, long address,
+			 boolean addition) {
+	    this.code = code;
+	    this.task = task;
+	    this.address = address;
+	    this.addition = addition;
+	}
+
+	public void run() {
+	    if (addition) {
+		boolean mustInstall = breakpoints.addBreakpoint(code, address);
+		if (mustInstall) {
+		    Breakpoint breakpoint;
+		    breakpoint = Breakpoint.create(address, Proc.this);
+		    breakpoint.install(task);
+		}
+	    } else {
+		boolean mustRemove = breakpoints.removeBreakpoint(code, address);
+		if (mustRemove) {
+		    Breakpoint breakpoint;
+		    breakpoint = Breakpoint.create(address, Proc.this);
+		    breakpoint.remove(task);
+		}
+	    }
+	}
+    }
+
+    /**
+     * (Internal) Tell the process to add the specified Code
+     * Observation, attaching to the process if necessary. Adds a
+     * TaskCodeObservation to the eventloop which instructs the task
+     * to install the breakpoint if necessary.
+     */
+    void requestAddCodeObserver(Task task, TaskObservable observable,
+				TaskObserver.Code observer,
+				final long address) {
+	logger.log(Level.FINE, "{0} requestAddCodeObserver\n", this);
+	BreakpointAction bpa = new BreakpointAction(observer, task, address, true);
+	TaskObservation to;
+	to = new TaskObservation(task, observable, observer, bpa, true) {
+		public void execute() {
+		    handleAddObservation(this);
+		}
+		public boolean needsSuspendedAction() {
+		    return breakpoints.getCodeObservers(address) == null;
+		}
+	    };
+	Manager.eventLoop.add(to);
+    }
+
+    /**
+     * (Internal) Tell the process to delete the specified Code
+     * Observation, detaching from the process if necessary.
+     */
+    void requestDeleteCodeObserver(Task task, TaskObservable observable,
+				   TaskObserver.Code observer,
+				   final long address)    {
+	logger.log(Level.FINE, "{0} requestDeleteCodeObserver\n", this);
+	BreakpointAction bpa = new BreakpointAction(observer, task, address, false);
+	TaskObservation to;
+	to = new TaskObservation(task, observable, observer, bpa, false) {
+		public void execute() {
+		    newState = oldState().handleDeleteObservation(Proc.this, this);
+		}
+
+		public boolean needsSuspendedAction() {
+		    return breakpoints.getCodeObservers(address).size() == 1;
+		}
+	    };
+
+	Manager.eventLoop.add(to);
+    }
+
+    /**
+     * Class describing the action to take on the suspended Task
+     * before adding or deleting an Instruction observer. No
+     * particular actions are needed, but we must make sure the Task
+     * is suspended.
+     */
+    final static class InstructionAction implements Runnable {
+	public void run()
+	{
+	    // There is nothing in particular we need to do. We just want
+	    // to make sure the Task is stopped so we can send it a step
+	    // instruction or, when deleted, start resuming the process
+	    // normally.
+
+	    // We do want an explicit updateExecuted() call, after adding
+	    // the observer, but while still suspended. This is done by
+	    // overriding the add() method in the TaskObservation
+	    // below. No such action is required on deletion.
+	}
+    }
+
+    /**
+     * (Internal) Tell the process to add the specified Instruction
+     * Observation, attaching and/or suspending the process if
+     * necessary. As soon as the observation is added and the task
+     * isn't blocked it will inform the Instruction observer of every
+     * step of the task.
+     */
+    void requestAddInstructionObserver(final Task task,
+				       TaskObservable observable,
+				       TaskObserver.Instruction observer) {
+	logger.log(Level.FINE, "{0} requestAddInstructionObserver\n", this);
+	TaskObservation to;
+	InstructionAction ia = new InstructionAction();
+	to = new TaskObservation(task, observable, observer, ia, true) {
+		public void execute() {
+		    handleAddObservation(this);
+		}
+
+		public boolean needsSuspendedAction() {
+		    return task.instructionObservers.numberOfObservers() == 0;
+		}
+
+		// Makes sure that the observer is properly added and then,
+		// while the Task is still suspended, updateExecuted() is
+		// called. Giving the observer a chance to inspect and
+		// possibly block the Task.
+		public void add() {
+		    super.add();
+		    TaskObserver.Instruction i = (TaskObserver.Instruction) observer;
+		    if (i.updateExecuted(task) == Action.BLOCK)
+			task.blockers.add(observer);
+		}
+	    };
+	Manager.eventLoop.add(to);
+    }
+
+    /**
+     * (Internal) Tell the process to delete the specified Instruction
+     * Observation, detaching and/or suspending from the process if
+     * necessary.
+     */
+    void requestDeleteInstructionObserver(final Task task,
+					  TaskObservable observable,
+					  TaskObserver.Instruction observer) {
+	logger.log(Level.FINE, "{0} requestDeleteInstructionObserver\n", this);
+	TaskObservation to;
+	InstructionAction ia = new InstructionAction();
+	to = new TaskObservation(task, observable, observer, ia, false) {
+		public void execute() {
+		    newState = oldState().handleDeleteObservation(Proc.this, this);
+		}
+		public boolean needsSuspendedAction() {
+		    return task.instructionObservers.numberOfObservers() == 1;
+		}
+	    };
+	Manager.eventLoop.add(to);
+    }
+
+    /**
+     * Table of this processes child processes.
+     */
+    private Set childPool = new HashSet();
+
+    /**
+     * Add Proc as a new child
+     *
+     * XXX: This should not be public.
+     */
+    public void add(Proc child) {
+	logger.log(Level.FINEST, "{0} add(Proc) -- a child process\n", this);
+	childPool.add(child);
+    }
+
+    /**
+     * Remove Proc from this processes children.
+     *
+     * XXX: This should not be public.
+     */
+    public void remove(Proc child) {
+	logger.log(Level.FINEST, "{0} remove(Proc) -- a child process\n", this);
+	childPool.remove(child);
+    }
+
+    /**
+     * Get the children as an array.
+     */
+    public LinkedList getChildren() {
+	return new LinkedList(childPool);
+    }
+
+    /**
+     * XXX: Temporary until .observable's are converted to
+     * .requestAddObserver.
+     */
+    public class ObservableXXX extends Observable {
+	/** XXX: Should not be public.  */
+	public void notify(Object o) {
+	    logger.log(Level.FINE, "{0} notify -- all observers\n", o);
+	    setChanged();
+	    notifyObservers(o);
+	}
+    }
+
+    /**
+     * Pool of tasks belonging to this Proc.
+     *
+     * XXX: Should not be public.
+     */
+    public Map taskPool = new HashMap();
+
+    /**
+     * Add the Task to this Proc.
+     */
+    void add(Task task) {
+	taskPool.put(task.id, task);
+	host.observableTaskAddedXXX.notify(task);
+    }
+
+    /**
+     * Remove Task from this Proc.
+     *
+     * XXX: Should not be public.
+     */
+    public void remove(Task task) {
+	logger.log(Level.FINEST, "{0} remove(Task) -- within this Proc\n", this);
+	host.observableTaskRemovedXXX.notify(task);
+	taskPool.remove(task.id);
+	host.remove(task);
+    }
+
+    /**
+     * Remove all but Task from this Proc.
+     *
+     * XXX: Should not be public.
+     */
+    public void retain(Task task) {
+	logger.log(Level.FINE, "{0} retain(Task) -- remove all but task\n", this);
+	HashMap new_tasks = new HashMap();
+	new_tasks = (HashMap) ((HashMap) taskPool).clone();
+	new_tasks.values().remove(task);
+	taskPool.values().removeAll(new_tasks.values());
+	host.removeTasks(new_tasks.values());
+    }
+
+    /**
+     * Return this Proc's Task's as a list.
+     */
+    public LinkedList getTasks() {
+	return new LinkedList(taskPool.values());
+    }
+
+    /**
+     * The Process Auxiliary Vector.
+     */
+    public Auxv[] getAuxv() {
+	if (auxv == null) {
+	    auxv = sendrecAuxv();
+	}
+	return auxv;
+    }
+
+    private Auxv[] auxv;
+
+    /**
+     * Extract the auxv from the inferior.
+     */
+    protected abstract Auxv[] sendrecAuxv();
+
+    /**
+     * Get the Isa object associated with the process. Only use this
+     * when you don't have a Task object to interrogate.
+     */
+    public Isa getIsa() {
+	return sendrecIsa();
+    }
+  
+    protected abstract Isa sendrecIsa();
+  
+    /**
+     * The process has transitioned to the attached state. XXX: Should
+     * be made private and instead accessor methods added. Should more
+     * formally define the observable and the event.
+     */
+    public ObservableXXX observableAttached = new ObservableXXX();
+
+    /**
+     * The process has transitioned to the detached. XXX: Should be
+     * made private and instead accessor methods added. Should more
+     * formally define the observable and the event.
+     */
+    public ObservableXXX observableDetached = new ObservableXXX();
+
+    public String toString() {
+	if (newState != null) {
+	    return ("{" + super.toString() + ",pid=" + getPid() + ",state="
+		    + getState() + "}");
+	}
+	return ("{" + super.toString() + ",pid=" + getPid() + ",oldState="
+		+ getState() + "}");
+    }
 }
