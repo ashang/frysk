@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007 Red Hat Inc.
+// Copyright 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -141,25 +141,23 @@ public class BreakpointAddresses
       return false;
   }
 
-  /**
-   * Called by the Proc when it has trapped a breakpoint.  Returns a
-   * Collection of TaskObserver.Code observers interested in the given
-   * address or null when no Code observer was installed on this address.
-   */
-  Collection getCodeObservers(long address)
-  {
-    ArrayList observers;
-    Breakpoint breakpoint = Breakpoint.create(address, proc);
-    ArrayList list = (ArrayList) map.get(breakpoint);
-    if (list == null)
-      return null;
-    
-    // Return the cloned list of observers in case the Code observer
-    // wants to add or remove itself or a new observer to that same
-    // breakpoint.
-    observers = (ArrayList) list.clone();
-    return observers;
-  }
+    /**
+     * Called by the Proc when it has trapped a breakpoint.  Returns a
+     * Collection of TaskObserver.Code observers interested in the given
+     * address or null when no Code observer was installed on this address.
+     */
+    public Collection getCodeObservers(long address) {
+	ArrayList observers;
+	Breakpoint breakpoint = Breakpoint.create(address, proc);
+	ArrayList list = (ArrayList) map.get(breakpoint);
+	if (list == null)
+	    return null;
+	// Return the cloned list of observers in case the Code
+	// observer wants to add or remove itself or a new observer to
+	// that same breakpoint.
+	observers = (ArrayList) list.clone();
+	return observers;
+    }
 
   public Breakpoint getBreakpoint(long address)
   {

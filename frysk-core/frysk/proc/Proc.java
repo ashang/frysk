@@ -261,7 +261,7 @@ public abstract class Proc {
      */
     protected Proc(Host host, Proc parent, ProcId id) {
 	this(id, parent, host, null);
-	newState = getInitialState(false);
+	setStateFIXME(getInitialState(false));
 	logger.log(Level.FINEST, "{0} new - create unattached running proc\n", this);
     }
 
@@ -277,7 +277,7 @@ public abstract class Proc {
      */
     protected Proc(Task task, ProcId forkId) {
 	this(forkId, task.getProc(), task.getProc().getHost(), task);
-	newState = getInitialState(true);
+	setStateFIXME(getInitialState(true));
 	logger.log(Level.FINE, "{0} new - create attached running proc\n", this);
     }
 
@@ -285,38 +285,11 @@ public abstract class Proc {
     public abstract void sendRefresh();
 
     /**
-     * The current state of this Proc, during a state transition
-     * newState is null.
-     */
-    private ProcState oldState;
-
-    private ProcState newState;
-
-    /**
      * Return the current state as a string.
      */
-    protected String getStateFIXME() {
-	if (newState != null)
-	    return newState.toString();
-	else
-	    return oldState.toString();
-    }
+    protected abstract String getStateFIXME();
+    protected abstract void setStateFIXME(ProcState state);
 
-    /**
-     * Return the current state while at the same time marking that
-     * the state is in flux. If a second attempt to change state
-     * occurs before the current state transition has completed,
-     * barf. XXX: Bit of a hack, but at least this prevents state
-     * transition code attempting a second recursive state transition.
-     */
-    private ProcState oldState() {
-	if (newState == null)
-	    throw new RuntimeException(this + " double state transition");
-	oldState = newState;
-	newState = null;
-	return oldState;
-    }
-  
     /**
      * killRequest handles killing off processes that either the
      * commandline or GUI have designated need to be removed from the
@@ -366,14 +339,7 @@ public abstract class Proc {
      * Request that the Proc's task list be refreshed using system
      * tables.
      */
-    public void requestRefresh() {
-	logger.log(Level.FINE, "{0} requestRefresh\n", this);
-	Manager.eventLoop.add(new ProcEvent() {
-		public void execute() {
-		    newState = oldState().handleRefresh(Proc.this);
-		}
-	    });
-    }
+    public abstract void requestRefresh();
 
     /**
      * (Internal) Tell the process that is no longer listed in the
@@ -381,14 +347,7 @@ public abstract class Proc {
      *
      * XXX: This should not be public.
      */
-    public void performRemoval() {
-	logger.log(Level.FINEST, "{0} performRemoval -- no longer in /proc\n", this);
-	Manager.eventLoop.add(new ProcEvent() {
-		public void execute() {
-		    newState = oldState().handleRemoval(Proc.this);
-		}
-	    });
-    }
+    public abstract void performRemoval();
 
     /**
      *(Internal) Tell the process that the corresponding task has
@@ -396,16 +355,7 @@ public abstract class Proc {
      *
      * XXX: Should not be public.
      */
-    public void performTaskAttachCompleted (final Task theTask) {
-	logger.log(Level.FINE, "{0} performTaskAttachCompleted\n", this);
-	Manager.eventLoop.add(new ProcEvent() {
-		Task task = theTask;
-
-		public void execute() {
-		    newState = oldState().handleTaskAttachCompleted(Proc.this, task);
-		}
-	    });
-    }
+    public abstract void performTaskAttachCompleted(Task theTask);
 
     /**
      * (Internal) Tell the process that the corresponding task has
@@ -413,41 +363,16 @@ public abstract class Proc {
      *
      * XXX: Should not be public.
      */
-    public void performTaskDetachCompleted(final Task theTask) {
-	logger.log(Level.FINE, "{0} performTaskDetachCompleted\n", this);
-	Manager.eventLoop.add(new ProcEvent() {
-		Task task = theTask;
-		public void execute() {
-		    newState = oldState().handleTaskDetachCompleted(Proc.this, task);
-		}
-	    });
-    }
+    public abstract void performTaskDetachCompleted(Task theTask);
 
     /**
      * (Internal) Tell the process that the corresponding task has
      * completed its detach.
      */
-    void performTaskDetachCompleted(final Task theTask, final Task theClone) {
-	logger.log(Level.FINE, "{0} performTaskDetachCompleted/clone\n", this);
-	Manager.eventLoop.add(new ProcEvent() {
-		Task task = theTask;
+    protected abstract void performTaskDetachCompleted(Task theTask,
+						       Task theClone);
 
-		Task clone = theClone;
-
-		public void execute() {
-		    newState = oldState().handleTaskDetachCompleted(Proc.this, task, clone);
-		}
-	    });
-    }
-
-    void performDetach() {
-	logger.log(Level.FINE, "{0} performDetach\n", this);
-	Manager.eventLoop.add(new ProcEvent() {
-		public void execute() {
-		    newState = oldState().handleDetach(Proc.this, true);
-		}
-	    });
-    }
+    protected abstract void performDetach();
 
     /**
      * The set of observations that currently apply to this task.
@@ -485,9 +410,7 @@ public abstract class Proc {
      * (internal) Tell the process to add the specified Observation,
      * attaching the process if necessary.
      */
-    void handleAddObservation(TaskObservation observation) {
-	newState = oldState().handleAddObservation(this, observation);
-    }
+    protected abstract void handleAddObservation(TaskObservation observation);
 
     /**
      * (Internal) Tell the process to add the specified Observation,
@@ -495,41 +418,9 @@ public abstract class Proc {
      *
      * XXX: Should not be public.
      */
-    public void requestAddObserver(Task task, TaskObservable observable,
-			    TaskObserver observer) {
-	logger.log(Level.FINE, "{0} requestAddObservation\n", this);
-	Manager.eventLoop.add(new TaskObservation(task, observable, observer, true) {
-		public void execute() {
-		    handleAddObservation(this);
-		}
-	    });
-    }
-
-    /**
-     * Class describing the action to take on the suspended Task
-     * before adding or deleting a Syscall observer.
-     */
-    final class SyscallAction implements Runnable {
-	private final Task task;
-
-	private final boolean addition;
-
-	SyscallAction(Task task, boolean addition) {
-	    this.task = task;
-	    this.addition = addition;
-	}
-
-	public void run() {
-	    int syscallobs = task.syscallObservers.numberOfObservers();
-	    if (addition) {
-		if (syscallobs == 0)
-		    task.startTracingSyscalls();
-	    } else {
-		if (syscallobs == 0)
-		    task.stopTracingSyscalls();
-	    }
-	}
-    }
+    public abstract void requestAddObserver(Task task,
+					    TaskObservable observable,
+					    TaskObserver observer);
 
     /**
      * (Internal) Tell the process to add the specified Observation,
@@ -538,21 +429,9 @@ public abstract class Proc {
      *
      * XXX: Should not be public.
      */
-    public void requestAddSyscallObserver(final Task task, TaskObservable observable,
-				   TaskObserver observer) {
-	logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
-	SyscallAction sa = new SyscallAction(task, true);
-	TaskObservation to = new TaskObservation(task, observable, observer, sa,
-						 true) {
-		public void execute() {
-		    handleAddObservation(this);
-		}
-		public boolean needsSuspendedAction() {
-		    return task.syscallObservers.numberOfObservers() == 0;
-		}
-	    };
-	Manager.eventLoop.add(to);
-    }
+    public abstract void requestAddSyscallObserver(final Task task,
+						   TaskObservable observable,
+						   TaskObserver observer);
 
     /**
      * (Internal) Tell the process to delete the specified
@@ -562,15 +441,9 @@ public abstract class Proc {
      *
      * XXX: Should not be public.
      */
-    public void requestDeleteObserver(Task task, TaskObservable observable,
-				      TaskObserver observer) {
-	Manager.eventLoop.add(new TaskObservation(task, observable,
-						  observer, false) {
-		public void execute() {
-		    newState = oldState().handleDeleteObservation(Proc.this, this);
-		}
-	    });
-    }
+    public abstract void requestDeleteObserver(Task task,
+					       TaskObservable observable,
+					       TaskObserver observer);
 
     /**
      * (Internal) Tell the process to delete the specified
@@ -578,63 +451,9 @@ public abstract class Proc {
      *
      * XXX: Should not be public.
      */
-    public void requestDeleteSyscallObserver(final Task task,
-				      TaskObservable observable,
-				      TaskObserver observer) {
-	logger.log(Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
-	SyscallAction sa = new SyscallAction(task, false);
-	TaskObservation to = new TaskObservation(task, observable, observer, sa,
-						 false) {
-		public void execute() {
-		    newState = oldState().handleDeleteObservation(Proc.this, this);
-		}
-
-		public boolean needsSuspendedAction() {
-		    return task.syscallObservers.numberOfObservers() == 1;
-		}
-	    };
-	Manager.eventLoop.add(to);
-    }
-
-    /**
-     * Class describing the action to take on the suspended Task
-     * before adding or deleting a Code observer.
-     */
-    final class BreakpointAction implements Runnable {
-	private final TaskObserver.Code code;
-
-	private final Task task;
-
-	private final long address;
-
-	private final boolean addition;
-
-	BreakpointAction(TaskObserver.Code code, Task task, long address,
-			 boolean addition) {
-	    this.code = code;
-	    this.task = task;
-	    this.address = address;
-	    this.addition = addition;
-	}
-
-	public void run() {
-	    if (addition) {
-		boolean mustInstall = breakpoints.addBreakpoint(code, address);
-		if (mustInstall) {
-		    Breakpoint breakpoint;
-		    breakpoint = Breakpoint.create(address, Proc.this);
-		    breakpoint.install(task);
-		}
-	    } else {
-		boolean mustRemove = breakpoints.removeBreakpoint(code, address);
-		if (mustRemove) {
-		    Breakpoint breakpoint;
-		    breakpoint = Breakpoint.create(address, Proc.this);
-		    breakpoint.remove(task);
-		}
-	    }
-	}
-    }
+    public abstract void requestDeleteSyscallObserver(Task task,
+						      TaskObservable observable,
+						      TaskObserver observer);
 
     /**
      * (Internal) Tell the process to add the specified Code
@@ -644,22 +463,10 @@ public abstract class Proc {
      *
      * XXX: Should not be public.
      */
-    public void requestAddCodeObserver(Task task, TaskObservable observable,
-				TaskObserver.Code observer,
-				final long address) {
-	logger.log(Level.FINE, "{0} requestAddCodeObserver\n", this);
-	BreakpointAction bpa = new BreakpointAction(observer, task, address, true);
-	TaskObservation to;
-	to = new TaskObservation(task, observable, observer, bpa, true) {
-		public void execute() {
-		    handleAddObservation(this);
-		}
-		public boolean needsSuspendedAction() {
-		    return breakpoints.getCodeObservers(address) == null;
-		}
-	    };
-	Manager.eventLoop.add(to);
-    }
+    public abstract void requestAddCodeObserver(Task task,
+						TaskObservable observable,
+						TaskObserver.Code observer,
+						long address);
 
     /**
      * (Internal) Tell the process to delete the specified Code
@@ -667,45 +474,10 @@ public abstract class Proc {
      *
      * XXX: Should not be public.
      */
-    public void requestDeleteCodeObserver(Task task, TaskObservable observable,
-				   TaskObserver.Code observer,
-				   final long address)    {
-	logger.log(Level.FINE, "{0} requestDeleteCodeObserver\n", this);
-	BreakpointAction bpa = new BreakpointAction(observer, task, address, false);
-	TaskObservation to;
-	to = new TaskObservation(task, observable, observer, bpa, false) {
-		public void execute() {
-		    newState = oldState().handleDeleteObservation(Proc.this, this);
-		}
-
-		public boolean needsSuspendedAction() {
-		    return breakpoints.getCodeObservers(address).size() == 1;
-		}
-	    };
-
-	Manager.eventLoop.add(to);
-    }
-
-    /**
-     * Class describing the action to take on the suspended Task
-     * before adding or deleting an Instruction observer. No
-     * particular actions are needed, but we must make sure the Task
-     * is suspended.
-     */
-    final static class InstructionAction implements Runnable {
-	public void run()
-	{
-	    // There is nothing in particular we need to do. We just want
-	    // to make sure the Task is stopped so we can send it a step
-	    // instruction or, when deleted, start resuming the process
-	    // normally.
-
-	    // We do want an explicit updateExecuted() call, after adding
-	    // the observer, but while still suspended. This is done by
-	    // overriding the add() method in the TaskObservation
-	    // below. No such action is required on deletion.
-	}
-    }
+    public abstract void requestDeleteCodeObserver(Task task,
+						   TaskObservable observable,
+						   TaskObserver.Code observer,
+						   long address);
 
     /**
      * (Internal) Tell the process to add the specified Instruction
@@ -716,34 +488,9 @@ public abstract class Proc {
      *
      * XXX: Should not be public.
      */
-    public void requestAddInstructionObserver(final Task task,
-				       TaskObservable observable,
-				       TaskObserver.Instruction observer) {
-	logger.log(Level.FINE, "{0} requestAddInstructionObserver\n", this);
-	TaskObservation to;
-	InstructionAction ia = new InstructionAction();
-	to = new TaskObservation(task, observable, observer, ia, true) {
-		public void execute() {
-		    handleAddObservation(this);
-		}
-
-		public boolean needsSuspendedAction() {
-		    return task.instructionObservers.numberOfObservers() == 0;
-		}
-
-		// Makes sure that the observer is properly added and then,
-		// while the Task is still suspended, updateExecuted() is
-		// called. Giving the observer a chance to inspect and
-		// possibly block the Task.
-		public void add() {
-		    super.add();
-		    TaskObserver.Instruction i = (TaskObserver.Instruction) observer;
-		    if (i.updateExecuted(task) == Action.BLOCK)
-			task.blockers.add(observer);
-		}
-	    };
-	Manager.eventLoop.add(to);
-    }
+    public abstract void requestAddInstructionObserver(Task task,
+						       TaskObservable observable,
+						       TaskObserver.Instruction observer);
 
     /**
      * (Internal) Tell the process to delete the specified Instruction
@@ -752,22 +499,9 @@ public abstract class Proc {
      *
      * XXX: Should not be public.
      */
-    public void requestDeleteInstructionObserver(final Task task,
-					  TaskObservable observable,
-					  TaskObserver.Instruction observer) {
-	logger.log(Level.FINE, "{0} requestDeleteInstructionObserver\n", this);
-	TaskObservation to;
-	InstructionAction ia = new InstructionAction();
-	to = new TaskObservation(task, observable, observer, ia, false) {
-		public void execute() {
-		    newState = oldState().handleDeleteObservation(Proc.this, this);
-		}
-		public boolean needsSuspendedAction() {
-		    return task.instructionObservers.numberOfObservers() == 1;
-		}
-	    };
-	Manager.eventLoop.add(to);
-    }
+    public abstract void requestDeleteInstructionObserver(Task task,
+							  TaskObservable observable,
+							  TaskObserver.Instruction observer);
 
     /**
      * Table of this processes child processes.
@@ -904,16 +638,9 @@ public abstract class Proc {
     public ObservableXXX observableDetached = new ObservableXXX();
 
     public String toString() {
-	if (newState != null) {
-	    return ("{" + super.toString()
-		    + ",pid=" + getPid()
-		    + ",state=" + getStateFIXME()
-		    + "}");
-	} else {
-	    return ("{" + super.toString()
-		    + ",pid=" + getPid()
-		    + ",oldState=" + getStateFIXME()
-		    + "}");
-	}
+	return ("{" + super.toString()
+		+ ",pid=" + getPid()
+		+ ",state=" + getStateFIXME()
+		+ "}");
     }
 }

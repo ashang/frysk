@@ -1,5 +1,30 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* ProcEvent.java: Make public.
+	* BreakpointAddresses.java (getCodeObservers(long)): Make public.
+	* Proc.java (oldState, newState): Delete.
+	(BreakpointAction): Delete.
+	(InstructionAction): Delete.
+	(SyscallAction): Delete.
+	(getStateFIXME()): Make abstract.
+	(handleAddObservation(TaskObservation)): Make abstract.
+	(oldState()): Delete.
+	(performDetach()): Make abstract.
+	(performRemoval()): Make abstract.
+	(performTaskAttachCompleted(Task)): Make abstract.
+	(performTaskDetachCompleted(Task)): Make abstract.
+	(performTaskDetachCompleted(Task,Task)): Make abstract.
+	(requestAddCodeObserver(Task,TaskObservable,TaskObserver.Code,long)): Make abstract.
+	(requestAddInstructionObserver(Task,TaskObservable,TaskObserver.Instruction)): Make abstract.
+	(requestAddObserver(Task,TaskObservable,TaskObserver)): Make abstract.
+	(requestAddSyscallObserver(Task,TaskObservable,TaskObserver)): Make abstract.
+	(requestDeleteCodeObserver(Task,TaskObservable,TaskObserver.Code,long)): Make abstract.
+	(requestDeleteInstructionObserver(Task,TaskObservable,TaskObserver.Instruction)): Make abstract.
+	(requestDeleteObserver(Task,TaskObservable,TaskObserver)): Make abstract.
+	(requestDeleteSyscallObserver(Task,TaskObservable,TaskObserver)): Make abstract.
+	(requestRefresh()): Make abstract.
+	(setStateFIXME(ProcState)): New.
+
 	* Proc.java (getStateFIXME()): New.
 	(getState()): Delete.
 	(toString()): Update.

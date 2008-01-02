@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,14 +43,13 @@ import frysk.event.Event;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-abstract class ProcEvent
+public abstract class ProcEvent
     implements Event
 {
     private static Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
     protected Proc proc;
     protected TaskId taskId; // Random task within Proc.
-    ProcEvent ()
-    {
+    public ProcEvent () {
     }
     ProcEvent (Proc proc)
     {

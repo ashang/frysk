@@ -1,5 +1,28 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* LiveProc.java (oldState, newState): New.
+	(BreakpointAction): New.
+	(InstructionAction): New.
+	(SyscallAction): New.
+	(getStateFIXME()): New.
+	(handleAddObservation(TaskObservation)): New.
+	(oldState()): New.
+	(performDetach()): New.
+	(performRemoval()): New.
+	(performTaskAttachCompleted(Task)): New.
+	(performTaskDetachCompleted(Task)): New.
+	(performTaskDetachCompleted(Task,Task)): New.
+	(requestAddCodeObserver(Task,TaskObservable,TaskObserver.Code,long)): New.
+	(requestAddInstructionObserver(Task,TaskObservable,TaskObserver.Instruction)): New.
+	(requestAddObserver(Task,TaskObservable,TaskObserver)): New.
+	(requestAddSyscallObserver(Task,TaskObservable,TaskObserver)): New.
+	(requestDeleteCodeObserver(Task,TaskObservable,TaskObserver.Code,long)): New.
+	(requestDeleteInstructionObserver(Task,TaskObservable,TaskObserver.Instruction)): New.
+	(requestDeleteObserver(Task,TaskObservable,TaskObserver)): New.
+	(requestDeleteSyscallObserver(Task,TaskObservable,TaskObserver)): New.
+	(requestRefresh()): New.
+	(setStateFIXME(ProcState)): New.
+
 	* TestByteBuffer.java: Update; frysk.proc.dummy.Proc renamed to
 	DummyProc.
 

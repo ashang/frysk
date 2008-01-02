@@ -1,5 +1,23 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* DummyProc.java (getStateFIXME()): New.
+	(handleAddObservation(TaskObservation)): New.
+	(performDetach()): New.
+	(performRemoval()): New.
+	(performTaskAttachCompleted(Task)): New.
+	(performTaskDetachCompleted(Task)): New.
+	(performTaskDetachCompleted(Task,Task)): New.
+	(requestAddCodeObserver(Task,TaskObservable,TaskObserver.Code,long)): New.
+	(requestAddInstructionObserver(Task,TaskObservable,TaskObserver.Instruction)): New.
+	(requestAddObserver(Task,TaskObservable,TaskObserver)): New.
+	(requestAddSyscallObserver(Task,TaskObservable,TaskObserver)): New.
+	(requestDeleteCodeObserver(Task,TaskObservable,TaskObserver.Code,long)): New.
+	(requestDeleteInstructionObserver(Task,TaskObservable,TaskObserver.Instruction)): New.
+	(requestDeleteObserver(Task,TaskObservable,TaskObserver)): New.
+	(requestDeleteSyscallObserver(Task,TaskObservable,TaskObserver)): New.
+	(requestRefresh()): New.
+	(setStateFIXME(ProcState)): New.
+
 	* DummyHost.java: Rename Host.java.
 	* DummyProc.java: Rename Proc.java.
 	* DummyTask.java: Rename Task.java.
