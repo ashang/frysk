@@ -1,5 +1,7 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* ProcEvent.java (ProcEvent(Proc)): Make public.
+
 	* Proc.java (handleAddObservation(TaskObservation observation)): Delete.
 	* Task.java (Task(Proc,TaskObserver,TaskState)): Delete call. 
 	

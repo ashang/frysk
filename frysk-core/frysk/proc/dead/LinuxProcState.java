@@ -42,8 +42,6 @@ package frysk.proc.dead;
 import java.util.logging.Level;
 import frysk.proc.ProcState;
 import frysk.proc.Proc;
-import frysk.proc.Observation;
-import frysk.proc.Task;
 
 /**
  * A CoreFile Process State
@@ -68,47 +66,10 @@ class LinuxProcState
     return detached;
   }
   
-  /**
-   * The process is running free (or at least was the last time its
-   * status was checked).
-   */
-  private static final ProcState detached = new ProcState ("detached")
-    {
-      public ProcState handleRefresh (Proc proc)
-      {
-	logger.log (Level.FINE, "{0} handleRefresh\n", proc); 
-	((LinuxProc)proc).sendRefresh ();
-	return detached;
-      }
-      public ProcState handleRemoval (Proc proc)
-      {
-	logger.log (Level.FINEST, "{0} handleRemoval\n", proc); 
-	
-	// XXX: Can't remove a core file Proc, it's there forever
-	// and there is only one proc. Maybe need to have a
-	// destroyed state for compatability?
-	
-	return detached;
-      }
-      
-      public ProcState handleDeleteObservation (Proc proc,
-					 Observation observation)
-      {
-	logger.log (Level.FINE, "{0} handleDeleteObservation\n", proc); 
-	// Must be bogus; if there were observations then the
-	// Proc wouldn't be in this state.
-	observation.fail (new RuntimeException ("not attached"));
-	return detached;
-      }
-
-      public ProcState handleTaskDetachCompleted (Proc proc, Task task)
-      {
-	return this;
-      }
-      
-      public ProcState handleDetach(Proc proc, boolean shouldRemoveObservers)
-      {
-	return detached;
-      } 
-    };
+    /**
+     * The process is running free (or at least was the last time its
+     * status was checked).
+     */
+    private static final ProcState detached = new ProcState ("detached") {
+	};
 }

@@ -1,5 +1,12 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxProcState.java (handleDetach(Proc,boolean)): Delete.
+	(handleTaskDetachCompleted(Proc,Task)): Delete.
+	(handleRemoval(Proc)): Delete.
+	(handleRefresh(Proc)): Delete.
+	(handleDeleteObservation(Proc,Observation)): Delete.
+	* DeadProc.java: Simplify.
+	
 	* LinuxProcState.java (handleAddObservation(Proc,Observation)): Delete.
 	* DeadProc.java (handleAddObservation(TaskObservation)): Delete.
 	

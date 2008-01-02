@@ -51,8 +51,7 @@ public abstract class ProcEvent
     protected TaskId taskId; // Random task within Proc.
     public ProcEvent () {
     }
-    ProcEvent (Proc proc)
-    {
+    public ProcEvent(Proc proc) {
 	logger.log (Level.FINE, "", this); 
 	this.proc = proc;
     }

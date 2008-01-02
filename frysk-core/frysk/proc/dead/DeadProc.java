@@ -104,9 +104,9 @@ abstract class DeadProc extends Proc {
      */
     public void requestRefresh() {
 	logger.log(Level.FINE, "{0} requestRefresh\n", this);
-	Manager.eventLoop.add(new ProcEvent() {
+	Manager.eventLoop.add(new ProcEvent(this) {
 		public void execute() {
-		    newState = oldState().handleRefresh(DeadProc.this);
+		    proc.sendRefresh ();
 		}
 	    });
     }
@@ -119,11 +119,9 @@ abstract class DeadProc extends Proc {
      */
     public void performRemoval() {
 	logger.log(Level.FINEST, "{0} performRemoval -- no longer in /proc\n", this);
-	Manager.eventLoop.add(new ProcEvent() {
-		public void execute() {
-		    newState = oldState().handleRemoval(DeadProc.this);
-		}
-	    });
+	// XXX: Fake out for now. What kind of observers would you put
+	// on a core file? Might need a brain dead attached state in
+	// this scenario for compataibility.
     }
 
     /**
@@ -151,38 +149,27 @@ abstract class DeadProc extends Proc {
      */
     public void performTaskDetachCompleted(final Task theTask) {
 	logger.log(Level.FINE, "{0} performTaskDetachCompleted\n", this);
-	Manager.eventLoop.add(new ProcEvent() {
-		Task task = theTask;
-		public void execute() {
-		    newState = oldState().handleTaskDetachCompleted(DeadProc.this, task);
-		}
-	    });
+	// XXX: Fake out for now. What kind of observers would you put
+	// on a core file? Might need a brain dead attached state in
+	// this scenario for compataibility.
     }
 
     /**
      * (Internal) Tell the process that the corresponding task has
      * completed its detach.
      */
-    protected void performTaskDetachCompleted(final Task theTask, final Task theClone) {
+    protected void performTaskDetachCompleted(Task theTask, Task theClone) {
 	logger.log(Level.FINE, "{0} performTaskDetachCompleted/clone\n", this);
-	Manager.eventLoop.add(new ProcEvent() {
-		Task task = theTask;
-
-		Task clone = theClone;
-
-		public void execute() {
-		    newState = oldState().handleTaskDetachCompleted(DeadProc.this, task, clone);
-		}
-	    });
+	// XXX: Fake out for now. What kind of observers would you put
+	// on a core file? Might need a brain dead attached state in
+	// this scenario for compataibility.
     }
 
     protected void performDetach() {
 	logger.log(Level.FINE, "{0} performDetach\n", this);
-	Manager.eventLoop.add(new ProcEvent() {
-		public void execute() {
-		    newState = oldState().handleDetach(DeadProc.this, true);
-		}
-	    });
+	// XXX: Fake out for now. What kind of observers would you put
+	// on a core file? Might need a brain dead attached state in
+	// this scenario for compataibility.
     }
 
     /**
@@ -253,7 +240,9 @@ abstract class DeadProc extends Proc {
 	Manager.eventLoop.add(new TaskObservation(task, observable,
 						  observer, false) {
 		public void execute() {
-		    newState = oldState().handleDeleteObservation(DeadProc.this, this);
+		    // Must be bogus; if there were observations then
+		    // the Proc wouldn't be in this state.
+		    fail(new RuntimeException ("not attached"));
 		}
 	    });
     }
