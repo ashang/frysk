@@ -48,7 +48,9 @@ import frysk.gui.memory.MemoryWindow;
 import frysk.gui.register.RegisterWindow;
 import frysk.proc.Manager;
 import frysk.proc.Task;
-import frysk.proc.dummy.Proc;
+import frysk.proc.Proc;
+import frysk.proc.dummy.DummyProc;
+import frysk.proc.dummy.DummyTask;
 
 //import org.gnu.glib.CustomEvents;
 
@@ -83,8 +85,8 @@ public class TestWindowFactorization
 	     java.io.FileNotFoundException,
 	     java.io.IOException
   {
-    Proc dp = new Proc();
-    Task dt = new frysk.proc.dummy.Task(dp);
+    Proc dp = new DummyProc();
+    Task dt = new DummyTask(dp);
     this.theTask = (Task) dt;
 
     Manager.eventLoop.start();
