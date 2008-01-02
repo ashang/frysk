@@ -85,7 +85,7 @@ public class TestRefresh
 	    assertEquals (reason + ", child removed nunce",
 			  0, removed.count);
 	    assertEquals (reason + ", child state",
-			  "detached", proc.getState ().toString ());
+			  "detached", proc.getStateFIXME());
 	}
 	void verifyRemove (String reason)
 	{
@@ -96,7 +96,7 @@ public class TestRefresh
 	    assertEquals (reason + ", child removed once",
 			  1, removed.count);
 	    assertEquals (reason + ", child state",
-			  "destroyed", proc.getState ().toString ());
+			  "destroyed", proc.getStateFIXME());
 	}
     }
 

@@ -1,5 +1,10 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (getStateFIXME()): New.
+	(getState()): Delete.
+	(toString()): Update.
+	* TestRefresh.java: Update.
+
 	* Proc.java: Make request methods public (for now).
 	* Task.java: Make TaskObservable-s public (for now).
 	(requestUnblock(TaskObserver)): Make abstract.

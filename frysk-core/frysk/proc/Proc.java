@@ -293,13 +293,13 @@ public abstract class Proc {
     private ProcState newState;
 
     /**
-     * Return the current state.
+     * Return the current state as a string.
      */
-    ProcState getState() {
+    protected String getStateFIXME() {
 	if (newState != null)
-	    return newState;
+	    return newState.toString();
 	else
-	    return oldState;
+	    return oldState.toString();
     }
 
     /**
@@ -905,10 +905,15 @@ public abstract class Proc {
 
     public String toString() {
 	if (newState != null) {
-	    return ("{" + super.toString() + ",pid=" + getPid() + ",state="
-		    + getState() + "}");
+	    return ("{" + super.toString()
+		    + ",pid=" + getPid()
+		    + ",state=" + getStateFIXME()
+		    + "}");
+	} else {
+	    return ("{" + super.toString()
+		    + ",pid=" + getPid()
+		    + ",oldState=" + getStateFIXME()
+		    + "}");
 	}
-	return ("{" + super.toString() + ",pid=" + getPid() + ",oldState="
-		+ getState() + "}");
     }
 }
