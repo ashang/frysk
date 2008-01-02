@@ -204,7 +204,7 @@ public class TestRefresh
 	     i.hasNext ();) {
  	    Task task = (Task) i.next ();
  	    assertEquals ("task " + task + " state", "detached",
-			  task.getState ().toString ());
+			  task.getStateFIXME());
  	}
 
 	// Tell the child to drop two tasks.  Check that the refresh
@@ -222,14 +222,14 @@ public class TestRefresh
 	     i.hasNext ();) {
  	    Task task = (Task) i.next ();
 	    assertEquals ("task " + task + " state", "detached",
-			  task.getState ().toString ());
+			  task.getStateFIXME());
  	}
 	assertEquals ("tasks removed by refresh after kills",
 		      nrKills, taskCount.removed.size ());
 	for (Iterator i = taskCount.removed.iterator (); i.hasNext (); ) {
 	    Task task = (Task) i.next ();
 	    assertEquals ("removed task state", "destroyed",
-			  task.getState ().toString ());
+			  task.getStateFIXME());
 	}
 
 	// Finally, tell the child to add a task back.  Check that the

@@ -1,3 +1,19 @@
+2008-01-02  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java (handleAddObservation(TaskObservation)): New.
+	(handleDeleteObservation(TaskObservation)): New.
+	(performContinue()): New.
+	(performRemoval()): New.
+	(performAttach()): New.
+	(performDetach(boolean)): New.
+	(newState): New.
+	(oldState): New.
+	(getState()): New.
+	(set(TaskState)): New.
+	(oldState()): New.
+	(handleUnblock(TaskObserver)): New.
+	(getStateFIXME()): New.
+
 2007-12-20  Andrew Cagney  <cagney@redhat.com>
 
 	* Task.java (sendrecRegisterBuffersFIXME()): Delete.

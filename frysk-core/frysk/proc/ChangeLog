@@ -1,5 +1,22 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (handleAddObservation(TaskObservation)): Make abstract.
+	(handleDeleteObservation(TaskObservation)): Make abstract.
+	(performContinue()): Make abstract.
+	(performRemoval()): Make abstract.
+	(performAttach()): Make abstract.
+	(performDetach(boolean)): Make abstract.
+	(newState): Delete.
+	(oldState): Delete.
+	(getState()): Delete.
+	(set(TaskState)): Delete.
+	(oldState()): Delete.
+	(toString()): Update.
+	(handleUnblock(TaskObserver)): New.
+	(requestUnblock(TaskObserver)): Use.
+	(getStateFIXME()): New.
+	* TestRefresh.java (testProcRefresh()): Update.
+	
 	* Host.java: Re-indent.
 	* Proc.java: Re-indent.
 	* Task.java: Re-indent.

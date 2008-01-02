@@ -89,6 +89,15 @@ public abstract class Task {
     }
 
     /**
+     * Return the state as a string; do not use!!!!
+     */
+    protected abstract String getStateFIXME();
+    /**
+     * Set the new state.
+     */
+    protected abstract void set(TaskState newState);
+
+    /**
      * Return's this Task's Instruction Set Architecture.
      */
     public final ISA getISA() {
@@ -155,7 +164,7 @@ public abstract class Task {
 	this.creator = creator;
 	proc.add(this);
 	proc.getHost().add(this);
-	newState = state;
+	set(state);
     }
 
     /**
@@ -171,7 +180,6 @@ public abstract class Task {
      */
     protected Task(Task task, TaskId cloneId, TaskState state) {
 	this(cloneId, task.proc, task, state);
-	//newState = LinuxPtraceTaskState.clonedState(task.getState());
 	logger.log(Level.FINE, "{0} new -- create attached clone\n", this);
     }
 
@@ -186,7 +194,6 @@ public abstract class Task {
      */
     protected Task(Proc proc, TaskObserver.Attached attached, TaskState state) {
 	this(new TaskId(proc.getPid()), proc, proc.creator, state);
-	//newState = LinuxPtraceTaskState.mainState();
 	if (attached != null) {
 	    TaskObservation ob = new TaskObservation(this, attachedObservers,
 						     attached, true) {
@@ -250,64 +257,24 @@ public abstract class Task {
     protected LinkedList queuedEvents = new LinkedList();
 
     /**
-     * The state of this task. During a state transition newState is
-     * NULL.
+     * Add the specified observer to the observable.
      */
-    private TaskState oldState;
-
-    private TaskState newState;
+    protected abstract void handleAddObservation(TaskObservation observation);
 
     /**
-     * Return the current state.
+     * Delete the specified observer from the observable.
      */
-    protected final TaskState getState() {
-	if (newState != null)
-	    return newState;
-	else
-	    return oldState;
-    }
-    /**
-     * Set the new state.
-     */
-    protected final void set(TaskState newState) {
-	this.newState = newState;
-    }
+    protected abstract void handleDeleteObservation(TaskObservation observation);
 
     /**
-     * Return the current state while at the same time marking that
-     * the state is in flux. If a second attempt to change state
-     * occurs before the current state transition has completed,
-     * barf. XXX: Bit of a hack, but at least this prevents state
-     * transition code attempting a second recursive state transition.
+     * Unblock the specified observer.
      */
-    protected TaskState oldState() {
-	if (newState == null)
-	    throw new RuntimeException(this + " double state transition");
-	oldState = newState;
-	newState = null;
-	return oldState;
-    }
+    protected abstract void handleUnblock(TaskObserver observation);
 
     /**
-     * (Internal) Add the specified observer to the observable.
+     * Requesting that the task go (or resume execution).
      */
-    void handleAddObservation(TaskObservation observation) {
-	newState = oldState().handleAddObservation(this, observation);
-    }
-
-    /**
-     * (Internal) Delete the specified observer from the observable.
-     */
-    void handleDeleteObservation(TaskObservation observation) {
-	newState = oldState().handleDeleteObservation(this, observation);
-    }
-
-    /**
-     * (Internal) Requesting that the task go (or resume execution).
-     */
-    public void performContinue() {
-	newState = oldState().handleContinue(Task.this);
-    }
+    public abstract void performContinue();
 
     /**
      * (Internal) Tell the task to remove itself (it is no longer
@@ -316,9 +283,7 @@ public abstract class Task {
      *
      * XXX: Should not be public.
      */
-    public void performRemoval() {
-	newState = oldState().handleRemoval(Task.this);
-    }
+    public abstract void performRemoval();
 
     /**
      * (Internal) Tell the task to attach itself (if it isn't
@@ -327,9 +292,7 @@ public abstract class Task {
      *
      * XXX: Should not be public.
      */
-    public void performAttach() {
-	newState = oldState().handleAttach(Task.this);
-    }
+    public abstract void performAttach();
 
     /**
      * (Internal) Tell the task to detach itself (if it isn't
@@ -337,9 +300,7 @@ public abstract class Task {
      * been processed; the task is allowed to run free.
      * @param shouldRemoveObservers whether to remove the observers as well.
      */
-    public void performDetach(boolean shouldRemoveObservers) {
-	newState = oldState().handleDetach(Task.this, shouldRemoveObservers);
-    }
+    public abstract void performDetach(boolean shouldRemoveObservers);
 
     /**
      *  (Internal) Request that all observers from this task be
@@ -375,8 +336,10 @@ public abstract class Task {
      * Return a summary of the task's state.
      */
     public String toString() {
-	return ("{" + super.toString() + ",pid=" + proc.getPid() + ",tid="
-		+ getTid() + ",state=" + getState() + "}");
+	return ("{" + super.toString()
+		+ ",pid=" + proc.getPid()
+		+ ",tid=" + getTid()
+		+ "}");
     }
 
     /**
@@ -404,7 +367,7 @@ public abstract class Task {
 	Manager.eventLoop.add(new TaskEvent(this) {
 		final TaskObserver observer = observerArg;
 		protected void execute(Task task) {
-		    newState = oldState().handleUnblock(task, observer);
+		    task.handleUnblock(observer);
 		}
 	    });
     }
