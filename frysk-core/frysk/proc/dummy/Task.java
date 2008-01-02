@@ -130,7 +130,7 @@ public class Task extends frysk.proc.Task {
 	newState = oldState().handleDeleteObservation(this, observation);
     }
 
-    protected void handleUnblock(TaskObserver observer) {
+    public void handleUnblock(TaskObserver observer) {
 	newState = oldState().handleUnblock(this, observer);
     }
 
@@ -171,5 +171,63 @@ public class Task extends frysk.proc.Task {
      */
     public void performDetach(boolean shouldRemoveObservers) {
 	newState = oldState().handleDetach(this, shouldRemoveObservers);
+    }
+
+    public void requestUnblock(final TaskObserver observerArg) {
+	throw new RuntimeException("oops!");
+    }
+    public void requestAddClonedObserver(TaskObserver.Cloned o) {
+	throw new RuntimeException("oops!");
+    }
+    public void requestDeleteClonedObserver(TaskObserver.Cloned o) {
+	throw new RuntimeException("oops!");
+    }
+    public void requestAddAttachedObserver(TaskObserver.Attached o) {
+	throw new RuntimeException("oops!");
+    }
+    public void requestDeleteAttachedObserver(TaskObserver.Attached o) {
+	throw new RuntimeException("oops!");
+    }
+    public void requestAddForkedObserver(TaskObserver.Forked o) {
+	throw new RuntimeException("oops!");
+    }
+    public void requestDeleteForkedObserver(TaskObserver.Forked o) {
+	throw new RuntimeException("oops!");
+    }
+    public void requestAddTerminatedObserver(TaskObserver.Terminated o) {
+	throw new RuntimeException("oops!");
+    }
+    public void requestDeleteTerminatedObserver(TaskObserver.Terminated o) {
+	throw new RuntimeException("oops!");
+    }
+    public void requestAddTerminatingObserver(TaskObserver.Terminating o) {
+	throw new RuntimeException("oops!");
+    }
+    public void requestDeleteTerminatingObserver(TaskObserver.Terminating o) {
+	throw new RuntimeException("oops!");
+    }
+    public void requestAddExecedObserver(TaskObserver.Execed o) {
+	throw new RuntimeException("oops!");
+    }
+    public void requestDeleteExecedObserver(TaskObserver.Execed o) {
+	throw new RuntimeException("oops!");
+    }
+    public void requestAddSyscallsObserver(TaskObserver.Syscalls o) {
+	throw new RuntimeException("oops!");
+    }
+    public void requestDeleteSyscallsObserver(TaskObserver.Syscalls o) {
+	throw new RuntimeException("oops!");
+    }
+    public void requestAddSignaledObserver(TaskObserver.Signaled o) {
+	throw new RuntimeException("oops!");
+    }
+    public void requestDeleteSignaledObserver(TaskObserver.Signaled o) {
+	throw new RuntimeException("oops!");
+    }
+    public void requestAddCodeObserver(TaskObserver.Code o, long a) {
+	throw new RuntimeException("oops!");
+    }
+    public void requestDeleteCodeObserver(TaskObserver.Code o, long a) {
+	throw new RuntimeException("oops!");
     }
 }

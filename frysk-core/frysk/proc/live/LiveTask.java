@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@
 
 package frysk.proc.live;
 
+import java.util.logging.Level;
 import frysk.proc.TaskObserver;
 import frysk.proc.Task;
 import frysk.proc.Proc;
@@ -46,6 +47,8 @@ import frysk.proc.TaskState;
 import frysk.proc.TaskObservation;
 import frysk.proc.TaskId;
 import frysk.proc.TaskObserver.Attached;
+import frysk.proc.TaskEvent;
+import frysk.proc.Manager;
 
 /**
  * A live Host/Proc/Task is characterised by its stateful nature;
@@ -120,7 +123,7 @@ abstract class LiveTask extends Task {
 	newState = oldState().handleDeleteObservation(this, observation);
     }
 
-    protected void handleUnblock(TaskObserver observer) {
+    public void handleUnblock(TaskObserver observer) {
 	newState = oldState().handleUnblock(this, observer);
     }
 
@@ -163,4 +166,163 @@ abstract class LiveTask extends Task {
 	newState = oldState().handleDetach(this, shouldRemoveObservers);
     }
 
+    /**
+     * Request that the observer be removed from this tasks set of
+     * blockers; once there are no blocking observers, this task
+     * resumes.
+     */
+    public void requestUnblock(final TaskObserver observerArg) {
+	logger.log(Level.FINE, "{0} requestUnblock -- observer\n", this);
+	Manager.eventLoop.add(new TaskEvent(this) {
+		final TaskObserver observer = observerArg;
+		protected void execute(Task task) {
+		    task.handleUnblock(observer);
+		}
+	    });
+    }
+
+    /**
+     * Add a TaskObserver.Cloned observer.
+     */
+    public void requestAddClonedObserver(TaskObserver.Cloned o) {
+	logger.log(Level.FINE, "{0} requestAddClonedObserver\n", this);
+	getProc().requestAddObserver(this, clonedObservers, o);
+    }
+
+    /**
+     * Delete a TaskObserver.Cloned observer.
+     */
+    public void requestDeleteClonedObserver(TaskObserver.Cloned o) {
+	logger.log(Level.FINE, "{0} requestDeleteClonedObserver\n", this);
+	getProc().requestDeleteObserver(this, clonedObservers, o);
+    }
+
+    /**
+     * Add a TaskObserver.Attached observer.
+     */
+    public void requestAddAttachedObserver(TaskObserver.Attached o) {
+	logger.log(Level.FINE, "{0} requestAddAttachedObserver\n", this);
+	getProc().requestAddObserver(this, attachedObservers, o);
+    }
+
+    /**
+     * Delete a TaskObserver.Attached observer.
+     */
+    public void requestDeleteAttachedObserver(TaskObserver.Attached o) {
+	logger.log(Level.FINE, "{0} requestDeleteAttachedObserver\n", this);
+	getProc().requestDeleteObserver(this, attachedObservers, o);
+    }
+
+    /**
+     * Add a TaskObserver.Forked observer.
+     */
+    public void requestAddForkedObserver(TaskObserver.Forked o) {
+	logger.log(Level.FINE, "{0} requestAddForkedObserver\n", this);
+	getProc().requestAddObserver(this, forkedObservers, o);
+    }
+
+    /**
+     * Delete a TaskObserver.Forked observer.
+     */
+    public void requestDeleteForkedObserver(TaskObserver.Forked o) {
+	logger.log(Level.FINE, "{0} requestDeleteForkedObserver\n", this);
+	getProc().requestDeleteObserver(this, forkedObservers, o);
+    }
+
+    /**
+     * Add a TaskObserver.Terminated observer.
+     */
+    public void requestAddTerminatedObserver(TaskObserver.Terminated o) {
+	logger.log(Level.FINE, "{0} requestAddTerminatedObserver\n", this);
+	getProc().requestAddObserver(this, terminatedObservers, o);
+    }
+
+    /**
+     * Delete a TaskObserver.Terminated observer.
+     */
+    public void requestDeleteTerminatedObserver(TaskObserver.Terminated o) {
+	logger.log(Level.FINE, "{0} requestDeleteTerminatedObserver\n", this);
+	getProc().requestDeleteObserver(this, terminatedObservers, o);
+    }
+
+    /**
+     * Add TaskObserver.Terminating to the TaskObserver pool.
+     */
+    public void requestAddTerminatingObserver(TaskObserver.Terminating o) {
+	logger.log(Level.FINE, "{0} requestAddTerminatingObserver\n", this);
+	getProc().requestAddObserver(this, terminatingObservers, o);
+    }
+
+    /**
+     * Delete TaskObserver.Terminating.
+     */
+    public void requestDeleteTerminatingObserver(TaskObserver.Terminating o) {
+	logger.log(Level.FINE, "{0} requestDeleteTerminatingObserver\n", this);
+	getProc().requestDeleteObserver(this, terminatingObservers, o);
+    }
+
+    /**
+     * Add TaskObserver.Execed to the TaskObserver pool.
+     */
+    public void requestAddExecedObserver(TaskObserver.Execed o) {
+	logger.log(Level.FINE, "{0} requestAddExecedObserver\n", this);
+	getProc().requestAddObserver(this, execedObservers, o);
+    }
+
+    /**
+     * Delete TaskObserver.Execed.
+     */
+    public void requestDeleteExecedObserver(TaskObserver.Execed o) {
+	logger.log(Level.FINE, "{0} requestDeleteExecedObserver\n", this);
+	getProc().requestDeleteObserver(this, execedObservers, o);
+    }
+
+    /**
+     * Add TaskObserver.Syscalls to the TaskObserver pool.
+     */
+    public void requestAddSyscallsObserver(TaskObserver.Syscalls o) {
+	logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
+	getProc().requestAddSyscallObserver(this, syscallObservers, o);
+    }
+
+    /**
+     * Delete TaskObserver.Syscall.
+     */
+    public void requestDeleteSyscallsObserver(TaskObserver.Syscalls o) {
+	logger.log(Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
+	getProc().requestDeleteSyscallObserver(this, syscallObservers, o);
+    }
+
+    /**
+     * Add TaskObserver.Signaled to the TaskObserver pool.
+     */
+    public void requestAddSignaledObserver(TaskObserver.Signaled o) {
+	logger.log(Level.FINE, "{0} requestAddSignaledObserver\n", this);
+	getProc().requestAddObserver(this, signaledObservers, o);
+    }
+
+    /**
+     * Delete TaskObserver.Signaled.
+     */
+    public void requestDeleteSignaledObserver(TaskObserver.Signaled o) {
+	logger.log(Level.FINE, "{0} requestDeleteSignaledObserver\n", this);
+	getProc().requestDeleteObserver(this, signaledObservers, o);
+    }
+
+  
+    /**
+     * Add TaskObserver.Code to the TaskObserver pool.
+     */
+    public void requestAddCodeObserver(TaskObserver.Code o, long a) {
+	logger.log(Level.FINE, "{0} requestAddCodeObserver\n", this);
+	getProc().requestAddCodeObserver(this, codeObservers, o, a);
+    }
+
+    /**
+     * Delete TaskObserver.Code for the TaskObserver pool.
+     */
+    public void requestDeleteCodeObserver(TaskObserver.Code o, long a) {
+	logger.log(Level.FINE, "{0} requestDeleteCodeObserver\n", this);
+	getProc().requestDeleteCodeObserver(this, codeObservers, o, a);
+    }
 }

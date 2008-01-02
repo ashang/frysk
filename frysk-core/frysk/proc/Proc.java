@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -492,8 +492,10 @@ public abstract class Proc {
     /**
      * (Internal) Tell the process to add the specified Observation,
      * attaching to the process if necessary.
+     *
+     * XXX: Should not be public.
      */
-    void requestAddObserver(Task task, TaskObservable observable,
+    public void requestAddObserver(Task task, TaskObservable observable,
 			    TaskObserver observer) {
 	logger.log(Level.FINE, "{0} requestAddObservation\n", this);
 	Manager.eventLoop.add(new TaskObservation(task, observable, observer, true) {
@@ -533,8 +535,10 @@ public abstract class Proc {
      * (Internal) Tell the process to add the specified Observation,
      * attaching to the process if necessary. Adds a syscallObserver
      * which changes the task to syscall tracing mode of necessary.
+     *
+     * XXX: Should not be public.
      */
-    void requestAddSyscallObserver(final Task task, TaskObservable observable,
+    public void requestAddSyscallObserver(final Task task, TaskObservable observable,
 				   TaskObserver observer) {
 	logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
 	SyscallAction sa = new SyscallAction(task, true);
@@ -571,8 +575,10 @@ public abstract class Proc {
     /**
      * (Internal) Tell the process to delete the specified
      * Observation, detaching from the process if necessary.
+     *
+     * XXX: Should not be public.
      */
-    void requestDeleteSyscallObserver(final Task task,
+    public void requestDeleteSyscallObserver(final Task task,
 				      TaskObservable observable,
 				      TaskObserver observer) {
 	logger.log(Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
@@ -635,8 +641,10 @@ public abstract class Proc {
      * Observation, attaching to the process if necessary. Adds a
      * TaskCodeObservation to the eventloop which instructs the task
      * to install the breakpoint if necessary.
+     *
+     * XXX: Should not be public.
      */
-    void requestAddCodeObserver(Task task, TaskObservable observable,
+    public void requestAddCodeObserver(Task task, TaskObservable observable,
 				TaskObserver.Code observer,
 				final long address) {
 	logger.log(Level.FINE, "{0} requestAddCodeObserver\n", this);
@@ -656,8 +664,10 @@ public abstract class Proc {
     /**
      * (Internal) Tell the process to delete the specified Code
      * Observation, detaching from the process if necessary.
+     *
+     * XXX: Should not be public.
      */
-    void requestDeleteCodeObserver(Task task, TaskObservable observable,
+    public void requestDeleteCodeObserver(Task task, TaskObservable observable,
 				   TaskObserver.Code observer,
 				   final long address)    {
 	logger.log(Level.FINE, "{0} requestDeleteCodeObserver\n", this);
@@ -703,8 +713,10 @@ public abstract class Proc {
      * necessary. As soon as the observation is added and the task
      * isn't blocked it will inform the Instruction observer of every
      * step of the task.
+     *
+     * XXX: Should not be public.
      */
-    void requestAddInstructionObserver(final Task task,
+    public void requestAddInstructionObserver(final Task task,
 				       TaskObservable observable,
 				       TaskObserver.Instruction observer) {
 	logger.log(Level.FINE, "{0} requestAddInstructionObserver\n", this);
@@ -737,8 +749,10 @@ public abstract class Proc {
      * (Internal) Tell the process to delete the specified Instruction
      * Observation, detaching and/or suspending from the process if
      * necessary.
+     *
+     * XXX: Should not be public.
      */
-    void requestDeleteInstructionObserver(final Task task,
+    public void requestDeleteInstructionObserver(final Task task,
 					  TaskObservable observable,
 					  TaskObserver.Instruction observer) {
 	logger.log(Level.FINE, "{0} requestDeleteInstructionObserver\n", this);

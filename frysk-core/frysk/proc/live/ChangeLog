@@ -1,5 +1,25 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* LiveTask.java (requestUnblock(TaskObserver)): New.
+	(requestAddClonedObserver(TaskObserver.Cloned)): New.
+	(requestDeleteClonedObserver(TaskObserver.Cloned)): New.
+	(requestAddAttachedObserver(TaskObserver.Attached)): New.
+	(requestDeleteAttachedObserver(TaskObserver.Attached)): New.
+	(requestAddForkedObserver(TaskObserver.Forked)): New.
+	(requestDeleteForkedObserver(TaskObserver.Forked)): New.
+	(requestAddTerminatedObserver(TaskObserver.Terminated)): New.
+	(requestDeleteTerminatedObserver(TaskObserver.Terminated)): New.
+	(requestAddTerminatingObserver(TaskObserver.Terminating)): New.
+	(requestDeleteTerminatingObserver(TaskObserver.Terminating)): New.
+	(requestAddExecedObserver(TaskObserver.Execed)): New.
+	(requestDeleteExecedObserver(TaskObserver.Execed)): New.
+	(requestAddSyscallsObserver(TaskObserver.Syscalls)): New.
+	(requestDeleteSyscallsObserver(TaskObserver.Syscalls)): New.
+	(requestAddSignaledObserver(TaskObserver.Signaled)): New.
+	(requestDeleteSignaledObserver(TaskObserver.Signaled)): New.
+	(requestAddCodeObserver(TaskObserver.Code)): New.
+	(requestDeleteCodeObserver(TaskObserver.Code)): New.
+
 	* LiveTask.java (handleAddObservation(TaskObservation)): New.
 	(handleDeleteObservation(TaskObservation)): New.
 	(performContinue()): New.

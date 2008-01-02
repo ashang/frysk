@@ -1,5 +1,27 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java: Make request methods public (for now).
+	* Task.java: Make TaskObservable-s public (for now).
+	(requestUnblock(TaskObserver)): Make abstract.
+	(requestAddClonedObserver(TaskObserver.Cloned)): Make abstract.
+	(requestDeleteClonedObserver(TaskObserver.Cloned)): Make abstract.
+	(requestAddAttachedObserver(TaskObserver.Attached)): Make abstract.
+	(requestDeleteAttachedObserver(TaskObserver.Attached)): Make abstract.
+	(requestAddForkedObserver(TaskObserver.Forked)): Make abstract.
+	(requestDeleteForkedObserver(TaskObserver.Forked)): Make abstract.
+	(requestAddTerminatedObserver(TaskObserver.Terminated)): Make abstract.
+	(requestDeleteTerminatedObserver(TaskObserver.Terminated)): Make abstract.
+	(requestAddTerminatingObserver(TaskObserver.Terminating)): Make abstract.
+	(requestDeleteTerminatingObserver(TaskObserver.Terminating)): Make abstract.
+	(requestAddExecedObserver(TaskObserver.Execed)): Make abstract.
+	(requestDeleteExecedObserver(TaskObserver.Execed)): Make abstract.
+	(requestAddSyscallsObserver(TaskObserver.Syscalls)): Make abstract.
+	(requestDeleteSyscallsObserver(TaskObserver.Syscalls)): Make abstract.
+	(requestAddSignaledObserver(TaskObserver.Signaled)): Make abstract.
+	(requestDeleteSignaledObserver(TaskObserver.Signaled)): Make abstract.
+	(requestAddCodeObserver(TaskObserver.Code)): Make abstract.
+	(requestDeleteCodeObserver(TaskObserver.Code)): Make abstract.
+
 	* Task.java (handleAddObservation(TaskObservation)): Make abstract.
 	(handleDeleteObservation(TaskObservation)): Make abstract.
 	(performContinue()): Make abstract.

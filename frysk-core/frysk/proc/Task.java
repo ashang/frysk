@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007 Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -269,7 +269,7 @@ public abstract class Task {
     /**
      * Unblock the specified observer.
      */
-    protected abstract void handleUnblock(TaskObserver observation);
+    public abstract void handleUnblock(TaskObserver observation);
 
     /**
      * Requesting that the task go (or resume execution).
@@ -362,36 +362,24 @@ public abstract class Task {
      * blockers; once there are no blocking observers, this task
      * resumes.
      */
-    public void requestUnblock(final TaskObserver observerArg) {
-	logger.log(Level.FINE, "{0} requestUnblock -- observer\n", this);
-	Manager.eventLoop.add(new TaskEvent(this) {
-		final TaskObserver observer = observerArg;
-		protected void execute(Task task) {
-		    task.handleUnblock(observer);
-		}
-	    });
-    }
+    public abstract void requestUnblock(final TaskObserver observerArg);
 
     /**
      * Set of Cloned observers.
+     *
+     * XXX: Should not be public.
      */
-    private TaskObservable clonedObservers = new TaskObservable(this);
+    public final TaskObservable clonedObservers = new TaskObservable(this);
 
     /**
      * Add a TaskObserver.Cloned observer.
      */
-    public void requestAddClonedObserver(TaskObserver.Cloned o) {
-	logger.log(Level.FINE, "{0} requestAddClonedObserver\n", this);
-	proc.requestAddObserver(this, clonedObservers, o);
-    }
+    public abstract void requestAddClonedObserver(TaskObserver.Cloned o);
 
     /**
      * Delete a TaskObserver.Cloned observer.
      */
-    public void requestDeleteClonedObserver(TaskObserver.Cloned o) {
-	logger.log(Level.FINE, "{0} requestDeleteClonedObserver\n", this);
-	proc.requestDeleteObserver(this, clonedObservers, o);
-    }
+    public abstract void requestDeleteClonedObserver(TaskObserver.Cloned o);
 
     /**
      * Notify all cloned observers that this task cloned. Return the
@@ -428,24 +416,20 @@ public abstract class Task {
 
     /**
      * Set of Attached observers.
+     *
+     * XXX: Should not be public.
      */
-    private TaskObservable attachedObservers = new TaskObservable(this);
+    public final TaskObservable attachedObservers = new TaskObservable(this);
 
     /**
      * Add a TaskObserver.Attached observer.
      */
-    public void requestAddAttachedObserver(TaskObserver.Attached o) {
-	logger.log(Level.FINE, "{0} requestAddAttachedObserver\n", this);
-	proc.requestAddObserver(this, attachedObservers, o);
-    }
+    public abstract void requestAddAttachedObserver(TaskObserver.Attached o);
 
     /**
      * Delete a TaskObserver.Attached observer.
      */
-    public void requestDeleteAttachedObserver(TaskObserver.Attached o) {
-	logger.log(Level.FINE, "{0} requestDeleteAttachedObserver\n", this);
-	proc.requestDeleteObserver(this, attachedObservers, o);
-    }
+    public abstract void requestDeleteAttachedObserver(TaskObserver.Attached o);
 
     /**
      * Notify all Attached observers that this task attached. Return
@@ -467,24 +451,20 @@ public abstract class Task {
 
     /**
      * Set of Forked observers.
+     *
+     * XXX: Should not be public.
      */
-    private TaskObservable forkedObservers = new TaskObservable(this);
+    public final TaskObservable forkedObservers = new TaskObservable(this);
 
     /**
      * Add a TaskObserver.Forked observer.
      */
-    public void requestAddForkedObserver(TaskObserver.Forked o) {
-	logger.log(Level.FINE, "{0} requestAddForkedObserver\n", this);
-	proc.requestAddObserver(this, forkedObservers, o);
-    }
+    public abstract void requestAddForkedObserver(TaskObserver.Forked o);
 
     /**
      * Delete a TaskObserver.Forked observer.
      */
-    public void requestDeleteForkedObserver(TaskObserver.Forked o) {
-	logger.log(Level.FINE, "{0} requestDeleteForkedObserver\n", this);
-	proc.requestDeleteObserver(this, forkedObservers, o);
-    }
+    public abstract void requestDeleteForkedObserver(TaskObserver.Forked o);
 
     /**
      * Notify all Forked observers that this task forked. Return the
@@ -520,24 +500,20 @@ public abstract class Task {
 
     /**
      * Set of Terminated observers.
+     *
+     * XXX: Should not be public.
      */
-    private TaskObservable terminatedObservers = new TaskObservable(this);
+    public final TaskObservable terminatedObservers = new TaskObservable(this);
 
     /**
      * Add a TaskObserver.Terminated observer.
      */
-    public void requestAddTerminatedObserver(TaskObserver.Terminated o) {
-	logger.log(Level.FINE, "{0} requestAddTerminatedObserver\n", this);
-	proc.requestAddObserver(this, terminatedObservers, o);
-    }
+    public abstract void requestAddTerminatedObserver(TaskObserver.Terminated o);
 
     /**
      * Delete a TaskObserver.Terminated observer.
      */
-    public void requestDeleteTerminatedObserver(TaskObserver.Terminated o) {
-	logger.log(Level.FINE, "{0} requestDeleteTerminatedObserver\n", this);
-	proc.requestDeleteObserver(this, terminatedObservers, o);
-    }
+    public abstract void requestDeleteTerminatedObserver(TaskObserver.Terminated o);
 
     /**
      * Notify all Terminated observers, of this Task's demise. Return
@@ -561,24 +537,20 @@ public abstract class Task {
 
     /**
      * Set of Terminating observers.
+     *
+     * XXX: Should not be public.
      */
-    private TaskObservable terminatingObservers = new TaskObservable(this);
+    public final TaskObservable terminatingObservers = new TaskObservable(this);
 
     /**
      * Add TaskObserver.Terminating to the TaskObserver pool.
      */
-    public void requestAddTerminatingObserver(TaskObserver.Terminating o) {
-	logger.log(Level.FINE, "{0} requestAddTerminatingObserver\n", this);
-	proc.requestAddObserver(this, terminatingObservers, o);
-    }
+    public abstract void requestAddTerminatingObserver(TaskObserver.Terminating o);
 
     /**
      * Delete TaskObserver.Terminating.
      */
-    public void requestDeleteTerminatingObserver(TaskObserver.Terminating o) {
-	logger.log(Level.FINE, "{0} requestDeleteTerminatingObserver\n", this);
-	proc.requestDeleteObserver(this, terminatingObservers, o);
-    }
+    public abstract void requestDeleteTerminatingObserver(TaskObserver.Terminating o);
 
     /**
      * Notify all Terminating observers, of this Task's demise. Return
@@ -597,24 +569,20 @@ public abstract class Task {
 
     /**
      * Set of Execed observers.
+     *
+     * XXX: Should not be public.
      */
-    private TaskObservable execedObservers = new TaskObservable(this);
+    public final TaskObservable execedObservers = new TaskObservable(this);
 
     /**
      * Add TaskObserver.Execed to the TaskObserver pool.
      */
-    public void requestAddExecedObserver(TaskObserver.Execed o) {
-	logger.log(Level.FINE, "{0} requestAddExecedObserver\n", this);
-	proc.requestAddObserver(this, execedObservers, o);
-    }
+    public abstract void requestAddExecedObserver(TaskObserver.Execed o);
 
     /**
      * Delete TaskObserver.Execed.
      */
-    public void requestDeleteExecedObserver(TaskObserver.Execed o) {
-	logger.log(Level.FINE, "{0} requestDeleteExecedObserver\n", this);
-	proc.requestDeleteObserver(this, execedObservers, o);
-    }
+    public abstract void requestDeleteExecedObserver(TaskObserver.Execed o);
 
     /**
      * Notify all Execed observers, of this Task's demise. Return the
@@ -639,23 +607,17 @@ public abstract class Task {
      *
      * XXX: Should not be public.
      */
-    public TaskObservable syscallObservers = new TaskObservable(this);
+    public final TaskObservable syscallObservers = new TaskObservable(this);
 
     /**
      * Add TaskObserver.Syscalls to the TaskObserver pool.
      */
-    public void requestAddSyscallsObserver(TaskObserver.Syscalls o) {
-	logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
-	proc.requestAddSyscallObserver(this, syscallObservers, o);
-    }
+    public abstract void requestAddSyscallsObserver(TaskObserver.Syscalls o);
 
     /**
      * Delete TaskObserver.Syscall.
      */
-    public void requestDeleteSyscallsObserver(TaskObserver.Syscalls o) {
-	proc.requestDeleteSyscallObserver(this, syscallObservers, o);
-	logger.log(Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
-    }
+    public abstract void requestDeleteSyscallsObserver(TaskObserver.Syscalls o);
 
     /**
      * Notify all Syscall observers of this Task's entry into a system
@@ -694,24 +656,20 @@ public abstract class Task {
 
     /**
      * Set of Signaled observers.
+     *
+     * XXX: Should not be public.
      */
-    private TaskObservable signaledObservers = new TaskObservable(this);
+    public final TaskObservable signaledObservers = new TaskObservable(this);
 
     /**
      * Add TaskObserver.Signaled to the TaskObserver pool.
      */
-    public void requestAddSignaledObserver(TaskObserver.Signaled o) {
-	logger.log(Level.FINE, "{0} requestAddSignaledObserver\n", this);
-	proc.requestAddObserver(this, signaledObservers, o);
-    }
+    public abstract void requestAddSignaledObserver(TaskObserver.Signaled o);
 
     /**
      * Delete TaskObserver.Signaled.
      */
-    public void requestDeleteSignaledObserver(TaskObserver.Signaled o) {
-	logger.log(Level.FINE, "{0} requestDeleteSignaledObserver\n", this);
-	proc.requestDeleteObserver(this, signaledObservers, o);
-    }
+    public abstract void requestDeleteSignaledObserver(TaskObserver.Signaled o);
 
     /**
      * Notify all Signaled observers of the signal. Return the number
@@ -760,23 +718,17 @@ public abstract class Task {
      *
      * XXX: Should not be public.
      */
-    public TaskObservable codeObservers = new TaskObservable(this);
+    public final TaskObservable codeObservers = new TaskObservable(this);
   
     /**
      * Add TaskObserver.Code to the TaskObserver pool.
      */
-    public void requestAddCodeObserver(TaskObserver.Code o, long a) {
-	logger.log(Level.FINE, "{0} requestAddCodeObserver\n", this);
-	proc.requestAddCodeObserver(this, codeObservers, o, a);
-    }
+    public abstract void requestAddCodeObserver(TaskObserver.Code o, long a);
 
     /**
      * Delete TaskObserver.Code for the TaskObserver pool.
      */
-    public void requestDeleteCodeObserver(TaskObserver.Code o, long a) {
-	logger.log(Level.FINE, "{0} requestDeleteCodeObserver\n", this);
-	proc.requestDeleteCodeObserver(this, codeObservers, o, a);
-    }
+    public abstract void requestDeleteCodeObserver(TaskObserver.Code o, long a);
   
     /**
      * Whether we are currently stepping over a breakpoint.  Used in
