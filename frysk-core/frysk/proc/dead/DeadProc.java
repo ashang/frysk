@@ -48,7 +48,6 @@ import frysk.proc.TaskObserver;
 import frysk.proc.TaskObservable;
 import frysk.proc.Manager;
 import frysk.proc.TaskObservation;
-import frysk.proc.Action;
 import frysk.proc.Breakpoint;
 import frysk.proc.ProcEvent;
 import frysk.proc.ProcState;
@@ -187,27 +186,17 @@ abstract class DeadProc extends Proc {
     }
 
     /**
-     * (internal) Tell the process to add the specified Observation,
-     * attaching the process if necessary.
-     */
-    protected void handleAddObservation(TaskObservation observation) {
-	newState = oldState().handleAddObservation(this, observation);
-    }
-
-    /**
      * (Internal) Tell the process to add the specified Observation,
      * attaching to the process if necessary.
      *
      * XXX: Should not be public.
      */
     public void requestAddObserver(Task task, TaskObservable observable,
-			    TaskObserver observer) {
-	logger.log(Level.FINE, "{0} requestAddObservation\n", this);
-	Manager.eventLoop.add(new TaskObservation(task, observable, observer, true) {
-		public void execute() {
-		    handleAddObservation(this);
-		}
-	    });
+				   TaskObserver observer) {
+	logger.log(Level.FINE, "{0} requestAddObserver\n", this);
+	// XXX: Fake out for now. What kind of observers would you put
+	// on a core file? Might need a brain dead attached state in
+	// this scenario for compataibility.
     }
 
     /**
@@ -246,17 +235,9 @@ abstract class DeadProc extends Proc {
     public void requestAddSyscallObserver(final Task task, TaskObservable observable,
 				   TaskObserver observer) {
 	logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
-	SyscallAction sa = new SyscallAction(task, true);
-	TaskObservation to = new TaskObservation(task, observable, observer, sa,
-						 true) {
-		public void execute() {
-		    handleAddObservation(this);
-		}
-		public boolean needsSuspendedAction() {
-		    return task.syscallObservers.numberOfObservers() == 0;
-		}
-	    };
-	Manager.eventLoop.add(to);
+	// XXX: Fake out for now. What kind of observers would you put
+	// on a core file? Might need a brain dead attached state in
+	// this scenario for compataibility.
     }
 
     /**
@@ -354,17 +335,9 @@ abstract class DeadProc extends Proc {
 				TaskObserver.Code observer,
 				final long address) {
 	logger.log(Level.FINE, "{0} requestAddCodeObserver\n", this);
-	BreakpointAction bpa = new BreakpointAction(observer, task, address, true);
-	TaskObservation to;
-	to = new TaskObservation(task, observable, observer, bpa, true) {
-		public void execute() {
-		    handleAddObservation(this);
-		}
-		public boolean needsSuspendedAction() {
-		    return breakpoints.getCodeObservers(address) == null;
-		}
-	    };
-	Manager.eventLoop.add(to);
+	// XXX: Fake out for now. What kind of observers would you put
+	// on a core file? Might need a brain dead attached state in
+	// this scenario for compataibility.
     }
 
     /**
@@ -426,29 +399,9 @@ abstract class DeadProc extends Proc {
 				       TaskObservable observable,
 				       TaskObserver.Instruction observer) {
 	logger.log(Level.FINE, "{0} requestAddInstructionObserver\n", this);
-	TaskObservation to;
-	InstructionAction ia = new InstructionAction();
-	to = new TaskObservation(task, observable, observer, ia, true) {
-		public void execute() {
-		    handleAddObservation(this);
-		}
-
-		public boolean needsSuspendedAction() {
-		    return task.instructionObservers.numberOfObservers() == 0;
-		}
-
-		// Makes sure that the observer is properly added and then,
-		// while the Task is still suspended, updateExecuted() is
-		// called. Giving the observer a chance to inspect and
-		// possibly block the Task.
-		public void add() {
-		    super.add();
-		    TaskObserver.Instruction i = (TaskObserver.Instruction) observer;
-		    if (i.updateExecuted(task) == Action.BLOCK)
-			task.blockers.add(observer);
-		}
-	    };
-	Manager.eventLoop.add(to);
+	// XXX: Fake out for now. What kind of observers would you put
+	// on a core file? Might need a brain dead attached state in
+	// this scenario for compataibility.
     }
 
     /**

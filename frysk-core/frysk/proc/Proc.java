@@ -407,12 +407,6 @@ public abstract class Proc {
     }
 
     /**
-     * (internal) Tell the process to add the specified Observation,
-     * attaching the process if necessary.
-     */
-    protected abstract void handleAddObservation(TaskObservation observation);
-
-    /**
      * (Internal) Tell the process to add the specified Observation,
      * attaching to the process if necessary.
      *

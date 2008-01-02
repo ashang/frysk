@@ -84,8 +84,7 @@ public class LinuxTask extends LiveTask {
     /**
      * Create a new attached main Task of Proc.
      */
-    public LinuxTask (Proc proc, TaskObserver.Attached attached)
-    {
+    public LinuxTask(LiveProc proc, TaskObserver.Attached attached) {
 	super(proc, attached, LinuxTaskState.mainState());
     }
 

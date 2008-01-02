@@ -194,15 +194,6 @@ public abstract class Task {
      */
     protected Task(Proc proc, TaskObserver.Attached attached, TaskState state) {
 	this(new TaskId(proc.getPid()), proc, proc.creator, state);
-	if (attached != null) {
-	    TaskObservation ob = new TaskObservation(this, attachedObservers,
-						     attached, true) {
-		    public void execute() {
-			throw new RuntimeException("oops!");
-		    }
-		};
-	    proc.handleAddObservation(ob);
-	}
     }
 
     // Send operation to corresponding underlying [kernel] task.  The

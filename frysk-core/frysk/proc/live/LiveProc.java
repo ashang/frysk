@@ -193,7 +193,7 @@ abstract class LiveProc extends Proc {
      * (internal) Tell the process to add the specified Observation,
      * attaching the process if necessary.
      */
-    protected void handleAddObservation(TaskObservation observation) {
+    void handleAddObservation(TaskObservation observation) {
 	newState = oldState().handleAddObservation(this, observation);
     }
 

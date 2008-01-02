@@ -90,17 +90,6 @@ class LinuxProcState
 	
 	return detached;
       }
-      public ProcState handleAddObservation (Proc proc,
-				      Observation observation)
-      {
-	logger.log (Level.FINE, "{0} handleAddObserver \n", proc); 
-	
-	// XXX: Fake out for now. What kind of observers would you
-	// put on a core file? Might need a brain dead
-	// attached state in this scenario for compataibility.
-	return detached;
-	// return Attaching.initialState (proc, observation);
-      }
       
       public ProcState handleDeleteObservation (Proc proc,
 					 Observation observation)

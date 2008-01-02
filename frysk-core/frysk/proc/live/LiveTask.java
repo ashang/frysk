@@ -63,8 +63,17 @@ abstract class LiveTask extends Task {
     LiveTask(Task task, TaskId taskId, TaskState initialState) {
 	super(task, taskId, initialState);
     }
-    LiveTask(Proc proc, Attached attached, TaskState initialState) {
+    LiveTask(LiveProc proc, Attached attached, TaskState initialState) {
 	super(proc, attached, initialState);
+	if (attached != null) {
+	    TaskObservation ob = new TaskObservation(this, attachedObservers,
+						     attached, true) {
+		    public void execute() {
+			throw new RuntimeException("oops!");
+		    }
+		};
+	    proc.handleAddObservation(ob);
+	}
     }
 
     /**

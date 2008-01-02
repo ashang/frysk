@@ -1,5 +1,8 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxProcState.java (handleAddObservation(Proc,Observation)): Delete.
+	* DeadProc.java (handleAddObservation(TaskObservation)): Delete.
+	
 	* DeadProc.java (getStateFIXME()): New.
 	(handleAddObservation(TaskObservation)): New.
 	(oldState()): New.

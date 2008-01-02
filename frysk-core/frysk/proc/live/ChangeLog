@@ -1,5 +1,15 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxTask.java (LinuxTask(LiveProc,Attached)): Rename
+	LinuxTask(Proc,TaskObserver.Attached).
+	* LiveProc.java (handleAddObservation(TaskObservation)): Make
+	package private.
+	* LiveTask.java (LiveTask(LiveProc,Attached,TaskState)): Rename
+	LiveTask(Proc,Attached,TaskState); call
+	LiveProc.handleAddObservation.
+	* LinuxHost.java: Update.
+	* LinuxWaitBuilder.java: Update.
+
 	* LiveProc.java (oldState, newState): New.
 	(BreakpointAction): New.
 	(InstructionAction): New.

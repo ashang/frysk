@@ -1,5 +1,8 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (handleAddObservation(TaskObservation observation)): Delete.
+	* Task.java (Task(Proc,TaskObserver,TaskState)): Delete call. 
+	
 	* ProcEvent.java: Make public.
 	* BreakpointAddresses.java (getCodeObservers(long)): Make public.
 	* Proc.java (oldState, newState): Delete.

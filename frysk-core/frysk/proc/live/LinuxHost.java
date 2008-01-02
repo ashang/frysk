@@ -248,7 +248,7 @@ public class LinuxHost extends LiveHost
 	    Proc myProc = getSelf();
 	    myTask = new LinuxTask (myProc, myTaskId);
 	}
-	Proc proc = new LinuxProc (myTask, new ProcId(pid));
+	LinuxProc proc = new LinuxProc (myTask, new ProcId(pid));
 	new LinuxTask (proc, attached);
     }
 

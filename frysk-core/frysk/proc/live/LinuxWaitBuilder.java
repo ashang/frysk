@@ -49,7 +49,6 @@ import java.util.logging.Logger;
 import frysk.proc.TaskId;
 import frysk.proc.Task;
 import frysk.proc.ProcId;
-import frysk.proc.Proc;
 import frysk.proc.TaskObserver;
 
 /**
@@ -165,7 +164,7 @@ class LinuxWaitBuilder
         LinuxTask task = searchId.get(pid, "{0} forkEvent\n");
         // Create an attached and running fork of TASK.
         ProcId forkId = new ProcId(childPid);
-        Proc forkProc = new LinuxProc(task, forkId);
+        LinuxProc forkProc = new LinuxProc(task, forkId);
         // The main task.
         Task forkTask;
 	forkTask = new LinuxTask(forkProc, (TaskObserver.Attached) null);
