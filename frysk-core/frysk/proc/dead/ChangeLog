@@ -1,5 +1,12 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* DeadProc.java (oldState, newState): Delete.
+	(getStateFIXME()): Simplify.
+	(oldState()): Delete.
+	(InstructionAction): Delete; replace with panic.
+	(BreakpointAction): Ditto.
+	(SyscallAction): Ditto.
+	
 	* LinuxProcState.java (handleDetach(Proc,boolean)): Delete.
 	(handleTaskDetachCompleted(Proc,Task)): Delete.
 	(handleRemoval(Proc)): Delete.

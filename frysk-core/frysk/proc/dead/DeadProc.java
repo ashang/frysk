@@ -48,7 +48,6 @@ import frysk.proc.TaskObserver;
 import frysk.proc.TaskObservable;
 import frysk.proc.Manager;
 import frysk.proc.TaskObservation;
-import frysk.proc.Breakpoint;
 import frysk.proc.ProcEvent;
 import frysk.proc.ProcState;
 
@@ -64,38 +63,13 @@ abstract class DeadProc extends Proc {
     }
 
     /**
-     * The current state of this Proc, during a state transition
-     * newState is null.
-     */
-    private ProcState oldState;
-    private ProcState newState;
-
-    /**
      * Return the current state as a string.
      */
     protected String getStateFIXME() {
-	if (newState != null)
-	    return newState.toString();
-	else
-	    return oldState.toString();
+	return "dead";
     }
     protected void setStateFIXME(ProcState state) {
-	newState = state;
-    }
-
-    /**
-     * Return the current state while at the same time marking that
-     * the state is in flux. If a second attempt to change state
-     * occurs before the current state transition has completed,
-     * barf. XXX: Bit of a hack, but at least this prevents state
-     * transition code attempting a second recursive state transition.
-     */
-    private ProcState oldState() {
-	if (newState == null)
-	    throw new RuntimeException(this + " double state transition");
-	oldState = newState;
-	newState = null;
-	return oldState;
+	// ignore
     }
   
     /**
@@ -130,15 +104,8 @@ abstract class DeadProc extends Proc {
      *
      * XXX: Should not be public.
      */
-    public void performTaskAttachCompleted (final Task theTask) {
-	logger.log(Level.FINE, "{0} performTaskAttachCompleted\n", this);
-	Manager.eventLoop.add(new ProcEvent() {
-		Task task = theTask;
-
-		public void execute() {
-		    newState = oldState().handleTaskAttachCompleted(DeadProc.this, task);
-		}
-	    });
+    public void performTaskAttachCompleted (Task theTask) {
+	throw new RuntimeException("the process is already dead");
     }
 
     /**
@@ -147,7 +114,7 @@ abstract class DeadProc extends Proc {
      *
      * XXX: Should not be public.
      */
-    public void performTaskDetachCompleted(final Task theTask) {
+    public void performTaskDetachCompleted(Task theTask) {
 	logger.log(Level.FINE, "{0} performTaskDetachCompleted\n", this);
 	// XXX: Fake out for now. What kind of observers would you put
 	// on a core file? Might need a brain dead attached state in
@@ -187,40 +154,15 @@ abstract class DeadProc extends Proc {
     }
 
     /**
-     * Class describing the action to take on the suspended Task
-     * before adding or deleting a Syscall observer.
-     */
-    final class SyscallAction implements Runnable {
-	private final Task task;
-
-	private final boolean addition;
-
-	SyscallAction(Task task, boolean addition) {
-	    this.task = task;
-	    this.addition = addition;
-	}
-
-	public void run() {
-	    int syscallobs = task.syscallObservers.numberOfObservers();
-	    if (addition) {
-		if (syscallobs == 0)
-		    task.startTracingSyscalls();
-	    } else {
-		if (syscallobs == 0)
-		    task.stopTracingSyscalls();
-	    }
-	}
-    }
-
-    /**
      * (Internal) Tell the process to add the specified Observation,
      * attaching to the process if necessary. Adds a syscallObserver
      * which changes the task to syscall tracing mode of necessary.
      *
      * XXX: Should not be public.
      */
-    public void requestAddSyscallObserver(final Task task, TaskObservable observable,
-				   TaskObserver observer) {
+    public void requestAddSyscallObserver(Task task,
+					  TaskObservable observable,
+					  TaskObserver observer) {
 	logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
 	// XXX: Fake out for now. What kind of observers would you put
 	// on a core file? Might need a brain dead attached state in
@@ -253,63 +195,10 @@ abstract class DeadProc extends Proc {
      *
      * XXX: Should not be public.
      */
-    public void requestDeleteSyscallObserver(final Task task,
-				      TaskObservable observable,
-				      TaskObserver observer) {
-	logger.log(Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
-	SyscallAction sa = new SyscallAction(task, false);
-	TaskObservation to = new TaskObservation(task, observable, observer, sa,
-						 false) {
-		public void execute() {
-		    newState = oldState().handleDeleteObservation(DeadProc.this,
-								  this);
-		}
-
-		public boolean needsSuspendedAction() {
-		    return task.syscallObservers.numberOfObservers() == 1;
-		}
-	    };
-	Manager.eventLoop.add(to);
-    }
-
-    /**
-     * Class describing the action to take on the suspended Task
-     * before adding or deleting a Code observer.
-     */
-    final class BreakpointAction implements Runnable {
-	private final TaskObserver.Code code;
-
-	private final Task task;
-
-	private final long address;
-
-	private final boolean addition;
-
-	BreakpointAction(TaskObserver.Code code, Task task, long address,
-			 boolean addition) {
-	    this.code = code;
-	    this.task = task;
-	    this.address = address;
-	    this.addition = addition;
-	}
-
-	public void run() {
-	    if (addition) {
-		boolean mustInstall = breakpoints.addBreakpoint(code, address);
-		if (mustInstall) {
-		    Breakpoint breakpoint;
-		    breakpoint = Breakpoint.create(address, DeadProc.this);
-		    breakpoint.install(task);
-		}
-	    } else {
-		boolean mustRemove = breakpoints.removeBreakpoint(code, address);
-		if (mustRemove) {
-		    Breakpoint breakpoint;
-		    breakpoint = Breakpoint.create(address, DeadProc.this);
-		    breakpoint.remove(task);
-		}
-	    }
-	}
+    public void requestDeleteSyscallObserver(Task task,
+					     TaskObservable observable,
+					     TaskObserver observer) {
+	throw new RuntimeException("the process is already dead");
     }
 
     /**
@@ -321,8 +210,8 @@ abstract class DeadProc extends Proc {
      * XXX: Should not be public.
      */
     public void requestAddCodeObserver(Task task, TaskObservable observable,
-				TaskObserver.Code observer,
-				final long address) {
+				       TaskObserver.Code observer,
+				       long address) {
 	logger.log(Level.FINE, "{0} requestAddCodeObserver\n", this);
 	// XXX: Fake out for now. What kind of observers would you put
 	// on a core file? Might need a brain dead attached state in
@@ -336,43 +225,9 @@ abstract class DeadProc extends Proc {
      * XXX: Should not be public.
      */
     public void requestDeleteCodeObserver(Task task, TaskObservable observable,
-				   TaskObserver.Code observer,
-				   final long address)    {
-	logger.log(Level.FINE, "{0} requestDeleteCodeObserver\n", this);
-	BreakpointAction bpa = new BreakpointAction(observer, task, address, false);
-	TaskObservation to;
-	to = new TaskObservation(task, observable, observer, bpa, false) {
-		public void execute() {
-		    newState = oldState().handleDeleteObservation(DeadProc.this, this);
-		}
-
-		public boolean needsSuspendedAction() {
-		    return breakpoints.getCodeObservers(address).size() == 1;
-		}
-	    };
-
-	Manager.eventLoop.add(to);
-    }
-
-    /**
-     * Class describing the action to take on the suspended Task
-     * before adding or deleting an Instruction observer. No
-     * particular actions are needed, but we must make sure the Task
-     * is suspended.
-     */
-    final static class InstructionAction implements Runnable {
-	public void run()
-	{
-	    // There is nothing in particular we need to do. We just want
-	    // to make sure the Task is stopped so we can send it a step
-	    // instruction or, when deleted, start resuming the process
-	    // normally.
-
-	    // We do want an explicit updateExecuted() call, after adding
-	    // the observer, but while still suspended. This is done by
-	    // overriding the add() method in the TaskObservation
-	    // below. No such action is required on deletion.
-	}
+					  TaskObserver.Code observer,
+					  long address)    {
+	throw new RuntimeException("the process is already dead");
     }
 
     /**
@@ -384,9 +239,9 @@ abstract class DeadProc extends Proc {
      *
      * XXX: Should not be public.
      */
-    public void requestAddInstructionObserver(final Task task,
-				       TaskObservable observable,
-				       TaskObserver.Instruction observer) {
+    public void requestAddInstructionObserver(Task task,
+					      TaskObservable observable,
+					      TaskObserver.Instruction observer) {
 	logger.log(Level.FINE, "{0} requestAddInstructionObserver\n", this);
 	// XXX: Fake out for now. What kind of observers would you put
 	// on a core file? Might need a brain dead attached state in
@@ -400,20 +255,9 @@ abstract class DeadProc extends Proc {
      *
      * XXX: Should not be public.
      */
-    public void requestDeleteInstructionObserver(final Task task,
-					  TaskObservable observable,
-					  TaskObserver.Instruction observer) {
-	logger.log(Level.FINE, "{0} requestDeleteInstructionObserver\n", this);
-	TaskObservation to;
-	InstructionAction ia = new InstructionAction();
-	to = new TaskObservation(task, observable, observer, ia, false) {
-		public void execute() {
-		    newState = oldState().handleDeleteObservation(DeadProc.this, this);
-		}
-		public boolean needsSuspendedAction() {
-		    return task.instructionObservers.numberOfObservers() == 1;
-		}
-	    };
-	Manager.eventLoop.add(to);
+    public void requestDeleteInstructionObserver(Task task,
+						 TaskObservable observable,
+						 TaskObserver.Instruction observer) {
+	throw new RuntimeException("the process is already dead");
     }
 }
