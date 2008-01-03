@@ -1,5 +1,9 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* DeadTask.java (requestUnblock, requestAddClonedObserver)
+	(requestAddForkedObserver, requestAddTerminatedObserver): Ignore
+	requests.
+
 	* DeadTask.java (oldState, newState): Delete.
 	(getState()): Delete; replace with exception.
 	(oldState()): Delete; replace with exception.

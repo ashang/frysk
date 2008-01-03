@@ -40,14 +40,12 @@
 package frysk.proc.dead;
 
 import java.util.logging.Level;
-import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.Proc;
 import frysk.proc.TaskState;
 import frysk.proc.TaskId;
 import frysk.proc.TaskObserver;
 import frysk.proc.TaskObservation;
-import frysk.proc.TaskEvent;
 
 /**
  * A dead Host/Proc/Task is characterised by its lack of state, and an
@@ -134,141 +132,131 @@ abstract class DeadTask extends Task {
      * resumes.
      */
     public void requestUnblock(final TaskObserver observerArg) {
-	logger.log(Level.FINE, "{0} requestUnblock -- observer\n", this);
-	Manager.eventLoop.add(new TaskEvent(this) {
-		final TaskObserver observer = observerArg;
-		protected void execute(Task task) {
-		    task.handleUnblock(observer);
-		}
-	    });
+	logger.log(Level.FINE, "{0} requestUnblock is bogus\n", this);
+	// XXX: Fake out for now. What kind of observers would you put
+	// on a core file? Might need a brain dead attached state in
+	// this scenario for compataibility.
     }
 
     /**
      * Add a TaskObserver.Cloned observer.
      */
     public void requestAddClonedObserver(TaskObserver.Cloned o) {
-	logger.log(Level.FINE, "{0} requestAddClonedObserver\n", this);
-	getProc().requestAddObserver(this, clonedObservers, o);
+	logger.log(Level.FINE, "{0} requestAddClonedObserver is bogus\n", this);
+	// XXX: Fake out for now. What kind of observers would you put
+	// on a core file? Might need a brain dead attached state in
+	// this scenario for compataibility.
     }
 
     /**
      * Delete a TaskObserver.Cloned observer.
      */
     public void requestDeleteClonedObserver(TaskObserver.Cloned o) {
-	logger.log(Level.FINE, "{0} requestDeleteClonedObserver\n", this);
-	getProc().requestDeleteObserver(this, clonedObservers, o);
+	throw new RuntimeException("requestDeleteClonedObserver");
     }
 
     /**
      * Add a TaskObserver.Attached observer.
      */
     public void requestAddAttachedObserver(TaskObserver.Attached o) {
-	logger.log(Level.FINE, "{0} requestAddAttachedObserver\n", this);
-	getProc().requestAddObserver(this, attachedObservers, o);
+	throw new RuntimeException("requestAddAttachedObserver");
     }
 
     /**
      * Delete a TaskObserver.Attached observer.
      */
     public void requestDeleteAttachedObserver(TaskObserver.Attached o) {
-	logger.log(Level.FINE, "{0} requestDeleteAttachedObserver\n", this);
-	getProc().requestDeleteObserver(this, attachedObservers, o);
+	throw new RuntimeException("requestDeleteAttachedObserver");
     }
 
     /**
      * Add a TaskObserver.Forked observer.
      */
     public void requestAddForkedObserver(TaskObserver.Forked o) {
-	logger.log(Level.FINE, "{0} requestAddForkedObserver\n", this);
-	getProc().requestAddObserver(this, forkedObservers, o);
+	logger.log(Level.FINE, "{0} requestAddForkedObserver is bogus\n", this);
+	// XXX: Fake out for now. What kind of observers would you put
+	// on a core file? Might need a brain dead attached state in
+	// this scenario for compataibility.
     }
 
     /**
      * Delete a TaskObserver.Forked observer.
      */
     public void requestDeleteForkedObserver(TaskObserver.Forked o) {
-	logger.log(Level.FINE, "{0} requestDeleteForkedObserver\n", this);
-	getProc().requestDeleteObserver(this, forkedObservers, o);
+	throw new RuntimeException("requestDeleteForkedObserver");
     }
 
     /**
      * Add a TaskObserver.Terminated observer.
      */
     public void requestAddTerminatedObserver(TaskObserver.Terminated o) {
-	logger.log(Level.FINE, "{0} requestAddTerminatedObserver\n", this);
-	getProc().requestAddObserver(this, terminatedObservers, o);
+	logger.log(Level.FINE, "{0} requestAddTerminatedObserver is bogus\n", this);
+	// XXX: Fake out for now. What kind of observers would you put
+	// on a core file? Might need a brain dead attached state in
+	// this scenario for compataibility.
     }
 
     /**
      * Delete a TaskObserver.Terminated observer.
      */
     public void requestDeleteTerminatedObserver(TaskObserver.Terminated o) {
-	logger.log(Level.FINE, "{0} requestDeleteTerminatedObserver\n", this);
-	getProc().requestDeleteObserver(this, terminatedObservers, o);
+	throw new RuntimeException("requestDeleteTerminatedObserver");
     }
 
     /**
      * Add TaskObserver.Terminating to the TaskObserver pool.
      */
     public void requestAddTerminatingObserver(TaskObserver.Terminating o) {
-	logger.log(Level.FINE, "{0} requestAddTerminatingObserver\n", this);
-	getProc().requestAddObserver(this, terminatingObservers, o);
+	throw new RuntimeException("requestAddTerminatingObserver");
     }
 
     /**
      * Delete TaskObserver.Terminating.
      */
     public void requestDeleteTerminatingObserver(TaskObserver.Terminating o) {
-	logger.log(Level.FINE, "{0} requestDeleteTerminatingObserver\n", this);
-	getProc().requestDeleteObserver(this, terminatingObservers, o);
+	throw new RuntimeException("requestDeleteTerminatingObserver");
     }
 
     /**
      * Add TaskObserver.Execed to the TaskObserver pool.
      */
     public void requestAddExecedObserver(TaskObserver.Execed o) {
-	logger.log(Level.FINE, "{0} requestAddExecedObserver\n", this);
-	getProc().requestAddObserver(this, execedObservers, o);
+	throw new RuntimeException("requestAddExecedObserver");
     }
 
     /**
      * Delete TaskObserver.Execed.
      */
     public void requestDeleteExecedObserver(TaskObserver.Execed o) {
-	logger.log(Level.FINE, "{0} requestDeleteExecedObserver\n", this);
-	getProc().requestDeleteObserver(this, execedObservers, o);
+	throw new RuntimeException("requestDeleteExecedObserver");
     }
 
     /**
      * Add TaskObserver.Syscalls to the TaskObserver pool.
      */
     public void requestAddSyscallsObserver(TaskObserver.Syscalls o) {
-	logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
-	getProc().requestAddSyscallObserver(this, syscallObservers, o);
+	throw new RuntimeException("requestAddSyscallsObserver");
     }
 
     /**
      * Delete TaskObserver.Syscall.
      */
     public void requestDeleteSyscallsObserver(TaskObserver.Syscalls o) {
-	logger.log(Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
-	getProc().requestDeleteSyscallObserver(this, syscallObservers, o);
+	throw new RuntimeException("requestDeleteSyscallsObserver");
     }
 
     /**
      * Add TaskObserver.Signaled to the TaskObserver pool.
      */
     public void requestAddSignaledObserver(TaskObserver.Signaled o) {
-	logger.log(Level.FINE, "{0} requestAddSignaledObserver\n", this);
-	getProc().requestAddObserver(this, signaledObservers, o);
+	throw new RuntimeException("requestAddSignaledObserver");
     }
 
     /**
      * Delete TaskObserver.Signaled.
      */
     public void requestDeleteSignaledObserver(TaskObserver.Signaled o) {
-	logger.log(Level.FINE, "{0} requestDeleteSignaledObserver\n", this);
-	getProc().requestDeleteObserver(this, signaledObservers, o);
+	throw new RuntimeException("requestDeleteSignaledObserver");
     }
 
   
@@ -276,15 +264,13 @@ abstract class DeadTask extends Task {
      * Add TaskObserver.Code to the TaskObserver pool.
      */
     public void requestAddCodeObserver(TaskObserver.Code o, long a) {
-	logger.log(Level.FINE, "{0} requestAddCodeObserver\n", this);
-	getProc().requestAddCodeObserver(this, codeObservers, o, a);
+	throw new RuntimeException("requestAddCodeObserver");
     }
 
     /**
      * Delete TaskObserver.Code for the TaskObserver pool.
      */
     public void requestDeleteCodeObserver(TaskObserver.Code o, long a) {
-	logger.log(Level.FINE, "{0} requestDeleteCodeObserver\n", this);
-	getProc().requestDeleteCodeObserver(this, codeObservers, o, a);
+	throw new RuntimeException("requestDeleteCodeObserver");
     }
 }
