@@ -57,7 +57,7 @@ public class TestBreakpoints
     }
     
     public void testHpdBreakpointRunProcess() {
-	e = HpdTestbed.run("hpd-c");
+	e = HpdTestbed.start("hpd-c");
 	// Break
 	e.send("break #hpd-c.c#196\n");	// This has to break on: while (int_21)
 	e.expect("breakpoint.*" + prompt);
@@ -115,7 +115,7 @@ public class TestBreakpoints
     public void testHpdBreakMultiThreaded() {
 	if (unresolved(5351))
 	    return;
-	e = HpdTestbed.run("funit-fib-clone", "3");
+	e = HpdTestbed.start("funit-fib-clone", "3");
 	// Break
 	e.send("break fib\n");	
 	e.expect("breakpoint.*" + prompt);
@@ -141,7 +141,7 @@ public class TestBreakpoints
 	if(unresolved(5280)){
 	    return;
 	}
-	e = HpdTestbed.run("funit-fib-clone", "3");
+	e = HpdTestbed.start("funit-fib-clone", "3");
 	// Break
 	e.send("break fib\n");	
 	e.expect("breakpoint.*" + prompt);
@@ -178,7 +178,7 @@ public class TestBreakpoints
   // name as a structure member.
 
   public void testBreakOnStructMemberName() {
-      e = HpdTestbed.run("funit-structmember");
+      e = HpdTestbed.start("funit-structmember");
       e.send("break testfn\n");
       e.expect("break.*" + prompt);
       e.send("go\n");

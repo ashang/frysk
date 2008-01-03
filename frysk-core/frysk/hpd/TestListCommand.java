@@ -51,7 +51,7 @@ public class TestListCommand extends TestLib {
     }
 
     public void testListPC() {
-	e = HpdTestbed.run("funit-quicksort");
+	e = HpdTestbed.start("funit-quicksort");
 	e.sendCommandExpectPrompt("break main", "breakpoint.*");
         e.send("go\n");
         e.expect("go.*\n" + prompt + "Breakpoint");
@@ -78,7 +78,7 @@ public class TestListCommand extends TestLib {
 
 
     public void testListFunction() {
-	e = HpdTestbed.run("funit-quicksort");
+	e = HpdTestbed.start("funit-quicksort");
 	e.sendCommandExpectPrompt("break main", "breakpoint.*");
         e.send("go\n");
         e.expect("go.*\n" + prompt + "Breakpoint");
@@ -122,7 +122,7 @@ public class TestListCommand extends TestLib {
     }
 
     public void testListReverse() {
-	e = HpdTestbed.run("funit-quicksort");
+	e = HpdTestbed.start("funit-quicksort");
 	e.sendCommandExpectPrompt("break main", "breakpoint.*");
         e.send("go\n");
         e.expect("go.*\n" + prompt + "Breakpoint");
@@ -156,7 +156,7 @@ public class TestListCommand extends TestLib {
     }
 
     public void testListErrors() {
-	e = HpdTestbed.run("funit-quicksort");
+	e = HpdTestbed.start("funit-quicksort");
 	e.sendCommandExpectPrompt("break main", "breakpoint.*");
         e.send("go\n");
         e.expect("go.*\n" + prompt + "Breakpoint");

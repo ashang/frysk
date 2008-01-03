@@ -128,14 +128,24 @@ class RunCommand extends ParameterizedCommand {
 	/* If the run command is given no args, check to see if 
 	   any procs were loaded with the load command or loaded
 	   when fhpd was started or loaded with the core command*/
-	if (cmd.size() < 1) {
-	    if (cli.coreProcs.isEmpty() && cli.loadedProcs.isEmpty())
-		throw new InvalidCommandException("missing program");
+	Iterator foo = cli.targetset.getTasks();
+	if (cmd.size() < 1 && foo.hasNext()) {
+	    if (cli.coreProcs.isEmpty() && cli.loadedProcs.isEmpty()) {
+		cli.execCommand("kill");
+		cli.execCommand("start");
+		cli.execCommand("go");
+		return;
+	    }
+	} else if (cmd.size() < 1 && !foo.hasNext()) {
+	    cli.addMessage("No procs in targetset to run", 
+		    Message.TYPE_NORMAL);
+	    return;
 	}
 	
 	// If a parameter was given the run command, go ahead and run it
 	if (cmd.size() >= 1) {
 	    run(cli, cmd);
+	    cli.execCommand("go");
 	    return;
 	}
 	

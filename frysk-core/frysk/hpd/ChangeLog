@@ -1,3 +1,11 @@
+2008-01-02  Rick Moseley  <rmoseley@redhat.com>
+
+	* RunCommand.java: Run to breakpoint instead of first instruction.
+	* TestRunCommand.java: New.
+	* TestListCommand.java: Use HpdTestbed.start instead of HpdTestbed.run.
+	* TestBreakpoints.java: Ditto.
+	* TestLoadCommand.java: Ditto.
+
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
 	* CoreCommand.java: Update; frysk.proc.dead.LinuxHost renamed to
