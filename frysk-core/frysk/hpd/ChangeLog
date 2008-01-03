@@ -1,3 +1,9 @@
+2008-01-03  Tim Moore  <timoore@redhat.com>
+    
+    	* BreakpointCommand.java (interpret): Throw error if no arguments
+    	are supplied.
+    	* LoadCommand.java (interpret): ditto
+	
 2008-01-02  Rick Moseley  <rmoseley@redhat.com>
 
 	* RunCommand.java: Run to breakpoint instead of first instruction.
