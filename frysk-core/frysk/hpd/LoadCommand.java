@@ -66,8 +66,10 @@ public class LoadCommand extends ParameterizedCommand {
     public void interpret(CLI cli, Input cmd, Object options) {
 	if (cmd.size() > 2) {
 	    throw new InvalidCommandException("Too many parameters");
-	}
-
+	} else if (cmd.size() < 1) {
+            throw new InvalidCommandException("missing arguments");
+        }
+        
 	File executableFile = new File(cmd.parameter(0));
 
 	if (!executableFile.exists() || !executableFile.canRead()

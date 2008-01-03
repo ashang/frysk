@@ -86,6 +86,10 @@ class BreakpointCommand extends ParameterizedCommand {
     }
 
     void interpret(CLI cli, Input cmd, Object arguments) {
+        if (cmd.size() < 1) {
+            throw new InvalidCommandException
+                ("missing argument");
+        }
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	String breakpt = cmd.parameter(0);
 	String fileName;
