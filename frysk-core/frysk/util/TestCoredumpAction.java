@@ -40,10 +40,10 @@
 
 package frysk.util;
 
-import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
-import frysk.isa.ISA;
+
 import java.io.File;
+
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfEHeader;
@@ -53,13 +53,13 @@ import lib.dwfl.ElfFileException;
 import lib.dwfl.ElfKind;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
+import frysk.isa.ISA;
 import frysk.proc.Auxv;
 import frysk.proc.Manager;
 import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcId;
-import frysk.proc.Task;
 import frysk.proc.dead.LinuxCoreHost;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.SlaveOffspring;
@@ -198,159 +198,6 @@ public class TestCoredumpAction
     
     testCore.delete();
   }
-
-  
-  public void testGeneralPurposeRegisters () {
-      if (unresolvedOn32On64(5525))
-	  return;
-
-      // Construct a process
-      Proc ackProc = giveMeABlockedProc();
-      assertNotNull("Found Process",ackProc);
-      
-      // Get main task
-      Task mainLiveTask = ackProc.getMainTask();
-      assertNotNull("Found main live task",mainLiveTask);
-      
-      // Get the live process register banks and store them
-      ByteBuffer liveRegisterMaps[] = mainLiveTask.getRegisterBuffersFIXME();
-      long bankSize = liveRegisterMaps[0].capacity();
-      byte[] liveRegBuffer = new byte[(int)bankSize];
-      liveRegisterMaps[0].get(0,liveRegBuffer,0,(int) liveRegisterMaps[0].capacity());
-      
-      // Create a corefile from process
-      String coreFileName = constructCore(ackProc);
-      File testCore = new File(coreFileName);
-      assertTrue("Checking core file " + coreFileName + " exists.",
-                 testCore.exists());
-
-      // Model the corefile, and get the Process.
-      LinuxCoreHost lcoreHost = new LinuxCoreHost(Manager.eventLoop, 
-		   testCore);      
-      assertNotNull("Checking core file Host", lcoreHost);
-      
-      // Get corefile process
-      Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid())); 
-      assertNotNull("Checking core file process", coreProc);
-      
-      // Get Main tasks of corefile
-      Task mainCoreTask = coreProc.getMainTask();
-      assertNotNull("Checking core main task", mainCoreTask);
- 
-      // Get corefile registers
-      ByteBuffer coreRegisterMaps[] = mainCoreTask.getRegisterBuffersFIXME(); 
-      byte[] coreRegBuffer = new byte[(int) coreRegisterMaps[0].capacity()];
-      coreRegisterMaps[0].get(coreRegBuffer);
-      
-      // Compare
-      for (int i=0; i<liveRegBuffer.length; i++)
-	assertEquals("General Purpose Register buffer postion "+i,coreRegBuffer[i],liveRegBuffer[i]);
-
-
-      testCore.delete();
- }
-
-  public void testFloatingPointRegisters ()
-  {
-      
-      // PowerPc doesnt have a bank for Floating Point registers
-      // this registers are with all others in the main bank
-      if (unresolvedOnPPC(4890))
-         return;	
-
-      // Construct a process
-      Proc ackProc = giveMeABlockedProc();
-      assertNotNull("Found Process",ackProc);
-      
-      // Get main task
-      Task mainLiveTask = ackProc.getMainTask();
-      assertNotNull("Found main live task",mainLiveTask);
-      
-      // Get the live process register banks and store them
-      ByteBuffer liveRegisterMaps[] = mainLiveTask.getRegisterBuffersFIXME();
-      byte[] liveRegBuffer = new byte[(int) liveRegisterMaps[1].capacity()];
-      liveRegisterMaps[1].get(0,liveRegBuffer,0,(int) liveRegisterMaps[1].capacity());
-      
-      // Create a corefile from process
-      String coreFileName = constructCore(ackProc);
-      File testCore = new File(coreFileName);
-      assertTrue("Checking core file " + coreFileName + " exists.",
-                 testCore.exists());
-
-      // Model the corefile, and get the Process.
-      LinuxCoreHost lcoreHost = new LinuxCoreHost(Manager.eventLoop, 
-		   testCore);      
-      assertNotNull("Checking core file Host", lcoreHost);
-      
-      // Get corefile process
-      Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid())); 
-      assertNotNull("Checking core file process", coreProc);
-      
-      // Get Main tasks of corefile
-      Task mainCoreTask = coreProc.getMainTask();
-      assertNotNull("Checking core main task", mainCoreTask);
- 
-      // Get corefile registers
-      ByteBuffer coreRegisterMaps[] = mainCoreTask.getRegisterBuffersFIXME(); 
-      byte[] coreRegBuffer = new byte[(int) coreRegisterMaps[1].capacity()];
-      coreRegisterMaps[1].get(coreRegBuffer);
-      
-      // Compare
-      for (int i=0; i<coreRegBuffer.length; i++)
-	  assertEquals("Floating Point Register buffer postion "+i,coreRegBuffer[i],liveRegBuffer[i]);
-
-      testCore.delete();
- }
-
-  
-  public void testXFloatingPointRegisters ()
-  {
-      
-      if (unresolvedOnPPC(4890) || unresolvedOnx8664(4890))
-	  return;
-      // Construct a process
-      Proc ackProc = giveMeABlockedProc();
-      assertNotNull("Found Process",ackProc);
-      
-      // Get main task
-      Task mainLiveTask = ackProc.getMainTask();
-      assertNotNull("Found main live task",mainLiveTask);
-      
-      // Get the live process register banks and store them
-      ByteBuffer liveRegisterMaps[] = mainLiveTask.getRegisterBuffersFIXME();
-      byte[] liveRegBuffer = new byte[(int) liveRegisterMaps[2].capacity()];
-      liveRegisterMaps[2].get(0,liveRegBuffer,0,(int) liveRegisterMaps[2].capacity());
-      
-      // Create a corefile from process
-      String coreFileName = constructCore(ackProc);
-      File testCore = new File(coreFileName);
-      assertTrue("Checking core file " + coreFileName + " exists.",
-                 testCore.exists());
-
-      // Model the corefile, and get the Process.
-      LinuxCoreHost lcoreHost = new LinuxCoreHost(Manager.eventLoop, 
-		   testCore);      
-      assertNotNull("Checking core file Host", lcoreHost);
-      
-      // Get corefile process
-      Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid())); 
-      assertNotNull("Checking core file process", coreProc);
-      
-      // Get Main tasks of corefile
-      Task mainCoreTask = coreProc.getMainTask();
-      assertNotNull("Checking core main task", mainCoreTask);
- 
-      // Get corefile registers
-      ByteBuffer coreRegisterMaps[] = mainCoreTask.getRegisterBuffersFIXME(); 
-      byte[] coreRegBuffer = new byte[(int) coreRegisterMaps[2].capacity()];
-      coreRegisterMaps[2].get(coreRegBuffer);
-      
-      // Compare
-      for (int i=0; i<coreRegBuffer.length; i++)
-	  assertEquals("X Floating Point Register buffer postion "+i,coreRegBuffer[i],liveRegBuffer[i]);
-  
-      testCore.delete();
- }
 
   public void testAuxv ()
   {

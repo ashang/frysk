@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -45,7 +45,6 @@ import frysk.proc.Proc;
 import frysk.testbed.CoreFileAtSignal;
 import frysk.util.Util;
 import java.io.File;
-import frysk.isa.ISA;
 
 /**
  * Check all register values.
@@ -72,21 +71,11 @@ public class TestCoreRegs extends RegsCase {
 	return task().getRegister(register);
     }
 
-    // XXX: Delete this once the unresolved cases are fixed.
     public void testFloatRegisters() {
-	if (isa() == ISA.IA32 && unresolved(4911))
-	    return;
-        if (isa() == ISA.X8664 && unresolved(5195))
-            return;
 	super.testFloatRegisters();
     }
 
-    // XXX: Delete this once the unresolved cases are fixed.
     public void testVectorRegisters() {
-	if (isa() == ISA.IA32 && unresolved(4911))
-	    return;
-        if (isa() == ISA.X8664 && unresolved(5195))
-            return;
 	super.testVectorRegisters();
     }
 }

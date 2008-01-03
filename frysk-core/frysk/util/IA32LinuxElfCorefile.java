@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 // 
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,25 +39,29 @@
 
 package frysk.util;
 
-import frysk.proc.Proc;
-import frysk.proc.Task;
-import inua.eio.ByteBuffer;
+import inua.eio.ArrayByteBuffer;
 
+import java.util.Iterator;
+
+import lib.dwfl.ElfEHeader;
+import lib.dwfl.ElfEMachine;
 import lib.dwfl.ElfNhdr;
 import lib.dwfl.ElfNhdrType;
-import lib.dwfl.ElfEMachine;
-import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfPrAuxv;
-import lib.dwfl.ElfPrpsinfo;
-import lib.dwfl.ElfPrstatus;
 import lib.dwfl.ElfPrFPRegSet;
 import lib.dwfl.ElfPrXFPRegSet;
+import lib.dwfl.ElfPrpsinfo;
+import lib.dwfl.ElfPrstatus;
+import frysk.bank.BankRegister;
+import frysk.bank.LinuxIA32RegisterBanks;
+import frysk.isa.IA32Registers;
+import frysk.isa.Register;
+import frysk.proc.Proc;
+import frysk.proc.Task;
 import frysk.sys.proc.AuxvBuilder;
 import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.Stat;
 import frysk.sys.proc.Status;
-import frysk.isa.IA32Registers;
-import frysk.isa.Register;
 
 
 /**
@@ -236,15 +240,25 @@ public class IA32LinuxElfCorefile extends LinuxElfCorefile {
      * @see frysk.util.LinuxElfCorefile#writeNoteFPRegset(lib.dwfl.ElfNhdr, frysk.proc.Task)
      */
     protected void writeNoteFPRegset(ElfNhdr nhdrEntry, Task task) {
+	
+    	final int bankSize = 108;
+    	byte[] scratch = new byte[10];
+    	byte[] byteOrderedRegister= new byte[bankSize];
+    	ArrayByteBuffer byteOrderedBuffer = new ArrayByteBuffer(byteOrderedRegister);
+    	
+    	Iterator registerIterator =  LinuxIA32RegisterBanks.FPREGS.entryIterator();
+    	while (registerIterator.hasNext()) {
+	    BankRegister bankRegister = ((BankRegister)registerIterator.next());
+	    Register register = bankRegister.getRegister();
+	    task.access(register, 0, register.getType().getSize(), scratch, 0, false);
+	    bankRegister.access(byteOrderedBuffer, 0, register.getType().getSize(), scratch, 0, true);
+    	}
+	
+	byteOrderedBuffer.get(byteOrderedRegister);
+	
 	ElfPrFPRegSet fpRegSet = new ElfPrFPRegSet();
-
-	// Write FP Register info over wholesae. Do not interpret.
-	ByteBuffer registerMaps[] = task.getRegisterBuffersFIXME();
-	byte[] regBuffer = new byte[(int) registerMaps[1].capacity()];
-	registerMaps[1].get(regBuffer);
-
-	fpRegSet.setFPRegisterBuffer(regBuffer);
-
+	fpRegSet.setFPRegisterBuffer(byteOrderedRegister);
+	
 	// Write it
 	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_FPREGSET, fpRegSet);
     }
@@ -252,24 +266,30 @@ public class IA32LinuxElfCorefile extends LinuxElfCorefile {
     /* (non-Javadoc)
      * @see frysk.util.LinuxElfCorefile#writeNotePRXFPRegset(lib.dwfl.ElfNhdr, frysk.proc.Task)
      */
-    protected boolean writeNotePRXFPRegset(ElfNhdr nhdrEntry, Task task)
-    {
+    protected boolean writeNotePRXFPRegset(ElfNhdr nhdrEntry, Task task) {
 	ElfPrXFPRegSet xfpRegSet = new ElfPrXFPRegSet();
-
-	// Write FP Register info over wholesae. Do not interpret.
-	ByteBuffer registerMaps[] = task.getRegisterBuffersFIXME();
-	if (registerMaps[2].capacity() <=0)
-	  {
-	    return false;
-	  }
-	byte[] regBuffer = new byte[(int) registerMaps[2].capacity()];
-	registerMaps[2].get(regBuffer);
-
-	xfpRegSet.setXFPRegisterBuffer(regBuffer);
-
+	
+	final int bankSize = 512;
+	final int maxRegSize = 16;
+	byte[] scratch = new byte[maxRegSize];
+	byte[] byteOrderedRegister= new byte[bankSize];
+	ArrayByteBuffer byteOrderedBuffer = new ArrayByteBuffer(byteOrderedRegister);
+	
+	Iterator registerIterator =  LinuxIA32RegisterBanks.XFPREGS.entryIterator();
+	while (registerIterator.hasNext()) {
+	    BankRegister bankRegister = ((BankRegister)registerIterator.next());
+	    Register register = bankRegister.getRegister();
+	    task.access(register, 0, register.getType().getSize(), scratch, 0, false);
+	    bankRegister.access(byteOrderedBuffer, 0, register.getType().getSize(), scratch, 0, true);
+	}
+	
+	byteOrderedBuffer.get(byteOrderedRegister);
+	
+	xfpRegSet.setXFPRegisterBuffer(byteOrderedRegister);
+	
 	// Write it
 	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_PRXFPREG, xfpRegSet);
-
+	
 	return true;
     }
 

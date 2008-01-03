@@ -1,3 +1,14 @@
+2008-01-03  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestCoredumpAction.java (testGeneralPurposeRegisters): Delete. Replaced by
+	frysk.proc.dead.TestCoreRegs.
+	(testFloatingPointRegisters): Ditto.
+	(testXFloatingPointRegisters): Ditto. 
+	* IA32LinuxElfCorefile.java (writeNotePRXFPRegSet): Rewrite and
+	use BankRegisters.
+	(writeNotePRFPRegSet): Ditto.
+	* X8664LinuxElfCorefile.java (writeNotePRFPRegSet): Ditto.
+
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
 	* TestCoredumpAction.java: Update frysk.proc.dead.LinuxHost

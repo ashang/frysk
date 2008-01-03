@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 // 
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,7 +39,10 @@
 
 package frysk.util;
 
-import inua.eio.ByteBuffer;
+import inua.eio.ArrayByteBuffer;
+
+import java.util.Iterator;
+
 import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfEMachine;
 import lib.dwfl.ElfNhdr;
@@ -48,6 +51,8 @@ import lib.dwfl.ElfPrAuxv;
 import lib.dwfl.ElfPrFPRegSet;
 import lib.dwfl.ElfPrpsinfo;
 import lib.dwfl.ElfPrstatus;
+import frysk.bank.BankRegister;
+import frysk.bank.LinuxX8664RegisterBanks;
 import frysk.isa.Register;
 import frysk.isa.X8664Registers;
 import frysk.proc.Proc;
@@ -242,17 +247,29 @@ public class X8664LinuxElfCorefile extends LinuxElfCorefile {
      * @see frysk.util.LinuxElfCorefile#writeNoteFPRegset(lib.dwfl.ElfNhdr, frysk.proc.Task)
      */
     protected void writeNoteFPRegset(ElfNhdr nhdrEntry, Task task) {
-	ElfPrFPRegSet fpRegSet = new ElfPrFPRegSet();
-
-	// Write FP Register info over wholesae. Do not interpret.
-	ByteBuffer registerMaps[] = task.getRegisterBuffersFIXME();
-	byte[] regBuffer = new byte[(int) registerMaps[1].capacity()];
-	registerMaps[1].get(regBuffer);
-
-	fpRegSet.setFPRegisterBuffer(regBuffer);
-
-	// Write it
-	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_FPREGSET, fpRegSet);
+	
+    	ElfPrFPRegSet xfpRegSet = new ElfPrFPRegSet();
+	
+    	final int bankSize = 512;
+    	final int maxRegSize = 16;
+    	byte[] scratch = new byte[maxRegSize];
+    	byte[] byteOrderedRegister= new byte[bankSize];
+    	ArrayByteBuffer byteOrderedBuffer = new ArrayByteBuffer(byteOrderedRegister);
+    	
+    	Iterator registerIterator =  LinuxX8664RegisterBanks.FPREGS.entryIterator();
+    	while (registerIterator.hasNext()) {
+	    BankRegister bankRegister = ((BankRegister)registerIterator.next());
+	    Register register = bankRegister.getRegister();
+	    task.access(register, 0, register.getType().getSize(), scratch, 0, false);
+	    bankRegister.access(byteOrderedBuffer, 0, register.getType().getSize(), scratch, 0, true);
+    	}
+	
+    	byteOrderedBuffer.get(byteOrderedRegister);
+	
+    	xfpRegSet.setFPRegisterBuffer(byteOrderedRegister);
+	
+    	// Write it
+    	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_FPREGSET, xfpRegSet);
     }
 
     /* (non-Javadoc)
