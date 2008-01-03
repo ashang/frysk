@@ -1,5 +1,8 @@
 2008-01-03  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* LinuxX8664RegisterBanks.java: (FPREGS) Make RDP and RIP 8 bytes big,
+	and MXCSR, and MXCSR_BLANK 4 bytes big.
+	
 	* LinuxIA32RegisterBanks.java (FPREGS): Made X87Register.DP offset
 	14 instead of 18.
 	* BankRegister.java (access): Add write condition logic.
