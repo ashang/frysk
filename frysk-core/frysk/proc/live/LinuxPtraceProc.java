@@ -66,21 +66,21 @@ import java.io.File;
  * A Linux Proc tracked using PTRACE.
  */
 
-public class LinuxProc extends LiveProc {
+public class LinuxPtraceProc extends LiveProc {
     /**
      * Create a new detached process.  RUNNING makes no sense here.
      * Since PARENT could be NULL, also explicitly pass in the host.
      */
-    public LinuxProc(Host host, Proc parent, ProcId pid, Stat stat) {
-	super(host, parent, pid, LinuxProcState.initial(false));
+    public LinuxPtraceProc(Host host, Proc parent, ProcId pid, Stat stat) {
+	super(host, parent, pid, LinuxPtraceProcState.initial(false));
 	this.stat = stat;
     }
     /**
      * Create a new, definitely attached, definitely running fork of
      * Task.
      */
-    public LinuxProc(Task task, ProcId forkId) {
-	super(task, forkId, LinuxProcState.initial(true));
+    public LinuxPtraceProc(Task task, ProcId forkId) {
+	super(task, forkId, LinuxPtraceProcState.initial(true));
     }
 
     /**
@@ -277,8 +277,8 @@ public class LinuxProc extends LiveProc {
 		}
 		else {
 		    // Add the process (it currently isn't attached).
-		    Task newTask = new LinuxTask (LinuxProc.this,
-						  new TaskId (tid));
+		    Task newTask = new LinuxPtraceTask(LinuxPtraceProc.this,
+						       new TaskId (tid));
 		    added.put (newTask.getTaskId(), newTask);
 		}
 	    }

@@ -58,11 +58,8 @@ import frysk.sys.Signal;
  * A Linux Task's State tracked using PTRACE.
  */
 
-class LinuxTaskState
-    extends TaskState
-{
-    protected LinuxTaskState (String state)
-    {
+class LinuxPtraceTaskState extends TaskState {
+    protected LinuxPtraceTaskState(String state) {
 	super (state);
     }
 
@@ -871,7 +868,7 @@ class LinuxTaskState
 	    logger.log (Level.FINE, "{0} handleExecedEvent\n", task); 
 	    // Remove all tasks, retaining just this one.
 	    task.getProc().retain (task);
-	    ((LinuxProc)task.getProc()).getStat ().refresh();
+	    ((LinuxPtraceProc)task.getProc()).getStat ().refresh();
 
 	    // All breakpoints have been erased.  We need to explicitly
 	    // tell those attached to the current Task.

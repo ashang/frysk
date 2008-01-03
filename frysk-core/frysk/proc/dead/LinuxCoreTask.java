@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -50,74 +50,72 @@ import frysk.proc.Isa;
 import frysk.isa.ISA;
 import frysk.bank.RegisterBanks;
 
-public class LinuxTask extends DeadTask {
+public class LinuxCoreTask extends DeadTask {
 
-  ElfPrstatus elfTask = null;
-  ElfPrFPRegSet elfFPRegs = null;
-  ElfPrXFPRegSet elfXFPRegs = null;
-  LinuxProc parent = null;
+    ElfPrstatus elfTask = null;
+    ElfPrFPRegSet elfFPRegs = null;
+    ElfPrXFPRegSet elfXFPRegs = null;
+    LinuxCoreProc parent = null;
 
-  protected ByteBuffer sendrecMemory ()
-  {
-    // XXX: Get the Proc's memory (memory maps). Task and register
-    // information is handled differently (through notes) in core
-    // files. There's a potential here for task to have its own memory
-    // maps in some architectures, but not in the current ISAs. In an
-    // attempt to save system resources, get a reference to the proc's
-    // maps for now.
-    return parent.getMemory();
-  }
+    protected ByteBuffer sendrecMemory () {
+	// XXX: Get the Proc's memory (memory maps). Task and register
+	// information is handled differently (through notes) in core
+	// files. There's a potential here for task to have its own memory
+	// maps in some architectures, but not in the current ISAs. In an
+	// attempt to save system resources, get a reference to the proc's
+	// maps for now.
+	return parent.getMemory();
+    }
 
-  private ByteBuffer[] simulateRegisterBanks ()  {
-	  
+    private ByteBuffer[] simulateRegisterBanks () {	  
 	// XXX: Potentially this information should be constructed 
 	// in CorefileRegisterBanksFactory. However that would require the factory to 
 	// know about elf constructs which is not desirable.
 	  
-    ByteBuffer[] bankBuffers = new ByteBuffer[4];
+	ByteBuffer[] bankBuffers = new ByteBuffer[4];
 
-    // Create an empty page
-    byte[] emptyBuffer = new byte[4096];
-    for (int i=0; i<emptyBuffer.length; i++)
-      emptyBuffer[i]=0;
+	// Create an empty page
+	byte[] emptyBuffer = new byte[4096];
+	for (int i=0; i<emptyBuffer.length; i++)
+	    emptyBuffer[i]=0;
 
-    // Get ISA specific data
-    ByteOrder byteOrder = getISA().order();
-    int  wordSize = getISA().wordSize();
+	// Get ISA specific data
+	ByteOrder byteOrder = getISA().order();
+	int  wordSize = getISA().wordSize();
     
-    // Set GP Registers
-    bankBuffers[0] = new ArrayByteBuffer(elfTask.getRawCoreRegisters());
-    bankBuffers[0].order(byteOrder);
-    bankBuffers[0].wordSize(wordSize);
+	// Set GP Registers
+	bankBuffers[0] = new ArrayByteBuffer(elfTask.getRawCoreRegisters());
+	bankBuffers[0].order(byteOrder);
+	bankBuffers[0].wordSize(wordSize);
 
-    // The following register banks are either fake (blank page) or
-    // actual core data. As corefiles may or may not contain various
-    // parts of register data, and there is an expectation throughout
-    // Frysk that each task will always provide register data
-    // regardless, we have to preset an empty page to avoid NPEs.
+	// The following register banks are either fake (blank page) or
+	// actual core data. As corefiles may or may not contain various
+	// parts of register data, and there is an expectation throughout
+	// Frysk that each task will always provide register data
+	// regardless, we have to preset an empty page to avoid NPEs.
 
-    // If Floating Point Register are present
-    if (elfFPRegs != null)
-      bankBuffers[1] = new ArrayByteBuffer(elfFPRegs.getFPRegisterBuffer());
-    else
-      bankBuffers[1] = new ArrayByteBuffer(emptyBuffer);
+	// If Floating Point Register are present
+	if (elfFPRegs != null)
+	    bankBuffers[1] = new ArrayByteBuffer(elfFPRegs.getFPRegisterBuffer());
+	else
+	    bankBuffers[1] = new ArrayByteBuffer(emptyBuffer);
 
-    bankBuffers[1].order(byteOrder);
-    bankBuffers[1].wordSize(wordSize);
+	bankBuffers[1].order(byteOrder);
+	bankBuffers[1].wordSize(wordSize);
 
-    // If X Floating Point Register are present
-    if (elfXFPRegs != null)
-      bankBuffers[2] = new ArrayByteBuffer(elfXFPRegs.getXFPRegisterBuffer());
-    else
-      bankBuffers[2] = new ArrayByteBuffer(emptyBuffer);
+	// If X Floating Point Register are present
+	if (elfXFPRegs != null)
+	    bankBuffers[2] = new ArrayByteBuffer(elfXFPRegs.getXFPRegisterBuffer());
+	else
+	    bankBuffers[2] = new ArrayByteBuffer(emptyBuffer);
 
-    bankBuffers[2].order(byteOrder);
-    bankBuffers[2].wordSize(wordSize);
+	bankBuffers[2].order(byteOrder);
+	bankBuffers[2].wordSize(wordSize);
 
-    // XXX: Other register banks need to be filled in.
-    bankBuffers[3] = new ArrayByteBuffer(emptyBuffer);
-    return bankBuffers;
-  }
+	// XXX: Other register banks need to be filled in.
+	bankBuffers[3] = new ArrayByteBuffer(emptyBuffer);
+	return bankBuffers;
+    }
 
     protected RegisterBanks sendrecRegisterBanks() {
 	return CorefileRegisterBanksFactory.create
@@ -128,8 +126,8 @@ public class LinuxTask extends DeadTask {
     /**
      * Create a new unattached Task.
      */
-    LinuxTask(LinuxProc proc, ElfPrstatus elfTask, ElfPrFPRegSet
-	      elfFPRegs, ElfPrXFPRegSet elfXFPRegs) {
+    LinuxCoreTask(LinuxCoreProc proc, ElfPrstatus elfTask, ElfPrFPRegSet
+		  elfFPRegs, ElfPrXFPRegSet elfXFPRegs) {
 	super(proc, new TaskId(elfTask.getPrPid()));
 	this.elfTask = elfTask;
 	this.elfFPRegs = elfFPRegs;
@@ -138,12 +136,10 @@ public class LinuxTask extends DeadTask {
     }
 
     protected ISA sendrecISA() {
-    	return ((LinuxProc)getProc()).sendrecISA();
+    	return ((LinuxCoreProc)getProc()).sendrecISA();
     }
 
-  protected Isa sendrecIsa() 
-  {
-    return getProc().getIsa();
-  }
-
+    protected Isa sendrecIsa() {
+	return getProc().getIsa();
+    }
 }

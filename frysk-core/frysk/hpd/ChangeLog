@@ -1,3 +1,8 @@
+2008-01-02  Andrew Cagney  <cagney@redhat.com>
+
+	* CoreCommand.java: Update; frysk.proc.dead.LinuxHost renamed to
+	.LinuxCoreHost.
+
 2008-01-02  Tim Moore  <timoore@redhat.com>
 
 	* TestBreakpoints.java (testBreakOnStructMemberName): New test.

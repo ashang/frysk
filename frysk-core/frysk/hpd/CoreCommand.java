@@ -49,7 +49,7 @@ import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.dead.LinuxHost;
+import frysk.proc.dead.LinuxCoreHost;
 
 public class CoreCommand extends ParameterizedCommand {
 
@@ -74,7 +74,7 @@ public class CoreCommand extends ParameterizedCommand {
 	void interpret(CLI cli, Input cmd, Object options) {
 
 		Proc coreProc;
-		LinuxHost coreHost = null;
+		LinuxCoreHost coreHost = null;
 
 		// If > 2 parameter, then too many parameters.
 		if (cmd.size() > 2) {
@@ -143,21 +143,21 @@ public class CoreCommand extends ParameterizedCommand {
 	}
 
 	// Build Correct Host on options.
-	private LinuxHost getHost(File coreFile, File executable, boolean loadExe) {
-		LinuxHost coreHost = null;
+	private LinuxCoreHost getHost(File coreFile, File executable, boolean loadExe) {
+		LinuxCoreHost coreHost = null;
 		if (executable == null)
 			if (!loadExe)
-				coreHost = new LinuxHost(Manager.eventLoop, coreFile);
+				coreHost = new LinuxCoreHost(Manager.eventLoop, coreFile);
 			else
-				coreHost = new LinuxHost(Manager.eventLoop, coreFile, null);
+				coreHost = new LinuxCoreHost(Manager.eventLoop, coreFile, null);
 		else
-			coreHost = new LinuxHost(Manager.eventLoop, coreFile, executable);
+			coreHost = new LinuxCoreHost(Manager.eventLoop, coreFile, executable);
 
 		return coreHost;
 	}
 
 	// From a Host, get a Proc
-	private Proc getProc(LinuxHost coreHost) {
+	private Proc getProc(LinuxCoreHost coreHost) {
 		// Get an iterator to the one process
 		Iterator i = coreHost.getProcIterator();
 

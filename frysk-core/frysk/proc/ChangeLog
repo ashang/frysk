@@ -1,5 +1,10 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	frysk.proc.live.LinuxHost renamed to .LinuxPtraceHost and
+	frysk.proc.dead.LinuxHost renamed to .LinuxCoreHost.
+	* Manager.java: Update.
+	* ProcBlockAction.java: Update.
+
 	* Task.java (set(TaskState)): Delete.
 	(Task(TaskId,Proc,Task)): Replace Task(TaskId,Proc,Task,TaskState).
 

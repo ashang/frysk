@@ -40,7 +40,7 @@
 package frysk.proc;
 
 import frysk.event.EventLoop;
-import frysk.proc.live.LinuxHost;
+import frysk.proc.live.LinuxPtraceHost;
 
 /**
  * Manager of all operations within the proc model.
@@ -53,12 +53,12 @@ public class Manager
 {
     // The host (for moment only the local native host).
 
-    // XXX: Should have the LinuxHost, along with any other host
+    // XXX: Should have the LinuxPtraceHost, along with any other host
     // types, register themselves and then have HOST set itself to the
     // most appropriate.
 
     public static EventLoop eventLoop = EventLoop.factory ();
-    public static Host host = new LinuxHost (eventLoop);
+    public static Host host = new LinuxPtraceHost (eventLoop);
 
     /**
      * XXX: For testing, resets the Manager back to it's default
@@ -67,7 +67,7 @@ public class Manager
     public static Host resetXXX ()
     {
 	eventLoop = EventLoop.factory ();
-	host = new LinuxHost (eventLoop);
+	host = new LinuxPtraceHost(eventLoop);
 	return host;
     }
 }

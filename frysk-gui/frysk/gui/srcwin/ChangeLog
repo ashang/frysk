@@ -1,3 +1,8 @@
+2008-01-02  Andrew Cagney  <cagney@redhat.com>
+
+	* SourceWindow.java: Update; frysk.proc.dead.LinuxProc renamed to
+	.LinuxCoreProc.
+
 2007-12-21  Andrew Cagney  <cagney@redhat.com>
 
 	* CurrentStackView.java: Delete ISA conditional code.

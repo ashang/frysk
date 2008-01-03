@@ -46,7 +46,7 @@ import frysk.proc.Host;
 import frysk.proc.FindProc;
 import frysk.proc.Manager;
 import frysk.proc.ProcId;
-import frysk.proc.dead.LinuxHost;
+import frysk.proc.dead.LinuxCoreHost;
 import frysk.proc.Proc;
 
 public class Util
@@ -63,7 +63,7 @@ public class Util
    */
   public static Proc getProcFromCoreFile(File coreFile)
   {
-    LinuxHost core = new LinuxHost(Manager.eventLoop, coreFile);
+    LinuxCoreHost core = new LinuxCoreHost(Manager.eventLoop, coreFile);
 
     Iterator iterator = core.getProcIterator();
 
@@ -83,7 +83,7 @@ public class Util
   
   public static Proc getProcFromCoreFile(File coreFile, File exeFile)
   {
-    LinuxHost core = new LinuxHost(Manager.eventLoop, coreFile, exeFile);
+    LinuxCoreHost core = new LinuxCoreHost(Manager.eventLoop, coreFile, exeFile);
 
     Iterator iterator = core.getProcIterator();
 

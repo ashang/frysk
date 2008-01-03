@@ -60,7 +60,7 @@ import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
-import frysk.proc.dead.LinuxHost;
+import frysk.proc.dead.LinuxCoreHost;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.SlaveOffspring;
 import frysk.testbed.TestLib;
@@ -164,7 +164,7 @@ public class TestCoredumpAction
             testCore.exists());
 
     // Model the corefile, and get the Process.
-    LinuxHost lcoreHost = new LinuxHost(Manager.eventLoop, 
+    LinuxCoreHost lcoreHost = new LinuxCoreHost(Manager.eventLoop, 
 		   testCore,new File(ackProc.getExe()));      
 
     assertNotNull("Checking core file Host", lcoreHost);
@@ -225,7 +225,7 @@ public class TestCoredumpAction
                  testCore.exists());
 
       // Model the corefile, and get the Process.
-      LinuxHost lcoreHost = new LinuxHost(Manager.eventLoop, 
+      LinuxCoreHost lcoreHost = new LinuxCoreHost(Manager.eventLoop, 
 		   testCore);      
       assertNotNull("Checking core file Host", lcoreHost);
       
@@ -278,7 +278,7 @@ public class TestCoredumpAction
                  testCore.exists());
 
       // Model the corefile, and get the Process.
-      LinuxHost lcoreHost = new LinuxHost(Manager.eventLoop, 
+      LinuxCoreHost lcoreHost = new LinuxCoreHost(Manager.eventLoop, 
 		   testCore);      
       assertNotNull("Checking core file Host", lcoreHost);
       
@@ -328,7 +328,7 @@ public class TestCoredumpAction
                  testCore.exists());
 
       // Model the corefile, and get the Process.
-      LinuxHost lcoreHost = new LinuxHost(Manager.eventLoop, 
+      LinuxCoreHost lcoreHost = new LinuxCoreHost(Manager.eventLoop, 
 		   testCore);      
       assertNotNull("Checking core file Host", lcoreHost);
       
@@ -365,7 +365,7 @@ public class TestCoredumpAction
                  testCore.exists());
 
       // Model the corefile, and get the Process.
-      LinuxHost lcoreHost = new LinuxHost(Manager.eventLoop, 
+      LinuxCoreHost lcoreHost = new LinuxCoreHost(Manager.eventLoop, 
 		   testCore);      
       assertNotNull("Checking core file Host", lcoreHost);
       

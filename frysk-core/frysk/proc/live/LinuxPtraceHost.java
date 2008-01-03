@@ -63,14 +63,12 @@ import frysk.proc.FindProc;
  * A Linux Host tracked using PTRACE.
  */
 
-public class LinuxHost extends LiveHost
-{
+public class LinuxPtraceHost extends LiveHost {
     /**
-     * Construct an instance of the LinuxHost that uses the
+     * Construct an instance of the LinuxPtraceHost that uses the
      * specified eventLoop.
      */
-    public LinuxHost (EventLoop eventLoop)
-    {
+    public LinuxPtraceHost(EventLoop eventLoop) {
 	eventLoop.add(new LinuxWaitBuilder(this));
     }
 
@@ -79,8 +77,7 @@ public class LinuxHost extends LiveHost
      * Either add or update a process, however, before doing that
      * determine the parent and ensure that it has been updated.
      */
-    private class ProcChanges
-    {
+    private class ProcChanges {
 	/**
 	 * ADDED accumulates all the tasks added as things are
 	 * updated.
@@ -127,13 +124,13 @@ public class LinuxHost extends LiveHost
 			break;
 		}
 		// .. and then add this process.
-		proc = new LinuxProc(LinuxHost.this, parent, procId, stat);
+		proc = new LinuxPtraceProc(LinuxPtraceHost.this, parent, procId, stat);
 		added.add(proc);
 	    }
 	    else if (removed.get(procId) != null) {
 		// Process 1 never gets a [new] parent.
 		if (pid > 1) {
-		    Stat stat = ((LinuxProc) proc).getStat();
+		    Stat stat = ((LinuxPtraceProc) proc).getStat();
 		    // An existing process that hasn't yet been
 		    // updated. Still need check that its parent
 		    // didn't change (assuming there is one).
@@ -172,7 +169,7 @@ public class LinuxHost extends LiveHost
 	if (refreshAll) {
 	    // Changes individual process.
 	    for (Iterator i = procPool.values().iterator(); i.hasNext();) {
-		LinuxProc proc = (LinuxProc) i.next();
+		LinuxPtraceProc proc = (LinuxPtraceProc) i.next();
 		proc.sendRefresh();
 	    }
 	}
@@ -217,7 +214,7 @@ public class LinuxHost extends LiveHost
 	}
 
     
-	LinuxProc proc = (LinuxProc) Manager.host.getProc(procId);
+	LinuxPtraceProc proc = (LinuxPtraceProc) Manager.host.getProc(procId);
 	proc.sendRefresh();
     
 	Manager.eventLoop.add(new Event()
@@ -246,10 +243,10 @@ public class LinuxHost extends LiveHost
 	if (myTask == null) {
 	    // If not, find this process and add this task to it.
 	    Proc myProc = getSelf();
-	    myTask = new LinuxTask (myProc, myTaskId);
+	    myTask = new LinuxPtraceTask(myProc, myTaskId);
 	}
-	LinuxProc proc = new LinuxProc (myTask, new ProcId(pid));
-	new LinuxTask (proc, attached);
+	LinuxPtraceProc proc = new LinuxPtraceProc (myTask, new ProcId(pid));
+	new LinuxPtraceTask(proc, attached);
     }
 
     /**
@@ -286,7 +283,7 @@ public class LinuxHost extends LiveHost
 				return;                
 			}
 			// .. and then add this process.
-			new LinuxProc(LinuxHost.this, null, procId, stat);
+			new LinuxPtraceProc(LinuxPtraceHost.this, null, procId, stat);
 		    }
 		}
 	    };
@@ -307,7 +304,7 @@ public class LinuxHost extends LiveHost
 	    return;
 	}
     
-	LinuxProc proc = (LinuxProc) Manager.host.getProc(procId);
+	LinuxPtraceProc proc = (LinuxPtraceProc) Manager.host.getProc(procId);
 	proc.sendRefresh();
     
 	Manager.eventLoop.add(new Event()

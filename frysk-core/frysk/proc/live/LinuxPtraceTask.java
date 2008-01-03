@@ -64,28 +64,28 @@ import frysk.bank.RegisterBanks;
  * A Linux Task tracked using PTRACE.
  */
 
-public class LinuxTask extends LiveTask {
+public class LinuxPtraceTask extends LiveTask {
     /**
      * Create a new unattached Task.
      */
-    public LinuxTask (Proc proc, TaskId id)
+    public LinuxPtraceTask (Proc proc, TaskId id)
     {
-	super(proc, id, LinuxTaskState.detachedState());
+	super(proc, id, LinuxPtraceTaskState.detachedState());
     }
     /**
      * Create a new attached clone of Task.
      */
-    public LinuxTask (Task task, TaskId clone)
+    public LinuxPtraceTask (Task task, TaskId clone)
     {
 	// XXX: shouldn't need to grub around in the old task's state.
 	super(task, clone,
-	      LinuxTaskState.clonedState(((LinuxTask)task).getState ()));
+	      LinuxPtraceTaskState.clonedState(((LinuxPtraceTask)task).getState ()));
     }
     /**
      * Create a new attached main Task of Proc.
      */
-    public LinuxTask(LiveProc proc, TaskObserver.Attached attached) {
-	super(proc, attached, LinuxTaskState.mainState());
+    public LinuxPtraceTask(LiveProc proc, TaskObserver.Attached attached) {
+	super(proc, attached, LinuxPtraceTaskState.mainState());
     }
 
 

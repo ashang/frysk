@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007 Red Hat Inc.
+// Copyright 2005, 2007, 2008 Red Hat Inc.
 // Copyright 2007 Oracle Corporation.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
@@ -142,6 +142,7 @@ import frysk.scopes.SourceLocation;
 import frysk.stack.FrameIdentifier;
 import frysk.stepping.SteppingEngine;
 import frysk.stepping.TaskStepEngine;
+import frysk.proc.dead.LinuxCoreProc;
 
 /**
  * The SourceWindow displays the source or assembly level view of a Task's
@@ -1070,7 +1071,7 @@ public class SourceWindow extends Window {
 	    public void actionEvent(ActionEvent action) {
 		// SourceWindow.this.glade.getWidget(SOURCE_WINDOW).destroy();
 		if (!SourceWindow.this.swProc[current].getClass().equals(
-			frysk.proc.dead.LinuxProc.class))
+			LinuxCoreProc.class))
 		    SourceWindow.this.steppingEngine.removeObserver(
 			    SourceWindow.this.lock,
 			    SourceWindow.this.swProc[current], true);

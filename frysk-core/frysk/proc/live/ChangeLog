@@ -1,5 +1,12 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceHost.java: Rename LinuxHost.java.
+	* LinuxPtraceProc.java: Rename LinuxProc.java.
+	* LinuxPtraceTask.java: Rename LinuxTask.java.
+	* LinuxPtraceProcState.java: Rename LinuxProcState.java.
+	* LinuxPtraceTaskState.java: Rename LinuxTaskState.java.
+	* LinuxWaitBuilder.java: Update.
+
 	* LiveTask.java: Set newState in constructor.
 	(set(TaskState)): Make package private.
 

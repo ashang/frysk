@@ -47,7 +47,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import frysk.event.Event;
-import frysk.proc.dead.LinuxHost;
+import frysk.proc.dead.LinuxCoreHost;
 
 /**
  * This class blocks all of the threads in a process and performs a given action
@@ -173,9 +173,8 @@ public class ProcBlockAction
     
   }
   
-  public ProcBlockAction (File coreFile)
-  {
-    LinuxHost core = new LinuxHost(Manager.eventLoop, coreFile);
+  public ProcBlockAction (File coreFile) {
+    LinuxCoreHost core = new LinuxCoreHost(Manager.eventLoop, coreFile);
 
     core.requestRefreshXXX();
     Manager.eventLoop.runPending();

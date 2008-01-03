@@ -1,5 +1,10 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxCoreHost.java: Rename LinuxHost.java.
+	* LinuxCoreProc.java: Rename LinuxProc.java.
+	* LinuxCoreTask.java: Rename LinuxTask.java.
+	* TestLinuxCore.java: Update.
+
 	* DeadTask.java (set(TaskState)): Delete.
 	
 	* LinuxTaskState.java: Delete.

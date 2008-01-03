@@ -58,7 +58,7 @@ import frysk.proc.TaskObserver;
 class LinuxWaitBuilder
     implements WaitBuilder
 {
-    LinuxWaitBuilder (LinuxHost host)
+    LinuxWaitBuilder (LinuxPtraceHost host)
     {
 	searchId = new SearchId (host);
     }
@@ -114,20 +114,16 @@ class LinuxWaitBuilder
     
     // Hold onto a scratch ID; avoids overhead of allocating a new
     // taskId everytime a new event arrives -- micro optimization..
-    static class SearchId
-	extends TaskId
-    {
-	private final LinuxHost host;
-	SearchId (LinuxHost host)
-	{
+    static class SearchId extends TaskId {
+	private final LinuxPtraceHost host;
+	SearchId (LinuxPtraceHost host) {
 	    super (0);
 	    this.host = host;
 	}
-	LinuxTask get(int pid, String why)
-	{
+	LinuxPtraceTask get(int pid, String why) {
 	    id = pid;
 	    logger.log(Level.FINE, why, this);
-	    return (LinuxTask) (host.get(this));
+	    return (LinuxPtraceTask) (host.get(this));
 	}
     }
     private final SearchId searchId;
@@ -147,9 +143,9 @@ class LinuxWaitBuilder
         // what happened. Note that hot on the heels of this event is
         // a clone.stopped event, and the clone Task must be created
         // before that event arrives.
-        LinuxTask task = searchId.get(pid, "{0} cloneEvent\n");
+        LinuxPtraceTask task = searchId.get(pid, "{0} cloneEvent\n");
         // Create an attached, and running, clone of TASK.
-        LinuxTask clone = new LinuxTask(task, new TaskId(clonePid));
+        LinuxPtraceTask clone = new LinuxPtraceTask(task, new TaskId(clonePid));
         task.processClonedEvent(clone);
 	attemptDeliveringFsckedKernelEvents ();
     }
@@ -161,13 +157,13 @@ class LinuxWaitBuilder
         // happened. Note that hot on the heels of this fork event is
         // the child's stop event, the fork Proc must be created
         // before that event arrives.
-        LinuxTask task = searchId.get(pid, "{0} forkEvent\n");
+        LinuxPtraceTask task = searchId.get(pid, "{0} forkEvent\n");
         // Create an attached and running fork of TASK.
         ProcId forkId = new ProcId(childPid);
-        LinuxProc forkProc = new LinuxProc(task, forkId);
+        LinuxPtraceProc forkProc = new LinuxPtraceProc(task, forkId);
         // The main task.
         Task forkTask;
-	forkTask = new LinuxTask(forkProc, (TaskObserver.Attached) null);
+	forkTask = new LinuxPtraceTask(forkProc, (TaskObserver.Attached) null);
         task.processForkedEvent(forkTask);
 	attemptDeliveringFsckedKernelEvents ();
     }
@@ -175,7 +171,7 @@ class LinuxWaitBuilder
     public void exitEvent (int pid, boolean signal, int value,
 			   boolean coreDumped)
     {
-        LinuxTask task = searchId.get(pid, "{0} exitEvent\n");
+        LinuxPtraceTask task = searchId.get(pid, "{0} exitEvent\n");
 	if (task == null)
 	    // Stray pid from uncontrolled fork.
 	    logMissing("exited", pid);
@@ -185,25 +181,25 @@ class LinuxWaitBuilder
     
     public void execEvent (int pid)
     {
-        LinuxTask task = searchId.get(pid, "{0} execEvent\n");
+        LinuxPtraceTask task = searchId.get(pid, "{0} execEvent\n");
         task.processExecedEvent();
     }
     
     public void disappeared (int pid, Throwable w)
     {
-        LinuxTask task = searchId.get(pid, "{0} disappeared\n");
+        LinuxPtraceTask task = searchId.get(pid, "{0} disappeared\n");
         task.processDisappearedEvent(w);
     }
     
     public void syscallEvent (int pid)
     {
-        LinuxTask task = searchId.get(pid, "{0} syscallEvent\n");
+        LinuxPtraceTask task = searchId.get(pid, "{0} syscallEvent\n");
         task.processSyscalledEvent();
     }
     
     public void stopped (int pid, int sig)
     {
-        LinuxTask task = searchId.get(pid, "{0} stopped\n");
+        LinuxPtraceTask task = searchId.get(pid, "{0} stopped\n");
 	if (task == null) {
 	    // If there's no Task corresponding to TID, assume that
 	    // the kernel fscked up its event ordering - notifying of
@@ -224,7 +220,7 @@ class LinuxWaitBuilder
     public void terminated (int pid, boolean signal, int value,
 			    boolean coreDumped)
     {
-        LinuxTask task = searchId.get(pid, "{0} terminated\n");
+        LinuxPtraceTask task = searchId.get(pid, "{0} terminated\n");
 	if (task == null)
 	    // Stray pid from uncontrolled fork.
 	    logMissing("terminated", pid);

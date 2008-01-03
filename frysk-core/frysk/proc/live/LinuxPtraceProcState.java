@@ -55,9 +55,7 @@ import frysk.proc.Manager;
  *
  */
 
-public abstract class LinuxProcState
-    extends ProcState
-{
+public abstract class LinuxPtraceProcState extends ProcState {
     /**
      * Return the Proc's initial state.
      *
@@ -74,8 +72,7 @@ public abstract class LinuxProcState
 	    return detached;
     }
 
-    protected LinuxProcState (String state)
-    {
+    protected LinuxPtraceProcState(String state) {
 	super (state);
     }
     

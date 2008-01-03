@@ -52,7 +52,7 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcCoreAction;
-import frysk.proc.dead.LinuxHost;
+import frysk.proc.dead.LinuxCoreHost;
 import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
 
@@ -134,7 +134,7 @@ public class TestStackTraceAction
    
     StringWriter stringWriter = new StringWriter();
     
-    Host coreHost = new LinuxHost(Manager.eventLoop,
+    Host coreHost = new LinuxCoreHost(Manager.eventLoop,
                                   Config.getPkgDataFile("test-core-x86"));
 
     assertNotNull("Core file Host is Null?", coreHost);
