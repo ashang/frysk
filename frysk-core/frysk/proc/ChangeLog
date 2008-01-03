@@ -1,5 +1,8 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (set(TaskState)): Delete.
+	(Task(TaskId,Proc,Task)): Replace Task(TaskId,Proc,Task,TaskState).
+
 	* Proc.java (getInitialState(boolean)): Delete.
 	(setStateFIXME(TaskState)): Delete.
 

@@ -92,10 +92,6 @@ public abstract class Task {
      * Return the state as a string; do not use!!!!
      */
     protected abstract String getStateFIXME();
-    /**
-     * Set the new state.
-     */
-    protected abstract void set(TaskState newState);
 
     /**
      * Return's this Task's Instruction Set Architecture.
@@ -158,28 +154,27 @@ public abstract class Task {
     /**
      * Create a new Task skeleton.
      */
-    private Task(TaskId id, Proc proc, Task creator, TaskState state) {
+    private Task(TaskId id, Proc proc, Task creator) {
 	this.proc = proc;
 	this.id = id;
 	this.creator = creator;
 	proc.add(this);
 	proc.getHost().add(this);
-	set(state);
     }
 
     /**
      * Create a new unattached Task.
      */
-    protected Task(Proc proc, TaskId id, TaskState state) {
-	this(id, proc, null, state);
+    protected Task(Proc proc, TaskId id) {
+	this(id, proc, null);
 	logger.log(Level.FINEST, "{0} new -- create unattached\n", this);
     }
 
     /**
      * Create a new attached clone of Task.
      */
-    protected Task(Task task, TaskId cloneId, TaskState state) {
-	this(cloneId, task.proc, task, state);
+    protected Task(Task task, TaskId cloneId) {
+	this(cloneId, task.proc, task);
 	logger.log(Level.FINE, "{0} new -- create attached clone\n", this);
     }
 
@@ -192,8 +187,8 @@ public abstract class Task {
      * Conversely, for a Task, while it has the Observable, it doesn't
      * have the containing proc.
      */
-    protected Task(Proc proc, TaskObserver.Attached attached, TaskState state) {
-	this(new TaskId(proc.getPid()), proc, proc.creator, state);
+    protected Task(Proc proc, TaskObserver.Attached attached) {
+	this(new TaskId(proc.getPid()), proc, proc.creator);
     }
 
     // Send operation to corresponding underlying [kernel] task.  The

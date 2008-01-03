@@ -1,5 +1,8 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* LiveTask.java: Set newState in constructor.
+	(set(TaskState)): Make package private.
+
 	* LinuxProcState.java (initial(boolean)): Replace
 	initial(Proc,boolean).
 	(Detaching()): New constructor.

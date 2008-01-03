@@ -58,13 +58,16 @@ import frysk.proc.Manager;
 
 abstract class LiveTask extends Task {
     LiveTask(Proc proc, TaskId taskId, TaskState initialState) {
-	super(proc, taskId, initialState);
+	super(proc, taskId);
+	newState = initialState;
     }
     LiveTask(Task task, TaskId taskId, TaskState initialState) {
-	super(task, taskId, initialState);
+	super(task, taskId);
+	newState = initialState;
     }
     LiveTask(LiveProc proc, Attached attached, TaskState initialState) {
-	super(proc, attached, initialState);
+	super(proc, attached);
+	newState = initialState;
 	if (attached != null) {
 	    TaskObservation ob = new TaskObservation(this, attachedObservers,
 						     attached, true) {
@@ -99,7 +102,7 @@ abstract class LiveTask extends Task {
     /**
      * Set the new state.
      */
-    protected final void set(TaskState newState) {
+    void set(TaskState newState) {
 	this.newState = newState;
     }
 

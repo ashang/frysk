@@ -1,5 +1,7 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* DummyTask.java (set(TaskState)): Delete.
+	
 	* DummyTask.java (oldState, newState): Delete; remove references.
 	(getState(), oldState()): Delete; remove references.
 	(getStateFIXME()): Simplify.

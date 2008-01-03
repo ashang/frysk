@@ -42,7 +42,6 @@ package frysk.proc.dead;
 import java.util.logging.Level;
 import frysk.proc.Task;
 import frysk.proc.Proc;
-import frysk.proc.TaskState;
 import frysk.proc.TaskId;
 import frysk.proc.TaskObserver;
 import frysk.proc.TaskObservation;
@@ -55,18 +54,11 @@ import frysk.proc.TaskObservation;
 
 abstract class DeadTask extends Task {
     DeadTask(Proc proc, TaskId taskId) {
-	super(proc, taskId, null);
+	super(proc, taskId);
     }
 
     protected String getStateFIXME() {
 	return "dead";
-    }
-
-    /**
-     * Set the new state.
-     */
-    protected final void set(TaskState newState) {
-	// ignore
     }
 
     /**

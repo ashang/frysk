@@ -1,5 +1,7 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* DeadTask.java (set(TaskState)): Delete.
+	
 	* LinuxTaskState.java: Delete.
 	* DeadTask.java: Update.
 	* LinuxExeTask.java: Update.

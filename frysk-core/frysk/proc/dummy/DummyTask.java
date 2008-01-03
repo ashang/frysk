@@ -42,7 +42,6 @@ package frysk.proc.dummy;
 import inua.eio.ByteBuffer;
 import frysk.proc.TaskObserver;
 import frysk.proc.Isa;
-import frysk.proc.TaskState;
 import frysk.proc.TaskObservation;
 import frysk.isa.ISA;
 import frysk.bank.RegisterBanks;
@@ -52,7 +51,7 @@ import frysk.proc.Proc;
 public class DummyTask extends Task {
 
     public DummyTask (Proc parent) {
-	super (parent, (TaskObserver.Attached) null, null);
+	super (parent, (TaskObserver.Attached) null);
     }
     public String getStateString() {
 	return "Attached";
@@ -72,13 +71,6 @@ public class DummyTask extends Task {
 
     protected String getStateFIXME() {
 	return "dummy";
-    }
-
-    /**
-     * Set the new state.
-     */
-    protected final void set(TaskState newState) {
-	// ignore
     }
 
     protected void handleAddObservation(TaskObservation observation) {
