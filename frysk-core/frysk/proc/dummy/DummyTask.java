@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -50,6 +50,7 @@ import frysk.proc.Task;
 import frysk.proc.Proc;
 
 public class DummyTask extends Task {
+
     public DummyTask (Proc parent) {
 	super (parent, (TaskObserver.Attached) null, null);
     }
@@ -69,105 +70,38 @@ public class DummyTask extends Task {
 	return null;
     }
 
-    /**
-     * The state of this task. During a state transition newState is
-     * NULL.
-     */
-    private TaskState oldState;
-    private TaskState newState;
-
-    /**
-     * Return the current state.
-     */
-    protected final TaskState getState() {
-	if (newState != null)
-	    return newState;
-	else
-	    return oldState;
-    }
     protected String getStateFIXME() {
-	return getState().toString();
+	return "dummy";
     }
 
     /**
      * Set the new state.
      */
     protected final void set(TaskState newState) {
-	this.newState = newState;
+	// ignore
     }
 
-    /**
-     * Return the current state while at the same time marking that
-     * the state is in flux. If a second attempt to change state
-     * occurs before the current state transition has completed,
-     * barf. XXX: Bit of a hack, but at least this prevents state
-     * transition code attempting a second recursive state transition.
-     */
-    protected TaskState oldState() {
-	if (newState == null)
-	    throw new RuntimeException(this + " double state transition");
-	oldState = newState;
-	newState = null;
-	return oldState;
-    }
-
-    /**
-     * (Internal) Add the specified observer to the observable.
-     */
     protected void handleAddObservation(TaskObservation observation) {
-	newState = oldState().handleAddObservation(this, observation);
+	throw new RuntimeException("oops!");
     }
-
-    /**
-     * (Internal) Delete the specified observer from the observable.
-     */
     protected void handleDeleteObservation(TaskObservation observation) {
-	newState = oldState().handleDeleteObservation(this, observation);
+	throw new RuntimeException("oops!");
     }
-
     public void handleUnblock(TaskObserver observer) {
-	newState = oldState().handleUnblock(this, observer);
+	throw new RuntimeException("oops!");
     }
-
-    /**
-     * (Internal) Requesting that the task go (or resume execution).
-     */
     public void performContinue() {
-	newState = oldState().handleContinue(this);
+	throw new RuntimeException("oops!");
     }
-
-    /**
-     * (Internal) Tell the task to remove itself (it is no longer
-     * listed in the system process table and, presumably, has
-     * exited).
-     *
-     * XXX: Should not be public.
-     */
     public void performRemoval() {
-	newState = oldState().handleRemoval(this);
+	throw new RuntimeException("oops!");
     }
-
-    /**
-     * (Internal) Tell the task to attach itself (if it isn't
-     * already). Notify the containing process once the operation has
-     * been completed. The task is left in the stopped state.
-     *
-     * XXX: Should not be public.
-     */
     public void performAttach() {
-	newState = oldState().handleAttach(this);
+	throw new RuntimeException("oops!");
     }
-
-    /**
-     * (Internal) Tell the task to detach itself (if it isn't
-     * already). Notify the containing process once the operation has
-     * been processed; the task is allowed to run free.
-     * @param shouldRemoveObservers whether to remove the observers as well.
-     */
     public void performDetach(boolean shouldRemoveObservers) {
-	newState = oldState().handleDetach(this, shouldRemoveObservers);
+	throw new RuntimeException("oops!");
     }
-
     public void requestUnblock(final TaskObserver observerArg) {
 	throw new RuntimeException("oops!");
     }
