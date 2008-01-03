@@ -337,4 +337,25 @@ abstract class LiveTask extends Task {
 	logger.log(Level.FINE, "{0} requestDeleteCodeObserver\n", this);
 	getProc().requestDeleteCodeObserver(this, codeObservers, o, a);
     }
+
+    /**
+     * Request the addition of a Instruction observer that will be
+     * notified as soon as the task executes an instruction.
+     * <code>o.updateExecuted</code> is called as soon as the Task
+     * starts running again (is not blocked or stopped) and executes
+     * the next instruction.
+     */
+    public void requestAddInstructionObserver(TaskObserver.Instruction o) {
+	logger.log(Level.FINE, "{0} requestAddInstructionObserver\n", this);
+	getProc().requestAddInstructionObserver(this, instructionObservers, o);
+    }
+
+    /**
+     * Delete TaskObserver.Instruction from the TaskObserver pool.
+     */
+    public void requestDeleteInstructionObserver(TaskObserver.Instruction o) {
+	logger.log(Level.FINE, "{0} requestDeleteInstructionObserver\n", this);
+	getProc().requestDeleteInstructionObserver(this, instructionObservers, o);
+    }
+  
 }

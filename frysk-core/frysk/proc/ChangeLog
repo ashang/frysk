@@ -1,3 +1,10 @@
+2008-01-03  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java (requestAddInstructionObserver(TaskObserver.Instruction)):
+	Make abstract.
+	(requestDeleteInstructionObserver(TaskObserver.Instruction)): Make
+	abstract.
+
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
 	frysk.proc.live.LinuxHost renamed to .LinuxPtraceHost and

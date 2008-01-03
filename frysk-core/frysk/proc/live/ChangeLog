@@ -1,3 +1,8 @@
+2008-01-03  Andrew Cagney  <cagney@redhat.com>
+
+	* LiveTask.java (requestAddInstructionObserver(TaskObserver.Instruction)): New.
+	(requestDeleteInstructionObserver(TaskObserver.Instruction)): New.
+
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceHost.java: Rename LinuxHost.java.

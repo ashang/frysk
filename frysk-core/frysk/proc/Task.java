@@ -790,18 +790,12 @@ public abstract class Task {
      * starts running again (is not blocked or stopped) and executes
      * the next instruction.
      */
-    public void requestAddInstructionObserver(TaskObserver.Instruction o) {
-	logger.log(Level.FINE, "{0} requestAddInstructionObserver\n", this);
-	proc.requestAddInstructionObserver(this, instructionObservers, o);
-    }
+    public abstract void requestAddInstructionObserver(TaskObserver.Instruction o);
 
     /**
      * Delete TaskObserver.Instruction from the TaskObserver pool.
      */
-    public void requestDeleteInstructionObserver(TaskObserver.Instruction o) {
-	logger.log(Level.FINE, "{0} requestDeleteInstructionObserver\n", this);
-	proc.requestDeleteInstructionObserver(this, instructionObservers, o);
-    }
+    public abstract void requestDeleteInstructionObserver(TaskObserver.Instruction o);
   
     /**
      * Notify all Instruction observers. Returns the total number of

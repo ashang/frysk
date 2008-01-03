@@ -265,4 +265,22 @@ abstract class DeadTask extends Task {
     public void requestDeleteCodeObserver(TaskObserver.Code o, long a) {
 	throw new RuntimeException("requestDeleteCodeObserver");
     }
+
+    /**
+     * Request the addition of a Instruction observer that will be
+     * notified as soon as the task executes an instruction.
+     * <code>o.updateExecuted</code> is called as soon as the Task
+     * starts running again (is not blocked or stopped) and executes
+     * the next instruction.
+     */
+    public void requestAddInstructionObserver(TaskObserver.Instruction o) {
+	throw new RuntimeException("requestAddInstructionObserver");
+    }
+
+    /**
+     * Delete TaskObserver.Instruction from the TaskObserver pool.
+     */
+    public void requestDeleteInstructionObserver(TaskObserver.Instruction o) {
+	throw new RuntimeException("requestDeleteInstructionObserver");
+    }
 }
