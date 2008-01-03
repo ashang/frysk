@@ -1,5 +1,14 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxProcState.java (initial(boolean)): Replace
+	initial(Proc,boolean).
+	(Detaching()): New constructor.
+	* LiveProc.java (setStateFIXME(ProcState)): Delete.
+	(LiveProc(Host,Proc,ProcId,ProcState)): Replace
+	LiveProc(Host,Proc.ProcId).
+	(LiveProc(Task,ProcId,ProcState)): Replace LiveProc(Task,ProcId).
+	* LinuxProc.java (getInitialState(boolean)): Delete.
+
 	* LinuxTask.java (LinuxTask(LiveProc,Attached)): Rename
 	LinuxTask(Proc,TaskObserver.Attached).
 	* LiveProc.java (handleAddObservation(TaskObservation)): Make

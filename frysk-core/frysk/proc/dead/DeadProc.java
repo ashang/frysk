@@ -49,7 +49,6 @@ import frysk.proc.TaskObservable;
 import frysk.proc.Manager;
 import frysk.proc.TaskObservation;
 import frysk.proc.ProcEvent;
-import frysk.proc.ProcState;
 
 /**
  * A dead Host/Proc/Task is characterised by its lack of state, and an
@@ -67,9 +66,6 @@ abstract class DeadProc extends Proc {
      */
     protected String getStateFIXME() {
 	return "dead";
-    }
-    protected void setStateFIXME(ProcState state) {
-	// ignore
     }
   
     /**

@@ -236,8 +236,6 @@ public abstract class Proc {
 	}
     }
 
-    protected abstract ProcState getInitialState(boolean procStarting);
-
     /**
      * Create a new Proc skeleton. Since PARENT could be NULL,
      * explicitly specify the HOST.
@@ -261,7 +259,6 @@ public abstract class Proc {
      */
     protected Proc(Host host, Proc parent, ProcId id) {
 	this(id, parent, host, null);
-	setStateFIXME(getInitialState(false));
 	logger.log(Level.FINEST, "{0} new - create unattached running proc\n", this);
     }
 
@@ -277,7 +274,6 @@ public abstract class Proc {
      */
     protected Proc(Task task, ProcId forkId) {
 	this(forkId, task.getProc(), task.getProc().getHost(), task);
-	setStateFIXME(getInitialState(true));
 	logger.log(Level.FINE, "{0} new - create attached running proc\n", this);
     }
 
@@ -288,7 +284,6 @@ public abstract class Proc {
      * Return the current state as a string.
      */
     protected abstract String getStateFIXME();
-    protected abstract void setStateFIXME(ProcState state);
 
     /**
      * killRequest handles killing off processes that either the

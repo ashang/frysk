@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -56,7 +56,6 @@ import java.util.logging.Level;
 import java.util.Iterator;
 import java.io.File;
 import java.util.ArrayList;
-import frysk.proc.ProcState;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.Auxv;
@@ -302,12 +301,6 @@ public class LinuxProc extends DeadProc {
     IsaFactory factory = IsaFactory.getSingleton();
     return factory.getIsaForCoreFile(header.machine);
   }
-
-  protected ProcState getInitialState (boolean procStarting) 
-  {
-    return LinuxProcState.initial(this);
-  }
-
 
   /**
    * XXX: Meta Data construction functions.

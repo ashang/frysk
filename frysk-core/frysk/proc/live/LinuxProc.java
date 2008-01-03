@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -55,7 +55,6 @@ import frysk.sys.proc.MapsBuilder;
 import frysk.sys.proc.Status;
 import frysk.proc.IsaFactory;
 import java.util.logging.Level;
-import frysk.proc.ProcState;
 import frysk.sys.proc.ProcBuilder;
 import java.util.Map;
 import java.util.HashMap;
@@ -72,18 +71,16 @@ public class LinuxProc extends LiveProc {
      * Create a new detached process.  RUNNING makes no sense here.
      * Since PARENT could be NULL, also explicitly pass in the host.
      */
-    public LinuxProc (Host host, Proc parent, ProcId pid, Stat stat)
-    {
-	super (host, parent, pid);
+    public LinuxProc(Host host, Proc parent, ProcId pid, Stat stat) {
+	super(host, parent, pid, LinuxProcState.initial(false));
 	this.stat = stat;
     }
     /**
      * Create a new, definitely attached, definitely running fork of
      * Task.
      */
-    public LinuxProc (Task task, ProcId forkId)
-    {
-	super (task, forkId);
+    public LinuxProc(Task task, ProcId forkId) {
+	super(task, forkId, LinuxProcState.initial(true));
     }
 
     /**
@@ -254,16 +251,6 @@ public class LinuxProc extends LiveProc {
     public String sendrecCommand ()
     {
 	return getStat ().comm;
-    }
-
-    /**
-     * Some constructors in Proc.java need a starting state.  As Proc
-     * is abstract and cannot return a state specific to its subclass,
-     * return here in the subclass
-     */
-    protected ProcState getInitialState (boolean procStarting)
-    {
-	return LinuxProcState.initial(this, procStarting);
     }
 
     /**

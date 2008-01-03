@@ -60,11 +60,13 @@ import frysk.proc.Breakpoint;
  */
 
 abstract class LiveProc extends Proc {
-    LiveProc(Host host, Proc parent, ProcId pid) {
+    LiveProc(Host host, Proc parent, ProcId pid, ProcState state) {
 	super(host, parent, pid);
+	newState = state;
     }
-    LiveProc(Task task, ProcId forkId) {
+    LiveProc(Task task, ProcId forkId, ProcState state) {
 	super(task, forkId);
+	newState = state;
     }
 
     /**
@@ -82,9 +84,6 @@ abstract class LiveProc extends Proc {
 	    return newState.toString();
 	else
 	    return oldState.toString();
-    }
-    protected void setStateFIXME(ProcState state) {
-	newState = state;
     }
 
     /**

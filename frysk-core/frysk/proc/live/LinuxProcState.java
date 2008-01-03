@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -66,11 +66,10 @@ public abstract class LinuxProcState
      * is always created via fork.  The latter, until an observer is
      * added is assumed to be about to detach.
      */
-    public static ProcState initial (Proc proc, boolean starting)
-    {
-	logger.log (Level.FINEST, "{0} initial\n", proc); 
+    public static ProcState initial (boolean starting) {
+	logger.log (Level.FINEST, "{0} initial\n");
 	if (starting)
-	    return new Detaching (proc, false);
+	    return new Detaching();
 	else
 	    return detached;
     }
@@ -297,10 +296,16 @@ public abstract class LinuxProcState
      * In the process of detaching; waiting for all tasks to report
      * back that they have successfully detached.
      */
-    private static class Detaching
-	extends ProcState
-    {
+    private static class Detaching extends ProcState {
 	private Collection attachedTasks;
+	/**
+	 * A Proc just created using fork; task yet to be created and
+	 * want to detach from it.
+	 */
+	Detaching() {
+	    super("Detaching");
+	    attachedTasks = new HashSet();
+	}
 	/**
 	 * Start detaching the entire process.
 	 * @param shouldRemoveObservers whether the observers on each task should 

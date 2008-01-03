@@ -1,5 +1,10 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* DeadProc.java (setStateFIXME(ProcState)): Delete.
+	* LinuxProc.java (getInitialState(boolean)): Delete.
+	* LinuxExeProc.java (getInitialState(boolean)): Delete.
+	* LinuxProcState.java: Delete.
+
 	* DeadProc.java (oldState, newState): Delete.
 	(getStateFIXME()): Simplify.
 	(oldState()): Delete.

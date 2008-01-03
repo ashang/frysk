@@ -40,7 +40,6 @@
 package frysk.proc.dummy;
 
 import frysk.proc.Auxv;
-import frysk.proc.ProcState;
 import frysk.proc.ProcId;
 import frysk.proc.Isa;
 import frysk.proc.MemoryMap;
@@ -75,9 +74,6 @@ public class DummyProc extends Proc {
     }
     public void sendRefresh() {
     }
-    protected ProcState getInitialState (boolean procStarting) {
-	return null;
-    }
     public MemoryMap[] sendrecMaps () {
         return null;
     }
@@ -89,9 +85,6 @@ public class DummyProc extends Proc {
     }
     protected String getStateFIXME() {
 	return "<dummy>";
-    }
-    protected void setStateFIXME(ProcState state) {
-	// ignore
     }
     public void requestRefresh() {
 	throw new RuntimeException("oops!");

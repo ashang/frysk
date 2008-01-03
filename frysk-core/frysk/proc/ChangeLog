@@ -1,5 +1,8 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (getInitialState(boolean)): Delete.
+	(setStateFIXME(TaskState)): Delete.
+
 	* ProcEvent.java (ProcEvent(Proc)): Make public.
 
 	* Proc.java (handleAddObservation(TaskObservation observation)): Delete.
