@@ -72,9 +72,8 @@ public class LinuxExeProc extends DeadProc {
     }
 
     public void sendRefresh() {
-	 LinuxExeTask newTask = new LinuxExeTask(this, new TaskId(0),
-		 LinuxExeTaskState.initial());
-	 newTask.getClass();
+	LinuxExeTask newTask = new LinuxExeTask(this, new TaskId(0));
+	newTask.getClass();
     }
 
     protected Auxv[] sendrecAuxv() {

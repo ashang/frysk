@@ -125,19 +125,17 @@ public class LinuxTask extends DeadTask {
     }
 
     
-  /**
-   * Create a new unattached Task.
-   */
-  LinuxTask (LinuxProc proc, ElfPrstatus elfTask, ElfPrFPRegSet
-	     elfFPRegs, ElfPrXFPRegSet elfXFPRegs)
-  {
-    super(proc, new TaskId(elfTask.getPrPid()),LinuxTaskState.initial());
-    this.elfTask = elfTask;
-    this.elfFPRegs = elfFPRegs;
-    this.elfXFPRegs = elfXFPRegs;
-    this.parent = proc;
-
-  }
+    /**
+     * Create a new unattached Task.
+     */
+    LinuxTask(LinuxProc proc, ElfPrstatus elfTask, ElfPrFPRegSet
+	      elfFPRegs, ElfPrXFPRegSet elfXFPRegs) {
+	super(proc, new TaskId(elfTask.getPrPid()));
+	this.elfTask = elfTask;
+	this.elfFPRegs = elfFPRegs;
+	this.elfXFPRegs = elfXFPRegs;
+	this.parent = proc;
+    }
 
     protected ISA sendrecISA() {
     	return ((LinuxProc)getProc()).sendrecISA();

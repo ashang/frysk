@@ -54,8 +54,8 @@ import frysk.proc.TaskObservation;
  */
 
 abstract class DeadTask extends Task {
-    DeadTask(Proc proc, TaskId taskId, TaskState initialState) {
-	super(proc, taskId, initialState);
+    DeadTask(Proc proc, TaskId taskId) {
+	super(proc, taskId, null);
     }
 
     protected String getStateFIXME() {

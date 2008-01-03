@@ -1,5 +1,10 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxTaskState.java: Delete.
+	* DeadTask.java: Update.
+	* LinuxExeTask.java: Update.
+	* LinuxTask.java: Update.
+
 	* DeadTask.java (requestUnblock, requestAddClonedObserver)
 	(requestAddForkedObserver, requestAddTerminatedObserver): Ignore
 	requests.

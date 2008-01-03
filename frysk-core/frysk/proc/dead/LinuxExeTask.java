@@ -44,7 +44,6 @@ import inua.eio.ByteBuffer;
 import frysk.bank.RegisterBanks;
 import frysk.proc.Isa;
 import frysk.proc.TaskId;
-import frysk.proc.TaskState;
 import frysk.isa.ISA;
 
 import lib.dwfl.*;
@@ -55,8 +54,8 @@ public class LinuxExeTask extends DeadTask
   LinuxExeProc proc = null;
   TaskId id = null;
 
-  protected LinuxExeTask(LinuxExeProc proc, TaskId id, TaskState state) {
-      super(proc, id, state);
+  protected LinuxExeTask(LinuxExeProc proc, TaskId id) {
+      super(proc, id);
       this.proc = proc;
       this.id = id;
 
