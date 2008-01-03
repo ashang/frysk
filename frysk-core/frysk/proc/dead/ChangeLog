@@ -1,5 +1,9 @@
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
+	* DeadTask.java (oldState, newState): Delete.
+	(getState()): Delete; replace with exception.
+	(oldState()): Delete; replace with exception.
+
 	* DeadProc.java (setStateFIXME(ProcState)): Delete.
 	* LinuxProc.java (getInitialState(boolean)): Delete.
 	* LinuxExeProc.java (getInitialState(boolean)): Delete.

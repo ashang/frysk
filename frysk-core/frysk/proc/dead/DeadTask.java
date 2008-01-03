@@ -58,74 +58,42 @@ import frysk.proc.TaskEvent;
 abstract class DeadTask extends Task {
     DeadTask(Proc proc, TaskId taskId, TaskState initialState) {
 	super(proc, taskId, initialState);
-	newState = initialState;
     }
 
-    /**
-     * The state of this task. During a state transition newState is
-     * NULL.
-     */
-    private TaskState oldState;
-    private TaskState newState;
-
-    /**
-     * Return the current state.
-     */
-    protected final TaskState getState() {
-	if (newState != null)
-	    return newState;
-	else
-	    return oldState;
-    }
     protected String getStateFIXME() {
-	return getState().toString();
+	return "dead";
     }
 
     /**
      * Set the new state.
      */
     protected final void set(TaskState newState) {
-	this.newState = newState;
-    }
-
-    /**
-     * Return the current state while at the same time marking that
-     * the state is in flux. If a second attempt to change state
-     * occurs before the current state transition has completed,
-     * barf. XXX: Bit of a hack, but at least this prevents state
-     * transition code attempting a second recursive state transition.
-     */
-    protected TaskState oldState() {
-	if (newState == null)
-	    throw new RuntimeException(this + " double state transition");
-	oldState = newState;
-	newState = null;
-	return oldState;
+	// ignore
     }
 
     /**
      * (Internal) Add the specified observer to the observable.
      */
     protected void handleAddObservation(TaskObservation observation) {
-	newState = oldState().handleAddObservation(this, observation);
+	throw new RuntimeException("oops!");
     }
 
     /**
      * (Internal) Delete the specified observer from the observable.
      */
     protected void handleDeleteObservation(TaskObservation observation) {
-	newState = oldState().handleDeleteObservation(this, observation);
+	throw new RuntimeException("oops!");
     }
 
     public void handleUnblock(TaskObserver observer) {
-	newState = oldState().handleUnblock(this, observer);
+	throw new RuntimeException("oops!");
     }
 
     /**
      * (Internal) Requesting that the task go (or resume execution).
      */
     public void performContinue() {
-	newState = oldState().handleContinue(this);
+	throw new RuntimeException("oops!");
     }
 
     /**
@@ -136,7 +104,7 @@ abstract class DeadTask extends Task {
      * XXX: Should not be public.
      */
     public void performRemoval() {
-	newState = oldState().handleRemoval(this);
+	throw new RuntimeException("oops!");
     }
 
     /**
@@ -147,7 +115,7 @@ abstract class DeadTask extends Task {
      * XXX: Should not be public.
      */
     public void performAttach() {
-	newState = oldState().handleAttach(this);
+	throw new RuntimeException("oops!");
     }
 
     /**
@@ -157,7 +125,7 @@ abstract class DeadTask extends Task {
      * @param shouldRemoveObservers whether to remove the observers as well.
      */
     public void performDetach(boolean shouldRemoveObservers) {
-	newState = oldState().handleDetach(this, shouldRemoveObservers);
+	throw new RuntimeException("oops!");
     }
 
     /**
