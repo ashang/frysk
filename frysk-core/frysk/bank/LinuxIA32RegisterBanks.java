@@ -73,7 +73,7 @@ public class LinuxIA32RegisterBanks {
 	.add(new BankRegister(0x0c, 4, X87Registers.EIP))
 	.add(new BankRegister(0x10, 2, X87Registers.CS))
 	.add(new BankRegister(0x12, 2, X87Registers.FOP))
-	.add(new BankRegister(0x18, 4, X87Registers.DP))
+	.add(new BankRegister(0x14, 4, X87Registers.DP))
 	.add(new BankRegister(0x18, 2, X87Registers.DS))
 	.add(new BankRegister(0x1c, 10, X87Registers.ST0))
 	.add(new BankRegister(0x26, 10, X87Registers.ST1))

@@ -58,7 +58,7 @@ public class BankRegister {
 	this.register = register;
     }
 
-    Register getRegister() {
+    public Register getRegister() {
 	return register;
     }
 
@@ -92,11 +92,14 @@ public class BankRegister {
 	return offset;
     }
 
-    void access(ByteBuffer byteBuffer, long offset, long size,
+    public void access(ByteBuffer byteBuffer, long offset, long size,
 		       byte[] bytes, int start, boolean write) {
-	if (write)
-	    // XXX: Should be directly supported by ByteBuffer.
-	    throw new RuntimeException("write not implemented");
+	if (write){
+		long position = byteBuffer.position();
+		byteBuffer.position(getOffset() + offset);
+		byteBuffer.put(bytes, (int)start, getLength());
+		byteBuffer.position(position);
+	}
 	else
 	    byteBuffer.get(this.offset + offset, bytes, start, (int) size);
     }
