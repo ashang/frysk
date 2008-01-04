@@ -152,15 +152,23 @@ public class LinuxPtraceHost extends LiveHost {
 	}
     }
 
-    protected void sendRefresh (boolean refreshAll)
-    {
+
+    public void requestRefreshXXX() {
+	logger.log(Level.FINEST, "{0} requestRefreshXXX\n", this); 
+	Manager.eventLoop.add(new Event() {
+		public void execute() {
+		    logger.log(Level.FINE, "{0} handleRefresh\n",
+			       LinuxPtraceHost.this); 
+		    LinuxPtraceHost.this.sendRefresh(false);
+		}
+	    });
+    }
+    private void sendRefresh(boolean refreshAll) {
 	// Iterate (build) the /proc tree, passing each found PID to
 	// procChanges where it can update the /proc tree.
 	final ProcChanges procChanges = new ProcChanges();
-	ProcBuilder pidBuilder = new ProcBuilder()
-	    {
-		public void buildId (int pid)
-		{
+	ProcBuilder pidBuilder = new ProcBuilder() {
+		public void buildId (int pid) {
 		    procChanges.update(pid);
 		}
 	    };

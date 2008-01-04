@@ -116,8 +116,6 @@ public abstract class Host {
     }
 
     // Refresh the list of processes.
-    protected abstract void sendRefresh(boolean refreshAll);
-    
     protected abstract void sendRefresh(ProcId procId, FindProc finder);
     
     /**
@@ -125,16 +123,7 @@ public abstract class Host {
      * refreshing the internal structure to match.  Optionally refresh
      * each processes task list.
      */
-    public void requestRefreshXXX() {
-	logger.log(Level.FINEST, "{0} requestRefreshXXX\n", this); 
-	Manager.eventLoop.add(new HostEvent("RequestRefresh") {
-		public void execute() {
-		    logger.log(Level.FINE, "{0} handleRefresh\n",
-			       Host.this); 
-		    Host.this.sendRefresh(false);
-		}
-	    });
-    }
+    public abstract void requestRefreshXXX();
 
     /**
      * Find a specifc process from its Id.

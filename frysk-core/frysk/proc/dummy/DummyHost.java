@@ -46,7 +46,8 @@ import frysk.proc.FindProc;
 import frysk.proc.Host;
 
 public class DummyHost extends Host {
-    protected void sendRefresh(boolean refreshAll) {
+    public void requestRefreshXXX() {
+	throw new RuntimeException("requestCreateAttachedProc");
     }
     public void requestCreateAttachedProc(String stdin, String stdout,
 					  String stderr, String[] args,

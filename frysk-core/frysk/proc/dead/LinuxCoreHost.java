@@ -91,7 +91,7 @@ public class LinuxCoreHost extends DeadHost {
 	}
 
 	if (doRefresh)
-	    this.sendRefresh(true);
+	    this.sendRefresh();
     }
 
     public LinuxCoreHost(EventLoop eventLoop, File coreFile) {
@@ -114,15 +114,14 @@ public class LinuxCoreHost extends DeadHost {
 		status.message = "The user provided executable: "
 		    + exeFile.getAbsolutePath() + " could not be accessed";
 	    }
-	this.sendRefresh(true);
+	this.sendRefresh();
     }
 
     public CorefileStatus getStatus() {
 	return status;
     }
 
-    protected void sendRefresh(boolean refreshAll) {
-
+    private void sendRefresh() {
 	if (this.hasRefreshed)
 	    return;
 	// Iterate (build) the /proc tree, passing each found PID to

@@ -60,44 +60,24 @@ public class LinuxExeHost extends DeadHost {
     protected File exeFile = null;
     EventLoop eventLoop = null;
     Elf exeFileElf = null;
-    private boolean hasRefreshed;
     
-    public LinuxExeHost(EventLoop eventLoop, File exeFile)
-    {
+    public LinuxExeHost(EventLoop eventLoop, File exeFile) {
 	this.exeFile = exeFile;
 	this.eventLoop = eventLoop;
-	try
-	{
+	try {
 	    this.exeFileElf = new Elf (exeFile.getPath(), ElfCommand.ELF_C_READ);
-	}
-	catch (Exception e)
-	{
+	} catch (Exception e)	{
 	    throw new RuntimeException("ExeFile " + this.exeFile + " is "+ 
 	    "not a valid ELF file.");
 	}
-	
-	this.sendRefresh(true);
-    }
-    
-    /**
-     * sendRefresh refreshes the list of processes.
-     * 
-     * @param refreshAll is a boolean, true=refresh, false=not
-     */
-    protected void sendRefresh(boolean refreshAll) {	
-	if (this.hasRefreshed)
-	    return;
 	// Iterate (build) the /proc tree, passing each found PID to
 	// procChanges where it can update the /proc tree.
 	// Changes individual process.
 	new DeconstructExeFile(this.exeFileElf);
-	
-	for (Iterator i = procPool.values().iterator(); i.hasNext();)
-	{
+	for (Iterator i = procPool.values().iterator(); i.hasNext();) {
 	    LinuxExeProc proc = (LinuxExeProc) i.next();
 	    proc.sendRefresh();
 	}
-	this.hasRefreshed = true;
     }
 
     /**

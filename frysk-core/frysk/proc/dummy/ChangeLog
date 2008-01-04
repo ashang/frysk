@@ -1,5 +1,8 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* DummyHost.java (requestRefreshXXX()): Replace
+	sendRefresh(boolean).
+	
 	* DummyHost.java (requestCreateAttachedProc): Replace
 	sendCreateAttachedProc.
 

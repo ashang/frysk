@@ -1,5 +1,8 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceHost.java (requestRefreshXXX()): New.
+	(sendRefresh(boolean)): Make private.
+	
 	* LinuxPtraceHost.java (requestCreateAttachedProc(String,String,String,String[],Attached)): New.
 	(sendCreateAttachedProc(String,String,String,String[],Attached)): Delete.
 

@@ -1,5 +1,9 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxExeHost.java (sendRefresh(boolean)): Delete.
+	* LinuxCoreHost.java (sendRefresh()): Replace
+	sendRefresh(boolean), make private.
+	
 	* DeadHost.java (requestCreateAttachedProc(String,String,String,String[],Attached)): New.
 	* LinuxExeHost.java (sendCreateAttachedProc(String,String,String,String[],Attached)): Delete.
 	* LinuxCoreHost.java (sendCreateAttachedProc(String,String,String,String[],Attached)): Delete.

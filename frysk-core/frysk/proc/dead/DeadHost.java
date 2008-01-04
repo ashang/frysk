@@ -54,4 +54,7 @@ abstract class DeadHost extends Host {
 					  Attached attached) {
 	throw new RuntimeException("requestCreateAttachedProc");
     }
+    public void requestRefreshXXX() {
+	// ignore.
+    }
 }
