@@ -39,6 +39,8 @@
 
 package frysk.proc.live;
 
+import frysk.proc.Action;
+import frysk.proc.Breakpoint;
 import frysk.sys.proc.Exe;
 import frysk.proc.ProcId;
 import frysk.proc.Proc;
@@ -60,7 +62,13 @@ import java.util.Map;
 import java.util.HashMap;
 import frysk.proc.TaskId;
 import java.util.Iterator;
+import frysk.proc.TaskObservable;
+import frysk.proc.ProcState;
 import java.io.File;
+import frysk.proc.Manager;
+import frysk.proc.ProcEvent;
+import frysk.proc.TaskObserver;
+import frysk.proc.TaskObservation;
 
 /**
  * A Linux Proc tracked using PTRACE.
@@ -72,7 +80,8 @@ public class LinuxPtraceProc extends LiveProc {
      * Since PARENT could be NULL, also explicitly pass in the host.
      */
     public LinuxPtraceProc(Host host, Proc parent, ProcId pid, Stat stat) {
-	super(host, parent, pid, LinuxPtraceProcState.initial(false));
+	super(host, parent, pid);
+	this.newState = LinuxPtraceProcState.initial(false);
 	this.stat = stat;
     }
     /**
@@ -80,7 +89,8 @@ public class LinuxPtraceProc extends LiveProc {
      * Task.
      */
     public LinuxPtraceProc(Task task, ProcId forkId) {
-	super(task, forkId, LinuxPtraceProcState.initial(true));
+	super(task, forkId);
+	this.newState = LinuxPtraceProcState.initial(true);
     }
 
     /**
@@ -295,5 +305,414 @@ public class LinuxPtraceProc extends LiveProc {
 	    task.performRemoval ();
 	    remove (task);
 	}
+    }
+
+
+    /**
+     * The current state of this Proc, during a state transition
+     * newState is null.
+     */
+    private ProcState oldState;
+    private ProcState newState;
+
+    /**
+     * Return the current state as a string.
+     */
+    protected String getStateFIXME() {
+	if (newState != null)
+	    return newState.toString();
+	else
+	    return oldState.toString();
+    }
+
+    /**
+     * Return the current state while at the same time marking that
+     * the state is in flux. If a second attempt to change state
+     * occurs before the current state transition has completed,
+     * barf. XXX: Bit of a hack, but at least this prevents state
+     * transition code attempting a second recursive state transition.
+     */
+    private ProcState oldState() {
+	if (newState == null)
+	    throw new RuntimeException(this + " double state transition");
+	oldState = newState;
+	newState = null;
+	return oldState;
+    }
+  
+    /**
+     * Request that the Proc's task list be refreshed using system
+     * tables.
+     */
+    public void requestRefresh() {
+	logger.log(Level.FINE, "{0} requestRefresh\n", this);
+	Manager.eventLoop.add(new ProcEvent() {
+		public void execute() {
+		    newState = oldState().handleRefresh(LinuxPtraceProc.this);
+		}
+	    });
+    }
+
+    /**
+     * (Internal) Tell the process that is no longer listed in the
+     * system table remove itself.
+     *
+     * XXX: This should not be public.
+     */
+    public void performRemoval() {
+	logger.log(Level.FINEST, "{0} performRemoval -- no longer in /proc\n", this);
+	Manager.eventLoop.add(new ProcEvent() {
+		public void execute() {
+		    newState = oldState().handleRemoval(LinuxPtraceProc.this);
+		}
+	    });
+    }
+
+    /**
+     *(Internal) Tell the process that the corresponding task has
+     * completed its attach.
+     *
+     * XXX: Should not be public.
+     */
+    public void performTaskAttachCompleted (final Task theTask) {
+	logger.log(Level.FINE, "{0} performTaskAttachCompleted\n", this);
+	Manager.eventLoop.add(new ProcEvent() {
+		Task task = theTask;
+
+		public void execute() {
+		    newState = oldState().handleTaskAttachCompleted(LinuxPtraceProc.this, task);
+		}
+	    });
+    }
+
+    /**
+     * (Internal) Tell the process that the corresponding task has
+     * completed its detach.
+     *
+     * XXX: Should not be public.
+     */
+    public void performTaskDetachCompleted(final Task theTask) {
+	logger.log(Level.FINE, "{0} performTaskDetachCompleted\n", this);
+	Manager.eventLoop.add(new ProcEvent() {
+		Task task = theTask;
+		public void execute() {
+		    newState = oldState().handleTaskDetachCompleted(LinuxPtraceProc.this, task);
+		}
+	    });
+    }
+
+    /**
+     * (Internal) Tell the process that the corresponding task has
+     * completed its detach.
+     */
+    protected void performTaskDetachCompleted(final Task theTask, final Task theClone) {
+	logger.log(Level.FINE, "{0} performTaskDetachCompleted/clone\n", this);
+	Manager.eventLoop.add(new ProcEvent() {
+		Task task = theTask;
+
+		Task clone = theClone;
+
+		public void execute() {
+		    newState = oldState().handleTaskDetachCompleted(LinuxPtraceProc.this, task, clone);
+		}
+	    });
+    }
+
+    protected void performDetach() {
+	logger.log(Level.FINE, "{0} performDetach\n", this);
+	Manager.eventLoop.add(new ProcEvent() {
+		public void execute() {
+		    newState = oldState().handleDetach(LinuxPtraceProc.this, true);
+		}
+	    });
+    }
+
+    /**
+     * (internal) Tell the process to add the specified Observation,
+     * attaching the process if necessary.
+     */
+    void handleAddObservation(TaskObservation observation) {
+	newState = oldState().handleAddObservation(this, observation);
+    }
+
+    /**
+     * (Internal) Tell the process to add the specified Observation,
+     * attaching to the process if necessary.
+     *
+     * XXX: Should not be public.
+     */
+    public void requestAddObserver(Task task, TaskObservable observable,
+			    TaskObserver observer) {
+	logger.log(Level.FINE, "{0} requestAddObservation\n", this);
+	Manager.eventLoop.add(new TaskObservation(task, observable, observer, true) {
+		public void execute() {
+		    handleAddObservation(this);
+		}
+	    });
+    }
+
+    /**
+     * Class describing the action to take on the suspended Task
+     * before adding or deleting a Syscall observer.
+     */
+    final class SyscallAction implements Runnable {
+	private final Task task;
+
+	private final boolean addition;
+
+	SyscallAction(Task task, boolean addition) {
+	    this.task = task;
+	    this.addition = addition;
+	}
+
+	public void run() {
+	    int syscallobs = task.syscallObservers.numberOfObservers();
+	    if (addition) {
+		if (syscallobs == 0)
+		    task.startTracingSyscalls();
+	    } else {
+		if (syscallobs == 0)
+		    task.stopTracingSyscalls();
+	    }
+	}
+    }
+
+    /**
+     * (Internal) Tell the process to add the specified Observation,
+     * attaching to the process if necessary. Adds a syscallObserver
+     * which changes the task to syscall tracing mode of necessary.
+     *
+     * XXX: Should not be public.
+     */
+    public void requestAddSyscallObserver(final Task task, TaskObservable observable,
+				   TaskObserver observer) {
+	logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
+	SyscallAction sa = new SyscallAction(task, true);
+	TaskObservation to = new TaskObservation(task, observable, observer, sa,
+						 true) {
+		public void execute() {
+		    handleAddObservation(this);
+		}
+		public boolean needsSuspendedAction() {
+		    return task.syscallObservers.numberOfObservers() == 0;
+		}
+	    };
+	Manager.eventLoop.add(to);
+    }
+
+    /**
+     * (Internal) Tell the process to delete the specified
+     * Observation, detaching from the process if necessary. Removes a
+     * syscallObserver exiting the task from syscall tracing mode of
+     * necessary.
+     *
+     * XXX: Should not be public.
+     */
+    public void requestDeleteObserver(Task task, TaskObservable observable,
+				      TaskObserver observer) {
+	Manager.eventLoop.add(new TaskObservation(task, observable,
+						  observer, false) {
+		public void execute() {
+		    newState = oldState().handleDeleteObservation(LinuxPtraceProc.this, this);
+		}
+	    });
+    }
+
+    /**
+     * (Internal) Tell the process to delete the specified
+     * Observation, detaching from the process if necessary.
+     *
+     * XXX: Should not be public.
+     */
+    public void requestDeleteSyscallObserver(final Task task,
+				      TaskObservable observable,
+				      TaskObserver observer) {
+	logger.log(Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
+	SyscallAction sa = new SyscallAction(task, false);
+	TaskObservation to = new TaskObservation(task, observable, observer, sa,
+						 false) {
+		public void execute() {
+		    newState = oldState().handleDeleteObservation(LinuxPtraceProc.this,
+								  this);
+		}
+
+		public boolean needsSuspendedAction() {
+		    return task.syscallObservers.numberOfObservers() == 1;
+		}
+	    };
+	Manager.eventLoop.add(to);
+    }
+
+    /**
+     * Class describing the action to take on the suspended Task
+     * before adding or deleting a Code observer.
+     */
+    final class BreakpointAction implements Runnable {
+	private final TaskObserver.Code code;
+
+	private final Task task;
+
+	private final long address;
+
+	private final boolean addition;
+
+	BreakpointAction(TaskObserver.Code code, Task task, long address,
+			 boolean addition) {
+	    this.code = code;
+	    this.task = task;
+	    this.address = address;
+	    this.addition = addition;
+	}
+
+	public void run() {
+	    if (addition) {
+		boolean mustInstall = breakpoints.addBreakpoint(code, address);
+		if (mustInstall) {
+		    Breakpoint breakpoint;
+		    breakpoint = Breakpoint.create(address, LinuxPtraceProc.this);
+		    breakpoint.install(task);
+		}
+	    } else {
+		boolean mustRemove = breakpoints.removeBreakpoint(code, address);
+		if (mustRemove) {
+		    Breakpoint breakpoint;
+		    breakpoint = Breakpoint.create(address, LinuxPtraceProc.this);
+		    breakpoint.remove(task);
+		}
+	    }
+	}
+    }
+
+    /**
+     * (Internal) Tell the process to add the specified Code
+     * Observation, attaching to the process if necessary. Adds a
+     * TaskCodeObservation to the eventloop which instructs the task
+     * to install the breakpoint if necessary.
+     *
+     * XXX: Should not be public.
+     */
+    public void requestAddCodeObserver(Task task, TaskObservable observable,
+				TaskObserver.Code observer,
+				final long address) {
+	logger.log(Level.FINE, "{0} requestAddCodeObserver\n", this);
+	BreakpointAction bpa = new BreakpointAction(observer, task, address, true);
+	TaskObservation to;
+	to = new TaskObservation(task, observable, observer, bpa, true) {
+		public void execute() {
+		    handleAddObservation(this);
+		}
+		public boolean needsSuspendedAction() {
+		    return breakpoints.getCodeObservers(address) == null;
+		}
+	    };
+	Manager.eventLoop.add(to);
+    }
+
+    /**
+     * (Internal) Tell the process to delete the specified Code
+     * Observation, detaching from the process if necessary.
+     *
+     * XXX: Should not be public.
+     */
+    public void requestDeleteCodeObserver(Task task, TaskObservable observable,
+				   TaskObserver.Code observer,
+				   final long address)    {
+	logger.log(Level.FINE, "{0} requestDeleteCodeObserver\n", this);
+	BreakpointAction bpa = new BreakpointAction(observer, task, address, false);
+	TaskObservation to;
+	to = new TaskObservation(task, observable, observer, bpa, false) {
+		public void execute() {
+		    newState = oldState().handleDeleteObservation(LinuxPtraceProc.this, this);
+		}
+
+		public boolean needsSuspendedAction() {
+		    return breakpoints.getCodeObservers(address).size() == 1;
+		}
+	    };
+
+	Manager.eventLoop.add(to);
+    }
+
+    /**
+     * Class describing the action to take on the suspended Task
+     * before adding or deleting an Instruction observer. No
+     * particular actions are needed, but we must make sure the Task
+     * is suspended.
+     */
+    final static class InstructionAction implements Runnable {
+	public void run()
+	{
+	    // There is nothing in particular we need to do. We just want
+	    // to make sure the Task is stopped so we can send it a step
+	    // instruction or, when deleted, start resuming the process
+	    // normally.
+
+	    // We do want an explicit updateExecuted() call, after adding
+	    // the observer, but while still suspended. This is done by
+	    // overriding the add() method in the TaskObservation
+	    // below. No such action is required on deletion.
+	}
+    }
+
+    /**
+     * (Internal) Tell the process to add the specified Instruction
+     * Observation, attaching and/or suspending the process if
+     * necessary. As soon as the observation is added and the task
+     * isn't blocked it will inform the Instruction observer of every
+     * step of the task.
+     *
+     * XXX: Should not be public.
+     */
+    public void requestAddInstructionObserver(final Task task,
+				       TaskObservable observable,
+				       TaskObserver.Instruction observer) {
+	logger.log(Level.FINE, "{0} requestAddInstructionObserver\n", this);
+	TaskObservation to;
+	InstructionAction ia = new InstructionAction();
+	to = new TaskObservation(task, observable, observer, ia, true) {
+		public void execute() {
+		    handleAddObservation(this);
+		}
+
+		public boolean needsSuspendedAction() {
+		    return task.instructionObservers.numberOfObservers() == 0;
+		}
+
+		// Makes sure that the observer is properly added and then,
+		// while the Task is still suspended, updateExecuted() is
+		// called. Giving the observer a chance to inspect and
+		// possibly block the Task.
+		public void add() {
+		    super.add();
+		    TaskObserver.Instruction i = (TaskObserver.Instruction) observer;
+		    if (i.updateExecuted(task) == Action.BLOCK)
+			task.blockers.add(observer);
+		}
+	    };
+	Manager.eventLoop.add(to);
+    }
+
+    /**
+     * (Internal) Tell the process to delete the specified Instruction
+     * Observation, detaching and/or suspending from the process if
+     * necessary.
+     *
+     * XXX: Should not be public.
+     */
+    public void requestDeleteInstructionObserver(final Task task,
+					  TaskObservable observable,
+					  TaskObserver.Instruction observer) {
+	logger.log(Level.FINE, "{0} requestDeleteInstructionObserver\n", this);
+	TaskObservation to;
+	InstructionAction ia = new InstructionAction();
+	to = new TaskObservation(task, observable, observer, ia, false) {
+		public void execute() {
+		    newState = oldState().handleDeleteObservation(LinuxPtraceProc.this, this);
+		}
+		public boolean needsSuspendedAction() {
+		    return task.instructionObservers.numberOfObservers() == 1;
+		}
+	    };
+	Manager.eventLoop.add(to);
     }
 }

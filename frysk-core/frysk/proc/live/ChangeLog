@@ -1,5 +1,8 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* LiveProc.java: Move all state code from here ...
+	* LinuxPtraceProc.java: ... to here.
+
 	* LiveTask.java: Move all state code from here ...
 	* LinuxPtraceTask.java: ... to here.
 

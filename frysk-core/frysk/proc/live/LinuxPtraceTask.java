@@ -86,7 +86,8 @@ public class LinuxPtraceTask extends LiveTask {
     /**
      * Create a new attached main Task of Proc.
      */
-    public LinuxPtraceTask(LiveProc proc, TaskObserver.Attached attached) {
+    public LinuxPtraceTask(LinuxPtraceProc proc,
+			   TaskObserver.Attached attached) {
 	super(proc, attached);
 	newState = LinuxPtraceTaskState.mainState();
 	if (attached != null) {
