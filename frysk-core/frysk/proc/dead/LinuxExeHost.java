@@ -54,7 +54,6 @@ import frysk.event.EventLoop;
 import frysk.proc.FindProc;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
-import frysk.proc.TaskObserver.Attached;
 
 public class LinuxExeHost extends DeadHost {
 
@@ -80,11 +79,6 @@ public class LinuxExeHost extends DeadHost {
 	this.sendRefresh(true);
     }
     
-    protected void sendCreateAttachedProc(String stdin, String stdout,
-	    String stderr, String[] args, Attached attached) {
-
-    }
-
     /**
      * sendRefresh refreshes the list of processes.
      * 

@@ -50,7 +50,7 @@ import frysk.sys.proc.ProcBuilder;
 import java.util.Iterator;
 import frysk.proc.TaskId;
 import frysk.proc.Task;
-import frysk.proc.TaskObserver;
+import frysk.proc.TaskObserver.Attached;
 import frysk.proc.Manager;
 import java.util.logging.Level;
 import frysk.sys.Fork;
@@ -227,28 +227,30 @@ public class LinuxPtraceHost extends LiveHost {
 
     } 
 
-    /**
-     * Create an attached process that is a child of this process (and
-     * this task).
-     */
-    protected void sendCreateAttachedProc (String in, String out, String err,
-					   String[] args,
-					   TaskObserver.Attached attached)
-    {
-	logger.log(Level.FINE, "{0} sendCreateAttachedProc\n", this);
-	int pid = Fork.ptrace(in, out, err, args);
-	// See if the Host knows about this task.
-	TaskId myTaskId = new TaskId(Tid.get());
-	Task myTask = get(myTaskId);
-	if (myTask == null) {
-	    // If not, find this process and add this task to it.
-	    Proc myProc = getSelf();
-	    myTask = new LinuxPtraceTask(myProc, myTaskId);
-	}
-	LinuxPtraceProc proc = new LinuxPtraceProc (myTask, new ProcId(pid));
-	new LinuxPtraceTask(proc, attached);
+    public void requestCreateAttachedProc(final String stdin,
+					  final String stdout,
+					  final String stderr,
+					  final String[] args,
+					  final Attached attachedObserver) {
+ 	logger.log(Level.FINE, "{0} requestCreateAttachedProc\n", this); 
+	Manager.eventLoop.add(new Event() {
+		public void execute() {
+		    logger.log(Level.FINE, "{0} sendCreateAttachedProc\n", this);
+		    int pid = Fork.ptrace(stdin, stdout, stderr, args);
+		    // See if the Host knows about this task.
+		    TaskId myTaskId = new TaskId(Tid.get());
+		    Task myTask = get(myTaskId);
+		    if (myTask == null) {
+			// If not, find this process and add this task to it.
+			Proc myProc = getSelf();
+			myTask = new LinuxPtraceTask(myProc, myTaskId);
+		    }
+		    LinuxPtraceProc proc = new LinuxPtraceProc (myTask, new ProcId(pid));
+		    new LinuxPtraceTask(proc, attachedObserver);
+		}
+	    });
     }
-
+	    
     /**
      * Return a pointer to this <em>frysk</em> instance.
      */

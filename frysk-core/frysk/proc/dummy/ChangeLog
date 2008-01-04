@@ -1,3 +1,8 @@
+2008-01-04  Andrew Cagney  <cagney@redhat.com>
+
+	* DummyHost.java (requestCreateAttachedProc): Replace
+	sendCreateAttachedProc.
+
 2008-01-03  Andrew Cagney  <cagney@redhat.com>
 
 	* DummyTask.java (requestAddInstructionObserver(TaskObserver.Instruction)): New.

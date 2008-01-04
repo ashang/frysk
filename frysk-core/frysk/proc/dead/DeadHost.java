@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 package frysk.proc.dead;
 
 import frysk.proc.Host;
+import frysk.proc.TaskObserver.Attached;
 
 /**
  * A dead Host/Proc/Task is characterised by its lack of state, and an
@@ -48,5 +49,9 @@ import frysk.proc.Host;
  */
 
 abstract class DeadHost extends Host {
-
+    public void requestCreateAttachedProc(String in, String out, String err,
+					  String[] args,
+					  Attached attached) {
+	throw new RuntimeException("requestCreateAttachedProc");
+    }
 }

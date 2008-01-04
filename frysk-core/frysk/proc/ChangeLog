@@ -1,5 +1,8 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* Host.java (requestCreateAttachedProc(String,String,String,String[],Attached)): Make abstract.
+	(sendCreateAttachedProc(String,String,String,String[],Attached)): Delete.
+	
 	* HostState.java: Delete.
 	* Host.java (requestRefreshXXX()): Eliminate state code.
 	(requestCreateAttachedProc(String,String,String,String[],Attached)):

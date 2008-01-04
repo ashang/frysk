@@ -54,7 +54,6 @@ import lib.dwfl.ElfPHeader;
 import lib.dwfl.ElfPrpsinfo;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
-import frysk.proc.TaskObserver;
 import frysk.proc.FindProc;
 
 public class LinuxCoreHost extends DeadHost {
@@ -159,10 +158,6 @@ public class LinuxCoreHost extends DeadHost {
 		}
 	    });
 
-    }
-
-    protected void sendCreateAttachedProc(String stdin, String stdout,
-					  String stderr, String[] args, TaskObserver.Attached attached) {
     }
 
     protected Proc sendrecSelf() {

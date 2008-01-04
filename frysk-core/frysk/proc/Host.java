@@ -121,24 +121,6 @@ public abstract class Host {
     protected abstract void sendRefresh(ProcId procId, FindProc finder);
     
     /**
-     * Tell the host to create a running child process.
-     *
-     * Unlike other requests, this operation is bound to an explicit
-     * call-back.  Doing this means that the requestor has a robust
-     * way of receiving an acknolwedge of the operation.  Without this
-     * there would be no reliable way to bind to the newly created
-     * process - frysk's state machine could easily detach before the
-     * requestor had an oportunity to add an attached observer.
-     *
-     * XXX: Is this the best thing?
-     */
-    protected abstract void sendCreateAttachedProc(String stdin,
-						   String stdout,
-						   String stderr,
-						   String[] args,
-						   TaskObserver.Attached attached);
-
-    /**
      * Request that the Host scan the system's process tables
      * refreshing the internal structure to match.  Optionally refresh
      * each processes task list.
@@ -166,23 +148,20 @@ public abstract class Host {
     }
     
     /**
-     * Request that a new attached and running process be created.
+     * Tell the host to create a running child process.
+     *
+     * Unlike other requests, this operation is bound to an explicit
+     * call-back.  Doing this means that the requestor has a robust
+     * way of receiving an acknolwedge of the operation.  Without this
+     * there would be no reliable way to bind to the newly created
+     * process - frysk's state machine could easily detach before the
+     * requestor had an oportunity to add an attached observer.
      */
-    public final void requestCreateAttachedProc(final String stdin,
-						final String stdout,
-						final String stderr,
-						final String[] args,
-						final TaskObserver.Attached attachedObserver) {
-	logger.log(Level.FINE, "{0} requestCreateAttachedProc\n", this); 
-	Manager.eventLoop.add(new HostEvent("requestCreateAttachedProc") {
-		public void execute() {
-		    logger.log(Level.FINE, "{0} handleCreateAttachedProc\n",
-			       Host.this);
-		    Host.this.sendCreateAttachedProc(stdin, stdout, stderr,
-						     args, attachedObserver);
-		}
-	    });
-    }
+    public abstract void requestCreateAttachedProc(String stdin,
+						   String stdout,
+						   String stderr,
+						   String[] args,
+						   TaskObserver.Attached attachedObserver);
     /**
      * Request that a new attached and running process(with stdin,
      * stdout, and stderr are shared with this process) be created.

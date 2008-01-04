@@ -1,3 +1,9 @@
+2008-01-04  Andrew Cagney  <cagney@redhat.com>
+
+	* DeadHost.java (requestCreateAttachedProc(String,String,String,String[],Attached)): New.
+	* LinuxExeHost.java (sendCreateAttachedProc(String,String,String,String[],Attached)): Delete.
+	* LinuxCoreHost.java (sendCreateAttachedProc(String,String,String,String[],Attached)): Delete.
+
 2008-01-03  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxExeProcState.java: Delete.
