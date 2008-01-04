@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -62,7 +62,6 @@ public abstract class Host {
      * The host corresponds to a specific system.
      */
     protected Host() {
-        newState = HostState.initial(this);
 	logger.log(Level.FINE, "{0} Host\n", this);
     }
   
@@ -140,35 +139,6 @@ public abstract class Host {
 						   TaskObserver.Attached attached);
 
     /**
-     * The current state of this host.
-     */
-    private HostState oldState;
-    private HostState newState;
-    /**
-     * Return the current state.
-     */
-    HostState getState() {
-	if (newState != null)
-	    return newState;
-	else
-	    return oldState;
-    }
-    /**
-     * Return the current state while at the same time marking that
-     * the state is in flux.  If a second attempt to change state
-     * occurs before the current state transition has completed, barf.
-     * XXX: Bit of a hack, but at least this prevents state transition
-     * code attempting a second recursive state transition.
-     */
-    private HostState oldState() {
-	if (newState == null)
-	    throw new RuntimeException("double state transition");
-	oldState = newState;
-	newState = null;
-	return oldState;
-    }
-    
-    /**
      * Request that the Host scan the system's process tables
      * refreshing the internal structure to match.  Optionally refresh
      * each processes task list.
@@ -177,7 +147,9 @@ public abstract class Host {
 	logger.log(Level.FINEST, "{0} requestRefreshXXX\n", this); 
 	Manager.eventLoop.add(new HostEvent("RequestRefresh") {
 		public void execute() {
-		    newState = oldState().handleRefresh(Host.this, false);
+		    logger.log(Level.FINE, "{0} handleRefresh\n",
+			       Host.this); 
+		    Host.this.sendRefresh(false);
 		}
 	    });
     }
@@ -188,7 +160,8 @@ public abstract class Host {
     public void requestFindProc(final ProcId procId, final FindProc finder) {
 	Manager.eventLoop.add(new HostEvent("FindProc") {
 		public void execute() {
-		    newState = oldState().handleRefresh(Host.this, procId, finder);
+		    logger.log(Level.FINE, "{0} handleRefresh\n", Host.this); 
+		    Host.this.sendRefresh (procId, finder);
 		}});
     }
     
@@ -203,8 +176,10 @@ public abstract class Host {
 	logger.log(Level.FINE, "{0} requestCreateAttachedProc\n", this); 
 	Manager.eventLoop.add(new HostEvent("requestCreateAttachedProc") {
 		public void execute() {
-		    newState= oldState().handleCreateAttachedProc
-			(Host.this, stdin, stdout, stderr, args, attachedObserver);
+		    logger.log(Level.FINE, "{0} handleCreateAttachedProc\n",
+			       Host.this);
+		    Host.this.sendCreateAttachedProc(stdin, stdout, stderr,
+						     args, attachedObserver);
 		}
 	    });
     }
@@ -289,7 +264,6 @@ public abstract class Host {
      */
     public String toString() {
 	return ("{" + super.toString()
-		+ ",state=" + getState()
 		+ "}");
     }
     

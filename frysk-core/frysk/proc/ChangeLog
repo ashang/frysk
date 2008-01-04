@@ -1,5 +1,13 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* HostState.java: Delete.
+	* Host.java (requestRefreshXXX()): Eliminate state code.
+	(requestCreateAttachedProc(String,String,String,String[],Attached)):
+	Ditto.
+	(requestFindProc(ProcId, FindProc)): Ditto.
+	(oldState(), getState()): Delete.
+	(oldState, newState): Delete.
+
 	* ProcState.java: Delete; merged into
 	frysk.proc.live.LinuxPtraceProcState.
 
