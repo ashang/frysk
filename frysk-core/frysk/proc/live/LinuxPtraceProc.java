@@ -63,7 +63,6 @@ import java.util.HashMap;
 import frysk.proc.TaskId;
 import java.util.Iterator;
 import frysk.proc.TaskObservable;
-import frysk.proc.ProcState;
 import java.io.File;
 import frysk.proc.Manager;
 import frysk.proc.ProcEvent;
@@ -312,8 +311,8 @@ public class LinuxPtraceProc extends LiveProc {
      * The current state of this Proc, during a state transition
      * newState is null.
      */
-    private ProcState oldState;
-    private ProcState newState;
+    private LinuxPtraceProcState oldState;
+    private LinuxPtraceProcState newState;
 
     /**
      * Return the current state as a string.
@@ -332,7 +331,7 @@ public class LinuxPtraceProc extends LiveProc {
      * barf. XXX: Bit of a hack, but at least this prevents state
      * transition code attempting a second recursive state transition.
      */
-    private ProcState oldState() {
+    private LinuxPtraceProcState oldState() {
 	if (newState == null)
 	    throw new RuntimeException(this + " double state transition");
 	oldState = newState;

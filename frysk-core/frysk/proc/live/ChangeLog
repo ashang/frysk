@@ -1,5 +1,9 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceProcState.java: Merge in deleted
+	frysk.proc.TaskState.
+	* LinuxPtraceProc.java: Update.
+
 	* LinuxPtraceTaskState.java: Merge in deleted
 	frysk.proc.TaskState.
 	* LinuxPtraceTask.java: Update.

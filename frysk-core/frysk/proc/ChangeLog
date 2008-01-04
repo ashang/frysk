@@ -1,5 +1,8 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* ProcState.java: Delete; merged into
+	frysk.proc.live.LinuxPtraceProcState.
+
 	* TaskState.java: Delete; merged into
 	frysk.proc.live.LinuxPtraceTaskState.
 	* State.java: Make public.
