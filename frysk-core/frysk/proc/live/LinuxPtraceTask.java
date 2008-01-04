@@ -159,7 +159,7 @@ public class LinuxPtraceTask extends LiveTask {
      */
     void processClonedEvent (Task clone)
     {
-	set(oldState().handleClonedEvent(this, clone));
+	set(oldState().handleClonedEvent(this, (LinuxPtraceTask)clone));
     }
     /**
      * (internal) This Task forked creating an entirely new child process
@@ -167,7 +167,7 @@ public class LinuxPtraceTask extends LiveTask {
      */
     void processForkedEvent (Task fork)
     {
-	set(oldState().handleForkedEvent(this, fork));
+	set(oldState().handleForkedEvent(this, (LinuxPtraceTask)fork));
     }
     /**
      * (internal) This task stopped.

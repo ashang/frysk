@@ -43,9 +43,7 @@ import java.util.Iterator;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.logging.Level;
-import frysk.proc.Proc;
 import frysk.proc.Observation;
-import frysk.proc.Task;
 import frysk.proc.TaskId;
 import frysk.proc.Manager;
 import frysk.proc.State;
@@ -59,27 +57,27 @@ abstract class LinuxPtraceProcState extends State {
     LinuxPtraceProcState(String state) {
 	super (state);
     }
-    LinuxPtraceProcState handleRemoval(Proc proc) {
+    LinuxPtraceProcState handleRemoval(LinuxPtraceProc proc) {
 	throw unhandled(proc, "handleRemoval");
     }
-    LinuxPtraceProcState handleRefresh(Proc proc) {
+    LinuxPtraceProcState handleRefresh(LinuxPtraceProc proc) {
 	throw unhandled(proc, "handleRefresh");
     }
-    LinuxPtraceProcState handleTaskAttachCompleted(Proc proc, Task task) {
+    LinuxPtraceProcState handleTaskAttachCompleted(LinuxPtraceProc proc, LinuxPtraceTask task) {
 	throw unhandled(proc, "handleTaskAttachCompleted");
     }
-    LinuxPtraceProcState handleTaskDetachCompleted(Proc proc, Task task) {
+    LinuxPtraceProcState handleTaskDetachCompleted(LinuxPtraceProc proc, LinuxPtraceTask task) {
 	throw unhandled(proc, "handleTaskDetachCompleted");
     }
-    LinuxPtraceProcState handleTaskDetachCompleted(Proc proc, Task task, Task clone) {
+    LinuxPtraceProcState handleTaskDetachCompleted(LinuxPtraceProc proc, LinuxPtraceTask task, LinuxPtraceTask clone) {
 	throw unhandled(proc, "handleTaskDetachCompleted/clone"); }
-    LinuxPtraceProcState handleAddObservation(Proc proc, Observation observation) {
+    LinuxPtraceProcState handleAddObservation(LinuxPtraceProc proc, Observation observation) {
 	throw unhandled(proc, "handleAddObservation");
     }
-    LinuxPtraceProcState handleDeleteObservation(Proc proc, Observation observation) {
+    LinuxPtraceProcState handleDeleteObservation(LinuxPtraceProc proc, Observation observation) {
 	throw unhandled(proc, "handleDeleteObservation");
     }
-    LinuxPtraceProcState handleDetach(Proc proc, boolean shouldRemoveObservers) {
+    LinuxPtraceProcState handleDetach(LinuxPtraceProc proc, boolean shouldRemoveObservers) {
 	throw unhandled(proc, "handleDetach");
     }
 
@@ -105,13 +103,13 @@ abstract class LinuxPtraceProcState extends State {
      */
     private static final LinuxPtraceProcState detached = new LinuxPtraceProcState ("detached")
 	{
-	    LinuxPtraceProcState handleRefresh (Proc proc)
+	    LinuxPtraceProcState handleRefresh (LinuxPtraceProc proc)
 	    {
 		logger.log (Level.FINE, "{0} handleRefresh\n", proc); 
 		proc.sendRefresh ();
 		return detached;
 	    }
-	    LinuxPtraceProcState handleRemoval (Proc proc)
+	    LinuxPtraceProcState handleRemoval (LinuxPtraceProc proc)
 	    {
 		logger.log (Level.FINEST, "{0} handleRemoval\n", proc); 
 		// XXX: What about a dieing proc's tasks, have a
@@ -120,14 +118,14 @@ abstract class LinuxPtraceProcState extends State {
 		    proc.parent.remove (proc);
 		return destroyed;
 	    }
-	    LinuxPtraceProcState handleAddObservation (Proc proc,
+	    LinuxPtraceProcState handleAddObservation (LinuxPtraceProc proc,
 					    Observation observation)
 	    {
 	    	logger.log (Level.FINE, "{0} handleAddObserver \n", proc); 
 	    	return Attaching.initialState (proc, observation);
 	    }
 
-	    LinuxPtraceProcState handleDeleteObservation (Proc proc,
+	    LinuxPtraceProcState handleDeleteObservation (LinuxPtraceProc proc,
 					       Observation observation)
 	    {
 	    	logger.log (Level.FINE, "{0} handleDeleteObservation\n", proc); 
@@ -148,7 +146,7 @@ abstract class LinuxPtraceProcState extends State {
 	 * The initial attaching state, find the main task and tell it
 	 * to attach.
 	 */
-	static LinuxPtraceProcState initialState (Proc proc, Observation observation)
+	static LinuxPtraceProcState initialState (LinuxPtraceProc proc, Observation observation)
 	{
 	    logger.log (Level.FINE, "{0} state\n", proc); 
 	    if (!proc.addObservation (observation))
@@ -158,7 +156,8 @@ abstract class LinuxPtraceProcState extends State {
 	    if (proc.taskPool.size () == 0)
 		proc.sendRefresh ();
 	    // Assumes that the main Task's ID == the Proc's ID.
-	    Task mainTask = Manager.host.get (new TaskId (proc.getPid ()));
+	    LinuxPtraceTask mainTask
+		= (LinuxPtraceTask)Manager.host.get(new TaskId(proc.getPid()));
 	    if (mainTask == null) {
 		// The main task exited and a refresh managed to
 		// update Proc removing it.
@@ -173,7 +172,7 @@ abstract class LinuxPtraceProcState extends State {
 	 * All tasks attached, set them running and notify any
 	 * interested parties.
 	 */
-	private static LinuxPtraceProcState allAttached (Proc proc)
+	private static LinuxPtraceProcState allAttached (LinuxPtraceProc proc)
 	{
 	    logger.log (Level.FINE, "{0} allAttached\n", proc); 
 	    for (Iterator i = proc.observationsIterator();
@@ -185,7 +184,7 @@ abstract class LinuxPtraceProcState extends State {
 	    // attached/running.
 	    for (Iterator i = proc.getTasks ().iterator ();
 		 i.hasNext (); ) {
-		Task t = (Task) i.next ();
+		LinuxPtraceTask t = (LinuxPtraceTask) i.next ();
 		t.performContinue ();
 	    }
 	    proc.observableAttached.notify (proc);
@@ -198,13 +197,13 @@ abstract class LinuxPtraceProcState extends State {
 	 * be attached.
 	 */
 	private static class ToMainTask extends LinuxPtraceProcState {
-	    private Task mainTask;
-	    ToMainTask (Task mainTask)
+	    private LinuxPtraceTask mainTask;
+	    ToMainTask (LinuxPtraceTask mainTask)
 	    {
 		super ("Attaching.ToMainTask");
 		this.mainTask = mainTask;
 	    }
-	    LinuxPtraceProcState handleTaskAttachCompleted (Proc proc, Task task)
+	    LinuxPtraceProcState handleTaskAttachCompleted (LinuxPtraceProc proc, LinuxPtraceTask task)
 	    {
 		logger.log (Level.FINE, "{0} handleTaskAttachCompleted\n", proc); 
 		// With the main task attached, it is possible to get
@@ -217,7 +216,7 @@ abstract class LinuxPtraceProcState extends State {
 		// Attach to those remaining attaching tasks.
 		for (Iterator i = attachingTasks.iterator ();
 		     i.hasNext (); ) {
-		    Task t = (Task) i.next ();
+		    LinuxPtraceTask t = (LinuxPtraceTask) i.next ();
 		    t.performAttach ();
 		}
 		// What next?  Nothing else wait for all the attaching
@@ -228,7 +227,7 @@ abstract class LinuxPtraceProcState extends State {
 		    return new Attaching.ToOtherTasks (attachingTasks);
 		
 	    }
-	    LinuxPtraceProcState handleAddObservation (Proc proc,
+	    LinuxPtraceProcState handleAddObservation (LinuxPtraceProc proc,
 					    Observation observation)
 	    {
 		logger.log (Level.FINE, "{0} handleAddObservation\n", proc); 
@@ -236,7 +235,7 @@ abstract class LinuxPtraceProcState extends State {
 		proc.addObservation (observation);
 		return this;
 	    }
-	    LinuxPtraceProcState handleDeleteObservation (Proc proc,
+	    LinuxPtraceProcState handleDeleteObservation (LinuxPtraceProc proc,
 					       Observation observation)
 	    {
 		logger.log (Level.FINE, "{0} handleDeleteObservation\n", proc); 
@@ -253,12 +252,12 @@ abstract class LinuxPtraceProcState extends State {
 		return this;
 	    }
 
-	    LinuxPtraceProcState handleTaskDetachCompleted (Proc proc, Task task)
+	    LinuxPtraceProcState handleTaskDetachCompleted (LinuxPtraceProc proc, LinuxPtraceTask task)
 	    {
 		return this;
 	    }
         
-	    LinuxPtraceProcState handleDetach(Proc proc, boolean shouldRemoveObservers)
+	    LinuxPtraceProcState handleDetach(LinuxPtraceProc proc, boolean shouldRemoveObservers)
 	    {
 		logger.log(Level.FINE, "{0} handleDetach\n", proc);
 		return new Detaching (proc, shouldRemoveObservers);
@@ -277,7 +276,7 @@ abstract class LinuxPtraceProcState extends State {
 		super ("Attaching.ToOtherTasks");
 		this.attachingTasks = attachingTasks;
 	    }
-	    LinuxPtraceProcState handleTaskAttachCompleted (Proc proc, Task task)
+	    LinuxPtraceProcState handleTaskAttachCompleted (LinuxPtraceProc proc, LinuxPtraceTask task)
 	    {
 		logger.log (Level.FINE, "{0} handleTaskAttachCompleted\n", proc); 
 		// As each task reports that it has been attached,
@@ -288,14 +287,14 @@ abstract class LinuxPtraceProcState extends State {
 		    return allAttached (proc);
 		return this;
 	    }
-	    LinuxPtraceProcState handleAddObservation (Proc proc,
+	    LinuxPtraceProcState handleAddObservation (LinuxPtraceProc proc,
 					    Observation observation)
 	    {
 		logger.log (Level.FINE, "{0} handleAddObservation\n", proc); 
 		proc.addObservation (observation);
 		return this;
 	    }
-	    LinuxPtraceProcState handleDeleteObservation (Proc proc,
+	    LinuxPtraceProcState handleDeleteObservation (LinuxPtraceProc proc,
 					       Observation observation)
 	    {
 		logger.log (Level.FINE, "{0} handleDeleteObservation\n", proc); 
@@ -327,13 +326,13 @@ abstract class LinuxPtraceProcState extends State {
 	 * @param shouldRemoveObservers whether the observers on each task should 
 	 * be removed.
 	 */
-	Detaching (Proc proc, boolean shouldRemoveObservers)
+	Detaching (LinuxPtraceProc proc, boolean shouldRemoveObservers)
 	{
 	    super ("Detaching");
 	    attachedTasks = proc.getTasks ();
 	    for (Iterator i = attachedTasks.iterator ();
 		 i.hasNext (); ) {
-		Task t = (Task) i.next ();
+		LinuxPtraceTask t = (LinuxPtraceTask) i.next ();
 		t.performDetach (shouldRemoveObservers);
 	    }
 	}
@@ -341,15 +340,15 @@ abstract class LinuxPtraceProcState extends State {
 	 * Either just starting up and assumed to be detaching or just
 	 * attached to the main task.
 	 */
-	Detaching (Proc proc, Task mainTask)
+	Detaching (LinuxPtraceProc proc, LinuxPtraceTask mainTask)
 	{
 	    super ("Detaching");
 	    attachedTasks = new HashSet ();
 	    attachedTasks.add (mainTask);
 	}
-	LinuxPtraceProcState handleTaskDetachCompleted (Proc proc, Task task)
+	LinuxPtraceProcState handleTaskDetachCompleted (LinuxPtraceProc proc, LinuxPtraceTask task)
 	{
-	    logger.log (Level.FINE, "{0} handleTaskDetachCompleted. Task {1}\n", new Object[] {proc, task});
+	    logger.log (Level.FINE, "{0} handleTaskDetachCompleted. LinuxPtraceTask {1}\n", new Object[] {proc, task});
 	    // As each task reports that it has detached, add it
 	    // to the detached list.
 	    attachedTasks.remove (task);
@@ -360,8 +359,8 @@ abstract class LinuxPtraceProcState extends State {
 	    proc.observableDetached.notify (proc);
 	    return detached;
 	}
-	LinuxPtraceProcState handleTaskDetachCompleted (Proc proc, Task task,
-					     Task clone)
+	LinuxPtraceProcState handleTaskDetachCompleted (LinuxPtraceProc proc, LinuxPtraceTask task,
+					     LinuxPtraceTask clone)
 	{
 	    logger.log (Level.FINE,
 			"{0} handleTaskDetachCompleted\n",
@@ -371,7 +370,7 @@ abstract class LinuxPtraceProcState extends State {
 	    attachedTasks.add (clone);
 	    return this;
 	}
-	LinuxPtraceProcState handleDetach(Proc proc, boolean shouldRemoveObservers)
+	LinuxPtraceProcState handleDetach(LinuxPtraceProc proc, boolean shouldRemoveObservers)
 	{
 	    //Already detaching, don't have to do anything different.
 	    if (shouldRemoveObservers)
@@ -379,7 +378,7 @@ abstract class LinuxPtraceProcState extends State {
       
 	    return super.handleDetach(proc, shouldRemoveObservers);
 	}
-	LinuxPtraceProcState handleAddObservation (Proc proc,
+	LinuxPtraceProcState handleAddObservation (LinuxPtraceProc proc,
 					Observation observation)
 	{
 	    logger.log (Level.FINE, "{0} handleAddObservation\n",
@@ -387,7 +386,7 @@ abstract class LinuxPtraceProcState extends State {
 	    // Ulgh, detaching and a new observer arrived.
 	    return Attaching.initialState (proc, observation);
 	}
-	LinuxPtraceProcState handleDeleteObservation (Proc proc,
+	LinuxPtraceProcState handleDeleteObservation (LinuxPtraceProc proc,
 					   Observation observation)
 	{
 	    logger.log (Level.FINE, "{0} handleDeleteObservation\n",
@@ -412,7 +411,7 @@ abstract class LinuxPtraceProcState extends State {
      */
     private static final LinuxPtraceProcState running = new LinuxPtraceProcState ("running")
 	{
-	    LinuxPtraceProcState handleAddObservation (Proc proc,
+	    LinuxPtraceProcState handleAddObservation (LinuxPtraceProc proc,
 					    Observation observation)
 	    {
 		logger.log (Level.FINE, "{0} handleAddObservation\n", proc); 
@@ -420,7 +419,7 @@ abstract class LinuxPtraceProcState extends State {
 		observation.handleAdd ();
 		return running;
 	    }
-	    LinuxPtraceProcState handleDeleteObservation (Proc proc,
+	    LinuxPtraceProcState handleDeleteObservation (LinuxPtraceProc proc,
 					       Observation observation)
 	    {
 		logger.log (Level.FINE, "{0} handleDeleteObservation\n", proc); 
@@ -437,7 +436,7 @@ abstract class LinuxPtraceProcState extends State {
         
 		return running;
 	    }
-	    LinuxPtraceProcState handleDetach(Proc proc, boolean shouldRemoveObservers)
+	    LinuxPtraceProcState handleDetach(LinuxPtraceProc proc, boolean shouldRemoveObservers)
             {
 		logger.log(Level.FINE, "{0} handleDetach\n", proc);
 		return new Detaching (proc, shouldRemoveObservers);

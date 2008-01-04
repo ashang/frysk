@@ -379,7 +379,7 @@ public class LinuxPtraceProc extends LiveProc {
 		Task task = theTask;
 
 		public void execute() {
-		    newState = oldState().handleTaskAttachCompleted(LinuxPtraceProc.this, task);
+		    newState = oldState().handleTaskAttachCompleted(LinuxPtraceProc.this, (LinuxPtraceTask) task);
 		}
 	    });
     }
@@ -395,7 +395,7 @@ public class LinuxPtraceProc extends LiveProc {
 	Manager.eventLoop.add(new ProcEvent() {
 		Task task = theTask;
 		public void execute() {
-		    newState = oldState().handleTaskDetachCompleted(LinuxPtraceProc.this, task);
+		    newState = oldState().handleTaskDetachCompleted(LinuxPtraceProc.this, (LinuxPtraceTask) task);
 		}
 	    });
     }
@@ -412,7 +412,7 @@ public class LinuxPtraceProc extends LiveProc {
 		Task clone = theClone;
 
 		public void execute() {
-		    newState = oldState().handleTaskDetachCompleted(LinuxPtraceProc.this, task, clone);
+		    newState = oldState().handleTaskDetachCompleted(LinuxPtraceProc.this, (LinuxPtraceTask) task, (LinuxPtraceTask) clone);
 		}
 	    });
     }
