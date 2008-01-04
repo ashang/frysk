@@ -455,15 +455,12 @@ public class LinuxPtraceProc extends LiveProc {
      * before adding or deleting a Syscall observer.
      */
     final class SyscallAction implements Runnable {
-	private final Task task;
-
+	private final LinuxPtraceTask task;
 	private final boolean addition;
-
-	SyscallAction(Task task, boolean addition) {
+	SyscallAction(LinuxPtraceTask task, boolean addition) {
 	    this.task = task;
 	    this.addition = addition;
 	}
-
 	public void run() {
 	    int syscallobs = task.syscallObservers.numberOfObservers();
 	    if (addition) {
@@ -486,7 +483,7 @@ public class LinuxPtraceProc extends LiveProc {
     public void requestAddSyscallObserver(final Task task, TaskObservable observable,
 				   TaskObserver observer) {
 	logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
-	SyscallAction sa = new SyscallAction(task, true);
+	SyscallAction sa = new SyscallAction((LinuxPtraceTask)task, true);
 	TaskObservation to = new TaskObservation(task, observable, observer, sa,
 						 true) {
 		public void execute() {
@@ -527,7 +524,7 @@ public class LinuxPtraceProc extends LiveProc {
 				      TaskObservable observable,
 				      TaskObserver observer) {
 	logger.log(Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
-	SyscallAction sa = new SyscallAction(task, false);
+	SyscallAction sa = new SyscallAction((LinuxPtraceTask)task, false);
 	TaskObservation to = new TaskObservation(task, observable, observer, sa,
 						 false) {
 		public void execute() {

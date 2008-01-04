@@ -1,5 +1,15 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (sendContinue(int)): Delete.
+	(sendSyscallContinue(int)): Delete.
+	(sendStepInstruction(int)): Delete.
+	(sendStop()): Delete.
+	(sendSetOptions()): Delete.
+	(sendAttach()): Delete.
+	(sendDetach()): Delete.
+	(startTracingSyscalls()): Delete.
+	(stopTracingSyscalls()): Delete.
+	
 	* Task.java (performRemoval()): Delete.
 	(performContinue()): Delete.
 	(performAttach(boolean)): Delete.

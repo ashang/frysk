@@ -191,55 +191,6 @@ public abstract class Task {
 	this(new TaskId(proc.getPid()), proc, proc.creator);
     }
 
-    // Send operation to corresponding underlying [kernel] task.  The
-    // continue, syscall and step methods should sig_send and set/reset
-    // step_send to indicate that last reques tot the Task was a single
-    // step.
-
-    /** XXX: Should not be public.  */
-    public void sendContinue(int sig) {
-	throw new RuntimeException("unimplemented");
-    }
-    /** XXX: Should not be public.  */
-    public void sendSyscallContinue(int sig) {
-	throw new RuntimeException("unimplemented");
-    }
-    /** XXX: Should not be public.  */
-    public void sendStepInstruction(int sig) {
-	throw new RuntimeException("unimplemented");
-    }
-    /** XXX: Should not be public.  */
-    public void sendStop() {
-	throw new RuntimeException("unimplemented");
-    }
-    /** XXX: Should not be public.  */
-    public void sendSetOptions() {
-	throw new RuntimeException("unimplemented");
-    }
-    /** XXX: Should not be public.  */
-    public void sendAttach() {
-	throw new RuntimeException("unimplemented");
-    }
-    /** XXX: Should not be public.  */
-    public void sendDetach(int sig) {
-	throw new RuntimeException("unimplemented");
-    }
-    /**
-     * Turns on systemcall entry and exit tracing XXX: Should not be
-     * public.
-     */
-    public void startTracingSyscalls() {
-	throw new RuntimeException("unimplemented");
-    }
-
-    /**
-     * Turns off systemcall entry and exit tracing XXX: Should not be
-     * public.
-     */
-    public void stopTracingSyscalls() {
-	throw new RuntimeException("unimplemented");
-    }
-
     protected LinkedList queuedEvents = new LinkedList();
 
     /**
