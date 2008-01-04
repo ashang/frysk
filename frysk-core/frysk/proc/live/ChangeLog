@@ -1,3 +1,8 @@
+2008-01-04  Andrew Cagney  <cagney@redhat.com>
+
+	* LiveTask.java: Move all state code from here ...
+	* LinuxPtraceTask.java: ... to here.
+
 2008-01-03  Andrew Cagney  <cagney@redhat.com>
 
 	* LiveTask.java (requestAddInstructionObserver(TaskObserver.Instruction)): New.
