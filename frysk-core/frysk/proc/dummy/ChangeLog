@@ -1,5 +1,11 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* DummyTask.java (performRemoval()): Delete.
+	(performContinue()): Delete.
+	(performAttach(boolean)): Delete.
+	(performDetach(boolean)): Delete.
+	(handleUnblock(TaskObserver)): Delete.
+
 	* DummyHost.java (getSelf()): Replace sendrecSelf().
 
 	* DummyHost.java (requestRefreshXXX()): Replace

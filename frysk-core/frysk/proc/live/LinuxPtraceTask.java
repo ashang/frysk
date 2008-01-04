@@ -431,14 +431,14 @@ public class LinuxPtraceTask extends LiveTask {
 	newState = oldState().handleDeleteObservation(this, observation);
     }
 
-    public void handleUnblock(TaskObserver observer) {
+    void handleUnblock(TaskObserver observer) {
 	newState = oldState().handleUnblock(this, observer);
     }
 
     /**
      * (Internal) Requesting that the task go (or resume execution).
      */
-    public void performContinue() {
+    void performContinue() {
 	newState = oldState().handleContinue(this);
     }
 
@@ -449,7 +449,7 @@ public class LinuxPtraceTask extends LiveTask {
      *
      * XXX: Should not be public.
      */
-    public void performRemoval() {
+    void performRemoval() {
 	newState = oldState().handleRemoval(this);
     }
 
@@ -460,7 +460,7 @@ public class LinuxPtraceTask extends LiveTask {
      *
      * XXX: Should not be public.
      */
-    public void performAttach() {
+    void performAttach() {
 	newState = oldState().handleAttach(this);
     }
 
@@ -470,7 +470,7 @@ public class LinuxPtraceTask extends LiveTask {
      * been processed; the task is allowed to run free.
      * @param shouldRemoveObservers whether to remove the observers as well.
      */
-    public void performDetach(boolean shouldRemoveObservers) {
+    void performDetach(boolean shouldRemoveObservers) {
 	newState = oldState().handleDetach(this, shouldRemoveObservers);
     }
 
@@ -484,7 +484,7 @@ public class LinuxPtraceTask extends LiveTask {
 	Manager.eventLoop.add(new TaskEvent(this) {
 		final TaskObserver observer = observerArg;
 		protected void execute(Task task) {
-		    task.handleUnblock(observer);
+		    ((LinuxPtraceTask)task).handleUnblock(observer);
 		}
 	    });
     }

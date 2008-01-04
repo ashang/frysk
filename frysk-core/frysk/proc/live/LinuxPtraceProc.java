@@ -297,7 +297,7 @@ public class LinuxPtraceProc extends LiveProc {
 	// Tell each task that no longer exists that it has been
 	// removed.
 	for (Iterator i = tasks.removed.values().iterator(); i.hasNext();) {
-	    Task task = (Task) i.next ();
+	    LinuxPtraceTask task = (LinuxPtraceTask) i.next ();
 	    // XXX: Should there be a TaskEvent.schedule(), instead of
 	    // Manager .eventLoop .appendEvent for injecting the event
 	    // into the event loop?

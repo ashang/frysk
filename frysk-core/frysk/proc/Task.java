@@ -253,42 +253,6 @@ public abstract class Task {
     protected abstract void handleDeleteObservation(TaskObservation observation);
 
     /**
-     * Unblock the specified observer.
-     */
-    public abstract void handleUnblock(TaskObserver observation);
-
-    /**
-     * Requesting that the task go (or resume execution).
-     */
-    public abstract void performContinue();
-
-    /**
-     * (Internal) Tell the task to remove itself (it is no longer
-     * listed in the system process table and, presumably, has
-     * exited).
-     *
-     * XXX: Should not be public.
-     */
-    public abstract void performRemoval();
-
-    /**
-     * (Internal) Tell the task to attach itself (if it isn't
-     * already). Notify the containing process once the operation has
-     * been completed. The task is left in the stopped state.
-     *
-     * XXX: Should not be public.
-     */
-    public abstract void performAttach();
-
-    /**
-     * (Internal) Tell the task to detach itself (if it isn't
-     * already). Notify the containing process once the operation has
-     * been processed; the task is allowed to run free.
-     * @param shouldRemoveObservers whether to remove the observers as well.
-     */
-    public abstract void performDetach(boolean shouldRemoveObservers);
-
-    /**
      *  (Internal) Request that all observers from this task be
      *  removed.  Warning, should also be removed from the proc's
      *  observations.

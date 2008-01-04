@@ -75,49 +75,6 @@ abstract class DeadTask extends Task {
 	throw new RuntimeException("oops!");
     }
 
-    public void handleUnblock(TaskObserver observer) {
-	throw new RuntimeException("oops!");
-    }
-
-    /**
-     * (Internal) Requesting that the task go (or resume execution).
-     */
-    public void performContinue() {
-	throw new RuntimeException("oops!");
-    }
-
-    /**
-     * (Internal) Tell the task to remove itself (it is no longer
-     * listed in the system process table and, presumably, has
-     * exited).
-     *
-     * XXX: Should not be public.
-     */
-    public void performRemoval() {
-	throw new RuntimeException("oops!");
-    }
-
-    /**
-     * (Internal) Tell the task to attach itself (if it isn't
-     * already). Notify the containing process once the operation has
-     * been completed. The task is left in the stopped state.
-     *
-     * XXX: Should not be public.
-     */
-    public void performAttach() {
-	throw new RuntimeException("oops!");
-    }
-
-    /**
-     * (Internal) Tell the task to detach itself (if it isn't
-     * already). Notify the containing process once the operation has
-     * been processed; the task is allowed to run free.
-     * @param shouldRemoveObservers whether to remove the observers as well.
-     */
-    public void performDetach(boolean shouldRemoveObservers) {
-	throw new RuntimeException("oops!");
-    }
-
     /**
      * Request that the observer be removed from this tasks set of
      * blockers; once there are no blocking observers, this task

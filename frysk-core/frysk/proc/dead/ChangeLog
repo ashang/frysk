@@ -1,5 +1,11 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* DeadTask.java (performRemoval()): Delete.
+	(performContinue()): Delete.
+	(performAttach(boolean)): Delete.
+	(performDetach(boolean)): Delete.
+	(handleUnblock(TaskObserver)): Delete.
+
 	* DeadHost.java (getSelf()): New.
 	* LinuxCoreHost.java (sendrecSelf()): Delete.
 	* LinuxExeHost.java (sendrecSelf()): Delete.

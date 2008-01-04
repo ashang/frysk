@@ -79,21 +79,6 @@ public class DummyTask extends Task {
     protected void handleDeleteObservation(TaskObservation observation) {
 	throw new RuntimeException("oops!");
     }
-    public void handleUnblock(TaskObserver observer) {
-	throw new RuntimeException("oops!");
-    }
-    public void performContinue() {
-	throw new RuntimeException("oops!");
-    }
-    public void performRemoval() {
-	throw new RuntimeException("oops!");
-    }
-    public void performAttach() {
-	throw new RuntimeException("oops!");
-    }
-    public void performDetach(boolean shouldRemoveObservers) {
-	throw new RuntimeException("oops!");
-    }
     public void requestUnblock(final TaskObserver observerArg) {
 	throw new RuntimeException("oops!");
     }
