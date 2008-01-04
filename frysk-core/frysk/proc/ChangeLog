@@ -1,5 +1,7 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (removeObservers()): Delete.
+
 	* Proc.java (performRemoval()): Delete.
 	(performTaskAttachCompleted(Task)): Delete.
 	(performTaskDetachCompleted(Task)): Delete.

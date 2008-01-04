@@ -203,29 +203,6 @@ public abstract class Task {
      */
     protected abstract void handleDeleteObservation(TaskObservation observation);
 
-    /**
-     *  (Internal) Request that all observers from this task be
-     *  removed.  Warning, should also be removed from the proc's
-     *  observations.
-     *
-     * XXX: Should not be public.
-     */
-    public void removeObservers() {
-	logger.log(Level.FINE, "{0} abandon", this);	 
-		
-	attachedObservers.removeAllObservers();
-	clonedObservers.removeAllObservers();
-	forkedObservers.removeAllObservers();
-	terminatedObservers.removeAllObservers();
-	terminatingObservers.removeAllObservers();
-	execedObservers.removeAllObservers();
-	syscallObservers.removeAllObservers();
-	signaledObservers.removeAllObservers();
-	instructionObservers.removeAllObservers();
-	blockers.clear();
-	pendingObservations.clear();
-    }
-  
     public class TaskEventObservable extends java.util.Observable {
 	protected void notify(Object o) {
 	    setChanged();

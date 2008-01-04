@@ -654,4 +654,24 @@ public class LinuxPtraceTask extends LiveTask {
 	getProc().requestDeleteInstructionObserver(this, instructionObservers, o);
     }
   
+
+    /**
+     * (Internal) Request that all observers from this task be
+     * removed.  Warning, should also be removed from the proc's
+     * observations.
+     */
+    void removeObservers() {
+	logger.log(Level.FINE, "{0} removeObservers", this);	 
+	attachedObservers.removeAllObservers();
+	clonedObservers.removeAllObservers();
+	forkedObservers.removeAllObservers();
+	terminatedObservers.removeAllObservers();
+	terminatingObservers.removeAllObservers();
+	execedObservers.removeAllObservers();
+	syscallObservers.removeAllObservers();
+	signaledObservers.removeAllObservers();
+	instructionObservers.removeAllObservers();
+	blockers.clear();
+	pendingObservations.clear();
+    }
 }
