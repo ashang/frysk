@@ -1,5 +1,9 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTaskState.java: Merge in deleted
+	frysk.proc.TaskState.
+	* LinuxPtraceTask.java: Update.
+
 	* LiveProc.java: Move all state code from here ...
 	* LinuxPtraceProc.java: ... to here.
 

@@ -41,7 +41,6 @@ package frysk.proc.live;
 
 import frysk.proc.TaskEvent;
 import frysk.proc.Manager;
-import frysk.proc.TaskState;
 import frysk.proc.TaskObservation;
 import frysk.proc.BreakpointAddresses;
 import frysk.proc.TaskObserver;
@@ -380,13 +379,13 @@ public class LinuxPtraceTask extends LiveTask {
      * The state of this task. During a state transition newState is
      * NULL.
      */
-    private TaskState oldState;
-    private TaskState newState;
+    private LinuxPtraceTaskState oldState;
+    private LinuxPtraceTaskState newState;
 
     /**
      * Return the current state.
      */
-    protected final TaskState getState() {
+    protected final LinuxPtraceTaskState getState() {
 	if (newState != null)
 	    return newState;
 	else
@@ -399,7 +398,7 @@ public class LinuxPtraceTask extends LiveTask {
     /**
      * Set the new state.
      */
-    void set(TaskState newState) {
+    void set(LinuxPtraceTaskState newState) {
 	this.newState = newState;
     }
 
@@ -410,7 +409,7 @@ public class LinuxPtraceTask extends LiveTask {
      * barf. XXX: Bit of a hack, but at least this prevents state
      * transition code attempting a second recursive state transition.
      */
-    protected TaskState oldState() {
+    protected LinuxPtraceTaskState oldState() {
 	if (newState == null)
 	    throw new RuntimeException(this + " double state transition");
 	oldState = newState;
