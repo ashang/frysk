@@ -885,7 +885,7 @@ class LinuxPtraceTaskState extends State {
 					  int value)
 	{
 	    logger.log(Level.FINE, "{0} handleTerminatingEvent\n", task); 
-	    if(task.notifyTerminating (signal, value) > 0)
+	    if (task.notifyTerminating (signal, value) > 0)
 		{
 		    if (signal)
 			return new BlockedSignal(value, insyscall);

@@ -39,10 +39,14 @@
 
 package frysk.proc.live;
 
+import java.util.Iterator;
+import java.util.Collection;
+import frysk.proc.Action;
 import frysk.proc.TaskEvent;
 import frysk.proc.Manager;
 import frysk.proc.TaskObservation;
 import frysk.proc.BreakpointAddresses;
+import frysk.proc.TaskObserver.Terminating;
 import frysk.proc.TaskObserver;
 import frysk.proc.Proc;
 import frysk.proc.TaskId;
@@ -57,10 +61,12 @@ import frysk.sys.Errno;
 import frysk.sys.Ptrace;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.sys.Signal;
+import frysk.syscall.Syscall;
 import frysk.isa.ISA;
 import frysk.isa.ElfMap;
 import java.io.File;
 import frysk.bank.RegisterBanks;
+import frysk.proc.TaskObservable;
 
 /**
  * A Linux Task tracked using PTRACE.
@@ -489,6 +495,39 @@ public class LinuxPtraceTask extends LiveTask {
 	    });
     }
 
+
+    /**
+     * Set of Cloned observers.
+     */
+    private final TaskObservable clonedObservers = new TaskObservable(this);
+    /**
+     * Notify all cloned observers that this task cloned. Return the
+     * number of blocking observers.
+     */
+    int notifyClonedParent(Task offspring) {
+	for (Iterator i = clonedObservers.iterator(); i.hasNext();) {
+	    TaskObserver.Cloned observer = (TaskObserver.Cloned) i.next();
+	    if (observer.updateClonedParent(this, offspring) == Action.BLOCK) {
+		blockers.add(observer);
+	    }
+	}
+	return blockers.size();
+    }
+    /**
+     * Notify all cloned observers that this task cloned. Return the
+     * number of blocking observers.
+     */
+    int notifyClonedOffspring() {
+	logger.log(Level.FINE, "{0} notifyClonedOffspring\n", this);
+	LinuxPtraceTask creator = (LinuxPtraceTask)this.getCreator();
+	for (Iterator i = creator.clonedObservers.iterator(); i.hasNext();) {
+	    TaskObserver.Cloned observer = (TaskObserver.Cloned) i.next();
+	    if (observer.updateClonedOffspring(creator, this) == Action.BLOCK) {
+		blockers.add(observer);
+	    }
+	}
+	return blockers.size();
+    }
     /**
      * Add a TaskObserver.Cloned observer.
      */
@@ -496,7 +535,6 @@ public class LinuxPtraceTask extends LiveTask {
 	logger.log(Level.FINE, "{0} requestAddClonedObserver\n", this);
 	getProc().requestAddObserver(this, clonedObservers, o);
     }
-
     /**
      * Delete a TaskObserver.Cloned observer.
      */
@@ -506,13 +544,33 @@ public class LinuxPtraceTask extends LiveTask {
     }
 
     /**
+     * Set of Attached observers.
+     *
+     * XXX: Should not be public.
+     */
+    private final TaskObservable attachedObservers = new TaskObservable(this);
+    /**
+     * Notify all Attached observers that this task attached. Return
+     * the number of blocking observers.
+     */
+    int notifyAttached() {
+	logger.log(Level.FINE, "{0} notifyAttached\n", this);
+	//Fill isa on attach.
+	getIsa();
+	for (Iterator i = attachedObservers.iterator(); i.hasNext();) {
+	    TaskObserver.Attached observer = (TaskObserver.Attached) i.next();
+	    if (observer.updateAttached(this) == Action.BLOCK)
+		blockers.add(observer);
+	}
+	return blockers.size();
+    }
+    /**
      * Add a TaskObserver.Attached observer.
      */
     public void requestAddAttachedObserver(TaskObserver.Attached o) {
 	logger.log(Level.FINE, "{0} requestAddAttachedObserver\n", this);
 	getProc().requestAddObserver(this, attachedObservers, o);
     }
-
     /**
      * Delete a TaskObserver.Attached observer.
      */
@@ -521,6 +579,38 @@ public class LinuxPtraceTask extends LiveTask {
 	getProc().requestDeleteObserver(this, attachedObservers, o);
     }
 
+
+    /**
+     * Set of Forked observers.
+     */
+    private final TaskObservable forkedObservers = new TaskObservable(this);
+    /**
+     * Notify all Forked observers that this task forked. Return the
+     * number of blocking observers.
+     */
+    int notifyForkedParent(Task offspring) {
+	for (Iterator i = forkedObservers.iterator(); i.hasNext();) {
+	    TaskObserver.Forked observer = (TaskObserver.Forked) i.next();
+	    if (observer.updateForkedParent(this, offspring) == Action.BLOCK) {
+		blockers.add(observer);
+	    }
+	}
+	return blockers.size();
+    }
+    /**
+     * Notify all Forked observers that this task's new offspring,
+     * created using fork, is sitting at the first instruction.
+     */
+    int notifyForkedOffspring() {
+	LinuxPtraceTask creator = (LinuxPtraceTask)this.getCreator();
+	for (Iterator i = creator.forkedObservers.iterator(); i.hasNext();) {
+	    TaskObserver.Forked observer = (TaskObserver.Forked) i.next();
+	    if (observer.updateForkedOffspring(creator, this) == Action.BLOCK) {
+		blockers.add(observer);
+	    }
+	}
+	return blockers.size();
+    }
     /**
      * Add a TaskObserver.Forked observer.
      */
@@ -528,7 +618,6 @@ public class LinuxPtraceTask extends LiveTask {
 	logger.log(Level.FINE, "{0} requestAddForkedObserver\n", this);
 	getProc().requestAddObserver(this, forkedObservers, o);
     }
-
     /**
      * Delete a TaskObserver.Forked observer.
      */
@@ -538,13 +627,33 @@ public class LinuxPtraceTask extends LiveTask {
     }
 
     /**
+     * Set of Terminated observers.
+     */
+    private final TaskObservable terminatedObservers = new TaskObservable(this);
+    /**
+     * Notify all Terminated observers, of this Task's demise. Return
+     * the number of blocking observers.(Does this make any sense?)
+     */
+    int notifyTerminated(boolean signal, int value) {
+	logger.log(Level.FINE, "{0} notifyTerminated\n", this);
+	for (Iterator i = terminatedObservers.iterator(); i.hasNext();) {
+	    TaskObserver.Terminated observer = (TaskObserver.Terminated) i.next();
+	    if (observer.updateTerminated(this, signal, value) == Action.BLOCK) {
+		logger.log(Level.FINER,
+			   "{0} notifyTerminated adding {1} to blockers\n",
+			   new Object[] { this, observer });
+		blockers.add(observer);
+	    }
+	}
+	return blockers.size();
+    }
+    /**
      * Add a TaskObserver.Terminated observer.
      */
     public void requestAddTerminatedObserver(TaskObserver.Terminated o) {
 	logger.log(Level.FINE, "{0} requestAddTerminatedObserver\n", this);
 	getProc().requestAddObserver(this, terminatedObservers, o);
     }
-
     /**
      * Delete a TaskObserver.Terminated observer.
      */
@@ -554,21 +663,55 @@ public class LinuxPtraceTask extends LiveTask {
     }
 
     /**
+     * Set of Terminating observers.
+     */
+    private final TaskObservable terminatingObservers = new TaskObservable(this);
+    /**
+     * Notify all Terminating observers, of this Task's demise. Return
+     * the number of blocking observers.
+     */
+    int notifyTerminating(boolean signal, int value) {
+	for (Iterator i = terminatingObservers.iterator(); i.hasNext();) {
+	    TaskObserver.Terminating observer = (TaskObserver.Terminating) i.next();
+	    if (observer.updateTerminating(this, signal, value) == Action.BLOCK)
+		blockers.add(observer);
+	}
+	return blockers.size();
+    }
+    /**
      * Add TaskObserver.Terminating to the TaskObserver pool.
      */
-    public void requestAddTerminatingObserver(TaskObserver.Terminating o) {
+    public void requestAddTerminatingObserver(Terminating o) {
 	logger.log(Level.FINE, "{0} requestAddTerminatingObserver\n", this);
 	getProc().requestAddObserver(this, terminatingObservers, o);
     }
-
     /**
      * Delete TaskObserver.Terminating.
      */
-    public void requestDeleteTerminatingObserver(TaskObserver.Terminating o) {
+    public void requestDeleteTerminatingObserver(Terminating o) {
 	logger.log(Level.FINE, "{0} requestDeleteTerminatingObserver\n", this);
 	getProc().requestDeleteObserver(this, terminatingObservers, o);
     }
 
+    /**
+     * Set of Execed observers.
+     */
+    private final TaskObservable execedObservers = new TaskObservable(this);
+    /**
+     * Notify all Execed observers, of this Task's demise. Return the
+     * number of blocking observers.
+     */
+    int notifyExeced() {
+	//Flush the isa in case it has changed between exec's.
+	clearIsa();
+	//XXX: When should the isa be rebuilt?
+	for (Iterator i = execedObservers.iterator(); i.hasNext();) {
+	    TaskObserver.Execed observer = (TaskObserver.Execed) i.next();
+	    if (observer.updateExeced(this) == Action.BLOCK)
+		blockers.add(observer);
+	}
+	return blockers.size();
+    }
     /**
      * Add TaskObserver.Execed to the TaskObserver pool.
      */
@@ -586,13 +729,48 @@ public class LinuxPtraceTask extends LiveTask {
     }
 
     /**
+     * Set of Syscall observers. Checked in TaskState.
+     *
+     * FIXME: LinuxPtraceProc screws around with this; should be
+     * private.
+     */
+    final TaskObservable syscallObservers = new TaskObservable(this);
+    /**
+     * Notify all Syscall observers of this Task's entry into a system
+     * call.  Return the number of blocking observers.
+     */
+    int notifySyscallEnter() {
+	logger.log(Level.FINE,
+		   "{0} notifySyscallEnter\n", this);
+	Syscall syscall = getSyscallTable().getSyscall(this);
+	for (Iterator i = syscallObservers.iterator(); i.hasNext();) {
+	    TaskObserver.Syscalls observer = (TaskObserver.Syscalls) i.next();
+	    if (observer.updateSyscallEnter(this, syscall) == Action.BLOCK)
+		blockers.add(observer);
+	}
+	return blockers.size();
+    }
+    /**
+     * Notify all Syscall observers of this Task's exit from a system
+     * call. Return the number of blocking observers.
+     */
+    int notifySyscallExit() {
+	logger.log(Level.FINE,
+		   "{0} notifySyscallExit {1}\n", this);
+	for (Iterator i = syscallObservers.iterator(); i.hasNext();) {
+	    TaskObserver.Syscalls observer = (TaskObserver.Syscalls) i.next();
+	    if (observer.updateSyscallExit(this) == Action.BLOCK)
+		blockers.add(observer);
+	}
+	return blockers.size();
+    }
+    /**
      * Add TaskObserver.Syscalls to the TaskObserver pool.
      */
     public void requestAddSyscallsObserver(TaskObserver.Syscalls o) {
 	logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
 	getProc().requestAddSyscallObserver(this, syscallObservers, o);
     }
-
     /**
      * Delete TaskObserver.Syscall.
      */
@@ -601,6 +779,24 @@ public class LinuxPtraceTask extends LiveTask {
 	getProc().requestDeleteSyscallObserver(this, syscallObservers, o);
     }
 
+
+    /**
+     * Set of Signaled observers.
+     */
+    private final TaskObservable signaledObservers = new TaskObservable(this);
+    /**
+     * Notify all Signaled observers of the signal. Return the number
+     * of blocking observers.
+     */
+    int notifySignaled(int sig) {
+	logger.log(Level.FINE, "{0} notifySignaled(int)\n", this);
+	for (Iterator i = signaledObservers.iterator(); i.hasNext();) {
+	    TaskObserver.Signaled observer = (TaskObserver.Signaled) i.next();
+	    if (observer.updateSignaled(this, sig) == Action.BLOCK)
+		blockers.add(observer);
+	}
+	return blockers.size();
+    }
     /**
      * Add TaskObserver.Signaled to the TaskObserver pool.
      */
@@ -608,7 +804,6 @@ public class LinuxPtraceTask extends LiveTask {
 	logger.log(Level.FINE, "{0} requestAddSignaledObserver\n", this);
 	getProc().requestAddObserver(this, signaledObservers, o);
     }
-
     /**
      * Delete TaskObserver.Signaled.
      */
@@ -618,6 +813,33 @@ public class LinuxPtraceTask extends LiveTask {
     }
 
   
+    /**
+     * Set of Code observers.
+     *
+     * FIXME: Should be private only LinuxPtraceTaskState grubs around
+     * with this variable.
+     */
+    final TaskObservable codeObservers = new TaskObservable(this);
+    /**
+     * Notify all Code observers of the breakpoint. Return the number
+     * of blocking observers or -1 if no Code observer were installed
+     * on this address.
+     */
+    int notifyCodeBreakpoint(long address) {
+	logger.log(Level.FINE, "{0} notifyCodeBreakpoint({1})\n",
+		   new Object[] { this, Long.valueOf(address) });
+	Collection observers = getProc().breakpoints.getCodeObservers(address);
+	if (observers == null)
+	    return -1;
+	Iterator i = observers.iterator();
+	while (i.hasNext()) {
+	    TaskObserver.Code observer = (TaskObserver.Code) i.next();
+	    if (codeObservers.contains(observer))
+		if (observer.updateHit(this, address) == Action.BLOCK)
+		    blockers.add(observer);
+	}
+	return blockers.size();
+    }
     /**
      * Add TaskObserver.Code to the TaskObserver pool.
      */
@@ -634,6 +856,29 @@ public class LinuxPtraceTask extends LiveTask {
 	getProc().requestDeleteCodeObserver(this, codeObservers, o, a);
     }
 
+  
+    /**
+     * Set of Instruction observers.
+     *
+     * FIXME: LinuxPtraceProc and LinuxPtraceTaskState grub around
+     * with this; chould not be public.
+     */
+    final TaskObservable instructionObservers = new TaskObservable(this);
+    /**
+     * Notify all Instruction observers. Returns the total number of
+     * blocking observers.
+     */
+    int notifyInstruction() {
+	logger.log(Level.FINE, "{0} notifyInstruction()\n", this);
+	Iterator i = instructionObservers.iterator();
+	while (i.hasNext()) {
+	    TaskObserver.Instruction observer;
+	    observer = (TaskObserver.Instruction) i.next();
+	    if (observer.updateExecuted(this) == Action.BLOCK)
+		blockers.add(observer);
+	}
+	return blockers.size();
+    }
     /**
      * Request the addition of a Instruction observer that will be
      * notified as soon as the task executes an instruction.
@@ -645,7 +890,6 @@ public class LinuxPtraceTask extends LiveTask {
 	logger.log(Level.FINE, "{0} requestAddInstructionObserver\n", this);
 	getProc().requestAddInstructionObserver(this, instructionObservers, o);
     }
-
     /**
      * Delete TaskObserver.Instruction from the TaskObserver pool.
      */

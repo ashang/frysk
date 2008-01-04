@@ -490,7 +490,7 @@ public class LinuxPtraceProc extends LiveProc {
 		    handleAddObservation(this);
 		}
 		public boolean needsSuspendedAction() {
-		    return task.syscallObservers.numberOfObservers() == 0;
+		    return ((LinuxPtraceTask)task).syscallObservers.numberOfObservers() == 0;
 		}
 	    };
 	Manager.eventLoop.add(to);
@@ -533,7 +533,7 @@ public class LinuxPtraceProc extends LiveProc {
 		}
 
 		public boolean needsSuspendedAction() {
-		    return task.syscallObservers.numberOfObservers() == 1;
+		    return ((LinuxPtraceTask)task).syscallObservers.numberOfObservers() == 1;
 		}
 	    };
 	Manager.eventLoop.add(to);
@@ -671,7 +671,7 @@ public class LinuxPtraceProc extends LiveProc {
 		}
 
 		public boolean needsSuspendedAction() {
-		    return task.instructionObservers.numberOfObservers() == 0;
+		    return ((LinuxPtraceTask)task).instructionObservers.numberOfObservers() == 0;
 		}
 
 		// Makes sure that the observer is properly added and then,
@@ -706,7 +706,7 @@ public class LinuxPtraceProc extends LiveProc {
 		    newState = oldState().handleDeleteObservation(LinuxPtraceProc.this, this);
 		}
 		public boolean needsSuspendedAction() {
-		    return task.instructionObservers.numberOfObservers() == 1;
+		    return ((LinuxPtraceTask)task).instructionObservers.numberOfObservers() == 1;
 		}
 	    };
 	Manager.eventLoop.add(to);

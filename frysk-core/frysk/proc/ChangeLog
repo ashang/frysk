@@ -1,5 +1,20 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskObservable.java: Make public.
+	* Task.java (terminatingObservers): Delete.
+	(notifyTerminating(boolean,int)): Delete.
+	(terminatedObservers, notifyTerminated(boolean,int)): Delete.
+	(execedObservers, notifyExeced()): Delete.
+	(attachedObservers, notifyAttached()): Delete.
+	(signaledObservers, notifySignaled(int)): Delete.
+	(syscallObservers, notifySyscallEnter(), notifySyscallExit): Delete.
+	(clonedObservers, notifyClonedParent(Task))
+	(notifyClonedOfspring()): Delete.
+	(forkedObservers, notifyForkedParent(Task))
+	(notifyForkedOfspring()): Delete.
+	(instructionObservers, notifyInstruction()): Delete.
+	(codeObservers, notifyCodeBreakpoint()): New.
+
 	* Task.java (removeObservers()): Delete.
 
 	* Proc.java (performRemoval()): Delete.

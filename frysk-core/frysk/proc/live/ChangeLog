@@ -1,5 +1,20 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTask.java (terminatingObservers): New.
+	(notifyTerminating(boolean,int)): New.
+	(terminatedObservers, notifyTerminated(boolean,int)): New.
+	(execedObservers, notifyExeced()): New.
+	(signaledObservers, notifySignaled(int)): New.
+	(syscallObservers, notifySyscallEnter(), notifySyscallExit()): New.
+	(clonedObservers, notifyClonedParent(Task))
+	(notifyClonedOfspring()): New.
+	(forkedObservers, notifyForkedParent(Task))
+	(notifyForkedOfspring()): New.
+	(instructionObservers, notifyInstruction()): New.
+	(attachedObservers, notifyAttached()): New.
+	(codeObservers, notifyCodeBreakpoint()): New.
+	* LinuxPtraceProc.java: Update.
+	
 	* LinuxPtraceTask.java (removeObservers()): Copied to here from
 	frysk.proc.Task.
 

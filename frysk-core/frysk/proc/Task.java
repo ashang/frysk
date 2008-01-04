@@ -39,15 +39,13 @@
 
 package frysk.proc;
 
-import frysk.syscall.Syscall;
+import frysk.proc.TaskObserver.Terminating;
 import frysk.syscall.SyscallTable;
 import frysk.syscall.SyscallTableFactory;
 import java.util.LinkedList;
 import inua.eio.ByteBuffer;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Observer;
@@ -63,7 +61,10 @@ public abstract class Task {
      * If known, as a result of tracing clone or fork, the task that
      * created this task.
      */
-    final Task creator;
+    private final Task creator;
+    public Task getCreator() {
+	return creator;
+    }
 
     /**
      * Return the task's corresponding TaskId.
@@ -243,327 +244,76 @@ public abstract class Task {
     public abstract void requestUnblock(final TaskObserver observerArg);
 
     /**
-     * Set of Cloned observers.
-     *
-     * XXX: Should not be public.
-     */
-    public final TaskObservable clonedObservers = new TaskObservable(this);
-
-    /**
      * Add a TaskObserver.Cloned observer.
      */
     public abstract void requestAddClonedObserver(TaskObserver.Cloned o);
-
     /**
      * Delete a TaskObserver.Cloned observer.
      */
     public abstract void requestDeleteClonedObserver(TaskObserver.Cloned o);
 
     /**
-     * Notify all cloned observers that this task cloned. Return the
-     * number of blocking observers.
-     *
-     * XXX: Should not be public.
-     */
-    public int notifyClonedParent(Task offspring) {
-	for (Iterator i = clonedObservers.iterator(); i.hasNext();) {
-	    TaskObserver.Cloned observer = (TaskObserver.Cloned) i.next();
-	    if (observer.updateClonedParent(this, offspring) == Action.BLOCK) {
-		blockers.add(observer);
-	    }
-	}
-	return blockers.size();
-    }
-
-    /**
-     * Notify all cloned observers that this task cloned. Return the
-     * number of blocking observers.
-     *
-     * XXX: Should not be public.
-     */
-    public int notifyClonedOffspring() {
-	logger.log(Level.FINE, "{0} notifyClonedOffspring\n", this);
-	for (Iterator i = creator.clonedObservers.iterator(); i.hasNext();) {
-	    TaskObserver.Cloned observer = (TaskObserver.Cloned) i.next();
-	    if (observer.updateClonedOffspring(creator, this) == Action.BLOCK) {
-		blockers.add(observer);
-	    }
-	}
-	return blockers.size();
-    }
-
-    /**
-     * Set of Attached observers.
-     *
-     * XXX: Should not be public.
-     */
-    public final TaskObservable attachedObservers = new TaskObservable(this);
-
-    /**
      * Add a TaskObserver.Attached observer.
      */
     public abstract void requestAddAttachedObserver(TaskObserver.Attached o);
-
     /**
      * Delete a TaskObserver.Attached observer.
      */
     public abstract void requestDeleteAttachedObserver(TaskObserver.Attached o);
 
     /**
-     * Notify all Attached observers that this task attached. Return
-     * the number of blocking observers.
-     *
-     * XXX: Should not be public.
-     */
-    public int notifyAttached() {
-	logger.log(Level.FINE, "{0} notifyAttached\n", this);
-	//Fill isa on attach.
-	getIsa();
-	for (Iterator i = attachedObservers.iterator(); i.hasNext();) {
-	    TaskObserver.Attached observer = (TaskObserver.Attached) i.next();
-	    if (observer.updateAttached(this) == Action.BLOCK)
-		blockers.add(observer);
-	}
-	return blockers.size();
-    }
-
-    /**
-     * Set of Forked observers.
-     *
-     * XXX: Should not be public.
-     */
-    public final TaskObservable forkedObservers = new TaskObservable(this);
-
-    /**
      * Add a TaskObserver.Forked observer.
      */
     public abstract void requestAddForkedObserver(TaskObserver.Forked o);
-
     /**
      * Delete a TaskObserver.Forked observer.
      */
     public abstract void requestDeleteForkedObserver(TaskObserver.Forked o);
 
     /**
-     * Notify all Forked observers that this task forked. Return the
-     * number of blocking observers.
-     *
-     * XXX: Should not be public.
-     */
-    public int notifyForkedParent(Task offspring) {
-	for (Iterator i = forkedObservers.iterator(); i.hasNext();) {
-	    TaskObserver.Forked observer = (TaskObserver.Forked) i.next();
-	    if (observer.updateForkedParent(this, offspring) == Action.BLOCK) {
-		blockers.add(observer);
-	    }
-	}
-	return blockers.size();
-    }
-
-    /**
-     * Notify all Forked observers that this task's new offspring,
-     * created using fork, is sitting at the first instruction.
-     *
-     * XXX: Should not be public.
-     */
-    public int notifyForkedOffspring() {
-	for (Iterator i = creator.forkedObservers.iterator(); i.hasNext();) {
-	    TaskObserver.Forked observer = (TaskObserver.Forked) i.next();
-	    if (observer.updateForkedOffspring(creator, this) == Action.BLOCK) {
-		blockers.add(observer);
-	    }
-	}
-	return blockers.size();
-    }
-
-    /**
-     * Set of Terminated observers.
-     *
-     * XXX: Should not be public.
-     */
-    public final TaskObservable terminatedObservers = new TaskObservable(this);
-
-    /**
      * Add a TaskObserver.Terminated observer.
      */
     public abstract void requestAddTerminatedObserver(TaskObserver.Terminated o);
-
     /**
      * Delete a TaskObserver.Terminated observer.
      */
     public abstract void requestDeleteTerminatedObserver(TaskObserver.Terminated o);
 
     /**
-     * Notify all Terminated observers, of this Task's demise. Return
-     * the number of blocking observers.(Does this make any sense?)
-     *
-     * XXX: Should not be public.
+     * Add the Terminating observer to the TaskObserver pool.
      */
-    public int notifyTerminated(boolean signal, int value) {
-	logger.log(Level.FINE, "{0} notifyTerminated\n", this);
-	for (Iterator i = terminatedObservers.iterator(); i.hasNext();) {
-	    TaskObserver.Terminated observer = (TaskObserver.Terminated) i.next();
-	    if (observer.updateTerminated(this, signal, value) == Action.BLOCK) {
-		logger.log(Level.FINER,
-			   "{0} notifyTerminated adding {1} to blockers\n",
-			   new Object[] { this, observer });
-		blockers.add(observer);
-	    }
-	}
-	return blockers.size();
-    }
-
+    public abstract void requestAddTerminatingObserver(Terminating o);
     /**
-     * Set of Terminating observers.
-     *
-     * XXX: Should not be public.
+     * Delete the Terminating observer.
      */
-    public final TaskObservable terminatingObservers = new TaskObservable(this);
-
-    /**
-     * Add TaskObserver.Terminating to the TaskObserver pool.
-     */
-    public abstract void requestAddTerminatingObserver(TaskObserver.Terminating o);
-
-    /**
-     * Delete TaskObserver.Terminating.
-     */
-    public abstract void requestDeleteTerminatingObserver(TaskObserver.Terminating o);
-
-    /**
-     * Notify all Terminating observers, of this Task's demise. Return
-     * the number of blocking observers.
-     *
-     * XXX: Should not be public.
-     */
-    public int notifyTerminating(boolean signal, int value) {
-	for (Iterator i = terminatingObservers.iterator(); i.hasNext();) {
-	    TaskObserver.Terminating observer = (TaskObserver.Terminating) i.next();
-	    if (observer.updateTerminating(this, signal, value) == Action.BLOCK)
-		blockers.add(observer);
-	}
-	return blockers.size();
-    }
-
-    /**
-     * Set of Execed observers.
-     *
-     * XXX: Should not be public.
-     */
-    public final TaskObservable execedObservers = new TaskObservable(this);
+    public abstract void requestDeleteTerminatingObserver(Terminating o);
 
     /**
      * Add TaskObserver.Execed to the TaskObserver pool.
      */
     public abstract void requestAddExecedObserver(TaskObserver.Execed o);
-
     /**
      * Delete TaskObserver.Execed.
      */
     public abstract void requestDeleteExecedObserver(TaskObserver.Execed o);
 
     /**
-     * Notify all Execed observers, of this Task's demise. Return the
-     * number of blocking observers.
-     *
-     * XXX: Should not be public.
-     */
-    public int notifyExeced() {
-	//Flush the isa in case it has changed between exec's.
-	clearIsa();
-	//XXX: When should the isa be rebuilt?
-	for (Iterator i = execedObservers.iterator(); i.hasNext();) {
-	    TaskObserver.Execed observer = (TaskObserver.Execed) i.next();
-	    if (observer.updateExeced(this) == Action.BLOCK)
-		blockers.add(observer);
-	}
-	return blockers.size();
-    }
-
-    /**
-     * Set of Syscall observers. Checked in TaskState.
-     *
-     * XXX: Should not be public.
-     */
-    public final TaskObservable syscallObservers = new TaskObservable(this);
-
-    /**
      * Add TaskObserver.Syscalls to the TaskObserver pool.
      */
     public abstract void requestAddSyscallsObserver(TaskObserver.Syscalls o);
-
     /**
      * Delete TaskObserver.Syscall.
      */
     public abstract void requestDeleteSyscallsObserver(TaskObserver.Syscalls o);
 
     /**
-     * Notify all Syscall observers of this Task's entry into a system
-     * call.  Return the number of blocking observers.
-     *
-     * XXX: Should not be public.
-     */
-    public int notifySyscallEnter() {
-	logger.log(Level.FINE,
-		   "{0} notifySyscallEnter\n", this);
-	Syscall syscall = getSyscallTable().getSyscall(this);
-	for (Iterator i = syscallObservers.iterator(); i.hasNext();) {
-	    TaskObserver.Syscalls observer = (TaskObserver.Syscalls) i.next();
-	    if (observer.updateSyscallEnter(this, syscall) == Action.BLOCK)
-		blockers.add(observer);
-	}
-	return blockers.size();
-    }
-
-    /**
-     * Notify all Syscall observers of this Task's exit from a system
-     * call. Return the number of blocking observers.
-     *
-     * XXX: Should not be public.
-     */
-    public int notifySyscallExit() {
-	logger.log(Level.FINE,
-		   "{0} notifySyscallExit {1}\n", this);
-	for (Iterator i = syscallObservers.iterator(); i.hasNext();) {
-	    TaskObserver.Syscalls observer = (TaskObserver.Syscalls) i.next();
-	    if (observer.updateSyscallExit(this) == Action.BLOCK)
-		blockers.add(observer);
-	}
-	return blockers.size();
-    }
-
-    /**
-     * Set of Signaled observers.
-     *
-     * XXX: Should not be public.
-     */
-    public final TaskObservable signaledObservers = new TaskObservable(this);
-
-    /**
      * Add TaskObserver.Signaled to the TaskObserver pool.
      */
     public abstract void requestAddSignaledObserver(TaskObserver.Signaled o);
-
     /**
      * Delete TaskObserver.Signaled.
      */
     public abstract void requestDeleteSignaledObserver(TaskObserver.Signaled o);
-
-    /**
-     * Notify all Signaled observers of the signal. Return the number
-     * of blocking observers.
-     *
-     * XXX: Should not be public.
-     */
-    public int notifySignaled(int sig) {
-	logger.log(Level.FINE, "{0} notifySignaled(int)\n", this);
-	for (Iterator i = signaledObservers.iterator(); i.hasNext();) {
-	    TaskObserver.Signaled observer = (TaskObserver.Signaled) i.next();
-	    if (observer.updateSignaled(this, sig) == Action.BLOCK)
-		blockers.add(observer);
-	}
-	return blockers.size();
-    }
 
     private ByteBuffer memory;
     protected abstract ByteBuffer sendrecMemory();
@@ -592,17 +342,9 @@ public abstract class Task {
     }
 
     /**
-     * Set of Code observers.
-     *
-     * XXX: Should not be public.
-     */
-    public final TaskObservable codeObservers = new TaskObservable(this);
-  
-    /**
      * Add TaskObserver.Code to the TaskObserver pool.
      */
     public abstract void requestAddCodeObserver(TaskObserver.Code o, long a);
-
     /**
      * Delete TaskObserver.Code for the TaskObserver pool.
      */
@@ -644,38 +386,6 @@ public abstract class Task {
     public boolean syscall_sigret;
 
     /**
-     * Notify all Code observers of the breakpoint. Return the number
-     * of blocking observers or -1 if no Code observer were installed
-     * on this address.
-     *
-     * XXX: Should not be public.
-     */
-    public int notifyCodeBreakpoint(long address) {
-	logger.log(Level.FINE, "{0} notifyCodeBreakpoint({1})\n",
-		   new Object[] { this, Long.valueOf(address) });
-    
-	Collection observers = proc.breakpoints.getCodeObservers(address);
-	if (observers == null)
-	    return -1;
-
-	Iterator i = observers.iterator();
-	while (i.hasNext()) {
-	    TaskObserver.Code observer = (TaskObserver.Code) i.next();
-	    if (codeObservers.contains(observer))
-		if (observer.updateHit(this, address) == Action.BLOCK)
-		    blockers.add(observer);
-	}
-	return blockers.size();
-    }
-
-    /**
-     * Set of Instruction observers.
-     *
-     * XXX: Should not be public.
-     */
-    public TaskObservable instructionObservers = new TaskObservable(this);
-  
-    /**
      * Request the addition of a Instruction observer that will be
      * notified as soon as the task executes an instruction.
      * <code>o.updateExecuted</code> is called as soon as the Task
@@ -683,29 +393,10 @@ public abstract class Task {
      * the next instruction.
      */
     public abstract void requestAddInstructionObserver(TaskObserver.Instruction o);
-
     /**
      * Delete TaskObserver.Instruction from the TaskObserver pool.
      */
     public abstract void requestDeleteInstructionObserver(TaskObserver.Instruction o);
-  
-    /**
-     * Notify all Instruction observers. Returns the total number of
-     * blocking observers.
-     *
-     * XXX: Should not be public.
-     */
-    public int notifyInstruction() {
-	logger.log(Level.FINE, "{0} notifyInstruction()\n", this);
-	Iterator i = instructionObservers.iterator();
-	while (i.hasNext()) {
-	    TaskObserver.Instruction observer;
-	    observer = (TaskObserver.Instruction) i.next();
-	    if (observer.updateExecuted(this) == Action.BLOCK)
-		blockers.add(observer);
-	}
-	return blockers.size();
-    }
 
     /**
      * List containing the TaskObservations that are pending addition
