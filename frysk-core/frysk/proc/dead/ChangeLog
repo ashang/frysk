@@ -1,5 +1,8 @@
 2008-01-03  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxExeProcState.java: Delete.
+	* LinuxExeTaskState.java: Delete.
+
 	* DeadTask.java (requestAddInstructionObserver(TaskObserver.Instruction)): New.
 	(requestDeleteInstructionObserver(TaskObserver.Instruction)): New.
 
