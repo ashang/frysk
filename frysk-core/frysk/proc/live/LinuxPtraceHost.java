@@ -262,11 +262,14 @@ public class LinuxPtraceHost extends LiveHost {
     /**
      * Return a pointer to this <em>frysk</em> instance.
      */
-    protected Proc sendrecSelf ()
-    {
-	ProcChanges procChanges = new ProcChanges();
-	return procChanges.update(Pid.get());
-    }  
+    public Proc getSelf() {
+	if (self == null) {
+	    ProcChanges procChanges = new ProcChanges();
+	    self = procChanges.update(Pid.get());
+	}
+	return self;
+    }
+    private Proc self;
 
     void sendGetProc (final ProcId procId, final FindProc finder)
     {

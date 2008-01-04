@@ -159,10 +159,6 @@ public class LinuxCoreHost extends DeadHost {
 
     }
 
-    protected Proc sendrecSelf() {
-	return null;
-    }
-
     private class DeconstructCoreFile {
 	List addedProcs = new LinkedList();
 

@@ -1,5 +1,9 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* Host.java (getSelf()): Make abstract.
+	(sendrecSelf()): Delete.
+	(self): Delete.
+
 	* Host.java (requestRefreshXXX()): Make abstract.
 	(sendRefresh(boolean)): Delete.
 

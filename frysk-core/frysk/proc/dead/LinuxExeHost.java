@@ -88,14 +88,6 @@ public class LinuxExeHost extends DeadHost {
 	return;
     }
 
-    /**
-     * sendrecSelf sends a point to frysk back, but no need for this 
-     * for an executable.
-     */
-    protected Proc sendrecSelf() {
-	return null;
-    }
-    
     private class DeconstructExeFile
     {
       List addedProcs = new LinkedList();

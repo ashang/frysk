@@ -54,8 +54,8 @@ public class DummyHost extends Host {
 					  Attached attached) {
 	throw new RuntimeException("requestCreateAttachedProc");
     }
-    protected Proc sendrecSelf() {
-	return null;
+    public Proc getSelf() {
+	throw new RuntimeException("getSelf");
     }
     protected void sendRefresh (ProcId procId, FindProc finder) {
     }

@@ -1,5 +1,7 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceHost.java (getSelf()): Replace sendrecSelf(). 
+	
 	* LinuxPtraceHost.java (requestRefreshXXX()): New.
 	(sendRefresh(boolean)): Make private.
 	

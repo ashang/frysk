@@ -41,6 +41,7 @@ package frysk.proc.dead;
 
 import frysk.proc.Host;
 import frysk.proc.TaskObserver.Attached;
+import frysk.proc.Proc;
 
 /**
  * A dead Host/Proc/Task is characterised by its lack of state, and an
@@ -56,5 +57,8 @@ abstract class DeadHost extends Host {
     }
     public void requestRefreshXXX() {
 	// ignore.
+    }
+    public Proc getSelf() {
+	throw new RuntimeException("getSelf");
     }
 }

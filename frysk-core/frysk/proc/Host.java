@@ -213,19 +213,7 @@ public abstract class Host {
      * Return the process corresponding to this running frysk instance
      * found on this host.
      */
-    public Proc getSelf() {
-	if (self == null)
-	    self = sendrecSelf();
-	return self;
-    }
-    /**
-     * Pointer to <em>frysk</em> running on this Host.
-     */
-    private Proc self;
-    /**
-     * Extract a pointer to <em>frysk</em> running on this Host.
-     */
-    protected abstract Proc sendrecSelf();
+    public abstract Proc getSelf();
 
     /**
      * Print this.

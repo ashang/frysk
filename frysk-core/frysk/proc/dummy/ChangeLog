@@ -1,5 +1,7 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* DummyHost.java (getSelf()): Replace sendrecSelf().
+
 	* DummyHost.java (requestRefreshXXX()): Replace
 	sendRefresh(boolean).
 	
