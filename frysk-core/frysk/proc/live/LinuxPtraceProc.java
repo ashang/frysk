@@ -358,7 +358,7 @@ public class LinuxPtraceProc extends LiveProc {
      *
      * XXX: This should not be public.
      */
-    public void performRemoval() {
+    void performRemoval() {
 	logger.log(Level.FINEST, "{0} performRemoval -- no longer in /proc\n", this);
 	Manager.eventLoop.add(new ProcEvent() {
 		public void execute() {
@@ -373,7 +373,7 @@ public class LinuxPtraceProc extends LiveProc {
      *
      * XXX: Should not be public.
      */
-    public void performTaskAttachCompleted (final Task theTask) {
+    void performTaskAttachCompleted (final Task theTask) {
 	logger.log(Level.FINE, "{0} performTaskAttachCompleted\n", this);
 	Manager.eventLoop.add(new ProcEvent() {
 		Task task = theTask;
@@ -390,7 +390,7 @@ public class LinuxPtraceProc extends LiveProc {
      *
      * XXX: Should not be public.
      */
-    public void performTaskDetachCompleted(final Task theTask) {
+    void performTaskDetachCompleted(final Task theTask) {
 	logger.log(Level.FINE, "{0} performTaskDetachCompleted\n", this);
 	Manager.eventLoop.add(new ProcEvent() {
 		Task task = theTask;
@@ -404,7 +404,7 @@ public class LinuxPtraceProc extends LiveProc {
      * (Internal) Tell the process that the corresponding task has
      * completed its detach.
      */
-    protected void performTaskDetachCompleted(final Task theTask, final Task theClone) {
+    void performTaskDetachCompleted(final Task theTask, final Task theClone) {
 	logger.log(Level.FINE, "{0} performTaskDetachCompleted/clone\n", this);
 	Manager.eventLoop.add(new ProcEvent() {
 		Task task = theTask;

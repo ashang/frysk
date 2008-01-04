@@ -89,18 +89,6 @@ public class DummyProc extends Proc {
     public void requestRefresh() {
 	throw new RuntimeException("oops!");
     }
-    public void performRemoval() {
-	throw new RuntimeException("oops!");
-    }
-    public void performTaskAttachCompleted (final Task theTask) {
-	throw new RuntimeException("oops!");
-    }
-    public void performTaskDetachCompleted(final Task theTask) {
-	throw new RuntimeException("oops!");
-    }
-    protected void performTaskDetachCompleted(final Task theTask, final Task theClone) {
-	throw new RuntimeException("oops!");
-    }
     protected void performDetach() {
 	throw new RuntimeException("oops!");
     }

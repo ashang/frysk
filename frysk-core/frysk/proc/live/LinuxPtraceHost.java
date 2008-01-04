@@ -185,7 +185,7 @@ public class LinuxPtraceHost extends LiveHost {
 	// destroyed.
 	for (Iterator i = procChanges.removed.values().iterator();
 	     i.hasNext();) {
-	    Proc proc = (Proc) i.next();
+	    LinuxPtraceProc proc = (LinuxPtraceProc) i.next();
 	    // XXX: Should there be a ProcEvent.schedule(), instead of
 	    // Manager .eventLoop .appendEvent for injecting the event
 	    // into the event loop?

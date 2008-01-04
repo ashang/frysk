@@ -1,5 +1,10 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* DummyProc.java (performRemoval()): Delete.
+	(performTaskAttachCompleted(Task)): Delete.
+	(performTaskDetachCompleted(Task)): Delete.
+	(performTaskDetachCompleted(Task,Task)): Delete.
+
 	* DummyTask.java (performRemoval()): Delete.
 	(performContinue()): Delete.
 	(performAttach(boolean)): Delete.

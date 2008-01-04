@@ -1,5 +1,12 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceProc.java (performRemoval()): Make package-private.
+	(performTaskAttachCompleted(Task)): Ditto.
+	(performTaskDetachCompleted(Task)): Ditto.
+	(performTaskDetachCompleted(Task,Task)): Ditto.
+	* LinuxPtraceTaskState.java: Update.
+	* LinuxPtraceHost.java: Update.
+
 	* LinuxPtraceProc.java (SyscallAction): Replace Task with
 	LinuxPtraceTask.
 	

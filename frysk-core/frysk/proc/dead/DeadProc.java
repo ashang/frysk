@@ -81,53 +81,6 @@ abstract class DeadProc extends Proc {
 	    });
     }
 
-    /**
-     * (Internal) Tell the process that is no longer listed in the
-     * system table remove itself.
-     *
-     * XXX: This should not be public.
-     */
-    public void performRemoval() {
-	logger.log(Level.FINEST, "{0} performRemoval -- no longer in /proc\n", this);
-	// XXX: Fake out for now. What kind of observers would you put
-	// on a core file? Might need a brain dead attached state in
-	// this scenario for compataibility.
-    }
-
-    /**
-     *(Internal) Tell the process that the corresponding task has
-     * completed its attach.
-     *
-     * XXX: Should not be public.
-     */
-    public void performTaskAttachCompleted (Task theTask) {
-	throw new RuntimeException("the process is already dead");
-    }
-
-    /**
-     * (Internal) Tell the process that the corresponding task has
-     * completed its detach.
-     *
-     * XXX: Should not be public.
-     */
-    public void performTaskDetachCompleted(Task theTask) {
-	logger.log(Level.FINE, "{0} performTaskDetachCompleted\n", this);
-	// XXX: Fake out for now. What kind of observers would you put
-	// on a core file? Might need a brain dead attached state in
-	// this scenario for compataibility.
-    }
-
-    /**
-     * (Internal) Tell the process that the corresponding task has
-     * completed its detach.
-     */
-    protected void performTaskDetachCompleted(Task theTask, Task theClone) {
-	logger.log(Level.FINE, "{0} performTaskDetachCompleted/clone\n", this);
-	// XXX: Fake out for now. What kind of observers would you put
-	// on a core file? Might need a brain dead attached state in
-	// this scenario for compataibility.
-    }
-
     protected void performDetach() {
 	logger.log(Level.FINE, "{0} performDetach\n", this);
 	// XXX: Fake out for now. What kind of observers would you put

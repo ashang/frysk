@@ -336,37 +336,6 @@ public abstract class Proc {
      */
     public abstract void requestRefresh();
 
-    /**
-     * (Internal) Tell the process that is no longer listed in the
-     * system table remove itself.
-     *
-     * XXX: This should not be public.
-     */
-    public abstract void performRemoval();
-
-    /**
-     *(Internal) Tell the process that the corresponding task has
-     * completed its attach.
-     *
-     * XXX: Should not be public.
-     */
-    public abstract void performTaskAttachCompleted(Task theTask);
-
-    /**
-     * (Internal) Tell the process that the corresponding task has
-     * completed its detach.
-     *
-     * XXX: Should not be public.
-     */
-    public abstract void performTaskDetachCompleted(Task theTask);
-
-    /**
-     * (Internal) Tell the process that the corresponding task has
-     * completed its detach.
-     */
-    protected abstract void performTaskDetachCompleted(Task theTask,
-						       Task theClone);
-
     protected abstract void performDetach();
 
     /**

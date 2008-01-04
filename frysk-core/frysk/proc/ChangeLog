@@ -1,5 +1,10 @@
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (performRemoval()): Delete.
+	(performTaskAttachCompleted(Task)): Delete.
+	(performTaskDetachCompleted(Task)): Delete.
+	(performTaskDetachCompleted(Task,Task)): Delete.
+
 	* Task.java (sendContinue(int)): Delete.
 	(sendSyscallContinue(int)): Delete.
 	(sendStepInstruction(int)): Delete.
