@@ -1,5 +1,7 @@
-2007-12-28  Andrew Cagney  <cagney@redhat.com>
+2008-01-04  Nurdin Premji  <npremji@redhat.com>
+        * TestCase.java (unresolvedCompilerNoSupportForAT_CLASS): New.
 
+2007-12-28  Andrew Cagney  <cagney@redhat.com>
 	* TestCase.java (unresolvedOn32On64()): New.
 	
 	* TestCase.java (missing32or64()): Rename skip32on64(); check both

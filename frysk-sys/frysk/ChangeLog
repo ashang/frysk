@@ -1,5 +1,8 @@
-2007-12-28  Andrew Cagney  <cagney@redhat.com>
+2008-01-04  Nurdin Premji  <npremji@redhat.com>
+        * CompilerVersion.java: New.
+        * cni/CompilerVersion.cxx: New.
 
+2007-12-28  Andrew Cagney  <cagney@redhat.com>
 	* cni/Config.cxx-in (Config::createInstallConfig)
 	(Config::createInstallConfig32, Config::createInstallConfig64)
 	(Config::createBuildConfig, Config::createBuildConfig32)
@@ -17,7 +20,7 @@
 	(testBuild32On64Dirs()): Delete.
 	(testInstallDirs(), testBuildDirs()): Update.
 
-2007-12-17  cagney  <cagney@redhat.com>
+2007-12-17  Andrew Cagney  <cagney@redhat.com>
 
 	* EventLogger.java (addConsoleOptions(Parser)): Add LogOption. 
 

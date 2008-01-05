@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,18 +37,27 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.value;
+#include <gcj/cni.h>
 
-/**
- * Type for a class
- */
-public class ClassType
-    extends CompositeType
-{
-    protected String getPrefix() {
-	return "class";
-    }
-    public ClassType(String name, int size) {
-	super(name, size);
-    }
+#include "frysk/CompilerVersion.h"
+
+jint
+frysk::CompilerVersion::getVersion() {
+	return (jint) __GNUC__;
+}
+
+
+jint
+frysk::CompilerVersion::getMinorVersion() {
+	return (jint) __GNUC_MINOR__;
+}
+
+jint
+frysk::CompilerVersion::getPatchLevel() {
+	return (jint) __GNUC_PATCHLEVEL__;
+}
+
+jint
+frysk::CompilerVersion::getRHRelease() {
+	return (jint) __GNUC_RH_RELEASE__;
 }

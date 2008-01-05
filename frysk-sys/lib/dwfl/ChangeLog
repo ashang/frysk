@@ -1,5 +1,10 @@
-2008-01-02  Tim Moore  <timoore@redhat.com>
+2007-01-04  Nurdin Premji  <npremji@redhat.com>
+        * DwarfDie.java (getProducer): New.
+        (getAttrString): New.
+        (get_attr_string): New.
+        * cni/DwarfDie.cxx (DwarfDie::get_attr_string): New.
 
+2008-01-02  Tim Moore  <timoore@redhat.com>
 	* cni/DwarfDie.cxx (iterate_decl): Don't descend into struture and
 	union types.
 

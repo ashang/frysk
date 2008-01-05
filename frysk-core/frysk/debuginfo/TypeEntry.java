@@ -40,10 +40,14 @@
 package frysk.debuginfo;
 
 import frysk.isa.ISA;
+import frysk.rsl.Level;
+import frysk.rsl.Log;
 import frysk.scopes.SourceLocation;
 import frysk.value.Access;
 import frysk.value.ArrayType;
 import frysk.value.CharType;
+import frysk.value.ClassType;
+import frysk.value.CompositeType;
 import frysk.value.ConstType;
 import frysk.value.EnumType;
 import frysk.value.FloatingPointType;
@@ -52,6 +56,7 @@ import frysk.value.GccStructOrClassType;
 import frysk.value.PointerType;
 import frysk.value.ReferenceType;
 import frysk.value.SignedType;
+import frysk.value.StructType;
 import frysk.value.Type;
 import frysk.value.TypeDef;
 import frysk.value.UnionType;
@@ -74,6 +79,8 @@ import lib.dwfl.DwarfDie;
 
 public class TypeEntry
 {
+    static protected Log fine = Log.get(TypeEntry.class, Level.FINE);
+    static protected Log finest = Log.get(TypeEntry.class, Level.FINEST);
     private final ByteOrder byteorder;
     private final HashMap dieHash;
 
@@ -118,7 +125,98 @@ public class TypeEntry
 	arrayType = new ArrayType(type, elementCount * typeSize, dims);
 	return arrayType;
     }
+    
+    
+    private void addMembers(DwarfDie classDie, CompositeType classType) {
+	LocationExpression locationExpression = null;
+	
+	for (DwarfDie member = classDie.getChild();
+	member != null;
+	member = member.getSibling()) {
+    
+    dumpDie("member=", member);
 
+    boolean staticMember = false;
+    long offset;
+    try {
+	offset = member.getDataMemberLocation();
+    } catch (DwAttributeNotFoundException de) {
+	offset = 0; // union
+	staticMember = true;
+	if(member.isDeclaration()){
+	    locationExpression = new LocationExpression(member.getDefinition());
+	}else{
+	    locationExpression = new LocationExpression(member);
+	}
+
+    }
+    
+    SourceLocation sourceLocation;
+    try{
+	sourceLocation = new SourceLocation(member.getDeclFile(), member.getDeclLine(), member.getDeclColumn());
+    }catch(DwAttributeNotFoundException e){
+	sourceLocation = SourceLocation.UNKNOWN;
+    }
+    
+    Access access = null;
+    switch (member.getAttrConstant(DwAt.ACCESSIBILITY)) {
+    case DwAccess.PUBLIC_: access = Access.PUBLIC; break;
+    case DwAccess.PROTECTED_: access = Access.PROTECTED; break;
+    case DwAccess.PRIVATE_: access = Access.PRIVATE; break;
+    }
+    
+    if (member.getTag() == DwTag.SUBPROGRAM) {
+	Value v = getSubprogramValue(member);
+	if(hasArtifitialParameter(member)){
+	    classType.addMember(member.getName(), sourceLocation, v.getType(), offset, access);
+	}else{
+	    classType.addStaticMember(locationExpression, member.getName(), sourceLocation, v.getType(), offset, access);
+	}
+	continue;
+    }
+    
+//    DwarfDie memberDieType = member.getUltimateType();
+//    if (memberDieType == null)
+//	continue;
+
+    Type memberType = getType (member.getType());
+    if (memberType instanceof UnknownType == false) {
+	// System V ABI Supplements discuss bit field layout
+	int bitSize = member
+	.getAttrConstant(DwAt.BIT_SIZE);
+	if (bitSize != -1) {
+	    int bitOffset = member
+	    .getAttrConstant(DwAt.BIT_OFFSET);
+	    if(staticMember){
+		classType.addStaticBitFieldMember(locationExpression, member.getName(), sourceLocation, memberType, offset, access,
+			    bitOffset, bitSize);
+	    }else{
+		classType.addBitFieldMember(member.getName(), sourceLocation, memberType, offset, access,
+			    bitOffset, bitSize);
+	    }
+	}
+	else{
+	    if(staticMember){
+		classType.addStaticMember(locationExpression, member.getName(), sourceLocation, memberType, offset, access);
+	    }else{
+		classType.addMember(member.getName(), sourceLocation, memberType, offset, access);
+	    }
+	    
+	}
+	continue;
+    }
+    else{
+	if(staticMember){
+	    classType.addStaticMember(locationExpression, member.getName(), sourceLocation, new UnknownType(member
+		.getName()), offset, access);
+	}else{
+	    classType.addMember(member.getName(), sourceLocation, new UnknownType(member
+			.getName()), offset, access);
+	}
+    }
+}
+    }
+    
     /**
      * @param classDie
      *                A struct die
@@ -126,100 +224,95 @@ public class TypeEntry
      *                Name of the struct
      * @return GccStructOrClassType for the struct
      */
-    public GccStructOrClassType getGccStructOrClassType(DwarfDie classDie, String name) {
-	
-	LocationExpression locationExpression = null;
+    public CompositeType getGccStructOrClassType(DwarfDie classDie, String name) {
+	dumpDie("structOrClassDie=", classDie);
 
+	CompositeType type;
+	// XXX: Maybe store compiler version for each program somewhere so this
+	// test doesn't need to be done multiple times.
+
+	String compiler = classDie.getProducer();
+	boolean compilerSupport = compilerSupportsClassType(compiler);
+	fine.log("Compiler support determined as:" + compilerSupport);
+
+	/*
+	 * If the compiler supported class types and this was a class, it would
+	 * have been detected as a ClassType. Since it was not, it must be a
+	 * struct
+	 */
+	if (compilerSupport)
+	    type = new StructType(name, getByteSize(classDie));
+	else
+	    type = new GccStructOrClassType(name, getByteSize(classDie));
+
+	addMembers(classDie, type);
+
+	return type;
+    }
+    
+    
+    // XXX: Perhaps make factory with multiple compilers that support ClassType.
+    private boolean compilerSupportsClassType(String compiler)
+    {
+	//XXX: GNU C specific.
+	fine.log("Found compiler: ", compiler);
+	
+	//String looks like: GNU C 4.1.2 20070925 (Red Hat 4.1.2-33)
+	if (!compiler.contains("GNU C"))
+	    return false;
+	
+	finest.log("Compiler is GNU C");
+	
+	String preCompilerVersion = "(Red Hat ";
+	
+	String compilerVersion = compiler.substring(compiler.indexOf(preCompilerVersion) 
+		+ preCompilerVersion.length(), compiler.lastIndexOf(')'));
+	
+	String[] versions = compilerVersion.split("\\.");
+	
+	if (versions.length < 3)
+	    return false;
+	
+	finest.log("Version string has 3 sections");
+	
+	if (Integer.parseInt(versions[0]) < 4)
+	    return false;
+	
+	finest.log("Major Version is >= 4");
+	
+	if (Integer.parseInt(versions[1]) < 1)
+	    return false;
+	
+	finest.log("Minor Version is >= 1");
+	
+	String [] minorVersions = versions[2].split("-");
+	
+	if (Integer.parseInt(minorVersions[0]) < 2)
+	    return false;
+	
+	finest.log("More minor version is >= 2");
+	
+	if (Integer.parseInt(minorVersions[1]) < 37)
+	    return false;
+	
+	finest.log("Most Minor version is >= 37");
+	
+	return true;
+    }
+    
+    /**
+     * 
+     * @param classDie
+     * 		A class die
+     * @param name 
+     * 		Name of the class
+     * @return ClassType for the class.
+     */
+    public ClassType getClassType(DwarfDie classDie, String name) {
 	dumpDie("classDie=", classDie);
-
-	GccStructOrClassType classType = new GccStructOrClassType(name, getByteSize(classDie));
 	
-	for (DwarfDie member = classDie.getChild();
-		member != null;
-		member = member.getSibling()) {
-	    
-	    dumpDie("member=", member);
-	
-	    boolean staticMember = false;
-	    long offset;
-	    try {
-		offset = member.getDataMemberLocation();
-	    } catch (DwAttributeNotFoundException de) {
-		offset = 0; // union
-		staticMember = true;
-		if(member.isDeclaration()){
-		    locationExpression = new LocationExpression(member.getDefinition());
-		}else{
-		    locationExpression = new LocationExpression(member);
-		}
-
-	    }
-	    
-	    SourceLocation sourceLocation;
-	    try{
-		sourceLocation = new SourceLocation(member.getDeclFile(), member.getDeclLine(), member.getDeclColumn());
-	    }catch(DwAttributeNotFoundException e){
-		sourceLocation = SourceLocation.UNKNOWN;
-	    }
-	    
-	    Access access = null;
-	    switch (member.getAttrConstant(DwAt.ACCESSIBILITY)) {
-	    case DwAccess.PUBLIC_: access = Access.PUBLIC; break;
-	    case DwAccess.PROTECTED_: access = Access.PROTECTED; break;
-	    case DwAccess.PRIVATE_: access = Access.PRIVATE; break;
-	    }
-	    
-	    if (member.getTag() == DwTag.SUBPROGRAM) {
-		Value v = getSubprogramValue(member);
-		if(hasArtifitialParameter(member)){
-		    classType.addMember(member.getName(), sourceLocation, v.getType(), offset, access);
-		}else{
-		    classType.addStaticMember(locationExpression, member.getName(), sourceLocation, v.getType(), offset, access);
-		}
-		continue;
-	    }
-	    
-//	    DwarfDie memberDieType = member.getUltimateType();
-//	    if (memberDieType == null)
-//		continue;
-
-	    Type memberType = getType (member.getType());
-	    if (memberType instanceof UnknownType == false) {
-		// System V ABI Supplements discuss bit field layout
-		int bitSize = member
-		.getAttrConstant(DwAt.BIT_SIZE);
-		if (bitSize != -1) {
-		    int bitOffset = member
-		    .getAttrConstant(DwAt.BIT_OFFSET);
-		    if(staticMember){
-			classType.addStaticBitFieldMember(locationExpression, member.getName(), sourceLocation, memberType, offset, access,
-				    bitOffset, bitSize);
-		    }else{
-			classType.addBitFieldMember(member.getName(), sourceLocation, memberType, offset, access,
-				    bitOffset, bitSize);
-		    }
-		}
-		else{
-		    if(staticMember){
-			classType.addStaticMember(locationExpression, member.getName(), sourceLocation, memberType, offset, access);
-		    }else{
-			classType.addMember(member.getName(), sourceLocation, memberType, offset, access);
-		    }
-		    
-		}
-		continue;
-	    }
-	    else{
-		if(staticMember){
-		    classType.addStaticMember(locationExpression, member.getName(), sourceLocation, new UnknownType(member
-			.getName()), offset, access);
-		}else{
-		    classType.addMember(member.getName(), sourceLocation, new UnknownType(member
-				.getName()), offset, access);
-		}
-	    }
-	}
-
+	ClassType classType = new ClassType(name, getByteSize(classDie));
+	addMembers(classDie, classType);
 	return classType;
     }
 
@@ -403,8 +496,14 @@ public class TypeEntry
 	    break;
 	}
 	case DwTag.STRUCTURE_TYPE_: {
-	    GccStructOrClassType classType = 
+	    CompositeType classType = 
 		getGccStructOrClassType(type, typeDie.getName());
+	    returnType = classType;
+	    break;
+	}
+	case DwTag.CLASS_TYPE_: {
+	    ClassType classType =
+		getClassType(type, typeDie.getName());
 	    returnType = classType;
 	    break;
 	}

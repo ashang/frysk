@@ -39,6 +39,7 @@
 
 package frysk.junit;
 
+import frysk.CompilerVersion;
 import frysk.Config;
 import frysk.sys.Uname;
 import java.math.BigInteger;
@@ -183,6 +184,20 @@ public class TestCase
 		    return false;
 		}
 	    });
+    }
+    
+    /**
+     * A method that returns true, and prints UNRESOLVED, when the compiler 
+     * does not support AT_CLASS
+     */
+    protected static boolean unresolvedCompilerNoSupportForAT_CLASS() {
+	
+	boolean compilerNoSupportForAT_CLASS = CompilerVersion.getVersion() <= 4
+	&& CompilerVersion.getMinorVersion() <= 1 && CompilerVersion.getPatchLevel() <= 2 &&
+	CompilerVersion.getRHRelease() < 37;
+	
+	Runner.unresolved(5518, compilerNoSupportForAT_CLASS);
+	return compilerNoSupportForAT_CLASS;
     }
 
     /**

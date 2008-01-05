@@ -1,3 +1,13 @@
+2008-01-04  Nurdin Premji  <npremji@redhat.com>
+
+	* TypeEntry.java: Added rsl loggers.
+	(addMembers): New.
+	(compilerSupportsClassType): New
+	(getClassType): New.
+	(getStructOrClassType): Return composite type, use addMembers, check for 
+	compiler supporting ClassType.
+	(getType): Added support for compilers supporting DWTag.CLASS_TYPE_
+
 2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TypeEntry.java: Use SourceLocation instead of LineColPair.

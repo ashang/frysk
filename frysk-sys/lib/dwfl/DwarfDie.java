@@ -91,6 +91,10 @@ abstract public class DwarfDie {
     public String getName () {
 	return get_diename();
     }
+    
+    public String getProducer () {
+	return getCompilationUnit().getAttrString(DwAt.PRODUCER);
+    }
   
     public File getDeclFile() {
 	File file = null;
@@ -266,10 +270,15 @@ abstract public class DwarfDie {
     public boolean getAttrBoolean(DwAt attr) {
 	return get_attr_boolean(this.getPointer(), attr.hashCode());
     }
+    
+    public String getAttrString(DwAt attr) {
+	return get_attr_string(this.getPointer(), attr.hashCode());
+    }
   
     public DwTag getTag() {
 	return DwTag.valueOf(get_tag(this.getPointer()));
     }
+    
   
     /**
      * @return The upper bound for this subrange die.
@@ -489,6 +498,8 @@ abstract public class DwarfDie {
     private native boolean get_attr_boolean (long addr, int attr);
   
     private native int get_attr_constant (long addr, int attr);
+    
+    private native String get_attr_string (long addr, int attr);
   
     private native long get_offset (long addr);
 

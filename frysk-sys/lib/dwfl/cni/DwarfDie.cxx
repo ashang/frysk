@@ -429,6 +429,25 @@ lib::dwfl::DwarfDie::get_attr_constant (jlong die_p, jint attr)
   return -1;
 }
   
+
+jstring
+lib::dwfl::DwarfDie::get_attr_string (jlong die_p, jint attr)
+{
+  Dwarf_Die *die = (Dwarf_Die*) die_p;
+  Dwarf_Attribute type_attr;
+  if (dwarf_attr_integrate(die, attr, &type_attr))
+  {
+	  const char *name = dwarf_formstring(&type_attr);
+      if (name != NULL)
+	    return JvNewStringUTF (name);
+	  else	
+		return JvNewStringUTF ("");
+  }
+  
+  return NULL;
+
+}
+
 jlong
 lib::dwfl::DwarfDie::get_offset (jlong var_die)
 {
