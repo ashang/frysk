@@ -437,15 +437,29 @@ public class LinuxPtraceProc extends LiveProc {
     /**
      * (Internal) Tell the process to add the specified Observation,
      * attaching to the process if necessary.
-     *
-     * XXX: Should not be public.
      */
-    public void requestAddObserver(Task task, TaskObservable observable,
+    void requestAddObserver(Task task, TaskObservable observable,
 			    TaskObserver observer) {
 	logger.log(Level.FINE, "{0} requestAddObservation\n", this);
 	Manager.eventLoop.add(new TaskObservation(task, observable, observer, true) {
 		public void execute() {
 		    handleAddObservation(this);
+		}
+	    });
+    }
+
+    /**
+     * (Internal) Tell the process to delete the specified
+     * Observation, detaching from the process if necessary. Removes a
+     * syscallObserver exiting the task from syscall tracing mode of
+     * necessary.
+     */
+    void requestDeleteObserver(Task task, TaskObservable observable,
+			       TaskObserver observer) {
+	Manager.eventLoop.add(new TaskObservation(task, observable,
+						  observer, false) {
+		public void execute() {
+		    newState = oldState().handleDeleteObservation(LinuxPtraceProc.this, this);
 		}
 	    });
     }
@@ -477,10 +491,8 @@ public class LinuxPtraceProc extends LiveProc {
      * (Internal) Tell the process to add the specified Observation,
      * attaching to the process if necessary. Adds a syscallObserver
      * which changes the task to syscall tracing mode of necessary.
-     *
-     * XXX: Should not be public.
      */
-    public void requestAddSyscallObserver(final Task task, TaskObservable observable,
+    void requestAddSyscallObserver(final Task task, TaskObservable observable,
 				   TaskObserver observer) {
 	logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
 	SyscallAction sa = new SyscallAction((LinuxPtraceTask)task, true);
@@ -498,29 +510,9 @@ public class LinuxPtraceProc extends LiveProc {
 
     /**
      * (Internal) Tell the process to delete the specified
-     * Observation, detaching from the process if necessary. Removes a
-     * syscallObserver exiting the task from syscall tracing mode of
-     * necessary.
-     *
-     * XXX: Should not be public.
-     */
-    public void requestDeleteObserver(Task task, TaskObservable observable,
-				      TaskObserver observer) {
-	Manager.eventLoop.add(new TaskObservation(task, observable,
-						  observer, false) {
-		public void execute() {
-		    newState = oldState().handleDeleteObservation(LinuxPtraceProc.this, this);
-		}
-	    });
-    }
-
-    /**
-     * (Internal) Tell the process to delete the specified
      * Observation, detaching from the process if necessary.
-     *
-     * XXX: Should not be public.
      */
-    public void requestDeleteSyscallObserver(final Task task,
+    void requestDeleteSyscallObserver(final Task task,
 				      TaskObservable observable,
 				      TaskObserver observer) {
 	logger.log(Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
@@ -584,10 +576,8 @@ public class LinuxPtraceProc extends LiveProc {
      * Observation, attaching to the process if necessary. Adds a
      * TaskCodeObservation to the eventloop which instructs the task
      * to install the breakpoint if necessary.
-     *
-     * XXX: Should not be public.
      */
-    public void requestAddCodeObserver(Task task, TaskObservable observable,
+    void requestAddCodeObserver(Task task, TaskObservable observable,
 				TaskObserver.Code observer,
 				final long address) {
 	logger.log(Level.FINE, "{0} requestAddCodeObserver\n", this);
@@ -607,10 +597,8 @@ public class LinuxPtraceProc extends LiveProc {
     /**
      * (Internal) Tell the process to delete the specified Code
      * Observation, detaching from the process if necessary.
-     *
-     * XXX: Should not be public.
      */
-    public void requestDeleteCodeObserver(Task task, TaskObservable observable,
+    void requestDeleteCodeObserver(Task task, TaskObservable observable,
 				   TaskObserver.Code observer,
 				   final long address)    {
 	logger.log(Level.FINE, "{0} requestDeleteCodeObserver\n", this);
@@ -656,10 +644,8 @@ public class LinuxPtraceProc extends LiveProc {
      * necessary. As soon as the observation is added and the task
      * isn't blocked it will inform the Instruction observer of every
      * step of the task.
-     *
-     * XXX: Should not be public.
      */
-    public void requestAddInstructionObserver(final Task task,
+    void requestAddInstructionObserver(final Task task,
 				       TaskObservable observable,
 				       TaskObserver.Instruction observer) {
 	logger.log(Level.FINE, "{0} requestAddInstructionObserver\n", this);
@@ -692,10 +678,8 @@ public class LinuxPtraceProc extends LiveProc {
      * (Internal) Tell the process to delete the specified Instruction
      * Observation, detaching and/or suspending from the process if
      * necessary.
-     *
-     * XXX: Should not be public.
      */
-    public void requestDeleteInstructionObserver(final Task task,
+    void requestDeleteInstructionObserver(final Task task,
 					  TaskObservable observable,
 					  TaskObserver.Instruction observer) {
 	logger.log(Level.FINE, "{0} requestDeleteInstructionObserver\n", this);

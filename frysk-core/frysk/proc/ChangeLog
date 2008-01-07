@@ -1,5 +1,14 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (requestAddObserver): Delete.
+	(requestAddSyscallObserver): Delete.
+	(requestDeleteObserver): Delete.
+	(requestDeleteSyscallObserver): Delete.
+	(requestAddCodeObserver): Delete.
+	(requestDeleteCodeObserver): Delete.
+	(requestAddInstructionObserver): Delete.
+	(requestDeleteInstructionObserver): Delete.
+
 	* Task.java (just_started): Move to
 	LinuxPtraceTask.justStartedXXX.
 	(sig_send): Move to LinuxPtraceTask.sigSendXXX.

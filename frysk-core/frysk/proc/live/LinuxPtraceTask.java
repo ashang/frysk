@@ -533,14 +533,14 @@ public class LinuxPtraceTask extends LiveTask {
      */
     public void requestAddClonedObserver(TaskObserver.Cloned o) {
 	logger.log(Level.FINE, "{0} requestAddClonedObserver\n", this);
-	getProc().requestAddObserver(this, clonedObservers, o);
+	((LinuxPtraceProc)getProc()).requestAddObserver(this, clonedObservers, o);
     }
     /**
      * Delete a TaskObserver.Cloned observer.
      */
     public void requestDeleteClonedObserver(TaskObserver.Cloned o) {
 	logger.log(Level.FINE, "{0} requestDeleteClonedObserver\n", this);
-	getProc().requestDeleteObserver(this, clonedObservers, o);
+	((LinuxPtraceProc)getProc()).requestDeleteObserver(this, clonedObservers, o);
     }
 
     /**
@@ -569,14 +569,14 @@ public class LinuxPtraceTask extends LiveTask {
      */
     public void requestAddAttachedObserver(TaskObserver.Attached o) {
 	logger.log(Level.FINE, "{0} requestAddAttachedObserver\n", this);
-	getProc().requestAddObserver(this, attachedObservers, o);
+	((LinuxPtraceProc)getProc()).requestAddObserver(this, attachedObservers, o);
     }
     /**
      * Delete a TaskObserver.Attached observer.
      */
     public void requestDeleteAttachedObserver(TaskObserver.Attached o) {
 	logger.log(Level.FINE, "{0} requestDeleteAttachedObserver\n", this);
-	getProc().requestDeleteObserver(this, attachedObservers, o);
+	((LinuxPtraceProc)getProc()).requestDeleteObserver(this, attachedObservers, o);
     }
 
 
@@ -616,14 +616,14 @@ public class LinuxPtraceTask extends LiveTask {
      */
     public void requestAddForkedObserver(TaskObserver.Forked o) {
 	logger.log(Level.FINE, "{0} requestAddForkedObserver\n", this);
-	getProc().requestAddObserver(this, forkedObservers, o);
+	((LinuxPtraceProc)getProc()).requestAddObserver(this, forkedObservers, o);
     }
     /**
      * Delete a TaskObserver.Forked observer.
      */
     public void requestDeleteForkedObserver(TaskObserver.Forked o) {
 	logger.log(Level.FINE, "{0} requestDeleteForkedObserver\n", this);
-	getProc().requestDeleteObserver(this, forkedObservers, o);
+	((LinuxPtraceProc)getProc()).requestDeleteObserver(this, forkedObservers, o);
     }
 
     /**
@@ -652,14 +652,14 @@ public class LinuxPtraceTask extends LiveTask {
      */
     public void requestAddTerminatedObserver(TaskObserver.Terminated o) {
 	logger.log(Level.FINE, "{0} requestAddTerminatedObserver\n", this);
-	getProc().requestAddObserver(this, terminatedObservers, o);
+	((LinuxPtraceProc)getProc()).requestAddObserver(this, terminatedObservers, o);
     }
     /**
      * Delete a TaskObserver.Terminated observer.
      */
     public void requestDeleteTerminatedObserver(TaskObserver.Terminated o) {
 	logger.log(Level.FINE, "{0} requestDeleteTerminatedObserver\n", this);
-	getProc().requestDeleteObserver(this, terminatedObservers, o);
+	((LinuxPtraceProc)getProc()).requestDeleteObserver(this, terminatedObservers, o);
     }
 
     /**
@@ -683,14 +683,14 @@ public class LinuxPtraceTask extends LiveTask {
      */
     public void requestAddTerminatingObserver(Terminating o) {
 	logger.log(Level.FINE, "{0} requestAddTerminatingObserver\n", this);
-	getProc().requestAddObserver(this, terminatingObservers, o);
+	((LinuxPtraceProc)getProc()).requestAddObserver(this, terminatingObservers, o);
     }
     /**
      * Delete TaskObserver.Terminating.
      */
     public void requestDeleteTerminatingObserver(Terminating o) {
 	logger.log(Level.FINE, "{0} requestDeleteTerminatingObserver\n", this);
-	getProc().requestDeleteObserver(this, terminatingObservers, o);
+	((LinuxPtraceProc)getProc()).requestDeleteObserver(this, terminatingObservers, o);
     }
 
     /**
@@ -717,7 +717,7 @@ public class LinuxPtraceTask extends LiveTask {
      */
     public void requestAddExecedObserver(TaskObserver.Execed o) {
 	logger.log(Level.FINE, "{0} requestAddExecedObserver\n", this);
-	getProc().requestAddObserver(this, execedObservers, o);
+	((LinuxPtraceProc)getProc()).requestAddObserver(this, execedObservers, o);
     }
 
     /**
@@ -725,7 +725,7 @@ public class LinuxPtraceTask extends LiveTask {
      */
     public void requestDeleteExecedObserver(TaskObserver.Execed o) {
 	logger.log(Level.FINE, "{0} requestDeleteExecedObserver\n", this);
-	getProc().requestDeleteObserver(this, execedObservers, o);
+	((LinuxPtraceProc)getProc()).requestDeleteObserver(this, execedObservers, o);
     }
 
     /**
@@ -769,14 +769,14 @@ public class LinuxPtraceTask extends LiveTask {
      */
     public void requestAddSyscallsObserver(TaskObserver.Syscalls o) {
 	logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
-	getProc().requestAddSyscallObserver(this, syscallObservers, o);
+	((LinuxPtraceProc)getProc()).requestAddSyscallObserver(this, syscallObservers, o);
     }
     /**
      * Delete TaskObserver.Syscall.
      */
     public void requestDeleteSyscallsObserver(TaskObserver.Syscalls o) {
 	logger.log(Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
-	getProc().requestDeleteSyscallObserver(this, syscallObservers, o);
+	((LinuxPtraceProc)getProc()).requestDeleteSyscallObserver(this, syscallObservers, o);
     }
 
 
@@ -802,14 +802,14 @@ public class LinuxPtraceTask extends LiveTask {
      */
     public void requestAddSignaledObserver(TaskObserver.Signaled o) {
 	logger.log(Level.FINE, "{0} requestAddSignaledObserver\n", this);
-	getProc().requestAddObserver(this, signaledObservers, o);
+	((LinuxPtraceProc)getProc()).requestAddObserver(this, signaledObservers, o);
     }
     /**
      * Delete TaskObserver.Signaled.
      */
     public void requestDeleteSignaledObserver(TaskObserver.Signaled o) {
 	logger.log(Level.FINE, "{0} requestDeleteSignaledObserver\n", this);
-	getProc().requestDeleteObserver(this, signaledObservers, o);
+	((LinuxPtraceProc)getProc()).requestDeleteObserver(this, signaledObservers, o);
     }
 
   
@@ -828,7 +828,7 @@ public class LinuxPtraceTask extends LiveTask {
     int notifyCodeBreakpoint(long address) {
 	logger.log(Level.FINE, "{0} notifyCodeBreakpoint({1})\n",
 		   new Object[] { this, Long.valueOf(address) });
-	Collection observers = getProc().breakpoints.getCodeObservers(address);
+	Collection observers = ((LinuxPtraceProc)getProc()).breakpoints.getCodeObservers(address);
 	if (observers == null)
 	    return -1;
 	Iterator i = observers.iterator();
@@ -845,7 +845,7 @@ public class LinuxPtraceTask extends LiveTask {
      */
     public void requestAddCodeObserver(TaskObserver.Code o, long a) {
 	logger.log(Level.FINE, "{0} requestAddCodeObserver\n", this);
-	getProc().requestAddCodeObserver(this, codeObservers, o, a);
+	((LinuxPtraceProc)getProc()).requestAddCodeObserver(this, codeObservers, o, a);
     }
 
     /**
@@ -853,7 +853,7 @@ public class LinuxPtraceTask extends LiveTask {
      */
     public void requestDeleteCodeObserver(TaskObserver.Code o, long a) {
 	logger.log(Level.FINE, "{0} requestDeleteCodeObserver\n", this);
-	getProc().requestDeleteCodeObserver(this, codeObservers, o, a);
+	((LinuxPtraceProc)getProc()).requestDeleteCodeObserver(this, codeObservers, o, a);
     }
 
   
@@ -888,14 +888,14 @@ public class LinuxPtraceTask extends LiveTask {
      */
     public void requestAddInstructionObserver(TaskObserver.Instruction o) {
 	logger.log(Level.FINE, "{0} requestAddInstructionObserver\n", this);
-	getProc().requestAddInstructionObserver(this, instructionObservers, o);
+	((LinuxPtraceProc)getProc()).requestAddInstructionObserver(this, instructionObservers, o);
     }
     /**
      * Delete TaskObserver.Instruction from the TaskObserver pool.
      */
     public void requestDeleteInstructionObserver(TaskObserver.Instruction o) {
 	logger.log(Level.FINE, "{0} requestDeleteInstructionObserver\n", this);
-	getProc().requestDeleteInstructionObserver(this, instructionObservers, o);
+	((LinuxPtraceProc)getProc()).requestDeleteInstructionObserver(this, instructionObservers, o);
     }
   
 

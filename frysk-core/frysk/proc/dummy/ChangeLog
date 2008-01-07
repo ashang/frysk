@@ -1,3 +1,14 @@
+2008-01-07  Andrew Cagney  <cagney@redhat.com>
+
+	* DummyProc.java (requestAddObserver): Delete.
+	(requestAddSyscallObserver): Delete.
+	(requestDeleteObserver): Delete.
+	(requestDeleteSyscallObserver): Delete.
+	(requestAddCodeObserver): Delete.
+	(requestDeleteCodeObserver): Delete.
+	(requestAddInstructionObserver): Delete.
+	(requestDeleteInstructionObserver): Delete.
+
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
 	* DummyProc.java (performRemoval()): Delete.

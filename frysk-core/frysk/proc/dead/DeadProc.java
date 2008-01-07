@@ -43,11 +43,7 @@ import java.util.logging.Level;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Host;
-import frysk.proc.Task;
-import frysk.proc.TaskObserver;
-import frysk.proc.TaskObservable;
 import frysk.proc.Manager;
-import frysk.proc.TaskObservation;
 import frysk.proc.ProcEvent;
 
 /**
@@ -86,127 +82,5 @@ abstract class DeadProc extends Proc {
 	// XXX: Fake out for now. What kind of observers would you put
 	// on a core file? Might need a brain dead attached state in
 	// this scenario for compataibility.
-    }
-
-    /**
-     * (Internal) Tell the process to add the specified Observation,
-     * attaching to the process if necessary.
-     *
-     * XXX: Should not be public.
-     */
-    public void requestAddObserver(Task task, TaskObservable observable,
-				   TaskObserver observer) {
-	logger.log(Level.FINE, "{0} requestAddObserver\n", this);
-	// XXX: Fake out for now. What kind of observers would you put
-	// on a core file? Might need a brain dead attached state in
-	// this scenario for compataibility.
-    }
-
-    /**
-     * (Internal) Tell the process to add the specified Observation,
-     * attaching to the process if necessary. Adds a syscallObserver
-     * which changes the task to syscall tracing mode of necessary.
-     *
-     * XXX: Should not be public.
-     */
-    public void requestAddSyscallObserver(Task task,
-					  TaskObservable observable,
-					  TaskObserver observer) {
-	logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
-	// XXX: Fake out for now. What kind of observers would you put
-	// on a core file? Might need a brain dead attached state in
-	// this scenario for compataibility.
-    }
-
-    /**
-     * (Internal) Tell the process to delete the specified
-     * Observation, detaching from the process if necessary. Removes a
-     * syscallObserver exiting the task from syscall tracing mode of
-     * necessary.
-     *
-     * XXX: Should not be public.
-     */
-    public void requestDeleteObserver(Task task, TaskObservable observable,
-				      TaskObserver observer) {
-	Manager.eventLoop.add(new TaskObservation(task, observable,
-						  observer, false) {
-		public void execute() {
-		    // Must be bogus; if there were observations then
-		    // the Proc wouldn't be in this state.
-		    fail(new RuntimeException ("not attached"));
-		}
-	    });
-    }
-
-    /**
-     * (Internal) Tell the process to delete the specified
-     * Observation, detaching from the process if necessary.
-     *
-     * XXX: Should not be public.
-     */
-    public void requestDeleteSyscallObserver(Task task,
-					     TaskObservable observable,
-					     TaskObserver observer) {
-	throw new RuntimeException("the process is already dead");
-    }
-
-    /**
-     * (Internal) Tell the process to add the specified Code
-     * Observation, attaching to the process if necessary. Adds a
-     * TaskCodeObservation to the eventloop which instructs the task
-     * to install the breakpoint if necessary.
-     *
-     * XXX: Should not be public.
-     */
-    public void requestAddCodeObserver(Task task, TaskObservable observable,
-				       TaskObserver.Code observer,
-				       long address) {
-	logger.log(Level.FINE, "{0} requestAddCodeObserver\n", this);
-	// XXX: Fake out for now. What kind of observers would you put
-	// on a core file? Might need a brain dead attached state in
-	// this scenario for compataibility.
-    }
-
-    /**
-     * (Internal) Tell the process to delete the specified Code
-     * Observation, detaching from the process if necessary.
-     *
-     * XXX: Should not be public.
-     */
-    public void requestDeleteCodeObserver(Task task, TaskObservable observable,
-					  TaskObserver.Code observer,
-					  long address)    {
-	throw new RuntimeException("the process is already dead");
-    }
-
-    /**
-     * (Internal) Tell the process to add the specified Instruction
-     * Observation, attaching and/or suspending the process if
-     * necessary. As soon as the observation is added and the task
-     * isn't blocked it will inform the Instruction observer of every
-     * step of the task.
-     *
-     * XXX: Should not be public.
-     */
-    public void requestAddInstructionObserver(Task task,
-					      TaskObservable observable,
-					      TaskObserver.Instruction observer) {
-	logger.log(Level.FINE, "{0} requestAddInstructionObserver\n", this);
-	// XXX: Fake out for now. What kind of observers would you put
-	// on a core file? Might need a brain dead attached state in
-	// this scenario for compataibility.
-    }
-
-    /**
-     * (Internal) Tell the process to delete the specified Instruction
-     * Observation, detaching and/or suspending from the process if
-     * necessary.
-     *
-     * XXX: Should not be public.
-     */
-    public void requestDeleteInstructionObserver(Task task,
-						 TaskObservable observable,
-						 TaskObserver.Instruction observer) {
-	throw new RuntimeException("the process is already dead");
     }
 }

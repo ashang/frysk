@@ -44,9 +44,6 @@ import frysk.proc.ProcId;
 import frysk.proc.Isa;
 import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
-import frysk.proc.Task;
-import frysk.proc.TaskObserver;
-import frysk.proc.TaskObservable;
 import frysk.proc.TaskObservation;
 
 public class DummyProc extends Proc {
@@ -93,43 +90,6 @@ public class DummyProc extends Proc {
 	throw new RuntimeException("oops!");
     }
     protected void handleAddObservation(TaskObservation observation) {
-	throw new RuntimeException("oops!");
-    }
-    public void requestAddObserver(Task task, TaskObservable observable,
-				   TaskObserver observer) {
-	throw new RuntimeException("oops!");
-    }
-    public void requestAddSyscallObserver(Task task, TaskObservable observable,
-					  TaskObserver observer) {
-	throw new RuntimeException("oops!");
-    }
-    public void requestDeleteObserver(Task task, TaskObservable observable,
-				      TaskObserver observer) {
-	throw new RuntimeException("oops!");
-    }
-    public void requestDeleteSyscallObserver(final Task task,
-				      TaskObservable observable,
-				      TaskObserver observer) {
-	throw new RuntimeException("oops!");
-    }
-    public void requestAddCodeObserver(Task task, TaskObservable observable,
-				       TaskObserver.Code observer,
-				       long address) {
-	throw new RuntimeException("oops!");
-    }
-    public void requestDeleteCodeObserver(Task task, TaskObservable observable,
-					  TaskObserver.Code observer,
-					  long address)    {
-	throw new RuntimeException("oops!");
-    }
-    public void requestAddInstructionObserver(Task task,
-					      TaskObservable observable,
-					      TaskObserver.Instruction observer) {
-	throw new RuntimeException("oops!");
-    }
-    public void requestDeleteInstructionObserver(Task task,
-						 TaskObservable observable,
-						 TaskObserver.Instruction observer) {
 	throw new RuntimeException("oops!");
     }
 }
