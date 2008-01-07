@@ -1,5 +1,8 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (setPC(long), getPC()): Make abstract.
+	(pcRegister, pcRegister()): Delete.	
+
 	* Task.java (getPC(), setPC(long)): New.
 	(pcRegister, pcRegister()): New.
 	* Isa.java (pc(Task), setPC(Task,long)): Delete.

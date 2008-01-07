@@ -1,5 +1,8 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTask.java (setPC(long), getPC()): New.
+	(pcRegister, pcRegister()): New.
+	
 	* LinuxPtraceTask.java (clearIsa()): New.
 
 	* LinuxPtraceTaskState.java: Update; Use Task.setPC(long).

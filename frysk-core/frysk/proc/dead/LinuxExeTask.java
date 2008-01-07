@@ -48,40 +48,37 @@ import frysk.isa.ISA;
 
 import lib.dwfl.*;
 
-public class LinuxExeTask extends DeadTask
-{
+public class LinuxExeTask extends DeadTask {
+    private final long pc;
+    LinuxExeProc proc = null;
+    TaskId id = null;
 
-  LinuxExeProc proc = null;
-  TaskId id = null;
-
-  protected LinuxExeTask(LinuxExeProc proc, TaskId id) {
-      super(proc, id);
-      this.proc = proc;
-      this.id = id;
-
-      // Fake PC.  XXX should be done in Proc instead of creating Elf
-      // object in the Task itself.
-      long pc;
-      Elf e = null;
-      try
-	{
-	  e = new Elf(getProc().getExe(), ElfCommand.ELF_C_READ);
-	  ElfEHeader h = e.getEHeader();
-	  pc = h.entry;
+    protected LinuxExeTask(LinuxExeProc proc, TaskId id) {
+	super(proc, id);
+	this.proc = proc;
+	this.id = id;
+	// Compute a Fake PC.  XXX should be done in Proc instead of
+	// creating Elf object in the Task itself.
+	Elf e = null;
+	long pc;
+	try {
+	    e = new Elf(getProc().getExe(), ElfCommand.ELF_C_READ);
+	    ElfEHeader h = e.getEHeader();
+	    pc = h.entry;
+	} catch (ElfException ee) {
+	    // Nice try, just give up.
+	    pc = 0;
+	} finally {
+	    if (e != null)
+		e.close();
 	}
-      catch (ElfException ee)
-	{
-	  // Nice try, just give up.
-	  pc = 0;
-	}
-      finally
-	{
-	  if (e != null)
-	    e.close();
-	}
-      setPC(pc);
-  }
+	this.pc = pc;
+    }
   
+    public long getPC() {
+	return pc;
+    }
+
   protected ISA sendrecISA() {
       return ((LinuxExeProc)getProc()).sendrecISA();
   }

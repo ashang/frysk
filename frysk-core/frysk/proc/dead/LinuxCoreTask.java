@@ -49,6 +49,7 @@ import frysk.proc.TaskId;
 import frysk.proc.Isa;
 import frysk.isa.ISA;
 import frysk.bank.RegisterBanks;
+import frysk.isa.RegistersFactory;
 
 public class LinuxCoreTask extends DeadTask {
 
@@ -141,5 +142,11 @@ public class LinuxCoreTask extends DeadTask {
 
     protected Isa sendrecIsa() {
 	return getProc().getIsa();
+    }
+
+    public long getPC() {
+	return getRegister(RegistersFactory
+			   .getRegisters(getISA())
+			   .getProgramCounter());
     }
 }

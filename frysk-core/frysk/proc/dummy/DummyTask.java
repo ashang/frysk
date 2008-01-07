@@ -146,4 +146,11 @@ public class DummyTask extends Task {
     public int getMod() {
 	return 1;
     }
+
+    public long getPC() {
+	throw new RuntimeException("oops!");
+    }
+    public void setPC(long addr) {
+	throw new RuntimeException("oops!");
+    }
 }

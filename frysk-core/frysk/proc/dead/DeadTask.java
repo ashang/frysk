@@ -244,4 +244,8 @@ abstract class DeadTask extends Task {
     public int getMod() {
 	return 1; // never changes.
     }
+
+    public void setPC(long addr) {
+	throw new RuntimeException("setPC: the task is dead");
+    }
 }

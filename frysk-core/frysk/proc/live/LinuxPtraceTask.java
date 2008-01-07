@@ -39,6 +39,8 @@
 
 package frysk.proc.live;
 
+import frysk.isa.Register;
+import frysk.isa.RegistersFactory;
 import java.util.Iterator;
 import java.util.Collection;
 import frysk.proc.Action;
@@ -954,8 +956,23 @@ public class LinuxPtraceTask extends LiveTask {
     public int getMod() {
 	return modCount;
     }
+    private Register pcRegister;
+    private Register pcRegister() {
+	if (pcRegister == null)
+	    pcRegister = RegistersFactory
+		.getRegisters(getISA())
+		.getProgramCounter();
+	return pcRegister;
+    }
+    public long getPC() {
+	return getRegister(pcRegister());
+    }
+    public void setPC(long addr) {
+	setRegister(pcRegister(), addr);
+    }
 
     public void clearIsa() {
 	super.clearIsa();
+	pcRegister = null;
     }
 }

@@ -1,5 +1,9 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxCoreTask.java (getPC()): New.
+	* LinuxExeTask.java (getPC()): New.
+	* DeadTask.java (setPC(long)): New.
+
 	* LinuxExeTask.java: Update; use Task.setPC(long).
 
 	* DeadTask.java (getMod()): New.
