@@ -1,5 +1,8 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTask.java (getIsaFIXME()): Rename sendrecIsa().
+	* LinuxPtraceTaskState.java: Update.
+
 	* LinuxPtraceProc.java (getIsa(), isaXXX): Delete.
 
 	* LinuxPtraceTask.java (setPC(long), getPC()): New.

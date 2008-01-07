@@ -1,5 +1,7 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* DummyTask.java (sendrecIsa()): Delete.
+
 	* DummyProc.java (getIsa()): Delete.
 
 	* DummyTask.java (getMod()): New.

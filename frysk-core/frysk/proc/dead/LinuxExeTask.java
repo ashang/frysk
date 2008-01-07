@@ -42,7 +42,6 @@ package frysk.proc.dead;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
 import frysk.bank.RegisterBanks;
-import frysk.proc.Isa;
 import frysk.proc.TaskId;
 import frysk.isa.ISA;
 
@@ -81,10 +80,6 @@ public class LinuxExeTask extends DeadTask {
 
   protected ISA sendrecISA() {
       return ((LinuxExeProc)getProc()).sendrecISA();
-  }
-
-  protected Isa sendrecIsa() {
-      return ((LinuxExeProc)getProc()).getIsa();
   }
 
   protected ByteBuffer sendrecMemory () {

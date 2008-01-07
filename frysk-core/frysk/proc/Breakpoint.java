@@ -146,7 +146,7 @@ public class Breakpoint implements Comparable
   private void set(Task task)
   {
     ByteBuffer buffer = task.getRawMemory();
-    Isa isa = task.getIsa();
+    Isa isa = task.getIsaFIXME();
     Instruction bpInstruction = isa.getBreakpointInstruction();
     
     origInstruction = isa.getInstruction(buffer, address);
@@ -180,7 +180,7 @@ public class Breakpoint implements Comparable
     ByteBuffer buffer = task.getRawMemory();
     buffer.position(address);
     
-    Isa isa = task.getIsa();
+    Isa isa = task.getIsaFIXME();
     Instruction bpInstruction = isa.getBreakpointInstruction();
     byte[] bp = bpInstruction.getBytes();
 

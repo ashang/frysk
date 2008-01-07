@@ -360,7 +360,7 @@ public class TestLinuxCore
 	assertEquals("Task ID",threadPid[i],tasks[i].getTaskId().id);
 	assertEquals("Task TID",threadPid[i], tasks[i].getTid());
 	assertEquals("Task TID",threadName[i],tasks[i].getName());
-	assertNotNull("Task ISA",tasks[i].getIsa());
+	assertNotNull("Task ISA",tasks[i].getISA());
 	assertSame("Task getParent",proc,tasks[i].getProc());
 
 	assertEquals("note: ebx", ebx[i], tasks[i].getRegister(IA32Registers.EBX));

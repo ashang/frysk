@@ -1,5 +1,7 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* test/TestWindowFactorization.java: Delete Task.getIsa() call.
+
 	* disassembler/DisassemblyWindow.java: Update; use Task.getPC().
 	* memory/MemoryWindow.java: Ditto.
 

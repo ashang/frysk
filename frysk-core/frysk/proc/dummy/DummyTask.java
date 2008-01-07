@@ -41,7 +41,6 @@ package frysk.proc.dummy;
 
 import inua.eio.ByteBuffer;
 import frysk.proc.TaskObserver;
-import frysk.proc.Isa;
 import frysk.proc.TaskObservation;
 import frysk.isa.ISA;
 import frysk.bank.RegisterBanks;
@@ -55,9 +54,6 @@ public class DummyTask extends Task {
     }
     public String getStateString() {
 	return "Attached";
-    }
-    protected Isa sendrecIsa() {
-	return null;
     }
     protected ISA sendrecISA() {
 	return null;

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,8 +39,8 @@
 
 package frysk.proc;
 
+import frysk.isa.ISA;
 import java.util.Observable;
-import lib.dwfl.ElfEMachine;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
 import frysk.testbed.ExecOffspring;
@@ -57,7 +57,7 @@ public class TestIsa
   {
     public Action updateAttached (Task task)
     {
-	task.getIsa();
+	task.getISA();
       
       assertTrue("task isa initialized", task.hasIsa());
       Manager.eventLoop.requestStop();
@@ -127,10 +127,10 @@ public class TestIsa
     secondMain.requestAddAttachedObserver(attacher);
     assertRunUntilStop("attach to second task");
 
-    assertNotNull("first task has Isa", firstMain.getIsa());
-    assertNotNull("second task has Isa", secondMain.getIsa());
+    assertNotNull("first task has Isa", firstMain.getISA());
+    assertNotNull("second task has Isa", secondMain.getISA());
     
-    assertSame(firstMain.getIsa(), secondMain.getIsa());
+    assertSame(firstMain.getISA(), secondMain.getISA());
   }
 
   public void testAttachedCreateChild ()
@@ -138,7 +138,7 @@ public class TestIsa
     SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
     Proc proc = ackProc.assertFindProcAndTasks();
 
-    assertNotNull("child has an isa", proc.getMainTask().getIsa());
+    assertNotNull("child has an isa", proc.getMainTask().getISA());
 
     ackProc.assertSendAddForkWaitForAcks();
 
@@ -150,7 +150,7 @@ public class TestIsa
 
     assertRunUntilStop("attach to child process");
 
-    assertNotNull("child has an isa", child.getMainTask().getIsa());
+    assertNotNull("child has an isa", child.getMainTask().getISA());
   }
 
   public void testAttachedCreateAttachedChild ()
@@ -183,7 +183,7 @@ public class TestIsa
 
     Proc child = (Proc) proc.getChildren().iterator().next();
 
-    assertNotNull("Child has an isa", child.getMainTask().getIsa());
+    assertNotNull("Child has an isa", child.getMainTask().getISA());
   }
   
   public void testAttachedCreateAttachedClone()
@@ -216,7 +216,7 @@ public class TestIsa
 
     Task clone = ackProc.findTaskUsingRefresh(false);
 
-    assertNotNull("Clone has an isa", clone.getIsa());
+    assertNotNull("Clone has an isa", clone.getISA());
   }
 
   public void testAttachDetachAttachAgainDetachAgainAttachAgainAgain ()
@@ -232,7 +232,7 @@ public class TestIsa
     task.requestAddAttachedObserver(attacher);
     assertRunUntilStop("First attach");
 
-    assertNotNull("Proc has an isa", proc.getMainTask().getIsa());
+    assertNotNull("Proc has an isa", proc.getMainTask().getISA());
 
     Task.taskStateDetached.addObserver(new DetachedObserver(task));
 
@@ -277,25 +277,15 @@ public class TestIsa
       assertRunUntilStop("Attaching to main task");
       
       ackProc.assertRunExec("execing 64-bit");
-      Isa isa64 = task.getIsa();
+      ISA isa64 = task.getISA();
       assertNotNull("64 bit isa", isa64);
       
       ackProc.assertRunExec("64-bit execing 32-bit");
-      assertNotNull("32 bit isa", task.getIsa());
-      assertNotSame("32 bit and 64 bit isa", task.getIsa(), isa64);
+      assertNotNull("32 bit isa", task.getISA());
+      assertNotSame("32 bit and 64 bit isa", task.getISA(), isa64);
       
       ackProc.assertRunExec("32-bit execing 64-bit");
-      assertNotNull("64 bit isa", task.getIsa());
-      assertSame("64 bit isa is a singleton", task.getIsa(), isa64);
-  }
-
-  public void testArbitraryISAInstantiation ()
-  {
-    IsaFactory factory = IsaFactory.getSingleton();
-    assertSame("Arbitrary x86_64  ISA",factory.getIsaForCoreFile(ElfEMachine.EM_X86_64),LinuxX8664.isaSingleton());
-    assertSame("Arbitrary i386  ISA",factory.getIsaForCoreFile(ElfEMachine.EM_386),LinuxIa32.isaSingleton());
-    assertSame("Arbitrary PPC64 ISA",factory.getIsaForCoreFile(ElfEMachine.EM_PPC64),LinuxPPC64.isaSingleton());
-    assertSame("Arbitrary PPC32 ISA",factory.getIsaForCoreFile(ElfEMachine.EM_PPC),LinuxPPC32.isaSingleton());
-
+      assertNotNull("64 bit isa", task.getISA());
+      assertSame("64 bit isa is a singleton", task.getISA(), isa64);
   }
 }

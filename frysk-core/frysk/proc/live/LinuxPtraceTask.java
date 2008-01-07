@@ -155,8 +155,7 @@ public class LinuxPtraceTask extends LiveTask {
      * XXX: This code locally, and not the IsaFactory, and definitly
      * not via a PID should be determining the ISA of the process.
      */
-    protected Isa sendrecIsa ()
-    {
+    public Isa getIsaFIXME() {
 	logger.log(Level.FINE, "{0} sendrecIsa\n", this);
 	IsaFactory factory = IsaFactory.getSingleton();
 	return factory.getIsa(getTid());
@@ -290,7 +289,7 @@ public class LinuxPtraceTask extends LiveTask {
 	logger.log(Level.FINE, "{0} sendStepInstruction\n", this);
 	sigSendXXX = sig;
         incrementMod();
-	syscallSigretXXX = getIsa().isAtSyscallSigReturn(this);
+	syscallSigretXXX = getIsaFIXME().isAtSyscallSigReturn(this);
 	try
 	    {
 		Ptrace.singleStep(getTid(), sig);
@@ -558,7 +557,7 @@ public class LinuxPtraceTask extends LiveTask {
     int notifyAttached() {
 	logger.log(Level.FINE, "{0} notifyAttached\n", this);
 	//Fill isa on attach.
-	getIsa();
+	getIsaFIXME();
 	for (Iterator i = attachedObservers.iterator(); i.hasNext();) {
 	    TaskObserver.Attached observer = (TaskObserver.Attached) i.next();
 	    if (observer.updateAttached(this) == Action.BLOCK)

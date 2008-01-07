@@ -52,15 +52,12 @@ import lib.dwfl.ElfSection;
 import lib.dwfl.ElfPrFPRegSet;
 import lib.dwfl.ElfPrXFPRegSet;
 import frysk.sys.proc.AuxvBuilder;
-import java.util.logging.Level;
 import java.util.Iterator;
 import java.io.File;
 import java.util.ArrayList;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.Auxv;
-import frysk.proc.Isa;
-import frysk.proc.IsaFactory;
 import frysk.proc.MemoryMap;
 import frysk.isa.ISA;
 import frysk.isa.ElfMap;
@@ -262,13 +259,6 @@ public class LinuxCoreProc extends DeadProc {
     ISA sendrecISA() {
 	ElfEHeader header = elfData.getParent().getEHeader();
 	return ElfMap.getISA(header);
-    }
-
-    Isa getIsa() {
-	logger.log(Level.FINE, "{0} sendrecIsa\n", this);
-	ElfEHeader header = elfData.getParent().getEHeader();
-	IsaFactory factory = IsaFactory.getSingleton();
-	return factory.getIsaForCoreFile(header.machine);
     }
 
     /**

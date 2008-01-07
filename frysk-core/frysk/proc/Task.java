@@ -107,26 +107,16 @@ public abstract class Task {
 
     /**
      * Returns this Task's Instruction Set Architecture.
+     *
+     * FIXME: Should instead be using ISA.
      */
-    public final Isa getIsa() {
-	if (isa == null)
-	    isa = sendrecIsa();
-	return isa;
+    public Isa getIsaFIXME() {
+	return null;
     }
 
     public final boolean hasIsa() {
-	return (null != isa);
+	return (currentISA != null);
     }
-
-    /**
-     * This Task's Instruction Set Architecture.
-     */
-    private Isa isa;
- 
-    /**
-     * Fetch this Task's Instruction Set Architecture.
-     */
-    protected abstract Isa sendrecIsa();
 
     private SyscallTable syscallTable;
     public final SyscallTable getSyscallTable() {
@@ -459,7 +449,6 @@ public abstract class Task {
     public abstract int getMod();
  
     public void clearIsa() {
-	isa = null;
 	memory = null;
 	registerBanks = null;
 	syscallTable = null;

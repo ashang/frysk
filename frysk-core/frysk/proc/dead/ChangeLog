@@ -1,5 +1,11 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxCoreTask.java (sendrecIsa()): Delete.
+	* LinuxExeTask.java (sendrecIsa()): Delete.
+	* LinuxExeProc.java (getIsa()): Delete.
+	* LinuxCoreProc.java (getIsa()): Delete.
+	* TestLinuxCore.java: Update.
+	
 	* LinuxExeProc.java (getIsa()): Make package-private.
 	(sendrecISA()): Make package-private.
 	* LinuxCoreProc.java: Ditto.

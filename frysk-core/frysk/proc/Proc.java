@@ -167,7 +167,7 @@ public abstract class Proc {
 	synchronized (outOfLineAddresses) {
 	    while (outOfLineAddresses.isEmpty()) {
 		if (! requestedOutOfLineAddresses) {
-		    Isa isa = getMainTask().getIsa();
+		    Isa isa = getMainTask().getIsaFIXME();
 		    outOfLineAddresses.addAll(isa.getOutOfLineAddresses(this));
 		    if (outOfLineAddresses.isEmpty())
 			throw new IllegalStateException("Isa.getOutOfLineAddresses"

@@ -140,10 +140,7 @@ public class TestWindowFactorization
 
     try
       {
-        if (theTask.getIsa() != null)
           rw.setTask(theTask);
-//        else
-//          System.out.println("ISA is null");
       }
     catch (Exception e)
       {

@@ -42,16 +42,12 @@ package frysk.proc.dead;
 import inua.eio.ByteBuffer;
 
 import java.util.ArrayList;
-import java.util.logging.Level;
-
 import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfData;
 
 import frysk.isa.ISA;
 import frysk.isa.ElfMap;
-import frysk.proc.IsaFactory;
 import frysk.proc.Auxv;
-import frysk.proc.Isa;
 import frysk.proc.MemoryMap;
 import frysk.proc.ProcId;
 import frysk.proc.TaskId;
@@ -103,13 +99,6 @@ public class LinuxExeProc extends DeadProc {
     ISA sendrecISA() {
 	ElfEHeader header = elfData.getParent().getEHeader();
 	return ElfMap.getISA(header);
-    }
-
-    Isa getIsa() {
-	logger.log(Level.FINE, "{0} sendrecIsa\n", this);
-	ElfEHeader header = elfData.getParent().getEHeader();
-	IsaFactory factory = IsaFactory.getSingleton();
-	return factory.getIsaForCoreFile(header.machine);
     }
 
     public MemoryMap[] getMaps() {

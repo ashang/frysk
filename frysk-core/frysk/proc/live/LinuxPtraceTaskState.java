@@ -990,7 +990,7 @@ class LinuxPtraceTaskState extends State {
 	  logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
 	  
 	  Isa isa;
-	  isa = task.getIsa();
+	  isa = task.getIsaFIXME();
 
 	  // First see if this was just an indication the we stepped.
 	  // And see if we were stepping a breakpoint.  Or whether we
@@ -1126,7 +1126,7 @@ class LinuxPtraceTaskState extends State {
       logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
       
       Isa isa;
-      isa = task.getIsa();
+      isa = task.getIsaFIXME();
       
       // First see if this was just an indication the we stepped.
       // And see if we were stepping a breakpoint.  Or whether we

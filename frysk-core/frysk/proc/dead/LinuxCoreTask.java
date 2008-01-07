@@ -46,7 +46,6 @@ import inua.eio.ByteBuffer;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
 import frysk.proc.TaskId;
-import frysk.proc.Isa;
 import frysk.isa.ISA;
 import frysk.bank.RegisterBanks;
 import frysk.isa.RegistersFactory;
@@ -138,10 +137,6 @@ public class LinuxCoreTask extends DeadTask {
 
     protected ISA sendrecISA() {
     	return ((LinuxCoreProc)getProc()).sendrecISA();
-    }
-
-    protected Isa sendrecIsa() {
-	return ((LinuxCoreProc)getProc()).getIsa();
     }
 
     public long getPC() {
