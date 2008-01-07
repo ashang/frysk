@@ -951,8 +951,11 @@ public class LinuxPtraceTask extends LiveTask {
     public void incrementMod() {
 	modCount++;
     }
- 
     public int getMod() {
 	return modCount;
+    }
+
+    public void clearIsa() {
+	super.clearIsa();
     }
 }
