@@ -141,7 +141,7 @@ public class LinuxCoreTask extends DeadTask {
     }
 
     protected Isa sendrecIsa() {
-	return getProc().getIsa();
+	return ((LinuxCoreProc)getProc()).getIsa();
     }
 
     public long getPC() {

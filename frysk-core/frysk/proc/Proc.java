@@ -167,7 +167,7 @@ public abstract class Proc {
 	synchronized (outOfLineAddresses) {
 	    while (outOfLineAddresses.isEmpty()) {
 		if (! requestedOutOfLineAddresses) {
-		    Isa isa = getIsa();
+		    Isa isa = getMainTask().getIsa();
 		    outOfLineAddresses.addAll(isa.getOutOfLineAddresses(this));
 		    if (outOfLineAddresses.isEmpty())
 			throw new IllegalStateException("Isa.getOutOfLineAddresses"
@@ -428,12 +428,6 @@ public abstract class Proc {
      */
     public abstract Auxv[] getAuxv();
 
-    /**
-     * Get the Isa object associated with the process. Only use this
-     * when you don't have a Task object to interrogate.
-     */
-    public abstract Isa getIsa();
-  
     /**
      * The process has transitioned to the attached state. XXX: Should
      * be made private and instead accessor methods added. Should more

@@ -51,11 +51,9 @@ import frysk.proc.Auxv;
 import frysk.sys.proc.AuxvBuilder;
 import frysk.proc.MemoryMap;
 import java.util.ArrayList;
-import frysk.proc.Isa;
 import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.MapsBuilder;
 import frysk.sys.proc.Status;
-import frysk.proc.IsaFactory;
 import java.util.logging.Level;
 import frysk.sys.proc.ProcBuilder;
 import java.util.Map;
@@ -208,16 +206,6 @@ public class LinuxPtraceProc extends LiveProc {
 	    this.exe = exe;
 	}
 	return exe;
-    }
-
-    private Isa isaXXX;
-    public Isa getIsa() {
-	if (isaXXX == null) {
-	    logger.log(Level.FINE, "{0} sendrecIsa\n", this);
-	    IsaFactory factory = IsaFactory.getSingleton();
-	    this.isaXXX = factory.getIsa(getId().intValue());
-	}
-	return isaXXX;
     }
 
     /**

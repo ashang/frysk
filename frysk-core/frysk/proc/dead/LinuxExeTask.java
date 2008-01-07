@@ -84,7 +84,7 @@ public class LinuxExeTask extends DeadTask {
   }
 
   protected Isa sendrecIsa() {
-      return getProc().getIsa();
+      return ((LinuxExeProc)getProc()).getIsa();
   }
 
   protected ByteBuffer sendrecMemory () {

@@ -259,13 +259,12 @@ public class LinuxCoreProc extends DeadProc {
 	return auxv;
     }
 
-    protected ISA sendrecISA() {
+    ISA sendrecISA() {
 	ElfEHeader header = elfData.getParent().getEHeader();
 	return ElfMap.getISA(header);
     }
 
-
-    public Isa getIsa() {
+    Isa getIsa() {
 	logger.log(Level.FINE, "{0} sendrecIsa\n", this);
 	ElfEHeader header = elfData.getParent().getEHeader();
 	IsaFactory factory = IsaFactory.getSingleton();

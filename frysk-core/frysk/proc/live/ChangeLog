@@ -1,5 +1,7 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceProc.java (getIsa(), isaXXX): Delete.
+
 	* LinuxPtraceTask.java (setPC(long), getPC()): New.
 	(pcRegister, pcRegister()): New.
 	

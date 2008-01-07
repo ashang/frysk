@@ -1,5 +1,7 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (getIsa()): Delete.
+
 	* Task.java (setPC(long), getPC()): Make abstract.
 	(pcRegister, pcRegister()): Delete.	
 

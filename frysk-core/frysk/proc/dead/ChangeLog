@@ -1,5 +1,11 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxExeProc.java (getIsa()): Make package-private.
+	(sendrecISA()): Make package-private.
+	* LinuxCoreProc.java: Ditto.
+	* LinuxExeTask.java: Update.
+	* LinuxCoreTask.java: Update.
+
 	* LinuxCoreTask.java (getPC()): New.
 	* LinuxExeTask.java (getPC()): New.
 	* DeadTask.java (setPC(long)): New.

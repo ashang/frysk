@@ -41,7 +41,6 @@ package frysk.proc.dummy;
 
 import frysk.proc.Auxv;
 import frysk.proc.ProcId;
-import frysk.proc.Isa;
 import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
 import frysk.proc.TaskObservation;
@@ -72,9 +71,6 @@ public class DummyProc extends Proc {
         return null;
     }
     public Auxv[] getAuxv() {
-	return null;
-    }
-    public Isa getIsa() {
 	return null;
     }
     protected String getStateFIXME() {
