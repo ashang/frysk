@@ -164,7 +164,7 @@ public class TestTaskObserverInstructionAndCode
                                         + this.task);
 
       hit++;
-      lastAddress = task.getIsa().pc(task);
+      lastAddress = task.getPC();
 
       if (cont)
         return Action.CONTINUE;

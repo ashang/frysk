@@ -1263,7 +1263,7 @@ public class SteppingEngine {
 	protected void logHit(Task task, long address, String message) {
 	    if (logger.isLoggable(Level.FINEST)) {
 		Object[] logArgs = { task, Long.toHexString(address),
-			Long.toHexString(task.getIsa().pc(task)),
+				     Long.toHexString(task.getPC()),
 			Long.toHexString(this.address) };
 		logger.logp(Level.FINEST, "SteppingEngine.SteppingBreakpoint",
 			"updateHit", message, logArgs);

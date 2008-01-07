@@ -143,7 +143,7 @@ public class Instruction
     ByteBuffer buffer = task.getRawMemory();
     buffer.position(address);
     buffer.put(instr);
-    task.getIsa().setPC(task, address);
+    task.setPC(address);
   }
 
   /**
@@ -155,10 +155,8 @@ public class Instruction
    * the length of this instruction. Override when the instruction needs
    * to do anything else.
    */
-  public void fixupExecuteOutOfLine(Task task, long pc, long address)
-  {
-    Isa isa = task.getIsa();
-    isa.setPC(task, pc + instr.length);
+  public void fixupExecuteOutOfLine(Task task, long pc, long address) {
+      task.setPC(pc + instr.length);
   }
 
   /**

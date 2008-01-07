@@ -308,7 +308,7 @@ public class fstep
 
     if (sample == 0 || steps % sample == 0) {
 	int tid = task.getTid();
-	long pc = task.getIsa().pc(task);
+	long pc = task.getPC();
 	Iterator it;
 	it = disassembler.disassembleInstructions(pc, instrs).iterator();
 	while (it.hasNext()) {

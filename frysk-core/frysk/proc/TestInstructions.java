@@ -207,7 +207,7 @@ public class TestInstructions
     assertRunUntilStop("Remove setup instruction observer");
 
     assertEquals("stopped at first breakpoint",
-		 task.getIsa().pc(task), first);
+		 task.getPC(), first);
 
     // Reinsert instruction observer now that we are at the start.
     task.requestAddInstructionObserver(io);
@@ -258,7 +258,7 @@ public class TestInstructions
 	long addr = ((Long) it.next()).longValue();
 	CodeObserver code = (CodeObserver) codeObservers.remove(0);
 	assertEquals("code observer hit: " + addr,
-		     task.getIsa().pc(task), addr);
+		     task.getPC(), addr);
 	task.requestUnblock(code);
 	if (it.hasNext())
 	  assertRunUntilStop("wait for next code observer hit after "
@@ -299,7 +299,7 @@ public class TestInstructions
 	long addr = ((Long) it.next()).longValue();
 	CodeObserver code = (CodeObserver) codeObservers.remove(0);
 	assertEquals("code observer hit: " + addr,
-		     task.getIsa().pc(task), addr);
+		     task.getPC(), addr);
 	assertEquals("step observer hit: " + addr, io.getAddr(), addr);
 	task.requestUnblock(io);
 	task.requestUnblock(code);
@@ -399,7 +399,7 @@ public class TestInstructions
                                         + " not equals expected "
                                         + this.task);
       
-      addr = task.getIsa().pc(task);
+      addr = task.getPC();
       if (block)
 	{
 	  Manager.eventLoop.requestStop();

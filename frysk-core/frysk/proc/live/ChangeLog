@@ -1,5 +1,7 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTaskState.java: Update; Use Task.setPC(long).
+
 	* State.java: Moved from frysk.proc.State.
 	* LinuxPtraceProcState.java: Update.
 	* LinuxPtraceTaskState.java: Update.

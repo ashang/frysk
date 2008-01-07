@@ -150,7 +150,7 @@ public class TaskStepEngine {
          */
     public DwflLine getDwflLine() {
 	Dwfl dwfl = DwflCache.getDwfl(task);
-	DwflLine dline = dwfl.getSourceLine(this.task.getIsa().pc(task));
+	DwflLine dline = dwfl.getSourceLine(this.task.getPC());
 	return dline;
     }
 

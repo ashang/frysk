@@ -287,7 +287,7 @@ public class MemoryWindow
     this.mmaps = this.myTask.getProc().getMaps();
     
     this.diss = new Disassembler(myTask.getMemory());
-    pc_inc = myTask.getIsa().pc(myTask);
+    pc_inc = myTask.getPC();
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
 
@@ -556,7 +556,7 @@ public class MemoryWindow
     
     this.diss = new Disassembler(myTask.getMemory());
 
-    pc_inc = myTask.getIsa().pc(myTask);
+    pc_inc = myTask.getPC();
 
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
@@ -597,7 +597,7 @@ public class MemoryWindow
   {
     this.refreshLock = true;
     long pc_inc = 0;
-    pc_inc = myTask.getIsa().pc(myTask);
+    pc_inc = myTask.getPC();
     
     this.lastKnownFrom = pc_inc;
     this.lastKnownTo = (double) pc_inc + ((MemoryWindow.this.getSize().getHeight()-180)/25)*8;

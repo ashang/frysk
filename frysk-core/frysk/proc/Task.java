@@ -51,6 +51,7 @@ import java.util.logging.Logger;
 import java.util.Observer;
 import java.util.Observable;
 import frysk.isa.Register;
+import frysk.isa.RegistersFactory;
 import frysk.isa.ISA;
 import frysk.bank.RegisterBanks;
 
@@ -382,6 +383,29 @@ public abstract class Task {
      */
     public LinkedList pendingObservations = new LinkedList();
 
+    private Register pcRegister;
+    private Register pcRegister() {
+	if (pcRegister == null)
+	    pcRegister = RegistersFactory
+		.getRegisters(getISA())
+		.getProgramCounter();
+	return pcRegister;
+    }
+    /**
+     * Return the address of the instruction that this task will
+     * execute next.
+     */
+    public long getPC() {
+	return getRegister(pcRegister());
+    }
+    /**
+     * Set the address of the instruction that this task will execute
+     * next.
+     */
+    public void setPC(long addr) {
+	setRegister(pcRegister(), addr);
+    }
+
     /**
      * Return the Task's Register as a long.
      */
@@ -453,6 +477,7 @@ public abstract class Task {
 	registerBanks = null;
 	syscallTable = null;
 	currentISA = null;
+	pcRegister = null;
     }
   
     /**

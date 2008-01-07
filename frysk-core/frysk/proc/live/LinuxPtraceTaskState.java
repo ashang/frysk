@@ -747,13 +747,12 @@ class LinuxPtraceTaskState extends State {
 	
       void setupSteppingBreakpoint(LinuxPtraceTask task, long address)
       {
-	// Reset pc, this should maybe be moved into the
-	// Breakpoint, but if the breakpoint gets removed before
-	// we step it, and the architecture puts the pc just behind
-	// the breakpoint address, then there is no good other place
-	// to get at the original pc location.
-	Isa isa = task.getIsa();
-	isa.setPC(task, address);
+	// Reset pc, this should maybe be moved into the Breakpoint,
+	// but if the breakpoint gets removed before we step it, and
+	// the architecture puts the pc just behind the breakpoint
+	// address, then there is no good other place to get at the
+	// original pc location.
+	task.setPC(address);
 
 	// All logic for determining how and where to step the
 	// Breakpoint is determined by Proc and
@@ -1217,7 +1216,7 @@ class LinuxPtraceTaskState extends State {
       Breakpoint steppingBreakpoint = task.steppingBreakpoint;
       if (steppingBreakpoint != null)
 	{
-	  long pc = task.getIsa().pc(task);
+	  long pc = task.getPC();
 	  long setupAddress = steppingBreakpoint.getSetupAddress();
 
 	  // Check whether the breakpoint was actually stepped.

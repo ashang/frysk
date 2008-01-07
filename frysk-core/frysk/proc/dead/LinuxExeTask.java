@@ -79,7 +79,7 @@ public class LinuxExeTask extends DeadTask
 	  if (e != null)
 	    e.close();
 	}
-      getIsa().setPC(this, pc);
+      setPC(pc);
   }
   
   protected ISA sendrecISA() {

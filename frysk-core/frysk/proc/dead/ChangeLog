@@ -1,5 +1,7 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxExeTask.java: Update; use Task.setPC(long).
+
 	* DeadTask.java (getMod()): New.
 
 	* LinuxCoreProc.java (getCommand()): Replace sendrecCommand().

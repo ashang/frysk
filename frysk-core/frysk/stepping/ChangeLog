@@ -1,3 +1,8 @@
+2008-01-07  Andrew Cagney  <cagney@redhat.com>
+
+	* SteppingEngine.java: Update; use Task.getPC().
+	* TaskStepEngine.java: Ditto.
+
 2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Moved frysk.rt.Line to frysk.scopes.SourceLocation.

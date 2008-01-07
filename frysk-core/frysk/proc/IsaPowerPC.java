@@ -1,7 +1,7 @@
 // This file is part of the program FRYSK.
 //
 // Copyright 2006 IBM Corp.
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -45,10 +45,7 @@ import inua.eio.ByteBuffer;
 import frysk.isa.Register;
 
 abstract class IsaPowerPC implements Isa {
-    private final Register PC;
-
     protected IsaPowerPC(Register PC) {
-	this.PC = PC;
     }
 
    // the illegal instruction for powerpc: 0x7d821008.
@@ -56,14 +53,6 @@ abstract class IsaPowerPC implements Isa {
    protected static final Instruction ppcBreakpoint = 
    	new Instruction(new byte[] { (byte)0x7d, (byte)0x82, 
 				     (byte)0x10, (byte)0x08 }, false);
-
-    public long pc (Task task) {
-	return task.getRegister(PC);
-    }
-
-    public void setPC (Task task, long address) {
-	task.setRegister(PC, address);
-    }
 
   /**
    * Get the breakpoint instruction of the PowerPC platform.
@@ -107,12 +96,9 @@ abstract class IsaPowerPC implements Isa {
    * one breakpoint set in task. In PowerPC, the PC register's value will 
    * remain unchanged. 
    */
-  public final long getBreakpointAddress(Task task)
-  {
+  public final long getBreakpointAddress(Task task) {
     long pcValue = 0;
-
-    pcValue = this.pc(task);
-    
+    pcValue = task.getPC();
     return pcValue;
   }
 

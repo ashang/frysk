@@ -579,7 +579,7 @@ public class TestBreakpoints
                                         + " not equals expected "
                                         + this.task);
 
-      if (task.getIsa().pc(task) == addr)
+      if (task.getPC() == addr)
 	addr_hit++;
       return Action.CONTINUE;
     }

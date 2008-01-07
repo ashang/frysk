@@ -61,7 +61,7 @@ public class TestSymbol
     	DaemonBlockedAtSignal daemon = new DaemonBlockedAtSignal(fullCommand);
     	Task task = daemon.getMainTask();
 
-	long pc = task.getIsa().pc(task);
+	long pc = task.getPC();
 	Symbol symbol = SymbolFactory.getSymbol(task, pc);
 	assertEquals ("symbol name", name, symbol.getDemangledName ());
 	assertEquals ("symbol address valid", addressValid,

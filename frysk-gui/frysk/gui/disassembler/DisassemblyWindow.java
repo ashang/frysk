@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 // 
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 // Copyright 2007 Oracle Corporation.
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
@@ -273,7 +273,7 @@ public class DisassemblyWindow
 
     this.diss = new Disassembler(myTask.getMemory());
 
-    pc_inc = myTask.getIsa().pc(myTask);
+    pc_inc = myTask.getPC();
     this.pc = pc_inc;
     //long end = pc_inc + 20;
     this.numInstructions = 50;
@@ -571,7 +571,7 @@ public class DisassemblyWindow
     double highestAddress = Math.pow(2.0, (double)(8 * myTask.getISA().wordSize())) - 1.0;
 
     this.diss = new Disassembler(myTask.getMemory());
-    pc_inc = myTask.getIsa().pc(myTask);
+    pc_inc = myTask.getPC();
     this.pc = pc_inc;
     // long end = pc_inc + 20;
     this.numInstructions = 50;
@@ -673,7 +673,7 @@ public class DisassemblyWindow
   {
     this.refreshLock = true;
     long pc_inc = 0;
-    pc_inc = myTask.getIsa().pc(myTask);
+    pc_inc = myTask.getPC();
     
     this.lastKnownFrom = pc_inc;
     this.fromSpin.setValue((double) pc_inc);

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007 Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -47,20 +47,7 @@ import inua.eio.ByteBuffer;
  *
  */
 
-public interface Isa
-{
-  /**
-   * Get the value of the program counter in a task.
-   * @param task the task
-   * @return program counter, which might be negative!
-   */
-  long pc(Task task);
-  
-
-  /**
-   * Sets the value of the program counter in a task to the given address.
-   */
-  void setPC(Task task, long address);
+public interface Isa {
 
   /**
    * Get the breakpoint instruction.

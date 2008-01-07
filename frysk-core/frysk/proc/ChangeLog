@@ -1,5 +1,17 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (getPC(), setPC(long)): New.
+	(pcRegister, pcRegister()): New.
+	* Isa.java (pc(Task), setPC(Task,long)): Delete.
+	* LinuxIa32.java: Update.
+	* LinuxX8664.java: Update.
+	* IsaPowerPC.java: Update.
+	* TestInstructions.java: Update.
+	* TestBreakpoints.java: Update.
+	* TestTaskObserverInstructionAndCode.java: Update.
+	* IA32InstructionParser.java: Update.
+	* Instruction.java: Update.
+
 	* State.java: Move to frysk.proc.live.State.
 
 	* Task.java (getMod()): Make abstract.

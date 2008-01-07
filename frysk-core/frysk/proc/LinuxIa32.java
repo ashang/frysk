@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007 Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -49,14 +49,6 @@ class LinuxIa32 implements Isa {
     private static final Instruction IA32Breakpoint
 	= new Instruction(new byte[] { (byte)0xcc }, false);
   
-    public long pc(Task task) {
-	return task.getRegister(IA32Registers.EIP);
-    }
-
-    public void setPC(Task task, long address) {
-	task.setRegister(IA32Registers.EIP, address);
-    }
-
     /**
      * Get the breakpoint instruction for IA32.
      */
@@ -84,7 +76,7 @@ class LinuxIa32 implements Isa {
     public long getBreakpointAddress(Task task) {
 	long pcValue;
     
-	pcValue = this.pc(task);
+	pcValue = task.getPC();
 	pcValue = pcValue - 1;
     
 	return pcValue;
@@ -135,7 +127,7 @@ class LinuxIa32 implements Isa {
      * that should trap into a kernel syscall.
      */
     public boolean hasExecutedSpuriousTrap(Task task) {
-	long address = pc(task);
+	long address = task.getPC();
 	return (task.getMemory().getByte(address - 1) == (byte) 0x80
 		&& task.getMemory().getByte(address - 2) == (byte) 0xcd);
     }
@@ -148,7 +140,7 @@ class LinuxIa32 implements Isa {
      * eax register contains 0x77.
      */
     public boolean isAtSyscallSigReturn(Task task) {
-	long address = pc(task);
+	long address = task.getPC();
 	boolean result = (task.getMemory().getByte(address) == (byte) 0xcd
 			  && (task.getMemory().getByte(address + 1)
 			      == (byte) 0x80));

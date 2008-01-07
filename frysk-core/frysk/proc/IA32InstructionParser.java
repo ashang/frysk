@@ -67,11 +67,9 @@ class IA32InstructionParser
       super("JMP", new byte[] { (byte) 0xeb, addr }, true);
     }
 
-    public void fixupExecuteOutOfLine(Task task, long pc, long address)
-    {
-      Isa isa = task.getIsa();
-      long new_pc = isa.pc(task);
-      isa.setPC(task, pc + (new_pc - address));
+    public void fixupExecuteOutOfLine(Task task, long pc, long address) {
+	long newPc = task.getPC();
+	task.setPC(pc + (newPc - address));
     }
   }
 
