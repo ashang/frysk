@@ -1,5 +1,7 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* State.java: Move to frysk.proc.live.State.
+
 	* Task.java (getMod()): Make abstract.
 	(incrementMod()): Delete.
 	(modCount()): Delete.

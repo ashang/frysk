@@ -1,5 +1,9 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* State.java: Moved from frysk.proc.State.
+	* LinuxPtraceProcState.java: Update.
+	* LinuxPtraceTaskState.java: Update.
+
 	* LinuxPtraceTask.java (modCount, incrementMod(), getMod()): New.
 
 	* LinuxPtraceProc.java (getCommand()): Replace sendrecCommand().

@@ -37,14 +37,14 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.live;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import frysk.event.Event;
 
-public class State {
-    protected static Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
+class State {
+    protected static Logger logger = Logger.getLogger("frysk");
 
     private String name;
     protected State (String name)

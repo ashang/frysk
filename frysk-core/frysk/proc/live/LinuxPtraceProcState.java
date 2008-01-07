@@ -46,7 +46,6 @@ import java.util.logging.Level;
 import frysk.proc.Observation;
 import frysk.proc.TaskId;
 import frysk.proc.Manager;
-import frysk.proc.State;
 
 /**
  * A UNIX Process State

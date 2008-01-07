@@ -50,7 +50,6 @@ import frysk.proc.Isa;
 import java.util.logging.Level;
 import frysk.proc.TaskObservable;
 import frysk.sys.Signal;
-import frysk.proc.State;
 
 /**
  * A Linux Task's State tracked using PTRACE.
