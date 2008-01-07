@@ -54,30 +54,27 @@ public class DummyProc extends Proc {
     public String getCommand() {
 	return "Foo";
     }
-    protected String sendrecCommand() {
+    public String getExe() {
 	return null;
     }
-    protected String sendrecExe() {
-	return null;
-    }
-    protected int sendrecUID() {
+    public int getUID() {
 	return 0;
     }
-    protected int sendrecGID() {
+    public int getGID() {
 	return 0;
     }
-    protected String[] sendrecCmdLine() {
+    public String[] getCmdLine() {
 	return null;
     }
     public void sendRefresh() {
     }
-    public MemoryMap[] sendrecMaps () {
+    public MemoryMap[] getMaps () {
         return null;
     }
-    protected Auxv[] sendrecAuxv() {
+    public Auxv[] getAuxv() {
 	return null;
     }
-    protected Isa sendrecIsa() {
+    public Isa getIsa() {
 	return null;
     }
     protected String getStateFIXME() {

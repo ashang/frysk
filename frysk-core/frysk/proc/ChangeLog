@@ -1,5 +1,20 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (sendrecAuxv()): Delete.
+	(getAuxv()): Make abstract.
+	(sendrecCommand()): Delete.
+	(getCommand()): Make abstract.
+	(sendrecExe()): Delete.
+	(getExe()): Make abstract.
+	(sendrecCmdLine()): Delete.
+	(getCmdLine()): Make abstract.
+	(sendrecMaps()): Delete.
+	(getMaps()): Make abstract.
+	(sendrecIsa()): Delete.
+	(getIsa()): Make abstract.
+	(sendrecUID(), sendrecGID()): Delete.
+	(getUID(), getGID()): Make abstract.
+	
 	* Proc.java (requestAddObserver): Delete.
 	(requestAddSyscallObserver): Delete.
 	(requestDeleteObserver): Delete.

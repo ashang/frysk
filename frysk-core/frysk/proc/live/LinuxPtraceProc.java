@@ -92,156 +92,132 @@ public class LinuxPtraceProc extends LiveProc {
 	this.newState = LinuxPtraceProcState.initial(true);
     }
 
-    /**
-     * Get the AUXV.
-     */
-    protected Auxv[] sendrecAuxv ()
-    {
-	class BuildAuxv
-	    extends AuxvBuilder
-	{
-	    Auxv[] vec;
-	    public void buildBuffer (byte[] auxv)
-	    {
+    private Auxv[] auxv;
+    public Auxv[] getAuxv() {
+	if (auxv == null) {
+	    class BuildAuxv extends AuxvBuilder {
+		Auxv[] vec;
+		public void buildBuffer (byte[] auxv) {
+		}
+		public void buildDimensions (int wordSize, boolean bigEndian,
+					     int length) {
+		    vec = new Auxv[length];
+		}
+		public void buildAuxiliary (int index, int type, long val) {
+		    vec[index] = new Auxv (type, val);
+		}
 	    }
-	    public void buildDimensions (int wordSize, boolean bigEndian,
-					 int length)
-	    {
-		vec = new Auxv[length];
-	    }
-	    public void buildAuxiliary (int index, int type, long val)
-	    {
-		vec[index] = new Auxv (type, val);
-	    }
+	    BuildAuxv auxv = new BuildAuxv ();
+	    auxv.construct (getPid ());
+	    this.auxv = auxv.vec;
 	}
-	BuildAuxv auxv = new BuildAuxv ();
-	auxv.construct (getPid ());
-	return auxv.vec;
+	return auxv;
     }
-    /**
-     * Get the address-maps.
-     */
-    protected MemoryMap[] sendrecMaps () 
-    {
-        class BuildMaps
-	    extends MapsBuilder
-	{
-	 
-	    ArrayList  maps = new ArrayList();
-            byte[] mapsLocal;
 
-     	    public void buildBuffer (byte[] maps)
-	    {
-	        mapsLocal = maps;
-	        maps[maps.length - 1] = 0;
+    private MemoryMap[] maps;
+    public MemoryMap[] getMaps() {
+	if (maps == null) {
+	    class BuildMaps extends MapsBuilder {
+		ArrayList  maps = new ArrayList();
+		byte[] mapsLocal;
+		public void buildBuffer (byte[] maps) {
+		    mapsLocal = maps;
+		    maps[maps.length - 1] = 0;
+		}
+		public void buildMap (long addressLow, long addressHigh,
+				      boolean permRead, boolean permWrite,
+				      boolean permExecute, boolean shared,
+				      long offset, int devMajor, int devMinor,
+				      int inode, int pathnameOffset,
+				      int pathnameLength) {
+		    byte[] filename = new byte[pathnameLength];
+		    System.arraycopy(mapsLocal, pathnameOffset, filename, 0,
+				     pathnameLength);
+		    MemoryMap map = new MemoryMap(addressLow, addressHigh,
+						  permRead, permWrite,
+						  permExecute, shared, offset,
+						  devMajor, devMinor, inode,
+						  pathnameOffset,
+						  pathnameLength, new
+						  String(filename));
+		    maps.add(map);
+		}
 	    }
-	  
-	    public void buildMap (long addressLow, long addressHigh,
-				  boolean permRead, boolean permWrite,
-				  boolean permExecute, boolean shared, long offset,
-				  int devMajor, int devMinor, int inode,
-				  int pathnameOffset, int pathnameLength)
-	    {
-
-	        byte[] filename = new byte[pathnameLength];
-
-		System.arraycopy(mapsLocal, pathnameOffset, filename, 0,
-				 pathnameLength);
-
-		MemoryMap map = new MemoryMap(addressLow, addressHigh,
-					      permRead, permWrite,
-					      permExecute, shared, offset,
-					      devMajor, devMinor, inode,
-					      pathnameOffset,
-					      pathnameLength, new
-					      String(filename));
-		maps.add(map);
-		
-	    }
+	    BuildMaps constructedMaps = new BuildMaps ();
+	    constructedMaps.construct(getPid ());
+	    MemoryMap arrayMaps[] = new MemoryMap[constructedMaps.maps.size()];
+	    constructedMaps.maps.toArray(arrayMaps);
+	    this.maps = arrayMaps;
 	}
+	return maps;
+    }
 
-	BuildMaps constructedMaps = new BuildMaps ();
-	constructedMaps.construct(getPid ());
-	MemoryMap arrayMaps[] = new MemoryMap[constructedMaps.maps.size()];
-	constructedMaps.maps.toArray(arrayMaps);
-	return arrayMaps;
-    }
-    /**
-     * Get the Command line.
-     */
-    protected String[] sendrecCmdLine ()
-    {
-	class BuildCmdLine
-	    extends CmdLineBuilder
-	{
-	    String[] argv;
-	    public void buildBuffer (byte[] buf)
-	    {
+    private String[] cmdLine;
+    public String[] getCmdLine() {
+	if (cmdLine == null) {
+	    class BuildCmdLine extends CmdLineBuilder {
+		String[] argv;
+		public void buildBuffer (byte[] buf) {
+		}
+		public void buildArgv (String[] argv) {
+		    this.argv = argv;
+		}
 	    }
-	    public void buildArgv (String[] argv)
-	    {
-		this.argv = argv;
-	    }
+	    BuildCmdLine cmdLine = new BuildCmdLine ();
+	    cmdLine.construct (getPid ());
+	    this.cmdLine = cmdLine.argv;
 	}
-	BuildCmdLine cmdLine = new BuildCmdLine ();
-	cmdLine.construct (getPid ());
-	return cmdLine.argv;
+	return cmdLine;
     }
-    /**
-     * Get the process group-ID.
-     */
-    protected int sendrecGID()
-    {
-	return Status.getGID (getPid ());
-    }
-    /**
-     * Get the process user-ID.
-     */
-    protected int sendrecUID ()
-    {
+
+    public int getUID() {
 	return Status.getUID (getPid ());
     }
+
+    public int getGID() {
+	return Status.getGID(getPid());
+    }
+
     /**
-     * Get the Executable.
-     *
      * XXX: This is racy - it can miss file renames.  The alternative
      * would be to have two methods; one returning a file descriptor
      * and a second returning the exe as it should be (but possibly
      * isn't :-).  Better yet have utrace handle it :-)
      */
-    protected String sendrecExe () {
-	String exe = Exe.get(getPid());
-	// Linux's /proc/$$/exe can get screwed up in several ways.
-	// Detect each here and return null.
-	if (exe.endsWith(" (deleted)"))
-	    // Assume (possibly incorrectly) that a trailing
-	    // "(deleted)" always indicates a deleted file.
-	    return null;
-	if (exe.indexOf((char)0) >= 0)
-	    // Assume that an EXE that has somehow ended up with an
-	    // embedded NUL character is invalid.  This happens when
-	    // the kernel screws up "mv a-really-long-file $exe"
-	    // leaving the updated EXE string with something like
-	    // "$exe<NUL>ally-long-file (deleted)".
-	    return null;
-	if (new File(exe).exists())
-	    // Final sanity check; the above two should have covered
-	    // all possible cases.  But one never knows.
-	    return exe;
-	return null;
+    private String exe;
+    public String getExe() {
+	if (exe == null) {
+	    String exe = Exe.get(getPid());
+	    // Linux's /proc/$$/exe can get screwed up in several
+	    // ways.  Detect each here and return null.
+	    if (exe.endsWith(" (deleted)"))
+		// Assume (possibly incorrectly) that a trailing
+		// "(deleted)" always indicates a deleted file.
+		return null;
+	    if (exe.indexOf((char)0) >= 0)
+		// Assume that an EXE that has somehow ended up with
+		// an embedded NUL character is invalid.  This happens
+		// when the kernel screws up "mv a-really-long-file
+		// $exe" leaving the updated EXE string with something
+		// like "$exe<NUL>ally-long-file (deleted)".
+		return null;
+	    if (!new File(exe).exists())
+		// Final sanity check; the above two should have covered
+		// all possible cases.  But one never knows.
+		return null;
+	    this.exe = exe;
+	}
+	return exe;
     }
-    /**
-     * Get the Process-wide ISA.
-     *
-     * XXX: IsaFactory should not be given a PID to extract the ISA
-     * from, instead IsaFactory should receive some sort of
-     * higher-level object, such as the ELF MACHINE.
-     */
-    protected Isa sendrecIsa ()
-    {
-	logger.log(Level.FINE, "{0} sendrecIsa\n", this);
-	IsaFactory factory = IsaFactory.getSingleton();
-	return factory.getIsa(getId().intValue());
+
+    private Isa isaXXX;
+    public Isa getIsa() {
+	if (isaXXX == null) {
+	    logger.log(Level.FINE, "{0} sendrecIsa\n", this);
+	    IsaFactory factory = IsaFactory.getSingleton();
+	    this.isaXXX = factory.getIsa(getId().intValue());
+	}
+	return isaXXX;
     }
 
     /**
@@ -257,9 +233,8 @@ public class LinuxPtraceProc extends LiveProc {
     }
     private Stat stat;
 
-    public String sendrecCommand ()
-    {
-	return getStat ().comm;
+    public String getCommand() {
+	return getStat().comm;
     }
 
     /**

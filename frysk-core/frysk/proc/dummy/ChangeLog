@@ -1,5 +1,14 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* DummyProc.java (getCommand()): Replace sendrecCommand().
+	(getExe()): Replace sendrecExe().
+	(getUID()): Replace sendrecUID().
+	(getGID()): Replace sendrecGID().
+	(getCmdLine()): Replace sendrecCmdLine().
+	(getMaps()): Replace sendrecMaps().
+	(getAuxv()): Replace sendrecAuxv().
+	(getIsa()): Replace sendrecIsa().
+	
 	* DummyProc.java (requestAddObserver): Delete.
 	(requestAddSyscallObserver): Delete.
 	(requestDeleteObserver): Delete.

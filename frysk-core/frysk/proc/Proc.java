@@ -103,51 +103,23 @@ public abstract class Proc {
      * Return the basename of the program that this process is
      * running.
      */
-    public String getCommand() {
-	command = sendrecCommand();
-	return command;
-    }
-
-    private String command;
-
-    protected abstract String sendrecCommand();
+    public abstract String getCommand();
 
     /**
      * Return the full path of the program that this process is
      * running.
      */
-    public String getExe() {
-	exe = sendrecExe();
-	return exe;
-    }
-
-    private String exe;
-
-    protected abstract String sendrecExe();
+    public abstract String getExe();
 
     /**
      * Return the UID of the Proc.
      */
-    public int getUID() {
-	uid = sendrecUID();
-	return uid;
-    }
-
-    protected abstract int sendrecUID();
-
-    private int uid;
+    public abstract int getUID();
 
     /**
      * Return the GID of the Proc.
      */
-    public int getGID() {
-	gid = sendrecGID();
-	return gid;
-    }
-
-    protected abstract int sendrecGID();
-
-    private int gid;
+    public abstract int getGID();
 
     /**
      * @return The main task for this process
@@ -159,19 +131,9 @@ public abstract class Proc {
     /**
      * Return the Proc's command line argument list
      */
-    public String[] getCmdLine() {
-	argv = sendrecCmdLine();
-	return argv;
-    }
+    public abstract String[] getCmdLine();
 
-    protected abstract String[] sendrecCmdLine();
-
-    private String[] argv;
-
-    public MemoryMap[] getMaps() {
-	MemoryMap maps[] = sendrecMaps();
-	return maps;
-    }
+    public abstract MemoryMap[] getMaps();
   
     public MemoryMap getMap(long address) {
 	MemoryMap maps[] = getMaps();
@@ -181,8 +143,6 @@ public abstract class Proc {
       
 	return null;
     }
-  
-    protected abstract MemoryMap[] sendrecMaps();
 
     /**
      * XXX: Should not be public.
@@ -466,29 +426,13 @@ public abstract class Proc {
     /**
      * The Process Auxiliary Vector.
      */
-    public Auxv[] getAuxv() {
-	if (auxv == null) {
-	    auxv = sendrecAuxv();
-	}
-	return auxv;
-    }
-
-    private Auxv[] auxv;
-
-    /**
-     * Extract the auxv from the inferior.
-     */
-    protected abstract Auxv[] sendrecAuxv();
+    public abstract Auxv[] getAuxv();
 
     /**
      * Get the Isa object associated with the process. Only use this
      * when you don't have a Task object to interrogate.
      */
-    public Isa getIsa() {
-	return sendrecIsa();
-    }
-  
-    protected abstract Isa sendrecIsa();
+    public abstract Isa getIsa();
   
     /**
      * The process has transitioned to the attached state. XXX: Should

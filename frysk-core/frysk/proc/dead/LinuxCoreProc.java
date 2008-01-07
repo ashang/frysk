@@ -87,7 +87,7 @@ public class LinuxCoreProc extends DeadProc {
 	// Executable is null (non-specified), find the executable
 	// as it is written in the corefile. 
 	if ((host.exeFile == null) && (host.exeSetToNull == false)) {
-	    File exeFileName = new File(sendrecExe());
+	    File exeFileName = new File(getExe());
 	    if ((exeFileName.exists()) && (exeFileName.canRead()))
 		host.exeFile = exeFileName;
 	
@@ -95,17 +95,16 @@ public class LinuxCoreProc extends DeadProc {
 	this.exefileBackEnd = host.exeFile;
     }	
 
-    protected String sendrecCommand() {
+    public String getCommand() {
 	return elfProc.getPrFname();
     }
 
-    protected String sendrecExe() {
-
+    public String getExe() {
 	if (this.exefileBackEnd != null)
 	    return this.exefileBackEnd.getPath();
 	// Only place to find full path + exe is
 	// in the args list. Remove ./ if present.
-	String[] args = sendrecCmdLine();
+	String[] args = getCmdLine();
 	if (args.length > 0) {
 	    if (args[0].startsWith("./"))
 		args[0]=args[0].substring(2);
@@ -114,15 +113,15 @@ public class LinuxCoreProc extends DeadProc {
 	    return elfProc.getPrFname();
     }
 
-    protected int sendrecUID() {
+    public int getUID() {
 	return (int) elfProc.getPrUid();
     }
 
-    protected int sendrecGID() {
+    public int getGID() {
 	return (int) elfProc.getPrGid();
     }
 
-    protected String[] sendrecCmdLine() {
+    public String[] getCmdLine() {
 
 	// Split arguments by space
 	String rawArgs = elfProc.getPrPsargs();
@@ -216,47 +215,48 @@ public class LinuxCoreProc extends DeadProc {
     }
 
 
-    public MemoryMap[] sendrecMaps () {
-
-	ArrayList maps = new ArrayList ();
-
-	// Build meta data if not already built.
-	if (!metaDataBuilt)
-	    constructMetaData ();
-
-
-	// Refactor metadata into format expected by clients of 
-	// sendrecMaps.
-	for (int i=0; i<metaData.length; i++)
-	    maps.add(new MemoryMap(metaData[i].vaddr, metaData[i].vaddr_end,
-				   metaData[i].permRead, metaData[i].permWrite,
-				   metaData[i].permExecute,false,
-				   metaData[i].solibOffset,-1,-1,-1,-1,-1,
-				   metaData[i].name));
-
-    
-	return (MemoryMap[]) maps.toArray(new MemoryMap[maps.size()]);
+    private MemoryMap[] memoryMaps;
+    public MemoryMap[] getMaps () {
+	if (memoryMaps == null) {
+	    ArrayList maps = new ArrayList ();
+	    // Build meta data if not already built.
+	    if (!metaDataBuilt)
+		constructMetaData ();
+	    // Refactor metadata into format expected by clients of 
+	    // sendrecMaps.
+	    for (int i=0; i<metaData.length; i++)
+		maps.add(new MemoryMap(metaData[i].vaddr, metaData[i].vaddr_end,
+				       metaData[i].permRead, metaData[i].permWrite,
+				       metaData[i].permExecute,false,
+				       metaData[i].solibOffset,-1,-1,-1,-1,-1,
+				       metaData[i].name));
+	    
+	    memoryMaps = (MemoryMap[]) maps.toArray(new MemoryMap[maps.size()]);
+	}
+	return memoryMaps;
     }
 
-    protected Auxv[] sendrecAuxv () {
-	final ElfPrAuxv prAuxv =  ElfPrAuxv.decode(elfData);
-
-	class BuildAuxv extends AuxvBuilder {
-	    Auxv[] vec;
-	    public void buildBuffer (byte[] auxv) {
+    private Auxv[] auxv;
+    public Auxv[] getAuxv() {
+	if (auxv == null) {
+	    final ElfPrAuxv prAuxv =  ElfPrAuxv.decode(elfData);
+	    class BuildAuxv extends AuxvBuilder {
+		Auxv[] vec;
+		public void buildBuffer (byte[] auxv) {
+		}
+		public void buildDimensions (int wordSize, boolean bigEndian,
+					     int length) {
+		    vec = new Auxv[length];
+		}
+		public void buildAuxiliary (int index, int type, long val) {
+		    vec[index] = new Auxv (type, val);
+		}
 	    }
-	    public void buildDimensions (int wordSize, boolean bigEndian,
-					 int length) {
-		vec = new Auxv[length];
-	    }
-	    public void buildAuxiliary (int index, int type, long val) {
-		vec[index] = new Auxv (type, val);
-	    }
+	    BuildAuxv auxv = new BuildAuxv ();
+	    auxv.construct (prAuxv.getAuxvBuffer());
+	    this.auxv = auxv.vec;
 	}
-
-	BuildAuxv auxv = new BuildAuxv ();
-	auxv.construct (prAuxv.getAuxvBuffer());
-	return auxv.vec;
+	return auxv;
     }
 
     protected ISA sendrecISA() {
@@ -265,11 +265,9 @@ public class LinuxCoreProc extends DeadProc {
     }
 
 
-    protected Isa sendrecIsa() {
+    public Isa getIsa() {
 	logger.log(Level.FINE, "{0} sendrecIsa\n", this);
-
 	ElfEHeader header = elfData.getParent().getEHeader();
-    
 	IsaFactory factory = IsaFactory.getSingleton();
 	return factory.getIsaForCoreFile(header.machine);
     }
@@ -677,7 +675,7 @@ public class LinuxCoreProc extends DeadProc {
      */
     private long getCorefileEntryPoint () {
 	// Need auxv data
-	Auxv[] auxv = sendrecAuxv ();
+	Auxv[] auxv = getAuxv ();
 	long entryPoint = 0;
 
 	if (auxv == null)
@@ -698,7 +696,7 @@ public class LinuxCoreProc extends DeadProc {
      * VDSO address
      */
     private long getCorefileVDSOAddress () {
-	Auxv[] auxv = sendrecAuxv ();
+	Auxv[] auxv = getAuxv();
 	long vdsoEntryPoint = 0;
 
 	if (auxv == null)

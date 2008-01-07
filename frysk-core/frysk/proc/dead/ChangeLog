@@ -1,5 +1,15 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxCoreProc.java (getCommand()): Replace sendrecCommand().
+	(getExe()): Replace sendrecExe().
+	(getUID()): Replace sendrecUID().
+	(getGID()): Replace sendrecGID().
+	(getCmdLine()): Replace sendrecCmdLine().
+	(getMaps()): Replace sendrecMaps().
+	(getAuxv()): Replace sendrecAuxv().
+	(getIsa()): Replace sendrecIsa().
+	* LinuxExeProc.java: Ditto.
+
 	* DeadProc.java (requestAddObserver): Delete.
 	(requestAddSyscallObserver): Delete.
 	(requestDeleteObserver): Delete.

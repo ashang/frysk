@@ -76,28 +76,27 @@ public class LinuxExeProc extends DeadProc {
 	newTask.getClass();
     }
 
-    protected Auxv[] sendrecAuxv() {
+    public Auxv[] getAuxv() {
 	return null;
     }
     
-    protected int sendrecUID() 
-    {
-      return 0;
+    public int getUID() {
+	return 0;
     }
 
-    protected String[] sendrecCmdLine() {
+    public String[] getCmdLine() {
 	return null;
     }
 
-    protected String sendrecCommand() {
+    public String getCommand() {
 	return this.host.exeFile.getName();
     }
 
-    protected String sendrecExe() {
+    public String getExe() {
 	return host.exeFile.getAbsolutePath();
     }
 
-    protected int sendrecGID() {
+    public int getGID() {
 	return 0;
     }
     
@@ -106,16 +105,14 @@ public class LinuxExeProc extends DeadProc {
 	return ElfMap.getISA(header);
     }
 
-    protected Isa sendrecIsa() {
+    public Isa getIsa() {
 	logger.log(Level.FINE, "{0} sendrecIsa\n", this);
-
 	ElfEHeader header = elfData.getParent().getEHeader();
-	    
 	IsaFactory factory = IsaFactory.getSingleton();
 	return factory.getIsaForCoreFile(header.machine);
     }
 
-    protected MemoryMap[] sendrecMaps() {
+    public MemoryMap[] getMaps() {
 	return (MemoryMap[]) metaData.toArray(new MemoryMap[metaData.size()]);
     }
 
