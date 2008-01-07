@@ -559,7 +559,7 @@ class LinuxPtraceTaskState extends State {
 							   int signal) {
 		    // Mark this LinuxPtraceTask as just started.
 		    // See Running.handleTrapped for more explanation. 
-		    task.just_started = true;
+		    task.justStartedXXX = true;
 		    if (task.notifyForkedOffspring () > 0)
 			return StartMainTask.attachContinueBlocked;
 		    return Attached.transitionToRunningState(task, signal);
@@ -811,7 +811,7 @@ class LinuxPtraceTaskState extends State {
 	    {
 	      // Always reset this, only the first step is important.
 	      // See Running.handleTrapped() for more.
-	      task.just_started = false;
+	      task.justStartedXXX = false;
 	      
 	      if (task.syscallObservers.numberOfObservers() > 0)
 		{
@@ -1002,9 +1002,9 @@ class LinuxPtraceTaskState extends State {
 	  // first step onto the first instruction of a just started
 	  // task sometimes doesn't set the right task stepped flag.
 	  // So we check and immediately clear here.
-	  if (isa.isTaskStepped(task) || task.just_started)
+	  if (isa.isTaskStepped(task) || task.justStartedXXX)
 	    {
-	      if (task.just_started)
+	      if (task.justStartedXXX)
 		return stepping.handleTrappedEvent(task);
 	      else
 		{
@@ -1138,9 +1138,9 @@ class LinuxPtraceTaskState extends State {
       Breakpoint steppingBreakpoint = task.steppingBreakpoint;
       if (isa.isTaskStepped(task)
 	  || steppingBreakpoint != null
-	  || task.just_started)
+	  || task.justStartedXXX)
 	{
-	  task.just_started = false;
+	  task.justStartedXXX = false;
 	  
 	  // Are we stepping a breakpoint? (This should be a new
 	  // State).  Reset/Reinstall Intruction, all logic is in the
@@ -1194,8 +1194,8 @@ class LinuxPtraceTaskState extends State {
 	      // would be nice to use to support syscall tracking
 	      // during stepping, but it doesn't happen on all
 	      // architectures).
-	      if ((task.sig_send != 0
-		   || task.syscall_sigret
+	      if ((task.sigSendXXX != 0
+		   || task.syscallSigretXXX
 		   || isa.hasExecutedSpuriousTrap(task)))
 		return sendContinue(task, 0);
 	      

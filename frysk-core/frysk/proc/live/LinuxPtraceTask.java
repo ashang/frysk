@@ -257,7 +257,7 @@ public class LinuxPtraceTask extends LiveTask {
     public void sendContinue (int sig)
     {
 	logger.log(Level.FINE, "{0} sendContinue\n", this);
-	sig_send = sig;
+	sigSendXXX = sig;
         incrementMod();
 	try
 	    {
@@ -271,7 +271,7 @@ public class LinuxPtraceTask extends LiveTask {
     public void sendSyscallContinue (int sig)
     {
 	logger.log(Level.FINE, "{0} sendSyscallContinue\n", this);
-	sig_send = sig;
+	sigSendXXX = sig;
         incrementMod();
 	try
 	    {
@@ -286,9 +286,9 @@ public class LinuxPtraceTask extends LiveTask {
     public void sendStepInstruction (int sig)
     {
 	logger.log(Level.FINE, "{0} sendStepInstruction\n", this);
-	sig_send = sig;
+	sigSendXXX = sig;
         incrementMod();
-	syscall_sigret = getIsa().isAtSyscallSigReturn(this);
+	syscallSigretXXX = getIsa().isAtSyscallSigReturn(this);
 	try
 	    {
 		Ptrace.singleStep(getTid(), sig);
@@ -918,4 +918,32 @@ public class LinuxPtraceTask extends LiveTask {
 	blockers.clear();
 	pendingObservations.clear();
     }
+
+    /**
+     * Whether we have just started the Task. Set in
+     * wantToAttachContinue.blockOrAttachContinue() and immediately
+     * reset in sendContinue() unless we request a step or
+     * Running.handleTrappedEvent() when the first step is
+     * received.
+     *
+     * XXX: This is a temporary hack to work around bug #4663. Needs
+     * to be merged with SteppingState (see step_send).
+     */
+    boolean justStartedXXX;
+
+    /**
+     * The signal, or zero, send last to the task.
+     *
+     * XXX: This should be a state in Linux/PTRACE state machine.
+     */
+    public int sigSendXXX;
+
+    /**
+     * When the last request to the process was a step request,
+     * whether it was a request to step a sigreturn syscall.  Set by
+     * sendStepInstruction().
+     *
+     * XXX: This should be a state in Linux/PTRACE state machine.
+     */
+    public boolean syscallSigretXXX;
 }

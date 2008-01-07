@@ -1,3 +1,10 @@
+2008-01-07  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java (just_started): Move to
+	LinuxPtraceTask.justStartedXXX.
+	(sig_send): Move to LinuxPtraceTask.sigSendXXX.
+	(syscall_sigret): Move to LinuxPtraceTask.syscallSigretXXX.
+	
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
 	* TaskObservable.java: Make public.

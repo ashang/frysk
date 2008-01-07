@@ -1,3 +1,11 @@
+2008-01-07  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceTask.java (justStartedXXX): Move to here from
+	Task.just_started.
+	(sigSendXXX): Move to here from Task.sig_send.
+	(syscallSigretXXX): Move to here from Task.syscall_sigret.
+	* LinuxPtraceTaskState.java: Update.
+
 2008-01-04  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceTask.java (terminatingObservers): New.

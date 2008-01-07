@@ -360,32 +360,6 @@ public abstract class Task {
     public Breakpoint steppingBreakpoint;
 
     /**
-     * Whether we have just started the Task. Set in
-     * wantToAttachContinue.blockOrAttachContinue() and immediately
-     * reset in sendContinue() unless we request a step or
-     * Running.handleTrappedEvent() when the first step is
-     * received. This is a temporary hack to work around bug
-     * #4663. Needs to be merged with SteppingState (see step_send).
-     */
-    public boolean just_started;
-
-    /**
-     * The signal, or zero, send last to the task.
-     *
-     * XXX: This should be a state in Linux/PTRACE state machine.
-     */
-    public int sig_send;
-
-    /**
-     * When the last request to the process was a step request,
-     * whether it was a request to step a sigreturn syscall.  Set by
-     * sendStepInstruction().
-     *
-     * XXX: This should be a state in Linux/PTRACE state machine.
-     */
-    public boolean syscall_sigret;
-
-    /**
      * Request the addition of a Instruction observer that will be
      * notified as soon as the task executes an instruction.
      * <code>o.updateExecuted</code> is called as soon as the Task
