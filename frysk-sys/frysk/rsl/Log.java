@@ -110,6 +110,10 @@ public final class Log {
     public static Log fine(String klass) {
 	return get(klass, Level.FINE);
     }
+    
+    public static Log finest(String klass) {
+	return get(klass, Level.FINEST);
+    }
 
     public static Tree get(Class klass) {
 	return get(klass.getName());
@@ -119,6 +123,9 @@ public final class Log {
     }
     public static Log fine(Class klass) {
 	return fine(klass.getName());
+    }
+    public static Log finest(Class klass) {
+	return finest(klass.getName());
     }
 
     public static int complete(String incomplete, List candidates) {

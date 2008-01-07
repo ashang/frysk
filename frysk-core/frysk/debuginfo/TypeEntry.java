@@ -79,8 +79,8 @@ import lib.dwfl.DwarfDie;
 
 public class TypeEntry
 {
-    static protected Log fine = Log.get(TypeEntry.class, Level.FINE);
-    static protected Log finest = Log.get(TypeEntry.class, Level.FINEST);
+    static protected Log fine = Log.fine(TypeEntry.class);
+    static protected Log finest = Log.finest(TypeEntry.class);
     private final ByteOrder byteorder;
     private final HashMap dieHash;
 
@@ -232,15 +232,15 @@ public class TypeEntry
 	// test doesn't need to be done multiple times.
 
 	String compiler = classDie.getProducer();
-	boolean compilerSupport = compilerSupportsClassType(compiler);
-	fine.log("Compiler support determined as:" + compilerSupport);
+	boolean supportsClassType = compilerSupportsClassType(compiler);
+	fine.log("Compiler support determined as:" + supportsClassType);
 
 	/*
 	 * If the compiler supported class types and this was a class, it would
 	 * have been detected as a ClassType. Since it was not, it must be a
 	 * struct
 	 */
-	if (compilerSupport)
+	if (supportsClassType)
 	    type = new StructType(name, getByteSize(classDie));
 	else
 	    type = new GccStructOrClassType(name, getByteSize(classDie));
