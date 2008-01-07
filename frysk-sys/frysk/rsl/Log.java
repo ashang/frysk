@@ -304,9 +304,19 @@ public final class Log {
 	suffix();
     }
     
+    public void log(String p1, String p2) {
+	if (!logging)
+	    return;
+	prefix();
+	print(p1);
+	print(p2);
+	suffix();
+    }
+    
     public void log(Object self, String p1) {
 	if (!logging)
 	    return;
+	prefix(self);
 	print(p1);
 	suffix();
     }

@@ -40,7 +40,6 @@
 package frysk.debuginfo;
 
 import frysk.isa.ISA;
-import frysk.rsl.Level;
 import frysk.rsl.Log;
 import frysk.scopes.SourceLocation;
 import frysk.value.Access;
@@ -228,11 +227,9 @@ public class TypeEntry
 	dumpDie("structOrClassDie=", classDie);
 
 	CompositeType type;
-	// XXX: Maybe store compiler version for each program somewhere so this
-	// test doesn't need to be done multiple times.
 
 	String compiler = classDie.getProducer();
-	boolean supportsClassType = compilerSupportsClassType(compiler);
+	boolean supportsClassType = CompilerVersionFactory.getCompilerVersion(compiler).supportsClassType();
 	fine.log("Compiler support determined as:" + supportsClassType);
 
 	/*
@@ -248,56 +245,6 @@ public class TypeEntry
 	addMembers(classDie, type);
 
 	return type;
-    }
-    
-    
-    // XXX: Perhaps make factory with multiple compilers that support ClassType.
-    private boolean compilerSupportsClassType(String compiler)
-    {
-	//XXX: GNU C specific.
-	fine.log("Found compiler: ", compiler);
-	
-	//String looks like: GNU C 4.1.2 20070925 (Red Hat 4.1.2-33)
-	if (!compiler.contains("GNU C"))
-	    return false;
-	
-	finest.log("Compiler is GNU C");
-	
-	String preCompilerVersion = "(Red Hat ";
-	
-	String compilerVersion = compiler.substring(compiler.indexOf(preCompilerVersion) 
-		+ preCompilerVersion.length(), compiler.lastIndexOf(')'));
-	
-	String[] versions = compilerVersion.split("\\.");
-	
-	if (versions.length < 3)
-	    return false;
-	
-	finest.log("Version string has 3 sections");
-	
-	if (Integer.parseInt(versions[0]) < 4)
-	    return false;
-	
-	finest.log("Major Version is >= 4");
-	
-	if (Integer.parseInt(versions[1]) < 1)
-	    return false;
-	
-	finest.log("Minor Version is >= 1");
-	
-	String [] minorVersions = versions[2].split("-");
-	
-	if (Integer.parseInt(minorVersions[0]) < 2)
-	    return false;
-	
-	finest.log("More minor version is >= 2");
-	
-	if (Integer.parseInt(minorVersions[1]) < 37)
-	    return false;
-	
-	finest.log("Most Minor version is >= 37");
-	
-	return true;
     }
     
     /**

@@ -1,5 +1,9 @@
+
 2008-01-07  Nurdin Premji <npremji@redhat.com>
-	
+
+	* Log.java(log(String,String): Added.
+	(log(Object, String)): Call prefix with Object self.
+		
 	* Log.java (finest(String)): Added.
 	(finest(Class)): Added.
 
