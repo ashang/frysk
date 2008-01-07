@@ -1,5 +1,9 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (getMod()): Make abstract.
+	(incrementMod()): Delete.
+	(modCount()): Delete.
+
 	* Proc.java (sendrecAuxv()): Delete.
 	(getAuxv()): Make abstract.
 	(sendrecCommand()): Delete.

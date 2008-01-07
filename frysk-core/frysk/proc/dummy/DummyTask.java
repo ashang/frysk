@@ -142,4 +142,8 @@ public class DummyTask extends Task {
     public void requestDeleteInstructionObserver(TaskObserver.Instruction o) {
 	throw new RuntimeException("oops!");
     }
+
+    public int getMod() {
+	return 1;
+    }
 }

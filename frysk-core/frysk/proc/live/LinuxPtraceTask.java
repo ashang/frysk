@@ -946,4 +946,13 @@ public class LinuxPtraceTask extends LiveTask {
      * XXX: This should be a state in Linux/PTRACE state machine.
      */
     public boolean syscallSigretXXX;
+
+    private int modCount = 0;
+    public void incrementMod() {
+	modCount++;
+    }
+ 
+    public int getMod() {
+	return modCount;
+    }
 }

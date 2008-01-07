@@ -445,15 +445,7 @@ public abstract class Task {
      * Use a counter rather than a boolean because multiple caches may
      * depend on this count and no cache should be able to clear it.
      */
-    private int modCount = 0;
- 
-    public void incrementMod() {
-	modCount++;
-    }
- 
-    public int getMod() {
-	return modCount;
-    }
+    public abstract int getMod();
  
     public void clearIsa() {
 	isa = null;

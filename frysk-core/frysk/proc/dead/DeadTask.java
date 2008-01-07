@@ -240,4 +240,8 @@ abstract class DeadTask extends Task {
     public void requestDeleteInstructionObserver(TaskObserver.Instruction o) {
 	throw new RuntimeException("requestDeleteInstructionObserver");
     }
+
+    public int getMod() {
+	return 1; // never changes.
+    }
 }
