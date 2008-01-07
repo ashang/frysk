@@ -1,6 +1,7 @@
 // This file is part of the program FRYSK.
 //
 // Copyright 2006 IBM Corp.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,7 +38,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.live;
 
 import frysk.isa.PPC64Registers;
 

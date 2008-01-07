@@ -37,12 +37,15 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.live;
 
 import java.util.LinkedList;
 import java.util.List;
 import inua.eio.ByteBuffer;
 import frysk.isa.X8664Registers;
+import frysk.proc.Task;
+import frysk.proc.Proc;
+import frysk.proc.Auxv;
 
 class LinuxX8664 implements Isa {
     private static final Instruction X8664Breakpoint

@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.live;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,11 +49,12 @@ import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfEMachine;
 import lib.dwfl.ElfException;
 import lib.dwfl.ElfFileException;
+import frysk.proc.Task;
 
 public class IsaFactory
 {
   private static IsaFactory factory;
-  static final Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
+  static final Logger logger = Logger.getLogger("frysk");
   private Hashtable isaHash;
     
     IsaFactory() {
@@ -63,7 +64,7 @@ public class IsaFactory
 	isaHash.put(Integer.valueOf(ElfEMachine.EM_PPC64),
 		    LinuxPPC64.isaSingleton());
 	isaHash.put(Integer.valueOf(ElfEMachine.EM_386),
-		    LinuxIa32.isaSingleton());
+		    LinuxIA32.isaSingleton());
 	isaHash.put(Integer.valueOf(ElfEMachine.EM_PPC),
 		    LinuxPPC32.isaSingleton());
     }
@@ -133,7 +134,7 @@ public class IsaFactory
       Isa isa = null;
       switch (machineType) {
       case ElfEMachine.EM_386:
-	  isa = LinuxIa32.isaSingleton();
+	  isa = LinuxIA32.isaSingleton();
 	  break;
       case ElfEMachine.EM_PPC:
 	  isa = LinuxPPC32.isaSingleton();

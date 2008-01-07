@@ -105,15 +105,6 @@ public abstract class Task {
     private ISA currentISA;
     protected abstract ISA sendrecISA();
 
-    /**
-     * Returns this Task's Instruction Set Architecture.
-     *
-     * FIXME: Should instead be using ISA.
-     */
-    public Isa getIsaFIXME() {
-	return null;
-    }
-
     public final boolean hasIsa() {
 	return (currentISA != null);
     }
@@ -340,15 +331,6 @@ public abstract class Task {
      */
     public abstract void requestDeleteCodeObserver(TaskObserver.Code o, long a);
   
-    /**
-     * Whether we are currently stepping over a breakpoint.  Used in
-     * the running task state when a trap event occurs after a step
-     * has been issued. Null when no step is being performed.
-     *
-     * XXX: This variable belongs in the Linux/PTRACE state machine.
-     */
-    public Breakpoint steppingBreakpoint;
-
     /**
      * Request the addition of a Instruction observer that will be
      * notified as soon as the task executes an instruction.

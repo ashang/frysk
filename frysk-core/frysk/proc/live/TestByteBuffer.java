@@ -50,7 +50,6 @@ import frysk.testbed.LocalMemory;
 import frysk.sys.Ptrace.RegisterSet;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.proc.Manager;
-import frysk.proc.BreakpointAddresses;
 
 import java.util.Arrays;
 

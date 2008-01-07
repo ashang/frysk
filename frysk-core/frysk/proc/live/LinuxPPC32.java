@@ -1,6 +1,7 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2006 IBM Corp.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -10,11 +11,11 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-// 
+//
 // In addition, as a special exception, Red Hat, Inc. gives You the
 // additional right to link the code of FRYSK with code not covered
 // under the GNU General Public License ("Non-GPL Code") and to
@@ -37,18 +38,21 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.live;
 
-import inua.eio.ByteBuffer;
+import frysk.isa.PPC32Registers;
 
-// Package private helper class that can parse instructions from a
-// ByteBuffer stream for x86_64.
-class X8664InstructionParser
-{
-  static Instruction parse(ByteBuffer bb)
-  {
-    // We only really know about the X86 instructions, so just
-    // delegate.
-    return IA32InstructionParser.parse(bb);
-  }
+class LinuxPPC32 extends IsaPowerPC {
+
+    LinuxPPC32() {
+	//In Power32 the PC will be in Link Register
+	super(PPC32Registers.LR);
+    }
+
+    private static LinuxPPC32 isa;
+    static LinuxPPC32 isaSingleton () {
+	if (isa == null)
+	    isa = new LinuxPPC32 ();
+	return isa;
+    }
 }

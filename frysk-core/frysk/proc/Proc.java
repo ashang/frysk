@@ -39,7 +39,6 @@
 
 package frysk.proc;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -145,58 +144,6 @@ public abstract class Proc {
     }
 
     /**
-     * XXX: Should not be public.
-     */
-    public final BreakpointAddresses breakpoints;
-
-    // List of available addresses for out of line stepping.
-    // Used a lock in getOutOfLineAddress() and doneOutOfLine().
-    private final ArrayList outOfLineAddresses = new ArrayList();
-
-    // Whether the Isa has been asked for addresses yet.
-    // Guarded by outOfLineAddresses in getOutOfLineAddress.
-    private boolean requestedOutOfLineAddresses;
-
-    /**
-     * Returns an available address for out of line stepping. Blocks
-     * till an address is available. Queries the Isa if not done so
-     * before.  Returned addresses should be returned by calling
-     * doneOutOfLine().
-     */
-    long getOutOfLineAddress() {
-	synchronized (outOfLineAddresses) {
-	    while (outOfLineAddresses.isEmpty()) {
-		if (! requestedOutOfLineAddresses) {
-		    Isa isa = getMainTask().getIsaFIXME();
-		    outOfLineAddresses.addAll(isa.getOutOfLineAddresses(this));
-		    if (outOfLineAddresses.isEmpty())
-			throw new IllegalStateException("Isa.getOutOfLineAddresses"
-							+ " returned empty List");
-		    requestedOutOfLineAddresses = true;
-		} else {
-		    try {
-			outOfLineAddresses.wait();
-		    } catch (InterruptedException ignored) {
-			// Just try again...
-		    }
-		}
-	    }
-	    return ((Long) outOfLineAddresses.remove(0)).longValue();
-	}
-    }
-
-    /**
-     * Called by Breakpoint with an address returned by
-     * getOutOfLineAddress() to put it back in the pool.
-     */
-    void doneOutOfLine(long address) {
-	synchronized (outOfLineAddresses) {
-	    outOfLineAddresses.add(Long.valueOf(address));
-	    outOfLineAddresses.notifyAll();
-	}
-    }
-
-    /**
      * Create a new Proc skeleton. Since PARENT could be NULL,
      * explicitly specify the HOST.
      */
@@ -205,7 +152,6 @@ public abstract class Proc {
 	this.id = id;
 	this.parent = parent;
 	this.creator = creator;
-	this.breakpoints = new BreakpointAddresses(this);
 	// Keep parent informed.
 	if (parent != null)
 	    parent.add(this);

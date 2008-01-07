@@ -1,5 +1,28 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* Breakpoint.java: Moved from frysk.proc.live.
+	* BreakpointAddress.java: Ditto.
+	* Isa.java: Ditto.
+	* LinuxIA32.java: Ditto.
+	* LinuxX8664.java: Ditto.
+	* IsaPowerPC.java: Ditto.
+	* LinuxPPC32.java: Ditto.
+	* LinuxPPC64.java: Ditto.
+	* IsaFactory.java: Ditto.
+	* Instruction.java: Ditto.
+	* IA32InstructionParser.java: Ditto.
+	* X8664InstructionParser.java: Ditto.
+	* Proc.java (getOutOfLineAddress()): Move from frysk.proc.Proc.
+	(breakpoints): Ditto.
+	(requestedOutofLineAddresses): Ditto.
+	(outOfLineAddresses): Ditto.
+	(doneOutOfLine()): Ditto.
+	* LinuxPtraceTask.java (steppingBreakpoint): Move from
+	frysk.proc.Task.
+	* TestByteBuffer.java: Update.
+	* LogicalMemoryBuffer.java: Update.
+	* LinuxPtraceTaskState.java: Update.
+	
 	* LinuxPtraceTask.java (getIsaFIXME()): Rename sendrecIsa().
 	* LinuxPtraceTaskState.java: Update.
 

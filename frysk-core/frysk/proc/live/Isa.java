@@ -37,8 +37,10 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.live;
 
+import frysk.proc.Task;
+import frysk.proc.Proc;
 import java.util.List;
 import inua.eio.ByteBuffer;
 

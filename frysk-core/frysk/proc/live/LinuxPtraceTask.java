@@ -47,7 +47,6 @@ import frysk.proc.Action;
 import frysk.proc.TaskEvent;
 import frysk.proc.Manager;
 import frysk.proc.TaskObservation;
-import frysk.proc.BreakpointAddresses;
 import frysk.proc.TaskObserver.Terminating;
 import frysk.proc.TaskObserver;
 import frysk.proc.Proc;
@@ -57,8 +56,6 @@ import java.util.logging.Level;
 import frysk.event.Event;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
-import frysk.proc.IsaFactory;
-import frysk.proc.Isa;
 import frysk.sys.Errno;
 import frysk.sys.Ptrace;
 import frysk.sys.Ptrace.AddressSpace;
@@ -127,7 +124,7 @@ public class LinuxPtraceTask extends LiveTask {
     {
       int tid = getTid();
       ByteOrder byteOrder = getISA().order();
-      BreakpointAddresses breakpoints = getProc().breakpoints;
+      BreakpointAddresses breakpoints = ((LinuxPtraceProc)getProc()).breakpoints;
       ByteBuffer memory = new LogicalMemoryBuffer(tid, AddressSpace.DATA,
 						  breakpoints);
       memory.order(byteOrder);
@@ -974,4 +971,14 @@ public class LinuxPtraceTask extends LiveTask {
 	super.clearIsa();
 	pcRegister = null;
     }
+
+    /**
+     * Whether we are currently stepping over a breakpoint.  Used in
+     * the running task state when a trap event occurs after a step
+     * has been issued. Null when no step is being performed.
+     *
+     * XXX: This variable belongs in the Linux/PTRACE state machine.
+     */
+    public Breakpoint steppingBreakpoint;
+
 }

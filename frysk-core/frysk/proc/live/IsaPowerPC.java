@@ -37,12 +37,16 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-package frysk.proc;
+
+package frysk.proc.live;
 
 import java.util.LinkedList;
 import java.util.List;
 import inua.eio.ByteBuffer;
 import frysk.isa.Register;
+import frysk.proc.Task;
+import frysk.proc.Proc;
+import frysk.proc.Auxv;
 
 abstract class IsaPowerPC implements Isa {
     protected IsaPowerPC(Register PC) {

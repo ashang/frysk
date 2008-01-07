@@ -40,7 +40,6 @@
 package frysk.proc.live;
 
 import frysk.proc.Action;
-import frysk.proc.Breakpoint;
 import frysk.sys.proc.Exe;
 import frysk.proc.ProcId;
 import frysk.proc.Proc;
@@ -80,6 +79,7 @@ public class LinuxPtraceProc extends LiveProc {
 	super(host, parent, pid);
 	this.newState = LinuxPtraceProcState.initial(false);
 	this.stat = stat;
+	this.breakpoints = new BreakpointAddresses(this);
     }
     /**
      * Create a new, definitely attached, definitely running fork of
@@ -88,6 +88,7 @@ public class LinuxPtraceProc extends LiveProc {
     public LinuxPtraceProc(Task task, ProcId forkId) {
 	super(task, forkId);
 	this.newState = LinuxPtraceProcState.initial(true);
+	this.breakpoints = new BreakpointAddresses(this);
     }
 
     private Auxv[] auxv;
@@ -657,5 +658,57 @@ public class LinuxPtraceProc extends LiveProc {
 		}
 	    };
 	Manager.eventLoop.add(to);
+    }
+
+    /**
+     * XXX: Should not be public.
+     */
+    public final BreakpointAddresses breakpoints;
+
+    // List of available addresses for out of line stepping.
+    // Used a lock in getOutOfLineAddress() and doneOutOfLine().
+    private final ArrayList outOfLineAddresses = new ArrayList();
+
+    // Whether the Isa has been asked for addresses yet.
+    // Guarded by outOfLineAddresses in getOutOfLineAddress.
+    private boolean requestedOutOfLineAddresses;
+
+    /**
+     * Returns an available address for out of line stepping. Blocks
+     * till an address is available. Queries the Isa if not done so
+     * before.  Returned addresses should be returned by calling
+     * doneOutOfLine().
+     */
+    long getOutOfLineAddress() {
+	synchronized (outOfLineAddresses) {
+	    while (outOfLineAddresses.isEmpty()) {
+		if (! requestedOutOfLineAddresses) {
+		    Isa isa = ((LinuxPtraceTask)getMainTask()).getIsaFIXME();
+		    outOfLineAddresses.addAll(isa.getOutOfLineAddresses(this));
+		    if (outOfLineAddresses.isEmpty())
+			throw new IllegalStateException("Isa.getOutOfLineAddresses"
+							+ " returned empty List");
+		    requestedOutOfLineAddresses = true;
+		} else {
+		    try {
+			outOfLineAddresses.wait();
+		    } catch (InterruptedException ignored) {
+			// Just try again...
+		    }
+		}
+	    }
+	    return ((Long) outOfLineAddresses.remove(0)).longValue();
+	}
+    }
+
+    /**
+     * Called by Breakpoint with an address returned by
+     * getOutOfLineAddress() to put it back in the pool.
+     */
+    void doneOutOfLine(long address) {
+	synchronized (outOfLineAddresses) {
+	    outOfLineAddresses.add(Long.valueOf(address));
+	    outOfLineAddresses.notifyAll();
+	}
     }
 }

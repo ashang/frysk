@@ -39,14 +39,8 @@
 
 package frysk.proc.live;
 
-import frysk.proc.Breakpoint;
-import frysk.proc.BreakpointAddresses;
-import frysk.proc.Instruction;
-
 import java.util.Iterator;
-
 import inua.eio.ByteBuffer;
-
 import frysk.sys.Ptrace.AddressSpace;
 
 /**

@@ -38,9 +38,15 @@
 // exception.
 
 
-package frysk.proc;
+package frysk.proc.live;
 
-import java.util.*;
+import frysk.proc.TaskObserver;
+import frysk.proc.Proc;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.HashMap;
+import java.util.TreeSet;
+import java.util.ArrayList;
 
 /**
  * Keeps track of address breakpoints for a Proc (all Tasks of a Proc

@@ -37,14 +37,17 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.live;
 
 import frysk.isa.IA32Registers;
 import inua.eio.ByteBuffer;
 import java.util.List;
 import java.util.LinkedList;
+import frysk.proc.Task;
+import frysk.proc.Proc;
+import frysk.proc.Auxv;
 
-class LinuxIa32 implements Isa {
+class LinuxIA32 implements Isa {
 
     private static final Instruction IA32Breakpoint
 	= new Instruction(new byte[] { (byte)0xcc }, false);
@@ -151,10 +154,10 @@ class LinuxIa32 implements Isa {
 	return result;
     }
 
-    private static LinuxIa32 isa;
-    static LinuxIa32 isaSingleton () {
+    private static LinuxIA32 isa;
+    static LinuxIA32 isaSingleton () {
 	if (isa == null)
-	    isa = new LinuxIa32 ();
+	    isa = new LinuxIA32 ();
 	return isa;
     }
 }

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007 Red Hat Inc.
+// Copyright 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -38,10 +38,11 @@
 // exception.
 
 
-package frysk.proc;
+package frysk.proc.live;
 
+import frysk.proc.Proc;
+import frysk.proc.Task;
 import inua.eio.ByteBuffer;
-
 import java.util.HashMap;
 
 /**
@@ -146,7 +147,7 @@ public class Breakpoint implements Comparable
   private void set(Task task)
   {
     ByteBuffer buffer = task.getRawMemory();
-    Isa isa = task.getIsaFIXME();
+    Isa isa = ((LinuxPtraceTask)task).getIsaFIXME();
     Instruction bpInstruction = isa.getBreakpointInstruction();
     
     origInstruction = isa.getInstruction(buffer, address);
@@ -180,7 +181,7 @@ public class Breakpoint implements Comparable
     ByteBuffer buffer = task.getRawMemory();
     buffer.position(address);
     
-    Isa isa = task.getIsaFIXME();
+    Isa isa = ((LinuxPtraceTask)task).getIsaFIXME();
     Instruction bpInstruction = isa.getBreakpointInstruction();
     byte[] bp = bpInstruction.getBytes();
 
@@ -213,7 +214,7 @@ public class Breakpoint implements Comparable
 	// Proc will collect an address for our usage, our wait
 	// till one if available. We need to return it to Proc
 	// afterwards in stepDone().
-	oo_address = proc.getOutOfLineAddress();
+	oo_address = ((LinuxPtraceProc)proc).getOutOfLineAddress();
 	origInstruction.setupExecuteOutOfLine(task, address, oo_address);
       }
     else if (origInstruction.canSimulate())
@@ -253,7 +254,7 @@ public class Breakpoint implements Comparable
 	    // at the original pc address. And let Proc know the address
 	    // is available again.
 	    origInstruction.fixupExecuteOutOfLine(task, address, oo_address);
-	    proc.doneOutOfLine(oo_address);
+	    ((LinuxPtraceProc)proc).doneOutOfLine(oo_address);
 	    oo_address = 0;
 	  }
 	else if (origInstruction.canSimulate())
@@ -287,7 +288,7 @@ public class Breakpoint implements Comparable
 	    // No step took place, so no fixup needed. Just but
 	    // breakpoint back and cleaer oo_address for Proc.
 	    set(task);
-	    proc.doneOutOfLine(oo_address);
+	    ((LinuxPtraceProc)proc).doneOutOfLine(oo_address);
 	    oo_address = 0;
 	  }
 	else if (origInstruction.canSimulate())
