@@ -1,5 +1,17 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* FindProc.java (procFound(Proc)): Replace procFound(ProcId).
+	(procNotFound(ProcId)): Replace
+	procNotFound(ProcId,RuntimeException).
+	* Host.java (requestProc(ProcId,FindProc)): Rename
+	requestFindProc.
+	* TestTaskSyscallObserver.java: Update.
+	* TestSyscallRunning.java: Update.
+	* ProcBlockAction.java: Update.
+	* TestBreakpoints.java: Update.
+	* TestFindProc.java: Ditto.
+	* TestSyscallSignal.java: Update.
+
 	* Proc.java (getOutOfLineAddress()): Move to
 	frysk.proc.live.LinuxPtraceProc.
 	(breakpoints): Ditto.

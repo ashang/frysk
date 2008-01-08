@@ -44,7 +44,6 @@ import java.util.Observable;
 import java.util.logging.Level;
 import java.util.Observer;
 import frysk.testbed.TestLib;
-import frysk.event.RequestStopEvent;
 import frysk.testbed.SlaveOffspring;
 
 public class TestFindProc
@@ -66,29 +65,22 @@ public class TestFindProc
     }
   }
 
-  class MyFinder implements FindProc
-  {
-    ProcId expectedId;
-    
-    public MyFinder (ProcId pid)
-    {
-      expectedId = pid;
+    class MyFinder implements FindProc {
+	private final ProcId expectedId;
+	public MyFinder (ProcId pid) {
+	    expectedId = pid;
+	}
+	public void procFound(Proc proc) {
+	    logger.log(Level.FINE, "proc: {0} proc parent: {1} \n",
+		       new Object[] { proc, proc.getParent() });
+	    assertEquals("procId", expectedId, proc.getId());
+	    Manager.eventLoop.requestStop();
+	}
+	public void procNotFound(ProcId procId) {
+	    logger.log(Level.FINE, "{0} procId\n", procId);
+	    fail("Could not find process with ID" + procId.id);
+	}
     }
-    public void procFound (ProcId procId)
-    {
-      Proc proc = Manager.host.getProc(procId);
-      logger.log(Level.FINE, "proc: {0} proc parent: {1} \n",
-                 new Object[] { proc, proc.getParent() });
-      assertEquals (expectedId, procId);
-      Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop));
-    }
-
-    public void procNotFound (ProcId procId, Exception e)
-    {
-      logger.log(Level.FINE, "{0} procId\n", procId);
-      fail("Could not find process with ID" + procId.id);
-    }
-  }
 
   public void testFindProcDetached ()
   {
@@ -130,7 +122,7 @@ public class TestFindProc
      * Should be just the one.
      */
     FindProc finder = new MyFinder(new ProcId(ackProc.getPid()));
-    Manager.host.requestFindProc(new ProcId(ackProc.getPid()), finder);
+    Manager.host.requestProc(new ProcId(ackProc.getPid()), finder);
     assertRunUntilStop("testFindProc");
 
     int postFind = o.getCount();
@@ -143,21 +135,18 @@ public class TestFindProc
   {
     FindProc finder = new FindProc()
     {
-      public void procFound (ProcId procId)
-      {
-        logger.log(Level.FINE, "{0} procId\n", procId);
+      public void procFound(Proc proc) {
+        logger.log(Level.FINE, "{0} procId\n", proc);
         fail("Found proc 0, should have failed.");
       }
 
-      public void procNotFound (ProcId procId, Exception e)
-      {
+      public void procNotFound(ProcId procId) {
         logger.log(Level.FINE, "{0} procId\n", procId);
-        Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop));
-
+        Manager.eventLoop.requestStop();
       }
     };
 
-    Manager.host.requestFindProc(new ProcId(0), finder);
+    Manager.host.requestProc(new ProcId(0), finder);
     assertRunUntilStop("testFindFailed");
 
   }

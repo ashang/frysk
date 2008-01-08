@@ -1,5 +1,7 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* fstep.java: Update; use Host.requestProc(ProcId,FindProc).
+
 	* fstep.java: Update; use Task.getPC().
 
 2007-12-20  Phil Muldoon  <pmuldoon@redhat.com>

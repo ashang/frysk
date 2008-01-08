@@ -91,16 +91,15 @@ public class TestSyscallRunning
     out = new DataOutputStream(process.out.getOutputStream());
 
     // Make sure the core knows about it.
-    Manager.host.requestFindProc(new ProcId(process.pid.hashCode()),
-				 new FindProc()
+    Manager.host.requestProc(new ProcId(process.pid.hashCode()),
+			     new FindProc()
 	{
-	    public void procFound (ProcId procId)
-	    {
-		proc = Manager.host.getProc(procId);
+	    public void procFound(Proc p) {
+		proc = p;
 		Manager.eventLoop.requestStop();
 	    }
-	    public void procNotFound (ProcId procId, Exception e)
-	    {
+	    public void procNotFound(ProcId procId) {
+		fail("proc not found");
 	    }
 	});
     assertRunUntilStop("finding proc");

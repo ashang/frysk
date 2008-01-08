@@ -127,18 +127,15 @@ public class TestFCatch
     {
       logger.log(Level.FINE, "{0} init", this);
 
-      Manager.host.requestFindProc(this.procID, new FindProc()
+      Manager.host.requestProc(this.procID, new FindProc()
       {
-        public void procFound (ProcId procId)
-        {
-          proc = Manager.host.getProc(procId);
-          iterateTasks();
+        public void procFound(Proc p) {
+	    proc = p;
+	    iterateTasks();
         }
-
-        public void procNotFound (ProcId procId, Exception e)
-        {
-          System.err.println("Couldn't find the process: " + procId.toString());
-          Manager.eventLoop.requestStop();
+        public void procNotFound(ProcId procId) {
+	    System.err.println("Couldn't find the process: " + procId.toString());
+	    Manager.eventLoop.requestStop();
         }
       });
       logger.log(Level.FINE, "{0} exiting init", this);

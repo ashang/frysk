@@ -128,7 +128,7 @@ public abstract class Host {
     /**
      * Find a specifc process from its Id.
      */
-    public void requestFindProc(final ProcId procId, final FindProc finder) {
+    public void requestProc(final ProcId procId, final FindProc finder) {
 	Manager.eventLoop.add(new HostEvent("FindProc") {
 		public void execute() {
 		    logger.log(Level.FINE, "{0} handleRefresh\n", Host.this); 

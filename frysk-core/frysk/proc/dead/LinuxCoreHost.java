@@ -141,19 +141,18 @@ public class LinuxCoreHost extends DeadHost {
 	if (!(procPool.containsKey(procId))) {
 	    eventLoop.add(new Event() {
 		    public void execute() {
-			finder.procNotFound(procId, new RuntimeException(
-									 "Couldn't find the proc" + procId));
+			finder.procNotFound(procId);
 		    }
 		});
 	    return;
 	}
 
-	LinuxCoreProc proc = (LinuxCoreProc) getProc(procId);
+	final LinuxCoreProc proc = (LinuxCoreProc) getProc(procId);
 	proc.sendRefresh();
 
 	eventLoop.add(new Event() {
 		public void execute() {
-		    finder.procFound(procId);
+		    finder.procFound(proc);
 		}
 	    });
 

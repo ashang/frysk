@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,20 +43,18 @@ package frysk.proc;
  * Interface to be used with Host.requestFindProc.
  */
 
-public interface FindProc
-{
+public interface FindProc {
     
     /**
      * The process was successfully found and added to the Host's list
      * of processes.
-     * @param procId the procId that was found.
+     * @param proc the Proc that was found.
      */
-    void procFound (ProcId procId);
+    void procFound(Proc proc);
 
     /**
      * The process with the given ID was not found.
      * @param procId the procId that was not found.
-     * @param e The exception that occurred.
      */
-    void procNotFound (ProcId procId, Exception e);    
+    void procNotFound(ProcId procId);    
 }

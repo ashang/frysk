@@ -93,14 +93,14 @@ public class TestBreakpoints
     out = new DataOutputStream(process.out.getOutputStream());
     
     // Make sure the core knows about it.
-    Manager.host.requestFindProc
+    Manager.host.requestProc
 	(new ProcId(process.pid.hashCode()),
 	 new FindProc() {
-	     public void procFound (ProcId procId) {
-		 proc = Manager.host.getProc(procId);
+	     public void procFound(Proc proc) {
+		 TestBreakpoints.this.proc = proc;
 		 Manager.eventLoop.requestStop();
 	     }
-	     public void procNotFound (ProcId procId, Exception e) {
+	     public void procNotFound(ProcId procId) {
 		 fail("proc not found");
 	     }
 	 });

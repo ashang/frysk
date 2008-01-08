@@ -128,12 +128,11 @@ public class FCatch {
     private void init() {
 	logger.log(Level.FINE, "{0} init", this);
 
-	Manager.host.requestFindProc(this.procID, new FindProc() {
-	    public void procFound(ProcId procId) {
-		iterateTasks(Manager.host.getProc(procId));
+	Manager.host.requestProc(this.procID, new FindProc() {
+	    public void procFound(Proc proc) {
+		iterateTasks(proc);
 	    }
-
-	    public void procNotFound(ProcId procId, Exception e) {
+	    public void procNotFound(ProcId procId) {
 		System.err.println("Couldn't find the process: "
 			+ procId.toString());
 		Manager.eventLoop.requestStop();

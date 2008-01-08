@@ -52,13 +52,13 @@ class AttachCommand extends ParameterizedCommand {
 
 	boolean procSearchFinished = false;
 
-	public synchronized void procFound(ProcId procId) {
-	    proc = Manager.host.getProc(procId);
+	public synchronized void procFound(Proc proc) {
+	    this.proc = proc;
 	    procSearchFinished = true;
 	    notifyAll();
 	}
 
-	public synchronized void procNotFound(ProcId procId, Exception e) {
+	public synchronized void procNotFound(ProcId procId) {
 	    proc = null;
 	    procSearchFinished = true;
 	    notifyAll();
@@ -85,7 +85,7 @@ class AttachCommand extends ParameterizedCommand {
 	for (int i = 0; i < cmd.size(); i++) {
 	    int pid = Integer.parseInt(cmd.parameter(i));
 	    ProcFinder findProc = new ProcFinder();
-	    Manager.host.requestFindProc(new ProcId(pid), findProc);
+	    Manager.host.requestProc(new ProcId(pid), findProc);
 	    synchronized (findProc) {
 		while (!findProc.procSearchFinished) {
 		    try {

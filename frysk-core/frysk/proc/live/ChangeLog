@@ -1,5 +1,8 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceHost.java: Update; implement FindProc.
+	(sendGetProc): Delete.
+	
 	* Breakpoint.java: Moved from frysk.proc.live.
 	* BreakpointAddress.java: Ditto.
 	* Isa.java: Ditto.

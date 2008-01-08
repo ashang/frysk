@@ -176,20 +176,15 @@ public class fstep
     final fstep step = new fstep();
     if (pid != 0)
       {
-	Manager.host.requestFindProc(new ProcId(pid), new FindProc() {
-	    
-	    public void procFound (ProcId procId)
-	    {
-	      Proc proc = Manager.host.getProc(procId);
-	      Task mainTask = proc.getMainTask();
-	      mainTask.requestAddAttachedObserver(step);
+	Manager.host.requestProc(new ProcId(pid), new FindProc() {
+	    public void procFound(Proc proc) {
+		Task mainTask = proc.getMainTask();
+		mainTask.requestAddAttachedObserver(step);
 	    }
-	    
-	    public void procNotFound (ProcId procId, Exception e)
-	    {
-	      System.err.println("no such process (" + pid + ") " + e);
-	      parser.printHelp();
-	      System.exit(-1);
+	    public void procNotFound(ProcId procId) {
+		System.err.println("no such process: " + pid);
+		parser.printHelp();
+		System.exit(-1);
 	    }});
       }
     else

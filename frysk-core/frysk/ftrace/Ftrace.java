@@ -209,11 +209,11 @@ public class Ftrace
     public void trace () {
 	init();
 	for (Iterator it = tracedParents.iterator(); it.hasNext(); ){
-	    Manager.host.requestFindProc
+	    Manager.host.requestProc
 		((ProcId)it.next(),
 		 new FindProc() {
-		     public void procFound (ProcId procId) {}
-		     public void procNotFound (ProcId procId, Exception e) {
+		     public void procFound(Proc proc) {}
+		     public void procNotFound(ProcId procId) {
 			 System.err.println("No process with ID " + procId.intValue() + " found.");
 			 Manager.eventLoop.requestStop();
 		     }

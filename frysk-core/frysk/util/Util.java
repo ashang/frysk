@@ -117,21 +117,18 @@ public class Util
   {
       class ProcFinder implements FindProc {
 	  Proc proc;
-	  public void procFound (ProcId procId)
-	  {
-	      proc = Manager.host.getProc(procId);
+	  public void procFound(Proc p) {
+	      proc = p;
 	      Manager.eventLoop.requestStop();
 	  }
-	  
-	  public void procNotFound (ProcId procId, Exception e)
-	  { 
+	  public void procNotFound(ProcId procId) { 
 	      System.err.println("Could not find the process: "
 				 + procId.intValue());
 	      Manager.eventLoop.requestStop();  
 	  } 
       }
       ProcFinder finder = new ProcFinder();
-      Manager.host.requestFindProc(procId, finder);
+      Manager.host.requestProc(procId, finder);
       Manager.eventLoop.run();
       return finder.proc;
   }

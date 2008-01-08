@@ -1,3 +1,7 @@
+2008-01-07  Andrew Cagney  <cagney@redhat.com>
+
+	* Ftrace.java: Update; use Host.requestProc(ProcId,FindProc).
+
 2007-12-28  Andrew Cagney  <cagney@redhat.com>
 
 	frysk.proc.TaskObserver.Syscall reanmed to .Syscalls. Syscall

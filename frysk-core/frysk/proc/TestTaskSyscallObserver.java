@@ -547,34 +547,25 @@ public class TestTaskSyscallObserver
 
     TestSyscallInterruptXXX (final int pid)
     {
-      Manager.host.requestFindProc(new ProcId(pid), new FindProc()
+      Manager.host.requestProc(new ProcId(pid), new FindProc()
       {
 
-        public void procFound (ProcId procId)
-        {
-          Proc p = host.getProc(new ProcId(pid));
-          if (p != null)
-            {
-              List tasks = p.getTasks();
-              for (Iterator i = tasks.iterator(); i.hasNext();)
-                {
-                  Task t = (Task) i.next();
-                  if (t.getTaskId().hashCode() == pid)
-                    {
-                      syscallObserver = new SyscallInterruptObserver(t);
-                      t.requestAddSyscallsObserver(syscallObserver);
-                      assertRunUntilStop("Add syscallObservers");
-                      t.requestAddSignaledObserver(syscallObserver);
-                      assertRunUntilStop("Add signaledObservers");
-                    }
-                }
-            }
-
-          Manager.eventLoop.requestStop();
+        public void procFound(Proc p) {
+	    List tasks = p.getTasks();
+	    for (Iterator i = tasks.iterator(); i.hasNext();) {
+		Task t = (Task) i.next();
+		if (t.getTaskId().hashCode() == pid) {
+		    syscallObserver = new SyscallInterruptObserver(t);
+		    t.requestAddSyscallsObserver(syscallObserver);
+		    assertRunUntilStop("Add syscallObservers");
+		    t.requestAddSignaledObserver(syscallObserver);
+		    assertRunUntilStop("Add signaledObservers");
+		}
+	    }
+	    Manager.eventLoop.requestStop();
         }
-
-        public void procNotFound (ProcId procId, Exception e)
-        {
+        public void procNotFound (ProcId procId) {
+	    fail("proc not found");
         }
       });
       Manager.eventLoop.run();

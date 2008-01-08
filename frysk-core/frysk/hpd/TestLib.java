@@ -77,19 +77,18 @@ class TestLib
 
 	    Proc proc;
 
-	    public void procFound(ProcId procId) {
-		proc = Manager.host.getProc(procId);
+	    public void procFound(Proc proc) {
+		this.proc = proc;
 		Manager.eventLoop.requestStop();
 	    }
-
-	    public void procNotFound(ProcId procId, Exception e) {
+	    public void procNotFound(ProcId procId) {
 		fail("Couldn't find child process");
 	    }
 
 	}
 
 	Finder finder = new Finder();
-	Manager.host.requestFindProc(new ProcId(pid.hashCode()), finder);
+	Manager.host.requestProc(new ProcId(pid.hashCode()), finder);
 	Manager.eventLoop.run();
 	return finder.proc;
     }

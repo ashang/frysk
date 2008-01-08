@@ -87,19 +87,18 @@ public abstract class Offspring {
      * Find/return the child's Proc, polling /proc if necessary.
      */
     public Proc assertFindProcAndTasks () {
-	class ProcFinder implements FindProc
-	{
+	class ProcFinder implements FindProc {
 	    Proc proc;
-	    public void procFound (ProcId procId) {
-		proc = Manager.host.getProc(procId);
+	    public void procFound(Proc p) {
+		proc = p;
 		Manager.eventLoop.requestStop();
 	    }
-	    public void procNotFound (ProcId procId, Exception e) {
+	    public void procNotFound(ProcId procId) {
 		TestCase.fail("Couldn't find the given proc");
 	    }
 	}
 	ProcFinder findProc = new ProcFinder();
-	Manager.host.requestFindProc(new ProcId(getPid()), findProc);
+	Manager.host.requestProc(new ProcId(getPid()), findProc);
 	Manager.eventLoop.run();
 	return findProc.proc;
     }

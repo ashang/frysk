@@ -1,3 +1,9 @@
+2008-01-07  Andrew Cagney  <cagney@redhat.com>
+
+	* FCatch.java: Update; use Host.requestProc.
+	* TestFCatch.java: Ditto.
+	* Util.java: Ditto.
+
 2008-01-03  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestCoredumpAction.java (testGeneralPurposeRegisters): Delete. Replaced by

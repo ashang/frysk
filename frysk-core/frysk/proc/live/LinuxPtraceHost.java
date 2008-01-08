@@ -213,23 +213,21 @@ public class LinuxPtraceHost extends LiveHost {
 		{
 		    public void execute ()
 		    {
-			finder.procNotFound(procId,
-					    new RuntimeException("Couldn't find the proc"
-								 + procId));
+			finder.procNotFound(procId);
 		    }
 		});
 	    return;
 	}
 
     
-	LinuxPtraceProc proc = (LinuxPtraceProc) Manager.host.getProc(procId);
+	final LinuxPtraceProc proc = (LinuxPtraceProc) Manager.host.getProc(procId);
 	proc.sendRefresh();
     
 	Manager.eventLoop.add(new Event()
 	    {
 		public void execute ()
 		{
-		    finder.procFound(procId);
+		    finder.procFound(proc);
 		}
 	    });
 
@@ -270,63 +268,4 @@ public class LinuxPtraceHost extends LiveHost {
 	return self;
     }
     private Proc self;
-
-    void sendGetProc (final ProcId procId, final FindProc finder)
-    {
-	ProcBuilder pidBuilder = new ProcBuilder()
-	    {
-		public void buildId (int pid)
-		{
-		    Proc proc = (Proc) procPool.get(procId);
-		    if (proc == null) {
-			// New, unknown process. Try to find both the process
-			// and its parent. In the case of a daemon process, a
-			// second attempt may be needed.
-			Stat stat = new Stat();
-			int attempt = 0;
-			while (true) {
-			    // Should take no more than two attempts - one for
-			    // a normal process, and one for a daemon.
-			    if (attempt++ >= 2)
-				break;
-			    // Scan in the process's stat file. Of course, if
-			    // the stat file disappeared indicating that the
-			    // process exited, return NULL.
-			    if (! stat.refresh(procId.id))
-				return;                
-			}
-			// .. and then add this process.
-			new LinuxPtraceProc(LinuxPtraceHost.this, null, procId, stat);
-		    }
-		}
-	    };
-	pidBuilder.construct(procId.id);
-
-	if (!(procPool.containsKey(procId))) {
-	    Manager.eventLoop.add(new Event()
-		{
-
-		    public void execute ()
-		    {
-			finder.procNotFound(procId,
-					    new RuntimeException("Couldn't find the"
-								 + "proc with id: "
-								 + procId.id));
-		    }
-		});
-	    return;
-	}
-    
-	LinuxPtraceProc proc = (LinuxPtraceProc) Manager.host.getProc(procId);
-	proc.sendRefresh();
-    
-	Manager.eventLoop.add(new Event()
-	    {
-
-		public void execute ()
-		{
-		    finder.procFound(procId);
-		}
-	    });
-    }
 }

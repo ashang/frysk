@@ -155,22 +155,16 @@ public class ProcBlockAction
   {
     logger.log(Level.FINE, "{0} new\n", this);
     
-    Manager.host.requestFindProc(procId, new FindProc() {
-
-      public void procFound (ProcId procId)
-      {
-        proc = Manager.host.getProc(procId);
-        taskList = proc.getTasks();
-        requestAdd();
-      }
-
-      public void procNotFound (ProcId procId, Exception e)
-      {
-        throw new RuntimeException("Proc not found " + procId.intValue());
-      }
-      
-    });
-    
+    Manager.host.requestProc(procId, new FindProc() {
+	    public void procFound(Proc proc) {
+		ProcBlockAction.this.proc = proc;
+		taskList = proc.getTasks();
+		requestAdd();
+	    }
+	    public void procNotFound(ProcId procId) {
+		throw new RuntimeException("Proc not found " + procId.intValue());
+	    }
+	});
   }
   
   public ProcBlockAction (File coreFile) {
