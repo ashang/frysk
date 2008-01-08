@@ -1,3 +1,8 @@
+2008-01-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (distclean-cvsignored): Add dependency on
+	GEN_CLASSPATH.
+
 2007-12-28  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRunner.java-in: Pass native, 32- and 64-bit configs to

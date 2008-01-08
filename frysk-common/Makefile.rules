@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, 2006, 2007, Red Hat Inc.
+# Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 # Copyright 2007 Oracle Corporation.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
@@ -649,7 +649,7 @@ files-java.list: files.list
 	else \
 	    cp /dev/null $@ ; \
 	fi
-${GEN_DIRNAME}.jar: files-java.list
+${GEN_DIRNAME}.jar: files-java.list $(GEN_CLASSPATH)
 	rm -rf $(JAVAROOT)
 	mkdir -p $(JAVAROOT)
 	$(JAVAC) -d $(JAVAROOT) $(JAVACFLAGS) \
