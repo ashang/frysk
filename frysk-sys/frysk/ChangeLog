@@ -1,4 +1,11 @@
+2008-01-07  Nurdin Premji  <npremji@redhat.com>
+
+	* CompilerVersion.java: Added (C).
+	* cni/CompilerVersion.cxx: Surround methods with #ifdef ... 
+	#else return -1.	
+
 2008-01-04  Nurdin Premji  <npremji@redhat.com>
+
         * CompilerVersion.java: New.
         * cni/CompilerVersion.cxx: New.
 
