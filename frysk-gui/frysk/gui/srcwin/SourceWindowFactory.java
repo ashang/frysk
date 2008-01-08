@@ -172,15 +172,14 @@ public class SourceWindowFactory
   {
     ProcId procID = new ProcId(pid);
 
-    Manager.host.requestFindProc(procID, new FindProc()
+    Manager.host.requestProc(procID, new FindProc()
     {
-      public void procFound (ProcId procId)
+      public void procFound (Proc proc)
       {
-        Proc proc = Manager.host.getProc(procId);
         createSourceWindow(proc);
       }
 
-      public void procNotFound (ProcId procId, Exception e)
+      public void procNotFound (ProcId procId)
       {
         System.err.println("Couldn't find the process: " + procId.toString());
         Gui.quitFrysk();

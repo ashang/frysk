@@ -1,3 +1,8 @@
+2008-01-08  Tim Moore  <timoore@redhat.com>
+
+	* SourceWindowFactory.java (attachToPID): Change requestFindProc
+	to requestProc, reflecting changes in frysk.proc.Host.
+
 2008-01-02  Andrew Cagney  <cagney@redhat.com>
 
 	* SourceWindow.java: Update; frysk.proc.dead.LinuxProc renamed to
