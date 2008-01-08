@@ -172,21 +172,13 @@ public class ProcBlockAction
 
     core.requestRefreshXXX();
     Manager.eventLoop.runPending();
-    Iterator iterator = core.getProcIterator();
-
-    if (iterator.hasNext())
-      proc = (Proc) iterator.next();
-    else
-      {
-        proc = null;
+    proc = core.getSoleProcFIXME();
+    if (proc == null)
         throw new RuntimeException("No proc in this corefile");
-      }
-    if (iterator.hasNext())
-      throw new RuntimeException("Too many procs on this corefile");
 
     taskList = proc.getTasks();
     
-    iterator = taskList.iterator();
+    Iterator iterator = taskList.iterator();
     
     while (iterator.hasNext())
       {

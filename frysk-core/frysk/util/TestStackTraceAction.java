@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,9 +42,7 @@ package frysk.util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Iterator;
 import java.util.logging.Level;
-
 import frysk.Config;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Host;
@@ -127,38 +125,24 @@ public class TestStackTraceAction
 
   }
   
-  public void testCore ()
-  {
-    if (unresolved(4581))
-      return;
-   
-    StringWriter stringWriter = new StringWriter();
-    
-    Host coreHost = new LinuxCoreHost(Manager.eventLoop,
-                                  Config.getPkgDataFile("test-core-x86"));
-
-    assertNotNull("Core file Host is Null?", coreHost);
-
-    Iterator iter = coreHost.getProcIterator();
-    while (iter.hasNext())
-      {
-        Proc proc = (Proc) iter.next();
-        StacktraceAction stacker;
-
-        stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop),20, true, false,false, false,true,true)
-        {
-
-          public void addFailed (Object observable, Throwable w)
-          {
-            fail("Proc add failed: " + w.getMessage());
-          }
-        };
-
-        new ProcCoreAction (proc, stacker);
-        assertRunUntilStop("perform backtrace");
-        
-        assertNotNull("has backtrace?", stringWriter.getBuffer().toString());
-      }
-
-  }
+    public void testCore() {
+	if (unresolved(4581))
+	    return;
+	StringWriter stringWriter = new StringWriter();
+	Host coreHost = new LinuxCoreHost(Manager.eventLoop,
+					  Config.getPkgDataFile("test-core-x86"));
+	assertNotNull("Core file Host is Null?", coreHost);
+	Proc proc = coreHost.getSoleProcFIXME();
+	assertNotNull("core proc", proc);
+	StacktraceAction stacker;
+	stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop),20, true, false,false, false,true,true) {
+		
+		public void addFailed (Object observable, Throwable w) {
+		    fail("Proc add failed: " + w.getMessage());
+		}
+	    };
+	new ProcCoreAction (proc, stacker);
+	assertRunUntilStop("perform backtrace");
+	assertNotNull("has backtrace?", stringWriter.getBuffer().toString());
+    }
 }

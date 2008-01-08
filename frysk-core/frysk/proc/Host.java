@@ -43,7 +43,6 @@ import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Observable; // XXX: Temporary.
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -107,13 +106,26 @@ public abstract class Host {
 	procPool.remove(proc.id);
 	observableProcRemovedXXX.notify(proc);
     }
-    public Iterator getProcIterator() {
-	return procPool.values().iterator();
-    }
     public Proc getProc(ProcId id) {
 	logger.log(Level.FINE, "{0} getProc ProcId {1} \n", new Object[] {this, id}); 
 	return (Proc) procPool.get(id);
     }
+    /**
+     * Assuming that this host has only one proc; return it; this is
+     * used by the EXE and CORE targets
+     *
+     * FIXME: This should this be replaced by methods to "request a
+     * core" and "request a proc".
+     */
+    public Proc getSoleProcFIXME() {
+	switch (procPool.size()) {
+	case 1:
+	    return (Proc) procPool.values().iterator().next();
+	default:
+	    return null;
+	}
+    }
+
 
     /**
      * Request that the Host scan the system's process tables

@@ -1,3 +1,9 @@
+2008-01-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Host.java (getProcIterator()): Delete.
+	(getSoleProcFIXME()): New.
+	* ProcBlockAction.java: Use Host.getSoleProcFIXME.
+
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
 	* Host.java requestProc(ProcId,FindProc): Make abstract.

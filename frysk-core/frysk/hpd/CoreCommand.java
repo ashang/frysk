@@ -101,7 +101,7 @@ public class CoreCommand extends ParameterizedCommand {
 		coreHost = getHost(coreFile, exeFile, noExeOption);
 
 		// Get the core proc.
-		coreProc = getProc(coreHost);
+		coreProc = coreHost.getSoleProcFIXME();
 
 		// Error out if no exe found, and -noexe option specified
 		if ((noExeOption == false) && (coreHost.getStatus().hasExe == false)) {
@@ -154,18 +154,6 @@ public class CoreCommand extends ParameterizedCommand {
 			coreHost = new LinuxCoreHost(Manager.eventLoop, coreFile, executable);
 
 		return coreHost;
-	}
-
-	// From a Host, get a Proc
-	private Proc getProc(LinuxCoreHost coreHost) {
-		// Get an iterator to the one process
-		Iterator i = coreHost.getProcIterator();
-
-		// Find process, if not error out and return.
-		if (i.hasNext())
-			return (Proc) i.next();
-		else
-			return null;
 	}
 
 	// Parse the option commandline

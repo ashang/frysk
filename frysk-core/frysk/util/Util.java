@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,8 +40,6 @@
 package frysk.util;
 
 import java.io.File;
-import java.util.Iterator;
-
 import frysk.proc.Host;
 import frysk.proc.FindProc;
 import frysk.proc.Manager;
@@ -56,50 +54,27 @@ public class Util
   {
   }
   
-  /**
-   * Return the Proc associated with a coreFile.
-   * @param coreFile the given coreFile.
-   * @return The Proc for the given coreFile.
-   */
-  public static Proc getProcFromCoreFile(File coreFile)
-  {
-    LinuxCoreHost core = new LinuxCoreHost(Manager.eventLoop, coreFile);
-
-    Iterator iterator = core.getProcIterator();
-
-    Proc proc;
-    if (iterator.hasNext())
-      proc = (Proc) iterator.next();
-    else
-      {
-        proc = null;
-        throw new RuntimeException("Cannot find a process in this corefile.");
-      }
-    if (iterator.hasNext())
-      throw new RuntimeException("Too many processes in this corefile.");
-    
-    return proc;
-  }
+    /**
+     * Return the Proc associated with a coreFile.
+     * @param coreFile the given coreFile.
+     * @return The Proc for the given coreFile.
+     */
+    public static Proc getProcFromCoreFile(File coreFile) {
+	LinuxCoreHost core = new LinuxCoreHost(Manager.eventLoop, coreFile);
+	Proc proc = core.getSoleProcFIXME();
+	if (proc == null)
+	    throw new RuntimeException("Core file contains no proc.");
+	return proc;
+    }
   
-  public static Proc getProcFromCoreFile(File coreFile, File exeFile)
-  {
-    LinuxCoreHost core = new LinuxCoreHost(Manager.eventLoop, coreFile, exeFile);
-
-    Iterator iterator = core.getProcIterator();
-
-    Proc proc;
-    if (iterator.hasNext())
-      proc = (Proc) iterator.next();
-    else
-      {
-        proc = null;
-        throw new RuntimeException("Cannot find a process in this corefile.");
-      }
-    if (iterator.hasNext())
-      throw new RuntimeException("Too many processes in this corefile.");
-    
-    return proc;
-  }
+    public static Proc getProcFromCoreFile(File coreFile, File exeFile) {
+	LinuxCoreHost core = new LinuxCoreHost(Manager.eventLoop, coreFile,
+					       exeFile);
+	Proc proc = core.getSoleProcFIXME();
+	if (proc == null)
+	    throw new RuntimeException("Cannot find a process in this corefile.");
+	return proc;
+    }
   
   public static Proc getProcFromCoreExePair(CoreExePair coreExePair) {
       if (coreExePair.exeFile == null)
@@ -133,26 +108,15 @@ public class Util
       return finder.proc;
   }
   
-  /**
-   * Return the Proc associated with an executable File.
-   * @param exeHost the Host associated with the desired Proc.
-   * @return The Proc for the given executable File.
-   */
-  public static Proc getProcFromExeFile(Host exeHost)
-  {
-      Iterator iterator = exeHost.getProcIterator();
-
-      Proc proc;
-      if (iterator.hasNext())
-        proc = (Proc) iterator.next();
-      else
-        {
-          proc = null;
-          throw new RuntimeException("Cannot find a process in this executable.");
-        }
-      if (iterator.hasNext())
-        throw new RuntimeException("Too many processes in this executable.");
-      
-      return proc;
+    /**
+     * Return the Proc associated with an executable File.
+     * @param exeHost the Host associated with the desired Proc.
+     * @return The Proc for the given executable File.
+     */
+    public static Proc getProcFromExeFile(Host exeHost) {
+	Proc proc = exeHost.getSoleProcFIXME();
+	if (proc == null)
+	    throw new RuntimeException("Cannot find a process in this executable.");
+	return proc;
     }
 }
