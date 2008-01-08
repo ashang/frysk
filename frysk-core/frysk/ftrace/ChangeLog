@@ -1,5 +1,9 @@
 2008-01-08  Petr Machata  <pmachata@redhat.com>
 
+	* ObjectFile.java: Reindent.
+
+2008-01-08  Petr Machata  <pmachata@redhat.com>
+
 	* Ftrace.java: Handle fake /SYSV00000000 files implementing the
 	memory sharing.
 
