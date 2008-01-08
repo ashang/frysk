@@ -583,7 +583,13 @@ public class Ftrace
 	    if (traceMmapUnmap)
 		reporter.eventSingle(task, "map " + mapping.path);
 
-	    ObjectFile objf = ObjectFile.buildFromFile(mapping.path);
+	    java.io.File path = mapping.path;
+	    if (path.getPath().equals("/SYSV00000000 (deleted)") {
+		// This is most probably artificial name of SYSV
+		// shared memory "file".
+		return Action.CONTINUE;
+	    }
+	    ObjectFile objf = ObjectFile.buildFromFile(path);
 	    if (objf == null)
 		return Action.CONTINUE;
 
