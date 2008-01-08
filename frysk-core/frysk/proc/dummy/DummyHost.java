@@ -57,6 +57,7 @@ public class DummyHost extends Host {
     public Proc getSelf() {
 	throw new RuntimeException("getSelf");
     }
-    protected void sendRefresh (ProcId procId, FindProc finder) {
+    public void requestProc(ProcId procId, FindProc finder) {
+	throw new RuntimeException("requestProc");
     }
 }

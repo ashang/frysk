@@ -39,7 +39,6 @@
 
 package frysk.proc.dead;
 
-import frysk.event.Event;
 import frysk.event.EventLoop;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,7 +53,6 @@ import lib.dwfl.ElfPHeader;
 import lib.dwfl.ElfPrpsinfo;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
-import frysk.proc.FindProc;
 
 public class LinuxCoreHost extends DeadHost {
 
@@ -133,29 +131,6 @@ public class LinuxCoreHost extends DeadHost {
 	    proc.sendRefresh();
 	}
 	this.hasRefreshed = true;
-    }
-
-    protected void sendRefresh(final ProcId procId, final FindProc finder) {
-
-	// Core files nevers never change 
-	if (!(procPool.containsKey(procId))) {
-	    eventLoop.add(new Event() {
-		    public void execute() {
-			finder.procNotFound(procId);
-		    }
-		});
-	    return;
-	}
-
-	final LinuxCoreProc proc = (LinuxCoreProc) getProc(procId);
-	proc.sendRefresh();
-
-	eventLoop.add(new Event() {
-		public void execute() {
-		    finder.procFound(proc);
-		}
-	    });
-
     }
 
     private class DeconstructCoreFile {

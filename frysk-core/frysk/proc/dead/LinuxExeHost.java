@@ -51,7 +51,6 @@ import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfPHeader;
 
 import frysk.event.EventLoop;
-import frysk.proc.FindProc;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 
@@ -78,14 +77,6 @@ public class LinuxExeHost extends DeadHost {
 	    LinuxExeProc proc = (LinuxExeProc) i.next();
 	    proc.sendRefresh();
 	}
-    }
-
-    /**
-     * sendRefresh refreshes a list of PIDs for this process, although
-     * at this point in time for an executable none have been assigned.
-     */
-    protected void sendRefresh(ProcId procId, FindProc finder) {
-	return;
     }
 
     private class DeconstructExeFile

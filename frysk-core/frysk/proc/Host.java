@@ -115,9 +115,6 @@ public abstract class Host {
 	return (Proc) procPool.get(id);
     }
 
-    // Refresh the list of processes.
-    protected abstract void sendRefresh(ProcId procId, FindProc finder);
-    
     /**
      * Request that the Host scan the system's process tables
      * refreshing the internal structure to match.  Optionally refresh
@@ -128,13 +125,7 @@ public abstract class Host {
     /**
      * Find a specifc process from its Id.
      */
-    public void requestProc(final ProcId procId, final FindProc finder) {
-	Manager.eventLoop.add(new HostEvent("FindProc") {
-		public void execute() {
-		    logger.log(Level.FINE, "{0} handleRefresh\n", Host.this); 
-		    Host.this.sendRefresh (procId, finder);
-		}});
-    }
+    public abstract void requestProc(ProcId procId, FindProc finder);
     
     /**
      * Tell the host to create a running child process.

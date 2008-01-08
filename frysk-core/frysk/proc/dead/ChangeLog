@@ -1,5 +1,9 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxCoreHost.java (sendRefresh(ProcId,FindProc)): Delete.
+	* LinuxExeHost.java (sendRefresh(ProcId,FindProc)): Delete.
+	* DeadHost.java (requestProc(ProcId,FindProc)): New.
+	
 	* LinuxCoreHost.java: Update; implement FindProc.
 
 	* LinuxCoreTask.java (sendrecIsa()): Delete.

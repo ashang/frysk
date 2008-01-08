@@ -1,5 +1,8 @@
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* Host.java requestProc(ProcId,FindProc): Make abstract.
+	(sendRefresh(ProcId,FindProc)): Delete.
+	
 	* FindProc.java (procFound(Proc)): Replace procFound(ProcId).
 	(procNotFound(ProcId)): Replace
 	procNotFound(ProcId,RuntimeException).

@@ -42,6 +42,10 @@ package frysk.proc.dead;
 import frysk.proc.Host;
 import frysk.proc.TaskObserver.Attached;
 import frysk.proc.Proc;
+import frysk.proc.Manager;
+import frysk.proc.ProcId;
+import frysk.proc.FindProc;
+import frysk.event.Event;
 
 /**
  * A dead Host/Proc/Task is characterised by its lack of state, and an
@@ -60,5 +64,22 @@ abstract class DeadHost extends Host {
     }
     public Proc getSelf() {
 	throw new RuntimeException("getSelf");
+    }
+
+    // Dead tasks never change.
+    public void requestProc(final ProcId theProcId, final FindProc theFinder) {
+	Manager.eventLoop.add(new Event() {
+		// Avoid implicit variables; gcj bug.
+		private final ProcId procId = theProcId;
+		private final FindProc finder = theFinder;
+		public void execute() {
+		    Proc proc = getProc(procId);
+		    if (proc == null) {
+			finder.procNotFound(procId);
+		    } else {
+			finder.procFound(proc);
+		    }
+		}
+	    });
     }
 }

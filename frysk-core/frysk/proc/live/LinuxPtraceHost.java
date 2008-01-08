@@ -194,44 +194,30 @@ public class LinuxPtraceHost extends LiveHost {
 	}
     }
   
-    protected void sendRefresh (final ProcId procId, final FindProc finder)
-    {
-
-	// Iterate (build) the /proc tree starting with the given procId.
-	final ProcChanges procChanges = new ProcChanges();
-	ProcBuilder pidBuilder = new ProcBuilder()
-	    {
-		public void buildId (int pid)
-		{
-		    procChanges.update(pid);
-		}
-	    };
-	pidBuilder.construct(procId.id);
-
-	if (!(procPool.containsKey(procId))) {
-	    Manager.eventLoop.add(new Event()
-		{
-		    public void execute ()
-		    {
+    public void requestProc(final ProcId theProcId, final FindProc theFinder) {
+	Manager.eventLoop.add(new Event() {
+		private final ProcId procId = theProcId;
+		private final FindProc finder = theFinder;
+		public void execute() {
+		    // Iterate (build) the /proc tree starting with
+		    // the given procId.
+		    final ProcChanges procChanges = new ProcChanges();
+		    ProcBuilder pidBuilder = new ProcBuilder() {
+			    public void buildId (int pid) {
+				procChanges.update(pid);
+			    }
+			};
+		    pidBuilder.construct(procId.id);
+		    final Proc proc = Manager.host.getProc(procId);
+		    if (proc == null) {
 			finder.procNotFound(procId);
+		    } else {
+			proc.sendRefresh();
+			finder.procFound(proc);
 		    }
-		});
-	    return;
-	}
-
-    
-	final LinuxPtraceProc proc = (LinuxPtraceProc) Manager.host.getProc(procId);
-	proc.sendRefresh();
-    
-	Manager.eventLoop.add(new Event()
-	    {
-		public void execute ()
-		{
-		    finder.procFound(proc);
 		}
 	    });
-
-    } 
+    }
 
     public void requestCreateAttachedProc(final String stdin,
 					  final String stdout,
