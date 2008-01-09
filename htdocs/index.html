@@ -75,18 +75,20 @@ available as both a research and development platform.</p>
 
 <p>
 
-The <tt>fhpd</tt>'s tab completer is expanding options and fields:
+Need to debug two programs
+simultaneously?  <tt>fhpd</tt>'s <tt>start</tt>> command now works
+with multiple-processes:
 
 <pre>
-(fhpd) print my_cars_ptr->
-audi    lexus   skoda
-(fhpd) print my_cars_ptr->skoda -
--format     -location   -raw        -tree
--type       -value
-(fhpd) print my_cars_ptr->skoda -location
-[0.0]
-Address 0x80497cc - 8 byte(s)
-(fhpd)
+$ ./frysk/bindir/fhpd
+(fhpd) load /bin/bash
+Loaded executable file: /bin/bash
+(fhpd) load /bin/ls
+Loaded executable file: /bin/ls
+(fhpd) start
+Attached to process 17686
+Attached to process 17687
+(fhpd) 
 </pre>
 
 <h2>Where Next?</h2>
