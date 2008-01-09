@@ -68,7 +68,7 @@ public class TestAuxvCommand extends TestLib {
     }
     
     BuildAuxv buildAuxv = new BuildAuxv();
-    buildAuxv.construct(liveAuxv);
+    buildAuxv.construct(liveAuxv, proc);
     
     
     e = new HpdTestbed();

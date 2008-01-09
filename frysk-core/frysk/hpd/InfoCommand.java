@@ -38,36 +38,14 @@
 // exception.
 package frysk.hpd;
 
-import java.util.List;
 
 public class InfoCommand extends MultiLevelCommand {
-    
-    private class Help extends Command {
-    	Help() {
-    	    super("Display this help message.", "help [command]",
-    		  "Display help (possibly for a command.)");
-    	}
-    	
-    	public void interpret(CLI cli, Input cmd) {
-    	    InfoCommand.this.help(cli, cmd);
-    	}
-    	
-    	/**
-    	 * Complete the line, throw problem back at the top level
-    	 * command.
-    	 */
-    	int complete(CLI cli, Input buffer, int cursor, List candidates) {
-    	    return InfoCommand.this.complete(cli, buffer, cursor,
-					     candidates);
-    	}
-    }
     
     
     InfoCommand() {
 	super("info command", "info <subcommand>", 
 	      "The info command displays useful information about " +
 	      "various system and process level systems.");
-        add(new Help(), "help");
     	add(new RegsCommand(),"regs");
     	add(new DebuginfoCommand(),"debuginfo");
     	add(new MapsCommand(),"maps");

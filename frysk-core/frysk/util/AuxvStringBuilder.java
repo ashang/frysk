@@ -38,8 +38,12 @@
 // exception.
 package frysk.util;
 
+import inua.eio.ByteBuffer;
 import inua.elf.AT;
 import frysk.proc.Auxv;
+import frysk.proc.Proc;
+import frysk.symtab.Symbol;
+import frysk.symtab.SymbolFactory;
 
 
 public abstract class AuxvStringBuilder
@@ -47,24 +51,56 @@ public abstract class AuxvStringBuilder
   protected AuxvStringBuilder() {
   }
   
-  public final void construct (Auxv[] rawAuxv) {
+  public final void construct (Auxv[] rawAuxv, Proc mainProc) {
     String  value;
+
     for (int i=0; i < rawAuxv.length; i++) {
-      switch (rawAuxv[i].type) {
-      case 33:
-      case 16:
-      case 3:
-      case 9:
+	switch (rawAuxv[i].type) {
+	case 33:
+	case 16:
+	case 3:
+	    value = "0x"+Long.toHexString(rawAuxv[i].val);
+	    break;
+	case 9:
+	    Symbol symbol = SymbolFactory.getSymbol(mainProc.getMainTask(), 
+		    rawAuxv[i].val);
+	    value = symbol.getName()+" (0x" +
+	    Long.toHexString(rawAuxv[i].val)+")";
+	    break;
 	case 15: 
-	  value = "0x"+Long.toHexString(rawAuxv[i].val);
-	  break;
-      default: 
-	value = ""+rawAuxv[i].val;
-      }    		  
-      buildLine(AT.toString(rawAuxv[i].type), AT.toPrintString(rawAuxv[i].type), value);
+	    value = getMemoryString(rawAuxv[i].val, mainProc);
+	    break;
+	default: 
+	    value = ""+rawAuxv[i].val;
+	}    		  
+	buildLine(AT.toString(rawAuxv[i].type), AT.toPrintString(rawAuxv[i].type), value);
     }
   }
   
   abstract public void buildLine(String type, String desc, String value);
+  
+  private String getMemoryString(long address, Proc mainProc) {
+      if (mainProc == null)
+	  return "";
+
+      byte[] scratchBuffer = new byte[255];
+      ByteBuffer location = mainProc.getMainTask().getMemory();
+
+      if (location == null)
+	  return "";
+      location.position(address);
+      
+      byte read = -1;
+      int count = 0;
+      while (count<255) {
+	  read = location.get();
+	  scratchBuffer[count] = read;
+	  if (read == 0)
+	      break;
+	  count++;
+      }
+     
+    return new String(scratchBuffer);
+}
 }
 

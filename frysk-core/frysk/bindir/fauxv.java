@@ -39,72 +39,123 @@
 
 package frysk.bindir;
 
-import frysk.util.CommandlineParser;
-import frysk.util.Util;
-import frysk.util.AuxvStringBuilder;
-import frysk.proc.Proc;
-import frysk.proc.ProcId;
-import frysk.proc.Auxv;
 import java.io.File;
+
+import frysk.event.Event;
+import frysk.proc.Manager;
+import frysk.proc.Proc;
+import frysk.proc.ProcBlockAction;
+import frysk.proc.ProcId;
+import frysk.proc.ProcObserver;
+import frysk.proc.Task;
+import frysk.util.AuxvStringBuilder;
+import frysk.util.CommandlineParser;
 import frysk.util.CoreExePair;
+import frysk.util.Util;
 
 public class fauxv {
-    
+
+    static Proc proc = null;
+
     public static void main (String[] args) {
 	// Parse command line. Check pid provided.
-	
+
 	CommandlineParser parser = new CommandlineParser("fauxv") {
-		
-		public void parseCores (CoreExePair[] corePairs) {
-		    for (int i = 0; i < corePairs.length; i++) {
-			File coreFile = corePairs[i].coreFile;
-			File exeFile = corePairs[i].exeFile;
-			Proc proc;
-			
-			if (exeFile == null)
-			    proc = Util.getProcFromCoreFile(coreFile);
-			else
-			    proc = Util.getProcFromCoreFile(coreFile, exeFile);
-			printAuxv(proc.getAuxv());
-		    }
-		    
+
+	    public void parseCores (CoreExePair[] corePairs) {
+		for (int i = 0; i < corePairs.length; i++) {
+		    File coreFile = corePairs[i].coreFile;
+		    File exeFile = corePairs[i].exeFile;
+		    if (exeFile == null)
+			proc = Util.getProcFromCoreFile(coreFile);
+		    else
+			proc = Util.getProcFromCoreFile(coreFile, exeFile);
+		    PrintAuxvEvent auxvPrint = new PrintAuxvEvent(proc);
+		    auxvPrint.execute();
 		    System.exit(0);
 		}
-		
-		public void parsePids (ProcId[] pids) {
-		    for (int i= 0; i< pids.length; i++) {
-			ProcId id = pids[i];
-			Proc proc = Util.getProcFromPid(id);
-			printAuxv(proc.getAuxv());
-		    }
+	    }
+
+	    public void parsePids (ProcId[] pids) {
+		for (int i= 0; i< pids.length; i++) {
+		    ProcId id = pids[i];
+		    proc = Util.getProcFromPid(id);
+		    new ProcBlockAction(proc, new RichAuxvDump(proc));
+		    Manager.eventLoop.run();
 		    System.exit(0);
 		}
-		
-		private void printAuxv(Auxv[] auxv)
-		{
-		    
-		    class BuildAuxv extends AuxvStringBuilder {
-			
-			public StringBuffer auxvData = new StringBuffer();
-			public void buildLine(String type, String desc, String value) {
-			    auxvData.append(type+" (" + desc+") : " + value+"\n");
-			}
-		    }
-		    
-		    BuildAuxv buildAuxv = new BuildAuxv();
-		    buildAuxv.construct(auxv);
-		    
-		    System.out.println(buildAuxv.auxvData.toString());
-		}
-		
-	    };
-	
-	parser.setHeader("Usage: fauxv <PID>  || fmaps <COREFILE> [<EXEFILE>]");
+	    }
+
+
+	};
+
+
+	parser.setHeader("Usage: fauxv <PID>  || fauxv <COREFILE> [<EXEFILE>]");
 	parser.parse(args);
-	
+
 	//If we got here, we didn't find a pid.
 	System.err.println("Error: No PID or COREFILE.");
 	parser.printHelp();
 	System.exit(1);
+    }   
+
+    private static class PrintAuxvEvent implements Event
+    {
+
+	private Proc proc = null;
+	public PrintAuxvEvent(Proc proc)
+	{
+	    this.proc = proc;
+	}
+	public void execute() {
+	    class BuildAuxv extends AuxvStringBuilder {
+
+		public StringBuffer auxvData = new StringBuffer();
+		public void buildLine(String type, String desc, String value) {
+		    auxvData.append(type+" (" + desc+") : " + value+"\n");
+		}
+	    }	
+
+	    BuildAuxv buildAuxv = new BuildAuxv();
+	    buildAuxv.construct(proc.getAuxv(), proc);
+
+	    System.out.print(buildAuxv.auxvData.toString());
+
+	    System.exit(0);
+	}
+
+
+    }
+
+
+
+    private static class RichAuxvDump implements ProcObserver.ProcAction {
+
+	private Proc proc;
+
+
+	public RichAuxvDump(Proc proc)
+	{
+	    this.proc = proc;
+	}
+
+	public void allExistingTasksCompleted() {
+	    Manager.eventLoop.add(new PrintAuxvEvent(this.proc));
+	}
+
+	public void taskAddFailed(Object task, Throwable w) {
+	}
+
+	public void existingTask(Task task) {
+	}
+
+	public void addFailed(Object observable, Throwable w) {
+	}
+
+	public void addedTo(Object observable) {
+	}
+
+	public void deletedFrom(Object observable) {
+	}
     }
 }

@@ -39,8 +39,10 @@
 
 package frysk.hpd;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
 import frysk.proc.Auxv;
 import frysk.proc.Proc;
 import frysk.util.AuxvStringBuilder;
@@ -63,39 +65,62 @@ public class AuxvCommand extends ParameterizedCommand {
   }
   
   void interpret(CLI cli, Input cmd, Object options) {
+    
+    int processCount = 0;
+    HashMap procList = new HashMap();
     PTSet ptset = cli.getCommandPTSet(cmd);
     Iterator taskDataIterator = ptset.getTaskData();
-    if (taskDataIterator.hasNext() == false) {
-      cli.addMessage("Cannot find main task. Cannot print out auxv", Message.TYPE_ERROR);
-      return;
-    }
-    Proc mainProc = ((TaskData) taskDataIterator.next()).getTask().getProc();
-    Auxv[] liveAux = mainProc.getAuxv();
 
-    if (liveAux == null) {
-	cli.addMessage("No Auxv data to print for this process",
-		       Message.TYPE_WARNING);
-	
+    if (taskDataIterator.hasNext() == false) {
+	cli.addMessage("Cannot find main task. Cannot print out auxv", 
+			Message.TYPE_ERROR);
 	return;
     }
-    class BuildAuxv extends AuxvStringBuilder {
-      
-      public StringBuffer auxvData = new StringBuffer();
-      public void buildLine(String type, String desc, String value) {
-	if (verbose)
-	  auxvData.append(type+" (" + desc+") : " + value+"\n");
-	else
-	  auxvData.append(type+" : " + value+"\n");	
-      }
+
+    
+    while (taskDataIterator.hasNext()) {
+	Proc proc = ((TaskData) taskDataIterator.next()).getTask().getProc();
+	if (!procList.containsValue(proc)) {
+	    procList.put(proc,proc);
+	    processCount++;
+	}
     }
-    
-    BuildAuxv buildAuxv = new BuildAuxv();
-    buildAuxv.construct(liveAux);
-    
-    cli.outWriter.println(buildAuxv.auxvData.toString());
+
+    Iterator procIterator = procList.values().iterator();
+
+    while (procIterator.hasNext()) {
+	Proc mainProc = ((Proc)procIterator.next());
+	
+	Auxv[] liveAux = mainProc.getAuxv();
+	
+	if (liveAux == null) {
+	    cli.addMessage("No Auxv data to print for this process",
+		    Message.TYPE_WARNING);
+
+	    continue;
+	}
+	
+	class BuildAuxv extends AuxvStringBuilder {
+
+	    public StringBuffer auxvData = new StringBuffer();
+	    public void buildLine(String type, String desc, String value) {
+		if (verbose)
+		    auxvData.append(type+" (" + desc+") : " + value+"\n");
+		else		    
+		    auxvData.append(type+" : " + value+"\n");	
+	    }
+	}
+
+	BuildAuxv buildAuxv = new BuildAuxv();
+	buildAuxv.construct(liveAux, mainProc);
+	if (processCount > 1)
+	    cli.outWriter.println("For process: " + mainProc.getPid()+"\n");
+	cli.outWriter.print(buildAuxv.auxvData.toString());
+    }
   }
   
-  int completer(CLI cli, Input input, int cursor, List completions) {
+
+int completer(CLI cli, Input input, int cursor, List completions) {
     return -1;
   }  
 }

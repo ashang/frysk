@@ -39,6 +39,7 @@
 
 package frysk.hpd;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import frysk.proc.MemoryMap;
@@ -55,23 +56,46 @@ public class MapsCommand extends ParameterizedCommand {
   }
   
   void interpret(CLI cli, Input cmd, Object options) {
+
+    int processCount = 0;
+    HashMap procList = new HashMap();  
     PTSet ptset = cli.getCommandPTSet(cmd);
+    
     Iterator taskDataIterator = ptset.getTaskData();
     if (taskDataIterator.hasNext() == false)  {
-      cli.addMessage("Cannot find main task. Cannot print out process maps.", Message.TYPE_ERROR);
+      cli.addMessage("Cannot find main task. Cannot print out process maps.", 
+	      	Message.TYPE_ERROR);
       return;
     }
-    Proc mainProc = ((TaskData) taskDataIterator.next()).getTask().getProc();
-    MemoryMap[] maps = mainProc.getMaps();
-
-    if (maps == null) {
-	cli.addMessage("No maps data to print for this process", 
-		       Message.TYPE_WARNING);
-	return;
+    
+    while (taskDataIterator.hasNext()) {
+	Proc proc = ((TaskData) taskDataIterator.next()).getTask().getProc();
+	if (!procList.containsValue(proc)) {
+	    procList.put(proc,proc);
+	    processCount++;
+	}
     }
-    for (int i=0; i<maps.length; i++)
-    	cli.outWriter.println(maps[i].toString());
-  }
+    
+    Iterator procIterator = procList.values().iterator();
+
+    while (procIterator.hasNext()) {
+	Proc mainProc = ((Proc)procIterator.next());
+
+	MemoryMap[] maps = mainProc.getMaps();
+
+	if (maps == null) {
+	    cli.addMessage("No maps data to print for this process", 
+		    Message.TYPE_WARNING);
+	    continue;
+	}
+
+	if (processCount > 1)
+	    cli.outWriter.println("For process: " + mainProc.getPid()+"\n");
+
+	for (int i=0; i<maps.length; i++)
+	    cli.outWriter.println(maps[i].toString());
+	}
+    }
   
   int completer(CLI cli, Input input, int cursor, List completions) {
     return -1;
