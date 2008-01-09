@@ -584,7 +584,7 @@ public class Ftrace
 		reporter.eventSingle(task, "map " + mapping.path);
 
 	    java.io.File path = mapping.path;
-	    if (path.getPath().equals("/SYSV00000000 (deleted)") {
+	    if (path.getPath().equals("/SYSV00000000 (deleted)")) {
 		// This is most probably artificial name of SYSV
 		// shared memory "file".
 		return Action.CONTINUE;
