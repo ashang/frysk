@@ -278,7 +278,7 @@ public class Ltrace
         }
 
 	public void deletedFrom (Object observable) {
-	    if (observers.isEmpty())
+	    if (!observers.isEmpty())
 		throw new AssertionError("Observers still present!");
 	    if (last == null)
 		throw new AssertionError("No last observer set!");

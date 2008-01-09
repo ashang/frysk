@@ -1,3 +1,8 @@
+2008-01-09  Petr Machata  <pmachata@redhat.com>
+
+	* Ltrace.java (TracePointObserver.deletedFrom): Fix checking of
+	observers emptiness.
+
 2008-01-08  Petr Machata  <pmachata@redhat.com>
 
 	* ObjectFile.java: Reindent.
