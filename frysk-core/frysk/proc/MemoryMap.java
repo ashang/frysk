@@ -95,7 +95,7 @@ public class MemoryMap
     else 
       perms.setCharAt(3,'p');
 
-    return " 0x" + Long.toHexString(addressLow) + 
+    return "0x" + Long.toHexString(addressLow) + 
       "-0x" +  Long.toHexString(addressHigh) +
       " " + perms +
       " 0x"+Long.toHexString(offset) +
