@@ -133,18 +133,11 @@ standard sourceware-style services.</p>
 
 <ul>
 
-<li><b>Anonymous CVS</b> <br>First login to the CVS server as
-anonymous:
+<li><b>Git</b> <br>Use Git to clone the <em>frysk</em> repository and check
+out the sources:
 
 <pre>
-cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/frysk login
-</pre>
-
-{enter "anoncvs" as the password}<br>
-The list of modules can then be listed with:
-
-<pre>
-cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/frysk co -c
+git-clone git://sourceware.org/git/frysk.git
 </pre>
 
 Details on how to build and run <em>frysk</em> can be found on the <a
@@ -152,13 +145,13 @@ href="../build/">build</a> page.
 
 </li>
 
-<li><b>Web CVS</b> <br> The <em>frysk</em> sources can be browsed <a
-href="http://sources.redhat.com/cgi-bin/cvsweb.cgi/?cvsroot=frysk">using
-cvsweb</a>.  </li>
+<li><b>Web Git</b> <br> The <em>frysk</em> sources can be browsed <a
+href="http://sourceware.org/git/?p=frysk.git;a=summary">using
+gitweb</a>.  </li>
 
 </ul>
 
-<p>People needing CVS write access can request it using <a
+<p>People needing write access to the Git repository can request it using <a
 href="http://sources.redhat.com/cgi-bin/pdw/ps_form.cgi">this handy
 form</a></p>
 

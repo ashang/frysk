@@ -430,22 +430,17 @@ Use <tt>CNTRL-B</tt>.
 </dl>
 
 <h3><a name="faq-git">GIT Questions, with Answers</h3></a>
+<p>See our <a href="git-fu.html">Git page</a> for examples of working
+  with Git.
+</p>
 
 <dl>
 
-<dt>
-<a name="How do I cut a branch?">
-How do I cut a branch?</dt></a> <dd><br>This needs to be rewritten for
-Git.<br>First choose a name for your branch, it should include both
-your user name, a terse hint as to the branches purpose, and todays
-date.  For instance <tt>pmuldoon-fcore-20061101</tt>, or
-<tt>cagney-triage12345-20061122</tt>.  Two tags will be created, first
-one for the branch point, and second one for the branch:
-
-<pre>
-$ cvs -d:.. rtag BRANCH-branchpoint frysk
-$ cvs -d... rtag -r BRANCH-branchpoint -b BRANCH-branch frysk
-</pre>
+<dt>How do I cut a branch?</dt>
+<dd> See our Git page's <a href="git-fu.html#branches">section on
+  branches</a>. A good Git practice is to take advantage of the
+  hierarchical nature of branch names and give short-lived "topic"
+  branches names like <tt>topic/regsbugfix</tt>.
 </dd>
 
 <dt>How do I import a third party package into frysk-imports?</dt>
@@ -533,6 +528,14 @@ Comments on how to improve this process appreciated.
 
 </dd>
 
+<dt>How do I create a tag or a branch at a certain date?</dt>
+<dd>There isn't a direct command for doing this in Git. Instead, you
+  can find the SHA1 hash of the last commit before a date with:
+<p><pre>
+git-rev-list --before=2007-12-14 --pretty=oneline -n1 HEAD
+</pre>
+and make the branch or tag using the hash.
+</dd>
 
 </dl>
               <!-- end text -->
