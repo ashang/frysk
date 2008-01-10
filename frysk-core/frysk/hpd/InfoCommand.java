@@ -46,9 +46,11 @@ public class InfoCommand extends MultiLevelCommand {
 	super("info command", "info <subcommand>", 
 	      "The info command displays useful information about " +
 	      "various system and process level systems.");
-    	add(new RegsCommand(),"regs");
     	add(new DebuginfoCommand(),"debuginfo");
     	add(new MapsCommand(),"maps");
     	add(new AuxvCommand(),"auxv");
+    	add(new RegsCommand("vector"), "vector-regs");
+    	add(new RegsCommand("float"), "float-regs");
+    	add(new RegsCommand("regs"), "general-regs");
     }
 }

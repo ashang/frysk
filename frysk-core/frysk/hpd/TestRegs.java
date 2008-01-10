@@ -51,7 +51,7 @@ public class TestRegs extends TestLib {
 	File exe = Config.getPkgLibFile("hpd-c");
 	ISA isa = ElfMap.getISA(exe);
 
-	String[] commandSet = {"regs\n", "info regs\n"};
+	String[] commandSet = {"regs\n", "info general-regs\n"};
 	// Regs
 	for (int i=0; i < commandSet.length; i++) {
 	    e.send(commandSet[i]);

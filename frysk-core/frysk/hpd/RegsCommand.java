@@ -50,13 +50,24 @@ import java.util.List;
 
 public class RegsCommand extends ParameterizedCommand {
 
+    
+    String group = "";
+    
     public RegsCommand() {
 	super("print registers", "regs group", "print out "
 	      + "registers in the given group, general registers "
 	      + "printed by default.");
     }
 
+    public RegsCommand(String groupname) {
+	super("print registers", "regs group", "print out "
+	      + "registers in the given group, general registers "
+	      + "printed by default.");
+	this.group = groupname;
+    }
+
     void interpret(CLI cli, Input cmd, Object options) {
+	String groupName = "";
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	Iterator taskDataIter = ptset.getTaskData();
 	while (taskDataIter.hasNext()) {
@@ -64,8 +75,14 @@ public class RegsCommand extends ParameterizedCommand {
 	    ISA isa = td.getTask().getISA();
 	    Registers regs = RegistersFactory.getRegisters(isa);
 	    RegisterGroup selectedGroup = regs.getGeneralRegisterGroup();
-	    if (cmd.size() > 0) {
-		String groupName = cmd.parameter(0);
+	    
+	    if (!this.group.equals(""))
+		groupName = this.group;
+	    
+	    if (cmd.size() > 0) 
+		groupName = cmd.parameter(0);
+		
+	    if (!groupName.equals("")) {
 		selectedGroup = regs.getGroup(groupName);
 		if (selectedGroup == null) {
 		    StringBuffer b = new StringBuffer();

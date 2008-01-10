@@ -1,5 +1,12 @@
 2008-01-10  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* TestRegs.java (testRegsCommand): Add general-regs
+	* RegsCommand.java: (RegsCommand): New constructor.
+	(interpret): Account for new constructor setting register
+	group.
+	* InfoCommand.java (InfoCommand): Add specific registers
+	group names.
+	
 	* AuxvCommand.java (interpret): Do not println, instead 
 	flush output.
 	
