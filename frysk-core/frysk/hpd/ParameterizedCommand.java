@@ -144,8 +144,8 @@ abstract class ParameterizedCommand extends Command {
 
     void help(CLI cli, Input input) {
 	cli.outWriter.print(syntax);
-	if (longOptions.size() > 1) {
-	    cli.outWriter.print(" -option ...; where options are:");
+	if (longOptions.size() > 0) {
+	    cli.outWriter.println(" -option ...; where options are:");
 	    for (Iterator i = longOptions.values().iterator();
 		 i.hasNext(); ) {
 		CommandOption option = (CommandOption)i.next();

@@ -1,5 +1,8 @@
 2008-01-10  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* ParameterizedCommand.java (help): Print help if longCommands >0 ! >1.
+	Seperate options from help text.
+	 
 	* TestRegs.java (testRegsCommand): Add general-regs
 	* RegsCommand.java: (RegsCommand): New constructor.
 	(interpret): Account for new constructor setting register
