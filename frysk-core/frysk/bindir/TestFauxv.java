@@ -74,13 +74,13 @@ public class TestFauxv
 	e.expect("AT_PHNUM \\(Number of program headers\\) : 8");
 	e.expect("AT_BASE \\(Base address of interpreter\\) : 0");
 	e.expect("AT_FLAGS \\(Flags\\) : 0");
-	e.expect("AT_ENTRY \\(Entry point of program\\) : 0x80483e0");
+	e.expect("AT_ENTRY \\(Entry point of program\\) : \\[unknown\\] \\(0x80483e0\\)");
 	e.expect("AT_UID \\(Real uid\\) : 500");
 	e.expect("AT_EUID \\(Effective uid\\) : 500");
 	e.expect("AT_GID \\(Real gid\\) : 500");
 	e.expect("AT_EGID \\(Effective gid\\) : 500");
 	e.expect("AT_0x17 \\(AT_0x17\\) : 0");
-	e.expect("AT_PLATFORM \\(String identifying platform.\\) : 0xbfcfee4b");
+	e.expect("AT_PLATFORM \\(String identifying platform.\\) : i686");
 	e.expect("AT_NULL \\(End of vector\\) : 0");
 	
     }

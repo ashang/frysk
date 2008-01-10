@@ -1,3 +1,8 @@
+2008-01-10  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestFauxv.java (testAuxvCore): Adjust expect output
+	to expect symbols.
+
 2008-01-09  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* fauxv.java (parsePids): Pass in proc object.
