@@ -55,20 +55,21 @@ public class TestAuxvCommand extends TestLib {
 	  
     Proc proc = (new DaemonBlockedAtSignal("funit-stacks")).getMainTask().getProc();
     Auxv[] liveAuxv = proc.getAuxv();
-    
+
+    class BuildAuxv extends AuxvStringBuilder {
+	      
+	      public ArrayList auxvData = new ArrayList();
+	      public void buildLine(String type, String desc, String value) {
+		auxvData.add(type+" : " + value+"\n");	
+	        }
+	    }
+
+    BuildAuxv buildAuxv = new BuildAuxv();
+    buildAuxv.construct(liveAuxv, proc);
+
     TestLinuxCore tester = new TestLinuxCore();
     File core = new File(tester.constructCore(proc));
     core.deleteOnExit();
-    class BuildAuxv extends AuxvStringBuilder {
-      
-      public ArrayList auxvData = new ArrayList();
-      public void buildLine(String type, String desc, String value) {
-	auxvData.add(type+" : " + value+"\n");	
-        }
-    }
-    
-    BuildAuxv buildAuxv = new BuildAuxv();
-    buildAuxv.construct(liveAuxv, proc);
     
     
     e = new HpdTestbed();
