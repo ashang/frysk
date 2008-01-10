@@ -116,6 +116,7 @@ public class AuxvCommand extends ParameterizedCommand {
 	if (processCount > 1)
 	    cli.outWriter.println("For process: " + mainProc.getPid()+"\n");
 	cli.outWriter.print(buildAuxv.auxvData.toString());
+	cli.outWriter.flush();
     }
   }
   

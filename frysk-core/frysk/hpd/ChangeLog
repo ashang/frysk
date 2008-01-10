@@ -1,7 +1,11 @@
 2008-01-10  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* AuxvCommand.java (interpret): Do not println, instead 
+	flush output.
+	
 	* TestAuxvCommand.java (testAuxVCoreCommand): Adjust order
 	or live and core auxv requests. 
+	
 
 2008-01-09  Phil Muldoon  <pmuldoon@redhat.com>
 
