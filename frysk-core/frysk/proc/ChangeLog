@@ -1,3 +1,7 @@
+2008-01-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java (queuedEvents): Delete.
+
 2008-01-10  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* MemoryMap.java (toString): Delete leading space. 

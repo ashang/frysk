@@ -173,8 +173,6 @@ public abstract class Task {
 	this(new TaskId(proc.getPid()), proc, proc.creator);
     }
 
-    protected LinkedList queuedEvents = new LinkedList();
-
     /**
      * Add the specified observer to the observable.
      */
