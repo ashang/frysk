@@ -1,3 +1,9 @@
+2008-01-11  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TopLevelCommand.java (TopLevelCommand): Add dump command.
+	* GenerateCoreCommand.java: New.
+	* TestGenerareCoreCommand.java: New. 
+
 2008-01-10  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ParameterizedCommand.java (help): Print help if longCommands >0 ! >1.

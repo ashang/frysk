@@ -359,6 +359,9 @@ public class LinuxCoreProc extends DeadProc {
 	// From that segment address, find linkmap table.
 	long linkmapAddress = getLinkmapAddress(dynamicTuple);
 
+	// No link map = no libraries loaded (core at entry point)
+	if (linkmapAddress == 0)
+	    return basicMetaData;
 
 	// Edge case: Save interp name as it is not included the linkmap
 	// as it is loaded by the kernel.

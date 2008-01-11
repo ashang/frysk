@@ -82,6 +82,7 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(new AttachCommand(), "attach");
         add(new BreakpointCommand(), "b|reak");
         add(new CoreCommand(), "core");
+        add(new GenerateCoreCommand(), "dump");
         add(new DbgVariableCommands.Set(), "set");
         add(new DbgVariableCommands.Unset(), "unset");
         add(new DetachCommand(), "detach");
@@ -114,7 +115,6 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(new StepNextCommand(), "n|ext");
         add(new StepNextiCommand(), "nexti");
         add(new WhatCommand(), "what");
-
         add(new WhichsetsCommand(), "whichsets");
         add(new ViewsetCommand(), "viewset");
         add(new DefsetCommand(), "defset");

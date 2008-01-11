@@ -1,3 +1,9 @@
+2008-01-11  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* DeadProc.java (DeadProc): Make public.
+	* LinuxCoreProc.java (constructEnhancedMapMetadata): Check that
+	linkmap address != 0.
+
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxCoreHost.java (sendRefresh(ProcId,FindProc)): Delete.

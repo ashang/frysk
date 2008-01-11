@@ -52,7 +52,7 @@ import frysk.proc.ProcEvent;
  * observers.
  */
 
-abstract class DeadProc extends Proc {
+public abstract class DeadProc extends Proc {
     DeadProc(Host host, Proc parent, ProcId id) {
 	super(host, parent, id);
     }
