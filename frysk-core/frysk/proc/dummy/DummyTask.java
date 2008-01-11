@@ -41,7 +41,6 @@ package frysk.proc.dummy;
 
 import inua.eio.ByteBuffer;
 import frysk.proc.TaskObserver;
-import frysk.proc.TaskObservation;
 import frysk.isa.ISA;
 import frysk.bank.RegisterBanks;
 import frysk.proc.Task;
@@ -69,12 +68,6 @@ public class DummyTask extends Task {
 	return "dummy";
     }
 
-    protected void handleAddObservation(TaskObservation observation) {
-	throw new RuntimeException("oops!");
-    }
-    protected void handleDeleteObservation(TaskObservation observation) {
-	throw new RuntimeException("oops!");
-    }
     public void requestUnblock(final TaskObserver observerArg) {
 	throw new RuntimeException("oops!");
     }

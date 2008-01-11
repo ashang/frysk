@@ -43,7 +43,6 @@ import frysk.proc.Auxv;
 import frysk.proc.ProcId;
 import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
-import frysk.proc.TaskObservation;
 
 public class DummyProc extends Proc {
     public DummyProc() {
@@ -80,9 +79,6 @@ public class DummyProc extends Proc {
 	throw new RuntimeException("oops!");
     }
     protected void performDetach() {
-	throw new RuntimeException("oops!");
-    }
-    protected void handleAddObservation(TaskObservation observation) {
 	throw new RuntimeException("oops!");
     }
 }

@@ -60,4 +60,13 @@ abstract class LiveTask extends Task {
     LiveTask(LiveProc proc, Attached attached) {
 	super(proc, attached);
     }
+
+    /**
+     * Process the add observation event.
+     */
+    abstract void handleAddObservation(TaskObservation observation);
+    /**
+     * Process the add observation event.
+     */
+    abstract void handleDeleteObservation(TaskObservation observation);
 }

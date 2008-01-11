@@ -1,3 +1,8 @@
+2008-01-11  Andrew Cagney  <cagney@redhat.com>
+
+	* DeadTask.java (handleAddObservation(TaskObservation))
+	(handleDeleteObservation(TaskObservation)): Delete.
+
 2008-01-11  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* DeadProc.java (DeadProc): Make public.

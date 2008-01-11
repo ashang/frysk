@@ -1,3 +1,14 @@
+2008-01-11  Andrew Cagney  <cagney@redhat.com>
+
+	* LiveTask.java (handleAddObservation(TaskObservation))
+	(handleDeleteObservation(TaskObservation)): Declare.
+	* TaskObservation.java: Move from frysk.proc.TaskObservation.
+	* TaskObservable.java: Move from frysk.proc.TaskObservable.
+	* LinuxPtraceTask.java (handleAddObservation(TaskObservation))
+	(handleDeleteObservation(TaskObservation)): Make pakage-private.
+	* LinuxPtraceProc.java: Update.
+	* LinuxPtraceTaskState.java: Update.
+
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceHost.java (requestProc(ProcId,FindProc)): Replace

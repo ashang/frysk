@@ -59,12 +59,10 @@ import java.util.Map;
 import java.util.HashMap;
 import frysk.proc.TaskId;
 import java.util.Iterator;
-import frysk.proc.TaskObservable;
 import java.io.File;
 import frysk.proc.Manager;
 import frysk.proc.ProcEvent;
 import frysk.proc.TaskObserver;
-import frysk.proc.TaskObservation;
 
 /**
  * A Linux Proc tracked using PTRACE.
@@ -405,7 +403,8 @@ public class LinuxPtraceProc extends LiveProc {
     void requestAddObserver(Task task, TaskObservable observable,
 			    TaskObserver observer) {
 	logger.log(Level.FINE, "{0} requestAddObservation\n", this);
-	Manager.eventLoop.add(new TaskObservation(task, observable, observer, true) {
+	Manager.eventLoop.add(new TaskObservation((LinuxPtraceTask)task,
+						  observable, observer, true) {
 		public void execute() {
 		    handleAddObservation(this);
 		}
@@ -420,8 +419,8 @@ public class LinuxPtraceProc extends LiveProc {
      */
     void requestDeleteObserver(Task task, TaskObservable observable,
 			       TaskObserver observer) {
-	Manager.eventLoop.add(new TaskObservation(task, observable,
-						  observer, false) {
+	Manager.eventLoop.add(new TaskObservation((LinuxPtraceTask)task,
+						  observable, observer, false) {
 		public void execute() {
 		    newState = oldState().handleDeleteObservation(LinuxPtraceProc.this, this);
 		}
@@ -460,7 +459,8 @@ public class LinuxPtraceProc extends LiveProc {
 				   TaskObserver observer) {
 	logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
 	SyscallAction sa = new SyscallAction((LinuxPtraceTask)task, true);
-	TaskObservation to = new TaskObservation(task, observable, observer, sa,
+	TaskObservation to = new TaskObservation((LinuxPtraceTask)task,
+						 observable, observer, sa,
 						 true) {
 		public void execute() {
 		    handleAddObservation(this);
@@ -481,7 +481,8 @@ public class LinuxPtraceProc extends LiveProc {
 				      TaskObserver observer) {
 	logger.log(Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
 	SyscallAction sa = new SyscallAction((LinuxPtraceTask)task, false);
-	TaskObservation to = new TaskObservation(task, observable, observer, sa,
+	TaskObservation to = new TaskObservation((LinuxPtraceTask)task,
+						 observable, observer, sa,
 						 false) {
 		public void execute() {
 		    newState = oldState().handleDeleteObservation(LinuxPtraceProc.this,
@@ -547,7 +548,8 @@ public class LinuxPtraceProc extends LiveProc {
 	logger.log(Level.FINE, "{0} requestAddCodeObserver\n", this);
 	BreakpointAction bpa = new BreakpointAction(observer, task, address, true);
 	TaskObservation to;
-	to = new TaskObservation(task, observable, observer, bpa, true) {
+	to = new TaskObservation((LinuxPtraceTask) task, observable, observer,
+				 bpa, true) {
 		public void execute() {
 		    handleAddObservation(this);
 		}
@@ -568,7 +570,7 @@ public class LinuxPtraceProc extends LiveProc {
 	logger.log(Level.FINE, "{0} requestDeleteCodeObserver\n", this);
 	BreakpointAction bpa = new BreakpointAction(observer, task, address, false);
 	TaskObservation to;
-	to = new TaskObservation(task, observable, observer, bpa, false) {
+	to = new TaskObservation((LinuxPtraceTask)task, observable, observer, bpa, false) {
 		public void execute() {
 		    newState = oldState().handleDeleteObservation(LinuxPtraceProc.this, this);
 		}
@@ -615,7 +617,7 @@ public class LinuxPtraceProc extends LiveProc {
 	logger.log(Level.FINE, "{0} requestAddInstructionObserver\n", this);
 	TaskObservation to;
 	InstructionAction ia = new InstructionAction();
-	to = new TaskObservation(task, observable, observer, ia, true) {
+	to = new TaskObservation((LinuxPtraceTask)task, observable, observer, ia, true) {
 		public void execute() {
 		    handleAddObservation(this);
 		}
@@ -649,7 +651,7 @@ public class LinuxPtraceProc extends LiveProc {
 	logger.log(Level.FINE, "{0} requestDeleteInstructionObserver\n", this);
 	TaskObservation to;
 	InstructionAction ia = new InstructionAction();
-	to = new TaskObservation(task, observable, observer, ia, false) {
+	to = new TaskObservation((LinuxPtraceTask)task, observable, observer, ia, false) {
 		public void execute() {
 		    newState = oldState().handleDeleteObservation(LinuxPtraceProc.this, this);
 		}

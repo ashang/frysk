@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007 Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,20 +37,20 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.live;
+
+import frysk.proc.Observation;
+import frysk.proc.TaskObserver;
 
 /**
  * The binding between an Observer and its Observable.
  */
-
-public abstract class TaskObservation
-    extends Observation
-{
-    private final Task task;
+public abstract class TaskObservation extends Observation {
+    private final LiveTask task;
     private final Runnable action;
     private final boolean adding;
 
-    public TaskObservation (Task task, TaskObservable observable,
+    public TaskObservation (LiveTask task, TaskObservable observable,
 			    TaskObserver observer, boolean adding)
     {
       this(task, observable, observer, null, adding);
@@ -66,7 +66,7 @@ public abstract class TaskObservation
      * @param action An action to run, or null if none, before adding
      * or after deletion while the Task is (temporarily) suspended.
      */
-    public TaskObservation (Task task, TaskObservable observable,
+    public TaskObservation (LiveTask task, TaskObservable observable,
 			    TaskObserver observer, Runnable action,
 			    boolean adding)
     {

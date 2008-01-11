@@ -173,16 +173,6 @@ public abstract class Task {
 	this(new TaskId(proc.getPid()), proc, proc.creator);
     }
 
-    /**
-     * Add the specified observer to the observable.
-     */
-    protected abstract void handleAddObservation(TaskObservation observation);
-
-    /**
-     * Delete the specified observer from the observable.
-     */
-    protected abstract void handleDeleteObservation(TaskObservation observation);
-
     public class TaskEventObservable extends java.util.Observable {
 	protected void notify(Object o) {
 	    setChanged();

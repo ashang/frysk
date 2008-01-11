@@ -42,11 +42,9 @@ package frysk.proc.live;
 import frysk.proc.TaskObserver;
 import frysk.proc.Observer;
 import frysk.proc.Observable;
-import frysk.proc.TaskObservation;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
-import frysk.proc.TaskObservable;
 import frysk.sys.Signal;
 
 /**

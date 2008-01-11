@@ -44,7 +44,6 @@ import frysk.proc.Task;
 import frysk.proc.Proc;
 import frysk.proc.TaskId;
 import frysk.proc.TaskObserver;
-import frysk.proc.TaskObservation;
 
 /**
  * A dead Host/Proc/Task is characterised by its lack of state, and an
@@ -59,20 +58,6 @@ abstract class DeadTask extends Task {
 
     protected String getStateFIXME() {
 	return "dead";
-    }
-
-    /**
-     * (Internal) Add the specified observer to the observable.
-     */
-    protected void handleAddObservation(TaskObservation observation) {
-	throw new RuntimeException("oops!");
-    }
-
-    /**
-     * (Internal) Delete the specified observer from the observable.
-     */
-    protected void handleDeleteObservation(TaskObservation observation) {
-	throw new RuntimeException("oops!");
     }
 
     /**

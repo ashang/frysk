@@ -37,7 +37,10 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.live;
+
+import frysk.proc.Observable;
+import frysk.proc.Task;
 
 /**
  * Observable element of Task.

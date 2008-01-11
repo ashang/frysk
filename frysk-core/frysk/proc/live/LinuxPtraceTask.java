@@ -46,7 +46,6 @@ import java.util.Collection;
 import frysk.proc.Action;
 import frysk.proc.TaskEvent;
 import frysk.proc.Manager;
-import frysk.proc.TaskObservation;
 import frysk.proc.TaskObserver.Terminating;
 import frysk.proc.TaskObserver;
 import frysk.proc.Proc;
@@ -65,7 +64,6 @@ import frysk.isa.ISA;
 import frysk.isa.ElfMap;
 import java.io.File;
 import frysk.bank.RegisterBanks;
-import frysk.proc.TaskObservable;
 
 /**
  * A Linux Task tracked using PTRACE.
@@ -420,21 +418,21 @@ public class LinuxPtraceTask extends LiveTask {
 	newState = null;
 	return oldState;
     }
-
+    
     /**
      * (Internal) Add the specified observer to the observable.
      */
-    protected void handleAddObservation(TaskObservation observation) {
+    void handleAddObservation(TaskObservation observation) {
 	newState = oldState().handleAddObservation(this, observation);
     }
-
+    
     /**
      * (Internal) Delete the specified observer from the observable.
      */
-    protected void handleDeleteObservation(TaskObservation observation) {
+    void handleDeleteObservation(TaskObservation observation) {
 	newState = oldState().handleDeleteObservation(this, observation);
     }
-
+    
     void handleUnblock(TaskObserver observer) {
 	newState = oldState().handleUnblock(this, observer);
     }

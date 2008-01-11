@@ -1,5 +1,9 @@
 2008-01-11  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskObservation.java: Move to frysk.proc.live.
+	* Task.java (handleAddObservation(TaskObserver)): Delete.
+	(handleDeleteObservation(TaskObserver)): Delete.
+
 	* UBigInteger.java: Delete.
 	* BitfieldAccessor.java: Delete.
 	* LongFloat.java: Delete.
