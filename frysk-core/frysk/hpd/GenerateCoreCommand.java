@@ -83,7 +83,7 @@ public class GenerateCoreCommand extends ParameterizedCommand {
 	    PTSet ptset = cli.getCommandPTSet(cmd);
 	    Iterator taskDataIterator = ptset.getTaskData();
 	    if (taskDataIterator.hasNext() == false) {
-		cli.addMessage("Cannot find main task. Cannot print out create core.", 
+		cli.addMessage("Cannot find main task. Cannot create core file.", 
 				Message.TYPE_ERROR);
 		return;
 	    }
