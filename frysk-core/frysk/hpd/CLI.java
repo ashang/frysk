@@ -287,6 +287,7 @@ public class CLI {
 	    cause = c;
 	}
 	return (cause instanceof NullPointerException
+		|| cause instanceof ArrayIndexOutOfBoundsException
 		|| e.getMessage() == null);
     }
 
