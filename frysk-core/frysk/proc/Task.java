@@ -117,15 +117,6 @@ public abstract class Task {
     }
 
     /**
-     * Return the task's entry point address. This is the address of
-     * the first instruction that the task will have executed. XXX:
-     * Not yet implemented.
-     */
-    public long getEntryPointAddress() {
-	return 0xdeadbeefL;
-    }
-
-    /**
      * Return the containing Proc.
      */
     public Proc getProc() {

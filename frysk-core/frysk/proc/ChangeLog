@@ -1,5 +1,7 @@
 2008-01-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (getEntryPointAddress()): Delete.
+	
 	* TestTaskObserverCode.java: Move to frysk.proc.live.
 	* Task.java (getRawMemory()): Move to frysk.proc.live.LiveTask.
 	
