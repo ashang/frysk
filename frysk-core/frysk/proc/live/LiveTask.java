@@ -39,6 +39,7 @@
 
 package frysk.proc.live;
 
+import inua.eio.ByteBuffer;
 import frysk.proc.Task;
 import frysk.proc.Proc;
 import frysk.proc.TaskId;
@@ -69,4 +70,15 @@ abstract class LiveTask extends Task {
      * Process the add observation event.
      */
     abstract void handleDeleteObservation(TaskObservation observation);
+
+    /**
+     * Returns the memory as seen by frysk-core. That includes things
+     * like inserted breakpoint instructions bytes which are filtered
+     * out by <code>getMemory()</code> (which is what you normally
+     * want unless you are interested in frysk-core specifics).  <p>
+     * Default implementation calls <code>getMemory()</code>, need to
+     * be overriden by subclasses for which the raw memory view and
+     * the logical memory view are different.
+     */
+    abstract ByteBuffer getRawMemory();
 }

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007 Red Hat Inc.
+// Copyright 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,17 +37,38 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.live;
 
-import inua.eio.*;
-import frysk.testbed.*;
-import frysk.sys.*;
-import frysk.dwfl.*;
-import lib.dwfl.*;
-import java.util.*;
-
+import lib.dwfl.DwarfCommand;
+import lib.dwfl.ElfCommand;
+import frysk.dwfl.DwflCache;
 import frysk.testbed.TestLib;
 import frysk.testbed.DaemonBlockedAtEntry;
+import frysk.proc.Task;
+import frysk.proc.Proc;
+import frysk.sys.Signal;
+import lib.dwfl.SymbolBuilder;
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflModule;
+import lib.dwfl.DwarfDie;
+import frysk.proc.TaskObserver;
+import frysk.proc.Action;
+import java.util.Map;
+import java.util.HashMap;
+import frysk.testbed.LegacyOffspring;
+import inua.eio.ByteBuffer;
+import frysk.proc.Manager;
+import frysk.proc.MemoryMap;
+import java.util.Collection;
+import java.util.Arrays;
+import java.util.Iterator;
+import frysk.testbed.StopEventLoopWhenProcRemoved;
+import lib.dwfl.ElfException;
+import java.util.ArrayList;
+import lib.dwfl.Elf;
+import frysk.testbed.Offspring;
+import frysk.sys.Errno;
+import lib.dwfl.Dwarf;
 
 public class TestTaskObserverCode extends TestLib
 {
@@ -470,7 +491,7 @@ public class TestTaskObserverCode extends TestLib
     assertRunUntilStop("adding AttachedObserver");
 
     ByteBuffer memory = task.getMemory();
-    ByteBuffer raw_memory = task.getRawMemory();
+    ByteBuffer rawMemory = ((LiveTask)task).getRawMemory();
     long address = getFunctionEntryAddress("bp1_func");
     DwarfDie func1_die = getFunctionDie("bp1_func");
     long func1_start = func1_die.getLowPC();
@@ -483,8 +504,8 @@ public class TestTaskObserverCode extends TestLib
     bp1_orig = memory.getByte();
 
     byte bp1_orig_raw;
-    raw_memory.position(address);
-    bp1_orig_raw = raw_memory.getByte();
+    rawMemory.position(address);
+    bp1_orig_raw = rawMemory.getByte();
     assertEquals("orig and raw", bp1_orig, bp1_orig_raw);
 
     byte[] func1_orig = new byte[(int) (func1_end - func1_start)];
@@ -492,8 +513,8 @@ public class TestTaskObserverCode extends TestLib
     memory.get(func1_orig);
 
     byte[] func1_orig_raw = new byte[(int) (func1_end - func1_start)];
-    raw_memory.position(func1_start);
-    raw_memory.get(func1_orig_raw);
+    rawMemory.position(func1_start);
+    rawMemory.get(func1_orig_raw);
     assertTrue("func_orig and func_raw",
 	       Arrays.equals(func1_orig, func1_orig_raw));
 
@@ -510,8 +531,8 @@ public class TestTaskObserverCode extends TestLib
     assertEquals("orig and insert", bp1_orig, bp1_insert);
 
     byte bp1_insert_raw;
-    raw_memory.position(address);
-    bp1_insert_raw = raw_memory.getByte();
+    rawMemory.position(address);
+    bp1_insert_raw = rawMemory.getByte();
     assertTrue("insert and raw", bp1_insert != bp1_insert_raw);
 
     byte[] func1_insert = new byte[(int) (func1_end - func1_start)];
@@ -521,8 +542,8 @@ public class TestTaskObserverCode extends TestLib
 	       Arrays.equals(func1_orig, func1_insert));
     
     byte[] func1_insert_raw = new byte[(int) (func1_end - func1_start)];
-    raw_memory.position(func1_start);
-    raw_memory.get(func1_insert_raw);
+    rawMemory.position(func1_start);
+    rawMemory.get(func1_insert_raw);
     assertFalse("func_insert and func_insert_raw",
 		Arrays.equals(func1_insert, func1_insert_raw));
 
@@ -544,14 +565,14 @@ public class TestTaskObserverCode extends TestLib
 	       Arrays.equals(func1_orig, func1_new));
 
     byte bp1_new_raw;
-    raw_memory.position(address);
-    bp1_new_raw = raw_memory.getByte();
+    rawMemory.position(address);
+    bp1_new_raw = rawMemory.getByte();
     assertEquals("new and raw",
 		 bp1_new, bp1_new_raw);
 
     byte[] func1_new_raw = new byte[(int) (func1_end - func1_start)];
-    raw_memory.position(func1_start);
-    raw_memory.get(func1_new_raw);
+    rawMemory.position(func1_start);
+    rawMemory.get(func1_new_raw);
     assertTrue("func_new and func_new_raw",
 	       Arrays.equals(func1_new, func1_new_raw));
   }
@@ -571,7 +592,7 @@ public class TestTaskObserverCode extends TestLib
     assertRunUntilStop("adding AttachedObserver");
 
     ByteBuffer memory = task.getMemory();
-    ByteBuffer raw_memory = task.getRawMemory();
+    ByteBuffer rawMemory = ((LiveTask)task).getRawMemory();
 
     DwarfDie func1_die = getFunctionDie("bp1_func");
     long func1_start = func1_die.getLowPC();
@@ -591,8 +612,8 @@ public class TestTaskObserverCode extends TestLib
     
     memory.position(map.addressLow);
     memory.get(mem_orig);
-    raw_memory.position(map.addressLow);
-    raw_memory.get(raw_orig);
+    rawMemory.position(map.addressLow);
+    rawMemory.get(raw_orig);
 
     assertTrue("mem_orig and raw_orig",
 	       Arrays.equals(mem_orig, raw_orig));
@@ -634,8 +655,8 @@ public class TestTaskObserverCode extends TestLib
     
     memory.position(map.addressLow);
     memory.get(bp_mem);
-    raw_memory.position(map.addressLow);
-    raw_memory.get(bp_raw);
+    rawMemory.position(map.addressLow);
+    rawMemory.get(bp_raw);
 
     assertTrue("mem_orig and bp_mem",
 	       Arrays.equals(mem_orig, bp_mem));
@@ -669,8 +690,8 @@ public class TestTaskObserverCode extends TestLib
 
     memory.position(map.addressLow);
     memory.get(bp_mem);
-    raw_memory.position(map.addressLow);
-    raw_memory.get(bp_raw);
+    rawMemory.position(map.addressLow);
+    rawMemory.get(bp_raw);
 
     assertTrue("deleted mem_orig and bp_mem",
                Arrays.equals(mem_orig, bp_mem));

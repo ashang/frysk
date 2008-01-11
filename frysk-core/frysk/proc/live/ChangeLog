@@ -1,5 +1,12 @@
 2008-01-11  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserverCode.java: Move from
+	frysk.proc.TestTaskObserverCode.
+	* LinuxPtraceTask.java (getRawMemory()): Make package-private.
+	* LiveTask.java (getRawMemory()): Declare.
+	* Breakpoint.java: Update.
+	* Instruction.java: Update.
+	
 	* LiveTask.java (handleAddObservation(TaskObservation))
 	(handleDeleteObservation(TaskObservation)): Declare.
 	* TaskObservation.java: Move from frysk.proc.TaskObservation.

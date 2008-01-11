@@ -298,19 +298,6 @@ public abstract class Task {
     }
 
     /**
-     * Returns the memory as seen by frysk-core. That includes things
-     * like inserted breakpoint instructions bytes which are filtered
-     * out by <code>getMemory()</code> (which is what you normally
-     * want unless you are interested in frysk-core specifics).  <p>
-     * Default implementation calls <code>getMemory()</code>, need to
-     * be overriden by subclasses for which the raw memory view and
-     * the logical memory view are different.
-     */
-    public ByteBuffer getRawMemory() {
-	return getMemory();
-    }
-
-    /**
      * Add TaskObserver.Code to the TaskObserver pool.
      */
     public abstract void requestAddCodeObserver(TaskObserver.Code o, long a);

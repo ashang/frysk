@@ -141,7 +141,7 @@ public class Instruction
    */
   public void setupExecuteOutOfLine(Task task, long pc, long address)
   {
-    ByteBuffer buffer = task.getRawMemory();
+      ByteBuffer buffer = ((LinuxPtraceTask)task).getRawMemory();
     buffer.position(address);
     buffer.put(instr);
     task.setPC(address);

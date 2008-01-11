@@ -103,12 +103,10 @@ public class LinuxPtraceTask extends LiveTask {
 	}
     }
 
-
     /**
      * Return the raw memory byte-buffer. This is the TEXT/DATA area.
      */
-    public ByteBuffer getRawMemory ()
-    {
+    ByteBuffer getRawMemory() {
 	logger.log(Level.FINE, "Begin fillMemory\n", this);
 	ByteOrder byteOrder = getISA().order();
 	ByteBuffer memory = new AddressSpaceByteBuffer(getTid(),

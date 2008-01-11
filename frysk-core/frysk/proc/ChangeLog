@@ -1,5 +1,8 @@
 2008-01-11  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserverCode.java: Move to frysk.proc.live.
+	* Task.java (getRawMemory()): Move to frysk.proc.live.LiveTask.
+	
 	* TaskObservation.java: Move to frysk.proc.live.
 	* Task.java (handleAddObservation(TaskObserver)): Delete.
 	(handleDeleteObservation(TaskObserver)): Delete.
