@@ -51,21 +51,19 @@ import frysk.proc.Task;
 import frysk.symtab.SymbolFactory;
 
 public class FunctionBreakpoint
-  extends SourceBreakpoint
-{
-  private String name;
-  private boolean containsInlineInstances = false;
-  private DwarfDie die;
+  extends SourceBreakpoint {
+    private String name;
+    private boolean containsInlineInstances = false;
+    private DwarfDie die;
 
-  /**
-   * Set a breakpoint based on a DwarfDie or just a name.
-   */
-  public FunctionBreakpoint(int id, String name, DwarfDie die)
-  {
-    super(id);
-    this.name = name;
-    this.die = die;
-  }
+    /**
+     * Set a breakpoint based on a DwarfDie or just a name.
+     */
+    public FunctionBreakpoint(int id, String name, DwarfDie die) {
+        super(id);
+        this.name = name;
+        this.die = die;
+    }
 
     public LinkedList getBreakpointRawAddresses(Task task) {
 	if (die != null) {
@@ -99,27 +97,23 @@ public class FunctionBreakpoint
 	}
     }
 
-  public long getRawAddress(Object addr)
-  {
-      return ((Long)addr).longValue();
-  }
+    public long getRawAddress(Object addr) {
+        return ((Long)addr).longValue();
+    }
 
-  public String getName()
-  {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public boolean containsInlineInstances()
-  {
-    // XXX What about in different processes?
-    return containsInlineInstances;
-  }
+    public boolean containsInlineInstances() {
+        // XXX What about in different processes?
+        return containsInlineInstances;
+    }
 
-  public PrintWriter output(PrintWriter writer)
-  {
-    writer.print(getName());
-    if (containsInlineInstances())
-      writer.print("*");
-    return writer;
-  }
+    public PrintWriter output(PrintWriter writer) {
+        writer.print(getName());
+        if (containsInlineInstances())
+            writer.print("*");
+        return writer;
+    }
 }
