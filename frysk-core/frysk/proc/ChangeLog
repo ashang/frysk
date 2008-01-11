@@ -1,5 +1,9 @@
 2008-01-11  Andrew Cagney  <cagney@redhat.com>
 
+	* UBigInteger.java: Delete.
+	* BitfieldAccessor.java: Delete.
+	* LongFloat.java: Delete.
+
 	* Task.java (queuedEvents): Delete.
 
 2008-01-10  Phil Muldoon  <pmuldoon@redhat.com>
