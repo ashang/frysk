@@ -357,7 +357,12 @@ public class LinuxPtraceTask extends LiveTask {
     public void sendDetach (int sig)
     {
 	logger.log(Level.FINE, "{0} sendDetach\n", this);
-	Ptrace.detach(getTid(), sig);
+	// Ignore problems trying to detach, most of the time the problem is the
+	// process has already left the cpu queue
+	try {
+	    Ptrace.detach(getTid(), sig);
+	} catch (Exception e) {
+	}
     }
 
     public void startTracingSyscalls ()

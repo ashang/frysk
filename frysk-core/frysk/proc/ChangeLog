@@ -1,3 +1,7 @@
+2008-01-14  Rick Moseley  <rmoseley@redhat.com>
+
+	* Proc.java: Remove requestAbandon() from requestKill().
+
 2008-01-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Task.java (getEntryPointAddress()): Delete.
