@@ -1,3 +1,8 @@
+2008-01-14  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxPtraceProc.java (getMaps): Remove if maps == null.
+	Rewrite using better variable names.
+
 2008-01-11  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskObserverCode.java: Move from

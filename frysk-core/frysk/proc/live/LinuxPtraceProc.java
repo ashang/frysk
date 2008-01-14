@@ -112,40 +112,42 @@ public class LinuxPtraceProc extends LiveProc {
     }
 
     private MemoryMap[] maps;
+
     public MemoryMap[] getMaps() {
-	if (maps == null) {
-	    class BuildMaps extends MapsBuilder {
-		ArrayList  maps = new ArrayList();
-		byte[] mapsLocal;
-		public void buildBuffer (byte[] maps) {
-		    mapsLocal = maps;
-		    maps[maps.length - 1] = 0;
-		}
-		public void buildMap (long addressLow, long addressHigh,
-				      boolean permRead, boolean permWrite,
-				      boolean permExecute, boolean shared,
-				      long offset, int devMajor, int devMinor,
-				      int inode, int pathnameOffset,
-				      int pathnameLength) {
-		    byte[] filename = new byte[pathnameLength];
-		    System.arraycopy(mapsLocal, pathnameOffset, filename, 0,
-				     pathnameLength);
-		    MemoryMap map = new MemoryMap(addressLow, addressHigh,
-						  permRead, permWrite,
-						  permExecute, shared, offset,
-						  devMajor, devMinor, inode,
-						  pathnameOffset,
-						  pathnameLength, new
-						  String(filename));
-		    maps.add(map);
-		}
+
+	class BuildMaps extends MapsBuilder {
+
+	    ArrayList mapsList = new ArrayList();
+	    byte[] mapsLocalArray;
+
+	    public void buildBuffer(byte[] mapsArray) {
+		mapsLocalArray = mapsArray;
+		mapsArray[mapsArray.length - 1] = 0;
 	    }
-	    BuildMaps constructedMaps = new BuildMaps ();
-	    constructedMaps.construct(getPid ());
-	    MemoryMap arrayMaps[] = new MemoryMap[constructedMaps.maps.size()];
-	    constructedMaps.maps.toArray(arrayMaps);
-	    this.maps = arrayMaps;
+
+	    public void buildMap(long addressLow, long addressHigh,
+		    boolean permRead, boolean permWrite, boolean permExecute,
+		    boolean shared, long offset, int devMajor, int devMinor,
+		    int inode, int pathnameOffset, int pathnameLength) {
+	
+		byte[] mapFilename = new byte[pathnameLength];
+		System.arraycopy(mapsLocalArray, pathnameOffset, mapFilename, 0,
+			pathnameLength);
+		
+		MemoryMap map = new MemoryMap(addressLow, addressHigh,
+			permRead, permWrite, permExecute, shared, offset,
+			devMajor, devMinor, inode, pathnameOffset,
+			pathnameLength, new String(mapFilename));
+		mapsList.add(map);
+	    }
 	}
+	
+	BuildMaps constructedMaps = new BuildMaps();
+	constructedMaps.construct(getPid());
+	MemoryMap arrayMaps[] = new MemoryMap[constructedMaps.mapsList.size()];
+	constructedMaps.mapsList.toArray(arrayMaps);
+	this.maps = arrayMaps;
+
 	return maps;
     }
 
