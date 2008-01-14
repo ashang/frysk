@@ -50,12 +50,12 @@ public class Dwfl {
 
     protected final DwarfDieFactory factory = DwarfDieFactory.getFactory();
   
-    public Dwfl() {
-	pointer = dwflBegin();
+    public Dwfl(String sysroot) {
+	pointer = dwflBegin(sysroot);
     }
 
-    Dwfl(int pid) {
-	pointer = dwflBegin(pid);
+    Dwfl(int pid, String sysroot) {
+	pointer = dwflBegin(sysroot, pid);
     }
 
     /**
@@ -174,8 +174,8 @@ public class Dwfl {
 	}
     }
   
-    private static native RawData dwflBegin ();
-    private static native RawData dwflBegin(int pid);
+    private static native RawData dwflBegin (String s);
+    private static native RawData dwflBegin(String s, int pid);
   
     public native void dwfl_report_begin();
     public native void dwfl_report_end();

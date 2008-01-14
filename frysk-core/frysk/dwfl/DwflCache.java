@@ -39,6 +39,7 @@
 
 package frysk.dwfl;
 
+import frysk.hpd.DbgVariables;
 import frysk.proc.Task;
 import java.util.Iterator;
 import java.util.WeakHashMap;
@@ -75,6 +76,52 @@ public class DwflCache
      */
     private static WeakHashMap allDwfls = new WeakHashMap();
 
+/**
+ * Given: a mock generated /sys/root/dir/usr/bin/program 
+ *			   /sys/root/dir/usr/lib/debug/usr/bin/program.debug
+ * Elfutils can be given an absolute or relative path to look for program.debug.
+ * It will look in: 
+ * 1. /sys/root/dir/usr/bin/program.debug 
+ * 2. /sys/root/dir/usr/bin/a/relative/path/program.debug 
+ * 3. /an/absolute/path/sys/root/dir/usr/bin/program.debug
+ * It would be helpful if it also looked in /an/absolute/path/program.debug 
+ * so it could be given /sys/root/dir/usr/lib/debug/usr/bin.  Lacking that we
+ * need to generate a relative path that has the same effect.
+ * XXX: Change to use java.io.File?
+ *
+ * @param pathname of executable
+ * @return a path where elfutils can find program.debug for separate debuginfo.
+ */
+
+    private static String getSysRoot(String execPathParm) {
+        String sysRoot = DbgVariables.getStringValue("SYSROOT");
+	if (sysRoot.length() == 0)
+	  return "/usr/lib/debug";
+	StringBuffer execPath = new StringBuffer(execPathParm);
+	StringBuffer relSysRoot = new StringBuffer("/..");
+	execPath.replace(0, sysRoot.length(), "");
+	int slashidx = execPath.lastIndexOf("/");
+	execPath.replace(slashidx, execPath.length(),"");
+	String nonSysRootPath = new String(execPath.toString());
+	slashidx = execPath.lastIndexOf("/");
+	while (slashidx >= 0) {
+	    while (execPath.substring(slashidx).compareTo("/..") == 0) {
+		execPath.replace(slashidx, execPath.length(), "");
+		slashidx = execPath.lastIndexOf("/");
+		execPath.replace(slashidx, execPath.length(), "");
+		slashidx = execPath.lastIndexOf("/");
+	    }
+	    execPath.replace(slashidx, execPath.length(), "");
+	    slashidx = execPath.lastIndexOf("/");
+	    if (slashidx != 0)
+		relSysRoot.append("/..");
+	}
+	relSysRoot.deleteCharAt(0);
+	relSysRoot.append("/usr/lib/debug/");
+	relSysRoot.append(nonSysRootPath);
+	return relSysRoot.toString();
+    }
+    
     /**
      * return a Dwfl for a {@link frysk.proc.Task}.
      * 
@@ -85,9 +132,10 @@ public class DwflCache
 	logger.log(Level.FINE, "entering createDwfl, task: {0}\n", task);
 
 	// If there is no dwfl for this task create one.
+	String relativeSysRoot = getSysRoot(task.getProc().getExe());
 	if (!modMap.containsKey(task)) {
 	    logger.log(Level.FINEST, "creating new dwfl for task {0}\n", task);
-	    Dwfl dwfl = new Dwfl();
+	    Dwfl dwfl = new Dwfl(relativeSysRoot);
 	    DwflFactory.updateDwfl(dwfl, task);
 	    Mod mod = new Mod(dwfl, task.getMod());
 	    modMap.put(task, mod);

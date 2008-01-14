@@ -50,7 +50,7 @@ import java.util.List;
 /**
  * Debugger variable accessible through the "set" command.
  */
-class DbgVariables {
+public class DbgVariables {
     public static int VARTYPE_INT = 0;
     public static int VARTYPE_STRING = 1;
     public static int VARTYPE_CUSTOM = 2;
@@ -99,7 +99,7 @@ class DbgVariables {
 	}
     }
 
-    private final SortedMap vars = new TreeMap();
+    private static final SortedMap vars = new TreeMap();
 
     public DbgVariables() {
 	vars.put("MODE", new Value(VARTYPE_CUSTOM, "MULTILEVEL", new String[] {"THREADS", "PROCESSES", "MULTILEVEL"}));
@@ -113,6 +113,7 @@ class DbgVariables {
 	vars.put("MAX_LEVELS", new Value(VARTYPE_INT, new Integer(20)));
 	vars.put("MAX_LIST", new Value(VARTYPE_INT, new Integer(20)));
 	vars.put("PROMPT", new Value(VARTYPE_STRING, "(frysk) "));
+	vars.put("SYSROOT", new Value(VARTYPE_STRING, ""));
 	vars.put("SOURCE_PATH", new Value(VARTYPE_STRING, ""));
 	vars.put("EXECUTABLE_PATH", new Value(VARTYPE_STRING, "./:" + System.getenv("PATH")));
     }
@@ -160,8 +161,11 @@ class DbgVariables {
 	return ((Integer)vars.get(var)).intValue();
     }
 
-    public String getStringValue(String var) {
-	return (String)vars.get(var);
+    public static String getStringValue(String var) {
+      if (vars.size() == 0)
+	return "";
+      else
+	return (String)((Value)vars.get(var)).value;
     }
 
     public Object getValue(String var) {

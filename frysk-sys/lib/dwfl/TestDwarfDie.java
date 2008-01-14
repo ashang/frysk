@@ -47,7 +47,7 @@ public class TestDwarfDie extends TestCase {
 
     
     public void testHasAttribute() {
-	Dwfl dwfl = new Dwfl(Pid.get());
+	Dwfl dwfl = new Dwfl(Pid.get(), "");
 	assertNotNull(dwfl);
 
 	// get CUDIE
@@ -65,7 +65,7 @@ public class TestDwarfDie extends TestCase {
     
     public void testGetCompilationUnit(){
 	long pc = LocalMemory.getCodeAddr();
-	Dwfl dwfl = new Dwfl(Pid.get());
+	Dwfl dwfl = new Dwfl(Pid.get(), "");
 	assertNotNull(dwfl);
 
 	// get CUDIE
@@ -87,7 +87,7 @@ public class TestDwarfDie extends TestCase {
 
     public void testGetModule(){
 	
-	Dwfl dwfl = new Dwfl(Pid.get());
+	Dwfl dwfl = new Dwfl(Pid.get(), "");
 	assertNotNull(dwfl);
 	long addr = LocalMemory.getCodeAddr();
 
@@ -103,7 +103,7 @@ public class TestDwarfDie extends TestCase {
 
     public void testGetOffset(){
 
-	Dwfl dwfl = new Dwfl(Pid.get());
+	Dwfl dwfl = new Dwfl(Pid.get(), "");
 	assertNotNull(dwfl);
 	long addr = LocalMemory.getCodeAddr();
 

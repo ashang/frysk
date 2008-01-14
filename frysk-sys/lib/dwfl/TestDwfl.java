@@ -53,13 +53,13 @@ public class TestDwfl
 {
   public void testDwfl()
   {
-    Dwfl dwfl = new Dwfl();
+    Dwfl dwfl = new Dwfl("");
     assertNotNull("dwfl", dwfl);
   }
   
   public void testDwflReporting()
   {
-    Dwfl dwfl = new Dwfl();
+    Dwfl dwfl = new Dwfl("");
     assertNotNull("dwfl", dwfl);
     
     dwfl.dwfl_report_begin();
@@ -69,7 +69,7 @@ public class TestDwfl
   
   public void testDwflModule()
   {
-    Dwfl dwfl = new Dwfl();
+    Dwfl dwfl = new Dwfl("");
     assertNotNull("dwfl", dwfl);
     
     String moduleName = "module";
@@ -86,7 +86,7 @@ public class TestDwfl
   
   public void testDwflGetModule2()
   {
-    Dwfl dwfl = new Dwfl();
+    Dwfl dwfl = new Dwfl("");
     assertNotNull("dwfl", dwfl);
     
     dwfl.dwfl_report_begin();
@@ -102,7 +102,7 @@ public class TestDwfl
   
   public void testDwflGetModules()
   {
-    Dwfl dwfl = new Dwfl();
+    Dwfl dwfl = new Dwfl("");
     assertNotNull("dwfl", dwfl);
     
     dwfl.dwfl_report_begin();
@@ -116,7 +116,7 @@ public class TestDwfl
   
   public void testGetLine ()
   {
-    Dwfl dwfl = new Dwfl(Pid.get());
+    Dwfl dwfl = new Dwfl(Pid.get(), "");
     assertNotNull("dwfl", dwfl);
     DwflLine line = dwfl.getSourceLine(LocalMemory.getCodeAddr());
     assertNotNull("line", line);
@@ -131,7 +131,7 @@ public class TestDwfl
 
   public void testGetDie ()
   {
-    Dwfl dwfl = new Dwfl(Pid.get());
+    Dwfl dwfl = new Dwfl(Pid.get(), "");
     assertNotNull(dwfl);
     
     DwflDieBias bias = dwfl.getCompilationUnit(LocalMemory.getCodeAddr());
@@ -172,7 +172,7 @@ public class TestDwfl
   // should be there. 
   public void testGetModules() 
   {
-    Dwfl dwfl = new Dwfl(Pid.get());
+    Dwfl dwfl = new Dwfl(Pid.get(), "");
     DwflModule[] modules = dwfl.getModules();
     assertNotNull(modules);
     // Look for some modules that should be there.
@@ -196,7 +196,7 @@ public class TestDwfl
   // in the DwflLine records returned for a line.
   public void testGetAddresses() 
   {
-    Dwfl dwfl = new Dwfl(Pid.get());
+    Dwfl dwfl = new Dwfl(Pid.get(), "");
     assertNotNull(dwfl);
     long addr = LocalMemory.getCodeAddr();
     DwflLine line = dwfl.getSourceLine(addr);
@@ -220,7 +220,7 @@ public class TestDwfl
   
   public void testGetCompliationUnitModule() 
   {
-    Dwfl dwfl = new Dwfl(Pid.get());
+    Dwfl dwfl = new Dwfl(Pid.get(), "");
     assertNotNull(dwfl);
     long addr = LocalMemory.getCodeAddr();
 

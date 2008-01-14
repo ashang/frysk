@@ -1,3 +1,9 @@
+2008-01-13  Stan Cox  <scox@redhat.com>
+
+	* Dwfl.java (Dwfl): Add sysroot parameter.  Change all callers.
+	* cni/Dwfl.cxx (dwflBegin): Add sysroot parameter.  Change all callers.
+	Consider sysroot.
+
 2007-01-04  Nurdin Premji  <npremji@redhat.com>
         * DwarfDie.java (getProducer): New.
         (getAttrString): New.

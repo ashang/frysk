@@ -107,11 +107,18 @@ dwfl_frysk_proc_find_elf (Dwfl_Module *mod,
 }
 
 gnu::gcj::RawData*
-lib::dwfl::Dwfl::dwflBegin (jint pid)
+lib::dwfl::Dwfl::dwflBegin (jstring jsysroot, jint pid)
 {
-  /* Default `DEFAULT_DEBUGINFO_PATH' is the same but checks it
-     CRCs.  */
-  static char* flags = "-:.debug:/usr/lib/debug";
+  int len = jsysroot->length ();
+  // jsize len = JvGetStringUTFLength(jsysroot);
+  char sysroot[len + 1]; 
+  JvGetStringUTFRegion(jsysroot, 0, len, sysroot);
+  sysroot[len] = '\0';
+  /* Default `DEFAULT_DEBUGINFO_PATH' is similar but checks its CRCs.  */
+  static char* flags;
+  if (asprintf (&flags, "-:.debug:%s", sysroot) < 0)
+    return NULL;
+
   static Dwfl_Callbacks callbacks = {
     &::dwfl_linux_proc_find_elf,
     &::dwfl_standard_find_debuginfo,
@@ -127,11 +134,17 @@ lib::dwfl::Dwfl::dwflBegin (jint pid)
 }
 
 gnu::gcj::RawData*
-lib::dwfl::Dwfl::dwflBegin()
+lib::dwfl::Dwfl::dwflBegin(jstring jsysroot)
 {
-  /* Default `DEFAULT_DEBUGINFO_PATH' is the same but checks it
-     CRCs.  */
-  static char* flags = "-:.debug:/usr/lib/debug";
+  int len = jsysroot->length ();
+  char sysroot[len+1]; 
+  JvGetStringUTFRegion(jsysroot, 0, len, sysroot);
+  sysroot[len] = '\0';
+  /* Default `DEFAULT_DEBUGINFO_PATH' is similar but checks its CRCs.  */
+  static char* flags;
+  if (asprintf (&flags, "-:.debug:%s", sysroot) < 0)
+    return NULL;
+
   static Dwfl_Callbacks callbacks = {
     &::dwfl_frysk_proc_find_elf,
     &::dwfl_standard_find_debuginfo,

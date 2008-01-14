@@ -1,3 +1,11 @@
+2008-01-13  Stan Cox  <scox@redhat.com>
+
+	* DbgVariables.java (DbgVariables): Make public.
+	(vars): Make static final.  Add SYSROOT.
+	(getSTringValue): Make static.  Return String.
+	* ListCommand.java (interpret): Consider SYSROOT.
+	* TestSysRoot.java: New file.
+
 2008-01-11  Andrew Cagney  <cagney@redhat.com>
 
 	* CLI.java (nasty(Exception)): Check for

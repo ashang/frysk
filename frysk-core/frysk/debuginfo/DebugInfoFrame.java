@@ -48,6 +48,7 @@ import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
 import lib.dwfl.DwflLine;
 import frysk.dwfl.DwflCache;
+import frysk.hpd.DbgVariables;
 import frysk.rt.LineXXX;
 import frysk.scopes.SourceLocation;
 import frysk.scopes.Scope;
@@ -182,6 +183,13 @@ public class DebugInfoFrame extends FrameDecorator {
   		    // that directory in front of it.
   		    File parent = new File(dwflLine.getCompilationDir());
   		    f = new File(parent, dwflLine.getSourceFile());
+		}
+		else {
+		    String sysroot = DbgVariables.getStringValue("SYSROOT");
+		    if (sysroot.length() > 0) {
+			File parent = new File(sysroot);
+			f = new File(parent, dwflLine.getSourceFile());
+		    }
 		}
   		this.line = new SourceLocation(f, dwflLine.getLineNum(),
 				     dwflLine.getColumn());

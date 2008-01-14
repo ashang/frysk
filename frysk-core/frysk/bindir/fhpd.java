@@ -63,6 +63,7 @@ public class fhpd
   static File core;
   static File exeFile;
   static boolean noExe = false;
+  static String sysroot;
 
   final static class FhpdCompletor implements Completor
   {
@@ -101,10 +102,10 @@ public class fhpd
         pid = pids[0].id;
       }
 
-    public void parseCores(CoreExePair[] corePairs) {
+      public void parseCores(CoreExePair[] corePairs) {
 	core = corePairs[0].coreFile;
 	exeFile = corePairs[0].exeFile;
-    }
+      }
     };
     parser.add(new Option("noexe", "Do not attempt to read an"+
 	" executable for a corefile ") {
@@ -115,6 +116,18 @@ public class fhpd
 	  } catch (IllegalArgumentException e) {
 	    throw new OptionException("Invalid noexe parameter "
 				      + exeValue);
+	  }
+	}
+    });
+    parser.add(new Option("sysroot", 's',
+			  "Assume the executable is from a sysroot build ",
+			  "SysRoot-Path") {
+	public void parsed(String sysrootValue) throws OptionException {
+	  try {
+	    sysroot = sysrootValue;
+	  } catch (IllegalArgumentException e) {
+	    throw new OptionException("Invalid sysroot parameter "
+				      + sysrootValue);
 	  }
 	}
     });
@@ -137,6 +150,8 @@ public class fhpd
 	  else if (noExe)
 	    line +=" -noexe";
       }
+      if (sysroot != null)
+	line = line + " ; set SYSROOT " + sysroot;
     }
     catch (IOException ignore) {}
     

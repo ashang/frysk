@@ -1,3 +1,7 @@
+2008-01-13  Stan Cox  <scox@redhat.com>
+
+	* DebugInfoFrame.java (getLine): Consider SYSROOT.
+
 2008-01-07  Nurdin Premji  <npremji@redhat.com>
 
 	* CompilerVersion: New.

@@ -120,7 +120,13 @@ class ListCommand extends ParameterizedCommand {
                         }
 			if (funcDie.getTag().hashCode() == DwTag.SUBPROGRAM_) {
 			    line = (int)funcDie.getDeclLine();
-			    file = funcDie.getDeclFile();
+			    String sysRoot = DbgVariables.getStringValue("SYSROOT");
+			    if (sysRoot.length() > 0) {
+				File parent = new File(sysRoot);
+				file = new File(parent, funcDie.getDeclFile().getName());
+			    }
+			    else
+				file = funcDie.getDeclFile();
 			}
 			else {
 			    cli.addMessage("function " + cmd.parameter(0) + " not found.",
@@ -146,6 +152,11 @@ class ListCommand extends ParameterizedCommand {
             if (file == null) {
                 if (frame.getLine() != SourceLocation.UNKNOWN) {
                     file = (frame.getLine()).getFile();
+		    String sysRoot = DbgVariables.getStringValue("SYSROOT");
+		    if (sysRoot.length() > 0) {
+		      File parent = new File(sysRoot);
+		      file = new File(parent, file.getAbsolutePath());
+		    }
                     if (file == null) {
                         cli.addMessage("No symbol table is available.",
                                        Message.TYPE_NORMAL);
