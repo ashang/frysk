@@ -10,11 +10,11 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-// 
+//
 // In addition, as a special exception, Red Hat, Inc. gives You the
 // additional right to link the code of FRYSK with code not covered
 // under the GNU General Public License ("Non-GPL Code") and to
@@ -76,14 +76,13 @@ import lib.dwfl.DwAttributeNotFoundException;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 
-public class TypeEntry
-{
+public class TypeEntry {
     static protected Log fine = Log.fine(TypeEntry.class);
     static protected Log finest = Log.finest(TypeEntry.class);
     private final ByteOrder byteorder;
     private final HashMap dieHash;
 
-    public TypeEntry (ISA isa) {
+    public TypeEntry(ISA isa) {
 	this.byteorder = isa.order();
 	this.dieHash = new HashMap();
     }
@@ -91,13 +90,13 @@ public class TypeEntry
     private int getByteSize(DwarfDie die) {
 	return die.getAttrConstant(DwAt.BYTE_SIZE);
     }
-    
-    private void dumpDie(String s, DwarfDie die)
-    {
-// 	System.out.println(s + Long.toHexString(die.getOffset()) + " "
-// 		+ DwTag.toName(die.getTag().hashCode())
-// 		+ " " + die.getName());
+
+    private void dumpDie(String s, DwarfDie die) {
+	// System.out.println(s + Long.toHexString(die.getOffset()) + " "
+	// + DwTag.toName(die.getTag().hashCode())
+	// + " " + die.getName());
     }
+
     /**
      * @param dieType
      *                An array die
@@ -111,111 +110,122 @@ public class TypeEntry
 	dumpDie("subrange=", subrange);
 	ArrayList dims = new ArrayList();
 	while (subrange != null) {
-	    int arrDim = subrange
-	    .getAttrConstant(DwAt.UPPER_BOUND);
+	    int arrDim = subrange.getAttrConstant(DwAt.UPPER_BOUND);
 	    dims.add(new Integer(arrDim));
 	    subrange = subrange.getSibling();
 	    elementCount *= arrDim + 1;
 	}
 
 	ArrayType arrayType = null;
-	Type type = getType (dieType);
+	Type type = getType(dieType);
 	int typeSize = type.getSize();
 	arrayType = new ArrayType(type, elementCount * typeSize, dims);
 	return arrayType;
     }
-    
-    
+
     private void addMembers(DwarfDie classDie, CompositeType classType) {
 	LocationExpression locationExpression = null;
-	
-	for (DwarfDie member = classDie.getChild();
-	member != null;
-	member = member.getSibling()) {
-    
-    dumpDie("member=", member);
 
-    boolean staticMember = false;
-    long offset;
-    try {
-	offset = member.getDataMemberLocation();
-    } catch (DwAttributeNotFoundException de) {
-	offset = 0; // union
-	staticMember = true;
-	if(member.isDeclaration()){
-	    locationExpression = new LocationExpression(member.getDefinition());
-	}else{
-	    locationExpression = new LocationExpression(member);
-	}
+	for (DwarfDie member = classDie.getChild(); 
+	     member != null; 
+	     member = member.getSibling()) {
 
-    }
-    
-    SourceLocation sourceLocation;
-    try{
-	sourceLocation = new SourceLocation(member.getDeclFile(), member.getDeclLine(), member.getDeclColumn());
-    }catch(DwAttributeNotFoundException e){
-	sourceLocation = SourceLocation.UNKNOWN;
-    }
-    
-    Access access = null;
-    switch (member.getAttrConstant(DwAt.ACCESSIBILITY)) {
-    case DwAccess.PUBLIC_: access = Access.PUBLIC; break;
-    case DwAccess.PROTECTED_: access = Access.PROTECTED; break;
-    case DwAccess.PRIVATE_: access = Access.PRIVATE; break;
-    }
-    
-    if (member.getTag() == DwTag.SUBPROGRAM) {
-	Value v = getSubprogramValue(member);
-	if(hasArtifitialParameter(member)){
-	    classType.addMember(member.getName(), sourceLocation, v.getType(), offset, access);
-	}else{
-	    classType.addStaticMember(locationExpression, member.getName(), sourceLocation, v.getType(), offset, access);
-	}
-	continue;
-    }
-    
-//    DwarfDie memberDieType = member.getUltimateType();
-//    if (memberDieType == null)
-//	continue;
+	    dumpDie("member=", member);
 
-    Type memberType = getType (member.getType());
-    if (memberType instanceof UnknownType == false) {
-	// System V ABI Supplements discuss bit field layout
-	int bitSize = member
-	.getAttrConstant(DwAt.BIT_SIZE);
-	if (bitSize != -1) {
-	    int bitOffset = member
-	    .getAttrConstant(DwAt.BIT_OFFSET);
-	    if(staticMember){
-		classType.addStaticBitFieldMember(locationExpression, member.getName(), sourceLocation, memberType, offset, access,
-			    bitOffset, bitSize);
-	    }else{
-		classType.addBitFieldMember(member.getName(), sourceLocation, memberType, offset, access,
-			    bitOffset, bitSize);
+	    boolean staticMember = false;
+	    long offset;
+	    try {
+		offset = member.getDataMemberLocation();
+	    } catch (DwAttributeNotFoundException de) {
+		offset = 0; // union
+		staticMember = true;
+		if (member.isDeclaration()) {
+		    locationExpression = new LocationExpression(member
+			    .getDefinition());
+		} else {
+		    locationExpression = new LocationExpression(member);
+		}
+
+	    }
+
+	    SourceLocation sourceLocation;
+	    try {
+		sourceLocation = new SourceLocation(member.getDeclFile(),
+			member.getDeclLine(), member.getDeclColumn());
+	    } catch (DwAttributeNotFoundException e) {
+		sourceLocation = SourceLocation.UNKNOWN;
+	    }
+
+	    Access access = null;
+	    switch (member.getAttrConstant(DwAt.ACCESSIBILITY)) {
+	    case DwAccess.PUBLIC_:
+		access = Access.PUBLIC;
+		break;
+	    case DwAccess.PROTECTED_:
+		access = Access.PROTECTED;
+		break;
+	    case DwAccess.PRIVATE_:
+		access = Access.PRIVATE;
+		break;
+	    }
+
+	    if (member.getTag() == DwTag.SUBPROGRAM) {
+		Value v = getSubprogramValue(member);
+		if (hasArtifitialParameter(member)) {
+		    classType.addMember(member.getName(), sourceLocation, v
+			    .getType(), offset, access);
+		} else {
+		    classType.addStaticMember(locationExpression, member
+			    .getName(), sourceLocation, v.getType(), offset,
+			    access);
+		}
+		continue;
+	    }
+
+	    // DwarfDie memberDieType = member.getUltimateType();
+	    // if (memberDieType == null)
+	    // continue;
+
+	    Type memberType = getType(member.getType());
+	    if (memberType instanceof UnknownType == false) {
+		// System V ABI Supplements discuss bit field layout
+		int bitSize = member.getAttrConstant(DwAt.BIT_SIZE);
+		if (bitSize != -1) {
+		    int bitOffset = member.getAttrConstant(DwAt.BIT_OFFSET);
+		    if (staticMember) {
+			classType.addStaticBitFieldMember(locationExpression,
+				member.getName(), sourceLocation, memberType,
+				offset, access, bitOffset, bitSize);
+		    } else {
+			classType.addBitFieldMember(member.getName(),
+				sourceLocation, memberType, offset, access,
+				bitOffset, bitSize);
+		    }
+		} else {
+		    if (staticMember) {
+			classType.addStaticMember(locationExpression, member
+				.getName(), sourceLocation, memberType, offset,
+				access);
+		    } else {
+			classType.addMember(member.getName(), sourceLocation,
+				memberType, offset, access);
+		    }
+
+		}
+		continue;
+	    } else {
+		if (staticMember) {
+		    classType.addStaticMember(locationExpression, member
+			    .getName(), sourceLocation, new UnknownType(member
+			    .getName()), offset, access);
+		} else {
+		    classType.addMember(member.getName(), sourceLocation,
+			    new UnknownType(member.getName()), offset, access);
+		}
 	    }
 	}
-	else{
-	    if(staticMember){
-		classType.addStaticMember(locationExpression, member.getName(), sourceLocation, memberType, offset, access);
-	    }else{
-		classType.addMember(member.getName(), sourceLocation, memberType, offset, access);
-	    }
-	    
-	}
-	continue;
     }
-    else{
-	if(staticMember){
-	    classType.addStaticMember(locationExpression, member.getName(), sourceLocation, new UnknownType(member
-		.getName()), offset, access);
-	}else{
-	    classType.addMember(member.getName(), sourceLocation, new UnknownType(member
-			.getName()), offset, access);
-	}
-    }
-}
-    }
-    
+
     /**
      * @param classDie
      *                A struct die
@@ -223,13 +233,15 @@ public class TypeEntry
      *                Name of the struct
      * @return GccStructOrClassType for the struct
      */
-    public CompositeType getGccStructOrClassType(DwarfDie classDie, String name) {
+    public CompositeType getGccStructOrClassType(DwarfDie classDie, 
+	    					 String name) {
 	dumpDie("structOrClassDie=", classDie);
 
 	CompositeType type;
 
 	String compiler = classDie.getProducer();
-	boolean supportsClassType = CompilerVersionFactory.getCompilerVersion(compiler).supportsClassType();
+	boolean supportsClassType = CompilerVersionFactory.getCompilerVersion(
+		compiler).supportsClassType();
 	fine.log("Compiler support determined as:" + supportsClassType);
 
 	/*
@@ -246,55 +258,58 @@ public class TypeEntry
 
 	return type;
     }
-    
+
     /**
      * 
      * @param classDie
-     * 		A class die
-     * @param name 
-     * 		Name of the class
+     *                A class die
+     * @param name
+     *                Name of the class
      * @return ClassType for the class.
      */
     public ClassType getClassType(DwarfDie classDie, String name) {
 	dumpDie("classDie=", classDie);
-	
+
 	ClassType classType = new ClassType(name, getByteSize(classDie));
 	addMembers(classDie, classType);
 	return classType;
     }
 
     /**
-     * Return true of the given die represents a 
-     * subprogram or inlined subroutine
+     * Return true of the given die represents a subprogram or inlined
+     * subroutine
+     * 
      * @param die
-     * @return 
+     * @return
      */
-    private boolean hasArtifitialParameter(DwarfDie die){
+    private boolean hasArtifitialParameter(DwarfDie die) {
 	if (die == null
-		|| !(die.getTag().equals(DwTag.SUBPROGRAM) ||
-		die.getTag().equals(DwTag.INLINED_SUBROUTINE))) {
-	    throw new IllegalArgumentException("Die [" + die + "] is not" +
-	    		" a subprogram or inlined subroutine die");
+		|| !(die.getTag().equals(DwTag.SUBPROGRAM) || die.getTag()
+			.equals(DwTag.INLINED_SUBROUTINE))) {
+	    throw new IllegalArgumentException("Die [" + die + "] is not"
+		    + " a subprogram or inlined subroutine die");
 	}
 
 	DwarfDie param = die.getChild();
-	while (param != null
-		&& param.getTag().equals(DwTag.FORMAL_PARAMETER)) {
+	while (param != null && 
+	       param.getTag().equals(DwTag.FORMAL_PARAMETER)) {
 	    if (param.getAttrBoolean((DwAt.ARTIFICIAL)) == true) {
 		return true;
-	    }       
+	    }
 	    param = param.getSibling();
 	}
 	return false;
     }
-    
+
     // ??? Reduce getGccStructOrClassType/getUnionType duplication
     public UnionType getUnionType(DwarfDie classDie, String name) {
 	dumpDie("unionDie=", classDie);
 
 	UnionType classType = new UnionType(name, getByteSize(classDie));
-	for (DwarfDie member = classDie.getChild(); member != null; member = member
-	.getSibling()) {
+	for (DwarfDie member = classDie.getChild(); 
+	     member != null; 
+	     member = member.getSibling()) {
+	    
 	    dumpDie("member=", member);
 	    long offset;
 	    try {
@@ -304,54 +319,58 @@ public class TypeEntry
 	    }
 
 	    SourceLocation lineColPair;
-	    try{
-		lineColPair = new SourceLocation(member.getDeclFile(),member.getDeclLine(), member.getDeclColumn());
-	    }catch(DwAttributeNotFoundException e){
+	    try {
+		lineColPair = new SourceLocation(member.getDeclFile(), member
+			.getDeclLine(), member.getDeclColumn());
+	    } catch (DwAttributeNotFoundException e) {
 		lineColPair = SourceLocation.UNKNOWN;
 	    }
-	    
+
 	    Access access = null;
 	    switch (member.getAttrConstant(DwAt.ACCESSIBILITY)) {
-	    case DwAccess.PUBLIC_: access = Access.PUBLIC; break;
-	    case DwAccess.PROTECTED_: access = Access.PROTECTED; break;
-	    case DwAccess.PRIVATE_: access = Access.PRIVATE; break;
+	    case DwAccess.PUBLIC_:
+		access = Access.PUBLIC;
+		break;
+	    case DwAccess.PROTECTED_:
+		access = Access.PROTECTED;
+		break;
+	    case DwAccess.PRIVATE_:
+		access = Access.PRIVATE;
+		break;
 	    }
 	    DwarfDie memberDieType = member.getUltimateType();
 
 	    if (member.getTag() == DwTag.SUBPROGRAM) {
 		Value v = getSubprogramValue(member);
-		classType.addMember(member.getName(), lineColPair, v.getType(), offset,
-			access);
+		classType.addMember(member.getName(), lineColPair, v.getType(),
+			offset, access);
 		continue;
 	    }
-	    
+
 	    if (memberDieType == null)
 		continue;
 
-	    Type memberType = getType (member.getType());
+	    Type memberType = getType(member.getType());
 	    if (memberType instanceof UnknownType == false) {
 		// System V ABI Supplements discuss bit field layout
-		int bitSize = member
-		.getAttrConstant(DwAt.BIT_SIZE);
+		int bitSize = member.getAttrConstant(DwAt.BIT_SIZE);
 		if (bitSize != -1) {
-		    int bitOffset = member
-		    .getAttrConstant(DwAt.BIT_OFFSET);
-		    classType.addBitFieldMember(member.getName(), lineColPair, memberType, offset, access,
-			    bitOffset, bitSize);
-		}
-		else
-		    classType.addMember(member.getName(), lineColPair, memberType, offset, access);
-		
+		    int bitOffset = member.getAttrConstant(DwAt.BIT_OFFSET);
+		    classType.addBitFieldMember(member.getName(), lineColPair,
+			    memberType, offset, access, bitOffset, bitSize);
+		} else
+		    classType.addMember(member.getName(), lineColPair,
+			    memberType, offset, access);
+
 		continue;
-	    }
-	    else
-		classType.addMember(member.getName(), lineColPair, new UnknownType(member
-			.getName()), offset, access);
+	    } else
+		classType.addMember(member.getName(), lineColPair,
+			new UnknownType(member.getName()), offset, access);
 	}
 
 	return classType;
     }
-    
+
     /**
      * @param varDie
      *                The die for a symbol corresponding to a function
@@ -368,10 +387,11 @@ public class TypeEntry
 	    if (varDie.getUltimateType() != null) {
 		type = getType(varDie.getType());
 	    }
-	    FunctionType functionType = new FunctionType(varDie.getName(), type);
+	    FunctionType functionType = new FunctionType(varDie.getName(), 
+		    					 type);
 	    DwarfDie parm = varDie.getChild();
-	    while (parm != null
-		    && parm.getTag().equals(DwTag.FORMAL_PARAMETER)) {
+	    while (parm != null && 
+		   parm.getTag().equals(DwTag.FORMAL_PARAMETER)) {
 		if (parm.getAttrBoolean((DwAt.ARTIFICIAL)) == false) {
 		    type = getType(parm);
 		    functionType.addParameter(type, parm.getName());
@@ -383,7 +403,6 @@ public class TypeEntry
 	}
 	return new Value(new UnknownType(varDie.getName()));
     }
-
 
     /**
      * @param varDie
@@ -401,25 +420,24 @@ public class TypeEntry
 		|| typeDie.getTag().equals(DwTag.VARIABLE)) {
 	    type = typeDie.getType();
 	    dumpDie("getType type=", type);
-	}
-	else
+	} else
 	    type = typeDie;
 
-	Type mappedType = (Type)dieHash.get(new Long(type.getOffset()));
+	Type mappedType = (Type) dieHash.get(new Long(type.getOffset()));
 	if (mappedType != null)
 	    return mappedType;
 	else if (dieHash.containsKey(new Long(type.getOffset()))) {
 	    // ??? will this always be a pointer to ourselves?
 	    // Instead of VoidType, we need a way to reference ourselves
-	    return new PointerType("", byteorder, getByteSize(type),  
+	    return new PointerType("", byteorder, getByteSize(type),
 		    new VoidType());
 	}
 	dieHash.put(new Long(type.getOffset()), null);
 	Type returnType = null;
-	
+
 	switch (type.getTag().hashCode()) {
 	case DwTag.TYPEDEF_:
-	    returnType = new TypeDef(type.getName(), getType (type.getType()));
+	    returnType = new TypeDef(type.getName(), getType(type.getType()));
 	    break;
 	case DwTag.POINTER_TYPE_: {
 	    Type ptrTarget = getType(type.getType());
@@ -443,22 +461,20 @@ public class TypeEntry
 	    break;
 	}
 	case DwTag.STRUCTURE_TYPE_: {
-	    CompositeType classType = 
-		getGccStructOrClassType(type, typeDie.getName());
+	    CompositeType classType = getGccStructOrClassType(type, typeDie
+		    .getName());
 	    returnType = classType;
 	    break;
 	}
 	case DwTag.CLASS_TYPE_: {
-	    ClassType classType =
-		getClassType(type, typeDie.getName());
+	    ClassType classType = getClassType(type, typeDie.getName());
 	    returnType = classType;
 	    break;
 	}
 	case DwTag.ENUMERATION_TYPE_: {
 	    DwarfDie subrange = type.getChild();
-	    EnumType enumType = new EnumType(typeDie.getName(),
-					     byteorder,
-					     getByteSize(type));
+	    EnumType enumType = new EnumType(typeDie.getName(), byteorder,
+		    getByteSize(type));
 	    while (subrange != null) {
 		enumType.addMember(subrange.getName(), subrange
 			.getAttrConstant(DwAt.CONST_VALUE));
@@ -480,31 +496,30 @@ public class TypeEntry
 	    switch (type.getAttrConstant(DwAt.ENCODING)) {
 	    case DwAte.SIGNED_:
 		returnType = new SignedType(type.getName(), byteorder,
-					    getByteSize(type));
-	    	break;
+			getByteSize(type));
+		break;
 	    case DwAte.SIGNED_CHAR_:
 		returnType = new CharType(type.getName(), byteorder,
-					  getByteSize(type), true);
+			getByteSize(type), true);
 		break;
 	    case DwAte.UNSIGNED_:
 		returnType = new UnsignedType(type.getName(), byteorder,
-					      getByteSize(type));
-	    	break;
-	    case DwAte.UNSIGNED_CHAR_: 
+			getByteSize(type));
+		break;
+	    case DwAte.UNSIGNED_CHAR_:
 		returnType = new CharType(type.getName(), byteorder,
-					  getByteSize(type), false);
+			getByteSize(type), false);
 		break;
 	    case DwAte.FLOAT_:
-		returnType = new FloatingPointType(type.getName(), byteorder, 
-			                           getByteSize(type));
+		returnType = new FloatingPointType(type.getName(), byteorder,
+			getByteSize(type));
 	    }
 	}
 
 	if (returnType != null) {
 	    dieHash.put(new Long(type.getOffset()), returnType);
 	    return returnType;
-	}
-	else
+	} else
 	    return new UnknownType(typeDie.getName());
     }
 }
