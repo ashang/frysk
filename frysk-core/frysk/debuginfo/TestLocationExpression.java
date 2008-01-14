@@ -84,7 +84,7 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.DUP_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)989, 12));
+	expectedLoc.add(new MemoryPiece((long)989, 4));
 	
 	checkLocExpected(ops, expectedLoc, 2);
     }
@@ -102,7 +102,7 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.BREGX_, dwarfReg1.intValue(), 2, 0) );
 		
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)989, 12));
+	expectedLoc.add(new MemoryPiece((long)989, 4));
 	
 	checkLocExpected(ops, expectedLoc, 1);
     }
@@ -146,7 +146,7 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.MUL_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)60, 12));
+	expectedLoc.add(new MemoryPiece((long)60, 4));
 	
 	checkLocExpected(ops, expectedLoc, 3);
     }
@@ -165,7 +165,7 @@ public class TestLocationExpression
 	
 	// Created expected result list
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)17, 12));
+	expectedLoc.add(new MemoryPiece((long)17, 4));
 	
 	checkLocExpected(ops, expectedLoc, 2);
     }
@@ -178,7 +178,7 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.DIV_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)3, 12));
+	expectedLoc.add(new MemoryPiece((long)3, 4));
 	
 	checkLocExpected(ops, expectedLoc, 1);
     }
@@ -191,7 +191,7 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.MOD_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)1, 12));
+	expectedLoc.add(new MemoryPiece((long)1, 4));
 	
 	checkLocExpected(ops, expectedLoc, 1);
     }
@@ -204,7 +204,7 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.DROP_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)30, 12));
+	expectedLoc.add(new MemoryPiece((long)30, 4));
 	
 	checkLocExpected(ops, expectedLoc, 1);
     }
@@ -217,7 +217,7 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.SWAP_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)12, 12));
+	expectedLoc.add(new MemoryPiece((long)12, 4));
 	
 	checkLocExpected(ops, expectedLoc, 2);
     }  
@@ -231,7 +231,7 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.ROT_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)7, 12));
+	expectedLoc.add(new MemoryPiece((long)7, 4));
 	
 	checkLocExpected(ops, expectedLoc, 3);
     }  
@@ -243,7 +243,7 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.ABS_, 0, 0, 0) );
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)5, 12));
+	expectedLoc.add(new MemoryPiece((long)5, 4));
 	
 	checkLocExpected(ops, expectedLoc, 1);
     }
@@ -255,7 +255,7 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.NEG_, 0, 0, 0) );
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)-5, 12));
+	expectedLoc.add(new MemoryPiece((long)-5, 4));
 	
 	checkLocExpected(ops, expectedLoc, 1);
     }
@@ -267,7 +267,7 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.NOT_, 0, 0, 0) );
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)-6, 12));
+	expectedLoc.add(new MemoryPiece((long)-6, 4));
 	
 	checkLocExpected(ops, expectedLoc, 1);
     }
@@ -280,7 +280,7 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.AND_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)0, 12));
+	expectedLoc.add(new MemoryPiece((long)0, 4));
 	
 	checkLocExpected(ops, expectedLoc, 1);
     }
@@ -294,7 +294,7 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.OR_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)7, 12));
+	expectedLoc.add(new MemoryPiece((long)7, 4));
 	
 	checkLocExpected(ops, expectedLoc, 1);
     }
@@ -308,7 +308,7 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.SHL_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)72, 12));
+	expectedLoc.add(new MemoryPiece((long)72, 4));
 	
 	checkLocExpected(ops, expectedLoc, 1);
     }
@@ -322,7 +322,7 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.SHR_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)3, 12));
+	expectedLoc.add(new MemoryPiece((long)3, 4));
 	
 	checkLocExpected(ops, expectedLoc, 1);
     }
@@ -336,7 +336,7 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.SHRA_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)-7, 12));
+	expectedLoc.add(new MemoryPiece((long)-7, 4));
 	
 	checkLocExpected(ops, expectedLoc, 1);
     }
@@ -350,7 +350,7 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.XOR_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)7, 12));
+	expectedLoc.add(new MemoryPiece((long)7, 4));
 	
 	checkLocExpected(ops, expectedLoc, 1);
     }
@@ -364,7 +364,7 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.LE_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)1, 12));
+	expectedLoc.add(new MemoryPiece((long)1, 4));
 	
 	checkLocExpected(ops, expectedLoc, 1);
     }
@@ -378,11 +378,33 @@ public class TestLocationExpression
 	ops.add( new DwarfOp(DwOp.GE_, 0, 0, 0) ) ;
 	
 	List expectedLoc = new ArrayList();
-	expectedLoc.add(new MemoryPiece((long)0, 12));
+	expectedLoc.add(new MemoryPiece((long)0, 4));
 	
 	checkLocExpected(ops, expectedLoc, 1);
     }
        
+    public void testOverFlow()
+    {
+    	if (unresolvedOnPPC(4964))
+    		return;
+    	List ops = new ArrayList();
+
+    	Task task = getStoppedTask();
+    	ISA isa = task.getISA();
+
+    	if (isa == ISA.IA32) {
+    		ops.add( new DwarfOp(DwOp.BREG2_, -4, 0, 0) ); // Value in register edx plus 4
+    	} else if (isa == ISA.X8664) {
+    		ops.add( new DwarfOp(DwOp.BREG1_, -4, 0, 0) ); // Value in register rdx plus 4
+    	} else {
+    		throw new RuntimeException("unknown isa: " + isa);
+    	}  
+
+    	List expectedLoc = new ArrayList();
+    	expectedLoc.add(new MemoryPiece((long)0x12345674, 4));
+
+    	checkLocExpected(ops, expectedLoc, 1);
+    }
     /**
      * Function that creates Dwarf stack and checks its values
      * 
@@ -397,7 +419,7 @@ public class TestLocationExpression
 	Frame frame = StackFactory.createFrame(task);
 	
 	LocationExpression locExp = new LocationExpression(die);
-	List loc = locExp.decode(frame, ops,12);  
+	List loc = locExp.decode(frame, ops, 4);  
 	
 	assertEquals ("Stack size", stackSize, locExp.getStackSize());
 	compareLocations (loc, expectedLoc);
@@ -423,9 +445,9 @@ public class TestLocationExpression
 		    // Note: equals() overridden for the pieces.
 		    isEqual = o.equals(oExpect);
 
-		    if (o instanceof MemoryPiece)
+		    if (o instanceof MemoryPiece) 
 			assertEquals ("Memory", ((MemoryPiece)oExpect).getMemory(), 
-				      ((MemoryPiece)o).getMemory());		  
+				      ((MemoryPiece)o).getMemory());
 
 		    else if (o instanceof RegisterPiece)  	
 			assertEquals ("Register", ((RegisterPiece)oExpect).getRegister(), 

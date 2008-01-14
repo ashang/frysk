@@ -1,3 +1,7 @@
+2008-01-14  Teresa Thomas  <tthomas@redhat.com>
+
+	* funit-location.S: Set REG3 for tests.
+
 2007-01-04  Nurdin Premji  <npremji@redhat.com>
 	* funit-complex-class.cxx: New
 	* funit-complex-struct.cxx: New

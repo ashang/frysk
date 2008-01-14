@@ -83,13 +83,16 @@ public class LocationExpression {
 	// pieces will contain the resulting location as a list of 
 	// MemoryPiece, RegisterPiece or UnavaiablePiece
 	ArrayList pieces = new ArrayList(); 
-
+	
+	long wordMask = (Config.getWordSize() == 32)?
+			         0xffffffffL : 0xffffffffffffffffL;
+	
 	if (nops == 0)
 	    if (die.getAttrBoolean(DwAt.LOCATION)) 
 		throw new VariableOptimizedOutException();  
 	    else 
 		throw new ValueUavailableException();
-
+	
 	for(int i = 0; i < nops; i++) {
 
 	    int operator = ((DwarfOp) ops.get(i)).operator;
@@ -206,7 +209,7 @@ public class LocationExpression {
 	    case DwOp.BREG31_:
 		register = registerMap.getRegister(operator - DwOp.BREG0_);
 		long regval = frame.getRegister(register);
-		stack.addFirst(new Long(operand1 + regval));
+		stack.addFirst(new Long((regval + operand1) & wordMask));
 		break;
 
 	    case DwOp.REGX_:
@@ -217,7 +220,7 @@ public class LocationExpression {
 	    case DwOp.BREGX_:
 		register = registerMap.getRegister((int)operand1);
 		regval = frame.getRegister(register);
-		stack.addFirst(new Long(operand2 + regval));
+		stack.addFirst(new Long((operand2 + regval) & wordMask));
 		break;
 
 	    case DwOp.ADDR_:

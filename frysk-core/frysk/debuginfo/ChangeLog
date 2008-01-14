@@ -1,3 +1,9 @@
+2008-01-14  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestLocationExpression.java (testOverFlow): New.
+	* LocationExpression.java (decode): Mask out
+	sign extension for BREG locations.
+	
 2008-01-14  Nurdin Premji  <npremji@redhat.com>
 
 	* TypeEntry.java: Ran formatter.
