@@ -331,7 +331,7 @@ public abstract class Proc {
      * Add the Task to this Proc.
      */
     void add(Task task) {
-	taskPool.put(task.id, task);
+	taskPool.put(task.getTaskId(), task);
 	host.observableTaskAddedXXX.notify(task);
     }
 
@@ -343,7 +343,7 @@ public abstract class Proc {
     public void remove(Task task) {
 	logger.log(Level.FINEST, "{0} remove(Task) -- within this Proc\n", this);
 	host.observableTaskRemovedXXX.notify(task);
-	taskPool.remove(task.id);
+	taskPool.remove(task.getTaskId());
 	host.remove(task);
     }
 

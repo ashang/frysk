@@ -72,8 +72,7 @@ public abstract class Task {
     public final TaskId getTaskId() {
 	return id;
     }
-
-    final TaskId id;
+    private final TaskId id;
 
     /**
      * Return the task's process id.

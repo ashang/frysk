@@ -74,11 +74,11 @@ public abstract class Host {
     Map taskPool = new HashMap();
     void add(Task task) {
 	logger.log(Level.FINEST, "{0} add Task\n", this);
-	taskPool.put(task.id, task);
+	taskPool.put(task.getTaskId(), task);
     }
     void remove(Task task) {
 	logger.log(Level.FINEST, "{0} remove Task\n", this);
-	taskPool.remove(task.id);
+	taskPool.remove(task.getTaskId());
     }
     void removeTasks(Collection c) {
 	logger.log(Level.FINE, "{0} removeTasks Collection\n", this);
