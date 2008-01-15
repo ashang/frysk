@@ -65,6 +65,8 @@ public class TestRunCommand extends TestLib {
      * and restart it and run until a breakpoint is found or the process blows up.
      */
     public void testRunTimesTwo() {
+	if (unresolved(5615))
+	    return;
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
 	"Loaded executable file.*");
@@ -77,8 +79,6 @@ public class TestRunCommand extends TestLib {
 	e.sendCommandExpectPrompt("run", "Killing process ([0-9])+.*" +
 		"Loaded executable file.*" + "Attached to process ([0-9])+.*" +
 		"Running process ([0-9])+.*");
-	e.send("quit\n");
-	e.expect("Quitting...");
 	e.close();
     }
 }
