@@ -55,18 +55,12 @@ public class TestSysRoot extends TestLib {
   }
 
     public void testHaveSysRoot() {
-	if (unresolved(5619))
-	    return;
+	File testSysRootDir = Config.getPkgDataFile("test-sysroot");
 	File testPath = Config.getPkgLibFile("funit-addresses");
-	System.out.println(Config.getBinFile("fhpd").getAbsolutePath() +
-		" -sysroot " + testPath.getParent() + "/test-sysroot/ " +
-	        testPath.getParent() + "/test-sysroot/"
-			   + testPath.getAbsolutePath());
 	child = new Expect(new String[] {
 		Config.getBinFile("fhpd").getAbsolutePath(),
-		"-sysroot", testPath.getParent() + "/test-sysroot/",
-	        testPath.getParent() + "/test-sysroot/"
-		+ testPath.getAbsolutePath()
+		"-sysroot", testSysRootDir.getAbsolutePath(),
+	        testSysRootDir.getAbsolutePath() + "/" + testPath
 	    });
 	child.expect(prompt);
 	child.send("break main\n");

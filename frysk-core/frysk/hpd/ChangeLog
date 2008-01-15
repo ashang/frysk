@@ -1,5 +1,9 @@
 2008-01-15  Andrew Cagney  <cagney@redhat.com>
 
+	* TestSysRoot.java (testHaveSysRoot): Test sysroot is now in pkgdatadir.
+
+2008-01-15  Stan Cox  <scox@redhat.com>
+
 	* TestSysRoot.java: Mark as unresolved, bug 5619.
 
 2008-01-15  Rick Moseley  <rmoseley@redhat.com>

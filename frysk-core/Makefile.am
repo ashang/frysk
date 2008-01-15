@@ -110,15 +110,21 @@ frysk_pkglibdir_funit_symbols_stripped_SOURCES =
 frysk/pkglibdir/funit-symbols-stripped: frysk/pkglibdir/funit-symbols
 	strip -o $@ frysk/pkglibdir/funit-symbols
 
-frysk/pkglibdir/funit-addresses-stripped: frysk/pkglibdir/funit-addresses
-	strip -o $@ frysk/pkglibdir/funit-addresses
-	mkdir -p `pwd`/frysk/pkglibdir/test-sysroot/`pwd`/frysk/pkglibdir
-	cp -r `pwd`/frysk/pkglibdir/funit-addresses `pwd`/frysk/pkglibdir/test-sysroot/`pwd`/frysk/pkglibdir
-	mkdir -p `pwd`/frysk/pkglibdir/test-sysroot/$(realpath $(srcdir))/frysk/pkglibdir
-	cp -r $(realpath $(srcdir))/frysk/pkglibdir/funit-addresses.c `pwd`/frysk/pkglibdir/test-sysroot/$(realpath $(srcdir))/frysk/pkglibdir
-	mkdir -p `pwd`/frysk/pkglibdir/test-sysroot/usr/lib/debug/`pwd`/frysk/pkglibdir/
-	eu-strip --remove-comment -f `pwd`/frysk/pkglibdir/test-sysroot/usr/lib/debug/`pwd`/frysk/pkglibdir/funit-addresses.debug \
-	`pwd`/frysk/pkglibdir/test-sysroot/`pwd`/frysk/pkglibdir/funit-addresses
+pkgdata_DATA += frysk/pkgdatadir/test-sysroot/`pwd`/frysk/pkglibdir/funit-addresses
+frysk/pkgdatadir/test-sysroot/`pwd`/frysk/pkglibdir/funit-addresses: frysk/pkglibdir/funit-addresses
+	mkdir -p `pwd`/frysk/pkgdatadir/test-sysroot/`pwd`/frysk/pkglibdir
+	cp -r $< $@
+
+pkgdata_DATA += frysk/pkgdatadir/test-sysroot/$(realpath $(srcdir))/frysk/pkglibdir/funit-addresses.c
+frysk/pkgdatadir/test-sysroot/$(realpath $(srcdir))/frysk/pkglibdir/funit-addresses.c: \
+frysk/pkgdatadir/test-sysroot/`pwd`/frysk/pkglibdir/funit-addresses
+	mkdir -p `pwd`/frysk/pkgdatadir/test-sysroot/$(realpath $(srcdir))/frysk/pkglibdir
+	cp $(realpath $(srcdir))/frysk/pkglibdir/funit-addresses.c $@
+
+pkgdata_DATA += frysk/pkgdatadir/test-sysroot/usr/lib/debug/`pwd`/frysk/pkglibdir/funit-addresses.debug
+frysk/pkgdatadir/test-sysroot/usr/lib/debug/`pwd`/frysk/pkglibdir/funit-addresses.debug: frysk/pkgdatadir/test-sysroot/`pwd`/frysk/pkglibdir/funit-addresses
+	mkdir -p `pwd`/frysk/pkgdatadir/test-sysroot/usr/lib/debug/`pwd`/frysk/pkglibdir/
+	eu-strip --remove-comment -f $@ $<
 
 if DO_ARCH32_TEST
 pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-symbols-nodebug
