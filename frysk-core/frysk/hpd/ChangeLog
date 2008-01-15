@@ -4,7 +4,7 @@
 	* StartCommand.java: Move common code to StartRun.java.
 	* RunCommand.java: Ditto.
 	* TestStartCommand.java: Modify for above changes.
-	* TestRunCommand.java: Ditto.
+	* TestRunCommand.java: Ditto plus add timeout so test won't fail.
 	* TestBreakpoints.java: Ditto.
 	* TestListCommand.java: Ditto.
 	* TestGenerateCoreCommand.java: Ditto.

@@ -73,10 +73,10 @@ public class TestRunCommand extends TestLib {
 	try { Thread.sleep(1000); } catch (Exception e) {}
 	e.sendCommandExpectPrompt("focus","Target set.*\\[0\\.0\\]\t\t([0-9]+)" +
 		"\t([0-9]+)\r\n" + "\\[0\\.1\\]\t\t([0-9]+)\t([0-9]+)\r\n");
+	try { Thread.sleep(1000); } catch (Exception e) {}
 	e.sendCommandExpectPrompt("run", "Killing process ([0-9])+.*" +
 		"Loaded executable file.*" + "Attached to process ([0-9])+.*" +
 		"Running process ([0-9])+.*");
-	try { Thread.sleep(1000); } catch (Exception e) {}
 	e.send("quit\n");
 	e.expect("Quitting...");
 	e.close();
