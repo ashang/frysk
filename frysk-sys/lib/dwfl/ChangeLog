@@ -1,3 +1,7 @@
+2008-01-14  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/DwAttributeNotFoundException.cxx: Delete.
+
 2008-01-13  Stan Cox  <scox@redhat.com>
 
 	* Dwfl.java (Dwfl): Add sysroot parameter.  Change all callers.
