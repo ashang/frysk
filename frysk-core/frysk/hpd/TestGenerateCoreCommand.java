@@ -39,6 +39,7 @@
 
 package frysk.hpd;
 
+import frysk.Config;
 import frysk.expunit.EndOfFileException;
 import frysk.expunit.Match;
 import frysk.expunit.Regex;
@@ -55,90 +56,106 @@ public class TestGenerateCoreCommand extends TestLib {
 
     
     public void testGenerateCoreCommand() {
-	HpdTestbed h = HpdTestbed.start("funit-hello");
+	HpdTestbed h = new HpdTestbed();
+	h.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+		"Loaded executable file.*");
+	h.sendCommandExpectPrompt("start", "Attached to process.*");
 	h.send("dump\n");
 	try {
-	    h.expect(new Match[] {
-			 new Regex("Generating corefile 'core.([0-9]+)") {
-			     public void execute() {
-				 int pid = Integer.parseInt(group(1));
-				 TearDownFile core = new TearDownFile("core."+pid);
-				 core.getClass();
-			     }
-			 }
-		     });
+	    h.expect(new Match[] { new Regex(
+		    "Generating corefile 'core.([0-9]+)") {
+		public void execute() {
+		    int pid = Integer.parseInt(group(1));
+		    TearDownFile core = new TearDownFile("core." + pid);
+		    core.getClass();
+		}
+	    } });
 	} catch (EndOfFileException e) {
 	    TestCase.fail("Expecting: Generating corefile ... got: <EOF>");
 	} catch (TimeoutException t) {
 	    TestCase.fail("Expecting: Generating corefile ... got: <TIMEOUT>");
 	}
 
+	h.send("quit\n");
+	h.expect("Quitting...");
 	h.close();
     }
 
     public void testGenerateCoreAllMapsCommand() {
-	HpdTestbed h = HpdTestbed.start("funit-hello");
+	HpdTestbed h = new HpdTestbed();
+	h.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+	"Loaded executable file.*");
+	h.sendCommandExpectPrompt("start", "Attached to process.*");
 	h.send("dump -a\n");
 	try {
-	    h.expect(new Match[] {
-			 new Regex("Generating corefile 'core.([0-9]+)") {
-			     public void execute() {
-				 int pid = Integer.parseInt(group(1));
-				 TearDownFile core = new TearDownFile("core."+pid);
-				 core.getClass();
-			     }
-			 }
-		     });
+	    h.expect(new Match[] { new Regex(
+		    "Generating corefile 'core.([0-9]+)") {
+		public void execute() {
+		    int pid = Integer.parseInt(group(1));
+		    TearDownFile core = new TearDownFile("core." + pid);
+		    core.getClass();
+		}
+	    } });
 	} catch (EndOfFileException e) {
 	    TestCase.fail("Expecting: Generating corefile ... got: <EOF>");
 	} catch (TimeoutException t) {
 	    TestCase.fail("Expecting: Generating corefile ... got: <TIMEOUT>");
 	}
 
+	h.send("quit\n");
+	h.expect("Quitting...");
 	h.close();
     }
 
     public void testGenerateRenamedCoreCommand() {
-	HpdTestbed h = HpdTestbed.start("funit-hello", "1");
+	HpdTestbed h = new HpdTestbed();
+	h.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+	"Loaded executable file.*");
+	h.sendCommandExpectPrompt("start 1", "Attached to process.*");
 	h.send("dump -o testname\n");
 	try {
-	    h.expect(new Match[] {
-			 new Regex("Generating corefile 'testname.([0-9]+)") {
-			     public void execute() {
-				 int pid = Integer.parseInt(group(1));
-				 TearDownFile core = new TearDownFile("testname."+pid);
-				 core.getClass();
-			     }
-			 }
-		     });
+	    h.expect(new Match[] { new Regex(
+		    "Generating corefile 'testname.([0-9]+)") {
+		public void execute() {
+		    int pid = Integer.parseInt(group(1));
+		    TearDownFile core = new TearDownFile("testname." + pid);
+		    core.getClass();
+		}
+	    } });
 	} catch (EndOfFileException e) {
 	    TestCase.fail("Expecting: Generating corefile ... got: <EOF>");
 	} catch (TimeoutException t) {
 	    TestCase.fail("Expecting: Generating corefile ... got: <TIMEOUT>");
 	}
 
+	h.send("quit\n");
+	h.expect("Quitting...");
 	h.close();
     }
 
     public void testGenerateRenamedAllMapsCoreCommand() {
-	HpdTestbed h = HpdTestbed.start("funit-fib-clone", "1");
+	HpdTestbed h = new HpdTestbed();
+	h.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-fib-clone").getPath(),
+	"Loaded executable file.*");
+	h.sendCommandExpectPrompt("start 1", "Attached to process.*");
 	h.send("dump -a -o testname\n");
 	try {
-	    h.expect(new Match[] {
-			 new Regex("Generating corefile 'testname.([0-9]+)") {
-			     public void execute() {
-				 int pid = Integer.parseInt(group(1));
-				 TearDownFile core = new TearDownFile("testname."+pid);
-				 core.getClass();
-			     }
-			 }
-		     });
+	    h.expect(new Match[] { new Regex(
+		    "Generating corefile 'testname.([0-9]+)") {
+		public void execute() {
+		    int pid = Integer.parseInt(group(1));
+		    TearDownFile core = new TearDownFile("testname." + pid);
+		    core.getClass();
+		}
+	    } });
 	} catch (EndOfFileException e) {
 	    TestCase.fail("Expecting: Generating corefile ... got: <EOF>");
 	} catch (TimeoutException t) {
 	    TestCase.fail("Expecting: Generating corefile ... got: <TIMEOUT>");
 	}
 
+	h.send("quit\n");
+	h.expect("Quitting...");
 	h.close();
     }
 

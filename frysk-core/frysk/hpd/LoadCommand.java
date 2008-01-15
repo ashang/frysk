@@ -60,7 +60,14 @@ import java.util.List;
 public class LoadCommand extends ParameterizedCommand {
 
     LoadCommand() {
-	super("load", "load path-to-executable", "load an executable file");
+	super("load", 
+	      "load path-to-executable", 
+	      "The load command lets the user examine information about"
+	      + " an executable file without actually running it.  An"
+	      + " executble must be loaded with this command before it"
+	      + " can be run with either the 'start' or 'run' command."
+	      + " No arguments are entered here, they are passed to the"
+	      + " process via the 'start'/'run' commands.");
     }
 
     public void interpret(CLI cli, Input cmd, Object options) {

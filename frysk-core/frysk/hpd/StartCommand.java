@@ -39,178 +39,25 @@
 
 package frysk.hpd;
 
-import frysk.proc.Action;
-import frysk.proc.Manager;
-import frysk.proc.Proc;
-import frysk.proc.ProcObserver.ProcTasks;
-import frysk.proc.ProcTasksObserver;
-import frysk.proc.Task;
-import frysk.proc.TaskObserver;
-import frysk.util.CountDownLatch;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-class StartCommand extends ParameterizedCommand {
+class StartCommand extends StartRun {
     
     StartCommand() {
-	super("start a process, run until the first executable instruction",
-		"start <executable>",
-		"The start command alllows the debuger to run a(any) program(s)"
-		      + " that has(have) either been previously loaded via a load command"
-		      + " if no parameters are given. To run an executable, just"
-		      + " give the start command the path to the executable as a"
-		      + " parameter.  In either case the debugger attaches immediately"
-		      + " to the process and runs to the first executable instruction.");
-    }
-    
-    private static class Runner implements TaskObserver.Attached {
-	private final CLI cli;
-	private CountDownLatch latch;
-	Task launchedTask;
-	Runner(CLI cli) {
-	    this.cli = cli;
-	}
-	public Action updateAttached(final Task task) {
-	    final Proc proc = task.getProc();
-	    synchronized (this) {
-		launchedTask = task;
-	    }
-	    synchronized (cli) {
-		cli.getRunningProcs().add(proc);
-	    }
-	    new ProcTasksObserver(proc, new ProcTasks() {
-		    public void existingTask(Task task) {
-		    }
-		    
-		    public void addedTo(Object observable) {
-		    }
-		    
-		    public void addFailed(Object observable, Throwable w) {
-		    }
-		    
-		    public void deletedFrom(Object observable) {
-		    }
-		    
-		    public void taskAdded(Task task) {
-		    }
-		    
-		    public void taskRemoved(Task task) {
-			if (proc.getChildren().size() == 0) {
-			    synchronized (cli) {
-				HashSet procs = cli.getRunningProcs();
-				procs.remove(proc);
-			    }
-			}
-		    }
-		});
-	    latch.countDown();
-	    // Keep task blocked until the SteppingEngine notifies us that its
-	    // instruction observers, etc. have been inserted.
-	    return Action.BLOCK;
-	}
-
-	public void addedTo(Object observable) {
-	}
-
-	public void addFailed(Object observable, Throwable w) {
-	    System.out.println("couldn't get it done:" + w);
-	}
-
-	public void deletedFrom(Object observable) {
-	}
+	super("start a previously-loaded process, run until the first executable instruction",
+		"start <arguments*> || <--noargs>",
+		"The start command alllows the debugger to run a(any) process(es)"
+		      + " that has(have) either been previously loaded via a load"
+		      + " or a core command.  The difference between the run and"
+		      + " start command is that start only runs the program until"
+		      + " the first executable instruction.  Arguments can be passed to"
+		      + " the process by entering them after the command.  If arguments"
+		      + " have previously been passed to the and the next requires"
+		      + " no arguments use '--noargs' as the only argument.  Issuing"
+		      + " the start command at any time in the debug session will"
+		      + " kill the process being debugged and reload a new copy of the"
+		      + " process and run to the first executable instruction.");
     }
     
     public void interpret(CLI cli, Input cmd, Object options) {
-	/* If the run command is given no args, check to see if 
-	   any procs were loaded with the load command or loaded
-	   when fhpd was started or loaded with the core command*/
-	Iterator foo = cli.targetset.getTasks();
-	if (cmd.size() < 1 && foo.hasNext()) {
-	    if (cli.coreProcs.isEmpty() && cli.loadedProcs.isEmpty()) {
-		cli.execCommand("kill");
-		cli.execCommand("start");
-		return;
-	    }
-	} else if (cmd.size() < 1 && !foo.hasNext()) {
-	    cli.addMessage("No procs in targetset to run", 
-		    Message.TYPE_NORMAL);
-	    return;
-	}
-	
-	// If a parameter was given the run command, go ahead and run it
-	if (cmd.size() >= 1) {
-	    
-	    run(cli, cmd);
-	    return;
-	}
-	
-	/* If we made it here, a run command was given with no parameters
-	 * and there should be either running procs or loaded procs or
-	 * core procs
-	 */
-
-	/* This is the case where there are loaded procs */
-	if (!cli.loadedProcs.isEmpty()) {
-	    Set procSet = cli.loadedProcs.entrySet();
-	    runProcs(cli, procSet);
-	    synchronized (cli) {
-		cli.loadedProcs.clear();
-	    }
-	}
-	
-	/* Check to see if there were procs loaded from a core command */
-	if (!cli.coreProcs.isEmpty()) {
-	    Set coreSet = cli.coreProcs.entrySet();
-	    runProcs(cli, coreSet);
-	    synchronized (cli) {
-		cli.coreProcs.clear();
-	    }
-	} 
-    }
-	
-    private void run(CLI cli, Input cmd) {
-	Runner runner = new Runner(cli);
-	Manager.host.requestCreateAttachedProc(cmd.stringArrayValue(), runner);
-        while (true) {
-            try {
-        	runner.latch = new CountDownLatch(1);
-                runner.latch.await();
-                break;
-            } catch (InterruptedException e) {
-            }
-        }
-        // register with SteppingEngine et.al.
-        cli.doAttach(runner.launchedTask.getProc());
-	runner.launchedTask.requestUnblock(runner);
-    }
-    
-    /*
-     * runProcs does as the name implies, it runs procs found to be loaded by a
-     * load or a core command.
-     */
-    private void runProcs(CLI cli, Set procs) {
-	Iterator foo = procs.iterator();
-	while (foo.hasNext()) {
-	    Map.Entry me = (Map.Entry) foo.next();
-	    Proc proc = (Proc) me.getKey();
-	    Integer taskid = (Integer) me.getValue();
-	    // Set the TaskID to be used to what was used when the
-	    // proc was loaded with the core or load commands
-	    synchronized (cli) {
-		cli.taskID = taskid.intValue();
-	    }
-	    cli.execCommand("start " + proc.getExe());
-	    synchronized (cli) {
-		cli.taskID = -1;
-	    }
-	}
-    }
-    
-    int completer(CLI cli, Input input, int cursor, List completions) {
-	return CompletionFactory.completeFileName(cli, input, cursor,
-						  completions);
+	interpretStart(cli, cmd, options);
     }
 }

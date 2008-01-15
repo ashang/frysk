@@ -39,6 +39,7 @@
 
 package frysk.hpd;
 
+import frysk.Config;
 
 /**
  * Test the functionality of the alias and unalias commands.
@@ -51,7 +52,10 @@ public class TestListCommand extends TestLib {
     }
 
     public void testListPC() {
-	e = HpdTestbed.start("funit-quicksort");
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-quicksort").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("start", "Attached to process.*");
 	e.sendCommandExpectPrompt("break main", "breakpoint.*");
         e.send("go\n");
         e.expect("go.*\n" + prompt + "Breakpoint");
@@ -78,7 +82,10 @@ public class TestListCommand extends TestLib {
 
 
     public void testListFunction() {
-	e = HpdTestbed.start("funit-quicksort");
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-quicksort").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("start", "Attached to process.*");
 	e.sendCommandExpectPrompt("break main", "breakpoint.*");
         e.send("go\n");
         e.expect("go.*\n" + prompt + "Breakpoint");
@@ -122,7 +129,10 @@ public class TestListCommand extends TestLib {
     }
 
     public void testListReverse() {
-	e = HpdTestbed.start("funit-quicksort");
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-quicksort").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("start", "Attached to process.*");
 	e.sendCommandExpectPrompt("break main", "breakpoint.*");
         e.send("go\n");
         e.expect("go.*\n" + prompt + "Breakpoint");
@@ -156,7 +166,10 @@ public class TestListCommand extends TestLib {
     }
 
     public void testListErrors() {
-	e = HpdTestbed.start("funit-quicksort");
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-quicksort").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("start", "Attached to process.*");
 	e.sendCommandExpectPrompt("break main", "breakpoint.*");
         e.send("go\n");
         e.expect("go.*\n" + prompt + "Breakpoint");

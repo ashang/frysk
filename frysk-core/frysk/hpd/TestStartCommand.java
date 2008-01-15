@@ -39,14 +39,21 @@
 
 package frysk.hpd;
 
+import frysk.Config;
+
 /**
 * This class tests the "start" command.
 */
 
 public class TestStartCommand extends TestLib {
     public void testStartCommand() {
-	e = HpdTestbed.start("funit-threads-looper");
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("start", "Attached to process.*");
 	e.sendCommandExpectPrompt("where", "[0.0].*");
+	e.send("quit\n");
+	e.expect("Quitting...");
 	e.close();
     }
 }

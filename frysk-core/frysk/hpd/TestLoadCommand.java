@@ -52,6 +52,8 @@ public class TestLoadCommand extends TestLib {
 	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath()
 		+ "\n");
 	e.expect(5, "Loaded executable file.*");
+	e.send("quit\n");
+	e.expect("Quitting...");
 	e.close();
     }
 
@@ -69,7 +71,6 @@ public class TestLoadCommand extends TestLib {
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
 		"Loaded executable file.*");
-	//e.sendCommandExpectPrompt("focus", "Target set*pid*id*\r\n\\[0\\.0\\]*0*0.*");
 	e.sendCommandExpectPrompt("focus", "Target set.*\\[0\\.0\\]\t\t0\t0.*");
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
 		"Loaded executable file.*");

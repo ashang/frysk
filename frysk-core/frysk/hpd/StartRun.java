@@ -1,0 +1,270 @@
+// This file is part of the program FRYSK.
+//
+// Copyright 2007, Red Hat Inc.
+//
+// FRYSK is free software; you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+//
+// FRYSK is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with FRYSK; if not, write to the Free Software Foundation,
+// Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+// 
+// In addition, as a special exception, Red Hat, Inc. gives You the
+// additional right to link the code of FRYSK with code not covered
+// under the GNU General Public License ("Non-GPL Code") and to
+// distribute linked combinations including the two, subject to the
+// limitations in this paragraph. Non-GPL Code permitted under this
+// exception must only link to the code of FRYSK through those well
+// defined interfaces identified in the file named EXCEPTION found in
+// the source code files (the "Approved Interfaces"). The files of
+// Non-GPL Code may instantiate templates or use macros or inline
+// functions from the Approved Interfaces without causing the
+// resulting work to be covered by the GNU General Public
+// License. Only Red Hat, Inc. may make changes or additions to the
+// list of Approved Interfaces. You must obey the GNU General Public
+// License in all respects for all of the FRYSK code and other code
+// used in conjunction with FRYSK except the Non-GPL Code covered by
+// this exception. If you modify this file, you may extend this
+// exception to your version of the file, but you are not obligated to
+// do so. If you do not wish to provide this exception without
+// modification, you must delete this exception statement from your
+// version and license this file solely under the GPL without
+// exception.
+
+package frysk.hpd;
+
+import frysk.proc.Action;
+import frysk.proc.Manager;
+import frysk.proc.Proc;
+import frysk.proc.ProcObserver.ProcTasks;
+import frysk.proc.ProcTasksObserver;
+import frysk.proc.Task;
+import frysk.proc.TaskObserver;
+import frysk.util.CountDownLatch;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * Due to a lot of similar code in StartCommand/RunCommand this class was
+ * created to consolidate most of the methods to one code base.
+ */
+class StartRun extends ParameterizedCommand {
+    
+    boolean runToBreak = false;
+    
+    StartRun(String command, String help1, String help2) {
+	super(command, help1, help2);
+    }
+
+    static class Runner implements TaskObserver.Attached {
+	final CLI cli;
+	CountDownLatch latch;
+	Task launchedTask;
+
+	Runner(CLI cli) {
+	    this.cli = cli;
+	}
+
+	public Action updateAttached(final Task task) {
+	    final Proc proc = task.getProc();
+	    synchronized (this) {
+		launchedTask = task;
+	    }
+	    synchronized (cli) {
+		cli.getRunningProcs().add(proc);
+	    }
+	    new ProcTasksObserver(proc, new ProcTasks() {
+		public void existingTask(Task task) {
+		}
+
+		public void addedTo(Object observable) {
+		}
+
+		public void addFailed(Object observable, Throwable w) {
+		}
+
+		public void deletedFrom(Object observable) {
+		}
+
+		public void taskAdded(Task task) {
+		}
+
+		public void taskRemoved(Task task) {
+		    if (proc.getChildren().size() == 0) {
+			synchronized (cli) {
+			    HashSet procs = cli.getRunningProcs();
+			    procs.remove(proc);
+			}
+		    }
+		}
+	    });
+	    latch.countDown();
+	    // Keep task blocked until the SteppingEngine notifies us that its
+	    // instruction observers, etc. have been inserted.
+	    return Action.BLOCK;
+	}
+
+	public void addedTo(Object observable) {
+	}
+
+	public void addFailed(Object observable, Throwable w) {
+	    System.out.println("couldn't get it done:" + w);
+	}
+
+	public void deletedFrom(Object observable) {
+	}
+    }
+    
+    public void interpretRun(CLI cli, Input cmd, Object options) {
+	//System.out.println("StartRun.interpretRun");
+	runToBreak = true;
+	interpretCmd(cli, cmd, options);
+    }
+    
+    public void interpretStart(CLI cli, Input cmd, Object options)  {
+	//System.out.println("StartRun.interpretStart");
+	//cli.execCommand("focus\n");
+	runToBreak = false;
+	interpretCmd(cli, cmd, options);
+    }
+    
+    public void interpret(CLI cli, Input cmd, Object options) {
+	return;
+    }
+
+    public void interpretCmd(CLI cli, Input cmd, Object options) {
+	// See if there are any running tasks, if so, process them
+	// if there are not any procs loaded with the load/core commands
+	Iterator foo = cli.targetset.getTasks();
+	if (foo.hasNext()) {
+	    //System.out.println("StartRun.interpretCmd: foo.hasNext()");
+	    if (cli.coreProcs.isEmpty() && cli.loadedProcs.isEmpty()) {
+		//System.out.println("StartRun.interpretCmd: coreProcs.isEmpty && loadedProcs.isEmpty");
+		// Clear the parameters for this process
+		while (foo.hasNext()) {
+		    //System.out.println("StartRun.interpretCmd: inside while");
+		    Task task = (Task) foo.next();
+		    String paramList = getParameters(cmd, task);
+		    //System.out.println("StartRun.interpretCmd: fixing to kill");
+		    cli.execCommand("kill\n");
+		    //cli.execCommand("focus\n");
+		    //System.out.println("StartRun.interpretCmd: fixing to start");
+		    cli.execCommand("start " + paramList + "\n");
+		    //cli.execCommand("focus\n");
+		    if (runToBreak)
+			cli.execCommand("go\n");
+		    //cli.execCommand("focus\n");
+		}
+		return;
+	    }
+	} else {
+	    cli.addMessage("No procs in targetset to run", Message.TYPE_NORMAL);
+	    return;
+	}
+
+	/*
+	 * If we made it here, a run command was issued and there are no running
+	 * procs, so, see if there were loaded procs or core procs
+	 */
+
+	/* This is the case where there are loaded procs */
+	if (!cli.loadedProcs.isEmpty()) {
+	    //System.out.println("StartRun.interpretCmd: if !cli.loadedProcs.isEmpty");
+	    Set procSet = cli.loadedProcs.entrySet();
+	    runProcs(cli, procSet, cmd);
+	    synchronized (cli) {
+		cli.loadedProcs.clear();
+	    }
+	}
+
+	/* Check to see if there were procs loaded from a core command */
+	if (!cli.coreProcs.isEmpty()) {
+	    Set coreSet = cli.coreProcs.entrySet();
+	    runProcs(cli, coreSet, cmd);
+	    synchronized (cli) {
+		cli.coreProcs.clear();
+	    }
+	}
+    }
+
+    private void run(CLI cli, Input cmd) {
+	//System.out.println("StartRun.run: beginning of run");
+	Runner runner = new Runner(cli);
+	Manager.host.requestCreateAttachedProc(cmd.stringArrayValue(), runner);
+	while (true) {
+	    try {
+		runner.latch = new CountDownLatch(1);
+		runner.latch.await();
+		break;
+	    } catch (InterruptedException e) {
+	    }
+	}
+	// register with SteppingEngine et.al.
+	cli.doAttach(runner.launchedTask.getProc());
+	runner.launchedTask.requestUnblock(runner);
+    }
+
+    /*
+     * runProcs does as the name implies, it runs procs found to be loaded by a
+     * load or a core command.
+     */
+    private void runProcs(CLI cli, Set procs, Input cmd) {
+	Iterator foo = procs.iterator();
+	int ctr = 0;
+	while (foo.hasNext()) {
+	    ctr++;
+	    //System.out.println("StartRun.runProcs: ctr = " + ctr);
+	    Map.Entry me = (Map.Entry) foo.next();
+	    Proc proc = (Proc) me.getKey();
+	    Integer taskid = (Integer) me.getValue();
+	    // Set the TaskID to be used to what was used when the
+	    // proc was loaded with the core or load commands
+	    synchronized (cli) {
+		cli.taskID = taskid.intValue();
+	    }
+	    //System.out.println("StartRun.runProcs: proc.getExe = " + proc.getExe());
+	    Input newcmd = new Input(proc.getExe() + " " +
+		    getParameters(cmd, proc.getMainTask()));
+	    run(cli, newcmd);
+	    //System.out.println("StartRun.runProcs: runToBreak = " + runToBreak);
+	    if (runToBreak)
+		cli.execCommand("go\n");
+	    synchronized (cli) {
+		cli.taskID = -1;
+	    }
+	}
+    }
+
+    private String getParameters(Input cmd, Task task) {
+	if (cmd.size() < 1) {
+	    // No params entered, use this proc's previous params
+	    Proc proc = task.getProc();
+	    return parseParameters(proc.getCmdLine());
+	    //Proc had no previous params, send back empty param list
+	} else
+	    return parseParameters(cmd.stringArrayValue());
+    }
+    
+    private String parseParameters(String[] parameters) {
+	if (parameters == null || parameters.length <= 0)
+		return "";
+	    String paramList = "";
+	    for (int i = 0; i < parameters.length; i++) 
+		paramList = paramList + parameters[i] + " ";
+	    return paramList;
+    }
+    
+    int completer(CLI cli, Input input, int cursor, List completions) {
+	return CompletionFactory.completeFileName(cli, input, cursor,
+		completions);
+    }
+}

@@ -48,7 +48,9 @@ import frysk.Config;
 public class TestRunCommand extends TestLib {
     public void testRunCommand() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("run " + Config.getPkgLibFile("funit-threads-looper"),
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	"Loaded executable file.*");
+	e.sendCommandExpectPrompt("run ",
 		"Attached to process ([0-9]+).*Running process ([0-9]+).*");
 	try { Thread.sleep(1000); } catch (Exception e) {}
 	e.sendCommandExpectPrompt("focus","Target set.*\\[0\\.0\\]\t\t([0-9]+)" +
@@ -64,7 +66,9 @@ public class TestRunCommand extends TestLib {
      */
     public void testRunTimesTwo() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("run " + Config.getPkgLibFile("funit-threads-looper"),
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	"Loaded executable file.*");
+	e.sendCommandExpectPrompt("run ",
 		"Attached to process ([0-9]+).*Running process ([0-9]+).*");
 	try { Thread.sleep(1000); } catch (Exception e) {}
 	e.sendCommandExpectPrompt("focus","Target set.*\\[0\\.0\\]\t\t([0-9]+)" +
@@ -72,6 +76,7 @@ public class TestRunCommand extends TestLib {
 	e.sendCommandExpectPrompt("run", "Killing process ([0-9])+.*" +
 		"Loaded executable file.*" + "Attached to process ([0-9])+.*" +
 		"Running process ([0-9])+.*");
+	try { Thread.sleep(1000); } catch (Exception e) {}
 	e.send("quit\n");
 	e.expect("Quitting...");
 	e.close();

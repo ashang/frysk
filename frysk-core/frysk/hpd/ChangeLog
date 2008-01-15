@@ -1,3 +1,16 @@
+2008-01-15  Rick Moseley  <rmoseley@redhat.com>
+
+	* StartRun.java: New, consolidation of Start/RunCommand.
+	* StartCommand.java: Move common code to StartRun.java.
+	* RunCommand.java: Ditto.
+	* TestStartCommand.java: Modify for above changes.
+	* TestRunCommand.java: Ditto.
+	* TestBreakpoints.java: Ditto.
+	* TestListCommand.java: Ditto.
+	* TestGenerateCoreCommand.java: Ditto.
+	* LoadCommand.java: Improve help verbage.
+	* TestLoadCommand.java: Add quit command at end of test.
+
 2008-01-14  Mike Cvet  <mcvet@redhat.com>
 
 	* StepInstructionCommand.java (interpret): Changed from iterating over

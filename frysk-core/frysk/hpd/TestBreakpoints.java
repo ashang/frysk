@@ -39,6 +39,8 @@
 
 package frysk.hpd;
 
+import frysk.Config;
+
 public class TestBreakpoints
     extends TestLib
 {
@@ -57,7 +59,10 @@ public class TestBreakpoints
     }
     
     public void testHpdBreakpointRunProcess() {
-	e = HpdTestbed.start("hpd-c");
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("hpd-c").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("start", "Attached to process.*");
 	// Break
 	e.send("break #hpd-c.c#196\n");	// This has to break on: while (int_21)
 	e.expect("breakpoint.*" + prompt);
@@ -115,7 +120,10 @@ public class TestBreakpoints
     public void testHpdBreakMultiThreaded() {
 	if (unresolved(5351))
 	    return;
-	e = HpdTestbed.start("funit-fib-clone", "3");
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-fib-clone").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("start 3", "Attached to process.*");
 	// Break
 	e.send("break fib\n");	
 	e.expect("breakpoint.*" + prompt);
@@ -141,7 +149,10 @@ public class TestBreakpoints
 	if(unresolved(5280)){
 	    return;
 	}
-	e = HpdTestbed.start("funit-fib-clone", "3");
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-fib-clone").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("start 3", "Attached to process.*");
 	// Break
 	e.send("break fib\n");	
 	e.expect("breakpoint.*" + prompt);
@@ -178,7 +189,10 @@ public class TestBreakpoints
   // name as a structure member.
 
   public void testBreakOnStructMemberName() {
-      e = HpdTestbed.start("funit-structmember");
+      e = new HpdTestbed();
+      e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-structmember").getPath(),
+		"Loaded executable file.*");
+      e.sendCommandExpectPrompt("start", "Attached to process.*");
       e.send("break testfn\n");
       e.expect("break.*" + prompt);
       e.send("go\n");
