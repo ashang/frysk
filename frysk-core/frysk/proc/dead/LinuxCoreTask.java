@@ -55,15 +55,15 @@ public class LinuxCoreTask extends DeadTask {
     ElfPrstatus elfTask = null;
     ElfPrFPRegSet elfFPRegs = null;
     ElfPrXFPRegSet elfXFPRegs = null;
-    LinuxCoreProc parent = null;
+    private final LinuxCoreProc parent;
 
-    protected ByteBuffer sendrecMemory () {
+    public ByteBuffer getMemory() {
 	// XXX: Get the Proc's memory (memory maps). Task and register
 	// information is handled differently (through notes) in core
-	// files. There's a potential here for task to have its own memory
-	// maps in some architectures, but not in the current ISAs. In an
-	// attempt to save system resources, get a reference to the proc's
-	// maps for now.
+	// files. There's a potential here for task to have its own
+	// memory maps in some architectures, but not in the current
+	// ISAs. In an attempt to save system resources, get a
+	// reference to the proc's maps for now.
 	return parent.getMemory();
     }
 

@@ -1,3 +1,9 @@
+2008-01-15  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxCoreTask.java (getMemory()): Replace sendrecMemory().
+	* LinuxExeTask.java: Ditto.
+	* LinuxExeProc.java: Ditto.
+
 2008-01-11  Andrew Cagney  <cagney@redhat.com>
 
 	* DeadTask.java (handleAddObservation(TaskObservation))

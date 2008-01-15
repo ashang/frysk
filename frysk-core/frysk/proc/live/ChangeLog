@@ -1,3 +1,7 @@
+2008-01-15  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceTask.java (getMemory()): Replace sendrecMemory().
+
 2008-01-14  Rick Moseley  <rmoseley@redhat.com>
 
 	* LinuxPtraceTask.java: Catch errors from Ptrace.detach().

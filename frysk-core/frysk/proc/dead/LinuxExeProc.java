@@ -105,10 +105,12 @@ public class LinuxExeProc extends DeadProc {
 	return (MemoryMap[]) metaData.toArray(new MemoryMap[metaData.size()]);
     }
 
-    public ByteBuffer sendrecMemory() {
-	ByteBuffer memory = new ExeByteBuffer(metaData);
+    ByteBuffer getMemory() {
+	if (memory == null)
+	    memory = new ExeByteBuffer(metaData);
 	return memory;
     }
+    private ByteBuffer memory;
     
     private void buildMetaData()
     {

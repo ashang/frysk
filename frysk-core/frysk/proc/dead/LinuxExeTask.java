@@ -49,7 +49,7 @@ import lib.dwfl.*;
 
 public class LinuxExeTask extends DeadTask {
     private final long pc;
-    LinuxExeProc proc = null;
+    private final LinuxExeProc proc;
     TaskId id = null;
 
     protected LinuxExeTask(LinuxExeProc proc, TaskId id) {
@@ -82,9 +82,9 @@ public class LinuxExeTask extends DeadTask {
       return ((LinuxExeProc)getProc()).sendrecISA();
   }
 
-  protected ByteBuffer sendrecMemory () {
-    return this.proc.sendrecMemory();
-  }
+    public ByteBuffer getMemory() {
+	return proc.getMemory();
+    }
   
   protected RegisterBanks sendrecRegisterBanks() {
       ByteBuffer[] bankBuffers = new ByteBuffer[4];

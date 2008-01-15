@@ -1,5 +1,8 @@
 2008-01-15  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (sendrecMemory()): Delete.
+	(getMemory()): Make abstract.	
+
 	* Task.java (id): Make private.
 	* Host.java: Update.
 	* Proc.java: Update.

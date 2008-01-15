@@ -116,16 +116,22 @@ public class LinuxPtraceTask extends LiveTask {
 	return memory;
     }
 
-    protected ByteBuffer sendrecMemory ()
-    {
-      int tid = getTid();
-      ByteOrder byteOrder = getISA().order();
-      BreakpointAddresses breakpoints = ((LinuxPtraceProc)getProc()).breakpoints;
-      ByteBuffer memory = new LogicalMemoryBuffer(tid, AddressSpace.DATA,
-						  breakpoints);
-      memory.order(byteOrder);
-      return memory;
+    /**
+     * Return the Task's memory.
+     */
+    public ByteBuffer getMemory() {
+	if (memory == null) {
+	    logger.log(Level.FINE, "{0} exiting get memory\n", this);
+	    int tid = getTid();
+	    ByteOrder byteOrder = getISA().order();
+	    BreakpointAddresses breakpoints = ((LinuxPtraceProc)getProc()).breakpoints;
+	    memory = new LogicalMemoryBuffer(tid, AddressSpace.DATA,
+					     breakpoints);
+	    memory.order(byteOrder);
+	}
+	return memory;
     }
+    private ByteBuffer memory;
 
     protected RegisterBanks sendrecRegisterBanks() {
 	return PtraceRegisterBanksFactory.create(getISA(), getTid());
@@ -971,6 +977,7 @@ public class LinuxPtraceTask extends LiveTask {
     public void clearIsa() {
 	super.clearIsa();
 	pcRegister = null;
+	memory = null;
     }
 
     /**

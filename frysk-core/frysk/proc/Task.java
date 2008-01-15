@@ -274,18 +274,10 @@ public abstract class Task {
      */
     public abstract void requestDeleteSignaledObserver(TaskObserver.Signaled o);
 
-    private ByteBuffer memory;
-    protected abstract ByteBuffer sendrecMemory();
     /**
      * Return the Task's memory.
      */
-    public ByteBuffer getMemory() {
-	logger.log(Level.FINE, "{0} entering get memory {1}\n",new Object[] {this, memory});
-	if (memory == null )
-	    memory = sendrecMemory();
-	logger.log(Level.FINE, "{0} exiting get memory {1}\n", new Object[] {this, memory});
-	return this.memory;
-    }
+    public abstract ByteBuffer getMemory();
 
     /**
      * Add TaskObserver.Code to the TaskObserver pool.
@@ -396,7 +388,6 @@ public abstract class Task {
     public abstract int getMod();
  
     public void clearIsa() {
-	memory = null;
 	registerBanks = null;
 	syscallTable = null;
 	currentISA = null;

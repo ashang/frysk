@@ -57,7 +57,7 @@ public class DummyTask extends Task {
     protected ISA sendrecISA() {
 	return null;
     }
-    protected ByteBuffer sendrecMemory () {
+    public ByteBuffer getMemory() {
 	return null;
     }
     protected RegisterBanks sendrecRegisterBanks() {
