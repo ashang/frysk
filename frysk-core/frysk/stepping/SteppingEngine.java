@@ -487,12 +487,28 @@ public class SteppingEngine {
      * @param task   The Task to be stepped
      * @param frame The frame to step out of.
      */
-    public void stepOut(Task task, DebugInfoFrame frame) {
+    public void stepOut(Task task, Frame frame) {
 
-	long address = frame.getOuterDebugInfoFrame().getAddress();
+	long address = frame.getOuter().getAddress();
 
 	TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
 	tse.setState(new StepOutState(task));
+	this.steppingObserver.notifyNotBlocked(tse);
+
+	int i = ((Integer) this.contextMap.get(task.getProc())).intValue();
+	this.contextMap.put(task.getProc(), new Integer(++i));
+
+	this.breakpoint = new SteppingBreakpoint(this, address);
+	this.breakpointMap.put(task, this.breakpoint);
+	task.requestAddCodeObserver(this.breakpoint, address);
+    }
+    
+    public void stepOut(Task task, Frame frame, State state) {
+
+	long address = frame.getOuter().getAddress();
+
+	TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
+	tse.setState(state);
 	this.steppingObserver.notifyNotBlocked(tse);
 
 	int i = ((Integer) this.contextMap.get(task.getProc())).intValue();

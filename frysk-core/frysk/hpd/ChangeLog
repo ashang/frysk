@@ -1,3 +1,8 @@
+2008-01-14  Mike Cvet  <mcvet@redhat.com>
+
+	* StepInstructionCommand.java (interpret): Changed from iterating over
+	taskList to iterating over ptset, fixing a bug.
+
 2008-01-13  Stan Cox  <scox@redhat.com>
 
 	* DbgVariables.java (DbgVariables): Make public.

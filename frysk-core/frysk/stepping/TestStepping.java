@@ -43,6 +43,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
+
 import frysk.testbed.Offspring;
 import frysk.testbed.SynchronizedOffspring;
 import frysk.Config;
@@ -1003,6 +1004,74 @@ public class TestStepping extends TestLib {
 
 	/** The stepping operation */
 	this.se.stepOver(theTask, frame);
+
+	this.testStarted = true;
+	/** Run to completion */
+	assertRunUntilStop("Running test");
+	cleanup();
+    }
+    
+    public void testInstructionStepThroughSection() {
+
+	class InstructionStepThroughSectionTest implements SteppingTest {
+
+	    Task testTask = null;
+	    String callingFrame = "foo";
+	    boolean first = true;
+	    int endLine = 0;
+	    
+	    public InstructionStepThroughSectionTest(Task task, int lineNum) {
+		testTask = task;
+		endLine = lineNum;
+	    }
+
+	    public void runAssertions() {
+		
+		DebugInfoFrame frame = DebugInfoStackFactory
+		.createDebugInfoStackTrace(testTask);
+	
+		String s = frame.getSymbol().getDemangledName();
+		
+		if (first) {
+		    se.stepLine(this.testTask);
+		    this.first = false;
+		    return;
+		}
+		
+		assertEquals("calling frame", callingFrame, s);
+		assertEquals("line number", endLine, frame.getLine().getLine());
+		Manager.eventLoop.requestStop();
+	    }
+	}
+
+	/** Variable setup */
+	String source = Config.getRootSrcDir()
+		+ "frysk-core/frysk/pkglibdir/funit-libcall.c";
+
+	this.scanner = new TestfileTokenScanner(new File(source));
+
+	int startLine = this.scanner.findTokenLine("_testIStepThrough_");
+
+	int endLine = startLine + 1;
+
+	/* The test process */
+	dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-libcall"));
+
+	Task theTask = dbae.getMainTask();
+
+	this.testStarted = false;
+
+	initTaskWithTask(theTask, source, startLine, endLine);
+
+	this.currentTest = new InstructionStepThroughSectionTest(theTask, endLine);
+
+	DebugInfoFrame frame = DebugInfoStackFactory
+		.createDebugInfoStackTrace(theTask);
+	assertTrue("Line information present",
+		frame.getLine() != SourceLocation.UNKNOWN);
+
+	/** The stepping operation */
+	this.se.stepLine(theTask);
 
 	this.testStarted = true;
 	/** Run to completion */

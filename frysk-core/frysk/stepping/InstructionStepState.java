@@ -39,23 +39,48 @@
 
 package frysk.stepping;
 
+import frysk.dwfl.ElfSectionCache;
 import frysk.proc.Task;
+import lib.dwfl.DwflLine;
+import lib.dwfl.ElfSectionHeader;
 
 public class InstructionStepState extends State {
+
+    private ElfSectionCache elfCache;
+    private final String PLT_DL_FIXUP = "_dl_fixup";
+
     public InstructionStepState(Task task) {
 	this.task = task;
     }
 
     /**
-         * When the instruction observer from SteppingEngine returns, a single
-         * step has been performed. All that is left to do is to reset the State
-         * for this Task back to a StoppedState.
-         * 
-         * @param tse
-         *                The TaskStepEngine for this State.
-         * @return new StoppedState
-         */
+     * When the instruction observer from SteppingEngine returns, a single
+     * step has been performed. All that is left to do is to reset the State
+     * for this Task back to a StoppedState.
+     * 
+     * @param tse
+     *                The TaskStepEngine for this State.
+     * @return new StoppedState
+     */
     public State handleUpdate(TaskStepEngine tse) {
+
+	long addr = this.task.getPC();
+	this.elfCache = new ElfSectionCache(this.task);
+	ElfSectionHeader header = this.elfCache.getSectionHeader(".plt", addr);
+
+	/* If the user steps into a function call, the following catches the .plt section of the program, and
+	 * ensures that Frysk steps past it, so that the user is landed back into their own code after the call. */
+	if ((header != null && header.addr <= addr && (header.addr + header.offset) >= addr)
+		&& (header.type == ElfSectionHeader.ELF_SHT_PROGBITS || header.type == ElfSectionHeader.ELF_SHT_NOBITS)) {
+
+	    DwflLine line = tse.getDwflLine();
+
+	    if (line == null) {
+		tse.getSteppingEngine().continueForStepping(this.task, true);
+		return new InstructionStepThroughState(task, PLT_DL_FIXUP);
+	    }
+	}
+
 	return new StoppedState(this.task);
     }
 

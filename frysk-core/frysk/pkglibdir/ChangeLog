@@ -1,6 +1,6 @@
-2008-01-14  Teresa Thomas  <tthomas@redhat.com>
+2007-01-14  Mike Cvet  <mcvet@redhat.com>
 
-	* funit-location.S: Set REG3 for tests.
+	* funit-libcall.c: Added.
 
 2007-01-04  Nurdin Premji  <npremji@redhat.com>
 	* funit-complex-class.cxx: New

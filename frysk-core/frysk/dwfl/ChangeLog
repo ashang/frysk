@@ -1,7 +1,7 @@
-2008-01-13  Stan Cox  <scox@redhat.com>
+2008-01-14  Mike Cvet  <mcvet@redhat.com>
 
-	* DwflCache.java (getSysRoot): New.
-	(getDwfl): Call it.
+	* ElfSectionCache.java: Added.
+	* TestElfSectionCache.java: Added.
 
 2007-10-18  Rick Moseley  <rmoseley@redhat.com>
 

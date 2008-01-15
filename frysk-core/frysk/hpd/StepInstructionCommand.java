@@ -70,7 +70,7 @@ public class StepInstructionCommand extends ParameterizedCommand {
 		} catch (InterruptedException ie) {
 		}
 	    }
-	    Iterator stepped = taskList.iterator();
+	    Iterator stepped = ptset.getTasks();
 	    while (stepped.hasNext()) {
 		Task task = (Task) stepped.next();
 		DebugInfoFrame rf = cli.getTaskFrame(task);
