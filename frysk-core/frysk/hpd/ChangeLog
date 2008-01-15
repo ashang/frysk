@@ -1,3 +1,7 @@
+2008-01-15  Andrew Cagney  <cagney@redhat.com>
+
+	* TestSysRoot.java: Mark as unresolved, bug 5619.
+
 2008-01-15  Rick Moseley  <rmoseley@redhat.com>
 
 	* StartRun.java: New, consolidation of Start/RunCommand.

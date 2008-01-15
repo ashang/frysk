@@ -55,6 +55,8 @@ public class TestSysRoot extends TestLib {
   }
 
     public void testHaveSysRoot() {
+	if (unresolved(5619))
+	    return;
 	File testPath = Config.getPkgLibFile("funit-addresses");
 	System.out.println(Config.getBinFile("fhpd").getAbsolutePath() +
 		" -sysroot " + testPath.getParent() + "/test-sysroot/ " +
