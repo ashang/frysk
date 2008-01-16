@@ -1,3 +1,16 @@
+2008-01-16  Andrew Cagney  <cagney@redhat.com>
+
+	* DeadTask.java (getISA()): New.
+	(DeadTask(Proc,TaskId,ISA)): Replace DeadTask(Proc,TaskId).
+	* LinuxCoreProc.java: Update.
+	(sendrecISA()): Delete.
+	* LinuxCoreTask.java: Update.
+	(sendrecISA()): Delete.
+	* LinuxExeTask.java: Update.
+	(sendrecISA()): Delete.
+	* LinuxExeProc.java: Update.
+	(sendrecISA()): Delete.
+
 2008-01-16  Phil Muldoon  <pmuldoon@redhat.com> 
 
 	* TestLinuxCore.java (testInsertedBreakpoint): Use TearDownFile.

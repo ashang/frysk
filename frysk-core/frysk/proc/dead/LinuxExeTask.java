@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -44,16 +44,18 @@ import inua.eio.ByteBuffer;
 import frysk.bank.RegisterBanks;
 import frysk.proc.TaskId;
 import frysk.isa.ISA;
-
-import lib.dwfl.*;
+import lib.dwfl.Elf;
+import lib.dwfl.ElfCommand;
+import lib.dwfl.ElfEHeader;
+import lib.dwfl.ElfException;
 
 public class LinuxExeTask extends DeadTask {
     private final long pc;
     private final LinuxExeProc proc;
     TaskId id = null;
 
-    protected LinuxExeTask(LinuxExeProc proc, TaskId id) {
-	super(proc, id);
+    protected LinuxExeTask(LinuxExeProc proc, TaskId id, ISA isa) {
+	super(proc, id, isa);
 	this.proc = proc;
 	this.id = id;
 	// Compute a Fake PC.  XXX should be done in Proc instead of
@@ -77,10 +79,6 @@ public class LinuxExeTask extends DeadTask {
     public long getPC() {
 	return pc;
     }
-
-  protected ISA sendrecISA() {
-      return ((LinuxExeProc)getProc()).sendrecISA();
-  }
 
     public ByteBuffer getMemory() {
 	return proc.getMemory();

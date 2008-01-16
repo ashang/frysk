@@ -1,5 +1,9 @@
 2008-01-16  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTask.java (getISA()): Replace sendrecISA().
+	(hasIsa()): New.
+	* TestRuntimeIsa.java (assertHasIsaEquals(Task,boolean)): New.
+
 	* TestRuntimeIsa.java: Move from frysk.proc.TestIsa.
 
 2008-01-15  Andrew Cagney  <cagney@redhat.com>

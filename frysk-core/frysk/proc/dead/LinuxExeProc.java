@@ -42,7 +42,6 @@ package frysk.proc.dead;
 import inua.eio.ByteBuffer;
 
 import java.util.ArrayList;
-import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfData;
 
 import frysk.isa.ISA;
@@ -68,7 +67,8 @@ public class LinuxExeProc extends DeadProc {
     }
 
     public void sendRefresh() {
-	LinuxExeTask newTask = new LinuxExeTask(this, new TaskId(0));
+	ISA isa = ElfMap.getISA(elfData.getParent().getEHeader());
+	LinuxExeTask newTask = new LinuxExeTask(this, new TaskId(0), isa);
 	newTask.getClass();
     }
 
@@ -96,11 +96,6 @@ public class LinuxExeProc extends DeadProc {
 	return 0;
     }
     
-    ISA sendrecISA() {
-	ElfEHeader header = elfData.getParent().getEHeader();
-	return ElfMap.getISA(header);
-    }
-
     public MemoryMap[] getMaps() {
 	return (MemoryMap[]) metaData.toArray(new MemoryMap[metaData.size()]);
     }

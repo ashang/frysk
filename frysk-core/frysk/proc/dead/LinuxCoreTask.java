@@ -127,16 +127,12 @@ public class LinuxCoreTask extends DeadTask {
      * Create a new unattached Task.
      */
     LinuxCoreTask(LinuxCoreProc proc, ElfPrstatus elfTask, ElfPrFPRegSet
-		  elfFPRegs, ElfPrXFPRegSet elfXFPRegs) {
-	super(proc, new TaskId(elfTask.getPrPid()));
+		  elfFPRegs, ElfPrXFPRegSet elfXFPRegs, ISA isa) {
+	super(proc, new TaskId(elfTask.getPrPid()), isa);
 	this.elfTask = elfTask;
 	this.elfFPRegs = elfFPRegs;
 	this.elfXFPRegs = elfXFPRegs;
 	this.parent = proc;
-    }
-
-    protected ISA sendrecISA() {
-    	return ((LinuxCoreProc)getProc()).sendrecISA();
     }
 
     public long getPC() {

@@ -143,10 +143,17 @@ public class LinuxPtraceTask extends LiveTask {
      *
      * Can this instead look at AUXV?
      */
-    protected ISA sendrecISA () {
-	// FIXME: This should use task.proc.getExe().  Only that
-	// causes wierd failures; take a rain-check :-(
-	return ElfMap.getISA(new File("/proc/" + getTid() + "/exe"));
+    public ISA getISA() {
+	if (currentISA == null)
+	    // FIXME: This should use task.proc.getExe().  Only that
+	    // causes wierd failures; take a rain-check :-(
+	    currentISA = ElfMap.getISA(new File("/proc/" + getTid() + "/exe"));
+	return currentISA;
+    }
+    private ISA currentISA;
+
+    boolean hasIsa() {
+	return (currentISA != null);
     }
 
     /**
@@ -986,6 +993,7 @@ public class LinuxPtraceTask extends LiveTask {
 	super.clearIsa();
 	pcRegister = null;
 	memory = null;
+	currentISA = null;
     }
 
     /**
