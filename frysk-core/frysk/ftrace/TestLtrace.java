@@ -54,7 +54,7 @@ import java.util.regex.*;
 public class TestLtrace
     extends TestLib
 {
-    class DummyFunctionObserver
+    static class DummyFunctionObserver
 	implements FunctionObserver
     {
 	public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
@@ -68,7 +68,7 @@ public class TestLtrace
 	public void addFailed (Object observable, Throwable w) {}
     }
 
-    abstract class ObserverCreator {
+    static abstract class ObserverCreator {
 	abstract FunctionObserver createObserver();
 	public boolean shouldAcceptMapping(Task task, String name) {
 	    return task.getProc().getExe().equals(name);
@@ -137,7 +137,7 @@ public class TestLtrace
 	}
     }
 
-    abstract class GenericController
+    static abstract class GenericController
 	extends ObserverCreator
     {
 	final String name;
@@ -216,16 +216,15 @@ public class TestLtrace
 	}
     }
 
-    public void testCallRecorded()
-    {
-	if(unresolvedOffUtrace(5053))
-	    return;
-
-	final ArrayList events = new ArrayList();
-
-	class MyFunctionObserver1
+	static class MyFunctionObserver1
 	    extends DummyFunctionObserver
 	{
+	    final ArrayList events;
+
+	    MyFunctionObserver1(ArrayList events)
+	    {
+		this.events = events;
+	    }
 	    public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
 		events.add("enter " + symbol.name);
 		return Action.CONTINUE;
@@ -236,10 +235,14 @@ public class TestLtrace
 	    }
 	}
 
+    public void testCallRecorded()
+    {
+	final ArrayList events = new ArrayList();
+
 	GenericMappingObserver mappingObserver
 	    = new GenericMappingObserver(new ObserverCreator() {
 		    public FunctionObserver createObserver() {
-			return new MyFunctionObserver1();
+			return new MyFunctionObserver1(events);
 		    }
 	    });
 
@@ -273,35 +276,19 @@ public class TestLtrace
 	assertEquals("number of recorded events", expectedEvents.length, events.size());
     }
 
-    public void testArgumentsCorrect1()
-    {
-	if(unresolvedOffUtrace(5053))
-	    return;
-
-	final Set registeredSymbols = new HashSet();
-	final LinkedList expectedEvents = new LinkedList();
-	final LinkedList expectedReturns = new LinkedList();
-
-	class ExpectedEvent {
-	    String name;
-	    long[] arguments;
-	    long retval;
-
-	    ExpectedEvent(String name, long[] arguments, long retval) {
-		this.name = name;
-		this.retval = retval;
-		this.arguments = arguments;
-		registeredSymbols.add(name);
-		expectedEvents.addLast(this);
-	    }
-	}
-
-	new ExpectedEvent("trace_me_1", new long[]{3, 5, 7, 11, 13, 17}, 56);
-	new ExpectedEvent("trace_me_2", new long[]{3, 5, 7, 11, 13, 17}, 56);
-
-	class MyFunctionObserver2
+	static class MyFunctionObserver2
 	    extends DummyFunctionObserver
 	{
+            final LinkedList expectedEvents;
+            final LinkedList expectedReturns;
+
+	    MyFunctionObserver2(LinkedList expectedEvents,
+				LinkedList expectedReturns)
+	    {
+		this.expectedEvents = expectedEvents;
+		this.expectedReturns = expectedReturns;
+	    }
+
 	    public Action funcallEnter(Task task, Symbol symbol, Object[] args) {
 		ExpectedEvent ee = (ExpectedEvent)expectedEvents.removeFirst();
 		assertEquals("enter function name", ee.name, symbol.name);
@@ -330,6 +317,32 @@ public class TestLtrace
 	    }
 	}
 
+	static class ExpectedEvent {
+	    String name;
+	    long[] arguments;
+	    long retval;
+
+	    ExpectedEvent(String name, long[] arguments, long retval,
+			  Set registeredSymbols, LinkedList expectedEvents) {
+		this.name = name;
+		this.retval = retval;
+		this.arguments = arguments;
+		registeredSymbols.add(name);
+		expectedEvents.addLast(this);
+	    }
+	}
+
+    public void testArgumentsCorrect1()
+    {
+	final Set registeredSymbols = new HashSet();
+	final LinkedList expectedEvents = new LinkedList();
+	final LinkedList expectedReturns = new LinkedList();
+
+	new ExpectedEvent("trace_me_1", new long[]{3, 5, 7, 11, 13, 17}, 56,
+				registeredSymbols, expectedEvents);
+	new ExpectedEvent("trace_me_2", new long[]{3, 5, 7, 11, 13, 17}, 56,
+				registeredSymbols, expectedEvents);
+
 	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
 	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
 	Task task = child.getMainTask();
@@ -339,7 +352,8 @@ public class TestLtrace
 	GenericMappingObserver mappingObserver
 	    = new GenericMappingObserver(new ObserverCreator() {
 		    public FunctionObserver createObserver() {
-			return new MyFunctionObserver2();
+			return new MyFunctionObserver2(expectedEvents,
+						       expectedReturns);
 		    }
 		    public boolean acceptTracepoint(Task task, TracePoint tp) {
 			return registeredSymbols.contains(tp.symbol.name);
@@ -357,21 +371,21 @@ public class TestLtrace
 	assertEquals("number of unprocessed returns", 0, expectedReturns.size());
     }
 
-    public void testTracingAlias()
-    {
-	if(unresolvedOffUtrace(5053))
-	    return;
 
-	final HashSet enterAliases = new HashSet();
-	final HashSet leaveAliases = new HashSet();
 
-	class MyFunctionObserver3
+	static class MyFunctionObserver3
 	    extends DummyFunctionObserver
 	{
 	    String name;
+            final HashSet enterAliases;
+            final HashSet leaveAliases;
 
-	    public MyFunctionObserver3 (String name) {
+	    public MyFunctionObserver3 (String name,
+                                        HashSet enterAliases,
+                                        HashSet leaveAliases) {
 		this.name = name;
+		this.enterAliases = enterAliases;
+		this.leaveAliases = leaveAliases;
 	    }
 
 	    private void addAliases(Symbol symbol, HashSet aliases) {
@@ -395,20 +409,32 @@ public class TestLtrace
 	    }
 	}
 
-	class MyObserverCreator3
+	static class MyObserverCreator3
 	    extends GenericController
 	{
 	    final String ownName;
+            final HashSet enterAliases;
+            final HashSet leaveAliases;
 
-	    public MyObserverCreator3(String aliasName, String ownName) {
+	    public MyObserverCreator3(String aliasName, String ownName,
+                                      HashSet enterAliases,
+                                      HashSet leaveAliases) {
 		super(aliasName);
 		this.ownName = ownName;
+                this.enterAliases = enterAliases;
+                this.leaveAliases = leaveAliases;
 	    }
 
 	    public FunctionObserver createObserver() {
-		return new MyFunctionObserver3(ownName);
+		return new MyFunctionObserver3(ownName,
+                                               enterAliases, leaveAliases);
 	    }
 	}
+
+    public void testTracingAlias()
+    {
+	final HashSet enterAliases = new HashSet();
+	final HashSet leaveAliases = new HashSet();
 
 	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
 	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
@@ -417,7 +443,7 @@ public class TestLtrace
 	int pid = proc.getPid();
 
 	String symbols[] = {"fun1", "alias1", "alias2"};
-	MyObserverCreator3 observerCreator = new MyObserverCreator3("alias2", "fun1");
+	MyObserverCreator3 observerCreator = new MyObserverCreator3("alias2", "fun1", enterAliases, leaveAliases);
 	MappingGuard.requestAddMappingObserver(task, new GenericMappingObserver(observerCreator));
 	assertRunUntilStop("add mapping observer");
 
@@ -436,9 +462,6 @@ public class TestLtrace
 
     public void testMultipleObservers()
     {
-	if(unresolvedOffUtrace(5053))
-	    return;
-
 	final int N = 10;
 
 	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
@@ -469,9 +492,6 @@ public class TestLtrace
 
     public void testMultipleControlers()
     {
-	if(unresolvedOffUtrace(5053))
-	    return;
-
 	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
 	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
 	Task task = child.getMainTask();
@@ -507,9 +527,6 @@ public class TestLtrace
 
     public void testRecursive()
     {
-	if(unresolvedOffUtrace(5053))
-	    return;
-
 	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
 	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
 	Task task = child.getMainTask();

@@ -1,3 +1,18 @@
+2008-01-16  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestLtrace.java (DummyFunctionObserver): Made static.
+	(ObserverCreator): Likewise.
+	(GenericController): Likewise.
+	(MyFunctionObserver1): Made class member and static. Add events as
+	field.
+	(MyFunctionObserver2): Likewise. Add expectedEvents and
+	expectedReturns as fields.
+	(MyFunctionObserver3): Likewiese. Add enterAliases and
+	leaveAliases as fields.
+	(testMultipleObservers): Removed unresolvedOffUtrace bug #5053.
+	(testMultipleControlers): Likewise.
+	(testRecursive): Likewise.
+	
 2008-01-09  Petr Machata  <pmachata@redhat.com>
 
 	* Ltrace.java (TracePointObserver.deletedFrom): Fix checking of
