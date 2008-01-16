@@ -1,3 +1,9 @@
+2008-01-16  Stan Cox  <scox@redhat.com>
+
+	* Makefile.am (pkgdatadir/test-sysroot): Use make functions.
+	(nobase_pkgdata_DATA): Define for installation of test-sysroot.
+	(install-data-hook): Likewise.
+
 2008-01-15  Stan Cox  <scox@redhat.com>
 
 	* Makefile.am (pkgdatadir/test-sysroot): New.

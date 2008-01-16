@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, 2007, Red Hat Inc.
+# Copyright 2005, 2007, 2008, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -110,21 +110,24 @@ frysk_pkglibdir_funit_symbols_stripped_SOURCES =
 frysk/pkglibdir/funit-symbols-stripped: frysk/pkglibdir/funit-symbols
 	strip -o $@ frysk/pkglibdir/funit-symbols
 
-pkgdata_DATA += frysk/pkgdatadir/test-sysroot/`pwd`/frysk/pkglibdir/funit-addresses
-frysk/pkgdatadir/test-sysroot/`pwd`/frysk/pkglibdir/funit-addresses: frysk/pkglibdir/funit-addresses
-	mkdir -p `pwd`/frysk/pkgdatadir/test-sysroot/`pwd`/frysk/pkglibdir
+nobase_pkgdata_DATA = frysk/pkgdatadir/test-sysroot/$(abspath frysk/pkglibdir/funit-addresses)
+frysk/pkgdatadir/test-sysroot/$(abspath frysk/pkglibdir/funit-addresses): frysk/pkglibdir/funit-addresses
+	mkdir -p $(abspath frysk/pkgdatadir/test-sysroot)/$(abspath frysk/pkglibdir)
 	cp -r $< $@
 
-pkgdata_DATA += frysk/pkgdatadir/test-sysroot/$(realpath $(srcdir))/frysk/pkglibdir/funit-addresses.c
-frysk/pkgdatadir/test-sysroot/$(realpath $(srcdir))/frysk/pkglibdir/funit-addresses.c: \
-frysk/pkgdatadir/test-sysroot/`pwd`/frysk/pkglibdir/funit-addresses
-	mkdir -p `pwd`/frysk/pkgdatadir/test-sysroot/$(realpath $(srcdir))/frysk/pkglibdir
-	cp $(realpath $(srcdir))/frysk/pkglibdir/funit-addresses.c $@
+nobase_pkgdata_DATA += frysk/pkgdatadir/test-sysroot/$(abspath $(srcdir)/frysk/pkglibdir/funit-addresses.c)
+frysk/pkgdatadir/test-sysroot/$(abspath $(srcdir)/frysk/pkglibdir/funit-addresses.c): \
+frysk/pkgdatadir/test-sysroot/$(abspath frysk/pkglibdir/funit-addresses)
+	mkdir -p $(abspath frysk/pkgdatadir/test-sysroot)/$(abspath $(srcdir)/frysk/pkglibdir)
+	cp $(abspath $(srcdir)/frysk/pkglibdir/funit-addresses.c) $@
 
-pkgdata_DATA += frysk/pkgdatadir/test-sysroot/usr/lib/debug/`pwd`/frysk/pkglibdir/funit-addresses.debug
-frysk/pkgdatadir/test-sysroot/usr/lib/debug/`pwd`/frysk/pkglibdir/funit-addresses.debug: frysk/pkgdatadir/test-sysroot/`pwd`/frysk/pkglibdir/funit-addresses
-	mkdir -p `pwd`/frysk/pkgdatadir/test-sysroot/usr/lib/debug/`pwd`/frysk/pkglibdir/
+nobase_pkgdata_DATA += frysk/pkgdatadir/test-sysroot/usr/lib/debug/$(abspath frysk/pkglibdir/funit-addresses.debug)
+frysk/pkgdatadir/test-sysroot/usr/lib/debug/$(abspath frysk/pkglibdir/funit-addresses.debug): frysk/pkgdatadir/test-sysroot/$(abspath frysk/pkglibdir/funit-addresses)
+	mkdir -p $(abspath frysk/pkgdatadir/test-sysroot/usr/lib/debug/)/$(abspath frysk/pkglibdir)
 	eu-strip --remove-comment -f $@ $<
+
+install-data-hook:
+	mv $(datarootdir)/frysk/frysk/pkgdatadir/test-sysroot $(datarootdir)
 
 if DO_ARCH32_TEST
 pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-symbols-nodebug
