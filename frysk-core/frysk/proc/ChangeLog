@@ -1,5 +1,8 @@
 2008-01-16  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (sendrecRegisterBanks()): Delete.
+	(getRegisterBanks()): Make abstract.
+
 	* Task.java (getISA()): Make abstract.
 	(sendrecISA()): Delete.
 	(hasIsa()): Delete.

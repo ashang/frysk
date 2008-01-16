@@ -134,9 +134,12 @@ public class LinuxPtraceTask extends LiveTask {
     }
     private ByteBuffer memory;
 
-    protected RegisterBanks sendrecRegisterBanks() {
-	return PtraceRegisterBanksFactory.create(getISA(), getTid());
+    protected RegisterBanks getRegisterBanks() {
+	if (registerBanks == null)
+	    registerBanks = PtraceRegisterBanksFactory.create(getISA(), getTid());
+	return registerBanks;
     }
+    private RegisterBanks registerBanks;
 
     /**
      * Return the Task's ISA.
@@ -994,6 +997,7 @@ public class LinuxPtraceTask extends LiveTask {
 	pcRegister = null;
 	memory = null;
 	currentISA = null;
+	registerBanks = null;
     }
 
     /**

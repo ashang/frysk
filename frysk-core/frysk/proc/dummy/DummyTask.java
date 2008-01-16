@@ -60,7 +60,7 @@ public class DummyTask extends Task {
     public ByteBuffer getMemory() {
 	return null;
     }
-    protected RegisterBanks sendrecRegisterBanks() {
+    protected RegisterBanks getRegisterBanks() {
 	return null;
     }
 

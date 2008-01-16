@@ -1,5 +1,8 @@
 2008-01-16  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTask.java (getRegisterBanks()): Replace
+	sendrecRegisterBanks().
+	
 	* LinuxPtraceTask.java (getISA()): Replace sendrecISA().
 	(hasIsa()): New.
 	* TestRuntimeIsa.java (assertHasIsaEquals(Task,boolean)): New.

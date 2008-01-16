@@ -45,6 +45,7 @@ import frysk.proc.Proc;
 import frysk.proc.TaskId;
 import frysk.proc.TaskObserver;
 import frysk.isa.ISA;
+import frysk.bank.RegisterBanks;
 
 /**
  * A dead Host/Proc/Task is characterised by its lack of state, and an
@@ -53,9 +54,11 @@ import frysk.isa.ISA;
  */
 
 abstract class DeadTask extends Task {
-    DeadTask(Proc proc, TaskId taskId, ISA isa) {
+    DeadTask(Proc proc, TaskId taskId, ISA isa,
+	     RegisterBanks registerBanks) {
 	super(proc, taskId);
 	this.isa = isa;
+	this.registerBanks = registerBanks;
     }
 
     protected String getStateFIXME() {
@@ -240,4 +243,9 @@ abstract class DeadTask extends Task {
 	return isa;
     }
     private final ISA isa;
+
+    protected RegisterBanks getRegisterBanks() {
+	return registerBanks;
+    }
+    private final RegisterBanks registerBanks;
 }

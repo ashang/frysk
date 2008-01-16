@@ -52,12 +52,10 @@ import lib.dwfl.ElfException;
 public class LinuxExeTask extends DeadTask {
     private final long pc;
     private final LinuxExeProc proc;
-    TaskId id = null;
 
     protected LinuxExeTask(LinuxExeProc proc, TaskId id, ISA isa) {
-	super(proc, id, isa);
+	super(proc, id, isa, constructRegisterBanks(isa));
 	this.proc = proc;
-	this.id = id;
 	// Compute a Fake PC.  XXX should be done in Proc instead of
 	// creating Elf object in the Task itself.
 	Elf e = null;
@@ -84,17 +82,16 @@ public class LinuxExeTask extends DeadTask {
 	return proc.getMemory();
     }
   
-  protected RegisterBanks sendrecRegisterBanks() {
-      ByteBuffer[] bankBuffers = new ByteBuffer[4];
-      // Create an empty page
-      byte[] emptyBuffer = new byte[4096];
-      for (int i = 0; i < emptyBuffer.length; i++)
-	  emptyBuffer[i] = 0;
-      bankBuffers[0] = new ArrayByteBuffer(emptyBuffer);
-      bankBuffers[1] = new ArrayByteBuffer(emptyBuffer);
-      bankBuffers[2] = new ArrayByteBuffer(emptyBuffer);
-      bankBuffers[3] = new ArrayByteBuffer(emptyBuffer);
-      return CorefileRegisterBanksFactory.create
-      	  (getISA(), bankBuffers);
+    private static RegisterBanks constructRegisterBanks(ISA isa) {
+	ByteBuffer[] bankBuffers = new ByteBuffer[4];
+	// Create an empty page
+	byte[] emptyBuffer = new byte[4096];
+	for (int i = 0; i < emptyBuffer.length; i++)
+	    emptyBuffer[i] = 0;
+	bankBuffers[0] = new ArrayByteBuffer(emptyBuffer);
+	bankBuffers[1] = new ArrayByteBuffer(emptyBuffer);
+	bankBuffers[2] = new ArrayByteBuffer(emptyBuffer);
+	bankBuffers[3] = new ArrayByteBuffer(emptyBuffer);
+	return CorefileRegisterBanksFactory.create(isa, bankBuffers);
   }
 }

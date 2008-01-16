@@ -52,9 +52,6 @@ import frysk.isa.RegistersFactory;
 
 public class LinuxCoreTask extends DeadTask {
 
-    ElfPrstatus elfTask = null;
-    ElfPrFPRegSet elfFPRegs = null;
-    ElfPrXFPRegSet elfXFPRegs = null;
     private final LinuxCoreProc parent;
 
     public ByteBuffer getMemory() {
@@ -67,11 +64,14 @@ public class LinuxCoreTask extends DeadTask {
 	return parent.getMemory();
     }
 
-    private ByteBuffer[] simulateRegisterBanks () {	  
-	// XXX: Potentially this information should be constructed 
-	// in CorefileRegisterBanksFactory. However that would require the factory to 
-	// know about elf constructs which is not desirable.
-	  
+    static private RegisterBanks simulateRegisterBanks(ElfPrstatus elfTask,
+						       ElfPrFPRegSet elfFPRegs,
+						       ElfPrXFPRegSet elfXFPRegs,
+						       ISA isa) {
+	// XXX: Potentially this information should be constructed in
+	// CorefileRegisterBanksFactory. However that would require
+	// the factory to know about elf constructs which is not
+	// desirable.
 	ByteBuffer[] bankBuffers = new ByteBuffer[4];
 
 	// Create an empty page
@@ -80,8 +80,8 @@ public class LinuxCoreTask extends DeadTask {
 	    emptyBuffer[i]=0;
 
 	// Get ISA specific data
-	ByteOrder byteOrder = getISA().order();
-	int  wordSize = getISA().wordSize();
+	ByteOrder byteOrder = isa.order();
+	int  wordSize = isa.wordSize();
     
 	// Set GP Registers
 	bankBuffers[0] = new ArrayByteBuffer(elfTask.getRawCoreRegisters());
@@ -114,24 +114,17 @@ public class LinuxCoreTask extends DeadTask {
 
 	// XXX: Other register banks need to be filled in.
 	bankBuffers[3] = new ArrayByteBuffer(emptyBuffer);
-	return bankBuffers;
+
+	return CorefileRegisterBanksFactory.create(isa, bankBuffers);
     }
 
-    protected RegisterBanks sendrecRegisterBanks() {
-	return CorefileRegisterBanksFactory.create
-	    (getISA(), simulateRegisterBanks());
-    }
-
-    
     /**
      * Create a new unattached Task.
      */
     LinuxCoreTask(LinuxCoreProc proc, ElfPrstatus elfTask, ElfPrFPRegSet
 		  elfFPRegs, ElfPrXFPRegSet elfXFPRegs, ISA isa) {
-	super(proc, new TaskId(elfTask.getPrPid()), isa);
-	this.elfTask = elfTask;
-	this.elfFPRegs = elfFPRegs;
-	this.elfXFPRegs = elfXFPRegs;
+	super(proc, new TaskId(elfTask.getPrPid()), isa,
+	      simulateRegisterBanks(elfTask, elfFPRegs, elfXFPRegs, isa));
 	this.parent = proc;
     }
 

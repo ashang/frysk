@@ -321,13 +321,10 @@ public abstract class Task {
 				  start, write);
     }
 
-    private RegisterBanks registerBanks;
-    protected abstract RegisterBanks sendrecRegisterBanks();
-    RegisterBanks getRegisterBanks() {
-	if (registerBanks == null)
-	    registerBanks = sendrecRegisterBanks();
-	return registerBanks;
-    }
+    /**
+     * Return this task's register banks.
+     */
+    protected abstract RegisterBanks getRegisterBanks();
 
     /**
      * Return the machine's register banks as an array of ByteBuffers.
@@ -346,7 +343,6 @@ public abstract class Task {
     public abstract int getMod();
  
     public void clearIsa() {
-	registerBanks = null;
 	syscallTable = null;
     }
 }
