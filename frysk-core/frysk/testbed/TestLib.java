@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -102,42 +102,6 @@ public class TestLib
     protected static void assertRunUntilStop (String reason) {
 	assertRunUntilStop(getTimeoutSeconds (), reason);
     }
-
-  /**
-   * Asserts that the State of the given tid turns to the given state,
-   * 'R' running, 'S' sleeping (interruptible), 'D' waiting/disk
-   * (uninterruptible), 'Z' zombie, 'T' traced or stopped or 'W'
-   * paging, in the current timeout.
-   */
-  public static void assertStatState(int tid, char state)
-  {
-    long timeout = getTimeoutMilliseconds();
-    Stat stat = new Stat();
-    stat.refresh(tid);
-    while (timeout > 0)
-      {
-	if (stat.state == state)
-	  return;
-	
-	long startsleep = System.currentTimeMillis();
-	try
-	  {
-	    Thread.sleep(100);
-	  }
-	catch (InterruptedException ie)
-	  {
-	    /* ignore */
-	  }
-
-	long now = System.currentTimeMillis();
-	timeout = timeout - (now - startsleep);
-
-	stat.refresh();
-      }
-
-    TestCase.fail("Stat state for tid " + tid + " expected '"
-		  + state + "' but was '" + stat.state + "'");
-  }
 
     /**
      * Process all the pending events; no polling of external events

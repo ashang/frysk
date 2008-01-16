@@ -1,5 +1,7 @@
 2008-01-15  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserverDetach.java: Use frysk.testbed.StatState.
+
 	* Task.java (sendrecMemory()): Delete.
 	(getMemory()): Make abstract.	
 

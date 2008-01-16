@@ -1,3 +1,13 @@
+2008-01-15  Andrew Cagney  <cagney@redhat.com>
+
+	* StatState.java: New.
+	* TestStatState.java: New.
+	* Offspring.java (assertIs(StatState)): New.
+	(assertRunUntil(StatState)): New.
+	* TestLib.java (assertStatState(int,char)): Delete.
+	* LegacyOffspring.java: Update.
+	* SlaveOffspring.java: Update.
+
 2008-01-07  Andrew Cagney  <cagney@redhat.com>
 
 	* Offspring.java: Update; use Host.requestProc.

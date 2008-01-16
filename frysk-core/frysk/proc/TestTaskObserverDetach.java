@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import frysk.testbed.StatState;
 import frysk.event.RequestStopEvent;
 import frysk.sys.Signal;
 import java.util.Observable;
@@ -119,7 +120,7 @@ public class TestTaskObserverDetach
 	    if (!eventIsSignal ())
 		assertRunUntilStop ("delivering signal");
 	    
-	    assertStatState(task.getTid(), 'T');
+	    StatState.TRACED_OR_STOPPED.assertIs(task.getTid());
 	    
 	    // Set up an ack handler to catch the process
 	    // acknowledging that it has completed the relevant task.

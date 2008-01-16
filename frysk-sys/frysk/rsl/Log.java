@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 // 
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -227,6 +227,26 @@ public final class Log {
     }
     
     /**
+     * Chars are printed in quotes.
+     */
+    private void print(char c) {
+	out.print(" '");
+	out.print(c);
+	out.print("'");
+    }
+    private void print(char[] a) {
+	out.print(" {");
+	for (int i = 0; i < a.length; i++) {
+	    if (i > 0)
+		out.print(',');
+	    out.print('\'');
+	    out.print(a[i]);
+	    out.print('\'');
+	}
+	out.print('}');
+    }
+
+    /**
      * Integers are printed in decimal.
      */
     private void print(int i) {
@@ -242,8 +262,9 @@ public final class Log {
 	}
 	out.print("]");
     }
+
     /**
-     * Longs are always printed in hex.
+     * Longs are printed in hex.
      */
     private void print(long l) {
 	out.print(" 0x");
@@ -267,7 +288,7 @@ public final class Log {
 	out.print(s);
     }
     /**
-     * Use poorly implemented reflection to dump Objectss.
+     * Use poorly implemented reflection to dump Objects.
      */
     private void print(Object o) {
 	out.print(" ");
@@ -304,6 +325,22 @@ public final class Log {
 	suffix();
     }
     
+    public void log(String p1, char p2) {
+	if (!logging)
+	    return;
+	prefix();
+	print(p1);
+	print(p2);
+	suffix();
+    }
+    public void log(String p1, char[] p2) {
+	if (!logging)
+	    return;
+	prefix();
+	print(p1);
+	print(p2);
+	suffix();
+    }
     public void log(String p1, String p2) {
 	if (!logging)
 	    return;
@@ -378,6 +415,17 @@ public final class Log {
 	prefix(self);
 	print(p1);
 	print(p2);
+	suffix();
+    }
+
+    public void log(Object self, String p1, int p2, String p3, char p4) {
+	if (!logging)
+	    return;
+	prefix(self);
+	print(p1);
+	print(p2);
+	print(p3);
+	print(p4);
 	suffix();
     }
 

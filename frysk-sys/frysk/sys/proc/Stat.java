@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,13 +42,18 @@ package frysk.sys.proc;
 /**
  * The contents of <tt>/proc/PID/stat</tt> file.
  */
-public class Stat
-{
+public class Stat {
     /**
-     * Create a Stat object for PID.
+     * Create an unbounded Stat object.
      */
-    public Stat ()
-    {
+    public Stat() {
+	this.tid = -1;
+    }
+    /**
+     * Create a Stat object for TID.
+     */
+    public Stat(int tid) {
+	this.tid = tid;
     }
 
     /**

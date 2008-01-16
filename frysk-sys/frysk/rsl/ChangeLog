@@ -1,4 +1,10 @@
+2008-01-15  Andrew Cagney  <cagney@redhat.com>
 
+	* Log.java (print(char)): New.
+	(log(Object,String,int,String,char)): New.
+	(log(String,char)): New.
+	(log(String,char[])): New.
+	
 2008-01-07  Nurdin Premji <npremji@redhat.com>
 
 	* Log.java(log(String,String): Added.

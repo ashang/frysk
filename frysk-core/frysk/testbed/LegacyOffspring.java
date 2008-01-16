@@ -231,7 +231,7 @@ public class LegacyOffspring
      */
     public void assertSendStop () {
 	signal(STOP_SIG);
-	TestLib.assertStatState(this.getPid(), 'T');
+	assertIs(StatState.TRACED_OR_STOPPED);
     }
 
     /**

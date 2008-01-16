@@ -121,4 +121,19 @@ public abstract class Offspring {
 	}
 	return null;
     }
+
+    /**
+     * The Offspring's main thread is in (or transitions to) the
+     * specified state.
+     */
+    public void assertIs(StatState state) {
+	state.assertIs(getPid());
+    }
+    /**
+     * Run the event-loop until the offspring's main thread is in the
+     * specified state.
+     */
+    public void assertRunUntil(StatState state) {
+	state.assertRunUntil(getPid());
+    }
 }
