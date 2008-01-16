@@ -1,3 +1,11 @@
+2008-01-16  Tim Moore  <timoore@redhat.com>
+
+	* src/src/main/java/jline/PtyTerminal.java (isEchoEnabled,
+	enableEcho, disableEcho): Implement new abstract methods in
+	Terminal.
+
+	Import jline 0.9.93, which has a new file layout.
+
 2007-11-01  Andrew Cagney  <cagney@redhat.com>
 
 	Backport fix from upstream.

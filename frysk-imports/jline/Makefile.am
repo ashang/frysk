@@ -1,13 +1,14 @@
-jlinesrc=$(srcdir)/src/jline/
+jlinesrc=$(srcdir)/src/src/main/java/jline
+jlinepropsrc=$(srcdir)/src/src/main/resources/jline
 
 all-local: jline.jar
 
 EXTRA_DIST  = $(jlinesrc)/*.java \
-			   $(jlinesrc)/*.properties
+			   $(jlinepropsrc)/*.properties
 
 CLEANFILES = jline.jar jline/*
 
 jline.jar: $(jlinesrc)/*.java
 	$(JAVAC) $(JAVACFLAGS) -g -d . $(jlinesrc)/*.java
-	cp $(jlinesrc)/*.properties ./jline
+	cp $(jlinepropsrc)/*.properties ./jline
 	$(JAR) cf jline.jar jline/*
