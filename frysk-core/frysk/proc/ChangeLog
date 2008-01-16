@@ -1,5 +1,7 @@
 2008-01-15  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (pendingObservations): Move to LinuxPtraceTask.
+
 	* Task.java (TaskStateObservable): Delete.
 
 	* TestIsa.java (DetachedObserver): Delete.

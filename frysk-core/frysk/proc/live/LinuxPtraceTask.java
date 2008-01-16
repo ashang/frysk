@@ -39,6 +39,7 @@
 
 package frysk.proc.live;
 
+import java.util.LinkedList;
 import frysk.isa.Register;
 import frysk.isa.RegistersFactory;
 import java.util.Iterator;
@@ -903,6 +904,13 @@ public class LinuxPtraceTask extends LiveTask {
 	((LinuxPtraceProc)getProc()).requestDeleteInstructionObserver(this, instructionObservers, o);
     }
   
+    /**
+     * List containing the TaskObservations that are pending addition
+     * or deletion (in order that they were requested). Will be dealt
+     * with as soon as a stop event is received during one of the
+     * running states.
+     */
+    final LinkedList pendingObservations = new LinkedList();
 
     /**
      * (Internal) Request that all observers from this task be

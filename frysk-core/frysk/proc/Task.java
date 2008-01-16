@@ -42,7 +42,6 @@ package frysk.proc;
 import frysk.proc.TaskObserver.Terminating;
 import frysk.syscall.SyscallTable;
 import frysk.syscall.SyscallTableFactory;
-import java.util.LinkedList;
 import inua.eio.ByteBuffer;
 import java.util.Set;
 import java.util.HashSet;
@@ -298,16 +297,6 @@ public abstract class Task {
      * Delete TaskObserver.Instruction from the TaskObserver pool.
      */
     public abstract void requestDeleteInstructionObserver(TaskObserver.Instruction o);
-
-    /**
-     * List containing the TaskObservations that are pending addition
-     * or deletion (in order that they were requested). Will be dealt
-     * with as soon as a stop event is received during one of the
-     * running states.
-     *
-     * XXX: Should not be public.
-     */
-    public LinkedList pendingObservations = new LinkedList();
 
     /**
      * Return the address of the instruction that this task will

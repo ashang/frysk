@@ -1,5 +1,8 @@
 2008-01-15  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTask.java (pendingObservations): Move here from
+	frysk.proc.Task.
+
 	* LinuxPtraceTaskState.java: Don't notify Task.taskStateDetached.
 	* LinuxPtraceTask.java (sendDetach(int)): Call clearIsa().
 	
