@@ -48,7 +48,6 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Observable;
 import frysk.isa.Register;
 import frysk.isa.ISA;
 import frysk.bank.RegisterBanks;
@@ -371,17 +370,5 @@ public abstract class Task {
 	registerBanks = null;
 	syscallTable = null;
 	currentISA = null;
-    }
-  
-    /**
-     * XXX: Temporary until .observable's are converted to
-     * .requestAddObserver.
-     */
-    public static class TaskStateObservable extends Observable {
-	public void notify(Object o) {
-	    logger.log(Level.FINE, "{0} notify -- all observers\n", o); 
-	    setChanged();
-	    notifyObservers(o);
-	}
     }
 }
