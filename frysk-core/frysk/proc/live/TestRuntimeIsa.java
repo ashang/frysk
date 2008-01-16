@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.live;
 
 import frysk.isa.ISA;
 import frysk.testbed.TestLib;
@@ -46,10 +46,13 @@ import frysk.testbed.ExecOffspring;
 import frysk.testbed.SlaveOffspring;
 import frysk.testbed.ExecCommand;
 import frysk.testbed.StatState;
+import frysk.proc.TaskObserver;
+import frysk.proc.Task;
+import frysk.proc.Proc;
+import frysk.proc.Action;
+import frysk.proc.Manager;
 
-public class TestIsa
-    extends TestLib
-{
+public class TestRuntimeIsa extends TestLib {
 
     static class AttachedObserver
 	extends TaskObserverBase

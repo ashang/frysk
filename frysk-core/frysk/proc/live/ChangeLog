@@ -1,3 +1,7 @@
+2008-01-16  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRuntimeIsa.java: Move from frysk.proc.TestIsa.
+
 2008-01-15  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceTask.java (pendingObservations): Move here from
