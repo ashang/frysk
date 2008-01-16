@@ -6,8 +6,6 @@
  */
 package jline;
 
-import java.awt.event.KeyEvent;
-
 /**
  *  Symbolic constants for Console operations and virtual key bindings.
  *  @see KeyEvent
