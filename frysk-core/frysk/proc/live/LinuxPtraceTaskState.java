@@ -1267,9 +1267,6 @@ class LinuxPtraceTaskState extends State {
 		// task is detached.
 		task.sendDetach (0);
 		((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted (task);
-		// FIXME: This static reference is totally bogus;
-		// should be stored in the dynamic LinuxPtraceHost.
-		frysk.proc.Task.taskStateDetached.notify(task);
 		return detached;
 	    }
 	    LinuxPtraceTaskState handleTerminatingEvent (LinuxPtraceTask task, boolean signal,

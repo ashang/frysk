@@ -40,75 +40,39 @@
 package frysk.proc;
 
 import frysk.isa.ISA;
-import java.util.Observable;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
 import frysk.testbed.ExecOffspring;
 import frysk.testbed.SlaveOffspring;
 import frysk.testbed.ExecCommand;
+import frysk.testbed.StatState;
 
 public class TestIsa
     extends TestLib
 {
 
-  class AttachedObserver
-      extends TaskObserverBase
-      implements TaskObserver.Attached
-  {
-    public Action updateAttached (Task task)
+    static class AttachedObserver
+	extends TaskObserverBase
+	implements TaskObserver.Attached
     {
-	task.getISA();
-      
-      assertTrue("task isa initialized", task.hasIsa());
-      Manager.eventLoop.requestStop();
-      return Action.CONTINUE;
-    }
-  }
-
-  class DetachedObserver
-      implements java.util.Observer
-  {
-    Task task;
-
-    public DetachedObserver (Task t)
-    {
-      task = t;
+	public Action updateAttached(Task task) {
+	    task.getISA();
+	    assertTrue("task isa initialized", task.hasIsa());
+	    Manager.eventLoop.requestStop();
+	    return Action.CONTINUE;
+	}
     }
 
-    public void update (Observable o, Object arg)
-    {
-      if (arg instanceof Task)
-        {
-          Task t = (Task) arg;
-
-          if (t == task)
-            {
-              Manager.eventLoop.requestStop();
-            }
-        }
-    }
-
-  }
-
-  public void testIsa ()
-  {
-
-    SlaveOffspring ackProc = SlaveOffspring.createChild();
-
-    final Task task = ackProc.findTaskUsingRefresh(true);
-
-    assertFalse("Task isa not initialized", task.hasIsa());    
-
-    TaskObserver.Attached attacher = new AttachedObserver();
-
-    Task.taskStateDetached.addObserver(new DetachedObserver(task));
-
-    task.requestAddAttachedObserver(attacher);
-    assertRunUntilStop("testIsa attach");
-    task.requestDeleteAttachedObserver(attacher);
-    assertRunUntilStop("testIsa detach");
-
-    assertFalse("Task isa flushed", task.hasIsa());
+  public void testIsa() {
+      SlaveOffspring ackProc = SlaveOffspring.createChild();
+      Task task = ackProc.findTaskUsingRefresh(true);
+      assertFalse("Task isa not initialized", task.hasIsa());    
+      TaskObserver.Attached attacher = new AttachedObserver();
+      task.requestAddAttachedObserver(attacher);
+      assertRunUntilStop("testIsa attach");
+      task.requestDeleteAttachedObserver(attacher);
+      StatState.SLEEPING.assertRunUntil(task.getTid());
+      assertFalse("Task isa flushed", task.hasIsa());
   }
 
   public void testIsaSingleton ()
@@ -234,10 +198,8 @@ public class TestIsa
 
     assertNotNull("Proc has an isa", proc.getMainTask().getISA());
 
-    Task.taskStateDetached.addObserver(new DetachedObserver(task));
-
     task.requestDeleteAttachedObserver(attacher);
-    assertRunUntilStop("First Detach");
+    StatState.SLEEPING.assertRunUntil(task.getTid());
 
     assertFalse("Task doesn't have isa", proc.getMainTask().hasIsa());
 
@@ -247,7 +209,7 @@ public class TestIsa
     assertTrue("Task has isa", proc.getMainTask().hasIsa());
 
     task.requestDeleteAttachedObserver(attacher);
-    assertRunUntilStop("Second detach");
+    StatState.SLEEPING.assertRunUntil(task.getTid());
 
     assertFalse("Task doesn't have isa", proc.getMainTask().hasIsa());
 

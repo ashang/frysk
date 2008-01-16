@@ -1,5 +1,8 @@
 2008-01-15  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTaskState.java: Don't notify Task.taskStateDetached.
+	* LinuxPtraceTask.java (sendDetach(int)): Call clearIsa().
+	
 	* LinuxPtraceTask.java (getMemory()): Replace sendrecMemory().
 
 2008-01-14  Rick Moseley  <rmoseley@redhat.com>

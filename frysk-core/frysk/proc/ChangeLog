@@ -1,5 +1,10 @@
 2008-01-15  Andrew Cagney  <cagney@redhat.com>
 
+	* TestIsa.java (DetachedObserver): Delete.
+	(testIsa()): Use StatState.
+	(testAttachDetachAttachAgainDetachAgainAttachAgainAgain()): Ditto.
+	* Task.java (taskStateDetached): Delete.
+
 	* TestTaskObserverDetach.java: Use frysk.testbed.StatState.
 
 	* Task.java (sendrecMemory()): Delete.

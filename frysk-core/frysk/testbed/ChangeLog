@@ -1,5 +1,7 @@
 2008-01-15  Andrew Cagney  <cagney@redhat.com>
 
+	* StatState.java (assertRunUntil(int)): Make public.	
+
 	* StatState.java: New.
 	* TestStatState.java: New.
 	* Offspring.java (assertIs(StatState)): New.

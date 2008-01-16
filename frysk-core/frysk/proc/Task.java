@@ -48,7 +48,6 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Observer;
 import java.util.Observable;
 import frysk.isa.Register;
 import frysk.isa.ISA;
@@ -362,25 +361,6 @@ public abstract class Task {
 	return getRegisterBanks().getBanksFIXME();
     }
   
-    /**
-     * The process has transitioned to the detached.
-     *
-     * XXX: Should be made private and instead accessor methods added.
-     * Should more formally define the observable and the event.
-     */
-    public static TaskStateObservable taskStateDetached = new TaskStateObservable ();
-  
-    static {
-	taskStateDetached.addObserver(new Observer() {
-		public void update (Observable o, Object arg) {
-		    if (arg instanceof Task) {
-			Task task = (Task) arg;
-			task.clearIsa();
-		    }
-		}
-	    });
-    }
- 
     /**
      * Use a counter rather than a boolean because multiple caches may
      * depend on this count and no cache should be able to clear it.
