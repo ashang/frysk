@@ -1,3 +1,8 @@
+2008-01-16  Phil Muldoon  <pmuldoon@redhat.com> 
+
+	* TestLinuxCore.java (testInsertedBreakpoint): Use TearDownFile.
+	(testLinuxCoreFileStackTrace): Ditto. Also use CorefileAtSignal.
+
 2008-01-15  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxCoreTask.java (getMemory()): Replace sendrecMemory().

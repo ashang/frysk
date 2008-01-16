@@ -64,8 +64,10 @@ import frysk.proc.ProcCoreAction;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
+import frysk.testbed.CoreFileAtSignal;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.LegacyOffspring;
+import frysk.testbed.TearDownFile;
 import frysk.testbed.TestLib;
 import frysk.util.CoredumpAction;
 import frysk.util.StacktraceAction;
@@ -143,12 +145,11 @@ public class TestLinuxCore
    **/
   public void testLinuxCoreFileStackTrace () {
    
-    Proc testProc;
-    
+
     // Create a blocked process, blocked at a signal
     File exeFile = Config.getPkgLibFile("funit-stacks");
-    testProc = new DaemonBlockedAtSignal(exeFile).getMainTask().getProc();
-
+    Proc testProc = new DaemonBlockedAtSignal(exeFile).getMainTask().getProc();
+    TearDownFile coreFile = (TearDownFile) CoreFileAtSignal.constructCore(testProc);
 
     StacktraceAction liveStacktrace;
     StacktraceAction coreStacktrace;
@@ -179,11 +180,8 @@ public class TestLinuxCore
     assertTrue("Live stack trace is not  empty", 
 	       liveStackOutput.getBuffer().length() > 0);
 
-    // Create a  corefile from blocked process, and model.
-    String coreFileName = constructCore(testProc);
-    File testCore = new File(coreFileName);
     Host coreHost = new LinuxCoreHost(Manager.eventLoop, 
-				  testCore, exeFile);
+				  coreFile, exeFile);
     Proc coreProc = coreHost.getProc(new ProcId(testProc.getPid()));
 
     // Create a stackktrace of a the corefile process
@@ -214,7 +212,6 @@ public class TestLinuxCore
 		 liveStackOutput.getBuffer().toString(),
 		 coreStackOutput.getBuffer().toString());
 
-    testCore.delete();
   }
 
   private static class PrintEvent implements Event
@@ -409,7 +406,9 @@ public class TestLinuxCore
 
     // Create a core file from the process and load it back in.
     String coreFileName = constructCore(ackProc);
-    File xtestCore = new File(coreFileName);
+    
+    // Create a teardown file
+    TearDownFile xtestCore = new TearDownFile(coreFileName);
     Host lcoreHost = new LinuxCoreHost(Manager.eventLoop,
 				       xtestCore, new File(ackProc.getExe()));
     Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid()));
