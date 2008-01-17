@@ -168,18 +168,10 @@ public abstract class Task {
     }
 
     /**
-     * Set of interfaces currently blocking this task.
-     *
-     * XXX: Should not be public.
+     * XXX: Code using this needs a re-think.
      */
-    public Set blockers = new HashSet();
-
-    /**
-     * Return the current set of blockers as an array. Useful when
-     * debugging.
-     */
-    public TaskObserver[] getBlockers() {
-	return (TaskObserver[]) blockers.toArray(new TaskObserver[0]);
+    public Set bogusUseOfInternalBlockersVariableFIXME() {
+	return new HashSet();
     }
 
     /**

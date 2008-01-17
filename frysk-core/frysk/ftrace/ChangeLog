@@ -1,3 +1,8 @@
+2008-01-16  Andrew Cagney  <cagney@redhat.com>
+
+	* Ltrace.java: Update; Task.blockers made private; use workaround.
+	* MappingGuard.java: Ditto.
+
 2008-01-16  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestLtrace.java (DummyFunctionObserver): Made static.

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -524,14 +524,16 @@ public class TestUpdatingDisplayValue extends TestLib
     public void updateAvailableTaskStopped (UpdatingDisplayValue value)
     {
       assertNotNull("DisplayValue passed to the observer", value);
-      assertFalse("Task should have blockers", myTask.getBlockers().length == 0);
+      assertFalse("Task should have blockers",
+		  myTask.bogusUseOfInternalBlockersVariableFIXME().size() == 0);
       hitStopped = true;
     }
 
     public void updateUnavailbeResumedExecution (UpdatingDisplayValue value)
     {
       assertNotNull("DisplayValue passed to the observer", value);
-      assertTrue("Task should not be blocked", myTask.getBlockers().length == 0);
+      assertTrue("Task should not be blocked",
+		 myTask.bogusUseOfInternalBlockersVariableFIXME().size() == 0);
       hitResumed = true;
     }
 

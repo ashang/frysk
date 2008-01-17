@@ -39,6 +39,8 @@
 
 package frysk.proc.live;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.LinkedList;
 import frysk.isa.Register;
 import frysk.isa.RegistersFactory;
@@ -511,6 +513,15 @@ public class LinuxPtraceTask extends LiveTask {
 	    });
     }
 
+    /**
+     * Set of interfaces currently blocking this task.
+     *
+     * Package-private.
+     */
+    final Set blockers = new HashSet();
+    public Set bogusUseOfInternalBlockersVariableFIXME() {
+	return blockers;
+    }
 
     /**
      * Set of Cloned observers.

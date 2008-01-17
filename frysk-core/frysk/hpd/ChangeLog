@@ -1,8 +1,12 @@
-2008-01-15  Andrew Cagney  <cagney@redhat.com>
+2008-01-16  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskData.java: Task.getBlockers() make private; use workaround.
+
+2008-01-15  Stan Cox  <scox@redhat.com>
 
 	* TestSysRoot.java (testHaveSysRoot): Test sysroot is now in pkgdatadir.
 
-2008-01-15  Stan Cox  <scox@redhat.com>
+2008-01-15  Andrew Cagney  <cagney@redhat.com>
 
 	* TestSysRoot.java: Mark as unresolved, bug 5619.
 

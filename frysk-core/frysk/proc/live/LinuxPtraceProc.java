@@ -636,7 +636,7 @@ public class LinuxPtraceProc extends LiveProc {
 		    super.add();
 		    TaskObserver.Instruction i = (TaskObserver.Instruction) observer;
 		    if (i.updateExecuted(task) == Action.BLOCK)
-			task.blockers.add(observer);
+			((LinuxPtraceTask)task).blockers.add(observer);
 		}
 	    };
 	Manager.eventLoop.add(to);

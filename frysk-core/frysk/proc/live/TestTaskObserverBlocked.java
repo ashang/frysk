@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@
 // exception.
 
 
-package frysk.proc;
+package frysk.proc.live;
 
 import java.util.logging.Level;
 import frysk.testbed.SignalWaiter;
@@ -50,6 +50,10 @@ import frysk.testbed.TaskObserverBase;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.Offspring;
 import frysk.testbed.SlaveOffspring;
+import frysk.proc.TaskObserver;
+import frysk.proc.Task;
+import frysk.proc.Action;
+import frysk.proc.Manager;
 
 /**
  * Check the behavior of an observer that blocks a Task's progress. In
@@ -96,13 +100,12 @@ public class TestTaskObserverBlocked
     assertEquals("blocked task count", 1, tasks.length);
 
     // That the Task's blocker set only contains this task.
-    for (int i = 0; i < tasks.length; i++)
-      {
-        Task task = tasks[i];
-        TaskObserver[] blockers = task.getBlockers();
-        assertEquals("blockers length", 1, blockers.length);
-        assertSame("blocker and blockAttached", blockAttached, blockers[0]);
-      }
+    for (int i = 0; i < tasks.length; i++) {
+	LinuxPtraceTask task = (LinuxPtraceTask) tasks[i];
+	assertEquals("blockers length", 1, task.blockers.size());
+	assertSame("blocker and blockAttached", blockAttached,
+		   task.blockers.toArray()[0]);
+    }
   }
 
   /**

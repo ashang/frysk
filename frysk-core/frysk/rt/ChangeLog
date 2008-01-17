@@ -1,3 +1,9 @@
+2008-01-16  Andrew Cagney  <cagney@redhat.com>
+
+	* UpdatingDisplayValue.java: Task.getBlockers() make private; use
+	work-around.
+	* TestUpdatingDisplayValue.java: Ditto.
+
 2008-01-11  Tim Moore  <timoore@redhat.com>
 
     	* FunctionBreakpoint.java (getBreakpointRawAddresses): Filter out

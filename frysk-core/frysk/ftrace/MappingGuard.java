@@ -157,7 +157,7 @@ class MappingGuard
 		MappingObserver ob = (MappingObserver)entry.getKey();
 		for (int j = 0; j < v; ++j)
 		    if (oit.action(ob) == Action.BLOCK)
-			task.blockers.add(ob);
+			task.bogusUseOfInternalBlockersVariableFIXME().add(ob);
 	    }
 	}
 

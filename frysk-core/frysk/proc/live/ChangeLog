@@ -1,5 +1,10 @@
 2008-01-16  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTask.java (blockers): New.
+	(bogusUseOfInternalBlockersVariableFIXME()): New.
+	* LinuxPtraceProc.java: Update.
+	* TestTaskObserverBlocked.java: Move here from frysk.proc.
+
 	* LinuxPtraceTask.java (getRegisterBanks()): Replace
 	sendrecRegisterBanks().
 	

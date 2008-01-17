@@ -103,7 +103,7 @@ public class Ltrace
 	for (Iterator it = observers.iterator(); it.hasNext();) {
 	    FunctionObserver fo = (FunctionObserver)it.next();
 	    if (oit.action(fo) == Action.BLOCK)
-		this.task.blockers.add(fo);
+		this.task.bogusUseOfInternalBlockersVariableFIXME().add(fo);
 	}
     }
 

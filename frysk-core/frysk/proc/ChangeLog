@@ -1,5 +1,10 @@
 2008-01-16  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (blockers): Delete.
+	(getBlockers()): Delete.
+	(bogusUseOfInternalBlockersVariableFIXME()): New.
+	* TestTaskObserverBlocked.java: Move to frysk.proc.live.
+	
 	* Task.java (sendrecRegisterBanks()): Delete.
 	(getRegisterBanks()): Make abstract.
 

@@ -113,11 +113,11 @@ public class UpdatingDisplayValue extends DisplayValue {
          */
     public void refresh() {
 	// If the task isn't running, notify our observers to that extent
-	if (myTask.getBlockers().length == 0) {
+	if (myTask.bogusUseOfInternalBlockersVariableFIXME().size() == 0) {
 	    /*
-                 * TODO: right now we don't get notified when the task is
-                 * resumed, should we?
-                 */
+	     * TODO: right now we don't get notified when the task is
+	     * resumed, should we?
+	     */
 	    // notifyObserversUnavailableTaskResumed();
 	    return;
 	}
