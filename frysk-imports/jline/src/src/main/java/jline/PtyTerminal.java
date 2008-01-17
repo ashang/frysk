@@ -62,7 +62,6 @@ public class PtyTerminal
 	public static final short ARROW_DOWN            = 66;
 
 	private Map terminfo;
-        private boolean echoEnabled;
 	private int width = -1;
 	private int height = -1;
 	private String ptyname = null;
@@ -110,7 +109,6 @@ public class PtyTerminal
 
 		// disable character echoing
 		stty ("-echo");
-                echoEnabled = false;
 
 		// at exit, restore the original tty configuration (for JDK 1.3+)
 		try
@@ -251,28 +249,6 @@ public class PtyTerminal
 		return height = val;
 	}
 
-
-    public boolean isEchoEnabled() {
-        return echoEnabled;
-    }
-
-    public void enableEcho() {
-        try {
-            stty("echo");
-            echoEnabled = true;
-        } catch (Exception e) {
-            consumeException(e);
-        }
-    }
-
-    public void disableEcho() {
-        try {
-            stty("-echo");
-            echoEnabled = false;
-        } catch (Exception e) {
-            consumeException(e);
-        }
-    }
 
 	/**
 	 *  Execute the stty command with the specified arguments

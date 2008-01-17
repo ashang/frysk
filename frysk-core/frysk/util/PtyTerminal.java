@@ -58,7 +58,6 @@ import frysk.sys.termios.Termios;
 public class PtyTerminal
   extends Terminal
 {
-  private boolean echoEnabled;
   private final FileDescriptor fd;
 
   public FileDescriptor getFd()
@@ -106,7 +105,6 @@ public class PtyTerminal
     // set the console to be character-buffered instead of line-buffered
     termios.set(Local.CANONICAL, false);
     termios.set(Local.ECHO_INPUT, false);
-    echoEnabled = false;
     termios.set(Special.NON_CANONICAL_READ_MINIMUM, (char)1);
     termios.set(fd);
     // at exit, restore the original tty configuration
@@ -180,21 +178,4 @@ public class PtyTerminal
     Size size = fd.getSize();
     return size.getColumns();
   }
-
-    public boolean isEchoEnabled() {
-        return echoEnabled;
-    }
-
-    public void enableEcho() {
-        final Termios termios = new Termios(fd);
-        termios.set(Local.ECHO_INPUT, true);
-        echoEnabled = true;
-    }
-
-    public void disableEcho() {
-        final Termios termios = new Termios(fd);
-        termios.set(Local.ECHO_INPUT, false);
-        echoEnabled = false;
-    }
-
 }

@@ -65,8 +65,8 @@ public abstract class Terminal implements ConsoleOperations {
                 throw (IllegalArgumentException) new IllegalArgumentException(e
                     .toString()).fillInStackTrace();
             }
-            //} else if (os.indexOf("windows") != -1) {
-            //t = new WindowsTerminal();
+        } else if (os.indexOf("windows") != -1) {
+            t = new WindowsTerminal();
         } else {
             t = new UnixTerminal();
         }
