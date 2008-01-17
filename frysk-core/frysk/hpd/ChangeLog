@@ -1,3 +1,8 @@
+2008-01-16  Stan Cox  <scox@redhat.com>
+
+	* ListCommand.java (interpret): Change line marker to ->
+	* TestListCommand.java (testListPC): Ditto.
+
 2008-01-16  Andrew Cagney  <cagney@redhat.com>
 
 	* TaskData.java: Task.getBlockers() make private; use workaround.
