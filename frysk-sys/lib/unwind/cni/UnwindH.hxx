@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -488,7 +488,26 @@ get_eh_frame_hdr_addr(unw_proc_info_t *pi, char *image, size_t size,
         }
     }
 
-  if (ptxt_ndx == -1 || peh_hdr_ndx == -1)
+  Elf_Data *debug_frame_data = NULL;
+  size_t shstrndx;
+  if (elf_getshstrndx (elf, &shstrndx) >= 0)
+    {
+      Elf_Scn *scn = NULL;
+      while ((scn = elf_nextscn (elf, scn)) != NULL
+	     && debug_frame_data == NULL)
+	{
+	  GElf_Shdr shdr;
+	  if (gelf_getshdr (scn, &shdr) != NULL
+	      && shdr.sh_type == SHT_PROGBITS)
+	    {
+	      const char *name = elf_strptr (elf, shstrndx, shdr.sh_name);
+	      if (strcmp (name, ".debug_frame") == 0)
+		debug_frame_data = elf_getdata (scn, NULL);
+	    }
+	}
+    }
+
+  if (ptxt_ndx == -1 || (peh_hdr_ndx == -1 && debug_frame_data == NULL))
     return NULL;
 
   GElf_Phdr ptxt, peh_hdr;
@@ -547,7 +566,23 @@ get_eh_frame_hdr_addr(unw_proc_info_t *pi, char *image, size_t size,
 
   *peh_vaddr = peh_hdr.p_vaddr;
 
-  char *hdr = image + peh_hdr.p_offset;
+  char *hdr;
+  // FIXME. Currently we prefer eh_frame, but we should switch to
+  // prefer debug_frame when all bugs have been squashed out of that
+  // in libunwind.
+  if (peh_hdr_ndx == -1
+      && debug_frame_data != NULL && debug_frame_data->d_buf != NULL
+      && debug_frame_data->d_size != 0)
+    {
+      pi->format = UNW_INFO_FORMAT_TABLE;
+      pi->unwind_info_size = debug_frame_data->d_size / sizeof (unw_word_t);
+      hdr = (char *) debug_frame_data->d_buf;
+    }
+  else
+    {
+      pi->format = UNW_INFO_FORMAT_REMOTE_TABLE;
+      hdr = image + peh_hdr.p_offset;
+    }
   return hdr;
 }
 
@@ -600,14 +635,26 @@ lib::unwind::TARGET::createProcInfoFromElfImage(lib::unwind::AddressSpace* addre
   if (eh_table_hdr == NULL)
     return new lib::unwind::ProcInfo(-UNW_ENOINFO);
 
-  int ret = unw_get_unwind_table((unw_word_t) ip,
-				 procInfo,
-				 (int) needUnwindInfo,
-				 &local_accessors,
-				 // virtual address
-				 peh_vaddr,
-				 // address adjustment
-				 eh_table_hdr - peh_vaddr);
+  int ret;
+  if (procInfo->format == UNW_INFO_FORMAT_REMOTE_TABLE)
+    ret = unw_get_unwind_table((unw_word_t) ip,
+			       procInfo,
+			       (int) needUnwindInfo,
+			       &local_accessors,
+			       // virtual address
+			       peh_vaddr,
+			       // address adjustment
+			       eh_table_hdr - peh_vaddr);
+  else
+    ret = unw_get_unwind_table((unw_word_t) ip,
+                               procInfo,
+                               (int) needUnwindInfo,
+                               &local_accessors,
+                               // virtual address
+                               0,
+                               // address adjustment
+                               eh_table_hdr);
+  
   
   logFine(this, logger, "Post unw_get_unwind_table");
   lib::unwind::ProcInfo *myInfo;

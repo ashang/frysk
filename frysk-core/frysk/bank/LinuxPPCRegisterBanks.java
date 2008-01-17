@@ -2,9 +2,6 @@
 //
 // Copyright 2006, 2007 IBM Corp.
 // Copyright 2007 Red Hat Inc.
-// 
-// Contributed by
-// Jose Flavio Aguilar Paulino (joseflavio@gmail.com)
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -48,7 +45,7 @@ import frysk.isa.PPC64Registers;
 
 public class LinuxPPCRegisterBanks {
 
-    public static final BankRegisterMap USR32
+    public static final BankRegisterMap GREGS32
 	= new BankRegisterMap()
 	.add(new BankRegister(0, 4, PPC32Registers.GPR0))
 	.add(new BankRegister(4, 4, PPC32Registers.GPR1))
@@ -94,6 +91,10 @@ public class LinuxPPCRegisterBanks {
 	.add(new BankRegister(164, 4, PPC32Registers.DAR))
 	.add(new BankRegister(168, 4, PPC32Registers.DSISR))
 	.add(new BankRegister(172, 4, PPC32Registers.RESULT))
+	;
+
+    public static final BankRegisterMap FPREGS32
+	= new BankRegisterMap()
 	.add(new BankRegister(192, 8, PPC32Registers.FPR0)) // 48*4
 	.add(new BankRegister(200, 8, PPC32Registers.FPR1))
 	.add(new BankRegister(208, 8, PPC32Registers.FPR2))
@@ -130,7 +131,7 @@ public class LinuxPPCRegisterBanks {
 	.add(new BankRegister(452, 4, PPC32Registers.FPSCR)) //(PT_FPR0 + 2*32 + 1)
 	;
 
-    public static final BankRegisterMap USR64
+    public static final BankRegisterMap GREGS64
 	= new BankRegisterMap()
 	.add(new BankRegister(0, 8, PPC64Registers.GPR0))
 	.add(new BankRegister(8, 8, PPC64Registers.GPR1))
@@ -176,6 +177,10 @@ public class LinuxPPCRegisterBanks {
 	.add(new BankRegister(328, 8, PPC64Registers.DAR))
 	.add(new BankRegister(336, 8, PPC64Registers.DSISR))
 	.add(new BankRegister(344, 8, PPC64Registers.RESULT))
+	;
+
+    public static final BankRegisterMap FPREGS64
+	= new BankRegisterMap()
 	.add(new BankRegister(384, 8, PPC64Registers.FPR0)) //PT_FPR0 48 
 	.add(new BankRegister(392, 8, PPC64Registers.FPR1))
 	.add(new BankRegister(400, 8, PPC64Registers.FPR2))
@@ -209,8 +214,12 @@ public class LinuxPPCRegisterBanks {
 	.add(new BankRegister(624, 8, PPC64Registers.FPR30))
 	.add(new BankRegister(632, 8, PPC64Registers.FPR31))
 	.add(new BankRegister(640, 4, PPC64Registers.FPSCR))
+	;
+
+    public static final BankRegisterMap VRREGS
+	= new BankRegisterMap()
 	// Fixme: need to implement altivec registers
-	// Vector Registers are 128 bit wide
+	// Vector Registers are 128 bit wide - in both PPC32 and PPC64
 	//.add(new BankRegister(0, 656, 16, PPC64Registers.VR0)) PT_VR0 82
 	//...
 	//.add(new BankRegister(0, 1152, 16, PPC64Registers.V31)) PT_VR0 + 31*2), index 148

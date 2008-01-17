@@ -1,3 +1,10 @@
+2008-01-17  Mark Wielaard  <mwielaard@redhat.com>
+
+	* cni/UnwindH.hxx (get_eh_frame_hdr_addr): Find and return
+	debug_frame address and set pi->format.
+	(createProcInfoFromElfImage): Handle either debug_frame or
+	eh_frame addresses.
+	
 2007-12-22  Mark Wielaard  <mwielaard@redhat.com>
 
 	* cni/UnwindH.hxx (get_eh_frame_hdr_addr): Return char*.

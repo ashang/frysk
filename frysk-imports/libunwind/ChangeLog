@@ -1,3 +1,19 @@
+2008-01-17  Mark Wielaard  <mwielaard@redhat.com>
+
+	* include/dwarf.h (dwarf_extract_proc_info_from_fde): Pass
+	table_start.
+	* src/dwarf/Gfde.c (is_cie_id): Removed.
+	(parse_cie): Accept debug and eh cie ids.
+	(dwarf_extract_proc_info_from_fde): Accept table_start. Calculate
+	correct cie_addr. Fix error reporting.
+	* src/dwarf/Gfind_proc_info-lsb.c (linear_search): Don't depend
+	on local address space. Pass table start for fde parsing.
+	(dwarf_search_unwind_table): Handle debug_frame by linear search.
+	* src/mi/Gget_unwind_table.c (get_frame_table, get_debug_table):
+	new functions.
+	(unw_get_unwind_table): Call either get_frame_table or
+	get_debug_table depending on format.
+	
 2007-12-22  Mark Wielaard  <mwielaard@redhat.com>
 
 	* include/libunwind-common.h.in (unw_get_unwind_table):

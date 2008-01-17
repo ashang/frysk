@@ -1,6 +1,8 @@
 /* libunwind - a platform-independent unwind library
    Copyright (c) 2003-2005 Hewlett-Packard Development Company, L.P.
 	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
+   Copyright (c) 2008 Red Hat, Inc.
+	Contributed by Mark Wielaard <mwielaard@redhat.com>
 
 This file is part of libunwind.
 
@@ -24,15 +26,6 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
 #include "dwarf_i.h"
-
-static inline int
-is_cie_id (unw_word_t val)
-{
-  /* DWARF spec says CIE_id is 0xffffffff (for 32-bit ELF) or
-     0xffffffffffffffff (for 64-bit ELF).  However, the GNU toolchain
-     uses 0.  */
-  return (val == 0 || val == - (unw_word_t) 1);
-}
 
 /* Note: we don't need to keep track of more than the first four
    characters of the augmentation string, because we (a) ignore any
@@ -80,7 +73,7 @@ parse_cie (unw_addr_space_t as, unw_accessors_t *a, unw_word_t addr,
       if ((ret = dwarf_readu32 (as, a, &addr, &cie_id, arg)) < 0)
 	return ret;
       /* DWARF says CIE id should be 0xffffffff, but in .eh_frame, it's 0 */
-      if (cie_id != 0)
+      if (cie_id != 0 && cie_id != 0xffffffff)
 	{
 	  Debug (1, "Unexpected CIE id %x\n", cie_id);
 	  return -UNW_EINVAL;
@@ -99,7 +92,7 @@ parse_cie (unw_addr_space_t as, unw_accessors_t *a, unw_word_t addr,
 	return ret;
       /* DWARF says CIE id should be 0xffffffffffffffff, but in
 	 .eh_frame, it's 0 */
-      if (cie_id != 0)
+      if (cie_id != 0 && cie_id != 0xffffffffffffffff)
 	{
 	  Debug (1, "Unexpected CIE id %llx\n", (long long) cie_id);
 	  return -UNW_EINVAL;
@@ -217,7 +210,8 @@ parse_cie (unw_addr_space_t as, unw_accessors_t *a, unw_word_t addr,
 
 HIDDEN int
 dwarf_extract_proc_info_from_fde (unw_addr_space_t as, unw_accessors_t *a,
-				  unw_word_t *addrp, unw_proc_info_t *pi,
+				  unw_word_t table_start, unw_word_t *addrp,
+				  unw_proc_info_t *pi,
 				  int need_unwind_info,
 				  void *arg)
 {
@@ -252,7 +246,12 @@ dwarf_extract_proc_info_from_fde (unw_addr_space_t as, unw_accessors_t *a,
       if ((ret = dwarf_reads32 (as, a, &addr, &cie_offset, arg)) < 0)
 	return ret;
 
-      if (is_cie_id (cie_offset))
+      /* DWARF spec says CIE_id is 0xffffffff (for 32-bit ELF) or
+	 0xffffffffffffffff (for 64-bit ELF).  However, the GNU toolchain
+	 uses 0.  */
+      if ((pi->format != UNW_INFO_FORMAT_TABLE && cie_offset == 0)
+	  || (pi->format == UNW_INFO_FORMAT_TABLE
+	      && cie_offset == 0xffffffff))
 	/* ignore CIEs (happens during linear searches) */
 	return 0;
 
@@ -260,7 +259,10 @@ dwarf_extract_proc_info_from_fde (unw_addr_space_t as, unw_accessors_t *a,
 	 .debug_frame-relative offset, but the GCC-generated .eh_frame
 	 sections instead store a "pcrelative" offset, which is just
 	 as fine as it's self-contained.  */
-      cie_addr = cie_offset_addr - cie_offset;
+      if (pi->format == UNW_INFO_FORMAT_TABLE)
+	cie_addr = table_start + cie_offset;
+      else
+	cie_addr = cie_offset_addr - cie_offset;
     }
   else
     {
@@ -277,7 +279,12 @@ dwarf_extract_proc_info_from_fde (unw_addr_space_t as, unw_accessors_t *a,
       if ((ret = dwarf_reads64 (as, a, &addr, &cie_offset, arg)) < 0)
 	return ret;
 
-      if (is_cie_id (cie_offset))
+      /* DWARF spec says CIE_id is 0xffffffff (for 32-bit ELF) or
+	 0xffffffffffffffff (for 64-bit ELF).  However, the GNU toolchain
+	 uses 0.  */
+      if ((pi->format != UNW_INFO_FORMAT_TABLE && cie_offset == 0)
+          || (pi->format == UNW_INFO_FORMAT_TABLE
+              && cie_offset == 0xffffffffffffffff))
 	/* ignore CIEs (happens during linear searches) */
 	return 0;
 
@@ -285,7 +292,10 @@ dwarf_extract_proc_info_from_fde (unw_addr_space_t as, unw_accessors_t *a,
 	 .debug_frame-relative offset, but the GCC-generated .eh_frame
 	 sections instead store a "pcrelative" offset, which is just
 	 as fine as it's self-contained.  */
-      cie_addr = (unw_word_t) ((uint64_t) cie_offset_addr - cie_offset);
+      if (pi->format == UNW_INFO_FORMAT_TABLE)
+	cie_addr = (unw_word_t) ((uint64_t) table_start + cie_offset);
+      else
+	cie_addr = (unw_word_t) ((uint64_t) cie_offset_addr - cie_offset);
     }
 
   if ((ret = parse_cie (as, a, cie_addr, pi, &dci, arg)) < 0)
@@ -320,11 +330,12 @@ dwarf_extract_proc_info_from_fde (unw_addr_space_t as, unw_accessors_t *a,
 
   if (need_unwind_info)
     {
-      pi->format = UNW_INFO_FORMAT_TABLE;
+      // FRYSK LOCAL - we already set this.
+      // pi->format = UNW_INFO_FORMAT_TABLE;
       pi->unwind_info_size = sizeof (dci);
       pi->unwind_info = mempool_alloc (&dwarf_cie_info_pool);
       if (!pi->unwind_info)
-	return UNW_ENOMEM;
+	return -UNW_ENOMEM;
 
       if (dci.have_abi_marker)
 	{
