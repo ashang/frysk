@@ -416,7 +416,10 @@ public class LinuxPtraceTask extends LiveTask {
 	    return oldState;
     }
     protected String getStateFIXME() {
-	return getState().toString();
+	if (getState() != null)
+	    return getState().toString();
+	else
+	    return "<null>";
     }
 
     /**

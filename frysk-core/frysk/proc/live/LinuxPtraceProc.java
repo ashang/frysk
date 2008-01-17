@@ -284,8 +284,10 @@ public class LinuxPtraceProc extends LiveProc {
     protected String getStateFIXME() {
 	if (newState != null)
 	    return newState.toString();
-	else
+	else if (oldState != null)
 	    return oldState.toString();
+	else
+	    return "<null>";
     }
 
     /**
