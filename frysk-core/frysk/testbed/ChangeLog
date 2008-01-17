@@ -1,3 +1,11 @@
+2008-01-17  Andrew Cagney  <cagney@redhat.com>
+
+	* SlaveOffspring.java (assertSendStop()): Move from here ...
+	(STOP_SIG): Delete.
+	* Offspring.java (assertSendStop()): ... to here.
+	* LegacyOffspring.java (assertSendStop()): Delete.
+	(STOP_SIG): Delete.
+
 2008-01-15  Andrew Cagney  <cagney@redhat.com>
 
 	* StatState.java (assertRunUntil(int)): Make public.	

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -92,7 +92,6 @@ public class LegacyOffspring
 
     private static final Signal ADD_CLONE_SIG = Signal.USR1;
     private static final Signal DEL_CLONE_SIG = Signal.USR2;
-    private static final Signal STOP_SIG = Signal.STOP;
     private static final Signal ADD_FORK_SIG = Signal.HUP;
     private static final Signal DEL_FORK_SIG = Signal.INT;
     private static final Signal ZOMBIE_FORK_SIG = Signal.URG;
@@ -224,14 +223,6 @@ public class LegacyOffspring
 					    "assertSendExecCloneWaitForAcks");
 	signal(EXEC_CLONE_SIG);
 	ack.assertRunUntilSignaled();
-    }
-
-    /**
-     * Stop a Task.
-     */
-    public void assertSendStop () {
-	signal(STOP_SIG);
-	assertIs(StatState.TRACED_OR_STOPPED);
     }
 
     /**

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ public abstract class Offspring {
     /**
      * Send the child the sig.
      */
-    public void signal (Signal sig) {
+    public void signal(Signal sig) {
 	sig.tkill(getPid());
     }
     /**
@@ -135,5 +135,13 @@ public abstract class Offspring {
      */
     public void assertRunUntil(StatState state) {
 	state.assertRunUntil(getPid());
+    }
+
+    /**
+     * Stop a Task with a SIGSTOP and then wait until it has stopped..
+     */
+    public void assertSendStop () {
+	signal(Signal.STOP);
+	assertIs(StatState.TRACED_OR_STOPPED);
     }
 }
