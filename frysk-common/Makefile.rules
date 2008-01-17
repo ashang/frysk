@@ -649,6 +649,10 @@ files-java.list: files.list
 	else \
 	    cp /dev/null $@ ; \
 	fi
+
+# Compile all the .java files to .class and then insert into a .jar.
+# Sort the list to keep the contents stable.
+
 ${GEN_DIRNAME}.jar: files-java.list $(GEN_CLASSPATH)
 	rm -rf $(JAVAROOT)
 	mkdir -p $(JAVAROOT)
@@ -662,6 +666,7 @@ ${GEN_DIRNAME}.jar: files-java.list $(GEN_CLASSPATH)
 	rm -f $*.log
 	cd $(JAVAROOT) ; \
 		find * -name '*.class' -print \
+		| sort \
 		| $(JAR) -@ -cf $@
 	mv $(JAVAROOT)/$@ $@
 
