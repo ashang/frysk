@@ -127,7 +127,11 @@ frysk/pkgdatadir/test-sysroot/usr/lib/debug/$(abspath frysk/pkglibdir/funit-addr
 	eu-strip --remove-comment -f $@ $<
 
 install-data-hook:
-	mv $(datarootdir)/frysk/frysk/pkgdatadir/test-sysroot $(datarootdir)
+	mv $(datarootdir)/frysk/frysk/pkgdatadir/test-sysroot $(datarootdir)/frysk
+	rmdir $(datarootdir)/frysk/frysk/pkgdatadir
+	rmdir $(datarootdir)/frysk/frysk
+# we don't want this installed, but noinst_SCRIPTS has no effect
+	rm $(libdir)/frysk/gen-type-funit-tests
 
 if DO_ARCH32_TEST
 pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-symbols-nodebug
