@@ -420,14 +420,14 @@ public class LinuxCoreProc extends DeadProc {
 	while (mapsIterator.hasNext()) {
 	    Linkmap singleLinkMap = (Linkmap) mapsIterator.next();
 	    if ((!singleLinkMap.name.equals("")) && (!singleLinkMap.name.equals("[vdso]")))
-		SOMaps.construct(new File(singleLinkMap.name),singleLinkMap.l_addr);
+		SOMaps.construct(new File(singleLinkMap.name),singleLinkMap.l_addr,this.getMainTask().getISA().wordSize());
 	    if (singleLinkMap.name.equals("[vdso]"))
 		SOMaps.buildMap(singleLinkMap.l_addr,0,true,true,true,0,singleLinkMap.name,0x1000);
 	}
 
 
 	// Add in case for executables maps.
-	SOMaps.construct(this.exefileBackEnd,0);
+	SOMaps.construct(this.exefileBackEnd,0,this.getMainTask().getISA().wordSize());
 
     
 	// Reconcile maps

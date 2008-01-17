@@ -65,7 +65,7 @@ public abstract class SOLibMapBuilder
    * Scan the maps file found in <tt>/proc/PID/auxv</tt> building up
    * a list of memory maps.  Return true if the scan was successful.
    */
-  public final void construct (File clientSolib, long base_addr)
+  public final void construct (File clientSolib, long base_addr, int wordSize)
   {
 
     Elf solib = openElf(clientSolib);
@@ -82,9 +82,20 @@ public abstract class SOLibMapBuilder
 		boolean read = (pHeader.flags &  ElfPHeader.PHFLAG_READABLE) > 0 ? true:false;
 		boolean write =  (pHeader.flags & ElfPHeader.PHFLAG_WRITABLE) > 0 ? true:false;
 		boolean execute = (pHeader.flags & ElfPHeader.PHFLAG_EXECUTABLE) > 0 ? true:false;
-	    
+		
 		long mapBegin = base_addr + (pHeader.vaddr &~ (pHeader.align-1));
 		long mapEnd = base_addr + ((pHeader.vaddr + pHeader.memsz) + pHeader.align -1) &~ (pHeader.align-1);
+
+		// On 32 bit systems, if a segment has been relocated ie base_addr > 0 and base_addr + vaddr is
+		// more than 0xffffffff then the address overlaps to 0++. As we are using a long, so it can store
+		// 64 bit addresses on 64 bit systems, check wordsize == 4 and if so, limit size of address space
+		//  to 32 bits.
+		if (wordSize == 4)
+		{
+		    mapBegin &= 0x00000000ffffffffl;
+		    mapEnd &= 0x00000000ffffffffl;
+		}
+
 		long aOffset = (pHeader.offset &- pHeader.align);
 		buildMap(mapBegin, mapEnd, read, write, execute, 
 			aOffset, clientSolib.getPath(),pHeader.align);

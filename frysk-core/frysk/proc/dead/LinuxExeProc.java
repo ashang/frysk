@@ -124,7 +124,7 @@ public class LinuxExeProc extends DeadProc {
 	
 	BuildExeMaps SOMaps = new BuildExeMaps();
 	// Add in case for executables maps.
-	SOMaps.construct(this.host.exeFile, 0);
+	SOMaps.construct(this.host.exeFile, 0, this.getMainTask().getISA().wordSize());
     }
 
 }
