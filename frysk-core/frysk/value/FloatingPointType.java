@@ -51,8 +51,26 @@ import java.math.BigInteger;
 public class FloatingPointType
     extends ArithmeticType
 {    
+	
+	private FloatingPointFormat format;
+	
     public FloatingPointType(String name, ByteOrder order, int size) {
 	super(name, order, size);
+	
+	switch (size) {
+	case 4: format = FloatingPoint854Format.IEEE32;
+	break;
+	case 8:format = FloatingPoint854Format.IEEE64;
+	break;
+	case 16:format = FloatingPoint854Format.IEEE128;
+	break;
+	case 10:format = FloatingPoint854Format.IEEE80;
+	break;
+	case 12: format = FloatingPoint854Format.IEEE96;
+	break;
+	default: format = FloatingPoint854Format.IEEE64;
+	break;
+	}
     }
 
     public void toPrint(PrintWriter writer, Location location,
@@ -82,15 +100,25 @@ public class FloatingPointType
     BigFloat bigFloatValue(Location location) {
 	return getBigFloat(location);
     }
+   
+    BigFloatingPoint getBigFloatingPoint(Location location) {
+    	return format.unpack(location.get(order()));
+    }
+
+    BigFloatingPoint bigFloatingPointValue(Location location) {
+    	return getBigFloatingPoint(location);
+    }
 
     BigInteger bigIntegerValue (Location location) {
-	return getBigFloat(location).bigIntegerValue();
+	return getBigFloatingPoint(location).bigIntegerValue();
     }
 
     void assign(Location location, Value v) {
-	BigFloat f = ((ArithmeticType)v.getType())
-	    .bigFloatValue(v.getLocation());
-	location.put(order(), f.toByteArray(getSize()), 0);
+//    	BigFloat f = ((ArithmeticType)v.getType())
+//    	.bigFloatValue(v.getLocation());
+//    	location.put(order(), f.toByteArray(getSize()), 0);
+    	BigFloatingPoint f = ((FloatingPointType)v.getType()).bigFloatingPointValue(v.getLocation());
+    	location.put(order(), format.pack(f, getSize()), 0);
     }
     
     /* getALUs are double dispatch functions to determine 

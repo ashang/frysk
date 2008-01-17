@@ -68,13 +68,10 @@ public abstract class Format
 	writer.print(new BigInteger(1, location.get(order)).toString(2));
     }
     private static void printFloatingPoint(PrintWriter writer,
-					   Location location,
-					   ArithmeticType type) {
-	BigFloat f = type.getBigFloat(location);
-	if (type.getSize() < 8)
-	    writer.print(f.floatValue());
-	else
-	    writer.print(f.doubleValue());
+					                       Location location,
+					                       FloatingPointType type) {
+    	BigFloatingPoint f = type.getBigFloatingPoint(location);
+    	writer.print(f.toString(type.getSize()));
     }
 
     /**

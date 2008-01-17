@@ -111,7 +111,11 @@ public class Value
      * Quick and dirty conversion to a floating-point.
      */
     public double doubleValue() {
-        return ((ArithmeticType)type.getUltimateType()).bigFloatValue(location).doubleValue();
+        return ((ArithmeticType)type.getUltimateType()).bigFloatingPointValue(location).doubleValue();
+    }
+    
+    public BigFloatingPoint asBigFloatingPoint() {
+    	return ((FloatingPointType)type.getUltimateType()).getBigFloatingPoint(location);
     }
 
     /**

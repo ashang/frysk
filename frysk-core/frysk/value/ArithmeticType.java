@@ -124,7 +124,16 @@ public abstract class ArithmeticType
      * floating-point value.  This does not do type-conversion.
      */
     abstract BigFloat getBigFloat(Location location);
-
+    /**
+     * Return the entire location, interpreting the raw bytes as a
+     * floating-point value.  
+     */
+    abstract BigFloatingPoint getBigFloatingPoint(Location location);
+    /**
+     * Return the arthmetic type converted to a BigFloatingPoint, this may
+     * involve truncation and/or rounding.
+     */
+    abstract BigFloatingPoint bigFloatingPointValue(Location location);
     /**
      * Re-write the entire location with the big integer value.  This
      * does not do type conversion.  The underlying type determines if
