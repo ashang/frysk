@@ -56,6 +56,7 @@ public class IsaFactory
   private static IsaFactory factory;
   static final Logger logger = Logger.getLogger("frysk");
   private Hashtable isaHash;
+  private String MESSAGE = "getting task's executable";
     
     IsaFactory() {
 	isaHash = new Hashtable();
@@ -96,16 +97,16 @@ public class IsaFactory
     try {
 	exe = new File("/proc/" + pid + "/exe").getCanonicalPath();
     } catch (java.io.IOException e) {
-	throw new RuntimeException("getting task's executable", e);
+	throw new RuntimeException(MESSAGE, e);
     }
     Elf elfFile;
     try {
 	elfFile = new Elf(exe, ElfCommand.ELF_C_READ);
     } catch (ElfFileException e) {
-	throw new RuntimeException ("getting task's executable", e);
+	throw new RuntimeException (MESSAGE, e);
     }
     catch (ElfException e) {
-	throw new RuntimeException ("getting task's executable", e);
+	throw new RuntimeException (MESSAGE, e);
     }
 
     try {
@@ -145,10 +146,13 @@ public class IsaFactory
       return isa;
   }
 
-  public  Isa getIsa(int pid) 
-  {
-    return getIsa(pid, null);
-  }
+  public Isa getIsa(int pid) {
+	try {
+	    return getIsa(pid, null);
+	} catch (Exception e) {
+	    return null;
+	}
+    }
   
   public Isa getIsa(Task task)
   {
