@@ -51,142 +51,117 @@ import frysk.proc.ProcBlockAction;
 
 public class TestProcStopped extends TestLib {
 
-  public void stopped (SlaveOffspring ackProc, int count)
-  {
-    ackProc.assertSendStop();
-    Proc proc = ackProc.assertFindProcAndTasks();
-    new ProcBlockAction(proc, new MyTester());
-  }
+    private void stopped(SlaveOffspring ackProc) {
+	ackProc.assertSendStop();
+	Proc proc = ackProc.assertFindProcAndTasks();
+	new ProcBlockAction(proc, new MyTester());
+    }
 
-  public void running (SlaveOffspring ackProc, int count)
-  {
-    Proc proc = ackProc.assertFindProcAndTasks();
-    new ProcBlockAction(proc, new MyTester());
-  }
+    private void running(SlaveOffspring ackProc) {
+	Proc proc = ackProc.assertFindProcAndTasks();
+	new ProcBlockAction(proc, new MyTester());
+    }
 
-  public void testStoppedAckDaemon ()
-  {
-    if (unresolvedOnUtrace(5114))
-      return;
-    SlaveOffspring ackProc = SlaveOffspring.createDaemon();
-    stopped(ackProc, 1);
-    assertRunUntilStop("testStoppedAckDaemon");
-  }
-
-  public void testStoppedDetached ()
-  {
-    if (unresolvedOnUtrace(5114))
-      return;
-    SlaveOffspring ackProc = SlaveOffspring.createChild();
-    stopped(ackProc, 1);
-    assertRunUntilStop("testStoppedDetached");
-  }
-
-  public void testStoppedAttached ()
-  {
-    SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
-    stopped(ackProc, 1);
-    assertRunUntilStop("testStoppedAttached");
-  }
-
-  public void testRunningAckDaemon ()
-  {
-    SlaveOffspring ackProc = SlaveOffspring.createDaemon();
-    running(ackProc, 1);
-    assertRunUntilStop("testRunningAckDaemon");
-  }
-
-  public void testRunningDetached ()
-  {
-    SlaveOffspring ackProc = SlaveOffspring.createChild();
-    running(ackProc, 1);
-    assertRunUntilStop("testRunningDetached");
-  }
-
-  public void testRunningAttached ()
-  {
-    SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
-    running(ackProc, 1);
-    assertRunUntilStop("testRunningAttached");
-  }
-
-    public void testMultiThreadedStoppedAckDaemon () {
-	if (unresolvedOnUtrace(3595))
+    public void testStoppedAckDaemon() {
+	if (unresolvedOnUtrace(5114))
 	    return;
-	SlaveOffspring ackProc = SlaveOffspring.createDaemon()
-	    .assertSendAddClonesWaitForAcks(2);
-	stopped(ackProc, 3);
+	SlaveOffspring ackProc = SlaveOffspring.createDaemon();
+	stopped(ackProc);
 	assertRunUntilStop("testStoppedAckDaemon");
     }
 
-    public void testMultiThreadedStoppedDetached () {
+    public void testStoppedDetached() {
+	if (unresolvedOnUtrace(5114))
+	    return;
+	SlaveOffspring ackProc = SlaveOffspring.createChild();
+	stopped(ackProc);
+	assertRunUntilStop("testStoppedDetached");
+    }
+
+    public void testStoppedAttached() {
+	SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
+	stopped(ackProc);
+	assertRunUntilStop("testStoppedAttached");
+    }
+
+    public void testRunningAckDaemon() {
+	SlaveOffspring ackProc = SlaveOffspring.createDaemon();
+	running(ackProc);
+	assertRunUntilStop("testRunningAckDaemon");
+    }
+
+    public void testRunningDetached() {
+	SlaveOffspring ackProc = SlaveOffspring.createChild();
+	running(ackProc);
+	assertRunUntilStop("testRunningDetached");
+    }
+
+    public void testRunningAttached() {
+	SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
+	running(ackProc);
+	assertRunUntilStop("testRunningAttached");
+    }
+
+    public void testMultiThreadedStoppedAckDaemon() {
+	if (unresolvedOnUtrace(3595))
+	    return;
+	SlaveOffspring ackProc = SlaveOffspring.createDaemon()
+	    .assertSendAddClonesWaitForAcks(2);
+	stopped(ackProc);
+	assertRunUntilStop("testStoppedAckDaemon");
+    }
+
+    public void testMultiThreadedStoppedDetached() {
 	if (unresolvedOnUtrace(3595))
 	    return;
 	SlaveOffspring ackProc = SlaveOffspring.createChild()
 	    .assertSendAddClonesWaitForAcks(2);
-	stopped(ackProc, 3);
+	stopped(ackProc);
 	assertRunUntilStop("testStoppedDetached");
     }
     
-    public void testMultiThreadedStoppedAttached () {
+    public void testMultiThreadedStoppedAttached() {
 	SlaveOffspring ackProc = SlaveOffspring.createAttachedChild()
 	    .assertSendAddClonesWaitForAcks(2);
-	stopped(ackProc, 3);
+	stopped(ackProc);
 	assertRunUntilStop("testStoppedAttached");
     }
 
-    public void testMultiThreadedRunningAckDaemon () {
+    public void testMultiThreadedRunningAckDaemon() {
 	SlaveOffspring ackProc = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(2);
-	running(ackProc, 3);
+	running(ackProc);
 	assertRunUntilStop("testRunningAckDaemon");
     }
 
-    public void testMultiThreadedRunningDetached () {
+    public void testMultiThreadedRunningDetached() {
 	SlaveOffspring ackProc = SlaveOffspring.createChild()
 	    .assertSendAddClonesWaitForAcks(2);
-	running(ackProc, 3);
+	running(ackProc);
 	assertRunUntilStop("testRunningDetached");
     }
 
-    public void testMultiThreadedRunningAttached () {
+    public void testMultiThreadedRunningAttached() {
 	SlaveOffspring ackProc = SlaveOffspring.createAttachedChild()
 	    .assertSendAddClonesWaitForAcks(2);
-	running(ackProc, 3);
+	running(ackProc);
 	assertRunUntilStop("testRunningAttached");
     }
 
-  public class MyTester
-      implements ProcObserver.ProcAction
-  {   
-
-    public void existingTask (Task task)
-    {
-
+    public class MyTester implements ProcObserver.ProcAction {   
+	public void existingTask(Task task) {
+	}
+	public void deletedFrom(Object observable) {
+	}
+	public void allExistingTasksCompleted() {
+	    Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop));
+	}
+	public void addFailed(Object observable, Throwable w) {
+	    fail("Proc add failed: " + w.getMessage());
+	}
+	public void addedTo(Object observable) {
+	}
+	public void taskAddFailed(Object task, Throwable w) {
+	}
     }
-
-    public void deletedFrom (Object observable)
-    {
-    }
-
-    public void allExistingTasksCompleted ()
-    {
-      Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop));
-
-    }
-
-    public void addFailed (Object observable, Throwable w)
-    {
-      fail("Proc add failed: " + w.getMessage());
-    }
-
-    public void addedTo (Object observable)
-    {
-    }
-
-    public void taskAddFailed (Object task, Throwable w)
-    {
-    }
-
-  }
 }
