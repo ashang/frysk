@@ -1,6 +1,8 @@
 /* libunwind - a platform-independent unwind library
    Copyright (c) 2003-2005 Hewlett-Packard Development Company, L.P.
 	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
+   Copyright (c) 2008, Red Hat, Inc.
+	Contributed by Mark Wielaard <mwielaard@redhat.com>
 
 This file is part of libunwind.
 
@@ -52,20 +54,23 @@ struct callback_data
     unw_dyn_info_t di;		/* table info (if single_fde is false) */
   };
 
+#endif /* !UNW_REMOTE_ONLY */
+
 static int
 linear_search (unw_addr_space_t as, unw_word_t ip,
 	       unw_word_t eh_frame_start, unw_word_t eh_frame_end,
 	       unw_word_t fde_count,
 	       unw_proc_info_t *pi, int need_unwind_info, void *arg)
 {
-  unw_accessors_t *a = unw_get_accessors (unw_local_addr_space);
+  unw_accessors_t *a = unw_get_accessors (as);
   unw_word_t i = 0, fde_addr, addr = eh_frame_start;
   int ret;
 
   while (i++ < fde_count && addr < eh_frame_end)
     {
       fde_addr = addr;
-      if ((ret = dwarf_extract_proc_info_from_fde (as, a, &addr, pi, 0, arg))
+      if ((ret = dwarf_extract_proc_info_from_fde (as, a, eh_frame_start,
+						   &addr, pi, 0, arg))
 	  < 0)
 	return ret;
 
@@ -74,7 +79,8 @@ linear_search (unw_addr_space_t as, unw_word_t ip,
 	  if (!need_unwind_info)
 	    return 1;
 	  addr = fde_addr;
-	  if ((ret = dwarf_extract_proc_info_from_fde (as, a, &addr, pi,
+	  if ((ret = dwarf_extract_proc_info_from_fde (as, a, eh_frame_start,
+						       &addr, pi,
 						       need_unwind_info, arg))
 	      < 0)
 	    return ret;
@@ -83,6 +89,8 @@ linear_search (unw_addr_space_t as, unw_word_t ip,
     }
   return -UNW_ENOINFO;
 }
+
+#ifndef UNW_REMOTE_ONLY
 
 /* Info is a pointer to a unw_dyn_info_t structure and, on entry,
    member u.rti.segbase contains the instruction-pointer we're looking
@@ -361,6 +369,15 @@ dwarf_search_unwind_table (unw_addr_space_t as, unw_word_t ip,
 #endif
   int ret;
 
+  if (di->format == UNW_INFO_FORMAT_TABLE)
+    {
+      ret = linear_search (as, ip, di->u.rti.table_data,
+			   di->u.rti.table_data
+			   + di->u.rti.table_len * sizeof (unw_word_t),
+			   ~0UL, pi, need_unwind_info, arg);
+      return ret;
+    }
+
   assert (di->format == UNW_INFO_FORMAT_REMOTE_TABLE
 	  && (ip >= di->start_ip && ip < di->end_ip));
 
@@ -397,7 +414,7 @@ dwarf_search_unwind_table (unw_addr_space_t as, unw_word_t ip,
   Debug (15, "ip=0x%lx, start_ip=0x%lx\n",
 	 (long) ip, (long) (e->start_ip_offset + segbase));
   fde_addr = e->fde_offset + segbase;
-  if ((ret = dwarf_extract_proc_info_from_fde (as, a, &fde_addr, pi,
+  if ((ret = dwarf_extract_proc_info_from_fde (as, a, segbase, &fde_addr, pi,
 					       need_unwind_info, arg)) < 0)
     return ret;
 

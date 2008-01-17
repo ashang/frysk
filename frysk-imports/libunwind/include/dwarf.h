@@ -362,6 +362,7 @@ extern int dwarf_eval_expr (struct dwarf_cursor *c, unw_word_t *addr,
 			    int *is_register);
 extern int dwarf_extract_proc_info_from_fde (unw_addr_space_t as,
 					     unw_accessors_t *a,
+					     unw_word_t table_start,
 					     unw_word_t *fde_addr,
 					     unw_proc_info_t *pi,
 					     int need_unwind_info,

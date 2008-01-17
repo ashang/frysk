@@ -1,4 +1,4 @@
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 
 /* This file is part of libunwind.
 
@@ -25,11 +25,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 #include "dwarf_i.h"
 #include "dwarf-eh.h"
 
-int
-unw_get_unwind_table(unw_word_t ip, unw_proc_info_t *pi, int need_unwind_info,
-		     unw_accessors_t *eh_frame_accessors,
-		     unw_word_t eh_frame_hdr_address,
-		     void *eh_frame_arg)
+#include <stdio.h>
+
+static int
+get_frame_table(unw_word_t ip, unw_proc_info_t *pi, int need_unwind_info,
+		unw_accessors_t *eh_frame_accessors,
+		unw_word_t eh_frame_hdr_address,
+		void *eh_frame_arg)
 {
   int ret;
   unw_addr_space_t as = unw_create_addr_space (eh_frame_accessors, 0);
@@ -87,7 +89,51 @@ unw_get_unwind_table(unw_word_t ip, unw_proc_info_t *pi, int need_unwind_info,
   di.u.rti.table_data = eh_frame_hdr_address + 12;
   di.u.rti.segbase = eh_frame_hdr_address;
 
+  pi->start_ip = 0;
+  pi->end_ip = 0;
   ret = tdep_search_unwind_table (as, ip, &di, pi, need_unwind_info,
 				  eh_frame_arg);
   return ret;
+}
+
+static int
+get_debug_table(unw_word_t ip, unw_proc_info_t *pi, int need_unwind_info,
+                unw_accessors_t *accessors,
+                unw_word_t address,
+                void *arg)
+{
+  unw_addr_space_t as = unw_create_addr_space (accessors, 0);
+
+  unw_dyn_info_t di;
+  di.start_ip = pi->start_ip;
+  di.end_ip = pi->end_ip;
+  di.format = UNW_INFO_FORMAT_TABLE;
+  di.gp = pi->gp;
+
+  // XXX Should we use the ti struct of the union?
+  di.u.rti.name_ptr = 0;
+  di.u.rti.segbase = address;
+  di.u.rti.table_data = address;
+  di.u.rti.table_len = pi->unwind_info_size;
+  
+  pi->start_ip = 0;
+  pi->end_ip = 0;
+  return tdep_search_unwind_table (as, ip, &di, pi, need_unwind_info, arg);
+}
+
+int
+unw_get_unwind_table(unw_word_t ip, unw_proc_info_t *pi, int need_unwind_info,
+		     unw_accessors_t *accessors,
+		     unw_word_t address,
+		     void *arg)
+{
+  if (pi->format == UNW_INFO_FORMAT_TABLE)
+    return get_debug_table(ip, pi, need_unwind_info, accessors,
+			   address, arg);
+
+  if (pi->format == UNW_INFO_FORMAT_REMOTE_TABLE)
+    return get_frame_table(ip, pi, need_unwind_info, accessors,
+			   address, arg);
+
+  return -UNW_EINVAL;
 }
