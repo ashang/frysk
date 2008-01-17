@@ -188,9 +188,14 @@ class LinuxWaitBuilder
     public void disappeared (int pid, Throwable w)
     {
         LinuxPtraceTask task = searchId.get(pid, "{0} disappeared\n");
-        task.processDisappearedEvent(w);
+        // XXX Sometimes it seems it has already disappeared and this fails
+        // Catch the failure, but not sure what to do with the failure right now
+        // Failures were seen here while running frysk.hpd.TestRunCommand -r 20
+        try {
+            task.processDisappearedEvent(w);
+        } catch (Exception e) {}
     }
-    
+
     public void syscallEvent (int pid)
     {
         LinuxPtraceTask task = searchId.get(pid, "{0} syscallEvent\n");
