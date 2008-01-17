@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -38,15 +38,18 @@
 // exception.
 
 
-package frysk.proc;
+package frysk.proc.live;
 
+import frysk.proc.Manager;
 import frysk.event.RequestStopEvent;
 import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
+import frysk.proc.Proc;
+import frysk.proc.Task;
+import frysk.proc.ProcObserver;
+import frysk.proc.ProcBlockAction;
 
-public class TestProcStopped
-    extends TestLib
-{
+public class TestProcStopped extends TestLib {
 
   public void stopped (SlaveOffspring ackProc, int count)
   {
