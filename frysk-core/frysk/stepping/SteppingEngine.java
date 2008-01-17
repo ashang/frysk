@@ -1183,7 +1183,7 @@ public class SteppingEngine {
 	     * as terminated and notify the observers of the event. */
             Proc proc = task.getProc();
 	    Integer context = (Integer)SteppingEngine.this.contextMap.get(proc);
-	    if (!SteppingEngine.this.contextMap.isEmpty())
+	    if (!SteppingEngine.this.contextMap.isEmpty() && context != null)
 		SteppingEngine.this.contextMap.put(proc, new Integer(
 		    context.intValue() - 1));
 
