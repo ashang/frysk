@@ -121,11 +121,6 @@ public abstract class ArithmeticType
     abstract BigInteger getBigInteger(Location location);
     /**
      * Return the entire location, interpreting the raw bytes as a
-     * floating-point value.  This does not do type-conversion.
-     */
-    abstract BigFloat getBigFloat(Location location);
-    /**
-     * Return the entire location, interpreting the raw bytes as a
      * floating-point value.  
      */
     abstract BigFloatingPoint getBigFloatingPoint(Location location);
@@ -146,9 +141,4 @@ public abstract class ArithmeticType
      * involve truncation and/or rounding.
      */
     abstract BigInteger bigIntegerValue(Location location);
-    /**
-     * Return the arthmetic type converted to a BigFloat, this may
-     * involve truncation and/or rounding.
-     */
-    abstract BigFloat bigFloatValue(Location location);
 }

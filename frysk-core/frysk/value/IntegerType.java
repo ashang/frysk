@@ -60,15 +60,8 @@ public abstract class IntegerType
 	format.print(writer, location, this);
     }
 
-    BigFloat getBigFloat(Location location) {
-	return new BigFloat(location.get(order()));
-    }
-
     BigInteger bigIntegerValue(Location location) {
 	return getBigInteger(location);
-    }
-    BigFloat bigFloatValue(Location location) {
-	return new BigFloat(getBigInteger(location));
     }
     
     BigFloatingPoint getBigFloatingPoint(Location location) {

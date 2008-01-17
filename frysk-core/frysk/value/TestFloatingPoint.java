@@ -50,13 +50,13 @@ public class TestFloatingPoint
 {
     public void testBigIntegerValue() {
 	FloatingPointType t = new FloatingPointType("type", ByteOrder.BIG_ENDIAN, 4);
-	Location l = new ScratchLocation(TestBigFloat.FLOAT_ONE);
+	Location l = new ScratchLocation(TestFloatingPoint854Format.FLOAT_ONE);
 	assertEquals("float", 1, t.bigIntegerValue(l).longValue());
     }
     public void testBigFloatValue() {
 	FloatingPointType t = new FloatingPointType("type", ByteOrder.BIG_ENDIAN, 4);
-	Location l = new ScratchLocation(TestBigFloat.FLOAT_ONE);
-	TestBigFloat.checkEquals("float", 1.0,
-				 t.bigFloatValue(l).doubleValue());
+	Location l = new ScratchLocation(TestFloatingPoint854Format.FLOAT_ONE);
+	TestFloatingPoint854Format.checkEquals("float", new BigFloatingPoint("1.0"),
+			                       t.bigFloatingPointValue(l));
     }
 }

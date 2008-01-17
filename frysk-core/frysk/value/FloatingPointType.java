@@ -92,14 +92,6 @@ public class FloatingPointType
     void putBigInteger(Location location, BigInteger val) {
 	location.put(order(), val.toByteArray(), 0);
     }
-
-    BigFloat getBigFloat(Location location) {
-	return new BigFloat(location.get(order()));
-    }
-
-    BigFloat bigFloatValue(Location location) {
-	return getBigFloat(location);
-    }
    
     BigFloatingPoint getBigFloatingPoint(Location location) {
     	return format.unpack(location.get(order()));
@@ -114,9 +106,6 @@ public class FloatingPointType
     }
 
     void assign(Location location, Value v) {
-//    	BigFloat f = ((ArithmeticType)v.getType())
-//    	.bigFloatValue(v.getLocation());
-//    	location.put(order(), f.toByteArray(getSize()), 0);
     	BigFloatingPoint f = ((FloatingPointType)v.getType()).bigFloatingPointValue(v.getLocation());
     	location.put(order(), format.pack(f, getSize()), 0);
     }

@@ -91,9 +91,9 @@ public class TestFormat
 	checkInteger(format, new byte[] {
 			 (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff
 		     }, uint_t, u);
-	checkFloatingPoint(format, TestBigFloat.FLOAT_ONE,
+	checkFloatingPoint(format, TestFloatingPoint854Format.FLOAT_ONE,
 			   float_t, f);
-	checkFloatingPoint(format, TestBigFloat.DOUBLE_TWO,
+	checkFloatingPoint(format, TestFloatingPoint854Format.DOUBLE_TWO,
 			   double_t, d);
 	checkPointer(format, new byte[] {
 			 1, 2, 3, 4

@@ -192,7 +192,8 @@ public class TestIntegerType
     public void testBigFloatValue() {
 	IntegerType t = new SignedType("type", ByteOrder.BIG_ENDIAN, 1);
 	Location l = new ScratchLocation(new byte[] { 1 });
-	TestBigFloat.checkEquals("1", 1.0, t.bigFloatValue(l).doubleValue());
+	TestFloatingPoint854Format.checkEquals("1", new BigFloatingPoint("1.0"), 
+			                       t.bigFloatingPointValue(l));
     }
     public void testBigIntegerValue() {
 	IntegerType t = new SignedType("type", ByteOrder.BIG_ENDIAN, 1);
