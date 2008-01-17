@@ -1,5 +1,9 @@
 2008-01-17  Andrew Cagney  <cagney@redhat.com>
 
+	* StressAttachDetachSignaledTask.java (stressSignalStorm(Action))
+	(SignalStorm, testBlockedSignalStorm())
+	(testUnblockedSignalStorm()): New.
+
 	* TestProcStopped.java: Move to frysk.proc.live.
 
 2008-01-16  Andrew Cagney  <cagney@redhat.com>

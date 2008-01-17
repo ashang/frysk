@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,6 +42,9 @@ package frysk.proc;
 import frysk.testbed.SlaveOffspring;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
+import frysk.Config;
+import frysk.testbed.DaemonBlockedAtEntry;
+import frysk.sys.Signal;
 
 /**
  * Test attaching to a process with many many tasks.
@@ -165,5 +168,61 @@ public class StressAttachDetachSignaledTask
 		child.assertSendExecWaitForAcks ();
 	    }
 	};
+    }
+
+    /**
+     * A signal class; that just adds then delets itself.  If an ABORT
+     * signal is seen (the child panics) fail the test.
+     */
+    private static class SignalStorm
+	extends TaskObserverBase implements TaskObserver.Signaled
+    {
+	private int count = 1000;
+	private final Action action;
+	SignalStorm(Action action) {
+	    this.action = action;
+	}
+	public Action updateSignaled(Task task, int signal) {
+	    if (Signal.TERM.equals(signal))
+		fail("child aborted");
+	    assertTrue("signal HUP", Signal.HUP.equals(signal));
+	    task.requestDeleteSignaledObserver(this);
+	    return action;
+	}
+	public void deletedFrom(Object o) {
+	    if (--count == 0)
+		Manager.eventLoop.requestStop();
+	    Task task = (Task)o;
+	    task.requestAddSignaledObserver(this);
+	}
+    }
+    private void stressSignalStorm(Action action) {
+	    DaemonBlockedAtEntry daemon
+		= new DaemonBlockedAtEntry(new String[] {
+			Config.getPkgLibFile("funit-hups").getAbsolutePath(),
+			"-t",
+			"" + getTimeoutSeconds()
+		    });
+	    daemon.requestRemoveBlock();
+	    SignalStorm storm = new SignalStorm(action);
+	    daemon.getMainTask().requestAddSignaledObserver(storm);
+	    assertRunUntilStop("storming");
+    }
+
+    /**
+     * Stress attaching and detaching a task that is constantly
+     * signalling itself.  If a signal is lost, the child process will
+     * abort.
+     */
+    public void testBlockedSignalStorm() {
+	stressSignalStorm(Action.BLOCK);
+    }
+    /**
+     * Stress attaching and detaching a task that is constantly
+     * signalling itself.  If a signal is lost, the child process will
+     * abort.
+     */
+    public void testUnblockedSignalStorm() {
+	stressSignalStorm(Action.CONTINUE);
     }
 }
