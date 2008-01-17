@@ -996,7 +996,7 @@ class LinuxPtraceTaskState extends State {
 	  // first step onto the first instruction of a just started
 	  // task sometimes doesn't set the right task stepped flag.
 	  // So we check and immediately clear here.
-	  if (isa.isTaskStepped(task) || task.justStartedXXX)
+	  if (isa != null && (isa.isTaskStepped(task) || task.justStartedXXX))
 	    {
 	      if (task.justStartedXXX)
 		return stepping.handleTrappedEvent(task);
