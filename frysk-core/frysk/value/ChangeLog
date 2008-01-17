@@ -1,3 +1,10 @@
+2008-01-17  Teresa Thomas  <tthomas@redhat.com>
+
+	* FloatingPointFormat.java: New.
+	* TestFloatingPoint854Format.java: New.
+	* FloatingPoint854Format.java: New. 
+	* BigFloatingPoint.java: New.
+
 2007-01-07  Nurdin Premji  <npremji@redhat.com>
 
 	* TestClass.java (getType): Modified to do most of the work.
