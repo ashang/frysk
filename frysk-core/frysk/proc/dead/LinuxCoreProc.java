@@ -162,6 +162,8 @@ public class LinuxCoreProc extends DeadProc {
 	elfFPRegs = ElfPrFPRegSet.decode(elfData);
 	elfXFPRegs = ElfPrXFPRegSet.decode(elfData);
     
+	ISA isa = ElfMap.getISA(elfData.getParent().getEHeader());
+
 	// Two methods of whether Floating Point note data exists.
 	// In userland generated core-dumps there is no way to test
 	// if floating point data operations have actually occurred, so
@@ -186,7 +188,7 @@ public class LinuxCoreProc extends DeadProc {
 		ElfPrXFPRegSet xregSet = null;
 		if (elfXFPRegs.length > 0)
 		    xregSet = elfXFPRegs[i];
-		newTask = new LinuxCoreTask(LinuxCoreProc.this, elfTasks[i], elfFPRegs[i], xregSet);
+		newTask = new LinuxCoreTask(LinuxCoreProc.this, elfTasks[i], elfFPRegs[i], xregSet, isa);
 	    } else {
 	    // Otherwise add only NT_FPREGSET data if pr_fpvalid is > 0. This
 	    // value is not reliable on userland kernels (gdb always sets it
@@ -201,10 +203,10 @@ public class LinuxCoreProc extends DeadProc {
 		    ElfPrXFPRegSet xregSet = null;
 		    if (elfXFPRegs.length > 0)
 			xregSet = elfXFPRegs[fpCount];
-		    newTask = new LinuxCoreTask(LinuxCoreProc.this, elfTasks[i], elfFPRegs[fpCount], xregSet);
+		    newTask = new LinuxCoreTask(LinuxCoreProc.this, elfTasks[i], elfFPRegs[fpCount], xregSet, isa);
 		    fpCount++;
 		} else
-		    newTask = new LinuxCoreTask(LinuxCoreProc.this, elfTasks[i],  null, null);
+		    newTask = new LinuxCoreTask(LinuxCoreProc.this, elfTasks[i],  null, null, isa);
 	    
 	    }
 	}
@@ -254,11 +256,6 @@ public class LinuxCoreProc extends DeadProc {
 	    this.auxv = auxv.vec;
 	}
 	return auxv;
-    }
-
-    ISA sendrecISA() {
-	ElfEHeader header = elfData.getParent().getEHeader();
-	return ElfMap.getISA(header);
     }
 
     /**

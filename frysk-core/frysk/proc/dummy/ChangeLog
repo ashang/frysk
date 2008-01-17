@@ -1,3 +1,10 @@
+2008-01-16  Andrew Cagney  <cagney@redhat.com>
+
+	* DummyTask.java (getRegisterBanks()): Replace
+	sendrecRegisterBanks().
+	
+	* DummyTask.java (getISA()): Replace sendrecISA().
+
 2008-01-15  Andrew Cagney  <cagney@redhat.com>
 
 	* DummyTask.java (getMemory()): Replace sendrecMemory().

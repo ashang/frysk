@@ -54,13 +54,13 @@ public class DummyTask extends Task {
     public String getStateString() {
 	return "Attached";
     }
-    protected ISA sendrecISA() {
+    public ISA getISA() {
 	return null;
     }
     public ByteBuffer getMemory() {
 	return null;
     }
-    protected RegisterBanks sendrecRegisterBanks() {
+    protected RegisterBanks getRegisterBanks() {
 	return null;
     }
 

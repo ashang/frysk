@@ -85,8 +85,12 @@ class TaskData
         toPrint(printWriter, false);
     }
 
-    // XXX Better way to do this?
+    /**
+     * XXX: The way to determine if a task is stopped is via the
+     * stepping engine which determines when, from the HPD's
+     * point-of-view, a task can be considered stopped.
+     */
     public boolean isStopped() {
-        return task.getBlockers().length != 0;
+        return task.bogusUseOfInternalBlockersVariableFIXME().size() != 0;
     }
 }

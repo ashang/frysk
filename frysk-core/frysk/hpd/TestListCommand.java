@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ public class TestListCommand extends TestLib {
 	e.expect("121.*121");
 	e.expect("122.*122.*main");
 	e.expect("123.*123");
-	e.expect("\\* 124.*124");
+	e.expect("-> 124.*124");
 	e.expect("125.*125");
         e.send("quit\n");
         e.expect("quit.*\nQuitting...");

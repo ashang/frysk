@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -44,18 +44,18 @@ import inua.eio.ByteBuffer;
 import frysk.bank.RegisterBanks;
 import frysk.proc.TaskId;
 import frysk.isa.ISA;
-
-import lib.dwfl.*;
+import lib.dwfl.Elf;
+import lib.dwfl.ElfCommand;
+import lib.dwfl.ElfEHeader;
+import lib.dwfl.ElfException;
 
 public class LinuxExeTask extends DeadTask {
     private final long pc;
     private final LinuxExeProc proc;
-    TaskId id = null;
 
-    protected LinuxExeTask(LinuxExeProc proc, TaskId id) {
-	super(proc, id);
+    protected LinuxExeTask(LinuxExeProc proc, TaskId id, ISA isa) {
+	super(proc, id, isa, constructRegisterBanks(isa));
 	this.proc = proc;
-	this.id = id;
 	// Compute a Fake PC.  XXX should be done in Proc instead of
 	// creating Elf object in the Task itself.
 	Elf e = null;
@@ -78,25 +78,20 @@ public class LinuxExeTask extends DeadTask {
 	return pc;
     }
 
-  protected ISA sendrecISA() {
-      return ((LinuxExeProc)getProc()).sendrecISA();
-  }
-
     public ByteBuffer getMemory() {
 	return proc.getMemory();
     }
   
-  protected RegisterBanks sendrecRegisterBanks() {
-      ByteBuffer[] bankBuffers = new ByteBuffer[4];
-      // Create an empty page
-      byte[] emptyBuffer = new byte[4096];
-      for (int i = 0; i < emptyBuffer.length; i++)
-	  emptyBuffer[i] = 0;
-      bankBuffers[0] = new ArrayByteBuffer(emptyBuffer);
-      bankBuffers[1] = new ArrayByteBuffer(emptyBuffer);
-      bankBuffers[2] = new ArrayByteBuffer(emptyBuffer);
-      bankBuffers[3] = new ArrayByteBuffer(emptyBuffer);
-      return CorefileRegisterBanksFactory.create
-      	  (getISA(), bankBuffers);
+    private static RegisterBanks constructRegisterBanks(ISA isa) {
+	ByteBuffer[] bankBuffers = new ByteBuffer[4];
+	// Create an empty page
+	byte[] emptyBuffer = new byte[4096];
+	for (int i = 0; i < emptyBuffer.length; i++)
+	    emptyBuffer[i] = 0;
+	bankBuffers[0] = new ArrayByteBuffer(emptyBuffer);
+	bankBuffers[1] = new ArrayByteBuffer(emptyBuffer);
+	bankBuffers[2] = new ArrayByteBuffer(emptyBuffer);
+	bankBuffers[3] = new ArrayByteBuffer(emptyBuffer);
+	return CorefileRegisterBanksFactory.create(isa, bankBuffers);
   }
 }

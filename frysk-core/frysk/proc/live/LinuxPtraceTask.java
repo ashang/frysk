@@ -39,6 +39,8 @@
 
 package frysk.proc.live;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.LinkedList;
 import frysk.isa.Register;
 import frysk.isa.RegistersFactory;
@@ -134,19 +136,29 @@ public class LinuxPtraceTask extends LiveTask {
     }
     private ByteBuffer memory;
 
-    protected RegisterBanks sendrecRegisterBanks() {
-	return PtraceRegisterBanksFactory.create(getISA(), getTid());
+    protected RegisterBanks getRegisterBanks() {
+	if (registerBanks == null)
+	    registerBanks = PtraceRegisterBanksFactory.create(getISA(), getTid());
+	return registerBanks;
     }
+    private RegisterBanks registerBanks;
 
     /**
      * Return the Task's ISA.
      *
      * Can this instead look at AUXV?
      */
-    protected ISA sendrecISA () {
-	// FIXME: This should use task.proc.getExe().  Only that
-	// causes wierd failures; take a rain-check :-(
-	return ElfMap.getISA(new File("/proc/" + getTid() + "/exe"));
+    public ISA getISA() {
+	if (currentISA == null)
+	    // FIXME: This should use task.proc.getExe().  Only that
+	    // causes wierd failures; take a rain-check :-(
+	    currentISA = ElfMap.getISA(new File("/proc/" + getTid() + "/exe"));
+	return currentISA;
+    }
+    private ISA currentISA;
+
+    boolean hasIsa() {
+	return (currentISA != null);
     }
 
     /**
@@ -501,6 +513,15 @@ public class LinuxPtraceTask extends LiveTask {
 	    });
     }
 
+    /**
+     * Set of interfaces currently blocking this task.
+     *
+     * Package-private.
+     */
+    final Set blockers = new HashSet();
+    public Set bogusUseOfInternalBlockersVariableFIXME() {
+	return blockers;
+    }
 
     /**
      * Set of Cloned observers.
@@ -986,6 +1007,8 @@ public class LinuxPtraceTask extends LiveTask {
 	super.clearIsa();
 	pcRegister = null;
 	memory = null;
+	currentISA = null;
+	registerBanks = null;
     }
 
     /**

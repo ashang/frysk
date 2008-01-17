@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.live;
 
 import frysk.isa.ISA;
 import frysk.testbed.TestLib;
@@ -46,10 +46,19 @@ import frysk.testbed.ExecOffspring;
 import frysk.testbed.SlaveOffspring;
 import frysk.testbed.ExecCommand;
 import frysk.testbed.StatState;
+import frysk.proc.TaskObserver;
+import frysk.proc.Task;
+import frysk.proc.Proc;
+import frysk.proc.Action;
+import frysk.proc.Manager;
 
-public class TestIsa
-    extends TestLib
-{
+public class TestRuntimeIsa extends TestLib {
+
+    private static void assertHasIsaEquals(String reason, Task task,
+					   boolean hasIsa) {
+	assertEquals("Has ISA (" + reason + ")", hasIsa,
+		     ((LinuxPtraceTask)task).hasIsa());
+    }
 
     static class AttachedObserver
 	extends TaskObserverBase
@@ -57,7 +66,7 @@ public class TestIsa
     {
 	public Action updateAttached(Task task) {
 	    task.getISA();
-	    assertTrue("task isa initialized", task.hasIsa());
+	    assertHasIsaEquals("just attached", task, true);
 	    Manager.eventLoop.requestStop();
 	    return Action.CONTINUE;
 	}
@@ -66,13 +75,13 @@ public class TestIsa
   public void testIsa() {
       SlaveOffspring ackProc = SlaveOffspring.createChild();
       Task task = ackProc.findTaskUsingRefresh(true);
-      assertFalse("Task isa not initialized", task.hasIsa());    
+      assertHasIsaEquals("before attach", task, false);
       TaskObserver.Attached attacher = new AttachedObserver();
       task.requestAddAttachedObserver(attacher);
       assertRunUntilStop("testIsa attach");
       task.requestDeleteAttachedObserver(attacher);
       StatState.SLEEPING.assertRunUntil(task.getTid());
-      assertFalse("Task isa flushed", task.hasIsa());
+      assertHasIsaEquals("after detach", task, false);
   }
 
   public void testIsaSingleton ()
@@ -201,23 +210,22 @@ public class TestIsa
     task.requestDeleteAttachedObserver(attacher);
     StatState.SLEEPING.assertRunUntil(task.getTid());
 
-    assertFalse("Task doesn't have isa", proc.getMainTask().hasIsa());
+    assertHasIsaEquals("after 1st detach", proc.getMainTask(), false);
 
     task.requestAddAttachedObserver(attacher);
     assertRunUntilStop("Second attach");
 
-    assertTrue("Task has isa", proc.getMainTask().hasIsa());
+    assertHasIsaEquals("second attach", proc.getMainTask(), true);
 
     task.requestDeleteAttachedObserver(attacher);
     StatState.SLEEPING.assertRunUntil(task.getTid());
 
-    assertFalse("Task doesn't have isa", proc.getMainTask().hasIsa());
+    assertHasIsaEquals("after 2nd detach", proc.getMainTask(), false);
 
     task.requestAddAttachedObserver(attacher);
     assertRunUntilStop("Third attach");
 
-    assertTrue("Task has isa", proc.getMainTask().hasIsa());
-
+    assertHasIsaEquals("third attach", proc.getMainTask(), true);
   }
   
   public void test64To32To64 () {

@@ -93,17 +93,7 @@ public abstract class Task {
     /**
      * Return's this Task's Instruction Set Architecture.
      */
-    public final ISA getISA() {
-	if (currentISA == null)
-	    currentISA = sendrecISA();
-	return currentISA;
-    }
-    private ISA currentISA;
-    protected abstract ISA sendrecISA();
-
-    public final boolean hasIsa() {
-	return (currentISA != null);
-    }
+    public abstract ISA getISA();
 
     private SyscallTable syscallTable;
     public final SyscallTable getSyscallTable() {
@@ -178,18 +168,10 @@ public abstract class Task {
     }
 
     /**
-     * Set of interfaces currently blocking this task.
-     *
-     * XXX: Should not be public.
+     * XXX: Code using this needs a re-think.
      */
-    public Set blockers = new HashSet();
-
-    /**
-     * Return the current set of blockers as an array. Useful when
-     * debugging.
-     */
-    public TaskObserver[] getBlockers() {
-	return (TaskObserver[]) blockers.toArray(new TaskObserver[0]);
+    public Set bogusUseOfInternalBlockersVariableFIXME() {
+	return new HashSet();
     }
 
     /**
@@ -331,13 +313,10 @@ public abstract class Task {
 				  start, write);
     }
 
-    private RegisterBanks registerBanks;
-    protected abstract RegisterBanks sendrecRegisterBanks();
-    RegisterBanks getRegisterBanks() {
-	if (registerBanks == null)
-	    registerBanks = sendrecRegisterBanks();
-	return registerBanks;
-    }
+    /**
+     * Return this task's register banks.
+     */
+    protected abstract RegisterBanks getRegisterBanks();
 
     /**
      * Return the machine's register banks as an array of ByteBuffers.
@@ -356,8 +335,6 @@ public abstract class Task {
     public abstract int getMod();
  
     public void clearIsa() {
-	registerBanks = null;
 	syscallTable = null;
-	currentISA = null;
     }
 }
