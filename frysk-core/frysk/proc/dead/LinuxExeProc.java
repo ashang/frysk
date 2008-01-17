@@ -63,6 +63,7 @@ public class LinuxExeProc extends DeadProc {
 	this.host = host;
 	this.elfData = data;
 	this.id = id;
+	sendRefresh();
 	buildMetaData();
     }
 
