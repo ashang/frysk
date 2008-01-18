@@ -377,7 +377,13 @@ public class LinuxPtraceTask extends LiveTask {
 	logger.log(Level.FINE, "{0} sendDetach\n", this);
 	clearIsa();
 	try {
-	    Ptrace.detach(getTid(), sig);
+	    if (Signal.STOP.equals(sig)) {
+		logger.log(Level.FINE, "{0} sendDetach/signal STOP\n", this);
+		Signal.STOP.tkill(getTid());
+		Ptrace.detach(getTid(), 0);
+	    } else {
+		Ptrace.detach(getTid(), sig);
+	    }
 	} catch (Exception e) {
 	    // Ignore problems trying to detach, most of the time the
 	    // problem is the process has already left the cpu queue

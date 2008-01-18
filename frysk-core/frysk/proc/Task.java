@@ -164,6 +164,7 @@ public abstract class Task {
 	return ("{" + super.toString()
 		+ ",pid=" + proc.getPid()
 		+ ",tid=" + getTid()
+		+ ",state=" + getStateFIXME()
 		+ "}");
     }
 

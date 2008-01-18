@@ -1,5 +1,10 @@
 2008-01-18  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTask.java (sendDetach(int)): For SIGSTOP, send a
+	signal.
+	* LinuxPtraceTaskState.java: Don't loose the signal in
+	WaitForContinueorUnblock.
+	
 	* TestProcStopped.java (testStoppedSignal()): New.
 	* LinuxPtraceTaskState.java (transitionToAttached): Merge signal code.
 

@@ -390,7 +390,7 @@ class LinuxPtraceTaskState extends State {
 	    {
 		logger.log (Level.FINE, "{0} handleUnblock\n", task); 
 		task.blockers.remove (observer);
-		return Attached.waitForContinueOrUnblock;
+		return this;
 	    }
 	    LinuxPtraceTaskState handleContinue (LinuxPtraceTask task)
 	    {
