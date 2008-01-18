@@ -120,9 +120,17 @@ public class DwflFactory
 	// Condensing elf mappings into a single Dwfl_Module per elf image.
 
 	// Base case:
-	// While the map is empty skip.
-	while (! isVDSO(proc, maps[count]) && isEmptyMap(maps[count]))
-	    count++;
+	// While the map is empty skip
+
+	// XXX: Add an explicit if count == maps.length -1 break. What is the 
+	// failure case for not finding a [vdso]?
+        while (! isVDSO(proc, maps[count]) && isEmptyMap(maps[count]))
+        {
+            if (count == (maps.length-1))
+                break;
+            count++;
+        }
+
 	// If map represents the vdso section, report vdso.
 	if (isVDSO(proc, maps[count])) {
 	    logger.log(Level.FINE, "Found the vdso!\n");

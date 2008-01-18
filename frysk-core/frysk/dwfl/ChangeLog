@@ -1,3 +1,8 @@
+2008-01-18  Phil Muldoon <pmuldoon@redhat.com>
+	
+	* DwflFactory.java (updateDwfl): Do not overrun map
+	length on vdso check.
+
 2008-01-14  Mike Cvet  <mcvet@redhat.com>
 
 	* ElfSectionCache.java: Added.
