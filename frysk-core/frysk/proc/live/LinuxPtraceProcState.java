@@ -39,6 +39,8 @@
 
 package frysk.proc.live;
 
+import frysk.sys.Signal;
+import frysk.sys.proc.Status;
 import java.util.Iterator;
 import java.util.Collection;
 import java.util.HashSet;
@@ -165,6 +167,15 @@ abstract class LinuxPtraceProcState extends State {
 	    }
 	    // Tell the main task to get things started.
 	    mainTask.performAttach ();
+	    // The attach has been initiated and the process state
+	    // should transition to (T) TRACED.  If it is instead in
+	    // (T) STOPPED then the process is stuck (suspended), send
+	    // it a SIGSTOP to unwedge it.  /proc/status is used as
+	    // that differentiates between STOPPED an TRACED.
+	    if (Status.isStopped(proc.getPid())) {
+		// wake the suspended process
+		Signal.CONT.tkill(proc.getPid());
+	    }
 	    return new Attaching.ToMainTask (mainTask);
 	}
 	/**

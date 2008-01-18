@@ -63,16 +63,12 @@ public class TestProcStopped extends TestLib {
     }
 
     public void testStoppedAckDaemon() {
-	if (unresolvedOnUtrace(5114))
-	    return;
 	SlaveOffspring ackProc = SlaveOffspring.createDaemon();
 	stopped(ackProc);
 	assertRunUntilStop("testStoppedAckDaemon");
     }
 
     public void testStoppedDetached() {
-	if (unresolvedOnUtrace(5114))
-	    return;
 	SlaveOffspring ackProc = SlaveOffspring.createChild();
 	stopped(ackProc);
 	assertRunUntilStop("testStoppedDetached");
@@ -103,8 +99,6 @@ public class TestProcStopped extends TestLib {
     }
 
     public void testMultiThreadedStoppedAckDaemon() {
-	if (unresolvedOnUtrace(3595))
-	    return;
 	SlaveOffspring ackProc = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(2);
 	stopped(ackProc);
@@ -112,8 +106,6 @@ public class TestProcStopped extends TestLib {
     }
 
     public void testMultiThreadedStoppedDetached() {
-	if (unresolvedOnUtrace(3595))
-	    return;
 	SlaveOffspring ackProc = SlaveOffspring.createChild()
 	    .assertSendAddClonesWaitForAcks(2);
 	stopped(ackProc);

@@ -1,3 +1,7 @@
+2008-01-18  Andrew Cagney  <cagney@redhat.com>
+
+	* Status.java (isStopped(int)): New.
+
 2008-01-15  Andrew Cagney  <cagney@redhat.com>
 
 	* Stat.java (Stat(int)): New.

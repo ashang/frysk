@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,26 +37,18 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.sys.proc;
 
-
-public class Status
-{
-
-    /**
-     * frysk.sys.proc.Status
-     * 
-     * Partial wrapper for /proc/$$/status. 
-     *
-     * This class supplements frysk.sys.proc.Stat 
-     * as that class  does not contain GID and UID. 
-     *
-     * This class extracts that information from either
-     * /proc/$$/status or from a buffer that has been
-     * been passed to it for parsing.
-     * 
-     */
+/**
+ * Partial wrapper for /proc/$$/status.
+ *
+ * This class supplements frysk.sys.proc.Stat as that class does not
+ * contain GID and UID.
+ *
+ * This class extracts that information from either /proc/$$/status or
+ * from a buffer that has been been passed to it for parsing.
+ */
+public class Status {
 
     private native static byte[] statusSlurp (int pid);
    
@@ -162,4 +154,14 @@ public class Status
     	return getGID(buffer);
     }
 
+    /**
+     * Returns true if the PID is in a stopped state.
+     */
+    public static boolean isStopped(int pid) {
+	byte[] buf = statusSlurp(pid);
+	if (buf == null)
+	    return false; // lost task?
+	String status = new String(buf);
+	return status.indexOf("T (stopped)") >= 0;
+    }
 }

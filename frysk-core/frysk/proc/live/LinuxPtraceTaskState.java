@@ -207,7 +207,14 @@ class LinuxPtraceTaskState extends State {
 	    LinuxPtraceTaskState handleSignaledEvent (LinuxPtraceTask task, int signal)
 	    {
 		logger.log (Level.FINE, "{0} handleSignaledEvent, signal: {1}\n ", new Object[] {task,new Integer(signal)}); 
-		return transitionToAttached (task, signal);
+		if (task.getProc().getMainTask() == task
+		    && Signal.CONT.equals(signal))
+		    // Its the cont signal sent to this task to wake
+		    // it up from it's slumber; turn it back into a
+		    // SIGSTOP.
+		    return transitionToAttached (task, Signal.STOP.intValue());
+		else
+		    return transitionToAttached (task, signal);
 	    }
 	    LinuxPtraceTaskState handleTrappedEvent (LinuxPtraceTask task)
 	    {
@@ -409,8 +416,7 @@ class LinuxPtraceTaskState extends State {
 		if (shouldRemoveObservers)
 		    task.removeObservers();
 		// XXX: Otherwise check that observers are empty?
-            
-		task.sendDetach (0);
+		task.sendDetach(signal);
 		((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted (task);
 		return detached;
 	    }
@@ -1414,8 +1420,7 @@ class LinuxPtraceTaskState extends State {
 	    if (shouldRemoveObservers)
 		task.removeObservers();
 	    // XXX: Otherwise check that observers are empty?
-        
-	    task.sendDetach (0);
+	    task.sendDetach (sig);
 	    ((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted (task);
 	    return detached;
 	}
