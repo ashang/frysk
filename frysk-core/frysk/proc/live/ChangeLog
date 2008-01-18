@@ -1,5 +1,8 @@
 2008-01-18  Andrew Cagney  <cagney@redhat.com>
 
+	* TestProcStopped.java (testStoppedSignal()): New.
+	* LinuxPtraceTaskState.java (transitionToAttached): Merge signal code.
+
 	* LinuxPtraceProcState.java: Move attach SIGCONT from here ...
 	* LinuxPtraceTaskState.java: ... to here; wait for SIGCONT.
 	

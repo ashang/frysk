@@ -160,7 +160,7 @@ public class Signal implements Comparable {
     public final void tkill(int lwp) {
 	tkill(lwp, sig);
     }
-    private static native void tkill(int lwp, int signum);
+    public static native void tkill(int lwp, int signum);
 
     /**
      * Momentarialy sets the signal handler for Sig to SIGIGN so that
@@ -172,6 +172,8 @@ public class Signal implements Comparable {
     private static native void drain(int signum);
 
     public static Signal valueOf(int signum) {
+	if (signum < 0)
+	    throw new NullPointerException("invalid signal: " + signum);
 	if (ALRM.equals(signum)) return ALRM;
 	if (BUS.equals(signum)) return BUS;
 	if (CONT.equals(signum)) return CONT;
@@ -193,6 +195,6 @@ public class Signal implements Comparable {
 	if (USR2.equals(signum)) return USR2;
 	if (URG.equals(signum)) return URG;
 	if (WINCH.equals(signum)) return WINCH;
-	throw new NullPointerException("unknown signal: " + signum);
+	return new Signal(signum, "???");
     }
 }

@@ -39,6 +39,7 @@
 
 package frysk.proc.live;
 
+import frysk.sys.SignalSet;
 import frysk.sys.proc.Status;
 import frysk.proc.TaskObserver;
 import frysk.proc.Observer;
@@ -213,35 +214,41 @@ class LinuxPtraceTaskState extends State {
 	    super("attaching");
 	    this.waitForSIGCONT = waitForSIGCONT;
 	}
+	private SignalSet sigset = new SignalSet();
 	private LinuxPtraceTaskState transitionToAttached(LinuxPtraceTask task,
 							  int signal) {
-	    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted (task);
-	    return new Attached.WaitForContinueOrUnblock (signal);
+	    if (waitForSIGCONT && !Signal.CONT.equals(signal)) {
+		// Save the signal and then re-wait for, hopefully,
+		// the SIGCONT behind it.
+		sigset.add(Signal.valueOf(signal));
+		task.sendContinue(0);
+		return this;
+	    } else {
+		if (waitForSIGCONT) {
+		    // Send the signals back
+		    Signal[] sigs = sigset.toArray();
+		    for (int i = 0; i < sigs.length; i++) {
+			logger.log(Level.FINE, "{0} re-sending {1}\n",
+				   new Object[] { this, sigs[i] });
+			sigs[i].tkill(task.getTid());
+		    }
+		    signal = Signal.STOP.intValue();
+		} else if (Signal.STOP.equals(signal)) {
+		    // toss the stop.
+		    signal = 0;
+		}
+		((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted (task);
+		return new Attached.WaitForContinueOrUnblock (signal);
+	    }
 	}
 	LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task) {
 	    logger.log (Level.FINE, "{0} handleStoppedEvent\n", task); 
-	    if (waitForSIGCONT) {
-		logger.log(Level.FINE, "{0} wait for CONT behind STOP\n",
-			   task);
-		// There's a SIGCONT behind this SIGSTOP; wait for
-		// that too.
-		return this;
-	    } else {
-		return transitionToAttached(task, 0);
-	    }
+	    return transitionToAttached(task, Signal.STOP.intValue());
 	}
 	LinuxPtraceTaskState handleSignaledEvent(LinuxPtraceTask task,
 						 int signal) {
 	    logger.log (Level.FINE, "{0} handleSignaledEvent, signal: {1}\n ", new Object[] {task,new Integer(signal)}); 
-	    if (waitForSIGCONT && Signal.CONT.equals(signal)) {
-		logger.log(Level.FINE, "{0} woken from slumber\n", task);
-		// Its the cont signal sent to this task to wake it up
-		// from it's slumber; turn it back into a SIGSTOP and
-		// continue.
-		return transitionToAttached (task, Signal.STOP.intValue());
-	    } else {
-		return transitionToAttached (task, signal);
-	    }
+	    return transitionToAttached(task, signal);
 	}
 	LinuxPtraceTaskState handleTrappedEvent(LinuxPtraceTask task) {
 	    logger.log (Level.FINE, "{0} handleTrappedEvent\n", task); 

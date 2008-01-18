@@ -40,7 +40,11 @@
 
 package frysk.proc.live;
 
+import frysk.sys.Signal;
+import frysk.testbed.TaskObserverBase;
+import frysk.proc.TaskObserver;
 import frysk.proc.Manager;
+import frysk.proc.Action;
 import frysk.event.RequestStopEvent;
 import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
@@ -155,5 +159,26 @@ public class TestProcStopped extends TestLib {
 	}
 	public void taskAddFailed(Object task, Throwable w) {
 	}
+    }
+
+    public void testStoppedSignal() {
+	SlaveOffspring ackProc = SlaveOffspring.createDaemon();
+	Task task = ackProc.findTaskUsingRefresh(true);
+	ackProc.assertSendStop();
+	// Make a termination signal pending; if that slips through
+	// the task dies and the test fails.
+	ackProc.signal(Signal.TERM);
+	class Signaled extends TaskObserverBase implements TaskObserver.Signaled {
+	    public void addedTo(Object o) {
+		Signal.CONT.tkill(((Task)o).getTid());
+	    }
+	    public Action updateSignaled(Task task, int signal) {
+		assertTrue("signal", Signal.TERM.equals(signal));
+		Manager.eventLoop.requestStop();
+		return Action.CONTINUE;
+	    }
+	}
+	task.requestAddSignaledObserver(new Signaled());
+	assertRunUntilStop("looking for sigterm");
     }
 }
