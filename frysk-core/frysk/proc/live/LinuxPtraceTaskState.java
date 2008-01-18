@@ -39,6 +39,7 @@
 
 package frysk.proc.live;
 
+import frysk.sys.proc.Status;
 import frysk.proc.TaskObserver;
 import frysk.proc.Observer;
 import frysk.proc.Observable;
@@ -181,116 +182,134 @@ class LinuxPtraceTaskState extends State {
 		logger.log (Level.FINE, "{0} handleRemoval\n", task); 
 		return destroyed;
 	    }
-	    LinuxPtraceTaskState handleAttach (LinuxPtraceTask task)
-	    {
+	    LinuxPtraceTaskState handleAttach(LinuxPtraceTask task) {
 		logger.log (Level.FINE, "{0} handleAttach\n", task); 
 		task.sendAttach ();
-		return attaching;
+		if (task.getProc().getMainTask() == task
+		    && Status.isStopped(task.getTid())) {
+		    // The attach has been initiated on the main task
+		    // of the process; the process state should
+		    // transition to (T) TRACED.  If it is instead (T)
+		    // STOPPED then the process is stuck (suspended),
+		    // send it a SIGSTOP to unwedge it.  /proc/status
+		    // is used as that differentiates between STOPPED
+		    // an TRACED.
+		    logger.log(Level.FINE,
+			       "{0} wake the suspended process", task);
+		    Signal.CONT.tkill(task.getTid());
+		    return new Attaching(true);
+		} else {
+		    return new Attaching(false);
+		}
 	    }
 	};
 
     /**
      * The task is in the process of being attached.
      */
-    private static final LinuxPtraceTaskState attaching = new LinuxPtraceTaskState("attaching")
-	{
-	    private LinuxPtraceTaskState transitionToAttached (LinuxPtraceTask task, int signal)
-	    {
-		((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted (task);
-		return new Attached.WaitForContinueOrUnblock (signal);
-	    }
-	    LinuxPtraceTaskState handleStoppedEvent (LinuxPtraceTask task)
-	    {
-		logger.log (Level.FINE, "{0} handleStoppedEvent\n", task); 
-		return transitionToAttached (task, 0);
-	    }
-	    LinuxPtraceTaskState handleSignaledEvent (LinuxPtraceTask task, int signal)
-	    {
-		logger.log (Level.FINE, "{0} handleSignaledEvent, signal: {1}\n ", new Object[] {task,new Integer(signal)}); 
-		if (task.getProc().getMainTask() == task
-		    && Signal.CONT.equals(signal))
-		    // Its the cont signal sent to this task to wake
-		    // it up from it's slumber; turn it back into a
-		    // SIGSTOP.
-		    return transitionToAttached (task, Signal.STOP.intValue());
-		else
-		    return transitionToAttached (task, signal);
-	    }
-	    LinuxPtraceTaskState handleTrappedEvent (LinuxPtraceTask task)
-	    {
-		logger.log (Level.FINE, "{0} handleTrappedEvent\n", task); 
-		return transitionToAttached (task, 0);
-	    }
-    	    LinuxPtraceTaskState handleDisappearedEvent (LinuxPtraceTask task, Throwable w)
-    	    {
-		logger.log (Level.FINE, "{0} handleDisappearedEvent\n", task); 
-		// Ouch, the task disappeared before the attach
-		// reached it, just abandon this one (but ack the
-		// operation regardless).
-		((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted (task);
-		((LinuxPtraceProc)task.getProc()).remove (task);
-		return destroyed;
-    	    }
-	    LinuxPtraceTaskState handleTerminatedEvent (LinuxPtraceTask task, boolean signal,
-					     int value)
-    	    {
-		logger.log (Level.FINE, "{0} processTerminatedEvent\n", task); 
-		// Ouch, the task terminated before the attach
-		// reached it, just abandon this one (but ack the
-		// operation regardless).
-		((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted (task);
-		((LinuxPtraceProc)task.getProc()).remove (task);
-		return destroyed;
-    	    }
-	    LinuxPtraceTaskState handleDetach (LinuxPtraceTask task, boolean shouldRemoveObservers)
-	    {
-		logger.log (Level.FINE, "{0} handleDetach\n", task); 
-		return detaching;
-	    }
-
-	    /**
-	     * Unblocking in attaching state is really a noop since
-	     * no observer should have been triggered yet, so no
-	     * observer should be blocking yet (but we allow a stray
-	     * unblock).
-	     */
-	    LinuxPtraceTaskState handleUnblock (LinuxPtraceTask task,
-				     TaskObserver observer)
-	    {
-		logger.log (Level.FINE, "{0} handleUnblock\n", task); 
-		// Sanity check
-		if (task.blockers.remove(observer))
-		  {
-		    throw new RuntimeException
-		      ("blocked observer in attaching state unblock? "
-		       + observer);
-		  }
+    static private class Attaching extends LinuxPtraceTaskState {
+	private final boolean waitForSIGCONT;
+	Attaching(boolean waitForSIGCONT) {
+	    super("attaching");
+	    this.waitForSIGCONT = waitForSIGCONT;
+	}
+	private LinuxPtraceTaskState transitionToAttached(LinuxPtraceTask task,
+							  int signal) {
+	    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted (task);
+	    return new Attached.WaitForContinueOrUnblock (signal);
+	}
+	LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task) {
+	    logger.log (Level.FINE, "{0} handleStoppedEvent\n", task); 
+	    if (waitForSIGCONT) {
+		logger.log(Level.FINE, "{0} wait for CONT behind STOP\n",
+			   task);
+		// There's a SIGCONT behind this SIGSTOP; wait for
+		// that too.
 		return this;
+	    } else {
+		return transitionToAttached(task, 0);
 	    }
-
-	    /**
-	     * All observer can be added (but won't trigger yet) in
-	     * attaching state.
-	     */
-	    LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task,
-					   TaskObservation observation)
-	    {
-	      logger.log (Level.FINE, "{0} handleAddObservation\n", task);
-	      observation.add();
-	      return this;
+	}
+	LinuxPtraceTaskState handleSignaledEvent(LinuxPtraceTask task,
+						 int signal) {
+	    logger.log (Level.FINE, "{0} handleSignaledEvent, signal: {1}\n ", new Object[] {task,new Integer(signal)}); 
+	    if (waitForSIGCONT && Signal.CONT.equals(signal)) {
+		logger.log(Level.FINE, "{0} woken from slumber\n", task);
+		// Its the cont signal sent to this task to wake it up
+		// from it's slumber; turn it back into a SIGSTOP and
+		// continue.
+		return transitionToAttached (task, Signal.STOP.intValue());
+	    } else {
+		return transitionToAttached (task, signal);
 	    }
-	  
-	    /**
-	     * Deleting an observer is always allowd in attaching state.
-	     */
-	    LinuxPtraceTaskState handleDeleteObservation(LinuxPtraceTask task,
-					      TaskObservation observation)
-	    {
-	      logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
-	      observation.delete();
-	      return handleUnblock(task, observation.getTaskObserver());
+	}
+	LinuxPtraceTaskState handleTrappedEvent(LinuxPtraceTask task) {
+	    logger.log (Level.FINE, "{0} handleTrappedEvent\n", task); 
+	    return transitionToAttached (task, 0);
+	}
+	LinuxPtraceTaskState handleDisappearedEvent(LinuxPtraceTask task,
+						    Throwable w) {
+	    logger.log (Level.FINE, "{0} handleDisappearedEvent\n", task); 
+	    // Ouch, the task disappeared before the attach reached
+	    // it, just abandon this one (but ack the operation
+	    // regardless).
+	    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted (task);
+	    ((LinuxPtraceProc)task.getProc()).remove (task);
+	    return destroyed;
+	}
+	LinuxPtraceTaskState handleTerminatedEvent(LinuxPtraceTask task,
+						   boolean signal, int value) {
+	    logger.log (Level.FINE, "{0} processTerminatedEvent\n", task); 
+	    // Ouch, the task terminated before the attach reached it,
+	    // just abandon this one (but ack the operation
+	    // regardless).
+	    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted (task);
+	    ((LinuxPtraceProc)task.getProc()).remove (task);
+	    return destroyed;
+	}
+	LinuxPtraceTaskState handleDetach(LinuxPtraceTask task,
+					  boolean shouldRemoveObservers) {
+	    logger.log (Level.FINE, "{0} handleDetach\n", task); 
+	    return detaching;
+	}
+	/**
+	 * Unblocking in attaching state is really a noop since
+	 * no observer should have been triggered yet, so no
+	 * observer should be blocking yet (but we allow a stray
+	 * unblock).
+	 */
+	LinuxPtraceTaskState handleUnblock(LinuxPtraceTask task,
+					   TaskObserver observer) {
+	    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
+	    // Sanity check
+	    if (task.blockers.remove(observer)) {
+		throw new RuntimeException
+		    ("blocked observer in attaching state unblock? "
+		     + observer);
 	    }
-	};
+	    return this;
+	}
+	/**
+	 * All observer can be added (but won't trigger yet) in
+	 * attaching state.
+	 */
+	LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task,
+						  TaskObservation observation) {
+	    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
+	    observation.add();
+	    return this;
+	}
+	/**
+	 * Deleting an observer is always allowd in attaching state.
+	 */
+	LinuxPtraceTaskState handleDeleteObservation(LinuxPtraceTask task,
+						     TaskObservation observation)
+	{
+	    logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
+	    observation.delete();
+	    return handleUnblock(task, observation.getTaskObserver());
+	}
+    }
 
     /**
      * The task is attached, and waiting to be either continued, or
@@ -1264,7 +1283,7 @@ class LinuxPtraceTaskState extends State {
 	    LinuxPtraceTaskState handleAttach (LinuxPtraceTask task)
 	    {
 		logger.log (Level.FINE, "{0} handleAttach\n", task); 
-		return attaching;
+		return new Attaching(false);
 	    }
 	    LinuxPtraceTaskState handleStoppedEvent (LinuxPtraceTask task)
 	    {

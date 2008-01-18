@@ -1,5 +1,8 @@
 2008-01-18  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceProcState.java: Move attach SIGCONT from here ...
+	* LinuxPtraceTaskState.java: ... to here; wait for SIGCONT.
+	
 	* LinuxPtraceTaskState.java: Convert a SIGCONT during the main
 	task's attach back into a SIGSTOP; pass pending signals back when
 	detaching.
