@@ -1,3 +1,7 @@
+2008-01-18  Mark Wielaard  <mwielaard@redhat.com>
+
+	* CompilerVersionFactory.java: Add copyright boilerplate.
+	
 2008-01-14  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestLocationExpression.java (testOverFlow): New.
