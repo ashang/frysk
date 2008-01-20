@@ -1,3 +1,11 @@
+2008-01-18  Mark Wielaard  <mwielaard@redhat.com>
+
+	* include/dwarf.h (dwarf_cie_info): Add as and as_arg members.
+	* src/dwarf/Gfde.c (dwarf_extract_proc_info_from_fde): Set dci
+	as and as_arg when not local only.
+	* src/dwarf/Gparser.c (run_cfi_program): Use dci as and as_arg
+	when not local only.
+
 2008-01-17  Mark Wielaard  <mwielaard@redhat.com>
 
 	* include/dwarf.h (dwarf_extract_proc_info_from_fde): Pass

@@ -71,8 +71,13 @@ run_cfi_program (struct dwarf_cursor *c, dwarf_state_record_t *sr,
   void *arg;
   int ret;
 
+#ifndef UNW_LOCAL_ONLY
+  as = dci->as;
+  arg = dci->as_arg;
+#else
   as = c->as;
   arg = c->as_arg;
+#endif
   a = unw_get_accessors (as);
   curr_ip = c->pi.start_ip;
 

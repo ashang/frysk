@@ -252,6 +252,10 @@ dwarf_reg_state_t;
 
 typedef struct dwarf_cie_info
   {
+#ifndef UNW_LOCAL_ONLY
+    unw_addr_space_t as;        /* reference to frame address-space */
+    void *as_arg;               /* argument to address-space callbacks */
+#endif
     unw_word_t cie_instr_start;	/* start addr. of CIE "initial_instructions" */
     unw_word_t cie_instr_end;	/* end addr. of CIE "initial_instructions" */
     unw_word_t fde_instr_start;	/* start addr. of FDE "instructions" */

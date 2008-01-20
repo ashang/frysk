@@ -351,7 +351,10 @@ dwarf_extract_proc_info_from_fde (unw_addr_space_t as, unw_accessors_t *a,
       else
 	dci.fde_instr_start = addr;
       dci.fde_instr_end = fde_end_addr;
-
+#ifndef UNW_LOCAL_ONLY
+      dci.as = as;
+      dci.as_arg = arg;
+#endif
       memcpy (pi->unwind_info, &dci, sizeof (dci));
     }
   return 0;

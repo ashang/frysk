@@ -567,11 +567,7 @@ get_eh_frame_hdr_addr(unw_proc_info_t *pi, char *image, size_t size,
   *peh_vaddr = peh_hdr.p_vaddr;
 
   char *hdr;
-  // FIXME. Currently we prefer eh_frame, but we should switch to
-  // prefer debug_frame when all bugs have been squashed out of that
-  // in libunwind.
-  if (peh_hdr_ndx == -1
-      && debug_frame_data != NULL && debug_frame_data->d_buf != NULL
+  if (debug_frame_data != NULL && debug_frame_data->d_buf != NULL
       && debug_frame_data->d_size != 0)
     {
       pi->format = UNW_INFO_FORMAT_TABLE;
