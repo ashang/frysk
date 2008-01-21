@@ -231,7 +231,7 @@ SUFFIXES += .java-sh
 	$(SHELL) $< > $*.tmp $@
 	chmod a-w $*.tmp
 	mv -f $*.tmp $@
-SUFFIXES += cxx-sh
+SUFFIXES += .cxx-sh
 .cxx-sh.cxx:
 	rm -f $*.tmp
 	mkdir -p `dirname $*`
@@ -239,7 +239,7 @@ SUFFIXES += cxx-sh
 	$(SHELL) $< > $*.tmp $@
 	chmod a-w $*.tmp
 	mv -f $*.tmp $@
-SUFFIXES += ..c-sh
+SUFFIXES += .c-sh
 .c-sh.c:
 	rm -f $*.tmp
 	mkdir -p `dirname $*`
@@ -305,13 +305,13 @@ SUBST = \
 	chmod a-w $@.tmp ; \
 	mv -f $@.tmp $@
 
-SUFFIXES += ..java-in
+SUFFIXES += .java-in
 .java-in.java:
 	$(SUBST)
 SUFFIXES += .cxx-in
 .cxx-in.cxx:
 	$(SUBST)
-SUFFIXES += ..c-in
+SUFFIXES += .c-in
 .c-in.c:
 	$(SUBST)
 TestRunner.java: common/TestRunner.java-in

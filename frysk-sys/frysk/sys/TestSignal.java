@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,71 +39,30 @@
 
 package frysk.sys;
 
+import frysk.junit.TestCase;
+
 /**
- * Identifies a process.
+ * Test the value of some well known signals; for each confirm that
+ * they are singleton's.
  */
-public class ProcessIdentifier
-    implements Comparable
-{
-    private int pid;
-    public ProcessIdentifier (int pid)
-    {
-	this.pid = pid;
-    }
-    public int hashCode () {
-	return pid;
-    }
-    public int intValue() {
-        return pid;
-    }
-    public int compareTo (Object o)
-    {
-	return ((ProcessIdentifier)o).pid - this.pid;
-    }
-    public boolean equals (Object o)
-    {
-	if (o instanceof ProcessIdentifier)
-	    return ((ProcessIdentifier)o).pid == this.pid;
-	else
-	    return false;
-    }
-    /**
-     * Represent the ProcessIdentifier textually.  Return the PID as a
-     * number so that it can be used directly.
-     */
-    public String toString ()
-    {
-	return Integer.toString (pid);
+
+public class TestSignal extends TestCase {
+
+    private void check(int val, Signal sig) {
+	assertEquals("value", val, sig.intValue());
+	assertSame("identity", sig, Signal.valueOf(val));
     }
 
-    /**
-     * Send a fatal signal (SIGKILL) to this process.
-     */
-    public void kill() {
-	Signal.KILL.kill(pid);
+    public void testNone() {
+	check(0, Signal.NONE);
     }
 
-    /**
-     * Send a signal to THIS pid.
-     */
-    public void tkill(Signal signal) {
-	signal.tkill(pid);
+    public void testKill() {
+	check(9, Signal.KILL);
     }
 
-    /**
-     * Perform a blocking drain of all wait events from this process.
-     * Only returns when the process has disappeared.
-     */
-    public void blockingDrain ()
-    {
-	Wait.drain (pid);
+    public void testTerm() {
+	check(15, Signal.TERM);
     }
 
-    /**
-     * Perform a blocking wait for a single event from this process.
-     */
-    public void blockingWait (WaitBuilder o)
-    {
-	Wait.waitAll (pid, o);
-    }
 }

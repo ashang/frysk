@@ -1,6 +1,8 @@
+#!/bin/sh
+cat <<EOF
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,6 +38,9 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+EOF
+
+cat <<EOF
 
 #include <sys/types.h>
 #include <signal.h>
@@ -49,33 +54,6 @@
 #include "frysk/sys/cni/Errno.hxx"
 #include <linux.syscall.h>
 #include <unistd.h>
-
-#define SIGVAL(sig, SIG)				\
-  jint							\
-  frysk::sys::Signal::sig() {				\
-    return (jint)(SIG);					\
-  }
-SIGVAL(alrm,SIGALRM)
-SIGVAL(bus,SIGBUS)
-SIGVAL(chld,SIGCHLD)
-SIGVAL(cont,SIGCONT)
-SIGVAL(fpe,SIGFPE)
-SIGVAL(hup,SIGHUP)
-SIGVAL(ill,SIGILL)
-SIGVAL(int_,SIGINT)
-SIGVAL(io,SIGIO)
-SIGVAL(kill,SIGKILL)
-SIGVAL(none,0)
-SIGVAL(prof,SIGPROF)
-SIGVAL(pwr,SIGPWR)
-SIGVAL(segv,SIGSEGV)
-SIGVAL(stop,SIGSTOP)
-SIGVAL(term,SIGTERM)
-SIGVAL(trap,SIGTRAP)
-SIGVAL(usr1,SIGUSR1)
-SIGVAL(usr2,SIGUSR2)
-SIGVAL(urg,SIGURG)
-SIGVAL(winch,SIGWINCH)
 
 void
 frysk::sys::Signal::tkill(jint tid, jint signum) {
@@ -110,3 +88,23 @@ frysk::sys::Signal::drain (jint signum) {
 //   printf ("After: %d (%s) pending? %s\n", signum, strsignal (signum),
 // 	  sigismember (&set, signum) ? "YES" : "NO");
 }
+
+EOF
+
+for sig in \
+  hup int_ quit ill abrt fpe kill segv pipe alrm term usr1 usr2 chld cont stop tstp ttin ttou \
+  bus poll prof sys trap urg vtalrm xcpu xfsz \
+  iot emt stkflt io cld pwr info lost winch unused
+do
+    SIG=SIG`echo "${sig}" | tr '[a-z]' '[A-Z]' | sed 's/_$//'`
+    cat <<EOF
+jint
+frysk::sys::Signal::${sig}() {
+#ifdef ${SIG}
+    return ${SIG};
+#else
+    return -1;
+#endif
+}
+EOF
+done
