@@ -1,5 +1,14 @@
 2008-01-22  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTask.java (processSignaledEvent(Signal)): Replace
+	processSignaledEvent(int).
+	(processTerminatingEvent(Signal,int)): Replace
+	processTerminatingEvent(boolean,int).
+	(processTerminatedEvent(Signal,int)): Replace
+	processTerminatedEvent(Signal,int).
+	* LinuxPtraceTaskState.java: Update.
+	* LinuxWaitBuilder.java: Update.
+
 	* LinuxWaitBuilder.java: Update to match
 	WaitBuilder.exitEvent(int,Signal,int,boolean) and
 	WaitBuilder.terminated(int,Signal,int,boolean).

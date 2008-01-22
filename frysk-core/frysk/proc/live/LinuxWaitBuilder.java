@@ -169,10 +169,8 @@ class LinuxWaitBuilder implements WaitBuilder {
 	if (task == null)
 	    // Stray pid from uncontrolled fork.
 	    logMissing("exited", pid);
-	else if (signal != null)
-	    task.processTerminatingEvent(true, signal.intValue());
 	else
-	    task.processTerminatingEvent(false, status);
+	    task.processTerminatingEvent(signal, status);
     }
     
     public void execEvent (int pid)
@@ -214,7 +212,7 @@ class LinuxWaitBuilder implements WaitBuilder {
 	else if (sig == Signal.TRAP)
             task.processTrappedEvent();
 	else
-            task.processSignaledEvent(sig.intValue());
+            task.processSignaledEvent(sig);
     }
     
     public void terminated(int pid, Signal signal, int status,
@@ -223,9 +221,7 @@ class LinuxWaitBuilder implements WaitBuilder {
 	if (task == null)
 	    // Stray pid from uncontrolled fork.
 	    logMissing("terminated", pid);
-	else if (signal != null)
-	    task.processTerminatedEvent(true, signal.intValue());
 	else
-	    task.processTerminatedEvent(false, status);
+	    task.processTerminatedEvent(signal, status);
     }
 }

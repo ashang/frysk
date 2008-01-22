@@ -205,16 +205,15 @@ public class LinuxPtraceTask extends LiveTask {
     /**
      * (internal) This task received a signal.
      */
-    void processSignaledEvent (int sig)
-    {
+    void processSignaledEvent(Signal sig) {
 	set(oldState().handleSignaledEvent(this, sig));
     }
     /**
-     * (internal) The task is in the process of terminating. If SIGNAL, VALUE is
-     * the signal, otherwize it is the exit status.
+     * (internal) The task is in the process of terminating. If SIGNAL
+     * is non-ZERO the terminating signal, else STATUS is the exit
+     * status.
      */
-    void processTerminatingEvent (boolean signal, int value)
-    {
+    void processTerminatingEvent(Signal signal, int value) {
 	set(oldState().handleTerminatingEvent(this, signal, value));
     }
     /**
@@ -233,11 +232,10 @@ public class LinuxPtraceTask extends LiveTask {
 	set(oldState().handleSyscalledEvent(this));
     }
     /**
-     * (internal) The task has terminated; if SIGNAL, VALUE is the signal,
-     * otherwize it is the exit status.
+     * (internal) The task has terminated; if SIGNAL is non-NULL the
+     * termination signal else STATUS contains the exit status.
      */
-    void processTerminatedEvent (boolean signal, int value)
-    {
+    void processTerminatedEvent(Signal signal, int value) {
 	set(oldState().handleTerminatedEvent(this, signal, value));
     }
     /**
