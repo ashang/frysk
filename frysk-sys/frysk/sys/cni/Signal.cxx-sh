@@ -89,6 +89,21 @@ frysk::sys::Signal::drain (jint signum) {
 // 	  sigismember (&set, signum) ? "YES" : "NO");
 }
 
+jint
+frysk::sys::Signal::nsig() {
+  return NSIG;
+}
+
+jint
+frysk::sys::Signal::rtMin() {
+  return SIGRTMIN;
+}
+
+jint
+frysk::sys::Signal::rtMax() {
+  return SIGRTMAX;
+}
+
 EOF
 
 for sig in \

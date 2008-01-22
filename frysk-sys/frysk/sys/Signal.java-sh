@@ -41,6 +41,7 @@ cat <<EOF
 EOF
 
 cat <<EOF
+
 package frysk.sys;
 
 import java.util.Map;
@@ -142,50 +143,68 @@ public class Signal implements Comparable {
     private static native void drain(int signum);
 
     /**
+     * Given an integer, return the corresponding signal.
+     * If the signal is unknown, make one up.
+     */
+    public static Signal valueOf(int signum) {
+	if (signum < 0) {
+	    throw new NullPointerException("invalid signal: " + signum);
+        } else if (signum < signals.length) {
+            Signal signal = signals[signum];
+            if (signal == null)
+	        throw new NullPointerException("invalid signal: " + signum);
+            else
+                return signal;
+        } else if (signum >= rtMin() && signum <= rtMax()) {
+            return rtSignals[signum - rtMin()];
+        } else {
+            // Fudge up a signal; beter than throwing an exception.
+            synchronized (unknownSignals) {
+                scratchSignal.signum = signum;
+                Signal signal = (Signal)unknownSignals.get(scratchSignal);
+                if (signal != null)
+                    return signal;
+                signal = new Signal(signum, "SIG" + signum);
+                unknownSignals.put(signal, signal);
+                return signal;
+            }
+        }
+    }
+    /**
      * A scratch value for searching the signal table.
      */
     private static class ScratchSignal extends Signal {
         ScratchSignal() {
-     	    super(0, "<scratch signal>");
-	}
+           super(0, "<scratch signal>");
+       }
         int signum;
         public int hashCode() {
-	    return signum;
+           return signum;
         }
     }
+    private static final Map unknownSignals = new WeakHashMap();
     private static final ScratchSignal scratchSignal = new ScratchSignal();
+
     /**
-     * A map for looking up known signals; weak so that scratch
+     * Tables for looking up known signals; weak so that scratch
      * signals do not accumulate.
      */
-    private static final Map signals = new WeakHashMap();
-    /**
-     * Given an integer, return (or create) the corresponding signal.
-     */
-    public static Signal valueOf(int signum) {
-	if (signum < 0)
-	    throw new NullPointerException("invalid signal: " + signum);
-        synchronized (scratchSignal) {
-            scratchSignal.signum = signum;
-	    Signal signal = (Signal)signals.get(scratchSignal);
-	    if (signal == null)
-	        return signalFactory(signum, "SIG" + signum);
-	    else
-	        return signal;
-        }
-    }
-
+    private static native int nsig();
+    private static native int rtMin();
+    private static native int rtMax();
+    private static final Signal[] signals = new Signal[nsig()];
+    private static final Signal[] rtSignals = new Signal[rtMax()-rtMin()+1];
     /**
      * Create a signal, also enter the signal into the signals table
      * for later retrieval.
      */
     private static Signal signalFactory(int sig, String name) {
-    	if (sig >= 0) {
-            Signal signal = new Signal(sig, name);
-            signals.put(signal, signal);
-	    return signal;
-        } else
-            return null; // Return a known value?
+        if (sig < 0)
+            return null;
+        Signal signal = new Signal(sig, name);
+        if (signals[sig] == null)
+            signals[sig] = signal;
+	return signal;
     }
 
     public static final Signal NONE = signalFactory(0, "SIGNONE");
@@ -202,5 +221,10 @@ do
 done
 
 cat <<EOF
+    static {
+        for (int sig = rtMin(); sig <= rtMax(); sig++) {
+            rtSignals[sig - rtMin()] = new Signal(sig, "SIGRT" + sig);
+        }
+    }
 }
 EOF

@@ -1,5 +1,12 @@
 2008-01-21  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/Signal.cxx-sh (frysk): Update.
+	* Signal.java-sh (signals): Use an array for known signals.
+	(unknownSignals): New.
+	(rtSignals): New.
+	(nsig(), rtMin(), rtMax()): New.	
+	* TestSignal.java (testUnknown()): New.
+
 	* TestSignal.java: New file.
 	* cni/Signal.cxx: Replace this with ...
 	* cni/Signal.cxx-sh (frysk): ... this.  New file.

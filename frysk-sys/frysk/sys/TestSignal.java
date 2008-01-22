@@ -48,21 +48,27 @@ import frysk.junit.TestCase;
 
 public class TestSignal extends TestCase {
 
-    private void check(int val, Signal sig) {
-	assertEquals("value", val, sig.intValue());
+    private void check(int val, Signal sig, String name) {
+	assertEquals("intValue", val, sig.intValue());
+	assertEquals("toPrint", name, sig.toPrint());
 	assertSame("identity", sig, Signal.valueOf(val));
     }
 
     public void testNone() {
-	check(0, Signal.NONE);
+	check(0, Signal.NONE, "SIGNONE");
     }
 
     public void testKill() {
-	check(9, Signal.KILL);
+	check(9, Signal.KILL, "SIGKILL");
     }
 
     public void testTerm() {
-	check(15, Signal.TERM);
+	check(15, Signal.TERM, "SIGTERM");
     }
 
+    public void testUnknown() {
+	// Something large, that will create an unknown signal.
+	final int sig = 100000000;
+	check(sig, Signal.valueOf(sig), "SIG" + sig);
+    }
 }
