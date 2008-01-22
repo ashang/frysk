@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@
 #include "frysk/sys/Signal.h"
 #include "frysk/sys/cni/SignalSet.hxx"
 #include "frysk/sys/SignalSet.h"
+#include "frysk/sys/Signal.h"
 #include "frysk/sys/WaitBuilder.h"
 #include "frysk/sys/SignalBuilder.h"
 
@@ -206,8 +207,9 @@ processStatus (int pid, int status,
 	int signum = WSTOPSIG (status);
 	if (signum >= 0x80)
 	  builder->syscallEvent (pid);
-	else
-	  builder->stopped (pid, signum);
+	else {
+	  builder->stopped(pid, frysk::sys::Signal::valueOf(signum));
+        }
       }
       break;
     default:

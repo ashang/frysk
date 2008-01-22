@@ -1,3 +1,8 @@
+2008-01-21  Andrew Cagney  <cagney@redhat.com>
+
+	* WaitObserver.java: Update to match
+	WaitBuilder.signal(int,Signal).
+
 2007-12-18  cagney  <cagney@redhat.com>
 
 	* TestEquals.java (testToString()): New.

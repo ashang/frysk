@@ -76,10 +76,9 @@ public class TestPtrace
 		{
 		    fail (why);
 		}
-		public void stopped (int pid, int signal) {
-		    assertEquals ("stopped pid", id, pid);
-		    assertEquals ("stopped sig", Signal.TRAP,
-				  Signal.valueOf(signal));
+		public void stopped(int pid, Signal signal) {
+		    assertEquals("stopped pid", id, pid);
+		    assertEquals("stopped sig", Signal.TRAP, signal);
 		}
 	    });
 
@@ -91,10 +90,9 @@ public class TestPtrace
 		{
 		    fail (why);
 		}
-		public void stopped (int pid, int signal) {
-		    assertEquals ("stopped pid", id, pid);
-		    assertEquals ("stopped sig", Signal.TRAP,
-				  Signal.valueOf(signal));
+		public void stopped(int pid, Signal signal) {
+		    assertEquals("stopped pid", id, pid);
+		    assertEquals("stopped sig", Signal.TRAP, signal);
 		}
 	    });
 
@@ -140,10 +138,9 @@ public class TestPtrace
 		{
 		    fail (why);
 		}
-		public void stopped (int pid, int signal) {
-		    assertEquals ("stopped pid", id, pid);
-		    assertEquals("stopped sig", Signal.STOP,
-				 Signal.valueOf(signal));
+		public void stopped(int pid, Signal signal) {
+		    assertEquals("stopped pid", id, pid);
+		    assertEquals("stopped sig", Signal.STOP, signal);
 		}
 	    });
 

@@ -90,25 +90,21 @@ class LinuxWaitBuilder
      * didn't exist) to the fscked-up list.  Will get re-processed
      * later.
      */
-    private void saveFsckedOrderedKernelStoppedEvent (final int aPid,
-						      final int aSignal)
-    {
+    private void saveFsckedOrderedKernelStoppedEvent(final int aPid,
+						     final Signal aSignal) {
 	if (fsckedOrderedKernelEvents == null)
-	    fsckedOrderedKernelEvents = new LinkedList ();
-	Event rescheduled = new Event ()
-	    {
+	    fsckedOrderedKernelEvents = new LinkedList();
+	Event rescheduled = new Event () {
 		final int pid = aPid;
-		final int signal = aSignal;
-		public void execute ()
-		{
-		    LinuxWaitBuilder.this.stopped (pid, signal);
+		final Signal signal = aSignal;
+		public void execute() {
+		    LinuxWaitBuilder.this.stopped(pid, signal);
 		}
-		public String toString ()
-		{
+		public String toString () {
 		    return "" + super.toString () + ",stopped,pid=" + pid;
 		}
 	    };
-	logger.log (Level.FINE, "{0} rescheduled\n", rescheduled);
+	logger.log(Level.FINE, "{0} rescheduled\n", rescheduled);
 	fsckedOrderedKernelEvents.add (rescheduled);
     }
     
@@ -202,8 +198,7 @@ class LinuxWaitBuilder
         task.processSyscalledEvent();
     }
     
-    public void stopped (int pid, int sig)
-    {
+    public void stopped(int pid, Signal sig) {
         LinuxPtraceTask task = searchId.get(pid, "{0} stopped\n");
 	if (task == null) {
 	    // If there's no Task corresponding to TID, assume that
@@ -214,12 +209,12 @@ class LinuxWaitBuilder
 	    saveFsckedOrderedKernelStoppedEvent (pid, sig);
 	    return;
 	}
-	if (Signal.STOP.equals(sig))
+	if (sig == Signal.STOP)
 	    task.processStoppedEvent();
-	else if (Signal.TRAP.equals(sig))
+	else if (sig == Signal.TRAP)
             task.processTrappedEvent();
 	else
-            task.processSignaledEvent(sig);
+            task.processSignaledEvent(sig.intValue());
     }
     
     public void terminated (int pid, boolean signal, int value,

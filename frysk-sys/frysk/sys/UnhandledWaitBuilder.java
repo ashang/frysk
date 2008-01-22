@@ -122,12 +122,11 @@ public abstract class UnhandledWaitBuilder
 	unhandled ("syscallEvent", pid);
     }
     /**
-     * The task PID stopped; if SIGNAL is non-zero, then SIGNAL is
-     * pending.
+     * The task PID stopped with SIGNAL pending (SIGNAL could be
+     * SIGNONE).
      */
-    public void stopped (int pid, int signal)
-    {
-	unhandled ("stopped", pid, "signal", signal);
+    public void stopped(int pid, Signal signal) {
+	unhandled("stopped", pid, "signal", signal.toPrint());
     }
     /**
      * The task PID terminated (WIFEXITED, WIFSIGNALED); if

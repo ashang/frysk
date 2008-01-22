@@ -81,8 +81,7 @@ public class TestTearDownProcess
 		       {
 			   fail (why);
 		       }
-		       public void stopped (int pid, int signal)
-		       {
+		       public void stopped(int pid, Signal signal) {
 			   // Toss.
 		       }
 		   },

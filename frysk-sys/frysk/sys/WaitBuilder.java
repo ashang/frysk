@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -71,10 +71,9 @@ public interface WaitBuilder
      */
     void syscallEvent (int pid);
     /**
-     * The task PID stopped; if SIGNAL is non-zero, then SIGNAL is
-     * pending.
+     * The task PID stopped with SIGNAL pending (could be SIGNONE).
      */
-    void stopped (int pid, int signal);
+    void stopped(int pid, Signal signal);
     /**
      * The task PID terminated (WIFEXITED, WIFSIGNALED); if
      * SIGNAL, VALUE is the +ve terminating signal, otherwize

@@ -1,5 +1,10 @@
 2008-01-21  Andrew Cagney  <cagney@redhat.com>
 
+	* WaitBuilder.java (stopped(int,Signal)): Replace stopped(int,int).
+	* cni/Wait.cxx (wait): Update.
+	* UnhandledWaitBuilder.java: Update.
+	* TestPtrace.java: Update.
+
 	* cni/Signal.cxx-sh (frysk): Update.
 	* Signal.java-sh (signals): Use an array for known signals.
 	(unknownSignals): New.

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,11 +39,10 @@
 
 package frysk.expunit;
 
+import frysk.sys.Signal;
 import frysk.sys.WaitBuilder;
 
-class WaitObserver
-    implements WaitBuilder
-{
+class WaitObserver implements WaitBuilder {
     private final int expectedStatus;
     /**
      * Observe wait status, expecting a specific termination value.
@@ -71,10 +70,9 @@ class WaitObserver
 						"Exited with status " + value);
 	}
     }
-    public void stopped (int pid, int signal)
-    {
-	throw new TerminationException (expectedStatus,
-					"Stopped with signal " + signal);
+    public void stopped(int pid, Signal signal) {
+	throw new TerminationException(expectedStatus,
+				       "Stopped with signal " + signal);
     }
     public void syscallEvent (int pid)
     {

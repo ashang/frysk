@@ -1,3 +1,8 @@
+2008-01-21  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxWaitBuilder.java: Update to match
+	WaitBuilder.stopped(int,Signal).
+
 2008-01-18  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceTask.java (sendDetach(int)): For SIGSTOP, send a
