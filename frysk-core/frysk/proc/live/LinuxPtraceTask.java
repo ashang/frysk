@@ -265,49 +265,36 @@ public class LinuxPtraceTask extends LiveTask {
 	    });
     }
 
-    public void sendContinue (int sig)
-    {
+    void sendContinue(Signal sig) {
 	logger.log(Level.FINE, "{0} sendContinue\n", this);
 	sigSendXXX = sig;
         incrementMod();
-	try
-	    {
-		Ptrace.cont(getTid(), sig);
-	    }
-	catch (Errno.Esrch e)
-	    {
-		postDisappearedEvent(e);
-	    }
+	try {
+	    Ptrace.cont(getTid(), sig);
+	} catch (Errno.Esrch e) {
+	    postDisappearedEvent(e);
+	}
     }
-    public void sendSyscallContinue (int sig)
-    {
+    void sendSyscallContinue(Signal sig) {
 	logger.log(Level.FINE, "{0} sendSyscallContinue\n", this);
 	sigSendXXX = sig;
         incrementMod();
-	try
-	    {
-		Ptrace.sysCall(getTid(), sig);
-	    }
-	catch (Errno.Esrch e)
-	    {
-		postDisappearedEvent(e);
-	    }
+	try {
+	    Ptrace.sysCall(getTid(), sig);
+	} catch (Errno.Esrch e) {
+	    postDisappearedEvent(e);
+	}
     }
-
-    public void sendStepInstruction (int sig)
-    {
+    void sendStepInstruction(Signal sig) {
 	logger.log(Level.FINE, "{0} sendStepInstruction\n", this);
 	sigSendXXX = sig;
         incrementMod();
 	syscallSigretXXX = getIsaFIXME().isAtSyscallSigReturn(this);
-	try
-	    {
-		Ptrace.singleStep(getTid(), sig);
-	    }
-	catch (Errno.Esrch e)
-	    {
-		postDisappearedEvent(e);
-	    }
+	try {
+	    Ptrace.singleStep(getTid(), sig);
+	} catch (Errno.Esrch e) {
+	    postDisappearedEvent(e);
+	}
     }
 
     public void sendStop ()
@@ -371,14 +358,14 @@ public class LinuxPtraceTask extends LiveTask {
 	    }
     }
 
-    public void sendDetach(int sig) {
+    void sendDetach(Signal sig) {
 	logger.log(Level.FINE, "{0} sendDetach\n", this);
 	clearIsa();
 	try {
-	    if (Signal.STOP.equals(sig)) {
+	    if (sig == Signal.STOP) {
 		logger.log(Level.FINE, "{0} sendDetach/signal STOP\n", this);
 		Signal.STOP.tkill(getTid());
-		Ptrace.detach(getTid(), 0);
+		Ptrace.detach(getTid(), Signal.NONE);
 	    } else {
 		Ptrace.detach(getTid(), sig);
 	    }
@@ -977,7 +964,7 @@ public class LinuxPtraceTask extends LiveTask {
      *
      * XXX: This should be a state in Linux/PTRACE state machine.
      */
-    public int sigSendXXX;
+    Signal sigSendXXX = Signal.NONE;
 
     /**
      * When the last request to the process was a step request,

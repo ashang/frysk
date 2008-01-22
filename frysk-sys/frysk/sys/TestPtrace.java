@@ -82,7 +82,7 @@ public class TestPtrace
 		}
 	    });
 
-	Ptrace.singleStep(pid, 0);
+	Ptrace.singleStep(pid, Signal.NONE);
 	Wait.waitAll (pid, new UnhandledWaitBuilder ()
 	    {
 		private final int id = pid;
@@ -96,7 +96,7 @@ public class TestPtrace
 		}
 	    });
 
-	Ptrace.cont(pid, Signal.TERM.intValue());
+	Ptrace.cont(pid, Signal.TERM);
 	Wait.waitAll (pid, new UnhandledWaitBuilder ()
 	    {
 		private final int id = pid;
@@ -143,7 +143,7 @@ public class TestPtrace
 		}
 	    });
 
-	Ptrace.detach (pid, 0);
+	Ptrace.detach(pid, Signal.NONE);
 	Errno errno = null;
 	try {
 	    Wait.waitAll (pid, new UnhandledWaitBuilder ()

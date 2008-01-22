@@ -59,10 +59,6 @@ public class Ptrace
     /**
      * Detach from the process specified by PID.
      */
-    public static native void detach(int pid, int sig);
-    /**
-     * Detach from the process specified by PID.
-     */
     public static void detach (ProcessIdentifier pid, int sig)
     {
 	detach(pid.hashCode(), sig);
@@ -71,23 +67,33 @@ public class Ptrace
      * Detach from the process specified by PID.
      */
     public static void detach(int pid, Signal sig) {
-	detach (pid, sig.hashCode ());
+	detach(pid, sig.intValue());
     }
+    private static native void detach(int pid, int sig);
     /**
      * Single-step (instruction step) the process specified by PID, if
      * SIG is non-zero, deliver the signal.
      */
-    public static native void singleStep(int pid, int sig);
+    public static void singleStep(int pid, Signal sig) {
+	singleStep(pid, sig.intValue());
+    }
+    private static native void singleStep(int pid, int sig);
     /**
      * Continue the process specified by PID, if SIG is non-zero,
      * deliver the signal.
      */
-    public static native void cont(int pid, int sig);
+    public static void cont(int pid, Signal sig) {
+	cont(pid, sig.intValue());
+    }
+    private static native void cont(int pid, int sig);
     /**
      * Continue the process specified by PID, stopping when there is a
      * system-call; if SIG is non-zero deliver the signal.
      */
-    public static native void sysCall(int pid, int sig);
+    public static void sysCall(int pid, Signal sig) {
+	sysCall(pid, sig.intValue());
+    }
+    private static native void sysCall(int pid, int sig);
     /**
      * Fetch the auxilary information associated with PID's last WAIT
      * event.

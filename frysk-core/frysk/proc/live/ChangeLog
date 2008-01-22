@@ -1,5 +1,12 @@
 2008-01-22  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTask.java (sendContinue(Signal)): Replace
+	sendContinue(int).
+	(sendSyscallContinue(Signal)): Replace sendSyscallContinue(int).
+	(sendStepInstruction(Signal)): Replace sendStepInstruction(int).
+	(sendDetach(Signal)): Replace sendDetach(int).
+	* LinuxPtraceTaskState.java: Update.
+
 	* LinuxPtraceTask.java (processSignaledEvent(Signal)): Replace
 	processSignaledEvent(int).
 	(processTerminatingEvent(Signal,int)): Replace

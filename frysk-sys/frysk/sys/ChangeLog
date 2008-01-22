@@ -1,5 +1,14 @@
 2008-01-22  Andrew Cagney  <cagney@redhat.com>
 
+	* Ptrace.java (detach(int,int)): Make private.
+	(singleStep(int,Signal)): New.
+	(signalStep(int,int)): Make private.
+	(cont(int,Signal)): New.
+	(cont(int,int)): Make private.
+	(sysCall(int,Signal)): New.
+	(sysCall(int,int)): Make private.
+	* TestPtrace.java: Update.
+
 	* WaitBuilder.java (terminated(int,Signal,int,boolean)): Replace
 	terminated(int,boolean,int,boolean).
 	(exitEvent(int,Signal,int)): Replace exitEvent(int,boolean,int).
