@@ -168,16 +168,16 @@ public class TestPipePair
 	// Capture the child's output (look for 
 	class ExitStatus extends UnhandledWaitBuilder {
 	    int pid;
-	    boolean signal;
-	    int value;
-	    public void terminated(int pid, boolean signal, int value,
+	    Signal signal;
+	    int status;
+	    public void terminated(int pid, Signal signal, int status,
 				   boolean coreDumped) {
 		logger.log(Level.FINE,
 			   "exited with status {0,number,integer}\n",
-			   new Integer(value));
+			   new Integer(status));
 		this.pid = pid;
 		this.signal = signal;
-		this.value = value;
+		this.status = status;
 	    }
 	    public void unhandled(String reason) {
 		fail(reason);
@@ -193,8 +193,8 @@ public class TestPipePair
 		  },
 		  getTimeoutMilliseconds() * 10);
 	// (a timeout will also fail with the below)
-	assertEquals("pid", pipe.pid.hashCode(), exitStatus.pid);
-	assertEquals("signal", false, exitStatus.signal);
-	assertEquals("status", 0, exitStatus.value);
+	assertEquals("pid", pipe.pid.intValue(), exitStatus.pid);
+	assertEquals("signal", null, exitStatus.signal);
+	assertEquals("status", 0, exitStatus.status);
     }
 }

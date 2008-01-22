@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -335,18 +335,27 @@ public class Expect
     }
 
     /**
-     * Expect the child process to have terminated.  A +ve or zero
-     * value indicates an exit status, a -ve value indicates
-     * termination with signal.
+     * Expect the child process to exit with status.
      */
-    public void expectTermination (final int status)
-    {
+    public void expectTermination(int status) {
 	try {
 	    expect ();
 	}
 	catch (EndOfFileException e) {
 	    // This is blocking; which probably isn't good.
-	    pid.blockingWait (new WaitObserver (status));
+	    pid.blockingWait(new WaitObserver(status));
+	}
+    }
+    /**
+     * Expect the child process to be terminated by SIGNAL.
+     */
+    public void expectTermination(Signal signal) {
+	try {
+	    expect ();
+	}
+	catch (EndOfFileException e) {
+	    // This is blocking; which probably isn't good.
+	    pid.blockingWait(new WaitObserver(signal));
 	}
     }
 }

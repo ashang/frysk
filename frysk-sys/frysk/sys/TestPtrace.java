@@ -104,13 +104,12 @@ public class TestPtrace
 		{
 		    fail (why);
 		}
-		public void terminated (int pid, boolean signal, int value,
-					boolean coreDumped)
-		{
-		    assertEquals ("terminated pid", id, pid);
-		    assertEquals ("terminated signal", true, signal);
-		    assertEquals ("terminated value", Signal.TERM,
-				  Signal.valueOf(value));
+		public void terminated(int pid, Signal signal, int status,
+				       boolean coreDumped) {
+		    assertEquals("terminated pid", id, pid);
+		    assertEquals("terminated signal", Signal.TERM, signal);
+		    assertEquals("terminated status", -Signal.TERM.intValue(),
+				 status);
 		}
 	    });
     }

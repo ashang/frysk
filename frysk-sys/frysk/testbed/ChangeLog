@@ -1,3 +1,9 @@
+2008-01-22  Andrew Cagney  <cagney@redhat.com>
+
+	* TearDownProcess.java: Update to match
+	WaitBuilder.terminating(int,Signal,int,boolean) and
+	WaitBuilder.exitEvent(int,Signal,int,boolean).
+
 2008-01-21  Andrew Cagney  <cagney@redhat.com>
 
 	* TearDownProcess.java: Update to match

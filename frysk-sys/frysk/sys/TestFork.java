@@ -86,16 +86,16 @@ public class TestFork
 	// Capture the child's status; to see if it was correct.
 	class ExitStatus extends UnhandledWaitBuilder {
 	    int pid;
-	    boolean signal;
-	    int value;
-	    public void terminated(int pid, boolean signal, int value,
+	    Signal signal;
+	    int status;
+	    public void terminated(int pid, Signal signal, int status,
 				   boolean coreDumped) {
 		logger.log(Level.FINE,
 			   "exited with status {0,number,integer}\n",
-			   new Integer(value));
+			   new Integer(status));
 		this.pid = pid;
 		this.signal = signal;
-		this.value = value;
+		this.status = status;
 	    }
 	    public void unhandled(String reason) {
 		fail(reason);
@@ -112,7 +112,7 @@ public class TestFork
 		  getTimeoutMilliseconds());
 	// (a timeout will also fail with the below)
 	assertEquals("pid", pid, exitStatus.pid);
-	assertEquals("signal", false, exitStatus.signal);
-	assertEquals("status", 0, exitStatus.value);
+	assertEquals("signal", null, exitStatus.signal);
+	assertEquals("status", 0, exitStatus.status);
     }
 }

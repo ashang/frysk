@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,8 @@
 
 package frysk.expunit;
 
+import frysk.sys.Signal;
+
 /**
  * Thrown an an end-of-file is encountered and nothing else matches.
  */
@@ -47,15 +49,13 @@ public class TerminationException
     extends RuntimeException
 {
     static final long serialVersionUID = 1;
-    static private String expecting (int expectedStatus)
-    {
-	if (expectedStatus >= 0)
-	    return " (expecting exit with status " + expectedStatus + ")";
+    static private String expecting(Signal expectedSignal, int expectedStatus) {
+	if (expectedSignal != null)
+	    return " (expecting kill with signal " + expectedSignal + ")";
 	else
-	    return " (expecting kill with signal " + expectedStatus + ")";
+	    return " (expecting exit with status " + expectedStatus + ")";
     }
-    TerminationException (int expectedStatus, String s)
-    {
-	super (s + expecting (expectedStatus));
+    TerminationException(Signal expectedSignal, int expectedStatus, String s) {
+	super (s + expecting(expectedSignal, expectedStatus));
     }
 }

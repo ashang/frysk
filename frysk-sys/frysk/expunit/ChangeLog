@@ -1,3 +1,15 @@
+2008-01-22  Andrew Cagney  <cagney@redhat.com>
+
+	* Expect.java (expectTermination(Signal)): New.
+	* TestExpect.java: Update.
+	* TerminationException.java (TerminationException(Signal, int,
+	String)): Replace TerminationException(int).
+	* WaitObserver.java (WaitObserver(Signal)): New.
+	(exitEvent(int,Signal,int,boolean)): Replace
+	exitEvent(int,boolean,int,boolean).
+	(terminated(int,Signal,int,boolean)): Replace
+	terminated(int,boolean,int,boolean.
+
 2008-01-21  Andrew Cagney  <cagney@redhat.com>
 
 	* WaitObserver.java: Update to match

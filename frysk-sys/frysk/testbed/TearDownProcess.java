@@ -1,7 +1,7 @@
 // This file is part of the program FRYSK.
 //
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 // Copyright 2007 Oracle Corporation.
-// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -256,7 +256,7 @@ public class TearDownProcess
 			     capturedSendDetachContKill(pid);
 			 }
 			 
-			 public void exitEvent (int pid, boolean signal,
+			 public void exitEvent (int pid, Signal signal,
 						int value,
 						boolean coreDumped) {
 			     capturedSendDetachContKill(pid);
@@ -292,9 +292,9 @@ public class TearDownProcess
 			     pidsToKillDuringTearDown.remove(id);
 			 }
 			 
-			 public void terminated (int pid, boolean signal,
-						 int value,
-						 boolean coreDumped) {
+			 public void terminated(int pid, Signal signal,
+						int value,
+						boolean coreDumped) {
 			     drainTerminated(pid);
 			 }
 			 

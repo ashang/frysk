@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -92,17 +92,15 @@ public abstract class UnhandledWaitBuilder
 	unhandled ("forkEvent", pid, "child", child);
     }
     /**
-     * The task PID got an exit event; if SIGNAL, VALUE is the +ve
-     * terminating signal, otherwize VALUE is the cardinal exit
-     * status.
+     * The task PID got an exit event; if SIGNAL is non-NULL it is the
+     * terminating signal, else STATUS is the exit status.
      */
-    public void exitEvent (int pid, boolean signal, int value,
-			   boolean coreDumped)
-    {
-	if (signal)
-	    unhandled ("exitEvent", pid, "signal", value);
+    public void exitEvent(int pid, Signal signal, int status,
+			  boolean coreDumped) {
+	if (signal != null)
+	    unhandled("exitEvent", pid, "signal", signal.toString());
 	else
-	    unhandled ("exitEvent", pid, "exit", value);
+	    unhandled("exitEvent", pid, "exit", status);
     }
     /**
      * The task PID got an exec event; the process has already
@@ -129,17 +127,16 @@ public abstract class UnhandledWaitBuilder
 	unhandled("stopped", pid, "signal", signal.toPrint());
     }
     /**
-     * The task PID terminated (WIFEXITED, WIFSIGNALED); if
-     * SIGNAL, VALUE is the +ve terminating signal, otherwize
-     * VALUE is the cardinal exit status.
+     * The task PID terminated (WIFEXITED, WIFSIGNALED); if SIGNAL is
+     * non-NULL it is the terminating signal, else STATUS is the exit
+     * status.
      */
-    public void terminated (int pid, boolean signal, int value,
-			    boolean coreDumped)
-    {
-	if (signal)
-	    unhandled ("terminated", pid, "signal", value);
+    public void terminated(int pid, Signal signal, int status,
+			   boolean coreDumped) {
+	if (signal != null)
+	    unhandled("terminated", pid, "signal", signal.toString());
 	else
-	    unhandled ("terminated", pid, "exit", value);
+	    unhandled("terminated", pid, "exit", status);
     }
     /**
      * The task PID disappeared.

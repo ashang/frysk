@@ -1,3 +1,12 @@
+2008-01-22  Andrew Cagney  <cagney@redhat.com>
+
+	* WaitBuilder.java (terminated(int,Signal,int,boolean)): Replace
+	terminated(int,boolean,int,boolean).
+	(exitEvent(int,Signal,int)): Replace exitEvent(int,boolean,int).
+	* cni/Wait.cxx (processStatus): Update.
+	* UnhandledWaitBuilder.java: Update.
+	* TestFork.java: Update.
+
 2008-01-21  Andrew Cagney  <cagney@redhat.com>
 
 	* WaitBuilder.java (stopped(int,Signal)): Replace stopped(int,int).

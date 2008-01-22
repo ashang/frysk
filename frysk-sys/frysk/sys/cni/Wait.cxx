@@ -146,9 +146,13 @@ processStatus (int pid, int status,
   if (0)
     ;
   else if (WIFEXITED (status))
-    builder->terminated (pid, false, WEXITSTATUS (status), false);
+    builder->terminated(pid, NULL, WEXITSTATUS (status), false);
   else if (WIFSIGNALED (status))
-    builder->terminated (pid, true, WTERMSIG (status), WCOREDUMP (status));
+    {
+      int termSig = WTERMSIG (status);
+      frysk::sys::Signal* signal = frysk::sys::Signal::valueOf (termSig);
+      builder->terminated(pid, signal, -termSig, WCOREDUMP (status));
+    }
   else if (WIFSTOPPED (status)) {
     switch (WSTOPEVENT (status)) {
     case PTRACE_EVENT_CLONE:
@@ -181,14 +185,16 @@ processStatus (int pid, int status,
 	// The event message contains the pending wait(2) status; need
 	// to decode that.
 	int exitStatus = frysk::sys::Ptrace::getEventMsg (pid);
-	if (WIFEXITED (exitStatus)) {
-	  builder->exitEvent (pid, false, WEXITSTATUS (exitStatus),
-			       false);
-	}
-	else if (WIFSIGNALED (exitStatus)) {
-	  builder->exitEvent (pid, true, WTERMSIG (exitStatus),
-			       WCOREDUMP (exitStatus));
-	}
+	if (WIFEXITED (exitStatus))
+	  {
+	    builder->exitEvent(pid, NULL, WEXITSTATUS (exitStatus), false);
+	  }
+	else if (WIFSIGNALED (exitStatus))
+	  {
+	    int termSig = WTERMSIG (exitStatus);
+	    frysk::sys::Signal* signal = frysk::sys::Signal::valueOf (termSig);
+	    builder->exitEvent(pid, signal, -termSig, WCOREDUMP (exitStatus));
+	  }
 	else {
 	  throwRuntimeException ("unknown exit event", "status", exitStatus);
 	}

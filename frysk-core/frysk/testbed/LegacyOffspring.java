@@ -237,12 +237,12 @@ public class LegacyOffspring
 			protected void unhandled (String why) {
 			    TestCase.fail ("killing child (" + why + ")");
 			}
-			public void terminated (int pid, boolean signal,
-						int value,
-						boolean coreDumped) {
+			public void terminated(int pid, Signal signal,
+					       int value,
+					       boolean coreDumped) {
 			    // Termination with signal is ok.
 			    TestCase.assertTrue("terminated with signal",
-						signal);
+						signal != null);
 			}
 		    });
 	    }

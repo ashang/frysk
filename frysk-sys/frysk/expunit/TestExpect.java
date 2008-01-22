@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -98,10 +98,9 @@ public class TestExpect
     /**
      * Check the signal status.
      */
-    public void testKill ()
-    {
+    public void testKill() {
 	e = new Expect ("kill -HUP $$");
-	e.expectTermination (-Signal.HUP.intValue());
+	e.expectTermination(Signal.HUP);
     }
 
     /**

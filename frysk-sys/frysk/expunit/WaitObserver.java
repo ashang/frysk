@@ -43,61 +43,52 @@ import frysk.sys.Signal;
 import frysk.sys.WaitBuilder;
 
 class WaitObserver implements WaitBuilder {
+    private final Signal expectedSignal;
     private final int expectedStatus;
     /**
      * Observe wait status, expecting a specific termination value.
      */
-    WaitObserver (int expectedStatus)
-    {
+    WaitObserver(int expectedStatus) {
+	this.expectedSignal = null;
 	this.expectedStatus = expectedStatus;
     }
-    public void disappeared (int pid, Throwable t)
-    {
-	throw new TerminationException (expectedStatus, "Process disappeared");
+    WaitObserver(Signal expectedSignal) {
+	this.expectedSignal = expectedSignal;
+	this.expectedStatus = -1;
     }
-    public void terminated (int pid, boolean signal, int value,
-			    boolean coreDumped)
-    {
-	if (signal) {
-	    if (expectedStatus != -value)
-		throw new TerminationException (expectedStatus,
-						"Killed with signal "
-						+ value);
-	}
-	else {
-	    if (expectedStatus != value)
-		throw new TerminationException (expectedStatus,
-						"Exited with status " + value);
+    private RuntimeException terminationException(String msg) {
+	return new TerminationException(expectedSignal, expectedStatus, msg);
+    }
+    public void disappeared(int pid, Throwable t) {
+	throw terminationException("Process disappeared");
+    }
+    public void terminated(int pid, Signal signal, int status,
+			   boolean coreDumped) {
+	if (signal != null) {
+	    if (signal != expectedSignal)
+		throw terminationException("Killed with signal " + signal);
+	} else {
+	    if (status != expectedStatus)
+		throw terminationException("Exited with status " + status);
 	}
     }
     public void stopped(int pid, Signal signal) {
-	throw new TerminationException(expectedStatus,
-				       "Stopped with signal " + signal);
+	throw terminationException("Stopped with signal " + signal);
     }
-    public void syscallEvent (int pid)
-    {
-	throw new TerminationException (expectedStatus,
-					"Stopped with syscall event");
+    public void syscallEvent (int pid) {
+	throw terminationException("Stopped with syscall event");
     }
-    public void execEvent (int pid)
-    {
-	throw new TerminationException (expectedStatus,
-					"Stopped with exec event");
+    public void execEvent (int pid) {
+	throw terminationException("Stopped with exec event");
     }
-    public void exitEvent (int pid, boolean signal,
-			   int value, boolean coreDumped)
-    {
-	throw new TerminationException (expectedStatus,
-					"Stopped with exit event");
+    public void exitEvent(int pid, Signal signal,
+			  int status, boolean coreDumped) {
+	throw terminationException("Stopped with exit event");
     }
-    public void forkEvent (int pid, int offspring)
-    {
-	throw new TerminationException (expectedStatus,
-					"Stopped with fork event");
+    public void forkEvent (int pid, int offspring) {
+	throw terminationException("Stopped with fork event");
     }
-    public void cloneEvent (int pid, int offspring)
-    {
-	throw new TerminationException (expectedStatus,
-					"Stopped with clone event");
+    public void cloneEvent (int pid, int offspring) {
+	throw terminationException("Stopped with clone event");
     }
 }

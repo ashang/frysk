@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -150,45 +150,39 @@ public class TestWait
     /**
      * Class to capture termination information.
      */
-    private static class WaitOnChild
-	extends UnhandledWaitBuilder
-    {
+    private static class WaitOnChild extends UnhandledWaitBuilder {
 	int pid = 0;
-	boolean signal;
-	int value;
-	protected void unhandled (String what)
-	{
+	Signal signal;
+	int status;
+	protected void unhandled (String what) {
 	    fail (what);
 	}
-	public void terminated (int pid, boolean signal, int value,
-				boolean coreDumped)
-	{
+	public void terminated(int pid, Signal signal, int status,
+			       boolean coreDumped) {
 	    this.pid = pid;
 	    this.signal = signal;
-	    this.value = value;
+	    this.status = status;
 	}
     }
 
-    public void testWaitExit0 ()
-    {
-	WaitOnChild waitOnChild = new WaitOnChild ();
-	int pid = Fork.exec (new String[] { "/bin/true" });
-	Wait.waitAll (getTimeoutMilliseconds (), waitOnChild,
-		      unhandledSignalBuilder);
-	assertEquals ("pid", pid, waitOnChild.pid);
-	assertEquals ("signal", false, waitOnChild.signal);
-	assertEquals ("value", 0, waitOnChild.value);
+    public void testWaitExit0() {
+	WaitOnChild waitOnChild = new WaitOnChild();
+	int pid = Fork.exec(new String[] { "/bin/true" });
+	Wait.waitAll(getTimeoutMilliseconds(), waitOnChild,
+		     unhandledSignalBuilder);
+	assertEquals("pid", pid, waitOnChild.pid);
+	assertEquals("signal", null, waitOnChild.signal);
+	assertEquals("status", 0, waitOnChild.status);
     }
 
-    public void testWaitExit1 ()
-    {
-	WaitOnChild waitOnChild = new WaitOnChild ();
-	int pid = Fork.exec (new String[] { "/bin/false" });
-	Wait.waitAll (getTimeoutMilliseconds (), waitOnChild,
-		      unhandledSignalBuilder);
-	assertEquals ("pid", pid, waitOnChild.pid);
-	assertEquals ("signal", false, waitOnChild.signal);
-	assertEquals ("value", 1, waitOnChild.value);
+    public void testWaitExit1() {
+	WaitOnChild waitOnChild = new WaitOnChild();
+	int pid = Fork.exec(new String[] { "/bin/false" });
+	Wait.waitAll(getTimeoutMilliseconds(), waitOnChild,
+		     unhandledSignalBuilder);
+	assertEquals("pid", pid, waitOnChild.pid);
+	assertEquals("signal", null, waitOnChild.signal);
+	assertEquals("status", 1, waitOnChild.status);
     }
 
     public void testNoWaitBuilder ()

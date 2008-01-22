@@ -53,12 +53,11 @@ public interface WaitBuilder
      */
     void forkEvent (int pid, int child);
     /**
-     * The task PID got an exit event; if SIGNAL, VALUE is the +ve
-     * terminating signal, otherwize VALUE is the cardinal exit
-     * status.
+     * The task PID got an exit event; if SIGNAL is non-NULL it
+     * contains the terminating signal and STATUS is the negated
+     * signal value, else STATUS contains the cardinal exit status.
      */
-    void exitEvent (int pid, boolean signal, int value,
-		    boolean coreDumped);
+    void exitEvent(int pid, Signal signal, int value, boolean coreDumped);
     /**
      * The task PID got an exec event; the process has already
      * been overlayed.
@@ -75,12 +74,12 @@ public interface WaitBuilder
      */
     void stopped(int pid, Signal signal);
     /**
-     * The task PID terminated (WIFEXITED, WIFSIGNALED); if
-     * SIGNAL, VALUE is the +ve terminating signal, otherwize
-     * VALUE is the cardinal exit status.
+     * The task PID terminated (either WIFEXITED or WIFSIGNALED); if
+     * SIGNAL is non-NULL then the termination is the specified signal
+     * and STATUS is the negated signal value; else STATUS is the
+     * cardinal exit status.
      */
-    void terminated (int pid, boolean signal, int value,
-		     boolean coreDumped);
+    void terminated(int pid, Signal signal, int value, boolean coreDumped);
     /**
      * The task PID disappeared.
      *
