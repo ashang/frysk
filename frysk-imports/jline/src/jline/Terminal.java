@@ -193,4 +193,20 @@ public abstract class Terminal
 	 *  Returns true if the terminal will echo all characters type.
 	 */
 	public abstract boolean getEcho ();
+
+    // From jline-0.9.93
+    /**
+     *  Invokes before the console reads a line with the prompt and mask.
+     */
+    public void beforeReadLine(ConsoleReader reader, String prompt,
+                               Character mask) {
+    }
+
+    /**
+     *  Invokes after the console reads a line with the prompt and mask.
+     */
+    public void afterReadLine(ConsoleReader reader, String prompt,
+                              Character mask) {
+    }
+
 }

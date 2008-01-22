@@ -1,3 +1,7 @@
+2008-02-04  Tim Moore  <timoore@redhat.com>
+
+	* fhpd.java (main): Use ObservingTerminal instead of PtyTerminal.
+
 2008-01-28  Teresa Thomas  <tthomas@redhat.com>
 
 	* fdebuginfo.java (PrintDebuginfoEvent): New.

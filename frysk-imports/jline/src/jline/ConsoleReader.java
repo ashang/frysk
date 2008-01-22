@@ -513,101 +513,102 @@ public class ConsoleReader
 	 *  		was null input (e.g., <i>CTRL-D</i> was pressed).
 	 */
 	public String readLine (final String prompt, final Character mask)
-		throws IOException
-	{
-		this.mask = mask;
-		this.prompt = prompt;
+            throws IOException {
+            this.mask = mask;
+            this.prompt = prompt;
 
-		if (prompt != null && prompt.length () > 0)
-		{
+            try {
+                terminal.beforeReadLine(this, this.prompt, mask);
+		if (prompt != null && prompt.length () > 0) {
 			out.write (prompt);
 			out.flush ();
-		}
+                }
 
 		// if the terminal is unsupported, just use plain-java reading
 		if (!terminal.isSupported ())
-			return readLine (in);
+                    return readLine (in);
 
-		while (true)
-		{
-			int[] next = readBinding ();
-			if (next == null)
-				return null;
+		while (true) {
+                    int[] next = readBinding ();
+                    if (next == null)
+                        return null;
 
-			int c = next[0];
-			int code = next[1];
+                    int c = next[0];
+                    int code = next[1];
 
-			if (c == -1)
-				return null;
+                    if (c == -1)
+                        return null;
 
-			boolean success = true;
+                    boolean success = true;
 
-			switch (code)
-			{
-				case EXIT: // ctrl-d
-					if (buf.buffer.length () == 0)
-						return null;
-				case COMPLETE: // tab
-					success = complete ();
-					break;
-				case MOVE_TO_BEG:
-					success = setCursorPosition (0);
-					break;
-				case KILL_LINE: // CTRL-K
-					success = killLine ();
-					break;
-				case CLEAR_SCREEN: // CTRL-L
-					success = clearScreen ();
-					break;
-				case KILL_LINE_PREV: // CTRL-U
-					success = resetLine ();
-					break;
-				case NEWLINE: // enter
-					printNewline (); // output newline
-					return finishBuffer ();
-				case DELETE_PREV_CHAR: // backspace
-					success = backspace ();
-					break;
-				case MOVE_TO_END:
-					success = moveToEnd ();
-					break;
-				case PREV_CHAR:
-					success = moveCursor (-1) != 0;
-					break;
-				case NEXT_CHAR:
-					success = moveCursor (1) != 0;
-					break;
-				case NEXT_HISTORY:
-					success = moveHistory (true);
-					break;
-				case PREV_HISTORY:
-					success = moveHistory (false);
-					break;
-				case REDISPLAY:
-					break;
-				case PASTE:
-					success = paste ();
-					break;
-				case DELETE_PREV_WORD:
-					success = deletePreviousWord ();
-					break;
-				case PREV_WORD:
-					success = previousWord ();
-					break;
-				case NEXT_WORD:
-					success = nextWord ();
-					break;
+                    switch (code) {
+                    case EXIT: // ctrl-d
+                        if (buf.buffer.length () == 0)
+                            return null;
+                    case COMPLETE: // tab
+                        success = complete ();
+                        break;
+                    case MOVE_TO_BEG:
+                        success = setCursorPosition (0);
+                        break;
+                    case KILL_LINE: // CTRL-K
+                        success = killLine ();
+                        break;
+                    case CLEAR_SCREEN: // CTRL-L
+                        success = clearScreen ();
+                        break;
+                    case KILL_LINE_PREV: // CTRL-U
+                        success = resetLine ();
+                        break;
+                    case NEWLINE: // enter
+                        printNewline (); // output newline
+                        return finishBuffer ();
+                    case DELETE_PREV_CHAR: // backspace
+                        success = backspace ();
+                        break;
+                    case MOVE_TO_END:
+                        success = moveToEnd ();
+                        break;
+                    case PREV_CHAR:
+                        success = moveCursor (-1) != 0;
+                        break;
+                    case NEXT_CHAR:
+                        success = moveCursor (1) != 0;
+                        break;
+                    case NEXT_HISTORY:
+                        success = moveHistory (true);
+                        break;
+                    case PREV_HISTORY:
+                        success = moveHistory (false);
+                        break;
+                    case REDISPLAY:
+                        break;
+                    case PASTE:
+                        success = paste ();
+                        break;
+                    case DELETE_PREV_WORD:
+                        success = deletePreviousWord ();
+                        break;
+                    case PREV_WORD:
+                        success = previousWord ();
+                        break;
+                    case NEXT_WORD:
+                        success = nextWord ();
+                        break;
 
-				case UNKNOWN:
-				default:
-					putChar (c, true);
-			}
+                    case UNKNOWN:
+                    default:
+                        putChar (c, true);
+                    }
 
-			if (!(success))
-				beep ();
+                    if (!(success))
+                        beep ();
 
-			flushConsole ();
-		}
+                    flushConsole ();
+                }
+            } finally {
+                terminal.afterReadLine(this, this.prompt, mask);
+            }
 	}
 
 

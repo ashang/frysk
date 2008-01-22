@@ -1,3 +1,9 @@
+2008-02-04  Tim Moore  <timoore@redhat.com>
+
+	* src/jline/Terminal.java (beforeReadLine, afterReadLine): methods
+	from 0.9.98.
+	* src/jline/ConsoleReader.java (readLine): Call them.
+
 2007-11-01  Andrew Cagney  <cagney@redhat.com>
 
 	Backport fix from upstream.
