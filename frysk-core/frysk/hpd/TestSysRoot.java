@@ -55,6 +55,8 @@ public class TestSysRoot extends TestLib {
   }
 
     public void testHaveSysRoot() {
+	if (unresolved(5657))
+	    return;
 	File testSysRootDir = Config.getPkgDataFile("test-sysroot");
 	File testPath = Config.getPkgLibFile("funit-addresses");
 	child = new Expect(new String[] {
