@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -179,21 +179,4 @@ frysk::sys::SignalSet::size()
       numSigs++;
   }
   return numSigs;
-}
-
-JArray<frysk::sys::Signal*>*
-frysk::sys::SignalSet::toArray()
-{
-  sigset_t *set = (sigset_t*) rawSet;
-  // Create an array for those signals
-  JArray<frysk::sys::Signal*>* sigs = (JArray<frysk::sys::Signal*>*)
-    JvNewObjectArray (size(), &frysk::sys::Signal::class$, NULL);
-  // Fill in the array.
-  for (int setI = 1, sigI = 0; setI < NSIG; setI++) {
-    if (sigismember (set, setI)) {
-      // printf ("%d setI %d\n", sigI, setI);
-      elements(sigs)[sigI++] = frysk::sys::Signal::valueOf(setI);
-    }
-  }
-  return sigs;
 }

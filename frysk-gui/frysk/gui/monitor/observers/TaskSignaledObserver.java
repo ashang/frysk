@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -123,7 +123,7 @@ public class TaskSignaledObserver extends TaskObserverRoot implements
     private void bottomHalf(final Task task, final int signal) {
 	setInfo(getName() + ": " + "PID: " + task.getProc().getPid()
 		+ " TID: " + task.getTid() + " Event: has pending signal: "
-		+ Signal.valueOf(signal).toPrint()
+		+ Signal.toHostStringFIXME(signal)
 		+ " Host: " + Manager.host.getName());
 	if (runFilters(task, signal)) {
 	    this.runActions(task, signal);
@@ -137,9 +137,9 @@ public class TaskSignaledObserver extends TaskObserverRoot implements
 
     private void runActions(final Task task, int signal) {
 	// XXX: This is the host and not target signal
-        Event event = new Event("signaled " + Signal.valueOf(signal).toPrint(),
+        Event event = new Event("signaled " + Signal.toHostStringFIXME(signal),
 				"task recieved signal "
-				+ Signal.valueOf(signal).toPrint(),
+				+ Signal.toHostStringFIXME(signal),
 				GuiTask.GuiTaskFactory.getGuiTask(task), this);
 	super.runActions();
 	taskActionPoint.runActions(task, this, event);

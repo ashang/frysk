@@ -1,3 +1,8 @@
+2008-01-23  Andrew Cagney  <cagney@redhat.com>
+
+	* Ftrace.java (MyTerminatedObserver): Replace Signal.intValue(int)
+	and Signal.toPrint() with Signal.toHostStringFIXME(int).
+
 2008-01-16  Andrew Cagney  <cagney@redhat.com>
 
 	* Ltrace.java: Update; Task.blockers made private; use workaround.

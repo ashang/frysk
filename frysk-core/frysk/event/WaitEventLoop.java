@@ -74,7 +74,7 @@ class WaitEventLoop
 	    {
 	      if (logger.isLoggable(Level.FINEST))
 		{
-		  Object[] logArgs = { this, sig.toPrint() };
+		  Object[] logArgs = { this, sig.toString() };
 		  logger.log (Level.FINEST, "{0} PollBuilder.signal {1}\n",
 			      logArgs); 
 		}

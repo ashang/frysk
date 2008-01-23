@@ -1,3 +1,18 @@
+2008-01-23  Andrew Cagney  <cagney@redhat.com>
+
+	* Signal.java-sh (valueOf(int)): Make package-private.
+	(Signal(int)): New constructor.
+	(toString()): Dump both the name and value.
+	(getHostSignalSet()): New.
+	(toHostStringFIXME(int)): New.
+	(stringValue()): Delete.
+	(toPrint()): Delete.
+	* TestSignal.java (testGaps()): New.
+	* SignalSet.java (add(Signal[])): Ignore null entries.
+	(toArray()): Implement in java.
+	* cni/SignalSet.cxx (JArray): Delete.
+	* UnhandledWaitBuilder.java: Update.
+
 2008-01-22  Andrew Cagney  <cagney@redhat.com>
 
 	* Ptrace.java (detach(int,int)): Make private.

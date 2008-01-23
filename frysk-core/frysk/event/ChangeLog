@@ -1,3 +1,7 @@
+2008-01-23  Andrew Cagney  <cagney@redhat.com>
+
+	* WaitEventLoop.java: Use Signal.toString().
+
 2007-12-04  Andrew Cagney  <cagney@redhat.com>
 
 	Merge frysk.sys.Sig into frysk.sys.Signal.

@@ -60,50 +60,46 @@ public class Signal implements Comparable {
 	this.sig = sig;
 	this.name = name;
     }
+    private Signal(int sig) {
+        this.sig = sig;
+        this.name = "SIG" + sig;
+    }
 
     /**
-     * Dump the signal to a string.
+     * Dump the signal to a string.  The format is "NAME(VALUE)".
      */
     public String toString() {
-        return Integer.toString(hashCode());
-	// return name + "(" + hashCode() + ")";
+	return name + "(" + this.intValue() + ")";
+    }
+
+    /**
+     * Hash on the Signal's intValue.
+     */
+    public int hashCode() {
+	return intValue();
     }
 
     /**
      * Return the signal's numeric value as an integer.
      */
     public int intValue() {
-	return hashCode();
-    }
-    /**
-     * Return the signal's numeric value as a String.
-     */
-    public String stringValue() {
-        return Integer.toString(hashCode());
-    }
-    /**
-     * Return the Signal in a form suitable for printing to the user.
-     */
-    public String toPrint() {
-        return name;
+        return sig;
     }
 
     /**
-     * Comparison operations; use hashCode() so that sub-classing can
-     * provide a scratch value.
+     * Comparison operations; use intValue() so that sub-classing can
+     * provide a scratch int value.
      */
     public boolean equals(Object o) {
-	return (o instanceof Signal && o.hashCode() == this.hashCode());
+        return ((o instanceof Signal)
+                && ((Signal) o).intValue() == this.intValue());
     }
     public boolean equals(int sig) {
-	return this.sig == sig;
-    }
-    public int hashCode() {
-	return sig;
+	return this.intValue() == sig;
     }
     public int compareTo(Object o) {
 	Signal rhs = (Signal)o; // exception ok
-	return rhs.sig - this.sig;
+	return rhs.intValue() - this.intValue();
     }
 
     /**
@@ -116,20 +112,20 @@ public class Signal implements Comparable {
      * Deliver SIG to process PID.
      */
     public void kill(ProcessIdentifier pid) {
-	kill(pid.intValue(), this.sig);
+	kill(pid.intValue(), this.intValue());
     }
     private static native void kill(int pid, int signum);
     /**
      * Deliver SIGNAL to task (or thread) LWP.
      */
     public final void tkill(int lwp) {
-	tkill(lwp, sig);
+	tkill(lwp, this.intValue());
     }
     /**
      * Deliver SIGNAL to task (or thread) LWP.
      */
     public final void tkill(ProcessIdentifier lwp) {
-	tkill(lwp.intValue(), this.sig);
+	tkill(lwp.intValue(), this.intValue());
     }
     public static native void tkill(int lwp, int signum);
 
@@ -143,33 +139,52 @@ public class Signal implements Comparable {
     private static native void drain(int signum);
 
     /**
-     * Given an integer, return the corresponding signal.
-     * If the signal is unknown, make one up.
+     * Return the known <b>host</b> signals as a SignalSet.
      */
-    public static Signal valueOf(int signum) {
+    public static SignalSet getHostSignalSet() {
+        return new SignalSet(signals);
+    }
+
+    /**
+     * Return the <b>host</b> signal as a string.
+     * 
+     * For frysk what you instead want is a conversion from the
+     * integer to the <b>target</b>'s string representation.
+     * See the numbering described in signal(7) for the problems.
+     */
+    public static String toHostStringFIXME(int signal) {
+        return valueOf(signal).toString();
+    }
+
+    /**
+     * Given an integer, return the corresponding <b>host</b> signal.
+     * If the signal is unknown, make one up.
+     *
+     * This is method is <b>package-private</b>.  If you need to convert
+     * a target signal to a Signal object, see frysk.proc.Signal.
+     */
+    static Signal valueOf(int signum) {
 	if (signum < 0) {
 	    throw new NullPointerException("invalid signal: " + signum);
         } else if (signum < signals.length) {
             Signal signal = signals[signum];
-            if (signal == null)
-	        throw new NullPointerException("invalid signal: " + signum);
-            else
+            if (signal != null)
                 return signal;
-        } else if (signum >= rtMin() && signum <= rtMax()) {
-            return rtSignals[signum - rtMin()];
-        } else {
-            // Fudge up a signal; beter than throwing an exception.
-            synchronized (unknownSignals) {
-                scratchSignal.signum = signum;
-                Signal signal = (Signal)unknownSignals.get(scratchSignal);
-                if (signal != null)
-                    return signal;
-                signal = new Signal(signum, "SIG" + signum);
-                unknownSignals.put(signal, signal);
+            // Fall through to bottom which will make up a signal.
+        }
+        // Unknown signal, fudge one up; beter than throwing
+        // an exception.
+        synchronized (unknownSignals) {
+            scratchSignal.signum = signum;
+            Signal signal = (Signal)unknownSignals.get(scratchSignal);
+            if (signal != null)
                 return signal;
-            }
+            signal = new Signal(signum);
+            unknownSignals.put(signal, signal);
+            return signal;
         }
     }
+
     /**
      * A scratch value for searching the signal table.
      */
@@ -178,7 +193,7 @@ public class Signal implements Comparable {
            super(0, "<scratch signal>");
        }
         int signum;
-        public int hashCode() {
+        public int intValue() {
            return signum;
         }
     }
@@ -192,8 +207,8 @@ public class Signal implements Comparable {
     private static native int nsig();
     private static native int rtMin();
     private static native int rtMax();
+    // Note: nsig()
     private static final Signal[] signals = new Signal[nsig()];
-    private static final Signal[] rtSignals = new Signal[rtMax()-rtMin()+1];
     /**
      * Create a signal, also enter the signal into the signals table
      * for later retrieval.
@@ -222,8 +237,11 @@ done
 
 cat <<EOF
     static {
-        for (int sig = rtMin(); sig <= rtMax(); sig++) {
-            rtSignals[sig - rtMin()] = new Signal(sig, "SIGRT" + sig);
+        // Populate the run-time signal table.  XXX while signal(7)
+        // seems to imply rtMax() is valid (cannot "exceed"), the code
+        // suggests otherwise.
+        for (int sig = rtMin(); sig < rtMax(); sig++) {
+            signals[sig] = new Signal(sig, "SIGRT" + sig);
         }
     }
 }
