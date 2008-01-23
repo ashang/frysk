@@ -41,9 +41,10 @@ package frysk.value;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 
 /**
- * Floating point type - uses java.math.BigDecimal.
+ * Floating point type - wrapper around java.math.BigDecimal.
  */
 public class BigFloatingPoint 
 {
@@ -109,9 +110,9 @@ public class BigFloatingPoint
     public String toString(int size) {
     	String retValue;
     	switch (encoding) {
-    	        // FIXME: Use BigDecimal's toString 
+    	// FIXME: Use BigDecimal's toString 
     	case 0: 
-    		   if (size < 8)
+    		if (size < 8)
     		       retValue = Float.toString(floatValue());
     	        else
     		       retValue = Double.toString(doubleValue());
@@ -140,5 +141,57 @@ public class BigFloatingPoint
     public boolean equals (BigFloatingPoint o) {
     	return (o.getValue().compareTo(this.value) == 0
     			&& o.getEncoding() == this.encoding);
+    }
+    
+    /*
+     * Wrapper functions for arithmetic operations 
+     * on BigFloatingPoint
+     */
+    BigFloatingPoint add (BigFloatingPoint v) {
+    	return new BigFloatingPoint (this.value.add(v.value));
+    }
+    BigFloatingPoint subtract (BigFloatingPoint v) {
+    	return new BigFloatingPoint (this.value.subtract(v.value));
+    }
+    BigFloatingPoint multiply (BigFloatingPoint v) {
+    	return new BigFloatingPoint (this.value.multiply(v.value));
+    }
+    /**
+     * Returns result rounded towards "nearest neighbor" unless 
+     * both neighbors are equidistant, in which case round up
+     */
+    BigFloatingPoint divide (BigFloatingPoint v) {
+    	return new BigFloatingPoint (value.divide(v.value, RoundingMode.HALF_UP));
+    }
+    BigFloatingPoint mod (BigFloatingPoint v) {
+        return new BigFloatingPoint (value.remainder(v.value));      
+    }        
+    
+    int lessThan (BigFloatingPoint v) {
+    	return (value.compareTo(v.value) < 0) ? 1:0;
+    }
+    int greaterThan (BigFloatingPoint v) {
+    	return (value.compareTo(v.value) > 0) ? 1:0;
+    }
+    int lessThanOrEqualTo (BigFloatingPoint v) {
+    	return (value.compareTo(v.value) <= 0) ? 1:0;
+    }
+    int greaterThanOrEqualTo (BigFloatingPoint v) {
+    	return (value.compareTo(v.value) >= 0) ? 1:0;
+    }
+    int equal(BigFloatingPoint v) {
+    	return (value.compareTo(v.value) == 0) ? 1:0;
+    }
+    int notEqual(BigFloatingPoint v) {
+    	return (value.compareTo(v.value) != 0) ? 1:0;
+    }
+    
+    static BigDecimal divide (BigDecimal a, BigDecimal b) {
+        BigDecimal result[] = a.divideAndRemainder(b);
+        // FIXME: Use long division? Use BigDecimal's 
+        // divide(BigDecimal,MathContext) when frysk 
+        // moves to java 1.5.0.
+        double fraction = result[1].doubleValue()/b.doubleValue();
+        return result[0].add(BigDecimal.valueOf(fraction));
     }
 }

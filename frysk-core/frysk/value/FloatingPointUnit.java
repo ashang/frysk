@@ -59,47 +59,47 @@ public class FloatingPointUnit
     
     public Value add(Value v1, Value v2) {
 	return retType.createValue
-	       (v1.doubleValue() + v2.doubleValue());
+	       (v1.asBigFloatingPoint().add(v2.asBigFloatingPoint()));
     }        
     public Value subtract(Value v1, Value v2) {
 	return retType.createValue
-	       (v1.doubleValue() - v2.doubleValue());
+	       (v1.asBigFloatingPoint().subtract(v2.asBigFloatingPoint()));
     }      
     public Value multiply (Value v1, Value v2) {
-	return retType.createValue
-	       (v1.doubleValue() * v2.doubleValue());
+    	return retType.createValue
+	       (v1.asBigFloatingPoint().multiply(v2.asBigFloatingPoint()));
     }
     public Value divide (Value v1, Value v2) {
-	return retType.createValue
-	       (v1.doubleValue() / v2.doubleValue());
+    	return retType.createValue
+    	       (v1.asBigFloatingPoint().divide(v2.asBigFloatingPoint()));
     }	        
     public Value mod (Value v1, Value v2) {
-	return retType.createValue
-	       (v1.doubleValue() % v2.doubleValue());
+    	return retType.createValue
+    	       (v1.asBigFloatingPoint().mod(v2.asBigFloatingPoint()));
     }	    
 
     public Value lessThan (Value v1, Value v2) {
 	return intType.createValue
-	       (v1.doubleValue() < v2.doubleValue() ? 1:0);
+	       (v1.asBigFloatingPoint().lessThan(v2.asBigFloatingPoint()));
     }
     public Value greaterThan (Value v1, Value v2) {
 	return intType.createValue
-	       (v1.doubleValue() > v2.doubleValue() ? 1:0);
+	       (v1.asBigFloatingPoint().greaterThan(v2.asBigFloatingPoint()));
     }    
     public Value greaterThanOrEqualTo (Value v1, Value v2) {
 	return intType.createValue
-	       (v1.doubleValue() >= v2.doubleValue() ? 1:0);
+	       (v1.asBigFloatingPoint().greaterThanOrEqualTo(v2.asBigFloatingPoint()));
     }     
     public Value lessThanOrEqualTo (Value v1, Value v2) {
 	return intType.createValue
-	       (v1.doubleValue() <= v2.doubleValue() ? 1:0);
+	       (v1.asBigFloatingPoint().lessThanOrEqualTo(v2.asBigFloatingPoint()));
     }     
     public Value equal (Value v1, Value v2) {
 	return intType.createValue
-	       (v1.doubleValue() == v2.doubleValue() ? 1:0);
+	       (v1.asBigFloatingPoint().equal(v2.asBigFloatingPoint()));
     }     
     public Value notEqual (Value v1, Value v2) {
 	return intType.createValue
-	       (v1.doubleValue() != v2.doubleValue() ? 1:0);
+	       (v1.asBigFloatingPoint().notEqual(v2.asBigFloatingPoint()));
     } 
 }    

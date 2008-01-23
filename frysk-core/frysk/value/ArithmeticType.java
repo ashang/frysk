@@ -102,6 +102,15 @@ public abstract class ArithmeticType
 	putBigInteger(l, val);
 	return new Value(this, l);
     }
+    
+    /**
+     * Create a new Value of THIS Type, initialized to VAL.
+     */
+    Value createValue(BigFloatingPoint val) {
+	Location l = new ScratchLocation(getSize());
+	putBigFloatingPoint(l, val);
+	return new Value(this, l);
+    }    
     /**
      * Create a new Value of THIS type, initialized to the long VAL.
      *
@@ -135,7 +144,12 @@ public abstract class ArithmeticType
      * the value should be zero or sign extended.
      */
     abstract void putBigInteger(Location location, BigInteger val);
-
+    /**
+     * Re-write the entire location with the big floating point value.  This
+     * does not do type conversion.  The underlying type determines if
+     * the value should be zero or sign extended.
+     */
+    abstract void putBigFloatingPoint(Location location, BigFloatingPoint val);
     /**
      * Return the arthmetic type converted to a BigInteger, this may
      * involve truncation and/or rounding.

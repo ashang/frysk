@@ -52,7 +52,7 @@ public class FloatingPointType
     extends ArithmeticType
 {    
 	
-	private FloatingPointFormat format;
+    private FloatingPointFormat format;
 	
     public FloatingPointType(String name, ByteOrder order, int size) {
 	super(name, order, size);
@@ -78,7 +78,7 @@ public class FloatingPointType
 	// double-dispatch.
 	format.print(writer, location, this);
     }
-
+    
     /**
      * Return the raw bytes as an unsigned integer.
      */
@@ -86,11 +86,12 @@ public class FloatingPointType
 	return new BigInteger(1, location.get(order()));
     }
 
-    /**
-     * Return the raw bytes as an unsigned integer.
-     */
     void putBigInteger(Location location, BigInteger val) {
 	location.put(order(), val.toByteArray(), 0);
+    }
+
+    void putBigFloatingPoint(Location location, BigFloatingPoint val) {
+	location.put(order(), this.format.pack(val, this.getSize()), 0);
     }
    
     BigFloatingPoint getBigFloatingPoint(Location location) {
