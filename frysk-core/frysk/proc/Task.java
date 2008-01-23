@@ -337,5 +337,19 @@ public abstract class Task {
  
     public void clearIsa() {
 	syscallTable = null;
+	signalTable = null;
     }
+
+
+    /**
+     * Return a table of known (and unknown) signals for this ISA.
+     */
+    public SignalTable getSignalTable() {
+	if (signalTable == null) {
+	    signalTable = LinuxSignals.getSignalTable(getISA());
+	}
+	return signalTable;
+    }
+    private SignalTable signalTable;
+
 }

@@ -1,3 +1,12 @@
+2008-01-23  Andrew Cagney  <cagney@redhat.com>
+
+	* TestSignalTable.java: New.
+	* Task.java (getSignalTable()): New.
+	(signalTable()): New.
+	* LinuxSignals.java: New file.
+	* SignalTable.java: New file.
+	* Signal.java: New file.
+
 2008-01-18  Andrew Cagney  <cagney@redhat.com>
 
 	* Task.java (toString()): Print the state.
