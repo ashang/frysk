@@ -1,3 +1,11 @@
+2008-01-23  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Makefile.am: Add rules to create -nodebug and -noeh versions of
+	funit-stacks, funit-empty-functions, funit-stacks-exit,
+	funit-scopes, funit-scopes-workaround, funit-stack-inlined,
+	funit-stacks-values, funit-stacks-linenum and
+	funit-cpp-scopes-class.
+	
 2008-01-17  Stan Cox  <scox@redhat.com>
 
 	* Makefile.am (install-data-hook): Don't install gen-type-funit-tests.

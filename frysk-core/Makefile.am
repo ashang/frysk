@@ -97,6 +97,121 @@ installcheck-funit:
 # Create executables for type tests for TestTypeEntry.java.
 frysk/debuginfo/TestTypeEntry.java: frysk/pkglibdir/funit-type-entry.c
 
+# Executable without debug_frame and without eh_frame for Frame tests.
+# Note that this depends on both being available by default because
+# Makefile.rules adds both -g and -fasynchronous-unwind-tables
+# WARNING. eh_frames can only be removed if it isn't used during runtime
+# of the test program (in particular c++ exceptions).
+
+# funit-stacks
+pkglib_PROGRAMS += frysk/pkglibdir/funit-stacks-nodebug
+pkglib_PROGRAMS += frysk/pkglibdir/funit-stacks-noeh
+frysk_pkglibdir_funit_stacks_nodebug_SOURCES =
+frysk_pkglibdir_funit_stacks_noeh_SOURCES =
+frysk/pkglibdir/funit-stacks-nodebug: frysk/pkglibdir/funit-stacks
+	objcopy --remove-section=.debug_frame \
+		frysk/pkglibdir/funit-stacks $@
+frysk/pkglibdir/funit-stacks-noeh: frysk/pkglibdir/funit-stacks
+	objcopy --remove-section=.eh_frame_hdr --remove-section=.eh_frame \
+		frysk/pkglibdir/funit-stacks $@
+
+# funit-empty-functions
+pkglib_PROGRAMS += frysk/pkglibdir/funit-empty-functions-nodebug
+pkglib_PROGRAMS += frysk/pkglibdir/funit-empty-functions-noeh
+frysk_pkglibdir_funit_empty_functions_nodebug_SOURCES =
+frysk_pkglibdir_funit_empty_functions_noeh_SOURCES =
+frysk/pkglibdir/funit-empty-functions-nodebug: frysk/pkglibdir/funit-empty-functions
+	objcopy --remove-section=.debug_frame \
+		frysk/pkglibdir/funit-empty-functions $@
+frysk/pkglibdir/funit-empty-functions-noeh: frysk/pkglibdir/funit-empty-functions
+	objcopy --remove-section=.eh_frame_hdr --remove-section=.eh_frame \
+		frysk/pkglibdir/funit-empty-functions $@
+
+# funit-stacks-exit
+pkglib_PROGRAMS += frysk/pkglibdir/funit-stacks-exit-nodebug
+pkglib_PROGRAMS += frysk/pkglibdir/funit-stacks-exit-noeh
+frysk_pkglibdir_funit_stacks_exit_nodebug_SOURCES =
+frysk_pkglibdir_funit_stacks_exit_noeh_SOURCES =
+frysk/pkglibdir/funit-stacks-exit-nodebug: frysk/pkglibdir/funit-stacks-exit
+	objcopy --remove-section=.debug_frame \
+		frysk/pkglibdir/funit-stacks-exit $@
+frysk/pkglibdir/funit-stacks-exit-noeh: frysk/pkglibdir/funit-stacks-exit
+	objcopy --remove-section=.eh_frame_hdr --remove-section=.eh_frame \
+		frysk/pkglibdir/funit-stacks-exit $@
+
+# funit-scopes
+pkglib_PROGRAMS += frysk/pkglibdir/funit-scopes-nodebug
+pkglib_PROGRAMS += frysk/pkglibdir/funit-scopes-noeh
+frysk_pkglibdir_funit_scopes_nodebug_SOURCES =
+frysk_pkglibdir_funit_scopes_noeh_SOURCES =
+frysk/pkglibdir/funit-scopes-nodebug: frysk/pkglibdir/funit-scopes
+	objcopy --remove-section=.debug_frame \
+		frysk/pkglibdir/funit-scopes $@
+frysk/pkglibdir/funit-scopes-noeh: frysk/pkglibdir/funit-scopes
+	objcopy --remove-section=.eh_frame_hdr --remove-section=.eh_frame \
+		frysk/pkglibdir/funit-scopes $@
+
+# funit-scopes-workaround
+pkglib_PROGRAMS += frysk/pkglibdir/funit-scopes-workaround-nodebug
+pkglib_PROGRAMS += frysk/pkglibdir/funit-scopes-workaround-noeh
+frysk_pkglibdir_funit_scopes_workaround_nodebug_SOURCES =
+frysk_pkglibdir_funit_scopes_workaround_noeh_SOURCES =
+frysk/pkglibdir/funit-scopes-workaround-nodebug: frysk/pkglibdir/funit-scopes-workaround
+	objcopy --remove-section=.debug_frame \
+		frysk/pkglibdir/funit-scopes-workaround $@
+frysk/pkglibdir/funit-scopes-workaround-noeh: frysk/pkglibdir/funit-scopes-workaround
+	objcopy --remove-section=.eh_frame_hdr --remove-section=.eh_frame \
+		frysk/pkglibdir/funit-scopes-workaround $@
+
+# funit-stack-inlined
+pkglib_PROGRAMS += frysk/pkglibdir/funit-stack-inlined-nodebug
+pkglib_PROGRAMS += frysk/pkglibdir/funit-stack-inlined-noeh
+frysk_pkglibdir_funit_stack_inlined_nodebug_SOURCES =
+frysk_pkglibdir_funit_stack_inlined_noeh_SOURCES =
+frysk/pkglibdir/funit-stack-inlined-nodebug: frysk/pkglibdir/funit-stack-inlined
+	objcopy --remove-section=.debug_frame \
+		frysk/pkglibdir/funit-stack-inlined $@
+frysk/pkglibdir/funit-stack-inlined-noeh: frysk/pkglibdir/funit-stack-inlined
+	objcopy --remove-section=.eh_frame_hdr --remove-section=.eh_frame \
+		frysk/pkglibdir/funit-stack-inlined $@
+
+# funit-stacks-values
+pkglib_PROGRAMS += frysk/pkglibdir/funit-stacks-values-nodebug
+pkglib_PROGRAMS += frysk/pkglibdir/funit-stacks-values-noeh
+frysk_pkglibdir_funit_stacks_values_nodebug_SOURCES =
+frysk_pkglibdir_funit_stacks_values_noeh_SOURCES =
+frysk/pkglibdir/funit-stacks-values-nodebug: frysk/pkglibdir/funit-stacks-values
+	objcopy --remove-section=.debug_frame \
+		frysk/pkglibdir/funit-stacks-values $@
+frysk/pkglibdir/funit-stacks-values-noeh: frysk/pkglibdir/funit-stacks-values
+	objcopy --remove-section=.eh_frame_hdr --remove-section=.eh_frame \
+		frysk/pkglibdir/funit-stacks-values $@
+
+# funit-stacks-linenum
+pkglib_PROGRAMS += frysk/pkglibdir/funit-stacks-linenum-nodebug
+pkglib_PROGRAMS += frysk/pkglibdir/funit-stacks-linenum-noeh
+frysk_pkglibdir_funit_stacks_linenum_nodebug_SOURCES =
+frysk_pkglibdir_funit_stacks_linenum_noeh_SOURCES =
+frysk/pkglibdir/funit-stacks-linenum-nodebug: frysk/pkglibdir/funit-stacks-linenum
+	objcopy --remove-section=.debug_frame \
+		frysk/pkglibdir/funit-stacks-linenum $@
+frysk/pkglibdir/funit-stacks-linenum-noeh: frysk/pkglibdir/funit-stacks-linenum
+	objcopy --remove-section=.eh_frame_hdr --remove-section=.eh_frame \
+		frysk/pkglibdir/funit-stacks-linenum $@
+
+# funit-cpp-scopes-class
+pkglib_PROGRAMS += frysk/pkglibdir/funit-cpp-scopes-class-nodebug
+pkglib_PROGRAMS += frysk/pkglibdir/funit-cpp-scopes-class-noeh
+frysk_pkglibdir_funit_cpp_scopes_class_nodebug_SOURCES =
+frysk_pkglibdir_funit_cpp_scopes_class_noeh_SOURCES =
+frysk/pkglibdir/funit-cpp-scopes-class-nodebug: frysk/pkglibdir/funit-cpp-scopes-class
+	objcopy --remove-section=.debug_frame \
+		frysk/pkglibdir/funit-cpp-scopes-class $@
+frysk/pkglibdir/funit-cpp-scopes-class-noeh: frysk/pkglibdir/funit-cpp-scopes-class
+	objcopy --remove-section=.eh_frame_hdr --remove-section=.eh_frame \
+		frysk/pkglibdir/funit-cpp-scopes-class $@
+
+
 # Create executables for symbol tests for TestSymbol.java.
 
 pkglib_PROGRAMS += frysk/pkglibdir/funit-symbols-nodebug

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -69,10 +69,25 @@ public class TestFrameDebugInfo
     /// I am not looking at what you are typing. I just have to see ya type
   Logger logger = Logger.getLogger("frysk");
 
-  public void testFrameDebugInfoStackTrace ()
+  public void testFrameDebugInfoStackTrace()
+  {
+    frameDebugInfoStackTrace("");
+  }
+
+  public void testFrameDebugInfoStackTraceNoDebug()
+  {
+    frameDebugInfoStackTrace("-nodebug");
+  }
+
+  public void testFrameDebugInfoStackTraceNoEH()
+  {
+    frameDebugInfoStackTrace("-noeh");
+  }
+
+  public void frameDebugInfoStackTrace(String ext)
   {
       
-    Task task = (new DaemonBlockedAtSignal("funit-stacks")).getMainTask();
+    Task task = (new DaemonBlockedAtSignal("funit-stacks" + ext)).getMainTask();
     
     StringWriter stringWriter = new StringWriter();
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
@@ -86,22 +101,52 @@ public class TestFrameDebugInfo
     
   }
   
-  public void testFrameCompilerIlinedFucntions ()
+  public void testFrameCompilerInlinedFunctions()
+  {
+    frameCompilerInlinedFunctions("");
+  }
+
+  public void testFrameCompilerInlinedFunctionsNoDebug()
+  {
+    frameCompilerInlinedFunctions("-nodebug");
+  }
+
+  public void testFrameCompilerInlinedFunctionsNoEH()
+  {
+    frameCompilerInlinedFunctions("-noeh");
+  }
+
+  public void frameCompilerInlinedFunctions(String ext)
   {
 
-    Task task = (new DaemonBlockedAtSignal("funit-empty-functions")).getMainTask();
+    Task task = (new DaemonBlockedAtSignal("funit-empty-functions" + ext)).getMainTask();
     
     DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
     Subprogram subprogram = frame.getSubprogram();
     assertNotNull(subprogram);
   }
   
-  public void testFrameAdjustedAddress ()
+  public void testFrameAdjustedAddress()
+  {
+    frameAdjustedAddress("");
+  }
+
+  public void testFrameAdjustedAddressNoDebug()
+  {
+    frameAdjustedAddress("-nodebug");
+  }
+
+  public void testFrameAdjustedAddressNoEH()
+  {
+    frameAdjustedAddress("-noeh");
+  }
+
+  public void frameAdjustedAddress(String ext)
   {
     if(unresolved(4676))
         return;
 
-    Task task = (new DaemonBlockedAtSignal("funit-stacks-exit")).getMainTask();
+    Task task = (new DaemonBlockedAtSignal("funit-stacks-exit" + ext)).getMainTask();
     
     Frame frame = StackFactory.createFrame(task);
     StringWriter stringWriter = new StringWriter();
@@ -116,10 +161,25 @@ public class TestFrameDebugInfo
     
   }
   
-  public void testFrameScopes ()
+  public void testFrameScopes()
+  {
+    frameScopes("");
+  }
+
+  public void testFrameScopesNoDebug()
+  {
+    frameScopes("-nodebug");
+  }
+
+  public void testFrameScopesNoEH()
+  {
+    frameScopes("-noeh");
+  }
+
+  public void frameScopes(String ext)
   {
 
-      Task task = (new DaemonBlockedAtSignal("funit-scopes")).getMainTask();
+      Task task = (new DaemonBlockedAtSignal("funit-scopes" + ext)).getMainTask();
     
     Frame frame = StackFactory.createFrame(task);
     
@@ -135,10 +195,25 @@ public class TestFrameDebugInfo
     
   }
   
-  public void testDebugInfoFrameScopes ()
+  public void testDebugInfoFrameScopes()
+  {
+    debugInfoFrameScopes("");
+  }
+
+  public void testDebugInfoFrameScopesNoDebug()
+  {
+    debugInfoFrameScopes("-nodebug");
+  }
+
+  public void testDebugInfoFrameScopesNoEH()
+  {
+    debugInfoFrameScopes("-noeh");
+  }
+
+  public void debugInfoFrameScopes(String ext)
   {
 
-      Task task = (new DaemonBlockedAtSignal("funit-scopes")).getMainTask();
+      Task task = (new DaemonBlockedAtSignal("funit-scopes" + ext)).getMainTask();
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
     
     Scope scope1 = frame.getScopes();
@@ -151,10 +226,25 @@ public class TestFrameDebugInfo
     
   }
   
-  public void testFrameScopesWorkAround ()
+  public void testFrameScopesWorkAround()
+  {
+    frameScopesWorkAround("");
+  }
+
+  public void testFrameScopesWorkAroundNoDebug()
+  {
+    frameScopesWorkAround("-nodebug");
+  }
+
+  public void testFrameScopesWorkAroundNoEH()
+  {
+    frameScopesWorkAround("-noeh");
+  }
+
+  public void frameScopesWorkAround(String ext)
   {
     
-      Task task = (new DaemonBlockedAtSignal("funit-scopes-workaround")).getMainTask();
+      Task task = (new DaemonBlockedAtSignal("funit-scopes-workaround" + ext)).getMainTask();
     Frame frame = StackFactory.createFrame(task);
     
     Dwfl dwfl = DwflCache.getDwfl(task);
@@ -170,10 +260,25 @@ public class TestFrameDebugInfo
     
   }
   
-  public void testGetInlinedSubroutines ()
+  public void testGetInlinedSubroutines()
+  {
+    getInlinedSubroutines("");
+  }
+
+  public void testGetInlinedSubroutinesNoDebug()
+  {
+    getInlinedSubroutines("-nodebug");
+  }
+
+  public void testGetInlinedSubroutinesNoEH()
+  {
+    getInlinedSubroutines("-noeh");
+  }
+
+  public void getInlinedSubroutines(String ext)
   {
     
-      Task task = (new DaemonBlockedAtSignal("funit-stack-inlined")).getMainTask();
+      Task task = (new DaemonBlockedAtSignal("funit-stack-inlined" + ext)).getMainTask();
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
     
     LinkedList inlinedSubprograms =  frame.getInlinedSubprograms();
@@ -182,10 +287,25 @@ public class TestFrameDebugInfo
     
   }
   
-  public void testVirtualStackTrace ()
+  public void testVirtualStackTrace()
+  {
+    virtualStackTrace("");
+  }
+
+  public void testVirtualStackTraceNoDebug()
+  {
+    virtualStackTrace("-nodebug");
+  }
+
+  public void testVirtualStackTraceNoEH()
+  {
+    virtualStackTrace("-noeh");
+  }
+
+  public void virtualStackTrace(String ext)
   {
     
-      Task task = (new DaemonBlockedAtSignal("funit-stack-inlined")).getMainTask();
+      Task task = (new DaemonBlockedAtSignal("funit-stack-inlined" + ext)).getMainTask();
     StringWriter stringWriter = new StringWriter();
     
     DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(stringWriter), task,0, true, true, true);
@@ -197,13 +317,28 @@ public class TestFrameDebugInfo
     assertTrue("contains main", stringWriter.getBuffer().toString().contains("main"));
   }
   
+  public void testInlinedFunctionDerailment()
+  {
+    inlinedFunctionDerailment("");
+  }
+
+  public void testInlinedFunctionDerailmentNoDebug()
+  {
+    inlinedFunctionDerailment("-nodebug");
+  }
+
+  public void testInlinedFunctionDerailmentNoEH()
+  {
+    inlinedFunctionDerailment("-noeh");
+  }
+
   // test that a Subprogram can be retrieved for a function even
   // if the call stack contains calls to inlined functions inner
   // to it.
-  public void testInlinedFunctionDerailment ()
+  public void inlinedFunctionDerailment(String ext)
   {
   
-      Task task = (new DaemonBlockedAtSignal("funit-stack-inlined")).getMainTask();
+      Task task = (new DaemonBlockedAtSignal("funit-stack-inlined" + ext)).getMainTask();
     
     DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
     Subprogram subprogram = null;
@@ -223,7 +358,22 @@ public class TestFrameDebugInfo
   
   public void testValues() throws NameNotFoundException
   {
-      Task task = (new DaemonBlockedAtSignal("funit-stacks-values")).getMainTask();
+    values("");
+  }
+
+  public void testValuesNoDebug() throws NameNotFoundException
+  {
+    values("-nodebug");
+  }
+
+  public void testValuesNoEH() throws NameNotFoundException
+  {
+    values("-noeh");
+  }
+
+  public void values(String ext) throws NameNotFoundException
+  {
+    Task task = (new DaemonBlockedAtSignal("funit-stacks-values" + ext)).getMainTask();
     Subprogram subprogram;
     DebugInfoFrame frame;
     Variable variable;
@@ -282,8 +432,24 @@ public class TestFrameDebugInfo
       
   }
   
-  public void testLineNumbers(){
-      Task task = (new DaemonBlockedAtSignal("funit-stacks-linenum")).getMainTask();
+  public void testLineNumbers()
+  {
+    lineNumbers("");
+  }
+
+  public void testLineNumbersNoDebug()
+  {
+    lineNumbers("-nodebug");
+  }
+
+  public void testLineNumbersNoEH()
+  {
+    lineNumbers("-noeh");
+  }
+
+  public void lineNumbers(String ext)
+  {
+      Task task = (new DaemonBlockedAtSignal("funit-stacks-linenum" + ext)).getMainTask();
       
       Subprogram subprogram;
       DebugInfoFrame frame;
@@ -333,9 +499,25 @@ public class TestFrameDebugInfo
       assertEquals("line number", variable.getLineNumber(), 10);
   }
 
-  public void testThatArtificialParametersAreIgnored() {
+  public void testThatArtificialParametersAreIgnored()
+  {
+    artificialParametersAreIgnored("");
+  }
 
-	Task task = (new DaemonBlockedAtSignal("funit-cpp-scopes-class")).getMainTask();
+  public void testThatArtificialParametersAreIgnoredNoDebug()
+  {
+    artificialParametersAreIgnored("-nodebug");
+  }
+
+  public void testThatArtificialParametersAreIgnoredNoEH()
+  {
+    artificialParametersAreIgnored("-noeh");
+  }
+
+  public void artificialParametersAreIgnored(String ext)
+  {
+
+	Task task = (new DaemonBlockedAtSignal("funit-cpp-scopes-class" + ext)).getMainTask();
 	      
 	DebugInfoFrame frame = DebugInfoStackFactory
 		.createVirtualStackTrace(task);
