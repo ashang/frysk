@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -98,8 +98,8 @@ public class TestDebugInfoStackTrace
     SynchronizedOffspring process
 	= new SynchronizedOffspring (Signal.USR1, new String[] {
 					 getExecPath ("funit-rt-looper"),
-					 "" + Pid.get (),
-					 Signal.USR1.toString()
+					 Integer.toString(Pid.get ()),
+					 Integer.toString(Signal.USR1.intValue())
 				     });
     myTask = process.findTaskUsingRefresh(true);
     assertNotNull(myTask);
@@ -205,8 +205,7 @@ public class TestDebugInfoStackTrace
     Manager.eventLoop.requestStop();
   }
   
-  public synchronized void testThreadedBacktrace ()
-  {
+  public synchronized void testThreadedBacktrace() {
       // Backtraces only work on x86 and x86_64 for now.
       if (unresolvedOnPPC(3277))
 	  return;
@@ -217,8 +216,8 @@ public class TestDebugInfoStackTrace
     SynchronizedOffspring process
 	= new SynchronizedOffspring (Signal.USR1, new String[] {
 					 getExecPath ("funit-rt-threader"),
-					 "" + Pid.get (),
-					 Signal.USR1.toString()
+					 Integer.toString(Pid.get ()),
+					 Integer.toString(Signal.USR1.intValue())
 				     });
     myTask = process.findTaskUsingRefresh(true);
     
@@ -267,8 +266,8 @@ public class TestDebugInfoStackTrace
   SynchronizedOffspring process
       = new SynchronizedOffspring (Signal.USR1, new String[] {
 				       getExecPath ("funit-rt-stepper"),
-				       "" + Pid.get (),
-				       Signal.USR1.toString()
+				       Integer.toString(Pid.get()),
+				       Integer.toString(Signal.USR1.intValue())
 				   });
   myTask = process.findTaskUsingRefresh(true);
   myProc = myTask.getProc();
@@ -305,8 +304,8 @@ public class TestDebugInfoStackTrace
   SynchronizedOffspring process
       = new SynchronizedOffspring (Signal.USR1, new String[] {
 				       getExecPath ("funit-rt-stepper"),
-				       "" + Pid.get (),
-				       Signal.USR1.toString()
+				       Integer.toString(Pid.get ()),
+				       Integer.toString(Signal.USR1.intValue())
 				   });
   myTask = process.findTaskUsingRefresh(true);
   myProc = myTask.getProc();

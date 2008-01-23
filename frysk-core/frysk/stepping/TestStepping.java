@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -323,8 +323,8 @@ public class TestStepping extends TestLib {
 	    = new SynchronizedOffspring(Signal.USR1,
 					new String[] {
 					    getExecPath("funit-rt-siglongjmp"),
-					    "" + Pid.get(),
-					    Signal.USR1.toString()
+					    Integer.toString(Pid.get()),
+					    Integer.toString(Signal.USR1.intValue())
 					});
 	this.testStarted = false;
 
@@ -370,8 +370,8 @@ public class TestStepping extends TestLib {
 	    = new SynchronizedOffspring(Signal.USR1,
 					new String[] {
 					    getExecPath("funit-rt-goto"),
-					    "" + Pid.get(),
-					    Signal.USR1.toString()
+					    Integer.toString(Pid.get()),
+					    Integer.toString(Signal.USR1.intValue())
 					});
 	this.testStarted = false;
 
@@ -420,8 +420,8 @@ public class TestStepping extends TestLib {
 	    = new SynchronizedOffspring(Signal.USR1,
 					new String[] {
 					    getExecPath("funit-rt-sigraise"),
-					    "" + Pid.get(),
-					    Signal.USR1.toString()
+					    Integer.toString(Pid.get()),
+					    Integer.toString(Signal.USR1.intValue())
 					});
 	this.testStarted = false;
 

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -67,11 +67,9 @@ public final class SignalSet
     /**
      * Create a SigSet containing the signals in the array.
      */
-    public SignalSet (Signal[] sigs) {
+    public SignalSet(Signal[] sigs) {
 	this();
-	for (int i = 0; i < sigs.length; i++) {
-	    add(sigs[i]);
-	}
+        add(sigs);
     }
     /**
      * Create a SigSet containing the single signal.
@@ -91,7 +89,7 @@ public final class SignalSet
 	for (int i = 0; i < sigs.length; i++) {
 	    if (i > 0)
 		s.append(",");
-	    s.append(sigs[i].toPrint());
+	    s.append(sigs[i].toString());
 	}
 	s.append("}");
 	return s.toString();
@@ -100,7 +98,19 @@ public final class SignalSet
     /**
      * As an array.
      */
-    public native Signal[] toArray ();
+    public Signal[] toArray() {
+	Signal[] signals = new Signal[this.size()];
+	int sig = 0;
+	for (int i = 0; i < signals.length; i++) {
+	    Signal signal;
+	    do {
+		sig++;
+		signal = Signal.valueOf(sig);
+	    } while (! this.contains(signal));
+	    signals[i] = signal;
+	}
+	return signals;
+    }
 
     /**
      * Empty the signal set; return this.
@@ -119,7 +129,8 @@ public final class SignalSet
      */
     public SignalSet add(Signal[] sigs) {
 	for (int i = 0; i < sigs.length; i++) {
-	    add(sigs[i]);
+            if (sigs[i] != null)
+		add(sigs[i]);
 	}
 	return this;
     }

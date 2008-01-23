@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -154,8 +154,8 @@ public class TaskTerminatingObserver
 	
 	if (signal) {
 	    // XXX: This is the host, and not the target signal :-(
-	    name += " sig " + Signal.valueOf(value).toPrint();
-	    tooltip += " with signal " + Signal.valueOf(value).toPrint();
+	    name += " sig " + Signal.toHostStringFIXME(value);
+	    tooltip += " with signal " + Signal.toHostStringFIXME(value);
 	}
 	EventManager.theManager.addEvent(event);
     }

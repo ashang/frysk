@@ -1,3 +1,11 @@
+2008-01-23  Andrew Cagney  <cagney@redhat.com>
+
+	* TestDebugInfoStackTrace.java (testBacktrace()): Use
+	Integer.toString(int) not Signal.toString().
+	(testThreadedBacktrace()): Ditto.
+	(testFramePushing()): Ditto.
+	(testFramePopping()): Ditto.
+
 2008-01-23  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestFrameDebugInfo.java: Add NoDebug and NoEH variants of

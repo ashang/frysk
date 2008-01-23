@@ -124,7 +124,7 @@ public abstract class UnhandledWaitBuilder
      * SIGNONE).
      */
     public void stopped(int pid, Signal signal) {
-	unhandled("stopped", pid, "signal", signal.toPrint());
+	unhandled("stopped", pid, "signal", signal.toString());
     }
     /**
      * The task PID terminated (WIFEXITED, WIFSIGNALED); if SIGNAL is
