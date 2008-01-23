@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -125,14 +125,11 @@ class StartRun extends ParameterizedCommand {
     }
     
     public void interpretRun(CLI cli, Input cmd, Object options) {
-	//System.out.println("StartRun.interpretRun");
 	runToBreak = true;
 	interpretCmd(cli, cmd, options);
     }
     
     public void interpretStart(CLI cli, Input cmd, Object options)  {
-	//System.out.println("StartRun.interpretStart");
-	//cli.execCommand("focus\n");
 	runToBreak = false;
 	interpretCmd(cli, cmd, options);
     }
@@ -243,23 +240,48 @@ class StartRun extends ParameterizedCommand {
 	    }
 	}
     }
+    
+    /**
+     * getParameters figures out what parameters to send back to start/run the process with;
+     * 	if no parameters are entered, use the previous ones if any were entered; if
+     *  parameters were entered, use those.
+     *  
+     * @param cmd is the Input object containing the command and any paramaters
+     * @param task is the Task object of the process that was previously run
+     * @return a String containing the parameters to be used in starting/running
+     *         the process
+     */
 
     private String getParameters(Input cmd, Task task) {
 	if (cmd.size() < 1) {
-	    // No params entered, use this proc's previous params
+	    // No params entered, use this proc's previous params(if any)
 	    Proc proc = task.getProc();
-	    return parseParameters(proc.getCmdLine());
-	    //Proc had no previous params, send back empty param list
-	} else
-	    return parseParameters(cmd.stringArrayValue());
+	    return parseParameters(proc.getCmdLine(), true);
+	} else//Proc had no previous params, send back empty param list
+	    // There were parameters entered, use those
+	    return parseParameters(cmd.stringArrayValue(), false);
     }
     
-    private String parseParameters(String[] parameters) {
+    /**
+     * parseParameters takes a String array and returns a space-delimited String
+     * @param parameters is the String array to convert
+     * @param which indicates whether or not to skip the first parameter
+     * @return a String of the parameters separated by spaces
+     */
+    private String parseParameters(String[] parameters, boolean which) {
 	if (parameters == null || parameters.length <= 0)
 		return "";
-	    String paramList = "";
-	    for (int i = 0; i < parameters.length; i++) 
-		paramList = paramList + parameters[i] + " ";
+	int i;
+	if (which)
+	    // In this case skip the first parameter which is the path to the process
+	    i = 1;
+	else
+	    // In this case, get all of the parameters which does not include the process
+	    i = 0;
+	String paramList = "";
+	for (int j = i; j < parameters.length; j++) 
+	    paramList = paramList + parameters[j] + " ";
+	    System.out.println("StartRun.parseParameters");
 	    return paramList;
     }
     

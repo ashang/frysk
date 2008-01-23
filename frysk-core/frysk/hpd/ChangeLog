@@ -2,6 +2,8 @@
 
 	* TestRunCommand.java (testRunCommandParamter): New.
 	* TestStartCommand.java (testStartCommandParameter): New.
+	* StartRun.java: Fix bug when multiple runs the correct
+	parameter list is generated.
 
 2008-01-21  Andrew Cagney  <cagney@redhat.com>
 
