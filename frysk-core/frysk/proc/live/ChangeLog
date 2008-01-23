@@ -1,5 +1,13 @@
 2008-01-22  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTaskState.java (handleTrappedEvent(LinuxPtraceTask))
+	(handleSignaledEvent(LinuxPtraceTask,Signal)): Delete.
+	(handleStoppedEvent(LinuxPtraceTask,Signal)): Delete.
+	(blockOrDetach(LinuxPtraceTask)): Delete.
+	(blockOrAttach(LinuxPtraceTask)): Delete.
+	(blockOrAttachContinue(LinuxPtraceTask)): Delete.
+	(attemptContinue(LinuxPtraceTask)): Delete.
+	
 	* LinuxPtraceTaskState.java (handleStoppedEvent(LinuxPtraceTask,
 	Signal)): Replace handleStoppedEvent(LinuxPtraceTask).
 	* LinuxPtraceTask.java (processSignaledEvent(Signal)): Delete.

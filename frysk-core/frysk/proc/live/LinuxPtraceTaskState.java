@@ -58,16 +58,9 @@ class LinuxPtraceTaskState extends State {
 	super(state);
     }
 
-    LinuxPtraceTaskState handleSignaledEvent(LinuxPtraceTask task,
-					     Signal sig) {
-	throw unhandled (task, "handleSignaledEvent");
-    }
     LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
 					    Signal signal) {
-	throw unhandled(task, "handleStoppedEvent");
-    }
-    LinuxPtraceTaskState handleTrappedEvent(LinuxPtraceTask task) {
-	throw unhandled (task, "handleTrappedEvent");
+	throw unhandled(task, "handleStoppedEvent " + signal);
     }
     LinuxPtraceTaskState handleSyscalledEvent(LinuxPtraceTask task) {
 	throw unhandled (task, "handleSyscalledEvent");
@@ -220,11 +213,12 @@ class LinuxPtraceTaskState extends State {
 	    this.waitForSIGCONT = waitForSIGCONT;
 	}
 	private SignalSet sigset = new SignalSet();
-	private LinuxPtraceTaskState transitionToAttached(LinuxPtraceTask task,
-							  Signal signal) {
+	LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
+						Signal signal) {
 	    if (waitForSIGCONT && signal != Signal.CONT) {
 		// Save the signal and then re-wait for, hopefully,
-		// the SIGCONT behind it.
+		// the SIGCONT behind it.  XXX: This could pass back a
+		// SIGTRAP, is that reasonable?
 		sigset.add(signal);
 		task.sendContinue(Signal.NONE);
 		return this;
@@ -237,32 +231,15 @@ class LinuxPtraceTaskState extends State {
 				   new Object[] { this, sigs[i] });
 			sigs[i].tkill(task.getTid());
 		    }
+		    // And convert the CONT back into a STOP.
 		    signal = Signal.STOP;
-		} else if (signal == Signal.STOP) {
-		    // toss the stop.
+		} else if (signal == Signal.STOP || signal == Signal.TRAP) {
+		    // Toss the stop event.
 		    signal = Signal.NONE;
 		}
 		((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted (task);
 		return new Attached.WaitForContinueOrUnblock(signal);
 	    }
-	}
-	LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
-						Signal signal) {
-	    if (signal == Signal.STOP)
-		return transitionToAttached(task, Signal.STOP);
-	    else if (signal == Signal.TRAP)
-		return handleTrappedEvent(task);
-	    else
-		return handleSignaledEvent(task, signal);
-	}
-	LinuxPtraceTaskState handleSignaledEvent(LinuxPtraceTask task,
-						 Signal signal) {
-	    logger.log (Level.FINE, "{0} handleSignaledEvent, signal: {1}\n ", new Object[] {task, signal}); 
-	    return transitionToAttached(task, signal);
-	}
-	LinuxPtraceTaskState handleTrappedEvent(LinuxPtraceTask task) {
-	    logger.log (Level.FINE, "{0} handleTrappedEvent\n", task); 
-	    return transitionToAttached (task, Signal.NONE);
 	}
 	LinuxPtraceTaskState handleDisappearedEvent(LinuxPtraceTask task,
 						    Throwable w) {
@@ -483,27 +460,17 @@ class LinuxPtraceTaskState extends State {
 		    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted (task);
 		    return StartMainTask.wantToAttach;
 		}
-		private LinuxPtraceTaskState blockOrDetach (LinuxPtraceTask task)
-		{
-		    if (task.notifyForkedOffspring () > 0)
-			return StartMainTask.detachBlocked;
-		    task.sendDetach(Signal.NONE);
-		    ((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted (task);
-		    return detached;
-		}
-		LinuxPtraceTaskState handleTrappedEvent (LinuxPtraceTask task)
-		{
-		    logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
-		    return blockOrDetach (task);
-		}
 		LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
 							Signal signal) {
-		    if (signal == Signal.STOP)
-			return blockOrDetach (task);
-		    else if (signal == Signal.TRAP)
-			return handleTrappedEvent(task);
-		    else
-			return handleSignaledEvent(task, signal);
+		    if (signal == Signal.STOP || signal == Signal.TRAP) {
+			if (task.notifyForkedOffspring () > 0)
+			    return StartMainTask.detachBlocked;
+			task.sendDetach(Signal.NONE);
+			((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted (task);
+			return detached;
+		    } else {
+			throw unhandled(task, "handleStoppedEvent " + signal);
+		    }
 		}
 	    };
 	/**
@@ -559,24 +526,15 @@ class LinuxPtraceTaskState extends State {
 		    observation.add();
 		    return this;
 		}
-		LinuxPtraceTaskState blockOrAttach(LinuxPtraceTask task) {
-		    if (task.notifyForkedOffspring () > 0)
-			return StartMainTask.attachBlocked;
-		    return Attached.waitForContinueOrUnblock;
-		}
-		LinuxPtraceTaskState handleTrappedEvent (LinuxPtraceTask task)
-		{
-		    logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
-		    return blockOrAttach(task);
-		}
 		LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
 							Signal signal) {
-		    if (signal == Signal.STOP)
-			return blockOrAttach (task);
-		    else if (signal == Signal.TRAP)
-			return handleTrappedEvent(task);
-		    else
-			return handleSignaledEvent(task, signal);
+		    if (signal == Signal.STOP || signal == Signal.TRAP) {
+			if (task.notifyForkedOffspring () > 0)
+			    return StartMainTask.attachBlocked;
+			return Attached.waitForContinueOrUnblock;
+		    } else {
+			throw unhandled(task, "handleStoppedEvent " + signal);
+		    }
 		}
 		LinuxPtraceTaskState handleContinue (LinuxPtraceTask task)
 		{
@@ -590,33 +548,19 @@ class LinuxPtraceTaskState extends State {
 	 */
 	private static final LinuxPtraceTaskState wantToAttachContinue =
 	    new StartMainTask ("wantToAttachContinue") {
-		LinuxPtraceTaskState blockOrAttachContinue(LinuxPtraceTask task,
-							   Signal signal) {
-		    // Mark this LinuxPtraceTask as just started.
-		    // See Running.handleTrapped for more explanation. 
+		LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
+							Signal signal) {
+		    // Mark this LinuxPtraceTask as just started.  See
+		    // Running.handleTrapped for more explanation.
 		    task.justStartedXXX = true;
 		    if (task.notifyForkedOffspring() > 0)
 			return StartMainTask.attachContinueBlocked;
-		    else
+		    else {
+			if (signal == Signal.STOP || signal == Signal.TRAP)
+			    // Discard the signal.
+			    signal = Signal.NONE;
 			return Attached.transitionToRunningState(task, signal);
-		}
-		LinuxPtraceTaskState handleTrappedEvent (LinuxPtraceTask task) {
-		    logger.log(Level.FINE, "{0} handleTrappedEvent\n", task);
-		    return blockOrAttachContinue(task, Signal.NONE);
-		}
-		LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
-							Signal signal) {
-		    if (signal == Signal.STOP)
-			return blockOrAttachContinue(task, Signal.NONE);
-		    else if (signal == Signal.TRAP)
-			return handleTrappedEvent(task);
-		    else
-			return handleSignaledEvent(task, signal);
-		}
-		LinuxPtraceTaskState handleSignaledEvent(LinuxPtraceTask task,
-							 Signal signal) {
-		    logger.log(Level.FINE, "{0} handleSignaledEvent\n", task);
-		    return blockOrAttachContinue(task, signal);
+		    }
 		}
 
 	      // Adding or removing observers doesn't impact this state.
@@ -701,17 +645,6 @@ class LinuxPtraceTaskState extends State {
 	{
 	    super ("StartClonedTask." + name);
 	}
-	private static LinuxPtraceTaskState attemptContinue (LinuxPtraceTask task)
-	{
-	    logger.log (Level.FINE, "{0} attemptContinue\n", task); 
-	    task.sendSetOptions ();
-	    if (task.notifyClonedOffspring () > 0)
-		return StartClonedTask.blockedOffspring;
-	    // XXX: Really notify attached here?
-	    if (task.notifyAttached () > 0)
-                return blockedContinue;
-	    return running.sendContinue(task, Signal.NONE);
-	}
 	LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task, TaskObservation observation)
 	{
 	    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
@@ -739,19 +672,20 @@ class LinuxPtraceTaskState extends State {
 		    task.blockers.remove (observer);
 		    return StartClonedTask.waitForStop;
 		}
-		LinuxPtraceTaskState handleTrappedEvent (LinuxPtraceTask task)
-		{
-		    logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
-		    return attemptContinue (task);
-		}
 		LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
 							Signal signal) {
-		    if (signal == Signal.STOP)
-			return attemptContinue (task);
-		    else if (signal == Signal.TRAP)
-			return handleTrappedEvent(task);
-		    else
-			return handleSignaledEvent(task, signal);
+		    if (signal == Signal.STOP || signal == Signal.TRAP) {
+			// Attempt an attached continue.
+			task.sendSetOptions ();
+			if (task.notifyClonedOffspring () > 0)
+			    return StartClonedTask.blockedOffspring;
+			// XXX: Really notify attached here?
+			if (task.notifyAttached () > 0)
+			    return blockedContinue;
+			return running.sendContinue(task, Signal.NONE);
+		    } else {
+			throw unhandled(task, "handleStoppedEvent " + signal);
+		    }
 		}
 	    };
 	
@@ -1313,10 +1247,11 @@ class LinuxPtraceTaskState extends State {
 		    task.sendDetach(Signal.NONE);
 		    ((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted (task);
 		    return detached;
-		} else if (signal == Signal.TRAP)
-		    return handleTrappedEvent(task);
-		else
+		} else if (signal == Signal.TRAP) {
+		    throw unhandled(task, "handleStoppedEvent " + signal);
+		} else {
 		    return handleSignaledEvent(task, signal);
+		}
 	    }
 	    LinuxPtraceTaskState handleTerminatingEvent (LinuxPtraceTask task,
 							 Signal signal,
