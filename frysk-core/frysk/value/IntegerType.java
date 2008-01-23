@@ -71,6 +71,10 @@ public abstract class IntegerType
     	return new BigFloatingPoint(getBigInteger(location));
     }
     
+    void putBigFloatingPoint(Location location, BigFloatingPoint val) {
+    	putBigInteger (location, val.bigIntegerValue());
+    }
+    
     void assign(Location location, Value value) {
 	BigInteger i = ((ArithmeticType)value.getType())
 	    .bigIntegerValue(value.getLocation());

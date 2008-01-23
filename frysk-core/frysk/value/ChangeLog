@@ -1,3 +1,13 @@
+2008-01-23  Teresa Thomas  <tthomas@redhat.com>
+
+	* BigFloatingPoint.java: Add arithmetic functions.
+	* FloatingPointUnit.java: Use BigFloatingPoint for 
+	arithmetics.
+	* Value.java (asBigFloatingPoint): Fix cast.
+	* IntegerType.java (putBigFloatingPoint): New.
+	* FloatingPointType.java (putBigFloatingPoint): New.
+	* ArithmeticType.java (putBigFloatingPoint): New.
+
 2008-01-18  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestClass.java: Add copyright boilerplate.

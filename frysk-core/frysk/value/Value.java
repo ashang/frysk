@@ -115,7 +115,7 @@ public class Value
     }
     
     public BigFloatingPoint asBigFloatingPoint() {
-    	return ((FloatingPointType)type.getUltimateType()).getBigFloatingPoint(location);
+    	return ((ArithmeticType)type.getUltimateType()).getBigFloatingPoint(location);
     }
 
     /**
