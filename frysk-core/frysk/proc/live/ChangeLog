@@ -1,5 +1,7 @@
 2008-01-22  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTaskState.java: Re-indent.
+	
 	* LinuxPtraceTaskState.java (handleTrappedEvent(LinuxPtraceTask))
 	(handleSignaledEvent(LinuxPtraceTask,Signal)): Delete.
 	(handleStoppedEvent(LinuxPtraceTask,Signal)): Delete.

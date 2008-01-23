@@ -63,12 +63,12 @@ class LinuxPtraceTaskState extends State {
 	throw unhandled(task, "handleStoppedEvent " + signal);
     }
     LinuxPtraceTaskState handleSyscalledEvent(LinuxPtraceTask task) {
-	throw unhandled (task, "handleSyscalledEvent");
+	throw unhandled(task, "handleSyscalledEvent");
     }
     LinuxPtraceTaskState handleTerminatedEvent(LinuxPtraceTask task,
 					       Signal signal,
 					       int status) {
-	throw unhandled (task, "handleTerminatedEvent");
+	throw unhandled(task, "handleTerminatedEvent");
     }
     LinuxPtraceTaskState handleTerminatingEvent(LinuxPtraceTask task,
 						Signal signal,
@@ -116,15 +116,13 @@ class LinuxPtraceTaskState extends State {
     /**
      * Return the initial state of a detached task.
      */
-    static LinuxPtraceTaskState detachedState ()
-    {
+    static LinuxPtraceTaskState detachedState() {
 	return detached;
     }
     /**
      * Return the initial state of the Main task.
      */
-    static LinuxPtraceTaskState mainState ()
-    {
+    static LinuxPtraceTaskState mainState() {
 	return StartMainTask.wantToDetach;
     }
     /**
@@ -139,8 +137,8 @@ class LinuxPtraceTaskState extends State {
 		 || parentState == inSyscallRunning)
 	    return StartClonedTask.waitForStop;
 	
-	throw new RuntimeException ("clone's parent in unexpected state "
-	                            + parentState);
+	throw new RuntimeException("clone's parent in unexpected state "
+				   + parentState);
     }
 
     /**
@@ -155,18 +153,18 @@ class LinuxPtraceTaskState extends State {
      * XXX: GCJ botches the code gen for a call to this method, from
      * an anonymous inner class, when this method isn't static.
      */
-    protected static void handleAttachedTerminated (LinuxPtraceTask task,
-						    Signal signal,
-						    int status) {
+    private static void handleAttachedTerminated(LinuxPtraceTask task,
+						   Signal signal,
+						   int status) {
 	logger.log(Level.FINE, "{0} handleAttachedTerminated\n", task); 
 	if (signal != null)
 	    task.notifyTerminated(true, signal.intValue());
 	else
 	    task.notifyTerminated(false, status);
 	// A process with no tasks is dead ...?
-	if (task.getProc().taskPool.size () == 0) {
-	    task.getProc().parent.remove (task.getProc());
-	    task.getProc().getHost().remove (task.getProc());
+	if (task.getProc().taskPool.size() == 0) {
+	    task.getProc().parent.remove(task.getProc());
+	    task.getProc().getHost().remove(task.getProc());
 	}
     }
 
@@ -174,39 +172,38 @@ class LinuxPtraceTaskState extends State {
      * The task isn't attached (it was presumably detected using a
      * probe of the system process list).
      */
-    protected static final LinuxPtraceTaskState detached = new LinuxPtraceTaskState("detached")
-	{
-	    LinuxPtraceTaskState handleRemoval (LinuxPtraceTask task)
-	    {
-		logger.log (Level.FINE, "{0} handleRemoval\n", task); 
-		return destroyed;
-	    }
-	    LinuxPtraceTaskState handleAttach(LinuxPtraceTask task) {
-		logger.log (Level.FINE, "{0} handleAttach\n", task); 
-		task.sendAttach ();
-		if (task.getProc().getMainTask() == task
-		    && Status.isStopped(task.getTid())) {
-		    // The attach has been initiated on the main task
-		    // of the process; the process state should
-		    // transition to (T) TRACED.  If it is instead (T)
-		    // STOPPED then the process is stuck (suspended),
-		    // send it a SIGSTOP to unwedge it.  /proc/status
-		    // is used as that differentiates between STOPPED
-		    // an TRACED.
-		    logger.log(Level.FINE,
-			       "{0} wake the suspended process", task);
-		    Signal.CONT.tkill(task.getTid());
-		    return new Attaching(true);
-		} else {
-		    return new Attaching(false);
+    private static final LinuxPtraceTaskState detached
+	= new LinuxPtraceTaskState("detached")	{
+		LinuxPtraceTaskState handleRemoval(LinuxPtraceTask task) {
+		    logger.log(Level.FINE, "{0} handleRemoval\n", task); 
+		    return destroyed;
 		}
-	    }
-	};
+		LinuxPtraceTaskState handleAttach(LinuxPtraceTask task) {
+		    logger.log(Level.FINE, "{0} handleAttach\n", task); 
+		    task.sendAttach();
+		    if (task.getProc().getMainTask() == task
+			&& Status.isStopped(task.getTid())) {
+			// The attach has been initiated on the main task
+			// of the process; the process state should
+			// transition to (T) TRACED.  If it is instead (T)
+			// STOPPED then the process is stuck (suspended),
+			// send it a SIGSTOP to unwedge it.  /proc/status
+			// is used as that differentiates between STOPPED
+			// an TRACED.
+			logger.log(Level.FINE,
+				   "{0} wake the suspended process", task);
+			Signal.CONT.tkill(task.getTid());
+			return new Attaching(true);
+		    } else {
+			return new Attaching(false);
+		    }
+		}
+	    };
 
     /**
      * The task is in the process of being attached.
      */
-    static private class Attaching extends LinuxPtraceTaskState {
+    private static class Attaching extends LinuxPtraceTaskState {
 	private final boolean waitForSIGCONT;
 	Attaching(boolean waitForSIGCONT) {
 	    super("attaching");
@@ -237,33 +234,33 @@ class LinuxPtraceTaskState extends State {
 		    // Toss the stop event.
 		    signal = Signal.NONE;
 		}
-		((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted (task);
+		((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted(task);
 		return new Attached.WaitForContinueOrUnblock(signal);
 	    }
 	}
 	LinuxPtraceTaskState handleDisappearedEvent(LinuxPtraceTask task,
 						    Throwable w) {
-	    logger.log (Level.FINE, "{0} handleDisappearedEvent\n", task); 
+	    logger.log(Level.FINE, "{0} handleDisappearedEvent\n", task); 
 	    // Ouch, the task disappeared before the attach reached
 	    // it, just abandon this one (but ack the operation
 	    // regardless).
-	    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted (task);
-	    ((LinuxPtraceProc)task.getProc()).remove (task);
+	    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted(task);
+	    ((LinuxPtraceProc)task.getProc()).remove(task);
 	    return destroyed;
 	}
 	LinuxPtraceTaskState handleTerminatedEvent(LinuxPtraceTask task,
 						   boolean signal, int value) {
-	    logger.log (Level.FINE, "{0} processTerminatedEvent\n", task); 
+	    logger.log(Level.FINE, "{0} processTerminatedEvent\n", task); 
 	    // Ouch, the task terminated before the attach reached it,
 	    // just abandon this one (but ack the operation
 	    // regardless).
-	    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted (task);
-	    ((LinuxPtraceProc)task.getProc()).remove (task);
+	    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted(task);
+	    ((LinuxPtraceProc)task.getProc()).remove(task);
 	    return destroyed;
 	}
 	LinuxPtraceTaskState handleDetach(LinuxPtraceTask task,
 					  boolean shouldRemoveObservers) {
-	    logger.log (Level.FINE, "{0} handleDetach\n", task); 
+	    logger.log(Level.FINE, "{0} handleDetach\n", task); 
 	    return detaching;
 	}
 	/**
@@ -274,7 +271,7 @@ class LinuxPtraceTaskState extends State {
 	 */
 	LinuxPtraceTaskState handleUnblock(LinuxPtraceTask task,
 					   TaskObserver observer) {
-	    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
+	    logger.log(Level.FINE, "{0} handleUnblock\n", task); 
 	    // Sanity check
 	    if (task.blockers.remove(observer)) {
 		throw new RuntimeException
@@ -289,7 +286,7 @@ class LinuxPtraceTaskState extends State {
 	 */
 	LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task,
 						  TaskObservation observation) {
-	    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
+	    logger.log(Level.FINE, "{0} handleAddObservation\n", task);
 	    observation.add();
 	    return this;
 	}
@@ -297,9 +294,8 @@ class LinuxPtraceTaskState extends State {
 	 * Deleting an observer is always allowd in attaching state.
 	 */
 	LinuxPtraceTaskState handleDeleteObservation(LinuxPtraceTask task,
-						     TaskObservation observation)
-	{
-	    logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
+						     TaskObservation observation) {
+	    logger.log(Level.FINE, "{0} handleDeleteObservation\n", task); 
 	    observation.delete();
 	    return handleUnblock(task, observation.getTaskObserver());
 	}
@@ -312,16 +308,15 @@ class LinuxPtraceTaskState extends State {
      * transitioned into the attached state.
      */
     private static class Attached extends LinuxPtraceTaskState {
-	private Attached (String name)
-	{
-	    super ("Attached." + name);
+	private Attached(String name) {
+	    super("Attached." + name);
 	}
 	/**
 	 * In all Attached states, addObservation is allowed.
 	 */
-        LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task, TaskObservation observation)
-	{
-	    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
+        LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task,
+						  TaskObservation observation) {
+	    logger.log(Level.FINE, "{0} handleAddObservation\n", task);
 	    observation.add();
 	    return this;
 	}
@@ -329,9 +324,8 @@ class LinuxPtraceTaskState extends State {
 	 * In all Attached states, deleteObservation is allowed.
 	 */
         LinuxPtraceTaskState handleDeleteObservation(LinuxPtraceTask task,
-					  TaskObservation observation)
-	{
-	    logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
+						     TaskObservation observation) {
+	    logger.log(Level.FINE, "{0} handleDeleteObservation\n", task); 
 	    observation.delete();
 	    return handleUnblock(task, observation.getTaskObserver());
 	}
@@ -339,11 +333,11 @@ class LinuxPtraceTaskState extends State {
         /**
 	 * While attaching the LinuxPtraceTask disappeared, go to destroyed.
 	 */
-        LinuxPtraceTaskState handleTerminatedEvent (LinuxPtraceTask task,
-						    Signal signal,
-						    int status) {
+        LinuxPtraceTaskState handleTerminatedEvent(LinuxPtraceTask task,
+						   Signal signal,
+						   int status) {
 	    logger.log(Level.FINE, "{0} handleTerminatedEvent\n", task);
-	    ((LinuxPtraceProc)task.getProc()).remove (task);
+	    ((LinuxPtraceProc)task.getProc()).remove(task);
 	    handleAttachedTerminated(task, signal, status);
 	    return destroyed;
 	}
@@ -355,7 +349,7 @@ class LinuxPtraceTaskState extends State {
         static LinuxPtraceTaskState transitionToRunningState(LinuxPtraceTask task, Signal signal) {
 	    logger.log(Level.FINE, "transitionToRunningState\n");
 	    task.sendSetOptions();
-	    if (task.notifyAttached () > 0)
+	    if (task.notifyAttached() > 0)
 		return new BlockedSignal(signal, false);
 	    else
 		return running.sendContinue(task, signal);
@@ -367,19 +361,18 @@ class LinuxPtraceTaskState extends State {
 	private static class WaitForContinueOrUnblock extends Attached {
 	    private final Signal signal;
 	    WaitForContinueOrUnblock(Signal signal) {
-		super ("WaitForContinueOrUnblock");
+		super("WaitForContinueOrUnblock");
 		this.signal = signal;
 	    }
-	    LinuxPtraceTaskState handleUnblock (LinuxPtraceTask task,
-				     TaskObserver observer)
-	    {
-		logger.log (Level.FINE, "{0} handleUnblock\n", task); 
-		task.blockers.remove (observer);
+	    LinuxPtraceTaskState handleUnblock(LinuxPtraceTask task,
+					       TaskObserver observer) {
+		logger.log(Level.FINE, "{0} handleUnblock\n", task); 
+		task.blockers.remove(observer);
 		return this;
 	    }
-	    LinuxPtraceTaskState handleContinue (LinuxPtraceTask task) {
-		logger.log (Level.FINE, "{0} handleContinue\n", task); 
-		if (task.blockers.size () == 0)
+	    LinuxPtraceTaskState handleContinue(LinuxPtraceTask task) {
+		logger.log(Level.FINE, "{0} handleContinue\n", task); 
+		if (task.blockers.size() == 0)
 		    return transitionToRunningState(task, signal);
 		else
 		    return new Attached.WaitForUnblock(signal);
@@ -394,34 +387,33 @@ class LinuxPtraceTaskState extends State {
 	private static class WaitForUnblock extends Attached {
 	    private final Signal signal;
 	    WaitForUnblock(Signal signal) {
-		super ("WaitForUnblock");
+		super("WaitForUnblock");
 		this.signal = signal;
 	    }
-	    public String toString () {
-		return super.toString () + ",signal=" + signal;
+	    public String toString() {
+		return super.toString() + ",signal=" + signal;
 	    }
-	    LinuxPtraceTaskState handleUnblock (LinuxPtraceTask task,
-				     TaskObserver observer)
-	    {
-		logger.log (Level.FINE, "{0} handleUnblock\n", task);
+	    LinuxPtraceTaskState handleUnblock(LinuxPtraceTask task,
+					       TaskObserver observer) {
+		logger.log(Level.FINE, "{0} handleUnblock\n", task);
 		logger.logp(Level.FINEST, "Attached.WaitForUnblock",
 			    "handleUnblock", "{0} blockers",
 			    new Integer(task.blockers.size()));
-		task.blockers.remove (observer);
-		if (task.blockers.size () == 0)
+		task.blockers.remove(observer);
+		if (task.blockers.size() == 0)
 		    return transitionToRunningState(task, signal);
 		return this;
 	    }
-	    LinuxPtraceTaskState handleDetach (LinuxPtraceTask task, boolean shouldRemoveObservers)
-	    {
+	    LinuxPtraceTaskState handleDetach(LinuxPtraceTask task,
+					      boolean shouldRemoveObservers) {
             
-		logger.log (Level.FINE, "{0} handleDetach\n", task);
+		logger.log(Level.FINE, "{0} handleDetach\n", task);
             
 		if (shouldRemoveObservers)
 		    task.removeObservers();
 		// XXX: Otherwise check that observers are empty?
 		task.sendDetach(signal);
-		((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted (task);
+		((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted(task);
 		return detached;
 	    }
 	}
@@ -441,10 +433,9 @@ class LinuxPtraceTaskState extends State {
      * assumption to that the task should be attached and proceed on
      * that basis.
      */
-    static class StartMainTask extends LinuxPtraceTaskState {
-	StartMainTask (String name)
-	{
-	    super ("StartMainTask." + name);
+    private static class StartMainTask extends LinuxPtraceTaskState {
+	StartMainTask(String name) {
+	    super("StartMainTask." + name);
 	}
 	/**
 	 * StartMainTask out assuming that, once the process has
@@ -452,21 +443,19 @@ class LinuxPtraceTaskState extends State {
 	 * all blocks have been removed, a detach should occure.
 	 */
 	static final LinuxPtraceTaskState wantToDetach =
-	    new StartMainTask ("wantToDetach")
-	    {
-		LinuxPtraceTaskState handleAttach (LinuxPtraceTask task)
-		{
-		    logger.log (Level.FINE, "{0} handleAttach\n", task); 
-		    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted (task);
+	    new StartMainTask("wantToDetach") {
+		LinuxPtraceTaskState handleAttach(LinuxPtraceTask task) {
+		    logger.log(Level.FINE, "{0} handleAttach\n", task); 
+		    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted(task);
 		    return StartMainTask.wantToAttach;
 		}
 		LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
 							Signal signal) {
 		    if (signal == Signal.STOP || signal == Signal.TRAP) {
-			if (task.notifyForkedOffspring () > 0)
+			if (task.notifyForkedOffspring() > 0)
 			    return StartMainTask.detachBlocked;
 			task.sendDetach(Signal.NONE);
-			((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted (task);
+			((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted(task);
 			return detached;
 		    } else {
 			throw unhandled(task, "handleStoppedEvent " + signal);
@@ -480,30 +469,27 @@ class LinuxPtraceTaskState extends State {
 	 * detach.
 	 */
 	static final LinuxPtraceTaskState detachBlocked =
-	    new StartMainTask ("detachBlocked")
-	    {
-		LinuxPtraceTaskState handleAttach (LinuxPtraceTask task)
-		{
+	    new StartMainTask("detachBlocked") {
+		LinuxPtraceTaskState handleAttach(LinuxPtraceTask task) {
 		    // Proc got around to telling us to be attached,
 		    // since the task has already stopped, immediatly
 		    // jump across to the blocked attached state
 		    // (waiting for ForkedOffspring observers to
 		    // unblock before finishing the attach).
-		    logger.log (Level.FINE, "{0} handleAttach\n", task); 
-		    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted (task);
+		    logger.log(Level.FINE, "{0} handleAttach\n", task); 
+		    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted(task);
 		    return StartMainTask.attachBlocked;
 		}
-		LinuxPtraceTaskState handleUnblock (LinuxPtraceTask task,
-					 TaskObserver observer)
-		{
-		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
-		    task.blockers.remove (observer);
-		    logger.log (Level.FINER, "{0} handleUnblock number of blockers left {1}\n", new Object[]{task, new Integer(task.blockers.size())}); 
+		LinuxPtraceTaskState handleUnblock(LinuxPtraceTask task,
+						   TaskObserver observer) {
+		    logger.log(Level.FINE, "{0} handleUnblock\n", task); 
+		    task.blockers.remove(observer);
+		    logger.log(Level.FINER, "{0} handleUnblock number of blockers left {1}\n", new Object[]{task, new Integer(task.blockers.size())}); 
 
-		    if (task.blockers.size () == 0) {
+		    if (task.blockers.size() == 0) {
 			// Ya! All the blockers have been removed.
 			task.sendDetach(Signal.NONE);
-			((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted (task);
+			((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted(task);
 			return detached;
 		    }
 		    return StartMainTask.detachBlocked;
@@ -516,12 +502,10 @@ class LinuxPtraceTaskState extends State {
 	 * the task progress to being attached.
 	 */
 	static final LinuxPtraceTaskState wantToAttach =
-	    new StartMainTask ("wantToAttach")
-	    {
+	    new StartMainTask("wantToAttach") {
 		LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task,
-					       TaskObservation observation)
-		{
-		    logger.log (Level.FINE, "{0} handleAddObservationr\n", task);
+							  TaskObservation observation) {
+		    logger.log(Level.FINE, "{0} handleAddObservationr\n", task);
 		    // XXX - This should most likely test needsSuspendedAction
 		    observation.add();
 		    return this;
@@ -529,16 +513,15 @@ class LinuxPtraceTaskState extends State {
 		LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
 							Signal signal) {
 		    if (signal == Signal.STOP || signal == Signal.TRAP) {
-			if (task.notifyForkedOffspring () > 0)
+			if (task.notifyForkedOffspring() > 0)
 			    return StartMainTask.attachBlocked;
 			return Attached.waitForContinueOrUnblock;
 		    } else {
 			throw unhandled(task, "handleStoppedEvent " + signal);
 		    }
 		}
-		LinuxPtraceTaskState handleContinue (LinuxPtraceTask task)
-		{
-		    logger.log (Level.FINE, "{0} handleContinue\n", task);
+		LinuxPtraceTaskState handleContinue(LinuxPtraceTask task) {
+		    logger.log(Level.FINE, "{0} handleContinue\n", task);
 		    return StartMainTask.wantToAttachContinue;
 		}
 	    };
@@ -547,7 +530,7 @@ class LinuxPtraceTaskState extends State {
 	 * stop so that it can be properly attached.
 	 */
 	private static final LinuxPtraceTaskState wantToAttachContinue =
-	    new StartMainTask ("wantToAttachContinue") {
+	    new StartMainTask("wantToAttachContinue") {
 		LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
 							Signal signal) {
 		    // Mark this LinuxPtraceTask as just started.  See
@@ -563,48 +546,42 @@ class LinuxPtraceTaskState extends State {
 		    }
 		}
 
-	      // Adding or removing observers doesn't impact this state.
-	      LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task,
-						    TaskObservation to)
-	      {
-		logger.log (Level.FINE, "{0} handleAddObservation\n", task);
-		to.add();
-		return this;
-	      }
-	      LinuxPtraceTaskState handleUnblock (LinuxPtraceTask task,
-					      TaskObserver observer)
-	      {
-		logger.log (Level.FINE, "{0} handleUnblock\n", task); 
-		task.blockers.remove(observer);
-		return this;
-	      }
+		// Adding or removing observers doesn't impact this state.
+		LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task,
+							  TaskObservation to) {
+		    logger.log(Level.FINE, "{0} handleAddObservation\n", task);
+		    to.add();
+		    return this;
+		}
+		LinuxPtraceTaskState handleUnblock(LinuxPtraceTask task,
+						   TaskObserver observer) {
+		    logger.log(Level.FINE, "{0} handleUnblock\n", task); 
+		    task.blockers.remove(observer);
+		    return this;
+		}
 	    };
 	/**
 	 * The task has stopped; just waiting for all the blockers to
 	 * be removed before finishing the attach.
 	 */
 	static final LinuxPtraceTaskState attachBlocked =
-	    new StartMainTask ("attachBlocked")
-	    {
+	    new StartMainTask("attachBlocked") {
 		LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task,
-					       TaskObservation observation)
-		{
-		    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
+							  TaskObservation observation) {
+		    logger.log(Level.FINE, "{0} handleAddObservation\n", task);
 		    observation.add();
 		    return this;
                 }
-		LinuxPtraceTaskState handleUnblock (LinuxPtraceTask task,
-					 TaskObserver observer)
-		{
-		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
-		    task.blockers.remove (observer);
-		    if (task.blockers.size () == 0)
+		LinuxPtraceTaskState handleUnblock(LinuxPtraceTask task,
+						   TaskObserver observer) {
+		    logger.log(Level.FINE, "{0} handleUnblock\n", task); 
+		    task.blockers.remove(observer);
+		    if (task.blockers.size() == 0)
 			return Attached.waitForContinueOrUnblock;
 		    return StartMainTask.attachBlocked;
 		}
-		LinuxPtraceTaskState handleContinue (LinuxPtraceTask task)
-		{
-		    logger.log (Level.FINE, "{0} handleContinue\n", task);
+		LinuxPtraceTaskState handleContinue(LinuxPtraceTask task) {
+		    logger.log(Level.FINE, "{0} handleContinue\n", task);
 		    return StartMainTask.attachContinueBlocked;
 		}
 	    };
@@ -615,21 +592,18 @@ class LinuxPtraceTaskState extends State {
 	 * attached state.
 	 */
 	static final LinuxPtraceTaskState attachContinueBlocked =
-	    new StartMainTask ("attachContinueBlocked")
-	    {
+	    new StartMainTask("attachContinueBlocked") {
 		LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task,
-					       TaskObservation observation)
-		{
-		    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
+							  TaskObservation observation) {
+		    logger.log(Level.FINE, "{0} handleAddObservation\n", task);
 		    observation.add();
 		    return this;
 		}
-		LinuxPtraceTaskState handleUnblock (LinuxPtraceTask task,
-					 TaskObserver observer)
-		{
-		    logger.log (Level.FINE, "{0} handleUnblock\n", task);
-		    task.blockers.remove (observer);
-		    if (task.blockers.size () > 0)
+		LinuxPtraceTaskState handleUnblock(LinuxPtraceTask task,
+						   TaskObserver observer) {
+		    logger.log(Level.FINE, "{0} handleUnblock\n", task);
+		    task.blockers.remove(observer);
+		    if (task.blockers.size() > 0)
 			return StartMainTask.attachContinueBlocked;
 		    return Attached.transitionToRunningState(task, Signal.NONE);
 		}
@@ -641,35 +615,30 @@ class LinuxPtraceTaskState extends State {
      * it to be unblocked.  A cloned task is never continued.
      */
     static class StartClonedTask extends LinuxPtraceTaskState {
-	StartClonedTask (String name)
-	{
-	    super ("StartClonedTask." + name);
+	StartClonedTask(String name) {
+	    super("StartClonedTask." + name);
 	}
-	LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task, TaskObservation observation)
-	{
-	    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
+	LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task, TaskObservation observation) {
+	    logger.log(Level.FINE, "{0} handleAddObservation\n", task);
 	    // XXX most likely need to check needsSuspendedAction
 	    observation.add();
 	    return this;
 	}
 	LinuxPtraceTaskState handleDeleteObservation(LinuxPtraceTask task,
-					  TaskObservation observation)
-	{
-	    logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
+						     TaskObservation observation) {
+	    logger.log(Level.FINE, "{0} handleDeleteObservation\n", task); 
 	    // XXX most likely need to check needsSuspendedAction
 	    observation.delete();
 	    return this;
 	}
 
 	static final LinuxPtraceTaskState waitForStop =
-	    new StartClonedTask ("waitForStop")
-	    {
-		LinuxPtraceTaskState handleUnblock (LinuxPtraceTask task,
-					 TaskObserver observer)
-		{
-		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
+	    new StartClonedTask("waitForStop") {
+		LinuxPtraceTaskState handleUnblock(LinuxPtraceTask task,
+						   TaskObserver observer) {
+		    logger.log(Level.FINE, "{0} handleUnblock\n", task); 
 		    // XXX: Should instead fail?
-		    task.blockers.remove (observer);
+		    task.blockers.remove(observer);
 		    return StartClonedTask.waitForStop;
 		}
 		LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
@@ -677,10 +646,10 @@ class LinuxPtraceTaskState extends State {
 		    if (signal == Signal.STOP || signal == Signal.TRAP) {
 			// Attempt an attached continue.
 			task.sendSetOptions ();
-			if (task.notifyClonedOffspring () > 0)
+			if(task.notifyClonedOffspring() > 0)
 			    return StartClonedTask.blockedOffspring;
 			// XXX: Really notify attached here?
-			if (task.notifyAttached () > 0)
+			if (task.notifyAttached() > 0)
 			    return blockedContinue;
 			return running.sendContinue(task, Signal.NONE);
 		    } else {
@@ -690,20 +659,17 @@ class LinuxPtraceTaskState extends State {
 	    };
 	
 	private static final LinuxPtraceTaskState blockedOffspring =
-	    new StartClonedTask ("blockedOffspring")
-	    {
-		LinuxPtraceTaskState handleUnblock (LinuxPtraceTask task,
-					 TaskObserver observer)
-		{
-		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
-		    task.blockers.remove (observer);
-		    if (task.blockers.size () > 0)
+	    new StartClonedTask("blockedOffspring") {
+		LinuxPtraceTaskState handleUnblock(LinuxPtraceTask task,
+						   TaskObserver observer) {
+		    logger.log(Level.FINE, "{0} handleUnblock\n", task); 
+		    task.blockers.remove(observer);
+		    if (task.blockers.size() > 0)
 			return StartClonedTask.blockedOffspring;
 		    // XXX: Really notify attached here?
-		    if (task.notifyAttached () > 0)
-			{
-			    return blockedContinue;
-			}
+		    if (task.notifyAttached() > 0) {
+			return blockedContinue;
+		    }
 		    return running.sendContinue(task, Signal.NONE);
 		}
 	    };
@@ -716,33 +682,30 @@ class LinuxPtraceTaskState extends State {
 	// Whether or not we are running inside a syscall
 	private final boolean insyscall;
 
-	protected Running (String state,
-			   boolean insyscall)
-	{
-	    super (state);
+	protected Running(String state, boolean insyscall) {
+	    super(state);
 	    this.insyscall = insyscall;
 	}
 	
-      void setupSteppingBreakpoint(LinuxPtraceTask task, long address)
-      {
-	// Reset pc, this should maybe be moved into the Breakpoint,
-	// but if the breakpoint gets removed before we step it, and
-	// the architecture puts the pc just behind the breakpoint
-	// address, then there is no good other place to get at the
-	// original pc location.
-	task.setPC(address);
+	void setupSteppingBreakpoint(LinuxPtraceTask task, long address) {
+	    // Reset pc, this should maybe be moved into the Breakpoint,
+	    // but if the breakpoint gets removed before we step it, and
+	    // the architecture puts the pc just behind the breakpoint
+	    // address, then there is no good other place to get at the
+	    // original pc location.
+	    task.setPC(address);
 
-	// All logic for determining how and where to step the
-	// Breakpoint is determined by Proc and
-	// Breakpoint.prepareStep() (called in sendContinue).
-	Breakpoint bp = Breakpoint.create(address, ((LinuxPtraceProc)task.getProc()));
+	    // All logic for determining how and where to step the
+	    // Breakpoint is determined by Proc and
+	    // Breakpoint.prepareStep() (called in sendContinue).
+	    Breakpoint bp = Breakpoint.create(address,((LinuxPtraceProc)task.getProc()));
 	
-	// TODO: This should really move us to a new TaskState.
-	// Currently we rely on the Task.steppingBreakpoint
-	// being set and the Breakpoint/Instruction having all
-	// the state necessary.
-	task.steppingBreakpoint = bp;
-      }
+	    // TODO: This should really move us to a new TaskState.
+	    // Currently we rely on the Task.steppingBreakpoint
+	    // being set and the Breakpoint/Instruction having all
+	    // the state necessary.
+	    task.steppingBreakpoint = bp;
+	}
       
         /**
 	 * Tells the LinuxPtraceTask to continue, keeping in kind pending
@@ -750,59 +713,55 @@ class LinuxPtraceTaskState extends State {
 	 * Returns the new Running (sub) state of the Task.
 	 */
         Running sendContinue(LinuxPtraceTask task, Signal sig) {
-	  Breakpoint bp = task.steppingBreakpoint;
-	  logger.log (Level.FINE, "{0} sendContinue, {1}\n",
-		      new Object[] { task, bp });
-	  if (bp != null)
-	    if (! bp.isInstalled())
-	      {
-		// Apparently the breakpoint was removed already
-		// which means it was never stepped, stepDone()
-		// will only do some bookkeeping, but not (re)set
-		// the breakpoint.
-		bp.stepDone(task);
-		task.steppingBreakpoint = null;
-		bp = null;
-	      }
-	    else
-	      {
-		// The breakpoint knows the instruction, address and
-		// Proc and will negotiate with the Proc how to step
-		// depending on the cababilities (canExecuteOutOfLine)
-		// of the Instruction.
-		bp.prepareStep(task);
-	      }
+	    Breakpoint bp = task.steppingBreakpoint;
+	    logger.log(Level.FINE, "{0} sendContinue, {1}\n",
+		       new Object[] { task, bp });
+	    if (bp != null)
+		if (! bp.isInstalled()) {
+		    // Apparently the breakpoint was removed already
+		    // which means it was never stepped, stepDone()
+		    // will only do some bookkeeping, but not (re)set
+		    // the breakpoint.
+		    bp.stepDone(task);
+		    task.steppingBreakpoint = null;
+		    bp = null;
+		} else {
+		    // The breakpoint knows the instruction, address and
+		    // Proc and will negotiate with the Proc how to step
+		    // depending on the cababilities (canExecuteOutOfLine)
+		    // of the Instruction.
+		    bp.prepareStep(task);
+		}
 
 	  
-	  // Step when there is a breakpoint at the current location
-	  // or there are Instruction observers installed.
-	  if (bp != null
-	      || task.instructionObservers.numberOfObservers() > 0) {
-	      task.sendStepInstruction(sig);
-	      return stepping;
-	  } else {
-	      // Always reset this, only the first step is important.
-	      // See Running.handleTrapped() for more.
-	      task.justStartedXXX = false;
+	    // Step when there is a breakpoint at the current location
+	    // or there are Instruction observers installed.
+	    if (bp != null
+		|| task.instructionObservers.numberOfObservers() > 0) {
+		task.sendStepInstruction(sig);
+		return stepping;
+	    } else {
+		// Always reset this, only the first step is important.
+		// See Running.handleTrapped() for more.
+		task.justStartedXXX = false;
 	      
-	      if (task.syscallObservers.numberOfObservers() > 0) {
-		  task.sendSyscallContinue(sig);
-		  return this;
-	      } else {
-		  task.sendContinue(sig);
-		  // If we were stepping, but no breakpoint step or instruction
-		  // observers are installed we are running again.
-		  return (this != stepping) ? this : running;
-	      }
-	  }
+		if (task.syscallObservers.numberOfObservers() > 0) {
+		    task.sendSyscallContinue(sig);
+		    return this;
+		} else {
+		    task.sendContinue(sig);
+		    // If we were stepping, but no breakpoint step or instruction
+		    // observers are installed we are running again.
+		    return (this != stepping) ? this : running;
+		}
+	    }
         }
 
         /**
 	 * Returns a blocked LinuxPtraceTaskState depending on whether we are
 	 * syscall tracing the LinuxPtraceTask and being inside or outside a syscall.
 	 */
-        LinuxPtraceTaskState blockedContinue()
-        {
+        LinuxPtraceTaskState blockedContinue() {
 	    if (insyscall)
 		return syscallBlockedInSyscallContinue;
 	    return blockedContinue;
@@ -810,7 +769,7 @@ class LinuxPtraceTaskState extends State {
 
 	LinuxPtraceTaskState handleSignaledEvent(LinuxPtraceTask task,
 						 Signal sig) {
-	    logger.log (Level.FINE, "{0} handleSignaledEvent, signal: {1}\n", new Object[] {task, sig}); 
+	    logger.log(Level.FINE, "{0} handleSignaledEvent, signal: {1}\n", new Object[] {task, sig}); 
 	    if (task.notifySignaled(sig.intValue()) > 0)
 		return new BlockedSignal(sig, insyscall);
 	    else
@@ -834,7 +793,7 @@ class LinuxPtraceTaskState extends State {
 		    it.remove();
 		}
 		// the observation.add() could have added a block.
-		if (task.blockers.size () > 0)
+		if (task.blockers.size() > 0)
 		    return blockedContinue();
 		// See how to continue depending on the kind of observers.
 		Running newState;
@@ -851,12 +810,11 @@ class LinuxPtraceTaskState extends State {
 
 	LinuxPtraceTaskState handleTerminatingEvent(LinuxPtraceTask task,
 						    Signal signal,
-						    int status)
-	{
+						    int status) {
 	    logger.log(Level.FINE, "{0} handleTerminatingEvent\n", task); 
 	    if (signal != null
-		? task.notifyTerminating (true, signal.intValue()) > 0
-		: task.notifyTerminating (false, status) > 0) {
+		? task.notifyTerminating(true, signal.intValue()) > 0
+		: task.notifyTerminating(false, status) > 0) {
 		if (signal != null)
 		    return new BlockedSignal(signal, insyscall);
 		else
@@ -864,21 +822,20 @@ class LinuxPtraceTaskState extends State {
 	    }
         
 	    if (signal != null)
-	      return sendContinue(task, signal);
+		return sendContinue(task, signal);
 	    else
-	      return sendContinue(task, Signal.NONE);
+		return sendContinue(task, Signal.NONE);
 	}
-	LinuxPtraceTaskState handleTerminatedEvent (LinuxPtraceTask task,
-						    Signal signal,
-						    int status) {
-	    logger.log (Level.FINE, "{0} handleTerminatedEvent\n", task); 
-	    ((LinuxPtraceProc)task.getProc()).remove (task);
+	LinuxPtraceTaskState handleTerminatedEvent(LinuxPtraceTask task,
+						   Signal signal,
+						   int status) {
+	    logger.log(Level.FINE, "{0} handleTerminatedEvent\n", task); 
+	    ((LinuxPtraceProc)task.getProc()).remove(task);
 	    handleAttachedTerminated(task, signal, status);
 	    return destroyed;
 	}
-	LinuxPtraceTaskState handleExecedEvent (LinuxPtraceTask task)
-	{
-	    logger.log (Level.FINE, "{0} handleExecedEvent\n", task); 
+	LinuxPtraceTaskState handleExecedEvent(LinuxPtraceTask task) {
+	    logger.log(Level.FINE, "{0} handleExecedEvent\n", task); 
 	    // Remove all tasks, retaining just this one.
 	    ((LinuxPtraceProc)task.getProc()).retain (task);
 	    ((LinuxPtraceProc)task.getProc()).getStat().refresh();
@@ -896,52 +853,44 @@ class LinuxPtraceTaskState extends State {
 	    while (it.hasNext())
 		((TaskObservation) it.next()).delete();
 
-	    if (task.notifyExeced () > 0)
-		{
-		  return (task.syscallObservers.numberOfObservers() > 0
-			    ? syscallBlockedInSyscallContinue
-			    : blockedInExecSyscall);
-		}
-	    else
-		{
-		  // XXX logic is slightly confusing after exec() call.
-		  sendContinue(task, Signal.NONE);
-		  return inSyscallRunning;
-		}
+	    if (task.notifyExeced() > 0) {
+		return (task.syscallObservers.numberOfObservers() > 0
+			? syscallBlockedInSyscallContinue
+			: blockedInExecSyscall);
+	    } else {
+		// XXX logic is slightly confusing after exec() call.
+		sendContinue(task, Signal.NONE);
+		return inSyscallRunning;
+	    }
 	}
-	LinuxPtraceTaskState handleDisappearedEvent (LinuxPtraceTask task, Throwable w)
-	{
-	    logger.log (Level.FINE, "{0} handleDisappearedEvent\n", task); 
+	LinuxPtraceTaskState handleDisappearedEvent(LinuxPtraceTask task, Throwable w) {
+	    logger.log(Level.FINE, "{0} handleDisappearedEvent\n", task); 
 	    return disappeared;
 	}
-	LinuxPtraceTaskState handleContinue (LinuxPtraceTask task)
-	{
-	    logger.log (Level.FINE, "{0} handleContinue\n", task); 
+	LinuxPtraceTaskState handleContinue(LinuxPtraceTask task) {
+	    logger.log(Level.FINE, "{0} handleContinue\n", task); 
 	    return this;
 	}
-	LinuxPtraceTaskState handleDetach (LinuxPtraceTask task, boolean shouldRemoveObservers)
-	{
-	    logger.log (Level.FINE, "{0} handleDetach\n", task); 
+	LinuxPtraceTaskState handleDetach(LinuxPtraceTask task, boolean shouldRemoveObservers) {
+	    logger.log(Level.FINE, "{0} handleDetach\n", task); 
 	    
 	    if (shouldRemoveObservers)
 		task.removeObservers();  
 	    // XXX: Otherwise check if there are still observers and panic?
         
 	    // Can't detach a running task, first need to stop it.                
-	    task.sendStop ();
+	    task.sendStop();
 	    return detaching;
 	}
-	LinuxPtraceTaskState handleClonedEvent (LinuxPtraceTask task, LinuxPtraceTask clone)
-	{
-	    logger.log (Level.FINE, "{0} handleClonedEvent\n", task); 
-	    if (task.notifyClonedParent (clone) > 0)
+	LinuxPtraceTaskState handleClonedEvent(LinuxPtraceTask task, LinuxPtraceTask clone) {
+	    logger.log(Level.FINE, "{0} handleClonedEvent\n", task); 
+	    if (task.notifyClonedParent(clone) > 0)
 		return blockedContinue();
 	    return sendContinue(task, Signal.NONE);
 	}
-	LinuxPtraceTaskState handleForkedEvent (LinuxPtraceTask task, LinuxPtraceTask fork)
-	{
-	    logger.log (Level.FINE, "{0} handleForkedEvent\n", task); 
-	    if (task.notifyForkedParent (fork) > 0)
+	LinuxPtraceTaskState handleForkedEvent(LinuxPtraceTask task, LinuxPtraceTask fork) {
+	    logger.log(Level.FINE, "{0} handleForkedEvent\n", task); 
+	    if (task.notifyForkedParent(fork) > 0)
 		return blockedContinue();
 	    return sendContinue(task, Signal.NONE);
 	}
@@ -957,270 +906,246 @@ class LinuxPtraceTaskState extends State {
 	 * observers are notified. Otherwise it is a real trap event and we
 	 * pass it on to the task itself.
 	 */
-	LinuxPtraceTaskState handleTrappedEvent (LinuxPtraceTask task)
-	{
-	  logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
+	LinuxPtraceTaskState handleTrappedEvent(LinuxPtraceTask task) {
+	    logger.log(Level.FINE, "{0} handleTrappedEvent\n", task);
 	  
-	  Isa isa;
-	  isa = task.getIsaFIXME();
+	    Isa isa;
+	    isa = task.getIsaFIXME();
 
-	  // First see if this was just an indication the we stepped.
-	  // And see if we were stepping a breakpoint.  Or whether we
-	  // installed a breakpoint at the address.  Otherwise it is a
-	  // real trap event and we should treat it like a trap
-	  // signal.  There is a special case for bug #4663.  The
-	  // first step onto the first instruction of a just started
-	  // task sometimes doesn't set the right task stepped flag.
-	  // So we check and immediately clear here.
-	  if (isa != null && (isa.isTaskStepped(task) || task.justStartedXXX))
-	    {
-	      if (task.justStartedXXX)
-		return stepping.handleTrappedEvent(task);
-	      else
-		{
-		  System.err.println("Whoa! Wrong state for stepping: "
-				     + this);
-		  return sendContinue(task, Signal.NONE);
-		}
-	    }
-	  else
-	    {
-	      // Do we have a breakpoint installed here?
-	      long address = isa.getBreakpointAddress(task);
-	      int blockers = task.notifyCodeBreakpoint(address);
-	      if (blockers >= 0)
-		{
-		  // Prepare for stepping the breakpoint
-		  setupSteppingBreakpoint(task, address);
-		  
-		  if (blockers == 0)
+	    // First see if this was just an indication the we stepped.
+	    // And see if we were stepping a breakpoint.  Or whether we
+	    // installed a breakpoint at the address.  Otherwise it is a
+	    // real trap event and we should treat it like a trap
+	    // signal.  There is a special case for bug #4663.  The
+	    // first step onto the first instruction of a just started
+	    // task sometimes doesn't set the right task stepped flag.
+	    // So we check and immediately clear here.
+	    if (isa != null && (isa.isTaskStepped(task) || task.justStartedXXX)) {
+		if (task.justStartedXXX) {
+		    return stepping.handleTrappedEvent(task);
+		} else {
+		    System.err.println("Whoa! Wrong state for stepping: "
+				       + this);
 		    return sendContinue(task, Signal.NONE);
-		  else
-		    return blockedContinue();
 		}
-	      else {
-		  // This is not a trap event generated by us.  And we
-		  // also didn't send a step request.  Deliver the
-		  // real Trap event to the Task.
-		  return handleSignaledEvent(task, Signal.TRAP);
-	      }
+	    } else {
+		// Do we have a breakpoint installed here?
+		long address = isa.getBreakpointAddress(task);
+		int blockers = task.notifyCodeBreakpoint(address);
+		if (blockers >= 0) {
+		    // Prepare for stepping the breakpoint
+		    setupSteppingBreakpoint(task, address);
+		  
+		    if (blockers == 0)
+			return sendContinue(task, Signal.NONE);
+		    else
+			return blockedContinue();
+		} else {
+		    // This is not a trap event generated by us.  And we
+		    // also didn't send a step request.  Deliver the
+		    // real Trap event to the Task.
+		    return handleSignaledEvent(task, Signal.TRAP);
+		}
 	    }
 	}
 
-	LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task, TaskObservation observation)
-	{
-	    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
-	    if (! observation.needsSuspendedAction())
+	LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task, TaskObservation observation) {
+	    logger.log(Level.FINE, "{0} handleAddObservation\n", task);
+	    if (! observation.needsSuspendedAction()) {
 		observation.add();
-	    else
-		{
-		    Collection pending = task.pendingObservations;
-		    if (pending.isEmpty())
-			task.sendStop();
-		    pending.add(observation);
-		}
+	    } else {
+		Collection pending = task.pendingObservations;
+		if (pending.isEmpty())
+		    task.sendStop();
+		pending.add(observation);
+	    }
 	    return this;
 	}
 	LinuxPtraceTaskState handleDeleteObservation(LinuxPtraceTask task,
-					  TaskObservation observation)
-	{
-	    logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
-	    if (! observation.needsSuspendedAction())
+						     TaskObservation observation) {
+	    logger.log(Level.FINE, "{0} handleDeleteObservation\n", task); 
+	    if (! observation.needsSuspendedAction()) {
 		observation.delete();
-	    else
-		{
-		    Collection pending = task.pendingObservations;
-		    if (pending.isEmpty())
-			task.sendStop();
-		    pending.add(observation);
-		}
+	    } else {
+		Collection pending = task.pendingObservations;
+		if (pending.isEmpty())
+		    task.sendStop();
+		pending.add(observation);
+	    }
 	    return this;
 	}
-	LinuxPtraceTaskState handleUnblock (LinuxPtraceTask task,
-				 TaskObserver observer)
-	{
-	    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
+	LinuxPtraceTaskState handleUnblock(LinuxPtraceTask task,
+					   TaskObserver observer) {
+	    logger.log(Level.FINE, "{0} handleUnblock\n", task); 
 	    // XXX: What to do about a stray unblock?
 	    // observer.fail (new RuntimeException (task, "not blocked");
 	    return this;
 	}
 
-	LinuxPtraceTaskState handleSyscalledEvent(LinuxPtraceTask task)
-	{
-	    logger.log (Level.FINE, "{0} handleSyscalledEvent\n", task); 
-	    if (task.syscallObservers.numberOfObservers() > 0)
-		{
-		    if (! insyscall && task.notifySyscallEnter() > 0)
-			return syscallBlockedInSyscallContinue;
+	LinuxPtraceTaskState handleSyscalledEvent(LinuxPtraceTask task) {
+	    logger.log(Level.FINE, "{0} handleSyscalledEvent\n", task); 
+	    if (task.syscallObservers.numberOfObservers() > 0) {
+		if (! insyscall && task.notifySyscallEnter() > 0)
+		    return syscallBlockedInSyscallContinue;
 	    
-		    if (insyscall && task.notifySyscallExit() > 0)
-			return blockedContinue;
+		if (insyscall && task.notifySyscallExit() > 0)
+		    return blockedContinue;
 
-		    // Swap in/out syscall
-		    Running newState = sendContinue(task, Signal.NONE);
-		    newState = (newState.insyscall
-				? running
-				: inSyscallRunning);
-		    return newState;
+		// Swap in/out syscall
+		Running newState = sendContinue(task, Signal.NONE);
+		newState = (newState.insyscall
+			    ? running
+			    : inSyscallRunning);
+		return newState;
+	    } else {
+		return sendContinue(task, Signal.NONE);
+	    }
+	}
+    }
+
+    // LinuxPtraceTask is stepping (either because of instruction observers
+    // or because of getting through a breakpoint).
+    static final Stepping stepping = new Stepping();
+
+    private static final class Stepping extends Running {
+	/**
+	 * Singleton indicating a stepping Running state
+	 * (not inside a syscall).
+	 */
+	Stepping() {
+	    super("stepping", false);
+	}
+
+	/**
+	 * Handles traps caused by breakpoints or instruction
+	 * stepping. If there are any Code observers at the address of
+	 * the trap they get notified. If none of the Code observers
+	 * blocks we continue over the breakpoint (breakpoint stepping
+	 * state), otherwise we block till all blocking observers are
+	 * happy (breakpoint stopped state). If there are no Code observers
+	 * installed at the address, but we are stepping then all instruction
+	 * observers are notified. Otherwise it is a real trap event and we
+	 * pass it on to the task itself.
+	 */
+	LinuxPtraceTaskState handleTrappedEvent(LinuxPtraceTask task) {
+	    logger.log(Level.FINE, "{0} handleTrappedEvent\n", task);
+      
+	    Isa isa;
+	    isa = task.getIsaFIXME();
+      
+	    // First see if this was just an indication the we stepped.
+	    // And see if we were stepping a breakpoint.  Or whether we
+	    // installed a breakpoint at the address.  Otherwise it is a
+	    // real trap event and we should treat it like a trap
+	    // signal.
+	    Breakpoint steppingBreakpoint = task.steppingBreakpoint;
+	    if (isa.isTaskStepped(task)
+		|| steppingBreakpoint != null
+		|| task.justStartedXXX) {
+		task.justStartedXXX = false;
+	  
+		// Are we stepping a breakpoint? (This should be a new
+		// State).  Reset/Reinstall Intruction, all logic is in the
+		// Breakpoint and associated Instruction, which will fixup
+		// any registers for us.
+		if (steppingBreakpoint != null) {
+		    steppingBreakpoint.stepDone(task);
+		    task.steppingBreakpoint = null;
 		}
+	  
+		if (task.notifyInstruction() > 0)
+		    return blockedContinue();
+		else
+		    return sendContinue(task, Signal.NONE);
+	    } else {
+		// Do we have a breakpoint installed here?
+		long address = isa.getBreakpointAddress(task);
+		int blockers = task.notifyCodeBreakpoint(address);
+		if (blockers >= 0) {
+		    // Sanity check
+		    if (task.steppingBreakpoint != null)
+			throw new RuntimeException("Already breakpoint stepping: "
+						   + task.steppingBreakpoint);
+	      
+		    // Prepare for stepping the breakpoint
+		    setupSteppingBreakpoint(task, address);
+	      
+		    if (blockers == 0)
+			return sendContinue(task, Signal.NONE);
+		    else
+			return blockedContinue();
+	      
+		} else {
+		    // This is not a trap event generated by us.
+	      
+		    // When we just send a step to the task there are
+		    // two reasons we might get a Trap event that
+		    // doesn't relate to an actual instruction
+		    // step. Either we requested a step into a signal
+		    // (which depending on architecture does or doesn't
+		    // set the step debug flag).  Or a instruction that
+		    // looks like it is generating a trap is encountered
+		    // but that the kernel will handle (like a syscall
+		    // trapping instruction) that we should ignore (this
+		    // would be nice to use to support syscall tracking
+		    // during stepping, but it doesn't happen on all
+		    // architectures).
+		    if ((task.sigSendXXX != Signal.NONE
+			 || task.syscallSigretXXX
+			 || isa.hasExecutedSpuriousTrap(task)))
+			return sendContinue(task, Signal.NONE);
+	      
+		    // Deliver the real Trap event to the Task.  This is
+		    // somewhat weird, we are either stepping a trapping
+		    // instruction (breakpoint) that we didn't install, or
+		    // something is sending this process an explicit trap
+		    // signal.
+		    return handleSignaledEvent(task, Signal.TRAP);
+		}
+	    }
+	}
+
+	private void checkBreakpointStepping(LinuxPtraceTask task) {
+	    // Since we were stepping we expected a trap event.
+	    // If we were stepping a breakpoint we have to check whether
+	    // or not the step occured before or after the breakpoint was
+	    // taken and make sure the breakpoint it put back in place.
+	    Breakpoint steppingBreakpoint = task.steppingBreakpoint;
+	    if (steppingBreakpoint != null) {
+		long pc = task.getPC();
+		long setupAddress = steppingBreakpoint.getSetupAddress();
+
+		// Check whether the breakpoint was actually stepped.
+		// In theory there are instructions that might not change the
+		// pc after execution, these are expected to not need fixups.
+		// If any of them would, then we can add an explicit abort()
+		// to Instruction so they can special case themselves.
+		if (pc != setupAddress)
+		    steppingBreakpoint.stepDone(task);
+		else
+		    steppingBreakpoint.stepAbort(task);
+	    }
+	}
+
+	LinuxPtraceTaskState handleSignaledEvent(LinuxPtraceTask task,
+						 Signal sig) {
+	    logger.log(Level.FINE, "{0} handleSignaledEvent, signal: {1}\n",
+		       new Object[] {task, sig}); 
+	    checkBreakpointStepping(task);
+	    return super.handleSignaledEvent(task, sig);
+	}
+
+	LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
+						Signal signal) {
+	    if (signal == Signal.STOP) {
+		checkBreakpointStepping(task);
+		return super.handleStoppedEvent(task, signal);
+	    } else if (signal == Signal.TRAP)
+		return handleTrappedEvent(task);
 	    else
-	      return sendContinue(task, Signal.NONE);
+		return handleSignaledEvent(task, signal);
 	}
     }
-
-  // LinuxPtraceTask is stepping (either because of instruction observers
-  // or because of getting through a breakpoint).
-  static final Stepping stepping = new Stepping();
-
-  static final class Stepping extends Running {
-    /**
-     * Singleton indicating a stepping Running state
-     * (not inside a syscall).
-     */
-    Stepping()
-    {
-      super("stepping", false);
-    }
-
-    /**
-     * Handles traps caused by breakpoints or instruction
-     * stepping. If there are any Code observers at the address of
-     * the trap they get notified. If none of the Code observers
-     * blocks we continue over the breakpoint (breakpoint stepping
-     * state), otherwise we block till all blocking observers are
-     * happy (breakpoint stopped state). If there are no Code observers
-     * installed at the address, but we are stepping then all instruction
-     * observers are notified. Otherwise it is a real trap event and we
-     * pass it on to the task itself.
-     */
-    LinuxPtraceTaskState handleTrappedEvent (LinuxPtraceTask task)
-    {
-      logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
-      
-      Isa isa;
-      isa = task.getIsaFIXME();
-      
-      // First see if this was just an indication the we stepped.
-      // And see if we were stepping a breakpoint.  Or whether we
-      // installed a breakpoint at the address.  Otherwise it is a
-      // real trap event and we should treat it like a trap
-      // signal.
-      Breakpoint steppingBreakpoint = task.steppingBreakpoint;
-      if (isa.isTaskStepped(task)
-	  || steppingBreakpoint != null
-	  || task.justStartedXXX)
-	{
-	  task.justStartedXXX = false;
-	  
-	  // Are we stepping a breakpoint? (This should be a new
-	  // State).  Reset/Reinstall Intruction, all logic is in the
-	  // Breakpoint and associated Instruction, which will fixup
-	  // any registers for us.
-	  if (steppingBreakpoint != null)
-	    {
-	      steppingBreakpoint.stepDone(task);
-	      task.steppingBreakpoint = null;
-	    }
-	  
-	  if (task.notifyInstruction() > 0)
-	    return blockedContinue();
-	  else
-	    return sendContinue(task, Signal.NONE);
-	}
-      else
-	{
-	  // Do we have a breakpoint installed here?
-	  long address = isa.getBreakpointAddress(task);
-	  int blockers = task.notifyCodeBreakpoint(address);
-	  if (blockers >= 0)
-	    {
-	      // Sanity check
-	      if (task.steppingBreakpoint != null)
-		throw new RuntimeException("Already breakpoint stepping: "
-					   + task.steppingBreakpoint);
-	      
-	      // Prepare for stepping the breakpoint
-	      setupSteppingBreakpoint(task, address);
-	      
-	      if (blockers == 0)
-		return sendContinue(task, Signal.NONE);
-	      else
-		return blockedContinue();
-	      
-	    }
-	  else {
-	      // This is not a trap event generated by us.
-	      
-	      // When we just send a step to the task there are
-	      // two reasons we might get a Trap event that
-	      // doesn't relate to an actual instruction
-	      // step. Either we requested a step into a signal
-	      // (which depending on architecture does or doesn't
-	      // set the step debug flag).  Or a instruction that
-	      // looks like it is generating a trap is encountered
-	      // but that the kernel will handle (like a syscall
-	      // trapping instruction) that we should ignore (this
-	      // would be nice to use to support syscall tracking
-	      // during stepping, but it doesn't happen on all
-	      // architectures).
-	      if ((task.sigSendXXX != Signal.NONE
-		   || task.syscallSigretXXX
-		   || isa.hasExecutedSpuriousTrap(task)))
-		return sendContinue(task, Signal.NONE);
-	      
-	      // Deliver the real Trap event to the Task.  This is
-	      // somewhat weird, we are either stepping a trapping
-	      // instruction (breakpoint) that we didn't install, or
-	      // something is sending this process an explicit trap
-	      // signal.
-	      return handleSignaledEvent(task, Signal.TRAP);
-	    }
-	}
-    }
-
-    private void checkBreakpointStepping(LinuxPtraceTask task)
-    {
-      // Since we were stepping we expected a trap event.
-      // If we were stepping a breakpoint we have to check whether
-      // or not the step occured before or after the breakpoint was
-      // taken and make sure the breakpoint it put back in place.
-      Breakpoint steppingBreakpoint = task.steppingBreakpoint;
-      if (steppingBreakpoint != null)
-	{
-	  long pc = task.getPC();
-	  long setupAddress = steppingBreakpoint.getSetupAddress();
-
-	  // Check whether the breakpoint was actually stepped.
-	  // In theory there are instructions that might not change the
-	  // pc after execution, these are expected to not need fixups.
-	  // If any of them would, then we can add an explicit abort()
-	  // to Instruction so they can special case themselves.
-	  if (pc != setupAddress)
-	    steppingBreakpoint.stepDone(task);
-	  else
-	    steppingBreakpoint.stepAbort(task);
-	}
-    }
-
-    LinuxPtraceTaskState handleSignaledEvent(LinuxPtraceTask task,
-					     Signal sig) {
-	logger.log(Level.FINE, "{0} handleSignaledEvent, signal: {1}\n",
-		   new Object[] {task, sig}); 
-	checkBreakpointStepping(task);
-	return super.handleSignaledEvent(task, sig);
-    }
-
-      LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
-					      Signal signal) {
-	  if (signal == Signal.STOP) {
-	      checkBreakpointStepping(task);
-	      return super.handleStoppedEvent(task, signal);
-	  } else if (signal == Signal.TRAP)
-	      return handleTrappedEvent(task);
-	  else
-	      return handleSignaledEvent(task, signal);
-      }
-  }
 
     /**
      * Sharable instance of the running state.
@@ -1232,11 +1157,9 @@ class LinuxPtraceTaskState extends State {
     protected static final Running inSyscallRunning =
 	new Running("inSyscallRunning", true);
 
-    protected static final LinuxPtraceTaskState detaching = new LinuxPtraceTaskState("detaching")
-	{
-	    LinuxPtraceTaskState handleAttach (LinuxPtraceTask task)
-	    {
-		logger.log (Level.FINE, "{0} handleAttach\n", task); 
+    protected static final LinuxPtraceTaskState detaching = new LinuxPtraceTaskState("detaching") {
+	    LinuxPtraceTaskState handleAttach(LinuxPtraceTask task) {
+		logger.log(Level.FINE, "{0} handleAttach\n", task); 
 		return new Attaching(false);
 	    }
 	    LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
@@ -1245,7 +1168,7 @@ class LinuxPtraceTaskState extends State {
 		    // This is what should happen, the task stops, the
 		    // task is detached.
 		    task.sendDetach(Signal.NONE);
-		    ((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted (task);
+		    ((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted(task);
 		    return detached;
 		} else if (signal == Signal.TRAP) {
 		    throw unhandled(task, "handleStoppedEvent " + signal);
@@ -1253,10 +1176,10 @@ class LinuxPtraceTaskState extends State {
 		    return handleSignaledEvent(task, signal);
 		}
 	    }
-	    LinuxPtraceTaskState handleTerminatingEvent (LinuxPtraceTask task,
-							 Signal signal,
-							 int status) {
-		logger.log (Level.FINE, "{0} handleTerminatingEvent\n", task); 
+	    LinuxPtraceTaskState handleTerminatingEvent(LinuxPtraceTask task,
+							Signal signal,
+							int status) {
+		logger.log(Level.FINE, "{0} handleTerminatingEvent\n", task); 
 		// Oops, the task is terminating.  Skip over the
 		// termination event allowing the stop or terminated
 		// event behind it to bubble up.  Since nothing is
@@ -1268,29 +1191,29 @@ class LinuxPtraceTaskState extends State {
 		    task.sendContinue(Signal.NONE);
 		return detaching;
 	    }
-	    LinuxPtraceTaskState handleTerminatedEvent (LinuxPtraceTask task,
-							Signal signal,
-							int status) {
-		logger.log (Level.FINE, "{0} handleTerminatedEvent\n", task); 
-		((LinuxPtraceProc)task.getProc()).remove (task);
+	    LinuxPtraceTaskState handleTerminatedEvent(LinuxPtraceTask task,
+						       Signal signal,
+						       int status) {
+		logger.log(Level.FINE, "{0} handleTerminatedEvent\n", task); 
+		((LinuxPtraceProc)task.getProc()).remove(task);
 		// Lie, really just need to tell the proc that the
 		// task is no longer lurking.
 		((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted(task);
 		return destroyed;
 	    }
-	    LinuxPtraceTaskState handleDisappearedEvent (LinuxPtraceTask task, Throwable w)
-	    {
+	    LinuxPtraceTaskState handleDisappearedEvent(LinuxPtraceTask task,
+							Throwable w) {
 		// Woops, it disappeared before we were really detached,
 	        // pretend the detached happened anyway.
-		logger.log (Level.FINE, "{0} handleDisappearedEvent\n", task); 
-		((LinuxPtraceProc)task.getProc()).remove (task);
-		((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted (task);
+		logger.log(Level.FINE, "{0} handleDisappearedEvent\n", task); 
+		((LinuxPtraceProc)task.getProc()).remove(task);
+		((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted(task);
 		return destroyed;
 	    }
-	    LinuxPtraceTaskState handleForkedEvent (LinuxPtraceTask task, LinuxPtraceTask fork)
-	    {
-		logger.log (Level.FINE, "{0} handleForkedEvent\n", task);
-		logger.log (Level.FINE, "... handleForkedEvent {0}\n", fork);
+	    LinuxPtraceTaskState handleForkedEvent(LinuxPtraceTask task,
+						   LinuxPtraceTask fork)	    {
+		logger.log(Level.FINE, "{0} handleForkedEvent\n", task);
+		logger.log(Level.FINE, "... handleForkedEvent {0}\n", fork);
 		// Oops, the task forked.  Skip that allowing the stop
 		// event behind it to bubble up.  The owning proc will
 		// have been informed of this via a separate code
@@ -1298,9 +1221,9 @@ class LinuxPtraceTaskState extends State {
 		task.sendContinue(Signal.NONE);
 		return detaching;
 	    }
-	    LinuxPtraceTaskState handleClonedEvent (LinuxPtraceTask task, LinuxPtraceTask clone)
-	    {
-		logger.log (Level.FINE, "{0} handleClonedEvent\n", task);
+	    LinuxPtraceTaskState handleClonedEvent(LinuxPtraceTask task,
+						   LinuxPtraceTask clone) {
+		logger.log(Level.FINE, "{0} handleClonedEvent\n", task);
 		// Oops, the task cloned.  Skip that event allowing
 		// the stop event behind it to bubble up.  The owning
 		// proc will have been informed of this via a separate
@@ -1310,9 +1233,8 @@ class LinuxPtraceTaskState extends State {
 		// exists?
 		return detaching;
 	    }
-	    LinuxPtraceTaskState handleExecedEvent (LinuxPtraceTask task)
-	    {
-		logger.log (Level.FINE, "{0} handleExecedEvent\n", task);
+	    LinuxPtraceTaskState handleExecedEvent(LinuxPtraceTask task) {
+		logger.log(Level.FINE, "{0} handleExecedEvent\n", task);
 		// Oops, the [main] task did an exec.  Skip that event
 		// allowing the stop event behind it to bubble up (I
 		// hope there's a stop event?).
@@ -1321,17 +1243,16 @@ class LinuxPtraceTaskState extends State {
 	    }
 	    LinuxPtraceTaskState handleSignaledEvent(LinuxPtraceTask task,
 						     Signal signal) {
-		logger.log (Level.FINE, "{0} handleSignaledEvent\n", task);
+		logger.log(Level.FINE, "{0} handleSignaledEvent\n", task);
 		// Oops, the task got the wrong signal.  Just continue
 		// so that the stop event behind it can bubble up.
 		task.sendContinue(signal);
 		return detaching;
 	    }
 	    //XXX: why is this needed and why does it mean a syscallExit ?
-	    LinuxPtraceTaskState handleSyscalledEvent (LinuxPtraceTask task)
-	    {
-		logger.log (Level.FINE, "{0} handleSyscalledEvent\n", task); 
-		task.notifySyscallExit ();
+	    LinuxPtraceTaskState handleSyscalledEvent(LinuxPtraceTask task) {
+		logger.log(Level.FINE, "{0} handleSyscalledEvent\n", task); 
+		task.notifySyscallExit();
 		task.sendContinue(Signal.NONE);
 		return detaching;
 	    }
@@ -1355,58 +1276,58 @@ class LinuxPtraceTaskState extends State {
 	public String toString() {
 	    return "BlockedSignal,sig=" + sig;
 	}
-	LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task, TaskObservation observation)
-	{
-	    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
+	LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task,
+						  TaskObservation observation) {
+	    logger.log(Level.FINE, "{0} handleAddObservation\n", task);
 	    observation.add();
 	    return this;
 	}
-	LinuxPtraceTaskState handleUnblock (LinuxPtraceTask task, TaskObserver observer)
-	{
+	LinuxPtraceTaskState handleUnblock(LinuxPtraceTask task,
+					   TaskObserver observer) {
 	    if (logger.isLoggable(Level.FINEST)) {
 		logger.log(Level.FINEST, "{0} handleUnblock {1}\n",
 			   new Object[] {task, observer});
 	    } else {
-		logger.log (Level.FINE, "{0} handleUnblock\n", task);
+		logger.log(Level.FINE, "{0} handleUnblock\n", task);
 	    }
-	  task.blockers.remove (observer);
-	  if (task.blockers.size () > 0)
-	    return this; // Still blocked.
-	  Running newState;
-	  if (task.instructionObservers.numberOfObservers() > 0)
-	    newState = insyscall ? inSyscallRunning : running;
-	  if (task.syscallObservers.numberOfObservers() > 0)
-	    newState = insyscall ? inSyscallRunning : running;
-	  else
-	    newState = running;
-	  return newState.sendContinue(task, sig);
+	    task.blockers.remove(observer);
+	    if (task.blockers.size() > 0)
+		return this; // Still blocked.
+	    Running newState;
+	    if (task.instructionObservers.numberOfObservers() > 0)
+		newState = insyscall ? inSyscallRunning : running;
+	    if (task.syscallObservers.numberOfObservers() > 0)
+		newState = insyscall ? inSyscallRunning : running;
+	    else
+		newState = running;
+	    return newState.sendContinue(task, sig);
 	}
 	
-	LinuxPtraceTaskState handleDeleteObservation(LinuxPtraceTask task, TaskObservation observation)
-	{
-	    logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
+	LinuxPtraceTaskState handleDeleteObservation(LinuxPtraceTask task,
+						     TaskObservation observation) {
+	    logger.log(Level.FINE, "{0} handleDeleteObservation\n", task); 
 	    observation.delete();
 	    return handleUnblock(task, observation.getTaskObserver());
 	}
       
-	LinuxPtraceTaskState handleDetach (LinuxPtraceTask task, boolean shouldRemoveObservers)
-	{
+	LinuxPtraceTaskState handleDetach(LinuxPtraceTask task,
+					  boolean shouldRemoveObservers) {
         
-	    logger.log (Level.FINE, "{0} handleDetach\n", task);
+	    logger.log(Level.FINE, "{0} handleDetach\n", task);
         
 	    if (shouldRemoveObservers)
 		task.removeObservers();
 	    // XXX: Otherwise check that observers are empty?
 	    task.sendDetach(sig);
-	    ((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted (task);
+	    ((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted(task);
 	    return detached;
 	}
 
         LinuxPtraceTaskState handleTerminatedEvent(LinuxPtraceTask task,
 						   Signal signal,
 						   int status) {
-	    logger.log (Level.FINE, "{0} handleTerminatedEvent\n", task); 
-	    ((LinuxPtraceProc)task.getProc()).remove (task);
+	    logger.log(Level.FINE, "{0} handleTerminatedEvent\n", task); 
+	    ((LinuxPtraceProc)task.getProc()).remove(task);
 	    handleAttachedTerminated(task, signal, status);
 	    return destroyed;
 	}
@@ -1428,11 +1349,10 @@ class LinuxPtraceTaskState extends State {
      * A task blocked after SyscallEnter notification or while runningInSyscall
      * by an event other than syscalledEvent
      */
-    static class SyscallBlockedInSyscall extends BlockedSignal{
+    private static class SyscallBlockedInSyscall extends BlockedSignal {
 	SyscallBlockedInSyscall(Signal sig) {
 	    super(sig, true);
 	}
-
 	public String toString() {
 	    return "SyscallBlockedInSyscall";
 	}	    
@@ -1444,10 +1364,10 @@ class LinuxPtraceTaskState extends State {
      */
     private static final LinuxPtraceTaskState syscallBlockedInSyscallContinue
 	= new SyscallBlockedInSyscall(Signal.NONE) {
-	    public String toString() {
-		return "syscallBlockedInSyscall";
-	    }
-	};
+		public String toString() {
+		    return "syscallBlockedInSyscall";
+		}
+	    };
     
     /**
      * A task recieves an execedEvent and the client decides to block
@@ -1464,68 +1384,63 @@ class LinuxPtraceTaskState extends State {
 	    }	    
 	};
     
-    private static final LinuxPtraceTaskState disappeared = new LinuxPtraceTaskState("disappeared")
-	{
-	    LinuxPtraceTaskState handleTerminatedEvent(LinuxPtraceTask task,
-						       Signal signal,
-						       int status) {
-		logger.log(Level.FINE, "{0} handleTerminatedEvent\n", task); 
-		((LinuxPtraceProc)task.getProc()).remove (task);
-		handleAttachedTerminated(task, signal, status);
-		return destroyed;
-	    }
-	    LinuxPtraceTaskState handleTerminatingEvent (LinuxPtraceTask task,
-							 Signal signal,
-							 int status)
-	    {
-		logger.log (Level.FINE, "{0} handleTerminatingEvent\n", task); 
-		if (signal != null)
-		    task.notifyTerminating(true, signal.intValue());
-		else
-		    task.notifyTerminating(false, status);
-		return disappeared;
-	    }
-    	    LinuxPtraceTaskState handleDisappearedEvent (LinuxPtraceTask task, Throwable w)
-    	    {
-		logger.log (Level.FINE, "{0} handleDisappearedEvent\n", task); 
-		return disappeared;
-    	    }
-	};
+    private static final LinuxPtraceTaskState disappeared
+	= new LinuxPtraceTaskState("disappeared") {
+		LinuxPtraceTaskState handleTerminatedEvent(LinuxPtraceTask task,
+							   Signal signal,
+							   int status) {
+		    logger.log(Level.FINE, "{0} handleTerminatedEvent\n", task); 
+		    ((LinuxPtraceProc)task.getProc()).remove(task);
+		    handleAttachedTerminated(task, signal, status);
+		    return destroyed;
+		}
+		LinuxPtraceTaskState handleTerminatingEvent(LinuxPtraceTask task,
+							    Signal signal,
+							    int status) {
+		    logger.log(Level.FINE, "{0} handleTerminatingEvent\n", task); 
+		    if (signal != null)
+			task.notifyTerminating(true, signal.intValue());
+		    else
+			task.notifyTerminating(false, status);
+		    return disappeared;
+		}
+		LinuxPtraceTaskState handleDisappearedEvent(LinuxPtraceTask task,
+							    Throwable w) {
+		    logger.log(Level.FINE, "{0} handleDisappearedEvent\n", task); 
+		    return disappeared;
+		}
+	    };
 
-    static LinuxPtraceTaskState getDestroyed()
-    {
+    static LinuxPtraceTaskState getDestroyed() {
 	return destroyed;
     }
     
     private static final LinuxPtraceTaskState destroyed
 	= new LinuxPtraceTaskState("destroyed") {
-	    LinuxPtraceTaskState handleAttach (LinuxPtraceTask task)
-	    {
-		logger.log (Level.FINE, "{0} handleAttach\n", task); 
-		// Lie; the Proc wants to know that the operation has
-		// been processed rather than the request was
-		// successful.
-		((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted (task);
-		return destroyed;
-	    }
-	    LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task,
-					   TaskObservation observation)
-	    {
-		logger.log (Level.FINE, "{0} handleAddObservation\n", task);
-		Observable observable = observation.getTaskObservable();
-		Observer observer = observation.getTaskObserver();
-		observer.addFailed (task, new RuntimeException ("destroyed"));
-		((LinuxPtraceProc)task.getProc()).requestDeleteObserver (task,
-						 (TaskObservable) observable,
-						 (TaskObserver) observer);
-		return destroyed;
-	    }
-	    LinuxPtraceTaskState handleDeleteObservation(LinuxPtraceTask task,
-					      TaskObservation observation)
-	    {
-		logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
-		observation.delete();
-		return destroyed;
-	    }
-	};
+		LinuxPtraceTaskState handleAttach(LinuxPtraceTask task) {
+		    logger.log(Level.FINE, "{0} handleAttach\n", task); 
+		    // Lie; the Proc wants to know that the operation has
+		    // been processed rather than the request was
+		    // successful.
+		    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted(task);
+		    return destroyed;
+		}
+		LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task,
+							  TaskObservation observation) {
+		    logger.log(Level.FINE, "{0} handleAddObservation\n", task);
+		    Observable observable = observation.getTaskObservable();
+		    Observer observer = observation.getTaskObserver();
+		    observer.addFailed(task, new RuntimeException("destroyed"));
+		    ((LinuxPtraceProc)task.getProc()).requestDeleteObserver(task,
+									    (TaskObservable) observable,
+									    (TaskObserver) observer);
+		    return destroyed;
+		}
+		LinuxPtraceTaskState handleDeleteObservation(LinuxPtraceTask task,
+							     TaskObservation observation) {
+		    logger.log(Level.FINE, "{0} handleDeleteObservation\n", task); 
+		    observation.delete();
+		    return destroyed;
+		}
+	    };
 }
