@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,10 @@
 
 package frysk.hpd;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.FileNotFoundException;
 import frysk.Config;
 
 /**
@@ -54,6 +58,47 @@ public class TestStartCommand extends TestLib {
 	e.sendCommandExpectPrompt("where", "[0.0].*");
 	e.send("quit\n");
 	e.expect("Quitting...");
+	e.close();
+    }
+    
+    public void testStartCommandParameter() {
+	e = new HpdTestbed();
+	String[] param = { "teststart", "parameter2start"};
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-parameters").getPath(),
+	"Loaded executable file.*");
+	e.sendCommandExpectPrompt("start " + param[0] + " " + param[1], "Attached to process.*");
+	e.sendCommandExpectPrompt("go",
+		"Running process ([0-9]+).*");
+	/*
+	 * The following wait is added to make the test pass.  It seems on a dual-core
+	 * machine the funit-parameters process gets put into a different CPU and gets behind
+	 * the test case.  funit-parameters creates a file that this test checks and when this
+	 * test gets ahead of it that, the test fails beause it cannot find it.  Delaying
+	 * 1/10 of a second seems to fix that problem.
+	 */
+	try { Thread.sleep(100); } catch (Exception e) {}
+	int file_length = 0;
+	String compare = "";
+	for (int i = 0; i < param.length; i++) {
+	    compare = compare + param[i];
+	    file_length = file_length + param[i].length();
+	}
+	byte[] buffer = new byte[file_length];
+	String paramlist = "";
+	try {
+	    File f = new File("param-test");
+	    FileInputStream fin = new FileInputStream(f);
+	    fin.read(buffer);
+	    paramlist = new String(buffer, 0, buffer.length);
+	    f.delete();
+	} catch (FileNotFoundException e) {
+	    System.out.println("Could not find param-test");
+	} catch (IOException e) {
+	    System.out.println("Error reading file param-test");
+	}
+	assertTrue("Testing passed parameters", paramlist.equals(compare));
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
 	e.close();
     }
 }
