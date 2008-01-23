@@ -189,24 +189,12 @@ public class LinuxPtraceTask extends LiveTask {
 	set(oldState().handleForkedEvent(this, (LinuxPtraceTask)fork));
     }
     /**
-     * (internal) This task stopped.
+     * (internal) This task stopped with SIGNAL pending.
      */
-    void processStoppedEvent ()
-    {
-	set(oldState().handleStoppedEvent(this));
-    }
-    /**
-     * (internal) This task encountered a trap.
-     */
-    void processTrappedEvent ()
-    {
-	set(oldState().handleTrappedEvent(this));
-    }
-    /**
-     * (internal) This task received a signal.
-     */
-    void processSignaledEvent(Signal sig) {
-	set(oldState().handleSignaledEvent(this, sig));
+    void processStoppedEvent(Signal signal) {
+	logger.log(Level.FINE, "{0} stoppedEvent {1}",
+		   new Object[] { this, signal });
+	set(oldState().handleStoppedEvent(this, signal));
     }
     /**
      * (internal) The task is in the process of terminating. If SIGNAL

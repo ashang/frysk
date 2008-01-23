@@ -1,5 +1,11 @@
 2008-01-22  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTaskState.java (handleStoppedEvent(LinuxPtraceTask,
+	Signal)): Replace handleStoppedEvent(LinuxPtraceTask).
+	* LinuxPtraceTask.java (processSignaledEvent(Signal)): Delete.
+	(processTrappedEvent()): Delete.
+	(processStoppedEvent(Signal)): Replace processStoppedEvent().
+
 	* LinuxPtraceTask.java (sendContinue(Signal)): Replace
 	sendContinue(int).
 	(sendSyscallContinue(Signal)): Replace sendSyscallContinue(int).

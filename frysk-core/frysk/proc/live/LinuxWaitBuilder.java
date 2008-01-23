@@ -207,12 +207,7 @@ class LinuxWaitBuilder implements WaitBuilder {
 	    saveFsckedOrderedKernelStoppedEvent (pid, sig);
 	    return;
 	}
-	if (sig == Signal.STOP)
-	    task.processStoppedEvent();
-	else if (sig == Signal.TRAP)
-            task.processTrappedEvent();
-	else
-            task.processSignaledEvent(sig);
+	task.processStoppedEvent(sig);
     }
     
     public void terminated(int pid, Signal signal, int status,
