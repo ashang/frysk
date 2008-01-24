@@ -1,5 +1,8 @@
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
+	* TestCoreCommand.java: Replace TestLinuxCore with
+	CoreFileAtSignal.
+	
 	* TestCoreCommand.java: Use sendCommandExpectPrompt.
 
 2008-01-23  Rick Moseley  <rmoseley@redhat.com>

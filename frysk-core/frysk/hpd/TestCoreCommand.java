@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,9 +39,8 @@
 
 package frysk.hpd;
 
-import frysk.proc.Proc;
-import frysk.proc.dead.TestLinuxCore;
-import frysk.testbed.SlaveOffspring;
+import java.io.File;
+import frysk.testbed.CoreFileAtSignal;
 import frysk.Config;
 
 public class TestCoreCommand extends TestLib {
@@ -68,24 +67,20 @@ public class TestCoreCommand extends TestLib {
     }
 
     public void testCoreExeCommand() {
-	TestLinuxCore tester = new TestLinuxCore();
-	SlaveOffspring funit = SlaveOffspring.createDaemon();
-	Proc funitProc = funit.assertFindProcAndTasks();
-	String core = tester.constructCore(funitProc);
-	String exe = SlaveOffspring.getExecutable().getPath();
+	File exe = Config.getPkgLibFile("funit-hello");
+	File core = CoreFileAtSignal.constructCore(exe);
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("core " + core + " " + exe,
+	e.sendCommandExpectPrompt(("core " + core.getPath()
+				   + " " + exe.getPath()),
 				  "Attached to core file.*");
     }
     
     public void testCoreThenRunCommand() {
-	TestLinuxCore tester = new TestLinuxCore();
-	SlaveOffspring funit = SlaveOffspring.createDaemon();
-	Proc funitProc = funit.assertFindProcAndTasks();
-	String core = tester.constructCore(funitProc);
-	String exe = SlaveOffspring.getExecutable().getPath();
+	File exe = Config.getPkgLibFile("funit-hello");
+	File core = CoreFileAtSignal.constructCore(exe);
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("core " + core + " " + exe,
+	e.sendCommandExpectPrompt(("core " + core.getPath()
+				   + " " + exe.getPath()),
 				  "Attached to core file.*");
 	e.sendCommandExpectPrompt("run",
 				  "Attached to process.*");
