@@ -1,3 +1,8 @@
+2008-01-24  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCommandlineParser.java: Replace TestLinuxCore with
+	CoreFileAtSignal.
+
 2008-01-24  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* PPC32LinuxElfCorefile.java (writeNoteFPRegset): Rewrite using

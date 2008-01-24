@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,44 +42,35 @@ package frysk.hpd;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
-
 import frysk.proc.Auxv;
 import frysk.proc.Proc;
-import frysk.proc.dead.TestLinuxCore;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.util.AuxvStringBuilder;
+import frysk.testbed.CoreFileAtSignal;
 
 public class TestAuxvCommand extends TestLib {
   
-  public void testAuxVCoreCommand() {
-	  
-    Proc proc = (new DaemonBlockedAtSignal("funit-stacks")).getMainTask().getProc();
-    Auxv[] liveAuxv = proc.getAuxv();
+    public void testAuxVCoreCommand() {
+	Proc proc = new DaemonBlockedAtSignal("funit-stacks")
+	    .getMainTask().getProc();
+	Auxv[] liveAuxv = proc.getAuxv();
 
-    class BuildAuxv extends AuxvStringBuilder {
-	      
-	      public ArrayList auxvData = new ArrayList();
-	      public void buildLine(String type, String desc, String value) {
+	class BuildAuxv extends AuxvStringBuilder {
+	    public ArrayList auxvData = new ArrayList();
+	    public void buildLine(String type, String desc, String value) {
 		auxvData.add(type+" : " + value+"\n");	
-	        }
 	    }
+	}
+	BuildAuxv buildAuxv = new BuildAuxv();
+	buildAuxv.construct(liveAuxv, proc);
 
-    BuildAuxv buildAuxv = new BuildAuxv();
-    buildAuxv.construct(liveAuxv, proc);
-
-    TestLinuxCore tester = new TestLinuxCore();
-    File core = new File(tester.constructCore(proc));
-    core.deleteOnExit();
-    
-    
-    e = new HpdTestbed();
-    e.send("core " + core.getPath()
-	   + " -noexe\n");
-    e.expect("Attached to core file.*");
-    e.send("info auxv\n");
-    Iterator i = buildAuxv.auxvData.iterator();
-    while (i.hasNext())
-      e.equals((String)i.next());
-    e.close();
-  }
+	File core = CoreFileAtSignal.constructCore(proc);
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("core " + core.getPath() + " -noexe",
+				  "Attached to core file.*");
+	e.send("info auxv\n");
+	Iterator i = buildAuxv.auxvData.iterator();
+	while (i.hasNext())
+	    e.equals((String)i.next());
+    }
 }

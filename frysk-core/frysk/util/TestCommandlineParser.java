@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,77 +40,57 @@
 package frysk.util;
 
 import java.io.File;
-import frysk.proc.Proc;
 import frysk.proc.ProcId;
-import frysk.proc.dead.TestLinuxCore;
 import frysk.testbed.TestLib;
-import frysk.testbed.SlaveOffspring;
+import frysk.testbed.CoreFileAtSignal;
+import frysk.Config;
 
 public class TestCommandlineParser extends TestLib {
 
     public void testCoreExe() {
-
-	TestLinuxCore tester = new TestLinuxCore();
-	SlaveOffspring funit = SlaveOffspring.createDaemon();
-	Proc funitProc = funit.assertFindProcAndTasks();
-	final File core = new File(tester.constructCore(funitProc));
-
+	final File exe = Config.getPkgLibFile("funit-hello");
+	final File core = CoreFileAtSignal.constructCore(exe);
 	CommandlineParser parser = new CommandlineParser("test") {
-
-	    public void parseCommand(String[] command) {
-		fail("Shoudn't have a command");
-	    }
-
-	    public void parseCores(CoreExePair[] coreExePairs) {
-		assertEquals("Should have one pair", coreExePairs.length, 1);
-		assertEquals("Core file is correct", coreExePairs[0].coreFile,
-			core);
-		assertEquals("Exe file is correct", coreExePairs[0].exeFile,
-			     SlaveOffspring.getExecutable());
-	    }
-
-	    public void parsePids(ProcId[] pids) {
-		fail("Shouldn't have a pid");
-	    }
-
-	};
-
+		public void parseCommand(String[] command) {
+		    fail("Shoudn't have a command");
+		}
+		public void parseCores(CoreExePair[] coreExePairs) {
+		    assertEquals("Should have one pair",
+				 coreExePairs.length, 1);
+		    assertEquals("Core file is correct",
+				 coreExePairs[0].coreFile, core);
+		    assertEquals("Exe file is correct",
+				 coreExePairs[0].exeFile, exe);
+		}
+		public void parsePids(ProcId[] pids) {
+		    fail("Shouldn't have a pid");
+		}
+	    };
+	// args: CORE EXE
 	parser.parse(new String[] {
-			 core.getPath(),
-			 SlaveOffspring.getExecutable().getPath()
-		     });
-	core.delete();
+		core.getPath(),
+		exe.getPath()
+	    });
     }
 
     public void testCore() {
-
-	TestLinuxCore tester = new TestLinuxCore();
-	SlaveOffspring funit = SlaveOffspring.createDaemon();
-	Proc funitProc = funit.assertFindProcAndTasks();
-	final File core = new File(tester.constructCore(funitProc));
-
+	final File exe = Config.getPkgLibFile("funit-hello");
+	final File core = CoreFileAtSignal.constructCore(exe);
 	CommandlineParser parser = new CommandlineParser("test") {
-
-	    public void parseCommand(String[] command) {
-		fail("Shoudn't have a command");
-	    }
-
-	    public void parseCores(CoreExePair[] coreExePairs) {
-		assertEquals("Should have one pair", coreExePairs.length, 1);
-		assertEquals("Core file is correct", coreExePairs[0].coreFile,
-			core);
-
-	    }
-
-	    public void parsePids(ProcId[] pids) {
-		fail("Shouldn't have a pid");
-	    }
-
-	};
-
+		public void parseCommand(String[] command) {
+		    fail("Shoudn't have a command");
+		}
+		public void parseCores(CoreExePair[] coreExePairs) {
+		    assertEquals("Should have one pair",
+				 coreExePairs.length, 1);
+		    assertEquals("Core file is correct",
+				 coreExePairs[0].coreFile, core);
+		}
+		public void parsePids(ProcId[] pids) {
+		    fail("Shouldn't have a pid");
+		}
+	    };
+	// args: CORE
 	parser.parse(new String[] { core.getPath() });
-
-	core.delete();
     }
-
 }

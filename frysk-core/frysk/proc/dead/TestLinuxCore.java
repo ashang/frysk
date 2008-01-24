@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -504,29 +504,24 @@ public class TestLinuxCore
   }
 
 
-  /**
-   * Given a Proc object, generate a core file from that given proc.
-   * 
-   * @param ackProc - proc object to generate core from.
-   * @return - name of constructed core file.
-   */
-  public String constructCore (final Proc ackProc)
-  {
-
-    final CoredumpAction coreDump = new CoredumpAction(ackProc, new Event()
-    {
-
-      public void execute ()
-      {
-        ackProc.requestAbandonAndRunEvent(new RequestStopEvent(
-                                                               Manager.eventLoop));
-      }
-    }, false);
-        
-    new ProcBlockAction(ackProc, coreDump);
-    assertRunUntilStop("Running event loop for core file");
-    return coreDump.getConstructedFileName();
-  }
+    /**
+     * Given a Proc object, generate a core file from that given proc.
+     * 
+     * @param ackProc - proc object to generate core from.
+     * @return - name of constructed core file.
+     */
+    private String constructCore(final Proc ackProc) {
+	final CoredumpAction coreDump
+	    = new CoredumpAction(ackProc, new Event() {
+		    public void execute() {
+			ackProc.requestAbandonAndRunEvent
+			    (new RequestStopEvent(Manager.eventLoop));
+		    }
+		}, false);
+	new ProcBlockAction(ackProc, coreDump);
+	assertRunUntilStop("Running event loop for core file");
+	return coreDump.getConstructedFileName();
+    }
 
   // Helper class for inserting a Code breakpoint observer.
   static class CodeObserver
