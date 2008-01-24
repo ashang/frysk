@@ -37,42 +37,105 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.bank;
+package frysk.isa.banks;
 
+import inua.eio.ByteBuffer;
 import frysk.isa.Register;
-import java.util.Iterator;
 
 /**
- * Implement a map from frysk.isa.Register to frysk.proc.BankArrayRegister.
- * For compatibility, also implement a name map.
+ * A Register within a ByteBuffer register bank.
  */
 
-public class BankArrayRegisterMap extends RegisterMap {
+public class BankRegister {
 
-    BankArrayRegisterMap add(int bank, BankRegisterMap bankMap) {
-	for (Iterator i = bankMap.entryIterator(); i.hasNext(); ) {
-	    BankRegister bankRegister = (BankRegister) i.next();
-	    put(new BankArrayRegister(bank, bankRegister));
+    private final int offset;
+    private final int length;
+    private final Register register;
+
+    BankRegister(int offset, int length, Register register) {
+	this.offset = offset;
+	this.length = length;
+	this.register = register;
+    }
+
+    public Register getRegister() {
+	return register;
+    }
+
+    public String toString() {
+	return (super.toString() + ",offset=" + offset + ",length=" + length
+		+ ",register=" + register);
+    }
+
+    /**
+     * Get the name of the register.
+     * 
+     * @return the name
+     */
+    public String getName() {
+	return register.getName();
+    }
+
+    /**
+     * Get the length of the register in bytes.
+     * 
+     * @return the length
+     */
+    int getLength() {
+	return length;
+    }
+
+    /**
+     * Return the offset into the register bank.
+     */
+    int getOffset() {
+	return offset;
+    }
+
+    public void access(ByteBuffer byteBuffer, long offset, long size,
+		       byte[] bytes, int start, boolean write) {
+	if (write){
+		long position = byteBuffer.position();
+		byteBuffer.position(getOffset() + offset);
+		byteBuffer.put(bytes, (int)start, getLength());
+		byteBuffer.position(position);
 	}
-	return this;
+	else
+	    byteBuffer.get(this.offset + offset, bytes, start, (int) size);
     }
 
-    BankArrayRegisterMap add(BankArrayRegister register) {
-	put(register);
-	return this;
-    }
-
-    BankArrayRegisterMap add(int bank, int offset, int length,
-			     Register register) {
-	put(new BankArrayRegister(bank, offset, length, register));
-	return this;
-    }
-    BankArrayRegisterMap add(int bank, int offset, int length,
-			     Register[] registers) {
-	for (int i = 0; i < registers.length; i++) {
-	    put(new BankArrayRegister(bank, offset, length, registers[i]));
-	    offset += length;
+    long get(ByteBuffer byteBuffer) {
+	switch (length) {
+	case 1:
+	    return byteBuffer.getUByte(offset);
+	case 2:
+	    return byteBuffer.getUShort(offset);
+	case 4:
+	    return byteBuffer.getUInt(offset);
+	case 8:
+	    return byteBuffer.getULong(offset);
+	default:
+	    throw new RuntimeException("unhandled size: " + length);
 	}
-	return this;
     }
+
+    void set(ByteBuffer byteBuffer, long value) {
+	switch (length) {
+	case 1:
+	    byteBuffer.putUByte(offset, (byte) value);
+	    break;
+	case 2:
+	    byteBuffer.putUShort(offset, (short) value);
+	    break;
+	case 4:
+	    byteBuffer.putUInt(offset, (int) value);
+	    break;
+	case 8:
+	    byteBuffer.putULong(offset, value);
+	    break;
+	default:
+	    throw new RuntimeException("unhandled size: " + length);
+	}
+    }
+
 }

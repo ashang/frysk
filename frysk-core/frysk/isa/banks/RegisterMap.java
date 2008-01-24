@@ -37,58 +37,48 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.bank;
+package frysk.isa.banks;
 
-import inua.eio.ByteBuffer;
+import java.util.LinkedHashMap;
 import frysk.isa.Register;
+import java.util.Iterator;
 
 /**
- * The target has registers scattered across one or more register
- * banks.  Map register requests onto the corresponding bank-register.
+ * A mapping from a Register to BankRegister (a register within a
+ * register bank).
  */
+class RegisterMap {
 
-public class RegisterBanks {
-    private final ByteBuffer[] banks;
-    private final BankArrayRegisterMap bankRegisters;
+    private final LinkedHashMap registerToEntry = new LinkedHashMap();
+    private final LinkedHashMap nameToEntry = new LinkedHashMap();
 
-    public RegisterBanks(BankArrayRegisterMap bankRegisters,
-			 ByteBuffer[] banks) {
-	this.banks = banks;
-	this.bankRegisters = bankRegisters;
+    /**
+     * Return an iterator over all BankRegisters in the map.
+     */
+    public Iterator entryIterator() {
+	// XXX: Uses nameToEntry as that contains more registers than
+	// registerToEntry.
+	return nameToEntry.values().iterator();
     }
 
-    public BankArrayRegister getBankArrayRegister(String name) {
-	BankArrayRegister bankRegister
-	    = (BankArrayRegister) bankRegisters.get(name);
-	if (bankRegister != null)
-	    return bankRegister;
-	throw new RuntimeException("unknown register: " + name);
+    /**
+     * Return an iterator over all Registers in the map.
+     */
+    public Iterator registerIterator() {
+	return registerToEntry.keySet().iterator();
     }
 
-    private BankArrayRegister findBankArrayRegister(Register register) {
-	BankArrayRegister bankRegister
-	    = (BankArrayRegister) bankRegisters.get(register);
-	if (bankRegister != null)
-	    return bankRegister;
-	// Workaround for code still relying on string names.
-	return getBankArrayRegister(register.getName());
+    void put(BankRegister br) {
+	Register register = br.getRegister();
+	registerToEntry.put(register, br);
+	nameToEntry.put(register.getName(), br);
     }
 
-    public long get(Register register) {
-	return findBankArrayRegister(register).get(banks);
+    Object get(Register r) {
+	return registerToEntry.get(r);
     }
 
-    public void set(Register register, long value) {
-	findBankArrayRegister(register).set(banks, value);
-    }
-
-    public void access(Register register, long offset, long size,
-		       byte[] bytes, int start, boolean write) {
-	findBankArrayRegister(register)
-	    .access(banks, offset, size, bytes, start, write);
-    }
-
-    public ByteBuffer[] getBanksFIXME() {
-	return banks;
+    Object get(String s) {
+	return nameToEntry.get(s);
     }
 }

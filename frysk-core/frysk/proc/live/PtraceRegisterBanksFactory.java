@@ -45,9 +45,9 @@ import inua.eio.ByteOrder;
 import frysk.isa.ISA;
 import frysk.sys.Ptrace.RegisterSet;
 import frysk.sys.Ptrace.AddressSpace;
-import frysk.bank.RegisterBanks;
-import frysk.bank.X86BankRegisters;
-import frysk.bank.PPCBankRegisters;
+import frysk.isa.banks.RegisterBanks;
+import frysk.isa.banks.X86BankRegisters;
+import frysk.isa.banks.PPCBankRegisters;
 import frysk.Config;
 
 /**

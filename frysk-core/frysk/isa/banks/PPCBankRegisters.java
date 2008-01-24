@@ -41,7 +41,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.bank;
+package frysk.isa.banks;
 
 import inua.eio.ByteOrder;
 import frysk.isa.PPC32Registers;

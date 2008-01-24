@@ -49,7 +49,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import frysk.isa.Register;
 import frysk.isa.ISA;
-import frysk.bank.RegisterBanks;
+import frysk.isa.banks.RegisterBanks;
 import frysk.isa.signals.SignalTable;
 import frysk.isa.signals.SignalTableFactory;
 

@@ -38,7 +38,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.bank;
+package frysk.isa.banks;
 
 import frysk.isa.PPC32Registers;
 import frysk.isa.PPC64Registers;

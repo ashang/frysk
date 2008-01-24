@@ -45,7 +45,7 @@ import frysk.proc.Proc;
 import frysk.proc.TaskId;
 import frysk.proc.TaskObserver;
 import frysk.isa.ISA;
-import frysk.bank.RegisterBanks;
+import frysk.isa.banks.RegisterBanks;
 
 /**
  * A dead Host/Proc/Task is characterised by its lack of state, and an

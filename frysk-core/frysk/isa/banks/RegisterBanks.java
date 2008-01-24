@@ -37,105 +37,58 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.bank;
+package frysk.isa.banks;
 
 import inua.eio.ByteBuffer;
 import frysk.isa.Register;
 
 /**
- * A Register within a ByteBuffer register bank.
+ * The target has registers scattered across one or more register
+ * banks.  Map register requests onto the corresponding bank-register.
  */
 
-public class BankRegister {
+public class RegisterBanks {
+    private final ByteBuffer[] banks;
+    private final BankArrayRegisterMap bankRegisters;
 
-    private final int offset;
-    private final int length;
-    private final Register register;
-
-    BankRegister(int offset, int length, Register register) {
-	this.offset = offset;
-	this.length = length;
-	this.register = register;
+    public RegisterBanks(BankArrayRegisterMap bankRegisters,
+			 ByteBuffer[] banks) {
+	this.banks = banks;
+	this.bankRegisters = bankRegisters;
     }
 
-    public Register getRegister() {
-	return register;
+    public BankArrayRegister getBankArrayRegister(String name) {
+	BankArrayRegister bankRegister
+	    = (BankArrayRegister) bankRegisters.get(name);
+	if (bankRegister != null)
+	    return bankRegister;
+	throw new RuntimeException("unknown register: " + name);
     }
 
-    public String toString() {
-	return (super.toString() + ",offset=" + offset + ",length=" + length
-		+ ",register=" + register);
+    private BankArrayRegister findBankArrayRegister(Register register) {
+	BankArrayRegister bankRegister
+	    = (BankArrayRegister) bankRegisters.get(register);
+	if (bankRegister != null)
+	    return bankRegister;
+	// Workaround for code still relying on string names.
+	return getBankArrayRegister(register.getName());
     }
 
-    /**
-     * Get the name of the register.
-     * 
-     * @return the name
-     */
-    public String getName() {
-	return register.getName();
+    public long get(Register register) {
+	return findBankArrayRegister(register).get(banks);
     }
 
-    /**
-     * Get the length of the register in bytes.
-     * 
-     * @return the length
-     */
-    int getLength() {
-	return length;
+    public void set(Register register, long value) {
+	findBankArrayRegister(register).set(banks, value);
     }
 
-    /**
-     * Return the offset into the register bank.
-     */
-    int getOffset() {
-	return offset;
-    }
-
-    public void access(ByteBuffer byteBuffer, long offset, long size,
+    public void access(Register register, long offset, long size,
 		       byte[] bytes, int start, boolean write) {
-	if (write){
-		long position = byteBuffer.position();
-		byteBuffer.position(getOffset() + offset);
-		byteBuffer.put(bytes, (int)start, getLength());
-		byteBuffer.position(position);
-	}
-	else
-	    byteBuffer.get(this.offset + offset, bytes, start, (int) size);
+	findBankArrayRegister(register)
+	    .access(banks, offset, size, bytes, start, write);
     }
 
-    long get(ByteBuffer byteBuffer) {
-	switch (length) {
-	case 1:
-	    return byteBuffer.getUByte(offset);
-	case 2:
-	    return byteBuffer.getUShort(offset);
-	case 4:
-	    return byteBuffer.getUInt(offset);
-	case 8:
-	    return byteBuffer.getULong(offset);
-	default:
-	    throw new RuntimeException("unhandled size: " + length);
-	}
+    public ByteBuffer[] getBanksFIXME() {
+	return banks;
     }
-
-    void set(ByteBuffer byteBuffer, long value) {
-	switch (length) {
-	case 1:
-	    byteBuffer.putUByte(offset, (byte) value);
-	    break;
-	case 2:
-	    byteBuffer.putUShort(offset, (short) value);
-	    break;
-	case 4:
-	    byteBuffer.putUInt(offset, (int) value);
-	    break;
-	case 8:
-	    byteBuffer.putULong(offset, value);
-	    break;
-	default:
-	    throw new RuntimeException("unhandled size: " + length);
-	}
-    }
-
 }

@@ -66,7 +66,7 @@ import frysk.isa.syscalls.Syscall;
 import frysk.isa.ISA;
 import frysk.isa.ElfMap;
 import java.io.File;
-import frysk.bank.RegisterBanks;
+import frysk.isa.banks.RegisterBanks;
 
 /**
  * A Linux Task tracked using PTRACE.

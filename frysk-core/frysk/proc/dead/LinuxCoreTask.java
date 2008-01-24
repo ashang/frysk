@@ -47,7 +47,7 @@ import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
 import frysk.proc.TaskId;
 import frysk.isa.ISA;
-import frysk.bank.RegisterBanks;
+import frysk.isa.banks.RegisterBanks;
 import frysk.isa.RegistersFactory;
 
 public class LinuxCoreTask extends DeadTask {

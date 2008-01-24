@@ -1,5 +1,7 @@
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java: Update; BankRegister moved to frysk.isa.banks.
+
 	* SyscallExaminer.java: Update; Syscall moved to frysk.isa.syscalls.
 	* TestSyscallRunning.java: Ditto.
 	* TaskObserver.java: Ditto.

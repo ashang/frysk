@@ -37,48 +37,42 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.bank;
+package frysk.isa.banks;
 
-import java.util.LinkedHashMap;
 import frysk.isa.Register;
 import java.util.Iterator;
 
 /**
- * A mapping from a Register to BankRegister (a register within a
- * register bank).
+ * Implement a map from frysk.isa.Register to frysk.proc.BankArrayRegister.
+ * For compatibility, also implement a name map.
  */
-class RegisterMap {
 
-    private final LinkedHashMap registerToEntry = new LinkedHashMap();
-    private final LinkedHashMap nameToEntry = new LinkedHashMap();
+public class BankArrayRegisterMap extends RegisterMap {
 
-    /**
-     * Return an iterator over all BankRegisters in the map.
-     */
-    public Iterator entryIterator() {
-	// XXX: Uses nameToEntry as that contains more registers than
-	// registerToEntry.
-	return nameToEntry.values().iterator();
+    BankArrayRegisterMap add(int bank, BankRegisterMap bankMap) {
+	for (Iterator i = bankMap.entryIterator(); i.hasNext(); ) {
+	    BankRegister bankRegister = (BankRegister) i.next();
+	    put(new BankArrayRegister(bank, bankRegister));
+	}
+	return this;
     }
 
-    /**
-     * Return an iterator over all Registers in the map.
-     */
-    public Iterator registerIterator() {
-	return registerToEntry.keySet().iterator();
+    BankArrayRegisterMap add(BankArrayRegister register) {
+	put(register);
+	return this;
     }
 
-    void put(BankRegister br) {
-	Register register = br.getRegister();
-	registerToEntry.put(register, br);
-	nameToEntry.put(register.getName(), br);
+    BankArrayRegisterMap add(int bank, int offset, int length,
+			     Register register) {
+	put(new BankArrayRegister(bank, offset, length, register));
+	return this;
     }
-
-    Object get(Register r) {
-	return registerToEntry.get(r);
-    }
-
-    Object get(String s) {
-	return nameToEntry.get(s);
+    BankArrayRegisterMap add(int bank, int offset, int length,
+			     Register[] registers) {
+	for (int i = 0; i < registers.length; i++) {
+	    put(new BankArrayRegister(bank, offset, length, registers[i]));
+	    offset += length;
+	}
+	return this;
     }
 }

@@ -1,3 +1,10 @@
+2008-01-24  Andrew Cagney  <cagney@redhat.com>
+
+	* DeadTask.java: Update BankRegister moved to frysk.isa.banks.
+	* LinuxCoreTask.java: Ditto.
+	* LinuxExeTask.java: Ditto.
+	* CorefileRegisterBanksFactory.java: Ditto.
+
 2008-01-17  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxExeProc.java (LinuxExeProc): Refresh tasks on 

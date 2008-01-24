@@ -42,7 +42,7 @@ package frysk.proc.dummy;
 import inua.eio.ByteBuffer;
 import frysk.proc.TaskObserver;
 import frysk.isa.ISA;
-import frysk.bank.RegisterBanks;
+import frysk.isa.banks.RegisterBanks;
 import frysk.proc.Task;
 import frysk.proc.Proc;
 

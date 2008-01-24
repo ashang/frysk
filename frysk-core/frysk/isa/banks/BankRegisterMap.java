@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,50 +37,34 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.bank;
+package frysk.isa.banks;
 
 import inua.eio.ByteBuffer;
 import frysk.isa.Register;
 
 /**
- * Register that is part of a register bank.
+ * A mapping from Register to BankRegister (a register within a
+ * register bank).
  */
-public class BankArrayRegister extends BankRegister {
-    private final int bank;
-  
-    BankArrayRegister(int bank, int offset, int length, Register register) {
-	super(offset, length, register);
-	this.bank = bank;
-    }
-  
-    BankArrayRegister(int bank, BankRegister bankRegister) {
-	super(bankRegister.getOffset(), bankRegister.getLength(),
-	      bankRegister.getRegister());
-	this.bank = bank;
+public class BankRegisterMap extends RegisterMap {
+
+    public void access(Register register, ByteBuffer bank, long offset,
+		       long size, byte[] bytes, int start, boolean write) {
+	((BankRegister)get(register))
+	    .access(bank, offset, size, bytes, start, write);
     }
 
-    public String toString() {
-	return (super.toString()
-		+ ",bank=" + bank);
+    BankRegisterMap add(BankRegister register) {
+	put(register);
+	return this;	
     }
 
-    /**
-     * Return the register bank, as an index.
-     */
-    int getBank() {
-	return bank;
+    long get(Register register, ByteBuffer bank) {
+	return ((BankRegister)get(register)).get(bank);
     }
 
-    long get(ByteBuffer[] banks) {
-	return get(banks[bank]);
+    void set(Register register, ByteBuffer bank, long value) {
+	((BankRegister)get(register)).set(bank, value);
     }
 
-    void set(ByteBuffer[] banks, long value) {
-	set(banks[bank], value);
-    }
-
-    void access(ByteBuffer[] banks, long offset, long size, byte[] bytes,
-		int start, boolean write) {
-	access(banks[bank], offset, size, bytes, start, write);
-    }
 }
