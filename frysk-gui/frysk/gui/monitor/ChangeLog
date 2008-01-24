@@ -1,3 +1,9 @@
+2008-01-24  Andrew Cagney  <cagney@redhat.com>
+
+	* observers/SysCallUtilyInfo.java: Update; Syscall moved to
+	frysk.isa.syscalls.
+	* observers/TaskSyscallObserver.java: Ditto.
+
 2008-01-23  Andrew Cagney  <cagney@redhat.com>
 
 	* observers/TaskSignaledObserver.java: Replace Signal.valueOf(int)

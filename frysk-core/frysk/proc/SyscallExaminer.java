@@ -44,7 +44,7 @@ import java.util.Observable;
 import java.util.logging.Level;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
-import frysk.syscall.Syscall;
+import frysk.isa.syscalls.Syscall;
 
 /**
  * Superclass for tests that examine process state at a system call.

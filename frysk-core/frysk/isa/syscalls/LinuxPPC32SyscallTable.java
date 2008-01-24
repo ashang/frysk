@@ -38,7 +38,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.syscall;
+package frysk.isa.syscalls;
 
 import frysk.isa.PPC32Registers;
 import frysk.proc.Task;

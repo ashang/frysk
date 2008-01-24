@@ -40,8 +40,8 @@
 package frysk.proc;
 
 import frysk.proc.TaskObserver.Terminating;
-import frysk.syscall.SyscallTable;
-import frysk.syscall.SyscallTableFactory;
+import frysk.isa.syscalls.SyscallTable;
+import frysk.isa.syscalls.SyscallTableFactory;
 import inua.eio.ByteBuffer;
 import java.util.Set;
 import java.util.HashSet;

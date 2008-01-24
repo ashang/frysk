@@ -1,3 +1,7 @@
+2008-01-24  Andrew Cagney  <cagney@redhat.com>
+
+	Move package frysk.syscall to frysk.isa.syscalls.
+
 2007-12-28  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxIA32SyscallTable.java (getSyscall(Task)): Fix typo, test if

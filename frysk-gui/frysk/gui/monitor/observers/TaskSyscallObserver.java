@@ -52,7 +52,7 @@ import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.eventviewer.Event;
 import frysk.gui.monitor.eventviewer.EventManager;
 import frysk.gui.monitor.filters.TaskFilterPoint;
-import frysk.syscall.Syscall;
+import frysk.isa.syscalls.Syscall;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;

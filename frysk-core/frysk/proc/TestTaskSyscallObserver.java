@@ -40,9 +40,9 @@
 
 package frysk.proc;
 
-import frysk.syscall.Syscall;
-import frysk.syscall.SyscallTable;
-import frysk.syscall.SyscallTableFactory;
+import frysk.isa.syscalls.Syscall;
+import frysk.isa.syscalls.SyscallTable;
+import frysk.isa.syscalls.SyscallTableFactory;
 import frysk.Config;
 import java.util.HashMap;
 import java.util.Iterator;

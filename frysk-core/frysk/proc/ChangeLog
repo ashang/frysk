@@ -1,5 +1,10 @@
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
+	* SyscallExaminer.java: Update; Syscall moved to frysk.isa.syscalls.
+	* TestSyscallRunning.java: Ditto.
+	* TaskObserver.java: Ditto.
+	* TestTaskSyscallObserver.java: Ditto.
+
 	* Signal.java: Move to frysk.isa.signals.Signal.
 	* SignalTable.java: Move to frysk.isa.signals.SignalTable.
 	* LinuxSignals.java: Move to frysk.isa.signals.SignalTableFactory.

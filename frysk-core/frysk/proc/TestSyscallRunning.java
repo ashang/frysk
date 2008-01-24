@@ -39,7 +39,7 @@
 
 package frysk.proc;
 
-import frysk.syscall.Syscall;
+import frysk.isa.syscalls.Syscall;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -51,8 +51,8 @@ import frysk.testbed.TestLib;
 import frysk.testbed.TearDownProcess;
 import frysk.Config;
 import frysk.sys.DaemonPipePair;
-import frysk.syscall.SyscallTable;
-import frysk.syscall.SyscallTableFactory;
+import frysk.isa.syscalls.SyscallTable;
+import frysk.isa.syscalls.SyscallTableFactory;
 
 /**
  * XXX: This code should be simplified, eliminating local parallelism

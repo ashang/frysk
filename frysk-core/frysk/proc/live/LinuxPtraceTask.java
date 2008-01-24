@@ -62,7 +62,7 @@ import frysk.sys.Errno;
 import frysk.sys.Ptrace;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.sys.Signal;
-import frysk.syscall.Syscall;
+import frysk.isa.syscalls.Syscall;
 import frysk.isa.ISA;
 import frysk.isa.ElfMap;
 import java.io.File;

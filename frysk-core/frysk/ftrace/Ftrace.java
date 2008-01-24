@@ -49,7 +49,7 @@ import frysk.proc.ProcObserver;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.syscall.Syscall;
+import frysk.isa.syscalls.Syscall;
 import frysk.sys.Signal;
 
 import inua.util.PrintWriter;

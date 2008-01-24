@@ -45,7 +45,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.logging.*;
 import java.io.File;
-import frysk.syscall.Syscall;
+import frysk.isa.syscalls.Syscall;
 import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
