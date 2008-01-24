@@ -56,6 +56,7 @@ public class FloatingPoint854Format
     private int sizeF;
     private int sizeE;
     private int size;
+    private int integralOfMantissa;
     private static final BigDecimal two = BigDecimal.ONE.add(BigDecimal.ONE);
     
     /**
@@ -77,17 +78,40 @@ public class FloatingPoint854Format
    }
    
    BigFloatingPoint unpack (byte[] bytes) {
+       int s = getSign (bytes);
+       BigInteger e = getBiasedExponent(bytes);
+       BigInteger f = getFraction(bytes);
+       BigInteger maxE = getMaxEValue();
+       return toBigFP (s, e, f, maxE);              
+   }
+
+   /**
+    * @return 0 for negative and 1 for positive values FPs.
+    */
+   int getSign (byte[] bytes) {
        int sIndex = 0;
        if (this.size == 12)
 	   sIndex = 2;
        else if (this.size == 16)
 	   sIndex = 6;
-       int s = (((bytes[sIndex] >> 7) & 0x01) == 0) ? -1:1;
-       BigInteger e = packExponent.unpackUnsigned(bytes);
-       BigInteger f = packFraction.unpackUnsigned(bytes);
-       BigInteger maxE = (BigInteger.valueOf(2).pow(sizeE)).subtract
-                         (BigInteger.ONE);
-       return toBigFP (s, e, f, maxE);              
+       return (((bytes[sIndex] >> 7) & 0x01) == 0) ? 0:1;
+   }
+   
+   BigInteger getBiasedExponent (byte[] bytes) {
+       return packExponent.unpackUnsigned(bytes);
+   }
+   
+   BigInteger getFraction (byte[] bytes) {
+       return packFraction.unpackUnsigned(bytes);
+   }
+   
+   int getIntegralOfMantissa (byte[] bytes) {
+       getMantissa (getFraction(bytes), getBiasedExponent(bytes), sizeF);
+       return integralOfMantissa;
+   }
+   
+   BigInteger getMaxEValue () {
+       return (BigInteger.valueOf(2).pow(sizeE)).subtract(BigInteger.ONE);
    }
 
    /**
@@ -106,7 +130,13 @@ public class FloatingPoint854Format
        int trailingZeroes = f.getLowestSetBit();
        BigDecimal m = new BigDecimal (f.shiftRight(trailingZeroes));
        m = divide (m, two.pow(sizeOfF-trailingZeroes));
-       return (e.compareTo(BigInteger.ZERO) == 0)? m : BigDecimal.ONE.add(m);
+       //return (e.compareTo(BigInteger.ZERO) == 0)? m : BigDecimal.ONE.add(m);
+       if (e.compareTo(BigInteger.ZERO) == 0) {
+	   integralOfMantissa = 0;
+	   return m;
+       } 
+       integralOfMantissa = 1;
+       return BigDecimal.ONE.add(m);
    }
 
    private BigDecimal getMantissaExtended (BigInteger f, int sizeOfF){
@@ -115,7 +145,14 @@ public class FloatingPoint854Format
        f = f.clearBit(f.bitLength()-1);
        BigDecimal m = new BigDecimal (f.shiftRight(trailingZeroes));
        m = divide (m, two.pow(sizeOfF-trailingZeroes-1));
-       return (j == false)? m : BigDecimal.ONE.add(m);
+       //return (j == false)? m : BigDecimal.ONE.add(m);
+       if (j == false) {
+	   integralOfMantissa = 0;
+	   return m;
+       } 
+       integralOfMantissa = 1;
+       return BigDecimal.ONE.add(m);
+       
    }
    
    /**
@@ -126,8 +163,8 @@ public class FloatingPoint854Format
     * @param maxE - max possible value of exponent field
     */
    private BigFloatingPoint toBigFP (int s, 
-	                                 BigInteger e, BigInteger f, 
-	                                 BigInteger maxE) {
+	                             BigInteger e, BigInteger f, 
+	                             BigInteger maxE) {
        BigDecimal m = getMantissa(f, e, sizeF);
        BigDecimal result = BigDecimal.ZERO;
        BigDecimal one = BigDecimal.ONE;
@@ -141,8 +178,8 @@ public class FloatingPoint854Format
            }
            else {
                // FIXME: 0 or m?
-               return (s == -1)? new BigFloatingPoint (m, BigFloatingPoint.posInf):
-        	                     new BigFloatingPoint (m, BigFloatingPoint.negInf);
+               return (s == 0)? new BigFloatingPoint (m, BigFloatingPoint.posInf):
+        	                new BigFloatingPoint (m, BigFloatingPoint.negInf);
            }
        }
        else if (e.compareTo(BigInteger.ZERO) == 0) {
@@ -152,16 +189,16 @@ public class FloatingPoint854Format
            else {
                result = BigDecimal.ZERO;
            }
-           return (s == -1)? new BigFloatingPoint(result):
-                             new BigFloatingPoint(result.negate());
+           return (s == 0)? new BigFloatingPoint(result):
+                            new BigFloatingPoint(result.negate());
        }
        else if (e.compareTo(BigInteger.ZERO) > 0 && e.compareTo(maxE) < 0) {
            if (e.intValue()-halfMaxE < 0)
                result = divide (one, two.pow(-e.intValue()+halfMaxE)).multiply(m);
            else
                result = two.pow(e.intValue()-halfMaxE).multiply(m);
-           return (s == -1)? new BigFloatingPoint(result):
-                             new BigFloatingPoint(result.negate());
+           return (s == 0)? new BigFloatingPoint(result):
+                            new BigFloatingPoint(result.negate());
        }
        else {
            throw new RuntimeException 
