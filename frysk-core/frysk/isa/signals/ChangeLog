@@ -1,0 +1,15 @@
+2008-01-24  Andrew Cagney  <cagney@redhat.com>
+
+	* Signal.java: Move from frysk.proc.Signal.
+	* SignalTable.java: Move from frysk.proc.SignalTable.
+	* SignalTableFactory.java: Move from frysk.proc.LinuxSignals.
+	* TestSignalTable.java: Move from frysk.proc.TestSignalTable.
+	* package.html: New.
+	
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

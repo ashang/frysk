@@ -1,3 +1,11 @@
+2008-01-24  Andrew Cagney  <cagney@redhat.com>
+
+	* Signal.java: Move to frysk.isa.signals.Signal.
+	* SignalTable.java: Move to frysk.isa.signals.SignalTable.
+	* LinuxSignals.java: Move to frysk.isa.signals.SignalTableFactory.
+	* TestSignalTable.java: Move to frysk.isa.signals.TestSignalTable.
+	* Task.java: Update.
+
 2008-01-23  Andrew Cagney  <cagney@redhat.com>
 
 	* TestSignalTable.java: New.

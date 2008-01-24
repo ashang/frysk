@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.isa.signals;
 
 import frysk.isa.ISAMap;
 import frysk.isa.ISA;
@@ -46,7 +46,7 @@ import frysk.isa.ISA;
  * Table of signals for for each known ISA.
  */
 
-class LinuxSignals {
+public class SignalTableFactory {
     private static class SignalEntry {
 	private final String name;
 	private final int[] value = new int[3];
@@ -128,7 +128,7 @@ class LinuxSignals {
 	.put(ISA.PPC32BE, IA32)
 	.put(ISA.PPC64BE, IA32);
 
-    static SignalTable getSignalTable(ISA isa) {
+    public static SignalTable getSignalTable(ISA isa) {
 	return (SignalTable) isaSignals.get(isa);
     }
 }

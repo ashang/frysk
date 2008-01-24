@@ -50,6 +50,8 @@ import java.util.logging.Logger;
 import frysk.isa.Register;
 import frysk.isa.ISA;
 import frysk.bank.RegisterBanks;
+import frysk.isa.signals.SignalTable;
+import frysk.isa.signals.SignalTableFactory;
 
 public abstract class Task {
     protected static final Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
@@ -346,7 +348,7 @@ public abstract class Task {
      */
     public SignalTable getSignalTable() {
 	if (signalTable == null) {
-	    signalTable = LinuxSignals.getSignalTable(getISA());
+	    signalTable = SignalTableFactory.getSignalTable(getISA());
 	}
 	return signalTable;
     }

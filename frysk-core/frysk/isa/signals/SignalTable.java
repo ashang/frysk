@@ -37,30 +37,66 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.isa.signals;
 
-import frysk.testbed.DaemonBlockedAtEntry;
-import frysk.testbed.TestLib;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.HashMap;
 
 /**
  * A target signal factory.
  */
 
-public class TestSignalTable extends TestLib {
-    public void testSignalTable() {
-	DaemonBlockedAtEntry daemon = new DaemonBlockedAtEntry("funit-slave");
-	frysk.sys.Signal[] hostSignals
-	    = frysk.sys.Signal.getHostSignalSet().toArray();
-	SignalTable signalTable = LinuxSignals.getSignalTable(daemon.getMainTask().getISA());
-	for (int i = 0; i < hostSignals.length; i++) {
-	    frysk.sys.Signal hostSignal = hostSignals[i];
-	    if (hostSignal.toString().startsWith("SIGRT"))
-		// Real-time signals are really messed up.
-		break;
-	    Signal targetSignal = signalTable.get(hostSignal.intValue());
-	    assertEquals("signal " + hostSignal.intValue(),
-			 hostSignal.toString(),
-			 targetSignal.toString());
+public class SignalTable {
+    /**
+     * Return the Signal corresponding to value.  Always returns
+     * something, even when it has to be made up.
+     */
+    public Signal get(int sig) {
+	synchronized (searchSignal) {
+	    searchSignal.key = sig;
+	    Signal signal = (Signal)signals.get(searchSignal);
+	    if (signal == null) {
+		signal = new Signal(sig);
+		signals.put(signal, signal);
+	    }
+	    return signal;
 	}
+    }
+    private final Map signals = new WeakHashMap();
+    private static class SearchSignal extends Signal {
+	SearchSignal() {
+	    super(-1);
+	}
+	int key;
+	public int intValue() {
+	    return key;
+	}
+    }
+    private final SearchSignal searchSignal = new SearchSignal();
+
+    /**
+     * Return the Signal corresponding to name; can return NULL if the
+     * name is unknown.
+     */
+    public Signal get(String sig) {
+	return (Signal)names.get(sig);
+    }
+    private final Map names = new HashMap();
+
+    /**
+     * Method to make construction of the signals table easier.
+     */
+    SignalTable add(int value, String name, String description) {
+	searchSignal.key = value;
+	Signal signal = (Signal)signals.get(searchSignal);
+	if (signal != null) {
+	    names.put(name, signal); // alias
+	} else {
+	    signal = new Signal(value, name, description);
+	    names.put(signal.getName(), signal);
+	    signals.put(signal, signal);
+	}
+	return this;
     }
 }
