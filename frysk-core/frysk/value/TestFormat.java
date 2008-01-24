@@ -110,7 +110,7 @@ public class TestFormat
     }
     public void testHexadecimal() {
 	checkFormat(Format.HEXADECIMAL, "0xffffffff", "0xffffffff",
-		    "0x3f800000", "0x4000000000000000",
+		    "0x1.0p0", "0x1.0p1",
 		    "0x1020304");
     }
     public void testOctal() {

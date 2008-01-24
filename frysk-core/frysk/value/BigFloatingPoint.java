@@ -185,13 +185,4 @@ public class BigFloatingPoint
     int notEqual(BigFloatingPoint v) {
     	return (value.compareTo(v.value) != 0) ? 1:0;
     }
-    
-    static BigDecimal divide (BigDecimal a, BigDecimal b) {
-        BigDecimal result[] = a.divideAndRemainder(b);
-        // FIXME: Use long division? Use BigDecimal's 
-        // divide(BigDecimal,MathContext) when frysk 
-        // moves to java 1.5.0.
-        double fraction = result[1].doubleValue()/b.doubleValue();
-        return result[0].add(BigDecimal.valueOf(fraction));
-    }
 }

@@ -60,15 +60,15 @@ public class FloatingPointType
 	switch (size) {
 	case 4: format = FloatingPoint854Format.IEEE32;
 	break;
-	case 8:format = FloatingPoint854Format.IEEE64;
+	case 8: format = FloatingPoint854Format.IEEE64;
 	break;
 	case 16:format = FloatingPoint854Format.IEEE128;
 	break;
 	case 10:format = FloatingPoint854Format.IEEE80;
 	break;
-	case 12: format = FloatingPoint854Format.IEEE96;
+	case 12:format = FloatingPoint854Format.IEEE96;
 	break;
-	default: format = FloatingPoint854Format.IEEE64;
+	default:format = FloatingPoint854Format.IEEE64;
 	break;
 	}
     }
@@ -77,6 +77,23 @@ public class FloatingPointType
 			ByteBuffer memory, Format format, int indent) {
 	// double-dispatch.
 	format.print(writer, location, this);
+    }
+    
+    /**
+     * Prints value as a hexadecimal float constant. 
+     * eg. double value 9.0 --> 0x1.2p+0
+     */
+    public void printAsHexConstant (PrintWriter writer, Location loc) {
+	byte[] bytes = loc.get(order());
+	FloatingPoint854Format f = (FloatingPoint854Format)format;
+	writer.print(f.getSign(bytes)==0? "":"-");
+	writer.print("0x");
+	writer.print(f.getIntegralOfMantissa(bytes));
+	writer.print('.');
+	writer.print(f.getFraction(bytes).toString(16));
+	writer.print('p');
+	writer.print(f.getBiasedExponent(bytes).intValue() 
+		     - f.getMaxEValue().intValue()/2);
     }
     
     /**
