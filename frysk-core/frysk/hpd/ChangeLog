@@ -1,3 +1,13 @@
+2008-01-24  Stan Cox  <scox@redhat.com>
+
+	* AttachCommand.java (Options): New.  Add -sysroot option.
+	(interpret): Set sysroot.
+	* CoreCommand.java: Likewise.
+	* LoadCommand.java: Likewise.
+	* ListCommand.java (interpret): Remove sysroot reference except for
+	"list function".
+	* DbgVariables.java (DbgVariables): Remove SYSROOT.
+
 2008-01-24  Rick Moseley  <rmoseley@redhat.com>
 
 	* StartRun.java: Print command line for start/run.

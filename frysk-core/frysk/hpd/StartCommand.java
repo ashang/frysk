@@ -44,10 +44,10 @@ class StartCommand extends StartRun {
     StartCommand() {
 	super("start a previously-loaded process, run until the first executable instruction",
 		"start <arguments*> || <--noargs>",
-		"The start command alllows the debugger to run a(any) process(es)"
+		"The start command allows the debugger to run a(any) process(es)"
 		      + " that has(have) either been previously loaded via a load"
 		      + " or a core command.  The difference between the run and"
-		      + " start command is that start only runs the program until"
+		      + " the start command is that start only runs the program until"
 		      + " the first executable instruction.  Arguments can be passed to"
 		      + " the process by entering them after the command.  If arguments"
 		      + " have previously been passed to the and the next requires"

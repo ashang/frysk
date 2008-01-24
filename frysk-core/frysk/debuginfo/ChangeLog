@@ -1,10 +1,14 @@
+2008-01-24  Stan Cox  <scox@redhat.com>
+
+	* DebugInfoFrame.java (getLine): Get sysroot via DwflCache.getSysroot.
+
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
 	* DwarfRegisterMapFactory.java: Update; Register moved to
 	frysk.isa.registers.
 	* LocationExpression.java: Ditto.
 	* ObjectDeclarationSearchEngine.java: Ditto.
-	* RegisterPiece.java: Ditt.
+	* RegisterPiece.java: Ditto.
 
 2008-01-23  Andrew Cagney  <cagney@redhat.com>
 

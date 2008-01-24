@@ -113,7 +113,6 @@ public class DbgVariables {
 	vars.put("MAX_LEVELS", new Value(VARTYPE_INT, new Integer(20)));
 	vars.put("MAX_LIST", new Value(VARTYPE_INT, new Integer(20)));
 	vars.put("PROMPT", new Value(VARTYPE_STRING, "(frysk) "));
-	vars.put("SYSROOT", new Value(VARTYPE_STRING, ""));
 	vars.put("SOURCE_PATH", new Value(VARTYPE_STRING, ""));
 	vars.put("EXECUTABLE_PATH", new Value(VARTYPE_STRING, "./:" + System.getenv("PATH")));
     }
@@ -161,7 +160,7 @@ public class DbgVariables {
 	return ((Integer)vars.get(var)).intValue();
     }
 
-    public static String getStringValue(String var) {
+    public String getStringValue(String var) {
       if (vars.size() == 0)
 	return "";
       else

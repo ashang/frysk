@@ -1,3 +1,7 @@
+2008-01-24  Stan Cox  <scox@redhat.com>
+	
+	* fhpd.java (main): Pass sysroot to request via -sysroot option.
+
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFmaps.java: Update; CoreFileAtSignal renamed to

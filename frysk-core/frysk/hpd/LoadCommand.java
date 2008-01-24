@@ -44,6 +44,7 @@ import java.util.Iterator;
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
+import frysk.dwfl.DwflCache;
 import frysk.proc.Host;
 import frysk.proc.dead.LinuxExeHost;
 import frysk.proc.Manager;
@@ -54,43 +55,58 @@ import java.util.List;
 /**
  * LoadCommand handles the "load path-to-executable" command on the fhpd
  * commandline.
- *
+ * 
  */
 
 public class LoadCommand extends ParameterizedCommand {
 
     LoadCommand() {
 	super("load", 
-	      "load path-to-executable", 
+	      "load path-to-executable [ -sysroot Path ]", 
 	      "The load command lets the user examine information about"
 	      + " an executable file without actually running it.  An"
-	      + " executble must be loaded with this command before it"
+	      + " executable must be loaded with this command before it"
 	      + " can be run with either the 'start' or 'run' command."
 	      + " No arguments are entered here, they are passed to the"
 	      + " process via the 'start'/'run' commands.");
+        add(new CommandOption("sysroot", "pathname to use as a sysroot",
+        "Pathname") {
+            void parse(String args, Object options) {
+        	((Options)options).sysroot = args;
+            }
+        });
+    }
+
+    private static class Options {
+	String sysroot = "/";
+    }
+    Object options() {
+	return new Options();
     }
 
     public void interpret(CLI cli, Input cmd, Object options) {
+	Options o = (Options)options;
+	
 	if (cmd.size() > 2) {
 	    throw new InvalidCommandException("Too many parameters");
 	} else if (cmd.size() < 1) {
-            throw new InvalidCommandException("missing arguments");
-        }
-        
+	    throw new InvalidCommandException("missing arguments");
+	}
+
 	File executableFile = new File(cmd.parameter(0));
 
 	if (!executableFile.exists() || !executableFile.canRead()
 		|| !executableFile.isFile()) {
 	    throw new InvalidCommandException
-		("File does not exist or is not readable or is not a file.");
+	    	("File does not exist or is not readable or is not a file.");
 	}
 
 	Host exeHost = new LinuxExeHost(Manager.eventLoop, executableFile);
 	Proc exeProc = frysk.util.Util.getProcFromExeFile(exeHost);
-	
+
 	int procID = cli.idManager.reserveProcID();
 	cli.idManager.manageProc(exeProc, procID);
-	
+
 	Iterator foo = cli.targetset.getTasks();
 	while (foo.hasNext()) {
 	    Task task = (Task) foo.next();
@@ -98,20 +114,20 @@ public class LoadCommand extends ParameterizedCommand {
 		DebugInfoFrame frame = DebugInfoStackFactory
 			.createDebugInfoStackTrace(task);
 		cli.setTaskFrame(task, frame);
-		cli.setTaskDebugInfo(task, new DebugInfo(
-			frame));
+		cli.setTaskDebugInfo(task, new DebugInfo(frame));
+		DwflCache.setSysroot(task, o.sysroot);
 	    }
 	}
 	synchronized (cli) {
 	    cli.getLoadedProcs().put(exeProc, new Integer(procID));
 	}
-    
-    cli.addMessage("Loaded executable file: " + cmd.parameter(0),
+
+	cli.addMessage("Loaded executable file: " + cmd.parameter(0),
 		Message.TYPE_NORMAL);
     }
 
     int completer(CLI cli, Input input, int cursor, List completions) {
 	return CompletionFactory.completeFileName(cli, input, cursor,
-						  completions);
+		completions);
     }
 }

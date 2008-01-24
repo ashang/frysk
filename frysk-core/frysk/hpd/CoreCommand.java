@@ -46,6 +46,7 @@ import java.util.List;
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
+import frysk.dwfl.DwflCache;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
@@ -60,19 +61,32 @@ public class CoreCommand extends ParameterizedCommand {
 	boolean noExeOption = false;
 
 	CoreCommand() {
-		super("Load a Corefile.", "core <core-file> [ <executable> ] [ -noexe ]",
-				"Opens, loads and models corefile.");
+		super("Load a Corefile.", "core <core-file> [ <executable> ] [ -noexe ]"
+			+ "[ -sysroot Path ]", "Opens, loads and models corefile.");
 
 		add(new CommandOption("noexe", "Do not attempt to load executable ") {
 			void parse(String argument, Object options) {
 				noExeOption = true;
 			}
 		});
+	        add(new CommandOption("sysroot", "pathname to use as a sysroot",
+	        "Pathname") {
+	            void parse(String args, Object options) {
+	        	((Options)options).sysroot = args;
+	            }
+	        });
+	}
 
+	private static class Options {
+	    String sysroot = "/";
+	}
+	Object options() {
+	    return new Options();
 	}
 
 	void interpret(CLI cli, Input cmd, Object options) {
-
+	        Options o = (Options)options;
+		
 		Proc coreProc;
 		LinuxCoreHost coreHost = null;
 
@@ -128,6 +142,7 @@ public class CoreCommand extends ParameterizedCommand {
 					.createVirtualStackTrace(task);
 			cli.setTaskFrame(task, frame);
 			cli.setTaskDebugInfo(task, new DebugInfo(frame));
+			DwflCache.setSysroot(task, o.sysroot);
 		}
 
 		// Finally, done.

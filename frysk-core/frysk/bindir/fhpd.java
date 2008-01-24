@@ -151,7 +151,7 @@ public class fhpd
 	    line +=" -noexe";
       }
       if (sysroot != null)
-	line = line + " ; set SYSROOT " + sysroot;
+	line = line + " -sysroot " + sysroot;
     }
     catch (IOException ignore) {}
     

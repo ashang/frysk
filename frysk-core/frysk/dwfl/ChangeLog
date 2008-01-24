@@ -1,3 +1,12 @@
+2008-01-24  Stan Cox  <scox@redhat.com>
+
+	* DwflCache.java (Mod.sysroot): New.
+	(sysrootMap): New.
+	(getRelativeSysRoot): Change to use java.io.File.
+	(getDwfl): Set Mod.sysroot.
+	(setSysroot): New.
+	(getSysroot): New.
+
 2008-01-18  Phil Muldoon <pmuldoon@redhat.com>
 	
 	* DwflFactory.java (updateDwfl): Do not overrun map

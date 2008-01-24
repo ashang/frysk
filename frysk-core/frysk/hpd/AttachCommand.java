@@ -39,6 +39,7 @@
 
 package frysk.hpd;
 
+import frysk.dwfl.DwflCache;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Manager;
@@ -67,7 +68,7 @@ class AttachCommand extends ParameterizedCommand {
 
     AttachCommand() {
 	super("Attach to a running process.",
-	      "attach <pid> ...",
+	      "attach <pid> ... [ -sysroot Path ]",
 	      ("The attach command causes the debugger to attach to an"
 	       + " existing process(es), making it possible to continue"
 	       + " the process' execution under debugger control.  The"
@@ -76,9 +77,25 @@ class AttachCommand extends ParameterizedCommand {
 	       + " operation.  It is the user's responsibility to ensure"
 	       + " that the process(es) actually is executing the specified"
 	       + " executable."));
+        add(new CommandOption("sysroot", "pathname to use as a sysroot",
+        "Pathname") {
+            void parse(String args, Object options) {
+        	((Options)options).sysroot = args;
+            }
+        });
     }
 
+
+    private static class Options {
+	String sysroot = "/";
+    }
+    Object options() {
+	return new Options();
+    }
+    
     public void interpret(CLI cli, Input cmd, Object options) {
+	Options o = (Options)options;
+
 	if (cmd.size() == 0) {
 	    throw new InvalidCommandException("Missing process ID");
 	}
@@ -100,6 +117,7 @@ class AttachCommand extends ParameterizedCommand {
 		cli.outWriter.println(pid);
 		continue;
 	    }
+	    DwflCache.setSysroot(findProc.proc.getMainTask(), o.sysroot);
 	    cli.doAttach(findProc.proc);
 	}
     }

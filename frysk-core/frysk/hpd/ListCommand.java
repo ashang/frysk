@@ -52,6 +52,7 @@ import lib.dwfl.DwarfDie;
 import lib.dwfl.DwTag; 
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfo;
+import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 
 /**
@@ -120,13 +121,10 @@ class ListCommand extends ParameterizedCommand {
                         }
 			if (funcDie.getTag().hashCode() == DwTag.SUBPROGRAM_) {
 			    line = (int)funcDie.getDeclLine();
-			    String sysRoot = DbgVariables.getStringValue("SYSROOT");
-			    if (sysRoot.length() > 0) {
-				File parent = new File(sysRoot);
-				file = new File(parent, funcDie.getDeclFile().getName());
-			    }
-			    else
-				file = funcDie.getDeclFile();
+			    File sysroot = DwflCache.getSysroot(frame.getTask());
+			    file = funcDie.getDeclFile();
+			    if (file.isAbsolute()) 
+				file = new File(sysroot.getPath(), file.getPath());
 			}
 			else {
 			    cli.addMessage("function " + cmd.parameter(0) + " not found.",
@@ -152,11 +150,6 @@ class ListCommand extends ParameterizedCommand {
             if (file == null) {
                 if (frame.getLine() != SourceLocation.UNKNOWN) {
                     file = (frame.getLine()).getFile();
-		    String sysRoot = DbgVariables.getStringValue("SYSROOT");
-		    if (sysRoot.length() > 0) {
-		      File parent = new File(sysRoot);
-		      file = new File(parent, file.getAbsolutePath());
-		    }
                     if (file == null) {
                         cli.addMessage("No symbol table is available.",
                                        Message.TYPE_NORMAL);
