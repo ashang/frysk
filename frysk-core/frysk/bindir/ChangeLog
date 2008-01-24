@@ -4,6 +4,17 @@
 
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: New.
+	* TestFcore.java: Extend TestLib.
+	* TestFhd.java: Ditto.
+	* TestFauxv.java: Ditto.
+	* TestFexe.java: Ditto.
+	* TestFtrace.java: Ditto.
+	* TestFmaps.java: Ditto.
+	* TestFdebuginfo.java: Ditto.
+	* TestFStep.java: Ditto.
+	* TestFcatch.java: Ditto.
+
 	* TestFmaps.java: Update; CoreFileAtSignal renamed to
 	CorefileFactory.
 	* TestFstack.java: Ditto.

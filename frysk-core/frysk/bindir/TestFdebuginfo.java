@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,64 +42,47 @@ package frysk.bindir;
 import frysk.Config;
 import frysk.expunit.Expect;
 import frysk.proc.Task;
-import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
 
 /**
  * This tests the basic functionality of the fdebuginfo
  * utility.
  */
-public class TestFdebuginfo
-    extends TestLib
-{
-    Expect e;
-    
-    public void tearDown ()
-    {
-	if (e != null)
-	    e.close ();
-	e = null;
-    }    
+public class TestFdebuginfo extends TestLib {
 
-    public void testPathListing ()
-    {
+    public void testPathListing() {
         // Create an unattached child process.
 	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);
-
 	e = new Expect(new String[] {
-		       Config.getBinFile("fdebuginfo").getAbsolutePath(),
-					      ""+task.getProc().getPid() 
-	});
+		Config.getBinFile("fdebuginfo").getAbsolutePath(),
+		""+task.getProc().getPid() 
+	    });
 	// Look for the path of executable
 	e.expect(task.getProc().getExe());	
     }
     
-    public void testNoArguments()
-    {
-        e = new Expect (new String[] { 
-                        Config.getBinFile("fdebuginfo").getAbsolutePath ()
-        });
-                  
-        e.expect ("Error: No pid provided.");      
+    public void testNoArguments() {
+        e = new Expect(new String[] { 
+		Config.getBinFile("fdebuginfo").getAbsolutePath ()
+	    });
+        e.expect("Error: No pid provided.");      
     }    
 
-    public void testBadArguments ()
-    {
-	e = new Expect (new String[] {
+    public void testBadArguments() {
+	e = new Expect(new String[] {
 		Config.getBinFile("fdebuginfo").getAbsolutePath (),
-	    "this is a bad argument"
-	});
-	e.expect ("Error: Commands not supported.");
+		"this is a bad argument"
+	    });
+	e.expect("Error: Commands not supported.");
     }
     
-    public void testInvalidArgument ()
-    {
+    public void testInvalidArgument() {
 	e = new Expect (new String[] {
 		Config.getBinFile("fdebuginfo").getAbsolutePath (),
-	    "-z",
-	    "1"
-	});
-	e.expect ("fdebuginfo: unrecognized option");
+		"-z",
+		"1"
+	    });
+	e.expect("fdebuginfo: unrecognized option");
     }    
 }    

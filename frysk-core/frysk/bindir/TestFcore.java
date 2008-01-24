@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, Red Hat Inc.
+// Copyright 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,88 +39,77 @@
 
 package frysk.bindir;
 
-import frysk.junit.TestCase;
 import frysk.expunit.Expect;
 import frysk.Config;
 
-public class TestFcore
-    extends TestCase
-{
-    Expect e;
-    public void tearDown ()
-    {
-	if (e != null)
-	    e.close ();
-	e = null;
-    }
-    
+public class TestFcore extends TestLib {
     public void testNoArguments() {
-	e = new Expect (Config.getBinFile("fcore"));
-	e.expect ("Error: No pid provided.");      
+	e = new Expect(Config.getBinFile("fcore"));
+	e.expect("Error: No pid provided.");      
     }
 
     public void testBadArguments () {
-	e = new Expect (new String[] {
-			    Config.getBinFile("fcore").getAbsolutePath (),
-			    "this is a bad argument"
-			});
-	e.expect ("Error: Commands not supported.");
+	e = new Expect(new String[] {
+		Config.getBinFile("fcore").getAbsolutePath (),
+		"this is a bad argument"
+	    });
+	e.expect("Error: Commands not supported.");
     }
 
     public void testBadConsoleParameter () {
-	e = new Expect (new String[] {
-			    Config.getBinFile("fcore").getAbsolutePath (),
-			    "-console", "frysk=SILLY",
-			    "1"
-			});
-	e.expect ("fcore: Invalid log console: SILLY");
+	e = new Expect(new String[] {
+		Config.getBinFile("fcore").getAbsolutePath (),
+		"-console", "frysk=SILLY",
+		"1"
+	    });
+	e.expect("fcore: Invalid log console: SILLY");
     }
 
     public void testBadLogParameter () {
-	e = new Expect (new String[] {
-			    Config.getBinFile("fcore").getAbsolutePath (),
-			    "-log", "frysk=SILLY",
-			    "1"
-			});
-	e.expect ("fcore: Invalid log level: SILLY");
+	e = new Expect(new String[] {
+		Config.getBinFile("fcore").getAbsolutePath (),
+		"-log", "frysk=SILLY",
+		"1"
+	    });
+	e.expect("fcore: Invalid log level: SILLY");
     }
 
     public void testGoodConsoleBadLogParameter () {
-	e = new Expect (new String[] {
-			    Config.getBinFile("fcore").getAbsolutePath (),
-			    "-console", "frysk=FINE",
-			    "-log", "frysk=SILLY",
-			    "1"
-			});
+	e = new Expect(new String[] {
+		Config.getBinFile("fcore").getAbsolutePath (),
+		"-console", "frysk=FINE",
+		"-log", "frysk=SILLY",
+		"1"
+	    });
 	e.expect ("fcore: Invalid log level: SILLY");
     }
 
     public void testBadConsoleBadLogParameter () {
-	e = new Expect (new String[] {
-			    Config.getBinFile("fcore").getAbsolutePath (),
-			    "-console", "frysk=SILLY",
-			    "-log", "frysk=SILLY",
-			    "1"
-			});
-	e.expect ("fcore: Invalid log console: SILLY");
+	e = new Expect(new String[] {
+		Config.getBinFile("fcore").getAbsolutePath (),
+		"-console", "frysk=SILLY",
+		"-log", "frysk=SILLY",
+		"1"
+	    });
+	e.expect("fcore: Invalid log console: SILLY");
     }
 
     public void testBadConsoleGoodLogParameter () {
-	e = new Expect (new String[] {
-			    Config.getBinFile("fcore").getAbsolutePath (),
-			    "-console", "frysk=SILLY",
-			    "-log", "frysk=FINE",
-			    "1"
-			});
-	e.expect ("fcore: Invalid log console: SILLY");
+	e = new Expect(new String[] {
+		Config.getBinFile("fcore").getAbsolutePath (),
+		"-console", "frysk=SILLY",
+		"-log", "frysk=FINE",
+		"1"
+	    });
+	e.expect("fcore: Invalid log console: SILLY");
     }
 
     public void testInvalidArgument () {
-	e = new Expect (new String[] {
-			    Config.getBinFile("fcore").getAbsolutePath (),
-			    "-z",
-			    "1"
-			});
-	e.expect ("fcore: unrecognized option");
+	e = new Expect(new String[] {
+		Config.getBinFile("fcore").getAbsolutePath (),
+		"-z",
+		"1"
+	    });
+	e.expect("fcore: unrecognized option");
     }
 }

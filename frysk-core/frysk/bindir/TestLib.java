@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, 2008, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,46 +39,30 @@
 
 package frysk.bindir;
 
-import frysk.Config;
 import frysk.expunit.Expect;
+import frysk.testbed.TearDownProcess;
+import frysk.testbed.TearDownExpect;
 
 /**
- * This performs a "sniff" test of Fstack, confirming basic
- * functionality of the command line interface.
- *
- * For more specific tests see frysk.hpd.
+ * This tests the basic functionality of the fdebuginfo
+ * utility.
  */
-
-public class TestFhd extends TestLib {
-    String prompt = "\\(fhpd\\) ";
-  
-    public void testHpdPid () {
-	child = new Expect(Config.getPkgLibFile("hpd-c"));
-	e = new Expect(new String[] { 
-			   Config.getBinFile("fhpd").getPath(), 
-			   child.getPid().toString() 
-		       });
-	e.expect(5, "Attached to process.*\n" + prompt);
-	e.close();
-    }
-  
-    public void testHpdCommand () {
-	e = new Expect(new String[] { 
-			   Config.getBinFile("fhpd").getPath(), 
-			   Config.getPkgLibFile("hpd-c").getPath() 
-		       });
-	e.expect(5, "Loaded executable file.*" + prompt);
-	e.close();
-    }
-  
-    public void testHpdCore ()  {
-	e = new Expect(new String[] {
-			   Config.getBinFile("fhpd").getPath(),
-			   Config.getPkgDataFile("test-core-x86").getPath(),
-			   "-noexe"
-		       });
-	e.expect(5, "Attached to core file.*");
-	e.close();
-    }
-    
-}
+public class TestLib extends frysk.testbed.TestLib {
+    Expect e;
+    Expect child;
+    public void tearDown () {
+	// Bit of a kludge, only adding the child here.
+	if (e != null) {
+	    TearDownExpect.add(e);
+	    TearDownProcess.add(e.getPid());
+	    e = null;
+	}
+	// Bit of a kludge, only adding the child here.
+	if (child != null) {
+	    TearDownExpect.add(child);
+	    TearDownProcess.add(child.getPid());
+	    child = null;
+	}
+	super.tearDown();
+    }    
+}    

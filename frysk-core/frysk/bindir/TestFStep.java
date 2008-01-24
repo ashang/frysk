@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,14 +42,9 @@ package frysk.bindir;
 
 import frysk.Config;
 import frysk.expunit.*;
-
-import frysk.testbed.TestLib;
-
 import lib.dwfl.*;
 
-public class TestFStep
-  extends TestLib
-{
+public class TestFStep extends TestLib {
   // Makes sure that fstep at least comes across the entry point of the
   // stepped program.
   public void testFirstStep() throws Exception

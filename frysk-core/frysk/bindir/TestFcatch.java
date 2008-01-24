@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,26 +42,14 @@ package frysk.bindir;
 
 import frysk.Config;
 import frysk.expunit.Expect;
-import frysk.junit.TestCase;
 
-public class TestFcatch
-    extends TestCase
-{
-  Expect e;
-
-    public void testBackTrace () {
+public class TestFcatch extends TestLib {
+    public void testBackTrace() {
 	e = new Expect(new String[] {
-			   Config.getBinFile("fcatch").getAbsolutePath(),
-			   Config.getPkgLibFile("funit-stackframe").getAbsolutePath()
-		       });
+		Config.getBinFile("fcatch").getAbsolutePath(),
+		Config.getPkgLibFile("funit-stackframe").getAbsolutePath()
+	    });
 	// just look for main.
 	e.expect(" in main ");
     }
-
-  public void tearDown ()
-  {
-    if (e != null)
-      e.close();
-    e = null;
-  }
 }

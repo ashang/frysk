@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, Red Hat Inc.
+// Copyright 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,77 +43,64 @@ import frysk.Config;
 import frysk.expunit.Expect;
 import frysk.proc.Task;
 import frysk.testbed.SlaveOffspring;
-import frysk.testbed.TestLib;
 
-public class TestFtrace
-    extends TestLib
-{
-  Expect expect;
-
-  public void tearDown ()
-  {
-    if (expect != null)
-      expect.close();
-    expect = null;
-  }
-
+public class TestFtrace extends TestLib {
     public void testFtraceTraces () {
 	// Create an unattached child process.
 	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);
-	expect = new Expect(new String[] {
-				Config.getBinFile("ftrace").getAbsolutePath(),
-				""+task.getProc().getPid()
-			    });
-	expect.expect(""+task.getProc().getPid()+"."+ task.getTid() + " attached");
+	e = new Expect(new String[] {
+		Config.getBinFile("ftrace").getAbsolutePath(),
+		""+task.getProc().getPid()
+	    });
+	e.expect(""+task.getProc().getPid()+"."+ task.getTid() + " attached");
     }
 
     public void testFtraceTracesExecutables () {
 	if (unresolvedOffUtrace(5055))
 	    return;
-	expect = new Expect(new String[] {
-				Config.getBinFile("ftrace").getAbsolutePath(),
-				"/bin/ls"
-			    });
-	expect.expect("execve");
-	expect.expect("close");
+	e = new Expect(new String[] {
+		Config.getBinFile("ftrace").getAbsolutePath(),
+		"/bin/ls"
+	    });
+	e.expect("execve");
+	e.expect("close");
     }
-
 
     public void testFtraceFollowsClones() {
 	// Create an unattached child process.
 	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);
-	expect = new Expect(new String[] {
-				Config.getBinFile("ftrace").getAbsolutePath(),
-				""+task.getProc().getPid()
-			    });
-	expect.expect(""+task.getProc().getPid()+"."+ task.getTid());
+	e = new Expect(new String[] {
+		Config.getBinFile("ftrace").getAbsolutePath(),
+		""+task.getProc().getPid()
+	    });
+	e.expect(""+task.getProc().getPid()+"."+ task.getTid());
 	child.assertSendAddCloneWaitForAcks();
 	Task task1 = child.findTaskUsingRefresh(false);
-        expect.expect(""+task1.getProc().getPid()+"."+ task1.getTid());
+        e.expect(""+task1.getProc().getPid()+"."+ task1.getTid());
     }
 
     public void testFtraceFollowsForks() {
 	// Create an unattached child process.
 	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);
-        expect = new Expect(new String[] {
-				Config.getBinFile("ftrace").getAbsolutePath(),
-				"-c",
-				""+task.getProc().getPid()
-			    });
-	expect.expect(""+task.getProc().getPid()+"."+ task.getTid() + " * syscall * rt_sigsuspend");
+        e = new Expect(new String[] {
+		Config.getBinFile("ftrace").getAbsolutePath(),
+		"-c",
+		""+task.getProc().getPid()
+	    });
+	e.expect(""+task.getProc().getPid()+"."+ task.getTid() + " * syscall * rt_sigsuspend");
 	child.assertSendAddForkWaitForAcks();
-	expect.expect("rt_sigsuspend");
-	expect.expect("rt_sigsuspend");
+	e.expect("rt_sigsuspend");
+	e.expect("rt_sigsuspend");
     }
 
     public void testFtraceHandlesPrcoessNotFound() {
-	expect = new Expect(new String[] {
-				Config.getBinFile("ftrace").getAbsolutePath(),
-				"0"
-			    });
-	expect.expect("No process with ID 0 found");
+	e = new Expect(new String[] {
+		Config.getBinFile("ftrace").getAbsolutePath(),
+		"0"
+	    });
+	e.expect("No process with ID 0 found");
     }
 }
