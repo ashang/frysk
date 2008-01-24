@@ -1,5 +1,9 @@
 2008-01-24  Teresa Thomas  <tthomas@redhat.com>
 
+	* FloatingPointType.java (printAsHexConstant): New.
+	* Format.java (printHexadecimalFP): Call printAsHexConstant.
+	* TestFormat.java (testHexadecimal): Update values.
+	
 	* FloatingPoint854Format.java: Refactor.
 	* BigFloatingPoint.java (divide): Delete.
 

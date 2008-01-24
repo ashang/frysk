@@ -68,10 +68,15 @@ public abstract class Format
 	writer.print(new BigInteger(1, location.get(order)).toString(2));
     }
     private static void printFloatingPoint(PrintWriter writer,
-					                       Location location,
-					                       FloatingPointType type) {
+	                                   Location location,
+	                                   FloatingPointType type) {
     	BigFloatingPoint f = type.getBigFloatingPoint(location);
     	writer.print(f.toString(type.getSize()));
+    }
+    private static void printHexadecimalFP(PrintWriter writer, 
+	                                   Location location, 
+	                                   FloatingPointType type) {
+	type.printAsHexConstant(writer, location);
     }
 
     /**
@@ -113,7 +118,7 @@ public abstract class Format
 	    }
 	    void print(PrintWriter writer, Location location,
 		       FloatingPointType type) {
-		printHexadecimal(writer, location, type.order());
+		printHexadecimalFP(writer, location, type);
 	    }
 	    void print(PrintWriter writer, Location location,
 		       PointerType type) {
