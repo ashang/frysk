@@ -2254,7 +2254,7 @@ public class SourceWindow extends Window {
 	DOMSource source = null;
 	LineXXX line = sf.getLineXXX();
 
-	if (line != SourceLocation.UNKNOWN) {
+	if (sf.getLine() != SourceLocation.UNKNOWN) {
 	    if (line.getDOMFunction() == null)
 	        noDOMFunction = true;
 	    source = line.getDOMSource();
@@ -2267,9 +2267,9 @@ public class SourceWindow extends Window {
 		}
 	}
 
-	if (line == SourceLocation.UNKNOWN)
+	if (sf.getLine() == SourceLocation.UNKNOWN)
 	    setSourceLabel("Unknown File for: ", task_name, proc_id, task_id, noDOMFunction, source);
-	else if (source == null && line != SourceLocation.UNKNOWN)
+	else if (source == null && sf.getLine() != SourceLocation.UNKNOWN)
 	    setSourceLabel(sf.getLine().getFile().getPath() + " for: ",
 		    task_name, proc_id, task_id, noDOMFunction, source);
 	else
@@ -2306,7 +2306,7 @@ public class SourceWindow extends Window {
 
 	updateSourceLabel(selected);
 
-	if (line != SourceLocation.UNKNOWN) {
+	if (selected.getLine() != SourceLocation.UNKNOWN) {
 	    source = line.getDOMSource();
 	    if (source == null)
 		try {
@@ -2318,7 +2318,7 @@ public class SourceWindow extends Window {
 		}
 	}
 
-	if (line == SourceLocation.UNKNOWN) {
+	if (selected.getLine() == SourceLocation.UNKNOWN) {
 	    SourceBuffer b = null;
 
 	    if (mode == 2)

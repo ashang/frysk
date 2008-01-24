@@ -1,3 +1,9 @@
+2008-01-24  swagiaal  <swagiaal@toner.yyz.redhat.com>
+
+	* LineXXX.java: Fix for NullPointerException
+	 at frysk.gui.srcwin.SourceWindow.updateSourceLabel
+	 patch provided by Andrew Cagney  <cagney@redhat.com>.
+
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
 	* ProcTaskIDManager.java: Update to match

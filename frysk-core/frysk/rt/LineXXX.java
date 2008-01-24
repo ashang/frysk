@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@
 package frysk.rt;
 
 import java.io.IOException;
-
+import java.io.File;
 import frysk.dom.DOMFactory;
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMFunction;
@@ -49,17 +49,36 @@ import frysk.dom.DOMSource;
 import frysk.proc.Proc;
 import frysk.scopes.SourceLocation;
 
-public class LineXXX extends SourceLocation{
-
-  
+public class LineXXX {
+    private final SourceLocation sourceLocation;
     private final Proc proc;
-
     private DOMSource source;
-    
     private DOMFunction function;
+    private final File file;
+    private final int line;
+    private final int column;
+  
+    public File getFile () {
+	return file;
+    }
+    
+    public int getLine () {
+	return line;
+    }
+
+    public int getColumn () {
+	return column;
+    }
+
+    public SourceLocation getSourceLocation() {
+	return sourceLocation;
+    }
 
     public LineXXX(SourceLocation sourceLocation, Proc proc) {
-	super(sourceLocation.getFile(), sourceLocation.getLine(), sourceLocation.getColumn());
+	this.sourceLocation = sourceLocation;
+	this.file = sourceLocation.getFile();
+	this.line = sourceLocation.getLine();
+	this.column = sourceLocation.getColumn();
 	this.proc = proc;
     }
 
@@ -88,7 +107,7 @@ public class LineXXX extends SourceLocation{
 		// source has not been parsed, go put it in the DOM and
 		// parse it
 		try {
-		    this.source = image.addSource(this.proc, this,
+		    this.source = image.addSource(this.proc, this.sourceLocation,
 						  DOMFactory.getDOM(this.proc));
 		} catch (IOException ioe) {
 		    System.err.println(ioe.getMessage());
