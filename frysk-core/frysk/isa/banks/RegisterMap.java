@@ -40,7 +40,7 @@
 package frysk.isa.banks;
 
 import java.util.LinkedHashMap;
-import frysk.isa.Register;
+import frysk.isa.registers.Register;
 import java.util.Iterator;
 
 /**

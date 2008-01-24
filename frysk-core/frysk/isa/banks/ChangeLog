@@ -1,5 +1,19 @@
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
+	* BankArrayRegister.java: Update; Register moved to
+	frysk.isa.registers.
+	* BankArrayRegisterMap.java: Ditto.
+	* BankRegister.java: Ditto.
+	* BankRegisterMap.java: Ditto.
+	* IndirectBankArrayRegisterMap.java: Ditto.
+	* LinuxIA32RegisterBanks.java: Ditto.
+	* LinuxPPCRegisterBanks.java: Ditto.
+	* LinuxX8664RegisterBanks.java: Ditto.
+	* PPCBankRegisters.java: Ditto.
+	* RegisterBanks.java: Ditto.
+	* RegisterMap.java: Ditto.
+	* X86BankRegisters.java: Ditto.
+
 	* Move from frysk.bank to frysk.isa.banks.
 
 2008-01-17  Carlos Eduardo Seo  <cseo@linux.vnet.ibm.com>

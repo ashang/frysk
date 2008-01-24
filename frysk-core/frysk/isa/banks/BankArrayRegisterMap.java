@@ -39,11 +39,11 @@
 
 package frysk.isa.banks;
 
-import frysk.isa.Register;
+import frysk.isa.registers.Register;
 import java.util.Iterator;
 
 /**
- * Implement a map from frysk.isa.Register to frysk.proc.BankArrayRegister.
+ * Implement a map from frysk.isa.registers.Register to frysk.proc.BankArrayRegister.
  * For compatibility, also implement a name map.
  */
 

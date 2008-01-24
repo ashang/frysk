@@ -47,7 +47,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import frysk.isa.Register;
+import frysk.isa.registers.Register;
 import frysk.isa.ISA;
 import frysk.isa.banks.RegisterBanks;
 import frysk.isa.signals.SignalTable;

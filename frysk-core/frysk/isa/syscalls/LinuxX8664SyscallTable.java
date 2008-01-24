@@ -39,7 +39,7 @@
 
 package frysk.isa.syscalls;
 
-import frysk.isa.X8664Registers;
+import frysk.isa.registers.X8664Registers;
 import frysk.proc.Task;
 
 class LinuxX8664SyscallTable extends SyscallTable {

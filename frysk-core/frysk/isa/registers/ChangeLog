@@ -1,0 +1,22 @@
+2008-01-24  Andrew Cagney  <cagney@redhat.com>
+
+	* IA32Registers.java: Move to here from frysk.isa.
+	* PPC32Registers.java: Ditto.
+	* PPC64Registers.java: Ditto.
+	* Register.java: Ditto.
+	* RegisterGroup.java: Ditto.
+	* RegisterMap.java: Ditto.
+	* Registers.java: Ditto.
+	* RegistersFactory.java: Ditto.
+	* TestRegisterMap.java: Ditto.
+	* TestRegisters.java: Ditto.
+	* X8664Registers.java: Ditto.
+	* X87Registers.java: Ditto.
+	* package.html: New.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

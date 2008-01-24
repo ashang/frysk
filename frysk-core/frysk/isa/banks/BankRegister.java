@@ -40,7 +40,7 @@
 package frysk.isa.banks;
 
 import inua.eio.ByteBuffer;
-import frysk.isa.Register;
+import frysk.isa.registers.Register;
 
 /**
  * A Register within a ByteBuffer register bank.

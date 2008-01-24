@@ -39,7 +39,7 @@
 
 package frysk.stack;
 
-import frysk.isa.Register;
+import frysk.isa.registers.Register;
 import lib.unwind.Unwind;
 import lib.unwind.UnwindX8664;
 import lib.unwind.UnwindX86;
@@ -55,7 +55,7 @@ import lib.unwind.AddressSpace;
 import lib.unwind.ByteOrder;
 import lib.unwind.ElfImage;
 import lib.unwind.ProcInfo;
-import frysk.isa.RegisterMap;
+import frysk.isa.registers.RegisterMap;
 
 class LibunwindAddressSpace extends AddressSpace {
 

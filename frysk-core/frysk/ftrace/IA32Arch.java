@@ -42,7 +42,7 @@ package frysk.ftrace;
 import inua.eio.ByteBuffer;
 
 import frysk.proc.Task;
-import frysk.isa.IA32Registers;
+import frysk.isa.registers.IA32Registers;
 
 /**
  * x86 implementation of Arch interface.

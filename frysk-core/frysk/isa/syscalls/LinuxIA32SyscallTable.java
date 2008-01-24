@@ -39,7 +39,7 @@
 
 package frysk.isa.syscalls;
 
-import frysk.isa.IA32Registers;
+import frysk.isa.registers.IA32Registers;
 import frysk.proc.Task;
 
 class LinuxIA32SyscallTable extends SyscallTable {

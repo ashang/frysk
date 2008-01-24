@@ -52,7 +52,7 @@ import frysk.Config;
 import frysk.dwfl.DwflCache;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
-import frysk.isa.IA32Registers;
+import frysk.isa.registers.IA32Registers;
 import frysk.proc.Action;
 import frysk.proc.Auxv;
 import frysk.proc.Host;

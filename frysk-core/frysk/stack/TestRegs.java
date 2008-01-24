@@ -39,7 +39,7 @@
 
 package frysk.stack;
 
-import frysk.isa.Register;
+import frysk.isa.registers.Register;
 import frysk.testbed.RegsCase;
 
 /**

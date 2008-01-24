@@ -40,7 +40,7 @@
 package frysk.stack;
 
 import frysk.symtab.Symbol;
-import frysk.isa.Register;
+import frysk.isa.registers.Register;
 
 /**
  * Decorator wrapper for the ABI frame.  More abstract frames, such as

@@ -78,10 +78,10 @@ import frysk.gui.monitor.Saveable;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 
-import frysk.isa.Register;
-import frysk.isa.RegisterGroup;
-import frysk.isa.Registers;
-import frysk.isa.RegistersFactory;
+import frysk.isa.registers.Register;
+import frysk.isa.registers.RegisterGroup;
+import frysk.isa.registers.Registers;
+import frysk.isa.registers.RegistersFactory;
 import frysk.stack.StackFactory;
 import frysk.stepping.TaskStepEngine;
 import frysk.value.ArithmeticType;

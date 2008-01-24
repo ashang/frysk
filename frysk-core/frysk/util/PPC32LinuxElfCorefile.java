@@ -43,6 +43,9 @@
 
 package frysk.util;
 
+import java.util.Iterator;
+
+import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
 import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfEMachine;
@@ -52,8 +55,10 @@ import lib.dwfl.ElfPrAuxv;
 import lib.dwfl.ElfPrFPRegSet;
 import lib.dwfl.ElfPrpsinfo;
 import lib.dwfl.ElfPrstatus;
-import frysk.isa.PPC32Registers;
-import frysk.isa.Register;
+import frysk.isa.registers.PPC32Registers;
+import frysk.isa.registers.Register;
+import frysk.isa.banks.BankRegister;
+import frysk.isa.banks.LinuxPPCRegisterBanks;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.sys.proc.AuxvBuilder;
@@ -243,6 +248,30 @@ public class PPC32LinuxElfCorefile extends LinuxElfCorefile {
          *      frysk.proc.Task)
          */
     protected void writeNoteFPRegset(ElfNhdr nhdrEntry, Task task) {
+	
+   	ElfPrFPRegSet xfpRegSet = new ElfPrFPRegSet();
+	
+    	final int bankSize = 260;
+    	final int maxRegSize = 8;
+    	byte[] scratch = new byte[maxRegSize];
+    	byte[] byteOrderedRegister= new byte[bankSize];
+    	ArrayByteBuffer byteOrderedBuffer = new ArrayByteBuffer(byteOrderedRegister);
+    	
+    	Iterator registerIterator =  LinuxPPCRegisterBanks.FPREGS32.entryIterator();
+    	while (registerIterator.hasNext()) {
+	    BankRegister bankRegister = ((BankRegister)registerIterator.next());
+	    Register register = bankRegister.getRegister();
+	    task.access(register, 0, register.getType().getSize(), scratch, 0, false);
+	    bankRegister.access(byteOrderedBuffer, 0, maxRegSize, scratch, 0, true);
+    	}
+	
+    	byteOrderedBuffer.get(byteOrderedRegister);
+	
+    	xfpRegSet.setFPRegisterBuffer(byteOrderedRegister);
+	
+    	// Write it
+    	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_FPREGSET, xfpRegSet);
+
 	ElfPrFPRegSet fpRegSet = new ElfPrFPRegSet();
 
 	// Write FP Register info over wholesae. Do not interpret.

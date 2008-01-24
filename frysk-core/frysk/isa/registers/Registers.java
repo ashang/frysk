@@ -37,21 +37,76 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.isa;
+package frysk.isa.registers;
+
+import java.util.List;
+import java.util.LinkedList;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
- * Given an ISA return its registers.
+ * The set of registers belonging to an ISA.
  */
+public abstract class Registers {
 
-public class RegistersFactory {
-    private static final ISAMap isaToRegisters
-	= new ISAMap("RegistersFactory")
-	.put(ISA.IA32, new IA32Registers())
-	.put(ISA.X8664, new X8664Registers())
-	.put(ISA.PPC32BE, new PPC32Registers())
-	.put(ISA.PPC64BE, new PPC64Registers())
-	;
-    static public Registers getRegisters(ISA isa) {
-	return (Registers)isaToRegisters.get(isa);
+    private final SortedMap registerGroupByName = new TreeMap();
+    private final SortedMap registerByName = new TreeMap();
+    private final String[] registerGroupNames;
+
+    protected Registers(RegisterGroup[] registerGroups) {
+	// Build up search tables.
+	List groupNames = new LinkedList();
+	for (int i = 0; i < registerGroups.length; i++) {
+	    RegisterGroup registerGroup = registerGroups[i];
+	    groupNames.add(registerGroup.getName());
+	    registerGroupByName.put(registerGroup.getName(), registerGroup);
+	    for (int j = 0; j < registerGroup.getRegisters().length; j++) {
+		Register register = registerGroup.getRegisters()[j];
+		registerByName.put(register.getName(), register);
+	    }
+	}
+	registerGroupNames = new String[groupNames.size()];
+	groupNames.toArray(registerGroupNames);
+    }
+
+    /**
+     * Return the program-counter register.
+     */
+    public abstract Register getProgramCounter();
+    /**
+     * Return the stack-pointer register.
+     */
+    public abstract Register getStackPointer();
+    /**
+     * Return the "default" or "regs" register group.
+     */
+    public RegisterGroup getGeneralRegisterGroup() {
+	return getGroup("regs");
+    }
+    /**
+     * Return the "all" register group.
+     */
+    public RegisterGroup getAllRegistersGroup() {
+	return null;
+    }
+    /**
+     * Return the register group; searched by NAME.
+     */
+    public RegisterGroup getGroup(String name) {
+	return (RegisterGroup) registerGroupByName.get(name);
+    }
+
+    /**
+     * Return the register; identified by NAME.
+     */
+    public Register getRegister(String name) {
+	return (Register) registerByName.get(name);
+    }
+
+    /**
+     * Return all the register group names.
+     */
+    public String[] getGroupNames() {
+	return registerGroupNames;
     }
 }
