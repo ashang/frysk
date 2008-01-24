@@ -48,7 +48,7 @@ import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.sys.Signal;
+import frysk.isa.signals.Signal;
 
 public class TaskSignaledObserver extends TaskObserverRoot implements
 		TaskObserver.Signaled {
@@ -107,23 +107,25 @@ public class TaskSignaledObserver extends TaskObserverRoot implements
 		task.requestDeleteSignaledObserver(this);
 	}
 
-	/* (non-Javadoc)
-	 * @see frysk.proc.TaskObserver$Signaled#updateSignaled(frysk.proc.Task, int)\]
-	 * 
-	 */
-	public Action updateSignaled(final Task task, final int signal) {
-		org.gnu.glib.CustomEvents.addEvent(new Runnable() {
-			public void run() {
-				bottomHalf(task, signal);
-			}
-		});
-		return Action.BLOCK;
-	}
+    /* (non-Javadoc)
+     * @see
+     * frysk.proc.TaskObserver$Signaled#updateSignaled(frysk.proc.Task,
+     * int)\]
+     * 
+     */
+    public Action updateSignaled(final Task task, final Signal signal) {
+	org.gnu.glib.CustomEvents.addEvent(new Runnable() {
+		public void run() {
+		    bottomHalf(task, signal);
+		}
+	    });
+	return Action.BLOCK;
+    }
 
-    private void bottomHalf(final Task task, final int signal) {
+    private void bottomHalf(final Task task, final Signal signal) {
 	setInfo(getName() + ": " + "PID: " + task.getProc().getPid()
 		+ " TID: " + task.getTid() + " Event: has pending signal: "
-		+ Signal.toHostStringFIXME(signal)
+		+ signal
 		+ " Host: " + Manager.host.getName());
 	if (runFilters(task, signal)) {
 	    this.runActions(task, signal);
@@ -135,20 +137,19 @@ public class TaskSignaledObserver extends TaskObserverRoot implements
 	}
     }
 
-    private void runActions(final Task task, int signal) {
+    private void runActions(final Task task, Signal signal) {
 	// XXX: This is the host and not target signal
-        Event event = new Event("signaled " + Signal.toHostStringFIXME(signal),
-				"task recieved signal "
-				+ Signal.toHostStringFIXME(signal),
+        Event event = new Event("signaled " + signal,
+				"task recieved signal " + signal,
 				GuiTask.GuiTaskFactory.getGuiTask(task), this);
 	super.runActions();
 	taskActionPoint.runActions(task, this, event);
         EventManager.theManager.addEvent(event);
     }
 
-	private boolean runFilters(final Task task, int signal) {
-		return filter(task);
-	}
+    private boolean runFilters(final Task task, Signal signal) {
+	return filter(task);
+    }
 
     protected GuiObject getCopy() {
 		return new TaskSignaledObserver(this);

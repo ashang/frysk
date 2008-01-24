@@ -1,5 +1,8 @@
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
+	* observers/TaskSignaledObserver.java: Update to match
+	TaskObserver.Signaled.updateSignaled(Task,Signal).
+
 	* observers/SysCallUtilyInfo.java: Update; Syscall moved to
 	frysk.isa.syscalls.
 	* observers/TaskSyscallObserver.java: Ditto.
