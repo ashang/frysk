@@ -83,8 +83,7 @@ abstract class StackCommands extends ParameterizedCommand {
 	for (Iterator i = ptset.getTaskData(); i.hasNext(); ) {
 	    TaskData td = (TaskData)i.next();
 	    Task task = td.getTask();
-	    td.toPrint(cli.outWriter, true);
-	    cli.outWriter.println();
+	    td.printHeader(cli.outWriter);
 	    DebugInfoFrame currentFrame = cli.getTaskFrame(task);
 	    // Where to?
 	    int newLevel;
@@ -218,8 +217,7 @@ abstract class StackCommands extends ParameterizedCommand {
 		TaskData td = (TaskData)i.next();
 		Task task = td.getTask();
 		DebugInfoFrame currentFrame = cli.getTaskFrame(task);
-		td.toPrint(cli.outWriter, true);
-		cli.outWriter.println();
+		td.printHeader(cli.outWriter);
 		// XXX: How come the pt set code didn't sort this out;
 		// filtering out running tasks???
 		if (cli.getSteppingEngine() == null

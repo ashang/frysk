@@ -1,3 +1,14 @@
+2008-01-24  Nurdin Premji  <npremji@redhat.com>
+
+	* TaskData.java (toPrint): Renamed to ...
+	(printHeader): also removed boolean parameter 
+	Was always set to true anyway.
+	Only print header if process has more than one task. bug #5417
+	Move extra println into this method, rather than after all calls to this function.
+	* EvalCommands.java (eval): Updated due to TaskData.printHeader name change.
+	* StackCommands.java (select): Ditto.
+	(Where.interpret): Ditto. 
+	
 2008-01-24  Stan Cox  <scox@redhat.com>
 
 	* AttachCommand.java (Options): New.  Add -sysroot option.
@@ -30,6 +41,8 @@
 	* TestCoreCommand.java: Replace TestLinuxCore with
 	CoreFileAtSignal.
 	
+=======
+>>>>>>> frysk-core/frysk/hpd/TaskData only print task id if more than one task:frysk-core/frysk/hpd/ChangeLog
 2008-01-23  Rick Moseley  <rmoseley@redhat.com>
 
 	* TestRunCommand.java (testRunCommandParamter): New.

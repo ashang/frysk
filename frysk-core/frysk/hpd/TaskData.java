@@ -73,16 +73,25 @@ class TaskData
         return parentid + "." + id;
     }
 
-    public void toPrint(PrintWriter printWriter, boolean brackets) {
-        if (brackets)
-            printWriter.write("[");
+    /**
+     * If appropriate (more than one task), print this tasks header 
+     * (parentId.id tuple)
+     * @param printWriter the PrintWriter to print output to.
+     */
+    public void printHeader(PrintWriter printWriter) {
+	
+	//Check the number of tasks, 
+	int  numTasks = task.getProc().getTasks().size();
+	
+	if (numTasks == 1) {
+	    //This is the only task, don't bother printing it's header.
+	    return;
+	}
+	
+        printWriter.write("[");
         printWriter.write(toString());
-        if (brackets)
-            printWriter.write("]");
-    }
-
-    public void toPrint(PrintWriter printWriter) {
-        toPrint(printWriter, false);
+        printWriter.write("]");
+        printWriter.println();
     }
 
     /**

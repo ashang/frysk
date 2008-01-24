@@ -154,8 +154,7 @@ abstract class EvalCommands extends ParameterizedCommand {
 	    if (taskDataIter.hasNext()) {
 		TaskData td = (TaskData)taskDataIter.next();
 		task = td.getTask();
-		td.toPrint(cli.outWriter, true);
-		cli.outWriter.println();
+		td.printHeader(cli.outWriter);
 	    }
 	    Expression result;
 	    try {
