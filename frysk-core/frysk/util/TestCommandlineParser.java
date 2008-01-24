@@ -42,14 +42,14 @@ package frysk.util;
 import java.io.File;
 import frysk.proc.ProcId;
 import frysk.testbed.TestLib;
-import frysk.testbed.CoreFileAtSignal;
+import frysk.testbed.CorefileFactory;
 import frysk.Config;
 
 public class TestCommandlineParser extends TestLib {
 
     public void testCoreExe() {
 	final File exe = Config.getPkgLibFile("funit-hello");
-	final File core = CoreFileAtSignal.constructCore(exe);
+	final File core = CorefileFactory.constructCoreAtSignal(exe);
 	CommandlineParser parser = new CommandlineParser("test") {
 		public void parseCommand(String[] command) {
 		    fail("Shoudn't have a command");
@@ -75,7 +75,7 @@ public class TestCommandlineParser extends TestLib {
 
     public void testCore() {
 	final File exe = Config.getPkgLibFile("funit-hello");
-	final File core = CoreFileAtSignal.constructCore(exe);
+	final File core = CorefileFactory.constructCoreAtSignal(exe);
 	CommandlineParser parser = new CommandlineParser("test") {
 		public void parseCommand(String[] command) {
 		    fail("Shoudn't have a command");

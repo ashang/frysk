@@ -1,5 +1,10 @@
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
-	
+
+	* CorefileFactory.java: Rename CoreFileAtSignal.java.
+	(constructCoreAtSignal(String)): Rename constructCore(String).
+	(constructCoreAtSignal(File)): Rename constructCore(File).
+	* TestCorefileFactory.java: Rename TestCoreFileAtSignal.
+
 	* FryskAsm.java: Update; Register moved to frysk.isa.registers.
 	* RegsCase.java: Ditto.
 	* TestFryskAsm.java: Ditto.

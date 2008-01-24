@@ -4,6 +4,11 @@
 
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
+	* HpdTestbed.java: Update; CoreFileAtSignal renamed to
+	CorefileFactory.
+	* TestAuxvCommand.java: Ditto.
+	* TestCoreCommand.java: Ditto.
+
 	* TestAuxvCommand.java: Replace TestLinuxCore with
 	CoreFileAtSignal; use sendCommandExpectPrompt.
 

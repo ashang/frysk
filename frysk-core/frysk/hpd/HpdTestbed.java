@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ package frysk.hpd;
 
 import frysk.junit.TestCase;
 import frysk.Config;
-import frysk.testbed.CoreFileAtSignal;
+import frysk.testbed.CorefileFactory;
 import frysk.expunit.Expect;
 import frysk.expunit.Match;
 import frysk.expunit.Regex;
@@ -260,7 +260,7 @@ public class HpdTestbed
      */
     static HpdTestbed hpdTerminatingProgram(String program) {
 	File exeFile = Config.getPkgLibFile(program);
-	File coreFile = CoreFileAtSignal.constructCore(exeFile);
+	File coreFile = CorefileFactory.constructCoreAtSignal(exeFile);
 	HpdTestbed hpd
 	    = new HpdTestbed(new String[] {
 				 Config.getBinFile("fhpd").getPath (),

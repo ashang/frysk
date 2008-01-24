@@ -1,5 +1,8 @@
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
+	* TestCommandlineParser.java: Update; CoreFileAtSignal renamed to
+	CorefileFactory.
+	
 	* TestCommandlineParser.java: Replace TestLinuxCore with
 	CoreFileAtSignal.
 

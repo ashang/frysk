@@ -42,7 +42,7 @@ package frysk.proc.dead;
 import frysk.isa.registers.Register;
 import frysk.testbed.RegsCase;
 import frysk.proc.Proc;
-import frysk.testbed.CoreFileAtSignal;
+import frysk.testbed.CorefileFactory;
 import frysk.util.Util;
 import java.io.File;
 
@@ -57,7 +57,7 @@ public class TestCoreRegs extends RegsCase {
 	// Replace the live task with a dead one.
 	Proc proc = task().getProc();
 	File exe = new File(proc.getExe());
-	File core = CoreFileAtSignal.constructCore(proc);
+	File core = CorefileFactory.constructCore(proc);
 	Proc coreProc = Util.getProcFromCoreFile(core, exe);
 	setTask(coreProc.getMainTask());
     }

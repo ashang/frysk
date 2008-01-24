@@ -1,5 +1,9 @@
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
+	* TestCoreRegs.java: Update; CoreFileAtSignal renamed to
+	CorefileFactory.
+	* TestLinuxCore.java: Ditto.
+
 	* TestLinuxCore.java (constructCore(Proc)): Make private.
 	
 	* LinuxCoreTask.java: Update; Register moved to

@@ -40,7 +40,7 @@
 package frysk.hpd;
 
 import java.io.File;
-import frysk.testbed.CoreFileAtSignal;
+import frysk.testbed.CorefileFactory;
 import frysk.Config;
 
 public class TestCoreCommand extends TestLib {
@@ -68,7 +68,7 @@ public class TestCoreCommand extends TestLib {
 
     public void testCoreExeCommand() {
 	File exe = Config.getPkgLibFile("funit-hello");
-	File core = CoreFileAtSignal.constructCore(exe);
+	File core = CorefileFactory.constructCoreAtSignal(exe);
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt(("core " + core.getPath()
 				   + " " + exe.getPath()),
@@ -77,7 +77,7 @@ public class TestCoreCommand extends TestLib {
     
     public void testCoreThenRunCommand() {
 	File exe = Config.getPkgLibFile("funit-hello");
-	File core = CoreFileAtSignal.constructCore(exe);
+	File core = CorefileFactory.constructCoreAtSignal(exe);
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt(("core " + core.getPath()
 				   + " " + exe.getPath()),

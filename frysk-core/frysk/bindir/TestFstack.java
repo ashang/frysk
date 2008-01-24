@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, Red Hat Inc.
+// Copyright 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ import java.io.File;
 
 import frysk.Config;
 import frysk.expunit.Expect;
-import frysk.testbed.CoreFileAtSignal;
+import frysk.testbed.CorefileFactory;
 import frysk.testbed.TearDownExpect;
 import frysk.testbed.TestLib;
 
@@ -62,7 +62,7 @@ public class TestFstack
      */
     private Expect fstack(String program, String[] args) {
 	File coreExe = Config.getPkgLibFile(program);
-	File coreFile = CoreFileAtSignal.constructCore(coreExe);
+	File coreFile = CorefileFactory.constructCoreAtSignal(coreExe);
 	String[] argv = new String[args.length + 3];
 	int argc = 0;
 	argv[argc++] = Config.getBinFile("fstack").getAbsolutePath();

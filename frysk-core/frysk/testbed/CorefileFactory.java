@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ import frysk.proc.ProcBlockAction;
 import frysk.util.CoredumpAction;
 import frysk.Config;
 
-public class CoreFileAtSignal extends TestLib {
+public class CorefileFactory extends TestLib {
     
     public static File constructCore(Proc ackProc) {
 	CoredumpAction coreDump
@@ -66,23 +66,23 @@ public class CoreFileAtSignal extends TestLib {
     }
     
     /**
-     * Given a path to an executable it will run it until it sigfaults then
-     * extracts a corefile at that point, and return a Proc representing
-     * that core file.
+     * Given a path to an executable it will run it until it sigfaults
+     * then extracts a corefile at that point, and return a File
+     * representing that core file.
      */
-    public static File constructCore(File exeFile) {
+    public static File constructCoreAtSignal(File exeFile) {
 	final Proc ackProc
 	    = new DaemonBlockedAtSignal(exeFile).getMainTask().getProc();
 	return constructCore(ackProc);
     }
 
     /**
-     * Given a path to an executable it will run it until it sigfaults then
-     * extracts a corefile at that point, and return a Proc representing
-     * that core file.
+     * Given a path to an executable it will run it until it sigfaults
+     * then extracts a corefile at that point, and return a File
+     * representing that core file.
      */
-    public static File constructCore(String process) {
-	return constructCore(Config.getPkgLibFile(process));
+    public static File constructCoreAtSignal(String program) {
+	return constructCoreAtSignal(Config.getPkgLibFile(program));
     }
 
 }

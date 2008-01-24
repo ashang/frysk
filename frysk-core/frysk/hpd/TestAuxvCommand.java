@@ -46,7 +46,7 @@ import frysk.proc.Auxv;
 import frysk.proc.Proc;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.util.AuxvStringBuilder;
-import frysk.testbed.CoreFileAtSignal;
+import frysk.testbed.CorefileFactory;
 
 public class TestAuxvCommand extends TestLib {
   
@@ -64,7 +64,7 @@ public class TestAuxvCommand extends TestLib {
 	BuildAuxv buildAuxv = new BuildAuxv();
 	buildAuxv.construct(liveAuxv, proc);
 
-	File core = CoreFileAtSignal.constructCore(proc);
+	File core = CorefileFactory.constructCore(proc);
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("core " + core.getPath() + " -noexe",
 				  "Attached to core file.*");

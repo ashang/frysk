@@ -1,3 +1,9 @@
+2008-01-24  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFmaps.java: Update; CoreFileAtSignal renamed to
+	CorefileFactory.
+	* TestFstack.java: Ditto.
+
 2008-01-13  Stan Cox  <scox@redhat.com>
 
 	* fhpd.java (main): Add sysroot option.

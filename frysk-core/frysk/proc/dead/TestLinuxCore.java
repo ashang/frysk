@@ -64,7 +64,7 @@ import frysk.proc.ProcCoreAction;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.testbed.CoreFileAtSignal;
+import frysk.testbed.CorefileFactory;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.LegacyOffspring;
 import frysk.testbed.TearDownFile;
@@ -149,7 +149,7 @@ public class TestLinuxCore
     // Create a blocked process, blocked at a signal
     File exeFile = Config.getPkgLibFile("funit-stacks");
     Proc testProc = new DaemonBlockedAtSignal(exeFile).getMainTask().getProc();
-    TearDownFile coreFile = (TearDownFile) CoreFileAtSignal.constructCore(testProc);
+    File coreFile = CorefileFactory.constructCore(testProc);
 
     StacktraceAction liveStacktrace;
     StacktraceAction coreStacktrace;
