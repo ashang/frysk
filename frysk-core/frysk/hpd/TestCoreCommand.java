@@ -39,8 +39,6 @@
 
 package frysk.hpd;
 
-import java.io.File;
-
 import frysk.proc.Proc;
 import frysk.proc.dead.TestLinuxCore;
 import frysk.testbed.SlaveOffspring;
@@ -48,55 +46,48 @@ import frysk.Config;
 
 public class TestCoreCommand extends TestLib {
 
+    private final String corefile
+	= Config.getPkgDataFile("test-core-x86").getPath();
+
     public void testCoreCommand() {
 	e = new HpdTestbed();
-	e.send("core " + Config.getPkgDataFile("test-core-x86").getPath()
-		+ " -noexe\n");
-	e.expect("Attached to core file.*");
-	e.close();
+	e.sendCommandExpectPrompt("core " + corefile + " -noexe",
+				  "Attached to core file.*");
     }
     
     public void testCoreCommandError() {
 	e = new HpdTestbed();
-	e.send("core " + Config.getPkgDataFile("test-core-x86").getPath()
-		+ "\n");
-	e.expect("Error:*");
-	e.close();
+	e.sendCommandExpectPrompt("core " + corefile,
+				  "Error:.*");
     }
     
     public void testCoreCommandErrorTwo() {
 	e = new HpdTestbed();
-	e.send("core " + Config.getPkgDataFile("test-core-x86").getPath()
-		+ "foo\n");
-	e.expect("Error:*");
-	e.close();
+	e.sendCommandExpectPrompt("core " + corefile + "foo",
+				  "Error:.*");
     }
 
     public void testCoreExeCommand() {
 	TestLinuxCore tester = new TestLinuxCore();
 	SlaveOffspring funit = SlaveOffspring.createDaemon();
 	Proc funitProc = funit.assertFindProcAndTasks();
-	File core = new File(tester.constructCore(funitProc));
+	String core = tester.constructCore(funitProc);
+	String exe = SlaveOffspring.getExecutable().getPath();
 	e = new HpdTestbed();
-	e.send("core " + core.getPath() + " "
-	       + SlaveOffspring.getExecutable().getPath() + "\n");
-	e.expect("Attached to core file.*");
-	e.close();
-	core.delete();
+	e.sendCommandExpectPrompt("core " + core + " " + exe,
+				  "Attached to core file.*");
     }
     
     public void testCoreThenRunCommand() {
 	TestLinuxCore tester = new TestLinuxCore();
 	SlaveOffspring funit = SlaveOffspring.createDaemon();
 	Proc funitProc = funit.assertFindProcAndTasks();
-	File core = new File(tester.constructCore(funitProc));
+	String core = tester.constructCore(funitProc);
+	String exe = SlaveOffspring.getExecutable().getPath();
 	e = new HpdTestbed();
-	e.send("core " + core.getPath() + " "
-	       + SlaveOffspring.getExecutable().getPath() + "\n");
-	e.expect("Attached to core file.*");
-	e.send("run\n");
-	e.expect("Attached to process*");
-	e.close();
-	core.delete();
+	e.sendCommandExpectPrompt("core " + core + " " + exe,
+				  "Attached to core file.*");
+	e.sendCommandExpectPrompt("run",
+				  "Attached to process.*");
     }
 }
