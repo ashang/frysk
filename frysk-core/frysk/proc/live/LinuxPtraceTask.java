@@ -795,16 +795,24 @@ public class LinuxPtraceTask extends LiveTask {
     private final TaskObservable signaledObservers = new TaskObservable(this);
     /**
      * Notify all Signaled observers of the signal. Return the number
-     * of blocking observers.
+     * of blocking observers.  Return -1 if there are no observers.
      */
     int notifySignaled(int sig) {
-	logger.log(Level.FINE, "{0} notifySignaled(int)\n", this);
-	for (Iterator i = signaledObservers.iterator(); i.hasNext();) {
-	    TaskObserver.Signaled observer = (TaskObserver.Signaled) i.next();
-	    if (observer.updateSignaled(this, sig) == Action.BLOCK)
-		blockers.add(observer);
+	frysk.isa.signals.Signal signal = getSignalTable().get(sig);
+	logger.log(Level.FINE, "{0} notifySignaled {1}\n",
+		   new Object[] { this, signal });
+	if (signaledObservers.numberOfObservers() > 0) {
+	    for (Iterator i = signaledObservers.iterator(); i.hasNext();) {
+		TaskObserver.Signaled observer
+		    = (TaskObserver.Signaled) i.next();
+		if (observer.updateSignaled(this, signal) == Action.BLOCK)
+		    blockers.add(observer);
+	    }
+	    return blockers.size();
+	} else {
+	    return -1;
 	}
-	return blockers.size();
+
     }
     /**
      * Add TaskObserver.Signaled to the TaskObserver pool.

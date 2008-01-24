@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -477,7 +477,7 @@ public class TestTaskSyscallObserver
     // notifications.)
 
     class SyscallInterruptObserver extends SyscallObserver
-        implements TaskObserver.Signaled
+	implements TaskObserver.Signaled
     {
 
 	SyscallInterruptObserver (Task task) {
@@ -512,8 +512,9 @@ public class TestTaskSyscallObserver
 	    return Action.CONTINUE;
 	}
 
-	public Action updateSignaled (Task task, int sig) {
-	    if (Signal.USR1.equals(sig))
+	public Action updateSignaled(Task task,
+				     frysk.isa.signals.Signal sig) {
+	    if (sig.intValue() == Signal.USR1.intValue())
 		sigusr1Count++;
 	    return Action.CONTINUE;
 	}

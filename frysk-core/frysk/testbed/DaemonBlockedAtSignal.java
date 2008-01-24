@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@
 
 package frysk.testbed;
 
+import frysk.isa.signals.Signal;
 import frysk.proc.Action;
 import frysk.proc.TaskObserver;
 import frysk.proc.Task;
@@ -56,7 +57,7 @@ public class DaemonBlockedAtSignal {
     extends TaskObserverBase
     implements TaskObserver.Signaled, TaskObserver.Terminated
     {
-	public Action updateSignaled (Task task, int value) {
+	public Action updateSignaled(Task task, Signal value) {
 	    Manager.eventLoop.requestStop();
 	    return Action.BLOCK;
 	}

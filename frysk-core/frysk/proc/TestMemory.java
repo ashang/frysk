@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -82,14 +82,12 @@ public class TestMemory
 	// created, otherwize the creation of the very first task is
 	// missed (giving a mismatch of task created and deleted
 	// notifications.)
-	
-	class TaskEventObserver
-	    extends TaskObserverBase
+	class TaskEventObserver extends TaskObserverBase
 	    implements TaskObserver.Signaled
 	{
-	    public Action updateSignaled (Task task, int sig)
-	    {
-		if (Signal.SEGV.equals(sig)) {
+	    public Action updateSignaled(Task task,
+					 frysk.isa.signals.Signal sig) {
+		if (sig.intValue() == Signal.SEGV.intValue()) {
 		    ByteBuffer b;
 		    long memAddr;
 		    long addr;

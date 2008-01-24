@@ -1,5 +1,15 @@
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskObserver.java (Signaled): Replace updateSignaled(Task,int)
+	with updateSignaled(Task,Signal).
+	* TestTaskSyscallObserver.java: Update.
+	* StressAttachDetachSignaledTask.java: Update.
+	* SyscallExaminer.java: Update.
+	* TestMemory.java: Update.
+	* TestSyscallSignal.java: Update.
+	* TestTaskObserverDetach.java: Update.
+	* TestTaskObserverInstructionSigReturn.java: Update.
+
 	* Task.java: Update; Register moved to frysk.isa.registers.
 	* LinuxCoreTask.java: Ditto.
 	* TestCoreRegs.java: Ditto.

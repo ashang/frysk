@@ -172,8 +172,10 @@ public class TestProcStopped extends TestLib {
 	    public void addedTo(Object o) {
 		Signal.CONT.tkill(((Task)o).getTid());
 	    }
-	    public Action updateSignaled(Task task, int signal) {
-		assertTrue("signal", Signal.TERM.equals(signal));
+	    public Action updateSignaled(Task task,
+					 frysk.isa.signals.Signal signal) {
+		assertEquals("signal", Signal.TERM.intValue(),
+			     signal.intValue());
 		Manager.eventLoop.requestStop();
 		return Action.CONTINUE;
 	    }

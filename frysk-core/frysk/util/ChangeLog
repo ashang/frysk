@@ -1,5 +1,9 @@
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFCatch.java: Update to match
+	TaskObserver.Signaled.updateSignaled(Task,Signal).
+	* FCatch.java: Ditto.
+
 	* TestCommandlineParser.java: Update; CoreFileAtSignal renamed to
 	CorefileFactory.
 	

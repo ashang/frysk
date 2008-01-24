@@ -1,5 +1,11 @@
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTask.java (notifySignaled(int)): Pass a
+	frysk.isa.signals.Signal to the observers; return -1 when there
+	are no observers.
+	* TestTaskObserverCode.java: Update.
+	* TestProcStopped.java: Update.
+	
 	* IsaPowerPC.java: Update; Register moved to frysk.isa.registers.
 	* LinuxIA32.java: Ditto.
 	* LinuxPPC32.java: Ditto.

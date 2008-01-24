@@ -1123,33 +1123,24 @@ public class TestTaskObserverCode extends TestLib
   }
 
 
-  static class SignaledObserver
-    implements TaskObserver.Signaled
-  {
-    int sig;
-
-    public Action updateSignaled (Task task, int signal)
-    {
-      this.sig = signal;
-      Manager.eventLoop.requestStop();
-      return Action.BLOCK;
+    static class SignaledObserver implements TaskObserver.Signaled {
+	int sig;
+	public Action updateSignaled (Task task,
+				      frysk.isa.signals.Signal signal) {
+	    this.sig = signal.intValue();
+	    Manager.eventLoop.requestStop();
+	    return Action.BLOCK;
+	}
+	public void addFailed(Object observable, Throwable w) {
+	    fail(w.toString());
+	}
+	public void addedTo(Object observable) {
+	    Manager.eventLoop.requestStop();
+	}
+	public void deletedFrom(Object observable) {
+	    // Ignored
+	}
     }
-
-    public void addFailed(Object observable, Throwable w)
-    {
-      fail(w.toString());
-    }
-
-    public void addedTo(Object observable)
-    {
-      Manager.eventLoop.requestStop();
-    }
-
-    public void deletedFrom(Object observable)
-    {
-      // Ignored
-    }
-  }
 
   class TerminatingObserver
     implements TaskObserver.Terminating

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@
 
 package frysk.util;
 
+import frysk.isa.signals.Signal;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -71,7 +72,7 @@ public class FCatch {
 
     private SignalObserver signalObserver;
 
-    int sig;
+    private Signal sig;
 
     private int stacklevel = 0;
 
@@ -217,62 +218,10 @@ public class FCatch {
     public synchronized void handleTaskBlock(Task task) {
 	this.signaledTasks.add(task);
 
-	switch (sig) {
-	case 1:
-	    stackTrace.append("SIGHUP detected - dumping stack trace for TID "
-		    + task.getTid() + "\n");
-	    break;
-	case 2:
-	    stackTrace.append("SIGINT detected - dumping stack trace for TID "
-		    + task.getTid() + "\n");
-	    break;
-	case 3:
-	    stackTrace.append("SIGQUIT detected - dumping stack trace for TID "
-		    + task.getTid() + "\n");
-	    break;
-	case 4:
-	    stackTrace.append("SIGILL detected - dumping stack trace for TID "
-		    + task.getTid() + "\n");
-	    break;
-	case 6:
-	    stackTrace.append("SIGABRT detected - dumping stack trace for TID "
-		    + task.getTid() + "\n");
-	    break;
-	case 9:
-	    stackTrace.append("SIGKILL detected - dumping stack trace for TID "
-		    + task.getTid() + "\n");
-	    break;
-	case 10:
-	    stackTrace.append("SIGUSR1 detected - dumping stack trace for TID "
-		    + task.getTid() + "\n");
-	    break;
-	case 11:
-	    stackTrace.append("SIGSEGV detected - dumping stack trace for TID "
-		    + task.getTid() + "\n");
-	    break;
-	case 12:
-	    stackTrace.append("SIGUSR2 detected - dumping stack trace for TID "
-		    + task.getTid() + "\n");
-	    break;
-	case 13:
-	    stackTrace.append("SIGPIPE detected - dumping stack trace for TID "
-		    + task.getTid() + "\n");
-	    break;
-	case 15:
-	    stackTrace.append("SIGTERM detected - dumping stack trace for TID "
-		    + task.getTid() + "\n");
-	    break;
-	case 17:
-	    stackTrace.append("SIGCHLD detected - dumping stack trace for TID "
-		    + task.getTid() + "\n");
-	    break;
-	default:
-	    stackTrace.append("Signal " + sig
-		    + " detected - dumping stack trace for TID "
-		    + task.getTid() + "\n");
-	    break;
-	}
-
+	stackTrace.append(sig.toString());
+	stackTrace.append(" detected - dumping stack trace for TID ");
+	stackTrace.append(task.getTid());
+	stackTrace.append("\n");
 	generateStackTrace(task);
 
 	if (numTasks <= 0) {
@@ -373,14 +322,13 @@ public class FCatch {
      * Intercepts signals to a Task and deals with them appropriately.
      */
     class SignalObserver implements TaskObserver.Signaled {
-
 	/**
-	 * The Task received a signal - block all the other tasks, and append to the 
-	 * StringBuffer member of FCatch that this Task was signaled.
+	 * The Task received a signal - block all the other tasks, and
+	 * append to the StringBuffer member of FCatch that this Task
+	 * was signaled.
 	 */
-	public Action updateSignaled(Task task, int signal) {
+	public Action updateSignaled(Task task, Signal signal) {
 	    logger.log(Level.FINE, "{0} updateSignaled", task);
-	    //            System.err.println("SignalObserver.updateSignaled");
 	    sigTask = task;
 
 	    FCatch.this.sig = signal;

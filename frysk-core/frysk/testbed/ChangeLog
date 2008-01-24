@@ -1,5 +1,8 @@
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
+	* DaemonBlockedAtSignal.java: Update to match
+	TaskObserver.Signaled.updateSignaled(Task,Signal).
+
 	* CorefileFactory.java: Rename CoreFileAtSignal.java.
 	(constructCoreAtSignal(String)): Rename constructCore(String).
 	(constructCoreAtSignal(File)): Rename constructCore(File).

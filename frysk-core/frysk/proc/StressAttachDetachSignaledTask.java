@@ -182,10 +182,12 @@ public class StressAttachDetachSignaledTask
 	SignalStorm(Action action) {
 	    this.action = action;
 	}
-	public Action updateSignaled(Task task, int signal) {
-	    if (Signal.TERM.equals(signal))
-		fail("child aborted");
-	    assertTrue("signal HUP", Signal.HUP.equals(signal));
+	public Action updateSignaled(Task task,
+				     frysk.isa.signals.Signal signal) {
+	    assertTrue("child did not abort",
+		       signal.intValue() != Signal.TERM.intValue());
+	    assertEquals("signal HUP", Signal.HUP.intValue(),
+			 signal.intValue());
 	    task.requestDeleteSignaledObserver(this);
 	    return action;
 	}

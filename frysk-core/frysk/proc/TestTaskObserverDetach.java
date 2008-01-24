@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -61,19 +61,16 @@ public class TestTaskObserverDetach
     /**
      * Co-ordinates a detach in the middle of some over random event.
      */
-    abstract class Detach
-	extends TaskObserverBase
+    abstract class Detach extends TaskObserverBase
 	implements TaskObserver.Signaled
     {
-	public void addedTo (Object o)
-	{
+	public void addedTo (Object o) {
 	    Manager.eventLoop.requestStop ();
 	}
-	public void deletedFrom (Object o)
-	{
+	public void deletedFrom (Object o) {
 	}
-	public Action updateSignaled (Task task, int signal)
-	{
+	public Action updateSignaled (Task task,
+				      frysk.isa.signals.Signal signal) {
 	    Manager.eventLoop.requestStop ();
 	    return Action.CONTINUE;
 	}

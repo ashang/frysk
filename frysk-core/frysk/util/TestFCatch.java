@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, Red Hat Inc.
+// Copyright 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ import java.util.logging.Level;
 import frysk.proc.FindProc;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
-import frysk.sys.Signal;
+import frysk.isa.signals.Signal;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -80,7 +80,7 @@ public class TestFCatch
 
     assertRunUntilStop("Adding all observers");
 
-    Signal.SEGV.kill(proc.getPid());
+    frysk.sys.Signal.SEGV.kill(proc.getPid());
 
     assertRunUntilStop("Building stacktrace");
 
@@ -104,8 +104,6 @@ public class TestFCatch
     protected int numTasks;
 
     protected Task sigTask;
-
-    protected int sig;
 
     private Blocker blocker;
 
@@ -235,29 +233,22 @@ public class TestFCatch
       }
     }
 
-    class SignalObserver
-        implements TaskObserver.Signaled
-    {
-
-      public Action updateSignaled (Task task, int signal)
-      {
-        logger.log(Level.FINE, "{0} updateSignaled", task);
-        // System.err.println("SignalObserver.updateSignaled");
-        sigTask = task;
-        sig = signal;
-        numTasks = task.getProc().getTasks().size();
-        // stackTrace.append("fcatch: from PID " + task.getProc().getPid() + "
-        // TID "
-        // + task.getTid() + ":\n");
-        blocker = new Blocker();
-        Iterator i = task.getProc().getTasks().iterator();
-        while (i.hasNext())
-          {
-            Task t = (Task) i.next();
-            t.requestAddInstructionObserver(blocker);
-          }
-        return Action.BLOCK;
-      }
+    class SignalObserver implements TaskObserver.Signaled {
+	public Action updateSignaled (Task task, Signal signal) {
+	    logger.log(Level.FINE, "{0} updateSignaled", task);
+	    sigTask = task;
+	    numTasks = task.getProc().getTasks().size();
+	    // stackTrace.append("fcatch: from PID " +
+	    // task.getProc().getPid() + " TID " + task.getTid() +
+	    // ":\n");
+	    blocker = new Blocker();
+	    Iterator i = task.getProc().getTasks().iterator();
+	    while (i.hasNext()) {
+		Task t = (Task) i.next();
+		t.requestAddInstructionObserver(blocker);
+	    }
+	    return Action.BLOCK;
+	}
 
       public void addFailed (Object observable, Throwable w)
       {

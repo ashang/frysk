@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -44,11 +44,11 @@ import frysk.sys.Signal;
 import frysk.testbed.TestLib;
 
 public class TestTaskObserverInstructionSigReturn
-  extends TestLib
-  implements TaskObserver.Attached,
-  TaskObserver.Instruction,
-  TaskObserver.Terminating,
-  TaskObserver.Signaled
+    extends TestLib
+    implements TaskObserver.Attached,
+	       TaskObserver.Instruction,
+	       TaskObserver.Terminating,
+	       TaskObserver.Signaled
 {
   // Counter for instruction observer hits.
   long hit;
@@ -132,9 +132,9 @@ public class TestTaskObserverInstructionSigReturn
   }
 
     // TaskObserver.Signaled interface
-    public Action updateSignaled (Task task, int signal) {
-	if (!Signal.PROF.equals(signal))
-	    fail("Wrong signal received: " + signal);
+    public Action updateSignaled(Task task, frysk.isa.signals.Signal signal) {
+	assertEquals("correct signal", Signal.PROF.intValue(),
+		     signal.intValue());
 	signaled++;
 	if (signaled == 1) {
 	    Manager.eventLoop.requestStop();
