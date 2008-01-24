@@ -1,3 +1,9 @@
+2008-01-24  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* PPC32LinuxElfCorefile.java (writeNoteFPRegset): Rewrite using
+	BankRegisters to form bank.
+	* PPC64LinuxElfCorefile.java (writeNoteFPRegset): Ditto.
+
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
 	* IA32LinuxElfCorefile.java: Update; RegisterBank moved to
