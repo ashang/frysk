@@ -143,23 +143,15 @@ class StartRun extends ParameterizedCommand {
 	// if there are not any procs loaded with the load/core commands
 	Iterator foo = cli.targetset.getTasks();
 	if (foo.hasNext()) {
-	    //System.out.println("StartRun.interpretCmd: foo.hasNext()");
 	    if (cli.coreProcs.isEmpty() && cli.loadedProcs.isEmpty()) {
-		//System.out.println("StartRun.interpretCmd: coreProcs.isEmpty && loadedProcs.isEmpty");
 		// Clear the parameters for this process
 		while (foo.hasNext()) {
-		    //System.out.println("StartRun.interpretCmd: inside while");
 		    Task task = (Task) foo.next();
 		    String paramList = getParameters(cmd, task);
-		    //System.out.println("StartRun.interpretCmd: fixing to kill");
 		    cli.execCommand("kill\n");
-		    //cli.execCommand("focus\n");
-		    //System.out.println("StartRun.interpretCmd: fixing to start");
 		    cli.execCommand("start " + paramList + "\n");
-		    //cli.execCommand("focus\n");
 		    if (runToBreak)
 			cli.execCommand("go\n");
-		    //cli.execCommand("focus\n");
 		}
 		return;
 	    }
@@ -175,7 +167,6 @@ class StartRun extends ParameterizedCommand {
 
 	/* This is the case where there are loaded procs */
 	if (!cli.loadedProcs.isEmpty()) {
-	    //System.out.println("StartRun.interpretCmd: if !cli.loadedProcs.isEmpty");
 	    Set procSet = cli.loadedProcs.entrySet();
 	    runProcs(cli, procSet, cmd);
 	    synchronized (cli) {
@@ -194,7 +185,6 @@ class StartRun extends ParameterizedCommand {
     }
 
     private void run(CLI cli, Input cmd) {
-	//System.out.println("StartRun.run: beginning of run");
 	Runner runner = new Runner(cli);
 	Manager.host.requestCreateAttachedProc(cmd.stringArrayValue(), runner);
 	while (true) {
@@ -219,7 +209,6 @@ class StartRun extends ParameterizedCommand {
 	int ctr = 0;
 	while (foo.hasNext()) {
 	    ctr++;
-	    //System.out.println("StartRun.runProcs: ctr = " + ctr);
 	    Map.Entry me = (Map.Entry) foo.next();
 	    Proc proc = (Proc) me.getKey();
 	    Integer taskid = (Integer) me.getValue();
@@ -228,11 +217,11 @@ class StartRun extends ParameterizedCommand {
 	    synchronized (cli) {
 		cli.taskID = taskid.intValue();
 	    }
-	    //System.out.println("StartRun.runProcs: proc.getExe = " + proc.getExe());
 	    Input newcmd = new Input(proc.getExe() + " " +
 		    getParameters(cmd, proc.getMainTask()));
+	    cli.addMessage("starting/running with this command: " + 
+		    newcmd, Message.TYPE_NORMAL);
 	    run(cli, newcmd);
-	    //System.out.println("StartRun.runProcs: runToBreak = " + runToBreak);
 	    if (runToBreak)
 		cli.execCommand("go\n");
 	    synchronized (cli) {
@@ -281,7 +270,6 @@ class StartRun extends ParameterizedCommand {
 	String paramList = "";
 	for (int j = i; j < parameters.length; j++) 
 	    paramList = paramList + parameters[j] + " ";
-	    System.out.println("StartRun.parseParameters");
 	    return paramList;
     }
     
