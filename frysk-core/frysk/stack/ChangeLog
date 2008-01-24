@@ -1,3 +1,12 @@
+2008-01-24  Andrew Cagney  <cagney@redhat.com>
+
+	* Frame.java: Update; Register moved to frysk.isa.registers.
+	* FrameDecorator.java: Ditto.
+	* LibunwindAddressSpace.java: Ditto.
+	* LibunwindFrame.java: Ditto.
+	* LibunwindRegisterMapFactory.java: Ditto.
+	* TestRegs.java: Ditt.
+
 2007-12-14  Jose Flavio Aguilar Paulino <joseflavio@gmail.com>
 
 	* LibunwindRegisterMapFactory.java: Add PPC32/64 LR, NIP and Floating

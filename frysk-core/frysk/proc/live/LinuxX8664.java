@@ -42,7 +42,7 @@ package frysk.proc.live;
 import java.util.LinkedList;
 import java.util.List;
 import inua.eio.ByteBuffer;
-import frysk.isa.X8664Registers;
+import frysk.isa.registers.X8664Registers;
 import frysk.proc.Task;
 import frysk.proc.Proc;
 import frysk.proc.Auxv;

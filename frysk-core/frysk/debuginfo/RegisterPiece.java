@@ -39,7 +39,7 @@
 
 package frysk.debuginfo;
 
-import frysk.isa.Register;
+import frysk.isa.registers.Register;
 import frysk.stack.Frame;
 import java.io.PrintWriter;
 

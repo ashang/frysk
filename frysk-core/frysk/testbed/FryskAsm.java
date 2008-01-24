@@ -40,11 +40,11 @@
 
 package frysk.testbed;
 
-import frysk.isa.Register;
-import frysk.isa.IA32Registers;
-import frysk.isa.PPC32Registers;
-import frysk.isa.PPC64Registers;
-import frysk.isa.X8664Registers;
+import frysk.isa.registers.Register;
+import frysk.isa.registers.IA32Registers;
+import frysk.isa.registers.PPC32Registers;
+import frysk.isa.registers.PPC64Registers;
+import frysk.isa.registers.X8664Registers;
 import frysk.isa.ISA;
 import frysk.isa.ISAMap;
 

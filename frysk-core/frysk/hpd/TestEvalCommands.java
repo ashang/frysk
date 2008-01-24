@@ -42,7 +42,7 @@ package frysk.hpd;
 import frysk.Config;
 import frysk.testbed.FryskAsm;
 import frysk.isa.ISA;
-import frysk.isa.Register;
+import frysk.isa.registers.Register;
 import frysk.isa.ElfMap;
 import java.io.File;
 

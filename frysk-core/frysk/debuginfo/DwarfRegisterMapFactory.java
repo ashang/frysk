@@ -43,9 +43,9 @@ import lib.dwfl.DwarfRegistersX86;
 import lib.dwfl.DwarfRegistersX8664;
 import frysk.isa.ISA;
 import frysk.isa.ISAMap;
-import frysk.isa.IA32Registers;
-import frysk.isa.RegisterMap;
-import frysk.isa.X8664Registers;
+import frysk.isa.registers.IA32Registers;
+import frysk.isa.registers.RegisterMap;
+import frysk.isa.registers.X8664Registers;
 
 public class DwarfRegisterMapFactory {
 

@@ -41,7 +41,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.isa;
+package frysk.isa.registers;
 
 import frysk.value.StandardTypes;
 

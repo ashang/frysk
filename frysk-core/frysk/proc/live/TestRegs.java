@@ -39,7 +39,7 @@
 
 package frysk.proc.live;
 
-import frysk.isa.Register;
+import frysk.isa.registers.Register;
 import frysk.testbed.RegsCase;
 
 /**

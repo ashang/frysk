@@ -39,7 +39,7 @@
 
 package frysk.proc.dead;
 
-import frysk.isa.Register;
+import frysk.isa.registers.Register;
 import frysk.testbed.RegsCase;
 import frysk.proc.Proc;
 import frysk.testbed.CoreFileAtSignal;

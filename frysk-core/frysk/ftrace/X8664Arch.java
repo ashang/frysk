@@ -42,8 +42,8 @@ package frysk.ftrace;
 import inua.eio.ByteBuffer;
 
 import frysk.proc.Task;
-import frysk.isa.X8664Registers;
-import frysk.isa.Register;
+import frysk.isa.registers.X8664Registers;
+import frysk.isa.registers.Register;
 
 /**
  * x86_64 implementation of Arch interface.

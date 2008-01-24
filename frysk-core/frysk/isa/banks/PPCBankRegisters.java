@@ -44,7 +44,7 @@
 package frysk.isa.banks;
 
 import inua.eio.ByteOrder;
-import frysk.isa.PPC32Registers;
+import frysk.isa.registers.PPC32Registers;
 
 public class PPCBankRegisters {
 

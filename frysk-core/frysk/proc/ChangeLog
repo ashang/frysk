@@ -1,5 +1,17 @@
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java: Update; Register moved to frysk.isa.registers.
+	* LinuxCoreTask.java: Ditto.
+	* TestCoreRegs.java: Ditto.
+	* TestLinuxCore.java: Ditto.
+	* IsaPowerPC.java: Ditto.
+	* LinuxIA32.java: Ditto.
+	* LinuxPPC32.java: Ditto.
+	* LinuxPPC64.java: Ditto.
+	* LinuxPtraceTask.java: Ditto.
+	* LinuxX8664.java: Ditto.
+	* TestRegs.java: Ditto.
+
 	* Task.java: Update; BankRegister moved to frysk.isa.banks.
 
 	* SyscallExaminer.java: Update; Syscall moved to frysk.isa.syscalls.

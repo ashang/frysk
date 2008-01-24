@@ -48,8 +48,8 @@ import lib.dwfl.DwOp;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.DwarfOp;
 import frysk.Config;
-import frysk.isa.Register;
-import frysk.isa.RegisterMap;
+import frysk.isa.registers.Register;
+import frysk.isa.registers.RegisterMap;
 import frysk.stack.Frame;
 
 public class LocationExpression {

@@ -40,8 +40,8 @@
 
 package frysk.isa.banks;
 
-import frysk.isa.PPC32Registers;
-import frysk.isa.PPC64Registers;
+import frysk.isa.registers.PPC32Registers;
+import frysk.isa.registers.PPC64Registers;
 
 public class LinuxPPCRegisterBanks {
 

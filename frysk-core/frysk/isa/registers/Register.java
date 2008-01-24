@@ -37,74 +37,28 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.isa;
+package frysk.isa.registers;
 
-import frysk.junit.TestCase;
+import frysk.value.Type;
 
-/**
- * Test the mapping between registers and numbers.
- */
-public class TestRegisterMap extends TestCase {
-    private final RegisterMap map
-	= new RegisterMap("testing")
-	.add(IA32Registers.EAX, new Long(0))
-	.add(IA32Registers.EBX, new Long(1))
-	.add(IA32Registers.ECX, new Long(2))
-	.add(IA32Registers.EDX, new Long(3));
+public class Register {
 
-    public void testContainsRegister() {
-	assertEquals("contains EAX", true,
-		     map.containsKey(IA32Registers.EAX));
-	assertEquals("contains ESP", false,
-		     map.containsKey(IA32Registers.ESP));
-    }
-    public void testContainsNumber() {
-	assertEquals("contains 1", true, map.containsKey(new Long(1)));
-	assertEquals("contains 5", false, map.containsKey(new Long(4)));
-    }
-    public void testContainsInt() {
-	assertEquals("contains 1", true, map.containsKey(1));
-	assertEquals("contains 5", false, map.containsKey(4));
+    public Register(String name, Type type) {
+	this.name = name;
+	this.type = type;
     }
 
-    public void testRegisterToNumber() {
-	assertEquals("EAX to 0", new Long(0),
-		     map.getRegisterNumber(IA32Registers.EAX));
-    }
-    public void testNumberToRegister() {
-	assertEquals("1 to EBX", IA32Registers.EBX,
-		     map.getRegister(new Long(1)));
-    }
-    public void testIntToRegister() {
-	assertEquals("2 to ECX", IA32Registers.ECX, map.getRegister(2));
-		     
+    private final String name;
+    public String getName() {
+	return name;
     }
 
-    public void testNoSuchRegister() {
-	boolean npe = false;
-	try {
-	    map.getRegisterNumber(IA32Registers.ESP);
-	} catch (NullPointerException e) {
-	    npe = true;
-	}
-	assertTrue("npe", npe);
+    private final Type type;
+    public Type getType() {
+	return type;
     }
-    public void testNoSuchNumber() {
-	boolean npe = false;
-	try {
-	    map.getRegister(new Long(4));
-	} catch (NullPointerException e) {
-	    npe = true;
-	}
-	assertTrue("npe", npe);
-    }
-    public void testNoSuchInt() {
-	boolean npe = false;
-	try {
-	    map.getRegister(4);
-	} catch (NullPointerException e) {
-	    npe = true;
-	}
-	assertTrue("npe", npe);
+
+    public String toString() {
+	return "[Register: " + name + " type: " + type + "]";
     }
 }

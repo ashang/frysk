@@ -40,7 +40,7 @@
 package frysk.testbed;
 
 import frysk.proc.Task;
-import frysk.isa.Register;
+import frysk.isa.registers.Register;
 import frysk.symtab.SymbolFactory;
 
 /**

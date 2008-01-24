@@ -40,7 +40,7 @@
 
 package frysk.proc.live;
 
-import frysk.isa.PPC32Registers;
+import frysk.isa.registers.PPC32Registers;
 
 class LinuxPPC32 extends IsaPowerPC {
 

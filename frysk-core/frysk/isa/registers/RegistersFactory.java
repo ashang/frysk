@@ -37,42 +37,24 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.isa;
+package frysk.isa.registers;
 
-import frysk.junit.TestCase;
+import frysk.isa.ISA;
+import frysk.isa.ISAMap;
 
 /**
- * The set of registers belonging to an ISA.
+ * Given an ISA return its registers.
  */
-public class TestRegisters extends TestCase {
 
-    private Registers regs;
-    public void setUp() {
-	regs = new IA32Registers();
-    }
-    public void tearDown() {
-	regs = null;
-    }
-
-    public void testGetGroup() {
-	assertEquals("getGroup", IA32Registers.REGS_GROUP,
-		     regs.getGroup("regs"));
-    }
-
-    public void testGetRegister() {
-	assertEquals("getGroup", IA32Registers.FS,
-		     regs.getRegister("fs"));
-    }
-
-    public void testGetGroupNames() {
-	assertEquals("getGroupNames",
-		     new String[] {
-			 "regs", "float", "vector", "segment"
-		     }, regs.getGroupNames());
-    }
-
-    public void testGeneralRegisterGroup() {
-	assertEquals("getGeneralRegisterGroup", IA32Registers.REGS_GROUP,
-		     regs.getGeneralRegisterGroup());
+public class RegistersFactory {
+    private static final ISAMap isaToRegisters
+	= new ISAMap("RegistersFactory")
+	.put(ISA.IA32, new IA32Registers())
+	.put(ISA.X8664, new X8664Registers())
+	.put(ISA.PPC32BE, new PPC32Registers())
+	.put(ISA.PPC64BE, new PPC64Registers())
+	;
+    static public Registers getRegisters(ISA isa) {
+	return (Registers)isaToRegisters.get(isa);
     }
 }

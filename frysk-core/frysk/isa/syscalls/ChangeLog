@@ -1,6 +1,21 @@
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxIA32SyscallTable.java: Update; Register moved to
+	frysk.isa.registers.
+	* LinuxPPC32SyscallTable.java: Ditto.
+	* LinuxPPC64SyscallTable.java: Ditto.
+	* LinuxX8664SyscallTable.java: Ditto.
+
 	Move package frysk.syscall to frysk.isa.syscalls.
+	* LinuxIA32SyscallTable.java: Update.
+	* LinuxPPC32SyscallTable.java: Update.
+	* LinuxPPC64SyscallTable.java: Update.
+	* LinuxX8664SyscallTable.java: Update.
+	* package.html: Update.
+	* Syscall.java: Update.
+	* SyscallTableFactory.java: Update.
+	* SyscallTable.java: Update.
+	* TestSyscallsWithAudit.java: Update.
 
 2007-12-28  Andrew Cagney  <cagney@redhat.com>
 

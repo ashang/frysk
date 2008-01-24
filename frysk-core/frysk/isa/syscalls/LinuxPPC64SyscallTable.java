@@ -40,7 +40,7 @@
 
 package frysk.isa.syscalls;
 
-import frysk.isa.PPC64Registers;
+import frysk.isa.registers.PPC64Registers;
 import frysk.proc.Task;
 
 /**

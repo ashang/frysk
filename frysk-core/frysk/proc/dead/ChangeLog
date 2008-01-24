@@ -1,5 +1,10 @@
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxCoreTask.java: Update; Register moved to
+	frysk.isa.registers.
+	* TestCoreRegs.java: Ditto.
+	* TestLinuxCore.java: Ditto.
+
 	* DeadTask.java: Update BankRegister moved to frysk.isa.banks.
 	* LinuxCoreTask.java: Ditto.
 	* LinuxExeTask.java: Ditto.

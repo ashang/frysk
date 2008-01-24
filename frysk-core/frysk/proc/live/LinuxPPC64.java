@@ -40,7 +40,7 @@
 
 package frysk.proc.live;
 
-import frysk.isa.PPC64Registers;
+import frysk.isa.registers.PPC64Registers;
 
 class LinuxPPC64 extends IsaPowerPC {
     LinuxPPC64() {

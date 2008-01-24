@@ -40,14 +40,14 @@
 package frysk.stack;
 
 import java.util.logging.Level;
-import frysk.isa.Register;
+import frysk.isa.registers.Register;
 import java.util.logging.Logger;
 import lib.unwind.Cursor;
 import frysk.isa.ISA;
 import frysk.proc.Task;
 import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
-import frysk.isa.RegisterMap;
+import frysk.isa.registers.RegisterMap;
 
 class LibunwindFrame extends Frame
 {  

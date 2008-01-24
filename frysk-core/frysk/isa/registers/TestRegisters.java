@@ -37,28 +37,42 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.isa;
+package frysk.isa.registers;
 
-import frysk.value.Type;
+import frysk.junit.TestCase;
 
-public class Register {
+/**
+ * The set of registers belonging to an ISA.
+ */
+public class TestRegisters extends TestCase {
 
-    public Register(String name, Type type) {
-	this.name = name;
-	this.type = type;
+    private Registers regs;
+    public void setUp() {
+	regs = new IA32Registers();
+    }
+    public void tearDown() {
+	regs = null;
     }
 
-    private final String name;
-    public String getName() {
-	return name;
+    public void testGetGroup() {
+	assertEquals("getGroup", IA32Registers.REGS_GROUP,
+		     regs.getGroup("regs"));
     }
 
-    private final Type type;
-    public Type getType() {
-	return type;
+    public void testGetRegister() {
+	assertEquals("getGroup", IA32Registers.FS,
+		     regs.getRegister("fs"));
     }
 
-    public String toString() {
-	return "[Register: " + name + " type: " + type + "]";
+    public void testGetGroupNames() {
+	assertEquals("getGroupNames",
+		     new String[] {
+			 "regs", "float", "vector", "segment"
+		     }, regs.getGroupNames());
+    }
+
+    public void testGeneralRegisterGroup() {
+	assertEquals("getGeneralRegisterGroup", IA32Registers.REGS_GROUP,
+		     regs.getGeneralRegisterGroup());
     }
 }

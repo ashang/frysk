@@ -1,9 +1,19 @@
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
-	* LinuxPtraceTask.java: Update: RegisterBank moved to frysk.isa.banks.
+	* IsaPowerPC.java: Update; Register moved to frysk.isa.registers.
+	* LinuxIA32.java: Ditto.
+	* LinuxPPC32.java: Ditto.
+	* LinuxPPC64.java: Ditto.
+	* LinuxPtraceTask.java: Ditto.
+	* LinuxX8664.java: Ditto.
+	* TestRegs.java: Ditto.
+
+	* LinuxPtraceTask.java: Update: RegisterBank moved to
+	frysk.isa.banks.
 	* PtraceRegisterBanksFactory.java: Ditto.
 
-	* LinuxPtraceTask.java: Update; Syscall moved to frysk.isa.syscalls.
+	* LinuxPtraceTask.java: Update; Syscall moved to
+	frysk.isa.syscalls.
 
 2008-01-22  Andrew Cagney  <cagney@redhat.com>
 

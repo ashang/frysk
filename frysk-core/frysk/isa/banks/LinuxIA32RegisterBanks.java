@@ -39,8 +39,8 @@
 
 package frysk.isa.banks;
 
-import frysk.isa.IA32Registers;
-import frysk.isa.X87Registers;
+import frysk.isa.registers.IA32Registers;
+import frysk.isa.registers.X87Registers;
 
 public class LinuxIA32RegisterBanks {
     

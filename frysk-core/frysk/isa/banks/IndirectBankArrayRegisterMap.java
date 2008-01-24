@@ -40,7 +40,7 @@
 package frysk.isa.banks;
 
 import inua.eio.ByteOrder;
-import frysk.isa.Register;
+import frysk.isa.registers.Register;
 
 /**
  * Mapping between bank registers, in particular a 32-bit register's

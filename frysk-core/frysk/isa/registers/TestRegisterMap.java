@@ -37,76 +37,74 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.isa;
+package frysk.isa.registers;
 
-import java.util.List;
-import java.util.LinkedList;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import frysk.junit.TestCase;
 
 /**
- * The set of registers belonging to an ISA.
+ * Test the mapping between registers and numbers.
  */
-public abstract class Registers {
+public class TestRegisterMap extends TestCase {
+    private final RegisterMap map
+	= new RegisterMap("testing")
+	.add(IA32Registers.EAX, new Long(0))
+	.add(IA32Registers.EBX, new Long(1))
+	.add(IA32Registers.ECX, new Long(2))
+	.add(IA32Registers.EDX, new Long(3));
 
-    private final SortedMap registerGroupByName = new TreeMap();
-    private final SortedMap registerByName = new TreeMap();
-    private final String[] registerGroupNames;
+    public void testContainsRegister() {
+	assertEquals("contains EAX", true,
+		     map.containsKey(IA32Registers.EAX));
+	assertEquals("contains ESP", false,
+		     map.containsKey(IA32Registers.ESP));
+    }
+    public void testContainsNumber() {
+	assertEquals("contains 1", true, map.containsKey(new Long(1)));
+	assertEquals("contains 5", false, map.containsKey(new Long(4)));
+    }
+    public void testContainsInt() {
+	assertEquals("contains 1", true, map.containsKey(1));
+	assertEquals("contains 5", false, map.containsKey(4));
+    }
 
-    protected Registers(RegisterGroup[] registerGroups) {
-	// Build up search tables.
-	List groupNames = new LinkedList();
-	for (int i = 0; i < registerGroups.length; i++) {
-	    RegisterGroup registerGroup = registerGroups[i];
-	    groupNames.add(registerGroup.getName());
-	    registerGroupByName.put(registerGroup.getName(), registerGroup);
-	    for (int j = 0; j < registerGroup.getRegisters().length; j++) {
-		Register register = registerGroup.getRegisters()[j];
-		registerByName.put(register.getName(), register);
-	    }
+    public void testRegisterToNumber() {
+	assertEquals("EAX to 0", new Long(0),
+		     map.getRegisterNumber(IA32Registers.EAX));
+    }
+    public void testNumberToRegister() {
+	assertEquals("1 to EBX", IA32Registers.EBX,
+		     map.getRegister(new Long(1)));
+    }
+    public void testIntToRegister() {
+	assertEquals("2 to ECX", IA32Registers.ECX, map.getRegister(2));
+		     
+    }
+
+    public void testNoSuchRegister() {
+	boolean npe = false;
+	try {
+	    map.getRegisterNumber(IA32Registers.ESP);
+	} catch (NullPointerException e) {
+	    npe = true;
 	}
-	registerGroupNames = new String[groupNames.size()];
-	groupNames.toArray(registerGroupNames);
+	assertTrue("npe", npe);
     }
-
-    /**
-     * Return the program-counter register.
-     */
-    public abstract Register getProgramCounter();
-    /**
-     * Return the stack-pointer register.
-     */
-    public abstract Register getStackPointer();
-    /**
-     * Return the "default" or "regs" register group.
-     */
-    public RegisterGroup getGeneralRegisterGroup() {
-	return getGroup("regs");
+    public void testNoSuchNumber() {
+	boolean npe = false;
+	try {
+	    map.getRegister(new Long(4));
+	} catch (NullPointerException e) {
+	    npe = true;
+	}
+	assertTrue("npe", npe);
     }
-    /**
-     * Return the "all" register group.
-     */
-    public RegisterGroup getAllRegistersGroup() {
-	return null;
-    }
-    /**
-     * Return the register group; searched by NAME.
-     */
-    public RegisterGroup getGroup(String name) {
-	return (RegisterGroup) registerGroupByName.get(name);
-    }
-
-    /**
-     * Return the register; identified by NAME.
-     */
-    public Register getRegister(String name) {
-	return (Register) registerByName.get(name);
-    }
-
-    /**
-     * Return all the register group names.
-     */
-    public String[] getGroupNames() {
-	return registerGroupNames;
+    public void testNoSuchInt() {
+	boolean npe = false;
+	try {
+	    map.getRegister(4);
+	} catch (NullPointerException e) {
+	    npe = true;
+	}
+	assertTrue("npe", npe);
     }
 }

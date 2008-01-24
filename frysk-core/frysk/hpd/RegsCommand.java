@@ -43,9 +43,9 @@ import java.util.Iterator;
 import frysk.value.Value;
 import frysk.value.Format;
 import frysk.isa.ISA;
-import frysk.isa.RegisterGroup;
-import frysk.isa.Registers;
-import frysk.isa.RegistersFactory;
+import frysk.isa.registers.RegisterGroup;
+import frysk.isa.registers.Registers;
+import frysk.isa.registers.RegistersFactory;
 import java.util.List;
 
 public class RegsCommand extends ParameterizedCommand {

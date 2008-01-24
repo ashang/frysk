@@ -1,3 +1,10 @@
+2008-01-24  Andrew Cagney  <cagney@redhat.com>
+	
+	* FryskAsm.java: Update; Register moved to frysk.isa.registers.
+	* RegsCase.java: Ditto.
+	* TestFryskAsm.java: Ditto.
+	* TestRegs.java: Ditto.
+
 2008-01-22  Andrew Cagney  <cagney@redhat.com>
 
 	* LegacyOffspring.java: Update to match

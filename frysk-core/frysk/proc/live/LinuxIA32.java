@@ -39,7 +39,7 @@
 
 package frysk.proc.live;
 
-import frysk.isa.IA32Registers;
+import frysk.isa.registers.IA32Registers;
 import inua.eio.ByteBuffer;
 import java.util.List;
 import java.util.LinkedList;

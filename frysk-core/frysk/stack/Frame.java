@@ -45,7 +45,7 @@ import java.io.PrintWriter;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
 import frysk.dwfl.DwflCache;
-import frysk.isa.Register;
+import frysk.isa.registers.Register;
 import frysk.proc.Task;
 import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;

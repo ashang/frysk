@@ -40,12 +40,12 @@
 package frysk.testbed;
 
 import java.util.Map.Entry;
-import frysk.isa.Register;
+import frysk.isa.registers.Register;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Iterator;
-import frysk.isa.RegistersFactory;
-import frysk.isa.RegisterGroup;
+import frysk.isa.registers.RegistersFactory;
+import frysk.isa.registers.RegisterGroup;
 
 /**
  * Sanity check of the RegsCase - that everything needed is present.
