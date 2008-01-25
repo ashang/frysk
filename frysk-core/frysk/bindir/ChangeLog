@@ -1,3 +1,9 @@
+2008-01-25  Teresa Thomas  <tthomas@redhat.com>
+
+	* fdebuginfo.java: Reindent.
+	(.parseCommand): New.
+	* TestFdebuginfo.java: Reindent.
+
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java: Delete.
