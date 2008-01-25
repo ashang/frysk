@@ -46,7 +46,7 @@ import frysk.testbed.TestLib;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.proc.Task;
 import frysk.proc.Proc;
-import frysk.sys.Signal;
+import frysk.isa.signals.Signal;
 import lib.dwfl.SymbolBuilder;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
@@ -208,23 +208,25 @@ public class TestTaskObserverCode extends TestLib
     task.requestUnblock(code);
     assertRunUntilStop("signal and wait for signaled observer to hit");
     assertFalse("not hit again (after second prof)", code.hit);
-    assertTrue("Prof signaled", Signal.PROF.equals(signaled.sig));
+    assertEquals("Prof signaled", frysk.sys.Signal.PROF.intValue(),
+		 signaled.sig.intValue());
 
-    signaled.sig = -1;
+    signaled.sig = null;
     task.requestUnblock(signaled);
     assertRunUntilStop("wait for hit after sigprof");
     assertTrue("hit again (after second prof)", code.hit);
-    assertEquals("signaled not again", -1, signaled.sig);
+    assertEquals("signaled not again", null, signaled.sig);
 
     // The TERM signal however isn't blocked. So making that pending
     // will immediately jump into the signal handler, bypassing the
     // step over the currently pending breakpoint. And will then kill
     // the process when delivered.
     code.hit = false;
-    Signal.TERM.tkill(task.getTid());
+    frysk.sys.Signal.TERM.tkill(task.getTid());
     task.requestUnblock(code);
     assertRunUntilStop("wait for TERM signal"); 
-    assertTrue("term signaled", Signal.TERM.equals(signaled.sig));
+    assertEquals("term signaled", frysk.sys.Signal.TERM.intValue(),
+		 signaled.sig.intValue());
     assertFalse("no hit after term", code.hit);
 
     TerminatingObserver terminatingObserver = new TerminatingObserver();
@@ -373,32 +375,32 @@ public class TestTaskObserverCode extends TestLib
 	// jump), label name to put breakpoint on, expected signal and
 	// whether or not the exit will be clean.
 	String testName;
-	Signal signal;
+	frysk.sys.Signal signal;
 	boolean cleanExit;
 	switch (argc) {
 	case 1:
 	    testName = "div_zero";
-	    signal = Signal.FPE;
+	    signal = frysk.sys.Signal.FPE;
 	    cleanExit = false;
 	    break;
 	case 2:
 	    testName = "bad_addr_segv";
-	    signal = Signal.SEGV;
+	    signal = frysk.sys.Signal.SEGV;
 	    cleanExit = false;
 	    break;
 	case 3:
 	    testName = "bad_inst_ill";
-	    signal = Signal.ILL;
+	    signal = frysk.sys.Signal.ILL;
 	    cleanExit = false;
 	    break;
 	case 4:
 	    testName = "term_sig_hup";
-	    signal = Signal.HUP;
+	    signal = frysk.sys.Signal.HUP;
 	    cleanExit = false;
 	    break;
 	case 5:
 	    testName = "ign_sig_urg";
-	    signal = Signal.URG;
+	    signal = frysk.sys.Signal.URG;
 	    cleanExit = true;
 	    break;
 	default:
@@ -435,7 +437,8 @@ public class TestTaskObserverCode extends TestLib
 	
 	task.requestUnblock(code);
 	assertRunUntilStop("wait for signal observer hit");
-	assertTrue("signal", signal.equals(so.sig));
+	assertEquals("signal", signal.intValue(),
+		     so.sig.intValue());
 	
 	TerminatingObserver to = new TerminatingObserver();
 	task.requestAddTerminatingObserver(to);
@@ -918,9 +921,9 @@ public class TestTaskObserverCode extends TestLib
     assertEquals("task exit status", 0, terminatingObserver.value);
   }
 
-  // Tells the child to run the dummy () function
-  // which calls bp1_func () and bp2_func ().
-  static final Signal dummySig = Signal.PROF;
+    // Tells the child to run the dummy () function which calls
+    // bp1_func () and bp2_func ().
+    static final frysk.sys.Signal dummySig = frysk.sys.Signal.PROF;
 
   /**
    * Request that that the child runs its dummy function which will
@@ -1124,10 +1127,9 @@ public class TestTaskObserverCode extends TestLib
 
 
     static class SignaledObserver implements TaskObserver.Signaled {
-	int sig;
-	public Action updateSignaled (Task task,
-				      frysk.isa.signals.Signal signal) {
-	    this.sig = signal.intValue();
+	Signal sig;
+	public Action updateSignaled (Task task, Signal signal) {
+	    this.sig = signal;
 	    Manager.eventLoop.requestStop();
 	    return Action.BLOCK;
 	}

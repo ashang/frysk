@@ -1,3 +1,8 @@
+2008-01-25  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTaskObserver.java: Eliminate uses of
+	frysk.sys.Signal.equals(int).
+
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
 	* TaskObserver.java (Signaled): Replace updateSignaled(Task,int)

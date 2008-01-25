@@ -94,9 +94,6 @@ public class Signal implements Comparable {
         return ((o instanceof Signal)
                 && ((Signal) o).intValue() == this.intValue());
     }
-    public boolean equals(int sig) {
-	return this.intValue() == sig;
-    }
     public int compareTo(Object o) {
 	Signal rhs = (Signal)o; // exception ok
 	return this.intValue() - rhs.intValue();

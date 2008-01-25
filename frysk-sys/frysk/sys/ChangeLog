@@ -1,5 +1,7 @@
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
+	* Signal.java-sh (equals(int)): Delete.
+	
 	* Signal.java-sh (compareTo(Object)): Fix ordering.
 	* TestSignal.java (testCompareTo()): New.
 	* TestSignalSet.java (testSingleToString())

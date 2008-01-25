@@ -1,3 +1,9 @@
+2008-01-25  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTaskObserverCode.java: Eliminate uses of
+	frysk.sys.Signal.equals(int); import frysk.isa.signals.Signal
+	instead of frysk.sys.Signal.
+
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceTask.java (notifySignaled(int)): Pass a
