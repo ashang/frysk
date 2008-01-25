@@ -70,6 +70,15 @@ public class TestSignal extends TestCase {
 	check(15, Signal.TERM, "SIGTERM");
     }
 
+    public void testCompareTo() {
+	assertTrue("SIGNONE < SIGKILL",
+		   Signal.NONE.compareTo(Signal.KILL) < 0);
+	assertTrue("SIGKILL == SIGKILL",
+		   Signal.KILL.compareTo(Signal.KILL) == 0);
+	assertTrue("SIGTERM > SIGKILL",
+		   Signal.TERM.compareTo(Signal.KILL) > 0);
+    }
+
     public void testUnknown() {
 	// Something large, that will create an unknown signal.
 	final int sig = 100000000;

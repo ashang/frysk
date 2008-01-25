@@ -1,3 +1,10 @@
+2008-01-25  Andrew Cagney  <cagney@redhat.com>
+
+	* Signal.java-sh (compareTo(Object)): Fix ordering.
+	* TestSignal.java (testCompareTo()): New.
+	* TestSignalSet.java (testSingleToString())
+	(testMultiToString()): Do not hard-wire signal names and numbers.
+
 2008-01-23  Andrew Cagney  <cagney@redhat.com>
 
 	* Signal.java-sh (valueOf(int)): Make package-private.

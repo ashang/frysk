@@ -99,7 +99,7 @@ public class Signal implements Comparable {
     }
     public int compareTo(Object o) {
 	Signal rhs = (Signal)o; // exception ok
-	return rhs.intValue() - this.intValue();
+	return this.intValue() - rhs.intValue();
     }
 
     /**

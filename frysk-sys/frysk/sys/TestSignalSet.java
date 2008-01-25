@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -129,17 +129,19 @@ public class TestSignalSet extends TestCase {
 	assertEquals ("empty set", "{}", new SignalSet().toString());
     }
     public void testSingleToString() {
-	assertEquals("SIGHUP set", "{SIGHUP}",
+	assertEquals("SIGHUP set", "{" + Signal.HUP + "}",
 		     new SignalSet(Signal.HUP).toString());
     }
     public void testMultiToString() {
 	// assumes a specific ordering
 	if (Signal.HUP.compareTo(Signal.USR1) < 0)
-	    assertEquals("SIGHUP+SIGUSR1 set", "{SIGUSR1,SIGHUP}",
+	    assertEquals("SIGHUP+SIGUSR1 set",
+			 "{" + Signal.HUP + "," + Signal.USR1 + "}",
 			 new SignalSet(new Signal[] {Signal.HUP, Signal.USR1})
 			 .toString());
 	else
-	    assertEquals("SIGHUP+SIGUSR1 set", "{SIGHUP,SIGUSR1}",
+	    assertEquals("SIGHUP+SIGUSR1 set",
+			 "{" + Signal.USR1 + "," + Signal.HUP + "}",
 			 new SignalSet(new Signal[] {Signal.HUP, Signal.USR1})
 			 .toString());
     }
