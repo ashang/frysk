@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -47,24 +47,34 @@ public class TestHpdTestHarness extends TestLib {
 	if (unresolved(5480))
 	    return;
 	e = new HpdTestbed();
-	e.send("load " + Config.getPkgLibFile("funit-threads-looper").getPath()
-		+ "\n");
-	e.expect("Loaded executable file.*");
+	//e.send("load " + Config.getPkgLibFile("funit-threads-looper").getPath()
+	//	+ "\n");
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+		"Loaded executable file.*");
+	//e.expect("Loaded executable file.*");
 	e.send("run\n");
-	e.expect("Attached to process.*");
-	e.send("go\n");
-	e.expect("Running process.*");
-	e.send("kill\n");
-	e.expect("Killing process.*");
-	e.expect("Loaded executable file.*");
-	e.send("run\n");
-	e.expect("Attached to process.*");
-	e.send("go\n");
-	e.expect("Running process*");
-	e.send("kill\n");
-	e.expect("Killing process.*");
-	e.expect("Loaded executable file.*");
-	e.expect("quit\n");
+	e.sendCommandExpectPrompt("run", "Attached to process.*starting/running.*" );
+	//e.expect("Attached to process.*");
+	//e.expect("starting/running.*");
+	//e.send("go\n");
+	e.sendCommandExpectPrompt("go", "Running process.*");
+	//e.expect("Running process.*");
+	//e.send("kill\n");
+	e.sendCommandExpectPrompt("kill", "Killing process.*Loaded executable file.*");
+	//e.expect("Killing process.*");
+	//e.expect("Loaded executable file.*");
+	//e.send("run\n");
+	e.sendCommandExpectPrompt("run", "Attached to process.*starting/running.*");
+	//e.expect("Attached to process.*");
+	//e.expect("starting/running.*");
+	//e.send("go\n");
+	e.sendCommandExpectPrompt("go", "Running process.*");
+	//e.expect("Running process*");
+	//e.send("kill\n");
+	e.sendCommandExpectPrompt("kill","Killing process.*Loaded executable file.*");
+	//e.expect("Killing process.*");
+	//e.expect("Loaded executable file.*");
+	e.send("quit\n");
 	e.expect("Quitting\\.\\.\\.");
     }
 }

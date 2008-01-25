@@ -1,6 +1,9 @@
 2008-01-25  Rick Moseley  <rmoseley@redhat.com>
 
 	* TestHpdTestHarness.java: Fix pattern matches.
+	
+	
+	* TestHpdTestHarness.java: Change e.send to e.sendCommandExpectPrompt.
 
 
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
