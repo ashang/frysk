@@ -1,3 +1,8 @@
+2008-01-25  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFdebuginfo.java (testPathListing()): Mark as unresolved; bug
+	5671.
+
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFhd.java: Do not call Expect.close(); do not hard-wire a
