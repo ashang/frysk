@@ -921,11 +921,7 @@ public class TestTaskObserverCode extends TestLib
 
     // Tells the child to run the dummy () function which calls
     // bp1_func () and bp2_func ().
-<<<<<<< HEAD:frysk-core/frysk/proc/live/TestTaskObserverCode.java
-    static final frysk.sys.Signal dummySig = frysk.sys.Signal.PROF;
-=======
     private static final frysk.sys.Signal dummySig = frysk.sys.Signal.PROF;
->>>>>>> Pass a Signal to terminating and terminated observers.:frysk-core/frysk/proc/live/TestTaskObserverCode.java
 
   /**
    * Request that that the child runs its dummy function which will
@@ -1128,17 +1124,9 @@ public class TestTaskObserverCode extends TestLib
   }
 
 
-<<<<<<< HEAD:frysk-core/frysk/proc/live/TestTaskObserverCode.java
-    static class SignaledObserver implements TaskObserver.Signaled {
-=======
     private static class SignaledObserver implements TaskObserver.Signaled {
->>>>>>> Pass a Signal to terminating and terminated observers.:frysk-core/frysk/proc/live/TestTaskObserverCode.java
 	Signal sig;
-<<<<<<< HEAD:frysk-core/frysk/proc/live/TestTaskObserverCode.java
-	public Action updateSignaled (Task task, Signal signal) {
-=======
 	public Action updateSignaled(Task task, Signal signal) {
->>>>>>> Pass a Signal to terminating and terminated observers.:frysk-core/frysk/proc/live/TestTaskObserverCode.java
 	    this.sig = signal;
 	    Manager.eventLoop.requestStop();
 	    return Action.BLOCK;

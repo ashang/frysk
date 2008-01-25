@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package frysk.gui.monitor;
 
 import java.util.HashMap;
@@ -44,6 +45,7 @@ import frysk.gui.monitor.GuiProc.GuiProcFactory;
 import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver.Terminated;
+import frysk.isa.signals.Signal;
 
 /**
  * Used to store a pointer to the Task object, and and any data that is relates
@@ -54,29 +56,25 @@ public class GuiTask extends GuiCoreObjectWrapper{
 
   private Task task;
 	
-  private GuiTask(Task task) {
-    if(task == null){
-      throw new IllegalArgumentException("task cannot be null");
-    }	
-    this.task = task;
-    
-    task.requestAddTerminatedObserver(new Terminated(){
-
-      public Action updateTerminated (Task task, boolean signal, int value)
-      {
-	if(task.getTid() == task.getProc().getPid()){
-	  getGuiProc().objectDied();
-	}
-	GuiTask.this.objectDied();
-	return Action.CONTINUE;
-      }
-
-      public void addFailed (Object observable, Throwable w){}
-      public void addedTo (Object observable){}
-      public void deletedFrom (Object observable){}
-      
-    });
-  }
+    private GuiTask(Task task) {
+	if(task == null){
+	    throw new IllegalArgumentException("task cannot be null");
+	}	
+	this.task = task;
+	task.requestAddTerminatedObserver(new Terminated() {
+		public Action updateTerminated(Task task, Signal signal,
+					       int value) {
+		    if(task.getTid() == task.getProc().getPid()){
+			getGuiProc().objectDied();
+		    }
+		    GuiTask.this.objectDied();
+		    return Action.CONTINUE;
+		}
+		public void addFailed (Object observable, Throwable w){}
+		public void addedTo (Object observable){}
+		public void deletedFrom (Object observable){}
+	    });
+    }
 
   public Task getTask() {
     return task;

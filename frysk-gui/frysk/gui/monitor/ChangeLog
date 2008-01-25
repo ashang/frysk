@@ -1,3 +1,10 @@
+2008-01-25  Andrew Cagney  <cagney@redhat.com>
+
+	* actions/RunExternal.java: Update to match
+	TaskObserver.Terminated.updateTerminated(Task,Signal,int).
+	* GuiTask.java: Ditto.
+	* observers/TaskTerminatingObserver.java: Ditto for terminating.
+
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
 	* observers/TaskSignaledObserver.java: Update to match

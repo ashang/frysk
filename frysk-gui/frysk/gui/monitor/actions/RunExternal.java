@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.gnu.glib.CustomEvents;
-
+import frysk.isa.signals.Signal;
 import frysk.gui.Gui;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
@@ -162,33 +162,24 @@ public class RunExternal
     }
   }
 
-  /**
-   * We want to know when the externally-executed program has quit, so that we
-   * can continue or optionally run another program.
-   */
-  class TaskTerminatedObserver
-      implements TaskObserver.Terminated
-  {
-    public void addedTo (Object observable)
-    {
+    /**
+     * We want to know when the externally-executed program has quit, so that we
+     * can continue or optionally run another program.
+     */
+    class TaskTerminatedObserver implements TaskObserver.Terminated {
+	public void addedTo(Object observable) {
+	}
+	public Action updateTerminated(Task task, Signal signal, int value) {
+	    theTask.requestUnblock(blocker);
+	    theTask.requestDeleteAttachedObserver(blocker);
+	    return Action.CONTINUE;
+	}
+	public void deletedFrom(Object observable) {
+	}
+	public void addFailed(Object observable, Throwable w) {
+	    throw new RuntimeException("Failed to attach to created proc", w);
+	}
     }
-
-    public Action updateTerminated (Task task, boolean signal, int value)
-    {
-      theTask.requestUnblock(blocker);
-      theTask.requestDeleteAttachedObserver(blocker);
-      return Action.CONTINUE;
-    }
-
-    public void deletedFrom (Object observable)
-    {
-    }
-
-    public void addFailed (Object observable, Throwable w)
-    {
-      throw new RuntimeException("Failed to attach to created proc", w);
-    }
-  }
 
   class RunExBlocker
       implements TaskObserver.Attached

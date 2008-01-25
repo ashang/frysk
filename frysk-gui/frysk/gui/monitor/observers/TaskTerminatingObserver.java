@@ -58,7 +58,7 @@ import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.sys.Signal;
+import frysk.isa.signals.Signal;
 
 public class TaskTerminatingObserver
     extends TaskObserverRoot
@@ -105,70 +105,57 @@ public class TaskTerminatingObserver
 
   }
 
-  public Action updateTerminating (Task task, boolean signal, int value)
-  {
-    final Task myTask = task;
-    final boolean mySignal = signal;
-    final int myValue = value;
+    public Action updateTerminating(Task task, Signal signal, int value) {
+	final Task myTask = task;
+	final Signal mySignal = signal;
+	final int myValue = value;
+	org.gnu.glib.CustomEvents.addEvent(new Runnable() {
+		public void run() {
+		    bottomHalf(myTask, mySignal, myValue);
+		}
+	    });
+	return Action.BLOCK;
+    }
 
-    org.gnu.glib.CustomEvents.addEvent(new Runnable()
-    {
-      public void run ()
-      {
-        bottomHalf(myTask, mySignal, myValue);
-      }
-    });
-    return Action.BLOCK;
-  }
+    protected void bottomHalf(Task task, Signal signal, int value) {
+	this.setInfo("PID: " + task.getProc().getPid()
+		     + " TID: " + task.getTid()
+		     + " Event: " + this.getName()
+		     + " Host: " + Manager.host.getName());
+	if (this.runFilters(task, signal, value)) {
+	    this.runActions(task, signal , value);
+	}
+	Action action = this.whatActionShouldBeReturned();
+	if (action == Action.BLOCK) {
+	    // 
+	} else {
+	    task.requestUnblock(this);
+	}
+    }
 
-  protected void bottomHalf (Task task, boolean signal, int value)
-  {
-    this.setInfo("PID: " + task.getProc().getPid() + " TID: " + task.getTid()
-                 + " Event: " + this.getName() + " Host: "
-                 + Manager.host.getName());
-    if (this.runFilters(task, signal, value))
-      {
-        this.runActions(task, signal , value);
-      }
-
-    Action action = this.whatActionShouldBeReturned();
-    if (action == Action.BLOCK)
-      {
-        // 
-      }
-    else
-      {
-        task.requestUnblock(this);
-      }
-  }
-
-    private void runActions (Task task, boolean signal, int value) {
+    private void runActions(Task task, Signal signal, int value) {
 	// TODO implement action points to take care of signal and
 	// value
 	String name = "terminating";
 	String tooltip = "task terminating";
 	Event event = new Event(name, tooltip, GuiTask.GuiTaskFactory.getGuiTask(task), this);
-	
 	super.runActions();
 	this.taskActionPoint.runActions(task, this, event);
-	
-	if (signal) {
-	    // XXX: This is the host, and not the target signal :-(
-	    name += " sig " + Signal.toHostStringFIXME(value);
-	    tooltip += " with signal " + Signal.toHostStringFIXME(value);
+	if (signal != null) {
+	    name += " sig " + signal;
+	    tooltip += " with signal " + signal;
 	}
 	EventManager.theManager.addEvent(event);
     }
 
-  private boolean runFilters (Task task, boolean signal, int value)
-  {
-    if (! this.taskFilterPoint.filter(task))
-      return false;
-    //To do add boolean filterPoint
-    if (! this.intFilterPoint.filter(value))
-      return false;
-    return true;
-  }
+    private boolean runFilters(Task task, Signal signal, int value) {
+	if (! this.taskFilterPoint.filter(task))
+	    return false;
+	//To do add boolean filterPoint
+	if (! this.intFilterPoint.filter(value))
+	    return false;
+	return true;
+    }
 
   public void apply (Task task)
   {

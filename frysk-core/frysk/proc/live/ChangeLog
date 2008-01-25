@@ -1,5 +1,7 @@
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserverCode.java: Fix a merge botch.
+
 	* TestRuntimeIsa.java (assertHasNoIsa(String,Task)): New.
 	(assertHasIsaEquals(String,Task,boolean)): Delete.
 	* LinuxPtraceTask.java (hasIsa()): Delete.
