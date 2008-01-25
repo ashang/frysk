@@ -51,7 +51,7 @@ public class TestLoadCommand extends TestLib {
 	e = new HpdTestbed();
 	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath()
 		+ "\n");
-	e.expect(5, "Loaded executable file.*");
+	e.expect("Loaded executable file.*");
 	e.send("quit\n");
 	e.expect("Quitting...");
 	e.close();
@@ -61,7 +61,7 @@ public class TestLoadCommand extends TestLib {
 	e = new HpdTestbed();
 	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath()
 		+ "foo\n");
-	e.expect(5, "File does not exist or is not readable*");
+	e.expect("File does not exist or is not readable*");
 	e.send("quit\n");
 	e.expect("Quitting...");
 	e.close();

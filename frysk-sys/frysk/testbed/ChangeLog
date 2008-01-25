@@ -1,3 +1,7 @@
+2008-01-25  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTearDownExpect.java: Update to match Expect rewrite.
+
 2008-01-22  Andrew Cagney  <cagney@redhat.com>
 
 	* TearDownProcess.java: Update to match

@@ -49,15 +49,13 @@ import frysk.junit.TestCase;
 public class TestExpect
     extends TestCase
 {
-    Expect e;
-    public void setUp ()
-    {
+    private Expect e;
+    public void setUp() {
 	e = null;
     }
-    public void tearDown ()
-    {
+    public void tearDown() {
 	if (e != null)
-	    e.close ();
+	    e.close();
     }
 
     /**
@@ -72,14 +70,12 @@ public class TestExpect
     /**
      * Try a timeout, that passes.
      */
-    public void testTimeout ()
-    {
-	e = new Expect (new String[] { "/bin/cat" });
+    public void testTimeout() {
+	e = new Expect(new String[] { "/bin/cat" });
 	long oldTime = System.currentTimeMillis ();
 	try {
-	    e.expectMilliseconds (100, (Match[]) null);
-	}
-	catch (TimeoutException e) {
+	    e.timeoutMilliseconds(100).expect(new Match[0]);
+	} catch (TimeoutException e) {
 	    // What the doctor ordered.
 	}
 	long newTime = System.currentTimeMillis ();

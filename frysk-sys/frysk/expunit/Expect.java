@@ -39,9 +39,7 @@
 
 package frysk.expunit;
 
-import frysk.sys.Errno;
 import frysk.sys.ProcessIdentifier;
-import frysk.sys.PseudoTerminal;
 import frysk.sys.Signal;
 import frysk.rsl.Log;
 import frysk.rsl.Level;
@@ -56,23 +54,24 @@ import java.io.File;
  * an exit status.
  */
 
-public class Expect
-{
-    static protected Log fine = Log.get(Expect.class, Level.FINE);
-    static private Log finest = Log.get(Expect.class, Level.FINEST);
+public class Expect {
+    private static final Log fine = Log.get(Expect.class, Level.FINE);
 
-    private final PseudoTerminal child = new PseudoTerminal ();
-    private ProcessIdentifier pid = null;
+    private final Child child;
+    private final long timeoutMilliseconds;
+    private Expect(Child child, long timeoutMilliseconds) {
+	this.child = child;
+	this.timeoutMilliseconds = timeoutMilliseconds;
+    }
 
     /**
      * Create an expect instance running the specified program args[0]
      * and args.
      */
     public Expect(String[] args) {
-	pid = child.addChild(args);
-	fine.log(this, "new", child, "pid", pid, "args", args);
+	this(new Child(args), defaultTimeoutSeconds * 1000);
+	fine.log(this, "new", child, "args", args);
     }
-
     /**
      * Create an expect instance running PROGRAM with no arguments.
      * 
@@ -82,16 +81,14 @@ public class Expect
     public Expect(File program) {
 	this(new String[] { program.getAbsolutePath() });
     }
-
     /**
      * Using <tt>bash</tt, create an expect instance running the
      * specified command.  Since the command is invoked using
      * <tt>bash</tt> it will be expanded using that shells variable
      * and globbing rules.
      */
-    public Expect (String command)
-    {
-	this (new String[] { "/bin/bash", "-c", command });
+    public Expect(String command) {
+	this(new String[] { "/bin/bash", "-c", command });
     }
 
     /**
@@ -101,18 +98,15 @@ public class Expect
      * events.
      */
     public void close() {
-	if (pid != null) {
-	    fine.log(this, "close");
+	if (child != null) {
 	    child.close();
-	    try {
-		pid.kill();
-	    } catch (Errno e) {
-		// Toss it, as cleanup.
-	    }
-	    pid.blockingDrain();
 	}
-	pid = null;
-	Signal.CHLD.drain();
+    }
+    /**
+     * Finalizer, also tries to clean up.
+     */
+    public void finalize() {
+	close();
     }
 
     /**
@@ -123,135 +117,37 @@ public class Expect
      * Set the global default timeout (in seconds).  Any expect
      * classes inherit this value.
      */
-    static public void setDefaultTimeoutSeconds (int defaultTimeoutSeconds)
-    {
+    static public void setDefaultTimeoutSeconds(int defaultTimeoutSeconds) {
 	Expect.defaultTimeoutSeconds = defaultTimeoutSeconds;
     }
 
     /**
-     * The current timeout (in seconds).
+     * Create a new expect (that shares everything with the old one)
+     * only with a different timeout.
      */
-    private int timeoutSeconds = defaultTimeoutSeconds;
-
-    /**
-     * Set the default timeout (in seconds).
-     */
-    public void setTimeoutSeconds (int timeoutSeconds)
-    {
-	this.timeoutSeconds = timeoutSeconds;
+    public Expect timeout(int timeoutSeconds) {
+	return timeoutMilliseconds(timeoutSeconds * 1000);
     }
     /**
-     * Get the default timeout (in seconds).
+     * Create a new expect (that shares everything with the old one)
+     * only with a different timeout.
      */
-    public int getTimeoutSeconds ()
-    {
-	return timeoutSeconds;
-    }
-
-    /**
-     * Finalizer, also tries to clean up.
-     */
-    public void finalize ()
-    {
-	close ();
+    Expect timeoutMilliseconds(long timeoutMilliseconds) {
+	return new Expect(child, timeoutMilliseconds);
     }
 
     /**
      * Return the Process ID of the child.
      */
-    public ProcessIdentifier getPid ()
-    {
-	return pid;
+    public ProcessIdentifier getPid() {
+	return child.getPid();
     }
 
-    /**
-     * Buffer containing all the unmatched output from the child.
-     * It's a String and not a StringBuffer as after every change the
-     * buffer gets re-converted to a String anyway.
-     */
-    private String output = new String ();
-    /**
-     * Detected end-of-file, or hang-up.
-     */
-    private boolean eof = false;
-    
     /**
      * Send "string" to the child process.
      */
     public void send(String string) {
-	fine.log(this, "send", (Object)string);
-	byte[] bytes = string.getBytes();
-	child.write(bytes, 0, bytes.length);
-    }
-
-    /**
-     * Expect one of the specified patterns; throw TimeoutException if
-     * timeoutSecond expires; throw EofException if end-of-file is encountered.
-     * 
-     * This is package visible so that TestExpect can use it, but no one else.
-     */
-    void expectMilliseconds(long timeoutMilliseconds, Match[] matches) {
-	final long endTime = (System.currentTimeMillis() + timeoutMilliseconds);
-	fine.log(this, "expect", matches, "timeout [milliseconds]", (int)timeoutMilliseconds);
-	while (true) {
-	    if (matches != null) {
-		for (int i = 0; i < matches.length; i++) {
-		    Match p = matches[i];
-		    if (p != null) {
-			finest.log(this, "find", p, "in", (Object) output);
-			if (p.find(output)) {
-			    fine.log(this, "match", (Object) p.group(), "with", p);
-			    p.execute();
-			    // Remove everything up to and including what
-			    // matched.
-			    if (p.end() >= 0)
-				output = output.substring(p.end());
-			    return;
-			}
-		    }
-		}
-	    }
-	    if (eof) {
-		fine.log(this, "match EOF");
-		throw new EndOfFileException(matches, output);
-	    }
-	    long timeRemaining = endTime - System.currentTimeMillis();
-	    if (timeRemaining <= 0) {
-		fine.log(this, "match TIMEOUT");
-		throw new TimeoutException(timeoutMilliseconds / 1000, matches,
-			output);
-	    }
-
-	    finest.log(this, "poll for [milliseconds]", timeRemaining);
-	    if (child.ready(timeRemaining)) {
-		byte[] bytes = new byte[100];
-		int nr = child.read(bytes, 0, bytes.length);
-		switch (nr) {
-		case -1:
-		    finest.log(this, "poll -> EOF");
-		    eof = true;
-		    break;
-		case 0:
-		    finest.log(this, "poll -> no data!");
-		    break;
-		default:
-		    String read = new String(bytes, 0, nr);
-		    output = output + read;
-		    finest.log(this, "poll -> ", (Object) read, "giving",
-			    (Object) output);
-		    break;
-		}
-	    }
-	}
-    }
-
-    /**
-     * Expect one of the specified patterns; throw TimeoutException if
-     * timeoutSecond expires; throw EofException if end-of-file is encountered.
-     */
-    public void expect (long timeoutSeconds, Match[] matches)
-    {
-	expectMilliseconds (timeoutSeconds * 1000, matches);
+	child.send(string);
     }
 
     /**
@@ -259,19 +155,8 @@ public class Expect
      * default timeout expires or EofException if end-of-file is
      * reached.
      */
-    public void expect (Match[] matches)
-    {
-	expect (timeoutSeconds, matches);
-    }
-
-    /**
-     * Expect the specified pattern, throw a TimeoutException if the
-     * specified timeout expires or EofException if end-of-file is
-     * reached.
-     */
-    public void expect (long timeoutSeconds, Match match)
-    {
-	expect (timeoutSeconds, new Match[] { match });
+    public void expect(Match[] matches) {
+	child.expectMilliseconds(timeoutMilliseconds, matches);
     }
 
     /**
@@ -279,19 +164,8 @@ public class Expect
      * default timeout expires or EofException if end-of-file is
      * reached.
      */
-    public void expect (Match match)
-    {
-	expect (timeoutSeconds, match);
-    }
-
-    /**
-     * Expect the specified regular expression, throw a
-     * TimeoutException if the specified timeout expires or
-     * EofException if end-of-file is reached.
-     */
-    public void expect (long timeoutSeconds, String regex)
-    {
-	expect (timeoutSeconds, new Regex (regex));
+    public void expect(Match match) {
+	expect(new Match[] { match });
     }
 
     /**
@@ -299,37 +173,17 @@ public class Expect
      * TimeoutException if the default timeout expires or EofException
      * if end-of-file is reached.
      */
-    public void expect (String regex)
-    {
-	expect (timeoutSeconds, regex);
-    }
-
-    /**
-     * Expect a TimeoutException after timeoutSeconds.
-     */
-    public void expect (long timeoutSeconds)
-    {
-	expect (timeoutSeconds, (Match[]) null);
-    }
-
-    /**
-     * Expect a TimeoutException to be thrown after waiting the
-     * default time period.
-     */
-    public void expect ()
-    {
-	expect (timeoutSeconds);
+    public void expect(String regex) {
+	expect(new Regex (regex));
     }
 
     /**
      * Expect an EOF.
      */
-    public void expectEOF ()
-    {
+    public void expectEOF() {
 	try {
-	    expect ();
-	}
-	catch (EndOfFileException e) {
+	    expect(new Match[0]);
+	} catch (EndOfFileException e) {
 	    // Just what the doctor ordered.
 	}
     }
@@ -339,23 +193,22 @@ public class Expect
      */
     public void expectTermination(int status) {
 	try {
-	    expect ();
-	}
-	catch (EndOfFileException e) {
+	    expect(new Match[0]);
+	} catch (EndOfFileException e) {
 	    // This is blocking; which probably isn't good.
-	    pid.blockingWait(new WaitObserver(status));
+	    getPid().blockingWait(new WaitObserver(status));
 	}
     }
+
     /**
      * Expect the child process to be terminated by SIGNAL.
      */
     public void expectTermination(Signal signal) {
 	try {
-	    expect ();
-	}
-	catch (EndOfFileException e) {
+	    expect(new Match[0]);
+	} catch (EndOfFileException e) {
 	    // This is blocking; which probably isn't good.
-	    pid.blockingWait(new WaitObserver(signal));
+	    getPid().blockingWait(new WaitObserver(signal));
 	}
     }
 }

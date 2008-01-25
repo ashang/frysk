@@ -1,3 +1,18 @@
+2008-01-25  Andrew Cagney  <cagney@redhat.com>
+
+	* Expect.java: Split into Child.java.
+	(setTimeoutSeconds(int)): Delete.
+	(timeout(int)): New.
+	(getTimeout()): Replace getTimeoutSeconds().
+	(expectMilliseconds(long,Match[])): Delete.
+	(expect(long,Match[])): Delete.
+	(expect(long,Match)): Delete.
+	(expect(long,String)): Delete.
+	(expect(long)): Delete.
+	(expect()): Delete.
+	* Child.java: New.
+	* TestExpect.java: Update.
+
 2008-01-22  Andrew Cagney  <cagney@redhat.com>
 
 	* Expect.java (expectTermination(Signal)): New.

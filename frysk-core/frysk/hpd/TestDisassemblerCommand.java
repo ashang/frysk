@@ -41,18 +41,13 @@ package frysk.hpd;
 
 import lib.opcodes.Disassembler;
 
-public class TestDisassemblerCommand
-    extends TestLib
-{
+public class TestDisassemblerCommand extends TestLib {
     public void testHpdDisassemble() {
 	if (unsupported("disassembler", !Disassembler.available()))
 	    return;
 	e = HpdTestbed.attachXXX("hpd-c");
 	e.send("disassemble\n");
-	e.expect(5, "\\*.*test.*\n(.*\n)*" + prompt);
-	e.send("quit\n");
-	e.expect("Quitting...");
-	e.close();
+	e.expect("\\*.*test.*\n(.*\n)*" + prompt);
     }
     
     public void testDisassembleRange() {
@@ -60,10 +55,7 @@ public class TestDisassemblerCommand
 	    return;
 	e = HpdTestbed.attachXXX("hpd-c");
 	e.send("disassemble 0x804860f  0x80487ea\n");
-	e.expect(5, " 0x804860f.*\n");
-	e.expect(5, " 0x80487ea.*\n" + prompt);
-	e.send("quit\n");
-	e.expect("Quitting...");
-	e.close();
+	e.expect(" 0x804860f.*\n");
+	e.expect(" 0x80487ea.*\n" + prompt);
     }
 }

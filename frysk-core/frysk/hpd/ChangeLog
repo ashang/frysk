@@ -1,3 +1,10 @@
+2008-01-25  Andrew Cagney  <cagney@redhat.com>
+
+	* TestDisassemblerCommand.java: Do not use explicit timeouts.
+	* TestHpdTestHarness.java: Ditto.
+	* TestKillCommand.java: Ditto.
+	* TestLoadCommand.java: Ditto.
+
 2008-01-24  Nurdin Premji  <npremji@redhat.com>
 
 	* TaskData.java (toPrint): Renamed to ...

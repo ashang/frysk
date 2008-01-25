@@ -62,14 +62,14 @@ public class TestKillCommand extends TestLib {
 	e = new HpdTestbed();
 	e.send("load " + Config.getPkgLibFile("funit-threads-looper").getPath()
 		+ "\n");
-	e.expect(5, "Loaded executable file*");
+	e.expect("Loaded executable file*");
 	e.send("run\n");
-	e.expect(5, "Attached to process*");
+	e.expect("Attached to process*");
 	e.send("go\n");
-	e.expect(5, "Running process*");
+	e.expect("Running process*");
 	e.send("kill\n");
-	e.expect(5, "Killing process*");
-	e.expect(5, "Loaded executable file*");
+	e.expect("Killing process*");
+	e.expect("Loaded executable file*");
 	/* Make sure you run again to make sure all has been cleaned up properly
 	 * from the last run.
 	 */
@@ -81,17 +81,17 @@ public class TestKillCommand extends TestLib {
          *  test to fail for no good reason.  A bug will be filed on this and the
          *  lines can be uncommented when fixed. */
 	/*
-	e.send(5, "run", "Attached to process*");
-	e.expect(5, "Attached to process*");
+	e.send("run", "Attached to process*");
+	e.expect("Attached to process*");
 	e.send("go\n");
-	e.expect(5, "Running process*");
+	e.expect("Running process*");
 	e.send("kill\n");
-	e.expect(5, "Killing process*");
-	e.expect(5, "Loaded executable file*");
+	e.expect("Killing process*");
+	e.expect("Loaded executable file*");
 	/* Make sure we can quit gracefully  */
 	/*
 	e.send("quit\n");
-	e.expect(5, "Quitting*"); */
+	e.expect("Quitting*"); */
 	e.close();
     }
     
@@ -103,11 +103,11 @@ public class TestKillCommand extends TestLib {
 	e = new HpdTestbed();
 	e.send("load " + Config.getPkgLibFile("funit-threads-looper").getPath()
 		+ "\n");
-	e.expect(5, "Loaded executable file*");
+	e.expect("Loaded executable file*");
 	e.send("run\n");
-	e.expect(5, "Attached to process*");
+	e.expect("Attached to process*");
 	e.send("kill\n");
-	e.expect(5, "Killing process*");
+	e.expect("Killing process*");
 	//e.send("quit\n");
 	//e.expect("Quitting*");
 	e.close();
