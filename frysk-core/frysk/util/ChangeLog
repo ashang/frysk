@@ -1,3 +1,8 @@
+2008-01-25  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCoredumpAction.java (testElfCoreHeader()): Fetch the ISA
+	from a blocked task.
+
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFCatch.java: Update to match

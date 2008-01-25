@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, Red Hat Inc.
+// Copyright 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -84,13 +84,13 @@ public class TestCoredumpAction
   {
 
 
-    Proc ackProc = giveMeAProc();
+    Proc ackProc = giveMeABlockedProc();
+    ISA isa = getISA(ackProc);
     String coreFileName = constructCore(ackProc);
     File testCore = new File(coreFileName);
     assertTrue("Checking core file " + coreFileName + " exists.",
                testCore.exists());
 
-    ISA isa = getISA(ackProc);
     ByteOrder order = isa.order();
 
     Elf local_elf = getElf(coreFileName);
