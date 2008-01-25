@@ -69,7 +69,7 @@ public class TestFdebuginfo extends TestLib {
 	TearDownExpect e = new TearDownExpect(new String[] { 
 		Config.getBinFile("fdebuginfo").getAbsolutePath ()
 	});
-	e.expect("Error: No pid provided.");      
+	e.expect("ERROR: No argument provided");      
     }    
 
     public void testBadArguments() {
@@ -77,7 +77,7 @@ public class TestFdebuginfo extends TestLib {
 		Config.getBinFile("fdebuginfo").getAbsolutePath (),
 		"this is a bad argument"
 	});
-	e.expect("Error: Commands not supported.");
+	e.expect("File does not exist or is not readable or is not a file.");
     }
 
     public void testInvalidArgument() {

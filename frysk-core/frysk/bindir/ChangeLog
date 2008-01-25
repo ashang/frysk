@@ -1,5 +1,8 @@
 2008-01-25  Teresa Thomas  <tthomas@redhat.com>
 
+	* TestFdebuginfo.java (testBadArguments): Update.
+	(testNoArguments): Update.
+	
 	* fdebuginfo.java: Reindent.
 	(.parseCommand): New.
 	* TestFdebuginfo.java: Reindent.
