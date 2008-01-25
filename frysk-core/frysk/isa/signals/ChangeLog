@@ -1,5 +1,10 @@
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
+	* SignalTableFactory.java: Use StandardSignal.
+	* Signal.java (equals(StandardSignal)): New.
+	(Signal(int,StandardSignal)): New.
+	* StandardSignal.java: New.
+
 	* TestSignalTable.java: Use frysk.testbed.IsaTestbed.
 
 2008-01-24  Andrew Cagney  <cagney@redhat.com>

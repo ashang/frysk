@@ -46,6 +46,11 @@ public class Signal implements Comparable {
     private final int value;
     private final String name;
     private final String description;
+    Signal(int value, StandardSignal s) {
+	this.value = value;
+	this.name = s.getName();
+	this.description = s.getDescription();
+    }
     Signal(int value, String name, String description) {
 	this.value = value;
 	this.name = name;
@@ -79,5 +84,8 @@ public class Signal implements Comparable {
     }
     public int compareTo(Object o) {
 	return ((Signal)o).intValue() - this.intValue();
+    }
+    public boolean equals(StandardSignal s) {
+	return s.equals(this);
     }
 }

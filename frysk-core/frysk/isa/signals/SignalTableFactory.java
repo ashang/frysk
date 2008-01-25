@@ -48,64 +48,59 @@ import frysk.isa.ISA;
 
 public class SignalTableFactory {
     private static class SignalEntry {
-	private final String name;
+	private final StandardSignal signal;
 	private final int[] value = new int[3];
-	private final String description;
-	SignalEntry(String name, int a0, int a1, int a2, String description) {
-	    this.name = name;
+	SignalEntry(int a0, int a1, int a2, StandardSignal signal) {
+	    this.signal = signal;
 	    this.value[0] = a0;
 	    this.value[1] = a1;
 	    this.value[2] = a2;
-	    this.description = description;
 	}
-	SignalEntry(String name, int a, String description) {
-	    this(name, a, a, a, description);
+	SignalEntry(int a, StandardSignal signal) {
+	    this(a, a, a, signal);
 	}
 	void put(SignalTable signalTable, int index) {
-	    if (value[index] >= 0)
-		signalTable.add(value[index], name, description);
+	    if (value[index] >= 0) {
+		signalTable.add(value[index], signal);
+	    }
 	}
     }
     private static final SignalEntry[] linuxSignals
 	= new SignalEntry[] {
-	new SignalEntry("SIGHUP", 1, "Hangup detected on controlling terminal or death of controlling process"),
-	new SignalEntry("SIGINT", 2, "Interrupt from keyboard"),
-	new SignalEntry("SIGQUIT", 3, "Quit from keyboard"),
-	new SignalEntry("SIGILL", 4, "Illegal Instruction"),
-	new SignalEntry("SIGABRT", 6, "Abort signal from abort(3)"),
-	new SignalEntry("SIGFPE", 8, "Floating point exception"),
-	new SignalEntry("SIGKILL", 9, "Kill signal"),
-	new SignalEntry("SIGSEGV", 11, "Invalid memory reference"),
-	new SignalEntry("SIGPIPE", 13, "Broken pipe: write to pipe with no readers"),
-	new SignalEntry("SIGALRM", 14, "Timer signal from alarm(2)"),
-	new SignalEntry("SIGTERM", 15, "Termination signal"),
-	new SignalEntry("SIGUSR1", 30,10,16, "User-defined signal 1"),
-	new SignalEntry("SIGUSR2", 31,12,17, "User-defined signal 2"),
-	new SignalEntry("SIGCHLD", 20,17,18, "Child stopped or terminated"),
-	new SignalEntry("SIGCONT", 19,18,25, "Continue if stopped"),
-	new SignalEntry("SIGSTOP", 17,19,23, "Stop process"),
-	new SignalEntry("SIGTSTP", 18,20,24, "Stop typed at tty"),
-	new SignalEntry("SIGTTIN", 21,21,26, "tty input for background process"),
-	new SignalEntry("SIGTTOU", 22,22,27, "tty output for background process"),
-	new SignalEntry("SIGBUS", 10,7,10, "Bus error (bad memory access)"),
-	new SignalEntry("SIGPOLL", 23,29,22, "IO event (Sys V). Synonym of SIGIO"),
-	new SignalEntry("SIGPROF", 27,27,29, "Profiling timer expired"),
-	new SignalEntry("SIGSYS", 12,-1,12, "Bad argument to routine (SVr4)"),
-	new SignalEntry("SIGTRAP", 5, "Trace/breakpoint trap"),
-	new SignalEntry("SIGURG", 16,23,21, "Urgent condition on socket (4.2BSD)"),
-	new SignalEntry("SIGVTALRM", 26,26,28, "Virtual alarm clock (4.2BSD)"),
-	new SignalEntry("SIGXCPU", 24,24,30, "CPU time limit exceeded (4.2BSD)"),
-	new SignalEntry("SIGXFSZ", 25,25,31, "File size limit exceeded (4.2BSD)"),
-	new SignalEntry("SIGIOT", 6, "IOT trap. A synonym for SIGABRT"),
-	new SignalEntry("SIGEMT", 7,-1,7, ""),
-	new SignalEntry("SIGSTKFLT", -1,16,-1, "Stack fault on coprocessor (unused)"),
-	new SignalEntry("SIGIO", 23,29,22, "I/O now possible (4.2BSD)"),
-	new SignalEntry("SIGCLD", -1,-1,18, "A synonym for SIGCHLD"),
-	new SignalEntry("SIGPWR", 29,30,19, "Power failure (System V)"),
-	new SignalEntry("SIGINFO", 29,-1,-1, "synonym for SIGPWR"),
-	new SignalEntry("SIGLOST", -1,-1,-1, "File lock lost"),
-	new SignalEntry("SIGWINCH", 28,28,20, "Window resize signal (4.3BSD, Sun)"),
-	new SignalEntry("SIGSYS", -1,31,-1, "Unused signal (will be SIGSYS)"),
+	new SignalEntry(1, StandardSignal.HUP),
+	new SignalEntry(2, StandardSignal.INT),
+	new SignalEntry(3, StandardSignal.QUIT),
+	new SignalEntry(4, StandardSignal.ILL),
+	new SignalEntry(6, StandardSignal.ABRT),
+	new SignalEntry(8, StandardSignal.FPE),
+	new SignalEntry(9, StandardSignal.KILL),
+	new SignalEntry(11, StandardSignal.SEGV),
+	new SignalEntry(13, StandardSignal.PIPE),
+	new SignalEntry(14, StandardSignal.ALRM),
+	new SignalEntry(15, StandardSignal.TERM),
+	new SignalEntry(30,10,16, StandardSignal.USR1),
+	new SignalEntry(31,12,17, StandardSignal.USR2),
+	new SignalEntry(20,17,18, StandardSignal.CHLD),
+	new SignalEntry(19,18,25, StandardSignal.CONT),
+	new SignalEntry(17,19,23, StandardSignal.STOP),
+	new SignalEntry(18,20,24, StandardSignal.TSTP),
+	new SignalEntry(21,21,26, StandardSignal.TTIN),
+	new SignalEntry(22,22,27, StandardSignal.TTOU),
+	new SignalEntry(10,7,10, StandardSignal.BUS),
+	new SignalEntry(27,27,29, StandardSignal.PROF),
+	new SignalEntry(12,-1,12, StandardSignal.SYS),
+	new SignalEntry(5, StandardSignal.TRAP),
+	new SignalEntry(16,23,21, StandardSignal.URG),
+	new SignalEntry(26,26,28, StandardSignal.VTALRM),
+	new SignalEntry(24,24,30, StandardSignal.XCPU),
+	new SignalEntry(25,25,31, StandardSignal.XFSZ),
+	new SignalEntry(7,-1,7, StandardSignal.EMT),
+	new SignalEntry(-1,16,-1, StandardSignal.STKFLT),
+	new SignalEntry(23,29,22, StandardSignal.IO),
+	new SignalEntry(29,30,19, StandardSignal.PWR),
+	new SignalEntry(-1,-1,-1, StandardSignal.LOST),
+	new SignalEntry(28,28,20, StandardSignal.WINCH),
+	new SignalEntry(-1,31,-1, StandardSignal.SYS),
     };
     public static final SignalTable ALPHA = new SignalTable();
     public static final SignalTable SPARC = ALPHA;
@@ -119,6 +114,18 @@ public class SignalTableFactory {
 	    linuxSignals[i].put(IA32, 1);
 	    linuxSignals[i].put(MIPS, 2);
 	}
+	ALPHA.add("SIGCLD", StandardSignal.CHLD)
+	    .add("SIGINFO", StandardSignal.PWR)
+	    .add("SIGPOLL", StandardSignal.IO)
+	    .add("SIGIOT", StandardSignal.ABRT);
+	IA32.add("SIGCLD", StandardSignal.CHLD)
+	    .add("SIGINFO", StandardSignal.PWR)
+	    .add("SIGPOLL", StandardSignal.IO)
+	    .add("SIGIOT", StandardSignal.ABRT);
+	MIPS.add("SIGCLD", StandardSignal.CHLD)
+	    .add("SIGINFO", StandardSignal.PWR)
+	    .add("SIGPOLL", StandardSignal.IO)
+	    .add("SIGIOT", StandardSignal.ABRT);
     }
 
     private static final ISAMap isaSignals

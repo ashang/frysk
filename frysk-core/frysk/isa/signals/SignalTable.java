@@ -85,18 +85,35 @@ public class SignalTable {
     private final Map names = new HashMap();
 
     /**
-     * Method to make construction of the signals table easier.
+     * Return the Signal corresponding to the StandardSignal.
      */
-    SignalTable add(int value, String name, String description) {
+    public Signal get(StandardSignal sig) {
+	return (Signal)standard.get(sig);
+    }
+    private final Map standard = new HashMap();
+
+    /**
+     * Add a signal based on a standard signal.
+     */
+    SignalTable add(int value, StandardSignal standardSignal) {
 	searchSignal.key = value;
 	Signal signal = (Signal)signals.get(searchSignal);
-	if (signal != null) {
-	    names.put(name, signal); // alias
-	} else {
-	    signal = new Signal(value, name, description);
-	    names.put(signal.getName(), signal);
-	    signals.put(signal, signal);
-	}
+	if (signal != null)
+	    throw new NullPointerException("duplicate signal " + value);
+	signal = new Signal(value, standardSignal);
+	names.put(signal.getName(), signal);
+	signals.put(signal, signal);
+	standard.put(standardSignal, signal);
+	return this;
+    }
+    /**
+     * Add a synonym for a standard signal.
+     */
+    SignalTable add(String name, StandardSignal standardSignal) {
+	Signal signal = get(standardSignal);
+	if (signal == null)
+	    throw new NullPointerException("signal synonym " + name + " not defined");
+	names.put(name, signal);
 	return this;
     }
 }

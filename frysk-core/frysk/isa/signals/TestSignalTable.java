@@ -63,4 +63,12 @@ public class TestSignalTable extends TestLib {
 			 targetSignal.toString());
 	}
     }
+    public void testStandardSignals() {
+	SignalTable signalTable
+	    = SignalTableFactory.getSignalTable(IsaTestbed.getISA());
+	Signal kill = signalTable.get(StandardSignal.KILL);
+	assertNotNull("kill", kill);
+	assertEquals("name", "SIGKILL", kill.getName());
+	assertEquals("value", 9, kill.intValue());
+    }
 }

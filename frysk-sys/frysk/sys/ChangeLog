@@ -1,5 +1,10 @@
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
+	* Signal.java-sh: Add the synonyms - POLL, IOT, INFO and CLD -
+	last.
+	
+	* Signal.java-sh (toHostStringFIXME(int)): Delete.
+	
 	* Signal.java-sh (equals(int)): Delete.
 	
 	* Signal.java-sh (compareTo(Object)): Fix ordering.

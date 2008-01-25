@@ -143,17 +143,6 @@ public class Signal implements Comparable {
     }
 
     /**
-     * Return the <b>host</b> signal as a string.
-     * 
-     * For frysk what you instead want is a conversion from the
-     * integer to the <b>target</b>'s string representation.
-     * See the numbering described in signal(7) for the problems.
-     */
-    public static String toHostStringFIXME(int signal) {
-        return valueOf(signal).toString();
-    }
-
-    /**
      * Given an integer, return the corresponding <b>host</b> signal.
      * If the signal is unknown, make one up.
      *
@@ -222,10 +211,14 @@ public class Signal implements Comparable {
     public static final Signal NONE = signalFactory(0, "SIGNONE");
 EOF
 
+# The synonyms are added last so that the real signals take priority.
+
 for sig in \
-  hup int_ quit ill abrt fpe kill segv pipe alrm term usr1 usr2 chld cont stop tstp ttin ttou \
-  bus poll prof sys trap urg vtalrm xcpu xfsz \
-  iot emt stkflt io cld pwr info lost winch unused
+    hup int_ quit ill abrt fpe kill segv pipe alrm term usr1 usr2 chld cont stop tstp ttin ttou \
+    bus prof sys trap urg vtalrm xcpu xfsz \
+    emt stkflt io pwr lost winch unused \
+    \
+    poll iot info cld
 do
     SIG=`echo "${sig}" | tr '[a-z]' '[A-Z]' | sed 's/_$//'`
     echo "    private static native int ${sig}();"
