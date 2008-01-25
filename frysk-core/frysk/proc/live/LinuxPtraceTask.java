@@ -149,17 +149,13 @@ public class LinuxPtraceTask extends LiveTask {
      * Can this instead look at AUXV?
      */
     public ISA getISA() {
-	if (currentISA == null)
-	    // FIXME: This should use task.proc.getExe().  Only that
-	    // causes wierd failures; take a rain-check :-(
-	    currentISA = ElfMap.getISA(new File("/proc/" + getTid() + "/exe"));
-	return currentISA;
+	ISA scratch = currentISA;
+	if (scratch == null)
+	    throw new NullPointerException("ISA unavailable; task "
+					   + this + " has no observers");
+	return scratch;
     }
     private ISA currentISA;
-
-    boolean hasIsa() {
-	return (currentISA != null);
-    }
 
     /**
      * Return the Task's ISA.
@@ -291,26 +287,6 @@ public class LinuxPtraceTask extends LiveTask {
 	Signal.STOP.tkill(getTid());
     }
 
-    private int ptraceOptions;
-    public void sendSetOptions ()
-    {
-	logger.log(Level.FINE, "{0} sendSetOptions\n", this);
-	try
-	    {
-		// XXX: Should be selecting the trace flags based on the
-		// contents of .observers.
-		ptraceOptions |= Ptrace.optionTraceClone();
-		ptraceOptions |= Ptrace.optionTraceFork();
-		ptraceOptions |= Ptrace.optionTraceExit();
-		// ptraceOptions |= Ptrace.optionTraceSysgood (); not set by default
-		ptraceOptions |= Ptrace.optionTraceExec();
-		Ptrace.setOptions(getTid(), ptraceOptions);
-	    }
-	catch (Errno.Esrch e)
-	    {
-		postDisappearedEvent(e);
-	    }
-    }
 
     public void sendAttach ()
     {
@@ -363,18 +339,29 @@ public class LinuxPtraceTask extends LiveTask {
 	}
     }
 
-    public void startTracingSyscalls ()
-    {
+    // XXX: Should be selecting the trace flags based on the contents
+    // of .observers?  Ptrace.optionTraceSysgood not set by default
+    private long ptraceOptions
+	= Ptrace.optionTraceClone()
+	| Ptrace.optionTraceFork()
+	| Ptrace.optionTraceExit()
+	| Ptrace.optionTraceExec();
+    void initializeAttachedState() {
+	logger.log(Level.FINE, "{0} initializeAttachedState\n", this);
+	Ptrace.setOptions(getTid(), ptraceOptions);
+	// FIXME: This should use task.proc.getExe().  Only that
+	// causes wierd failures; take a rain-check :-(
+	currentISA = ElfMap.getISA(new File("/proc/" + getTid() + "/exe"));
+    }
+    void startTracingSyscalls() {
 	logger.log(Level.FINE, "{0} startTracingSyscalls\n", this);
 	ptraceOptions |= Ptrace.optionTraceSysgood();
-	this.sendSetOptions();
+	Ptrace.setOptions(getTid(), ptraceOptions);
     }
-
-    public void stopTracingSyscalls ()
-    {
+    void stopTracingSyscalls() {
 	logger.log(Level.FINE, "{0} stopTracingSyscalls\n", this);
 	ptraceOptions &= ~ (Ptrace.optionTraceSysgood());
-	this.sendSetOptions();
+	Ptrace.setOptions(getTid(), ptraceOptions);
     }
 
 
@@ -714,6 +701,7 @@ public class LinuxPtraceTask extends LiveTask {
 	//Flush the isa in case it has changed between exec's.
 	clearIsa();
 	//XXX: When should the isa be rebuilt?
+	initializeAttachedState();
 	for (Iterator i = execedObservers.iterator(); i.hasNext();) {
 	    TaskObserver.Execed observer = (TaskObserver.Execed) i.next();
 	    if (observer.updateExeced(this) == Action.BLOCK)
@@ -993,7 +981,8 @@ public class LinuxPtraceTask extends LiveTask {
 	setRegister(pcRegister(), addr);
     }
 
-    public void clearIsa() {
+    protected void clearIsa() {
+	logger.log(Level.FINE, "{0} clearIsa\n", this);
 	super.clearIsa();
 	pcRegister = null;
 	memory = null;

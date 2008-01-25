@@ -93,7 +93,12 @@ public abstract class Task {
     protected abstract String getStateFIXME();
 
     /**
-     * Return's this Task's Instruction Set Architecture.
+     * Return's this Task's Instruction Set Architecture; or throw a
+     * NullPointerException if the ISA is not available.
+     *
+     * The isa is only available while the task is under observation
+     * (attached) as an un-observed task can switch isa's (using
+     * exec(2)) undetected.
      */
     public abstract ISA getISA();
 
@@ -337,7 +342,7 @@ public abstract class Task {
      */
     public abstract int getMod();
  
-    public void clearIsa() {
+    protected void clearIsa() {
 	syscallTable = null;
 	signalTable = null;
     }

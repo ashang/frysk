@@ -183,13 +183,13 @@ class LinuxPtraceTaskState extends State {
 		    task.sendAttach();
 		    if (task.getProc().getMainTask() == task
 			&& Status.isStopped(task.getTid())) {
-			// The attach has been initiated on the main task
-			// of the process; the process state should
-			// transition to (T) TRACED.  If it is instead (T)
-			// STOPPED then the process is stuck (suspended),
-			// send it a SIGSTOP to unwedge it.  /proc/status
-			// is used as that differentiates between STOPPED
-			// an TRACED.
+			// The attach has been initiated on the main
+			// task of the process; the process state
+			// should transition to (T) TRACED.  If it is
+			// instead (T) STOPPED then the process is
+			// stuck (suspended), send it a SIGSTOP to
+			// unwedge it.  /proc/status is used as that
+			// differentiates between STOPPED an TRACED.
 			logger.log(Level.FINE,
 				   "{0} wake the suspended process", task);
 			Signal.CONT.tkill(task.getTid());
@@ -234,7 +234,9 @@ class LinuxPtraceTaskState extends State {
 		    // Toss the stop event.
 		    signal = Signal.NONE;
 		}
-		((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted(task);
+		task.initializeAttachedState();
+		((LinuxPtraceProc)task.getProc())
+		    .performTaskAttachCompleted(task);
 		return new Attached.WaitForContinueOrUnblock(signal);
 	    }
 	}
@@ -287,6 +289,8 @@ class LinuxPtraceTaskState extends State {
 	LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task,
 						  TaskObservation observation) {
 	    logger.log(Level.FINE, "{0} handleAddObservation\n", task);
+	    // XXX: Need to check needsSuspendedAction; the task isn't
+	    // stopped.
 	    observation.add();
 	    return this;
 	}
@@ -296,6 +300,8 @@ class LinuxPtraceTaskState extends State {
 	LinuxPtraceTaskState handleDeleteObservation(LinuxPtraceTask task,
 						     TaskObservation observation) {
 	    logger.log(Level.FINE, "{0} handleDeleteObservation\n", task); 
+	    // XXX: Need to check needsSuspendedAction; the task isn't
+	    // stopped.
 	    observation.delete();
 	    return handleUnblock(task, observation.getTaskObserver());
 	}
@@ -348,7 +354,6 @@ class LinuxPtraceTaskState extends State {
 	 */
         static LinuxPtraceTaskState transitionToRunningState(LinuxPtraceTask task, Signal signal) {
 	    logger.log(Level.FINE, "transitionToRunningState\n");
-	    task.sendSetOptions();
 	    if (task.notifyAttached() > 0)
 		return new BlockedSignal(signal, false);
 	    else
@@ -425,9 +430,9 @@ class LinuxPtraceTaskState extends State {
      * influence this assumption: the task stops; and the controlling
      * proc orders an attach.
      *
-     * If the LinuxPtraceTask stops then, once the ForkedOffspring observers have
-     * stopped blocking this, do the detach.  * ForkOffspring
-     * observers of this).
+     * If the LinuxPtraceTask stops then, once the ForkedOffspring
+     * observers have stopped blocking this, do the detach.
+     * ForkOffspring observers of this).
      *
      * If, on the other hand, an attach order is received, change the
      * assumption to that the task should be attached and proceed on
@@ -446,27 +451,32 @@ class LinuxPtraceTaskState extends State {
 	    new StartMainTask("wantToDetach") {
 		LinuxPtraceTaskState handleAttach(LinuxPtraceTask task) {
 		    logger.log(Level.FINE, "{0} handleAttach\n", task); 
-		    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted(task);
+		    ((LinuxPtraceProc)task.getProc())
+			.performTaskAttachCompleted(task);
 		    return StartMainTask.wantToAttach;
 		}
 		LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
 							Signal signal) {
 		    if (signal == Signal.STOP || signal == Signal.TRAP) {
-			if (task.notifyForkedOffspring() > 0)
+			task.initializeAttachedState();
+			if (task.notifyForkedOffspring() > 0) {
 			    return StartMainTask.detachBlocked;
-			task.sendDetach(Signal.NONE);
-			((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted(task);
-			return detached;
+			} else {
+			    task.sendDetach(Signal.NONE);
+			    ((LinuxPtraceProc)task.getProc())
+				.performTaskDetachCompleted(task);
+			    return detached;
+			}
 		    } else {
 			throw unhandled(task, "handleStoppedEvent " + signal);
 		    }
 		}
 	    };
 	/**
-	 * The detaching LinuxPtraceTask has stopped and the ForkedOffspring
-	 * observers have been notified; just waiting for all the
-	 * ForkedOffspring blockers to be removed before finishing the
-	 * detach.
+	 * The detaching LinuxPtraceTask has stopped and the
+	 * ForkedOffspring observers have been notified; just waiting
+	 * for all the ForkedOffspring blockers to be removed before
+	 * finishing the detach.
 	 */
 	static final LinuxPtraceTaskState detachBlocked =
 	    new StartMainTask("detachBlocked") {
@@ -477,22 +487,30 @@ class LinuxPtraceTaskState extends State {
 		    // (waiting for ForkedOffspring observers to
 		    // unblock before finishing the attach).
 		    logger.log(Level.FINE, "{0} handleAttach\n", task); 
-		    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted(task);
+		    ((LinuxPtraceProc)task.getProc())
+			.performTaskAttachCompleted(task);
 		    return StartMainTask.attachBlocked;
 		}
 		LinuxPtraceTaskState handleUnblock(LinuxPtraceTask task,
 						   TaskObserver observer) {
-		    logger.log(Level.FINE, "{0} handleUnblock\n", task); 
+		    logger.log(Level.FINE, "{0} handleUnblock {1}\n",
+			       new Object[] { task, observer }); 
 		    task.blockers.remove(observer);
-		    logger.log(Level.FINER, "{0} handleUnblock number of blockers left {1}\n", new Object[]{task, new Integer(task.blockers.size())}); 
-
+		    logger.log(Level.FINER,
+			       "{0} handleUnblock number blockers left {1}\n",
+			       new Object[]{
+				   task,
+				   new Integer(task.blockers.size())
+			       }); 
 		    if (task.blockers.size() == 0) {
 			// Ya! All the blockers have been removed.
 			task.sendDetach(Signal.NONE);
-			((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted(task);
+			((LinuxPtraceProc)task.getProc())
+			    .performTaskDetachCompleted(task);
 			return detached;
+		    } else {
+			return StartMainTask.detachBlocked;
 		    }
-		    return StartMainTask.detachBlocked;
 		}
 	    };
 	/**
@@ -506,16 +524,19 @@ class LinuxPtraceTaskState extends State {
 		LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task,
 							  TaskObservation observation) {
 		    logger.log(Level.FINE, "{0} handleAddObservationr\n", task);
-		    // XXX - This should most likely test needsSuspendedAction
+		    // XXX - This should most likely test
+		    // needsSuspendedAction
 		    observation.add();
 		    return this;
 		}
 		LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
 							Signal signal) {
 		    if (signal == Signal.STOP || signal == Signal.TRAP) {
+			task.initializeAttachedState();
 			if (task.notifyForkedOffspring() > 0)
 			    return StartMainTask.attachBlocked;
-			return Attached.waitForContinueOrUnblock;
+			else
+			    return Attached.waitForContinueOrUnblock;
 		    } else {
 			throw unhandled(task, "handleStoppedEvent " + signal);
 		    }
@@ -533,20 +554,24 @@ class LinuxPtraceTaskState extends State {
 	    new StartMainTask("wantToAttachContinue") {
 		LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
 							Signal signal) {
-		    // Mark this LinuxPtraceTask as just started.  See
-		    // Running.handleTrapped for more explanation.
-		    task.justStartedXXX = true;
-		    if (task.notifyForkedOffspring() > 0)
-			return StartMainTask.attachContinueBlocked;
-		    else {
-			if (signal == Signal.STOP || signal == Signal.TRAP)
-			    // Discard the signal.
-			    signal = Signal.NONE;
-			return Attached.transitionToRunningState(task, signal);
+		    if (signal == Signal.STOP || signal == Signal.TRAP) {
+			task.initializeAttachedState();
+			// Mark this LinuxPtraceTask as just started.  See
+			// Running.handleTrapped for more explanation.
+			task.justStartedXXX = true;
+			if (task.notifyForkedOffspring() > 0) {
+			    return StartMainTask.attachContinueBlocked;
+			} else {
+			    // Discard the stop signal.
+			    return Attached
+				.transitionToRunningState(task, Signal.NONE);
+			}
+		    } else {
+			throw unhandled(task, "handleStoppedEvent " + signal);
 		    }
 		}
-
-		// Adding or removing observers doesn't impact this state.
+		// Adding or removing observers doesn't impact this
+		// state.
 		LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task,
 							  TaskObservation to) {
 		    logger.log(Level.FINE, "{0} handleAddObservation\n", task);
@@ -605,7 +630,9 @@ class LinuxPtraceTaskState extends State {
 		    task.blockers.remove(observer);
 		    if (task.blockers.size() > 0)
 			return StartMainTask.attachContinueBlocked;
-		    return Attached.transitionToRunningState(task, Signal.NONE);
+		    else
+			return Attached.transitionToRunningState(task,
+								 Signal.NONE);
 		}
 	    };
     }
@@ -618,20 +645,22 @@ class LinuxPtraceTaskState extends State {
 	StartClonedTask(String name) {
 	    super("StartClonedTask." + name);
 	}
-	LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task, TaskObservation observation) {
+	LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task,
+						  TaskObservation observation) {
 	    logger.log(Level.FINE, "{0} handleAddObservation\n", task);
-	    // XXX most likely need to check needsSuspendedAction
+	    // XXX: Need to check needsSuspendedAction; the task isn't
+	    // stopped.
 	    observation.add();
 	    return this;
 	}
 	LinuxPtraceTaskState handleDeleteObservation(LinuxPtraceTask task,
 						     TaskObservation observation) {
 	    logger.log(Level.FINE, "{0} handleDeleteObservation\n", task); 
-	    // XXX most likely need to check needsSuspendedAction
+	    // XXX: Need to check needsSuspendedAction; the task isn't
+	    // stopped.
 	    observation.delete();
 	    return this;
 	}
-
 	static final LinuxPtraceTaskState waitForStop =
 	    new StartClonedTask("waitForStop") {
 		LinuxPtraceTaskState handleUnblock(LinuxPtraceTask task,
@@ -645,7 +674,7 @@ class LinuxPtraceTaskState extends State {
 							Signal signal) {
 		    if (signal == Signal.STOP || signal == Signal.TRAP) {
 			// Attempt an attached continue.
-			task.sendSetOptions ();
+			task.initializeAttachedState();
 			if(task.notifyClonedOffspring() > 0)
 			    return StartClonedTask.blockedOffspring;
 			// XXX: Really notify attached here?
@@ -657,7 +686,6 @@ class LinuxPtraceTaskState extends State {
 		    }
 		}
 	    };
-	
 	private static final LinuxPtraceTaskState blockedOffspring =
 	    new StartClonedTask("blockedOffspring") {
 		LinuxPtraceTaskState handleUnblock(LinuxPtraceTask task,
@@ -667,9 +695,8 @@ class LinuxPtraceTaskState extends State {
 		    if (task.blockers.size() > 0)
 			return StartClonedTask.blockedOffspring;
 		    // XXX: Really notify attached here?
-		    if (task.notifyAttached() > 0) {
+		    if (task.notifyAttached() > 0)
 			return blockedContinue;
-		    }
 		    return running.sendContinue(task, Signal.NONE);
 		}
 	    };
@@ -876,7 +903,8 @@ class LinuxPtraceTaskState extends State {
 	    
 	    if (shouldRemoveObservers)
 		task.removeObservers();  
-	    // XXX: Otherwise check if there are still observers and panic?
+	    // XXX: Otherwise check if there are still observers and
+	    // panic?
         
 	    // Can't detach a running task, first need to stop it.                
 	    task.sendStop();

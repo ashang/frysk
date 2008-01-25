@@ -9,6 +9,9 @@
 
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java: Mention that ISA can be null.
+	(clearIsa()): Make protected.
+
 	* TaskObserver.java (Signaled): Replace updateSignaled(Task,int)
 	with updateSignaled(Task,Signal).
 	* TestTaskSyscallObserver.java: Update.

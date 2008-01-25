@@ -1,5 +1,18 @@
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRuntimeIsa.java (assertHasNoIsa(String,Task)): New.
+	(assertHasIsaEquals(String,Task,boolean)): Delete.
+	* LinuxPtraceTask.java (hasIsa()): Delete.
+	(clearIsa()): Make protected.
+	(getISA()): Simplify, throw an NPE when the ISA is null.
+	(sendSetOptions()): Delete.
+	(ptraceOptions): Initialize directly.
+	(startTracingSyscalls(), stopTracingSyscalls()): Call
+	Ptrace.setOptions.
+	(initializeAttachedState()): New.
+	* LinuxPtraceTaskState.java: Call Task.initializeAttachedState(),
+	instead of Task.sendSetOptions() as the task is attached.
+
 	* TestTaskObserverCode.java: Eliminate uses of
 	frysk.sys.Signal.equals(int); import frysk.isa.signals.Signal
 	instead of frysk.sys.Signal.
