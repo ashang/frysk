@@ -1,5 +1,8 @@
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
+	* TearDownExpect.java: Extend Expect.
+	* TestTearDownExpect.java: Update.
+
 	* TestTearDownExpect.java: Update to match Expect rewrite.
 
 2008-01-22  Andrew Cagney  <cagney@redhat.com>

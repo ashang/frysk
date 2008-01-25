@@ -41,11 +41,12 @@
 package frysk.bindir;
 
 import frysk.Config;
-import frysk.expunit.Expect;
+import frysk.testbed.TearDownExpect;
+import frysk.testbed.TestLib;
 
 public class TestFcatch extends TestLib {
     public void testBackTrace() {
-	e = new Expect(new String[] {
+	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("fcatch").getAbsolutePath(),
 		Config.getPkgLibFile("funit-stackframe").getAbsolutePath()
 	    });

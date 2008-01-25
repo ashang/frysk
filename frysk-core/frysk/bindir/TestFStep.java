@@ -41,8 +41,10 @@
 package frysk.bindir;
 
 import frysk.Config;
-import frysk.expunit.*;
 import lib.dwfl.*;
+import frysk.expunit.Regex;
+import frysk.testbed.TestLib;
+import frysk.testbed.TearDownExpect;
 
 public class TestFStep extends TestLib {
   // Makes sure that fstep at least comes across the entry point of the
@@ -50,27 +52,23 @@ public class TestFStep extends TestLib {
   public void testFirstStep() throws Exception
   {
     Elf e = new Elf("/bin/true", ElfCommand.ELF_C_READ);
-    try
-      {
+    try {
 	ElfEHeader h = e.getEHeader();
 	final String entryAddress = "0x" + Long.toHexString(h.entry);
 
 	String command = Config.getBinFile("fstep").getAbsolutePath();
 	String argument = "/bin/true";
-	Expect expect = new Expect(new String[] { command, argument });
-	try
-	  {
+	TearDownExpect expect = new TearDownExpect(new String[] {
+		command, argument
+	    });
+	try {
 	    Regex regex = new Regex("^\\[\\d+\\]\t" + entryAddress + "\t");
 	    expect.expect(regex);
-	  }
-	finally
-	  {
+	} finally {
 	    expect.close();
-	  }
-      }
-    finally
-      {
+	}
+    } finally {
 	e.close();
-      }
+    }
   }
 }

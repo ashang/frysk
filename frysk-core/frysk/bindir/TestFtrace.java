@@ -40,7 +40,8 @@
 package frysk.bindir;
 
 import frysk.Config;
-import frysk.expunit.Expect;
+import frysk.testbed.TearDownExpect;
+import frysk.testbed.TestLib;
 import frysk.proc.Task;
 import frysk.testbed.SlaveOffspring;
 
@@ -49,7 +50,7 @@ public class TestFtrace extends TestLib {
 	// Create an unattached child process.
 	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);
-	e = new Expect(new String[] {
+	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("ftrace").getAbsolutePath(),
 		""+task.getProc().getPid()
 	    });
@@ -59,7 +60,7 @@ public class TestFtrace extends TestLib {
     public void testFtraceTracesExecutables () {
 	if (unresolvedOffUtrace(5055))
 	    return;
-	e = new Expect(new String[] {
+	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("ftrace").getAbsolutePath(),
 		"/bin/ls"
 	    });
@@ -71,7 +72,7 @@ public class TestFtrace extends TestLib {
 	// Create an unattached child process.
 	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);
-	e = new Expect(new String[] {
+	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("ftrace").getAbsolutePath(),
 		""+task.getProc().getPid()
 	    });
@@ -85,7 +86,7 @@ public class TestFtrace extends TestLib {
 	// Create an unattached child process.
 	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);
-        e = new Expect(new String[] {
+        TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("ftrace").getAbsolutePath(),
 		"-c",
 		""+task.getProc().getPid()
@@ -97,7 +98,7 @@ public class TestFtrace extends TestLib {
     }
 
     public void testFtraceHandlesPrcoessNotFound() {
-	e = new Expect(new String[] {
+	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("ftrace").getAbsolutePath(),
 		"0"
 	    });

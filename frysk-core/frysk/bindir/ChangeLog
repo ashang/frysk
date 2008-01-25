@@ -1,5 +1,15 @@
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Delete.
+	* TestFauxv.java: Replace Expect with TearDownExpect.
+	* TestFdebuginfo.java: Ditto.
+	* TestFtrace.java: Ditto.
+	* TestFStep.java: Ditto.
+	* TestFexe.java: Ditto.
+	* TestFmaps.java: Ditto.
+	* TestFstack.java: Ditto.
+	* TestFcatch.java: Ditto.
+
 	* fstep.java: Update to match
 	TaskObserver.Terminated.updateTerminated(Task,Signal,int).
 

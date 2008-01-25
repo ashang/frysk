@@ -42,7 +42,6 @@ package frysk.bindir;
 import java.io.File;
 
 import frysk.Config;
-import frysk.expunit.Expect;
 import frysk.testbed.CorefileFactory;
 import frysk.testbed.TearDownExpect;
 import frysk.testbed.TestLib;
@@ -52,15 +51,13 @@ import frysk.testbed.TestLib;
  * functionality.
  */
 
-public class TestFstack
-    extends TestLib
-{
+public class TestFstack extends TestLib {
     /**
      * Start FSTACK with both a core file and an executable; avoids
      * problems with Linux's bone-head COREFILE format storing only
      * the first 50 characters of the executable.
      */
-    private Expect fstack(String program, String[] args) {
+    private TearDownExpect fstack(String program, String[] args) {
 	File coreExe = Config.getPkgLibFile(program);
 	File coreFile = CorefileFactory.constructCoreAtSignal(coreExe);
 	String[] argv = new String[args.length + 3];
@@ -71,19 +68,17 @@ public class TestFstack
 	for (int i = 0; i < args.length; i++) {
 	    argv[argc + i] = args[i];
 	}
-	Expect e = new Expect(argv);
-	TearDownExpect.add(e);
-	return e;
+	return new TearDownExpect(argv);
     }
 
     public void testBackTrace () {
-	Expect e = fstack("funit-stack-outlined", new String[0]);
+	TearDownExpect e = fstack("funit-stack-outlined", new String[0]);
 	// Just look for main.
 	e.expect ("main");
     }
     
     public void testBackTraceWithParams () {
-	Expect e = fstack("funit-stack-outlined",
+	TearDownExpect e = fstack("funit-stack-outlined",
 			  new String[] { "-print", "params" });
         e.expect("\\#0 .* third\\(int arg3.*\\)");
         e.expect("\\#1 .* second\\(int arg2.*\\)");
@@ -92,8 +87,8 @@ public class TestFstack
     }
 
     public void testBackTraceWithScopes () {
-	Expect e = fstack("funit-stack-outlined",
-			  new String[] { "--print", "scopes" });
+	TearDownExpect e = fstack("funit-stack-outlined",
+				  new String[] { "--print", "scopes" });
 	e.expect("\\#0 .* third\\(\\)");
         e.expect("int var3");
 	e.expect("\\#1 .* second\\(\\)");
@@ -105,8 +100,8 @@ public class TestFstack
     }
 
     public void testBackTraceWithFullpath () {
-	Expect e = fstack("funit-stack-outlined",
-			  new String[] { "--print", "fullpath" });
+	TearDownExpect e = fstack("funit-stack-outlined",
+				  new String[] { "--print", "fullpath" });
         e.expect (Config.getRootSrcDir()
 		  + ".*"
 		  + "funit-stack-outlined"
@@ -114,7 +109,8 @@ public class TestFstack
     }
 
     public void testBackTraceWithDashA () {
-	Expect e = fstack("funit-stack-outlined", new String[] { "-a" });
+	TearDownExpect e = fstack("funit-stack-outlined",
+				  new String[] { "-a" });
 	e.expect("\\#0 .* in third\\(int arg3\\)"
 		 + ".*" + Config.getRootSrcDir()
 		 + ".*" + "funit-stack-outlined" + "\\.c#" 
@@ -123,7 +119,8 @@ public class TestFstack
     }
 
     public void testBackTraceWithDashC () {
-	Expect e = fstack("funit-stack-outlined", new String[] { "-c" });
+	TearDownExpect e = fstack("funit-stack-outlined",
+				  new String[] { "-c" });
 	e.expect("\\#0 .* in third\\(int arg3\\)"
 		 + ".*" + Config.getRootSrcDir()
 		 + ".*" + "funit-stack-outlined" + "\\.c#");
@@ -131,7 +128,8 @@ public class TestFstack
   }
 
     public void testBackTraceWithDashV () {
-	Expect e = fstack("funit-stack-inlined", new String[] { "-v", "-a" });
+	TearDownExpect e = fstack("funit-stack-inlined",
+				  new String[] { "-v", "-a" });
         e.expect("\\#0 .*third[^\\r\\n]*\\[inline\\]");
 	e.expect("\\#1 .*second[^\\r\\n]*\\[inline\\]");
 	e.expect("\\#2 .*first[^\\r\\n]*\\[inline\\]");
@@ -140,7 +138,7 @@ public class TestFstack
 
     public void testBackTraceWithDashN () {
 	
-	Expect e = fstack("funit-long-stack", new String[]{"-n","5"});
+	TearDownExpect e = fstack("funit-long-stack", new String[]{"-n","5"});
 	e.expect("\\#0 .*crash[^\\r\\n]*");
 	e.expect("\\#1 [^\r\n]*first[^\\r\\n]*");
 	e.expect("\\#2 [^\r\n]*first[^\\r\\n]*");
@@ -165,7 +163,8 @@ public class TestFstack
     
     public void testBackTraceWithDashNDashA () {
 	
-	Expect e = fstack("funit-long-stack", new String[]{"-n","5", "-a"});
+	TearDownExpect e = fstack("funit-long-stack",
+				  new String[]{"-n","5", "-a"});
 	e.expect("\\#0 .*crash[^\\r\\n]*");
 	e.expect("\\#1 .*first[^\\r\\n]*");
 	e.expect("\\#2 .*first[^\\r\\n]*");

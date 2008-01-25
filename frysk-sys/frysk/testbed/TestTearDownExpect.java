@@ -43,11 +43,8 @@ import frysk.junit.TestCase;
 import frysk.sys.Errno;
 import frysk.sys.Signal;
 import frysk.sys.ProcessIdentifier;
-import frysk.expunit.Expect;
 
-public class TestTearDownExpect
-    extends TestCase
-{
+public class TestTearDownExpect extends TestCase {
     private void assertGone (ProcessIdentifier pid) {
 	boolean gone = false;
 	try {
@@ -59,12 +56,10 @@ public class TestTearDownExpect
     }
 
     public void testOnSleeping() {
-	Expect e = new Expect("sleep 5");
+	TearDownExpect e = new TearDownExpect("sleep 5");
 	ProcessIdentifier pid = e.getPid();
-	TearDownProcess.add(pid);
-	TearDownExpect.add(e);
 	// The close shuts down the pid with a SIGHUP.
-	TearDownExpect.tearDown ();
+	TearDownExpect.tearDown();
 	assertGone(pid);
     }
 

@@ -40,7 +40,8 @@
 package frysk.bindir;
 
 import frysk.Config;
-import frysk.expunit.Expect;
+import frysk.testbed.TearDownExpect;
+import frysk.testbed.TestLib;
 import frysk.proc.Task;
 import frysk.testbed.SlaveOffspring;
 
@@ -56,7 +57,7 @@ public class TestFdebuginfo extends TestLib {
         // Create an unattached child process.
 	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);
-	e = new Expect(new String[] {
+	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("fdebuginfo").getAbsolutePath(),
 		""+task.getProc().getPid() 
 	    });
@@ -65,14 +66,14 @@ public class TestFdebuginfo extends TestLib {
     }
     
     public void testNoArguments() {
-        e = new Expect(new String[] { 
+        TearDownExpect e = new TearDownExpect(new String[] { 
 		Config.getBinFile("fdebuginfo").getAbsolutePath ()
 	    });
         e.expect("Error: No pid provided.");      
     }    
 
     public void testBadArguments() {
-	e = new Expect(new String[] {
+	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("fdebuginfo").getAbsolutePath (),
 		"this is a bad argument"
 	    });
@@ -80,7 +81,7 @@ public class TestFdebuginfo extends TestLib {
     }
     
     public void testInvalidArgument() {
-	e = new Expect (new String[] {
+	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("fdebuginfo").getAbsolutePath (),
 		"-z",
 		"1"

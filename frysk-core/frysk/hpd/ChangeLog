@@ -5,6 +5,12 @@
 
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Replace Expect with TearDownExpect.
+	* TestSysRoot.java: Ditto.
+	(expect): Delete.
+	(tearDown()): Delete.
+	* HpdTestbed.java: Extend TearDownExpect instead of Expect.
+
 	* TestDisassemblerCommand.java: Do not use explicit timeouts.
 	* TestHpdTestHarness.java: Ditto.
 	* TestKillCommand.java: Ditto.

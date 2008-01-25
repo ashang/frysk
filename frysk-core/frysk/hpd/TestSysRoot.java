@@ -40,7 +40,7 @@
 package frysk.hpd;
 
 import frysk.Config;
-import frysk.expunit.Expect;
+import frysk.testbed.TearDownExpect;
 import java.io.File;
 
 /**
@@ -48,18 +48,12 @@ import java.io.File;
  */
 
 public class TestSysRoot extends TestLib {
-  Expect expect;
-
-  public void tearDown ()
-  {
-  }
-
     public void testHaveSysRoot() {
 	if (unresolved(5657))
 	    return;
 	File testSysRootDir = Config.getPkgDataFile("test-sysroot");
 	File testPath = Config.getPkgLibFile("funit-addresses");
-	child = new Expect(new String[] {
+	child = new TearDownExpect(new String[] {
 		Config.getBinFile("fhpd").getAbsolutePath(),
 		"-sysroot", testSysRootDir.getAbsolutePath(),
 	        testSysRootDir.getAbsolutePath() + "/" + testPath

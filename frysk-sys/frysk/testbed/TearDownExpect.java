@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,25 +43,38 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
 import frysk.expunit.Expect;
+import java.io.File;
 
 /**
  * Framework for cleaning up temporary processes created as part of a
  * test run.
  */
 
-public class TearDownExpect
-{
+public class TearDownExpect extends Expect {
+    public TearDownExpect(String[] args) {
+	super(args);
+	add(this);
+    }
+    public TearDownExpect(File program) {
+	super(program);
+	add(this);
+    }
+    public TearDownExpect(String command) {
+	super(command);
+	add(this);
+    }
+
     /**
      * Collection of expect classes.
      */
     private static Set expects = new HashSet();
-
     /**
      * Add the Expect class to the collection of things that should be
      * blown away.
      */
-    public static void add (Expect expect) {
+    private static void add (Expect expect) {
 	expects.add(expect);
+	TearDownProcess.add(expect.getPid());
     }
 
     public static void tearDown () {

@@ -43,30 +43,21 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.testbed.TearDownExpect;
-import frysk.testbed.TearDownProcess;
 import frysk.sys.ProcessIdentifier;
-import frysk.expunit.Expect;
 import frysk.proc.FindProc;
 
 /**
  * Generic framework for testing the HPD command line interface.
  */
 
-class TestLib
-    extends frysk.testbed.TestLib
-{
+class TestLib extends frysk.testbed.TestLib {
     HpdTestbed e;
-    Expect child;
+    TearDownExpect child;
     String prompt = "\\(fhpd\\) ";
 
     public void tearDown () {
-	// Bit of a kludge, only adding the child here.
-	if (child != null) {
-	    TearDownExpect.add(child);
-	    TearDownProcess.add(child.getPid());
-	    child = null;
-	}
 	e = null;
+	child = null;
 	super.tearDown();
     }
     

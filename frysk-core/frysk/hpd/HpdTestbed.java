@@ -42,7 +42,6 @@ package frysk.hpd;
 import frysk.junit.TestCase;
 import frysk.Config;
 import frysk.testbed.CorefileFactory;
-import frysk.expunit.Expect;
 import frysk.expunit.Match;
 import frysk.expunit.Regex;
 import frysk.expunit.EndOfFileException;
@@ -56,9 +55,7 @@ import frysk.sys.ProcessIdentifier;
  * Variation on frysk.expunit.Expect that drives the HPD.
  */
 
-public class HpdTestbed
-    extends Expect
-{
+public class HpdTestbed extends TearDownExpect {
     /**
      * The prompt string.
      */
@@ -66,8 +63,6 @@ public class HpdTestbed
 
     private HpdTestbed(String[] command) {
 	super(command);
-	TearDownExpect.add(this);
-	TearDownProcess.add(getPid());
     }
 
     /**
@@ -158,10 +153,9 @@ public class HpdTestbed
      * processes state not being well defined when HPD attaches to it.
      */
     static HpdTestbed attachXXX(String program) {
-	Expect child = new Expect(Config.getPkgLibFile(program));
-	TearDownExpect.add(child);
+	TearDownExpect child
+	    = new TearDownExpect(Config.getPkgLibFile(program));
 	ProcessIdentifier pid = child.getPid();
-	TearDownProcess.add(pid);
 	return new HpdTestbed(pid.toString(),
 			      "Attached to process "
 			      + pid

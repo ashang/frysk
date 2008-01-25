@@ -39,11 +39,11 @@
 
 package frysk.bindir;
 
-import frysk.expunit.Expect;
 import frysk.Config;
 import java.io.File;
 import frysk.testbed.TearDownExpect;
 import frysk.testbed.CorefileFactory;
+import frysk.testbed.TestLib;
 
 public class TestFmaps extends TestLib {
   
@@ -52,7 +52,7 @@ public class TestFmaps extends TestLib {
      * problems with Linux's bone-head COREFILE format storing only
      * the first 50 characters of the executable.
      */
-    private Expect fmaps(String program, String[] args) {
+    private TearDownExpect fmaps(String program, String[] args) {
 	File coreExe = Config.getPkgLibFile(program);
 	File coreFile = CorefileFactory.constructCoreAtSignal(coreExe);
 	String[] argv = new String[args.length + 3];
@@ -63,15 +63,13 @@ public class TestFmaps extends TestLib {
 	for (int i = 0; i < args.length; i++) {
 	    argv[argc + i] = args[i];
 	}
-	Expect e = new Expect(argv);
-	TearDownExpect.add(e);
-	return e;
+	return new TearDownExpect(argv);
     }
     
     // Basic sniff test, are we getting output that looks like a map?
     // getMaps is tested in the frysk-core/proc namespalce
     public void testExeOfPid() {
-	Expect e = fmaps("funit-stack-outlined", new String[0]);
+	TearDownExpect e = fmaps("funit-stack-outlined", new String[0]);
 	e.expect("funit-stack-outlined");
 	
     }

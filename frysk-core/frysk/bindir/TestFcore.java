@@ -39,17 +39,18 @@
 
 package frysk.bindir;
 
-import frysk.expunit.Expect;
+import frysk.testbed.TearDownExpect;
+import frysk.testbed.TestLib;
 import frysk.Config;
 
 public class TestFcore extends TestLib {
     public void testNoArguments() {
-	e = new Expect(Config.getBinFile("fcore"));
+	TearDownExpect e = new TearDownExpect(Config.getBinFile("fcore"));
 	e.expect("Error: No pid provided.");      
     }
 
     public void testBadArguments () {
-	e = new Expect(new String[] {
+	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("fcore").getAbsolutePath (),
 		"this is a bad argument"
 	    });
@@ -57,7 +58,7 @@ public class TestFcore extends TestLib {
     }
 
     public void testBadConsoleParameter () {
-	e = new Expect(new String[] {
+	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("fcore").getAbsolutePath (),
 		"-console", "frysk=SILLY",
 		"1"
@@ -66,7 +67,7 @@ public class TestFcore extends TestLib {
     }
 
     public void testBadLogParameter () {
-	e = new Expect(new String[] {
+	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("fcore").getAbsolutePath (),
 		"-log", "frysk=SILLY",
 		"1"
@@ -75,7 +76,7 @@ public class TestFcore extends TestLib {
     }
 
     public void testGoodConsoleBadLogParameter () {
-	e = new Expect(new String[] {
+	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("fcore").getAbsolutePath (),
 		"-console", "frysk=FINE",
 		"-log", "frysk=SILLY",
@@ -85,7 +86,7 @@ public class TestFcore extends TestLib {
     }
 
     public void testBadConsoleBadLogParameter () {
-	e = new Expect(new String[] {
+	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("fcore").getAbsolutePath (),
 		"-console", "frysk=SILLY",
 		"-log", "frysk=SILLY",
@@ -95,7 +96,7 @@ public class TestFcore extends TestLib {
     }
 
     public void testBadConsoleGoodLogParameter () {
-	e = new Expect(new String[] {
+	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("fcore").getAbsolutePath (),
 		"-console", "frysk=SILLY",
 		"-log", "frysk=FINE",
@@ -105,7 +106,7 @@ public class TestFcore extends TestLib {
     }
 
     public void testInvalidArgument () {
-	e = new Expect(new String[] {
+	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("fcore").getAbsolutePath (),
 		"-z",
 		"1"

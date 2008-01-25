@@ -39,27 +39,25 @@
 
 package frysk.bindir;
 
-import frysk.expunit.Expect;
 import frysk.Config;
 import java.io.File;
 import frysk.testbed.TearDownExpect;
+import frysk.testbed.TestLib;
 
 public class TestFauxv extends TestLib {
     
-    private Expect fauxv(File coreFile) {
+    private TearDownExpect fauxv(File coreFile) {
 	String[] argv = new String[2];
 	int argc = 0;
 	argv[argc++] = Config.getBinFile("fauxv").getAbsolutePath();
 	argv[argc++] = coreFile.getAbsolutePath();
-	Expect e = new Expect(argv);
-	TearDownExpect.add(e);
-	return e;
+	return new TearDownExpect(argv);
     }
     
     // Basic sniff test, are we getting output that looks like a auuv?
     // getAuxv is tested in the frysk-core/proc namespace/
     public void testAuxvCore() {
-	Expect e  = fauxv(Config.getPkgDataFile("test-core-x86"));
+	TearDownExpect e = fauxv(Config.getPkgDataFile("test-core-x86"));
 	
 	e.expect("AT_SYSINFO \\(SYSINFO\\) : 6464512");
 	e.expect("AT_SYSINFO_EHDR \\(SYSINFO EHDR\\) : 0x62a000");

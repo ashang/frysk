@@ -39,14 +39,15 @@
 
 package frysk.bindir;
 
-import frysk.expunit.Expect;
+import frysk.testbed.TearDownExpect;
+import frysk.testbed.TestLib;
 import frysk.Config;
 import java.io.File;
 
 public class TestFexe extends TestLib {
     public void testExeOfPid() {
 	File fexe = Config.getBinFile("fexe");
-	e = new Expect(fexe.getAbsolutePath () + " $$");
+	TearDownExpect e = new TearDownExpect(fexe.getAbsolutePath () + " $$");
 	e.expect(fexe + "\r\n");
     }
 }

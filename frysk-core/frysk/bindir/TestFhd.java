@@ -40,7 +40,8 @@
 package frysk.bindir;
 
 import frysk.Config;
-import frysk.expunit.Expect;
+import frysk.testbed.TestLib;
+import frysk.testbed.TearDownExpect;
 
 /**
  * This performs a "sniff" test of Fstack, confirming basic
@@ -53,8 +54,8 @@ public class TestFhd extends TestLib {
     private final String prompt = "\\(fhpd\\) ";
 
     public void testHpdPid () {
-	child = new Expect(Config.getPkgLibFile("hpd-c"));
-	e = new Expect(new String[] { 
+	TearDownExpect child = new TearDownExpect(Config.getPkgLibFile("hpd-c"));
+	TearDownExpect e = new TearDownExpect(new String[] { 
 		Config.getBinFile("fhpd").getPath(), 
 		child.getPid().toString() 
 	    });
@@ -62,7 +63,7 @@ public class TestFhd extends TestLib {
     }
   
     public void testHpdCommand () {
-	e = new Expect(new String[] { 
+	TearDownExpect e = new TearDownExpect(new String[] { 
 		Config.getBinFile("fhpd").getPath(), 
 		Config.getPkgLibFile("hpd-c").getPath() 
 	    });
@@ -70,7 +71,7 @@ public class TestFhd extends TestLib {
     }
   
     public void testHpdCore ()  {
-	e = new Expect(new String[] {
+	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("fhpd").getPath(),
 		Config.getPkgDataFile("test-core-x86").getPath(),
 		"-noexe"
