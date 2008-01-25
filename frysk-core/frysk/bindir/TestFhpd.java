@@ -50,7 +50,7 @@ import frysk.testbed.TearDownExpect;
  * For more specific tests see frysk.hpd.
  */
 
-public class TestFhd extends TestLib {
+public class TestFhpd extends TestLib {
     private final String prompt = "\\(fhpd\\) ";
 
     public void testHpdPid () {

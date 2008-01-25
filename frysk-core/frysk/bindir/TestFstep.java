@@ -46,7 +46,7 @@ import frysk.expunit.Regex;
 import frysk.testbed.TestLib;
 import frysk.testbed.TearDownExpect;
 
-public class TestFStep extends TestLib {
+public class TestFstep extends TestLib {
   // Makes sure that fstep at least comes across the entry point of the
   // stepped program.
   public void testFirstStep() throws Exception

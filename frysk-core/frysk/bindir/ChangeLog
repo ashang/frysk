@@ -9,6 +9,9 @@
 
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFstep.java: Rename TestFStep.
+	* TestFhpd.java: Rename TestFhd.
+
 	* TestLib.java: Delete.
 	* TestFauxv.java: Replace Expect with TearDownExpect.
 	* TestFdebuginfo.java: Ditto.
