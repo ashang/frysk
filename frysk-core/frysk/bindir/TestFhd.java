@@ -50,35 +50,32 @@ import frysk.expunit.Expect;
  */
 
 public class TestFhd extends TestLib {
-    String prompt = "\\(fhpd\\) ";
-  
+    private final String prompt = "\\(fhpd\\) ";
+
     public void testHpdPid () {
 	child = new Expect(Config.getPkgLibFile("hpd-c"));
 	e = new Expect(new String[] { 
-			   Config.getBinFile("fhpd").getPath(), 
-			   child.getPid().toString() 
-		       });
-	e.expect(5, "Attached to process.*\n" + prompt);
-	e.close();
+		Config.getBinFile("fhpd").getPath(), 
+		child.getPid().toString() 
+	    });
+	e.expect("Attached to process.*\n" + prompt);
     }
   
     public void testHpdCommand () {
 	e = new Expect(new String[] { 
-			   Config.getBinFile("fhpd").getPath(), 
-			   Config.getPkgLibFile("hpd-c").getPath() 
-		       });
-	e.expect(5, "Loaded executable file.*" + prompt);
-	e.close();
+		Config.getBinFile("fhpd").getPath(), 
+		Config.getPkgLibFile("hpd-c").getPath() 
+	    });
+	e.expect("Loaded executable file.*" + prompt);
     }
   
     public void testHpdCore ()  {
 	e = new Expect(new String[] {
-			   Config.getBinFile("fhpd").getPath(),
-			   Config.getPkgDataFile("test-core-x86").getPath(),
-			   "-noexe"
-		       });
-	e.expect(5, "Attached to core file.*");
-	e.close();
+		Config.getBinFile("fhpd").getPath(),
+		Config.getPkgDataFile("test-core-x86").getPath(),
+		"-noexe"
+	    });
+	e.expect("Attached to core file.*");
     }
     
 }

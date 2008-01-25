@@ -1,3 +1,8 @@
+2008-01-24  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFhd.java: Do not call Expect.close(); do not hard-wire a
+	timeout.
+
 2008-01-24  Stan Cox  <scox@redhat.com>
 	
 	* fhpd.java (main): Pass sysroot to request via -sysroot option.
