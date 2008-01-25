@@ -49,22 +49,22 @@ public class TestHpdTestHarness extends TestLib {
 	e = new HpdTestbed();
 	e.send("load " + Config.getPkgLibFile("funit-threads-looper").getPath()
 		+ "\n");
-	e.expect("Loaded executable file*");
+	e.expect("Loaded executable file.*");
 	e.send("run\n");
-	e.expect("Attached to process*");
+	e.expect("Attached to process.*");
+	e.send("go\n");
+	e.expect("Running process.*");
+	e.send("kill\n");
+	e.expect("Killing process.*");
+	e.expect("Loaded executable file.*");
+	e.send("run\n");
+	e.expect("Attached to process.*");
 	e.send("go\n");
 	e.expect("Running process*");
 	e.send("kill\n");
-	e.expect("Killing process*");
-	e.expect("Loaded executable file*");
-	e.send("run\n");
-	e.expect("Attached to process*");
-	e.send("go\n");
-	e.expect("Running process*");
-	e.send("kill\n");
-	e.expect("Killing process*");
-	e.expect("Loaded executable file*");
+	e.expect("Killing process.*");
+	e.expect("Loaded executable file.*");
 	e.expect("quit\n");
-	e.expect("Quitting...");
+	e.expect("Quitting\\.\\.\\.");
     }
 }

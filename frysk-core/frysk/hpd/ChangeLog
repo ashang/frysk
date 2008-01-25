@@ -1,3 +1,8 @@
+2008-01-25  Rick Moseley  <rmoseley@redhat.com>
+
+	* TestHpdTestHarness.java: Fix pattern matches.
+
+
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
 	* TestDisassemblerCommand.java: Do not use explicit timeouts.
