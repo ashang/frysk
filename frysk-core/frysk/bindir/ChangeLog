@@ -1,5 +1,8 @@
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
+	* fstep.java: Update to match
+	TaskObserver.Terminated.updateTerminated(Task,Signal,int).
+
 	* TestFdebuginfo.java (testPathListing()): Mark as unresolved; bug
 	5671.
 

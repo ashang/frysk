@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@
 
 package frysk.ftrace;
 
+import frysk.isa.signals.Signal;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Map;
@@ -336,8 +337,7 @@ class MappingGuard
 	    return Action.CONTINUE;
 	}
 
-	public Action updateTerminating (Task task, boolean signal, int value)
-	{
+	public Action updateTerminating(Task task, Signal signal, int value) {
 	    logger.log(Level.FINE, "The task is terminating.");
 	    updateMapping(task, true);
 	    return Action.CONTINUE;

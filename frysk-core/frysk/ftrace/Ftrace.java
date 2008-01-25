@@ -50,8 +50,7 @@ import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.isa.syscalls.Syscall;
-import frysk.sys.Signal;
-
+import frysk.isa.signals.Signal;
 import inua.util.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -547,17 +546,12 @@ public class Ftrace
     }
     TaskObserver.Cloned clonedObserver = new MyClonedObserver();
 
-    class MyTerminatedObserver
-	implements TaskObserver.Terminated
-    {
-	public Action updateTerminated (Task task, boolean signal,
-					int value)
-	{
-	    if (signal)
-		reporter.eventSingle(task, "killed by " + Signal.toHostStringFIXME(value));
+    class MyTerminatedObserver implements TaskObserver.Terminated {
+	public Action updateTerminated (Task task, Signal signal, int value) {
+	    if (signal != null)
+		reporter.eventSingle(task, "killed by " + signal);
 	    else
 		reporter.eventSingle(task, "exited with status " + value);
-
 	    return Action.CONTINUE;
 	}
 

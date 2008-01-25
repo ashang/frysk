@@ -1,3 +1,10 @@
+2008-01-24  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcTaskIDManager.java: Update to match
+	TaskObserver.Terminated.updateTerminated(Task,Signal,int).
+	* TestUpdatingDisplayValue.java: Ditto.
+	* UpdatingDisplayValue.java: Ditto.
+
 2008-01-16  Andrew Cagney  <cagney@redhat.com>
 
 	* UpdatingDisplayValue.java: Task.getBlockers() make private; use

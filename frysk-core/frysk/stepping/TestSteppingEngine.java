@@ -622,11 +622,11 @@ public class TestSteppingEngine extends TestLib {
 	Manager.eventLoop.add(new Event() {
 	    public void execute() {
 		Breakpoint b = se.getTaskBreakpoint(bpTask);
-		assertNotNull(b);
+		assertNotNull("task breakpoint", b);
 		assertEquals("isAdded", true, b.isAdded());
 		assertEquals("isRemoved", false, b.isRemoved());
-		assertEquals("breakpoint address", breakpointAddress, b
-			.getAddress());
+		assertEquals("breakpoint address", breakpointAddress,
+			     b.getAddress());
 		Manager.eventLoop.requestStop();
 		cleanup();
 	    }
@@ -675,11 +675,11 @@ public class TestSteppingEngine extends TestLib {
 	    }
 
 	    public void runAssertions() {
-
-		assertTrue(!tse.isAlive());
+		assertFalse("is alive", tse.isAlive());
 		String msg = tse.getMessage();
-		assertTrue(msg.contains("Task " + this.testTask.getTid() + " terminated from signal 9"));
-
+		assertTrue("termination message",
+			   msg.contains("Task " + this.testTask.getTid()
+					+ " terminated by signal SIGKILL(9)"));
 		Manager.eventLoop.requestStop();
 	    }
 	}

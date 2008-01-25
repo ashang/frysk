@@ -41,7 +41,7 @@ package frysk.proc;
 
 import frysk.Config;
 import java.util.Observer;
-import frysk.sys.Signal;
+import frysk.isa.signals.Signal;
 import java.util.Observable;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
@@ -85,9 +85,8 @@ public class TestMemory
 	class TaskEventObserver extends TaskObserverBase
 	    implements TaskObserver.Signaled
 	{
-	    public Action updateSignaled(Task task,
-					 frysk.isa.signals.Signal sig) {
-		if (sig.intValue() == Signal.SEGV.intValue()) {
+	    public Action updateSignaled(Task task, Signal sig) {
+		if (sig.intValue() == frysk.sys.Signal.SEGV.intValue()) {
 		    ByteBuffer b;
 		    long memAddr;
 		    long addr;
@@ -168,9 +167,9 @@ public class TestMemory
 	    extends TaskObserverBase
 	    implements TaskObserver.Terminated
 	{
-	    public Action updateTerminated (Task task, boolean signal, int value)
-	    {
-		if (!signal) {
+	    public Action updateTerminated(Task task, Signal signal,
+					   int value) {
+		if (signal == null) {
 		    exitedTaskEventStatus = value;
 		    exited = true;
 		}

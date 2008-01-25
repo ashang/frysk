@@ -1,5 +1,10 @@
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
+	* MappingGuard.java: Update to match
+	TaskObserver.Terminating.updateTerminating(Task,Signal,int).
+	* Ftrace.java: Update to match
+	TaskObserver.Terminated.updateTerminated(Task,Signal,int).
+
 	* IA32Arch.java: Update; Register moved to frysk.isa.registers.
 	* X8664Arch.java: Ditto.
 

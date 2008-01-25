@@ -1,5 +1,19 @@
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskObserver.java (Terminated): Replace
+	updateTerminated(Task,boolean,int) with
+	updateTerminated(Task,Signal,int).
+	(Terminating): Replace updateTerminating(Task,boolean,int) with
+	updateTerminating(Task,Signal,int).
+	* TestTaskObserverInstructionSigReturn.java: Update.
+	* TestTaskTerminateObserver.java: Update.
+	* TestTaskObserver.java: Update.
+	* TestMemory.java: Update.
+	* TestBreakpoints.java: Update.
+	* TestTaskObserverInstructionAndCode.java: Update.
+	* ProcBlockAction.java: Update.
+	* ProcTasksObserver.java: Update.
+	
 	* TestSyscallRunning.java: Use IsaTestbed to get the isa.
 	* TestSyscallSignal.java: Ditto.
 	* TestTaskSyscallObserver.java: Ditto.

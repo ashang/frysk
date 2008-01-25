@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 // 
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2008, Red Hat Inc.
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import frysk.isa.signals.Signal;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -157,7 +158,7 @@ public final class ProcTasksObserver
 	procTasksObserver.deletedFrom(observable);
     }
 	
-    public Action updateTerminated(Task task, boolean signal, int value) {
+    public Action updateTerminated(Task task, Signal signal, int value) {
 	procTasksObserver.taskRemoved(task);
 	return Action.CONTINUE;
     }

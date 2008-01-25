@@ -42,7 +42,7 @@ package frysk.rt;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
-
+import frysk.isa.signals.Signal;
 import frysk.Config;
 import frysk.proc.Action;
 import frysk.proc.Manager;
@@ -303,9 +303,9 @@ public class TestUpdatingDisplayValue extends TestLib
         public void addFailed(Object observable, Throwable w) {}
     
         /* When the task dies, stop the event loop */
-        public Action updateTerminated(Task task, boolean signal, int value) {
-            	Manager.eventLoop.requestStop();
-    		return Action.CONTINUE;
+        public Action updateTerminated(Task task, Signal signal, int value) {
+	    Manager.eventLoop.requestStop();
+	    return Action.CONTINUE;
         }
     
     });

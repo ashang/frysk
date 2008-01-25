@@ -53,16 +53,14 @@ public class DaemonBlockedAtSignal {
     
     private final Task mainTask;
   
-    private class RunToSignal
-    extends TaskObserverBase
-    implements TaskObserver.Signaled, TaskObserver.Terminated
+    private class RunToSignal extends TaskObserverBase
+	implements TaskObserver.Signaled, TaskObserver.Terminated
     {
 	public Action updateSignaled(Task task, Signal value) {
 	    Manager.eventLoop.requestStop();
 	    return Action.BLOCK;
 	}
-	
-	public Action updateTerminated (Task task, boolean sig, int value) {
+	public Action updateTerminated(Task task, Signal sig, int value) {
 	    throw new RuntimeException("Program Exited.");
 	}
     }

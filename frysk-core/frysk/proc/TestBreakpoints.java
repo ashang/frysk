@@ -1,7 +1,7 @@
 // This file is part of the program FRYSK.
 //
+// Copyright 2006, 2007, 2008 Red Hat Inc.
 // Copyright 2007 Oracle Corporation.
-// Copyright 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 
 package frysk.proc;
 
+import frysk.isa.signals.Signal;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
@@ -207,7 +208,7 @@ public class TestBreakpoints
 	assertRunUntilStop ("terminating");
 
     assertEquals("exitValue", 0, terminatingObserver.exitValue);
-    assertFalse("exitSignal", terminatingObserver.exitSignal);
+    assertNull("exitSignal", terminatingObserver.exitSignal);
   }
 
   public void testSteppingtestHitAndRun() throws IOException
@@ -310,7 +311,7 @@ public class TestBreakpoints
 	assertRunUntilStop ("terminating");
 
     assertEquals("exitValue", 0, terminatingObserver.exitValue);
-    assertFalse("exitSignal", terminatingObserver.exitSignal);
+    assertNull("exitSignal", terminatingObserver.exitSignal);
 
     assertEquals(8, code1.getTriggered());
     assertEquals(3, code2.getTriggered());
@@ -410,7 +411,7 @@ public class TestBreakpoints
 	assertRunUntilStop("terminating");
 
     assertEquals("exitValue", 0, terminatingObserver.exitValue);
-    assertFalse("exitSignal", terminatingObserver.exitSignal);
+    assertNull("exitSignal", terminatingObserver.exitSignal);
 
     for (int i = 0; i < 1512; i++)
       {
@@ -455,10 +456,9 @@ public class TestBreakpoints
   {
     // How the process exits.
     boolean terminating;
-    boolean exitSignal;
+    Signal exitSignal;
     int exitValue;
-    public Action updateTerminating (Task task, boolean signal, int value)
-    {
+    public Action updateTerminating(Task task, Signal signal, int value) {
 	terminating = true;
 	exitValue = value;
 	exitSignal = signal;

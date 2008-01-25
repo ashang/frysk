@@ -287,13 +287,13 @@ public class FCatch {
 	    return Action.BLOCK;
 	}
 
-	public Action updateTerminating(Task task, boolean signal, int value) {
+	public Action updateTerminating(Task task, Signal signal, int value) {
 	    logger.log(Level.FINE, "{0} updateTerminating", task);
 	    //                System.err.println("CatchObserver.updateTerminating on " + task + " " + value + " " + numTasks);
 	    return Action.CONTINUE;
 	}
 
-	public Action updateTerminated(Task task, boolean signal, int value) {
+	public Action updateTerminated(Task task, Signal signal, int value) {
 	    logger.log(Level.FINE, "{0} updateTerminated", task);
 	    //                System.err.println("CatchObserver.updateTerminated " + task + " " + numTasks);
 	    if (--FCatch.this.numTasks <= 0)

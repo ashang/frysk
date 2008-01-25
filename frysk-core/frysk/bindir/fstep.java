@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, Red Hat Inc.
+// Copyright 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@
 
 package frysk.bindir;
 
+import frysk.isa.signals.Signal;
 import frysk.proc.FindProc;
 import java.util.List;
 import frysk.proc.Auxv;
@@ -277,22 +278,20 @@ public class fstep
   }
 
 
-  // TaskObserver.Terminated interface
-  public Action updateTerminated(Task task, boolean signal, int exit)
-  {
-    int tid = task.getTid();
-    long steps = ((Long) tasks.get(task)).longValue();
-    System.err.println("Total steps [" + tid + "]: " + steps);
-    if (signal)
-      System.err.println("[" + tid + "] Terminated by signal: " + exit);
-    else
-      System.err.println("[" + tid + "] Exited: " + exit);
-
-    tasks.remove(task);
-    if (tasks.isEmpty())
-      Manager.eventLoop.requestStop();
-    return Action.CONTINUE;
-  }
+    // TaskObserver.Terminated interface
+    public Action updateTerminated(Task task, Signal signal, int exit) {
+	int tid = task.getTid();
+	long steps = ((Long) tasks.get(task)).longValue();
+	System.err.println("Total steps [" + tid + "]: " + steps);
+	if (signal != null)
+	    System.err.println("[" + tid + "] Terminated by signal: " + signal);
+	else
+	    System.err.println("[" + tid + "] Exited: " + exit);
+	tasks.remove(task);
+	if (tasks.isEmpty())
+	    Manager.eventLoop.requestStop();
+	return Action.CONTINUE;
+    }
 
   // TaskObserver.Instruction interface
   public Action updateExecuted(Task task)

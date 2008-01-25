@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@
 package frysk.proc;
 
 import frysk.sys.Pid;
-import frysk.sys.Signal;
+import frysk.isa.signals.Signal;
 import frysk.testbed.TestLib;
 import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.TaskObserverBase;
@@ -59,26 +59,22 @@ public class TestTaskTerminateObserver
     /**
      * Save the Terminating, and Terminated values as they pass by.
      */
-    class Terminate
-	extends TaskObserverBase
+    class Terminate extends TaskObserverBase
 	implements TaskObserver.Terminating, TaskObserver.Terminated
     {
 	int terminating = INVALID;
-
 	int terminated = INVALID;
-
-	public Action updateTerminating (Task task, boolean signal, int value) {
-	    if (signal) {
-		terminating = -value;
+	public Action updateTerminating(Task task, Signal signal, int value) {
+	    if (signal != null) {
+		terminating = -signal.intValue();
 	    } else {
 		terminating = value;
 	    }
 	    return Action.CONTINUE;
 	}
-
-	public Action updateTerminated (Task task, boolean signal, int value) {
-	    if (signal) {
-		terminated = -value;
+	public Action updateTerminated(Task task, Signal signal, int value) {
+	    if (signal != null) {
+		terminated = -signal.intValue();
 	    } else {
 		terminated = value;
 	    }
@@ -145,11 +141,11 @@ public class TestTaskTerminateObserver
     }
 
     public void testTerminateKillINT () {
-	terminate(- Signal.INT.intValue());
+	terminate(- frysk.sys.Signal.INT.intValue());
     }
 
     public void testTerminateKillHUP () {
-	terminate(- Signal.HUP.intValue());
+	terminate(- frysk.sys.Signal.HUP.intValue());
     }
 
     public void testTerminatingExit0 () {
@@ -161,11 +157,11 @@ public class TestTaskTerminateObserver
     }
 
     public void testTerminatingKillINT () {
-	terminating(- Signal.INT.intValue());
+	terminating(- frysk.sys.Signal.INT.intValue());
     }
 
     public void testTerminatingKillHUP () {
-	terminating(- Signal.HUP.intValue());
+	terminating(- frysk.sys.Signal.HUP.intValue());
     }
 
     public void testTerminatedExit0 () {
@@ -177,7 +173,7 @@ public class TestTaskTerminateObserver
     }
 
     public void testTerminatedKillINT () {
-	terminated(- Signal.INT.intValue());
+	terminated(- frysk.sys.Signal.INT.intValue());
     }
 
     public void testTerminatedKillKILL () {
@@ -185,24 +181,21 @@ public class TestTaskTerminateObserver
 	// is that a TERMINATED event will be received.  Dependant on
 	// various races, there may or may not also be a terminating
 	// event.  See bug 3639.
-	terminated(- Signal.KILL.intValue());
+	terminated(- frysk.sys.Signal.KILL.intValue());
     }
 
     public void testTerminatedKillHUP () {
-	terminated(- Signal.HUP.intValue());
+	terminated(- frysk.sys.Signal.HUP.intValue());
     }
 
-    class TerminatingCounter
-	extends TaskObserverBase
+    class TerminatingCounter extends TaskObserverBase
 	implements TaskObserver.Terminating
     {
 	int count;
-
 	public void addedTo (Object o) {
 	    Manager.eventLoop.requestStop();
 	}
-
-	public Action updateTerminating (Task task, boolean signal, int value) {
+	public Action updateTerminating(Task task, Signal signal, int value) {
 	    count++;
 	    task.requestUnblock(this);
 	    return Action.BLOCK;
@@ -237,7 +230,7 @@ public class TestTaskTerminateObserver
 	// Now terminate the main thread. Trace the processes exit all
 	// the way through to being removed so that both terminating
 	// and terminated events are seen by this test.
-	daemon.signal(Signal.TERM);
+	daemon.signal(frysk.sys.Signal.TERM);
 	new StopEventLoopWhenProcRemoved(task.getTid());
 	assertRunUntilStop("terminate process");
 

@@ -40,7 +40,7 @@
 package frysk.proc;
 
 import frysk.Config;
-import frysk.sys.Signal;
+import frysk.isa.signals.Signal;
 import frysk.testbed.TestLib;
 
 public class TestTaskObserverInstructionSigReturn
@@ -122,18 +122,16 @@ public class TestTaskObserverInstructionSigReturn
     return Action.CONTINUE;
   }
 
-  // TaskObserver.Terminated interface
-  public Action updateTerminating(Task task, boolean signal, int exit)
-  {
-    Manager.eventLoop.requestStop();
-
-    this.exit = exit;
-    return Action.CONTINUE;
-  }
+    // TaskObserver.Terminated interface
+    public Action updateTerminating(Task task, Signal signal, int exit) {
+	Manager.eventLoop.requestStop();
+	this.exit = exit;
+	return Action.CONTINUE;
+    }
 
     // TaskObserver.Signaled interface
-    public Action updateSignaled(Task task, frysk.isa.signals.Signal signal) {
-	assertEquals("correct signal", Signal.PROF.intValue(),
+    public Action updateSignaled(Task task, Signal signal) {
+	assertEquals("correct signal", frysk.sys.Signal.PROF.intValue(),
 		     signal.intValue());
 	signaled++;
 	if (signaled == 1) {

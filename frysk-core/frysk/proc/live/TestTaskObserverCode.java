@@ -437,8 +437,7 @@ public class TestTaskObserverCode extends TestLib
 	
 	task.requestUnblock(code);
 	assertRunUntilStop("wait for signal observer hit");
-	assertEquals("signal", signal.intValue(),
-		     so.sig.intValue());
+	assertEquals("signal " + signal, signal.intValue(), so.sig.intValue());
 	
 	TerminatingObserver to = new TerminatingObserver();
 	task.requestAddTerminatingObserver(to);
@@ -446,10 +445,9 @@ public class TestTaskObserverCode extends TestLib
 	
 	task.requestUnblock(so);
 	assertRunUntilStop("wait for terminating observer hit");
-	assertEquals("killed by signal", ! cleanExit, to.signal);
+	assertEquals("clean exit", cleanExit, to.signal == null);
 	assertEquals("exit/signal value", cleanExit ? 0 : signal.intValue(),
-		     to.value);
-	
+		     to.signal == null ? to.value : to.signal.intValue());
 	// And let it go...
 	task.requestDeleteTerminatingObserver(to);
     }
@@ -917,13 +915,17 @@ public class TestTaskObserverCode extends TestLib
     // The logic here is that when one of the forked processes dies
     // due to a signal, parent task notices that and kills itself with
     // that same signal.
-    assertTrue("task didn't die on signal", !terminatingObserver.signal);
+    assertEquals("task didn't die on signal", null, terminatingObserver.signal);
     assertEquals("task exit status", 0, terminatingObserver.value);
   }
 
     // Tells the child to run the dummy () function which calls
     // bp1_func () and bp2_func ().
+<<<<<<< HEAD:frysk-core/frysk/proc/live/TestTaskObserverCode.java
     static final frysk.sys.Signal dummySig = frysk.sys.Signal.PROF;
+=======
+    private static final frysk.sys.Signal dummySig = frysk.sys.Signal.PROF;
+>>>>>>> Pass a Signal to terminating and terminated observers.:frysk-core/frysk/proc/live/TestTaskObserverCode.java
 
   /**
    * Request that that the child runs its dummy function which will
@@ -1126,9 +1128,17 @@ public class TestTaskObserverCode extends TestLib
   }
 
 
+<<<<<<< HEAD:frysk-core/frysk/proc/live/TestTaskObserverCode.java
     static class SignaledObserver implements TaskObserver.Signaled {
+=======
+    private static class SignaledObserver implements TaskObserver.Signaled {
+>>>>>>> Pass a Signal to terminating and terminated observers.:frysk-core/frysk/proc/live/TestTaskObserverCode.java
 	Signal sig;
+<<<<<<< HEAD:frysk-core/frysk/proc/live/TestTaskObserverCode.java
 	public Action updateSignaled (Task task, Signal signal) {
+=======
+	public Action updateSignaled(Task task, Signal signal) {
+>>>>>>> Pass a Signal to terminating and terminated observers.:frysk-core/frysk/proc/live/TestTaskObserverCode.java
 	    this.sig = signal;
 	    Manager.eventLoop.requestStop();
 	    return Action.BLOCK;
@@ -1144,30 +1154,23 @@ public class TestTaskObserverCode extends TestLib
 	}
     }
 
-  class TerminatingObserver
-    implements TaskObserver.Terminating
-  {
-    Task task;
-    boolean signal;
-    int value;
-
-    public Action updateTerminating (Task task, boolean signal, int value)
-    {
-      this.task = task;
-      this.signal = signal;
-      this.value = value;
-
-      Manager.eventLoop.requestStop();
-      return Action.BLOCK;
+    private class TerminatingObserver implements TaskObserver.Terminating {
+	Task task;
+	Signal signal;
+	int value;
+	public Action updateTerminating(Task task, Signal signal, int value) {
+	    this.task = task;
+	    this.signal = signal;
+	    this.value = value;
+	    Manager.eventLoop.requestStop();
+	    return Action.BLOCK;
+	}
+	public void addFailed(Object observable, Throwable w) {
+	    fail(w.getMessage());
+	}
+	public void addedTo(Object observable) {
+	    Manager.eventLoop.requestStop();
+	}
+	public void deletedFrom(Object observable){}
     }
-    public void addFailed(Object observable, Throwable w)
-    {
-      fail(w.getMessage());
-    }
-    public void addedTo(Object observable)
-    {
-      Manager.eventLoop.requestStop();
-    }
-    public void deletedFrom(Object observable){}
-  }
 }

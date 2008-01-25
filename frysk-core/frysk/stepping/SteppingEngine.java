@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ import frysk.rt.Breakpoint;
 import frysk.rt.BreakpointManager;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
-import frysk.sys.Signal;
+import frysk.isa.signals.Signal;
 
 /**
  * State machine for thread and process stepping. Provides static methods for
@@ -1128,8 +1128,9 @@ public class SteppingEngine {
      * TASKOBSERVER.CLONED/TERMINATED OBSERVER CLASS
      **********************************************************************/
 
-    protected class ThreadLifeObservable extends Observable implements
-	    TaskObserver.Cloned, TaskObserver.Terminating, TaskObserver.Terminated {
+    protected class ThreadLifeObservable extends Observable
+	implements TaskObserver.Cloned, TaskObserver.Terminating,
+		   TaskObserver.Terminated {
 
 	private LinkedList exitingTasks;
 
@@ -1155,32 +1156,31 @@ public class SteppingEngine {
 	    return Action.CONTINUE;
 	}
 
-	public Action updateTerminating(Task task, boolean signal, int value) {
-	    //      System.err.println("threadlife.updateTerminating " + task + " " + value);
-
-	    /* Watch for terminating Tasks. Set the stepping state of the task
-	     * as terminated and notify the observers of the event. */
-
+	public Action updateTerminating(Task task, Signal signal, int value) {
+	    // Watch for terminating Tasks. Set the stepping state of
+	    // the task as terminated and notify the observers of the
+	    // event.
 	    TaskStepEngine tse = (TaskStepEngine) SteppingEngine.this.taskStateMap
 		    .get(task);
 	    tse.setState(new StepTerminatedState(task, true));
-
-	    if (signal)
-		tse.setMessage(tse.getMessage() + "Task " + task.getTid()
-			+ " is terminating from signal " + value);
+	    if (signal != null)
+		tse.setMessage(tse.getMessage()
+			       + "Task " + task.getTid()
+			       + " is terminating from signal " + signal);
 	    else
-		tse.setMessage(tse.getMessage() + "Task " + task.getTid() + " is terminating");
+		tse.setMessage(tse.getMessage()
+			       + "Task " + task.getTid()
+			       + " is exiting with status " + value);
 
 	    steppingObserver.notifyNotBlocked(tse);
 
 	    return Action.CONTINUE;
 	}
 	
-	public Action updateTerminated(Task task, boolean signal, int value) {
-	    //      System.err.println("threadlife.updateTerminating " + task + " " + value);
-
-	    /* Watch for terminating Tasks. Set the stepping state of the task
-	     * as terminated and notify the observers of the event. */
+	public Action updateTerminated(Task task, Signal signal, int value) {
+	    // Watch for terminating Tasks. Set the stepping state of
+	    // the task as terminated and notify the observers of the
+	    // event.
             Proc proc = task.getProc();
 	    Integer context = (Integer)SteppingEngine.this.contextMap.get(proc);
 	    if (!SteppingEngine.this.contextMap.isEmpty() && context != null)
@@ -1194,14 +1194,14 @@ public class SteppingEngine {
             if (tse != null && tse.isAlive()) {
                 tse.setState(new StepTerminatedState(task));
 
-                if (signal)
-                    tse.setMessage(tse.getMessage() + "Task "
-                                   + task.getTid()
-                                   + " terminated from signal "
-                                   + value);
+                if (signal != null)
+                    tse.setMessage(tse.getMessage()
+				   + "Task " + task.getTid()
+                                   + " terminated by signal " + signal);
                 else
-                    tse.setMessage(tse.getMessage() + "Task "
-                                   + task.getTid() + " terminated");
+                    tse.setMessage(tse.getMessage()
+				   + "Task " + task.getTid()
+				   + " exited with status " + value);
                 steppingObserver.notifyNotBlocked(tse);
             }
             // Clone task list so we can remove tasks (via cleanTask)
@@ -1242,7 +1242,7 @@ public class SteppingEngine {
 		    contextMap.put(task.getProc(), new Integer(i));
 		} else {
 		    contextMap.remove(task.getProc());
-		    Signal.KILL.kill(task.getProc().getPid());
+		    frysk.sys.Signal.KILL.kill(task.getProc().getPid());
 		}
 	    }
 	}

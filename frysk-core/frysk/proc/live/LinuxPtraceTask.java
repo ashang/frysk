@@ -628,20 +628,30 @@ public class LinuxPtraceTask extends LiveTask {
     private final TaskObservable terminatedObservers = new TaskObservable(this);
     /**
      * Notify all Terminated observers, of this Task's demise. Return
-     * the number of blocking observers.(Does this make any sense?)
+     * the number of blocking observers (does this make any sense?);
+     * or -1 if there were no observers.
      */
-    int notifyTerminated(boolean signal, int value) {
-	logger.log(Level.FINE, "{0} notifyTerminated\n", this);
-	for (Iterator i = terminatedObservers.iterator(); i.hasNext();) {
-	    TaskObserver.Terminated observer = (TaskObserver.Terminated) i.next();
-	    if (observer.updateTerminated(this, signal, value) == Action.BLOCK) {
-		logger.log(Level.FINER,
-			   "{0} notifyTerminated adding {1} to blockers\n",
-			   new Object[] { this, observer });
-		blockers.add(observer);
+    int notifyTerminated(boolean sig, int value) {
+	frysk.isa.signals.Signal signal
+	    = sig ? getSignalTable().get(value) : null;
+	logger.log(Level.FINE, "{0} notifyTerminated {1} {2}",
+		   new Object[] { this, signal, new Integer(value) });
+	if (terminatedObservers.numberOfObservers() > 0) {
+	    for (Iterator i = terminatedObservers.iterator(); i.hasNext();) {
+		TaskObserver.Terminated observer
+		    = (TaskObserver.Terminated) i.next();
+		if (observer.updateTerminated(this, signal, value)
+		    == Action.BLOCK) {
+		    logger.log(Level.FINER,
+			       "{0} notifyTerminated adding {1} to blockers\n",
+			       new Object[] { this, observer });
+		    blockers.add(observer);
+		}
 	    }
+	    return blockers.size();
+	} else {
+	    return -1;
 	}
-	return blockers.size();
     }
     /**
      * Add a TaskObserver.Terminated observer.
@@ -664,15 +674,30 @@ public class LinuxPtraceTask extends LiveTask {
     private final TaskObservable terminatingObservers = new TaskObservable(this);
     /**
      * Notify all Terminating observers, of this Task's demise. Return
-     * the number of blocking observers.
+     * the number of blocking observers; or -1 of there are no
+     * observers.
      */
-    int notifyTerminating(boolean signal, int value) {
-	for (Iterator i = terminatingObservers.iterator(); i.hasNext();) {
-	    TaskObserver.Terminating observer = (TaskObserver.Terminating) i.next();
-	    if (observer.updateTerminating(this, signal, value) == Action.BLOCK)
-		blockers.add(observer);
+    int notifyTerminating(boolean sig, int value) {
+	frysk.isa.signals.Signal signal
+	    = sig ? getSignalTable().get(value) : null;
+	logger.log(Level.FINE, "{0} notifyTerminating {1} {2}",
+		   new Object[] { this, signal, new Integer(value) });
+	if (terminatingObservers.numberOfObservers() > 0) {
+	    for (Iterator i = terminatingObservers.iterator(); i.hasNext();) {
+		TaskObserver.Terminating observer
+		    = (TaskObserver.Terminating) i.next();
+		if (observer.updateTerminating(this, signal, value)
+		    == Action.BLOCK) {
+		    logger.log(Level.FINER,
+			       "{0} notifyTerminating adding {1} to blockers\n",
+			       new Object[] { this, observer });
+		    blockers.add(observer);
+		}
+	    }
+	    return blockers.size();
+	} else {
+	    return -1;
 	}
-	return blockers.size();
     }
     /**
      * Add TaskObserver.Terminating to the TaskObserver pool.
@@ -783,7 +808,7 @@ public class LinuxPtraceTask extends LiveTask {
     private final TaskObservable signaledObservers = new TaskObservable(this);
     /**
      * Notify all Signaled observers of the signal. Return the number
-     * of blocking observers.  Return -1 if there are no observers.
+     * of blocking observers; or -1 if there are no observers.
      */
     int notifySignaled(int sig) {
 	frysk.isa.signals.Signal signal = getSignalTable().get(sig);
@@ -793,8 +818,12 @@ public class LinuxPtraceTask extends LiveTask {
 	    for (Iterator i = signaledObservers.iterator(); i.hasNext();) {
 		TaskObserver.Signaled observer
 		    = (TaskObserver.Signaled) i.next();
-		if (observer.updateSignaled(this, signal) == Action.BLOCK)
+		if (observer.updateSignaled(this, signal) == Action.BLOCK) {
+		    logger.log(Level.FINER,
+			       "{0} notifySignaled adding {1} to blockers\n",
+			       new Object[] { this, observer });
 		    blockers.add(observer);
+		}
 	    }
 	    return blockers.size();
 	} else {

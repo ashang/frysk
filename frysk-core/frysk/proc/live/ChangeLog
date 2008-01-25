@@ -19,6 +19,11 @@
 
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTask.java (notifyTerminating(boolean,int))
+	(notifyTerminated(boolean,int)): Pass frysk.isa.signals.Signal to
+	observers.
+	* TestTaskObserverCode.java: Update.
+	
 	* LinuxPtraceTask.java (notifySignaled(int)): Pass a
 	frysk.isa.signals.Signal to the observers; return -1 when there
 	are no observers.

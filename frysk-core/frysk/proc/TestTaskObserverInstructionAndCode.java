@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import frysk.isa.signals.Signal;
 import frysk.testbed.TestLib;
 import frysk.testbed.Offspring;
 import frysk.testbed.SlaveOffspring;
@@ -126,20 +127,17 @@ public class TestTaskObserverInstructionAndCode
     }
   }
 
-  // Simple observer to alert when child process dies unexpectedly
-  static class TerminatedObserver
-    extends TestObserver
-    implements TaskObserver.Terminated
-  {
-
-    // Shouldn't be triggered ever.
-    public Action updateTerminated (Task task, boolean signal, int value)
+    // Simple observer to alert when child process dies unexpectedly
+    static class TerminatedObserver extends TestObserver
+	implements TaskObserver.Terminated
     {
-      String message = task + " terminated (signal: " + signal + "): " + value;
-      fail(message);
-      throw new IllegalStateException(message);
+	// Shouldn't be triggered ever.
+	public Action updateTerminated(Task task, Signal signal, int value) {
+	    fail(task + " terminated; signal=" + signal
+		 + " value=" + value);
+	    return null; // not reached
+	}
     }
-  }
 
 
   static class InstructionObserver

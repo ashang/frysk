@@ -106,35 +106,29 @@ public interface TaskObserver
     /**
      * Interface used to notify of a Task that is terminating.
      */
-    public interface Terminating
-	extends TaskObserver
-    {
+    public interface Terminating extends TaskObserver {
 	/**
 	 * Called while the Task is terminating; while the process
 	 * still exists not much other than examining it can be
-	 * performed.  If SIGNAL, the termination was forced using
-	 * signal VALUE, otherwize the termination is due to an
-	 * _exit(2) call.
+	 * performed.  If SIGNAL is non-NULL it is the signal causing
+	 * the termination, else STATUS is the exit value passed to
+	 * _exit(2).
 	 */
-	Action updateTerminating (Task task, boolean signal,
-					   int value);
+	Action updateTerminating (Task task, Signal signal, int status);
     }
 
     /**
      * Interface used to notify that Task has terminated (the task no
      * longer exits).
      */
-    public interface Terminated
-	extends TaskObserver
-    {
+    public interface Terminated extends TaskObserver {
 	/**
 	 * Called once the Task has terminated; the process no longer
-	 * exists.  If SIGNAL, the termination was forced using signal
-	 * VALUE, otherwize the termination is due to an _exit(2)
-	 * call.
+	 * exists.  If SIGNAL is non-NULL it is the signal causing the
+	 * termination, else STATUS is the exit value passed to
+	 * _exit(2).
 	 */
-	Action updateTerminated (Task task, boolean signal,
-					  int value);
+	Action updateTerminated(Task task, Signal signal, int value);
     }
 
     /**

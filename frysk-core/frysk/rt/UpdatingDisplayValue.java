@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@
 
 package frysk.rt;
 
+import frysk.isa.signals.Signal;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -320,21 +321,17 @@ public class UpdatingDisplayValue extends DisplayValue {
     }
 
     /*
-     * When the task dies, let the people watching us know that the value is
-     * no longer available.
+     * When the task dies, let the people watching us know that the
+     * value is no longer available.
      */
     private class TermObserver implements TaskObserver.Terminated {
-
 	public void addFailed(Object observable, Throwable w) {
 	}
-
 	public void addedTo(Object observable) {
 	}
-
 	public void deletedFrom(Object observable) {
 	}
-
-	public Action updateTerminated(Task task, boolean signal, int value) {
+	public Action updateTerminated(Task task, Signal signal, int value) {
 	    UpdatingDisplayValue.this.myVar = null;
 	    notifyObserversUnavailableOutOfScope();
 	    return Action.CONTINUE;
