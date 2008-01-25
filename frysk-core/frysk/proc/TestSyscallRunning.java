@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, Red Hat Inc.
+// Copyright 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -53,6 +53,7 @@ import frysk.Config;
 import frysk.sys.DaemonPipePair;
 import frysk.isa.syscalls.SyscallTable;
 import frysk.isa.syscalls.SyscallTableFactory;
+import frysk.testbed.IsaTestbed;
 
 /**
  * XXX: This code should be simplified, eliminating local parallelism
@@ -175,7 +176,7 @@ public class TestSyscallRunning
 
 	SyscallObserver(String call, Task task, boolean entered) {
 	    SyscallTable syscallTable
-		= SyscallTableFactory.getSyscallTable(task.getISA());
+		= SyscallTableFactory.getSyscallTable(IsaTestbed.getISA());
 	    this.expected = syscallTable.getSyscall(call);
 	    this.entered = entered;
 	}

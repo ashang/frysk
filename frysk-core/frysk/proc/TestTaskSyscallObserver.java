@@ -37,7 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.proc;
 
 import frysk.isa.syscalls.Syscall;
@@ -56,6 +55,7 @@ import frysk.testbed.SlaveOffspring;
 import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.TaskObserverBase;
 import frysk.testbed.DaemonBlockedAtEntry;
+import frysk.testbed.IsaTestbed;
 
 /**
  * Check that syscall events are detected. This should be expanded later to
@@ -85,7 +85,7 @@ public class TestTaskSyscallObserver
 
 	SyscallObserver (Task task) {
 	    SyscallTable syscallTable
-		= SyscallTableFactory.getSyscallTable(task.getISA());
+		= SyscallTableFactory.getSyscallTable(IsaTestbed.getISA());
 	    execvesys = syscallTable.getSyscall("execve");
 	    opensys = syscallTable.getSyscall("open");
 	    readsys = syscallTable.getSyscall("read");

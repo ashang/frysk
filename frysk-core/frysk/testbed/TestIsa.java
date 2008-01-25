@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008 Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,30 +37,51 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.isa.signals;
+package frysk.testbed;
 
-import frysk.testbed.IsaTestbed;
-import frysk.testbed.TestLib;
+import java.io.File;
+import frysk.isa.ISA;
+import frysk.Config;
 
 /**
- * A target signal factory.
+ * Test IsaTestbed.
  */
 
-public class TestSignalTable extends TestLib {
-    public void testSignalTable() {
-	frysk.sys.Signal[] hostSignals
-	    = frysk.sys.Signal.getHostSignalSet().toArray();
-	SignalTable signalTable
-	    = SignalTableFactory.getSignalTable(IsaTestbed.getISA());
-	for (int i = 0; i < hostSignals.length; i++) {
-	    frysk.sys.Signal hostSignal = hostSignals[i];
-	    if (hostSignal.toString().startsWith("SIGRT"))
-		// Real-time signals are really messed up.
-		break;
-	    Signal targetSignal = signalTable.get(hostSignal.intValue());
-	    assertEquals("signal " + hostSignal.intValue(),
-			 hostSignal.toString(),
-			 targetSignal.toString());
-	}
+public class TestIsa extends TestLib {
+
+    public void testIsaValid() {
+	assertNotNull("isa", IsaTestbed.getISA());
+    }
+    public void testIsa32Valid() {
+	if (missing32or64())
+	    return;
+	assertNotNull("isa32", IsaTestbed.getISA32());
+    }
+    public void testIsa64Valid() {
+	if (missing32or64())
+	    return;
+	assertNotNull("isa32", IsaTestbed.getISA32());
+    }
+
+    private void checkIsaMatchesBlockedProcess(ISA isa, File exe) {
+	assertSame("running isa",
+		   new DaemonBlockedAtEntry(exe).getMainTask().getISA(),
+		   isa);
+    }
+    public void testIsaMatchesBlockedProcess() {
+	checkIsaMatchesBlockedProcess(IsaTestbed.getISA(),
+				      Config.getPkgLibFile("funit-slave"));
+    }
+    public void testIsa32MatchesBlockedProcess() {
+	if (missing32or64())
+	    return;
+	checkIsaMatchesBlockedProcess(IsaTestbed.getISA32(),
+				      Config.getPkgLib32File("funit-slave"));
+    }
+    public void testIsa64MatchesBlockedProcess() {
+	if (missing32or64())
+	    return;
+	checkIsaMatchesBlockedProcess(IsaTestbed.getISA64(),
+				      Config.getPkgLib64File("funit-slave"));
     }
 }

@@ -1,3 +1,7 @@
+2008-01-25  Andrew Cagney  <cagney@redhat.com>
+
+	* TestSignalTable.java: Use frysk.testbed.IsaTestbed.
+
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
 	* Signal.java: Move from frysk.proc.Signal.

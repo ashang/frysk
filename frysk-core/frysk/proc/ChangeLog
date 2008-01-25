@@ -1,5 +1,9 @@
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
+	* TestSyscallRunning.java: Use IsaTestbed to get the isa.
+	* TestSyscallSignal.java: Ditto.
+	* TestTaskSyscallObserver.java: Ditto.
+
 	* TestTaskObserver.java: Eliminate uses of
 	frysk.sys.Signal.equals(int).
 

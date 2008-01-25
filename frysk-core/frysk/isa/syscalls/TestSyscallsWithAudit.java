@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, Red Hat Inc.
+// Copyright 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,30 +42,20 @@ package frysk.isa.syscalls;
 import frysk.sys.AuditLibs;
 import frysk.testbed.TestLib;
 import frysk.isa.ISA;
+import frysk.isa.ISAMap;
+import frysk.testbed.IsaTestbed;
 
 public class TestSyscallsWithAudit extends TestLib {
   
-  public void testLinuxIA32() {
-      int machine = AuditLibs.MACH_X86;
-      syscallTest(machine, ISA.IA32);
-  }
+    private static final ISAMap machines = new ISAMap("syscall machines")
+	.put(ISA.IA32, new Integer(AuditLibs.MACH_X86))
+	.put(ISA.PPC32BE, new Integer(AuditLibs.MACH_PPC))
+	.put(ISA.PPC64BE, new Integer(AuditLibs.MACH_PPC64))
+	.put(ISA.X8664, new Integer(AuditLibs.MACH_86_64))
+	;
 
-  public void testLinuxPPC32() {
-      int machine = AuditLibs.MACH_PPC;
-      syscallTest(machine, ISA.PPC32BE);
-  }
-
-  public void testLinuxPPC64() {
-      int machine = AuditLibs.MACH_PPC64;
-      syscallTest(machine, ISA.PPC64BE);
-  }
-
-  public void testLinuxX8664() {
-      int machine = AuditLibs.MACH_86_64;
-      syscallTest(machine, ISA.X8664);
-  }
-
-    private void syscallTest(int machine, ISA isa) {
+    private void syscallTest(ISA isa) {
+	int machine = ((Integer) machines.get(isa)).intValue();
 	SyscallTable syscallTable
 	    = SyscallTableFactory.getSyscallTable(isa);
 	
@@ -103,5 +93,26 @@ public class TestSyscallsWithAudit extends TestLib {
 		//assertEquals("no-name", "<" + i + ">", fryskName);
 	    }
 	}
+    }
+
+
+    public void testLinuxIA32() {
+	syscallTest(ISA.IA32);
+    }
+    
+    public void testLinuxPPC32() {
+	syscallTest(ISA.PPC32BE);
+    }
+    
+    public void testLinuxPPC64() {
+	syscallTest(ISA.PPC64BE);
+    }
+    
+    public void testLinuxX8664() {
+	syscallTest(ISA.X8664);
+    }
+
+    public void testHost() {
+	syscallTest(IsaTestbed.getISA());
     }
 }

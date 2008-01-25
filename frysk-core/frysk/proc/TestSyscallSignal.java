@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import frysk.testbed.IsaTestbed;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -254,7 +255,7 @@ public class TestSyscallSignal
 
 	SyscallObserver(int stophits, Task task) {
 	    SyscallTable syscallTable
-		= SyscallTableFactory.getSyscallTable(task.getISA());
+		= SyscallTableFactory.getSyscallTable(IsaTestbed.getISA());
 	    this.stophits = stophits;
 	    this.opensys = syscallTable.getSyscall("open");
 	    this.closesys = syscallTable.getSyscall("close");

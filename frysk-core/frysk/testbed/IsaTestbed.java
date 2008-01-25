@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008 Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,30 +37,36 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.isa.signals;
+package frysk.testbed;
 
-import frysk.testbed.IsaTestbed;
-import frysk.testbed.TestLib;
+import frysk.isa.ISA;
+import frysk.isa.ElfMap;
+import frysk.Config;
 
 /**
- * A target signal factory.
+ * Return the ISA being used by the testbed.
  */
 
-public class TestSignalTable extends TestLib {
-    public void testSignalTable() {
-	frysk.sys.Signal[] hostSignals
-	    = frysk.sys.Signal.getHostSignalSet().toArray();
-	SignalTable signalTable
-	    = SignalTableFactory.getSignalTable(IsaTestbed.getISA());
-	for (int i = 0; i < hostSignals.length; i++) {
-	    frysk.sys.Signal hostSignal = hostSignals[i];
-	    if (hostSignal.toString().startsWith("SIGRT"))
-		// Real-time signals are really messed up.
-		break;
-	    Signal targetSignal = signalTable.get(hostSignal.intValue());
-	    assertEquals("signal " + hostSignal.intValue(),
-			 hostSignal.toString(),
-			 targetSignal.toString());
-	}
+public class IsaTestbed {
+
+    /**
+     * Return the default isa being used for testing.
+     */
+    public static ISA getISA() {
+	return ElfMap.getISA(Config.getPkgLibFile("funit-slave"));
+    }
+    
+    /**
+     * Return the 32-bit isa being used for 32-on-64 testing.
+     */
+    public static ISA getISA32() {
+	return ElfMap.getISA(Config.getPkgLib32File("funit-slave"));
+    }
+
+    /**
+     * Return the 64-bit isa being used for 32-on-64 testing.
+     */
+    public static ISA getISA64() {
+	return ElfMap.getISA(Config.getPkgLib64File("funit-slave"));
     }
 }

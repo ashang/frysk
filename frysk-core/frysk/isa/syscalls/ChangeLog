@@ -1,3 +1,7 @@
+2008-01-25  Andrew Cagney  <cagney@redhat.com>
+
+	* TestSyscallsWithAudit.java: Use frysk.testbed.IsaTestbed.
+
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxIA32SyscallTable.java: Update; Register moved to

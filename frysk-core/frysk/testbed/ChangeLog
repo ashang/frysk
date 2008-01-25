@@ -1,3 +1,8 @@
+2008-01-25  Andrew Cagney  <cagney@redhat.com>
+
+	* TestIsa.java: New.
+	* IsaTestbed.java: New.
+
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
 	* DaemonBlockedAtSignal.java: Update to match
