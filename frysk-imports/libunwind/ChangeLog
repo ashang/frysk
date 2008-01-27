@@ -1,3 +1,38 @@
+2007-01-25  Mark Wielaard  <mwielaard@redhat.com>
+
+	Revert:
+	2006-09-20  Alexandre Oliva  <aoliva@redhat.com>
+	
+	* src/os-linux.h (maps_next): Don't error out just because
+	path is missing.
+	* include/tdep-hppa/libunwind_i.h (tdep_get_elf_image): Add as
+	and arg to the parameter list.
+	* include/tdep-ia64/libunwind_i.h (tdep_get_elf_image): Ditto.
+	* include/tdep-ppc64/libunwind_i.h (tdep_get_elf_image): Ditto.
+	* include/tdep-x86/libunwind_i.h (tdep_get_elf_image): Ditto.
+	* include/tdep-x86_64/libunwind_i.h (tdep_get_elf_image): Ditto.
+	* src/elfxx.h (get_proc_name): Ditto.
+	* src/elfxx.c (get_proc_name): Ditto.  Adjust.
+	* src/hppa/Ginit.c (get_static_proc_name): Adjust.
+	* src/ia64/Ginit.c (get_static_proc_name): Ditto.
+	* src/ppc64/Ginit.c (get_static_proc_name): Ditto.
+	* src/x86/Ginit.c (get_static_proc_name): Ditto.
+	* src/x86_64/Ginit.c (get_static_proc_name): Ditto.
+	* src/ptrace/_UPT_find_proc_info.c (get_unwind_info): Ditto.
+	* src/ptrace/_UPT_get_proc_name.c (_UPT_get_proc_name): Ditto.
+	* src/os-hpux.c (tdep_get_elf_image): Ditto.
+	* src/os-linux.c (tdep_get_elf_image): Ditto.  Read in 1-page
+	segments that start with the ELF magic.
+	(MAX_VDSO_SIZE): New.
+
+	2007-04-25  Nurdin Premji  <npremji@redhat.com>
+
+	* src/elfxx.h (elf_map_image): map image using MAP_32BIT to
+	avoid address truncation issues in cross-platform unwinding.
+	* src/os-linux.h: (tdep_get_elf_image) Ditto for VDSO section.
+	* src/ptrace/_UPT_find_proc_info.c (_UPTi_find_unwind_table): 
+	Added dummy local address space for cross-platform unwinding.
+
 2008-01-18  Mark Wielaard  <mwielaard@redhat.com>
 
 	* include/dwarf.h (dwarf_cie_info): Add as and as_arg members.

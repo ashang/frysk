@@ -138,7 +138,7 @@ elf_w (lookup_symbol) (unw_addr_space_t as,
 
 HIDDEN int
 elf_w (get_proc_name) (unw_addr_space_t as, pid_t pid, unw_word_t ip,
-		       char *buf, size_t buf_len, unw_word_t *offp, void *arg)
+		       char *buf, size_t buf_len, unw_word_t *offp)
 {
   unsigned long segbase, mapoff;
   Elf_W (Addr) load_offset = 0;
@@ -147,7 +147,7 @@ elf_w (get_proc_name) (unw_addr_space_t as, pid_t pid, unw_word_t ip,
   Elf_W (Phdr) *phdr;
   int i, ret;
 
-  ret = tdep_get_elf_image (as, &ei, pid, ip, &segbase, &mapoff, arg);
+  ret = tdep_get_elf_image (&ei, pid, ip, &segbase, &mapoff);
   if (ret < 0)
     return ret;
 

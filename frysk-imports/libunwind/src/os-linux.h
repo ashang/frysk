@@ -294,12 +294,8 @@ maps_next (struct map_iterator *mi,
       cp = scan_char (cp, &colon);
       cp = scan_hex (cp, &minor);
       cp = scan_dec (cp, &inum);
-      if (!cp)
-	continue;
       cp = scan_string (cp, path, path_size);
-      if (!cp)
-	*path = 0;
-      if (dash != '-' || colon != ':')
+      if (!cp || dash != '-' || colon != ':')
 	continue;	/* skip line with unknown or bad format */
       return 1;
     }

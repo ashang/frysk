@@ -2,7 +2,6 @@
    Copyright (C) 2003, 2005 Hewlett-Packard Co
    Copyright (C) 2007 David Mosberger-Tang
 	Contributed by David Mosberger-Tang <dmosberger@gmail.com>
-   Copyright Red Hat 2007
 
 This file is part of libunwind.
 
@@ -44,10 +43,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 # define elf_w(x)	_Uelf64_##x
 #endif
 
-#ifndef MAP_32BIT
-# define MAP_32BIT 0
-#endif
-
 static inline int
 elf_map_image (struct elf_image *ei, const char *path)
 {
@@ -65,7 +60,7 @@ elf_map_image (struct elf_image *ei, const char *path)
     }
 
   ei->size = stat.st_size;
-  ei->image = mmap (NULL, ei->size, PROT_READ, MAP_PRIVATE | MAP_32BIT, fd, 0);
+  ei->image = mmap (NULL, ei->size, PROT_READ, MAP_PRIVATE, fd, 0);
   close (fd);
   if (ei->image == MAP_FAILED)
     return -1;
@@ -77,4 +72,4 @@ extern int elf_w (valid_object) (struct elf_image *ei);
 extern int elf_w (get_proc_name) (unw_addr_space_t as,
 				  pid_t pid, unw_word_t ip,
 				  char *buf, size_t len,
-				  unw_word_t *offp, void *arg);
+				  unw_word_t *offp);

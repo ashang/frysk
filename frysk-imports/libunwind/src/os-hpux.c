@@ -33,10 +33,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 #include "elf64.h"
 
 HIDDEN int
-tdep_get_elf_image (unw_addr_space_t as, struct elf_image *ei,
-		    pid_t pid, unw_word_t ip,
-		    unsigned long *segbase, unsigned long *mapoff,
-		    void *arg)
+tdep_get_elf_image (struct elf_image *ei, pid_t pid, unw_word_t ip,
+		    unsigned long *segbase, unsigned long *mapoff)
 {
   struct load_module_desc lmd;
   const char *path;
