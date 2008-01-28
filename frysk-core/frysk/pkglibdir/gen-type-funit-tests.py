@@ -419,7 +419,7 @@ c_file.add('''struct {
     .int_var=1,
   },
 }''')
-# HERE HERE -------------------------------------------------------
+
 c_file.add('''struct {
   union {
     int int_var;
@@ -780,4 +780,7 @@ c_file.add('''enum colors {\n  orange = 0,\n  yellow = 1,\n  violet = 2,\n  indi
 c_file.add('''enum  {\n  chevy = 0,\n  dodge = 44,\n  ford = 55\n}''', "usa_cars", "chevy")
 c_file.add('''enum cars {\n  bmw = 0,\n  mercedes = 1,\n  porsche = 2\n}''', "sports_cars", "bmw")
 
+
+c_file.write("\ntypedef void void_type;\n")
+c_file.add("void_type *", "ptr_void_type_var", "")
 c_file.epilogue()

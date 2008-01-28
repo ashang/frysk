@@ -1,3 +1,7 @@
+2008-01-28  Stan Cox  <scox@redhat.com>
+
+	* TypeEntry.java (getType): DwTag.TYPEDEF_: Handle "typedef void"
+
 2008-01-24  swagiaal  <swagiaal@redhat.com>
 
 	* DebugInfoFrame.java: Fix for NullPointerException

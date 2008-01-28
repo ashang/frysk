@@ -437,7 +437,11 @@ public class TypeEntry {
 
 	switch (type.getTag().hashCode()) {
 	case DwTag.TYPEDEF_:
-	    returnType = new TypeDef(type.getName(), getType(type.getType()));
+	    DwarfDie typedefDieType = type.getType();
+	    Type typedefType = (typedefDieType != null) 
+		? getType(typedefDieType)
+	    	: new UnknownType(type.getName());
+	    returnType = new TypeDef(type.getName(), typedefType);
 	    break;
 	case DwTag.POINTER_TYPE_: {
 	    Type ptrTarget = getType(type.getType());

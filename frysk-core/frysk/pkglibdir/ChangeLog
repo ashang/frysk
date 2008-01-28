@@ -1,3 +1,7 @@
+2008-01-28  Stan Cox  <scox@redhat.com>
+
+	* gen-type-funit-tests.py (main): Add ptr_void_type_var.
+
 2008-01-23  Rick Moseley  <rmoseley@redhat.com>
 
 	* funit-parameters.c: New for testing Start/RunCommand.java.
