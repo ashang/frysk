@@ -1,3 +1,7 @@
+2008-01-29  Rick Moseley  <rmoseley@redhat.com>
+
+	* StartRun.java: Kill each proc only once(bz #5691).
+
 2008-01-25  Rick Moseley  <rmoseley@redhat.com>
 
 	* TestHpdTestHarness.java: Fix pattern matches.
