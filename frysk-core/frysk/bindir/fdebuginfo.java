@@ -42,10 +42,13 @@ package frysk.bindir;
 
 import java.io.File;
 
+import frysk.event.Event;
 import frysk.proc.Host;
 import frysk.proc.Manager;
+import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcId;
 import frysk.proc.Proc;
+import frysk.proc.ProcObserver;
 import frysk.proc.Task;
 import frysk.proc.dead.LinuxExeHost;
 
@@ -57,20 +60,6 @@ import frysk.util.DebuginfoPaths;
 public final class fdebuginfo
 {
     private static CommandlineParser parser;
-
-    /**
-     * Function that gets and prints the debuginfo install paths
-     * 
-     * @param proc - pid
-     */
-    private static void printDebuginfo (Proc proc)
-    {
-	Task task  = proc.getMainTask();
-	DebuginfoPaths dbg = new DebuginfoPaths(task);
-	String dInfo = dbg.getDebuginfo();          
-	if (dInfo!=null)
-	    System.out.print(dInfo);      
-    }
 
     /**
      * Entry function for fdebuginfo
@@ -88,7 +77,7 @@ public final class fdebuginfo
 		for (int i = 0; i < coreExePairs.length; i++)
 		{       
 		    Proc proc = Util.getProcFromCoreExePair(coreExePairs[i]);
-		    printDebuginfo(proc);
+		    new PrintDebuginfoEvent (proc).execute();
 		}  
 		System.exit(0);  
 	    }
@@ -99,7 +88,8 @@ public final class fdebuginfo
 		for (int i= 0; i< pids.length; i++)
 		{       
 		    Proc proc = Util.getProcFromPid(pids[i]);
-		    printDebuginfo(proc);
+		    new ProcBlockAction(proc, new PrintDebuginfoAction(proc));
+		    Manager.eventLoop.run();
 		}  
 		System.exit(0);
 	    }
@@ -115,7 +105,7 @@ public final class fdebuginfo
 		    Manager.eventLoop.start();
 		    Host exeHost = new LinuxExeHost(Manager.eventLoop, exeFile);
 		    Proc exeProc = Util.getProcFromExeFile(exeHost);
-		    printDebuginfo(exeProc);
+		    new PrintDebuginfoEvent(exeProc).execute();
 		}
 		System.exit(0);
 	    }
@@ -130,5 +120,48 @@ public final class fdebuginfo
 	parser.printHelp();
 	System.exit(1);   
     }   
+    
+    private static class PrintDebuginfoEvent implements Event
+    {
+	private Proc proc = null;
+	
+	public PrintDebuginfoEvent(Proc proc) {
+	    this.proc = proc;
+	}
+
+	public void execute() {
+	    /* Get and print the debuginfo install paths.
+	     */
+	    Task task  = proc.getMainTask();
+	    DebuginfoPaths dbg = new DebuginfoPaths(task);
+	    String dInfo = dbg.getDebuginfo();          
+	    if (dInfo!=null)
+		System.out.print(dInfo); 
+	    System.exit(0);
+	}	
+    }
+    
+    private static class PrintDebuginfoAction implements ProcObserver.ProcAction 
+    {
+	private Proc proc;
+
+	public PrintDebuginfoAction(Proc proc) {
+	    this.proc = proc;
+	}
+
+	public void allExistingTasksCompleted() {
+	    Manager.eventLoop.add(new PrintDebuginfoEvent(this.proc));
+	}
+	public void taskAddFailed(Object task, Throwable w) {
+	}
+	public void existingTask(Task task) {
+	}
+	public void addFailed(Object observable, Throwable w) {
+	}
+	public void addedTo(Object observable) {
+	}
+	public void deletedFrom(Object observable) {
+	}
+    }
 }
 

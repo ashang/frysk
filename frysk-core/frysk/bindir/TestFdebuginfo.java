@@ -52,8 +52,6 @@ import frysk.testbed.SlaveOffspring;
 public class TestFdebuginfo extends TestLib {
 
     public void testPathListing() {
-	if (unresolved(5671))
-	    return;
 	// Create an unattached child process.
 	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);

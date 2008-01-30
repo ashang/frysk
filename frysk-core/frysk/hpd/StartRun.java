@@ -145,13 +145,17 @@ class StartRun extends ParameterizedCommand {
 	if (foo.hasNext()) {
 	    if (cli.coreProcs.isEmpty() && cli.loadedProcs.isEmpty()) {
 		// Clear the parameters for this process
+		int oldPid = -1;
 		while (foo.hasNext()) {
 		    Task task = (Task) foo.next();
+		    if (task.getProc().getPid() == oldPid)
+		        continue;
 		    String paramList = getParameters(cmd, task);
 		    cli.execCommand("kill\n");
 		    cli.execCommand("start " + paramList + "\n");
 		    if (runToBreak)
 			cli.execCommand("go\n");
+		    oldPid = task.getProc().getPid();
 		}
 		return;
 	    }

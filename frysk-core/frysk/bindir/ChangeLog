@@ -1,3 +1,11 @@
+2008-01-28  Teresa Thomas  <tthomas@redhat.com>
+
+	* fdebuginfo.java (PrintDebuginfoEvent): New.
+	(PrintDebuginfoAction): New.
+	(.parseCores, .parseCommand): Use PrintDebuginfoEvent.	 
+	(.parsePids): Use PrintDebuginfoAction.
+	* TestFdebuginfo.java (testPathListing): Remove unresolved.
+
 2008-01-25  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestFdebuginfo.java (testBadArguments): Update.
