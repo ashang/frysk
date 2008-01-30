@@ -1,10 +1,13 @@
+2008-01-29  Stan Cox  <scox@redhat.com>
+
+	* TestSysRoot.java (testHaveSysRoot): test-sysroot now lives in
+	pkglibdir.  Use sendCommandExpectPrompt.
+
 2008-01-25  Rick Moseley  <rmoseley@redhat.com>
 
 	* TestHpdTestHarness.java: Fix pattern matches.
 	
-	
 	* TestHpdTestHarness.java: Change e.send to e.sendCommandExpectPrompt.
-
 
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 

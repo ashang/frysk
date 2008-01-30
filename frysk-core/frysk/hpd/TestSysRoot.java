@@ -40,7 +40,6 @@
 package frysk.hpd;
 
 import frysk.Config;
-import frysk.testbed.TearDownExpect;
 import java.io.File;
 
 /**
@@ -48,34 +47,29 @@ import java.io.File;
  */
 
 public class TestSysRoot extends TestLib {
+    public void setUp() {
+	super.setUp();
+	e = new HpdTestbed();
+    }
+
     public void testHaveSysRoot() {
-	if (unresolved(5657))
-	    return;
-	File testSysRootDir = Config.getPkgDataFile("test-sysroot");
+	File testSysRootDir = Config.getPkgLibFile("test-sysroot");
 	File testPath = Config.getPkgLibFile("funit-addresses");
-	child = new TearDownExpect(new String[] {
-		Config.getBinFile("fhpd").getAbsolutePath(),
-		"-sysroot", testSysRootDir.getAbsolutePath(),
-	        testSysRootDir.getAbsolutePath() + "/" + testPath
-	    });
-	child.expect(prompt);
-	child.send("break main\n");
-	child.expect(prompt);
-        child.send("run\n");
-        child.expect("Breakpoint");
-	child.send("list\n");
-	child.expect(".*int main.int argc, char. argv.*");
-	child.send("next\n");
-	child.expect(prompt);
-	child.send("next\n");
-	child.expect(prompt);
-	child.send("next\n");
-	child.expect(prompt);
-	child.send("print static_int\n");
-	child.expect("22.*" + prompt);
-	child.send("print volatile_int\n");
-	child.expect("33.*" + prompt);
-	child.send("quit");
-	child.close();
+	e.sendCommandExpectPrompt("load "  
+		+ testSysRootDir.getAbsolutePath() + "/usr/bin/" + testPath.getName()
+		+ " -sysroot " + testSysRootDir.getAbsolutePath(), 
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("start", "Attached to process.*");
+	e.sendCommandExpectPrompt("break main", "breakpoint.*");
+        e.send("go\n");
+        e.expect("go.*\n" + prompt + "Breakpoint");
+	e.sendCommandExpectPrompt("list",".*int main.int argc, char. argv.*");
+	e.sendCommandExpectPrompt("step", ".*stopped.*");
+	e.sendCommandExpectPrompt("step", ".*stopped.*");
+	e.sendCommandExpectPrompt("step", ".*stopped.*");
+	e.sendCommandExpectPrompt("print static_int", ".*22.*");
+	e.sendCommandExpectPrompt("print volatile_int", ".*33.*");
+	e.send("quit");
+	e.close();
     }
 }

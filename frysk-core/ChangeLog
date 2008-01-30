@@ -1,3 +1,8 @@
+2008-01-29  Stan Cox  <scox@redhat.com>
+
+	* Makefile.am (pkglib_PROGRAMS): Add funit-addresses-stripped.
+	Remove nobase_pkgdata_DATA.
+	
 2008-01-23  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Makefile.am: Add rules to create -nodebug and -noeh versions of

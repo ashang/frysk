@@ -225,28 +225,31 @@ frysk_pkglibdir_funit_symbols_stripped_SOURCES =
 frysk/pkglibdir/funit-symbols-stripped: frysk/pkglibdir/funit-symbols
 	strip -o $@ frysk/pkglibdir/funit-symbols
 
-nobase_pkgdata_DATA = frysk/pkgdatadir/test-sysroot/$(abspath frysk/pkglibdir/funit-addresses)
-frysk/pkgdatadir/test-sysroot/$(abspath frysk/pkglibdir/funit-addresses): frysk/pkglibdir/funit-addresses
-	mkdir -p $(abspath frysk/pkgdatadir/test-sysroot)/$(abspath frysk/pkglibdir)
-	cp -r $< $@
+pkglib_PROGRAMS += frysk/pkglibdir/funit-addresses-stripped
+frysk_pkglibdir_funit_addresses_stripped_SOURCES =
+frysk/pkglibdir/funit-addresses-stripped: frysk/pkglibdir/funit-addresses
+	cp $< $@
+	mkdir -p frysk/pkglibdir/test-sysroot/usr/src/debug
+	cp $(abspath $(srcdir)/frysk/pkglibdir/funit-addresses.c) \
+	   frysk/pkglibdir/test-sysroot/usr/src/debug
+	mkdir -p frysk/pkglibdir/test-sysroot/usr/bin
+	mkdir -p frysk/pkglibdir/test-sysroot/usr/lib/debug/usr/bin
+	(cd frysk/pkglibdir/test-sysroot/usr/src/debug; \
+	 gcc -g funit-addresses.c -o ../../bin/funit-addresses; \
+	 eu-strip --remove-comment -f ../../lib/debug/usr/bin/funit-addresses.debug ../../bin/funit-addresses; \
+	 /usr/lib/rpm/debugedit -b $(abspath frysk/pkglibdir/test-sysroot) -d / ../../lib/debug/usr/bin/funit-addresses.debug)
 
-nobase_pkgdata_DATA += frysk/pkgdatadir/test-sysroot/$(abspath $(srcdir)/frysk/pkglibdir/funit-addresses.c)
-frysk/pkgdatadir/test-sysroot/$(abspath $(srcdir)/frysk/pkglibdir/funit-addresses.c): \
-frysk/pkgdatadir/test-sysroot/$(abspath frysk/pkglibdir/funit-addresses)
-	mkdir -p $(abspath frysk/pkgdatadir/test-sysroot)/$(abspath $(srcdir)/frysk/pkglibdir)
-	cp $(abspath $(srcdir)/frysk/pkglibdir/funit-addresses.c) $@
-
-nobase_pkgdata_DATA += frysk/pkgdatadir/test-sysroot/usr/lib/debug/$(abspath frysk/pkglibdir/funit-addresses.debug)
-frysk/pkgdatadir/test-sysroot/usr/lib/debug/$(abspath frysk/pkglibdir/funit-addresses.debug): frysk/pkgdatadir/test-sysroot/$(abspath frysk/pkglibdir/funit-addresses)
-	mkdir -p $(abspath frysk/pkgdatadir/test-sysroot/usr/lib/debug/)/$(abspath frysk/pkglibdir)
-	eu-strip --remove-comment -f $@ $<
-
-install-data-hook:
-	mv $(datarootdir)/frysk/frysk/pkgdatadir/test-sysroot $(datarootdir)/frysk
-	rmdir $(datarootdir)/frysk/frysk/pkgdatadir
-	rmdir $(datarootdir)/frysk/frysk
+install-exec-local: install-sysroot-local
+uninstall-local: uninstall-sysroot-local
+.PHONY: install-sysroot-local uninstall-sysroot-local
+install-sysroot-local:
+	cp -r frysk/pkglibdir/test-sysroot $(pkglibdir)
+	cp -r frysk/pkglibdir/arch32/test-sysroot $(pkglib32dir)
 # we don't want this installed, but noinst_SCRIPTS has no effect
-	rm $(libdir)/frysk/gen-type-funit-tests
+	rm -f $(libdir)/frysk/gen-type-funit-tests
+uninstall-sysroot-local:
+	rm -rf $(pkglibdir)/test-sysroot
+	rm -rf $(pkglib32dir)/test-sysroot
 
 if DO_ARCH32_TEST
 pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-symbols-nodebug
@@ -260,10 +263,24 @@ frysk_pkglibdir_arch32_funit_symbols_stripped_SOURCES =
 frysk/pkglibdir/arch32/funit-symbols-stripped: frysk/pkglibdir/arch32/funit-symbols
 	strip -o $@ frysk/pkglibdir/arch32/funit-symbols
 
+pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-addresses-stripped
+frysk_pkglibdir_arch32_funit_addresses_stripped_SOURCES =
+frysk/pkglibdir/arch32/funit-addresses-stripped: frysk/pkglibdir/arch32/funit-addresses
+	cp $< $@
+	mkdir -p frysk/pkglibdir/arch32/test-sysroot/usr/src/debug
+	cp $(abspath $(srcdir)/frysk/pkglibdir/funit-addresses.c) \
+	   frysk/pkglibdir/arch32/test-sysroot/usr/src/debug
+	mkdir -p frysk/pkglibdir/arch32/test-sysroot/usr/bin
+	mkdir -p frysk/pkglibdir/arch32/test-sysroot/usr/lib/debug/usr/bin
+	(cd frysk/pkglibdir/arch32/test-sysroot/usr/src/debug; \
+	 gcc -g -m32 funit-addresses.c -o ../../bin/funit-addresses; \
+	 eu-strip --remove-comment -f ../../lib/debug/usr/bin/funit-addresses.debug ../../bin/funit-addresses; \
+	 /usr/lib/rpm/debugedit -b $(abspath frysk/pkglibdir/arch32/test-sysroot) -d / ../../lib/debug/usr/bin/funit-addresses.debug)
+
 endif
 
 # frysk-core code needs to be able to find the core files found in
-# frysk-sys/frysk/pkgdatadir/.  Since frysk-core can only see
+# frysk-sys/frysk/pkgddatadir/.  Since frysk-core can only see
 # frysk-core/frysk/pkgdatadir/ add links to the unpacked core files in
 # frysk-sys.
 
