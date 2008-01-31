@@ -62,9 +62,8 @@ import frysk.stepping.SteppingEngine;
  * 
  */
 public abstract class SourceBreakpoint
-  implements Comparable, BreakpointObserver
-{
-  private HashMap procMap;
+    implements Comparable, BreakpointObserver {
+    private HashMap procMap;
 
     // Possible actionpoint states
     public static class State {
@@ -141,219 +140,196 @@ public abstract class SourceBreakpoint
 	userState = state;
     }
 
-  private class ProcEntry
-  {
-    LinkedList addrs = null; // The "raw" addresses
-    LinkedList breakpoints = null; // RunState breakpoints
-  }
+    private class ProcEntry {
+        LinkedList addrs = null; // The "raw" addresses
+        LinkedList breakpoints = null; // RunState breakpoints
+    }
 
-  public SourceBreakpoint(int id, State state)
-  {
-    procMap = new HashMap();
-    this.userState = state;
-    this.id = id;
-  }
+    public SourceBreakpoint(int id, State state) {
+        procMap = new HashMap();
+        this.userState = state;
+        this.id = id;
+    }
 
-  public SourceBreakpoint(int id)
-  {
-    this(id, DISABLED);
-  }
+    public SourceBreakpoint(int id) {
+        this(id, DISABLED);
+    }
   
-  /**
-   * Get the list of raw address objects for a process
-   *
-   * @param The process
-   * @return the list
-   */
-  public LinkedList getAddrs(Proc proc)
-  {
-    ProcEntry procEntry = (ProcEntry)procMap.get(proc);
-    if (procEntry != null) 
-      return procEntry.addrs;
-    else
-      return null;
-  }
+    /**
+     * Get the list of raw address objects for a process
+     *
+     * @param The process
+     * @return the list
+     */
+    public LinkedList getAddrs(Proc proc) {
+        ProcEntry procEntry = (ProcEntry)procMap.get(proc);
+        if (procEntry != null) 
+            return procEntry.addrs;
+        else
+            return null;
+    }
 
-  /**
-   * Set the list of raw address objects.
-   * @param addrs the address objects
-   */
-  public void setAddrs(Proc proc, LinkedList addrs)
-  {
-    ProcEntry procEntry = (ProcEntry)procMap.get(proc);
-    if (procEntry == null)
-      {
-	procEntry = new ProcEntry();
-	procMap.put(proc, procEntry);
-      }
-    procEntry.addrs = addrs;
-  }
+    /**
+     * Set the list of raw address objects.
+     * @param addrs the address objects
+     */
+    public void setAddrs(Proc proc, LinkedList addrs) {
+        ProcEntry procEntry = (ProcEntry)procMap.get(proc);
+        if (procEntry == null)
+            {
+                procEntry = new ProcEntry();
+                procMap.put(proc, procEntry);
+            }
+        procEntry.addrs = addrs;
+    }
 
-  /**
-   * Return the address to use as a breakpoint from the object stored
-   * in the list of breakpoints.
-   * @param addr the object stored in the addrs list
-   * @return the raw address at which a breakpoint will be set
-   */
-  abstract long getRawAddress(Object addr);
+    /**
+     * Return the address to use as a breakpoint from the object stored
+     * in the list of breakpoints.
+     * @param addr the object stored in the addrs list
+     * @return the raw address at which a breakpoint will be set
+     */
+    abstract long getRawAddress(Object addr);
   
-   /**
-    * Add this object's raw breakpoints to the process via the RunState object.
-   * @param task task to which breakpoints are added, although they are in
-    * 	fact added to the entire process.
-   * @param steppingEngine The SteppingEngine to notify.
-   * @param runState the RunState object
-    */
-  public void enableBreakpoint(Task task, SteppingEngine steppingEngine)
-  {
-    Proc proc = task.getProc();
+    /**
+     * Add this object's raw breakpoints to the process via the RunState object.
+     * @param task task to which breakpoints are added, although they are in
+     * 	fact added to the entire process.
+     * @param steppingEngine The SteppingEngine to notify.
+     * @param runState the RunState object
+     */
+    public void enableBreakpoint(Task task, SteppingEngine steppingEngine) {
+        Proc proc = task.getProc();
 
-    LinkedList addressList = getBreakpointRawAddresses(task);
-    setAddrs(proc, addressList);
-    ProcEntry procEntry = (ProcEntry)procMap.get(proc);
-    Iterator bpts = procEntry.addrs.iterator();
-    procEntry.breakpoints = new LinkedList();
-    while (bpts.hasNext())
-      {
-	Object bpt = bpts.next();
-	long address = getRawAddress(bpt);
-	Breakpoint.PersistentBreakpoint breakpoint
-            = new Breakpoint.PersistentBreakpoint(task, address,
-                                                  steppingEngine);
-	breakpoint.addObserver(this);
-	procEntry.breakpoints.add(breakpoint);
-	steppingEngine.addBreakpoint(task, breakpoint);
-      }
-    userState = ENABLED;
-    taskStateMap.put(task, ENABLED);
-  }
+        LinkedList addressList = getBreakpointRawAddresses(task);
+        setAddrs(proc, addressList);
+        ProcEntry procEntry = (ProcEntry)procMap.get(proc);
+        Iterator bpts = procEntry.addrs.iterator();
+        procEntry.breakpoints = new LinkedList();
+        while (bpts.hasNext()) {
+            Object bpt = bpts.next();
+            long address = getRawAddress(bpt);
+            Breakpoint.PersistentBreakpoint breakpoint
+                = new Breakpoint.PersistentBreakpoint(task, address,
+                                                      steppingEngine);
+            breakpoint.addObserver(this);
+            procEntry.breakpoints.add(breakpoint);
+            steppingEngine.addBreakpoint(task, breakpoint);
+        }
+        userState = ENABLED;
+        taskStateMap.put(task, ENABLED);
+    }
 
-  /**
-   * Delete the object's raw breakpoints from a process via the RunState.
-   * @param task task in the process
-   * @param steppingEngine TODO
-   * @param runState the RunState object
-   */
-  public void disableBreakpoint(Task task, SteppingEngine steppingEngine)
-  {
-    Proc proc = task.getProc();
-    ProcEntry procEntry = (ProcEntry)procMap.get(proc);
-    if (procEntry == null)
-      return; 			// Exception?
-    Iterator iterator = procEntry.breakpoints.iterator();
+    /**
+     * Delete the object's raw breakpoints from a process via the RunState.
+     * @param task task in the process
+     * @param steppingEngine TODO
+     * @param runState the RunState object
+     */
+    public void disableBreakpoint(Task task, SteppingEngine steppingEngine) {
+        Proc proc = task.getProc();
+        ProcEntry procEntry = (ProcEntry)procMap.get(proc);
+        if (procEntry == null)
+            return; 			// Exception?
+        Iterator iterator = procEntry.breakpoints.iterator();
 
-    while (iterator.hasNext())
-      {
-	Breakpoint.PersistentBreakpoint bpt
-	  = (Breakpoint.PersistentBreakpoint) iterator.next();
-        steppingEngine.deleteBreakpoint(task, bpt);
-      }
-    procEntry.breakpoints.clear();
-    userState = DISABLED;
-    taskStateMap.remove(task);
-  }
+        while (iterator.hasNext()) {
+            Breakpoint.PersistentBreakpoint bpt
+                = (Breakpoint.PersistentBreakpoint) iterator.next();
+            steppingEngine.deleteBreakpoint(task, bpt);
+        }
+        procEntry.breakpoints.clear();
+        userState = DISABLED;
+        taskStateMap.remove(task);
+    }
 
-  /**
-   * Test if RunState breakpoint is contained in this object. This is only
-   * valid if the source breakpoint has been added to (and not deleted from)
-   * the process.
-   * @param bpt
-   * @return
-   */
-  public boolean
-  containsPersistentBreakpoint(Proc proc, Breakpoint.PersistentBreakpoint bpt)
-  {
-    ProcEntry procEntry = (ProcEntry)procMap.get(proc);
-    if (procEntry == null)
-      return false;
-    return procEntry.breakpoints.contains(bpt);
-  }
+    /**
+     * Test if RunState breakpoint is contained in this object. This is only
+     * valid if the source breakpoint has been added to (and not deleted from)
+     * the process.
+     * @param bpt
+     * @return
+     */
+    public boolean
+        containsPersistentBreakpoint(Proc proc, Breakpoint.PersistentBreakpoint bpt) {
+        ProcEntry procEntry = (ProcEntry)procMap.get(proc);
+        if (procEntry == null)
+            return false;
+        return procEntry.breakpoints.contains(bpt);
+    }
 
-  public void updateHit(Breakpoint.PersistentBreakpoint breakpoint,
-			Task task,
-			long address)
-  {
-    ArrayList observersCopy;
-    synchronized (this)
-      {
-	observersCopy = (ArrayList)observers.clone();
-      }
-    Iterator iterator = observersCopy.iterator();
-    while (iterator.hasNext())
-      {
-	SourceBreakpointObserver observer
-	  = (SourceBreakpointObserver)iterator.next();
-	observer.updateHit(this, task, address);
-      }
-  }
+    public void updateHit(Breakpoint.PersistentBreakpoint breakpoint,
+                          Task task,
+                          long address) {
+        ArrayList observersCopy;
+        synchronized (this) {
+            observersCopy = (ArrayList)observers.clone();
+        }
+        Iterator iterator = observersCopy.iterator();
+        while (iterator.hasNext()) {
+            SourceBreakpointObserver observer
+                = (SourceBreakpointObserver)iterator.next();
+            observer.updateHit(this, task, address);
+        }
+    }
 
-  public void addedTo (Object observable)
-  {
-  }
+    public void addedTo (Object observable) {
+    }
 
-  public void addFailed (Object observable, Throwable w)
-  {
-  }
+    public void addFailed (Object observable, Throwable w) {
+    }
 
-  public void deletedFrom (Object observable)
-  {
-  }
+    public void deletedFrom (Object observable) {
+    }
 
-  private ArrayList observers = new ArrayList();
+    private ArrayList observers = new ArrayList();
     
 
-  public synchronized void addObserver(SourceBreakpointObserver observer)
-  {
-    observers.add(observer);
-  }
+    public synchronized void addObserver(SourceBreakpointObserver observer) {
+        observers.add(observer);
+    }
 
-  public synchronized void deleteObserver(SourceBreakpointObserver observer)
-  {
-    observers.remove(observer);
-  }
+    public synchronized void deleteObserver(SourceBreakpointObserver observer) {
+        observers.remove(observer);
+    }
 
-  public synchronized int numberOfObservers()
-  {
-    return observers.size();
-  }
+    public synchronized int numberOfObservers() {
+        return observers.size();
+    }
 
-  public synchronized void removeAllObservers()
-  {
-    observers.clear();
-  }
+    public synchronized void removeAllObservers() {
+        observers.clear();
+    }
 
-  final int id;
+    final int id;
 
-  public int getId()
-  {
-    return id;
-  }
-  // Comparable interface
-  public int compareTo(Object o)
-  {
-    SourceBreakpoint bpt = (SourceBreakpoint)o;
-    if (id == bpt.id)
-      return 0;
-    else if (id < bpt.id)
-      return -1;
-    else
-      return 1;
-  }
+    public int getId() {
+        return id;
+    }
+    // Comparable interface
+    public int compareTo(Object o) {
+        SourceBreakpoint bpt = (SourceBreakpoint)o;
+        if (id == bpt.id)
+            return 0;
+        else if (id < bpt.id)
+            return -1;
+        else
+            return 1;
+    }
 
-  /**
-   * Get all the machine addresses for this breakpoint using the
-   * stopped task in the process.
-   * @param task the stopped task
-   * @return list of addresses
-   */
-  public abstract LinkedList getBreakpointRawAddresses(Task task);
+    /**
+     * Get all the machine addresses for this breakpoint using the
+     * stopped task in the process.
+     * @param task the stopped task
+     * @return list of addresses
+     */
+    public abstract LinkedList getBreakpointRawAddresses(Task task);
 
-  public abstract PrintWriter output(PrintWriter writer);
+    public abstract PrintWriter output(PrintWriter writer);
 
-  public boolean appliesTo(Proc proc, Task task)
-  {
-    // XXX
-    return true;
-  }
+    public boolean appliesTo(Proc proc, Task task) {
+        // XXX
+        return true;
+    }
   
 }
