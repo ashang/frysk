@@ -41,7 +41,6 @@ package frysk.value;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 
 /**
  * Floating point type - wrapper around java.math.BigDecimal.
@@ -161,7 +160,7 @@ public class BigFloatingPoint
      * both neighbors are equidistant, in which case round up
      */
     BigFloatingPoint divide (BigFloatingPoint v) {
-    	return new BigFloatingPoint (value.divide(v.value, RoundingMode.HALF_UP));
+    	return new BigFloatingPoint (value.divide(v.value, BigDecimal.ROUND_HALF_UP));
     }
     BigFloatingPoint mod (BigFloatingPoint v) {
         return new BigFloatingPoint (value.remainder(v.value));      
