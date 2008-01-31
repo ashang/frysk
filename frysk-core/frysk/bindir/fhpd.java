@@ -57,133 +57,122 @@ import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import frysk.sys.FileDescriptor;
 
-public class fhpd 
-{
-  static int pid;
-  static File execFile;
-  static File core;
-  static File exeFile;
-  static boolean noExe = false;
-  static String sysroot;
+public class fhpd {
+    static int pid;
+    static File execFile;
+    static File core;
+    static File exeFile;
+    static boolean noExe = false;
+    static String sysroot;
 
-  final static class FhpdCompletor implements Completor
-  {
-    CLI cli;
-    public FhpdCompletor (CLI cli)
-    {
-      this.cli = cli;
+    final static class FhpdCompletor implements Completor {
+        CLI cli;
+        public FhpdCompletor (CLI cli) {
+            this.cli = cli;
+        }
+        public int complete (String buffer, int cursor, List candidates) {
+            return cli.complete (buffer, cursor, candidates);
+        }
     }
-    public int complete (String buffer, int cursor, List candidates)
-    {
-      return cli.complete (buffer, cursor, candidates);
-    }
-  }
 
-  public static void main (String[] args)
-  {
-    CLI cli;
-    CommandlineParser parser = new CommandlineParser ("fhpd")
-    {
+    public static void main (String[] args) {
+        CLI cli;
+        CommandlineParser parser = new CommandlineParser ("fhpd") {
 
-      //@Override
-      public void parseCommand (String[] command)
-      {
-        execFile = new File (command[0]);
-        if (execFile.canRead() == false)
-          {
-            printHelp();
-            throw new RuntimeException("command not readable: " 
-                                                     + command[0]);
-          }
-      }
+                //@Override
+                public void parseCommand (String[] command) {
+                    execFile = new File (command[0]);
+                    if (execFile.canRead() == false) {
+                        printHelp();
+                        throw new RuntimeException("command not readable: " 
+                                                   + command[0]);
+                    }
+                }
 
-      //@Override
-      public void parsePids (ProcId[] pids)
-      {
-        pid = pids[0].id;
-      }
+                //@Override
+                public void parsePids (ProcId[] pids) {
+                    pid = pids[0].id;
+                }
 
-      public void parseCores(CoreExePair[] corePairs) {
-	core = corePairs[0].coreFile;
-	exeFile = corePairs[0].exeFile;
-      }
-    };
-    parser.add(new Option("noexe", "Do not attempt to read an"+
-	" executable for a corefile ") {
-	public void parsed(String exeValue) throws OptionException {
-	  try {
-	    noExe = true;
+                public void parseCores(CoreExePair[] corePairs) {
+                    core = corePairs[0].coreFile;
+                    exeFile = corePairs[0].exeFile;
+                }
+            };
+        parser.add(new Option("noexe", "Do not attempt to read an"+
+                              " executable for a corefile ") {
+                public void parsed(String exeValue) throws OptionException {
+                    try {
+                        noExe = true;
 	    
-	  } catch (IllegalArgumentException e) {
-	    throw new OptionException("Invalid noexe parameter "
-				      + exeValue);
-	  }
-	}
-    });
-    parser.add(new Option("sysroot", 's',
-			  "Assume the executable is from a sysroot build ",
-			  "SysRoot-Path") {
-	public void parsed(String sysrootValue) throws OptionException {
-	  try {
-	    sysroot = sysrootValue;
-	  } catch (IllegalArgumentException e) {
-	    throw new OptionException("Invalid sysroot parameter "
-				      + sysrootValue);
-	  }
-	}
-    });
+                    } catch (IllegalArgumentException e) {
+                        throw new OptionException("Invalid noexe parameter "
+                                                  + exeValue);
+                    }
+                }
+            });
+        parser.add(new Option("sysroot", 's',
+                              "Assume the executable is from a sysroot build ",
+                              "SysRoot-Path") {
+                public void parsed(String sysrootValue) throws OptionException {
+                    try {
+                        sysroot = sysrootValue;
+                    } catch (IllegalArgumentException e) {
+                        throw new OptionException("Invalid sysroot parameter "
+                                                  + sysrootValue);
+                    }
+                }
+            });
     
-    parser.setHeader("Usage: fhpd <PID> || fhpd <EXEFILE> || fhpd <COREFILE> [<EXEFILE>]");
-    parser.parse(args);
-    Manager.eventLoop.start();
-    String line = "";
+        parser.setHeader("Usage: fhpd <PID> || fhpd <EXEFILE> || fhpd <COREFILE> [<EXEFILE>]");
+        parser.parse(args);
+        Manager.eventLoop.start();
+        String line = "";
     
-    try 
-    {
-      if (pid > 0)
-        line = "attach " + pid;
-      else if (execFile != null)
-        line = "load " + execFile.getCanonicalPath();
-      else if (core != null) {
-	  line = "core " + core.getCanonicalPath();      
-	  if (exeFile != null)
-	    line += " " + exeFile.getCanonicalPath();
-	  else if (noExe)
-	    line +=" -noexe";
-      }
-      if (sysroot != null)
-	line = line + " -sysroot " + sysroot;
-    }
-    catch (IOException ignore) {}
+        try {
+            if (pid > 0)
+                line = "attach " + pid;
+            else if (execFile != null)
+                line = "load " + execFile.getCanonicalPath();
+            else if (core != null) {
+                line = "core " + core.getCanonicalPath();      
+                if (exeFile != null)
+                    line += " " + exeFile.getCanonicalPath();
+                else if (noExe)
+                    line +=" -noexe";
+            }
+            if (sysroot != null)
+                line = line + " -sysroot" + sysroot;
+        }
+        catch (IOException ignore) {}
     
-    cli = new CLI("(fhpd) ", System.out);
-    ConsoleReader reader = null; // the jline reader
+        cli = new CLI("(fhpd) ", System.out);
+        ConsoleReader reader = null; // the jline reader
 
-    try {
-      reader = new ConsoleReader(new FileInputStream(java.io.FileDescriptor.in),
-				 new PrintWriter(System.out),
-				 null,
-				 new ObservingTerminal(FileDescriptor.in));
-    }
-    catch (IOException ioe) {
-      System.out.println("ERROR: Could not create a command line");
-      System.out.print(ioe.getMessage());
-    }
+        try {
+            reader = new ConsoleReader(new FileInputStream(java.io.FileDescriptor.in),
+                                       new PrintWriter(System.out),
+                                       null,
+                                       new ObservingTerminal(FileDescriptor.in));
+        }
+        catch (IOException ioe) {
+            System.out.println("ERROR: Could not create a command line");
+            System.out.print(ioe.getMessage());
+        }
 
-    Completor fhpdCompletor = new FhpdCompletor(cli);
-    reader.addCompletor(fhpdCompletor);
-    try {
-      cli.execCommand(line);
-      while (line != null && ! (line.equals("quit") || line.equals("q") || line.equals("exit"))) 
-	{
-	  line = reader.readLine(cli.getPrompt());
-	  cli.execCommand(line);
-	}
-
+        Completor fhpdCompletor = new FhpdCompletor(cli);
+        reader.addCompletor(fhpdCompletor);
+        try {
+            cli.execCommand(line);
+            while (line != null && ! (line.equals("quit") || line.equals("q")
+                                      || line.equals("exit"))) {
+                    line = reader.readLine(cli.getPrompt());
+                    cli.execCommand(line);
+                }
+        }
+        catch (IOException ioe) {
+            System.out.println("ERROR: Could not read from command line");
+            System.out.print(ioe.getMessage());
+        }
     }
-    catch (IOException ioe) {
-      System.out.println("ERROR: Could not read from command line");
-      System.out.print(ioe.getMessage());
-    }
-  }
 }
