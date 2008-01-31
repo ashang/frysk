@@ -44,22 +44,20 @@ package frysk.sys;
  * the parent.
  */
 
-public class Daemon
-    extends ProcessIdentifier
-{
+public class Daemon extends ProcessIdentifierDecorator {
     /**
      * Create a daemon process (child of process 1 a.k.a. init) that
      * redirects its I/O to REDIRECT, and executes EXEC.
      *
      * Package private.
      */
-    private static native int daemon (Redirect redirect, Execute exec);
+    private static native ProcessIdentifier daemon(Redirect redirect,
+						   Execute exec);
 
     /**
      * Create a daemon wired to REDIRECT, and running EXEC.
      */
-    Daemon (Redirect redirect, Execute exec)
-    {
+    Daemon(Redirect redirect, Execute exec) {
 	super (daemon (redirect, exec));
     }
 
@@ -67,15 +65,12 @@ public class Daemon
      * Create a daemon wired to nothing; STDIN is closed, STDOUT/ERROR
      * are the same as for this process.
      */
-    public Daemon (Execute exec)
-    {
-	this (new Redirect ()
-	    {
-		protected void reopen ()
-		{
-		    FileDescriptor.in.close ();
+    public Daemon(Execute exec) {
+	this(new Redirect() {
+		protected void reopen() {
+		    FileDescriptor.in.close();
 		}
-		protected void close ()
+		protected void close()
 		{
 		}
 	    }, exec);

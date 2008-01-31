@@ -49,11 +49,13 @@
 
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/ProcessIdentifier.h"
+#include "frysk/sys/ProcessIdentifierFactory.h"
+#include "frysk/sys/ProcessIdentifierDecorator.h"
 #include "frysk/sys/Daemon.h"
 #include "frysk/sys/Redirect.h"
 #include "frysk/sys/Execute.h"
 
-jint
+frysk::sys::ProcessIdentifier*
 frysk::sys::Daemon::daemon (frysk::sys::Redirect* redirect,
 			    frysk::sys::Execute* exec)
 {
@@ -99,6 +101,6 @@ frysk::sys::Daemon::daemon (frysk::sys::Redirect* redirect,
       throwErrno (wait_errno, "waitpid", "process %d", v);
     // printf ("v %d pid %d\n", v, pid);
     redirect->close ();
-    return pid;
+    return frysk::sys::ProcessIdentifierFactory::create(pid);
   }
 }

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,28 +42,17 @@ package frysk.sys;
 /**
  * Identifies a process.
  */
-public class ProcessIdentifier
-    implements Comparable
-{
-    private int pid;
-    public ProcessIdentifier (int pid)
-    {
-	this.pid = pid;
-    }
+public abstract class ProcessIdentifier implements Comparable {
     public int hashCode () {
-	return pid;
+	return intValue();
     }
-    public int intValue() {
-        return pid;
+    public abstract int intValue();
+    public int compareTo (Object o) {
+	return this.intValue() - ((ProcessIdentifier)o).intValue();
     }
-    public int compareTo (Object o)
-    {
-	return ((ProcessIdentifier)o).pid - this.pid;
-    }
-    public boolean equals (Object o)
-    {
+    public boolean equals(Object o) {
 	if (o instanceof ProcessIdentifier)
-	    return ((ProcessIdentifier)o).pid == this.pid;
+	    return ((ProcessIdentifier)o).intValue() == this.intValue();
 	else
 	    return false;
     }
@@ -71,39 +60,36 @@ public class ProcessIdentifier
      * Represent the ProcessIdentifier textually.  Return the PID as a
      * number so that it can be used directly.
      */
-    public String toString ()
-    {
-	return Integer.toString (pid);
+    public String toString () {
+	return Integer.toString(intValue());
     }
 
     /**
      * Send a fatal signal (SIGKILL) to this process.
      */
     public void kill() {
-	Signal.KILL.kill(pid);
+	Signal.KILL.kill(intValue());
     }
 
     /**
      * Send a signal to THIS pid.
      */
     public void tkill(Signal signal) {
-	signal.tkill(pid);
+	signal.tkill(intValue());
     }
 
     /**
      * Perform a blocking drain of all wait events from this process.
      * Only returns when the process has disappeared.
      */
-    public void blockingDrain ()
-    {
-	Wait.drain (pid);
+    public void blockingDrain() {
+	Wait.drain(intValue());
     }
 
     /**
      * Perform a blocking wait for a single event from this process.
      */
-    public void blockingWait (WaitBuilder o)
-    {
-	Wait.waitAll (pid, o);
+    public void blockingWait(WaitBuilder o) {
+	Wait.waitAll(intValue(), o);
     }
 }

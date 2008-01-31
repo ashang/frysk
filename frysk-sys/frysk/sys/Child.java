@@ -39,41 +39,33 @@
 
 package frysk.sys;
 
-public class Child
-    extends ProcessIdentifier
-{
+public class Child extends ProcessIdentifierDecorator {
     /**
      * Create a child process (direct decendant of this process) that
      * redirects its I/O to REDIRECT, and executes EXEC.
      *
      * Private.
      */
-    private static native int child (Redirect redirect, Execute exec);
-
+    private static native ProcessIdentifier child(Redirect redirect,
+						  Execute exec);
     /**
      * Create a child wired to IO redirect, running exec.
      *
      * Package private.
      */
-    Child (Redirect redirect, Execute exec)
-    {
+    Child(Redirect redirect, Execute exec) {
 	super (child (redirect, exec));
     }
-
     /**
      * Create a child wired to nothing; STDIN is closed, STDOUT/ERROR
      * are the same as for this process.
      */
-    public Child (Execute exec)
-    {
-	this (new Redirect ()
-	    {
-		protected void reopen ()
-		{
+    public Child(Execute exec) {
+	this(new Redirect() {
+		protected void reopen() {
 		    FileDescriptor.in.close ();
 		}
-		protected void close ()
-		{
+		protected void close() {
 		}
 	    }, exec);
     }

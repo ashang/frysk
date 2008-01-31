@@ -40,6 +40,7 @@
 
 package frysk.testbed;
 
+import frysk.sys.ProcessIdentifierFactory;
 import frysk.junit.TestCase;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -116,9 +117,8 @@ public class TearDownProcess
      * Add the pid to the set of pidsToKillDuringTearDown that should
      * be killed off during tearDown.
      */
-    public static void add (int pid)
-    {
-	add (new ProcessIdentifier (pid));
+    public static void add(int pid) {
+	add(ProcessIdentifierFactory.createFIXME(pid));
     }
 
     /**
@@ -129,9 +129,8 @@ public class TearDownProcess
     {
 	return pidsToKillDuringTearDown.contains (pid);
     }
-    public static boolean contains (int pid)
-    {
-	return contains (new ProcessIdentifier (pid));
+    public static boolean contains(int pid) {
+	return contains(ProcessIdentifierFactory.createFIXME(pid));
     }
 
     /**
@@ -187,9 +186,9 @@ public class TearDownProcess
 	return pid;
     }
 
-    private static ProcessIdentifier capturedSendDetachContKill (int pid)
-    {
-	return capturedSendDetachContKill (new ProcessIdentifier (pid));
+    private static ProcessIdentifier capturedSendDetachContKill(int pid) {
+	return capturedSendDetachContKill
+	    (ProcessIdentifierFactory.createFIXME(pid));
     }
 
     public static void tearDown ()

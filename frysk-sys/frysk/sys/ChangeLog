@@ -1,3 +1,15 @@
+2008-01-31  Andrew Cagney  <cagney@redhat.com>
+
+	* Child.java: Extend ProcessIdentiferDecorator.
+	* Daemon.java: Ditto.
+	* cni/Child.cxx (Child::child): Use ProcessIdentifierFactory.
+	* cni/Daemon.cxx (Daemon::daemon): Ditto.
+	* ProcessIdentifierDecorator.java: New file.
+	* TestProcessIdentifier.java: New file.
+	* ProcessIdentifierFactory.java: New file.
+	* ProcessIdentifier.java: Use intValue() instead of pid through
+	out.
+
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
 	* Signal.java-sh: Add the synonyms - POLL, IOT, INFO and CLD -

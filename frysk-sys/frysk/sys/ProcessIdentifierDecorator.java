@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,44 +37,18 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <stdio.h>
-#include <alloca.h>
-#include <errno.h>
-#include <unistd.h>
-#include <sys/ptrace.h>
-#include <sys/types.h>
-#include <sys/wait.h>
+package frysk.sys;
 
-#include <gcj/cni.h>
-
-#include "frysk/sys/cni/Errno.hxx"
-#include "frysk/sys/ProcessIdentifier.h"
-#include "frysk/sys/ProcessIdentifierFactory.h"
-#include "frysk/sys/ProcessIdentifierDecorator.h"
-#include "frysk/sys/Child.h"
-#include "frysk/sys/Redirect.h"
-#include "frysk/sys/Execute.h"
-
-frysk::sys::ProcessIdentifier*
-frysk::sys::Child::child (frysk::sys::Redirect* redirect,
-			  frysk::sys::Execute* exec)
-{
-  // Fork/exec
-  errno = 0;
-  pid_t pid = fork ();
-  switch (pid) {
-  case -1:
-    // Fork failed.
-    throwErrno (errno, "fork");
-  case 0:
-    // Child
-    // ::fprintf (stderr, "%d child calls reopen\n", getpid ());
-    redirect->reopen ();
-    // ::fprintf (stderr, "%d child calls execute\n", getpid ());
-    exec->execute ();
-    ::_exit (0);
-  default:
-    redirect->close ();
-    return frysk::sys::ProcessIdentifierFactory::create(pid);
-  }
+/**
+ * Identifies a process.
+ */
+public class ProcessIdentifierDecorator extends ProcessIdentifier {
+    private final ProcessIdentifier pid;
+    ProcessIdentifierDecorator(ProcessIdentifier pid) {
+	super();
+	this.pid = pid;
+    }
+    public int intValue() {
+        return pid.intValue();
+    }
 }
