@@ -39,10 +39,10 @@
 
 package frysk.proc;
 
+import java.util.Collection;
 import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Collection;
 import java.util.Observable; // XXX: Temporary.
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -139,6 +139,15 @@ public abstract class Host {
      */
     public abstract void requestProc(ProcId procId, FindProc finder);
     
+    /**
+     * Given a set of knownProcesses and knownDaemons (children of
+     * init) scan the system passing back the set of newProcesses (not
+     * in knownProcesses), deadProcesses (were in knownProcesses but
+     * exited), newDaemons (processes that re-parented to init).
+     */
+    public abstract void requestRefresh(Collection knownProcesses,
+					HostRefreshBuilder update);
+
     /**
      * Tell the host to create a running child process.
      *

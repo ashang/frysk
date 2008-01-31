@@ -1,3 +1,10 @@
+2008-01-31  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceHost.java (requestRefresh(Set,HostRefreshBuilder))
+	(executeRefresh(Set,HostRefreshBuilder)): New.
+	(executeRefresh()): Rename sendRefresh().
+	* TestRefresh.java: New.
+
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskObserverCode.java: Fix a merge botch.

@@ -45,7 +45,9 @@ import frysk.proc.Proc;
 import frysk.proc.Manager;
 import frysk.proc.ProcId;
 import frysk.proc.FindProc;
+import frysk.proc.HostRefreshBuilder;
 import frysk.event.Event;
+import java.util.Collection;
 
 /**
  * A dead Host/Proc/Task is characterised by its lack of state, and an
@@ -62,6 +64,12 @@ abstract class DeadHost extends Host {
     public void requestRefreshXXX() {
 	// ignore.
     }
+    public void requestRefresh(Collection knownProcesses,
+			       HostRefreshBuilder builder) {
+	// Ignore for now; should call back with the known processes
+	// (all one of them) for this dead host
+    }
+			       
     public Proc getSelf() {
 	throw new RuntimeException("getSelf");
     }

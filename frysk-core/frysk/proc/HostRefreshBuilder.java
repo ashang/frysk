@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, 2008, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,33 +37,22 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc.dummy;
+package frysk.proc;
 
-import frysk.proc.TaskObserver.Attached;
-import frysk.proc.ProcId;
-import frysk.proc.Proc;
-import frysk.proc.FindProc;
-import frysk.proc.Host;
 import java.util.Collection;
-import frysk.proc.HostRefreshBuilder;
 
-public class DummyHost extends Host {
-    public void requestRefreshXXX() {
-	throw new RuntimeException("requestCreateAttachedProc");
-    }
-    public void requestCreateAttachedProc(String stdin, String stdout,
-					  String stderr, String[] args,
-					  Attached attached) {
-	throw new RuntimeException("requestCreateAttachedProc");
-    }
-    public Proc getSelf() {
-	throw new RuntimeException("getSelf");
-    }
-    public void requestProc(ProcId procId, FindProc finder) {
-	throw new RuntimeException("requestProc");
-    }
-    public void requestRefresh(Collection processes,
-			       HostRefreshBuilder results) {
-	throw new RuntimeException("requestRefresh");
-    }
+/**
+ * [Re-]build the information on the processes running on a host.
+ *
+ * Supplies deltas to the supplied set of processes (and the subset of
+ * daemons).
+ */
+
+public interface HostRefreshBuilder {
+    /**
+     * The set of new processes, exitedProcesses and newDaemons.
+     * Exited daemons can be determined from the intersection of
+     * knownDaemons and exitedProcesses.
+     */
+    void construct(Collection newProcesses, Collection exitedProcesses);
 }

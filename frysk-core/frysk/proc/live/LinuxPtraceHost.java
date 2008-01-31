@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@
 
 package frysk.proc.live;
 
+import java.util.HashSet;
 import frysk.event.EventLoop;
 import java.util.List;
 import java.util.LinkedList;
@@ -58,6 +59,8 @@ import frysk.sys.Tid;
 import frysk.sys.Pid;
 import frysk.event.Event;
 import frysk.proc.FindProc;
+import frysk.proc.HostRefreshBuilder;
+import java.util.Collection;
 
 /**
  * A Linux Host tracked using PTRACE.
@@ -159,11 +162,11 @@ public class LinuxPtraceHost extends LiveHost {
 		public void execute() {
 		    logger.log(Level.FINE, "{0} handleRefresh\n",
 			       LinuxPtraceHost.this); 
-		    LinuxPtraceHost.this.sendRefresh(false);
+		    LinuxPtraceHost.this.executeRefresh();
 		}
 	    });
     }
-    private void sendRefresh(boolean refreshAll) {
+    private ProcChanges executeRefresh() {
 	// Iterate (build) the /proc tree, passing each found PID to
 	// procChanges where it can update the /proc tree.
 	final ProcChanges procChanges = new ProcChanges();
@@ -173,14 +176,6 @@ public class LinuxPtraceHost extends LiveHost {
 		}
 	    };
 	pidBuilder.construct();
-	// If requested, tell each process that it too should refresh.
-	if (refreshAll) {
-	    // Changes individual process.
-	    for (Iterator i = procPool.values().iterator(); i.hasNext();) {
-		LinuxPtraceProc proc = (LinuxPtraceProc) i.next();
-		proc.sendRefresh();
-	    }
-	}
 	// Tell each process that no longer exists that it has been
 	// destroyed.
 	for (Iterator i = procChanges.removed.values().iterator();
@@ -192,8 +187,29 @@ public class LinuxPtraceHost extends LiveHost {
 	    proc.performRemoval();
 	    remove(proc);
 	}
+	return procChanges;
     }
   
+    public void requestRefresh(final Collection knownProcesses,
+			       final HostRefreshBuilder updates) {
+	logger.log(Level.FINE, "{0} requestRefresh\n", this);
+	Manager.eventLoop.add(new Event() {
+		public void execute() {
+		    LinuxPtraceHost.this.executeRefresh(knownProcesses,
+							updates);
+		}
+	    });
+    }
+    private void executeRefresh(Collection knownProcesses,
+				HostRefreshBuilder builder) {
+	ProcChanges procChanges = executeRefresh();
+	Collection exitedProcesses = procChanges.removed.values();
+	exitedProcesses.retainAll(knownProcesses);
+	Collection newProcesses = new HashSet(procPool.values());
+	newProcesses.removeAll(knownProcesses);
+	builder.construct(newProcesses, exitedProcesses);
+    }
+
     public void requestProc(final ProcId theProcId, final FindProc theFinder) {
 	Manager.eventLoop.add(new Event() {
 		private final ProcId procId = theProcId;
