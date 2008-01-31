@@ -189,6 +189,7 @@ libunwind_la_SOURCES_x86_64 = $(libunwind_la_SOURCES_x86_64_common)	    \
 	$(libunwind_la_SOURCES_local)					    \
 	$(dwarf_SOURCES_local)						    \
 	dwarf/Lfind_proc_info-lsb.c					    \
+	x86_64/setcontext.S						\
 	x86_64/Lcreate_addr_space.c x86_64/Lget_save_loc.c x86_64/Lglobal.c \
 	x86_64/Linit.c x86_64/Linit_local.c x86_64/Linit_remote.c	    \
 	x86_64/Lis_signal_frame.c x86_64/Lget_proc_info.c x86_64/Lregs.c    \

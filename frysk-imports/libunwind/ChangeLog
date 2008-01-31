@@ -1,3 +1,12 @@
+2007-01-31  Mark Wielaard  <mwielaard@redhat.com>
+
+	Fixup libunwind merge.
+	* src/Makefile.am (libunwind_la_SOURCES_x86_64): Add
+	x86_64/setcontext.S.
+	* src/x86_64/Gresume.c (x86_64_local_resume): Call
+	_x86_64_setcontext.
+	* src/x86_64/setcontext.S: Added.
+
 2007-01-25  Mark Wielaard  <mwielaard@redhat.com>
 
 	Revert:
