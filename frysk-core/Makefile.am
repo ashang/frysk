@@ -243,8 +243,10 @@ install-exec-local: install-sysroot-local
 uninstall-local: uninstall-sysroot-local
 .PHONY: install-sysroot-local uninstall-sysroot-local
 install-sysroot-local:
-	cp -r frysk/pkglibdir/test-sysroot $(pkglibdir)
-	cp -r frysk/pkglibdir/arch32/test-sysroot $(pkglib32dir)
+	cp -r frysk/pkglibdir/test-sysroot $(DESTDIR)$(pkglibdir)
+if DO_ARCH32_TEST
+	cp -r frysk/pkglibdir/arch32/test-sysroot $(DESTDIR)$(pkglib32dir)
+endif
 # we don't want this installed, but noinst_SCRIPTS has no effect
 	rm -f $(libdir)/frysk/gen-type-funit-tests
 uninstall-sysroot-local:
