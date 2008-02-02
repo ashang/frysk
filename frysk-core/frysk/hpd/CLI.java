@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007 Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -47,8 +47,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 import java.util.WeakHashMap;
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
@@ -141,7 +143,7 @@ public class CLI {
     /*
      * Command handlers
      */
-    public void doAttach(Proc proc) {
+    public void doAttach(Proc proc, boolean running) {
         synchronized (this) {
             attached = -1;
             attachedLatch = new CountDownLatch(1);
@@ -163,6 +165,14 @@ public class CLI {
         }
 
         steppingEngine.getBreakpointManager().manageProcess(proc);
+        
+        // If doAttach was called for a "run" command, continue running
+        if (running) {
+            steppingEngine.continueExecution(proc.getTasks());
+            steppingEngine.setRunning(proc.getTasks());
+            addMessage("Running process " + proc.getPid(),
+			Message.TYPE_NORMAL);
+        }
         // If passed a taskID < 0, request a reserved ProcID
         if (this.taskID < 0)
             idManager.manageProc(proc, idManager.reserveProcID());
@@ -479,5 +489,27 @@ public class CLI {
             ptset = createSet(setString);
         }
         return ptset;
+    }
+    
+    /**
+     * notRunningFile make sure we are not running the "go" command on 
+     * procs that are loaded or on core files.
+     * 
+     * @param checkFiles is a HashMap containing the procs we want to check
+     * @param task is what we need to check against
+     * @return true if it is a loaded or core file, false if not
+     */
+    public static boolean notRunningProc(int pid, HashMap checkFiles) {
+	if (checkFiles.isEmpty())
+	    return false;
+	Set procSet = checkFiles.entrySet();
+	Iterator foo = procSet.iterator();
+	while (foo.hasNext()) {
+	    Map.Entry me = (Map.Entry) foo.next();
+	    Proc proc = (Proc) me.getKey();
+	    if (proc.getPid() == pid)
+		return true;
+	}
+	return false;
     }
 }

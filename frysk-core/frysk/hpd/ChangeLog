@@ -1,3 +1,13 @@
+2008-02-01  Rick Moseley  <rmoseley@redhat.com>
+
+	* GoCommand.java: Fix bz#5674.
+	* AttachCommand.java: Ditto.
+	* CLI.java: Ditto.
+	* StartRun.java: Ditto.
+	* TestGoCommand.java: New.
+	* TestStartCommand.java: Increase timeout for file creation wait.
+	* TestRunCommand.java: Ditto.
+
 2008-01-29  Stan Cox  <scox@redhat.com>
 
 	* TestSysRoot.java (testHaveSysRoot): test-sysroot now lives in

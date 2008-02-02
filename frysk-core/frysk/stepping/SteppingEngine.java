@@ -767,7 +767,7 @@ public class SteppingEngine {
      * @param tasks The Tasks to check states for.
      * 
      * @return true If any of the Tasks are not stopped
-     * @retruen false If all the Tasks are stopped
+     * @return false If all the Tasks are stopped
      */
     public boolean isProcRunning(LinkedList tasks) {
 	TaskStepEngine tse = null;
@@ -960,15 +960,25 @@ public class SteppingEngine {
      * @param tasks The Tasks to be set as running.
      */
     public void setRunning(LinkedList tasks) {
-	TaskStepEngine tse = null;
 	Iterator i = tasks.iterator();
 	while (i.hasNext()) {
 	    Task t = (Task) i.next();
-	    tse = (TaskStepEngine) this.taskStateMap.get(t);
-	    tse.setState(new RunningState(t));
+	    setTaskRunning(t);
 	}
     }
 
+    /**
+     * Set the current state of the given task as running.  Used when the running
+     * of this task was out of the scope of control for SteppingEngine.
+     * 
+     * @param task to be set as running
+     */
+    
+    public void setTaskRunning(Task task) {
+	TaskStepEngine tse = null;
+	tse = (TaskStepEngine) this.taskStateMap.get(task);
+	    tse.setState(new RunningState(task));
+    }
     /**
      * Adds the given Observer to this.steppingObserver's Observer list.
      * 

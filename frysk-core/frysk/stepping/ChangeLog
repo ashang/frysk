@@ -1,3 +1,7 @@
+2008-02-01  Rick Moseley  <rmoseley@redhat.com>
+
+	* SteppingEngine.java (setTaskRunning): New.
+
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
 	* SteppingEngine.java: Update to match

@@ -124,14 +124,32 @@ class StartRun extends ParameterizedCommand {
 	}
     }
     
+    /**
+     * interpretRun is called from RunCommand to run a process until
+     * its first break point(if any) or until it blows up of finishes.
+     * 
+     * @param cli is the current command line interface object
+     * @param cmd is the command to be run
+     * @param options is not used at this point
+     */
     public void interpretRun(CLI cli, Input cmd, Object options) {
 	runToBreak = true;
 	interpretCmd(cli, cmd, options);
+	return;
     }
-    
+   
+    /**
+     * interpretStart is called from StartCommand to start a process and
+     * run it to the first executable statement.
+     * 
+     * @param cli is the current command line interface object
+     * @param cmd is the command to be started
+     * @param options is not used at this point
+     */
     public void interpretStart(CLI cli, Input cmd, Object options)  {
 	runToBreak = false;
 	interpretCmd(cli, cmd, options);
+	return;
     }
     
     public void interpret(CLI cli, Input cmd, Object options) {
@@ -148,13 +166,15 @@ class StartRun extends ParameterizedCommand {
 		int oldPid = -1;
 		while (foo.hasNext()) {
 		    Task task = (Task) foo.next();
-		    if (task.getProc().getPid() == oldPid)
-		        continue;
+		    // Need only one kill per PID(proc)
+		    if (task.getProc().getPid() == oldPid) {
+			continue;
+		    } else 
+			cli.execCommand("kill\n");
 		    String paramList = getParameters(cmd, task);
-		    cli.execCommand("kill\n");
-		    cli.execCommand("start " + paramList + "\n");
-		    if (runToBreak)
-			cli.execCommand("go\n");
+		    Input newcmd = new Input(task.getProc().getExe() + " " +
+			    paramList);
+		    run(cli, newcmd);
 		    oldPid = task.getProc().getPid();
 		}
 		return;
@@ -200,13 +220,17 @@ class StartRun extends ParameterizedCommand {
 	    }
 	}
 	// register with SteppingEngine et.al.
-	cli.doAttach(runner.launchedTask.getProc());
+	cli.doAttach(runner.launchedTask.getProc(), runToBreak);
 	runner.launchedTask.requestUnblock(runner);
     }
 
-    /*
+    /**
      * runProcs does as the name implies, it runs procs found to be loaded by a
      * load or a core command.
+     * 
+     * @param cli is the current commandline interface object
+     * @param procs is the set of procs to be run
+     * @param cmd is the command object to use to start the proc(s)
      */
     private void runProcs(CLI cli, Set procs, Input cmd) {
 	Iterator foo = procs.iterator();
@@ -226,8 +250,8 @@ class StartRun extends ParameterizedCommand {
 	    cli.addMessage("starting/running with this command: " + 
 		    newcmd, Message.TYPE_NORMAL);
 	    run(cli, newcmd);
-	    if (runToBreak)
-		cli.execCommand("go\n");
+	    //if (runToBreak)
+		//cli.execCommand("go\n");
 	    synchronized (cli) {
 		cli.taskID = -1;
 	    }
@@ -257,6 +281,7 @@ class StartRun extends ParameterizedCommand {
     
     /**
      * parseParameters takes a String array and returns a space-delimited String
+     * 
      * @param parameters is the String array to convert
      * @param which indicates whether or not to skip the first parameter
      * @return a String of the parameters separated by spaces

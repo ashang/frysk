@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007 Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,10 +39,11 @@
 
 package frysk.hpd;
 
+//import java.util.HashMap;
 import java.util.Iterator;
-import frysk.proc.Task;
-import frysk.stepping.SteppingEngine;
 import java.util.List;
+import frysk.stepping.SteppingEngine;
+import frysk.proc.Task;
 
 class GoCommand extends ParameterizedCommand {
     private static String full = "Continue running a process, returning "
@@ -54,24 +55,44 @@ class GoCommand extends ParameterizedCommand {
 
     GoCommand() {
 	super("Continue a process.", "go", full);
-    }
+    } 
 
     void interpret(CLI cli, Input cmd, Object options) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	if (cli.steppingObserver != null) {
 	    Iterator taskIter = ptset.getTasks();
 	    SteppingEngine steppingEngine = cli.getSteppingEngine();
+//	    HashMap loadedProcs = cli.getLoadedProcs();
+//	    HashMap coreProcs = cli.getCoreProcs();
 	    while (taskIter.hasNext()) {
 		Task task = (Task) taskIter.next();
-		if (!steppingEngine.isTaskRunning(task))
-		    steppingEngine.continueExecution(task);
-		cli.addMessage("Running process " + task.getProc().getPid(),
+//		int taskPid = task.getProc().getPid();
+		if (!steppingEngine.isTaskRunning(task)) { //&& 
+//			CLI.notRunningProc(taskPid, loadedProcs) && 
+//			CLI.notRunningProc(taskPid, coreProcs)) {
+		    /* Try to continue task, if an exception occurs it is 
+		     * probably because it is already running and previously
+		     * has not been marked as such.  Until the
+		     * method task.getStateFIXME is fixed, this may be the best we
+		     * can do for now.
+		     */
+		    try {
+			steppingEngine.continueExecution(task);
+		    } catch (Exception e) {
+			// OK, caught an exception, set the task to running
+			steppingEngine.setTaskRunning(task);
+		    }
+		} // else if (CLI.notRunningProc(taskPid, loadedProcs) || 
+		//	CLI.notRunningProc(taskPid, coreProcs))
+		  //     cli.addMessage("Cannot use 'go' on a loaded or core file, must 'start' first", Message.TYPE_WARNING);
+		//else
+		    cli.addMessage("Running process " + task.getProc().getPid(),
 			Message.TYPE_NORMAL);
 	    }
 	} else
 	    cli.addMessage("Not attached to any process", Message.TYPE_ERROR);
     }
-
+    
     int completer(CLI cli, Input input, int cursor, List completions) {
 	return -1;
     }

@@ -114,9 +114,9 @@ public class TestRunCommand extends TestLib {
 	 * machine the funit-parameters process gets put into a different CPU and gets behind
 	 * the test case.  funit-parameters creates a file that this test checks and when this
 	 * test gets ahead of it that, the test fails beause it cannot find it.  Delaying
-	 * 1/10 of a second seems to fix that problem.
+	 * 1 second seems to fix that problem.
 	 */
-	try { Thread.sleep(100); } catch (Exception e) {}
+	try { Thread.sleep(1000); } catch (Exception e) {}
 	int file_length = 0;
 	String compare = "";
 	for (int i = 0; i < param.length; i++) {
