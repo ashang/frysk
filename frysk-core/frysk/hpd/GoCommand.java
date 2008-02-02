@@ -62,14 +62,10 @@ class GoCommand extends ParameterizedCommand {
 	if (cli.steppingObserver != null) {
 	    Iterator taskIter = ptset.getTasks();
 	    SteppingEngine steppingEngine = cli.getSteppingEngine();
-//	    HashMap loadedProcs = cli.getLoadedProcs();
-//	    HashMap coreProcs = cli.getCoreProcs();
+
 	    while (taskIter.hasNext()) {
 		Task task = (Task) taskIter.next();
-//		int taskPid = task.getProc().getPid();
-		if (!steppingEngine.isTaskRunning(task)) { //&& 
-//			CLI.notRunningProc(taskPid, loadedProcs) && 
-//			CLI.notRunningProc(taskPid, coreProcs)) {
+		if (!steppingEngine.isTaskRunning(task)) {
 		    /* Try to continue task, if an exception occurs it is 
 		     * probably because it is already running and previously
 		     * has not been marked as such.  Until the
@@ -77,17 +73,26 @@ class GoCommand extends ParameterizedCommand {
 		     * can do for now.
 		     */
 		    try {
+			if (CLI.notRunningProc(task.getProc().getPid(), cli.getLoadedProcs()) || 
+				CLI.notRunningProc(task.getProc().getPid(), cli.getCoreProcs())) {
+				cli.addMessage("Cannot use 'go' on a loaded or core file, must " +
+					"use 'start' first",
+					Message.TYPE_ERROR);
+				continue;
+			}
 			steppingEngine.continueExecution(task);
+			cli.addMessage("Running process " + task.getProc().getPid(),
+				Message.TYPE_NORMAL);
 		    } catch (Exception e) {
-			// OK, caught an exception, set the task to running
-			steppingEngine.setTaskRunning(task);
+			// OK, caught an exception, try to set the task to running
+			try {
+			    steppingEngine.setTaskRunning(task);
+			} catch (Exception err) {
+			    cli.addMessage("Process " + task.getProc().getPid() + " already running",
+				    Message.TYPE_NORMAL);
+			}
 		    }
-		} // else if (CLI.notRunningProc(taskPid, loadedProcs) || 
-		//	CLI.notRunningProc(taskPid, coreProcs))
-		  //     cli.addMessage("Cannot use 'go' on a loaded or core file, must 'start' first", Message.TYPE_WARNING);
-		//else
-		    cli.addMessage("Running process " + task.getProc().getPid(),
-			Message.TYPE_NORMAL);
+		}
 	    }
 	} else
 	    cli.addMessage("Not attached to any process", Message.TYPE_ERROR);

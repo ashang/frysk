@@ -53,20 +53,39 @@ public class TestGoCommand extends TestLib {
 	"Loaded executable file.*");
 	//e.sendCommandExpectPrompt("run ",
 	//	"Attached to process ([0-9]+).*Running process ([0-9]+).*");
-	e.send("run\n");
-	e.expect("Attached to process ([0-9]+).*");
-	e.expect("Running process ([0-9]+).*" + prompt);
-	e.sendCommandExpectPrompt("go","Running process ([0-9]+).*");
+	e.sendCommandExpectPrompt("start", "Attached to process ([0-9]+).*");
+	e.sendCommandExpectPrompt("go", "Running process ([0-9]+).*");
 	e.send("quit\n");
 	e.expect("Quitting\\.\\.\\.");
 	e.close();
     }
     
-/*    public void testGoCommandError() {
+    /**
+     * testGoCommandError tests the condition when a 'go' command is issued on
+     * a loaded core file or executable before a 'start' or 'run' is issued.
+     */
+    public void testGoCommandError() {
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
 	"Loaded executable file.*");
-	e.sendCommandExpectPrompt("go", "Warning: Cannot use.*");
+	e.sendCommandExpectPrompt("go", "Error: Cannot use.*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
+	e.close(); 
+    }
+    
+    /**
+     * testGoCommandErrorTwo tests the condition when a 'go' command is issued on
+     * a loaded core file or executable before a 'start' or 'run' is issued.
+     * 
+     * Future test when bz #5674 is resolved.
+     */
+ /*   public void testGoCommandErrorTwo() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	"Loaded executable file.*");
+	e.sendCommandExpectPrompt("run", "Attached to process.*Running process.*");
+	e.sendCommandExpectPrompt("go", "Error: Cannot use.*");
 	e.send("quit\n");
 	e.expect("Quitting\\.\\.\\.");
 	e.close(); 
