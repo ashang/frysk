@@ -91,7 +91,7 @@ public class LocationExpression {
 	    if (die.getAttrBoolean(DwAt.LOCATION)) 
 		throw new VariableOptimizedOutException();  
 	    else 
-		throw new ValueUavailableException();
+		throw new ValueUnavailableException(die.getName());
 	
 	for(int i = 0; i < nops; i++) {
 
@@ -428,7 +428,7 @@ public class LocationExpression {
 		break;
 
 	    default:
-		throw new ValueUavailableException();
+		throw new ValueUnavailableException(die.getName());
 	    }
 	}
 

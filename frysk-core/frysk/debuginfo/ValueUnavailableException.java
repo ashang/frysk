@@ -39,7 +39,11 @@
 
 package frysk.debuginfo;
 
-public class ValueUavailableException extends RuntimeException {
+public class ValueUnavailableException extends RuntimeException {
+    
+    public ValueUnavailableException(String valName) {
+	super ("Value Unavailable - " + valName);
+    }
 
     /**
      * 

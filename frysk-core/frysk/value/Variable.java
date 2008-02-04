@@ -48,7 +48,7 @@ import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.LocationExpression;
 import frysk.debuginfo.PieceLocation;
 import frysk.debuginfo.TypeEntry;
-import frysk.debuginfo.ValueUavailableException;
+import frysk.debuginfo.ValueUnavailableException;
 import frysk.debuginfo.VariableOptimizedOutException;
 import frysk.isa.ISA;
 import frysk.scopes.SourceLocation;
@@ -126,7 +126,7 @@ public class Variable extends ObjectDeclaration{
 	    Value value = getValue(frame);
 	    value.toPrint(printWriter, frame.getTask().getMemory(),
 			  Format.NATURAL, 0);
-	} catch (ValueUavailableException e) {
+	} catch (ValueUnavailableException e) {
 	    printWriter.print("< value unavailable at pc=0x"+ Long.toHexString(frame.getAdjustedAddress())+">");
 	} catch (VariableOptimizedOutException e) {
 	    printWriter.print("< optimized out >");
